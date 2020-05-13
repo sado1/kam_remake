@@ -24,6 +24,9 @@ uses
   function GetMultiplicator(aButton: TMouseButton): Word; overload;
   function GetMultiplicator(aShift: TShiftState): Word; overload;
 
+  function RoundToTilePixel(aVal: Single): Single; inline; overload;
+  function RoundToTilePixel(aVal: TKMPointF): TKMPointF; inline; overload;
+
   procedure LoadMapHeader(aStream: TKMemoryStreamBinary; var aMapX: Integer; var aMapY: Integer); overload;
   procedure LoadMapHeader(aStream: TKMemoryStreamBinary; var aMapX: Integer; var aMapY: Integer; var aGameRev: Integer); overload;
   procedure LoadMapHeader(aStream: TKMemoryStreamBinary; var aMapX: Integer; var aMapY: Integer; var aGameRev: Integer; var aMapDataSize: Cardinal); overload;
@@ -40,6 +43,17 @@ uses
   Math, KM_ResTexts, KM_ResKeys, KM_Houses, KM_Units, KM_UnitGroup;
 
 
+function RoundToTilePixel(aVal: Single): Single; inline;
+begin
+  Result := Round(aVal * CELL_SIZE_PX) / CELL_SIZE_PX;
+end;
+
+
+function RoundToTilePixel(aVal: TKMPointF): TKMPointF; inline;
+begin
+  Result.X := RoundToTilePixel(aVal.X);
+  Result.Y := RoundToTilePixel(aVal.Y);
+end;
 
 
 function KMPathLength(aNodeList: TKMPointList): Single;

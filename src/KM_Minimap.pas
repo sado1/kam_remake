@@ -293,7 +293,7 @@ begin
 
   //Draw 'Resize map' feature on minimap
   if (gGame <> nil) and gGame.IsMapEditor
-    and (mlMapResize in gGame.MapEditor.VisibleLayers)
+    and (melMapResize in gGame.MapEditor.VisibleLayers)
     and not KMSameRect(gGame.MapEditor.ResizeMapRect, KMRECT_ZERO) then
     for I := 0 to fMapY - 1 do
       for K := 0 to fMapX - 1 do

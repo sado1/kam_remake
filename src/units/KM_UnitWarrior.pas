@@ -128,7 +128,7 @@ uses
   KM_ResTexts, KM_HandsCollection, KM_RenderPool, KM_RenderAux, KM_UnitTaskAttackHouse, KM_HandLogistics,
   KM_UnitActionFight, KM_UnitActionGoInOut, KM_UnitActionWalkTo, KM_UnitActionStay,
   KM_UnitActionStormAttack, KM_Resource, KM_ResUnits, KM_Hand, KM_UnitGroup,
-  KM_ResWares, KM_Game, KM_ResHouses, KM_CommonUtils;
+  KM_ResWares, KM_Game, KM_ResHouses, KM_CommonUtils, KM_RenderDebug;
 
 
 { TKMUnitWarrior }
@@ -1014,8 +1014,7 @@ procedure TKMUnitWarrior.Paint;
 var
   Act: TKMUnitActionType;
   UnitPos: TKMPointF;
-  I,K: Integer;
-  Color: Cardinal;
+  fillColor, lineColor: Cardinal;
 begin
   inherited;
   if not fVisible then Exit;
@@ -1029,20 +1028,21 @@ begin
   if fThought <> thNone then
     gRenderPool.AddUnitThought(fType, Act, Direction, fThought, UnitPos.X, UnitPos.Y);
 
-  if SHOW_ATTACK_RADIUS or (gGame.IsMapEditor and (mlUnitsAttackRadius in gGame.MapEditor.VisibleLayers)) then
-  begin
-    Color := $40FFFFFF;
-    if (gMySpectator.Selected = Self)
-      or ((gMySpectator.Selected is TKMUnitGroup)
-        and (TKMUnitGroup(gMySpectator.Selected).FlagBearer = Self)) then
-      Color := icRed and Color;
+  if SHOW_ATTACK_RADIUS or (mlUnitsAttackRadius in gGame.VisibleLayers) then
     if IsRanged then
-      for I := -Round(GetFightMaxRange) - 1 to Round(GetFightMaxRange) do
-        for K := -Round(GetFightMaxRange) - 1 to Round(GetFightMaxRange) do
-          if InRange(GetLength(I, K), GetFightMinRange, GetFightMaxRange)
-            and gTerrain.TileInMapCoords(CurrPosition.X + K, CurrPosition.Y + I) then
-              gRenderAux.Quad(CurrPosition.X + K, CurrPosition.Y + I, Color);
-  end;
+    begin
+      fillColor := $40FFFFFF;
+      lineCOlor := icWhite;
+      if (gMySpectator.Selected = Self)
+        or ((gMySpectator.Selected is TKMUnitGroup)
+          and (TKMUnitGroup(gMySpectator.Selected).FlagBearer = Self)) then
+      begin
+        fillColor := icRed and fillColor;
+        lineColor := icCyan;
+      end;
+
+      gRenderPool.RenderDebug.RenderTiledArea(CurrPosition, GetFightMinRange, GetFightMaxRange, GetLength, fillColor, lineColor);
+    end;
 end;
 
 

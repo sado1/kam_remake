@@ -119,6 +119,8 @@ uses
   function ArrayContains(aPoint: TKMPoint; const aArray: TKMPointArray): Boolean; overload;
   function ArrayContains(aPoint: TKMPoint; const aArray: TKMPointArray; aElemCnt: Integer): Boolean; overload;
 
+  procedure ArrayReverse(var aArray: TKMPointArray);
+
   function Pack4ByteToInteger(aByte1, aByte2, aByte3, aByte4: Byte): Integer;
   procedure UnpackIntegerTo4Byte(aInt: Integer; out aByte1, aByte2, aByte3, aByte4: Byte);
 
@@ -351,6 +353,22 @@ begin
       Result := True;
       Exit;
     end;
+end;
+
+
+procedure ArrayReverse(var aArray: TKMPointArray);
+var
+  I: Integer;
+  tmp: TKMPoint;
+  IMax: Integer;
+begin
+  IMax := High(aArray);
+  for I := 0 to IMax div 2 do
+  begin
+    tmp := aArray[I];
+    aArray[I] := aArray[IMax - I];
+    aArray[IMax - I] := tmp;
+  end;
 end;
 
 

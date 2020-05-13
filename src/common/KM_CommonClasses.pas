@@ -255,7 +255,8 @@ type
 
     procedure Clear; virtual;
     procedure Copy(aSrc: TKMPointList);
-    procedure Add(const aLoc: TKMPoint); virtual;
+    procedure Add(const aLoc: TKMPoint); overload; virtual;
+    procedure Add(X, Y: Integer); overload;
     procedure AddList(aList: TKMPointList);
     procedure AddUnique(const aLoc: TKMPoint);
     procedure AddListUnique(aList: TKMPointList);
@@ -597,6 +598,12 @@ begin
     SetLength(fItems, fCount + 32);
   fItems[fCount] := aLoc;
   Inc(fCount);
+end;
+
+
+procedure TKMPointList.Add(X, Y: Integer);
+begin
+  Add(KMPoint(X, Y));
 end;
 
 

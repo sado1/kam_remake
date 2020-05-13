@@ -167,7 +167,6 @@ var
   SHOW_VERTEX_UNIT        :Boolean = False; //Show vertex unit (if vertex is occupied)
   SHOW_UIDs               :Boolean = False; //Show units/groups/houses UIDs
   SHOW_WALK_CONNECT       :Boolean = False; //Show floodfill areas of interconnected areas
-  SHOW_DEFENCE_POSITIONS  :Boolean = False; //Show defence positions
   SHOW_GROUP_MEMBERS_POS  :Boolean = False; //Show group members position
   TEST_VIEW_CLIP_INSET    :Boolean = False; //Renders smaller area to see if everything gets clipped well
   OUTLINE_ALL_SPRITES     :Boolean = False; //Render outline around every sprite
@@ -594,6 +593,10 @@ type
   TKMArmyType = (atIronThenLeather = 0, atLeather = 1, atIron = 2, atIronAndLeather = 3);
 
 const
+  GROUP_IMG: array [TKMGroupType] of Word = (
+    371, 374,
+    376, 377);
+
   KaMGroupType: array [TKMGroupType] of Byte = (0, 1, 2, 3);
 
   UnitGroups: array [WARRIOR_MIN..WARRIOR_MAX] of TKMGroupType = (
@@ -798,23 +801,33 @@ const
   MAP_SIZE_ENUM_MAX = msXXL;
 
 type
-  TKMMapEdLayer = (
+  //Enum representing map visible layers
+  TKMGameVisibleLayer = (
     mlObjects,
     mlHouses,
     mlUnits,
     mlOverlays,
-    mlDeposits,
     mlMiningRadius,
     mlTowersAttackRadius,
     mlUnitsAttackRadius,
-    mlDefences,
-    mlRevealFOW,
-    mlCenterScreen,
-    mlAIStart,
-    mlSelection,
-    mlWaterFlow,
-    mlMapResize);  //Enum representing mapEditor visible layers
-  TKMMapEdLayerSet = set of TKMMapEdLayer;                                   //Set of above enum
+    mlDefencesAll
+    );
+
+  TKMMapVisibleLayerSet = set of TKMGameVisibleLayer; //Set of above enum
+
+  //Enum representing mapEd visible layers
+  TKMMapEdVisibleLayers = (
+    melDeposits,
+    melRevealFOW,
+    melCenterScreen,
+    melAIStart,
+    melSelection,
+    melWaterFlow,
+    melMapResize,
+    melDefences
+  );
+
+  TKMMapEdVisibleLayerSet = set of TKMMapEdVisibleLayers; //Set of above enum
 
 const
   //Colors available for selection in multiplayer

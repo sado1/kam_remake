@@ -85,6 +85,8 @@ type
 
     fLoadFromFile: UnicodeString; //Path to file, from which game was loaded. '.bas' file for replays
 
+    fVisibleLayers: TKMMapVisibleLayerSet;
+
     fSaveWorkerThread: TKMWorkerThread;
 
     procedure GameMPDisconnect(const aData: UnicodeString);
@@ -174,6 +176,8 @@ type
     property BlockGetPointer: Boolean read fBlockGetPointer;
     function AllowGetPointer: Boolean;
     property MissionFile: UnicodeString read GetMissionFile;
+
+    property VisibleLayers: TKMMapVisibleLayerSet read fVisibleLayers write fVisibleLayers;
 
     function MissionTime: TDateTime;
     function GetPeacetimeRemaining: TDateTime;
@@ -312,6 +316,8 @@ begin
   // Suppress Alt key for menu while in the game. We can use Alt key as a modificator for some hotkeys (for School hotkeys, f.e.)
   if gMain <> nil then
     gMain.FormMain.SuppressAltForMenu := True;
+
+  fVisibleLayers := [mlObjects, mlHouses, mlUnits, mlOverlays];
 
   fSaveWorkerThread := TKMWorkerThread.Create;
 
@@ -731,6 +737,8 @@ begin
 
   if fGamePlayInterface <> nil then
     fGamePlayInterface.GuiGameResultsMP.ResetControls;
+
+  gRenderPool.ReInit;
 
   gLog.AddTime('After game ends', True);
 end;
@@ -1256,6 +1264,8 @@ begin
     fActiveInterface.SyncUI;
     fActiveInterface.SyncUIView(KMPointF(gTerrain.MapX / 2, gTerrain.MapY / 2));
   end;
+
+  gRenderPool.ReInit;
 
   gLog.AddTime('Gameplay initialized', True);
 end;
@@ -2415,6 +2425,8 @@ begin
   else
     // Save dummy GIP to know when game was loaded. Good for debug
     fGameInputProcess.CmdGame(gicGameLoadSave, Integer(fGameTick));
+
+  gRenderPool.ReInit;
 
   gLog.AddTime('Game options: ' + fGameOptions.ToString);
   gLog.AddTime('After game loading', True);

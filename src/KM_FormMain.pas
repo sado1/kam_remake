@@ -146,6 +146,18 @@ type
     chkTileUnit: TCheckBox;
     chkVertexUnit: TCheckBox;
     chkTileObject: TCheckBox;
+
+    chkSupervisor: TCheckBox;
+    cpScripting: TCategoryPanel;
+    chkShowDefencePos: TCheckBox;
+    chkShowUnitRadius: TCheckBox;
+    chkShowTowerRadius: TCheckBox;
+    chkShowMiningRadius: TCheckBox;
+    chkShowDeposits: TCheckBox;
+    chkShowOverlays: TCheckBox;
+    chkShowUnits: TCheckBox;
+    chkShowHouses: TCheckBox;
+    chkShowObjects: TCheckBox;
     {$ENDIF}
     {$IFDEF FPC}
     mainGroup: TGroupBox;
@@ -165,8 +177,6 @@ type
     Debug_UnlockCmpMissions: TMenuItem;
     N11: TMenuItem;
     mnExportRngChecks: TMenuItem;
-    chkSupervisor: TCheckBox;
-    cpScripting: TCategoryPanel;
 
     procedure Export_TreeAnim1Click(Sender: TObject);
     procedure MenuItem1Click(Sender: TObject);
@@ -801,6 +811,10 @@ procedure TFormMain.ControlsReset;
                                                          or (PanelSurface.Controls[I] = chkLogNetConnection)
                                                          or (PanelSurface.Controls[I] = chkLogSkipTempCmd)
                                                          or ((PanelSurface.Controls[I] = chkSnowHouses) and gGameApp.GameSettings.AllowSnowHouses)
+                                                         or (PanelSurface.Controls[I] = chkShowObjects)
+                                                         or (PanelSurface.Controls[I] = chkShowHouses)
+                                                         or (PanelSurface.Controls[I] = chkShowUnits)
+                                                         or (PanelSurface.Controls[I] = chkShowOverlays)
         else
         if PanelSurface.Controls[I] is TTrackBar then
           TTrackBar(PanelSurface.Controls[I]).Position := 0
@@ -874,7 +888,7 @@ begin
   chkDebugScripting.SetCheckedWithoutClick(DEBUG_SCRIPTING_EXEC);
   {$ENDIF}
 
-  if (gGame = nil) or not gGame.IsMapEditor then Exit;
+  if (gGame = nil) or not gMain.IsDebugChangeAllowed then Exit;
 
   tbPassability.Max := Byte(High(TKMTerrainPassability));
   tbPassability.Position := SHOW_TERRAIN_PASS;
@@ -893,6 +907,15 @@ begin
   chkVertexUnit.SetCheckedWithoutClick      (SHOW_VERTEX_UNIT);
   chkShowRoutes.SetCheckedWithoutClick      (SHOW_UNIT_ROUTES);
   chkSelectionBuffer.SetCheckedWithoutClick (SHOW_SEL_BUFFER);
+
+  chkShowObjects.SetCheckedWithoutClick     (mlObjects            in gGame.VisibleLayers);
+  chkShowHouses.SetCheckedWithoutClick      (mlHouses             in gGame.VisibleLayers);
+  chkShowUnits.SetCheckedWithoutClick       (mlUnits              in gGame.VisibleLayers);
+  chkShowOverlays.SetCheckedWithoutClick    (mlOverlays           in gGame.VisibleLayers);
+  chkShowMiningRadius.SetCheckedWithoutClick(mlMiningRadius       in gGame.VisibleLayers);
+  chkShowTowerRadius.SetCheckedWithoutClick (mlTowersAttackRadius in gGame.VisibleLayers);
+  chkShowUnitRadius.SetCheckedWithoutClick  (mlUnitsAttackRadius  in gGame.VisibleLayers);
+  chkShowDefencePos.SetCheckedWithoutClick  (mlDefencesAll        in gGame.VisibleLayers);
 end;
 
 
@@ -979,6 +1002,81 @@ begin
     SHOW_TERRAIN_OVERLAYS := chkShowTerrainOverlays.Checked;
     DEBUG_SCRIPTING_EXEC := chkDebugScripting.Checked;
     SKIP_LOG_TEMP_COMMANDS := chkLogSkipTempCmd.Checked;
+
+    if gGame <> nil then
+    begin
+      if (Sender = chkShowDefencePos) then
+      begin
+        if chkShowDefencePos.Checked then
+          gGame.VisibleLayers := gGame.VisibleLayers + [mlDefencesAll]
+        else
+          gGame.VisibleLayers := gGame.VisibleLayers - [mlDefencesAll];
+      end;
+
+      if (Sender = chkShowObjects) then
+      begin
+        if chkShowObjects.Checked then
+          gGame.VisibleLayers := gGame.VisibleLayers + [mlObjects]
+        else
+          gGame.VisibleLayers := gGame.VisibleLayers - [mlObjects];
+      end;
+
+      if (Sender = chkShowHouses) then
+      begin
+        if chkShowHouses.Checked then
+          gGame.VisibleLayers := gGame.VisibleLayers + [mlHouses]
+        else
+          gGame.VisibleLayers := gGame.VisibleLayers - [mlHouses];
+      end;
+
+      if (Sender = chkShowUnits) then
+      begin
+        if chkShowUnits.Checked then
+          gGame.VisibleLayers := gGame.VisibleLayers + [mlUnits]
+        else
+          gGame.VisibleLayers := gGame.VisibleLayers - [mlUnits];
+      end;
+
+      if (Sender = chkShowOverlays) then
+      begin
+        if chkShowOverlays.Checked then
+          gGame.VisibleLayers := gGame.VisibleLayers + [mlOverlays]
+        else
+          gGame.VisibleLayers := gGame.VisibleLayers - [mlOverlays];
+      end;
+
+      if (Sender = chkShowMiningRadius) then
+      begin
+        if chkShowMiningRadius.Checked then
+          gGame.VisibleLayers := gGame.VisibleLayers + [mlMiningRadius]
+        else
+          gGame.VisibleLayers := gGame.VisibleLayers - [mlMiningRadius];
+      end;
+
+      if (Sender = chkShowTowerRadius) then
+      begin
+        if chkShowTowerRadius.Checked then
+          gGame.VisibleLayers := gGame.VisibleLayers + [mlTowersAttackRadius]
+        else
+          gGame.VisibleLayers := gGame.VisibleLayers - [mlTowersAttackRadius];
+      end;
+
+      if (Sender = chkShowUnitRadius) then
+      begin
+        if chkShowUnitRadius.Checked then
+          gGame.VisibleLayers := gGame.VisibleLayers + [mlUnitsAttackRadius]
+        else
+          gGame.VisibleLayers := gGame.VisibleLayers - [mlUnitsAttackRadius];
+      end;
+
+//      if (Sender = chkShowDeposits) then
+//      begin
+//        if chkShowDeposits.Checked then
+//          gGame.VisibleLayers := gGame.VisibleLayers + [mlDefences]
+//        else
+//          gGame.VisibleLayers := gGame.VisibleLayers - [mlDefences];
+//      end;
+    end;
     {$ENDIF}
 
     SKIP_RENDER := chkSkipRender.Checked;

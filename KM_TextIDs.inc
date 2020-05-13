@@ -1476,3 +1476,5 @@ TX_MENU_OPTIONS_MAKE_SAVEPOINTS = 1429; //Make replay savepoints
 TX_UNUSED_312_ = 312; //
 TX_UNUSED_313_ = 313; //
 TX_UNUSED_1356_MAPSIZE = 1356; //Map size:
+
+TX_MAPED_VIEW_DEFENCES = 1435; //Show defence positions

@@ -59,6 +59,7 @@ type
     class procedure WriteText      (aLeft, aTop, aWidth: SmallInt; aText: UnicodeString; aFont: TKMFont; aAlign: TKMTextAlign;
                                     aColor: TColor4 = $FFFFFFFF; aIgnoreMarkup: Boolean = False; aShowMarkup: Boolean = False;
                                     aShowEolSymbol: Boolean = False; aTabWidth: Integer = TAB_WIDTH; aResetTexture: Boolean = True);
+    class procedure WriteTextInShape(const aText: string; X,Y: SmallInt; aLineColor: Cardinal; aTextColor: Cardinal);
     class procedure WriteTexture   (aLeft, aTop, aWidth, aHeight: SmallInt; const aTexture: TTexture; aCol: TColor4);
     class procedure WriteCircle    (aCenterX, aCenterY: SmallInt; aRadius: Byte; aFillColor: TColor4);
     class procedure WriteShadow    (aLeft, aTop, aWidth, aHeight: SmallInt; aBlur: Byte; aCol: TColor4);
@@ -879,6 +880,23 @@ begin
 
   if SetupClipXApplied then
     ReleaseClipX;
+end;
+
+
+class procedure TKMRenderUI.WriteTextInShape(const aText: string; X,Y: SmallInt; aLineColor: Cardinal; aTextColor: Cardinal);
+var
+  W: Integer;
+begin
+  TRender.BindTexture(0);
+  //Paint the background
+  W := 10 + 10 * Length(aText);
+  WriteShape(X - W div 2, Y - 10, W, 20, $80000000);
+  WriteOutline(X - W div 2, Y - 10, W, 20, 2, aLineColor);
+
+  //Paint the label on top of the background
+  WriteText(X, Y - 7, 0, aText, fntMetal, taCenter, aTextColor);
+
+  TRender.BindTexture(0);
 end;
 
 

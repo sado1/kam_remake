@@ -5,7 +5,7 @@ uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLType, {$ENDIF}
   SysUtils, Controls, Classes, Math, KM_Defaults, KM_Controls, KM_Points,
-  KM_InterfaceDefaults, KM_CommonTypes,
+  KM_InterfaceDefaults, KM_CommonTypes, KM_AIDefensePos,
   KM_GameCursor, KM_Render, KM_Minimap, KM_Viewport, KM_ResHouses, KM_ResWares, KM_ResFonts;
 
 
@@ -51,6 +51,8 @@ type
     procedure SyncUIView(const aCenter: TKMPointF; aZoom: Single = 1);
     procedure UpdateGameCursor(X, Y: Integer; Shift: TShiftState);
     procedure UpdateStateIdle(aFrameTime: Cardinal); virtual; abstract;
+
+    procedure Paint; override;
   end;
 
 
@@ -62,6 +64,8 @@ const
   PAGE_TITLE_Y = 5; // Page title offset
   TERRAIN_PAGE_TITLE_Y = PAGE_TITLE_Y + 2; // Terrain pages title offset
   STATS_LINES_CNT = 13; //Number of stats (F3) lines
+
+  DEFENCE_LINE_TYPE_COL: array [TAIDefencePosType] of Cardinal = ($FF80FF00, $FFFF8000);
 
   // Shortcuts
   // All shortcuts are in English and are the same for all languages to avoid
@@ -165,7 +169,8 @@ const
 
 implementation
 uses
-  KM_Main, KM_Terrain, KM_RenderPool, KM_Resource, KM_ResCursors, KM_ResKeys;
+  KM_Main, KM_Terrain, KM_RenderPool, KM_Resource, KM_ResCursors, KM_ResKeys, KM_HandsCollection, KM_Game,
+  KM_RenderUI, KM_Pics, KM_CommonUtils;
 
 
 { TKMUserInterfaceGame }
@@ -354,6 +359,33 @@ begin
                                  fViewport.Position.Y + PrevCursor.Y-gGameCursor.Float.Y);
   UpdateGameCursor(X, Y, Shift); // Recentering the map changes the cursor position
   aHandled := True;
+end;
+
+
+procedure TKMUserInterfaceGame.Paint;
+var
+  I, K: Integer;
+  DP: TAIDefencePosition;
+  LocF: TKMPointF;
+  ScreenLoc: TKMPoint;
+begin
+  //Paint texture
+  if (mlDefencesAll in gGame.VisibleLayers) then
+  begin
+    for I := 0 to gHands.Count - 1 do
+      for K := 0 to gHands[I].AI.General.DefencePositions.Count - 1 do
+      begin
+        DP := gHands[I].AI.General.DefencePositions[K];
+        LocF := gTerrain.FlatToHeight(KMPointF(DP.Position.Loc.X-0.5, DP.Position.Loc.Y-0.5));
+        ScreenLoc := fViewport.MapToScreen(LocF);
+
+        if KMInRect(ScreenLoc, fViewport.ViewRect) then
+          TKMRenderUI.WriteTextInShape(IntToStr(K+1), ScreenLoc.X, ScreenLoc.Y - 22, DEFENCE_LINE_TYPE_COL[DP.DefenceType],
+                                       FlagColorToTextColor(gHands[I].FlagColor));
+      end;
+  end;
+
+  inherited;
 end;
 
 

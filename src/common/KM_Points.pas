@@ -5,6 +5,7 @@ interface
 
 type
   TKMDirection = (dirNA, dirN, dirNE, dirE, dirSE, dirS, dirSW, dirW, dirNW);
+  TKMDirection4 = (drNA, drN, drE, drS, drW);
 
 type
   //Records must be packed so they are stored identically in MP saves (padding bytes are unknown values)
@@ -171,6 +172,7 @@ type
 
   function KMLength(const A, B: TKMPoint): Single; overload;
   function KMLength(const A, B: TKMPointF): Single; overload;
+  function KMLengthDiag(X, Y: Integer): Single; overload;
   function KMLengthDiag(const A, B: TKMPoint): Single; overload;
   function KMLengthDiag(X,Y: Integer; const B: TKMPoint): Single; overload;
   function KMLengthSqr(const A, B: TKMPoint): Integer; overload;
@@ -1027,12 +1029,19 @@ begin
 end;
 
 
-function KMLengthDiag(X,Y: Integer; const B: TKMPoint): Single;
+function KMLengthDiag(X, Y: Integer; const B: TKMPoint): Single;
 begin
   if Abs(X - B.X) > Abs(Y - B.Y) then
     Result := Abs(X - B.X) + Abs(Y - B.Y) * 0.41
   else
     Result := Abs(Y - B.Y) + Abs(X - B.X) * 0.41;
+end;
+
+
+//Diag length to the KMPOINT_ZERO
+function KMLengthDiag(X, Y: Integer): Single;
+begin
+  Result := KMLengthDiag(X, Y, KMPOINT_ZERO);
 end;
 
 

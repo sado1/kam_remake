@@ -57,6 +57,7 @@ uses
   KM_CommonTypes in 'src\common\KM_CommonTypes.pas',
   KM_CommonSave in 'src\common\KM_CommonSave.pas',
 	KM_Defaults in 'src\common\KM_Defaults.pas',
+  KM_MarchingSquares in 'src\common\KM_MarchingSquares.pas',
 	KM_Points in 'src\common\KM_Points.pas',
 	KM_WorkerThread in 'src\common\KM_WorkerThread.pas',
 	
@@ -247,6 +248,7 @@ uses
   KM_Render in 'src\render\KM_Render.pas',
   KM_RenderAux in 'src\render\KM_RenderAux.pas',
   KM_RenderControl in 'src\render\KM_RenderControl.pas',
+  KM_RenderDebug in 'src\render\KM_RenderDebug.pas',
   KM_RenderPool in 'src\render\KM_RenderPool.pas',
   KM_RenderTerrain in 'src\render\KM_RenderTerrain.pas',
   KM_RenderQuery in 'src\render\KM_RenderQuery.pas',

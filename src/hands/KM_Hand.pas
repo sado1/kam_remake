@@ -274,7 +274,7 @@ end;
 
 procedure TKMHandCommon.Paint(const aRect: TKMRect);
 begin
-  if not gGame.IsMapEditor or (mlUnits in gGame.MapEditor.VisibleLayers) then
+  if mlUnits in gGame.VisibleLayers then
     fUnits.Paint(aRect);
 end;
 
@@ -2065,14 +2065,15 @@ begin
 
   inherited;
 
-  if not gGame.IsMapEditor or (mlUnits in gGame.MapEditor.VisibleLayers) then
+  if mlUnits in gGame.VisibleLayers then
     fUnitGroups.Paint(aRect);
 
-  if not gGame.IsMapEditor or (mlHouses in gGame.MapEditor.VisibleLayers) then
+  if mlHouses in gGame.VisibleLayers then
     fHouses.Paint(aRect);
 
   if not SKIP_RENDER AND OVERLAY_DEFENCES AND not fAI.Setup.NewAI then
-    fAI.General.DefencePositions.Paint;
+    if gMySpectator.SelectedHandID = fID then
+      fAI.General.DefencePositions.Paint;
 
   if not SKIP_RENDER AND fAI.Setup.NewAI then
   begin

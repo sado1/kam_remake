@@ -72,7 +72,7 @@ begin
   fSetup := aSetup;
 
   fAttacks := TKMAIAttacks.Create;
-  fDefencePositions := TAIDefencePositions.Create;
+  fDefencePositions := TAIDefencePositions.Create(aPlayer);
 end;
 
 

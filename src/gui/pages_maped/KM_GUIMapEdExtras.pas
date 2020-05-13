@@ -27,6 +27,7 @@ type
     CheckBox_ShowMiningRadius: TKMCheckBox;
     CheckBox_ShowTowersAttackRadius: TKMCheckBox;
     CheckBox_ShowUnitsAttackRadius: TKMCheckBox;
+    CheckBox_ShowDefences: TKMCheckBox;
     CheckBox_ShowTilesOwner: TKMCheckBox;
     CheckBox_ShowTilesGrid: TKMCheckBox;
     constructor Create(aParent: TKMPanel; aOnChange: TNotifyEvent);
@@ -42,13 +43,13 @@ implementation
 uses
   KM_GameApp,
   KM_HandsCollection, KM_Sound, KM_ResSound,
-  KM_RenderUI, KM_ResFonts, KM_ResTexts;
+  KM_RenderUI, KM_ResFonts, KM_ResTexts, KM_Game;
 
 
 { TKMMapEdExtras }
 constructor TKMMapEdExtras.Create(aParent: TKMPanel; aOnChange: TNotifyEvent);
 const
-  PANEL_HEIGHT = 240;
+  PANEL_HEIGHT = 260;
 var
   I: Integer;
 begin
@@ -103,6 +104,9 @@ begin
   CheckBox_ShowUnitsAttackRadius := TKMCheckBox.Create(Panel_Extra, 300, 210, 280, 20, gResTexts[TX_MAPED_VIEW_UNITS_ATTACK_RADIUS], fntAntiqua);
   CheckBox_ShowUnitsAttackRadius.Checked := False; //Disabled by default
   CheckBox_ShowUnitsAttackRadius.OnClick := Extra_Change;
+  CheckBox_ShowDefences := TKMCheckBox.Create(Panel_Extra, 300, 230, 280, 20, gResTexts[TX_MAPED_VIEW_DEFENCES], fntAntiqua);
+  CheckBox_ShowDefences.Checked := False; //Disabled by default
+  CheckBox_ShowDefences.OnClick := Extra_Change;
 
   CheckBox_ShowTilesOwner := TKMCheckBox.Create(Panel_Extra, 50, 170, 220, 20, gResTexts[TX_MAPED_SHOW_TILE_OWNERS], fntAntiqua);
   CheckBox_ShowTilesOwner.Checked := False; //Disabled by default
@@ -137,10 +141,11 @@ begin
   else
     Label_Passability.Caption := gResTexts[TX_MAPED_PASSABILITY_OFF];
 
+  fOnChange(Self);
+
+  //Call event handlers after we updated visible layers
   if Assigned(gGameApp.OnOptionsChange) then
     gGameApp.OnOptionsChange;
-
-  fOnChange(Self);
 end;
 
 
@@ -169,6 +174,16 @@ begin
   CheckBox_ShowTilesGrid.Checked  := SHOW_TERRAIN_TILES_GRID;
   CheckBox_ShowTilesOwner.Checked := SHOW_TILES_OWNER;
   TrackBar_Passability.Position   := SHOW_TERRAIN_PASS;
+
+  CheckBox_ShowObjects.Checked            := mlObjects            in gGame.VisibleLayers;
+  CheckBox_ShowHouses.Checked             := mlHouses             in gGame.VisibleLayers;
+  CheckBox_ShowUnits.Checked              := mlUnits              in gGame.VisibleLayers;
+  CheckBox_ShowOverlays.Checked           := mlOverlays           in gGame.VisibleLayers;
+  CheckBox_ShowMiningRadius.Checked       := mlMiningRadius       in gGame.VisibleLayers;
+  CheckBox_ShowTowersAttackRadius.Checked := mlTowersAttackRadius in gGame.VisibleLayers;
+  CheckBox_ShowUnitsAttackRadius.Checked  := mlUnitsAttackRadius  in gGame.VisibleLayers;
+  CheckBox_ShowDefences.Checked           := mlDefencesAll        in gGame.VisibleLayers;
+//  CheckBox_ShowDeposits.Checked    := mlDeposits in gGame.MapEditor.VisibleLayers;
 end;
 
 

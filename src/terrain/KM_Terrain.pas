@@ -2497,7 +2497,6 @@ var
   MiningRect: TKMRect;
 
 begin
-  Assert(gGame.IsMapEditor, 'Its allowed to use this method only from MapEd for now...');
   Assert(Length(aPoints) = 3, 'Wrong length of Points array: ' + IntToStr(Length(aPoints)));
 
   if not (aRes in [wtIronOre, wtGoldOre, wtCoal]) then

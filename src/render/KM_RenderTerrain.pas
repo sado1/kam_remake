@@ -849,7 +849,7 @@ begin
   {$IFDEF PERFLOG}
   gPerfLogs.SectionEnter(psFrameOverlays);
   {$ENDIF}
-  if gGame.IsMapEditor and not (mlOverlays in gGame.MapEditor.VisibleLayers) then
+  if not (mlOverlays in gGame.VisibleLayers) then
     Exit;
 
   for I := fClipRect.Top to fClipRect.Bottom do
@@ -866,7 +866,7 @@ procedure TRenderTerrain.RenderFences(aFOW: TKMFogOfWarCommon);
 var
   I,K: Integer;
 begin
-  if gGame.IsMapEditor and not (mlOverlays in gGame.MapEditor.VisibleLayers) then
+  if gGame.IsMapEditor and not (mlOverlays in gGame.VisibleLayers) then
     Exit;
 
   with gTerrain do

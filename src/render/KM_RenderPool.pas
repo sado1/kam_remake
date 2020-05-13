@@ -7,7 +7,7 @@ uses
   dglOpenGL, SysUtils, KromOGLUtils, KromUtils, Math,
   KM_Defaults, KM_CommonTypes, KM_CommonClasses, KM_Pics, KM_Points, KM_Render, KM_Viewport,
   KM_RenderTerrain, KM_ResHouses, KM_ResSprites, KM_ResWares, KM_Units,
-  KM_Houses, KM_Terrain, KM_Projectiles;
+  KM_Houses, KM_Terrain, KM_Projectiles, KM_RenderDebug;
 
 type
   TKMPaintLayer = (plTerrain, plObjects, plCursors);
@@ -62,6 +62,7 @@ type
     rPitch,rHeading,rBank: Integer;
     fRenderList: TRenderList;
     fRenderTerrain: TRenderTerrain;
+    fRenderDebug: TKMRenderDebug;
 
     fFieldsList: TKMPointTagList;
     fHousePlansList: TKMPointDirList;
@@ -109,6 +110,8 @@ type
     constructor Create(aViewport: TKMViewport; aRender: TRender);
     destructor Destroy; override;
 
+    procedure ReInit;
+
     procedure AddAlert(const aLoc: TKMPointF; aId: Word; aFlagColor: TColor4);
     procedure AddProjectile(aProj: TKMProjectileType; const aRenderPos, aTilePos: TKMPointF; aDir: TKMDirection; aFlight: Single);
     procedure AddHouse(aHouse: TKMHouseType; const aLoc: TKMPoint; aWoodStep, aStoneStep, aSnowStep: Single; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
@@ -132,6 +135,8 @@ type
     procedure RenderSpriteOnTerrain(const aLoc: TKMPointF; aId: Word; aFlagColor: TColor4 = $FFFFFFFF; aForced: Boolean = False);
     procedure RenderTile(aTerrainId: Word; pX,pY,Rot: Integer);
     procedure RenderWireTile(const P: TKMPoint; Col: TColor4; aInset: Single = 0.0; aLineWidth: Single = -1);
+
+    property RenderDebug: TKMRenderDebug read fRenderDebug;
 
     property RenderList: TRenderList read fRenderList;
     property RenderTerrain: TRenderTerrain read fRenderTerrain;
@@ -158,19 +163,6 @@ const
   DELETE_COLOR = $1616FF;
 
 
-function RoundToTilePixel(aVal: Single): Single; inline; overload;
-begin
-  Result := Round(aVal * CELL_SIZE_PX) / CELL_SIZE_PX;
-end;
-
-
-function RoundToTilePixel(aVal: TKMPointF): TKMPointF; inline; overload;
-begin
-  Result.X := RoundToTilePixel(aVal.X);
-  Result.Y := RoundToTilePixel(aVal.Y);
-end;
-
-
 constructor TRenderPool.Create(aViewport: TKMViewport; aRender: TRender);
 var
   RT: TRXType;
@@ -187,6 +179,7 @@ begin
 
   fRenderList     := TRenderList.Create;
   fRenderTerrain  := TRenderTerrain.Create;
+  fRenderDebug    := TKMRenderDebug.Create;
   gRenderAux      := TRenderAux.Create;
 
   fFieldsList     := TKMPointTagList.Create;
@@ -208,10 +201,17 @@ begin
   fHouseOutline.Free;
   // fSampleHouse.Free;
   fRenderList.Free;
+  fRenderDebug.Free;
   fRenderTerrain.Free;
   gRenderAux.Free;
 
   inherited;
+end;
+
+
+procedure TRenderPool.ReInit;
+begin
+  fRenderDebug.ReInit;
 end;
 
 
@@ -306,8 +306,15 @@ begin
     // so that terrain shadows could be applied seamlessly ontop
     glDisable(GL_DEPTH_TEST);
 
-    fRenderTerrain.RenderFences(gMySpectator.FogOfWar);
-    fRenderTerrain.RenderPlayerPlans(fFieldsList, fHousePlansList);
+    if mlOverlays in gGame.VisibleLayers then
+    begin
+      fRenderTerrain.RenderFences(gMySpectator.FogOfWar);
+      fRenderTerrain.RenderPlayerPlans(fFieldsList, fHousePlansList);
+
+    end;
+
+    if mlMiningRadius in gGame.VisibleLayers then
+      fRenderDebug.PaintMiningRadius;
 
     {$IFDEF PERFLOG}
     gPerfLogs.SectionLeave(psFrameTerrain);
@@ -330,6 +337,9 @@ begin
 
     fRenderList.SortRenderList;
     fRenderList.Render;
+
+    if mlDefencesAll in gGame.VisibleLayers then
+      fRenderDebug.PaintDefences;
 
     fRenderTerrain.RenderFOW(gMySpectator.FogOfWar);
 
@@ -427,8 +437,7 @@ procedure TRenderPool.CollectTerrainObjects(const aRect: TKMRect; aAnimStep: Car
 var
   I, K: Integer;
 begin
-  if gGame.IsMapEditor and not (mlObjects in gGame.MapEditor.VisibleLayers) then
-    Exit;
+  if not (mlObjects in gGame.VisibleLayers) then Exit;
 
   if gGame.IsMapEditor then
     gGame.MapEditor.Paint(plObjects, aRect);
@@ -439,7 +448,7 @@ begin
       begin
         if (Land[I, K].Obj <> 255)
         // In the map editor we shouldn't render terrain objects within the paste preview
-        and (not gGame.IsMapEditor or not (mlSelection in gGame.MapEditor.VisibleLayers)
+        and (not gGame.IsMapEditor or not (melSelection in gGame.MapEditor.VisibleLayers)
              or not gGame.MapEditor.Selection.TileWithinPastePreview(K, I)) then
           RenderMapElement(Land[I, K].Obj, AnimStep, K, I);
       end;
