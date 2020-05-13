@@ -48,6 +48,8 @@ begin
   TMonitor.Pulse(fTaskQueue);
   TMonitor.Exit(fTaskQueue);
 
+  //Intentionally don't free fTaskQueue object
+
   inherited;
 end;
 
