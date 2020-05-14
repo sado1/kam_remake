@@ -1440,7 +1440,8 @@ var
   ID: Integer;
   Color: Cardinal;
 begin
-  if not fNetworking.MapInfo.TxtInfo.BlockColorSelection then Exit;
+  if (fNetworking.SelectGameKind = ngkMap) and not fNetworking.MapInfo.TxtInfo.BlockColorSelection then Exit;
+  if (fNetworking.SelectGameKind = ngkSave) and not fNetworking.SaveInfo.GameInfo.BlockColorSelection then Exit;
 
   if (DropBox_Loc[I].GetSelectedTag <> LOC_SPECTATE) then
   begin
@@ -1449,7 +1450,12 @@ begin
     else
     begin
       ID := fLocalToNetPlayers[I];
-      Color := fNetworking.MapInfo.FlagColors[DropBox_Loc[I].GetSelectedTag - 1];
+      case fNetworking.SelectGameKind of
+        ngkMap:   Color := fNetworking.MapInfo.FlagColors[DropBox_Loc[I].GetSelectedTag - 1];
+        ngkSave:  Color := fNetworking.SaveInfo.GameInfo.Color[DropBox_Loc[I].GetSelectedTag - 1];
+        else      Color := 0;
+      end;
+
       DropBox_Colors[I][0].Cells[0].Color := Color;
       DropBox_Colors[I][0].Cells[0].Pic.Id := 30;
       fNetworking.NetPlayers[ID].FlagColor := Color;
@@ -1853,7 +1859,8 @@ begin
                                       and not fNetworking.MapInfo.TxtInfo.BlockTeamSelection;
       DropBox_Colors[I].Enabled := (CanEdit or (MyNik and not CurPlayer.ReadyToStart))
                                         and (not IsSave or CurPlayer.IsSpectator)
-                                        and ((fNetworking.SelectGameKind <> ngkMap) or not fNetworking.MapInfo.TxtInfo.BlockColorSelection);
+                                        and (    (fNetworking.SelectGameKind <> ngkMap)
+                                           or not fNetworking.MapInfo.TxtInfo.BlockColorSelection);
       if MyNik and not fNetworking.IsHost then
       begin
         if CurPlayer.ReadyToStart then

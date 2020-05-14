@@ -1908,6 +1908,7 @@ begin
     GameInfo.MissionDifficulty := fMissionDifficulty;
     GameInfo.MapSizeX := gTerrain.MapX;
     GameInfo.MapSizeY := gTerrain.MapY;
+    GameInfo.BlockColorSelection := fMapTxtInfo.BlockColorSelection;
 
     GameInfo.PlayerCount := gHands.Count;
     for I := 0 to gHands.Count - 1 do

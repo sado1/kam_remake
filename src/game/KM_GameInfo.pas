@@ -30,6 +30,7 @@ type
     MissionMode: TKMissionMode; //Fighting or Build-a-City map
     MissionDifficulty: TKMMissionDifficulty;
     MapSizeX, MapSizeY: Integer;
+    BlockColorSelection: Boolean;
 
     PlayerCount: Byte;
     Enabled: array [0..MAX_HANDS-1] of Boolean;
@@ -102,6 +103,7 @@ procedure TKMGameInfo.Load(LoadStream: TKMemoryStream);
     LoadStream.Read(MissionDifficulty, SizeOf(MissionDifficulty));
     LoadStream.Read(MapSizeX);
     LoadStream.Read(MapSizeY);
+    LoadStream.Read(BlockColorSelection);
 
     LoadStream.Read(PlayerCount);
     for I := 0 to PlayerCount - 1 do
@@ -173,6 +175,7 @@ begin
   SaveStream.Write(MissionDifficulty, SizeOf(MissionDifficulty));
   SaveStream.Write(MapSizeX);
   SaveStream.Write(MapSizeY);
+  SaveStream.Write(BlockColorSelection);
 
   SaveStream.Write(PlayerCount);
   for I := 0 to PlayerCount - 1 do
