@@ -48,9 +48,9 @@ begin
   TMonitor.Pulse(fTaskQueue);
   TMonitor.Exit(fTaskQueue);
 
-  //Intentionally don't free fTaskQueue object
+  inherited Destroy;
 
-  inherited;
+  fTaskQueue.Free; // Free task queue after Worker thread is destroyed so we don't wait for it
 end;
 
 procedure TKMWorkerThread.Execute;
