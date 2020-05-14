@@ -777,13 +777,22 @@ procedure TKMGame.MultiplayerRig(aNewGame: Boolean);
 var
   I: Integer;
   HIndex: TKMHandID;
+  isPT: Boolean;
+  oldSpeedPT, oldSpeedAfterPT: Single;
 begin
+  oldSpeedPT := fGameOptions.SpeedPT;
+  oldSpeedAfterPT := fGameOptions.SpeedAfterPT;
   //Copy game options from lobby to this game
   fGameOptions.Peacetime := fNetworking.NetGameOptions.Peacetime;
   fGameOptions.SpeedPT := fNetworking.NetGameOptions.SpeedPT;
   fGameOptions.SpeedAfterPT := fNetworking.NetGameOptions.SpeedAfterPT;
 
-  if aNewGame then
+  isPT := IsPeacetime;
+
+  //Set game speed for new game or when game speed was changed in the lobby
+  if aNewGame
+    or (    isPT and not SameValue(oldSpeedPT,      fGameOptions.SpeedPT,      0.01))
+    or (not isPT and not SameValue(oldSpeedAfterPT, fGameOptions.SpeedAfterPT, 0.01)) then
     SetGameSpeed(GetNormalGameSpeed, True);
 
   //Check for default advanced AI's
@@ -1714,6 +1723,15 @@ var
   speedChanged: Boolean;
 begin
   speedChanged := fGameSpeedGIP <> aSpeed;
+
+  //Update gameOptions SpeedPT / SpeedAfterPT for MP game
+  if IsMultiPlayerOrSpec then
+  begin
+    if IsPeacetime then
+      fGameOptions.SpeedPT := aSpeed
+    else
+      fGameOptions.SpeedAfterPT := aSpeed;
+  end;
 
   fGameSpeedGIP := aSpeed;
   if aUpdateActual then
