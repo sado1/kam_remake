@@ -230,7 +230,7 @@ const
   procedure PaintOrePoints(aOreP: TKMPointListArray; Color: Cardinal; aHighlight: Boolean = False);
   var
     I, K, L: Integer;
-    Color2: Cardinal;
+    lineColor, fillColor: Cardinal;
     Coef: Single;
   begin
     Coef := 0.15;
@@ -240,6 +240,8 @@ const
       Coef := 0.3;
     end;
 
+    ResetAreaData;
+    lineColor := Color;
     for I := 1 to Length(aOreP) - 1 do
     begin
       Color := Color and $40FFFFFF; //Add some transparency
@@ -247,20 +249,29 @@ const
       for K := Length(aOreP) - 1 downto 0 do
         for L := 0 to aOreP[K].Count - 1 do
         begin
-          Color2 := Color;
+          fillColor := Color;
           if K = 1 then
-            Color2 := MultiplyBrightnessByFactor(Color, 4);
+            fillColor := MultiplyBrightnessByFactor(Color, 4);
           if K = 2 then
-            Color2 := MultiplyBrightnessByFactor(Color, 7);
-          gRenderAux.Quad(aOreP[K][L].X, aOreP[K][L].Y, Color2);
+            fillColor := MultiplyBrightnessByFactor(Color, 7);
+          gRenderAux.Quad(aOreP[K][L].X, aOreP[K][L].Y, fillColor);
+
+          fAreaTilesLand[aOreP[K][L].Y - 1, aOreP[K][L].X - 1] := True;
         end;
     end;
+
+    if not fMarchingSquares.IdentifyPerimeters(fBorderPoints) then
+      Exit;
+
+    for I := 0 to fBorderPoints.Count - 1 do
+      gRenderAux.LineOnTerrain(fBorderPoints[I], lineColor);
   end;
 
   procedure PaintMiningPoints(aPoints: TKMPointList; Color: Cardinal; aHighlight: Boolean = False; aDeepCl: Boolean = False);
   var
     I: Integer;
     Coef: Single;
+    lineColor: Cardinal;
   begin
     Coef := 0.15;
     if aHighlight then
@@ -269,14 +280,27 @@ const
       Coef := 0.3;
     end;
 
+    lineColor := Color;
+
     if aDeepCl then
       Color := Color and $80FFFFFF //Add some transparency
     else
       Color := Color and $40FFFFFF; //Add more transparency
     Color := MultiplyBrightnessByFactor(Color, Coef);
 
+    ResetAreaData;
+
     for I := 0 to aPoints.Count - 1 do
+    begin
       gRenderAux.Quad(aPoints[I].X, aPoints[I].Y, Color);
+      fAreaTilesLand[aPoints[I].Y - 1, aPoints[I].X - 1] := True;
+    end;
+
+    if not fMarchingSquares.IdentifyPerimeters(fBorderPoints) then
+      Exit;
+
+    for I := 0 to fBorderPoints.Count - 1 do
+      gRenderAux.LineOnTerrain(fBorderPoints[I], lineColor);
   end;
 
 var
