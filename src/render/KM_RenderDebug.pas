@@ -12,14 +12,14 @@ type
   private
     fAreaTilesLand: TBoolean2Array;
     procedure ResetAreaLand;
+    procedure CollectAreaTiles(var aPoints: TBoolean2Array; const aLoc: TKMPoint; aMinRadius, aMaxRadius: Single;
+                               aDistanceFunc: TCoordDistanceFn);
   public
     procedure ReInit;
 
     procedure PaintMiningRadius;
     procedure PaintDefences;
 
-    class procedure CollectAreaTiles(var aPoints: TBoolean2Array; const aLoc: TKMPoint; aMinRadius, aMaxRadius: Single;
-                                     aDistanceFunc: TCoordDistanceFn);
     procedure RenderTiledArea(const aLoc: TKMPoint; aMinRadius, aMaxRadius: Single; aDistanceFunc: TCoordDistanceFn;
                                     aFillColor, aLineColor: Cardinal);
   end;
@@ -86,8 +86,8 @@ begin
 end;
 
 
-class procedure TKMRenderDebug.CollectAreaTiles(var aPoints: TBoolean2Array; const aLoc: TKMPoint; aMinRadius, aMaxRadius: Single;
-                                                aDistanceFunc: TCoordDistanceFn);
+procedure TKMRenderDebug.CollectAreaTiles(var aPoints: TBoolean2Array; const aLoc: TKMPoint; aMinRadius, aMaxRadius: Single;
+                                          aDistanceFunc: TCoordDistanceFn);
 var
   I, K: Integer;
 begin
