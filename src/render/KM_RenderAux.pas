@@ -616,7 +616,8 @@ var
 begin
   for I := aRect.Top to aRect.Bottom do
     for J := aRect.Left to aRect.Right do
-      Text(J-0.5, I-0.5, IntToStr(gTerrain.Land[I,J].Height), icCyan);
+      //Use fHeight to show real height, even when 'Flat terrain' is checked
+      Text(J-0.5, I-0.5, IntToStr(gTerrain.Land[I,J].fHeight), icCyan);
 end;
 
 
