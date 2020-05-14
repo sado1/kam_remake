@@ -94,7 +94,7 @@ const
     49, 50, 51, 52, 53, 54,                 // Map Editor sub-menus (1-6)
     81, 87, 69, 82, 84, 89, 85,             // Map Editor sub-menu actions (Q, W, E, R, T, Y, U)
     32,                                     // Map Editor show objects palette (Space)
-    73,                                     // Map Editor show tiles palette (I)
+    119,                                    // Map Editor show tiles palette (F8)
     46,                                     // Map Editor universal erasor (Delete)
     45,                                     // Map Editor paint bucket (Insert)
     72                                      // Map Editor history (H)
