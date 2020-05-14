@@ -137,8 +137,8 @@ type
     procedure Resize(X,Y: Word); override;
     procedure SetLoadMode(aMultiplayer: Boolean);
 
-    procedure DebugControlsUpdated; override;
-	
+    procedure DebugControlsUpdated(aSenderTag: Integer); override;
+
 	  procedure HistoryUndoRedo;
     procedure HistoryAddCheckpoint;
 
@@ -358,7 +358,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.DebugControlsUpdated;
+procedure TKMapEdInterface.DebugControlsUpdated(aSenderTag: Integer);
 begin
   inherited;
 
@@ -523,8 +523,12 @@ end;
 //Set which layers are visible and which are not
 //Layer is always visible if corresponding editing page is active (to see what gets placed)
 procedure TKMapEdInterface.Layers_UpdateVisibility;
+var
+  flatTerWasEnabled: Boolean;
 begin
   if gGame = nil then Exit; //Happens on init
+
+  flatTerWasEnabled := mlFlatTerrain in gGame.VisibleLayers;
 
   gGame.VisibleLayers := [];
   gGame.MapEditor.VisibleLayers := [];
@@ -532,6 +536,9 @@ begin
   //Map visible layers
   if fGuiExtras.CheckBox_ShowDefences.Checked {and not fGuiMarkerDefence.Visible} then
     gGame.VisibleLayers := gGame.VisibleLayers + [mlDefencesAll];
+
+  if fGuiExtras.CheckBox_ShowFlatTerrain.Checked then
+    gGame.VisibleLayers := gGame.VisibleLayers + [mlFlatTerrain];
 
   if fGuiExtras.CheckBox_ShowObjects.Checked or fGuiTerrain.IsVisible(ttObject) then
     gGame.VisibleLayers := gGame.VisibleLayers + [mlObjects];
@@ -572,6 +579,9 @@ begin
 
   if fGuiMenu.GuiMenuResize.Visible then
     gGame.MapEditor.VisibleLayers := gGame.MapEditor.VisibleLayers + [melMapResize];
+
+  if flatTerWasEnabled xor (mlFlatTerrain in gGame.VisibleLayers) then
+    gTerrain.UpdateLighting;
 end;
 
 

@@ -810,7 +810,8 @@ type
     mlMiningRadius,
     mlTowersAttackRadius,
     mlUnitsAttackRadius,
-    mlDefencesAll
+    mlDefencesAll,
+    mlFlatTerrain
     );
 
   TKMMapVisibleLayerSet = set of TKMGameVisibleLayer; //Set of above enum
@@ -828,6 +829,9 @@ type
   );
 
   TKMMapEdVisibleLayerSet = set of TKMMapEdVisibleLayers; //Set of above enum
+
+  TKMDebugControls = (dcNone, dcFlatTerrain);
+
 
 const
   //Colors available for selection in multiplayer

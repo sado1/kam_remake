@@ -66,7 +66,7 @@ type
     LayersCnt: Byte;
     Layer: array [0..2] of TKMTerrainLayer;
 //    StoneLayer: TKMTerrainLayer;
-    Height: Byte;
+    fHeight: Byte;
     Obj: Word;
     IsCustom: Boolean; //Custom tile (rotated tile, atm)
     BlendingLvl: Byte; //Use blending for layers transitions
@@ -101,6 +101,8 @@ type
 
     Fence: TKMFenceType; //Fences (ropes, planks, stones)
     FenceSide: Byte; //Bitfield whether the fences are enabled
+
+    function Height: Byte;
   end;
 
   TKMTerrainTileArray = array of TKMTerrainTile;
@@ -347,7 +349,8 @@ type
     function FlatToHeight(const aPoint: TKMPointF): TKMPointF; overload;
     function HeightAt(inX, inY: Single): Single;
 
-    procedure UpdateLighting(const aRect: TKMRect);
+    procedure UpdateLighting; overload;
+    procedure UpdateLighting(const aRect: TKMRect); overload;
     procedure UpdatePassability(const aRect: TKMRect); overload;
     procedure UpdatePassability(const Loc: TKMPoint); overload;
 
@@ -390,6 +393,9 @@ uses
   KM_Log, KM_HandsCollection, KM_TerrainWalkConnect, KM_Resource, KM_Units, KM_DevPerfLog,
   KM_ResSound, KM_Sound, KM_UnitActionStay, KM_UnitWarrior, KM_TerrainPainter, KM_Houses,
   KM_ResUnits, KM_ResSprites, KM_Hand, KM_Game, KM_GameTypes, KM_ScriptingEvents, KM_Utils, KM_DevPerfLogTypes;
+
+const
+  HEIGHT_DEFAULT = 30;
 
 
 { TKMTerrainLayer }
@@ -450,7 +456,7 @@ begin
           BaseLayer.Terrain := 0;
         LayersCnt    := 0;
         BaseLayer.SetCorners([0,1,2,3]);
-        Height       := 30 + KaMRandom(HEIGHT_RAND_VALUE, 'TKMTerrain.MakeNewMap 3');  //variation in Height
+        fHeight      := HEIGHT_DEFAULT + KaMRandom(HEIGHT_RAND_VALUE, 'TKMTerrain.MakeNewMap 3');  //variation in Height
         BaseLayer.Rotation     := KaMRandom(4, 'TKMTerrain.MakeNewMap 4');  //Make it random
         Obj          := OBJ_NONE;             //none
         IsCustom     := False;
@@ -526,7 +532,7 @@ begin
         ReadTileFromStream(S, TileBasic, GameRev);
 
         Land[I,J].BaseLayer   := TileBasic.BaseLayer;
-        Land[I,J].Height      := TileBasic.Height;
+        Land[I,J].fHeight     := TileBasic.Height;
         Land[I,J].Obj         := TileBasic.Obj;
         Land[I,J].LayersCnt   := TileBasic.LayersCnt;
         Land[I,J].IsCustom    := TileBasic.IsCustom;
@@ -730,7 +736,7 @@ begin
   //To use CheckHeightPass we must apply change then roll it back if it failed
   OldHeight := aHeight;
   //Apply change
-  Land[Y, X].Height := aHeight;
+  Land[Y, X].fHeight := aHeight;
 
   //Don't check canElevate: If scripter wants to block mines that's his choice
 
@@ -744,7 +750,7 @@ begin
         or (Land[Y+I, X+K].TileLock = tlHouse) then
         begin
           //Rollback change
-          Land[Y, X].Height := OldHeight;
+          Land[Y, X].fHeight := OldHeight;
           Exit(False);
         end;
 
@@ -4148,13 +4154,13 @@ begin
   Avg := Round(Avg / VertsFactored);
 
   if CanElevateAt(Loc.X  , Loc.Y  ) then
-    Land[Loc.Y  ,Loc.X  ].Height := Mix(Avg, Land[Loc.Y  ,Loc.X  ].Height, 0.5);
+    Land[Loc.Y  ,Loc.X  ].fHeight := Mix(Avg, Land[Loc.Y  ,Loc.X  ].Height, 0.5);
   if CanElevateAt(Loc.X+1, Loc.Y  ) then
-    Land[Loc.Y  ,Loc.X+1].Height := Mix(Avg, Land[Loc.Y  ,Loc.X+1].Height, 0.5);
+    Land[Loc.Y  ,Loc.X+1].fHeight := Mix(Avg, Land[Loc.Y  ,Loc.X+1].Height, 0.5);
   if CanElevateAt(Loc.X  , Loc.Y+1) then
-    Land[Loc.Y+1,Loc.X  ].Height := Mix(Avg, Land[Loc.Y+1,Loc.X  ].Height, 0.5);
+    Land[Loc.Y+1,Loc.X  ].fHeight := Mix(Avg, Land[Loc.Y+1,Loc.X  ].Height, 0.5);
   if CanElevateAt(Loc.X+1, Loc.Y+1) then
-    Land[Loc.Y+1,Loc.X+1].Height := Mix(Avg, Land[Loc.Y+1,Loc.X+1].Height, 0.5);
+    Land[Loc.Y+1,Loc.X+1].fHeight := Mix(Avg, Land[Loc.Y+1,Loc.X+1].Height, 0.5);
 
   //All 9 tiles around and including this one could have become unwalkable and made a unit stuck, so check them all
   for I := Max(Loc.Y-1, 1) to Min(Loc.Y+1, fMapY-1) do
@@ -4194,6 +4200,12 @@ begin
 
   //wcFish not affected by height
   UpdateWalkConnect([wcWalk, wcRoad, wcWork], KMRectGrow(fBoundsWC, 1), False);
+end;
+
+
+procedure TKMTerrain.UpdateLighting;
+begin
+  UpdateLighting(fMapRect);
 end;
 
 
@@ -4811,7 +4823,7 @@ begin
     begin
       ReadTileFromStream(LoadStream, TileBasic, GAME_REVISION_NUM);
       Land[I,J].BaseLayer := TileBasic.BaseLayer;
-      Land[I,J].Height := TileBasic.Height;
+      Land[I,J].fHeight := TileBasic.Height;
       Land[I,J].Obj := TileBasic.Obj;
       Land[I,J].IsCustom := TileBasic.IsCustom;
       Land[I,J].BlendingLvl := TileBasic.BlendingLvl;
@@ -5222,5 +5234,16 @@ begin
   if UseKaMFormat then
     aStream.Seek(17, soFromCurrent);
 end;
+
+
+{ TKMTerrainTile }
+function TKMTerrainTile.Height: Byte;
+begin
+  if mlFlatTerrain in gGame.VisibleLayers then
+    Result := HEIGHT_DEFAULT
+  else
+    Result := fHeight;
+end;
+
 
 end.

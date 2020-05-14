@@ -28,6 +28,7 @@ type
     CheckBox_ShowTowersAttackRadius: TKMCheckBox;
     CheckBox_ShowUnitsAttackRadius: TKMCheckBox;
     CheckBox_ShowDefences: TKMCheckBox;
+    CheckBox_ShowFlatTerrain: TKMCheckBox;
     CheckBox_ShowTilesOwner: TKMCheckBox;
     CheckBox_ShowTilesGrid: TKMCheckBox;
     constructor Create(aParent: TKMPanel; aOnChange: TNotifyEvent);
@@ -49,7 +50,7 @@ uses
 { TKMMapEdExtras }
 constructor TKMMapEdExtras.Create(aParent: TKMPanel; aOnChange: TNotifyEvent);
 const
-  PANEL_HEIGHT = 260;
+  PANEL_HEIGHT = 280;
 var
   I: Integer;
 begin
@@ -107,6 +108,9 @@ begin
   CheckBox_ShowDefences := TKMCheckBox.Create(Panel_Extra, 300, 230, 280, 20, gResTexts[TX_MAPED_VIEW_DEFENCES], fntAntiqua);
   CheckBox_ShowDefences.Checked := False; //Disabled by default
   CheckBox_ShowDefences.OnClick := Extra_Change;
+  CheckBox_ShowFlatTerrain := TKMCheckBox.Create(Panel_Extra, 300, 250, 280, 20, gResTexts[TX_MAPED_VIEW_FLAT_TERRAIN], fntAntiqua);
+  CheckBox_ShowFlatTerrain.Checked := False; //Disabled by default
+  CheckBox_ShowFlatTerrain.OnClick := Extra_Change;
 
   CheckBox_ShowTilesOwner := TKMCheckBox.Create(Panel_Extra, 50, 170, 220, 20, gResTexts[TX_MAPED_SHOW_TILE_OWNERS], fntAntiqua);
   CheckBox_ShowTilesOwner.Checked := False; //Disabled by default
@@ -183,7 +187,8 @@ begin
   CheckBox_ShowTowersAttackRadius.Checked := mlTowersAttackRadius in gGame.VisibleLayers;
   CheckBox_ShowUnitsAttackRadius.Checked  := mlUnitsAttackRadius  in gGame.VisibleLayers;
   CheckBox_ShowDefences.Checked           := mlDefencesAll        in gGame.VisibleLayers;
-//  CheckBox_ShowDeposits.Checked    := mlDeposits in gGame.MapEditor.VisibleLayers;
+  CheckBox_ShowFlatTerrain.Checked        := mlFlatTerrain        in gGame.VisibleLayers;
+//  CheckBox_ShowDeposits.Checked         := mlDeposits in gGame.MapEditor.VisibleLayers;
 end;
 
 

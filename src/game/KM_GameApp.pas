@@ -115,7 +115,7 @@ type
     procedure UnlockAllCampaigns;
 
     function DynamicFOWEnabled: Boolean;
-    procedure DebugControlsUpdated;
+    procedure DebugControlsUpdated(Sender: TObject; aSenderTag: Integer);
 
     property OnGameSpeedActualChange: TSingleEvent read fOnGameSpeedChange write fOnGameSpeedChange;
     property OnGameStart: TKMGameModeChangeEvent read fOnGameStart write fOnGameStart;
@@ -245,13 +245,12 @@ begin
 end;
 
 
-procedure TKMGameApp.DebugControlsUpdated;
+procedure TKMGameApp.DebugControlsUpdated(Sender: TObject; aSenderTag: Integer);
 begin
   if gGame = nil then
-    fMainMenuInterface.DebugControlsUpdated
+    fMainMenuInterface.DebugControlsUpdated(aSenderTag)
   else
-  if gGame.IsMapEditor then
-    gGame.MapEditorInterface.DebugControlsUpdated;
+    gGame.DebugControlsUpdated(Sender, aSenderTag);
 end;
 
 

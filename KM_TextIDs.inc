@@ -1478,3 +1478,4 @@ TX_UNUSED_313_ = 313; //
 TX_UNUSED_1356_MAPSIZE = 1356; //Map size:
 
 TX_MAPED_VIEW_DEFENCES = 1435; //Show defence positions
+TX_MAPED_VIEW_FLAT_TERRAIN = 1436; //Show flat terrain

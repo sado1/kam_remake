@@ -68,7 +68,7 @@ type
 
     property MyControls: TKMMasterControl read fMyControls;
     procedure ExportPages(const aPath: string); virtual; abstract;
-    procedure DebugControlsUpdated; virtual;
+    procedure DebugControlsUpdated(aSenderTag: Integer); virtual;
 
     procedure KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean); virtual; abstract;
     procedure KeyPress(Key: Char); virtual;
@@ -177,7 +177,7 @@ begin
 end;
 
 
-procedure TKMUserInterfaceCommon.DebugControlsUpdated;
+procedure TKMUserInterfaceCommon.DebugControlsUpdated(aSenderTag: Integer);
 begin
   // Do nothing
 end;

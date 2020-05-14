@@ -158,6 +158,7 @@ type
     chkShowUnits: TCheckBox;
     chkShowHouses: TCheckBox;
     chkShowObjects: TCheckBox;
+    chkShowFlatTerrain: TCheckBox;
     {$ENDIF}
     {$IFDEF FPC}
     mainGroup: TGroupBox;
@@ -239,7 +240,7 @@ type
     fShowStartVideo: Boolean;
     fUpdating: Boolean;
     fMissionDefOpenPath: UnicodeString;
-    fOnControlsUpdated: TEvent;
+    fOnControlsUpdated: TObjectIntegerEvent;
     procedure FormKeyDownProc(aKey: Word; aShift: TShiftState);
     procedure FormKeyUpProc(aKey: Word; aShift: TShiftState);
     function ConfirmExport: Boolean;
@@ -264,7 +265,7 @@ type
     procedure SetSaveEditableMission(aEnabled: Boolean);
     procedure SetExportGameStats(aEnabled: Boolean);
     procedure ShowFolderPermissionError;
-    property OnControlsUpdated: TEvent read fOnControlsUpdated write fOnControlsUpdated;
+    property OnControlsUpdated: TObjectIntegerEvent read fOnControlsUpdated write fOnControlsUpdated;
   end;
 
 
@@ -330,6 +331,8 @@ begin
   RenderArea.SendToBack;
   mainGroup.BringToFront;
   {$ENDIF}
+
+  chkShowFlatTerrain.Tag := Ord(dcFlatTerrain);
 end;
 
 procedure TFormMain.FormShow(Sender: TObject);
@@ -916,6 +919,7 @@ begin
   chkShowTowerRadius.SetCheckedWithoutClick (mlTowersAttackRadius in gGame.VisibleLayers);
   chkShowUnitRadius.SetCheckedWithoutClick  (mlUnitsAttackRadius  in gGame.VisibleLayers);
   chkShowDefencePos.SetCheckedWithoutClick  (mlDefencesAll        in gGame.VisibleLayers);
+  chkShowFlatTerrain.SetCheckedWithoutClick (mlFlatTerrain        in gGame.VisibleLayers);
 end;
 
 
@@ -960,6 +964,18 @@ end;
 
 
 procedure TFormMain.ControlsUpdate(Sender: TObject);
+
+  procedure UpdateVisibleLayers(aCheckBox: TCheckBox; aLayer: TKMGameVisibleLayer);
+  begin
+    if (Sender = aCheckBox) then
+    begin
+      if aCheckBox.Checked then
+        gGame.VisibleLayers := gGame.VisibleLayers + [aLayer]
+      else
+        gGame.VisibleLayers := gGame.VisibleLayers - [aLayer];
+    end;
+  end;
+
 var
   I: Integer;
   AllowDebugChange: Boolean;
@@ -1005,77 +1021,17 @@ begin
 
     if gGame <> nil then
     begin
-      if (Sender = chkShowDefencePos) then
-      begin
-        if chkShowDefencePos.Checked then
-          gGame.VisibleLayers := gGame.VisibleLayers + [mlDefencesAll]
-        else
-          gGame.VisibleLayers := gGame.VisibleLayers - [mlDefencesAll];
-      end;
-
-      if (Sender = chkShowObjects) then
-      begin
-        if chkShowObjects.Checked then
-          gGame.VisibleLayers := gGame.VisibleLayers + [mlObjects]
-        else
-          gGame.VisibleLayers := gGame.VisibleLayers - [mlObjects];
-      end;
-
-      if (Sender = chkShowHouses) then
-      begin
-        if chkShowHouses.Checked then
-          gGame.VisibleLayers := gGame.VisibleLayers + [mlHouses]
-        else
-          gGame.VisibleLayers := gGame.VisibleLayers - [mlHouses];
-      end;
-
-      if (Sender = chkShowUnits) then
-      begin
-        if chkShowUnits.Checked then
-          gGame.VisibleLayers := gGame.VisibleLayers + [mlUnits]
-        else
-          gGame.VisibleLayers := gGame.VisibleLayers - [mlUnits];
-      end;
-
-      if (Sender = chkShowOverlays) then
-      begin
-        if chkShowOverlays.Checked then
-          gGame.VisibleLayers := gGame.VisibleLayers + [mlOverlays]
-        else
-          gGame.VisibleLayers := gGame.VisibleLayers - [mlOverlays];
-      end;
-
-      if (Sender = chkShowMiningRadius) then
-      begin
-        if chkShowMiningRadius.Checked then
-          gGame.VisibleLayers := gGame.VisibleLayers + [mlMiningRadius]
-        else
-          gGame.VisibleLayers := gGame.VisibleLayers - [mlMiningRadius];
-      end;
-
-      if (Sender = chkShowTowerRadius) then
-      begin
-        if chkShowTowerRadius.Checked then
-          gGame.VisibleLayers := gGame.VisibleLayers + [mlTowersAttackRadius]
-        else
-          gGame.VisibleLayers := gGame.VisibleLayers - [mlTowersAttackRadius];
-      end;
-
-      if (Sender = chkShowUnitRadius) then
-      begin
-        if chkShowUnitRadius.Checked then
-          gGame.VisibleLayers := gGame.VisibleLayers + [mlUnitsAttackRadius]
-        else
-          gGame.VisibleLayers := gGame.VisibleLayers - [mlUnitsAttackRadius];
-      end;
-
-//      if (Sender = chkShowDeposits) then
-//      begin
-//        if chkShowDeposits.Checked then
-//          gGame.VisibleLayers := gGame.VisibleLayers + [mlDefences]
-//        else
-//          gGame.VisibleLayers := gGame.VisibleLayers - [mlDefences];
-//      end;
+      UpdateVisibleLayers(chkShowObjects,       mlObjects);
+      UpdateVisibleLayers(chkShowHouses,        mlHouses);
+      UpdateVisibleLayers(chkShowUnits,         mlUnits);
+      UpdateVisibleLayers(chkShowOverlays,      mlOverlays);
+      UpdateVisibleLayers(chkShowMiningRadius,  mlMiningRadius);
+      UpdateVisibleLayers(chkShowTowerRadius,   mlTowersAttackRadius);
+      UpdateVisibleLayers(chkShowUnitRadius,    mlUnitsAttackRadius);
+      UpdateVisibleLayers(chkShowDefencePos,    mlDefencesAll);
+      UpdateVisibleLayers(chkShowFlatTerrain,   mlFlatTerrain);
+//      UpdateVisibleLayers(chkShowDeposits,    mlDeposits);
+    chkShowTowerRadius.Tag := 5;
     end;
     {$ENDIF}
 
@@ -1191,8 +1147,8 @@ begin
 
   ActiveControl := nil; //Do not allow to focus on anything on debug panel
 
-  if Assigned (fOnControlsUpdated) then
-    fOnControlsUpdated;
+  if Assigned (fOnControlsUpdated) and (Sender is TControl) then
+    fOnControlsUpdated(Sender, TControl(Sender).Tag);
 end;
 
 

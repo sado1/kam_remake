@@ -197,6 +197,7 @@ type
     function IsMPGameSpeedChangeAllowed: Boolean;
 
     function IsWareDistributionStoredBetweenGames: Boolean;
+    procedure DebugControlsUpdated(Sender: TObject; aSenderTag: Integer);
 
     function IsTactic: Boolean;
     function IsNormalMission: Boolean;
@@ -2869,6 +2870,14 @@ begin
   //Terrain should be updated in real time when user applies brushes
   if fMapEditor <> nil then
     fMapEditor.UpdateStateIdle;
+end;
+
+
+procedure TKMGame.DebugControlsUpdated(Sender: TObject; aSenderTag: Integer);
+begin
+  if Self = nil then Exit;
+
+  ActiveInterface.DebugControlsUpdated(aSenderTag);
 end;
 
 

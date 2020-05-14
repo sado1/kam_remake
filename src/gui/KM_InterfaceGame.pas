@@ -38,6 +38,8 @@ type
 
     function CursorToMapCoord(X, Y: Integer): TKMPointF;
 
+    procedure DebugControlsUpdated(aSenderTag: Integer); override;
+
     procedure KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean); override;
     procedure KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean); override;
     procedure KeyPress(Key: Char); override;
@@ -196,6 +198,15 @@ begin
   FreeAndNil(fViewport);
   FreeAndNil(gRenderPool);
   Inherited;
+end;
+
+
+procedure TKMUserInterfaceGame.DebugControlsUpdated(aSenderTag: Integer);
+begin
+  inherited;
+
+  if aSenderTag = Ord(dcFlatTerrain) then
+    gTerrain.UpdateLighting;
 end;
 
 
