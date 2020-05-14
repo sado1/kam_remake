@@ -6,15 +6,21 @@ uses
   KM_MarchingSquares, KM_Viewport, KM_AIDefensePos;
 
 type
-  TKMDefPosData = class;
+  TKMAreaData = class;
 
   TKMRenderDebug = class
   private
     fAreaTilesLand: TBoolean2Array;
-    procedure ResetAreaLand;
+    fAreaData: TKMAreaData;
+    fMarchingSquares: TKMMarchingSquares;
+    fBorderPoints: TList<TKMPointList>;
+    procedure ResetAreaData;
     procedure CollectAreaTiles(var aPoints: TBoolean2Array; const aLoc: TKMPoint; aMinRadius, aMaxRadius: Single;
                                aDistanceFunc: TCoordDistanceFn);
   public
+    constructor Create;
+    destructor Destroy; override;
+
     procedure ReInit;
 
     procedure PaintMiningRadius;
@@ -25,12 +31,12 @@ type
   end;
 
 
-  TKMDefPosData = class(TInterfacedObject, IKMData2D<Boolean>)
+  TKMAreaData = class(TInterfacedObject, IKMData2D<Boolean>)
   private
     fAreaPoints: TBoolean2Array;
     function GetData(X, Y: Integer): Boolean;
   public
-    constructor Create(var aDefPoints: TBoolean2Array);
+    procedure SetDataArray(var aAreaPoints: TBoolean2Array);
   end;
 
 
@@ -43,6 +49,27 @@ uses
 
 
 { TKMRenderDebug }
+constructor TKMRenderDebug.Create;
+begin
+  inherited;
+
+  fAreaData := TKMAreaData.Create;
+  fBorderPoints := TObjectList<TKMPointList>.Create; // Object list will take care of Freeing added objects
+  fMarchingSquares := TKMMarchingSquares.Create;
+end;
+
+
+destructor TKMRenderDebug.Destroy;
+begin
+  fBorderPoints.Clear;
+  fBorderPoints.Free;
+  fMarchingSquares.Free;
+  // No need to Free fAreaData object, since its implementing interface with ref count
+
+  inherited;
+end;
+
+
 procedure TKMRenderDebug.ReInit;
 begin
   SetLength(fAreaTilesLand, gTerrain.MapY, gTerrain.MapX);
@@ -54,35 +81,22 @@ procedure TKMRenderDebug.RenderTiledArea(const aLoc: TKMPoint; aMinRadius, aMaxR
                                                aFillColor, aLineColor: Cardinal);
 var
   I, K: Integer;
-  borderPoints: TList<TKMPointList>;
-  defPosData: TKMDefPosData;
-  marchingSquares: TKMMarchingSquares;
 begin
-  ResetAreaLand;
-  borderPoints := TObjectList<TKMPointList>.Create; // Object list will take care of Freeing added objects
-  defPosData := TKMDefPosData.Create(fAreaTilesLand);
+  ResetAreaData;
 
-  marchingSquares := TKMMarchingSquares.Create(defPosData as IKMData2D<Boolean>, gTerrain.MapX + 1, gTerrain.MapY + 1);
+  for I := -Round(aMaxRadius) - 1 to Round(aMaxRadius) do
+    for K := -Round(aMaxRadius) - 1 to Round(aMaxRadius) do
+      if InRange(aDistanceFunc(K, I), aMinRadius, aMaxRadius) and gTerrain.TileInMapCoords(aLoc.X+K, aLoc.Y+I) then
+      begin
+        fAreaTilesLand[aLoc.Y+I - 1, aLoc.X+K - 1] := True; // fDefLand is 0-based
+        gRenderAux.Quad(aLoc.X+K, aLoc.Y+I, aFillColor);
+      end;
 
-  try
-    for I := -Round(aMaxRadius) - 1 to Round(aMaxRadius) do
-      for K := -Round(aMaxRadius) - 1 to Round(aMaxRadius) do
-        if InRange(aDistanceFunc(K, I), aMinRadius, aMaxRadius) and gTerrain.TileInMapCoords(aLoc.X+K, aLoc.Y+I) then
-        begin
-          fAreaTilesLand[aLoc.Y+I - 1, aLoc.X+K - 1] := True; // fDefLand is 0-based
-          gRenderAux.Quad(aLoc.X+K, aLoc.Y+I, aFillColor);
-        end;
+  if not fMarchingSquares.IdentifyPerimeters(fBorderPoints) then
+    Exit;
 
-    if not marchingSquares.IdentifyPerimeters(borderPoints) then
-      Exit;
-
-    for K := 0 to borderPoints.Count - 1 do
-      gRenderAux.LineOnTerrain(borderPoints[K], aLineColor);
-  finally
-    marchingSquares.Free;
-    borderPoints.Clear;
-    borderPoints.Free;
-  end;
+  for K := 0 to fBorderPoints.Count - 1 do
+    gRenderAux.LineOnTerrain(fBorderPoints[K], aLineColor);
 end;
 
 
@@ -98,13 +112,17 @@ begin
 end;
 
 
-procedure TKMRenderDebug.ResetAreaLand;
+procedure TKMRenderDebug.ResetAreaData;
 var
   I: Integer;
 begin
   //Dynamic 2d array should be cleared row by row
   for I := 0 to gTerrain.MapY - 1 do
     FillChar(fAreaTilesLand[I,0], SizeOf(fAreaTilesLand[I,0]) * Length(fAreaTilesLand[I]), #0);
+
+  fAreaData.SetDataArray(fAreaTilesLand);
+  fMarchingSquares.SetData(fAreaData as IKMData2D<Boolean>, gTerrain.MapX + 1, gTerrain.MapY + 1);
+  fBorderPoints.Clear;
 end;
 
 
@@ -113,76 +131,59 @@ var
   I, J, K: Integer;
   DP: TAIDefencePosition;
   fillColor, lineColor: Cardinal;
-
-  borderPoints: TList<TKMPointList>;
-  defPosData: TKMDefPosData;
-  marchingSquares: TKMMarchingSquares;
 begin
   if SKIP_RENDER or (gGame = nil) then Exit;
 
   Assert(Length(fAreaTilesLand) > 0, 'TKMRenderDebug was not initialized');
 
-  borderPoints := TObjectList<TKMPointList>.Create; // Object list will take care of Freeing added objects
+  //Draw tiles and shared borders first for all players
+  for I := 0 to gHands.Count - 1 do
+  begin
+    ResetAreaData; //Reset data for every hand
 
-  defPosData := TKMDefPosData.Create(fAreaTilesLand);
-  marchingSquares := TKMMarchingSquares.Create(defPosData as IKMData2D<Boolean>, gTerrain.MapX + 1, gTerrain.MapY + 1);
-  try
-    //Draw tiles and shared borders first for all players
-    for I := 0 to gHands.Count - 1 do
+    if I = gMySpectator.SelectedHandID then
     begin
-      borderPoints.Clear;
-      ResetAreaLand; //Reset data for every hand
-
-      if I = gMySpectator.SelectedHandID then
-      begin
-        fillColor := gHands[I].FlagColor and $60FFFFFF;
-        lineColor := icCyan;
-      end
-      else
-      begin
-        fillColor := gHands[I].FlagColor and $20FFFFFF;
-        lineColor := gHands[I].FlagColor;
-      end;
-
-      for K := 0 to gHands[I].AI.General.DefencePositions.Count - 1 do
-      begin
-        DP := gHands[I].AI.General.DefencePositions[K];
-
-        CollectAreaTiles(fAreaTilesLand, DP.Position.Loc, 0, DP.Radius, KMLengthDiag);
-      end;
-
-      //Draw quads
-      gRenderAux.SetColor(fillColor); //Setting color initially will be much faster, than calling it on every cell
-      for J := 0 to gTerrain.MapY - 1 do
-        for K := 0 to gTerrain.MapX - 1 do
-          if fAreaTilesLand[J, K] then
-            gRenderAux.Quad(K + 1, J + 1); //gTerrain is 1-based...
-
-      if not marchingSquares.IdentifyPerimeters(borderPoints) then
-        Continue;
-
-      for K := 0 to borderPoints.Count - 1 do
-        gRenderAux.LineOnTerrain(borderPoints[K], lineColor);
+      fillColor := gHands[I].FlagColor and $60FFFFFF;
+      lineColor := icCyan;
+    end
+    else
+    begin
+      fillColor := gHands[I].FlagColor and $20FFFFFF;
+      lineColor := gHands[I].FlagColor;
     end;
 
+    for K := 0 to gHands[I].AI.General.DefencePositions.Count - 1 do
+    begin
+      DP := gHands[I].AI.General.DefencePositions[K];
 
-    //And all def positions pics - above tiles and borders
-    for I := 0 to gHands.Count - 1 do
-      for K := 0 to gHands[I].AI.General.DefencePositions.Count - 1 do
-      begin
-        DP := gHands[I].AI.General.DefencePositions[K];
-        //Dir selector
-        gRenderPool.RenderSpriteOnTile(DP.Position.Loc, 510 + Byte(DP.Position.Dir), gHands[I].FlagColor);
-        //GroupType icon
-        gRenderPool.RenderSpriteOnTile(DP.Position.Loc, GROUP_IMG[DP.GroupType], gHands[I].FlagColor);
-      end;
-  finally
-//    defPosData.Free;
-    marchingSquares.Free;
-    //Clear and Free borderPoints
-    borderPoints.Clear;
-    borderPoints.Free;
+      CollectAreaTiles(fAreaTilesLand, DP.Position.Loc, 0, DP.Radius, KMLengthDiag);
+    end;
+
+    //Draw quads
+    gRenderAux.SetColor(fillColor); //Setting color initially will be much faster, than calling it on every cell
+    for J := 0 to gTerrain.MapY - 1 do
+      for K := 0 to gTerrain.MapX - 1 do
+        if fAreaTilesLand[J, K] then
+          gRenderAux.Quad(K + 1, J + 1); //gTerrain is 1-based...
+
+    if not fMarchingSquares.IdentifyPerimeters(fBorderPoints) then
+      Continue;
+
+    for K := 0 to fBorderPoints.Count - 1 do
+      gRenderAux.LineOnTerrain(fBorderPoints[K], lineColor);
   end;
+
+
+  //And all def positions pics - above tiles and borders
+  for I := 0 to gHands.Count - 1 do
+    for K := 0 to gHands[I].AI.General.DefencePositions.Count - 1 do
+    begin
+      DP := gHands[I].AI.General.DefencePositions[K];
+      //Dir selector
+      gRenderPool.RenderSpriteOnTile(DP.Position.Loc, 510 + Byte(DP.Position.Dir), gHands[I].FlagColor);
+      //GroupType icon
+      gRenderPool.RenderSpriteOnTile(DP.Position.Loc, GROUP_IMG[DP.GroupType], gHands[I].FlagColor);
+    end;
 end;
 
 
@@ -415,19 +416,17 @@ end;
 
 
 { TKMDefPosData }
-constructor TKMDefPosData.Create(var aDefPoints: TBoolean2Array);
-begin
-  inherited Create;
-
-  fAreaPoints := aDefPoints;
-end;
-
-
-function TKMDefPosData.GetData(X, Y: Integer): Boolean;
+function TKMAreaData.GetData(X, Y: Integer): Boolean;
 begin
   Result :=     InRange(Y, Low(fAreaPoints), High(fAreaPoints))
             and InRange(X, Low(fAreaPoints[Y]), High(fAreaPoints[Y]))
             and fAreaPoints[Y, X];
+end;
+
+
+procedure TKMAreaData.SetDataArray(var aAreaPoints: TBoolean2Array);
+begin
+  fAreaPoints := aAreaPoints;
 end;
 
 

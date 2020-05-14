@@ -23,8 +23,10 @@ type
     function GetSurroundingsValueAndMark(X, Y: Integer; aMark: Boolean = True): Integer;
     function GetPlainIndex(X, Y: Integer): Integer;
   public
-    constructor Create(aData: IKMData2D<Boolean>; aWidth, aHeight: Integer);
+    constructor Create;
     destructor Destroy; override;
+
+    procedure SetData(aData: IKMData2D<Boolean>; aWidth, aHeight: Integer);
 
     function IdentifyPerimeters(out aPerimeters: TList<TKMPointList>): Boolean;
     function IdentifyFirstPerimeter(out aPerimeterVertexes: TKMPointList): Boolean;
@@ -47,13 +49,9 @@ uses
 
 
 { TKMMarchingSquares }
-constructor TKMMarchingSquares.Create(aData: IKMData2D<Boolean>; aWidth, aHeight: Integer);
+constructor TKMMarchingSquares.Create;
 begin
   inherited Create;
-
-  fData := aData;
-  fWidth := aWidth;
-  fHeight := aHeight;
 
   fCountouredData := TDictionary<Integer, Boolean>.Create;
 end;
@@ -64,6 +62,14 @@ begin
   fCountouredData.Free;
 
   inherited;
+end;
+
+
+procedure TKMMarchingSquares.SetData(aData: IKMData2D<Boolean>; aWidth, aHeight: Integer);
+begin
+  fData := aData;
+  fWidth := aWidth;
+  fHeight := aHeight;
 end;
 
 
@@ -80,6 +86,8 @@ var
 
   perimeter: TKMPointList;
 begin
+  Assert(fWidth*fHeight > 0, 'TKMMarchingSquares was not initialized');
+
   countoursCnt := 0;
   fCountouredData.Clear;
   aPerimeters.Clear;
@@ -105,6 +113,8 @@ function TKMMarchingSquares.IdentifyFirstPerimeter(out aPerimeterVertexes: TKMPo
 var
   I, K: Integer;
 begin
+  Assert(fWidth*fHeight > 0, 'TKMMarchingSquares was not initialized');
+
   Result := False;
   for I := 0 to fHeight - 1 do
     for K := 0 to fWidth - 1 do
@@ -120,6 +130,8 @@ var
   x, y, initialX, initialY, initialValue: Integer;
   direction, prevDir: TKMDirection4;
 begin
+  Assert(fWidth*fHeight > 0, 'TKMMarchingSquares was not initialized');
+
   Result := False;
 
   initialX := EnsureRange(aInitialX, 0, fWidth);
