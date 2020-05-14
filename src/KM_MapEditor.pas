@@ -92,8 +92,8 @@ uses
   SysUtils, StrUtils, Math,
   KM_Terrain, KM_FileIO,
   KM_AIDefensePos, KM_ResTexts,
-  KM_Units, KM_UnitGroup, KM_Houses, KM_HouseCollection, KM_HouseWoodcutters,
-  KM_Game, KM_GameCursor, KM_ResMapElements, KM_ResHouses, KM_ResWares, KM_Resource, KM_ResUnits,
+  KM_Units, KM_UnitGroup, KM_Houses, KM_HouseCollection,
+  KM_Game, KM_GameCursor, KM_ResMapElements, KM_ResHouses, KM_Resource, KM_ResUnits,
   KM_RenderAux, KM_Hand, KM_HandsCollection, KM_InterfaceMapEditor, KM_CommonUtils, KM_RenderDebug;
 
 //defines default defence position radius for static AI 

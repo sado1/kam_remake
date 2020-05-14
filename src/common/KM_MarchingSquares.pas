@@ -45,7 +45,7 @@ const
 
 implementation
 uses
-  Math, KM_CommonUtils;
+  Math;
 
 
 { TKMMarchingSquares }

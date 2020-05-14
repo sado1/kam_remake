@@ -155,7 +155,7 @@ uses
   KM_HandsCollection, KM_ResTexts, KM_Game, KM_GameCursor,
   KM_Resource, KM_TerrainDeposits, KM_ResCursors, KM_ResKeys, KM_GameApp, KM_CommonUtils,
   KM_Hand, KM_AIDefensePos, KM_RenderUI, KM_ResFonts, KM_CommonClasses, KM_UnitWarrior,
-  KM_ResHouses, KM_Utils, KM_RenderAux, KM_RenderPool;
+  KM_ResHouses, KM_Utils, KM_RenderPool;
 
 
 { TKMapEdInterface }

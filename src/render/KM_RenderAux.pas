@@ -68,7 +68,7 @@ var
 
 implementation
 uses
-  KM_Render, KM_RenderUI, KM_Game, KM_Units, KM_Terrain, KM_Resource, KM_ResTileset, KM_ResFonts, KM_CommonUtils;
+  KM_Render, KM_Game, KM_Units, KM_Terrain, KM_Resource, KM_ResTileset, KM_CommonUtils;
 
 const
   TILE_TERRAIN_LAYERS_COLORS: array [0..3] of Cardinal =

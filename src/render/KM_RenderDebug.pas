@@ -3,7 +3,7 @@ unit KM_RenderDebug;
 interface
 uses
   KM_Defaults, KM_Points, KM_CommonTypes, KM_CommonClasses, Generics.Collections,
-  KM_MarchingSquares, KM_Viewport, KM_AIDefensePos;
+  KM_MarchingSquares, KM_AIDefensePos;
 
 type
   TKMAreaData = class;
@@ -42,10 +42,10 @@ type
 
 implementation
 uses
-  Math, SysUtils, KromUtils,
-  KM_Game, KM_RenderAux, KM_RenderUI, KM_Pics,
+  Math, SysUtils,
+  KM_Game, KM_RenderAux,
   KM_Resource, KM_Terrain, KM_Houses, KM_HouseWoodcutters, KM_ResHouses, KM_ResWares, KM_ResUnits,
-  KM_HandsCollection, KM_CommonUtils, KM_RenderPool, KM_Utils;
+  KM_HandsCollection, KM_CommonUtils, KM_RenderPool;
 
 
 { TKMRenderDebug }

@@ -172,7 +172,7 @@ const
 implementation
 uses
   KM_Main, KM_Terrain, KM_RenderPool, KM_Resource, KM_ResCursors, KM_ResKeys, KM_HandsCollection, KM_Game,
-  KM_RenderUI, KM_Pics, KM_CommonUtils;
+  KM_RenderUI, KM_CommonUtils;
 
 
 { TKMUserInterfaceGame }

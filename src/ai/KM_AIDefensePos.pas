@@ -83,7 +83,7 @@ type
 implementation
 uses
   Math, SysUtils,
-  KM_Game, KM_HandsCollection, KM_RenderAux, KM_RenderPool, KM_RenderUI, KM_Pics, KM_Terrain, KM_Hand;
+  KM_Game, KM_HandsCollection, KM_RenderAux, KM_RenderPool, KM_Hand;
 
 
 { TAIDefencePosition }
