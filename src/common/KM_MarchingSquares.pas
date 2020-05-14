@@ -6,6 +6,7 @@ uses
 
 type
   IKMData2D<T> = interface(IInterface)
+    ['{07066900-CC25-4134-9330-D58BEAE04D5B}']
     function GetData(X, Y: Integer): T;
   end;
 

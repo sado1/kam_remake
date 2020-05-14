@@ -11,7 +11,7 @@ type
   TKMRenderDebug = class
   private
     fAreaTilesLand: TBoolean2Array;
-    fAreaData: TKMAreaData;
+    fAreaData: IKMData2D<Boolean>;
     fMarchingSquares: TKMMarchingSquares;
     fBorderPoints: TList<TKMPointList>;
     procedure ResetAreaData;
@@ -61,10 +61,10 @@ end;
 
 destructor TKMRenderDebug.Destroy;
 begin
+  fMarchingSquares.Free;
   fBorderPoints.Clear;
   fBorderPoints.Free;
-  fMarchingSquares.Free;
-  // No need to Free fAreaData object, since its implementing interface with ref count
+  fAreaData := nil; //Interfaced object will be freed automatically
 
   inherited;
 end;
@@ -120,7 +120,7 @@ begin
   for I := 0 to gTerrain.MapY - 1 do
     FillChar(fAreaTilesLand[I,0], SizeOf(fAreaTilesLand[I,0]) * Length(fAreaTilesLand[I]), #0);
 
-  fAreaData.SetDataArray(fAreaTilesLand);
+  TKMAreaData(fAreaData).SetDataArray(fAreaTilesLand);
   fMarchingSquares.SetData(fAreaData as IKMData2D<Boolean>, gTerrain.MapX + 1, gTerrain.MapY + 1);
   fBorderPoints.Clear;
 end;
