@@ -177,8 +177,8 @@ begin
 
   gSoundPlayer  := TKMSoundPlayer.Create(fGameSettings.SoundFXVolume);
   fMusicLib     := TKMMusicLib.Create(fGameSettings.MusicVolume);
-  gSoundPlayer.OnRequestFade   := fMusicLib.FadeMusic;
-  gSoundPlayer.OnRequestUnfade := fMusicLib.UnfadeMusic;
+  gSoundPlayer.OnRequestFade   := fMusicLib.Fade;
+  gSoundPlayer.OnRequestUnfade := fMusicLib.Unfade;
 
   fCampaigns    := TKMCampaignsCollection.Create;
   fCampaigns.Load;
@@ -223,7 +223,7 @@ begin
 
   if fTimerUI <> nil then fTimerUI.Enabled := False;
   //Stop music imediently, so it doesn't keep playing and jerk while things closes
-  if fMusicLib <> nil then fMusicLib.StopMusic;
+  if fMusicLib <> nil then fMusicLib.Stop;
 
   StopGame(grSilent);
 
@@ -1187,7 +1187,7 @@ procedure TKMGameApp.PauseMusicToPlayFile(const aFileName: UnicodeString);
 begin
   if not FileExists(aFileName) then Exit;
   gSoundPlayer.AbortAllFadeSounds; //Victory/defeat sounds also fade music, so stop those in the rare chance they might still be playing
-  fMusicLib.PauseMusicToPlayFile(aFileName, fGameSettings.SoundFXVolume);
+  fMusicLib.PauseToPlayFile(aFileName, fGameSettings.SoundFXVolume);
 end;
 
 
@@ -1223,7 +1223,7 @@ begin
   if fGlobalTickCount mod 10 = 0 then
   begin
     //Music
-    if not GameSettings.MusicOff and fMusicLib.IsMusicEnded then
+    if not GameSettings.MusicOff and fMusicLib.IsEnded then
       fMusicLib.PlayNextTrack; //Feed new music track
 
     //StatusBar

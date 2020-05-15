@@ -426,7 +426,7 @@ begin
   SetupVSync(fMainSettings.VSync);
   if MusicToggled then
   begin
-    gGameApp.MusicLib.ToggleMusic(not fGameSettings.MusicOff);
+    gGameApp.MusicLib.ToggleEnabled(not fGameSettings.MusicOff);
     if not fGameSettings.MusicOff then
       ShuffleToggled := True; // Re-shuffle songs if music has been enabled
   end;

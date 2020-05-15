@@ -31,14 +31,14 @@ type
 
   TKMMusicLib = class
   private
-    fMusicCount: Integer;
-    fMusicIndex: Integer; //Points to the index in TrackOrder of the current track
-    fMusicTracks: TStringDynArray;
+    fCount: Integer;
+    fIndex: Integer; //Points to the index in TrackOrder of the current track
+    fTracks: TStringDynArray;
     fTrackOrder: TIntegerDynArray; //Each index points to an index of MusicTracks
     //MIDICount,MIDIIndex:integer;
     //MIDITracks:array[1..256]of string;
-    fIsMusicInitialized: Boolean;
-    fMusicGain: Single;
+    fIsInitialized: Boolean;
+    fVolume: Single;
     {$IFDEF USEBASS} fBassStream, fBassOtherStream: Cardinal; {$ENDIF}
     {$IFDEF USELIBZPLAY} ZPlayer, ZPlayerOther: ZPlay; {$ENDIF} //I dislike that it's not TZPlay... Guess they don't know Delphi conventions.
     fFadeState: TKMFadeState;
@@ -47,9 +47,9 @@ type
     fToPlayAfterFade: UnicodeString;
     fFadedToPlayOther: Boolean;
     fOtherVolume: Single;
-    function PlayMusicFile(const FileName: UnicodeString): Boolean;
+    function PlayFile(const FileName: UnicodeString): Boolean;
     function PlayOtherFile(const FileName: UnicodeString): Boolean;
-    procedure ScanMusicTracks(const aPath: UnicodeString);
+    procedure ScanTracks(const aPath: UnicodeString);
     procedure ShuffleSongs; //should not be seen outside of this class
     procedure UnshuffleSongs;
 
@@ -64,19 +64,19 @@ type
     procedure PlayMenuTrack;
     procedure PlayNextTrack;
     procedure PlayPreviousTrack;
-    function IsMusicEnded: Boolean;
+    function IsEnded: Boolean;
     function IsOtherEnded: Boolean;
-    procedure PauseMusic;
-    procedure ResumeMusic;
-    procedure StopMusic;
-    procedure ToggleMusic(aEnableMusic: Boolean);
+    procedure Pause;
+    procedure Resume;
+    procedure Stop;
+    procedure ToggleEnabled(aEnableMusic: Boolean);
     procedure ToggleShuffle(aEnableShuffle: Boolean);
-    procedure FadeMusic; overload;
-    procedure FadeMusic(aFadeTime: Integer); overload;
-    procedure UnfadeStartingMusic;
-    procedure UnfadeMusic; overload;
-    procedure UnfadeMusic(aFadeTime: Integer; aHandleCrackling: Boolean = False); overload;
-    procedure PauseMusicToPlayFile(const aFileName: UnicodeString; aVolume: Single);
+    procedure Fade; overload;
+    procedure Fade(aFadeTime: Integer); overload;
+    procedure UnfadeStarting;
+    procedure Unfade; overload;
+    procedure Unfade(aFadeTime: Integer; aHandleCrackling: Boolean = False); overload;
+    procedure PauseToPlayFile(const aFileName: UnicodeString; aVolume: Single);
     procedure StopPlayingOtherFile;
     function GetTrackTitle: UnicodeString;
     procedure UpdateStateIdle; //Used for fading
@@ -101,12 +101,12 @@ var
   I: Integer;
 begin
   inherited Create;
-  fIsMusicInitialized := True;
+  fIsInitialized := True;
 
   if not DirectoryExists(ExeDir + 'Music') then
     ForceDirectories(ExeDir + 'Music');
 
-  ScanMusicTracks(ExeDir + 'Music' + PathDelim);
+  ScanTracks(ExeDir + 'Music' + PathDelim);
 
 
   {$IFDEF USELIBZPLAY}
@@ -126,10 +126,10 @@ begin
   SetVolume(aVolume);
 
   // Initialise TrackOrder
-  for I := 0 to fMusicCount - 1 do
+  for I := 0 to fCount - 1 do
     fTrackOrder[I] := I;
 
-  gLog.AddTime('Music init done, ' + IntToStr(fMusicCount) + ' tracks found');
+  gLog.AddTime('Music init done, ' + IntToStr(fCount) + ' tracks found');
 end;
 
 
@@ -152,14 +152,14 @@ begin
 end;
 
 
-function TKMMusicLib.PlayMusicFile(const FileName: UnicodeString): Boolean;
+function TKMMusicLib.PlayFile(const FileName: UnicodeString): Boolean;
 {$IFDEF USEBASS}
 var
   errorCode: Integer;
 {$ENDIF}
 begin
   Result := False;
-  if not fIsMusicInitialized then Exit;
+  if not fIsInitialized then Exit;
   if fFadeState <> fsNone then exit; //Don't start a new track while fading or faded
 
   //Cancel previous sound
@@ -184,7 +184,7 @@ begin
   if errorCode <> BASS_OK then exit; //Error
   {$ENDIF}
 
-  SetVolume(fMusicGain); //Need to reset music volume after starting playback
+  SetVolume(fVolume); //Need to reset music volume after starting playback
   Result := True;
 end;
 
@@ -196,7 +196,7 @@ var
 {$ENDIF}
 begin
   Result := False;
-  if not fIsMusicInitialized then exit;
+  if not fIsInitialized then exit;
 
   //Cancel previous sound
   {$IFDEF USELIBZPLAY} ZPlayerOther.StopPlayback; {$ENDIF}
@@ -235,8 +235,8 @@ end;
 {Update music gain (global volume for all sounds/music)}
 procedure TKMMusicLib.SetVolume(aValue: Single);
 begin
-  if not fIsMusicInitialized then Exit; //Keep silent
-  fMusicGain := aValue;
+  if not fIsInitialized then Exit; //Keep silent
+  fVolume := aValue;
   {$IFDEF USELIBZPLAY}
   ZPlayer.SetPlayerVolume(Round(aValue * 100), Round(aValue * 100)); //0=silent, 100=max
   {$ENDIF}
@@ -262,15 +262,15 @@ begin
 end;
 
 
-procedure TKMMusicLib.ScanMusicTracks(const aPath: UnicodeString);
+procedure TKMMusicLib.ScanTracks(const aPath: UnicodeString);
 var
   searchRec: TSearchRec;
 begin
-  if not fIsMusicInitialized then Exit;
-  fMusicCount := 0;
+  if not fIsInitialized then Exit;
+  fCount := 0;
   if not DirectoryExists(aPath) then Exit;
 
-  SetLength(fMusicTracks, 255);
+  SetLength(fTracks, 255);
 
   FindFirst(aPath + '*.*', faAnyFile - faDirectory, searchRec);
   try
@@ -291,8 +291,8 @@ begin
       {$ENDIF}
       then
       begin
-        Inc(fMusicCount);
-        fMusicTracks[fMusicCount - 1] := aPath + searchRec.Name;
+        Inc(fCount);
+        fTracks[fCount - 1] := aPath + searchRec.Name;
       end;
       {if GetFileExt(SearchRec.Name)='MID' then
       begin
@@ -305,10 +305,10 @@ begin
   end;
 
   //Cut to length
-  SetLength(fMusicTracks, fMusicCount);
-  SetLength(fTrackOrder, fMusicCount);
+  SetLength(fTracks, fCount);
+  SetLength(fTrackOrder, fCount);
 
-  fMusicIndex := -1;
+  fIndex := -1;
 end;
 
 
@@ -316,51 +316,51 @@ procedure TKMMusicLib.PlayMenuTrack;
 var
   prevVolume: Single;
 begin
-  if not fIsMusicInitialized then Exit;
-  if fMusicCount = 0 then Exit; //no music files found
-  if fMusicIndex = 0 then Exit; //It's already playing
-  fMusicIndex := 0;
+  if not fIsInitialized then Exit;
+  if fCount = 0 then Exit; //no music files found
+  if fIndex = 0 then Exit; //It's already playing
+  fIndex := 0;
   // There was audio crackling after loading screen, here we fix it by setting a delay and fading the volume.
-  prevVolume := fMusicGain;
-  fMusicGain := 0;
-  PlayMusicFile(fMusicTracks[0]);
-  fMusicGain := prevVolume;
-  UnfadeStartingMusic;
+  prevVolume := fVolume;
+  fVolume := 0;
+  PlayFile(fTracks[0]);
+  fVolume := prevVolume;
+  UnfadeStarting;
 end;
 
 
 procedure TKMMusicLib.PlayNextTrack;
 begin
-  if not fIsMusicInitialized then exit;
-  if fMusicCount = 0 then exit; //no music files found
+  if not fIsInitialized then exit;
+  if fCount = 0 then exit; //no music files found
   if fFadeState <> fsNone then exit;
 
   //Set next index, looped or random
-  fMusicIndex := (fMusicIndex + 1) mod fMusicCount;
-  PlayMusicFile(fMusicTracks[fTrackOrder[fMusicIndex]]);
+  fIndex := (fIndex + 1) mod fCount;
+  PlayFile(fTracks[fTrackOrder[fIndex]]);
 end;
 
 
 procedure TKMMusicLib.PlayPreviousTrack;
 begin
-  if not fIsMusicInitialized then exit;
-  if fMusicCount = 0 then exit; //no music files found
+  if not fIsInitialized then exit;
+  if fCount = 0 then exit; //no music files found
   if fFadeState <> fsNone then exit;
 
-  fMusicIndex := (fMusicIndex + fMusicCount - 1) mod fMusicCount;
-  PlayMusicFile(fMusicTracks[fTrackOrder[fMusicIndex]]);
+  fIndex := (fIndex + fCount - 1) mod fCount;
+  PlayFile(fTracks[fTrackOrder[fIndex]]);
 end;
 
 
 //Check if Music is not playing, to know when new mp3 should be feeded
-function TKMMusicLib.IsMusicEnded: Boolean;
+function TKMMusicLib.IsEnded: Boolean;
 {$IFDEF USELIBZPLAY}
 var
   status: TStreamStatus;
 {$ENDIF}
 begin
   {$IFDEF USELIBZPLAY} ZPlayer.GetStatus(status); {$ENDIF}
-  Result := fIsMusicInitialized
+  Result := fIsInitialized
             {$IFDEF USELIBZPLAY}
             and (not status.fPlay and not status.fPause) //Not playing and not paused due to fade
             {$ENDIF}
@@ -379,7 +379,7 @@ var
 {$ENDIF}
 begin
   {$IFDEF USELIBZPLAY} ZPlayerOther.GetStatus(status); {$ENDIF}
-  Result := fIsMusicInitialized
+  Result := fIsInitialized
             {$IFDEF USELIBZPLAY}
             and (not status.fPlay) //Not playing and not paused due to fade
             {$ENDIF}
@@ -390,21 +390,21 @@ begin
 end;
 
 
-procedure TKMMusicLib.StopMusic;
+procedure TKMMusicLib.Stop;
 begin
-  if not fIsMusicInitialized then exit;
+  if not fIsInitialized then exit;
   {$IFDEF USELIBZPLAY} ZPlayer.StopPlayback; {$ENDIF}
   {$IFDEF USEBASS} BASS_ChannelStop(fBassStream); {$ENDIF}
-  fMusicIndex := -1;
+  fIndex := -1;
 end;
 
 
-procedure TKMMusicLib.ToggleMusic(aEnableMusic: Boolean);
+procedure TKMMusicLib.ToggleEnabled(aEnableMusic: Boolean);
 begin
   if aEnableMusic then
     PlayMenuTrack //Start with the default track
   else
-    StopMusic;
+    Stop;
 end;
 
 
@@ -421,20 +421,20 @@ procedure TKMMusicLib.ShuffleSongs;
 var
   I, R, newIndex: Integer;
 begin
-  if fMusicIndex = -1 then Exit; // Music is disabled
+  if fIndex = -1 then Exit; // Music is disabled
 
-  newIndex := fMusicIndex;
+  newIndex := fIndex;
 
   //Shuffle everything except for first (menu) track
-  for I := fMusicCount - 1 downto 1 do
+  for I := fCount - 1 downto 1 do
   begin
     R := RandomRange(1, I);
     //Remember the track number of the current track
-    if fTrackOrder[R] = fMusicIndex then
+    if fTrackOrder[R] = fIndex then
       newIndex := I;
     KromUtils.SwapInt(fTrackOrder[R], fTrackOrder[I]);
   end;
-  fMusicIndex := newIndex;
+  fIndex := newIndex;
 end;
 
 
@@ -442,29 +442,29 @@ procedure TKMMusicLib.UnshuffleSongs;
 var
   I: Integer;
 begin
-  if fMusicIndex = -1 then Exit; // Music is disabled
-  fMusicIndex := fTrackOrder[fMusicIndex];
+  if fIndex = -1 then Exit; // Music is disabled
+  fIndex := fTrackOrder[fIndex];
 
   //Reset every index of the TrackOrder array
-  for I := 0 to fMusicCount - 1 do
+  for I := 0 to fCount - 1 do
     fTrackOrder[I] := I;
 end;
 
 
-procedure TKMMusicLib.FadeMusic;
+procedure TKMMusicLib.Fade;
 begin
-  FadeMusic(FADE_TIME);
+  Fade(FADE_TIME);
 end;
 
 
-procedure TKMMusicLib.FadeMusic(aFadeTime: Integer);
+procedure TKMMusicLib.Fade(aFadeTime: Integer);
 {$IFDEF USELIBZPLAY}
 var
   startTime, endTime: TStreamTime;
   left, right: Integer;
 {$ENDIF}
 begin
-  if (not fIsMusicInitialized) then Exit;
+  if (not fIsInitialized) then Exit;
   fFadeTime := aFadeTime;
   fFadeState := fsFadeOut; //Fade it out
   fFadeStarted := TimeGet;
@@ -480,27 +480,27 @@ begin
 end;
 
 
-procedure TKMMusicLib.UnfadeStartingMusic;
+procedure TKMMusicLib.UnfadeStarting;
 begin
-  UnfadeMusic(STARTING_MUSIC_UNFADE_TIME, True);
+  Unfade(STARTING_MUSIC_UNFADE_TIME, True);
 end;
 
 
-procedure TKMMusicLib.UnfadeMusic;
+procedure TKMMusicLib.Unfade;
 begin
-  UnfadeMusic(FADE_TIME);
+  Unfade(FADE_TIME);
 end;
 
 
 // aHandleCrackling flag is used to mitigate initial sound crackling
-procedure TKMMusicLib.UnfadeMusic(aFadeTime: Integer; aHandleCrackling: Boolean = False);
+procedure TKMMusicLib.Unfade(aFadeTime: Integer; aHandleCrackling: Boolean = False);
 {$IFDEF USELIBZPLAY}
 var
   startTime, endTime: TStreamTime;
   left, right: Integer;
 {$ENDIF}
 begin
-  if (not fIsMusicInitialized) then Exit;
+  if (not fIsInitialized) then Exit;
   fFadeTime := aFadeTime;
   fFadeState := fsFadeIn; //Fade it in
   fFadeStarted := TimeGet;
@@ -511,7 +511,7 @@ begin
   ZPlayer.GetPosition(startTime);
   endTime.ms := startTime.ms + aFadeTime;
   ZPlayer.GetPlayerVolume(left, right); //Start fade from the current volume
-  ZPlayer.SlideVolume(tfMillisecond, startTime, left, right, tfMillisecond, endTime, Round(fMusicGain * 100), Round(fMusicGain * 100));
+  ZPlayer.SlideVolume(tfMillisecond, startTime, left, right, tfMillisecond, endTime, Round(fVolume * 100), Round(fVolume * 100));
   {$ENDIF}
   {$IFDEF USEBASS}
   BASS_ChannelPlay(fBassStream, False); //Music may have been paused due to fade out
@@ -523,7 +523,7 @@ end;
 
 procedure TKMMusicLib.UpdateStateIdle;
 begin
-  if not fIsMusicInitialized then Exit;
+  if not fIsInitialized then Exit;
 
   case fFadeState of
     fsFadeIn:   if GetTimeSince(fFadeStarted) > fFadeTime then
@@ -550,35 +550,35 @@ begin
   if fFadedToPlayOther and (fFadeState = fsFaded) and IsOtherEnded then
   begin
     fFadedToPlayOther := False;
-    UnfadeMusic;
+    Unfade;
   end;
 end;
 
 
-procedure TKMMusicLib.PauseMusic;
+procedure TKMMusicLib.Pause;
 begin
-  if not fIsMusicInitialized then Exit;
+  if not fIsInitialized then Exit;
 
   {$IFDEF USELIBZPLAY} ZPlayerOther.PausePlayback; {$ENDIF}
   {$IFDEF USEBASS} BASS_ChannelPause(fBassStream); {$ENDIF}
 end;
 
 
-procedure TKMMusicLib.ResumeMusic;
+procedure TKMMusicLib.Resume;
 begin
-  if not fIsMusicInitialized then Exit;
+  if not fIsInitialized then Exit;
 
   {$IFDEF USELIBZPLAY} ZPlayer.ResumePlayback; {$ENDIF}
   {$IFDEF USEBASS} BASS_ChannelPlay(fBassStream, False); {$ENDIF}
 end;
 
 
-procedure TKMMusicLib.PauseMusicToPlayFile(const aFileName: UnicodeString; aVolume: single);
+procedure TKMMusicLib.PauseToPlayFile(const aFileName: UnicodeString; aVolume: single);
 begin
   fOtherVolume := aVolume;
   if fFadeState in [fsNone, fsFadeIn] then
   begin
-    FadeMusic;
+    Fade;
     fToPlayAfterFade := aFilename
   end
   else
@@ -594,7 +594,7 @@ end;
 
 procedure TKMMusicLib.StopPlayingOtherFile;
 begin
-  if not fIsMusicInitialized then Exit;
+  if not fIsInitialized then Exit;
   {$IFDEF USELIBZPLAY} ZPlayerOther.StopPlayback; {$ENDIF}
   {$IFDEF USEBASS} BASS_ChannelStop(fBassOtherStream); {$ENDIF}
   fToPlayAfterFade := '';
@@ -604,10 +604,10 @@ end;
 
 function TKMMusicLib.GetTrackTitle: UnicodeString;
 begin
-  if not fIsMusicInitialized then Exit;
-  if not InRange(fMusicIndex, Low(fMusicTracks), High(fMusicTracks)) then Exit;
+  if not fIsInitialized then Exit;
+  if not InRange(fIndex, Low(fTracks), High(fTracks)) then Exit;
 
-  Result := TruncateExt(ExtractFileName(fMusicTracks[fTrackOrder[fMusicIndex]]));
+  Result := TruncateExt(ExtractFileName(fTracks[fTrackOrder[fIndex]]));
 end;
 
 

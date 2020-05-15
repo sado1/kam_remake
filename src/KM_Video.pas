@@ -425,7 +425,7 @@ begin
   begin
     gSoundPlayer.AbortAllFadeSounds;
     gGameApp.MusicLib.StopPlayingOtherFile;
-    gGameApp.MusicLib.FadeMusic(FADE_MUSIC_TIME);
+    gGameApp.MusicLib.Fade(FADE_MUSIC_TIME);
   end;
 
   FTrackList.Clear;
@@ -529,9 +529,9 @@ begin
     if Assigned(gGameApp) then
     begin
       if startingVideo then
-        gGameApp.MusicLib.UnfadeStartingMusic
+        gGameApp.MusicLib.UnfadeStarting
       else
-        gGameApp.MusicLib.UnfadeMusic(FADE_MUSIC_TIME);
+        gGameApp.MusicLib.Unfade(FADE_MUSIC_TIME);
     end;
 
     if Assigned(FCallback) then
