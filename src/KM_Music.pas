@@ -10,7 +10,7 @@ interface
 //              - ZLibPlay supports more formats, (FLAC, AC-3, AAC, PCM) but we don't care
 //              - ZLibPlay is GPL but BASS is not, and BASS can only be used for free in non-commercial products
 
-{.DEFINE USEBASS}
+{.$DEFINE USEBASS}
 {$IFDEF MSWindows}
   {$IFNDEF NO_LIBZPLAY}
     {$DEFINE USELIBZPLAY}
@@ -240,13 +240,19 @@ end;
 
 
 function TKMMusicLib.GetVolume: Single;
+{$IFDEF USELIBZPLAY}
 var
   LeftVolume, RightVolume: Integer;
+{$ENDIF}
 begin
+  Result := 0;
   {$IFDEF USELIBZPLAY}
   ZPlayer.GetPlayerVolume(LeftVolume, RightVolume); //0=silent, 100=max
-  {$ENDIF}
   Result := LeftVolume / 100;
+  {$ENDIF}
+  {$IFDEF USEBASS}
+  BASS_ChannelGetAttribute(fBassStream, BASS_ATTRIB_VOL, Result);
+  {$ENDIF}
 end;
 
 
