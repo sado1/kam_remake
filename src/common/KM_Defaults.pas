@@ -472,6 +472,13 @@ type
   TKMapFolder = (mfSP, mfMP, mfDL);
   TKMapFolderSet = set of TKMapFolder;
 
+const
+  FOG_OF_WAR_MIN  = 80;           //Minimum value for explored but FOW terrain, MIN/ACT determines FOW darkness
+  FOG_OF_WAR_ACT  = 160;          //Until this value FOW is not rendered at all
+  FOG_OF_WAR_MAX  = 255;          //This is max value that FOW can be, MAX-ACT determines how long until FOW appears
+  FOG_OF_WAR_INC  = 128;          //Increment for FOW
+  FOG_OF_WAR_DEC  = 12;           //Decrement for FOW
+
 
 const
   MAPS_FOLDER_NAME = 'Maps';
