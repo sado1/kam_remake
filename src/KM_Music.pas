@@ -43,6 +43,7 @@ type
     {$IFDEF USELIBZPLAY} ZPlayer, ZPlayerOther: ZPlay; {$ENDIF} //I dislike that it's not TZPlay... Guess they don't know Delphi conventions.
     fFadeState: TKMFadeState;
     fFadeStarted: Cardinal;
+    fFadeTime: Integer;
     fToPlayAfterFade: UnicodeString;
     fFadedToPlayOther: Boolean;
     fOtherVolume: Single;
@@ -65,11 +66,14 @@ type
     procedure PlayPreviousTrack;
     function IsMusicEnded: Boolean;
     function IsOtherEnded: Boolean;
+    procedure PauseMusic;
     procedure StopMusic;
     procedure ToggleMusic(aEnableMusic: Boolean);
     procedure ToggleShuffle(aEnableShuffle: Boolean);
-    procedure FadeMusic;
-    procedure UnfadeMusic(aHandleCrackling: Boolean);
+    procedure FadeMusic; overload;
+    procedure FadeMusic(aFadeTime: Integer); overload;
+    procedure UnfadeMusic(aHandleCrackling: Boolean); overload;
+    procedure UnfadeMusic(aHandleCrackling: Boolean; aFadeTime: Integer); overload;
     procedure PauseMusicToPlayFile(const aFileName: UnicodeString; aVolume: Single);
     procedure StopPlayingOtherFile;
     function GetTrackTitle: UnicodeString;
@@ -446,6 +450,12 @@ end;
 
 
 procedure TKMMusicLib.FadeMusic;
+begin
+  FadeMusic(FADE_TIME);
+end;
+
+
+procedure TKMMusicLib.FadeMusic(aFadeTime: Integer);
 {$IFDEF USELIBZPLAY}
 var
   startTime, endTime: TStreamTime;
@@ -453,23 +463,29 @@ var
 {$ENDIF}
 begin
   if (not fIsMusicInitialized) then Exit;
+  fFadeTime := aFadeTime;
   fFadeState := fsFadeOut; //Fade it out
   fFadeStarted := TimeGet;
   {$IFDEF USELIBZPLAY}
   ZPlayer.GetPosition(startTime);
-  endTime.ms := startTime.ms + FADE_TIME;
+  endTime.ms := startTime.ms + aFadeTime;
   ZPlayer.GetPlayerVolume(left, right); //Start fade from the current volume
   ZPlayer.SlideVolume(tfMillisecond, startTime, left, right, tfMillisecond, endTime, 0, 0);
   {$ENDIF}
   {$IFDEF USEBASS}
-  BASS_ChannelSlideAttribute(fBassStream, BASS_ATTRIB_VOL, 0, FADE_TIME);
+  BASS_ChannelSlideAttribute(fBassStream, BASS_ATTRIB_VOL, 0, aFadeTime);
   {$ENDIF}
 end;
 
 
+procedure TKMMusicLib.UnfadeMusic(aHandleCrackling: Boolean);
+begin
+  UnfadeMusic(aHandleCrackling, FADE_TIME);
+end;
+
 
 // aHandleCrackling flag is used to mitigate initial sound crackling
-procedure TKMMusicLib.UnfadeMusic(aHandleCrackling: Boolean);
+procedure TKMMusicLib.UnfadeMusic(aHandleCrackling: Boolean; aFadeTime: Integer);
 {$IFDEF USELIBZPLAY}
 var
   startTime, endTime: TStreamTime;
@@ -477,6 +493,7 @@ var
 {$ENDIF}
 begin
   if (not fIsMusicInitialized) then Exit;
+  fFadeTime := aFadeTime;
   fFadeState := fsFadeIn; //Fade it in
   fFadeStarted := TimeGet;
   {$IFDEF USELIBZPLAY}
@@ -484,14 +501,14 @@ begin
   ZPlayer.ResumePlayback; //Music may have been paused due to fade out
   if aHandleCrackling then Sleep(25);
   ZPlayer.GetPosition(startTime);
-  endTime.ms := startTime.ms + FADE_TIME;
+  endTime.ms := startTime.ms + aFadeTime;
   ZPlayer.GetPlayerVolume(left, right); //Start fade from the current volume
   ZPlayer.SlideVolume(tfMillisecond, startTime, left, right, tfMillisecond, endTime, Round(fMusicGain * 100), Round(fMusicGain * 100));
   {$ENDIF}
   {$IFDEF USEBASS}
   BASS_ChannelPlay(fBassStream, False); //Music may have been paused due to fade out
   if aHandleCrackling then Sleep(25);
-  BASS_ChannelSlideAttribute(fBassStream, BASS_ATTRIB_VOL, fMusicGain, FADE_TIME);
+  BASS_ChannelSlideAttribute(fBassStream, BASS_ATTRIB_VOL, fMusicGain, aFadeTime);
   {$ENDIF}
 end;
 
@@ -501,10 +518,10 @@ begin
   if not fIsMusicInitialized then Exit;
 
   case fFadeState of
-    fsFadeIn:   if GetTimeSince(fFadeStarted) > FADE_TIME then
+    fsFadeIn:   if GetTimeSince(fFadeStarted) > fFadeTime then
                   fFadeState := fsNone;
     fsFadeOut:  begin
-                  if GetTimeSince(fFadeStarted) > FADE_TIME then
+                  if GetTimeSince(fFadeStarted) > fFadeTime then
                   begin
                     fFadeState := fsFaded;
                     {$IFDEF USELIBZPLAY} ZPlayer.PausePlayback; {$ENDIF}
@@ -512,7 +529,7 @@ begin
                   end
                   else
                   //Start playback of other file half way through the fade
-                  if (GetTimeSince(fFadeStarted) > FADE_TIME div 2)
+                  if (GetTimeSince(fFadeStarted) > fFadeTime div 2)
                     and (fToPlayAfterFade <> '') then
                   begin
                     fFadedToPlayOther := True;
@@ -527,6 +544,15 @@ begin
     fFadedToPlayOther := False;
     UnfadeMusic(False);
   end;
+end;
+
+
+procedure TKMMusicLib.PauseMusic;
+begin
+  if not fIsMusicInitialized then Exit;
+
+  {$IFDEF USELIBZPLAY} ZPlayerOther.PausePlayback; {$ENDIF}
+  {$IFDEF USEBASS} BASS_ChannelPause(fBassStream); {$ENDIF}
 end;
 
 
