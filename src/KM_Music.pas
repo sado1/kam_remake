@@ -494,26 +494,26 @@ procedure TKMMusicLib.UpdateStateIdle;
 begin
   if not fIsMusicInitialized then Exit;
 
-  if fFadeState in [fsFadeIn, fsFadeOut] then
-  begin
-    if GetTimeSince(fFadeStarted) > FADE_TIME then
-    begin
-      if fFadeState = fsFadeOut then //Fade out is complete so pause the music
-      begin
-        fFadeState := fsFaded;
-        {$IFDEF USELIBZPLAY} ZPlayer.PausePlayback; {$ENDIF}
-        {$IFDEF USEBASS} BASS_ChannelPause(fBassStream); {$ENDIF}
-      end;
-      if fFadeState = fsFadeIn then fFadeState := fsNone;
-    end;
-    //Start playback of other file half way through the fade
-    if (fFadeState = fsFadeOut) and (GetTimeSince(fFadeStarted) > FADE_TIME div 2)
-    and (fToPlayAfterFade <> '') then
-    begin
-      fFadedToPlayOther := True;
-      PlayOtherFile(fToPlayAfterFade);
-      fToPlayAfterFade := '';
-    end;
+  case fFadeState of
+    fsFadeIn:   if GetTimeSince(fFadeStarted) > FADE_TIME then
+                  fFadeState := fsNone;
+    fsFadeOut:  begin
+                  if GetTimeSince(fFadeStarted) > FADE_TIME then
+                  begin
+                    fFadeState := fsFaded;
+                    {$IFDEF USELIBZPLAY} ZPlayer.PausePlayback; {$ENDIF}
+                    {$IFDEF USEBASS} BASS_ChannelPause(fBassStream); {$ENDIF}
+                  end
+                  else
+                  //Start playback of other file half way through the fade
+                  if (GetTimeSince(fFadeStarted) > FADE_TIME div 2)
+                    and (fToPlayAfterFade <> '') then
+                  begin
+                    fFadedToPlayOther := True;
+                    PlayOtherFile(fToPlayAfterFade);
+                    fToPlayAfterFade := '';
+                  end;
+                end;
   end;
 
   if fFadedToPlayOther and (fFadeState = fsFaded) and IsOtherEnded then
