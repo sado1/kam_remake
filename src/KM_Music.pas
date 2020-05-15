@@ -67,6 +67,7 @@ type
     function IsMusicEnded: Boolean;
     function IsOtherEnded: Boolean;
     procedure PauseMusic;
+    procedure ResumeMusic;
     procedure StopMusic;
     procedure ToggleMusic(aEnableMusic: Boolean);
     procedure ToggleShuffle(aEnableShuffle: Boolean);
@@ -552,6 +553,15 @@ begin
 
   {$IFDEF USELIBZPLAY} ZPlayerOther.PausePlayback; {$ENDIF}
   {$IFDEF USEBASS} BASS_ChannelPause(fBassStream); {$ENDIF}
+end;
+
+
+procedure TKMMusicLib.ResumeMusic;
+begin
+  if not fIsMusicInitialized then Exit;
+
+  {$IFDEF USELIBZPLAY} ZPlayer.ResumePlayback; {$ENDIF}
+  {$IFDEF USEBASS} BASS_ChannelPlay(fBassStream, False); {$ENDIF}
 end;
 
 
