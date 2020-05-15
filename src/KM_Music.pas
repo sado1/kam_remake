@@ -119,7 +119,7 @@ begin
   if not BASS_Init(-1, 44100, 0, 0, nil) then
   begin
     gLog.AddTime('Failed to initialize the music playback device');
-    fIsMusicInitialized := False;
+    fIsInitialized := False;
   end;
   {$ENDIF}
 
@@ -516,7 +516,7 @@ begin
   {$IFDEF USEBASS}
   BASS_ChannelPlay(fBassStream, False); //Music may have been paused due to fade out
   if aHandleCrackling then Sleep(25);
-  BASS_ChannelSlideAttribute(fBassStream, BASS_ATTRIB_VOL, fMusicGain, aFadeTime);
+  BASS_ChannelSlideAttribute(fBassStream, BASS_ATTRIB_VOL, fVolume, aFadeTime);
   {$ENDIF}
 end;
 
