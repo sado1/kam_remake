@@ -422,7 +422,7 @@ begin
   CheckBox_Options_ShuffleOn.Enabled  := not CheckBox_Options_MusicOff.Checked;
 
   gSoundPlayer.UpdateSoundVolume(fGameSettings.SoundFXVolume);
-  gGameApp.MusicLib.UpdateMusicVolume(fGameSettings.MusicVolume);
+  gGameApp.MusicLib.Volume := fGameSettings.MusicVolume;
   SetupVSync(fMainSettings.VSync);
   if MusicToggled then
   begin

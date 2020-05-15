@@ -114,7 +114,7 @@ begin
   gGameApp.GameSettings.ShuffleOn     := CheckBox_Settings_ShuffleOn.Checked;
 
   gSoundPlayer.UpdateSoundVolume(gGameApp.GameSettings.SoundFXVolume);
-  gGameApp.MusicLib.UpdateMusicVolume(gGameApp.GameSettings.MusicVolume);
+  gGameApp.MusicLib.Volume := gGameApp.GameSettings.MusicVolume;
   if MusicToggled then
   begin
     gGameApp.MusicLib.ToggleMusic(not gGameApp.GameSettings.MusicOff);

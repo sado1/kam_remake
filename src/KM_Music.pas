@@ -249,7 +249,6 @@ var
   LeftVolume, RightVolume: Integer;
 {$ENDIF}
 begin
-  Result := 0;
   {$IFDEF USELIBZPLAY}
   ZPlayer.GetPlayerVolume(LeftVolume, RightVolume); //0=silent, 100=max
   Result := LeftVolume / 100;
