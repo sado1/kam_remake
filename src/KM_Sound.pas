@@ -49,7 +49,7 @@ type
     fMusicIsFaded: Boolean;
 
     fOnFadeMusic: TEvent;
-    fOnUnfadeMusic: TBooleanEvent;
+    fOnUnfadeMusic: TEvent;
     procedure CheckOpenALError;
     function IsSoundPlaying(aIndex: Integer): Boolean;
 
@@ -64,7 +64,7 @@ type
     function ActiveCount: Byte;
 
     property OnRequestFade: TEvent write fOnFadeMusic;
-    property OnRequestUnfade: TBooleanEvent write fOnUnfadeMusic;
+    property OnRequestUnfade: TEvent write fOnUnfadeMusic;
     procedure AbortAllFadeSounds;
     procedure AbortAllScriptSounds;
     procedure AbortAllLongSounds;
@@ -816,7 +816,7 @@ begin
   //If we reached the end without exiting then we need to resume the music
   fMusicIsFaded := False;
   if Assigned(fOnUnfadeMusic) then
-    fOnUnfadeMusic(False);
+    fOnUnfadeMusic;
 end;
 
 

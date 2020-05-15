@@ -73,8 +73,9 @@ type
     procedure ToggleShuffle(aEnableShuffle: Boolean);
     procedure FadeMusic; overload;
     procedure FadeMusic(aFadeTime: Integer); overload;
-    procedure UnfadeMusic(aHandleCrackling: Boolean); overload;
-    procedure UnfadeMusic(aHandleCrackling: Boolean; aFadeTime: Integer); overload;
+    procedure UnfadeStartingMusic;
+    procedure UnfadeMusic; overload;
+    procedure UnfadeMusic(aFadeTime: Integer; aHandleCrackling: Boolean = False); overload;
     procedure PauseMusicToPlayFile(const aFileName: UnicodeString; aVolume: Single);
     procedure StopPlayingOtherFile;
     function GetTrackTitle: UnicodeString;
@@ -90,6 +91,7 @@ uses
 
 
 const
+  STARTING_MUSIC_UNFADE_TIME = 500; //Time to unfade game starting music, in ms
   FADE_TIME = 2000; //Time that a fade takes to occur in ms
 
 
@@ -323,7 +325,7 @@ begin
   fMusicGain := 0;
   PlayMusicFile(fMusicTracks[0]);
   fMusicGain := prevVolume;
-  UnfadeMusic(True);
+  UnfadeStartingMusic;
 end;
 
 
@@ -478,14 +480,20 @@ begin
 end;
 
 
-procedure TKMMusicLib.UnfadeMusic(aHandleCrackling: Boolean);
+procedure TKMMusicLib.UnfadeStartingMusic;
 begin
-  UnfadeMusic(aHandleCrackling, FADE_TIME);
+  UnfadeMusic(STARTING_MUSIC_UNFADE_TIME, True);
+end;
+
+
+procedure TKMMusicLib.UnfadeMusic;
+begin
+  UnfadeMusic(FADE_TIME);
 end;
 
 
 // aHandleCrackling flag is used to mitigate initial sound crackling
-procedure TKMMusicLib.UnfadeMusic(aHandleCrackling: Boolean; aFadeTime: Integer);
+procedure TKMMusicLib.UnfadeMusic(aFadeTime: Integer; aHandleCrackling: Boolean = False);
 {$IFDEF USELIBZPLAY}
 var
   startTime, endTime: TStreamTime;
@@ -542,7 +550,7 @@ begin
   if fFadedToPlayOther and (fFadeState = fsFaded) and IsOtherEnded then
   begin
     fFadedToPlayOther := False;
-    UnfadeMusic(False);
+    UnfadeMusic;
   end;
 end;
 

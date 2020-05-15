@@ -359,8 +359,8 @@ begin
 
   if not fStartVideoPlayed and (gGameApp.GameSettings <> nil) and gGameApp.GameSettings.VideoStartup then
   begin
-    gVideoPlayer.AddVideo('Campaigns\The Shattered Kingdom\Logo');
-    gVideoPlayer.AddVideo('KaM');
+    gVideoPlayer.AddVideo('Campaigns' + PathDelim + 'The Shattered Kingdom' + PathDelim + 'Logo', vfkStarting);
+    gVideoPlayer.AddVideo('KaM', vfkStarting);
     gVideoPlayer.Play;
     fStartVideoPlayed := True;
   end;
