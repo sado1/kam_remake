@@ -192,7 +192,7 @@ const
   GOLD_ORE_COLOR = icYellow;
   IRON_ORE_COLOR = icSteelBlue;
   COAL_ORE_COLOR = icGray;
-  WOODCUTTER_COLOR = icGreen;
+  WOODCUTTER_COLOR = icDeepGreen;
   QUARRY_COLOR = icBlack;
   FISHERHUT_COLOR = icBlue;
   FARM_COLOR = icYellow;
@@ -267,11 +267,13 @@ const
       gRenderAux.LineOnTerrain(fBorderPoints[I], lineColor);
   end;
 
-  procedure PaintMiningPoints(aPoints: TKMPointList; Color: Cardinal; aHighlight: Boolean = False; aDeepCl: Boolean = False);
+  procedure PaintMiningPoints(aPoints: TKMPointList; Color: Cardinal; aHighlight: Boolean = False; aDeepCl: Boolean = False;
+                              aVertexes: Boolean = False);
   var
     I: Integer;
     Coef: Single;
     lineColor: Cardinal;
+    inset: Single;
   begin
     Coef := 0.15;
     if aHighlight then
@@ -279,6 +281,10 @@ const
       Color := SELECTED_ORE_COLOR;
       Coef := 0.3;
     end;
+
+    inset := 0;
+    if aVertexes then
+      inset := -0.5;
 
     lineColor := Color;
 
@@ -290,9 +296,13 @@ const
 
     ResetAreaData;
 
+    gRenderAux.SetColor(Color);
     for I := 0 to aPoints.Count - 1 do
     begin
-      gRenderAux.Quad(aPoints[I].X, aPoints[I].Y, Color);
+      gRenderAux.Quad(aPoints[I].X + inset, aPoints[I].Y + inset);
+      if aVertexes then
+        gRenderAux.CircleOnTerrain(aPoints[I].X - 1, aPoints[I].Y - 1, 0.15, Color);
+
       fAreaTilesLand[aPoints[I].Y - 1, aPoints[I].X - 1] := True;
     end;
 
@@ -300,7 +310,7 @@ const
       Exit;
 
     for I := 0 to fBorderPoints.Count - 1 do
-      gRenderAux.LineOnTerrain(fBorderPoints[I], lineColor);
+      gRenderAux.LineOnTerrain(fBorderPoints[I], lineColor, inset);
   end;
 
 var
@@ -412,12 +422,13 @@ begin
   PaintOrePoints(CoalOreP, COAL_ORE_COLOR);
   PaintOrePoints(SelectedOreP, 0, True);
 
-  PaintMiningPoints(WoodcutterPts, WOODCUTTER_COLOR);
+  PaintMiningPoints(WoodcutterPts, WOODCUTTER_COLOR, False, False, True);
   PaintMiningPoints(QuarryPts, QUARRY_COLOR);
   PaintMiningPoints(FisherHutPts, FISHERHUT_COLOR);
   PaintMiningPoints(FarmPts, FARM_COLOR, False, True);
   PaintMiningPoints(WineyardPts, WINEYARD_COLOR);
-  PaintMiningPoints(SelectedPts, 0, True);
+  // Show selected points as vertexes if woodcutter house is selected
+  PaintMiningPoints(SelectedPts, 0, True, False, (gMySpectator.Selected is TKMHouse) and (TKMHouse(gMySpectator.Selected).HouseType = htWoodcutters));
 
   for I := 0 to Length(OreP) - 1 do
   begin

@@ -61,6 +61,8 @@ uses
 
   procedure ParseDelimited(const Value, Delimiter: UnicodeString; SL: TStringList);
 
+  function EnsureRangeF(const aValue, aMin, aMax: Single): Single;
+
   procedure SetKaMSeed(aSeed: Integer);
   function GetKaMSeed: Integer;
   function KaMRandomWSeed(var aSeed: Integer): Extended; overload;
@@ -1129,6 +1131,17 @@ begin
   finally
     SL.EndUpdate;
   end;
+end;
+
+
+function EnsureRangeF(const aValue, aMin, aMax: Single): Single;
+begin
+  Result := aValue;
+  if aValue < aMin then
+    Result := aMin
+  else
+  if aValue > aMax then
+    Result := aMax;
 end;
 
 

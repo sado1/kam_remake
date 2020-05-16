@@ -106,6 +106,7 @@ type
   function KMRectF(const aRect: TKMRect): TKMRectF; overload;
   function KMRectF(const aPoint: TKMPointF): TKMRectF; overload;
   function KMRectF(aLeft, aTop, aRight, aBottom: SmallInt): TKMRectF; overload;
+  function KMRectF(aLeft, aTop, aRight, aBottom: Single): TKMRectF; overload;
   function KMRectRound(const aRect: TKMRectF): TKMRect;
   function KMSameRect(const aRect1, aRect2: TKMRect): Boolean;
   function KMRectWidth(const aRect: TKMRect): Integer;
@@ -494,6 +495,15 @@ end;
 
 
 function KMRectF(aLeft, aTop, aRight, aBottom: SmallInt): TKMRectF;
+begin
+  Result.Left   := aLeft;
+  Result.Right  := aRight;
+  Result.Top    := aTop;
+  Result.Bottom := aBottom;
+end;
+
+
+function KMRectF(aLeft, aTop, aRight, aBottom: Single): TKMRectF;
 begin
   Result.Left   := aLeft;
   Result.Right  := aRight;

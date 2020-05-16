@@ -12,9 +12,10 @@ type
   TRenderAux = class
   private
     procedure RenderDot(pX, pY: Single; Size: Single = 0.05);
-    procedure RenderDotOnTile(pX, pY: Single);
+    procedure RenderDotOnTile(pX, pY: Single; aSize: Single = 0.1);
     procedure RenderLine(x1, y1, x2, y2: Single);
-    procedure RenderQuad(pX, pY: Integer);
+    procedure RenderQuad(pX, pY: Integer); overload;
+    procedure RenderQuad(pX, pY: Single); overload;
   public
     procedure Circle(x, y, rad: Single; Fill, Line: TColor4);
     procedure CircleOnTerrain(x, y, rad: Single; Fill, Line: TColor4); overload;
@@ -26,7 +27,8 @@ type
     procedure LineOnTerrain(const A, B: TKMPointF; aCol: TColor4; aPattern: Word = $FFFF; aDots: Boolean = True); overload;
     procedure LineOnTerrain(const aPoints: TKMPointArray; aColor: Cardinal; aThickness: Integer = -1; aLineMode: TKMLineMode = lmStrip; aPattern: Word = $FFFF); overload;
     procedure LineOnTerrain(const aPoints: TKMPointFArray; aColor: Cardinal; aThickness: Integer = -1; aLineMode: TKMLineMode = lmStrip; aPattern: Word = $FFFF); overload;
-    procedure LineOnTerrain(aPoints: TKMPointList; aColor: Cardinal; aThickness: Integer = -1; aLineMode: TKMLineMode = lmStrip; aPattern: Word = $FFFF); overload;
+    procedure LineOnTerrain(aPoints: TKMPointList; aColor: Cardinal; aInset: Single = 0; aThickness: Integer = -1;
+                            aLineMode: TKMLineMode = lmStrip; aPattern: Word = $FFFF); overload;
     procedure Line(const A, B: TKMPoint; aCol: TColor4; aPattern: Word = $FFFF); overload;
     procedure Line(const A, B: TKMPointF; aCol: TColor4; aPattern: Word = $FFFF); overload;
     procedure Line(x1, y1, x2, y2: Single; aCol: TColor4; aPattern: Word = $FFFF); overload;
@@ -50,6 +52,8 @@ type
     procedure SetColor(aCol: Cardinal);
     procedure Quad(pX, pY: Integer); overload;
     procedure Quad(pX, pY: Integer; aCol: TColor4); overload;
+    procedure Quad(pX, pY: Single); overload;
+    procedure Quad(pX, pY: Single; aCol: TColor4); overload;
     procedure SquareOnTerrain(x1, y1, x2, y2: Single; aLineColor: TColor4);
     procedure Text(pX, pY: Single; const aText: string; aCol: TColor4); overload;
     procedure Text(pX, pY: Single; const aText: string; aCol: TColor4; const aInset: TKMPointF; aConsiderTextLength: Boolean = True); overload;
@@ -86,12 +90,12 @@ begin
 end;
 
 
-procedure TRenderAux.RenderDotOnTile(pX, pY: Single);
+procedure TRenderAux.RenderDotOnTile(pX, pY: Single; aSize: Single = 0.1);
 begin
   TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
   pY := gTerrain.FlatToHeight(pX, pY);
   glBegin(GL_QUADS);
-    glkRect(pX, pY, pX + 0.1, pY - 0.1);
+    glkRect(pX - aSize/2, pY + aSize/2, pX + aSize/2, pY - aSize/2);
   glEnd;
 end;
 
@@ -109,7 +113,7 @@ end;
 
 procedure TRenderAux.RenderQuad(pX, pY: Integer);
 begin
-  if not gTerrain.TileInMapCoords(pX, pY) then exit;
+  if not gTerrain.TileInMapCoords(pX, pY) then Exit;
 
   TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
   glBegin(GL_QUADS);
@@ -118,6 +122,25 @@ begin
             pX  ,pY-1-Land[pY  ,pX+1].Height/CELL_HEIGHT_DIV,
             pX  ,pY-  Land[pY+1,pX+1].Height/CELL_HEIGHT_DIV,
             pX-1,pY-  Land[pY+1,pX  ].Height/CELL_HEIGHT_DIV);
+  glEnd;
+end;
+
+
+procedure TRenderAux.RenderQuad(pX, pY: Single);
+var
+  rect: TKMRectF;
+begin
+  rect := KMRectF(pX - 1, pY - 1, pX, pY);
+
+  rect := gTerrain.EnsureVerticesRectWithinMap(rect);
+
+  TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
+  glBegin(GL_QUADS);
+    with gTerrain do
+    glkQuad(rect.Left,  gTerrain.FlatToHeight(rect.Left,  rect.Top),
+            rect.Right, gTerrain.FlatToHeight(rect.Right, rect.Top),
+            rect.Right, gTerrain.FlatToHeight(rect.Right, rect.Bottom),
+            rect.Left,  gTerrain.FlatToHeight(rect.Left,  rect.Bottom));
   glEnd;
 end;
 
@@ -377,7 +400,8 @@ begin
 end;
 
 
-procedure TRenderAux.LineOnTerrain(aPoints: TKMPointList; aColor: Cardinal; aThickness: Integer = -1; aLineMode: TKMLineMode = lmStrip; aPattern: Word = $FFFF);
+procedure TRenderAux.LineOnTerrain(aPoints: TKMPointList; aColor: Cardinal; aInset: Single = 0; aThickness: Integer = -1;
+                                   aLineMode: TKMLineMode = lmStrip; aPattern: Word = $FFFF);
 var
   I, LineWidth: Integer;
 begin
@@ -399,7 +423,7 @@ begin
   end;
 
   for I := 0 to aPoints.Count - 1 do
-    glVertex2f(aPoints[I].X, gTerrain.FlatToHeight(aPoints[I].X, aPoints[I].Y));
+    glVertex2f(aPoints[I].X + aInset, gTerrain.FlatToHeight(aPoints[I].X + aInset, aPoints[I].Y + aInset));
 
   glEnd;
 
@@ -683,6 +707,19 @@ end;
 
 
 procedure TRenderAux.Quad(pX, pY: Integer; aCol: TColor4);
+begin
+  glColor4ubv(@aCol);
+  RenderQuad(pX, pY);
+end;
+
+
+procedure TRenderAux.Quad(pX, pY: Single);
+begin
+  RenderQuad(pX, pY);
+end;
+
+
+procedure TRenderAux.Quad(pX, pY: Single; aCol: TColor4);
 begin
   glColor4ubv(@aCol);
   RenderQuad(pX, pY);
