@@ -1830,7 +1830,7 @@ var
   NewGameSpeed: Single;
 begin
   //Make the speed toggle between normal speed and desired value
-  if (aSpeed = fGameSpeedActual) and aToggle then
+  if SameValue(aSpeed, fGameSpeedActual, 0.001) and aToggle then
     NewGameSpeed := aToggleTo
   else
     NewGameSpeed := aSpeed;
