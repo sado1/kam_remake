@@ -1740,36 +1740,34 @@ end;
 
 function TKMTerrain.TileCornerTerKind(aX, aY: Word; aCorner: Byte): TKMTerrainKind;
 var
+  L: Integer;
   cornersTKinds: TKMTerrainKindCorners;
 begin
   Assert(InRange(aCorner, 0, 3));
   
-  GetTileCornersTerKinds(aX, aY, cornersTKinds);
-  Result := cornersTKinds[aCorner];
+  Result := tkCustom;
+  with gTerrain.Land[aY,aX] do
+  begin
+    if BaseLayer.Corners[aCorner] then
+      Result := TILE_CORNERS_TERRAIN_KINDS[BaseLayer.Terrain, (aCorner + 4 - BaseLayer.Rotation) mod 4]
+    else
+      for L := 0 to LayersCnt - 1 do
+        if Layer[L].Corners[aCorner] then
+        begin
+          Result := gRes.Sprites.GetGenTerrainInfo(Layer[L].Terrain).TerKind;
+          Break;
+        end;
+  end;
 end;
 
 
 //Get tile corners terrain kinds
 procedure TKMTerrain.GetTileCornersTerKinds(aX, aY: Word; out aCornerTerKinds: TKMTerrainKindCorners);
 var
-  K, L: Integer;
+  K: Integer;
 begin
   for K := 0 to 3 do
-  begin
-    aCornerTerKinds[K] := tkCustom;
-    with gTerrain.Land[aY,aX] do
-    begin
-      if BaseLayer.Corners[K] then
-        aCornerTerKinds[K] := TILE_CORNERS_TERRAIN_KINDS[BaseLayer.Terrain, (K + 4 - BaseLayer.Rotation) mod 4]
-      else
-        for L := 0 to LayersCnt - 1 do
-          if Layer[L].Corners[K] then
-          begin
-            aCornerTerKinds[K] := gRes.Sprites.GetGenTerrainInfo(Layer[L].Terrain).TerKind;
-            Break;
-          end;
-    end;
-  end;
+    aCornerTerKinds[K] := TileCornerTerKind(aX, aY, K);
 end;
 
 
