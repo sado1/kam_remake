@@ -467,7 +467,7 @@ begin
     if(FWidth > 0) and (FHeight > 0) then
     begin
       SetLength(FBuffer, FWidth * FHeight * 3);
-      FTexture.Tex := TRender.GenerateTextureCommon(ftNearest, ftNearest);
+      FTexture.Tex := TRender.GenerateTextureCommon(ftLinear, ftLinear);
 
       FMediaPlayer := libvlc_media_player_new_from_media(Media);
       libvlc_video_set_format(FMediaPlayer, 'RV24', FWidth, FHeight, FWidth * 3);
