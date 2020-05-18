@@ -356,6 +356,7 @@ type
 
     procedure UpdateLighting; overload;
     procedure UpdateLighting(const aRect: TKMRect); overload;
+    procedure UpdatePassability; overload;
     procedure UpdatePassability(const aRect: TKMRect); overload;
     procedure UpdatePassability(const Loc: TKMPoint); overload;
 
@@ -483,8 +484,8 @@ begin
       end;
 
   fFinder := TKMTerrainFinder.Create;
-  UpdateLighting(MapRect);
-  UpdatePassability(MapRect);
+  UpdateLighting;
+  UpdatePassability;
 
   //Everything except roads
   UpdateWalkConnect([wcWalk, wcFish, wcWork], MapRect, True);
@@ -558,8 +559,8 @@ begin
   end;
 
   fFinder := TKMTerrainFinder.Create;
-  UpdateLighting(MapRect);
-  UpdatePassability(MapRect);
+  UpdateLighting;
+  UpdatePassability;
 
   //Everything except roads
   UpdateWalkConnect([wcWalk, wcFish, wcWork], MapRect, True);
@@ -4278,6 +4279,13 @@ begin
 end;
 
 
+//Rebuilds passability for all map
+procedure TKMTerrain.UpdatePassability;
+begin
+  UpdatePassability(fMapRect);
+end;
+
+
 //Rebuilds passability for given bounds
 procedure TKMTerrain.UpdatePassability(const aRect: TKMRect);
 var
@@ -4892,7 +4900,7 @@ begin
 
   fFinder := TKMTerrainFinder.Create;
 
-  UpdateLighting(MapRect);
+  UpdateLighting;
   // Do not update Passability and WalkConnect, since we loaded it from the stream
   gLog.AddTime('Terrain loaded');
 end;
