@@ -363,7 +363,7 @@ uses
   KM_CommonUtils, KM_ResLocales, KM_ResSound, KM_Resource, KM_Log, KM_ResCursors, KM_ResFonts, KM_ResKeys,
   KM_FogOfWar, KM_Sound, KM_NetPlayersList, KM_MessageLog, KM_NetworkTypes,
   KM_InterfaceMapEditor, KM_HouseWoodcutters, KM_MapTypes,
-  KM_GameTypes;
+  KM_GameTypes, KM_Video;
 
 const
   ALLIES_ROWS = 7;
@@ -1672,6 +1672,13 @@ begin
 
   ShowStats := False;
   ReinitStatsLastTime := False;
+
+  // Add victory / defeat videos to play
+  case aMsg of
+    grWin:              gVideoPlayer.AddMissionVideo(gGame.MissionFile, 'Victory');
+    grDefeat, grCancel: gVideoPlayer.AddMissionVideo(gGame.MissionFile, 'Defeat');
+  end;
+  gVideoPlayer.Play;
 
   case aMsg of
     grWin,
