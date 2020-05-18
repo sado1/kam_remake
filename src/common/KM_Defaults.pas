@@ -945,7 +945,12 @@ const
   icBarColorGreen = $FF00AA26;
   icBarColorBlue = $FFBBAA00;
 
+  icBlackish = $FF333333;
+
   // Interface colors (by usage)
+  clWhiteText = icWhite;
+  clBlackText = icBlackish;
+
   clPingLow = icGreen;
   clPingNormal = icYellow;
   clPingHigh = icOrange;

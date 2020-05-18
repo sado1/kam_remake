@@ -57,6 +57,7 @@ uses
   function WrapColor(const aText: UnicodeString; aColor: Cardinal): UnicodeString;
   function WrapColorA(const aText: AnsiString; aColor: Cardinal): AnsiString;
   function StripColor(const aText: UnicodeString): UnicodeString;
+  function GetContrastTextColor(aBackgroundColor: Cardinal): Cardinal;
   function FindMPColor(aColor: Cardinal): Integer;
 
   procedure ParseDelimited(const Value, Delimiter: UnicodeString; SL: TStringList);
@@ -1095,6 +1096,23 @@ begin
     if skippingMarkup and (aText[I] = ']') then
       skippingMarkup := False;
   end;
+end;
+
+
+// Return black or white text color, that is contrasst to the specified background color
+function GetContrastTextColor(aBackgroundColor: Cardinal): Cardinal;
+var
+  R,G,B: Byte;
+  colorValue: Single;
+begin
+  B := aBackgroundColor and $FF;
+  G := aBackgroundColor shr 8 and $FF;
+  R := aBackgroundColor shr 16 and $FF;
+  colorValue := (R*299 + G*587 + B*114) / 1000; // some fancy formula, that considers each color luminance
+  if colorValue >= 128 then
+    Result := clBlackText
+  else
+    Result := clWhiteText;
 end;
 
 
