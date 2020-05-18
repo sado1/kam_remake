@@ -1231,8 +1231,7 @@ begin
   LoadStream.Read(Dismissable);
   LoadStream.Read(fLastTimeTrySetActionWalk);
 
-  //Create last so it can initialise with loaded values
-  fVisual := TKMUnitVisual.Create(Self);
+
 end;
 
 
@@ -1246,6 +1245,9 @@ begin
 
   fHome := gHands.GetHouseByUID(cardinal(fHome));
   fInHouse := gHands.GetHouseByUID(cardinal(fInHouse));
+
+  //Create last so it can initialise with loaded (and sync-loaded) values
+  fVisual := TKMUnitVisual.Create(Self);
 end;
 
 
