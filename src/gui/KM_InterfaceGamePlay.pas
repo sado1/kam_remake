@@ -3826,8 +3826,10 @@ begin
     if fMyControls.CtrlOver = nil then Exit; // Don't move troops too
   end;
 
-  if (fMyControls.CtrlOver <> nil)
-    and (fMyControls.CtrlOver <> Image_DirectionCursor)
+  if (fMyControls.CtrlOver = nil) then
+    fMyControls.MouseUp(X,Y,Shift,Button) // That will update control States, f.e.
+  else
+  if   (fMyControls.CtrlOver <> Image_DirectionCursor)
     and not SelectingTroopDirection then
   begin
     fMyControls.MouseUp(X,Y,Shift,Button);
