@@ -794,7 +794,7 @@ begin
   if aNewGame
     or (    isPT and not SameValue(oldSpeedPT,      fGameOptions.SpeedPT,      0.01))
     or (not isPT and not SameValue(oldSpeedAfterPT, fGameOptions.SpeedAfterPT, 0.01)) then
-    SetGameSpeed(GetNormalGameSpeed, True);
+    SetGameSpeed(GetNormalGameSpeed, False);
 
   //Check for default advanced AI's
   if fNetworking.IsMap then
@@ -1849,7 +1849,11 @@ procedure TKMGame.SetGameSpeed(aSpeed: Single; aToggle: Boolean; aToggleTo: Sing
 var
   NewGameSpeed: Single;
 begin
-  //Make the speed toggle between normal speed and desired value
+  // There is no reason to 'toggle' to the same value. Toggle to NORMAL_SPEED (x1) instead
+  if SameValue(aSpeed, aToggleTo, 0.001) then
+    aToggleTo := GAME_SPEED_NORMAL;
+
+  // Make the speed toggle between normal speed and desired value
   if SameValue(aSpeed, fGameSpeedActual, 0.001) and aToggle then
     NewGameSpeed := aToggleTo
   else
