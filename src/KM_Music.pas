@@ -10,9 +10,9 @@ interface
 //              - ZLibPlay supports more formats, (FLAC, AC-3, AAC, PCM) but we don't care
 //              - ZLibPlay is GPL but BASS is not, and BASS can only be used for free in non-commercial products
 
+{$IFNDEF NO_MUSIC}
 {.$DEFINE USEBASS}
 {$IFDEF MSWindows}
-  {$IFNDEF NO_LIBZPLAY}
     {$DEFINE USELIBZPLAY}
   {$ENDIF}
 {$ENDIF}
