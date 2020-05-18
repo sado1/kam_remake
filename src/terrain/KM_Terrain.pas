@@ -356,6 +356,7 @@ type
 
     procedure UpdateLighting; overload;
     procedure UpdateLighting(const aRect: TKMRect); overload;
+    procedure UpdateLighting(X, Y: Integer); overload;
     procedure UpdatePassability; overload;
     procedure UpdatePassability(const aRect: TKMRect); overload;
     procedure UpdatePassability(const Loc: TKMPoint); overload;
@@ -4258,24 +4259,30 @@ end;
 procedure TKMTerrain.UpdateLighting(const aRect: TKMRect);
 var
   I, K: Integer;
-  x0, y2: Integer;
+
 begin
   //Valid vertices are within 1..Map
   for I := Max(aRect.Top, 1) to Min(aRect.Bottom, fMapY) do
-  for K := Max(aRect.Left, 1) to Min(aRect.Right, fMapX) do
-  begin
-    x0 := Max(K-1, 1);
-    y2 := Min(I+1, fMapY);
-    Land[I,K].Light := EnsureRange((Land[I,K].Height-(Land[y2,K].Height+Land[I,x0].Height)/2)/22,-1,1); //  1.33*16 ~=22
+    for K := Max(aRect.Left, 1) to Min(aRect.Right, fMapX) do
+      UpdateLighting(K, I);
+end;
 
-    //Use more contrast lighting for Waterbeds
-    if fTileset.TileIsWater(Land[I, K].BaseLayer.Terrain) then
-      Land[I,K].Light := EnsureRange(Land[I,K].Light * 1.3 + 0.1, -1, 1);
 
-    //Map borders always fade to black
-    if (I = 1) or (I = fMapY) or (K = 1) or (K = fMapX) then
-      Land[I,K].Light := -1;
-  end;
+procedure TKMTerrain.UpdateLighting(X, Y: Integer);
+var
+  x0, y2: Integer;
+begin
+  x0 := Max(X - 1, 1);
+  y2 := Min(Y + 1, fMapY);
+  Land[Y,X].Light := EnsureRange((Land[Y,X].Height - (Land[y2,X].Height + Land[Y,x0].Height)/2)/22,-1,1); //  1.33*16 ~=22
+
+  //Use more contrast lighting for Waterbeds
+  if fTileset.TileIsWater(Land[Y, X].BaseLayer.Terrain) then
+    Land[Y,X].Light := EnsureRange(Land[Y,X].Light * 1.3 + 0.1, -1, 1);
+
+  //Map borders always fade to black
+  if (Y = 1) or (Y = fMapY) or (X = 1) or (X = fMapX) then
+    Land[Y,X].Light := -1;
 end;
 
 
