@@ -1131,7 +1131,8 @@ begin
   if fGameMode = gmMultiSpectate then
     Exit;
 
-  if aHandIndex = gMySpectator.HandID then
+  if (aHandIndex = gMySpectator.HandID)
+    and not gGameApp.GameSettings.VideoOn then // Don't play victory sound if videos are on
     gSoundPlayer.Play(sfxnVictory, 1, True); //Fade music
 
   if fGameMode = gmMulti then
@@ -1161,12 +1162,19 @@ end;
 
 
 procedure TKMGame.PlayerDefeat(aPlayerIndex: TKMHandID; aShowDefeatMessage: Boolean = True);
+
+  procedure PlayDefeatSound;
+  begin
+    if not gGameApp.GameSettings.VideoOn then // Don't play defeat sound if videos are on
+      gSoundPlayer.Play(sfxnDefeat, 1, True); //Fade music
+  end;
+
 begin
   case GameMode of
     gmSingle, gmCampaign:
               if aPlayerIndex = gMySpectator.HandID then
               begin
-                gSoundPlayer.Play(sfxnDefeat, 1, True); //Fade music
+                PlayDefeatSound;
                 RequestGameHold(grDefeat);
               end;
     gmMulti:  begin
@@ -1176,7 +1184,7 @@ begin
 
                 if aPlayerIndex = gMySpectator.HandID then
                 begin
-                  gSoundPlayer.Play(sfxnDefeat, 1, True); //Fade music
+                  PlayDefeatSound;
                   GameResult := grDefeat;
                   fGamePlayInterface.ShowMPPlayMore(grDefeat);
                 end;
