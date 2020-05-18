@@ -12,7 +12,7 @@ uses
 
 {$IFDEF VIDEOS}
 const
-  VIDEOFILE_PATH = 'data\gfx\video\';
+  VIDEOFILE_PATH = 'data' + PathDelim + 'gfx' + PathDelim + 'video' + PathDelim;
 
 {$ENDIF}
 
