@@ -99,7 +99,8 @@ uses
   KM_Render, KM_RenderUI, dglOpenGL, KM_ResLocales, KM_GameApp, KM_Sound;
 
 const
-  FADE_MUSIC_TIME = 500; // Music fade / unfade time, in ms
+  FADE_MUSIC_TIME   = 500; // Music fade time, in ms
+  UNFADE_MUSIC_TIME = 2000; // Music unfade time, in ms
 
 {$IFDEF VIDEOS}
 
@@ -535,7 +536,7 @@ begin
       if startingVideo then
         gGameApp.MusicLib.UnfadeStarting
       else
-        gGameApp.MusicLib.Unfade(FADE_MUSIC_TIME);
+        gGameApp.MusicLib.Unfade(UNFADE_MUSIC_TIME);
     end;
 
     if Assigned(FCallback) then
