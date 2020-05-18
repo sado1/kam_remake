@@ -404,9 +404,11 @@ begin
     begin
       Panel_Common.Childs[I].Hide;
       for K := 0 to TKMPanel(Panel_Common.Childs[I]).ChildCount - 1 do
-    if TKMPanel(Panel_Common.Childs[I]).Childs[K] is TKMPanel then
-      TKMPanel(Panel_Common.Childs[I]).Childs[K].Hide;
-  end;
+      if TKMPanel(Panel_Common.Childs[I]).Childs[K] is TKMPanel then
+        TKMPanel(Panel_Common.Childs[I]).Childs[K].Hide;
+    end;
+
+  gGame.MapEditor.Reset;
 end;
 
 
@@ -666,20 +668,16 @@ end;
 
 procedure TKMapEdInterface.ShowMarkerInfo(aMarker: TKMMapEdMarker);
 begin
+  HidePages; // HidePages first. That will also reset old marker;
+
   gGame.MapEditor.ActiveMarker := aMarker;
   Assert((aMarker.MarkerType <> mtNone) and (aMarker.Owner <> PLAYER_NONE) and (aMarker.Index <> -1));
 
   Player_SetActive(aMarker.Owner);
 
   case aMarker.MarkerType of
-    mtDefence:    begin
-                    HidePages;
-                    fGuiMarkerDefence.Show(aMarker.Owner, aMarker.Index);
-                  end;
-    mtRevealFOW:  begin
-                    HidePages;
-                    fGuiMarkerReveal.Show(aMarker.Owner, aMarker.Index);
-                  end;
+    mtDefence:    fGuiMarkerDefence.Show(aMarker.Owner, aMarker.Index);
+    mtRevealFOW:  fGuiMarkerReveal.Show(aMarker.Owner, aMarker.Index);
   end;
 
   Layers_UpdateVisibility;
@@ -743,6 +741,8 @@ begin
   //Reset drag object fields
   ResetDragObject;
   gRes.Cursors.Cursor := kmcDefault;
+
+  gGame.MapEditor.Reset;
 end;
 
 

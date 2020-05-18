@@ -83,6 +83,8 @@ type
     procedure UpdateStateIdle;
     procedure Paint(aLayer: TKMPaintLayer; const aClipRect: TKMRect);
 
+    procedure Reset;
+
     procedure DeletePlayer(aIndex: TKMHandID);
   end;
 
@@ -672,6 +674,14 @@ begin
     else
       gHands.PlayerAnimals.AddUnit(TKMUnitType(gGameCursor.Tag1), P);
   end;
+end;
+
+
+procedure TKMMapEditor.Reset;
+begin
+  if Self = nil then Exit;
+  
+  ActiveMarker.MarkerType := mtNone;
 end;
 
 
