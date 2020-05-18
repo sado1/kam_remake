@@ -407,11 +407,6 @@ end;
 
 
 procedure TKMUserInterfaceGame.Paint;
-var
-  I, K: Integer;
-  DP: TAIDefencePosition;
-  LocF: TKMPointF;
-  ScreenLoc: TKMPoint;
 begin
   if (mlDefencesAll in gGame.VisibleLayers) then
     fPaintDefences := True;

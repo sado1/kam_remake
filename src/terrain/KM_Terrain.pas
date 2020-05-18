@@ -1741,7 +1741,6 @@ end;
 function TKMTerrain.TileCornerTerKind(aX, aY: Word; aCorner: Byte): TKMTerrainKind;
 var
   L: Integer;
-  cornersTKinds: TKMTerrainKindCorners;
 begin
   Assert(InRange(aCorner, 0, 3));
   
