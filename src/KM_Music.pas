@@ -11,8 +11,8 @@ interface
 //              - ZLibPlay is GPL but BASS is not, and BASS can only be used for free in non-commercial products
 
 {$IFNDEF NO_MUSIC}
-{.$DEFINE USEBASS}
-{$IFDEF MSWindows}
+  {.$DEFINE USEBASS}
+  {$IFDEF MSWindows}
     {$DEFINE USELIBZPLAY}
   {$ENDIF}
 {$ENDIF}
@@ -60,6 +60,7 @@ type
     destructor Destroy; override;
 
     property Volume: Single read GetVolume write SetVolume;
+    procedure SetPlayerVolume(aValue: Single);
 
     procedure PlayMenuTrack;
     procedure PlayNextTrack;
@@ -237,6 +238,13 @@ procedure TKMMusicLib.SetVolume(aValue: Single);
 begin
   if not fIsInitialized then Exit; //Keep silent
   fVolume := aValue;
+  SetPlayerVolume(aValue);
+end;
+
+
+// Set player volume (game music volume stays unchanged)
+procedure TKMMusicLib.SetPlayerVolume(aValue: Single);
+begin
   {$IFDEF USELIBZPLAY}
   ZPlayer.SetPlayerVolume(Round(aValue * 100), Round(aValue * 100)); //0=silent, 100=max
   {$ENDIF}

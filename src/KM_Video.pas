@@ -68,6 +68,7 @@ type
     procedure AddCampaignVideo(const aCampaignPath, aVideoName: string);
     procedure AddMissionVideo(const aMissionFile, aVideoName: string);
     procedure AddVideo(const AVideoName: String; aKind: TKMVideoFileKind = vfkNone);
+
     procedure Play;
     procedure Stop;
     procedure Pause;
@@ -98,7 +99,7 @@ uses
   KM_Render, KM_RenderUI, dglOpenGL, KM_ResLocales, KM_GameApp, KM_Sound;
 
 const
-  FADE_MUSIC_TIME = 100; // Music fade / unfade time, in ms
+  FADE_MUSIC_TIME = 500; // Music fade / unfade time, in ms
 
 {$IFDEF VIDEOS}
 
@@ -426,6 +427,9 @@ begin
     gSoundPlayer.AbortAllFadeSounds;
     gGameApp.MusicLib.StopPlayingOtherFile;
     gGameApp.MusicLib.Fade(FADE_MUSIC_TIME);
+    // For unknown reason libzPlay lib will use higher volume when unfade (resume) music after video is stopped
+    // We either can use BASS or set player volume to 0 here. Let's try the latter option for now
+    gGameApp.MusicLib.SetPlayerVolume(0);
   end;
 
   FTrackList.Clear;
