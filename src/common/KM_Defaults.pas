@@ -480,6 +480,11 @@ const
   FOG_OF_WAR_INC  = 128;          //Increment for FOW
   FOG_OF_WAR_DEC  = 12;           //Decrement for FOW
 
+const
+  MAPED_HISTORY_DEPTH_MIN = 20;
+  MAPED_HISTORY_DEPTH_MAX = 1000;
+  MAPED_HISTORY_DEPTH_DEF = 500;
+
 
 const
   MAPS_FOLDER_NAME = 'Maps';

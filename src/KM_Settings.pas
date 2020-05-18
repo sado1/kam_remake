@@ -139,6 +139,9 @@ type
     fVideoStartup: Boolean;
     fVideoVolume: Single;
 
+    //MapEd
+    fMapEdHistoryDepth: Integer;
+
     //Multiplayer
     fMultiplayerName: AnsiString;
     fLastIP: string;
@@ -249,6 +252,9 @@ type
     procedure SetVideoStretch(aValue: Boolean);
     procedure SetVideoStartup(aValue: Boolean);
     procedure SetVideoVolume(aValue: Single);
+
+    //MapEd
+    procedure SetMapEdHistoryDepth(const aValue: Integer);
 
     //Multiplayer
     procedure SetMultiplayerName(const aValue: AnsiString);
@@ -366,6 +372,9 @@ type
     property VideoStretch: Boolean read fVideoStretch write SetVideoStretch;
     property VideoStartup: Boolean read fVideoStartup write SetVideoStartup;
     property VideoVolume: Single read fVideoVolume write SetVideoVolume;
+
+    //MapEd
+    property MapEdHistoryDepth: Integer read fMapEdHistoryDepth write SetMapEdHistoryDepth;
 
     //Multiplayer
     property MultiplayerName: AnsiString read fMultiplayerName write SetMultiplayerName;
@@ -712,6 +721,8 @@ begin
     fVideoStartup := F.ReadBool ('Video',  'Startup', True);
     fVideoVolume  := F.ReadFloat('Video',  'Volume',   0.5);
 
+    SetMapEdHistoryDepth(F.ReadInteger('MapEd', 'HistoryDepth', MAPED_HISTORY_DEPTH_DEF));
+
     if INI_HITPOINT_RESTORE then
       HITPOINT_RESTORE_PACE := F.ReadInteger('Fights', 'HitPointRestorePace', DEFAULT_HITPOINT_RESTORE)
     else
@@ -837,7 +848,7 @@ begin
 
     F.WriteString ('Game','Locale',          UnicodeString(fLocale));
 
-    F.WriteInteger('Game','DayGamesCount',        fDayGamesCount);
+    F.WriteInteger('Game','DayGamesCount',      fDayGamesCount);
     F.WriteDate   ('Game','LastDayGamePlayed',  fLastDayGamePlayed);
 
     F.WriteString ('Game','WareDistribution', fWareDistribution.PackToStr);
@@ -852,15 +863,17 @@ begin
     F.WriteBool   ('Replay','ReplayAutosave',          fReplayAutosave);
     F.WriteInteger('Replay','ReplayAutosaveFrequency', fReplayAutosaveFrequency);
 
-    F.WriteFloat  ('SFX','SFXVolume',     fSoundFXVolume);
-    F.WriteFloat  ('SFX','MusicVolume',   fMusicVolume);
-    F.WriteBool   ('SFX','MusicDisabled', fMusicOff);
-    F.WriteBool   ('SFX','ShuffleEnabled',fShuffleOn);
+    F.WriteFloat  ('SFX','SFXVolume',      fSoundFXVolume);
+    F.WriteFloat  ('SFX','MusicVolume',    fMusicVolume);
+    F.WriteBool   ('SFX','MusicDisabled',  fMusicOff);
+    F.WriteBool   ('SFX','ShuffleEnabled', fShuffleOn);
 
-    F.WriteBool   ('Video','Enabled',fVideoOn);
-    F.WriteBool   ('Video','Stretch',fVideoStretch);
-    F.WriteBool   ('Video','Startup',fVideoStartup);
-    F.WriteFloat  ('Video','Volume', fVideoVolume);
+    F.WriteBool   ('Video','Enabled', fVideoOn);
+    F.WriteBool   ('Video','Stretch', fVideoStretch);
+    F.WriteBool   ('Video','Startup', fVideoStartup);
+    F.WriteFloat  ('Video','Volume',  fVideoVolume);
+
+    F.WriteInteger('MapEd','HistoryDepth', fMapEdHistoryDepth);
 
     if INI_HITPOINT_RESTORE then
       F.WriteInteger('Fights','HitPointRestorePace', HITPOINT_RESTORE_PACE);
@@ -1407,6 +1420,14 @@ begin
   fVideoVolume := EnsureRange(aValue, 0, 1);
   Changed;
 end;
+
+
+procedure TKMGameSettings.SetMapEdHistoryDepth(const aValue: Integer);
+begin
+  fMapEdHistoryDepth := EnsureRange(aValue, MAPED_HISTORY_DEPTH_MIN, MAPED_HISTORY_DEPTH_MAX);
+  Changed;
+end;
+
 
 procedure TKMGameSettings.SetMaxRooms(eValue: Integer);
 begin
