@@ -600,10 +600,6 @@ type
   TKMArmyType = (atIronThenLeather = 0, atLeather = 1, atIron = 2, atIronAndLeather = 3);
 
 const
-  GROUP_IMG: array [TKMGroupType] of Word = (
-    371, 374,
-    376, 377);
-
   KaMGroupType: array [TKMGroupType] of Byte = (0, 1, 2, 3);
 
   UnitGroups: array [WARRIOR_MIN..WARRIOR_MAX] of TKMGroupType = (
@@ -1008,6 +1004,16 @@ const
 //  clGameSelf = icRed;
 //  clGameAlly = icYellow;
 //  clGameEnemy = icCyan;
+
+  GROUP_IMG: array [TKMGroupType] of Word = (
+    371, 374,
+    376, 377);
+
+  GROUP_TXT_COLOR: array [TKMGroupType] of Cardinal = (
+    icWhite,
+    icGreen,
+    icPink,
+    icRed);
 
 var
   ExeDir: UnicodeString;

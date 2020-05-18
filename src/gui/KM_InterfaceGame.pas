@@ -16,11 +16,15 @@ type
     fDragScrollingCursorPos: TPoint;
     fDragScrollingViewportPos: TKMPointF;
     fOnUserAction: TKMUserActionEvent;
+
     procedure ResetDragScrolling;
+    procedure PaintDefences;
   protected
     fMinimap: TKMMinimap;
     fViewport: TKMViewport;
     fDragScrolling: Boolean;
+
+    fPaintDefences: Boolean;
 
     function IsDragScrollingAllowed: Boolean; virtual;
     function GetHintPositionBase: TKMPoint; override;
@@ -172,7 +176,7 @@ const
 implementation
 uses
   KM_Main, KM_Terrain, KM_RenderPool, KM_Resource, KM_ResCursors, KM_ResKeys, KM_HandsCollection, KM_Game,
-  KM_RenderUI, KM_CommonUtils;
+  KM_RenderUI, KM_CommonUtils, KM_Pics;
 
 
 { TKMUserInterfaceGame }
@@ -187,6 +191,8 @@ begin
   fDragScrollingCursorPos.X := 0;
   fDragScrollingCursorPos.Y := 0;
   fDragScrollingViewportPos := KMPOINTF_ZERO;
+
+  fPaintDefences := False;
 
   gRenderPool := TRenderPool.Create(fViewport, aRender);
 end;
@@ -373,6 +379,33 @@ begin
 end;
 
 
+procedure TKMUserInterfaceGame.PaintDefences;
+var
+  I, K: Integer;
+  DP: TAIDefencePosition;
+  LocF: TKMPointF;
+  ScreenLoc: TKMPoint;
+begin
+  for I := 0 to gHands.Count - 1 do
+    for K := 0 to gHands[I].AI.General.DefencePositions.Count - 1 do
+    begin
+      DP := gHands[I].AI.General.DefencePositions[K];
+      LocF := gTerrain.FlatToHeight(KMPointF(DP.Position.Loc.X-0.5, DP.Position.Loc.Y-0.5));
+      ScreenLoc := fViewport.MapToScreen(LocF);
+
+      if KMInRect(ScreenLoc, fViewport.ViewRect) then
+      begin
+        //Dir selector
+        TKMRenderUI.WritePicture(ScreenLoc.X, ScreenLoc.Y, 0, 0, [], rxGui,  510 + Byte(DP.Position.Dir));
+        TKMRenderUI.WriteTextInShape(IntToStr(K+1), ScreenLoc.X, ScreenLoc.Y - 28, DEFENCE_LINE_TYPE_COL[DP.DefenceType],
+                                     FlagColorToTextColor(GROUP_TXT_COLOR[DP.GroupType]), $80000000, IntToStr(I + 1), gHands[I].FlagColor, icWhite);
+        //GroupType icon
+        TKMRenderUI.WritePicture(ScreenLoc.X, ScreenLoc.Y, 0, 0, [], rxGui, GROUP_IMG[DP.GroupType]);
+      end;
+    end;
+end;
+
+
 procedure TKMUserInterfaceGame.Paint;
 var
   I, K: Integer;
@@ -380,21 +413,13 @@ var
   LocF: TKMPointF;
   ScreenLoc: TKMPoint;
 begin
-  //Paint texture
   if (mlDefencesAll in gGame.VisibleLayers) then
-  begin
-    for I := 0 to gHands.Count - 1 do
-      for K := 0 to gHands[I].AI.General.DefencePositions.Count - 1 do
-      begin
-        DP := gHands[I].AI.General.DefencePositions[K];
-        LocF := gTerrain.FlatToHeight(KMPointF(DP.Position.Loc.X-0.5, DP.Position.Loc.Y-0.5));
-        ScreenLoc := fViewport.MapToScreen(LocF);
+    fPaintDefences := True;
 
-        if KMInRect(ScreenLoc, fViewport.ViewRect) then
-          TKMRenderUI.WriteTextInShape(IntToStr(K+1), ScreenLoc.X, ScreenLoc.Y - 22, DEFENCE_LINE_TYPE_COL[DP.DefenceType],
-                                       FlagColorToTextColor(gHands[I].FlagColor));
-      end;
-  end;
+  if fPaintDefences then
+    PaintDefences;
+
+  fPaintDefences := False;
 
   inherited;
 end;

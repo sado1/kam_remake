@@ -793,27 +793,19 @@ end;
 
 procedure TKMMapEditor.PaintDefences(aLayer: TKMPaintLayer);
 var
-  I, K: Integer;
   DP: TAIDefencePosition;
 begin
   if not (melDefences in gGame.MapEditor.VisibleLayers) then Exit;
 
   case aLayer of
-    plCursors:  for I := 0 to gHands.Count - 1 do
-                  for K := 0 to gHands[I].AI.General.DefencePositions.Count - 1 do
-                  begin
-                    DP := gHands[I].AI.General.DefencePositions[K];
-                    //Dir selector
-                    gRenderPool.RenderSpriteOnTile(DP.Position.Loc, 510 + Byte(DP.Position.Dir), gHands[I].FlagColor);
-                  end;
     plTerrain:  if ActiveMarker.MarkerType = mtDefence then
                   //Render defence position tiles covered
                   if InRange(ActiveMarker.Index, 0, gHands[ActiveMarker.Owner].AI.General.DefencePositions.Count - 1) then
                   begin
                     DP := gHands[ActiveMarker.Owner].AI.General.DefencePositions[ActiveMarker.Index];
                     gRenderPool.RenderDebug.RenderTiledArea(DP.Position.Loc, 0, DP.Radius, KMLengthDiag,
-                                                   gHands[ActiveMarker.Owner].FlagColor AND $60FFFFFF,
-                                                   icCyan);
+                                                            gHands[ActiveMarker.Owner].FlagColor AND $60FFFFFF,
+                                                            icCyan);
                   end;
   end;
 end;

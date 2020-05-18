@@ -55,11 +55,11 @@ type
     class procedure WritePolyShape (aPoints: TKMPointArray; aColor: TColor4; aPattern: Word = $FFFF); overload;
     class procedure WritePolyShape (aPoints: TKMPointFArray; aColor: TColor4; aPattern: Word = $FFFF); overload;
 //    class procedure WritePolyShape (aPoints: TKMPointFArray; aColor: TKMColor4f; aPattern: Word = $FFFF); overload;
-    class procedure WriteLine      (aFromX, aFromY, aToX, aToY: Single; aCol: TColor4; aPattern: Word = $FFFF);
+    class procedure WriteLine      (aFromX, aFromY, aToX, aToY: Single; aCol: TColor4; aPattern: Word = $FFFF; aLineWidth: Integer = -1);
     class procedure WriteText      (aLeft, aTop, aWidth: SmallInt; aText: UnicodeString; aFont: TKMFont; aAlign: TKMTextAlign;
                                     aColor: TColor4 = $FFFFFFFF; aIgnoreMarkup: Boolean = False; aShowMarkup: Boolean = False;
                                     aShowEolSymbol: Boolean = False; aTabWidth: Integer = TAB_WIDTH; aResetTexture: Boolean = True);
-    class procedure WriteTextInShape(const aText: string; X,Y: SmallInt; aLineColor: Cardinal; aTextColor: Cardinal);
+    class procedure WriteTextInShape(const aText: string; X,Y: SmallInt; aLineColor, aTextColor: Cardinal; aShapeColor1: Cardinal = $80000000; aText2: string = ''; aShapeColor2: Cardinal = 0; aTextColor2: Cardinal = 0);
     class procedure WriteTexture   (aLeft, aTop, aWidth, aHeight: SmallInt; const aTexture: TTexture; aCol: TColor4);
     class procedure WriteCircle    (aCenterX, aCenterY: SmallInt; aRadius: Byte; aFillColor: TColor4);
     class procedure WriteShadow    (aLeft, aTop, aWidth, aHeight: SmallInt; aBlur: Byte; aCol: TColor4);
@@ -654,7 +654,7 @@ begin
 end;
 
 
-class procedure TKMRenderUI.WriteLine(aFromX, aFromY, aToX, aToY: Single; aCol: TColor4; aPattern: Word = $FFFF);
+class procedure TKMRenderUI.WriteLine(aFromX, aFromY, aToX, aToY: Single; aCol: TColor4; aPattern: Word = $FFFF; aLineWidth: Integer = -1);
 begin
   TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
 
@@ -663,11 +663,20 @@ begin
   glEnable(GL_LINE_STIPPLE);
   glLineStipple(2, aPattern);
 
+  if aLineWidth <> -1 then
+  begin
+    glPushAttrib(GL_LINE_BIT);
+    glLineWidth(aLineWidth);
+  end;
+
   glBegin(GL_LINES);
     glVertex2f(aFromX, aFromY);
     glVertex2f(aToX, aToY);
   glEnd;
   glDisable(GL_LINE_STIPPLE);
+
+  if aLineWidth <> -1 then
+    glPopAttrib;
 end;
 
 
@@ -883,18 +892,35 @@ begin
 end;
 
 
-class procedure TKMRenderUI.WriteTextInShape(const aText: string; X,Y: SmallInt; aLineColor: Cardinal; aTextColor: Cardinal);
+class procedure TKMRenderUI.WriteTextInShape(const aText: string; X,Y: SmallInt; aLineColor, aTextColor: Cardinal; aShapeColor1: Cardinal = $80000000;
+                                             aText2: string = ''; aShapeColor2: Cardinal = 0; aTextColor2: Cardinal = 0);
 var
-  W: Integer;
+  W, W1, W2: Integer;
+  hasText2: Boolean;
 begin
   TRender.BindTexture(0);
-  //Paint the background
-  W := 10 + 10 * Length(aText);
-  WriteShape(X - W div 2, Y - 10, W, 20, $80000000);
-  WriteOutline(X - W div 2, Y - 10, W, 20, 2, aLineColor);
+
+  hasText2 := aShapeColor2 <> 0;
+
+  W1 := 10 + 10 * Length(aText);
+  W2 := Byte(hasText2)*(10 + 10 * Length(aText2));
+  W := W1 + W2;
+  WriteShape  (X - W div 2, Y - 10, W1, 20, aShapeColor1);
+
+  if hasText2 then
+  begin
+    WriteShape  (X - W div 2 + W1, Y - 10, W2, 20, aShapeColor2);
+    WriteText   (X - W div 2 + W1 + W2 div 2, Y - 7, 0, aText2, fntMetal, taCenter, aTextColor2);
+    WriteOutline(X - W div 2, Y - 10, W, 20, 2, aLineColor); // Outline for both texts
+    // Separator between texts
+    WriteLine   (X - W div 2 + W1, Y - 10,
+                 X - W div 2 + W1, Y + 10, aLineColor, $FFFF, 2);
+  end
+  else
+    WriteOutline(X - W div 2, Y - 10, W1, 20, 2, aLineColor);
 
   //Paint the label on top of the background
-  WriteText(X, Y - 7, 0, aText, fntMetal, taCenter, aTextColor);
+  WriteText(X - ((W - W1) div 2), Y - 7, 0, aText, fntMetal, taCenter, aTextColor);
 
   TRender.BindTexture(0);
 end;

@@ -172,18 +172,6 @@ begin
     for K := 0 to fBorderPoints.Count - 1 do
       gRenderAux.LineOnTerrain(fBorderPoints[K], lineColor);
   end;
-
-
-  //And all def positions pics - above tiles and borders
-  for I := 0 to gHands.Count - 1 do
-    for K := 0 to gHands[I].AI.General.DefencePositions.Count - 1 do
-    begin
-      DP := gHands[I].AI.General.DefencePositions[K];
-      //Dir selector
-      gRenderPool.RenderSpriteOnTile(DP.Position.Loc, 510 + Byte(DP.Position.Dir), gHands[I].FlagColor);
-      //GroupType icon
-      gRenderPool.RenderSpriteOnTile(DP.Position.Loc, GROUP_IMG[DP.GroupType], gHands[I].FlagColor);
-    end;
 end;
 
 

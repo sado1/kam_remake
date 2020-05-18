@@ -400,10 +400,10 @@ var
 begin
   //Hide all existing pages (2 levels)
   for I := 0 to Panel_Common.ChildCount - 1 do
-  if Panel_Common.Childs[I] is TKMPanel then
-  begin
-    Panel_Common.Childs[I].Hide;
-    for K := 0 to TKMPanel(Panel_Common.Childs[I]).ChildCount - 1 do
+    if Panel_Common.Childs[I] is TKMPanel then
+    begin
+      Panel_Common.Childs[I].Hide;
+      for K := 0 to TKMPanel(Panel_Common.Childs[I]).ChildCount - 1 do
     if TKMPanel(Panel_Common.Childs[I]).Childs[K] is TKMPanel then
       TKMPanel(Panel_Common.Childs[I]).Childs[K].Hide;
   end;
@@ -1468,9 +1468,8 @@ end;
 //UI should paint only controls
 procedure TKMapEdInterface.Paint;
 var
-  I, K: Integer;
+  I: Integer;
   R: TKMRawDeposit;
-  DP: TAIDefencePosition;
   LocF: TKMPointF;
   ScreenLoc: TKMPoint;
 begin
@@ -1491,22 +1490,7 @@ begin
   end;
 
   if melDefences in gGame.MapEditor.VisibleLayers then
-  begin
-    for I := 0 to gHands.Count - 1 do
-      for K := 0 to gHands[I].AI.General.DefencePositions.Count - 1 do
-      begin
-        DP := gHands[I].AI.General.DefencePositions[K];
-        LocF := gTerrain.FlatToHeight(KMPointF(DP.Position.Loc.X-0.5, DP.Position.Loc.Y-0.5));
-        ScreenLoc := fViewport.MapToScreen(LocF);
-
-        if KMInRect(ScreenLoc, fViewport.ViewRect) then
-        begin
-          TKMRenderUI.WriteTextInShape(IntToStr(K+1), ScreenLoc.X, ScreenLoc.Y - 22, DEFENCE_LINE_TYPE_COL[DP.DefenceType], FlagColorToTextColor(gHands[I].FlagColor));
-          TKMRenderUI.WritePicture(ScreenLoc.X, ScreenLoc.Y, 0, 0, [], rxGui, GROUP_IMG[DP.GroupType]);
-          gRenderPool.RenderSpriteOnTile(DP.Position.Loc, GROUP_IMG[DP.GroupType], gHands[I].FlagColor);
-        end;
-      end;
-  end;
+    fPaintDefences := True;
 
   inherited;
 end;
