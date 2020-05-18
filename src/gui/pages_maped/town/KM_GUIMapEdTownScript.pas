@@ -25,8 +25,8 @@ type
         Button_CloseClassicAIParams: TKMButton;
 
       CheckBox_UnlimitedEquip: TKMCheckBox;
-      TrackBar_EquipRateLeather: TKMTrackBar;
-      TrackBar_EquipRateIron: TKMTrackBar;
+      NumEd_EquipRateLeather: TKMNumericEdit;
+      NumEd_EquipRateIron: TKMNumericEdit;
       Button_AIStart: TKMButtonFlat;
   public
     constructor Create(aParent: TKMPanel);
@@ -91,26 +91,28 @@ begin
                                                     120, 30, gResTexts[TX_WORD_CLOSE], bsGame);
     Button_CloseClassicAIParams.OnClick := ClassicAIParams_Click;
 
-  CheckBox_UnlimitedEquip := TKMCheckBox.Create(Panel_Script, 9, 130, Panel_Script.Width - 9, 20, gResTexts[TX_MAPED_AI_FASTEQUIP], fntMetal);
+  CheckBox_UnlimitedEquip := TKMCheckBox.Create(Panel_Script, TB_PAD, 130, Panel_Script.Width - 9, 20, gResTexts[TX_MAPED_AI_FASTEQUIP], fntMetal);
   CheckBox_UnlimitedEquip.OnClick := Town_ScriptChange;
   CheckBox_UnlimitedEquip.Hint := GetHintWHotKey(TX_MAPED_AI_FASTEQUIP_HINT, MAPED_SUBMENU_ACTIONS_HOTKEYS[3]);
 
-  TrackBar_EquipRateLeather := TKMTrackBar.Create(Panel_Script, 9, 155, Panel_Script.Width - 9, 10, 300);
-  TrackBar_EquipRateLeather.Anchors := [anLeft, anTop, anRight];
-  TrackBar_EquipRateLeather.Caption := gResTexts[TX_MAPED_AI_DEFENSE_EQUIP_LEATHER];
-  TrackBar_EquipRateLeather.Hint := gResTexts[TX_MAPED_AI_DEFENSE_EQUIP_LEATHER_HINT];
-  TrackBar_EquipRateLeather.MouseWheelStep := 10;
-  TrackBar_EquipRateLeather.OnChange := Town_ScriptChange;
+  with TKMLabel.Create(Panel_Script, TB_PAD, 155, Panel_Script.Width - TB_PAD, 20, gResTexts[TX_MAPED_AI_DEFENSE_EQUIP_LEATHER], fntMetal, taLeft) do
+    Hint := gResTexts[TX_MAPED_AI_DEFENSE_EQUIP_LEATHER_HINT];
 
-  TrackBar_EquipRateIron := TKMTrackBar.Create(Panel_Script, 9, 200, Panel_Script.Width - 9, 10, 300);
-  TrackBar_EquipRateIron.Anchors := [anLeft, anTop, anRight];
-  TrackBar_EquipRateIron.Caption := gResTexts[TX_MAPED_AI_DEFENSE_EQUIP_IRON];
-  TrackBar_EquipRateIron.Hint := gResTexts[TX_MAPED_AI_DEFENSE_EQUIP_IRON_HINT];
-  TrackBar_EquipRateIron.MouseWheelStep := 10;
-  TrackBar_EquipRateIron.OnChange := Town_ScriptChange;
+  NumEd_EquipRateLeather := TKMNumericEdit.Create(Panel_Script, TB_PAD, 155 + 20, 100, 3000);
+  NumEd_EquipRateLeather.Hint := gResTexts[TX_MAPED_AI_DEFENSE_EQUIP_LEATHER_HINT];
+  NumEd_EquipRateLeather.MouseWheelStep := 100;
+  NumEd_EquipRateLeather.OnChange := Town_ScriptChange;
 
-  TKMLabel.Create(Panel_Script, 9, 255, gResTexts[TX_MAPED_AI_START], fntMetal, taLeft);
-  Button_AIStart         := TKMButtonFlat.Create(Panel_Script, 9, 275, 33, 33, 62, rxGuiMain);
+  with TKMLabel.Create(Panel_Script, TB_PAD, 200, Panel_Script.Width - TB_PAD, 20, gResTexts[TX_MAPED_AI_DEFENSE_EQUIP_IRON], fntMetal, taLeft) do
+    Hint := gResTexts[TX_MAPED_AI_DEFENSE_EQUIP_IRON_HINT];
+
+  NumEd_EquipRateIron := TKMNumericEdit.Create(Panel_Script, TB_PAD, 200 + 20, 100, 3000);
+  NumEd_EquipRateIron.Hint := gResTexts[TX_MAPED_AI_DEFENSE_EQUIP_IRON_HINT];
+  NumEd_EquipRateIron.MouseWheelStep := 100;
+  NumEd_EquipRateIron.OnChange := Town_ScriptChange;
+
+  TKMLabel.Create(Panel_Script, TB_PAD, 255, gResTexts[TX_MAPED_AI_START], fntMetal, taLeft);
+  Button_AIStart         := TKMButtonFlat.Create(Panel_Script, TB_PAD, 275, 33, 33, 62, rxGuiMain);
   Button_AIStart.Hint    := GetHintWHotKey(TX_MAPED_AI_START_HINT, MAPED_SUBMENU_ACTIONS_HOTKEYS[4]);
   Button_AIStart.OnClick := Town_ScriptChange;
 
@@ -137,15 +139,15 @@ begin
     TrackBar_SerfsPer10Houses.Hint := Format(gResTexts[TX_MAPED_AI_SERFS_PER_10_HOUSES_HINT], [gMySpectator.Hand.Stats.GetHouseQty(htAny)]);
   TrackBar_WorkerCount.Position := gMySpectator.Hand.AI.Setup.WorkerCount;
   CheckBox_UnlimitedEquip.Checked := gMySpectator.Hand.AI.Setup.UnlimitedEquip;
-  TrackBar_EquipRateLeather.Position := gMySpectator.Hand.AI.Setup.EquipRateLeather div 10;
-  TrackBar_EquipRateIron.Position := gMySpectator.Hand.AI.Setup.EquipRateIron div 10;
+  NumEd_EquipRateLeather.Value := gMySpectator.Hand.AI.Setup.EquipRateLeather;
+  NumEd_EquipRateIron.Value    := gMySpectator.Hand.AI.Setup.EquipRateIron;
   DropBox_ArmyType.SelectByTag(Byte(gMySpectator.Hand.AI.Setup.ArmyType));
 
-  TrackBar_EquipRateLeather.Enable;
-  TrackBar_EquipRateIron.Enable;
+  NumEd_EquipRateLeather.Enable;
+  NumEd_EquipRateIron.Enable;
   case gMySpectator.Hand.AI.Setup.ArmyType of
-    atLeather: TrackBar_EquipRateIron.Disable;
-    atIron:    TrackBar_EquipRateLeather.Disable;
+    atLeather: NumEd_EquipRateIron.Disable;
+    atIron:    NumEd_EquipRateLeather.Disable;
   end;
 
   Button_ClassicAIParams.Enabled := not gGame.MapEditor.OnlyAdvancedAIHand(gMySpectator.HandID);
@@ -165,22 +167,22 @@ begin
   gMySpectator.Hand.AI.Setup.SerfsPerHouse := TrackBar_SerfsPer10Houses.Position / 10;
   gMySpectator.Hand.AI.Setup.WorkerCount := TrackBar_WorkerCount.Position;
   gMySpectator.Hand.AI.Setup.UnlimitedEquip := CheckBox_UnlimitedEquip.Checked;
-  gMySpectator.Hand.AI.Setup.EquipRateLeather := TrackBar_EquipRateLeather.Position * 10;
-  gMySpectator.Hand.AI.Setup.EquipRateIron := TrackBar_EquipRateIron.Position * 10;
+  gMySpectator.Hand.AI.Setup.EquipRateLeather := NumEd_EquipRateLeather.Value;
+  gMySpectator.Hand.AI.Setup.EquipRateIron := NumEd_EquipRateIron.Value;
   gMySpectator.Hand.AI.Setup.ArmyType := TKMArmyType(DropBox_ArmyType.GetSelectedTag);
 
   if CheckBox_UnlimitedEquip.Checked and gGame.MapEditor.OnlyAdvancedAIHand(gMySpectator.HandID) then
   begin
     //Only for Advanced AI locks
     //No equip rates when equip is unlimited
-    TrackBar_EquipRateIron.Disable;
-    TrackBar_EquipRateLeather.Disable;
+    NumEd_EquipRateIron.Disable;
+    NumEd_EquipRateLeather.Disable;
   end else begin
-    TrackBar_EquipRateLeather.Enable;
-    TrackBar_EquipRateIron.Enable;
+    NumEd_EquipRateLeather.Enable;
+    NumEd_EquipRateIron.Enable;
     case gMySpectator.Hand.AI.Setup.ArmyType of
-      atLeather: TrackBar_EquipRateIron.Disable;
-      atIron:    TrackBar_EquipRateLeather.Disable;
+      atLeather: NumEd_EquipRateIron.Disable;
+      atIron:    NumEd_EquipRateLeather.Disable;
     end;
   end;
 
