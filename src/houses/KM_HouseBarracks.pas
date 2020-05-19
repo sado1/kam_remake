@@ -48,6 +48,7 @@ type
     procedure ToggleNotAcceptFlag(aRes: TKMWareType);
     procedure ToggleNotAllowTakeOutFlag(aRes: TKMWareType);
     procedure ToggleAcceptRecruits;
+    function EquipWarrior(aUnitType: TKMUnitType): Pointer;
     function Equip(aUnitType: TKMUnitType; aCount: Integer): Integer;
     procedure CreateRecruitInside(aIsMapEd: Boolean);
   end;
@@ -305,12 +306,51 @@ begin
 end;
 
 
+function TKMHouseBarracks.EquipWarrior(aUnitType: TKMUnitType): Pointer;
+var
+  I, K: Integer;
+  TroopWareType: TKMWareType;
+  Soldier: TKMUnitWarrior;
+begin
+  Result := nil;
+
+  //Make sure we have enough resources to equip a unit
+  if not CanEquip(aUnitType) then Exit;
+
+  //Take resources
+  for I := 1 to 4 do
+  if TROOP_COST[aUnitType, I] <> wtNone then
+  begin
+    TroopWareType := TROOP_COST[aUnitType, I];
+    SetWareCnt(TroopWareType, fResourceCount[TroopWareType] - 1);
+
+    gHands[fOwner].Stats.WareConsumed(TROOP_COST[aUnitType, I]);
+    gHands[fOwner].Deliveries.Queue.RemOffer(Self, TROOP_COST[aUnitType, I], 1);
+  end;
+
+  //Special way to kill the Recruit because it is in a house
+  TKMUnitRecruit(fRecruitsList.Items[0]).KillInHouse;
+  fRecruitsList.Delete(0); //Delete first recruit in the list
+
+  //Make new unit
+  Soldier := TKMUnitWarrior(gHands[fOwner].TrainUnit(aUnitType, Entrance));
+  Soldier.InHouse := Self; //Put him in the barracks, so if it is destroyed while he is inside he is placed somewhere
+  Soldier.Visible := False; //Make him invisible as he is inside the barracks
+  Soldier.Condition := Round(TROOPS_TRAINED_CONDITION * UNIT_MAX_CONDITION); //All soldiers start with 3/4, so groups get hungry at the same time
+  //Soldier.OrderLoc := KMPointBelow(Entrance); //Position in front of the barracks facing north
+  Soldier.SetActionGoIn(uaWalk, gdGoOutside, Self);
+  if Assigned(Soldier.OnUnitTrained) then
+    Soldier.OnUnitTrained(Soldier);
+
+  Result := Soldier;
+end;
+
+
 //Equip a new soldier and make him walk out of the house
 //Return the number of units successfully equipped
 function TKMHouseBarracks.Equip(aUnitType: TKMUnitType; aCount: Integer): Integer;
 var
-  I, K: Integer;
-  TroopWareType: TKMWareType;
+  K: Integer;
   Soldier: TKMUnitWarrior;
 begin
   Result := 0;
@@ -318,33 +358,10 @@ begin
 
   for K := 0 to aCount - 1 do
   begin
-    //Make sure we have enough resources to equip a unit
-    if not CanEquip(aUnitType) then Exit;
-
-    //Take resources
-    for I := 1 to 4 do
-    if TROOP_COST[aUnitType, I] <> wtNone then
-    begin
-      TroopWareType := TROOP_COST[aUnitType, I];
-      SetWareCnt(TroopWareType, fResourceCount[TroopWareType] - 1);
-
-      gHands[fOwner].Stats.WareConsumed(TROOP_COST[aUnitType, I]);
-      gHands[fOwner].Deliveries.Queue.RemOffer(Self, TROOP_COST[aUnitType, I], 1);
-    end;
-
-    //Special way to kill the Recruit because it is in a house
-    TKMUnitRecruit(fRecruitsList.Items[0]).KillInHouse;
-    fRecruitsList.Delete(0); //Delete first recruit in the list
-
-    //Make new unit
-    Soldier := TKMUnitWarrior(gHands[fOwner].TrainUnit(aUnitType, Entrance));
-    Soldier.InHouse := Self; //Put him in the barracks, so if it is destroyed while he is inside he is placed somewhere
-    Soldier.Visible := False; //Make him invisible as he is inside the barracks
-    Soldier.Condition := Round(TROOPS_TRAINED_CONDITION * UNIT_MAX_CONDITION); //All soldiers start with 3/4, so groups get hungry at the same time
-    //Soldier.OrderLoc := KMPointBelow(Entrance); //Position in front of the barracks facing north
-    Soldier.SetActionGoIn(uaWalk, gdGoOutside, Self);
-    if Assigned(Soldier.OnUnitTrained) then
-      Soldier.OnUnitTrained(Soldier);
+    Soldier := TKMUnitWarrior(EquipWarrior(aUnitType));
+    if Soldier = nil then
+      Exit;
+      
     Inc(Result);
   end;
 end;

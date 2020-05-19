@@ -2014,11 +2014,11 @@ begin
       begin
         //There is no space for this unit so it must be destroyed
         //todo: re-route to KillUnit and let it sort out that unit is invisible and cant be placed
-        if (gHands <> nil) and (fOwner <> PLAYER_NONE) and not IsDeadOrDying then
-        begin
-          gHands[fOwner].Stats.UnitLost(fType);
-          gScriptEvents.ProcUnitDied(Self, PLAYER_NONE);
-        end;
+        if    (fOwner <> PLAYER_NONE)
+          and not IsDeadOrDying
+          and Assigned(OnUnitDied) then
+          OnUnitDied(Self, PLAYER_NONE);
+
         //These must be freed before running CloseUnit because task destructors sometimes need access to unit properties
         SetAction(nil);
         FreeAndNil(fTask);

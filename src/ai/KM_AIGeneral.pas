@@ -2,8 +2,9 @@ unit KM_AIGeneral;
 {$I KaM_Remake.inc}
 interface
 uses
+  Generics.Collections,
   KM_AISetup, KM_AIAttacks, KM_AIDefensePos,
-  KM_Units, KM_UnitGroup,
+  KM_Units, KM_UnitGroup, KM_UnitWarrior,
   KM_CommonClasses, KM_Defaults, KM_Points,
   KM_NavMeshDefences;
 
@@ -12,6 +13,8 @@ type
   TKMGeneral = class
   private
     fLastEquippedTimeIron, fLastEquippedTimeLeather: Cardinal;
+    fUnitsEquipOrdered: TDictionary<Integer, TKMUnitWarrior>; //Units for which AIGeneral ordered to equip, but who did not exits the barracks yet
+
     fOwner: TKMHandID;
     fSetup: TKMHandAISetup;
     fAttacks: TKMAIAttacks;
@@ -23,6 +26,8 @@ type
     procedure CheckAutoAttack;
     procedure CheckAutoDefend;
     procedure OrderAttack(aGroup: TKMUnitGroup; aTarget: TKMAIAttackTarget; const aCustomPos: TKMPoint);
+
+    procedure RemoveEquipOrderedWarrior(aWarrior: TKMUnitWarrior);
   public
     constructor Create(aPlayer: TKMHandID; aSetup: TKMHandAISetup);
     destructor Destroy; override;
@@ -32,7 +37,8 @@ type
     property Attacks: TKMAIAttacks read fAttacks;
     property DefencePositions: TAIDefencePositions read fDefencePositions;
     procedure RetaliateAgainstThreat(aAttacker: TKMUnit);
-    procedure WarriorEquipped(aGroup: TKMUnitGroup);
+    procedure WarriorEquipped(aWarrior: TKMUnitWarrior);
+    procedure WarriorDied(aWarrior: TKMUnitWarrior);
 
     procedure UpdateState(aTick: Cardinal);
     procedure Save(SaveStream: TKMemoryStream);
@@ -73,11 +79,22 @@ begin
 
   fAttacks := TKMAIAttacks.Create;
   fDefencePositions := TAIDefencePositions.Create(aPlayer);
+
+  fUnitsEquipOrdered := TDictionary<Integer, TKMUnitWarrior>.Create;
 end;
 
 
 destructor TKMGeneral.Destroy;
+var
+  U, U2: TKMUnit;
 begin
+  for U in fUnitsEquipOrdered.Values do
+  begin
+    U2 := U;
+    gHands.CleanUpUnitPointer(U2);
+  end;
+
+  fUnitsEquipOrdered.Free;
   fDefencePositions.Free;
   fAttacks.Free;
 
@@ -98,6 +115,9 @@ end;
 
 
 procedure TKMGeneral.Save(SaveStream: TKMemoryStream);
+var
+  uid: Integer;
+  keyArray : TArray<Integer>;
 begin
   SaveStream.PlaceMarker('AIGeneral');
   SaveStream.Write(fOwner);
@@ -105,10 +125,20 @@ begin
   SaveStream.Write(fLastEquippedTimeLeather);
   fAttacks.Save(SaveStream);
   fDefencePositions.Save(SaveStream);
+
+  SaveStream.PlaceMarker('AIGeneral_unitsEquipOrdered');
+  SaveStream.Write(fUnitsEquipOrdered.Count);
+  keyArray := fUnitsEquipOrdered.Keys.ToArray;
+  TArray.Sort<Integer>(keyArray);
+
+  for uid in keyArray do
+    SaveStream.Write(uid);
 end;
 
 
 procedure TKMGeneral.Load(LoadStream: TKMemoryStream);
+var
+  I, count, uid: Integer;
 begin
   LoadStream.CheckMarker('AIGeneral');
   LoadStream.Read(fOwner);
@@ -116,12 +146,26 @@ begin
   LoadStream.Read(fLastEquippedTimeLeather);
   fAttacks.Load(LoadStream);
   fDefencePositions.Load(LoadStream);
+
+  LoadStream.CheckMarker('AIGeneral_unitsEquipOrdered');
+  fUnitsEquipOrdered.Clear;
+  LoadStream.Read(count);
+  for I := 0 to Count - 1 do
+  begin
+    LoadStream.Read(uid);
+    fUnitsEquipOrdered.Add(uid, nil);
+  end;
 end;
 
 
 procedure TKMGeneral.SyncLoad;
+var
+  uid: Integer;
 begin
   fDefencePositions.SyncLoad;
+
+  for uid in fUnitsEquipOrdered.Keys do
+    fUnitsEquipOrdered[uid] := TKMUnitWarrior(gHands.GetUnitByUID(Cardinal(uid)));
 end;
 
 
@@ -146,6 +190,7 @@ var
   I,K: Integer;
   UT: TKMUnitType;
   GroupReq: TKMGroupTypeArray;
+  warrior: TKMUnitWarrior;
 begin
   if gGame.IsPeaceTime then Exit; //Do not train soldiers during peacetime
 
@@ -181,6 +226,11 @@ begin
     HB := TKMHouseBarracks(gHands[fOwner].FindHouse(htBarracks, I+1));
   end;
 
+  // Decrease group requirements on number of soldiers that are not walked out of barracks yet
+  for warrior in fUnitsEquipOrdered.Values do
+    if not warrior.IsDeadOrDying then
+      Dec(GroupReq[UNIT_TO_GROUP_TYPE[warrior.UnitType]]);
+
   //Train troops where possible in each barracks
   for I := 0 to High(Barracks) do
   begin
@@ -202,11 +252,20 @@ begin
 
       if (UT <> utNone) then
         while ((CanEquipIron and (UT in WARRIORS_IRON)) or (CanEquipLeather and not (UT in WARRIORS_IRON)))
-        and HB.CanEquip(UT)
         and (GroupReq[GT] > 0)
         and ((fSetup.MaxSoldiers = -1) or (gHands[fOwner].Stats.GetArmyCount < fSetup.MaxSoldiers)) do
         begin
-          HB.Equip(UT, 1);
+          warrior := TKMUnitWarrior(HB.EquipWarrior(UT));
+          if warrior = nil then //We cant make unit of this type
+            Break; //Continue with next UnitType
+
+          //Save unit we just equipped in the list of units, that has to be equipped
+          //Problem is that we could make several orders before all equipped units will exit the barracks
+          //and register in the defence position groups
+          //So we will order more units in that case, who will eventually exit the barracks and chill around,
+          //because all defence groups are filled already
+          fUnitsEquipOrdered.Add(warrior.UID, TKMUnitWarrior(warrior.GetUnitPointer));
+
           Dec(GroupReq[GT]);
           //Only reset it when we actually trained something (in IronThenLeather mode we don't count them separately)
           if (UT in WARRIORS_IRON) or (fSetup.ArmyType = atIronThenLeather) then
@@ -666,10 +725,27 @@ begin
 end;
 
 
-//Trained warrior reports for duty
-procedure TKMGeneral.WarriorEquipped(aGroup: TKMUnitGroup);
+procedure TKMGeneral.RemoveEquipOrderedWarrior(aWarrior: TKMUnitWarrior);
 begin
-  fDefencePositions.FindPlaceForGroup(aGroup, AI_FILL_CLOSEST_EQUIPPED);
+  if fUnitsEquipOrdered.ContainsKey(aWarrior.UID) then
+  begin
+    fUnitsEquipOrdered[aWarrior.UID].ReleaseUnitPointer;
+    fUnitsEquipOrdered.Remove(aWarrior.UID);
+  end;
+end;
+
+
+//Trained warrior reports for duty
+procedure TKMGeneral.WarriorEquipped(aWarrior: TKMUnitWarrior);
+begin
+  RemoveEquipOrderedWarrior(aWarrior);
+  fDefencePositions.FindPlaceForGroup(TKMUnitGroup(aWarrior.Group), AI_FILL_CLOSEST_EQUIPPED);
+end;
+
+
+procedure TKMGeneral.WarriorDied(aWarrior: TKMUnitWarrior);
+begin
+  RemoveEquipOrderedWarrior(aWarrior);
 end;
 
 

@@ -92,7 +92,7 @@ type
     procedure HouseDestroyed(aHouse: TKMHouse; aFrom: TKMHandID);
     procedure UnitDied(aUnit: TKMUnit; aFrom: TKMHandID);
     procedure UnitTrained(aUnit: TKMUnit);
-    procedure WarriorWalkedOut(aUnit: TKMUnitWarrior);
+    procedure WarriorWalkedOut(aWarrior: TKMUnitWarrior);
     function LocHasNoAllyPlans(const aLoc: TKMPoint): Boolean;
     function GetGameFlagColor: Cardinal;
     function GetOwnerNiknameU: UnicodeString;
@@ -509,17 +509,19 @@ begin
 end;
 
 
-procedure TKMHand.WarriorWalkedOut(aUnit: TKMUnitWarrior);
-var G: TKMUnitGroup;
-    H: TKMHouse;
-    HWFP: TKMHouseWFlagPoint;
+procedure TKMHand.WarriorWalkedOut(aWarrior: TKMUnitWarrior);
+var
+  G: TKMUnitGroup;
+  H: TKMHouse;
+  HWFP: TKMHouseWFlagPoint;
 begin
   //Warrior could be killed before he walked out, f.e. by script OnTick ---> Actions.UnitKill
   //Then group will be assigned to invalid warrior and never gets removed from game
-  if (aUnit = nil)
-  or aUnit.IsDeadOrDying then
+  if  (aWarrior = nil)
+    or aWarrior.IsDeadOrDying then
     Exit;
-  G := fUnitGroups.WarriorTrained(aUnit);
+
+  G := fUnitGroups.WarriorTrained(aWarrior);
   Assert(G <> nil, 'It is certain that equipped warrior creates or finds some group to join to');
   G.OnGroupDied := GroupDied;
   if HandType = hndComputer then
@@ -527,14 +529,14 @@ begin
     if AI.Setup.NewAI then
       AI.ArmyManagement.WarriorEquipped(G)
     else
-      AI.General.WarriorEquipped(G);
-    G := UnitGroups.GetGroupByMember(aUnit); //AI might assign warrior to different group
+      AI.General.WarriorEquipped(aWarrior);
+    G := UnitGroups.GetGroupByMember(aWarrior); //AI might assign warrior to different group
   end
   else
     if G.Count = 1 then
     begin
       //If player is human and this is the first warrior in the group, send it to the rally point
-      H := HousesHitTest(aUnit.CurrPosition.X, aUnit.CurrPosition.Y-1);
+      H := HousesHitTest(aWarrior.CurrPosition.X, aWarrior.CurrPosition.Y-1);
       if (H is TKMHouseWFlagPoint) then
       begin
         HWFP := TKMHouseWFlagPoint(H);
@@ -544,7 +546,7 @@ begin
           G.OrderWalk(HWFP.FlagPoint, True, wtokFlagPoint);
       end;
     end;
-  gScriptEvents.ProcWarriorEquipped(aUnit, G);
+  gScriptEvents.ProcWarriorEquipped(aWarrior, G);
 end;
 
 
@@ -1896,6 +1898,9 @@ begin
 
   //Demands: food for soldiers / stone or wood for workers
   Deliveries.Queue.RemDemand(aUnit);
+
+  if aUnit is TKMUnitWarrior then
+    AI.General.WarriorDied(TKMUnitWarrior(aUnit));
 
   //Call script event after updating statistics
   gScriptEvents.ProcUnitDied(aUnit, aFrom);
