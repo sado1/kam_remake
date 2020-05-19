@@ -2042,8 +2042,8 @@ begin
 
       //OnWarriorWalkOut usually happens in TUnitActionGoInOut, otherwise the warrior doesn't get assigned a group
       //Do this after setting terrain usage since OnWarriorWalkOut calls script events
-      if (Self is TKMUnitWarrior) and Assigned(TKMUnitWarrior(Self).OnWarriorWalkOut) then
-        TKMUnitWarrior(Self).OnWarriorWalkOut(TKMUnitWarrior(Self));
+      if (Self is TKMUnitWarrior) then
+        TKMUnitWarrior(Self).WalkedOut;
 
       if Action is TKMUnitActionGoInOut then
         SetActionLockedStay(0, uaWalk); //Abandon the walk out in this case

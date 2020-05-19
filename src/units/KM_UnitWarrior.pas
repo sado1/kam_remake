@@ -47,7 +47,6 @@ type
     procedure UpdateOrderTargets;
 
     procedure TakeNextOrder;
-    procedure WalkedOut;
     function CanInterruptAction(aForced: Boolean = True): Boolean;
 
     function GetFiringDelay: Byte;
@@ -110,6 +109,8 @@ type
     function CheckForEnemy: Boolean;
     function FindEnemy: TKMUnit;
     function PathfindingShouldAvoid: Boolean; override;
+
+    procedure WalkedOut;
 
     procedure SetActionGoIn(aAction: TKMUnitActionType; aGoDir: TKMGoInDirection; aHouse: TKMHouse); override;
 
