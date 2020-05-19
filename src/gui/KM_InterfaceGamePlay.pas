@@ -1674,11 +1674,14 @@ begin
   ReinitStatsLastTime := False;
 
   // Add victory / defeat videos to play
-  case aMsg of
-    grWin:              gVideoPlayer.AddMissionVideo(gGame.MissionFile, 'Victory');
-    grDefeat, grCancel: gVideoPlayer.AddMissionVideo(gGame.MissionFile, 'Defeat');
+  if gGame.IsNormalGame then // Don't play Victory / Defeat videos for specs
+  begin
+    case aMsg of
+      grWin:              gVideoPlayer.AddMissionVideo(gGame.MissionFile, 'Victory');
+      grDefeat, grCancel: gVideoPlayer.AddMissionVideo(gGame.MissionFile, 'Defeat');
+    end;
+    gVideoPlayer.Play;
   end;
-  gVideoPlayer.Play;
 
   case aMsg of
     grWin,
