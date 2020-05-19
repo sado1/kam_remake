@@ -171,7 +171,7 @@ end;
 
 function TAIDefencePosition.CanAccept(aGroup: TKMUnitGroup; aMaxUnits: Integer): Boolean;
 begin
-  Result := (fGroupType = UnitGroups[aGroup.UnitType]);
+  Result := (fGroupType = UNIT_TO_GROUP_TYPE[aGroup.UnitType]);
 
   if not Result then Exit;
 

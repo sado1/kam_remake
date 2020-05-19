@@ -270,7 +270,7 @@ begin
 
   fUID := aID;
   fOwner := aCreator.Owner;
-  fGroupType := UnitGroups[aCreator.UnitType];
+  fGroupType := UNIT_TO_GROUP_TYPE[aCreator.UnitType];
   fMembers := TList.Create;
   fOffenders := TList.Create;
 
@@ -298,7 +298,7 @@ begin
 
   fUID := aID;
   fOwner := aOwner;
-  fGroupType := UnitGroups[aUnitType];
+  fGroupType := UNIT_TO_GROUP_TYPE[aUnitType];
   fMembers := TList.Create;
   fOffenders := TList.Create;
 

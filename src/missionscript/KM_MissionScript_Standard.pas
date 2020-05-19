@@ -966,14 +966,14 @@ begin
     AddCommand(ctAICharacter,cptRecruitCount, [gHands[I].AI.Setup.RecruitDelay]);
     for G:=Low(TKMGroupType) to High(TKMGroupType) do
       if gHands[I].AI.General.DefencePositions.TroopFormations[G].NumUnits <> 0 then //Must be valid and used
-        AddCommand(ctAICharacter, cptTroopParam, [KaMGroupType[G], gHands[I].AI.General.DefencePositions.TroopFormations[G].NumUnits, gHands[I].AI.General.DefencePositions.TroopFormations[G].UnitsPerRow]);
+        AddCommand(ctAICharacter, cptTroopParam, [GROUP_TYPES[G], gHands[I].AI.General.DefencePositions.TroopFormations[G].NumUnits, gHands[I].AI.General.DefencePositions.TroopFormations[G].UnitsPerRow]);
     AddData(''); //NL
     for K:=0 to gHands[I].AI.General.DefencePositions.Count - 1 do
       with gHands[I].AI.General.DefencePositions[K] do
         AddCommand(ctAIDefence, [Position.Loc.X - 1 + aLeftInset,
                                   Position.Loc.Y - 1 + aTopInset,
                                   Byte(Position.Dir) - 1,
-                                  KaMGroupType[GroupType],
+                                  GROUP_TYPES[GroupType],
                                   Radius,
                                   Byte(DefenceType)]);
     AddData(''); //NL
@@ -987,7 +987,7 @@ begin
           AddCommand(ctAIAttack, cptTakeAll, [])
         else
           for G:=Low(TKMGroupType) to High(TKMGroupType) do
-            AddCommand(ctAIAttack, cptTroopAmount, [KaMGroupType[G], GroupAmounts[G]]);
+            AddCommand(ctAIAttack, cptTroopAmount, [GROUP_TYPES[G], GroupAmounts[G]]);
 
         if (Delay > 0) or (AttackType = aatOnce) then //Type once must always have counter because it uses the delay
           AddCommand(ctAIAttack,cptCounter, [Delay]);

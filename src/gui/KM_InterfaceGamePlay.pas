@@ -3764,7 +3764,7 @@ begin
     and (Obj is TKMUnitWarrior)
     and (TKMUnitWarrior(Obj).Owner = gMySpectator.HandID)
     and not Group.HasMember(TKMUnitWarrior(Obj))
-    and (UnitGroups[TKMUnitWarrior(Obj).UnitType] = Group.GroupType) then
+    and (UNIT_TO_GROUP_TYPE[TKMUnitWarrior(Obj).UnitType] = Group.GroupType) then
       gRes.Cursors.Cursor := kmcJoinYes
     else
       gRes.Cursors.Cursor := kmcJoinNo;
@@ -3856,7 +3856,7 @@ begin
             and (Obj is TKMUnitWarrior)
             and (TKMUnitWarrior(Obj).Owner = gMySpectator.HandID)
             and not Group.HasMember(TKMUnitWarrior(Obj))
-            and (UnitGroups[TKMUnitWarrior(Obj).UnitType] = Group.GroupType) then
+            and (UNIT_TO_GROUP_TYPE[TKMUnitWarrior(Obj).UnitType] = Group.GroupType) then
           begin
             Group2 := gMySpectator.Hand.UnitGroups.GetGroupByMember(TKMUnitWarrior(Obj));
             // Warrior might not have a group yet if he's still walking out of the barracks

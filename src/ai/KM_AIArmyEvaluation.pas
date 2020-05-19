@@ -98,7 +98,7 @@ begin
     AttackHorse        := US.AttackHorse;
     Defence            := US.Defence;
     DefenceProjectiles := US.GetDefenceVsProjectiles(False);
-    if aConsiderHitChance AND (UnitGroups[aUT] = gtRanged) then
+    if aConsiderHitChance AND (UNIT_TO_GROUP_TYPE[aUT] = gtRanged) then
       Attack := Attack * HIT_CHANCE_MODIFIER;
   end;
 end;
@@ -278,7 +278,7 @@ begin
   begin
     Qty := Stats.GetUnitQty(UT);
     US := gRes.Units[UT];
-    GT := UnitGroups[UT];
+    GT := UNIT_TO_GROUP_TYPE[UT];
     with fEvals[aPlayer].Groups[GT] do
     begin
       Hitpoints := Hitpoints + Qty * US.HitPoints;

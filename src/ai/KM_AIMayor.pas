@@ -879,7 +879,7 @@ procedure TKMayor.SetArmyDemand(aFootmen, aPikemen, aHorsemen, aArchers: Single)
       Result := 0 //This warrior is blocked
     else
       if (fSetup.ArmyType = atIronAndLeather)
-      and GroupBlocked(UnitGroups[aUT], not (aUT in WARRIORS_IRON)) then
+      and GroupBlocked(UNIT_TO_GROUP_TYPE[aUT], not (aUT in WARRIORS_IRON)) then
         Result := 2 //In mixed army type, if our compliment is blocked we need to make double
       else
         Result := 1;

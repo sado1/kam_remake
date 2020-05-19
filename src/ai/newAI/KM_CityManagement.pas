@@ -748,7 +748,7 @@ var
     Iron := False;
     for I := 1 to 3 do
     begin
-      UT := AITroopTrainOrder[antiGT,I];
+      UT := AI_TROOP_TRAIN_ORDER[antiGT,I];
       if (UT <> utNone) AND not gHands[fOwner].Locks.GetUnitBlocked(UT) then
         if (I = 1) then
           Iron := True
@@ -777,7 +777,7 @@ var
     // Compute unit requirements
     for I := 1 to 3 do
     begin
-      UT := AITroopTrainOrder[antiGT,I];
+      UT := AI_TROOP_TRAIN_ORDER[antiGT,I];
       // Skip unit type in case that it is blocked
       if (UT = utNone) OR gHands[fOwner].Locks.GetUnitBlocked(UT) then
         continue;

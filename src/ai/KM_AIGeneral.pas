@@ -196,9 +196,9 @@ begin
     if GroupReq[GT] = 0 then
       Break; // Don't train
 
-    for K := Low(AITroopTrainOrder[GT]) to High(AITroopTrainOrder[GT]) do
+    for K := Low(AI_TROOP_TRAIN_ORDER[GT]) to High(AI_TROOP_TRAIN_ORDER[GT]) do
     begin
-      UT := AITroopTrainOrder[GT, K];
+      UT := AI_TROOP_TRAIN_ORDER[GT, K];
 
       if (UT <> utNone) then
         while ((CanEquipIron and (UT in WARRIORS_IRON)) or (CanEquipLeather and not (UT in WARRIORS_IRON)))
@@ -289,7 +289,7 @@ var
   procedure AddAvailable(aGroup: TKMUnitGroup);
   var GT: TKMGroupType;
   begin
-    GT := UnitGroups[aGroup.UnitType];
+    GT := UNIT_TO_GROUP_TYPE[aGroup.UnitType];
     if Length(AttackGroups[GT]) <= GroupsAvailable[GT] then
       SetLength(AttackGroups[GT], GroupsAvailable[GT] + 10);
     AttackGroups[GT, GroupsAvailable[GT]] := aGroup;
