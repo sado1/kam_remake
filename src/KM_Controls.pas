@@ -90,7 +90,18 @@ type
 
   {Base class for all TKM elements}
   TKMControl = class
+//  type
+//    TKMKeyPressKind = (kpkDown, kpkPress);
+//    TKMKeyPress = record
+//      Time: Int64;
+////      Key: Word;
+//      C: Char;
+//      Kind: TKMKeyPressKind;
+//      function ToString: string;
+//    end;
   private
+//    fKeyPressList: TList<TKMKeyPress>;
+
     fParent: TKMPanel;
     fAnchors: TKMAnchorsSet;
 
@@ -1994,6 +2005,8 @@ begin
   fLastClickPos := KMPOINT_ZERO;
   fIsHitTestUseDrawRect := False;
 
+//  fKeyPressList := TList<TKMKeyPress>.Create;
+
   if aParent <> nil then
   begin
     fID := aParent.fMasterControl.GetNextCtrlID;
@@ -2005,6 +2018,13 @@ begin
   fParent   := aParent;
   if aParent <> nil then
     fControlIndex := aParent.AddChild(Self);
+end;
+
+destructor TKMControl.Destroy;
+begin
+//  fKeyPressList.Free;
+
+  inherited;
 end;
 
 
@@ -2031,7 +2051,19 @@ end;
 
 
 function TKMControl.KeyDown(Key: Word; Shift: TShiftState): Boolean;
+//var
+//  keyPress: TKMKeyPress;
 begin
+//  if fKeyPressList.Count = 0 then
+//    keyPress.Time := TimeGetUSec
+//  else
+//    keyPress.Time := GetTImeUSecSince(fKeyPressList[0].Time);
+
+//  keyPress.Key := Key;
+//  keyPress.C := Char(Key);
+//  keyPress.Kind := kpkDown;
+//  fKeyPressList.Add(keyPress);
+
   Result := MODE_DESIGN_CONTROLS;
 
   if Assigned(fOnKeyDown) then
@@ -2048,7 +2080,24 @@ end;
 
 
 procedure TKMControl.KeyPress(Key: Char);
+//var
+//  I: Integer;
+//  keyPress: TKMKeyPress;
 begin
+//  if fKeyPressList.Count = 0 then
+//    keyPress.Time := TimeGetUSec
+//  else
+//    keyPress.Time := GetTImeUSecSince(fKeyPressList[0].Time);
+////  keyPress.Key := 0;
+//  keyPress.C := Key;
+//  keyPress.Kind := kpkPress;
+//
+//  fKeyPressList.Add(keyPress);
+
+//  gLog.AddTime('KeyPressList cnt ' + IntToStr(fKeyPressList.Count));
+//  for I := 0 to fKeyPressList.Count - 1 do
+//    gLog.AddTime(fKeyPressList[I].ToString);
+
   //Could be something common
 end;
 
@@ -10300,6 +10349,21 @@ begin
 
   CloseFile(ft);
 end;
+
+
+{ TKMControl.TKMKeyPress }
+//function TKMControl.TKMKeyPress.ToString: string;
+//var
+//  kindStr: string;
+//begin
+//  case Kind of
+//    kpkDown:  kindStr := 'Down';
+//    kpkPress: kindStr := 'Press';
+//    else      kindStr := 'unknown';
+//  end;
+////  Result := Format('T=%d %s Key=%d C=%s ', [Integer(Time), kpkPress, Key, String(C)]);
+//  Result := Format('T=%d %s C=%d ', [Integer(Time), kindStr, {Key, }Ord(c)]);
+//end;
 
 
 end.
