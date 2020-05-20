@@ -2034,6 +2034,14 @@ begin
 
   if Assigned(fOnKeyDown) then
     Result := fOnKeyDown(Self, Key, Shift);
+
+  // Exit if control handlers handle the event
+  if Result then
+    Exit;
+
+  // Unfocus focused control without AutoFocusable flag on Esc key
+  if IsFocused and not AutoFocusable and (Key = VK_ESCAPE) then
+    Unfocus;
 end;
 
 
