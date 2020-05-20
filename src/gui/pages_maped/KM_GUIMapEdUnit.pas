@@ -121,9 +121,11 @@ begin
 
   TKMLabel.Create(Panel_Army, 0, 185, 'X:', fntGrey, taLeft);
   Edit_ArmyOrderX := TKMNumericEdit.Create(Panel_Army, 20, 185, 1, MAX_MAP_SIZE - 1);
+  Edit_ArmyOrderX.AutoFocusable := False;
   Edit_ArmyOrderX.OnChange := Unit_ArmyChange1;
   TKMLabel.Create(Panel_Army, 0, 205, 'Y:', fntGrey, taLeft);
   Edit_ArmyOrderY := TKMNumericEdit.Create(Panel_Army, 20, 205, 1, MAX_MAP_SIZE - 1);
+  Edit_ArmyOrderY.AutoFocusable := False;
   Edit_ArmyOrderY.OnChange := Unit_ArmyChange1;
   TKMLabel.Create(Panel_Army, 110, 185, gResTexts[TX_MAPED_GROUP_ORDER_DIRECTION], fntGrey, taLeft);
   Edit_ArmyOrderDir := TKMNumericEdit.Create(Panel_Army, 110, 205, 0, 7);

@@ -101,6 +101,7 @@ begin
   NumEd_EquipRateLeather := TKMNumericEdit.Create(Panel_Script, TB_PAD, 155 + 20, 100, 3000);
   NumEd_EquipRateLeather.Hint := gResTexts[TX_MAPED_AI_DEFENSE_EQUIP_LEATHER_HINT];
   NumEd_EquipRateLeather.MouseWheelStep := 100;
+  NumEd_EquipRateLeather.AutoFocusable := False;
   NumEd_EquipRateLeather.OnChange := Town_ScriptChange;
 
   with TKMLabel.Create(Panel_Script, TB_PAD, 200, Panel_Script.Width - TB_PAD, 20, gResTexts[TX_MAPED_AI_DEFENSE_EQUIP_IRON], fntMetal, taLeft) do
@@ -109,6 +110,7 @@ begin
   NumEd_EquipRateIron := TKMNumericEdit.Create(Panel_Script, TB_PAD, 200 + 20, 100, 3000);
   NumEd_EquipRateIron.Hint := gResTexts[TX_MAPED_AI_DEFENSE_EQUIP_IRON_HINT];
   NumEd_EquipRateIron.MouseWheelStep := 100;
+  NumEd_EquipRateIron.AutoFocusable := False;
   NumEd_EquipRateIron.OnChange := Town_ScriptChange;
 
   TKMLabel.Create(Panel_Script, TB_PAD, 255, gResTexts[TX_MAPED_AI_START], fntMetal, taLeft);

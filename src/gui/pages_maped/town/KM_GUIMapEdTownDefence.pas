@@ -84,6 +84,7 @@ begin
   NumEdit_RecruitDelay := TKMNumericEdit.Create(Panel_Defence, TB_PAD, 230 + 20, 0, 500);
   NumEdit_RecruitDelay.Hint := gResTexts[TX_MAPED_AI_RECRUIT_DELAY_HINT];
   NumEdit_RecruitDelay.MouseWheelStep := 20;
+  NumEdit_RecruitDelay.AutoFocusable := False;
   NumEdit_RecruitDelay.OnChange := Town_DefenceChange;
 
   CheckBox_MaxSoldiers := TKMCheckBox.Create(Panel_Defence, TB_PAD, 274, Panel_Defence.Width - TB_PAD, 20, gResTexts[TX_MAPED_AI_MAX_SOLDIERS], fntMetal);
@@ -93,6 +94,7 @@ begin
   NumEdit_MaxSoldiers := TKMNumericEdit.Create(Panel_Defence, TB_PAD + 20, 292, 0, 500);
   NumEdit_MaxSoldiers.Hint := gResTexts[TX_MAPED_AI_MAX_SOLDIERS_HINT];
   NumEdit_MaxSoldiers.MouseWheelStep := 20;
+  NumEdit_MaxSoldiers.AutoFocusable := False;
   NumEdit_MaxSoldiers.OnChange := Town_DefenceChange;
 
   Button_EditFormations := TKMButton.Create(Panel_Defence, TB_PAD, 322, Panel_Defence.Width - TB_PAD, 25, gResTexts[TX_MAPED_AI_FORMATIONS], bsGame);

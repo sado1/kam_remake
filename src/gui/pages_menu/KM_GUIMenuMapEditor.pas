@@ -231,6 +231,8 @@ begin
       NumEdit_MapSizeY.Anchors := [anLeft, anBottom];
       NumEdit_MapSizeX.Value := 64;
       NumEdit_MapSizeY.Value := 64;
+      NumEdit_MapSizeX.AutoFocusable := False;
+      NumEdit_MapSizeY.AutoFocusable := False;
       NumEdit_MapSizeX.OnChange := SizeChangeByEdit;
       NumEdit_MapSizeY.OnChange := SizeChangeByEdit;
 
