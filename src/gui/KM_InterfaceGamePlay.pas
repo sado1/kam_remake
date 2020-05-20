@@ -1380,8 +1380,6 @@ begin
   Button_Menu_TrackDown.Hint := gResTexts[TX_MUSIC_PREV_HINT];
   Button_Menu_TrackUp.OnClick := Menu_NextTrack;
   Button_Menu_TrackDown.OnClick := Menu_PreviousTrack;
-
-
 end;
 
 
@@ -1394,6 +1392,7 @@ begin
     Edit_Save := TKMEdit.Create(Panel_Save, 0, 235, TB_WIDTH, 20, fntMetal);
     Edit_Save.AllowedChars := acFileName;
     Edit_Save.MaxLen := MAX_SAVENAME_LENGTH;
+    Edit_Save.AutoFocusable := False;
     Edit_Save.OnChange := Menu_Save_EditChange;
 
     ListBox_Save := TKMListBox.Create(Panel_Save, 0, 4, TB_WIDTH, 220, fntMetal, bsGame);
