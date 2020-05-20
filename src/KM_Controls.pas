@@ -28,7 +28,7 @@ type
   TKMControl = class;
   TKMPanel = class;
 
-  { TKMMaster }
+  { TKMMasterControl }
   TKMMasterControl = class
   private
     fMasterPanel: TKMPanel; //Parentmost control (TKMPanel with all its childs)
@@ -170,6 +170,8 @@ type
     function GetIsClickable: Boolean;
 
     procedure ResetClickHoldMode;
+
+    procedure DebugKeyDown(Key: Word; Shift: TShiftState);
   protected
     procedure SetLeft(aValue: Integer); virtual;
     procedure SetTop(aValue: Integer); virtual;
@@ -2004,25 +2006,34 @@ begin
 end;
 
 
+procedure TKMControl.DebugKeyDown(Key: Word; Shift: TShiftState);
+var
+  amt: Byte;
+begin
+  if MODE_DESIGN_CONTROLS then
+  begin
+    amt := 1;
+    if ssShift in Shift then amt := 10;
+    if ssAlt in Shift then amt := 100;
+
+    if Key = VK_LEFT  then fLeft   := fLeft - amt;
+    if Key = VK_RIGHT then fLeft   := fLeft + amt;
+    if Key = VK_UP    then fTop    := fTop  - amt;
+    if Key = VK_DOWN  then fTop    := fTop  + amt;
+    if Key = VK_HOME  then fWidth  := fWidth  + amt;
+    if Key = VK_END   then fWidth  := fWidth  - amt;
+    if Key = VK_PRIOR then fHeight := fHeight  + amt;
+    if Key = VK_NEXT  then fHeight := fHeight  - amt;
+  end;
+end;
+
+
 function TKMControl.KeyDown(Key: Word; Shift: TShiftState): Boolean;
-var Amt: Byte;
 begin
   Result := MODE_DESIGN_CONTROLS;
 
   if Assigned(fOnKeyDown) then
     Result := fOnKeyDown(Self, Key, Shift);
-
-  if MODE_DESIGN_CONTROLS then
-  begin
-    Amt := 1;
-    if ssCtrl  in Shift then Amt := 10;
-    if ssShift in Shift then Amt := 100;
-
-    if Key = VK_LEFT  then fLeft := fLeft - Amt;
-    if Key = VK_RIGHT then fLeft := fLeft + Amt;
-    if Key = VK_UP    then fTop  := fTop  - Amt;
-    if Key = VK_DOWN  then fTop  := fTop  + Amt;
-  end
 end;
 
 
@@ -2049,8 +2060,6 @@ begin
 
   if Assigned(fOnKeyUp) then
     Result := fOnKeyUp(Self, Key, Shift);
-
-  if not MODE_DESIGN_CONTROLS then Exit;
 end;
 
 
@@ -2186,10 +2195,10 @@ begin
   Inc(CtrlPaintCount);
 
   if SHOW_CONTROLS_FOCUS and (csFocus in State) then
-  begin
-    TKMRenderUI.WriteShape(AbsLeft-1, AbsTop-1, Width+2, Height+2, $00000000, $FF00D0FF);
-    TKMRenderUI.WriteShape(AbsLeft-2, AbsTop-2, Width+4, Height+4, $00000000, $FF00D0FF);
-  end;
+    TKMRenderUI.WriteOutline(AbsLeft-2, AbsTop-2, Width+4, Height+4, 2, $FF00D0FF);
+
+  if MODE_DESIGN_CONTROLS and (csOver in State) then
+    TKMRenderUI.WriteOutline(AbsLeft-2, AbsTop-2, Width+4, Height+4, 2, $FFFFD000);
 
   if SHOW_CONTROLS_ID then
     TKMRenderUI.WriteText(AbsLeft+1, AbsTop, fWidth, IntToStr(fID), fntMini, taLeft);
@@ -10097,6 +10106,9 @@ begin
 
     Result := Control <> nil; // means we find someone, who handle that event
   end;
+
+  if MODE_DESIGN_CONTROLS and (CtrlOver <> nil) then
+    CtrlOver.DebugKeyDown(Key, Shift);
 end;
 
 
@@ -10219,6 +10231,7 @@ end;
 procedure TKMMasterControl.Paint;
 var
   I: Integer;
+  str: string;
 begin
   if Self = nil then Exit;
 
@@ -10229,8 +10242,15 @@ begin
     fMasterPanel.PaintPanel(I);
   end;
 
-  if MODE_DESIGN_CONTROLS and (CtrlFocus <> nil) then
-    TKMRenderUI.WriteText(CtrlFocus.AbsLeft, CtrlFocus.AbsTop-14, 0, inttostr(CtrlFocus.AbsLeft)+':'+inttostr(CtrlFocus.AbsTop), fntGrey, taLeft);
+  if MODE_DESIGN_CONTROLS and (CtrlOver <> nil) then
+  begin
+    if GetKeyState(VK_CONTROL) < 0 then
+      str := Format('%d:%d/%d:%d', [CtrlOver.AbsLeft, CtrlOver.AbsTop, CtrlOver.Width, CtrlOver.Height])
+    else
+      str := Format('%d:%d/%d:%d', [CtrlOver.Left, CtrlOver.Top, CtrlOver.Width, CtrlOver.Height]);
+
+    TKMRenderUI.WriteText(CtrlOver.AbsLeft, CtrlOver.AbsTop - 14, 0, str, fntGrey, taLeft);
+  end;
 end;
 
 
