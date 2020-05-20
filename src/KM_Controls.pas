@@ -1,4 +1,4 @@
-﻿unit KM_Controls;
+unit KM_Controls;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -652,11 +652,13 @@ type
     procedure FocusChanged(aFocused: Boolean); override;
     function GetMaxLength: Word; virtual; abstract;
     function IsCharValid(aChar: WideChar): Boolean; virtual; abstract;
-    procedure ValidateText; virtual; abstract;
+    procedure ValidateText; virtual;
     function KeyEventHandled(Key: Word; Shift: TShiftState): Boolean; virtual; abstract;
     procedure PaintSelection;
     function DrawEolSymbol: Boolean; virtual;
     function DoShowMarkup: Boolean; virtual;
+
+    procedure Changed;
   public
     ReadOnly: Boolean;
     BlockInput: Boolean; // Blocks all input into the field, but allow focus, selection and copy selected text
@@ -3858,6 +3860,19 @@ begin
 end;
 
 
+procedure TKMSelectableEdit.ValidateText;
+begin
+  Changed;
+end;
+
+
+procedure TKMSelectableEdit.Changed;
+begin
+  // OnChange should be called here, since we changed the input and don't want to wait until KeyUp event
+  if Assigned(OnChange) then OnChange(Self);
+end;
+
+
 procedure TKMSelectableEdit.SetCursorPos(aPos: Integer);
 var
   RText: UnicodeString;
@@ -3996,6 +4011,8 @@ end;
 
 procedure TKMSelectableEdit.KeyPress(Key: Char);
 begin
+  inherited;
+
   if ReadOnly or BlockInput then Exit;
 
   if HasSelection and IsCharValid(Key) then
@@ -4013,8 +4030,6 @@ function TKMSelectableEdit.KeyUp(Key: Word; Shift: TShiftState): Boolean;
 begin
   Result := KeyEventHandled(Key, Shift);
   if inherited KeyUp(Key, Shift) or ReadOnly then Exit;
-
-  if Assigned(OnChange) then OnChange(Self);
 end;
 
 
@@ -4178,7 +4193,8 @@ end;
 //Validates fText basing on predefined sets of allowed or disallowed chars
 //It iterates from end to start of a string - deletes chars and moves cursor appropriately
 procedure TKMEdit.ValidateText;
-var I: Integer;
+var
+  I: Integer;
 begin
   //Parse whole text incase user placed it from clipboard
   //Validate contents
@@ -4193,6 +4209,8 @@ begin
   //Validate length
   if Length(fText) > MaxLen then
     fText := Copy(fText, 0, MaxLen);
+
+  inherited; //Will trigger OnChange event
 end;
 
 
@@ -4919,8 +4937,14 @@ begin
   inherited KeyDown(Key, Shift);
 
   case Key of
-    VK_UP:      SetValueNCheckRange(Int64(Value) + 1 + 9*Byte(ssShift in Shift));
-    VK_DOWN:    SetValueNCheckRange(Int64(Value) - 1 - 9*Byte(ssShift in Shift));
+    VK_UP:      begin
+                  SetValueNCheckRange(Int64(Value) + 1 + 9*Byte(ssShift in Shift));
+                  Changed;
+                end;
+    VK_DOWN:    begin
+                  SetValueNCheckRange(Int64(Value) - 1 - 9*Byte(ssShift in Shift));
+                  Changed;
+                end;
     VK_DELETE:  ValidateText; //Update value, cause we just deleted text and KeyPress was not invoked
   end;
 end;
@@ -5114,8 +5138,7 @@ begin
 
   CursorPos := Min(CursorPos, Length(fText)); //In case we had leading zeros in fText string
 
-  if Assigned(OnChange) then
-    OnChange(Self);
+  inherited; //Will trigger OnChange event
 end;
 
 
