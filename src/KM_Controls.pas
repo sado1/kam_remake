@@ -1,4 +1,4 @@
-unit KM_Controls;
+﻿unit KM_Controls;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -235,6 +235,7 @@ type
     Tag2: Integer; //Some tag which can be used for various needs
 
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aPaintLayer: Integer = 0);
+    destructor Destroy; override;
     function HitTest(X, Y: Integer; aIncludeDisabled: Boolean = False; aIncludeNotHitable: Boolean = False): Boolean; virtual;
 
     property Parent: TKMPanel read fParent;
@@ -3859,6 +3860,7 @@ begin
   if CursorPos = fSelectionEnd then
     CursorPos := CursorPos - (fSelectionEnd-fSelectionStart);
   ResetSelection;
+  Changed;
 end;
 
 
@@ -3918,7 +3920,8 @@ end;
 procedure TKMSelectableEdit.Changed;
 begin
   // OnChange should be called here, since we changed the input and don't want to wait until KeyUp event
-  if Assigned(OnChange) then OnChange(Self);
+  if Assigned(OnChange) then
+    OnChange(Self);
 end;
 
 
@@ -3992,11 +3995,15 @@ begin
                 else begin
                   Delete(fText, CursorPos, 1);
                   CursorPos := CursorPos-1;
+                  Changed;
                 end;
     VK_DELETE:  if HasSelection then
                   DeleteSelectedText
                 else
+                begin
                   Delete(fText, CursorPos+1, 1);
+                  Changed;
+                end;
   end;
 
   if (Shift = [ssShift]) and (Key <> VK_SHIFT) then
