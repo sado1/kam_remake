@@ -2824,6 +2824,7 @@ begin
         gmMapEd:          begin
                             gTerrain.IncAnimStep;
                             gHands.IncAnimStep;
+                            gHands.UpdateVisualState;
                           end;
       end;
     except

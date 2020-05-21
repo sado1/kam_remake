@@ -43,6 +43,7 @@ type
     procedure SyncLoad; virtual;
 
     procedure UpdateState(aTick: Cardinal); virtual;
+    procedure UpdateVisualState;
     procedure Paint(const aRect: TKMRect; aTickLag: Single); virtual;
   end;
 
@@ -340,6 +341,14 @@ end;
 procedure TKMHandCommon.UpdateState(aTick: Cardinal);
 begin
   fUnits.UpdateState(aTick);
+end;
+
+
+procedure TKMHandCommon.UpdateVisualState;
+begin
+  Assert(gGame.IsMapEditor);
+
+  fUnits.UpdateVisualState;
 end;
 
 

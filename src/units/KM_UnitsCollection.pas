@@ -40,6 +40,7 @@ type
     procedure Load(LoadStream: TKMemoryStream);
     procedure SyncLoad;
     procedure UpdateState(aTick: Cardinal);
+    procedure UpdateVisualState;
     procedure Paint(const aRect: TKMRect; aTickLag: Single);
   end;
 
@@ -320,6 +321,19 @@ begin
   for I := 0 to Count - 1 do
     Units[I].SyncLoad;
 end;
+
+
+procedure TKMUnitsCollection.UpdateVisualState;
+var
+  I: Integer;
+begin
+  Assert(gGame.IsMapEditor);
+
+  for I := Count - 1 downto 0 do
+    if not Units[I].IsDead then
+      Units[I].UpdateVisualState;
+end;
+
 
 
 procedure TKMUnitsCollection.UpdateState(aTick: Cardinal);

@@ -91,6 +91,7 @@ type
     procedure IncAnimStep;
 
     procedure UpdateState(aTick: Cardinal);
+    procedure UpdateVisualState;
     procedure Paint(const aRect: TKMRect; aTickLag: Single);
     function ObjToString: String;
 
@@ -1079,6 +1080,17 @@ begin
     gPerfLogs.SectionLeave(psHands);
     {$ENDIF}
   end;
+end;
+
+
+procedure TKMHandsCollection.UpdateVisualState;
+var
+  I: Integer;
+begin
+  Assert(gGame.IsMapEditor);
+
+  for I := 0 to Count - 1 do
+    fHandsList[I].UpdateVisualState;
 end;
 
 
