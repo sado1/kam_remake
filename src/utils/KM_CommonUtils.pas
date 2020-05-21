@@ -141,6 +141,9 @@ uses
   function IntToBool(aValue: Integer): Boolean;
 
   //String functions
+  function GetNextWordPos(const aStr: String; aPos: Integer): Integer;
+  function GetPrevWordPos(const aStr: String; aPos: Integer): Integer;
+
   function StrIndexOf(const aStr, aSubStr: String): Integer;
   function StrLastIndexOf(const aStr, aSubStr: String): Integer;
   function StrSubstring(const aStr: String; aFrom, aLength: Integer): String; overload;
@@ -1483,6 +1486,64 @@ end;
 function IntToBool(aValue: Integer): Boolean;
 begin
   Result := aValue <> 0;
+end;
+
+
+//Get next word position in the given aStr, after cirtain position aPos
+//positions starts from 0
+function GetNextWordPos(const aStr: String; aPos: Integer): Integer;
+var
+  I, pos: Integer;
+  found: Boolean;
+begin
+  pos := aPos;
+  Result := Length(aStr);
+  found := False;
+
+  //Cut all spaces
+  while (pos + 1 < Length(aStr)) and (aStr[pos + 1] = ' ') do
+    Inc(pos);
+
+  //Result is the position of the latest space after last non-space character
+  for I := pos + 1 to Length(aStr) - 1 do
+  begin
+    if aStr[I] = ' ' then
+    begin
+      Result := I;
+      found := True;
+    end
+    else
+    if found then
+      Break;
+  end;
+
+  Result := Min(Length(aStr), Max(aPos + 1, Result));
+end;
+
+
+//Get previous word position in the given aStr, after cirtain position aPos
+//positions starts from 0
+function GetPrevWordPos(const aStr: String; aPos: Integer): Integer;
+var
+  I, pos: Integer;
+begin
+  pos := aPos;
+
+  //Cut all spaces
+  while (pos >= 1) and (aStr[pos] = ' ') do
+    Dec(pos);
+
+  //Result is the first non-space character
+  Result := pos;
+  for I := pos downto 1 do
+  begin
+    if aStr[I] <> ' ' then
+      Result := I - 1
+    else
+      Break;
+  end;
+
+  Result := Max(0, Min(aPos - 1, Result));
 end;
 
 
