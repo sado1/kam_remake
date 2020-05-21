@@ -648,7 +648,7 @@ type
     fSelectable: Boolean;
     fSelectionStart: Integer;
     fSelectionEnd: Integer;
-    fSelectionInitialCursorPos: Integer;
+    fSelectionInitialPos: Integer;
 
     procedure SetCursorPos(aPos: Integer);
     function GetCursorPosAt(X: Integer): Integer;
@@ -658,6 +658,8 @@ type
     procedure SetSelectionStart(aValue: Integer);
     procedure SetSelectionEnd(aValue: Integer);
     procedure DeleteSelectedText;
+    procedure SetSelections(aValue1, aValue2: Integer);
+    procedure UpdateSelection(aOldCursorPos: Integer; aIsSelecting: Boolean);
   protected
     fText: UnicodeString;
     procedure ControlMouseDown(Sender: TObject; X,Y: Integer; Shift: TShiftState; Button: TMouseButton); override;
@@ -1616,6 +1618,7 @@ type
     function GetCursorPosAt(X,Y: Integer): Integer;
     procedure ResetSelection;
     function HasSelection: Boolean;
+    function GetPlainText(aUsePipeAsEOL: Boolean; aStart: Integer = -1; aEnd: Integer = -1): UnicodeString;
     function GetSelectedText: UnicodeString;
     function GetMaxCursorPos: Integer;
     function GetMaxPosInRow(aRow: Integer): Integer;
@@ -1625,7 +1628,7 @@ type
     procedure SetSelectionStart(aValue: Integer);
     procedure SetSelectionEnd(aValue: Integer);
     procedure SetSelections(aValue1, aValue2: Integer);
-    procedure UpdateSelection(aPrevCursorPos: Integer);
+    procedure UpdateSelection(aOldCursorPos: Integer; aIsSelecting: Boolean);
   protected
     procedure SetHeight(aValue: Integer); override;
     procedure SetWidth(aValue: Integer); override;
@@ -1889,6 +1892,9 @@ const
   CLICK_HOLD_TIME_THRESHOLD = 200; // Time period, determine delay between mouse down and 1st click hold events
   WARE_ROW_HEIGHT = 21;
 
+type
+  TKMCursorDir = (cdNone = 0, cdForward = 1, cdBack = -1);
+
 
 function MakeListRow(const aCaption: array of String; aTag: Integer = 0): TKMListRow;
 var
@@ -1978,6 +1984,22 @@ begin
     Result.Cells[I].Enabled := True;
   end;
   Result.Tag := aTag;
+end;
+
+
+function IsSelecting(Key: Word; Shift: TShiftState): Boolean;
+begin
+  Result := (ssShift in Shift) and (Key <> VK_SHIFT);
+end;
+
+
+function GetCursorDir(aKey: Word): TKMCursorDir;
+begin
+  case aKey of
+    VK_LEFT:  Result := cdBack;
+    VK_RIGHT: Result := cdForward;
+    else      Result := cdNone;
+  end;
 end;
 
 
@@ -3893,7 +3915,7 @@ procedure TKMSelectableEdit.ResetSelection;
 begin
   fSelectionStart := -1;
   fSelectionEnd := -1;
-  fSelectionInitialCursorPos := -1;
+  fSelectionInitialPos := -1;
 end;
 
 
@@ -3908,6 +3930,14 @@ procedure TKMSelectableEdit.SetSelectionStart(aValue: Integer);
 begin
   if fSelectable then
     fSelectionStart := EnsureRange(aValue, 0, Length(fText));
+end;
+
+
+//Set selections with pair of value, using he fact, that fSelectionStart <= fSelectionEnd
+procedure TKMSelectableEdit.SetSelections(aValue1, aValue2: Integer);
+begin
+  SelectionStart := Min(aValue1, aValue2);
+  SelectionEnd := Max(aValue1, aValue2);
 end;
 
 
@@ -3946,7 +3976,45 @@ begin
 end;
 
 
+//Update selection start/end due to change cursor position
+procedure TKMSelectableEdit.UpdateSelection(aOldCursorPos: Integer; aIsSelecting: Boolean);
+begin
+  if aIsSelecting then
+  begin
+    if HasSelection then
+    begin
+      if aOldCursorPos = SelectionStart then
+        SetSelections(CursorPos, SelectionEnd)
+      else
+      if aOldCursorPos = SelectionEnd then
+        SetSelections(SelectionStart, CursorPos);
+    end else
+      SetSelections(aOldCursorPos, CursorPos);
+  end
+  else
+    ResetSelection;
+end;
+
+
 function TKMSelectableEdit.KeyDown(Key: Word; Shift: TShiftState): Boolean;
+
+  // Update cursor pos considering Ctrl Key to go to the next / prev word in the text
+  procedure UpdateCursorPos(aCursorDir: TKMCursorDir);
+  begin
+    if ssCtrl in Shift then
+    begin
+      case aCursorDir of
+        cdNone:     ;
+        cdForward:  CursorPos := GetNextWordPos(fText, CursorPos);
+        cdBack:     CursorPos := GetPrevWordPos(fText, CursorPos);
+      end;
+    end
+    else
+      CursorPos := CursorPos + ShortInt(aCursorDir);
+  end;
+
+var
+  oldCursorPos: Integer;
 begin
   Result := KeyEventHandled(Key, Shift);
   if inherited KeyDown(Key, Shift) or ReadOnly then Exit;
@@ -3955,6 +4023,8 @@ begin
   if BlockInput
     and not ((Key in [VK_LEFT, VK_RIGHT, VK_HOME, VK_END])
       or ((ssCtrl in Shift) and (Key in [Ord('A'), Ord('C')]))) then Exit;
+
+  oldCursorPos := CursorPos;
 
   //Clipboard operations
   if (Shift = [ssCtrl]) and (Key <> VK_CONTROL) then
@@ -3973,7 +4043,7 @@ begin
       Ord('V'): begin
                   if HasSelection then
                   begin
-                    Delete(fText, fSelectionStart+1, fSelectionEnd-fSelectionStart);
+                    Delete(fText, fSelectionStart + 1, fSelectionEnd-fSelectionStart);
                     Insert(Clipboard.AsText, fText, fSelectionStart + 1);
                     ValidateText;
                     if CursorPos = fSelectionStart then
@@ -3994,74 +4064,33 @@ begin
                   DeleteSelectedText
                 else begin
                   Delete(fText, CursorPos, 1);
-                  CursorPos := CursorPos-1;
+                  CursorPos := CursorPos - 1;
                   Changed;
                 end;
     VK_DELETE:  if HasSelection then
                   DeleteSelectedText
                 else
                 begin
-                  Delete(fText, CursorPos+1, 1);
+                  Delete(fText, CursorPos + 1, 1);
                   Changed;
                 end;
   end;
 
-  if (Shift = [ssShift]) and (Key <> VK_SHIFT) then
-    case Key of
-      VK_LEFT:    begin
-                    if HasSelection then
-                    begin
-                      if CursorPos = SelectionStart then
-                        SelectionStart := SelectionStart-1
-                      else if CursorPos = SelectionEnd then
-                        SelectionEnd := SelectionEnd-1;
-                    end else begin
-                      SelectionStart := CursorPos-1;
-                      SelectionEnd := CursorPos;
-                    end;
-                    CursorPos := CursorPos-1;
-                  end;
-      VK_RIGHT:   begin
-                    if HasSelection then
-                    begin
-                      if CursorPos = SelectionStart then
-                        SelectionStart := SelectionStart+1
-                      else if CursorPos = SelectionEnd then
-                        SelectionEnd := SelectionEnd+1;
-                    end else begin
-                      SelectionStart := CursorPos;
-                      SelectionEnd := CursorPos+1;
-                    end;
-                    CursorPos := CursorPos+1;
-                  end;
-      VK_HOME:    begin
-                    if HasSelection then
-                    begin
-                      if SelectionEnd = CursorPos then
-                        SelectionEnd := SelectionStart;
-                    end else
-                      SelectionEnd := CursorPos;
-                    SelectionStart := 0;
-                    CursorPos := 0;
-                  end;
-      VK_END:     begin
-                    if HasSelection then
-                    begin
-                      if SelectionStart = CursorPos then
-                        SelectionStart := SelectionEnd;
-                    end else
-                      SelectionStart := CursorPos;
-                    SelectionEnd := Length(fText);
-                    CursorPos := Length(fText);
-                  end;
-    end
-  else
-    case Key of
-      VK_LEFT:    begin CursorPos := CursorPos-1; ResetSelection; end;
-      VK_RIGHT:   begin CursorPos := CursorPos+1; ResetSelection; end;
-      VK_HOME:    begin CursorPos := 0; ResetSelection; end;
-      VK_END:     begin CursorPos := Length(fText); ResetSelection; end;
-    end;
+  case Key of
+    VK_LEFT,
+    VK_RIGHT: begin
+                UpdateCursorPos(GetCursorDir(Key));
+                UpdateSelection(oldCursorPos, IsSelecting(Key, Shift));
+              end;
+    VK_HOME:  begin
+                CursorPos := 0;
+                UpdateSelection(oldCursorPos, IsSelecting(Key, Shift));
+              end;
+    VK_END:   begin
+                CursorPos := Length(fText);
+                UpdateSelection(oldCursorPos, IsSelecting(Key, Shift));
+              end;
+  end;
 end;
 
 
@@ -4090,37 +4119,42 @@ end;
 
 
 procedure TKMSelectableEdit.MouseDown(X, Y: Integer; Shift: TShiftState; Button: TMouseButton);
+var
+  oldCursorPos: Integer;
 begin
   if ReadOnly then Exit;
   inherited;
   // Update Focus now, because we need to focus on MouseDown, not on MouseUp as by default for all controls
   MasterParent.fMasterControl.UpdateFocus(Self);
 
+  oldCursorPos := CursorPos;
   CursorPos := GetCursorPosAt(X);
-  ResetSelection;
-  fSelectionInitialCursorPos := CursorPos;
+
+  if Focusable then
+  begin
+    //Try select on Shift + LMB click
+    UpdateSelection(oldCursorPos, (oldCursorPos <> -1) and (Shift = [ssLeft, ssShift]));
+    fSelectionInitialPos := CursorPos;
+  end;
 end;
 
 
 procedure TKMSelectableEdit.MouseMove(X, Y: Integer; Shift: TShiftState);
 var
-  CurCursorPos: Integer;
+  curCursorPos, oldCursorPos: Integer;
 begin
   if ReadOnly then Exit;
   inherited;
-  if ssLeft in Shift then
+  if (ssLeft in Shift) and (fSelectionInitialPos <> -1) then
   begin
-    CurCursorPos := GetCursorPosAt(X);
+    curCursorPos := GetCursorPosAt(X);
     // To rotate line to left while selecting
     if (X-SelfAbsLeft-4 < 0) and (fLeftIndex > 0) then
-      CurCursorPos := CurCursorPos - 1;
+      curCursorPos := curCursorPos - 1;
 
-    if fSelectionInitialCursorPos <> -1 then
-    begin
-      SelectionStart := min(CurCursorPos, fSelectionInitialCursorPos);
-      SelectionEnd := max(CurCursorPos, fSelectionInitialCursorPos);
-    end;
+    oldCursorPos := CursorPos;
     CursorPos := CurCursorPos;
+    UpdateSelection(oldCursorPos, True);
   end;
 end;
 
@@ -4129,7 +4163,7 @@ procedure TKMSelectableEdit.MouseUp(X, Y: Integer; Shift: TShiftState; Button: T
 begin
   if ReadOnly then Exit;
   inherited;
-  fSelectionInitialCursorPos := -1;
+  fSelectionInitialPos := -1;
 end;
 
 
@@ -6375,18 +6409,29 @@ begin
 end;
 
 
+function TKMMemo.GetPlainText(aUsePipeAsEOL: Boolean; aStart: Integer = -1; aEnd: Integer = -1): UnicodeString;
+begin
+  if aStart = -1 then
+    aStart := 0;
+
+  if aEnd = -1 then
+    aEnd := Length(fItems.Text);
+
+  // First remove EOL's to get correct positions in text
+  Result := StringReplace(fItems.Text, EolW, '|', [rfReplaceAll]);
+  // Get text with selected positions, cleaned of color markup
+  Result := Copy(GetNoColorMarkupText(Result), aStart + 1, aEnd - aStart);
+  // Return EOL's back
+  if not aUsePipeAsEOL then
+    Result := StringReplace(Result, '|', EolW, [rfReplaceAll]);
+end;
+
+
 function TKMMemo.GetSelectedText: UnicodeString;
 begin
   Result := '';
   if HasSelection then
-  begin
-    // First remove EOL's to get correct positions in text
-    Result := StringReplace(fItems.Text, EolW, '|', [rfReplaceAll]);
-    // Get text with selected positions, cleaned of color markup
-    Result := Copy(GetNoColorMarkupText(Result), fSelectionStart+1, fSelectionEnd - fSelectionStart);
-    // Return EOL's back
-    Result := StringReplace(Result, '|', EolW, [rfReplaceAll]);
-  end;
+    Result := GetPlainText(False, fSelectionStart, fSelectionEnd);
 end;
 
 
@@ -6543,17 +6588,22 @@ end;
 
 
 //Update selection start/end due to change cursor position
-procedure TKMMemo.UpdateSelection(aOldCursorPos: Integer);
+procedure TKMMemo.UpdateSelection(aOldCursorPos: Integer; aIsSelecting: Boolean);
 begin
-  if HasSelection then
+  if aIsSelecting then
   begin
-    if aOldCursorPos = SelectionStart then
+    if HasSelection then
+    begin
+      if aOldCursorPos = SelectionStart then
       SetSelections(CursorPos, SelectionEnd)
     else
     if aOldCursorPos = SelectionEnd then
-      SetSelections(SelectionStart, CursorPos);
-  end else
-    SetSelections(aOldCursorPos, CursorPos);
+        SetSelections(SelectionStart, CursorPos);
+    end else
+      SetSelections(aOldCursorPos, CursorPos);
+  end
+  else
+    ResetSelection;
 end;
 
 
@@ -6643,17 +6693,24 @@ function TKMMemo.KeyDown(Key: Word; Shift: TShiftState): Boolean;
     end;
   end;
 
-  procedure MoveCursorVerticallyNUpdateSelections(aRowIncrement: Integer);
-  var
-    oldCursorPos: Integer;
+  // Update cursor pos considering Ctrl Key to go to the next / prev word in the text
+  procedure UpdateCursorPos(aCursorDir: TKMCursorDir);
   begin
-    oldCursorPos := CursorPos;
-    MoveCursorVertically(aRowIncrement);
-    UpdateSelection(oldCursorPos);
+    if ssCtrl in Shift then
+    begin
+      case aCursorDir of
+        cdNone:     ;
+        cdForward:  CursorPos := GetNextWordPos(GetPlainText(True), CursorPos);
+        cdBack:     CursorPos := GetPrevWordPos(GetPlainText(True), CursorPos);
+      end;
+    end
+    else
+      CursorPos := CursorPos + ShortInt(aCursorDir);
   end;
 
 var
   oldCursorPos: Integer;
+  isSelect: Boolean;
 begin
   Result := KeyEventHandled(Key, Shift);
   if inherited KeyDown(Key, Shift) then Exit;
@@ -6667,44 +6724,40 @@ begin
                   Clipboard.AsText := GetSelectedText;
     end;
 
-  if (Shift = [ssShift]) and (Key <> VK_SHIFT) then
-    case Key of
-      VK_UP:    MoveCursorVerticallyNUpdateSelections(-1);
-      VK_DOWN:  MoveCursorVerticallyNUpdateSelections(1);
-      VK_PRIOR: MoveCursorVerticallyNUpdateSelections(-GetVisibleRows);
-      VK_NEXT:  MoveCursorVerticallyNUpdateSelections(GetVisibleRows);
-      VK_LEFT:  begin
-                  oldCursorPos := CursorPos;
-                  CursorPos := CursorPos - 1;
-                  UpdateSelection(oldCursorPos);
-                end;
-      VK_RIGHT: begin
-                  oldCursorPos := CursorPos;
-                  CursorPos := CursorPos + 1;
-                  UpdateSelection(oldCursorPos);
-                end;
-      VK_HOME:  begin
-                  oldCursorPos := CursorPos;
-                  CursorPos := GetMinCursorPosInRow;
-                  UpdateSelection(oldCursorPos);
-                end;
-      VK_END:   begin
-                  oldCursorPos := CursorPos;
-                  CursorPos := GetMaxCursorPosInRow;
-                  UpdateSelection(oldCursorPos);
-                end;
-    end
-  else
-    case Key of
-      VK_UP:    begin MoveCursorVertically(-1); ResetSelection; end;
-      VK_DOWN:  begin MoveCursorVertically(1); ResetSelection; end;
-      VK_PRIOR: begin MoveCursorVertically(-GetVisibleRows); ResetSelection; end;
-      VK_NEXT:  begin MoveCursorVertically(GetVisibleRows); ResetSelection; end;
-      VK_LEFT:  begin CursorPos := CursorPos-1; ResetSelection; end;
-      VK_RIGHT: begin CursorPos := CursorPos+1; ResetSelection; end;
-      VK_HOME:  begin CursorPos := GetMinCursorPosInRow; ResetSelection; end;
-      VK_END:   begin CursorPos := GetMaxCursorPosInRow; ResetSelection; end;
-    end;
+  oldCursorPos := CursorPos;
+  isSelect := IsSelecting(Key, Shift);
+
+  case Key of
+    VK_LEFT,
+    VK_RIGHT: begin
+                UpdateCursorPos(GetCursorDir(Key));
+                UpdateSelection(oldCursorPos, isSelect);
+              end;
+    VK_UP:    begin
+                MoveCursorVertically(-1);
+                UpdateSelection(oldCursorPos, isSelect);
+              end;
+    VK_DOWN:  begin
+                MoveCursorVertically(1);
+                UpdateSelection(oldCursorPos, isSelect);
+              end;
+    VK_PRIOR: begin
+                MoveCursorVertically(-GetVisibleRows);
+                UpdateSelection(oldCursorPos, isSelect);
+              end;
+    VK_NEXT:  begin
+                MoveCursorVertically(GetVisibleRows);
+                UpdateSelection(oldCursorPos, isSelect);
+              end;
+    VK_HOME:  begin
+                CursorPos := GetMinCursorPosInRow;
+                UpdateSelection(oldCursorPos, isSelect);
+              end;
+    VK_END:   begin
+                CursorPos := GetMaxCursorPosInRow;
+                UpdateSelection(oldCursorPos, isSelect);
+              end;
+  end
 end;
 
 
@@ -6748,11 +6801,7 @@ begin
   if Focusable then
   begin
     //Try select on Shift + LMB click
-    if (oldCursorPos <> -1) and (Shift = [ssLeft, ssShift]) then
-      UpdateSelection(oldCursorPos)
-    else begin
-      ResetSelection;
-    end;
+    UpdateSelection(oldCursorPos, (oldCursorPos <> -1) and (Shift = [ssLeft, ssShift]));
     fSelectionInitialPos := CursorPos;
   end;
 end;
@@ -6784,7 +6833,7 @@ begin
 
     oldCursorPos := CursorPos;
     CursorPos := PointToLinearPos(charPos.X, charPos.Y);;
-    UpdateSelection(oldCursorPos);
+    UpdateSelection(oldCursorPos, True);
   end;
 end;
 

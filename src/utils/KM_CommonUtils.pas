@@ -1489,6 +1489,9 @@ begin
 end;
 
 
+const
+  SPACE_CHARS: set of Char = [' ', '|'];
+
 //Get next word position in the given aStr, after cirtain position aPos
 //positions starts from 0
 function GetNextWordPos(const aStr: String; aPos: Integer): Integer;
@@ -1501,13 +1504,13 @@ begin
   found := False;
 
   //Cut all spaces
-  while (pos + 1 < Length(aStr)) and (aStr[pos + 1] = ' ') do
+  while (pos + 1 < Length(aStr)) and (aStr[pos + 1] in SPACE_CHARS) do
     Inc(pos);
 
   //Result is the position of the latest space after last non-space character
   for I := pos + 1 to Length(aStr) - 1 do
   begin
-    if aStr[I] = ' ' then
+    if aStr[I] in SPACE_CHARS then
     begin
       Result := I;
       found := True;
@@ -1530,14 +1533,14 @@ begin
   pos := aPos;
 
   //Cut all spaces
-  while (pos >= 1) and (aStr[pos] = ' ') do
+  while (pos >= 1) and (aStr[pos] in SPACE_CHARS) do
     Dec(pos);
 
   //Result is the first non-space character
   Result := pos;
   for I := pos downto 1 do
   begin
-    if aStr[I] <> ' ' then
+    if not (aStr[I] in SPACE_CHARS) then
       Result := I - 1
     else
       Break;
