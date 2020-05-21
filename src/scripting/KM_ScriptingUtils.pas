@@ -3,7 +3,7 @@ unit KM_ScriptingUtils;
 
 interface
 uses
-  Math,
+  Math, StrUtils, SysUtils,
   KM_ScriptingEvents, KM_CommonTypes, KM_Points;
 
 type
@@ -27,6 +27,14 @@ type
 
     function BoolToStr(aBool: Boolean): AnsiString;
 
+    function ColorBrightness(const aHexColor: string): Single;
+
+    function CompareString(const Str1, Str2: String): Integer;
+    function CompareText(const Str1, Str2: String): Integer;
+    function CopyString(Str: String; Index, Count: Integer): String;
+
+    procedure DeleteString(var Str: String; Index, Count: Integer);
+
     function EnsureRangeI(aValue, aMin, aMax: Integer): Integer;
     function EnsureRangeS(aValue, aMin, aMax: Single): Single;
 
@@ -43,7 +51,11 @@ type
     function InRangeI(aValue, aMin, aMax: Integer): Boolean;
     function InRangeS(aValue, aMin, aMax: Single): Boolean;
 
+    procedure InsertString(Source: String; var Target: String; Index: Integer);
+
     function KMPoint(X,Y: Integer): TKMPoint;
+
+    function LowerCase(const Str: String): String;
 
     function MaxI(A, B: Integer): Integer;
     function MaxS(A, B: Single): Single;
@@ -57,6 +69,10 @@ type
     function MinInArrayI(aArray: array of Integer): Integer;
     function MinInArrayS(aArray: array of Single): Single;
 
+    procedure MoveString(const Source: String; var Destination: String; Count: Integer);
+
+    function Pos(SubStr, Str: String): Integer;
+
     function Power(aBase, aExp: Extended): Extended;
 
     function RandomRangeI(aFrom, aTo: Integer): Integer;
@@ -69,13 +85,19 @@ type
 
     function Sqr(A: Extended): Extended;
 
+    function StringReplace(const Str, OldPattern, NewPattern: string; Flags: TReplaceFlags): String;
+
     function SumI(aArray: array of Integer): Integer;
     function SumS(aArray: array of Single): Single;
 
     function TimeToString(aTicks: Integer): AnsiString;
     function TimeToTick(aHours, aMinutes, aSeconds: Integer): Cardinal;
 
-    function ColorBrightness(const aHexColor: string): Single;
+    function Trim(const Str: String): String;
+    function TrimLeft(const Str: String): String;
+    function TrimRight(const Str: String): String;
+
+    function UpperCase(const Str: String): String;
 
   end;
 
@@ -83,7 +105,7 @@ type
 implementation
 
 uses
-  SysUtils, KM_CommonUtils;
+  KM_CommonUtils;
 
 
 function TryParseHexColor(aHexColor: string; out aResult: string): Boolean;
@@ -374,6 +396,67 @@ begin
 end;
 
 
+//* Version: 11750
+//* Compares Str1 to Str2, with case-sensitivity.
+//* Result: The return value is less than 0 if Str1 is less than Str2, 0 if Str1 equals Str2, or greater than 0 if Str1 is greater than Str2.
+function TKMScriptUtils.CompareString(const Str1, Str2: String): Integer;
+begin
+  try
+    Result := SysUtils.AnsiCompareStr(Str1, Str2);
+  except
+    gScriptEvents.ExceptionOutsideScript := True;
+    raise;
+  end;
+end;
+
+
+//* Version: 11750
+//* Compares Str1 to Str2, without case-sensitivity.
+//* Result: The return value is less than 0 if Str1 is less than Str2, 0 if Str1 equals Str2, or greater than 0 if Str1 is greater than Str2.
+function TKMScriptUtils.CompareText(const Str1, Str2: String): Integer;
+begin
+  try
+    Result := SysUtils.AnsiCompareText(Str1, Str2);
+  except
+    gScriptEvents.ExceptionOutsideScript := True;
+    raise;
+  end;
+end;
+
+
+//* Version: 11750
+//* Creates a copy of part of a string
+//* Result: Copy of part of a Str string
+//* The first character of a string has index = 1.
+//* Up to Count characters are copied from the Index of the Str string to the returned string.
+//* Less than Count characters will be copied, if the end of the Str string is encountered before Count characters.
+function TKMScriptUtils.CopyString(Str: String; Index, Count: Integer): String;
+begin
+  try
+    Result := System.Copy(Str, Index, Count);
+  except
+    gScriptEvents.ExceptionOutsideScript := True;
+    raise;
+  end;
+end;
+
+
+//* Version: 11750
+//* Deletes up to Count characters from the Str string starting from position Index
+//* The first character of a string has index = 1.
+//* If the Index is before the first, or after the last character of Str, then no characters are deleted
+//* No error is produced if Count exceeds the remaining character count of Str.
+procedure TKMScriptUtils.DeleteString(var Str: String; Index, Count: Integer);
+begin
+  try
+    System.Delete(Str, Index, Count);
+  except
+    gScriptEvents.ExceptionOutsideScript := True;
+    raise;
+  end;
+end;
+
+
 //* Version: 7000+
 //* Returns the closest to aValue integer that is in interval [aMin..aMax]
 function TKMScriptUtils.EnsureRangeI(aValue, aMin, aMax: Integer): Integer;
@@ -522,11 +605,42 @@ begin
 end;
 
 
+//* Version: 11750
+//* Inserts one string, Source into another string, Target at the given position Index.
+//* The first character of a string has index = 1.
+//* The Target string characters from the Index character are moved right to make way for the Source string.
+//* The length of Target string is now the sum of the length of the two strings.
+//* To insert into the start of Target, set Index to 1 or less.
+//* To append to the end of Target, set Index after the last character of Target.
+procedure TKMScriptUtils.InsertString(Source: String; var Target: String; Index: Integer);
+begin
+  try
+    System.Insert(Source, Target, Index);
+  except
+    gScriptEvents.ExceptionOutsideScript := True;
+    raise;
+  end;
+end;
+
+
 //* Version: 7000+
 //* Returns point record with specified coordinates
 function TKMScriptUtils.KMPoint(X,Y: Integer): TKMPoint;
 begin
   Result := KM_Points.KMPoint(X,Y);
+end;
+
+
+//* Version: 11750
+//* Changes upper case characters in a string Str to lower case
+function TKMScriptUtils.LowerCase(const Str: String): String;
+begin
+  try
+    Result := SysUtils.AnsiLowerCase(Str);
+  except
+    gScriptEvents.ExceptionOutsideScript := True;
+    raise;
+  end;
 end;
 
 
@@ -674,6 +788,37 @@ begin
 end;
 
 
+//* Version: 11750
+//* Copy data from a Source to a Destination
+//* Count characters are copied from storage referenced by Source and written to Destination
+//* It can be used to take a copy of a substring from one string and overlay it on top of part of another string.
+procedure TKMScriptUtils.MoveString(const Source: String; var Destination: String; Count: Integer);
+begin
+  try
+    System.Move(Source, Destination, Count);
+  except
+    gScriptEvents.ExceptionOutsideScript := True;
+    raise;
+  end;
+end;
+
+
+//* Version: 11750
+//* Searches for a substring, SubStr, in a string, Str.
+//* Returns an integer value that is the index of the first character of SubStr within Str.
+//* Function is case-sensitive.
+//* If SubStr is not found, Result = 0
+function TKMScriptUtils.Pos(SubStr, Str: String): Integer;
+begin
+  try
+    Result := SysUtils.AnsiPos(SubStr, Str);
+  except
+    gScriptEvents.ExceptionOutsideScript := True;
+    raise;
+  end;
+end;
+
+
 //* Version: 7000+
 //* Exponentation, base 'Base' raised to power 'Exp'.
 //* F.e. Power(3, 2) = 3^2 = 9
@@ -781,6 +926,23 @@ begin
 end;
 
 
+//* Version: 11750
+//* Replaces the first or all occurences of a substring OldPattern in Str string with NewPattern according to Flags settings
+//* The changed string is returned as Result
+//* The Flags may be none, one, or both of these set values:
+//* rfReplaceAll: Change all occurrences
+//* rfIgnoreCase: Ignore case when searching
+function TKMScriptUtils.StringReplace(const Str, OldPattern, NewPattern: String; Flags: TReplaceFlags): String;
+begin
+  try
+    Result := SysUtils.StringReplace(Str, OldPattern, NewPattern, Flags);
+  except
+    gScriptEvents.ExceptionOutsideScript := True;
+    raise;
+  end;
+end;
+
+
 //* Version: 7000+
 //* Returns sum of the elements of requested array
 function TKMScriptUtils.SumI(aArray: array of Integer): Integer;
@@ -849,6 +1011,58 @@ function TKMScriptUtils.TimeToTick(aHours, aMinutes, aSeconds: Integer): Cardina
 begin
   try
     Result := ((aHours * 60 * 60) + (aMinutes * 60) + aSeconds) * 10;
+  except
+    gScriptEvents.ExceptionOutsideScript := True;
+    raise;
+  end;
+end;
+
+
+//* Version: 11750
+//* Removes blank and control characters (such as line feed) from the start and end of a string.
+function TKMScriptUtils.Trim(const Str: String): String;
+begin
+  try
+    Result := SysUtils.Trim(Str);
+  except
+    gScriptEvents.ExceptionOutsideScript := True;
+    raise;
+  end;
+end;
+
+
+//* Version: 11750
+//* Removes blank and control characters (such as line feed) from the start of a string.
+function TKMScriptUtils.TrimLeft(const Str: String): String;
+begin
+  try
+    Result := SysUtils.TrimLeft(Str);
+  except
+    gScriptEvents.ExceptionOutsideScript := True;
+    raise;
+  end;
+end;
+
+
+//* Version: 11750
+//* Removes blank and control characters (such as line feed) from the end of a string.
+function TKMScriptUtils.TrimRight(const Str: String): String;
+begin
+  try
+    Result := SysUtils.TrimRight(Str);
+  except
+    gScriptEvents.ExceptionOutsideScript := True;
+    raise;
+  end;
+end;
+
+
+//* Version: 11750
+//* Changes lower case characters in a string Str to upper case
+function TKMScriptUtils.UpperCase(const Str: String): String;
+begin
+  try
+    Result := SysUtils.AnsiUpperCase(Str);
   except
     gScriptEvents.ExceptionOutsideScript := True;
     raise;

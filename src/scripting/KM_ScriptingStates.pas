@@ -116,6 +116,7 @@ type
     function MapTileIsCoal(X, Y: Integer): Word;
     function MapTileIsGold(X, Y: Integer): Word;
     function MapTileIsIce(X, Y: Integer): Boolean;
+    function MapTileIsInMapCoords(X, Y: Integer): Boolean;
     function MapTileIsIron(X, Y: Integer): Word;
     function MapTileIsSand(X, Y: Integer): Boolean;
     function MapTileIsSnow(X, Y: Integer): Boolean;
@@ -202,6 +203,7 @@ type
     function UnitsGroup(aUnitID: Integer): Integer;
     function UnitType(aUnitID: Integer): Integer;
     function UnitTypeName(aUnitType: Byte): AnsiString;
+    function UnitUnlocked(aPlayer: Word; aUnitType: Integer): Boolean;
 
     function WareTypeName(aWareType: Byte): AnsiString;
     function WarriorInFight(aUnitID: Integer; aCountCitizens: Boolean): Boolean;
@@ -2906,7 +2908,7 @@ end;
 //* Version: 6587
 //* Returns the tile type ID of the tile at the specified XY coordinates.
 //* Tile IDs can be seen by hovering over the tiles on the terrain tiles tab in the map editor.
-//* Result: Tile type (0..255)
+//* Result: Tile type (0..597)
 function TKMScriptStates.MapTileType(X, Y: Integer): Integer;
 begin
   try
@@ -3192,6 +3194,21 @@ begin
     Result := False;
     LogParamWarning('States.MapTileIsIce', [X, Y]);
   end;
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 11750
+//* Check if tile at the specified XY coordinates is within map borders (map has specified XY coordinates).
+//* F.e. coordinates (150, 200) are invalid for 128x128 map and not within map borders
+//* Result: tile is in map coordinates
+function TKMScriptStates.MapTileIsInMapCoords(X, Y: Integer): Boolean;
+begin
+  try
+    Result := gTerrain.TileInMapCoords(X, Y);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3714,6 +3731,28 @@ begin
     begin
       Result := '';
       LogParamWarning('States.UnitTypeName', [aUnitType]);
+    end;
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 11750
+//* Returns true if the specified player can train/equip the specified unit type
+//* Result: Unit unlocked
+function TKMScriptStates.UnitUnlocked(aPlayer: Word; aUnitType: Integer): Boolean;
+begin
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1)
+    and (gHands[aPlayer].Enabled)
+    and (aUnitType in [UnitTypeToIndex[HUMANS_MIN]..UnitTypeToIndex[HUMANS_MAX]]) then
+      Result := not gHands[aPlayer].Locks.GetUnitBlocked(UnitIndexToType[aUnitType])
+    else
+    begin
+      Result := False;
+      LogParamWarning('States.UnitUnlocked', [aPlayer, aUnitType]);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
