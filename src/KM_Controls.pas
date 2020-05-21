@@ -1,4 +1,4 @@
-unit KM_Controls;
+﻿unit KM_Controls;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -4023,7 +4023,7 @@ begin
   //Allow some keys while blocking input
   if BlockInput
     and not ((Key in [VK_LEFT, VK_RIGHT, VK_HOME, VK_END])
-      or ((ssCtrl in Shift) and (Key in [Ord('A'), Ord('C')]))) then Exit;
+      or ((ssCtrl in Shift) and (Key in [VK_LEFT, VK_RIGHT, Ord('A'), Ord('C')]))) then Exit;
 
   oldCursorPos := CursorPos;
 
@@ -4326,7 +4326,7 @@ begin
   if Key in [VK_F1..VK_F12, VK_ESCAPE, VK_RETURN, VK_TAB] then Result := False;
 
   //Ctrl can be used as an escape character, e.g. CTRL+B places beacon while chat is open
-  if ssCtrl in Shift then Result := (Key in [Ord('A'), Ord('C'), Ord('X'), Ord('V')]);
+  if ssCtrl in Shift then Result := (Key in [VK_LEFT, VK_RIGHT, Ord('A'), Ord('C'), Ord('X'), Ord('V')]);
 
   // If key is ignored, then check if can still handle it (check via OnIsKeyEventHandled)
   if not Result and Assigned(OnIsKeyEventHandled) then
@@ -5060,7 +5060,7 @@ begin
 
   //Ctrl can be used as an escape character, e.g. CTRL+B places beacon while chat is open
   if ssCtrl in Shift then
-    Result := (Key in [Ord('A'), Ord('C'), Ord('X'), Ord('V')]);
+    Result := (Key in [VK_LEFT, VK_RIGHT, Ord('A'), Ord('C'), Ord('X'), Ord('V')]);
 end;
 
 
@@ -6596,9 +6596,9 @@ begin
     if HasSelection then
     begin
       if aOldCursorPos = SelectionStart then
-      SetSelections(CursorPos, SelectionEnd)
-    else
-    if aOldCursorPos = SelectionEnd then
+        SetSelections(CursorPos, SelectionEnd)
+      else
+      if aOldCursorPos = SelectionEnd then
         SetSelections(SelectionStart, CursorPos);
     end else
       SetSelections(aOldCursorPos, CursorPos);
@@ -6664,7 +6664,7 @@ begin
   if Key in [VK_F1..VK_F12, VK_ESCAPE] then Result := False;
 
   //Ctrl can be used as an escape character, e.g. CTRL+B places beacon while chat is open
-  if ssCtrl in Shift then Result := (Key in [Ord('A'), Ord('C'), Ord('X')]);
+  if ssCtrl in Shift then Result := (Key in [VK_LEFT, VK_RIGHT, Ord('A'), Ord('C'), Ord('X')]);
 end;
 
 
