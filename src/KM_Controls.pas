@@ -1,4 +1,4 @@
-﻿unit KM_Controls;
+unit KM_Controls;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -6537,22 +6537,23 @@ end;
 //Set selections with pair of value, using he fact, that fSelectionStart <= fSelectionEnd
 procedure TKMMemo.SetSelections(aValue1, aValue2: Integer);
 begin
-  fSelectionStart := min(aValue1, aValue2);
-  fSelectionEnd := max(aValue1, aValue2);
+  fSelectionStart := Min(aValue1, aValue2);
+  fSelectionEnd := Max(aValue1, aValue2);
 end;
 
 
 //Update selection start/end due to change cursor position
-procedure TKMMemo.UpdateSelection(aPrevCursorPos: Integer);
+procedure TKMMemo.UpdateSelection(aOldCursorPos: Integer);
 begin
   if HasSelection then
   begin
-    if aPrevCursorPos = SelectionStart then
+    if aOldCursorPos = SelectionStart then
       SetSelections(CursorPos, SelectionEnd)
-    else if aPrevCursorPos = SelectionEnd then
+    else
+    if aOldCursorPos = SelectionEnd then
       SetSelections(SelectionStart, CursorPos);
   end else
-    SetSelections(aPrevCursorPos, CursorPos);
+    SetSelections(aOldCursorPos, CursorPos);
 end;
 
 
@@ -6619,37 +6620,40 @@ end;
 function TKMMemo.KeyDown(Key: Word; Shift: TShiftState): Boolean;
   //Move cursor vertically (change cursor row)
   procedure MoveCursorVertically(aRowIncrement: Integer);
-  var CursorPointPos: TKMPoint;
-      NewCursorPosY: Integer;
-      SrcLineText, DestLineText: UnicodeString;
+  var
+    cursorPointPos: TKMPoint;
+    newCursorPosY: Integer;
+    srcLineText, destLineText: UnicodeString;
   begin
-    CursorPointPos := LinearToPointPos(CursorPos);
-    NewCursorPosY := EnsureRange(CursorPointPos.Y + aRowIncrement, 0, fItems.Count-1);
-    if NewCursorPosY <> CursorPointPos.Y then
+    cursorPointPos := LinearToPointPos(CursorPos);
+    newCursorPosY := EnsureRange(cursorPointPos.Y + aRowIncrement, 0, fItems.Count-1);
+    if newCursorPosY <> cursorPointPos.Y then
     begin
       // Because we don't use monospaces fonts, then its better to find proper column, which depends of text width in px
-      SrcLineText := GetNoColorMarkupText(Copy(fItems[CursorPointPos.Y], 1, CursorPointPos.X));
-      DestLineText := GetNoColorMarkupText(fItems[NewCursorPosY]);
+      srcLineText := GetNoColorMarkupText(Copy(fItems[cursorPointPos.Y], 1, cursorPointPos.X));
+      destLineText := GetNoColorMarkupText(fItems[newCursorPosY]);
       //Use 'rounding' version of CharsThatFit to get more precise position
-      CursorPointPos.X := gRes.Fonts[fFont].CharsThatFit(DestLineText, gRes.Fonts[fFont].GetTextSize(SrcLineText).X, True);
-      CursorPos := PointToLinearPos(CursorPointPos.X, NewCursorPosY);
+      cursorPointPos.X := gRes.Fonts[fFont].CharsThatFit(destLineText, gRes.Fonts[fFont].GetTextSize(srcLineText).X, True);
+      CursorPos := PointToLinearPos(cursorPointPos.X, newCursorPosY);
       // Update scroll position, if needed
-      if TopIndex > NewCursorPosY then
-        TopIndex := NewCursorPosY
-      else if TopIndex < NewCursorPosY - GetVisibleRows + 1 then
-        TopIndex := NewCursorPosY - GetVisibleRows + 1;
+      if TopIndex > newCursorPosY then
+        TopIndex := newCursorPosY
+      else if TopIndex < newCursorPosY - GetVisibleRows + 1 then
+        TopIndex := newCursorPosY - GetVisibleRows + 1;
     end;
   end;
 
   procedure MoveCursorVerticallyNUpdateSelections(aRowIncrement: Integer);
-  var OldCursorPos: Integer;
+  var
+    oldCursorPos: Integer;
   begin
-    OldCursorPos := CursorPos;
+    oldCursorPos := CursorPos;
     MoveCursorVertically(aRowIncrement);
-    UpdateSelection(OldCursorPos);
+    UpdateSelection(oldCursorPos);
   end;
 
-var OldCursorPos: Integer;
+var
+  oldCursorPos: Integer;
 begin
   Result := KeyEventHandled(Key, Shift);
   if inherited KeyDown(Key, Shift) then Exit;
@@ -6670,24 +6674,24 @@ begin
       VK_PRIOR: MoveCursorVerticallyNUpdateSelections(-GetVisibleRows);
       VK_NEXT:  MoveCursorVerticallyNUpdateSelections(GetVisibleRows);
       VK_LEFT:  begin
-                  OldCursorPos := CursorPos;
+                  oldCursorPos := CursorPos;
                   CursorPos := CursorPos - 1;
-                  UpdateSelection(OldCursorPos);
+                  UpdateSelection(oldCursorPos);
                 end;
       VK_RIGHT: begin
-                  OldCursorPos := CursorPos;
+                  oldCursorPos := CursorPos;
                   CursorPos := CursorPos + 1;
-                  UpdateSelection(OldCursorPos);
+                  UpdateSelection(oldCursorPos);
                 end;
       VK_HOME:  begin
-                  OldCursorPos := CursorPos;
+                  oldCursorPos := CursorPos;
                   CursorPos := GetMinCursorPosInRow;
-                  UpdateSelection(OldCursorPos);
+                  UpdateSelection(oldCursorPos);
                 end;
       VK_END:   begin
-                  OldCursorPos := CursorPos;
+                  oldCursorPos := CursorPos;
                   CursorPos := GetMaxCursorPosInRow;
-                  UpdateSelection(OldCursorPos);
+                  UpdateSelection(oldCursorPos);
                 end;
     end
   else
@@ -6729,7 +6733,8 @@ end;
 
 
 procedure TKMMemo.MouseDown(X,Y: Integer; Shift: TShiftState; Button: TMouseButton);
-var OldCursorPos: Integer;
+var
+  oldCursorPos: Integer;
 begin
   inherited;
 
@@ -6737,14 +6742,14 @@ begin
   // Update Focus now, because we need to focus on MouseDown, not on MouseUp as by default for all controls
   MasterParent.fMasterControl.UpdateFocus(Self);
 
-  OldCursorPos := CursorPos;
+  oldCursorPos := CursorPos;
   CursorPos := GetCursorPosAt(X, Y);
 
   if Focusable then
   begin
     //Try select on Shift + LMB click
-    if (OldCursorPos <> -1) and (Shift = [ssLeft, ssShift]) then
-      UpdateSelection(OldCursorPos)
+    if (oldCursorPos <> -1) and (Shift = [ssLeft, ssShift]) then
+      UpdateSelection(oldCursorPos)
     else begin
       ResetSelection;
     end;
@@ -6754,31 +6759,32 @@ end;
 
 
 procedure TKMMemo.MouseMove(X,Y: Integer; Shift: TShiftState);
-var OldCursorPos: Integer;
-    CharPos: TKMPoint;
+var
+  oldCursorPos: Integer;
+  charPos: TKMPoint;
 begin
   inherited;
   if (ssLeft in Shift) and (fSelectionInitialPos <> -1) then
   begin
-    CharPos := GetCharPosAt(X, Y);
+    charPos := GetCharPosAt(X, Y);
 
     // To rotate text to top while selecting
     if (Y-AbsTop-3 < 0) and (TopIndex > 0) then
     begin
-      Dec(CharPos.Y);
+      Dec(charPos.Y);
       SetTopIndex(TopIndex-1);
     end;
     // To rotate text to bottom while selecting
     if (Y-AbsTop-3 > fHeight)
       and (fScrollBar.Position < fScrollBar.MaxValue) then
     begin
-      CharPos.Y := EnsureRange(CharPos.Y+1, 0, fItems.Count);
+      charPos.Y := EnsureRange(charPos.Y+1, 0, fItems.Count);
       SetTopIndex(TopIndex+1);
     end;
 
-    OldCursorPos := CursorPos;
-    CursorPos := PointToLinearPos(CharPos.X, CharPos.Y);;
-    UpdateSelection(OldCursorPos);
+    oldCursorPos := CursorPos;
+    CursorPos := PointToLinearPos(charPos.X, charPos.Y);;
+    UpdateSelection(oldCursorPos);
   end;
 end;
 
