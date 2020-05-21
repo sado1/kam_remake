@@ -1,7 +1,78 @@
 const
   AUTOFEED_TIME = 6000;
   DEPOSITS_TIME = 600;
-  ATTACK_TIME = 108000;
+  AMBIENT_TIME = 250;
+
+
+var
+  Wolves: array of Integer;
+  SoundAllowed: array[0..1] of Boolean;
+
+
+function AttackTime: Integer;
+begin
+  case States.MissionDifficulty of
+    mdEasy1:  Result := 144000;
+    mdNormal: Result := 108000;
+    mdHard1:  Result := 90000;
+  end;
+end;
+
+
+function Timer: ANSIString;
+begin
+  case States.MissionDifficulty of
+    mdEasy1:  Result := '4';
+    mdNormal: Result := '3';
+    mdHard1:  Result := '2,5';
+  end;
+end;
+
+
+procedure UpdateAttack;
+var
+  Pos: TKMPoint;
+begin
+  Actions.AIAttackRemoveAll(5);
+  Actions.AIAttackRemoveAll(10);
+  Pos.X := 0;
+  Pos.Y := 0;
+  Actions.AIAttackAdd(5, True, AttackTime, 1, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
+  Actions.AIAttackAdd(10, True, AttackTime, 1, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
+end;
+
+
+procedure FindWolves;
+var
+  aX, aY, W: Integer;
+begin
+  for aX := 1 to States.MapWidth - 1 do
+    for aY := 1 to States.MapHeight - 1 do
+    begin
+      W := States.UnitAt(aX, aY);
+      if W > 0 then
+        if States.UnitType(W) = 30 then
+        begin
+          SetLength(Wolves, Length(Wolves) + 1);
+          if Length(Wolves) > 0 then
+            Wolves[Length(Wolves) - 1] := W;
+        end;
+    end;
+end;
+
+
+{$COMMAND sound: TurnSoundOnOff}
+
+
+procedure TurnSoundOnOff(P, Value: Integer);
+var
+  aValue: Integer;
+begin
+  if not Utils.InRangeI(P, 0, 1) then
+    Exit;
+  aValue := Utils.EnsureRangeI(Value, 0, 1);
+  SoundAllowed[P] := Boolean(aValue);
+end;
 
 
 procedure SetWareDistribution;
@@ -452,7 +523,7 @@ function TimerColor(aTime: Integer): ANSIString;
 var
   Time: Integer;
 begin
-  Time := Round(100 * aTime / ATTACK_TIME)
+  Time := Round(100 * aTime / AttackTime)
   case Time of
     0..20:   Result := '[$00CC35]';
     21..40:  Result := '[$7AEBBD]';
@@ -464,17 +535,24 @@ end;
 
 
 procedure OnMissionStart;
+var
+  I: Integer;
 begin
-  Actions.PlayWAVAtLocationLooped(-1, 'Waterfall Creek', 2.5, 32, 113, 118);
+  Actions.PlayWAVAtLocationLooped(-1, 'Fall', 2.5, 32, 113, 118);
   BlockWares;
   SetWareDistribution;
   Flood(0);
+  FindWolves;
+  UpdateAttack;
+  for I := 0 to 1 do
+    SoundAllowed[I] := True;
+  Actions.ShowMsg(-1, '<$4>');
 end;
 
 
 procedure OnTick;
 var
-  I: Integer;
+  I, K: Integer;
 begin
   for I := 2 to 10 do
     if States.GameTime mod AUTOFEED_TIME = 5 * I then
@@ -484,7 +562,7 @@ begin
     UpdateDeposits; 
 
   if States.GameTime = 20 then
-    Actions.ShowMsg(-1, '<$0>');
+    Actions.ShowMsgFormatted(-1, '<$0>', [Timer]);
 
   if States.GameTime = FloodSoundTime then
     Actions.PlayOggAtLocation(-1, 'Flood', 3, 28, 17, 57);
@@ -517,6 +595,28 @@ begin
   if States.GameTime = 375 then Flood(26);
   if States.GameTime = 385 then Flood(27);
 
-  Actions.OverlayTextSet(-1, Utils.IfThen(States.GameTime <= ATTACK_TIME, '<$3> ' + TimerColor(States.GameTime) + Utils.TimeToString(ATTACK_TIME - States.GameTime) + '[]', ''));
+  Actions.OverlayTextSet(-1, Utils.IfThen(States.GameTime <= AttackTime, '<$3> ' + TimerColor(States.GameTime) + Utils.TimeToString(AttackTime - States.GameTime) + '[]', ''));
+
+
+  for K := 0 to 1 do
+    if SoundAllowed[K] then
+    begin
+      if (States.KaMRandom > 0.5)
+      and (States.GameTime mod AMBIENT_TIME = 0) then
+      begin
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 76, 164);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 100, 127);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 170, 140);
+      end;
+
+      if (States.KaMRandom < 0.4)
+      and (States.GameTime mod AMBIENT_TIME = 33) then
+        if Length(Wolves) > 0 then
+          for I := Low(Wolves) to High(Wolves) do
+            if not States.UnitDead(Wolves[I]) then
+              if States.KaMRandom < 0.25 then
+                 Actions.PlayOGGAtLocation(K, 'Wolf' + IntToStr(1 + States.KaMRandomI(3)), Utils.MinS(States.KaMRandom, 0.35), 32, States.UnitPositionX(Wolves[I]), States.UnitPositionY(Wolves[I]));
+
+    end;
 
 end;

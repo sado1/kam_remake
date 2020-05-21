@@ -111,6 +111,7 @@ begin
   FindWolves;
   for I := 0 to 1 do
     SoundAllowed[I] := True;
+  Actions.ShowMsg(-1, '<$2>');
   BlockWares;
   SetWareDistribution;
   Actions.PlayWAVAtLocationLooped(-1, 'Waterfall Creek', 2.5, 32, 148, 17);
@@ -320,7 +321,7 @@ begin
   if (States.GameTime = 39200)
   and (States.MissionDifficulty = mdHard1) then
   begin
-    Actions.GiveGroup(8, 22, 3, 38, 2, 27, 9);
+    Actions.GiveGroup(8, 22, 7, 21, 2, 27, 9);
     Actions.GiveGroup(8, 22, 25, 10, 4, 24, 8);
     Actions.GiveGroup(8, 22, 94, 24, 4, 25, 5);
     Actions.GiveGroup(8, 22, 65, 20, 2, 15, 5);
@@ -339,15 +340,15 @@ begin
       if (States.KaMRandom > 0.5)
       and (States.GameTime mod AMBIENT_TIME = 0) then
       begin
-        Actions.PlayOGGAtLocation(-1, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 21, 79);
-        Actions.PlayOGGAtLocation(-1, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 4, 156);
-        Actions.PlayOGGAtLocation(-1, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 64, 115);
-        Actions.PlayOGGAtLocation(-1, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 131, 92);
-        Actions.PlayOGGAtLocation(-1, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 135, 55);
-        Actions.PlayOGGAtLocation(-1, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 90, 37);
-        Actions.PlayOGGAtLocation(-1, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 31, 2);
-        Actions.PlayOGGAtLocation(-1, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 100, 143);
-        Actions.PlayOGGAtLocation(-1, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 150, 16);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 21, 79);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 4, 156);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 64, 115);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 131, 92);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 135, 55);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 90, 37);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 31, 2);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 100, 143);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 150, 16);
       end;
 
       if (States.KaMRandom < 0.4)
@@ -356,7 +357,7 @@ begin
           for I := Low(Wolves) to High(Wolves) do
             if not States.UnitDead(Wolves[I]) then
               if States.KaMRandom < 0.25 then
-                 Actions.PlayOGGAtLocation(-1, 'Wolf' + IntToStr(1 + States.KaMRandomI(3)), Utils.MinS(States.KaMRandom, 0.35), 32, States.UnitPositionX(Wolves[I]), States.UnitPositionY(Wolves[I]));
+                 Actions.PlayOGGAtLocation(K, 'Wolf' + IntToStr(1 + States.KaMRandomI(3)), Utils.MinS(States.KaMRandom, 0.35), 32, States.UnitPositionX(Wolves[I]), States.UnitPositionY(Wolves[I]));
 
     end;
 

@@ -2,6 +2,7 @@ const
   AUTOFEED_TIME = 6000;
   DEPOSITS_TIME = 600;
   FISH_TIME = 450;
+  AMBIENT_TIME = 250;
 
 type
   AIAttack = Record
@@ -14,6 +15,41 @@ var
   Fish, J, RebuildCount, AttacksCounter: Integer;
   RebuildType, RebuildX, RebuildY: array of Integer;
   AIAttacks: AIAttack;
+  Wolves: array of Integer;
+  SoundAllowed: array[0..1] of Boolean;
+
+
+procedure FindWolves;
+var
+  aX, aY, W: Integer;
+begin
+  for aX := 1 to States.MapWidth - 1 do
+    for aY := 1 to States.MapHeight - 1 do
+    begin
+      W := States.UnitAt(aX, aY);
+      if W > 0 then
+        if States.UnitType(W) = 30 then
+        begin
+          SetLength(Wolves, Length(Wolves) + 1);
+          if Length(Wolves) > 0 then
+            Wolves[Length(Wolves) - 1] := W;
+        end;
+    end;
+end;
+
+
+{$COMMAND sound: TurnSoundOnOff}
+
+
+procedure TurnSoundOnOff(P, Value: Integer);
+var
+  aValue: Integer;
+begin
+  if not Utils.InRangeI(P, 0, 1) then
+    Exit;
+  aValue := Utils.EnsureRangeI(Value, 0, 1);
+  SoundAllowed[P] := Boolean(aValue);
+end;
 
 
 //Adjust ware distribution for AI
@@ -132,6 +168,8 @@ end;
 
 
 procedure OnMissionStart;
+var
+  I: Integer;
 begin
   Fish := 0;
   RebuildCount := 0;
@@ -140,6 +178,13 @@ begin
   BlockWares;
   SetWareDistribution;
   UpdateAIEquipRates;
+
+
+  FindWolves;
+  for I := 0 to 1 do
+    SoundAllowed[I] := True;
+
+  Actions.ShowMsg(-1, '<$0>');
 
 //Build schools and inns
 
@@ -429,7 +474,7 @@ end;
 
 procedure OnTick;
 var 
-  sw1, sw2, sw3, sw4, axe1, axe2, I: Integer;
+  sw1, sw2, sw3, sw4, axe1, axe2, I, K: Integer;
 begin
 
 //Try to add new fish
@@ -476,5 +521,34 @@ begin
   for I := 2 to 11 do
     if States.GameTime mod AUTOFEED_TIME = 5 * I then
       AutoFeed(I);
+
+  for K := 0 to 1 do
+    if SoundAllowed[K] then
+    begin
+      if (States.KaMRandom > 0.5)
+      and (States.GameTime mod AMBIENT_TIME = 0) then
+      begin
+        Actions.PlayOGGAtLocation(-1, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 60, 170);
+        Actions.PlayOGGAtLocation(-1, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 85, 170);
+        Actions.PlayOGGAtLocation(-1, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 110, 170);
+        Actions.PlayOGGAtLocation(-1, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 130, 170);
+        Actions.PlayOGGAtLocation(-1, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 26, 76);
+        Actions.PlayOGGAtLocation(-1, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 60, 65);
+        Actions.PlayOGGAtLocation(-1, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 100, 70);
+        Actions.PlayOGGAtLocation(-1, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 140, 70);
+        Actions.PlayOGGAtLocation(-1, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 180, 70);
+        Actions.PlayOGGAtLocation(-1, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 65, 32);
+        Actions.PlayOGGAtLocation(-1, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 150, 32);
+      end;
+
+      if (States.KaMRandom < 0.35)
+      and (States.GameTime mod AMBIENT_TIME = 33) then
+        if Length(Wolves) > 0 then
+          for I := Low(Wolves) to High(Wolves) do
+            if not States.UnitDead(Wolves[I]) then
+              if States.KaMRandom < 0.25 then
+                 Actions.PlayOGGAtLocation(-1, 'Wolf' + IntToStr(1 + States.KaMRandomI(3)), Utils.MinS(States.KaMRandom, 0.35), 32, States.UnitPositionX(Wolves[I]), States.UnitPositionY(Wolves[I]));
+
+    end;
 
 end;

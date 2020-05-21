@@ -10,4 +10,5 @@ Script is licensed under GPLv2, you can find its text here: http://www.gnu.org/l
 
 ===SOUND CREDITS===
 
-Additional sounds derived from wav-library.net (sound IDs 03723, 03338)
+'Offer.ogg' and 'Notification.ogg' derived from wav-library.net
+'Wolf.ogg' and 'Quack.ogg' derived from NoiseFX sound library
