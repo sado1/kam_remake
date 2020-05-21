@@ -666,7 +666,7 @@ type
     procedure FocusChanged(aFocused: Boolean); override;
     function GetMaxLength: Word; virtual; abstract;
     function IsCharValid(aChar: WideChar): Boolean; virtual; abstract;
-    procedure ValidateText; virtual;
+    procedure ValidateText(aTriggerOnChange: Boolean = True); virtual;
     function KeyEventHandled(Key: Word; Shift: TShiftState): Boolean; virtual; abstract;
     procedure PaintSelection;
     function DrawEolSymbol: Boolean; virtual;
@@ -700,7 +700,7 @@ type
   protected
     function GetMaxLength: Word; override;
     function IsCharValid(aChar: WideChar): Boolean; override;
-    procedure ValidateText; override;
+    procedure ValidateText(aTriggerOnChange: Boolean = True); override;
     function KeyEventHandled(Key: Word; Shift: TShiftState): Boolean; override;
     function GetRText: UnicodeString;
     function DrawEolSymbol: Boolean; override;
@@ -716,7 +716,7 @@ type
 
     property AllowedChars: TKMAllowedChars read fAllowedChars write fAllowedChars;
     property Text: UnicodeString read fText write SetText;
-    procedure UpdateText(const aText: UnicodeString);
+    procedure UpdateText(const aText: UnicodeString; aTriggerOnChange: Boolean = True);
 
     function HitTest(X, Y: Integer; aIncludeDisabled: Boolean = False; aIncludeNotHitable: Boolean = False): Boolean; override;
     procedure Paint; override;
@@ -915,7 +915,7 @@ type
     function GetSelfWidth: Integer; override;
     function GetMaxLength: Word; override;
     function IsCharValid(Key: WideChar): Boolean; override;
-    procedure ValidateText; override;
+    procedure ValidateText(aTriggerOnChange: Boolean = True); override;
     procedure FocusChanged(aFocused: Boolean); override;
     function KeyEventHandled(Key: Word; Shift: TShiftState): Boolean; override;
     procedure ControlMouseDown(Sender: TObject; X,Y: Integer; Shift: TShiftState; Button: TMouseButton); override;
@@ -3941,9 +3941,10 @@ begin
 end;
 
 
-procedure TKMSelectableEdit.ValidateText;
+procedure TKMSelectableEdit.ValidateText(aTriggerOnChange: Boolean = True);
 begin
-  Changed;
+  if aTriggerOnChange then
+    Changed;
 end;
 
 
@@ -4266,10 +4267,10 @@ begin
 end;
 
 
-procedure TKMEdit.UpdateText(const aText: UnicodeString);
+procedure TKMEdit.UpdateText(const aText: UnicodeString; aTriggerOnChange: Boolean = True);
 begin
   fText := aText;
-  ValidateText; //Validate first since it could change fText
+  ValidateText(aTriggerOnChange); //Validate first since it could change fText
   CursorPos := Math.Min(CursorPos, Length(fText));
 end;
 
@@ -4282,7 +4283,7 @@ end;
 
 //Validates fText basing on predefined sets of allowed or disallowed chars
 //It iterates from end to start of a string - deletes chars and moves cursor appropriately
-procedure TKMEdit.ValidateText;
+procedure TKMEdit.ValidateText(aTriggerOnChange: Boolean = True);
 var
   I: Integer;
 begin
@@ -4300,7 +4301,7 @@ begin
   if Length(fText) > MaxLen then
     fText := Copy(fText, 0, MaxLen);
 
-  inherited; //Will trigger OnChange event
+  inherited ValidateText(aTriggerOnChange); //Could trigger OnChange event
 end;
 
 
@@ -5194,7 +5195,7 @@ begin
 end;
 
 
-procedure TKMNumericEdit.ValidateText;
+procedure TKMNumericEdit.ValidateText(aTriggerOnChange: Boolean = True);
 var
   I: Integer;
   AllowedChars: TSetOfAnsiChar;
@@ -5228,7 +5229,7 @@ begin
 
   CursorPos := Min(CursorPos, Length(fText)); //In case we had leading zeros in fText string
 
-  inherited; //Will trigger OnChange event
+  inherited ValidateText(aTriggerOnChange); //Could trigger OnChange event
 end;
 
 
