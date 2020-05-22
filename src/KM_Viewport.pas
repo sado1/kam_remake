@@ -313,7 +313,9 @@ begin
   end;
 
   // Both advancements have minimal value > 0
-  ScrollAdv := (0.5 + gGameApp.GameSettings.ScrollSpeed / 5) * aFrameTime / 100;
+  // ScrollAdv depends on Zoom. Value was taken empirically
+  ScrollAdv := (0.5 + gGameApp.GameSettings.ScrollSpeed / 5) * aFrameTime / 100 / Math.Power(fZoom, 0.8);
+
   ZoomAdv := (0.2 + gGameApp.GameSettings.ScrollSpeed / 20) * aFrameTime / 1000;
 
   if SCROLL_ACCEL then
