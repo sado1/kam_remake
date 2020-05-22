@@ -1490,7 +1490,7 @@ end;
 
 
 const
-  SPACE_CHARS: set of Char = [' ', '|'];
+  SPACE_CHARS: set of AnsiChar = [' ', '|'];
 
 //Get next word position in the given aStr, after cirtain position aPos
 //positions starts from 0
@@ -1504,13 +1504,13 @@ begin
   found := False;
 
   //Cut all spaces
-  while (pos + 1 < Length(aStr)) and (aStr[pos + 1] in SPACE_CHARS) do
+  while (pos + 1 < Length(aStr)) and CharInSet(aStr[pos + 1], SPACE_CHARS) do
     Inc(pos);
 
   //Result is the position of the latest space after last non-space character
   for I := pos + 1 to Length(aStr) - 1 do
   begin
-    if aStr[I] in SPACE_CHARS then
+    if CharInSet(aStr[I], SPACE_CHARS) then
     begin
       Result := I;
       found := True;
@@ -1533,14 +1533,14 @@ begin
   pos := aPos;
 
   //Cut all spaces
-  while (pos >= 1) and (aStr[pos] in SPACE_CHARS) do
+  while (pos >= 1) and CharInSet(aStr[pos], SPACE_CHARS) do
     Dec(pos);
 
   //Result is the first non-space character
   Result := pos;
   for I := pos downto 1 do
   begin
-    if not (aStr[I] in SPACE_CHARS) then
+    if not CharInSet(aStr[I], SPACE_CHARS) then
       Result := I - 1
     else
       Break;
