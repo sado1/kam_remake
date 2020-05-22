@@ -179,19 +179,30 @@ type
     N11: TMenuItem;
     mnExportRngChecks: TMenuItem;
 
-    procedure Export_TreeAnim1Click(Sender: TObject);
-    procedure MenuItem1Click(Sender: TObject);
-    procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure Debug_ExportMenuClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure FormKeyPress(Sender: TObject; var Key: Char);
-    procedure Debug_EnableCheatsClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+
+    procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure FormMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+
+    procedure RenderAreaMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure RenderAreaMouseMove(Sender: TObject; Shift: TShiftState; X,Y: Integer);
+    procedure RenderAreaMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure RenderAreaMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+
+    procedure RenderAreaResize(aWidth, aHeight: Integer);
+    procedure RenderAreaRender(aSender: TObject);
+
+    procedure Debug_ExportMenuClick(Sender: TObject);
+    procedure Debug_EnableCheatsClick(Sender: TObject);
     procedure AboutClick(Sender: TObject);
     procedure ExitClick(Sender: TObject);
     procedure Debug_PrintScreenClick(Sender: TObject);
+    procedure MenuItem1Click(Sender: TObject);
     procedure Export_TreesRXClick(Sender: TObject);
     procedure Export_HousesRXClick(Sender: TObject);
     procedure Export_UnitsRXClick(Sender: TObject);
@@ -202,6 +213,7 @@ type
     procedure Export_TilesetClick(Sender: TObject);
     procedure Export_Sounds1Click(Sender: TObject);
     procedure Export_HouseAnim1Click(Sender: TObject);
+    procedure Export_TreeAnim1Click(Sender: TObject);
     procedure Export_Fonts1Click(Sender: TObject);
     procedure Export_DeliverLists1Click(Sender: TObject);
     procedure Button_StopClick(Sender: TObject);
@@ -209,18 +221,10 @@ type
     procedure Open_MissionMenuClick(Sender: TObject);
     procedure chkSuperSpeedClick(Sender: TObject);
     procedure Debug_ShowPanelClick(Sender: TObject);
-    procedure FormMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure Debug_ExportUIPagesClick(Sender: TObject);
     procedure HousesDat1Click(Sender: TObject);
     procedure ExportGameStatsClick(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ResourceValues1Click(Sender: TObject);
-    procedure RenderAreaMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure RenderAreaMouseMove(Sender: TObject; Shift: TShiftState; X,Y: Integer);
-    procedure RenderAreaMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure RenderAreaMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
-    procedure RenderAreaResize(aWidth, aHeight: Integer);
-    procedure RenderAreaRender(aSender: TObject);
     procedure Debug_ShowLogisticsClick(Sender: TObject);
     procedure UnitAnim_AllClick(Sender: TObject);
     procedure SoldiersClick(Sender: TObject);
