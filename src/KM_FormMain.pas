@@ -178,6 +178,7 @@ type
     Debug_UnlockCmpMissions: TMenuItem;
     N11: TMenuItem;
     mnExportRngChecks: TMenuItem;
+    chkGIP: TCheckBox;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -1022,6 +1023,8 @@ begin
     SHOW_TERRAIN_OVERLAYS := chkShowTerrainOverlays.Checked;
     DEBUG_SCRIPTING_EXEC := chkDebugScripting.Checked;
     SKIP_LOG_TEMP_COMMANDS := chkLogSkipTempCmd.Checked;
+
+    SHOW_GIP := chkGIP.Checked;
 
     if gGame <> nil then
     begin

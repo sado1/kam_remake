@@ -70,6 +70,7 @@ object FormMain: TFormMain
     Top = 0
     Width = 260
     Height = 765
+    VertScrollBar.Position = 9
     VertScrollBar.Tracking = True
     Align = alRight
     DoubleBuffered = False
@@ -83,7 +84,7 @@ object FormMain: TFormMain
     ParentDoubleBuffered = False
     TabOrder = 1
     object cpLogs: TCategoryPanel
-      Top = 593
+      Top = 584
       Height = 179
       Caption = 'Logs'
       TabOrder = 0
@@ -171,7 +172,7 @@ object FormMain: TFormMain
       end
     end
     object cpGraphicTweaks: TCategoryPanel
-      Top = 569
+      Top = 560
       Height = 24
       Caption = 'Graphic tweaks'
       Collapsed = True
@@ -275,7 +276,7 @@ object FormMain: TFormMain
       end
     end
     object cpUserInreface: TCategoryPanel
-      Top = 545
+      Top = 536
       Height = 24
       Caption = 'User Interface'
       Collapsed = True
@@ -310,7 +311,7 @@ object FormMain: TFormMain
       end
     end
     object cpPerfLogs: TCategoryPanel
-      Top = 521
+      Top = 512
       Height = 24
       Caption = 'Perf Logs'
       Collapsed = True
@@ -318,7 +319,7 @@ object FormMain: TFormMain
       ExpandedHeight = 660
     end
     object cpAI: TCategoryPanel
-      Top = 497
+      Top = 488
       Height = 24
       Caption = 'AI'
       Collapsed = True
@@ -526,7 +527,7 @@ object FormMain: TFormMain
       end
     end
     object cpScripting: TCategoryPanel
-      Top = 473
+      Top = 464
       Height = 24
       Caption = 'Scripting'
       Collapsed = True
@@ -548,7 +549,7 @@ object FormMain: TFormMain
       end
     end
     object cpGameAdv: TCategoryPanel
-      Top = 449
+      Top = 440
       Height = 24
       Caption = 'Game additional'
       Collapsed = True
@@ -597,7 +598,7 @@ object FormMain: TFormMain
       end
     end
     object cpDebugRender: TCategoryPanel
-      Top = 49
+      Top = 40
       Height = 400
       Caption = 'Debug Render'
       DoubleBuffered = True
@@ -719,8 +720,8 @@ object FormMain: TFormMain
         OnClick = ControlsUpdate
       end
       object chkTilesGrid: TCheckBox
-        Left = 120
-        Top = 292
+        Left = 8
+        Top = 324
         Width = 79
         Height = 17
         Caption = 'Tiles grid'
@@ -938,9 +939,18 @@ object FormMain: TFormMain
         TabOrder = 34
         OnClick = ControlsUpdate
       end
+      object chkGIP: TCheckBox
+        Left = 120
+        Top = 280
+        Width = 76
+        Height = 17
+        Caption = 'GIP'
+        TabOrder = 35
+        OnClick = ControlsUpdate
+      end
     end
     object cpGameControls: TCategoryPanel
-      Top = 0
+      Top = -9
       Height = 49
       Caption = 'Game '
       TabOrder = 8

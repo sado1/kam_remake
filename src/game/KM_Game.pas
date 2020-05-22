@@ -1447,6 +1447,7 @@ begin
 
     aRender.SetRenderMode(rm2D);
     fActiveInterface.Paint;
+    fGameInputProcess.Paint;
 
   finally
     {$IFDEF PERFLOG}

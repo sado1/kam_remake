@@ -304,6 +304,9 @@ type
     procedure ExecCommand(const aCommand: TKMGameInputCommand);
     procedure StoreCommand(const aCommand: TKMGameInputCommand);
     procedure ExecGameAlertBeaconCmd(const aCommand: TKMGameInputCommand);
+
+    function DoSkipLogCommand(const aCommand: TKMGameInputCommand): Boolean;
+    function QueueToString: String;
   protected
     function IsLastTickValueCorrect(aLastTickValue: Cardinal): Boolean;
     procedure SaveExtra(SaveStream: TKMemoryStream); virtual;
@@ -368,6 +371,8 @@ type
 
     class function GIPCommandToString(aGIC: TKMGameInputCommand): UnicodeString;
     class function StoredGIPCommandToString(aCommand: TKMStoredGIPCommand): String;
+
+    procedure Paint;
   end;
 
 
@@ -376,8 +381,8 @@ uses
   SysUtils, TypInfo, Math,
   KM_GameApp, KM_Game, KM_Hand, KM_HandsCollection,
   KM_HouseMarket, KM_HouseBarracks, KM_HouseSchool, KM_HouseTownHall,
-  KM_ScriptingEvents, KM_Alerts, KM_CommonUtils, KM_Log,
-  KM_GameTypes;
+  KM_ScriptingEvents, KM_Alerts, KM_CommonUtils, KM_Log, KM_RenderUI,
+  KM_GameTypes, KM_ResFonts, KM_Resource;
 
 const 
   NO_LAST_TICK_VALUE = 0;
@@ -485,7 +490,7 @@ begin
       if NPlayerI = -1 then
         NetPlayerStr := Format(' [NetPlayer %d]', [NPlayerI])
       else
-        NetPlayerStr := Format(' [NetPlayer %d | %s]', [NPlayerI, gGame.Networking.NetPlayers[NPlayerI].Nikname]);
+        NetPlayerStr := Format(' [NetPlayer %d / %s]', [NPlayerI, gGame.Networking.NetPlayers[NPlayerI].Nikname]);
     end;
 
     Result := Format('%-' + IntToStr(GIC_COMMAND_TYPE_MAX_LENGTH) + 's hand: %2d' + NetPlayerStr + ', params: ',
@@ -650,6 +655,12 @@ begin
 end;
 
 
+function TKMGameInputProcess.DoSkipLogCommand(const aCommand: TKMGameInputCommand): Boolean;
+begin
+  Result := SKIP_LOG_TEMP_COMMANDS and (aCommand.CommandType in [gicTempAddScout, gicTempRevealMap, gicTempVictory, gicTempDefeat, gicTempDoNothing]);
+end;
+
+
 procedure TKMGameInputProcess.ExecCommand(const aCommand: TKMGameInputCommand);
 var
   P: TKMHand;
@@ -733,9 +744,7 @@ begin
     if not (aCommand.CommandType in AllowedInCinematic) and (P.InCinematic) then
       Exit;
 
-    if gLog.CanLogCommands()
-      and (not SKIP_LOG_TEMP_COMMANDS
-           or not (aCommand.CommandType in [gicTempAddScout, gicTempRevealMap, gicTempVictory, gicTempDefeat, gicTempDoNothing]))then
+    if gLog.CanLogCommands() and not DoSkipLogCommand(aCommand) then
       gLog.LogCommands(Format('Tick: %6d Exec command: %s', [gGame.GameTick, GIPCommandToString(aCommand)]));
 
     case CommandType of
@@ -1256,6 +1265,56 @@ var
 begin
   LoadStream.Read(Tmp); //Just read some bytes from the stream
   //Only used in GIP_Single
+end;
+
+
+function TKMGameInputProcess.QueueToString: String;
+const
+  MAX_ITEMS_CNT = 100;
+var
+  I, K, maxIndex: Integer;
+begin
+  if Self = nil then Exit('');
+
+  if fReplayState = gipRecording then
+    maxIndex := fCount
+  else
+    maxIndex := fCursor;
+
+  Result := '';
+  K := 0;
+  for I := maxIndex downto 1 do
+  begin
+    if not DoSkipLogCommand(fQueue[I].Command) then
+    begin
+      Inc(K);
+      Result := Result + StoredGIPCommandToString(fQueue[I]) + '|';
+    end;
+    if K > MAX_ITEMS_CNT then
+      Break;
+  end;
+end;
+
+
+procedure TKMGameInputProcess.Paint;
+var
+  W: Integer;
+  str: string;
+  textSize: TKMPoint;
+begin
+  if Self = nil then Exit;
+  if not SHOW_GIP then Exit;
+
+  str := QueueToString;
+
+  if str = '' then Exit;
+
+  textSize := gRes.Fonts[fntArial].GetTextSize(str);
+
+  W := gGame.ActiveInterface.MyControls.MasterPanel.Width;
+
+  TKMRenderUI.WriteBevel(W - textSize.X - 10, 0, textSize.X, textSize.Y + 10);
+  TKMRenderUI.WriteText(W, 0, 0, str, fntArial, taRight);
 end;
 
 
