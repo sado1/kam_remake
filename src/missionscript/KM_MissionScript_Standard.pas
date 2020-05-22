@@ -447,7 +447,7 @@ begin
                           gHands[fLastHand].AddRoadToList(KMPoint(P[0],P[1]+2));
                           gHands[fLastHand].AddRoadToList(KMPoint(P[0]-1,P[1]+2));
                         end;
-
+    // @Deprecated, used AddWareToLast instead
     ctAddWare:          if fLastHand <> PLAYER_NONE then
                         begin
                           Qty := EnsureRange(P[1], -1, High(Word)); //Sometimes user can define it to be 999999
@@ -459,7 +459,7 @@ begin
                             gHands[fLastHand].Stats.WareInitial(WareIndexToType[P[0]], Qty);
                           end;
                         end;
-
+    // @Deprecated, used AddWareToLast instead
     ctAddWareToAll:    begin
                           Qty := EnsureRange(P[1], -1, High(Word)); //Sometimes user can define it to be 999999
                           if Qty = -1 then Qty := High(Word); //-1 means maximum resources
@@ -473,7 +473,7 @@ begin
                             end;
                           end;
                         end;
-
+    // @Deprecated, used AddWareToLast instead
     ctAddWareToSecond:  if fLastHand <> PLAYER_NONE then
                         begin
                           Qty := EnsureRange(P[1], -1, High(Word)); //Sometimes user can define it to be 999999
@@ -517,7 +517,7 @@ begin
                           else
                             AddError('ct_AddWareToLast without prior declaration of House');
                         end;
-
+    // @Deprecated, used AddWareToLast instead
     ctAddWeapon:        if fLastHand <> PLAYER_NONE then
                         begin
                           Qty := EnsureRange(P[1], -1, High(Word)); //Sometimes user can define it to be 999999
@@ -1074,34 +1074,13 @@ begin
           AddCommand(ctSetRallyPoint, [TKMHouseWFlagPoint(H).FlagPoint.X-1 + aLeftInset, TKMHouseWFlagPoint(H).FlagPoint.Y-1 + aTopInset]);
 
         //Process any wares in this house
-        //First two Stores use special KaM commands
-        if (H.HouseType = htStore) and (StoreCount < 2) then
+        for WT := WARE_MIN to WARE_MAX do
         begin
-          Inc(StoreCount);
-          for WT := WARE_MIN to WARE_MAX do
-            if H.CheckResIn(WT) > 0 then
-              case StoreCount of
-                1:  AddCommand(ctAddWare, [WareTypeToIndex[WT], H.CheckResIn(WT)]);
-                2:  AddCommand(ctAddWareToSecond, [WareTypeToIndex[WT], H.CheckResIn(WT)]);
-              end;
-        end
-        else
-        //First Barracks uses special KaM command
-        if (H.HouseType = htBarracks) and (BarracksCount = 0) then
-        begin
-          Inc(BarracksCount);
-          for WT := WARFARE_MIN to WARFARE_MAX do
-            if H.CheckResIn(WT) > 0 then
-              AddCommand(ctAddWeapon, [WareTypeToIndex[WT], H.CheckResIn(WT)]); //Ware, Count
-        end
-        else
-          for WT := WARE_MIN to WARE_MAX do
-          begin
-            if H.CheckResIn(WT) > 0 then
-              AddCommand(ctAddWareToLast, [WareTypeToIndex[WT], H.CheckResIn(WT)]);
-            if H.CheckResOut(WT) > 0 then
-              AddCommand(ctAddWareToLast, [WareTypeToIndex[WT], H.CheckResOut(WT)]);
-          end;
+          if H.CheckResIn(WT) > 0 then
+            AddCommand(ctAddWareToLast, [WareTypeToIndex[WT], H.CheckResIn(WT)]);
+          if H.CheckResOut(WT) > 0 then
+            AddCommand(ctAddWareToLast, [WareTypeToIndex[WT], H.CheckResOut(WT)]);
+        end;
 
         //Set Delivery mode after Wares, so in case there are some wares and delivery mode TakeOut, then we will need to add proper Offers
         if H.DeliveryMode <> dmDelivery then //Default delivery mode is dmDelivery
