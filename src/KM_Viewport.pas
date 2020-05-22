@@ -337,8 +337,8 @@ begin
   if ScrollKeyUp    then fPosition.Y := fPosition.Y - ScrollAdv;
   if ScrollKeyRight then fPosition.X := fPosition.X + ScrollAdv;
   if ScrollKeyDown  then fPosition.Y := fPosition.Y + ScrollAdv;
-  if ZoomKeyIn      then fZoom := fZoom + ZoomAdv;
-  if ZoomKeyOut     then fZoom := fZoom - ZoomAdv;
+  if ZoomKeyIn      then fZoom := fZoom * (1 + ZoomAdv);
+  if ZoomKeyOut     then fZoom := fZoom * (1 - ZoomAdv);
   //Mouse
   if CursorPoint.X <= ScreenBounds.Left   + SCROLL_FLEX then begin inc(I,1); fPosition.X := fPosition.X - ScrollAdv*(1+(ScreenBounds.Left   - CursorPoint.X)/SCROLL_FLEX); end;
   if CursorPoint.Y <= ScreenBounds.Top    + SCROLL_FLEX then begin inc(I,2); fPosition.Y := fPosition.Y - ScrollAdv*(1+(ScreenBounds.Top    - CursorPoint.Y)/SCROLL_FLEX); end;
