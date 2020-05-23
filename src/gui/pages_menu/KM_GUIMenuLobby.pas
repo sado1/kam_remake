@@ -70,7 +70,7 @@ type
     procedure MapTypeChanged(Sender: TObject);
     procedure InitDropColMapsList;
     procedure MapList_OnShow(Sender: TObject);
-    procedure UpdateMapList;
+    procedure UpdateMapList(aIsHost: Boolean);
 
     procedure MapList_SortUpdate(Sender: TObject);
     procedure MapList_ScanUpdate(Sender: TObject);
@@ -889,7 +889,7 @@ var
 begin
   fNetworking := aNetworking;
 
-  Reset(aKind);
+  Reset(aKind, True);
 
   //Events binding is the same for Host and Joiner because of stand-alone Server
   //E.g. If Server fails, Host can be disconnected from it as well as a Joiner
@@ -911,7 +911,7 @@ begin
   fNetworking.OnAbortAllTransfers := Lobby_AbortAllTransfers;
 
   Radio_MapType.ItemIndex := gGameApp.GameSettings.MenuLobbyMapType;
-  UpdateMapList;
+  UpdateMapList(aKind = lpkHost);
 
   //Hide RMG settings PopUp in case it was shown previosly
   if fGuiRMG <> nil then
@@ -1093,7 +1093,10 @@ begin
   begin
     Radio_MapType.Enable;
     Radio_MapType.ItemIndex := 0;
-    if not aPreserveMaps then UpdateMapList;
+
+    if not aPreserveMaps then
+      UpdateMapList(True);
+
     DropCol_Maps.Show;
     Label_MapName.Hide;
     Button_Start.Caption := gResTexts[TX_LOBBY_START]; //Start
@@ -1968,14 +1971,15 @@ begin
 end;
 
 
-procedure TKMMenuLobby.UpdateMapList;
+procedure TKMMenuLobby.UpdateMapList(aIsHost: Boolean);
 begin
   //Terminate any running scans otherwise they will continue to fill the drop box in the background
   fMapsMP.TerminateScan;
   fSavesMP.TerminateScan;
   DropCol_Maps.Clear; //Clear previous items in case scanning finds no maps/saves
 
-  if fNetworking.IsHost then
+  // can't use fNetworking.IsHost here, since we could just open lobby, and we didn't set fNetwroking.PlayerKind
+  if aIsHost then
   begin
     DropCol_Maps.Show;
     Label_MapName.Hide;
@@ -2046,7 +2050,7 @@ var
   RMG: Boolean; //RMG
 begin
   RMG := Radio_MapType.ItemIndex = 5; //RMG
-  UpdateMapList;
+  UpdateMapList(fNetworking.IsHost);
   gGameApp.GameSettings.MenuLobbyMapType := Radio_MapType.ItemIndex;
   if not RMG then //RMG
     fNetworking.SelectNoMap('');
@@ -2649,7 +2653,7 @@ begin
   //Pick correct position of map type selector
   Radio_MapType.ItemIndex := DetectMapType;
 
-  UpdateMapList;
+  UpdateMapList(True);
   Lobby_OnGameOptions(nil);
 
   case fNetworking.SelectGameKind of
@@ -2927,7 +2931,7 @@ end;
 procedure TKMMenuLobby.ReturnToLobby(const aSaveName: UnicodeString);
 begin
   Radio_MapType.ItemIndex := MAP_TYPE_INDEX_SAVE; //Save
-  UpdateMapList;
+  UpdateMapList(fNetworking.IsHost);
   Lobby_OnGameOptions(nil);
   if fNetworking.IsHost then
   begin
