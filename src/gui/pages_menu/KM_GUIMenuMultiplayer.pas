@@ -39,9 +39,9 @@ type
     function MP_GetInEnabled: Boolean;
     procedure MP_Join(const aServerAddress: string; aPort: Word; aRoom: Integer);
     procedure MP_JoinPassword(Sender: TObject);
-    procedure MP_JoinSuccess(Sender: TObject);
+    procedure MP_JoinSuccess;
     procedure MP_JoinFail(const aData: UnicodeString);
-    procedure MP_JoinAssignedHost(Sender: TObject);
+    procedure MP_JoinAssignedHost;
     procedure MP_HostClick(Sender: TObject);
     procedure MP_HostFail(const aData: UnicodeString);
     procedure BackClick(Sender: TObject);
@@ -914,13 +914,12 @@ begin
 end;
 
 
-//We had recieved permission to join
-procedure TKMMenuMultiplayer.MP_JoinSuccess(Sender: TObject);
+// We had recieved permission to join
+procedure TKMMenuMultiplayer.MP_JoinSuccess;
 begin
   gGameApp.Networking.OnJoinSucc := nil;
   gGameApp.Networking.OnJoinFail := nil;
   gGameApp.Networking.OnJoinAssignedHost := nil;
-
 
   StartLobby(False);
 end;
@@ -934,15 +933,15 @@ begin
 end;
 
 
-procedure TKMMenuMultiplayer.MP_JoinAssignedHost(Sender: TObject);
+procedure TKMMenuMultiplayer.MP_JoinAssignedHost;
 begin
   gGameApp.Networking.OnJoinSucc := nil;
   gGameApp.Networking.OnJoinFail := nil;
   gGameApp.Networking.OnJoinAssignedHost := nil;
   gGameApp.Networking.OnHostFail := MP_HostFail;
 
-  //We were joining a game and the server assigned hosting rights to us
-  StartLobby(True); //Open lobby page in host mode
+  // We were joining a game and the server assigned hosting rights to us
+  StartLobby(True); // Open lobby page in host mode
 end;
 
 

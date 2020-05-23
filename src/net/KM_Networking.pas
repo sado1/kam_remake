@@ -148,11 +148,11 @@ type
     procedure WriteInfoToJoinRoom(aM: TKMemoryStream);
     function GetMapInfo: TKMapInfo;
   public
-    OnJoinSucc: TNotifyEvent;         // We were allowed to join
+    OnJoinSucc: TEvent;               // We were allowed to join
     OnJoinFail: TUnicodeStringEvent;  // We were refused to join
     OnJoinPassword: TNotifyEvent;     // Lobby requires password
     OnHostFail: TUnicodeStringEvent;  // Server failed to start (already running a server?)
-    OnJoinAssignedHost: TNotifyEvent; // We were assigned hosting rights upon connection
+    OnJoinAssignedHost: TEvent;       // We were assigned hosting rights upon connection
     OnReassignedHost: TNotifyEvent;   // We were reassigned hosting rights when the host quit
     OnReassignedJoiner: TNotifyEvent; // We were reassigned to a joiner from host
     OnFileTransferProgress: TTransferProgressEvent;             // File transfer progress to this player
@@ -1701,9 +1701,9 @@ begin
                 begin
                   fNetPlayerKind := lpkHost;
 
-                  //Enter the lobby if we had hosting rights assigned to us
+                  // Enter the lobby if we had hosting rights assigned to us
                   if Assigned(OnJoinAssignedHost) then
-                    OnJoinAssignedHost(Self);
+                    OnJoinAssignedHost;
 
                   PostLocalMessage(gResTexts[TX_LOBBY_HOST_RIGHTS], csNone);
                 end;
@@ -1873,7 +1873,7 @@ begin
       mkAllowToJoin:
               if fNetPlayerKind = lpkJoiner then
               begin
-                OnJoinSucc(Self); //Enter lobby
+                OnJoinSucc; // Enter lobby
                 SetGameState(lgsLobby);
                 //No need to play a sound here, host will send "<player> has joined" message
                 if fWelcomeMessage <> '' then PostLocalMessage(fWelcomeMessage, csNone);
