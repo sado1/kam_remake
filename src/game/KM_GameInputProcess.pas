@@ -483,14 +483,13 @@ begin
   with aGIC do
   begin
     NetPlayerStr := '';
-    if (gGame <> nil)
-      and (gGame.Networking <> nil) then
+    if (gGame <> nil) and (gGame.Networking <> nil) then
     begin
       NPlayerI := gGame.Networking.GetNetPlayerIndex(HandIndex);
       if NPlayerI = -1 then
-        NetPlayerStr := Format(' [NetPlayer %d]', [NPlayerI])
+        NetPlayerStr := Format(' [NetP %d %' + IntToStr(MAX_NIKNAME_LENGTH) +'s]', [NPlayerI, ''])
       else
-        NetPlayerStr := Format(' [NetPlayer %d / %s]', [NPlayerI, gGame.Networking.NetPlayers[NPlayerI].Nikname]);
+        NetPlayerStr := Format(' [NetP %d/%' + IntToStr(MAX_NIKNAME_LENGTH) +'s]', [NPlayerI, gGame.Networking.NetPlayers[NPlayerI].Nikname]);
     end;
 
     Result := Format('%-' + IntToStr(GIC_COMMAND_TYPE_MAX_LENGTH) + 's hand: %2d' + NetPlayerStr + ', params: ',

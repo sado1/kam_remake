@@ -42,6 +42,8 @@ const
   FONTS_FOLDER          = 'data' + PathDelim + 'gfx' + PathDelim + 'fonts' + PathDelim;
   DEFAULT_LOCALE: AnsiString = 'eng';
 
+  MAX_NIKNAME_LENGTH = 16;
+
   DEL_LOGS_OLDER_THAN   = 14;           //in days
 
   TEMPLATE_LIBX_FILE_TEXT = 'text.%s.libx';
