@@ -1278,7 +1278,7 @@ begin
   if fReplayState = gipRecording then
     maxIndex := fCount
   else
-    maxIndex := fCursor;
+    maxIndex := Min(fCount, fCursor);
 
   Result := '';
   K := 0;
