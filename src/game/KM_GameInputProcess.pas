@@ -870,8 +870,10 @@ begin
       gicGameMessageLogRead:      P.MessageLog[Params[1]].IsReadGIP := True;
       gicGamePlayerChange:        begin
                                     Assert(fReplayState <> gipRecording); //Should only occur in replays
+                                    Assert(not gGame.IsMapEditor);
                                     gHands[Params[1]].HandType := TKMHandType(Params[2]);
                                     gHands[Params[1]].OwnerNikname := AnsiStrParam;
+                                    gGame.GamePlayInterface.UpdateUI; //Update players drop list
                                   end;
       gicGamePlayerDefeat:        begin
                                     gHands.UpdateGoalsForHand(Params[1], False);

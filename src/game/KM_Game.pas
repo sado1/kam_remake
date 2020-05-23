@@ -832,6 +832,7 @@ begin
       end;
 
       //In saves players can be changed to AIs, which needs to be stored in the replay
+      //Also one player could replace another, we have to update its player name
       if fNetworking.SelectGameKind = ngkSave then
       begin
         if fNetworking.NetPlayers[I].IsHuman then
@@ -840,10 +841,10 @@ begin
           playerNikname := '';
 
         TKMGameInputProcess_Multi(GameInputProcess).PlayerChanged(HIndex, gHands[HIndex].HandType, playerNikname);
-      end
-      else
-        //Set owners name so we can write it into savegame/replay
-        gHands[HIndex].OwnerNikname := fNetworking.NetPlayers[I].Nikname;
+      end;
+
+      //Update player nikname to show in the list for specs, in the stats etc
+      gHands[HIndex].OwnerNikname := fNetworking.NetPlayers[I].Nikname;
     end;
 
   //Find enabled human hands, where if there is no net player on that loc
