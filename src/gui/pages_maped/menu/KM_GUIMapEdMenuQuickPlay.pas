@@ -151,7 +151,7 @@ begin
   gGameApp.NewSingleMap(MissionFile, GameName, HandId, Color, Difficulty, AIType, not aMapSaved);
   gGame.StartedFromMapEditor := True;
   gGame.StartedFromMapEdAsMPMap := IsMultiplayer;
-  TKMGamePlayInterface(gGame.ActiveInterface).SetMenuState(gGame.MissionMode = mmTactic);
+  TKMGamePlayInterface(gGame.ActiveInterface).SetMenuState(gGame.IsTactic);
 end;
 
 

@@ -848,7 +848,7 @@ begin
               if fNetworking.MapInfo.TxtInfo.IsRMG then
                 Result := MAP_TYPE_INDEX_RMG
               else
-              if fNetworking.MapInfo.MissionMode = mmTactic then
+              if fNetworking.MapInfo.IsTacticMission then
                 Result := 1;
     ngkSave: Result := MAP_TYPE_INDEX_SAVE;
   end;
@@ -2159,8 +2159,8 @@ begin
       //Different modes allow different maps
       case Radio_MapType.ItemIndex of
         0, MAP_TYPE_INDEX_RMG:    
-              AddMap := (fMapsMP[I].MissionMode = mmNormal) and not fMapsMP[I].TxtInfo.IsCoop and not fMapsMP[I].TxtInfo.IsSpecial; //BuildMap
-        1:    AddMap := (fMapsMP[I].MissionMode = mmTactic) and not fMapsMP[I].TxtInfo.IsCoop and not fMapsMP[I].TxtInfo.IsSpecial; //FightMap
+              AddMap := fMapsMP[I].IsNormalMission and not fMapsMP[I].TxtInfo.IsCoop and not fMapsMP[I].TxtInfo.IsSpecial; //BuildMap
+        1:    AddMap := fMapsMP[I].IsTacticMission and not fMapsMP[I].TxtInfo.IsCoop and not fMapsMP[I].TxtInfo.IsSpecial; //FightMap
         2:    AddMap := fMapsMP[I].TxtInfo.IsCoop; //CoopMap
         3:    AddMap := fMapsMP[I].TxtInfo.IsSpecial; //Special map
         else  AddMap := False; //Other cases are already handled in Lobby_MapTypeSelect

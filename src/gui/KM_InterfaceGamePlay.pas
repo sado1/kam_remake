@@ -1481,7 +1481,7 @@ begin
     fGuiGameUnit.JoiningGroups := False;
     ReleaseDirectionSelector;
     gRes.Cursors.Cursor := kmcDefault; // Might have been scrolling or joining groups
-    SetMenuState(gGame.MissionMode = mmTactic); // Disabled main buttons
+    SetMenuState(gGame.IsTactic); // Disabled main buttons
 
     MinimapView.Disable;
     Sidebar_Top.Disable;
@@ -1491,7 +1491,7 @@ begin
   end
   else
   begin
-    SetMenuState(gGame.MissionMode = mmTactic); // Enable main buttons
+    SetMenuState(gGame.IsTactic); // Enable main buttons
 
     Viewport.CinematicReset; //Reset Pan points for future cinematics
 
@@ -2588,7 +2588,7 @@ begin
                   end;
     grDefeat:    begin
                     // Refresh it so that menu buttons become disabled
-                    SetMenuState(gGame.MissionMode = mmTactic);
+                    SetMenuState(gGame.IsTactic);
                     // Close e.g. the build menu if it was open
                     SwitchPage(Button_Back);
 
@@ -4117,7 +4117,7 @@ begin
   MinimapView.SetMinimap(fMinimap);
   MinimapView.SetViewport(fViewport);
 
-  SetMenuState(gGame.MissionMode = mmTactic);
+  SetMenuState(gGame.IsTactic);
 end;
 
 

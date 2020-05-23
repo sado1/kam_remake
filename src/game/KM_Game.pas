@@ -2664,8 +2664,8 @@ begin
 
     //Tell the master server about our game on the specific tick (host only)
     if (fGameMode in [gmMulti, gmMultiSpectate]) and fNetworking.IsHost
-      and (((fMissionMode = mmNormal) and (fGameTick = ANNOUNCE_BUILD_MAP))
-      or ((fMissionMode = mmTactic) and (fGameTick = ANNOUNCE_BATTLE_MAP))) then
+      and ((IsNormalMission and (fGameTick = ANNOUNCE_BUILD_MAP))
+      or (IsTactic and (fGameTick = ANNOUNCE_BATTLE_MAP))) then
     fNetworking.ServerQuery.SendMapInfo(fGameName, fGameMapFullCRC, fNetworking.NetPlayers.GetConnectedCount);
 
     fScripting.UpdateState;

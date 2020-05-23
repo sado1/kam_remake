@@ -726,7 +726,7 @@ begin
                        I);
       R.Cells[0].Pic := fMaps[I].FavouriteMapPic;
       R.Cells[0].HighlightOnMouseOver := True;
-      R.Cells[1].Pic := MakePic(rxGui, 657 + Byte(fMaps[I].MissionMode = mmTactic));
+      R.Cells[1].Pic := MakePic(rxGui, 657 + Byte(fMaps[I].IsTacticMission));
       R.Tag := I;
       ColumnBox_MapEd.AddItem(R);
 

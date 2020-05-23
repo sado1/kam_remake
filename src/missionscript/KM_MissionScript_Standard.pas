@@ -867,7 +867,7 @@ begin
   AddData('!' + COMMANDVALUES[ctSetMap] + ' "data\mission\smaps\' +
     AnsiString(ChangeFileExt(ExtractFileName(aFileName), '.map')) + '"');
 
-  if gGame.MissionMode = mmTactic then AddCommand(ctSetTactic, []);
+  if gGame.IsTactic then AddCommand(ctSetTactic, []);
   AddCommand(ctSetMaxPlayer, [gHands.Count]);
   //When removing players DefaultHuman can be left outside the valid range
   if InRange(gGame.MapEditor.DefaultHuman, 0, gHands.Count - 1) then
