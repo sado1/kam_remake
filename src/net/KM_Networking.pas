@@ -2466,7 +2466,8 @@ begin
     ngkMap:  OnStartMap(fMapInfo.FileNameWithoutHash, fMapInfo.MapFolder, fMapInfo.CRC, MyNetPlayer.IsSpectator,
                          fNetGameOptions.MissionDifficulty);
     ngkSave: OnStartSave(fSaveInfo.FileName, MyNetPlayer.IsSpectator);
-    else      raise Exception.Create('Unexpacted fSelectGameKind');
+  else
+    raise Exception.Create('Unexpected fSelectGameKind');
   end;
 end;
 
