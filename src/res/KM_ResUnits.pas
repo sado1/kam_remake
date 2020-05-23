@@ -438,7 +438,8 @@ end;
 
 
 destructor TKMResUnits.Destroy;
-var U:TKMUnitType;
+var
+  U: TKMUnitType;
 begin
   for U := Low(TKMUnitType) to High(TKMUnitType) do
     fItems[U].Free;
