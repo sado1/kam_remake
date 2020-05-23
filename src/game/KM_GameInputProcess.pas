@@ -101,7 +101,7 @@ type
     gicGameTeamChange,
     gicGameHotkeySet,        //Hotkeys are synced for MP saves (UI keeps local copy to avoid GIP delays)
     gicGameMessageLogRead,   //Player marks a message in their log as read
-    gicGamePlayerTypeChange, //Players can be changed to AI when loading a save
+    gicGamePlayerChange, //Players can be changed to AI when loading a save
     gicGamePlayerDefeat,     //Player can be defeated after intentional quit from the game
 
     //VII.
@@ -126,6 +126,7 @@ type
     gicpt_Int2,
     gicpt_Int3,
     gicpt_Int4,
+    gicpt_Ansi1Int2,
     gicpt_Float,
     gicpt_UniStr1,
     gicpt_Ansi1Uni4,
@@ -245,7 +246,7 @@ const
     gicpt_Int2,     // gicGameTeamChange
     gicpt_Int2,     // gicGameHotkeySet
     gicpt_Int1,     // gicGameMessageLogRead
-    gicpt_Int2,     // gicGamePlayerTypeChange
+    gicpt_Ansi1Int2,// gicGamePlayerChange
     gicpt_Int1,     // gicGamePlayerDefeat
     //VII.     Scripting commands
     gicpt_Ansi1Uni4,
@@ -296,6 +297,7 @@ type
     function MakeCommand(aGIC: TKMGameInputCommandType; const aParam1, aParam2: Integer): TKMGameInputCommand; overload;
     function MakeCommand(aGIC: TKMGameInputCommandType; const aParam1, aParam2, aParam3: Integer): TKMGameInputCommand; overload;
     function MakeCommand(aGIC: TKMGameInputCommandType; const aParam1, aParam2, aParam3, aParam4: Integer): TKMGameInputCommand; overload;
+    function MakeCommand(aGIC: TKMGameInputCommandType; const aAnsiTxtParam: AnsiString; const aParam1, aParam2: Integer): TKMGameInputCommand; overload;
     function MakeCommandNoHand(aGIC: TKMGameInputCommandType; const aParam1: Single): TKMGameInputCommand;
     function MakeCommand(aGIC: TKMGameInputCommandType; const aTextParam: UnicodeString): TKMGameInputCommand; overload;
     function MakeCommand(aGIC: TKMGameInputCommandType; const aAnsiTxtParam: AnsiString; const aUniTxtArray: TKMScriptCommandParamsArray): TKMGameInputCommand; overload;
@@ -420,6 +422,11 @@ begin
                         aMemoryStream.Write(Params[3]);
                         aMemoryStream.Write(Params[4]);
                       end;
+      gicpt_Ansi1Int2:begin
+                        aMemoryStream.WriteA(AnsiStrParam);
+                        aMemoryStream.Write(Params[1]);
+                        aMemoryStream.Write(Params[2]);
+                      end;
       gicpt_Float:    aMemoryStream.Write(FloatParam);
       gicpt_UniStr1:  aMemoryStream.WriteW(UnicodeStrParams[0]);
       gicpt_Ansi1Uni4:begin
@@ -458,6 +465,11 @@ begin
                         aMemoryStream.Read(Params[2]);
                         aMemoryStream.Read(Params[3]);
                         aMemoryStream.Read(Params[4]);
+                      end;
+      gicpt_Ansi1Int2:begin
+                        aMemoryStream.ReadA(AnsiStrParam);
+                        aMemoryStream.Read(Params[1]);
+                        aMemoryStream.Read(Params[2]);
                       end;
       gicpt_Float:    aMemoryStream.Read(FloatParam);
       gicpt_UniStr1:  aMemoryStream.ReadW(UnicodeStrParams[0]);
@@ -500,9 +512,10 @@ begin
       gicpt_Int2:       Result := Result + Format('[%10d,%10d]', [Params[1], Params[2]]);
       gicpt_Int3:       Result := Result + Format('[%10d,%10d,%10d]', [Params[1], Params[2], Params[3]]);
       gicpt_Int4:       Result := Result + Format('[%10d,%10d,%10d,%10d]', [Params[1], Params[2], Params[3], Params[4]]);
+      gicpt_Ansi1Int2:  Result := Result + Format('[S1=%s,%10d,%10d]', [AnsiStrParam, Params[1], Params[2]]);
       gicpt_UniStr1:    Result := Result + Format('[%s]', [UnicodeStrParams[0]]);
       gicpt_Float:      Result := Result + Format('[%f]', [FloatParam]);
-      gicpt_Ansi1Uni4:  Result := Result + Format('[S1=%s,S2=%s,S3=%s,S4=%s,S5=%s]', [AnsiStrParam,UnicodeStrParams[0],UnicodeStrParams[1],UnicodeStrParams[2],UnicodeStrParams[3]]);
+      gicpt_Ansi1Uni4:  Result := Result + Format('[S1=%s,S2=%s,S3=%s,S4=%s,S5=%s]', [AnsiStrParam, UnicodeStrParams[0], UnicodeStrParams[1],UnicodeStrParams[2],UnicodeStrParams[3]]);
       gicpt_Date:       Result := Result + Format('[%s]', [FormatDateTime('dd.mm.yy hh:nn:ss.zzz', DateTimeParam)]);
       else              ;
     end;
@@ -597,6 +610,19 @@ begin
   Result.Params[2] := aParam2;
   Result.Params[3] := aParam3;
   Result.Params[4] := aParam4;
+end;
+
+
+function TKMGameInputProcess.MakeCommand(aGIC: TKMGameInputCommandType; const aAnsiTxtParam: AnsiString; const aParam1, aParam2: Integer): TKMGameInputCommand;
+begin
+  Assert(CommandPackType[aGIC] = gicpt_Ansi1Int2,
+         Format('Wrong packing type for command %s: Expected: gicpt_Ansi1Int2 Actual: [%s]',
+                [GetEnumName(TypeInfo(TKMGameInputCommandType), Integer(aGIC)),
+                 GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(CommandPackType[aGIC]))]));
+  Result := MakeEmptyCommand(aGIC);
+  Result.AnsiStrParam := aAnsiTxtParam;
+  Result.Params[1] := aParam1;
+  Result.Params[2] := aParam2;
 end;
 
 
@@ -842,9 +868,10 @@ begin
       gicGameAlertBeacon:         ExecGameAlertBeaconCmd(aCommand);
       gicGameHotkeySet:           P.SelectionHotkeys[Params[1]] := Params[2];
       gicGameMessageLogRead:      P.MessageLog[Params[1]].IsReadGIP := True;
-      gicGamePlayerTypeChange:    begin
+      gicGamePlayerChange:        begin
                                     Assert(fReplayState <> gipRecording); //Should only occur in replays
                                     gHands[Params[1]].HandType := TKMHandType(Params[2]);
+                                    gHands[Params[1]].OwnerNikname := AnsiStrParam;
                                   end;
       gicGamePlayerDefeat:        begin
                                     gHands.UpdateGoalsForHand(Params[1], False);

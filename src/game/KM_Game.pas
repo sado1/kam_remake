@@ -779,6 +779,7 @@ var
   I: Integer;
   HIndex: TKMHandID;
   isPT: Boolean;
+  playerNikname: AnsiString;
   oldSpeedPT, oldSpeedAfterPT: Single;
 begin
   oldSpeedPT := fGameOptions.SpeedPT;
@@ -832,10 +833,17 @@ begin
 
       //In saves players can be changed to AIs, which needs to be stored in the replay
       if fNetworking.SelectGameKind = ngkSave then
-        TKMGameInputProcess_Multi(GameInputProcess).PlayerTypeChange(HIndex, gHands[HIndex].HandType);
+      begin
+        if fNetworking.NetPlayers[I].IsHuman then
+          playerNikname := fNetworking.NetPlayers[I].Nikname
+        else
+          playerNikname := '';
 
-      //Set owners name so we can write it into savegame/replay
-      gHands[HIndex].SetOwnerNikname(fNetworking.NetPlayers[I].Nikname);
+        TKMGameInputProcess_Multi(GameInputProcess).PlayerChanged(HIndex, gHands[HIndex].HandType, playerNikname);
+      end
+      else
+        //Set owners name so we can write it into savegame/replay
+        gHands[HIndex].OwnerNikname := fNetworking.NetPlayers[I].Nikname;
     end;
 
   //Find enabled human hands, where if there is no net player on that loc

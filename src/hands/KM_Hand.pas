@@ -101,6 +101,8 @@ type
 
     function GetAI: TKMHandAI;
     procedure SetFlagColor(const Value: Cardinal);
+
+    procedure SetOwnerNikname(const aName: AnsiString);
   public
     Enabled: Boolean;
     InCinematic: Boolean;
@@ -123,8 +125,7 @@ type
     property Disabled: Boolean read IsDisabled;
 
     procedure SetHandIndex(aNewIndex: TKMHandID);
-    procedure SetOwnerNikname(const aName: AnsiString); //MP owner nikname (empty in SP)
-    property OwnerNikname: AnsiString read fOwnerNikname;
+    property OwnerNikname: AnsiString read fOwnerNikname write SetOwnerNikname; //MP owner nikname (empty in SP)
     property OwnerNiknameU: UnicodeString read GetOwnerNiknameU;
     function CalcOwnerName: UnicodeString; //Universal owner name
     function OwnerName(aNumberedAIs: Boolean = True; aLocalized: Boolean = True): UnicodeString; //Universal owner name
