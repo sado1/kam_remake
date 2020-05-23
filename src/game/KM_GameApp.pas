@@ -59,14 +59,14 @@ type
 
     procedure PrepageStopGame(aMsg: TKMGameResultMsg);
     procedure StopGame(aMsg: TKMGameResultMsg; const aTextMsg: UnicodeString = '');
-    procedure AnnounceReturnToLobby(Sender: TObject);
+    procedure AnnounceReturnToLobby;
     procedure PrepareReturnToLobby(aTimestamp: TDateTime);
-    procedure StopGameReturnToLobby(Sender: TObject);
+    procedure StopGameReturnToLobby;
     function CanClose: Boolean;
     procedure Resize(X,Y: Integer);
     procedure ToggleLocale(const aLocale: AnsiString);
     procedure NetworkInit;
-    procedure SendMPGameInfo(Sender: TObject);
+    procedure SendMPGameInfo;
     function RenderVersion: UnicodeString;
     procedure PrintScreen(const aFilename: UnicodeString = '');
     procedure PauseMusicToPlayFile(const aFileName: UnicodeString);
@@ -644,7 +644,7 @@ begin
 end;
 
 
-procedure TKMGameApp.AnnounceReturnToLobby(Sender: TObject);
+procedure TKMGameApp.AnnounceReturnToLobby;
 begin
   //When this GIC command is executed, it will run PrepareReturnToLobby
   gGame.GameInputProcess.CmdGame(gicGameSaveReturnLobby, UTCNow);
@@ -661,7 +661,7 @@ begin
 end;
 
 
-procedure TKMGameApp.StopGameReturnToLobby(Sender: TObject);
+procedure TKMGameApp.StopGameReturnToLobby;
 begin
   if gGame = nil then Exit;
 
@@ -1108,7 +1108,7 @@ end;
 
 //Called by fNetworking to access MissionTime/GameName if they are valid
 //fNetworking knows nothing about fGame
-procedure TKMGameApp.SendMPGameInfo(Sender: TObject);
+procedure TKMGameApp.SendMPGameInfo;
 begin
   if gGame <> nil then
     fNetworking.AnnounceGameInfo(gGame.MissionTime, gGame.GameName)
@@ -1216,7 +1216,7 @@ begin
   begin
     gGame.UpdateState(fGlobalTickCount);
     if gGame.IsMultiPlayerOrSpec and (fGlobalTickCount mod 100 = 0) then
-      SendMPGameInfo(Self); //Send status to the server every 10 seconds
+      SendMPGameInfo; //Send status to the server every 10 seconds
   end
   else
     fMainMenuInterface.UpdateState(fGlobalTickCount);
@@ -1253,6 +1253,3 @@ end;
 
 
 end.
-
-
-

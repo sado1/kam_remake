@@ -105,15 +105,15 @@ type
     procedure UpdateDifficultyLevels(aMap: TKMapInfo); overload;
 
     procedure Lobby_OnDisconnect(const aData: UnicodeString);
-    procedure Lobby_OnGameOptions(Sender: TObject);
+    procedure Lobby_OnGameOptions;
     procedure Lobby_OnMapName(const aData: UnicodeString);
     procedure Lobby_OnMapMissing(const aData: UnicodeString; aStartTransfer: Boolean);
     procedure Lobby_OnMessage(const aText: UnicodeString);
-    procedure Lobby_OnPingInfo(Sender: TObject);
-    procedure Lobby_OnPlayersSetup(Sender: TObject);
-    procedure Lobby_OnUpdateMinimap(Sender: TObject);
-    procedure Lobby_OnReassignedToHost(Sender: TObject);
-    procedure Lobby_OnReassignedToJoiner(Sender: TObject);
+    procedure Lobby_OnPingInfo;
+    procedure Lobby_OnPlayersSetup;
+    procedure Lobby_OnUpdateMinimap;
+    procedure Lobby_OnReassignedToHost;
+    procedure Lobby_OnReassignedToJoiner;
     procedure Lobby_OnFileTransferProgress(aTotal, aProgress: Cardinal);
     procedure Lobby_OnPlayerFileTransferProgress(aNetPlayerIndex: Integer; aTotal, aProgress: Cardinal);
     procedure Lobby_OnSetPassword(const aPassword: AnsiString);
@@ -1149,7 +1149,7 @@ begin
                                 MD);
 
   //Refresh the data to controls
-  Lobby_OnGameOptions(nil);
+  Lobby_OnGameOptions;
 end;
 
 
@@ -1179,7 +1179,7 @@ begin
 end;
 
 
-procedure TKMMenuLobby.Lobby_OnGameOptions(Sender: TObject);
+procedure TKMMenuLobby.Lobby_OnGameOptions;
 var
   MD: TKMMissionDifficulty;
 begin
@@ -1605,7 +1605,7 @@ end;
 //Players list has been updated
 //We should reflect it to UI
 //Not very fast operation - ~4ms per player = ~60ms per all
-procedure TKMMenuLobby.Lobby_OnPlayersSetup(Sender: TObject);
+procedure TKMMenuLobby.Lobby_OnPlayersSetup;
 
   function ConvertSpeedRange(aSpeedRng: TKMRangeSingle): TKMRangeInt;
   begin
@@ -1942,7 +1942,7 @@ begin
 end;
 
 
-procedure TKMMenuLobby.Lobby_OnPingInfo(Sender: TObject);
+procedure TKMMenuLobby.Lobby_OnPingInfo;
 var
   I: Integer;
 begin
@@ -2442,22 +2442,22 @@ begin
 end;
 
 
-procedure TKMMenuLobby.Lobby_OnUpdateMinimap(Sender: TObject);
+procedure TKMMenuLobby.Lobby_OnUpdateMinimap;
 var
-  S: TKMSaveInfo;
+  si: TKMSaveInfo;
 begin
-  S := fNetworking.SaveInfo;
-  if fNetworking.IsSave then
+  if not fNetworking.IsSave then Exit;
+
+  si := fNetworking.SaveInfo;
+
+  if si.IsValid
+  and (fNetworking.MyIndex > 0)
+  and si.LoadMinimap(fMinimap, fNetworking.MyNetPlayer.StartLocation) then
   begin
-    if S.IsValid
-      and (fNetworking.MyIndex > 0)
-      and S.LoadMinimap(fMinimap, fNetworking.MyNetPlayer.StartLocation) then
-    begin
-      MinimapView.SetMinimap(fMinimap);
-      MinimapView.Show;
-    end else
-      MinimapView.Hide;
-  end;
+    MinimapView.SetMinimap(fMinimap);
+    MinimapView.Show;
+  end else
+    MinimapView.Hide;
 end;
 
 
@@ -2583,7 +2583,7 @@ begin
                   Txt := WrapColor(S.SaveError.ErrorString, clSaveLoadTry) + '||' +
                          WrapColor(gResTexts[TX_UNSUPPORTED_SAVE_LOAD_WARNING_TXT], clSaveLoadError) + '||' + Txt;
                 Memo_MapDesc.Text := Txt;
-                Lobby_OnUpdateMinimap(nil);
+                Lobby_OnUpdateMinimap;
                 UpdateDifficultyLevels(S);
               end;
     ngkMap:  begin
@@ -2646,7 +2646,7 @@ end;
 
 
 //We have been assigned to be the host of the game because the host disconnected. Reopen lobby page in correct mode.
-procedure TKMMenuLobby.Lobby_OnReassignedToHost(Sender: TObject);
+procedure TKMMenuLobby.Lobby_OnReassignedToHost;
 begin
   Reset(lpkHost, True); //Will reset the lobby page into host mode, preserving messages/maps
 
@@ -2654,7 +2654,7 @@ begin
   Radio_MapType.ItemIndex := DetectMapType;
 
   UpdateMapList(True);
-  Lobby_OnGameOptions(nil);
+  Lobby_OnGameOptions;
 
   case fNetworking.SelectGameKind of
     ngkMap:  Lobby_OnMapName(fNetworking.MapInfo.FileName);
@@ -2663,7 +2663,7 @@ begin
 end;
 
 
-procedure TKMMenuLobby.Lobby_OnReassignedToJoiner(Sender: TObject);
+procedure TKMMenuLobby.Lobby_OnReassignedToJoiner;
 begin
   Reset(lpkJoiner, True); //Will reset the lobby page into host mode, preserving messages/maps
 
@@ -2932,7 +2932,7 @@ procedure TKMMenuLobby.ReturnToLobby(const aSaveName: UnicodeString);
 begin
   Radio_MapType.ItemIndex := MAP_TYPE_INDEX_SAVE; //Save
   UpdateMapList(fNetworking.IsHost);
-  Lobby_OnGameOptions(nil);
+  Lobby_OnGameOptions;
   if fNetworking.IsHost then
   begin
     fNetworking.SelectSave(aSaveName);

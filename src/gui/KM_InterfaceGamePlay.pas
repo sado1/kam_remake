@@ -313,8 +313,8 @@ type
     procedure UpdateOverlayControls;
     procedure ReleaseDirectionSelector;
     procedure ChatMessage(const aData: UnicodeString);
-    procedure AlliesOnPlayerSetup(Sender: TObject);
-    procedure AlliesOnPingInfo(Sender: TObject);
+    procedure AlliesOnPlayerSetup;
+    procedure AlliesOnPingInfo;
     procedure AlliesTeamChange(Sender: TObject);
     procedure CinematicUpdate;
     procedure LoadHotkeysFromHand;
@@ -3014,7 +3014,7 @@ begin
 end;
 
 
-procedure TKMGamePlayInterface.AlliesOnPlayerSetup(Sender: TObject);
+procedure TKMGamePlayInterface.AlliesOnPlayerSetup;
 var
   I, K, NetI: Integer;
   LocaleID: Integer;
@@ -3120,7 +3120,7 @@ begin
 end;
 
 
-procedure TKMGamePlayInterface.AlliesOnPingInfo(Sender: TObject);
+procedure TKMGamePlayInterface.AlliesOnPingInfo;
 var
   I, K, NetI: Integer;
   Ping: Word;

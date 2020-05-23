@@ -150,27 +150,27 @@ type
   public
     OnJoinSucc: TEvent;               // We were allowed to join
     OnJoinFail: TUnicodeStringEvent;  // We were refused to join
-    OnJoinPassword: TNotifyEvent;     // Lobby requires password
+    OnJoinPassword: TEvent;           // Lobby requires password
     OnHostFail: TUnicodeStringEvent;  // Server failed to start (already running a server?)
     OnJoinAssignedHost: TEvent;       // We were assigned hosting rights upon connection
-    OnReassignedHost: TNotifyEvent;   // We were reassigned hosting rights when the host quit
-    OnReassignedJoiner: TNotifyEvent; // We were reassigned to a joiner from host
+    OnReassignedHost: TEvent;         // We were reassigned hosting rights when the host quit
+    OnReassignedJoiner: TEvent;       // We were reassigned to a joiner from host
     OnFileTransferProgress: TTransferProgressEvent;             // File transfer progress to this player
     OnPlayerFileTransferProgress: TTransferProgressPlayerEvent; // File transfer progress to other player
 
-    OnPlayersSetup: TNotifyEvent;         // Player list updated
-    OnUpdateMinimap: TNotifyEvent;        // Update minimap
-    OnGameOptions: TNotifyEvent;          // Game options updated
+    OnPlayersSetup: TEvent;               // Player list updated
+    OnUpdateMinimap: TEvent;              // Update minimap
+    OnGameOptions: TEvent;                // Game options updated
     OnMapName: TUnicodeStringEvent;       // Map name updated
     OnMapMissing: TUnicodeStringBoolEvent;// Map missing
     OnStartMap: TMapStartEvent;           // Start the game
     OnStartSave: TGameStartEvent;         // Load the game
-    OnDoReturnToLobby: TNotifyEvent;
-    OnAnnounceReturnToLobby: TNotifyEvent;
-    OnPlay: TNotifyEvent;                 // Start the gameplay
-    OnReadyToPlay: TNotifyEvent;          // Update the list of players ready to play
-    OnPingInfo: TNotifyEvent;             // Ping info updated
-    OnMPGameInfoChanged: TNotifyEvent;
+    OnDoReturnToLobby: TEvent;
+    OnAnnounceReturnToLobby: TEvent;      // Sends GIC command to create synchronised save file
+    OnPlay: TEvent;                       // Start the gameplay
+    OnReadyToPlay: TEvent;                // Update the list of players ready to play
+    OnPingInfo: TEvent;                   // Ping info updated
+    OnMPGameInfoChanged: TEvent;
     OnSetPassword: TAnsiStringEvent;
     OnAbortAllTransfers: TEvent;
 
@@ -707,7 +707,7 @@ begin
   NetGameOptions.SpeedPT := fSaveInfo.GameOptions.SpeedPT;
   NetGameOptions.SpeedAfterPT := fSaveInfo.GameOptions.SpeedAfterPT;
   SendGameOptions;
-  if Assigned(OnGameOptions) then OnGameOptions(Self);
+  if Assigned(OnGameOptions) then OnGameOptions;
 
   fSelectGameKind := ngkSave;
 
@@ -740,7 +740,7 @@ begin
   //Check if position can be taken before doing anything
   if not CanTakeLocation(aPlayerIndex, aIndex, IsHost and fNetPlayers.HostDoesSetup) then
   begin
-    if Assigned(OnPlayersSetup) then OnPlayersSetup(Self);
+    if Assigned(OnPlayersSetup) then OnPlayersSetup;
     Exit;
   end;
 
@@ -776,7 +776,7 @@ begin
 
                   // Update minimap
                   if (aPlayerIndex = fMyIndex) and Assigned(OnUpdateMinimap) then
-                    OnUpdateMinimap(Self);
+                    OnUpdateMinimap;
 
                   SendPlayerListAndRefreshPlayersSetup;
                 end;
@@ -819,7 +819,7 @@ begin
     lpkHost:   SendPlayerListAndRefreshPlayersSetup;
     lpkJoiner: begin
                   PacketSend(NET_ADDRESS_HOST, mkFlagColorQuery, aColor);
-                  if Assigned(OnPlayersSetup) then OnPlayersSetup(Self);
+                  if Assigned(OnPlayersSetup) then OnPlayersSetup;
                 end;
   end;
 end;
@@ -889,7 +889,7 @@ procedure TKMNetworking.SetPassword(const aPassword: AnsiString);
 begin
   Assert(IsHost, 'Only host can set password');
   fPassword := aPassword;
-  OnMPGameInfoChanged(Self); //Send the password state to the server so it is shown in server list
+  OnMPGameInfoChanged; //Send the password state to the server so it is shown in server list
   PacketSendA(NET_ADDRESS_SERVER, mkSetPassword, fPassword); //Send to server
 
   PacketSendA(NET_ADDRESS_OTHERS, mkSetPassword, fPassword); //Send to other players as well, just to let them know we have password here
@@ -1091,7 +1091,7 @@ begin
   fMyIndex := fNetPlayers.NiknameToLocal(fMyNikname); //The host's index can change when players are removed
   fHostIndex := fMyIndex;
 
-  OnMPGameInfoChanged(Self); //Tell the server about the changes
+  OnMPGameInfoChanged; //Tell the server about the changes
 
   M := TKMemoryStreamBinary.Create;
   M.Write(fHostIndex);
@@ -1099,7 +1099,7 @@ begin
   PacketSend(aPlayerIndex, mkPlayersList, M);
   M.Free;
 
-  if Assigned(OnPlayersSetup) then OnPlayersSetup(Self);
+  if Assigned(OnPlayersSetup) then OnPlayersSetup;
 end;
 
 
@@ -1352,8 +1352,8 @@ begin
     //We are no longer the host
     AbortAllTransfers;
     fNetPlayerKind := lpkJoiner;
-    if Assigned(OnReassignedJoiner) then OnReassignedJoiner(Self); //Lobby/game might need to know
-    if Assigned(OnPlayersSetup) then OnPlayersSetup(Self);
+    if Assigned(OnReassignedJoiner) then OnReassignedJoiner; //Lobby/game might need to know
+    if Assigned(OnPlayersSetup) then OnPlayersSetup;
   end;
   if NewHostIndex = fMyIndexOnServer then
   begin
@@ -1364,7 +1364,7 @@ begin
     OldHostIndex := fHostIndex;
 
     if Assigned(OnReassignedHost) then
-      OnReassignedHost(Self); //Lobby/game might need to know that we are now hosting
+      OnReassignedHost; //Lobby/game might need to know that we are now hosting
 
     case fNetGameState of
       lgsLobby:   begin
@@ -1375,7 +1375,7 @@ begin
                      SendGameOptions; //Only needs to be sent when in the lobby. Our version becomes standard.
                    end;
       lgsLoading: begin
-                     if Assigned(OnReadyToPlay) then OnReadyToPlay(Self);
+                     if Assigned(OnReadyToPlay) then OnReadyToPlay;
                      TryPlayGame;
                    end;
     end;
@@ -1389,7 +1389,7 @@ begin
     fPassword := PasswordA;
     fDescription := DescriptionW;
 
-    OnMPGameInfoChanged(Self);
+    OnMPGameInfoChanged;
     if (fSelectGameKind = ngkNone)
       or ((fSelectGameKind = ngkMap)  and not MapInfo.IsValid)
       or ((fSelectGameKind = ngkSave) and not SaveInfo.IsValid) then
@@ -1427,13 +1427,13 @@ begin
     fNetPlayers.LoadFromStream(aM); //Our index could have changed on players add/removal
     fMyIndex := fNetPlayers.NiknameToLocal(fMyNikname);
 
-    if Assigned(OnPlayersSetup) then OnPlayersSetup(Self);
+    if Assigned(OnPlayersSetup) then OnPlayersSetup;
 
     if Assigned(OnUpdateMinimap)
     and ((IsPlayerInitBefore
       and (OldLoc <> MyNetPlayer.StartLocation))
       or not IsPlayerInitBefore) then
-      OnUpdateMinimap(Self);
+      OnUpdateMinimap;
   end;
 end;
 
@@ -1737,7 +1737,7 @@ begin
                           fHostIndex := fMyIndex;
                           MyNetPlayer.ReadyToStart := True;
                           MyNetPlayer.HasMapOrSave := True;
-                          if Assigned(OnPlayersSetup) then OnPlayersSetup(Self);
+                          if Assigned(OnPlayersSetup) then OnPlayersSetup;
                           SetGameState(lgsLobby);
                           gSoundPlayer.Play(sfxnMPChatSystem); //Sound for joining the lobby
                           if fWelcomeMessage <> '' then PostLocalMessage(fWelcomeMessage, csNone);
@@ -1891,7 +1891,7 @@ begin
       mkReqPassword:
               begin
                 fEnteringPassword := True; //Disables timing out
-                OnJoinPassword(Self);
+                OnJoinPassword;
               end;
 
       mkAskForAuth:
@@ -1982,7 +1982,7 @@ begin
       mkPingInfo:
               begin
                 DecodePingInfo(M);
-                if Assigned(OnPingInfo) then OnPingInfo(Self);
+                if Assigned(OnPingInfo) then OnPingInfo;
               end;
 
 //      mkFPS:
@@ -1991,7 +1991,7 @@ begin
 //                PlayerIndex := fNetPlayers.ServerToLocal(aSenderIndex);
 //                if PlayerIndex = -1 then Exit;
 //                fNetPlayers[PlayerIndex].FPS := Cardinal(tmpInteger);
-//                if Assigned(OnPingInfo) then OnPingInfo(Self);
+//                if Assigned(OnPingInfo) then OnPingInfo;
 //              end;
 
       mkPlayersList: PlayersListReceived(M);
@@ -2000,7 +2000,7 @@ begin
               if fNetPlayerKind = lpkJoiner then
               begin
                 fNetGameOptions.Load(M);
-                if Assigned(OnGameOptions) then OnGameOptions(Self);
+                if Assigned(OnGameOptions) then OnGameOptions;
               end;
 
       mkResetMap:
@@ -2046,7 +2046,7 @@ begin
                   if Assigned(OnMapName) then OnMapName(tmpStringW);
                   if Assigned(OnMapMissing) then OnMapMissing(tmpStringW, False);
                 end;
-                if Assigned(OnPlayersSetup) then OnPlayersSetup(Self);
+                if Assigned(OnPlayersSetup) then OnPlayersSetup;
               end;
 
       mkSaveSelect:
@@ -2087,7 +2087,7 @@ begin
                 begin
                   fSelectGameKind := ngkSave;
                   if Assigned(OnMapName) then OnMapName(tmpStringW);
-                  if Assigned(OnPlayersSetup) then OnPlayersSetup(Self);
+                  if Assigned(OnPlayersSetup) then OnPlayersSetup;
                   PacketSend(NET_ADDRESS_HOST, mkHasMapOrSave);
                 end
                 else
@@ -2184,14 +2184,14 @@ begin
                 if fNetPlayers.AllReadyToReturnToLobby then
                 begin
                   ResetReturnToLobbyVote;   //So it's reset for next time
-                  OnDoReturnToLobby(Self);
+                  OnDoReturnToLobby;
                 end;
               end;
 
       mkReadyToPlay:
               begin
                 fNetPlayers[fNetPlayers.ServerToLocal(aSenderIndex)].ReadyToPlay := true;
-                if Assigned(OnReadyToPlay) then OnReadyToPlay(Self);
+                if Assigned(OnReadyToPlay) then OnReadyToPlay;
                 if IsHost then TryPlayGame;
               end;
 
@@ -2512,7 +2512,7 @@ procedure TKMNetworking.PlayGame;
 begin
   fIgnorePings := 5; //Ignore the next few pings as they will have been measured during loading
   SetGameState(lgsGame); //The game has begun (no further players allowed to join)
-  if Assigned(OnPlay) then OnPlay(Self);
+  if Assigned(OnPlay) then OnPlay;
 end;
 
 
@@ -2520,7 +2520,7 @@ procedure TKMNetworking.SetDescription(const Value: UnicodeString);
 begin
   Assert(IsHost, 'Only host can set description');
   fDescription := Value;
-  OnMPGameInfoChanged(Self); //Send the description to the server so it is shown in room info
+  OnMPGameInfoChanged; //Send the description to the server so it is shown in room info
 end;
 
 
@@ -2564,7 +2564,7 @@ procedure TKMNetworking.SetGameState(aState: TKMNetGameState);
 begin
   fNetGameState := aState;
   if (fNetGameState in [lgsLobby,lgsLoading,lgsGame]) and IsHost and (fMyIndexOnServer <> -1) then
-    OnMPGameInfoChanged(Self);
+    OnMPGameInfoChanged;
 end;
 
 
@@ -2780,11 +2780,11 @@ end;
 
 procedure TKMNetworking.ReturnToLobbyVoteSucceeded;
 begin
-  //Don't run NetPlayers.ResetVote here, wait until we actually return to the lobby so the vote can't start again
+  // Don't run NetPlayers.ResetVote here, wait until we actually return to the lobby so the vote can't start again
   NetPlayers.ResetReadyToReturnToLobby;
   fVoteReturnToLobbySucceeded := True;
   SendPlayerListAndRefreshPlayersSetup;
-  OnAnnounceReturnToLobby(Self); //Sends GIC command to create synchronised save file
+  OnAnnounceReturnToLobby; // Sends GIC command to create synchronised save file
 end;
 
 

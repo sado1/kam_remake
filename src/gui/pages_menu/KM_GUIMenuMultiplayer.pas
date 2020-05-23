@@ -38,7 +38,7 @@ type
     procedure MP_GetInClick(Sender: TObject);
     function MP_GetInEnabled: Boolean;
     procedure MP_Join(const aServerAddress: string; aPort: Word; aRoom: Integer);
-    procedure MP_JoinPassword(Sender: TObject);
+    procedure MP_JoinPassword;
     procedure MP_JoinSuccess;
     procedure MP_JoinFail(const aData: UnicodeString);
     procedure MP_JoinAssignedHost;
@@ -906,7 +906,7 @@ begin
 end;
 
 
-procedure TKMMenuMultiplayer.MP_JoinPassword(Sender: TObject);
+procedure TKMMenuMultiplayer.MP_JoinPassword;
 begin
   Panel_MPFindServer.Hide;
   Edit_MP_Password.Text := '';

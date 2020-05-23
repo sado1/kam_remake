@@ -151,8 +151,8 @@ type
 
     function MapSizeInfo: UnicodeString;
 
-    procedure GameMPPlay(Sender: TObject);
-    procedure GameMPReadyToPlay(Sender: TObject);
+    procedure GameMPPlay;
+    procedure GameMPReadyToPlay;
     procedure GameHold(aDoHold: Boolean; Msg: TKMGameResultMsg); //Hold the game to ask if player wants to play after Victory/Defeat/ReplayEnd
     procedure RequestGameHold(Msg: TKMGameResultMsg);
     procedure PlayerVictory(aHandIndex: TKMHandID);
@@ -931,9 +931,9 @@ begin
 end;
 
 
-//Everyone is ready to start playing
-//Issued by fNetworking at the time depending on each Players lag individually
-procedure TKMGame.GameMPPlay(Sender: TObject);
+// Everyone is ready to start playing
+// Issued by fNetworking at the time depending on each Players lag individually
+procedure TKMGame.GameMPPlay;
 begin
   WaitingPlayersDisplay(False); //Finished waiting for players
   fNetworking.AnnounceGameInfo(MissionTime, GameName);
@@ -941,7 +941,7 @@ begin
 end;
 
 
-procedure TKMGame.GameMPReadyToPlay(Sender: TObject);
+procedure TKMGame.GameMPReadyToPlay;
 begin
   //Update the list of players that are ready to play
   WaitingPlayersDisplay(True);
@@ -1135,7 +1135,7 @@ begin
       csSystem);
 
     if Assigned(fNetworking.OnPlayersSetup) then
-      fNetworking.OnPlayersSetup(nil); //Update players panel
+      fNetworking.OnPlayersSetup; //Update players panel
   end;
 
   if fGameMode = gmMultiSpectate then
@@ -1200,7 +1200,7 @@ begin
                 end;
 
                 if Assigned(fNetworking.OnPlayersSetup) then
-                  fNetworking.OnPlayersSetup(nil); //Update players panel
+                  fNetworking.OnPlayersSetup; //Update players panel
 
               end;
     gmMultiSpectate:
@@ -1210,7 +1210,7 @@ begin
                                                       [gHands[aPlayerIndex].GetOwnerNameColoredU]), csSystem);
 
                 if Assigned(fNetworking.OnPlayersSetup) then
-                  fNetworking.OnPlayersSetup(nil); //Update players panel
+                  fNetworking.OnPlayersSetup; //Update players panel
               end;
     //We have not thought of anything to display on players defeat in Replay
   end;
