@@ -304,7 +304,7 @@ type
     destructor Destroy; override;
     procedure MessageIssue(aKind: TKMMessageKind; const aText: UnicodeString); overload;
     procedure MessageIssue(aKind: TKMMessageKind; const aText: UnicodeString; const aLoc: TKMPoint); overload;
-    procedure SetMenuState(aTactic: Boolean);
+    procedure UpdateUI;
     procedure UpdateClock(aSpeedActual, aSpeedRecorded: Single; aShowRecorded: Boolean);
     procedure ShowPlayMore(DoShow: Boolean; Msg: TKMGameResultMsg);
     procedure ShowMPPlayMore(Msg: TKMGameResultMsg);
@@ -1481,7 +1481,7 @@ begin
     fGuiGameUnit.JoiningGroups := False;
     ReleaseDirectionSelector;
     gRes.Cursors.Cursor := kmcDefault; // Might have been scrolling or joining groups
-    SetMenuState(gGame.IsTactic); // Disabled main buttons
+    UpdateUI; // Disabled main buttons
 
     MinimapView.Disable;
     Sidebar_Top.Disable;
@@ -1491,7 +1491,7 @@ begin
   end
   else
   begin
-    SetMenuState(gGame.IsTactic); // Enable main buttons
+    UpdateUI; // Enable main buttons
 
     Viewport.CinematicReset; //Reset Pan points for future cinematics
 
@@ -2425,13 +2425,17 @@ begin
 end;
 
 
-procedure TKMGamePlayInterface.SetMenuState(aTactic: Boolean);
+procedure TKMGamePlayInterface.UpdateUI;
+var
+  isTactic: Boolean;
 begin
   UpdateMessageImages;
 
-  Button_Main[tbBuild].Enabled := not aTactic and not HasLostMPGame and not gMySpectator.Hand.InCinematic; //Allow to 'test build' if we are in replay / spectate mode
-  Button_Main[tbRatio].Enabled := not aTactic and ((fUIMode in [umReplay, umSpectate]) or (not HasLostMPGame and not gMySpectator.Hand.InCinematic));
-  Button_Main[tbStats].Enabled := not aTactic;
+  isTactic := gGame.IsTactic;
+
+  Button_Main[tbBuild].Enabled := not isTactic and not HasLostMPGame and not gMySpectator.Hand.InCinematic; //Allow to 'test build' if we are in replay / spectate mode
+  Button_Main[tbRatio].Enabled := not isTactic and ((fUIMode in [umReplay, umSpectate]) or (not HasLostMPGame and not gMySpectator.Hand.InCinematic));
+  Button_Main[tbStats].Enabled := not isTactic;
 
   Button_Menu_Load.Enabled := fUIMode = umSP; // No loading during multiplayer games
   Button_Menu_Save.Enabled := (fUIMode in [umSP, umMP, umSpectate]) or (ALLOW_SAVE_IN_REPLAY and (fUIMode = umReplay));
@@ -2588,7 +2592,7 @@ begin
                   end;
     grDefeat:    begin
                     // Refresh it so that menu buttons become disabled
-                    SetMenuState(gGame.IsTactic);
+                    UpdateUI;
                     // Close e.g. the build menu if it was open
                     SwitchPage(Button_Back);
 
@@ -4117,7 +4121,7 @@ begin
   MinimapView.SetMinimap(fMinimap);
   MinimapView.SetViewport(fViewport);
 
-  SetMenuState(gGame.IsTactic);
+  UpdateUI;
 end;
 
 
