@@ -78,6 +78,7 @@ type
     procedure ExportTreeAnim;
     procedure ExportHouseAnim;
     procedure ExportUnitAnim(aUnitFrom, aUnitTo: TKMUnitType; aExportUnused: Boolean = False);
+    procedure ExportSpritesToPNG(aRT: TRXType);
   end;
 
 
@@ -276,6 +277,29 @@ begin
 end;
 
 
+procedure TKMResource.ExportSpritesToPNG(aRT: TRXType);
+begin
+  GetOrCreateExportWorker.QueueWork(procedure
+  var
+    sprites: TKMResSprites;
+  begin
+    {$IFDEF DEBUG}
+    TThread.NameThreadForDebugging('Export ' + GetEnumName(TypeInfo(TRXType), Integer(aRT)));
+    {$ENDIF}
+
+    sprites := TKMResSprites.Create;
+    try
+      if sprites.LoadSprites(aRT, False) then
+      begin
+        sprites[aRT].ExportAll(ExeDir + 'Export' + PathDelim + RXInfo[aRT].FileName + '.rx' + PathDelim);
+        sprites.ClearTemp;
+      end;
+    finally
+      sprites.Free;
+    end;
+  end);
+end;
+
 
 //Export Units graphics categorized by Unit and Action
 procedure TKMResource.ExportUnitAnim(aUnitFrom, aUnitTo: TKMUnitType; aExportUnused: Boolean = False);
@@ -340,6 +364,7 @@ begin
                     FolderCreated := True;
                   end;
                   SpritePack.ExportFullImageData(FullFolder, ci, SList);
+                  // Stop export if async thread is terminated by application
                   if TThread.CheckTerminated then
                     Exit;
                 end;
@@ -384,6 +409,7 @@ begin
                     FolderCreated := True;
                   end;
                   SpritePack.ExportFullImageData(FullFolder, ci, SList);
+                  // Stop export if async thread is terminated by application
                   if TThread.CheckTerminated then
                     Exit;
                 end;
@@ -410,6 +436,7 @@ begin
         if not Used[ci] then
         begin
           SpritePack.ExportFullImageData(FullFolder, ci, SList);
+          // Stop export if async thread is terminated by application
           if TThread.CheckTerminated then
             Exit;
         end;
@@ -469,6 +496,7 @@ begin
             ci := houses[ID].Anim[Ac].Step[K] + 1;
             if ci <> 0 then
               SpritePack.ExportFullImageData(FullFolder, ci, SList);
+            // Stop export if async thread is terminated by application
             if TThread.CheckTerminated then
               Exit;
           end;
@@ -489,6 +517,7 @@ begin
               ci := houses.BeastAnim[ID,Beast,I].Step[K]+1;
               if ci <> 0 then
                 SpritePack.ExportFullImageData(FullFolder, ci, SList);
+              // Stop export if async thread is terminated by application
               if TThread.CheckTerminated then
                 Exit;
             end;
@@ -546,6 +575,9 @@ begin
             end else
               FullFolder := Folder;
             SpritePack.ExportFullImageData(FullFolder, SpriteID, SList);
+            // Stop export if async thread is terminated by application
+            if TThread.CheckTerminated then
+              Exit;
           end;
         end;
       end;

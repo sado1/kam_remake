@@ -248,7 +248,7 @@ type
     fOnControlsUpdated: TObjectIntegerEvent;
     procedure FormKeyDownProc(aKey: Word; aShift: TShiftState);
     procedure FormKeyUpProc(aKey: Word; aShift: TShiftState);
-    function ConfirmExport: Boolean;
+//    function ConfirmExport: Boolean;
     function GetMouseWheelStepsCnt(aWheelData: Integer): Integer;
     {$IFDEF MSWindows}
     function GetWindowParams: TKMWindowParamsRecord;
@@ -591,20 +591,17 @@ end;
 //Exports
 procedure TFormMain.Export_TreesRXClick(Sender: TObject);
 begin
-  if ConfirmExport then
-    gRes.Sprites.ExportToPNG(rxTrees);
+  gRes.ExportSpritesToPNG(rxTrees);
 end;
 
 procedure TFormMain.Export_HousesRXClick(Sender: TObject);
 begin
-  if ConfirmExport then
-    gRes.Sprites.ExportToPNG(rxHouses);
+  gRes.ExportSpritesToPNG(rxHouses);
 end;
 
 procedure TFormMain.Export_UnitsRXClick(Sender: TObject);
 begin
-  if ConfirmExport then
-    gRes.Sprites.ExportToPNG(rxUnits);
+  gRes.ExportSpritesToPNG(rxUnits);
 end;
 
 procedure TFormMain.Export_ScriptDataClick(Sender: TObject);
@@ -616,24 +613,22 @@ end;
 
 procedure TFormMain.Export_GUIClick(Sender: TObject);
 begin
-  if ConfirmExport then
-    gRes.Sprites.ExportToPNG(rxGUI);
+  gRes.ExportSpritesToPNG(rxGUI);
 end;
 
 procedure TFormMain.Export_GUIMainRXClick(Sender: TObject);
 begin
-  if ConfirmExport then
-    gRes.Sprites.ExportToPNG(rxGUIMain);
+  gRes.ExportSpritesToPNG(rxGUIMain);
 end;
 
 procedure TFormMain.Export_CustomClick(Sender: TObject);
 begin
-  gRes.Sprites.ExportToPNG(rxCustom);
+  gRes.ExportSpritesToPNG(rxCustom);
 end;
 
 procedure TFormMain.Export_TilesetClick(Sender: TObject);
 begin
-  gRes.Sprites.ExportToPNG(rxTiles);
+  gRes.ExportSpritesToPNG(rxTiles);
 end;
 
 procedure TFormMain.Export_Sounds1Click(Sender: TObject);
@@ -1198,13 +1193,13 @@ begin
 end;
 
 
-function TFormMain.ConfirmExport: Boolean;
-begin
-  case MessageDlg(Format(gResTexts[TX_FORM_EXPORT_CONFIRM_MSG], [ExeDir + 'Export']), mtWarning, [mbYes, mbNo], 0) of
-    mrYes:  Result := True;
-    else    Result := False;
-  end;
-end;
+//function TFormMain.ConfirmExport: Boolean;
+//begin
+//  case MessageDlg(Format(gResTexts[TX_FORM_EXPORT_CONFIRM_MSG], [ExeDir + 'Export']), mtWarning, [mbYes, mbNo], 0) of
+//    mrYes:  Result := True;
+//    else    Result := False;
+//  end;
+//end;
 
 
 procedure TFormMain.ValidateGameStatsClick(Sender: TObject);

@@ -685,7 +685,12 @@ begin
   SL := TStringList.Create;
 
   for I := 1 to fRXData.Count do
+  begin
     ExportFullImageData(aFolder, I, SL);
+    // Stop export if async thread is terminated by application
+    if TThread.CheckTerminated then
+      Exit;
+  end;
 
   SL.Free;
 end;
