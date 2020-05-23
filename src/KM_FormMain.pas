@@ -643,14 +643,12 @@ end;
 
 procedure TFormMain.Export_TreeAnim1Click(Sender: TObject);
 begin
-  if ConfirmExport then
-    gRes.ExportTreeAnim;
+  gRes.ExportTreeAnim;
 end;
 
 procedure TFormMain.Export_HouseAnim1Click(Sender: TObject);
 begin
-  if ConfirmExport then
-    gRes.ExportHouseAnim;
+  gRes.ExportHouseAnim;
 end;
 
 
@@ -740,8 +738,7 @@ end;
 
 procedure TFormMain.SoldiersClick(Sender: TObject);
 begin
-  if ConfirmExport then
-    gRes.ExportUnitAnim(WARRIOR_MIN, WARRIOR_MAX);
+  gRes.ExportUnitAnim(WARRIOR_MIN, WARRIOR_MAX);
 end;
 
 
@@ -783,8 +780,7 @@ end;
 
 procedure TFormMain.Civilians1Click(Sender: TObject);
 begin
-  if ConfirmExport then
-    gRes.ExportUnitAnim(CITIZEN_MIN, CITIZEN_MAX);
+  gRes.ExportUnitAnim(CITIZEN_MIN, CITIZEN_MAX);
 end;
 
 
@@ -1198,8 +1194,7 @@ end;
 
 procedure TFormMain.UnitAnim_AllClick(Sender: TObject);
 begin
-  if ConfirmExport then
-    gRes.ExportUnitAnim(UNIT_MIN, UNIT_MAX, True);
+  gRes.ExportUnitAnim(UNIT_MIN, UNIT_MAX, True);
 end;
 
 
