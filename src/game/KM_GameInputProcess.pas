@@ -631,12 +631,12 @@ var
   I: Integer;
 begin
   Assert(CommandPackType[aGIC] = gicpt_Ansi1Uni4,
-         Format('Wrong packing type for command %s: Expected: gicpt_Text5 Actual: [%s]',
+         Format('Wrong packing type for command %s: Expected: gicpt_Ansi1Uni4 Actual: [%s]',
                 [GetEnumName(TypeInfo(TKMGameInputCommandType), Integer(aGIC)),
                  GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(CommandPackType[aGIC]))]));
   Result := MakeEmptyCommand(aGIC);
 
-  Result.AnsiStrParam        := aAnsiTxtParam;
+  Result.AnsiStrParam := aAnsiTxtParam;
 
   for I := 0 to Length(aUniTxtArray) - 1 do
     Result.UnicodeStrParams[I] := aUniTxtArray[I];
@@ -1309,18 +1309,18 @@ begin
 
   if str = '' then Exit;
 
-  textSize := gRes.Fonts[fntArial].GetTextSize(str);
+  textSize := gRes.Fonts[fntMini].GetTextSize(str, False, False, TAB_WIDTH, True);
 
   W := gGame.ActiveInterface.MyControls.MasterPanel.Width;
 
   TKMRenderUI.WriteBevel(W - textSize.X - 10, 0, textSize.X, textSize.Y + 10);
-  TKMRenderUI.WriteText(W, 0, 0, str, fntArial, taRight);
+  TKMRenderUI.WriteText(W - textSize.X - 5, 0, 0, str, fntMini, taLeft, icWhite, False, False, False, TAB_WIDTH, True, True);
 end;
 
 
 class function TKMGameInputProcess.StoredGIPCommandToString(aCommand: TKMStoredGIPCommand): String;
 begin
-  Result := Format('Tick: %d; Rand: %d; Command: %s', [aCommand.Tick, aCommand.Rand, GIPCommandToString(aCommand.Command)]);
+  Result := Format('Tick: %6d; Rand: %10d; Command: %s', [aCommand.Tick, aCommand.Rand, GIPCommandToString(aCommand.Command)]);
 end;
 
 
