@@ -136,7 +136,7 @@ type
     OnSetPassword: TAnsiStringEvent;
     OnAbortAllTransfers: TEvent;
 
-    OnDisconnect: TUnicodeStringEvent;    // Lost connection, was kicked
+    OnDisconnect: TUnicodeStringEvent;    // Lost connection or was kicked
     OnJoinerDropped: TIntegerEvent;       // Other player disconnected
     OnCommands: TStreamIntEvent;          // Recieved GIP commands
     OnResyncFromTick: TResyncEvent;
