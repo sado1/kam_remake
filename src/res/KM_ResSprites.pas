@@ -128,7 +128,8 @@ type
     function GetNextLoadRxTypeIndex(aRT: TRXType): Integer;
     {$ENDIF}
   public
-    constructor Create(aStepProgress: TEvent; aStepCaption: TUnicodeStringEvent);
+    constructor Create; overload;
+    constructor Create(aStepProgress: TEvent; aStepCaption: TUnicodeStringEvent); overload;
     destructor Destroy; override;
 
     procedure LoadMenuResources;
@@ -1112,6 +1113,12 @@ end;
 
 
 { TKMResSprites }
+constructor TKMResSprites.Create;
+begin
+  Create(nil, nil);
+end;
+
+
 constructor TKMResSprites.Create(aStepProgress: TEvent; aStepCaption: TUnicodeStringEvent);
 var
   RT: TRXType;
@@ -1397,10 +1404,14 @@ begin
   for RT := Low(TRXType) to High(TRXType) do
     if RXInfo[RT].Usage = ruMenu then
     begin
-      fStepCaption('Reading ' + RXInfo[RT].FileName + ' ...');
+      if Assigned(fStepCaption) then
+        fStepCaption('Reading ' + RXInfo[RT].FileName + ' ...');
+
       LoadSprites(RT, RT = rxGUI); //Only GUI needs alpha shadows
       fSprites[RT].MakeGFX(RT = rxGUI);
-      fStepProgress;
+
+      if Assigned(fStepProgress) then
+        fStepProgress;
     end;
 end;
 
@@ -1427,7 +1438,9 @@ procedure TKMResSprites.LoadGameResources(aAlphaShadows: Boolean; aForceReload: 
     for RT := Low(TRXType) to High(TRXType) do
       if RXInfo[RT].Usage = ruGame then
       begin
-        fStepCaption(gResTexts[RXInfo[RT].LoadingTextID]);
+        if Assigned(fStepCaption) then
+          fStepCaption(gResTexts[RXInfo[RT].LoadingTextID]);
+
         gLog.AddTime('Reading ' + RXInfo[RT].FileName + '.rx');
         LoadSprites(RT, fAlphaShadows);
         fSprites[RT].MakeGFX(fAlphaShadows);
@@ -1566,7 +1579,10 @@ begin
     // OpenGL work mainly with 1 thread only, so we have to call gl functions only from main thread
     // That is why we need call this method from main thread only
     GenerateTextureAtlasForGameRes(fGameResLoader.RXType);
-    fStepCaption(gResTexts[RXInfo[fGameResLoader.RXType].LoadingTextID]);
+
+    if Assigned(fStepCaption) then
+      fStepCaption(gResTexts[RXInfo[fGameResLoader.RXType].LoadingTextID]);
+
     fSprites[fGameResLoader.RXType].ClearTemp;      //Clear fRXData sprites temp data, which is not needed anymore
     ClearGameResGenTemp;                                   //Clear all the temp data used for atlas texture generating
     NextRXTypeI := GetNextLoadRxTypeIndex(fGameResLoader.RXType); // get next RXType to load
