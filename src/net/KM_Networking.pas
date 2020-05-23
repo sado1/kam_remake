@@ -245,6 +245,7 @@ implementation
 uses
   Math, StrUtils,
   KM_NetworkConsts, KM_Sound, KM_Log, KM_CommonUtils, KM_HandsCollection, KM_Hand,
+  KM_Main, KM_GameApp,
   KM_Resource, KM_ResSound, KM_ResTexts;
 
 
@@ -1224,20 +1225,28 @@ end;
 
 procedure TKMNetworking.PostLocalMessage(const aText: UnicodeString; aSound: TKMChatSound = csNone);
 const
-  ChatSound: array[TKMChatSound] of TSoundFXNew = (sfxnMPChatSystem, //csNone
-                                                 sfxnMPChatSystem, //csJoin
-                                                 sfxnMPChatSystem, //csLeave
-                                                 sfxnMPChatSystem, //csSystem
-                                                 sfxnMPChatSystem, //csGameStart
-                                                 sfxnMPChatSystem, //csSaveGame
-                                                 sfxnMPChatMessage,//csChat
-                                                 sfxnMPChatTeam,   //csChatTeam
-                                                 sfxnMPChatTeam);  //csChatWhisper
+  CHAT_SOUND: array [TKMChatSound] of TSoundFXNew = (
+    sfxnMPChatSystem, // csNone
+    sfxnMPChatSystem, // csJoin
+    sfxnMPChatSystem, // csLeave
+    sfxnMPChatSystem, // csSystem
+    sfxnMPChatSystem, // csGameStart
+    sfxnMPChatSystem, // csSaveGame
+    sfxnMPChatMessage,// csChat
+    sfxnMPChatTeam,   // csChatTeam
+    sfxnMPChatTeam    // csChatWhisper
+  );
 begin
   if Assigned(OnTextMessage) then
   begin
+    if (gMain <> nil) and (gGameApp <> nil) and (gGameApp.GameSettings <> nil) then
+      if gGameApp.GameSettings.FlashOnMessage then
+        gMain.FlashingStart;
+
     OnTextMessage(aText);
-    if aSound <> csNone then gSoundPlayer.Play(ChatSound[aSound]);
+
+    if aSound <> csNone then
+      gSoundPlayer.Play(CHAT_SOUND[aSound]);
   end;
 end;
 

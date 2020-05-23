@@ -218,7 +218,7 @@ var
 implementation
 uses
   KM_Log, KM_CommonTypes, KM_ResLocales, KM_CommonUtils, KM_Sound, KM_ResSound, KM_RenderUI,
-  KM_Resource, KM_ResFonts, KM_NetPlayersList, KM_Main, KM_GameApp, KM_Points, KM_MapTypes; //RMG
+  KM_Resource, KM_ResFonts, KM_NetPlayersList, KM_GameApp, KM_Points, KM_MapTypes; //RMG
 
 const
   PANEL_SETUP_OPTIONS_TOP = 548;
@@ -2771,13 +2771,8 @@ end;
 
 procedure TKMMenuLobby.Lobby_OnMessage(const aText: UnicodeString);
 begin
-  if (gGameApp <> nil) and (gGameApp.GameSettings <> nil) then
-  begin
-    if gGameApp.GameSettings.FlashOnMessage then
-      gMain.FlashingStart;
-
+  if gGameApp <> nil then
     gGameApp.Chat.AddLine(aText);
-  end;
 end;
 
 

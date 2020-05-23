@@ -61,7 +61,7 @@ type
 
 implementation
 uses
-  KM_Main, KM_GameApp, KM_RenderUI, KM_ResTexts, KM_Game, KM_CommonUtils,
+  KM_GameApp, KM_RenderUI, KM_ResTexts, KM_Game, KM_CommonUtils,
   KM_ResSound, KM_Resource, KM_ResFonts, KM_Sound, KM_NetPlayersList;
 
 
@@ -377,9 +377,6 @@ end;
 
 procedure TKMGUIGameChat.ChatMessage(const aData: UnicodeString);
 begin
-  if gGameApp.GameSettings.FlashOnMessage then
-    gMain.FlashingStart;
-
   gGameApp.Chat.AddLine(aData);
 end;
 
