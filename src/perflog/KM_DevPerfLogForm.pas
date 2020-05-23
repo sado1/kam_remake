@@ -142,7 +142,7 @@ begin
     end;
     fUpdating := False;
 
-    seFrameBudget.Value := fPerfLogs.FrameBudget;
+    seFrameBudget.Value := fPerfLogs.Scale;
 
     fControlsCreated := True;
   end;
@@ -272,7 +272,7 @@ begin
   fPerfLogs.StackGFX.Enabled := cbStackedGFX.Checked;
   fPerfLogs.StackGFX.Display := cbStackedGFX.Checked;
 
-  fPerfLogs.FrameBudget := seFrameBudget.Value;
+  fPerfLogs.Scale := seFrameBudget.Value;
 
   fPerfLogs.Smoothing := cbSmoothLines.Checked;
 end;

@@ -20,7 +20,7 @@ type
     function GetStackCPU: TKMPerfLogStackCPU;
     function GetStackGFX: TKMPerfLogStackGFX;
   public
-    FrameBudget: Integer;
+    Scale: Integer;
     Smoothing: Boolean;
     SaveOnExit: Boolean;
 
@@ -71,7 +71,7 @@ var
 begin
   inherited Create;
   {$IFDEF PERFLOG}
-  FrameBudget := 20;
+  Scale := 20;
 
   for I := LOW_PERF_SECTION to High(TPerfSectionDev) do
   begin
@@ -235,13 +235,13 @@ begin
 
   for PS := LOW_PERF_SECTION to High(TPerfSectionDev) do
   begin
-    fItems[PS].Render(aLeft + PAD_SIDE, aLeft + aWidth - PAD_SIDE * 2, aHeight - PAD_Y, scaleY, EMA_ALPHA, FrameBudget, Smoothing);
+    fItems[PS].Render(aLeft + PAD_SIDE, aLeft + aWidth - PAD_SIDE * 2, aHeight - PAD_Y, scaleY, EMA_ALPHA, Scale, Smoothing);
     UpdateCntNLastTick(fItems[PS].Count, fItems[PS].EnterTick);
   end;
 
   // Stacked chart
-  fStackCPU.Render(aLeft + PAD_SIDE, aLeft + aWidth - PAD_SIDE * 2, aHeight - PAD_Y, scaleY, EMA_ALPHA, FrameBudget, Smoothing);
-  fStackGFX.Render(aLeft + PAD_SIDE, aLeft + aWidth - PAD_SIDE * 2, aHeight - PAD_Y, scaleY, EMA_ALPHA, FrameBudget, Smoothing);
+  fStackCPU.Render(aLeft + PAD_SIDE, aLeft + aWidth - PAD_SIDE * 2, aHeight - PAD_Y, scaleY, EMA_ALPHA, Scale, Smoothing);
+  fStackGFX.Render(aLeft + PAD_SIDE, aLeft + aWidth - PAD_SIDE * 2, aHeight - PAD_Y, scaleY, EMA_ALPHA, Scale, Smoothing);
 
   needChart := fStackCPU.Display or fStackGFX.Display;
   for PS := LOW_PERF_SECTION to High(TPerfSectionDev) do
@@ -258,7 +258,7 @@ begin
       y := scaleY / 10 * K;
       gRenderAux.Line(aLeft + PAD_SIDE + 0.5, aHeight - PAD_Y + 0.5 - y, aLeft + PAD_SIDE - 3.5, aHeight - PAD_Y + 0.5 - y, icWhite);
 
-      lbl := FormatFloat('##0.#', FrameBudget / 10 * K) + 'ms';
+      lbl := FormatFloat('##0.#', Scale / 10 * K) + 'ms';
       TKMRenderUI.WriteText(aLeft + PAD_SIDE - 5, Trunc(aHeight - PAD_Y - y - 8), 0, lbl, fntMini, taRight);
     end;
 
