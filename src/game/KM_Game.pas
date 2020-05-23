@@ -321,11 +321,7 @@ begin
 
   fVisibleLayers := [mlObjects, mlHouses, mlUnits, mlOverlays];
 
-  fSaveWorkerThread := TKMWorkerThread.Create;
-
-  {$IFDEF DEBUG}
-  TThread.NameThreadForDebugging('SaveWorker', fSaveWorkerThread.ThreadID);
-  {$ENDIF}
+  fSaveWorkerThread := TKMWorkerThread.Create('SaveWorker');
 
   fGameMode := aGameMode;
   fNetworking := aNetworking;
