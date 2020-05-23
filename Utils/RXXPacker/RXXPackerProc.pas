@@ -73,6 +73,7 @@ begin
         SpritePack.AdjoinHouseMasks(resHouses);
         SpritePack.GrowHouseMasks(resHouses);
         SpritePack.RemoveSnowHouseShadows(resHouses);
+        SpritePack.RemoveMarketWaresShadows(resHouses);
         resHouses.Free;
       end;
 

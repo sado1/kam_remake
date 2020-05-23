@@ -87,6 +87,7 @@ type
     procedure SoftenShadows(aStart: Integer = 1; aEnd: Integer = -1; aOnlyShadows: Boolean = True); overload;
     procedure SoftenShadows(aID: Integer; aOnlyShadows: Boolean = True); overload;
     procedure DetermineImagesObjectSize(aStart: Integer = 1; aEnd: Integer = -1);
+    procedure RemoveMarketWaresShadows(aResHouses: TKMResHouses);
     procedure RemoveSnowHouseShadows(aResHouses: TKMResHouses);
 
     function GetSpriteColors(aCount: Word): TRGBArray;
@@ -379,10 +380,28 @@ begin
     begin
       SnowID := aResHouses[HT].SnowPic + 1;
       if (fRXData.Flag[SnowID] <> 0) then
-        ShadowConverter.RemoveShadow(SnowID);
+        ShadowConverter.RemoveShadow(SnowID, True);
     end;
   finally
     ShadowConverter.Free;
+  end;
+end;
+
+
+procedure TKMSpritePack.RemoveMarketWaresShadows(aResHouses: TKMResHouses);
+var
+  I: Integer;
+  shadowConverter: TKMSoftShadowConverter;
+begin
+  Assert(fRT = rxHouses);
+
+  shadowConverter := TKMSoftShadowConverter.Create(Self);
+  try
+    for I := MARKET_WARES_TEX_START + 1 to MARKET_WARES_TEX_START + MARKET_WARES_TEX_CNT - 1 do
+    if (fRXData.Flag[I] <> 0) then
+      shadowConverter.RemoveShadow(I, False);
+  finally
+    shadowConverter.Free;
   end;
 end;
 

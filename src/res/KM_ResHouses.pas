@@ -151,6 +151,7 @@ const
   //Sprites in the marketplace
   MARKET_WARES_OFF_X = -93;
   MARKET_WARES_OFF_Y = -88;
+  MARKET_WARES_TEX_CNT = 323;
   MARKET_WARES_TEX_START = 1724; //ID of where market ware sprites start. Allows us to relocate them easily.
   MARKET_WARES: array[TKMWareType] of record
                                          TexStart: Integer; //Tex ID for first sprite
