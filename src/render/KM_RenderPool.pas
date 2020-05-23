@@ -121,7 +121,7 @@ type
     procedure AddHouseBuildSupply(aHouse: TKMHouseType; const Loc: TKMPoint; Wood,Stone: Byte);
     procedure AddHouseWork(aHouse: TKMHouseType; const Loc: TKMPoint; aActSet: TKMHouseActionSet; AnimStep: Cardinal; FlagColor: TColor4; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
     procedure AddHouseSupply(aHouse: TKMHouseType; const Loc: TKMPoint; const R1, R2, R3: array of Byte; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
-    procedure AddHouseMarketSupply(const Loc: TKMPoint; ResType: TKMWareType; ResCount:word; AnimStep: Integer);
+    procedure AddHouseMarketSupply(const Loc: TKMPoint; ResType: TKMWareType; ResCount: Word; AnimStep: Integer);
     procedure AddHouseStableBeasts(aHouse: TKMHouseType; const Loc: TKMPoint; BeastId,BeastAge,AnimStep: Integer; aRX: TRXType = rxHouses);
     procedure AddHouseEater(const Loc: TKMPoint; aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; StepId: Integer; OffX,OffY: Single; FlagColor: TColor4);
     procedure AddUnit(aUnit: TKMUnitType; aUID: Integer; aAct: TKMUnitActionType; aDir: TKMDirection; StepId: Integer; pX,pY: Single; FlagColor: TColor4; NewInst: Boolean; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
@@ -892,24 +892,24 @@ begin
 end;
 
 
-procedure TRenderPool.AddHouseMarketSupply(const Loc: TKMPoint; ResType: TKMWareType; ResCount:word; AnimStep: Integer);
+procedure TRenderPool.AddHouseMarketSupply(const Loc: TKMPoint; ResType: TKMWareType; ResCount: Word; AnimStep: Integer);
 var
-  i, Id: Integer;
+  I, Id: Integer;
   CornerX, CornerY: Single;
   R: TRXData;
 begin
   if ResType = wtHorse then // Horses are a beast, BeastId is the count, age is 1
-    for i:=1 to Min(ResCount, MarketWares[ResType].Count) do // Render each beast
-      AddHouseStableBeasts(htMarketplace, Loc, i, 1, AnimStep, rxHouses)
+    for I := 1 to Min(ResCount, MARKET_WARES[ResType].Count) do // Render each beast
+      AddHouseStableBeasts(htMarketplace, Loc, I, 1, AnimStep, rxHouses)
   else
   begin
-    if MarketWares[ResType].Count = 0 then exit;
-    Id := (MarketWares[ResType].TexStart-1) + Min(ResCount, MarketWares[ResType].Count);
+    if MARKET_WARES[ResType].Count = 0 then Exit;
+    Id := (MARKET_WARES[ResType].TexStart-1) + Min(ResCount, MARKET_WARES[ResType].Count);
     if Id = 0 then Exit;
 
     R := fRXData[rxHouses];
-    CornerX := Loc.X + (R.Pivot[Id].X + MarketWaresOffsetX) / CELL_SIZE_PX - 1;
-    CornerY := Loc.Y + (R.Pivot[Id].Y + MarketWaresOffsetY + R.Size[Id].Y) / CELL_SIZE_PX - 1
+    CornerX := Loc.X + (R.Pivot[Id].X + MARKET_WARES_OFF_X) / CELL_SIZE_PX - 1;
+    CornerY := Loc.Y + (R.Pivot[Id].Y + MARKET_WARES_OFF_Y + R.Size[Id].Y) / CELL_SIZE_PX - 1
                      - gTerrain.Land[Loc.Y+1,Loc.X].Height / CELL_HEIGHT_DIV;
     fRenderList.AddSprite(rxHouses, Id, CornerX, CornerY);
   end;
@@ -988,7 +988,7 @@ var
 begin
   A := gRes.Units[aUnit].UnitAnim[aAct, aDir];
   Id := A.Step[StepId mod Byte(A.Count) + 1] + 1;
-  Id0 := A.Step[UnitStillFrames[aDir] mod Byte(A.Count) + 1] + 1;
+  Id0 := A.Step[UNIT_STILL_FRAMES[aDir] mod Byte(A.Count) + 1] + 1;
   if Id <= 0 then exit;
   R := fRXData[rxUnits];
 
@@ -1067,7 +1067,7 @@ begin
 
   // Unit position
   A := gRes.Units[aUnit].UnitAnim[aAct, aDir];
-  Id0 := A.Step[UnitStillFrames[aDir] mod Byte(A.Count) + 1] + 1;
+  Id0 := A.Step[UNIT_STILL_FRAMES[aDir] mod Byte(A.Count) + 1] + 1;
 
   // Units feet
   Ground := pY + (R.Pivot[Id0].Y + R.Size[Id0].Y) / CELL_SIZE_PX;
@@ -1109,7 +1109,7 @@ begin
 
   // Unit position
   A := gRes.Units[aUnit].UnitAnim[aAct, aDir];
-  Id0 := A.Step[UnitStillFrames[aDir] mod Byte(A.Count) + 1] + 1;
+  Id0 := A.Step[UNIT_STILL_FRAMES[aDir] mod Byte(A.Count) + 1] + 1;
 
   // Units feet
   Ground := pY + (R.Pivot[Id0].Y + R.Size[Id0].Y) / CELL_SIZE_PX;
@@ -1722,7 +1722,7 @@ begin
   else begin
     P := gGameCursor.Cell;
     if gTerrain.CanPlaceUnit(P, TKMUnitType(gGameCursor.Tag1)) then
-      AddUnitWithDefaultArm(TKMUnitType(gGameCursor.Tag1), 0, uaWalk, dirS, UnitStillFrames[dirS], P.X+UNIT_OFF_X, P.Y+UNIT_OFF_Y, gMySpectator.Hand.FlagColor, True)
+      AddUnitWithDefaultArm(TKMUnitType(gGameCursor.Tag1), 0, uaWalk, dirS, UNIT_STILL_FRAMES[dirS], P.X+UNIT_OFF_X, P.Y+UNIT_OFF_Y, gMySpectator.Hand.FlagColor, True)
     else
       RenderSpriteOnTile(P, TC_BLOCK); // Red X
   end;

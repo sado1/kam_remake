@@ -149,44 +149,44 @@ type
 
 const
   //Sprites in the marketplace
-  MarketWaresOffsetX = -93;
-  MarketWaresOffsetY = -88;
-  MarketWareTexStart = 1724; //ID of where market ware sprites start. Allows us to relocate them easily.
-  MarketWares: array[TKMWareType] of record
+  MARKET_WARES_OFF_X = -93;
+  MARKET_WARES_OFF_Y = -88;
+  MARKET_WARES_TEX_START = 1724; //ID of where market ware sprites start. Allows us to relocate them easily.
+  MARKET_WARES: array[TKMWareType] of record
                                          TexStart: Integer; //Tex ID for first sprite
                                          Count: Integer; //Total sprites for this resource
                                        end
   = (
       (TexStart: 0; Count: 0;), //rtNone
 
-      (TexStart: MarketWareTexStart+237; Count: 20;), //rtTrunk
-      (TexStart: MarketWareTexStart+47;  Count: 36;), //rtStone
-      (TexStart: MarketWareTexStart+94;  Count: 19;), //rtWood
-      (TexStart: MarketWareTexStart+113; Count: 11;), //rtIronOre
-      (TexStart: MarketWareTexStart+135; Count: 12;), //rtGoldOre
-      (TexStart: MarketWareTexStart+207; Count: 11;), //rtCoal
-      (TexStart: MarketWareTexStart+130; Count: 5;),  //rtSteel
-      (TexStart: MarketWareTexStart+147; Count: 9;),  //rtGold
-      (TexStart: MarketWareTexStart+1;   Count: 23;), //rtWine
-      (TexStart: MarketWareTexStart+24;  Count: 23;), //rtCorn
-      (TexStart: MarketWareTexStart+218; Count: 12;), //rtBread
-      (TexStart: MarketWareTexStart+186; Count: 12;), //rtFlour
-      (TexStart: MarketWareTexStart+156; Count: 9;),  //rtLeather
-      (TexStart: MarketWareTexStart+283; Count: 16;), //rtSausages
-      (TexStart: MarketWareTexStart+299; Count: 6;),  //rtPig
-      (TexStart: MarketWareTexStart+230; Count: 7;),  //rtSkin
-      (TexStart: MarketWareTexStart+85;  Count: 9;),  //rtShield
-      (TexStart: MarketWareTexStart+127; Count: 3;),  //rtMetalShield
-      (TexStart: MarketWareTexStart+165; Count: 6;),  //rtArmor
-      (TexStart: MarketWareTexStart+124; Count: 3;),  //rtMetalArmor
-      (TexStart: MarketWareTexStart+201; Count: 6;),  //rtAxe
-      (TexStart: MarketWareTexStart+183; Count: 3;),  //rtSword
-      (TexStart: MarketWareTexStart+171; Count: 6;),  //rtPike
-      (TexStart: MarketWareTexStart+198; Count: 3;),  //rtHallebard
-      (TexStart: MarketWareTexStart+177; Count: 6;),  //rtBow
-      (TexStart: MarketWareTexStart+83;  Count: 2;),  //rtArbalet
+      (TexStart: MARKET_WARES_TEX_START+237; Count: 20;), //rtTrunk
+      (TexStart: MARKET_WARES_TEX_START+47;  Count: 36;), //rtStone
+      (TexStart: MARKET_WARES_TEX_START+94;  Count: 19;), //rtWood
+      (TexStart: MARKET_WARES_TEX_START+113; Count: 11;), //rtIronOre
+      (TexStart: MARKET_WARES_TEX_START+135; Count: 12;), //rtGoldOre
+      (TexStart: MARKET_WARES_TEX_START+207; Count: 11;), //rtCoal
+      (TexStart: MARKET_WARES_TEX_START+130; Count: 5;),  //rtSteel
+      (TexStart: MARKET_WARES_TEX_START+147; Count: 9;),  //rtGold
+      (TexStart: MARKET_WARES_TEX_START+1;   Count: 23;), //rtWine
+      (TexStart: MARKET_WARES_TEX_START+24;  Count: 23;), //rtCorn
+      (TexStart: MARKET_WARES_TEX_START+218; Count: 12;), //rtBread
+      (TexStart: MARKET_WARES_TEX_START+186; Count: 12;), //rtFlour
+      (TexStart: MARKET_WARES_TEX_START+156; Count: 9;),  //rtLeather
+      (TexStart: MARKET_WARES_TEX_START+283; Count: 16;), //rtSausages
+      (TexStart: MARKET_WARES_TEX_START+299; Count: 6;),  //rtPig
+      (TexStart: MARKET_WARES_TEX_START+230; Count: 7;),  //rtSkin
+      (TexStart: MARKET_WARES_TEX_START+85;  Count: 9;),  //rtShield
+      (TexStart: MARKET_WARES_TEX_START+127; Count: 3;),  //rtMetalShield
+      (TexStart: MARKET_WARES_TEX_START+165; Count: 6;),  //rtArmor
+      (TexStart: MARKET_WARES_TEX_START+124; Count: 3;),  //rtMetalArmor
+      (TexStart: MARKET_WARES_TEX_START+201; Count: 6;),  //rtAxe
+      (TexStart: MARKET_WARES_TEX_START+183; Count: 3;),  //rtSword
+      (TexStart: MARKET_WARES_TEX_START+171; Count: 6;),  //rtPike
+      (TexStart: MARKET_WARES_TEX_START+198; Count: 3;),  //rtHallebard
+      (TexStart: MARKET_WARES_TEX_START+177; Count: 6;),  //rtBow
+      (TexStart: MARKET_WARES_TEX_START+83;  Count: 2;),  //rtArbalet
       (TexStart: 0;                      Count: 2;),  //rtHorse (defined in fMarketBeastAnim)
-      (TexStart: MarketWareTexStart+305; Count: 19;), //rtFish
+      (TexStart: MARKET_WARES_TEX_START+305; Count: 19;), //rtFish
 
       (TexStart: 0; Count: 0;), //rtAll
       (TexStart: 0; Count: 0;), //rtWarfare
@@ -196,7 +196,7 @@ const
   //These tables are used to convert between KaM script IDs and Remake enums
   HOUSE_DAT_COUNT = 30;
   //KaM scripts and HouseDat address houses in this order
-  HouseIndexToType: array [0 .. HOUSE_DAT_COUNT - 1] of TKMHouseType = (
+  HOUSE_ID_TO_TYPE: array [0 .. HOUSE_DAT_COUNT - 1] of TKMHouseType = (
     htSawmill, htIronSmithy, htWeaponSmithy, htCoalMine, htIronMine,
     htGoldMine, htFisherHut, htBakery, htFarm, htWoodcutters,
     htArmorSmithy, htStore, htStables, htSchool, htQuary,
@@ -206,7 +206,7 @@ const
 
   //TKMHouseType corresponds to this index in KaM scripts and libs
   //KaM scripts are 0 based, so we must use HouseTypeToIndex[H]-1 in script usage. Other cases are 1 based.
-  HouseTypeToIndex: array [TKMHouseType] of Byte = (0, 0,
+  HOUSE_TYPE_TO_ID: array [TKMHouseType] of Byte = (0, 0,
     11, 21, 8, 22, 25, 4, 9, 7, 6, 28,
     5, 2, 30, 16, 23, 15, 1, 14, 24, 13, 12,
     17, 26, 19, 18, 3, 20, 29, 10);
@@ -587,7 +587,7 @@ constructor TKMHouseSpec.Create(aHouseType: TKMHouseType);
 begin
   inherited Create;
   fHouseType := aHouseType;
-  fNameTextID := TX_HOUSES_NAMES__29 + HouseTypeToIndex[fHouseType] - 1; //May be overridden for new houses
+  fNameTextID := TX_HOUSES_NAMES__29 + HOUSE_TYPE_TO_ID[fHouseType] - 1; //May be overridden for new houses
 end;
 
 
@@ -660,8 +660,8 @@ end;
 function TKMHouseSpec.GetOwnerType: TKMUnitType;
 begin
   //fHouseDat.OwnerType is read from DAT file and is shortint, it can be out of range (i.e. -1)
-  if InRange(fHouseDat.OwnerType, Low(UnitIndexToType), High(UnitIndexToType)) then
-    Result := UnitIndexToType[fHouseDat.OwnerType]
+  if InRange(fHouseDat.OwnerType, Low(UNIT_ID_TO_TYPE), High(UNIT_ID_TO_TYPE)) then
+    Result := UNIT_ID_TO_TYPE[fHouseDat.OwnerType]
   else
     Result := utNone;
 end;
@@ -746,7 +746,7 @@ constructor TKMResHouses.Create;
   begin
     // Beast anims are 0 indexed
     for I := 1 to 30 do
-      fMarketBeastAnim[aBeast].Step[I] := aStep[I - 1] + MarketWareTexStart - 1;
+      fMarketBeastAnim[aBeast].Step[I] := aStep[I - 1] + MARKET_WARES_TEX_START - 1;
   end;
 
 var H: TKMHouseType; I: Integer;
@@ -805,14 +805,14 @@ begin
                         273, 274, 275, 276, 277, 277, 278, 279, 280, 281, 282, 282, 282,
                         282, 281, 280, 279]);
   fMarketBeastAnim[1].Count := 30;
-  fMarketBeastAnim[1].MoveX := MarketWaresOffsetX;
-  fMarketBeastAnim[1].MoveY := MarketWaresOffsetY;
+  fMarketBeastAnim[1].MoveX := MARKET_WARES_OFF_X;
+  fMarketBeastAnim[1].MoveY := MARKET_WARES_OFF_Y;
   AddMarketBeastAnim(2,[266, 265, 264, 263, 262, 261, 260, 259, 258, 257, 258, 259, 260,
                         261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 270, 270, 270,
                         270, 269, 268, 267]);
   fMarketBeastAnim[2].Count := 30;
-  fMarketBeastAnim[2].MoveX := MarketWaresOffsetX;
-  fMarketBeastAnim[2].MoveY := MarketWaresOffsetY;
+  fMarketBeastAnim[2].MoveX := MARKET_WARES_OFF_X;
+  fMarketBeastAnim[2].MoveY := MARKET_WARES_OFF_Y;
 
   //ExportCSV(ExeDir+'Houses.csv');
 end;
@@ -870,8 +870,8 @@ begin
 
     //Read the records one by one because we need to reorder them and skip one in the middle
     for i:=0 to 28 do //KaM has only 28 houses
-    if HouseIndexToType[i] <> htNone then
-      fItems[HouseIndexToType[i]].LoadFromStream(S)
+    if HOUSE_ID_TO_TYPE[i] <> htNone then
+      fItems[HOUSE_ID_TO_TYPE[i]].LoadFromStream(S)
     else
       S.Seek(SizeOf(TKMHouseDat), soFromCurrent);
 

@@ -1105,7 +1105,7 @@ begin
   fDirection    := dirS;
   fVisible      := True;
   IsExchanging  := False;
-  AnimStep      := UnitStillFrames[fDirection]; //Use still frame at begining, so units don't all change frame on first tick
+  AnimStep      := UNIT_STILL_FRAMES[fDirection]; //Use still frame at begining, so units don't all change frame on first tick
   Dismissable   := True;
   fLastTimeTrySetActionWalk := 0;
 
@@ -1638,8 +1638,8 @@ begin
   //When standing still in walk, use default frame
   if (aAction = uaWalk) and aStayStill then
   begin
-    aStillFrame := UnitStillFrames[Direction];
-    aStep := UnitStillFrames[Direction];
+    aStillFrame := UNIT_STILL_FRAMES[Direction];
+    aStep := UNIT_STILL_FRAMES[Direction];
   end;
   SetAction(TKMUnitActionStay.Create(Self, aTimeToStay, aAction, aStayStill, aStillFrame, False), aStep);
 end;
@@ -1664,8 +1664,8 @@ begin
   //When standing still in walk, use default frame
   if (aAction = uaWalk) and aStayStill then
   begin
-    aStillFrame := UnitStillFrames[Direction];
-    aStep := UnitStillFrames[Direction];
+    aStillFrame := UNIT_STILL_FRAMES[Direction];
+    aStep := UNIT_STILL_FRAMES[Direction];
   end;
   SetAction(TKMUnitActionStay.Create(Self, aTimeToStay, aAction, aStayStill, aStillFrame, True), aStep);
 end;

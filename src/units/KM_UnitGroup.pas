@@ -315,7 +315,7 @@ begin
     if Warrior <> nil then
     begin
       Warrior.Direction := aDir;
-      Warrior.AnimStep  := UnitStillFrames[aDir];
+      Warrior.AnimStep  := UNIT_STILL_FRAMES[aDir];
       AddMember(Warrior);
       Warrior.Condition := GetDefaultCondition;
       fMapEdCount := aCount;
@@ -334,7 +334,7 @@ begin
       if Warrior = nil then Continue;
 
       Warrior.Direction := aDir;
-      Warrior.AnimStep  := UnitStillFrames[aDir];
+      Warrior.AnimStep  := UNIT_STILL_FRAMES[aDir];
       AddMember(Warrior, -1, False);
       Warrior.Condition := NewCondition;
     end;
@@ -729,7 +729,7 @@ end;
 procedure TKMUnitGroup.ResetAnimStep;
 begin
   Assert(gGame.IsMapEditor);
-  Members[0].AnimStep := UnitStillFrames[Members[0].Direction];
+  Members[0].AnimStep := UNIT_STILL_FRAMES[Members[0].Direction];
 end;
 
 
@@ -2170,7 +2170,7 @@ begin
     if not DoesFit then Continue; //Don't render units that are off the map in the map editor
     UnitPos.X := NewPos.X + UNIT_OFF_X; //MapEd units don't have sliding
     UnitPos.Y := NewPos.Y + UNIT_OFF_Y;
-    gRenderPool.AddUnit(FlagBearer.UnitType, 0, uaWalk, fOrderLoc.Dir, UnitStillFrames[fOrderLoc.Dir], UnitPos.X, UnitPos.Y, aHandColor, True, aDoImmediateRender, aDoHighlight, aHighlightColor);
+    gRenderPool.AddUnit(FlagBearer.UnitType, 0, uaWalk, fOrderLoc.Dir, UNIT_STILL_FRAMES[fOrderLoc.Dir], UnitPos.X, UnitPos.Y, aHandColor, True, aDoImmediateRender, aDoHighlight, aHighlightColor);
   end;
 
   // We need to render Flag after MapEd virtual members

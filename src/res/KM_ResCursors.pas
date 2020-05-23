@@ -40,7 +40,7 @@ const
   COUNT_OFFSET = 1;
 
   //Indexes of cursor images in GUI.RX
-  Cursors: array [TKMCursor] of Word = (
+  CURSORS: array [TKMCursor] of Word = (
     1, 452, 457, 460, 450, 453, 449,
     511,  512, 513, 514, 515, 516, 517, 518, 519,
     4, 7, 3, 9, 5, 8, 2, 6,
@@ -103,8 +103,8 @@ begin
     end
     else
     begin
-      sx := fRXData.Size[Cursors[KMC]].X;
-      sy := fRXData.Size[Cursors[KMC]].Y;
+      sx := fRXData.Size[CURSORS[KMC]].X;
+      sy := fRXData.Size[CURSORS[KMC]].Y;
       bm.Width  := sx; bm.Height  := sy;
       bm2.Width := sx; bm2.Height := sy;
 
@@ -113,20 +113,20 @@ begin
         Px := bm.ScanLine[y];
         for x:=0 to sx-1 do
         begin
-          if fRXData.RGBA[Cursors[KMC],y*sx+x] and $FF000000 = 0 then
+          if fRXData.RGBA[CURSORS[KMC],y*sx+x] and $FF000000 = 0 then
             Px.rgbReserved := $00
           else
             Px.rgbReserved := $FF;
           // Here we have BGR, not RGB
-          Px.rgbBlue := (fRXData.RGBA[Cursors[KMC],y*sx+x] and $FF0000) shr 16;
-          Px.rgbGreen := (fRXData.RGBA[Cursors[KMC],y*sx+x] and $FF00) shr 8;
-          Px.rgbRed := fRXData.RGBA[Cursors[KMC],y*sx+x] and $FF;
+          Px.rgbBlue := (fRXData.RGBA[CURSORS[KMC],y*sx+x] and $FF0000) shr 16;
+          Px.rgbGreen := (fRXData.RGBA[CURSORS[KMC],y*sx+x] and $FF00) shr 8;
+          Px.rgbRed := fRXData.RGBA[CURSORS[KMC],y*sx+x] and $FF;
           inc(Px);
         end;
       end;
       //Load hotspot offsets from RX file, adding the manual offsets (normally 0)
-      IconInfo.xHotspot := Math.max(-fRXData.Pivot[Cursors[KMC]].x+CursorOffsetsX[KMC],0);
-      IconInfo.yHotspot := Math.max(-fRXData.Pivot[Cursors[KMC]].y+CursorOffsetsY[KMC],0);
+      IconInfo.xHotspot := Math.max(-fRXData.Pivot[CURSORS[KMC]].x+CursorOffsetsX[KMC],0);
+      IconInfo.yHotspot := Math.max(-fRXData.Pivot[CURSORS[KMC]].y+CursorOffsetsY[KMC],0);
     end;
 
     //Release the Mask, otherwise there is black rect in Lazarus
@@ -157,15 +157,15 @@ end;
 // Return cursor offset for given direction, which is a signed(!) value
 function TKMResCursors.CursorOffset(aDir: TKMDirection): TKMPoint;
 begin
-  Result.X := fRXData.Pivot[Cursors[TKMCursorDirections[aDir]]].X;
-  Result.Y := fRXData.Pivot[Cursors[TKMCursorDirections[aDir]]].Y;
+  Result.X := fRXData.Pivot[CURSORS[TKMCursorDirections[aDir]]].X;
+  Result.Y := fRXData.Pivot[CURSORS[TKMCursorDirections[aDir]]].Y;
 end;
 
 
 // Sprite index of the cursor
 function TKMResCursors.CursorTexID(aDir: TKMDirection): Integer;
 begin
-  Result := Cursors[TKMCursorDirections[aDir]];
+  Result := CURSORS[TKMCursorDirections[aDir]];
 end;
 
 

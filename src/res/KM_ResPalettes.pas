@@ -50,7 +50,7 @@ implementation
 
 const
   //Palette filenames, except pallin which is generated proceduraly
-  PalFiles: array [TKMPal] of string = (
+  PAL_FILES: array [TKMPal] of string = (
     'map.bbm',
     'pal0.bbm', //'pal1.bbm', 'pal2.bbm', 'pal3.bbm', 'pal4.bbm', 'pal5.bbm', unused
     'setup.bbm',
@@ -156,7 +156,7 @@ begin
   case I of
     palbw:   fPalettes[I].GenerateBW;
     pallin:  fPalettes[I].GenerateLinear;
-    else      fPalettes[I].LoadFromFile(aPath + PalFiles[I]);
+    else      fPalettes[I].LoadFromFile(aPath + PAL_FILES[I]);
   end;
 end;
 
@@ -164,13 +164,13 @@ end;
 //Load only Default Palette
 procedure TKMResPalettes.LoadDefaultPalette(const aPath: UnicodeString);
 begin
-  fPalettes[pal0].LoadFromFile(aPath + PalFiles[pal0]);
+  fPalettes[pal0].LoadFromFile(aPath + PAL_FILES[pal0]);
 end;
 
 
 function TKMResPalettes.PalFile(aIndex: TKMPal): UnicodeString;
 begin
-  Result := PalFiles[aIndex];
+  Result := PAL_FILES[aIndex];
 end;
 
 
