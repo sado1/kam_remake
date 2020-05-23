@@ -299,7 +299,7 @@ uses
   Classes, Controls, Dialogs, SysUtils, KromUtils, Math, TypInfo,
   {$IFDEF WDC} UITypes, {$ENDIF}
   KM_PathFindingAStarOld, KM_PathFindingAStarNew, KM_PathFindingJPS,
-  KM_Projectiles, KM_AIFields,
+  KM_Projectiles, KM_AIFields, KM_NetworkTypes,
   KM_Main, KM_GameApp, KM_RenderPool, KM_GameInfo, KM_GameClasses,
   KM_Terrain, KM_HandsCollection, KM_HandSpectator, KM_MapEditorHistory,
   KM_MissionScript, KM_MissionScript_Standard, KM_GameInputProcess_Multi, KM_GameInputProcess_Single,

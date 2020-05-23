@@ -17,44 +17,6 @@ uses
   ;
 
 type
-  TKMNetPlayerKind = (lpkHost, lpkJoiner);
-  TKMNetGameState = (lgsNone, lgsConnecting, lgsQuery, lgsLobby, lgsLoading, lgsGame, lgsReconnecting);
-  TKMNetGameKind = (ngkNone, ngkMap, ngkSave);
-  TKMChatSound = (csNone, csJoin, csLeave, csSystem, csGameStart, csSaveGame, csChat, csChatWhisper, csChatTeam);
-
-const
-  NetMPGameState: array [TKMNetGameState] of TMPGameState = (mgsNone, mgsNone, mgsNone, mgsLobby, mgsLoading, mgsGame, mgsGame);
-  NetAllowedPackets: array [TKMNetGameState] of set of TKMessageKind = (
-    //lgsNone
-    [],
-    //lgsConnecting
-    [mkRefuseToJoin,mkIndexOnServer,mkGameVersion,mkWelcomeMessage,mkPing,
-     mkConnectedToRoom,mkPingInfo,mkKicked,mkServerName,mkReqPassword],
-    //lgsQuery
-    [mkAllowToJoin,mkRefuseToJoin,mkAuthChallenge,mkPing,mkPingInfo,mkKicked],
-    //lgsLobby
-    [mkAskForAuth,mkAskToJoin,mkClientLost,mkReassignHost,mkDisconnect,mkPing,mkPingInfo,mkPlayersList,
-     mkStartingLocQuery,mkSetTeam,mkFlagColorQuery,mkResetMap,mkMapSelect,mkSaveSelect,
-     mkReadyToStart,mkStart,mkTextChat,mkKicked,mkLangCode,mkGameOptions,mkServerName,
-     mkFileRequest,mkFileSendStarted,mkFileChunk,mkFileEnd,mkFileAck,mkFileProgress,
-     mkTextTranslated,mkHasMapOrSave,mkSetPassword],
-    //lgsLoading
-    [mkAskForAuth,mkClientLost,mkReassignHost,mkDisconnect,mkPing,mkPingInfo,mkPlayersList,
-     mkReadyToPlay,mkPlay,mkTextChat,mkKicked,mkTextTranslated,mkVote],
-    //lgsGame
-    [mkAskForAuth,mkClientLost,mkReassignHost,mkDisconnect,mkPing,mkPingInfo,{mkFPS,}mkPlayersList,mkReadyToReturnToLobby,
-     mkCommands,mkTextChat,mkResyncFromTick,mkAskToReconnect,mkKicked,mkClientReconnected,mkTextTranslated,mkVote],
-    //lgsReconnecting
-    [mkIndexOnServer,mkGameVersion,mkWelcomeMessage,mkPing,{mkFPS,}mkConnectedToRoom,
-     mkPingInfo,mkPlayersList,mkReconnectionAccepted,mkRefuseReconnect,mkKicked]
-  );
-
-  JOIN_TIMEOUT = 8000; //8 sec. Timeout for join queries
-  RECONNECT_PAUSE = 3000; //Time in ms which we wait before attempting to reconnect (stops the socket from becoming overloaded)
-  VOTE_TIMEOUT = 60000; //60 sec. Timeout for votes
-
-
-type
   TMapStartEvent = procedure (const aData: UnicodeString; aMapFolder: TKMapFolder; aCRC: Cardinal; Spectating: Boolean;
                               aMissionDifficulty: TKMMissionDifficulty) of object;
 
@@ -281,7 +243,7 @@ type
 
 implementation
 uses
-  KM_ResTexts, KM_Sound, KM_ResSound, KM_Log, KM_CommonUtils, StrUtils, Math, KM_Resource, KM_HandsCollection, KM_Hand;
+  KM_NetworkConsts, KM_ResTexts, KM_Sound, KM_ResSound, KM_Log, KM_CommonUtils, StrUtils, Math, KM_Resource, KM_HandsCollection, KM_Hand;
 
 
 { TKMNetworking }
@@ -1637,7 +1599,7 @@ begin
     M.Read(Kind, SizeOf(TKMessageKind)); //Depending on kind message contains either Text or a Number
 
     //Make sure we are allowed to receive this packet at this point
-    if not (Kind in NetAllowedPackets[fNetGameState]) then
+    if not (Kind in NET_ALLOWED_PACKETS_SET[fNetGameState]) then
     begin
       //When querying or reconnecting to a host we may receive data such as commands, player setup, etc. These should be ignored.
       if not (fNetGameState in [lgsQuery, lgsReconnecting]) then
@@ -2592,7 +2554,7 @@ begin
     MPGameInfo.Description := fDescription;
     MPGameInfo.Map := aMap;
     MPGameInfo.GameTime := aGameTime;
-    MPGameInfo.GameState := NetMPGameState[fNetGameState];
+    MPGameInfo.GameState := NET_MP_GAME_STATE[fNetGameState];
     MPGameInfo.PasswordLocked := (fPassword <> '');
     MPGameInfo.PlayerCount := NetPlayers.Count;
 
