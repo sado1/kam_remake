@@ -11,13 +11,16 @@ type
 
   TKMWorkerThread = class(TThread)
   private
+    fThreadName: string;
     fWorkCompleted: Boolean;
     fTaskQueue: TQueue<TKMWorkerThreadTask>;
+
+    procedure NameThread;
   public
     //Special mode for exception handling. Runs work synchronously inside QueueWork
     fSynchronousExceptionMode: Boolean;
 
-    constructor Create;
+    constructor Create(const aThreadName: string = '');
     destructor Destroy; override;
     procedure Execute; override;
 
@@ -29,11 +32,15 @@ implementation
 
 
 { TKMWorkerThread }
-constructor TKMWorkerThread.Create;
+constructor TKMWorkerThread.Create(const aThreadName: string = '');
 begin
   //Thread isn't started until all constructors have run to completion
   //so Create(False) may be put in front as well
   inherited Create(False);
+
+  fThreadName := aThreadName;
+
+  NameThread;
 
   fWorkCompleted := False;
   fSynchronousExceptionMode := False;
@@ -51,6 +58,14 @@ begin
   inherited Destroy;
 
   fTaskQueue.Free; // Free task queue after Worker thread is destroyed so we don't wait for it
+end;
+
+procedure TKMWorkerThread.NameThread;
+begin
+  {$IFDEF DEBUG}
+  if fThreadName <> '' then
+    TThread.NameThreadForDebugging(fThreadName, ThreadID);
+  {$ENDIF}
 end;
 
 procedure TKMWorkerThread.Execute;
@@ -96,6 +111,8 @@ begin
       Job.Proc();
       FreeAndNil(Job);
     end;
+
+    NameThread;
   end;
 end;
 
