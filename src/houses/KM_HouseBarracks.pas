@@ -308,7 +308,7 @@ end;
 
 function TKMHouseBarracks.EquipWarrior(aUnitType: TKMUnitType): Pointer;
 var
-  I, K: Integer;
+  I: Integer;
   TroopWareType: TKMWareType;
   Soldier: TKMUnitWarrior;
 begin
