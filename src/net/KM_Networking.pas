@@ -20,7 +20,7 @@ type
   TMapStartEvent = procedure (const aData: UnicodeString; aMapFolder: TKMapFolder; aCRC: Cardinal; Spectating: Boolean;
                               aMissionDifficulty: TKMMissionDifficulty) of object;
 
-  //Should handle message exchange and routing, interacting with UI
+  // Should handle message exchange and routing, interacting with UI
   TKMNetworking = class
   private
     fPacketsReceived: array[TKMessageKind] of Cardinal;
@@ -243,7 +243,9 @@ type
 
 implementation
 uses
-  KM_NetworkConsts, KM_ResTexts, KM_Sound, KM_ResSound, KM_Log, KM_CommonUtils, StrUtils, Math, KM_Resource, KM_HandsCollection, KM_Hand;
+  Math, StrUtils,
+  KM_NetworkConsts, KM_Sound, KM_Log, KM_CommonUtils, KM_HandsCollection, KM_Hand,
+  KM_Resource, KM_ResSound, KM_ResTexts;
 
 
 { TKMNetworking }
