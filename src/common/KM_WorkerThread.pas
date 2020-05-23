@@ -52,8 +52,11 @@ begin
   Terminate;
   //Wake the thread if it's waiting
   TMonitor.Enter(fTaskQueue);
-  TMonitor.Pulse(fTaskQueue);
-  TMonitor.Exit(fTaskQueue);
+  try
+    TMonitor.Pulse(fTaskQueue);
+  finally
+    TMonitor.Exit(fTaskQueue);
+  end;
 
   inherited Destroy;
 
