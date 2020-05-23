@@ -455,8 +455,7 @@ begin
 end;
 
 
-class procedure TKMemoryStream.AsyncSaveToFileAndFree(var aStream;
-  const aFileName: string; aWorkerThread: TKMWorkerThread);
+class procedure TKMemoryStream.AsyncSaveToFileAndFree(var aStream; const aFileName: string; aWorkerThread: TKMWorkerThread);
 var
   LocalStream: TKMemoryStream;
 begin
@@ -472,7 +471,7 @@ begin
       finally
         LocalStream.Free;
       end;
-    end);
+    end, 'AsyncSaveToFile');
   {$ELSE}
     try
       LocalStream.SaveToFile(aFileName);
@@ -483,9 +482,8 @@ begin
 end;
 
 
-class procedure TKMemoryStream.AsyncSaveToFileCompressedAndFree(
-  var aStream; const aFileName: string; const aMarker: string;
-  aWorkerThread: TKMWorkerThread);
+class procedure TKMemoryStream.AsyncSaveToFileCompressedAndFree(var aStream; const aFileName: string; const aMarker: string;
+                                                                aWorkerThread: TKMWorkerThread);
 var
   LocalStream: TKMemoryStream;
 begin
@@ -501,7 +499,7 @@ begin
       finally
         LocalStream.Free;
       end;
-    end);
+    end, 'AsyncSaveToFileCompressed ' + aMarker);
   {$ELSE}
     try
       LocalStream.SaveToFileCompressed(aFileName, aMarker);

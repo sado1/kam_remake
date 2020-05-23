@@ -181,7 +181,7 @@ begin
   aWorkerThread.QueueWork(procedure
   begin
     KMCopyFile(aSrc, aDest, aOverwrite);
-  end);
+  end, 'KMCopyFile');
   {$ELSE}
   KMCopyFile(aSrc, aDest, aOverwrite);
   {$ENDIF}

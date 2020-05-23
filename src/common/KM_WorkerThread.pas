@@ -6,16 +6,18 @@ uses
 
 type
   TKMWorkerThreadTask = class
+    WorkName: string;
     Proc: TProc;
   end;
 
   TKMWorkerThread = class(TThread)
   private
-    fThreadName: string;
+    fWorkerThreadName: string;
     fWorkCompleted: Boolean;
     fTaskQueue: TQueue<TKMWorkerThreadTask>;
 
-    procedure NameThread;
+    procedure NameThread; overload;
+    procedure NameThread(aThreadName: string); overload;
   public
     //Special mode for exception handling. Runs work synchronously inside QueueWork
     fSynchronousExceptionMode: Boolean;
@@ -24,7 +26,7 @@ type
     destructor Destroy; override;
     procedure Execute; override;
 
-    procedure QueueWork(aProc: TProc);
+    procedure QueueWork(aProc: TProc; aWorkName: string = '');
     procedure WaitForAllWorkToComplete;
   end;
 
@@ -38,9 +40,12 @@ begin
   //so Create(False) may be put in front as well
   inherited Create(False);
 
-  fThreadName := aThreadName;
+  fWorkerThreadName := aThreadName;
 
-  NameThread;
+  {$IFDEF DEBUG}
+  if fWorkerThreadName <> '' then
+    TThread.NameThreadForDebugging(fWorkerThreadName, ThreadID);
+  {$ENDIF}
 
   fWorkCompleted := False;
   fSynchronousExceptionMode := False;
@@ -65,9 +70,14 @@ end;
 
 procedure TKMWorkerThread.NameThread;
 begin
+  NameThread(fWorkerThreadName);
+end;
+
+procedure TKMWorkerThread.NameThread(aThreadName: string);
+begin
   {$IFDEF DEBUG}
-  if fThreadName <> '' then
-    TThread.NameThreadForDebugging(fThreadName, ThreadID);
+  if fWorkerThreadName <> '' then
+    TThread.NameThreadForDebugging(fWorkerThreadName);
   {$ENDIF}
 end;
 
@@ -111,6 +121,7 @@ begin
 
     if Job <> nil then
     begin
+      NameThread(Job.WorkName);
       Job.Proc();
       FreeAndNil(Job);
     end;
@@ -119,7 +130,7 @@ begin
   end;
 end;
 
-procedure TKMWorkerThread.QueueWork(aProc: TProc);
+procedure TKMWorkerThread.QueueWork(aProc: TProc; aWorkName: string = '');
 var
   Job: TKMWorkerThreadTask;
 begin
@@ -134,6 +145,7 @@ begin
 
     Job := TKMWorkerThreadTask.Create;
     Job.Proc := aProc;
+    Job.WorkName := aWorkName;
 
     TMonitor.Enter(fTaskQueue);
     try

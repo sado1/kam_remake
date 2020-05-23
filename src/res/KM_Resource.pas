@@ -283,10 +283,6 @@ begin
   var
     sprites: TKMResSprites;
   begin
-    {$IFDEF DEBUG}
-    TThread.NameThreadForDebugging('Export ' + GetEnumName(TypeInfo(TRXType), Integer(aRT)));
-    {$ENDIF}
-
     sprites := TKMResSprites.Create;
     try
       if sprites.LoadSprites(aRT, False) then
@@ -297,7 +293,7 @@ begin
     finally
       sprites.Free;
     end;
-  end);
+  end, 'Export ' + GetEnumName(TypeInfo(TRXType), Integer(aRT)));
 end;
 
 
@@ -325,10 +321,6 @@ begin
       units: TKMResUnits;
       resTexts: TKMTextLibraryMulti;
     begin
-
-    {$IFDEF DEBUG}
-    TThread.NameThreadForDebugging('Export units anim');
-    {$ENDIF}
 
     sprites := TKMResSprites.Create;
     sprites.LoadSprites(rxUnits, False); //BMP can't show alpha shadows anyways
@@ -447,7 +439,7 @@ begin
       resTexts.Free;
       SList.Free;
     end;
-  end);
+  end, 'Export units anim');
 end;
 
 
@@ -475,10 +467,6 @@ begin
 
     Folder := ExeDir + 'Export' + PathDelim + 'HouseAnim' + PathDelim;
     ForceDirectories(Folder);
-
-    {$IFDEF DEBUG}
-    TThread.NameThreadForDebugging('Export house anim');
-    {$ENDIF}
 
     SList := TStringList.Create;
     houses := TKMResHouses.Create;
@@ -528,7 +516,7 @@ begin
       sprites.ClearTemp;
       sprites.Free;
     end;
-  end);
+  end, 'Export house anim');
 end;
 
 
@@ -552,10 +540,6 @@ begin
 
     Folder := ExeDir + 'Export' + PathDelim + 'TreeAnim' + PathDelim;
     ForceDirectories(Folder);
-
-    {$IFDEF DEBUG}
-    TThread.NameThreadForDebugging('Export tree anim');
-    {$ENDIF}
 
     SList := TStringList.Create;
 
@@ -586,7 +570,7 @@ begin
       sprites.Free;
       SList.Free;
     end;
-  end);
+  end, 'Export tree anim');
 end;
 
 

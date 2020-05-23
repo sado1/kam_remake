@@ -1335,7 +1335,7 @@ begin
     fSaveWorkerThread.QueueWork(procedure
     begin
       DoAutoSaveRename(LocalIsMultiPlayerOrSpec);
-    end);
+    end, 'AutoSave');
   {$ELSE}
     DoAutoSaveRename(IsMultiPlayerOrSpec);
   {$ENDIF}
