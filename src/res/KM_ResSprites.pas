@@ -87,6 +87,7 @@ type
     procedure SoftenShadows(aStart: Integer = 1; aEnd: Integer = -1; aOnlyShadows: Boolean = True); overload;
     procedure SoftenShadows(aID: Integer; aOnlyShadows: Boolean = True); overload;
     procedure DetermineImagesObjectSize(aStart: Integer = 1; aEnd: Integer = -1);
+    procedure RemoveMarketWaresShadows(aResHouses: TKMResHouses);
     procedure RemoveSnowHouseShadows(aResHouses: TKMResHouses);
 
     function GetSpriteColors(aCount: Word): TRGBArray;
@@ -127,7 +128,8 @@ type
     function GetNextLoadRxTypeIndex(aRT: TRXType): Integer;
     {$ENDIF}
   public
-    constructor Create(aStepProgress: TEvent; aStepCaption: TUnicodeStringEvent);
+    constructor Create; overload;
+    constructor Create(aStepProgress: TEvent; aStepCaption: TUnicodeStringEvent); overload;
     destructor Destroy; override;
 
     procedure LoadMenuResources;
@@ -379,10 +381,28 @@ begin
     begin
       SnowID := aResHouses[HT].SnowPic + 1;
       if (fRXData.Flag[SnowID] <> 0) then
-        ShadowConverter.RemoveShadow(SnowID);
+        ShadowConverter.RemoveShadow(SnowID, True);
     end;
   finally
     ShadowConverter.Free;
+  end;
+end;
+
+
+procedure TKMSpritePack.RemoveMarketWaresShadows(aResHouses: TKMResHouses);
+var
+  I: Integer;
+  shadowConverter: TKMSoftShadowConverter;
+begin
+  Assert(fRT = rxHouses);
+
+  shadowConverter := TKMSoftShadowConverter.Create(Self);
+  try
+    for I := MARKET_WARES_TEX_START + 1 to MARKET_WARES_TEX_START + MARKET_WARES_TEX_CNT - 1 do
+    if (fRXData.Flag[I] <> 0) then
+      shadowConverter.RemoveShadow(I, False);
+  finally
+    shadowConverter.Free;
   end;
 end;
 
@@ -665,7 +685,12 @@ begin
   SL := TStringList.Create;
 
   for I := 1 to fRXData.Count do
+  begin
     ExportFullImageData(aFolder, I, SL);
+    // Stop export if async thread is terminated by application
+    if TThread.CheckTerminated then
+      Exit;
+  end;
 
   SL.Free;
 end;
@@ -1093,6 +1118,12 @@ end;
 
 
 { TKMResSprites }
+constructor TKMResSprites.Create;
+begin
+  Create(nil, nil);
+end;
+
+
 constructor TKMResSprites.Create(aStepProgress: TEvent; aStepCaption: TUnicodeStringEvent);
 var
   RT: TRXType;
@@ -1378,10 +1409,14 @@ begin
   for RT := Low(TRXType) to High(TRXType) do
     if RXInfo[RT].Usage = ruMenu then
     begin
-      fStepCaption('Reading ' + RXInfo[RT].FileName + ' ...');
+      if Assigned(fStepCaption) then
+        fStepCaption('Reading ' + RXInfo[RT].FileName + ' ...');
+
       LoadSprites(RT, RT = rxGUI); //Only GUI needs alpha shadows
       fSprites[RT].MakeGFX(RT = rxGUI);
-      fStepProgress;
+
+      if Assigned(fStepProgress) then
+        fStepProgress;
     end;
 end;
 
@@ -1408,7 +1443,9 @@ procedure TKMResSprites.LoadGameResources(aAlphaShadows: Boolean; aForceReload: 
     for RT := Low(TRXType) to High(TRXType) do
       if RXInfo[RT].Usage = ruGame then
       begin
-        fStepCaption(gResTexts[RXInfo[RT].LoadingTextID]);
+        if Assigned(fStepCaption) then
+          fStepCaption(gResTexts[RXInfo[RT].LoadingTextID]);
+
         gLog.AddTime('Reading ' + RXInfo[RT].FileName + '.rx');
         LoadSprites(RT, fAlphaShadows);
         fSprites[RT].MakeGFX(fAlphaShadows);
@@ -1547,7 +1584,10 @@ begin
     // OpenGL work mainly with 1 thread only, so we have to call gl functions only from main thread
     // That is why we need call this method from main thread only
     GenerateTextureAtlasForGameRes(fGameResLoader.RXType);
-    fStepCaption(gResTexts[RXInfo[fGameResLoader.RXType].LoadingTextID]);
+
+    if Assigned(fStepCaption) then
+      fStepCaption(gResTexts[RXInfo[fGameResLoader.RXType].LoadingTextID]);
+
     fSprites[fGameResLoader.RXType].ClearTemp;      //Clear fRXData sprites temp data, which is not needed anymore
     ClearGameResGenTemp;                                   //Clear all the temp data used for atlas texture generating
     NextRXTypeI := GetNextLoadRxTypeIndex(fGameResLoader.RXType); // get next RXType to load

@@ -57,9 +57,12 @@ uses
   function WrapColor(const aText: UnicodeString; aColor: Cardinal): UnicodeString;
   function WrapColorA(const aText: AnsiString; aColor: Cardinal): AnsiString;
   function StripColor(const aText: UnicodeString): UnicodeString;
+  function GetContrastTextColor(aBackgroundColor: Cardinal): Cardinal;
   function FindMPColor(aColor: Cardinal): Integer;
 
   procedure ParseDelimited(const Value, Delimiter: UnicodeString; SL: TStringList);
+
+  function EnsureRangeF(const aValue, aMin, aMax: Single): Single;
 
   procedure SetKaMSeed(aSeed: Integer);
   function GetKaMSeed: Integer;
@@ -69,6 +72,8 @@ uses
   function KaMRandomWSeedI2(var aSeed: Integer; Range_Both_Directions: Integer): Integer;
   function KaMRandom(const aCaller: AnsiString; aLogRng: Boolean = True): Extended; overload;
   function KaMRandom(aMax: Integer; const aCaller: AnsiString; aLogRng: Boolean = True): Integer; overload;
+  function KaMRandom(aMax: Cardinal; const aCaller: AnsiString; aLogRng: Boolean = True): Cardinal; overload;
+  function KaMRandom(aMax: Int64; const aCaller: AnsiString; aLogRng: Boolean = True): Int64; overload;
   function KaMRandomS1(aMax: Single; const aCaller: AnsiString): Single;
   function KaMRandomI2(Range_Both_Directions: Integer; const aCaller: AnsiString): Integer; overload;
   function KaMRandomS2(Range_Both_Directions: Single; const aCaller: AnsiString): Single; overload;
@@ -117,6 +122,8 @@ uses
   function ArrayContains(aPoint: TKMPoint; const aArray: TKMPointArray): Boolean; overload;
   function ArrayContains(aPoint: TKMPoint; const aArray: TKMPointArray; aElemCnt: Integer): Boolean; overload;
 
+  procedure ArrayReverse(var aArray: TKMPointArray);
+
   function Pack4ByteToInteger(aByte1, aByte2, aByte3, aByte4: Byte): Integer;
   procedure UnpackIntegerTo4Byte(aInt: Integer; out aByte1, aByte2, aByte3, aByte4: Byte);
 
@@ -134,6 +141,9 @@ uses
   function IntToBool(aValue: Integer): Boolean;
 
   //String functions
+  function GetNextWordPos(const aStr: String; aPos: Integer): Integer;
+  function GetPrevWordPos(const aStr: String; aPos: Integer): Integer;
+
   function StrIndexOf(const aStr, aSubStr: String): Integer;
   function StrLastIndexOf(const aStr, aSubStr: String): Integer;
   function StrSubstring(const aStr: String; aFrom, aLength: Integer): String; overload;
@@ -349,6 +359,22 @@ begin
       Result := True;
       Exit;
     end;
+end;
+
+
+procedure ArrayReverse(var aArray: TKMPointArray);
+var
+  I: Integer;
+  tmp: TKMPoint;
+  IMax: Integer;
+begin
+  IMax := High(aArray);
+  for I := 0 to IMax div 2 do
+  begin
+    tmp := aArray[I];
+    aArray[I] := aArray[IMax - I];
+    aArray[IMax - I] := tmp;
+  end;
 end;
 
 
@@ -1076,6 +1102,23 @@ begin
 end;
 
 
+// Return black or white text color, that is contrasst to the specified background color
+function GetContrastTextColor(aBackgroundColor: Cardinal): Cardinal;
+var
+  R,G,B: Byte;
+  colorValue: Single;
+begin
+  B := aBackgroundColor and $FF;
+  G := aBackgroundColor shr 8 and $FF;
+  R := aBackgroundColor shr 16 and $FF;
+  colorValue := (R*299 + G*587 + B*114) / 1000; // some fancy formula, that considers each color luminance
+  if colorValue >= 128 then
+    Result := clBlackText
+  else
+    Result := clWhiteText;
+end;
+
+
 function FindMPColor(aColor: Cardinal): Integer;
 var I: Integer;
 begin
@@ -1109,6 +1152,17 @@ begin
   finally
     SL.EndUpdate;
   end;
+end;
+
+
+function EnsureRangeF(const aValue, aMin, aMax: Single): Single;
+begin
+  Result := aValue;
+  if aValue < aMin then
+    Result := aMin
+  else
+  if aValue > aMax then
+    Result := aMax;
 end;
 
 
@@ -1244,6 +1298,31 @@ begin
   if aLogRng then
     LogKamRandom(Result, aCaller, 'I*');
 end;
+
+
+function KaMRandom(aMax: Cardinal; const aCaller: AnsiString; aLogRng: Boolean = True): Cardinal;
+begin
+  if CUSTOM_RANDOM then
+    Result := Trunc(KaMRandom(aCaller, False)*aMax)
+  else
+    Result := Random(aMax);
+
+  if aLogRng then
+    LogKamRandom(Result, aCaller, 'C*');
+end;
+
+
+function KaMRandom(aMax: Int64; const aCaller: AnsiString; aLogRng: Boolean = True): Int64;
+begin
+  if CUSTOM_RANDOM then
+    Result := Trunc(KaMRandom(aCaller, False)*aMax)
+  else
+    Result := Random(aMax);
+
+  if aLogRng then
+    LogKamRandom(Result, aCaller, 'I64*');
+end;
+
 
 
 //Returns random number from -Range_Both_Directions to +Range_Both_Directions
@@ -1407,6 +1486,67 @@ end;
 function IntToBool(aValue: Integer): Boolean;
 begin
   Result := aValue <> 0;
+end;
+
+
+const
+  SPACE_CHARS: set of AnsiChar = [' ', '|'];
+
+//Get next word position in the given aStr, after cirtain position aPos
+//positions starts from 0
+function GetNextWordPos(const aStr: String; aPos: Integer): Integer;
+var
+  I, pos: Integer;
+  found: Boolean;
+begin
+  pos := aPos;
+  Result := Length(aStr);
+  found := False;
+
+  //Cut all spaces
+  while (pos + 1 < Length(aStr)) and CharInSet(aStr[pos + 1], SPACE_CHARS) do
+    Inc(pos);
+
+  //Result is the position of the latest space after last non-space character
+  for I := pos + 1 to Length(aStr) - 1 do
+  begin
+    if CharInSet(aStr[I], SPACE_CHARS) then
+    begin
+      Result := I;
+      found := True;
+    end
+    else
+    if found then
+      Break;
+  end;
+
+  Result := Min(Length(aStr), Max(aPos + 1, Result));
+end;
+
+
+//Get previous word position in the given aStr, after cirtain position aPos
+//positions starts from 0
+function GetPrevWordPos(const aStr: String; aPos: Integer): Integer;
+var
+  I, pos: Integer;
+begin
+  pos := aPos;
+
+  //Cut all spaces
+  while (pos >= 1) and CharInSet(aStr[pos], SPACE_CHARS) do
+    Dec(pos);
+
+  //Result is the first non-space character
+  Result := pos;
+  for I := pos downto 1 do
+  begin
+    if not CharInSet(aStr[I], SPACE_CHARS) then
+      Result := I - 1
+    else
+      Break;
+  end;
+
+  Result := Max(0, Min(aPos - 1, Result));
 end;
 
 

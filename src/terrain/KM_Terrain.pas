@@ -66,7 +66,7 @@ type
     LayersCnt: Byte;
     Layer: array [0..2] of TKMTerrainLayer;
 //    StoneLayer: TKMTerrainLayer;
-    Height: Byte;
+    fHeight: Byte;
     Obj: Word;
     IsCustom: Boolean; //Custom tile (rotated tile, atm)
     BlendingLvl: Byte; //Use blending for layers transitions
@@ -101,6 +101,8 @@ type
 
     Fence: TKMFenceType; //Fences (ropes, planks, stones)
     FenceSide: Byte; //Bitfield whether the fences are enabled
+
+    function Height: Byte;
   end;
 
   TKMTerrainTileArray = array of TKMTerrainTile;
@@ -250,7 +252,6 @@ type
 
     procedure UnitAdd(const LocTo: TKMPoint; aUnit: Pointer);
     procedure UnitRem(const LocFrom: TKMPoint);
-    procedure UnitWalkInsideHouse(const aHouseEntrance: TKMPoint; aUnit: Pointer);
     procedure UnitWalk(const LocFrom,LocTo: TKMPoint; aUnit: Pointer);
     procedure UnitSwap(const LocFrom,LocTo: TKMPoint; UnitFrom: Pointer);
     procedure UnitVertexAdd(const LocTo: TKMPoint; Usage: TKMVertexUsage); overload;
@@ -259,11 +260,16 @@ type
     function VertexUsageCompatible(const LocFrom, LocTo: TKMPoint): Boolean;
     function GetVertexUsageType(const LocFrom, LocTo: TKMPoint): TKMVertexUsage;
 
+    function CoordsWithinMap(X, Y: Single; aInset: Byte = 0): Boolean;
+    function PointFInMapCoords(const aPointF: TKMPointF; aInset: Byte = 0): Boolean;
     function TileInMapCoords(X, Y: Integer; Inset: Byte = 0): Boolean; overload;
     function TileInMapCoords(aCell: TKMPoint; Inset: Byte = 0): Boolean; overload;
     function TileInMapCoords(X,Y: Integer; InsetRect: TKMRect): Boolean; overload;
     function VerticeInMapCoords(X, Y: Integer; Inset: Byte = 0): Boolean; overload;
     function VerticeInMapCoords(const aCell: TKMPoint; Inset: Byte = 0): Boolean; overload;
+    procedure EnsureCoordsWithinMap(var X, Y: Single; aInset: Byte = 0);
+    function EnsureTilesRectWithinMap(const aRectF: TKMRectF; aInset: Single = 0): TKMRectF;
+    function EnsureVerticesRectWithinMap(const aRectF: TKMRectF; aInset: Single = 0): TKMRectF;
     function EnsureTileInMapCoords(X, Y: Integer; aInset: Byte = 0): TKMPoint; overload;
     function EnsureTileInMapCoords(const aLoc: TKMPoint; aInset: Byte = 0): TKMPoint; overload;
 
@@ -348,7 +354,10 @@ type
     function FlatToHeight(const aPoint: TKMPointF): TKMPointF; overload;
     function HeightAt(inX, inY: Single): Single;
 
-    procedure UpdateLighting(const aRect: TKMRect);
+    procedure UpdateLighting; overload;
+    procedure UpdateLighting(const aRect: TKMRect); overload;
+    procedure UpdateLighting(X, Y: Integer); overload;
+    procedure UpdatePassability; overload;
     procedure UpdatePassability(const aRect: TKMRect); overload;
     procedure UpdatePassability(const Loc: TKMPoint); overload;
 
@@ -391,6 +400,9 @@ uses
   KM_Log, KM_HandsCollection, KM_TerrainWalkConnect, KM_Resource, KM_Units, KM_DevPerfLog,
   KM_ResSound, KM_Sound, KM_UnitActionStay, KM_UnitWarrior, KM_TerrainPainter, KM_Houses,
   KM_ResUnits, KM_ResSprites, KM_Hand, KM_Game, KM_GameTypes, KM_ScriptingEvents, KM_Utils, KM_DevPerfLogTypes;
+
+const
+  HEIGHT_DEFAULT = 30;
 
 
 { TKMTerrainLayer }
@@ -451,7 +463,7 @@ begin
           BaseLayer.Terrain := 0;
         LayersCnt    := 0;
         BaseLayer.SetCorners([0,1,2,3]);
-        Height       := 30 + KaMRandom(HEIGHT_RAND_VALUE, 'TKMTerrain.MakeNewMap 3');  //variation in Height
+        fHeight      := HEIGHT_DEFAULT + KaMRandom(HEIGHT_RAND_VALUE, 'TKMTerrain.MakeNewMap 3');  //variation in Height
         BaseLayer.Rotation     := KaMRandom(4, 'TKMTerrain.MakeNewMap 4');  //Make it random
         Obj          := OBJ_NONE;             //none
         IsCustom     := False;
@@ -473,8 +485,8 @@ begin
       end;
 
   fFinder := TKMTerrainFinder.Create;
-  UpdateLighting(MapRect);
-  UpdatePassability(MapRect);
+  UpdateLighting;
+  UpdatePassability;
 
   //Everything except roads
   UpdateWalkConnect([wcWalk, wcFish, wcWork], MapRect, True);
@@ -527,7 +539,7 @@ begin
         ReadTileFromStream(S, TileBasic, GameRev);
 
         Land[I,J].BaseLayer   := TileBasic.BaseLayer;
-        Land[I,J].Height      := TileBasic.Height;
+        Land[I,J].fHeight     := TileBasic.Height;
         Land[I,J].Obj         := TileBasic.Obj;
         Land[I,J].LayersCnt   := TileBasic.LayersCnt;
         Land[I,J].IsCustom    := TileBasic.IsCustom;
@@ -548,8 +560,8 @@ begin
   end;
 
   fFinder := TKMTerrainFinder.Create;
-  UpdateLighting(MapRect);
-  UpdatePassability(MapRect);
+  UpdateLighting;
+  UpdatePassability;
 
   //Everything except roads
   UpdateWalkConnect([wcWalk, wcFish, wcWork], MapRect, True);
@@ -731,7 +743,7 @@ begin
   //To use CheckHeightPass we must apply change then roll it back if it failed
   OldHeight := aHeight;
   //Apply change
-  Land[Y, X].Height := aHeight;
+  Land[Y, X].fHeight := aHeight;
 
   //Don't check canElevate: If scripter wants to block mines that's his choice
 
@@ -745,7 +757,7 @@ begin
         or (Land[Y+I, X+K].TileLock = tlHouse) then
         begin
           //Rollback change
-          Land[Y, X].Height := OldHeight;
+          Land[Y, X].fHeight := OldHeight;
           Exit(False);
         end;
 
@@ -1116,6 +1128,21 @@ begin
 end;
 
 
+function TKMTerrain.CoordsWithinMap(X, Y: Single; aInset: Byte = 0): Boolean;
+begin
+  Result :=     (X >= 1 + aInset)
+            and (X <= fMapX - 1 - aInset)
+            and (Y >= 1 + aInset)
+            and (Y <= fMapY - 1 - aInset)
+end;
+
+
+function TKMTerrain.PointFInMapCoords(const aPointF: TKMPointF; aInset: Byte = 0): Boolean;
+begin
+  Result := CoordsWithinMap(aPointF.X, aPointF.Y, aInset);
+end;
+
+
 function TKMTerrain.TileInMapCoords(aCell: TKMPoint; Inset: Byte = 0): Boolean;
 begin
   Result := TileInMapCoords(aCell.X, aCell.Y, Inset);
@@ -1149,6 +1176,31 @@ function TKMTerrain.EnsureTileInMapCoords(X,Y: Integer; aInset: Byte = 0): TKMPo
 begin
   Result.X := EnsureRange(X, 1 + aInset, fMapX - 1 - aInset);
   Result.Y := EnsureRange(Y, 1 + aInset, fMapY - 1 - aInset);
+end;
+
+
+procedure TKMTerrain.EnsureCoordsWithinMap(var X, Y: Single; aInset: Byte = 0);
+begin
+  X := EnsureRange(X, 1 + aInset, fMapX - 1 - aInset);
+  Y := EnsureRange(Y, 1 + aInset, fMapY - 1 - aInset);
+end;
+
+
+function TKMTerrain.EnsureTilesRectWithinMap(const aRectF: TKMRectF; aInset: Single = 0): TKMRectF;
+begin
+  Result.Left   := EnsureRangeF(aRectF.Left,   1 + aInset, fMapX - 1 - aInset);
+  Result.Right  := EnsureRangeF(aRectF.Right,  1 + aInset, fMapX - 1 - aInset);
+  Result.Top    := EnsureRangeF(aRectF.Top,    1 + aInset, fMapY - 1 - aInset);
+  Result.Bottom := EnsureRangeF(aRectF.Bottom, 1 + aInset, fMapY - 1 - aInset);
+end;
+
+
+function TKMTerrain.EnsureVerticesRectWithinMap(const aRectF: TKMRectF; aInset: Single = 0): TKMRectF;
+begin
+  Result.Left   := EnsureRangeF(aRectF.Left,   aInset, fMapX - aInset);
+  Result.Right  := EnsureRangeF(aRectF.Right,  aInset, fMapX - aInset);
+  Result.Top    := EnsureRangeF(aRectF.Top,    aInset, fMapY - aInset);
+  Result.Bottom := EnsureRangeF(aRectF.Bottom, aInset, fMapY - aInset);
 end;
 
 
@@ -1690,36 +1742,33 @@ end;
 
 function TKMTerrain.TileCornerTerKind(aX, aY: Word; aCorner: Byte): TKMTerrainKind;
 var
-  cornersTKinds: TKMTerrainKindCorners;
+  L: Integer;
 begin
   Assert(InRange(aCorner, 0, 3));
   
-  GetTileCornersTerKinds(aX, aY, cornersTKinds);
-  Result := cornersTKinds[aCorner];
+  Result := tkCustom;
+  with gTerrain.Land[aY,aX] do
+  begin
+    if BaseLayer.Corners[aCorner] then
+      Result := TILE_CORNERS_TERRAIN_KINDS[BaseLayer.Terrain, (aCorner + 4 - BaseLayer.Rotation) mod 4]
+    else
+      for L := 0 to LayersCnt - 1 do
+        if Layer[L].Corners[aCorner] then
+        begin
+          Result := gRes.Sprites.GetGenTerrainInfo(Layer[L].Terrain).TerKind;
+          Break;
+        end;
+  end;
 end;
 
 
 //Get tile corners terrain kinds
 procedure TKMTerrain.GetTileCornersTerKinds(aX, aY: Word; out aCornerTerKinds: TKMTerrainKindCorners);
 var
-  K, L: Integer;
+  K: Integer;
 begin
   for K := 0 to 3 do
-  begin
-    aCornerTerKinds[K] := tkCustom;
-    with gTerrain.Land[aY,aX] do
-    begin
-      if BaseLayer.Corners[K] then
-        aCornerTerKinds[K] := TILE_CORNERS_TERRAIN_KINDS[BaseLayer.Terrain, (K + 4 - BaseLayer.Rotation) mod 4]
-      else
-        for L := 0 to LayersCnt - 1 do
-          if Layer[L].Corners[K] then
-          begin
-            aCornerTerKinds[K] := gRes.Sprites.GetGenTerrainInfo(Layer[L].Terrain).TerKind;
-            Break;
-          end;
-    end;
-  end;
+    aCornerTerKinds[K] := TileCornerTerKind(aX, aY, K);
 end;
 
 
@@ -2498,7 +2547,6 @@ var
   MiningRect: TKMRect;
 
 begin
-  Assert(gGame.IsMapEditor, 'Its allowed to use this method only from MapEd for now...');
   Assert(Length(aPoints) = 3, 'Wrong length of Points array: ' + IntToStr(Length(aPoints)));
 
   if not (aRes in [wtIronOre, wtGoldOre, wtCoal]) then
@@ -3982,17 +4030,6 @@ begin
 end;
 
 
-{ Mark tile as occupied and update occupied unit}
-// We have no way of knowing whether a unit is inside a house, or several units exit a house at once
-// when exiting the game and destroying all units this will cause asserts.
-procedure TKMTerrain.UnitWalkInsideHouse(const aHouseEntrance: TKMPoint; aUnit: Pointer);
-begin
-  if not DO_UNIT_INTERACTION then Exit;
-
-  Land[aHouseEntrance.Y,aHouseEntrance.X].IsUnit := aUnit;
-end;
-
-
 {Mark previous tile as empty and next one as occupied}
 //We need to check both tiles since UnitWalk is called only by WalkTo where both tiles aren't houses
 procedure TKMTerrain.UnitWalk(const LocFrom,LocTo: TKMPoint; aUnit: Pointer);
@@ -4161,13 +4198,13 @@ begin
   Avg := Round(Avg / VertsFactored);
 
   if CanElevateAt(Loc.X  , Loc.Y  ) then
-    Land[Loc.Y  ,Loc.X  ].Height := Mix(Avg, Land[Loc.Y  ,Loc.X  ].Height, 0.5);
+    Land[Loc.Y  ,Loc.X  ].fHeight := Mix(Avg, Land[Loc.Y  ,Loc.X  ].Height, 0.5);
   if CanElevateAt(Loc.X+1, Loc.Y  ) then
-    Land[Loc.Y  ,Loc.X+1].Height := Mix(Avg, Land[Loc.Y  ,Loc.X+1].Height, 0.5);
+    Land[Loc.Y  ,Loc.X+1].fHeight := Mix(Avg, Land[Loc.Y  ,Loc.X+1].Height, 0.5);
   if CanElevateAt(Loc.X  , Loc.Y+1) then
-    Land[Loc.Y+1,Loc.X  ].Height := Mix(Avg, Land[Loc.Y+1,Loc.X  ].Height, 0.5);
+    Land[Loc.Y+1,Loc.X  ].fHeight := Mix(Avg, Land[Loc.Y+1,Loc.X  ].Height, 0.5);
   if CanElevateAt(Loc.X+1, Loc.Y+1) then
-    Land[Loc.Y+1,Loc.X+1].Height := Mix(Avg, Land[Loc.Y+1,Loc.X+1].Height, 0.5);
+    Land[Loc.Y+1,Loc.X+1].fHeight := Mix(Avg, Land[Loc.Y+1,Loc.X+1].Height, 0.5);
 
   //All 9 tiles around and including this one could have become unwalkable and made a unit stuck, so check them all
   for I := Max(Loc.Y-1, 1) to Min(Loc.Y+1, fMapY-1) do
@@ -4210,30 +4247,49 @@ begin
 end;
 
 
+procedure TKMTerrain.UpdateLighting;
+begin
+  UpdateLighting(fMapRect);
+end;
+
+
 //Rebuilds lighting values for given bounds.
 //These values are used to draw highlights/shadows on terrain
 //Note that input values may be off-map
 procedure TKMTerrain.UpdateLighting(const aRect: TKMRect);
 var
   I, K: Integer;
-  x0, y2: Integer;
+
 begin
   //Valid vertices are within 1..Map
   for I := Max(aRect.Top, 1) to Min(aRect.Bottom, fMapY) do
-  for K := Max(aRect.Left, 1) to Min(aRect.Right, fMapX) do
-  begin
-    x0 := Max(K-1, 1);
-    y2 := Min(I+1, fMapY);
-    Land[I,K].Light := EnsureRange((Land[I,K].Height-(Land[y2,K].Height+Land[I,x0].Height)/2)/22,-1,1); //  1.33*16 ~=22
+    for K := Max(aRect.Left, 1) to Min(aRect.Right, fMapX) do
+      UpdateLighting(K, I);
+end;
 
-    //Use more contrast lighting for Waterbeds
-    if fTileset.TileIsWater(Land[I, K].BaseLayer.Terrain) then
-      Land[I,K].Light := EnsureRange(Land[I,K].Light * 1.3 + 0.1, -1, 1);
 
-    //Map borders always fade to black
-    if (I = 1) or (I = fMapY) or (K = 1) or (K = fMapX) then
-      Land[I,K].Light := -1;
-  end;
+procedure TKMTerrain.UpdateLighting(X, Y: Integer);
+var
+  x0, y2: Integer;
+begin
+  x0 := Max(X - 1, 1);
+  y2 := Min(Y + 1, fMapY);
+  Land[Y,X].Light := EnsureRange((Land[Y,X].Height - (Land[y2,X].Height + Land[Y,x0].Height)/2)/22,-1,1); //  1.33*16 ~=22
+
+  //Use more contrast lighting for Waterbeds
+  if fTileset.TileIsWater(Land[Y, X].BaseLayer.Terrain) then
+    Land[Y,X].Light := EnsureRange(Land[Y,X].Light * 1.3 + 0.1, -1, 1);
+
+  //Map borders always fade to black
+  if (Y = 1) or (Y = fMapY) or (X = 1) or (X = fMapX) then
+    Land[Y,X].Light := -1;
+end;
+
+
+//Rebuilds passability for all map
+procedure TKMTerrain.UpdatePassability;
+begin
+  UpdatePassability(fMapRect);
 end;
 
 
@@ -4824,7 +4880,7 @@ begin
     begin
       ReadTileFromStream(LoadStream, TileBasic, GAME_REVISION_NUM);
       Land[I,J].BaseLayer := TileBasic.BaseLayer;
-      Land[I,J].Height := TileBasic.Height;
+      Land[I,J].fHeight := TileBasic.Height;
       Land[I,J].Obj := TileBasic.Obj;
       Land[I,J].IsCustom := TileBasic.IsCustom;
       Land[I,J].BlendingLvl := TileBasic.BlendingLvl;
@@ -4851,7 +4907,7 @@ begin
 
   fFinder := TKMTerrainFinder.Create;
 
-  UpdateLighting(MapRect);
+  UpdateLighting;
   // Do not update Passability and WalkConnect, since we loaded it from the stream
   gLog.AddTime('Terrain loaded');
 end;
@@ -5235,5 +5291,16 @@ begin
   if UseKaMFormat then
     aStream.Seek(17, soFromCurrent);
 end;
+
+
+{ TKMTerrainTile }
+function TKMTerrainTile.Height: Byte;
+begin
+  if mlFlatTerrain in gGame.VisibleLayers then
+    Result := HEIGHT_DEFAULT
+  else
+    Result := fHeight;
+end;
+
 
 end.

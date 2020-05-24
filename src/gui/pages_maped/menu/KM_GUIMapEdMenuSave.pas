@@ -62,6 +62,7 @@ begin
   Edit_SaveName       := TKMEdit.Create(Panel_Save,aLeftPanelInset,80,aControlsWidth,20, fntGrey);
   Edit_SaveName.MaxLen := MAX_SAVENAME_LENGTH;
   Edit_SaveName.AllowedChars := acFileName;
+  Edit_SaveName.AutoFocusable := False;
   Label_SaveExists    := TKMLabel.Create(Panel_Save,aLeftPanelInset,110,aControlsWidth,0,gResTexts[TX_MAPED_SAVE_EXISTS],fntOutline,taCenter);
   CheckBox_SaveExists := TKMCheckBox.Create(Panel_Save,aLeftPanelInset,130,aControlsWidth,20,gResTexts[TX_MAPED_SAVE_OVERWRITE], fntMetal);
   Button_SaveSave     := TKMButton.Create(Panel_Save,aLeftPanelInset,150,aControlsWidth,30,gResTexts[TX_MAPED_SAVE],bsGame);

@@ -39,9 +39,10 @@ function PickMin(Values: array of Single): Byte;
 function Max(const A,B,C: Integer): Integer; overload;
 function Max(const A,B,C: Single): Single; overload;
 
-  function GetLengthSQR(ix,iy,iz:integer): integer; //Length without SQRT
-  function GetLength(ix,iy,iz:single): single; overload;
-  function GetLength(ix,iy:single): single; overload;
+  function GetLengthSQR(ix,iy,iz: integer): integer; //Length without SQRT
+  function GetLength(ix,iy,iz: single): single; overload;
+  function GetLength(ix,iy: single): single; overload;
+  function GetLength(ix,iy: integer): single; overload;
 
   function Mix(x1,x2,MixValue:single):single; overload;
   function Mix(x1,x2:integer; MixValue:single):integer; overload;
@@ -334,6 +335,12 @@ end;
 
 
 function GetLength(ix, iy: single): single; overload;
+begin
+  Result := sqrt(sqr(ix) + sqr(iy));
+end;
+
+
+function GetLength(ix, iy: integer): single; overload;
 begin
   Result := sqrt(sqr(ix) + sqr(iy));
 end;

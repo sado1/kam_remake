@@ -30,6 +30,7 @@ type
     MissionMode: TKMissionMode; //Fighting or Build-a-City map
     MissionDifficulty: TKMMissionDifficulty;
     MapSizeX, MapSizeY: Integer;
+    BlockColorSelection: Boolean;
 
     PlayerCount: Byte;
     Enabled: array [0..MAX_HANDS-1] of Boolean;
@@ -102,6 +103,7 @@ procedure TKMGameInfo.Load(LoadStream: TKMemoryStream);
     LoadStream.Read(MissionDifficulty, SizeOf(MissionDifficulty));
     LoadStream.Read(MapSizeX);
     LoadStream.Read(MapSizeY);
+    LoadStream.Read(BlockColorSelection);
 
     LoadStream.Read(PlayerCount);
     for I := 0 to PlayerCount - 1 do
@@ -151,7 +153,9 @@ end;
 
 
 procedure TKMGameInfo.Save(SaveStream: TKMemoryStream);
-var I: Integer;
+var
+  I: Integer;
+  zeroTime: TDateTime;
 begin
   SaveStream.WriteA('KaM_GameInfo');
   SaveStream.WriteA(GAME_REVISION); //Save current revision
@@ -165,13 +169,18 @@ begin
   // Game times differ for game and replay
   // Set default value there in that case
   if GAME_SAVE_STRIP_FOR_CRC then
-    SaveStream.Write(TDateTime(0))
+  begin
+    zeroTime := 0;
+    SaveStream.Write(zeroTime);
+  end
   else
     SaveStream.Write(SaveTimestamp);
+
   SaveStream.Write(MissionMode, SizeOf(MissionMode));
   SaveStream.Write(MissionDifficulty, SizeOf(MissionDifficulty));
   SaveStream.Write(MapSizeX);
   SaveStream.Write(MapSizeY);
+  SaveStream.Write(BlockColorSelection);
 
   SaveStream.Write(PlayerCount);
   for I := 0 to PlayerCount - 1 do

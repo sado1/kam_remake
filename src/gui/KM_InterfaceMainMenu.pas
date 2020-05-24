@@ -65,7 +65,7 @@ type
     procedure MouseMove(Shift: TShiftState; X,Y: Integer; var aHandled: Boolean); override;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X,Y: Integer); override;
 
-    procedure DebugControlsUpdated; override;
+    procedure DebugControlsUpdated(aSenderTag: Integer); override;
     procedure RefreshCampaigns;
     procedure Resize(X,Y: Word); override;
     procedure UpdateState(aTickCount: Cardinal); override;
@@ -74,7 +74,7 @@ type
 
 implementation
 uses
-  KM_Main, KM_ResTexts, KM_Campaigns, KM_GameApp, KM_Log, KM_RenderUI;
+  KM_Main, KM_ResTexts, KM_Campaigns, KM_GameApp, KM_Log, KM_RenderUI, KM_NetworkTypes;
 
 
 { TKMMainMenuInterface }
@@ -129,7 +129,7 @@ begin
 end;
 
 
-procedure TKMMainMenuInterface.DebugControlsUpdated;
+procedure TKMMainMenuInterface.DebugControlsUpdated(aSenderTag: Integer);
 begin
   if fMenuOptions.Visible then
     fMenuOptions.Refresh;

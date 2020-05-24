@@ -70,7 +70,7 @@ type
     procedure MapTypeChanged(Sender: TObject);
     procedure InitDropColMapsList;
     procedure MapList_OnShow(Sender: TObject);
-    procedure UpdateMapList;
+    procedure UpdateMapList(aIsHost: Boolean);
 
     procedure MapList_SortUpdate(Sender: TObject);
     procedure MapList_ScanUpdate(Sender: TObject);
@@ -105,15 +105,15 @@ type
     procedure UpdateDifficultyLevels(aMap: TKMapInfo); overload;
 
     procedure Lobby_OnDisconnect(const aData: UnicodeString);
-    procedure Lobby_OnGameOptions(Sender: TObject);
+    procedure Lobby_OnGameOptions;
     procedure Lobby_OnMapName(const aData: UnicodeString);
     procedure Lobby_OnMapMissing(const aData: UnicodeString; aStartTransfer: Boolean);
     procedure Lobby_OnMessage(const aText: UnicodeString);
-    procedure Lobby_OnPingInfo(Sender: TObject);
-    procedure Lobby_OnPlayersSetup(Sender: TObject);
-    procedure Lobby_OnUpdateMinimap(Sender: TObject);
-    procedure Lobby_OnReassignedToHost(Sender: TObject);
-    procedure Lobby_OnReassignedToJoiner(Sender: TObject);
+    procedure Lobby_OnPingInfo;
+    procedure Lobby_OnPlayersSetup;
+    procedure Lobby_OnUpdateMinimap;
+    procedure Lobby_OnReassignedToHost;
+    procedure Lobby_OnReassignedToJoiner;
     procedure Lobby_OnFileTransferProgress(aTotal, aProgress: Cardinal);
     procedure Lobby_OnPlayerFileTransferProgress(aNetPlayerIndex: Integer; aTotal, aProgress: Cardinal);
     procedure Lobby_OnSetPassword(const aPassword: AnsiString);
@@ -218,7 +218,7 @@ var
 implementation
 uses
   KM_Log, KM_CommonTypes, KM_ResLocales, KM_CommonUtils, KM_Sound, KM_ResSound, KM_RenderUI,
-  KM_Resource, KM_ResFonts, KM_NetPlayersList, KM_Main, KM_GameApp, KM_Points, KM_MapTypes; //RMG
+  KM_Resource, KM_ResFonts, KM_NetPlayersList, KM_GameApp, KM_Points, KM_MapTypes; //RMG
 
 const
   PANEL_SETUP_OPTIONS_TOP = 548;
@@ -848,7 +848,7 @@ begin
               if fNetworking.MapInfo.TxtInfo.IsRMG then
                 Result := MAP_TYPE_INDEX_RMG
               else
-              if fNetworking.MapInfo.MissionMode = mmTactic then
+              if fNetworking.MapInfo.IsTacticMission then
                 Result := 1;
     ngkSave: Result := MAP_TYPE_INDEX_SAVE;
   end;
@@ -889,7 +889,7 @@ var
 begin
   fNetworking := aNetworking;
 
-  Reset(aKind);
+  Reset(aKind, True);
 
   //Events binding is the same for Host and Joiner because of stand-alone Server
   //E.g. If Server fails, Host can be disconnected from it as well as a Joiner
@@ -911,7 +911,7 @@ begin
   fNetworking.OnAbortAllTransfers := Lobby_AbortAllTransfers;
 
   Radio_MapType.ItemIndex := gGameApp.GameSettings.MenuLobbyMapType;
-  UpdateMapList;
+  UpdateMapList(aKind = lpkHost);
 
   //Hide RMG settings PopUp in case it was shown previosly
   if fGuiRMG <> nil then
@@ -1093,7 +1093,10 @@ begin
   begin
     Radio_MapType.Enable;
     Radio_MapType.ItemIndex := 0;
-    if not aPreserveMaps then UpdateMapList;
+
+    if not aPreserveMaps then
+      UpdateMapList(True);
+
     DropCol_Maps.Show;
     Label_MapName.Hide;
     Button_Start.Caption := gResTexts[TX_LOBBY_START]; //Start
@@ -1146,7 +1149,7 @@ begin
                                 MD);
 
   //Refresh the data to controls
-  Lobby_OnGameOptions(nil);
+  Lobby_OnGameOptions;
 end;
 
 
@@ -1176,7 +1179,7 @@ begin
 end;
 
 
-procedure TKMMenuLobby.Lobby_OnGameOptions(Sender: TObject);
+procedure TKMMenuLobby.Lobby_OnGameOptions;
 var
   MD: TKMMissionDifficulty;
 begin
@@ -1440,7 +1443,8 @@ var
   ID: Integer;
   Color: Cardinal;
 begin
-  if not fNetworking.MapInfo.TxtInfo.BlockColorSelection then Exit;
+  if (fNetworking.SelectGameKind = ngkMap) and not fNetworking.MapInfo.TxtInfo.BlockColorSelection then Exit;
+  if (fNetworking.SelectGameKind = ngkSave) and not fNetworking.SaveInfo.GameInfo.BlockColorSelection then Exit;
 
   if (DropBox_Loc[I].GetSelectedTag <> LOC_SPECTATE) then
   begin
@@ -1449,7 +1453,12 @@ begin
     else
     begin
       ID := fLocalToNetPlayers[I];
-      Color := fNetworking.MapInfo.FlagColors[DropBox_Loc[I].GetSelectedTag - 1];
+      case fNetworking.SelectGameKind of
+        ngkMap:   Color := fNetworking.MapInfo.FlagColors[DropBox_Loc[I].GetSelectedTag - 1];
+        ngkSave:  Color := fNetworking.SaveInfo.GameInfo.Color[DropBox_Loc[I].GetSelectedTag - 1];
+        else      Color := 0;
+      end;
+
       DropBox_Colors[I][0].Cells[0].Color := Color;
       DropBox_Colors[I][0].Cells[0].Pic.Id := 30;
       fNetworking.NetPlayers[ID].FlagColor := Color;
@@ -1596,7 +1605,7 @@ end;
 //Players list has been updated
 //We should reflect it to UI
 //Not very fast operation - ~4ms per player = ~60ms per all
-procedure TKMMenuLobby.Lobby_OnPlayersSetup(Sender: TObject);
+procedure TKMMenuLobby.Lobby_OnPlayersSetup;
 
   function ConvertSpeedRange(aSpeedRng: TKMRangeSingle): TKMRangeInt;
   begin
@@ -1853,7 +1862,8 @@ begin
                                       and not fNetworking.MapInfo.TxtInfo.BlockTeamSelection;
       DropBox_Colors[I].Enabled := (CanEdit or (MyNik and not CurPlayer.ReadyToStart))
                                         and (not IsSave or CurPlayer.IsSpectator)
-                                        and ((fNetworking.SelectGameKind <> ngkMap) or not fNetworking.MapInfo.TxtInfo.BlockColorSelection);
+                                        and (    (fNetworking.SelectGameKind <> ngkMap)
+                                           or not fNetworking.MapInfo.TxtInfo.BlockColorSelection);
       if MyNik and not fNetworking.IsHost then
       begin
         if CurPlayer.ReadyToStart then
@@ -1932,7 +1942,7 @@ begin
 end;
 
 
-procedure TKMMenuLobby.Lobby_OnPingInfo(Sender: TObject);
+procedure TKMMenuLobby.Lobby_OnPingInfo;
 var
   I: Integer;
 begin
@@ -1961,14 +1971,15 @@ begin
 end;
 
 
-procedure TKMMenuLobby.UpdateMapList;
+procedure TKMMenuLobby.UpdateMapList(aIsHost: Boolean);
 begin
   //Terminate any running scans otherwise they will continue to fill the drop box in the background
   fMapsMP.TerminateScan;
   fSavesMP.TerminateScan;
   DropCol_Maps.Clear; //Clear previous items in case scanning finds no maps/saves
 
-  if fNetworking.IsHost then
+  // can't use fNetworking.IsHost here, since we could just open lobby, and we didn't set fNetwroking.PlayerKind
+  if aIsHost then
   begin
     DropCol_Maps.Show;
     Label_MapName.Hide;
@@ -2039,7 +2050,7 @@ var
   RMG: Boolean; //RMG
 begin
   RMG := Radio_MapType.ItemIndex = 5; //RMG
-  UpdateMapList;
+  UpdateMapList(fNetworking.IsHost);
   gGameApp.GameSettings.MenuLobbyMapType := Radio_MapType.ItemIndex;
   if not RMG then //RMG
     fNetworking.SelectNoMap('');
@@ -2148,8 +2159,8 @@ begin
       //Different modes allow different maps
       case Radio_MapType.ItemIndex of
         0, MAP_TYPE_INDEX_RMG:    
-              AddMap := (fMapsMP[I].MissionMode = mmNormal) and not fMapsMP[I].TxtInfo.IsCoop and not fMapsMP[I].TxtInfo.IsSpecial; //BuildMap
-        1:    AddMap := (fMapsMP[I].MissionMode = mmTactic) and not fMapsMP[I].TxtInfo.IsCoop and not fMapsMP[I].TxtInfo.IsSpecial; //FightMap
+              AddMap := fMapsMP[I].IsNormalMission and not fMapsMP[I].TxtInfo.IsCoop and not fMapsMP[I].TxtInfo.IsSpecial; //BuildMap
+        1:    AddMap := fMapsMP[I].IsTacticMission and not fMapsMP[I].TxtInfo.IsCoop and not fMapsMP[I].TxtInfo.IsSpecial; //FightMap
         2:    AddMap := fMapsMP[I].TxtInfo.IsCoop; //CoopMap
         3:    AddMap := fMapsMP[I].TxtInfo.IsSpecial; //Special map
         else  AddMap := False; //Other cases are already handled in Lobby_MapTypeSelect
@@ -2431,22 +2442,22 @@ begin
 end;
 
 
-procedure TKMMenuLobby.Lobby_OnUpdateMinimap(Sender: TObject);
+procedure TKMMenuLobby.Lobby_OnUpdateMinimap;
 var
-  S: TKMSaveInfo;
+  si: TKMSaveInfo;
 begin
-  S := fNetworking.SaveInfo;
-  if fNetworking.IsSave then
+  if not fNetworking.IsSave then Exit;
+
+  si := fNetworking.SaveInfo;
+
+  if si.IsValid
+  and (fNetworking.MyIndex > 0)
+  and si.LoadMinimap(fMinimap, fNetworking.MyNetPlayer.StartLocation) then
   begin
-    if S.IsValid
-      and (fNetworking.MyIndex > 0)
-      and S.LoadMinimap(fMinimap, fNetworking.MyNetPlayer.StartLocation) then
-    begin
-      MinimapView.SetMinimap(fMinimap);
-      MinimapView.Show;
-    end else
-      MinimapView.Hide;
-  end;
+    MinimapView.SetMinimap(fMinimap);
+    MinimapView.Show;
+  end else
+    MinimapView.Hide;
 end;
 
 
@@ -2572,7 +2583,7 @@ begin
                   Txt := WrapColor(S.SaveError.ErrorString, clSaveLoadTry) + '||' +
                          WrapColor(gResTexts[TX_UNSUPPORTED_SAVE_LOAD_WARNING_TXT], clSaveLoadError) + '||' + Txt;
                 Memo_MapDesc.Text := Txt;
-                Lobby_OnUpdateMinimap(nil);
+                Lobby_OnUpdateMinimap;
                 UpdateDifficultyLevels(S);
               end;
     ngkMap:  begin
@@ -2635,15 +2646,15 @@ end;
 
 
 //We have been assigned to be the host of the game because the host disconnected. Reopen lobby page in correct mode.
-procedure TKMMenuLobby.Lobby_OnReassignedToHost(Sender: TObject);
+procedure TKMMenuLobby.Lobby_OnReassignedToHost;
 begin
   Reset(lpkHost, True); //Will reset the lobby page into host mode, preserving messages/maps
 
   //Pick correct position of map type selector
   Radio_MapType.ItemIndex := DetectMapType;
 
-  UpdateMapList;
-  Lobby_OnGameOptions(nil);
+  UpdateMapList(True);
+  Lobby_OnGameOptions;
 
   case fNetworking.SelectGameKind of
     ngkMap:  Lobby_OnMapName(fNetworking.MapInfo.FileName);
@@ -2652,7 +2663,7 @@ begin
 end;
 
 
-procedure TKMMenuLobby.Lobby_OnReassignedToJoiner(Sender: TObject);
+procedure TKMMenuLobby.Lobby_OnReassignedToJoiner;
 begin
   Reset(lpkJoiner, True); //Will reset the lobby page into host mode, preserving messages/maps
 
@@ -2760,13 +2771,8 @@ end;
 
 procedure TKMMenuLobby.Lobby_OnMessage(const aText: UnicodeString);
 begin
-  if (gGameApp <> nil) and (gGameApp.GameSettings <> nil) then
-  begin
-    if gGameApp.GameSettings.FlashOnMessage then
-      gMain.FlashingStart;
-
+  if gGameApp <> nil then
     gGameApp.Chat.AddLine(aText);
-  end;
 end;
 
 
@@ -2920,8 +2926,8 @@ end;
 procedure TKMMenuLobby.ReturnToLobby(const aSaveName: UnicodeString);
 begin
   Radio_MapType.ItemIndex := MAP_TYPE_INDEX_SAVE; //Save
-  UpdateMapList;
-  Lobby_OnGameOptions(nil);
+  UpdateMapList(fNetworking.IsHost);
+  Lobby_OnGameOptions;
   if fNetworking.IsHost then
   begin
     fNetworking.SelectSave(aSaveName);

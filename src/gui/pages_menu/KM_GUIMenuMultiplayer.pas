@@ -38,10 +38,10 @@ type
     procedure MP_GetInClick(Sender: TObject);
     function MP_GetInEnabled: Boolean;
     procedure MP_Join(const aServerAddress: string; aPort: Word; aRoom: Integer);
-    procedure MP_JoinPassword(Sender: TObject);
-    procedure MP_JoinSuccess(Sender: TObject);
+    procedure MP_JoinPassword;
+    procedure MP_JoinSuccess;
     procedure MP_JoinFail(const aData: UnicodeString);
-    procedure MP_JoinAssignedHost(Sender: TObject);
+    procedure MP_JoinAssignedHost;
     procedure MP_HostClick(Sender: TObject);
     procedure MP_HostFail(const aData: UnicodeString);
     procedure BackClick(Sender: TObject);
@@ -116,7 +116,6 @@ uses
 
 
 const
-  MAX_NIKNAME_LENGTH = 16;
   IMG_COL2 = 8 + 22 + 156 + 35 + 20;
   SERVER_DETAILS_W = 320;
   S_DETAILS_W_INT = SERVER_DETAILS_W - 16;
@@ -907,7 +906,7 @@ begin
 end;
 
 
-procedure TKMMenuMultiplayer.MP_JoinPassword(Sender: TObject);
+procedure TKMMenuMultiplayer.MP_JoinPassword;
 begin
   Panel_MPFindServer.Hide;
   Edit_MP_Password.Text := '';
@@ -915,13 +914,12 @@ begin
 end;
 
 
-//We had recieved permission to join
-procedure TKMMenuMultiplayer.MP_JoinSuccess(Sender: TObject);
+// We had recieved permission to join
+procedure TKMMenuMultiplayer.MP_JoinSuccess;
 begin
   gGameApp.Networking.OnJoinSucc := nil;
   gGameApp.Networking.OnJoinFail := nil;
   gGameApp.Networking.OnJoinAssignedHost := nil;
-
 
   StartLobby(False);
 end;
@@ -935,15 +933,15 @@ begin
 end;
 
 
-procedure TKMMenuMultiplayer.MP_JoinAssignedHost(Sender: TObject);
+procedure TKMMenuMultiplayer.MP_JoinAssignedHost;
 begin
   gGameApp.Networking.OnJoinSucc := nil;
   gGameApp.Networking.OnJoinFail := nil;
   gGameApp.Networking.OnJoinAssignedHost := nil;
   gGameApp.Networking.OnHostFail := MP_HostFail;
 
-  //We were joining a game and the server assigned hosting rights to us
-  StartLobby(True); //Open lobby page in host mode
+  // We were joining a game and the server assigned hosting rights to us
+  StartLobby(True); // Open lobby page in host mode
 end;
 
 

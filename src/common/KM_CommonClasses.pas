@@ -255,7 +255,8 @@ type
 
     procedure Clear; virtual;
     procedure Copy(aSrc: TKMPointList);
-    procedure Add(const aLoc: TKMPoint); virtual;
+    procedure Add(const aLoc: TKMPoint); overload; virtual;
+    procedure Add(X, Y: Integer); overload;
     procedure AddList(aList: TKMPointList);
     procedure AddUnique(const aLoc: TKMPoint);
     procedure AddListUnique(aList: TKMPointList);
@@ -454,8 +455,7 @@ begin
 end;
 
 
-class procedure TKMemoryStream.AsyncSaveToFileAndFree(var aStream;
-  const aFileName: string; aWorkerThread: TKMWorkerThread);
+class procedure TKMemoryStream.AsyncSaveToFileAndFree(var aStream; const aFileName: string; aWorkerThread: TKMWorkerThread);
 var
   LocalStream: TKMemoryStream;
 begin
@@ -471,7 +471,7 @@ begin
       finally
         LocalStream.Free;
       end;
-    end);
+    end, 'AsyncSaveToFile');
   {$ELSE}
     try
       LocalStream.SaveToFile(aFileName);
@@ -482,9 +482,8 @@ begin
 end;
 
 
-class procedure TKMemoryStream.AsyncSaveToFileCompressedAndFree(
-  var aStream; const aFileName: string; const aMarker: string;
-  aWorkerThread: TKMWorkerThread);
+class procedure TKMemoryStream.AsyncSaveToFileCompressedAndFree(var aStream; const aFileName: string; const aMarker: string;
+                                                                aWorkerThread: TKMWorkerThread);
 var
   LocalStream: TKMemoryStream;
 begin
@@ -500,7 +499,7 @@ begin
       finally
         LocalStream.Free;
       end;
-    end);
+    end, 'AsyncSaveToFileCompressed ' + aMarker);
   {$ELSE}
     try
       LocalStream.SaveToFileCompressed(aFileName, aMarker);
@@ -597,6 +596,12 @@ begin
     SetLength(fItems, fCount + 32);
   fItems[fCount] := aLoc;
   Inc(fCount);
+end;
+
+
+procedure TKMPointList.Add(X, Y: Integer);
+begin
+  Add(KMPoint(X, Y));
 end;
 
 
@@ -846,7 +851,7 @@ begin
 end;
 
 
-{ TKMWeightedList }
+{ TKMWeightedPointList }
 procedure TKMWeightedPointList.Add(const aLoc: TKMPoint; aWeight: Single);
 begin
   inherited Add(aLoc);

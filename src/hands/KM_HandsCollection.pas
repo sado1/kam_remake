@@ -91,7 +91,8 @@ type
     procedure IncAnimStep;
 
     procedure UpdateState(aTick: Cardinal);
-    procedure Paint(const aRect: TKMRect);
+    procedure UpdateVisualState;
+    procedure Paint(const aRect: TKMRect; aTickLag: Single);
     function ObjToString: String;
 
     procedure ExportGameStatsToCSV(const aPath: String; const aHeader: String = '');
@@ -107,7 +108,7 @@ uses
   SysUtils,
   KromUtils,
 
-  KM_Game, KM_Terrain, KM_AIFields, KM_AIParameters,
+  KM_Game, KM_Terrain, KM_AIFields,
   KM_UnitsCollection, KM_MapEditorHistory,
   KM_Resource, KM_ResUnits, KM_ResTexts,
   KM_Log, KM_CommonUtils, KM_DevPerfLog, KM_DevPerfLogTypes;
@@ -1082,6 +1083,17 @@ begin
 end;
 
 
+procedure TKMHandsCollection.UpdateVisualState;
+var
+  I: Integer;
+begin
+  Assert(gGame.IsMapEditor);
+
+  for I := 0 to Count - 1 do
+    fHandsList[I].UpdateVisualState;
+end;
+
+
 procedure TKMHandsCollection.ExportGameStatsToCSV(const aPath: String; const aHeader: String = '');
 var
   I,J,K: Integer;
@@ -1177,14 +1189,14 @@ begin
 end;
 
 
-procedure TKMHandsCollection.Paint(const aRect: TKMRect);
+procedure TKMHandsCollection.Paint(const aRect: TKMRect; aTickLag: Single);
 var
   I: Integer;
 begin
   for I := 0 to fCount - 1 do
-    fHandsList[I].Paint(aRect);
+    fHandsList[I].Paint(aRect, aTickLag);
 
-  PlayerAnimals.Paint(aRect);
+  PlayerAnimals.Paint(aRect, aTickLag);
 end;
 
 

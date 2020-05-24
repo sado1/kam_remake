@@ -56,7 +56,7 @@
         <DCC_F>false</DCC_F>
         <DCC_K>false</DCC_K>
         <SanitizedProjectName>Batcher</SanitizedProjectName>
-        <DCC_Define>NO_OGG_SOUND;NO_LIBZPLAY;$(DCC_Define)</DCC_Define>
+        <DCC_Define>NO_OGG_SOUND;NO_MUSIC;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <DCC_UsePackage>vcldbx;frx16;TeeDB;Rave100VCL;vclib;Tee;inetdbbde;DBXOdbcDriver;svnui;ibxpress;DBXSybaseASEDriver;vclimg;frxDB16;intrawebdb_120_160;fmi;fs16;FMXTee;TeeUI;vclactnband;vcldb;vcldsnap;bindcompvcl;vclie;vcltouch;Intraweb_120_160;DBXDb2Driver;websnap;vclribbon;frxe16;VclSmp;fsDB16;vcl;DataSnapConnectors;CloudService;DBXMSSQLDriver;CodeSiteExpressPkg;FmxTeeUI;dsnapcon;vclx;webdsnap;svn;bdertl;adortl;$(DCC_UsePackage)</DCC_UsePackage>

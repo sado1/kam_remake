@@ -137,8 +137,8 @@ type
     procedure Resize(X,Y: Word); override;
     procedure SetLoadMode(aMultiplayer: Boolean);
 
-    procedure DebugControlsUpdated; override;
-	
+    procedure DebugControlsUpdated(aSenderTag: Integer); override;
+
 	  procedure HistoryUndoRedo;
     procedure HistoryAddCheckpoint;
 
@@ -153,14 +153,9 @@ type
 implementation
 uses
   KM_HandsCollection, KM_ResTexts, KM_Game, KM_GameCursor,
-  KM_Resource, KM_TerrainDeposits, KM_ResCursors, KM_ResKeys, KM_GameApp, KM_CommonUtils,
+  KM_Resource, KM_TerrainDeposits, KM_ResCursors, KM_ResKeys, KM_GameApp,
   KM_Hand, KM_AIDefensePos, KM_RenderUI, KM_ResFonts, KM_CommonClasses, KM_UnitWarrior,
   KM_ResHouses, KM_Utils;
-
-const
-  GROUP_IMG: array [TKMGroupType] of Word = (
-    371, 374,
-    376, 377);
 
 
 { TKMapEdInterface }
@@ -363,7 +358,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.DebugControlsUpdated;
+procedure TKMapEdInterface.DebugControlsUpdated(aSenderTag: Integer);
 begin
   inherited;
 
@@ -405,13 +400,15 @@ var
 begin
   //Hide all existing pages (2 levels)
   for I := 0 to Panel_Common.ChildCount - 1 do
-  if Panel_Common.Childs[I] is TKMPanel then
-  begin
-    Panel_Common.Childs[I].Hide;
-    for K := 0 to TKMPanel(Panel_Common.Childs[I]).ChildCount - 1 do
-    if TKMPanel(Panel_Common.Childs[I]).Childs[K] is TKMPanel then
-      TKMPanel(Panel_Common.Childs[I]).Childs[K].Hide;
-  end;
+    if Panel_Common.Childs[I] is TKMPanel then
+    begin
+      Panel_Common.Childs[I].Hide;
+      for K := 0 to TKMPanel(Panel_Common.Childs[I]).ChildCount - 1 do
+      if TKMPanel(Panel_Common.Childs[I]).Childs[K] is TKMPanel then
+        TKMPanel(Panel_Common.Childs[I]).Childs[K].Hide;
+    end;
+
+  gGame.MapEditor.Reset;
 end;
 
 
@@ -528,49 +525,65 @@ end;
 //Set which layers are visible and which are not
 //Layer is always visible if corresponding editing page is active (to see what gets placed)
 procedure TKMapEdInterface.Layers_UpdateVisibility;
+var
+  flatTerWasEnabled: Boolean;
 begin
   if gGame = nil then Exit; //Happens on init
 
+  flatTerWasEnabled := mlFlatTerrain in gGame.VisibleLayers;
+
+  gGame.VisibleLayers := [];
   gGame.MapEditor.VisibleLayers := [];
 
-  if fGuiPlayer.IsVisible(ptView) or fGuiMarkerReveal.Visible then
-    gGame.MapEditor.VisibleLayers := gGame.MapEditor.VisibleLayers + [mlRevealFOW, mlCenterScreen];
+  //Map visible layers
+  if fGuiExtras.CheckBox_ShowDefences.Checked {and not fGuiMarkerDefence.Visible} then
+    gGame.VisibleLayers := gGame.VisibleLayers + [mlDefencesAll];
 
-  if fGuiTown.IsVisible(ttScript) then
-    gGame.MapEditor.VisibleLayers := gGame.MapEditor.VisibleLayers + [mlAIStart];
-
-  if fGuiTown.IsVisible(ttDefences) or fGuiMarkerDefence.Visible then
-    gGame.MapEditor.VisibleLayers := gGame.MapEditor.VisibleLayers + [mlDefences];
+  if fGuiExtras.CheckBox_ShowFlatTerrain.Checked then
+    gGame.VisibleLayers := gGame.VisibleLayers + [mlFlatTerrain];
 
   if fGuiExtras.CheckBox_ShowObjects.Checked or fGuiTerrain.IsVisible(ttObject) then
-    gGame.MapEditor.VisibleLayers := gGame.MapEditor.VisibleLayers + [mlObjects];
+    gGame.VisibleLayers := gGame.VisibleLayers + [mlObjects];
 
   if fGuiExtras.CheckBox_ShowHouses.Checked or fGuiTown.IsVisible(ttHouses) or fGuiHouse.Visible then
-    gGame.MapEditor.VisibleLayers := gGame.MapEditor.VisibleLayers + [mlHouses];
+    gGame.VisibleLayers := gGame.VisibleLayers + [mlHouses];
 
   if fGuiExtras.CheckBox_ShowUnits.Checked or fGuiTown.IsVisible(ttUnits) or fGuiUnit.Visible then
-    gGame.MapEditor.VisibleLayers := gGame.MapEditor.VisibleLayers + [mlUnits];
-
-  if fGuiTerrain.IsVisible(ttSelection) then
-    gGame.MapEditor.VisibleLayers := gGame.MapEditor.VisibleLayers + [mlSelection];
-
-  if fGuiExtras.CheckBox_ShowDeposits.Checked then
-    gGame.MapEditor.VisibleLayers := gGame.MapEditor.VisibleLayers + [mlDeposits];
+    gGame.VisibleLayers := gGame.VisibleLayers + [mlUnits];
 
   if fGuiExtras.CheckBox_ShowMiningRadius.Checked then
-    gGame.MapEditor.VisibleLayers := gGame.MapEditor.VisibleLayers + [mlMiningRadius];
+    gGame.VisibleLayers := gGame.VisibleLayers + [mlMiningRadius];
 
   if fGuiExtras.CheckBox_ShowTowersAttackRadius.Checked then
-    gGame.MapEditor.VisibleLayers := gGame.MapEditor.VisibleLayers + [mlTowersAttackRadius];
+    gGame.VisibleLayers := gGame.VisibleLayers + [mlTowersAttackRadius];
 
   if fGuiExtras.CheckBox_ShowUnitsAttackRadius.Checked then
-    gGame.MapEditor.VisibleLayers := gGame.MapEditor.VisibleLayers + [mlUnitsAttackRadius];
+    gGame.VisibleLayers := gGame.VisibleLayers + [mlUnitsAttackRadius];
 
   if fGuiExtras.CheckBox_ShowOverlays.Checked then
-    gGame.MapEditor.VisibleLayers := gGame.MapEditor.VisibleLayers + [mlOverlays];
+    gGame.VisibleLayers := gGame.VisibleLayers + [mlOverlays];
+
+  // MapEd visible layers
+  if fGuiTown.IsVisible(ttDefences) or fGuiMarkerDefence.Visible then
+    gGame.MapEditor.VisibleLayers := gGame.MapEditor.VisibleLayers + [melDefences];
+
+  if fGuiPlayer.IsVisible(ptView) or fGuiMarkerReveal.Visible then
+    gGame.MapEditor.VisibleLayers := gGame.MapEditor.VisibleLayers + [melRevealFOW, melCenterScreen];
+
+  if fGuiTown.IsVisible(ttScript) then
+    gGame.MapEditor.VisibleLayers := gGame.MapEditor.VisibleLayers + [melAIStart];
+
+  if fGuiTerrain.IsVisible(ttSelection) then
+    gGame.MapEditor.VisibleLayers := gGame.MapEditor.VisibleLayers + [melSelection];
+
+  if fGuiExtras.CheckBox_ShowDeposits.Checked then
+    gGame.MapEditor.VisibleLayers := gGame.MapEditor.VisibleLayers + [melDeposits];
 
   if fGuiMenu.GuiMenuResize.Visible then
-    gGame.MapEditor.VisibleLayers := gGame.MapEditor.VisibleLayers + [mlMapResize];
+    gGame.MapEditor.VisibleLayers := gGame.MapEditor.VisibleLayers + [melMapResize];
+
+  if flatTerWasEnabled xor (mlFlatTerrain in gGame.VisibleLayers) then
+    gTerrain.UpdateLighting;
 end;
 
 
@@ -655,21 +668,19 @@ end;
 
 procedure TKMapEdInterface.ShowMarkerInfo(aMarker: TKMMapEdMarker);
 begin
+  HidePages; // HidePages first. That will also reset old marker;
+
   gGame.MapEditor.ActiveMarker := aMarker;
   Assert((aMarker.MarkerType <> mtNone) and (aMarker.Owner <> PLAYER_NONE) and (aMarker.Index <> -1));
 
   Player_SetActive(aMarker.Owner);
 
   case aMarker.MarkerType of
-    mtDefence:    begin
-                    HidePages;
-                    fGuiMarkerDefence.Show(aMarker.Owner, aMarker.Index);
-                  end;
-    mtRevealFOW:  begin
-                    HidePages;
-                    fGuiMarkerReveal.Show(aMarker.Owner, aMarker.Index);
-                  end;
+    mtDefence:    fGuiMarkerDefence.Show(aMarker.Owner, aMarker.Index);
+    mtRevealFOW:  fGuiMarkerReveal.Show(aMarker.Owner, aMarker.Index);
   end;
+
+  Layers_UpdateVisibility;
 end;
 
 
@@ -730,6 +741,8 @@ begin
   //Reset drag object fields
   ResetDragObject;
   gRes.Cursors.Cursor := kmcDefault;
+
+  gGame.MapEditor.Reset;
 end;
 
 
@@ -1454,28 +1467,13 @@ end;
 
 //UI should paint only controls
 procedure TKMapEdInterface.Paint;
-  procedure PaintTextInShape(const aText: string; X,Y: SmallInt; aLineColor: Cardinal; aTextColor: Cardinal);
-  var
-    W: Integer;
-  begin
-    //Paint the background
-    W := 10 + 10 * Length(aText);
-    TKMRenderUI.WriteShape(X - W div 2, Y - 10, W, 20, $80000000);
-    TKMRenderUI.WriteOutline(X - W div 2, Y - 10, W, 20, 2, aLineColor);
-
-    //Paint the label on top of the background
-    TKMRenderUI.WriteText(X, Y - 7, 0, aText, fntMetal, taCenter, aTextColor);
-  end;
-const
-  DefenceLine: array [TAIDefencePosType] of Cardinal = ($FF80FF00, $FFFF8000);
 var
-  I, K: Integer;
+  I: Integer;
   R: TKMRawDeposit;
-  DP: TAIDefencePosition;
   LocF: TKMPointF;
   ScreenLoc: TKMPoint;
 begin
-  if mlDeposits in gGame.MapEditor.VisibleLayers then
+  if melDeposits in gGame.MapEditor.VisibleLayers then
   begin
     for R := Low(TKMRawDeposit) to High(TKMRawDeposit) do
       for I := 0 to gGame.MapEditor.Deposits.Count[R] - 1 do
@@ -1487,26 +1485,12 @@ begin
 
         //At extreme zoom coords may become out of range of SmallInt used in controls painting
         if KMInRect(ScreenLoc, fViewport.ViewRect) then
-          PaintTextInShape(IntToStr(gGame.MapEditor.Deposits.Amount[R, I]), ScreenLoc.X, ScreenLoc.Y, DEPOSIT_COLORS[R], $FFFFFFFF);
+          TKMRenderUI.WriteTextInShape(IntToStr(gGame.MapEditor.Deposits.Amount[R, I]), ScreenLoc.X, ScreenLoc.Y, DEPOSIT_COLORS[R], $FFFFFFFF);
       end;
   end;
 
-  if mlDefences in gGame.MapEditor.VisibleLayers then
-  begin
-    for I := 0 to gHands.Count - 1 do
-      for K := 0 to gHands[I].AI.General.DefencePositions.Count - 1 do
-      begin
-        DP := gHands[I].AI.General.DefencePositions[K];
-        LocF := gTerrain.FlatToHeight(KMPointF(DP.Position.Loc.X-0.5, DP.Position.Loc.Y-0.5));
-        ScreenLoc := fViewport.MapToScreen(LocF);
-
-        if KMInRect(ScreenLoc, fViewport.ViewRect) then
-        begin
-          PaintTextInShape(IntToStr(K+1), ScreenLoc.X, ScreenLoc.Y - 22, DefenceLine[DP.DefenceType], FlagColorToTextColor(gHands[I].FlagColor));
-          TKMRenderUI.WritePicture(ScreenLoc.X, ScreenLoc.Y, 0, 0, [], rxGui, GROUP_IMG[DP.GroupType]);
-        end;
-      end;
-  end;
+  if melDefences in gGame.MapEditor.VisibleLayers then
+    fPaintDefences := True;
 
   inherited;
 end;

@@ -188,12 +188,18 @@ const
                   of array[0..3] //Corners: LeftTop - RightTop - RightBottom - LeftBottom
                     of TKMTerrainKind = (
   (tkGrass,tkGrass,tkGrass,tkGrass), (tkGrass,tkGrass,tkGrass,tkGrass), (tkGrass,tkGrass,tkGrass,tkGrass),
-  (tkGrass,tkGrass,tkGrass,tkGrass), (tkIce,tkIce,tkSnow,tkSnow),       (tkGrass,tkGrass,tkGrass,tkGrass),
-  (tkGrass,tkGrass,tkGrass,tkGrass), (tkLava,tkLava,tkLava,tkLava),     (tkMoss,tkMoss,tkMoss,tkMoss),
-  (tkMoss,tkMoss,tkMoss,tkMoss),
+  (tkGrass,tkGrass,tkGrass,tkGrass),
+   //4
+  (tkIce,tkIce,tkSnow,tkSnow),
+  (tkGrass,tkGrass,tkGrass,tkGrass), (tkGrass,tkGrass,tkGrass,tkGrass),
+   //7
+  (tkLava,tkLava,tkLava,tkLava),
+   //8
+  (tkMoss,tkMoss,tkMoss,tkMoss), (tkMoss,tkMoss,tkMoss,tkMoss),
   //10
   (tkSnow,tkIce,tkSnow,tkSnow),      (tkGrass,tkGrass,tkGrass,tkGrass), (tkIce,tkIce,tkWater,tkWater),
   (tkGrass,tkGrass,tkGrass,tkGrass), (tkGrass,tkGrass,tkGrass,tkGrass), (tkGoldMount,tkLava,tkLava,tkLava),
+   //16
   (tkPaleGrass,tkPaleGrass,tkPaleGrass,tkPaleGrass), (tkPaleGrass,tkPaleGrass,tkPaleGrass,tkPaleGrass),
   (tkGrass,tkGrass,tkMoss,tkMoss),   (tkMoss,tkGrass,tkMoss,tkMoss),    //??? not sure if they are good there
    //20
@@ -218,14 +224,15 @@ const
    //52
   (tkSnow,tkIronMount,tkSnow,tkSnow), (tkIronMount,tkIronMount,tkIronMount,tkAbyss), (tkIronMount,tkIronMount,tkIronMount,tkSnow),
   (tkCustom,tkCustom,tkCustom,tkCustom), // Wine
-  (tkGrass,tkDirt,tkGrass,tkGrass),
-  (tkDirt,tkDirt,tkGrass,tkGrass), (tkDirt,tkDirt,tkDirt,tkGrass),
+   //56
+  (tkGrass,tkDirt,tkGrass,tkGrass),(tkDirt,tkDirt,tkGrass,tkGrass), (tkDirt,tkDirt,tkDirt,tkGrass),
   (tkCustom,tkCustom,tkCustom,tkCustom), // Corn
    //60
   (tkCustom,tkCustom,tkCustom,tkCustom), (tkCustom,tkCustom,tkCustom,tkCustom), // Corn
   (tkCustom,tkCustom,tkCustom,tkCustom), (tkCustom,tkCustom,tkCustom,tkCustom), // Corn
    //64
   (tkSnowOnDirt,tkSnowOnDirt,tkDirt,tkDirt), (tkSnowOnDirt,tkSnowOnDirt,tkSnowOnDirt,tkDirt),
+   //66
   (tkGrass,tkPaleGrass,tkGrass,tkGrass), (tkPaleGrass,tkPaleGrass,tkGrass,tkGrass), (tkPaleGrass,tkPaleGrass,tkPaleGrass,tkGrass),
    //69
   (tkGrass,tkCoastSand,tkGrass,tkGrass), (tkCoastSand,tkCoastSand,tkGrass,tkGrass), (tkCoastSand,tkCoastSand,tkCoastSand,tkGrass),
@@ -322,6 +329,7 @@ const
   (tkIronMount,tkGrassSand2,tkIronMount,tkIronMount), (tkIronMount,tkIronMount,tkIronMount,tkDirt),
    //188
   (tkGrass,tkIronMount,tkGrass,tkGrass), (tkCoastSand,tkIronMount,tkCoastSand,tkCoastSand),
+   //190
   (tkGrassSand2,tkIronMount,tkGrassSand2,tkGrassSand2), (tkDirt,tkIronMount,tkDirt,tkDirt),
    //192
   (tkWater,tkWater,tkWater,tkWater), (tkWater,tkWater,tkWater,tkWater), (tkWater,tkWater,tkWater,tkWater),

@@ -47,7 +47,6 @@ type
     procedure UpdateOrderTargets;
 
     procedure TakeNextOrder;
-    procedure WalkedOut;
     function CanInterruptAction(aForced: Boolean = True): Boolean;
 
     function GetFiringDelay: Byte;
@@ -111,6 +110,8 @@ type
     function FindEnemy: TKMUnit;
     function PathfindingShouldAvoid: Boolean; override;
 
+    procedure WalkedOut;
+
     procedure SetActionGoIn(aAction: TKMUnitActionType; aGoDir: TKMGoInDirection; aHouse: TKMHouse); override;
 
     function ObjToStringShort(const aSeparator: String = '|'): String; override;
@@ -118,17 +119,17 @@ type
 
     procedure Save(SaveStream: TKMemoryStream); override;
     function UpdateState: Boolean; override;
-    procedure Paint; override;
+    procedure Paint(aTickLag: Single); override;
   end;
 
 
 implementation
 uses
   TypInfo,
-  KM_ResTexts, KM_HandsCollection, KM_RenderPool, KM_RenderAux, KM_UnitTaskAttackHouse, KM_HandLogistics,
+  KM_ResTexts, KM_HandsCollection, KM_RenderPool, KM_UnitTaskAttackHouse, KM_HandLogistics,
   KM_UnitActionFight, KM_UnitActionGoInOut, KM_UnitActionWalkTo, KM_UnitActionStay,
   KM_UnitActionStormAttack, KM_Resource, KM_ResUnits, KM_Hand, KM_UnitGroup,
-  KM_ResWares, KM_Game, KM_ResHouses, KM_CommonUtils;
+  KM_ResWares, KM_Game, KM_ResHouses, KM_CommonUtils, KM_RenderDebug, KM_UnitVisual;
 
 
 { TKMUnitWarrior }
@@ -242,9 +243,10 @@ end;
 
 
 procedure TKMUnitWarrior.Kill(aFrom: TKMHandID; aShowAnimation, aForceDelay: Boolean);
-var AlreadyDeadOrDying: Boolean;
+var
+  AlreadyDeadOrDying: Boolean;
 begin
-  AlreadyDeadOrDying := IsDeadOrDying; //Inherrited will kill the unit
+  AlreadyDeadOrDying := IsDeadOrDying; //Inherited will kill the unit
   inherited;
 
   //After inherited so script events can still check which group the warrior is from
@@ -456,7 +458,7 @@ begin
     U := FoundUnits[I];
     if (U is TKMUnitWarrior)
     and (U <> Self)
-    and (UnitGroups[U.UnitType] = UnitGroups[fType]) //They must be the same group type
+    and (UNIT_TO_GROUP_TYPE[U.UnitType] = UNIT_TO_GROUP_TYPE[fType]) //They must be the same group type
     and TKMUnitWarrior(U).InAGroup then //Check if warrior belongs to some Group
     begin
       L := KMLength(aLoc, U.CurrPosition);
@@ -1010,39 +1012,41 @@ begin
 end;
 
 
-procedure TKMUnitWarrior.Paint;
+procedure TKMUnitWarrior.Paint(aTickLag: Single);
 var
+  V: TKMUnitVisualState;
   Act: TKMUnitActionType;
   UnitPos: TKMPointF;
-  I,K: Integer;
-  Color: Cardinal;
+  fillColor, lineColor: Cardinal;
 begin
   inherited;
   if not fVisible then Exit;
+  V := fVisual.GetLerp(aTickLag);
 
-  Act := fAction.ActionType;
-  UnitPos.X := fPositionF.X + UNIT_OFF_X + GetSlide(axX);
-  UnitPos.Y := fPositionF.Y + UNIT_OFF_Y + GetSlide(axY);
+  Act := V.Action;
+  UnitPos.X := V.PosF.X + UNIT_OFF_X + V.SlideX;
+  UnitPos.Y := V.PosF.Y + UNIT_OFF_Y + V.SlideY;
 
-  gRenderPool.AddUnit(fType, fUID, Act, Direction, AnimStep, UnitPos.X, UnitPos.Y, gHands[fOwner].GameFlagColor, True);
+  gRenderPool.AddUnit(fType, fUID, Act, V.Dir, V.AnimStep, UnitPos.X, UnitPos.Y, gHands[fOwner].GameFlagColor, True);
 
   if fThought <> thNone then
-    gRenderPool.AddUnitThought(fType, Act, Direction, fThought, UnitPos.X, UnitPos.Y);
+    gRenderPool.AddUnitThought(fType, Act, V.Dir, fThought, UnitPos.X, UnitPos.Y);
 
-  if SHOW_ATTACK_RADIUS or (gGame.IsMapEditor and (mlUnitsAttackRadius in gGame.MapEditor.VisibleLayers)) then
-  begin
-    Color := $40FFFFFF;
-    if (gMySpectator.Selected = Self)
-      or ((gMySpectator.Selected is TKMUnitGroup)
-        and (TKMUnitGroup(gMySpectator.Selected).FlagBearer = Self)) then
-      Color := icRed and Color;
+  if SHOW_ATTACK_RADIUS or (mlUnitsAttackRadius in gGame.VisibleLayers) then
     if IsRanged then
-      for I := -Round(GetFightMaxRange) - 1 to Round(GetFightMaxRange) do
-        for K := -Round(GetFightMaxRange) - 1 to Round(GetFightMaxRange) do
-          if InRange(GetLength(I, K), GetFightMinRange, GetFightMaxRange)
-            and gTerrain.TileInMapCoords(CurrPosition.X + K, CurrPosition.Y + I) then
-              gRenderAux.Quad(CurrPosition.X + K, CurrPosition.Y + I, Color);
-  end;
+    begin
+      fillColor := $40FFFFFF;
+      lineCOlor := icWhite;
+      if (gMySpectator.Selected = Self)
+        or ((gMySpectator.Selected is TKMUnitGroup)
+          and (TKMUnitGroup(gMySpectator.Selected).FlagBearer = Self)) then
+      begin
+        fillColor := icRed and fillColor;
+        lineColor := icCyan;
+      end;
+
+      gRenderPool.RenderDebug.RenderTiledArea(CurrPosition, GetFightMinRange, GetFightMaxRange, GetLength, fillColor, lineColor);
+    end;
 end;
 
 

@@ -5,7 +5,7 @@ uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLType, {$ENDIF}
   SysUtils, Controls, Classes, Math, KM_Defaults, KM_Controls, KM_Points,
-  KM_InterfaceDefaults, KM_CommonTypes,
+  KM_InterfaceDefaults, KM_CommonTypes, KM_AIDefensePos,
   KM_GameCursor, KM_Render, KM_Minimap, KM_Viewport, KM_ResHouses, KM_ResWares, KM_ResFonts;
 
 
@@ -16,11 +16,15 @@ type
     fDragScrollingCursorPos: TPoint;
     fDragScrollingViewportPos: TKMPointF;
     fOnUserAction: TKMUserActionEvent;
+
     procedure ResetDragScrolling;
+    procedure PaintDefences;
   protected
     fMinimap: TKMMinimap;
     fViewport: TKMViewport;
     fDragScrolling: Boolean;
+
+    fPaintDefences: Boolean;
 
     function IsDragScrollingAllowed: Boolean; virtual;
     function GetHintPositionBase: TKMPoint; override;
@@ -38,6 +42,8 @@ type
 
     function CursorToMapCoord(X, Y: Integer): TKMPointF;
 
+    procedure DebugControlsUpdated(aSenderTag: Integer); override;
+
     procedure KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean); override;
     procedure KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean); override;
     procedure KeyPress(Key: Char); override;
@@ -51,6 +57,8 @@ type
     procedure SyncUIView(const aCenter: TKMPointF; aZoom: Single = 1);
     procedure UpdateGameCursor(X, Y: Integer; Shift: TShiftState);
     procedure UpdateStateIdle(aFrameTime: Cardinal); virtual; abstract;
+
+    procedure Paint; override;
   end;
 
 
@@ -62,6 +70,8 @@ const
   PAGE_TITLE_Y = 5; // Page title offset
   TERRAIN_PAGE_TITLE_Y = PAGE_TITLE_Y + 2; // Terrain pages title offset
   STATS_LINES_CNT = 13; //Number of stats (F3) lines
+
+  DEFENCE_LINE_TYPE_COL: array [TAIDefencePosType] of Cardinal = ($FF80FF00, $FFFF8000);
 
   // Shortcuts
   // All shortcuts are in English and are the same for all languages to avoid
@@ -165,7 +175,8 @@ const
 
 implementation
 uses
-  KM_Main, KM_Terrain, KM_RenderPool, KM_Resource, KM_ResCursors, KM_ResKeys;
+  KM_Main, KM_Terrain, KM_RenderPool, KM_Resource, KM_ResCursors, KM_ResKeys, KM_HandsCollection, KM_Game,
+  KM_RenderUI, KM_CommonUtils, KM_Pics, KM_GameApp;
 
 
 { TKMUserInterfaceGame }
@@ -181,6 +192,8 @@ begin
   fDragScrollingCursorPos.Y := 0;
   fDragScrollingViewportPos := KMPOINTF_ZERO;
 
+  fPaintDefences := False;
+
   gRenderPool := TRenderPool.Create(fViewport, aRender);
 end;
 
@@ -191,6 +204,15 @@ begin
   FreeAndNil(fViewport);
   FreeAndNil(gRenderPool);
   Inherited;
+end;
+
+
+procedure TKMUserInterfaceGame.DebugControlsUpdated(aSenderTag: Integer);
+begin
+  inherited;
+
+  if aSenderTag = Ord(dcFlatTerrain) then
+    gTerrain.UpdateLighting;
 end;
 
 
@@ -347,13 +369,57 @@ begin
   
   UpdateGameCursor(X, Y, Shift); // Make sure we have the correct cursor position to begin with
   PrevCursor := gGameCursor.Float;
-  fViewport.Zoom := fViewport.Zoom + WheelSteps*3/50;
+  // +1 for ScrollSpeed = 0.
+  // Sqrt to reduce Scroll speed importance
+  // 11 = 10 + 1, 10 is default scroll speed
+  fViewport.Zoom := fViewport.Zoom * (1 + WheelSteps * Sqrt((gGameApp.GameSettings.ScrollSpeed + 1) / 11) / 12);
   UpdateGameCursor(X, Y, Shift); // Zooming changes the cursor position
   // Move the center of the screen so the cursor stays on the same tile, thus pivoting the zoom around the cursor
   fViewport.Position := KMPointF(fViewport.Position.X + PrevCursor.X-gGameCursor.Float.X,
                                  fViewport.Position.Y + PrevCursor.Y-gGameCursor.Float.Y);
   UpdateGameCursor(X, Y, Shift); // Recentering the map changes the cursor position
   aHandled := True;
+end;
+
+
+procedure TKMUserInterfaceGame.PaintDefences;
+var
+  I, K: Integer;
+  DP: TAIDefencePosition;
+  LocF: TKMPointF;
+  ScreenLoc: TKMPoint;
+begin
+  for I := 0 to gHands.Count - 1 do
+    for K := 0 to gHands[I].AI.General.DefencePositions.Count - 1 do
+    begin
+      DP := gHands[I].AI.General.DefencePositions[K];
+      LocF := gTerrain.FlatToHeight(KMPointF(DP.Position.Loc.X-0.5, DP.Position.Loc.Y-0.5));
+      ScreenLoc := fViewport.MapToScreen(LocF);
+
+      if KMInRect(ScreenLoc, fViewport.ViewRect) then
+      begin
+        //Dir selector
+        TKMRenderUI.WritePicture(ScreenLoc.X, ScreenLoc.Y, 0, 0, [], rxGui,  510 + Byte(DP.Position.Dir));
+        TKMRenderUI.WriteTextInShape(IntToStr(K+1), ScreenLoc.X, ScreenLoc.Y - 28, DEFENCE_LINE_TYPE_COL[DP.DefenceType],
+                                     FlagColorToTextColor(GROUP_TXT_COLOR[DP.GroupType]), $80000000, IntToStr(I + 1), gHands[I].FlagColor, icWhite);
+        //GroupType icon
+        TKMRenderUI.WritePicture(ScreenLoc.X, ScreenLoc.Y, 0, 0, [], rxGui, GROUP_IMG[DP.GroupType]);
+      end;
+    end;
+end;
+
+
+procedure TKMUserInterfaceGame.Paint;
+begin
+  if (mlDefencesAll in gGame.VisibleLayers) then
+    fPaintDefences := True;
+
+  if fPaintDefences then
+    PaintDefences;
+
+  fPaintDefences := False;
+
+  inherited;
 end;
 
 

@@ -52,20 +52,21 @@ type
     procedure GameFinished;
     function GetGameSettings: TKMGameSettings;
   public
-    constructor Create(aRenderControl: TKMRenderControl; aScreenX, aScreenY: Word; aVSync: Boolean; aOnLoadingStep: TEvent; aOnLoadingText: TUnicodeStringEvent; aOnCursorUpdate: TIntegerStringEvent; NoMusic: Boolean = False);
+    constructor Create(aRenderControl: TKMRenderControl; aScreenX, aScreenY: Word; aVSync: Boolean; aOnLoadingStep: TEvent;
+                       aOnLoadingText: TUnicodeStringEvent; aOnCursorUpdate: TIntegerStringEvent; NoMusic: Boolean = False);
     destructor Destroy; override;
     procedure AfterConstruction(aReturnToOptions: Boolean); reintroduce;
 
     procedure PrepageStopGame(aMsg: TKMGameResultMsg);
     procedure StopGame(aMsg: TKMGameResultMsg; const aTextMsg: UnicodeString = '');
-    procedure AnnounceReturnToLobby(Sender: TObject);
+    procedure AnnounceReturnToLobby;
     procedure PrepareReturnToLobby(aTimestamp: TDateTime);
-    procedure StopGameReturnToLobby(Sender: TObject);
+    procedure StopGameReturnToLobby;
     function CanClose: Boolean;
     procedure Resize(X,Y: Integer);
     procedure ToggleLocale(const aLocale: AnsiString);
     procedure NetworkInit;
-    procedure SendMPGameInfo(Sender: TObject);
+    procedure SendMPGameInfo;
     function RenderVersion: UnicodeString;
     procedure PrintScreen(const aFilename: UnicodeString = '');
     procedure PauseMusicToPlayFile(const aFileName: UnicodeString);
@@ -115,7 +116,7 @@ type
     procedure UnlockAllCampaigns;
 
     function DynamicFOWEnabled: Boolean;
-    procedure DebugControlsUpdated;
+    procedure DebugControlsUpdated(Sender: TObject; aSenderTag: Integer);
 
     property OnGameSpeedActualChange: TSingleEvent read fOnGameSpeedChange write fOnGameSpeedChange;
     property OnGameStart: TKMGameModeChangeEvent read fOnGameStart write fOnGameStart;
@@ -145,7 +146,8 @@ uses
 
 
 { Creating everything needed for MainMenu, game stuff is created on StartGame }
-constructor TKMGameApp.Create(aRenderControl: TKMRenderControl; aScreenX, aScreenY: Word; aVSync: Boolean; aOnLoadingStep: TEvent; aOnLoadingText: TUnicodeStringEvent; aOnCursorUpdate: TIntegerStringEvent; NoMusic: Boolean = False);
+constructor TKMGameApp.Create(aRenderControl: TKMRenderControl; aScreenX, aScreenY: Word; aVSync: Boolean; aOnLoadingStep: TEvent;
+                              aOnLoadingText: TUnicodeStringEvent; aOnCursorUpdate: TIntegerStringEvent; NoMusic: Boolean = False);
 begin
   inherited Create;
 
@@ -177,8 +179,8 @@ begin
 
   gSoundPlayer  := TKMSoundPlayer.Create(fGameSettings.SoundFXVolume);
   fMusicLib     := TKMMusicLib.Create(fGameSettings.MusicVolume);
-  gSoundPlayer.OnRequestFade   := fMusicLib.FadeMusic;
-  gSoundPlayer.OnRequestUnfade := fMusicLib.UnfadeMusic;
+  gSoundPlayer.OnRequestFade   := fMusicLib.Fade;
+  gSoundPlayer.OnRequestUnfade := fMusicLib.Unfade;
 
   fCampaigns    := TKMCampaignsCollection.Create;
   fCampaigns.Load;
@@ -223,7 +225,7 @@ begin
 
   if fTimerUI <> nil then fTimerUI.Enabled := False;
   //Stop music imediently, so it doesn't keep playing and jerk while things closes
-  if fMusicLib <> nil then fMusicLib.StopMusic;
+  if fMusicLib <> nil then fMusicLib.Stop;
 
   StopGame(grSilent);
 
@@ -245,13 +247,12 @@ begin
 end;
 
 
-procedure TKMGameApp.DebugControlsUpdated;
+procedure TKMGameApp.DebugControlsUpdated(Sender: TObject; aSenderTag: Integer);
 begin
   if gGame = nil then
-    fMainMenuInterface.DebugControlsUpdated
+    fMainMenuInterface.DebugControlsUpdated(aSenderTag)
   else
-  if gGame.IsMapEditor then
-    gGame.MapEditorInterface.DebugControlsUpdated;
+    gGame.DebugControlsUpdated(Sender, aSenderTag);
 end;
 
 
@@ -643,7 +644,7 @@ begin
 end;
 
 
-procedure TKMGameApp.AnnounceReturnToLobby(Sender: TObject);
+procedure TKMGameApp.AnnounceReturnToLobby;
 begin
   //When this GIC command is executed, it will run PrepareReturnToLobby
   gGame.GameInputProcess.CmdGame(gicGameSaveReturnLobby, UTCNow);
@@ -660,7 +661,7 @@ begin
 end;
 
 
-procedure TKMGameApp.StopGameReturnToLobby(Sender: TObject);
+procedure TKMGameApp.StopGameReturnToLobby;
 begin
   if gGame = nil then Exit;
 
@@ -1107,7 +1108,7 @@ end;
 
 //Called by fNetworking to access MissionTime/GameName if they are valid
 //fNetworking knows nothing about fGame
-procedure TKMGameApp.SendMPGameInfo(Sender: TObject);
+procedure TKMGameApp.SendMPGameInfo;
 begin
   if gGame <> nil then
     fNetworking.AnnounceGameInfo(gGame.MissionTime, gGame.GameName)
@@ -1188,7 +1189,7 @@ procedure TKMGameApp.PauseMusicToPlayFile(const aFileName: UnicodeString);
 begin
   if not FileExists(aFileName) then Exit;
   gSoundPlayer.AbortAllFadeSounds; //Victory/defeat sounds also fade music, so stop those in the rare chance they might still be playing
-  fMusicLib.PauseMusicToPlayFile(aFileName, fGameSettings.SoundFXVolume);
+  fMusicLib.PauseToPlayFile(aFileName, fGameSettings.SoundFXVolume);
 end;
 
 
@@ -1215,7 +1216,7 @@ begin
   begin
     gGame.UpdateState(fGlobalTickCount);
     if gGame.IsMultiPlayerOrSpec and (fGlobalTickCount mod 100 = 0) then
-      SendMPGameInfo(Self); //Send status to the server every 10 seconds
+      SendMPGameInfo; //Send status to the server every 10 seconds
   end
   else
     fMainMenuInterface.UpdateState(fGlobalTickCount);
@@ -1224,7 +1225,7 @@ begin
   if fGlobalTickCount mod 10 = 0 then
   begin
     //Music
-    if not GameSettings.MusicOff and fMusicLib.IsMusicEnded then
+    if not GameSettings.MusicOff and fMusicLib.IsEnded then
       fMusicLib.PlayNextTrack; //Feed new music track
 
     //StatusBar
@@ -1252,6 +1253,3 @@ end;
 
 
 end.
-
-
-

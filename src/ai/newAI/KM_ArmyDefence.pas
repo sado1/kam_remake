@@ -172,7 +172,7 @@ end;
 function TKMDefencePosition.CanAccept(aGroup: TKMUnitGroup; aMaxUnits: Integer): Boolean;
 begin
   Result := (Group = nil)
-            OR ((GroupType = UnitGroups[aGroup.UnitType]) AND (Group.Count < aMaxUnits));
+            OR ((GroupType = UNIT_TO_GROUP_TYPE[aGroup.UnitType]) AND (Group.Count < aMaxUnits));
 end;
 
 

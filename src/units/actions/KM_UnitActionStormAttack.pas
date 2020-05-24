@@ -130,7 +130,7 @@ begin
   if fDelay > 0 then
   begin
     Dec(fDelay);
-    fUnit.AnimStep := UnitStillFrames[fUnit.Direction];
+    fUnit.AnimStep := UNIT_STILL_FRAMES[fUnit.Direction];
     Result := arActContinues;
     Exit;
   end;

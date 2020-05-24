@@ -308,7 +308,7 @@ begin
                           Qty := EnsureRange(P[1], -1, High(Byte)); //Sometimes user can define it to be 999999
                           if Qty = -1 then Qty := High(Byte); //-1 means maximum resources
                           ChooseLoc := gHands[fLastHand].ChooseLocation;
-                          ChooseLoc.Units[ UnitIndexToType[P[0]] ] := Qty;
+                          ChooseLoc.Units[ UNIT_ID_TO_TYPE[P[0]] ] := Qty;
                           gHands[fLastHand].ChooseLocation := ChooseLoc;
                         end;
 
@@ -336,10 +336,10 @@ begin
                         end;
 
     ctSetHouse:         if fLastHand <> PLAYER_NONE then
-                          if PointInMap(P[1]+1, P[2]+1) and InRange(P[0], Low(HouseIndexToType), High(HouseIndexToType)) then
-                            if gTerrain.CanPlaceHouseFromScript(HouseIndexToType[P[0]], KMPoint(P[1]+1, P[2]+1)) then
+                          if PointInMap(P[1]+1, P[2]+1) and InRange(P[0], Low(HOUSE_ID_TO_TYPE), High(HOUSE_ID_TO_TYPE)) then
+                            if gTerrain.CanPlaceHouseFromScript(HOUSE_ID_TO_TYPE[P[0]], KMPoint(P[1]+1, P[2]+1)) then
                               fLastHouse := gHands[fLastHand].AddHouse(
-                                HouseIndexToType[P[0]], P[1]+1, P[2]+1, false)
+                                HOUSE_ID_TO_TYPE[P[0]], P[1]+1, P[2]+1, false)
                             else
                               AddError('ct_SetHouse failed, can not place house at ' + TypeToString(KMPoint(P[1]+1, P[2]+1)));
 
@@ -385,25 +385,25 @@ begin
     ctSetUnit:          if PointInMap(P[1]+1, P[2]+1) then
                         begin
                           //Animals should be added regardless of current player
-                          if UnitOldIndexToType[P[0]] in [ANIMAL_MIN..ANIMAL_MAX] then
-                            gHands.PlayerAnimals.AddUnit(UnitOldIndexToType[P[0]], KMPoint(P[1]+1, P[2]+1))
+                          if UNIT_OLD_ID_TO_TYPE[P[0]] in [ANIMAL_MIN..ANIMAL_MAX] then
+                            gHands.PlayerAnimals.AddUnit(UNIT_OLD_ID_TO_TYPE[P[0]], KMPoint(P[1]+1, P[2]+1))
                           else
-                          if (fLastHand <> PLAYER_NONE) and (UnitOldIndexToType[P[0]] in [HUMANS_MIN..HUMANS_MAX]) then
-                            fLastUnit := gHands[fLastHand].AddUnit(UnitOldIndexToType[P[0]], KMPoint(P[1]+1, P[2]+1));
+                          if (fLastHand <> PLAYER_NONE) and (UNIT_OLD_ID_TO_TYPE[P[0]] in [HUMANS_MIN..HUMANS_MAX]) then
+                            fLastUnit := gHands[fLastHand].AddUnit(UNIT_OLD_ID_TO_TYPE[P[0]], KMPoint(P[1]+1, P[2]+1));
                         end;
 
     ctSetUnitByStock:   if fLastHand <> PLAYER_NONE then
-                          if UnitOldIndexToType[P[0]] in [HUMANS_MIN..HUMANS_MAX] then
+                          if UNIT_OLD_ID_TO_TYPE[P[0]] in [HUMANS_MIN..HUMANS_MAX] then
                           begin
                             H := gHands[fLastHand].FindHouse(htStore, 1);
                             if (H <> nil) and PointInMap(H.Entrance.X, H.Entrance.Y+1) then
-                              gHands[fLastHand].AddUnit(UnitOldIndexToType[P[0]], KMPoint(H.Entrance.X, H.Entrance.Y+1));
+                              gHands[fLastHand].AddUnit(UNIT_OLD_ID_TO_TYPE[P[0]], KMPoint(H.Entrance.X, H.Entrance.Y+1));
                           end;
 
     ctUnitAddToLast:    if fLastHand <> PLAYER_NONE then
                           if fLastHouse <> nil then
                           begin
-                            if (fLastHouse is TKMHouseBarracks) and (P[0] = UnitTypeToOldIndex[utRecruit]) then
+                            if (fLastHouse is TKMHouseBarracks) and (P[0] = UNIT_TYPE_TO_OLD_ID[utRecruit]) then
                             begin
                               if not fLastHouse.IsDestroyed then //Could be destroyed already by damage
                                 TKMHouseBarracks(fLastHouse).CreateRecruitInside(fParsingMode = mpmEditor);
@@ -447,7 +447,7 @@ begin
                           gHands[fLastHand].AddRoadToList(KMPoint(P[0],P[1]+2));
                           gHands[fLastHand].AddRoadToList(KMPoint(P[0]-1,P[1]+2));
                         end;
-
+    // @Deprecated, used AddWareToLast instead
     ctAddWare:          if fLastHand <> PLAYER_NONE then
                         begin
                           Qty := EnsureRange(P[1], -1, High(Word)); //Sometimes user can define it to be 999999
@@ -459,7 +459,7 @@ begin
                             gHands[fLastHand].Stats.WareInitial(WareIndexToType[P[0]], Qty);
                           end;
                         end;
-
+    // @Deprecated, used AddWareToLast instead
     ctAddWareToAll:    begin
                           Qty := EnsureRange(P[1], -1, High(Word)); //Sometimes user can define it to be 999999
                           if Qty = -1 then Qty := High(Word); //-1 means maximum resources
@@ -473,7 +473,7 @@ begin
                             end;
                           end;
                         end;
-
+    // @Deprecated, used AddWareToLast instead
     ctAddWareToSecond:  if fLastHand <> PLAYER_NONE then
                         begin
                           Qty := EnsureRange(P[1], -1, High(Word)); //Sometimes user can define it to be 999999
@@ -493,7 +493,7 @@ begin
                           Qty := EnsureRange(P[3], -1, High(Word)); //Sometimes user can define it to be 999999
                           if Qty = -1 then Qty := High(Word); //-1 means maximum resources
 
-                          H := gHands[fLastHand].FindHouse(HouseIndexToType[P[0]], P[1]);
+                          H := gHands[fLastHand].FindHouse(HOUSE_ID_TO_TYPE[P[0]], P[1]);
                           if (H <> nil) and (H.ResCanAddToIn(WareIndexToType[P[2]]) or H.ResCanAddToOut(WareIndexToType[P[2]])) then
                           begin
                             H.ResAddToEitherFromScript(WareIndexToType[P[2]], Qty);
@@ -517,7 +517,7 @@ begin
                           else
                             AddError('ct_AddWareToLast without prior declaration of House');
                         end;
-
+    // @Deprecated, used AddWareToLast instead
     ctAddWeapon:        if fLastHand <> PLAYER_NONE then
                         begin
                           Qty := EnsureRange(P[1], -1, High(Word)); //Sometimes user can define it to be 999999
@@ -538,7 +538,7 @@ begin
 
     ctBlockUnit:        if fLastHand <> PLAYER_NONE then
                         begin
-                          UT := UnitIndexToType[P[0]];
+                          UT := UNIT_ID_TO_TYPE[P[0]];
 
                           if UT in [HUMANS_MIN..HUMANS_MAX] then
                           begin
@@ -552,14 +552,14 @@ begin
 
     ctBlockHouse:       if fLastHand <> PLAYER_NONE then
                         begin
-                          if InRange(P[0], Low(HouseIndexToType), High(HouseIndexToType)) then
-                            gHands[fLastHand].Locks.HouseBlocked[HouseIndexToType[P[0]]] := True;
+                          if InRange(P[0], Low(HOUSE_ID_TO_TYPE), High(HOUSE_ID_TO_TYPE)) then
+                            gHands[fLastHand].Locks.HouseBlocked[HOUSE_ID_TO_TYPE[P[0]]] := True;
                         end;
 
     ctReleaseHouse:     if fLastHand <> PLAYER_NONE then
                         begin
-                          if InRange(P[0], Low(HouseIndexToType), High(HouseIndexToType)) then
-                            gHands[fLastHand].Locks.HouseGranted[HouseIndexToType[P[0]]] := True;
+                          if InRange(P[0], Low(HOUSE_ID_TO_TYPE), High(HOUSE_ID_TO_TYPE)) then
+                            gHands[fLastHand].Locks.HouseGranted[HOUSE_ID_TO_TYPE[P[0]]] := True;
                         end;
 
     ctReleaseAllHouses: if fLastHand <> PLAYER_NONE then
@@ -567,10 +567,10 @@ begin
                             gHands[fLastHand].Locks.HouseGranted[HT] := True;
 
     ctSetGroup:         if (fLastHand <> PLAYER_NONE) and PointInMap(P[1]+1, P[2]+1) then
-                          if InRange(P[0], Low(UnitIndexToType), High(UnitIndexToType)) and (UnitIndexToType[P[0]] <> utNone) then
+                          if InRange(P[0], Low(UNIT_ID_TO_TYPE), High(UNIT_ID_TO_TYPE)) and (UNIT_ID_TO_TYPE[P[0]] <> utNone) then
                           try
                             fLastTroop := gHands[fLastHand].AddUnitGroup(
-                              UnitIndexToType[P[0]],
+                              UNIT_ID_TO_TYPE[P[0]],
                               KMPoint(P[1]+1, P[2]+1),
                               TKMDirection(P[3]+1),
                               P[4],
@@ -867,7 +867,7 @@ begin
   AddData('!' + COMMANDVALUES[ctSetMap] + ' "data\mission\smaps\' +
     AnsiString(ChangeFileExt(ExtractFileName(aFileName), '.map')) + '"');
 
-  if gGame.MissionMode = mmTactic then AddCommand(ctSetTactic, []);
+  if gGame.IsTactic then AddCommand(ctSetTactic, []);
   AddCommand(ctSetMaxPlayer, [gHands.Count]);
   //When removing players DefaultHuman can be left outside the valid range
   if InRange(gGame.MapEditor.DefaultHuman, 0, gHands.Count - 1) then
@@ -912,7 +912,7 @@ begin
         // Add units
         for UT := Low(Units) to High(Units) do
           if (Units[UT] > 0) then
-            AddCommand(ctChooseLocAddUnit, [UnitTypeToIndex[UT], Units[UT]]);
+            AddCommand(ctChooseLocAddUnit, [UNIT_TYPE_TO_ID[UT], Units[UT]]);
       end;
 
     with gGame.MapEditor.Revealers[I] do
@@ -966,14 +966,14 @@ begin
     AddCommand(ctAICharacter,cptRecruitCount, [gHands[I].AI.Setup.RecruitDelay]);
     for G:=Low(TKMGroupType) to High(TKMGroupType) do
       if gHands[I].AI.General.DefencePositions.TroopFormations[G].NumUnits <> 0 then //Must be valid and used
-        AddCommand(ctAICharacter, cptTroopParam, [KaMGroupType[G], gHands[I].AI.General.DefencePositions.TroopFormations[G].NumUnits, gHands[I].AI.General.DefencePositions.TroopFormations[G].UnitsPerRow]);
+        AddCommand(ctAICharacter, cptTroopParam, [GROUP_TYPES[G], gHands[I].AI.General.DefencePositions.TroopFormations[G].NumUnits, gHands[I].AI.General.DefencePositions.TroopFormations[G].UnitsPerRow]);
     AddData(''); //NL
     for K:=0 to gHands[I].AI.General.DefencePositions.Count - 1 do
       with gHands[I].AI.General.DefencePositions[K] do
         AddCommand(ctAIDefence, [Position.Loc.X - 1 + aLeftInset,
                                   Position.Loc.Y - 1 + aTopInset,
                                   Byte(Position.Dir) - 1,
-                                  KaMGroupType[GroupType],
+                                  GROUP_TYPES[GroupType],
                                   Radius,
                                   Byte(DefenceType)]);
     AddData(''); //NL
@@ -987,7 +987,7 @@ begin
           AddCommand(ctAIAttack, cptTakeAll, [])
         else
           for G:=Low(TKMGroupType) to High(TKMGroupType) do
-            AddCommand(ctAIAttack, cptTroopAmount, [KaMGroupType[G], GroupAmounts[G]]);
+            AddCommand(ctAIAttack, cptTroopAmount, [GROUP_TYPES[G], GroupAmounts[G]]);
 
         if (Delay > 0) or (AttackType = aatOnce) then //Type once must always have counter because it uses the delay
           AddCommand(ctAIAttack,cptCounter, [Delay]);
@@ -1018,12 +1018,12 @@ begin
     begin
       if gHands[I].Locks.HouseBlocked[HT] then
       begin
-        AddCommand(ctBlockHouse, [HouseTypeToIndex[HT]-1]);
+        AddCommand(ctBlockHouse, [HOUSE_TYPE_TO_ID[HT]-1]);
         ReleaseAllHouses := false;
       end
       else
         if gHands[I].Locks.HouseGranted[HT] then
-          AddCommand(ctReleaseHouse, [HouseTypeToIndex[HT]-1])
+          AddCommand(ctReleaseHouse, [HOUSE_TYPE_TO_ID[HT]-1])
         else
           ReleaseAllHouses := false;
     end;
@@ -1034,10 +1034,10 @@ begin
     for UT := HUMANS_MIN to HUMANS_MAX do
     begin
       if (UT = utMilitia) and gHands[I].Locks.GetUnitBlocked(UT, True) then
-        AddCommand(ctBlockUnit, [UnitTypeToIndex[UT], 1]); // 1 - special case for militia in TownHall
+        AddCommand(ctBlockUnit, [UNIT_TYPE_TO_ID[UT], 1]); // 1 - special case for militia in TownHall
 
       if gHands[I].Locks.GetUnitBlocked(UT) then
-        AddCommand(ctBlockUnit, [UnitTypeToIndex[UT], 0]); // means default
+        AddCommand(ctBlockUnit, [UNIT_TYPE_TO_ID[UT], 0]); // means default
     end;
 
     //Block trades
@@ -1053,7 +1053,7 @@ begin
       H := gHands[I].Houses[K];
       if not H.IsDestroyed then
       begin
-        AddCommand(ctSetHouse, [HouseTypeToIndex[H.HouseType]-1, H.Position.X-1 + aLeftInset, H.Position.Y-1 + aTopInset]);
+        AddCommand(ctSetHouse, [HOUSE_TYPE_TO_ID[H.HouseType]-1, H.Position.X-1 + aLeftInset, H.Position.Y-1 + aTopInset]);
         if H.IsDamaged then
           AddCommand(ctSetHouseDamage, [H.GetDamage]);
 
@@ -1066,7 +1066,7 @@ begin
         if H is TKMHouseBarracks then
         begin
           for J := 1 to TKMHouseBarracks(H).MapEdRecruitCount do
-            AddCommand(ctUnitAddToLast, [UnitTypeToOldIndex[utRecruit]]);
+            AddCommand(ctUnitAddToLast, [UNIT_TYPE_TO_OLD_ID[utRecruit]]);
         end;
 
         if (H is TKMHouseWFlagPoint)
@@ -1074,34 +1074,13 @@ begin
           AddCommand(ctSetRallyPoint, [TKMHouseWFlagPoint(H).FlagPoint.X-1 + aLeftInset, TKMHouseWFlagPoint(H).FlagPoint.Y-1 + aTopInset]);
 
         //Process any wares in this house
-        //First two Stores use special KaM commands
-        if (H.HouseType = htStore) and (StoreCount < 2) then
+        for WT := WARE_MIN to WARE_MAX do
         begin
-          Inc(StoreCount);
-          for WT := WARE_MIN to WARE_MAX do
-            if H.CheckResIn(WT) > 0 then
-              case StoreCount of
-                1:  AddCommand(ctAddWare, [WareTypeToIndex[WT], H.CheckResIn(WT)]);
-                2:  AddCommand(ctAddWareToSecond, [WareTypeToIndex[WT], H.CheckResIn(WT)]);
-              end;
-        end
-        else
-        //First Barracks uses special KaM command
-        if (H.HouseType = htBarracks) and (BarracksCount = 0) then
-        begin
-          Inc(BarracksCount);
-          for WT := WARFARE_MIN to WARFARE_MAX do
-            if H.CheckResIn(WT) > 0 then
-              AddCommand(ctAddWeapon, [WareTypeToIndex[WT], H.CheckResIn(WT)]); //Ware, Count
-        end
-        else
-          for WT := WARE_MIN to WARE_MAX do
-          begin
-            if H.CheckResIn(WT) > 0 then
-              AddCommand(ctAddWareToLast, [WareTypeToIndex[WT], H.CheckResIn(WT)]);
-            if H.CheckResOut(WT) > 0 then
-              AddCommand(ctAddWareToLast, [WareTypeToIndex[WT], H.CheckResOut(WT)]);
-          end;
+          if H.CheckResIn(WT) > 0 then
+            AddCommand(ctAddWareToLast, [WareTypeToIndex[WT], H.CheckResIn(WT)]);
+          if H.CheckResOut(WT) > 0 then
+            AddCommand(ctAddWareToLast, [WareTypeToIndex[WT], H.CheckResOut(WT)]);
+        end;
 
         //Set Delivery mode after Wares, so in case there are some wares and delivery mode TakeOut, then we will need to add proper Offers
         if H.DeliveryMode <> dmDelivery then //Default delivery mode is dmDelivery
@@ -1138,7 +1117,7 @@ begin
       U := gHands[I].Units[K];
       if not (U is TKMUnitWarrior) then //Groups get saved separately
       begin
-        AddCommand(ctSetUnit, [UnitTypeToOldIndex[U.UnitType], U.CurrPosition.X-1 + aLeftInset, U.CurrPosition.Y-1 + aTopInset]);
+        AddCommand(ctSetUnit, [UNIT_TYPE_TO_OLD_ID[U.UnitType], U.CurrPosition.X-1 + aLeftInset, U.CurrPosition.Y-1 + aTopInset]);
         if not U.StartWDefaultCondition then
           AddCommand(ctSetUnitFood, [U.Condition]);
       end;
@@ -1148,7 +1127,7 @@ begin
     for K := 0 to gHands[I].UnitGroups.Count - 1 do
     begin
       Group := gHands[I].UnitGroups[K];
-      AddCommand(ctSetGroup, [UnitTypeToIndex[Group.UnitType], Group.Position.X-1 + aLeftInset, Group.Position.Y-1 + aTopInset, Byte(Group.Direction)-1, Group.UnitsPerRow, Group.MapEdCount]);
+      AddCommand(ctSetGroup, [UNIT_TYPE_TO_ID[Group.UnitType], Group.Position.X-1 + aLeftInset, Group.Position.Y-1 + aTopInset, Byte(Group.Direction)-1, Group.UnitsPerRow, Group.MapEdCount]);
       if not Group.FlagBearer.StartWDefaultCondition then
         AddCommand(ctSetGroupFood, [Group.FlagBearer.Condition]);
 
@@ -1175,7 +1154,7 @@ begin
   for I := 0 to gHands.PlayerAnimals.Units.Count - 1 do
   begin
     U := gHands.PlayerAnimals.Units[I];
-    AddCommand(ctSetUnit, [UnitTypeToOldIndex[U.UnitType], U.CurrPosition.X-1 + aLeftInset, U.CurrPosition.Y-1 + aTopInset]);
+    AddCommand(ctSetUnit, [UNIT_TYPE_TO_OLD_ID[U.UnitType], U.CurrPosition.X-1 + aLeftInset, U.CurrPosition.Y-1 + aTopInset]);
   end;
   AddData(''); //NL
 

@@ -40,7 +40,8 @@ type
     procedure Load(LoadStream: TKMemoryStream);
     procedure SyncLoad;
     procedure UpdateState(aTick: Cardinal);
-    procedure Paint(const aRect: TKMRect);
+    procedure UpdateVisualState;
+    procedure Paint(const aRect: TKMRect; aTickLag: Single);
   end;
 
 
@@ -322,6 +323,19 @@ begin
 end;
 
 
+procedure TKMUnitsCollection.UpdateVisualState;
+var
+  I: Integer;
+begin
+  Assert(gGame.IsMapEditor);
+
+  for I := Count - 1 downto 0 do
+    if not Units[I].IsDead then
+      Units[I].UpdateVisualState;
+end;
+
+
+
 procedure TKMUnitsCollection.UpdateState(aTick: Cardinal);
 var
   I: Integer;
@@ -332,7 +346,10 @@ begin
   try
     for I := Count - 1 downto 0 do
       if not Units[I].IsDead then
-        Units[I].UpdateState
+      begin
+        Units[I].UpdateState;
+        Units[I].UpdateVisualState;
+      end
       else
         if FREE_POINTERS and (Units[I].GetPointerCount = 0) then
           fUnits.Delete(I);
@@ -361,7 +378,7 @@ begin
 end;
 
 
-procedure TKMUnitsCollection.Paint(const aRect: TKMRect);
+procedure TKMUnitsCollection.Paint(const aRect: TKMRect; aTickLag: Single);
 const
   Margin = 2;
 var
@@ -378,7 +395,7 @@ begin
           and (Units[I].Action is TKMUnitActionWalkTo)
           and TKMUnitActionWalkTo(Units[I].Action).NeedToPaint(growRect))
         or KMInRect(Units[I].PositionF, growRect)) then
-    Units[I].Paint;
+    Units[I].Paint(aTickLag);
 end;
 
 

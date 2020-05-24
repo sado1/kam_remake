@@ -102,7 +102,7 @@ type
 const
   //This is a map of the valid values for !SET_UNIT,
   //TSK did not had place for new warriors that were inserted in the middle(!)
-  UnitOldIndexToType: array[0..31] of TKMUnitType = (
+  UNIT_OLD_ID_TO_TYPE: array[0..31] of TKMUnitType = (
     utSerf,utWoodcutter,utMiner,utAnimalBreeder,utFarmer,
     utLamberjack,utBaker,utButcher,utFisher,utWorker,
     utStoneCutter,utSmith,utMetallurgist,utRecruit, //Units
@@ -112,7 +112,7 @@ const
     utWaterflower,utWaterleaf,utDuck); //Animals
 
   //and the corresponing unit that will be created (matches KaM behavior)
-  UnitTypeToOldIndex: array[TKMUnitType] of integer = (
+  UNIT_TYPE_TO_OLD_ID: array[TKMUnitType] of integer = (
   -1, -1, //utNone, utAny
   0,1,2,3,4,5,6,7,8,9,10,11,12,13, //Citizens
   14,15,16,17,18,19,20,21,22,23, //Warriors
@@ -120,7 +120,7 @@ const
   24,25,26,27,28,29,30,31); //Animals
 
   //This is a map of the valid values for !SET_GROUP, and the corresponing unit that will be created (matches KaM behavior)
-  UnitIndexToType: array[0..40] of TKMUnitType = (
+  UNIT_ID_TO_TYPE: array[0..40] of TKMUnitType = (
     utSerf,utWoodcutter,utMiner,utAnimalBreeder,utFarmer,
     utLamberjack,utBaker,utButcher,utFisher,utWorker,
     utStoneCutter,utSmith,utMetallurgist,utRecruit, //Units
@@ -133,7 +133,7 @@ const
     utNone, utNone, utNone
     );
 
-  UnitTypeToIndex: array[TKMUnitType] of ShortInt = (
+  UNIT_TYPE_TO_ID: array[TKMUnitType] of ShortInt = (
   -1, -1, //utNone, utAny
   0,1,2,3,4,5,6,7,8,9,10,11,12,13, //Citizens
   14,15,16,17,18,19,20,21,22,23, //Warriors
@@ -157,7 +157,7 @@ const
 
 
   //The frame shown when a unit is standing still in uaWalk. Same for all units!
-  UnitStillFrames: array [TKMDirection] of Byte = (0,3,2,2,1,6,7,6,6);
+  UNIT_STILL_FRAMES: array [TKMDirection] of Byte = (0,3,2,2,1,6,7,6,6);
 
 var
   //TownHall default units troops cost (number of gold chests needed)
@@ -319,11 +319,11 @@ begin
     utBarbarian:     Result := 70;
   else
     if IsCitizen then
-      Result := 141 + UnitTypeToIndex[fUnitType]
+      Result := 141 + UNIT_TYPE_TO_ID[fUnitType]
     else if IsWarriorEquipable then
-      Result := 47 + UnitTypeToIndex[fUnitType]
+      Result := 47 + UNIT_TYPE_TO_ID[fUnitType]
     else if IsWarrior then
-      Result := 55 + UnitTypeToIndex[fUnitType]
+      Result := 55 + UNIT_TYPE_TO_ID[fUnitType]
     else
       Result := 0;
   end;
@@ -333,7 +333,7 @@ end;
 function TKMUnitSpec.GetGUIScroll: Word;
 begin
   if IsValid then
-    Result := 521 + UnitTypeToIndex[fUnitType]
+    Result := 521 + UNIT_TYPE_TO_ID[fUnitType]
   else
     Result := 0;
 end;
@@ -392,7 +392,7 @@ begin
       utWaterflower: Result := TX_UNITS_WATERFLOWER;
       utWaterleaf:   Result := TX_UNITS_WATERLEAF;
       utDuck:        Result := TX_UNITS_DUCK;
-      else            Result := TX_UNITS_NAMES__29 + UnitTypeToIndex[fUnitType];
+      else            Result := TX_UNITS_NAMES__29 + UNIT_TYPE_TO_ID[fUnitType];
     end
   else
     Result := -1;
@@ -412,7 +412,7 @@ end;
 function TKMUnitSpec.GetDescription: UnicodeString;
 begin
   if IsValid and not IsAnimal then
-    Result := gResTexts[TX_UNITS_DESCRIPTIONS__13 + UnitTypeToIndex[fUnitType]]
+    Result := gResTexts[TX_UNITS_DESCRIPTIONS__13 + UNIT_TYPE_TO_ID[fUnitType]]
   else
     Result := 'N/A';
 end;
@@ -438,7 +438,8 @@ end;
 
 
 destructor TKMResUnits.Destroy;
-var U:TKMUnitType;
+var
+  U: TKMUnitType;
 begin
   for U := Low(TKMUnitType) to High(TKMUnitType) do
     fItems[U].Free;
@@ -550,8 +551,8 @@ begin
     S.Read(fSerfCarry, SizeOf(fSerfCarry){28*8*70});
 
     for I := 0 to UNIT_DAT_COUNT - 1 do
-    if UnitIndexToType[I] <> utNone then
-      fItems[UnitIndexToType[I]].LoadFromStream(S)
+    if UNIT_ID_TO_TYPE[I] <> utNone then
+      fItems[UNIT_ID_TO_TYPE[I]].LoadFromStream(S)
     else //Skip
       S.Seek(SizeOf(TKMUnitDat) + SizeOf(TKMUnitSprite) + SizeOf(TKMUnitSprite2), soFromCurrent);
 

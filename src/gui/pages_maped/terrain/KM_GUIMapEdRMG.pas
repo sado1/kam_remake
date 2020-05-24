@@ -526,6 +526,7 @@ begin
     NumSeed.OnChange := RMG_Change;
     NumSeed.Value := Random( High(Integer) );
     NumSeed.Hint := gResTexts[TX_MAPED_RMG_SETTINGS_SEED_HINT];
+    NumSeed.AutoFocusable := False;
 
 
 // Preselection of configuration

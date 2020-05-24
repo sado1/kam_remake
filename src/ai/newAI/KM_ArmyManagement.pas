@@ -222,9 +222,9 @@ begin
   // Take required warriors from CityManagement (-> implemented consideration of required units + save time)
   FillChar(GroupReq, SizeOf(GroupReq), #0); //Clear up
   for GT := Low(TKMGroupType) to High(TKMGroupType) do
-    for K := Low(AITroopTrainOrder[GT]) to High(AITroopTrainOrder[GT]) do
-      if (AITroopTrainOrder[GT,K] <> utNone) then
-        Inc(GroupReq[GT], gHands[fOwner].AI.CityManagement.WarriorsDemands[ AITroopTrainOrder[GT,K] ] + 1); // Always recruit something
+    for K := Low(AI_TROOP_TRAIN_ORDER[GT]) to High(AI_TROOP_TRAIN_ORDER[GT]) do
+      if (AI_TROOP_TRAIN_ORDER[GT,K] <> utNone) then
+        Inc(GroupReq[GT], gHands[fOwner].AI.CityManagement.WarriorsDemands[ AI_TROOP_TRAIN_ORDER[GT,K] ] + 1); // Always recruit something
 
   // Find barracks
   SetLength(Barracks, gHands[fOwner].Stats.GetHouseQty(htBarracks));
@@ -255,9 +255,9 @@ begin
       if (GroupReq[GT] = 0) then
         continue; // Don't train
 
-      for L := Low(AITroopTrainOrder[GT]) to High(AITroopTrainOrder[GT]) do
+      for L := Low(AI_TROOP_TRAIN_ORDER[GT]) to High(AI_TROOP_TRAIN_ORDER[GT]) do
       begin
-        UT := AITroopTrainOrder[GT, L];
+        UT := AI_TROOP_TRAIN_ORDER[GT, L];
         if (UT <> utNone) then
         begin
           if CanEquipIron AND (UT in WARRIORS_IRON) then
@@ -497,7 +497,7 @@ type
     else if (TargetUnit <> nil) then
       aTargetP := TargetUnit.CurrPosition
     else if (aTarget = attCustomPosition) then
-      aTargetP := TargetHouse.Position;
+      aTargetP := aCustomPos;
     Result := not KMSamePoint(aTargetP, KMPOINT_ZERO);
   end;
 
@@ -573,7 +573,7 @@ begin
       if (DefRatio < MIN_DEF_RATIO) AND (FoodShortage OR (BestEnemy <> WorstEnemy)) AND (gGame.MissionMode <> mmTactic) then
         Exit;
       // 1v1 or special game mode
-      if (BestEnemy = WorstEnemy) OR (gGame.MissionMode = mmTactic) then
+      if (BestEnemy = WorstEnemy) OR gGame.IsTactic then
         MobilizationCoef := 1
       // Else compute if it is necessary to mobilize the first defence line (or fraction)
       else

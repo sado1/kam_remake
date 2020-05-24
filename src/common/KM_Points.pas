@@ -5,6 +5,7 @@ interface
 
 type
   TKMDirection = (dirNA, dirN, dirNE, dirE, dirSE, dirS, dirSW, dirW, dirNW);
+  TKMDirection4 = (drNA, drN, drE, drS, drW);
 
 type
   //Records must be packed so they are stored identically in MP saves (padding bytes are unknown values)
@@ -105,6 +106,7 @@ type
   function KMRectF(const aRect: TKMRect): TKMRectF; overload;
   function KMRectF(const aPoint: TKMPointF): TKMRectF; overload;
   function KMRectF(aLeft, aTop, aRight, aBottom: SmallInt): TKMRectF; overload;
+  function KMRectF(aLeft, aTop, aRight, aBottom: Single): TKMRectF; overload;
   function KMRectRound(const aRect: TKMRectF): TKMRect;
   function KMSameRect(const aRect1, aRect2: TKMRect): Boolean;
   function KMRectWidth(const aRect: TKMRect): Integer;
@@ -171,6 +173,7 @@ type
 
   function KMLength(const A, B: TKMPoint): Single; overload;
   function KMLength(const A, B: TKMPointF): Single; overload;
+  function KMLengthDiag(X, Y: Integer): Single; overload;
   function KMLengthDiag(const A, B: TKMPoint): Single; overload;
   function KMLengthDiag(X,Y: Integer; const B: TKMPoint): Single; overload;
   function KMLengthSqr(const A, B: TKMPoint): Integer; overload;
@@ -492,6 +495,15 @@ end;
 
 
 function KMRectF(aLeft, aTop, aRight, aBottom: SmallInt): TKMRectF;
+begin
+  Result.Left   := aLeft;
+  Result.Right  := aRight;
+  Result.Top    := aTop;
+  Result.Bottom := aBottom;
+end;
+
+
+function KMRectF(aLeft, aTop, aRight, aBottom: Single): TKMRectF;
 begin
   Result.Left   := aLeft;
   Result.Right  := aRight;
@@ -1027,12 +1039,19 @@ begin
 end;
 
 
-function KMLengthDiag(X,Y: Integer; const B: TKMPoint): Single;
+function KMLengthDiag(X, Y: Integer; const B: TKMPoint): Single;
 begin
   if Abs(X - B.X) > Abs(Y - B.Y) then
     Result := Abs(X - B.X) + Abs(Y - B.Y) * 0.41
   else
     Result := Abs(Y - B.Y) + Abs(X - B.X) * 0.41;
+end;
+
+
+//Diag length to the KMPOINT_ZERO
+function KMLengthDiag(X, Y: Integer): Single;
+begin
+  Result := KMLengthDiag(X, Y, KMPOINT_ZERO);
 end;
 
 

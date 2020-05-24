@@ -6,7 +6,7 @@ uses
   KM_RenderControl, KM_Settings, KM_Video, KM_CommonTypes,
 
   {$IFDEF FPC} LResources, {$ENDIF}
-  {$IFDEF MSWindows} ShellAPI, Windows, Messages; {$ENDIF}
+  {$IFDEF MSWindows} ShellAPI, Windows, Messages, Vcl.Samples.Spin; {$ENDIF}
   {$IFDEF Unix} LCLIntf, LCLType; {$ENDIF}
 
 
@@ -146,6 +146,19 @@ type
     chkTileUnit: TCheckBox;
     chkVertexUnit: TCheckBox;
     chkTileObject: TCheckBox;
+
+    chkSupervisor: TCheckBox;
+    cpScripting: TCategoryPanel;
+    chkShowDefencePos: TCheckBox;
+    chkShowUnitRadius: TCheckBox;
+    chkShowTowerRadius: TCheckBox;
+    chkShowMiningRadius: TCheckBox;
+    chkShowDeposits: TCheckBox;
+    chkShowOverlays: TCheckBox;
+    chkShowUnits: TCheckBox;
+    chkShowHouses: TCheckBox;
+    chkShowObjects: TCheckBox;
+    chkShowFlatTerrain: TCheckBox;
     {$ENDIF}
     {$IFDEF FPC}
     mainGroup: TGroupBox;
@@ -165,22 +178,40 @@ type
     Debug_UnlockCmpMissions: TMenuItem;
     N11: TMenuItem;
     mnExportRngChecks: TMenuItem;
-    chkSupervisor: TCheckBox;
-    cpScripting: TCategoryPanel;
+    chkGIP: TCheckBox;
+    sePauseAfterTick: TSpinEdit;
+    Label8: TLabel;
+    Label9: TLabel;
+    seMakeSaveptAfterTick: TSpinEdit;
+    edDebugText: TEdit;
+    seDebugValue: TSpinEdit;
+    Label10: TLabel;
+    Label11: TLabel;
 
-    procedure Export_TreeAnim1Click(Sender: TObject);
-    procedure MenuItem1Click(Sender: TObject);
-    procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure Debug_ExportMenuClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure FormKeyPress(Sender: TObject; var Key: Char);
-    procedure Debug_EnableCheatsClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+
+    procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure FormMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+
+    procedure RenderAreaMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure RenderAreaMouseMove(Sender: TObject; Shift: TShiftState; X,Y: Integer);
+    procedure RenderAreaMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure RenderAreaMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+
+    procedure RenderAreaResize(aWidth, aHeight: Integer);
+    procedure RenderAreaRender(aSender: TObject);
+
+    procedure Debug_ExportMenuClick(Sender: TObject);
+    procedure Debug_EnableCheatsClick(Sender: TObject);
     procedure AboutClick(Sender: TObject);
     procedure ExitClick(Sender: TObject);
     procedure Debug_PrintScreenClick(Sender: TObject);
+    procedure MenuItem1Click(Sender: TObject);
     procedure Export_TreesRXClick(Sender: TObject);
     procedure Export_HousesRXClick(Sender: TObject);
     procedure Export_UnitsRXClick(Sender: TObject);
@@ -191,6 +222,7 @@ type
     procedure Export_TilesetClick(Sender: TObject);
     procedure Export_Sounds1Click(Sender: TObject);
     procedure Export_HouseAnim1Click(Sender: TObject);
+    procedure Export_TreeAnim1Click(Sender: TObject);
     procedure Export_Fonts1Click(Sender: TObject);
     procedure Export_DeliverLists1Click(Sender: TObject);
     procedure Button_StopClick(Sender: TObject);
@@ -198,18 +230,10 @@ type
     procedure Open_MissionMenuClick(Sender: TObject);
     procedure chkSuperSpeedClick(Sender: TObject);
     procedure Debug_ShowPanelClick(Sender: TObject);
-    procedure FormMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure Debug_ExportUIPagesClick(Sender: TObject);
     procedure HousesDat1Click(Sender: TObject);
     procedure ExportGameStatsClick(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ResourceValues1Click(Sender: TObject);
-    procedure RenderAreaMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure RenderAreaMouseMove(Sender: TObject; Shift: TShiftState; X,Y: Integer);
-    procedure RenderAreaMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure RenderAreaMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
-    procedure RenderAreaResize(aWidth, aHeight: Integer);
-    procedure RenderAreaRender(aSender: TObject);
     procedure Debug_ShowLogisticsClick(Sender: TObject);
     procedure UnitAnim_AllClick(Sender: TObject);
     procedure SoldiersClick(Sender: TObject);
@@ -226,13 +250,13 @@ type
 
     procedure ControlsUpdate(Sender: TObject);
   private
-    fShowStartVideo: Boolean;
+    fStartVideoPlayed: Boolean;
     fUpdating: Boolean;
     fMissionDefOpenPath: UnicodeString;
-    fOnControlsUpdated: TEvent;
+    fOnControlsUpdated: TObjectIntegerEvent;
     procedure FormKeyDownProc(aKey: Word; aShift: TShiftState);
     procedure FormKeyUpProc(aKey: Word; aShift: TShiftState);
-    function ConfirmExport: Boolean;
+//    function ConfirmExport: Boolean;
     function GetMouseWheelStepsCnt(aWheelData: Integer): Integer;
     {$IFDEF MSWindows}
     function GetWindowParams: TKMWindowParamsRecord;
@@ -254,7 +278,7 @@ type
     procedure SetSaveEditableMission(aEnabled: Boolean);
     procedure SetExportGameStats(aEnabled: Boolean);
     procedure ShowFolderPermissionError;
-    property OnControlsUpdated: TEvent read fOnControlsUpdated write fOnControlsUpdated;
+    property OnControlsUpdated: TObjectIntegerEvent read fOnControlsUpdated write fOnControlsUpdated;
   end;
 
 
@@ -287,7 +311,7 @@ uses
 //Remove VCL panel and use flicker-free TMyPanel instead
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
-  fShowStartVideo := True;
+  fStartVideoPlayed := False;
   RenderArea := TKMRenderControl.Create(Self);
   RenderArea.Parent := Self;
   RenderArea.Align := alClient;
@@ -320,6 +344,8 @@ begin
   RenderArea.SendToBack;
   mainGroup.BringToFront;
   {$ENDIF}
+
+  chkShowFlatTerrain.Tag := Ord(dcFlatTerrain);
 end;
 
 procedure TFormMain.FormShow(Sender: TObject);
@@ -344,13 +370,13 @@ begin
 
   Application.ProcessMessages;
 
-  if fShowStartVideo and (gGameApp.GameSettings <> nil) and gGameApp.GameSettings.VideoStartup then
+  if not fStartVideoPlayed and (gGameApp.GameSettings <> nil) and gGameApp.GameSettings.VideoStartup then
   begin
-    gVideoPlayer.AddVideo('Campaigns\The Shattered Kingdom\Logo');
-    gVideoPlayer.AddVideo('KaM');
+    gVideoPlayer.AddVideo('Campaigns' + PathDelim + 'The Shattered Kingdom' + PathDelim + 'Logo', vfkStarting);
+    gVideoPlayer.AddVideo('KaM', vfkStarting);
     gVideoPlayer.Play;
+    fStartVideoPlayed := True;
   end;
-  fShowStartVideo := False;
 end;
 
 
@@ -573,20 +599,17 @@ end;
 //Exports
 procedure TFormMain.Export_TreesRXClick(Sender: TObject);
 begin
-  if ConfirmExport then
-    gRes.Sprites.ExportToPNG(rxTrees);
+  gRes.ExportSpritesToPNG(rxTrees);
 end;
 
 procedure TFormMain.Export_HousesRXClick(Sender: TObject);
 begin
-  if ConfirmExport then
-    gRes.Sprites.ExportToPNG(rxHouses);
+  gRes.ExportSpritesToPNG(rxHouses);
 end;
 
 procedure TFormMain.Export_UnitsRXClick(Sender: TObject);
 begin
-  if ConfirmExport then
-    gRes.Sprites.ExportToPNG(rxUnits);
+  gRes.ExportSpritesToPNG(rxUnits);
 end;
 
 procedure TFormMain.Export_ScriptDataClick(Sender: TObject);
@@ -598,24 +621,22 @@ end;
 
 procedure TFormMain.Export_GUIClick(Sender: TObject);
 begin
-  if ConfirmExport then
-    gRes.Sprites.ExportToPNG(rxGUI);
+  gRes.ExportSpritesToPNG(rxGUI);
 end;
 
 procedure TFormMain.Export_GUIMainRXClick(Sender: TObject);
 begin
-  if ConfirmExport then
-    gRes.Sprites.ExportToPNG(rxGUIMain);
+  gRes.ExportSpritesToPNG(rxGUIMain);
 end;
 
 procedure TFormMain.Export_CustomClick(Sender: TObject);
 begin
-  gRes.Sprites.ExportToPNG(rxCustom);
+  gRes.ExportSpritesToPNG(rxCustom);
 end;
 
 procedure TFormMain.Export_TilesetClick(Sender: TObject);
 begin
-  gRes.Sprites.ExportToPNG(rxTiles);
+  gRes.ExportSpritesToPNG(rxTiles);
 end;
 
 procedure TFormMain.Export_Sounds1Click(Sender: TObject);
@@ -625,14 +646,12 @@ end;
 
 procedure TFormMain.Export_TreeAnim1Click(Sender: TObject);
 begin
-  if ConfirmExport then
-    gRes.ExportTreeAnim;
+  gRes.ExportTreeAnim;
 end;
 
 procedure TFormMain.Export_HouseAnim1Click(Sender: TObject);
 begin
-  if ConfirmExport then
-    gRes.ExportHouseAnim;
+  gRes.ExportHouseAnim;
 end;
 
 
@@ -722,8 +741,7 @@ end;
 
 procedure TFormMain.SoldiersClick(Sender: TObject);
 begin
-  if ConfirmExport then
-    gRes.ExportUnitAnim(WARRIOR_MIN, WARRIOR_MAX);
+  gRes.ExportUnitAnim(WARRIOR_MIN, WARRIOR_MAX);
 end;
 
 
@@ -765,8 +783,7 @@ end;
 
 procedure TFormMain.Civilians1Click(Sender: TObject);
 begin
-  if ConfirmExport then
-    gRes.ExportUnitAnim(CITIZEN_MIN, CITIZEN_MAX);
+  gRes.ExportUnitAnim(CITIZEN_MIN, CITIZEN_MAX);
 end;
 
 
@@ -801,6 +818,10 @@ procedure TFormMain.ControlsReset;
                                                          or (PanelSurface.Controls[I] = chkLogNetConnection)
                                                          or (PanelSurface.Controls[I] = chkLogSkipTempCmd)
                                                          or ((PanelSurface.Controls[I] = chkSnowHouses) and gGameApp.GameSettings.AllowSnowHouses)
+                                                         or (PanelSurface.Controls[I] = chkShowObjects)
+                                                         or (PanelSurface.Controls[I] = chkShowHouses)
+                                                         or (PanelSurface.Controls[I] = chkShowUnits)
+                                                         or (PanelSurface.Controls[I] = chkShowOverlays)
         else
         if PanelSurface.Controls[I] is TTrackBar then
           TTrackBar(PanelSurface.Controls[I]).Position := 0
@@ -874,7 +895,7 @@ begin
   chkDebugScripting.SetCheckedWithoutClick(DEBUG_SCRIPTING_EXEC);
   {$ENDIF}
 
-  if (gGame = nil) or not gGame.IsMapEditor then Exit;
+  if (gGame = nil) or not gMain.IsDebugChangeAllowed then Exit;
 
   tbPassability.Max := Byte(High(TKMTerrainPassability));
   tbPassability.Position := SHOW_TERRAIN_PASS;
@@ -893,6 +914,16 @@ begin
   chkVertexUnit.SetCheckedWithoutClick      (SHOW_VERTEX_UNIT);
   chkShowRoutes.SetCheckedWithoutClick      (SHOW_UNIT_ROUTES);
   chkSelectionBuffer.SetCheckedWithoutClick (SHOW_SEL_BUFFER);
+
+  chkShowObjects.SetCheckedWithoutClick     (mlObjects            in gGame.VisibleLayers);
+  chkShowHouses.SetCheckedWithoutClick      (mlHouses             in gGame.VisibleLayers);
+  chkShowUnits.SetCheckedWithoutClick       (mlUnits              in gGame.VisibleLayers);
+  chkShowOverlays.SetCheckedWithoutClick    (mlOverlays           in gGame.VisibleLayers);
+  chkShowMiningRadius.SetCheckedWithoutClick(mlMiningRadius       in gGame.VisibleLayers);
+  chkShowTowerRadius.SetCheckedWithoutClick (mlTowersAttackRadius in gGame.VisibleLayers);
+  chkShowUnitRadius.SetCheckedWithoutClick  (mlUnitsAttackRadius  in gGame.VisibleLayers);
+  chkShowDefencePos.SetCheckedWithoutClick  (mlDefencesAll        in gGame.VisibleLayers);
+  chkShowFlatTerrain.SetCheckedWithoutClick (mlFlatTerrain        in gGame.VisibleLayers);
 end;
 
 
@@ -937,6 +968,18 @@ end;
 
 
 procedure TFormMain.ControlsUpdate(Sender: TObject);
+
+  procedure UpdateVisibleLayers(aCheckBox: TCheckBox; aLayer: TKMGameVisibleLayer);
+  begin
+    if (Sender = aCheckBox) then
+    begin
+      if aCheckBox.Checked then
+        gGame.VisibleLayers := gGame.VisibleLayers + [aLayer]
+      else
+        gGame.VisibleLayers := gGame.VisibleLayers - [aLayer];
+    end;
+  end;
+
 var
   I: Integer;
   AllowDebugChange: Boolean;
@@ -979,6 +1022,28 @@ begin
     SHOW_TERRAIN_OVERLAYS := chkShowTerrainOverlays.Checked;
     DEBUG_SCRIPTING_EXEC := chkDebugScripting.Checked;
     SKIP_LOG_TEMP_COMMANDS := chkLogSkipTempCmd.Checked;
+
+    SHOW_GIP := chkGIP.Checked;
+    PAUSE_GAME_AFTER_TICK := sePauseAfterTick.Value;
+    MAKE_SAVEPT_AFTER_TICK := seMakeSaveptAfterTick.Value;
+
+    DEBUG_TEXT := edDebugText.Text;
+    DEBUG_VALUE := seDebugValue.Value;
+
+    if gGame <> nil then
+    begin
+      UpdateVisibleLayers(chkShowObjects,       mlObjects);
+      UpdateVisibleLayers(chkShowHouses,        mlHouses);
+      UpdateVisibleLayers(chkShowUnits,         mlUnits);
+      UpdateVisibleLayers(chkShowOverlays,      mlOverlays);
+      UpdateVisibleLayers(chkShowMiningRadius,  mlMiningRadius);
+      UpdateVisibleLayers(chkShowTowerRadius,   mlTowersAttackRadius);
+      UpdateVisibleLayers(chkShowUnitRadius,    mlUnitsAttackRadius);
+      UpdateVisibleLayers(chkShowDefencePos,    mlDefencesAll);
+      UpdateVisibleLayers(chkShowFlatTerrain,   mlFlatTerrain);
+//      UpdateVisibleLayers(chkShowDeposits,    mlDeposits);
+    chkShowTowerRadius.Tag := 5;
+    end;
     {$ENDIF}
 
     SKIP_RENDER := chkSkipRender.Checked;
@@ -1091,10 +1156,12 @@ begin
     end;
   end;
 
-  ActiveControl := nil; //Do not allow to focus on anything on debug panel
+  if    not (Sender is TSpinEdit)
+    and not (Sender is TEdit) then // TSpinEdit need focus to enter value
+    ActiveControl := nil; //Do not allow to focus on anything on debug panel
 
-  if Assigned (fOnControlsUpdated) then
-    fOnControlsUpdated;
+  if Assigned (fOnControlsUpdated) and (Sender is TControl) then
+    fOnControlsUpdated(Sender, TControl(Sender).Tag);
 end;
 
 
@@ -1137,18 +1204,17 @@ end;
 
 procedure TFormMain.UnitAnim_AllClick(Sender: TObject);
 begin
-  if ConfirmExport then
-    gRes.ExportUnitAnim(UNIT_MIN, UNIT_MAX, True);
+  gRes.ExportUnitAnim(UNIT_MIN, UNIT_MAX, True);
 end;
 
 
-function TFormMain.ConfirmExport: Boolean;
-begin
-  case MessageDlg(Format(gResTexts[TX_FORM_EXPORT_CONFIRM_MSG], [ExeDir + 'Export']), mtWarning, [mbYes, mbNo], 0) of
-    mrYes:  Result := True;
-    else    Result := False;
-  end;
-end;
+//function TFormMain.ConfirmExport: Boolean;
+//begin
+//  case MessageDlg(Format(gResTexts[TX_FORM_EXPORT_CONFIRM_MSG], [ExeDir + 'Export']), mtWarning, [mbYes, mbNo], 0) of
+//    mrYes:  Result := True;
+//    else    Result := False;
+//  end;
+//end;
 
 
 procedure TFormMain.ValidateGameStatsClick(Sender: TObject);

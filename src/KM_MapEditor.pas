@@ -24,7 +24,7 @@ type
     fDeposits: TKMDeposits;
     fSelection: TKMSelection;
     fRevealers: array [0..MAX_HANDS-1] of TKMPointTagList;
-    fVisibleLayers: TKMMapEdLayerSet;
+    fVisibleLayers: TKMMapEdVisibleLayerSet;
     //When you load a map script/libx/wav/etc. files are "attached" then copied when
     //saving if the path is different
     fAttachedFiles: array of UnicodeString;
@@ -41,7 +41,6 @@ type
     procedure PaintRevealFOW(aLayer: TKMPaintLayer);
     procedure PaintCenterScreen(aLayer: TKMPaintLayer);
     procedure PaintAIStart(aLayer: TKMPaintLayer);
-    procedure PaintMiningRadius(aLayer: TKMPaintLayer);
 
     procedure AddDefenceMarker(const aLoc: TKMPoint);
 
@@ -65,9 +64,9 @@ type
     constructor Create(aTerrainPainter: TKMTerrainPainter; aOnHistoryUndoRedo, aOnHistoryAddCheckpoint: TEvent);
     destructor Destroy; override;
     property Deposits: TKMDeposits read fDeposits;
+    property VisibleLayers: TKMMapEdVisibleLayerSet read fVisibleLayers write fVisibleLayers;
     property Selection: TKMSelection read fSelection;
     property Revealers[aIndex: Byte]: TKMPointTagList read GetRevealer;
-    property VisibleLayers: TKMMapEdLayerSet read fVisibleLayers write fVisibleLayers;
     property History: TKMMapEditorHistory read GetHistory write fHistory;
 
     function OnlyAdvancedAIHand(aHandId: TKMHandID): Boolean;
@@ -84,6 +83,8 @@ type
     procedure UpdateStateIdle;
     procedure Paint(aLayer: TKMPaintLayer; const aClipRect: TKMRect);
 
+    procedure Reset;
+
     procedure DeletePlayer(aIndex: TKMHandID);
   end;
 
@@ -93,9 +94,9 @@ uses
   SysUtils, StrUtils, Math,
   KM_Terrain, KM_FileIO,
   KM_AIDefensePos, KM_ResTexts,
-  KM_Units, KM_UnitGroup, KM_Houses, KM_HouseCollection, KM_HouseWoodcutters,
-  KM_Game, KM_GameCursor, KM_ResMapElements, KM_ResHouses, KM_ResWares, KM_Resource, KM_ResUnits,
-  KM_RenderAux, KM_Hand, KM_HandsCollection, KM_InterfaceMapEditor, KM_CommonUtils;
+  KM_Units, KM_UnitGroup, KM_Houses, KM_HouseCollection,
+  KM_Game, KM_GameCursor, KM_ResMapElements, KM_ResHouses, KM_Resource, KM_ResUnits,
+  KM_RenderAux, KM_Hand, KM_HandsCollection, KM_InterfaceMapEditor, KM_CommonUtils, KM_RenderDebug;
 
 //defines default defence position radius for static AI 
 const
@@ -110,6 +111,8 @@ begin
   inherited Create;
 
   MissionDefSavePath := '';
+
+  fVisibleLayers := [melDeposits];
 
   for I := 0 to MAX_HANDS - 1 do
   begin
@@ -126,8 +129,6 @@ begin
   fHistory := TKMMapEditorHistory.Create;
   fHistory.OnUndoRedo := aOnHistoryUndoRedo;
   fHistory.OnAddCheckpoint := aOnHistoryAddCheckpoint;
-
-  fVisibleLayers := [mlObjects, mlHouses, mlUnits, mlOverlays, mlDeposits];
 
   ResizeMapRect := KMRECT_ZERO;
 
@@ -266,9 +267,11 @@ end;
 
 
 function TKMMapEditor.HitTest(X, Y: Integer): TKMMapEdMarker;
-var I,K: Integer;
+var
+  I,K: Integer;
 begin
-  if mlDefences in fVisibleLayers then
+  if   (melDefences in gGame.MapEditor.VisibleLayers)
+    or (mlDefencesAll in gGame.VisibleLayers) then
   begin
     for I := 0 to gHands.Count - 1 do
       for K := 0 to gHands[I].AI.General.DefencePositions.Count - 1 do
@@ -282,7 +285,7 @@ begin
         end;
   end;
 
-  if mlRevealFOW in fVisibleLayers then
+  if melRevealFOW in gGame.MapEditor.VisibleLayers then
   begin
     for I := 0 to gHands.Count - 1 do
       for K := 0 to fRevealers[I].Count - 1 do
@@ -674,6 +677,14 @@ begin
 end;
 
 
+procedure TKMMapEditor.Reset;
+begin
+  if Self = nil then Exit;
+  
+  ActiveMarker.MarkerType := mtNone;
+end;
+
+
 function TKMMapEditor.GetCheckpointObjectsStr: string;
 begin
   if gGameCursor.Tag1 = OBJ_NONE then
@@ -792,28 +803,20 @@ end;
 
 procedure TKMMapEditor.PaintDefences(aLayer: TKMPaintLayer);
 var
-  I, K: Integer;
   DP: TAIDefencePosition;
 begin
-  if mlDefences in fVisibleLayers then
-  begin
-    case aLayer of
-      plCursors:  for I := 0 to gHands.Count - 1 do
-                    for K := 0 to gHands[I].AI.General.DefencePositions.Count - 1 do
-                    begin
-                      DP := gHands[I].AI.General.DefencePositions[K];
-                      gRenderPool.RenderSpriteOnTile(DP.Position.Loc, 510 + Byte(DP.Position.Dir), gHands[I].FlagColor);
-                    end;
-      plTerrain:  if ActiveMarker.MarkerType = mtDefence then
-                    //Render the radius only for the selected defence position, otherwise it's too much overlap
-                    if InRange(ActiveMarker.Index, 0, gHands[ActiveMarker.Owner].AI.General.DefencePositions.Count - 1) then
-                    begin
-                      DP := gHands[ActiveMarker.Owner].AI.General.DefencePositions[ActiveMarker.Index];
-                      gRenderAux.CircleOnTerrain(DP.Position.Loc.X-0.5, DP.Position.Loc.Y-0.5, DP.Radius,
-                                                 gHands[ActiveMarker.Owner].FlagColor AND $40FFFF80,
-                                                 gHands[ActiveMarker.Owner].FlagColor);
-                    end;
-    end;
+  if not (melDefences in gGame.MapEditor.VisibleLayers) then Exit;
+
+  case aLayer of
+    plTerrain:  if ActiveMarker.MarkerType = mtDefence then
+                  //Render defence position tiles covered
+                  if InRange(ActiveMarker.Index, 0, gHands[ActiveMarker.Owner].AI.General.DefencePositions.Count - 1) then
+                  begin
+                    DP := gHands[ActiveMarker.Owner].AI.General.DefencePositions[ActiveMarker.Index];
+                    gRenderPool.RenderDebug.RenderTiledArea(DP.Position.Loc, 0, DP.Radius, KMLengthDiag,
+                                                            gHands[ActiveMarker.Owner].FlagColor AND $60FFFFFF,
+                                                            icCyan);
+                  end;
   end;
 end;
 
@@ -823,20 +826,20 @@ var
   I, K: Integer;
   Loc: TKMPoint;
 begin
-  if mlRevealFOW in fVisibleLayers then
-    for I := 0 to gHands.Count - 1 do
-      for K := 0 to fRevealers[I].Count - 1 do
-      begin
-        Loc := fRevealers[I][K];
-        case aLayer of
-          plTerrain:  gRenderAux.CircleOnTerrain(Loc.X-0.5, Loc.Y-0.5,
-                                               fRevealers[I].Tag[K],
-                                               gHands[I].FlagColor and $20FFFFFF,
-                                               gHands[I].FlagColor);
-          plCursors:  gRenderPool.RenderSpriteOnTile(Loc,
-                          394, gHands[I].FlagColor);
-        end;
+  if not (melRevealFOW in gGame.MapEditor.VisibleLayers) then Exit;
+
+  for I := 0 to gHands.Count - 1 do
+    for K := 0 to fRevealers[I].Count - 1 do
+    begin
+      Loc := fRevealers[I][K];
+      case aLayer of
+        plTerrain:  gRenderAux.CircleOnTerrain(Loc.X-0.5, Loc.Y-0.5,
+                                             fRevealers[I].Tag[K],
+                                             gHands[I].FlagColor and $20FFFFFF,
+                                             gHands[I].FlagColor);
+        plCursors:  gRenderPool.RenderSpriteOnTile(Loc, 394, gHands[I].FlagColor);
       end;
+    end;
 end;
 
 
@@ -845,18 +848,19 @@ var
   I: Integer;
   Loc: TKMPoint;
 begin
-  if mlCenterScreen in fVisibleLayers then
-    for I := 0 to gHands.Count - 1 do
-      if gHands[I].HasAssets then
-      begin
-        Loc := gHands[I].CenterScreen;
-        case aLayer of
-          plTerrain:  gRenderAux.SquareOnTerrain(Loc.X - 3, Loc.Y - 2.5,
-                                                 Loc.X + 2, Loc.Y + 1.5,
-                                                 gHands[I].FlagColor);
-          plCursors:  gRenderPool.RenderSpriteOnTile(Loc, 391, gHands[I].FlagColor);
-        end;
+  if not (melCenterScreen in gGame.MapEditor.VisibleLayers) then Exit;
+
+  for I := 0 to gHands.Count - 1 do
+    if gHands[I].HasAssets then
+    begin
+      Loc := gHands[I].CenterScreen;
+      case aLayer of
+        plTerrain:  gRenderAux.SquareOnTerrain(Loc.X - 3, Loc.Y - 2.5,
+                                               Loc.X + 2, Loc.Y + 1.5,
+                                               gHands[I].FlagColor);
+        plCursors:  gRenderPool.RenderSpriteOnTile(Loc, 391, gHands[I].FlagColor);
       end;
+    end;
 end;
 
 
@@ -865,246 +869,19 @@ var
   I: Integer;
   Loc: TKMPoint;
 begin
-  if mlAIStart in fVisibleLayers then
-    for I := 0 to gHands.Count - 1 do
-      if gHands[I].HasAssets then
-      begin
-        Loc := gHands[I].AI.Setup.StartPosition;
-        case aLayer of
-          plTerrain:  gRenderAux.SquareOnTerrain(Loc.X - 3, Loc.Y - 2.5,
-                                                 Loc.X + 2, Loc.Y + 1.5,
-                                                 gHands[I].FlagColor);
-          plCursors:  gRenderPool.RenderSpriteOnTile(Loc, 390, gHands[I].FlagColor);
-        end;
-      end;
-end;
+  if not (melAIStart in gGame.MapEditor.VisibleLayers) then Exit;
 
-
-procedure TKMMapEditor.PaintMiningRadius(aLayer: TKMPaintLayer);
-const
-  GOLD_ORE_COLOR = icYellow;
-  IRON_ORE_COLOR = icSteelBlue;
-  COAL_ORE_COLOR = icGray;
-  WOODCUTTER_COLOR = icGreen;
-  QUARRY_COLOR = icBlack;
-  FISHERHUT_COLOR = icBlue;
-  FARM_COLOR = icYellow;
-  WINEYARD_COLOR = icLightCyan;
-  SELECTED_ORE_COLOR = icLight2Red;
-
-  procedure AddOrePoints(aOreP, aAllOreP: TKMPointListArray);
-  var
-    I,J,K: Integer;
-    Skip: Boolean;
-  begin
-    for I := 0 to Length(aOreP) - 1 do
+  for I := 0 to gHands.Count - 1 do
+    if gHands[I].HasAssets then
     begin
-      for J := 0 to aOreP[I].Count - 1 do
-      begin
-        Skip := False;
-        //Skip if we already have this point in upper layer
-        for K := 0 to I do
-          if aAllOreP[K].Contains(aOreP[I][J]) then
-          begin
-            Skip := True;
-            Break;
-          end;
-        if not Skip then
-        begin
-          aAllOreP[I].Add(aOreP[I][J]); //Couild be Add actually, as we checked Contains already
-          //Remove added points from lowered layers
-          for K := I + 1 to 2 do
-            aAllOreP[K].Remove(aOreP[I][J]);
-        end;
+      Loc := gHands[I].AI.Setup.StartPosition;
+      case aLayer of
+        plTerrain:  gRenderAux.SquareOnTerrain(Loc.X - 3, Loc.Y - 2.5,
+                                               Loc.X + 2, Loc.Y + 1.5,
+                                               gHands[I].FlagColor);
+        plCursors:  gRenderPool.RenderSpriteOnTile(Loc, 390, gHands[I].FlagColor);
       end;
     end;
-  end;
-
-  procedure PaintOrePoints(aOreP: TKMPointListArray; Color: Cardinal; aHighlight: Boolean = False);
-  var
-    I, K, L: Integer;
-    Color2: Cardinal;
-    Coef: Single;
-  begin
-    Coef := 0.15;
-    if aHighlight then
-    begin
-      Color := SELECTED_ORE_COLOR;
-      Coef := 0.3;
-    end;
-
-    for I := 1 to Length(aOreP) - 1 do
-    begin
-      Color := Color and $40FFFFFF; //Add some transparency
-      Color := MultiplyBrightnessByFactor(Color, Coef);
-      for K := Length(aOreP) - 1 downto 0 do
-        for L := 0 to aOreP[K].Count - 1 do
-        begin
-          Color2 := Color;
-          if K = 1 then
-            Color2 := MultiplyBrightnessByFactor(Color, 4);
-          if K = 2 then
-            Color2 := MultiplyBrightnessByFactor(Color, 7);
-          gRenderAux.Quad(aOreP[K][L].X, aOreP[K][L].Y, Color2);
-        end;
-    end;
-  end;
-
-  procedure PaintMiningPoints(aPoints: TKMPointList; Color: Cardinal; aHighlight: Boolean = False; aDeepCl: Boolean = False);
-  var
-    I: Integer;
-    Coef: Single;
-  begin
-    Coef := 0.15;
-    if aHighlight then
-    begin
-      Color := SELECTED_ORE_COLOR;
-      Coef := 0.3;
-    end;
-
-    if aDeepCl then
-      Color := Color and $80FFFFFF //Add some transparency
-    else
-      Color := Color and $40FFFFFF; //Add more transparency
-    Color := MultiplyBrightnessByFactor(Color, Coef);
-
-    for I := 0 to aPoints.Count - 1 do
-      gRenderAux.Quad(aPoints[I].X, aPoints[I].Y, Color);
-  end;
-
-var
-  I, J, K: Integer;
-  H: TKMHouse;
-  IronOreP, GoldOreP, CoalOreP, OreP, SelectedOreP: TKMPointListArray;
-  WoodcutterPts, QuarryPts, FisherHutPts, FarmPts, WineyardPts: TKMPointList;
-  HouseDirPts: TKMPointDirList;
-  HousePts, SelectedPts: TKMPointList;
-begin
-  if (mlMiningRadius in fVisibleLayers) and (aLayer = plTerrain) then
-  begin
-    SetLength(OreP, 3);
-    SetLength(IronOreP, 3);
-    SetLength(GoldOreP, 3);
-    SetLength(CoalOreP, 3);
-    SetLength(SelectedOreP, 3);
-
-    for I := 0 to Length(OreP) - 1 do
-    begin
-      OreP[I] := TKMPointList.Create;
-      IronOreP[I] := TKMPointList.Create;
-      GoldOreP[I] := TKMPointList.Create;
-      CoalOreP[I] := TKMPointList.Create;
-      SelectedOreP[I] := TKMPointList.Create;
-    end;
-
-    WoodcutterPts := TKMPointList.Create;
-    QuarryPts := TKMPointList.Create;
-    FisherHutPts := TKMPointList.Create;
-    FarmPts := TKMPointList.Create;
-    WineyardPts := TKMPointList.Create;
-    HousePts := TKMPointList.Create;
-    HouseDirPts := TKMPointDirList.Create;
-    SelectedPts := TKMPointList.Create;
-
-    for I := 0 to gHands.Count - 1 do
-    begin
-      for J := 0 to gHands[I].Houses.Count - 1 do
-      begin
-        HousePts.Clear;
-        HouseDirPts.Clear;
-        H := gHands[I].Houses[J];
-        case H.HouseType of
-          htIronMine:   begin
-                          gTerrain.FindOrePointsByDistance(H.PointBelowEntrance, wtIronOre, OreP);
-                          AddOrePoints(OreP, IronOreP);
-                        end;
-          htGoldMine:   begin
-                          gTerrain.FindOrePointsByDistance(H.PointBelowEntrance, wtGoldOre, OreP);
-                          AddOrePoints(OreP, GoldOreP);
-                        end;
-          htCoalMine:   begin
-                          gTerrain.FindOrePointsByDistance(H.PointBelowEntrance, wtCoal, OreP);
-                          AddOrePoints(OreP, CoalOreP);
-                        end;
-          htWoodcutters:begin
-                          gTerrain.FindPossibleTreePoints(TKMHouseWoodcutters(H).FlagPoint,
-                                                          gRes.Units[utWoodcutter].MiningRange,
-                                                          HousePts);
-                          WoodcutterPts.AddList(HousePts);
-                        end;
-          htQuary:      begin
-                          gTerrain.FindStoneLocs(H.PointBelowEntrance,
-                                                 gRes.Units[utStoneCutter].MiningRange,
-                                                 KMPOINT_ZERO, True, HousePts);
-                          QuarryPts.AddList(HousePts);
-                        end;
-          htFisherHut:  begin
-                          gTerrain.FindFishWaterLocs(H.PointBelowEntrance,
-                                                     gRes.Units[utFisher].MiningRange,
-                                                     KMPOINT_ZERO, True, HouseDirPts);
-                          HouseDirPts.ToPointList(HousePts, True);
-                          FisherHutPts.AddList(HousePts);
-                        end;
-          htFarm:       begin
-                          gTerrain.FindCornFieldLocs(H.PointBelowEntrance,
-                                                     gRes.Units[utFarmer].MiningRange,
-                                                     HousePts);
-                          FarmPts.AddList(HousePts);
-                        end;
-          htWineyard:   begin
-                          gTerrain.FindWineFieldLocs(H.PointBelowEntrance,
-                                                     gRes.Units[utFarmer].MiningRange,
-                                                     HousePts);
-                          WineyardPts.AddList(HousePts);
-                        end;
-          else Continue;
-        end;
-
-        if gMySpectator.Selected = H then
-        begin
-          if H.HouseType in [htIronMine, htGoldMine, htCoalMine] then
-          begin
-            for K := 0 to Length(OreP) - 1 do
-              SelectedOreP[K].AddList(OreP[K]);
-          end
-          else
-            SelectedPts.AddList(HousePts);
-        end;
-
-        for K := 0 to Length(OreP) - 1 do
-          OreP[K].Clear;
-      end;
-    end;
-
-    PaintOrePoints(IronOreP, IRON_ORE_COLOR);
-    PaintOrePoints(GoldOreP, GOLD_ORE_COLOR);
-    PaintOrePoints(CoalOreP, COAL_ORE_COLOR);
-    PaintOrePoints(SelectedOreP, 0, True);
-
-    PaintMiningPoints(WoodcutterPts, WOODCUTTER_COLOR);
-    PaintMiningPoints(QuarryPts, QUARRY_COLOR);
-    PaintMiningPoints(FisherHutPts, FISHERHUT_COLOR);
-    PaintMiningPoints(FarmPts, FARM_COLOR, False, True);
-    PaintMiningPoints(WineyardPts, WINEYARD_COLOR);
-    PaintMiningPoints(SelectedPts, 0, True);
-
-    for I := 0 to Length(OreP) - 1 do
-    begin
-      OreP[I].Free;
-      IronOreP[I].Free;
-      GoldOreP[I].Free;
-      CoalOreP[I].Free;
-      SelectedOreP[I].Free;
-    end;
-    WoodcutterPts.Free;
-    QuarryPts.Free;
-    FisherHutPts.Free;
-    FarmPts.Free;
-    WineyardPts.Free;
-    HousePts.Free;
-    HouseDirPts.Free;
-    SelectedPts.Free;
-  end;
 end;
 
 
@@ -1131,15 +908,14 @@ begin
   PaintRevealFOW(aLayer);
   PaintCenterScreen(aLayer);
   PaintAIStart(aLayer);
-  PaintMiningRadius(aLayer);
 
-  if mlSelection in fVisibleLayers then
+  if melSelection in gGame.MapEditor.VisibleLayers then
     fSelection.Paint(aLayer, aClipRect);
 
-  if (mlMapResize in fVisibleLayers) and not KMSameRect(ResizeMapRect, KMRECT_ZERO) then
+  if (melMapResize in gGame.MapEditor.VisibleLayers) and not KMSameRect(ResizeMapRect, KMRECT_ZERO) then
     gRenderAux.RenderResizeMap(ResizeMapRect);
 
-  if mlWaterFlow in fVisibleLayers then
+  if melWaterFlow in gGame.MapEditor.VisibleLayers then
   begin
     for I := aClipRect.Top to aClipRect.Bottom do
     for K := aClipRect.Left to aClipRect.Right do
@@ -1166,7 +942,7 @@ end;
 
 procedure TKMMapEditor.UpdateState;
 begin
-  if mlDeposits in VisibleLayers then
+  if melDeposits in gGame.MapEditor.VisibleLayers then
     fDeposits.UpdateAreas([rdStone, rdCoal, rdIron, rdGold, rdFish]);
 
   fTerrainPainter.UpdateState;

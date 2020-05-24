@@ -206,10 +206,10 @@ begin
     gGameApp.GameSettings.SpecShowBeacons   := CheckBox_ReplaySpecShowBeacons.Checked;
 
   gSoundPlayer.UpdateSoundVolume(gGameApp.GameSettings.SoundFXVolume);
-  gGameApp.MusicLib.UpdateMusicVolume(gGameApp.GameSettings.MusicVolume);
+  gGameApp.MusicLib.Volume := gGameApp.GameSettings.MusicVolume;
   if MusicToggled then
   begin
-    gGameApp.MusicLib.ToggleMusic(not gGameApp.GameSettings.MusicOff);
+    gGameApp.MusicLib.ToggleEnabled(not gGameApp.GameSettings.MusicOff);
     if not gGameApp.GameSettings.MusicOff then
       ShuffleToggled := True; //Re-shuffle songs if music has been enabled
   end;

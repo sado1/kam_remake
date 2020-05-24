@@ -43,7 +43,8 @@ type
     procedure SyncLoad; virtual;
 
     procedure UpdateState(aTick: Cardinal); virtual;
-    procedure Paint(const aRect: TKMRect); virtual;
+    procedure UpdateVisualState;
+    procedure Paint(const aRect: TKMRect; aTickLag: Single); virtual;
   end;
 
 
@@ -92,7 +93,7 @@ type
     procedure HouseDestroyed(aHouse: TKMHouse; aFrom: TKMHandID);
     procedure UnitDied(aUnit: TKMUnit; aFrom: TKMHandID);
     procedure UnitTrained(aUnit: TKMUnit);
-    procedure WarriorWalkedOut(aUnit: TKMUnitWarrior);
+    procedure WarriorWalkedOut(aWarrior: TKMUnitWarrior);
     function LocHasNoAllyPlans(const aLoc: TKMPoint): Boolean;
     function GetGameFlagColor: Cardinal;
     function GetOwnerNiknameU: UnicodeString;
@@ -100,6 +101,8 @@ type
 
     function GetAI: TKMHandAI;
     procedure SetFlagColor(const Value: Cardinal);
+
+    procedure SetOwnerNikname(const aName: AnsiString);
   public
     Enabled: Boolean;
     InCinematic: Boolean;
@@ -122,8 +125,7 @@ type
     property Disabled: Boolean read IsDisabled;
 
     procedure SetHandIndex(aNewIndex: TKMHandID);
-    procedure SetOwnerNikname(const aName: AnsiString); //MP owner nikname (empty in SP)
-    property OwnerNikname: AnsiString read fOwnerNikname;
+    property OwnerNikname: AnsiString read fOwnerNikname write SetOwnerNikname; //MP owner nikname (empty in SP)
     property OwnerNiknameU: UnicodeString read GetOwnerNiknameU;
     function CalcOwnerName: UnicodeString; //Universal owner name
     function OwnerName(aNumberedAIs: Boolean = True; aLocalized: Boolean = True): UnicodeString; //Universal owner name
@@ -220,7 +222,7 @@ type
     procedure SyncLoad; override;
     procedure IncAnimStep;
     procedure UpdateState(aTick: Cardinal); override;
-    procedure Paint(const aRect: TKMRect); override;
+    procedure Paint(const aRect: TKMRect; aTickLag: Single); override;
     function ObjToString: String;
   end;
 
@@ -272,10 +274,10 @@ begin
 end;
 
 
-procedure TKMHandCommon.Paint(const aRect: TKMRect);
+procedure TKMHandCommon.Paint(const aRect: TKMRect; aTickLag: Single);
 begin
-  if not gGame.IsMapEditor or (mlUnits in gGame.MapEditor.VisibleLayers) then
-    fUnits.Paint(aRect);
+  if mlUnits in gGame.VisibleLayers then
+    fUnits.Paint(aRect, aTickLag);
 end;
 
 
@@ -340,6 +342,14 @@ end;
 procedure TKMHandCommon.UpdateState(aTick: Cardinal);
 begin
   fUnits.UpdateState(aTick);
+end;
+
+
+procedure TKMHandCommon.UpdateVisualState;
+begin
+  Assert(gGame.IsMapEditor);
+
+  fUnits.UpdateVisualState;
 end;
 
 
@@ -509,17 +519,19 @@ begin
 end;
 
 
-procedure TKMHand.WarriorWalkedOut(aUnit: TKMUnitWarrior);
-var G: TKMUnitGroup;
-    H: TKMHouse;
-    HWFP: TKMHouseWFlagPoint;
+procedure TKMHand.WarriorWalkedOut(aWarrior: TKMUnitWarrior);
+var
+  G: TKMUnitGroup;
+  H: TKMHouse;
+  HWFP: TKMHouseWFlagPoint;
 begin
   //Warrior could be killed before he walked out, f.e. by script OnTick ---> Actions.UnitKill
   //Then group will be assigned to invalid warrior and never gets removed from game
-  if (aUnit = nil)
-  or aUnit.IsDeadOrDying then
+  if  (aWarrior = nil)
+    or aWarrior.IsDeadOrDying then
     Exit;
-  G := fUnitGroups.WarriorTrained(aUnit);
+
+  G := fUnitGroups.WarriorTrained(aWarrior);
   Assert(G <> nil, 'It is certain that equipped warrior creates or finds some group to join to');
   G.OnGroupDied := GroupDied;
   if HandType = hndComputer then
@@ -527,14 +539,14 @@ begin
     if AI.Setup.NewAI then
       AI.ArmyManagement.WarriorEquipped(G)
     else
-      AI.General.WarriorEquipped(G);
-    G := UnitGroups.GetGroupByMember(aUnit); //AI might assign warrior to different group
+      AI.General.WarriorEquipped(aWarrior);
+    G := UnitGroups.GetGroupByMember(aWarrior); //AI might assign warrior to different group
   end
   else
     if G.Count = 1 then
     begin
       //If player is human and this is the first warrior in the group, send it to the rally point
-      H := HousesHitTest(aUnit.CurrPosition.X, aUnit.CurrPosition.Y-1);
+      H := HousesHitTest(aWarrior.CurrPosition.X, aWarrior.CurrPosition.Y-1);
       if (H is TKMHouseWFlagPoint) then
       begin
         HWFP := TKMHouseWFlagPoint(H);
@@ -544,7 +556,7 @@ begin
           G.OrderWalk(HWFP.FlagPoint, True, wtokFlagPoint);
       end;
     end;
-  gScriptEvents.ProcWarriorEquipped(aUnit, G);
+  gScriptEvents.ProcWarriorEquipped(aWarrior, G);
 end;
 
 
@@ -1897,6 +1909,9 @@ begin
   //Demands: food for soldiers / stone or wood for workers
   Deliveries.Queue.RemDemand(aUnit);
 
+  if aUnit is TKMUnitWarrior then
+    AI.General.WarriorDied(TKMUnitWarrior(aUnit));
+
   //Call script event after updating statistics
   gScriptEvents.ProcUnitDied(aUnit, aFrom);
 
@@ -2059,20 +2074,21 @@ begin
 end;
 
 
-procedure TKMHand.Paint(const aRect: TKMRect);
+procedure TKMHand.Paint(const aRect: TKMRect; aTickLag: Single);
 begin
   if not Enabled then Exit;
 
   inherited;
 
-  if not gGame.IsMapEditor or (mlUnits in gGame.MapEditor.VisibleLayers) then
+  if mlUnits in gGame.VisibleLayers then
     fUnitGroups.Paint(aRect);
 
-  if not gGame.IsMapEditor or (mlHouses in gGame.MapEditor.VisibleLayers) then
+  if mlHouses in gGame.VisibleLayers then
     fHouses.Paint(aRect);
 
   if not SKIP_RENDER AND OVERLAY_DEFENCES AND not fAI.Setup.NewAI then
-    fAI.General.DefencePositions.Paint;
+    if gMySpectator.SelectedHandID = fID then
+      fAI.General.DefencePositions.Paint;
 
   if not SKIP_RENDER AND fAI.Setup.NewAI then
   begin

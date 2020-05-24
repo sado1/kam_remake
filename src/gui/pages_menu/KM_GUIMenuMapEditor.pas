@@ -231,6 +231,8 @@ begin
       NumEdit_MapSizeY.Anchors := [anLeft, anBottom];
       NumEdit_MapSizeX.Value := 64;
       NumEdit_MapSizeY.Value := 64;
+      NumEdit_MapSizeX.AutoFocusable := False;
+      NumEdit_MapSizeY.AutoFocusable := False;
       NumEdit_MapSizeX.OnChange := SizeChangeByEdit;
       NumEdit_MapSizeY.OnChange := SizeChangeByEdit;
 
@@ -724,7 +726,7 @@ begin
                        I);
       R.Cells[0].Pic := fMaps[I].FavouriteMapPic;
       R.Cells[0].HighlightOnMouseOver := True;
-      R.Cells[1].Pic := MakePic(rxGui, 657 + Byte(fMaps[I].MissionMode = mmTactic));
+      R.Cells[1].Pic := MakePic(rxGui, 657 + Byte(fMaps[I].IsTacticMission));
       R.Tag := I;
       ColumnBox_MapEd.AddItem(R);
 

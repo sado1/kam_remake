@@ -4,7 +4,7 @@ interface
 uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
-  Classes, Math, StrUtils, SysUtils, Generics.Collections,
+  Classes, Math, StrUtils, SysUtils,
 
   KM_Networking, KM_NetworkTypes,
   KM_InterfaceGame, KM_InterfaceDefaults, KM_CommonTypes,
@@ -61,7 +61,7 @@ type
 
 implementation
 uses
-  KM_Main, KM_GameApp, KM_RenderUI, KM_ResTexts, KM_Game, KM_CommonUtils,
+  KM_GameApp, KM_RenderUI, KM_ResTexts, KM_Game, KM_CommonUtils,
   KM_ResSound, KM_Resource, KM_ResFonts, KM_Sound, KM_NetPlayersList;
 
 
@@ -377,9 +377,6 @@ end;
 
 procedure TKMGUIGameChat.ChatMessage(const aData: UnicodeString);
 begin
-  if gGameApp.GameSettings.FlashOnMessage then
-    gMain.FlashingStart;
-
   gGameApp.Chat.AddLine(aData);
 end;
 

@@ -1355,6 +1355,7 @@ end;
 procedure TKMTerrainPainter.DoApplyBrush;
 var
   X, Y: Integer;
+  rect: TKMRect;
 begin
   // Clear fBrushAreaTerKind array. It will be refilled in BrushTerrainTile
   fBrushAreaTerKindCnt := 0;
@@ -1374,7 +1375,9 @@ begin
   if fBrushMask <> mkNone then
     UseMagicBrush(X, Y, fSize, (fShape = hsSquare), True);
 
-  gTerrain.UpdatePassability(KMRectGrow(KMRect(KMPoint(fMapXc, fMapYc)), (fSize div 2) + 1));
+  rect := KMRectGrow(KMRect(KMPoint(fMapXc, fMapYc)), (fSize div 2) + 1);
+  gTerrain.UpdatePassability(rect);
+  gTerrain.UpdateLighting(rect); //Also update lighting because of water
 end;
 
 
@@ -1453,7 +1456,7 @@ begin
         Tmp := base;
     end;
 
-    gTerrain.Land[I,K].Height := Trunc(Tmp);
+    gTerrain.Land[I,K].fHeight := Trunc(Tmp);
     LandTerKind[I,K].HeightAdd := Round(Frac(Tmp)*255); //write Fractional part in 0..255 range (1Byte) to save us mem
   end;
 
@@ -1474,6 +1477,7 @@ begin
   gTerrain.Land[aLoc.Y, aLoc.X].BaseLayer.Rotation := aRotation;
 
   gTerrain.UpdatePassability(aLoc);
+  gTerrain.UpdateLighting(aLoc.X, aLoc.Y); //Also update lighting because of water
 end;
 
 

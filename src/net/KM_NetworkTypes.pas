@@ -5,6 +5,12 @@ uses
   Math, KM_Points, KM_CommonClasses;
 
 
+type
+  TKMNetPlayerKind = (lpkHost, lpkJoiner);
+  TKMNetGameState = (lgsNone, lgsConnecting, lgsQuery, lgsLobby, lgsLoading, lgsGame, lgsReconnecting);
+  TKMNetGameKind = (ngkNone, ngkMap, ngkSave);
+  TKMChatSound = (csNone, csJoin, csLeave, csSystem, csGameStart, csSaveGame, csChat, csChatWhisper, csChatTeam);
+
 const
   NET_ADDRESS_EMPTY = 0;    //Yet undefined
   NET_ADDRESS_OTHERS = -1;  //Recipient

@@ -49,7 +49,7 @@ type
     fMusicIsFaded: Boolean;
 
     fOnFadeMusic: TEvent;
-    fOnUnfadeMusic: TBooleanEvent;
+    fOnUnfadeMusic: TEvent;
     procedure CheckOpenALError;
     function IsSoundPlaying(aIndex: Integer): Boolean;
 
@@ -64,7 +64,7 @@ type
     function ActiveCount: Byte;
 
     property OnRequestFade: TEvent write fOnFadeMusic;
-    property OnRequestUnfade: TBooleanEvent write fOnUnfadeMusic;
+    property OnRequestUnfade: TEvent write fOnUnfadeMusic;
     procedure AbortAllFadeSounds;
     procedure AbortAllScriptSounds;
     procedure AbortAllLongSounds;
@@ -497,6 +497,10 @@ begin
   //Assign new data to buffer and assign it to source
   if SoundID = sfxNone then
   begin
+    // Can not find sound file, silently Exit...
+    if not FileExists(aFile) then
+      Exit;
+
     FileExt := ExtractFileExt(aFile);
     try
       if LowerCase(FileExt) = WAV_FILE_EXT then
@@ -568,6 +572,10 @@ begin
   else
   begin
     ID := word(SoundID);
+    // Can not find sound with ID, silently Exit...
+    if ID > gRes.Sounds.fWavesCount then
+      Exit;
+
     W := gRes.Sounds.fWaves[ID];
 
     Assert(W.IsLoaded and (ID <= gRes.Sounds.fWavesCount), 'Sounds.dat seems to be short');
@@ -816,7 +824,7 @@ begin
   //If we reached the end without exiting then we need to resume the music
   fMusicIsFaded := False;
   if Assigned(fOnUnfadeMusic) then
-    fOnUnfadeMusic(False);
+    fOnUnfadeMusic;
 end;
 
 

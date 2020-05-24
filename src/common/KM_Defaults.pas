@@ -42,6 +42,8 @@ const
   FONTS_FOLDER          = 'data' + PathDelim + 'gfx' + PathDelim + 'fonts' + PathDelim;
   DEFAULT_LOCALE: AnsiString = 'eng';
 
+  MAX_NIKNAME_LENGTH = 16;
+
   DEL_LOGS_OLDER_THAN   = 14;           //in days
 
   TEMPLATE_LIBX_FILE_TEXT = 'text.%s.libx';
@@ -85,6 +87,7 @@ var
   SHOW_DISMISS_GROUP_BTN:Boolean = False; //The button to kill group
   CHECK_8087CW          :Boolean = False; //Check that 8087CW (FPU flags) are set correctly each frame, in case some lib/API changed them
   SCROLL_ACCEL          :Boolean = False; //Acceleration for viewport scrolling
+  INTERPOLATED_RENDER   :Boolean = False; //Interpolate positions/animations in render between game ticks
   PathFinderToUse       :Byte = 1;
 
   //Cache / delivery / pathfinding
@@ -167,7 +170,6 @@ var
   SHOW_VERTEX_UNIT        :Boolean = False; //Show vertex unit (if vertex is occupied)
   SHOW_UIDs               :Boolean = False; //Show units/groups/houses UIDs
   SHOW_WALK_CONNECT       :Boolean = False; //Show floodfill areas of interconnected areas
-  SHOW_DEFENCE_POSITIONS  :Boolean = False; //Show defence positions
   SHOW_GROUP_MEMBERS_POS  :Boolean = False; //Show group members position
   TEST_VIEW_CLIP_INSET    :Boolean = False; //Renders smaller area to see if everything gets clipped well
   OUTLINE_ALL_SPRITES     :Boolean = False; //Render outline around every sprite
@@ -203,38 +205,43 @@ var
   SHOW_NET_PACKETS_LIMIT  :Integer = 1;
   SHOW_SELECTED_OBJ_INFO  :Boolean = False; //Show selected object (Unit/Group + Unit/House) data (UID/order/action etc)
   SHOW_HANDS_INFO         :Boolean = False; //Show hands info
+  SHOW_GIP                :Boolean = False; //Show GIP commands
   INI_HITPOINT_RESTORE    :Boolean = False; //Use the hitpoint restore rate from the INI file to compare with KaM
   SLOW_MAP_SCAN           :Boolean = False; //Scan maps with a pause to emulate uncached file access
   SLOW_SAVE_SCAN          :Boolean = False; //Scan saves with a pause to emulate uncached file access
   SLOW_MAP_SAVE_LOAD      :Boolean = False; //Load map or save to emulate slow network
   DO_PERF_LOGGING         :Boolean = False; //Write each ticks time to log (DEPRECATED PERF_LOGGER)
-  DO_DEV_PERF_LOGGING     :Boolean = True; //Write each ticks time to log
   MP_RESULTS_IN_SP        :Boolean = False; //Display each players stats in SP
-  SHOW_DEBUG_OVERLAY_BEVEL:Boolean = True; //Show debug text overlay Bevel (for better text readability)
+  SHOW_DEBUG_OVERLAY_BEVEL:Boolean = True;  //Show debug text overlay Bevel (for better text readability)
   {Gameplay}
-  USE_CUSTOM_SEED       :Boolean = False; //Use custom seed for every game
-  CUSTOM_SEED_VALUE     :Integer = 0;     //Custom seed value
-  PAUSE_GAME_AT_TICK    :Integer = -1;    //Pause at specified game tick
-  MAKE_SAVEPT_AT_TICK   :Integer = -1;    //Make savepoint at a certain tick (for both game and replay)
-  ALLOW_SAVE_IN_REPLAY  :Boolean = DEBUG_CFG; //Allow to save game from replay, good for debug
-  SAVE_GAME_AS_TEXT     :Boolean = True; //Save game serialized //Todo DEBUG. set to False before releases
+  LOBBY_SET_SPECS_DEFAULT :Boolean = DEBUG_CFG; //Set 'Allow spectators' flag in the lobby by default
+  LOBBY_HOST_AS_SPECTATOR :Boolean = DEBUG_CFG; //Host lobby as spectator by default
+  USE_CUSTOM_SEED         :Boolean = False; //Use custom seed for every game
+  CUSTOM_SEED_VALUE       :Integer = 0;     //Custom seed value
+  PAUSE_GAME_AFTER_TICK   :Integer = -1;    //Pause after specified game tick
+  MAKE_SAVEPT_AFTER_TICK  :Integer = -1;    //Make savepoint after a certain tick (for both game and replay)
+  ALLOW_SAVE_IN_REPLAY    :Boolean = DEBUG_CFG; //Allow to save game from replay, good for debug
+  SAVE_GAME_AS_TEXT       :Boolean = True; //Save game serialized //Todo DEBUG. set to False before releases
+
+  DEBUG_TEXT              :String = '';    //Debug text
+  DEBUG_VALUE             :Integer = 0;    //Debug value
   {Gameplay cheats}
-  UNLOCK_CAMPAIGN_MAPS  :Boolean = False; //Unlock more maps for debug
-  REDUCE_SHOOTING_RANGE :Boolean = False; //Reduce shooting range for debug
-  MULTIPLAYER_CHEATS    :Boolean = DEBUG_CFG; //Allow cheats and debug overlays (e.g. CanWalk) in Multiplayer
-  DEBUG_CHEATS          :Boolean = DEBUG_CFG; //Cheats for debug (place scout and reveal map) which can be turned On from menu
-  MULTIPLAYER_SPEEDUP   :Boolean = DEBUG_CFG; //Allow you to use F8 to speed up multiplayer for debugging (only effects local client)
-  SKIP_EXE_CRC          :Boolean = False; //Don't check KaM_Remake.exe CRC before MP game (useful for testing with different versions)
-  ALLOW_MP_MODS         :Boolean = False; //Don't let people enter MP mode if they are using mods (unit.dat, house.dat, etc.)
-  ALLOW_TAKE_AI_PLAYERS :Boolean = False; //Allow to load SP maps without Human player (usefull for AI testing)
+  UNLOCK_CAMPAIGN_MAPS    :Boolean = False; //Unlock more maps for debug
+  REDUCE_SHOOTING_RANGE   :Boolean = False; //Reduce shooting range for debug
+  MULTIPLAYER_CHEATS      :Boolean = DEBUG_CFG; //Allow cheats and debug overlays (e.g. CanWalk) in Multiplayer
+  DEBUG_CHEATS            :Boolean = DEBUG_CFG; //Cheats for debug (place scout and reveal map) which can be turned On from menu
+  MULTIPLAYER_SPEEDUP     :Boolean = DEBUG_CFG; //Allow you to use F8 to speed up multiplayer for debugging (only effects local client)
+  SKIP_EXE_CRC            :Boolean = False; //Don't check KaM_Remake.exe CRC before MP game (useful for testing with different versions)
+  ALLOW_MP_MODS           :Boolean = False; //Don't let people enter MP mode if they are using mods (unit.dat, house.dat, etc.)
+  ALLOW_TAKE_AI_PLAYERS   :Boolean = False; //Allow to load SP maps without Human player (usefull for AI testing)
   {Data output}
-  BLOCK_SAVE            :Boolean = False; //Block saving game (used in parallel Runner)
-  BLOCK_FILE_WRITE      :Boolean = False; //Block to write into txt file (used in parallel Runner)
-  WRITE_DECODED_MISSION :Boolean = False; //Save decoded mission as txt file
-  WRITE_WALKTO_LOG      :Boolean = False; //Write even more output into log + slows down game noticably
-  WriteResourceInfoToTXT:Boolean = False; //Whenever to write txt files with defines data properties on loading
-  EXPORT_SPRITE_ATLASES :Boolean = False; //Whenever to write all generated textures to BMP on loading (extremely time consuming)
-  EXPORT_INFLUENCE      :Boolean = False;
+  BLOCK_SAVE              :Boolean = False; //Block saving game (used in parallel Runner)
+  BLOCK_FILE_WRITE        :Boolean = False; //Block to write into txt file (used in parallel Runner)
+  WRITE_DECODED_MISSION   :Boolean = False; //Save decoded mission as txt file
+  WRITE_WALKTO_LOG        :Boolean = False; //Write even more output into log + slows down game noticably
+  WriteResourceInfoToTXT  :Boolean = False; //Whenever to write txt files with defines data properties on loading
+  EXPORT_SPRITE_ATLASES   :Boolean = False; //Whenever to write all generated textures to BMP on loading (extremely time consuming)
+  EXPORT_INFLUENCE        :Boolean = False;
   {Statistic}
   CtrlPaintCount: Word; //How many Controls were painted in last frame
 
@@ -284,7 +291,7 @@ var
   GAME_SAVE_CHECKPOINT_FREQ_DEF: Integer = 10*15*60; // 15 minutes
   GAME_SAVE_CHECKPOINT_CNT_LIMIT_MIN: Integer  = 0;  // Min limit for number of game checkpoints
   GAME_SAVE_CHECKPOINT_CNT_LIMIT_MAX: Integer  = 40; // Max limit for number of game checkpoints
-  GAME_SAVE_CHECKPOINT_CNT_LIMIT_DEF: Integer  = 10; // Def limit for number of game checkpoints
+  GAME_SAVE_CHECKPOINT_CNT_LIMIT_DEF: Integer  = 20; // Def limit for number of game checkpoints
 {$IFDEF DEBUG}
 const
 {$ENDIF}
@@ -471,6 +478,18 @@ type
   TKMapFolder = (mfSP, mfMP, mfDL);
   TKMapFolderSet = set of TKMapFolder;
 
+const
+  FOG_OF_WAR_MIN  = 80;           //Minimum value for explored but FOW terrain, MIN/ACT determines FOW darkness
+  FOG_OF_WAR_ACT  = 160;          //Until this value FOW is not rendered at all
+  FOG_OF_WAR_MAX  = 255;          //This is max value that FOW can be, MAX-ACT determines how long until FOW appears
+  FOG_OF_WAR_INC  = 128;          //Increment for FOW
+  FOG_OF_WAR_DEC  = 12;           //Decrement for FOW
+
+const
+  MAPED_HISTORY_DEPTH_MIN = 20;
+  MAPED_HISTORY_DEPTH_MAX = 1000;
+  MAPED_HISTORY_DEPTH_DEF = 500;
+
 
 const
   MAPS_FOLDER_NAME = 'Maps';
@@ -592,9 +611,9 @@ type
   TKMArmyType = (atIronThenLeather = 0, atLeather = 1, atIron = 2, atIronAndLeather = 3);
 
 const
-  KaMGroupType: array [TKMGroupType] of Byte = (0, 1, 2, 3);
+  GROUP_TYPES: array [TKMGroupType] of Byte = (0, 1, 2, 3);
 
-  UnitGroups: array [WARRIOR_MIN..WARRIOR_MAX] of TKMGroupType = (
+  UNIT_TO_GROUP_TYPE: array [WARRIOR_MIN..WARRIOR_MAX] of TKMGroupType = (
     gtMelee,gtMelee,gtMelee, //utMilitia, utAxeFighter, utSwordsman
     gtRanged,gtRanged,        //utBowman, utArbaletman
     gtAntiHorse,gtAntiHorse,  //utPikeman, utHallebardman,
@@ -609,7 +628,7 @@ const
     );
 
   //AI's prefences for training troops
-  AITroopTrainOrder: array [TKMGroupType, 1..3] of TKMUnitType = (
+  AI_TROOP_TRAIN_ORDER: array [TKMGroupType, 1..3] of TKMUnitType = (
     (utSwordsman,    utAxeFighter, utMilitia),
     (utHallebardman, utPikeman,    utNone),
     (utArbaletman,   utBowman,     utNone),
@@ -796,23 +815,37 @@ const
   MAP_SIZE_ENUM_MAX = msXXL;
 
 type
-  TKMMapEdLayer = (
+  //Enum representing map visible layers
+  TKMGameVisibleLayer = (
     mlObjects,
     mlHouses,
     mlUnits,
     mlOverlays,
-    mlDeposits,
     mlMiningRadius,
     mlTowersAttackRadius,
     mlUnitsAttackRadius,
-    mlDefences,
-    mlRevealFOW,
-    mlCenterScreen,
-    mlAIStart,
-    mlSelection,
-    mlWaterFlow,
-    mlMapResize);  //Enum representing mapEditor visible layers
-  TKMMapEdLayerSet = set of TKMMapEdLayer;                                   //Set of above enum
+    mlDefencesAll,
+    mlFlatTerrain
+    );
+
+  TKMMapVisibleLayerSet = set of TKMGameVisibleLayer; //Set of above enum
+
+  //Enum representing mapEd visible layers
+  TKMMapEdVisibleLayers = (
+    melDeposits,
+    melRevealFOW,
+    melCenterScreen,
+    melAIStart,
+    melSelection,
+    melWaterFlow,
+    melMapResize,
+    melDefences
+  );
+
+  TKMMapEdVisibleLayerSet = set of TKMMapEdVisibleLayers; //Set of above enum
+
+  TKMDebugControls = (dcNone, dcFlatTerrain);
+
 
 const
   //Colors available for selection in multiplayer
@@ -902,6 +935,7 @@ const
   icDarkOrange = $FF0060FF;
   icDarkCyan   = $FFB0B000;
   icLightGreen = $FF00F000;
+  icDeepGreen = $FF008000;
   icGreenYellow = $FF00FFBB;
 
   icPink = $FFFF00FF;
@@ -918,7 +952,12 @@ const
   icBarColorGreen = $FF00AA26;
   icBarColorBlue = $FFBBAA00;
 
+  icBlackish = $FF333333;
+
   // Interface colors (by usage)
+  clWhiteText = icWhite;
+  clBlackText = icBlackish;
+
   clPingLow = icGreen;
   clPingNormal = icYellow;
   clPingHigh = icOrange;
@@ -976,6 +1015,16 @@ const
 //  clGameSelf = icRed;
 //  clGameAlly = icYellow;
 //  clGameEnemy = icCyan;
+
+  GROUP_IMG: array [TKMGroupType] of Word = (
+    371, 374,
+    376, 377);
+
+  GROUP_TXT_COLOR: array [TKMGroupType] of Cardinal = (
+    icWhite,
+    icGreen,
+    icPink,
+    icRed);
 
 var
   ExeDir: UnicodeString;

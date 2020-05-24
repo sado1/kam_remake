@@ -525,7 +525,7 @@ var
 {$ENDIF}
 begin
   {$IFNDEF FPC}
-  if (GetForeGroundWindow <> gMain.FormMain.Handle) then
+  if (GetForegroundWindow <> gMain.FormMain.Handle) then
   begin
     flashInfo.cbSize := 20;
     flashInfo.hwnd := Application.Handle;
@@ -563,7 +563,8 @@ end;
 function TKMMain.IsDebugChangeAllowed: Boolean;
 begin
   Result := (gGameApp.Game = nil)
-            or (not gGameApp.Game.IsMultiPlayerOrSpec or MULTIPLAYER_CHEATS)
+            or not gGameApp.Game.IsMultiPlayerOrSpec
+            or MULTIPLAYER_CHEATS;
 end;
 
 

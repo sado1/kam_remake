@@ -304,7 +304,7 @@ type
     destructor Destroy; override;
     procedure MessageIssue(aKind: TKMMessageKind; const aText: UnicodeString); overload;
     procedure MessageIssue(aKind: TKMMessageKind; const aText: UnicodeString; const aLoc: TKMPoint); overload;
-    procedure SetMenuState(aTactic: Boolean);
+    procedure UpdateUI;
     procedure UpdateClock(aSpeedActual, aSpeedRecorded: Single; aShowRecorded: Boolean);
     procedure ShowPlayMore(DoShow: Boolean; Msg: TKMGameResultMsg);
     procedure ShowMPPlayMore(Msg: TKMGameResultMsg);
@@ -313,8 +313,8 @@ type
     procedure UpdateOverlayControls;
     procedure ReleaseDirectionSelector;
     procedure ChatMessage(const aData: UnicodeString);
-    procedure AlliesOnPlayerSetup(Sender: TObject);
-    procedure AlliesOnPingInfo(Sender: TObject);
+    procedure AlliesOnPlayerSetup;
+    procedure AlliesOnPingInfo;
     procedure AlliesTeamChange(Sender: TObject);
     procedure CinematicUpdate;
     procedure LoadHotkeysFromHand;
@@ -363,7 +363,7 @@ uses
   KM_CommonUtils, KM_ResLocales, KM_ResSound, KM_Resource, KM_Log, KM_ResCursors, KM_ResFonts, KM_ResKeys,
   KM_FogOfWar, KM_Sound, KM_NetPlayersList, KM_MessageLog, KM_NetworkTypes,
   KM_InterfaceMapEditor, KM_HouseWoodcutters, KM_MapTypes,
-  KM_GameTypes;
+  KM_GameTypes, KM_Video;
 
 const
   ALLIES_ROWS = 7;
@@ -1380,8 +1380,6 @@ begin
   Button_Menu_TrackDown.Hint := gResTexts[TX_MUSIC_PREV_HINT];
   Button_Menu_TrackUp.OnClick := Menu_NextTrack;
   Button_Menu_TrackDown.OnClick := Menu_PreviousTrack;
-
-
 end;
 
 
@@ -1394,6 +1392,7 @@ begin
     Edit_Save := TKMEdit.Create(Panel_Save, 0, 235, TB_WIDTH, 20, fntMetal);
     Edit_Save.AllowedChars := acFileName;
     Edit_Save.MaxLen := MAX_SAVENAME_LENGTH;
+    Edit_Save.AutoFocusable := False;
     Edit_Save.OnChange := Menu_Save_EditChange;
 
     ListBox_Save := TKMListBox.Create(Panel_Save, 0, 4, TB_WIDTH, 220, fntMetal, bsGame);
@@ -1482,7 +1481,7 @@ begin
     fGuiGameUnit.JoiningGroups := False;
     ReleaseDirectionSelector;
     gRes.Cursors.Cursor := kmcDefault; // Might have been scrolling or joining groups
-    SetMenuState(gGame.MissionMode = mmTactic); // Disabled main buttons
+    UpdateUI; // Disabled main buttons
 
     MinimapView.Disable;
     Sidebar_Top.Disable;
@@ -1492,7 +1491,7 @@ begin
   end
   else
   begin
-    SetMenuState(gGame.MissionMode = mmTactic); // Enable main buttons
+    UpdateUI; // Enable main buttons
 
     Viewport.CinematicReset; //Reset Pan points for future cinematics
 
@@ -1672,6 +1671,16 @@ begin
 
   ShowStats := False;
   ReinitStatsLastTime := False;
+
+  // Add victory / defeat videos to play
+  if gGame.IsNormalGame then // Don't play Victory / Defeat videos for specs
+  begin
+    case aMsg of
+      grWin:              gVideoPlayer.AddMissionVideo(gGame.MissionFile, 'Victory');
+      grDefeat, grCancel: gVideoPlayer.AddMissionVideo(gGame.MissionFile, 'Defeat');
+    end;
+    gVideoPlayer.Play;
+  end;
 
   case aMsg of
     grWin,
@@ -2416,13 +2425,17 @@ begin
 end;
 
 
-procedure TKMGamePlayInterface.SetMenuState(aTactic: Boolean);
+procedure TKMGamePlayInterface.UpdateUI;
+var
+  isTactic: Boolean;
 begin
   UpdateMessageImages;
 
-  Button_Main[tbBuild].Enabled := not aTactic and not HasLostMPGame and not gMySpectator.Hand.InCinematic; //Allow to 'test build' if we are in replay / spectate mode
-  Button_Main[tbRatio].Enabled := not aTactic and ((fUIMode in [umReplay, umSpectate]) or (not HasLostMPGame and not gMySpectator.Hand.InCinematic));
-  Button_Main[tbStats].Enabled := not aTactic;
+  isTactic := gGame.IsTactic;
+
+  Button_Main[tbBuild].Enabled := not isTactic and not HasLostMPGame and not gMySpectator.Hand.InCinematic; //Allow to 'test build' if we are in replay / spectate mode
+  Button_Main[tbRatio].Enabled := not isTactic and ((fUIMode in [umReplay, umSpectate]) or (not HasLostMPGame and not gMySpectator.Hand.InCinematic));
+  Button_Main[tbStats].Enabled := not isTactic;
 
   Button_Menu_Load.Enabled := fUIMode = umSP; // No loading during multiplayer games
   Button_Menu_Save.Enabled := (fUIMode in [umSP, umMP, umSpectate]) or (ALLOW_SAVE_IN_REPLAY and (fUIMode = umReplay));
@@ -2579,7 +2592,7 @@ begin
                   end;
     grDefeat:    begin
                     // Refresh it so that menu buttons become disabled
-                    SetMenuState(gGame.MissionMode = mmTactic);
+                    UpdateUI;
                     // Close e.g. the build menu if it was open
                     SwitchPage(Button_Back);
 
@@ -3001,7 +3014,7 @@ begin
 end;
 
 
-procedure TKMGamePlayInterface.AlliesOnPlayerSetup(Sender: TObject);
+procedure TKMGamePlayInterface.AlliesOnPlayerSetup;
 var
   I, K, NetI: Integer;
   LocaleID: Integer;
@@ -3107,7 +3120,7 @@ begin
 end;
 
 
-procedure TKMGamePlayInterface.AlliesOnPingInfo(Sender: TObject);
+procedure TKMGamePlayInterface.AlliesOnPingInfo;
 var
   I, K, NetI: Integer;
   Ping: Word;
@@ -3283,10 +3296,13 @@ begin
 
   if gGame.IsPaused
     and (SpeedChangeAllowed([umSP])
-      or ((PAUSE_GAME_AT_TICK <> -1) and (fUIMode <> umReplay))) then
+      or ((PAUSE_GAME_AFTER_TICK <> -1) and (fUIMode <> umReplay))) then
   begin
     if Key = gResKeys[SC_PAUSE].Key then
       SetPause(False);
+
+    if (fUIMode = umReplay) and (Key = gResKeys[SC_REPLAY_PLAY_NEXT_TICK].Key) and Button_ReplayStep.Enabled then
+      ReplayClick(Button_ReplayStep);
     Exit;
   end;
 
@@ -3751,7 +3767,7 @@ begin
     and (Obj is TKMUnitWarrior)
     and (TKMUnitWarrior(Obj).Owner = gMySpectator.HandID)
     and not Group.HasMember(TKMUnitWarrior(Obj))
-    and (UnitGroups[TKMUnitWarrior(Obj).UnitType] = Group.GroupType) then
+    and (UNIT_TO_GROUP_TYPE[TKMUnitWarrior(Obj).UnitType] = Group.GroupType) then
       gRes.Cursors.Cursor := kmcJoinYes
     else
       gRes.Cursors.Cursor := kmcJoinNo;
@@ -3816,8 +3832,10 @@ begin
     if fMyControls.CtrlOver = nil then Exit; // Don't move troops too
   end;
 
-  if (fMyControls.CtrlOver <> nil)
-    and (fMyControls.CtrlOver <> Image_DirectionCursor)
+  if (fMyControls.CtrlOver = nil) then
+    fMyControls.MouseUp(X,Y,Shift,Button) // That will update control States, f.e.
+  else
+  if   (fMyControls.CtrlOver <> Image_DirectionCursor)
     and not SelectingTroopDirection then
   begin
     fMyControls.MouseUp(X,Y,Shift,Button);
@@ -3841,7 +3859,7 @@ begin
             and (Obj is TKMUnitWarrior)
             and (TKMUnitWarrior(Obj).Owner = gMySpectator.HandID)
             and not Group.HasMember(TKMUnitWarrior(Obj))
-            and (UnitGroups[TKMUnitWarrior(Obj).UnitType] = Group.GroupType) then
+            and (UNIT_TO_GROUP_TYPE[TKMUnitWarrior(Obj).UnitType] = Group.GroupType) then
           begin
             Group2 := gMySpectator.Hand.UnitGroups.GetGroupByMember(TKMUnitWarrior(Obj));
             // Warrior might not have a group yet if he's still walking out of the barracks
@@ -4103,7 +4121,7 @@ begin
   MinimapView.SetMinimap(fMinimap);
   MinimapView.SetViewport(fViewport);
 
-  SetMenuState(gGame.MissionMode = mmTactic);
+  UpdateUI;
 end;
 
 

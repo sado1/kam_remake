@@ -30,6 +30,7 @@ type
     function GetLastSpecSelectedObj: TObject;
     function IsLastSelectObjectValid(aObject: TObject): Boolean;
     procedure UpdateNewSelected(var aNewSelected: TObject; aAllowSelectAllies: Boolean = False); overload;
+    function GetSelectedHandID: TKMHandID;
   public
     constructor Create(aHandIndex: TKMHandID);
     destructor Destroy; override;
@@ -39,6 +40,7 @@ type
     property IsSelectedMyObj: Boolean read fIsSelectedMyObj write fIsSelectedMyObj;
     function Hand: TKMHand;
     property HandID: TKMHandID read fHandIndex write SetHandIndex;
+    property SelectedHandID: TKMHandID read GetSelectedHandID;
     property FOWIndex: TKMHandID read fFOWIndex write SetFOWIndex;
     property FogOfWar: TKMFogOfWarCommon read fFogOfWar;
     property LastSpecSelectedObj: TObject read GetLastSpecSelectedObj;
@@ -124,6 +126,25 @@ begin
   if Self = nil then Exit(nil);
 
   Result := fSelected;
+end;
+
+
+function TKMSpectator.GetSelectedHandID: TKMHandID;
+begin
+  Result := fHandIndex;
+  if Self = nil then Exit;
+
+  if fSelected <> nil then
+  begin
+    if fSelected is TKMHouse then
+     Result := TKMHouse(fSelected).Owner
+    else
+    if fSelected is TKMUnit then
+      Result := TKMUnit(fSelected).Owner
+    else
+    if fSelected is TKMUnitGroup then
+      Result := TKMUnitGroup(fSelected).Owner;
+  end;
 end;
 
 

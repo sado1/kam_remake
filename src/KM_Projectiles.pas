@@ -43,7 +43,7 @@ type
     function AimTarget(const aStart: TKMPointF; aTarget: TKMHouse; aProjType: TKMProjectileType; aOwner: TKMUnit; aMaxRange,aMinRange: Single):word; overload;
 
     procedure UpdateState;
-    procedure Paint;
+    procedure Paint(aTickLag: Single);
 
     procedure Save(SaveStream: TKMemoryStream);
     procedure Load(LoadStream: TKMemoryStream);
@@ -328,10 +328,10 @@ begin
 end;
 
 
-procedure TKMProjectiles.Paint;
+procedure TKMProjectiles.Paint(aTickLag: Single);
 var
   I: Integer;
-  MixValue,MixValueMax: Single;
+  MixValue, MixValueMax, TickLagOffset, LaggedPosition: Single;
   MixArc: Single; //mix Arc shape
   P: TKMPointF; //Arrows and bolts send 2 points for head and tail
   PTileBased: TKMPointF;
@@ -340,9 +340,13 @@ begin
   for I := 0 to Length(fItems) - 1 do
     if (fItems[I].fSpeed <> 0) and ProjectileVisible(I) then
     begin
+      TickLagOffset := aTickLag*fItems[I].fSpeed;
+      LaggedPosition := fItems[I].fPosition - TickLagOffset;
+      //If the projectile hasn't appeared yet in lagged time
+      if LaggedPosition < 0 then Continue;
 
-      MixValue := fItems[I].fPosition / fItems[I].fLength; // 0 >> 1
-      MixValueMax := fItems[I].fPosition / fItems[I].fMaxLength; // 0 >> 1
+      MixValue := EnsureRange(LaggedPosition / fItems[I].fLength, 0.0, 1.0); // 0 >> 1
+      MixValueMax := EnsureRange(LaggedPosition / fItems[I].fMaxLength, 0.0, 1.0); // 0 >> 1
       P := KMLerp(fItems[I].fScreenStart, fItems[I].fScreenEnd, MixValue);
       PTileBased := KMLerp(fItems[I].fShotFrom, fItems[I].fTarget, MixValue);
       case fItems[I].fType of

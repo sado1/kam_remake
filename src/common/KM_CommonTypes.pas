@@ -62,6 +62,7 @@ type
   TBoolIntFuncSimple = function (aValue: Integer): Boolean of object;
   TBoolCardFuncSimple = function (aValue: Cardinal): Boolean of object;
   TObjectIntBoolEvent = procedure (Sender: TObject; aIntValue: Integer; aBoolValue: Boolean) of object;
+  TCoordDistanceFn = function (X, Y: Integer): Single;
 
   TKMAnimLoop = packed record
                   Step: array [1 .. 30] of SmallInt;

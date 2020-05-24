@@ -575,7 +575,7 @@ begin
     fMissionParser.Free;
   end;
 
-  if MissionMode = mmTactic then
+  if IsTacticMission then
     fTxtInfo.BlockPeacetime := True;
 
   fTxtInfo.LoadTXTInfo(fPath + fFileName + '.txt');

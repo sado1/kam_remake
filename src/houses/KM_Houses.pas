@@ -367,7 +367,7 @@ uses
   KM_UnitWarrior, KM_HouseWoodcutters,
   KM_Resource, KM_ResSound, KM_ResTexts, KM_ResUnits, KM_ResMapElements,
   KM_Log, KM_ScriptingEvents, KM_CommonUtils, KM_MapEditorHistory,
-  KM_GameTypes;
+  KM_GameTypes, KM_RenderDebug;
 
 const
   //Delay, In ticks, from user click on DeliveryMode btn, to tick, when mode will be really set.
@@ -2591,21 +2591,21 @@ end;
 
 procedure TKMHouseTower.Paint;
 var
-  I, K: Integer;
-  Color: Cardinal;
+  fillColor, lineColor: Cardinal;
 begin
   inherited;
 
-  if SHOW_ATTACK_RADIUS or (gGame.IsMapEditor and (mlTowersAttackRadius in gGame.MapEditor.VisibleLayers)) then
+  if SHOW_ATTACK_RADIUS or (mlTowersAttackRadius in gGame.VisibleLayers) then
   begin
-    Color := $40FFFFFF;
+    fillColor := $40FFFFFF;
+    lineColor := icWhite;
     if gMySpectator.Selected = Self then
-      Color := icRed and Color;
-    for I := -Round(RANGE_WATCHTOWER_MAX) - 1 to Round(RANGE_WATCHTOWER_MAX) do
-      for K := -Round(RANGE_WATCHTOWER_MAX) - 1 to Round(RANGE_WATCHTOWER_MAX) do
-        if InRange(GetLength(I, K), RANGE_WATCHTOWER_MIN, RANGE_WATCHTOWER_MAX)
-          and gTerrain.TileInMapCoords(Position.X+K, Position.Y+I) then
-            gRenderAux.Quad(Position.X+K, Position.Y+I, Color);
+    begin
+      fillColor := icRed and fillColor;
+      lineColor := icCyan;
+    end;
+
+    gRenderPool.RenderDebug.RenderTiledArea(Position, RANGE_WATCHTOWER_MIN, RANGE_WATCHTOWER_MAX, GetLength, fillColor, lineColor);
   end;
 end;
 

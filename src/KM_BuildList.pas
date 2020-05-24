@@ -1440,4 +1440,5 @@ begin
       Result := Result + gRes.Houses[ fPlans[I].HouseType ].WoodCost;
 end;
 
+
 end.

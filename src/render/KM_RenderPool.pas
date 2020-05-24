@@ -7,7 +7,7 @@ uses
   dglOpenGL, SysUtils, KromOGLUtils, KromUtils, Math,
   KM_Defaults, KM_CommonTypes, KM_CommonClasses, KM_Pics, KM_Points, KM_Render, KM_Viewport,
   KM_RenderTerrain, KM_ResHouses, KM_ResSprites, KM_ResWares, KM_Units,
-  KM_Houses, KM_Terrain, KM_Projectiles;
+  KM_Houses, KM_Terrain, KM_Projectiles, KM_RenderDebug;
 
 type
   TKMPaintLayer = (plTerrain, plObjects, plCursors);
@@ -62,6 +62,7 @@ type
     rPitch,rHeading,rBank: Integer;
     fRenderList: TRenderList;
     fRenderTerrain: TRenderTerrain;
+    fRenderDebug: TKMRenderDebug;
 
     fFieldsList: TKMPointTagList;
     fHousePlansList: TKMPointDirList;
@@ -109,6 +110,8 @@ type
     constructor Create(aViewport: TKMViewport; aRender: TRender);
     destructor Destroy; override;
 
+    procedure ReInit;
+
     procedure AddAlert(const aLoc: TKMPointF; aId: Word; aFlagColor: TColor4);
     procedure AddProjectile(aProj: TKMProjectileType; const aRenderPos, aTilePos: TKMPointF; aDir: TKMDirection; aFlight: Single);
     procedure AddHouse(aHouse: TKMHouseType; const aLoc: TKMPoint; aWoodStep, aStoneStep, aSnowStep: Single; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
@@ -118,7 +121,7 @@ type
     procedure AddHouseBuildSupply(aHouse: TKMHouseType; const Loc: TKMPoint; Wood,Stone: Byte);
     procedure AddHouseWork(aHouse: TKMHouseType; const Loc: TKMPoint; aActSet: TKMHouseActionSet; AnimStep: Cardinal; FlagColor: TColor4; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
     procedure AddHouseSupply(aHouse: TKMHouseType; const Loc: TKMPoint; const R1, R2, R3: array of Byte; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
-    procedure AddHouseMarketSupply(const Loc: TKMPoint; ResType: TKMWareType; ResCount:word; AnimStep: Integer);
+    procedure AddHouseMarketSupply(const Loc: TKMPoint; ResType: TKMWareType; ResCount: Word; AnimStep: Integer);
     procedure AddHouseStableBeasts(aHouse: TKMHouseType; const Loc: TKMPoint; BeastId,BeastAge,AnimStep: Integer; aRX: TRXType = rxHouses);
     procedure AddHouseEater(const Loc: TKMPoint; aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; StepId: Integer; OffX,OffY: Single; FlagColor: TColor4);
     procedure AddUnit(aUnit: TKMUnitType; aUID: Integer; aAct: TKMUnitActionType; aDir: TKMDirection; StepId: Integer; pX,pY: Single; FlagColor: TColor4; NewInst: Boolean; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
@@ -133,11 +136,13 @@ type
     procedure RenderTile(aTerrainId: Word; pX,pY,Rot: Integer);
     procedure RenderWireTile(const P: TKMPoint; Col: TColor4; aInset: Single = 0.0; aLineWidth: Single = -1);
 
+    property RenderDebug: TKMRenderDebug read fRenderDebug;
+
     property RenderList: TRenderList read fRenderList;
     property RenderTerrain: TRenderTerrain read fRenderTerrain;
     procedure SetRotation(aH,aP,aB: Integer);
 
-    procedure Render;
+    procedure Render(aTickLag: Single);
   end;
 
 
@@ -158,19 +163,6 @@ const
   DELETE_COLOR = $1616FF;
 
 
-function RoundToTilePixel(aVal: Single): Single; inline; overload;
-begin
-  Result := Round(aVal * CELL_SIZE_PX) / CELL_SIZE_PX;
-end;
-
-
-function RoundToTilePixel(aVal: TKMPointF): TKMPointF; inline; overload;
-begin
-  Result.X := RoundToTilePixel(aVal.X);
-  Result.Y := RoundToTilePixel(aVal.Y);
-end;
-
-
 constructor TRenderPool.Create(aViewport: TKMViewport; aRender: TRender);
 var
   RT: TRXType;
@@ -187,6 +179,7 @@ begin
 
   fRenderList     := TRenderList.Create;
   fRenderTerrain  := TRenderTerrain.Create;
+  fRenderDebug    := TKMRenderDebug.Create;
   gRenderAux      := TRenderAux.Create;
 
   fFieldsList     := TKMPointTagList.Create;
@@ -208,10 +201,17 @@ begin
   fHouseOutline.Free;
   // fSampleHouse.Free;
   fRenderList.Free;
+  fRenderDebug.Free;
   fRenderTerrain.Free;
   gRenderAux.Free;
 
   inherited;
+end;
+
+
+procedure TRenderPool.ReInit;
+begin
+  fRenderDebug.ReInit;
 end;
 
 
@@ -271,7 +271,7 @@ end;
 // 2. Renders terrain
 // 3. Polls Game objects to add themselves to RenderList through Add** methods
 // 4. Renders cursor highlights
-procedure TRenderPool.Render;
+procedure TRenderPool.Render(aTickLag: Single);
 var
   ClipRect: TKMRect;
 begin
@@ -306,8 +306,15 @@ begin
     // so that terrain shadows could be applied seamlessly ontop
     glDisable(GL_DEPTH_TEST);
 
-    fRenderTerrain.RenderFences(gMySpectator.FogOfWar);
-    fRenderTerrain.RenderPlayerPlans(fFieldsList, fHousePlansList);
+    if mlOverlays in gGame.VisibleLayers then
+    begin
+      fRenderTerrain.RenderFences(gMySpectator.FogOfWar);
+      fRenderTerrain.RenderPlayerPlans(fFieldsList, fHousePlansList);
+
+    end;
+
+    if mlMiningRadius in gGame.VisibleLayers then
+      fRenderDebug.PaintMiningRadius;
 
     {$IFDEF PERFLOG}
     gPerfLogs.SectionLeave(psFrameTerrain);
@@ -322,14 +329,17 @@ begin
 
     PaintFlagPoints(True);
 
-    gHands.Paint(ClipRect); // Units and houses
-    gProjectiles.Paint;
+    gHands.Paint(ClipRect, aTickLag); // Units and houses
+    gProjectiles.Paint(aTickLag);
 
     if gGame.GamePlayInterface <> nil then
       gGame.GamePlayInterface.Alerts.Paint(0);
 
     fRenderList.SortRenderList;
     fRenderList.Render;
+
+    if mlDefencesAll in gGame.VisibleLayers then
+      fRenderDebug.PaintDefences;
 
     fRenderTerrain.RenderFOW(gMySpectator.FogOfWar);
 
@@ -427,8 +437,7 @@ procedure TRenderPool.CollectTerrainObjects(const aRect: TKMRect; aAnimStep: Car
 var
   I, K: Integer;
 begin
-  if gGame.IsMapEditor and not (mlObjects in gGame.MapEditor.VisibleLayers) then
-    Exit;
+  if not (mlObjects in gGame.VisibleLayers) then Exit;
 
   if gGame.IsMapEditor then
     gGame.MapEditor.Paint(plObjects, aRect);
@@ -439,7 +448,7 @@ begin
       begin
         if (Land[I, K].Obj <> 255)
         // In the map editor we shouldn't render terrain objects within the paste preview
-        and (not gGame.IsMapEditor or not (mlSelection in gGame.MapEditor.VisibleLayers)
+        and (not gGame.IsMapEditor or not (melSelection in gGame.MapEditor.VisibleLayers)
              or not gGame.MapEditor.Selection.TileWithinPastePreview(K, I)) then
           RenderMapElement(Land[I, K].Obj, AnimStep, K, I);
       end;
@@ -883,24 +892,24 @@ begin
 end;
 
 
-procedure TRenderPool.AddHouseMarketSupply(const Loc: TKMPoint; ResType: TKMWareType; ResCount:word; AnimStep: Integer);
+procedure TRenderPool.AddHouseMarketSupply(const Loc: TKMPoint; ResType: TKMWareType; ResCount: Word; AnimStep: Integer);
 var
-  i, Id: Integer;
+  I, Id: Integer;
   CornerX, CornerY: Single;
   R: TRXData;
 begin
   if ResType = wtHorse then // Horses are a beast, BeastId is the count, age is 1
-    for i:=1 to Min(ResCount, MarketWares[ResType].Count) do // Render each beast
-      AddHouseStableBeasts(htMarketplace, Loc, i, 1, AnimStep, rxHouses)
+    for I := 1 to Min(ResCount, MARKET_WARES[ResType].Count) do // Render each beast
+      AddHouseStableBeasts(htMarketplace, Loc, I, 1, AnimStep, rxHouses)
   else
   begin
-    if MarketWares[ResType].Count = 0 then exit;
-    Id := (MarketWares[ResType].TexStart-1) + Min(ResCount, MarketWares[ResType].Count);
+    if MARKET_WARES[ResType].Count = 0 then Exit;
+    Id := (MARKET_WARES[ResType].TexStart-1) + Min(ResCount, MARKET_WARES[ResType].Count);
     if Id = 0 then Exit;
 
     R := fRXData[rxHouses];
-    CornerX := Loc.X + (R.Pivot[Id].X + MarketWaresOffsetX) / CELL_SIZE_PX - 1;
-    CornerY := Loc.Y + (R.Pivot[Id].Y + MarketWaresOffsetY + R.Size[Id].Y) / CELL_SIZE_PX - 1
+    CornerX := Loc.X + (R.Pivot[Id].X + MARKET_WARES_OFF_X) / CELL_SIZE_PX - 1;
+    CornerY := Loc.Y + (R.Pivot[Id].Y + MARKET_WARES_OFF_Y + R.Size[Id].Y) / CELL_SIZE_PX - 1
                      - gTerrain.Land[Loc.Y+1,Loc.X].Height / CELL_HEIGHT_DIV;
     fRenderList.AddSprite(rxHouses, Id, CornerX, CornerY);
   end;
@@ -979,7 +988,7 @@ var
 begin
   A := gRes.Units[aUnit].UnitAnim[aAct, aDir];
   Id := A.Step[StepId mod Byte(A.Count) + 1] + 1;
-  Id0 := A.Step[UnitStillFrames[aDir] mod Byte(A.Count) + 1] + 1;
+  Id0 := A.Step[UNIT_STILL_FRAMES[aDir] mod Byte(A.Count) + 1] + 1;
   if Id <= 0 then exit;
   R := fRXData[rxUnits];
 
@@ -1058,7 +1067,7 @@ begin
 
   // Unit position
   A := gRes.Units[aUnit].UnitAnim[aAct, aDir];
-  Id0 := A.Step[UnitStillFrames[aDir] mod Byte(A.Count) + 1] + 1;
+  Id0 := A.Step[UNIT_STILL_FRAMES[aDir] mod Byte(A.Count) + 1] + 1;
 
   // Units feet
   Ground := pY + (R.Pivot[Id0].Y + R.Size[Id0].Y) / CELL_SIZE_PX;
@@ -1100,7 +1109,7 @@ begin
 
   // Unit position
   A := gRes.Units[aUnit].UnitAnim[aAct, aDir];
-  Id0 := A.Step[UnitStillFrames[aDir] mod Byte(A.Count) + 1] + 1;
+  Id0 := A.Step[UNIT_STILL_FRAMES[aDir] mod Byte(A.Count) + 1] + 1;
 
   // Units feet
   Ground := pY + (R.Pivot[Id0].Y + R.Size[Id0].Y) / CELL_SIZE_PX;
@@ -1110,8 +1119,8 @@ begin
   IdFlag := A.Step[FlagAnim mod Byte(A.Count) + 1] + 1;
   if IdFlag <= 0 then Exit;
 
-  FlagX := pX + (R.Pivot[IdFlag].X + FlagXOffset[UnitGroups[aUnit], aDir]) / CELL_SIZE_PX - 0.5;
-  FlagY := gTerrain.FlatToHeight(pX, pY) + (R.Pivot[IdFlag].Y + FlagYOffset[UnitGroups[aUnit], aDir] + R.Size[IdFlag].Y) / CELL_SIZE_PX - 2.25;
+  FlagX := pX + (R.Pivot[IdFlag].X + FlagXOffset[UNIT_TO_GROUP_TYPE[aUnit], aDir]) / CELL_SIZE_PX - 0.5;
+  FlagY := gTerrain.FlatToHeight(pX, pY) + (R.Pivot[IdFlag].Y + FlagYOffset[UNIT_TO_GROUP_TYPE[aUnit], aDir] + R.Size[IdFlag].Y) / CELL_SIZE_PX - 2.25;
 
   if DoImmediateRender then
     RenderSprite(rxUnits, IdFlag, FlagX, FlagY, FlagColor)
@@ -1713,7 +1722,7 @@ begin
   else begin
     P := gGameCursor.Cell;
     if gTerrain.CanPlaceUnit(P, TKMUnitType(gGameCursor.Tag1)) then
-      AddUnitWithDefaultArm(TKMUnitType(gGameCursor.Tag1), 0, uaWalk, dirS, UnitStillFrames[dirS], P.X+UNIT_OFF_X, P.Y+UNIT_OFF_Y, gMySpectator.Hand.FlagColor, True)
+      AddUnitWithDefaultArm(TKMUnitType(gGameCursor.Tag1), 0, uaWalk, dirS, UNIT_STILL_FRAMES[dirS], P.X+UNIT_OFF_X, P.Y+UNIT_OFF_Y, gMySpectator.Hand.FlagColor, True)
     else
       RenderSpriteOnTile(P, TC_BLOCK); // Red X
   end;

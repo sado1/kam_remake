@@ -6,22 +6,27 @@ uses
 
 type
   TKMWorkerThreadTask = class
+    WorkName: string;
     Proc: TProc;
   end;
 
   TKMWorkerThread = class(TThread)
   private
+    fWorkerThreadName: string;
     fWorkCompleted: Boolean;
     fTaskQueue: TQueue<TKMWorkerThreadTask>;
+
+    procedure NameThread; overload;
+    procedure NameThread(aThreadName: string); overload;
   public
     //Special mode for exception handling. Runs work synchronously inside QueueWork
     fSynchronousExceptionMode: Boolean;
 
-    constructor Create;
+    constructor Create(const aThreadName: string = '');
     destructor Destroy; override;
     procedure Execute; override;
 
-    procedure QueueWork(aProc: TProc);
+    procedure QueueWork(aProc: TProc; aWorkName: string = '');
     procedure WaitForAllWorkToComplete;
   end;
 
@@ -29,11 +34,18 @@ implementation
 
 
 { TKMWorkerThread }
-constructor TKMWorkerThread.Create;
+constructor TKMWorkerThread.Create(const aThreadName: string = '');
 begin
   //Thread isn't started until all constructors have run to completion
   //so Create(False) may be put in front as well
   inherited Create(False);
+
+  fWorkerThreadName := aThreadName;
+
+  {$IFDEF DEBUG}
+  if fWorkerThreadName <> '' then
+    TThread.NameThreadForDebugging(fWorkerThreadName, ThreadID);
+  {$ENDIF}
 
   fWorkCompleted := False;
   fSynchronousExceptionMode := False;
@@ -45,10 +57,28 @@ begin
   Terminate;
   //Wake the thread if it's waiting
   TMonitor.Enter(fTaskQueue);
-  TMonitor.Pulse(fTaskQueue);
-  TMonitor.Exit(fTaskQueue);
+  try
+    TMonitor.Pulse(fTaskQueue);
+  finally
+    TMonitor.Exit(fTaskQueue);
+  end;
 
-  inherited;
+  inherited Destroy;
+
+  fTaskQueue.Free; // Free task queue after Worker thread is destroyed so we don't wait for it
+end;
+
+procedure TKMWorkerThread.NameThread;
+begin
+  NameThread(fWorkerThreadName);
+end;
+
+procedure TKMWorkerThread.NameThread(aThreadName: string);
+begin
+  {$IFDEF DEBUG}
+  if fWorkerThreadName <> '' then
+    TThread.NameThreadForDebugging(fWorkerThreadName);
+  {$ENDIF}
 end;
 
 procedure TKMWorkerThread.Execute;
@@ -62,39 +92,45 @@ begin
   while LoopRunning do
   begin
     TMonitor.Enter(fTaskQueue);
-    if fTaskQueue.Count > 0 then
-    begin
-      Job := fTaskQueue.Dequeue;
-    end
-    else
-    begin
-      //We may only terminate once we have finished all our work
-      if Terminated then
+    try
+      if fTaskQueue.Count > 0 then
       begin
-        LoopRunning := False;
+        Job := fTaskQueue.Dequeue;
       end
       else
       begin
-        //Notify main thread that worker is idle if it's blocked in WaitForAllWorkToComplete
-        fWorkCompleted := True;
-        TMonitor.Pulse(fTaskQueue);
+        //We may only terminate once we have finished all our work
+        if Terminated then
+        begin
+          LoopRunning := False;
+        end
+        else
+        begin
+          //Notify main thread that worker is idle if it's blocked in WaitForAllWorkToComplete
+          fWorkCompleted := True;
+          TMonitor.Pulse(fTaskQueue);
 
-        TMonitor.Wait(fTaskQueue, 10000);
-        if fTaskQueue.Count > 0 then
-          Job := fTaskQueue.Dequeue;
+          TMonitor.Wait(fTaskQueue, 10000);
+          if fTaskQueue.Count > 0 then
+            Job := fTaskQueue.Dequeue;
+        end;
       end;
+    finally
+      TMonitor.Exit(fTaskQueue);
     end;
-    TMonitor.Exit(fTaskQueue);
 
     if Job <> nil then
     begin
+      NameThread(Job.WorkName);
       Job.Proc();
       FreeAndNil(Job);
     end;
+
+    NameThread;
   end;
 end;
 
-procedure TKMWorkerThread.QueueWork(aProc: TProc);
+procedure TKMWorkerThread.QueueWork(aProc: TProc; aWorkName: string = '');
 var
   Job: TKMWorkerThreadTask;
 begin
@@ -109,14 +145,17 @@ begin
 
     Job := TKMWorkerThreadTask.Create;
     Job.Proc := aProc;
+    Job.WorkName := aWorkName;
 
     TMonitor.Enter(fTaskQueue);
+    try
+      fWorkCompleted := False;
+      fTaskQueue.Enqueue(Job);
 
-    fWorkCompleted := False;
-    fTaskQueue.Enqueue(Job);
-
-    TMonitor.Pulse(fTaskQueue);
-    TMonitor.Exit(fTaskQueue);
+      TMonitor.Pulse(fTaskQueue);
+    finally
+      TMonitor.Exit(fTaskQueue);
+    end;
   end;
 end;
 
@@ -126,12 +165,15 @@ begin
     Exit;
 
   TMonitor.Enter(fTaskQueue);
-  if not fWorkCompleted and not Finished then
-  begin
-    if not TMonitor.Wait(fTaskQueue, 10000) then
-      raise Exception.Create('Timeout in TKMWorkerThread.WaitForAllWorkToComplete');
+  try
+    if not fWorkCompleted and not Finished then
+    begin
+      //Wait infinite until worker thread finish his job
+      while not TMonitor.Wait(fTaskQueue, 1000) do ;
+    end;
+  finally
+    TMonitor.Exit(fTaskQueue);
   end;
-  TMonitor.Exit(fTaskQueue);
 end;
 
 end.

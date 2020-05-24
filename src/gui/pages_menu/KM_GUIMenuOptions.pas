@@ -379,7 +379,9 @@ begin
   CheckBox_Options_VideoStartup.Checked    := fGameSettings.VideoStartup;
   CheckBox_Options_VideoStartup.Enabled    := fGameSettings.VideoOn;
   TrackBar_Options_VideoVolume.Position    := Round(fGameSettings.VideoVolume * TrackBar_Options_VideoVolume.MaxValue);
-  TrackBar_Options_VideoVolume.Enabled     := fGameSettings.VideoOn;
+  //Disable Video volume util we will fix it
+  //Video volume is set via windows mixer now, and it affect all other game sounds/music after the end of video playback
+  TrackBar_Options_VideoVolume.Enabled     := False; //fGameSettings.VideoOn;
   Button_Options_VideoTest.Enabled         := fGameSettings.VideoOn;
   CheckBox_Options_SnowHouses.Checked      := fGameSettings.AllowSnowHouses;
   CheckBox_MakeSavePoints.Checked          := fGameSettings.SaveCheckpoints;
@@ -422,11 +424,11 @@ begin
   CheckBox_Options_ShuffleOn.Enabled  := not CheckBox_Options_MusicOff.Checked;
 
   gSoundPlayer.UpdateSoundVolume(fGameSettings.SoundFXVolume);
-  gGameApp.MusicLib.UpdateMusicVolume(fGameSettings.MusicVolume);
+  gGameApp.MusicLib.Volume := fGameSettings.MusicVolume;
   SetupVSync(fMainSettings.VSync);
   if MusicToggled then
   begin
-    gGameApp.MusicLib.ToggleMusic(not fGameSettings.MusicOff);
+    gGameApp.MusicLib.ToggleEnabled(not fGameSettings.MusicOff);
     if not fGameSettings.MusicOff then
       ShuffleToggled := True; // Re-shuffle songs if music has been enabled
   end;
@@ -454,7 +456,9 @@ begin
   begin
     CheckBox_Options_VideoStartup.Enabled := CheckBox_Options_VideoEnable.Checked;
     CheckBox_Options_VideoStretch.Enabled := CheckBox_Options_VideoEnable.Checked;
-    TrackBar_Options_VideoVolume.Enabled  := CheckBox_Options_VideoEnable.Checked;
+    //Disable Video volume util we will fix it
+    //Video volume is set via windows mixer now, and it affect all other game sounds/music after the end of video playback
+    TrackBar_Options_VideoVolume.Enabled  := False; //CheckBox_Options_VideoEnable.Checked;
     Button_Options_VideoTest.Enabled      := CheckBox_Options_VideoEnable.Checked;
   end;
 

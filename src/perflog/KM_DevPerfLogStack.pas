@@ -106,7 +106,7 @@ type
 
 implementation
 uses
-  KM_Render, KM_RenderAux, KM_RenderUI, KM_DevPerfLog,
+  KM_Render, KM_RenderAux, KM_RenderUI,
   KM_Points, KM_CommonUtils, KM_CommonTypes, KM_ResFonts;
 
 
