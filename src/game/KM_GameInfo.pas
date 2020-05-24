@@ -153,7 +153,9 @@ end;
 
 
 procedure TKMGameInfo.Save(SaveStream: TKMemoryStream);
-var I: Integer;
+var
+  I: Integer;
+  zeroTime: TDateTime;
 begin
   SaveStream.WriteA('KaM_GameInfo');
   SaveStream.WriteA(GAME_REVISION); //Save current revision
@@ -167,7 +169,10 @@ begin
   // Game times differ for game and replay
   // Set default value there in that case
   if GAME_SAVE_STRIP_FOR_CRC then
-    SaveStream.Write(0)
+  begin
+    zeroTime := 0;
+    SaveStream.Write(zeroTime);
+  end
   else
     SaveStream.Write(SaveTimestamp);
 
