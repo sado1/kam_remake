@@ -1300,7 +1300,8 @@ begin
     gHands.CleanUpHousePointer(fHome);
   end;
 
-  if aRemoveTileUsage then
+  if aRemoveTileUsage
+    and (gTerrain.Land[NextPosition.Y, NextPosition.X].IsUnit = Self) then //remove lock only if it was made by this unit
     gTerrain.UnitRem(fNextPosition); //Must happen before we nil NextPosition
 
   fIsDead       := True;
