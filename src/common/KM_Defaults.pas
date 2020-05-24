@@ -211,18 +211,20 @@ var
   SLOW_SAVE_SCAN          :Boolean = False; //Scan saves with a pause to emulate uncached file access
   SLOW_MAP_SAVE_LOAD      :Boolean = False; //Load map or save to emulate slow network
   DO_PERF_LOGGING         :Boolean = False; //Write each ticks time to log (DEPRECATED PERF_LOGGER)
-  DO_DEV_PERF_LOGGING     :Boolean = True; //Write each ticks time to log
   MP_RESULTS_IN_SP        :Boolean = False; //Display each players stats in SP
-  SHOW_DEBUG_OVERLAY_BEVEL:Boolean = True; //Show debug text overlay Bevel (for better text readability)
+  SHOW_DEBUG_OVERLAY_BEVEL:Boolean = True;  //Show debug text overlay Bevel (for better text readability)
   {Gameplay}
   LOBBY_SET_SPECS_DEFAULT :Boolean = DEBUG_CFG; //Set 'Allow spectators' flag in the lobby by default
   LOBBY_HOST_AS_SPECTATOR :Boolean = DEBUG_CFG; //Host lobby as spectator by default
   USE_CUSTOM_SEED         :Boolean = False; //Use custom seed for every game
   CUSTOM_SEED_VALUE       :Integer = 0;     //Custom seed value
-  PAUSE_GAME_AT_TICK      :Integer = -1;    //Pause at specified game tick
-  MAKE_SAVEPT_AT_TICK     :Integer = -1;    //Make savepoint at a certain tick (for both game and replay)
+  PAUSE_GAME_AFTER_TICK   :Integer = -1;    //Pause after specified game tick
+  MAKE_SAVEPT_AFTER_TICK  :Integer = -1;    //Make savepoint after a certain tick (for both game and replay)
   ALLOW_SAVE_IN_REPLAY    :Boolean = DEBUG_CFG; //Allow to save game from replay, good for debug
   SAVE_GAME_AS_TEXT       :Boolean = True; //Save game serialized //Todo DEBUG. set to False before releases
+
+  DEBUG_TEXT              :String = '';    //Debug text
+  DEBUG_VALUE             :Integer = 0;    //Debug value
   {Gameplay cheats}
   UNLOCK_CAMPAIGN_MAPS    :Boolean = False; //Unlock more maps for debug
   REDUCE_SHOOTING_RANGE   :Boolean = False; //Reduce shooting range for debug

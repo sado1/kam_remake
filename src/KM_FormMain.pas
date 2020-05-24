@@ -6,7 +6,7 @@ uses
   KM_RenderControl, KM_Settings, KM_Video, KM_CommonTypes,
 
   {$IFDEF FPC} LResources, {$ENDIF}
-  {$IFDEF MSWindows} ShellAPI, Windows, Messages; {$ENDIF}
+  {$IFDEF MSWindows} ShellAPI, Windows, Messages, Vcl.Samples.Spin; {$ENDIF}
   {$IFDEF Unix} LCLIntf, LCLType; {$ENDIF}
 
 
@@ -179,6 +179,14 @@ type
     N11: TMenuItem;
     mnExportRngChecks: TMenuItem;
     chkGIP: TCheckBox;
+    sePauseAfterTick: TSpinEdit;
+    Label8: TLabel;
+    Label9: TLabel;
+    seMakeSaveptAfterTick: TSpinEdit;
+    edDebugText: TEdit;
+    seDebugValue: TSpinEdit;
+    Label10: TLabel;
+    Label11: TLabel;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -1016,6 +1024,11 @@ begin
     SKIP_LOG_TEMP_COMMANDS := chkLogSkipTempCmd.Checked;
 
     SHOW_GIP := chkGIP.Checked;
+    PAUSE_GAME_AFTER_TICK := sePauseAfterTick.Value;
+    MAKE_SAVEPT_AFTER_TICK := seMakeSaveptAfterTick.Value;
+
+    DEBUG_TEXT := edDebugText.Text;
+    DEBUG_VALUE := seDebugValue.Value;
 
     if gGame <> nil then
     begin
@@ -1143,7 +1156,9 @@ begin
     end;
   end;
 
-  ActiveControl := nil; //Do not allow to focus on anything on debug panel
+  if    not (Sender is TSpinEdit)
+    and not (Sender is TEdit) then // TSpinEdit need focus to enter value
+    ActiveControl := nil; //Do not allow to focus on anything on debug panel
 
   if Assigned (fOnControlsUpdated) and (Sender is TControl) then
     fOnControlsUpdated(Sender, TControl(Sender).Tag);

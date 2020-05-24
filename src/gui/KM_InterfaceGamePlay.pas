@@ -3296,7 +3296,7 @@ begin
 
   if gGame.IsPaused
     and (SpeedChangeAllowed([umSP])
-      or ((PAUSE_GAME_AT_TICK <> -1) and (fUIMode <> umReplay))) then
+      or ((PAUSE_GAME_AFTER_TICK <> -1) and (fUIMode <> umReplay))) then
   begin
     if Key = gResKeys[SC_PAUSE].Key then
       SetPause(False);

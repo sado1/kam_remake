@@ -70,7 +70,7 @@ object FormMain: TFormMain
     Top = 0
     Width = 260
     Height = 765
-    VertScrollBar.Position = 9
+    VertScrollBar.Position = 57
     VertScrollBar.Tracking = True
     Align = alRight
     DoubleBuffered = False
@@ -84,10 +84,11 @@ object FormMain: TFormMain
     ParentDoubleBuffered = False
     TabOrder = 1
     object cpLogs: TCategoryPanel
-      Top = 584
+      Top = 607
       Height = 179
       Caption = 'Logs'
       TabOrder = 0
+      ExplicitTop = 589
       object chkLogCommands: TCheckBox
         Left = 120
         Top = 8
@@ -172,13 +173,14 @@ object FormMain: TFormMain
       end
     end
     object cpGraphicTweaks: TCategoryPanel
-      Top = 560
+      Top = 583
       Height = 24
       Caption = 'Graphic tweaks'
       Collapsed = True
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 1
+      ExplicitTop = 565
       ExpandedHeight = 124
       object Label1: TLabel
         Left = 101
@@ -276,11 +278,12 @@ object FormMain: TFormMain
       end
     end
     object cpUserInreface: TCategoryPanel
-      Top = 536
+      Top = 559
       Height = 24
       Caption = 'User Interface'
       Collapsed = True
       TabOrder = 2
+      ExplicitTop = 541
       ExpandedHeight = 72
       object chkUIControlsBounds: TCheckBox
         Left = 8
@@ -311,19 +314,21 @@ object FormMain: TFormMain
       end
     end
     object cpPerfLogs: TCategoryPanel
-      Top = 512
+      Top = 535
       Height = 24
       Caption = 'Perf Logs'
       Collapsed = True
       TabOrder = 3
+      ExplicitTop = 517
       ExpandedHeight = 660
     end
     object cpAI: TCategoryPanel
-      Top = 488
+      Top = 511
       Height = 24
       Caption = 'AI'
       Collapsed = True
       TabOrder = 4
+      ExplicitTop = 493
       object Label5: TLabel
         Left = 202
         Top = 111
@@ -527,11 +532,12 @@ object FormMain: TFormMain
       end
     end
     object cpScripting: TCategoryPanel
-      Top = 464
+      Top = 487
       Height = 24
       Caption = 'Scripting'
       Collapsed = True
       TabOrder = 5
+      ExplicitTop = 469
       ExpandedHeight = 50
       object chkDebugScripting: TCheckBox
         Left = 8
@@ -549,11 +555,12 @@ object FormMain: TFormMain
       end
     end
     object cpGameAdv: TCategoryPanel
-      Top = 440
+      Top = 463
       Height = 24
       Caption = 'Game additional'
       Collapsed = True
       TabOrder = 6
+      ExplicitTop = 445
       ExpandedHeight = 136
       object chkLoadUnsupSaves: TCheckBox
         Left = 12
@@ -599,7 +606,7 @@ object FormMain: TFormMain
     end
     object cpDebugRender: TCategoryPanel
       Top = 40
-      Height = 400
+      Height = 423
       Caption = 'Debug Render'
       DoubleBuffered = True
       ParentDoubleBuffered = False
@@ -611,11 +618,25 @@ object FormMain: TFormMain
         Height = 13
         Caption = 'Passability'
       end
+      object Label10: TLabel
+        Left = 8
+        Top = 357
+        Width = 61
+        Height = 13
+        Caption = 'Debug value'
+      end
+      object Label11: TLabel
+        Left = 120
+        Top = 357
+        Width = 52
+        Height = 13
+        Caption = 'Debug text'
+      end
       object btnUpdateUI: TButton
         Left = 5
-        Top = 347
+        Top = 330
         Width = 79
-        Height = 17
+        Height = 18
         Caption = 'Update UI'
         TabOrder = 0
         OnClick = Button_UpdateUI_Click
@@ -649,7 +670,7 @@ object FormMain: TFormMain
       end
       object chkShowFPS: TCheckBox
         Left = 120
-        Top = 332
+        Top = 316
         Width = 76
         Height = 17
         Caption = 'FPS'
@@ -658,7 +679,7 @@ object FormMain: TFormMain
       end
       object chkShowGameTick: TCheckBox
         Left = 120
-        Top = 348
+        Top = 332
         Width = 76
         Height = 17
         Caption = 'Game tick'
@@ -721,7 +742,7 @@ object FormMain: TFormMain
       end
       object chkTilesGrid: TCheckBox
         Left = 8
-        Top = 324
+        Top = 303
         Width = 79
         Height = 17
         Caption = 'Tiles grid'
@@ -948,12 +969,45 @@ object FormMain: TFormMain
         TabOrder = 35
         OnClick = ControlsUpdate
       end
+      object edDebugText: TEdit
+        Left = 120
+        Top = 376
+        Width = 113
+        Height = 21
+        TabOrder = 36
+        OnChange = ControlsUpdate
+      end
+      object seDebugValue: TSpinEdit
+        Left = 8
+        Top = 376
+        Width = 97
+        Height = 22
+        MaxValue = 9999999
+        MinValue = -9999999
+        TabOrder = 37
+        Value = 0
+        OnChange = ControlsUpdate
+      end
     end
     object cpGameControls: TCategoryPanel
-      Top = -9
-      Height = 49
+      Top = -57
+      Height = 97
       Caption = 'Game '
       TabOrder = 8
+      object Label8: TLabel
+        Left = 79
+        Top = 30
+        Width = 74
+        Height = 13
+        Caption = 'Pause after tick'
+      end
+      object Label9: TLabel
+        Left = 33
+        Top = 56
+        Width = 120
+        Height = 13
+        Caption = 'Make savepoint after tick'
+      end
       object chkSuperSpeed: TCheckBox
         Left = 8
         Top = 5
@@ -965,13 +1019,39 @@ object FormMain: TFormMain
         OnClick = chkSuperSpeedClick
       end
       object Button_Stop: TButton
-        Left = 89
+        Left = 135
         Top = 5
         Width = 89
         Height = 17
         Caption = 'Stop the game'
         TabOrder = 1
         OnClick = Button_StopClick
+      end
+      object sePauseAfterTick: TSpinEdit
+        Left = 159
+        Top = 28
+        Width = 66
+        Height = 22
+        Ctl3D = True
+        MaxValue = 9999999
+        MinValue = 0
+        ParentCtl3D = False
+        TabOrder = 2
+        Value = 0
+        OnChange = ControlsUpdate
+      end
+      object seMakeSaveptAfterTick: TSpinEdit
+        Left = 159
+        Top = 53
+        Width = 66
+        Height = 22
+        Ctl3D = True
+        MaxValue = 9999999
+        MinValue = 0
+        ParentCtl3D = False
+        TabOrder = 3
+        Value = 0
+        OnChange = ControlsUpdate
       end
     end
   end
