@@ -404,9 +404,7 @@ const
   begin
     if InRange(aX, 0, aWidth) then  //Dont allow to render outside of control
     begin
-      //Just draw 2 lines...
-      WriteLine(aX,     1, aX    , aHeight - 1, aColor, aPattern);
-      WriteLine(aX - 1, 1, aX - 1, aHeight - 1, aColor, aPattern);
+      WriteLine(aX,     1, aX    , aHeight - 1, aColor, aPattern, 2);
     end;
   end;
 
