@@ -160,7 +160,7 @@ begin
     Actions.AIRecruitDelay(2, 18000);
     Actions.GiveGroup(8, 22, 3, 38, 2, 9, 3);
     Actions.GiveGroup(8, 22, 25, 10, 4, 10, 5);
-    Actions.GiveGroup(8, 22, 92, 31, 4, 12, 4);
+    Actions.GiveGroup(8, 22, 83, 28, 4, 12, 4);
     G2 := Actions.GiveGroup(2, 20, 69, 69, 2, 8 + States.KaMRandomI(3), 4);
     Actions.GroupOrderWalk(G2, 82, 62, 0);
     Actions.AIEquipRate(3, 0, 120);
