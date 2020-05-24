@@ -660,14 +660,14 @@ begin
 
   glColor4ubv(@aCol);
 
-  glEnable(GL_LINE_STIPPLE);
-  glLineStipple(2, aPattern);
-
   if aLineWidth <> -1 then
   begin
     glPushAttrib(GL_LINE_BIT);
     glLineWidth(aLineWidth);
   end;
+
+  glEnable(GL_LINE_STIPPLE);
+  glLineStipple(2, aPattern);
 
   glBegin(GL_LINES);
     glVertex2f(aFromX, aFromY);
