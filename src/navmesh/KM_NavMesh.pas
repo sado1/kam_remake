@@ -16,6 +16,7 @@ type
   TKMNavMesh = class
   private
     fMapX, fMapY: Word;               // Limits of arrays
+    fInnerNodesStartIdx: Word;        // Inner nodes starts at this index
     fNodeCount, fPolyCount: Integer;  // Thresholds
     fNodes: TKMPointArray;            // Nodes
     fPolygons: TPolygonArray;         // Polygons
@@ -98,6 +99,7 @@ begin
   SaveStream.Write(fMapX);
   SaveStream.Write(fMapY);
 
+  SaveStream.Write(fInnerNodesStartIdx);
   SaveStream.Write(fNodeCount);
   SaveStream.Write(fNodes[0], SizeOf(fNodes[0]) * fNodeCount);
 
@@ -139,6 +141,7 @@ begin
   LoadStream.Read(fMapX);
   LoadStream.Read(fMapY);
 
+  LoadStream.Read(fInnerNodesStartIdx);
   LoadStream.Read(fNodeCount);
   SetLength(fNodes, fNodeCount);
   LoadStream.Read(fNodes[0], SizeOf(fNodes[0]) * fNodeCount);
@@ -176,6 +179,7 @@ begin
 
   fNodeCount := fNavMeshGenerator.NodeCount;
   fPolyCount := fNavMeshGenerator.PolygonCount;
+  fInnerNodesStartIdx := fNavMeshGenerator.InnerPointStartIdx;
   fNodes := fNavMeshGenerator.Nodes;
   fPolygons := fNavMeshGenerator.Polygons;
 
@@ -190,6 +194,7 @@ begin
 
 end;
 
+
 function TKMNavMesh.GetPolygonFromPoint(const aY,aX: Integer): Word;
 var
   Idx: Integer;
@@ -200,6 +205,7 @@ begin
     Result := fPoint2PolygonArr[Idx];
 end;
 
+
 function TKMNavMesh.GetPolygonFromKMPoint(const aPoint: TKMPoint): Word;
 var
   Idx: Integer;
@@ -209,6 +215,7 @@ begin
   if (Length(fPoint2PolygonArr) > Idx) then
     Result := fPoint2PolygonArr[Idx];
 end;
+
 
 procedure TKMNavMesh.FindClosestPolygon();
 var
@@ -261,6 +268,7 @@ begin
     if (fPoint2PolygonArr[K + fMapX + 1] = 0) then AddToQueue(K + fMapX + 1, fPoint2PolygonArr[K]);
   end;
 end;
+
 
 procedure TKMNavMesh.TieUpTilesWithPolygons();
   procedure GetNodesSortedByY(aIdx: Integer; var a,b,c: TKMPoint);
@@ -324,11 +332,19 @@ procedure TKMNavMesh.TieUpTilesWithPolygons();
       begin
         P := KMPointAverage(fNodes[ Indices[0] ], fNodes[ Indices[1] ]);
         fPolygons[aIdx].NearbyPoints[K] := KMPoint(  Min( fMapX-1, Max(1,P.X) ), Min( fMapY-1, Max(1,P.Y) )  );
+
+        if (fInnerNodesStartIdx >= Indices[0]) AND (fInnerNodesStartIdx > Indices[1]) then
+          fPolygons[aIdx].NearbyLineLength[K] := Min(6,  Max( abs(fNodes[ Indices[0] ].X - fNodes[ Indices[1] ].X), abs(fNodes[ Indices[0] ].Y - fNodes[ Indices[1] ].Y) )  )
+        else
+          fPolygons[aIdx].NearbyLineLength[K] := 6;
       end
       else
       begin
         for L := K to fPolygons[aIdx].NearbyCount - 2 do
+        begin
           fPolygons[aIdx].NearbyPoints[L] := fPolygons[aIdx].NearbyPoints[L+1];
+          fPolygons[aIdx].NearbyLineLength[L] := fPolygons[aIdx].NearbyLineLength[L+1];
+        end;
         Dec(fPolygons[aIdx].NearbyCount);
       end;
     end;
@@ -354,13 +370,14 @@ begin
     // Fill another polygon informations
     // Center point must be inside of map coords
     fPolygons[K].CenterPoint := KMPoint(
-                                         Min(  fMapX-1, Max( 1, Round((N1.X+N2.X+N3.X)/3) )  ),
-                                         Min(  fMapY-1, Max( 1, Round((N1.Y+N2.Y+N3.Y)/3) )  )
-                                       );
+                                  Min(  fMapX-1, Max( 1, Round((N1.X+N2.X+N3.X)/3) )  ),
+                                  Min(  fMapY-1, Max( 1, Round((N1.Y+N2.Y+N3.Y)/3) )  )
+                                );
     ComputeNearbyPoints(K);
   end;
   FindClosestPolygon();
 end;
+
 
 procedure TKMNavMesh.TieUpPolygonsWithTiles();
 //var
@@ -388,6 +405,7 @@ begin
     fPolygons[X].Poly2PointStart := fPolygons[X-1].Poly2PointStart + fPolygons[X-1].Poly2PointCnt;
   //}
 end;
+
 
 //Render debug symbols
 procedure TKMNavMesh.Paint(const aRect: TKMRect);
@@ -424,6 +442,7 @@ const
 
 var
   K, L: Integer;
+  //Color: Cardinal;
   p1,p2: TKMPoint;
 begin
   //{ DEFENCE SYSTEM
@@ -455,7 +474,7 @@ begin
         fNodes[ Indices[2] ].Y, $50000000 OR COLOR_BLACK);
       for L := 0 to NearbyCount - 1 do
         if GetCommonPoints(K, Nearby[L], p1, p2) then
-          gRenderAux.LineOnTerrain(p1, p2, $50000000 OR COLOR_BLUE)
+          gRenderAux.LineOnTerrain(p1, p2, $99000000 OR ((6-NearbyLineLength[L])*16 shl 24) OR $770000 OR (NearbyLineLength[L]*20 shl 16) OR ((250-NearbyLineLength[L]*40) shl 0))
         else
         begin
           gRenderAux.TriangleOnTerrain(
