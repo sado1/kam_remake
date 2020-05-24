@@ -12,7 +12,8 @@ uses
 type
   TPolygonQueue = record
     Visited: Byte;
-    Distance, Next: Word;
+    Next: Word;
+    Distance: Cardinal;
     DistPoint: TKMPoint;
   end;
   TPolygonsQueueArr = array of TPolygonQueue;
@@ -31,7 +32,7 @@ type
     function IsQueueEmpty(): Boolean; inline;
     function IsVisited(const aIdx: Word): Boolean; virtual;
     function CanBeExpanded(const aIdx: Word): Boolean; virtual;
-    procedure MarkAsVisited(const aIdx, aDistance: Word; const aPoint: TKMPoint); virtual;
+    procedure MarkAsVisited(const aIdx: Word; const aDistance: Cardinal; const aPoint: TKMPoint); virtual;
     procedure InsertInQueue(const aIdx: Word); virtual;
     procedure InsertAndSort(const aIdx: Word); virtual; // Only for sorted case
     function RemoveFromQueue(var aIdx: Word): Boolean;
@@ -109,7 +110,7 @@ begin
 end;
 
 
-procedure TNavMeshFloodFill.MarkAsVisited(const aIdx, aDistance: Word; const aPoint: TKMPoint);
+procedure TNavMeshFloodFill.MarkAsVisited(const aIdx: Word; const aDistance: Cardinal; const aPoint: TKMPoint);
 begin
   with fQueueArray[aIdx] do
   begin
@@ -132,7 +133,7 @@ end;
 
 procedure TNavMeshFloodFill.InsertAndSort(const aIdx: Word);
 var
-  I, ActIdx, PrevIdx: Word;
+  K, ActIdx, PrevIdx: Integer;
 begin
   // Empty queue
   if IsQueueEmpty then
@@ -146,22 +147,22 @@ begin
     PrevIdx := fStartQueue;
     ActIdx := fStartQueue;
     // Find the right position
-    I := 0;
-    while (I < fQueueCnt) do // While must be here
+    K := 0;
+    while (K < fQueueCnt) do // While must be here
     begin
       if (fQueueArray[aIdx].Distance < fQueueArray[ActIdx].Distance) then
         break;
       PrevIdx := ActIdx;
       ActIdx := fQueueArray[ActIdx].Next;
-      I := I + 1;
+      K := K + 1;
     end;
     // Change indexes of surrounding elements (= insert element into queue, no shift of other elements is required)
-    if (I = 0) then
+    if (K = 0) then
     begin
       fQueueArray[aIdx].Next := fStartQueue;
       fStartQueue := aIdx;
     end
-    else if (I = fQueueCnt) then
+    else if (K = fQueueCnt) then
     begin
       fQueueArray[fEndQueue].Next := aIdx;
       fEndQueue := aIdx;
@@ -193,13 +194,13 @@ procedure TNavMeshFloodFill.InitQueue(const aMaxIdx: Integer; var aInitIdxArray:
 const
   INIT_DISTANCE = 0;
 var
-  I, Idx: Word;
+  K, Idx: Integer;
 begin
   MakeNewQueue();
   if (aMaxIdx >= 0) then
-    for I := 0 to aMaxIdx do
+    for K := 0 to aMaxIdx do
     begin
-      Idx := aInitIdxArray[I];
+      Idx := aInitIdxArray[K];
       if not IsVisited(Idx) then
       begin
         MarkAsVisited(Idx, INIT_DISTANCE, gAIFields.NavMesh.Polygons[ Idx ].CenterPoint);
@@ -212,27 +213,25 @@ end;
 // Flood fill in NavMesh grid
 procedure TNavMeshFloodFill.Flood();
 var
-  I: SmallInt;
-  Idx, NearbyIdx: Word;
-  Point: TKMPoint;
+  Idx: Word;
+  K: Integer;
 begin
   while RemoveFromQueue(Idx) do
     if CanBeExpanded(Idx) then
-      for I := 0 to gAIFields.NavMesh.Polygons[Idx].NearbyCount-1 do
-      begin
-        NearbyIdx := gAIFields.NavMesh.Polygons[Idx].Nearby[I];
-        if not IsVisited(NearbyIdx) then
+      with gAIFields.NavMesh.Polygons[Idx] do
+        for K := 0 to NearbyCount-1 do
         begin
-          Point := gAIFields.NavMesh.Polygons[Idx].NearbyPoints[I];
-          MarkAsVisited( NearbyIdx,
-                         fQueueArray[Idx].Distance + KMDistanceAbs(fQueueArray[Idx].DistPoint, Point),
-                         Point);
-          if fSorted then
-            InsertAndSort(NearbyIdx)
-          else
-            InsertInQueue(NearbyIdx);
+          if not IsVisited(Nearby[K]) then
+          begin
+            MarkAsVisited( Nearby[K],
+                           fQueueArray[Idx].Distance + KMDistanceWalk(fQueueArray[Idx].DistPoint, NearbyPoints[K]),
+                           NearbyPoints[K]);
+            if fSorted then
+              InsertAndSort(Nearby[K])
+            else
+              InsertInQueue(Nearby[K]);
+          end;
         end;
-      end;
 end;
 
 

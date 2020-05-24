@@ -44,11 +44,11 @@ type
   TDistancePenalization = class(TNavMeshFloodFill)
   private
   protected
-    fMaxDistance: Word;
+    fMaxDistance: Integer;
     fInflInfo: TKMInflInfoArray;
 
     function CanBeExpanded(const aIdx: Word): Boolean; override;
-    procedure MarkAsVisited(const aIdx, aDistance: Word; const aPoint: TKMPoint); override;
+    procedure MarkAsVisited(const aIdx: Word; const aDistance: Cardinal; const aPoint: TKMPoint); override;
   public
     function PrefillDistances(var aAlliance: TKMAllianceInfo; var aDefInfo: TKMInflInfoArray; var aQueueArray: TPolygonsQueueArr): Boolean;
   end;
@@ -69,7 +69,7 @@ type
     function CanBeExpanded(const aIdx: Word): Boolean; override;
     procedure MakeNewQueue(); override;
     function IsVisited(const aIdx: Word): Boolean; override;
-    procedure MarkAsVisited(const aIdx, aDistance: Word; const aPoint: TKMPoint); override;
+    procedure MarkAsVisited(const aIdx: Word; const aDistance: Cardinal; const aPoint: TKMPoint); override;
     procedure InitQueue(const aMaxIdx: Integer; var aInitIdxArray: TKMWordArray); override;
     function ForwardFF(): Boolean;
 
@@ -156,7 +156,7 @@ begin
 end;
 
 
-procedure TDistancePenalization.MarkAsVisited(const aIdx, aDistance: Word; const aPoint: TKMPoint);
+procedure TDistancePenalization.MarkAsVisited(const aIdx: Word; const aDistance: Cardinal; const aPoint: TKMPoint);
 begin
   inherited MarkAsVisited(aIdx, aDistance, aPoint);
   //fInflInfo[aIdx].Distance := Max(0,PREFILL_MAX_DISTANCE - aDistance) * 4;
@@ -252,7 +252,7 @@ begin
 end;
 
 
-procedure TArmyForwardFF.MarkAsVisited(const aIdx, aDistance: Word; const aPoint: TKMPoint);
+procedure TArmyForwardFF.MarkAsVisited(const aIdx: Word; const aDistance: Cardinal; const aPoint: TKMPoint);
 begin
   //fInflInfo[aIdx].EnemyInfluence := Min(250,fInflInfo[aIdx].Distance);
   //fInflInfo[aIdx].AllyInfluence := gAIFields.Influences.GetAlliancePresence(fOwner, aIdx, atAlly);

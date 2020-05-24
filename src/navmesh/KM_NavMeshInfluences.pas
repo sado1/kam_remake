@@ -29,7 +29,7 @@ type
     fEnemiesStats: TKMEnemyStatisticsArray;
 
     function CanBeExpanded(const aIdx: Word): Boolean; override;
-    procedure MarkAsVisited(const aIdx, aDistance: Word; const aPoint: TKMPoint); override;
+    procedure MarkAsVisited(const aIdx: Word; const aDistance: Cardinal; const aPoint: TKMPoint); override;
   public
     function FindClosestEnemies(const aOwner: TKMHandID; var aCenterPoints: TKMPointArray; var aEnemiesStats: TKMEnemyStatisticsArray; aHouseInfluence: Boolean = True): Boolean;
   end;
@@ -44,7 +44,7 @@ type
   protected
     fOwner: TKMHandID;
     function CanBeExpanded(const aIdx: Word): Boolean; override;
-    procedure MarkAsVisited(const aIdx, aDistance: Word; const aPoint: TKMPoint); override;
+    procedure MarkAsVisited(const aIdx: Word; const aDistance: Cardinal; const aPoint: TKMPoint); override;
   public
     function MilitaryPresence(aPlayer: TKMHandID; aUnitStrength, aMaxDistance, aMaximalIdx: Word; aGroupType: TKMGroupType; var aInitIdxArray: TKMWordArray): Boolean;
     function HouseInfluence(aPlayer: TKMHandID; aHouseInfluence, aMaxDistance, aMaximalIdx: Word; var aInitIdxArray: TKMWordArray): Boolean;
@@ -56,7 +56,7 @@ type
   protected
     fMaxDistance: Word;
     function CanBeExpanded(const aIdx: Word): Boolean; override;
-    procedure MarkAsVisited(const aIdx, aDistance: Word; const aPoint: TKMPoint); override;
+    procedure MarkAsVisited(const aIdx: Word; const aDistance: Cardinal; const aPoint: TKMPoint); override;
   public
     WalkableAreas: TKMByteArray;
     procedure MarkPolygons();
@@ -75,7 +75,7 @@ begin
 end;
 
 
-procedure TNavMeshInfluenceSearch.MarkAsVisited(const aIdx, aDistance: Word; const aPoint: TKMPoint);
+procedure TNavMeshInfluenceSearch.MarkAsVisited(const aIdx: Word; const aDistance: Cardinal; const aPoint: TKMPoint);
 const
   HOUSE_INFLUENCE_LIMIT = 200;
   ARMY_INFLUENCE_LIMIT = 1;
@@ -172,14 +172,14 @@ begin
 end;
 
 
-procedure TKMInfluenceFloodFill.MarkAsVisited(const aIdx, aDistance: Word; const aPoint: TKMPoint);
+procedure TKMInfluenceFloodFill.MarkAsVisited(const aIdx: Word; const aDistance: Cardinal; const aPoint: TKMPoint);
 const
   HOUSE_COEF = 2;
 begin
   if fCityFlood then
-    gAIFields.Influences.OwnPoly[fOwner,aIdx] := Max(0, fHouseInfluence - (aDistance shl HOUSE_COEF))
+    gAIFields.Influences.OwnPoly[fOwner,aIdx] := Max(0, fHouseInfluence - Integer(aDistance shl HOUSE_COEF))
   else
-    gAIFields.Influences.IncPresence[fOwner,aIdx,fGroupType] := Max(0, fUnitStrength - aDistance * fDecreaseCoef );
+    gAIFields.Influences.IncPresence[fOwner,aIdx,fGroupType] := Max(0, Integer(fUnitStrength - Integer(aDistance * fDecreaseCoef)) );
   inherited MarkAsVisited(aIdx, aDistance, aPoint);
 end;
 
@@ -215,7 +215,7 @@ begin
 end;
 
 
-procedure TKMWalkableAreasDetector.MarkAsVisited(const aIdx, aDistance: Word; const aPoint: TKMPoint);
+procedure TKMWalkableAreasDetector.MarkAsVisited(const aIdx: Word; const aDistance: Cardinal; const aPoint: TKMPoint);
 begin
   with fQueueArray[aIdx] do
   begin

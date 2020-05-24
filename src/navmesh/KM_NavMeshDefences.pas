@@ -75,7 +75,7 @@ type
     procedure MakeNewQueue(); override;
     function IsVisited(const aIdx: Word): Boolean; override;
     function CanBeExpanded(const aIdx: Word): Boolean; override;
-    procedure MarkAsVisited(const aIdx, aDistance: Word; const aPoint: TKMPoint); override;
+    procedure MarkAsVisited(const aIdx: Word; const aDistance: Cardinal; const aPoint: TKMPoint); override;
     function ForwardFF(): Boolean;
     procedure DrawPolygon(aIdx: Integer; aOffset: Single; aOpacity: Byte; aFillColor: Cardinal; aText: String = '');
   public
@@ -139,7 +139,7 @@ type
   protected
     procedure InitQueue(aMaxIdx: Integer; aInitIdxArray: TKMWordArray); reintroduce;
     function IsVisited(const aIdx: Word): Boolean; override;
-    procedure MarkAsVisited(const aIdx, aDistance: Word; const aPoint: TKMPoint); override;
+    procedure MarkAsVisited(const aIdx: Word; const aDistance: Cardinal; const aPoint: TKMPoint); override;
     function CheckStartPolygons(var aStartPolygons: TKMWordArray): boolean;
   public
     property BestDefLines: TKMDefenceLines read fBestDefLines;
@@ -257,9 +257,9 @@ begin
 end;
 
 
-procedure TForwardFF.MarkAsVisited(const aIdx, aDistance: Word; const aPoint: TKMPoint);
+procedure TForwardFF.MarkAsVisited(const aIdx: Word; const aDistance: Cardinal; const aPoint: TKMPoint);
 var
-  Distance: Word;
+  Distance: Cardinal;
 begin
   Inc(fPolygonCnt);
   // Get owner influence and distance from influence
@@ -970,7 +970,7 @@ begin
   Result := (fQueueArray[aIdx].Visited > 0); // Visited Array is always filled with zeros
 end;
 
-procedure TFilterFF.MarkAsVisited(const aIdx, aDistance: Word; const aPoint: TKMPoint);
+procedure TFilterFF.MarkAsVisited(const aIdx: Word; const aDistance: Cardinal; const aPoint: TKMPoint);
 begin
   Inc(fPolyCnt);
   inherited MarkAsVisited(aIdx, aDistance, aPoint);
