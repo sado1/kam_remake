@@ -2065,7 +2065,9 @@ end;
 
 procedure TKMUnit.UpdateVisualState;
 begin
-  fVisual.UpdateState;
+  // Action could be nil just before death of the unit
+  if (fAction <> nil) then
+    fVisual.UpdateState;
 end;
 
 procedure TKMUnit.VertexAdd(const aFrom, aTo: TKMPoint);
