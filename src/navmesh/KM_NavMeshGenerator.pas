@@ -48,6 +48,7 @@ type
       Poly2PointStart, Poly2PointCnt: Word; // Indexes of fPolygon2PointArr (points which are part of this polygon)
       Indices: array [0..2] of Word; //Neighbour nodes
       Nearby: array [0..2] of Word; //Neighbour polygons
+      NearbyLineLength: array [0..2] of Byte; //Neighbour polygons
       NearbyPoints: array [0..2] of TKMPoint; // Center points
     end;
   TPolygonArray = array of TPolygon;
@@ -89,6 +90,8 @@ type
     property PolygonCount: Integer read fPolyCount;
     property Nodes: TKMPointArray read fNodes;
     property Polygons: TPolygonArray read fPolygons;
+    property InnerPointStartIdx: Word read fInnerPointStartIdx;
+    property InnerPointEndIdx: Word read fInnerPointEndIdx;
 
     constructor Create();
     destructor Destroy(); override;
