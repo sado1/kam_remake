@@ -107,7 +107,9 @@ implementation
 uses
   SysUtils, Math,
   KM_Terrain,
-
+  {$IFDEF DEBUG_NavMesh}
+  KM_RenderAux,
+  {$ENDIF}
   Dialogs;
 
 
