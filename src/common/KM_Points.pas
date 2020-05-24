@@ -159,8 +159,8 @@ type
   function KMPointAdd(const A, B: TKMPoint): TKMPoint; overload;
   function KMPointAdd(const A, B, C: TKMPoint): TKMPoint; overload;
   function KMDotProduct(const A, B: TKMPoint): Single;
-  function KMDistanceAbs(const A, B: TKMPoint): Integer; overload;
-  function KMDistanceAbs(const A, B: TKMPointF): Single; overload;
+  function KMDistanceAbs(const A, B: TKMPoint): Integer;
+  function KMDistanceWalk(const A, B: TKMPoint): Integer;
   function KMDistanceSqr(const A, B: TKMPoint): Single; overload;
   function KMDistanceSqr(const A, B: TKMPointF): Single; overload;
 
@@ -919,16 +919,16 @@ begin
 end;
 
 
-// Faster version of distance when we need just approximate information
+// Faster version of distance when we need just approximate information and Integer
 function KMDistanceAbs(const A, B: TKMPoint): Integer;
 begin
   Result := Abs(A.X - B.X) + Abs(A.Y - B.Y);
 end;
 
-
-function KMDistanceAbs(const A, B: TKMPointF): Single;
+// Walking distance in relation to time to get from point A to B (movement in a straight line, vertically / horizontally / diagonally)
+function KMDistanceWalk(const A, B: TKMPoint): Integer;
 begin
-  Result := Abs(A.X - B.X) + Abs(A.Y - B.Y);
+  Result := Max(Abs(A.X - B.X), Abs(A.Y - B.Y));
 end;
 
 
