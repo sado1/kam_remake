@@ -295,7 +295,7 @@ uses
   KM_Main,
   //Use these units directly to avoid pass-through methods in fMain
   KM_Resource,
-  KM_ResSprites,
+
   KM_ResTexts,
   KM_GameApp,
   KM_HandsCollection,

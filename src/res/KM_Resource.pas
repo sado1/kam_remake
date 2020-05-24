@@ -88,7 +88,7 @@ var
 
 implementation
 uses
-  System.Threading, TypInfo, KromUtils, KM_Log, KM_Points, KM_ResTexts, KM_ResKeys;
+  TypInfo, KromUtils, KM_Log, KM_Points, KM_ResTexts, KM_ResKeys;
 
 
 { TKMResource }
