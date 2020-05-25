@@ -150,6 +150,18 @@ type
     procedure LoadSavedReplay(aTick: Cardinal; const aSaveFile: UnicodeString);
     procedure AfterLoad;
 
+    procedure Save(const aSaveName: UnicodeString); overload;
+    procedure Save(const aSaveName: UnicodeString; aTimestamp: TDateTime); overload;
+    procedure SaveAndWait(const aSaveName: UnicodeString);
+
+    procedure AutoSave(aTimestamp: TDateTime);
+    procedure AutoSaveAfterPT(aTimestamp: TDateTime);
+    procedure SaveReplayToMemory();
+    procedure SaveMapEditor(const aPathName: UnicodeString); overload;
+    procedure SaveMapEditor(const aPathName: UnicodeString; const aInsetRect: TKMRect); overload;
+
+    procedure RestartReplay; //Restart the replay but keep current viewport position/zoom
+
     function MapSizeInfo: UnicodeString;
 
     procedure GameMPPlay;
@@ -161,13 +173,6 @@ type
     procedure WaitingPlayersDisplay(aWaiting: Boolean);
     procedure WaitingPlayersDrop;
     procedure ShowScriptError(const aMsg: UnicodeString);
-
-    procedure AutoSave(aTimestamp: TDateTime);
-    procedure AutoSaveAfterPT(aTimestamp: TDateTime);
-    procedure SaveReplayToMemory();
-    procedure SaveMapEditor(const aPathName: UnicodeString); overload;
-    procedure SaveMapEditor(const aPathName: UnicodeString; const aInsetRect: TKMRect); overload;
-    procedure RestartReplay; //Restart the replay but keep current viewport position/zoom
 
     property AIType: TKMAIType read fAIType;
 
@@ -270,10 +275,6 @@ type
     property TextMission: TKMTextLibraryMulti read fTextMission;
 
     procedure SetSeed(aSeed: Integer);
-
-    procedure Save(const aSaveName: UnicodeString); overload;
-    procedure Save(const aSaveName: UnicodeString; aTimestamp: TDateTime); overload;
-    procedure SaveAndWait(const aSaveName: UnicodeString);
 
     function GetCurrectTickSaveCRC: Cardinal;
     {$IFDEF USE_MAD_EXCEPT}
