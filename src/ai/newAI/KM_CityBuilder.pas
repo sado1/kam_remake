@@ -557,7 +557,7 @@ end;
 procedure TKMCityBuilder.UpdateBuildNode(var aNode: TBuildNode);
   function IsPlan(aPoint: TKMPoint; aField: TKMFieldType): Boolean; overload;
   begin
-    Result := gHands[fOwner].BuildList.FieldworksList.HasField(aPoint) = aField;
+    Result := gHands[fOwner].Constructions.FieldworksList.HasField(aPoint) = aField;
   end;
   function IsPlan(aPoint: TKMPoint; aLock: TKMTileLock): Boolean; overload;
   begin
@@ -599,7 +599,7 @@ procedure TKMCityBuilder.UpdateBuildNode(var aNode: TBuildNode);
     Output := False;
     if gHands[fOwner].CanAddFieldPlan(aNode.FieldList.Items[aIdx], aFieldType) then
     begin
-      gHands[fOwner].BuildList.FieldworksList.AddField(aNode.FieldList.Items[aIdx], aFieldType);
+      gHands[fOwner].Constructions.FieldworksList.AddField(aNode.FieldList.Items[aIdx], aFieldType);
       aNode.FreeWorkers := aNode.FreeWorkers - 1;
       aNode.RequiredWorkers := aNode.RequiredWorkers - 1;
       Output := True;
@@ -635,7 +635,7 @@ procedure TKMCityBuilder.UpdateBuildNode(var aNode: TBuildNode);
       begin
         // Is there field / wine plan in progress?
         if IsPlan(FieldList.Items[K], ftWine) OR IsPlan(FieldList.Items[K], ftCorn) then
-          gHands[fOwner].BuildList.FieldworksList.RemFieldPlan( FieldList.Items[K] );
+          gHands[fOwner].Constructions.FieldworksList.RemFieldPlan( FieldList.Items[K] );
         // Is there road plan / work in progress?
         if IsPlan(FieldList.Items[K], tlRoadWork, ftRoad) then
         begin
@@ -782,9 +782,9 @@ procedure TKMCityBuilder.UpdateBuildNode(var aNode: TBuildNode);
           end;
         end
         // Tree was destroyed while worker is going to do it -> remove wine or corn plan and remove point from build node
-        else if (gHands[fOwner].BuildList.FieldworksList.HasField(FieldList.Items[K]) <> ftNone) then // ftNone is fine, road was checked before
+        else if (gHands[fOwner].Constructions.FieldworksList.HasField(FieldList.Items[K]) <> ftNone) then // ftNone is fine, road was checked before
         begin
-          gHands[fOwner].BuildList.FieldworksList.RemFieldPlan(FieldList.Items[K]);
+          gHands[fOwner].Constructions.FieldworksList.RemFieldPlan(FieldList.Items[K]);
           FieldList.Delete(K);
         end
         // There is digged wine / field
@@ -846,8 +846,8 @@ begin
   fTrunkShortage := (aTrunkBalance < AI_Par[BUILDER_Shortage_Trunk]);
 
   // Compute building materials
-  RequiredStones := gHands[fOwner].BuildList.HousePlanList.GetPlansStoneDemands();
-  RequiredWood := gHands[fOwner].BuildList.HousePlanList.GetPlansWoodDemands();
+  RequiredStones := gHands[fOwner].Constructions.HousePlanList.GetPlansStoneDemands();
+  RequiredWood := gHands[fOwner].Constructions.HousePlanList.GetPlansWoodDemands();
   for K := 0 to gHands[fOwner].Houses.Count - 1 do
   begin
     H := gHands[fOwner].Houses[K];
@@ -1610,7 +1610,7 @@ begin
       begin
         gAIFields.Influences.AvoidBuilding[BaseLoc.Y+1, K] := 255;
         if gHands[fOwner].CanAddFieldPlan(KMPoint(K, BaseLoc.Y+1) , ftRoad) then
-          gHands[fOwner].BuildList.FieldworksList.AddField(KMPoint(K, BaseLoc.Y+1) , ftRoad);
+          gHands[fOwner].Constructions.FieldworksList.AddField(KMPoint(K, BaseLoc.Y+1) , ftRoad);
       end;
 
   // Find houses which should be connected
@@ -1833,9 +1833,9 @@ begin
         AddField();
       if fPlanner.GetFieldToHouse(aHT, HouseIdx, FieldList, FieldType) then // Place fields
         AddField();
-      if gHands[fOwner].BuildList.HousePlanList.TryGetPlan(Loc, HPlan) then // Remove house plan (it must be done because of road planning)
+      if gHands[fOwner].Constructions.HousePlanList.TryGetPlan(Loc, HPlan) then // Remove house plan (it must be done because of road planning)
       begin
-        gHands[fOwner].BuildList.HousePlanList.RemPlan(Loc);
+        gHands[fOwner].Constructions.HousePlanList.RemPlan(Loc);
         gHands[fOwner].Stats.HousePlanRemoved(aHT);
       end;
       gHands[fOwner].AddHouse(aHT, Loc.X, Loc.Y, True); // Place house
@@ -2192,7 +2192,7 @@ end;
 procedure TKMCityBuilder.UpdateBuildNode(var aNode: TBuildNode);
   function IsPlan(aPoint: TKMPoint; aLock: TKMTileLock; aField: TKMFieldType): Boolean;
   begin
-    Result := (gHands[fOwner].BuildList.FieldworksList.HasField(aPoint) = aField)
+    Result := (gHands[fOwner].Constructions.FieldworksList.HasField(aPoint) = aField)
               OR (gTerrain.Land[aPoint.Y, aPoint.X].TileLock = aLock);
   end;
   function IsCompletedRoad(aPoint: TKMPoint): Boolean;
@@ -2227,7 +2227,7 @@ procedure TKMCityBuilder.UpdateBuildNode(var aNode: TBuildNode);
     Output := False;
     if gHands[fOwner].CanAddFieldPlan(aNode.FieldList.Items[aIdx], aFieldType) then
     begin
-      gHands[fOwner].BuildList.FieldworksList.AddField(aNode.FieldList.Items[aIdx], aFieldType);
+      gHands[fOwner].Constructions.FieldworksList.AddField(aNode.FieldList.Items[aIdx], aFieldType);
       aNode.FreeWorkers := aNode.FreeWorkers - 1;
       Output := True;
     end;

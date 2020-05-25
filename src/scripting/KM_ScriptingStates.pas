@@ -2384,7 +2384,7 @@ function TKMScriptStates.IsPlanAt(var aPlayer: Integer; var aFieldType: TKMField
   var
     FT: TKMFieldType;
   begin
-    FT := gHands[aHandId].BuildList.FieldworksList.HasField(KMPoint(aX, aY));
+    FT := gHands[aHandId].Constructions.FieldworksList.HasField(KMPoint(aX, aY));
     if aFieldType = ftNone then
     begin
       Result := FT in [ftCorn, ftRoad, ftWine];
@@ -2448,7 +2448,7 @@ function TKMScriptStates.IsFieldPlanAt(var aPlayer: Integer; X, Y: Word): Boolea
 
   function FindPlan(aHandId, aX, aY: Word): Boolean; inline;
   begin
-    Result := gHands[aHandId].BuildList.FieldworksList.HasField(KMPoint(aX, aY)) = ftCorn;
+    Result := gHands[aHandId].Constructions.FieldworksList.HasField(KMPoint(aX, aY)) = ftCorn;
   end;
 
 var
@@ -2495,7 +2495,7 @@ function TKMScriptStates.IsHousePlanAt(var aPlayer: Integer; var aHouseType: TKM
   var
     HT: TKMHouseType;
   begin
-    Result := gHands[aHandId].BuildList.HousePlanList.HasPlan(KMPoint(aX, aY), HT);
+    Result := gHands[aHandId].Constructions.HousePlanList.HasPlan(KMPoint(aX, aY), HT);
     if Result then
     begin
       if aHouseType = htNone then
@@ -2559,7 +2559,7 @@ function TKMScriptStates.IsRoadPlanAt(var aPlayer: Integer; X, Y: Word): Boolean
 
   function FindPlan(aHandId, aX, aY: Word): Boolean; inline;
   begin
-    Result := gHands[aHandId].BuildList.FieldworksList.HasField(KMPoint(aX, aY)) = ftRoad;
+    Result := gHands[aHandId].Constructions.FieldworksList.HasField(KMPoint(aX, aY)) = ftRoad;
   end;
 
 var
@@ -2603,7 +2603,7 @@ function TKMScriptStates.IsWinefieldPlanAt(var aPlayer: Integer; X, Y: Word): Bo
 
   function FindPlan(aHandId, aX, aY: Word): Boolean; inline;
   begin
-    Result := gHands[aHandId].BuildList.FieldworksList.HasField(KMPoint(aX, aY)) = ftWine;
+    Result := gHands[aHandId].Constructions.FieldworksList.HasField(KMPoint(aX, aY)) = ftWine;
   end;
 
 var

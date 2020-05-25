@@ -619,7 +619,7 @@ begin
                           Result := True;
                           for I := 0 to gHands.Count - 1 do
                             if gHands[fOwner].Alliances[I] = atAlly then
-                              Result := Result and not gHands[I].BuildList.HousePlanList.HasPlan(aLoc);
+                              Result := Result and not gHands[I].Constructions.HousePlanList.HasPlan(aLoc);
                         end;
     else Result := True;
   end;

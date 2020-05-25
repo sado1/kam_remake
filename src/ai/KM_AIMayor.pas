@@ -492,7 +492,7 @@ begin
     for I := 0 to NodeList.Count - 1 do
       //We must check if we can add the plan ontop of plans placed earlier in this turn
       if P.CanAddFieldPlan(NodeList[I], ftRoad) then
-         P.BuildList.FieldworksList.AddField(NodeList[I], ftRoad);
+         P.Constructions.FieldworksList.AddField(NodeList[I], ftRoad);
     Result := True;
   finally
     NodeList.Free;
@@ -540,8 +540,8 @@ begin
   
   //I tried to use this when the bug occured but it didn't always work because AI places multiple house/field plans at once (if P.CanAddFieldPlan(KMPointBelow(Loc), ftRoad) then)
   //Fixes Classical AI bug related to houses never being finished/connected to road network
-   P.BuildList.FieldworksList.RemFieldPlan(KMPointBelow(Loc)); //Make sure our entrance to the house has no plan (vine/corn) in front of it
-   P.BuildList.FieldworksList.AddField(KMPointBelow(Loc), ftRoad); //Place a road below house entrance to make sure it is connected to our city!
+   P.Constructions.FieldworksList.RemFieldPlan(KMPointBelow(Loc)); //Make sure our entrance to the house has no plan (vine/corn) in front of it
+   P.Constructions.FieldworksList.AddField(KMPointBelow(Loc), ftRoad); //Place a road below house entrance to make sure it is connected to our city!
 
   //Build fields for Farm
   if aHouse = htFarm then
@@ -565,7 +565,7 @@ begin
 
       NodeTagList.SortByTag;
       for I := 0 to Min(NodeTagList.Count, 16) - 1 do
-        P.BuildList.FieldworksList.AddField(NodeTagList[I], ftCorn);
+        P.Constructions.FieldworksList.AddField(NodeTagList[I], ftCorn);
     finally
       NodeTagList.Free;
     end;
@@ -593,7 +593,7 @@ begin
 
       NodeTagList.SortByTag;
       for I := 0 to Min(NodeTagList.Count, 10) - 1 do
-        P.BuildList.FieldworksList.AddField(NodeTagList[I], ftWine);
+        P.Constructions.FieldworksList.AddField(NodeTagList[I], ftWine);
     finally
       NodeTagList.Free;
     end;
@@ -608,7 +608,7 @@ begin
     for I := Max(Loc.Y - 3, 1) to Min(Loc.Y + 2, gTerrain.MapY - 1) do
     for K := Max(Loc.X - 2, 1) to Min(Loc.X + 2, gTerrain.MapY - 1) do
     if P.CanAddFieldPlan(KMPoint(K, I), ftRoad) then
-      P.BuildList.FieldworksList.AddField(KMPoint(K, I), ftRoad);
+      P.Constructions.FieldworksList.AddField(KMPoint(K, I), ftRoad);
 
   Result := True;
 end;
@@ -786,7 +786,7 @@ begin
     for I := Max(StoreLoc.Y - 3, 1) to Min(StoreLoc.Y + 2, gTerrain.MapY - 1) do
     for K := StoreLoc.X - 2 to StoreLoc.X + 2 do
     if P.CanAddFieldPlan(KMPoint(K, I), ftRoad) then
-      P.BuildList.FieldworksList.AddField(KMPoint(K, I), ftRoad);
+      P.Constructions.FieldworksList.AddField(KMPoint(K, I), ftRoad);
   end;
 
   //Check if we need to connect separate branches of road network
@@ -821,7 +821,7 @@ begin
             for K := 0 to NodeList.Count - 1 do
               //We must check if we can add the plan ontop of plans placed earlier in this turn
               if P.CanAddFieldPlan(NodeList[K], ftRoad) then
-                P.BuildList.FieldworksList.AddField(NodeList[K], ftRoad);
+                P.Constructions.FieldworksList.AddField(NodeList[K], ftRoad);
           end;
         end;
     end;

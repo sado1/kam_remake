@@ -3735,13 +3735,13 @@ begin
         cmWine:   HandleFieldLMBDrag(P, ftWine);
         cmErase:  if not KMSamePoint(fLastDragPoint, P) then
                   begin
-                    if gMySpectator.Hand.BuildList.HousePlanList.HasPlan(P) then
+                    if gMySpectator.Hand.Constructions.HousePlanList.HasPlan(P) then
                     begin
                       gGame.GameInputProcess.CmdBuild(gicBuildRemoveHousePlan, P);
                       fLastDragPoint := gGameCursor.Cell;
                     end
                     else
-                      if (gMySpectator.Hand.BuildList.FieldworksList.HasFakeField(P) <> ftNone) then
+                      if (gMySpectator.Hand.Constructions.FieldworksList.HasFakeField(P) <> ftNone) then
                       begin
                         gGame.GameInputProcess.CmdBuild(gicBuildRemoveFieldPlan, P); // Remove any plans
                         fLastDragPoint := gGameCursor.Cell;
@@ -3977,10 +3977,10 @@ begin
                 else
                 begin
                   // Now remove houses that are not started
-                  if gMySpectator.Hand.BuildList.HousePlanList.HasPlan(P) then
+                  if gMySpectator.Hand.Constructions.HousePlanList.HasPlan(P) then
                     gGame.GameInputProcess.CmdBuild(gicBuildRemoveHousePlan, P)
                   else
-                    if gMySpectator.Hand.BuildList.FieldworksList.HasFakeField(P) <> ftNone then
+                    if gMySpectator.Hand.Constructions.FieldworksList.HasFakeField(P) <> ftNone then
                       gGame.GameInputProcess.CmdBuild(gicBuildRemoveFieldPlan, P) // Remove plans
                     else
                       gSoundPlayer.Play(sfxCantPlace, P, False, 4); // Otherwise there is nothing to erase

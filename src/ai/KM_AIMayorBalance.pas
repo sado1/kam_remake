@@ -248,7 +248,7 @@ begin
     //Do not build extra houses if we are low on building materials
     if (gHands[fOwner].Stats.GetHouseQty(htQuary) = 0)
     and(gHands[fOwner].Stats.GetWareBalance(wtStone)
-        - gHands[fOwner].BuildList.FieldworksList.FieldCount(ftRoad) < 40)
+        - gHands[fOwner].Constructions.FieldworksList.FieldCount(ftRoad) < 40)
     and (AdviceContains(htQuary) or (gHands[fOwner].Stats.GetHouseWip(htQuary) > 1)) then
       Break;
 

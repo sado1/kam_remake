@@ -85,15 +85,16 @@ end;
 
 
 function TPathFindingRoad.MovementCost(aFromX, aFromY, aToX, aToY: Word): Word;
-var IsRoad: Boolean;
+var
+  isRoad: Boolean;
 begin
-  IsRoad := (tpWalkRoad in gTerrain.Land[aToY, aToX].Passability)
-            or (gHands[fOwner].BuildList.FieldworksList.HasField(KMPoint(aToX, aToY)) = ftRoad)
+  isRoad := (tpWalkRoad in gTerrain.Land[aToY, aToX].Passability)
+            or (gHands[fOwner].Constructions.FieldworksList.HasField(KMPoint(aToX, aToY)) = ftRoad)
             or (gTerrain.Land[aToY, aToX].TileLock = tlRoadWork);
 
   //Since we don't allow roads to be built diagonally we can assume
   //path is always 1 tile = 1 point
-  if IsRoad then
+  if isRoad then
     Result := 0
   else
     Result := 1;
@@ -121,8 +122,8 @@ end;
 function TPathFindingRoad.IsWalkableTile(aX, aY: Word): Boolean;
 begin
   Result := ( ([tpMakeRoads, tpWalkRoad] * gTerrain.Land[aY,aX].Passability <> []) OR (gTerrain.Land[aY, aX].TileLock = tlRoadWork) )
-            AND (gHands[fOwner].BuildList.FieldworksList.HasField(KMPoint(aX, aY)) in [ftNone, ftRoad])
-            AND not gHands[fOwner].BuildList.HousePlanList.HasPlan(KMPoint(aX, aY)); // This will ignore allied plans but I guess that it will not cause trouble
+            and (gHands[fOwner].Constructions.FieldworksList.HasField(KMPoint(aX, aY)) in [ftNone, ftRoad])
+            and not gHands[fOwner].Constructions.HousePlanList.HasPlan(KMPoint(aX, aY)); // This will ignore allied plans but I guess that it will not cause trouble
 end;
 
 
@@ -151,17 +152,19 @@ end;
 
 { TPathFindingRoadShortcuts }
 function TPathFindingRoadShortcuts.MovementCost(aFromX, aFromY, aToX, aToY: Word): Word;
-var IsRoad: Boolean;
+var
+  isRoad: Boolean;
 begin
   //Since we don't allow roads to be built diagonally we can assume
   //path is always 1 tile
   Result := 1;
 
   //Off road costs extra
-  IsRoad := (tpWalkRoad in gTerrain.Land[aToY, aToX].Passability)
-            or (gHands[fOwner].BuildList.FieldworksList.HasField(KMPoint(aToX, aToY)) = ftRoad)
+  isRoad := (tpWalkRoad in gTerrain.Land[aToY, aToX].Passability)
+            or (gHands[fOwner].Constructions.FieldworksList.HasField(KMPoint(aToX, aToY)) = ftRoad)
             or (gTerrain.Land[aToY, aToX].TileLock = tlRoadWork);
-  if not IsRoad then
+
+  if not isRoad then
     Inc(Result, 3);
 
   //Building roads over fields is discouraged unless unavoidable

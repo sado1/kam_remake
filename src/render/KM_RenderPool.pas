@@ -1332,7 +1332,7 @@ begin
     if gMySpectator.FOWIndex = -1 then
       for I := 0 to gHands.Count - 1 do
         // Don't use Hand.GetFieldPlans as it will give us plans multiple times for allies
-        gHands[I].BuildList.FieldworksList.GetFields(fFieldsList, aRect, False)
+        gHands[I].Constructions.FieldworksList.GetFields(fFieldsList, aRect, False)
     else
       gHands[gMySpectator.FOWIndex].GetFieldPlans(fFieldsList, aRect, False)
   end
@@ -1349,7 +1349,7 @@ begin
     if gMySpectator.FOWIndex = -1 then
       for I := 0 to gHands.Count - 1 do
         // Don't use Hand.GetHousePlans as it will give us plans multiple times for allies
-        gHands[I].BuildList.HousePlanList.GetOutlines(fHousePlansList, aRect)
+        gHands[I].Constructions.HousePlanList.GetOutlines(fHousePlansList, aRect)
     else
       gHands[gMySpectator.FOWIndex].GetHousePlans(fHousePlansList, aRect)
   end
@@ -1606,8 +1606,8 @@ begin
     cmNone:       ;
     cmErase:      if not gGame.IsMapEditor then
                   begin
-                    if ((gMySpectator.Hand.BuildList.FieldworksList.HasFakeField(P) <> ftNone)
-                        or gMySpectator.Hand.BuildList.HousePlanList.HasPlan(P)
+                    if ((gMySpectator.Hand.Constructions.FieldworksList.HasFakeField(P) <> ftNone)
+                        or gMySpectator.Hand.Constructions.HousePlanList.HasPlan(P)
                         or (gMySpectator.Hand.HousesHitTest(P.X, P.Y) <> nil))
                     then
                       RenderWireTile(P, icCyan) // Cyan quad
