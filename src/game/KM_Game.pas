@@ -399,7 +399,7 @@ begin
 
   fIgnoreConsistencyCheckErrors := False;
 
-  case PathFinderToUse of
+  case PATHFINDER_TO_USE of
     0:    fPathfinding := TPathfindingAStarOld.Create;
     1:    fPathfinding := TPathfindingAStarNew.Create;
     2:    fPathfinding := TPathfindingJPS.Create;

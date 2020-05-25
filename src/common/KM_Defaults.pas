@@ -88,7 +88,7 @@ var
   CHECK_8087CW          :Boolean = False; //Check that 8087CW (FPU flags) are set correctly each frame, in case some lib/API changed them
   SCROLL_ACCEL          :Boolean = False; //Acceleration for viewport scrolling
   INTERPOLATED_RENDER   :Boolean = False; //Interpolate positions/animations in render between game ticks
-  PathFinderToUse       :Byte = 1;
+  PATHFINDER_TO_USE     :Byte = 1;        //Use TPathfindingAStarNew
 
   //Cache / delivery / pathfinding
   CACHE_PATHFINDING                       :Boolean = True; //Cache routes incase they are needed soon (Vortamic PF runs x4 faster even with lame approach)
