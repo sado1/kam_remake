@@ -1237,20 +1237,26 @@ begin
   
   if aLegacyGeneration then
   begin
+    //static arrays could be reset via its variable
+    FillChar(gGenTerrainTransitionsLegacy, SizeOf(gGenTerrainTransitionsLegacy), #0); //Init array, it could be init on previous tileset load
     TexId := 4999;
     fGenTexIdStartILegacy := TexId;
     GenTilesCntTemp := (Integer(High(TKMTerrainKind)) - 1)*Integer(High(TKMTileMaskKind))
                    *Integer(High(TKMTileMaskType))*(Integer(High(TKMTileMaskSubType)) + 1);
     SetLength(fGenTerrainToTerKindLegacy, GenTilesCntTemp);
+    FillChar(fGenTerrainToTerKindLegacy[0], SizeOf(fGenTerrainToTerKindLegacy[0])*GenTilesCntTemp, #0);
   end
   else
   begin
+    //static arrays could be reset via its variable
+    FillChar(gGenTerrainTransitions, SizeOf(gGenTerrainTransitions), #0); //Init array, it could be init on previous tileset load
     TexId := Length(aSprites.fRXData.RGBA) + 1;
     fGenTexIdStartI := TexId;
     GenTilesCnt := Integer(High(TKMTerrainKind))*Integer(High(TKMTileMaskKind))
                    *Integer(High(TKMTileMaskType))*(Integer(High(TKMTileMaskSubType)) + 1);
     SetLength(fGenTerrainToTerKind, GenTilesCnt);
     aSprites.Allocate(TexId + GenTilesCnt);
+    FillChar(fGenTerrainToTerKind[0], SizeOf(fGenTerrainToTerKind[0])*GenTilesCnt, #0);
   end;
   GeneratedMasks := TStringList.Create;
 //  K := 0;
