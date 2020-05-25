@@ -562,7 +562,7 @@ begin
   if fGameMode = gmMapEd then
   begin
     //Mission loader needs to read the data into MapEd (e.g. FOW revealers)
-    fMapEditor := TKMMapEditor.Create(fTerrainPainter, fMapEditorInterface.HistoryUndoRedo, fMapEditorInterface.HistoryAddCheckpoint);
+    fMapEditor := TKMMapEditor.Create(False, fTerrainPainter, fMapEditorInterface.HistoryUndoRedo, fMapEditorInterface.HistoryAddCheckpoint);
     fMapEditor.DetectAttachedFiles(aMissionFile);
   end;
 
@@ -1258,12 +1258,11 @@ begin
   fMissionFileSP := '';
   fSaveFile := '';
 
-  fMapEditor := TKMMapEditor.Create(fTerrainPainter, fMapEditorInterface.HistoryUndoRedo, fMapEditorInterface.HistoryAddCheckpoint);
+  fMapEditor := TKMMapEditor.Create(True, fTerrainPainter, fMapEditorInterface.HistoryUndoRedo, fMapEditorInterface.HistoryAddCheckpoint);
   fMapEditor.MissionDefSavePath := fGameName + '.dat';
   gTerrain.MakeNewMap(aSizeX, aSizeY, True);
   fTerrainPainter.InitEmpty;
   fMapEditor.History.MakeCheckpoint(caAll, gResTexts[TX_MAPED_HISTORY_CHPOINT_INITIAL]);
-  fMapEditor.IsNewMap := True;
 
   gHands.AddPlayers(MAX_HANDS); //Create MAX players
   gHands[0].HandType := hndHuman; //Make Player1 human by default
@@ -1357,6 +1356,7 @@ var
   fMissionParser: TKMMissionParserStandard;
   MapInfo: TKMapInfo;
   MapFolder: TKMapFolder;
+  mapPath: string;
 begin
   if aPathName = '' then exit;
 
@@ -1369,7 +1369,12 @@ begin
   gHands.RemoveAssetsOutOfBounds(aInsetRect);
   gHands.RemoveEmptyPlayers;
 
-  ForceDirectories(ExtractFilePath(aPathName));
+  mapPath := ExtractFilePath(aPathName);
+
+  if fMapEditor.IsNewMap then
+    KMDeleteFolderContent(mapPath); //Delete any possible old map with the same name, if there was any
+
+  ForceDirectories(mapPath);
   gLog.AddTime('Saving from map editor: ' + aPathName);
 
   fMapEditor.MissionDefSavePath := aPathName;

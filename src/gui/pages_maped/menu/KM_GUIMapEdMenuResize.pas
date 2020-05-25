@@ -236,7 +236,7 @@ begin
   begin
     Panel_Resize_Edit.Hide;
     Panel_Resize_Confirm.Show;
-    if not gGame.MapEditor.IsNewMap or gGame.MapEditor.WasSaved then
+    if not gGame.MapEditor.IsNewMap then
     begin
       Label_Resize_Confirm.Caption := gResTexts[TX_MAPED_MAP_RESIZE_CONFIRM];
       Button_Resize_Confirm_Yes.Visible := True;

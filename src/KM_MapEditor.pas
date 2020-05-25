@@ -19,6 +19,7 @@ type
   //Collection of map editing classes and map editor specific data
   TKMMapEditor = class
   private
+    fIsNewMap: Boolean;
     fTerrainPainter: TKMTerrainPainter;
     fHistory: TKMMapEditorHistory;
     fDeposits: TKMDeposits;
@@ -58,16 +59,14 @@ type
     PlayerClassicAI: array [0..MAX_HANDS - 1] of Boolean;
     PlayerAdvancedAI: array [0..MAX_HANDS - 1] of Boolean;
 
-    IsNewMap: Boolean;  // set True for new empty map
-    WasSaved: Boolean; // set True when at least 1 map save has been done
-
-    constructor Create(aTerrainPainter: TKMTerrainPainter; aOnHistoryUndoRedo, aOnHistoryAddCheckpoint: TEvent);
+    constructor Create(aNewMap: Boolean; aTerrainPainter: TKMTerrainPainter; aOnHistoryUndoRedo, aOnHistoryAddCheckpoint: TEvent);
     destructor Destroy; override;
     property Deposits: TKMDeposits read fDeposits;
     property VisibleLayers: TKMMapEdVisibleLayerSet read fVisibleLayers write fVisibleLayers;
     property Selection: TKMSelection read fSelection;
     property Revealers[aIndex: Byte]: TKMPointTagList read GetRevealer;
     property History: TKMMapEditorHistory read GetHistory write fHistory;
+    property IsNewMap: Boolean read fIsNewMap;
 
     function OnlyAdvancedAIHand(aHandId: TKMHandID): Boolean;
 
@@ -104,7 +103,7 @@ const
 
 
 { TKMMapEditor }
-constructor TKMMapEditor.Create(aTerrainPainter: TKMTerrainPainter; aOnHistoryUndoRedo, aOnHistoryAddCheckpoint: TEvent);
+constructor TKMMapEditor.Create(aNewMap: Boolean; aTerrainPainter: TKMTerrainPainter; aOnHistoryUndoRedo, aOnHistoryAddCheckpoint: TEvent);
 var
   I: Integer;
 begin
@@ -113,6 +112,7 @@ begin
   MissionDefSavePath := '';
 
   fVisibleLayers := [melDeposits];
+  fIsNewMap := aNewMap;
 
   for I := 0 to MAX_HANDS - 1 do
   begin
@@ -227,34 +227,39 @@ var
   I: Integer;
   MissionPath, MissionNewName, MissionOldName, DestPath: UnicodeString;
 begin
-  MissionPath := ExtractFilePath(aMissionFile);
-  MissionNewName := GetFileDirName(aMissionFile);
-  MissionOldName := '';
+  if not fIsNewMap then
+  begin
+    MissionPath := ExtractFilePath(aMissionFile);
+    MissionNewName := GetFileDirName(aMissionFile);
+    MissionOldName := '';
 
-  //Copy all attachments files into new folder
-  for I := 0 to High(fAttachedFiles) do
-    if FileExists(fAttachedFiles[I]) then
-    begin
-      DestPath := MissionPath + ExtractFileName(fAttachedFiles[I]);
-
-      //Get MissionOldName from first attachment file
-      if MissionOldName = '' then
-        MissionOldName := GetFileDirName(fAttachedFiles[I]);
-
-      if not SameFileName(DestPath, fAttachedFiles[I]) then
+    //Copy all attachments files into new folder
+    for I := 0 to High(fAttachedFiles) do
+      if FileExists(fAttachedFiles[I]) then
       begin
-        if FileExists(DestPath) then
-          DeleteFile(DestPath);
-        KMCopyFile(fAttachedFiles[I], DestPath);
+        DestPath := MissionPath + ExtractFileName(fAttachedFiles[I]);
+
+        //Get MissionOldName from first attachment file
+        if MissionOldName = '' then
+          MissionOldName := GetFileDirName(fAttachedFiles[I]);
+
+        if not SameFileName(DestPath, fAttachedFiles[I]) then
+        begin
+          if FileExists(DestPath) then
+            DeleteFile(DestPath);
+          KMCopyFile(fAttachedFiles[I], DestPath);
+        end;
       end;
-    end;
 
-  // Rename all files inside new saved map folder
-  KMRenameFilesInFolder(MissionPath, MissionOldName, MissionNewName);
+    // Rename all files inside new saved map folder
+    KMRenameFilesInFolder(MissionPath, MissionOldName, MissionNewName);
 
-  //Update attached files to be in the new path
-  SetLength(fAttachedFiles, 0);
-  DetectAttachedFiles(aMissionFile);
+    //Update attached files to be in the new path
+    SetLength(fAttachedFiles, 0);
+    DetectAttachedFiles(aMissionFile);
+  end;
+
+  fIsNewMap := False; //Map was saved, its not a new map anymore
 end;
 
 

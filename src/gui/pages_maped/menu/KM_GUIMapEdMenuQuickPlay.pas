@@ -179,7 +179,7 @@ begin
     else
       PlayerSelectFirst;
   end;
-  Button_QuickPlay.Enabled := (not gGame.MapEditor.IsNewMap or gGame.MapEditor.WasSaved) and DropList_SelectHand.List.Selected;
+  Button_QuickPlay.Enabled := not gGame.MapEditor.IsNewMap and DropList_SelectHand.List.Selected;
 
   //Update Difficulty dropbox
   DropBox_Difficulty.Clear;
