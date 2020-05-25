@@ -571,7 +571,11 @@ var
   InputStream: TFileStream;
   DecompressionStream: TDecompressionStream;
 begin
-  if SKIP_RENDER then Exit;
+  case fRT of
+    rxTiles: if SKIP_RENDER and not DO_NOT_SKIP_LOAD_TILESET then Exit;
+    else     if SKIP_RENDER then Exit;
+  end;
+
   if not FileExists(aFileName) then Exit;
 
   InputStream := TFileStream.Create(aFileName, fmOpenRead or fmShareDenyNone);

@@ -138,6 +138,7 @@ var
   MAPED_SHOW_CONDITION_UNIT_BTNS: Boolean = True; //Show condition Inc/Dec buttons for citizen units in MapEd
   {Gameplay display}
   SKIP_RENDER             :Boolean = False; //Skip all the rendering in favor of faster logic
+  DO_NOT_SKIP_LOAD_TILESET:Boolean = False; //Do not skip load tileset even if SKIP_RENDER is set
   SKIP_SOUND              :Boolean = False; //Skip all the sounds in favor of faster logic
   SKIP_LOADING_CURSOR     :Boolean = False; //Skip loading and setting cursor
   SKIP_SETTINGS_SAVE      :Boolean = False; //Skip save main/game settings into the ini file
