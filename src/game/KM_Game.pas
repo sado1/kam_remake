@@ -99,6 +99,7 @@ type
     function GetReplayAutosaveEffectiveFrequency: Integer;
     procedure UpdateClockUI;
     function GetMapEditor: TKMMapEditor;
+    function GetMissionFile: UnicodeString;
 
     procedure GameMPDisconnect(const aData: UnicodeString);
     procedure OtherPlayerDisconnected(aDefeatedPlayerHandId: Integer);
@@ -117,9 +118,6 @@ type
 
     function DoSaveRandomChecks: Boolean;
     function DoSaveGameAsText: Boolean;
-
-    function GetMissionFile: UnicodeString;
-
     function DoRenderGame: Boolean;
 
     procedure MultiplayerRig(aNewGame: Boolean);
