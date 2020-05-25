@@ -2058,6 +2058,7 @@ procedure TKMGame.SaveGameToFile(const aPathName: String; aTimestamp: TDateTime;
 var
   SaveStream, SaveStreamTxt: TKMemoryStream;
   GameMPLocalData: TKMGameMPLocalData;
+  path: string;
 begin
   if BLOCK_SAVE then // This must be here because of paraller Runner
     Exit;
@@ -2079,7 +2080,11 @@ begin
   begin
     //Doing this async would mean that every part of saving must be done async
     //Seems error prone so I disabled it for now. It only takes ~0.3ms in my tests
-    ForceDirectories(ExtractFilePath(aPathName));
+    path := ExtractFilePath(aPathName);
+    if DirectoryExists(path) then
+      KMDeleteFolderContent(path) // Delete save folder content, since we want to overwrite old saves
+    else
+      ForceDirectories(path);
     {fSaveWorkerThread.QueueWork(procedure
     begin
       ForceDirectories(ExtractFilePath(aPathName));
