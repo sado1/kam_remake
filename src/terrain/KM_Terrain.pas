@@ -2838,14 +2838,83 @@ begin
 end;
 
 
-function TKMTerrain.ChooseTreeToPlant(const aLoc: TKMPoint):integer;
+function TKMTerrain.ChooseTreeToPlant(const aLoc: TKMPoint): Integer;
+type
+  TKMTreeType = (ttNone, ttOnGrass, ttOnYellowGrass, ttOnDirt);
+
+const
+  // Dependancy found empirically
+  TERKIND_TO_TREE_TYPE: array[TKMTerrainKind] of TKMTreeType = (
+    ttNone,           //    tkCustom,
+    ttOnGrass,        //    tkGrass,
+    ttOnGrass,        //    tkMoss,
+    ttOnGrass,        //    tkPaleGrass,
+    ttNone,           //    tkCoastSand,
+    ttOnGrass,        //    tkGrassSand1,
+    ttOnYellowGrass,  //    tkGrassSand2,
+    ttOnYellowGrass,  //    tkGrassSand3,
+    ttOnGrass,        //    tkSand,       //8
+    ttOnDirt,         //    tkGrassDirt,
+    ttOnDirt,         //    tkDirt,       //10
+    ttOnDirt,         //    tkCobbleStone,
+    ttNone,           //    tkGrassyWater,//12
+    ttNone,           //    tkSwamp,      //13
+    ttNone,           //    tkIce,        //14
+    ttOnGrass,        //    tkSnowOnGrass,
+    ttOnDirt,         //    tkSnowOnDirt,
+    ttNone,           //    tkSnow,
+    ttNone,           //    tkDeepSnow,
+    ttNone,           //    tkStone,
+    ttNone,           //    tkGoldMount,
+    ttNone,           //    tkIronMount,  //21
+    ttNone,           //    tkAbyss,
+    ttOnDirt,         //    tkGravel,
+    ttNone,           //    tkCoal,
+    ttNone,           //    tkGold,
+    ttNone,           //    tkIron,
+    ttNone,           //    tkWater,
+    ttNone,           //    tkFastWater,
+    ttNone            //    tkLava);
+  );
+
+  function FindBestTreeType: TKMTreeType;
+  var
+    I, K: Integer;
+    treeType: TKMTreeType;
+    verticeCornerTKinds: TKMTerrainKindCorners;
+  begin
+    // Find tree type to plant by vertice corner terrain kinds
+    Result := ttNone;
+    GetVerticeTerKinds(aLoc, verticeCornerTKinds);
+    // Compare corner terKinds and find if there are at least 2 of the same tree type
+    for I := 0 to 3 do
+      for K := I + 1 to 3 do
+      begin
+        treeType := TERKIND_TO_TREE_TYPE[verticeCornerTKinds[I]];
+        if    (treeType <> ttNone)
+          and (treeType = TERKIND_TO_TREE_TYPE[verticeCornerTKinds[K]]) then //Pair found - we can choose this tree type
+          Exit(treeType);
+      end;
+  end;
+
+var
+  bestTreeType: TKMTreeType;
 begin
+  Result := 0;
   //This function randomly chooses a tree object based on the terrain type. Values matched to KaM, using all soil tiles.
   case Land[aLoc.Y,aLoc.X].BaseLayer.Terrain of
-    0..3,5,6,8,9,11,13,14,18,19,56,57,66..69,72..74,84..86,93..98,180,188: Result := ChopableTrees[1+KaMRandom(7, 'TKMTerrain.ChooseTreeToPlant'), caAge1]; //Grass (oaks, etc.)
-    26..28,75..80,182,190:                                                 Result := ChopableTrees[7+KaMRandom(2, 'TKMTerrain.ChooseTreeToPlant 2'), caAge1]; //Yellow dirt
-    16,17,20,21,34..39,47,49,58,64,65,87..89,183,191,220,247:              Result := ChopableTrees[9+KaMRandom(5, 'TKMTerrain.ChooseTreeToPlant 3'), caAge1]; //Brown dirt (pine trees)
-    else Result := ChopableTrees[1+KaMRandom(Length(ChopableTrees), 'TKMTerrain.ChooseTreeToPlant 4'), caAge1]; //If it isn't one of those soil types then choose a random tree
+    0..3,5,6,8,9,11,13,14,18,19,56,57,66..69,72..74,84..86,93..98,180,188: bestTreeType := ttOnGrass;
+    26..28,75..80,182,190:                                                 bestTreeType := ttOnYellowGrass;
+    16,17,20,21,34..39,47,49,58,64,65,87..89,183,191,220,247:              bestTreeType := ttOnDirt;
+    else
+      bestTreeType := FindBestTreeType;
+  end;
+
+  case bestTreeType of
+    ttNone:           Result := ChopableTrees[1 + KaMRandom(Length(ChopableTrees), 'TKMTerrain.ChooseTreeToPlant 4'), caAge1]; //If it isn't one of those soil types then choose a random tree
+    ttOnGrass:        Result := ChopableTrees[1 + KaMRandom(7, 'TKMTerrain.ChooseTreeToPlant'), caAge1]; //Grass (oaks, etc.)
+    ttOnYellowGrass:  Result := ChopableTrees[7 + KaMRandom(2, 'TKMTerrain.ChooseTreeToPlant 2'), caAge1]; //Yellow dirt
+    ttOnDirt:         Result := ChopableTrees[9 + KaMRandom(5, 'TKMTerrain.ChooseTreeToPlant 3'), caAge1]; //Brown dirt (pine trees)
   end;
 end;
 
