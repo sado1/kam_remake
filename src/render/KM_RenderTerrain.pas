@@ -293,7 +293,7 @@ var
     with gTerrain do
     begin
       aVert.X := aTX;
-      aVert.Y := aTY - Land[aTY+1, aTX+1].Height / CELL_HEIGHT_DIV;
+      aVert.Y := aTY - Land[aTY+1, aTX+1].RenderHeight / CELL_HEIGHT_DIV;
       aVert.Z := aTY - Byte(aIsBottomRow);
       aVert.UTile := aUTile;
       aVert.VTile := aVTile;
@@ -305,7 +305,7 @@ var
   procedure SetTileFowVertex(out aVert: TTileFowVertice; Fog: PKMByte2Array; aTX, aTY: Word; aIsBottomRow: Boolean); inline;
   begin
     aVert.X := aTX;
-    aVert.Y := aTY - gTerrain.Land[aTY+1, aTX+1].Height / CELL_HEIGHT_DIV;
+    aVert.Y := aTY - gTerrain.Land[aTY+1, aTX+1].RenderHeight / CELL_HEIGHT_DIV;
     aVert.Z := aTY - Byte(aIsBottomRow);
     if Fog <> nil then
       aVert.UFow := Fog^[aTY, aTX] / 256
@@ -318,7 +318,7 @@ var
     with gTerrain do
     begin
       aVert.X := aTX;
-      aVert.Y := aTY - Land[aTY+1, aTX+1].Height / CELL_HEIGHT_DIV;
+      aVert.Y := aTY - Land[aTY+1, aTX+1].RenderHeight / CELL_HEIGHT_DIV;
       aVert.Z := aTY - Byte(aIsBottomRow);
       aVert.UAnim := aUAnimTile;
       aVert.VAnim := aVAnimTile;
@@ -533,15 +533,15 @@ begin
   with gTerrain do
     if RENDER_3D then
     begin
-      glTexCoord2fv(@TexC[1]); glVertex3f(tX-1,tY-1,-Land[tY,  tX].Height/CELL_HEIGHT_DIV);
-      glTexCoord2fv(@TexC[2]); glVertex3f(tX-1,tY  ,-Land[tY+1,tX].Height/CELL_HEIGHT_DIV);
-      glTexCoord2fv(@TexC[3]); glVertex3f(tX  ,tY  ,-Land[tY+1,tX+1].Height/CELL_HEIGHT_DIV);
-      glTexCoord2fv(@TexC[4]); glVertex3f(tX  ,tY-1,-Land[tY,  tX+1].Height/CELL_HEIGHT_DIV);
+      glTexCoord2fv(@TexC[1]); glVertex3f(tX-1,tY-1,-Land[tY,  tX].RenderHeight/CELL_HEIGHT_DIV);
+      glTexCoord2fv(@TexC[2]); glVertex3f(tX-1,tY  ,-Land[tY+1,tX].RenderHeight/CELL_HEIGHT_DIV);
+      glTexCoord2fv(@TexC[3]); glVertex3f(tX  ,tY  ,-Land[tY+1,tX+1].RenderHeight/CELL_HEIGHT_DIV);
+      glTexCoord2fv(@TexC[4]); glVertex3f(tX  ,tY-1,-Land[tY,  tX+1].RenderHeight/CELL_HEIGHT_DIV);
     end else begin
-      glTexCoord2fv(@TexC[1]); glVertex3f(tX-1,tY-1-Land[tY,  tX].Height / CELL_HEIGHT_DIV, tY-1);
-      glTexCoord2fv(@TexC[2]); glVertex3f(tX-1,tY  -Land[tY+1,tX].Height / CELL_HEIGHT_DIV, tY-1);
-      glTexCoord2fv(@TexC[3]); glVertex3f(tX  ,tY  -Land[tY+1,tX+1].Height / CELL_HEIGHT_DIV, tY-1);
-      glTexCoord2fv(@TexC[4]); glVertex3f(tX  ,tY-1-Land[tY,  tX+1].Height / CELL_HEIGHT_DIV, tY-1);
+      glTexCoord2fv(@TexC[1]); glVertex3f(tX-1,tY-1-Land[tY,  tX].RenderHeight / CELL_HEIGHT_DIV, tY-1);
+      glTexCoord2fv(@TexC[2]); glVertex3f(tX-1,tY  -Land[tY+1,tX].RenderHeight / CELL_HEIGHT_DIV, tY-1);
+      glTexCoord2fv(@TexC[3]); glVertex3f(tX  ,tY  -Land[tY+1,tX+1].RenderHeight / CELL_HEIGHT_DIV, tY-1);
+      glTexCoord2fv(@TexC[4]); glVertex3f(tX  ,tY-1-Land[tY,  tX+1].RenderHeight / CELL_HEIGHT_DIV, tY-1);
     end;
 end;
 
@@ -554,34 +554,34 @@ begin
   with gTerrain do
     if RENDER_3D then
     begin
-      glTexCoord2fv(@TexC[1]); glVertex3f(tX-1,tY-1,-Land[tY,  tX].Height/CELL_HEIGHT_DIV);
-      glTexCoord2fv(@TexC[2]); glVertex3f(tX-1,tY  ,-Land[tY+1,tX].Height/CELL_HEIGHT_DIV);
-      glTexCoord2fv(@TexC[3]); glVertex3f(tX  ,tY  ,-Land[tY+1,tX+1].Height/CELL_HEIGHT_DIV);
-      glTexCoord2fv(@TexC[4]); glVertex3f(tX  ,tY-1,-Land[tY,  tX+1].Height/CELL_HEIGHT_DIV);
+      glTexCoord2fv(@TexC[1]); glVertex3f(tX-1,tY-1,-Land[tY,  tX].RenderHeight/CELL_HEIGHT_DIV);
+      glTexCoord2fv(@TexC[2]); glVertex3f(tX-1,tY  ,-Land[tY+1,tX].RenderHeight/CELL_HEIGHT_DIV);
+      glTexCoord2fv(@TexC[3]); glVertex3f(tX  ,tY  ,-Land[tY+1,tX+1].RenderHeight/CELL_HEIGHT_DIV);
+      glTexCoord2fv(@TexC[4]); glVertex3f(tX  ,tY-1,-Land[tY,  tX+1].RenderHeight/CELL_HEIGHT_DIV);
     end else begin
       if aCorners[0] then
         glColor4f(1,1,1,1)
       else
         glColor4f(1,1,1,BlendFactor);
-      glTexCoord2fv(@TexC[1]); glVertex3f(tX-1,tY-1-Land[tY,  tX].Height / CELL_HEIGHT_DIV, tY-1);
+      glTexCoord2fv(@TexC[1]); glVertex3f(tX-1,tY-1-Land[tY,  tX].RenderHeight / CELL_HEIGHT_DIV, tY-1);
 
       if aCorners[3] then
         glColor4f(1,1,1,1)
       else
         glColor4f(1,1,1,BlendFactor);
-      glTexCoord2fv(@TexC[2]); glVertex3f(tX-1,tY  -Land[tY+1,tX].Height / CELL_HEIGHT_DIV, tY-1);
+      glTexCoord2fv(@TexC[2]); glVertex3f(tX-1,tY  -Land[tY+1,tX].RenderHeight / CELL_HEIGHT_DIV, tY-1);
 
       if aCorners[2] then
         glColor4f(1,1,1,1)
       else
         glColor4f(1,1,1,BlendFactor);
-      glTexCoord2fv(@TexC[3]); glVertex3f(tX  ,tY  -Land[tY+1,tX+1].Height / CELL_HEIGHT_DIV, tY-1);
+      glTexCoord2fv(@TexC[3]); glVertex3f(tX  ,tY  -Land[tY+1,tX+1].RenderHeight / CELL_HEIGHT_DIV, tY-1);
 
       if aCorners[1] then
         glColor4f(1,1,1,1)
       else
         glColor4f(1,1,1,BlendFactor);
-      glTexCoord2fv(@TexC[4]); glVertex3f(tX  ,tY-1-Land[tY,  tX+1].Height / CELL_HEIGHT_DIV, tY-1);
+      glTexCoord2fv(@TexC[4]); glVertex3f(tX  ,tY-1-Land[tY,  tX+1].RenderHeight / CELL_HEIGHT_DIV, tY-1);
       glColor4f(1,1,1,1);
     end;
 end;
@@ -949,17 +949,17 @@ begin
             if RENDER_3D then
             begin
               glBegin(GL_TRIANGLE_FAN);
-                glTexCoord1f(Land[  tY,   tX].Light); glVertex3f(tX-1, tY-1, -Land[  tY,   tX].Height / CELL_HEIGHT_DIV);
-                glTexCoord1f(Land[tY+1,   tX].Light); glVertex3f(tX-1,   tY, -Land[tY+1,   tX].Height / CELL_HEIGHT_DIV);
-                glTexCoord1f(Land[tY+1, tX+1].Light); glVertex3f(  tX,   tY, -Land[tY+1, tX+1].Height / CELL_HEIGHT_DIV);
-                glTexCoord1f(Land[  tY, tX+1].Light); glVertex3f(  tX, tY-1, -Land[  tY, tX+1].Height / CELL_HEIGHT_DIV);
+                glTexCoord1f(Land[  tY,   tX].Light); glVertex3f(tX-1, tY-1, -Land[  tY,   tX].RenderHeight / CELL_HEIGHT_DIV);
+                glTexCoord1f(Land[tY+1,   tX].Light); glVertex3f(tX-1,   tY, -Land[tY+1,   tX].RenderHeight / CELL_HEIGHT_DIV);
+                glTexCoord1f(Land[tY+1, tX+1].Light); glVertex3f(  tX,   tY, -Land[tY+1, tX+1].RenderHeight / CELL_HEIGHT_DIV);
+                glTexCoord1f(Land[  tY, tX+1].Light); glVertex3f(  tX, tY-1, -Land[  tY, tX+1].RenderHeight / CELL_HEIGHT_DIV);
               glEnd;
             end else begin
               glBegin(GL_TRIANGLE_FAN);
-                glTexCoord1f(Land[  tY,   tX].Light); glVertex3f(tX-1, tY-1 - Land[  tY,   tX].Height / CELL_HEIGHT_DIV, tY-1);
-                glTexCoord1f(Land[tY+1,   tX].Light); glVertex3f(tX-1,   tY - Land[tY+1,   tX].Height / CELL_HEIGHT_DIV, tY-1);
-                glTexCoord1f(Land[tY+1, tX+1].Light); glVertex3f(  tX,   tY - Land[tY+1, tX+1].Height / CELL_HEIGHT_DIV, tY-1);
-                glTexCoord1f(Land[  tY, tX+1].Light); glVertex3f(  tX, tY-1 - Land[  tY, tX+1].Height / CELL_HEIGHT_DIV, tY-1);
+                glTexCoord1f(Land[  tY,   tX].Light); glVertex3f(tX-1, tY-1 - Land[  tY,   tX].RenderHeight / CELL_HEIGHT_DIV, tY-1);
+                glTexCoord1f(Land[tY+1,   tX].Light); glVertex3f(tX-1,   tY - Land[tY+1,   tX].RenderHeight / CELL_HEIGHT_DIV, tY-1);
+                glTexCoord1f(Land[tY+1, tX+1].Light); glVertex3f(  tX,   tY - Land[tY+1, tX+1].RenderHeight / CELL_HEIGHT_DIV, tY-1);
+                glTexCoord1f(Land[  tY, tX+1].Light); glVertex3f(  tX, tY-1 - Land[  tY, tX+1].RenderHeight / CELL_HEIGHT_DIV, tY-1);
               glEnd;
             end;
           end;
@@ -1017,17 +1017,17 @@ begin
             if RENDER_3D then
             begin
               glBegin(GL_TRIANGLE_FAN);
-                glTexCoord1f(-Land[  tY,   tX].Light); glVertex3f(tX-1, tY-1, -Land[  tY,   tX].Height / CELL_HEIGHT_DIV);
-                glTexCoord1f(-Land[tY+1,   tX].Light); glVertex3f(tX-1,   tY, -Land[tY+1,   tX].Height / CELL_HEIGHT_DIV);
-                glTexCoord1f(-Land[tY+1, tX+1].Light); glVertex3f(  tX,   tY, -Land[tY+1, tX+1].Height / CELL_HEIGHT_DIV);
-                glTexCoord1f(-Land[  tY, tX+1].Light); glVertex3f(  tX, tY-1, -Land[  tY, tX+1].Height / CELL_HEIGHT_DIV);
+                glTexCoord1f(-Land[  tY,   tX].Light); glVertex3f(tX-1, tY-1, -Land[  tY,   tX].RenderHeight / CELL_HEIGHT_DIV);
+                glTexCoord1f(-Land[tY+1,   tX].Light); glVertex3f(tX-1,   tY, -Land[tY+1,   tX].RenderHeight / CELL_HEIGHT_DIV);
+                glTexCoord1f(-Land[tY+1, tX+1].Light); glVertex3f(  tX,   tY, -Land[tY+1, tX+1].RenderHeight / CELL_HEIGHT_DIV);
+                glTexCoord1f(-Land[  tY, tX+1].Light); glVertex3f(  tX, tY-1, -Land[  tY, tX+1].RenderHeight / CELL_HEIGHT_DIV);
               glEnd;
             end else begin
               glBegin(GL_TRIANGLE_FAN);
-                glTexCoord1f(-Land[  tY,   tX].Light); glVertex3f(tX-1, tY-1 - Land[  tY,   tX].Height / CELL_HEIGHT_DIV, tY-1);
-                glTexCoord1f(-Land[tY+1,   tX].Light); glVertex3f(tX-1,   tY - Land[tY+1,   tX].Height / CELL_HEIGHT_DIV, tY-1);
-                glTexCoord1f(-Land[tY+1, tX+1].Light); glVertex3f(  tX,   tY - Land[tY+1, tX+1].Height / CELL_HEIGHT_DIV, tY-1);
-                glTexCoord1f(-Land[  tY, tX+1].Light); glVertex3f(  tX, tY-1 - Land[  tY, tX+1].Height / CELL_HEIGHT_DIV, tY-1);
+                glTexCoord1f(-Land[  tY,   tX].Light); glVertex3f(tX-1, tY-1 - Land[  tY,   tX].RenderHeight / CELL_HEIGHT_DIV, tY-1);
+                glTexCoord1f(-Land[tY+1,   tX].Light); glVertex3f(tX-1,   tY - Land[tY+1,   tX].RenderHeight / CELL_HEIGHT_DIV, tY-1);
+                glTexCoord1f(-Land[tY+1, tX+1].Light); glVertex3f(  tX,   tY - Land[tY+1, tX+1].RenderHeight / CELL_HEIGHT_DIV, tY-1);
+                glTexCoord1f(-Land[  tY, tX+1].Light); glVertex3f(  tX, tY-1 - Land[  tY, tX+1].RenderHeight / CELL_HEIGHT_DIV, tY-1);
               glEnd;
             end;
           end;
@@ -1096,13 +1096,13 @@ begin
       begin
         glBegin(GL_TRIANGLE_FAN);
           glTexCoord1f(Fog^[I - 1, K - 1] / 255);
-          glVertex3f(K - 1, I - 1, -Land[I, K].Height / CELL_HEIGHT_DIV);
+          glVertex3f(K - 1, I - 1, -Land[I, K].RenderHeight / CELL_HEIGHT_DIV);
           glTexCoord1f(Fog^[I, K - 1] / 255);
-          glVertex3f(K - 1, I, -Land[I + 1, K].Height / CELL_HEIGHT_DIV);
+          glVertex3f(K - 1, I, -Land[I + 1, K].RenderHeight / CELL_HEIGHT_DIV);
           glTexCoord1f(Fog^[I, K] / 255);
-          glVertex3f(K, I, -Land[I + 1, K + 1].Height / CELL_HEIGHT_DIV);
+          glVertex3f(K, I, -Land[I + 1, K + 1].RenderHeight / CELL_HEIGHT_DIV);
           glTexCoord1f(Fog^[I - 1, K] / 255);
-          glVertex3f(K, I - 1, -Land[I, K + 1].Height / CELL_HEIGHT_DIV);
+          glVertex3f(K, I - 1, -Land[I, K + 1].RenderHeight / CELL_HEIGHT_DIV);
         glEnd;
       end
     else
@@ -1111,13 +1111,13 @@ begin
       begin
         glBegin(GL_TRIANGLE_FAN);
           glTexCoord1f(Fog^[I - 1, K - 1] / 255);
-          glVertex2f(K - 1, I - 1 - Land[I, K].Height / CELL_HEIGHT_DIV);
+          glVertex2f(K - 1, I - 1 - Land[I, K].RenderHeight / CELL_HEIGHT_DIV);
           glTexCoord1f(Fog^[I, K - 1] / 255);
-          glVertex2f(K - 1, I - Land[I + 1, K].Height / CELL_HEIGHT_DIV);
+          glVertex2f(K - 1, I - Land[I + 1, K].RenderHeight / CELL_HEIGHT_DIV);
           glTexCoord1f(Fog^[I, K] / 255);
-          glVertex2f(K, I - Land[I + 1, K + 1].Height / CELL_HEIGHT_DIV);
+          glVertex2f(K, I - Land[I + 1, K + 1].RenderHeight / CELL_HEIGHT_DIV);
           glTexCoord1f(Fog^[I - 1, K] / 255);
-          glVertex2f(K, I - 1 - Land[I, K + 1].Height / CELL_HEIGHT_DIV);
+          glVertex2f(K, I - 1 - Land[I, K + 1].RenderHeight / CELL_HEIGHT_DIV);
         glEnd;
       end;
   end;
@@ -1134,13 +1134,13 @@ begin
       begin
         glBegin(GL_TRIANGLE_FAN);
           glTexCoord1f(Fog^[0, K - 1] / 255);
-          glVertex2f(K - 1, I - 1 - Land[1, K].Height / CELL_HEIGHT_DIV);
+          glVertex2f(K - 1, I - 1 - Land[1, K].RenderHeight / CELL_HEIGHT_DIV);
           glTexCoord1f(Fog^[0, K - 1] / 255);
-          glVertex2f(K - 1, I - Land[1, K].Height / CELL_HEIGHT_DIV);
+          glVertex2f(K - 1, I - Land[1, K].RenderHeight / CELL_HEIGHT_DIV);
           glTexCoord1f(Fog^[0, K] / 255);
-          glVertex2f(K, I - Land[1, K + 1].Height / CELL_HEIGHT_DIV);
+          glVertex2f(K, I - Land[1, K + 1].RenderHeight / CELL_HEIGHT_DIV);
           glTexCoord1f(Fog^[0, K] / 255);
-          glVertex2f(K, I - 1 - Land[1, K + 1].Height / CELL_HEIGHT_DIV);
+          glVertex2f(K, I - 1 - Land[1, K + 1].RenderHeight / CELL_HEIGHT_DIV);
         glEnd;
       end;
     end;
@@ -1153,13 +1153,13 @@ begin
       begin
         glBegin(GL_TRIANGLE_FAN);
           glTexCoord1f(Fog^[MapY-1, K - 1] / 255);
-          glVertex2f(K - 1, MapY-1 - Land[MapY, K].Height / CELL_HEIGHT_DIV);
+          glVertex2f(K - 1, MapY-1 - Land[MapY, K].RenderHeight / CELL_HEIGHT_DIV);
           glTexCoord1f(Fog^[MapY-1, K - 1] / 255);
-          glVertex2f(K - 1, MapY - Land[MapY, K].Height / CELL_HEIGHT_DIV);
+          glVertex2f(K - 1, MapY - Land[MapY, K].RenderHeight / CELL_HEIGHT_DIV);
           glTexCoord1f(Fog^[MapY-1, K] / 255);
-          glVertex2f(K, MapY-1 - Land[MapY, K + 1].Height / CELL_HEIGHT_DIV);
+          glVertex2f(K, MapY-1 - Land[MapY, K + 1].RenderHeight / CELL_HEIGHT_DIV);
           glTexCoord1f(Fog^[MapY-1, K] / 255);
-          glVertex2f(K, MapY - Land[MapY, K + 1].Height / CELL_HEIGHT_DIV);
+          glVertex2f(K, MapY - Land[MapY, K + 1].RenderHeight / CELL_HEIGHT_DIV);
         glEnd;
       end;
     end;
@@ -1372,8 +1372,8 @@ begin
     UVb.X := gGFXData[rxGui, TexID].Tex.u2;
     UVb.Y := gGFXData[rxGui, TexID].Tex.v2;
 
-    y1 := pY - 1 - (gTerrain.Land[pY, pX].Height + VO) / CELL_HEIGHT_DIV;
-    y2 := pY - 1 - (gTerrain.Land[pY, pX + 1].Height + VO) / CELL_HEIGHT_DIV;
+    y1 := pY - 1 - (gTerrain.Land[pY, pX].RenderHeight + VO) / CELL_HEIGHT_DIV;
+    y2 := pY - 1 - (gTerrain.Land[pY, pX + 1].RenderHeight + VO) / CELL_HEIGHT_DIV;
 
     FenceY := gGFXData[rxGui,TexID].PxWidth / CELL_SIZE_PX;
     glBegin(GL_QUADS);
@@ -1386,14 +1386,14 @@ begin
   else
   begin //Vertical
     TRender.BindTexture(gGFXData[rxGui,TexID].Tex.ID);
-    HeightInPx := Round(CELL_SIZE_PX * (1 + (gTerrain.Land[pY,pX].Height - gTerrain.Land[pY+1,pX].Height)/CELL_HEIGHT_DIV)+FO);
+    HeightInPx := Round(CELL_SIZE_PX * (1 + (gTerrain.Land[pY,pX].RenderHeight - gTerrain.Land[pY+1,pX].RenderHeight)/CELL_HEIGHT_DIV)+FO);
     UVa.X := gGFXData[rxGui, TexID].Tex.u1;
     UVa.Y := gGFXData[rxGui, TexID].Tex.v1;
     UVb.X := gGFXData[rxGui, TexID].Tex.u2;
     UVb.Y := Mix(gGFXData[rxGui, TexID].Tex.v2, gGFXData[rxGui, TexID].Tex.v1, HeightInPx / gGFXData[rxGui, TexID].pxHeight);
 
-    y1 := pY - 1 - (gTerrain.Land[pY, pX].Height + FO + VO) / CELL_HEIGHT_DIV;
-    y2 := pY - (gTerrain.Land[pY + 1, pX].Height + VO) / CELL_HEIGHT_DIV;
+    y1 := pY - 1 - (gTerrain.Land[pY, pX].RenderHeight + FO + VO) / CELL_HEIGHT_DIV;
+    y2 := pY - (gTerrain.Land[pY + 1, pX].RenderHeight + VO) / CELL_HEIGHT_DIV;
 
     FenceX := gGFXData[rxGui,TexID].PxWidth / CELL_SIZE_PX;
 
@@ -1430,15 +1430,15 @@ begin
   UVb.Y := gGFXData[rxGui, ID].Tex.v2;
 
   glBegin(GL_QUADS);
-    glTexCoord2f(UVb.x, UVa.y); glVertex2f(pX-1, pY-1 - gTerrain.Land[pY  ,pX  ].Height/CELL_HEIGHT_DIV+0.10);
-    glTexCoord2f(UVa.x, UVa.y); glVertex2f(pX-1, pY-1 - gTerrain.Land[pY  ,pX  ].Height/CELL_HEIGHT_DIV-0.15);
-    glTexCoord2f(UVa.x, UVb.y); glVertex2f(pX  , pY   - gTerrain.Land[pY+1,pX+1].Height/CELL_HEIGHT_DIV-0.25);
-    glTexCoord2f(UVb.x, UVb.y); glVertex2f(pX  , pY   - gTerrain.Land[pY+1,pX+1].Height/CELL_HEIGHT_DIV);
+    glTexCoord2f(UVb.x, UVa.y); glVertex2f(pX-1, pY-1 - gTerrain.Land[pY  ,pX  ].RenderHeight/CELL_HEIGHT_DIV+0.10);
+    glTexCoord2f(UVa.x, UVa.y); glVertex2f(pX-1, pY-1 - gTerrain.Land[pY  ,pX  ].RenderHeight/CELL_HEIGHT_DIV-0.15);
+    glTexCoord2f(UVa.x, UVb.y); glVertex2f(pX  , pY   - gTerrain.Land[pY+1,pX+1].RenderHeight/CELL_HEIGHT_DIV-0.25);
+    glTexCoord2f(UVb.x, UVb.y); glVertex2f(pX  , pY   - gTerrain.Land[pY+1,pX+1].RenderHeight/CELL_HEIGHT_DIV);
 
-    glTexCoord2f(UVb.x, UVa.y); glVertex2f(pX-1, pY   - gTerrain.Land[pY+1,pX  ].Height/CELL_HEIGHT_DIV);
-    glTexCoord2f(UVa.x, UVa.y); glVertex2f(pX-1, pY   - gTerrain.Land[pY+1,pX  ].Height/CELL_HEIGHT_DIV-0.25);
-    glTexCoord2f(UVa.x, UVb.y); glVertex2f(pX  , pY-1 - gTerrain.Land[pY  ,pX+1].Height/CELL_HEIGHT_DIV-0.15);
-    glTexCoord2f(UVb.x, UVb.y); glVertex2f(pX  , pY-1 - gTerrain.Land[pY  ,pX+1].Height/CELL_HEIGHT_DIV+0.10);
+    glTexCoord2f(UVb.x, UVa.y); glVertex2f(pX-1, pY   - gTerrain.Land[pY+1,pX  ].RenderHeight/CELL_HEIGHT_DIV);
+    glTexCoord2f(UVa.x, UVa.y); glVertex2f(pX-1, pY   - gTerrain.Land[pY+1,pX  ].RenderHeight/CELL_HEIGHT_DIV-0.25);
+    glTexCoord2f(UVa.x, UVb.y); glVertex2f(pX  , pY-1 - gTerrain.Land[pY  ,pX+1].RenderHeight/CELL_HEIGHT_DIV-0.15);
+    glTexCoord2f(UVb.x, UVb.y); glVertex2f(pX  , pY-1 - gTerrain.Land[pY  ,pX+1].RenderHeight/CELL_HEIGHT_DIV+0.10);
   glEnd;
 end;
 

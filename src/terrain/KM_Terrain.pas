@@ -66,7 +66,7 @@ type
     LayersCnt: Byte;
     Layer: array [0..2] of TKMTerrainLayer;
 //    StoneLayer: TKMTerrainLayer;
-    fHeight: Byte;
+    Height: Byte;
     Obj: Word;
     IsCustom: Boolean; //Custom tile (rotated tile, atm)
     BlendingLvl: Byte; //Use blending for layers transitions
@@ -102,7 +102,7 @@ type
     Fence: TKMFenceType; //Fences (ropes, planks, stones)
     FenceSide: Byte; //Bitfield whether the fences are enabled
 
-    function Height: Byte;
+    function RenderHeight: Byte;
   end;
 
   TKMTerrainTileArray = array of TKMTerrainTile;
@@ -353,6 +353,7 @@ type
     function FlatToHeight(inX, inY: Single): Single; overload;
     function FlatToHeight(const aPoint: TKMPointF): TKMPointF; overload;
     function HeightAt(inX, inY: Single): Single;
+    function RenderHeightAt(inX, inY: Single): Single;
 
     procedure UpdateLighting; overload;
     procedure UpdateLighting(const aRect: TKMRect); overload;
@@ -463,7 +464,7 @@ begin
           BaseLayer.Terrain := 0;
         LayersCnt    := 0;
         BaseLayer.SetCorners([0,1,2,3]);
-        fHeight      := HEIGHT_DEFAULT + KaMRandom(HEIGHT_RAND_VALUE, 'TKMTerrain.MakeNewMap 3');  //variation in Height
+        Height      := HEIGHT_DEFAULT + KaMRandom(HEIGHT_RAND_VALUE, 'TKMTerrain.MakeNewMap 3');  //variation in Height
         BaseLayer.Rotation     := KaMRandom(4, 'TKMTerrain.MakeNewMap 4');  //Make it random
         Obj          := OBJ_NONE;             //none
         IsCustom     := False;
@@ -539,7 +540,7 @@ begin
         ReadTileFromStream(S, TileBasic, GameRev);
 
         Land[I,J].BaseLayer   := TileBasic.BaseLayer;
-        Land[I,J].fHeight     := TileBasic.Height;
+        Land[I,J].Height     := TileBasic.Height;
         Land[I,J].Obj         := TileBasic.Obj;
         Land[I,J].LayersCnt   := TileBasic.LayersCnt;
         Land[I,J].IsCustom    := TileBasic.IsCustom;
@@ -743,7 +744,7 @@ begin
   //To use CheckHeightPass we must apply change then roll it back if it failed
   OldHeight := aHeight;
   //Apply change
-  Land[Y, X].fHeight := aHeight;
+  Land[Y, X].Height := aHeight;
 
   //Don't check canElevate: If scripter wants to block mines that's his choice
 
@@ -757,7 +758,7 @@ begin
         or (Land[Y+I, X+K].TileLock = tlHouse) then
         begin
           //Rollback change
-          Land[Y, X].fHeight := OldHeight;
+          Land[Y, X].Height := OldHeight;
           Exit(False);
         end;
 
@@ -4267,13 +4268,13 @@ begin
   Avg := Round(Avg / VertsFactored);
 
   if CanElevateAt(Loc.X  , Loc.Y  ) then
-    Land[Loc.Y  ,Loc.X  ].fHeight := Mix(Avg, Land[Loc.Y  ,Loc.X  ].Height, 0.5);
+    Land[Loc.Y  ,Loc.X  ].Height := Mix(Avg, Land[Loc.Y  ,Loc.X  ].Height, 0.5);
   if CanElevateAt(Loc.X+1, Loc.Y  ) then
-    Land[Loc.Y  ,Loc.X+1].fHeight := Mix(Avg, Land[Loc.Y  ,Loc.X+1].Height, 0.5);
+    Land[Loc.Y  ,Loc.X+1].Height := Mix(Avg, Land[Loc.Y  ,Loc.X+1].Height, 0.5);
   if CanElevateAt(Loc.X  , Loc.Y+1) then
-    Land[Loc.Y+1,Loc.X  ].fHeight := Mix(Avg, Land[Loc.Y+1,Loc.X  ].Height, 0.5);
+    Land[Loc.Y+1,Loc.X  ].Height := Mix(Avg, Land[Loc.Y+1,Loc.X  ].Height, 0.5);
   if CanElevateAt(Loc.X+1, Loc.Y+1) then
-    Land[Loc.Y+1,Loc.X+1].fHeight := Mix(Avg, Land[Loc.Y+1,Loc.X+1].Height, 0.5);
+    Land[Loc.Y+1,Loc.X+1].Height := Mix(Avg, Land[Loc.Y+1,Loc.X+1].Height, 0.5);
 
   //All 9 tiles around and including this one could have become unwalkable and made a unit stuck, so check them all
   for I := Max(Loc.Y-1, 1) to Min(Loc.Y+1, fMapY-1) do
@@ -4343,7 +4344,7 @@ var
 begin
   x0 := Max(X - 1, 1);
   y2 := Min(Y + 1, fMapY);
-  Land[Y,X].Light := EnsureRange((Land[Y,X].Height - (Land[y2,X].Height + Land[Y,x0].Height)/2)/22,-1,1); //  1.33*16 ~=22
+  Land[Y,X].Light := EnsureRange((Land[Y,X].RenderHeight - (Land[y2,X].RenderHeight + Land[Y,x0].RenderHeight)/2)/22,-1,1); //  1.33*16 ~=22
 
   //Use more contrast lighting for Waterbeds
   if fTileset.TileIsWater(Land[Y, X].BaseLayer.Terrain) then
@@ -4858,6 +4859,25 @@ begin
 end;
 
 
+//Return Render height within cell interpolating node heights
+//Note that input parameters are 0 based
+function TKMTerrain.RenderHeightAt(inX, inY: Single): Single;
+var
+  Xc, Yc: Integer;
+  Tmp1, Tmp2: single;
+begin
+  //Valid range of tiles is 0..MapXY-2 because we check height from (Xc+1,Yc+1) to (Xc+2,Yc+2)
+  //We cannot ask for height at the bottom row (MapY-1) because that row is not on the visible map,
+  //and does not have a vertex below it
+  Xc := EnsureRange(Trunc(inX), 0, fMapX-2);
+  Yc := EnsureRange(Trunc(inY), 0, fMapY-2);
+
+  Tmp1 := Mix(Land[Yc+1, Xc+2].RenderHeight, Land[Yc+1, Xc+1].RenderHeight, Frac(inX));
+  Tmp2 := Mix(Land[Yc+2, Xc+2].RenderHeight, Land[Yc+2, Xc+1].RenderHeight, Frac(inX));
+  Result := Mix(Tmp2, Tmp1, Frac(inY)) / CELL_HEIGHT_DIV;
+end;
+
+
 //Get highest walkable hill on a maps top row to use for viewport top bound
 function TKMTerrain.TopHill: Byte;
 var
@@ -4949,7 +4969,7 @@ begin
     begin
       ReadTileFromStream(LoadStream, TileBasic, GAME_REVISION_NUM);
       Land[I,J].BaseLayer := TileBasic.BaseLayer;
-      Land[I,J].fHeight := TileBasic.Height;
+      Land[I,J].Height := TileBasic.Height;
       Land[I,J].Obj := TileBasic.Obj;
       Land[I,J].IsCustom := TileBasic.IsCustom;
       Land[I,J].BlendingLvl := TileBasic.BlendingLvl;
@@ -5363,12 +5383,12 @@ end;
 
 
 { TKMTerrainTile }
-function TKMTerrainTile.Height: Byte;
+function TKMTerrainTile.RenderHeight: Byte;
 begin
   if mlFlatTerrain in gGame.VisibleLayers then
     Result := HEIGHT_DEFAULT
   else
-    Result := fHeight;
+    Result := Height;
 end;
 
 

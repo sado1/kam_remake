@@ -1456,7 +1456,7 @@ begin
         Tmp := base;
     end;
 
-    gTerrain.Land[I,K].fHeight := Trunc(Tmp);
+    gTerrain.Land[I,K].Height := Trunc(Tmp);
     LandTerKind[I,K].HeightAdd := Round(Frac(Tmp)*255); //write Fractional part in 0..255 range (1Byte) to save us mem
   end;
 

@@ -252,7 +252,7 @@ begin
   aUndoTile.BaseLayer.UnpackRotAndCorners(aTile.BaseLayer.Rotation, aTile.BaseLayer.Corners);
 
   aTile.LayersCnt           := aUndoTile.LayersCnt;
-  aTile.fHeight             := aUndoTile.Height;
+  aTile.Height              := aUndoTile.Height;
   aTile.Obj                 := aUndoTile.Obj;
   aTile.IsCustom            := aUndoTile.IsCustom;
   aTile.BlendingLvl         := aUndoTile.BlendingLvl;

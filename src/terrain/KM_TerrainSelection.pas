@@ -311,7 +311,7 @@ begin
         gTerrain.Land[I+1, K+1].BaseLayer.Rotation := fSelectionBuffer[By,Bx].BaseLayer.Rotation;
         gTerrain.Land[I+1, K+1].BaseLayer.Corners  := fSelectionBuffer[By,Bx].BaseLayer.Corners;
         gTerrain.Land[I+1, K+1].LayersCnt   := fSelectionBuffer[By,Bx].LayersCnt;
-        gTerrain.Land[I+1, K+1].fHeight     := fSelectionBuffer[By,Bx].Height;
+        gTerrain.Land[I+1, K+1].Height     := fSelectionBuffer[By,Bx].Height;
         gTerrain.Land[I+1, K+1].Obj         := fSelectionBuffer[By,Bx].Obj;
         gTerrain.Land[I+1, K+1].IsCustom    := fSelectionBuffer[By,Bx].IsCustom;
         gTerrain.Land[I+1, K+1].BlendingLvl := fSelectionBuffer[By,Bx].BlendingLvl;
@@ -367,8 +367,8 @@ procedure TKMSelection.Selection_Flip(aAxis: TKMFlipAxis);
 
     //Heights are vertex based not tile based, so it gets flipped slightly differently
     case aAxis of
-      faHorizontal: SwapInt(gTerrain.Land[Y1,X1].fHeight, gTerrain.Land[Y2  ,X2+1].fHeight);
-      faVertical:   SwapInt(gTerrain.Land[Y1,X1].fHeight, gTerrain.Land[Y2+1,X2  ].fHeight);
+      faHorizontal: SwapInt(gTerrain.Land[Y1,X1].Height, gTerrain.Land[Y2  ,X2+1].Height);
+      faVertical:   SwapInt(gTerrain.Land[Y1,X1].Height, gTerrain.Land[Y2+1,X2  ].Height);
     end;
     Tmp := fTerrainPainter.LandTerKind[Y1, X1].TerKind;
     fTerrainPainter.LandTerKind[Y1, X1].TerKind := fTerrainPainter.LandTerKind[Y2, X2].TerKind;
