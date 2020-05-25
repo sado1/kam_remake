@@ -178,16 +178,16 @@ begin
     begin
       if gTerrain.CanAddField(fLoc.X, fLoc.Y, ftRoad) then
         //Allow other workers to take this task
-        gHands[fUnit.Owner].BuildList.FieldworksList.ReOpenField(BuildID)
+        gHands[fUnit.Owner].Constructions.FieldworksList.ReOpenField(BuildID)
       else
         //This plan is not valid anymore
-        gHands[fUnit.Owner].BuildList.FieldworksList.CloseField(BuildID);
+        gHands[fUnit.Owner].Constructions.FieldworksList.CloseField(BuildID);
     end
     else
       //Autobuild AI should rebuild roads when worker dies (otherwise house is never built)
       if (gGame <> nil) and not gGame.IsExiting and gHands[fUnit.Owner].AI.Setup.AutoBuild and (fPhase < 9)
       and gHands[fUnit.Owner].CanAddFieldPlan(fLoc, ftRoad) then
-        gHands[fUnit.Owner].BuildList.FieldworksList.AddField(fLoc, ftRoad);
+        gHands[fUnit.Owner].Constructions.FieldworksList.AddField(fLoc, ftRoad);
   end;
 
   inherited;
@@ -203,7 +203,7 @@ end;
 
 procedure TKMTaskBuildRoad.CancelThePlan;
 begin
-  gHands[fUnit.Owner].BuildList.FieldworksList.CloseField(BuildID); //Close the job now because it can no longer be cancelled
+  gHands[fUnit.Owner].Constructions.FieldworksList.CloseField(BuildID); //Close the job now because it can no longer be cancelled
   BuildID := -1;
 end;
 
@@ -324,10 +324,10 @@ begin
   if BuildID <> -1 then
     if gTerrain.CanAddField(fLoc.X, fLoc.Y, ftWine) then
       //Allow other workers to take this task
-      gHands[fUnit.Owner].BuildList.FieldworksList.ReOpenField(BuildID)
+      gHands[fUnit.Owner].Constructions.FieldworksList.ReOpenField(BuildID)
     else
       //This plan is not valid anymore
-      gHands[fUnit.Owner].BuildList.FieldworksList.CloseField(BuildID);
+      gHands[fUnit.Owner].Constructions.FieldworksList.CloseField(BuildID);
 
   if DemandSet then
     gHands[fUnit.Owner].Deliveries.Queue.RemDemand(fUnit);
@@ -347,7 +347,7 @@ end;
 
 procedure TKMTaskBuildWine.CancelThePlan;
 begin
-  gHands[fUnit.Owner].BuildList.FieldworksList.CloseField(BuildID); //Close the job now because it can no longer be cancelled
+  gHands[fUnit.Owner].Constructions.FieldworksList.CloseField(BuildID); //Close the job now because it can no longer be cancelled
   BuildID := -1;
 end;
 
@@ -461,10 +461,10 @@ begin
   if BuildID <> -1 then
     if gTerrain.CanAddField(fLoc.X, fLoc.Y, ftCorn) then
       //Allow other workers to take this task
-      gHands[fUnit.Owner].BuildList.FieldworksList.ReOpenField(BuildID)
+      gHands[fUnit.Owner].Constructions.FieldworksList.ReOpenField(BuildID)
     else
       //This plan is not valid anymore
-      gHands[fUnit.Owner].BuildList.FieldworksList.CloseField(BuildID);
+      gHands[fUnit.Owner].Constructions.FieldworksList.CloseField(BuildID);
 
   if TileLockSet then gTerrain.UnlockTile(fLoc);
   inherited;
@@ -480,7 +480,7 @@ end;
 
 procedure TKMTaskBuildField.CancelThePlan;
 begin
-  gHands[fUnit.Owner].BuildList.FieldworksList.CloseField(BuildID); //Close the job now because it can no longer be cancelled
+  gHands[fUnit.Owner].Constructions.FieldworksList.CloseField(BuildID); //Close the job now because it can no longer be cancelled
   BuildID := -1;
 end;
 
@@ -599,11 +599,11 @@ begin
   if (BuildID <> -1) then
     if gTerrain.CanPlaceHouse(GetHouseEntranceLoc,fHouseType) then
       //Allow other workers to take this task
-      gHands[fUnit.Owner].BuildList.HousePlanList.ReOpenPlan(BuildID)
+      gHands[fUnit.Owner].Constructions.HousePlanList.ReOpenPlan(BuildID)
     else
     begin
       //This plan is not valid anymore
-      gHands[fUnit.Owner].BuildList.HousePlanList.ClosePlan(BuildID);
+      gHands[fUnit.Owner].Constructions.HousePlanList.ClosePlan(BuildID);
       gHands[fUnit.Owner].Stats.HousePlanRemoved(fHouseType);
     end;
 
@@ -616,7 +616,7 @@ begin
   if HouseReadyToBuild and not HouseNeedsWorker and (fHouse <> nil) and not fHouse.IsDestroyed then
   begin
     fHouse.BuildingState := hbsWood;
-    gHands[fUnit.Owner].BuildList.HouseList.AddHouse(fHouse); //Add the house to JobList, so then all workers could take it
+    gHands[fUnit.Owner].Constructions.HouseList.AddHouse(fHouse); //Add the house to JobList, so then all workers could take it
     gHands[fUnit.Owner].Deliveries.Queue.AddDemand(fHouse, nil, wtWood, gRes.Houses[fHouse.HouseType].WoodCost, dtOnce, diHigh4);
     gHands[fUnit.Owner].Deliveries.Queue.AddDemand(fHouse, nil, wtStone, gRes.Houses[fHouse.HouseType].StoneCost, dtOnce, diHigh4);
   end;
@@ -653,7 +653,7 @@ begin
   //House plan could be canceled during initial walk or while walking within the house area so
   //ignore it if it's already been canceled (occurs when trying to walk within range of an enemy tower during flattening)
   if BuildID = -1 then Exit;
-  gHands[fUnit.Owner].BuildList.HousePlanList.ClosePlan(BuildID);
+  gHands[fUnit.Owner].Constructions.HousePlanList.ClosePlan(BuildID);
   gHands[fUnit.Owner].Stats.HousePlanRemoved(fHouseType);
   BuildID := -1;
 end;
@@ -801,7 +801,7 @@ end;
 destructor TKMTaskBuildHouse.Destroy;
 begin
   //We are no longer connected to the House (it's either done or we died)
-  gHands[fUnit.Owner].BuildList.HouseList.RemWorker(BuildID);
+  gHands[fUnit.Owner].Constructions.HouseList.RemWorker(BuildID);
   gHands.CleanUpHousePointer(fHouse);
   FreeAndNil(Cells);
   inherited;
@@ -934,7 +934,7 @@ end;
 
 destructor TKMTaskBuildHouseRepair.Destroy;
 begin
-  gHands[fUnit.Owner].BuildList.RepairList.RemWorker(fRepairID);
+  gHands[fUnit.Owner].Constructions.RepairList.RemWorker(fRepairID);
   gHands.CleanUpHousePointer(fHouse);
   FreeAndNil(Cells);
   inherited;

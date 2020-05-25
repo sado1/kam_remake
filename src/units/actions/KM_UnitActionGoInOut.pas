@@ -104,18 +104,25 @@ begin
   gHands.CleanUpHousePointer(fHouse);
   gHands.CleanUpUnitPointer(fPushedUnit);
 
-  //A bug can occur because this action is destroyed early when a unit is told to die.
-  //If we are still invisible then TTaskDie assumes we are inside and creates a new
-  //GoOut action. Therefore if we are invisible we do not occupy a tile.
-  if (fUnit <> nil) 
-    and (fDirection = gdGoOutside)
+
+  if (fUnit <> nil)
     and fHasStarted
-    and not fUnit.Visible
-    and (gTerrain.Land[fUnit.NextPosition.Y,fUnit.NextPosition.X].IsUnit = fUnit) then
+    and (gTerrain.Land[fUnit.NextPosition.Y, fUnit.NextPosition.X].IsUnit = fUnit) then
   begin
-    gTerrain.UnitRem(fUnit.NextPosition);
-    if not KMSamePoint(fDoor, KMPOINT_ZERO) then
-      fUnit.PositionF := KMPointF(fDoor); //Put us back inside the house
+    case fDirection of
+      //Clear terrain lock for house entrance that made while unit was entering the house
+      gdGoInside:   gTerrain.UnitRem(fUnit.NextPosition);
+
+      //A bug can occur because this action is destroyed early when a unit is told to die.
+      //If we are still invisible then TTaskDie assumes we are inside and creates a new
+      //GoOut action. Therefore if we are invisible we do not occupy a tile.
+      gdGoOutside:  if not fUnit.Visible then
+                    begin
+                      gTerrain.UnitRem(fUnit.NextPosition);
+                      if not KMSamePoint(fDoor, KMPOINT_ZERO) then
+                        fUnit.PositionF := KMPointF(fDoor); //Put us back inside the house
+                    end;
+    end;
   end;
 
   if (fDirection = gdGoOutside) and fUnit.Visible then

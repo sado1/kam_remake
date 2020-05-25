@@ -404,9 +404,7 @@ const
   begin
     if InRange(aX, 0, aWidth) then  //Dont allow to render outside of control
     begin
-      //Just draw 2 lines...
-      WriteLine(aX,     1, aX    , aHeight - 1, aColor, aPattern);
-      WriteLine(aX - 1, 1, aX - 1, aHeight - 1, aColor, aPattern);
+      WriteLine(aX,     1, aX    , aHeight - 1, aColor, aPattern, 2);
     end;
   end;
 
@@ -660,14 +658,14 @@ begin
 
   glColor4ubv(@aCol);
 
-  glEnable(GL_LINE_STIPPLE);
-  glLineStipple(2, aPattern);
-
   if aLineWidth <> -1 then
   begin
     glPushAttrib(GL_LINE_BIT);
     glLineWidth(aLineWidth);
   end;
+
+  glEnable(GL_LINE_STIPPLE);
+  glLineStipple(2, aPattern);
 
   glBegin(GL_LINES);
     glVertex2f(aFromX, aFromY);

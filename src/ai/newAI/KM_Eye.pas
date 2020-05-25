@@ -803,7 +803,7 @@ function TKMEye.CanAddHousePlan(aLoc: TKMPoint; aHT: TKMHouseType; aIgnoreAvoidB
   function CanBeRoad(X,Y: Integer): Boolean;
   begin
     Result := (gTerrain.Land[Y, X].Passability * [tpMakeRoads, tpWalkRoad] <> [])
-              OR (gHands[fOwner].BuildList.FieldworksList.HasField(KMPoint(X,Y)) <> ftNone) // We dont need strictly road just make sure that it is possible to place something here (and replace it by road later)
+              OR (gHands[fOwner].Constructions.FieldworksList.HasField(KMPoint(X,Y)) <> ftNone) // We dont need strictly road just make sure that it is possible to place something here (and replace it by road later)
               OR (gTerrain.Land[Y, X].TileLock in [tlFieldWork, tlRoadWork]);
   end;
 var
@@ -828,7 +828,7 @@ begin
     Exit;
 
   // Make sure that we dont put new house into another plan (just entrance is enought because houses have similar size)
-  //if gHands[fOwner].BuildList.HousePlanList.HasPlan(KMPoint(aLoc.X,aLoc.Y)) then
+  //if gHands[fOwner].Constructions.HousePlanList.HasPlan(KMPoint(aLoc.X,aLoc.Y)) then
   //  Exit;
 
   // Scan tiles inside house plan
@@ -851,7 +851,7 @@ begin
     //This tile must not contain fields/houseplans of allied players
     for PL := 0 to gHands.Count - 1 do
       if (gHands[fOwner].Alliances[PL] = atAlly) then// AND (PL <> fOwner) then
-        if (gHands[PL].BuildList.FieldworksList.HasField(Point) <> ftNone) then
+        if (gHands[PL].Constructions.FieldworksList.HasField(Point) <> ftNone) then
           Exit;
   end;
 
@@ -868,7 +868,7 @@ begin
     // Surrounding tiles must not be a house
     for PL := 0 to gHands.Count - 1 do
       if (gHands[fOwner].Alliances[PL] = atAlly) then
-        if gHands[PL].BuildList.HousePlanList.HasPlan(Point) then
+        if gHands[PL].Constructions.HousePlanList.HasPlan(Point) then
           Exit;
     if (aHT in [htGoldMine, htIronMine]) then
       continue;
@@ -1692,8 +1692,8 @@ begin
     if (gHands[fOwner].Alliances[PL] = atAlly) then
     begin
       // House plans
-      for K := 0 to gHands[PL].BuildList.HousePlanList.Count - 1 do
-        with gHands[PL].BuildList.HousePlanList.Plans[K] do
+      for K := 0 to gHands[PL].Constructions.HousePlanList.Count - 1 do
+        with gHands[PL].Constructions.HousePlanList.Plans[K] do
         begin
           HT := HouseType;
           if (HT = htNone) then
@@ -1717,8 +1717,8 @@ begin
             end;
         end;
       // Field plans
-      for K := 0 to gHands[PL].BuildList.FieldworksList.Count - 1 do
-        with gHands[PL].BuildList.FieldworksList.Fields[K] do
+      for K := 0 to gHands[PL].Constructions.FieldworksList.Count - 1 do
+        with gHands[PL].Constructions.FieldworksList.Fields[K] do
           case FieldType of
             ftNone: continue;
             ftRoad: State[Loc.Y, Loc.X] := bsRoadPlan;

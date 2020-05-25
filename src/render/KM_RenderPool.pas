@@ -582,7 +582,7 @@ begin
     gX := pX + (R.Pivot[Id0].X + R.Size[Id0].X/2) / CELL_SIZE_PX;
     gY := pY + (R.Pivot[Id0].Y + R.Size[Id0].Y) / CELL_SIZE_PX;
     CornerX := pX + R.Pivot[Id].X / CELL_SIZE_PX;
-    CornerY := pY - gTerrain.HeightAt(gX, gY) + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX;
+    CornerY := pY - gTerrain.RenderHeightAt(gX, gY) + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX;
     if DoImmediateRender then
       RenderSprite(rxTrees, Id, CornerX, CornerY, $FFFFFFFF, Deleting, DELETE_COLOR)
     else
@@ -609,7 +609,7 @@ var
     gX := pX + (R.Pivot[Id0].X + R.Size[Id0].X/2) / CELL_SIZE_PX;
     gY := pY + (R.Pivot[Id0].Y + R.Size[Id0].Y) / CELL_SIZE_PX;
     CornerX := pX + R.Pivot[Id].X / CELL_SIZE_PX;
-    CornerY := pY - gTerrain.HeightAt(gX, gY) + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX;
+    CornerY := pY - gTerrain.RenderHeightAt(gX, gY) + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX;
 
     if DoImmediateRender then
       RenderSprite(rxTrees, Id, CornerX, CornerY, $FFFFFFFF, Deleting, DELETE_COLOR)
@@ -670,7 +670,7 @@ begin
   gX := Loc.X + (R.Pivot[Id].X + R.Size[Id].X / 2) / CELL_SIZE_PX - 0.5;
   gY := Loc.Y + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX - 0.45;
   CornerX := Loc.X + R.Pivot[Id].X / CELL_SIZE_PX - 0.25;
-  CornerY := Loc.Y - gTerrain.HeightAt(gX, gY) + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX - 0.55;
+  CornerY := Loc.Y - gTerrain.RenderHeightAt(gX, gY) + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX - 0.55;
   fRenderList.AddSpriteG(rxGui, Id, 0, CornerX, CornerY, gX, gY);
 end;
 
@@ -691,7 +691,7 @@ begin
     id := 260 + Wood - 1;
     cornerX := Loc.X + supply[1, Wood].MoveX / CELL_SIZE_PX - 1;
     cornerY := Loc.Y + (supply[1, Wood].MoveY + rx.Size[id].Y) / CELL_SIZE_PX - 1
-                     - gTerrain.Land[Loc.Y + 1, Loc.X].Height / CELL_HEIGHT_DIV;
+                     - gTerrain.Land[Loc.Y + 1, Loc.X].RenderHeight / CELL_HEIGHT_DIV;
     fRenderList.AddSprite(rxHouses, id, cornerX, cornerY);
   end;
 
@@ -700,7 +700,7 @@ begin
     id := 267 + Stone - 1;
     cornerX := Loc.X + supply[2, Stone].MoveX / CELL_SIZE_PX - 1;
     cornerY := Loc.Y + (supply[2, Stone].MoveY + rx.Size[id].Y) / CELL_SIZE_PX - 1
-                     - gTerrain.Land[Loc.Y + 1, Loc.X].Height / CELL_HEIGHT_DIV;
+                     - gTerrain.Land[Loc.Y + 1, Loc.X].RenderHeight / CELL_HEIGHT_DIV;
     fRenderList.AddSprite(rxHouses, id, cornerX, cornerY);
   end;
 end;
@@ -733,7 +733,7 @@ var
   function CornerY(aPic: Integer): Single;
   begin
     Result := aLoc.Y + (R.Pivot[aPic].Y + R.Size[aPic].Y) / CELL_SIZE_PX - 1
-                     - gTerrain.Land[aLoc.Y + 1, aLoc.X].Height / CELL_HEIGHT_DIV;
+                     - gTerrain.Land[aLoc.Y + 1, aLoc.X].RenderHeight / CELL_HEIGHT_DIV;
   end;
 
 begin
@@ -807,7 +807,7 @@ begin
       Id := A.Step[AnimStep mod Byte(A.Count) + 1] + 1;
       CornerX := Loc.X + (R.Pivot[Id].X + A.MoveX) / CELL_SIZE_PX - 1;
       CornerY := Loc.Y + (R.Pivot[Id].Y + A.MoveY + R.Size[Id].Y) / CELL_SIZE_PX - 1
-                       - gTerrain.Land[Loc.Y + 1, Loc.X].Height / CELL_HEIGHT_DIV;
+                       - gTerrain.Land[Loc.Y + 1, Loc.X].RenderHeight / CELL_HEIGHT_DIV;
 
       if DoImmediateRender then
         RenderSprite(rxHouses, Id, CornerX, CornerY, FlagColor, DoHighlight, HighlightColor)
@@ -832,7 +832,7 @@ var
 
     CornerX := Loc.X + R.Pivot[aId].X / CELL_SIZE_PX - 1;
     CornerY := Loc.Y + (R.Pivot[aId].Y + R.Size[aId].Y) / CELL_SIZE_PX - 1
-                     - gTerrain.Land[Loc.Y + 1, Loc.X].Height / CELL_HEIGHT_DIV;
+                     - gTerrain.Land[Loc.Y + 1, Loc.X].RenderHeight / CELL_HEIGHT_DIV;
     if DoImmediateRender then
     begin
       RenderSprite(rxHouses, aId, CornerX, CornerY, $0, DoHighlight, HighlightColor)
@@ -910,7 +910,7 @@ begin
     R := fRXData[rxHouses];
     CornerX := Loc.X + (R.Pivot[Id].X + MARKET_WARES_OFF_X) / CELL_SIZE_PX - 1;
     CornerY := Loc.Y + (R.Pivot[Id].Y + MARKET_WARES_OFF_Y + R.Size[Id].Y) / CELL_SIZE_PX - 1
-                     - gTerrain.Land[Loc.Y+1,Loc.X].Height / CELL_HEIGHT_DIV;
+                     - gTerrain.Land[Loc.Y+1,Loc.X].RenderHeight / CELL_HEIGHT_DIV;
     fRenderList.AddSprite(rxHouses, Id, CornerX, CornerY);
   end;
 end;
@@ -930,7 +930,7 @@ begin
   Id := A.Step[AnimStep mod Byte(A.Count) + 1] + 1;
   CornerX := Loc.X + (A.MoveX + R.Pivot[Id].X) / CELL_SIZE_PX - 1;
   CornerY := Loc.Y + (A.MoveY + R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX - 1
-                   - gTerrain.Land[Loc.Y + 1, Loc.X].Height / CELL_HEIGHT_DIV;
+                   - gTerrain.Land[Loc.Y + 1, Loc.X].RenderHeight / CELL_HEIGHT_DIV;
   fRenderList.AddSprite(aRX, Id, CornerX, CornerY);
 end;
 
@@ -1028,7 +1028,7 @@ begin
   // Eaters need to interpolate land height the same as the inn otherwise they are rendered at the wrong place
   CornerX := Loc.X + OffX + R.Pivot[Id].X / CELL_SIZE_PX - 1;
   CornerY := Loc.Y + OffY + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX - 1
-                   - gTerrain.Land[Loc.Y + 1, Loc.X].Height / CELL_HEIGHT_DIV;
+                   - gTerrain.Land[Loc.Y + 1, Loc.X].RenderHeight / CELL_HEIGHT_DIV;
 
   fRenderList.AddSprite(rxUnits, Id, CornerX, CornerY, FlagColor);
 end;
@@ -1332,7 +1332,7 @@ begin
     if gMySpectator.FOWIndex = -1 then
       for I := 0 to gHands.Count - 1 do
         // Don't use Hand.GetFieldPlans as it will give us plans multiple times for allies
-        gHands[I].BuildList.FieldworksList.GetFields(fFieldsList, aRect, False)
+        gHands[I].Constructions.FieldworksList.GetFields(fFieldsList, aRect, False)
     else
       gHands[gMySpectator.FOWIndex].GetFieldPlans(fFieldsList, aRect, False)
   end
@@ -1349,7 +1349,7 @@ begin
     if gMySpectator.FOWIndex = -1 then
       for I := 0 to gHands.Count - 1 do
         // Don't use Hand.GetHousePlans as it will give us plans multiple times for allies
-        gHands[I].BuildList.HousePlanList.GetOutlines(fHousePlansList, aRect)
+        gHands[I].Constructions.HousePlanList.GetOutlines(fHousePlansList, aRect)
     else
       gHands[gMySpectator.FOWIndex].GetHousePlans(fHousePlansList, aRect)
   end
@@ -1404,7 +1404,7 @@ begin
     begin
       X := Loc.X + fHouseOutline[I].X - 3;
       Y := Loc.Y + fHouseOutline[I].Y - 4;
-      glVertex2f(X, Y - Land[Y+1, X+1].Height / CELL_HEIGHT_DIV);
+      glVertex2f(X, Y - Land[Y+1, X+1].RenderHeight / CELL_HEIGHT_DIV);
     end;
   glEnd;
 end;
@@ -1606,8 +1606,8 @@ begin
     cmNone:       ;
     cmErase:      if not gGame.IsMapEditor then
                   begin
-                    if ((gMySpectator.Hand.BuildList.FieldworksList.HasFakeField(P) <> ftNone)
-                        or gMySpectator.Hand.BuildList.HousePlanList.HasPlan(P)
+                    if ((gMySpectator.Hand.Constructions.FieldworksList.HasFakeField(P) <> ftNone)
+                        or gMySpectator.Hand.Constructions.HousePlanList.HasPlan(P)
                         or (gMySpectator.Hand.HousesHitTest(P.X, P.Y) <> nil))
                     then
                       RenderWireTile(P, icCyan) // Cyan quad

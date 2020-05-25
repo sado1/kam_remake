@@ -1198,7 +1198,7 @@ begin
     Activate(True);
     //House was damaged while under construction, so set the repair mode now it is complete
     if (fDamage > 0) and BuildingRepair then
-      gHands[fOwner].BuildList.RepairList.AddHouse(Self);
+      gHands[fOwner].Constructions.RepairList.AddHouse(Self);
 
     gScriptEvents.ProcHouseBuilt(Self); //At the end since it could destroy this house
   end;
@@ -1239,7 +1239,7 @@ begin
   if IsComplete then
   begin
     if BuildingRepair then
-      gHands[fOwner].BuildList.RepairList.AddHouse(Self);
+      gHands[fOwner].Constructions.RepairList.AddHouse(Self);
 
     //Update fire if the house is complete
     UpdateDamage;
@@ -1298,7 +1298,7 @@ begin
   if fBuildingRepair then
   begin
     if IsComplete and IsDamaged and not IsDestroyed then
-      gHands[fOwner].BuildList.RepairList.AddHouse(Self);
+      gHands[fOwner].Constructions.RepairList.AddHouse(Self);
   end
   else
     //Worker checks on house and will cancel the walk if Repair is turned off

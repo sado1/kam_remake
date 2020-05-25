@@ -968,6 +968,8 @@ const
 { TKMRunnerDesyncTest }
 procedure TKMRunnerDesyncTest.SetUp();
 begin
+  DO_NOT_SKIP_LOAD_TILESET := True; //gGameApp will create game in the inherited call, we need to set this earlier
+
   inherited;
 
   fDesyncsDir := Format('%s..\Desyncs\', [ExeDir]);

@@ -6,7 +6,7 @@ uses
   KM_Units, KM_UnitsCollection, KM_UnitGroup, KM_UnitWarrior,
   KM_Houses, KM_HouseCollection, KM_HouseInn,
   KM_HandLogistics, KM_HandLocks, KM_HandStats,
-  KM_FogOfWar, KM_BuildList, KM_MessageLog, KM_ResHouses,
+  KM_FogOfWar, KM_HandConstructions, KM_MessageLog, KM_ResHouses,
   KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_ResWares, KM_Points;
 
 
@@ -51,7 +51,7 @@ type
   TKMHand = class(TKMHandCommon)
   private
     fAI: TKMHandAI;
-    fBuildList: TKMBuildList; //Not the best name for buildingManagement
+    fConstructions: TKMHandConstructions;
     fDeliveries: TKMHandLogistics;
     fFogOfWar: TKMFogOfWar; //Stores FOW info for current player, which includes
     fHouses: TKMHousesCollection;
@@ -114,7 +114,7 @@ type
     destructor Destroy; override;
 
     property AI: TKMHandAI read GetAI;
-    property BuildList: TKMBuildList read fBuildList;
+    property Constructions: TKMHandConstructions read fConstructions;
     property Deliveries: TKMHandLogistics read fDeliveries;
     property Houses: TKMHousesCollection read fHouses;
     property Locks: TKMHandLocks read fLocks;
@@ -371,7 +371,7 @@ begin
   fRoadsList    := TKMPointList.Create;
   fHouses       := TKMHousesCollection.Create;
   fDeliveries   := TKMHandLogistics.Create(fID);
-  fBuildList    := TKMBuildList.Create;
+  fConstructions:= TKMHandConstructions.Create;
   fUnitGroups   := TKMUnitGroups.Create;
   fMessageLog   := TKMMessageLog.Create;
 
@@ -421,7 +421,7 @@ begin
   FreeThenNil(fStats);
   FreeThenNil(fFogOfWar);
   FreeThenNil(fDeliveries);
-  FreeThenNil(fBuildList);
+  FreeThenNil(fConstructions);
   FreeThenNil(fAI);
 end;
 
@@ -461,7 +461,7 @@ begin
     TKMUnitWarrior(Result).OnWarriorWalkOut := WarriorWalkedOut;
 
   if Result is TKMUnitWorker then
-    fBuildList.AddWorker(TKMUnitWorker(Result));
+    fConstructions.AddWorker(TKMUnitWorker(Result));
   if Result is TKMUnitSerf then
     fDeliveries.AddSerf(TKMUnitSerf(Result));
 
@@ -507,7 +507,7 @@ end;
 procedure TKMHand.UnitTrained(aUnit: TKMUnit);
 begin
   if aUnit.UnitType = utWorker then
-    fBuildList.AddWorker(TKMUnitWorker(aUnit));
+    fConstructions.AddWorker(TKMUnitWorker(aUnit));
   if aUnit.UnitType = utSerf then
     fDeliveries.AddSerf(TKMUnitSerf(aUnit));
 
@@ -694,7 +694,7 @@ var
       Sketch2Verify := fHouses[aIndex];
     end else if (hstHousePlan in aSketchTypesSet) then
     begin
-      FillHSketchByHPlan(aHouseSketchTmp, fBuildList.HousePlanList.Plans[aIndex - Byte(hstHouse in aSketchTypesSet)*fHouses.Count]);
+      FillHSketchByHPlan(aHouseSketchTmp, fConstructions.HousePlanList.Plans[aIndex - Byte(hstHouse in aSketchTypesSet)*fHouses.Count]);
       Sketch2Verify := aHouseSketchTmp;
     end;
 
@@ -722,7 +722,7 @@ begin
   ResultSet := False;
 
   Cnt :=   Byte(hstHouse in aSketchTypesSet)*fHouses.Count
-         + Byte(hstHousePlan in aSketchTypesSet)*fBuildList.HousePlanList.Count;
+         + Byte(hstHousePlan in aSketchTypesSet)*fConstructions.HousePlanList.Count;
 
   I := 0;
   FirstHSketchI := 0;
@@ -938,8 +938,8 @@ begin
   //Don't allow placing on allies plans either
   for I := 0 to gHands.Count - 1 do
     if (I <> fID) and (fAlliances[I] = atAlly) then
-      Result := Result and (gHands[i].fBuildList.FieldworksList.HasField(aLoc) = ftNone)
-                       and not gHands[i].fBuildList.HousePlanList.HasPlan(aLoc);
+      Result := Result and (gHands[i].fConstructions.FieldworksList.HasField(aLoc) = ftNone)
+                       and not gHands[i].fConstructions.HousePlanList.HasPlan(aLoc);
 end;
 
 
@@ -980,8 +980,8 @@ end;
 function TKMHand.CanAddFieldPlan(const aLoc: TKMPoint; aFieldType: TKMFieldType): Boolean;
 begin
   Result := gTerrain.CanAddField(aLoc.X, aLoc.Y, aFieldType)
-            and (fBuildList.FieldworksList.HasField(aLoc) = ftNone)
-            and not fBuildList.HousePlanList.HasPlan(aLoc)
+            and (fConstructions.FieldworksList.HasField(aLoc) = ftNone)
+            and not fConstructions.HousePlanList.HasPlan(aLoc)
             and LocHasNoAllyPlans(aLoc);
 end;
 
@@ -992,8 +992,8 @@ end;
 function TKMHand.CanAddFakeFieldPlan(const aLoc: TKMPoint; aFieldType: TKMFieldType): Boolean;
 begin
   Result := gTerrain.CanAddField(aLoc.X, aLoc.Y, aFieldType)
-            and (fBuildList.FieldworksList.HasFakeField(aLoc) = ftNone)
-            and not fBuildList.HousePlanList.HasPlan(aLoc)
+            and (fConstructions.FieldworksList.HasFakeField(aLoc) = ftNone)
+            and not fConstructions.HousePlanList.HasPlan(aLoc)
             and LocHasNoAllyPlans(aLoc);
 end;
 
@@ -1001,7 +1001,7 @@ end;
 // Same as for CanAddFakeFieldPlan, but check can we delete plan
 function TKMHand.CanRemFakeFieldPlan(const aLoc: TKMPoint; aFieldType: TKMFieldType): Boolean;
 begin
-  Result := (fBuildList.FieldworksList.HasFakeField(aLoc) = aFieldType)
+  Result := (fConstructions.FieldworksList.HasFakeField(aLoc) = aFieldType)
             and LocHasNoAllyPlans(aLoc);
 end;
 
@@ -1033,11 +1033,11 @@ begin
     for J := 0 to gHands.Count - 1 do
       if fAlliances[J] = atAlly then
       begin
-        Result := Result and (gHands[J].fBuildList.FieldworksList.HasField(KMPoint(Tx,Ty)) = ftNone);
+        Result := Result and (gHands[J].fConstructions.FieldworksList.HasField(KMPoint(Tx,Ty)) = ftNone);
         //Surrounding tiles must not be a house
         for S := -1 to 1 do
           for T := -1 to 1 do
-            Result := Result and not gHands[J].fBuildList.HousePlanList.HasPlan(KMPoint(Tx+S,Ty+T));
+            Result := Result and not gHands[J].fConstructions.HousePlanList.HasPlan(KMPoint(Tx+S,Ty+T));
       end;
   end;
 end;
@@ -1107,13 +1107,13 @@ begin
     for J := 0 to gHands.Count - 1 do
       if fAlliances[J] = atAlly then
       begin
-        if (gHands[J].fBuildList.FieldworksList.HasField(KMPoint(Tx,Ty)) <> ftNone) then
+        if (gHands[J].fConstructions.FieldworksList.HasField(KMPoint(Tx,Ty)) <> ftNone) then
           Exit;
 
         //Surrounding tiles must not be a house
         for S := -1 to 1 do
         for T := -1 to 1 do
-        if gHands[J].fBuildList.HousePlanList.HasPlan(KMPoint(Tx+S,Ty+T)) then
+        if gHands[J].fConstructions.HousePlanList.HasPlan(KMPoint(Tx+S,Ty+T)) then
           Exit;
       end;
   end;
@@ -1130,7 +1130,7 @@ var Plan: TKMFieldType;
 begin
   Assert(aFieldType in [ftRoad, ftCorn, ftWine], 'Placing wrong FieldType');
 
-  Plan := fBuildList.FieldworksList.HasField(aLoc);
+  Plan := fConstructions.FieldworksList.HasField(aLoc);
   if aFieldType = Plan then //Same plan - remove it
     RemFieldPlan(aLoc,aMakeSound)
   else
@@ -1139,7 +1139,7 @@ begin
       if aMakeSound and not (gGame.GameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti])
         and (ID = gMySpectator.HandID) then
         gSoundPlayer.Play(sfxPlacemarker);
-      fBuildList.FieldworksList.AddField(aLoc, aFieldType);
+      fConstructions.FieldworksList.AddField(aLoc, aFieldType);
       case aFieldType of
          ftRoad: gScriptEvents.ProcPlanRoadPlaced(fID, aLoc.X, aLoc.Y);
          ftCorn: gScriptEvents.ProcPlanFieldPlaced(fID, aLoc.X, aLoc.Y);
@@ -1156,8 +1156,8 @@ begin
       if Plan = ftNone then //If we can't build because there's some other plan, that's ok
       begin
         //Can't build here anymore because something changed between click and command processing, so remove any fake plans
-        fBuildList.FieldworksList.RemFakeField(aLoc);
-        fBuildList.FieldworksList.RemFakeDeletedField(aLoc);
+        fConstructions.FieldworksList.RemFakeField(aLoc);
+        fConstructions.FieldworksList.RemFakeDeletedField(aLoc);
       end;
     end;
 end;
@@ -1170,17 +1170,17 @@ var Plan: TKMFieldType;
 begin
   Assert(aFieldType in [ftRoad, ftCorn, ftWine], 'Placing wrong fake FieldType');
 
-  Plan := fBuildList.FieldworksList.HasFakeField(aLoc);
+  Plan := fConstructions.FieldworksList.HasFakeField(aLoc);
   if aFieldType = Plan then //Same plan - remove it
   begin
-    fBuildList.FieldworksList.RemFakeField(aLoc); //Remove our fake marker which is shown to the user
-    fBuildList.FieldworksList.AddFakeDeletedField(aLoc); //This will hide the real field until it is deleted from game
+    fConstructions.FieldworksList.RemFakeField(aLoc); //Remove our fake marker which is shown to the user
+    fConstructions.FieldworksList.AddFakeDeletedField(aLoc); //This will hide the real field until it is deleted from game
     if ID = gMySpectator.HandID then gSoundPlayer.Play(sfxClick);
   end
   else
     if CanAddFakeFieldPlan(aLoc, aFieldType) then
     begin
-      fBuildList.FieldworksList.AddFakeField(aLoc, aFieldType);
+      fConstructions.FieldworksList.AddFakeField(aLoc, aFieldType);
       if ID = gMySpectator.HandID then
         gSoundPlayer.Play(sfxPlacemarker);
     end
@@ -1224,7 +1224,7 @@ begin
   Loc.X := aLoc.X - gRes.Houses[aHouseType].EntranceOffsetX;
   Loc.Y := aLoc.Y;
 
-  fBuildList.HousePlanList.AddPlan(aHouseType, Loc);
+  fConstructions.HousePlanList.AddPlan(aHouseType, Loc);
   fStats.HousePlanned(aHouseType);
   gScriptEvents.ProcHousePlanPlaced(fID, Loc.X, Loc.Y, aHouseType);
 
@@ -1258,10 +1258,10 @@ procedure TKMHand.RemHousePlan(const Position: TKMPoint);
 var
   HPlan: TKMHousePlan;
 begin
-  if not fBuildList.HousePlanList.TryGetPlan(Position, HPlan) then //Due to network delays house might not exist now
+  if not fConstructions.HousePlanList.TryGetPlan(Position, HPlan) then //Due to network delays house might not exist now
     Exit;
 
-  fBuildList.HousePlanList.RemPlan(Position);
+  fConstructions.HousePlanList.RemPlan(Position);
   fStats.HousePlanRemoved(HPlan.HouseType);
   gScriptEvents.ProcHousePlanRemoved(fID, HPlan.Loc.X, HPlan.Loc.Y, HPlan.HouseType);
   if (ID = gMySpectator.HandID) and not (gGame.GameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti]) then
@@ -1274,9 +1274,9 @@ procedure TKMHand.RemFieldPlan(const Position: TKMPoint; aMakeSound: Boolean);
 var
   fieldType: TKMFieldType;
 begin
-  fieldType := fBuildList.FieldworksList.HasField(Position);
+  fieldType := fConstructions.FieldworksList.HasField(Position);
   if fieldType = ftNone then Exit; //Can happen due to network delays
-  fBuildList.FieldworksList.RemFieldPlan(Position);
+  fConstructions.FieldworksList.RemFieldPlan(Position);
 
   case fieldType of
     ftRoad: gScriptEvents.ProcPlanRoadRemoved(fID, Position.X, Position.Y);
@@ -1311,8 +1311,8 @@ end;
 //while the game does not know the difference.
 procedure TKMHand.RemFakeFieldPlan(const Position: TKMPoint);
 begin
-  fBuildList.FieldworksList.RemFakeField(Position); //Remove our fake marker which is shown to the user
-  fBuildList.FieldworksList.AddFakeDeletedField(Position); //This will hide the real field until it is deleted from game
+  fConstructions.FieldworksList.RemFakeField(Position); //Remove our fake marker which is shown to the user
+  fConstructions.FieldworksList.AddFakeDeletedField(Position); //This will hide the real field until it is deleted from game
   if ID = gMySpectator.HandID then gSoundPlayer.Play(sfxClick);
 end;
 
@@ -1695,7 +1695,7 @@ begin
   //Include self and allies
   for I := 0 to gHands.Count - 1 do
     if gHands[fID].Alliances[I] = atAlly then
-      gHands[I].BuildList.FieldworksList.GetFields(aList, aRect, aIncludeFake);
+      gHands[I].Constructions.FieldworksList.GetFields(aList, aRect, aIncludeFake);
 end;
 
 
@@ -1706,7 +1706,7 @@ begin
   //Include self and allies
   for I := 0 to gHands.Count - 1 do
     if gHands[fID].Alliances[I] = atAlly then
-      gHands[I].BuildList.HousePlanList.GetOutlines(aList, aRect);
+      gHands[I].Constructions.HousePlanList.GetOutlines(aList, aRect);
 end;
 
 
@@ -1717,7 +1717,7 @@ begin
   //Include self and allies
   for I := 0 to gHands.Count - 1 do
     if gHands[fID].Alliances[I] = atAlly then
-      gHands[I].BuildList.HousePlanList.GetTablets(aList, aRect);
+      gHands[I].Constructions.HousePlanList.GetTablets(aList, aRect);
 end;
 
 
@@ -1763,8 +1763,8 @@ begin
         if AllowBuild then
           for J := 0 to gHands.Count - 1 do
             if (gHands[fID].Alliances[J] = atAlly)
-              and ((gHands[J].fBuildList.FieldworksList.HasField(P2) <> ftNone)
-                or gHands[J].fBuildList.HousePlanList.HasPlan(P2)) then
+              and ((gHands[J].fConstructions.FieldworksList.HasField(P2) <> ftNone)
+                or gHands[J].fConstructions.HousePlanList.HasPlan(P2)) then
               AllowBuild := False;
 
         //Check surrounding tiles in +/- 1 range for other houses pressence
@@ -1773,7 +1773,7 @@ begin
             if (S <> 0) or (T <> 0) then //This is a surrounding tile, not the actual tile
               for J := 0 to gHands.Count - 1 do
                 if (gHands[fID].Alliances[J] = atAlly)
-                  and gHands[J].fBuildList.HousePlanList.HasPlan(KMPoint(P2.X+S,P2.Y+T)) then
+                  and gHands[J].fConstructions.HousePlanList.HasPlan(KMPoint(P2.X+S,P2.Y+T)) then
                 begin
                   BlockPoint(KMPoint(P2.X+S,P2.Y+T), TC_BLOCK); //Block surrounding points
                   AllowBuild := False;
@@ -1801,7 +1801,7 @@ begin
 
   inherited;
   fAI.Save(SaveStream);
-  fBuildList.Save(SaveStream);
+  fConstructions.Save(SaveStream);
   fDeliveries.Save(SaveStream);
   fFogOfWar.Save(SaveStream);
   fHouses.Save(SaveStream);
@@ -1834,7 +1834,7 @@ begin
 
   inherited;
   fAI.Load(LoadStream);
-  fBuildList.Load(LoadStream);
+  fConstructions.Load(LoadStream);
   fDeliveries.Load(LoadStream);
   fFogOfWar.Load(LoadStream);
   fHouses.Load(LoadStream);
@@ -1887,7 +1887,7 @@ begin
     fHouses[I].OnDestroyed := HouseDestroyed;
 
   fDeliveries.SyncLoad;
-  fBuildList.SyncLoad;
+  fConstructions.SyncLoad;
   fAI.SyncLoad;
 end;
 
@@ -1955,7 +1955,7 @@ begin
   //Distribute AI updates among different Ticks to avoid slowdowns
   if (aTick + Byte(fID)) mod 10 = 0 then
   begin
-    fBuildList.UpdateState;
+    fConstructions.UpdateState;
     fDeliveries.UpdateState(aTick);
   end;
 
@@ -1995,10 +1995,11 @@ begin
   if (HandType = hndComputer) then
     fChooseLocation.Placed := True
   // Check if storehouse has been placed
-  else if (Stats.GetHouseTotal(htStore) > 0) then
+  else
+  if (Stats.GetHouseTotal(htStore) > 0) then
   begin
-    for K := 0 to BuildList.HousePlanList.Count - 1 do
-      with BuildList.HousePlanList.Plans[K] do
+    for K := 0 to fConstructions.HousePlanList.Count - 1 do
+      with fConstructions.HousePlanList.Plans[K] do
         if (HouseType = htStore) then
         begin
           Entrance := KMPointAdd( Loc, KMPoint(gRes.Houses[HouseType].EntranceOffsetX,0) );
@@ -2007,10 +2008,11 @@ begin
             AddFirstStorehouse(Entrance);
         end;
   end;
+
   // Preselect storehouse
   if not gGame.IsReplayOrSpectate
-    AND (gMySpectator.HandID = ID)
-    AND not fChooseLocation.Placed then
+  and (gMySpectator.HandID = ID)
+  and not fChooseLocation.Placed then
   begin
     gGameCursor.Mode := cmHouses;
     gGameCursor.Tag1 := Byte(htStore);

@@ -90,38 +90,39 @@ type
 
     fSaveWorkerThread: TKMWorkerThread;
 
-    procedure GameMPDisconnect(const aData: UnicodeString);
-    procedure OtherPlayerDisconnected(aDefeatedPlayerHandId: Integer);
-    procedure MultiplayerRig(aNewGame: Boolean);
-    procedure SaveGameToStream(aTimestamp: TDateTime; aSaveStream: TKMemoryStream);
-    procedure SaveGameToFile(const aPathName: String; aTimestamp: TDateTime; const aMPLocalDataPathName: String = '');
+    procedure IssueAutosaveCommand(aAfterPT: Boolean = False);
+    function FindHandToSpec: Integer;
     procedure UpdatePeaceTime;
     function GetWaitingPlayersList: TKMByteArray;
-    function FindHandToSpec: Integer;
+    function GetControlledHandIndex: TKMHandID;
+    procedure UserAction(aActionType: TKMUserActionType);
+    function GetReplayAutosaveEffectiveFrequency: Integer;
+    procedure UpdateClockUI;
+    function GetMapEditor: TKMMapEditor;
+    function GetMissionFile: UnicodeString;
+
+    procedure GameMPDisconnect(const aData: UnicodeString);
+    procedure OtherPlayerDisconnected(aDefeatedPlayerHandId: Integer);
+
+    function GetGameTickDuration: Single;
     procedure UpdateTickCounters;
     function GetTicksBehindCnt: Single;
     procedure SetIsPaused(aValue: Boolean);
-    procedure IssueAutosaveCommand(aAfterPT: Boolean = False);
 
-    function GetGameTickDuration: Single;
     procedure GameSpeedActualChanged(aFromSpeed, aToSpeed: Single);
-    function GetControlledHandIndex: TKMHandID;
+    procedure SetGameSpeedActualValue(aSpeed: Single);
+
     procedure IncGameTick;
     procedure CheckPauseGameAtTick;
     function IsReplayEnded: Boolean;
 
-    procedure UserAction(aActionType: TKMUserActionType);
-    function GetReplayAutosaveEffectiveFrequency: Integer;
-
     function DoSaveRandomChecks: Boolean;
     function DoSaveGameAsText: Boolean;
-
-    function GetMissionFile: UnicodeString;
-
-    procedure SetGameSpeedActualValue(aSpeed: Single);
-    procedure UpdateClockUI;
-    function GetMapEditor: TKMMapEditor;
     function DoRenderGame: Boolean;
+
+    procedure MultiplayerRig(aNewGame: Boolean);
+    procedure SaveGameToStream(aTimestamp: TDateTime; aSaveStream: TKMemoryStream);
+    procedure SaveGameToFile(const aPathName: String; aTimestamp: TDateTime; const aMPLocalDataPathName: String = '');
 
     function PlayGameTick: Boolean;
     function PlayReplayTick: Boolean;
@@ -228,9 +229,7 @@ type
     property GameMode: TKMGameMode read fGameMode;
     property SaveFile: UnicodeString read fSaveFile;
 
-    {$IFDEF RUNNER}
-    procedure SetGameMode(aGameMode: TKMGameMode);
-    {$ENDIF}
+    {$IFDEF RUNNER} procedure SetGameMode(aGameMode: TKMGameMode); {$ENDIF}
 
     function GetScriptSoundFile(const aSound: AnsiString; aAudioFormat: TKMAudioFormat): UnicodeString;
     property LastReplayTick: Cardinal read fLastReplayTick write fLastReplayTick;
@@ -400,7 +399,7 @@ begin
 
   fIgnoreConsistencyCheckErrors := False;
 
-  case PathFinderToUse of
+  case PATHFINDER_TO_USE of
     0:    fPathfinding := TPathfindingAStarOld.Create;
     1:    fPathfinding := TPathfindingAStarNew.Create;
     2:    fPathfinding := TPathfindingJPS.Create;
@@ -1438,7 +1437,7 @@ begin
   {$ENDIF}
   try
     //How far in the past should we render? (0.0=Current tick, 1.0=Previous tick)
-    if INTERPOLATED_RENDER then
+    if gGameApp.GameSettings.InterpolatedRender then
     begin
       tickLag := GetTimeSince(fLastUpdateState) / fGameSpeedActual / gGameApp.GameSettings.SpeedPace;
       tickLag := 1.0 - tickLag;
@@ -1836,14 +1835,12 @@ begin
     fGameInputProcess.CmdGame(gicGameSpeed, aSpeed);
 end;
 
-
 {$IFDEF RUNNER}
 procedure TKMGame.SetGameMode(aGameMode: TKMGameMode);
 begin
   fGameMode := aGameMode;
 end;
 {$ENDIF}
-
 
 procedure TKMGame.SetGameSpeed(aSpeed: Single; aToggle: Boolean);
 begin

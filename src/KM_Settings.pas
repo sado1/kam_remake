@@ -119,6 +119,7 @@ type
 
     //GameTweaks
     fGameTweaks_AllowSnowHouses: Boolean;
+    fGameTweaks_InterpolatedRender: Boolean;
 
     //Campaign
     fCampaignLastDifficulty: TKMMissionDifficulty;
@@ -231,6 +232,7 @@ type
 
     //GameTweaks
     procedure SetAllowSnowHouses(aValue: Boolean);
+    procedure SetInterpolatedRender(aValue: Boolean);
 
     //Campaign
     procedure SetCampaignLastDifficulty(aValue: TKMMissionDifficulty);
@@ -351,6 +353,7 @@ type
 
     //GameTweaks
     property AllowSnowHouses: Boolean read fGameTweaks_AllowSnowHouses write SetAllowSnowHouses;
+    property InterpolatedRender: Boolean read fGameTweaks_InterpolatedRender write SetInterpolatedRender;
 
     //Campaign
     property CampaignLastDifficulty: TKMMissionDifficulty read fCampaignLastDifficulty write SetCampaignLastDifficulty;
@@ -702,7 +705,8 @@ begin
     fWareDistribution.LoadFromStr(F.ReadString ('Game','WareDistribution',''));
     fSaveWareDistribution := F.ReadBool     ('Game', 'SaveWareDistribution', True); //Enabled by default
 
-    AllowSnowHouses := F.ReadBool('GameTweaks', 'AllowSnowHouses', True); // With restriction by ALLOW_SNO_HOUSES
+    AllowSnowHouses     := F.ReadBool('GameTweaks', 'AllowSnowHouses', True); // With restriction by ALLOW_SNOW_HOUSES
+    InterpolatedRender  := F.ReadBool('GameTweaks', 'InterpolatedRender', False); // With restriction by ALLOW_INTERPOLATED_RENDER
 
     fCampaignLastDifficulty := TKMMissionDifficulty(F.ReadInteger('Campaign', 'CampaignLastDifficulty', Byte(mdNormal))); //Normal as default
 
@@ -855,6 +859,7 @@ begin
     F.WriteBool   ('Game','SaveWareDistribution', fSaveWareDistribution);
 
     F.WriteBool   ('GameTweaks','AllowSnowHouses', fGameTweaks_AllowSnowHouses);
+    F.WriteBool   ('GameTweaks','InterpolatedRender', fGameTweaks_InterpolatedRender);
 
     F.WriteInteger('Campaign','CampaignLastDifficulty', Byte(fCampaignLastDifficulty));
 
@@ -1230,8 +1235,16 @@ end;
 procedure TKMGameSettings.SetAllowSnowHouses(aValue: Boolean);
 begin
   if not ALLOW_SNOW_HOUSES then Exit;
-  
+
   fGameTweaks_AllowSnowHouses := aValue;
+  Changed;
+end;
+
+procedure TKMGameSettings.SetInterpolatedRender(aValue: Boolean);
+begin
+  if not ALLOW_INTERPOLATED_RENDER then Exit;
+
+  fGameTweaks_InterpolatedRender := aValue;
   Changed;
 end;
 

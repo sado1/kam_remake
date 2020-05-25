@@ -87,8 +87,8 @@ var
   SHOW_DISMISS_GROUP_BTN:Boolean = False; //The button to kill group
   CHECK_8087CW          :Boolean = False; //Check that 8087CW (FPU flags) are set correctly each frame, in case some lib/API changed them
   SCROLL_ACCEL          :Boolean = False; //Acceleration for viewport scrolling
-  INTERPOLATED_RENDER   :Boolean = False; //Interpolate positions/animations in render between game ticks
-  PathFinderToUse       :Byte = 1;
+  ALLOW_INTERPOLATED_RENDER :Boolean = True; //Interpolate positions/animations in render between game ticks
+  PATHFINDER_TO_USE     :Byte = 1;        //Use TPathfindingAStarNew
 
   //Cache / delivery / pathfinding
   CACHE_PATHFINDING                       :Boolean = True; //Cache routes incase they are needed soon (Vortamic PF runs x4 faster even with lame approach)
@@ -138,6 +138,7 @@ var
   MAPED_SHOW_CONDITION_UNIT_BTNS: Boolean = True; //Show condition Inc/Dec buttons for citizen units in MapEd
   {Gameplay display}
   SKIP_RENDER             :Boolean = False; //Skip all the rendering in favor of faster logic
+  DO_NOT_SKIP_LOAD_TILESET:Boolean = False; //Do not skip load tileset even if SKIP_RENDER is set
   SKIP_SOUND              :Boolean = False; //Skip all the sounds in favor of faster logic
   SKIP_LOADING_CURSOR     :Boolean = False; //Skip loading and setting cursor
   SKIP_SETTINGS_SAVE      :Boolean = False; //Skip save main/game settings into the ini file

@@ -1,4 +1,4 @@
-unit KM_BuildList;
+unit KM_HandConstructions;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -172,7 +172,7 @@ type
 
 
   // Matchmaking service of workers to building sites, fields, repairs, etc
-  TKMBuildList = class
+  TKMHandConstructions = class
   private
     fFieldworksList: TKMFieldworksList;
     fHouseList: TKMHouseList;
@@ -1124,7 +1124,7 @@ end;
 
 
 { TKMWorkersList }
-constructor TKMBuildList.Create;
+constructor TKMHandConstructions.Create;
 begin
   inherited;
   fFieldworksList := TKMFieldworksList.Create;
@@ -1134,7 +1134,7 @@ begin
 end;
 
 
-destructor TKMBuildList.Destroy;
+destructor TKMHandConstructions.Destroy;
 var
   I: Integer;
 begin
@@ -1151,7 +1151,7 @@ end;
 
 
 //Add the Worker to the List
-procedure TKMBuildList.AddWorker(aWorker: TKMUnitWorker);
+procedure TKMHandConstructions.AddWorker(aWorker: TKMUnitWorker);
 begin
   if fWorkersCount >= Length(fWorkers) then
     SetLength(fWorkers, fWorkersCount + LENGTH_INC);
@@ -1161,7 +1161,7 @@ begin
 end;
 
 //Remove died Worker from the List
-procedure TKMBuildList.RemWorker(aIndex: Integer);
+procedure TKMHandConstructions.RemWorker(aIndex: Integer);
 begin
   gHands.CleanUpUnitPointer(TKMUnit(fWorkers[aIndex].Worker));
 
@@ -1173,7 +1173,7 @@ end;
 
 
 //Remove dead workers
-procedure TKMBuildList.RemoveExtraWorkers;
+procedure TKMHandConstructions.RemoveExtraWorkers;
 var
   I: Integer;
 begin
@@ -1183,7 +1183,7 @@ begin
 end;
 
 
-procedure TKMBuildList.Save(SaveStream: TKMemoryStream);
+procedure TKMHandConstructions.Save(SaveStream: TKMemoryStream);
 var
   I: Integer;
 begin
@@ -1205,7 +1205,7 @@ begin
 end;
 
 
-procedure TKMBuildList.Load(LoadStream: TKMemoryStream);
+procedure TKMHandConstructions.Load(LoadStream: TKMemoryStream);
 var I: Integer;
 begin
   LoadStream.CheckMarker('WorkerList');
@@ -1222,7 +1222,7 @@ begin
 end;
 
 
-procedure TKMBuildList.SyncLoad;
+procedure TKMHandConstructions.SyncLoad;
 var I: Integer; U: TKMUnit;
 begin
   for I := 0 to fWorkersCount - 1 do
@@ -1239,7 +1239,7 @@ begin
 end;
 
 
-function TKMBuildList.GetIdleWorkerCount: Integer;
+function TKMHandConstructions.GetIdleWorkerCount: Integer;
 var I: Integer;
 begin
   Result := 0;
@@ -1249,7 +1249,7 @@ begin
 end;
 
 
-function TKMBuildList.GetBestWorker(const aPoint: TKMPoint): TKMUnitWorker;
+function TKMHandConstructions.GetBestWorker(const aPoint: TKMPoint): TKMUnitWorker;
 var
   I: Integer;
   NewBid, BestBid: Single;
@@ -1269,7 +1269,7 @@ begin
 end;
 
 
-procedure TKMBuildList.AssignFieldworks;
+procedure TKMHandConstructions.AssignFieldworks;
 var
   I, AvailableWorkers, AvailableJobs, JobID: Integer;
   MyBid: Single;
@@ -1298,7 +1298,7 @@ begin
 end;
 
 
-procedure TKMBuildList.AssignHousePlans;
+procedure TKMHandConstructions.AssignHousePlans;
 var
   I, AvailableWorkers, AvailableJobs, JobID: Integer;
   MyBid: Single;
@@ -1327,7 +1327,7 @@ begin
 end;
 
 
-procedure TKMBuildList.AssignHouses;
+procedure TKMHandConstructions.AssignHouses;
 var
   I, AvailableWorkers, AvailableJobs, JobID: Integer;
   MyBid: Single;
@@ -1357,7 +1357,7 @@ begin
 end;
 
 
-procedure TKMBuildList.AssignRepairs;
+procedure TKMHandConstructions.AssignRepairs;
 var
   I, AvailableWorkers, AvailableJobs, JobID: Integer;
   MyBid: Single;
@@ -1387,7 +1387,7 @@ begin
 end;
 
 
-procedure TKMBuildList.UpdateState;
+procedure TKMHandConstructions.UpdateState;
 begin
   HouseList.UpdateState;
   fRepairList.UpdateState;

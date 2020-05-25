@@ -194,7 +194,7 @@ uses
   TypInfo, KM_AI, KM_Game, KM_FogOfWar, KM_HandsCollection, KM_HandLogistics,
   KM_HouseBarracks, KM_HouseSchool, KM_ResUnits, KM_CommonUtils, KM_HouseMarket,
   KM_Resource, KM_Hand, KM_AIDefensePos, KM_CommonClasses,
-  KM_PathFindingRoad, KM_ResMapElements, KM_BuildList,
+  KM_PathFindingRoad, KM_ResMapElements, KM_HandConstructions,
   KM_HouseWoodcutters, KM_HouseTownHall;
 
 const
@@ -1053,7 +1053,7 @@ begin
           gHands[aPlayer].Deliveries.Queue.AddDemand(H, nil, wtWood, gRes.Houses[H.HouseType].WoodCost, dtOnce, diHigh4);
           gHands[aPlayer].Deliveries.Queue.AddDemand(H, nil, wtStone, gRes.Houses[H.HouseType].StoneCost, dtOnce, diHigh4);
         end;
-        gHands[aPlayer].BuildList.HouseList.AddHouse(H);
+        gHands[aPlayer].Constructions.HouseList.AddHouse(H);
       end;
     end
     else
@@ -3201,7 +3201,7 @@ begin
       if gHands[aPlayer].CanAddFieldPlan(KMPoint(X, Y), ftRoad) then
       begin
         Result := True;
-        gHands[aPlayer].BuildList.FieldworksList.AddField(KMPoint(X, Y), ftRoad);
+        gHands[aPlayer].Constructions.FieldworksList.AddField(KMPoint(X, Y), ftRoad);
       end;
     end
     else
@@ -3241,7 +3241,7 @@ begin
       if gHands[aPlayer].CanAddFieldPlan(KMPoint(X, Y), ftCorn) then
       begin
         Result := True;
-        gHands[aPlayer].BuildList.FieldworksList.AddField(KMPoint(X, Y), ftCorn);
+        gHands[aPlayer].Constructions.FieldworksList.AddField(KMPoint(X, Y), ftCorn);
       end;
     end
     else
@@ -3267,7 +3267,7 @@ begin
       if gHands[aPlayer].CanAddFieldPlan(KMPoint(X, Y), ftWine) then
       begin
         Result := True;
-        gHands[aPlayer].BuildList.FieldworksList.AddField(KMPoint(X, Y), ftWine);
+        gHands[aPlayer].Constructions.FieldworksList.AddField(KMPoint(X, Y), ftWine);
       end;
     end
     else
@@ -3310,7 +3310,7 @@ begin
         for I := 0 to Points.Count - 1 do
           if gHands[aPlayer].CanAddFieldPlan(Points[I], ftRoad) then
             if not aCompleted then
-              gHands[aPlayer].BuildList.FieldworksList.AddField(Points[I], ftRoad)
+              gHands[aPlayer].Constructions.FieldworksList.AddField(Points[I], ftRoad)
             else
             begin
               gTerrain.SetRoad(Points[I], aPlayer);
@@ -3346,15 +3346,15 @@ begin
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
     and gTerrain.TileInMapCoords(X,Y) then
     begin
-      if gHands[aPlayer].BuildList.HousePlanList.TryGetPlan(KMPoint(X, Y), HPlan) then
+      if gHands[aPlayer].Constructions.HousePlanList.TryGetPlan(KMPoint(X, Y), HPlan) then
       begin
-        gHands[aPlayer].BuildList.HousePlanList.RemPlan(KMPoint(X, Y));
+        gHands[aPlayer].Constructions.HousePlanList.RemPlan(KMPoint(X, Y));
         gHands[aPlayer].Stats.HousePlanRemoved(HPlan.HouseType);
         Result := True;
       end;
-      if gHands[aPlayer].BuildList.FieldworksList.HasField(KMPoint(X, Y)) <> ftNone then
+      if gHands[aPlayer].Constructions.FieldworksList.HasField(KMPoint(X, Y)) <> ftNone then
       begin
-        gHands[aPlayer].BuildList.FieldworksList.RemFieldPlan(KMPoint(X, Y));
+        gHands[aPlayer].Constructions.FieldworksList.RemFieldPlan(KMPoint(X, Y));
         Result := True;
       end;
     end
