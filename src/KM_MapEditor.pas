@@ -20,6 +20,7 @@ type
   TKMMapEditor = class
   private
     fIsNewMap: Boolean;
+    fSavedMapIsPlayable: Boolean; // Saved map is playable if there is at elast 1 enabled human loc with assets
     fTerrainPainter: TKMTerrainPainter;
     fHistory: TKMMapEditorHistory;
     fDeposits: TKMDeposits;
@@ -47,6 +48,8 @@ type
 
     function GetCheckpointObjectsStr: string;
     function GetHistory: TKMMapEditorHistory;
+
+    function MapIsPlayable: Boolean;
   public
     MissionDefSavePath: UnicodeString;
 
@@ -61,12 +64,17 @@ type
 
     constructor Create(aNewMap: Boolean; aTerrainPainter: TKMTerrainPainter; aOnHistoryUndoRedo, aOnHistoryAddCheckpoint: TEvent);
     destructor Destroy; override;
+
+    procedure AfterCreated;
+
     property Deposits: TKMDeposits read fDeposits;
     property VisibleLayers: TKMMapEdVisibleLayerSet read fVisibleLayers write fVisibleLayers;
     property Selection: TKMSelection read fSelection;
     property Revealers[aIndex: Byte]: TKMPointTagList read GetRevealer;
     property History: TKMMapEditorHistory read GetHistory write fHistory;
+
     property IsNewMap: Boolean read fIsNewMap;
+    property SavedMapIsPlayable: Boolean read fSavedMapIsPlayable;
 
     function OnlyAdvancedAIHand(aHandId: TKMHandID): Boolean;
 
@@ -222,6 +230,23 @@ begin
 end;
 
 
+function TKMMapEditor.MapIsPlayable: Boolean;
+var
+  I: Integer;
+begin
+  Result := False;
+  for I := 0 to MAX_HANDS - 1 do
+    if PlayerHuman[I] and gHands[I].HasAssets then
+      Exit(True);
+end;
+
+
+procedure TKMMapEditor.AfterCreated;
+begin
+  fSavedMapIsPlayable := MapIsPlayable;
+end;
+
+
 procedure TKMMapEditor.SaveAttachements(const aMissionFile: UnicodeString);
 var
   I: Integer;
@@ -260,6 +285,7 @@ begin
   end;
 
   fIsNewMap := False; //Map was saved, its not a new map anymore
+  fSavedMapIsPlayable := MapIsPlayable;
 end;
 
 

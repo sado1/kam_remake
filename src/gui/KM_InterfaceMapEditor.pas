@@ -127,6 +127,7 @@ type
     property Minimap: TKMMinimap read fMinimap;
     property Viewport: TKMViewport read fViewport;
     property GuiTerrain: TKMMapEdTerrain read fGuiTerrain;
+    property GuiMission: TKMMapEdMission read fGuiMission;
 
     procedure KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean); override;
     procedure KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean); override;

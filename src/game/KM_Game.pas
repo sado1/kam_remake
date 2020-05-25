@@ -618,7 +618,6 @@ begin
             or ((gHands[I].HandAITypes = [aitClassic, aitAdvanced])
               and (aAIType = aitAdvanced))) then
             gHands[I].AI.Setup.EnableAdvancedAI
-
     end;
 
     if Parser.MinorErrors <> '' then
@@ -708,6 +707,8 @@ begin
   begin
     fMapEditor.History.Clear;
     fMapEditor.History.MakeCheckpoint(caAll, gResTexts[TX_MAPED_HISTORY_CHPOINT_INITIAL]);
+    fMapEditorInterface.GuiMission.GuiMissionPlayers.UpdatePlayerTypes; //Will update MapEditor PlayerHuman/PLayerAI etc //Todo refactor
+    fMapEditor.AfterCreated;
   end;
 
   //MissionStart goes after basesave to keep it pure (repeats on Load of basesave)
