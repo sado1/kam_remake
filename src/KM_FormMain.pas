@@ -129,6 +129,7 @@ type
     cpGameAdv: TCategoryPanel;
     cpPerfLogs: TCategoryPanel;
     chkSnowHouses: TCheckBox;
+    chkInterpolatedRender: TCheckBox;
     chkLoadUnsupSaves: TCheckBox;
     chkJamMeter: TCheckBox;
     chkShowTerrainOverlays: TCheckBox;
@@ -818,6 +819,7 @@ procedure TFormMain.ControlsReset;
                                                          or (PanelSurface.Controls[I] = chkLogNetConnection)
                                                          or (PanelSurface.Controls[I] = chkLogSkipTempCmd)
                                                          or ((PanelSurface.Controls[I] = chkSnowHouses) and gGameApp.GameSettings.AllowSnowHouses)
+                                                         or ((PanelSurface.Controls[I] = chkInterpolatedRender) and gGameApp.GameSettings.InterpolatedRender)
                                                          or (PanelSurface.Controls[I] = chkShowObjects)
                                                          or (PanelSurface.Controls[I] = chkShowHouses)
                                                          or (PanelSurface.Controls[I] = chkShowUnits)
@@ -891,6 +893,7 @@ procedure TFormMain.ControlsRefill;
 begin
   {$IFDEF WDC}
   chkSnowHouses.SetCheckedWithoutClick(gGameApp.GameSettings.AllowSnowHouses); // Snow houses checkbox could be updated before game
+  chkInterpolatedRender.SetCheckedWithoutClick(gGameApp.GameSettings.InterpolatedRender); // Snow houses checkbox could be updated before game
   chkLoadUnsupSaves.SetCheckedWithoutClick(ALLOW_LOAD_UNSUP_VERSION_SAVE);
   chkDebugScripting.SetCheckedWithoutClick(DEBUG_SCRIPTING_EXEC);
   {$ENDIF}
@@ -1084,6 +1087,7 @@ begin
   {$IFDEF WDC} //one day update .lfm for lazarus...
 //  ALLOW_SNOW_HOUSES := chkSnowHouses.Checked;
   gGameApp.GameSettings.AllowSnowHouses := chkSnowHouses.Checked;
+  gGameApp.GameSettings.InterpolatedRender := chkInterpolatedRender.Checked;
 
   ALLOW_LOAD_UNSUP_VERSION_SAVE := chkLoadUnsupSaves.Checked;
   {$ENDIF}

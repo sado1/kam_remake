@@ -1437,7 +1437,7 @@ begin
   {$ENDIF}
   try
     //How far in the past should we render? (0.0=Current tick, 1.0=Previous tick)
-    if INTERPOLATED_RENDER then
+    if gGameApp.GameSettings.InterpolatedRender then
     begin
       tickLag := GetTimeSince(fLastUpdateState) / fGameSpeedActual / gGameApp.GameSettings.SpeedPace;
       tickLag := 1.0 - tickLag;
