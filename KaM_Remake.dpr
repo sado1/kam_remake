@@ -48,7 +48,6 @@ uses
   KM_AIParameters in 'src\ai\newAI\KM_AIParameters.pas',
 
   KM_Alerts in 'src\KM_Alerts.pas',
-  KM_BuildList in 'src\KM_BuildList.pas',
   KM_Campaigns in 'src\KM_Campaigns.pas',
 
   KM_Console in 'src\KM_Console.pas',
@@ -161,6 +160,7 @@ uses
 
   KM_Hand in 'src\hands\KM_Hand.pas',
   KM_HandsCollection in 'src\hands\KM_HandsCollection.pas',
+  KM_HandConstructions in 'src\hands\KM_HandConstructions.pas',
   KM_HandLocks in 'src\hands\KM_HandLocks.pas',
   KM_HandLogistics in 'src\hands\KM_HandLogistics.pas',
   KM_HandSpectator in 'src\hands\KM_HandSpectator.pas',

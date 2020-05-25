@@ -194,7 +194,7 @@ uses
   TypInfo, KM_AI, KM_Game, KM_FogOfWar, KM_HandsCollection, KM_HandLogistics,
   KM_HouseBarracks, KM_HouseSchool, KM_ResUnits, KM_CommonUtils, KM_HouseMarket,
   KM_Resource, KM_Hand, KM_AIDefensePos, KM_CommonClasses,
-  KM_PathFindingRoad, KM_ResMapElements, KM_BuildList,
+  KM_PathFindingRoad, KM_ResMapElements, KM_HandConstructions,
   KM_HouseWoodcutters, KM_HouseTownHall;
 
 const

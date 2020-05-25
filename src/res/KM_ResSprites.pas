@@ -128,8 +128,7 @@ type
     function GetNextLoadRxTypeIndex(aRT: TRXType): Integer;
     {$ENDIF}
   public
-    constructor Create; overload;
-    constructor Create(aStepProgress: TEvent; aStepCaption: TUnicodeStringEvent); overload;
+    constructor Create(aStepProgress: TEvent = nil; aStepCaption: TUnicodeStringEvent = nil);
     destructor Destroy; override;
 
     procedure LoadMenuResources;
@@ -1122,13 +1121,7 @@ end;
 
 
 { TKMResSprites }
-constructor TKMResSprites.Create;
-begin
-  Create(nil, nil);
-end;
-
-
-constructor TKMResSprites.Create(aStepProgress: TEvent; aStepCaption: TUnicodeStringEvent);
+constructor TKMResSprites.Create(aStepProgress: TEvent = nil; aStepCaption: TUnicodeStringEvent = nil);
 var
   RT: TRXType;
 begin
