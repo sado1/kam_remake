@@ -71,7 +71,6 @@ type
     destructor Destroy; override;
     procedure WaitingForConfirmation(aTick: Cardinal);
     procedure AdjustDelay(aGameSpeed: Single);
-    procedure PlayerChanged(aPlayer: TKMHandID; aType: TKMHandType; aPlayerNikname: AnsiString);
     function GetNetworkDelay: Word;
     property NumberConsecutiveWaits: Word read fNumberConsecutiveWaits;
     property LastSentCmdsTick: Cardinal read fLastSentCmdsTick;
@@ -265,13 +264,6 @@ begin
     SetDelay(MIN_DELAY) //We can set the lowest delay if we are the only MP player
   else
     SetDelay(Ceil(aGameSpeed * (fNetworking.NetPlayers.GetMaxHighestRoundTripLatency / 200 + 1.2)));
-end;
-
-
-procedure TKMGameInputProcess_Multi.PlayerChanged(aPlayer: TKMHandID; aType: TKMHandType; aPlayerNikname: AnsiString);
-begin
-  Assert(ReplayState = gipRecording);
-  StoreCommand(MakeCommand(gicGamePlayerChange, aPlayerNikname, aPlayer, Byte(aType)));
 end;
 
 

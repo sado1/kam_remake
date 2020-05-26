@@ -3,7 +3,7 @@ unit KM_GameInputProcess;
 interface
 uses
   KM_Units, KM_UnitGroup,
-  KM_Houses, KM_HouseWoodcutters,
+  KM_Houses, KM_HouseWoodcutters, KM_Hand,
   KM_ResHouses, KM_ResWares, KM_ScriptingConsoleCommands,
   KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Points, KM_WorkerThread;
 
@@ -101,8 +101,9 @@ type
     gicGameTeamChange,
     gicGameHotkeySet,        //Hotkeys are synced for MP saves (UI keeps local copy to avoid GIP delays)
     gicGameMessageLogRead,   //Player marks a message in their log as read
-    gicGamePlayerChange, //Players can be changed to AI when loading a save
+    gicGamePlayerChange,     //Players can be changed to AI when loading a save and player name could be changed
     gicGamePlayerDefeat,     //Player can be defeated after intentional quit from the game
+    gicGamePlayerAllianceSet,//Set player alliance to other player
 
     //VII.
     gicScriptConsoleCommand,
@@ -139,7 +140,7 @@ const
   AllowedAfterDefeat: set of TKMGameInputCommandType =
     [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameLoadSave, gicGameMessageLogRead, gicTempDoNothing];
   AllowedInCinematic: set of TKMGameInputCommandType =
-    [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameMessageLogRead, gicTempDoNothing];
+    [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameMessageLogRead, gicGamePlayerAllianceSet, gicTempDoNothing];
   AllowedBySpectators: set of TKMGameInputCommandType =
     [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameLoadSave, gicGamePlayerDefeat, gicTempDoNothing];
   //Those commands should not have random check, because they they are not strictly happen, depends of player config and actions
@@ -248,6 +249,7 @@ const
     gicpt_Int1,     // gicGameMessageLogRead
     gicpt_Ansi1Int2,// gicGamePlayerChange
     gicpt_Int1,     // gicGamePlayerDefeat
+    gicpt_Int3,     // gicGamePlayerAllianceSet
     //VII.     Scripting commands
     gicpt_Ansi1Uni4,
     //VIII.    Temporary and debug commands
@@ -350,6 +352,9 @@ type
     procedure CmdGame(aCommandType: TKMGameInputCommandType; aValue: Integer); overload;
     procedure CmdGame(aCommandType: TKMGameInputCommandType; aValue: Single); overload;
 
+    procedure CmdPlayerAllianceSet(aForPlayer, aToPlayer: TKMHandID; aAllianceType: TKMAllianceType);
+    procedure CmdPlayerChanged(aPlayer: TKMHandID; aType: TKMHandType; aPlayerNikname: AnsiString);
+
     procedure CmdTemp(aCommandType: TKMGameInputCommandType; const aLoc: TKMPoint); overload;
     procedure CmdTemp(aCommandType: TKMGameInputCommandType); overload;
 
@@ -381,7 +386,7 @@ type
 implementation
 uses
   SysUtils, TypInfo, Math,
-  KM_GameApp, KM_Game, KM_Hand, KM_HandsCollection,
+  KM_GameApp, KM_Game, KM_HandsCollection,
   KM_HouseMarket, KM_HouseBarracks, KM_HouseSchool, KM_HouseTownHall,
   KM_ScriptingEvents, KM_Alerts, KM_CommonUtils, KM_Log, KM_RenderUI,
   KM_GameTypes, KM_ResFonts, KM_Resource;
@@ -869,7 +874,6 @@ begin
       gicGameHotkeySet:           P.SelectionHotkeys[Params[1]] := Params[2];
       gicGameMessageLogRead:      P.MessageLog[Params[1]].IsReadGIP := True;
       gicGamePlayerChange:        begin
-                                    Assert(fReplayState <> gipRecording); //Should only occur in replays
                                     Assert(not gGame.IsMapEditor);
                                     gHands[Params[1]].HandType := TKMHandType(Params[2]);
                                     gHands[Params[1]].OwnerNikname := AnsiStrParam;
@@ -879,6 +883,7 @@ begin
                                     gHands.UpdateGoalsForHand(Params[1], False);
                                     gHands[Params[1]].AI.Defeat(False);
                                   end;
+      gicGamePlayerAllianceSet:   gHands[Params[1]].Alliances[Params[2]] := TKMAllianceType(Params[3]);
       gicScriptConsoleCommand:    gScriptEvents.CallConsoleCommand(HandIndex, AnsiStrParam, UnicodeStrParams);
       else                        raise Exception.Create('Unexpected gic command');
     end;
@@ -1124,6 +1129,19 @@ procedure TKMGameInputProcess.CmdGame(aCommandType: TKMGameInputCommandType; aVa
 begin
   Assert(aCommandType = gicGameSpeed);
   TakeCommand(MakeCommandNoHand(aCommandType, aValue));
+end;
+
+
+procedure TKMGameInputProcess.CmdPlayerAllianceSet(aForPlayer, aToPlayer: TKMHandID; aAllianceType: TKMAllianceType);
+begin
+  TakeCommand(MakeCommand(gicGamePlayerAllianceSet, aForPlayer, aToPlayer, Byte(aAllianceType)));
+end;
+
+
+procedure TKMGameInputProcess.CmdPlayerChanged(aPlayer: TKMHandID; aType: TKMHandType; aPlayerNikname: AnsiString);
+begin
+  Assert(ReplayState = gipRecording);
+  TakeCommand(MakeCommand(gicGamePlayerChange, aPlayerNikname, aPlayer, Byte(aType)));
 end;
 
 

@@ -837,7 +837,7 @@ begin
         else
           playerNikname := '';
 
-        TKMGameInputProcess_Multi(GameInputProcess).PlayerChanged(HIndex, gHands[HIndex].HandType, playerNikname);
+        fGameInputProcess.CmdPlayerChanged(HIndex, gHands[HIndex].HandType, playerNikname);
       end;
 
       //Update player nikname to show in the list for specs, in the stats etc
