@@ -44,6 +44,7 @@ type
     btnStop: TButton;
     btnPause: TButton;
     rgMaps: TRadioGroup;
+    chkRandomTeams: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure btnRunClick(Sender: TObject);
     procedure PageControl1Change(Sender: TObject);
@@ -234,6 +235,7 @@ begin
         Runner.AIType := aitAdvanced;
 
       Runner.MapsType := TKMRunnerMapsType(rgMaps.ItemIndex);
+      Runner.RandomTeams := chkRandomTeams.Checked;
 
       fResults := Runner.Run(Count);
       fRunTime := 'Done in ' + IntToStr(GetTickCount - T) + ' ms';

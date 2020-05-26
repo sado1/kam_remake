@@ -330,4 +330,12 @@ object Form2: TForm2
       'Coop')
     TabOrder = 11
   end
+  object chkRandomTeams: TCheckBox
+    Left = 79
+    Top = 384
+    Width = 96
+    Height = 17
+    Caption = 'Random teams'
+    TabOrder = 12
+  end
 end

@@ -1107,8 +1107,34 @@ end;
 function TKMRunnerDesyncTest.TickPlayed(aTick: Cardinal): Boolean;
 var
   tickCRC, T: Cardinal;
+  I, loc: Integer;
+  allianceType: TKMAllianceType;
 begin
   Result := True;
+
+  if gGame.GameTick = 1 then
+  begin
+    gGame.GameInputProcess.CmdPlayerChanged(0, hndComputer, 'AI 1');
+
+//    if gHands[0].CanBeHuman then
+//      gHands[0].AI.Setup.ApplyMultiplayerSetup(AIType = aitAdvanced)
+//    else
+//      //Just enable Advanced AI, do not override MapEd AI params
+//      gHands[0].AI.Setup.EnableAdvancedAI(AIType = aitAdvanced);
+
+    if RandomTeams then
+      for I := 0 to gHands.Count - 1 do
+      begin
+        loc := KaMRandomWSeed(fRunSeed, gHands.Count - 1);
+        if loc <> I then
+        begin
+          allianceType := TKMAllianceType(KaMRandomWSeed(fRunSeed, 2));
+          gGame.GameInputProcess.CmdPlayerAllianceSet(I, loc, allianceType);
+          gGame.GameInputProcess.CmdPlayerAllianceSet(loc, I, allianceType);
+        end;
+      end;
+    SaveGame;
+  end;
 
   case fRunKind of
     drkGame:      begin
@@ -1204,21 +1230,21 @@ const
   LOAD_SAVEPT_AT_TICK = 0;
   SKIP_FIRST_SAVEPT_CNT = 15; //Skip first savepoints to save some time
 
+var
+  K,L,I,M: Integer;
+  desyncCnt, mapsCnt, savesFreq, savesCnt, replayLength: Integer;
+  simulLastTick, totalRuns, totalLoads: Integer;
+
   procedure StartGame;
   var
     mapFullName: string;
   begin
-    fRunSeed := 1;
+    fRunSeed := L;
 
     mapFullName := Format('%sMapsMP\%s\%s.dat',[ExeDir,fMap,fMap]);
     gGameApp.NewSingleMap(mapFullName, fMap, -1, 0, mdNone, AIType);
   end;
 
-
-var
-  K,L,I,M: Integer;
-  desyncCnt, mapsCnt, savesFreq, savesCnt, replayLength: Integer;
-  simulLastTick, totalRuns, totalLoads: Integer;
 begin
   PAUSE_GAME_AFTER_TICK := -1;    //Pause at specified game tick
 //  MAKE_SAVEPT_AFTER_TICK := 40800;
@@ -1288,6 +1314,8 @@ begin
 //      Include(gLog.MessageTypes, lmtCommands);
 
       SimulateGame(0, SIMUL_TIME_MAX);
+
+      SaveGame;
 
 //      LOG_GAME_TICK := False;
 //      Exclude(gLog.MessageTypes, lmtCommands);

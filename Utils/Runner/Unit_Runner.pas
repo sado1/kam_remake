@@ -43,6 +43,7 @@ type
     Seed: Integer;
     AIType: TKMAIType;
     MapsType: TKMRunnerMapsType;
+    RandomTeams: Boolean;
     OnProgress: TUnicodeStringEvent;
     OnProgress_Left: TUnicodeStringEvent;
     OnProgress_Left2: TUnicodeStringEvent;
