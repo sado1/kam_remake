@@ -75,7 +75,7 @@ type
     procedure InitQueue(var aEnemy: TKMAllianceInfo2); reintroduce;
     function CanBeExpanded(const aIdx: Word): Boolean; override;
     procedure MarkAsVisited(const aIdx, aClusterID: Word; const aDistance: Cardinal; const aPoint: TKMPoint); reintroduce;
-    procedure ExpandPolygon(aIdx: Word);
+    procedure ExpandPolygon(aIdx: Word; aCanBeExpanded: Boolean);
     procedure Flood(var aEnemy: TKMAllianceInfo2); reintroduce;
   public
     function FindClusters(var aClusters: TKMCombatClusters; var aAllianceInfo: TKMAllianceInfo2; var aDefInfo: TKMInflInfoArray2; var aQueueArray: TPolygonsQueueArr): Boolean;
@@ -254,7 +254,7 @@ begin
 end;
 
 
-procedure TKMFindClusters.ExpandPolygon(aIdx: Word);
+procedure TKMFindClusters.ExpandPolygon(aIdx: Word; aCanBeExpanded: Boolean);
 var
   K, L, NearbyIdx, RefID, NearbyRefID: Integer;
 begin
@@ -265,10 +265,13 @@ begin
     // Expand polygon
     if not IsVisited(NearbyIdx) then
     begin
-      MarkAsVisited( NearbyIdx, RefID,
-                     fQueueArray[aIdx].Distance + KMDistanceWalk(fQueueArray[aIdx].DistPoint, gAIFields.NavMesh.Polygons[aIdx].NearbyPoints[K]),
-                     gAIFields.NavMesh.Polygons[aIdx].NearbyPoints[K]);
-      InsertAndSort(NearbyIdx);
+      if aCanBeExpanded then
+      begin
+        MarkAsVisited( NearbyIdx, RefID,
+                       fQueueArray[aIdx].Distance + KMDistanceWalk(fQueueArray[aIdx].DistPoint, gAIFields.NavMesh.Polygons[aIdx].NearbyPoints[K]),
+                       gAIFields.NavMesh.Polygons[aIdx].NearbyPoints[K]);
+        InsertAndSort(NearbyIdx);
+      end;
     end
     // Merge clusters by changing reference (faster than copying arrays)
     else
@@ -294,8 +297,7 @@ begin
   // Start merging clusters
   Idx := fStartQueue;
   while RemoveFromQueue(Idx) do
-    if CanBeExpanded(Idx) then
-      ExpandPolygon(Idx);
+    ExpandPolygon(Idx, CanBeExpanded(Idx));
 end;
 
 
