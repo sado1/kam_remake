@@ -1053,7 +1053,7 @@ end;
 //Occasional replay inconsistencies are a known bug, we don't need reports of it
 procedure TKMGame.ReplayInconsistancy(aCommand: TKMStoredGIPCommand; aMyRand: Cardinal);
 const
-  TRY_KAM_RANDOM_CNT = 20;
+  TRY_KAM_RANDOM_CNT = 10;
 var
   I: Integer;
   TempSeedI, TempSeedF: Integer;
@@ -1061,18 +1061,18 @@ var
   ValF: Double;
 begin
   gLog.AddTime('Replay failed a consistency check at tick ' + IntToStr(fGameTick));
-  gLog.AddTime(Format('MyRand = %d, but command: %s', [aMyRand, TKMGameInputProcess.StoredGIPCommandToString(aCommand)]));
+  gLog.AddTime(Format('MyRand = %d, seed: %d; but command: %s', [aMyRand, GetKaMSeed, TKMGameInputProcess.StoredGIPCommandToString(aCommand)]));
   if gLog.CanLogRandomChecks() then
   begin
-    gLog.LogRandomChecks('Next KaMRandom values are: ');
+    gLog.LogRandomChecks('Next KaMRandom seed values are: ');
     TempSeedI := GetKaMSeed;
     TempSeedF := GetKaMSeed;
     for I := 0 to TRY_KAM_RANDOM_CNT - 1 do
     begin
       ValI := KaMRandomWSeed(TempSeedI, MaxInt);
       ValF := KaMRandomWSeed(TempSeedF);
-      gLog.LogRandomChecks(Format('%d: KaMRandomI: %30d', [I+1, ValI]));
-      gLog.LogRandomChecks(Format('%d: KaMRandomF: %30s', [I+1, FormatFloat('0.##############################', ValF)]));
+      gLog.LogRandomChecks(Format('%d: seed: %d; KaMRandomI: %30d', [I+1, TempSeedI, ValI]));
+      gLog.LogRandomChecks(Format('%d: seed: %d; KaMRandomF: %30s', [I+1, TempSeedF, FormatFloat('0.##############################', ValF)]));
       if ValI = aMyRand then
         gLog.LogRandomChecks('Find match with MyRand !!!');
     end;
