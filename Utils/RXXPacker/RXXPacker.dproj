@@ -7,7 +7,7 @@
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Application</AppType>
         <FrameworkType>VCL</FrameworkType>
-        <ProjectVersion>18.8</ProjectVersion>
+        <ProjectVersion>19.0</ProjectVersion>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
@@ -105,7 +105,7 @@
         <DCCReference Include="..\..\src\res\KM_ResSprites.pas"/>
         <DCCReference Include="..\..\src\res\KM_ResSpritesEdit.pas"/>
         <DCCReference Include="..\..\src\res\KM_ResPalettes.pas"/>
-        <DCCReference Include="..\..\src\KM_SoftShadows.pas"/>
+        <DCCReference Include="..\..\src\utils\KM_SoftShadows.pas"/>
         <DCCReference Include="..\..\src\common\KM_Defaults.pas"/>
         <DCCReference Include="..\..\src\common\KM_CommonTypes.pas"/>
         <DCCReference Include="..\..\src\common\KM_CommonClasses.pas"/>
