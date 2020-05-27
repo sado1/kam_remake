@@ -1008,7 +1008,7 @@ begin
   //Remove fake markup that will be visible only to gMySpectator until Server verifies it.
   //Must go before TakeCommand as it could execute command immediately (in singleplayer)
   //and the fake markup must be added first otherwise our logic in FieldsList fails
-  if (gGame.GameMode = gmMulti) and (aCommandType = gicBuildRemoveFieldPlan) then
+  if gGame.IsMultiplayerGame and (aCommandType = gicBuildRemoveFieldPlan) then
     gMySpectator.Hand.RemFakeFieldPlan(aLoc);
 
   TakeCommand(MakeCommand(aCommandType, aLoc.X, aLoc.Y));
@@ -1024,7 +1024,7 @@ begin
   //Add fake markup that will be visible only to gMySpectator until Server verifies it.
   //Must go before TakeCommand as it could execute command immediately (in singleplayer)
   //and the fake markup must be added first otherwise our logic in FieldsList fails
-  if gGame.GameMode = gmMulti then
+  if gGame.IsMultiplayerGame then
     gMySpectator.Hand.ToggleFakeFieldPlan(aLoc, aFieldType);
 
   TakeCommand(MakeCommand(aCommandType, aLoc.X, aLoc.Y, Byte(aFieldType)));

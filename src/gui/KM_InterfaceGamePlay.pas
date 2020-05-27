@@ -1718,7 +1718,7 @@ end;
 procedure TKMGamePlayInterface.Menu_QuitMission(Sender: TObject);
 begin
   //Defeat player, if he intentionally quit, when game result is not determined yet (grCancel)
-  if (gGame.GameMode = gmMulti) and (gGame.GameResult = grCancel) then
+  if gGame.IsMultiplayerGame and (gGame.GameResult = grCancel) then
     gGame.GameResult := grDefeat
   else if gGame.IsReplay then
     gGame.GameResult := grReplayEnd;

@@ -1151,7 +1151,7 @@ begin
     and not gGameApp.GameSettings.VideoOn then // Don't play victory sound if videos are on
     gSoundPlayer.Play(sfxnVictory, 1, True); //Fade music
 
-  if fGameMode = gmMulti then
+  if IsMultiplayerGame then
   begin
     if aHandIndex = gMySpectator.HandID then
     begin
@@ -1702,7 +1702,7 @@ var
   PeaceTicksRemaining: Cardinal;
 begin
   PeaceTicksRemaining := Max(0, Int64((fGameOptions.Peacetime * 600)) - fGameTick);
-  if (PeaceTicksRemaining = 1) and (fGameMode in [gmMulti, gmMultiSpectate, gmReplayMulti]) then
+  if (PeaceTicksRemaining = 1) and IsMultiplayer then
   begin
     gSoundPlayer.Play(sfxnPeacetime, 1, True); //Fades music
     if IsMultiPlayerOrSpec then
@@ -2923,7 +2923,7 @@ begin
     fActiveInterface.UpdateState(aGlobalTickCount);
 
     //Notify about player being AFK
-    if (gGame.GameMode = gmMulti) //Only for MP game players, not specs
+    if IsMultiplayerGame //Only for MP game players, not specs
       and (GetTimeSince(fLastTimeUserAction) > PLAYER_AFK_TIME*60*1000)
       and (GetTimeSince(fLastAfkMessageSent) > PLAYER_AFK_MESSAGE_DELAY) then
     begin

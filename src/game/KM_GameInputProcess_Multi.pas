@@ -192,7 +192,7 @@ var
 begin
   Assert(fDelay < MAX_SCHEDULE, 'Error, fDelay >= MAX_SCHEDULE');
   if ((gGame.GameMode = gmMultiSpectate) and not (aCommand.CommandType in ALLOWED_BY_SPECTATORS)) // Do not allow spectators to command smth
-    or ((gGame.GameMode = gmMulti)                      // in multiplayer game
+    or (gGame.IsMultiplayerGame                  // in multiplayer game
       and IsSelectedObjectCommand(aCommand.CommandType) // block only commands for selected object
       and (gMySpectator.Selected <> nil)                // if there is selected object
       and not gMySpectator.IsSelectedMyObj) then        // and we try to make command to ally's object
