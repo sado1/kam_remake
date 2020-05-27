@@ -1144,7 +1144,7 @@ begin
     and (
       (fGameResultMsg <> grGameContinues)
       or SHOW_ENEMIES_STATS
-      or (gGame.GameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti])
+      or gGame.IsReplayOrSpectate
       or (gHands[aHandId].Alliances[gMySpectator.HandID] = atAlly)
       or gMySpectator.Hand.AI.HasWon);
 end;

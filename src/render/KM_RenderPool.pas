@@ -463,7 +463,7 @@ begin
 
   // Tablets on house plans, for self and allies
   fTabletsList.Clear;
-  if gGame.GameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti] then
+  if gGame.IsReplayOrSpectate then
     if gMySpectator.FOWIndex = -1 then
       for I := 0 to gHands.Count - 1 do
         gHands[I].GetPlansTablets(fTabletsList, aRect)
@@ -1327,7 +1327,7 @@ begin
   fHousePlansList.Clear;
 
   // Collect field plans (road, corn, wine)
-  if gGame.GameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti] then
+  if gGame.IsReplayOrSpectate then
   begin
     if gMySpectator.FOWIndex = -1 then
       for I := 0 to gHands.Count - 1 do
@@ -1344,7 +1344,7 @@ begin
   end;
 
   // House plans for self and allies
-  if gGame.GameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti] then
+  if gGame.IsReplayOrSpectate then
   begin
     if gMySpectator.FOWIndex = -1 then
       for I := 0 to gHands.Count - 1 do

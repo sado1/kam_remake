@@ -1137,7 +1137,7 @@ begin
   else
     if CanAddFieldPlan(aLoc, aFieldType) then
     begin
-      if aMakeSound and not (gGame.GameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti])
+      if aMakeSound and not gGame.IsReplayOrSpectate
         and (ID = gMySpectator.HandID) then
         gSoundPlayer.Play(sfxPlacemarker);
       fConstructions.FieldworksList.AddField(aLoc, aFieldType);
@@ -1151,7 +1151,7 @@ begin
     end
     else
     begin
-      if aMakeSound and not (gGame.GameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti])
+      if aMakeSound and not gGame.IsReplayOrSpectate
         and (ID = gMySpectator.HandID) then
         gSoundPlayer.Play(sfxCantPlace, 4);
       if Plan = ftNone then //If we can't build because there's some other plan, that's ok
@@ -1229,7 +1229,7 @@ begin
   fStats.HousePlanned(aHouseType);
   gScriptEvents.ProcHousePlanPlaced(fID, Loc.X, Loc.Y, aHouseType);
 
-  if (ID = gMySpectator.HandID) and not (gGame.GameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti]) then
+  if (ID = gMySpectator.HandID) and not gGame.IsReplayOrSpectate then
     gSoundPlayer.Play(sfxPlacemarker);
 end;
 
@@ -1265,7 +1265,7 @@ begin
   fConstructions.HousePlanList.RemPlan(Position);
   fStats.HousePlanRemoved(HPlan.HouseType);
   gScriptEvents.ProcHousePlanRemoved(fID, HPlan.Loc.X, HPlan.Loc.Y, HPlan.HouseType);
-  if (ID = gMySpectator.HandID) and not (gGame.GameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti]) then
+  if (ID = gMySpectator.HandID) and not gGame.IsReplayOrSpectate then
     gSoundPlayer.Play(sfxClick);
 end;
 
@@ -1287,7 +1287,7 @@ begin
     raise Exception.Create('Unknown fieldType');
   end;
 
-  if aMakeSound and not (gGame.GameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti])
+  if aMakeSound and not gGame.IsReplayOrSpectate
   and (ID = gMySpectator.HandID) then
     gSoundPlayer.Play(sfxClick);
 end;

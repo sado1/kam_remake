@@ -315,7 +315,7 @@ begin
   end;
 
   // In a replay we want in-game statistics (and other things) to be shown for the owner of the last select object
-  if gGame.GameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti] then
+  if gGame.IsReplayOrSpectate then
   begin
     UID := UID_NONE;
     if Selected is TKMHouse then

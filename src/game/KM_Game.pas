@@ -2315,7 +2315,7 @@ begin
   gRes.Units.LoadCustomData(LoadStream);
   gRes.Wares.LoadCustomData(LoadStream);
 
-  if gGame.GameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti] then
+  if IsReplayOrSpectate then
   begin
     gMySpectator.FOWIndex := PLAYER_NONE; //Show all by default in replays
     //HandIndex is the first enabled player
