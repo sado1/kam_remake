@@ -1033,8 +1033,7 @@ begin
     end;
   end;
 
-  if (fGameMode in [gmReplaySingle, gmReplayMulti])
-    or (fGamePlayInterface.UIMode = umReplay) then //In case game mode was altered or loaded with logical error
+  if IsReplay or (fGamePlayInterface.UIMode = umReplay) then //In case game mode was altered or loaded with logical error
   begin
     //For replays attach only replay save files
     AttachFile(ChangeFileExt(ExeDir + fSaveFile, EXT_SAVE_BASE_DOT));
@@ -2282,7 +2281,7 @@ begin
 
   //If there is Campaign Name in save then change GameMode to gmCampaign, because GameMode is not stored in Save
   if IsCampaign
-    and not (fGameMode in [gmReplaySingle, gmReplayMulti]) then //Not for replays thought...
+    and not IsReplay then //Not for replays thought...
     fGameMode := gmCampaign;
 
   //We need to know which mission/savegame to try to restart. This is unused in MP.

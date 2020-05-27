@@ -261,7 +261,7 @@ function TKMGameApp.CanClose: Boolean;
 begin
   //There are no unsaved changes in MainMenu and in Replays
   //In all other cases (maybe except gsOnHold?) there are potentially unsaved changes
-  Result := (gGame = nil) or (gGame.GameMode in [gmReplaySingle, gmReplayMulti]);
+  Result := (gGame = nil) or gGame.IsReplay;
 end;
 
 
