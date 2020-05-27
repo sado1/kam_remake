@@ -2642,7 +2642,7 @@ end;
 function TKMScriptStates.IsMissionBuildType: Boolean;
 begin
   try
-    Result := gGame.MissionMode = mmNormal;
+    Result := gGame.IsNormalMission;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

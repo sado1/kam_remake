@@ -1399,8 +1399,8 @@ begin
   ReinitChartWares;
   ReinitChartArmy;
 
-  Button_Wares.Enabled := (gGame.MissionMode = mmNormal);
-  Button_Economy.Enabled := (gGame.MissionMode = mmNormal);
+  Button_Wares.Enabled := gGame.IsNormalMission;
+  Button_Economy.Enabled := gGame.IsNormalMission;
 
   if fGameResultMsg = grGameContinues then
   begin

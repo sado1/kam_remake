@@ -284,9 +284,9 @@ begin
     for I := 0 to TempGraphCount - 1 do
       Chart_Army.AddLine(TempGraphs[I].OwnerName, TempGraphs[I].Color, TempGraphs[I].G);
 
-  Button_ResultsHouses.Enabled := (gGame.MissionMode = mmNormal);
-  Button_ResultsCitizens.Enabled := (gGame.MissionMode = mmNormal);
-  Button_ResultsWares.Enabled := (gGame.MissionMode = mmNormal);
+  Button_ResultsHouses.Enabled := gGame.IsNormalMission;
+  Button_ResultsCitizens.Enabled := gGame.IsNormalMission;
+  Button_ResultsWares.Enabled := gGame.IsNormalMission;
 end;
 
 
