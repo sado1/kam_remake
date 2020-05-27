@@ -535,7 +535,7 @@ begin
   G := fUnitGroups.WarriorTrained(aWarrior);
   Assert(G <> nil, 'It is certain that equipped warrior creates or finds some group to join to');
   G.OnGroupDied := GroupDied;
-  if HandType = hndComputer then
+  if IsComputer then
   begin
     if AI.Setup.NewAI then
       AI.ArmyManagement.WarriorEquipped(G)
@@ -1024,7 +1024,7 @@ begin
     Ty := aLoc.Y + I - 4;
     //AI ignores FOW (this function is used from scripting)
     Result := Result and gTerrain.TileInMapCoords(Tx, Ty, 1)
-                     and ((fHandType = hndComputer)
+                     and (IsComputer
                       or (NeedToChooseFirstStorehouseInGame and fFogOfWar.CheckTileInitialRevelation(Tx, Ty)) //Use initial revelation for first storehouse
                       or (not NeedToChooseFirstStorehouseInGame and (fFogOfWar.CheckTileRevelation(Tx, Ty) > 0)));
     //This checks below require Tx;Ty to be within the map so exit immediately if they are not
@@ -2019,7 +2019,7 @@ var
   K: Integer;
   Entrance: TKMPoint;
 begin
-  if (HandType = hndComputer) then
+  if IsComputer then
     fChooseLocation.Placed := True
   // Check if storehouse has been placed
   else

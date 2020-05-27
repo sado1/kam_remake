@@ -826,7 +826,7 @@ type
       // Send defences to owner
       for I := 0 to Length(aOwners) - 1 do
         with gHands[ aOwners[I] ] do
-          if (HandType = hndComputer) AND AI.Setup.NewAI AND AI.Setup.AutoDefend then
+          if IsComputer AND AI.Setup.NewAI AND AI.Setup.AutoDefend then
             AI.ArmyManagement.Defence.UpdateDefences(DistributedPos[ aOwners[I] ].Count, DistributedPos[ aOwners[I] ].DefPos);
     end;
   end;
@@ -844,7 +844,7 @@ begin
     for IdxPL := 0 to Length(DefPosReq) - 1 do
       with gHands[ fAlli2PL[aTeam, IdxPL] ] do
       begin
-        Troops := Byte(HandType = hndComputer) * (Stats.GetUnitQty(utRecruit) + Stats.GetArmyCount); // Consider also recruits so after peace time the AI already have prepared defences
+        Troops := Byte(IsComputer) * (Stats.GetUnitQty(utRecruit) + Stats.GetArmyCount); // Consider also recruits so after peace time the AI already have prepared defences
         DefPosReq[IdxPL] := Round(Troops / 8) + RESERVE_DEF_POS; // Each group have 9 troops so we need max (Troops / 9) positions + reserves
       end;
     SetLength(TeamDefPos,0);
@@ -966,7 +966,7 @@ begin
     DefRatio := 0;
     for IdxPL := 0 to Length( fAlli2PL[aTeam] ) - 1 do
       with gHands[ fAlli2PL[aTeam, IdxPL] ] do
-        if (HandType = hndComputer) AND AI.Setup.NewAI AND AI.Setup.AutoAttack then
+        if IsComputer AND AI.Setup.NewAI AND AI.Setup.AutoAttack then
         begin
           DefRatio := Max(DefRatio, AI.ArmyManagement.Defence.DefenceStatus);
           KMSwapInt(fAlli2PL[aTeam, 0], fAlli2PL[aTeam, IdxPL]); // Make sure that player in first index is new AI
@@ -1113,7 +1113,7 @@ begin
   Result := False;
   for IdxPL := 0 to Length( fAlli2PL[aTeam] ) - 1 do
     with gHands[ fAlli2PL[aTeam, IdxPL] ] do
-      if (HandType = hndComputer)
+      if IsComputer
         AND AI.Setup.NewAI
         AND (not aAttack OR AI.Setup.AutoAttack)
         AND (not aDefence OR AI.Setup.AutoDefend) then

@@ -233,7 +233,7 @@ begin
   TempGraphCount := 0; //Reset
   for I := 0 to gHands.Count - 1 do
     with gHands[I] do
-      if HandType = hndComputer then
+      if IsComputer then
         AddToTempGraph(OwnerName(False), FlagColor, Stats.ChartCitizens)
       else
       begin
@@ -250,7 +250,7 @@ begin
   TempGraphCount := 0; //Reset
   for I := 0 to gHands.Count - 1 do
     with gHands[I] do
-      if HandType = hndComputer then
+      if IsComputer then
         AddToTempGraph(OwnerName(False), FlagColor, Stats.ChartHouses)
       else
         Chart_Houses.AddLine(OwnerName, FlagColor, Stats.ChartHouses);
@@ -275,7 +275,7 @@ begin
   TempGraphCount := 0; //Reset
   for I := 0 to gHands.Count - 1 do
   with gHands[I] do
-    if HandType = hndComputer then
+    if IsComputer then
       AddToTempGraph(OwnerName(False), FlagColor, Stats.ChartArmy[cakInstantaneous, utAny])
     else
       Chart_Army.AddLine(OwnerName, FlagColor, Stats.ChartArmy[cakInstantaneous, utAny]);

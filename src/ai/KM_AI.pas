@@ -337,7 +337,7 @@ begin
             fGeneral.RetaliateAgainstThreat(aAttacker);
             //Our allies might like to help us too
             for I := 0 to gHands.Count-1 do
-              if gHands[I].Enabled and (gHands[I].HandType = hndComputer)
+              if gHands[I].Enabled and gHands[I].IsComputer
               and (gHands.CheckAlliance(I, fOwner) = atAlly) and gHands[I].AI.Setup.DefendAllies then
                 gHands[I].AI.General.RetaliateAgainstThreat(aAttacker);
           end;
@@ -397,7 +397,7 @@ begin
 
               //Our allies might like to help us too
               for I := 0 to gHands.Count-1 do
-                if gHands[I].Enabled and (gHands[I].HandType = hndComputer)
+                if gHands[I].Enabled and gHands[I].IsComputer
                 and (gHands.CheckAlliance(I, fOwner) = atAlly) and gHands[I].AI.Setup.DefendAllies then
                   gHands[I].AI.General.RetaliateAgainstThreat(aAttacker);
 
