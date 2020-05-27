@@ -2795,11 +2795,12 @@ function TKMNetworking.GetNetPlayerByHandIndex(aHandIndex: Integer): TKMNetPlaye
 var
   index: Integer;
 begin
+  Result := nil;
+  if Self = nil then Exit;
+
   index := GetNetPlayerIndex(aHandIndex);
   if index <> -1 then
-    Result := fNetPlayers[index]
-  else
-    Result := nil;
+    Result := fNetPlayers[index];
 end;
 
 
@@ -2809,6 +2810,8 @@ var
   I: Integer;
 begin
   Result := -1;
+  if Self = nil then Exit;
+
   for I := 1 to MAX_LOBBY_SLOTS do
     if aHandIndex = fNetPlayers[I].HandIndex then
       Exit(I);
