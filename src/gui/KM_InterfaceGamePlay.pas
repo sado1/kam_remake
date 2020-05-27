@@ -3285,7 +3285,7 @@ procedure TKMGamePlayInterface.KeyUp(Key: Word; Shift: TShiftState; var aHandled
   function SpeedChangeAllowed(aUIModes: TUIModeSet): Boolean;
   begin
     Result := (fUIMode in aUIModes)
-              or gGame.IsMPGameSpeedChangeAllowed
+              or gGame.CanChangeMPGameSpeed
               or MULTIPLAYER_SPEEDUP;
   end;
 

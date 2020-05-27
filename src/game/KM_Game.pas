@@ -204,6 +204,7 @@ type
     function IsSingleplayer: Boolean;
     function IsNormalGame: Boolean;
     function IsSpeedUpAllowed: Boolean;
+    function CanChangeMPGameSpeed: Boolean;
     function IsMPGameSpeedChangeAllowed: Boolean;
 
     function IsWareDistributionStoredBetweenGames: Boolean;
@@ -1549,14 +1550,47 @@ end;
 
 function TKMGame.IsSpeedUpAllowed: Boolean;
 begin
-  Result := not IsMultiPlayerOrSpec or IsMPGameSpeedChangeAllowed;
+  Result := not IsMultiPlayerOrSpec or CanChangeMPGameSpeed;
 end;
 
 
-function TKMGame.IsMPGameSpeedChangeAllowed: Boolean;
+// Can this player change game speed?
+function TKMGame.CanChangeMPGameSpeed: Boolean;
 begin
-  Result := IsMultiPlayerOrSpec
-        and (fNetworking.NetPlayers.GetNotDroppedCount = 1);
+  Result := False;
+
+  if not IsMultiPlayerOrSpec or (gHands = nil) then Exit;
+
+  if (fNetworking = nil) or not fNetworking.IsHost then Exit; //Only host can change game speed in MP
+
+  Result := IsMPGameSpeedChangeAllowed;
+end;
+
+
+// Can game speed be changed (by someone in the game)?
+// Game speed could be changed if there are only AI players who can continue to play
+// Defeated / or not connected human players do not considered as well
+function TKMGame.IsMPGameSpeedChangeAllowed: Boolean;
+var
+  I, netI: Integer;
+begin
+  Result := False;
+
+  if not IsMultiPlayerOrSpec or (gHands = nil) then Exit;
+
+  for I := 0 to gHands.Count - 1 do
+  begin
+    if    gHands[I].Enabled
+      and gHands[I].IsHuman
+      and not gHands[I].AI.HasLost then
+    begin
+      netI := fNetworking.GetNetPlayerIndex(I);
+      if (netI <> -1) and fNetworking.NetPlayers[netI].Connected then
+        Exit;
+    end;
+  end;
+
+  Result := True;
 end;
 
 
