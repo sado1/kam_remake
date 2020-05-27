@@ -296,7 +296,7 @@ begin
 end;
 
 
-function TKMNetworking.MyIPString:string;
+function TKMNetworking.MyIPString: string;
 begin
   Result := fNetClient.MyIPString;
 end;

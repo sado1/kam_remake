@@ -1928,7 +1928,7 @@ end;
 //In replay mode we can step the game by exactly one frame and then pause again
 procedure TKMGame.StepOneFrame;
 begin
-  Assert(fGameMode in [gmReplaySingle,gmReplayMulti], 'We can work step-by-step only in Replay');
+  Assert(IsReplay, 'We can work step-by-step only in Replay');
   SetGameSpeed(1, False); //Make sure we step only one tick. Do not allow multiple updates in UpdateState loop
   fAdvanceFrame := True;
 end;
