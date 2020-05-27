@@ -79,7 +79,8 @@ end;
 
 
 function TKMHousesCollection.AddToCollection(aHouseType: TKMHouseType; PosX,PosY: Integer; aOwner: TKMHandID; aHBS: TKMHouseBuildState): TKMHouse;
-var ID: Cardinal;
+var
+  ID: Cardinal;
 begin
   ID := gGame.GetNewUID;
 
@@ -269,10 +270,13 @@ end;
 
 
 function TKMHousesCollection.FindHouse(aType: TKMHouseType; X, Y: word; const aIndex: Byte = 1; aOnlyCompleted: Boolean = True): TKMHouse;
-var HT: THouseTypeSet;
+var
+  HT: THouseTypeSet;
 begin
-  if aType = htAny then HT := [Low(TKMHouseType)..High(TKMHouseType)]
-  else                   HT := [aType];
+  if aType = htAny then
+    HT := [Low(TKMHouseType)..High(TKMHouseType)]
+  else
+    HT := [aType];
   Result := FindHouse(HT, X, Y, aIndex, aOnlyCompleted);
 end;
 
@@ -282,7 +286,7 @@ end;
 //Find house by index (1st, 2nd)
 function TKMHousesCollection.FindHouse(const aTypes: THouseTypeSet; X, Y: word; const aIndex: Byte = 1; aOnlyCompleted: Boolean = True): TKMHouse;
 var
-  I,ID: Integer;
+  I, ID: Integer;
   UsePosition: Boolean;
   BestMatch,Dist: Single;
 begin
@@ -321,7 +325,7 @@ end;
 
 function TKMHousesCollection.FindHousesInRadius(aLoc: TKMPoint; aSqrRadius: Single; aTypes: THouseTypeSet; aOnlyCompleted: Boolean = True): TKMHouseArray;
 var
-  I,Idx: Integer;
+  I, Idx: Integer;
 begin
   SetLength(Result, 12);
   Idx := 0;
@@ -343,7 +347,8 @@ end;
 
 
 procedure TKMHousesCollection.Save(SaveStream: TKMemoryStream);
-var I: Integer;
+var
+  I: Integer;
 begin
   SaveStream.PlaceMarker('Houses');
 
@@ -391,7 +396,8 @@ end;
 
 
 procedure TKMHousesCollection.SyncLoad;
-var I: Integer;
+var
+  I: Integer;
 begin
   for I := 0 to Count - 1 do
     Houses[I].SyncLoad;
@@ -400,7 +406,8 @@ end;
 
 //Update resource requested counts for all houses
 procedure TKMHousesCollection.UpdateResRequest;
-var I: Integer;
+var
+  I: Integer;
 begin
   for I := 0 to Count - 1 do
   if Houses[I].IsComplete and not Houses[I].IsDestroyed then
@@ -422,7 +429,8 @@ end;
 
 
 procedure TKMHousesCollection.IncAnimStep;
-var I: Integer;
+var
+  I: Integer;
 begin
   for I := 0 to Count - 1 do
     Houses[I].IncAnimStep;
@@ -430,7 +438,8 @@ end;
 
 
 function TKMHousesCollection.GetTotalPointers: Cardinal;
-var I: Integer;
+var
+  I: Integer;
 begin
   Result := 0;
   for I := 0 to Count - 1 do
