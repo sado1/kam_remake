@@ -11,6 +11,7 @@
 *.a
 *.rsj
 *.dcu
+*.dsk
 *.iml
 *.ini
 *.stat
