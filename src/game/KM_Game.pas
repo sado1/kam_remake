@@ -1565,7 +1565,7 @@ function TKMGame.IsWareDistributionStoredBetweenGames: Boolean;
 begin
   Result := IsNormalMission //No need to store ware distribution for Tactic mission
             and gGameApp.GameSettings.SaveWareDistribution //If "save ware distribution" is ON
-            and (fGameMode in [gmSingle, gmCampaign, gmMulti]); //Not for Replay / MapEd
+            and IsNormalGame; //Not for Replay / MapEd
 end;
 
 
@@ -1639,7 +1639,7 @@ begin
   gHands[aHandIndex].MessageLog.Add(aKind, aTextID, aLoc);
 
   //Don't play sound in replays or spectator
-  if (aHandIndex = gMySpectator.HandID) and (fGameMode in [gmSingle, gmCampaign, gmMulti]) then
+  if (aHandIndex = gMySpectator.HandID) and IsNormalGame then
     gSoundPlayer.Play(sfxMessageNotice, 2);
 end;
 
@@ -1894,7 +1894,7 @@ end;
 function TKMGame.GetControlledHandIndex: TKMHandID;
 begin
   Result := -1;
-  if fGameMode in [gmSingle, gmCampaign, gmMulti] then
+  if IsNormalGame then
     Result := gMySpectator.HandID;
 end;
 
@@ -2481,7 +2481,7 @@ begin
     //MP does not saves view position cos of save identity for all players
     fActiveInterface.SyncUIView(KMPointF(gMySpectator.Hand.CenterScreen));
     //In MP saves hotkeys can't be saved by UI, they must be network synced
-    if fGameMode in [gmSingle, gmCampaign, gmMulti] then
+    if IsNormalGame then
       fGamePlayInterface.LoadHotkeysFromHand;
   end;
 
