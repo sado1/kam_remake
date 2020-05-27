@@ -1,0 +1,39 @@
+TKMRunnerAAIPerformanceTest
+
+MAPS_TO_TEST = 5;
+cnt_MAP_SIMULATIONS = 3;
+PT 60 min
+
+
+not-released r11936
+Advanced: ~19600
+
+
+r11740
+Classic: ~12100
+Advanced: ~20000
+
+
+r11537
+Classic: ~12200
+Advanced: ~19450
+
+
+3 maps by 1 run:
+r11740
+Classic: ~13500
+Advanced: ~24333
+
+r11537
+Classic: ~13400
+Advanced: ~24590
+
+r11222
+Classic: ~15500
+Advanced: ~29000
+
+r10968
+Classic: ~17000
+Advanced: ~25000
+
+
