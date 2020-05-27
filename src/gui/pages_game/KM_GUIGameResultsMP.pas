@@ -1172,7 +1172,7 @@ end;
 
 function TKMGameResultsMP.DoAdjoinSameColorHand(aHandId: Integer): Boolean;
 begin
-  Result := gHands[aHandId].IsComputer and (gGame.GameMode in [gmSingle, gmCampaign, gmReplaySingle]); //Adjoin only AI's in SP games
+  Result := gHands[aHandId].IsComputer and gGame.IsSingleplayer; //Adjoin only AI's in SP games
 end;
 
 
@@ -1992,7 +1992,7 @@ begin
   //Results SP             -> ResultsMP -> ResultsSP
   if Sender = Button_Back then
   begin
-    if gGame.GameMode in [gmSingle, gmCampaign, gmReplaySingle] then
+    if gGame.IsSingleplayer then
       fOnShowSPStats
     else begin
       fReinitedLastTime := False; //Reset to default Value for next game (before game stop)

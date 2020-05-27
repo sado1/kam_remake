@@ -1538,7 +1538,7 @@ function TKMHand.CalcOwnerName: UnicodeString;
 var
   NumberedAIs: Boolean;
 begin
-  NumberedAIs := not (gGame.GameMode in [gmSingle, gmCampaign, gmReplaySingle]);
+  NumberedAIs := not gGame.IsSingleplayer;
   //Default names
   if HandType = hndHuman then
     Result := gResTexts[TX_PLAYER_YOU]
@@ -1621,7 +1621,7 @@ end;
 
 function TKMHand.GetOwnerName: UnicodeString;
 begin
-  Result := OwnerName(not (gGame.GameMode in [gmSingle, gmCampaign, gmReplaySingle]));
+  Result := OwnerName(not gGame.IsSingleplayer);
 end;
 
 
