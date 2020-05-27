@@ -1358,7 +1358,7 @@ var
   ResultsLabelCap: UnicodeString;
 begin
   //MP Stats can be shown from SP stats page. We have to hide AI players then, depending on game result
-  fShowAIResults := not (gGame.GameMode in [gmSingle, gmCampaign])
+  fShowAIResults := not gGame.IsSingleplayerGame
                     or (fGameResultMsg in [grWin, grReplayEnd])
                     or ((fGameResultMsg = grGameContinues) and (gMySpectator.Hand.AI.HasWon));
 

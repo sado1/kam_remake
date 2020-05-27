@@ -591,7 +591,7 @@ begin
       gMySpectator.FOWIndex := PLAYER_NONE;
     end
     else
-    if fGameMode in [gmSingle, gmCampaign] then
+    if IsSingleplayerGame then
     begin
       for I := 0 to gHands.Count - 1 do
         gHands[I].HandType := hndComputer;
@@ -1288,7 +1288,7 @@ begin
 
   gHands.AfterMissionInit(false);
 
-  if fGameMode in [gmSingle, gmCampaign] then
+  if IsSingleplayerGame then
     fGameInputProcess := TKMGameInputProcess_Single.Create(gipRecording);
 
   //When everything is ready we can update UI
