@@ -1394,14 +1394,14 @@ begin
 
   W := gGame.ActiveInterface.MyControls.MasterPanel.Width;
 
-  TKMRenderUI.WriteBevel(W - textSize.X - 10, 0, textSize.X, textSize.Y + 10);
+  TKMRenderUI.WriteBevel(W - textSize.X - 10, 0, textSize.X + 10, textSize.Y + 10);
   TKMRenderUI.WriteText(W - textSize.X - 5, 0, 0, str, fntMini, taLeft, icWhite, False, False, False, TAB_WIDTH, True, True);
 end;
 
 
 class function TKMGameInputProcess.StoredGIPCommandToString(aCommand: TKMStoredGIPCommand): String;
 begin
-  Result := Format('Tick: %6d; Rand: %10d; Command: %s', [aCommand.Tick, aCommand.Rand, GIPCommandToString(aCommand.Command)]);
+  Result := Format('Tick %6d Rand %10d Cmd: %s', [aCommand.Tick, aCommand.Rand, GIPCommandToString(aCommand.Command)]);
 end;
 
 
