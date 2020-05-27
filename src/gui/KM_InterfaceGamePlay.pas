@@ -1899,7 +1899,9 @@ begin
   end
   else
     if not KMSamePoint(gHands[gMySpectator.HandID].CenterScreen, KMPOINT_ZERO) then
-      fViewport.Position := KMPointF(gHands[gMySpectator.HandID].CenterScreen); //By default set viewport position to hand CenterScreen
+      fViewport.Position := gHands[gMySpectator.HandID].CenterScreen.ToFloat //By default set viewport position to hand CenterScreen
+    else
+      fViewport.Position := gHands[gMySpectator.HandID].FindCityCenter.ToFloat;
 
   gMySpectator.Selected := LastSelectedObj;  // Change selected object to last one for this hand or Reset it to nil
 

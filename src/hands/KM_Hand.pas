@@ -203,6 +203,7 @@ type
     function FindHouse(aType: TKMHouseType; const aPosition: TKMPoint; Index: Byte = 1): TKMHouse; overload;
     function FindHouse(aType: TKMHouseType; Index: Byte=1): TKMHouse; overload;
     function FindHousesInRadius(const aLoc: TKMPoint; aSqrRadius: Single; aTypes: THouseTypeSet = [HOUSE_MIN..HOUSE_MAX]; aOnlyCompleted: Boolean = True): TKMHouseArray;
+    function FindCityCenter: TKMPoint;
     function HitTest(X,Y: Integer): TObject;
     function HousesHitTest(X, Y: Integer): TKMHouse;
     function GroupsHitTest(X, Y: Integer): TKMUnitGroup;
@@ -1320,6 +1321,32 @@ end;
 function TKMHand.FindHouse(aType: TKMHouseType; const aPosition: TKMPoint; Index: Byte=1): TKMHouse;
 begin
   Result := fHouses.FindHouse(aType, aPosition.X, aPosition.Y, Index);
+end;
+
+
+// Very rough but fast way to find approximate city center
+function TKMHand.FindCityCenter: TKMPoint;
+const
+  IMPORTANT_HOUSES: array[0..4] of TKMHouseType = (htStore, htInn, htSchool, htBarracks, htTownhall);
+var
+  I: Integer;
+  H: TKMHouse;
+begin
+  for I := 0 to High(IMPORTANT_HOUSES) do
+  begin
+    H := FindHouse(IMPORTANT_HOUSES[I]);
+    if (H <> nil) and not H.IsDestroyed then
+      Exit(H.Entrance);
+  end;
+
+  // Very rough approach. We suggest there will be at least 1 of the important houses 99.99% of times
+  // Find any house then
+  for I := 0 to fHouses.Count - 1 do
+  begin
+    H := fHouses[I];
+    if (H <> nil) and not H.IsDestroyed then
+      Exit(H.Entrance);
+  end;
 end;
 
 
