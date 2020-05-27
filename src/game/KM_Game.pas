@@ -441,7 +441,7 @@ begin
   fIsExiting := True;
 
   //if (fGameInputProcess <> nil) and (fGameInputProcess.ReplayState = gipRecording) then
-  //  fGameInputProcess.SaveToFile(SaveName('basesave', EXT_SAVE_REPLAY, fGameMode in [gmMulti, gmMultiSpectate]));
+  //  fGameInputProcess.SaveToFile(SaveName('basesave', EXT_SAVE_REPLAY, IsMultiPlayerOrSpec));
 
   FreeAndNil(fTimerGame);
 
@@ -671,7 +671,7 @@ begin
 
     gLog.AddTime('Gameplay recording initialized', True);
 
-    if fGameMode in [gmMulti, gmMultiSpectate] then
+    if IsMultiPlayerOrSpec then
       MultiplayerRig(True);
 
     //some late operations for parser (f.e. ProcessAttackPositions, which should be done after MultiplayerRig)
@@ -1556,7 +1556,7 @@ end;
 
 function TKMGame.IsMPGameSpeedChangeAllowed: Boolean;
 begin
-  Result := (fGameMode in [gmMulti, gmMultiSpectate])
+  Result := IsMultiPlayerOrSpec
         and (fNetworking.NetPlayers.GetNotDroppedCount = 1);
 end;
 
@@ -1705,7 +1705,7 @@ begin
   if (PeaceTicksRemaining = 1) and (fGameMode in [gmMulti, gmMultiSpectate, gmReplayMulti]) then
   begin
     gSoundPlayer.Play(sfxnPeacetime, 1, True); //Fades music
-    if fGameMode in [gmMulti, gmMultiSpectate] then
+    if IsMultiPlayerOrSpec then
     begin
       SetGameSpeed(fGameOptions.SpeedAfterPT, False);
       fNetworking.PostLocalMessage(gResTexts[TX_MP_PEACETIME_OVER], csNone);
@@ -2035,7 +2035,7 @@ begin
 
   gTerrain.Save(aSaveStream); //Saves the map
   fTerrainPainter.Save(aSaveStream);
-  gHands.Save(aSaveStream, fGameMode in [gmMulti, gmMultiSpectate]); //Saves all players properties individually
+  gHands.Save(aSaveStream, IsMultiPlayerOrSpec); //Saves all players properties individually
   if not IsMultiPlayerOrSpec then
     gMySpectator.Save(aSaveStream);
   gAIFields.Save(aSaveStream);
@@ -2331,7 +2331,7 @@ begin
   if IsReplay then
     fGameInputProcess := TKMGameInputProcess_Single.Create(gipReplaying) //Replay
   else
-    if fGameMode in [gmMulti, gmMultiSpectate] then
+    if IsMultiPlayerOrSpec then
       fGameInputProcess := TKMGameInputProcess_Multi.Create(gipRecording, fNetworking) //Multiplayer
     else
       fGameInputProcess := TKMGameInputProcess_Single.Create(gipRecording);
@@ -2459,7 +2459,7 @@ begin
   gProjectiles.SyncLoad;
   fScripting.SyncLoad;
 
-  if fGameMode in [gmMulti, gmMultiSpectate] then
+  if IsMultiPlayerOrSpec then
     MultiplayerRig(False);
 
   if fGameMode in [gmSingle, gmCampaign, gmMulti, gmMultiSpectate] then
@@ -2681,11 +2681,11 @@ begin
 
     fLastReplayTick := fGameTick;
 
-    if (fGameMode in [gmMulti, gmMultiSpectate]) then
+    if IsMultiPlayerOrSpec then
       fNetworking.LastProcessedTick := fGameTick;
 
     //Tell the master server about our game on the specific tick (host only)
-    if (fGameMode in [gmMulti, gmMultiSpectate]) and fNetworking.IsHost
+    if IsMultiPlayerOrSpec and fNetworking.IsHost
       and ((IsNormalMission and (fGameTick = ANNOUNCE_BUILD_MAP))
       or (IsTactic and (fGameTick = ANNOUNCE_BATTLE_MAP))) then
     fNetworking.ServerQuery.SendMapInfo(fGameName, fGameMapFullCRC, fNetworking.NetPlayers.GetConnectedCount);
