@@ -54,7 +54,7 @@ type
     gicUnitDismissCancel,
 
     //III.     Building/road plans (what to build and where)
-    gicBuildAddFieldPlan,
+    gicBuildToggleFieldPlan,
     gicBuildRemoveFieldPlan, //Removal of a plan
     gicBuildRemoveHouse,     //Removal of house
     gicBuildRemoveHousePlan, //Removal of house plan
@@ -792,7 +792,7 @@ begin
       gicUnitDismiss:        SrcUnit.Dismiss;
       gicUnitDismissCancel:  SrcUnit.DismissCancel;
 
-      gicBuildAddFieldPlan:      P.ToggleFieldPlan(KMPoint(Params[1],Params[2]), TKMFieldType(Params[3]), not gGame.IsMultiPlayerOrSpec); //Make sound in singleplayer mode only
+      gicBuildToggleFieldPlan:   P.ToggleFieldPlan(KMPoint(Params[1],Params[2]), TKMFieldType(Params[3]), not gGame.IsMultiPlayerOrSpec); //Make sound in singleplayer mode only
       gicBuildRemoveFieldPlan:   P.RemFieldPlan(KMPoint(Params[1],Params[2]), not gGame.IsMultiPlayerOrSpec); //Make sound in singleplayer mode only
       gicBuildRemoveHouse:       P.RemHouse(KMPoint(Params[1],Params[2]), IsSilent);
       gicBuildRemoveHousePlan:   P.RemHousePlan(KMPoint(Params[1],Params[2]));
@@ -998,7 +998,7 @@ end;
 
 procedure TKMGameInputProcess.CmdBuild(aCommandType: TKMGameInputCommandType; const aLoc: TKMPoint; aFieldType: TKMFieldType);
 begin
-  Assert(aCommandType in [gicBuildAddFieldPlan]);
+  Assert(aCommandType in [gicBuildToggleFieldPlan]);
 
   if gGame.IsReplayOrSpectate then Exit;
 

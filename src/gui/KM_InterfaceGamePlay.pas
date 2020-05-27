@@ -3552,11 +3552,11 @@ procedure TKMGamePlayInterface.MouseDown(Button: TMouseButton; Shift: TShiftStat
     gGameCursor.Tag1 := Byte(cfmPlan);
     if gMySpectator.Hand.CanAddFakeFieldPlan(P, aFieldType) then
     begin
-      gGame.GameInputProcess.CmdBuild(gicBuildAddFieldPlan, P, aFieldType);
+      gGame.GameInputProcess.CmdBuild(gicBuildToggleFieldPlan, P, aFieldType);
       fLastDragPoint := gGameCursor.Cell;
     end else if gMySpectator.Hand.CanRemFakeFieldPlan(P, aFieldType) then
     begin
-      gGame.GameInputProcess.CmdBuild(gicBuildAddFieldPlan, P, aFieldType);
+      gGame.GameInputProcess.CmdBuild(gicBuildToggleFieldPlan, P, aFieldType);
       fLastDragPoint := gGameCursor.Cell;
       // Set cursor into "Erase" mode, so dragging it will erase next tiles with the same field type
       gGameCursor.Tag1 := Byte(cfmErase);
@@ -3651,11 +3651,11 @@ procedure TKMGamePlayInterface.MouseMove(Shift: TShiftState; X,Y: Integer; var a
     if not KMSamePoint(fLastDragPoint, P) then
       if (gMySpectator.Hand.CanAddFakeFieldPlan(P, aFieldType)) and (gGameCursor.Tag1 = Byte(cfmPlan)) then
       begin
-        gGame.GameInputProcess.CmdBuild(gicBuildAddFieldPlan, P, aFieldType);
+        gGame.GameInputProcess.CmdBuild(gicBuildToggleFieldPlan, P, aFieldType);
         fLastDragPoint := gGameCursor.Cell;
       end else if (gMySpectator.Hand.CanRemFakeFieldPlan(P, aFieldType)) and (gGameCursor.Tag1 = Byte(cfmErase)) then
       begin
-        gGame.GameInputProcess.CmdBuild(gicBuildAddFieldPlan, P, aFieldType);
+        gGame.GameInputProcess.CmdBuild(gicBuildToggleFieldPlan, P, aFieldType);
         fLastDragPoint := gGameCursor.Cell;
       end;
   end;
