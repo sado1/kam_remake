@@ -2792,11 +2792,12 @@ end;
 
 //Get NetPlayer by hand index. If no NetPlayer found for specified aHandIndex, then nil returned
 function TKMNetworking.GetNetPlayerByHandIndex(aHandIndex: Integer): TKMNetPlayerInfo;
-var Index: Integer;
+var
+  index: Integer;
 begin
-  Index := GetNetPlayerIndex(aHandIndex);
-  if Index <> -1 then
-    Result := fNetPlayers[Index]
+  index := GetNetPlayerIndex(aHandIndex);
+  if index <> -1 then
+    Result := fNetPlayers[index]
   else
     Result := nil;
 end;
@@ -2804,15 +2805,13 @@ end;
 
 //Get NetPlayer index by hand index. If no NetPlayer found for specified aHandIndex, then -1 returned
 function TKMNetworking.GetNetPlayerIndex(aHandIndex: Integer): Integer;
-var I: Integer;
+var
+  I: Integer;
 begin
   Result := -1;
   for I := 1 to MAX_LOBBY_SLOTS do
     if aHandIndex = fNetPlayers[I].HandIndex then
-    begin
-     Result := I;
-     Exit;
-    end;
+      Exit(I);
 end;
 
 
