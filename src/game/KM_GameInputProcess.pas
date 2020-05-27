@@ -2,6 +2,7 @@ unit KM_GameInputProcess;
 {$I KaM_Remake.inc}
 interface
 uses
+  Generics.Collections,
   KM_Units, KM_UnitGroup,
   KM_Houses, KM_HouseWoodcutters, KM_Hand,
   KM_ResHouses, KM_ResWares, KM_ScriptingConsoleCommands,
@@ -288,6 +289,7 @@ type
   private
     fCount: Integer;
     fReplayState: TKMGIPReplayState;
+    fPlannedCommands: TList<TKMGameInputCommand>; //Commands that were made before game was started (f.e. gicPlayerTypeChange, gicGameSpeed), we plan them for the next tick
   protected
     fCursor: Integer; //Used only in gipReplaying
     fQueue: array of TKMStoredGIPCommand;
@@ -304,14 +306,15 @@ type
     function MakeCommand(aGIC: TKMGameInputCommandType; const aTextParam: UnicodeString): TKMGameInputCommand; overload;
     function MakeCommand(aGIC: TKMGameInputCommandType; const aAnsiTxtParam: AnsiString; const aUniTxtArray: TKMScriptCommandParamsArray): TKMGameInputCommand; overload;
     function MakeCommand(aGIC: TKMGameInputCommandType; aDateTimeParam: TDateTime): TKMGameInputCommand; overload;
-    procedure TakeCommand(const aCommand: TKMGameInputCommand); virtual; abstract;
+    procedure TakeCommand(const aCommand: TKMGameInputCommand);
+    procedure DoTakeCommand(const aCommand: TKMGameInputCommand); virtual; abstract;
     procedure ExecCommand(const aCommand: TKMGameInputCommand);
     procedure StoreCommand(const aCommand: TKMGameInputCommand);
     procedure ExecGameAlertBeaconCmd(const aCommand: TKMGameInputCommand);
 
     function DoSkipLogCommand(const aCommand: TKMGameInputCommand): Boolean;
     function QueueToString: String;
-  protected
+
     function IsLastTickValueCorrect(aLastTickValue: Cardinal): Boolean;
     procedure SaveExtra(SaveStream: TKMemoryStream); virtual;
     procedure LoadExtra(LoadStream: TKMemoryStream); virtual;
@@ -360,6 +363,7 @@ type
 
     procedure ReplayTimer(aTick: Cardinal); virtual;
     procedure RunningTimer(aTick: Cardinal); virtual;
+    procedure TakePlannedCommands;
     procedure UpdateState(aTick: Cardinal); virtual;
 
     //Replay methods
@@ -532,15 +536,20 @@ end;
 constructor TKMGameInputProcess.Create(aReplayState: TKMGIPReplayState);
 begin
   inherited Create;
-  setlength(fQueue, 128);
+
+  SetLength(fQueue, 128);
   fCount := 0;
   fCursor := 1;
   fReplayState := aReplayState;
+
+  fPlannedCommands := TList<TKMGameInputCommand>.Create;
 end;
 
 
 destructor TKMGameInputProcess.Destroy;
 begin
+  fPlannedCommands.Free;
+
   inherited;
 end;
 
@@ -688,6 +697,16 @@ end;
 function TKMGameInputProcess.DoSkipLogCommand(const aCommand: TKMGameInputCommand): Boolean;
 begin
   Result := SKIP_LOG_TEMP_COMMANDS and (aCommand.CommandType in [gicTempAddScout, gicTempRevealMap, gicTempVictory, gicTempDefeat, gicTempDoNothing]);
+end;
+
+
+procedure TKMGameInputProcess.TakeCommand(const aCommand: TKMGameInputCommand);
+begin
+  if gGame.IsStarted
+    and (gGame.GameTick > 0) then //We could get some commands even before 1st game update (on tick 0)
+    DoTakeCommand(aCommand)
+  else
+    fPlannedCommands.Add(aCommand);
 end;
 
 
@@ -1284,6 +1303,22 @@ end;
 
 procedure TKMGameInputProcess.RunningTimer(aTick: Cardinal);
 begin
+end;
+
+
+procedure TKMGameInputProcess.TakePlannedCommands;
+var
+  I: Integer;
+begin
+  if Self = nil then Exit;
+  if fPlannedCommands.Count = 0 then Exit;
+
+  // Take all planned commands
+  for I := 0 to fPlannedCommands.Count - 1 do
+    DoTakeCommand(fPlannedCommands[I]);
+
+  // And clear
+  fPlannedCommands.Clear;
 end;
 
 

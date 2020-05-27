@@ -65,7 +65,7 @@ type
 
     procedure SetDelay(aNewDelay: Integer);
   protected
-    procedure TakeCommand(const aCommand: TKMGameInputCommand); override;
+    procedure DoTakeCommand(const aCommand: TKMGameInputCommand); override;
   public
     constructor Create(aReplayState: TKMGIPReplayState; aNetworking: TKMNetworking);
     destructor Destroy; override;
@@ -186,7 +186,7 @@ end;
 
 
 // Stack the command into schedule
-procedure TKMGameInputProcess_Multi.TakeCommand(const aCommand: TKMGameInputCommand);
+procedure TKMGameInputProcess_Multi.DoTakeCommand(const aCommand: TKMGameInputCommand);
 var
   I,Tick: Cardinal;
 begin

@@ -85,6 +85,7 @@ type
     fGameSeed: Integer;
 
     fLoadFromFile: UnicodeString; //Path to file, from which game was loaded. '.bas' file for replays
+    fIsStarted: Boolean;
 
     fVisibleLayers: TKMMapVisibleLayerSet;
 
@@ -178,11 +179,13 @@ type
 
     property IsExiting: Boolean read fIsExiting;
     property IsPaused: Boolean read fIsPaused write SetIsPaused;
+    property IsStarted: Boolean read fIsStarted;
     property ReadyToStop: Boolean read fReadyToStop write fReadyToStop;
     property DynamicFOW: Boolean read fDynamicFOW write fDynamicFOW;
     property BlockGetPointer: Boolean read fBlockGetPointer;
     function AllowGetPointer: Boolean;
     property MissionFile: UnicodeString read GetMissionFile;
+
 
     property VisibleLayers: TKMMapVisibleLayerSet read fVisibleLayers write fVisibleLayers;
 
@@ -344,6 +347,10 @@ begin
   fLastTimeUserAction := TimeGet;
   fLastAfkMessageSent := 0;
   fLoadFromFile := '';
+
+  fIsStarted := False;
+  fIsPaused := False;
+  fIsExiting := False;
 
   fTerrainPainter := TKMTerrainPainter.Create;
 
@@ -612,9 +619,9 @@ begin
       if aColor <> NO_OVERWRITE_COLOR then
         gMySpectator.Hand.FlagColor := aColor;
 
-      //Set Advanced AI for only advanced locs and if choosen Advanced AI in Single map setup  
+      //Set Advanced AI for only advanced locs and if choosen Advanced AI in Single map setup
       for I := 0 to gHands.Count - 1 do
-        if (gHands[I].HandType = hndComputer) 
+        if (gHands[I].HandType = hndComputer)
           and ((gHands[I].HandAITypes = [aitAdvanced])
             or ((gHands[I].HandAITypes = [aitClassic, aitAdvanced])
               and (aAIType = aitAdvanced))) then
@@ -738,6 +745,8 @@ begin
     fGamePlayInterface.GuiGameResultsMP.ResetControls;
 
   gRenderPool.ReInit;
+
+  fIsStarted := True;
 
   gLog.AddTime('After game ends', True);
 end;
@@ -1126,7 +1135,7 @@ begin
   begin
     if fNetworking.NetPlayers.PlayerIndexToLocal(aHandIndex) = -1 then
       Exit;
-      
+
     fNetworking.PostLocalMessage(
       Format(gResTexts[TX_MULTIPLAYER_PLAYER_WON], [gHands[aHandIndex].GetOwnerNameColoredU]),
       csSystem);
@@ -1290,6 +1299,8 @@ begin
   end;
 
   gRenderPool.ReInit;
+
+  fIsStarted := True;
 
   gLog.AddTime('Gameplay initialized', True);
 end;
@@ -1985,7 +1996,7 @@ begin
   end;
 
   fGameOptions.Save(aSaveStream);
-                 
+
   //Because some stuff is only saved in singleplayer we need to know whether it is included in this save,
   //so we can load multiplayer saves in single player and vice versa.
   aSaveStream.Write(IsMultiPlayerOrSpec);
@@ -2006,7 +2017,7 @@ begin
   //We need to know which mission/savegame to try to restart. This is unused in MP
   if not IsMultiPlayerOrSpec then
     aSaveStream.WriteW(fMissionFileSP);
-    
+
   aSaveStream.Write(fUIDTracker); //Units-Houses ID tracker
   aSaveStream.Write(GetKaMSeed); //Include the random seed in the save file to ensure consistency in replays
 
@@ -2018,8 +2029,8 @@ begin
       gameRes := grCancel
     else
       gameRes := GameResult;
-      
-    aSaveStream.Write(gameRes, SizeOf(GameResult));    
+
+    aSaveStream.Write(gameRes, SizeOf(GameResult));
   end;
 
   gTerrain.Save(aSaveStream); //Saves the map
@@ -2280,7 +2291,7 @@ begin
 
   LoadStream.Read(fUIDTracker);
   LoadStream.Read(LoadedSeed);
-  
+
   if not SaveIsMultiplayer then
     LoadStream.Read(GameResult, SizeOf(GameResult));
 
@@ -2487,6 +2498,8 @@ begin
 
   gRenderPool.ReInit;
 
+  fIsStarted := True;
+
   gLog.AddTime('Game options: ' + fGameOptions.ToString);
   gLog.AddTime('After game loading', True);
 end;
@@ -2541,7 +2554,7 @@ var
 
 begin
   DoUpdateGame;
-  
+
   if CALC_EXPECTED_TICK then
   begin
     TicksBehindCnt := GetTicksBehindCnt;
@@ -2556,7 +2569,7 @@ begin
   end
   else
   begin
-    // Always play several ticks per update. This is more convinient while using debugger 
+    // Always play several ticks per update. This is more convinient while using debugger
     for I := 1 to fGameSpeedMultiplier - 1 do // 1 Tick we already played
       DoUpdateGame;
   end;
@@ -2661,6 +2674,9 @@ begin
       WaitingPlayersDisplay(False);
 
     IncGameTick;
+
+    fGameInputProcess.TakePlannedCommands;
+
     fLastUpdateState := TimeGet;
 
     fLastReplayTick := fGameTick;

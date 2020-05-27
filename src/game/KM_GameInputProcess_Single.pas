@@ -8,7 +8,7 @@ uses
 type
   TKMGameInputProcess_Single = class(TKMGameInputProcess)
   protected
-    procedure TakeCommand(const aCommand: TKMGameInputCommand); override;
+    procedure DoTakeCommand(const aCommand: TKMGameInputCommand); override;
     procedure SaveExtra(SaveStream: TKMemoryStream); override;
     procedure LoadExtra(LoadStream: TKMemoryStream); override;
   public
@@ -22,7 +22,7 @@ uses
   Math, KM_Game, KM_Defaults, KM_CommonUtils;
 
 
-procedure TKMGameInputProcess_Single.TakeCommand(const aCommand: TKMGameInputCommand);
+procedure TKMGameInputProcess_Single.DoTakeCommand(const aCommand: TKMGameInputCommand);
 begin
   if gGame.IsReplay then Exit;
 
