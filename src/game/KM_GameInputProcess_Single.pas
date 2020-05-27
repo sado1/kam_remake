@@ -48,7 +48,7 @@ begin
     begin
       //Call to KaMRandom, just like in StoreCommand
       //We did not generate random checks for those commands
-      if SKIP_RNG_CHECKS_FOR_SOME_GIC and (fQueue[fCursor].Command.CommandType in SkipRandomChecksFor) then
+      if SKIP_RNG_CHECKS_FOR_SOME_GIC and (fQueue[fCursor].Command.CommandType in SKIP_RANDOM_CHECKS_FOR) then
         MyRand := 0
       else
         MyRand := Cardinal(KaMRandom(MaxInt, 'TKMGameInputProcess_Single.ReplayTimer 2'));

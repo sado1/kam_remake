@@ -191,14 +191,14 @@ var
   I,Tick: Cardinal;
 begin
   Assert(fDelay < MAX_SCHEDULE, 'Error, fDelay >= MAX_SCHEDULE');
-  if ((gGame.GameMode = gmMultiSpectate) and not (aCommand.CommandType in AllowedBySpectators)) // Do not allow spectators to command smth
+  if ((gGame.GameMode = gmMultiSpectate) and not (aCommand.CommandType in ALLOWED_BY_SPECTATORS)) // Do not allow spectators to command smth
     or ((gGame.GameMode = gmMulti)                      // in multiplayer game
       and IsSelectedObjectCommand(aCommand.CommandType) // block only commands for selected object
       and (gMySpectator.Selected <> nil)                // if there is selected object
       and not gMySpectator.IsSelectedMyObj) then        // and we try to make command to ally's object
     Exit;
 
-  if gGame.IsPeaceTime and (aCommand.CommandType in BlockedByPeaceTime) then
+  if gGame.IsPeaceTime and (aCommand.CommandType in BLOCKED_BY_PEACETIME) then
   begin
     gGameApp.Networking.PostLocalMessage(gResTexts[TX_MP_BLOCKED_BY_PEACETIME], csNone);
     gSoundPlayer.Play(sfxCantPlace);
@@ -207,7 +207,7 @@ begin
 
   if (gGame.GameMode <> gmMultiSpectate)
   and gMySpectator.Hand.AI.HasLost
-  and not (aCommand.CommandType in AllowedAfterDefeat) then
+  and not (aCommand.CommandType in ALLOWED_AFTER_DEFEAT) then
   begin
     gSoundPlayer.Play(sfxCantPlace);
     Exit;
@@ -415,7 +415,7 @@ begin
       if {not fNetworking.NetPlayers[I].Dropped}
       //Don't allow exploits like moving enemy soldiers (but maybe one day you can control disconnected allies?)
         (fNetworking.NetPlayers[I].HandIndex = fSchedule[Tick, I].Items[K].HandIndex)
-           or (fSchedule[Tick, I].Items[K].CommandType in AllowedBySpectators) then
+           or (fSchedule[Tick, I].Items[K].CommandType in ALLOWED_BY_SPECTATORS) then
       begin
         StoreCommand(fSchedule[Tick, I].Items[K]); //Store the command first so if Exec fails we still have it in the replay
         ExecCommand(fSchedule[Tick, I].Items[K]);
