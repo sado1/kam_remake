@@ -1540,7 +1540,7 @@ var
 begin
   NumberedAIs := not gGame.IsSingleplayer;
   //Default names
-  if HandType = hndHuman then
+  if IsHuman then
     Result := gResTexts[TX_PLAYER_YOU]
   else
     if AI.Setup.NewAI then
@@ -1560,13 +1560,13 @@ begin
   //Do not use names in MP to avoid confusion of AI players with real player niknames
   if gGame.GameMode in [gmSingle, gmCampaign, gmMapEd, gmReplaySingle] then
     if gGame.TextMission.HasText(HANDS_NAMES_OFFSET + fID) then
-      if HandType = hndHuman then
+      if IsHuman then
         Result := gResTexts[TX_PLAYER_YOU] + ' (' + gGame.TextMission[HANDS_NAMES_OFFSET + fID] + ')'
       else
         Result := gGame.TextMission[HANDS_NAMES_OFFSET + fID];
 
   //If this location is controlled by an MP player - show his nik
-  if (fOwnerNikname <> '') and (HandType = hndHuman) then
+  if (fOwnerNikname <> '') and IsHuman then
     Result := UnicodeString(fOwnerNikname);
 end;
 
@@ -1584,7 +1584,7 @@ function TKMHand.OwnerName(aNumberedAIs: Boolean = True; aLocalized: Boolean = T
 begin
   //If this location is controlled by an MP player - show his nik
   if (fOwnerNikname <> '')
-    and (HandType = hndHuman) then //we could ask AI to play on ex human loc, so fOwnerNikname will be still some human name
+    and IsHuman then //we could ask AI to play on ex human loc, so fOwnerNikname will be still some human name
     Exit(UnicodeString(fOwnerNikname));
 
   //Try to take player name from mission text if we are in SP
@@ -1592,7 +1592,7 @@ begin
   if (gGame.GameMode in [gmSingle, gmCampaign, gmMapEd, gmReplaySingle])
     and gGame.TextMission.HasText(HANDS_NAMES_OFFSET + fID) then
   begin
-    if HandType = hndHuman then
+    if IsHuman then
       Result := GetText(TX_PLAYER_YOU, aLocalized) + ' (' + gGame.TextMission[HANDS_NAMES_OFFSET + fID] + ')'
     else
       Result := gGame.TextMission[HANDS_NAMES_OFFSET + fID];
@@ -1601,7 +1601,7 @@ begin
   end;
 
   //Default names
-  if HandType = hndHuman then
+  if IsHuman then
     Result := GetText(TX_PLAYER_YOU, aLocalized)
   else
     if AI.Setup.NewAI then

@@ -193,7 +193,7 @@ begin
   //This is SP menu, we are dead sure there's only one Human player (NOT REALLY)
   HumanId := -1;
   for I := 0 to gHands.Count - 1 do
-    if gHands[I].HandType = hndHuman then
+    if gHands[I].IsHuman then
       HumanId := I;
 
   //Still possible to have no Humans, if we play some MP replay in SP replay mode

@@ -1980,7 +1980,7 @@ begin
         else
         begin
           GameInfo.Enabled[I] := gHands[I].Enabled;
-          GameInfo.CanBeHuman[I] := gHands[I].HandType = hndHuman;
+          GameInfo.CanBeHuman[I] := gHands[I].IsHuman;
           GameInfo.OwnerNikname[I] := gHands[I].OwnerNikname; //MP nikname, not translated OwnerName
           GameInfo.HandTypes[I] := gHands[I].HandType;
           GameInfo.Color[I] := gHands[I].FlagColor;

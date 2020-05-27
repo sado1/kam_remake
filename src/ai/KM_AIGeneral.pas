@@ -697,7 +697,7 @@ var
   I: Integer;
   Group: TKMUnitGroup;
 begin
-  if gHands[fOwner].HandType = hndHuman then Exit;
+  if gHands[fOwner].IsHuman then Exit;
 
   //Attacker may be already dying (e.g. killed by script)
   //We could retaliate against his whole group however
