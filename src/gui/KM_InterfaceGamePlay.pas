@@ -4323,6 +4323,9 @@ begin
   S := '';
 
   // Debug info
+  if SHOW_GAME_TICK then
+    S := S + 'Tick: ' + IntToStr(gGame.GameTick) + '|';
+
   if SHOW_SPRITE_COUNT then
     S := IntToStr(gHands.UnitCount) + ' units on map|' +
          IntToStr(gRenderPool.RenderList.Stat_Sprites) + '/' +
