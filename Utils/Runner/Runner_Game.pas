@@ -1514,7 +1514,7 @@ begin
       if KaMRandomWSeed(fRunSeed, FREQ) = 0 then
       begin
         P := gTerrain.EnsureTileInMapCoords(hand.CenterScreen + TKMPoint.New(KaMRandomWSeedI2(fRunSeed, 30), KaMRandomWSeedI2(fRunSeed, 30)));
-        gGameApp.Game.GameInputProcess.CmdBuild(gicBuildAddFieldPlan, P, TKMFieldType(KaMRandomWSeed(fRunSeed, 3) + 1))
+        gGameApp.Game.GameInputProcess.CmdBuild(gicBuildToggleFieldPlan, P, TKMFieldType(KaMRandomWSeed(fRunSeed, 3) + 1))
       end;
 //
       // CmdBuildAddHousePlan
