@@ -95,6 +95,8 @@ const
 
 { TKMMain }
 constructor TKMMain.Create;
+var
+  collapsed: Boolean;
 begin
   inherited;
 
@@ -108,7 +110,11 @@ begin
   {$IFDEF PERFLOG}
   gPerfLogs := TKMPerfLogs.Create([], True);
   gPerfLogs.ShowForm(fFormMain.cpPerfLogs);
+
+  collapsed := fFormMain.cpPerfLogs.Collapsed; //Save collapsed flag
+  fFormMain.cpPerfLogs.Collapsed := False; //We can set TCategoryPanel height only when collapsed set to False
   fFormMain.cpPerfLogs.Height := gPerfLogs.FormHeight;
+  fFormMain.cpPerfLogs.Collapsed := collapsed; //Restore collapsed flag
   {$ELSE}
   fFormMain.cpPerfLogs.Hide;
   {$ENDIF}
