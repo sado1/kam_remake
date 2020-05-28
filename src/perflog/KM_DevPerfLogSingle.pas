@@ -33,7 +33,7 @@ type
     procedure SectionEnter(aTick: Integer = -1; aTag: Integer = 0);
     procedure SectionLeave;
     procedure Clear;
-    procedure Render(aLeft, aWidth, aHeight, aScaleY: Integer; aEmaAlpha: Single; aFrameBudget: Integer; aSmoothing: Boolean);
+    procedure Render(aLeft, aWidth, aHeight, aScaleY: Integer; aEmaAlpha: Single; aScale: Integer; aSmoothing: Boolean);
     procedure SaveToFile(const aFilename: string; aSaveThreshold: Integer);
     procedure SaveToStringList(aStringList: TStringList; aSaveThreshold: Integer);
   end;
@@ -131,7 +131,7 @@ begin
 end;
 
 
-procedure TKMPerfLogSingle.Render(aLeft, aWidth, aHeight, aScaleY: Integer; aEmaAlpha: Single; aFrameBudget: Integer; aSmoothing: Boolean);
+procedure TKMPerfLogSingle.Render(aLeft, aWidth, aHeight, aScaleY: Integer; aEmaAlpha: Single; aScale: Integer; aSmoothing: Boolean);
 var
   I, K: Integer;
   vaChart: TKMPointFArray;
@@ -150,7 +150,7 @@ begin
   begin
     // Instant reading
     K := fCount - 1 - I;
-    vaChart[I] := TKMPointF.New(aLeft + I + 0.5, aHeight + 0.5 - fTimes[K].Time / 1000 / aFrameBudget * aScaleY);
+    vaChart[I] := TKMPointF.New(aLeft + I + 0.5, aHeight + 0.5 - fTimes[K].Time / 1000 / aScale * aScaleY);
 
     if aSmoothing then
     begin

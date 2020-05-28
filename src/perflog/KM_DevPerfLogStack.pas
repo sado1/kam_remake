@@ -64,7 +64,7 @@ type
     destructor Destroy; override;
     procedure Clear;
     procedure GetSectionsStats(aList: TStringList);
-    procedure Render(aLeft, aWidth, aHeight, aScaleY: Integer; aEmaAlpha: Single; aFrameBudget: Integer; aSmoothing: Boolean);
+    procedure Render(aLeft, aWidth, aHeight, aScaleY: Integer; aEmaAlpha: Single; aScale: Integer; aSmoothing: Boolean);
     property SectionData[aSection: TPerfSectionDev]: TKMSectionData read GetSectionData; default;
     property Count: Integer read GetCount;
     procedure SectionRollback(const aName: string); overload;
@@ -264,7 +264,7 @@ begin
 end;
 
 
-procedure TKMPerfLogStack.Render(aLeft, aWidth, aHeight, aScaleY: Integer; aEmaAlpha: Single; aFrameBudget: Integer; aSmoothing: Boolean);
+procedure TKMPerfLogStack.Render(aLeft, aWidth, aHeight, aScaleY: Integer; aEmaAlpha: Single; aScale: Integer; aSmoothing: Boolean);
 const
   HALF_CAPTION_HEIGHT = 10;
   LERP_AVG = 0.025;
@@ -318,16 +318,16 @@ begin
       begin
         t2 := GetTime(L,I);
         vaFill[K*2]   := TKMPointF.New(aLeft + K + 0.5, aHeight + 0.5);
-        vaFill[K*2+1] := TKMPointF.New(aLeft + K + 0.5, aHeight + 0.5 - t2 / 1000 / aFrameBudget * aScaleY);
+        vaFill[K*2+1] := TKMPointF.New(aLeft + K + 0.5, aHeight + 0.5 - t2 / 1000 / aScale * aScaleY);
       end else
       begin
         t1 := GetTime(L,I-1);
         t2 := t1 + fTimes[L,I];
-        vaFill[K*2]   := TKMPointF.New(aLeft + K + 0.5, aHeight + 0.5 - t1 / 1000 / aFrameBudget * aScaleY);
-        vaFill[K*2+1] := TKMPointF.New(aLeft + K + 0.5, aHeight + 0.5 - t2 / 1000 / aFrameBudget * aScaleY);
+        vaFill[K*2]   := TKMPointF.New(aLeft + K + 0.5, aHeight + 0.5 - t1 / 1000 / aScale * aScaleY);
+        vaFill[K*2+1] := TKMPointF.New(aLeft + K + 0.5, aHeight + 0.5 - t2 / 1000 / aScale * aScaleY);
       end;
 
-      vaLine[K] := TKMPointF.New(aLeft + K + 0.5, aHeight + 0.5 - t2 / 1000 / aFrameBudget * aScaleY);
+      vaLine[K] := TKMPointF.New(aLeft + K + 0.5, aHeight + 0.5 - t2 / 1000 / aScale * aScaleY);
 
       if L = fCount - 2 then
         tLast := T2;
@@ -360,9 +360,9 @@ begin
       fCaptions[I].Middle := (fCaptions[prevSection].AvgBase + fCaptions[I].AvgBase) / 2;
 
     // Sections captions
-    if (fCaptions[I].AvgBase - fCaptions[I].Middle) / 1000 / aFrameBudget * aScaleY > HALF_CAPTION_HEIGHT then
+    if (fCaptions[I].AvgBase - fCaptions[I].Middle) / 1000 / aScale * aScaleY > HALF_CAPTION_HEIGHT then
     begin
-      ty := EnsureRange(Round(fCaptions[I].Middle / 1000 / aFrameBudget * aScaleY), 0, 5000);
+      ty := EnsureRange(Round(fCaptions[I].Middle / 1000 / aScale * aScaleY), 0, 5000);
       TKMRenderUI.WriteText(aLeft + 4, Trunc(aHeight + 0.5 - ty - 7), 0,
         Trim(SECTION_INFO[sectionData.fSection].Name) + ' x' + IntToStr(sectionData.fCount), fntMini, taLeft);
     end;
