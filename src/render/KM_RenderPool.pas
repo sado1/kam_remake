@@ -651,7 +651,7 @@ begin
   R := fRXData[rxGui];
 
   CornerX := aLoc.X + R.Pivot[aId].X / CELL_SIZE_PX;
-  CornerY := gTerrain.FlatToHeight(aLoc).Y + R.Pivot[aId].Y / CELL_SIZE_PX;
+  CornerY := gTerrain.RenderFlatToHeight(aLoc).Y + R.Pivot[aId].Y / CELL_SIZE_PX;
 
   fRenderList.AddSpriteG(rxGui, aId, 0, CornerX, CornerY, aLoc.X, aLoc.Y, aFlagColor);
 end;
@@ -993,7 +993,7 @@ begin
   R := fRXData[rxUnits];
 
   CornerX := pX + R.Pivot[Id].X / CELL_SIZE_PX;
-  CornerY := gTerrain.FlatToHeight(pX, pY) + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX;
+  CornerY := gTerrain.RenderFlatToHeight(pX, pY) + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX;
   Ground := pY + (R.Pivot[Id0].Y + R.Size[Id0].Y) / CELL_SIZE_PX;
 
   if DoImmediateRender then
@@ -1047,7 +1047,7 @@ begin
   R := fRXData[rxUnits];
 
   CornerX := pX + (R.Pivot[Id].X + a.MoveX) / CELL_SIZE_PX;
-  CornerY := gTerrain.FlatToHeight(pX, pY) + (R.Pivot[Id].Y + R.Size[Id].Y + a.MoveY) / CELL_SIZE_PX;
+  CornerY := gTerrain.RenderFlatToHeight(pX, pY) + (R.Pivot[Id].Y + R.Size[Id].Y + a.MoveY) / CELL_SIZE_PX;
   fRenderList.AddSprite(rxUnits, Id, CornerX, CornerY);
 end;
 
@@ -1079,7 +1079,7 @@ begin
        (gGame.GameTick mod Word(ThoughtBounds[Thought, 2] - ThoughtBounds[Thought, 1]));
 
   CornerX := pX + R.Pivot[Id].X / CELL_SIZE_PX;
-  CornerY := gTerrain.FlatToHeight(pX, pY) + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX - 1.5;
+  CornerY := gTerrain.RenderFlatToHeight(pX, pY) + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX - 1.5;
   fRenderList.AddSpriteG(rxUnits, Id, 0, CornerX, CornerY, pX, Ground);
 end;
 
@@ -1120,7 +1120,7 @@ begin
   if IdFlag <= 0 then Exit;
 
   FlagX := pX + (R.Pivot[IdFlag].X + FlagXOffset[UNIT_TO_GROUP_TYPE[aUnit], aDir]) / CELL_SIZE_PX - 0.5;
-  FlagY := gTerrain.FlatToHeight(pX, pY) + (R.Pivot[IdFlag].Y + FlagYOffset[UNIT_TO_GROUP_TYPE[aUnit], aDir] + R.Size[IdFlag].Y) / CELL_SIZE_PX - 2.25;
+  FlagY := gTerrain.RenderFlatToHeight(pX, pY) + (R.Pivot[IdFlag].Y + FlagYOffset[UNIT_TO_GROUP_TYPE[aUnit], aDir] + R.Size[IdFlag].Y) / CELL_SIZE_PX - 2.25;
 
   if DoImmediateRender then
     RenderSprite(rxUnits, IdFlag, FlagX, FlagY, FlagColor)
@@ -1418,7 +1418,7 @@ begin
     or (gMySpectator.FogOfWar.CheckVerticeRenderRev(aLoc.X,aLoc.Y) <= FOG_OF_WAR_MIN) then Exit;
 
   pX := aLoc.X - 0.5 + fRXData[rxGui].Pivot[aId].X / CELL_SIZE_PX;
-  pY := gTerrain.FlatToHeight(aLoc.X - 0.5, aLoc.Y - 0.5) -
+  pY := gTerrain.RenderFlatToHeight(aLoc.X - 0.5, aLoc.Y - 0.5) -
         fRXData[rxGui].Pivot[aId].Y / CELL_SIZE_PX;
   RenderSprite(rxGui, aId, pX, pY, aFlagColor);
 end;
@@ -1430,7 +1430,7 @@ var
 begin
   // if not gTerrain.TileInMapCoords(aLoc.X, aLoc.Y) then Exit;
   pX := aLoc.X + fRXData[rxGui].Pivot[aId].X / CELL_SIZE_PX;
-  pY := gTerrain.FlatToHeight(aLoc.X, aLoc.Y) +
+  pY := gTerrain.RenderFlatToHeight(aLoc.X, aLoc.Y) +
         fRXData[rxGui].Pivot[aId].Y / CELL_SIZE_PX;
   RenderSprite(rxGui, aId, pX, pY, aFlagColor, False, 0, aForced);
 end;
@@ -2042,8 +2042,8 @@ begin
     // Child ground lines are useless
     glBegin(GL_LINES);
       glColor3f(1,1,0.5);
-      glVertex2f(Sp1.Feet.X + 0.15, gTerrain.FlatToHeight(Sp1.Feet).Y);
-      glVertex2f(Sp1.Feet.X - 0.15, gTerrain.FlatToHeight(Sp1.Feet).Y);
+      glVertex2f(Sp1.Feet.X + 0.15, gTerrain.RenderFlatToHeight(Sp1.Feet).Y);
+      glVertex2f(Sp1.Feet.X - 0.15, gTerrain.RenderFlatToHeight(Sp1.Feet).Y);
     glEnd;
   end;
 end;

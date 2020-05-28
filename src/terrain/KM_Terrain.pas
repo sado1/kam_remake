@@ -352,6 +352,8 @@ type
     function ConvertCursorToMapCoord(inX,inY:single): Single;
     function FlatToHeight(inX, inY: Single): Single; overload;
     function FlatToHeight(const aPoint: TKMPointF): TKMPointF; overload;
+    function RenderFlatToHeight(inX, inY: Single): Single; overload;
+    function RenderFlatToHeight(const aPoint: TKMPointF): TKMPointF; overload;
     function HeightAt(inX, inY: Single): Single;
     function RenderHeightAt(inX, inY: Single): Single;
 
@@ -4830,6 +4832,33 @@ begin
   Tmp2 := Mix(Land[Yc+2, Xc+2].Height, Land[Yc+2, Xc+1].Height, Frac(inX));
   Result := inY - Mix(Tmp2, Tmp1, Frac(inY)) / CELL_HEIGHT_DIV;
 end;
+
+
+//Convert point from flat position to height position on terrain
+function TKMTerrain.RenderFlatToHeight(const aPoint: TKMPointF): TKMPointF;
+begin
+  Result.X := aPoint.X;
+  Result.Y := RenderFlatToHeight(aPoint.X, aPoint.Y);
+end;
+
+
+//Convert point from flat position to height position on terrain
+function TKMTerrain.RenderFlatToHeight(inX, inY: Single): Single;
+var
+  Xc, Yc: Integer;
+  Tmp1, Tmp2: single;
+begin
+  //Valid range of tiles is 0..MapXY-2 because we check height from (Xc+1,Yc+1) to (Xc+2,Yc+2)
+  //We cannot ask for height at the bottom row (MapY-1) because that row is not on the visible map,
+  //and does not have a vertex below it
+  Xc := EnsureRange(Trunc(inX), 0, fMapX-2);
+  Yc := EnsureRange(Trunc(inY), 0, fMapY-2);
+
+  Tmp1 := Mix(Land[Yc+1, Xc+2].RenderHeight, Land[Yc+1, Xc+1].RenderHeight, Frac(inX));
+  Tmp2 := Mix(Land[Yc+2, Xc+2].RenderHeight, Land[Yc+2, Xc+1].RenderHeight, Frac(inX));
+  Result := inY - Mix(Tmp2, Tmp1, Frac(inY)) / CELL_HEIGHT_DIV;
+end;
+
 
 
 //Convert point from flat position to height position on terrain
