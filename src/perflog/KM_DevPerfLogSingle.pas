@@ -15,6 +15,7 @@ type
     fTimes: array of record
       Time: Int64;
       Tag: Integer;
+      Count: Integer;
     end;
     function GetCount: Integer;
     function GetEnterTick: Integer;
@@ -194,7 +195,7 @@ begin
     Inc(total, fTimes[I].Time);
 
     if fTimes[I].Time >= aSaveThreshold then
-      aStringList.Append(Format('Tick: %d'#9'%d'#9'%d', [I, fTimes[I].Tag, fTimes[I].Time]));
+      aStringList.Append(Format('Tick: %d'#9'%d'#9'%d', [I, fTimes[I].Count, fTimes[I].Time]));
   end;
 
   aStringList.Append('Total ' + FloatToStr(total/1000) + 'msec');
@@ -233,7 +234,10 @@ begin
   if fEnterTick = -1 then
     fTimes[tgt].Time := T
   else
+  begin
     fTimes[tgt].Time := fTimes[tgt].Time + T;
+    Inc(fTimes[tgt].Count);
+  end;
 
   fCount := Max(fCount, tgt);
 end;
