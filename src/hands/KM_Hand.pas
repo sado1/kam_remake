@@ -1980,7 +1980,7 @@ begin
   fFogOfWar.UpdateState; //We might optimize it for AI somehow, to make it work coarse and faster
 
   //Distribute AI updates among different Ticks to avoid slowdowns
-  if (aTick + Byte(fID)) mod 10 = 0 then
+  if (aTick mod gHands.Count) = fID then
   begin
     fConstructions.UpdateState;
     fDeliveries.UpdateState(aTick);

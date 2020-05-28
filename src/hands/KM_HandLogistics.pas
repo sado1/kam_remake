@@ -62,8 +62,8 @@ type
   {$IFDEF USE_HASH}
   //Bids cache key
   TKMDeliveryBidKey = record
-    FromUID: Integer; //House or Unit UID From where delivery path goes
-    ToUID: Integer;   //same for To where delivery path goes
+    FromP: TKMPoint; //House or Unit UID From where delivery path goes
+    ToP: TKMPoint;   //same for To where delivery path goes
   end;
 
 type
@@ -73,8 +73,14 @@ type
     function GetHashCode(const Value: TKMDeliveryBidKey): Integer; override;
   end;
 
+  //Comparer just to make some order by keys
   TKMDeliveryBidKeyComparer = class(TComparer<TKMDeliveryBidKey>)
     function Compare(const Left, Right: TKMDeliveryBidKey): Integer; override;
+  end;
+
+  TKMDeliveryBid = record
+    Value: Single;
+    TimeToLive: Word; //Cached bid time to live, we have to update it from time to time
   end;
   {$ENDIF}
 
@@ -90,6 +96,16 @@ type
   //Comparison function could be executed more rare or frequent depending on signals from houses/serfs
   //e.g. with no houses signals it can sleep till first on. At any case - not more frequent than 1/tick
   //TKMDeliveryList = class; //Serfs, Houses/Warriors/Workers
+
+  {$IFDEF USE_HASH}
+  TKMDeliveryCache = class(TDictionary<TKMDeliveryBidKey, TKMDeliveryBid>)
+  public
+    procedure Add(const FromP: TKMPoint; ToP: TKMPoint; const aValue: Single; const aTimeToLive: Word); reintroduce; overload;
+    procedure Add(const aKey: TKMDeliveryBidKey; const aValue: Single; const aTimeToLive: Word); reintroduce; overload;
+    procedure Add(const aKey: TKMDeliveryBidKey; const aBid: TKMDeliveryBid); reintroduce; overload;
+  end;
+  {$ENDIF}
+
 
   TKMDeliveries = class
   private
@@ -109,10 +125,8 @@ type
     end;
 
     {$IFDEF USE_HASH}
-    // Cache of bid costs between offer object (house, serf) and demand object (house, unit - worker or warrior)
-    fOfferToDemandCache: TDictionary<TKMDeliveryBidKey, Single>;
-    // Cache of bid costs between serf and offer house
-    fSerfToOfferCache: TDictionary<TKMDeliveryBidKey, Single>;
+    // Cache of bid costs between 2 points
+    fBidsCache: TKMDeliveryCache;
     {$ENDIF}
 
     fNodeList: TKMPointList; // Used to calc delivery bid
@@ -137,7 +151,7 @@ type
                                   aAllowOffroad: Boolean = False): Boolean; overload;
     function TryCalcSerfBidValue(aSerf: TKMUnitSerf; aOfferPos: TKMPoint; aToUID: Integer; var aSerfBidValue: Single): Boolean;
     function TryCalcRouteCost(aFromPos, aToPos: TKMPoint; aMainPass: TKMTerrainPassability; var aRoutCost: Single; aSecondPass: TKMTerrainPassability = tpUnused): Boolean;
-    function GetUnitsCntOnPath(aNodeList: TKMPointList): Integer;
+//    function GetUnitsCntOnPath(aNodeList: TKMPointList): Integer;
   public
     constructor Create(aHandIndex: TKMHandID);
     destructor Destroy; override;
@@ -217,9 +231,10 @@ const
   BID_CALC_MAX_DIST_FOR_PATHF = 100;
   //Approx compensation to compare Bid cost calc with pathfinding and without it. Pathfinding is usually longer
   BID_CALC_PATHF_COMPENSATION = 0.9;
-  CACHE_CLEAN_FREQ = 10; //in ticks. Clean cache every N ticks
   LENGTH_INC = 32; //Increment array lengths by this value
   NOT_REACHABLE_DEST_VALUE = MaxSingle;
+  OFFER_DEMAND_BID_TTL = 200; //In update counts. Update is not made every tick. F.e. for 8 players it will be every 2m40s
+  SERF_OFFER_BID_TTL = 300;   //In update counts. Update is not made every tick. And for 12 player it will be every 6 minutes
 
 
 { TKMHandLogistics }
@@ -425,21 +440,13 @@ end;
 
 { TKMDeliveries }
 constructor TKMDeliveries.Create(aHandIndex: TKMHandID);
-{$IFDEF USE_HASH}
-var
-  CacheKeyComparer: TKMDeliveryBidKeyEqualityComparer;
-{$ENDIF}
 begin
   fOwner := aHandIndex;
   {$IFDEF USE_HASH}
   if CACHE_DELIVERY_BIDS then
-  begin
-    CacheKeyComparer := TKMDeliveryBidKeyEqualityComparer.Create;
-    fOfferToDemandCache := TDictionary<TKMDeliveryBidKey, Single>.Create(CacheKeyComparer);
-    fSerfToOfferCache := TDictionary<TKMDeliveryBidKey, Single>.Create(CacheKeyComparer);
-  end;
-
+    fBidsCache := TKMDeliveryCache.Create(TKMDeliveryBidKeyEqualityComparer.Create);
   {$ENDIF}
+
   if DELIVERY_BID_CALC_USE_PATHFINDING then
     fNodeList := TKMPointList.Create;
 
@@ -456,11 +463,9 @@ destructor TKMDeliveries.Destroy;
 begin
   {$IFDEF USE_HASH}
   if CACHE_DELIVERY_BIDS then
-  begin
-    FreeAndNil(fSerfToOfferCache);
-    FreeAndNil(fOfferToDemandCache);
-  end;
+    FreeAndNil(fBidsCache);
   {$ENDIF}
+
   if DELIVERY_BID_CALC_USE_PATHFINDING then
     FreeAndNil(fNodeList);
 
@@ -1108,8 +1113,8 @@ end;
 function TKMDeliveries.TryCalcSerfBidValue(aSerf: TKMUnitSerf; aOfferPos: TKMPoint; aToUID: Integer; var aSerfBidValue: Single): Boolean;
   {$IFDEF USE_HASH}
 var
-  BidKey: TKMDeliveryBidKey;
-  CachedBid: Single;
+  bidKey: TKMDeliveryBidKey;
+  cachedBid: TKMDeliveryBid;
   {$ENDIF}
 begin
   aSerfBidValue := 0;
@@ -1119,12 +1124,12 @@ begin
   {$IFDEF USE_HASH}
   if CACHE_DELIVERY_BIDS then
   begin
-    BidKey.FromUID := aSerf.UID;
-    BidKey.ToUID := aToUID;
+    bidKey.FromP := aSerf.CurrPosition;
+    bidKey.ToP := aOfferPos;
 
-    if fSerfToOfferCache.TryGetValue(BidKey, CachedBid) then
+    if fBidsCache.TryGetValue(bidKey, cachedBid) then
     begin
-      aSerfBidValue := aSerfBidValue + CachedBid;
+      aSerfBidValue := aSerfBidValue + cachedBid.Value;
       Result := (aSerfBidValue <> NOT_REACHABLE_DEST_VALUE);
       Exit;
     end;
@@ -1137,20 +1142,19 @@ begin
     Result := TryCalcRouteCost(GetSerfActualPos(aSerf), aOfferPos, tpWalkRoad, aSerfBidValue, tpWalk);
 
   {$IFDEF USE_HASH}
-  if CACHE_DELIVERY_BIDS then
-    fSerfToOfferCache.Add(BidKey, aSerfBidValue);
+  fBidsCache.Add(bidKey, aSerfBidValue, SERF_OFFER_BID_TTL);
   {$ENDIF}
 end;
 
 
-function TKMDeliveries.GetUnitsCntOnPath(aNodeList: TKMPointList): Integer;
-var
-  I: Integer;
-begin
-  Result := 0;
-  for I := 1 to aNodeList.Count - 1 do
-    Inc(Result, Byte(gTerrain.Land[aNodeList[I].Y,aNodeList[I].X].IsUnit <> nil));
-end;
+//function TKMDeliveries.GetUnitsCntOnPath(aNodeList: TKMPointList): Integer;
+//var
+//  I: Integer;
+//begin
+//  Result := 0;
+//  for I := 1 to aNodeList.Count - 1 do
+//    Inc(Result, Byte(gTerrain.Land[aNodeList[I].Y,aNodeList[I].X].IsUnit <> nil));
+//end;
 
 
 //Try to Calc route cost
@@ -1178,7 +1182,7 @@ begin
     if Result
       and gGame.Pathfinding.Route_Make(aFromPos, aToPos, [PassToUse], 1, nil, fNodeList) then
       aRoutCost := KMPathLength(fNodeList) * BID_CALC_PATHF_COMPENSATION //to equalize routes with Pathfinding and without
-                + GetUnitsCntOnPath(fNodeList) // units on path are also considered
+//                + GetUnitsCntOnPath(fNodeList) // units on path are also considered
     else
       Result := False;
   end
@@ -1205,21 +1209,13 @@ end;
 function TKMDeliveries.TryCalculateBidBasic(aOfferUID: Integer; aOfferPos: TKMPoint; aOfferCnt: Cardinal; aOfferHouseType: TKMHouseType;
                                             aOwner: TKMHandID; iD: Integer; var aBidBasicValue: Single;
                                             aSerf: TKMUnitSerf = nil; aAllowOffroad: Boolean = False): Boolean;
-
-  {$IFDEF USE_HASH}
-  procedure TryAddToCache(aBidKey: TKMDeliveryBidKey; aBidBasicV: Single);
-  begin
-    if CACHE_DELIVERY_BIDS then
-      fOfferToDemandCache.Add(aBidKey, aBidBasicV);
-  end;
-  {$ENDIF}
-
 var
   SerfBidValue: Single;
   SecondPass: TKMTerrainPassability;
   {$IFDEF USE_HASH}
-  BidKey: TKMDeliveryBidKey;
-  OfferToDemandCache: Single;
+  bidKey: TKMDeliveryBidKey;
+  bid: TKMDeliveryBid;
+
   {$ENDIF}
 begin
   aBidBasicValue := NOT_REACHABLE_DEST_VALUE;
@@ -1230,20 +1226,20 @@ begin
   {$IFDEF USE_HASH}
   if CACHE_DELIVERY_BIDS then
   begin
-    BidKey.FromUID := aOfferUID;
-    BidKey.ToUID := 0;
+    bidKey.FromP := aOfferPos;
+    bidKey.ToP := KMPOINT_INVALID_TILE;
     if (fDemand[iD].Loc_House <> nil) then
-      BidKey.ToUID := fDemand[iD].Loc_House.UID
+      bidKey.ToP := fDemand[iD].Loc_House.PointBelowEntrance
     else if (fDemand[iD].Loc_Unit <> nil) then //Sometimes Loc_House and Loc_Unit could be nil for some reason (its a bug actually). Just add nil check here for now
-      BidKey.ToUID := fDemand[iD].Loc_Unit.UID;
+      bidKey.ToP := fDemand[iD].Loc_Unit.CurrPosition;
 
-    if (BidKey.ToUID <> 0) and fOfferToDemandCache.TryGetValue(BidKey, OfferToDemandCache) then
+    if (bidKey.ToP <> KMPOINT_INVALID_TILE) and fBidsCache.TryGetValue(bidKey, bid) then
     begin
-      Result := (OfferToDemandCache <> NOT_REACHABLE_DEST_VALUE);
+      Result := (bid.Value <> NOT_REACHABLE_DEST_VALUE);
       if not Result then
         aBidBasicValue := NOT_REACHABLE_DEST_VALUE
       else
-        aBidBasicValue := SerfBidValue + OfferToDemandCache;
+        aBidBasicValue := SerfBidValue + bid.Value;
       Exit;
     end;
   end;
@@ -1283,7 +1279,7 @@ begin
     begin
       aBidBasicValue := NOT_REACHABLE_DEST_VALUE;
       {$IFDEF USE_HASH}
-      TryAddToCache(BidKey, aBidBasicValue);
+      fBidsCache.Add(bidKey, aBidBasicValue, OFFER_DEMAND_BID_TTL);
       {$ENDIF}
       Exit; //Add to cache NOT_REACHABLE_DEST_VALUE value
     end;
@@ -1311,7 +1307,7 @@ begin
     aBidBasicValue := aBidBasicValue + 1000;
 
   {$IFDEF USE_HASH}
-  TryAddToCache(BidKey, aBidBasicValue);
+  fBidsCache.Add(bidKey, aBidBasicValue, OFFER_DEMAND_BID_TTL);
   {$ENDIF}
 
   aBidBasicValue := aBidBasicValue + SerfBidValue;
@@ -1887,9 +1883,10 @@ procedure TKMDeliveries.Save(SaveStream: TKMemoryStream);
 var
   I: Integer;
   {$IFDEF USE_HASH}
-  CacheKeyArray : TArray<TKMDeliveryBidKey>;
-  Key: TKMDeliveryBidKey;
-  Comparer: TKMDeliveryBidKeyComparer;
+  cacheKeyArray : TArray<TKMDeliveryBidKey>;
+  key: TKMDeliveryBidKey;
+  comparer: TKMDeliveryBidKeyComparer;
+  bid: TKMDeliveryBid;
   {$ENDIF}
 begin
   SaveStream.PlaceMarker('Deliveries');
@@ -1938,45 +1935,29 @@ begin
   {$IFDEF USE_HASH}
   if CACHE_DELIVERY_BIDS then
   begin
-    SaveStream.PlaceMarker('OfferToDemandCache');
-    SaveStream.Write(fOfferToDemandCache.Count);
+    SaveStream.PlaceMarker('DeliveryBidsCache');
+    SaveStream.Write(fBidsCache.Count);
 
-    Comparer := nil; //RESET to nil. Obligatory!
+    comparer := nil; //RESET to nil. Obligatory!
 
-    if (fOfferToDemandCache.Count > 0) or (fSerfToOfferCache.Count > 0) then
-      Comparer := TKMDeliveryBidKeyComparer.Create;
+    if fBidsCache.Count > 0 then
+      comparer := TKMDeliveryBidKeyComparer.Create;
 
-    if fOfferToDemandCache.Count > 0 then
+    if fBidsCache.Count > 0 then
     begin
-      CacheKeyArray := fOfferToDemandCache.Keys.ToArray;
-      TArray.Sort<TKMDeliveryBidKey>(CacheKeyArray, Comparer);
+      cacheKeyArray := fBidsCache.Keys.ToArray;
+      TArray.Sort<TKMDeliveryBidKey>(cacheKeyArray, comparer);
 
-      for Key in CacheKeyArray do
+      for key in cacheKeyArray do
       begin
-        SaveStream.Write(Key.FromUID);
-        SaveStream.Write(Key.ToUID);
-        SaveStream.Write(fOfferToDemandCache.Items[Key]);
+        SaveStream.Write(key, SizeOf(key));
+        bid := fBidsCache[key];
+        SaveStream.Write(bid, SizeOf(bid));
       end;
     end;
 
-    SaveStream.PlaceMarker('SerfToOfferCache');
-    SaveStream.Write(fSerfToOfferCache.Count);
-
-    if fSerfToOfferCache.Count > 0 then
-    begin
-      CacheKeyArray := fSerfToOfferCache.Keys.ToArray;
-      TArray.Sort<TKMDeliveryBidKey>(CacheKeyArray, Comparer);
-
-      for Key in CacheKeyArray do
-      begin
-        SaveStream.Write(Key.FromUID);
-        SaveStream.Write(Key.ToUID);
-        SaveStream.Write(fSerfToOfferCache.Items[Key]);
-      end;
-    end;
-
-    if Comparer <> nil then
-      Comparer.Free;
+    if comparer <> nil then
+      comparer.Free;
   end;
   {$ENDIF}
 end;
@@ -1986,9 +1967,9 @@ procedure TKMDeliveries.Load(LoadStream: TKMemoryStream);
 var
   I: Integer;
   {$IFDEF USE_HASH}
-  Count: Integer;
-  Key: TKMDeliveryBidKey;
-  Value: Single;
+  count: Integer;
+  key: TKMDeliveryBidKey;
+  bid: TKMDeliveryBid;
   {$ENDIF}
 begin
   LoadStream.CheckMarker('Deliveries');
@@ -2037,26 +2018,14 @@ begin
   {$IFDEF USE_HASH}
   if CACHE_DELIVERY_BIDS then
   begin
-    LoadStream.CheckMarker('OfferToDemandCache');
-    fOfferToDemandCache.Clear;
-    LoadStream.Read(Count);
-    for I := 0 to Count - 1 do
+    LoadStream.CheckMarker('DeliveryBidsCache');
+    fBidsCache.Clear;
+    LoadStream.Read(count);
+    for I := 0 to count - 1 do
     begin
-      LoadStream.Read(Key.FromUID);
-      LoadStream.Read(Key.ToUID);
-      LoadStream.Read(Value);
-      fOfferToDemandCache.Add(Key, Value);
-    end;
-
-    LoadStream.CheckMarker('SerfToOfferCache');
-    fSerfToOfferCache.Clear;
-    LoadStream.Read(Count);
-    for I := 0 to Count - 1 do
-    begin
-      LoadStream.Read(Key.FromUID);
-      LoadStream.Read(Key.ToUID);
-      LoadStream.Read(Value);
-      fSerfToOfferCache.Add(Key, Value);
+      LoadStream.Read(key, SizeOf(key));
+      LoadStream.Read(bid, SizeOf(bid));
+      fBidsCache.Add(key, bid);
     end;
   end;
   {$ENDIF}
@@ -2090,13 +2059,25 @@ end;
 
 
 procedure TKMDeliveries.UpdateState(aTick: Cardinal);
+{$IFDEF USE_HASH}
+var
+  bidPair: TPair<TKMDeliveryBidKey, TKMDeliveryBid>;
+  bid: TKMDeliveryBid;
+{$ENDIF}
 begin
   {$IFDEF USE_HASH}
-  //Clear cache every 10 ticks, spread cache clearing a by handIndex, to make route's calc's spread too
-  if CACHE_DELIVERY_BIDS and (((aTick + fOwner) mod CACHE_CLEAN_FREQ) = 0) then
+  if CACHE_DELIVERY_BIDS then
   begin
-    fOfferToDemandCache.Clear;
-    fSerfToOfferCache.Clear;
+    for bidPair in fBidsCache do
+    begin
+      bid := bidPair.Value;
+      Dec(bid.TimeToLive);
+
+      if bid.TimeToLive <= 0 then
+        fBidsCache.Remove(bidPair.Key)
+      else
+        fBidsCache[bidPair.Key] := bid;
+    end;
   end;
   {$ENDIF}
 end;
@@ -2166,9 +2147,12 @@ end;
 
 {$IFDEF USE_HASH}
 { TKMDeliveryBidKeyComparer }
+
 function TKMDeliveryBidKeyEqualityComparer.Equals(const Left, Right: TKMDeliveryBidKey): Boolean;
 begin
-  Result := (Left.FromUID = Right.FromUID) and (Left.ToUID = Right.ToUID);
+  // path keys are equal if they have same ends
+  Result := ((Left.FromP = Right.FromP) and (Left.ToP = Right.ToP))
+         or ((Left.FromP = Right.ToP)   and (Left.ToP = Right.FromP));
 end;
 
 
@@ -2191,23 +2175,70 @@ end;
 {$ENDIF}
 
 
+// Hash function should be match to equals function, so
+// if A equals B, then Hash(A) = Hash(B)
+// For our task we need that From / To end could be swapped, since we don't care where is the starting point of the path
 function TKMDeliveryBidKeyEqualityComparer.GetHashCode(const Value: TKMDeliveryBidKey): Integer;
+var
+  a,b,c,d: Integer;
 begin
-  Result := CombinedHash([THashBobJenkins.GetHashValue(Value.FromUID, SizeOf(Integer), 0),
-                          THashBobJenkins.GetHashValue(Value.ToUID, SizeOf(Integer), 0)]);
+  //a, b, c, d should be the same if we swap From and To
+  a :=     Value.FromP.X + Value.ToP.X;
+  b := Abs(Value.FromP.X - Value.ToP.X);
+  c :=     Value.FromP.Y + Value.ToP.Y;
+  d := Abs(Value.FromP.Y - Value.ToP.Y);
+  Result := CombinedHash([THashBobJenkins.GetHashValue(a, SizeOf(Integer), 0),
+                          THashBobJenkins.GetHashValue(b, SizeOf(Integer), 0),
+                          THashBobJenkins.GetHashValue(c, SizeOf(Integer), 0),
+                          THashBobJenkins.GetHashValue(d, SizeOf(Integer), 0)]);
 end;
 
 
+//Compare keys to make some order to make save consistent. We do care about the order, it just should be consistent
 function TKMDeliveryBidKeyComparer.Compare(const Left, Right: TKMDeliveryBidKey): Integer;
 begin
-  if Left.FromUID = Right.FromUID then
-    Result := Left.ToUID - Right.ToUID
+  if Left.FromP = Right.FromP then
+    Result := Left.ToP.Compare(Right.ToP)
   else
-    Result := Left.FromUID - Right.FromUID;
+    Result := Left.FromP.Compare(Right.FromP);
 end;
 
 
-{$ENDIF}
+{ TKMDeliveryCache }
+procedure TKMDeliveryCache.Add(const aKey: TKMDeliveryBidKey; const aValue: Single; const aTimeToLive: Word);
+var
+  value: TKMDeliveryBid;
+begin
+  if not CACHE_DELIVERY_BIDS then Exit;
 
+  value.Value := aValue;
+  value.TimeToLive := aTimeToLive;
+  inherited Add(aKey, value);
+end;
+
+
+procedure TKMDeliveryCache.Add(const aKey: TKMDeliveryBidKey; const aBid: TKMDeliveryBid);
+begin
+  if not CACHE_DELIVERY_BIDS then Exit;
+
+  inherited Add(aKey, aBid);
+end;
+
+
+procedure TKMDeliveryCache.Add(const FromP: TKMPoint; ToP: TKMPoint; const aValue: Single; const aTimeToLive: Word);
+var
+  key: TKMDeliveryBidKey;
+  bid: TKMDeliveryBid;
+begin
+  if not CACHE_DELIVERY_BIDS then Exit;
+
+  key.FromP := FromP;
+  key.ToP := ToP;
+  bid.Value := aValue;
+  bid.TimeToLive := aTimeToLive;
+  inherited Add(key, bid);
+end;
+
+{$ENDIF}
 
 end.

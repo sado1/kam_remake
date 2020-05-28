@@ -26,6 +26,7 @@ type
     class operator NotEqual(const A, B: TKMPoint): Boolean;
     class operator Add(const A, B: TKMPoint): TKMPoint;
     class function New(aX, aY: Integer): TKMPoint; static;
+    function Compare(const aPoint: TKMPoint): Integer;
     function ToFloat: TKMPointF;
   end;
 
@@ -220,13 +221,19 @@ const
 
 implementation
 uses
-  SysUtils, TypInfo, Math, KM_CommonUtils;
+  SysUtils, TypInfo, Math, KM_Defaults, KM_CommonUtils;
 
 
 class function TKMPoint.New(aX, aY: Integer): TKMPoint;
 begin
   Result.X := aX;
   Result.Y := aY;
+end;
+
+
+function TKMPoint.Compare(const aPoint: TKMPoint): Integer;
+begin
+  Result := (Y - aPoint.Y) * MAX_MAP_SIZE + (X - aPoint.X);
 end;
 
 
