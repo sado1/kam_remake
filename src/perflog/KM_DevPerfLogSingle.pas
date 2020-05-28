@@ -194,7 +194,7 @@ begin
     Inc(total, fTimes[I].Time);
 
     if fTimes[I].Time >= aSaveThreshold then
-      aStringList.Append(Format('%d'#9'%d'#9'%d', [I, fTimes[I].Tag, fTimes[I].Time]));
+      aStringList.Append(Format('Tick: %d'#9'%d'#9'%d', [I, fTimes[I].Tag, fTimes[I].Time]));
   end;
 
   aStringList.Append('Total ' + FloatToStr(total/1000) + 'msec');
