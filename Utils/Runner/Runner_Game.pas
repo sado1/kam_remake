@@ -3,11 +3,12 @@ unit Runner_Game;
 interface
 uses
   Forms, Unit_Runner, Windows, SysUtils, Classes, KromUtils, Math,
+  Generics.Collections, Generics.Defaults, System.Hash,
   KM_CommonClasses, KM_Defaults, KM_Points, KM_CommonUtils, KM_HandLogistics,
   KM_GameApp, KM_ResLocales, KM_Log, KM_HandsCollection, KM_HouseCollection, KM_ResTexts, KM_Resource,
   KM_Terrain, KM_Units, KM_UnitWarrior, KM_Campaigns, KM_AIFields, KM_Houses,
   GeneticAlgorithm, GeneticAlgorithmParameters, KM_AIParameters,
-  ComInterface, Generics.Collections, KM_RenderControl;
+  ComInterface, KM_RenderControl;
 
 
 type
@@ -187,6 +188,49 @@ type
   private
     fMap: string;
     fRun: Integer;
+    fStartTime: Cardinal;
+    procedure Reset;
+  protected
+    procedure SetUp(); override;
+    procedure TearDown(); override;
+    procedure Execute(aRun: Integer); override;
+  end;
+
+  TKMRunnerCachePerformanceTest = class(TKMRunnerCommon)
+  type
+    TKMRDeliveryBidKey = record
+      FromP: TKMPoint; //House or Unit UID From where delivery path goes
+      ToP: TKMPoint;   //same for To where delivery path goes
+      function GetHashCode: Integer;
+      function Compare(aOther: TKMRDeliveryBidKey): Integer;
+    end;
+
+    //Custom key comparator. Probably TDictionary can handle it himself, but lets try our custom comparator
+    TKMRDeliveryBidKeyEqualityComparer = class(TEqualityComparer<TKMRDeliveryBidKey>)
+      function Equals(const Left, Right: TKMRDeliveryBidKey): Boolean; override;
+      function GetHashCode(const Value: TKMRDeliveryBidKey): Integer; override;
+    end;
+
+    //Comparer just to make some order by keys
+    TKMRDeliveryBidKeyComparer = class(TComparer<TKMRDeliveryBidKey>)
+      function Compare(const Left, Right: TKMRDeliveryBidKey): Integer; override;
+    end;
+
+    TKMRDeliveryBid = record
+      Value: Single;
+      TimeToLive: Integer; //Cached bid time to live, we have to update it from time to time
+    end;
+
+    TKMRDeliveryCache = class(TDictionary<TKMRDeliveryBidKey, TKMRDeliveryBid>)
+    public
+      function TryGetValue(const aKey: TKMRDeliveryBidKey; var aValue: TKMRDeliveryBid): Boolean; reintroduce;
+      procedure Add(const FromP: TKMPoint; ToP: TKMPoint; const aValue: Single; const aTimeToLive: Word); reintroduce; overload;
+      procedure Add(const aKey: TKMRDeliveryBidKey; const aValue: Single; const aTimeToLive: Word); reintroduce; overload;
+      procedure Add(const aKey: TKMRDeliveryBidKey; const aBid: TKMRDeliveryBid); reintroduce; overload;
+    end;
+
+  private
+    fCache: TKMRDeliveryCache;
     fStartTime: Cardinal;
     procedure Reset;
   protected
@@ -2169,9 +2213,216 @@ begin
 end;
 
 
+{ TKMRunnerCachePerformanceTest }
+procedure TKMRunnerCachePerformanceTest.Execute(aRun: Integer);
+const
+  SIZE = 13;
+  SIZE_HUGE = 100000000; //100 millions
+var
+  I, J, K, L, score: Integer;
+  bidKey, bidKey2: TKMRDeliveryBidKey;
+  bid: TKMRDeliveryBid;
+  T1,T2: Int64;
+begin
+  inherited;
+
+  fCache.Clear;
+  SetKaMSeed(1);
+  T1 := TimeGetUSec;
+
+
+  bidKey.FromP := KMPoint(0, 5);
+  bidKey.ToP := KMPoint(10, 15);
+  bidKey2.FromP := KMPoint(20, 25);
+  bidKey2.ToP := KMPoint(30, 35);
+  for I := 0 to SIZE_HUGE - 1 do
+  begin
+//    bidKey.Compare(bidKey2);
+    bidKey.GetHashCode;
+  end;
+//    for J := 0 to SIZE - 1 do
+//    begin
+//      bidKey.FromP := KMPoint(I, J);
+//      for K := 0 to SIZE - 1 do
+//        for L := 0 to SIZE - 1 do
+//        begin
+//          bidKey.ToP := KMPoint(K, L);
+//          bidKey
+////          bid.Value := KaMRandomS1(100, 'test');
+////          bid.TimeToLive := 100;
+////          fCache.Add(bidKey, bid);
+//        end;
+//    end;
+
+  T2 := GetTimeUsecSince(T1);
+
+  OnProgress_Left(Format('Score: %d', [T2 div 1000]));
+end;
+
+
+procedure TKMRunnerCachePerformanceTest.Reset;
+begin
+
+end;
+
+procedure TKMRunnerCachePerformanceTest.SetUp;
+begin
+  // inherited;
+
+  fCache := TKMRDeliveryCache.Create(TKMRDeliveryBidKeyEqualityComparer.Create);
+
+//  if (gLog = nil) then
+//    gLog := TKMLog.Create(Format('%sUtils\Runner\Runner_Log.log',[ExeDir]));
+//  gLog.MessageTypes := [];
+end;
+
+procedure TKMRunnerCachePerformanceTest.TearDown;
+begin
+  // inherited;
+
+  fCache.Free;
+end;
+
+
+{ TKMRunnerCachePerformanceTest.TKMRDeliveryBidKey }
+//example taken from https://stackoverflow.com/questions/18068977/use-objects-as-keys-in-tobjectdictionary
+{$IFOPT Q+}
+  {$DEFINE OverflowChecksEnabled}
+  {$Q-}
+{$ENDIF}
+function CombinedHash(const Values: array of Integer): Integer;
+var
+  Value: Integer;
+begin
+  Result := 17;
+  for Value in Values do begin
+    Result := Result*37 + Value;
+  end;
+end;
+{$IFDEF OverflowChecksEnabled}
+  {$Q+}
+{$ENDIF}
+
+function TKMRunnerCachePerformanceTest.TKMRDeliveryBidKey.Compare(aOther: TKMRDeliveryBidKey): Integer;
+begin
+//  Result := GetHashCode - aOther.GetHashCode;
+  if FromP = aOther.FromP then
+    Result := ToP.Compare(aOther.ToP)
+  else
+    Result := FromP.Compare(aOther.FromP);
+end;
+
+
+function TKMRunnerCachePerformanceTest.TKMRDeliveryBidKey.GetHashCode: Integer;
+var
+  a,b,c,d,xTotal,yTotal: Integer;
+  totalCard: Cardinal;
+  total: Int64;
+begin
+  //a, b, c, d should be the same if we swap From and To
+//  a :=    (FromP.X + ToP.X);
+//  b := Abs(FromP.X - ToP.X);
+//  c :=     FromP.Y + ToP.Y;
+//  d := Abs(FromP.Y - ToP.Y);
+////  xTotal := (a shl 9) or b;
+////  yTotal := (c shl 9) or d;
+////  totalCard := (a shl 24) or (b shl 16) or (c shl 8) or d;
+//  Int64Rec(total).Words[0] := a;
+//  Int64Rec(total).Words[1] := b;
+//  Int64Rec(total).Words[2] := c;
+//  Int64Rec(total).Words[3] := d;
+  Int64Rec(total).Words[0] := (FromP.X + ToP.X);
+  Int64Rec(total).Words[1] := Abs(FromP.X - ToP.X);
+  Int64Rec(total).Words[2] := FromP.Y + ToP.Y;
+  Int64Rec(total).Words[3] := Abs(FromP.Y - ToP.Y);
+  Result := THashBobJenkins.GetHashValue(total, SizeOf(Int64), 0);
+//  Result := THashBobJenkins.GetHashValue(totalCard, SizeOf(Cardinal), 0);
+//  Result := CombinedHash([THashBobJenkins.GetHashValue(xTotal, SizeOf(Integer), 0),
+//                          THashBobJenkins.GetHashValue(yTotal, SizeOf(Integer), 0)]);
+//  Result := CombinedHash([THashBobJenkins.GetHashValue(a, SizeOf(Integer), 0),
+//                          THashBobJenkins.GetHashValue(b, SizeOf(Integer), 0),
+//                          THashBobJenkins.GetHashValue(c, SizeOf(Integer), 0),
+//                          THashBobJenkins.GetHashValue(d, SizeOf(Integer), 0)]);
+end;
+
+
+{ TKMRunnerCachePerformanceTest.TKMRDeliveryBidKeyEqualityComparer }
+function TKMRunnerCachePerformanceTest.TKMRDeliveryBidKeyEqualityComparer.Equals(const Left, Right: TKMRDeliveryBidKey): Boolean;
+begin
+
+end;
+
+function TKMRunnerCachePerformanceTest.TKMRDeliveryBidKeyEqualityComparer.GetHashCode(const Value: TKMRDeliveryBidKey): Integer;
+begin
+
+end;
+
+
+{ TKMRunnerCachePerformanceTest.TKMRDeliveryCache }
+procedure TKMRunnerCachePerformanceTest.TKMRDeliveryCache.Add(const FromP: TKMPoint; ToP: TKMPoint; const aValue: Single;
+                                                              const aTimeToLive: Word);
+var
+  key: TKMRDeliveryBidKey;
+  bid: TKMRDeliveryBid;
+begin
+  if not CACHE_DELIVERY_BIDS then Exit;
+
+  key.FromP := FromP;
+  key.ToP := ToP;
+  bid.Value := aValue;
+  bid.TimeToLive := aTimeToLive;
+  inherited Add(key, bid);
+end;
+
+procedure TKMRunnerCachePerformanceTest.TKMRDeliveryCache.Add(const aKey: TKMRDeliveryBidKey; const aValue: Single;
+                                                              const aTimeToLive: Word);
+var
+  value: TKMRDeliveryBid;
+begin
+  if not CACHE_DELIVERY_BIDS then Exit;
+
+  value.Value := aValue;
+  value.TimeToLive := aTimeToLive;
+  inherited Add(aKey, value);
+end;
+
+procedure TKMRunnerCachePerformanceTest.TKMRDeliveryCache.Add(const aKey: TKMRDeliveryBidKey; const aBid: TKMRDeliveryBid);
+begin
+  if not CACHE_DELIVERY_BIDS then Exit;
+
+  inherited Add(aKey, aBid);
+end;
+
+function TKMRunnerCachePerformanceTest.TKMRDeliveryCache.TryGetValue(const aKey: TKMRDeliveryBidKey;
+                                                                     var aValue: TKMRDeliveryBid): Boolean;
+begin
+  Result := False;
+  if inherited TryGetValue(aKey, aValue) then
+  begin
+    if aValue.TimeToLive <= 0 then //Don't return expired records
+      Remove(aKey) //Remove expired record
+    else
+      Exit(True); // We found value
+  end;
+end;
+
+
+
+{ TKMRunnerCachePerformanceTest.TKMRDeliveryBidKeyComparer }
+function TKMRunnerCachePerformanceTest.TKMRDeliveryBidKeyComparer.Compare(const Left, Right: TKMRDeliveryBidKey): Integer;
+begin
+  //  Result := Left.GetHashCode - Right.GetHashCode;
+  if Left.FromP = Right.FromP then
+    Result := Left.ToP.Compare(Right.ToP)
+  else
+    Result := Left.FromP.Compare(Right.FromP);
+end;
+
+
 initialization
   RegisterRunner(TKMRunnerDesyncTest);
   RegisterRunner(TKMRunnerAAIPerformanceTest);
+  RegisterRunner(TKMRunnerCachePerformanceTest);
   RegisterRunner(TKMRunnerPushModes);
   RegisterRunner(TKMRunnerGA_TestParRun);
   RegisterRunner(TKMRunnerGA_HandLogistics);
