@@ -64,9 +64,9 @@ type
   TKMDeliveryBidKey = record
     FromP: TKMPoint; //House or Unit UID From where delivery path goes
     ToP: TKMPoint;   //same for To where delivery path goes
+    function GetHashCode: Integer;
   end;
 
-type
   //Custom key comparator. Probably TDictionary can handle it himself, but lets try our custom comparator
   TKMDeliveryBidKeyEqualityComparer = class(TEqualityComparer<TKMDeliveryBidKey>)
     function Equals(const Left, Right: TKMDeliveryBidKey): Boolean; override;
@@ -82,6 +82,14 @@ type
     Value: Single;
     TimeToLive: Integer; //Cached bid time to live, we have to update it from time to time
   end;
+
+  TKMDeliveryCache = class(TDictionary<TKMDeliveryBidKey, TKMDeliveryBid>)
+  public
+    function TryGetValue(const aKey: TKMDeliveryBidKey; var aValue: TKMDeliveryBid): Boolean; reintroduce;
+    procedure Add(const FromP: TKMPoint; ToP: TKMPoint; const aValue: Single; const aTimeToLive: Word); reintroduce; overload;
+    procedure Add(const aKey: TKMDeliveryBidKey; const aValue: Single; const aTimeToLive: Word); reintroduce; overload;
+    procedure Add(const aKey: TKMDeliveryBidKey; const aBid: TKMDeliveryBid); reintroduce; overload;
+  end;
   {$ENDIF}
 
 type
@@ -96,17 +104,6 @@ type
   //Comparison function could be executed more rare or frequent depending on signals from houses/serfs
   //e.g. with no houses signals it can sleep till first on. At any case - not more frequent than 1/tick
   //TKMDeliveryList = class; //Serfs, Houses/Warriors/Workers
-
-  {$IFDEF USE_HASH}
-  TKMDeliveryCache = class(TDictionary<TKMDeliveryBidKey, TKMDeliveryBid>)
-  public
-    function TryGetValue(const aKey: TKMDeliveryBidKey; var aValue: TKMDeliveryBid): Boolean; reintroduce;
-    procedure Add(const FromP: TKMPoint; ToP: TKMPoint; const aValue: Single; const aTimeToLive: Word); reintroduce; overload;
-    procedure Add(const aKey: TKMDeliveryBidKey; const aValue: Single; const aTimeToLive: Word); reintroduce; overload;
-    procedure Add(const aKey: TKMDeliveryBidKey; const aBid: TKMDeliveryBid); reintroduce; overload;
-  end;
-  {$ENDIF}
-
 
   TKMDeliveries = class
   private
@@ -2201,18 +2198,8 @@ end;
 // if A equals B, then Hash(A) = Hash(B)
 // For our task we need that From / To end could be swapped, since we don't care where is the starting point of the path
 function TKMDeliveryBidKeyEqualityComparer.GetHashCode(const Value: TKMDeliveryBidKey): Integer;
-var
-  a,b,c,d: Integer;
 begin
-  //a, b, c, d should be the same if we swap From and To
-  a :=     Value.FromP.X + Value.ToP.X;
-  b := Abs(Value.FromP.X - Value.ToP.X);
-  c :=     Value.FromP.Y + Value.ToP.Y;
-  d := Abs(Value.FromP.Y - Value.ToP.Y);
-  Result := CombinedHash([THashBobJenkins.GetHashValue(a, SizeOf(Integer), 0),
-                          THashBobJenkins.GetHashValue(b, SizeOf(Integer), 0),
-                          THashBobJenkins.GetHashValue(c, SizeOf(Integer), 0),
-                          THashBobJenkins.GetHashValue(d, SizeOf(Integer), 0)]);
+  Result := Value.GetHashCode;
 end;
 
 
@@ -2275,5 +2262,18 @@ begin
 end;
 
 {$ENDIF}
+
+{ TKMDeliveryBidKey }
+function TKMDeliveryBidKey.GetHashCode: Integer;
+var
+  total: Int64;
+begin
+  //HashCode should be the same if we swap From and To
+  Int64Rec(total).Words[0] := (FromP.X + ToP.X);
+  Int64Rec(total).Words[1] := Abs(FromP.X - ToP.X);
+  Int64Rec(total).Words[2] := FromP.Y + ToP.Y;
+  Int64Rec(total).Words[3] := Abs(FromP.Y - ToP.Y);
+  Result := THashBobJenkins.GetHashValue(total, SizeOf(Int64), 0);
+end;
 
 end.
