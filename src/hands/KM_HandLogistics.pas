@@ -80,7 +80,7 @@ type
 
   TKMDeliveryBid = record
     Value: Single;
-    TimeToLive: Word; //Cached bid time to live, we have to update it from time to time
+    TimeToLive: Integer; //Cached bid time to live, we have to update it from time to time
   end;
   {$ENDIF}
 
@@ -100,6 +100,7 @@ type
   {$IFDEF USE_HASH}
   TKMDeliveryCache = class(TDictionary<TKMDeliveryBidKey, TKMDeliveryBid>)
   public
+    function TryGetValue(const aKey: TKMDeliveryBidKey; var aValue: TKMDeliveryBid): Boolean; reintroduce;
     procedure Add(const FromP: TKMPoint; ToP: TKMPoint; const aValue: Single; const aTimeToLive: Word); reintroduce; overload;
     procedure Add(const aKey: TKMDeliveryBidKey; const aValue: Single; const aTimeToLive: Word); reintroduce; overload;
     procedure Add(const aKey: TKMDeliveryBidKey; const aBid: TKMDeliveryBid); reintroduce; overload;
@@ -126,7 +127,8 @@ type
 
     {$IFDEF USE_HASH}
     // Cache of bid costs between 2 points
-    fBidsCache: TKMDeliveryCache;
+    fBidsCache: TKMDeliveryCache; //cache
+    fRemoveKeysList: TList<TKMDeliveryBidKey>; //list of items to remove from cache. Create / Destroy it only once
     {$ENDIF}
 
     fNodeList: TKMPointList; // Used to calc delivery bid
@@ -444,7 +446,10 @@ begin
   fOwner := aHandIndex;
   {$IFDEF USE_HASH}
   if CACHE_DELIVERY_BIDS then
+  begin
     fBidsCache := TKMDeliveryCache.Create(TKMDeliveryBidKeyEqualityComparer.Create);
+    fRemoveKeysList := TList<TKMDeliveryBidKey>.Create;
+  end;
   {$ENDIF}
 
   if DELIVERY_BID_CALC_USE_PATHFINDING then
@@ -463,7 +468,10 @@ destructor TKMDeliveries.Destroy;
 begin
   {$IFDEF USE_HASH}
   if CACHE_DELIVERY_BIDS then
+  begin
     FreeAndNil(fBidsCache);
+    fRemoveKeysList.Free;
+  end;
   {$ENDIF}
 
   if DELIVERY_BID_CALC_USE_PATHFINDING then
@@ -1891,9 +1899,10 @@ var
 begin
   SaveStream.PlaceMarker('Deliveries');
   SaveStream.Write(fOwner);
-  SaveStream.Write(fOfferCount);
 
   SaveStream.PlaceMarker('Offers');
+  SaveStream.Write(fOfferCount);
+
   for I := 1 to fOfferCount do
   begin
     SaveStream.Write(fOffer[I].Ware, SizeOf(fOffer[I].Ware));
@@ -1950,9 +1959,11 @@ begin
 
       for key in cacheKeyArray do
       begin
-        SaveStream.Write(key, SizeOf(key));
+        SaveStream.Write(key.FromP);
+        SaveStream.Write(key.ToP);
         bid := fBidsCache[key];
-        SaveStream.Write(bid, SizeOf(bid));
+        SaveStream.Write(bid.Value);
+        SaveStream.Write(bid.TimeToLive);
       end;
     end;
 
@@ -1974,10 +1985,11 @@ var
 begin
   LoadStream.CheckMarker('Deliveries');
   LoadStream.Read(fOwner);
+
+  LoadStream.CheckMarker('Offers');
   LoadStream.Read(fOfferCount);
   SetLength(fOffer, fOfferCount+1);
 
-  LoadStream.CheckMarker('Offers');
   for I := 1 to fOfferCount do
   begin
     LoadStream.Read(fOffer[I].Ware, SizeOf(fOffer[I].Ware));
@@ -2023,8 +2035,10 @@ begin
     LoadStream.Read(count);
     for I := 0 to count - 1 do
     begin
-      LoadStream.Read(key, SizeOf(key));
-      LoadStream.Read(bid, SizeOf(bid));
+      LoadStream.Read(key.FromP);
+      LoadStream.Read(key.ToP);
+      LoadStream.Read(bid.Value);
+      LoadStream.Read(bid.TimeToLive);
       fBidsCache.Add(key, bid);
     end;
   end;
@@ -2061,6 +2075,7 @@ end;
 procedure TKMDeliveries.UpdateState(aTick: Cardinal);
 {$IFDEF USE_HASH}
 var
+  I: Integer;
   bidPair: TPair<TKMDeliveryBidKey, TKMDeliveryBid>;
   bid: TKMDeliveryBid;
 {$ENDIF}
@@ -2068,16 +2083,23 @@ begin
   {$IFDEF USE_HASH}
   if CACHE_DELIVERY_BIDS then
   begin
+    fRemoveKeysList.Clear;
+
+    // Decrease TimeToLive for every cache record
     for bidPair in fBidsCache do
     begin
       bid := bidPair.Value;
       Dec(bid.TimeToLive);
 
       if bid.TimeToLive <= 0 then
-        fBidsCache.Remove(bidPair.Key)
+        fRemoveKeysList.Add(bidPair.Key) // its not safe to remove dictionary value in the loop, will cause desyncs
       else
-        fBidsCache[bidPair.Key] := bid;
+        fBidsCache[bidPair.Key]:= bid;
     end;
+
+    // Remove old records after full dictionary scan
+    for I := 0 to fRemoveKeysList.Count - 1 do
+      fBidsCache.Remove(fRemoveKeysList[I]);
   end;
   {$ENDIF}
 end;
@@ -2237,6 +2259,19 @@ begin
   bid.Value := aValue;
   bid.TimeToLive := aTimeToLive;
   inherited Add(key, bid);
+end;
+
+
+function TKMDeliveryCache.TryGetValue(const aKey: TKMDeliveryBidKey; var aValue: TKMDeliveryBid): Boolean;
+begin
+  Result := False;
+  if inherited TryGetValue(aKey, aValue) then
+  begin
+    if aValue.TimeToLive <= 0 then //Don't return expired records
+      Remove(aKey) //Remove expired record
+    else
+      Exit(True); // We found value
+  end;
 end;
 
 {$ENDIF}
