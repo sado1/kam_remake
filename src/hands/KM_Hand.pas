@@ -366,7 +366,7 @@ begin
   fOnAllianceChange := aOnAllianceChange;
 
   fAI           := TKMHandAI.Create(fID);
-  fFogOfWar     := TKMFogOfWar.Create(gTerrain.MapX, gTerrain.MapY);
+  fFogOfWar     := TKMFogOfWar.Create(gTerrain.MapX, gTerrain.MapY, gGameApp.DynamicFOWEnabled);
   fLocks        := TKMHandLocks.Create;
   fStats        := TKMHandStats.Create;
   fRoadsList    := TKMPointList.Create;
@@ -1977,7 +1977,7 @@ begin
   inherited;
 
   fHouses.UpdateState(aTick);
-  fFogOfWar.UpdateState; //We might optimize it for AI somehow, to make it work coarse and faster
+  fFogOfWar.UpdateState(gGameApp.DynamicFOWEnabled); //We might optimize it for AI somehow, to make it work coarse and faster
 
   //Distribute AI updates among different Ticks to avoid slowdowns
   if (aTick mod gHands.Count) = fID then

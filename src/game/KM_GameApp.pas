@@ -488,6 +488,8 @@ end;
 
 function TKMGameApp.DynamicFOWEnabled: Boolean;
 begin
+  if Self = nil then Exit(False);
+  
   Result := DYNAMIC_FOG_OF_WAR or ((gGame <> nil) and gGame.DynamicFOW)
 end;
 

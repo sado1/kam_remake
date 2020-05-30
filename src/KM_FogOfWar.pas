@@ -56,7 +56,7 @@ type
     Revelation: TKMByte2Array; //Public for faster access from Render
     RenderRevelation: TKMByte2Array; //Revelation for render - we have to render sprites a bit around actual FOW revelation
 
-    constructor Create(X,Y: Word);
+    constructor Create(X,Y: Word; aDynamicFOW: Boolean);
     destructor Destroy; override;
 
     property InitialRevealAll: Boolean read fInitialRevealAll write fInitialRevealAll;
@@ -84,7 +84,7 @@ type
     procedure Save(SaveStream: TKMemoryStream);
     procedure Load(LoadStream: TKMemoryStream);
 
-    procedure UpdateState;
+    procedure UpdateState(aDynamicFOW: Boolean);
   end;
 
   //FOW that is always revealed (used by MapEd, Replays)
@@ -104,7 +104,7 @@ type
 
 implementation
 uses
-  SysUtils, KM_GameApp, KM_DevPerfLog, KM_DevPerfLogTypes;
+  SysUtils, KM_DevPerfLog, KM_DevPerfLogTypes;
 
 const
   //Addition to Revelation radius for Render revelation
@@ -113,7 +113,7 @@ const
 
 { TKMFogOfWar }
 //Init with Terrain size only once on creation as terrain size never change during the game
-constructor TKMFogOfWar.Create(X,Y: Word);
+constructor TKMFogOfWar.Create(X,Y: Word; aDynamicFOW: Boolean);
 begin
   inherited Create;
 
@@ -121,7 +121,7 @@ begin
   fInitialRevealers := TKMPointTagList.Create;
   SetMapSize(X,Y);
 
-  fDynamicFOW := (gGameApp <> nil) and gGameApp.DynamicFOWEnabled;
+  fDynamicFOW := aDynamicFOW;
 end;
 
 
@@ -548,11 +548,11 @@ end;
 
 
 //Decrease FOW revelation as time goes
-procedure TKMFogOfWar.UpdateState;
+procedure TKMFogOfWar.UpdateState(aDynamicFOW: Boolean);
 var
   I, K: Word;
 begin
-  fDynamicFOW := gGameApp.DynamicFOWEnabled;
+  fDynamicFOW := aDynamicFOW;
   if not fDynamicFOW then Exit;
 
   {$IFDEF PERFLOG}
