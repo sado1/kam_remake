@@ -163,6 +163,8 @@ end;
 
 procedure TKMPerfLogs.SectionEnter(aSection: TPerfSectionDev);
 begin
+  if Self = nil then Exit;
+
   if IsCPUSection(aSection) then
     SectionEnter(aSection, fTick)
   else
