@@ -60,6 +60,8 @@ type
   end;
 
   {$IFDEF USE_HASH}
+  TKMDeliveryBidKind = (dbkSerfToOffer, dbkOfferToDemand);
+
   //Bids cache key
   TKMDeliveryBidKey = record
     FromP: TKMPoint; //House or Unit UID From where delivery path goes
@@ -80,15 +82,18 @@ type
 
   TKMDeliveryBid = record
     Value: Single;
-    TimeToLive: Integer; //Cached bid time to live, we have to update it from time to time
+    Kind: TKMDeliveryBidKind;
+    CreatedAt: Integer; //Cached bid time to live, we have to update it from time to time
+    function GetTTL: Integer;
+    function IsExpired(aTick: Integer): Boolean;
   end;
 
   TKMDeliveryCache = class(TDictionary<TKMDeliveryBidKey, TKMDeliveryBid>)
   public
-    function TryGetValue(const aKey: TKMDeliveryBidKey; var aValue: TKMDeliveryBid): Boolean; reintroduce;
-    procedure Add(const FromP: TKMPoint; ToP: TKMPoint; const aValue: Single; const aTimeToLive: Word); reintroduce; overload;
-    procedure Add(const aKey: TKMDeliveryBidKey; const aValue: Single; const aTimeToLive: Word); reintroduce; overload;
-    procedure Add(const aKey: TKMDeliveryBidKey; const aBid: TKMDeliveryBid); reintroduce; overload;
+    function TryGetValue(const aKey: TKMDeliveryBidKey; var aBid: TKMDeliveryBid): Boolean; reintroduce;
+    procedure Add(const FromP: TKMPoint; ToP: TKMPoint; const aValue: Single; const aKind: TKMDeliveryBidKind); reintroduce; overload;
+    procedure Add(const aKey: TKMDeliveryBidKey; const aValue: Single; const aKind: TKMDeliveryBidKind); reintroduce; overload;
+//    procedure Add(const aKey: TKMDeliveryBidKey; const aBid: TKMDeliveryBid); reintroduce; overload;
   end;
   {$ENDIF}
 
@@ -107,6 +112,7 @@ type
 
   TKMDeliveries = class
   private
+    fUpdatesCnt: Integer; //Keep number od updates
     fOwner: TKMHandID;
     fOfferCount: Integer;
     fOffer: array of TKMDeliveryOffer;
@@ -151,6 +157,10 @@ type
     function TryCalcSerfBidValue(aSerf: TKMUnitSerf; aOfferPos: TKMPoint; aToUID: Integer; var aSerfBidValue: Single): Boolean;
     function TryCalcRouteCost(aFromPos, aToPos: TKMPoint; aMainPass: TKMTerrainPassability; var aRoutCost: Single; aSecondPass: TKMTerrainPassability = tpUnused): Boolean;
 //    function GetUnitsCntOnPath(aNodeList: TKMPointList): Integer;
+
+    {$IFDEF USE_HASH}
+    procedure CleanCache;
+    {$ENDIF}
   public
     constructor Create(aHandIndex: TKMHandID);
     destructor Destroy; override;
@@ -232,8 +242,9 @@ const
   BID_CALC_PATHF_COMPENSATION = 0.9;
   LENGTH_INC = 32; //Increment array lengths by this value
   NOT_REACHABLE_DEST_VALUE = MaxSingle;
-  OFFER_DEMAND_BID_TTL = 200; //In update counts. Update is not made every tick. F.e. for 8 players it will be every 2m40s
-  SERF_OFFER_BID_TTL = 300;   //In update counts. Update is not made every tick. And for 12 player it will be every 6 minutes
+  CACHE_CLEAN_FREQ = 100; //In update counts
+  OFFER_DEMAND_CACHED_BID_TTL = 50; //In ticks. DeliveryUpdate is not made every tick
+  SERF_OFFER_CACHED_BID_TTL = 30;   //In ticks. DeliveryUpdate is not made every tick
 
 
 { TKMHandLogistics }
@@ -1147,7 +1158,7 @@ begin
     Result := TryCalcRouteCost(GetSerfActualPos(aSerf), aOfferPos, tpWalkRoad, aSerfBidValue, tpWalk);
 
   {$IFDEF USE_HASH}
-  fBidsCache.Add(bidKey, aSerfBidValue, SERF_OFFER_BID_TTL);
+  fBidsCache.Add(bidKey, aSerfBidValue, dbkSerfToOffer);
   {$ENDIF}
 end;
 
@@ -1284,7 +1295,7 @@ begin
     begin
       aBidBasicValue := NOT_REACHABLE_DEST_VALUE;
       {$IFDEF USE_HASH}
-      fBidsCache.Add(bidKey, aBidBasicValue, OFFER_DEMAND_BID_TTL);
+      fBidsCache.Add(bidKey, aBidBasicValue, dbkOfferToDemand);
       {$ENDIF}
       Exit; //Add to cache NOT_REACHABLE_DEST_VALUE value
     end;
@@ -1312,7 +1323,7 @@ begin
     aBidBasicValue := aBidBasicValue + 1000;
 
   {$IFDEF USE_HASH}
-  fBidsCache.Add(bidKey, aBidBasicValue, OFFER_DEMAND_BID_TTL);
+  fBidsCache.Add(bidKey, aBidBasicValue, dbkOfferToDemand);
   {$ENDIF}
 
   aBidBasicValue := aBidBasicValue + SerfBidValue;
@@ -1941,10 +1952,12 @@ begin
   {$IFDEF USE_HASH}
   if CACHE_DELIVERY_BIDS then
   begin
+    CleanCache; // Don't save expired cache records
     SaveStream.PlaceMarker('DeliveryBidsCache');
+    SaveStream.Write(fUpdatesCnt);
     SaveStream.Write(fBidsCache.Count);
 
-    comparer := nil; //RESET to nil. Obligatory!
+    comparer := nil; // RESET to nil. Obligatory!
 
     if fBidsCache.Count > 0 then
       comparer := TKMDeliveryBidKeyComparer.Create;
@@ -1956,11 +1969,13 @@ begin
 
       for key in cacheKeyArray do
       begin
+        bid := fBidsCache[key];
+
         SaveStream.Write(key.FromP);
         SaveStream.Write(key.ToP);
-        bid := fBidsCache[key];
         SaveStream.Write(bid.Value);
-        SaveStream.Write(bid.TimeToLive);
+        SaveStream.Write(bid.Kind, SizeOf(bid.Kind));
+        SaveStream.Write(bid.CreatedAt);
       end;
     end;
 
@@ -2028,6 +2043,7 @@ begin
   if CACHE_DELIVERY_BIDS then
   begin
     LoadStream.CheckMarker('DeliveryBidsCache');
+    LoadStream.Read(fUpdatesCnt);
     fBidsCache.Clear;
     LoadStream.Read(count);
     for I := 0 to count - 1 do
@@ -2035,7 +2051,8 @@ begin
       LoadStream.Read(key.FromP);
       LoadStream.Read(key.ToP);
       LoadStream.Read(bid.Value);
-      LoadStream.Read(bid.TimeToLive);
+      LoadStream.Read(bid.Kind, SizeOf(bid.Kind));
+      LoadStream.Read(bid.CreatedAt);
       fBidsCache.Add(key, bid);
     end;
   end;
@@ -2069,35 +2086,37 @@ begin
 end;
 
 
-procedure TKMDeliveries.UpdateState(aTick: Cardinal);
 {$IFDEF USE_HASH}
+procedure TKMDeliveries.CleanCache;
 var
   I: Integer;
   bidPair: TPair<TKMDeliveryBidKey, TKMDeliveryBid>;
   bid: TKMDeliveryBid;
+begin
+  fRemoveKeysList.Clear;
+
+  // Decrease TimeToLive for every cache record
+  for bidPair in fBidsCache do
+  begin
+    bid := bidPair.Value;
+
+    if bid.IsExpired(gGame.GameTick) then
+      fRemoveKeysList.Add(bidPair.Key); // its not safe to remove dictionary value in the loop, will cause desyncs
+  end;
+
+  // Remove old records after full dictionary scan
+  for I := 0 to fRemoveKeysList.Count - 1 do
+    fBidsCache.Remove(fRemoveKeysList[I]);
+end;
 {$ENDIF}
+
+
+procedure TKMDeliveries.UpdateState(aTick: Cardinal);
 begin
   {$IFDEF USE_HASH}
-  if CACHE_DELIVERY_BIDS then
-  begin
-    fRemoveKeysList.Clear;
-
-    // Decrease TimeToLive for every cache record
-    for bidPair in fBidsCache do
-    begin
-      bid := bidPair.Value;
-      Dec(bid.TimeToLive);
-
-      if bid.TimeToLive <= 0 then
-        fRemoveKeysList.Add(bidPair.Key) // its not safe to remove dictionary value in the loop, will cause desyncs
-      else
-        fBidsCache[bidPair.Key]:= bid;
-    end;
-
-    // Remove old records after full dictionary scan
-    for I := 0 to fRemoveKeysList.Count - 1 do
-      fBidsCache.Remove(fRemoveKeysList[I]);
-  end;
+  Inc(fUpdatesCnt);
+  if CACHE_DELIVERY_BIDS and ((fUpdatesCnt mod CACHE_CLEAN_FREQ) = 0) then
+    CleanCache;
   {$ENDIF}
 end;
 
@@ -2214,27 +2233,20 @@ end;
 
 
 { TKMDeliveryCache }
-procedure TKMDeliveryCache.Add(const aKey: TKMDeliveryBidKey; const aValue: Single; const aTimeToLive: Word);
+procedure TKMDeliveryCache.Add(const aKey: TKMDeliveryBidKey; const aValue: Single; const aKind: TKMDeliveryBidKind); //; const aTimeToLive: Word);
 var
-  value: TKMDeliveryBid;
+  bid: TKMDeliveryBid;
 begin
   if not CACHE_DELIVERY_BIDS then Exit;
 
-  value.Value := aValue;
-  value.TimeToLive := aTimeToLive;
-  inherited Add(aKey, value);
+  bid.Value := aValue;
+  bid.Kind := aKind;
+  bid.CreatedAt := gGame.GameTick;
+  inherited Add(aKey, bid);
 end;
 
 
-procedure TKMDeliveryCache.Add(const aKey: TKMDeliveryBidKey; const aBid: TKMDeliveryBid);
-begin
-  if not CACHE_DELIVERY_BIDS then Exit;
-
-  inherited Add(aKey, aBid);
-end;
-
-
-procedure TKMDeliveryCache.Add(const FromP: TKMPoint; ToP: TKMPoint; const aValue: Single; const aTimeToLive: Word);
+procedure TKMDeliveryCache.Add(const FromP: TKMPoint; ToP: TKMPoint; const aValue: Single; const aKind: TKMDeliveryBidKind);//; const aTimeToLive: Word);
 var
   key: TKMDeliveryBidKey;
   bid: TKMDeliveryBid;
@@ -2244,17 +2256,26 @@ begin
   key.FromP := FromP;
   key.ToP := ToP;
   bid.Value := aValue;
-  bid.TimeToLive := aTimeToLive;
+  bid.Kind := aKind;
+  bid.CreatedAt := gGame.GameTick;
   inherited Add(key, bid);
 end;
 
 
-function TKMDeliveryCache.TryGetValue(const aKey: TKMDeliveryBidKey; var aValue: TKMDeliveryBid): Boolean;
+//procedure TKMDeliveryCache.Add(const aKey: TKMDeliveryBidKey; const aBid: TKMDeliveryBid);
+//begin
+//  if not CACHE_DELIVERY_BIDS then Exit;
+//
+//  inherited Add(aKey, aBid);
+//end;
+
+
+function TKMDeliveryCache.TryGetValue(const aKey: TKMDeliveryBidKey; var aBid: TKMDeliveryBid): Boolean;
 begin
   Result := False;
-  if inherited TryGetValue(aKey, aValue) then
+  if inherited TryGetValue(aKey, aBid) then
   begin
-    if aValue.TimeToLive <= 0 then //Don't return expired records
+    if aBid.IsExpired(gGame.GameTick) then //Don't return expired records
       Remove(aKey) //Remove expired record
     else
       Exit(True); // We found value
@@ -2269,11 +2290,30 @@ var
   total: Int64;
 begin
   //HashCode should be the same if we swap From and To
-  Int64Rec(total).Words[0] := (FromP.X + ToP.X);
-  Int64Rec(total).Words[1] := Abs(FromP.X - ToP.X);
-  Int64Rec(total).Words[2] := FromP.Y + ToP.Y;
-  Int64Rec(total).Words[3] := Abs(FromP.Y - ToP.Y);
+  Int64Rec(total).Words[0] := (FromP.X + ToP.X);    // values range is 0..MAX_MAP_SIZE*2 (0..512)
+  Int64Rec(total).Words[1] := Abs(FromP.X - ToP.X); // (0..256)
+  Int64Rec(total).Words[2] := FromP.Y + ToP.Y;      // (0..512)
+  Int64Rec(total).Words[3] := Abs(FromP.Y - ToP.Y); // (0..256)
+  //GetHashValue(Integer/Cardinal) is even faster, but we can't fit our 34 bits there
   Result := THashBobJenkins.GetHashValue(total, SizeOf(Int64), 0);
 end;
+
+
+{ TKMDeliveryBid }
+function TKMDeliveryBid.GetTTL: Integer;
+begin
+  Result := 0;
+  case Kind of
+    dbkSerfToOffer:   Result := SERF_OFFER_CACHED_BID_TTL;
+    dbkOfferToDemand: Result := OFFER_DEMAND_CACHED_BID_TTL;
+  end;
+end;
+
+
+function TKMDeliveryBid.IsExpired(aTick: Integer): Boolean;
+begin
+  Result := aTick - CreatedAt > GetTTL;
+end;
+
 
 end.
