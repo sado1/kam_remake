@@ -30,7 +30,7 @@ type
 
 implementation
 uses
-  Math, KM_ResMapElements, KM_DevPerfLog, KM_DevPerfLogTypes, KM_Game;
+  Math, KM_ResMapElements, KM_DevPerfLog, KM_DevPerfLogTypes;
 
 { TKMTerrainWalkConnect }
 class procedure TKMTerrainWalkConnect.DoUpdate(const aAreaAffected: TKMRect; aWC: TKMWalkConnect; aDiagObjectsEffected: Boolean);

@@ -49,7 +49,7 @@ type
 
 implementation
 uses
-  KM_ResMapElements, KM_Terrain, KM_Game, KM_DevPerfLog,  KM_DevPerfLogTypes;
+  KM_ResMapElements, KM_Terrain, KM_DevPerfLog,  KM_DevPerfLogTypes;
 
 
 { TKMTerrainFinder }

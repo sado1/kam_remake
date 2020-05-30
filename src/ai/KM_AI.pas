@@ -69,7 +69,7 @@ type
 implementation
 uses
   SysUtils, TypInfo, Math,
-  KM_GameTypes, KM_GameApp, KM_Game, KM_Hand, KM_HandsCollection, KM_HandStats, KM_UnitGroup,
+  KM_GameApp, KM_Game, KM_Hand, KM_HandsCollection, KM_HandStats, KM_UnitGroup,
   KM_ResHouses, KM_ResSound, KM_ScriptingEvents, KM_Alerts,
   KM_AIFields, KM_Terrain, KM_ResMapElements, KM_DevPerfLog, KM_DevPerfLogTypes;
 
