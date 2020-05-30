@@ -87,7 +87,7 @@ implementation
 uses
   TypInfo,
   SysUtils, Math, KromUtils,
-  KM_GameApp, KM_Game, KM_GameParams, KM_HandsCollection, KM_NetworkTypes,
+  KM_Game, KM_GameParams, KM_HandsCollection, KM_NetworkTypes,
   KM_ResTexts, KM_ResSound, KM_Sound, KM_CommonUtils,
   KM_GameTypes;
 
@@ -188,7 +188,7 @@ end;
 // Stack the command into schedule
 procedure TKMGameInputProcess_Multi.DoTakeCommand(const aCommand: TKMGameInputCommand);
 var
-  I,Tick: Cardinal;
+  I, Tick: Cardinal;
 begin
   Assert(fDelay < MAX_SCHEDULE, 'Error, fDelay >= MAX_SCHEDULE');
   if ((gGameParams.GameMode = gmMultiSpectate) and not (aCommand.CommandType in ALLOWED_BY_SPECTATORS)) // Do not allow spectators to command smth
@@ -200,7 +200,7 @@ begin
 
   if gGame.IsPeaceTime and (aCommand.CommandType in BLOCKED_BY_PEACETIME) then
   begin
-    gGameApp.Networking.PostLocalMessage(gResTexts[TX_MP_BLOCKED_BY_PEACETIME], csNone);
+    gGame.Networking.PostLocalMessage(gResTexts[TX_MP_BLOCKED_BY_PEACETIME], csNone);
     gSoundPlayer.Play(sfxCantPlace);
     Exit;
   end;
