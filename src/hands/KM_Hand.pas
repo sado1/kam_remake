@@ -239,7 +239,7 @@ type
 implementation
 uses
   Classes, SysUtils, KromUtils, Math, TypInfo,
-  KM_GameApp, KM_GameCursor, KM_Game, KM_Terrain,
+  KM_GameApp, KM_GameCursor, KM_Game, KM_GameParams, KM_Terrain,
   KM_HandsCollection, KM_Sound, KM_AIFields, KM_MapEditorHistory,
   KM_Resource, KM_ResSound, KM_ResTexts, KM_ResMapElements, KM_ScriptingEvents, KM_ResUnits,
   KM_GameTypes, KM_CommonUtils;
@@ -269,7 +269,7 @@ begin
   //Animals are autoplaced by default
   Result := fUnits.AddUnit(fID, aUnitType, aLoc, True);
 
-  if gGame.IsMapEditor and aMakeCheckpoint then
+  if gGameParams.IsMapEditor and aMakeCheckpoint then
     gGame.MapEditor.History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH],
                                                            [gRes.Units[aUnitType].GUIName, aLoc.ToString]));
 end;
@@ -294,7 +294,7 @@ function TKMHandCommon.RemUnit(const Position: TKMPoint; out aUnitType: TKMUnitT
 var
   U: TKMUnit;
 begin
-  Assert(gGame.IsMapEditor);
+  Assert(gGameParams.IsMapEditor);
 
   U := fUnits.HitTest(Position.X, Position.Y);
 
@@ -348,7 +348,7 @@ end;
 
 procedure TKMHandCommon.UpdateVisualState;
 begin
-  Assert(gGame.IsMapEditor);
+  Assert(gGameParams.IsMapEditor);
 
   fUnits.UpdateVisualState;
 end;
@@ -446,7 +446,7 @@ begin
   //Unit failed to add, that happens
   if Result = nil then Exit;
 
-  if gGame.IsMapEditor then
+  if gGameParams.IsMapEditor then
   begin
     if aMakeCheckpoint then
       gGame.MapEditor.History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH],
@@ -580,7 +580,7 @@ begin
   if Result <> nil then
     Result.OnGroupDied := GroupDied;
 
-  if gGame.IsMapEditor and aMakeCheckpoint then
+  if gGameParams.IsMapEditor and aMakeCheckpoint then
     gGame.MapEditor.History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH],
                                                            [gRes.Units[aUnitType].GUIName, Position.ToString]));
 
@@ -630,7 +630,7 @@ begin
 
   FreeAndNil(fRoadsList);
 
-  if not gGame.IsMapEditor then
+  if not gGameParams.IsMapEditor then
     fAI.AfterMissionInit;
 end;
 
@@ -947,7 +947,7 @@ end;
 function TKMHand.GetGameFlagColor: Cardinal;
 begin
   Result := fFlagColor;
-  if (gGame <> nil) and not gGame.IsMapEditor then
+  if (gGame <> nil) and not gGameParams.IsMapEditor then
   begin
     case gGameApp.GameSettings.PlayersColorMode of
       pcmAllyEnemy: begin
@@ -1137,7 +1137,7 @@ begin
   else
     if CanAddFieldPlan(aLoc, aFieldType) then
     begin
-      if aMakeSound and not gGame.IsReplayOrSpectate
+      if aMakeSound and not gGameParams.IsReplayOrSpectate
         and (ID = gMySpectator.HandID) then
         gSoundPlayer.Play(sfxPlacemarker);
       fConstructions.FieldworksList.AddField(aLoc, aFieldType);
@@ -1151,7 +1151,7 @@ begin
     end
     else
     begin
-      if aMakeSound and not gGame.IsReplayOrSpectate
+      if aMakeSound and not gGameParams.IsReplayOrSpectate
         and (ID = gMySpectator.HandID) then
         gSoundPlayer.Play(sfxCantPlace, 4);
       if Plan = ftNone then //If we can't build because there's some other plan, that's ok
@@ -1229,7 +1229,7 @@ begin
   fStats.HousePlanned(aHouseType);
   gScriptEvents.ProcHousePlanPlaced(fID, Loc.X, Loc.Y, aHouseType);
 
-  if (ID = gMySpectator.HandID) and not gGame.IsReplayOrSpectate then
+  if (ID = gMySpectator.HandID) and not gGameParams.IsReplayOrSpectate then
     gSoundPlayer.Play(sfxPlacemarker);
 end;
 
@@ -1265,7 +1265,7 @@ begin
   fConstructions.HousePlanList.RemPlan(Position);
   fStats.HousePlanRemoved(HPlan.HouseType);
   gScriptEvents.ProcHousePlanRemoved(fID, HPlan.Loc.X, HPlan.Loc.Y, HPlan.HouseType);
-  if (ID = gMySpectator.HandID) and not gGame.IsReplayOrSpectate then
+  if (ID = gMySpectator.HandID) and not gGameParams.IsReplayOrSpectate then
     gSoundPlayer.Play(sfxClick);
 end;
 
@@ -1287,7 +1287,7 @@ begin
     raise Exception.Create('Unknown fieldType');
   end;
 
-  if aMakeSound and not gGame.IsReplayOrSpectate
+  if aMakeSound and not gGameParams.IsReplayOrSpectate
   and (ID = gMySpectator.HandID) then
     gSoundPlayer.Play(sfxClick);
 end;
@@ -1297,7 +1297,7 @@ function TKMHand.RemGroup(const Position: TKMPoint): Boolean;
 var
   Group: TKMUnitGroup;
 begin
-  Assert(gGame.IsMapEditor);
+  Assert(gGameParams.IsMapEditor);
 
   Group := fUnitGroups.HitTest(Position.X, Position.Y);
   Result := Group <> nil;
@@ -1468,7 +1468,7 @@ begin
   else
   begin
     //We have to consider destroyed closed house as actually opened, otherwise closed houses stats will be corrupted
-    if aHouse.IsClosedForWorker and not gGame.IsMapEditor then
+    if aHouse.IsClosedForWorker and not gGameParams.IsMapEditor then
       fStats.HouseClosed(False, aHouse.HouseType);
 
     //Distribute honors
@@ -1538,7 +1538,7 @@ function TKMHand.CalcOwnerName: UnicodeString;
 var
   NumberedAIs: Boolean;
 begin
-  NumberedAIs := not gGame.IsSingleplayer;
+  NumberedAIs := not gGameParams.IsSingleplayer;
   //Default names
   if IsHuman then
     Result := gResTexts[TX_PLAYER_YOU]
@@ -1558,7 +1558,7 @@ begin
 
   //Try to take player name from mission text if we are in SP
   //Do not use names in MP to avoid confusion of AI players with real player niknames
-  if gGame.GameMode in [gmSingle, gmCampaign, gmMapEd, gmReplaySingle] then
+  if gGameParams.GameMode in [gmSingle, gmCampaign, gmMapEd, gmReplaySingle] then
     if gGame.TextMission.HasText(HANDS_NAMES_OFFSET + fID) then
       if IsHuman then
         Result := gResTexts[TX_PLAYER_YOU] + ' (' + gGame.TextMission[HANDS_NAMES_OFFSET + fID] + ')'
@@ -1589,7 +1589,7 @@ begin
 
   //Try to take player name from mission text if we are in SP
   //Do not use names in MP to avoid confusion of AI players with real player niknames
-  if (gGame.GameMode in [gmSingle, gmCampaign, gmMapEd, gmReplaySingle])
+  if (gGameParams.GameMode in [gmSingle, gmCampaign, gmMapEd, gmReplaySingle])
     and gGame.TextMission.HasText(HANDS_NAMES_OFFSET + fID) then
   begin
     if IsHuman then
@@ -1621,7 +1621,7 @@ end;
 
 function TKMHand.GetOwnerName: UnicodeString;
 begin
-  Result := OwnerName(not gGame.IsSingleplayer);
+  Result := OwnerName(not gGameParams.IsSingleplayer);
 end;
 
 
@@ -1995,7 +1995,7 @@ begin
   if CanDoStatsUpdate(aTick) then
     fStats.UpdateState;
 
-  if not gGame.IsMapEditor //Do not place first storehouse in map editor etc
+  if not gGameParams.IsMapEditor //Do not place first storehouse in map editor etc
     and fChooseLocation.Allowed
     and not fChooseLocation.Placed then
     ChooseFirstStorehouse();
@@ -2010,7 +2010,7 @@ end;
 
 function TKMHand.NeedToChooseFirstStorehouseInGame: Boolean;
 begin
-  Result := not gGame.IsMapEditor and NeedToChooseFirstStorehouse;
+  Result := not gGameParams.IsMapEditor and NeedToChooseFirstStorehouse;
 end;
 
 
@@ -2037,7 +2037,7 @@ begin
   end;
 
   // Preselect storehouse
-  if not gGame.IsReplayOrSpectate
+  if not gGameParams.IsReplayOrSpectate
   and (gMySpectator.HandID = ID)
   and not fChooseLocation.Placed then
   begin
@@ -2180,7 +2180,7 @@ end;
 function GetStatsUpdatePeriod: Integer;
 begin
   Result := 1000;
-  case gGame.MissionMode of
+  case gGameParams.MissionMode of
     mmNormal:  Result := CHARTS_SAMPLING_FOR_ECONOMY;
     mmTactic:  Result := CHARTS_SAMPLING_FOR_TACTICS;
   end;

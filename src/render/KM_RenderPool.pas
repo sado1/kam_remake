@@ -156,7 +156,7 @@ uses
   KM_ResMapElements, KM_AIFields, KM_TerrainPainter, KM_GameCursor,
 
   KM_FogOfWar, KM_Hand, KM_UnitGroup, KM_CommonUtils,
-  KM_GameTypes, KM_Utils, KM_ResTileset, KM_DevPerfLog, KM_DevPerfLogTypes;
+  KM_GameParams, KM_Utils, KM_ResTileset, KM_DevPerfLog, KM_DevPerfLogTypes;
 
 
 const
@@ -365,7 +365,7 @@ begin
   if gMySpectator.Highlight is TKMHouseSketch then
     RenderHouseOutline(TKMHouseSketch(gMySpectator.Highlight));
 
-  if gGame.IsMapEditor then
+  if gGameParams.IsMapEditor then
     gGame.MapEditor.Paint(plTerrain, aRect);
 
   if gAIFields <> nil then
@@ -439,7 +439,7 @@ var
 begin
   if not (mlObjects in gGame.VisibleLayers) then Exit;
 
-  if gGame.IsMapEditor then
+  if gGameParams.IsMapEditor then
     gGame.MapEditor.Paint(plObjects, aRect);
 
   with gTerrain do
@@ -448,7 +448,7 @@ begin
       begin
         if (Land[I, K].Obj <> 255)
         // In the map editor we shouldn't render terrain objects within the paste preview
-        and (not gGame.IsMapEditor or not (melSelection in gGame.MapEditor.VisibleLayers)
+        and (not gGameParams.IsMapEditor or not (melSelection in gGame.MapEditor.VisibleLayers)
              or not gGame.MapEditor.Selection.TileWithinPastePreview(K, I)) then
           RenderMapElement(Land[I, K].Obj, AnimStep, K, I);
       end;
@@ -463,7 +463,7 @@ begin
 
   // Tablets on house plans, for self and allies
   fTabletsList.Clear;
-  if gGame.IsReplayOrSpectate then
+  if gGameParams.IsReplayOrSpectate then
     if gMySpectator.FOWIndex = -1 then
       for I := 0 to gHands.Count - 1 do
         gHands[I].GetPlansTablets(fTabletsList, aRect)
@@ -556,7 +556,7 @@ begin
   begin
     // Invisible wall
     // Render as a red outline in map editor mode
-    if gGame.IsMapEditor then
+    if gGameParams.IsMapEditor then
     begin
       gRenderAux.Quad(LocX, LocY, $600000FF);
       RenderWireTile(KMPoint(LocX, LocY), $800000FF);
@@ -1327,7 +1327,7 @@ begin
   fHousePlansList.Clear;
 
   // Collect field plans (road, corn, wine)
-  if gGame.IsReplayOrSpectate then
+  if gGameParams.IsReplayOrSpectate then
   begin
     if gMySpectator.FOWIndex = -1 then
       for I := 0 to gHands.Count - 1 do
@@ -1344,7 +1344,7 @@ begin
   end;
 
   // House plans for self and allies
-  if gGame.IsReplayOrSpectate then
+  if gGameParams.IsReplayOrSpectate then
   begin
     if gMySpectator.FOWIndex = -1 then
       for I := 0 to gHands.Count - 1 do
@@ -1443,7 +1443,7 @@ var
 begin
   fMarksList.Clear;
   //Show house marks ignoring player FOW if we can see all map in replay/spec
-  ShowHMarksIgnoreFOW := gGame.IsReplayOrSpectate and (gMySpectator.FOWIndex = -1);
+  ShowHMarksIgnoreFOW := gGameParams.IsReplayOrSpectate and (gMySpectator.FOWIndex = -1);
   gMySpectator.Hand.GetHouseMarks(P, aHouseType, fMarksList, ShowHMarksIgnoreFOW);
 
   for I := 0 to fMarksList.Count - 1 do
@@ -1590,7 +1590,7 @@ begin
 
   TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
 
-  if gGame.IsMapEditor then
+  if gGameParams.IsMapEditor then
     gGame.MapEditor.Paint(plCursors, KMRect(0,0,0,0));
 
   P := gGameCursor.Cell;
@@ -1604,7 +1604,7 @@ begin
   with gTerrain do
   case gGameCursor.Mode of
     cmNone:       ;
-    cmErase:      if not gGame.IsMapEditor then
+    cmErase:      if not gGameParams.IsMapEditor then
                   begin
                     if ((gMySpectator.Hand.Constructions.FieldworksList.HasFakeField(P) <> ftNone)
                         or gMySpectator.Hand.Constructions.HousePlanList.HasPlan(P)
@@ -1618,12 +1618,12 @@ begin
                     RenderWireTile(P, icCyan) // Cyan quad
                   else
                     RenderSpriteOnTile(P, TC_BLOCK);       // Red X
-    cmField:      if (gMySpectator.Hand.CanAddFakeFieldPlan(P, ftCorn) or (gGame.IsMapEditor and gTerrain.TileIsCornField(P)))
+    cmField:      if (gMySpectator.Hand.CanAddFakeFieldPlan(P, ftCorn) or (gGameParams.IsMapEditor and gTerrain.TileIsCornField(P)))
                     and (gGameCursor.Tag1 <> Ord(cfmErase)) then
                     RenderWireTile(P, icCyan) // Cyan quad
                   else
                     RenderSpriteOnTile(P, TC_BLOCK);       // Red X
-    cmWine:       if (gMySpectator.Hand.CanAddFakeFieldPlan(P, ftWine) or (gGame.IsMapEditor and gTerrain.TileIsWineField(P)))
+    cmWine:       if (gMySpectator.Hand.CanAddFakeFieldPlan(P, ftWine) or (gGameParams.IsMapEditor and gTerrain.TileIsWineField(P)))
                     and (gGameCursor.Tag1 <> Ord(cfmErase)) then
                     RenderWireTile(P, icCyan) // Cyan quad
                   else

@@ -100,7 +100,7 @@ type
 implementation
 uses
   SysUtils, Math,
-  KM_Game, KM_HandsCollection, KM_Hand,
+  KM_Game, KM_GameParams, KM_HandsCollection, KM_Hand,
   {$IFDEF DEBUG_BattleLines}
     KM_RenderAux,
   {$ENDIF}
@@ -228,7 +228,7 @@ begin
   if not gGame.IsPeaceTime then
   begin
     if (Modulo >= ATTACKS) AND (Modulo - ATTACKS < Length(fAlli2PL))
-    AND (  gGame.IsTactic OR (aTick > (gGame.GameOptions.Peacetime+3) * 10 * 60)  ) then // In normal mode wait 3 minutes after peace
+    AND (  gGameParams.IsTactic OR (aTick > (gGame.GameOptions.Peacetime+3) * 10 * 60)  ) then // In normal mode wait 3 minutes after peace
     begin
       UpdateFFA();
       UpdateAttack(Modulo - ATTACKS);
@@ -961,7 +961,7 @@ begin
   if not NewAIInTeam(aTeam, True, False) OR (Length(fAlli2PL) < 2) then // I sometimes use my loc as a spectator (alliance with everyone) so make sure that search for enemy will use AI loc
     Exit;
   // Check if alliance can attack (have available soldiers) in the FFA mode (if there are just 2 teams attack if we have advantage)
-  if fFFA AND not gGame.IsTactic then
+  if fFFA AND not gGameParams.IsTactic then
   begin
     DefRatio := 0;
     for IdxPL := 0 to Length( fAlli2PL[aTeam] ) - 1 do
@@ -983,14 +983,14 @@ begin
     ArmyState := gAIFields.Eye.ArmyEvaluation.AllianceEvaluation[ fAlli2PL[aTeam,0], atAlly ];
     with ArmyState.FoodState do
       FoodLevel := (Full + Middle) / Max(1, (Full + Middle + Low));
-    if (BestCmpIdx <> -1) AND ((BestCmp > MIN_ADVANTAGE) OR (FoodLevel < FOOD_THRESHOLD) OR gGame.IsTactic) then
+    if (BestCmpIdx <> -1) AND ((BestCmp > MIN_ADVANTAGE) OR (FoodLevel < FOOD_THRESHOLD) OR gGameParams.IsTactic) then
     begin
       EnemyTeamIdx := fPL2Alli[ EnemyStats[BestCmpIdx].Player ];
       for IdxPL := 0 to Length( fAlli2PL[aTeam] ) - 1 do
         if gHands[ fAlli2PL[aTeam,IdxPL] ].AI.Setup.AutoAttack then
         begin
           fCombatStatus[fAlli2PL[aTeam,IdxPL],EnemyStats[BestCmpIdx].Player] := csAttackingCity;
-          if gGame.IsTactic then
+          if gGameParams.IsTactic then
             fCombatStatus[fAlli2PL[aTeam,IdxPL],EnemyStats[BestCmpIdx].Player] := csAttackingEverything;
           with AR do
           begin

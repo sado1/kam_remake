@@ -67,7 +67,7 @@ type
 
 implementation
 uses
-  KM_Game, KM_Hand, KM_HandsCollection, KM_Terrain, KM_AIFields,
+  KM_Game, KM_GameParams, KM_Hand, KM_HandsCollection, KM_Terrain, KM_AIFields,
   KM_HouseBarracks, KM_Supervisor,
   KM_ResHouses, KM_CommonUtils,
   KM_AIParameters, KM_DevPerfLog, KM_DevPerfLogTypes;
@@ -570,10 +570,10 @@ begin
     with fAttackRequest do
     begin
       // Exit if AI has NOT enought soldiers in defence AND there is NOT food or there are multiple oponents
-      if (DefRatio < MIN_DEF_RATIO) AND (FoodShortage OR (BestEnemy <> WorstEnemy)) AND (gGame.MissionMode <> mmTactic) then
+      if (DefRatio < MIN_DEF_RATIO) AND (FoodShortage OR (BestEnemy <> WorstEnemy)) AND (gGameParams.MissionMode <> mmTactic) then
         Exit;
       // 1v1 or special game mode
-      if (BestEnemy = WorstEnemy) OR gGame.IsTactic then
+      if (BestEnemy = WorstEnemy) OR gGameParams.IsTactic then
         MobilizationCoef := 1
       // Else compute if it is necessary to mobilize the first defence line (or fraction)
       else

@@ -230,7 +230,7 @@ uses
   Classes, SysUtils, Math, TypInfo,
   KM_Terrain,
   KM_FormLogistics, KM_UnitTaskDelivery,
-  KM_Main, KM_Game, KM_Hand, KM_HandsCollection, KM_HouseBarracks,
+  KM_Main, KM_Game, KM_GameParams, KM_Hand, KM_HandsCollection, KM_HouseBarracks,
   KM_Resource, KM_ResUnits,
   KM_Log, KM_Utils, KM_CommonUtils, KM_DevPerfLog, KM_DevPerfLogTypes;
 
@@ -639,7 +639,7 @@ procedure TKMDeliveries.AddOffer(aHouse: TKMHouse; aWare: TKMWareType; aCount: I
 var
   I, K: Integer;
 begin
-  if gGame.IsMapEditor then
+  if gGameParams.IsMapEditor then
     Exit;
   if aCount = 0 then
     Exit;
@@ -701,7 +701,7 @@ procedure TKMDeliveries.RemAllOffers(aHouse: TKMHouse);
 var
   I: Integer;
 begin
-  if gGame.IsMapEditor then
+  if gGameParams.IsMapEditor then
     Exit;
 
   //We need to parse whole list, never knowing how many offers the house had
@@ -723,7 +723,7 @@ procedure TKMDeliveries.RemOffer(aHouse: TKMHouse; aWare: TKMWareType; aCount: C
 var
   I: Integer;
 begin
-  if gGame.IsMapEditor then
+  if gGameParams.IsMapEditor then
     Exit;
   if aCount = 0 then
     Exit;
@@ -756,7 +756,7 @@ procedure TKMDeliveries.RemDemand(aHouse: TKMHouse);
 var
   I: Integer;
 begin
-  if gGame.IsMapEditor then
+  if gGameParams.IsMapEditor then
     Exit;
 
   Assert(aHouse <> nil);
@@ -789,7 +789,7 @@ procedure TKMDeliveries.RemDemand(aUnit: TKMUnit);
 var
   I: Integer;
 begin
-  if gGame.IsMapEditor then
+  if gGameParams.IsMapEditor then
     Exit;
   Assert(aUnit <> nil);
   for I := 1 to fDemandCount do
@@ -844,7 +844,7 @@ begin
   Result := 0;
   aPlannedToRemove := 0;
 
-  if gGame.IsMapEditor then
+  if gGameParams.IsMapEditor then
     Exit;
 
   if aCount = 0 then Exit;
@@ -912,7 +912,7 @@ procedure TKMDeliveries.AddDemand(aHouse: TKMHouse; aUnit: TKMUnit; aResource: T
 var
   I,K,J: Integer;
 begin
-  if gGame.IsMapEditor then
+  if gGameParams.IsMapEditor then
     Exit;
   Assert(aResource <> wtNone, 'Demanding rtNone');
   if aCount <= 0 then Exit;

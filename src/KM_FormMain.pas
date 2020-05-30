@@ -543,7 +543,7 @@ procedure TFormMain.SaveEditableMission1Click(Sender: TObject);
 begin
   if gGameApp.Game = nil then Exit;
 
-  if not gGameApp.Game.IsMapEditor then Exit;
+  if not gGameApp.Game.Params.IsMapEditor then Exit;
 
   if RunSaveDialog(SaveDialog1, gGameApp.Game.MapEditor.MissionDefSavePath, ExtractFileDir(gGameApp.Game.MapEditor.MissionDefSavePath), 'Knights & Merchants Mission (*.dat)|*.dat') then
     gGameApp.SaveMapEditor(SaveDialog1.FileName);
@@ -615,7 +615,8 @@ end;
 
 procedure TFormMain.Export_ScriptDataClick(Sender: TObject);
 begin
-  if (gGame <> nil)
+  if    (gGameApp <> nil)
+    and (gGameApp.Game <> nil)
     and (gGame.Scripting <> nil) then
     gGame.Scripting.ExportDataToText;
 end;
@@ -684,7 +685,7 @@ procedure TFormMain.ExportGameStatsClick(Sender: TObject);
 var
   DateS: UnicodeString;
 begin
-  if (gGame <> nil) and not gGame.IsMapEditor then
+  if (gGame <> nil) and not gGame.Params.IsMapEditor then
   begin
     gResTexts.ForceDefaultLocale := True; //Use only eng for exported csv
     DateS := FormatDateTime('yyyy-mm-dd_hh-nn', Now);
@@ -703,11 +704,12 @@ end;
 
 
 procedure TFormMain.Export_DeliverLists1Click(Sender: TObject);
-var I: Integer;
+var
+  I: Integer;
 begin
   if gHands = nil then Exit;
   //You could possibly cheat in multiplayer by seeing what supplies your enemy has
-  if (gGameApp.Game <> nil) and (not gGameApp.Game.IsMultiPlayerOrSpec or MULTIPLAYER_CHEATS) then
+  if (gGameApp.Game <> nil) and (not gGameApp.Game.Params.IsMultiPlayerOrSpec or MULTIPLAYER_CHEATS) then
   for I := 0 to gHands.Count - 1 do
     gHands[I].Deliveries.Queue.ExportToFile(ExeDir + 'Player_' + IntToStr(I) + '_Deliver_List.txt');
 end;
@@ -716,8 +718,8 @@ end;
 procedure TFormMain.RGPlayerClick(Sender: TObject);
 begin
   if (gGameApp.Game = nil)
-    or gGameApp.Game.IsMapEditor
-    or gGameApp.Game.IsMultiPlayerOrSpec then
+    or gGameApp.Game.Params.IsMapEditor
+    or gGameApp.Game.Params.IsMultiPlayerOrSpec then
     Exit;
 
   if (gHands <> nil) and (RGPlayer.ItemIndex < gHands.Count) then
@@ -749,10 +751,10 @@ end;
 procedure TFormMain.chkSuperSpeedClick(Sender: TObject);
 begin
   if (gGameApp.Game = nil)
-    or (gGameApp.Game.IsMultiPlayerOrSpec
+    or (gGameApp.Game.Params.IsMultiPlayerOrSpec
       and not gGameApp.Game.CanChangeMPGameSpeed
       and not MULTIPLAYER_SPEEDUP
-      and not gGameApp.Game.IsReplay) then
+      and not gGameApp.Game.Params.IsReplay) then
     Exit;
 
   gGameApp.Game.SetGameSpeed(IfThen(chkSuperSpeed.Checked, DEBUG_SPEEDUP_SPEED, 1), False);
@@ -764,7 +766,7 @@ end;
 procedure TFormMain.Button_StopClick(Sender: TObject);
 begin
   if gGameApp.Game <> nil then
-    if gGameApp.Game.IsMapEditor then
+    if gGameApp.Game.Params.IsMapEditor then
       gGameApp.StopGame(grMapEdEnd)
     else
       gGameApp.StopGame(grCancel);

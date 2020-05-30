@@ -83,7 +83,7 @@ type
 implementation
 uses
   Math, SysUtils,
-  KM_Game, KM_HandsCollection, KM_RenderAux, KM_RenderPool, KM_Hand;
+  KM_GameParams, KM_HandsCollection, KM_RenderAux, KM_RenderPool, KM_Hand;
 
 
 { TAIDefencePosition }
@@ -118,21 +118,21 @@ end;
 
 procedure TAIDefencePosition.SetDefenceType(const Value: TAIDefencePosType);
 begin
-  Assert(gGame.IsMapEditor);
+  Assert(gGameParams.IsMapEditor);
   fDefenceType := Value;
 end;
 
 
 procedure TAIDefencePosition.SetGroupType(const Value: TKMGroupType);
 begin
-  Assert(gGame.IsMapEditor);
+  Assert(gGameParams.IsMapEditor);
   fGroupType := Value;
 end;
 
 
 procedure TAIDefencePosition.SetPosition(const Value: TKMPointDir);
 begin
-  Assert(gGame.IsMapEditor);
+  Assert(gGameParams.IsMapEditor);
   fPosition := Value;
 end;
 
@@ -467,7 +467,7 @@ begin
                                gHands[fOwner].FlagColor);
     //group type and position number will be painted by InterfaceMapEditor
 
-    if not gGame.IsMapEditor then 
+    if not gGameParams.IsMapEditor then
     begin
       str := 'nil';
       if Positions[I].CurrentGroup <> nil then

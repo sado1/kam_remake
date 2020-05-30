@@ -37,7 +37,7 @@ type
 
 implementation
 uses
-  KM_GameApp, KM_ResTexts, KM_ResFonts, KM_InterfaceGame, KM_Sound, KM_Game,
+  KM_GameApp, KM_ResTexts, KM_ResFonts, KM_InterfaceGame, KM_Sound, KM_Game, KM_GameParams,
   KM_GameTypes;
 
 
@@ -102,7 +102,7 @@ end;
 
 procedure TKMGameMenuSettings.UpdateView;
 begin
-  CheckBox_ReplayAutopauseAtPTEnd.Enabled := (gGame.GameMode = gmReplayMulti) and gGame.IsPeaceTime;
+  CheckBox_ReplayAutopauseAtPTEnd.Enabled := (gGameParams.GameMode = gmReplayMulti) and gGame.IsPeaceTime;
   CheckBox_AllyEnemy_ColorMode.Checked := gGameApp.GameSettings.PlayersColorMode = pcmAllyEnemy;
 end;
 
@@ -113,7 +113,7 @@ var
 begin
   Top := 15;
 
-  if gGame.IsReplay then
+  if gGameParams.IsReplay then
     CheckBox_Autosave.Hide
   else begin
     CheckBox_Autosave.Show;
@@ -124,7 +124,7 @@ begin
   CheckBox_AllyEnemy_ColorMode.Show;
   Inc(Top, 40);
 
-  if gGame.GameMode = gmReplayMulti then
+  if gGameParams.GameMode = gmReplayMulti then
   begin
     CheckBox_ReplayAutopauseAtPTEnd.Top := Top;
     CheckBox_ReplayAutopauseAtPTEnd.Show;
@@ -132,7 +132,7 @@ begin
   end else
     CheckBox_ReplayAutopauseAtPTEnd.Hide;
 
-  if gGame.GameMode in [gmReplaySingle, gmReplayMulti, gmMultiSpectate] then
+  if gGameParams.GameMode in [gmReplaySingle, gmReplayMulti, gmMultiSpectate] then
   begin
     CheckBox_ReplaySpecShowBeacons.Top := Top;
     CheckBox_ReplaySpecShowBeacons.Show;
@@ -167,14 +167,14 @@ begin
   CheckBox_ShuffleOn.Checked       := gGameApp.GameSettings.ShuffleOn;
   CheckBox_AllyEnemy_ColorMode.Checked := gGameApp.GameSettings.PlayersColorMode = pcmAllyEnemy;
 
-  if gGame.IsReplay then
+  if gGameParams.IsReplay then
     CheckBox_ReplaySpecShowBeacons.Checked := gGameApp.GameSettings.ReplayShowBeacons
-  else if gGame.GameMode = gmMultiSpectate then
+  else if gGameParams.GameMode = gmMultiSpectate then
     CheckBox_ReplaySpecShowBeacons.Checked := gGameApp.GameSettings.SpecShowBeacons;
 
   TrackBar_Music.Enabled           := not CheckBox_MusicOff.Checked;
   CheckBox_ShuffleOn.Enabled       := not CheckBox_MusicOff.Checked;
-  CheckBox_ReplayAutopauseAtPTEnd.Enabled := (gGame.GameMode = gmReplayMulti) and gGame.IsPeaceTime;
+  CheckBox_ReplayAutopauseAtPTEnd.Enabled := (gGameParams.GameMode = gmReplayMulti) and gGame.IsPeaceTime;
   UpdateControlsPosition;
 end;
 
@@ -200,9 +200,9 @@ begin
   else
     gGameApp.GameSettings.PlayersColorMode := pcmDefault;
 
-  if gGame.IsReplay then
+  if gGameParams.IsReplay then
     gGameApp.GameSettings.ReplayShowBeacons   := CheckBox_ReplaySpecShowBeacons.Checked
-  else if gGame.GameMode = gmMultiSpectate then
+  else if gGameParams.GameMode = gmMultiSpectate then
     gGameApp.GameSettings.SpecShowBeacons   := CheckBox_ReplaySpecShowBeacons.Checked;
 
   gSoundPlayer.UpdateSoundVolume(gGameApp.GameSettings.SoundFXVolume);

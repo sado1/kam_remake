@@ -191,7 +191,7 @@ type
 
 implementation
 uses
-  TypInfo, KM_AI, KM_Game, KM_FogOfWar, KM_HandsCollection, KM_HandLogistics,
+  TypInfo, KM_AI, KM_Game, KM_GameParams, KM_FogOfWar, KM_HandsCollection, KM_HandLogistics,
   KM_HouseBarracks, KM_HouseSchool, KM_ResUnits, KM_CommonUtils, KM_HouseMarket,
   KM_Resource, KM_Hand, KM_AIDefensePos, KM_CommonClasses,
   KM_PathFindingRoad, KM_ResMapElements, KM_HandConstructions,
@@ -3641,7 +3641,7 @@ var
   Speed: Single;
 begin
   try
-    if gGame.IsMultiplayer then
+    if gGameParams.IsMultiplayer then
       Speed := EnsureRange(aSpeed, GAME_SPEED_NORMAL, GAME_MP_SPEED_MAX)
     else
       Speed := EnsureRange(aSpeed, GAME_SPEED_NORMAL, GAME_SP_SPEED_MAX);

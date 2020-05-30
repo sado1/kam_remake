@@ -227,7 +227,7 @@ type
 implementation
 
 uses
-  KM_InterfaceGame, KM_Game, KM_RenderUI, KM_ResFonts, KM_Resource, KM_ResTexts, KM_ResUnits,
+  KM_InterfaceGame, KM_Game, KM_GameParams, KM_RenderUI, KM_ResFonts, KM_Resource, KM_ResTexts, KM_ResUnits,
   KM_UnitGroup, KM_HouseTownhall,
   KM_CommonUtils;
 
@@ -451,7 +451,7 @@ end;
 procedure TKMGUIGameSpectatorItemLine.PaintPanel(aPaintLayer: Integer);
 begin
   Image.TexId := GUI_SPEC_HEADER_FLAG + gGame.GameTick mod GUI_SPEC_HEADER_FLAG_FRAME;
-  Label_Text.Caption := gHands[FHandIndex].OwnerName(not gGame.IsSingleplayer);
+  Label_Text.Caption := gHands[FHandIndex].OwnerName(not gGameParams.IsSingleplayer);
 
   inherited;
 end;

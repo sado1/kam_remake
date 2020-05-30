@@ -363,7 +363,7 @@ uses
   KM_CommonUtils, KM_ResLocales, KM_ResSound, KM_Resource, KM_Log, KM_ResCursors, KM_ResFonts, KM_ResKeys,
   KM_FogOfWar, KM_Sound, KM_NetPlayersList, KM_MessageLog, KM_NetworkTypes,
   KM_InterfaceMapEditor, KM_HouseWoodcutters, KM_MapTypes,
-  KM_GameTypes, KM_Video;
+  KM_GameTypes, KM_GameParams, KM_Video;
 
 const
   ALLIES_ROWS = 7;
@@ -400,7 +400,7 @@ begin
     CheckBox_SaveExists.Enabled := FileExists(gGame.SaveName(Edit_Save.Text,
                                                              EXT_SAVE_MAIN,
                                                              (fUIMode in [umMP, umSpectate])
-                                                             or (ALLOW_SAVE_IN_REPLAY and (gGame.GameMode = gmReplayMulti))));
+                                                             or (ALLOW_SAVE_IN_REPLAY and (gGameParams.GameMode = gmReplayMulti))));
     Label_SaveExists.Visible := CheckBox_SaveExists.Enabled;
     CheckBox_SaveExists.Checked := False;
     // we should protect ourselves from empty names and whitespaces at beggining and at end of name
@@ -617,7 +617,7 @@ begin
       Menu_Save_RefreshList(nil); // Need to call it at last one time to setup GUI even if there are no saves
       // Initiate refresh and process each new save added
       fSaves.Refresh(Menu_Save_RefreshList, (fUIMode in [umMP, umSpectate])
-                                            or (ALLOW_SAVE_IN_REPLAY and (gGame.GameMode = gmReplayMulti)));
+                                            or (ALLOW_SAVE_IN_REPLAY and (gGameParams.GameMode = gmReplayMulti)));
       Panel_Save.Show;
       Label_MenuTitle.Caption := gResTexts[TX_MENU_SAVE_GAME];
       if fLastSaveName = '' then
@@ -1673,7 +1673,7 @@ begin
   ReinitStatsLastTime := False;
 
   // Add victory / defeat videos to play
-  if gGame.IsNormalGame then // Don't play Victory / Defeat videos for specs
+  if gGameParams.IsNormalGame then // Don't play Victory / Defeat videos for specs
   begin
     case aMsg of
       grWin:              gVideoPlayer.AddMissionVideo(gGame.MissionFile, 'Victory');
@@ -1700,7 +1700,7 @@ begin
 
   if ShowStats then
   begin
-    if (gGame.GameMode in [gmMulti, gmMultiSpectate, gmReplayMulti]) or MP_RESULTS_IN_SP then
+    if (gGameParams.GameMode in [gmMulti, gmMultiSpectate, gmReplayMulti]) or MP_RESULTS_IN_SP then
       fGuiGameResultsMP.Show(aMsg)
     else begin
       if ReinitStatsLastTime then
@@ -1718,9 +1718,9 @@ end;
 procedure TKMGamePlayInterface.Menu_QuitMission(Sender: TObject);
 begin
   //Defeat player, if he intentionally quit, when game result is not determined yet (grCancel)
-  if gGame.IsMultiplayerGame and (gGame.GameResult = grCancel) then
+  if gGameParams.IsMultiplayerGame and (gGame.GameResult = grCancel) then
     gGame.GameResult := grDefeat
-  else if gGame.IsReplay then
+  else if gGameParams.IsReplay then
     gGame.GameResult := grReplayEnd;
   // Show outcome depending on actual situation.
   // By default PlayOnState is grCancel, if playing on after victory/defeat it changes
@@ -2433,7 +2433,7 @@ var
 begin
   UpdateMessageImages;
 
-  isTactic := gGame.IsTactic;
+  isTactic := gGameParams.IsTactic;
 
   Button_Main[tbBuild].Enabled := not isTactic and not HasLostMPGame and not gMySpectator.Hand.InCinematic; //Allow to 'test build' if we are in replay / spectate mode
   Button_Main[tbRatio].Enabled := not isTactic and ((fUIMode in [umReplay, umSpectate]) or (not HasLostMPGame and not gMySpectator.Hand.InCinematic));
@@ -2491,19 +2491,19 @@ begin
   if fUIMode in [umSpectate, umReplay] then
   begin
     //In singleplayer replays, start with fog enabled so replays can be watched without spoilers
-    Checkbox_ReplayFOW.Checked := gGame.IsSingleplayer and gGame.IsReplay;
+    Checkbox_ReplayFOW.Checked := gGameParams.IsSingleplayer and gGameParams.IsReplay;
     ReplayClick(Checkbox_ReplayFOW); //Apply FOW
     Dropbox_ReplayFOW.Clear;
 
     // Set dropbox in different ways
-    case gGame.GameMode of
+    case gGameParams.GameMode of
       gmReplaySingle:   Replay_Single_SetPlayersDropbox; // Do not show team, as its meaningless
       // Use team info from ally states:
       // consider team as a group of hands where all members are allied to each other and not allied to any other hands.
       gmReplayMulti,
       gmMultiSpectate:  Replay_Multi_SetPlayersDropbox;
       else              raise Exception.Create(Format('Wrong game mode [%s], while spectating/watching replay',
-                                                      [GetEnumName(TypeInfo(TKMGameMode), Integer(gGame.GameMode))]));
+                                                      [GetEnumName(TypeInfo(TKMGameMode), Integer(gGameParams.GameMode))]));
     end;
     fGuiGameSpectator := TKMGUIGameSpectator.Create(Panel_Main, Replay_JumpToPlayer, SetViewportPos);
     gMySpectator.HandID := Dropbox_ReplayFOW.GetTag(Dropbox_ReplayFOW.ItemIndex); //Update HandIndex
@@ -3183,7 +3183,7 @@ begin
 
     // As we don't have names for teams in SP we only allow showing team names in MP or MP replays
   if (Key = gResKeys[SC_SHOW_TEAMS].Key) then
-    if SHOW_UIDs or (fUIMode in [umMP, umSpectate]) or (gGame.GameMode = gmReplayMulti) then //Only MP replays
+    if SHOW_UIDs or (fUIMode in [umMP, umSpectate]) or (gGameParams.GameMode = gmReplayMulti) then //Only MP replays
     begin
       fShowTeamNames := True;
       // Update it immediately so there's no 300ms lag after pressing the key
@@ -3206,7 +3206,7 @@ end;
 
 procedure TKMGamePlayInterface.GameStarted;
 begin
-  if gGame.IsMultiPlayerOrSpec and (gGameApp.Chat.Text <> '') then
+  if gGameParams.IsMultiPlayerOrSpec and (gGameApp.Chat.Text <> '') then
     fGuiGameChat.Show;
 end;
 
@@ -3883,13 +3883,13 @@ begin
         end;
 
         //Manage only cmNone while spectating / watchingreplay
-        if (gGameCursor.Mode <> cmNone) and gGame.IsReplayOrSpectate then
+        if (gGameCursor.Mode <> cmNone) and gGameParams.IsReplayOrSpectate then
           Exit;
 
         // Only allow placing of roads etc. with the left mouse button
         if gMySpectator.FogOfWar.CheckTileRevelation(P.X, P.Y) = 0 then
         begin
-          if (gGameCursor.Mode in [cmErase, cmRoad, cmField, cmWine, cmHouses]) and not gGame.IsReplayOrSpectate then
+          if (gGameCursor.Mode in [cmErase, cmRoad, cmField, cmWine, cmHouses]) and not gGameParams.IsReplayOrSpectate then
             // Can't place noise when clicking on unexplored areas
             gSoundPlayer.Play(sfxCantPlace, P, False, 4);
         end

@@ -178,7 +178,7 @@ implementation
 uses
   KM_Main, KM_ResTexts, KM_Game, KM_HandsCollection, KM_CommonUtils, KM_Resource, KM_ResFonts,
   KM_RenderUI, KM_Hand, KM_ResUnits, KM_MapTypes,
-  KM_GameTypes;
+  KM_GameParams, KM_GameTypes;
 
 
 const
@@ -218,7 +218,7 @@ end;
 
 function GetOwnerName(aHandId: Integer): String;
 begin
-  Result := gHands[aHandId].OwnerName(not gGame.IsSingleplayer);
+  Result := gHands[aHandId].OwnerName(not gGameParams.IsSingleplayer);
 end;
 
 
@@ -1144,7 +1144,7 @@ begin
     and (
       (fGameResultMsg <> grGameContinues)
       or SHOW_ENEMIES_STATS
-      or gGame.IsReplayOrSpectate
+      or gGameParams.IsReplayOrSpectate
       or (gHands[aHandId].Alliances[gMySpectator.HandID] = atAlly)
       or gMySpectator.Hand.AI.HasWon);
 end;
@@ -1172,7 +1172,7 @@ end;
 
 function TKMGameResultsMP.DoAdjoinSameColorHand(aHandId: Integer): Boolean;
 begin
-  Result := gHands[aHandId].IsComputer and gGame.IsSingleplayer; //Adjoin only AI's in SP games
+  Result := gHands[aHandId].IsComputer and gGameParams.IsSingleplayer; //Adjoin only AI's in SP games
 end;
 
 
@@ -1358,7 +1358,7 @@ var
   ResultsLabelCap: UnicodeString;
 begin
   //MP Stats can be shown from SP stats page. We have to hide AI players then, depending on game result
-  fShowAIResults := not gGame.IsSingleplayerGame
+  fShowAIResults := not gGameParams.IsSingleplayerGame
                     or (fGameResultMsg in [grWin, grReplayEnd])
                     or ((fGameResultMsg = grGameContinues) and (gMySpectator.Hand.AI.HasWon));
 
@@ -1399,13 +1399,13 @@ begin
   ReinitChartWares;
   ReinitChartArmy;
 
-  Button_Wares.Enabled := gGame.IsNormalMission;
-  Button_Economy.Enabled := gGame.IsNormalMission;
+  Button_Wares.Enabled := gGameParams.IsNormalMission;
+  Button_Economy.Enabled := gGameParams.IsNormalMission;
 
   if fGameResultMsg = grGameContinues then
   begin
     Button_BackToGame.DoSetVisible;
-    case gGame.GameMode of
+    case gGameParams.GameMode of
       gmSingle,
       gmCampaign,
       gmReplaySingle: begin
@@ -1423,7 +1423,7 @@ begin
   begin
     Button_BackToGame.Hide;
     Button_Back.DoSetVisible;
-    case gGame.GameMode of
+    case gGameParams.GameMode of
       gmSingle,
       gmCampaign,
       gmReplaySingle: begin
@@ -1992,7 +1992,7 @@ begin
   //Results SP             -> ResultsMP -> ResultsSP
   if Sender = Button_Back then
   begin
-    if gGame.IsSingleplayer then
+    if gGameParams.IsSingleplayer then
       fOnShowSPStats
     else begin
       fReinitedLastTime := False; //Reset to default Value for next game (before game stop)

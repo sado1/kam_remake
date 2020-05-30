@@ -249,13 +249,13 @@ begin
   //pauses here until the user clicks ok. However for some reason we chose MessageBox
   //thus we need to pause the game manually
 
-  CanClose := (gGameApp = nil) or (gGameApp.Game = nil) or gGameApp.Game.IsReplay;
+  CanClose := (gGameApp = nil) or (gGameApp.Game = nil) or gGameApp.Game.Params.IsReplay;
 
   if not CanClose then
   begin
     //We want to pause the game for the time user verifies he really wants to close
-    WasRunning := not gGameApp.Game.IsMultiPlayerOrSpec
-                  and not gGameApp.Game.IsMapEditor
+    WasRunning := not gGameApp.Game.Params.IsMultiPlayerOrSpec
+                  and not gGameApp.Game.Params.IsMapEditor
                   and not gGameApp.Game.IsPaused;
 
     //Pause the game
@@ -569,7 +569,7 @@ end;
 function TKMMain.IsDebugChangeAllowed: Boolean;
 begin
   Result := (gGameApp.Game = nil)
-            or not gGameApp.Game.IsMultiPlayerOrSpec
+            or not gGameApp.Game.Params.IsMultiPlayerOrSpec
             or MULTIPLAYER_CHEATS;
 end;
 

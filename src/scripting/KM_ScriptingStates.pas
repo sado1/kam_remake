@@ -210,7 +210,7 @@ type
 
 implementation
 uses
-  KM_AI, KM_Game, KM_UnitWarrior,
+  KM_AI, KM_Game, KM_GameParams, KM_UnitWarrior,
   KM_HouseBarracks, KM_HouseSchool, KM_ResUnits, KM_CommonUtils, KM_HouseMarket,
   KM_Resource, KM_UnitTaskSelfTrain, KM_Hand, KM_AIDefensePos,
   KM_UnitsCollection, KM_HouseWoodcutters, KM_HouseTownHall,
@@ -2642,7 +2642,7 @@ end;
 function TKMScriptStates.IsMissionBuildType: Boolean;
 begin
   try
-    Result := gGame.IsNormalMission;
+    Result := gGameParams.IsNormalMission;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2655,7 +2655,7 @@ end;
 function TKMScriptStates.IsMissionFightType: Boolean;
 begin
   try
-    Result := gGame.IsTactic;
+    Result := gGameParams.IsTactic;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

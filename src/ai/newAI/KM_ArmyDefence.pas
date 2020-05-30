@@ -94,7 +94,7 @@ const
 implementation
 uses
   Math,
-  KM_Game, KM_HandsCollection, KM_Hand, KM_RenderAux,
+  KM_GameParams, KM_HandsCollection, KM_Hand, KM_RenderAux,
   KM_AIFields, KM_NavMesh;
 
 
@@ -156,7 +156,7 @@ end;
 
 procedure TKMDefencePosition.SetPosition(const Value: TKMPointDir);
 begin
-  Assert(gGame.IsMapEditor);
+  Assert(gGameParams.IsMapEditor);
   fPosition := Value;
 end;
 

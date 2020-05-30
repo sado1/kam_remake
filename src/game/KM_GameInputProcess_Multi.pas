@@ -87,7 +87,7 @@ implementation
 uses
   TypInfo,
   SysUtils, Math, KromUtils,
-  KM_GameApp, KM_Game, KM_HandsCollection, KM_NetworkTypes,
+  KM_GameApp, KM_Game, KM_GameParams, KM_HandsCollection, KM_NetworkTypes,
   KM_ResTexts, KM_ResSound, KM_Sound, KM_CommonUtils,
   KM_GameTypes;
 
@@ -191,8 +191,8 @@ var
   I,Tick: Cardinal;
 begin
   Assert(fDelay < MAX_SCHEDULE, 'Error, fDelay >= MAX_SCHEDULE');
-  if ((gGame.GameMode = gmMultiSpectate) and not (aCommand.CommandType in ALLOWED_BY_SPECTATORS)) // Do not allow spectators to command smth
-    or (gGame.IsMultiplayerGame                  // in multiplayer game
+  if ((gGameParams.GameMode = gmMultiSpectate) and not (aCommand.CommandType in ALLOWED_BY_SPECTATORS)) // Do not allow spectators to command smth
+    or (gGameParams.IsMultiplayerGame                  // in multiplayer game
       and IsSelectedObjectCommand(aCommand.CommandType) // block only commands for selected object
       and (gMySpectator.Selected <> nil)                // if there is selected object
       and not gMySpectator.IsSelectedMyObj) then        // and we try to make command to ally's object
@@ -205,7 +205,7 @@ begin
     Exit;
   end;
 
-  if (gGame.GameMode <> gmMultiSpectate)
+  if (gGameParams.GameMode <> gmMultiSpectate)
   and gMySpectator.Hand.AI.HasLost
   and not (aCommand.CommandType in ALLOWED_AFTER_DEFEAT) then
   begin

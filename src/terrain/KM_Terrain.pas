@@ -402,7 +402,7 @@ implementation
 uses
   KM_Log, KM_HandsCollection, KM_TerrainWalkConnect, KM_Resource, KM_Units, KM_DevPerfLog,
   KM_ResSound, KM_Sound, KM_UnitActionStay, KM_UnitWarrior, KM_TerrainPainter, KM_Houses,
-  KM_ResUnits, KM_ResSprites, KM_Hand, KM_Game, KM_GameTypes, KM_ScriptingEvents, KM_Utils, KM_DevPerfLogTypes;
+  KM_ResUnits, KM_ResSprites, KM_Hand, KM_Game, KM_GameParams, KM_GameTypes, KM_ScriptingEvents, KM_Utils, KM_DevPerfLogTypes;
 
 const
   HEIGHT_DEFAULT = 30;
@@ -1089,7 +1089,7 @@ begin
   else
   begin
     // Actualize terrain for map editor (brushes have array which helps them make smooth transitions)
-    if (gGame.GameMode = gmMapEd) then
+    if (gGameParams.GameMode = gmMapEd) then
       for I := 1 to fMapY do
         for J := 1 to fMapX do
           gGame.TerrainPainter.RMG2MapEditor(J,I, Land[I, J].BaseLayer.Terrain);
@@ -4395,7 +4395,7 @@ procedure TKMTerrain.UpdateWalkConnect(const aSet: TKMWalkConnectSet; aRect: TKM
 var
   WC: TKMWalkConnect;
 begin
-  if gGame.IsMapEditor then Exit;
+  if gGameParams.IsMapEditor then Exit;
   
   aRect := KMClipRect(aRect, 1, 1, fMapX - 1, fMapY - 1);
 

@@ -7,7 +7,7 @@ uses
   KM_CommonClasses, KM_Defaults, KM_Points, KM_CommonUtils, KM_HandLogistics,
   KM_GameApp, KM_ResLocales, KM_Log, KM_HandsCollection, KM_HouseCollection, KM_ResTexts, KM_Resource,
   KM_Terrain, KM_Units, KM_UnitWarrior, KM_Campaigns, KM_AIFields, KM_Houses,
-  GeneticAlgorithm, GeneticAlgorithmParameters, KM_AIParameters,
+  GeneticAlgorithm, GeneticAlgorithmParameters, KM_AIParameters, KM_GameParams,
   ComInterface, KM_RenderControl;
 
 
@@ -148,6 +148,7 @@ type
   type
     TKMDesyncRunKind = (drkGame, drkReplay, drkGameCRC, drkReplayCRC, drkGameSave);
   private
+    fGameModeSetEvent: TKMGameModeSetEvent;
     fRunSeed: Integer;
     fStartTime: Cardinal;
     fSaveName: string;
@@ -1089,10 +1090,11 @@ procedure TKMRunnerDesyncTest.SaveGame(aSaveName: string);
 var
   gameMode: TKMGameMode;
 begin
-  gameMode := gGame.GameMode;
-  gGame.SetGameMode(gmSingle);
+  gameMode := gGameParams.GameMode;
+
+  fGameModeSetEvent(gmSingle);
   gGame.SaveAndWait(aSaveName); //Save game and wait for async worker to complete all of his jobs
-  gGame.SetGameMode(gameMode);
+  fGameModeSetEvent(gameMode);
 end;
 
 procedure TKMRunnerDesyncTest.MoveSave(aSaveName: string);
@@ -1287,6 +1289,7 @@ var
 
     mapFullName := Format('%sMapsMP\%s\%s.dat',[ExeDir,fMap,fMap]);
     gGameApp.NewSingleMap(mapFullName, fMap, -1, 0, mdNone, AIType);
+    gGame.Params.GetGameModeSetEvent(fGameModeSetEvent);
   end;
 
 begin
@@ -1369,7 +1372,7 @@ begin
       fRngMismatchFound := False;
       fRngMismatchTick := -1;
 
-      gGame.SetGameMode(gmReplaySingle);
+      fGameModeSetEvent(gmReplaySingle);
 
       for I := 0 to savesCnt - 1 do
       begin
@@ -1403,7 +1406,7 @@ begin
 
             SimulateGame(0, fRngMismatchTick - 1);
 
-            gGame.SetGameMode(gmReplaySingle);
+            fGameModeSetEvent(gmReplaySingle);
 
             fCRCDesyncFound := False;
             fCRCDesyncTick := -1;

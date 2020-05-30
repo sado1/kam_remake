@@ -103,7 +103,7 @@ type
 
 implementation
 uses
-  KM_Game, KM_Render, KM_Resource, KM_DevPerfLog, KM_DevPerfLogTypes;
+  KM_Game, KM_GameParams, KM_Render, KM_Resource, KM_DevPerfLog, KM_DevPerfLogTypes;
 
 type
   TAnimLayer = (alWater, alFalls, alSwamp);
@@ -380,7 +380,7 @@ begin
   if not fUseVBO then Exit;
 
   //Skip updating VBOs if GameTick and ClipRect haven't changed
-  if not gGame.IsMapEditor
+  if not gGameParams.IsMapEditor
     and (fClipRect = fVBOLastClipRect)
     and (fVBOLastFOW = aFOW)
     and (gGame.GameTick = fVBOLastGameTick) then
@@ -866,7 +866,7 @@ procedure TRenderTerrain.RenderFences(aFOW: TKMFogOfWarCommon);
 var
   I,K: Integer;
 begin
-  if gGame.IsMapEditor and not (mlOverlays in gGame.VisibleLayers) then
+  if gGameParams.IsMapEditor and not (mlOverlays in gGame.VisibleLayers) then
     Exit;
 
   with gTerrain do

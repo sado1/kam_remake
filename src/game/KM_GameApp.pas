@@ -261,7 +261,7 @@ function TKMGameApp.CanClose: Boolean;
 begin
   //There are no unsaved changes in MainMenu and in Replays
   //In all other cases (maybe except gsOnHold?) there are potentially unsaved changes
-  Result := (gGame = nil) or gGame.IsReplay;
+  Result := (gGame = nil) or gGame.Params.IsReplay;
 end;
 
 
@@ -573,7 +573,7 @@ begin
     end;
   end;
 
-  if gGame.IsMultiPlayerOrSpec then
+  if gGame.Params.IsMultiPlayerOrSpec then
   begin
     if fNetworking.Connected then
     begin
@@ -591,7 +591,7 @@ begin
   if (gGame.GamePlayInterface <> nil) and (gGame.GamePlayInterface.GuiGameSpectator <> nil) then
     gGame.GamePlayInterface.GuiGameSpectator.CloseDropBox;
 
-  if (gGame.GameResult in [grWin, grDefeat]) and not gGame.IsReplay then
+  if (gGame.GameResult in [grWin, grDefeat]) and not gGame.Params.IsReplay then
   begin
     GameFinished;
     if fGameSettings.AutosaveAtGameEnd then
@@ -599,7 +599,7 @@ begin
   end;
 
   if Assigned(fOnGameEnd) then
-    fOnGameEnd(gGame.GameMode);
+    fOnGameEnd(gGame.Params.GameMode);
 end;
 
 
@@ -619,7 +619,7 @@ begin
   case aMsg of
     grWin,
     grDefeat,
-    grCancel:      case gGame.GameMode of
+    grCancel:      case gGame.Params.GameMode of
                       gmSingle:         fMainMenuInterface.PageChange(gpSinglePlayer);
                       gmCampaign:       if aTextMsg = '' then //Rely on text message (for campaign it should contain CampaignID)
                                           fMainMenuInterface.PageChange(gpMainMenu) //Goto main menu in case we fail campaing mission
@@ -631,7 +631,7 @@ begin
     grReplayEnd:   fMainMenuInterface.PageChange(gpReplays);
     grError,
     grDisconnect:  begin
-                      if gGame.IsMultiPlayerOrSpec then
+                      if gGame.Params.IsMultiPlayerOrSpec then
                         //After Error page User will go to the main menu, but Mutex will be still locked.
                         //We will need to unlock it on gGame destroy, so mark it with GameLockedMutex
                         gGame.GameLockedMutex := True;
@@ -758,7 +758,7 @@ begin
   end;
 
   //Clear chat for SP game, as it useddthere only for console commands
-  if gGame.IsSingleplayerGame then
+  if gGame.Params.IsSingleplayerGame then
     fChat.Clear;
 
   gGame.AfterStart; //Call after start separately, so errors in it could be sended in crashreport
@@ -781,7 +781,7 @@ begin
   // Get existing configuration
   SavedReplays := gGame.SavedReplays;
   gGame.SavedReplays := nil;
-  GameMode := gGame.GameMode;
+  GameMode := gGame.Params.GameMode;
   SaveFile := gGame.SaveFile;
   // Store GIP locally, to restore it later
   // GIP is the same for every checkpoint, that is why its not stored in the saved replay checkpoint, so we can reuse it
@@ -874,7 +874,7 @@ begin
                      -1, 0, aDifficulty);
 
   if Assigned(fOnGameStart) and (gGame <> nil) then
-    fOnGameStart(gGame.GameMode);
+    fOnGameStart(gGame.Params.GameMode);
 end;
 
 
@@ -886,7 +886,7 @@ begin
                      aAutoselectHumanLoc);
 
   if Assigned(fOnGameStart) and (gGame <> nil) then
-    fOnGameStart(gGame.GameMode);
+    fOnGameStart(gGame.Params.GameMode);
 end;
 
 
@@ -896,7 +896,7 @@ begin
   LoadGameFromSave(SaveName(aSaveName, EXT_SAVE_MAIN, False), gmSingle);
 
   if Assigned(fOnGameStart) and (gGame <> nil) then
-    fOnGameStart(gGame.GameMode);
+    fOnGameStart(gGame.Params.GameMode);
 end;
 
 
@@ -917,7 +917,7 @@ begin
     gGame.GamePlayInterface.GameStarted;
 
     if Assigned(fOnGameStart) and (gGame <> nil) then
-      fOnGameStart(gGame.GameMode);
+      fOnGameStart(gGame.Params.GameMode);
   end;
 end;
 
@@ -938,7 +938,7 @@ begin
   gGame.GamePlayInterface.GameStarted;
 
   if Assigned(fOnGameStart) and (gGame <> nil) then
-    fOnGameStart(gGame.GameMode);
+    fOnGameStart(gGame.Params.GameMode);
 end;
 
 
@@ -955,7 +955,7 @@ begin
     fMainMenuInterface.PageChange(gpError, 'Can not repeat last mission');
 
   if Assigned(fOnGameStart) and (gGame <> nil) then
-    fOnGameStart(gGame.GameMode);
+    fOnGameStart(gGame.Params.GameMode);
 
 end;
 
@@ -966,7 +966,7 @@ begin
   LoadGameFromScratch(aSizeX, aSizeY, gmSingle);
 
   if Assigned(fOnGameStart) and (gGame <> nil) then
-    fOnGameStart(gGame.GameMode);
+    fOnGameStart(gGame.Params.GameMode);
 
 end;
 
@@ -983,7 +983,7 @@ begin
   end;
 
   if Assigned(fOnGameStart) and (gGame <> nil) then
-    fOnGameStart(gGame.GameMode);
+    fOnGameStart(gGame.Params.GameMode);
 end;
 
 
@@ -1000,7 +1000,7 @@ begin
   LoadGameFromSave(aFilePath, gmReplaySingle); //Will be changed to gmReplayMulti depending on save contents
 
   if Assigned(fOnGameStart) and (gGame <> nil) then
-    fOnGameStart(gGame.GameMode);
+    fOnGameStart(gGame.Params.GameMode);
 end;
 
 
@@ -1009,7 +1009,7 @@ begin
   LoadGameFromSave(aSavPath, gmReplaySingle, aRplPath); //Will be changed to gmReplayMulti depending on save contents
 
   if Assigned(fOnGameStart) and (gGame <> nil) then
-    fOnGameStart(gGame.GameMode);
+    fOnGameStart(gGame.Params.GameMode);
 end;
 
 
@@ -1025,7 +1025,7 @@ begin
     Result := True;
 
     if Assigned(fOnGameStart) and (gGame <> nil) then
-      fOnGameStart(gGame.GameMode);
+      fOnGameStart(gGame.Params.GameMode);
   end;
 end;
 
@@ -1217,7 +1217,7 @@ begin
   if gGame <> nil then
   begin
     gGame.UpdateState(fGlobalTickCount);
-    if gGame.IsMultiPlayerOrSpec and (fGlobalTickCount mod 100 = 0) then
+    if gGame.Params.IsMultiPlayerOrSpec and (fGlobalTickCount mod 100 = 0) then
       SendMPGameInfo; //Send status to the server every 10 seconds
   end
   else

@@ -390,7 +390,7 @@ type
 implementation
 uses
   SysUtils, TypInfo, Math,
-  KM_GameApp, KM_Game, KM_HandsCollection,
+  KM_GameApp, KM_Game, KM_GameParams, KM_HandsCollection,
   KM_HouseMarket, KM_HouseBarracks, KM_HouseSchool, KM_HouseTownHall,
   KM_ScriptingEvents, KM_Alerts, KM_CommonUtils, KM_Log, KM_RenderUI,
   KM_GameTypes, KM_ResFonts, KM_Resource;
@@ -811,8 +811,8 @@ begin
       gicUnitDismiss:        SrcUnit.Dismiss;
       gicUnitDismissCancel:  SrcUnit.DismissCancel;
 
-      gicBuildToggleFieldPlan:   P.ToggleFieldPlan(KMPoint(Params[1],Params[2]), TKMFieldType(Params[3]), not gGame.IsMultiPlayerOrSpec); //Make sound in singleplayer mode only
-      gicBuildRemoveFieldPlan:   P.RemFieldPlan(KMPoint(Params[1],Params[2]), not gGame.IsMultiPlayerOrSpec); //Make sound in singleplayer mode only
+      gicBuildToggleFieldPlan:   P.ToggleFieldPlan(KMPoint(Params[1],Params[2]), TKMFieldType(Params[3]), not gGameParams.IsMultiPlayerOrSpec); //Make sound in singleplayer mode only
+      gicBuildRemoveFieldPlan:   P.RemFieldPlan(KMPoint(Params[1],Params[2]), not gGameParams.IsMultiPlayerOrSpec); //Make sound in singleplayer mode only
       gicBuildRemoveHouse:       P.RemHouse(KMPoint(Params[1],Params[2]), IsSilent);
       gicBuildRemoveHousePlan:   P.RemHousePlan(KMPoint(Params[1],Params[2]));
       gicBuildHousePlan:         if P.CanAddHousePlan(KMPoint(Params[2],Params[3]), TKMHouseType(Params[1])) then
@@ -858,14 +858,14 @@ begin
                                     P.Houses.UpdateResRequest;
                                   end;
 
-      gicTempAddScout:            if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or not gGame.IsMultiPlayerOrSpec) then
+      gicTempAddScout:            if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or not gGameParams.IsMultiPlayerOrSpec) then
                                     //Place a warrior
                                     P.AddUnit(utHorseScout, KMPoint(Params[1], Params[2]), True, 0, True);
-      gicTempRevealMap:           if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or not gGame.IsMultiPlayerOrSpec) then
+      gicTempRevealMap:           if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or not gGameParams.IsMultiPlayerOrSpec) then
                                     P.FogOfWar.RevealEverything;
-      gicTempVictory:             if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or not gGame.IsMultiPlayerOrSpec) then
+      gicTempVictory:             if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or not gGameParams.IsMultiPlayerOrSpec) then
                                     P.AI.Victory;
-      gicTempDefeat:              if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or not gGame.IsMultiPlayerOrSpec) then
+      gicTempDefeat:              if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or not gGameParams.IsMultiPlayerOrSpec) then
                                     P.AI.Defeat;
       gicTempDoNothing:           ;
 
@@ -893,7 +893,7 @@ begin
       gicGameHotkeySet:           P.SelectionHotkeys[Params[1]] := Params[2];
       gicGameMessageLogRead:      P.MessageLog[Params[1]].IsReadGIP := True;
       gicGamePlayerChange:        begin
-                                    Assert(not gGame.IsMapEditor);
+                                    Assert(not gGameParams.IsMapEditor);
                                     gHands[Params[1]].HandType := TKMHandType(Params[2]);
                                     gHands[Params[1]].OwnerNikname := AnsiStrParam;
                                     gGame.GamePlayInterface.UpdateUI; //Update players drop list
@@ -930,7 +930,7 @@ begin
 
   AddBeacon := False;
 
-  case gGame.GameMode of
+  case gGameParams.GameMode of
     gmSingle,
     gmCampaign,
     gmMulti:          AddBeacon := (aCommand.Params[3] <> PLAYER_NONE) and DoAddPlayerBeacon;
@@ -1003,12 +1003,12 @@ procedure TKMGameInputProcess.CmdBuild(aCommandType: TKMGameInputCommandType; co
 begin
   Assert(aCommandType in [gicBuildRemoveFieldPlan, gicBuildRemoveHouse, gicBuildRemoveHousePlan]);
 
-  if gGame.IsReplayOrSpectate then Exit;
+  if gGameParams.IsReplayOrSpectate then Exit;
 
   //Remove fake markup that will be visible only to gMySpectator until Server verifies it.
   //Must go before TakeCommand as it could execute command immediately (in singleplayer)
   //and the fake markup must be added first otherwise our logic in FieldsList fails
-  if gGame.IsMultiplayerGame and (aCommandType = gicBuildRemoveFieldPlan) then
+  if gGameParams.IsMultiplayerGame and (aCommandType = gicBuildRemoveFieldPlan) then
     gMySpectator.Hand.RemFakeFieldPlan(aLoc);
 
   TakeCommand(MakeCommand(aCommandType, aLoc.X, aLoc.Y));
@@ -1019,12 +1019,12 @@ procedure TKMGameInputProcess.CmdBuild(aCommandType: TKMGameInputCommandType; co
 begin
   Assert(aCommandType in [gicBuildToggleFieldPlan]);
 
-  if gGame.IsReplayOrSpectate then Exit;
+  if gGameParams.IsReplayOrSpectate then Exit;
 
   //Add fake markup that will be visible only to gMySpectator until Server verifies it.
   //Must go before TakeCommand as it could execute command immediately (in singleplayer)
   //and the fake markup must be added first otherwise our logic in FieldsList fails
-  if gGame.IsMultiplayerGame then
+  if gGameParams.IsMultiplayerGame then
     gMySpectator.Hand.ToggleFakeFieldPlan(aLoc, aFieldType);
 
   TakeCommand(MakeCommand(aCommandType, aLoc.X, aLoc.Y, Byte(aFieldType)));
@@ -1035,7 +1035,7 @@ procedure TKMGameInputProcess.CmdBuild(aCommandType: TKMGameInputCommandType; co
 begin
   Assert(aCommandType = gicBuildHousePlan);
 
-  if gGame.IsReplayOrSpectate then Exit;
+  if gGameParams.IsReplayOrSpectate then Exit;
 
   TakeCommand(MakeCommand(aCommandType, Byte(aHouseType), aLoc.X, aLoc.Y));
 end;

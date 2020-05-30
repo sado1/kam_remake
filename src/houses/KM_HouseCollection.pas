@@ -50,7 +50,7 @@ type
 implementation
 uses
   SysUtils, Types, Math,
-  KM_Game, KM_Terrain,
+  KM_Game, KM_GameParams, KM_Terrain,
   KM_HouseInn, KM_HouseMarket, KM_HouseBarracks, KM_HouseSchool, 
   KM_HouseTownHall, KM_HouseWoodcutters,
   KM_Resource,
@@ -134,7 +134,7 @@ end;
 
 procedure TKMHousesCollection.AddHouseToList(aHouse: TKMHouse);
 begin
-  Assert(gGame.GameMode = gmMapEd); // Allow to add existing House directly only in MapEd
+  Assert(gGameParams.GameMode = gmMapEd); // Allow to add existing House directly only in MapEd
   if (aHouse <> nil) then
     fHouses.Add(aHouse);
 end;
@@ -143,7 +143,7 @@ end;
 //Delete pointer to House in List
 procedure TKMHousesCollection.DeleteHouseFromList(aHouse: TKMHouse);
 begin
-  Assert(gGame.IsMapEditor); // Allow to delete existing House directly only in MapEd
+  Assert(gGameParams.IsMapEditor); // Allow to delete existing House directly only in MapEd
 
   if (aHouse <> nil) then
     fHouses.Extract(aHouse);
@@ -155,7 +155,7 @@ var
   I: Integer;
   newMapRect: TKMRect;
 begin
-  Assert(gGame.IsMapEditor);
+  Assert(gGameParams.IsMapEditor);
   if Count <= 0 then Exit;
 
   newMapRect := KMRectGrow(gTerrain.MapRect, aInsetRect);
@@ -171,7 +171,7 @@ procedure TKMHousesCollection.RemoveAllHouses;
 var
   I: Integer;
 begin
-  Assert(gGame.IsMapEditor);
+  Assert(gGameParams.IsMapEditor);
   if Count <= 0 then Exit;
 
   for I := 0 to Count - 1 do

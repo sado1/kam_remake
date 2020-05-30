@@ -108,7 +108,7 @@ uses
   SysUtils,
   KromUtils,
 
-  KM_Game, KM_Terrain, KM_AIFields,
+  KM_Game, KM_GameParams, KM_Terrain, KM_AIFields,
   KM_UnitsCollection, KM_MapEditorHistory,
   KM_Resource, KM_ResUnits, KM_ResTexts,
   KM_Log, KM_CommonUtils, KM_DevPerfLog, KM_DevPerfLogTypes;
@@ -183,7 +183,7 @@ var
 begin
   //RMG place storehouse before assembling NavMesh and create influences so AI initialize correctly
   gAIFields.Eye.AfterMissionInit(); // Update Eye so it sees all mines on the map
-  if not gGame.IsMapEditor then
+  if not gGameParams.IsMapEditor then
     for I := 0 to fCount - 1 do
       with fHandsList[I] do
         if IsComputer AND NeedToChooseFirstStorehouse() then
@@ -894,7 +894,7 @@ function TKMHandsCollection.RemAnyHouse(const Position: TKMPoint): Boolean;
 var
   H: TKMHouse;
 begin
-  Assert(gGame.IsMapEditor, 'RemAnyHouse is not allowed outside of MapEditor');
+  Assert(gGameParams.IsMapEditor, 'RemAnyHouse is not allowed outside of MapEditor');
 
   H := HousesHitTest(Position.X, Position.Y);
   Result := H <> nil;
@@ -914,7 +914,7 @@ var
   I: Integer;
   UnitType: TKMUnitType;
 begin
-  Assert(gGame.IsMapEditor, 'RemAnyUnit is not allowed outside of MapEditor');
+  Assert(gGameParams.IsMapEditor, 'RemAnyUnit is not allowed outside of MapEditor');
 
   UnitType := utNone;
   Result := False;
@@ -1087,7 +1087,7 @@ procedure TKMHandsCollection.UpdateVisualState;
 var
   I: Integer;
 begin
-  Assert(gGame.IsMapEditor);
+  Assert(gGameParams.IsMapEditor);
 
   for I := 0 to Count - 1 do
     fHandsList[I].UpdateVisualState;

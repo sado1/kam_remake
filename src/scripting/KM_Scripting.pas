@@ -203,7 +203,7 @@ const
 
 implementation
 uses
-  TypInfo, Math, KromUtils, KM_Game, KM_Resource, KM_ResUnits, KM_Log, KM_CommonUtils, KM_ResWares, KM_ScriptingConsoleCommands;
+  TypInfo, Math, KromUtils, KM_Game, KM_GameParams, KM_Resource, KM_ResUnits, KM_Log, KM_CommonUtils, KM_ResWares, KM_ScriptingConsoleCommands;
 
 const
   SCRIPT_LOG_EXT = '.log.txt';
@@ -2138,7 +2138,7 @@ const
 
   function AllowGameUpdate: Boolean;
   begin
-    Result := ((gGame <> nil) and not gGame.IsMapEditor)
+    Result := ((gGame <> nil) and not gGameParams.IsMapEditor)
               or ((gGame = nil) and (gScripting <> nil));
   end;
 
