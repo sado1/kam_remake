@@ -191,7 +191,7 @@ begin
   if not FileExists(aFilename) then Exit;
 
   FreeAndNil(fFnt);
-  fFnt := TKMFontDataEdit.Create;
+  fFnt := TKMFontDataEdit.Create(fntArial); //fntArial, why not, it looks like we dont care
 
   fFnt.LoadFontX(aFilename);
 
