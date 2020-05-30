@@ -2102,7 +2102,9 @@ begin
   //Wait for previous save async tasks to complete before proceeding
   fSaveWorkerThread.WaitForAllWorkToComplete;
 
+  {$IFDEF PERFLOG}
   gPerfLogs.SectionEnter(psGameSave);
+  {$ENDIF}
   try
     //Convert name to full path+name
     fullPath := SaveName(aSaveName, EXT_SAVE_MAIN, fParams.IsMultiplayer);
@@ -2150,7 +2152,9 @@ begin
           gLog.AddTime('Error saving random checks to ' + RngPath); //Silently log error, don't propagate error further
       end;
   finally
+    {$IFDEF PERFLOG}
     gPerfLogs.SectionLeave(psGameSave);
+    {$ENDIF}
   end;
   gLog.AddTime('Saving game', True);
 end;
