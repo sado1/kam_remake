@@ -213,7 +213,7 @@ var
   I: Integer;
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psScripting, gGame.GameTick);
+  gPerfLogs.SectionEnter(psScripting);
   {$ENDIF}
   try
     //Clear out dead IDs every now and again

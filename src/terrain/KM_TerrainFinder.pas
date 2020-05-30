@@ -268,7 +268,7 @@ var
   I, K: Integer;
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psTerrainFinder, gGame.GameTick);
+  gPerfLogs.SectionEnter(psTerrainFinder);
   {$ENDIF}
   if USE_WALKING_DISTANCE then
   begin

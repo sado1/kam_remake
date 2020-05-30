@@ -980,7 +980,7 @@ end;
 procedure TKMayor.UpdateState(aTick: Cardinal);
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psAICityCls, aTick);
+  gPerfLogs.SectionEnter(psAICityCls);
   {$ENDIF}
   try
     //Checking mod result against MAX_HANDS causes first update to happen ASAP

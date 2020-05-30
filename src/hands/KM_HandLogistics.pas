@@ -375,7 +375,7 @@ var
   Serf: TKMUnitSerf;
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psDelivery, aTick);
+  gPerfLogs.SectionEnter(psDelivery);
   {$ENDIF}
   try
     fQueue.UpdateState(aTick);
@@ -1086,7 +1086,7 @@ var
   DemandTaken: array of Boolean; //Each demand can only be taken once in our measurements
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psDelivery, gGame.GameTick);
+  gPerfLogs.SectionEnter(psDelivery);
   {$ENDIF}
   try
     SetLength(DemandTaken,fDemandCount+1);
@@ -1333,7 +1333,7 @@ end;
 function TKMDeliveries.TryCalculateBid(iO, iD: Integer; var aBidValue: Single; aSerf: TKMUnitSerf = nil): Boolean;
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psDelivery, gGame.GameTick);
+  gPerfLogs.SectionEnter(psDelivery);
   {$ENDIF}
   try
     Result := TryCalculateBidBasic(iO, iD, aBidValue, aSerf);
@@ -1391,7 +1391,7 @@ var
   BestImportance: TKMDemandImportance;
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psDelivery, gGame.GameTick);
+  gPerfLogs.SectionEnter(psDelivery);
   {$ENDIF}
   try
     iO := fQueue[aDeliveryID].OfferID;
@@ -1579,7 +1579,7 @@ var
   BestDemandId, OldDemandId: Integer; // Keep Int to assign to Delivery down below
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psDelivery, gGame.GameTick);
+  gPerfLogs.SectionEnter(psDelivery);
   {$ENDIF}
   try
     OldDemandId := fQueue[aDeliveryId].DemandID;
@@ -1641,7 +1641,7 @@ var
   BestImportance: TKMDemandImportance;
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psDelivery, gGame.GameTick);
+  gPerfLogs.SectionEnter(psDelivery);
   {$ENDIF}
   try
     //Find Offer matching Demand
@@ -1809,7 +1809,7 @@ procedure TKMDeliveries.AbandonDelivery(aID: Integer);
 begin
   gLog.LogDelivery('Abandoned delivery ID ' + IntToStr(aID));
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psDelivery, gGame.GameTick);
+  gPerfLogs.SectionEnter(psDelivery);
   {$ENDIF}
   try
     //Remove reservations without removing items from lists

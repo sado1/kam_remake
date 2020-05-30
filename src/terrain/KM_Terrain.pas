@@ -5145,7 +5145,7 @@ var
 begin
   if not DYNAMIC_TERRAIN then Exit;
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psTerrain, gGame.GameTick);
+  gPerfLogs.SectionEnter(psTerrain);
   {$ENDIF}
   try
     inc(fAnimStep);

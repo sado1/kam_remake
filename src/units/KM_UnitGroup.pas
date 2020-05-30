@@ -1947,7 +1947,7 @@ var
   NewMembers: TList;
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psHungarian, gGame.GameTick);
+  gPerfLogs.SectionEnter(psHungarian);
   {$ENDIF}
   try
     if not HUNGARIAN_GROUP_ORDER then Exit;

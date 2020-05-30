@@ -1064,7 +1064,7 @@ var
   I: Integer;
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psHands, gGame.GameTick);
+  gPerfLogs.SectionEnter(psHands);
   {$ENDIF}
   try
     for I := 0 to Count - 1 do

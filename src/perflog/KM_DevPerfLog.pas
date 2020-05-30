@@ -19,6 +19,8 @@ type
     function GetItem(aSection: TPerfSectionDev): TKMPerfLogSingle;
     function GetStackCPU: TKMPerfLogStackCPU;
     function GetStackGFX: TKMPerfLogStackGFX;
+
+    procedure SectionEnter(aSection: TPerfSectionDev; aTick: Integer; aTag: Integer = 0); overload;
   public
     Scale: Integer;
     Smoothing: Boolean;
@@ -31,7 +33,8 @@ type
     property StackCPU: TKMPerfLogStackCPU read GetStackCPU;
     property StackGFX: TKMPerfLogStackGFX read GetStackGFX;
 
-    procedure SectionEnter(aSection: TPerfSectionDev; aTick: Integer = -1; aTag: Integer = 0);
+    procedure SectionEnter(aSection: TPerfSectionDev); overload;//; aTick: Integer = -1; aTag: Integer = 0);
+
     procedure SectionLeave(aSection: TPerfSectionDev);
 
     procedure Clear;
@@ -158,7 +161,16 @@ begin
 end;
 
 
-procedure TKMPerfLogs.SectionEnter(aSection: TPerfSectionDev; aTick: Integer = -1; aTag: Integer = 0);
+procedure TKMPerfLogs.SectionEnter(aSection: TPerfSectionDev);
+begin
+  if IsCPUSection(aSection) then
+    SectionEnter(aSection, fTick)
+  else
+    SectionEnter(aSection, -1);
+end;
+
+
+procedure TKMPerfLogs.SectionEnter(aSection: TPerfSectionDev; aTick: Integer; aTag: Integer = 0);
 begin
   if Self = nil then Exit;
 

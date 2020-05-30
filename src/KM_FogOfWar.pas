@@ -193,7 +193,7 @@ var
   AroundRadius: Word;
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psGameFOW, gGameApp.Game.GameTick);
+  gPerfLogs.SectionEnter(psGameFOW);
   {$ENDIF}
   try
     AroundRadius := Radius + RENDER_RADIUS_ADD;
@@ -251,7 +251,7 @@ procedure TKMFogOfWar.CoverCircle(const Pos: TKMPoint; Radius: Word);
 
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psGameFOW, gGameApp.Game.GameTick);
+  gPerfLogs.SectionEnter(psGameFOW);
   {$ENDIF}
   try
     CoverFor(True, Radius);
@@ -271,7 +271,7 @@ var
   I, K: Word;
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psGameFOW, gGameApp.Game.GameTick);
+  gPerfLogs.SectionEnter(psGameFOW);
   {$ENDIF}
   try
     for I := TL.Y to BR.Y do
@@ -299,7 +299,7 @@ var
   I, K: Word;
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psGameFOW, gGameApp.Game.GameTick);
+  gPerfLogs.SectionEnter(psGameFOW);
   {$ENDIF}
   try
     for I := TL.Y to BR.Y do
@@ -326,7 +326,7 @@ var
   I,K: Word;
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psGameFOW, gGameApp.Game.GameTick);
+  gPerfLogs.SectionEnter(psGameFOW);
   {$ENDIF}
   try
     for I := 0 to fMapY - 1 do
@@ -348,7 +348,7 @@ var
   I,K: Word;
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psGameFOW, gGameApp.Game.GameTick);
+  gPerfLogs.SectionEnter(psGameFOW);
   {$ENDIF}
   try
     for I := 0 to fMapY - 1 do
@@ -556,7 +556,7 @@ begin
   if not fDynamicFOW then Exit;
 
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psGameFOW, gGameApp.Game.GameTick);
+  gPerfLogs.SectionEnter(psGameFOW);
   {$ENDIF}
   try
     Inc(fAnimStep);

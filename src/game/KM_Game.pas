@@ -2190,7 +2190,7 @@ begin
   //Wait for previous save async tasks to complete before proceeding
   fSaveWorkerThread.WaitForAllWorkToComplete;
 
-  gPerfLogs.SectionEnter(psGameSave, fGameTick);
+  gPerfLogs.SectionEnter(psGameSave);
   try
     //Convert name to full path+name
     fullPath := SaveName(aSaveName, EXT_SAVE_MAIN, IsMultiplayer);

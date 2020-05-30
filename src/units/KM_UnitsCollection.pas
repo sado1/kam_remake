@@ -341,7 +341,7 @@ var
   I: Integer;
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psUnits, aTick);
+  gPerfLogs.SectionEnter(psUnits);
   {$ENDIF}
   try
     for I := Count - 1 downto 0 do

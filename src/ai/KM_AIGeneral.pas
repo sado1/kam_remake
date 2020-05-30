@@ -752,7 +752,7 @@ end;
 procedure TKMGeneral.UpdateState(aTick: Cardinal);
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psAIArmyCls, aTick);
+  gPerfLogs.SectionEnter(psAIArmyCls);
   {$ENDIF}
   try
     //Update defence positions locations

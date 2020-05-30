@@ -152,7 +152,7 @@ const
   LONG_UPDATE = MAX_HANDS * 2;
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psAICityAdv, aTick);
+  gPerfLogs.SectionEnter(psAICityAdv);
   {$ENDIF}
   try
     if fSetup.AutoBuild AND (aTick mod MAX_HANDS = fOwner) then

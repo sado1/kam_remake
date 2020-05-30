@@ -399,7 +399,7 @@ var
   I: Integer;
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psScripting, gGame.GameTick);
+  gPerfLogs.SectionEnter(psScripting);
   {$ENDIF}
   try
     for I := Low(fEventHandlers[aEventType]) to High(fEventHandlers[aEventType]) do
@@ -817,7 +817,7 @@ var
   handler: TMethod;
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psScripting, gGame.GameTick);
+  gPerfLogs.SectionEnter(psScripting);
   {$ENDIF}
   try
     if MethodAssigned(evtGroupBeforeOrderSplit) then

@@ -100,7 +100,7 @@ end;
 procedure TKMAIFields.UpdateState(aTick: Cardinal);
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psAIFields, gGame.GameTick);
+  gPerfLogs.SectionEnter(psAIFields);
   {$ENDIF}
   try
     fNavMesh.UpdateState(aTick);

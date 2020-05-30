@@ -43,7 +43,7 @@ var
   AllowDiag: Boolean;
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psWalkConnect, gGame.GameTick);
+  gPerfLogs.SectionEnter(psWalkConnect);
   {$ENDIF}
   try
     Pass := WC_PASS[aWC];

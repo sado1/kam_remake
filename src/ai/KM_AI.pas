@@ -478,7 +478,7 @@ end;
 procedure TKMHandAI.UpdateState(aTick: Cardinal; aCheckGoals: Boolean);
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psAI, aTick);
+  gPerfLogs.SectionEnter(psAI);
   {$ENDIF}
   try
     if (WonOrLost <> wolNone) then

@@ -630,7 +630,7 @@ end;
 procedure TKMArmyManagement.UpdateState(aTick: Cardinal);
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psAIArmyAdv, aTick);
+  gPerfLogs.SectionEnter(psAIArmyAdv);
   {$ENDIF}
   try
     if (aTick mod MAX_HANDS = fOwner) then
