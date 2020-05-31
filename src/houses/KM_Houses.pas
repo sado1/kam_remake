@@ -527,7 +527,7 @@ begin
   begin
     Activate(False);
     fBuildingProgress := gRes.Houses[fType].MaxHealth;
-    gTerrain.SetHouse(fPosition, fType, hsBuilt, fOwner, (gGame <> nil) and (gGameParams.GameMode <> gmMapEd)); //Sets passability and flattens terrain if we're not in the map editor
+    gTerrain.SetHouse(fPosition, fType, hsBuilt, fOwner, (gGameParams <> nil) and not gGameParams.IsMapEditor); //Sets passability and flattens terrain if we're not in the map editor
   end
   else
     gTerrain.SetHouse(fPosition, fType, hsFence, fOwner); //Terrain remains neutral yet
