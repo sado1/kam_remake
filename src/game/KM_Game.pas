@@ -543,6 +543,7 @@ begin
   begin
     //Mission loader needs to read the data into MapEd (e.g. FOW revealers)
     fMapEditor := TKMMapEditor.Create(False, fTerrainPainter, fMapEditorInterface.HistoryUndoRedo, fMapEditorInterface.HistoryAddCheckpoint);
+    fMapEditor.OnEyedropper := fMapEditorInterface.GuiTerrain.GuiTiles.TilesTableSetTileTexId;
     fMapEditor.DetectAttachedFiles(aMissionFile);
   end;
 
