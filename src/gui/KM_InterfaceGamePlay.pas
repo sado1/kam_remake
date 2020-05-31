@@ -1770,7 +1770,7 @@ begin
     if gLog.IsDegubLogEnabled then
       gLog.LogDebug(Format('TKMGamePlayInterface.Allies_mute: Image.tag = %d NetPlayerIndex = %d',
                            [Image.Tag, fLineIdToNetPlayerId[Image.Tag]]));
-    gGame.Networking.ToggleMuted(fLineIdToNetPlayerId[Image.Tag]);
+    gNetworking.ToggleMuted(fLineIdToNetPlayerId[Image.Tag]);
     Update_Image_AlliesMute(Image);
   end;
 end;
@@ -1778,7 +1778,7 @@ end;
 
 procedure TKMGamePlayInterface.Update_Image_AlliesMute(aImage: TKMImage);
 begin
-  if gGame.Networking.IsMuted(fLineIdToNetPlayerId[aImage.Tag]) then
+  if gNetworking.IsMuted(fLineIdToNetPlayerId[aImage.Tag]) then
   begin
     aImage.Hint := gResTexts[TX_UNMUTE_PLAYER];
     aImage.TexId := 84;
@@ -1804,9 +1804,9 @@ begin
   for I := 0 to MAX_HANDS - 1 do
     HandIdToNetPlayersId[I] := -1;
 
-  for I := 1 to gGame.Networking.NetPlayers.Count do
-    if not gGame.Networking.NetPlayers[I].IsSpectator then
-      HandIdToNetPlayersId[gGame.Networking.NetPlayers[I].HandIndex] := I;
+  for I := 1 to gNetworking.NetPlayers.Count do
+    if not gNetworking.NetPlayers[I].IsSpectator then
+      HandIdToNetPlayersId[gNetworking.NetPlayers[I].HandIndex] := I;
 
   Teams := gHands.Teams;
 
@@ -1820,8 +1820,8 @@ begin
       end;
 
   // Spectators
-  for I := 1 to gGame.Networking.NetPlayers.Count do
-    if gGame.Networking.NetPlayers[I].IsSpectator then
+  for I := 1 to gNetworking.NetPlayers.Count do
+    if gNetworking.NetPlayers[I].IsSpectator then
     begin
       fLineIdToNetPlayerId[K] := I;
       Inc(K);
@@ -2027,7 +2027,7 @@ end;
 
 procedure TKMGamePlayInterface.ReturnToLobbyClick(Sender: TObject);
 begin
-  gGame.Networking.VoteReturnToLobby;
+  gNetworking.VoteReturnToLobby;
 end;
 
 
@@ -2260,7 +2260,7 @@ begin
     // In replays we show the beacon directly without GIP. In spectator we use -1 for hand index
     case fUIMode of
       umReplay:   Alerts.AddBeacon(aLoc, gMySpectator.HandID, gMySpectator.Hand.FlagColor, gGameApp.GlobalTickCount + ALERT_DURATION[atBeacon]);
-      umSpectate: gGame.GameInputProcess.CmdGame(gicGameAlertBeacon, aLoc, PLAYER_NONE, gGame.Networking.MyNetPlayer.FlagColor);
+      umSpectate: gGame.GameInputProcess.CmdGame(gicGameAlertBeacon, aLoc, PLAYER_NONE, gNetworking.MyNetPlayer.FlagColor);
       else        gGame.GameInputProcess.CmdGame(gicGameAlertBeacon, aLoc, gMySpectator.HandID, gMySpectator.Hand.FlagColor);
     end;
     Beacon_Cancel;
@@ -2657,7 +2657,7 @@ begin
     Panel_NetWaitButtons.Show;
   end;
 
-  if gGame.Networking.IsReconnecting then
+  if gNetworking.IsReconnecting then
   begin
     WPlayersMsg := gResTexts[TX_MULTIPLAYER_ATTEMPT_RECONNECTING];
     Button_NetDropPlayers.Visible := False;
@@ -2670,10 +2670,10 @@ begin
     WPlayersMsg := '';
     WDCPlayersMsg := '';
     for I := Low(aPlayers) to High(aPlayers) do
-      if not gGame.Networking.NetPlayers[aPlayers[I]].Dropped then
-        WPlayersMsg := WPlayersMsg + gGame.Networking.NetPlayers[aPlayers[I]].NiknameU + IfThen(I <> High(aPlayers), ', ')
+      if not gNetworking.NetPlayers[aPlayers[I]].Dropped then
+        WPlayersMsg := WPlayersMsg + gNetworking.NetPlayers[aPlayers[I]].NiknameU + IfThen(I <> High(aPlayers), ', ')
       else
-        WDCPlayersMsg := WDCPlayersMsg + gGame.Networking.NetPlayers[aPlayers[I]].NiknameU + IfThen(I <> High(aPlayers), ', ');
+        WDCPlayersMsg := WDCPlayersMsg + gNetworking.NetPlayers[aPlayers[I]].NiknameU + IfThen(I <> High(aPlayers), ', ');
 
     if WPlayersMsg <> '' then
       WPlayersMsg := gResTexts[TX_MULTIPLAYER_WAITING] + ' ' + WPlayersMsg;
@@ -3023,9 +3023,9 @@ var
 begin
   Image_AlliesHostStar.Hide;
   // Can't vote if we already have, and spectators don't get to vote unless there's only spectators left
-  Button_Menu_ReturnLobby.Enabled := not gGame.Networking.MyNetPlayer.VotedYes
-                                     and (gGame.Networking.NetPlayers.HasOnlySpectators
-                                          or not gGame.Networking.MyNetPlayer.IsSpectator);
+  Button_Menu_ReturnLobby.Enabled := not gNetworking.MyNetPlayer.VotedYes
+                                     and (gNetworking.NetPlayers.HasOnlySpectators
+                                          or not gNetworking.MyNetPlayer.IsSpectator);
 
   UpdateNetPlayersMapping;
 
@@ -3045,51 +3045,51 @@ begin
     if NetI = -1 then Continue; //In case we have AI players at hand, without NetI
 
     // Show players locale flag
-    if gGame.Networking.NetPlayers[NetI].IsComputer then
-      Image_AlliesFlag[I].TexID := GetAIPlayerIcon(gGame.Networking.NetPlayers[NetI].PlayerNetType)
+    if gNetworking.NetPlayers[NetI].IsComputer then
+      Image_AlliesFlag[I].TexID := GetAIPlayerIcon(gNetworking.NetPlayers[NetI].PlayerNetType)
     else
     begin
-      LocaleID := gResLocales.IndexByCode(gGame.Networking.NetPlayers[NetI].LangCode);
+      LocaleID := gResLocales.IndexByCode(gNetworking.NetPlayers[NetI].LangCode);
       if LocaleID <> -1 then
         Image_AlliesFlag[I].TexID := gResLocales[LocaleID].FlagSpriteID
       else
         Image_AlliesFlag[I].TexID := 0;
     end;
-    if gGame.Networking.HostIndex = NetI then
+    if gNetworking.HostIndex = NetI then
     begin
       Image_AlliesHostStar.Visible := True;
       Image_AlliesHostStar.Left := 190 + (I div ALLIES_ROWS)*380;
       Image_AlliesHostStar.Top := 80 + (I mod ALLIES_ROWS)*20;
     end;
 
-    if gGame.Networking.NetPlayers[NetI].IsHuman then
-      Label_AlliesPlayer[I].Caption := gGame.Networking.NetPlayers[NetI].NiknameU
+    if gNetworking.NetPlayers[NetI].IsHuman then
+      Label_AlliesPlayer[I].Caption := gNetworking.NetPlayers[NetI].NiknameU
     else
-      Label_AlliesPlayer[I].Caption := gHands[gGame.Networking.NetPlayers[NetI].HandIndex].OwnerName;
+      Label_AlliesPlayer[I].Caption := gHands[gNetworking.NetPlayers[NetI].HandIndex].OwnerName;
 
-    if (gGame.Networking.MyIndex <> NetI)                // If not my player
-      and gGame.Networking.NetPlayers[NetI].IsHuman then // and is not Computer
+    if (gNetworking.MyIndex <> NetI)                // If not my player
+      and gNetworking.NetPlayers[NetI].IsHuman then // and is not Computer
     begin
       Update_Image_AlliesMute(Image_AlliesMute[I]);
       Image_AlliesMute[I].DoSetVisible; //Do not use .Show here, because we do not want change Parent.Visible status from here
     end;
 
-    if gGame.Networking.NetPlayers[NetI].IsSpectator then
+    if gNetworking.NetPlayers[NetI].IsSpectator then
     begin
-      Label_AlliesPlayer[I].FontColor := gGame.Networking.NetPlayers[NetI].FlagColorDef;
+      Label_AlliesPlayer[I].FontColor := gNetworking.NetPlayers[NetI].FlagColorDef;
       DropBox_AlliesTeam[I].ItemIndex := 0;
       Label_AlliesTeam[I].Caption := gResTexts[TX_LOBBY_SPECTATOR];
     end
     else
     begin
-      Label_AlliesPlayer[I].FontColor := gHands[gGame.Networking.NetPlayers[NetI].HandIndex].FlagColor;
-      DropBox_AlliesTeam[I].ItemIndex := gGame.Networking.NetPlayers[NetI].Team;
-      if gGame.Networking.NetPlayers[NetI].Team = 0 then
+      Label_AlliesPlayer[I].FontColor := gHands[gNetworking.NetPlayers[NetI].HandIndex].FlagColor;
+      DropBox_AlliesTeam[I].ItemIndex := gNetworking.NetPlayers[NetI].Team;
+      if gNetworking.NetPlayers[NetI].Team = 0 then
         Label_AlliesTeam[I].Caption := '-'
       else
-        Label_AlliesTeam[I].Caption := IntToStr(gGame.Networking.NetPlayers[NetI].Team);
+        Label_AlliesTeam[I].Caption := IntToStr(gNetworking.NetPlayers[NetI].Team);
 
-      case gHands[gGame.Networking.NetPlayers[NetI].HandIndex].AI.WonOrLost of
+      case gHands[gNetworking.NetPlayers[NetI].HandIndex].AI.WonOrLost of
         wolNone: Image_AlliesWinLoss[I].Hide;
         wolWon:  begin
                     Image_AlliesWinLoss[I].TexId := 8;
@@ -3104,17 +3104,17 @@ begin
       end;
     end;
     // Strikethrough for disconnected players
-    Image_AlliesMute[I].Enabled := not gGame.Networking.NetPlayers[NetI].Dropped;
-    if gGame.Networking.NetPlayers[NetI].Dropped then
+    Image_AlliesMute[I].Enabled := not gNetworking.NetPlayers[NetI].Dropped;
+    if gNetworking.NetPlayers[NetI].Dropped then
       Image_AlliesMute[I].Hint := '';
-    Image_AlliesFlag[I].Enabled := not gGame.Networking.NetPlayers[NetI].Dropped;
-    Label_AlliesPlayer[I].Strikethrough := gGame.Networking.NetPlayers[NetI].Dropped;
+    Image_AlliesFlag[I].Enabled := not gNetworking.NetPlayers[NetI].Dropped;
+    Label_AlliesPlayer[I].Strikethrough := gNetworking.NetPlayers[NetI].Dropped;
     // Do not strike throught '-' symbol, when player has no team
-    Label_AlliesTeam[I].Strikethrough := gGame.Networking.NetPlayers[NetI].Dropped
-                                         and (gGame.Networking.NetPlayers[NetI].Team <> 0);
-    Label_AlliesPing[I].Strikethrough := gGame.Networking.NetPlayers[NetI].Dropped;
-    Label_AlliesFPS[I].Strikethrough := gGame.Networking.NetPlayers[NetI].Dropped;
-    DropBox_AlliesTeam[I].Enabled := (NetI = gGame.Networking.MyIndex); // Our index
+    Label_AlliesTeam[I].Strikethrough := gNetworking.NetPlayers[NetI].Dropped
+                                         and (gNetworking.NetPlayers[NetI].Team <> 0);
+    Label_AlliesPing[I].Strikethrough := gNetworking.NetPlayers[NetI].Dropped;
+    Label_AlliesFPS[I].Strikethrough := gNetworking.NetPlayers[NetI].Dropped;
+    DropBox_AlliesTeam[I].Enabled := (NetI = gNetworking.MyIndex); // Our index
     DropBox_AlliesTeam[I].Hide; // Use label for demos until we fix exploits
 
     Inc(I);
@@ -3137,10 +3137,10 @@ begin
 
     if NetI = -1 then Continue; //In case we have AI players at hand, without NetI
 
-    if (I < gGame.Networking.NetPlayers.Count) and (gGame.Networking.NetPlayers[NetI].IsHuman) then
+    if (I < gNetworking.NetPlayers.Count) and (gNetworking.NetPlayers[NetI].IsHuman) then
     begin
-      Ping := gGame.Networking.NetPlayers[NetI].GetInstantPing;
-      Fps := gGame.Networking.NetPlayers[NetI].FPS;
+      Ping := gNetworking.NetPlayers[NetI].GetInstantPing;
+      Fps := gNetworking.NetPlayers[NetI].FPS;
       Label_AlliesPing[I].Caption := WrapColor(IntToStr(Ping), GetPingColor(Ping));
       Label_AlliesPingFpsSlash[I].Caption := '/';
       Label_AlliesFPS[I].Caption := WrapColor(IntToStr(Fps), GetFPSColor(Fps));
@@ -4245,7 +4245,7 @@ begin
   // Update info on awaited players
   if Panel_NetWait.Visible then
   begin
-    if gGame.Networking.IsReconnecting then
+    if gNetworking.IsReconnecting then
       Label_NetDropPlayersDelay.Caption := ''
     else
     begin
@@ -4381,11 +4381,11 @@ begin
     SPackets := '';
     RTotal := 0;
     STotal := 0;
-    Period := GetTimeSince(gGame.Networking.PacketsStatsStartTime);
+    Period := GetTimeSince(gNetworking.PacketsStatsStartTime);
     for mKind := Low(TKMessageKind) to High(TKMessageKind) do
     begin
-      Received := gGame.Networking.PacketsReceived[mKind];
-      Sent := gGame.Networking.PacketsSent[mKind];
+      Received := gNetworking.PacketsReceived[mKind];
+      Sent := gNetworking.PacketsSent[mKind];
       RTotal := RTotal + Received;
       STotal := STotal + Sent;
       S2 := S2 + Format('%-25s: R: %s S:%s|', [GetEnumName(TypeInfo(TKMessageKind), Integer(mKind)),

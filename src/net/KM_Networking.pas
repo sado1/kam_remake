@@ -241,6 +241,10 @@ type
   end;
 
 
+var
+  gNetworking: TKMNetworking;
+
+
 implementation
 uses
   Math, StrUtils,
@@ -276,6 +280,8 @@ begin
   fFileSenderManager.OnTransferPacket := TransferOnPacket;
   gLog.OnLogMessage := PostLogMessageToChat;
   fVoteReturnToLobbySucceeded := False;
+
+  gNetworking := Self;
 end;
 
 
@@ -291,6 +297,8 @@ begin
   FreeAndNil(fSaveInfo);
   FreeAndNil(fNetGameOptions);
   FreeAndNil(fNetGameFilter);
+
+  gNetworking := nil;
 
   inherited;
 end;

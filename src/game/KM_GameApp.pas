@@ -683,7 +683,7 @@ begin
   if gMain <> nil then
     gMain.FormMain.ControlsReset;
 
-  gGame := TKMGame.Create(aGameMode, gRender, fNetworking, GameDestroyed);
+  gGame := TKMGame.Create(aGameMode, gRender, GameDestroyed);
   try
     gGame.LoadFromFile(FilePath, aGIPPath);
   except
@@ -729,7 +729,7 @@ begin
   if gMain <> nil then
     gMain.FormMain.ControlsReset;
 
-  gGame := TKMGame.Create(aGameMode, gRender, fNetworking, GameDestroyed);
+  gGame := TKMGame.Create(aGameMode, gRender, GameDestroyed);
   try
     gGame.GameStart(MissionFile, GameName, aFullCRC, aSimpleCRC, aCampaign, aMap, aDesiredLoc, aDesiredColor, aDifficulty, aAIType, aAutoselectHumanLoc);
   except
@@ -786,7 +786,7 @@ begin
   if gMain <> nil then
     gMain.FormMain.ControlsReset;
 
-  gGame := TKMGame.Create(GameMode, gRender, fNetworking, GameDestroyed);
+  gGame := TKMGame.Create(GameMode, gRender, GameDestroyed);
   try
     // SavedReplays have been just created, and we will reassign them in the next line.
     // Then Free the newly created save replays object first
@@ -834,7 +834,7 @@ begin
   if gMain <> nil then
     gMain.FormMain.ControlsReset;
 
-  gGame := TKMGame.Create(aGameMode, gRender, nil, GameDestroyed);
+  gGame := TKMGame.Create(aGameMode, gRender, GameDestroyed);
   gGame.SetSeed(4); //Every time the game will be the same as previous. Good for debug.
   try
     gGame.MapEdStartEmptyMap(aSizeX, aSizeY);

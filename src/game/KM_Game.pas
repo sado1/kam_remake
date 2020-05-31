@@ -21,7 +21,6 @@ type
   private //Irrelevant to savegame
     fTimerGame: TTimer;
     fGameOptions: TKMGameOptions;
-    fNetworking: TKMNetworking;
     fGameInputProcess: TKMGameInputProcess;
     fTextMission: TKMTextLibraryMulti;
     fPathfinding: TPathFinding;
@@ -129,7 +128,7 @@ type
     StartedFromMapEditor: Boolean; //True if we start game from map editor ('Try Map')
     StartedFromMapEdAsMPMap: Boolean;     //True if we start game from map editor ('Try Map') with MP map
 
-    constructor Create(aGameMode: TKMGameMode; aRender: TRender; aNetworking: TKMNetworking; aOnDestroy: TEvent);
+    constructor Create(aGameMode: TKMGameMode; aRender: TRender; aOnDestroy: TEvent);
     destructor Destroy; override;
 
     procedure GameStart(const aMissionFile, aGameName: UnicodeString; aFullCRC, aSimpleCRC: Cardinal; aCampaign: TKMCampaign;
@@ -235,7 +234,6 @@ type
 
     procedure UpdateMultiplayerTeams;
 
-    property Networking: TKMNetworking read fNetworking;
     property Pathfinding: TPathFinding read fPathfinding;
     property GameInputProcess: TKMGameInputProcess read fGameInputProcess write fGameInputProcess;
     property GameOptions: TKMGameOptions read fGameOptions;
@@ -281,7 +279,7 @@ uses
 //Create template for the Game
 //aRender - who will be rendering the Game session
 //aNetworking - access to MP stuff
-constructor TKMGame.Create(aGameMode: TKMGameMode; aRender: TRender; aNetworking: TKMNetworking; aOnDestroy: TEvent);
+constructor TKMGame.Create(aGameMode: TKMGameMode; aRender: TRender; aOnDestroy: TEvent);
 const
   UIMode: array[TKMGameMode] of TUIMode = (umSP, umSP, umMP, umSpectate, umSP, umReplay, umReplay);
 begin
@@ -295,7 +293,6 @@ begin
 
   fParams := TKMGameParams.Create(aGameMode, fSetGameTickEvent, fSetGameModeEvent, fSetMissionFileSP);
 
-  fNetworking := aNetworking;
   fOnDestroy := aOnDestroy;
 
   fAdvanceFrame := False;
@@ -511,17 +508,17 @@ begin
   case fParams.GameMode of
     gmMulti, gmMultiSpectate:
               begin
-                fNetworking.ResetPacketsStats;
-                fParams.DynamicFOW := fNetworking.NetGameFilter.DynamicFOW;
+                gNetworking.ResetPacketsStats;
+                fParams.DynamicFOW := gNetworking.NetGameFilter.DynamicFOW;
                 FillChar(PlayerEnabled, SizeOf(PlayerEnabled), #0);
-                for I := 1 to fNetworking.NetPlayers.Count do
-                  if not fNetworking.NetPlayers[I].IsSpectator then
-                    PlayerEnabled[fNetworking.NetPlayers[I].HandIndex] := True;
+                for I := 1 to gNetworking.NetPlayers.Count do
+                  if not gNetworking.NetPlayers[I].IsSpectator then
+                    PlayerEnabled[gNetworking.NetPlayers[I].HandIndex] := True;
 
                 //Fixed AIs are always enabled (e.g. coop missions)
-                for I := 0 to fNetworking.MapInfo.LocCount - 1 do
-                  if (fNetworking.MapInfo.CanBeAI[I] or fNetworking.MapInfo.CanBeAdvancedAI[I])
-                    and not fNetworking.MapInfo.CanBeHuman[I] then
+                for I := 0 to gNetworking.MapInfo.LocCount - 1 do
+                  if (gNetworking.MapInfo.CanBeAI[I] or gNetworking.MapInfo.CanBeAdvancedAI[I])
+                    and not gNetworking.MapInfo.CanBeHuman[I] then
                     PlayerEnabled[I] := True;
               end;
     gmSingle, gmCampaign: //Setup should tell us which player is AI and which not
@@ -623,7 +620,7 @@ begin
     case fParams.GameMode of
       gmMulti, gmMultiSpectate:
                 begin
-                  fGameInputProcess := TKMGameInputProcess_Multi.Create(gipRecording, fNetworking);
+                  fGameInputProcess := TKMGameInputProcess_Multi.Create(gipRecording, gNetworking);
                   fTextMission := TKMTextLibraryMulti.Create;
                   fTextMission.LoadLocale(ChangeFileExt(aMissionFile, '.%s.libx'));
                 end;
@@ -664,7 +661,7 @@ begin
 
   //Random after StartGame and ViewReplay should match
   if fParams.IsMultiPlayerOrSpec then
-    SetSeed(fNetworking.NetGameOptions.RandomSeed)
+    SetSeed(gNetworking.NetGameOptions.RandomSeed)
   else
     SetSeed(RandomRange(1, 2147483646));
 
@@ -746,7 +743,7 @@ begin
 end;
 
 
-//All setup data gets taken from fNetworking class
+//All setup data gets taken from gNetworking class
 procedure TKMGame.MultiplayerRig(aNewGame: Boolean);
 var
   I: Integer;
@@ -758,9 +755,9 @@ begin
   oldSpeedPT := fGameOptions.SpeedPT;
   oldSpeedAfterPT := fGameOptions.SpeedAfterPT;
   //Copy game options from lobby to this game
-  fGameOptions.Peacetime := fNetworking.NetGameOptions.Peacetime;
-  fGameOptions.SpeedPT := fNetworking.NetGameOptions.SpeedPT;
-  fGameOptions.SpeedAfterPT := fNetworking.NetGameOptions.SpeedAfterPT;
+  fGameOptions.Peacetime := gNetworking.NetGameOptions.Peacetime;
+  fGameOptions.SpeedPT := gNetworking.NetGameOptions.SpeedPT;
+  fGameOptions.SpeedAfterPT := gNetworking.NetGameOptions.SpeedAfterPT;
 
   isPT := IsPeacetime;
 
@@ -771,34 +768,34 @@ begin
     SetGameSpeed(GetNormalGameSpeed, False);
 
   //Check for default advanced AI's
-  if fNetworking.IsMap then
-    for I := 0 to fNetworking.MapInfo.LocCount - 1 do
-      if fNetworking.MapInfo.CanBeAdvancedAI[I]
-        and not fNetworking.MapInfo.CanBeAI[I]
-        and not fNetworking.MapInfo.CanBeHuman[I] then
+  if gNetworking.IsMap then
+    for I := 0 to gNetworking.MapInfo.LocCount - 1 do
+      if gNetworking.MapInfo.CanBeAdvancedAI[I]
+        and not gNetworking.MapInfo.CanBeAI[I]
+        and not gNetworking.MapInfo.CanBeHuman[I] then
         gHands[I].AI.Setup.EnableAdvancedAI; //Just enable Advanced AI, do not override MapEd AI params
 
   //Assign existing NetPlayers(1..N) to map players(0..N-1)
-  for I := 1 to fNetworking.NetPlayers.Count do
-    if not fNetworking.NetPlayers[I].IsSpectator then
+  for I := 1 to gNetworking.NetPlayers.Count do
+    if not gNetworking.NetPlayers[I].IsSpectator then
     begin
-      HIndex := fNetworking.NetPlayers[I].HandIndex;
-      gHands[HIndex].HandType := fNetworking.NetPlayers[I].GetPlayerType;
-      gHands[HIndex].FlagColor := fNetworking.NetPlayers[I].FlagColor;
+      HIndex := gNetworking.NetPlayers[I].HandIndex;
+      gHands[HIndex].HandType := gNetworking.NetPlayers[I].GetPlayerType;
+      gHands[HIndex].FlagColor := gNetworking.NetPlayers[I].FlagColor;
 
-      if fNetworking.NetPlayers[I].IsComputer then
+      if gNetworking.NetPlayers[I].IsComputer then
       begin
         //For MP locs we will set AI MP setup only when loc is allowed for humans too.
         //For only AI locs there we should use AI params set from MapEd
         if gHands[HIndex].CanBeHuman then
-          gHands[HIndex].AI.Setup.ApplyMultiplayerSetup(fNetworking.NetPlayers[I].IsAdvancedComputer)
+          gHands[HIndex].AI.Setup.ApplyMultiplayerSetup(gNetworking.NetPlayers[I].IsAdvancedComputer)
         else
           //Just enable Advanced AI, do not override MapEd AI params
-          gHands[HIndex].AI.Setup.EnableAdvancedAI(fNetworking.NetPlayers[I].IsAdvancedComputer);
+          gHands[HIndex].AI.Setup.EnableAdvancedAI(gNetworking.NetPlayers[I].IsAdvancedComputer);
       end
       else
       //We can start to play for defeated hand, f.e. if player just left the game and we restart from save with other player
-      if fNetworking.NetPlayers[I].IsHuman and gHands[HIndex].AI.HasLost then
+      if gNetworking.NetPlayers[I].IsHuman and gHands[HIndex].AI.HasLost then
       begin
         gHands[HIndex].AI.ResetWonOrLost; //Reset WonOrLost status
         gHands.UpdateGoalsForHand(HIndex, True); //Enable this hand goals for all other hands
@@ -806,10 +803,10 @@ begin
 
       //In saves players can be changed to AIs, which needs to be stored in the replay
       //Also one player could replace another, we have to update its player name
-      if fNetworking.SelectGameKind = ngkSave then
+      if gNetworking.SelectGameKind = ngkSave then
       begin
-        if fNetworking.NetPlayers[I].IsHuman then
-          playerNikname := fNetworking.NetPlayers[I].Nikname
+        if gNetworking.NetPlayers[I].IsHuman then
+          playerNikname := gNetworking.NetPlayers[I].Nikname
         else
           playerNikname := '';
 
@@ -817,7 +814,7 @@ begin
       end;
 
       //Update player nikname to show in the list for specs, in the stats etc
-      gHands[HIndex].OwnerNikname := fNetworking.NetPlayers[I].Nikname;
+      gHands[HIndex].OwnerNikname := gNetworking.NetPlayers[I].Nikname;
     end;
 
   //Find enabled human hands, where if there is no net player on that loc
@@ -826,7 +823,7 @@ begin
   begin
     if gHands[I].Enabled and gHands[I].IsHuman then
     begin
-      if fNetworking.NetPlayers.PlayerIndexToLocal(I) = -1 then
+      if gNetworking.NetPlayers.PlayerIndexToLocal(I) = -1 then
         gHands.UpdateGoalsForHand(I, False);
     end;
   end;
@@ -834,45 +831,45 @@ begin
 
   //Setup alliances
   //We mirror Lobby team setup on to alliances. Savegame and coop has the setup already
-  if (fNetworking.SelectGameKind = ngkMap) and not fNetworking.MapInfo.TxtInfo.BlockTeamSelection then
+  if (gNetworking.SelectGameKind = ngkMap) and not gNetworking.MapInfo.TxtInfo.BlockTeamSelection then
     UpdateMultiplayerTeams;
 
   FreeAndNil(gMySpectator); //May have been created earlier
-  if fNetworking.MyNetPlayer.IsSpectator then
+  if gNetworking.MyNetPlayer.IsSpectator then
   begin
     gMySpectator := TKMSpectator.Create(FindHandToSpec);
     gMySpectator.FOWIndex := PLAYER_NONE; //Show all by default while spectating
   end
   else
-    gMySpectator := TKMSpectator.Create(fNetworking.MyNetPlayer.HandIndex);
+    gMySpectator := TKMSpectator.Create(gNetworking.MyNetPlayer.HandIndex);
 
   //We cannot remove a player from a save (as they might be interacting with other players)
 
   //FOW should never be synced for saves, it should be left like it was when the save was
   //created otherwise it can cause issues in special maps using PlayerShareFog
-  if fNetworking.SelectGameKind <> ngkSave then
+  if gNetworking.SelectGameKind <> ngkSave then
     gHands.SyncFogOfWar; //Syncs fog of war revelation between players AFTER alliances
 
   //Multiplayer missions don't have goals yet, so add the defaults (except for special/coop missions)
-  if (fNetworking.SelectGameKind = ngkMap)
-    and not fNetworking.MapInfo.TxtInfo.IsSpecial
-    and not fNetworking.MapInfo.TxtInfo.IsCoop then
+  if (gNetworking.SelectGameKind = ngkMap)
+    and not gNetworking.MapInfo.TxtInfo.IsSpecial
+    and not gNetworking.MapInfo.TxtInfo.IsCoop then
     gHands.AddDefaultGoalsToAll(fParams.MissionMode);
 
-  fNetworking.OnPlay           := GameMPPlay;
-  fNetworking.OnReadyToPlay    := GameMPReadyToPlay;
-  fNetworking.OnCommands       := TKMGameInputProcess_Multi(fGameInputProcess).RecieveCommands;
-  fNetworking.OnTextMessage    := fGamePlayInterface.ChatMessage;
-  fNetworking.OnPlayersSetup   := fGamePlayInterface.AlliesOnPlayerSetup;
-  fNetworking.OnPingInfo       := fGamePlayInterface.AlliesOnPingInfo;
-  fNetworking.OnDisconnect     := GameMPDisconnect; //For auto reconnecting
-  fNetworking.OnJoinerDropped := OtherPlayerDisconnected;
-  fNetworking.OnUpdateMinimap := nil;
-  fNetworking.OnReassignedHost := nil; //Reset Lobby OnReassignedHost
-  fNetworking.OnReassignedJoiner := nil; //So it is no longer assigned to a lobby event
-  fNetworking.GameCreated;
+  gNetworking.OnPlay           := GameMPPlay;
+  gNetworking.OnReadyToPlay    := GameMPReadyToPlay;
+  gNetworking.OnCommands       := TKMGameInputProcess_Multi(fGameInputProcess).RecieveCommands;
+  gNetworking.OnTextMessage    := fGamePlayInterface.ChatMessage;
+  gNetworking.OnPlayersSetup   := fGamePlayInterface.AlliesOnPlayerSetup;
+  gNetworking.OnPingInfo       := fGamePlayInterface.AlliesOnPingInfo;
+  gNetworking.OnDisconnect     := GameMPDisconnect; //For auto reconnecting
+  gNetworking.OnJoinerDropped := OtherPlayerDisconnected;
+  gNetworking.OnUpdateMinimap := nil;
+  gNetworking.OnReassignedHost := nil; //Reset Lobby OnReassignedHost
+  gNetworking.OnReassignedJoiner := nil; //So it is no longer assigned to a lobby event
+  gNetworking.GameCreated;
 
-  if fNetworking.Connected and (fNetworking.NetGameState = lgsLoading) then
+  if gNetworking.Connected and (gNetworking.NetGameState = lgsLoading) then
     WaitingPlayersDisplay(True); //Waiting for players
 end;
 
@@ -883,19 +880,19 @@ var
   PlayerI: TKMHand;
   PlayerK: Integer;
 begin
-  for I := 1 to fNetworking.NetPlayers.Count do
-    if not fNetworking.NetPlayers[I].IsSpectator then
+  for I := 1 to gNetworking.NetPlayers.Count do
+    if not gNetworking.NetPlayers[I].IsSpectator then
     begin
-      PlayerI := gHands[fNetworking.NetPlayers[I].HandIndex];
-      for K := 1 to fNetworking.NetPlayers.Count do
-        if not fNetworking.NetPlayers[K].IsSpectator then
+      PlayerI := gHands[gNetworking.NetPlayers[I].HandIndex];
+      for K := 1 to gNetworking.NetPlayers.Count do
+        if not gNetworking.NetPlayers[K].IsSpectator then
         begin
-          PlayerK := fNetworking.NetPlayers[K].HandIndex;
+          PlayerK := gNetworking.NetPlayers[K].HandIndex;
 
           //Players are allies if they belong to same team (team 0 means free-for-all)
           if (I = K)
-          or ((fNetworking.NetPlayers[I].Team <> 0)
-          and (fNetworking.NetPlayers[I].Team = fNetworking.NetPlayers[K].Team)) then
+          or ((gNetworking.NetPlayers[I].Team <> 0)
+          and (gNetworking.NetPlayers[I].Team = gNetworking.NetPlayers[K].Team)) then
             PlayerI.Alliances[PlayerK] := atAlly
           else
             PlayerI.Alliances[PlayerK] := atEnemy;
@@ -905,11 +902,11 @@ end;
 
 
 // Everyone is ready to start playing
-// Issued by fNetworking at the time depending on each Players lag individually
+// Issued by gNetworking at the time depending on each Players lag individually
 procedure TKMGame.GameMPPlay;
 begin
   WaitingPlayersDisplay(False); //Finished waiting for players
-  fNetworking.AnnounceGameInfo(MissionTime, fParams.GameName);
+  gNetworking.AnnounceGameInfo(MissionTime, fParams.GameName);
   gLog.AddTime('Net game began');
 end;
 
@@ -929,17 +926,17 @@ end;
 
 procedure TKMGame.GameMPDisconnect(const aData: UnicodeString);
 begin
-  if fNetworking.NetGameState in [lgsGame, lgsReconnecting] then
+  if gNetworking.NetGameState in [lgsGame, lgsReconnecting] then
   begin
     gLog.LogNetConnection('GameMPDisconnect: ' + aData);
-    fNetworking.OnJoinFail := GameMPDisconnect; //If the connection fails (e.g. timeout) then try again
-    fNetworking.OnJoinAssignedHost := nil;
-    fNetworking.OnJoinSucc := nil;
-    fNetworking.AttemptReconnection;
+    gNetworking.OnJoinFail := GameMPDisconnect; //If the connection fails (e.g. timeout) then try again
+    gNetworking.OnJoinAssignedHost := nil;
+    gNetworking.OnJoinSucc := nil;
+    gNetworking.AttemptReconnection;
   end
   else
   begin
-    fNetworking.Disconnect;
+    gNetworking.Disconnect;
     gGameApp.StopGame(grDisconnect, gResTexts[TX_GAME_ERROR_NETWORK] + ' ' + aData)
   end;
 end;
@@ -1038,7 +1035,7 @@ var
   ValF: Double;
 begin
   gLog.AddTime('Replay failed a consistency check at tick ' + IntToStr(fParams.GameTick));
-  gLog.AddTime(Format('MyRand = %d, seed: %d; but command: %s', [aMyRand, GetKaMSeed, TKMGameInputProcess.StoredGIPCommandToString(aCommand)]));
+  gLog.AddTime(Format('MyRand = %d, seed: %d; but command: %s', [aMyRand, GetKaMSeed, fGameInputProcess.StoredGIPCommandToString(aCommand)]));
   if gLog.CanLogRandomChecks() then
   begin
     gLog.LogRandomChecks('Next KaMRandom seed values are: ');
@@ -1101,15 +1098,15 @@ procedure TKMGame.PlayerVictory(aHandIndex: TKMHandID);
 begin
   if fParams.IsMultiPlayerOrSpec then
   begin
-    if fNetworking.NetPlayers.PlayerIndexToLocal(aHandIndex) = -1 then
+    if gNetworking.NetPlayers.PlayerIndexToLocal(aHandIndex) = -1 then
       Exit;
 
-    fNetworking.PostLocalMessage(
+    gNetworking.PostLocalMessage(
       Format(gResTexts[TX_MULTIPLAYER_PLAYER_WON], [gHands[aHandIndex].GetOwnerNameColoredU]),
       csSystem);
 
-    if Assigned(fNetworking.OnPlayersSetup) then
-      fNetworking.OnPlayersSetup; //Update players panel
+    if Assigned(gNetworking.OnPlayersSetup) then
+      gNetworking.OnPlayersSetup; //Update players panel
   end;
 
   if fParams.GameMode = gmMultiSpectate then
@@ -1163,7 +1160,7 @@ begin
               end;
     gmMulti:  begin
                 if aShowDefeatMessage then
-                  fNetworking.PostLocalMessage(Format(gResTexts[TX_MULTIPLAYER_PLAYER_DEFEATED],
+                  gNetworking.PostLocalMessage(Format(gResTexts[TX_MULTIPLAYER_PLAYER_DEFEATED],
                                                       [gHands[aPlayerIndex].GetOwnerNameColoredU]), csSystem);
 
                 if aPlayerIndex = gMySpectator.HandID then
@@ -1173,40 +1170,40 @@ begin
                   fGamePlayInterface.ShowMPPlayMore(grDefeat);
                 end;
 
-                if Assigned(fNetworking.OnPlayersSetup) then
-                  fNetworking.OnPlayersSetup; //Update players panel
+                if Assigned(gNetworking.OnPlayersSetup) then
+                  gNetworking.OnPlayersSetup; //Update players panel
 
               end;
     gmMultiSpectate:
               begin
                 if aShowDefeatMessage then
-                  fNetworking.PostLocalMessage(Format(gResTexts[TX_MULTIPLAYER_PLAYER_DEFEATED],
+                  gNetworking.PostLocalMessage(Format(gResTexts[TX_MULTIPLAYER_PLAYER_DEFEATED],
                                                       [gHands[aPlayerIndex].GetOwnerNameColoredU]), csSystem);
 
-                if Assigned(fNetworking.OnPlayersSetup) then
-                  fNetworking.OnPlayersSetup; //Update players panel
+                if Assigned(gNetworking.OnPlayersSetup) then
+                  gNetworking.OnPlayersSetup; //Update players panel
               end;
     //We have not thought of anything to display on players defeat in Replay
   end;
 end;
 
 
-//Get list of players we are waiting for. We do it here because fNetworking does not knows about GIP
+//Get list of players we are waiting for. We do it here because gNetworking does not knows about GIP
 function TKMGame.GetWaitingPlayersList: TKMByteArray;
 var
   ErrorMsg: UnicodeString;
 begin
-  case fNetworking.NetGameState of
+  case gNetworking.NetGameState of
     lgsGame, lgsReconnecting:
         //GIP is waiting for next tick
         Result := TKMGameInputProcess_Multi(fGameInputProcess).GetWaitingPlayers(fParams.GameTick + 1);
     lgsLoading:
         //We are waiting during inital loading
-        Result := fNetworking.NetPlayers.GetNotReadyToPlayPlayers;
+        Result := gNetworking.NetPlayers.GetNotReadyToPlayPlayers;
     else  begin
             SetLength(Result, 0);
             ErrorMsg := 'GetWaitingPlayersList from wrong state: '
-                       + GetEnumName(TypeInfo(TKMNetGameState), Integer(fNetworking.NetGameState));
+                       + GetEnumName(TypeInfo(TKMNetGameState), Integer(gNetworking.NetGameState));
             gLog.AddTime(ErrorMsg);
             //raise Exception.Create(ErrorMsg); //This error sometimes occur when host quits, but that's not critical, so we can just log it
           end;
@@ -1217,13 +1214,13 @@ end;
 procedure TKMGame.WaitingPlayersDisplay(aWaiting: Boolean);
 begin
   fWaitingForNetwork := aWaiting;
-  fGamePlayInterface.ShowNetworkLag(aWaiting, GetWaitingPlayersList, fNetworking.IsHost);
+  fGamePlayInterface.ShowNetworkLag(aWaiting, GetWaitingPlayersList, gNetworking.IsHost);
 end;
 
 
 procedure TKMGame.WaitingPlayersDrop;
 begin
-  fNetworking.DropPlayers(GetWaitingPlayersList);
+  gNetworking.DropPlayers(GetWaitingPlayersList);
 end;
 
 
@@ -1507,7 +1504,7 @@ begin
 
   if not fParams.IsMultiPlayerOrSpec or (gHands = nil) then Exit;
 
-  if (fNetworking = nil) or not fNetworking.IsHost then Exit; //Only host can change game speed in MP
+  if (gNetworking = nil) or not gNetworking.IsHost then Exit; //Only host can change game speed in MP
 
   Result := IsMPGameSpeedChangeAllowed;
 end;
@@ -1530,8 +1527,8 @@ begin
       and gHands[I].IsHuman
       and not gHands[I].AI.HasLost then
     begin
-      netI := fNetworking.GetNetPlayerIndex(I);
-      if (netI <> -1) and fNetworking.NetPlayers[netI].Connected then
+      netI := gNetworking.GetNetPlayerIndex(I);
+      if (netI <> -1) and gNetworking.NetPlayers[netI].Connected then
         Exit;
     end;
   end;
@@ -1626,7 +1623,7 @@ begin
     if fParams.IsMultiPlayerOrSpec then
     begin
       SetGameSpeed(fGameOptions.SpeedAfterPT, False);
-      fNetworking.PostLocalMessage(gResTexts[TX_MP_PEACETIME_OVER], csNone);
+      gNetworking.PostLocalMessage(gResTexts[TX_MP_PEACETIME_OVER], csNone);
       IssueAutosaveCommand(True);
 
       gScriptEvents.ProcPeacetimeEnd;
@@ -1864,7 +1861,7 @@ begin
     GameInfo.PlayerCount := gHands.Count;
     for I := 0 to gHands.Count - 1 do
     begin
-      if fNetworking = nil then
+      if gNetworking = nil then
       begin
         GameInfo.Enabled[I] := False;
         GameInfo.CanBeHuman[I] := False;
@@ -1874,15 +1871,15 @@ begin
         GameInfo.Team[I] := 0;
       end else
       begin
-        netIndex := fNetworking.NetPlayers.PlayerIndexToLocal(I);
+        netIndex := gNetworking.NetPlayers.PlayerIndexToLocal(I);
         if netIndex <> -1 then
         begin
           GameInfo.Enabled[I] := True;
-          GameInfo.CanBeHuman[I] := fNetworking.NetPlayers[netIndex].IsHuman;
-          GameInfo.OwnerNikname[I] := fNetworking.NetPlayers[netIndex].Nikname;
-          GameInfo.HandTypes[I] := fNetworking.NetPlayers[netIndex].GetPlayerType;
-          GameInfo.Color[I] := fNetworking.NetPlayers[netIndex].FlagColor;
-          GameInfo.Team[I] := fNetworking.NetPlayers[netIndex].Team;
+          GameInfo.CanBeHuman[I] := gNetworking.NetPlayers[netIndex].IsHuman;
+          GameInfo.OwnerNikname[I] := gNetworking.NetPlayers[netIndex].Nikname;
+          GameInfo.HandTypes[I] := gNetworking.NetPlayers[netIndex].GetPlayerType;
+          GameInfo.Color[I] := gNetworking.NetPlayers[netIndex].FlagColor;
+          GameInfo.Team[I] := gNetworking.NetPlayers[netIndex].Team;
         end
         else
         begin
@@ -2013,7 +2010,7 @@ begin
   if fParams.IsMultiPlayerOrSpec and (aMPLocalDataPathName <> '') then
   begin
     try
-      GameMPLocalData := TKMGameMPLocalData.Create(fLastReplayTick, fNetworking.MyNetPlayer.StartLocation, fGamePlayInterface.Minimap);
+      GameMPLocalData := TKMGameMPLocalData.Create(fLastReplayTick, gNetworking.MyNetPlayer.StartLocation, fGamePlayInterface.Minimap);
       try
         GameMPLocalData.SaveToFileAsync(aMPLocalDataPathName, fSaveWorkerThread);
       finally
@@ -2247,7 +2244,7 @@ begin
     fGameInputProcess := TKMGameInputProcess_Single.Create(gipReplaying) //Replay
   else
     if fParams.IsMultiPlayerOrSpec then
-      fGameInputProcess := TKMGameInputProcess_Multi.Create(gipRecording, fNetworking) //Multiplayer
+      fGameInputProcess := TKMGameInputProcess_Multi.Create(gipRecording, gNetworking) //Multiplayer
     else
       fGameInputProcess := TKMGameInputProcess_Single.Create(gipRecording);
 
@@ -2502,7 +2499,7 @@ begin
 
   if fParams.IsMultiPlayerOrSpec then
   begin
-    if fNetworking.IsHost then
+    if gNetworking.IsHost then
     begin
       fGameInputProcess.CmdGame(GICType, UTCNow); //Timestamp must be synchronised
     end;
@@ -2597,13 +2594,13 @@ begin
     fLastReplayTick := fParams.GameTick;
 
     if fParams.IsMultiPlayerOrSpec then
-      fNetworking.LastProcessedTick := fParams.GameTick;
+      gNetworking.LastProcessedTick := fParams.GameTick;
 
     //Tell the master server about our game on the specific tick (host only)
-    if fParams.IsMultiPlayerOrSpec and fNetworking.IsHost
+    if fParams.IsMultiPlayerOrSpec and gNetworking.IsHost
       and ((fParams.IsNormalMission and (fParams.GameTick = ANNOUNCE_BUILD_MAP))
       or (fParams.IsTactic and (fParams.GameTick = ANNOUNCE_BATTLE_MAP))) then
-    fNetworking.ServerQuery.SendMapInfo(fParams.GameName, fParams.GameMapFullCRC, fNetworking.NetPlayers.GetConnectedCount);
+    gNetworking.ServerQuery.SendMapInfo(fParams.GameName, fParams.GameMapFullCRC, gNetworking.NetPlayers.GetConnectedCount);
 
     fScripting.UpdateState;
     UpdatePeacetime; //Send warning messages about peacetime if required
@@ -2748,11 +2745,11 @@ begin
         gmMultiSpectate:  begin
                             gipMP := TKMGameInputProcess_Multi(fGameInputProcess);
                             // For MP game we have to play tick (and possible GIP) only in lgsGame state
-                            // Otherwise fNetworking.MyIndex could contain corrupted data
+                            // Otherwise gNetworking.MyIndex could contain corrupted data
                             // (f.e. when reconnecting MyIndex is reset by TKMNetworking.Join, assuming we will receive a new one with PlayerList packet
                             // which could be delayed)
                             // Other NetGameState's states could also have potential problems
-                            if fNetworking.NetGameState = lgsGame then // MP game in Game state
+                            if gNetworking.NetGameState = lgsGame then // MP game in Game state
                             begin
                               if gipMP.CommandsConfirmed(fParams.GameTick + 1) then
                                 Result := PlayGameTick
@@ -2842,7 +2839,7 @@ begin
       and (GetTimeSince(fLastTimeUserAction) > PLAYER_AFK_TIME*60*1000)
       and (GetTimeSince(fLastAfkMessageSent) > PLAYER_AFK_MESSAGE_DELAY) then
     begin
-      fNetworking.PostMessage(TX_PLAYER_AFK_MESSAGE, csSystem, fNetworking.MyNetPlayer.NiknameColoredU,
+      gNetworking.PostMessage(TX_PLAYER_AFK_MESSAGE, csSystem, gNetworking.MyNetPlayer.NiknameColoredU,
                               WrapColor(IntToStr(GetTimeSince(fLastTimeUserAction) div 60000), icGoldenYellow));
       fLastAfkMessageSent := TimeGet;
     end;
