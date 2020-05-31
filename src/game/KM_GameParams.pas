@@ -11,6 +11,7 @@ type
   private
     fGameMode: TKMGameMode;
     fMissionMode: TKMissionMode;
+    fGameTick: Cardinal;
     procedure SetGameMode(aGameMode: TKMGameMode);
   public
     constructor Create(out aSetGameModeEvent: TKMGameModeSetEvent);
@@ -18,6 +19,7 @@ type
 
     property GameMode: TKMGameMode read fGameMode;
     property MissionMode: TKMissionMode read fMissionMode write fMissionMode;
+    property GameTick: Cardinal read fGameTick;
 
     function IsMapEditor: Boolean;
     function IsCampaign: Boolean;
@@ -32,6 +34,8 @@ type
 
     function IsTactic: Boolean;
     function IsNormalMission: Boolean;
+
+    procedure UpdateState(aGameTick: Cardinal);
 
     {$IFDEF RUNNER}
     procedure GetGameModeSetEvent(out aSetGameModeEvent: TKMGameModeSetEvent);
@@ -49,6 +53,8 @@ implementation
 constructor TKMGameParams.Create(out aSetGameModeEvent: TKMGameModeSetEvent);
 begin
   inherited Create;
+
+  fGameTick := 0;
 
   aSetGameModeEvent := SetGameMode;
 
@@ -76,7 +82,6 @@ procedure TKMGameParams.SetGameMode(aGameMode: TKMGameMode);
 begin
   fGameMode := aGameMode;
 end;
-
 
 
 function TKMGameParams.IsMapEditor: Boolean;
@@ -149,6 +154,12 @@ end;
 function TKMGameParams.IsReplayOrSpectate: Boolean;
 begin
   Result := fGameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti];
+end;
+
+
+procedure TKMGameParams.UpdateState(aGameTick: Cardinal);
+begin
+  fGameTick := aGameTick;
 end;
 
 

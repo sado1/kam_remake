@@ -108,7 +108,7 @@ type
 
 implementation
 uses
-  KM_RenderAux, KM_Game, KM_HandsCollection, KM_Terrain, KM_ResUnits, KM_UnitGroup,
+  KM_RenderAux, KM_Game, KM_GameParams, KM_HandsCollection, KM_Terrain, KM_ResUnits, KM_UnitGroup,
   KM_UnitActionGoInOut, KM_UnitActionStay, KM_UnitTaskBuild, KM_PathFinding,
   KM_UnitWarrior, KM_Log, KM_Resource, KM_CommonClassesExt;
 
@@ -237,7 +237,7 @@ begin
     Exit;
   ExplanationLog.Add(Format(
   '%d'+#9+'%d:%d > %d:%d > %d:%d'+#9+Explanation+'',
-  [ gGame.GameTick,
+  [ gGameParams.GameTick,
     fUnit.PrevPosition.X,
     fUnit.PrevPosition.Y,
     fUnit.CurrPosition.X,

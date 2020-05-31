@@ -1104,7 +1104,7 @@ var
         Squad := AvailableSquads[GT].Squads[I];
         Squad.FinalPosition := KMPointDir(  Positions[Cnt], KMGetDirection( Squad.Position, Positions[Cnt] )  );
         // Time limit does not make sence for unit in combat
-        //Squad.TimeLimit := gGame.GameTickCount + KMDistanceAbs(Position, Squads[ClosestIdx].Position) * TIME_PER_A_TILE;
+        //Squad.TimeLimit := gGameParams.GameTick + KMDistanceAbs(Position, Squads[ClosestIdx].Position) * TIME_PER_A_TILE;
         Cnt := Cnt + 1;
         if (Cnt >= Length(Positions)) then
           Exit;

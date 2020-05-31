@@ -208,7 +208,7 @@ type
     procedure OverlayUpdate;
     procedure OverlaySet(const aText: UnicodeString; aPlayer: Shortint);
     procedure OverlayAppend(const aText: UnicodeString; aPlayer: Shortint);
-    property GameTick: Cardinal read fGameTick;
+//    property GameTick: Cardinal read fGameTick;
     property GameName: UnicodeString read fGameName;
     property CampaignName: TKMCampaignId read fCampaignName;
     property CampaignMap: Byte read fCampaignMap;
@@ -2564,6 +2564,7 @@ end;
 procedure TKMGame.IncGameTick;
 begin
   Inc(fGameTick); //Thats our tick counter for gameplay events
+  fParams.UpdateState(fGameTick);
   if LOG_GAME_TICK then
     gLog.AddTime('Tick: ' + IntToStr(fGameTick));
 end;

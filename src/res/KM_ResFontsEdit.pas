@@ -16,6 +16,15 @@ type
   TKMFontDataEdit = class(TKMFontData)
   private
     fTexPadding: Byte;
+    fCodepage: Word;
+    fIsUnicode: Boolean;
+    fTexSizeX: Word;
+    fTexSizeY: Word;
+    fUnknown: SmallInt;
+    fLineSpacing: Byte;
+    fBaseHeight: SmallInt;
+    fWordSpacing: SmallInt;
+    fCharSpacing: SmallInt;
     function GetTexData(aIndex: Integer): TKMCardinalArray;
   public
     procedure CreateFont(aFontName: string; aFontSize: Byte; aFontStyle: TFontStyles; aAntialias: Boolean; const aChars: TWideCharArray);

@@ -883,7 +883,7 @@ end;
 function TKMScriptStates.GameTime: Cardinal;
 begin
   try
-    Result := gGame.GameTick;
+    Result := gGameParams.GameTick;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

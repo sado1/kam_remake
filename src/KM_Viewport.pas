@@ -56,7 +56,7 @@ implementation
 uses
   Math, KromUtils,
   KM_Resource, KM_ResCursors,
-  KM_Main, KM_GameApp, KM_Game, KM_Sound,
+  KM_Main, KM_GameApp, KM_Sound,
   KM_Defaults, KM_CommonUtils;
 
 
@@ -213,7 +213,7 @@ begin
   fPanFrom := fPosition;
   fPanImmidiately := aTicksCnt = 0;
   fPanProgress := 0;
-  fPanDuration := Round(aTicksCnt * gGame.GameTickDuration);
+  fPanDuration := Round(aTicksCnt * gGameApp.Game.GameTickDuration);
   //Panning will be skipped when duration is zero
   if fPanImmidiately then
     SetPosition(aLoc);

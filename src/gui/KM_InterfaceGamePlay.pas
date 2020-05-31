@@ -2008,7 +2008,7 @@ begin
   if Sender = Button_ReplaySaveAt then
   begin
     gGame.SaveReplayToMemory();
-    AddReplayMark(gGame.GameTick);
+    AddReplayMark(gGameParams.GameTick);
   end;
 
   if Sender = Dropbox_ReplayFOW then
@@ -2345,7 +2345,7 @@ begin
   begin
     gGame.IsPaused := True;
     UpdateReplayButtons(False); //Update buttons
-    UpdateState(gGame.GameTick);
+    UpdateState(gGameParams.GameTick);
   end;
 
   UpdateReplayMarks;
@@ -4194,10 +4194,10 @@ begin
   begin
     LastTick := Max4(gGame.LastReplayTick,
                      gGame.GameInputProcess.GetLastTick,
-                     gGame.GameTick,
+                     gGameParams.GameTick,
                      gGame.SavedReplays.LastTick);
     // Replays can continue after end, keep the bar in 0..1 range
-    ReplayBar_Replay.SetParameters(gGame.GameTick,
+    ReplayBar_Replay.SetParameters(gGameParams.GameTick,
                                    gGame.GameOptions.Peacetime*60*10,
                                    LastTick);
 
@@ -4213,7 +4213,7 @@ begin
   begin
     Label_Clock.Caption := TimeToString(gGame.MissionTime);
     if SHOW_GAME_TICK then
-      Label_Clock.Caption := Label_Clock.Caption + '|' + IntToStr(gGame.GameTick);
+      Label_Clock.Caption := Label_Clock.Caption + '|' + IntToStr(gGameParams.GameTick);
   end;
 
   // Keep on updating these menu pages as game data keeps on changing
@@ -4324,7 +4324,7 @@ begin
 
   // Debug info
   if SHOW_GAME_TICK then
-    S := S + 'Tick: ' + IntToStr(gGame.GameTick) + '|';
+    S := S + 'Tick: ' + IntToStr(gGameParams.GameTick) + '|';
 
   if SHOW_SPRITE_COUNT then
     S := IntToStr(gHands.UnitCount) + ' units on map|' +
