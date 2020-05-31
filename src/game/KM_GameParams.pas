@@ -2,7 +2,7 @@ unit KM_GameParams;
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_Defaults, KM_CommonTypes, KM_GameTypes;
+  KM_Defaults, KM_CommonTypes, KM_GameTypes, KM_MapTypes;
 
 type
   TKMGameModeSetEvent = procedure (aGameMode: TKMGameMode) of object;
@@ -18,6 +18,9 @@ type
     fGameMapSimpleCRC: Cardinal; //CRC of map (based on Map and Dat) used in MapEd
     fGameMapFullCRC: Cardinal; //CRC of map for reporting stats to master server. Also used in MapEd
     fMissionFileSP: UnicodeString; //Relative pathname to mission we are playing, so it gets saved to crashreport. SP only, see GetMissionFile.
+
+    fMissionDifficulty: TKMMissionDifficulty;
+
     fDynamicFOW: Boolean;
 
     procedure SetGameTick(aGameTick: Cardinal);
@@ -41,6 +44,7 @@ type
     property GameMapFullCRC: Cardinal read fGameMapFullCRC write fGameMapFullCRC;
     property MissionFileSP: UnicodeString read fMissionFileSP;
     property MissionFile: UnicodeString read GetMissionFile;
+    property MissionDifficulty: TKMMissionDifficulty read fMissionDifficulty write fMissionDifficulty;
     property DynamicFOW: Boolean read GetDynamicFOW write SetDynamicFOW;
 
     function IsMapEditor: Boolean;
@@ -56,6 +60,8 @@ type
 
     function IsTactic: Boolean;
     function IsNormalMission: Boolean;
+
+    function HasMissionDifficulty: Boolean;
 
     {$IFDEF RUNNER}
     procedure GetGameModeSetEvent(out aSetGameModeEvent: TKMGameModeSetEvent);
@@ -80,6 +86,7 @@ begin
 
   fGameMode := aGameMode;
   fGameTick := 0;
+  fMissionDifficulty := mdNone;
   DynamicFOW := False;
 
   aSetGameTickEvent := SetGameTick;
@@ -218,6 +225,12 @@ end;
 function TKMGameParams.IsReplayOrSpectate: Boolean;
 begin
   Result := fGameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti];
+end;
+
+
+function TKMGameParams.HasMissionDifficulty: Boolean;
+begin
+  Result := fMissionDifficulty <> mdNone;
 end;
 
 

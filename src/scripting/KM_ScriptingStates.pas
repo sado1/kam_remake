@@ -2869,7 +2869,7 @@ end;
 function TKMScriptStates.MissionDifficulty: TKMMissionDifficulty;
 begin
   try
-    Result := gGame.MissionDifficulty;
+    Result := gGameParams.MissionDifficulty;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

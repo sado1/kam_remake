@@ -2228,11 +2228,11 @@ begin
 
   Label_GameTime.Caption := TimeToString(gGame.MissionTime);
   Label_MapName.Caption := Copy(gGameParams.GameName, 0, EnsureRange(Length(gGameParams.GameName), 1, MAX_MAPNAME_LENGTH));
-  if gGame.HasMissionDifficulty then
+  if gGameParams.HasMissionDifficulty then
   begin
     Label_MapName.Caption := Format('%s|[$%s]( %s )[]', [Label_MapName.Caption,
-                                    IntToHex(DIFFICULTY_LEVELS_COLOR[gGame.MissionDifficulty] and $00FFFFFF, 6),
-                                    gResTexts[DIFFICULTY_LEVELS_TX[gGame.MissionDifficulty]]]);
+                                    IntToHex(DIFFICULTY_LEVELS_COLOR[gGameParams.MissionDifficulty] and $00FFFFFF, 6),
+                                    gResTexts[DIFFICULTY_LEVELS_TX[gGameParams.MissionDifficulty]]]);
     Panel_Track.Top := PANEL_TRACK_TOP + 15;
   end else
     Panel_Track.Top := PANEL_TRACK_TOP;

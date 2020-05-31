@@ -140,7 +140,7 @@ begin
   fRepeatCampMap := gGame.CampaignMap;
   fRepeatLocation := gGame.PlayerLoc;
   fRepeatColor := gGame.PlayerColor;
-  fRepeatDifficulty := gGame.MissionDifficulty;
+  fRepeatDifficulty := gGameParams.MissionDifficulty;
   fRepeatAIType := gGame.AIType;
 
   // When exit mission update stats to build actual charts
@@ -186,8 +186,8 @@ begin
   Label_Results.Caption := Label_Results.Caption + gGameParams.GameName; //Don't show the mission time in SP because it's already shown elsewhere
 
   //Append difficulty level to game results caption
-  if gGame.MissionDifficulty <> mdNone then
-    Label_Results.Caption := Label_Results.Caption + ' (' + gResTexts[DIFFICULTY_LEVELS_TX[gGame.MissionDifficulty]] + ')';
+  if gGameParams.MissionDifficulty <> mdNone then
+    Label_Results.Caption := Label_Results.Caption + ' (' + gResTexts[DIFFICULTY_LEVELS_TX[gGameParams.MissionDifficulty]] + ')';
 
 
   //This is SP menu, we are dead sure there's only one Human player (NOT REALLY)

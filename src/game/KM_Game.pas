@@ -61,9 +61,6 @@ type
 
     fBlockGetPointer: Boolean; //?? should be saved ??
 
-    //Saved and loaded via GameInfo
-    fMissionDifficulty: TKMMissionDifficulty;
-
     fUIDTracker: Cardinal;       //Units-Houses tracker, to issue unique IDs
 
     //Saved to local data
@@ -219,10 +216,8 @@ type
     property SkipReplayEndCheck: Boolean read fSkipReplayEndCheck write fSkipReplayEndCheck;
     property IgnoreConsistencyCheckErrors: Boolean read fIgnoreConsistencyCheckErrors;
 
-    property MissionDifficulty: TKMMissionDifficulty read fMissionDifficulty write fMissionDifficulty;
     property GameLockedMutex: Boolean read fGameLockedMutex write fGameLockedMutex;
 
-    function HasMissionDifficulty: Boolean;
     function GetNewUID: Integer;
     function GetNormalGameSpeed: Single;
     procedure StepOneFrame;
@@ -310,7 +305,6 @@ begin
   fSkipReplayEndCheck := False;
   fWaitingForNetwork := False;
   fGameOptions  := TKMGameOptions.Create;
-  fMissionDifficulty := mdNone;
   fGameSpeedChangeTick := 0;
   fGameSpeedChangeTime := 0;
   fGameSpeedChangeAllowed := True;
@@ -499,7 +493,7 @@ begin
   else
     fCampaignName := NO_CAMPAIGN;
   fCampaignMap := aCampMap;
-  fMissionDifficulty := aMapDifficulty;
+  fParams.MissionDifficulty := aMapDifficulty;
   fAIType := aAIType;
 
   if fParams.IsMultiPlayerOrSpec then
@@ -1657,12 +1651,6 @@ begin
 end;
 
 
-function TKMGame.HasMissionDifficulty: Boolean;
-begin
-  Result := fMissionDifficulty <> mdNone;
-end;
-
-
 function TKMGame.GetNormalGameSpeed: Single;
 begin
   if fParams.IsMultiPlayerOrSpec then
@@ -1868,7 +1856,7 @@ begin
     GameInfo.TickCount := fParams.GameTick;
     GameInfo.SaveTimestamp := aTimestamp;
     GameInfo.MissionMode := fParams.MissionMode;
-    GameInfo.MissionDifficulty := fMissionDifficulty;
+    GameInfo.MissionDifficulty := fParams.MissionDifficulty;
     GameInfo.MapSizeX := gTerrain.MapX;
     GameInfo.MapSizeY := gTerrain.MapY;
     GameInfo.BlockColorSelection := fMapTxtInfo.BlockColorSelection;
@@ -2156,7 +2144,7 @@ begin
     fParams.GameMapSimpleCRC := GameInfo.MapSimpleCRC;
     fSetGameTickEvent(GameInfo.TickCount);
     fParams.MissionMode := GameInfo.MissionMode;
-    fMissionDifficulty := GameInfo.MissionDifficulty;
+    fParams.MissionDifficulty := GameInfo.MissionDifficulty;
   finally
     FreeAndNil(GameInfo);
   end;

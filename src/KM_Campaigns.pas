@@ -137,7 +137,7 @@ const
 implementation
 uses
   SysUtils, Math, KromUtils,
-  KM_Game, KM_Resource, KM_ResLocales, KM_ResSprites,
+  KM_GameParams, KM_Resource, KM_ResLocales, KM_ResSprites,
   KM_Log, KM_Defaults;
 
 
@@ -358,8 +358,8 @@ begin
     ActiveCampaign.UnlockedMap := fActiveCampaignMap + 1;
     ActiveCampaign.MapsProgressData[fActiveCampaignMap].Completed := True;
     //Update BestDifficulty if we won harder game
-    if Byte(ActiveCampaign.MapsProgressData[fActiveCampaignMap].BestCompleteDifficulty) < Byte(gGame.MissionDifficulty)  then
-      ActiveCampaign.MapsProgressData[fActiveCampaignMap].BestCompleteDifficulty := gGame.MissionDifficulty;
+    if Byte(ActiveCampaign.MapsProgressData[fActiveCampaignMap].BestCompleteDifficulty) < Byte(gGameParams.MissionDifficulty)  then
+      ActiveCampaign.MapsProgressData[fActiveCampaignMap].BestCompleteDifficulty := gGameParams.MissionDifficulty;
   end;
 end;
 
