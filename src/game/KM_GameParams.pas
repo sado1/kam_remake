@@ -19,11 +19,12 @@ type
     fGameMapFullCRC: Cardinal; //CRC of map for reporting stats to master server. Also used in MapEd
     fMissionFileSP: UnicodeString; //Relative pathname to mission we are playing, so it gets saved to crashreport. SP only, see GetMissionFile.
 
+    procedure SetGameTick(aGameTick: Cardinal);
     procedure SetGameMode(aGameMode: TKMGameMode);
     function GetMissionFile: UnicodeString;
     procedure SetMissionFileSP(const aMissionFileSP: UnicodeString);
   public
-    constructor Create(out aSetGameModeEvent: TKMGameModeSetEvent; out aSetMissionFileSP: TUnicodeStringEvent);
+    constructor Create(out aSetGameTickEvent: TCardinalEvent; out aSetGameModeEvent: TKMGameModeSetEvent; out aSetMissionFileSP: TUnicodeStringEvent);
     destructor Destroy; override;
 
     property GameMode: TKMGameMode read fGameMode;
@@ -51,8 +52,6 @@ type
     function IsTactic: Boolean;
     function IsNormalMission: Boolean;
 
-    procedure UpdateState(aGameTick: Cardinal);
-
     {$IFDEF RUNNER}
     procedure GetGameModeSetEvent(out aSetGameModeEvent: TKMGameModeSetEvent);
     {$ENDIF}
@@ -68,7 +67,7 @@ uses
 
 
 { TKMGameParams }
-constructor TKMGameParams.Create(out aSetGameModeEvent: TKMGameModeSetEvent; out aSetMissionFileSP: TUnicodeStringEvent);
+constructor TKMGameParams.Create(out aSetGameTickEvent: TCardinalEvent; out aSetGameModeEvent: TKMGameModeSetEvent; out aSetMissionFileSP: TUnicodeStringEvent);
 begin
   inherited Create;
 
@@ -76,6 +75,7 @@ begin
 
   fGameTick := 0;
 
+  aSetGameTickEvent := SetGameTick;
   aSetGameModeEvent := SetGameMode;
   aSetMissionFileSP := SetMissionFileSP;
 
@@ -112,6 +112,12 @@ end;
 procedure TKMGameParams.SetGameMode(aGameMode: TKMGameMode);
 begin
   fGameMode := aGameMode;
+end;
+
+
+procedure TKMGameParams.SetGameTick(aGameTick: Cardinal);
+begin
+  fGameTick := aGameTick;
 end;
 
 
@@ -192,13 +198,6 @@ function TKMGameParams.IsReplayOrSpectate: Boolean;
 begin
   Result := fGameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti];
 end;
-
-
-procedure TKMGameParams.UpdateState(aGameTick: Cardinal);
-begin
-  fGameTick := aGameTick;
-end;
-
 
 
 end.
