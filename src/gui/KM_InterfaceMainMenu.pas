@@ -74,7 +74,7 @@ type
 
 implementation
 uses
-  KM_Main, KM_ResTexts, KM_GameApp, KM_Log, KM_RenderUI, KM_Render, KM_NetworkTypes;
+  KM_Main, KM_ResTexts, KM_GameApp, KM_Log, KM_RenderUI, KM_NetworkTypes;
 
 
 { TKMMainMenuInterface }
