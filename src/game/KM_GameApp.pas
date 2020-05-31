@@ -1080,17 +1080,19 @@ end;
 procedure TKMGameApp.NetworkInit;
 begin
   if fNetworking = nil then
-  fNetworking := TKMNetworking.Create(fGameSettings.MasterServerAddress,
-                                      fGameSettings.AutoKickTimeout,
-                                      fGameSettings.PingInterval,
-                                      fGameSettings.MasterAnnounceInterval,
-                                      fGameSettings.ServerUDPScanPort,
-                                      fGameSettings.ServerDynamicFOW,
-                                      fGameSettings.ServerMapsRosterEnabled,
-                                      fGameSettings.ServerMapsRosterStr,
-                                      KMRange(fGameSettings.ServerLimitPTFrom, fGameSettings.ServerLimitPTTo),
-                                      KMRange(fGameSettings.ServerLimitSpeedFrom, fGameSettings.ServerLimitSpeedTo),
-                                      KMRange(fGameSettings.ServerLimitSpeedAfterPTFrom, fGameSettings.ServerLimitSpeedAfterPTTo));
+    fNetworking := TKMNetworking.Create(fGameSettings.MasterServerAddress,
+                                        fGameSettings.AutoKickTimeout,
+                                        fGameSettings.PingInterval,
+                                        fGameSettings.MasterAnnounceInterval,
+                                        fGameSettings.ServerUDPScanPort,
+                                        fGameSettings.ServerDynamicFOW,
+                                        fGameSettings.ServerMapsRosterEnabled,
+                                        fGameSettings.ServerMapsRosterStr,
+                                        KMRange(fGameSettings.ServerLimitPTFrom, fGameSettings.ServerLimitPTTo),
+                                        KMRange(fGameSettings.ServerLimitSpeedFrom, fGameSettings.ServerLimitSpeedTo),
+                                        KMRange(fGameSettings.ServerLimitSpeedAfterPTFrom, fGameSettings.ServerLimitSpeedAfterPTTo));
+
+  // Set event handlers anyway. Those could be reset by someone
   fNetworking.OnMPGameInfoChanged := SendMPGameInfo;
   fNetworking.OnStartMap := NewMultiplayerMap;
   fNetworking.OnStartSave := NewMultiplayerSave;
