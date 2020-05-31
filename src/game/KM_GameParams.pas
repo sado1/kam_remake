@@ -12,6 +12,7 @@ type
     fGameMode: TKMGameMode;
     fMissionMode: TKMissionMode;
     fGameTick: Cardinal;
+    fVisibleLayers: TKMMapVisibleLayerSet;
     procedure SetGameMode(aGameMode: TKMGameMode);
   public
     constructor Create(out aSetGameModeEvent: TKMGameModeSetEvent);
@@ -20,6 +21,7 @@ type
     property GameMode: TKMGameMode read fGameMode;
     property MissionMode: TKMissionMode read fMissionMode write fMissionMode;
     property GameTick: Cardinal read fGameTick;
+    property VisibleLayers: TKMMapVisibleLayerSet read fVisibleLayers write fVisibleLayers;
 
     function IsMapEditor: Boolean;
     function IsCampaign: Boolean;
@@ -53,6 +55,8 @@ implementation
 constructor TKMGameParams.Create(out aSetGameModeEvent: TKMGameModeSetEvent);
 begin
   inherited Create;
+
+  fVisibleLayers := [mlObjects, mlHouses, mlUnits, mlOverlays];
 
   fGameTick := 0;
 

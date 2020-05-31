@@ -306,14 +306,14 @@ begin
     // so that terrain shadows could be applied seamlessly ontop
     glDisable(GL_DEPTH_TEST);
 
-    if mlOverlays in gGame.VisibleLayers then
+    if mlOverlays in gGameParams.VisibleLayers then
     begin
       fRenderTerrain.RenderFences(gMySpectator.FogOfWar);
       fRenderTerrain.RenderPlayerPlans(fFieldsList, fHousePlansList);
 
     end;
 
-    if mlMiningRadius in gGame.VisibleLayers then
+    if mlMiningRadius in gGameParams.VisibleLayers then
       fRenderDebug.PaintMiningRadius;
 
     {$IFDEF PERFLOG}
@@ -338,7 +338,7 @@ begin
     fRenderList.SortRenderList;
     fRenderList.Render;
 
-    if mlDefencesAll in gGame.VisibleLayers then
+    if mlDefencesAll in gGameParams.VisibleLayers then
       fRenderDebug.PaintDefences;
 
     fRenderTerrain.RenderFOW(gMySpectator.FogOfWar);
@@ -437,7 +437,7 @@ procedure TRenderPool.CollectTerrainObjects(const aRect: TKMRect; aAnimStep: Car
 var
   I, K: Integer;
 begin
-  if not (mlObjects in gGame.VisibleLayers) then Exit;
+  if not (mlObjects in gGameParams.VisibleLayers) then Exit;
 
   if gGameParams.IsMapEditor then
     gGame.MapEditor.Paint(plObjects, aRect);

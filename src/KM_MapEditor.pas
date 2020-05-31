@@ -102,7 +102,7 @@ uses
   KM_Terrain, KM_FileIO,
   KM_AIDefensePos, KM_ResTexts,
   KM_Units, KM_UnitGroup, KM_Houses, KM_HouseCollection,
-  KM_Game, KM_GameCursor, KM_ResMapElements, KM_ResHouses, KM_Resource, KM_ResUnits,
+  KM_Game, KM_GameParams, KM_GameCursor, KM_ResMapElements, KM_ResHouses, KM_Resource, KM_ResUnits,
   KM_RenderAux, KM_Hand, KM_HandsCollection, KM_InterfaceMapEditor, KM_CommonUtils, KM_RenderDebug;
 
 //defines default defence position radius for static AI 
@@ -302,7 +302,7 @@ var
   I,K: Integer;
 begin
   if   (melDefences in gGame.MapEditor.VisibleLayers)
-    or (mlDefencesAll in gGame.VisibleLayers) then
+    or (mlDefencesAll in gGameParams.VisibleLayers) then
   begin
     for I := 0 to gHands.Count - 1 do
       for K := 0 to gHands[I].AI.General.DefencePositions.Count - 1 do

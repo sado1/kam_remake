@@ -89,8 +89,6 @@ type
     fLoadFromFile: UnicodeString; //Path to file, from which game was loaded. '.bas' file for replays
     fIsStarted: Boolean;
 
-    fVisibleLayers: TKMMapVisibleLayerSet;
-
     fSaveWorkerThread: TKMWorkerThread;
 
     procedure IssueAutosaveCommand(aAfterPT: Boolean = False);
@@ -187,9 +185,6 @@ type
     property BlockGetPointer: Boolean read fBlockGetPointer;
     function AllowGetPointer: Boolean;
     property MissionFile: UnicodeString read GetMissionFile;
-
-
-    property VisibleLayers: TKMMapVisibleLayerSet read fVisibleLayers write fVisibleLayers;
 
     function MissionTime: TDateTime;
     function GetPeacetimeRemaining: TDateTime;
@@ -308,8 +303,6 @@ begin
   // Suppress Alt key for menu while in the game. We can use Alt key as a modificator for some hotkeys (for School hotkeys, f.e.)
   if gMain <> nil then
     gMain.FormMain.SuppressAltForMenu := True;
-
-  fVisibleLayers := [mlObjects, mlHouses, mlUnits, mlOverlays];
 
   fSaveWorkerThread := TKMWorkerThread.Create('SaveWorker');
 

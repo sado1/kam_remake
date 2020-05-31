@@ -129,7 +129,7 @@ uses
   KM_ResTexts, KM_HandsCollection, KM_RenderPool, KM_UnitTaskAttackHouse, KM_HandLogistics,
   KM_UnitActionFight, KM_UnitActionGoInOut, KM_UnitActionWalkTo, KM_UnitActionStay,
   KM_UnitActionStormAttack, KM_Resource, KM_ResUnits, KM_Hand, KM_UnitGroup,
-  KM_ResWares, KM_Game, KM_GameParams, KM_ResHouses, KM_CommonUtils, KM_RenderDebug, KM_UnitVisual;
+  KM_ResWares, KM_GameParams, KM_ResHouses, KM_CommonUtils, KM_RenderDebug, KM_UnitVisual;
 
 
 { TKMUnitWarrior }
@@ -1032,7 +1032,7 @@ begin
   if fThought <> thNone then
     gRenderPool.AddUnitThought(fType, Act, V.Dir, fThought, UnitPos.X, UnitPos.Y);
 
-  if SHOW_ATTACK_RADIUS or (mlUnitsAttackRadius in gGame.VisibleLayers) then
+  if SHOW_ATTACK_RADIUS or (mlUnitsAttackRadius in gGameParams.VisibleLayers) then
     if IsRanged then
     begin
       fillColor := $40FFFFFF;

@@ -103,7 +103,7 @@ type
 
 implementation
 uses
-  KM_Game, KM_GameParams, KM_Render, KM_Resource, KM_DevPerfLog, KM_DevPerfLogTypes;
+  KM_GameParams, KM_Render, KM_Resource, KM_DevPerfLog, KM_DevPerfLogTypes;
 
 type
   TAnimLayer = (alWater, alFalls, alSwamp);
@@ -849,7 +849,7 @@ begin
   {$IFDEF PERFLOG}
   gPerfLogs.SectionEnter(psFrameOverlays);
   {$ENDIF}
-  if not (mlOverlays in gGame.VisibleLayers) then
+  if not (mlOverlays in gGameParams.VisibleLayers) then
     Exit;
 
   for I := fClipRect.Top to fClipRect.Bottom do
@@ -866,7 +866,7 @@ procedure TRenderTerrain.RenderFences(aFOW: TKMFogOfWarCommon);
 var
   I,K: Integer;
 begin
-  if gGameParams.IsMapEditor and not (mlOverlays in gGame.VisibleLayers) then
+  if gGameParams.IsMapEditor and not (mlOverlays in gGameParams.VisibleLayers) then
     Exit;
 
   with gTerrain do

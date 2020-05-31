@@ -298,7 +298,7 @@ uses
   KM_Resource,
 
   KM_ResTexts,
-  KM_GameApp, //KM_Settings,
+  KM_GameApp, KM_GameParams,
   KM_HandsCollection,
   KM_ResSound,
   KM_Pics,
@@ -920,15 +920,15 @@ begin
   chkShowRoutes.SetCheckedWithoutClick      (SHOW_UNIT_ROUTES);
   chkSelectionBuffer.SetCheckedWithoutClick (SHOW_SEL_BUFFER);
 
-  chkShowObjects.SetCheckedWithoutClick     (mlObjects            in gGame.VisibleLayers);
-  chkShowHouses.SetCheckedWithoutClick      (mlHouses             in gGame.VisibleLayers);
-  chkShowUnits.SetCheckedWithoutClick       (mlUnits              in gGame.VisibleLayers);
-  chkShowOverlays.SetCheckedWithoutClick    (mlOverlays           in gGame.VisibleLayers);
-  chkShowMiningRadius.SetCheckedWithoutClick(mlMiningRadius       in gGame.VisibleLayers);
-  chkShowTowerRadius.SetCheckedWithoutClick (mlTowersAttackRadius in gGame.VisibleLayers);
-  chkShowUnitRadius.SetCheckedWithoutClick  (mlUnitsAttackRadius  in gGame.VisibleLayers);
-  chkShowDefencePos.SetCheckedWithoutClick  (mlDefencesAll        in gGame.VisibleLayers);
-  chkShowFlatTerrain.SetCheckedWithoutClick (mlFlatTerrain        in gGame.VisibleLayers);
+  chkShowObjects.SetCheckedWithoutClick     (mlObjects            in gGameParams.VisibleLayers);
+  chkShowHouses.SetCheckedWithoutClick      (mlHouses             in gGameParams.VisibleLayers);
+  chkShowUnits.SetCheckedWithoutClick       (mlUnits              in gGameParams.VisibleLayers);
+  chkShowOverlays.SetCheckedWithoutClick    (mlOverlays           in gGameParams.VisibleLayers);
+  chkShowMiningRadius.SetCheckedWithoutClick(mlMiningRadius       in gGameParams.VisibleLayers);
+  chkShowTowerRadius.SetCheckedWithoutClick (mlTowersAttackRadius in gGameParams.VisibleLayers);
+  chkShowUnitRadius.SetCheckedWithoutClick  (mlUnitsAttackRadius  in gGameParams.VisibleLayers);
+  chkShowDefencePos.SetCheckedWithoutClick  (mlDefencesAll        in gGameParams.VisibleLayers);
+  chkShowFlatTerrain.SetCheckedWithoutClick (mlFlatTerrain        in gGameParams.VisibleLayers);
 end;
 
 
@@ -979,9 +979,9 @@ procedure TFormMain.ControlsUpdate(Sender: TObject);
     if (Sender = aCheckBox) then
     begin
       if aCheckBox.Checked then
-        gGame.VisibleLayers := gGame.VisibleLayers + [aLayer]
+        gGameParams.VisibleLayers := gGameParams.VisibleLayers + [aLayer]
       else
-        gGame.VisibleLayers := gGame.VisibleLayers - [aLayer];
+        gGameParams.VisibleLayers := gGameParams.VisibleLayers - [aLayer];
     end;
   end;
 

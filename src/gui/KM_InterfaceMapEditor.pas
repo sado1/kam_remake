@@ -153,7 +153,7 @@ type
 
 implementation
 uses
-  KM_HandsCollection, KM_ResTexts, KM_Game, KM_GameCursor,
+  KM_HandsCollection, KM_ResTexts, KM_Game, KM_GameParams, KM_GameCursor,
   KM_Resource, KM_TerrainDeposits, KM_ResCursors, KM_ResKeys, KM_GameApp,
   KM_Hand, KM_AIDefensePos, KM_RenderUI, KM_ResFonts, KM_CommonClasses, KM_UnitWarrior,
   KM_ResHouses, KM_Utils;
@@ -531,38 +531,38 @@ var
 begin
   if gGame = nil then Exit; //Happens on init
 
-  flatTerWasEnabled := mlFlatTerrain in gGame.VisibleLayers;
+  flatTerWasEnabled := mlFlatTerrain in gGameParams.VisibleLayers;
 
-  gGame.VisibleLayers := [];
+  gGameParams.VisibleLayers := [];
   gGame.MapEditor.VisibleLayers := [];
 
   //Map visible layers
   if fGuiExtras.CheckBox_ShowDefences.Checked {and not fGuiMarkerDefence.Visible} then
-    gGame.VisibleLayers := gGame.VisibleLayers + [mlDefencesAll];
+    gGameParams.VisibleLayers := gGameParams.VisibleLayers + [mlDefencesAll];
 
   if fGuiExtras.CheckBox_ShowFlatTerrain.Checked then
-    gGame.VisibleLayers := gGame.VisibleLayers + [mlFlatTerrain];
+    gGameParams.VisibleLayers := gGameParams.VisibleLayers + [mlFlatTerrain];
 
   if fGuiExtras.CheckBox_ShowObjects.Checked or fGuiTerrain.IsVisible(ttObject) then
-    gGame.VisibleLayers := gGame.VisibleLayers + [mlObjects];
+    gGameParams.VisibleLayers := gGameParams.VisibleLayers + [mlObjects];
 
   if fGuiExtras.CheckBox_ShowHouses.Checked or fGuiTown.IsVisible(ttHouses) or fGuiHouse.Visible then
-    gGame.VisibleLayers := gGame.VisibleLayers + [mlHouses];
+    gGameParams.VisibleLayers := gGameParams.VisibleLayers + [mlHouses];
 
   if fGuiExtras.CheckBox_ShowUnits.Checked or fGuiTown.IsVisible(ttUnits) or fGuiUnit.Visible then
-    gGame.VisibleLayers := gGame.VisibleLayers + [mlUnits];
+    gGameParams.VisibleLayers := gGameParams.VisibleLayers + [mlUnits];
 
   if fGuiExtras.CheckBox_ShowMiningRadius.Checked then
-    gGame.VisibleLayers := gGame.VisibleLayers + [mlMiningRadius];
+    gGameParams.VisibleLayers := gGameParams.VisibleLayers + [mlMiningRadius];
 
   if fGuiExtras.CheckBox_ShowTowersAttackRadius.Checked then
-    gGame.VisibleLayers := gGame.VisibleLayers + [mlTowersAttackRadius];
+    gGameParams.VisibleLayers := gGameParams.VisibleLayers + [mlTowersAttackRadius];
 
   if fGuiExtras.CheckBox_ShowUnitsAttackRadius.Checked then
-    gGame.VisibleLayers := gGame.VisibleLayers + [mlUnitsAttackRadius];
+    gGameParams.VisibleLayers := gGameParams.VisibleLayers + [mlUnitsAttackRadius];
 
   if fGuiExtras.CheckBox_ShowOverlays.Checked then
-    gGame.VisibleLayers := gGame.VisibleLayers + [mlOverlays];
+    gGameParams.VisibleLayers := gGameParams.VisibleLayers + [mlOverlays];
 
   // MapEd visible layers
   if fGuiTown.IsVisible(ttDefences) or fGuiMarkerDefence.Visible then
@@ -583,7 +583,7 @@ begin
   if fGuiMenu.GuiMenuResize.Visible then
     gGame.MapEditor.VisibleLayers := gGame.MapEditor.VisibleLayers + [melMapResize];
 
-  if flatTerWasEnabled xor (mlFlatTerrain in gGame.VisibleLayers) then
+  if flatTerWasEnabled xor (mlFlatTerrain in gGameParams.VisibleLayers) then
     gTerrain.UpdateLighting;
 end;
 

@@ -277,7 +277,7 @@ end;
 
 procedure TKMHandCommon.Paint(const aRect: TKMRect; aTickLag: Single);
 begin
-  if mlUnits in gGame.VisibleLayers then
+  if mlUnits in gGameParams.VisibleLayers then
     fUnits.Paint(aRect, aTickLag);
 end;
 
@@ -2109,10 +2109,10 @@ begin
 
   inherited;
 
-  if mlUnits in gGame.VisibleLayers then
+  if mlUnits in gGameParams.VisibleLayers then
     fUnitGroups.Paint(aRect);
 
-  if mlHouses in gGame.VisibleLayers then
+  if mlHouses in gGameParams.VisibleLayers then
     fHouses.Paint(aRect);
 
   if not SKIP_RENDER AND OVERLAY_DEFENCES AND not fAI.Setup.NewAI then

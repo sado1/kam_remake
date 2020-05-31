@@ -5431,7 +5431,7 @@ end;
 { TKMTerrainTile }
 function TKMTerrainTile.RenderHeight: Byte;
 begin
-  if mlFlatTerrain in gGame.VisibleLayers then
+  if mlFlatTerrain in gGameParams.VisibleLayers then
     Result := HEIGHT_DEFAULT
   else
     Result := Height;

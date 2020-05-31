@@ -2595,7 +2595,7 @@ var
 begin
   inherited;
 
-  if SHOW_ATTACK_RADIUS or (mlTowersAttackRadius in gGame.VisibleLayers) then
+  if SHOW_ATTACK_RADIUS or (mlTowersAttackRadius in gGameParams.VisibleLayers) then
   begin
     fillColor := $40FFFFFF;
     lineColor := icWhite;
