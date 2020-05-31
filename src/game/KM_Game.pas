@@ -56,7 +56,6 @@ type
     //Should be saved
     fCampaignMap: Byte;         //Which campaign map it is, so we can unlock next one on victory
     fCampaignName: TKMCampaignId;  //Is this a game part of some campaign
-    fDynamicFOW: Boolean;
     fGameSpeedGIP: Single; //GameSpeed, recorded to GIP, could be requested by scripts
     fGameSpeedChangeAllowed: Boolean; //Is game speed change allowed?
 
@@ -177,7 +176,6 @@ type
     property IsPaused: Boolean read fIsPaused write SetIsPaused;
     property IsStarted: Boolean read fIsStarted;
     property ReadyToStop: Boolean read fReadyToStop write fReadyToStop;
-    property DynamicFOW: Boolean read fDynamicFOW write fDynamicFOW;
     property BlockGetPointer: Boolean read fBlockGetPointer;
     function AllowGetPointer: Boolean;
 
@@ -313,7 +311,6 @@ begin
   fWaitingForNetwork := False;
   fGameOptions  := TKMGameOptions.Create;
   fMissionDifficulty := mdNone;
-  fDynamicFOW := False;
   fGameSpeedChangeTick := 0;
   fGameSpeedChangeTime := 0;
   fGameSpeedChangeAllowed := True;
@@ -521,7 +518,7 @@ begin
     gmMulti, gmMultiSpectate:
               begin
                 fNetworking.ResetPacketsStats;
-                fDynamicFOW := fNetworking.NetGameFilter.DynamicFOW;
+                fParams.DynamicFOW := fNetworking.NetGameFilter.DynamicFOW;
                 FillChar(PlayerEnabled, SizeOf(PlayerEnabled), #0);
                 for I := 1 to fNetworking.NetPlayers.Count do
                   if not fNetworking.NetPlayers[I].IsSpectator then
@@ -1930,7 +1927,7 @@ begin
   aSaveStream.Write(fCampaignName, SizeOf(TKMCampaignId));
   aSaveStream.Write(fCampaignMap);
 
-  aSaveStream.Write(fDynamicFOW);
+  aSaveStream.Write(fParams.DynamicFOW);
   aSaveStream.Write(fGameSpeedGIP);
   aSaveStream.Write(fGameSpeedChangeAllowed);
 
@@ -2145,7 +2142,7 @@ procedure TKMGame.LoadFromStream(var LoadStream: TKMemoryStreamBinary);
 var
   GameInfo: TKMGameInfo;
   LoadedSeed: LongInt;
-  SaveIsMultiplayer, IsCampaign: Boolean;
+  SaveIsMultiplayer, IsCampaign, dynamicFOW: Boolean;
   I: Integer;
   missionFileSP: UnicodeString;
 begin
@@ -2188,7 +2185,8 @@ begin
   LoadStream.Read(fCampaignName, SizeOf(TKMCampaignId));
   LoadStream.Read(fCampaignMap);
 
-  LoadStream.Read(fDynamicFOW);
+  LoadStream.Read(dynamicFOW);
+  fParams.DynamicFOW := dynamicFOW;
   LoadStream.Read(fGameSpeedGIP);
 
   // Set game actual speed, so we will have same speed after game load as it was when game was saved

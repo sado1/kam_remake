@@ -362,7 +362,7 @@ type
 implementation
 uses
   TypInfo, SysUtils, Math, KromUtils,
-  KM_Game, KM_GameParams, KM_GameApp, KM_Terrain, KM_RenderPool, KM_RenderAux, KM_Sound, KM_FogOfWar,
+  KM_Game, KM_GameParams, KM_Terrain, KM_RenderPool, KM_RenderAux, KM_Sound, KM_FogOfWar,
   KM_Hand, KM_HandsCollection, KM_HandLogistics,
   KM_UnitWarrior, KM_HouseWoodcutters,
   KM_Resource, KM_ResSound, KM_ResTexts, KM_ResUnits, KM_ResMapElements,
@@ -2007,7 +2007,7 @@ begin
     fSnowStep := Min(fSnowStep + (1 + Byte(gGameParams.IsMapEditor) * 10) / SNOW_TIME, 1);
 
   //FlagAnimStep is a sort of counter to reveal terrain once a sec
-  if gGameApp.DynamicFOWEnabled and (FlagAnimStep mod FOW_PACE = 0) then
+  if gGameParams.DynamicFOW and (FlagAnimStep mod FOW_PACE = 0) then
   begin
     HA := gRes.Houses[fType].BuildArea;
     //Reveal house from all points it covers
@@ -2112,7 +2112,7 @@ var
 begin
   if not IsComplete then
   begin
-    if gGameApp.DynamicFOWEnabled and ((aTick + fOwner) mod FOW_PACE = 0) then
+    if gGameParams.DynamicFOW and ((aTick + fOwner) mod FOW_PACE = 0) then
     begin
       HA := gRes.Houses[fType].BuildArea;
       //Reveal house from all points it covers

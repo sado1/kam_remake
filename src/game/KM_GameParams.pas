@@ -18,11 +18,15 @@ type
     fGameMapSimpleCRC: Cardinal; //CRC of map (based on Map and Dat) used in MapEd
     fGameMapFullCRC: Cardinal; //CRC of map for reporting stats to master server. Also used in MapEd
     fMissionFileSP: UnicodeString; //Relative pathname to mission we are playing, so it gets saved to crashreport. SP only, see GetMissionFile.
+    fDynamicFOW: Boolean;
 
     procedure SetGameTick(aGameTick: Cardinal);
     procedure SetGameMode(aGameMode: TKMGameMode);
     function GetMissionFile: UnicodeString;
     procedure SetMissionFileSP(const aMissionFileSP: UnicodeString);
+
+    function GetDynamicFOW: Boolean;
+    procedure SetDynamicFOW(const aDynamicFOW: Boolean);
   public
     constructor Create(out aSetGameTickEvent: TCardinalEvent; out aSetGameModeEvent: TKMGameModeSetEvent; out aSetMissionFileSP: TUnicodeStringEvent);
     destructor Destroy; override;
@@ -37,6 +41,7 @@ type
     property GameMapFullCRC: Cardinal read fGameMapFullCRC write fGameMapFullCRC;
     property MissionFileSP: UnicodeString read fMissionFileSP;
     property MissionFile: UnicodeString read GetMissionFile;
+    property DynamicFOW: Boolean read GetDynamicFOW write SetDynamicFOW;
 
     function IsMapEditor: Boolean;
     function IsCampaign: Boolean;
@@ -74,6 +79,7 @@ begin
   fVisibleLayers := [mlObjects, mlHouses, mlUnits, mlOverlays];
 
   fGameTick := 0;
+  DynamicFOW := False;
 
   aSetGameTickEvent := SetGameTick;
   aSetGameModeEvent := SetGameMode;
@@ -99,6 +105,14 @@ end;
 {$ENDIF}
 
 
+function TKMGameParams.GetDynamicFOW: Boolean;
+begin
+  if Self = nil then Exit(DYNAMIC_FOG_OF_WAR);
+  
+  Result := fDynamicFOW;
+end;
+
+
 function TKMGameParams.GetMissionFile: UnicodeString;
 begin
   if not IsMultiplayer then
@@ -106,6 +120,12 @@ begin
   else
     //In MP we can't store it since it will be MapsMP or MapsDL on different clients
     Result := GuessMPPath(fGameName, '.dat', fGameMapFullCRC);
+end;
+
+
+procedure TKMGameParams.SetDynamicFOW(const aDynamicFOW: Boolean);
+begin
+  fDynamicFOW := aDynamicFOW;
 end;
 
 

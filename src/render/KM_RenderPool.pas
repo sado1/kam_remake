@@ -152,7 +152,7 @@ var
 
 implementation
 uses
-  KM_RenderAux, KM_HandsCollection, KM_Game, KM_GameApp, KM_Settings, KM_Sound, KM_Resource, KM_ResUnits,
+  KM_RenderAux, KM_HandsCollection, KM_Game, KM_Settings, KM_Sound, KM_Resource, KM_ResUnits,
   KM_ResMapElements, KM_AIFields, KM_TerrainPainter, KM_GameCursor,
 
   KM_FogOfWar, KM_Hand, KM_UnitGroup, KM_CommonUtils,
@@ -566,7 +566,7 @@ begin
   begin
     if gMapElements[aIndex].Anim.Count = 0 then Exit;
 
-    if gGameApp.DynamicFOWEnabled then
+    if gGameParams.DynamicFOW then
     begin
       FOW := gMySpectator.FogOfWar.CheckTileRevelation(LocX,LocY);
       if FOW <= 128 then AnimStep := 0; // Stop animation
@@ -620,7 +620,7 @@ var
 var
   FOW: Byte;
 begin
-  if gGameApp.DynamicFOWEnabled then
+  if gGameParams.DynamicFOW then
   begin
     FOW := gMySpectator.FogOfWar.CheckTileRevelation(pX, pY);
     if FOW <= 128 then AnimStep := 0; // Stop animation
@@ -947,7 +947,7 @@ begin
   // We don't care about off-map arrows, but still we get TKMPoint error if X/Y gets negative
   if not gTerrain.TileInMapCoords(Round(aRenderPos.X), Round(aRenderPos.Y)) then Exit;
 
-  if gGameApp.DynamicFOWEnabled then
+  if gGameParams.DynamicFOW then
   begin
     FOW := gMySpectator.FogOfWar.CheckRevelation(aRenderPos);
     if FOW <= 128 then Exit; // Don't render objects which are behind FOW

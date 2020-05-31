@@ -239,7 +239,7 @@ type
 implementation
 uses
   Classes, SysUtils, KromUtils, Math, TypInfo,
-  KM_GameApp, KM_GameCursor, KM_Game, KM_GameParams, KM_Terrain,
+  KM_GameCursor, KM_Game, KM_GameParams, KM_Terrain,
   KM_HandsCollection, KM_Sound, KM_AIFields, KM_MapEditorHistory,
   KM_Resource, KM_ResSound, KM_ResTexts, KM_ResMapElements, KM_ScriptingEvents, KM_ResUnits,
   KM_GameTypes, KM_CommonUtils, KM_Settings;
@@ -366,7 +366,7 @@ begin
   fOnAllianceChange := aOnAllianceChange;
 
   fAI           := TKMHandAI.Create(fID);
-  fFogOfWar     := TKMFogOfWar.Create(gTerrain.MapX, gTerrain.MapY, gGameApp.DynamicFOWEnabled);
+  fFogOfWar     := TKMFogOfWar.Create(gTerrain.MapX, gTerrain.MapY, gGameParams.DynamicFOW);
   fLocks        := TKMHandLocks.Create;
   fStats        := TKMHandStats.Create;
   fRoadsList    := TKMPointList.Create;
@@ -1977,7 +1977,7 @@ begin
   inherited;
 
   fHouses.UpdateState(aTick);
-  fFogOfWar.UpdateState(gGameApp.DynamicFOWEnabled); //We might optimize it for AI somehow, to make it work coarse and faster
+  fFogOfWar.UpdateState(gGameParams.DynamicFOW); //We might optimize it for AI somehow, to make it work coarse and faster
 
   //Distribute AI updates among different Ticks to avoid slowdowns
   if (aTick mod gHands.Count) = fID then
