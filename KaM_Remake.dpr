@@ -54,7 +54,6 @@ uses
   KM_CommonClasses in 'src\common\KM_CommonClasses.pas',
   KM_CommonClassesExt in 'src\common\KM_CommonClassesExt.pas',
   KM_CommonTypes in 'src\common\KM_CommonTypes.pas',
-  KM_CommonSave in 'src\common\KM_CommonSave.pas',
   KM_Defaults in 'src\common\KM_Defaults.pas',
   KM_MarchingSquares in 'src\common\KM_MarchingSquares.pas',
   KM_Points in 'src\common\KM_Points.pas',
