@@ -242,7 +242,7 @@ uses
   KM_GameApp, KM_GameCursor, KM_Game, KM_GameParams, KM_Terrain,
   KM_HandsCollection, KM_Sound, KM_AIFields, KM_MapEditorHistory,
   KM_Resource, KM_ResSound, KM_ResTexts, KM_ResMapElements, KM_ScriptingEvents, KM_ResUnits,
-  KM_GameTypes, KM_CommonUtils;
+  KM_GameTypes, KM_CommonUtils, KM_Settings;
 
 const
   TIME_TO_SET_FIRST_STOREHOUSE = 10*60*2; //We give 2 minutes to set first storehouse, otherwise player will be defeated
@@ -949,14 +949,14 @@ begin
   Result := fFlagColor;
   if (gGame <> nil) and not gGameParams.IsMapEditor then
   begin
-    case gGameApp.GameSettings.PlayersColorMode of
+    case gGameSettings.PlayersColorMode of
       pcmAllyEnemy: begin
                       if ID = gMySpectator.HandID then
-                        Result := gGameApp.GameSettings.PlayerColorSelf
+                        Result := gGameSettings.PlayerColorSelf
                       else if (Alliances[gMySpectator.HandID] = atAlly) then
-                        Result := gGameApp.GameSettings.PlayerColorAlly
+                        Result := gGameSettings.PlayerColorAlly
                       else
-                        Result := gGameApp.GameSettings.PlayerColorEnemy;
+                        Result := gGameSettings.PlayerColorEnemy;
                     end;
       pcmTeams:     Result := fTeamColor;
     end;

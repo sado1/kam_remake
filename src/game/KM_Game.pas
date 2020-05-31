@@ -293,7 +293,7 @@ uses
   KM_Main, KM_GameApp, KM_RenderPool, KM_GameInfo, KM_GameClasses,
   KM_Terrain, KM_HandsCollection, KM_HandSpectator, KM_MapEditorHistory,
   KM_MissionScript, KM_MissionScript_Standard, KM_GameInputProcess_Multi, KM_GameInputProcess_Single,
-  KM_Resource, KM_ResCursors, KM_ResSound, KM_InterfaceDefaults,
+  KM_Resource, KM_ResCursors, KM_ResSound, KM_InterfaceDefaults, KM_Settings,
   KM_Log, KM_ScriptingEvents, KM_Saves, KM_FileIO, KM_CommonUtils, KM_RandomChecks, KM_DevPerfLog, KM_DevPerfLogTypes;
 
 //Create template for the Game
@@ -409,7 +409,7 @@ begin
     gRandomCheckLogger.Enabled := not fParams.IsMapEditor and not fParams.IsReplay; //Disable random check logger for MapEditor
   end;
 
-  gGameApp.GameSettings.PlayersColorMode := pcmDefault;
+  gGameSettings.PlayersColorMode := pcmDefault;
 
   fGameTick := 0; //Restart counter
 end;
@@ -1035,7 +1035,7 @@ begin
   else
   if not fParams.IsMapEditor then // no need autosaves for MapEd error...
     //For other game modes attach last autosaves
-    for I := 1 to Min(gGameApp.GameSettings.AutosaveCount, AUTOSAVE_ATTACH_TO_CRASHREPORT_MAX) do //Add autosaves
+    for I := 1 to Min(gGameSettings.AutosaveCount, AUTOSAVE_ATTACH_TO_CRASHREPORT_MAX) do //Add autosaves
     begin
       AttachFile(SaveName('autosave' + Int2Fix(I, 2), EXT_SAVE_REPLAY, fParams.IsMultiPlayerOrSpec));
       AttachFile(SaveName('autosave' + Int2Fix(I, 2), EXT_SAVE_BASE, fParams.IsMultiPlayerOrSpec));
@@ -1139,7 +1139,7 @@ begin
     Exit;
 
   if (aHandIndex = gMySpectator.HandID)
-    and not gGameApp.GameSettings.VideoOn then // Don't play victory sound if videos are on
+    and not gGameSettings.VideoOn then // Don't play victory sound if videos are on
     gSoundPlayer.Play(sfxnVictory, 1, True); //Fade music
 
   if fParams.IsMultiplayerGame then
@@ -1172,7 +1172,7 @@ procedure TKMGame.PlayerDefeat(aPlayerIndex: TKMHandID; aShowDefeatMessage: Bool
 
   procedure PlayDefeatSound;
   begin
-    if not gGameApp.GameSettings.VideoOn then // Don't play defeat sound if videos are on
+    if not gGameSettings.VideoOn then // Don't play defeat sound if videos are on
       gSoundPlayer.Play(sfxnDefeat, 1, True); //Fade music
   end;
 
@@ -1308,10 +1308,10 @@ var
   I: Integer;
 begin
   //Delete last autosave
-  KMDeleteFolder(TKMGame.SavePath('autosave' + Int2Fix(gGameApp.GameSettings.AutosaveCount, 2), aIsMultiPlayerOrSpec));
+  KMDeleteFolder(TKMGame.SavePath('autosave' + Int2Fix(gGameSettings.AutosaveCount, 2), aIsMultiPlayerOrSpec));
 
   //Shift remaining autosaves by 1 position back
-  for I := gGameApp.GameSettings.AutosaveCount downto 2 do // 03 to 01
+  for I := gGameSettings.AutosaveCount downto 2 do // 03 to 01
     KMMoveFolder(TKMGame.SavePath('autosave' + Int2Fix(I - 1, 2), aIsMultiPlayerOrSpec), TKMGame.SavePath('autosave' + Int2Fix(I, 2), aIsMultiPlayerOrSpec));
 
   //Rename temp to be first in list
@@ -1397,33 +1397,33 @@ begin
     MapInfo := TKMapInfo.Create(GetFileDirName(aPathName), True, MapFolder); //Force recreate map CRC
     case MapInfo.MapFolder of
       mfSP:       begin
-                    gGameApp.GameSettings.MenuMapEdSPMapCRC := MapInfo.MapAndDatCRC;
-                    gGameApp.GameSettings.MenuMapEdMapType := 0;
+                    gGameSettings.MenuMapEdSPMapCRC := MapInfo.MapAndDatCRC;
+                    gGameSettings.MenuMapEdMapType := 0;
                     // Update saved SP game list saved selected map position CRC if we resave this map
-                    if fGameMapSimpleCRC = gGameApp.GameSettings.MenuSPScenarioMapCRC then
-                      gGameApp.GameSettings.MenuSPScenarioMapCRC := MapInfo.MapAndDatCRC;
-                    if fGameMapSimpleCRC = gGameApp.GameSettings.MenuSPMissionMapCRC then
-                      gGameApp.GameSettings.MenuSPMissionMapCRC := MapInfo.MapAndDatCRC;
-                    if fGameMapSimpleCRC = gGameApp.GameSettings.MenuSPTacticMapCRC then
-                      gGameApp.GameSettings.MenuSPTacticMapCRC := MapInfo.MapAndDatCRC;
-                    if fGameMapSimpleCRC = gGameApp.GameSettings.MenuSPSpecialMapCRC then
-                      gGameApp.GameSettings.MenuSPSpecialMapCRC := MapInfo.MapAndDatCRC;
+                    if fGameMapSimpleCRC = gGameSettings.MenuSPScenarioMapCRC then
+                      gGameSettings.MenuSPScenarioMapCRC := MapInfo.MapAndDatCRC;
+                    if fGameMapSimpleCRC = gGameSettings.MenuSPMissionMapCRC then
+                      gGameSettings.MenuSPMissionMapCRC := MapInfo.MapAndDatCRC;
+                    if fGameMapSimpleCRC = gGameSettings.MenuSPTacticMapCRC then
+                      gGameSettings.MenuSPTacticMapCRC := MapInfo.MapAndDatCRC;
+                    if fGameMapSimpleCRC = gGameSettings.MenuSPSpecialMapCRC then
+                      gGameSettings.MenuSPSpecialMapCRC := MapInfo.MapAndDatCRC;
                   end;
       mfMP:       begin
-                    gGameApp.GameSettings.MenuMapEdMPMapCRC := MapInfo.MapAndDatCRC;
-                    gGameApp.GameSettings.MenuMapEdMPMapName := MapInfo.FileName;
-                    gGameApp.GameSettings.MenuMapEdMapType := 1;
+                    gGameSettings.MenuMapEdMPMapCRC := MapInfo.MapAndDatCRC;
+                    gGameSettings.MenuMapEdMPMapName := MapInfo.FileName;
+                    gGameSettings.MenuMapEdMapType := 1;
                   end;
       mfDL:       begin
-                    gGameApp.GameSettings.MenuMapEdDLMapCRC := MapInfo.MapAndDatCRC;
-                    gGameApp.GameSettings.MenuMapEdMapType := 2;
+                    gGameSettings.MenuMapEdDLMapCRC := MapInfo.MapAndDatCRC;
+                    gGameSettings.MenuMapEdMapType := 2;
                   end;
     end;
     // Update favorite map CRC if we resave favourite map with the same name
     if fGameName = MapInfo.FileName then
     begin
-      gGameApp.GameSettings.FavouriteMaps.Replace(fGameMapSimpleCRC, MapInfo.MapAndDatCRC);
-      gGameApp.GameSettings.ServerMapsRoster.Replace(fGameMapFullCRC, MapInfo.CRC);
+      gGameSettings.FavouriteMaps.Replace(fGameMapSimpleCRC, MapInfo.MapAndDatCRC);
+      gGameSettings.ServerMapsRoster.Replace(fGameMapFullCRC, MapInfo.CRC);
     end;
     MapInfo.Free;
   end;
@@ -1446,9 +1446,9 @@ begin
   {$ENDIF}
   try
     //How far in the past should we render? (0.0=Current tick, 1.0=Previous tick)
-    if gGameApp.GameSettings.InterpolatedRender then
+    if gGameSettings.InterpolatedRender then
     begin
-      tickLag := GetTimeSince(fLastUpdateState) / fGameSpeedActual / gGameApp.GameSettings.SpeedPace;
+      tickLag := GetTimeSince(fLastUpdateState) / fGameSpeedActual / gGameSettings.SpeedPace;
       tickLag := 1.0 - tickLag;
       tickLag := EnsureRange(tickLag, 0.0, 1.0);
     end
@@ -1576,7 +1576,7 @@ end;
 function TKMGame.IsWareDistributionStoredBetweenGames: Boolean;
 begin
   Result := fParams.IsNormalMission //No need to store ware distribution for Tactic mission
-            and gGameApp.GameSettings.SaveWareDistribution //If "save ware distribution" is ON
+            and gGameSettings.SaveWareDistribution //If "save ware distribution" is ON
             and fParams.IsNormalGame; //Not for Replay / MapEd
 end;
 
@@ -1707,7 +1707,7 @@ end;
 procedure TKMGame.UpdateClockUI;
 begin
   //don't show speed clock in MP since you can't turn it on/off
-  if IsSpeedUpAllowed or gGameApp.GameSettings.ShowGameTime or SHOW_GAME_TICK then
+  if IsSpeedUpAllowed or gGameSettings.ShowGameTime or SHOW_GAME_TICK then
     fGamePlayInterface.UpdateClock(fGameSpeedActual, fGameSpeedGIP, fParams.IsReplay);
 end;
 
@@ -1775,12 +1775,12 @@ begin
   if fGameSpeedActual > 5 then
   begin
     fGameSpeedMultiplier := Round(fGameSpeedActual / 4);
-    fTimerGame.Interval := Round(gGameApp.GameSettings.SpeedPace / fGameSpeedActual * fGameSpeedMultiplier);
+    fTimerGame.Interval := Round(gGameSettings.SpeedPace / fGameSpeedActual * fGameSpeedMultiplier);
   end
   else
   begin
     fGameSpeedMultiplier := 1;
-    fTimerGame.Interval := Round(gGameApp.GameSettings.SpeedPace / fGameSpeedActual);
+    fTimerGame.Interval := Round(gGameSettings.SpeedPace / fGameSpeedActual);
   end;
 
   UpdateClockUI;
@@ -2114,7 +2114,7 @@ begin
 
     if not fParams.IsMultiPlayerOrSpec then
       // Update GameSettings for saved positions in lists of saves and replays
-      gGameApp.GameSettings.MenuSPSaveFileName := aSaveName;
+      gGameSettings.MenuSPSaveFileName := aSaveName;
 
     //Remember which savegame to try to restart (if game was not saved before)
     fSaveFile := ExtractRelativePath(ExeDir, fullPath);
@@ -2140,7 +2140,7 @@ begin
     fGameInputProcess.SaveToFileAsync(ChangeFileExt(fullPath, EXT_SAVE_REPLAY_DOT), fSaveWorkerThread);
 
     // Save checkpoints
-    if gGameApp.GameSettings.SaveCheckpoints and not SKIP_SAVE_SAVPTS_TO_FILE then
+    if gGameSettings.SaveCheckpoints and not SKIP_SAVE_SAVPTS_TO_FILE then
       fSavedReplays.SaveToFileAsync(ChangeFileExt(fullPath, EXT_SAVE_GAME_SAVEPTS_DOT), fSaveWorkerThread);
 
     if DoSaveRandomChecks then
@@ -2456,7 +2456,7 @@ end;
 
 function TKMGame.GetGameTickDuration: Single;
 begin
-  Result := gGameApp.GameSettings.SpeedPace / fGameSpeedActual;
+  Result := gGameSettings.SpeedPace / fGameSpeedActual;
 end;
 
 
@@ -2467,7 +2467,7 @@ var
 begin
   //Lets calculate tick, that shoud be at that moment in theory, depending of speed multiplier and game duration
   TimeSince := GetTimeSince(fGameSpeedChangeTime);
-  CalculatedTick := TimeSince*fGameSpeedActual/gGameApp.GameSettings.SpeedPace - fPausedTicksCnt;
+  CalculatedTick := TimeSince*fGameSpeedActual/gGameSettings.SpeedPace - fPausedTicksCnt;
   //Calc how far behind are we, in ticks
   Result := CalculatedTick + fGameSpeedChangeTick - fGameTick;
 end;
@@ -2542,7 +2542,7 @@ begin
     end;
   end
   else
-    if gGameApp.GameSettings.Autosave then
+    if gGameSettings.Autosave then
     begin
       fGameInputProcess.CmdGame(GICType, UTCNow);
     end;
@@ -2606,7 +2606,7 @@ begin
       fGamePlayInterface.SetPause(True);
   end;
 
-  if (PeaceTimeLeft = 1) and gGameApp.GameSettings.ReplayAutopause then
+  if (PeaceTimeLeft = 1) and gGameSettings.ReplayAutopause then
     SetReplayPause;
 end;
 
@@ -2665,19 +2665,19 @@ begin
 
     //Save replay to memory (to be able to load it later)
     //Make replay save only after everything is updated (UpdateState)
-    if gGameApp.GameSettings.SaveCheckpoints
-      and (fSavedReplays.Count <= gGameApp.GameSettings.SaveCheckpointsLimit) //Do not allow to spam saves, could cause OUT_OF_MEMORY error
+    if gGameSettings.SaveCheckpoints
+      and (fSavedReplays.Count <= gGameSettings.SaveCheckpointsLimit) //Do not allow to spam saves, could cause OUT_OF_MEMORY error
       and ((fGameTick = MAKE_SAVEPT_AFTER_TICK)
         or (fGameTick = (fGameOptions.Peacetime*60*10)) //At PT end
-        or ((fGameTick mod gGameApp.GameSettings.SaveCheckpointsFreq) = 0)) then
+        or ((fGameTick mod gGameSettings.SaveCheckpointsFreq) = 0)) then
       SaveReplayToMemory;
 
     // Update our ware distributions from settings at the start of the game
     if (fGameTick = 1)
     and IsWareDistributionStoredBetweenGames then
-      fGameInputProcess.CmdWareDistribution(gicWareDistributions, gGameApp.GameSettings.WareDistribution.PackToStr);
+      fGameInputProcess.CmdWareDistribution(gicWareDistributions, gGameSettings.WareDistribution.PackToStr);
 
-    if (fGameTick mod gGameApp.GameSettings.AutosaveFrequency) = 0 then
+    if (fGameTick mod gGameSettings.AutosaveFrequency) = 0 then
       IssueAutosaveCommand;
 
     CheckPauseGameAtTick;
@@ -2727,7 +2727,7 @@ begin
 
     //Save replay to memory (to be able to load it later)
     //Make replay save only after everything is updated (UpdateState)
-    if gGameApp.GameSettings.ReplayAutosave
+    if gGameSettings.ReplayAutosave
       and (fSavedReplays.Count <= REPLAY_AUTOSAVE_CNT_MAX) //Do not allow to spam saves, could cause OUT_OF_MEMORY error
       and ((fGameTick = 1) //First tick
         or (fGameTick = MAKE_SAVEPT_AFTER_TICK)
@@ -2824,7 +2824,7 @@ end;
 
 function TKMGame.DoSaveRandomChecks: Boolean;
 begin
-  Result := gGameApp.GameSettings.DebugSaveRandomChecks
+  Result := gGameSettings.DebugSaveRandomChecks
             and SAVE_RANDOM_CHECKS
             and (gRandomCheckLogger <> nil);
 end;
@@ -2839,7 +2839,7 @@ end;
 
 function TKMGame.DoSaveGameAsText: Boolean;
 begin
-  Result := gGameApp.GameSettings.DebugSaveGameAsText
+  Result := gGameSettings.DebugSaveGameAsText
             and SAVE_GAME_AS_TEXT;
 end;
 
@@ -2847,7 +2847,7 @@ end;
 function TKMGame.GetReplayAutosaveEffectiveFrequency: Integer;
 begin
   Assert(fParams.IsReplay, 'Wrong game mode');
-  Result := Math.Max(gGameApp.GameSettings.ReplayAutosaveFrequency,
+  Result := Math.Max(gGameSettings.ReplayAutosaveFrequency,
                      //Do not save too often, that could cause OUT_OF_MEMORY error
                      fGameInputProcess.GetLastTick div (REPLAY_AUTOSAVE_CNT_MAX - 2)); // - 2 for starting one and for PT
   Result := Ceil(Result / 300)*300; //Ceil to every 30 sec

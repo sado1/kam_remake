@@ -61,7 +61,7 @@ type
 
 implementation
 uses
-  KM_Log, KM_ResTexts, KM_GameApp, KM_RenderUI, KM_ResFonts, KM_Pics;
+  KM_Log, KM_ResTexts, KM_GameApp, KM_RenderUI, KM_ResFonts, KM_Pics, KM_Settings;
 
 
 { TKMGUIMenuLoad }
@@ -271,7 +271,7 @@ end;
 procedure TKMMenuLoad.SetLastSaveFileName(const aFileName: String = '');
 begin
   fLastSaveFileName := aFileName;
-  gGameApp.GameSettings.MenuSPSaveFileName := aFileName;
+  gGameSettings.MenuSPSaveFileName := aFileName;
 end;
 
 
@@ -476,7 +476,7 @@ begin
   ColumnBox_Load.Clear; //clear the list
   Load_DeleteConfirmation(False);
   UpdateUI;
-  fLastSaveFileName := gGameApp.GameSettings.MenuSPSaveFileName;
+  fLastSaveFileName := gGameSettings.MenuSPSaveFileName;
 
   //Initiate refresh and process each new save added
   fSaves.Refresh(Load_ScanUpdate, False, Load_ScanComplete);

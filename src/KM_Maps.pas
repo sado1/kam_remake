@@ -252,7 +252,7 @@ implementation
 uses
   SysUtils, StrUtils, TypInfo, Math,
   KromShellUtils, KromUtils,
-  KM_GameApp, KM_FileIO,
+  KM_GameApp, KM_Settings, KM_FileIO,
   KM_MissionScript_Info, KM_Scripting,
   KM_CommonUtils, KM_Log;
 
@@ -385,10 +385,10 @@ begin
     //Load additional text info
     fTxtInfo.LoadTXTInfo(fPath + fFileName + '.txt');
 
-    if gGameApp.GameSettings = nil // In case we are closing app and settings object is already destroyed
+    if gGameSettings = nil // In case we are closing app and settings object is already destroyed
       then Exit;
 
-    IsFavourite := gGameApp.GameSettings.FavouriteMaps.Contains(fMapAndDatCRC);
+    IsFavourite := gGameSettings.FavouriteMaps.Contains(fMapAndDatCRC);
 
     SaveToFile(fPath + fFileName + '.mi'); //Save new cache file
   end;
@@ -634,7 +634,7 @@ begin
 
   fTxtInfo.Load(S);
 
-  IsFavourite := gGameApp.GameSettings.FavouriteMaps.Contains(fMapAndDatCRC);
+  IsFavourite := gGameSettings.FavouriteMaps.Contains(fMapAndDatCRC);
 end;
 
 
@@ -801,10 +801,10 @@ var
   Path: String;
 begin
   Assert(gGameApp <> nil, 'gGameApp = nil!');
-  Assert(gGameApp.GameSettings <> nil, 'gGameApp.GameSettings = nil!');
+  Assert(gGameSettings <> nil, 'gGameSettings = nil!');
 
   Result := '';
-  Path := fPath + fFileName + '.' + String(gGameApp.GameSettings.Locale) + '.pdf'; // Try to file with our locale first
+  Path := fPath + fFileName + '.' + String(gGameSettings.Locale) + '.pdf'; // Try to file with our locale first
   if FileExists(Path) then
     Result := Path
   else

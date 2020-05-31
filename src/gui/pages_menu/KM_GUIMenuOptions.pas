@@ -606,7 +606,7 @@ begin
   // (we do that on Show because Create gets called from Main/Game constructor and fMain/gGameApp are not yet assigned)
   // Ideally we could pass them as parameters here
   fMainSettings := gMain.Settings;
-  fGameSettings := gGameApp.GameSettings;
+  fGameSettings := gGameSettings;
   fResolutions := gMain.Resolutions;
   fLastAlphaShadows := fGameSettings.AlphaShadows;
 
@@ -664,9 +664,9 @@ procedure TKMMenuOptions.KeysRefreshList;
   function GetFunctionName(aTX_ID: Integer): String;
   begin
     case aTX_ID of
-      TX_KEY_FUNC_GAME_SPEED_2: Result := Format(gResTexts[aTX_ID], [FormatFloat('##0.##', gGameApp.GameSettings.SpeedMedium)]);
-      TX_KEY_FUNC_GAME_SPEED_3: Result := Format(gResTexts[aTX_ID], [FormatFloat('##0.##', gGameApp.GameSettings.SpeedFast)]);
-      TX_KEY_FUNC_GAME_SPEED_4: Result := Format(gResTexts[aTX_ID], [FormatFloat('##0.##', gGameApp.GameSettings.SpeedVeryFast)]);
+      TX_KEY_FUNC_GAME_SPEED_2: Result := Format(gResTexts[aTX_ID], [FormatFloat('##0.##', gGameSettings.SpeedMedium)]);
+      TX_KEY_FUNC_GAME_SPEED_3: Result := Format(gResTexts[aTX_ID], [FormatFloat('##0.##', gGameSettings.SpeedFast)]);
+      TX_KEY_FUNC_GAME_SPEED_4: Result := Format(gResTexts[aTX_ID], [FormatFloat('##0.##', gGameSettings.SpeedVeryFast)]);
       else                      Result := gResTexts[aTX_ID];
 
     end;

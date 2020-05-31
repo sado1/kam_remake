@@ -119,7 +119,7 @@ type
 
 implementation
 uses
-  KM_ResTexts, KM_Game, KM_GameApp,
+  KM_ResTexts, KM_Game, KM_GameApp, KM_Settings,
   KM_RenderUI, KM_Resource, KM_ResFonts, KM_InterfaceMapEditor,
   KM_Pics, KM_CommonTypes, KM_CommonUtils;
 
@@ -443,11 +443,11 @@ begin
       fMaps[I].IsFavourite := not fMaps[I].IsFavourite;
       if fMaps[I].IsFavourite then
       begin
-        gGameApp.GameSettings.FavouriteMaps.Add(fMaps[I].MapAndDatCRC);
-        gGameApp.GameSettings.ServerMapsRoster.Add(fMaps[I].CRC);
+        gGameSettings.FavouriteMaps.Add(fMaps[I].MapAndDatCRC);
+        gGameSettings.ServerMapsRoster.Add(fMaps[I].CRC);
       end else begin
-        gGameApp.GameSettings.FavouriteMaps.Remove(fMaps[I].MapAndDatCRC);
-        gGameApp.GameSettings.ServerMapsRoster.Remove(fMaps[I].CRC);
+        gGameSettings.FavouriteMaps.Remove(fMaps[I].MapAndDatCRC);
+        gGameSettings.ServerMapsRoster.Remove(fMaps[I].CRC);
       end;
 
       //Update pic
@@ -521,8 +521,8 @@ procedure TKMMenuMapEditor.SizeChangeByEdit(Sender: TObject);
 begin
   UpdateRadioMapEdSizes;
   
-  gGameApp.GameSettings.MenuMapEdNewMapX := NumEdit_MapSizeX.Value;
-  gGameApp.GameSettings.MenuMapEdNewMapY := NumEdit_MapSizeY.Value;
+  gGameSettings.MenuMapEdNewMapX := NumEdit_MapSizeX.Value;
+  gGameSettings.MenuMapEdNewMapY := NumEdit_MapSizeY.Value;
 end;
 
 
@@ -532,14 +532,14 @@ begin
     NumEdit_MapSizeX.Value := MapSize[Radio_NewMapSizeX.ItemIndex];
   if Radio_NewMapSizeY.ItemIndex <> -1 then
     NumEdit_MapSizeY.Value := MapSize[Radio_NewMapSizeY.ItemIndex];
-  gGameApp.GameSettings.MenuMapEdNewMapX := NumEdit_MapSizeX.Value;
-  gGameApp.GameSettings.MenuMapEdNewMapY := NumEdit_MapSizeY.Value;
+  gGameSettings.MenuMapEdNewMapX := NumEdit_MapSizeX.Value;
+  gGameSettings.MenuMapEdNewMapY := NumEdit_MapSizeY.Value;
 end;
 
 
 procedure TKMMenuMapEditor.MapTypeChange(Sender: TObject);
 begin
-  gGameApp.GameSettings.MenuMapEdMapType := Radio_MapType.ItemIndex;
+  gGameSettings.MenuMapEdMapType := Radio_MapType.ItemIndex;
   UpdateSelectedMapCRC;
   UpdateFilterUI;
   RefreshList(True);
@@ -599,12 +599,12 @@ end;
 procedure TKMMenuMapEditor.UpdateSelectedMapCRC;
 begin
   case Radio_MapType.ItemIndex of
-    0:  fSelectedMapInfo.CRC := gGameApp.GameSettings.MenuMapEdSPMapCRC;
+    0:  fSelectedMapInfo.CRC := gGameSettings.MenuMapEdSPMapCRC;
     1:  begin
-          fSelectedMapInfo.CRC := gGameApp.GameSettings.MenuMapEdMPMapCRC;
-          fSelectedMapInfo.Name := gGameApp.GameSettings.MenuMapEdMPMapName;
+          fSelectedMapInfo.CRC := gGameSettings.MenuMapEdMPMapCRC;
+          fSelectedMapInfo.Name := gGameSettings.MenuMapEdMPMapName;
         end;
-    2:  fSelectedMapInfo.CRC := gGameApp.GameSettings.MenuMapEdDLMapCRC;
+    2:  fSelectedMapInfo.CRC := gGameSettings.MenuMapEdDLMapCRC;
   end;
 end;
 
@@ -663,13 +663,13 @@ begin
       MapsSimpleCRCArray[I] := fMaps[I].MapAndDatCRC;
       MapsFullCRCArray[I] := fMaps[I].CRC;
 
-      if gGameApp.GameSettings.ServerMapsRosterEnabled
-        and gGameApp.GameSettings.FavouriteMaps.Contains(MapsSimpleCRCArray[I]) then
-        gGameApp.GameSettings.ServerMapsRoster.Add(MapsFullCRCArray[I]);
+      if gGameSettings.ServerMapsRosterEnabled
+        and gGameSettings.FavouriteMaps.Contains(MapsSimpleCRCArray[I]) then
+        gGameSettings.ServerMapsRoster.Add(MapsFullCRCArray[I]);
     end;
 
-    gGameApp.GameSettings.FavouriteMaps.RemoveMissing(MapsSimpleCRCArray);
-    gGameApp.GameSettings.ServerMapsRoster.RemoveMissing(MapsFullCRCArray);
+    gGameSettings.FavouriteMaps.RemoveMissing(MapsSimpleCRCArray);
+    gGameSettings.ServerMapsRoster.RemoveMissing(MapsFullCRCArray);
   end;
 end;
 
@@ -967,12 +967,12 @@ begin
   fSelectedMapInfo.CRC := aCRC;
   fSelectedMapInfo.Name := aName;
   case Radio_MapType.ItemIndex of
-    0:  gGameApp.GameSettings.MenuMapEdSPMapCRC := aCRC; // Set only CRC, because we do not save selected SP map name
+    0:  gGameSettings.MenuMapEdSPMapCRC := aCRC; // Set only CRC, because we do not save selected SP map name
     1:  begin
-          gGameApp.GameSettings.MenuMapEdMPMapCRC := aCRC;
-          gGameApp.GameSettings.MenuMapEdMPMapName := aName;
+          gGameSettings.MenuMapEdMPMapCRC := aCRC;
+          gGameSettings.MenuMapEdMPMapName := aName;
         end;
-    2:  gGameApp.GameSettings.MenuMapEdDLMapCRC := aCRC; // Set only CRC, because we do not save selected DL map name
+    2:  gGameSettings.MenuMapEdDLMapCRC := aCRC; // Set only CRC, because we do not save selected DL map name
   end;
 end;
 
@@ -1103,9 +1103,9 @@ end;
 procedure TKMMenuMapEditor.Show;
 begin
   // we can get access to gGameApp only here, because in Create it could still be nil
-  Radio_MapType.ItemIndex := gGameApp.GameSettings.MenuMapEdMapType;
-  NumEdit_MapSizeX.Value := gGameApp.GameSettings.MenuMapEdNewMapX;
-  NumEdit_MapSizeY.Value := gGameApp.GameSettings.MenuMapEdNewMapY;
+  Radio_MapType.ItemIndex := gGameSettings.MenuMapEdMapType;
+  NumEdit_MapSizeX.Value := gGameSettings.MenuMapEdNewMapX;
+  NumEdit_MapSizeY.Value := gGameSettings.MenuMapEdNewMapY;
   UpdateRadioMapEdSizes;
 
   ListUpdate;

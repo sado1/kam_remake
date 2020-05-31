@@ -96,7 +96,7 @@ var
 
 implementation
 uses
-  KM_Render, KM_RenderUI, dglOpenGL, KM_ResLocales, KM_GameApp, KM_Sound;
+  KM_Render, KM_RenderUI, dglOpenGL, KM_ResLocales, KM_GameApp, KM_Settings, KM_Sound;
 
 const
   FADE_MUSIC_TIME   = 500; // Music fade time, in ms
@@ -172,7 +172,7 @@ begin
   if Self = nil then
     Exit;
 {$IFDEF VIDEOS}
-  if not gGameApp.GameSettings.VideoOn then
+  if not gGameSettings.VideoOn then
     Exit;
 
   if TryGetPathFile(aCampaignPath + aVideoName, Path) or
@@ -191,7 +191,7 @@ begin
   if Self = nil then
     Exit;
 {$IFDEF VIDEOS}
-  if not gGameApp.GameSettings.VideoOn then
+  if not gGameSettings.VideoOn then
     Exit;
   MissionPath := ExtractFilePath(aMissionFile);
   FileName := ExtractFileName(ChangeFileExt(aMissionFile, '')) + '.' + aVideoName;
@@ -212,7 +212,7 @@ begin
   if Self = nil then
     Exit;
 {$IFDEF VIDEOS}
-  if not gGameApp.GameSettings.VideoOn then
+  if not gGameSettings.VideoOn then
     Exit;
   if TryGetPathFile(aVideoName, Path) or
     TryGetPathFile(VIDEOFILE_PATH + aVideoName, Path) then
@@ -297,7 +297,7 @@ begin
     FCriticalSection.Leave;
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    if gGameApp.GameSettings.VideoStretch then
+    if gGameSettings.VideoStretch then
     begin
       AspectRatio := FWidth / FHeight;
       if AspectRatio > FScreenWidth / FScreenHeight then
@@ -476,7 +476,7 @@ begin
       //libvlc_media_player_set_hwnd(FMediaPlayer, Pointer(FPanel.Handle));
       libvlc_media_player_play(FMediaPlayer);
       SetTrackByLocale;
-      libvlc_audio_set_volume(FMediaPlayer, Round(gGameApp.GameSettings.VideoVolume * 100));
+      libvlc_audio_set_volume(FMediaPlayer, Round(gGameSettings.VideoVolume * 100));
     end
     else
       Stop;

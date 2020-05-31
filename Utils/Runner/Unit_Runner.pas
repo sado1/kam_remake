@@ -63,7 +63,7 @@ var
 
 implementation
 uses
-  KM_HouseInn, KM_HouseBarracks, KM_HandsCollection;
+  KM_HouseInn, KM_HouseBarracks, KM_HandsCollection, KM_Settings;
 
 
 procedure RegisterRunner(aRunner: TKMRunnerClass);
@@ -178,7 +178,7 @@ begin
   end;
 
   gGameApp := TKMGameApp.Create(fRenderTarget, tgtWidth, tgtHeight, False, nil, nil, nil, True);
-  gGameApp.GameSettings.Autosave := False;
+  gGameSettings.Autosave := False;
   gGameApp.PreloadGameResources;
 end;
 

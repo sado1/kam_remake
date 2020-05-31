@@ -56,7 +56,7 @@ implementation
 uses
   Math, KromUtils,
   KM_Resource, KM_ResCursors,
-  KM_Main, KM_GameApp, KM_Sound,
+  KM_Main, KM_GameApp, KM_Settings, KM_Sound,
   KM_Defaults, KM_CommonUtils;
 
 
@@ -314,9 +314,9 @@ begin
 
   // Both advancements have minimal value > 0
   // ScrollAdv depends on Zoom. Value was taken empirically
-  ScrollAdv := (0.5 + gGameApp.GameSettings.ScrollSpeed / 5) * aFrameTime / 100 / Math.Power(fZoom, 0.8);
+  ScrollAdv := (0.5 + gGameSettings.ScrollSpeed / 5) * aFrameTime / 100 / Math.Power(fZoom, 0.8);
 
-  ZoomAdv := (0.2 + gGameApp.GameSettings.ScrollSpeed / 20) * aFrameTime / 1000;
+  ZoomAdv := (0.2 + gGameSettings.ScrollSpeed / 20) * aFrameTime / 1000;
 
   if SCROLL_ACCEL then
   begin

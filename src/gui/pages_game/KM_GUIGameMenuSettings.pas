@@ -37,7 +37,7 @@ type
 
 implementation
 uses
-  KM_GameApp, KM_ResTexts, KM_ResFonts, KM_InterfaceGame, KM_Sound, KM_Game, KM_GameParams,
+  KM_GameApp, KM_Settings, KM_ResTexts, KM_ResFonts, KM_InterfaceGame, KM_Sound, KM_Game, KM_GameParams,
   KM_GameTypes;
 
 
@@ -103,7 +103,7 @@ end;
 procedure TKMGameMenuSettings.UpdateView;
 begin
   CheckBox_ReplayAutopauseAtPTEnd.Enabled := (gGameParams.GameMode = gmReplayMulti) and gGame.IsPeaceTime;
-  CheckBox_AllyEnemy_ColorMode.Checked := gGameApp.GameSettings.PlayersColorMode = pcmAllyEnemy;
+  CheckBox_AllyEnemy_ColorMode.Checked := gGameSettings.PlayersColorMode = pcmAllyEnemy;
 end;
 
 
@@ -157,20 +157,20 @@ end;
 
 procedure TKMGameMenuSettings.Menu_Settings_Fill;
 begin
-  TrackBar_Brightness.Position     := gGameApp.GameSettings.Brightness;
-  CheckBox_Autosave.Checked        := gGameApp.GameSettings.Autosave;
-  CheckBox_ReplayAutopauseAtPTEnd.Checked := gGameApp.GameSettings.ReplayAutopause;
-  TrackBar_ScrollSpeed.Position    := gGameApp.GameSettings.ScrollSpeed;
-  TrackBar_SFX.Position            := Round(gGameApp.GameSettings.SoundFXVolume * TrackBar_SFX.MaxValue);
-  TrackBar_Music.Position          := Round(gGameApp.GameSettings.MusicVolume * TrackBar_Music.MaxValue);
-  CheckBox_MusicOff.Checked        := gGameApp.GameSettings.MusicOff;
-  CheckBox_ShuffleOn.Checked       := gGameApp.GameSettings.ShuffleOn;
-  CheckBox_AllyEnemy_ColorMode.Checked := gGameApp.GameSettings.PlayersColorMode = pcmAllyEnemy;
+  TrackBar_Brightness.Position     := gGameSettings.Brightness;
+  CheckBox_Autosave.Checked        := gGameSettings.Autosave;
+  CheckBox_ReplayAutopauseAtPTEnd.Checked := gGameSettings.ReplayAutopause;
+  TrackBar_ScrollSpeed.Position    := gGameSettings.ScrollSpeed;
+  TrackBar_SFX.Position            := Round(gGameSettings.SoundFXVolume * TrackBar_SFX.MaxValue);
+  TrackBar_Music.Position          := Round(gGameSettings.MusicVolume * TrackBar_Music.MaxValue);
+  CheckBox_MusicOff.Checked        := gGameSettings.MusicOff;
+  CheckBox_ShuffleOn.Checked       := gGameSettings.ShuffleOn;
+  CheckBox_AllyEnemy_ColorMode.Checked := gGameSettings.PlayersColorMode = pcmAllyEnemy;
 
   if gGameParams.IsReplay then
-    CheckBox_ReplaySpecShowBeacons.Checked := gGameApp.GameSettings.ReplayShowBeacons
+    CheckBox_ReplaySpecShowBeacons.Checked := gGameSettings.ReplayShowBeacons
   else if gGameParams.GameMode = gmMultiSpectate then
-    CheckBox_ReplaySpecShowBeacons.Checked := gGameApp.GameSettings.SpecShowBeacons;
+    CheckBox_ReplaySpecShowBeacons.Checked := gGameSettings.SpecShowBeacons;
 
   TrackBar_Music.Enabled           := not CheckBox_MusicOff.Checked;
   CheckBox_ShuffleOn.Enabled       := not CheckBox_MusicOff.Checked;
@@ -184,37 +184,37 @@ var
   MusicToggled, ShuffleToggled: Boolean;
 begin
   //Change these options only if they changed state since last time
-  MusicToggled   := (gGameApp.GameSettings.MusicOff <> CheckBox_MusicOff.Checked);
-  ShuffleToggled := (gGameApp.GameSettings.ShuffleOn <> CheckBox_ShuffleOn.Checked);
+  MusicToggled   := (gGameSettings.MusicOff <> CheckBox_MusicOff.Checked);
+  ShuffleToggled := (gGameSettings.ShuffleOn <> CheckBox_ShuffleOn.Checked);
 
-  gGameApp.GameSettings.Brightness            := TrackBar_Brightness.Position;
-  gGameApp.GameSettings.Autosave              := CheckBox_Autosave.Checked;
-  gGameApp.GameSettings.ReplayAutopause       := CheckBox_ReplayAutopauseAtPTEnd.Checked;
-  gGameApp.GameSettings.ScrollSpeed           := TrackBar_ScrollSpeed.Position;
-  gGameApp.GameSettings.SoundFXVolume         := TrackBar_SFX.Position / TrackBar_SFX.MaxValue;
-  gGameApp.GameSettings.MusicVolume           := TrackBar_Music.Position / TrackBar_Music.MaxValue;
-  gGameApp.GameSettings.MusicOff              := CheckBox_MusicOff.Checked;
-  gGameApp.GameSettings.ShuffleOn             := CheckBox_ShuffleOn.Checked;
+  gGameSettings.Brightness            := TrackBar_Brightness.Position;
+  gGameSettings.Autosave              := CheckBox_Autosave.Checked;
+  gGameSettings.ReplayAutopause       := CheckBox_ReplayAutopauseAtPTEnd.Checked;
+  gGameSettings.ScrollSpeed           := TrackBar_ScrollSpeed.Position;
+  gGameSettings.SoundFXVolume         := TrackBar_SFX.Position / TrackBar_SFX.MaxValue;
+  gGameSettings.MusicVolume           := TrackBar_Music.Position / TrackBar_Music.MaxValue;
+  gGameSettings.MusicOff              := CheckBox_MusicOff.Checked;
+  gGameSettings.ShuffleOn             := CheckBox_ShuffleOn.Checked;
   if CheckBox_AllyEnemy_ColorMode.Checked then
-    gGameApp.GameSettings.PlayersColorMode := pcmAllyEnemy
+    gGameSettings.PlayersColorMode := pcmAllyEnemy
   else
-    gGameApp.GameSettings.PlayersColorMode := pcmDefault;
+    gGameSettings.PlayersColorMode := pcmDefault;
 
   if gGameParams.IsReplay then
-    gGameApp.GameSettings.ReplayShowBeacons   := CheckBox_ReplaySpecShowBeacons.Checked
+    gGameSettings.ReplayShowBeacons   := CheckBox_ReplaySpecShowBeacons.Checked
   else if gGameParams.GameMode = gmMultiSpectate then
-    gGameApp.GameSettings.SpecShowBeacons   := CheckBox_ReplaySpecShowBeacons.Checked;
+    gGameSettings.SpecShowBeacons   := CheckBox_ReplaySpecShowBeacons.Checked;
 
-  gSoundPlayer.UpdateSoundVolume(gGameApp.GameSettings.SoundFXVolume);
-  gGameApp.MusicLib.Volume := gGameApp.GameSettings.MusicVolume;
+  gSoundPlayer.UpdateSoundVolume(gGameSettings.SoundFXVolume);
+  gGameApp.MusicLib.Volume := gGameSettings.MusicVolume;
   if MusicToggled then
   begin
-    gGameApp.MusicLib.ToggleEnabled(not gGameApp.GameSettings.MusicOff);
-    if not gGameApp.GameSettings.MusicOff then
+    gGameApp.MusicLib.ToggleEnabled(not gGameSettings.MusicOff);
+    if not gGameSettings.MusicOff then
       ShuffleToggled := True; //Re-shuffle songs if music has been enabled
   end;
   if ShuffleToggled then
-    gGameApp.MusicLib.ToggleShuffle(gGameApp.GameSettings.ShuffleOn);
+    gGameApp.MusicLib.ToggleShuffle(gGameSettings.ShuffleOn);
 
   TrackBar_Music.Enabled := not CheckBox_MusicOff.Checked;
   CheckBox_ShuffleOn.Enabled := not CheckBox_MusicOff.Checked;

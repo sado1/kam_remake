@@ -302,7 +302,7 @@ type
 implementation
 uses
   TypInfo, StrUtils,
-  KM_HandSpectator, KM_ResWares, KM_ResHouses, KM_Hand, KM_UnitsCollection, KM_UnitGroup, KM_GameSavedReplays,
+  KM_HandSpectator, KM_ResWares, KM_ResHouses, KM_Hand, KM_UnitsCollection, KM_UnitGroup, KM_GameSavedReplays, KM_Settings,
   KM_CommonTypes, KM_MapTypes, KM_RandomChecks, KM_FileIO, KM_Game, KM_GameInputProcess, KM_GameTypes, KM_InterfaceGame;
 
 
@@ -1351,11 +1351,11 @@ begin
 
       StartGame;
 
-      gGameApp.GameSettings.DebugSaveGameAsText := True;
+      gGameSettings.DebugSaveGameAsText := True;
 
-      gGameApp.GameSettings.SaveCheckpoints := True;
-      gGameApp.GameSettings.SaveCheckpointsFreq := savesFreq;
-      gGameApp.GameSettings.SaveCheckpointsLimit := savesCnt;
+      gGameSettings.SaveCheckpoints := True;
+      gGameSettings.SaveCheckpointsFreq := savesFreq;
+      gGameSettings.SaveCheckpointsLimit := savesCnt;
 
 //      LOG_GAME_TICK := True;
 //      Include(gLog.MessageTypes, lmtCommands);
@@ -1788,9 +1788,9 @@ begin
 
       StartGame;
 
-      gGameApp.GameSettings.DebugSaveGameAsText := True;
+      gGameSettings.DebugSaveGameAsText := True;
 
-      gGameApp.GameSettings.SaveCheckpoints := False;
+      gGameSettings.SaveCheckpoints := False;
 
 //      LOG_GAME_TICK := True;
 //      Include(gLog.MessageTypes, lmtCommands);

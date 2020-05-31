@@ -152,7 +152,7 @@ var
 
 implementation
 uses
-  KM_RenderAux, KM_HandsCollection, KM_Game, KM_GameApp, KM_Sound, KM_Resource, KM_ResUnits,
+  KM_RenderAux, KM_HandsCollection, KM_Game, KM_GameApp, KM_Settings, KM_Sound, KM_Resource, KM_ResUnits,
   KM_ResMapElements, KM_AIFields, KM_TerrainPainter, KM_GameCursor,
 
   KM_FogOfWar, KM_Hand, KM_UnitGroup, KM_CommonUtils,
@@ -756,7 +756,7 @@ begin
   if (aWoodStep = 1) and (aStoneStep = 1) then
   begin
     // Snow only happens on fully built houses
-    if gGameApp.GameSettings.AllowSnowHouses
+    if gGameSettings.AllowSnowHouses
       and (aSnowStep > 0)
       and (PicSnow <> 0) then
     begin

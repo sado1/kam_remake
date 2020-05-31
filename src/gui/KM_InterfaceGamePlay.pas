@@ -359,7 +359,7 @@ uses
   Generics.Collections,
   KM_Main, KM_GameInputProcess, KM_GameInputProcess_Multi, KM_AI, KM_RenderUI, KM_GameCursor, KM_Maps,
   KM_HandsCollection, KM_Hand, KM_RenderPool, KM_ResTexts, KM_Game, KM_GameApp, KM_HouseBarracks, KM_HouseTownHall,
-  KM_Utils, KM_ScriptingEvents, KM_AIFields,
+  KM_Utils, KM_ScriptingEvents, KM_AIFields, KM_Settings, 
   KM_CommonUtils, KM_ResLocales, KM_ResSound, KM_Resource, KM_Log, KM_ResCursors, KM_ResFonts, KM_ResKeys,
   KM_FogOfWar, KM_Sound, KM_NetPlayersList, KM_MessageLog, KM_NetworkTypes,
   KM_InterfaceMapEditor, KM_HouseWoodcutters, KM_MapTypes,
@@ -566,7 +566,7 @@ begin
 
   // If they just closed settings then we should save them (if something has changed)
   if LastVisiblePage = fGuiMenuSettings then
-    gGameApp.GameSettings.SaveSettings;
+    gGameSettings.SaveSettings;
 
   // Ensure, that saves scanning will be stopped when user leaves save/load page
   if (LastVisiblePage = Panel_Save) or (LastVisiblePage = Panel_Load) then
@@ -749,7 +749,7 @@ end;
 procedure TKMGamePlayInterface.GameSettingsChanged;
 begin
   //Update player color mode radio
-  Radio_PlayersColorMode.ItemIndex := Byte(gGameApp.GameSettings.PlayersColorMode) - 1;
+  Radio_PlayersColorMode.ItemIndex := Byte(gGameSettings.PlayersColorMode) - 1;
   //Update minimap
   fMinimap.Update;
 end;
@@ -757,7 +757,7 @@ end;
 
 procedure TKMGamePlayInterface.Replay_PlayersColorModeClick(Sender: TObject);
 begin
-  gGameApp.GameSettings.PlayersColorMode := TKMPlayerColorMode(Radio_PlayersColorMode.ItemIndex + 1);
+  gGameSettings.PlayersColorMode := TKMPlayerColorMode(Radio_PlayersColorMode.ItemIndex + 1);
   fGuiMenuSettings.UpdateView; //Update settings
   //Update minimap
   fMinimap.Update;
@@ -2216,7 +2216,7 @@ end;
 
 procedure TKMGamePlayInterface.Menu_Update;
 begin
-  if gGameApp.GameSettings.MusicOff then
+  if gGameSettings.MusicOff then
     Label_Menu_Track.Caption := '-'
   else
     Label_Menu_Track.Caption := gGameApp.MusicLib.GetTrackTitle;
@@ -2237,9 +2237,9 @@ begin
   end else
     Panel_Track.Top := PANEL_TRACK_TOP;
 
-  Label_Menu_Track.Enabled      := not gGameApp.GameSettings.MusicOff;
-  Button_Menu_TrackUp.Enabled   := not gGameApp.GameSettings.MusicOff;
-  Button_Menu_TrackDown.Enabled := not gGameApp.GameSettings.MusicOff;
+  Label_Menu_Track.Enabled      := not gGameSettings.MusicOff;
+  Button_Menu_TrackUp.Enabled   := not gGameSettings.MusicOff;
+  Button_Menu_TrackDown.Enabled := not gGameSettings.MusicOff;
 end;
 
 
@@ -2521,7 +2521,7 @@ begin
               or (aShowRecorded and (aSpeedRecorded <> GAME_SPEED_NORMAL));
 
   Image_Clock.Visible := doShowClock;
-  Label_Clock.Visible := doShowClock or gGameApp.GameSettings.ShowGameTime or SHOW_GAME_TICK;
+  Label_Clock.Visible := doShowClock or gGameSettings.ShowGameTime or SHOW_GAME_TICK;
   Label_ClockSpeedActual.Visible := doShowClock;
   Label_ClockSpeedActual.Caption := 'x' + FormatFloat('##0.##', aSpeedActual);
 
@@ -3410,13 +3410,13 @@ begin
   if (Key = gResKeys[SC_PLAYER_COLOR_MODE].Key) then
   begin
     if fUIMode in [umReplay, umSpectate] then
-      gGameApp.GameSettings.PlayersColorMode := TKMPlayerColorMode((Byte(gGameApp.GameSettings.PlayersColorMode) mod 3) + 1)
+      gGameSettings.PlayersColorMode := TKMPlayerColorMode((Byte(gGameSettings.PlayersColorMode) mod 3) + 1)
     else
     begin
-      if gGameApp.GameSettings.PlayersColorMode = pcmDefault then
-        gGameApp.GameSettings.PlayersColorMode := pcmAllyEnemy
+      if gGameSettings.PlayersColorMode = pcmDefault then
+        gGameSettings.PlayersColorMode := pcmAllyEnemy
       else
-        gGameApp.GameSettings.PlayersColorMode := pcmDefault;
+        gGameSettings.PlayersColorMode := pcmDefault;
     end;
     GameSettingsChanged;
     //Update minimap immidiately
@@ -3429,11 +3429,11 @@ begin
     if Key = gResKeys[SC_SPEEDUP_1].Key then
       gGame.SetGameSpeed(GAME_SPEED_NORMAL, True, gGame.GameSpeedGIP);
     if Key = gResKeys[SC_SPEEDUP_2].Key then
-      gGame.SetGameSpeed(gGameApp.GameSettings.SpeedMedium, True);
+      gGame.SetGameSpeed(gGameSettings.SpeedMedium, True);
     if Key = gResKeys[SC_SPEEDUP_3].Key then
-      gGame.SetGameSpeed(gGameApp.GameSettings.SpeedFast, True);
+      gGame.SetGameSpeed(gGameSettings.SpeedFast, True);
     if Key = gResKeys[SC_SPEEDUP_4].Key then
-      gGame.SetGameSpeed(gGameApp.GameSettings.SpeedVeryFast, True);
+      gGame.SetGameSpeed(gGameSettings.SpeedVeryFast, True);
   end;
 
   // First check if this key was associated with some Spectate/Replay key

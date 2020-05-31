@@ -3,7 +3,7 @@ unit KM_FormMain;
 interface
 uses
   Classes, ComCtrls, Controls, Buttons, Dialogs, ExtCtrls, Forms, Graphics, Math, Menus, StdCtrls, SysUtils, StrUtils,
-  KM_RenderControl, KM_Settings, KM_Video, KM_CommonTypes,
+  KM_RenderControl, KM_Settings, KM_CommonTypes,
 
   {$IFDEF FPC} LResources, {$ENDIF}
   {$IFDEF MSWindows} ShellAPI, Windows, Messages, Vcl.Samples.Spin; {$ENDIF}
@@ -298,7 +298,7 @@ uses
   KM_Resource,
 
   KM_ResTexts,
-  KM_GameApp,
+  KM_GameApp, //KM_Settings,
   KM_HandsCollection,
   KM_ResSound,
   KM_Pics,
@@ -306,7 +306,7 @@ uses
   KM_Hand,
   KM_ResKeys, KM_FormLogistics, KM_Game,
   KM_RandomChecks,
-  KM_Log, KM_CommonClasses, KM_Helpers;
+  KM_Log, KM_CommonClasses, KM_Helpers, KM_Video;
 
 
 //Remove VCL panel and use flicker-free TMyPanel instead
@@ -371,7 +371,7 @@ begin
 
   Application.ProcessMessages;
 
-  if not fStartVideoPlayed and (gGameApp.GameSettings <> nil) and gGameApp.GameSettings.VideoStartup then
+  if not fStartVideoPlayed and (gGameSettings <> nil) and gGameSettings.VideoStartup then
   begin
     gVideoPlayer.AddVideo('Campaigns' + PathDelim + 'The Shattered Kingdom' + PathDelim + 'Logo', vfkStarting);
     gVideoPlayer.AddVideo('KaM', vfkStarting);
@@ -435,14 +435,14 @@ end;
 
 procedure TFormMain.ReloadLibxClick(Sender: TObject);
 begin
-  gRes.LoadLocaleAndFonts(gGameApp.GameSettings.Locale, gGameApp.GameSettings.LoadFullFonts);
+  gRes.LoadLocaleAndFonts(gGameSettings.Locale, gGameSettings.LoadFullFonts);
 end;
 
 
 procedure TFormMain.ReloadSettingsClick(Sender: TObject);
 begin
   gMain.Settings.ReloadSettings;
-  gGameApp.GameSettings.ReloadSettings;
+  gGameSettings.ReloadSettings;
 end;
 
 
@@ -730,7 +730,7 @@ end;
 procedure TFormMain.SaveSettingsClick(Sender: TObject);
 begin
   gMain.Settings.SaveSettings(True);
-  gGameApp.GameSettings.SaveSettings(True);
+  gGameSettings.SaveSettings(True);
 end;
 
 
@@ -820,8 +820,8 @@ procedure TFormMain.ControlsReset;
           TCheckBox(PanelSurface.Controls[I]).Checked :=    (PanelSurface.Controls[I] = chkBevel)
                                                          or (PanelSurface.Controls[I] = chkLogNetConnection)
                                                          or (PanelSurface.Controls[I] = chkLogSkipTempCmd)
-                                                         or ((PanelSurface.Controls[I] = chkSnowHouses) and gGameApp.GameSettings.AllowSnowHouses)
-                                                         or ((PanelSurface.Controls[I] = chkInterpolatedRender) and gGameApp.GameSettings.InterpolatedRender)
+                                                         or ((PanelSurface.Controls[I] = chkSnowHouses) and gGameSettings.AllowSnowHouses)
+                                                         or ((PanelSurface.Controls[I] = chkInterpolatedRender) and gGameSettings.InterpolatedRender)
                                                          or (PanelSurface.Controls[I] = chkShowObjects)
                                                          or (PanelSurface.Controls[I] = chkShowHouses)
                                                          or (PanelSurface.Controls[I] = chkShowUnits)
@@ -894,8 +894,8 @@ end;
 procedure TFormMain.ControlsRefill;
 begin
   {$IFDEF WDC}
-  chkSnowHouses.SetCheckedWithoutClick(gGameApp.GameSettings.AllowSnowHouses); // Snow houses checkbox could be updated before game
-  chkInterpolatedRender.SetCheckedWithoutClick(gGameApp.GameSettings.InterpolatedRender); // Snow houses checkbox could be updated before game
+  chkSnowHouses.SetCheckedWithoutClick(gGameSettings.AllowSnowHouses); // Snow houses checkbox could be updated before game
+  chkInterpolatedRender.SetCheckedWithoutClick(gGameSettings.InterpolatedRender); // Snow houses checkbox could be updated before game
   chkLoadUnsupSaves.SetCheckedWithoutClick(ALLOW_LOAD_UNSUP_VERSION_SAVE);
   chkDebugScripting.SetCheckedWithoutClick(DEBUG_SCRIPTING_EXEC);
   {$ENDIF}
@@ -1087,8 +1087,8 @@ begin
 
   {$IFDEF WDC} //one day update .lfm for lazarus...
 //  ALLOW_SNOW_HOUSES := chkSnowHouses.Checked;
-  gGameApp.GameSettings.AllowSnowHouses := chkSnowHouses.Checked;
-  gGameApp.GameSettings.InterpolatedRender := chkInterpolatedRender.Checked;
+  gGameSettings.AllowSnowHouses := chkSnowHouses.Checked;
+  gGameSettings.InterpolatedRender := chkInterpolatedRender.Checked;
 
   ALLOW_LOAD_UNSUP_VERSION_SAVE := chkLoadUnsupSaves.Checked;
   {$ENDIF}

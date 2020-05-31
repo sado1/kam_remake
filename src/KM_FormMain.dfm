@@ -87,6 +87,7 @@ object FormMain: TFormMain
       Height = 179
       Caption = 'Logs'
       TabOrder = 0
+      ExplicitWidth = 256
       object chkLogCommands: TCheckBox
         Left = 120
         Top = 8
@@ -178,6 +179,7 @@ object FormMain: TFormMain
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 1
+      ExplicitWidth = 256
       ExpandedHeight = 133
       object Label1: TLabel
         Left = 101
@@ -289,6 +291,7 @@ object FormMain: TFormMain
       Caption = 'User Interface'
       Collapsed = True
       TabOrder = 2
+      ExplicitWidth = 256
       ExpandedHeight = 72
       object chkUIControlsBounds: TCheckBox
         Left = 8
@@ -324,6 +327,7 @@ object FormMain: TFormMain
       Caption = 'Perf Logs'
       Collapsed = True
       TabOrder = 3
+      ExplicitWidth = 256
       ExpandedHeight = 660
     end
     object cpAI: TCategoryPanel
@@ -332,6 +336,7 @@ object FormMain: TFormMain
       Caption = 'AI'
       Collapsed = True
       TabOrder = 4
+      ExplicitWidth = 256
       object Label5: TLabel
         Left = 202
         Top = 111
@@ -540,6 +545,7 @@ object FormMain: TFormMain
       Caption = 'Scripting'
       Collapsed = True
       TabOrder = 5
+      ExplicitWidth = 256
       ExpandedHeight = 50
       object chkDebugScripting: TCheckBox
         Left = 8
@@ -562,6 +568,7 @@ object FormMain: TFormMain
       Caption = 'Game additional'
       Collapsed = True
       TabOrder = 6
+      ExplicitWidth = 256
       ExpandedHeight = 136
       object chkLoadUnsupSaves: TCheckBox
         Left = 12
@@ -612,6 +619,7 @@ object FormMain: TFormMain
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 7
+      ExplicitWidth = 256
       object Label2: TLabel
         Left = 136
         Top = 5
@@ -985,6 +993,7 @@ object FormMain: TFormMain
       Height = 97
       Caption = 'Game '
       TabOrder = 8
+      ExplicitWidth = 256
       object Label8: TLabel
         Left = 79
         Top = 30
