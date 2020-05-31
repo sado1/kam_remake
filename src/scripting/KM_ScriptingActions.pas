@@ -1119,7 +1119,7 @@ begin
         AttackType := aatOnce;
 
       //Attack delay should be counted from the moment attack was added from script
-      Delay := aDelay + gGame.GameTick;
+      Delay := aDelay + gGameParams.GameTick;
       Result := gHands[aPlayer].AI.General.Attacks.AddAttack(AttackType, Delay, aTotalMen, aMelleCount, aAntiHorseCount, aRangedCount, aMountedCount, aRandomGroups, aTarget, 0, aCustomPosition);
     end else
       LogParamWarning('Actions.AIAttackAdd', [aPlayer, aDelay, aTotalMen, aMelleCount, aAntiHorseCount, aRangedCount, aMountedCount]);

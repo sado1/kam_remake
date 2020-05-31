@@ -39,7 +39,7 @@ type
 
 implementation
 uses
-  KromUtils, Math, KM_Defaults, KM_GameApp, KM_Game, KM_Terrain,
+  KromUtils, Math, KM_Defaults, KM_GameApp, KM_Game, KM_GameParams, KM_Terrain,
   KM_InterfaceGame, KM_ResFonts, KM_RenderUI, KM_Points, KM_Maps, KM_ResTexts, KM_ResTileset;
 
 
@@ -181,7 +181,7 @@ begin
 
   gGame.TerrainPainter.FixTerrainKindInfoAtBorders(False);
 
-  SaveName := TKMapsCollection.FullPath(gGame.GameName, '.dat', fIsMultiplayer);
+  SaveName := TKMapsCollection.FullPath(gGameParams.GameName, '.dat', fIsMultiplayer);
   gGame.SaveMapEditor(SaveName, KMRect(NumEdit_Resize_Left.Value,  NumEdit_Resize_Top.Value,
                                        NumEdit_Resize_Right.Value, NumEdit_Resize_Bottom.Value));
   FreeThenNil(gGame);

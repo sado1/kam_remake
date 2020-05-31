@@ -109,7 +109,7 @@ const
 implementation
 uses
   Types, TypInfo,
-  KM_Game, KM_HandsCollection, KM_Terrain, KM_AIFields,
+  KM_Game, KM_GameParams, KM_HandsCollection, KM_Terrain, KM_AIFields,
   KM_NavMesh, KM_RenderAux,
   KM_UnitWarrior, KM_AIParameters, KM_UnitActionFight, KM_UnitActionWalkTo;
 
@@ -260,7 +260,7 @@ begin
   SetTargetGroup(nil);
   SetTargetHouse(nil);
   fTargetPosition := aLoc;
-  fWalkTimeLimit := gGame.GameTick + KMDistanceAbs(fTargetPosition.Loc, Position) * 5;
+  fWalkTimeLimit := gGameParams.GameTick + KMDistanceAbs(fTargetPosition.Loc, Position) * 5;
 end;
 
 
@@ -730,8 +730,8 @@ begin
                           Byte(CG.OnPlace),
                           Byte(CG.InFight),
                           Order,
-                          Max(0, Integer(CG.WalkTimeLimit)   - Integer(gGame.GameTick)),
-                          Max(0, Integer(CG.AttackTimeLimit) - Integer(gGame.GameTick)),
+                          Max(0, Integer(CG.WalkTimeLimit)   - Integer(gGameParams.GameTick)),
+                          Max(0, Integer(CG.AttackTimeLimit) - Integer(gGameParams.GameTick)),
                           CG.Position.X, CG.Position.Y,
                           CG.TargetAim.X, CG.TargetAim.Y,
                           KMDistanceSqr(CG.TargetAim,CG.Position), KMDistanceAbs(CG.TargetAim,CG.Position),

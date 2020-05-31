@@ -133,8 +133,8 @@ begin
   fGameMode := gGameParams.GameMode;
 
   //Remember which map we played so we could restart it
-  fRepeatGameName := gGame.GameName;
-  fRepeatMission := gGame.MissionFile;
+  fRepeatGameName := gGameParams.GameName;
+  fRepeatMission := gGameParams.MissionFile;
   fRepeatSave := gGame.SaveFile;
   fRepeatCampName := gGame.CampaignName;
   fRepeatCampMap := gGame.CampaignMap;
@@ -183,7 +183,7 @@ begin
   //Append mission name and time after the result message
   if Label_Results.Caption <> '' then
     Label_Results.Caption := Label_Results.Caption + ' - ';
-  Label_Results.Caption := Label_Results.Caption + gGame.GameName; //Don't show the mission time in SP because it's already shown elsewhere
+  Label_Results.Caption := Label_Results.Caption + gGameParams.GameName; //Don't show the mission time in SP because it's already shown elsewhere
 
   //Append difficulty level to game results caption
   if gGame.MissionDifficulty <> mdNone then
@@ -224,10 +224,10 @@ begin
   Chart_Houses.MaxLength    := gHands[HumanId].Stats.ChartCount;
   Chart_Wares.MaxLength     := gHands[HumanId].Stats.ChartCount;
 
-  Chart_Army.MaxTime      := gGame.GameTick div 10;
-  Chart_Citizens.MaxTime  := gGame.GameTick div 10;
-  Chart_Houses.MaxTime    := gGame.GameTick div 10;
-  Chart_Wares.MaxTime     := gGame.GameTick div 10;
+  Chart_Army.MaxTime      := gGameParams.GameTick div 10;
+  Chart_Citizens.MaxTime  := gGameParams.GameTick div 10;
+  Chart_Houses.MaxTime    := gGameParams.GameTick div 10;
+  Chart_Wares.MaxTime     := gGameParams.GameTick div 10;
 
   //Citizens
   TempGraphCount := 0; //Reset

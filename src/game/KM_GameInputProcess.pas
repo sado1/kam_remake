@@ -393,7 +393,7 @@ uses
   KM_GameApp, KM_Game, KM_GameParams, KM_HandsCollection,
   KM_HouseMarket, KM_HouseBarracks, KM_HouseSchool, KM_HouseTownHall,
   KM_ScriptingEvents, KM_Alerts, KM_CommonUtils, KM_Log, KM_RenderUI,
-  KM_GameTypes, KM_ResFonts, KM_Resource;
+  KM_GameTypes, KM_ResFonts, KM_Settings, KM_Resource;
 
 const 
   NO_LAST_TICK_VALUE = 0;
@@ -703,7 +703,7 @@ end;
 procedure TKMGameInputProcess.TakeCommand(const aCommand: TKMGameInputCommand);
 begin
   if gGame.IsStarted
-    and (gGame.GameTick > 0) then //We could get some commands even before 1st game update (on tick 0)
+    and (gGameParams.GameTick > 0) then //We could get some commands even before 1st game update (on tick 0)
     DoTakeCommand(aCommand)
   else
     fPlannedCommands.Add(aCommand);
@@ -794,7 +794,7 @@ begin
       Exit;
 
     if gLog.CanLogCommands() and not DoSkipLogCommand(aCommand) then
-      gLog.LogCommands(Format('Tick: %6d Exec command: %s', [gGame.GameTick, GIPCommandToString(aCommand)]));
+      gLog.LogCommands(Format('Tick: %6d Exec command: %s', [gGameParams.GameTick, GIPCommandToString(aCommand)]));
 
     case CommandType of
       gicArmyFeed:         SrcGroup.OrderFood(True);
@@ -871,9 +871,9 @@ begin
 
       gicGamePause:               ;//if fReplayState = gipRecording then fGame.fGamePlayInterface.SetPause(boolean(Params[1]));
       gicGameSpeed:               gGame.SetGameSpeedGIP(FloatParam, fReplayState = gipRecording);
-      gicGameAutoSave:            if (fReplayState = gipRecording) and gGameApp.GameSettings.Autosave then
+      gicGameAutoSave:            if (fReplayState = gipRecording) and gGameSettings.Autosave then
                                     gGame.AutoSave(DateTimeParam); //Timestamp is synchronised
-      gicGameAutoSaveAfterPT:     if (fReplayState = gipRecording) and gGameApp.GameSettings.Autosave then
+      gicGameAutoSaveAfterPT:     if (fReplayState = gipRecording) and gGameSettings.Autosave then
                                     gGame.AutoSaveAfterPT(DateTimeParam); //Timestamp is synchronised
       gicGameSaveReturnLobby:     if fReplayState = gipRecording then
                                   begin
@@ -935,10 +935,10 @@ begin
     gmCampaign,
     gmMulti:          AddBeacon := (aCommand.Params[3] <> PLAYER_NONE) and DoAddPlayerBeacon;
     gmMultiSpectate:  AddBeacon := (aCommand.Params[3] = PLAYER_NONE) // Show spectators beacons while spectating
-                                    or (gGameApp.GameSettings.SpecShowBeacons and DoAddPlayerBeacon);
+                                    or (gGameSettings.SpecShowBeacons and DoAddPlayerBeacon);
     gmReplaySingle,
     gmReplayMulti:    AddBeacon := (aCommand.Params[3] <> PLAYER_NONE)  // Do not show spectators beacons in replay
-                                    and gGameApp.GameSettings.ReplayShowBeacons and DoAddPlayerBeacon;
+                                    and gGameSettings.ReplayShowBeacons and DoAddPlayerBeacon;
   end;
 
   if AddBeacon then
@@ -1285,7 +1285,7 @@ begin
   Inc(fCount);
   if Length(fQueue) <= fCount then SetLength(fQueue, fCount + 128);
 
-  fQueue[fCount].Tick    := gGame.GameTick;
+  fQueue[fCount].Tick    := gGameParams.GameTick;
   fQueue[fCount].Command := aCommand;
   //Skip random check generation. We do not want KaMRandom to be called here
   if SKIP_RNG_CHECKS_FOR_SOME_GIC and (aCommand.CommandType in SKIP_RANDOM_CHECKS_FOR) then

@@ -17,7 +17,8 @@ type
 
 
 implementation
-uses KM_Maps;
+uses 
+  KM_Maps, KM_Settings;
 
 
 procedure TestKMMissionScript.SetUp;
@@ -27,7 +28,7 @@ begin
   ExeDir := ExtractFilePath(ParamStr(0)) + '..\';
   gLog := TKMLog.Create(ExtractFilePath(ParamStr(0)) + 'Temp\temp.log');
   gGameApp := TKMGameApp.Create(nil, 1024, 768, False, nil, nil, nil, True);
-  gGameApp.GameSettings.Autosave := False;
+  gGameSettings.Autosave := False;
 end;
 
 

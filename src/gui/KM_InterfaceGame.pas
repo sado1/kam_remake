@@ -175,8 +175,8 @@ const
 
 implementation
 uses
-  KM_Main, KM_Terrain, KM_RenderPool, KM_Resource, KM_ResCursors, KM_ResKeys, KM_HandsCollection, KM_Game,
-  KM_RenderUI, KM_CommonUtils, KM_Pics, KM_GameApp;
+  KM_Main, KM_Terrain, KM_RenderPool, KM_Resource, KM_ResCursors, KM_ResKeys, KM_HandsCollection, KM_GameParams,
+  KM_RenderUI, KM_CommonUtils, KM_Pics, KM_Settings;
 
 
 { TKMUserInterfaceGame }
@@ -372,7 +372,7 @@ begin
   // +1 for ScrollSpeed = 0.
   // Sqrt to reduce Scroll speed importance
   // 11 = 10 + 1, 10 is default scroll speed
-  fViewport.Zoom := fViewport.Zoom * (1 + WheelSteps * Sqrt((gGameApp.GameSettings.ScrollSpeed + 1) / 11) / 12);
+  fViewport.Zoom := fViewport.Zoom * (1 + WheelSteps * Sqrt((gGameSettings.ScrollSpeed + 1) / 11) / 12);
   UpdateGameCursor(X, Y, Shift); // Zooming changes the cursor position
   // Move the center of the screen so the cursor stays on the same tile, thus pivoting the zoom around the cursor
   fViewport.Position := KMPointF(fViewport.Position.X + PrevCursor.X-gGameCursor.Float.X,
@@ -411,7 +411,7 @@ end;
 
 procedure TKMUserInterfaceGame.Paint;
 begin
-  if (mlDefencesAll in gGame.VisibleLayers) then
+  if (mlDefencesAll in gGameParams.VisibleLayers) then
     fPaintDefences := True;
 
   if fPaintDefences then

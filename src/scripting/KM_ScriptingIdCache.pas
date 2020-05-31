@@ -42,7 +42,7 @@ type
 
 implementation
 uses
-  KM_Game, KM_HandsCollection, KM_DevPerfLog, KM_DevPerfLogTypes;
+  KM_GameParams, KM_HandsCollection, KM_DevPerfLog, KM_DevPerfLogTypes;
 
 
 { TKMScriptingIdCache }
@@ -218,7 +218,7 @@ begin
   try
     //Clear out dead IDs every now and again
     //Leave them in the cache as nils, because we still might need to lookup that UID
-    if gGame.GameTick mod 11 = 0 then
+    if gGameParams.GameTick mod 11 = 0 then
     begin
       for I := Low(fUnitCache) to High(fUnitCache) do
         if (fUnitCache[I].U <> nil) and fUnitCache[I].U.IsDeadOrDying then

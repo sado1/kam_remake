@@ -27,7 +27,7 @@ type
 
 implementation
 uses
-  KM_HandsCollection, KM_ResSound, KM_Sound, KM_Resource, KM_Projectiles, KM_Game, KM_ResUnits;
+  KM_HandsCollection, KM_ResSound, KM_Sound, KM_Resource, KM_Projectiles, KM_GameParams, KM_ResUnits;
 
 
 const
@@ -119,7 +119,7 @@ begin
               //Prevent rate of fire exploit by making archers pause for longer if they shot recently
               Cycle := Max(gRes.Units[UnitType].UnitAnim[uaWork, Direction].Count, 1) - FiringDelay;
               if NeedsToReload(Cycle) then
-                Delay := Delay + Cycle - (gGame.GameTick - LastShootTime);
+                Delay := Delay + Cycle - (gGameParams.GameTick - LastShootTime);
 
               SetActionLockedStay(Delay,uaWork); //Pretend to aim
 

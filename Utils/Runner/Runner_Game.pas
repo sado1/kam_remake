@@ -302,7 +302,7 @@ type
 implementation
 uses
   TypInfo, StrUtils,
-  KM_HandSpectator, KM_ResWares, KM_ResHouses, KM_Hand, KM_UnitsCollection, KM_UnitGroup, KM_GameSavedReplays,
+  KM_HandSpectator, KM_ResWares, KM_ResHouses, KM_Hand, KM_UnitsCollection, KM_UnitGroup, KM_GameSavedReplays, KM_Settings,
   KM_CommonTypes, KM_MapTypes, KM_RandomChecks, KM_FileIO, KM_Game, KM_GameInputProcess, KM_GameTypes, KM_InterfaceGame;
 
 
@@ -981,7 +981,7 @@ begin
       SetKaMSeed(Max(1,L));
 
       SimulateGame();
-      Score := gGameApp.Game.GameTick;//Max(0,EvalGame());
+      Score := gGameApp.Game.Params.GameTick;//Max(0,EvalGame());
       fAverageScore := fAverageScore + Score;
       //gGameApp.Game.Save(Format('%s__No_%.3d__Score_%.6d',[MapName, K, Round(Score)]), Now);
       if (Score < fWorstScore) AND (cnt_MAP_SIMULATIONS > 1) then
@@ -1074,7 +1074,7 @@ begin
   Assert(fRunKind = drkReplay);
 
   fRngMismatchFound := True;
-  fRngMismatchTick := gGame.GameTick;
+  fRngMismatchTick := gGameParams.GameTick;
 
   OnProgress_Left2(Format('RNG mismatch: %d', [fRngMismatchTick]));
 end;
@@ -1131,7 +1131,7 @@ end;
 
 function TKMRunnerDesyncTest.GetSaveName: string;
 begin
-  Result := GetSaveName(fRunKind, gGame.GameTick);
+  Result := GetSaveName(fRunKind, gGameParams.GameTick);
 end;
 
 
@@ -1158,7 +1158,7 @@ var
 begin
   Result := True;
 
-  if gGame.GameTick = 1 then
+  if gGameParams.GameTick = 1 then
   begin
     gGame.GameInputProcess.CmdPlayerChanged(0, hndComputer, 'AI 1');
 
@@ -1188,30 +1188,30 @@ begin
                   end;
     drkReplay:    ;
     drkGameCRC:   begin
-                    if gGame.GameTick >= fSavePointTick then
+                    if gGameParams.GameTick >= fSavePointTick then
                     begin
                       tickCRC := gGame.GetCurrectTickSaveCRC;
-                      fTickCRC[gGame.GameTick - fSavePointTick] := tickCRC;
+                      fTickCRC[gGameParams.GameTick - fSavePointTick] := tickCRC;
 
                       //SaveGame();
                     end;
                   end;
     drkReplayCRC: begin
                     tickCRC := gGame.GetCurrectTickSaveCRC;
-                    if tickCRC <> fTickCRC[gGame.GameTick - fSavePointTick] then
+                    if tickCRC <> fTickCRC[gGameParams.GameTick - fSavePointTick] then
                     begin
                       SaveGameAndMove;
-//                      MoveSave(GetSaveName(drkGameCRC, gGame.GameTick));
+//                      MoveSave(GetSaveName(drkGameCRC, gGameParams.GameTick));
 
                       //Move last sync saves
                       if SAVE_LAST_SYNC_TICK then
                       begin
-                        MoveSave(GetSaveName(drkReplayCRC, gGame.GameTick - 1));
-                        MoveSave(GetSaveName(drkGameCRC, gGame.GameTick - 1));
+                        MoveSave(GetSaveName(drkReplayCRC, gGameParams.GameTick - 1));
+                        MoveSave(GetSaveName(drkGameCRC, gGameParams.GameTick - 1));
                       end;
 
                       fCRCDesyncFound := True;
-                      fCRCDesyncTick := gGame.GameTick;
+                      fCRCDesyncTick := gGameParams.GameTick;
 
                       OnProgress_Left3(Format('CRC desync: %d', [fCRCDesyncTick]));
 
@@ -1219,10 +1219,10 @@ begin
                     end;
                   end;
     drkGameSave:  begin
-                    if gGame.GameTick = fCRCDesyncTick then
+                    if gGameParams.GameTick = fCRCDesyncTick then
                       SaveGameAndMove
                     else
-                    if gGame.GameTick = fRngMismatchTick then
+                    if gGameParams.GameTick = fRngMismatchTick then
                       SaveGameAndMove;
                   end;
   end;
@@ -1351,11 +1351,11 @@ begin
 
       StartGame;
 
-      gGameApp.GameSettings.DebugSaveGameAsText := True;
+      gGameSettings.DebugSaveGameAsText := True;
 
-      gGameApp.GameSettings.SaveCheckpoints := True;
-      gGameApp.GameSettings.SaveCheckpointsFreq := savesFreq;
-      gGameApp.GameSettings.SaveCheckpointsLimit := savesCnt;
+      gGameSettings.SaveCheckpoints := True;
+      gGameSettings.SaveCheckpointsFreq := savesFreq;
+      gGameSettings.SaveCheckpointsLimit := savesCnt;
 
 //      LOG_GAME_TICK := True;
 //      Include(gLog.MessageTypes, lmtCommands);
@@ -1476,7 +1476,7 @@ begin
 
   // We use gRandom.Get for repeatability in Stadium
 
-  Log(Format('Tick: %5d %d' ,[gGame.GameTick, fRunSeed]));
+  Log(Format('Tick: %5d %d' ,[gGameParams.GameTick, fRunSeed]));
   if KaMRandomWSeed(fRunSeed, FREQ) = 0 then
   begin
     gMySpectator.HandID := KaMRandomWSeed(fRunSeed, gHands.Count);
@@ -1788,9 +1788,9 @@ begin
 
       StartGame;
 
-      gGameApp.GameSettings.DebugSaveGameAsText := True;
+      gGameSettings.DebugSaveGameAsText := True;
 
-      gGameApp.GameSettings.SaveCheckpoints := False;
+      gGameSettings.SaveCheckpoints := False;
 
 //      LOG_GAME_TICK := True;
 //      Include(gLog.MessageTypes, lmtCommands);

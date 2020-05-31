@@ -227,7 +227,7 @@ type
     class function FullPath(const aName, aExt: string; aMultiplayer: Boolean): string; overload;
     class function FullPath(const aName, aExt: string; aMapFolder: TKMapFolder): string; overload;
     class function FullPath(const aName, aExt: string; aMapFolder: TKMapFolder; aCRC: Cardinal): string; overload;
-    class function GuessMPPath(const aName, aExt: string; aCRC: Cardinal): string;
+//    class function GuessMPPath(const aName, aExt: string; aCRC: Cardinal): string;
     class procedure GetAllMapPaths(const aExeDir: string; aList: TStringList);
     class function GetMapCRC(const aName: UnicodeString; aIsMultiplayer: Boolean): Cardinal;
 
@@ -252,16 +252,9 @@ implementation
 uses
   SysUtils, StrUtils, TypInfo, Math,
   KromShellUtils, KromUtils,
-  KM_GameApp, KM_FileIO,
+  KM_GameApp, KM_Settings, KM_FileIO,
   KM_MissionScript_Info, KM_Scripting,
   KM_CommonUtils, KM_Log;
-
-
-const
-  //Map folder name by folder type. Containing single maps, for SP/MP/DL mode
-  MAP_FOLDER: array [TKMapFolder] of string = (MAPS_FOLDER_NAME, MAPS_MP_FOLDER_NAME, MAPS_DL_FOLDER_NAME);
-
-  CUSTOM_MAP_PARAM_DESCR_TX: array[TKMCustomScriptParam] of Integer = (TX_MAP_CUSTOM_PARAM_TH_TROOP_COST, TX_MAP_CUSTOM_PARAM_MARKET_PRICE);
 
 
 { TKMapInfo }
@@ -385,10 +378,10 @@ begin
     //Load additional text info
     fTxtInfo.LoadTXTInfo(fPath + fFileName + '.txt');
 
-    if gGameApp.GameSettings = nil // In case we are closing app and settings object is already destroyed
+    if gGameSettings = nil // In case we are closing app and settings object is already destroyed
       then Exit;
 
-    IsFavourite := gGameApp.GameSettings.FavouriteMaps.Contains(fMapAndDatCRC);
+    IsFavourite := gGameSettings.FavouriteMaps.Contains(fMapAndDatCRC);
 
     SaveToFile(fPath + fFileName + '.mi'); //Save new cache file
   end;
@@ -634,7 +627,7 @@ begin
 
   fTxtInfo.Load(S);
 
-  IsFavourite := gGameApp.GameSettings.FavouriteMaps.Contains(fMapAndDatCRC);
+  IsFavourite := gGameSettings.FavouriteMaps.Contains(fMapAndDatCRC);
 end;
 
 
@@ -801,10 +794,10 @@ var
   Path: String;
 begin
   Assert(gGameApp <> nil, 'gGameApp = nil!');
-  Assert(gGameApp.GameSettings <> nil, 'gGameApp.GameSettings = nil!');
+  Assert(gGameSettings <> nil, 'gGameSettings = nil!');
 
   Result := '';
-  Path := fPath + fFileName + '.' + String(gGameApp.GameSettings.Locale) + '.pdf'; // Try to file with our locale first
+  Path := fPath + fFileName + '.' + String(gGameSettings.Locale) + '.pdf'; // Try to file with our locale first
   if FileExists(Path) then
     Result := Path
   else
@@ -1297,14 +1290,15 @@ begin
 end;
 
 
-class function TKMapsCollection.GuessMPPath(const aName, aExt: string; aCRC: Cardinal): string;
-var S: UnicodeString;
-begin
-  S := aName + '_' + IntToHex(aCRC, 8);
-  Result := MAP_FOLDER[mfDL] + PathDelim + S + PathDelim + S + aExt;
-  if not FileExists(ExeDir + Result) then
-    Result := MAP_FOLDER[mfMP] + PathDelim + aName + PathDelim + aName + aExt;
-end;
+//class function TKMapsCollection.GuessMPPath(const aName, aExt: string; aCRC: Cardinal): string;
+//var
+//  S: UnicodeString;
+//begin
+//  S := aName + '_' + IntToHex(aCRC, 8);
+//  Result := MAP_FOLDER[mfDL] + PathDelim + S + PathDelim + S + aExt;
+//  if not FileExists(ExeDir + Result) then
+//    Result := MAP_FOLDER[mfMP] + PathDelim + aName + PathDelim + aName + aExt;
+//end;
 
 
 procedure TKMapsCollection.Lock;

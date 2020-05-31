@@ -443,6 +443,9 @@ type
     property ServerMapsRoster: TKMMapsCRCList read fServerMapsRoster;
   end;
 
+var
+  gGameSettings: TKMGameSettings;
+
 
 implementation
 uses
@@ -617,6 +620,8 @@ begin
   fServerMapsRoster.OnMapsUpdate := SetServerMapsRosterStr;
 
   ReloadSettings;
+
+  gGameSettings := Self;
 end;
 
 
@@ -626,6 +631,8 @@ begin
   FreeAndNil(fWareDistribution);
   FreeAndNil(fFavouriteMaps);
   FreeAndNil(fServerMapsRoster);
+
+  gGameSettings := nil;
 
   inherited;
 end;

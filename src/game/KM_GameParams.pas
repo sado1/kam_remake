@@ -2,7 +2,7 @@ unit KM_GameParams;
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_Defaults, KM_GameTypes;
+  KM_Defaults, KM_CommonTypes, KM_GameTypes;
 
 type
   TKMGameModeSetEvent = procedure (aGameMode: TKMGameMode) of object;
@@ -11,13 +11,37 @@ type
   private
     fGameMode: TKMGameMode;
     fMissionMode: TKMissionMode;
+    fGameTick: Cardinal;
+    fVisibleLayers: TKMMapVisibleLayerSet;
+
+    fGameName: UnicodeString;
+    fGameMapSimpleCRC: Cardinal; //CRC of map (based on Map and Dat) used in MapEd
+    fGameMapFullCRC: Cardinal; //CRC of map for reporting stats to master server. Also used in MapEd
+    fMissionFileSP: UnicodeString; //Relative pathname to mission we are playing, so it gets saved to crashreport. SP only, see GetMissionFile.
+    fDynamicFOW: Boolean;
+
+    procedure SetGameTick(aGameTick: Cardinal);
     procedure SetGameMode(aGameMode: TKMGameMode);
+    function GetMissionFile: UnicodeString;
+    procedure SetMissionFileSP(const aMissionFileSP: UnicodeString);
+
+    function GetDynamicFOW: Boolean;
+    procedure SetDynamicFOW(const aDynamicFOW: Boolean);
   public
-    constructor Create(out aSetGameModeEvent: TKMGameModeSetEvent);
+    constructor Create(aGameMode: TKMGameMode; out aSetGameTickEvent: TCardinalEvent; out aSetGameModeEvent: TKMGameModeSetEvent; out aSetMissionFileSP: TUnicodeStringEvent);
     destructor Destroy; override;
 
     property GameMode: TKMGameMode read fGameMode;
     property MissionMode: TKMissionMode read fMissionMode write fMissionMode;
+    property GameTick: Cardinal read fGameTick;
+    property VisibleLayers: TKMMapVisibleLayerSet read fVisibleLayers write fVisibleLayers;
+
+    property GameName: UnicodeString read fGameName write fGameName;
+    property GameMapSimpleCRC: Cardinal read fGameMapSimpleCRC write fGameMapSimpleCRC;
+    property GameMapFullCRC: Cardinal read fGameMapFullCRC write fGameMapFullCRC;
+    property MissionFileSP: UnicodeString read fMissionFileSP;
+    property MissionFile: UnicodeString read GetMissionFile;
+    property DynamicFOW: Boolean read GetDynamicFOW write SetDynamicFOW;
 
     function IsMapEditor: Boolean;
     function IsCampaign: Boolean;
@@ -43,14 +67,24 @@ var
 
 
 implementation
+uses
+  KM_MapUtils;
 
 
 { TKMGameParams }
-constructor TKMGameParams.Create(out aSetGameModeEvent: TKMGameModeSetEvent);
+constructor TKMGameParams.Create(aGameMode: TKMGameMode; out aSetGameTickEvent: TCardinalEvent; out aSetGameModeEvent: TKMGameModeSetEvent; out aSetMissionFileSP: TUnicodeStringEvent);
 begin
   inherited Create;
 
+  fVisibleLayers := [mlObjects, mlHouses, mlUnits, mlOverlays];
+
+  fGameMode := aGameMode;
+  fGameTick := 0;
+  DynamicFOW := False;
+
+  aSetGameTickEvent := SetGameTick;
   aSetGameModeEvent := SetGameMode;
+  aSetMissionFileSP := SetMissionFileSP;
 
   gGameParams := Self;
 end;
@@ -72,11 +106,46 @@ end;
 {$ENDIF}
 
 
+function TKMGameParams.GetDynamicFOW: Boolean;
+begin
+  if Self = nil then Exit(DYNAMIC_FOG_OF_WAR);
+  
+  Result := fDynamicFOW;
+end;
+
+
+function TKMGameParams.GetMissionFile: UnicodeString;
+begin
+  if not IsMultiplayer then
+    Result := MissionFileSP //In SP we store it
+  else
+    //In MP we can't store it since it will be MapsMP or MapsDL on different clients
+    Result := GuessMPPath(fGameName, '.dat', fGameMapFullCRC);
+end;
+
+
+procedure TKMGameParams.SetDynamicFOW(const aDynamicFOW: Boolean);
+begin
+  fDynamicFOW := aDynamicFOW;
+end;
+
+
 procedure TKMGameParams.SetGameMode(aGameMode: TKMGameMode);
 begin
   fGameMode := aGameMode;
 end;
 
+
+procedure TKMGameParams.SetGameTick(aGameTick: Cardinal);
+begin
+  fGameTick := aGameTick;
+end;
+
+
+procedure TKMGameParams.SetMissionFileSP(const aMissionFileSP: UnicodeString);
+begin
+  fMissionFileSP := aMissionFileSP;
+end;
 
 
 function TKMGameParams.IsMapEditor: Boolean;
@@ -150,7 +219,6 @@ function TKMGameParams.IsReplayOrSpectate: Boolean;
 begin
   Result := fGameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti];
 end;
-
 
 
 end.

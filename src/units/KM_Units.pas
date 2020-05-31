@@ -343,7 +343,7 @@ const
 implementation
 uses
   TypInfo,
-  KM_Game, KM_GameApp, KM_GameParams, KM_RenderPool, KM_RenderAux, KM_ResTexts,
+  KM_Game, KM_GameParams, KM_RenderPool, KM_RenderAux, KM_ResTexts,
   KM_HandsCollection, KM_UnitWarrior, KM_Resource, KM_ResUnits,
   KM_Hand, KM_MapEditorHistory,
 
@@ -1111,7 +1111,7 @@ begin
 
   //Units start with a random amount of condition ranging from 0.5 to 0.7 (KaM uses 0.6 for all units)
   //By adding the random amount they won't all go eat at the same time and cause crowding, blockages, food shortages and other problems.
-  if (gGame <> nil) and not gGameParams.IsMapEditor then
+  if (gGameParams <> nil) and not gGameParams.IsMapEditor then
     fCondition    := Round(UNIT_MAX_CONDITION * (UNIT_CONDITION_BASE + KaMRandomS2(UNIT_CONDITION_RANDOM, 'TKMUnit.Create')))
   else begin
     fCondition    := GetDefaultCondition;
@@ -2376,7 +2376,7 @@ begin
     Kill(PLAYER_NONE, True, False);
 
   //We only need to update fog of war regularly if we're using dynamic fog of war, otherwise only update it when the unit moves
-  if gGameApp.DynamicFOWEnabled and (fTicker mod FOW_PACE = 0) then
+  if gGameParams.DynamicFOW and (fTicker mod FOW_PACE = 0) then
     gHands.RevealForTeam(fOwner, fCurrPosition, gRes.Units[fType].Sight, FOG_OF_WAR_INC);
 
   UpdateThoughts;

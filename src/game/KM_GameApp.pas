@@ -115,7 +115,6 @@ type
 
     procedure UnlockAllCampaigns;
 
-    function DynamicFOWEnabled: Boolean;
     procedure DebugControlsUpdated(Sender: TObject; aSenderTag: Integer);
 
     property OnGameSpeedActualChange: TSingleEvent read fOnGameSpeedChange write fOnGameSpeedChange;
@@ -486,14 +485,6 @@ begin
 end;
 
 
-function TKMGameApp.DynamicFOWEnabled: Boolean;
-begin
-  if Self = nil then Exit(False);
-  
-  Result := DYNAMIC_FOG_OF_WAR or ((gGame <> nil) and gGame.DynamicFOW)
-end;
-
-
 function TKMGameApp.Game: TKMGame;
 begin
   Result := gGame;
@@ -595,7 +586,7 @@ begin
   begin
     GameFinished;
     if fGameSettings.AutosaveAtGameEnd then
-      gGame.Save(Format('%s %s #%d', [gGame.GameName, FormatDateTime('yyyy-mm-dd', Now), fGameSettings.DayGamesCount]), Now);
+      gGame.Save(Format('%s %s #%d', [gGame.Params.GameName, FormatDateTime('yyyy-mm-dd', Now), fGameSettings.DayGamesCount]), Now);
   end;
 
   if Assigned(fOnGameEnd) then
@@ -1113,7 +1104,7 @@ end;
 procedure TKMGameApp.SendMPGameInfo;
 begin
   if gGame <> nil then
-    fNetworking.AnnounceGameInfo(gGame.MissionTime, gGame.GameName)
+    fNetworking.AnnounceGameInfo(gGame.MissionTime, gGame.Params.GameName)
   else
     fNetworking.AnnounceGameInfo(-1, ''); //fNetworking will fill the details from lobby
 end;

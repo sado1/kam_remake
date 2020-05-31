@@ -129,7 +129,7 @@ uses
   KM_ResTexts, KM_HandsCollection, KM_RenderPool, KM_UnitTaskAttackHouse, KM_HandLogistics,
   KM_UnitActionFight, KM_UnitActionGoInOut, KM_UnitActionWalkTo, KM_UnitActionStay,
   KM_UnitActionStormAttack, KM_Resource, KM_ResUnits, KM_Hand, KM_UnitGroup,
-  KM_ResWares, KM_Game, KM_ResHouses, KM_CommonUtils, KM_RenderDebug, KM_UnitVisual;
+  KM_ResWares, KM_GameParams, KM_ResHouses, KM_CommonUtils, KM_RenderDebug, KM_UnitVisual;
 
 
 { TKMUnitWarrior }
@@ -401,14 +401,14 @@ end;
 //Used to prevent rate of fire exploit
 function TKMUnitWarrior.NeedsToReload(aFightAnimLength: Byte): Boolean;
 begin
-  Result := (fLastShootTime <> 0) and ((gGame.GameTick - fLastShootTime) < aFightAnimLength);
+  Result := (fLastShootTime <> 0) and ((gGameParams.GameTick - fLastShootTime) < aFightAnimLength);
 end;
 
 
 //Used to prevent rate of fire exploit
 procedure TKMUnitWarrior.SetLastShootTime;
 begin
-  fLastShootTime := gGame.GameTick;
+  fLastShootTime := gGameParams.GameTick;
 end;
 
 
@@ -647,7 +647,7 @@ begin
   Cycle := Max(gRes.Units[UnitType].UnitAnim[aAction, Direction].Count, 1);
   if (TKMUnitWarrior(Self).IsRanged) and TKMUnitWarrior(Self).NeedsToReload(Cycle) then
     //Skip the unit's animation forward to 1 step AFTER firing
-    Step := (FiringDelay + (gGame.GameTick - TKMUnitWarrior(Self).LastShootTime)) mod Cycle;
+    Step := (FiringDelay + (gGameParams.GameTick - TKMUnitWarrior(Self).LastShootTime)) mod Cycle;
 
   if (Action is TKMUnitActionWalkTo) and not TKMUnitActionWalkTo(Action).CanAbandonExternal then
     raise ELocError.Create('Unit fight overrides walk', fCurrPosition);
@@ -1032,7 +1032,7 @@ begin
   if fThought <> thNone then
     gRenderPool.AddUnitThought(fType, Act, V.Dir, fThought, UnitPos.X, UnitPos.Y);
 
-  if SHOW_ATTACK_RADIUS or (mlUnitsAttackRadius in gGame.VisibleLayers) then
+  if SHOW_ATTACK_RADIUS or (mlUnitsAttackRadius in gGameParams.VisibleLayers) then
     if IsRanged then
     begin
       fillColor := $40FFFFFF;

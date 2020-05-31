@@ -62,6 +62,8 @@ type
     PlayerClassicAI: array [0..MAX_HANDS - 1] of Boolean;
     PlayerAdvancedAI: array [0..MAX_HANDS - 1] of Boolean;
 
+    OnEyedropper: TIntegerEvent;
+
     constructor Create(aNewMap: Boolean; aTerrainPainter: TKMTerrainPainter; aOnHistoryUndoRedo, aOnHistoryAddCheckpoint: TEvent);
     destructor Destroy; override;
 
@@ -102,8 +104,8 @@ uses
   KM_Terrain, KM_FileIO,
   KM_AIDefensePos, KM_ResTexts,
   KM_Units, KM_UnitGroup, KM_Houses, KM_HouseCollection,
-  KM_Game, KM_GameCursor, KM_ResMapElements, KM_ResHouses, KM_Resource, KM_ResUnits,
-  KM_RenderAux, KM_Hand, KM_HandsCollection, KM_InterfaceMapEditor, KM_CommonUtils, KM_RenderDebug;
+  KM_GameParams, KM_GameCursor, KM_ResMapElements, KM_ResHouses, KM_Resource, KM_ResUnits,
+  KM_RenderAux, KM_Hand, KM_HandsCollection, KM_CommonUtils, KM_RenderDebug;
 
 //defines default defence position radius for static AI 
 const
@@ -301,8 +303,8 @@ function TKMMapEditor.HitTest(X, Y: Integer): TKMMapEdMarker;
 var
   I,K: Integer;
 begin
-  if   (melDefences in gGame.MapEditor.VisibleLayers)
-    or (mlDefencesAll in gGame.VisibleLayers) then
+  if   (melDefences in fVisibleLayers)
+    or (mlDefencesAll in gGameParams.VisibleLayers) then
   begin
     for I := 0 to gHands.Count - 1 do
       for K := 0 to gHands[I].AI.General.DefencePositions.Count - 1 do
@@ -316,7 +318,7 @@ begin
         end;
   end;
 
-  if melRevealFOW in gGame.MapEditor.VisibleLayers then
+  if melRevealFOW in fVisibleLayers then
   begin
     for I := 0 to gHands.Count - 1 do
       for K := 0 to fRevealers[I].Count - 1 do
@@ -798,8 +800,10 @@ begin
                 cmMagicWater: fTerrainPainter.MagicWater(P);
                 cmEyedropper: begin
                                 fTerrainPainter.Eyedropper(P);
-                                if (gGame.ActiveInterface is TKMapEdInterface) then
-                                  TKMapEdInterface(gGame.ActiveInterface).GuiTerrain.GuiTiles.TilesTableSetTileTexId(gGameCursor.Tag1);
+
+                                if Assigned(OnEyedropper) then
+                                  OnEyedropper(gGameCursor.Tag1);
+
                                 if not (ssShift in gGameCursor.SState) then  //Holding shift allows to choose another tile
                                   gGameCursor.Mode := cmTiles;
                               end;
@@ -836,7 +840,7 @@ procedure TKMMapEditor.PaintDefences(aLayer: TKMPaintLayer);
 var
   DP: TAIDefencePosition;
 begin
-  if not (melDefences in gGame.MapEditor.VisibleLayers) then Exit;
+  if not (melDefences in fVisibleLayers) then Exit;
 
   case aLayer of
     plTerrain:  if ActiveMarker.MarkerType = mtDefence then
@@ -857,7 +861,7 @@ var
   I, K: Integer;
   Loc: TKMPoint;
 begin
-  if not (melRevealFOW in gGame.MapEditor.VisibleLayers) then Exit;
+  if not (melRevealFOW in fVisibleLayers) then Exit;
 
   for I := 0 to gHands.Count - 1 do
     for K := 0 to fRevealers[I].Count - 1 do
@@ -879,7 +883,7 @@ var
   I: Integer;
   Loc: TKMPoint;
 begin
-  if not (melCenterScreen in gGame.MapEditor.VisibleLayers) then Exit;
+  if not (melCenterScreen in fVisibleLayers) then Exit;
 
   for I := 0 to gHands.Count - 1 do
     if gHands[I].HasAssets then
@@ -900,7 +904,7 @@ var
   I: Integer;
   Loc: TKMPoint;
 begin
-  if not (melAIStart in gGame.MapEditor.VisibleLayers) then Exit;
+  if not (melAIStart in fVisibleLayers) then Exit;
 
   for I := 0 to gHands.Count - 1 do
     if gHands[I].HasAssets then
@@ -940,13 +944,13 @@ begin
   PaintCenterScreen(aLayer);
   PaintAIStart(aLayer);
 
-  if melSelection in gGame.MapEditor.VisibleLayers then
+  if melSelection in fVisibleLayers then
     fSelection.Paint(aLayer, aClipRect);
 
-  if (melMapResize in gGame.MapEditor.VisibleLayers) and not KMSameRect(ResizeMapRect, KMRECT_ZERO) then
+  if (melMapResize in fVisibleLayers) and not KMSameRect(ResizeMapRect, KMRECT_ZERO) then
     gRenderAux.RenderResizeMap(ResizeMapRect);
 
-  if melWaterFlow in gGame.MapEditor.VisibleLayers then
+  if melWaterFlow in fVisibleLayers then
   begin
     for I := aClipRect.Top to aClipRect.Bottom do
     for K := aClipRect.Left to aClipRect.Right do
@@ -973,7 +977,7 @@ end;
 
 procedure TKMMapEditor.UpdateState;
 begin
-  if melDeposits in gGame.MapEditor.VisibleLayers then
+  if melDeposits in fVisibleLayers then
     fDeposits.UpdateAreas([rdStone, rdCoal, rdIron, rdGold, rdFish]);
 
   fTerrainPainter.UpdateState;

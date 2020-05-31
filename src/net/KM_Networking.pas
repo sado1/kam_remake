@@ -245,7 +245,7 @@ implementation
 uses
   Math, StrUtils,
   KM_NetworkConsts, KM_Sound, KM_Log, KM_CommonUtils, KM_HandsCollection, KM_Hand,
-  KM_Main, KM_GameApp,
+  KM_Main, KM_GameApp, KM_Settings,
   KM_Resource, KM_ResSound, KM_ResTexts;
 
 
@@ -1239,8 +1239,8 @@ const
 begin
   if Assigned(OnTextMessage) then
   begin
-    if (gMain <> nil) and (gGameApp <> nil) and (gGameApp.GameSettings <> nil) then
-      if gGameApp.GameSettings.FlashOnMessage then
+    if (gMain <> nil) and (gGameApp <> nil) and (gGameSettings <> nil) then
+      if gGameSettings.FlashOnMessage then
         gMain.FlashingStart;
 
     OnTextMessage(aText);

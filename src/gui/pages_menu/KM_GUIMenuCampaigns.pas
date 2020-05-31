@@ -32,7 +32,7 @@ type
 
 implementation
 uses
-  KM_ResTexts, KM_ResFonts, KM_GameApp, KM_RenderUI;
+  KM_ResTexts, KM_ResFonts, KM_GameApp, KM_RenderUI, KM_Settings;
 
 
 { TKMMainMenuInterface }
@@ -98,7 +98,7 @@ begin
     ColumnBox_Camps.AddItem(MakeListRow(
                         [Camps[I].GetCampaignTitle, IntToStr(Camps[I].MapCount), IntToStr(Camps[I].UnlockedMap + 1)],
                         [$FFFFFFFF, $FFFFFFFF, $FFFFFFFF], I));
-    if Camps[I].ShortName = gGameApp.GameSettings.MenuCampaignName then
+    if Camps[I].ShortName = gGameSettings.MenuCampaignName then
     begin
       ColumnBox_Camps.ItemIndex := I;
       ListChange(nil);
@@ -135,7 +135,7 @@ begin
     Image_CampsPreview.TexID := Camp.BackGroundPic.ID;
 
     Memo_CampDesc.Text := Camp.GetCampaignDescription;
-    gGameApp.GameSettings.MenuCampaignName := Camp.ShortName;
+    gGameSettings.MenuCampaignName := Camp.ShortName;
   end;
 end;
 

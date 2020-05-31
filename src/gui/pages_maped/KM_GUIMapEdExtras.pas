@@ -42,9 +42,9 @@ type
 
 implementation
 uses
-  KM_GameApp,
+  KM_GameApp, KM_GameParams,
   KM_HandsCollection, KM_Sound, KM_ResSound,
-  KM_RenderUI, KM_ResFonts, KM_ResTexts, KM_Game;
+  KM_RenderUI, KM_ResFonts, KM_ResTexts;
 
 
 { TKMMapEdExtras }
@@ -179,15 +179,15 @@ begin
   CheckBox_ShowTilesOwner.Checked := SHOW_TILES_OWNER;
   TrackBar_Passability.Position   := SHOW_TERRAIN_PASS;
 
-  CheckBox_ShowObjects.Checked            := mlObjects            in gGame.VisibleLayers;
-  CheckBox_ShowHouses.Checked             := mlHouses             in gGame.VisibleLayers;
-  CheckBox_ShowUnits.Checked              := mlUnits              in gGame.VisibleLayers;
-  CheckBox_ShowOverlays.Checked           := mlOverlays           in gGame.VisibleLayers;
-  CheckBox_ShowMiningRadius.Checked       := mlMiningRadius       in gGame.VisibleLayers;
-  CheckBox_ShowTowersAttackRadius.Checked := mlTowersAttackRadius in gGame.VisibleLayers;
-  CheckBox_ShowUnitsAttackRadius.Checked  := mlUnitsAttackRadius  in gGame.VisibleLayers;
-  CheckBox_ShowDefences.Checked           := mlDefencesAll        in gGame.VisibleLayers;
-  CheckBox_ShowFlatTerrain.Checked        := mlFlatTerrain        in gGame.VisibleLayers;
+  CheckBox_ShowObjects.Checked            := mlObjects            in gGameParams.VisibleLayers;
+  CheckBox_ShowHouses.Checked             := mlHouses             in gGameParams.VisibleLayers;
+  CheckBox_ShowUnits.Checked              := mlUnits              in gGameParams.VisibleLayers;
+  CheckBox_ShowOverlays.Checked           := mlOverlays           in gGameParams.VisibleLayers;
+  CheckBox_ShowMiningRadius.Checked       := mlMiningRadius       in gGameParams.VisibleLayers;
+  CheckBox_ShowTowersAttackRadius.Checked := mlTowersAttackRadius in gGameParams.VisibleLayers;
+  CheckBox_ShowUnitsAttackRadius.Checked  := mlUnitsAttackRadius  in gGameParams.VisibleLayers;
+  CheckBox_ShowDefences.Checked           := mlDefencesAll        in gGameParams.VisibleLayers;
+  CheckBox_ShowFlatTerrain.Checked        := mlFlatTerrain        in gGameParams.VisibleLayers;
 //  CheckBox_ShowDeposits.Checked         := mlDeposits in gGame.MapEditor.VisibleLayers;
 end;
 

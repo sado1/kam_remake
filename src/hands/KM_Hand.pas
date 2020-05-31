@@ -239,10 +239,10 @@ type
 implementation
 uses
   Classes, SysUtils, KromUtils, Math, TypInfo,
-  KM_GameApp, KM_GameCursor, KM_Game, KM_GameParams, KM_Terrain,
+  KM_GameCursor, KM_Game, KM_GameParams, KM_Terrain,
   KM_HandsCollection, KM_Sound, KM_AIFields, KM_MapEditorHistory,
   KM_Resource, KM_ResSound, KM_ResTexts, KM_ResMapElements, KM_ScriptingEvents, KM_ResUnits,
-  KM_GameTypes, KM_CommonUtils;
+  KM_GameTypes, KM_CommonUtils, KM_Settings;
 
 const
   TIME_TO_SET_FIRST_STOREHOUSE = 10*60*2; //We give 2 minutes to set first storehouse, otherwise player will be defeated
@@ -277,7 +277,7 @@ end;
 
 procedure TKMHandCommon.Paint(const aRect: TKMRect; aTickLag: Single);
 begin
-  if mlUnits in gGame.VisibleLayers then
+  if mlUnits in gGameParams.VisibleLayers then
     fUnits.Paint(aRect, aTickLag);
 end;
 
@@ -366,7 +366,7 @@ begin
   fOnAllianceChange := aOnAllianceChange;
 
   fAI           := TKMHandAI.Create(fID);
-  fFogOfWar     := TKMFogOfWar.Create(gTerrain.MapX, gTerrain.MapY, gGameApp.DynamicFOWEnabled);
+  fFogOfWar     := TKMFogOfWar.Create(gTerrain.MapX, gTerrain.MapY, gGameParams.DynamicFOW);
   fLocks        := TKMHandLocks.Create;
   fStats        := TKMHandStats.Create;
   fRoadsList    := TKMPointList.Create;
@@ -949,14 +949,14 @@ begin
   Result := fFlagColor;
   if (gGame <> nil) and not gGameParams.IsMapEditor then
   begin
-    case gGameApp.GameSettings.PlayersColorMode of
+    case gGameSettings.PlayersColorMode of
       pcmAllyEnemy: begin
                       if ID = gMySpectator.HandID then
-                        Result := gGameApp.GameSettings.PlayerColorSelf
+                        Result := gGameSettings.PlayerColorSelf
                       else if (Alliances[gMySpectator.HandID] = atAlly) then
-                        Result := gGameApp.GameSettings.PlayerColorAlly
+                        Result := gGameSettings.PlayerColorAlly
                       else
-                        Result := gGameApp.GameSettings.PlayerColorEnemy;
+                        Result := gGameSettings.PlayerColorEnemy;
                     end;
       pcmTeams:     Result := fTeamColor;
     end;
@@ -1977,7 +1977,7 @@ begin
   inherited;
 
   fHouses.UpdateState(aTick);
-  fFogOfWar.UpdateState(gGameApp.DynamicFOWEnabled); //We might optimize it for AI somehow, to make it work coarse and faster
+  fFogOfWar.UpdateState(gGameParams.DynamicFOW); //We might optimize it for AI somehow, to make it work coarse and faster
 
   //Distribute AI updates among different Ticks to avoid slowdowns
   if (aTick mod gHands.Count) = fID then
@@ -2109,10 +2109,10 @@ begin
 
   inherited;
 
-  if mlUnits in gGame.VisibleLayers then
+  if mlUnits in gGameParams.VisibleLayers then
     fUnitGroups.Paint(aRect);
 
-  if mlHouses in gGame.VisibleLayers then
+  if mlHouses in gGameParams.VisibleLayers then
     fHouses.Paint(aRect);
 
   if not SKIP_RENDER AND OVERLAY_DEFENCES AND not fAI.Setup.NewAI then

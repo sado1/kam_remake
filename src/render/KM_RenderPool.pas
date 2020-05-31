@@ -152,7 +152,7 @@ var
 
 implementation
 uses
-  KM_RenderAux, KM_HandsCollection, KM_Game, KM_GameApp, KM_Sound, KM_Resource, KM_ResUnits,
+  KM_RenderAux, KM_HandsCollection, KM_Game, KM_Settings, KM_Sound, KM_Resource, KM_ResUnits,
   KM_ResMapElements, KM_AIFields, KM_TerrainPainter, KM_GameCursor,
 
   KM_FogOfWar, KM_Hand, KM_UnitGroup, KM_CommonUtils,
@@ -306,14 +306,14 @@ begin
     // so that terrain shadows could be applied seamlessly ontop
     glDisable(GL_DEPTH_TEST);
 
-    if mlOverlays in gGame.VisibleLayers then
+    if mlOverlays in gGameParams.VisibleLayers then
     begin
       fRenderTerrain.RenderFences(gMySpectator.FogOfWar);
       fRenderTerrain.RenderPlayerPlans(fFieldsList, fHousePlansList);
 
     end;
 
-    if mlMiningRadius in gGame.VisibleLayers then
+    if mlMiningRadius in gGameParams.VisibleLayers then
       fRenderDebug.PaintMiningRadius;
 
     {$IFDEF PERFLOG}
@@ -338,7 +338,7 @@ begin
     fRenderList.SortRenderList;
     fRenderList.Render;
 
-    if mlDefencesAll in gGame.VisibleLayers then
+    if mlDefencesAll in gGameParams.VisibleLayers then
       fRenderDebug.PaintDefences;
 
     fRenderTerrain.RenderFOW(gMySpectator.FogOfWar);
@@ -437,7 +437,7 @@ procedure TRenderPool.CollectTerrainObjects(const aRect: TKMRect; aAnimStep: Car
 var
   I, K: Integer;
 begin
-  if not (mlObjects in gGame.VisibleLayers) then Exit;
+  if not (mlObjects in gGameParams.VisibleLayers) then Exit;
 
   if gGameParams.IsMapEditor then
     gGame.MapEditor.Paint(plObjects, aRect);
@@ -566,7 +566,7 @@ begin
   begin
     if gMapElements[aIndex].Anim.Count = 0 then Exit;
 
-    if gGameApp.DynamicFOWEnabled then
+    if gGameParams.DynamicFOW then
     begin
       FOW := gMySpectator.FogOfWar.CheckTileRevelation(LocX,LocY);
       if FOW <= 128 then AnimStep := 0; // Stop animation
@@ -620,7 +620,7 @@ var
 var
   FOW: Byte;
 begin
-  if gGameApp.DynamicFOWEnabled then
+  if gGameParams.DynamicFOW then
   begin
     FOW := gMySpectator.FogOfWar.CheckTileRevelation(pX, pY);
     if FOW <= 128 then AnimStep := 0; // Stop animation
@@ -756,7 +756,7 @@ begin
   if (aWoodStep = 1) and (aStoneStep = 1) then
   begin
     // Snow only happens on fully built houses
-    if gGameApp.GameSettings.AllowSnowHouses
+    if gGameSettings.AllowSnowHouses
       and (aSnowStep > 0)
       and (PicSnow <> 0) then
     begin
@@ -947,7 +947,7 @@ begin
   // We don't care about off-map arrows, but still we get TKMPoint error if X/Y gets negative
   if not gTerrain.TileInMapCoords(Round(aRenderPos.X), Round(aRenderPos.Y)) then Exit;
 
-  if gGameApp.DynamicFOWEnabled then
+  if gGameParams.DynamicFOW then
   begin
     FOW := gMySpectator.FogOfWar.CheckRevelation(aRenderPos);
     if FOW <= 128 then Exit; // Don't render objects which are behind FOW
@@ -1076,7 +1076,7 @@ begin
 
   // Thought bubbles are animated in reverse
   Id := ThoughtBounds[Thought, 2] + 1 -
-       (gGame.GameTick mod Word(ThoughtBounds[Thought, 2] - ThoughtBounds[Thought, 1]));
+       (gGameParams.GameTick mod Word(ThoughtBounds[Thought, 2] - ThoughtBounds[Thought, 1]));
 
   CornerX := pX + R.Pivot[Id].X / CELL_SIZE_PX;
   CornerY := gTerrain.RenderFlatToHeight(pX, pY) + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX - 1.5;

@@ -54,7 +54,6 @@ uses
   KM_CommonClasses in 'src\common\KM_CommonClasses.pas',
   KM_CommonClassesExt in 'src\common\KM_CommonClassesExt.pas',
   KM_CommonTypes in 'src\common\KM_CommonTypes.pas',
-  KM_CommonSave in 'src\common\KM_CommonSave.pas',
   KM_Defaults in 'src\common\KM_Defaults.pas',
   KM_MarchingSquares in 'src\common\KM_MarchingSquares.pas',
   KM_Points in 'src\common\KM_Points.pas',
@@ -184,6 +183,7 @@ uses
   KM_Main in 'src\KM_Main.pas',
   KM_Maps in 'src\KM_Maps.pas',
   KM_MapTypes in 'src\KM_MapTypes.pas',
+  KM_MapUtils in 'src\KM_MapUtils.pas',
   KM_MapEditor in 'src\KM_MapEditor.pas',
   KM_MapEditorHistory in 'src\KM_MapEditorHistory.pas',
   KM_MapEdTypes in 'src\KM_MapEdTypes.pas',
@@ -254,6 +254,7 @@ uses
   KM_RenderDebug in 'src\render\KM_RenderDebug.pas',
   KM_RenderPool in 'src\render\KM_RenderPool.pas',
   KM_RenderTerrain in 'src\render\KM_RenderTerrain.pas',
+  KM_RenderTypes in 'src\render\KM_RenderTypes.pas',
   KM_RenderQuery in 'src\render\KM_RenderQuery.pas',
   KM_RenderUI in 'src\render\KM_RenderUI.pas',
 

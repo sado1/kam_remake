@@ -220,7 +220,7 @@ const
 
 implementation
 uses
-  KM_Game, KM_HouseCollection, KM_HandsCollection, KM_Hand, KM_Terrain, KM_Resource,
+  KM_GameParams, KM_HouseCollection, KM_HandsCollection, KM_Hand, KM_Terrain, KM_Resource,
   KM_AIFields,
   KM_NavMesh, KM_HouseWoodcutters, KM_ResUnits,
   KM_RenderAux, KM_ResMapElements;
@@ -2089,7 +2089,7 @@ begin
       begin
         Loc := BuildFF.Locs.Items[I];
         Gain := - ObstaclesInHousePlan(HT,Loc) * AI_Par[PLANNER_FindPlaceForQuary_Obstacle]
-                - BuildFF.Distance[Loc] * AI_Par[PLANNER_FindPlaceForQuary_DistCity] * Max(1, AI_Par[PLANNER_FindPlaceForQuary_DistTimer] - gGame.GameTick)
+                - BuildFF.Distance[Loc] * AI_Par[PLANNER_FindPlaceForQuary_DistCity] * Max(1, AI_Par[PLANNER_FindPlaceForQuary_DistTimer] - gGameParams.GameTick)
                 - BuildFF.DistanceInitPoint[Loc] * AI_Par[PLANNER_FindPlaceForQuary_DistStone]
                 + SnapCrit(HT, Loc) * AI_Par[PLANNER_FindPlaceForQuary_SnapCrit];
         if (Gain > BestGain) then
@@ -2260,8 +2260,8 @@ var
     P: TKMPoint;
   begin
     P := FI.Forests[aIdx].Loc;
-    TreeCnt   := + FI.Forests[aIdx].TreeCout           * AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_TreeCnt] * Max(1, AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_TreeCntTimer] - gGame.GameTick);
-    DistCrit  := - FI.Forests[aIdx].Distance           * AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_DistCrit] * Max(1, AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_DistTimer] - gGame.GameTick);
+    TreeCnt   := + FI.Forests[aIdx].TreeCout           * AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_TreeCnt] * Max(1, AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_TreeCntTimer] - gGameParams.GameTick);
+    DistCrit  := - FI.Forests[aIdx].Distance           * AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_DistCrit] * Max(1, AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_DistTimer] - gGameParams.GameTick);
     ExistFrs  := + Byte(FI.Forests[aIdx].PartOfForest) * AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_ExistForest];
     Routes    := + gAIFields.Eye.Routes[P.Y, P.X]      * AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_Routes];
     FlatArea  := + gAIFields.Eye.FlatArea[P.Y, P.X]    * AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_FlatArea];

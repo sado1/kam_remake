@@ -80,7 +80,7 @@ var
 
 implementation
 uses
-  KM_Campaigns, KM_Game, KM_Hand, KM_MissionScript_Standard;
+  KM_Campaigns, KM_Game, KM_Settings, KM_Hand, KM_MissionScript_Standard;
 
 {$R *.dfm}
 
@@ -208,7 +208,7 @@ begin
   ExeDir := ExtractFilePath(ParamStr(0)) + '..\..\';
   gLog := TKMLog.Create(ExtractFilePath(ParamStr(0)) + 'temp.log');
   gGameApp := TKMGameApp.Create(nil, 1024, 768, False, nil, nil, nil, True);
-  gGameApp.GameSettings.Autosave := False;
+  gGameSettings.Autosave := False;
 end;
 
 
