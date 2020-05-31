@@ -28,7 +28,7 @@ type
     function GetDynamicFOW: Boolean;
     procedure SetDynamicFOW(const aDynamicFOW: Boolean);
   public
-    constructor Create(out aSetGameTickEvent: TCardinalEvent; out aSetGameModeEvent: TKMGameModeSetEvent; out aSetMissionFileSP: TUnicodeStringEvent);
+    constructor Create(aGameMode: TKMGameMode; out aSetGameTickEvent: TCardinalEvent; out aSetGameModeEvent: TKMGameModeSetEvent; out aSetMissionFileSP: TUnicodeStringEvent);
     destructor Destroy; override;
 
     property GameMode: TKMGameMode read fGameMode;
@@ -72,12 +72,13 @@ uses
 
 
 { TKMGameParams }
-constructor TKMGameParams.Create(out aSetGameTickEvent: TCardinalEvent; out aSetGameModeEvent: TKMGameModeSetEvent; out aSetMissionFileSP: TUnicodeStringEvent);
+constructor TKMGameParams.Create(aGameMode: TKMGameMode; out aSetGameTickEvent: TCardinalEvent; out aSetGameModeEvent: TKMGameModeSetEvent; out aSetMissionFileSP: TUnicodeStringEvent);
 begin
   inherited Create;
 
   fVisibleLayers := [mlObjects, mlHouses, mlUnits, mlOverlays];
 
+  fGameMode := aGameMode;
   fGameTick := 0;
   DynamicFOW := False;
 

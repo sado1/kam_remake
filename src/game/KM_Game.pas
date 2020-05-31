@@ -298,7 +298,7 @@ begin
 
   fSaveWorkerThread := TKMWorkerThread.Create('SaveWorker');
 
-  fParams := TKMGameParams.Create(fSetGameTickEvent, fSetGameModeEvent, fSetMissionFileSP);
+  fParams := TKMGameParams.Create(aGameMode, fSetGameTickEvent, fSetGameModeEvent, fSetMissionFileSP);
 
   fNetworking := aNetworking;
   fOnDestroy := aOnDestroy;
