@@ -595,7 +595,7 @@ begin
   begin
     GameFinished;
     if fGameSettings.AutosaveAtGameEnd then
-      gGame.Save(Format('%s %s #%d', [gGame.GameName, FormatDateTime('yyyy-mm-dd', Now), fGameSettings.DayGamesCount]), Now);
+      gGame.Save(Format('%s %s #%d', [gGame.Params.GameName, FormatDateTime('yyyy-mm-dd', Now), fGameSettings.DayGamesCount]), Now);
   end;
 
   if Assigned(fOnGameEnd) then
@@ -1113,7 +1113,7 @@ end;
 procedure TKMGameApp.SendMPGameInfo;
 begin
   if gGame <> nil then
-    fNetworking.AnnounceGameInfo(gGame.MissionTime, gGame.GameName)
+    fNetworking.AnnounceGameInfo(gGame.MissionTime, gGame.Params.GameName)
   else
     fNetworking.AnnounceGameInfo(-1, ''); //fNetworking will fill the details from lobby
 end;

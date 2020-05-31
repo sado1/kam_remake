@@ -2,7 +2,7 @@ unit KM_GameParams;
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_Defaults, KM_GameTypes;
+  KM_Defaults, KM_CommonTypes, KM_GameTypes;
 
 type
   TKMGameModeSetEvent = procedure (aGameMode: TKMGameMode) of object;
@@ -13,15 +13,29 @@ type
     fMissionMode: TKMissionMode;
     fGameTick: Cardinal;
     fVisibleLayers: TKMMapVisibleLayerSet;
+
+    fGameName: UnicodeString;
+    fGameMapSimpleCRC: Cardinal; //CRC of map (based on Map and Dat) used in MapEd
+    fGameMapFullCRC: Cardinal; //CRC of map for reporting stats to master server. Also used in MapEd
+    fMissionFileSP: UnicodeString; //Relative pathname to mission we are playing, so it gets saved to crashreport. SP only, see GetMissionFile.
+
     procedure SetGameMode(aGameMode: TKMGameMode);
+    function GetMissionFile: UnicodeString;
+    procedure SetMissionFileSP(const aMissionFileSP: UnicodeString);
   public
-    constructor Create(out aSetGameModeEvent: TKMGameModeSetEvent);
+    constructor Create(out aSetGameModeEvent: TKMGameModeSetEvent; out aSetMissionFileSP: TUnicodeStringEvent);
     destructor Destroy; override;
 
     property GameMode: TKMGameMode read fGameMode;
     property MissionMode: TKMissionMode read fMissionMode write fMissionMode;
     property GameTick: Cardinal read fGameTick;
     property VisibleLayers: TKMMapVisibleLayerSet read fVisibleLayers write fVisibleLayers;
+
+    property GameName: UnicodeString read fGameName write fGameName;
+    property GameMapSimpleCRC: Cardinal read fGameMapSimpleCRC write fGameMapSimpleCRC;
+    property GameMapFullCRC: Cardinal read fGameMapFullCRC write fGameMapFullCRC;
+    property MissionFileSP: UnicodeString read fMissionFileSP;
+    property MissionFile: UnicodeString read GetMissionFile;
 
     function IsMapEditor: Boolean;
     function IsCampaign: Boolean;
@@ -49,10 +63,12 @@ var
 
 
 implementation
+uses
+  KM_MapUtils;
 
 
 { TKMGameParams }
-constructor TKMGameParams.Create(out aSetGameModeEvent: TKMGameModeSetEvent);
+constructor TKMGameParams.Create(out aSetGameModeEvent: TKMGameModeSetEvent; out aSetMissionFileSP: TUnicodeStringEvent);
 begin
   inherited Create;
 
@@ -61,6 +77,7 @@ begin
   fGameTick := 0;
 
   aSetGameModeEvent := SetGameMode;
+  aSetMissionFileSP := SetMissionFileSP;
 
   gGameParams := Self;
 end;
@@ -82,9 +99,25 @@ end;
 {$ENDIF}
 
 
+function TKMGameParams.GetMissionFile: UnicodeString;
+begin
+  if not IsMultiplayer then
+    Result := MissionFileSP //In SP we store it
+  else
+    //In MP we can't store it since it will be MapsMP or MapsDL on different clients
+    Result := GuessMPPath(fGameName, '.dat', fGameMapFullCRC);
+end;
+
+
 procedure TKMGameParams.SetGameMode(aGameMode: TKMGameMode);
 begin
   fGameMode := aGameMode;
+end;
+
+
+procedure TKMGameParams.SetMissionFileSP(const aMissionFileSP: UnicodeString);
+begin
+  fMissionFileSP := aMissionFileSP;
 end;
 
 

@@ -44,7 +44,7 @@ type
 
 implementation
 uses
-  SysUtils, KromUtils, KM_GameApp, KM_Game, KM_HandsCollection, KM_Maps, KM_MapTypes,
+  SysUtils, KromUtils, KM_GameApp, KM_Game, KM_GameParams, KM_HandsCollection, KM_Maps, KM_MapTypes,
   KM_Hand, KM_InterfaceGamePlay,
   KM_RenderUI, KM_ResFonts, KM_ResTexts, KM_Resource, Math;
 
@@ -135,8 +135,8 @@ var
   Difficulty: TKMMissionDifficulty;
   AIType: TKMAIType;
 begin
-  MissionFile := gGame.MissionFile;
-  GameName := gGame.GameName;
+  MissionFile := gGameParams.MissionFile;
+  GameName := gGameParams.GameName;
   HandId := DropList_SelectHand.GetSelectedTag;
   Color := gHands[HandId].FlagColor;
   IsMultiplayer := fIsMultiplayer; //Somehow fIsMultiplayer sometimes change its value... have no time to debug it. Just save to local value for now

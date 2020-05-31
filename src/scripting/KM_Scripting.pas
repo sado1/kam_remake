@@ -203,7 +203,7 @@ const
 
 implementation
 uses
-  TypInfo, Math, KromUtils, KM_Game, KM_GameParams, KM_Resource, KM_ResUnits, KM_Log, KM_CommonUtils, KM_ResWares, KM_ScriptingConsoleCommands;
+  TypInfo, Math, KromUtils, KM_GameParams, KM_Resource, KM_ResUnits, KM_Log, KM_CommonUtils, KM_ResWares, KM_ScriptingConsoleCommands;
 
 const
   SCRIPT_LOG_EXT = '.log.txt';
@@ -1659,7 +1659,7 @@ begin
   end;
 
   //The log path can't be stored in the save since it might be in MapsMP or MapsDL on different clients
-  fErrorHandler.ScriptLogFile := ExeDir + ChangeFileExt(gGame.MissionFile, SCRIPT_LOG_EXT);
+  fErrorHandler.ScriptLogFile := ExeDir + ChangeFileExt(gGameParams.MissionFile, SCRIPT_LOG_EXT);
 end;
 
 
@@ -2138,8 +2138,8 @@ const
 
   function AllowGameUpdate: Boolean;
   begin
-    Result := ((gGame <> nil) and not gGameParams.IsMapEditor)
-              or ((gGame = nil) and (gScripting <> nil));
+    Result := ((gGameParams <> nil) and not gGameParams.IsMapEditor)
+              or ((gGameParams = nil) and (gScripting <> nil));
   end;
 
   procedure LoadCustomEventDirectives;

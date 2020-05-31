@@ -1383,7 +1383,7 @@ begin
   if ResultsLabelCap <> '' then
     Label_ResultsMP.Caption := Label_ResultsMP.Caption + ' - ';
 
-  Label_ResultsMP.Caption := Label_ResultsMP.Caption + gGame.GameName;
+  Label_ResultsMP.Caption := Label_ResultsMP.Caption + gGameParams.GameName;
 
   //Append difficulty level to game results caption
   if gGame.MissionDifficulty <> mdNone then

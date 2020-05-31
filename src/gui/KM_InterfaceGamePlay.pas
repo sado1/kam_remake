@@ -621,7 +621,7 @@ begin
       Panel_Save.Show;
       Label_MenuTitle.Caption := gResTexts[TX_MENU_SAVE_GAME];
       if fLastSaveName = '' then
-        Edit_Save.Text := gGame.GameName
+        Edit_Save.Text := gGameParams.GameName
       else
         Edit_Save.Text := fLastSaveName;
       Menu_Save_EditChange(nil); // Displays "confirm overwrite" message if necessary
@@ -1676,8 +1676,8 @@ begin
   if gGameParams.IsNormalGame then // Don't play Victory / Defeat videos for specs
   begin
     case aMsg of
-      grWin:              gVideoPlayer.AddMissionVideo(gGame.MissionFile, 'Victory');
-      grDefeat, grCancel: gVideoPlayer.AddMissionVideo(gGame.MissionFile, 'Defeat');
+      grWin:              gVideoPlayer.AddMissionVideo(gGameParams.MissionFile, 'Victory');
+      grDefeat, grCancel: gVideoPlayer.AddMissionVideo(gGameParams.MissionFile, 'Defeat');
     end;
     gVideoPlayer.Play;
   end;
@@ -1734,8 +1734,8 @@ var
   IsMultiplayer: Boolean;
 begin
   IsMultiplayer := gGame.StartedFromMapEdAsMPMap;
-  MapPath := TKMapsCollection.FullPath(gGame.GameName, '.dat', IsMultiplayer);
-  GameName := gGame.GameName;
+  MapPath := TKMapsCollection.FullPath(gGameParams.GameName, '.dat', IsMultiplayer);
+  GameName := gGameParams.GameName;
   FreeThenNil(gGame);
   gGameApp.NewMapEditor(MapPath, 0, 0, TKMapsCollection.GetMapCRC(GameName, IsMultiplayer));
   TKMapEdInterface(gGame.ActiveInterface).SetLoadMode(IsMultiplayer);
@@ -2227,7 +2227,7 @@ begin
   Button_Menu_TrackDown.Height := IfThen(Label_Menu_Track.AutoWrap, 38, 30);
 
   Label_GameTime.Caption := TimeToString(gGame.MissionTime);
-  Label_MapName.Caption := Copy(gGame.GameName, 0, EnsureRange(Length(gGame.GameName), 1, MAX_MAPNAME_LENGTH));
+  Label_MapName.Caption := Copy(gGameParams.GameName, 0, EnsureRange(Length(gGameParams.GameName), 1, MAX_MAPNAME_LENGTH));
   if gGame.HasMissionDifficulty then
   begin
     Label_MapName.Caption := Format('%s|[$%s]( %s )[]', [Label_MapName.Caption,

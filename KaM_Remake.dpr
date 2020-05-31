@@ -184,6 +184,7 @@ uses
   KM_Main in 'src\KM_Main.pas',
   KM_Maps in 'src\KM_Maps.pas',
   KM_MapTypes in 'src\KM_MapTypes.pas',
+  KM_MapUtils in 'src\KM_MapUtils.pas',
   KM_MapEditor in 'src\KM_MapEditor.pas',
   KM_MapEditorHistory in 'src\KM_MapEditorHistory.pas',
   KM_MapEdTypes in 'src\KM_MapEdTypes.pas',
