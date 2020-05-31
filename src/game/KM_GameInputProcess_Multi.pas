@@ -65,13 +65,12 @@ type
 
     procedure SetDelay(aNewDelay: Integer);
   protected
-    procedure TakeCommand(const aCommand: TKMGameInputCommand); override;
+    procedure DoTakeCommand(const aCommand: TKMGameInputCommand); override;
   public
     constructor Create(aReplayState: TKMGIPReplayState; aNetworking: TKMNetworking);
     destructor Destroy; override;
     procedure WaitingForConfirmation(aTick: Cardinal);
     procedure AdjustDelay(aGameSpeed: Single);
-    procedure PlayerChanged(aPlayer: TKMHandID; aType: TKMHandType; aPlayerNikname: AnsiString);
     function GetNetworkDelay: Word;
     property NumberConsecutiveWaits: Word read fNumberConsecutiveWaits;
     property LastSentCmdsTick: Cardinal read fLastSentCmdsTick;
@@ -88,7 +87,7 @@ implementation
 uses
   TypInfo,
   SysUtils, Math, KromUtils,
-  KM_GameApp, KM_Game, KM_HandsCollection, KM_NetworkTypes,
+  KM_Game, KM_GameParams, KM_HandsCollection, KM_NetworkTypes,
   KM_ResTexts, KM_ResSound, KM_Sound, KM_CommonUtils,
   KM_GameTypes;
 
@@ -187,28 +186,28 @@ end;
 
 
 // Stack the command into schedule
-procedure TKMGameInputProcess_Multi.TakeCommand(const aCommand: TKMGameInputCommand);
+procedure TKMGameInputProcess_Multi.DoTakeCommand(const aCommand: TKMGameInputCommand);
 var
-  I,Tick: Cardinal;
+  I, Tick: Cardinal;
 begin
   Assert(fDelay < MAX_SCHEDULE, 'Error, fDelay >= MAX_SCHEDULE');
-  if ((gGame.GameMode = gmMultiSpectate) and not (aCommand.CommandType in AllowedBySpectators)) // Do not allow spectators to command smth
-    or ((gGame.GameMode = gmMulti)                      // in multiplayer game
+  if ((gGameParams.GameMode = gmMultiSpectate) and not (aCommand.CommandType in ALLOWED_BY_SPECTATORS)) // Do not allow spectators to command smth
+    or (gGameParams.IsMultiplayerGame                  // in multiplayer game
       and IsSelectedObjectCommand(aCommand.CommandType) // block only commands for selected object
       and (gMySpectator.Selected <> nil)                // if there is selected object
       and not gMySpectator.IsSelectedMyObj) then        // and we try to make command to ally's object
     Exit;
 
-  if gGame.IsPeaceTime and (aCommand.CommandType in BlockedByPeaceTime) then
+  if gGame.IsPeaceTime and (aCommand.CommandType in BLOCKED_BY_PEACETIME) then
   begin
-    gGameApp.Networking.PostLocalMessage(gResTexts[TX_MP_BLOCKED_BY_PEACETIME], csNone);
+    gGame.Networking.PostLocalMessage(gResTexts[TX_MP_BLOCKED_BY_PEACETIME], csNone);
     gSoundPlayer.Play(sfxCantPlace);
     Exit;
   end;
 
-  if (gGame.GameMode <> gmMultiSpectate)
+  if (gGameParams.GameMode <> gmMultiSpectate)
   and gMySpectator.Hand.AI.HasLost
-  and not (aCommand.CommandType in AllowedAfterDefeat) then
+  and not (aCommand.CommandType in ALLOWED_AFTER_DEFEAT) then
   begin
     gSoundPlayer.Play(sfxCantPlace);
     Exit;
@@ -216,7 +215,7 @@ begin
 
   //Find first unsent pack
   Tick := MAX_SCHEDULE; //Out of range value
-  for I := gGame.GameTick + fDelay to gGame.GameTick + MAX_SCHEDULE - 1 do
+  for I := gGameParams.GameTick + fDelay to gGameParams.GameTick + MAX_SCHEDULE - 1 do
     if not fSent[I mod MAX_SCHEDULE] then
     begin
       Tick := I mod MAX_SCHEDULE; //Place in a ring buffer
@@ -268,13 +267,6 @@ begin
 end;
 
 
-procedure TKMGameInputProcess_Multi.PlayerChanged(aPlayer: TKMHandID; aType: TKMHandType; aPlayerNikname: AnsiString);
-begin
-  Assert(ReplayState = gipRecording);
-  StoreCommand(MakeCommand(gicGamePlayerChange, aPlayerNikname, aPlayer, Byte(aType)));
-end;
-
-
 procedure TKMGameInputProcess_Multi.SendCommands(aTick: Cardinal; aPlayerIndex: ShortInt = -1);
 var
   Msg: TKMemoryStreamBinary;
@@ -317,7 +309,7 @@ begin
                                                         aPlayerIndex,
                                                         fNetworking.NetPlayers[aPlayerIndex].Nikname,
                                                         fNetworking.NetPlayers[aPlayerIndex].HandIndex,
-                                                        gGame.GameTick]));
+                                                        gGameParams.GameTick]));
     PlayerCheckPending[aPlayerIndex] := False;
   end;
 end;
@@ -339,7 +331,7 @@ begin
     kdpCommands:
         begin
           //Recieving commands too late will happen during reconnections, so just ignore it
-          if (Tick > gGame.GameTick)
+          if (Tick > gGameParams.GameTick)
             //DO not check if player is dropped - we could receive scheduled commmands from already dropped player, that we should store/execute to be in sync with other players
             {and not gGame.Networking.NetPlayers[aSenderIndex].Dropped}
             then
@@ -354,7 +346,7 @@ begin
           fRandomCheck[Tick mod MAX_SCHEDULE].PlayerCheck[aSenderIndex] := CRC; //Store it for this player
           fRandomCheck[Tick mod MAX_SCHEDULE].PlayerCheckPending[aSenderIndex] := True;
           //If we have processed this tick already, check now
-          if Tick <= gGame.GameTick then
+          if Tick <= gGameParams.GameTick then
             DoRandomCheck(Tick, aSenderIndex);
         end;
   end;
@@ -423,7 +415,7 @@ begin
       if {not fNetworking.NetPlayers[I].Dropped}
       //Don't allow exploits like moving enemy soldiers (but maybe one day you can control disconnected allies?)
         (fNetworking.NetPlayers[I].HandIndex = fSchedule[Tick, I].Items[K].HandIndex)
-           or (fSchedule[Tick, I].Items[K].CommandType in AllowedBySpectators) then
+           or (fSchedule[Tick, I].Items[K].CommandType in ALLOWED_BY_SPECTATORS) then
       begin
         StoreCommand(fSchedule[Tick, I].Items[K]); //Store the command first so if Exec fails we still have it in the replay
         ExecCommand(fSchedule[Tick, I].Items[K]);

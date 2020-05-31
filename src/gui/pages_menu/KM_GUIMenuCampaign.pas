@@ -57,7 +57,7 @@ type
 
 implementation
 uses
-  KM_GameApp, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_Sound, KM_ResSound, KM_Defaults, KM_Video;
+  KM_GameApp, KM_Settings, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_Sound, KM_ResSound, KM_Defaults, KM_Video;
 
 const
   FLAG_LABEL_OFFSET_X = 10;
@@ -191,8 +191,8 @@ begin
   begin
     DiffLevels := fCampaign.MapsInfo[fMapIndex].TxtInfo.DifficultyLevels;
 
-    if gGameApp.GameSettings.CampaignLastDifficulty in DiffLevels then
-      OldMD := gGameApp.GameSettings.CampaignLastDifficulty;
+    if gGameSettings.CampaignLastDifficulty in DiffLevels then
+      OldMD := gGameSettings.CampaignLastDifficulty;
 
     DropBox_Difficulty.Clear;
     I := 0;
@@ -291,7 +291,7 @@ begin
   gGameApp.MusicLib.StopPlayingOtherFile;
   gGameApp.NewCampaignMap(fCampaign, fMapIndex, fDifficulty);
   if fCampaign.MapsInfo[fMapIndex].TxtInfo.HasDifficultyLevels then
-    gGameApp.GameSettings.CampaignLastDifficulty := TKMMissionDifficulty(DropBox_Difficulty.GetSelectedTag);
+    gGameSettings.CampaignLastDifficulty := TKMMissionDifficulty(DropBox_Difficulty.GetSelectedTag);
 end;
 
 

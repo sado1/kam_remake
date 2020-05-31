@@ -61,7 +61,7 @@ begin
 
   for I := Low(aFiles) to High(aFiles) do
   begin
-    srcFonts[I] := TKMFontDataEdit.Create;
+    srcFonts[I] := TKMFontDataEdit.Create(fntArial); //fntArial, why not, it looks like we dont care
     srcFontFile := ExeDir + '..\..\data\gfx\fonts\' + aFiles[I];
 
     //Guess font palette from filename
@@ -76,7 +76,7 @@ begin
       srcFonts[I].LoadFont(srcFontFile, pals[fntPal]);
   end;
 
-  aFont := TKMFontDataEdit.Create;
+  aFont := TKMFontDataEdit.Create(fntArial); //fntArial, why not, it looks like we dont care
   aFont.TexPadding := aPad;
   aFont.TexSizeX := aX;
   aFont.TexSizeY := aY;

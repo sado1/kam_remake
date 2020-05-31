@@ -23,6 +23,7 @@ uses
 
   //Delete a folder (DeleteFolder is different between Delphi and Lazarus)
   procedure KMDeleteFolder(const aPath: UnicodeString);
+  procedure KMDeleteFolderContent(const aPath: UnicodeString);
 
   //Rename a file (RenameFile is different between Delphi and Lazarus)
   procedure KMRenamePath(const aSourcePath, aDestPath: UnicodeString);
@@ -190,7 +191,8 @@ end;
 
 procedure KMDeleteFolder(const aPath: UnicodeString);
 {$IFDEF WDC}
-var S: string;
+var
+  S: string;
 {$ENDIF}
 begin
   if DirectoryExists(aPath) then
@@ -219,6 +221,44 @@ begin
       for S in TDirectory.GetFiles(aPath) do
         DeleteFile(S);
       TDirectory.Delete(aPath, True);
+      //Assert(not DirectoryExists(aPath));
+    {$ENDIF}
+  end;
+end;
+
+
+procedure KMDeleteFolderContent(const aPath: UnicodeString);
+{$IFDEF WDC}
+var
+  S: string;
+{$ENDIF}
+begin
+  if DirectoryExists(aPath) then
+  begin
+    {$IFDEF FPC}
+      DeleteDirectory(aPath, False);
+      ForceDirectories(aPath); // We do not care too much about FPC now, recreating directory is ok
+    {$ENDIF}
+    {$IFDEF WDC}
+
+      //TDirectory.Delete will sometimes delay deletion due to Windows behaviour
+      //Suggested workarounds:
+      // - Empty the directory first (seems to work, commented out below)
+      // - Move the directory to a temporary name then delete it (sounds more robust)
+      //Discussions of workarounds:
+      //https://stackoverflow.com/questions/42809389/tdirectory-delete-seems-to-be-asynchronous
+      //https://github.com/dotnet/runtime/issues/27958
+
+      //Generate a temporary name based on time and random number
+      //S := TDirectory.GetParent(ExcludeTrailingPathDelimiter(aPath)) + PathDelim + IntToStr(Random(MaxInt)) + UIntToStr(TimeGet);
+      //TDirectory.Move(aPath, S);
+      //TDirectory.Delete(S, True);
+
+      // Rename folder approach could trigger antivirus sometimes (f.e. Kaspersky)
+      // so there could be many (almost) empty folders after antivirus block folders deletion
+      // "(folder deletion is potentionly dangeroues operation because of data corruption)"
+      for S in TDirectory.GetFiles(aPath) do
+        DeleteFile(S);
       //Assert(not DirectoryExists(aPath));
     {$ENDIF}
   end;

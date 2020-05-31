@@ -518,7 +518,7 @@ begin
   // Update game info
   if (gGame <> nil) then
   begin
-    //gGame.MissionMode := mmNormal;
+    //gGameParams.IsNormalMission;
 
     if (Length(gGame.MapTxtInfo.Author) = 0) then
       gGame.MapTxtInfo.Author := 'Random number generator';

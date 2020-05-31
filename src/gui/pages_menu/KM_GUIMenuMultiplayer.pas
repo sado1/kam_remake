@@ -111,7 +111,7 @@ type
 
 implementation
 uses
-  KM_Main, KM_NetworkTypes, KM_ResTexts, KM_GameApp, KM_ResLocales, KM_GUIMenuLobby, KM_MapTypes,
+  KM_Main, KM_Settings, KM_NetworkTypes, KM_ResTexts, KM_GameApp, KM_ResLocales, KM_GUIMenuLobby, KM_MapTypes,
   KM_CommonUtils, KM_CommonTypes, KM_Sound, KM_ResSound, KM_RenderUI, KM_ResFonts;
 
 
@@ -342,14 +342,14 @@ begin
   //Refresh the list when they first open the multiplayer page
   MP_ServersRefresh(nil);
 
-  Edit_MP_PlayerName.Text := UnicodeString(gGameApp.GameSettings.MultiplayerName);
+  Edit_MP_PlayerName.Text := UnicodeString(gGameSettings.MultiplayerName);
 
-  Edit_MP_ServerName.Text := UnicodeString(gGameApp.GameSettings.ServerName);
-  Edit_MP_ServerPort.Text := gGameApp.GameSettings.ServerPort;
+  Edit_MP_ServerName.Text := UnicodeString(gGameSettings.ServerName);
+  Edit_MP_ServerPort.Text := gGameSettings.ServerPort;
 
-  Edit_MP_FindIP.Text := gGameApp.GameSettings.LastIP;
-  Edit_MP_FindPort.Text := gGameApp.GameSettings.LastPort;
-  Edit_MP_FindRoom.Text := gGameApp.GameSettings.LastRoom;
+  Edit_MP_FindIP.Text := gGameSettings.LastIP;
+  Edit_MP_FindPort.Text := gGameSettings.LastPort;
+  Edit_MP_FindRoom.Text := gGameSettings.LastRoom;
 
   Button_MP_GetIn.Disable;
 
@@ -416,16 +416,16 @@ end;
 procedure TKMMenuMultiplayer.MP_SaveSettings;
 begin
   //Player name
-  gGameApp.GameSettings.MultiplayerName := AnsiString(Edit_MP_PlayerName.Text);
+  gGameSettings.MultiplayerName := AnsiString(Edit_MP_PlayerName.Text);
 
   //Create Server popup
-  gGameApp.GameSettings.ServerName := AnsiString(Edit_MP_ServerName.Text);
-  gGameApp.GameSettings.ServerPort := Edit_MP_ServerPort.Text;
+  gGameSettings.ServerName := AnsiString(Edit_MP_ServerName.Text);
+  gGameSettings.ServerPort := Edit_MP_ServerPort.Text;
 
   //Join server popup
-  gGameApp.GameSettings.LastPort := Edit_MP_FindPort.Text;
-  gGameApp.GameSettings.LastRoom := Edit_MP_FindRoom.Text;
-  gGameApp.GameSettings.LastIP   := Edit_MP_FindIP.Text;
+  gGameSettings.LastPort := Edit_MP_FindPort.Text;
+  gGameSettings.LastRoom := Edit_MP_FindRoom.Text;
+  gGameSettings.LastIP   := Edit_MP_FindIP.Text;
 end;
 
 
@@ -807,7 +807,7 @@ begin
   gGameApp.Networking.OnHostFail := MP_HostFail;
   gGameApp.Networking.Host(AnsiString(Edit_MP_ServerName.Text), serverPort,
                            AnsiString(Edit_MP_PlayerName.Text), (Sender = Button_MP_CreateWAN),
-                           gGameApp.GameSettings.ServerUDPAnnounce);
+                           gGameSettings.ServerUDPAnnounce);
 end;
 
 

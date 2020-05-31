@@ -4,22 +4,12 @@ interface
 uses
   {$IFDEF WDC} Windows, Graphics, JPEG, {$ENDIF} //Lazarus doesn't have JPEG library yet -> FPReadJPEG?
   {$IFDEF Unix} LCLIntf, LCLType, OpenGLContext, {$ENDIF}
-  Math, dglOpenGL, KromOGLUtils, KromUtils, KM_RenderControl, KM_RenderQuery;
+  Math, dglOpenGL, KromOGLUtils, KromUtils, KM_RenderControl, KM_RenderQuery, KM_RenderTypes;
 
 
-type
-  TTexFormat = (
-    tfRGB5A1,
-    tfRGBA8,
-    tfAlpha8 //Mask used for team colors and house construction steps (GL_ALPHA)
-    );
-  TFilterType = (
-    ftNearest,
-    ftLinear
-  );
-  const
-    TexFormatSize: array [TTexFormat] of Byte = (2, 4, 1);
-    TexFilter: array [TFilterType] of GLint = (GL_NEAREST, GL_LINEAR);
+const
+  TexFormatSize: array [TTexFormat] of Byte = (2, 4, 1);
+  TexFilter: array [TFilterType] of GLint = (GL_NEAREST, GL_LINEAR);
 
 type
   TRenderMode = (rm2D, rm3D);
@@ -34,6 +24,7 @@ type
     fQuery: TKMRenderQuery;
     class var
       fLastBindedTextureId: Cardinal;
+      fMaxTextureSize: Cardinal;
   public
     constructor Create(aRenderControl: TKMRenderControl; ScreenX,ScreenY: Integer; aVSync: Boolean);
     destructor Destroy; override;
@@ -47,6 +38,7 @@ type
     class procedure UpdateTexture(aTexture: GLuint; DestX, DestY: Word; Mode: TTexFormat; const Data: Pointer);
     class procedure BindTexture(aTexId: Cardinal);
     class procedure FakeRender(aID: Cardinal);
+    class property MaxTextureSize: Cardinal read fMaxTextureSize;
 
     property RendererVersion: UnicodeString read fOpenGL_Version;
     function IsOldGLVersion: Boolean;
@@ -70,13 +62,11 @@ var
 
 implementation
 uses
-  SysUtils, KM_Log, KM_ResSprites;
+  SysUtils, KM_Log;
 
 
 { TRender }
 constructor TRender.Create(aRenderControl: TKMRenderControl; ScreenX,ScreenY: Integer; aVSync: Boolean);
-var
-  MaxTextureSize: Integer;
 begin
   inherited Create;
 
@@ -89,9 +79,8 @@ begin
 
     fRenderControl.CreateRenderContext;
 
-    glGetIntegerv(GL_MAX_TEXTURE_SIZE, @MaxTextureSize); //Get max supported texture size by video adapter
-    gLog.AddTime('GL_MAX_TEXTURE_SIZE = ' + IntToStr(MaxTextureSize));
-    TKMResSprites.SetMaxAtlasSize(MaxTextureSize);       //Save it for texture processing
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, @fMaxTextureSize); //Get max supported texture size by video adapter
+    gLog.AddTime('GL_MAX_TEXTURE_SIZE = ' + IntToStr(fMaxTextureSize));
 
     glClearColor(0, 0, 0, 0); 	   //Background
     glClearStencil(0);

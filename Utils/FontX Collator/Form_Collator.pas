@@ -106,7 +106,7 @@ begin
 
   //Recreate clean Font
   FreeAndNil(Fnt);
-  Fnt := TKMFontDataEdit.Create;
+  Fnt := TKMFontDataEdit.Create(fntArial); //fntArial, why not, it looks like we dont care
 
   K := 0;
   SetLength(files, ListBox2.Count);

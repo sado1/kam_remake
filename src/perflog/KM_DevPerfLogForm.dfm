@@ -29,6 +29,13 @@ object FormPerfLogs: TFormPerfLogs
     Height = 13
     Caption = 'Scale (ms)'
   end
+  object lblPerflogSaveThreshold: TLabel
+    Left = 8
+    Top = 83
+    Width = 102
+    Height = 13
+    Caption = 'Save Threshold (ms):'
+  end
   object cbStackedGFX: TCheckBox
     Left = 8
     Top = 24
@@ -38,7 +45,7 @@ object FormPerfLogs: TFormPerfLogs
     TabOrder = 0
     OnClick = DoChange
   end
-  object seFrameBudget: TSpinEdit
+  object seScale: TSpinEdit
     Left = 95
     Top = 27
     Width = 49
@@ -48,7 +55,7 @@ object FormPerfLogs: TFormPerfLogs
     TabOrder = 1
     Value = 20
     OnChange = DoChange
-    OnKeyDown = seFrameBudgetKeyDown
+    OnKeyDown = seScaleKeyDown
   end
   object cbStackedCPU: TCheckBox
     Left = 8
@@ -69,5 +76,24 @@ object FormPerfLogs: TFormPerfLogs
     State = cbChecked
     TabOrder = 3
     OnClick = DoChange
+  end
+  object sePerfLogSaveThreshold: TSpinEdit
+    Left = 116
+    Top = 80
+    Width = 40
+    Height = 22
+    MaxValue = 300
+    MinValue = 1
+    TabOrder = 4
+    Value = 20
+  end
+  object btnPerfLogExport: TButton
+    Left = 169
+    Top = 80
+    Width = 68
+    Height = 22
+    Caption = 'Export'
+    TabOrder = 5
+    OnClick = DoExport
   end
 end

@@ -78,7 +78,7 @@ type
 
 implementation
 uses
-  KM_Log, KM_ResTexts, KM_GameApp, KM_RenderUI, KM_ResFonts;
+  KM_Log, KM_ResTexts, KM_GameApp, KM_RenderUI, KM_ResFonts, KM_Settings;
 
 const
   MINIMAP_NOT_LOADED = -100; // smth, but not -1, as -1 is used for ColumnBox.ItemIndex, when no item is selected
@@ -274,8 +274,8 @@ procedure TKMMenuReplays.SetSelectedSaveName(const aName: UnicodeString);
 begin
   fSelectedSaveName := aName;
   case Radio_Replays_Type.ItemIndex of
-    0:  gGameApp.GameSettings.MenuReplaySPSaveName := aName;
-    1:  gGameApp.GameSettings.MenuReplayMPSaveName := aName;
+    0:  gGameSettings.MenuReplaySPSaveName := aName;
+    1:  gGameSettings.MenuReplayMPSaveName := aName;
   end;
 end;
 
@@ -350,8 +350,8 @@ begin
   fMinimapLastListId := MINIMAP_NOT_LOADED;
 
   case Radio_Replays_Type.ItemIndex of
-    0:  fSelectedSaveName := gGameApp.GameSettings.MenuReplaySPSaveName;
-    1:  fSelectedSaveName := gGameApp.GameSettings.MenuReplayMPSaveName;
+    0:  fSelectedSaveName := gGameSettings.MenuReplaySPSaveName;
+    1:  fSelectedSaveName := gGameSettings.MenuReplayMPSaveName;
   end;
 
   ColumnBox_Replays.Clear;
@@ -362,11 +362,11 @@ end;
 
 procedure TKMMenuReplays.Replay_TypeChange(Sender: TObject);
 begin
-  gGameApp.GameSettings.MenuReplaysType := Radio_Replays_Type.ItemIndex;
+  gGameSettings.MenuReplaysType := Radio_Replays_Type.ItemIndex;
   ListUpdate;
   DeleteConfirm(False);
   RenameConfirm(False);
-  gGameApp.GameSettings.MenuReplaysType := Radio_Replays_Type.ItemIndex;
+  gGameSettings.MenuReplaysType := Radio_Replays_Type.ItemIndex;
 end;
 
 
@@ -651,7 +651,7 @@ begin
   Panel_Replays.Show;
   //Copy/Pasted from SwitchPage for now (needed that for ResultsMP BackClick)
   //Probably needs some cleanup when we have GUIMenuReplays
-  Radio_Replays_Type.ItemIndex := gGameApp.GameSettings.MenuReplaysType;
+  Radio_Replays_Type.ItemIndex := gGameSettings.MenuReplaysType;
   Replay_TypeChange(nil); //Select SP as this will refresh everything
   Replays_Sort(ColumnBox_Replays.SortIndex); //Apply sorting from last time we were on this page
 end;

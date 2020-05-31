@@ -61,7 +61,7 @@ type
 
 implementation
 uses
-  KM_GameApp, KM_RenderUI, KM_ResTexts, KM_Game, KM_CommonUtils,
+  KM_GameApp, KM_RenderUI, KM_ResTexts, KM_Game, KM_GameParams, KM_CommonUtils,
   KM_ResSound, KM_Resource, KM_ResFonts, KM_Sound, KM_NetPlayersList;
 
 
@@ -141,7 +141,7 @@ begin
     //Sending chat during reconnections at best causes messages to be lost and at worst causes
     //crashes due to intermediate connecting states. Therefore we block sending completely.
     VK_RETURN:  Result := ((gGame.Networking <> nil) and not gGame.Networking.IsReconnecting)
-                           or gGame.IsSingleplayerGame;
+                           or gGameParams.IsSingleplayerGame;
     VK_UP,
     VK_DOWN:    Result := Button_ChatActionsAllowed.Down;
   end;

@@ -159,7 +159,7 @@ implementation
 uses
   Math,
   KM_HandsCollection, KM_Hand, KM_Units, KM_UnitsCollection,
-  KM_GameApp, KM_Game, KM_CommonUtils, KM_Resource, KM_HouseTownhall, KM_HouseBarracks;
+  KM_Settings, KM_Game, KM_CommonUtils, KM_Resource, KM_HouseTownhall, KM_HouseBarracks;
 
 
 { TKMCheckpoint }
@@ -669,7 +669,7 @@ begin
   end else
   begin
     // Delete the very first checkpoint when we reached the limit
-    if fCheckpoints.Count >= gGameApp.GameSettings.MapEdHistoryDepth then
+    if fCheckpoints.Count >= gGameSettings.MapEdHistoryDepth then
       fCheckpoints.Delete(0);
 
     // Otherwise create new one

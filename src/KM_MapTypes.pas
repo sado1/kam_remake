@@ -2,7 +2,7 @@ unit KM_MapTypes;
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_ResTexts, KM_Defaults;
+  KM_ResTexts, KM_Defaults, KM_CommonTypes;
 
 type
   TKMMissionDifficulty = (mdNone, mdEasy3, mdEasy2, mdEasy1, mdNormal, mdHard1, mdHard2, mdHard3);
@@ -30,6 +30,11 @@ const
      icOrange,
      icDarkOrange,
      icRed);
+
+  //Map folder name by folder type. Containing single maps, for SP/MP/DL mode
+  MAP_FOLDER: array [TKMapFolder] of string = (MAPS_FOLDER_NAME, MAPS_MP_FOLDER_NAME, MAPS_DL_FOLDER_NAME);
+
+  CUSTOM_MAP_PARAM_DESCR_TX: array[TKMCustomScriptParam] of Integer = (TX_MAP_CUSTOM_PARAM_TH_TROOP_COST, TX_MAP_CUSTOM_PARAM_MARKET_PRICE);
 
 
 implementation

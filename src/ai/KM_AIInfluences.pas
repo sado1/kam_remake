@@ -627,7 +627,7 @@ begin
   // Create array of polygon indexes
   SetLength(IdxArray, gHands[aPL].Houses.Count);
   Cnt := 0;
-  AI := gHands[aPL].HandType = hndComputer;
+  AI := gHands[aPL].IsComputer;
   for I := 0 to gHands[aPL].Houses.Count - 1 do
   begin
     H := gHands[aPL].Houses[I];

@@ -34,7 +34,7 @@ type
 
 implementation
 uses
-  KM_Game, KM_RenderUI, KM_ResFonts, KM_ResTexts, KM_InterfaceDefaults;
+  KM_Game, KM_GameParams, KM_RenderUI, KM_ResFonts, KM_ResTexts, KM_InterfaceDefaults;
 
 
 { TKMMapEdMenuSave }
@@ -102,7 +102,6 @@ begin
       fOnMapTypChanged(fIsMultiplayer);
 
     gGame.SaveMapEditor(GetSaveName);
-    gGame.MapEditor.WasSaved := True;
 
     //Player colors and mapname has changed
     gGame.ActiveInterface.SyncUI(False); //Don't move the viewport
@@ -125,7 +124,7 @@ end;
 procedure TKMMapEdMenuSave.Show;
 begin
   SetLoadMode(fIsMultiplayer);
-  Edit_SaveName.Text := gGame.GameName;
+  Edit_SaveName.Text := gGameParams.GameName;
   Menu_SaveClick(Edit_SaveName);
   Panel_Save.Show;
 end;

@@ -100,7 +100,7 @@ type
 implementation
 uses
   SysUtils, Math,
-  KM_Game, KM_HandsCollection, KM_Hand,
+  KM_Game, KM_GameParams, KM_HandsCollection, KM_Hand,
   {$IFDEF DEBUG_BattleLines}
     KM_RenderAux,
   {$ENDIF}
@@ -228,7 +228,7 @@ begin
   if not gGame.IsPeaceTime then
   begin
     if (Modulo >= ATTACKS) AND (Modulo - ATTACKS < Length(fAlli2PL))
-    AND (  gGame.IsTactic OR (aTick > (gGame.GameOptions.Peacetime+3) * 10 * 60)  ) then // In normal mode wait 3 minutes after peace
+    AND (  gGameParams.IsTactic OR (aTick > (gGame.GameOptions.Peacetime+3) * 10 * 60)  ) then // In normal mode wait 3 minutes after peace
     begin
       UpdateFFA();
       UpdateAttack(Modulo - ATTACKS);
@@ -826,7 +826,7 @@ type
       // Send defences to owner
       for I := 0 to Length(aOwners) - 1 do
         with gHands[ aOwners[I] ] do
-          if (HandType = hndComputer) AND AI.Setup.NewAI AND AI.Setup.AutoDefend then
+          if IsComputer AND AI.Setup.NewAI AND AI.Setup.AutoDefend then
             AI.ArmyManagement.Defence.UpdateDefences(DistributedPos[ aOwners[I] ].Count, DistributedPos[ aOwners[I] ].DefPos);
     end;
   end;
@@ -844,7 +844,7 @@ begin
     for IdxPL := 0 to Length(DefPosReq) - 1 do
       with gHands[ fAlli2PL[aTeam, IdxPL] ] do
       begin
-        Troops := Byte(HandType = hndComputer) * (Stats.GetUnitQty(utRecruit) + Stats.GetArmyCount); // Consider also recruits so after peace time the AI already have prepared defences
+        Troops := Byte(IsComputer) * (Stats.GetUnitQty(utRecruit) + Stats.GetArmyCount); // Consider also recruits so after peace time the AI already have prepared defences
         DefPosReq[IdxPL] := Round(Troops / 8) + RESERVE_DEF_POS; // Each group have 9 troops so we need max (Troops / 9) positions + reserves
       end;
     SetLength(TeamDefPos,0);
@@ -961,12 +961,12 @@ begin
   if not NewAIInTeam(aTeam, True, False) OR (Length(fAlli2PL) < 2) then // I sometimes use my loc as a spectator (alliance with everyone) so make sure that search for enemy will use AI loc
     Exit;
   // Check if alliance can attack (have available soldiers) in the FFA mode (if there are just 2 teams attack if we have advantage)
-  if fFFA AND not gGame.IsTactic then
+  if fFFA AND not gGameParams.IsTactic then
   begin
     DefRatio := 0;
     for IdxPL := 0 to Length( fAlli2PL[aTeam] ) - 1 do
       with gHands[ fAlli2PL[aTeam, IdxPL] ] do
-        if (HandType = hndComputer) AND AI.Setup.NewAI AND AI.Setup.AutoAttack then
+        if IsComputer AND AI.Setup.NewAI AND AI.Setup.AutoAttack then
         begin
           DefRatio := Max(DefRatio, AI.ArmyManagement.Defence.DefenceStatus);
           KMSwapInt(fAlli2PL[aTeam, 0], fAlli2PL[aTeam, IdxPL]); // Make sure that player in first index is new AI
@@ -983,14 +983,14 @@ begin
     ArmyState := gAIFields.Eye.ArmyEvaluation.AllianceEvaluation[ fAlli2PL[aTeam,0], atAlly ];
     with ArmyState.FoodState do
       FoodLevel := (Full + Middle) / Max(1, (Full + Middle + Low));
-    if (BestCmpIdx <> -1) AND ((BestCmp > MIN_ADVANTAGE) OR (FoodLevel < FOOD_THRESHOLD) OR gGame.IsTactic) then
+    if (BestCmpIdx <> -1) AND ((BestCmp > MIN_ADVANTAGE) OR (FoodLevel < FOOD_THRESHOLD) OR gGameParams.IsTactic) then
     begin
       EnemyTeamIdx := fPL2Alli[ EnemyStats[BestCmpIdx].Player ];
       for IdxPL := 0 to Length( fAlli2PL[aTeam] ) - 1 do
         if gHands[ fAlli2PL[aTeam,IdxPL] ].AI.Setup.AutoAttack then
         begin
           fCombatStatus[fAlli2PL[aTeam,IdxPL],EnemyStats[BestCmpIdx].Player] := csAttackingCity;
-          if gGame.IsTactic then
+          if gGameParams.IsTactic then
             fCombatStatus[fAlli2PL[aTeam,IdxPL],EnemyStats[BestCmpIdx].Player] := csAttackingEverything;
           with AR do
           begin
@@ -1113,7 +1113,7 @@ begin
   Result := False;
   for IdxPL := 0 to Length( fAlli2PL[aTeam] ) - 1 do
     with gHands[ fAlli2PL[aTeam, IdxPL] ] do
-      if (HandType = hndComputer)
+      if IsComputer
         AND AI.Setup.NewAI
         AND (not aAttack OR AI.Setup.AutoAttack)
         AND (not aDefence OR AI.Setup.AutoDefend) then

@@ -49,7 +49,7 @@ type
 
 implementation
 uses
-  KM_ResMapElements, KM_Terrain, KM_Game, KM_DevPerfLog,  KM_DevPerfLogTypes;
+  KM_ResMapElements, KM_Terrain, KM_DevPerfLog,  KM_DevPerfLogTypes;
 
 
 { TKMTerrainFinder }
@@ -268,7 +268,7 @@ var
   I, K: Integer;
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psTerrainFinder, gGame.GameTick);
+  gPerfLogs.SectionEnter(psTerrainFinder);
   {$ENDIF}
   if USE_WALKING_DISTANCE then
   begin

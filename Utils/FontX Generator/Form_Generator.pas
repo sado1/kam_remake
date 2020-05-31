@@ -88,7 +88,7 @@ var
   fntStyle: TFontStyles;
 begin
   FreeAndNil(Fnt);
-  Fnt := TKMFontDataEdit.Create;
+  Fnt := TKMFontDataEdit.Create(fntArial); //fntArial, why not, it looks like we dont care
 
   {$IFDEF WDC}
   chars := Memo1.Text;

@@ -72,7 +72,7 @@ var
 
 implementation
 uses
-  KM_Render, KM_Game, KM_Units, KM_Terrain, KM_Resource, KM_ResTileset, KM_CommonUtils;
+  KM_Render, KM_Game, KM_GameParams, KM_Units, KM_Terrain, KM_Resource, KM_ResTileset, KM_CommonUtils;
 
 const
   TILE_TERRAIN_LAYERS_COLORS: array [0..3] of Cardinal =
@@ -496,7 +496,7 @@ procedure TRenderAux.TileTerrainKinds(const aRect: TKMRect);
     TerKind: TKMTerrainKind;
     TerKindStr: String;
   begin
-    if gGame.IsMapEditor then
+    if gGameParams.IsMapEditor then
     begin
       TerKind := gGame.TerrainPainter.LandTerKind[Y,X].TerKind;
       case TerKind of

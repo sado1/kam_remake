@@ -252,7 +252,7 @@ type
 implementation
 uses
   TypInfo,
-  KM_Game, KM_Hand, KM_HandsCollection, KM_Terrain, KM_CommonUtils, KM_ResTexts, KM_RenderPool,
+  KM_Game, KM_GameParams, KM_Hand, KM_HandsCollection, KM_Terrain, KM_CommonUtils, KM_ResTexts, KM_RenderPool,
   KM_Hungarian, KM_UnitActionWalkTo, KM_ResUnits, KM_ScriptingEvents,
   KM_UnitActionStormAttack, KM_CommonClassesExt, KM_RenderAux,
   KM_GameTypes, KM_Log, KM_DevPerfLog, KM_DevPerfLogTypes;
@@ -308,7 +308,7 @@ begin
   //Whole group should have the same condition
   NewCondition := Round(UNIT_MAX_CONDITION * (UNIT_CONDITION_BASE + KaMRandomS2(UNIT_CONDITION_RANDOM, 'TKMUnitGroup.Create')));
 
-  if gGame.IsMapEditor then
+  if gGameParams.IsMapEditor then
   begin
     //In MapEd we create only flagholder, other members are virtual
     Warrior := TKMUnitWarrior(gHands[aOwner].AddUnit(aUnitType, KMPoint(PosX, PosY), False, 0, False, False));
@@ -629,7 +629,7 @@ end;
 
 procedure TKMUnitGroup.SetPosition(const aValue: TKMPoint);
 begin
-  Assert(gGame.IsMapEditor);
+  Assert(gGameParams.IsMapEditor);
   Members[0].SetPosition(aValue);
   fOrderLoc.Loc := Members[0].CurrPosition; //Don't assume we can move to aValue
 end;
@@ -667,7 +667,7 @@ end;
 
 procedure TKMUnitGroup.SetDirection(Value: TKMDirection);
 begin
-  Assert(gGame.IsMapEditor);
+  Assert(gGameParams.IsMapEditor);
   fOrderLoc.Dir := Value;
   Members[0].Direction := Value;
 end;
@@ -684,7 +684,7 @@ end;
 
 procedure TKMUnitGroup.SetUnitsPerRow(aCount: Word);
 begin
-  if gGame.IsMapEditor then
+  if gGameParams.IsMapEditor then
     fUnitsPerRow := EnsureRange(aCount, 1, fMapEdCount)
   else
     fUnitsPerRow := EnsureRange(aCount, 1, Count);
@@ -728,7 +728,7 @@ end;
 //Used by the MapEd after changing direction (so warriors are frozen on the right frame)
 procedure TKMUnitGroup.ResetAnimStep;
 begin
-  Assert(gGame.IsMapEditor);
+  Assert(gGameParams.IsMapEditor);
   Members[0].AnimStep := UNIT_STILL_FRAMES[Members[0].Direction];
 end;
 
@@ -1217,7 +1217,7 @@ var I: Integer;
 begin
   if aMoveToNewOwner and (fOwner <> aOwner) then
   begin
-    Assert(gGame.GameMode = gmMapEd); // Allow to move existing Unit directly only in MapEd
+    Assert(gGameParams.GameMode = gmMapEd); // Allow to move existing Unit directly only in MapEd
     gHands[fOwner].UnitGroups.DeleteGroupFromList(Self);
     gHands[aOwner].UnitGroups.AddGroupToList(Self);
   end;
@@ -1947,7 +1947,7 @@ var
   NewMembers: TList;
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psHungarian, gGame.GameTick);
+  gPerfLogs.SectionEnter(psHungarian);
   {$ENDIF}
   try
     if not HUNGARIAN_GROUP_ORDER then Exit;
@@ -2161,7 +2161,7 @@ begin
   if FlagBearer.IsDeadOrDying then Exit;
 
   //In MapEd units fTicker always the same, use Terrain instead
-  FlagStep := IfThen(gGame.GameMode = gmMapEd, gTerrain.AnimStep, fTicker);
+  FlagStep := IfThen(gGameParams.GameMode = gmMapEd, gTerrain.AnimStep, fTicker);
 
   //Paint virtual members in MapEd mode
   for I := 1 to fMapEdCount - 1 do
@@ -2177,7 +2177,7 @@ begin
   gRenderPool.AddUnitFlag(FlagBearer.UnitType, FlagBearer.Action.ActionType,
     FlagBearer.Direction, FlagStep, FlagPositionF.X, FlagPositionF.Y, aFlagColor, aDoImmediateRender);
 
-  if SHOW_GROUP_MEMBERS_POS and not gGame.IsMapEditor then
+  if SHOW_GROUP_MEMBERS_POS and not gGameParams.IsMapEditor then
     for I := 0 to Count - 1 do
       gRenderAux.Text(Members[I].PositionF.X + 0.2, Members[I].PositionF.Y + 0.2, IntToStr(I), icCyan);
 end;
@@ -2250,7 +2250,7 @@ end;
 
 procedure TKMUnitGroups.AddGroupToList(aGroup: TKMUnitGroup);
 begin
-  Assert(gGame.GameMode = gmMapEd); // Allow to add existing Group directly only in MapEd
+  Assert(gGameParams.GameMode = gmMapEd); // Allow to add existing Group directly only in MapEd
   if aGroup <> nil then
     fGroups.Add(aGroup);
 end;
@@ -2258,7 +2258,7 @@ end;
 
 procedure TKMUnitGroups.DeleteGroupFromList(aGroup: TKMUnitGroup);
 begin
-  Assert(gGame.GameMode = gmMapEd); // Allow to delete existing Group directly only in MapEd
+  Assert(gGameParams.GameMode = gmMapEd); // Allow to delete existing Group directly only in MapEd
   if (aGroup <> nil) then
     fGroups.Extract(aGroup);  // use Extract instead of Delete, cause Delete nils inner objects somehow
 end;
@@ -2462,7 +2462,7 @@ end;
 
 procedure TKMUnitGroups.RemAllGroups;
 begin
-  Assert(gGame.GameMode = gmMapEd);
+  Assert(gGameParams.GameMode = gmMapEd);
   fGroups.Clear;
 end;
 

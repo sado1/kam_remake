@@ -89,7 +89,7 @@ type
 
 implementation
 uses
-  KM_ResTexts, KM_GameApp, KM_CommonUtils, KM_RenderUI, KM_ResFonts;
+  KM_ResTexts, KM_GameApp, KM_CommonUtils, KM_RenderUI, KM_ResFonts, KM_Settings;
 
 const
   PAD_VERT = 44; //Padding from top/bottom
@@ -128,7 +128,7 @@ begin
   ListUpdate;
   ListRefresh(True);
   Update;
-  gGameApp.GameSettings.MenuMapSPType := Radio_MapType.ItemIndex;
+  gGameSettings.MenuMapSPType := Radio_MapType.ItemIndex;
 end;
 
 
@@ -411,10 +411,10 @@ begin
 
       fLastMapCRC := fMaps[MapId].MapAndDatCRC;
       case Radio_MapType.ItemIndex of
-        0:  gGameApp.GameSettings.MenuSPScenarioMapCRC := fLastMapCRC;
-        1:  gGameApp.GameSettings.MenuSPMissionMapCRC := fLastMapCRC;
-        2:  gGameApp.GameSettings.MenuSPTacticMapCRC := fLastMapCRC;
-        3:  gGameApp.GameSettings.MenuSPSpecialMapCRC := fLastMapCRC;
+        0:  gGameSettings.MenuSPScenarioMapCRC := fLastMapCRC;
+        1:  gGameSettings.MenuSPMissionMapCRC := fLastMapCRC;
+        2:  gGameSettings.MenuSPTacticMapCRC := fLastMapCRC;
+        3:  gGameSettings.MenuSPSpecialMapCRC := fLastMapCRC;
       end;
 
       Label_Title.Caption   := fMaps[MapId].FileName;
@@ -525,10 +525,10 @@ begin
 
   fLastMapCRC := 0;
   case Radio_MapType.ItemIndex of
-    0:  fLastMapCRC := gGameApp.GameSettings.MenuSPScenarioMapCRC;
-    1:  fLastMapCRC := gGameApp.GameSettings.MenuSPMissionMapCRC;
-    2:  fLastMapCRC := gGameApp.GameSettings.MenuSPTacticMapCRC;
-    3:  fLastMapCRC := gGameApp.GameSettings.MenuSPSpecialMapCRC;
+    0:  fLastMapCRC := gGameSettings.MenuSPScenarioMapCRC;
+    1:  fLastMapCRC := gGameSettings.MenuSPMissionMapCRC;
+    2:  fLastMapCRC := gGameSettings.MenuSPTacticMapCRC;
+    3:  fLastMapCRC := gGameSettings.MenuSPSpecialMapCRC;
   end;
 end;
 
@@ -771,7 +771,7 @@ end;
 
 procedure TKMMenuSingleMap.Show;
 begin
-  Radio_MapType.ItemIndex := gGameApp.GameSettings.MenuMapSPType;
+  Radio_MapType.ItemIndex := gGameSettings.MenuMapSPType;
 
   ResetUI;
   //Terminate all

@@ -95,6 +95,8 @@ const
 
 { TKMMain }
 constructor TKMMain.Create;
+var
+  collapsed: Boolean;
 begin
   inherited;
 
@@ -108,7 +110,11 @@ begin
   {$IFDEF PERFLOG}
   gPerfLogs := TKMPerfLogs.Create([], True);
   gPerfLogs.ShowForm(fFormMain.cpPerfLogs);
+
+  collapsed := fFormMain.cpPerfLogs.Collapsed; //Save collapsed flag
+  fFormMain.cpPerfLogs.Collapsed := False; //We can set TCategoryPanel height only when collapsed set to False
   fFormMain.cpPerfLogs.Height := gPerfLogs.FormHeight;
+  fFormMain.cpPerfLogs.Collapsed := collapsed; //Restore collapsed flag
   {$ELSE}
   fFormMain.cpPerfLogs.Hide;
   {$ENDIF}
@@ -243,13 +249,13 @@ begin
   //pauses here until the user clicks ok. However for some reason we chose MessageBox
   //thus we need to pause the game manually
 
-  CanClose := (gGameApp = nil) or (gGameApp.Game = nil) or gGameApp.Game.IsReplay;
+  CanClose := (gGameApp = nil) or (gGameApp.Game = nil) or gGameApp.Game.Params.IsReplay;
 
   if not CanClose then
   begin
     //We want to pause the game for the time user verifies he really wants to close
-    WasRunning := not gGameApp.Game.IsMultiPlayerOrSpec
-                  and not gGameApp.Game.IsMapEditor
+    WasRunning := not gGameApp.Game.Params.IsMultiPlayerOrSpec
+                  and not gGameApp.Game.Params.IsMapEditor
                   and not gGameApp.Game.IsPaused;
 
     //Pause the game
@@ -563,7 +569,7 @@ end;
 function TKMMain.IsDebugChangeAllowed: Boolean;
 begin
   Result := (gGameApp.Game = nil)
-            or not gGameApp.Game.IsMultiPlayerOrSpec
+            or not gGameApp.Game.Params.IsMultiPlayerOrSpec
             or MULTIPLAYER_CHEATS;
 end;
 

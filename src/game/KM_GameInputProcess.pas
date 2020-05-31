@@ -2,8 +2,9 @@ unit KM_GameInputProcess;
 {$I KaM_Remake.inc}
 interface
 uses
+  Generics.Collections,
   KM_Units, KM_UnitGroup,
-  KM_Houses, KM_HouseWoodcutters,
+  KM_Houses, KM_HouseWoodcutters, KM_Hand,
   KM_ResHouses, KM_ResWares, KM_ScriptingConsoleCommands,
   KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Points, KM_WorkerThread;
 
@@ -54,7 +55,7 @@ type
     gicUnitDismissCancel,
 
     //III.     Building/road plans (what to build and where)
-    gicBuildAddFieldPlan,
+    gicBuildToggleFieldPlan,
     gicBuildRemoveFieldPlan, //Removal of a plan
     gicBuildRemoveHouse,     //Removal of house
     gicBuildRemoveHousePlan, //Removal of house plan
@@ -101,8 +102,9 @@ type
     gicGameTeamChange,
     gicGameHotkeySet,        //Hotkeys are synced for MP saves (UI keeps local copy to avoid GIP delays)
     gicGameMessageLogRead,   //Player marks a message in their log as read
-    gicGamePlayerChange, //Players can be changed to AI when loading a save
+    gicGamePlayerChange,     //Players can be changed to AI when loading a save and player name could be changed
     gicGamePlayerDefeat,     //Player can be defeated after intentional quit from the game
+    gicGamePlayerAllianceSet,//Set player alliance to other player
 
     //VII.
     gicScriptConsoleCommand,
@@ -133,22 +135,22 @@ type
     gicpt_Date);
 
 const
-  BlockedByPeaceTime: set of TKMGameInputCommandType = [gicArmySplit, gicArmySplitSingle,
+  BLOCKED_BY_PEACETIME: set of TKMGameInputCommandType = [gicArmySplit, gicArmySplitSingle,
     gicArmyLink, gicArmyAttackUnit, gicArmyAttackHouse, gicArmyHalt,
     gicArmyFormation,  gicArmyWalk, gicArmyStorm, gicHouseBarracksEquip, gicHouseTownHallEquip];
-  AllowedAfterDefeat: set of TKMGameInputCommandType =
+  ALLOWED_AFTER_DEFEAT: set of TKMGameInputCommandType =
     [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameLoadSave, gicGameMessageLogRead, gicTempDoNothing];
-  AllowedInCinematic: set of TKMGameInputCommandType =
-    [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameMessageLogRead, gicTempDoNothing];
-  AllowedBySpectators: set of TKMGameInputCommandType =
+  ALLOWED_IN_CINEMATIC: set of TKMGameInputCommandType =
+    [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameMessageLogRead, gicGamePlayerAllianceSet, gicTempDoNothing];
+  ALLOWED_BY_SPECTATORS: set of TKMGameInputCommandType =
     [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameLoadSave, gicGamePlayerDefeat, gicTempDoNothing];
   //Those commands should not have random check, because they they are not strictly happen, depends of player config and actions
   //We want to make it possible to reproduce AI city build knowing only seed + map config
   //Autosave and other commands random checks could break it, since every command have its own random check (and KaMRandom call)
-  SkipRandomChecksFor: set of TKMGameInputCommandType =
+  SKIP_RANDOM_CHECKS_FOR: set of TKMGameInputCommandType =
     [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby];
 
-  ArmyOrderCommands: set of TKMGameInputCommandType = [
+  ARMY_ORDER_COMMANDS: set of TKMGameInputCommandType = [
     gicArmyFeed,
     gicArmySplit,
     gicArmySplitSingle,
@@ -160,7 +162,7 @@ const
     gicArmyWalk,
     gicArmyStorm];
 
-  HouseOrderCommands: set of TKMGameInputCommandType = [
+  HOUSE_ORDER_COMMANDS: set of TKMGameInputCommandType = [
     gicHouseRepairToggle,
     gicHouseDeliveryModeNext,
     gicHouseDeliveryModePrev,
@@ -185,7 +187,7 @@ const
     gicHouseWoodcuttersCutting];
 
 
-  CommandPackType: array[TKMGameInputCommandType] of TKMGameInputCommandPackType = (
+  COMMAND_PACK_TYPES: array[TKMGameInputCommandType] of TKMGameInputCommandPackType = (
     gicpt_NoParams, // gicNone
     //I.      Army commands, only warriors (TKMUnitWarrior, OrderInfo)
     gicpt_Int1,     // gicArmyFeed
@@ -248,6 +250,7 @@ const
     gicpt_Int1,     // gicGameMessageLogRead
     gicpt_Ansi1Int2,// gicGamePlayerChange
     gicpt_Int1,     // gicGamePlayerDefeat
+    gicpt_Int3,     // gicGamePlayerAllianceSet
     //VII.     Scripting commands
     gicpt_Ansi1Uni4,
     //VIII.    Temporary and debug commands
@@ -286,6 +289,7 @@ type
   private
     fCount: Integer;
     fReplayState: TKMGIPReplayState;
+    fPlannedCommands: TList<TKMGameInputCommand>; //Commands that were made before game was started (f.e. gicPlayerTypeChange, gicGameSpeed), we plan them for the next tick
   protected
     fCursor: Integer; //Used only in gipReplaying
     fQueue: array of TKMStoredGIPCommand;
@@ -302,14 +306,15 @@ type
     function MakeCommand(aGIC: TKMGameInputCommandType; const aTextParam: UnicodeString): TKMGameInputCommand; overload;
     function MakeCommand(aGIC: TKMGameInputCommandType; const aAnsiTxtParam: AnsiString; const aUniTxtArray: TKMScriptCommandParamsArray): TKMGameInputCommand; overload;
     function MakeCommand(aGIC: TKMGameInputCommandType; aDateTimeParam: TDateTime): TKMGameInputCommand; overload;
-    procedure TakeCommand(const aCommand: TKMGameInputCommand); virtual; abstract;
+    procedure TakeCommand(const aCommand: TKMGameInputCommand);
+    procedure DoTakeCommand(const aCommand: TKMGameInputCommand); virtual; abstract;
     procedure ExecCommand(const aCommand: TKMGameInputCommand);
     procedure StoreCommand(const aCommand: TKMGameInputCommand);
     procedure ExecGameAlertBeaconCmd(const aCommand: TKMGameInputCommand);
 
     function DoSkipLogCommand(const aCommand: TKMGameInputCommand): Boolean;
     function QueueToString: String;
-  protected
+
     function IsLastTickValueCorrect(aLastTickValue: Cardinal): Boolean;
     procedure SaveExtra(SaveStream: TKMemoryStream); virtual;
     procedure LoadExtra(LoadStream: TKMemoryStream); virtual;
@@ -350,11 +355,15 @@ type
     procedure CmdGame(aCommandType: TKMGameInputCommandType; aValue: Integer); overload;
     procedure CmdGame(aCommandType: TKMGameInputCommandType; aValue: Single); overload;
 
+    procedure CmdPlayerAllianceSet(aForPlayer, aToPlayer: TKMHandID; aAllianceType: TKMAllianceType);
+    procedure CmdPlayerChanged(aPlayer: TKMHandID; aType: TKMHandType; aPlayerNikname: AnsiString);
+
     procedure CmdTemp(aCommandType: TKMGameInputCommandType; const aLoc: TKMPoint); overload;
     procedure CmdTemp(aCommandType: TKMGameInputCommandType); overload;
 
     procedure ReplayTimer(aTick: Cardinal); virtual;
     procedure RunningTimer(aTick: Cardinal); virtual;
+    procedure TakePlannedCommands;
     procedure UpdateState(aTick: Cardinal); virtual;
 
     //Replay methods
@@ -381,10 +390,10 @@ type
 implementation
 uses
   SysUtils, TypInfo, Math,
-  KM_GameApp, KM_Game, KM_Hand, KM_HandsCollection,
+  KM_GameApp, KM_Game, KM_GameParams, KM_HandsCollection,
   KM_HouseMarket, KM_HouseBarracks, KM_HouseSchool, KM_HouseTownHall,
   KM_ScriptingEvents, KM_Alerts, KM_CommonUtils, KM_Log, KM_RenderUI,
-  KM_GameTypes, KM_ResFonts, KM_Resource;
+  KM_GameTypes, KM_ResFonts, KM_Settings, KM_Resource;
 
 const 
   NO_LAST_TICK_VALUE = 0;
@@ -395,7 +404,7 @@ var
 
 function IsSelectedObjectCommand(aGIC: TKMGameInputCommandType): Boolean;
 begin
-  Result := (aGIC in ArmyOrderCommands) or (aGIC in HouseOrderCommands);
+  Result := (aGIC in ARMY_ORDER_COMMANDS) or (aGIC in HOUSE_ORDER_COMMANDS);
 end;
 
 
@@ -404,7 +413,7 @@ begin
   with aCommand do
   begin
     aMemoryStream.Write(CommandType, SizeOf(CommandType));
-    case CommandPackType[CommandType] of
+    case COMMAND_PACK_TYPES[CommandType] of
       gicpt_NoParams: ;
       gicpt_Int1:     aMemoryStream.Write(Params[1]);
       gicpt_Int2:     begin
@@ -448,7 +457,7 @@ begin
   with aCommand do
   begin
     aMemoryStream.Read(CommandType, SizeOf(CommandType));
-    case CommandPackType[CommandType] of
+    case COMMAND_PACK_TYPES[CommandType] of
       gicpt_NoParams: ;
       gicpt_Int1:     aMemoryStream.Read(Params[1]);
       gicpt_Int2:     begin
@@ -506,7 +515,7 @@ begin
 
     Result := Format('%-' + IntToStr(GIC_COMMAND_TYPE_MAX_LENGTH) + 's hand: %2d' + NetPlayerStr + ', params: ',
                      [GetEnumName(TypeInfo(TKMGameInputCommandType), Integer(CommandType)), HandIndex]);
-    case CommandPackType[CommandType] of
+    case COMMAND_PACK_TYPES[CommandType] of
       gicpt_NoParams:   Result := Result + ' []';
       gicpt_Int1:       Result := Result + Format('[%10d]', [Params[1]]);
       gicpt_Int2:       Result := Result + Format('[%10d,%10d]', [Params[1], Params[2]]);
@@ -527,15 +536,20 @@ end;
 constructor TKMGameInputProcess.Create(aReplayState: TKMGIPReplayState);
 begin
   inherited Create;
-  setlength(fQueue, 128);
+
+  SetLength(fQueue, 128);
   fCount := 0;
   fCursor := 1;
   fReplayState := aReplayState;
+
+  fPlannedCommands := TList<TKMGameInputCommand>.Create;
 end;
 
 
 destructor TKMGameInputProcess.Destroy;
 begin
+  fPlannedCommands.Free;
+
   inherited;
 end;
 
@@ -555,20 +569,20 @@ end;
 
 function TKMGameInputProcess.MakeCommand(aGIC: TKMGameInputCommandType): TKMGameInputCommand;
 begin
-  Assert(CommandPackType[aGIC] = gicpt_NoParams,
+  Assert(COMMAND_PACK_TYPES[aGIC] = gicpt_NoParams,
          Format('Wrong packing type for command %s: Expected: gicpt_NoParams Actual: [%s]',
                 [GetEnumName(TypeInfo(TKMGameInputCommandType), Integer(aGIC)),
-                 GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(CommandPackType[aGIC]))]));
+                 GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(COMMAND_PACK_TYPES[aGIC]))]));
   Result := MakeEmptyCommand(aGIC);
 end;
 
 
 function TKMGameInputProcess.MakeCommand(aGIC: TKMGameInputCommandType; const aParam1: Integer): TKMGameInputCommand;
 begin
-  Assert(CommandPackType[aGIC] = gicpt_Int1,
+  Assert(COMMAND_PACK_TYPES[aGIC] = gicpt_Int1,
          Format('Wrong packing type for command %s: Expected: gicpt_Int1 Actual: [%s]',
                 [GetEnumName(TypeInfo(TKMGameInputCommandType), Integer(aGIC)),
-                 GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(CommandPackType[aGIC]))]));
+                 GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(COMMAND_PACK_TYPES[aGIC]))]));
   Result := MakeEmptyCommand(aGIC);
   Result.Params[1] := aParam1;
 end;
@@ -576,10 +590,10 @@ end;
 
 function TKMGameInputProcess.MakeCommand(aGIC: TKMGameInputCommandType; const aParam1, aParam2: Integer): TKMGameInputCommand;
 begin
-  Assert(CommandPackType[aGIC] = gicpt_Int2,
+  Assert(COMMAND_PACK_TYPES[aGIC] = gicpt_Int2,
          Format('Wrong packing type for command %s: Expected: gicpt_Int2 Actual: [%s]',
                 [GetEnumName(TypeInfo(TKMGameInputCommandType), Integer(aGIC)),
-                 GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(CommandPackType[aGIC]))]));
+                 GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(COMMAND_PACK_TYPES[aGIC]))]));
   Result := MakeEmptyCommand(aGIC);
   Result.Params[1] := aParam1;
   Result.Params[2] := aParam2;
@@ -588,10 +602,10 @@ end;
 
 function TKMGameInputProcess.MakeCommand(aGIC: TKMGameInputCommandType; const aParam1, aParam2, aParam3: Integer): TKMGameInputCommand;
 begin
-  Assert(CommandPackType[aGIC] = gicpt_Int3,
+  Assert(COMMAND_PACK_TYPES[aGIC] = gicpt_Int3,
          Format('Wrong packing type for command %s: Expected: gicpt_Int3 Actual: [%s]',
                 [GetEnumName(TypeInfo(TKMGameInputCommandType), Integer(aGIC)),
-                 GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(CommandPackType[aGIC]))]));
+                 GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(COMMAND_PACK_TYPES[aGIC]))]));
   Result := MakeEmptyCommand(aGIC);
   Result.Params[1] := aParam1;
   Result.Params[2] := aParam2;
@@ -601,10 +615,10 @@ end;
 
 function TKMGameInputProcess.MakeCommand(aGIC: TKMGameInputCommandType; const aParam1, aParam2, aParam3, aParam4: Integer): TKMGameInputCommand;
 begin
-  Assert(CommandPackType[aGIC] = gicpt_Int4,
+  Assert(COMMAND_PACK_TYPES[aGIC] = gicpt_Int4,
          Format('Wrong packing type for command %s: Expected: gicpt_Int4 Actual: [%s]',
                 [GetEnumName(TypeInfo(TKMGameInputCommandType), Integer(aGIC)),
-                 GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(CommandPackType[aGIC]))]));
+                 GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(COMMAND_PACK_TYPES[aGIC]))]));
   Result := MakeEmptyCommand(aGIC);
   Result.Params[1] := aParam1;
   Result.Params[2] := aParam2;
@@ -615,10 +629,10 @@ end;
 
 function TKMGameInputProcess.MakeCommand(aGIC: TKMGameInputCommandType; const aAnsiTxtParam: AnsiString; const aParam1, aParam2: Integer): TKMGameInputCommand;
 begin
-  Assert(CommandPackType[aGIC] = gicpt_Ansi1Int2,
+  Assert(COMMAND_PACK_TYPES[aGIC] = gicpt_Ansi1Int2,
          Format('Wrong packing type for command %s: Expected: gicpt_Ansi1Int2 Actual: [%s]',
                 [GetEnumName(TypeInfo(TKMGameInputCommandType), Integer(aGIC)),
-                 GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(CommandPackType[aGIC]))]));
+                 GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(COMMAND_PACK_TYPES[aGIC]))]));
   Result := MakeEmptyCommand(aGIC);
   Result.AnsiStrParam := aAnsiTxtParam;
   Result.Params[1] := aParam1;
@@ -628,10 +642,10 @@ end;
 
 function TKMGameInputProcess.MakeCommandNoHand(aGIC: TKMGameInputCommandType; const aParam1: Single): TKMGameInputCommand;
 begin
-  Assert(CommandPackType[aGIC] = gicpt_Float,
+  Assert(COMMAND_PACK_TYPES[aGIC] = gicpt_Float,
          Format('Wrong packing type for command %s: Expected: gicpt_Float Actual: [%s]',
                 [GetEnumName(TypeInfo(TKMGameInputCommandType), Integer(aGIC)),
-                 GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(CommandPackType[aGIC]))]));
+                 GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(COMMAND_PACK_TYPES[aGIC]))]));
   Result.HandIndex := -1;
   Result.CommandType := aGIC;
   Result.FloatParam := aParam1;
@@ -640,10 +654,10 @@ end;
 
 function TKMGameInputProcess.MakeCommand(aGIC: TKMGameInputCommandType; const aTextParam: UnicodeString): TKMGameInputCommand;
 begin
-  Assert(CommandPackType[aGIC] = gicpt_UniStr1,
+  Assert(COMMAND_PACK_TYPES[aGIC] = gicpt_UniStr1,
          Format('Wrong packing type for command %s: Expected: gicpt_Text Actual: [%s]',
                 [GetEnumName(TypeInfo(TKMGameInputCommandType), Integer(aGIC)),
-                 GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(CommandPackType[aGIC]))]));
+                 GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(COMMAND_PACK_TYPES[aGIC]))]));
   Result := MakeEmptyCommand(aGIC);
 
   Result.UnicodeStrParams[0] := aTextParam;
@@ -655,10 +669,10 @@ function TKMGameInputProcess.MakeCommand(aGIC: TKMGameInputCommandType; const aA
 var
   I: Integer;
 begin
-  Assert(CommandPackType[aGIC] = gicpt_Ansi1Uni4,
+  Assert(COMMAND_PACK_TYPES[aGIC] = gicpt_Ansi1Uni4,
          Format('Wrong packing type for command %s: Expected: gicpt_Ansi1Uni4 Actual: [%s]',
                 [GetEnumName(TypeInfo(TKMGameInputCommandType), Integer(aGIC)),
-                 GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(CommandPackType[aGIC]))]));
+                 GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(COMMAND_PACK_TYPES[aGIC]))]));
   Result := MakeEmptyCommand(aGIC);
 
   Result.AnsiStrParam := aAnsiTxtParam;
@@ -670,10 +684,10 @@ end;
 
 function TKMGameInputProcess.MakeCommand(aGIC: TKMGameInputCommandType; aDateTimeParam: TDateTime): TKMGameInputCommand;
 begin
-  Assert(CommandPackType[aGIC] = gicpt_Date,
+  Assert(COMMAND_PACK_TYPES[aGIC] = gicpt_Date,
          Format('Wrong packing type for command %s: Expected: gicpt_Date Actual: [%s]',
                 [GetEnumName(TypeInfo(TKMGameInputCommandType), Integer(aGIC)),
-                 GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(CommandPackType[aGIC]))]));
+                 GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(COMMAND_PACK_TYPES[aGIC]))]));
   Result := MakeEmptyCommand(aGIC);
 
   Result.DateTimeParam := aDateTimeParam;
@@ -683,6 +697,16 @@ end;
 function TKMGameInputProcess.DoSkipLogCommand(const aCommand: TKMGameInputCommand): Boolean;
 begin
   Result := SKIP_LOG_TEMP_COMMANDS and (aCommand.CommandType in [gicTempAddScout, gicTempRevealMap, gicTempVictory, gicTempDefeat, gicTempDoNothing]);
+end;
+
+
+procedure TKMGameInputProcess.TakeCommand(const aCommand: TKMGameInputCommand);
+begin
+  if gGame.IsStarted
+    and (gGameParams.GameTick > 0) then //We could get some commands even before 1st game update (on tick 0)
+    DoTakeCommand(aCommand)
+  else
+    fPlannedCommands.Add(aCommand);
 end;
 
 
@@ -758,19 +782,19 @@ begin
     end;
 
     //Some commands are blocked by peacetime (this is a fall back in case players try to cheat)
-    if gGame.IsPeaceTime and (CommandType in BlockedByPeaceTime) then
+    if gGame.IsPeaceTime and (CommandType in BLOCKED_BY_PEACETIME) then
        Exit;
 
     //No commands allowed after a player has lost (this is a fall back in case players try to cheat)
-    if not (aCommand.CommandType in AllowedAfterDefeat) and gGame.IsMultiPlayerOrSpec and P.AI.HasLost then
+    if not (aCommand.CommandType in ALLOWED_AFTER_DEFEAT) and P.AI.HasLost then
       Exit;
 
     //Most commands blocked during cinematic (this is a fall back in case players try to cheat)
-    if not (aCommand.CommandType in AllowedInCinematic) and (P.InCinematic) then
+    if not (aCommand.CommandType in ALLOWED_IN_CINEMATIC) and (P.InCinematic) then
       Exit;
 
     if gLog.CanLogCommands() and not DoSkipLogCommand(aCommand) then
-      gLog.LogCommands(Format('Tick: %6d Exec command: %s', [gGame.GameTick, GIPCommandToString(aCommand)]));
+      gLog.LogCommands(Format('Tick: %6d Exec command: %s', [gGameParams.GameTick, GIPCommandToString(aCommand)]));
 
     case CommandType of
       gicArmyFeed:         SrcGroup.OrderFood(True);
@@ -787,8 +811,8 @@ begin
       gicUnitDismiss:        SrcUnit.Dismiss;
       gicUnitDismissCancel:  SrcUnit.DismissCancel;
 
-      gicBuildAddFieldPlan:      P.ToggleFieldPlan(KMPoint(Params[1],Params[2]), TKMFieldType(Params[3]), not gGame.IsMultiPlayerOrSpec); //Make sound in singleplayer mode only
-      gicBuildRemoveFieldPlan:   P.RemFieldPlan(KMPoint(Params[1],Params[2]), not gGame.IsMultiPlayerOrSpec); //Make sound in singleplayer mode only
+      gicBuildToggleFieldPlan:   P.ToggleFieldPlan(KMPoint(Params[1],Params[2]), TKMFieldType(Params[3]), not gGameParams.IsMultiPlayerOrSpec); //Make sound in singleplayer mode only
+      gicBuildRemoveFieldPlan:   P.RemFieldPlan(KMPoint(Params[1],Params[2]), not gGameParams.IsMultiPlayerOrSpec); //Make sound in singleplayer mode only
       gicBuildRemoveHouse:       P.RemHouse(KMPoint(Params[1],Params[2]), IsSilent);
       gicBuildRemoveHousePlan:   P.RemHousePlan(KMPoint(Params[1],Params[2]));
       gicBuildHousePlan:         if P.CanAddHousePlan(KMPoint(Params[2],Params[3]), TKMHouseType(Params[1])) then
@@ -834,22 +858,22 @@ begin
                                     P.Houses.UpdateResRequest;
                                   end;
 
-      gicTempAddScout:            if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or not gGame.IsMultiPlayerOrSpec) then
+      gicTempAddScout:            if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or not gGameParams.IsMultiPlayerOrSpec) then
                                     //Place a warrior
                                     P.AddUnit(utHorseScout, KMPoint(Params[1], Params[2]), True, 0, True);
-      gicTempRevealMap:           if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or not gGame.IsMultiPlayerOrSpec) then
+      gicTempRevealMap:           if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or not gGameParams.IsMultiPlayerOrSpec) then
                                     P.FogOfWar.RevealEverything;
-      gicTempVictory:             if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or not gGame.IsMultiPlayerOrSpec) then
+      gicTempVictory:             if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or not gGameParams.IsMultiPlayerOrSpec) then
                                     P.AI.Victory;
-      gicTempDefeat:              if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or not gGame.IsMultiPlayerOrSpec) then
+      gicTempDefeat:              if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or not gGameParams.IsMultiPlayerOrSpec) then
                                     P.AI.Defeat;
       gicTempDoNothing:           ;
 
       gicGamePause:               ;//if fReplayState = gipRecording then fGame.fGamePlayInterface.SetPause(boolean(Params[1]));
       gicGameSpeed:               gGame.SetGameSpeedGIP(FloatParam, fReplayState = gipRecording);
-      gicGameAutoSave:            if (fReplayState = gipRecording) and gGameApp.GameSettings.Autosave then
+      gicGameAutoSave:            if (fReplayState = gipRecording) and gGameSettings.Autosave then
                                     gGame.AutoSave(DateTimeParam); //Timestamp is synchronised
-      gicGameAutoSaveAfterPT:     if (fReplayState = gipRecording) and gGameApp.GameSettings.Autosave then
+      gicGameAutoSaveAfterPT:     if (fReplayState = gipRecording) and gGameSettings.Autosave then
                                     gGame.AutoSaveAfterPT(DateTimeParam); //Timestamp is synchronised
       gicGameSaveReturnLobby:     if fReplayState = gipRecording then
                                   begin
@@ -869,8 +893,7 @@ begin
       gicGameHotkeySet:           P.SelectionHotkeys[Params[1]] := Params[2];
       gicGameMessageLogRead:      P.MessageLog[Params[1]].IsReadGIP := True;
       gicGamePlayerChange:        begin
-                                    Assert(fReplayState <> gipRecording); //Should only occur in replays
-                                    Assert(not gGame.IsMapEditor);
+                                    Assert(not gGameParams.IsMapEditor);
                                     gHands[Params[1]].HandType := TKMHandType(Params[2]);
                                     gHands[Params[1]].OwnerNikname := AnsiStrParam;
                                     gGame.GamePlayInterface.UpdateUI; //Update players drop list
@@ -879,6 +902,7 @@ begin
                                     gHands.UpdateGoalsForHand(Params[1], False);
                                     gHands[Params[1]].AI.Defeat(False);
                                   end;
+      gicGamePlayerAllianceSet:   gHands[Params[1]].Alliances[Params[2]] := TKMAllianceType(Params[3]);
       gicScriptConsoleCommand:    gScriptEvents.CallConsoleCommand(HandIndex, AnsiStrParam, UnicodeStrParams);
       else                        raise Exception.Create('Unexpected gic command');
     end;
@@ -906,15 +930,15 @@ begin
 
   AddBeacon := False;
 
-  case gGame.GameMode of
+  case gGameParams.GameMode of
     gmSingle,
     gmCampaign,
     gmMulti:          AddBeacon := (aCommand.Params[3] <> PLAYER_NONE) and DoAddPlayerBeacon;
     gmMultiSpectate:  AddBeacon := (aCommand.Params[3] = PLAYER_NONE) // Show spectators beacons while spectating
-                                    or (gGameApp.GameSettings.SpecShowBeacons and DoAddPlayerBeacon);
+                                    or (gGameSettings.SpecShowBeacons and DoAddPlayerBeacon);
     gmReplaySingle,
     gmReplayMulti:    AddBeacon := (aCommand.Params[3] <> PLAYER_NONE)  // Do not show spectators beacons in replay
-                                    and gGameApp.GameSettings.ReplayShowBeacons and DoAddPlayerBeacon;
+                                    and gGameSettings.ReplayShowBeacons and DoAddPlayerBeacon;
   end;
 
   if AddBeacon then
@@ -979,12 +1003,12 @@ procedure TKMGameInputProcess.CmdBuild(aCommandType: TKMGameInputCommandType; co
 begin
   Assert(aCommandType in [gicBuildRemoveFieldPlan, gicBuildRemoveHouse, gicBuildRemoveHousePlan]);
 
-  if gGame.IsReplayOrSpectate then Exit;
+  if gGameParams.IsReplayOrSpectate then Exit;
 
   //Remove fake markup that will be visible only to gMySpectator until Server verifies it.
   //Must go before TakeCommand as it could execute command immediately (in singleplayer)
   //and the fake markup must be added first otherwise our logic in FieldsList fails
-  if (gGame.GameMode = gmMulti) and (aCommandType = gicBuildRemoveFieldPlan) then
+  if gGameParams.IsMultiplayerGame and (aCommandType = gicBuildRemoveFieldPlan) then
     gMySpectator.Hand.RemFakeFieldPlan(aLoc);
 
   TakeCommand(MakeCommand(aCommandType, aLoc.X, aLoc.Y));
@@ -993,14 +1017,14 @@ end;
 
 procedure TKMGameInputProcess.CmdBuild(aCommandType: TKMGameInputCommandType; const aLoc: TKMPoint; aFieldType: TKMFieldType);
 begin
-  Assert(aCommandType in [gicBuildAddFieldPlan]);
+  Assert(aCommandType in [gicBuildToggleFieldPlan]);
 
-  if gGame.IsReplayOrSpectate then Exit;
+  if gGameParams.IsReplayOrSpectate then Exit;
 
   //Add fake markup that will be visible only to gMySpectator until Server verifies it.
   //Must go before TakeCommand as it could execute command immediately (in singleplayer)
   //and the fake markup must be added first otherwise our logic in FieldsList fails
-  if gGame.GameMode = gmMulti then
+  if gGameParams.IsMultiplayerGame then
     gMySpectator.Hand.ToggleFakeFieldPlan(aLoc, aFieldType);
 
   TakeCommand(MakeCommand(aCommandType, aLoc.X, aLoc.Y, Byte(aFieldType)));
@@ -1011,7 +1035,7 @@ procedure TKMGameInputProcess.CmdBuild(aCommandType: TKMGameInputCommandType; co
 begin
   Assert(aCommandType = gicBuildHousePlan);
 
-  if gGame.IsReplayOrSpectate then Exit;
+  if gGameParams.IsReplayOrSpectate then Exit;
 
   TakeCommand(MakeCommand(aCommandType, Byte(aHouseType), aLoc.X, aLoc.Y));
 end;
@@ -1124,6 +1148,19 @@ procedure TKMGameInputProcess.CmdGame(aCommandType: TKMGameInputCommandType; aVa
 begin
   Assert(aCommandType = gicGameSpeed);
   TakeCommand(MakeCommandNoHand(aCommandType, aValue));
+end;
+
+
+procedure TKMGameInputProcess.CmdPlayerAllianceSet(aForPlayer, aToPlayer: TKMHandID; aAllianceType: TKMAllianceType);
+begin
+  TakeCommand(MakeCommand(gicGamePlayerAllianceSet, aForPlayer, aToPlayer, Byte(aAllianceType)));
+end;
+
+
+procedure TKMGameInputProcess.CmdPlayerChanged(aPlayer: TKMHandID; aType: TKMHandType; aPlayerNikname: AnsiString);
+begin
+  Assert(ReplayState = gipRecording);
+  TakeCommand(MakeCommand(gicGamePlayerChange, aPlayerNikname, aPlayer, Byte(aType)));
 end;
 
 
@@ -1248,10 +1285,10 @@ begin
   Inc(fCount);
   if Length(fQueue) <= fCount then SetLength(fQueue, fCount + 128);
 
-  fQueue[fCount].Tick    := gGame.GameTick;
+  fQueue[fCount].Tick    := gGameParams.GameTick;
   fQueue[fCount].Command := aCommand;
   //Skip random check generation. We do not want KaMRandom to be called here
-  if SKIP_RNG_CHECKS_FOR_SOME_GIC and (aCommand.CommandType in SkipRandomChecksFor) then
+  if SKIP_RNG_CHECKS_FOR_SOME_GIC and (aCommand.CommandType in SKIP_RANDOM_CHECKS_FOR) then
     fQueue[fCount].Rand := 0
   else
     //This will be our check to ensure everything is consistent
@@ -1266,6 +1303,22 @@ end;
 
 procedure TKMGameInputProcess.RunningTimer(aTick: Cardinal);
 begin
+end;
+
+
+procedure TKMGameInputProcess.TakePlannedCommands;
+var
+  I: Integer;
+begin
+  if Self = nil then Exit;
+  if fPlannedCommands.Count = 0 then Exit;
+
+  // Take all planned commands
+  for I := 0 to fPlannedCommands.Count - 1 do
+    DoTakeCommand(fPlannedCommands[I]);
+
+  // And clear
+  fPlannedCommands.Clear;
 end;
 
 
@@ -1341,14 +1394,14 @@ begin
 
   W := gGame.ActiveInterface.MyControls.MasterPanel.Width;
 
-  TKMRenderUI.WriteBevel(W - textSize.X - 10, 0, textSize.X, textSize.Y + 10);
+  TKMRenderUI.WriteBevel(W - textSize.X - 10, 0, textSize.X + 10, textSize.Y + 10);
   TKMRenderUI.WriteText(W - textSize.X - 5, 0, 0, str, fntMini, taLeft, icWhite, False, False, False, TAB_WIDTH, True, True);
 end;
 
 
 class function TKMGameInputProcess.StoredGIPCommandToString(aCommand: TKMStoredGIPCommand): String;
 begin
-  Result := Format('Tick: %6d; Rand: %10d; Command: %s', [aCommand.Tick, aCommand.Rand, GIPCommandToString(aCommand.Command)]);
+  Result := Format('Tick %6d Rand %10d Cmd: %s', [aCommand.Tick, aCommand.Rand, GIPCommandToString(aCommand.Command)]);
 end;
 
 

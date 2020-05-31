@@ -14,6 +14,7 @@
 {$IFDEF VER310} {$DEFINE WDC} {$ENDIF} //Define Windows Delphi 10.1 Berlin compiler
 {$IFDEF VER320} {$DEFINE WDC} {$ENDIF} //Define Windows Delphi 10.2 Tokyo compiler
 {$IFDEF VER330} {$DEFINE WDC} {$ENDIF} //Define Windows Delphi 10.3 Rio compiler
+{$IFDEF VER340} {$DEFINE WDC} {$ENDIF} //Define Windows Delphi 10.4 Sydney compiler
 {.$DEFINE FPC} //Define Free Pascal compiler (defined automatically by Lazarus)
 
 //Lazarus compiler specific settings
@@ -31,8 +32,10 @@
 
 //Delphi compiler specific settings
 {$IFDEF WDC}
-  //Project can be compiled without madExcept features (if you dont have madExcept installed)
-  {$DEFINE USE_MAD_EXCEPT}
+  {$IFNDEF VER340} // Delphi 10.4 Rio does not have madexcept support yet
+    //Project can be compiled without madExcept features (if you dont have madExcept installed)
+    {$DEFINE USE_MAD_EXCEPT}
+  {$ENDIF}
 {$ENDIF}
 
 //Use secure authentication unit (KM_NetAuthSecure)

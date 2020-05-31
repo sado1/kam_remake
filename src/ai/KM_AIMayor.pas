@@ -965,7 +965,7 @@ procedure TKMayor.CheckAutoRepair;
 var I: Integer;
 begin
   with gHands[fOwner] do
-    if HandType = hndComputer then
+    if IsComputer then
       for I := 0 to Houses.Count - 1 do
         Houses[I].BuildingRepair := fSetup.AutoRepair;
 end;
@@ -980,7 +980,7 @@ end;
 procedure TKMayor.UpdateState(aTick: Cardinal);
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psAICityCls, aTick);
+  gPerfLogs.SectionEnter(psAICityCls);
   {$ENDIF}
   try
     //Checking mod result against MAX_HANDS causes first update to happen ASAP

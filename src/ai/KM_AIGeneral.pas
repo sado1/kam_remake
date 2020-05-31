@@ -50,7 +50,7 @@ type
 implementation
 uses
   Classes, Math,
-  KM_Game, KM_Hand, KM_HandsCollection, KM_Terrain, KM_AIFields,
+  KM_Game, KM_GameParams, KM_Hand, KM_HandsCollection, KM_Terrain, KM_AIFields,
   KM_Houses, KM_HouseBarracks,
   KM_ResHouses, KM_CommonUtils, KM_DevPerfLog, KM_DevPerfLogTypes;
 
@@ -269,9 +269,9 @@ begin
           Dec(GroupReq[GT]);
           //Only reset it when we actually trained something (in IronThenLeather mode we don't count them separately)
           if (UT in WARRIORS_IRON) or (fSetup.ArmyType = atIronThenLeather) then
-            fLastEquippedTimeIron := gGame.GameTick;
+            fLastEquippedTimeIron := gGameParams.GameTick;
           if not (UT in WARRIORS_IRON) or (fSetup.ArmyType = atIronThenLeather) then
-            fLastEquippedTimeLeather := gGame.GameTick;
+            fLastEquippedTimeLeather := gGameParams.GameTick;
         end;
     end;
   end;
@@ -402,7 +402,7 @@ begin
 
     //Now process AI attacks (we have compiled a list of warriors available to attack)
     for I := 0 to Attacks.Count - 1 do
-    if Attacks.CanOccur(I, MenAvailable, GroupsAvailable, gGame.GameTick) then //Check conditions are right
+    if Attacks.CanOccur(I, MenAvailable, GroupsAvailable, gGameParams.GameTick) then //Check conditions are right
     begin
       AttackLaunched := True;
       //Order groups to attack
@@ -697,7 +697,7 @@ var
   I: Integer;
   Group: TKMUnitGroup;
 begin
-  if gHands[fOwner].HandType = hndHuman then Exit;
+  if gHands[fOwner].IsHuman then Exit;
 
   //Attacker may be already dying (e.g. killed by script)
   //We could retaliate against his whole group however
@@ -752,7 +752,7 @@ end;
 procedure TKMGeneral.UpdateState(aTick: Cardinal);
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psAIArmyCls, aTick);
+  gPerfLogs.SectionEnter(psAIArmyCls);
   {$ENDIF}
   try
     //Update defence positions locations

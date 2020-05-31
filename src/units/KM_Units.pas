@@ -343,7 +343,7 @@ const
 implementation
 uses
   TypInfo,
-  KM_Game, KM_GameApp, KM_RenderPool, KM_RenderAux, KM_ResTexts,
+  KM_Game, KM_GameParams, KM_RenderPool, KM_RenderAux, KM_ResTexts,
   KM_HandsCollection, KM_UnitWarrior, KM_Resource, KM_ResUnits,
   KM_Hand, KM_MapEditorHistory,
 
@@ -1073,14 +1073,14 @@ begin
   YPaintPos := V.PosF.Y + UNIT_OFF_Y + V.SlideY;
 
   //Make fish/watersnakes more visible in the MapEd
-  if (gGame.GameMode = gmMapEd) and (fType in [utFish, utWatersnake, utSeastar]) then
+  if (gGameParams.GameMode = gmMapEd) and (fType in [utFish, utWatersnake, utSeastar]) then
     gRenderAux.Circle(fPositionF.X - 0.5,
                       gTerrain.FlatToHeight(fPositionF.X - 0.5, fPositionF.Y - 0.5),
                       0.5, $30FF8000, $60FF8000);
 
   //Animals share the same WalkTo logic as other units and they exchange places if necessary
   //Animals can be picked only in MapEd
-  gRenderPool.AddUnit(fType, fUID * Byte(gGame.IsMapEditor), Act, V.Dir, V.AnimStep, XPaintPos, YPaintPos, $FFFFFFFF, True);
+  gRenderPool.AddUnit(fType, fUID * Byte(gGameParams.IsMapEditor), Act, V.Dir, V.AnimStep, XPaintPos, YPaintPos, $FFFFFFFF, True);
 end;
 
 
@@ -1111,7 +1111,7 @@ begin
 
   //Units start with a random amount of condition ranging from 0.5 to 0.7 (KaM uses 0.6 for all units)
   //By adding the random amount they won't all go eat at the same time and cause crowding, blockages, food shortages and other problems.
-  if (gGame <> nil) and (gGame.GameMode <> gmMapEd) then
+  if (gGameParams <> nil) and not gGameParams.IsMapEditor then
     fCondition    := Round(UNIT_MAX_CONDITION * (UNIT_CONDITION_BASE + KaMRandomS2(UNIT_CONDITION_RANDOM, 'TKMUnit.Create')))
   else begin
     fCondition    := GetDefaultCondition;
@@ -1458,7 +1458,7 @@ procedure TKMUnit.OwnerUpdate(aOwner: TKMHandID; aMoveToNewOwner: Boolean = Fals
 begin
   if aMoveToNewOwner and (fOwner <> aOwner) then
   begin
-    Assert(gGame.GameMode = gmMapEd); // Allow to move existing Unit directly only in MapEd
+    Assert(gGameParams.GameMode = gmMapEd); // Allow to move existing Unit directly only in MapEd
     gHands[fOwner].Units.DeleteUnitFromList(Self);
     gHands[aOwner].Units.AddUnitToList(Self);
   end;
@@ -1471,7 +1471,7 @@ var
   newPos: Boolean;
 begin
   //This is only used by the map editor, set all positions to aPos
-  Assert(gGame.IsMapEditor);
+  Assert(gGameParams.IsMapEditor);
   if not gTerrain.CanPlaceUnit(aPos, UnitType) then Exit;
 
   newPos := fCurrPosition <> aPos;
@@ -2376,7 +2376,7 @@ begin
     Kill(PLAYER_NONE, True, False);
 
   //We only need to update fog of war regularly if we're using dynamic fog of war, otherwise only update it when the unit moves
-  if gGameApp.DynamicFOWEnabled and (fTicker mod FOW_PACE = 0) then
+  if gGameParams.DynamicFOW and (fTicker mod FOW_PACE = 0) then
     gHands.RevealForTeam(fOwner, fCurrPosition, gRes.Units[fType].Sight, FOG_OF_WAR_INC);
 
   UpdateThoughts;

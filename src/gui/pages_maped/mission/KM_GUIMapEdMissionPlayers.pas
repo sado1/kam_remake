@@ -14,7 +14,6 @@ type
 
     procedure Mission_PlayerTypesChange(Sender: TObject);
     procedure Mission_PlayerTypesAllClick(Sender: TObject);
-    procedure Mission_PlayerTypesUpdate;
     procedure Mission_PlayerIdUpdate;
     procedure PlayerDelete_Click(Sender: TObject);
     procedure ClosePlayerTypes_Click(Sender: TObject);
@@ -41,6 +40,7 @@ type
     function Visible: Boolean;
     procedure Hide;
 
+    procedure UpdatePlayerTypes;
     procedure UpdatePlayer(aIndex: TKMHandID = -1);
   end;
 
@@ -149,7 +149,7 @@ begin
 end;
 
 
-procedure TKMMapEdMissionPlayers.Mission_PlayerTypesUpdate;
+procedure TKMMapEdMissionPlayers.UpdatePlayerTypes;
 var
   I, K: Integer;
   EnabledCnt, CheckedCnt: array [0..2] of Integer;
@@ -273,7 +273,7 @@ begin
     PlayerDeleteConfirm(False);
 
     Mission_PlayerIdUpdate;
-    Mission_PlayerTypesUpdate;
+    UpdatePlayerTypes;
   end;
 end;
 
@@ -346,7 +346,7 @@ begin
     end;
   end;
 
-  Mission_PlayerTypesUpdate;
+  UpdatePlayerTypes;
 end;
 
 
@@ -398,7 +398,7 @@ begin
     end;
   end;
 
-  Mission_PlayerTypesUpdate;
+  UpdatePlayerTypes;
 end;
 
 procedure TKMMapEdMissionPlayers.Mission_PlayerIdUpdate;
@@ -432,7 +432,7 @@ end;
 
 procedure TKMMapEdMissionPlayers.Show;
 begin
-  Mission_PlayerTypesUpdate;
+  UpdatePlayerTypes;
   Mission_PlayerIdUpdate;
   Panel_PlayerTypes.Show;
 end;

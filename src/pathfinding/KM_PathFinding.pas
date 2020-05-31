@@ -83,7 +83,7 @@ type
 
 implementation
 uses
-  KM_Units, KM_Game, KM_DevPerfLog, KM_DevPerfLogTypes;
+  KM_Units, KM_DevPerfLog, KM_DevPerfLogTypes;
 
 
 { TPathFinding }
@@ -121,7 +121,7 @@ function TPathFinding.Route_Make(const aLocA, aLocB: TKMPoint; aPass: TKMTerrain
                                  aTargetHouse: TKMHouse; NodeList: TKMPointList; aAvoidLocked: TKMPathAvoidLocked = palNoAvoid): Boolean;
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psPathfinding, gGame.GameTick);
+  gPerfLogs.SectionEnter(psPathfinding);
   {$ENDIF}
   try
     Result := False;
@@ -175,7 +175,7 @@ end;
 function TPathFinding.Route_MakeAvoid(const aLocA, aLocB: TKMPoint; aPass: TKMTerrainPassabilitySet; aDistance: Single; aTargetHouse: TKMHouse; NodeList: TKMPointList): Boolean;
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psPathfinding, gGame.GameTick);
+  gPerfLogs.SectionEnter(psPathfinding);
   {$ENDIF}
   try
     Result := False;
@@ -211,7 +211,7 @@ function TPathFinding.Route_ReturnToWalkable(const aLocA, aLocB: TKMPoint; aTarg
                                              aTargetNetwork: Byte; aPass: TKMTerrainPassabilitySet; NodeList: TKMPointList): Boolean;
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psPathfinding, gGame.GameTick);
+  gPerfLogs.SectionEnter(psPathfinding);
   {$ENDIF}
   try
     Result := False;
@@ -524,7 +524,7 @@ var
   I: Integer;
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psPathfinding, gGame.GameTick);
+  gPerfLogs.SectionEnter(psPathfinding);
   {$ENDIF}
   try
     if CACHE_PATHFINDING then

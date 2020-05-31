@@ -9,6 +9,14 @@ type
 
 type
   //Records must be packed so they are stored identically in MP saves (padding bytes are unknown values)
+  TKMPointF = record
+    X,Y: Single;
+    class operator Equal(const A, B: TKMPointF): Boolean;
+    class operator NotEqual(A: TKMPointF; B: TKMPointF): Boolean;
+    function ToString: String;
+    constructor New(aX, aY: Single);
+  end;
+
   TKMPoint = record
     X,Y: Integer;
 
@@ -18,14 +26,8 @@ type
     class operator NotEqual(const A, B: TKMPoint): Boolean;
     class operator Add(const A, B: TKMPoint): TKMPoint;
     class function New(aX, aY: Integer): TKMPoint; static;
-  end;
-
-  TKMPointF = record
-    X,Y: Single;
-    class operator Equal(const A, B: TKMPointF): Boolean;
-    class operator NotEqual(A: TKMPointF; B: TKMPointF): Boolean;
-    function ToString: String;
-    constructor New(aX, aY: Single);
+    function Compare(const aPoint: TKMPoint): Integer;
+    function ToFloat: TKMPointF;
   end;
 
   TKMPointDir = packed record
@@ -219,13 +221,19 @@ const
 
 implementation
 uses
-  SysUtils, TypInfo, Math, KM_CommonUtils;
+  SysUtils, TypInfo, Math, KM_Defaults, KM_CommonUtils;
 
 
 class function TKMPoint.New(aX, aY: Integer): TKMPoint;
 begin
   Result.X := aX;
   Result.Y := aY;
+end;
+
+
+function TKMPoint.Compare(const aPoint: TKMPoint): Integer;
+begin
+  Result := (Y - aPoint.Y) * MAX_MAP_SIZE + (X - aPoint.X);
 end;
 
 
@@ -244,6 +252,12 @@ end;
 class operator TKMPoint.Add(const A, B: TKMPoint): TKMPoint;
 begin
   Result := KMPoint(A.X + B.X,A.Y + B.Y);
+end;
+
+
+function TKMPoint.ToFloat: TKMPointF;
+begin
+  Result := KMPointF(X, Y);
 end;
 
 

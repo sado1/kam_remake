@@ -4,7 +4,7 @@ interface
 uses
   {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
   Classes, Graphics, Math, SysUtils, Generics.Collections,
-  KM_CommonTypes, KM_Defaults, KM_Pics, KM_PNG, KM_Render, KM_ResTexts, KM_ResTileset, KM_ResHouses
+  KM_CommonTypes, KM_Defaults, KM_Pics, KM_PNG, KM_RenderTypes, KM_ResTexts, KM_ResTileset, KM_ResHouses
   {$IFDEF FPC}, zstream {$ENDIF}
   {$IFDEF WDC}, ZLib {$ENDIF};
 
@@ -135,7 +135,7 @@ type
     procedure LoadGameResources(aAlphaShadows: Boolean; aForceReload: Boolean = False);
     procedure ClearTemp;
     procedure ClearGameResGenTemp;
-    class procedure SetMaxAtlasSize(aMaxSupportedTxSize: Integer);
+
     class function AllTilesOnOneAtlas: Boolean;
 
     procedure GenerateTerrainTransitions(aSprites: TKMSpritePack; aLegacyGeneration: Boolean = False);
@@ -202,10 +202,10 @@ implementation
 uses
   KromUtils,
   {$IFDEF LOAD_GAME_RES_ASYNC}
-  KM_GameApp,
+
   {$ENDIF}
-  KM_SoftShadows, KM_Resource, KM_ResUnits,
-  KM_Log, KM_BinPacking, KM_CommonUtils, KM_Points;
+  KM_SoftShadows, KM_Resource, KM_ResUnits, KM_Render,
+  KM_Log, KM_BinPacking, KM_CommonUtils, KM_Points, KM_Settings;
 
 type
   TSpriteAtlasType = (saBase, saMask);
@@ -217,7 +217,6 @@ const
 
 var
   AllTilesInOneTexture: Boolean = False;
-  MaxAtlasSize: Integer;
 
   gGFXPrepData: array[TSpriteAtlasType] of  // for each atlas type
                   array of                  // Atlases for each rxx
@@ -226,6 +225,12 @@ var
                       TexType: TTexFormat;
                       Data: TKMCardinalArray;
                     end;
+
+
+function GetMaxAtlasSize: Integer;
+begin
+  Result := Min(TRender.MaxTextureSize, MAX_GAME_ATLAS_SIZE);
+end;
 
 
 { TKMSpritePack }
@@ -1059,11 +1064,11 @@ begin
   else if fRT = rxTiles then
   begin
     AllTilesAtlasSize := MakePOT(Ceil(sqrt(K))*(32+2*fPad)); //Tiles are 32x32
-    AtlasSize := Min(MaxAtlasSize, AllTilesAtlasSize);       //Use smallest possible atlas size for tiles (should be 1024, until many new tiles were added)
+    AtlasSize := Min(GetMaxAtlasSize, AllTilesAtlasSize);       //Use smallest possible atlas size for tiles (should be 1024, until many new tiles were added)
     if AtlasSize = AllTilesAtlasSize then
       AllTilesInOneTexture := True;
   end else
-    AtlasSize := MaxAtlasSize;
+    AtlasSize := GetMaxAtlasSize;
 
   SetLength(SpriteInfo, 0);
   BinPack(SpriteSizes, AtlasSize, fPad, SpriteInfo);
@@ -1465,7 +1470,7 @@ begin
   //Remember which version we load, so if it changes inbetween games we reload it
   fAlphaShadows := aAlphaShadows;
   {$IFDEF LOAD_GAME_RES_ASYNC}
-  if gGameApp.GameSettings.AsyncGameResLoad then
+  if gGameSettings.AsyncGameResLoad then
   begin
     if fGameResLoader <> nil then
     begin
@@ -1574,18 +1579,12 @@ begin
 end;
 
 
-class procedure TKMResSprites.SetMaxAtlasSize(aMaxSupportedTxSize: Integer);
-begin
-  MaxAtlasSize := Min(aMaxSupportedTxSize, MAX_GAME_ATLAS_SIZE);
-end;
-
-
 {$IFDEF LOAD_GAME_RES_ASYNC}
 procedure TKMResSprites.ManageResLoader;
 var
   NextRXTypeI: Integer;
 begin
-  if gGameApp.GameSettings.AsyncGameResLoad
+  if gGameSettings.AsyncGameResLoad
     and (fGameResLoader <> nil)
     and fGameResLoader.LoadStepDone then
   begin

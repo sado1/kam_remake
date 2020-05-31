@@ -19,6 +19,8 @@ type
   //Collection of map editing classes and map editor specific data
   TKMMapEditor = class
   private
+    fIsNewMap: Boolean;
+    fSavedMapIsPlayable: Boolean; // Saved map is playable if there is at elast 1 enabled human loc with assets
     fTerrainPainter: TKMTerrainPainter;
     fHistory: TKMMapEditorHistory;
     fDeposits: TKMDeposits;
@@ -46,6 +48,8 @@ type
 
     function GetCheckpointObjectsStr: string;
     function GetHistory: TKMMapEditorHistory;
+
+    function MapIsPlayable: Boolean;
   public
     MissionDefSavePath: UnicodeString;
 
@@ -58,16 +62,21 @@ type
     PlayerClassicAI: array [0..MAX_HANDS - 1] of Boolean;
     PlayerAdvancedAI: array [0..MAX_HANDS - 1] of Boolean;
 
-    IsNewMap: Boolean;  // set True for new empty map
-    WasSaved: Boolean; // set True when at least 1 map save has been done
+    OnEyedropper: TIntegerEvent;
 
-    constructor Create(aTerrainPainter: TKMTerrainPainter; aOnHistoryUndoRedo, aOnHistoryAddCheckpoint: TEvent);
+    constructor Create(aNewMap: Boolean; aTerrainPainter: TKMTerrainPainter; aOnHistoryUndoRedo, aOnHistoryAddCheckpoint: TEvent);
     destructor Destroy; override;
+
+    procedure AfterCreated;
+
     property Deposits: TKMDeposits read fDeposits;
     property VisibleLayers: TKMMapEdVisibleLayerSet read fVisibleLayers write fVisibleLayers;
     property Selection: TKMSelection read fSelection;
     property Revealers[aIndex: Byte]: TKMPointTagList read GetRevealer;
     property History: TKMMapEditorHistory read GetHistory write fHistory;
+
+    property IsNewMap: Boolean read fIsNewMap;
+    property SavedMapIsPlayable: Boolean read fSavedMapIsPlayable;
 
     function OnlyAdvancedAIHand(aHandId: TKMHandID): Boolean;
 
@@ -95,8 +104,8 @@ uses
   KM_Terrain, KM_FileIO,
   KM_AIDefensePos, KM_ResTexts,
   KM_Units, KM_UnitGroup, KM_Houses, KM_HouseCollection,
-  KM_Game, KM_GameCursor, KM_ResMapElements, KM_ResHouses, KM_Resource, KM_ResUnits,
-  KM_RenderAux, KM_Hand, KM_HandsCollection, KM_InterfaceMapEditor, KM_CommonUtils, KM_RenderDebug;
+  KM_GameParams, KM_GameCursor, KM_ResMapElements, KM_ResHouses, KM_Resource, KM_ResUnits,
+  KM_RenderAux, KM_Hand, KM_HandsCollection, KM_CommonUtils, KM_RenderDebug;
 
 //defines default defence position radius for static AI 
 const
@@ -104,7 +113,7 @@ const
 
 
 { TKMMapEditor }
-constructor TKMMapEditor.Create(aTerrainPainter: TKMTerrainPainter; aOnHistoryUndoRedo, aOnHistoryAddCheckpoint: TEvent);
+constructor TKMMapEditor.Create(aNewMap: Boolean; aTerrainPainter: TKMTerrainPainter; aOnHistoryUndoRedo, aOnHistoryAddCheckpoint: TEvent);
 var
   I: Integer;
 begin
@@ -113,6 +122,7 @@ begin
   MissionDefSavePath := '';
 
   fVisibleLayers := [melDeposits];
+  fIsNewMap := aNewMap;
 
   for I := 0 to MAX_HANDS - 1 do
   begin
@@ -222,39 +232,62 @@ begin
 end;
 
 
+function TKMMapEditor.MapIsPlayable: Boolean;
+var
+  I: Integer;
+begin
+  Result := False;
+  for I := 0 to MAX_HANDS - 1 do
+    if PlayerHuman[I] and gHands[I].HasAssets then
+      Exit(True);
+end;
+
+
+procedure TKMMapEditor.AfterCreated;
+begin
+  fSavedMapIsPlayable := MapIsPlayable;
+end;
+
+
 procedure TKMMapEditor.SaveAttachements(const aMissionFile: UnicodeString);
 var
   I: Integer;
   MissionPath, MissionNewName, MissionOldName, DestPath: UnicodeString;
 begin
-  MissionPath := ExtractFilePath(aMissionFile);
-  MissionNewName := GetFileDirName(aMissionFile);
-  MissionOldName := '';
+  if not fIsNewMap then
+  begin
+    MissionPath := ExtractFilePath(aMissionFile);
+    MissionNewName := GetFileDirName(aMissionFile);
+    MissionOldName := '';
 
-  //Copy all attachments files into new folder
-  for I := 0 to High(fAttachedFiles) do
-    if FileExists(fAttachedFiles[I]) then
-    begin
-      DestPath := MissionPath + ExtractFileName(fAttachedFiles[I]);
-
-      //Get MissionOldName from first attachment file
-      if MissionOldName = '' then
-        MissionOldName := GetFileDirName(fAttachedFiles[I]);
-
-      if not SameFileName(DestPath, fAttachedFiles[I]) then
+    //Copy all attachments files into new folder
+    for I := 0 to High(fAttachedFiles) do
+      if FileExists(fAttachedFiles[I]) then
       begin
-        if FileExists(DestPath) then
-          DeleteFile(DestPath);
-        KMCopyFile(fAttachedFiles[I], DestPath);
+        DestPath := MissionPath + ExtractFileName(fAttachedFiles[I]);
+
+        //Get MissionOldName from first attachment file
+        if MissionOldName = '' then
+          MissionOldName := GetFileDirName(fAttachedFiles[I]);
+
+        if not SameFileName(DestPath, fAttachedFiles[I]) then
+        begin
+          if FileExists(DestPath) then
+            DeleteFile(DestPath);
+          KMCopyFile(fAttachedFiles[I], DestPath);
+        end;
       end;
-    end;
 
-  // Rename all files inside new saved map folder
-  KMRenameFilesInFolder(MissionPath, MissionOldName, MissionNewName);
+    // Rename all files inside new saved map folder
+    KMRenameFilesInFolder(MissionPath, MissionOldName, MissionNewName);
 
-  //Update attached files to be in the new path
-  SetLength(fAttachedFiles, 0);
-  DetectAttachedFiles(aMissionFile);
+    //Update attached files to be in the new path
+    SetLength(fAttachedFiles, 0);
+    DetectAttachedFiles(aMissionFile);
+  end;
+
+  fIsNewMap := False; //Map was saved, its not a new map anymore
+  fSavedMapIsPlayable := MapIsPlayable;
 end;
 
 
@@ -270,8 +303,8 @@ function TKMMapEditor.HitTest(X, Y: Integer): TKMMapEdMarker;
 var
   I,K: Integer;
 begin
-  if   (melDefences in gGame.MapEditor.VisibleLayers)
-    or (mlDefencesAll in gGame.VisibleLayers) then
+  if   (melDefences in fVisibleLayers)
+    or (mlDefencesAll in gGameParams.VisibleLayers) then
   begin
     for I := 0 to gHands.Count - 1 do
       for K := 0 to gHands[I].AI.General.DefencePositions.Count - 1 do
@@ -285,7 +318,7 @@ begin
         end;
   end;
 
-  if melRevealFOW in gGame.MapEditor.VisibleLayers then
+  if melRevealFOW in fVisibleLayers then
   begin
     for I := 0 to gHands.Count - 1 do
       for K := 0 to fRevealers[I].Count - 1 do
@@ -767,8 +800,10 @@ begin
                 cmMagicWater: fTerrainPainter.MagicWater(P);
                 cmEyedropper: begin
                                 fTerrainPainter.Eyedropper(P);
-                                if (gGame.ActiveInterface is TKMapEdInterface) then
-                                  TKMapEdInterface(gGame.ActiveInterface).GuiTerrain.GuiTiles.TilesTableSetTileTexId(gGameCursor.Tag1);
+
+                                if Assigned(OnEyedropper) then
+                                  OnEyedropper(gGameCursor.Tag1);
+
                                 if not (ssShift in gGameCursor.SState) then  //Holding shift allows to choose another tile
                                   gGameCursor.Mode := cmTiles;
                               end;
@@ -805,7 +840,7 @@ procedure TKMMapEditor.PaintDefences(aLayer: TKMPaintLayer);
 var
   DP: TAIDefencePosition;
 begin
-  if not (melDefences in gGame.MapEditor.VisibleLayers) then Exit;
+  if not (melDefences in fVisibleLayers) then Exit;
 
   case aLayer of
     plTerrain:  if ActiveMarker.MarkerType = mtDefence then
@@ -826,7 +861,7 @@ var
   I, K: Integer;
   Loc: TKMPoint;
 begin
-  if not (melRevealFOW in gGame.MapEditor.VisibleLayers) then Exit;
+  if not (melRevealFOW in fVisibleLayers) then Exit;
 
   for I := 0 to gHands.Count - 1 do
     for K := 0 to fRevealers[I].Count - 1 do
@@ -848,7 +883,7 @@ var
   I: Integer;
   Loc: TKMPoint;
 begin
-  if not (melCenterScreen in gGame.MapEditor.VisibleLayers) then Exit;
+  if not (melCenterScreen in fVisibleLayers) then Exit;
 
   for I := 0 to gHands.Count - 1 do
     if gHands[I].HasAssets then
@@ -869,7 +904,7 @@ var
   I: Integer;
   Loc: TKMPoint;
 begin
-  if not (melAIStart in gGame.MapEditor.VisibleLayers) then Exit;
+  if not (melAIStart in fVisibleLayers) then Exit;
 
   for I := 0 to gHands.Count - 1 do
     if gHands[I].HasAssets then
@@ -909,13 +944,13 @@ begin
   PaintCenterScreen(aLayer);
   PaintAIStart(aLayer);
 
-  if melSelection in gGame.MapEditor.VisibleLayers then
+  if melSelection in fVisibleLayers then
     fSelection.Paint(aLayer, aClipRect);
 
-  if (melMapResize in gGame.MapEditor.VisibleLayers) and not KMSameRect(ResizeMapRect, KMRECT_ZERO) then
+  if (melMapResize in fVisibleLayers) and not KMSameRect(ResizeMapRect, KMRECT_ZERO) then
     gRenderAux.RenderResizeMap(ResizeMapRect);
 
-  if melWaterFlow in gGame.MapEditor.VisibleLayers then
+  if melWaterFlow in fVisibleLayers then
   begin
     for I := aClipRect.Top to aClipRect.Bottom do
     for K := aClipRect.Left to aClipRect.Right do
@@ -942,7 +977,7 @@ end;
 
 procedure TKMMapEditor.UpdateState;
 begin
-  if melDeposits in gGame.MapEditor.VisibleLayers then
+  if melDeposits in fVisibleLayers then
     fDeposits.UpdateAreas([rdStone, rdCoal, rdIron, rdGold, rdFish]);
 
   fTerrainPainter.UpdateState;

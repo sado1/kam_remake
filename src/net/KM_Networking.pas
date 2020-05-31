@@ -245,7 +245,7 @@ implementation
 uses
   Math, StrUtils,
   KM_NetworkConsts, KM_Sound, KM_Log, KM_CommonUtils, KM_HandsCollection, KM_Hand,
-  KM_Main, KM_GameApp,
+  KM_Main, KM_GameApp, KM_Settings,
   KM_Resource, KM_ResSound, KM_ResTexts;
 
 
@@ -296,7 +296,7 @@ begin
 end;
 
 
-function TKMNetworking.MyIPString:string;
+function TKMNetworking.MyIPString: string;
 begin
   Result := fNetClient.MyIPString;
 end;
@@ -1239,8 +1239,8 @@ const
 begin
   if Assigned(OnTextMessage) then
   begin
-    if (gMain <> nil) and (gGameApp <> nil) and (gGameApp.GameSettings <> nil) then
-      if gGameApp.GameSettings.FlashOnMessage then
+    if (gMain <> nil) and (gGameApp <> nil) and (gGameSettings <> nil) then
+      if gGameSettings.FlashOnMessage then
         gMain.FlashingStart;
 
     OnTextMessage(aText);
@@ -2792,27 +2792,29 @@ end;
 
 //Get NetPlayer by hand index. If no NetPlayer found for specified aHandIndex, then nil returned
 function TKMNetworking.GetNetPlayerByHandIndex(aHandIndex: Integer): TKMNetPlayerInfo;
-var Index: Integer;
+var
+  index: Integer;
 begin
-  Index := GetNetPlayerIndex(aHandIndex);
-  if Index <> -1 then
-    Result := fNetPlayers[Index]
-  else
-    Result := nil;
+  Result := nil;
+  if Self = nil then Exit;
+
+  index := GetNetPlayerIndex(aHandIndex);
+  if index <> -1 then
+    Result := fNetPlayers[index];
 end;
 
 
 //Get NetPlayer index by hand index. If no NetPlayer found for specified aHandIndex, then -1 returned
 function TKMNetworking.GetNetPlayerIndex(aHandIndex: Integer): Integer;
-var I: Integer;
+var
+  I: Integer;
 begin
   Result := -1;
+  if Self = nil then Exit;
+
   for I := 1 to MAX_LOBBY_SLOTS do
     if aHandIndex = fNetPlayers[I].HandIndex then
-    begin
-     Result := I;
-     Exit;
-    end;
+      Exit(I);
 end;
 
 

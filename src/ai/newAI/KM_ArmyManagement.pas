@@ -67,7 +67,7 @@ type
 
 implementation
 uses
-  KM_Game, KM_Hand, KM_HandsCollection, KM_Terrain, KM_AIFields,
+  KM_Game, KM_GameParams, KM_Hand, KM_HandsCollection, KM_Terrain, KM_AIFields,
   KM_HouseBarracks, KM_Supervisor,
   KM_ResHouses, KM_CommonUtils,
   KM_AIParameters, KM_DevPerfLog, KM_DevPerfLogTypes;
@@ -272,7 +272,7 @@ begin
           begin
             Barracks[K].Equip(UT, 1);
             Dec(GroupReq[GT]);
-            pEquippedTime^ := gGame.GameTick; // Only reset it when we actually trained something (in IronThenLeather mode we don't count them separately)
+            pEquippedTime^ := gGameParams.GameTick; // Only reset it when we actually trained something (in IronThenLeather mode we don't count them separately)
           end;
         end;
       end;
@@ -570,10 +570,10 @@ begin
     with fAttackRequest do
     begin
       // Exit if AI has NOT enought soldiers in defence AND there is NOT food or there are multiple oponents
-      if (DefRatio < MIN_DEF_RATIO) AND (FoodShortage OR (BestEnemy <> WorstEnemy)) AND (gGame.MissionMode <> mmTactic) then
+      if (DefRatio < MIN_DEF_RATIO) AND (FoodShortage OR (BestEnemy <> WorstEnemy)) AND (gGameParams.MissionMode <> mmTactic) then
         Exit;
       // 1v1 or special game mode
-      if (BestEnemy = WorstEnemy) OR gGame.IsTactic then
+      if (BestEnemy = WorstEnemy) OR gGameParams.IsTactic then
         MobilizationCoef := 1
       // Else compute if it is necessary to mobilize the first defence line (or fraction)
       else
@@ -598,7 +598,7 @@ begin
     begin
       AG := GetGroups(1);
       for K := 0 to Attacks.Count - 1 do
-        if Attacks.CanOccur(K, AG.MenAvailable, AG.GroupsAvailable, gGame.GameTick) then //Check conditions are right
+        if Attacks.CanOccur(K, AG.MenAvailable, AG.GroupsAvailable, gGameParams.GameTick) then //Check conditions are right
         begin
           FilterGroups(Attacks[K].TotalMen, Attacks[K].GroupAmounts, AG);
           if FindScriptedTarget(AG.GroupArr[0], Attacks[K].Target, Attacks[K].CustomPosition, TargetPoint) then
@@ -630,7 +630,7 @@ end;
 procedure TKMArmyManagement.UpdateState(aTick: Cardinal);
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psAIArmyAdv, aTick);
+  gPerfLogs.SectionEnter(psAIArmyAdv);
   {$ENDIF}
   try
     if (aTick mod MAX_HANDS = fOwner) then

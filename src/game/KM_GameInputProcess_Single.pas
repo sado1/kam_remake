@@ -8,7 +8,7 @@ uses
 type
   TKMGameInputProcess_Single = class(TKMGameInputProcess)
   protected
-    procedure TakeCommand(const aCommand: TKMGameInputCommand); override;
+    procedure DoTakeCommand(const aCommand: TKMGameInputCommand); override;
     procedure SaveExtra(SaveStream: TKMemoryStream); override;
     procedure LoadExtra(LoadStream: TKMemoryStream); override;
   public
@@ -19,12 +19,12 @@ type
 
 implementation
 uses
-  Math, KM_Game, KM_Defaults, KM_CommonUtils;
+  Math, KM_Game, KM_GameParams, KM_Defaults, KM_CommonUtils;
 
 
-procedure TKMGameInputProcess_Single.TakeCommand(const aCommand: TKMGameInputCommand);
+procedure TKMGameInputProcess_Single.DoTakeCommand(const aCommand: TKMGameInputCommand);
 begin
-  if gGame.IsReplay then Exit;
+  if gGameParams.IsReplay then Exit;
 
   StoreCommand(aCommand); //Store the command for the replay (store it first in case Exec crashes and we want to debug it)
   ExecCommand(aCommand);  //Execute the command now
@@ -48,7 +48,7 @@ begin
     begin
       //Call to KaMRandom, just like in StoreCommand
       //We did not generate random checks for those commands
-      if SKIP_RNG_CHECKS_FOR_SOME_GIC and (fQueue[fCursor].Command.CommandType in SkipRandomChecksFor) then
+      if SKIP_RNG_CHECKS_FOR_SOME_GIC and (fQueue[fCursor].Command.CommandType in SKIP_RANDOM_CHECKS_FOR) then
         MyRand := 0
       else
         MyRand := Cardinal(KaMRandom(MaxInt, 'TKMGameInputProcess_Single.ReplayTimer 2'));

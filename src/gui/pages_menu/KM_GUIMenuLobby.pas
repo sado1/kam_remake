@@ -217,7 +217,7 @@ var
 
 implementation
 uses
-  KM_Log, KM_CommonTypes, KM_ResLocales, KM_CommonUtils, KM_Sound, KM_ResSound, KM_RenderUI,
+  KM_Log, KM_CommonTypes, KM_Settings, KM_ResLocales, KM_CommonUtils, KM_Sound, KM_ResSound, KM_RenderUI,
   KM_Resource, KM_ResFonts, KM_NetPlayersList, KM_GameApp, KM_Points, KM_MapTypes; //RMG
 
 const
@@ -910,7 +910,7 @@ begin
   fNetworking.OnSetPassword := Lobby_OnSetPassword;
   fNetworking.OnAbortAllTransfers := Lobby_AbortAllTransfers;
 
-  Radio_MapType.ItemIndex := gGameApp.GameSettings.MenuLobbyMapType;
+  Radio_MapType.ItemIndex := gGameSettings.MenuLobbyMapType;
   UpdateMapList(aKind = lpkHost);
 
   //Hide RMG settings PopUp in case it was shown previosly
@@ -2051,7 +2051,7 @@ var
 begin
   RMG := Radio_MapType.ItemIndex = 5; //RMG
   UpdateMapList(fNetworking.IsHost);
-  gGameApp.GameSettings.MenuLobbyMapType := Radio_MapType.ItemIndex;
+  gGameSettings.MenuLobbyMapType := Radio_MapType.ItemIndex;
   if not RMG then //RMG
     fNetworking.SelectNoMap('');
 end;
@@ -2109,7 +2109,7 @@ begin
 //    SetLength(MapsCRCArray, fMapsMP.Count);
 //    for I := 0 to fMapsMP.Count - 1 do
 //      MapsCRCArray[I] := fMapsMP[I].CRC;
-//    gGameApp.GameSettings.FavouriteMaps.RemoveMissing(MapsCRCArray);
+//    gGameSettings.FavouriteMaps.RemoveMissing(MapsCRCArray);
 //  end;
 end;
 
@@ -2392,11 +2392,11 @@ begin
       fMapsMP[I].IsFavourite := not fMapsMP[I].IsFavourite;
       if fMapsMP[I].IsFavourite then
       begin
-        gGameApp.GameSettings.FavouriteMaps.Add(fMapsMP[I].MapAndDatCRC);
-        gGameApp.GameSettings.ServerMapsRoster.Add(fMapsMP[I].CRC);
+        gGameSettings.FavouriteMaps.Add(fMapsMP[I].MapAndDatCRC);
+        gGameSettings.ServerMapsRoster.Add(fMapsMP[I].CRC);
       end else begin
-        gGameApp.GameSettings.FavouriteMaps.Remove(fMapsMP[I].MapAndDatCRC);
-        gGameApp.GameSettings.ServerMapsRoster.Remove(fMapsMP[I].CRC);
+        gGameSettings.FavouriteMaps.Remove(fMapsMP[I].MapAndDatCRC);
+        gGameSettings.ServerMapsRoster.Remove(fMapsMP[I].CRC);
       end;
 
       //Update pic
@@ -2905,7 +2905,7 @@ begin
   end;
 
   if Sender = Button_SettingsUseLastPassword then
-    Edit_Password.Text := gGameApp.GameSettings.LastPassword;
+    Edit_Password.Text := gGameSettings.LastPassword;
 
   if Sender = Button_SettingsCancel then
   begin
@@ -2918,7 +2918,7 @@ begin
     fNetworking.Description := Edit_Description.Text;
     fNetworking.SetPassword(AnsiString(Edit_Password.Text));
     if Checkbox_RememberPassword.Checked then
-      gGameApp.GameSettings.LastPassword := UnicodeString(fNetworking.Password);
+      gGameSettings.LastPassword := UnicodeString(fNetworking.Password);
   end;
 end;
 

@@ -994,19 +994,9 @@ begin
 
   case J of
     3:      Exit;
-    4:      begin
-              Result := mt_4Square;
-              Exit;
-            end
+    4:      Exit(mt_4Square);
     else    raise Exception.Create('Wrong number of corners with different TerKind: ' + IntToStr(J));
   end;
-
-
-  aLayerOrder[0].TerKind := A;
-  aLayerOrder[0].Rotation := 0;
-  aLayerOrder[0].SetCorners([0,1,2,3]);
-
-  Result := mtNone;
 end;
 
 

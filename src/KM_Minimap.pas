@@ -57,7 +57,7 @@ type
 implementation
 uses
   SysUtils, KromUtils, Math,
-  KM_Game, KM_Render,
+  KM_Game, KM_GameParams, KM_Render, KM_RenderTypes,
   KM_Units, KM_UnitGroup, KM_Hand, KM_HandsCollection,
   KM_Resource, KM_ResUnits, KM_CommonUtils,
   KM_DevPerfLog, KM_DevPerfLogTypes;
@@ -292,7 +292,7 @@ begin
       end;
 
   //Draw 'Resize map' feature on minimap
-  if (gGame <> nil) and gGame.IsMapEditor
+  if (gGame <> nil) and gGameParams.IsMapEditor
     and (melMapResize in gGame.MapEditor.VisibleLayers)
     and not KMSameRect(gGame.MapEditor.ResizeMapRect, KMRECT_ZERO) then
     for I := 0 to fMapY - 1 do

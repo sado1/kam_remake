@@ -56,7 +56,7 @@ type
 
 implementation
 uses
-  KM_Game, KM_GameCursor, KM_HandsCollection,
+  KM_GameParams, KM_GameCursor, KM_HandsCollection,
   KM_Units, KM_UnitGroup, KM_UnitWarrior, KM_Houses,
   KM_Utils, KM_CommonUtils,
   KM_GameTypes;
@@ -92,7 +92,7 @@ end;
 procedure TKMSpectator.UpdateFogOfWarIndex;
 begin
   //fGame = nil in Tests
-  if (gGame <> nil) and (gGame.GameMode in [gmMultiSpectate, gmMapEd, gmReplaySingle, gmReplayMulti]) then
+  if (gGameParams <> nil) and (gGameParams.GameMode in [gmMultiSpectate, gmMapEd, gmReplaySingle, gmReplayMulti]) then
     if FOWIndex = -1 then
       fFogOfWar := fFogOfWarOpen
     else
@@ -210,7 +210,7 @@ begin
 
   if Result is TKMUnitWarrior then
   begin
-    if gGame.GameMode in [gmMultiSpectate, gmMapEd, gmReplaySingle, gmReplayMulti]  then
+    if gGameParams.GameMode in [gmMultiSpectate, gmMapEd, gmReplaySingle, gmReplayMulti]  then
       G := gHands.GetGroupByMember(TKMUnitWarrior(Result))
     else
       G := gHands[fHandIndex].UnitGroups.GetGroupByMember(TKMUnitWarrior(Result));
@@ -238,7 +238,7 @@ procedure TKMSpectator.UpdateNewSelected(var aNewSelected: TObject; aAllowSelect
 var
   OwnerIndex: TKMHandID;
 begin
-  if gGame.GameMode in [gmMultiSpectate, gmMapEd, gmReplaySingle, gmReplayMulti] then
+  if gGameParams.GameMode in [gmMultiSpectate, gmMapEd, gmReplaySingle, gmReplayMulti] then
     Exit;
 
   OwnerIndex := GetGameObjectOwnerIndex(aNewSelected);
@@ -315,7 +315,7 @@ begin
   end;
 
   // In a replay we want in-game statistics (and other things) to be shown for the owner of the last select object
-  if gGame.GameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti] then
+  if gGameParams.IsReplayOrSpectate then
   begin
     UID := UID_NONE;
     if Selected is TKMHouse then
@@ -358,10 +358,10 @@ end;
 
 procedure TKMSpectator.SetHandIndex(const Value: TKMHandID);
 begin
-  Assert(MULTIPLAYER_CHEATS or (gGame.GameMode <> gmMulti));
+  Assert(MULTIPLAYER_CHEATS or (gGameParams.GameMode <> gmMulti));
   fHandIndex := Value;
 
-  if not (gGame.GameMode in [gmMultiSpectate, gmMapEd, gmReplaySingle, gmReplayMulti]) then
+  if not (gGameParams.GameMode in [gmMultiSpectate, gmMapEd, gmReplaySingle, gmReplayMulti]) then
     Selected := nil;
 
   UpdateFogOfWarIndex;

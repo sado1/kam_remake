@@ -3,7 +3,7 @@ unit KM_FormMain;
 interface
 uses
   Classes, ComCtrls, Controls, Buttons, Dialogs, ExtCtrls, Forms, Graphics, Math, Menus, StdCtrls, SysUtils, StrUtils,
-  KM_RenderControl, KM_Settings, KM_Video, KM_CommonTypes,
+  KM_RenderControl, KM_Settings, KM_CommonTypes,
 
   {$IFDEF FPC} LResources, {$ENDIF}
   {$IFDEF MSWindows} ShellAPI, Windows, Messages, Vcl.Samples.Spin; {$ENDIF}
@@ -298,7 +298,7 @@ uses
   KM_Resource,
 
   KM_ResTexts,
-  KM_GameApp,
+  KM_GameApp, KM_GameParams,
   KM_HandsCollection,
   KM_ResSound,
   KM_Pics,
@@ -306,7 +306,7 @@ uses
   KM_Hand,
   KM_ResKeys, KM_FormLogistics, KM_Game,
   KM_RandomChecks,
-  KM_Log, KM_CommonClasses, KM_Helpers;
+  KM_Log, KM_CommonClasses, KM_Helpers, KM_Video;
 
 
 //Remove VCL panel and use flicker-free TMyPanel instead
@@ -371,7 +371,7 @@ begin
 
   Application.ProcessMessages;
 
-  if not fStartVideoPlayed and (gGameApp.GameSettings <> nil) and gGameApp.GameSettings.VideoStartup then
+  if not fStartVideoPlayed and (gGameSettings <> nil) and gGameSettings.VideoStartup then
   begin
     gVideoPlayer.AddVideo('Campaigns' + PathDelim + 'The Shattered Kingdom' + PathDelim + 'Logo', vfkStarting);
     gVideoPlayer.AddVideo('KaM', vfkStarting);
@@ -435,14 +435,14 @@ end;
 
 procedure TFormMain.ReloadLibxClick(Sender: TObject);
 begin
-  gRes.LoadLocaleAndFonts(gGameApp.GameSettings.Locale, gGameApp.GameSettings.LoadFullFonts);
+  gRes.LoadLocaleAndFonts(gGameSettings.Locale, gGameSettings.LoadFullFonts);
 end;
 
 
 procedure TFormMain.ReloadSettingsClick(Sender: TObject);
 begin
   gMain.Settings.ReloadSettings;
-  gGameApp.GameSettings.ReloadSettings;
+  gGameSettings.ReloadSettings;
 end;
 
 
@@ -543,7 +543,7 @@ procedure TFormMain.SaveEditableMission1Click(Sender: TObject);
 begin
   if gGameApp.Game = nil then Exit;
 
-  if not gGameApp.Game.IsMapEditor then Exit;
+  if not gGameApp.Game.Params.IsMapEditor then Exit;
 
   if RunSaveDialog(SaveDialog1, gGameApp.Game.MapEditor.MissionDefSavePath, ExtractFileDir(gGameApp.Game.MapEditor.MissionDefSavePath), 'Knights & Merchants Mission (*.dat)|*.dat') then
     gGameApp.SaveMapEditor(SaveDialog1.FileName);
@@ -615,7 +615,8 @@ end;
 
 procedure TFormMain.Export_ScriptDataClick(Sender: TObject);
 begin
-  if (gGame <> nil)
+  if    (gGameApp <> nil)
+    and (gGameApp.Game <> nil)
     and (gGame.Scripting <> nil) then
     gGame.Scripting.ExportDataToText;
 end;
@@ -684,12 +685,12 @@ procedure TFormMain.ExportGameStatsClick(Sender: TObject);
 var
   DateS: UnicodeString;
 begin
-  if (gGame <> nil) and not gGame.IsMapEditor then
+  if (gGame <> nil) and not gGame.Params.IsMapEditor then
   begin
     gResTexts.ForceDefaultLocale := True; //Use only eng for exported csv
     DateS := FormatDateTime('yyyy-mm-dd_hh-nn', Now);
-    gHands.ExportGameStatsToCSV(ExeDir + 'Export' + PathDelim + gGame.GameName + '_' + DateS + '.csv',
-                            Format('Statistics for game at map ''%s'' on %s', [gGame.GameName, DateS]));
+    gHands.ExportGameStatsToCSV(ExeDir + 'Export' + PathDelim + gGameParams.GameName + '_' + DateS + '.csv',
+                            Format('Statistics for game at map ''%s'' on %s', [gGameParams.GameName, DateS]));
     gResTexts.ForceDefaultLocale := False;
   end;
 end;
@@ -703,11 +704,12 @@ end;
 
 
 procedure TFormMain.Export_DeliverLists1Click(Sender: TObject);
-var I: Integer;
+var
+  I: Integer;
 begin
   if gHands = nil then Exit;
   //You could possibly cheat in multiplayer by seeing what supplies your enemy has
-  if (gGameApp.Game <> nil) and (not gGameApp.Game.IsMultiPlayerOrSpec or MULTIPLAYER_CHEATS) then
+  if (gGameApp.Game <> nil) and (not gGameApp.Game.Params.IsMultiPlayerOrSpec or MULTIPLAYER_CHEATS) then
   for I := 0 to gHands.Count - 1 do
     gHands[I].Deliveries.Queue.ExportToFile(ExeDir + 'Player_' + IntToStr(I) + '_Deliver_List.txt');
 end;
@@ -716,8 +718,8 @@ end;
 procedure TFormMain.RGPlayerClick(Sender: TObject);
 begin
   if (gGameApp.Game = nil)
-    or gGameApp.Game.IsMapEditor
-    or gGameApp.Game.IsMultiPlayerOrSpec then
+    or gGameApp.Game.Params.IsMapEditor
+    or gGameApp.Game.Params.IsMultiPlayerOrSpec then
     Exit;
 
   if (gHands <> nil) and (RGPlayer.ItemIndex < gHands.Count) then
@@ -728,7 +730,7 @@ end;
 procedure TFormMain.SaveSettingsClick(Sender: TObject);
 begin
   gMain.Settings.SaveSettings(True);
-  gGameApp.GameSettings.SaveSettings(True);
+  gGameSettings.SaveSettings(True);
 end;
 
 
@@ -749,10 +751,10 @@ end;
 procedure TFormMain.chkSuperSpeedClick(Sender: TObject);
 begin
   if (gGameApp.Game = nil)
-    or (gGameApp.Game.IsMultiPlayerOrSpec
-      and not gGameApp.Game.IsMPGameSpeedChangeAllowed
+    or (gGameApp.Game.Params.IsMultiPlayerOrSpec
+      and not gGameApp.Game.CanChangeMPGameSpeed
       and not MULTIPLAYER_SPEEDUP
-      and not gGameApp.Game.IsReplay) then
+      and not gGameApp.Game.Params.IsReplay) then
     Exit;
 
   gGameApp.Game.SetGameSpeed(IfThen(chkSuperSpeed.Checked, DEBUG_SPEEDUP_SPEED, 1), False);
@@ -764,7 +766,7 @@ end;
 procedure TFormMain.Button_StopClick(Sender: TObject);
 begin
   if gGameApp.Game <> nil then
-    if gGameApp.Game.IsMapEditor then
+    if gGameApp.Game.Params.IsMapEditor then
       gGameApp.StopGame(grMapEdEnd)
     else
       gGameApp.StopGame(grCancel);
@@ -818,8 +820,8 @@ procedure TFormMain.ControlsReset;
           TCheckBox(PanelSurface.Controls[I]).Checked :=    (PanelSurface.Controls[I] = chkBevel)
                                                          or (PanelSurface.Controls[I] = chkLogNetConnection)
                                                          or (PanelSurface.Controls[I] = chkLogSkipTempCmd)
-                                                         or ((PanelSurface.Controls[I] = chkSnowHouses) and gGameApp.GameSettings.AllowSnowHouses)
-                                                         or ((PanelSurface.Controls[I] = chkInterpolatedRender) and gGameApp.GameSettings.InterpolatedRender)
+                                                         or ((PanelSurface.Controls[I] = chkSnowHouses) and gGameSettings.AllowSnowHouses)
+                                                         or ((PanelSurface.Controls[I] = chkInterpolatedRender) and gGameSettings.InterpolatedRender)
                                                          or (PanelSurface.Controls[I] = chkShowObjects)
                                                          or (PanelSurface.Controls[I] = chkShowHouses)
                                                          or (PanelSurface.Controls[I] = chkShowUnits)
@@ -892,8 +894,8 @@ end;
 procedure TFormMain.ControlsRefill;
 begin
   {$IFDEF WDC}
-  chkSnowHouses.SetCheckedWithoutClick(gGameApp.GameSettings.AllowSnowHouses); // Snow houses checkbox could be updated before game
-  chkInterpolatedRender.SetCheckedWithoutClick(gGameApp.GameSettings.InterpolatedRender); // Snow houses checkbox could be updated before game
+  chkSnowHouses.SetCheckedWithoutClick(gGameSettings.AllowSnowHouses); // Snow houses checkbox could be updated before game
+  chkInterpolatedRender.SetCheckedWithoutClick(gGameSettings.InterpolatedRender); // Snow houses checkbox could be updated before game
   chkLoadUnsupSaves.SetCheckedWithoutClick(ALLOW_LOAD_UNSUP_VERSION_SAVE);
   chkDebugScripting.SetCheckedWithoutClick(DEBUG_SCRIPTING_EXEC);
   {$ENDIF}
@@ -918,15 +920,15 @@ begin
   chkShowRoutes.SetCheckedWithoutClick      (SHOW_UNIT_ROUTES);
   chkSelectionBuffer.SetCheckedWithoutClick (SHOW_SEL_BUFFER);
 
-  chkShowObjects.SetCheckedWithoutClick     (mlObjects            in gGame.VisibleLayers);
-  chkShowHouses.SetCheckedWithoutClick      (mlHouses             in gGame.VisibleLayers);
-  chkShowUnits.SetCheckedWithoutClick       (mlUnits              in gGame.VisibleLayers);
-  chkShowOverlays.SetCheckedWithoutClick    (mlOverlays           in gGame.VisibleLayers);
-  chkShowMiningRadius.SetCheckedWithoutClick(mlMiningRadius       in gGame.VisibleLayers);
-  chkShowTowerRadius.SetCheckedWithoutClick (mlTowersAttackRadius in gGame.VisibleLayers);
-  chkShowUnitRadius.SetCheckedWithoutClick  (mlUnitsAttackRadius  in gGame.VisibleLayers);
-  chkShowDefencePos.SetCheckedWithoutClick  (mlDefencesAll        in gGame.VisibleLayers);
-  chkShowFlatTerrain.SetCheckedWithoutClick (mlFlatTerrain        in gGame.VisibleLayers);
+  chkShowObjects.SetCheckedWithoutClick     (mlObjects            in gGameParams.VisibleLayers);
+  chkShowHouses.SetCheckedWithoutClick      (mlHouses             in gGameParams.VisibleLayers);
+  chkShowUnits.SetCheckedWithoutClick       (mlUnits              in gGameParams.VisibleLayers);
+  chkShowOverlays.SetCheckedWithoutClick    (mlOverlays           in gGameParams.VisibleLayers);
+  chkShowMiningRadius.SetCheckedWithoutClick(mlMiningRadius       in gGameParams.VisibleLayers);
+  chkShowTowerRadius.SetCheckedWithoutClick (mlTowersAttackRadius in gGameParams.VisibleLayers);
+  chkShowUnitRadius.SetCheckedWithoutClick  (mlUnitsAttackRadius  in gGameParams.VisibleLayers);
+  chkShowDefencePos.SetCheckedWithoutClick  (mlDefencesAll        in gGameParams.VisibleLayers);
+  chkShowFlatTerrain.SetCheckedWithoutClick (mlFlatTerrain        in gGameParams.VisibleLayers);
 end;
 
 
@@ -977,9 +979,9 @@ procedure TFormMain.ControlsUpdate(Sender: TObject);
     if (Sender = aCheckBox) then
     begin
       if aCheckBox.Checked then
-        gGame.VisibleLayers := gGame.VisibleLayers + [aLayer]
+        gGameParams.VisibleLayers := gGameParams.VisibleLayers + [aLayer]
       else
-        gGame.VisibleLayers := gGame.VisibleLayers - [aLayer];
+        gGameParams.VisibleLayers := gGameParams.VisibleLayers - [aLayer];
     end;
   end;
 
@@ -1044,7 +1046,6 @@ begin
       UpdateVisibleLayers(chkShowUnitRadius,    mlUnitsAttackRadius);
       UpdateVisibleLayers(chkShowDefencePos,    mlDefencesAll);
       UpdateVisibleLayers(chkShowFlatTerrain,   mlFlatTerrain);
-//      UpdateVisibleLayers(chkShowDeposits,    mlDeposits);
     chkShowTowerRadius.Tag := 5;
     end;
     {$ENDIF}
@@ -1086,8 +1087,8 @@ begin
 
   {$IFDEF WDC} //one day update .lfm for lazarus...
 //  ALLOW_SNOW_HOUSES := chkSnowHouses.Checked;
-  gGameApp.GameSettings.AllowSnowHouses := chkSnowHouses.Checked;
-  gGameApp.GameSettings.InterpolatedRender := chkInterpolatedRender.Checked;
+  gGameSettings.AllowSnowHouses := chkSnowHouses.Checked;
+  gGameSettings.InterpolatedRender := chkInterpolatedRender.Checked;
 
   ALLOW_LOAD_UNSUP_VERSION_SAVE := chkLoadUnsupSaves.Checked;
   {$ENDIF}

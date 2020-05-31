@@ -152,11 +152,11 @@ var
 
 implementation
 uses
-  KM_RenderAux, KM_HandsCollection, KM_Game, KM_GameApp, KM_Sound, KM_Resource, KM_ResUnits,
+  KM_RenderAux, KM_HandsCollection, KM_Game, KM_Settings, KM_Sound, KM_Resource, KM_ResUnits,
   KM_ResMapElements, KM_AIFields, KM_TerrainPainter, KM_GameCursor,
 
   KM_FogOfWar, KM_Hand, KM_UnitGroup, KM_CommonUtils,
-  KM_GameTypes, KM_Utils, KM_ResTileset, KM_DevPerfLog, KM_DevPerfLogTypes;
+  KM_GameParams, KM_Utils, KM_ResTileset, KM_DevPerfLog, KM_DevPerfLogTypes;
 
 
 const
@@ -306,14 +306,14 @@ begin
     // so that terrain shadows could be applied seamlessly ontop
     glDisable(GL_DEPTH_TEST);
 
-    if mlOverlays in gGame.VisibleLayers then
+    if mlOverlays in gGameParams.VisibleLayers then
     begin
       fRenderTerrain.RenderFences(gMySpectator.FogOfWar);
       fRenderTerrain.RenderPlayerPlans(fFieldsList, fHousePlansList);
 
     end;
 
-    if mlMiningRadius in gGame.VisibleLayers then
+    if mlMiningRadius in gGameParams.VisibleLayers then
       fRenderDebug.PaintMiningRadius;
 
     {$IFDEF PERFLOG}
@@ -338,7 +338,7 @@ begin
     fRenderList.SortRenderList;
     fRenderList.Render;
 
-    if mlDefencesAll in gGame.VisibleLayers then
+    if mlDefencesAll in gGameParams.VisibleLayers then
       fRenderDebug.PaintDefences;
 
     fRenderTerrain.RenderFOW(gMySpectator.FogOfWar);
@@ -365,7 +365,7 @@ begin
   if gMySpectator.Highlight is TKMHouseSketch then
     RenderHouseOutline(TKMHouseSketch(gMySpectator.Highlight));
 
-  if gGame.IsMapEditor then
+  if gGameParams.IsMapEditor then
     gGame.MapEditor.Paint(plTerrain, aRect);
 
   if gAIFields <> nil then
@@ -437,9 +437,9 @@ procedure TRenderPool.CollectTerrainObjects(const aRect: TKMRect; aAnimStep: Car
 var
   I, K: Integer;
 begin
-  if not (mlObjects in gGame.VisibleLayers) then Exit;
+  if not (mlObjects in gGameParams.VisibleLayers) then Exit;
 
-  if gGame.IsMapEditor then
+  if gGameParams.IsMapEditor then
     gGame.MapEditor.Paint(plObjects, aRect);
 
   with gTerrain do
@@ -448,7 +448,7 @@ begin
       begin
         if (Land[I, K].Obj <> 255)
         // In the map editor we shouldn't render terrain objects within the paste preview
-        and (not gGame.IsMapEditor or not (melSelection in gGame.MapEditor.VisibleLayers)
+        and (not gGameParams.IsMapEditor or not (melSelection in gGame.MapEditor.VisibleLayers)
              or not gGame.MapEditor.Selection.TileWithinPastePreview(K, I)) then
           RenderMapElement(Land[I, K].Obj, AnimStep, K, I);
       end;
@@ -463,7 +463,7 @@ begin
 
   // Tablets on house plans, for self and allies
   fTabletsList.Clear;
-  if gGame.GameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti] then
+  if gGameParams.IsReplayOrSpectate then
     if gMySpectator.FOWIndex = -1 then
       for I := 0 to gHands.Count - 1 do
         gHands[I].GetPlansTablets(fTabletsList, aRect)
@@ -556,7 +556,7 @@ begin
   begin
     // Invisible wall
     // Render as a red outline in map editor mode
-    if gGame.IsMapEditor then
+    if gGameParams.IsMapEditor then
     begin
       gRenderAux.Quad(LocX, LocY, $600000FF);
       RenderWireTile(KMPoint(LocX, LocY), $800000FF);
@@ -566,7 +566,7 @@ begin
   begin
     if gMapElements[aIndex].Anim.Count = 0 then Exit;
 
-    if gGameApp.DynamicFOWEnabled then
+    if gGameParams.DynamicFOW then
     begin
       FOW := gMySpectator.FogOfWar.CheckTileRevelation(LocX,LocY);
       if FOW <= 128 then AnimStep := 0; // Stop animation
@@ -620,7 +620,7 @@ var
 var
   FOW: Byte;
 begin
-  if gGameApp.DynamicFOWEnabled then
+  if gGameParams.DynamicFOW then
   begin
     FOW := gMySpectator.FogOfWar.CheckTileRevelation(pX, pY);
     if FOW <= 128 then AnimStep := 0; // Stop animation
@@ -651,7 +651,7 @@ begin
   R := fRXData[rxGui];
 
   CornerX := aLoc.X + R.Pivot[aId].X / CELL_SIZE_PX;
-  CornerY := gTerrain.FlatToHeight(aLoc).Y + R.Pivot[aId].Y / CELL_SIZE_PX;
+  CornerY := gTerrain.RenderFlatToHeight(aLoc).Y + R.Pivot[aId].Y / CELL_SIZE_PX;
 
   fRenderList.AddSpriteG(rxGui, aId, 0, CornerX, CornerY, aLoc.X, aLoc.Y, aFlagColor);
 end;
@@ -756,7 +756,7 @@ begin
   if (aWoodStep = 1) and (aStoneStep = 1) then
   begin
     // Snow only happens on fully built houses
-    if gGameApp.GameSettings.AllowSnowHouses
+    if gGameSettings.AllowSnowHouses
       and (aSnowStep > 0)
       and (PicSnow <> 0) then
     begin
@@ -947,7 +947,7 @@ begin
   // We don't care about off-map arrows, but still we get TKMPoint error if X/Y gets negative
   if not gTerrain.TileInMapCoords(Round(aRenderPos.X), Round(aRenderPos.Y)) then Exit;
 
-  if gGameApp.DynamicFOWEnabled then
+  if gGameParams.DynamicFOW then
   begin
     FOW := gMySpectator.FogOfWar.CheckRevelation(aRenderPos);
     if FOW <= 128 then Exit; // Don't render objects which are behind FOW
@@ -993,7 +993,7 @@ begin
   R := fRXData[rxUnits];
 
   CornerX := pX + R.Pivot[Id].X / CELL_SIZE_PX;
-  CornerY := gTerrain.FlatToHeight(pX, pY) + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX;
+  CornerY := gTerrain.RenderFlatToHeight(pX, pY) + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX;
   Ground := pY + (R.Pivot[Id0].Y + R.Size[Id0].Y) / CELL_SIZE_PX;
 
   if DoImmediateRender then
@@ -1047,7 +1047,7 @@ begin
   R := fRXData[rxUnits];
 
   CornerX := pX + (R.Pivot[Id].X + a.MoveX) / CELL_SIZE_PX;
-  CornerY := gTerrain.FlatToHeight(pX, pY) + (R.Pivot[Id].Y + R.Size[Id].Y + a.MoveY) / CELL_SIZE_PX;
+  CornerY := gTerrain.RenderFlatToHeight(pX, pY) + (R.Pivot[Id].Y + R.Size[Id].Y + a.MoveY) / CELL_SIZE_PX;
   fRenderList.AddSprite(rxUnits, Id, CornerX, CornerY);
 end;
 
@@ -1076,10 +1076,10 @@ begin
 
   // Thought bubbles are animated in reverse
   Id := ThoughtBounds[Thought, 2] + 1 -
-       (gGame.GameTick mod Word(ThoughtBounds[Thought, 2] - ThoughtBounds[Thought, 1]));
+       (gGameParams.GameTick mod Word(ThoughtBounds[Thought, 2] - ThoughtBounds[Thought, 1]));
 
   CornerX := pX + R.Pivot[Id].X / CELL_SIZE_PX;
-  CornerY := gTerrain.FlatToHeight(pX, pY) + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX - 1.5;
+  CornerY := gTerrain.RenderFlatToHeight(pX, pY) + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX - 1.5;
   fRenderList.AddSpriteG(rxUnits, Id, 0, CornerX, CornerY, pX, Ground);
 end;
 
@@ -1120,7 +1120,7 @@ begin
   if IdFlag <= 0 then Exit;
 
   FlagX := pX + (R.Pivot[IdFlag].X + FlagXOffset[UNIT_TO_GROUP_TYPE[aUnit], aDir]) / CELL_SIZE_PX - 0.5;
-  FlagY := gTerrain.FlatToHeight(pX, pY) + (R.Pivot[IdFlag].Y + FlagYOffset[UNIT_TO_GROUP_TYPE[aUnit], aDir] + R.Size[IdFlag].Y) / CELL_SIZE_PX - 2.25;
+  FlagY := gTerrain.RenderFlatToHeight(pX, pY) + (R.Pivot[IdFlag].Y + FlagYOffset[UNIT_TO_GROUP_TYPE[aUnit], aDir] + R.Size[IdFlag].Y) / CELL_SIZE_PX - 2.25;
 
   if DoImmediateRender then
     RenderSprite(rxUnits, IdFlag, FlagX, FlagY, FlagColor)
@@ -1327,7 +1327,7 @@ begin
   fHousePlansList.Clear;
 
   // Collect field plans (road, corn, wine)
-  if gGame.GameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti] then
+  if gGameParams.IsReplayOrSpectate then
   begin
     if gMySpectator.FOWIndex = -1 then
       for I := 0 to gHands.Count - 1 do
@@ -1344,7 +1344,7 @@ begin
   end;
 
   // House plans for self and allies
-  if gGame.GameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti] then
+  if gGameParams.IsReplayOrSpectate then
   begin
     if gMySpectator.FOWIndex = -1 then
       for I := 0 to gHands.Count - 1 do
@@ -1418,7 +1418,7 @@ begin
     or (gMySpectator.FogOfWar.CheckVerticeRenderRev(aLoc.X,aLoc.Y) <= FOG_OF_WAR_MIN) then Exit;
 
   pX := aLoc.X - 0.5 + fRXData[rxGui].Pivot[aId].X / CELL_SIZE_PX;
-  pY := gTerrain.FlatToHeight(aLoc.X - 0.5, aLoc.Y - 0.5) -
+  pY := gTerrain.RenderFlatToHeight(aLoc.X - 0.5, aLoc.Y - 0.5) -
         fRXData[rxGui].Pivot[aId].Y / CELL_SIZE_PX;
   RenderSprite(rxGui, aId, pX, pY, aFlagColor);
 end;
@@ -1430,7 +1430,7 @@ var
 begin
   // if not gTerrain.TileInMapCoords(aLoc.X, aLoc.Y) then Exit;
   pX := aLoc.X + fRXData[rxGui].Pivot[aId].X / CELL_SIZE_PX;
-  pY := gTerrain.FlatToHeight(aLoc.X, aLoc.Y) +
+  pY := gTerrain.RenderFlatToHeight(aLoc.X, aLoc.Y) +
         fRXData[rxGui].Pivot[aId].Y / CELL_SIZE_PX;
   RenderSprite(rxGui, aId, pX, pY, aFlagColor, False, 0, aForced);
 end;
@@ -1443,7 +1443,7 @@ var
 begin
   fMarksList.Clear;
   //Show house marks ignoring player FOW if we can see all map in replay/spec
-  ShowHMarksIgnoreFOW := gGame.IsReplayOrSpectate and (gMySpectator.FOWIndex = -1);
+  ShowHMarksIgnoreFOW := gGameParams.IsReplayOrSpectate and (gMySpectator.FOWIndex = -1);
   gMySpectator.Hand.GetHouseMarks(P, aHouseType, fMarksList, ShowHMarksIgnoreFOW);
 
   for I := 0 to fMarksList.Count - 1 do
@@ -1590,7 +1590,7 @@ begin
 
   TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
 
-  if gGame.IsMapEditor then
+  if gGameParams.IsMapEditor then
     gGame.MapEditor.Paint(plCursors, KMRect(0,0,0,0));
 
   P := gGameCursor.Cell;
@@ -1604,7 +1604,7 @@ begin
   with gTerrain do
   case gGameCursor.Mode of
     cmNone:       ;
-    cmErase:      if not gGame.IsMapEditor then
+    cmErase:      if not gGameParams.IsMapEditor then
                   begin
                     if ((gMySpectator.Hand.Constructions.FieldworksList.HasFakeField(P) <> ftNone)
                         or gMySpectator.Hand.Constructions.HousePlanList.HasPlan(P)
@@ -1618,12 +1618,12 @@ begin
                     RenderWireTile(P, icCyan) // Cyan quad
                   else
                     RenderSpriteOnTile(P, TC_BLOCK);       // Red X
-    cmField:      if (gMySpectator.Hand.CanAddFakeFieldPlan(P, ftCorn) or (gGame.IsMapEditor and gTerrain.TileIsCornField(P)))
+    cmField:      if (gMySpectator.Hand.CanAddFakeFieldPlan(P, ftCorn) or (gGameParams.IsMapEditor and gTerrain.TileIsCornField(P)))
                     and (gGameCursor.Tag1 <> Ord(cfmErase)) then
                     RenderWireTile(P, icCyan) // Cyan quad
                   else
                     RenderSpriteOnTile(P, TC_BLOCK);       // Red X
-    cmWine:       if (gMySpectator.Hand.CanAddFakeFieldPlan(P, ftWine) or (gGame.IsMapEditor and gTerrain.TileIsWineField(P)))
+    cmWine:       if (gMySpectator.Hand.CanAddFakeFieldPlan(P, ftWine) or (gGameParams.IsMapEditor and gTerrain.TileIsWineField(P)))
                     and (gGameCursor.Tag1 <> Ord(cfmErase)) then
                     RenderWireTile(P, icCyan) // Cyan quad
                   else
@@ -2042,8 +2042,8 @@ begin
     // Child ground lines are useless
     glBegin(GL_LINES);
       glColor3f(1,1,0.5);
-      glVertex2f(Sp1.Feet.X + 0.15, gTerrain.FlatToHeight(Sp1.Feet).Y);
-      glVertex2f(Sp1.Feet.X - 0.15, gTerrain.FlatToHeight(Sp1.Feet).Y);
+      glVertex2f(Sp1.Feet.X + 0.15, gTerrain.RenderFlatToHeight(Sp1.Feet).Y);
+      glVertex2f(Sp1.Feet.X - 0.15, gTerrain.RenderFlatToHeight(Sp1.Feet).Y);
     glEnd;
   end;
 end;

@@ -60,7 +60,7 @@ implementation
 uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLType, {$ENDIF}
-  KM_ResTexts, KM_Game, KM_RenderUI, KM_ResFonts, KM_InterfaceGame, KM_HandsCollection, KM_Hand;
+  KM_ResTexts, KM_Game, KM_GameParams, KM_RenderUI, KM_ResFonts, KM_InterfaceGame, KM_HandsCollection, KM_Hand;
 
 
 { TKMMapEdMissionMode }
@@ -267,7 +267,7 @@ end;
 
 procedure TKMMapEdMissionMode.Mission_ModeChange(Sender: TObject);
 begin
-  gGame.MissionMode := TKMissionMode(Radio_MissionMode.ItemIndex);
+  gGameParams.MissionMode := TKMissionMode(Radio_MissionMode.ItemIndex);
 end;
 
 
@@ -305,7 +305,7 @@ end;
 
 procedure TKMMapEdMissionMode.Mission_ModeUpdate;
 begin
-  Radio_MissionMode.ItemIndex := Byte(gGame.MissionMode);
+  Radio_MissionMode.ItemIndex := Byte(gGameParams.MissionMode);
 end;
 
 

@@ -48,7 +48,7 @@ type
 implementation
 uses
   SysUtils,
-  KM_Game, KM_HandsCollection, KM_Log, KM_Resource, KM_ResUnits, KM_UnitWarrior,
+  KM_Game, KM_GameParams, KM_HandsCollection, KM_Log, KM_Resource, KM_ResUnits, KM_UnitWarrior,
   KM_UnitActionWalkTo,
   KM_DevPerfLog, KM_DevPerfLogTypes;
 
@@ -142,7 +142,7 @@ end;
 
 procedure TKMUnitsCollection.AddUnitToList(aUnit: TKMUnit);
 begin
-  Assert(gGame.IsMapEditor); // Allow to add existing Unit directly only in MapEd
+  Assert(gGameParams.IsMapEditor); // Allow to add existing Unit directly only in MapEd
   if aUnit <> nil then
     fUnits.Add(aUnit);
 end;
@@ -160,7 +160,7 @@ var
   I: Integer;
   newMapRect: TKMRect;
 begin
-  Assert(gGame.IsMapEditor);
+  Assert(gGameParams.IsMapEditor);
   if Count <= 0 then Exit;
 
   newMapRect := KMRectGrow(gTerrain.MapRect, aInsetRect);
@@ -175,7 +175,7 @@ procedure TKMUnitsCollection.RemoveAllUnits;
 var
   I: Integer;
 begin
-  Assert(gGame.IsMapEditor);
+  Assert(gGameParams.IsMapEditor);
   if Count <= 0 then Exit;
 
   for I := 0 to Count - 1 do
@@ -186,7 +186,7 @@ end;
 
 procedure TKMUnitsCollection.DeleteUnitFromList(aUnit: TKMUnit);
 begin
-  Assert(gGame.IsMapEditor); // Allow to delete existing Unit directly only in MapEd
+  Assert(gGameParams.IsMapEditor); // Allow to delete existing Unit directly only in MapEd
   if (aUnit <> nil) then
     fUnits.Extract(aUnit);  // use Extract instead of Delete, cause Delete nils inner objects somehow
 end;
@@ -327,7 +327,7 @@ procedure TKMUnitsCollection.UpdateVisualState;
 var
   I: Integer;
 begin
-  Assert(gGame.IsMapEditor);
+  Assert(gGameParams.IsMapEditor);
 
   for I := Count - 1 downto 0 do
     if not Units[I].IsDead then
@@ -341,7 +341,7 @@ var
   I: Integer;
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psUnits, aTick);
+  gPerfLogs.SectionEnter(psUnits);
   {$ENDIF}
   try
     for I := Count - 1 downto 0 do

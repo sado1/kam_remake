@@ -40,7 +40,7 @@ type
 implementation
 uses
   Classes, SysUtils, Math, KromUtils,
-  KM_Hand, KM_Game, KM_HandsCollection,
+  KM_Hand, KM_Game, KM_GameParams, KM_HandsCollection,
   KM_UnitsCollection, KM_UnitWarrior,
   KM_HouseCollection, KM_HouseBarracks,
   KM_AI, KM_AIDefensePos,
@@ -208,7 +208,7 @@ begin
 
     ctSetTactic:        begin
                           //Default is mmNormal
-                          gGame.MissionMode := mmTactic;
+                          gGameParams.MissionMode := mmTactic;
                         end;
 
     ctSetCurrPlayer:    if InRange(P[0], 0, MAX_HANDS - 1) then
@@ -867,7 +867,7 @@ begin
   AddData('!' + COMMANDVALUES[ctSetMap] + ' "data\mission\smaps\' +
     AnsiString(ChangeFileExt(ExtractFileName(aFileName), '.map')) + '"');
 
-  if gGame.IsTactic then AddCommand(ctSetTactic, []);
+  if gGameParams.IsTactic then AddCommand(ctSetTactic, []);
   AddCommand(ctSetMaxPlayer, [gHands.Count]);
   //When removing players DefaultHuman can be left outside the valid range
   if InRange(gGame.MapEditor.DefaultHuman, 0, gHands.Count - 1) then

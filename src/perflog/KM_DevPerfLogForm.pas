@@ -9,12 +9,16 @@ type
   TFormPerfLogs = class(TForm)
     Label1: TLabel;
     cbStackedGFX: TCheckBox;
-    seFrameBudget: TSpinEdit;
+    seScale: TSpinEdit;
     Label2: TLabel;
     cbStackedCPU: TCheckBox;
     cbSmoothLines: TCheckBox;
+    sePerfLogSaveThreshold: TSpinEdit;
+    lblPerflogSaveThreshold: TLabel;
+    btnPerfLogExport: TButton;
     procedure DoChange(Sender: TObject);
-    procedure seFrameBudgetKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure DoExport(Sender: TObject);
+    procedure seScaleKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     fPerfLogs: TKMPerfLogs;
     fControlsCreated: Boolean;
@@ -33,23 +37,23 @@ implementation
 uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
-  Math;
+  Math, KM_Defaults;
 
 
 { TFormPerfLogs }
-procedure TFormPerfLogs.seFrameBudgetKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+procedure TFormPerfLogs.seScaleKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if Key = VK_PRIOR then
-    seFrameBudget.Value := seFrameBudget.Value + 10
+    seScale.Value := seScale.Value + 10
   else
   if Key = VK_NEXT then
-    seFrameBudget.Value := seFrameBudget.Value - 10
+    seScale.Value := seScale.Value - 10
 end;
 
 
 function TFormPerfLogs.FormHeight: Integer;
 begin
-  Result := CheckBoxes[High(TPerfSectionDev), 0].Top + CheckBoxes[High(TPerfSectionDev), 0].Height + 25;
+  Result := btnPerfLogExport.Top + btnPerfLogExport.Height + 25;
 end;
 
 
@@ -61,6 +65,7 @@ var
   PS: TPerfSectionDev;
   lbl: TLabel;
   shp: TShape;
+  bottom: Integer;
 begin
   fPerfLogs := aPerfLogs;
 
@@ -142,12 +147,27 @@ begin
     end;
     fUpdating := False;
 
-    seFrameBudget.Value := fPerfLogs.Scale;
+    seScale.Value := fPerfLogs.Scale;
 
     fControlsCreated := True;
+
+    bottom := CheckBoxes[High(TPerfSectionDev), 0].Top + CheckBoxes[High(TPerfSectionDev), 0].Height + 15;
+
+    lblPerflogSaveThreshold.Top := bottom;
+    sePerfLogSaveThreshold.Top := bottom;
+    btnPerfLogExport.Top := bottom;
   end;
 
   inherited Show;
+end;
+
+
+procedure TFormPerfLogs.DoExport(Sender: TObject);
+begin
+  {$IFDEF PERFLOG}
+  gPerflogs.SaveToFile(ExeDir + PathDelim + 'Export' + PathDelim + 'Perflog.txt',
+                       1000*sePerfLogSaveThreshold.Value); //threshold in ms
+  {$ENDIF}
 end;
 
 
@@ -272,7 +292,7 @@ begin
   fPerfLogs.StackGFX.Enabled := cbStackedGFX.Checked;
   fPerfLogs.StackGFX.Display := cbStackedGFX.Checked;
 
-  fPerfLogs.Scale := seFrameBudget.Value;
+  fPerfLogs.Scale := seScale.Value;
 
   fPerfLogs.Smoothing := cbSmoothLines.Checked;
 end;

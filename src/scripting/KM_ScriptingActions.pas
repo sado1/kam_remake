@@ -191,7 +191,7 @@ type
 
 implementation
 uses
-  TypInfo, KM_AI, KM_Game, KM_FogOfWar, KM_HandsCollection, KM_HandLogistics,
+  TypInfo, KM_AI, KM_Game, KM_GameParams, KM_FogOfWar, KM_HandsCollection, KM_HandLogistics,
   KM_HouseBarracks, KM_HouseSchool, KM_ResUnits, KM_CommonUtils, KM_HouseMarket,
   KM_Resource, KM_Hand, KM_AIDefensePos, KM_CommonClasses,
   KM_PathFindingRoad, KM_ResMapElements, KM_HandConstructions,
@@ -1119,7 +1119,7 @@ begin
         AttackType := aatOnce;
 
       //Attack delay should be counted from the moment attack was added from script
-      Delay := aDelay + gGame.GameTick;
+      Delay := aDelay + gGameParams.GameTick;
       Result := gHands[aPlayer].AI.General.Attacks.AddAttack(AttackType, Delay, aTotalMen, aMelleCount, aAntiHorseCount, aRangedCount, aMountedCount, aRandomGroups, aTarget, 0, aCustomPosition);
     end else
       LogParamWarning('Actions.AIAttackAdd', [aPlayer, aDelay, aTotalMen, aMelleCount, aAntiHorseCount, aRangedCount, aMountedCount]);
@@ -3641,7 +3641,7 @@ var
   Speed: Single;
 begin
   try
-    if gGame.IsMultiplayer then
+    if gGameParams.IsMultiplayer then
       Speed := EnsureRange(aSpeed, GAME_SPEED_NORMAL, GAME_MP_SPEED_MAX)
     else
       Speed := EnsureRange(aSpeed, GAME_SPEED_NORMAL, GAME_SP_SPEED_MAX);

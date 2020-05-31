@@ -359,11 +359,11 @@ uses
   Generics.Collections,
   KM_Main, KM_GameInputProcess, KM_GameInputProcess_Multi, KM_AI, KM_RenderUI, KM_GameCursor, KM_Maps,
   KM_HandsCollection, KM_Hand, KM_RenderPool, KM_ResTexts, KM_Game, KM_GameApp, KM_HouseBarracks, KM_HouseTownHall,
-  KM_Utils, KM_ScriptingEvents, KM_AIFields,
+  KM_Utils, KM_ScriptingEvents, KM_AIFields, KM_Settings, 
   KM_CommonUtils, KM_ResLocales, KM_ResSound, KM_Resource, KM_Log, KM_ResCursors, KM_ResFonts, KM_ResKeys,
   KM_FogOfWar, KM_Sound, KM_NetPlayersList, KM_MessageLog, KM_NetworkTypes,
   KM_InterfaceMapEditor, KM_HouseWoodcutters, KM_MapTypes,
-  KM_GameTypes, KM_Video;
+  KM_GameTypes, KM_GameParams, KM_Video;
 
 const
   ALLIES_ROWS = 7;
@@ -400,7 +400,7 @@ begin
     CheckBox_SaveExists.Enabled := FileExists(gGame.SaveName(Edit_Save.Text,
                                                              EXT_SAVE_MAIN,
                                                              (fUIMode in [umMP, umSpectate])
-                                                             or (ALLOW_SAVE_IN_REPLAY and (gGame.GameMode = gmReplayMulti))));
+                                                             or (ALLOW_SAVE_IN_REPLAY and (gGameParams.GameMode = gmReplayMulti))));
     Label_SaveExists.Visible := CheckBox_SaveExists.Enabled;
     CheckBox_SaveExists.Checked := False;
     // we should protect ourselves from empty names and whitespaces at beggining and at end of name
@@ -566,7 +566,7 @@ begin
 
   // If they just closed settings then we should save them (if something has changed)
   if LastVisiblePage = fGuiMenuSettings then
-    gGameApp.GameSettings.SaveSettings;
+    gGameSettings.SaveSettings;
 
   // Ensure, that saves scanning will be stopped when user leaves save/load page
   if (LastVisiblePage = Panel_Save) or (LastVisiblePage = Panel_Load) then
@@ -617,11 +617,11 @@ begin
       Menu_Save_RefreshList(nil); // Need to call it at last one time to setup GUI even if there are no saves
       // Initiate refresh and process each new save added
       fSaves.Refresh(Menu_Save_RefreshList, (fUIMode in [umMP, umSpectate])
-                                            or (ALLOW_SAVE_IN_REPLAY and (gGame.GameMode = gmReplayMulti)));
+                                            or (ALLOW_SAVE_IN_REPLAY and (gGameParams.GameMode = gmReplayMulti)));
       Panel_Save.Show;
       Label_MenuTitle.Caption := gResTexts[TX_MENU_SAVE_GAME];
       if fLastSaveName = '' then
-        Edit_Save.Text := gGame.GameName
+        Edit_Save.Text := gGameParams.GameName
       else
         Edit_Save.Text := fLastSaveName;
       Menu_Save_EditChange(nil); // Displays "confirm overwrite" message if necessary
@@ -749,7 +749,7 @@ end;
 procedure TKMGamePlayInterface.GameSettingsChanged;
 begin
   //Update player color mode radio
-  Radio_PlayersColorMode.ItemIndex := Byte(gGameApp.GameSettings.PlayersColorMode) - 1;
+  Radio_PlayersColorMode.ItemIndex := Byte(gGameSettings.PlayersColorMode) - 1;
   //Update minimap
   fMinimap.Update;
 end;
@@ -757,7 +757,7 @@ end;
 
 procedure TKMGamePlayInterface.Replay_PlayersColorModeClick(Sender: TObject);
 begin
-  gGameApp.GameSettings.PlayersColorMode := TKMPlayerColorMode(Radio_PlayersColorMode.ItemIndex + 1);
+  gGameSettings.PlayersColorMode := TKMPlayerColorMode(Radio_PlayersColorMode.ItemIndex + 1);
   fGuiMenuSettings.UpdateView; //Update settings
   //Update minimap
   fMinimap.Update;
@@ -1673,11 +1673,11 @@ begin
   ReinitStatsLastTime := False;
 
   // Add victory / defeat videos to play
-  if gGame.IsNormalGame then // Don't play Victory / Defeat videos for specs
+  if gGameParams.IsNormalGame then // Don't play Victory / Defeat videos for specs
   begin
     case aMsg of
-      grWin:              gVideoPlayer.AddMissionVideo(gGame.MissionFile, 'Victory');
-      grDefeat, grCancel: gVideoPlayer.AddMissionVideo(gGame.MissionFile, 'Defeat');
+      grWin:              gVideoPlayer.AddMissionVideo(gGameParams.MissionFile, 'Victory');
+      grDefeat, grCancel: gVideoPlayer.AddMissionVideo(gGameParams.MissionFile, 'Defeat');
     end;
     gVideoPlayer.Play;
   end;
@@ -1700,7 +1700,7 @@ begin
 
   if ShowStats then
   begin
-    if (gGame.GameMode in [gmMulti, gmMultiSpectate, gmReplayMulti]) or MP_RESULTS_IN_SP then
+    if (gGameParams.GameMode in [gmMulti, gmMultiSpectate, gmReplayMulti]) or MP_RESULTS_IN_SP then
       fGuiGameResultsMP.Show(aMsg)
     else begin
       if ReinitStatsLastTime then
@@ -1718,9 +1718,9 @@ end;
 procedure TKMGamePlayInterface.Menu_QuitMission(Sender: TObject);
 begin
   //Defeat player, if he intentionally quit, when game result is not determined yet (grCancel)
-  if (gGame.GameMode = gmMulti) and (gGame.GameResult = grCancel) then
+  if gGameParams.IsMultiplayerGame and (gGame.GameResult = grCancel) then
     gGame.GameResult := grDefeat
-  else if gGame.IsReplay then
+  else if gGameParams.IsReplay then
     gGame.GameResult := grReplayEnd;
   // Show outcome depending on actual situation.
   // By default PlayOnState is grCancel, if playing on after victory/defeat it changes
@@ -1734,8 +1734,8 @@ var
   IsMultiplayer: Boolean;
 begin
   IsMultiplayer := gGame.StartedFromMapEdAsMPMap;
-  MapPath := TKMapsCollection.FullPath(gGame.GameName, '.dat', IsMultiplayer);
-  GameName := gGame.GameName;
+  MapPath := TKMapsCollection.FullPath(gGameParams.GameName, '.dat', IsMultiplayer);
+  GameName := gGameParams.GameName;
   FreeThenNil(gGame);
   gGameApp.NewMapEditor(MapPath, 0, 0, TKMapsCollection.GetMapCRC(GameName, IsMultiplayer));
   TKMapEdInterface(gGame.ActiveInterface).SetLoadMode(IsMultiplayer);
@@ -1899,7 +1899,9 @@ begin
   end
   else
     if not KMSamePoint(gHands[gMySpectator.HandID].CenterScreen, KMPOINT_ZERO) then
-      fViewport.Position := KMPointF(gHands[gMySpectator.HandID].CenterScreen); //By default set viewport position to hand CenterScreen
+      fViewport.Position := gHands[gMySpectator.HandID].CenterScreen.ToFloat //By default set viewport position to hand CenterScreen
+    else
+      fViewport.Position := gHands[gMySpectator.HandID].FindCityCenter.ToFloat;
 
   gMySpectator.Selected := LastSelectedObj;  // Change selected object to last one for this hand or Reset it to nil
 
@@ -2006,7 +2008,7 @@ begin
   if Sender = Button_ReplaySaveAt then
   begin
     gGame.SaveReplayToMemory();
-    AddReplayMark(gGame.GameTick);
+    AddReplayMark(gGameParams.GameTick);
   end;
 
   if Sender = Dropbox_ReplayFOW then
@@ -2214,7 +2216,7 @@ end;
 
 procedure TKMGamePlayInterface.Menu_Update;
 begin
-  if gGameApp.GameSettings.MusicOff then
+  if gGameSettings.MusicOff then
     Label_Menu_Track.Caption := '-'
   else
     Label_Menu_Track.Caption := gGameApp.MusicLib.GetTrackTitle;
@@ -2225,7 +2227,7 @@ begin
   Button_Menu_TrackDown.Height := IfThen(Label_Menu_Track.AutoWrap, 38, 30);
 
   Label_GameTime.Caption := TimeToString(gGame.MissionTime);
-  Label_MapName.Caption := Copy(gGame.GameName, 0, EnsureRange(Length(gGame.GameName), 1, MAX_MAPNAME_LENGTH));
+  Label_MapName.Caption := Copy(gGameParams.GameName, 0, EnsureRange(Length(gGameParams.GameName), 1, MAX_MAPNAME_LENGTH));
   if gGame.HasMissionDifficulty then
   begin
     Label_MapName.Caption := Format('%s|[$%s]( %s )[]', [Label_MapName.Caption,
@@ -2235,9 +2237,9 @@ begin
   end else
     Panel_Track.Top := PANEL_TRACK_TOP;
 
-  Label_Menu_Track.Enabled      := not gGameApp.GameSettings.MusicOff;
-  Button_Menu_TrackUp.Enabled   := not gGameApp.GameSettings.MusicOff;
-  Button_Menu_TrackDown.Enabled := not gGameApp.GameSettings.MusicOff;
+  Label_Menu_Track.Enabled      := not gGameSettings.MusicOff;
+  Button_Menu_TrackUp.Enabled   := not gGameSettings.MusicOff;
+  Button_Menu_TrackDown.Enabled := not gGameSettings.MusicOff;
 end;
 
 
@@ -2343,7 +2345,7 @@ begin
   begin
     gGame.IsPaused := True;
     UpdateReplayButtons(False); //Update buttons
-    UpdateState(gGame.GameTick);
+    UpdateState(gGameParams.GameTick);
   end;
 
   UpdateReplayMarks;
@@ -2431,7 +2433,7 @@ var
 begin
   UpdateMessageImages;
 
-  isTactic := gGame.IsTactic;
+  isTactic := gGameParams.IsTactic;
 
   Button_Main[tbBuild].Enabled := not isTactic and not HasLostMPGame and not gMySpectator.Hand.InCinematic; //Allow to 'test build' if we are in replay / spectate mode
   Button_Main[tbRatio].Enabled := not isTactic and ((fUIMode in [umReplay, umSpectate]) or (not HasLostMPGame and not gMySpectator.Hand.InCinematic));
@@ -2489,19 +2491,19 @@ begin
   if fUIMode in [umSpectate, umReplay] then
   begin
     //In singleplayer replays, start with fog enabled so replays can be watched without spoilers
-    Checkbox_ReplayFOW.Checked := gGame.IsSingleplayer and gGame.IsReplay;
+    Checkbox_ReplayFOW.Checked := gGameParams.IsSingleplayer and gGameParams.IsReplay;
     ReplayClick(Checkbox_ReplayFOW); //Apply FOW
     Dropbox_ReplayFOW.Clear;
 
     // Set dropbox in different ways
-    case gGame.GameMode of
+    case gGameParams.GameMode of
       gmReplaySingle:   Replay_Single_SetPlayersDropbox; // Do not show team, as its meaningless
       // Use team info from ally states:
       // consider team as a group of hands where all members are allied to each other and not allied to any other hands.
       gmReplayMulti,
       gmMultiSpectate:  Replay_Multi_SetPlayersDropbox;
       else              raise Exception.Create(Format('Wrong game mode [%s], while spectating/watching replay',
-                                                      [GetEnumName(TypeInfo(TKMGameMode), Integer(gGame.GameMode))]));
+                                                      [GetEnumName(TypeInfo(TKMGameMode), Integer(gGameParams.GameMode))]));
     end;
     fGuiGameSpectator := TKMGUIGameSpectator.Create(Panel_Main, Replay_JumpToPlayer, SetViewportPos);
     gMySpectator.HandID := Dropbox_ReplayFOW.GetTag(Dropbox_ReplayFOW.ItemIndex); //Update HandIndex
@@ -2519,7 +2521,7 @@ begin
               or (aShowRecorded and (aSpeedRecorded <> GAME_SPEED_NORMAL));
 
   Image_Clock.Visible := doShowClock;
-  Label_Clock.Visible := doShowClock or gGameApp.GameSettings.ShowGameTime or SHOW_GAME_TICK;
+  Label_Clock.Visible := doShowClock or gGameSettings.ShowGameTime or SHOW_GAME_TICK;
   Label_ClockSpeedActual.Visible := doShowClock;
   Label_ClockSpeedActual.Caption := 'x' + FormatFloat('##0.##', aSpeedActual);
 
@@ -3181,7 +3183,7 @@ begin
 
     // As we don't have names for teams in SP we only allow showing team names in MP or MP replays
   if (Key = gResKeys[SC_SHOW_TEAMS].Key) then
-    if SHOW_UIDs or (fUIMode in [umMP, umSpectate]) or (gGame.GameMode = gmReplayMulti) then //Only MP replays
+    if SHOW_UIDs or (fUIMode in [umMP, umSpectate]) or (gGameParams.GameMode = gmReplayMulti) then //Only MP replays
     begin
       fShowTeamNames := True;
       // Update it immediately so there's no 300ms lag after pressing the key
@@ -3204,7 +3206,7 @@ end;
 
 procedure TKMGamePlayInterface.GameStarted;
 begin
-  if gGame.IsMultiPlayerOrSpec and (gGameApp.Chat.Text <> '') then
+  if gGameParams.IsMultiPlayerOrSpec and (gGameApp.Chat.Text <> '') then
     fGuiGameChat.Show;
 end;
 
@@ -3283,7 +3285,7 @@ procedure TKMGamePlayInterface.KeyUp(Key: Word; Shift: TShiftState; var aHandled
   function SpeedChangeAllowed(aUIModes: TUIModeSet): Boolean;
   begin
     Result := (fUIMode in aUIModes)
-              or gGame.IsMPGameSpeedChangeAllowed
+              or gGame.CanChangeMPGameSpeed
               or MULTIPLAYER_SPEEDUP;
   end;
 
@@ -3408,13 +3410,13 @@ begin
   if (Key = gResKeys[SC_PLAYER_COLOR_MODE].Key) then
   begin
     if fUIMode in [umReplay, umSpectate] then
-      gGameApp.GameSettings.PlayersColorMode := TKMPlayerColorMode((Byte(gGameApp.GameSettings.PlayersColorMode) mod 3) + 1)
+      gGameSettings.PlayersColorMode := TKMPlayerColorMode((Byte(gGameSettings.PlayersColorMode) mod 3) + 1)
     else
     begin
-      if gGameApp.GameSettings.PlayersColorMode = pcmDefault then
-        gGameApp.GameSettings.PlayersColorMode := pcmAllyEnemy
+      if gGameSettings.PlayersColorMode = pcmDefault then
+        gGameSettings.PlayersColorMode := pcmAllyEnemy
       else
-        gGameApp.GameSettings.PlayersColorMode := pcmDefault;
+        gGameSettings.PlayersColorMode := pcmDefault;
     end;
     GameSettingsChanged;
     //Update minimap immidiately
@@ -3427,11 +3429,11 @@ begin
     if Key = gResKeys[SC_SPEEDUP_1].Key then
       gGame.SetGameSpeed(GAME_SPEED_NORMAL, True, gGame.GameSpeedGIP);
     if Key = gResKeys[SC_SPEEDUP_2].Key then
-      gGame.SetGameSpeed(gGameApp.GameSettings.SpeedMedium, True);
+      gGame.SetGameSpeed(gGameSettings.SpeedMedium, True);
     if Key = gResKeys[SC_SPEEDUP_3].Key then
-      gGame.SetGameSpeed(gGameApp.GameSettings.SpeedFast, True);
+      gGame.SetGameSpeed(gGameSettings.SpeedFast, True);
     if Key = gResKeys[SC_SPEEDUP_4].Key then
-      gGame.SetGameSpeed(gGameApp.GameSettings.SpeedVeryFast, True);
+      gGame.SetGameSpeed(gGameSettings.SpeedVeryFast, True);
   end;
 
   // First check if this key was associated with some Spectate/Replay key
@@ -3552,11 +3554,11 @@ procedure TKMGamePlayInterface.MouseDown(Button: TMouseButton; Shift: TShiftStat
     gGameCursor.Tag1 := Byte(cfmPlan);
     if gMySpectator.Hand.CanAddFakeFieldPlan(P, aFieldType) then
     begin
-      gGame.GameInputProcess.CmdBuild(gicBuildAddFieldPlan, P, aFieldType);
+      gGame.GameInputProcess.CmdBuild(gicBuildToggleFieldPlan, P, aFieldType);
       fLastDragPoint := gGameCursor.Cell;
     end else if gMySpectator.Hand.CanRemFakeFieldPlan(P, aFieldType) then
     begin
-      gGame.GameInputProcess.CmdBuild(gicBuildAddFieldPlan, P, aFieldType);
+      gGame.GameInputProcess.CmdBuild(gicBuildToggleFieldPlan, P, aFieldType);
       fLastDragPoint := gGameCursor.Cell;
       // Set cursor into "Erase" mode, so dragging it will erase next tiles with the same field type
       gGameCursor.Tag1 := Byte(cfmErase);
@@ -3651,11 +3653,11 @@ procedure TKMGamePlayInterface.MouseMove(Shift: TShiftState; X,Y: Integer; var a
     if not KMSamePoint(fLastDragPoint, P) then
       if (gMySpectator.Hand.CanAddFakeFieldPlan(P, aFieldType)) and (gGameCursor.Tag1 = Byte(cfmPlan)) then
       begin
-        gGame.GameInputProcess.CmdBuild(gicBuildAddFieldPlan, P, aFieldType);
+        gGame.GameInputProcess.CmdBuild(gicBuildToggleFieldPlan, P, aFieldType);
         fLastDragPoint := gGameCursor.Cell;
       end else if (gMySpectator.Hand.CanRemFakeFieldPlan(P, aFieldType)) and (gGameCursor.Tag1 = Byte(cfmErase)) then
       begin
-        gGame.GameInputProcess.CmdBuild(gicBuildAddFieldPlan, P, aFieldType);
+        gGame.GameInputProcess.CmdBuild(gicBuildToggleFieldPlan, P, aFieldType);
         fLastDragPoint := gGameCursor.Cell;
       end;
   end;
@@ -3881,13 +3883,13 @@ begin
         end;
 
         //Manage only cmNone while spectating / watchingreplay
-        if (gGameCursor.Mode <> cmNone) and gGame.IsReplayOrSpectate then
+        if (gGameCursor.Mode <> cmNone) and gGameParams.IsReplayOrSpectate then
           Exit;
 
         // Only allow placing of roads etc. with the left mouse button
         if gMySpectator.FogOfWar.CheckTileRevelation(P.X, P.Y) = 0 then
         begin
-          if (gGameCursor.Mode in [cmErase, cmRoad, cmField, cmWine, cmHouses]) and not gGame.IsReplayOrSpectate then
+          if (gGameCursor.Mode in [cmErase, cmRoad, cmField, cmWine, cmHouses]) and not gGameParams.IsReplayOrSpectate then
             // Can't place noise when clicking on unexplored areas
             gSoundPlayer.Play(sfxCantPlace, P, False, 4);
         end
@@ -4192,10 +4194,10 @@ begin
   begin
     LastTick := Max4(gGame.LastReplayTick,
                      gGame.GameInputProcess.GetLastTick,
-                     gGame.GameTick,
+                     gGameParams.GameTick,
                      gGame.SavedReplays.LastTick);
     // Replays can continue after end, keep the bar in 0..1 range
-    ReplayBar_Replay.SetParameters(gGame.GameTick,
+    ReplayBar_Replay.SetParameters(gGameParams.GameTick,
                                    gGame.GameOptions.Peacetime*60*10,
                                    LastTick);
 
@@ -4211,7 +4213,7 @@ begin
   begin
     Label_Clock.Caption := TimeToString(gGame.MissionTime);
     if SHOW_GAME_TICK then
-      Label_Clock.Caption := Label_Clock.Caption + '|' + IntToStr(gGame.GameTick);
+      Label_Clock.Caption := Label_Clock.Caption + '|' + IntToStr(gGameParams.GameTick);
   end;
 
   // Keep on updating these menu pages as game data keeps on changing
@@ -4321,6 +4323,9 @@ begin
   S := '';
 
   // Debug info
+  if SHOW_GAME_TICK then
+    S := S + 'Tick: ' + IntToStr(gGameParams.GameTick) + '|';
+
   if SHOW_SPRITE_COUNT then
     S := IntToStr(gHands.UnitCount) + ' units on map|' +
          IntToStr(gRenderPool.RenderList.Stat_Sprites) + '/' +

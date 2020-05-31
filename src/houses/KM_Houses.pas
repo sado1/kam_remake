@@ -362,7 +362,7 @@ type
 implementation
 uses
   TypInfo, SysUtils, Math, KromUtils,
-  KM_Game, KM_GameApp, KM_Terrain, KM_RenderPool, KM_RenderAux, KM_Sound, KM_FogOfWar,
+  KM_Game, KM_GameParams, KM_Terrain, KM_RenderPool, KM_RenderAux, KM_Sound, KM_FogOfWar,
   KM_Hand, KM_HandsCollection, KM_HandLogistics,
   KM_UnitWarrior, KM_HouseWoodcutters,
   KM_Resource, KM_ResSound, KM_ResTexts, KM_ResUnits, KM_ResMapElements,
@@ -521,13 +521,13 @@ begin
   fOrderCompletedMsgIssued := False;
 
   //ByDefault allow to show all human player houses to allies, or AI's not in Campaign
-  fAllowAllyToView := gHands[fOwner].IsHuman or not gGame.IsCampaign;
+  fAllowAllyToView := gHands[fOwner].IsHuman or not gGameParams.IsCampaign;
 
   if aBuildState = hbsDone then //House was placed on map already Built e.g. in mission maker
   begin
     Activate(False);
     fBuildingProgress := gRes.Houses[fType].MaxHealth;
-    gTerrain.SetHouse(fPosition, fType, hsBuilt, fOwner, (gGame <> nil) and (gGame.GameMode <> gmMapEd)); //Sets passability and flattens terrain if we're not in the map editor
+    gTerrain.SetHouse(fPosition, fType, hsBuilt, fOwner, (gGame <> nil) and (gGameParams.GameMode <> gmMapEd)); //Sets passability and flattens terrain if we're not in the map editor
   end
   else
     gTerrain.SetHouse(fPosition, fType, hsFence, fOwner); //Terrain remains neutral yet
@@ -716,7 +716,7 @@ end;
 
 procedure TKMHouse.RemoveHouse;
 begin
-  Assert(gGame.IsMapEditor, 'Operation allowed only in the MapEd');
+  Assert(gGameParams.IsMapEditor, 'Operation allowed only in the MapEd');
 
   DemolishHouse(fOwner, True);
   gHands[fOwner].Houses.DeleteHouseFromList(Self);
@@ -789,7 +789,7 @@ procedure TKMHouse.SetPosition(const aPos: TKMPoint);
 var
   WasOnSnow, IsRallyPointSet, newPos: Boolean;
 begin
-  Assert(gGame.GameMode = gmMapEd);
+  Assert(gGameParams.GameMode = gmMapEd);
 
   newPos := fPosition <> aPos;
 
@@ -1218,7 +1218,7 @@ procedure TKMHouse.OwnerUpdate(aOwner: TKMHandID; aMoveToNewOwner: Boolean = Fal
 begin
   if aMoveToNewOwner and (fOwner <> aOwner) then
   begin
-    Assert(gGame.GameMode = gmMapEd); // Allow to move existing House directly only in MapEd
+    Assert(gGameParams.GameMode = gmMapEd); // Allow to move existing House directly only in MapEd
     gHands[fOwner].Houses.DeleteHouseFromList(Self);
     gHands[aOwner].Houses.AddHouseToList(Self);
   end;
@@ -1245,7 +1245,7 @@ begin
     UpdateDamage;
   end;
 
-  if gGame.GameMode <> gmMapEd then
+  if gGameParams.GameMode <> gmMapEd then
   begin
     //Let AI and script know when the damage is already applied, so they see actual state
     gHands[Owner].AI.HouseAttackNotification(Self, TKMUnitWarrior(aAttacker));
@@ -1310,7 +1310,7 @@ procedure TKMHouse.SetIsClosedForWorker(aIsClosed: Boolean);
 begin
   fIsClosedForWorker := aIsClosed;
 
-  if not gGame.IsMapEditor then
+  if not gGameParams.IsMapEditor then
     gHands[fOwner].Stats.HouseClosed(aIsClosed, fType);
 end;
 
@@ -1995,7 +1995,7 @@ begin
   Inc(FlagAnimStep);
   Inc(WorkAnimStep);
 
-  if (FlagAnimStep mod 10 = 0) and gGame.IsMapEditor then
+  if (FlagAnimStep mod 10 = 0) and gGameParams.IsMapEditor then
   begin
     WasOnSnow := fIsOnSnow;
     CheckOnSnow;
@@ -2004,10 +2004,10 @@ begin
   end;
 
   if fIsOnSnow and (fSnowStep < 1) then
-    fSnowStep := Min(fSnowStep + (1 + Byte(gGame.IsMapEditor) * 10) / SNOW_TIME, 1);
+    fSnowStep := Min(fSnowStep + (1 + Byte(gGameParams.IsMapEditor) * 10) / SNOW_TIME, 1);
 
   //FlagAnimStep is a sort of counter to reveal terrain once a sec
-  if gGameApp.DynamicFOWEnabled and (FlagAnimStep mod FOW_PACE = 0) then
+  if gGameParams.DynamicFOW and (FlagAnimStep mod FOW_PACE = 0) then
   begin
     HA := gRes.Houses[fType].BuildArea;
     //Reveal house from all points it covers
@@ -2112,7 +2112,7 @@ var
 begin
   if not IsComplete then
   begin
-    if gGameApp.DynamicFOWEnabled and ((aTick + fOwner) mod FOW_PACE = 0) then
+    if gGameParams.DynamicFOW and ((aTick + fOwner) mod FOW_PACE = 0) then
     begin
       HA := gRes.Houses[fType].BuildArea;
       //Reveal house from all points it covers
@@ -2404,7 +2404,7 @@ begin
   Assert(aWare in [WARE_MIN .. WARE_MAX]);
 
   // We need to skip cheats in MP replays too, not just MP games, so don't use fGame.IsMultiplayer
-  if CHEATS_SP_ENABLED and (MULTIPLAYER_CHEATS or not (gGame.GameMode in [gmMulti, gmMultiSpectate, gmReplayMulti])) then
+  if CHEATS_SP_ENABLED and (MULTIPLAYER_CHEATS or not (gGameParams.GameMode in [gmMulti, gmMultiSpectate, gmReplayMulti])) then
   begin
     // Check the cheat pattern
     cheatPattern := True;
@@ -2418,14 +2418,14 @@ begin
                       gHands[fOwner].Stats.WareProduced(wtAll, 10);
                       Exit;
                     end;
-        wtHorse:   if not gGame.IsMultiPlayerOrSpec then
+        wtHorse:   if not gGameParams.IsMultiPlayerOrSpec then
                     begin
                       // Game results cheats should not be used in MP even in debug
                       // MP does Win/Defeat differently (without Hold)
                       gGame.RequestGameHold(grWin);
                       Exit;
                     end;
-        wtFish:    if not gGame.IsMultiPlayerOrSpec then
+        wtFish:    if not gGameParams.IsMultiPlayerOrSpec then
                     begin
                       // Game results cheats should not be used in MP even in debug
                       // MP does Win/Defeat differently (without Hold)
@@ -2595,7 +2595,7 @@ var
 begin
   inherited;
 
-  if SHOW_ATTACK_RADIUS or (mlTowersAttackRadius in gGame.VisibleLayers) then
+  if SHOW_ATTACK_RADIUS or (mlTowersAttackRadius in gGameParams.VisibleLayers) then
   begin
     fillColor := $40FFFFFF;
     lineColor := icWhite;

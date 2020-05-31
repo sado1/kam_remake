@@ -675,6 +675,8 @@ begin
 
   if aLineWidth <> -1 then
     glPopAttrib;
+
+  TRender.BindTexture(0);
 end;
 
 

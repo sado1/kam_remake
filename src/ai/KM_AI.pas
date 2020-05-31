@@ -69,7 +69,7 @@ type
 implementation
 uses
   SysUtils, TypInfo, Math,
-  KM_GameTypes, KM_GameApp, KM_Game, KM_Hand, KM_HandsCollection, KM_HandStats, KM_UnitGroup,
+  KM_GameApp, KM_Game, KM_Hand, KM_HandsCollection, KM_HandStats, KM_UnitGroup,
   KM_ResHouses, KM_ResSound, KM_ScriptingEvents, KM_Alerts,
   KM_AIFields, KM_Terrain, KM_ResMapElements, KM_DevPerfLog, KM_DevPerfLogTypes;
 
@@ -139,8 +139,8 @@ begin
     fWonOrLost := wolWon;
 
     //Replays/spectators don't see victory screen
-    if not (gGame.GameMode in [gmReplaySingle, gmReplayMulti])
-    and (gGame.IsMultiPlayerOrSpec or (gMySpectator.HandID = fOwner)) then  //Let everyone know in MP mode
+    if not gGame.Params.IsReplay
+      and (gGame.Params.IsMultiPlayerOrSpec or (gMySpectator.HandID = fOwner)) then  //Let everyone know in MP mode
       gGame.PlayerVictory(fOwner);
 
     //Script may have additional event processors
@@ -318,9 +318,9 @@ begin
     hndHuman:
       begin
         //No fight alerts in replays/spectating, and only show alerts for ourselves
-        if not (gGame.GameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti])
-        and (fOwner = gMySpectator.HandID)
-        and (aAttacker <> nil) then //Don't show alerts for annonymous attacks (e.g. script)
+        if not gGame.Params.IsReplayOrSpectate
+          and (fOwner = gMySpectator.HandID)
+          and (aAttacker <> nil) then //Don't show alerts for annonymous attacks (e.g. script)
           gGame.GamePlayInterface.Alerts.AddFight(KMPointF(aHouse.Position), fOwner, anTown,
                                                   gGameApp.GlobalTickCount + ALERT_DURATION[atFight]);
       end;
@@ -337,7 +337,7 @@ begin
             fGeneral.RetaliateAgainstThreat(aAttacker);
             //Our allies might like to help us too
             for I := 0 to gHands.Count-1 do
-              if gHands[I].Enabled and (gHands[I].HandType = hndComputer)
+              if gHands[I].Enabled and gHands[I].IsComputer
               and (gHands.CheckAlliance(I, fOwner) = atAlly) and gHands[I].AI.Setup.DefendAllies then
                 gHands[I].AI.General.RetaliateAgainstThreat(aAttacker);
           end;
@@ -376,8 +376,8 @@ begin
   case gHands[fOwner].HandType of
     hndHuman:
       //No fight alerts in replays, and only show alerts for ourselves
-      if not (gGame.GameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti])
-      and (fOwner = gMySpectator.HandID) then
+      if not gGame.Params.IsReplayOrSpectate
+        and (fOwner = gMySpectator.HandID) then
         gGame.GamePlayInterface.Alerts.AddFight(aUnit.PositionF, fOwner, NotifyKind[aUnit is TKMUnitWarrior],
                                                 gGameApp.GlobalTickCount + ALERT_DURATION[atFight]);
     hndComputer:
@@ -397,7 +397,7 @@ begin
 
               //Our allies might like to help us too
               for I := 0 to gHands.Count-1 do
-                if gHands[I].Enabled and (gHands[I].HandType = hndComputer)
+                if gHands[I].Enabled and gHands[I].IsComputer
                 and (gHands.CheckAlliance(I, fOwner) = atAlly) and gHands[I].AI.Setup.DefendAllies then
                   gHands[I].AI.General.RetaliateAgainstThreat(aAttacker);
 
@@ -478,7 +478,7 @@ end;
 procedure TKMHandAI.UpdateState(aTick: Cardinal; aCheckGoals: Boolean);
 begin
   {$IFDEF PERFLOG}
-  gPerfLogs.SectionEnter(psAI, aTick);
+  gPerfLogs.SectionEnter(psAI);
   {$ENDIF}
   try
     if (WonOrLost <> wolNone) then
