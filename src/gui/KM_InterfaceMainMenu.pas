@@ -4,7 +4,7 @@ interface
 uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLType, {$ENDIF}
-  Classes, Controls, Math, SysUtils, KromUtils,
+  Classes, Controls, Math, SysUtils, KromUtils, KM_Campaigns,
   KM_Controls, KM_Points, KM_Defaults, KM_Pics, KM_Networking, KM_ResFonts,
   KM_InterfaceDefaults,
   KM_GUIMenuCampaign,
@@ -49,7 +49,7 @@ type
     function GetHintPositionBase: TKMPoint; override;
     function GetHintFont: TKMFont; override;
   public
-    constructor Create(X,Y: Word);
+    constructor Create(X,Y: Word; aCampaigns: TKMCampaignsCollection);
     destructor Destroy; override;
 
     property MenuPage: TKMMenuPageCommon read fMenuPage;
@@ -74,15 +74,16 @@ type
 
 implementation
 uses
-  KM_Main, KM_ResTexts, KM_Campaigns, KM_GameApp, KM_Log, KM_RenderUI, KM_NetworkTypes;
+  KM_Main, KM_ResTexts, KM_GameApp, KM_Log, KM_RenderUI, KM_Render, KM_NetworkTypes;
 
 
 { TKMMainMenuInterface }
-constructor TKMMainMenuInterface.Create(X,Y: Word);
+constructor TKMMainMenuInterface.Create(X,Y: Word; aCampaigns: TKMCampaignsCollection);
 var
   S: TKMShape;
 begin
-  inherited;
+  inherited Create(X,Y);
+
   Assert(gResTexts <> nil, 'fTextMain should be initialized before MainMenuInterface');
 
   //Fixed-size and centered Panel for menu
@@ -96,7 +97,7 @@ begin
 
   fMenuMain          := TKMMenuMain.Create(Panel_Menu, PageChange);
   fMenuSinglePlayer  := TKMMenuSinglePlayer.Create(Panel_Menu, PageChange);
-  fMenuCampaigns     := TKMMenuCampaigns.Create(Panel_Menu, PageChange);
+  fMenuCampaigns     := TKMMenuCampaigns.Create(Panel_Menu, aCampaigns, PageChange);
   fMenuCampaign      := TKMMenuCampaign.Create(Panel_Menu, PageChange);
   fMenuSingleMap     := TKMMenuSingleMap.Create(Panel_Menu, PageChange);
   fMenuLoad          := TKMMenuLoad.Create(Panel_Menu, PageChange);

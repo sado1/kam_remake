@@ -185,7 +185,7 @@ begin
   fCampaigns.Load;
 
   //If game was reinitialized from options menu then we should return there
-  fMainMenuInterface := TKMMainMenuInterface.Create(aScreenX, aScreenY);
+  fMainMenuInterface := TKMMainMenuInterface.Create(aScreenX, aScreenY, fCampaigns);
 
   fTimerUI := TTimer.Create(nil);
   fTimerUI.Interval := 100;
@@ -298,7 +298,7 @@ begin
   //Campaigns use single locale
   fCampaigns := TKMCampaignsCollection.Create;
   fCampaigns.Load;
-  fMainMenuInterface := TKMMainMenuInterface.Create(gRender.ScreenX, gRender.ScreenY);
+  fMainMenuInterface := TKMMainMenuInterface.Create(gRender.ScreenX, gRender.ScreenY, fCampaigns);
   fMainMenuInterface.PageChange(gpOptions);
   Resize(gRender.ScreenX, gRender.ScreenY); //Force the recreated main menu to resize to the user's screen
   fTimerUI.Enabled := True; //Safe to enable the timer again
@@ -1080,17 +1080,17 @@ end;
 procedure TKMGameApp.NetworkInit;
 begin
   if fNetworking = nil then
-    fNetworking := TKMNetworking.Create(fGameSettings.MasterServerAddress,
-                                        fGameSettings.AutoKickTimeout,
-                                        fGameSettings.PingInterval,
-                                        fGameSettings.MasterAnnounceInterval,
-                                        fGameSettings.ServerUDPScanPort,
-                                        fGameSettings.ServerDynamicFOW,
-                                        fGameSettings.ServerMapsRosterEnabled,
-                                        fGameSettings.ServerMapsRosterStr,
-                                        KMRange(fGameSettings.ServerLimitPTFrom, fGameSettings.ServerLimitPTTo),
-                                        KMRange(fGameSettings.ServerLimitSpeedFrom, fGameSettings.ServerLimitSpeedTo),
-                                        KMRange(fGameSettings.ServerLimitSpeedAfterPTFrom, fGameSettings.ServerLimitSpeedAfterPTTo));
+  fNetworking := TKMNetworking.Create(fGameSettings.MasterServerAddress,
+                                      fGameSettings.AutoKickTimeout,
+                                      fGameSettings.PingInterval,
+                                      fGameSettings.MasterAnnounceInterval,
+                                      fGameSettings.ServerUDPScanPort,
+                                      fGameSettings.ServerDynamicFOW,
+                                      fGameSettings.ServerMapsRosterEnabled,
+                                      fGameSettings.ServerMapsRosterStr,
+                                      KMRange(fGameSettings.ServerLimitPTFrom, fGameSettings.ServerLimitPTTo),
+                                      KMRange(fGameSettings.ServerLimitSpeedFrom, fGameSettings.ServerLimitSpeedTo),
+                                      KMRange(fGameSettings.ServerLimitSpeedAfterPTFrom, fGameSettings.ServerLimitSpeedAfterPTTo));
   fNetworking.OnMPGameInfoChanged := SendMPGameInfo;
   fNetworking.OnStartMap := NewMultiplayerMap;
   fNetworking.OnStartSave := NewMultiplayerSave;
