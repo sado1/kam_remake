@@ -249,10 +249,10 @@ begin
                     end;
     gpLobby:        begin
                       if aText = 'HOST' then
-                        fMenuLobby.Show(lpkHost, gGameApp.Networking, Panel_Menu.Height)
+                        fMenuLobby.Show(lpkHost, gNetworking, Panel_Menu.Height)
                       else
                       if aText = 'JOIN' then
-                        fMenuLobby.Show(lpkJoiner, gGameApp.Networking, Panel_Menu.Height)
+                        fMenuLobby.Show(lpkJoiner, gNetworking, Panel_Menu.Height)
                       else
                         raise Exception.Create('');
                       fMenuPage := fMenuLobby;
@@ -324,7 +324,7 @@ end;
 
 procedure TKMMainMenuInterface.ReturnToLobby(const aSaveName: UnicodeString);
 begin
-  if gGameApp.Networking.IsHost then
+  if gNetworking.IsHost then
     PageChange(gpLobby, 'HOST')
   else
     PageChange(gpLobby, 'JOIN');
