@@ -57,7 +57,7 @@ type
 implementation
 uses
   SysUtils, KromUtils, Math,
-  KM_Game, KM_GameParams, KM_Render,
+  KM_Game, KM_GameParams, KM_Render, KM_RenderTypes,
   KM_Units, KM_UnitGroup, KM_Hand, KM_HandsCollection,
   KM_Resource, KM_ResUnits, KM_CommonUtils,
   KM_DevPerfLog, KM_DevPerfLogTypes;

@@ -2,8 +2,8 @@ unit KM_ResFonts;
 {$I KaM_Remake.inc}
 interface
 uses
-  Classes, Graphics, Math, StrUtils, SysUtils, KM_PNG,
-  KM_CommonTypes, KM_Defaults, KM_Points, KM_Render, KM_ResPalettes
+  Classes, Graphics, Math, StrUtils, SysUtils, KM_PNG, KM_RenderTypes,
+  KM_CommonTypes, KM_Defaults, KM_Points, KM_ResPalettes
   {$IFDEF FPC}, zstream {$ENDIF}
   {$IFDEF WDC}, ZLib {$ENDIF};
 
@@ -140,6 +140,7 @@ const
 
 implementation
 uses
+  KM_Render,
   KM_CommonUtils, KM_Log;
 
 

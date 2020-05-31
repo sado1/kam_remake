@@ -255,6 +255,7 @@ uses
   KM_RenderDebug in 'src\render\KM_RenderDebug.pas',
   KM_RenderPool in 'src\render\KM_RenderPool.pas',
   KM_RenderTerrain in 'src\render\KM_RenderTerrain.pas',
+  KM_RenderTypes in 'src\render\KM_RenderTypes.pas',
   KM_RenderQuery in 'src\render\KM_RenderQuery.pas',
   KM_RenderUI in 'src\render\KM_RenderUI.pas',
 
