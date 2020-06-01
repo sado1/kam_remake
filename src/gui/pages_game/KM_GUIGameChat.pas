@@ -61,7 +61,7 @@ type
 
 implementation
 uses
-  KM_GameApp, KM_RenderUI, KM_ResTexts, KM_Game, KM_GameParams, KM_CommonUtils,
+  KM_GameApp, KM_RenderUI, KM_ResTexts, KM_GameParams, KM_CommonUtils,
   KM_ResSound, KM_Resource, KM_ResFonts, KM_Sound, KM_NetPlayersList;
 
 

@@ -122,7 +122,7 @@ type
 implementation
 uses
   KM_ResTexts, KM_Settings,
-  KM_RenderUI, KM_Resource, KM_ResFonts, KM_InterfaceMapEditor,
+  KM_RenderUI, KM_Resource, KM_ResFonts,
   KM_Pics, KM_CommonUtils;
 
 const
