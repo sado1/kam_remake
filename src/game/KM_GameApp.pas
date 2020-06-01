@@ -251,7 +251,7 @@ end;
 procedure TKMGameApp.InitMainMenu(aScreenX, aScreenY: Word);
 begin
   fMainMenuInterface := TKMMainMenuInterface.Create(aScreenX, aScreenY, fCampaigns,
-                                                    NewSingleMap, NewCampaignMap, NewMapEditor,
+                                                    NewSingleMap, NewCampaignMap, NewMapEditor, NewReplay,
                                                     ToggleLocale, PreloadGameResources);
 end;
 

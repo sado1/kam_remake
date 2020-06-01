@@ -53,6 +53,7 @@ type
                         aOnNewSingleMap: TKMNewSingleMapEvent;
                         aOnNewCampaignMap: TKMNewCampaignMapEvent;
                         aOnNewMapEditor: TKMNewMapEditorEvent;
+                        aOnNewReplay: TUnicodeStringEvent;
                         aOnToggleLocale: TAnsiStringEvent;
                         aOnPreloadGameResources: TEvent);
     destructor Destroy; override;
@@ -88,6 +89,7 @@ constructor TKMMainMenuInterface.Create(X,Y: Word; aCampaigns: TKMCampaignsColle
                                         aOnNewSingleMap: TKMNewSingleMapEvent;
                                         aOnNewCampaignMap: TKMNewCampaignMapEvent;
                                         aOnNewMapEditor: TKMNewMapEditorEvent;
+                                        aOnNewReplay: TUnicodeStringEvent;
                                         aOnToggleLocale: TAnsiStringEvent;
                                         aOnPreloadGameResources: TEvent);
 var
@@ -125,6 +127,7 @@ begin
   fMenuSinglePlayer.OnNewSingleMap  := aOnNewSingleMap;
   fMenuCampaign.OnNewCampaignMap    := aOnNewCampaignMap;
   fMenuMapEditor.OnNewMapEditor     := aOnNewMapEditor;
+  fMenuReplays.OnNewReplay          := aOnNewReplay;
 
   fMenuOptions.OnToggleLocale         := aOnToggleLocale;
   fMenuOptions.OnPreloadGameResources := aOnPreloadGameResources;

@@ -68,6 +68,8 @@ type
         Edit_Rename: TKMEdit;
         Button_Rename, Button_RenameConfirm, Button_RenameCancel: TKMButton;
   public
+    OnNewReplay: TUnicodeStringEvent;
+
     constructor Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText);
     destructor Destroy; override;
 
@@ -78,7 +80,7 @@ type
 
 implementation
 uses
-  KM_Log, KM_ResTexts, KM_GameApp, KM_RenderUI, KM_ResFonts, KM_Settings;
+  KM_Log, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_Settings;
 
 const
   MINIMAP_NOT_LOADED = -100; // smth, but not -1, as -1 is used for ColumnBox.ItemIndex, when no item is selected
@@ -493,7 +495,8 @@ var
 
   procedure DoPlay;
   begin
-    gGameApp.NewReplay(fSaves[ID].Path + fSaves[ID].FileName + EXT_SAVE_BASE_DOT);
+    if Assigned(OnNewReplay) then
+      OnNewReplay(fSaves[ID].Path + fSaves[ID].FileName + EXT_SAVE_BASE_DOT);
   end;
 
 begin
