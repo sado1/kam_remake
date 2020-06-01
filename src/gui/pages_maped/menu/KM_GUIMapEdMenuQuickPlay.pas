@@ -44,7 +44,7 @@ type
 
 implementation
 uses
-  SysUtils, KromUtils, KM_GameApp, KM_Game, KM_GameParams, KM_HandsCollection, KM_Maps, KM_MapTypes,
+  SysUtils, KromUtils, KM_GameApp, KM_Game, KM_GameParams, KM_GameTypes, KM_HandsCollection, KM_Maps, KM_MapTypes,
   KM_Hand, KM_InterfaceGamePlay,
   KM_RenderUI, KM_ResFonts, KM_ResTexts, KM_Resource, Math;
 

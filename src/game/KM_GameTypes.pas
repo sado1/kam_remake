@@ -13,7 +13,10 @@ type
     gmReplayMulti   //No input, different results screen to gmReplaySingle
     );
 
-  TKMGameModeChangeEvent = procedure (aGameMode: TKMGameMode) of Object;
+  TKMAIType = (aitNone, aitClassic, aitAdvanced);
+  TKMAITypeSet = set of TKMAIType;
+
+  TKMGameModeChangeEvent = procedure (aGameMode: TKMGameMode) of object;
 
 implementation
 
