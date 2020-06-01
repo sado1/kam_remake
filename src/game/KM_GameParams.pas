@@ -7,6 +7,9 @@ uses
 type
   TKMGameModeSetEvent = procedure (aGameMode: TKMGameMode) of object;
 
+  // This class represents some of the game parameters, kind of KM_Game light interface
+  // Usefull to split KM_Game and to reduce units dependencies
+
   TKMGameParams = class
   private
     fGameMode: TKMGameMode;
