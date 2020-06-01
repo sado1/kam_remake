@@ -51,6 +51,8 @@ type
       Button_DeleteYes, Button_DeleteNo: TKMButton;
 
   public
+    OnNewSingleSave: TUnicodeStringEvent;
+
     constructor Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText);
     destructor Destroy; override;
 
@@ -61,7 +63,7 @@ type
 
 implementation
 uses
-  KM_Log, KM_ResTexts, KM_GameApp, KM_RenderUI, KM_ResFonts, KM_Pics, KM_Settings;
+  KM_Log, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_Pics, KM_Settings;
 
 
 { TKMGUIMenuLoad }
@@ -232,7 +234,8 @@ procedure TKMMenuLoad.LoadClick(Sender: TObject);
 
   procedure DoLoad;
   begin
-    gGameApp.NewSingleSave(fSaves[ColumnBox_Load.ItemIndex].FileName);
+    if Assigned(OnNewSingleSave) then
+      OnNewSingleSave(fSaves[ColumnBox_Load.ItemIndex].FileName);
   end;
 
 var
