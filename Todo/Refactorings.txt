@@ -31,3 +31,22 @@ Internal refactorings that don't affect gameplay, but might be needed for the pr
 	Split Houses and Units into modules. 1 class = 1 module
 
 	Replace ActionAbandonWalk with a flag in ActionWalkTo that will be checked once unit steps on a new tile
+  
+  
+Reduce units dependacies:
+  TKMMapEdMissionMode - gGame
+
+TRenderTerrain - gGame
+TKMUnitsCollection - gGame
+TRenderAux - gGame
+KM_RenderPool - gGame
+
+
+KM_Units - gGame
+
+TKMMapEdExtras - gGameApp (???? slower ?)
+TKMHand - gGame (? gMapEditor?)
+TKMHandCollection - gGame (?)
+TKM_MissionScript_Standart - gGame (? gMapEditor?)
+
+KM_FormMain - KM_Settings, KM_Video (перенести в impl)
