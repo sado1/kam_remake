@@ -174,12 +174,13 @@
         <DCCReference Include="src\ai\newAI\KM_Supervisor.pas"/>
         <DCCReference Include="src\ai\newAI\KM_AIParameters.pas"/>
         <DCCReference Include="src\KM_Alerts.pas"/>
+        <DCCReference Include="src\KM_Audio.pas"/>
         <DCCReference Include="src\KM_Campaigns.pas"/>
+        <DCCReference Include="src\KM_CampaignTypes.pas"/>
         <DCCReference Include="src\KM_Console.pas"/>
         <DCCReference Include="src\common\KM_CommonClasses.pas"/>
         <DCCReference Include="src\common\KM_CommonClassesExt.pas"/>
         <DCCReference Include="src\common\KM_CommonTypes.pas"/>
-        <DCCReference Include="src\common\KM_CommonSave.pas"/>
         <DCCReference Include="src\common\KM_Defaults.pas"/>
         <DCCReference Include="src\common\KM_MarchingSquares.pas"/>
         <DCCReference Include="src\common\KM_Points.pas"/>
@@ -199,6 +200,7 @@
         <DCCReference Include="src\game\KM_GameCursor.pas"/>
         <DCCReference Include="src\game\KM_GameInfo.pas"/>
         <DCCReference Include="src\game\KM_GameOptions.pas"/>
+        <DCCReference Include="src\game\KM_GameParams.pas"/>
         <DCCReference Include="src\game\KM_GameInputProcess.pas"/>
         <DCCReference Include="src\game\KM_GameInputProcess_Multi.pas"/>
         <DCCReference Include="src\game\KM_GameInputProcess_Single.pas"/>
@@ -292,6 +294,7 @@
         <DCCReference Include="src\KM_Main.pas"/>
         <DCCReference Include="src\KM_Maps.pas"/>
         <DCCReference Include="src\KM_MapTypes.pas"/>
+        <DCCReference Include="src\KM_MapUtils.pas"/>
         <DCCReference Include="src\KM_MapEditor.pas"/>
         <DCCReference Include="src\KM_MapEditorHistory.pas"/>
         <DCCReference Include="src\KM_MapEdTypes.pas"/>
@@ -349,6 +352,7 @@
         <DCCReference Include="src\render\KM_RenderDebug.pas"/>
         <DCCReference Include="src\render\KM_RenderPool.pas"/>
         <DCCReference Include="src\render\KM_RenderTerrain.pas"/>
+        <DCCReference Include="src\render\KM_RenderTypes.pas"/>
         <DCCReference Include="src\render\KM_RenderQuery.pas"/>
         <DCCReference Include="src\render\KM_RenderUI.pas"/>
         <DCCReference Include="src\KM_Resolutions.pas"/>
