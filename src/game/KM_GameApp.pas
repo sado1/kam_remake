@@ -51,6 +51,9 @@ type
     procedure GameDestroyed;
     procedure GameFinished;
     function GetGameSettings: TKMGameSettings;
+    procedure SetOnOptionsChange(const aEvent: TEvent);
+
+    procedure InitMainMenu(aScreenX, aScreenY: Word);
   public
     constructor Create(aRenderControl: TKMRenderControl; aScreenX, aScreenY: Word; aVSync: Boolean; aOnLoadingStep: TEvent;
                        aOnLoadingText: TUnicodeStringEvent; aOnCursorUpdate: TIntegerStringEvent; NoMusic: Boolean = False);
@@ -119,7 +122,7 @@ type
     property OnGameSpeedActualChange: TSingleEvent read fOnGameSpeedChange write fOnGameSpeedChange;
     property OnGameStart: TKMGameModeChangeEvent read fOnGameStart write fOnGameStart;
     property OnGameEnd: TKMGameModeChangeEvent read fOnGameEnd write fOnGameEnd;
-    property OnOptionsChange: TEvent read fOnOptionsChange write fOnOptionsChange;
+    property OnOptionsChange: TEvent read fOnOptionsChange write SetOnOptionsChange;
 
     procedure Render(aForPrintScreen: Boolean = False);
     procedure UpdateState(Sender: TObject);
@@ -184,7 +187,7 @@ begin
   fCampaigns.Load;
 
   //If game was reinitialized from options menu then we should return there
-  fMainMenuInterface := TKMMainMenuInterface.Create(aScreenX, aScreenY, fCampaigns);
+  InitMainMenu(aScreenX, aScreenY);
 
   fTimerUI := TTimer.Create(nil);
   fTimerUI.Interval := 100;
@@ -245,6 +248,12 @@ begin
 end;
 
 
+procedure TKMGameApp.InitMainMenu(aScreenX, aScreenY: Word);
+begin
+  fMainMenuInterface := TKMMainMenuInterface.Create(aScreenX, aScreenY, fCampaigns, NewSingleMap, NewCampaignMap, ToggleLocale, PreloadGameResources);
+end;
+
+
 procedure TKMGameApp.DebugControlsUpdated(Sender: TObject; aSenderTag: Integer);
 begin
   if gGame = nil then
@@ -297,7 +306,7 @@ begin
   //Campaigns use single locale
   fCampaigns := TKMCampaignsCollection.Create;
   fCampaigns.Load;
-  fMainMenuInterface := TKMMainMenuInterface.Create(gRender.ScreenX, gRender.ScreenY, fCampaigns);
+  InitMainMenu(gRender.ScreenX, gRender.ScreenY);
   fMainMenuInterface.PageChange(gpOptions);
   Resize(gRender.ScreenX, gRender.ScreenY); //Force the recreated main menu to resize to the user's screen
   fTimerUI.Enabled := True; //Safe to enable the timer again
@@ -1110,6 +1119,14 @@ begin
     fNetworking.AnnounceGameInfo(gGame.MissionTime, gGame.Params.GameName)
   else
     fNetworking.AnnounceGameInfo(-1, ''); //fNetworking will fill the details from lobby
+end;
+
+
+procedure TKMGameApp.SetOnOptionsChange(const aEvent: TEvent);
+begin
+  fOnOptionsChange := aEvent;
+
+  fMainMenuInterface.SetOnOptionsChange(aEvent);
 end;
 
 

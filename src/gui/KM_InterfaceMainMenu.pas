@@ -5,7 +5,7 @@ uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLType, {$ENDIF}
   Classes, Controls, Math, SysUtils, KromUtils, KM_Campaigns,
-  KM_Controls, KM_Points, KM_Defaults, KM_Pics, KM_Networking, KM_ResFonts,
+  KM_Controls, KM_Points, KM_Defaults, KM_Pics, KM_Networking, KM_ResFonts, KM_CommonTypes, KM_GameTypes,
   KM_InterfaceDefaults,
   KM_GUIMenuCampaign,
   KM_GUIMenuCampaigns,
@@ -49,7 +49,11 @@ type
     function GetHintPositionBase: TKMPoint; override;
     function GetHintFont: TKMFont; override;
   public
-    constructor Create(X,Y: Word; aCampaigns: TKMCampaignsCollection);
+    constructor Create (X,Y: Word; aCampaigns: TKMCampaignsCollection;
+                        aOnNewSingleMap: TKMNewSingleMapEvent;
+                        aOnNewCampaignMap: TKMNewCampaignMapEvent;
+                        aOnToggleLocale: TAnsiStringEvent;
+                        aOnPreloadGameResources: TEvent);
     destructor Destroy; override;
 
     property MenuPage: TKMMenuPageCommon read fMenuPage;
@@ -66,6 +70,7 @@ type
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X,Y: Integer); override;
 
     procedure DebugControlsUpdated(aSenderTag: Integer); override;
+    procedure SetOnOptionsChange(aEvent: TEvent);
     procedure RefreshCampaigns;
     procedure Resize(X,Y: Word); override;
     procedure UpdateState(aTickCount: Cardinal); override;
@@ -78,7 +83,11 @@ uses
 
 
 { TKMMainMenuInterface }
-constructor TKMMainMenuInterface.Create(X,Y: Word; aCampaigns: TKMCampaignsCollection);
+constructor TKMMainMenuInterface.Create(X,Y: Word; aCampaigns: TKMCampaignsCollection;
+                                        aOnNewSingleMap: TKMNewSingleMapEvent;
+                                        aOnNewCampaignMap: TKMNewCampaignMapEvent;
+                                        aOnToggleLocale: TAnsiStringEvent;
+                                        aOnPreloadGameResources: TEvent);
 var
   S: TKMShape;
 begin
@@ -110,13 +119,12 @@ begin
   fMenuError         := TKMMenuError.Create(Panel_Menu, PageChange);
   fMenuLoading       := TKMMenuLoading.Create(Panel_Menu, PageChange);
 
-  fMenuSingleMap.OnNewSingleMap     := gGameApp.NewSingleMap;
-  fMenuSinglePlayer.OnNewSingleMap  := gGameApp.NewSingleMap;
-  fMenuCampaign.OnNewCampaignMap    := gGameApp.NewCampaignMap;
+  fMenuSingleMap.OnNewSingleMap     := aOnNewSingleMap;
+  fMenuSinglePlayer.OnNewSingleMap  := aOnNewSingleMap;
+  fMenuCampaign.OnNewCampaignMap    := aOnNewCampaignMap;
 
-  fMenuOptions.OnToggleLocale         := gGameApp.ToggleLocale;
-  fMenuOptions.OnOptionsChange        := gGameApp.OnOptionsChange;
-  fMenuOptions.OnPreloadGameResources := gGameApp.PreloadGameResources;
+  fMenuOptions.OnToggleLocale         := aOnToggleLocale;
+  fMenuOptions.OnPreloadGameResources := aOnPreloadGameResources;
 
   //Show version info on every page
   Label_Version := TKMLabel.Create(Panel_Main, 8, 8, 0, 0, '', fntAntiqua, taLeft);
@@ -338,6 +346,12 @@ begin
     PageChange(gpLobby, 'JOIN');
 
   fMenuLobby.ReturnToLobby(aSaveName);
+end;
+
+
+procedure TKMMainMenuInterface.SetOnOptionsChange(aEvent: TEvent);
+begin
+  fMenuOptions.OnOptionsChange := aEvent;
 end;
 
 
