@@ -3,7 +3,8 @@ unit KM_FormMain;
 interface
 uses
   Classes, ComCtrls, Controls, Buttons, Dialogs, ExtCtrls, Forms, Graphics, Math, Menus, StdCtrls, SysUtils, StrUtils,
-  KM_RenderControl, KM_Settings, KM_CommonTypes,
+  KM_RenderControl, KM_CommonTypes,
+  KM_WindowParams,
 
   {$IFDEF FPC} LResources, {$ENDIF}
   {$IFDEF MSWindows} ShellAPI, Windows, Messages, Vcl.Samples.Spin; {$ENDIF}
@@ -306,7 +307,8 @@ uses
   KM_Hand,
   KM_ResKeys, KM_FormLogistics, KM_Game,
   KM_RandomChecks,
-  KM_Log, KM_CommonClasses, KM_Helpers, KM_Video;
+  KM_Log, KM_CommonClasses, KM_Helpers, KM_Video,
+  KM_Settings;
 
 
 //Remove VCL panel and use flicker-free TMyPanel instead

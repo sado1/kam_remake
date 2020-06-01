@@ -346,7 +346,8 @@ uses
   KM_Viewport in 'src\KM_Viewport.pas',
   KM_WareDistribution in 'src\KM_WareDistribution.pas',
   KM_Video in 'src\KM_Video.pas',
-  KM_VLC in 'src\utils\KM_VLC.pas';
+  KM_VLC in 'src\utils\KM_VLC.pas',
+  KM_WindowParams in 'src\utils\KM_WindowParams.pas';
 
   //KM_PerfLog in 'src\unused\KM_PerfLog.pas', //unused
 
