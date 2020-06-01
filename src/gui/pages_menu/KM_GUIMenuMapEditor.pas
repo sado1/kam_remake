@@ -881,12 +881,10 @@ begin
   if aVisible then
   begin
     PopUp_Delete.Show;
-    ColumnBox_MapEd.Focusable := False;
-    gGameApp.MainMenuInterface.MyControls.UpdateFocus(ColumnBox_MapEd);
+    ColumnBox_MapEd.Focusable := False; // Will update focus automatically
   end else begin
     PopUp_Delete.Hide;
-    ColumnBox_MapEd.Focusable := True;
-    gGameApp.MainMenuInterface.MyControls.UpdateFocus(ColumnBox_MapEd);
+    ColumnBox_MapEd.Focusable := True; // Will update focus automatically
   end;
 end;
 
@@ -936,12 +934,10 @@ begin
   if aVisible then
   begin
     PopUp_Move.Show;
-    ColumnBox_MapEd.Focusable := False;
-    gGameApp.MainMenuInterface.MyControls.UpdateFocus(ColumnBox_MapEd);
+    ColumnBox_MapEd.Focusable := False; // Will update focus automatically
   end else begin
     PopUp_Move.Hide;
-    ColumnBox_MapEd.Focusable := True;
-    gGameApp.MainMenuInterface.MyControls.UpdateFocus(ColumnBox_MapEd);
+    ColumnBox_MapEd.Focusable := True; // Will update focus automatically
   end;
 end;
 

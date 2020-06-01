@@ -430,12 +430,10 @@ begin
   if aVisible then
   begin
     PopUp_Delete.Show;
-    ColumnBox_Load.Focusable := False;
-    gGameApp.MainMenuInterface.MyControls.UpdateFocus(ColumnBox_Load);
+    ColumnBox_Load.Focusable := False; // Will update focus automatically
   end else begin
     PopUp_Delete.Hide;
-    ColumnBox_Load.Focusable := True;
-    gGameApp.MainMenuInterface.MyControls.UpdateFocus(ColumnBox_Load);
+    ColumnBox_Load.Focusable := True; // Will update focus automatically
   end;
 end;
 

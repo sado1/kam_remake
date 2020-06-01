@@ -553,12 +553,10 @@ begin
   if aVisible then
   begin
     PopUp_Delete.Show;
-    ColumnBox_Replays.Focusable := False;
-    gGameApp.MainMenuInterface.MyControls.UpdateFocus(ColumnBox_Replays);
+    ColumnBox_Replays.Focusable := False; // Will update focus automatically
   end else begin
     PopUp_Delete.Hide;
-    ColumnBox_Replays.Focusable := True;
-    gGameApp.MainMenuInterface.MyControls.UpdateFocus(ColumnBox_Replays);
+    ColumnBox_Replays.Focusable := True; // Will update focus automatically
   end;
 end;
 
