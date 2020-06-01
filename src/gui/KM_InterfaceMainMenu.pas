@@ -110,6 +110,9 @@ begin
   fMenuError         := TKMMenuError.Create(Panel_Menu, PageChange);
   fMenuLoading       := TKMMenuLoading.Create(Panel_Menu, PageChange);
 
+  fMenuSingleMap.OnNewSingleMap     := gGameApp.NewSingleMap;
+  fMenuSinglePlayer.OnNewSingleMap  := gGameApp.NewSingleMap;
+
   //Show version info on every page
   Label_Version := TKMLabel.Create(Panel_Main, 8, 8, 0, 0, '', fntAntiqua, taLeft);
 
