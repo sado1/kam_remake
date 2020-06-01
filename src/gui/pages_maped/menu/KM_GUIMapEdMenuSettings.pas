@@ -32,7 +32,7 @@ type
 
 implementation
 uses
-  KM_GameApp, KM_Settings, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_InterfaceGame, KM_Music, KM_Sound;
+  KM_Settings, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_InterfaceGame, KM_Music, KM_Sound;
 
 
 { TKMMapEdMenuQuit }
