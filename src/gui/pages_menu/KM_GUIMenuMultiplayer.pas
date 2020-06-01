@@ -5,7 +5,7 @@ uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLType, {$ENDIF}
   StrUtils, SysUtils, KromOGLUtils, Math, Classes, Controls,
-  KM_Controls, KM_Defaults, KM_Pics,
+  KM_Controls, KM_Defaults, KM_CommonTypes, KM_Pics,
   KM_InterfaceDefaults, KM_ServerQuery;
 
 
@@ -102,6 +102,8 @@ type
         Button_MP_PasswordOk: TKMButton;
         Button_MP_PasswordCancel: TKMButton;
   public
+    OnNetworkInit: TEvent;
+
     constructor Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText);
 
     procedure Show(const aText: UnicodeString);
@@ -111,8 +113,8 @@ type
 
 implementation
 uses
-  KM_Main, KM_Settings, KM_Networking, KM_NetworkTypes, KM_ResTexts, KM_GameApp, KM_ResLocales, KM_GUIMenuLobby, KM_MapTypes,
-  KM_CommonUtils, KM_CommonTypes, KM_Sound, KM_ResSound, KM_RenderUI, KM_ResFonts;
+  KM_Main, KM_Settings, KM_Networking, KM_NetworkTypes, KM_ResTexts, KM_ResLocales, KM_GUIMenuLobby, KM_MapTypes,
+  KM_CommonUtils, KM_Sound, KM_ResSound, KM_RenderUI, KM_ResFonts, KM_Console;
 
 
 const
@@ -778,7 +780,7 @@ end;
 
 procedure TKMMenuMultiplayer.StartLobby(aIsHost: Boolean);
 begin
-  gGameApp.Chat.Clear;
+  gChat.Clear;
   if aIsHost then
     fOnPageChange(gpLobby, 'HOST')
   else
@@ -981,7 +983,9 @@ end;
 
 procedure TKMMenuMultiplayer.Show(const aText: UnicodeString);
 begin
-  gGameApp.NetworkInit;
+  if Assigned(OnNetworkInit) then
+    OnNetworkInit;
+
   MP_Init;
 
   if aText = '' then

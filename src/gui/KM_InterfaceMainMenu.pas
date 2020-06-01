@@ -56,7 +56,8 @@ type
                         aOnNewReplay: TUnicodeStringEvent;
                         aOnNewSingleSave: TUnicodeStringEvent;
                         aOnToggleLocale: TAnsiStringEvent;
-                        aOnPreloadGameResources: TEvent);
+                        aOnPreloadGameResources: TEvent;
+                        aOnNetworkInit: TEvent);
     destructor Destroy; override;
 
     property MenuPage: TKMMenuPageCommon read fMenuPage;
@@ -93,7 +94,8 @@ constructor TKMMainMenuInterface.Create(X,Y: Word; aCampaigns: TKMCampaignsColle
                                         aOnNewReplay: TUnicodeStringEvent;
                                         aOnNewSingleSave: TUnicodeStringEvent;
                                         aOnToggleLocale: TAnsiStringEvent;
-                                        aOnPreloadGameResources: TEvent);
+                                        aOnPreloadGameResources: TEvent;
+                                        aOnNetworkInit: TEvent);
 var
   S: TKMShape;
 begin
@@ -134,6 +136,8 @@ begin
 
   fMenuOptions.OnToggleLocale         := aOnToggleLocale;
   fMenuOptions.OnPreloadGameResources := aOnPreloadGameResources;
+
+  fMenuMultiplayer.OnNetworkInit      := aOnNetworkInit;
 
   //Show version info on every page
   Label_Version := TKMLabel.Create(Panel_Main, 8, 8, 0, 0, '', fntAntiqua, taLeft);
