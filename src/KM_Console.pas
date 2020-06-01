@@ -59,11 +59,16 @@ type
     WhisperRecipient: TKMNetHandleIndex;
 
     constructor Create;
+    destructor Destroy; override;
 
     property Mode: TKMChatMode read fMode write SetMode;
 
     procedure Clear; override;
   end;
+
+
+var
+  gChat: TKMChat;
 
 const
   CHAT_COOLDOWN = 500;  //Minimum time in milliseconds between chat messages
@@ -317,6 +322,16 @@ begin
   inherited;
 
   Clear;
+
+  gChat := Self;
+end;
+
+
+destructor TKMChat.Destroy;
+begin
+  gChat := nil;
+
+  inherited;
 end;
 
 
