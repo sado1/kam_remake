@@ -704,8 +704,10 @@ end;
 
 procedure TKMSupervisor.UpdateAlliances();
 var
-  PL1,PL2: TKMHandID;
+  Check: Boolean;
   AlliCnt, PLCnt: Byte;
+  Idx: Integer;
+  PL1,PL2,PL3: TKMHandID;
 begin
   FillChar(fPL2Alli, SizeOf(fPL2Alli), #255); // TKMHandIndex = SmallInt => Byte(255) = -1 = PLAYER_NONE
   SetLength(fAlli2PL, gHands.Count, gHands.Count);
@@ -715,8 +717,16 @@ begin
     begin
       PLCnt := 0;
       for PL2 := 0 to gHands.Count - 1 do
-        if gHands[PL2].Enabled AND ((PL1 = PL2) OR (gHands[PL1].Alliances[PL2] = atAlly)) then
+        if gHands[PL2].Enabled AND (fPL2Alli[PL2] = 255) AND ((PL1 = PL2) OR (gHands[PL1].Alliances[PL2] = atAlly)) then
         begin
+          Check := True;
+          for Idx := 0 to PLCnt - 1 do
+          begin
+            PL3 := fAlli2PL[AlliCnt,Idx];
+            Check := Check AND ((gHands[PL3].Alliances[PL2] = atAlly) AND (gHands[PL2].Alliances[PL3] = atAlly));
+          end;
+          if not Check then
+            Continue;
           fPL2Alli[PL2] := AlliCnt;
           fAlli2PL[AlliCnt,PLCnt] := PL2;
           Inc(PLCnt);
