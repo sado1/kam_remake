@@ -90,7 +90,7 @@ type
                              aAIType: TKMAIType = aitNone);
     procedure NewEmptyMap(aSizeX, aSizeY: Integer);
     procedure NewMapEditor(const aFileName: UnicodeString; aSizeX: Integer = 0; aSizeY: Integer = 0;
-                           aMapFullCRC: Cardinal = 0; aMapSimpleCRC: Cardinal = 0);
+                           aMapFullCRC: Cardinal = 0; aMapSimpleCRC: Cardinal = 0; aMultiplayerLoadMode: Boolean = False);
     procedure NewReplay(const aFilePath: UnicodeString);
     procedure NewSaveAndReplay(const aSavPath, aRplPath: UnicodeString);
     function TryLoadSavedReplay(aTick: Integer): Boolean;
@@ -250,7 +250,9 @@ end;
 
 procedure TKMGameApp.InitMainMenu(aScreenX, aScreenY: Word);
 begin
-  fMainMenuInterface := TKMMainMenuInterface.Create(aScreenX, aScreenY, fCampaigns, NewSingleMap, NewCampaignMap, ToggleLocale, PreloadGameResources);
+  fMainMenuInterface := TKMMainMenuInterface.Create(aScreenX, aScreenY, fCampaigns,
+                                                    NewSingleMap, NewCampaignMap, NewMapEditor,
+                                                    ToggleLocale, PreloadGameResources);
 end;
 
 
@@ -973,14 +975,22 @@ end;
 
 
 procedure TKMGameApp.NewMapEditor(const aFileName: UnicodeString; aSizeX: Integer = 0; aSizeY: Integer = 0;
-                                  aMapFullCRC: Cardinal = 0; aMapSimpleCRC: Cardinal = 0);
+                                  aMapFullCRC: Cardinal = 0; aMapSimpleCRC: Cardinal = 0; aMultiplayerLoadMode: Boolean = False);
 begin
   if aFileName <> '' then
-    LoadGameFromScript(aFileName, TruncateExt(ExtractFileName(aFileName)), aMapFullCRC, aMapSimpleCRC, nil, 0, gmMapEd, 0, 0)
+  begin
+    LoadGameFromScript(aFileName, TruncateExt(ExtractFileName(aFileName)), aMapFullCRC, aMapSimpleCRC, nil, 0, gmMapEd, 0, 0);
+    // gGame could be nil if we failed to load map
+    if gGame <> nil then
+      gGame.MapEditorInterface.SetLoadMode(aMultiplayerLoadMode);
+  end
   else begin
     aSizeX := EnsureRange(aSizeX, MIN_MAP_SIZE, MAX_MAP_SIZE);
     aSizeY := EnsureRange(aSizeY, MIN_MAP_SIZE, MAX_MAP_SIZE);
     LoadGameFromScratch(aSizeX, aSizeY, gmMapEd);
+    // gGame could be nil if we failed to load map
+    if gGame <> nil then
+      gGame.MapEditorInterface.SetLoadMode(aMultiplayerLoadMode);
   end;
 
   if Assigned(fOnGameStart) and (gGame <> nil) then

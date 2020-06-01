@@ -26,6 +26,9 @@ type
 
   TKMNewCampaignMapEvent = procedure (aCampaign: TKMCampaignId; aMap: Byte; aDifficulty: TKMMissionDifficulty = mdNone) of object;
 
+  TKMNewMapEditorEvent = procedure (const aFileName: UnicodeString; aSizeX: Integer = 0; aSizeY: Integer = 0; aMapFullCRC: Cardinal = 0;
+                                    aMapSimpleCRC: Cardinal = 0; aMultiplayerLoadMode: Boolean = False) of object;
+
 implementation
 
 end.
