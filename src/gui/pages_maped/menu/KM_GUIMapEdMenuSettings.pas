@@ -32,7 +32,7 @@ type
 
 implementation
 uses
-  KM_GameApp, KM_Settings, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_InterfaceGame, KM_Sound;
+  KM_GameApp, KM_Settings, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_InterfaceGame, KM_Music, KM_Sound;
 
 
 { TKMMapEdMenuQuit }
@@ -114,15 +114,15 @@ begin
   gGameSettings.ShuffleOn     := CheckBox_Settings_ShuffleOn.Checked;
 
   gSoundPlayer.UpdateSoundVolume(gGameSettings.SoundFXVolume);
-  gGameApp.MusicLib.Volume := gGameSettings.MusicVolume;
+  gMusic.Volume := gGameSettings.MusicVolume;
   if MusicToggled then
   begin
-    gGameApp.MusicLib.ToggleEnabled(not gGameSettings.MusicOff);
+    gMusic.ToggleEnabled(not gGameSettings.MusicOff);
     if not gGameSettings.MusicOff then
       ShuffleToggled := True; //Re-shuffle songs if music has been enabled
   end;
   if ShuffleToggled then
-    gGameApp.MusicLib.ToggleShuffle(gGameSettings.ShuffleOn);
+    gMusic.ToggleShuffle(gGameSettings.ShuffleOn);
 
   TrackBar_Settings_Music.Enabled := not CheckBox_Settings_MusicOff.Checked;
   CheckBox_Settings_ShuffleOn.Enabled := not CheckBox_Settings_MusicOff.Checked;

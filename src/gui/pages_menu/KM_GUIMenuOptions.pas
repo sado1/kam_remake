@@ -94,7 +94,7 @@ type
 
 implementation
 uses
-  KM_Main, KM_GameApp, KM_Sound, KM_RenderUI, KM_Resource, KM_ResTexts, KM_ResLocales, KM_ResFonts, KM_ResSound, KM_Video;
+  KM_Main, KM_GameApp, KM_Music, KM_Sound, KM_RenderUI, KM_Resource, KM_ResTexts, KM_ResLocales, KM_ResFonts, KM_ResSound, KM_Video;
 
 
 { TKMGUIMainOptions }
@@ -424,16 +424,16 @@ begin
   CheckBox_Options_ShuffleOn.Enabled  := not CheckBox_Options_MusicOff.Checked;
 
   gSoundPlayer.UpdateSoundVolume(fGameSettings.SoundFXVolume);
-  gGameApp.MusicLib.Volume := fGameSettings.MusicVolume;
+  gMusic.Volume := fGameSettings.MusicVolume;
   SetupVSync(fMainSettings.VSync);
   if MusicToggled then
   begin
-    gGameApp.MusicLib.ToggleEnabled(not fGameSettings.MusicOff);
+    gMusic.ToggleEnabled(not fGameSettings.MusicOff);
     if not fGameSettings.MusicOff then
       ShuffleToggled := True; // Re-shuffle songs if music has been enabled
   end;
   if ShuffleToggled then
-    gGameApp.MusicLib.ToggleShuffle(fGameSettings.ShuffleOn);
+    gMusic.ToggleShuffle(fGameSettings.ShuffleOn);
 
   if Sender = CheckBox_Options_FullFonts then
   begin

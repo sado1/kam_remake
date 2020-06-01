@@ -57,7 +57,7 @@ type
 
 implementation
 uses
-  KM_GameApp, KM_Settings, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_Sound, KM_ResSound, KM_Defaults, KM_Video;
+  KM_GameApp, KM_Settings, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_Music, KM_Sound, KM_ResSound, KM_Defaults, KM_Video;
 
 const
   FLAG_LABEL_OFFSET_X = 10;
@@ -277,7 +277,7 @@ begin
   Image_ScrollRestore.Hide;
   Panel_CampScroll.Show;
 
-  gGameApp.MusicLib.StopPlayingOtherFile; //Stop playing the previous breifing even if this one doesn't exist
+  gMusic.StopPlayingOtherFile; //Stop playing the previous breifing even if this one doesn't exist
   PlayBrifingAudioTrack;
 end;
 
@@ -288,7 +288,7 @@ end;
 
 procedure TKMMenuCampaign.StartClick(Sender: TObject);
 begin
-  gGameApp.MusicLib.StopPlayingOtherFile;
+  gMusic.StopPlayingOtherFile;
   gGameApp.NewCampaignMap(fCampaign, fMapIndex, fDifficulty);
   if fCampaign.MapsInfo[fMapIndex].TxtInfo.HasDifficultyLevels then
     gGameSettings.CampaignLastDifficulty := TKMMissionDifficulty(DropBox_Difficulty.GetSelectedTag);
@@ -376,7 +376,7 @@ end;
 
 procedure TKMMenuCampaign.BackClick(Sender: TObject);
 begin
-  gGameApp.MusicLib.StopPlayingOtherFile; //Cancel briefing if it was playing
+  gMusic.StopPlayingOtherFile; //Cancel briefing if it was playing
 
   fOnPageChange(gpCampSelect);
 end;

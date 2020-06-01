@@ -356,14 +356,14 @@ type
 
 implementation
 uses
-  Generics.Collections,
+  Generics.Collections, 
   KM_Main, KM_GameInputProcess, KM_GameInputProcess_Multi, KM_AI, KM_RenderUI, KM_GameCursor, KM_Maps,
   KM_HandsCollection, KM_Hand, KM_RenderPool, KM_ResTexts, KM_Game, KM_GameApp, KM_HouseBarracks, KM_HouseTownHall,
   KM_Utils, KM_ScriptingEvents, KM_AIFields, KM_Settings, 
   KM_CommonUtils, KM_ResLocales, KM_ResSound, KM_Resource, KM_Log, KM_ResCursors, KM_ResFonts, KM_ResKeys,
   KM_FogOfWar, KM_Sound, KM_NetPlayersList, KM_MessageLog, KM_NetworkTypes,
   KM_InterfaceMapEditor, KM_HouseWoodcutters, KM_MapTypes,
-  KM_GameTypes, KM_GameParams, KM_Video;
+  KM_GameTypes, KM_GameParams, KM_Video, KM_Music;
 
 const
   ALLIES_ROWS = 7;
@@ -1744,13 +1744,13 @@ end;
 
 procedure TKMGamePlayInterface.Menu_NextTrack(Sender: TObject);
 begin
-  gGameApp.MusicLib.PlayNextTrack;
+  gMusic.PlayNextTrack;
 end;
 
 
 procedure TKMGamePlayInterface.Menu_PreviousTrack(Sender: TObject);
 begin
-  gGameApp.MusicLib.PlayPreviousTrack;
+  gMusic.PlayPreviousTrack;
 end;
 
 
@@ -2219,7 +2219,7 @@ begin
   if gGameSettings.MusicOff then
     Label_Menu_Track.Caption := '-'
   else
-    Label_Menu_Track.Caption := gGameApp.MusicLib.GetTrackTitle;
+    Label_Menu_Track.Caption := gMusic.GetTrackTitle;
 
   Label_Menu_Track.AutoWrap := Length(Label_Menu_Track.Caption) > MAX_TRACKNAME_LENGTH;
   Label_Menu_Track.Top := IfThen(Label_Menu_Track.AutoWrap, 19, 22);
