@@ -1135,7 +1135,7 @@ begin
     else
       fMainMenuInterface.Paint;
 
-    gRender.RenderBrightness(GameSettings.Brightness);
+    gRender.RenderBrightness(fGameSettings.Brightness);
   {$IFDEF PERFLOG}
   finally
     gPerfLogs.SectionLeave(psFrameFullG);
@@ -1220,7 +1220,7 @@ begin
   if fGlobalTickCount mod 10 = 0 then
   begin
     //Music
-    if not GameSettings.MusicOff and fMusicLib.IsEnded then
+    if not fGameSettings.MusicOff and fMusicLib.IsEnded then
       fMusicLib.PlayNextTrack; //Feed new music track
 
     //StatusBar
