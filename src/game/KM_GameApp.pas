@@ -7,7 +7,7 @@ uses
   Classes, Dialogs, ExtCtrls,
   KM_CommonTypes, KM_Defaults, KM_RenderControl, KM_Video,
   KM_Campaigns, KM_Game, KM_InterfaceMainMenu, KM_Resource,
-  KM_Music, KM_Maps, KM_MapTypes, KM_Networking, KM_Settings, KM_Render,
+  KM_Music, KM_Maps, KM_MapTypes, KM_CampaignTypes, KM_Networking, KM_Settings, KM_Render,
   KM_GameTypes, KM_Points, KM_Console;
 
 type
@@ -69,13 +69,12 @@ type
     procedure SendMPGameInfo;
     function RenderVersion: UnicodeString;
     procedure PrintScreen(const aFilename: UnicodeString = '');
-    procedure PauseMusicToPlayFile(const aFileName: UnicodeString);
     function CheckDATConsistency: Boolean;
 
     procedure PreloadGameResources;
 
     //These are all different game kinds we can start
-    procedure NewCampaignMap(aCampaign: TKMCampaign; aMap: Byte; aDifficulty: TKMMissionDifficulty = mdNone);
+    procedure NewCampaignMap(aCampaignId: TKMCampaignId; aMap: Byte; aDifficulty: TKMMissionDifficulty = mdNone);
     procedure NewSingleMap(const aMissionFile, aGameName: UnicodeString; aDesiredLoc: ShortInt = -1;
                            aDesiredColor: Cardinal = $00000000; aDifficulty: TKMMissionDifficulty = mdNone;
                            aAIType: TKMAIType = aitNone; aAutoselectHumanLoc: Boolean = False);
@@ -859,10 +858,12 @@ begin
 end;
 
 
-procedure TKMGameApp.NewCampaignMap(aCampaign: TKMCampaign; aMap: Byte; aDifficulty: TKMMissionDifficulty = mdNone);
+procedure TKMGameApp.NewCampaignMap(aCampaignId: TKMCampaignId; aMap: Byte; aDifficulty: TKMMissionDifficulty = mdNone);
+var
+  camp: TKMCampaign;
 begin
-  LoadGameFromScript(aCampaign.GetMissionFile(aMap), aCampaign.GetMissionTitle(aMap), 0, 0, aCampaign, aMap, gmCampaign,
-                     -1, 0, aDifficulty);
+  camp := fCampaigns.CampaignById(aCampaignId);
+  LoadGameFromScript(camp.GetMissionFile(aMap), camp.GetMissionTitle(aMap), 0, 0, camp, aMap, gmCampaign, -1, 0, aDifficulty);
 
   if Assigned(fOnGameStart) and (gGame <> nil) then
     fOnGameStart(gGame.Params.GameMode);
@@ -1177,14 +1178,6 @@ begin
 
   ForceDirectories(ExtractFilePath(strName));
   gRender.DoPrintScreen(strName);
-end;
-
-
-procedure TKMGameApp.PauseMusicToPlayFile(const aFileName: UnicodeString);
-begin
-  if not FileExists(aFileName) then Exit;
-  gSoundPlayer.AbortAllFadeSounds; //Victory/defeat sounds also fade music, so stop those in the rare chance they might still be playing
-  fMusic.PauseToPlayFile(aFileName, fGameSettings.SoundFXVolume);
 end;
 
 

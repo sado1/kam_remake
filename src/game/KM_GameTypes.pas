@@ -2,7 +2,7 @@ unit KM_GameTypes;
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_MapTypes;
+  KM_MapTypes, KM_CampaignTypes;
 
 type
   TKMGameMode = (
@@ -23,6 +23,8 @@ type
   TKMNewSingleMapEvent = procedure (const aMissionFile, aGameName: UnicodeString; aDesiredLoc: ShortInt = -1;
                                     aDesiredColor: Cardinal = $00000000; aDifficulty: TKMMissionDifficulty = mdNone;
                                     aAIType: TKMAIType = aitNone; aAutoselectHumanLoc: Boolean = False) of object;
+
+  TKMNewCampaignMapEvent = procedure (aCampaign: TKMCampaignId; aMap: Byte; aDifficulty: TKMMissionDifficulty = mdNone) of object;
 
 implementation
 

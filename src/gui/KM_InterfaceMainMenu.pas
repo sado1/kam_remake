@@ -74,7 +74,7 @@ type
 
 implementation
 uses
-  KM_Main, KM_ResTexts, KM_GameApp, KM_Log, KM_RenderUI, KM_NetworkTypes;
+  KM_Main, KM_ResTexts, KM_GameApp, KM_Log, KM_RenderUI, KM_NetworkTypes, KM_CampaignTypes;
 
 
 { TKMMainMenuInterface }
@@ -98,7 +98,7 @@ begin
   fMenuMain          := TKMMenuMain.Create(Panel_Menu, PageChange);
   fMenuSinglePlayer  := TKMMenuSinglePlayer.Create(Panel_Menu, PageChange);
   fMenuCampaigns     := TKMMenuCampaigns.Create(Panel_Menu, aCampaigns, PageChange);
-  fMenuCampaign      := TKMMenuCampaign.Create(Panel_Menu, PageChange);
+  fMenuCampaign      := TKMMenuCampaign.Create(Panel_Menu, aCampaigns, PageChange);
   fMenuSingleMap     := TKMMenuSingleMap.Create(Panel_Menu, PageChange);
   fMenuLoad          := TKMMenuLoad.Create(Panel_Menu, PageChange);
   fMenuMultiplayer   := TKMMenuMultiplayer.Create(Panel_Menu, PageChange);
@@ -112,6 +112,7 @@ begin
 
   fMenuSingleMap.OnNewSingleMap     := gGameApp.NewSingleMap;
   fMenuSinglePlayer.OnNewSingleMap  := gGameApp.NewSingleMap;
+  fMenuCampaign.OnNewCampaignMap    := gGameApp.NewCampaignMap;
 
   //Show version info on every page
   Label_Version := TKMLabel.Create(Panel_Main, 8, 8, 0, 0, '', fntAntiqua, taLeft);

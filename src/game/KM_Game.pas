@@ -8,7 +8,7 @@ uses
   KM_Networking,
   KM_PathFinding,
   KM_GameParams, KM_GameInputProcess, KM_GameSavedReplays, KM_GameOptions, KM_GameTypes,
-  KM_MapEditor, KM_Campaigns, KM_Maps, KM_MapTypes, KM_TerrainPainter,
+  KM_MapEditor, KM_Campaigns, KM_Maps, KM_MapTypes, KM_CampaignTypes, KM_TerrainPainter,
   KM_Render, KM_Sound, KM_Scripting,
   KM_InterfaceGame, KM_InterfaceGamePlay, KM_InterfaceMapEditor,
   KM_ResTexts, KM_Hand,
