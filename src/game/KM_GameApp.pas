@@ -19,7 +19,7 @@ type
 
     fCampaigns: TKMCampaignsCollection;
     fGameSettings: TKMGameSettings;
-    fMusicLib: TKMMusicLib;
+    fMusic: TKMMusicLib;
     fNetworking: TKMNetworking;
     fTimerUI: TTimer;
     fMainMenuInterface: TKMMainMenuInterface;
@@ -99,7 +99,7 @@ type
     function Game: TKMGame;
     property GameSettings: TKMGameSettings read GetGameSettings;
     property MainMenuInterface: TKMMainMenuInterface read fMainMenuInterface;
-    property MusicLib: TKMMusicLib read fMusicLib;
+    property Music: TKMMusicLib read fMusic;
     property Networking: TKMNetworking read fNetworking;
     property GlobalTickCount: Cardinal read fGlobalTickCount;
     property Chat: TKMChat read fChat;
@@ -177,9 +177,9 @@ begin
     MessageDlg(gResTexts[TX_GAME_ERROR_OLD_OPENGL] + EolW + EolW + gResTexts[TX_GAME_ERROR_OLD_OPENGL_2], mtWarning, [mbOk], 0);
 
   gSoundPlayer  := TKMSoundPlayer.Create(fGameSettings.SoundFXVolume);
-  fMusicLib     := TKMMusicLib.Create(fGameSettings.MusicVolume);
-  gSoundPlayer.OnRequestFade   := fMusicLib.Fade;
-  gSoundPlayer.OnRequestUnfade := fMusicLib.Unfade;
+  fMusic     := TKMMusicLib.Create(fGameSettings.MusicVolume);
+  gSoundPlayer.OnRequestFade   := fMusic.Fade;
+  gSoundPlayer.OnRequestUnfade := fMusic.Unfade;
 
   fCampaigns    := TKMCampaignsCollection.Create;
   fCampaigns.Load;
@@ -194,9 +194,9 @@ begin
 
   //Start the Music playback as soon as loading is complete
   if (not NoMusic) and not fGameSettings.MusicOff then
-    fMusicLib.PlayMenuTrack;
+    fMusic.PlayMenuTrack;
 
-  fMusicLib.ToggleShuffle(fGameSettings.ShuffleOn); //Determine track order
+  fMusic.ToggleShuffle(fGameSettings.ShuffleOn); //Determine track order
 
   fOnGameStart := GameStarted;
   fOnGameEnd := GameEnded;
@@ -224,7 +224,7 @@ begin
 
   if fTimerUI <> nil then fTimerUI.Enabled := False;
   //Stop music imediently, so it doesn't keep playing and jerk while things closes
-  if fMusicLib <> nil then fMusicLib.Stop;
+  if fMusic <> nil then fMusic.Stop;
 
   StopGame(grSilent);
 
@@ -235,7 +235,7 @@ begin
   FreeThenNil(fMainMenuInterface);
   FreeThenNil(gRes);
   FreeThenNil(gSoundPlayer);
-  FreeThenNil(fMusicLib);
+  FreeThenNil(fMusic);
   FreeAndNil(fNetworking);
   FreeAndNil(gRandomCheckLogger);
   FreeAndNil(gGameCursor);
@@ -1184,7 +1184,7 @@ procedure TKMGameApp.PauseMusicToPlayFile(const aFileName: UnicodeString);
 begin
   if not FileExists(aFileName) then Exit;
   gSoundPlayer.AbortAllFadeSounds; //Victory/defeat sounds also fade music, so stop those in the rare chance they might still be playing
-  fMusicLib.PauseToPlayFile(aFileName, fGameSettings.SoundFXVolume);
+  fMusic.PauseToPlayFile(aFileName, fGameSettings.SoundFXVolume);
 end;
 
 
@@ -1220,8 +1220,8 @@ begin
   if fGlobalTickCount mod 10 = 0 then
   begin
     //Music
-    if not fGameSettings.MusicOff and fMusicLib.IsEnded then
-      fMusicLib.PlayNextTrack; //Feed new music track
+    if not fGameSettings.MusicOff and fMusic.IsEnded then
+      fMusic.PlayNextTrack; //Feed new music track
 
     //StatusBar
     if (gGame <> nil) and not gGame.IsPaused and Assigned(fOnCursorUpdate) then
@@ -1240,7 +1240,7 @@ end;
 procedure TKMGameApp.UpdateStateIdle(aFrameTime: Cardinal);
 begin
   if gGame <> nil then gGame.UpdateStateIdle(aFrameTime);
-  if fMusicLib <> nil then fMusicLib.UpdateStateIdle;
+  if fMusic <> nil then fMusic.UpdateStateIdle;
   if gSoundPlayer <> nil then gSoundPlayer.UpdateStateIdle;
   if fNetworking <> nil then fNetworking.UpdateStateIdle;
   if gRes <> nil then gRes.UpdateStateIdle;
