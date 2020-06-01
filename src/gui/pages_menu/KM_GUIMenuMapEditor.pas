@@ -1090,7 +1090,7 @@ begin
   begin
     fMaps.MoveMap(ColumnBox_MapEd.SelectedItemTag, Edit_MapMove.Text, mfMP);
     SetSelectedMapInfo(fSelectedMapInfo.CRC, Edit_MapMove.Text); // Update Name of selected item in list
-    gGameApp.MainMenuInterface.MyControls.UpdateFocus(ColumnBox_MapEd); // Set focus to the maps list
+    ColumnBox_MapEd.Focus;
     ListUpdate;
   end;
 end;
@@ -1108,7 +1108,7 @@ begin
   UpdateUI;
 
   Panel_MapEd.Show;
-  gGameApp.MainMenuInterface.MyControls.UpdateFocus(ColumnBox_MapEd); // Set focus to the maps list
+  ColumnBox_MapEd.Focus;
 end;
 
 
