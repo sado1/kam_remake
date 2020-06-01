@@ -14,6 +14,8 @@ type
   private
     fOnPageChange: TKMMenuChangeEventText; //will be in ancestor class
 
+    fCampaigns: TKMCampaignsCollection;
+
     procedure ListChange(Sender: TObject);
     procedure StartClick(Sender: TObject);
     procedure BackClick(Sender: TObject);
@@ -24,7 +26,7 @@ type
       Memo_CampDesc: TKMMemo;
       Button_Camp_Start, Button_Camp_Back: TKMButton;
   public
-    constructor Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText);
+    constructor Create(aParent: TKMPanel; aCampaigns: TKMCampaignsCollection; aOnPageChange: TKMMenuChangeEventText);
     procedure RefreshList;
     procedure Show;
   end;
@@ -32,16 +34,17 @@ type
 
 implementation
 uses
-  KM_ResTexts, KM_ResFonts, KM_GameApp, KM_RenderUI, KM_Settings;
+  KM_ResTexts, KM_ResFonts, KM_RenderUI, KM_Settings, KM_CampaignTypes;
 
 
 { TKMMainMenuInterface }
-constructor TKMMenuCampaigns.Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText);
+constructor TKMMenuCampaigns.Create(aParent: TKMPanel; aCampaigns: TKMCampaignsCollection; aOnPageChange: TKMMenuChangeEventText);
 var
   L: TKMLabel;
 begin
   inherited Create(gpCampSelect);
 
+  fCampaigns := aCampaigns;
   fOnPageChange := aOnPageChange;
   OnEscKeyDown := BackClick;
 
@@ -86,19 +89,16 @@ end;
 procedure TKMMenuCampaigns.RefreshList;
 var
   I: Integer;
-  Camps: TKMCampaignsCollection;
 begin
-  Camps := gGameApp.Campaigns;
-
   Image_CampsPreview.TexID := 0; //Clear preview image
   ColumnBox_Camps.Clear;
   Memo_CampDesc.Clear;
-  for I := 0 to Camps.Count - 1 do
+  for I := 0 to fCampaigns.Count - 1 do
   begin
     ColumnBox_Camps.AddItem(MakeListRow(
-                        [Camps[I].GetCampaignTitle, IntToStr(Camps[I].MapCount), IntToStr(Camps[I].UnlockedMap + 1)],
+                        [fCampaigns[I].GetCampaignTitle, IntToStr(fCampaigns[I].MapCount), IntToStr(fCampaigns[I].UnlockedMap + 1)],
                         [$FFFFFFFF, $FFFFFFFF, $FFFFFFFF], I));
-    if Camps[I].ShortName = gGameSettings.MenuCampaignName then
+    if fCampaigns[I].ShortName = gGameSettings.MenuCampaignName then
     begin
       ColumnBox_Camps.ItemIndex := I;
       ListChange(nil);
@@ -128,8 +128,8 @@ begin
   else
   begin
     Button_Camp_Start.Enable;
-    cmp := gGameApp.Campaigns[ColumnBox_Camps.Rows[ColumnBox_Camps.ItemIndex].Tag].CampaignId;
-    Camp := gGameApp.Campaigns.CampaignById(cmp);
+    cmp := fCampaigns[ColumnBox_Camps.Rows[ColumnBox_Camps.ItemIndex].Tag].CampaignId;
+    Camp := fCampaigns.CampaignById(cmp);
 
     Image_CampsPreview.RX := Camp.BackGroundPic.RX;
     Image_CampsPreview.TexID := Camp.BackGroundPic.ID;
@@ -146,7 +146,7 @@ var
 begin
   //Get the caption and pass it to Campaign selection menu (it will be casted to TKMCampaignName there)
   //so that we avoid cast/uncast/cast along the event chain
-  cmp := gGameApp.Campaigns[ColumnBox_Camps.Rows[ColumnBox_Camps.ItemIndex].Tag].ShortName;
+  cmp := fCampaigns[ColumnBox_Camps.Rows[ColumnBox_Camps.ItemIndex].Tag].ShortName;
   fOnPageChange(gpCampaign, cmp);
 end;
 

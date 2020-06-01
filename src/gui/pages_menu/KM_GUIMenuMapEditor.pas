@@ -6,7 +6,7 @@ uses
   {$IFDEF Unix} LCLType, {$ENDIF}
   Classes, Controls, SysUtils, Math,
   KM_Controls, KM_Maps, KM_Minimap,
-  KM_InterfaceDefaults, KM_Defaults;
+  KM_InterfaceDefaults, KM_Defaults, KM_CommonTypes, KM_GameTypes;
 
 
 type
@@ -110,6 +110,8 @@ type
       Button_MapEdBack: TKMButton;
 
   public
+    OnNewMapEditor: TKMNewMapEditorEvent;
+
     constructor Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText);
     destructor Destroy; override;
     procedure Show;
@@ -119,9 +121,9 @@ type
 
 implementation
 uses
-  KM_ResTexts, KM_Game, KM_GameApp, KM_Settings,
-  KM_RenderUI, KM_Resource, KM_ResFonts, KM_InterfaceMapEditor,
-  KM_Pics, KM_CommonTypes, KM_CommonUtils;
+  KM_ResTexts, KM_Settings,
+  KM_RenderUI, KM_Resource, KM_ResFonts,
+  KM_Pics, KM_CommonUtils;
 
 const
   MAPSIZES_COUNT = 8;
@@ -480,12 +482,8 @@ begin
       //Terminate all
       fMaps.TerminateScan;
 
-      gGameApp.NewMapEditor(Map.FullPath('.dat'), 0, 0, Map.CRC, Map.MapAndDatCRC);
-
-      //Keep MP/SP selected in the map editor interface
-      //(if mission failed to load we would have gGame = nil)
-      if (gGame <> nil) and (gGame.ActiveInterface is TKMapEdInterface) then
-        TKMapEdInterface(gGame.ActiveInterface).SetLoadMode(Radio_MapType.ItemIndex <> 0);
+      if Assigned(OnNewMapEditor) then
+        OnNewMapEditor(Map.FullPath('.dat'), 0, 0, Map.CRC, Map.MapAndDatCRC, Radio_MapType.ItemIndex <> 0);
     end;
   finally
     fMaps.Unlock; //Double unlock should not harm
@@ -496,7 +494,8 @@ begin
   begin
     MapEdSizeX := NumEdit_MapSizeX.Value;
     MapEdSizeY := NumEdit_MapSizeY.Value;
-    gGameApp.NewMapEditor('', MapEdSizeX, MapEdSizeY);
+    if Assigned(OnNewMapEditor) then
+      OnNewMapEditor('', MapEdSizeX, MapEdSizeY);
   end;
 end;
 
@@ -881,12 +880,10 @@ begin
   if aVisible then
   begin
     PopUp_Delete.Show;
-    ColumnBox_MapEd.Focusable := False;
-    gGameApp.MainMenuInterface.MyControls.UpdateFocus(ColumnBox_MapEd);
+    ColumnBox_MapEd.Focusable := False; // Will update focus automatically
   end else begin
     PopUp_Delete.Hide;
-    ColumnBox_MapEd.Focusable := True;
-    gGameApp.MainMenuInterface.MyControls.UpdateFocus(ColumnBox_MapEd);
+    ColumnBox_MapEd.Focusable := True; // Will update focus automatically
   end;
 end;
 
@@ -936,12 +933,10 @@ begin
   if aVisible then
   begin
     PopUp_Move.Show;
-    ColumnBox_MapEd.Focusable := False;
-    gGameApp.MainMenuInterface.MyControls.UpdateFocus(ColumnBox_MapEd);
+    ColumnBox_MapEd.Focusable := False; // Will update focus automatically
   end else begin
     PopUp_Move.Hide;
-    ColumnBox_MapEd.Focusable := True;
-    gGameApp.MainMenuInterface.MyControls.UpdateFocus(ColumnBox_MapEd);
+    ColumnBox_MapEd.Focusable := True; // Will update focus automatically
   end;
 end;
 
@@ -1094,7 +1089,7 @@ begin
   begin
     fMaps.MoveMap(ColumnBox_MapEd.SelectedItemTag, Edit_MapMove.Text, mfMP);
     SetSelectedMapInfo(fSelectedMapInfo.CRC, Edit_MapMove.Text); // Update Name of selected item in list
-    gGameApp.MainMenuInterface.MyControls.UpdateFocus(ColumnBox_MapEd); // Set focus to the maps list
+    ColumnBox_MapEd.Focus;
     ListUpdate;
   end;
 end;
@@ -1112,7 +1107,7 @@ begin
   UpdateUI;
 
   Panel_MapEd.Show;
-  gGameApp.MainMenuInterface.MyControls.UpdateFocus(ColumnBox_MapEd); // Set focus to the maps list
+  ColumnBox_MapEd.Focus;
 end;
 
 

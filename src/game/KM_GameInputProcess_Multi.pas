@@ -200,7 +200,7 @@ begin
 
   if gGame.IsPeaceTime and (aCommand.CommandType in BLOCKED_BY_PEACETIME) then
   begin
-    gGame.Networking.PostLocalMessage(gResTexts[TX_MP_BLOCKED_BY_PEACETIME], csNone);
+    gNetworking.PostLocalMessage(gResTexts[TX_MP_BLOCKED_BY_PEACETIME], csNone);
     gSoundPlayer.Play(sfxCantPlace);
     Exit;
   end;
@@ -225,10 +225,10 @@ begin
 
   if not fCommandIssued[Tick] then
   begin
-    fSchedule[Tick, gGame.Networking.MyIndex].Clear; //Clear old data (it was kept in case it was required for resync)
+    fSchedule[Tick, gNetworking.MyIndex].Clear; //Clear old data (it was kept in case it was required for resync)
     fCommandIssued[Tick] := True;
   end;
-  fSchedule[Tick, gGame.Networking.MyIndex].Add(aCommand);
+  fSchedule[Tick, gNetworking.MyIndex].Add(aCommand);
 //  gLog.AddTime(Format('Scheduled cmd Tick: %d, CMD_TYPE = %s',
 //                      [Tick, GetEnumName(TypeInfo(TKMGameInputCommandType), Integer(aCommand.CommandType))]));
 end;
@@ -275,7 +275,7 @@ begin
   try
     Msg.Write(Byte(kdpCommands));
     Msg.Write(aTick); //Target Tick in 1..n range
-    fSchedule[aTick mod MAX_SCHEDULE, gGame.Networking.MyIndex].Save(Msg); //Write all commands to the stream
+    fSchedule[aTick mod MAX_SCHEDULE, gNetworking.MyIndex].Save(Msg); //Write all commands to the stream
 
     fNetworking.SendCommands(Msg, aPlayerIndex); //Send to all players by default
   finally
@@ -333,7 +333,7 @@ begin
           //Recieving commands too late will happen during reconnections, so just ignore it
           if (Tick > gGameParams.GameTick)
             //DO not check if player is dropped - we could receive scheduled commmands from already dropped player, that we should store/execute to be in sync with other players
-            {and not gGame.Networking.NetPlayers[aSenderIndex].Dropped}
+            {and not gNetworking.NetPlayers[aSenderIndex].Dropped}
             then
           begin
             fSchedule[Tick mod MAX_SCHEDULE, aSenderIndex].Load(aStream);
@@ -456,14 +456,14 @@ begin
       and (fNetworking.NetGameState = lgsGame) then //Don't send commands unless game is running normally
     begin
       if not fCommandIssued[I mod MAX_SCHEDULE] then
-        fSchedule[I mod MAX_SCHEDULE, gGame.Networking.MyIndex].Clear; //No one has used it since last time through the ring buffer
+        fSchedule[I mod MAX_SCHEDULE, gNetworking.MyIndex].Clear; //No one has used it since last time through the ring buffer
       fCommandIssued[I mod MAX_SCHEDULE] := False; //Make it as requiring clearing next time around
 
       fLastSentCmdsTick := I;
       SendCommands(I);
 //      gLog.AddTime(Format('fDelay = %d; Send Commands for Tick = %d', [fDelay, I]));
       fSent[I mod MAX_SCHEDULE] := True;
-      fRecievedData[I mod MAX_SCHEDULE, gGame.Networking.MyIndex] := True; //Recieved commands from self
+      fRecievedData[I mod MAX_SCHEDULE, gNetworking.MyIndex] := True; //Recieved commands from self
     end;
 end;
 

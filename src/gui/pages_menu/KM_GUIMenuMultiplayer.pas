@@ -5,7 +5,7 @@ uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLType, {$ENDIF}
   StrUtils, SysUtils, KromOGLUtils, Math, Classes, Controls,
-  KM_Controls, KM_Defaults, KM_Pics,
+  KM_Controls, KM_Defaults, KM_CommonTypes, KM_Pics,
   KM_InterfaceDefaults, KM_ServerQuery;
 
 
@@ -102,6 +102,8 @@ type
         Button_MP_PasswordOk: TKMButton;
         Button_MP_PasswordCancel: TKMButton;
   public
+    OnNetworkInit: TEvent;
+
     constructor Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText);
 
     procedure Show(const aText: UnicodeString);
@@ -111,8 +113,8 @@ type
 
 implementation
 uses
-  KM_Main, KM_Settings, KM_NetworkTypes, KM_ResTexts, KM_GameApp, KM_ResLocales, KM_GUIMenuLobby, KM_MapTypes,
-  KM_CommonUtils, KM_CommonTypes, KM_Sound, KM_ResSound, KM_RenderUI, KM_ResFonts;
+  KM_Main, KM_Settings, KM_Networking, KM_NetworkTypes, KM_ResTexts, KM_ResLocales, KM_GUIMenuLobby, KM_MapTypes,
+  KM_CommonUtils, KM_Sound, KM_ResSound, KM_RenderUI, KM_ResFonts, KM_Console;
 
 
 const
@@ -354,8 +356,8 @@ begin
   Button_MP_GetIn.Disable;
 
   //Fetch the announcements display
-  gGameApp.Networking.ServerQuery.OnAnnouncements := MP_AnnouncementsUpdated;
-  gGameApp.Networking.ServerQuery.FetchAnnouncements(gResLocales.UserLocale);
+  gNetworking.ServerQuery.OnAnnouncements := MP_AnnouncementsUpdated;
+  gNetworking.ServerQuery.FetchAnnouncements(gResLocales.UserLocale);
   Memo_MP_Announcement.Clear;
   Memo_MP_Announcement.Add(gResTexts[TX_MP_MENU_LOADING_ANNOUNCEMENTS]);
 end;
@@ -401,11 +403,11 @@ begin
   if Sender = Button_MP_PasswordOk then
   begin
     Panel_MPPassword.Hide;
-    gGameApp.Networking.SendPassword(AnsiString(Edit_MP_Password.Text));
+    gNetworking.SendPassword(AnsiString(Edit_MP_Password.Text));
   end;
   if Sender = Button_MP_PasswordCancel then
   begin
-    gGameApp.Networking.Disconnect;
+    gNetworking.Disconnect;
     Panel_MPPassword.Hide;
     MP_Update(gResTexts[TX_MP_MENU_STATUS_READY], icGreen, False);
   end;
@@ -481,8 +483,8 @@ end;
 
 procedure TKMMenuMultiplayer.MP_ServersRefresh(Sender: TObject);
 begin
-  gGameApp.Networking.ServerQuery.OnListUpdated := MP_ServersUpdateList;
-  gGameApp.Networking.ServerQuery.RefreshList;
+  gNetworking.ServerQuery.OnListUpdated := MP_ServersUpdateList;
+  gNetworking.ServerQuery.RefreshList;
   ColumnBox_Servers.Clear;
   MP_ClearServerDetailsPanel;
 
@@ -507,7 +509,7 @@ begin
   PrevTop := ColumnBox_Servers.TopIndex;
   ColumnBox_Servers.Clear;
 
-  if gGameApp.Networking.ServerQuery.Rooms.Count = 0 then
+  if gNetworking.ServerQuery.Rooms.Count = 0 then
   begin
     //Do not use 'Show' here as it will also make the parent panel visible
     //which could be already hidden if player switched pages
@@ -517,16 +519,16 @@ begin
   else
   begin
     Label_Servers_Status.Hide;
-    for I := 0 to gGameApp.Networking.ServerQuery.Rooms.Count - 1 do
+    for I := 0 to gNetworking.ServerQuery.Rooms.Count - 1 do
     begin
-      R := gGameApp.Networking.ServerQuery.Rooms[I];
+      R := gNetworking.ServerQuery.Rooms[I];
 
       //Check room game revision
       if (R.GameRevision <> EMPTY_ROOM_DEFAULT_GAME_REVISION)
         and (R.GameRevision <> GAME_REVISION_NUM) then //Room game revision differs from ours, skip it
         Continue;
 
-      S := gGameApp.Networking.ServerQuery.Servers[R.ServerIndex];
+      S := gNetworking.ServerQuery.Servers[R.ServerIndex];
 
       //Only show # if Server has more than 1 Room
       DisplayName := IfThen(R.OnlyRoom, S.Name, S.Name + ' #' + IntToStr(R.RoomID + 1));
@@ -573,37 +575,37 @@ procedure TKMMenuMultiplayer.MP_ServersSort(aIndex: Integer);
 begin
   case ColumnBox_Servers.SortIndex of
     0:  if ColumnBox_Servers.SortDirection = sdDown then
-          gGameApp.Networking.ServerQuery.SortMethod := ssmByTypeAsc
+          gNetworking.ServerQuery.SortMethod := ssmByTypeAsc
         else
-          gGameApp.Networking.ServerQuery.SortMethod := ssmByTypeDesc;
+          gNetworking.ServerQuery.SortMethod := ssmByTypeDesc;
     1:  if ColumnBox_Servers.SortDirection = sdDown then
-          gGameApp.Networking.ServerQuery.SortMethod := ssmByPasswordAsc
+          gNetworking.ServerQuery.SortMethod := ssmByPasswordAsc
         else
-          gGameApp.Networking.ServerQuery.SortMethod := ssmByPasswordDesc;
+          gNetworking.ServerQuery.SortMethod := ssmByPasswordDesc;
     //Sorting by name goes A..Z by default
     2:  if ColumnBox_Servers.SortDirection = sdDown then
-          gGameApp.Networking.ServerQuery.SortMethod := ssmByNameAsc
+          gNetworking.ServerQuery.SortMethod := ssmByNameAsc
         else
-          gGameApp.Networking.ServerQuery.SortMethod := ssmByNameDesc;
+          gNetworking.ServerQuery.SortMethod := ssmByNameDesc;
     //Sorting by state goes Lobby,Loading,Game,None by default
     3:  if ColumnBox_Servers.SortDirection = sdDown then
-          gGameApp.Networking.ServerQuery.SortMethod := ssmByStateAsc
+          gNetworking.ServerQuery.SortMethod := ssmByStateAsc
         else
-          gGameApp.Networking.ServerQuery.SortMethod := ssmByStateDesc;
+          gNetworking.ServerQuery.SortMethod := ssmByStateDesc;
     //Sorting by player count goes 8..0 by default
     4:  if ColumnBox_Servers.SortDirection = sdDown then
-          gGameApp.Networking.ServerQuery.SortMethod := ssmByPlayersDesc
+          gNetworking.ServerQuery.SortMethod := ssmByPlayersDesc
         else
-          gGameApp.Networking.ServerQuery.SortMethod := ssmByPlayersAsc;
+          gNetworking.ServerQuery.SortMethod := ssmByPlayersAsc;
     //Sorting by ping goes 0 ... 1000 by default
     5:  if ColumnBox_Servers.SortDirection = sdDown then
-          gGameApp.Networking.ServerQuery.SortMethod := ssmByPingAsc
+          gNetworking.ServerQuery.SortMethod := ssmByPingAsc
         else
-          gGameApp.Networking.ServerQuery.SortMethod := ssmByPingDesc;
+          gNetworking.ServerQuery.SortMethod := ssmByPingDesc;
   end;
 
   //Refresh the display only if there are rooms to be sorted (otherwise it shows "no servers found" immediately)
-  if gGameApp.Networking.ServerQuery.Rooms.Count > 0 then
+  if gNetworking.ServerQuery.Rooms.Count > 0 then
     MP_ServersUpdateList(nil);
 end;
 
@@ -661,8 +663,8 @@ begin
   fServerSelected := True;
   Button_MP_GetIn.Enabled := MP_GetInEnabled;
 
-  fSelectedRoomInfo := gGameApp.Networking.ServerQuery.Rooms[ColumnBox_Servers.Rows[ID].Tag];
-  fSelectedServerInfo := gGameApp.Networking.ServerQuery.Servers[fSelectedRoomInfo.ServerIndex];
+  fSelectedRoomInfo := gNetworking.ServerQuery.Rooms[ColumnBox_Servers.Rows[ID].Tag];
+  fSelectedServerInfo := gNetworking.ServerQuery.Servers[fSelectedRoomInfo.ServerIndex];
 
   if fSelectedRoomInfo.GameInfo.PlayerCount = 0 then
   begin
@@ -771,14 +773,14 @@ procedure TKMMenuMultiplayer.MP_ServersDoubleClick(Sender: TObject);
 begin
   //MP_SelectServer gets called by first Click
   if Button_MP_GetIn.Enabled and (ColumnBox_Servers.ItemIndex <> -1)
-  and InRange(ColumnBox_Servers.Rows[ColumnBox_Servers.ItemIndex].Tag, 0, gGameApp.Networking.ServerQuery.Rooms.Count-1) then
+  and InRange(ColumnBox_Servers.Rows[ColumnBox_Servers.ItemIndex].Tag, 0, gNetworking.ServerQuery.Rooms.Count-1) then
     MP_GetInClick(Sender);
 end;
 
 
 procedure TKMMenuMultiplayer.StartLobby(aIsHost: Boolean);
 begin
-  gGameApp.Chat.Clear;
+  gChat.Clear;
   if aIsHost then
     fOnPageChange(gpLobby, 'HOST')
   else
@@ -804,10 +806,10 @@ begin
 
   StartLobby(True);
 
-  gGameApp.Networking.OnHostFail := MP_HostFail;
-  gGameApp.Networking.Host(AnsiString(Edit_MP_ServerName.Text), serverPort,
-                           AnsiString(Edit_MP_PlayerName.Text), (Sender = Button_MP_CreateWAN),
-                           gGameSettings.ServerUDPAnnounce);
+  gNetworking.OnHostFail := MP_HostFail;
+  gNetworking.Host(AnsiString(Edit_MP_ServerName.Text), serverPort,
+                   AnsiString(Edit_MP_PlayerName.Text), (Sender = Button_MP_CreateWAN),
+                   gGameSettings.ServerUDPAnnounce);
 end;
 
 
@@ -898,11 +900,11 @@ begin
   MP_Update(gResTexts[TX_MP_MENU_STATUS_CONNECTING], icGreen, True);
 
   //Send request to join
-  gGameApp.Networking.OnJoinSucc := MP_JoinSuccess;
-  gGameApp.Networking.OnJoinFail := MP_JoinFail;
-  gGameApp.Networking.OnJoinPassword := MP_JoinPassword;
-  gGameApp.Networking.OnJoinAssignedHost := MP_JoinAssignedHost;
-  gGameApp.Networking.Join(aServerAddress, aPort, AnsiString(Edit_MP_PlayerName.Text), aRoom); //Init lobby
+  gNetworking.OnJoinSucc := MP_JoinSuccess;
+  gNetworking.OnJoinFail := MP_JoinFail;
+  gNetworking.OnJoinPassword := MP_JoinPassword;
+  gNetworking.OnJoinAssignedHost := MP_JoinAssignedHost;
+  gNetworking.Join(aServerAddress, aPort, AnsiString(Edit_MP_PlayerName.Text), aRoom); //Init lobby
 end;
 
 
@@ -917,9 +919,9 @@ end;
 // We had recieved permission to join
 procedure TKMMenuMultiplayer.MP_JoinSuccess;
 begin
-  gGameApp.Networking.OnJoinSucc := nil;
-  gGameApp.Networking.OnJoinFail := nil;
-  gGameApp.Networking.OnJoinAssignedHost := nil;
+  gNetworking.OnJoinSucc := nil;
+  gNetworking.OnJoinFail := nil;
+  gNetworking.OnJoinAssignedHost := nil;
 
   StartLobby(False);
 end;
@@ -927,7 +929,7 @@ end;
 
 procedure TKMMenuMultiplayer.MP_JoinFail(const aData: UnicodeString);
 begin
-  gGameApp.Networking.Disconnect;
+  gNetworking.Disconnect;
   MP_Update(Format(gResTexts[TX_GAME_ERROR_CONNECTION_FAILED], [aData]), icYellow, False);
   gSoundPlayer.Play(sfxnError);
 end;
@@ -935,10 +937,10 @@ end;
 
 procedure TKMMenuMultiplayer.MP_JoinAssignedHost;
 begin
-  gGameApp.Networking.OnJoinSucc := nil;
-  gGameApp.Networking.OnJoinFail := nil;
-  gGameApp.Networking.OnJoinAssignedHost := nil;
-  gGameApp.Networking.OnHostFail := MP_HostFail;
+  gNetworking.OnJoinSucc := nil;
+  gNetworking.OnJoinFail := nil;
+  gNetworking.OnJoinAssignedHost := nil;
+  gNetworking.OnHostFail := MP_HostFail;
 
   // We were joining a game and the server assigned hosting rights to us
   StartLobby(True); // Open lobby page in host mode
@@ -961,7 +963,7 @@ end;
 
 procedure TKMMenuMultiplayer.BackClick(Sender: TObject);
 begin
-  gGameApp.Networking.Disconnect;
+  gNetworking.Disconnect;
   MP_SaveSettings;
 
   gMain.UnlockMutex; //Leaving MP areas
@@ -972,7 +974,7 @@ end;
 
 procedure TKMMenuMultiplayer.MP_HostFail(const aData: UnicodeString);
 begin
-  gGameApp.Networking.Disconnect;
+  gNetworking.Disconnect;
   gSoundPlayer.Play(sfxnError);
 
   fOnPageChange(gpMultiplayer, aData);
@@ -981,7 +983,9 @@ end;
 
 procedure TKMMenuMultiplayer.Show(const aText: UnicodeString);
 begin
-  gGameApp.NetworkInit;
+  if Assigned(OnNetworkInit) then
+    OnNetworkInit;
+
   MP_Init;
 
   if aText = '' then

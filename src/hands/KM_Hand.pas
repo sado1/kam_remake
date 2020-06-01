@@ -5,7 +5,7 @@ uses
   KM_AI,
   KM_Units, KM_UnitsCollection, KM_UnitGroup, KM_UnitWarrior,
   KM_Houses, KM_HouseCollection, KM_HouseInn,
-  KM_HandLogistics, KM_HandLocks, KM_HandStats,
+  KM_HandLogistics, KM_HandLocks, KM_HandStats, KM_GameTypes,
   KM_FogOfWar, KM_HandConstructions, KM_MessageLog, KM_ResHouses,
   KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_ResWares, KM_Points;
 
@@ -242,7 +242,7 @@ uses
   KM_GameCursor, KM_Game, KM_GameParams, KM_Terrain,
   KM_HandsCollection, KM_Sound, KM_AIFields, KM_MapEditorHistory,
   KM_Resource, KM_ResSound, KM_ResTexts, KM_ResMapElements, KM_ScriptingEvents, KM_ResUnits,
-  KM_GameTypes, KM_CommonUtils, KM_Settings;
+  KM_CommonUtils, KM_Settings;
 
 const
   TIME_TO_SET_FIRST_STOREHOUSE = 10*60*2; //We give 2 minutes to set first storehouse, otherwise player will be defeated

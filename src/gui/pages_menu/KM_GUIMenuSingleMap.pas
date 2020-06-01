@@ -4,7 +4,7 @@ interface
 uses
   Controls, Math, SysUtils,
   KM_Defaults,
-  KM_Maps, KM_MapTypes,
+  KM_Maps, KM_MapTypes, KM_GameTypes,
   KM_Controls, KM_Pics, KM_InterfaceDefaults, KM_Minimap, KM_CommonTypes;
 
 
@@ -79,6 +79,8 @@ type
       ColumnBox_Maps: TKMColumnBox;
       Button_Back, Button_Start: TKMButton;
   public
+    OnNewSingleMap: TKMNewSingleMapEvent;
+
     constructor Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText);
     destructor Destroy; override;
 
@@ -89,7 +91,7 @@ type
 
 implementation
 uses
-  KM_ResTexts, KM_GameApp, KM_CommonUtils, KM_RenderUI, KM_ResFonts, KM_Settings;
+  KM_ResTexts, KM_CommonUtils, KM_RenderUI, KM_ResFonts, KM_Settings;
 
 const
   PAD_VERT = 44; //Padding from top/bottom
@@ -714,7 +716,8 @@ begin
         fMaps.TerminateScan;
 
         //Provide mission FileName mask and title here
-        gGameApp.NewSingleMap(Map.FullPath('.dat'), Map.FileName, fSingleLoc, fSingleColor, fDifficulty, fAIType);
+        if Assigned(OnNewSingleMap) then
+          OnNewSingleMap(Map.FullPath('.dat'), Map.FileName, fSingleLoc, fSingleColor, fDifficulty, fAIType);
         Exit;
       end;
   finally

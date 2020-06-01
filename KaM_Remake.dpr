@@ -48,7 +48,9 @@ uses
   KM_AIParameters in 'src\ai\newAI\KM_AIParameters.pas',
 
   KM_Alerts in 'src\KM_Alerts.pas',
+  KM_Audio in 'src\KM_Audio.pas',
   KM_Campaigns in 'src\KM_Campaigns.pas',
+  KM_CampaignTypes in 'src\KM_CampaignTypes.pas',
 
   KM_Console in 'src\KM_Console.pas',
   KM_CommonClasses in 'src\common\KM_CommonClasses.pas',

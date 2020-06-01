@@ -96,7 +96,7 @@ var
 
 implementation
 uses
-  KM_Render, KM_RenderTypes, KM_RenderUI, dglOpenGL, KM_ResLocales, KM_GameApp, KM_Settings, KM_Sound;
+  KM_Render, KM_RenderTypes, KM_RenderUI, dglOpenGL, KM_ResLocales, KM_GameApp, KM_Settings, KM_Music, KM_Sound;
 
 const
   FADE_MUSIC_TIME   = 500; // Music fade time, in ms
@@ -426,11 +426,11 @@ begin
   if Assigned(gGameApp) then
   begin
     gSoundPlayer.AbortAllFadeSounds;
-    gGameApp.MusicLib.StopPlayingOtherFile;
-    gGameApp.MusicLib.Fade(FADE_MUSIC_TIME);
+    gMusic.StopPlayingOtherFile;
+    gMusic.Fade(FADE_MUSIC_TIME);
     // For unknown reason libzPlay lib will use higher volume when unfade (resume) music after video is stopped
     // We either can use BASS or set player volume to 0 here. Let's try the latter option for now
-    gGameApp.MusicLib.SetPlayerVolume(0);
+    gMusic.SetPlayerVolume(0);
   end;
 
   FTrackList.Clear;
@@ -534,9 +534,9 @@ begin
     if Assigned(gGameApp) then
     begin
       if startingVideo then
-        gGameApp.MusicLib.UnfadeStarting
+        gMusic.UnfadeStarting
       else
-        gGameApp.MusicLib.Unfade(UNFADE_MUSIC_TIME);
+        gMusic.Unfade(UNFADE_MUSIC_TIME);
     end;
 
     if Assigned(FCallback) then

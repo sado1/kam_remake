@@ -1386,8 +1386,8 @@ begin
   Label_ResultsMP.Caption := Label_ResultsMP.Caption + gGameParams.GameName;
 
   //Append difficulty level to game results caption
-  if gGame.MissionDifficulty <> mdNone then
-    Label_ResultsMP.Caption := Label_ResultsMP.Caption + ' (' + gResTexts[DIFFICULTY_LEVELS_TX[gGame.MissionDifficulty]] + ')';
+  if gGameParams.MissionDifficulty <> mdNone then
+    Label_ResultsMP.Caption := Label_ResultsMP.Caption + ' (' + gResTexts[DIFFICULTY_LEVELS_TX[gGameParams.MissionDifficulty]] + ')';
 
   //Append mission time
   Label_ResultsMP.Caption := Label_ResultsMP.Caption + ' - ' + TimeToString(gGame.MissionTime);

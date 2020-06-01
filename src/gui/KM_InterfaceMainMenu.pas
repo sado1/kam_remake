@@ -4,8 +4,8 @@ interface
 uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLType, {$ENDIF}
-  Classes, Controls, Math, SysUtils, KromUtils,
-  KM_Controls, KM_Points, KM_Defaults, KM_Pics, KM_Networking, KM_ResFonts,
+  Classes, Controls, Math, SysUtils, KromUtils, KM_Campaigns,
+  KM_Controls, KM_Points, KM_Defaults, KM_Pics, KM_Networking, KM_ResFonts, KM_CommonTypes, KM_GameTypes,
   KM_InterfaceDefaults,
   KM_GUIMenuCampaign,
   KM_GUIMenuCampaigns,
@@ -49,7 +49,15 @@ type
     function GetHintPositionBase: TKMPoint; override;
     function GetHintFont: TKMFont; override;
   public
-    constructor Create(X,Y: Word);
+    constructor Create (X,Y: Word; aCampaigns: TKMCampaignsCollection;
+                        aOnNewSingleMap: TKMNewSingleMapEvent;
+                        aOnNewCampaignMap: TKMNewCampaignMapEvent;
+                        aOnNewMapEditor: TKMNewMapEditorEvent;
+                        aOnNewReplay: TUnicodeStringEvent;
+                        aOnNewSingleSave: TUnicodeStringEvent;
+                        aOnToggleLocale: TAnsiStringEvent;
+                        aOnPreloadGameResources: TEvent;
+                        aOnNetworkInit: TEvent);
     destructor Destroy; override;
 
     property MenuPage: TKMMenuPageCommon read fMenuPage;
@@ -66,6 +74,7 @@ type
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X,Y: Integer); override;
 
     procedure DebugControlsUpdated(aSenderTag: Integer); override;
+    procedure SetOnOptionsChange(aEvent: TEvent);
     procedure RefreshCampaigns;
     procedure Resize(X,Y: Word); override;
     procedure UpdateState(aTickCount: Cardinal); override;
@@ -74,15 +83,24 @@ type
 
 implementation
 uses
-  KM_Main, KM_ResTexts, KM_Campaigns, KM_GameApp, KM_Log, KM_RenderUI, KM_NetworkTypes;
+  KM_Main, KM_ResTexts, KM_GameApp, KM_Log, KM_RenderUI, KM_NetworkTypes, KM_CampaignTypes;
 
 
 { TKMMainMenuInterface }
-constructor TKMMainMenuInterface.Create(X,Y: Word);
+constructor TKMMainMenuInterface.Create(X,Y: Word; aCampaigns: TKMCampaignsCollection;
+                                        aOnNewSingleMap: TKMNewSingleMapEvent;
+                                        aOnNewCampaignMap: TKMNewCampaignMapEvent;
+                                        aOnNewMapEditor: TKMNewMapEditorEvent;
+                                        aOnNewReplay: TUnicodeStringEvent;
+                                        aOnNewSingleSave: TUnicodeStringEvent;
+                                        aOnToggleLocale: TAnsiStringEvent;
+                                        aOnPreloadGameResources: TEvent;
+                                        aOnNetworkInit: TEvent);
 var
   S: TKMShape;
 begin
-  inherited;
+  inherited Create(X,Y);
+
   Assert(gResTexts <> nil, 'fTextMain should be initialized before MainMenuInterface');
 
   //Fixed-size and centered Panel for menu
@@ -96,8 +114,8 @@ begin
 
   fMenuMain          := TKMMenuMain.Create(Panel_Menu, PageChange);
   fMenuSinglePlayer  := TKMMenuSinglePlayer.Create(Panel_Menu, PageChange);
-  fMenuCampaigns     := TKMMenuCampaigns.Create(Panel_Menu, PageChange);
-  fMenuCampaign      := TKMMenuCampaign.Create(Panel_Menu, PageChange);
+  fMenuCampaigns     := TKMMenuCampaigns.Create(Panel_Menu, aCampaigns, PageChange);
+  fMenuCampaign      := TKMMenuCampaign.Create(Panel_Menu, aCampaigns, PageChange);
   fMenuSingleMap     := TKMMenuSingleMap.Create(Panel_Menu, PageChange);
   fMenuLoad          := TKMMenuLoad.Create(Panel_Menu, PageChange);
   fMenuMultiplayer   := TKMMenuMultiplayer.Create(Panel_Menu, PageChange);
@@ -108,6 +126,18 @@ begin
   fMenuCredits       := TKMMenuCredits.Create(Panel_Menu, PageChange);
   fMenuError         := TKMMenuError.Create(Panel_Menu, PageChange);
   fMenuLoading       := TKMMenuLoading.Create(Panel_Menu, PageChange);
+
+  fMenuSingleMap.OnNewSingleMap     := aOnNewSingleMap;
+  fMenuSinglePlayer.OnNewSingleMap  := aOnNewSingleMap;
+  fMenuCampaign.OnNewCampaignMap    := aOnNewCampaignMap;
+  fMenuMapEditor.OnNewMapEditor     := aOnNewMapEditor;
+  fMenuReplays.OnNewReplay          := aOnNewReplay;
+  fMenuLoad.OnNewSingleSave         := aOnNewSingleSave;
+
+  fMenuOptions.OnToggleLocale         := aOnToggleLocale;
+  fMenuOptions.OnPreloadGameResources := aOnPreloadGameResources;
+
+  fMenuMultiplayer.OnNetworkInit      := aOnNetworkInit;
 
   //Show version info on every page
   Label_Version := TKMLabel.Create(Panel_Main, 8, 8, 0, 0, '', fntAntiqua, taLeft);
@@ -248,10 +278,10 @@ begin
                     end;
     gpLobby:        begin
                       if aText = 'HOST' then
-                        fMenuLobby.Show(lpkHost, gGameApp.Networking, Panel_Menu.Height)
+                        fMenuLobby.Show(lpkHost, gNetworking, Panel_Menu.Height)
                       else
                       if aText = 'JOIN' then
-                        fMenuLobby.Show(lpkJoiner, gGameApp.Networking, Panel_Menu.Height)
+                        fMenuLobby.Show(lpkJoiner, gNetworking, Panel_Menu.Height)
                       else
                         raise Exception.Create('');
                       fMenuPage := fMenuLobby;
@@ -323,12 +353,18 @@ end;
 
 procedure TKMMainMenuInterface.ReturnToLobby(const aSaveName: UnicodeString);
 begin
-  if gGameApp.Networking.IsHost then
+  if gNetworking.IsHost then
     PageChange(gpLobby, 'HOST')
   else
     PageChange(gpLobby, 'JOIN');
 
   fMenuLobby.ReturnToLobby(aSaveName);
+end;
+
+
+procedure TKMMainMenuInterface.SetOnOptionsChange(aEvent: TEvent);
+begin
+  fMenuOptions.OnOptionsChange := aEvent;
 end;
 
 

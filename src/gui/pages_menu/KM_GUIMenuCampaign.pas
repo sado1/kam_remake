@@ -3,7 +3,7 @@ unit KM_GUIMenuCampaign;
 interface
 uses
   Classes, Controls, SysUtils, Math,
-  KM_Controls, KM_Pics, KM_MapTypes,
+  KM_Controls, KM_Pics, KM_MapTypes, KM_CampaignTypes, KM_GameTypes,
   KM_Campaigns, KM_InterfaceDefaults;
 
 
@@ -11,6 +11,8 @@ type
   TKMMenuCampaign = class (TKMMenuPageCommon)
   private
     fOnPageChange: TKMMenuChangeEventText; //will be in ancestor class
+
+    fCampaigns: TKMCampaignsCollection;
 
     fCampaignId: TKMCampaignId;
     fCampaign: TKMCampaign;
@@ -43,7 +45,9 @@ type
       DropBox_Difficulty: TKMDropList;
       Button_CampaignStart, Button_CampaignBack: TKMButton;
   public
-    constructor Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText);
+    OnNewCampaignMap: TKMNewCampaignMapEvent;
+
+    constructor Create(aParent: TKMPanel; aCampaigns: TKMCampaignsCollection; aOnPageChange: TKMMenuChangeEventText);
 
     procedure MouseMove(Shift: TShiftState; X,Y: Integer);
     procedure Resize(X, Y: Word);
@@ -57,7 +61,7 @@ type
 
 implementation
 uses
-  KM_GameApp, KM_Settings, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_Sound, KM_ResSound, KM_Defaults, KM_Video;
+  KM_Audio, KM_Settings, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_Music, KM_Sound, KM_ResSound, KM_Defaults, KM_Video;
 
 const
   FLAG_LABEL_OFFSET_X = 10;
@@ -65,11 +69,13 @@ const
   CAMP_NODE_ANIMATION_PERIOD = 5;
 
 { TKMGUIMainCampaign }
-constructor TKMMenuCampaign.Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText);
+constructor TKMMenuCampaign.Create(aParent: TKMPanel; aCampaigns: TKMCampaignsCollection; aOnPageChange: TKMMenuChangeEventText);
 var
   I: Integer;
 begin
   inherited Create(gpCampaign);
+
+  fCampaigns := aCampaigns;
 
   fDifficulty := mdNone;
   fMapIndex := 1;
@@ -146,7 +152,7 @@ const
 var
   I: Integer;
 begin
-  fCampaign := gGameApp.Campaigns.CampaignById(fCampaignId);
+  fCampaign := fCampaigns.CampaignById(fCampaignId);
 
   //Choose background
   Image_CampaignBG.RX := fCampaign.BackGroundPic.RX;
@@ -277,19 +283,22 @@ begin
   Image_ScrollRestore.Hide;
   Panel_CampScroll.Show;
 
-  gGameApp.MusicLib.StopPlayingOtherFile; //Stop playing the previous breifing even if this one doesn't exist
+  gMusic.StopPlayingOtherFile; //Stop playing the previous breifing even if this one doesn't exist
   PlayBrifingAudioTrack;
 end;
 
 procedure TKMMenuCampaign.PlayBrifingAudioTrack;
 begin
-  gGameApp.PauseMusicToPlayFile(fCampaign.GetBreifingAudioFile(fMapIndex));
+  TKMAudio.PauseMusicToPlayFile(fCampaign.GetBreifingAudioFile(fMapIndex));
 end;
 
 procedure TKMMenuCampaign.StartClick(Sender: TObject);
 begin
-  gGameApp.MusicLib.StopPlayingOtherFile;
-  gGameApp.NewCampaignMap(fCampaign, fMapIndex, fDifficulty);
+  gMusic.StopPlayingOtherFile;
+
+  if Assigned(OnNewCampaignMap) then
+    OnNewCampaignMap(fCampaignId, fMapIndex, fDifficulty);
+
   if fCampaign.MapsInfo[fMapIndex].TxtInfo.HasDifficultyLevels then
     gGameSettings.CampaignLastDifficulty := TKMMissionDifficulty(DropBox_Difficulty.GetSelectedTag);
 end;
@@ -365,7 +374,7 @@ begin
   if not fCampaign.Viewed then
   begin
     fCampaign.Viewed := True;
-    gGameApp.Campaigns.SaveProgress;
+    fCampaigns.SaveProgress;
 
     gVideoPlayer.AddCampaignVideo(fCampaign.Path, 'Logo');
     gVideoPlayer.AddCampaignVideo(fCampaign.Path, 'Intro');
@@ -376,7 +385,7 @@ end;
 
 procedure TKMMenuCampaign.BackClick(Sender: TObject);
 begin
-  gGameApp.MusicLib.StopPlayingOtherFile; //Cancel briefing if it was playing
+  gMusic.StopPlayingOtherFile; //Cancel briefing if it was playing
 
   fOnPageChange(gpCampSelect);
 end;

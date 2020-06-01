@@ -7,7 +7,7 @@ uses
   Classes, Dialogs, ExtCtrls,
   KM_CommonTypes, KM_Defaults, KM_RenderControl, KM_Video,
   KM_Campaigns, KM_Game, KM_InterfaceMainMenu, KM_Resource,
-  KM_Music, KM_Maps, KM_MapTypes, KM_Networking, KM_Settings, KM_Render,
+  KM_Music, KM_Maps, KM_MapTypes, KM_CampaignTypes, KM_Networking, KM_Settings, KM_Render,
   KM_GameTypes, KM_Points, KM_Console;
 
 type
@@ -19,7 +19,7 @@ type
 
     fCampaigns: TKMCampaignsCollection;
     fGameSettings: TKMGameSettings;
-    fMusicLib: TKMMusicLib;
+    fMusic: TKMMusicLib;
     fNetworking: TKMNetworking;
     fTimerUI: TTimer;
     fMainMenuInterface: TKMMainMenuInterface;
@@ -51,6 +51,9 @@ type
     procedure GameDestroyed;
     procedure GameFinished;
     function GetGameSettings: TKMGameSettings;
+    procedure SetOnOptionsChange(const aEvent: TEvent);
+
+    procedure InitMainMenu(aScreenX, aScreenY: Word);
   public
     constructor Create(aRenderControl: TKMRenderControl; aScreenX, aScreenY: Word; aVSync: Boolean; aOnLoadingStep: TEvent;
                        aOnLoadingText: TUnicodeStringEvent; aOnCursorUpdate: TIntegerStringEvent; NoMusic: Boolean = False);
@@ -69,13 +72,12 @@ type
     procedure SendMPGameInfo;
     function RenderVersion: UnicodeString;
     procedure PrintScreen(const aFilename: UnicodeString = '');
-    procedure PauseMusicToPlayFile(const aFileName: UnicodeString);
     function CheckDATConsistency: Boolean;
 
     procedure PreloadGameResources;
 
     //These are all different game kinds we can start
-    procedure NewCampaignMap(aCampaign: TKMCampaign; aMap: Byte; aDifficulty: TKMMissionDifficulty = mdNone);
+    procedure NewCampaignMap(aCampaignId: TKMCampaignId; aMap: Byte; aDifficulty: TKMMissionDifficulty = mdNone);
     procedure NewSingleMap(const aMissionFile, aGameName: UnicodeString; aDesiredLoc: ShortInt = -1;
                            aDesiredColor: Cardinal = $00000000; aDifficulty: TKMMissionDifficulty = mdNone;
                            aAIType: TKMAIType = aitNone; aAutoselectHumanLoc: Boolean = False);
@@ -88,7 +90,7 @@ type
                              aAIType: TKMAIType = aitNone);
     procedure NewEmptyMap(aSizeX, aSizeY: Integer);
     procedure NewMapEditor(const aFileName: UnicodeString; aSizeX: Integer = 0; aSizeY: Integer = 0;
-                           aMapFullCRC: Cardinal = 0; aMapSimpleCRC: Cardinal = 0);
+                           aMapFullCRC: Cardinal = 0; aMapSimpleCRC: Cardinal = 0; aMultiplayerLoadMode: Boolean = False);
     procedure NewReplay(const aFilePath: UnicodeString);
     procedure NewSaveAndReplay(const aSavPath, aRplPath: UnicodeString);
     function TryLoadSavedReplay(aTick: Integer): Boolean;
@@ -99,7 +101,7 @@ type
     function Game: TKMGame;
     property GameSettings: TKMGameSettings read GetGameSettings;
     property MainMenuInterface: TKMMainMenuInterface read fMainMenuInterface;
-    property MusicLib: TKMMusicLib read fMusicLib;
+    property Music: TKMMusicLib read fMusic;
     property Networking: TKMNetworking read fNetworking;
     property GlobalTickCount: Cardinal read fGlobalTickCount;
     property Chat: TKMChat read fChat;
@@ -120,7 +122,7 @@ type
     property OnGameSpeedActualChange: TSingleEvent read fOnGameSpeedChange write fOnGameSpeedChange;
     property OnGameStart: TKMGameModeChangeEvent read fOnGameStart write fOnGameStart;
     property OnGameEnd: TKMGameModeChangeEvent read fOnGameEnd write fOnGameEnd;
-    property OnOptionsChange: TEvent read fOnOptionsChange write fOnOptionsChange;
+    property OnOptionsChange: TEvent read fOnOptionsChange write SetOnOptionsChange;
 
     procedure Render(aForPrintScreen: Boolean = False);
     procedure UpdateState(Sender: TObject);
@@ -177,15 +179,15 @@ begin
     MessageDlg(gResTexts[TX_GAME_ERROR_OLD_OPENGL] + EolW + EolW + gResTexts[TX_GAME_ERROR_OLD_OPENGL_2], mtWarning, [mbOk], 0);
 
   gSoundPlayer  := TKMSoundPlayer.Create(fGameSettings.SoundFXVolume);
-  fMusicLib     := TKMMusicLib.Create(fGameSettings.MusicVolume);
-  gSoundPlayer.OnRequestFade   := fMusicLib.Fade;
-  gSoundPlayer.OnRequestUnfade := fMusicLib.Unfade;
+  fMusic     := TKMMusicLib.Create(fGameSettings.MusicVolume);
+  gSoundPlayer.OnRequestFade   := fMusic.Fade;
+  gSoundPlayer.OnRequestUnfade := fMusic.Unfade;
 
   fCampaigns    := TKMCampaignsCollection.Create;
   fCampaigns.Load;
 
   //If game was reinitialized from options menu then we should return there
-  fMainMenuInterface := TKMMainMenuInterface.Create(aScreenX, aScreenY);
+  InitMainMenu(aScreenX, aScreenY);
 
   fTimerUI := TTimer.Create(nil);
   fTimerUI.Interval := 100;
@@ -194,9 +196,9 @@ begin
 
   //Start the Music playback as soon as loading is complete
   if (not NoMusic) and not fGameSettings.MusicOff then
-    fMusicLib.PlayMenuTrack;
+    fMusic.PlayMenuTrack;
 
-  fMusicLib.ToggleShuffle(fGameSettings.ShuffleOn); //Determine track order
+  fMusic.ToggleShuffle(fGameSettings.ShuffleOn); //Determine track order
 
   fOnGameStart := GameStarted;
   fOnGameEnd := GameEnded;
@@ -224,7 +226,7 @@ begin
 
   if fTimerUI <> nil then fTimerUI.Enabled := False;
   //Stop music imediently, so it doesn't keep playing and jerk while things closes
-  if fMusicLib <> nil then fMusicLib.Stop;
+  if fMusic <> nil then fMusic.Stop;
 
   StopGame(grSilent);
 
@@ -235,7 +237,7 @@ begin
   FreeThenNil(fMainMenuInterface);
   FreeThenNil(gRes);
   FreeThenNil(gSoundPlayer);
-  FreeThenNil(fMusicLib);
+  FreeThenNil(fMusic);
   FreeAndNil(fNetworking);
   FreeAndNil(gRandomCheckLogger);
   FreeAndNil(gGameCursor);
@@ -243,6 +245,14 @@ begin
   FreeThenNil(gRender);
 
   inherited;
+end;
+
+
+procedure TKMGameApp.InitMainMenu(aScreenX, aScreenY: Word);
+begin
+  fMainMenuInterface := TKMMainMenuInterface.Create(aScreenX, aScreenY, fCampaigns,
+                                                    NewSingleMap, NewCampaignMap, NewMapEditor, NewReplay, NewSingleSave,
+                                                    ToggleLocale, PreloadGameResources, NetworkInit);
 end;
 
 
@@ -298,7 +308,7 @@ begin
   //Campaigns use single locale
   fCampaigns := TKMCampaignsCollection.Create;
   fCampaigns.Load;
-  fMainMenuInterface := TKMMainMenuInterface.Create(gRender.ScreenX, gRender.ScreenY);
+  InitMainMenu(gRender.ScreenX, gRender.ScreenY);
   fMainMenuInterface.PageChange(gpOptions);
   Resize(gRender.ScreenX, gRender.ScreenY); //Force the recreated main menu to resize to the user's screen
   fTimerUI.Enabled := True; //Safe to enable the timer again
@@ -683,7 +693,7 @@ begin
   if gMain <> nil then
     gMain.FormMain.ControlsReset;
 
-  gGame := TKMGame.Create(aGameMode, gRender, fNetworking, GameDestroyed);
+  gGame := TKMGame.Create(aGameMode, gRender, GameDestroyed);
   try
     gGame.LoadFromFile(FilePath, aGIPPath);
   except
@@ -729,7 +739,7 @@ begin
   if gMain <> nil then
     gMain.FormMain.ControlsReset;
 
-  gGame := TKMGame.Create(aGameMode, gRender, fNetworking, GameDestroyed);
+  gGame := TKMGame.Create(aGameMode, gRender, GameDestroyed);
   try
     gGame.GameStart(MissionFile, GameName, aFullCRC, aSimpleCRC, aCampaign, aMap, aDesiredLoc, aDesiredColor, aDifficulty, aAIType, aAutoselectHumanLoc);
   except
@@ -786,7 +796,7 @@ begin
   if gMain <> nil then
     gMain.FormMain.ControlsReset;
 
-  gGame := TKMGame.Create(GameMode, gRender, fNetworking, GameDestroyed);
+  gGame := TKMGame.Create(GameMode, gRender, GameDestroyed);
   try
     // SavedReplays have been just created, and we will reassign them in the next line.
     // Then Free the newly created save replays object first
@@ -834,7 +844,7 @@ begin
   if gMain <> nil then
     gMain.FormMain.ControlsReset;
 
-  gGame := TKMGame.Create(aGameMode, gRender, nil, GameDestroyed);
+  gGame := TKMGame.Create(aGameMode, gRender, GameDestroyed);
   gGame.SetSeed(4); //Every time the game will be the same as previous. Good for debug.
   try
     gGame.MapEdStartEmptyMap(aSizeX, aSizeY);
@@ -859,10 +869,12 @@ begin
 end;
 
 
-procedure TKMGameApp.NewCampaignMap(aCampaign: TKMCampaign; aMap: Byte; aDifficulty: TKMMissionDifficulty = mdNone);
+procedure TKMGameApp.NewCampaignMap(aCampaignId: TKMCampaignId; aMap: Byte; aDifficulty: TKMMissionDifficulty = mdNone);
+var
+  camp: TKMCampaign;
 begin
-  LoadGameFromScript(aCampaign.GetMissionFile(aMap), aCampaign.GetMissionTitle(aMap), 0, 0, aCampaign, aMap, gmCampaign,
-                     -1, 0, aDifficulty);
+  camp := fCampaigns.CampaignById(aCampaignId);
+  LoadGameFromScript(camp.GetMissionFile(aMap), camp.GetMissionTitle(aMap), 0, 0, camp, aMap, gmCampaign, -1, 0, aDifficulty);
 
   if Assigned(fOnGameStart) and (gGame <> nil) then
     fOnGameStart(gGame.Params.GameMode);
@@ -963,14 +975,22 @@ end;
 
 
 procedure TKMGameApp.NewMapEditor(const aFileName: UnicodeString; aSizeX: Integer = 0; aSizeY: Integer = 0;
-                                  aMapFullCRC: Cardinal = 0; aMapSimpleCRC: Cardinal = 0);
+                                  aMapFullCRC: Cardinal = 0; aMapSimpleCRC: Cardinal = 0; aMultiplayerLoadMode: Boolean = False);
 begin
   if aFileName <> '' then
-    LoadGameFromScript(aFileName, TruncateExt(ExtractFileName(aFileName)), aMapFullCRC, aMapSimpleCRC, nil, 0, gmMapEd, 0, 0)
+  begin
+    LoadGameFromScript(aFileName, TruncateExt(ExtractFileName(aFileName)), aMapFullCRC, aMapSimpleCRC, nil, 0, gmMapEd, 0, 0);
+    // gGame could be nil if we failed to load map
+    if gGame <> nil then
+      gGame.MapEditorInterface.SetLoadMode(aMultiplayerLoadMode);
+  end
   else begin
     aSizeX := EnsureRange(aSizeX, MIN_MAP_SIZE, MAX_MAP_SIZE);
     aSizeY := EnsureRange(aSizeY, MIN_MAP_SIZE, MAX_MAP_SIZE);
     LoadGameFromScratch(aSizeX, aSizeY, gmMapEd);
+    // gGame could be nil if we failed to load map
+    if gGame <> nil then
+      gGame.MapEditorInterface.SetLoadMode(aMultiplayerLoadMode);
   end;
 
   if Assigned(fOnGameStart) and (gGame <> nil) then
@@ -1091,6 +1111,8 @@ begin
                                         KMRange(fGameSettings.ServerLimitPTFrom, fGameSettings.ServerLimitPTTo),
                                         KMRange(fGameSettings.ServerLimitSpeedFrom, fGameSettings.ServerLimitSpeedTo),
                                         KMRange(fGameSettings.ServerLimitSpeedAfterPTFrom, fGameSettings.ServerLimitSpeedAfterPTTo));
+
+  // Set event handlers anyway. Those could be reset by someone
   fNetworking.OnMPGameInfoChanged := SendMPGameInfo;
   fNetworking.OnStartMap := NewMultiplayerMap;
   fNetworking.OnStartSave := NewMultiplayerSave;
@@ -1107,6 +1129,14 @@ begin
     fNetworking.AnnounceGameInfo(gGame.MissionTime, gGame.Params.GameName)
   else
     fNetworking.AnnounceGameInfo(-1, ''); //fNetworking will fill the details from lobby
+end;
+
+
+procedure TKMGameApp.SetOnOptionsChange(const aEvent: TEvent);
+begin
+  fOnOptionsChange := aEvent;
+
+  fMainMenuInterface.SetOnOptionsChange(aEvent);
 end;
 
 
@@ -1133,7 +1163,7 @@ begin
     else
       fMainMenuInterface.Paint;
 
-    gRender.RenderBrightness(GameSettings.Brightness);
+    gRender.RenderBrightness(fGameSettings.Brightness);
   {$IFDEF PERFLOG}
   finally
     gPerfLogs.SectionLeave(psFrameFullG);
@@ -1178,14 +1208,6 @@ begin
 end;
 
 
-procedure TKMGameApp.PauseMusicToPlayFile(const aFileName: UnicodeString);
-begin
-  if not FileExists(aFileName) then Exit;
-  gSoundPlayer.AbortAllFadeSounds; //Victory/defeat sounds also fade music, so stop those in the rare chance they might still be playing
-  fMusicLib.PauseToPlayFile(aFileName, fGameSettings.SoundFXVolume);
-end;
-
-
 function TKMGameApp.CheckDATConsistency: Boolean;
 begin
   Result := ALLOW_MP_MODS or (gRes.GetDATCRC = $4F5458E6); //That's the magic CRC of official .dat files
@@ -1218,8 +1240,8 @@ begin
   if fGlobalTickCount mod 10 = 0 then
   begin
     //Music
-    if not GameSettings.MusicOff and fMusicLib.IsEnded then
-      fMusicLib.PlayNextTrack; //Feed new music track
+    if not fGameSettings.MusicOff and fMusic.IsEnded then
+      fMusic.PlayNextTrack; //Feed new music track
 
     //StatusBar
     if (gGame <> nil) and not gGame.IsPaused and Assigned(fOnCursorUpdate) then
@@ -1238,7 +1260,7 @@ end;
 procedure TKMGameApp.UpdateStateIdle(aFrameTime: Cardinal);
 begin
   if gGame <> nil then gGame.UpdateStateIdle(aFrameTime);
-  if fMusicLib <> nil then fMusicLib.UpdateStateIdle;
+  if fMusic <> nil then fMusic.UpdateStateIdle;
   if gSoundPlayer <> nil then gSoundPlayer.UpdateStateIdle;
   if fNetworking <> nil then fNetworking.UpdateStateIdle;
   if gRes <> nil then gRes.UpdateStateIdle;

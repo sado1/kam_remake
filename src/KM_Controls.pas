@@ -118,6 +118,7 @@ type
     fEnabled: Boolean;
     fEnabledVisually: Boolean;
     fVisible: Boolean;
+    fFocusable: Boolean; //Can this control have focus (e.g. TKMEdit sets this true)
     fControlIndex: Integer; //Index number of this control in his Parent's (TKMPanel) collection
     fID: Integer; //Control global ID
     fHint: UnicodeString; //Text that shows up when cursor is over that control, mainly for Buttons
@@ -183,6 +184,7 @@ type
     procedure ResetClickHoldMode;
 
     procedure DebugKeyDown(Key: Word; Shift: TShiftState);
+    procedure SetFocusable(const aValue: Boolean);
   protected
     procedure SetLeft(aValue: Integer); virtual;
     procedure SetTop(aValue: Integer); virtual;
@@ -223,7 +225,7 @@ type
     function CanFocusNext: Boolean; virtual;
   public
     Hitable: Boolean; //Can this control be hit with the cursor?
-    Focusable: Boolean; //Can this control have focus (e.g. TKMEdit sets this true)
+
     AutoFocusable: Boolean; //Can we focus on this element automatically (f.e. if set to False we will able to Focus only by manual mouse click)
     HandleMouseWheelByDefault: Boolean; //Do control handle MW by default? Usually it is
     CanChangeEnable: Boolean; //Enable state could be changed
@@ -271,6 +273,7 @@ type
     property Anchors: TKMAnchorsSet read fAnchors write SetAnchors;
     property Enabled: Boolean read fEnabled write SetEnabled;
     property Visible: Boolean read GetVisible write SetVisible;
+    property Focusable: Boolean read fFocusable write SetFocusable;
     property IsSetVisible: Boolean read fVisible;
     property IsPainted: Boolean read GetIsPainted;
     property IsFocused: Boolean read GetIsFocused;
@@ -2630,6 +2633,20 @@ begin
     MasterParent.fMasterControl.UpdateFocus(Self);
 
   UpdateEnableStatus;
+end;
+
+
+procedure TKMControl.SetFocusable(const aValue: Boolean);
+var
+  oldFocusable: Boolean;
+begin
+  oldFocusable := fFocusable;
+
+  fFocusable := aValue;
+
+  // Update focus if Focusable was changed
+  if oldFocusable <> fFocusable then
+    Parent.MasterControl.UpdateFocus(Self);
 end;
 
 

@@ -318,6 +318,9 @@ type
     function IsLastTickValueCorrect(aLastTickValue: Cardinal): Boolean;
     procedure SaveExtra(SaveStream: TKMemoryStream); virtual;
     procedure LoadExtra(LoadStream: TKMemoryStream); virtual;
+
+    function GetNetPlayerName(aHandIndex: TKMHandID): String; virtual;
+    function IsPlayerMuted(aHandIndex: Integer): Boolean; virtual;
   public
     constructor Create(aReplayState: TKMGIPReplayState);
     destructor Destroy; override;
@@ -380,8 +383,8 @@ type
 
     property OnReplayDesync: TIntegerEvent read fOnReplayDesync write fOnReplayDesync;
 
-    class function GIPCommandToString(aGIC: TKMGameInputCommand): UnicodeString;
-    class function StoredGIPCommandToString(aCommand: TKMStoredGIPCommand): String;
+    function GIPCommandToString(aGIC: TKMGameInputCommand): UnicodeString;
+    function StoredGIPCommandToString(aCommand: TKMStoredGIPCommand): String;
 
     procedure Paint;
   end;
@@ -496,24 +499,17 @@ begin
 end;
 
 
-class function TKMGameInputProcess.GIPCommandToString(aGIC: TKMGameInputCommand): UnicodeString;
-var
-  NetPlayerStr: String;
-  NPlayerI: Integer;
+function TKMGameInputProcess.GetNetPlayerName(aHandIndex: TKMHandID): String;
+begin
+  Result := '';
+end;
+
+
+function TKMGameInputProcess.GIPCommandToString(aGIC: TKMGameInputCommand): UnicodeString;
 begin
   with aGIC do
   begin
-    NetPlayerStr := '';
-    if (gGame <> nil) and (gGame.Networking <> nil) then
-    begin
-      NPlayerI := gGame.Networking.GetNetPlayerIndex(HandIndex);
-      if NPlayerI = -1 then
-        NetPlayerStr := Format(' [NetP %d %' + IntToStr(MAX_NIKNAME_LENGTH) +'s]', [NPlayerI, ''])
-      else
-        NetPlayerStr := Format(' [NetP %d/%' + IntToStr(MAX_NIKNAME_LENGTH) +'s]', [NPlayerI, gGame.Networking.NetPlayers[NPlayerI].Nikname]);
-    end;
-
-    Result := Format('%-' + IntToStr(GIC_COMMAND_TYPE_MAX_LENGTH) + 's hand: %2d' + NetPlayerStr + ', params: ',
+    Result := Format('%-' + IntToStr(GIC_COMMAND_TYPE_MAX_LENGTH) + 's hand: %2d' + GetNetPlayerName(HandIndex) + ', params: ',
                      [GetEnumName(TypeInfo(TKMGameInputCommandType), Integer(CommandType)), HandIndex]);
     case COMMAND_PACK_TYPES[CommandType] of
       gicpt_NoParams:   Result := Result + ' []';
@@ -910,38 +906,45 @@ begin
 end;
 
 
-procedure TKMGameInputProcess.ExecGameAlertBeaconCmd(const aCommand: TKMGameInputCommand);
-  function DoAddPlayerBeacon: Boolean;
-  var IsPlayerMuted: Boolean;
-  begin
-    // Check if player, who send beacon, is muted
-    IsPlayerMuted := (gGame.Networking <> nil) and gGame.Networking.IsMuted(gGame.Networking.GetNetPlayerIndex(aCommand.Params[3]));
+function TKMGameInputProcess.IsPlayerMuted(aHandIndex: Integer): Boolean;
+begin
+  Result := False;
+end;
 
-    Result := (gHands.CheckAlliance(aCommand.Params[3], gMySpectator.HandID) = atAlly)
-      and (gHands[aCommand.Params[3]].ShareBeacons[gMySpectator.HandID])
-      and not IsPlayerMuted; // do not show beacons sended by muted players
+
+procedure TKMGameInputProcess.ExecGameAlertBeaconCmd(const aCommand: TKMGameInputCommand);
+
+  function DoAddPlayerBeacon: Boolean;
+  var
+    handId: Integer;
+  begin
+    handId := aCommand.Params[3];
+
+    Result := (gHands.CheckAlliance(handId, gMySpectator.HandID) = atAlly)
+      and (gHands[handId].ShareBeacons[gMySpectator.HandID])
+      and not IsPlayerMuted(handId); // do not show beacons sended by muted players
   end;
 
 var
-  AddBeacon: Boolean;
+  doAddBeacon: Boolean;
 begin
   // Beacon script event must always be run by all players for consistency
   gScriptEvents.ProcBeacon(aCommand.Params[3], 1 + (aCommand.Params[1] div 10), 1 + (aCommand.Params[2] div 10));
 
-  AddBeacon := False;
+  doAddBeacon := False;
 
   case gGameParams.GameMode of
     gmSingle,
     gmCampaign,
-    gmMulti:          AddBeacon := (aCommand.Params[3] <> PLAYER_NONE) and DoAddPlayerBeacon;
-    gmMultiSpectate:  AddBeacon := (aCommand.Params[3] = PLAYER_NONE) // Show spectators beacons while spectating
+    gmMulti:          doAddBeacon := (aCommand.Params[3] <> PLAYER_NONE) and DoAddPlayerBeacon;
+    gmMultiSpectate:  doAddBeacon := (aCommand.Params[3] = PLAYER_NONE) // Show spectators beacons while spectating
                                     or (gGameSettings.SpecShowBeacons and DoAddPlayerBeacon);
     gmReplaySingle,
-    gmReplayMulti:    AddBeacon := (aCommand.Params[3] <> PLAYER_NONE)  // Do not show spectators beacons in replay
+    gmReplayMulti:    doAddBeacon := (aCommand.Params[3] <> PLAYER_NONE)  // Do not show spectators beacons in replay
                                     and gGameSettings.ReplayShowBeacons and DoAddPlayerBeacon;
   end;
 
-  if AddBeacon then
+  if doAddBeacon then
     gGame.GamePlayInterface.Alerts.AddBeacon(KMPointF(aCommand.Params[1]/10,
                                                       aCommand.Params[2]/10),
                                                       aCommand.Params[3],
@@ -1399,7 +1402,7 @@ begin
 end;
 
 
-class function TKMGameInputProcess.StoredGIPCommandToString(aCommand: TKMStoredGIPCommand): String;
+function TKMGameInputProcess.StoredGIPCommandToString(aCommand: TKMStoredGIPCommand): String;
 begin
   Result := Format('Tick %6d Rand %10d Cmd: %s', [aCommand.Tick, aCommand.Rand, GIPCommandToString(aCommand.Command)]);
 end;

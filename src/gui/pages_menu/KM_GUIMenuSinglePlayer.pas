@@ -4,7 +4,7 @@ interface
 uses
   Controls, Math, SysUtils,
   KM_Defaults,
-  KM_Controls, KM_Pics, KM_InterfaceDefaults;
+  KM_Controls, KM_Pics, KM_InterfaceDefaults, KM_GameTypes;
 
 
 type
@@ -24,6 +24,8 @@ type
       Button_SP_Load: TKMButton;
       Button_SP_Back: TKMButton;
   public
+    OnNewSingleMap: TKMNewSingleMapEvent;
+
     constructor Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText);
     procedure Show;
   end;
@@ -31,7 +33,7 @@ type
 
 implementation
 uses
-  KM_ResTexts, KM_GameApp, KM_RenderUI, KM_ResFonts;
+  KM_ResTexts, KM_RenderUI, KM_ResFonts;
 
 
 { TKMGUIMenuSinglePlayer }
@@ -75,11 +77,14 @@ end;
 
 procedure TKMMenuSinglePlayer.ButtonClick(Sender: TObject);
 begin
-  if Sender = Button_SP_Tutor then
-    gGameApp.NewSingleMap(ExeDir + TUTORIALS_FOLDER_NAME + PathDelim + 'Town Tutorial' + PathDelim + 'Town Tutorial.dat', gResTexts[TX_MENU_TUTORIAL_TOWN]);
+  if Assigned(OnNewSingleMap) then
+  begin
+    if Sender = Button_SP_Tutor then
+      OnNewSingleMap(ExeDir + TUTORIALS_FOLDER_NAME + PathDelim + 'Town Tutorial' + PathDelim + 'Town Tutorial.dat', gResTexts[TX_MENU_TUTORIAL_TOWN]);
 
-  if Sender = Button_SP_Fight then
-    gGameApp.NewSingleMap(ExeDir + TUTORIALS_FOLDER_NAME + PathDelim + 'Battle Tutorial' + PathDelim + 'Battle Tutorial.dat', gResTexts[TX_MENU_TUTORIAL_BATTLE]);
+    if Sender = Button_SP_Fight then
+      OnNewSingleMap(ExeDir + TUTORIALS_FOLDER_NAME + PathDelim + 'Battle Tutorial' + PathDelim + 'Battle Tutorial.dat', gResTexts[TX_MENU_TUTORIAL_BATTLE]);
+  end;
 
   if Sender = Button_SP_Camp then
     fOnPageChange(gpCampSelect);

@@ -61,7 +61,7 @@ type
 
 implementation
 uses
-  KM_GameApp, KM_RenderUI, KM_ResTexts, KM_Game, KM_GameParams, KM_CommonUtils,
+  KM_GameApp, KM_RenderUI, KM_ResTexts, KM_GameParams, KM_CommonUtils,
   KM_ResSound, KM_Resource, KM_ResFonts, KM_Sound, KM_NetPlayersList;
 
 
@@ -140,7 +140,7 @@ begin
   case Key of
     //Sending chat during reconnections at best causes messages to be lost and at worst causes
     //crashes due to intermediate connecting states. Therefore we block sending completely.
-    VK_RETURN:  Result := ((gGame.Networking <> nil) and not gGame.Networking.IsReconnecting)
+    VK_RETURN:  Result := ((gNetworking <> nil) and not gNetworking.IsReconnecting)
                            or gGameParams.IsSingleplayerGame;
     VK_UP,
     VK_DOWN:    Result := Button_ChatActionsAllowed.Down;
@@ -158,7 +158,7 @@ end;
 procedure TKMGUIGameChat.HandleError(const aMsg: UnicodeString);
 begin
   if fUIMode in [umMP, umSpectate] then
-    gGame.Networking.PostLocalMessage(aMsg, csSystem)
+    gNetworking.PostLocalMessage(aMsg, csSystem)
   else if Assigned(fOnChatMessage) then
     fOnChatMessage(aMsg);
 end;
@@ -167,7 +167,7 @@ end;
 procedure TKMGUIGameChat.PostLocalMsg(const aMsg: UnicodeString);
 begin
   if fUIMode in [umMP, umSpectate] then
-    gGame.Networking.PostLocalMessage(aMsg, csChat)
+    gNetworking.PostLocalMessage(aMsg, csChat)
   else if Assigned(fOnChatMessage) then
     fOnChatMessage(aMsg)
 end;
@@ -178,9 +178,9 @@ begin
   if fUIMode in [umMP, umSpectate] then
   begin
     if gGameApp.Chat.Mode = cmWhisper then
-      gGame.Networking.PostChat(aMsg, gGameApp.Chat.Mode, gGameApp.Chat.WhisperRecipient)
+      gNetworking.PostChat(aMsg, gGameApp.Chat.Mode, gGameApp.Chat.WhisperRecipient)
     else
-      gGame.Networking.PostChat(aMsg, gGameApp.Chat.Mode);
+      gNetworking.PostChat(aMsg, gGameApp.Chat.Mode);
 
   end else if Assigned(fOnChatMessage) then
     fOnChatMessage(aMsg);
@@ -205,12 +205,12 @@ begin
   begin
     if gGameApp.Chat.Mode = cmWhisper then
     begin
-      NetI := gGame.Networking.NetPlayers.ServerToLocal(gGameApp.Chat.WhisperRecipient);
-      if not gGame.Networking.NetPlayers[NetI].Connected
-        or gGame.Networking.NetPlayers[NetI].Dropped then
+      NetI := gNetworking.NetPlayers.ServerToLocal(gGameApp.Chat.WhisperRecipient);
+      if not gNetworking.NetPlayers[NetI].Connected
+        or gNetworking.NetPlayers[NetI].Dropped then
       begin
-        gGame.Networking.PostLocalMessage(Format(gResTexts[TX_MULTIPLAYER_CHAT_PLAYER_NOT_CONNECTED_ANYMORE],
-                                                [gGame.Networking.NetPlayers[NetI].NiknameColored]),
+        gNetworking.PostLocalMessage(Format(gResTexts[TX_MULTIPLAYER_CHAT_PLAYER_NOT_CONNECTED_ANYMORE],
+                                                [gNetworking.NetPlayers[NetI].NiknameColored]),
                                           csSystem);
         Chat_MenuSelect(CHAT_MENU_ALL);
       end else
@@ -310,13 +310,13 @@ begin
                             Edit_ChatMsg.OutlineColor := $FF66FF66;
                           end;
     else  begin //Whisper to player
-            NetI := gGame.Networking.NetPlayers.ServerToLocal(aItemTag);
+            NetI := gNetworking.NetPlayers.ServerToLocal(aItemTag);
             if NetI <> -1 then
             begin
               gGameApp.Chat.Mode := cmWhisper;
               Edit_ChatMsg.DrawOutline := True;
               Edit_ChatMsg.OutlineColor := $FF00B9FF;
-              with gGame.Networking.NetPlayers[NetI] do
+              with gNetworking.NetPlayers[NetI] do
               begin
                 gGameApp.Chat.WhisperRecipient := aItemTag;
                 UpdateButtonCaption(NiknameU, IfThen(IsColorSet, FlagColorToTextColor(FlagColor), 0));
@@ -352,18 +352,18 @@ begin
   Menu_Chat.AddItem(gResTexts[TX_CHAT_ALL], CHAT_MENU_ALL);
 
   //Only show "Team" if the player is on a team
-  if gGame.Networking.MyNetPlayer.Team <> 0 then
+  if gNetworking.MyNetPlayer.Team <> 0 then
     Menu_Chat.AddItem('[$66FF66]' + gResTexts[TX_CHAT_TEAM], CHAT_MENU_TEAM);
 
   //Only show "Spectator" if the player is a spectator
-  if gGame.Networking.MyNetPlayer.IsSpectator then
+  if gNetworking.MyNetPlayer.IsSpectator then
     Menu_Chat.AddItem('[$66FF66]' + gResTexts[TX_CHAT_SPECTATORS], CHAT_MENU_SPECTATORS);
 
   //Fill
-  for I := 1 to gGame.Networking.NetPlayers.Count do
-  if I <> gGame.Networking.MyIndex then //Can't whisper to self
+  for I := 1 to gNetworking.NetPlayers.Count do
+  if I <> gNetworking.MyIndex then //Can't whisper to self
   begin
-    n := gGame.Networking.NetPlayers[I];
+    n := gNetworking.NetPlayers[I];
 
     if n.IsHuman and n.Connected and not n.Dropped then
       Menu_Chat.AddItem(n.NiknameColoredU, n.IndexOnServer);
@@ -383,15 +383,15 @@ end;
 
 procedure TKMGUIGameChat.Unfocus;
 begin
-  Edit_ChatMsg.Focusable := False;
-  gGame.GamePlayInterface.MyControls.UpdateFocus(Edit_ChatMsg); // Update only Edit focus, Memo will lose focus automatically
+  // Update only Edit focus, Memo will lose focus automatically
+  Edit_ChatMsg.Focusable := False; // Will update focus automatically
 end;
 
 
 procedure TKMGUIGameChat.Focus;
 begin
-  Edit_ChatMsg.Focusable := True;
-  gGame.GamePlayInterface.MyControls.UpdateFocus(Panel_Chat); // Update focus on chat panel (both Edit and Memo could be focused)
+  // Update focus on chat panel (both Edit and Memo could be focused)
+  Edit_ChatMsg.Focusable := True; // Will update focus automatically
 end;
 
 

@@ -84,6 +84,10 @@ type
   end;
 
 
+var
+  gMusic: TKMMusicLib;
+
+
 implementation
 uses
   SysUtils, KromUtils, Math,
@@ -130,6 +134,8 @@ begin
   for I := 0 to fCount - 1 do
     fTrackOrder[I] := I;
 
+  gMusic := Self;
+
   gLog.AddTime('Music init done, ' + IntToStr(fCount) + ' tracks found');
 end;
 
@@ -148,6 +154,8 @@ begin
   BASS_StreamFree(fBassOtherStream);
   BASS_Free; //Frees this usage of BASS, allowing it to be recreated successfully
   {$ENDIF}
+
+  gMusic := nil;
 
   inherited;
 end;
