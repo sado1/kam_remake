@@ -4,7 +4,7 @@ interface
 uses
   Classes, Controls, KromOGLUtils, Math, SysUtils,
   KM_Controls, KM_Settings, KM_Pics, KM_Resolutions, KM_ResKeys,
-  KM_InterfaceDefaults;
+  KM_InterfaceDefaults, KM_CommonTypes;
 
 
 type
@@ -84,6 +84,10 @@ type
             Button_OptionsKeysCancel: TKMButton;
       Button_OptionsBack: TKMButton;
   public
+    OnToggleLocale: TAnsiStringEvent;
+    OnOptionsChange: TEvent;
+    OnPreloadGameResources: TEvent;
+
     constructor Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText);
     destructor Destroy; override;
     procedure Refresh;
@@ -94,7 +98,7 @@ type
 
 implementation
 uses
-  KM_Main, KM_GameApp, KM_Music, KM_Sound, KM_RenderUI, KM_Resource, KM_ResTexts, KM_ResLocales, KM_ResFonts, KM_ResSound, KM_Video;
+  KM_Main, KM_Music, KM_Sound, KM_RenderUI, KM_Resource, KM_ResTexts, KM_ResLocales, KM_ResFonts, KM_ResSound, KM_Video;
 
 
 { TKMGUIMainOptions }
@@ -441,14 +445,16 @@ begin
     if CheckBox_Options_FullFonts.Checked and (gRes.Fonts.LoadLevel <> fllFull) then
     begin
       // When enabling full fonts, use ToggleLocale reload the entire interface
-      gGameApp.ToggleLocale(gResLocales[Radio_Options_Lang.ItemIndex].Code);
+      if Assigned(OnToggleLocale) then
+        OnToggleLocale(gResLocales[Radio_Options_Lang.ItemIndex].Code);
       Exit; // Exit ASAP because whole interface will be recreated
     end;
   end;
 
   if Sender = Radio_Options_Lang then
   begin
-    gGameApp.ToggleLocale(gResLocales[Radio_Options_Lang.ItemIndex].Code);
+    if Assigned(OnToggleLocale) then
+      OnToggleLocale(gResLocales[Radio_Options_Lang.ItemIndex].Code);
     Exit; // Exit ASAP because whole interface will be recreated
   end;
 
@@ -462,8 +468,8 @@ begin
     Button_Options_VideoTest.Enabled      := CheckBox_Options_VideoEnable.Checked;
   end;
 
-  if Assigned(gGameApp.OnOptionsChange) then
-    gGameApp.OnOptionsChange();
+  if Assigned(OnOptionsChange) then
+    OnOptionsChange();
 end;
 
 
@@ -734,8 +740,9 @@ begin
   // Return to MainMenu and restore resolution changes
   fMainSettings.SaveSettings;
 
-  if fLastAlphaShadows <> fGameSettings.AlphaShadows then
-    gGameApp.PreloadGameResources;  //Update loaded game resources, if we changed alpha shadow setting
+  if    (fLastAlphaShadows <> fGameSettings.AlphaShadows)
+    and Assigned(OnPreloadGameResources) then
+    OnPreloadGameResources;  //Update loaded game resources, if we changed alpha shadow setting
 
   fOnPageChange(gpMainMenu);
 end;

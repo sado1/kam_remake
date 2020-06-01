@@ -114,6 +114,10 @@ begin
   fMenuSinglePlayer.OnNewSingleMap  := gGameApp.NewSingleMap;
   fMenuCampaign.OnNewCampaignMap    := gGameApp.NewCampaignMap;
 
+  fMenuOptions.OnToggleLocale         := gGameApp.ToggleLocale;
+  fMenuOptions.OnOptionsChange        := gGameApp.OnOptionsChange;
+  fMenuOptions.OnPreloadGameResources := gGameApp.PreloadGameResources;
+
   //Show version info on every page
   Label_Version := TKMLabel.Create(Panel_Main, 8, 8, 0, 0, '', fntAntiqua, taLeft);
 
