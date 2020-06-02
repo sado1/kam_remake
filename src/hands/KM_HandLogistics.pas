@@ -1880,6 +1880,8 @@ begin
     SaveStream.Write(fQueue[I].JobStatus, SizeOf(fQueue[I].JobStatus));
     if fQueue[I].Serf  <> nil then SaveStream.Write(fQueue[I].Serf.UID ) else SaveStream.Write(Integer(0));
   end;
+
+  fRouteEvaluator.Save(SaveStream);
 end;
 
 
@@ -1930,6 +1932,8 @@ begin
     LoadStream.Read(fQueue[I].JobStatus, SizeOf(fQueue[I].JobStatus));
     LoadStream.Read(fQueue[I].Serf, 4);
   end;
+
+  fRouteEvaluator.Load(LoadStream);
 end;
 
 
