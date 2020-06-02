@@ -1863,8 +1863,17 @@ begin
     SaveStream.Write(Ware, SizeOf(Ware));
     SaveStream.Write(DemandType, SizeOf(DemandType));
     SaveStream.Write(Importance, SizeOf(Importance));
-    if Loc_House <> nil then SaveStream.Write(Loc_House.UID) else SaveStream.Write(Integer(0));
-    if Loc_Unit  <> nil then SaveStream.Write(Loc_Unit.UID ) else SaveStream.Write(Integer(0));
+
+    if Loc_House <> nil then
+      SaveStream.Write(Loc_House.UID)
+    else
+      SaveStream.Write(Integer(0));
+
+    if Loc_Unit <> nil then
+      SaveStream.Write(Loc_Unit.UID )
+    else
+      SaveStream.Write(Integer(0));
+
     SaveStream.Write(BeingPerformed);
     SaveStream.Write(IsDeleted);
     SaveStream.Write(NotifyLocHouseOnClose);
@@ -1878,7 +1887,10 @@ begin
     SaveStream.Write(fQueue[I].OfferID);
     SaveStream.Write(fQueue[I].DemandID);
     SaveStream.Write(fQueue[I].JobStatus, SizeOf(fQueue[I].JobStatus));
-    if fQueue[I].Serf  <> nil then SaveStream.Write(fQueue[I].Serf.UID ) else SaveStream.Write(Integer(0));
+    if fQueue[I].Serf  <> nil then
+      SaveStream.Write(fQueue[I].Serf.UID )
+    else
+      SaveStream.Write(Integer(0));
   end;
 
   fRouteEvaluator.Save(SaveStream);
