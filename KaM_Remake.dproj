@@ -1,4 +1,4 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{CB64F5E8-91AE-4497-A8C4-89668924F870}</ProjectGuid>
         <MainSource>KaM_Remake.dpr</MainSource>
@@ -431,6 +431,7 @@
         <DCCReference Include="src\KM_WareDistribution.pas"/>
         <DCCReference Include="src\KM_Video.pas"/>
         <DCCReference Include="src\utils\KM_VLC.pas"/>
+        <DCCReference Include="src\utils\KM_WindowParams.pas"/>
         <None Include="Profiling\AQtimeModule1.aqt"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
