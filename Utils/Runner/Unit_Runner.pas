@@ -3,7 +3,7 @@ unit Unit_Runner;
 interface
 uses
   Classes, Math, SysUtils,
-  KM_Defaults, KM_CommonClasses, KM_CommonTypes, KromUtils,
+  KM_Defaults, KM_CommonClasses, KM_CommonTypes, KromUtils, KM_GameTypes,
   KM_GameApp, KM_ResLocales, KM_Log, KM_ResTexts, KM_CommonUtils, KM_RenderControl, ComInterface;
 
 

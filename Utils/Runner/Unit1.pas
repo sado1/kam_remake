@@ -85,7 +85,7 @@ var
 implementation
 {$R *.dfm}
 uses
-  KM_CommonTypes;
+  KM_GameTypes;
 
 
 const

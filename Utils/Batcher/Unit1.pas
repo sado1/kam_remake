@@ -80,7 +80,7 @@ var
 
 implementation
 uses
-  KM_Campaigns, KM_Game, KM_Settings, KM_Hand, KM_MissionScript_Standard;
+  KM_Campaigns, KM_Game, KM_Settings, KM_Hand, KM_MissionScript_Standard, KM_CampaignTypes;
 
 {$R *.dfm}
 
@@ -254,7 +254,7 @@ begin
 
   for I := 0 to gGameApp.Campaigns.CampaignById(TPR_CAMPAIGN).MapCount - 1 do
   begin
-    gGameApp.NewCampaignMap(gGameApp.Campaigns.CampaignById(TPR_CAMPAIGN), I);
+    gGameApp.NewCampaignMap(TPR_CAMPAIGN, I);
 
     gHands[0].AI.Goals.ExportMessages(ExtractFilePath(ParamStr(0)) + Format('TPR%.2d.evt', [I+1]));
 
