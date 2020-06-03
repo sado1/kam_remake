@@ -4,7 +4,8 @@ interface
 uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   KM_FormMain, KM_FormLoading, KM_Maps,
-  KM_Settings, KM_Resolutions, KM_Video;
+  KM_Settings, KM_Resolutions, KM_Video,
+  KM_WindowParams;
 
 
 type

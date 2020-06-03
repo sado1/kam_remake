@@ -6,40 +6,11 @@ uses
   {$IFDEF FPC}Forms,{$ENDIF}   //Lazarus do not know UITypes
   {$IFDEF WDC}UITypes,{$ENDIF} //We use settings in console modules
   KM_Resolutions, KM_WareDistribution, KM_MapTypes,
-  KM_Defaults, KM_Points, KM_CommonTypes, KM_CommonClasses;
+  KM_Defaults, KM_CommonTypes, KM_CommonClasses,
+  KM_WindowParams;
 
 
 type
-
-  TKMWindowParamsRecord = record
-    Width, Height, Left, Top: SmallInt;
-    State: TWindowState;
-  end;
-
-  TKMWindowParams = class
-  private
-    fWidth, fHeight, fLeft, fTop: SmallInt; // Window size/position on the screen
-    fState: TWindowState;                   // Window state (wsNormal/wsMaximized)
-    fLockParams: Boolean;                   // Lock updating window params, used when Fullscreen turned On
-    fIsChanged: Boolean;
-    fNeedResetToDefaults: Boolean;          // Flag, when set params should be updated with defaults
-  public
-    constructor Create;
-    property Width: SmallInt read fWidth;
-    property Height: SmallInt read fHeight;
-    property Left: SmallInt read fLeft;
-    property Top: SmallInt read fTop;
-    property State: TWindowState read fState;
-    property IsChanged: Boolean read fIsChanged;
-    property NeedResetToDefaults: Boolean read fNeedResetToDefaults write fNeedResetToDefaults;
-
-    procedure ApplyWindowParams(const aParams: TKMWindowParamsRecord; aDefaults: Boolean = False);
-    procedure LockParams;
-    procedure UnlockParams;
-    function IsValid(aMonitorsInfo: TKMPointArray): Boolean;
-  end;
-
-
   //Settings that are irrelevant to the game (game does not cares about them)
   //Everything gets written through setter to set fNeedsSave flag
   TKMainSettings = class
@@ -503,21 +474,21 @@ begin
     // Otherwise reset all window params to defaults
     if F.ValueExists('Window', 'WindowLeft') and F.ValueExists('Window', 'WindowTop') then
     begin
-      fWindowParams.fWidth  := F.ReadInteger('Window', 'WindowWidth',  MENU_DESIGN_X);
-      fWindowParams.fHeight := F.ReadInteger('Window', 'WindowHeight', MENU_DESIGN_Y);
-      fWindowParams.fLeft   := F.ReadInteger('Window', 'WindowLeft',   -1);
-      fWindowParams.fTop    := F.ReadInteger('Window', 'WindowTop',    -1);
-      fWindowParams.fState  := TWindowState(EnsureRange(F.ReadInteger('Window', 'WindowState', 0), 0, 2));
+      fWindowParams.Width  := F.ReadInteger('Window', 'WindowWidth',  MENU_DESIGN_X);
+      fWindowParams.Height := F.ReadInteger('Window', 'WindowHeight', MENU_DESIGN_Y);
+      fWindowParams.Left   := F.ReadInteger('Window', 'WindowLeft',   -1);
+      fWindowParams.Top    := F.ReadInteger('Window', 'WindowTop',    -1);
+      fWindowParams.State  := TWindowState(EnsureRange(F.ReadInteger('Window', 'WindowState', 0), 0, 2));
     end else
-      fWindowParams.fNeedResetToDefaults := True;
+      fWindowParams.NeedResetToDefaults := True;
 
     fNoRenderMaxTime := F.ReadInteger('Misc', 'NoRenderMaxTime', NO_RENDER_MAX_TIME_DEFAULT);
     if fNoRenderMaxTime < NO_RENDER_MAX_TIME_MIN then
       fNoRenderMaxTime := NO_RENDER_MAX_TIME_UNDEF;
 
     // Reset wsMinimized state to wsNormal
-    if (fWindowParams.fState = TWindowState.wsMinimized) then
-      fWindowParams.fState := TWindowState.wsNormal;
+    if (fWindowParams.State = TWindowState.wsMinimized) then
+      fWindowParams.State := TWindowState.wsNormal;
   finally
     FreeAndNil(F);
   end;
@@ -1495,65 +1466,6 @@ procedure TKMGameSettings.SetServerWelcomeMessage(const aValue: UnicodeString);
 begin
   fServerWelcomeMessage := aValue;
   Changed;
-end;
-
-
-{TKMWindowParams}
-constructor TKMWindowParams.Create;
-begin
-  inherited;
-  fIsChanged := False;
-  fLockParams := False;
-  fNeedResetToDefaults := False;
-end;
-
-
-procedure TKMWindowParams.ApplyWindowParams(const aParams: TKMWindowParamsRecord; aDefaults: Boolean = False);
-begin
-  if not fLockParams then
-  begin
-    fWidth := aParams.Width;
-    fHeight := aParams.Height;
-    fLeft := aParams.Left;
-    fTop := aParams.Top;
-    fState := aParams.State;
-    fIsChanged := True;
-    fNeedResetToDefaults := aDefaults;
-  end;
-end;
-
-
-procedure TKMWindowParams.LockParams;
-begin
-  fLockParams := True;
-end;
-
-
-procedure TKMWindowParams.UnlockParams;
-begin
-  fLockParams := False;
-end;
-
-
-// Check window param, with current Screen object
-function TKMWindowParams.IsValid(aMonitorsInfo: TKMPointArray): Boolean;
-var I, ScreenMaxWidth, ScreenMaxHeight: Integer;
-begin
-  ScreenMaxWidth := 0;
-  ScreenMaxHeight := 0;
-  // Calc Max width/height for multi screen systems
-  // Assume appending monitor screens left to right, so summarise width, get max of height
-  for I := Low(aMonitorsInfo) to High(aMonitorsInfo) do
-  begin
-    ScreenMaxWidth := ScreenMaxWidth + aMonitorsInfo[I].X;
-    ScreenMaxHeight := max(ScreenMaxHeight, aMonitorsInfo[I].Y);
-  end;
-  // Do not let put window too much left or right. 100px is enought to get it back in that case
-  Result := (fWidth >= MIN_RESOLUTION_WIDTH)
-        and (fWidth <= ScreenMaxWidth)
-        and (fHeight >= MIN_RESOLUTION_HEIGHT)
-        and (fHeight <= ScreenMaxHeight)
-        and (fState in [TWindowState.wsNormal, TWindowState.wsMaximized]);
 end;
 
 

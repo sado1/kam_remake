@@ -4,7 +4,8 @@ interface
 uses
   Windows, Classes, ComCtrls, Controls, Dialogs, ExtDlgs, ExtCtrls, Forms,
   Graphics, Mask, Math, Spin, StdCtrls, SysUtils,
-  KM_Defaults, KM_Campaigns, KM_Pics, KM_ResSpritesEdit, KromUtils, inifiles;
+  KM_Defaults, KM_Campaigns, KM_Pics, KM_ResSpritesEdit, KromUtils, inifiles,
+  KM_CampaignTypes;
 
 type
   TForm1 = class(TForm)

@@ -16,9 +16,6 @@ uses
   KM_FormLogistics in 'src\KM_FormLogistics.pas' {FormLogistics},
   KM_FormLoading in 'src\KM_FormLoading.pas' {FormLoading},
 
-  KromOGLUtils in 'src\ext\KromOGLUtils.pas',
-  KromUtils in 'src\ext\KromUtils.pas',
-  KromShellUtils in 'src\ext\KromShellUtils.pas',
   ScriptValidatorResult in 'src\ext\ScriptValidatorResult.pas',
   iaWin.NameDelphiThreads in 'src\ext\iaWin.NameDelphiThreads.pas',
 
@@ -339,14 +336,22 @@ uses
   KM_SoftShadows in 'src\utils\KM_SoftShadows.pas',
   KM_Sort in 'src\utils\KM_Sort.pas',
   KM_Utils in 'src\utils\KM_Utils.pas',
-
+  
+  KromOGLUtils in 'src\utils\KromOGLUtils.pas',
+  KromUtils in 'src\utils\KromUtils.pas',
+  KromShellUtils in 'src\utils\KromShellUtils.pas',
+  
+  BinaryHeap in 'src\utils\heap\BinaryHeap.pas',
+  BinaryHeapGen in 'src\utils\heap\BinaryHeapGen.pas',
+  
   KM_MethodParser in 'src\utils\method_parser\KM_MethodParser.pas',
   KM_MethodParserParams in 'src\utils\method_parser\KM_MethodParserParams.pas',
 
   KM_Viewport in 'src\KM_Viewport.pas',
   KM_WareDistribution in 'src\KM_WareDistribution.pas',
   KM_Video in 'src\KM_Video.pas',
-  KM_VLC in 'src\utils\KM_VLC.pas';
+  KM_VLC in 'src\utils\KM_VLC.pas',
+  KM_WindowParams in 'src\utils\KM_WindowParams.pas';
 
   //KM_PerfLog in 'src\unused\KM_PerfLog.pas', //unused
 

@@ -8,15 +8,15 @@ uses Generics.Collections;
 type
   TComparator<T: class> = function(A, B: T) : Boolean of object;
 
-  TBinaryHeap<T: class> = class
+  TBinaryHeap<T: class> = class
   private
     fCount: Cardinal;
     fItems: array of T;
+    fCmp: TComparator<T>;
     procedure _siftdown(startpos, pos: SmallInt);
     procedure _siftup(pos: SmallInt);
   public
-    Cmp: TComparator<T>;
-    constructor Create(aSize: Cardinal);
+    constructor Create(aSize: Cardinal; aCmp: TComparator<T>);
     procedure Clear;
     function IsEmpty: Boolean;
     function Pop: T;
@@ -29,9 +29,11 @@ implementation
 
 
 { TBinaryHeap }
-constructor TBinaryHeap<T>.Create(aSize: Cardinal);
+constructor TBinaryHeap<T>.Create(aSize: Cardinal; aCmp: TComparator<T>);
 begin
   inherited Create;
+
+  fCmp := aCmp;
 
   SetLength(fItems, aSize);
 end;
@@ -106,7 +108,7 @@ begin
     begin
       parentpos := (pos - 1) shr 1;
       parent := fItems[parentpos];
-      if Cmp(newitem, parent) then
+      if fCmp(newitem, parent) then
       begin
         fItems[pos] := parent;
         pos := parentpos;
@@ -129,7 +131,7 @@ begin
     while (childpos < endpos) do
     begin
       rightpos := childpos + 1;
-      if (rightpos < endpos) and (not Cmp(fItems[childpos], fItems[rightpos])) then
+      if (rightpos < endpos) and (not fCmp(fItems[childpos], fItems[rightpos])) then
       begin
         childpos := rightpos;
       end;
@@ -143,3 +145,4 @@ end;
 
 
 end.
+
