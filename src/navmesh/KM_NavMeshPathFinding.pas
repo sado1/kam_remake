@@ -39,6 +39,11 @@ type
     fGroupType: TKMGroupType;
     fMode: TPathfindingMode;
 
+    {$IFDEF DEBUG_NavMeshPathFinding}
+    fTimeSumShortest, fTimeSumShortestPoly, fTimeSumTraffic, fTimeSumEnemy: Int64;
+    fTimePeakShortest, fTimePeakShortestPoly, fTimePeakTraffic, fTimePeakEnemy: Int64;
+    {$ENDIF}
+
     function HeapCmp(A,B: Pointer): Boolean;
   protected
     function MovementCost(aIdx, aFrom, aTo: Word; var aSPoint, aEPoint: TKMPoint): Cardinal;
@@ -59,7 +64,7 @@ type
     function AvoidTrafficRoute(aOwner: TKMHandID; aStart, aEnd: TKMPoint; out aDistance: Word; out aRoutePointArray: TKMPointArray): Boolean;
     function AvoidEnemyRoute(aOwner: TKMHandID; aGroup: TKMGroupType; aStart, aEnd: TKMPoint; out aDistance: Word; out aRoutePointArray: TKMPointArray): Boolean;
 
-    {$IFDEF DEBUG_NavMeshPathfinding}
+    {$IFDEF DEBUG_NavMeshPathFinding}
     procedure Paint();
     {$ENDIF}
   end;
@@ -68,8 +73,8 @@ type
 implementation
 uses
    KM_AIFields, KM_NavMesh, KM_NavMeshGenerator,
-   {$IFDEF DEBUG_NavMeshPathfinding}
-   KM_RenderAux,
+   {$IFDEF DEBUG_NavMeshPathFinding}
+   KM_RenderAux, KM_CommonUtils,
    {$ENDIF}
    KM_AIParameters;
 
@@ -80,6 +85,16 @@ begin
   inherited;
   fHeap := TBinaryHeap.Create(MAX_POLYGONS);
   fHeap.Cmp := HeapCmp;
+  {$IFDEF DEBUG_NavMeshPathFinding}
+  fTimeSumShortest := 0;
+  fTimeSumShortestPoly := 0;
+  fTimeSumTraffic := 0;
+  fTimeSumEnemy := 0;
+  fTimePeakShortest := 0;
+  fTimePeakShortestPoly := 0;
+  fTimePeakTraffic := 0;
+  fTimePeakEnemy := 0;
+  {$ENDIF}
 end;
 
 
@@ -340,37 +355,81 @@ end;
 
 
 function TNavMeshPathFinding.ShortestPolygonRoute(aStart, aEnd: Word; out aDistance: Word; out aRoutePolygonArray: TKMWordArray): Boolean;
+{$IFDEF DEBUG_NavMeshPathFinding}
+var Time: Int64;
+{$ENDIF}
 begin
+  {$IFDEF DEBUG_NavMeshPathFinding}
+  Time := TimeGetUsec();
+  {$ENDIF}
   fMode := pmShortestWay;
   Result := InitPolygonRoute(aStart, aEnd, aDistance, aRoutePolygonArray);
+  {$IFDEF DEBUG_NavMeshPathFinding}
+  Time := TimeGetUsec() - Time;
+  fTimeSumShortestPoly := fTimeSumShortestPoly + Time;
+  fTimePeakShortestPoly := Max(fTimePeakShortestPoly,Time);
+  {$ENDIF}
 end;
 
 
 function TNavMeshPathFinding.ShortestRoute(aStart, aEnd: TKMPoint; out aDistance: Word; out aRoutePointArray: TKMPointArray): Boolean;
+{$IFDEF DEBUG_NavMeshPathFinding}
+var Time: Int64;
+{$ENDIF}
 begin
+  {$IFDEF DEBUG_NavMeshPathFinding}
+  Time := TimeGetUsec();
+  {$ENDIF}
   fMode := pmShortestWay;
   Result := InitRoute(aStart, aEnd, aDistance, aRoutePointArray);
+  {$IFDEF DEBUG_NavMeshPathFinding}
+  Time := TimeGetUsec() - Time;
+  fTimeSumShortest := fTimeSumShortest + Time;
+  fTimePeakShortest := Max(fTimePeakShortest,Time);
+  {$ENDIF}
 end;
 
 
 function TNavMeshPathFinding.AvoidTrafficRoute(aOwner: TKMHandID; aStart, aEnd: TKMPoint; out aDistance: Word; out aRoutePointArray: TKMPointArray): Boolean;
+{$IFDEF DEBUG_NavMeshPathFinding}
+var Time: Int64;
+{$ENDIF}
 begin
+  {$IFDEF DEBUG_NavMeshPathFinding}
+  Time := TimeGetUsec();
+  {$ENDIF}
   fOwner := aOwner;
   fMode := pmAvoidTraffic;
   Result := InitRoute(aStart, aEnd, aDistance, aRoutePointArray);
+  {$IFDEF DEBUG_NavMeshPathFinding}
+  Time := TimeGetUsec() - Time;
+  fTimeSumTraffic := fTimeSumTraffic + Time;
+  fTimePeakTraffic := Max(fTimePeakTraffic,Time);
+  {$ENDIF}
 end;
 
 
 function TNavMeshPathFinding.AvoidEnemyRoute(aOwner: TKMHandID; aGroup: TKMGroupType; aStart, aEnd: TKMPoint; out aDistance: Word; out aRoutePointArray: TKMPointArray): Boolean;
+{$IFDEF DEBUG_NavMeshPathFinding}
+var Time: Int64;
+{$ENDIF}
 begin
+  {$IFDEF DEBUG_NavMeshPathFinding}
+  Time := TimeGetUsec();
+  {$ENDIF}
   fOwner := aOwner;
   fMode := pmAvoidSpecEnemy;
   fGroupType := aGroup;
   Result := InitRoute(aStart, aEnd, aDistance, aRoutePointArray);
+  {$IFDEF DEBUG_NavMeshPathFinding}
+  Time := TimeGetUsec() - Time;
+  fTimeSumEnemy := fTimeSumEnemy + Time;
+  fTimePeakEnemy := Max(fTimePeakEnemy,Time);
+  {$ENDIF}
 end;
 
 
-{$IFDEF DEBUG_NavMeshPathfinding}
+{$IFDEF DEBUG_NavMeshPathFinding}
 procedure TNavMeshPathFinding.Paint();
 const
   COLOR_WHITE = $FFFFFF;
