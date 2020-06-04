@@ -836,7 +836,6 @@ procedure TArmyVectorField.FindPositions();
     IN_PLACE_TOLERANCE = 13;
     MAX_WALKING_DISTANCE = 15;
   var
-    NearEnemy: Boolean;
     K, L, M, PolyIdx, BestIdx, NearbyIdx: Integer;
     Distance: Cardinal;
     InitP: TKMPoint;
@@ -865,15 +864,25 @@ procedure TArmyVectorField.FindPositions();
           PolyIdx := BestIdx;
         end;
 
-        NearEnemy := fQueueArray[PolyIdx].Distance < IN_PLACE_TOLERANCE;
+        // Get target position
         Groups[K].TargetPosition.Loc := gAIFields.NavMesh.Polygons[ PolyIdx ].CenterPoint;
-        Groups[K].TargetPosition.Dir := KMGetDirection(InitP, Groups[K].TargetPosition.Loc );;
-        Groups[K].Status := NearEnemy OR (Distance <= MAX_WALKING_DISTANCE);
-        if Groups[K].Status then
+        Groups[K].TargetPosition.Dir := KMGetDirection(InitP, Groups[K].TargetPosition.Loc );
+        // Check if group is in the place
+        InPlace := False;
+        if (fVectorField[PolyIdx].Distance < fVectorField[BestIdx].Distance) OR (fQueueArray[PolyIdx].Distance < IN_PLACE_TOLERANCE) then // Distance from combat line
         begin
           Inc(InPositionCnt);
-          Inc(NearEnemyCnt,Byte(NearEnemy));
+          InPlace := True;
+        end;
+        if not Groups[K].Group.CanTakeOrders then // Group in combat
+        begin
+          Inc(NearEnemyCnt);
+          InPlace := True;
+        end;
+        if InPlace then
+        begin
           InPositionStrength := InPositionStrength + Groups[K].Group.Count;
+          Groups[K].Status := InPlace;
         end;
       end;
   end;
@@ -903,9 +912,9 @@ begin
   for K := Low(CCT) to High(CCT) do
     with CCT[K].CounterWeight do
     begin
-      InPlace := InPositionCnt > GroupsCount * AI_Par[ATTACK_ArmyVectorField_EvalClusters_InPlace];
+      InPlace     := InPositionCnt      > GroupsCount   * AI_Par[ATTACK_ArmyVectorField_EvalClusters_InPlace];
       AtAdvantage := InPositionStrength > CCT[K].Threat * AI_Par[ATTACK_ArmyVectorField_EvalClusters_AtAdvantage];
-      Ambushed := NearEnemyCnt > GroupsCount * AI_Par[ATTACK_ArmyVectorField_EvalClusters_Ambushed];
+      Ambushed    := NearEnemyCnt       > GroupsCount   * AI_Par[ATTACK_ArmyVectorField_EvalClusters_Ambushed];
     end;
 
   {$IFDEF DEBUG_ArmyVectorField}
