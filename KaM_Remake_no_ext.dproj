@@ -145,9 +145,6 @@
         <DCCReference Include="src\KM_FormLoading.pas">
             <Form>FormLoading</Form>
         </DCCReference>
-        <DCCReference Include="src\ext\KromOGLUtils.pas"/>
-        <DCCReference Include="src\ext\KromUtils.pas"/>
-        <DCCReference Include="src\ext\KromShellUtils.pas"/>
         <DCCReference Include="src\ext\ScriptValidatorResult.pas"/>
         <DCCReference Include="src\ext\iaWin.NameDelphiThreads.pas"/>
         <DCCReference Include="src\ai\KM_AI.pas"/>
@@ -425,6 +422,11 @@
         <DCCReference Include="src\utils\KM_SoftShadows.pas"/>
         <DCCReference Include="src\utils\KM_Sort.pas"/>
         <DCCReference Include="src\utils\KM_Utils.pas"/>
+        <DCCReference Include="src\utils\KromOGLUtils.pas"/>
+        <DCCReference Include="src\utils\KromUtils.pas"/>
+        <DCCReference Include="src\utils\KromShellUtils.pas"/>
+        <DCCReference Include="src\utils\heap\BinaryHeap.pas"/>
+        <DCCReference Include="src\utils\heap\BinaryHeapGen.pas"/>
         <DCCReference Include="src\utils\method_parser\KM_MethodParser.pas"/>
         <DCCReference Include="src\utils\method_parser\KM_MethodParserParams.pas"/>
         <DCCReference Include="src\KM_Viewport.pas"/>

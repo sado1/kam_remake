@@ -16,9 +16,6 @@ uses
   KM_FormLogistics in 'src\KM_FormLogistics.pas' {FormLogistics},
   KM_FormLoading in 'src\KM_FormLoading.pas' {FormLoading},
 
-  KromOGLUtils in 'src\ext\KromOGLUtils.pas',
-  KromUtils in 'src\ext\KromUtils.pas',
-  KromShellUtils in 'src\ext\KromShellUtils.pas',
   ScriptValidatorResult in 'src\ext\ScriptValidatorResult.pas',
   iaWin.NameDelphiThreads in 'src\ext\iaWin.NameDelphiThreads.pas',
 
@@ -339,7 +336,14 @@ uses
   KM_SoftShadows in 'src\utils\KM_SoftShadows.pas',
   KM_Sort in 'src\utils\KM_Sort.pas',
   KM_Utils in 'src\utils\KM_Utils.pas',
-
+  
+  KromOGLUtils in 'src\utils\KromOGLUtils.pas',
+  KromUtils in 'src\utils\KromUtils.pas',
+  KromShellUtils in 'src\utils\KromShellUtils.pas',
+  
+  BinaryHeap in 'src\utils\BinaryHeap.pas',
+  BinaryHeapGen in 'src\utils\BinaryHeapGen.pas',
+  
   KM_MethodParser in 'src\utils\method_parser\KM_MethodParser.pas',
   KM_MethodParserParams in 'src\utils\method_parser\KM_MethodParserParams.pas',
 
