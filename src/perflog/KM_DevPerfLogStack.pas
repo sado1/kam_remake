@@ -537,12 +537,14 @@ end;
 
 procedure TKMPerfLogStack.SectionLeave;
 begin
+  if Self = nil then Exit;
   if not Enabled {or not fInTick} then Exit;
 
   if fThisSection = -1 then Exit;
 
   // Sum times, since same section could be entered more than once
-  fTimes[fCount - 1, fThisSection] := fTimes[fCount - 1, fThisSection] + GetSectionTime;
+  if fCount > 0 then
+    fTimes[fCount - 1, fThisSection] := fTimes[fCount - 1, fThisSection] + GetSectionTime;
 end;
 
 
@@ -633,6 +635,8 @@ end;
 
 procedure TKMPerfLogStackGFX.InitSection(aIndex: Integer);
 begin
+  inherited;
+
   SetLength(fGPUQueryList, fSectionNames.Count);
   fGPUQueryList[aIndex] := gRender.Query.QueriesGen;
 end;

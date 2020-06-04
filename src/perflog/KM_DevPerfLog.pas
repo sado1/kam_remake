@@ -46,10 +46,6 @@ type
 
     procedure TickBegin(aTick: Integer);
     procedure TickEnd;
-
-
-    class function IsCPUSection(aSection: TPerfSectionDev): Boolean;
-    class function IsGFXSection(aSection: TPerfSectionDev): Boolean;
   end;
 
 
@@ -136,18 +132,6 @@ begin
     Result := fStackGFX
   else
     Result := nil;
-end;
-
-
-class function TKMPerfLogs.IsCPUSection(aSection: TPerfSectionDev): Boolean;
-begin
-  Result := SECTION_INFO[aSection].Kind = plkCPU;
-end;
-
-
-class function TKMPerfLogs.IsGFXSection(aSection: TPerfSectionDev): Boolean;
-begin
-  Result := SECTION_INFO[aSection].Kind = plkGFX;
 end;
 
 
