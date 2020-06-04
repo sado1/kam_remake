@@ -287,7 +287,7 @@ begin
     L := fArmyVector.Ally.GroupsPoly[K];
     if (fArmyVector.QueueArray[L].Visited > 0) then
     begin
-      pCluster := @fArmyVector.Clusters.Clusters[  fArmyVector.Clusters.Clusters[ fArmyVector.Influence[L].ClusterID ].ReferenceID  ];
+      pCluster := @fArmyVector.Clusters.Clusters[  fArmyVector.Clusters.Clusters[ fArmyVector.ClusterMapping[L] ].ReferenceID  ];
       for M := Low(fArmyVector.CCT) to High(fArmyVector.CCT) do
         if (fArmyVector.CCT[M].Cluster = pCluster) then
         begin
