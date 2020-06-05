@@ -16,6 +16,8 @@ type
     sePerfLogSaveThreshold: TSpinEdit;
     lblPerflogSaveThreshold: TLabel;
     btnPerfLogExport: TButton;
+    cbEnabled: TCheckBox;
+    procedure UpdateAllChkboxState;
     procedure DoChange(Sender: TObject);
     procedure DoExport(Sender: TObject);
     procedure seScaleKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -65,7 +67,7 @@ procedure TFormPerfLogs.Show(aPerfLogs: TKMPerfLogs);
 const
   TY = 56;
   DY = 16;
-  DY_SPLIT = 36;
+  DY_SPLIT = DY + 10;
   DX_SPLIT = 37;
 
   function LineNum(aPS: TPerfSectionDev; aIsGFX: Boolean): Integer;
@@ -193,6 +195,16 @@ begin
     btnPerfLogExport.Top := bottom;
   end;
 
+  cbEnabled.Checked := False;
+  cbStackedCPU.Enabled  := False;
+  cbStackedGFX.Enabled  := False;
+  seScale.Enabled       := False;
+  cbSmoothLines.Enabled := False;
+  sePerfLogSaveThreshold.Enabled := False;
+  btnPerfLogExport.Enabled := False;
+
+  UpdateAllChkboxState;
+
   inherited Show;
 end;
 
@@ -206,40 +218,45 @@ begin
 end;
 
 
-procedure TFormPerfLogs.DoChange(Sender: TObject);
-
-  procedure UpdateAllChkboxState;
-  var
-    I: Integer;
-    PS: TPerfSectionDev;
-    PLK: TKMPerfLogKind;
-    AllEnabled, AllDisabled: Boolean;
-  begin
-    for PLK := Low(CheckBoxesAll) to High(CheckBoxesAll) do
-      for I := 0 to 2 do
+procedure TFormPerfLogs.UpdateAllChkboxState;
+var
+  I: Integer;
+  PS: TPerfSectionDev;
+  PLK: TKMPerfLogKind;
+  allChecked, allUnchecked: Boolean;
+begin
+  for PLK := Low(CheckBoxesAll) to High(CheckBoxesAll) do
+    for I := 0 to 2 do
+    begin
+      allChecked := True;
+      allUnchecked := True;
+      for PS := LOW_PERF_SECTION to High(TPerfSectionDev) do
       begin
-        AllEnabled := True;
-        AllDisabled := True;
-        for PS := LOW_PERF_SECTION to High(TPerfSectionDev) do
-        begin
-          if PLK <> SECTION_INFO[PS].Kind then Continue;
+        if PLK <> SECTION_INFO[PS].Kind then Continue;
 
-          if not CheckBoxes[PS, I].Checked then
-            AllEnabled := False;
+        if not CheckBoxes[PS, I].Checked then
+          allChecked := False;
 
-          if CheckBoxes[PS, I].Checked then
-            AllDisabled := False;
-        end;
+        if CheckBoxes[PS, I].Checked then
+          allUnchecked := False;
 
-        if AllEnabled then
-          CheckBoxesAll[PLK, I].SetStateWithoutClick(cbChecked)
-        else
-        if AllDisabled then
-          CheckBoxesAll[PLK, I].SetStateWithoutClick(cbUnchecked)
-        else
-          CheckBoxesAll[PLK, I].SetStateWithoutClick(cbGrayed);
+        CheckBoxes[PS, I].Enabled := cbEnabled.Checked;
       end;
-  end;
+
+      if allChecked then
+        CheckBoxesAll[PLK, I].SetStateWithoutClick(cbChecked)
+      else
+      if allUnchecked then
+        CheckBoxesAll[PLK, I].SetStateWithoutClick(cbUnchecked)
+      else
+        CheckBoxesAll[PLK, I].SetStateWithoutClick(cbGrayed);
+
+      CheckBoxesAll[PLK, I].Enabled := cbEnabled.Checked;
+    end;
+end;
+
+
+procedure TFormPerfLogs.DoChange(Sender: TObject);
 
   procedure ChangeCheckboxes;
   var
@@ -299,14 +316,25 @@ procedure TFormPerfLogs.DoChange(Sender: TObject);
 
 var
   section: TPerfSectionDev;
+  enabled: Boolean;
 begin
   if fUpdating then Exit;
 
-  fPerfLogs.StackCPU.Enabled := cbStackedCPU.Checked;
-  fPerfLogs.StackCPU.Display := cbStackedCPU.Checked;
+  enabled := cbEnabled.Checked;
+  fPerfLogs.Enabled := enabled;
 
-  fPerfLogs.StackGFX.Enabled := cbStackedGFX.Checked;
-  fPerfLogs.StackGFX.Display := cbStackedGFX.Checked;
+  cbStackedCPU.Enabled  := enabled;
+  cbStackedGFX.Enabled  := enabled;
+  seScale.Enabled       := enabled;
+  cbSmoothLines.Enabled := enabled;
+  sePerfLogSaveThreshold.Enabled := enabled;
+  btnPerfLogExport.Enabled := enabled;
+
+  fPerfLogs.StackCPU.Enabled := enabled and cbStackedCPU.Checked;
+  fPerfLogs.StackCPU.Display := enabled and cbStackedCPU.Checked;
+
+  fPerfLogs.StackGFX.Enabled := enabled and cbStackedGFX.Checked;
+  fPerfLogs.StackGFX.Display := enabled and cbStackedGFX.Checked;
 
   fPerfLogs.Scale := seScale.Value;
 
@@ -314,6 +342,9 @@ begin
 
   if (Sender = cbStackedCPU) or (Sender = cbStackedGFX) then
     SyncStackPerfLog(PS_IS_GFX_KIND[Sender = cbStackedGFX])
+  else
+  if Sender = cbEnabled then
+    UpdateAllChkboxState
   else
   begin
     section := TPerfSectionDev(TCheckBox(Sender).Tag);
@@ -326,37 +357,38 @@ begin
       begin
         fPerfLogs[section].Enabled := TCheckBox(Sender).Checked;
         if IsCPUSection(section) then
-          fPerfLogs.StackCPU[section].Enabled := TCheckBox(Sender).Checked
+          fPerfLogs.StackCPU[section].Enabled := enabled and TCheckBox(Sender).Checked
         else
-          fPerfLogs.StackGFX[section].Enabled := TCheckBox(Sender).Checked;
+          fPerfLogs.StackGFX[section].Enabled := enabled and TCheckBox(Sender).Checked;
       end
       else
       begin
         if Sender = CheckBoxes[section, 1] then
         begin
-          fPerfLogs[section].Display := TCheckBox(Sender).Checked;
-          fPerfLogs[section].Enabled := fPerfLogs[section].Enabled or fPerfLogs[section].Display;
+          fPerfLogs[section].Display := enabled and TCheckBox(Sender).Checked;
+          fPerfLogs[section].Enabled := enabled and (fPerfLogs[section].Enabled or fPerfLogs[section].Display);
         end
         else
         if Sender = CheckBoxes[section, 2] then
         begin
           if IsCPUSection(section) then
           begin
-            fPerfLogs.StackCPU[section].Show := TCheckBox(Sender).Checked;
-            fPerfLogs.StackCPU[section].Enabled := fPerfLogs.StackCPU.SectionData[section].Enabled
-                                                   or TCheckBox(Sender).Checked;
+            fPerfLogs.StackCPU[section].Show := enabled and TCheckBox(Sender).Checked;
+            fPerfLogs.StackCPU[section].Enabled := enabled
+                                                   and (fPerfLogs.StackCPU.SectionData[section].Enabled or TCheckBox(Sender).Checked);
           end
           else
           begin
-            fPerfLogs.StackGFX[section].Show := TCheckBox(Sender).Checked;
-            fPerfLogs.StackGFX[section].Enabled := fPerfLogs.StackGFX.SectionData[section].Enabled
-                                                   or TCheckBox(Sender).Checked;
+            fPerfLogs.StackGFX[section].Show := enabled and TCheckBox(Sender).Checked;
+            fPerfLogs.StackGFX[section].Enabled := enabled
+                                                   and (fPerfLogs.StackGFX.SectionData[section].Enabled or TCheckBox(Sender).Checked);
           end;
         end;
 
-        CheckBoxes[section, 0].Checked := fPerfLogs[section].Enabled
-                                          or fPerfLogs.StackCPU.SectionData[section].Enabled
-                                          or fPerfLogs.StackGFX.SectionData[section].Enabled;
+        CheckBoxes[section, 0].Checked := enabled
+                                          and (fPerfLogs[section].Enabled
+                                            or fPerfLogs.StackCPU.SectionData[section].Enabled
+                                            or fPerfLogs.StackGFX.SectionData[section].Enabled);
       end;
 
       if not fAllClicked then
