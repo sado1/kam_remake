@@ -16,6 +16,7 @@ type
     function AIAutoDefence(aPlayer: Byte): Boolean;
     function AIAutoRepair(aPlayer: Byte): Boolean;
     function AIDefendAllies(aPlayer: Byte): Boolean;
+    procedure AIDefencePositionGet(aPlayer, aID: Byte; out aX, aY: Integer; out aGroupType: Byte; out aRadius: Word; out aDefType: Byte);
     function AIEquipRate(aPlayer: Byte; aType: Byte): Integer;
     procedure AIGroupsFormationGet(aPlayer, aType: Byte; out aCount, aColumns: Integer);
     function AIRecruitDelay(aPlayer: Byte): Integer;
@@ -341,6 +342,36 @@ begin
 end;
 
 
+//* Version: 12000+
+//* Gets the parameters of AI defence position
+//* parameters are returned in aX, aY, aGroupType, aRadius, aDefType variables
+procedure TKMScriptStates.AIDefencePositionGet(aPlayer, aID: Byte; out aX, aY: Integer; out aGroupType: Byte; out aRadius: Word; out aDefType: Byte);
+var
+  DP: TAIDefencePosition;
+begin
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    and InRange(aID, 0, gHands[aPlayer].AI.General.DefencePositions.Count - 1) then
+    begin
+      DP := gHands[aPlayer].AI.General.DefencePositions.Positions[aID];
+      if DP <> nil then
+      begin
+        aX := DP.Position.Loc.X;
+        aY := DP.Position.Loc.Y;
+        //aGroupType := 
+        aRadius := DP.Radius;
+        //aDefType := 
+      end;
+    end
+    else
+      LogParamWarning('States.AIDefencePositionGet', [aPlayer, aID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
 //* Version: 7000+
 //* Gets the warriors equip rate for AI.
 //* aType: type: 0 - leather, 1 - iron
@@ -384,7 +415,7 @@ begin
         aColumns := gHands[aPlayer].AI.ArmyManagement.Defence.TroopFormations[gt].UnitsPerRow;
       end
       else
-      begin;
+      begin
         aCount := gHands[aPlayer].AI.General.DefencePositions.TroopFormations[gt].NumUnits;
         aColumns := gHands[aPlayer].AI.General.DefencePositions.TroopFormations[gt].UnitsPerRow;
       end
