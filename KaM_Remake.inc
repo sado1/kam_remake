@@ -32,10 +32,8 @@
 
 //Delphi compiler specific settings
 {$IFDEF WDC}
-  {$IFNDEF VER340} // Delphi 10.4 Rio does not have madexcept support yet
-    //Project can be compiled without madExcept features (if you dont have madExcept installed)
-    {$DEFINE USE_MAD_EXCEPT}
-  {$ENDIF}
+  //Project can be compiled without madExcept features (if you dont have madExcept installed)
+  {$DEFINE USE_MAD_EXCEPT}
 {$ENDIF}
 
 //Use secure authentication unit (KM_NetAuthSecure)
