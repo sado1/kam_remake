@@ -750,40 +750,43 @@ end;
 
 procedure TForm1.Button12Click(Sender: TObject);
 var
-  I, Cnt: Integer;
-  SL, PathToUnits: TStringList;
-  PathToExt: UnicodeString;
+  I, cnt: Integer;
+  SL, pathToUnits: TStringList;
+  pathToExt, pathToUtils: UnicodeString;
 begin
   SetUp(True);
 
   SL := TStringList.Create;
-  PathToUnits := TStringList.Create;
+  pathToUnits := TStringList.Create;
   try
-    GetAllPathsInDir(IncludeTrailingBackslash(ExeDir) + PathDelim + 'src', PathToUnits, ValidateKMUnitName);
+    GetAllPathsInDir(IncludeTrailingBackslash(ExeDir) + PathDelim + 'src', pathToUnits, ValidateKMUnitName);
 
-    GetAllPathsInDir(IncludeTrailingBackslash(ExeDir) + PathDelim + 'Utils', PathToUnits, ValidateUtilsUnitName);
+    GetAllPathsInDir(IncludeTrailingBackslash(ExeDir) + PathDelim + 'Utils', pathToUnits, ValidateUtilsUnitName);
 
-    PathToExt := IncludeTrailingBackslash(ExeDir) + PathDelim + 'src' + PathDelim + 'ext' + PathDelim;
-    PathToUnits.Add(PathToExt + 'KromUtils.pas');
-    PathToUnits.Add(PathToExt + 'KromIOUtils.pas');
-    PathToUnits.Add(PathToExt + 'KromOGLUtils.pas');
-    PathToUnits.Add(PathToExt + 'KromShellUtils.pas');
+    pathToExt := IncludeTrailingBackslash(ExeDir) + PathDelim + 'src' + PathDelim + 'ext' + PathDelim;
+    pathToUtils := IncludeTrailingBackslash(ExeDir) + PathDelim + 'src' + PathDelim + 'utils' + PathDelim;
+    pathToUnits.Add(pathToExt + 'KromIOUtils.pas');
+    pathToUnits.Add(pathToUtils + 'KromUtils.pas');
+    pathToUnits.Add(pathToUtils + 'KromOGLUtils.pas');
+    pathToUnits.Add(pathToUtils + 'KromShellUtils.pas');
+    pathToUnits.Add(pathToUtils + 'BinaryHeap.pas');
+    pathToUnits.Add(pathToUtils + 'BinaryHeapGen.pas');
 
-    Cnt := PathToUnits.Count;
-    for I := 0 to PathToUnits.Count - 1 do
+    cnt := pathToUnits.Count;
+    for I := 0 to pathToUnits.Count - 1 do
     begin
-      Memo1.Lines.Append(PathToUnits[I]);
+      Memo1.Lines.Append(pathToUnits[I]);
       SL.Clear;
       //Load and save all units
-      SL.LoadFromFile(PathToUnits[I]);
-      SL.SaveToFile(PathToUnits[I]);
+      SL.LoadFromFile(pathToUnits[I]);
+      SL.SaveToFile(pathToUnits[I]);
     end;
   finally
-    PathToUnits.Free;
+    pathToUnits.Free;
     SL.Free;
   end;
 
-  Memo1.Lines.Append(IntToStr(Cnt));
+  Memo1.Lines.Append(IntToStr(cnt));
 
   TearDown;
 end;
