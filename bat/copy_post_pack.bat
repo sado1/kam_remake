@@ -49,7 +49,8 @@ REM ============================================================
 @REM Adding * to the file name supresses the "Is it a file or a folder" query
 @REM xcopy ..\data.pack .\"%kam_folder%"\data.pack* /y /r /i
 xcopy ..\KaM_Remake.exe "%kam_folder%"\KaM_Remake.exe* /y /r /i
-xcopy ..\libzplay.dll "%kam_folder%"\libzplay.dll* /y /r /i
+REM xcopy ..\libzplay.dll "%kam_folder%"\libzplay.dll* /y /r /i
+xcopy ..\bass.dll "%kam_folder%"\bass.dll* /y /r /i
 xcopy ..\ogg.dll "%kam_folder%"\ogg.dll* /y /r /i
 xcopy ..\vorbis.dll "%kam_folder%"\vorbis.dll* /y /r /i
 xcopy ..\vorbisfile.dll "%kam_folder%"\vorbisfile.dll* /y /r /i
