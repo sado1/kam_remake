@@ -191,6 +191,8 @@ type
     fRun: Integer;
     fStartTime: Cardinal;
     procedure Reset;
+
+    function TickPlayed(aTick: Cardinal): Boolean;
   protected
     procedure SetUp(); override;
     procedure TearDown(); override;
@@ -1038,6 +1040,7 @@ begin
 //  LOG_GAME_TICK := True;
   USE_CUSTOM_SEED := True;
 
+//  LOG_GAME_TICK := True;
   CALC_EXPECTED_TICK := False;
   CRASH_ON_REPLAY := False;
   SAVE_GAME_AS_TEXT := True;
@@ -1654,7 +1657,7 @@ begin
 //
 //  SetLength(fTickCRC, fResults.TimesCount);
 //
-//  fOnTick := TickPlayed;
+  fOnTick := TickPlayed;
 //  fOnBeforeTick := BeforeTickPlayed;
 
   // Deactivate KaM log
@@ -1690,6 +1693,12 @@ procedure TKMRunnerAAIPerformanceTest.TearDown();
 begin
 
   inherited;
+end;
+
+
+function TKMRunnerAAIPerformanceTest.TickPlayed(aTick: Cardinal): Boolean;
+begin
+  // good for debug
 end;
 
 
