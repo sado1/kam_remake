@@ -43,7 +43,8 @@ end;
 
 
 function TBinaryHeap.IsEmpty: Boolean;
-begin
+
+begin
   Result := (fCount = 0);
 end;
 

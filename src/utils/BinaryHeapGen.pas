@@ -8,7 +8,8 @@ uses Generics.Collections;
 type
   TComparator<T: class> = function(A, B: T) : Boolean of object;
 
-  TObjectBinaryHeap<T: class> = class
+
+  TObjectBinaryHeap<T: class> = class
   private
     fCount: Integer;
     fItems: array of T;
@@ -76,7 +77,8 @@ end;
 
 
 function TObjectBinaryHeap<T>.IsEmpty: Boolean;
-begin
+
+begin
   Result := (fCount = 0);
 end;
 
