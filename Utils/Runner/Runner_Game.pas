@@ -2317,8 +2317,8 @@ end;
 
 function TKMRunnerCachePerformanceTest.TKMRDeliveryBidKey.GetHashCode: Integer;
 var
-  a,b,c,d,xTotal,yTotal: Integer;
-  totalCard: Cardinal;
+//  a,b,c,d,xTotal,yTotal: Integer;
+//  totalCard: Cardinal;
   total: Int64;
 begin
   //a, b, c, d should be the same if we swap From and To
