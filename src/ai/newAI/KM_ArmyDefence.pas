@@ -8,7 +8,7 @@ unit KM_ArmyDefence;
 interface
 uses
   Classes, KM_CommonClasses, KM_CommonTypes, KM_Defaults,
-  KM_Points, KM_UnitGroup, KM_NavMeshDefences, KM_ArmyAttack, KM_AIDefensePos;
+  KM_Points, KM_UnitGroup, KM_NavMeshDefences, KM_AIDefensePos;
 
 
 type
@@ -48,15 +48,13 @@ type
     fFirstLineCnt: Word;
     fPositions: TKMList;
 
-    fAttack: TKMArmyAttack;
-
     function GetCount: Integer; inline;
     function GetPosition(aIndex: Integer): TKMDefencePosition; inline;
     function GetGroupsCount(): Word;
   public
     TroopFormations: array [TKMGroupType] of TKMFormation; //Defines how defending troops will be formatted. 0 means leave unchanged.
 
-    constructor Create(aOwner: TKMHandID; aAttack: TKMArmyAttack);
+    constructor Create(aOwner: TKMHandID);
     destructor Destroy; override;
     procedure Save(SaveStream: TKMemoryStream);
     procedure Load(LoadStream: TKMemoryStream);
@@ -198,7 +196,7 @@ end;
 
 
 { TKMArmyDefence }
-constructor TKMArmyDefence.Create(aOwner: TKMHandID; aAttack: TKMArmyAttack);
+constructor TKMArmyDefence.Create(aOwner: TKMHandID);
 var
   GT: TKMGroupType;
 begin
@@ -207,7 +205,6 @@ begin
   fOwner := aOwner;
   fCityUnderAttack := False;
   fPositions := TKMList.Create;
-  fAttack := aAttack;
 
   for GT := Low(TKMGroupType) to High(TKMGroupType) do
   begin
@@ -540,7 +537,7 @@ const
   COLOR_YELLOW = $00FFFF;
   COLOR_BLUE = $FF0000;
 var
-  I, K, Idx, Threat: Integer;
+  I, K, Idx, Threat, AllianceIdx: Integer;
   Col: Cardinal;
   Loc, Pos: TKMPoint;
   GT: TKMGroupType;
@@ -572,15 +569,17 @@ begin
         break;
       end;
 
+  if not gAIFields.Influences.GetAllianceIdx(fOwner,AllianceIdx) then
+    Exit;
   // First line of defences
   for I := 0 to fPositions.Count - 1 do
     if (Positions[I].Line = 0) then
     begin
-      Threat := 0;
       Loc := Positions[I].Position.Loc;
       Idx := gAIFields.NavMesh.KMPoint2Polygon[Loc];
-      for GT := Low(TKMGroupType) to High(TKMGroupType) do
-        Threat := Threat + gAIFields.Influences.EnemyGroupPresence[ fOwner, Idx, GT ];
+      Threat := 0;
+      for GT := Low(GT) to High(GT) do
+        Threat := Threat + gAIFields.Influences.Presence[ AllianceIdx, Idx, GT ];
 
       // Draw defensive lines as a triangles
       Col := Max( $22, Min($FF, Threat) );
