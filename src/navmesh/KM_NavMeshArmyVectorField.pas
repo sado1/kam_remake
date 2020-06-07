@@ -523,6 +523,14 @@ var
   K, L, M, Cnt, OwnersCnt: Integer;
   G: TKMUnitGroup;
 begin
+  // Clear mess before FillChar
+  for K := Low(CCT) to High(CCT) do
+    with CCT[K] do
+    begin
+      SetLength(Owners,0);
+      SetLength(CounterWeight.Groups,0);
+    end;
+
   SetLength(CCT, fClusters.UnreferencedCount);
   if (Length(CCT) <= 0) then
     Exit;
