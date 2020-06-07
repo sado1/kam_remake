@@ -1,9 +1,9 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{A5901296-43C7-446C-8113-93B25ADD188C}</ProjectGuid>
         <MainSource>KaM_Remake.dpr</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Config Condition="'$(Config)'==''">Release</Config>
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Application</AppType>
         <FrameworkType>VCL</FrameworkType>
@@ -425,8 +425,8 @@
         <DCCReference Include="src\utils\KromOGLUtils.pas"/>
         <DCCReference Include="src\utils\KromUtils.pas"/>
         <DCCReference Include="src\utils\KromShellUtils.pas"/>
-        <DCCReference Include="src\utils\heap\BinaryHeap.pas"/>
-        <DCCReference Include="src\utils\heap\BinaryHeapGen.pas"/>
+        <DCCReference Include="src\utils\BinaryHeap.pas"/>
+        <DCCReference Include="src\utils\BinaryHeapGen.pas"/>
         <DCCReference Include="src\utils\method_parser\KM_MethodParser.pas"/>
         <DCCReference Include="src\utils\method_parser\KM_MethodParserParams.pas"/>
         <DCCReference Include="src\KM_Viewport.pas"/>

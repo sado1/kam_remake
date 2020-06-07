@@ -2429,7 +2429,7 @@ begin
                         end;
     arActCanNotStart:   begin
                           FreeAndNil(fAction);
-                          if not fTask.CanRestartAction(arActCanNotStart) then
+                          if (fTask <> nil) and not fTask.CanRestartAction(arActCanNotStart) then
                             FreeAndNil(fTask);
                         end;
     arActDone:          FreeAndNil(fAction);

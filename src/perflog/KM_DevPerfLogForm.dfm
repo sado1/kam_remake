@@ -23,7 +23,7 @@ object FormPerfLogs: TFormPerfLogs
     Visible = False
   end
   object Label2: TLabel
-    Left = 95
+    Left = 182
     Top = 8
     Width = 49
     Height = 13
@@ -37,8 +37,8 @@ object FormPerfLogs: TFormPerfLogs
     Caption = 'Save Threshold (ms):'
   end
   object cbStackedGFX: TCheckBox
-    Left = 8
-    Top = 24
+    Left = 95
+    Top = 27
     Width = 81
     Height = 17
     Caption = 'Stacked GFX'
@@ -46,7 +46,7 @@ object FormPerfLogs: TFormPerfLogs
     OnClick = DoChange
   end
   object seScale: TSpinEdit
-    Left = 95
+    Left = 182
     Top = 27
     Width = 49
     Height = 22
@@ -58,7 +58,7 @@ object FormPerfLogs: TFormPerfLogs
     OnKeyDown = seScaleKeyDown
   end
   object cbStackedCPU: TCheckBox
-    Left = 8
+    Left = 95
     Top = 8
     Width = 81
     Height = 17
@@ -67,8 +67,8 @@ object FormPerfLogs: TFormPerfLogs
     OnClick = DoChange
   end
   object cbSmoothLines: TCheckBox
-    Left = 161
-    Top = 8
+    Left = 8
+    Top = 27
     Width = 81
     Height = 17
     Caption = 'Smooth lines'
@@ -95,5 +95,14 @@ object FormPerfLogs: TFormPerfLogs
     Caption = 'Export'
     TabOrder = 5
     OnClick = DoExport
+  end
+  object cbEnabled: TCheckBox
+    Left = 8
+    Top = 8
+    Width = 81
+    Height = 17
+    Caption = 'Enabled'
+    TabOrder = 6
+    OnClick = DoChange
   end
 end

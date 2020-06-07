@@ -3965,6 +3965,9 @@ begin
   //Source point has to be walkable
   Result := Result and CheckPassability(LocA, aPass);
 
+  if not Result then
+    Exit;
+
   //Target has to be walkable within Distance
   testRadius := False;
   distanceSqr := Sqr(aDistance);
@@ -3974,6 +3977,9 @@ begin
         testRadius := testRadius or CheckPassability(KMPoint(K, I), aPass);
 
   Result := Result and testRadius;
+
+  if not Result then
+    Exit;
 
   case aPass of
     tpWalk:      WC := wcWalk;

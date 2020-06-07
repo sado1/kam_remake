@@ -22,6 +22,7 @@ type
 
     procedure SectionEnter(aSection: TPerfSectionDev; aTick: Integer; aTag: Integer = 0); overload;
   public
+    Enabled: Boolean;
     Scale: Integer;
     Smoothing: Boolean;
     SaveOnExit: Boolean;
@@ -46,10 +47,6 @@ type
 
     procedure TickBegin(aTick: Integer);
     procedure TickEnd;
-
-
-    class function IsCPUSection(aSection: TPerfSectionDev): Boolean;
-    class function IsGFXSection(aSection: TPerfSectionDev): Boolean;
   end;
 
 
@@ -91,6 +88,7 @@ begin
 
   fStackCPU := TKMPerfLogStackCPU.Create;
   fStackGFX := TKMPerfLogStackGFX.Create;
+  Enabled := False;
   {$ENDIF}
 end;
 
@@ -139,18 +137,6 @@ begin
 end;
 
 
-class function TKMPerfLogs.IsCPUSection(aSection: TPerfSectionDev): Boolean;
-begin
-  Result := SECTION_INFO[aSection].Kind = plkCPU;
-end;
-
-
-class function TKMPerfLogs.IsGFXSection(aSection: TPerfSectionDev): Boolean;
-begin
-  Result := SECTION_INFO[aSection].Kind = plkGFX;
-end;
-
-
 function TKMPerfLogs.GetStackCPU: TKMPerfLogStackCPU;
 begin
   // This easy check allows us to exit if the Log was not initialized, e.g. in utils
@@ -163,7 +149,7 @@ end;
 
 procedure TKMPerfLogs.SectionEnter(aSection: TPerfSectionDev);
 begin
-  if Self = nil then Exit;
+  if (Self = nil) or not Enabled then Exit;
 
   if IsCPUSection(aSection) then
     SectionEnter(aSection, fTick)
@@ -187,7 +173,7 @@ end;
 
 procedure TKMPerfLogs.SectionLeave(aSection: TPerfSectionDev);
 begin
-  if Self = nil then Exit;
+  if (Self = nil) or not Enabled then Exit;
 
   fItems[aSection].SectionLeave;
 
@@ -237,7 +223,7 @@ var
   x, y: Single;
   lbl: string;
 begin
-  if Self = nil then Exit;
+  if (Self = nil) or not Enabled then Exit;
 
   lastTick := 0;
   cCount := 0;
@@ -304,7 +290,7 @@ var
   I: TPerfSectionDev;
   S: TStringList;
 begin
-  if Self = nil then Exit;
+  if (Self = nil) or not Enabled then Exit;
 
   ForceDirectories(ExtractFilePath(aFilename));
 
@@ -343,7 +329,6 @@ begin
 
   fPerfLogForm.Parent := aContainer;
 
-
   if aContainer = nil then
   begin
     fPerfLogForm.Align := alNone;
@@ -356,7 +341,7 @@ end;
 
 procedure TKMPerfLogs.TickBegin(aTick: Integer);
 begin
-  if Self = nil then Exit;
+  if (Self = nil) or not Enabled then Exit;
 
   fTick := aTick;
   StackCPU.TickBegin;
@@ -368,7 +353,7 @@ procedure TKMPerfLogs.TickEnd;
 var
   I: TPerfSectionDev;
 begin
-  if Self = nil then Exit;
+  if (Self = nil) or not Enabled then Exit;
 
   StackCPU.TickEnd;
   SectionLeave(psGameTick);

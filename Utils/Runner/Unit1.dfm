@@ -162,10 +162,6 @@ object Form2: TForm2
     object TabSheet1: TTabSheet
       Caption = 'Results'
       OnResize = TabSheetResize
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         873
         597)
@@ -183,10 +179,6 @@ object Form2: TForm2
       Caption = 'Distribution'
       ImageIndex = 1
       OnResize = TabSheetResize
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         873
         597)
@@ -204,10 +196,6 @@ object Form2: TForm2
       Caption = 'Times'
       ImageIndex = 2
       OnResize = TabSheetResize
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         873
         597)
@@ -244,10 +232,6 @@ object Form2: TForm2
     object TabSheet4: TTabSheet
       Caption = 'Log'
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Memo1: TMemo
         Left = 0
         Top = 0
@@ -260,10 +244,6 @@ object Form2: TForm2
     object Render: TTabSheet
       Caption = 'Render'
       ImageIndex = 4
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel1: TPanel
         Left = 0
         Top = 0
@@ -350,12 +330,17 @@ object Form2: TForm2
       'Coop')
     TabOrder = 11
   end
-  object chkRandomTeams: TCheckBox
+  object rgTeams: TRadioGroup
     Left = 79
-    Top = 384
-    Width = 96
-    Height = 17
-    Caption = 'Random teams'
+    Top = 328
+    Width = 113
+    Height = 73
+    Caption = 'Teams'
+    ItemIndex = 2
+    Items.Strings = (
+      'FFA'
+      'Random alliances'
+      'Random teams')
     TabOrder = 12
   end
 end
