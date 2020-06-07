@@ -41,7 +41,7 @@ type
     fInfluenceSearch: TNavMeshInfluenceSearch;
     fNavMesh: TKMNavMesh;
 
-    {$IFDEF DEBUG_AIINFLUENCES}
+    {$IFDEF DEBUG_AIInfluences}
     fTimeSumOwnership, fTimeSumPresence: Int64;
     fTimePeakOwnership, fTimePeakPresence: Int64;
     {$ENDIF}
@@ -115,7 +115,7 @@ implementation
 uses
   Classes, Graphics, SysUtils,
   KM_RenderAux,
-  {$IFDEF DEBUG_AIINFLUENCES}
+  {$IFDEF DEBUG_AIInfluences}
     KM_CommonUtils,
   {$ENDIF}
   KM_Terrain, KM_Houses, KM_HouseCollection,
@@ -132,7 +132,7 @@ begin
   fUpdateArmyIdx := 0;
   fInfluenceFloodFill := TKMInfluenceFloodFill.Create(False); // Check if True is better
   fInfluenceSearch := TNavMeshInfluenceSearch.Create(False);
-  {$IFDEF DEBUG_AIINFLUENCES}
+  {$IFDEF DEBUG_AIInfluences}
     fTimeSumOwnership := 0;
     fTimeSumPresence := 0;
     fTimePeakOwnership := 0;
@@ -694,19 +694,19 @@ end;
 
 
 procedure TKMInfluences.UpdateState(aTick: Cardinal);
-{$IFDEF DEBUG_AIINFLUENCES}
+{$IFDEF DEBUG_AIInfluences}
   var Time: Int64;
 {$ENDIF}
 begin
   // City:
   if aTick mod 150 = 15 then // Update every 15 sec 1 player
   begin
-    {$IFDEF DEBUG_AIINFLUENCES}
+    {$IFDEF DEBUG_AIInfluences}
       Time := TimeGetUsec();
     {$ENDIF}
     fUpdateCityIdx := (fUpdateCityIdx + 1) mod gHands.Count;
     UpdateOwnership(fUpdateCityIdx);
-    {$IFDEF DEBUG_AIINFLUENCES}
+    {$IFDEF DEBUG_AIInfluences}
       Time := TimeGetUsec() - Time;
       fTimeSumOwnership := fTimeSumOwnership + Time;
       fTimePeakOwnership := Max(fTimePeakOwnership,Time);
@@ -715,12 +715,12 @@ begin
   // Army:
   if (aTick mod 5 = 0) AND (Length(fAlli2PL) > 0) then // Update every 0.5 sec 1 player
   begin
-    {$IFDEF DEBUG_AIINFLUENCES}
+    {$IFDEF DEBUG_AIInfluences}
       Time := TimeGetUsec();
     {$ENDIF}
     fUpdateArmyIdx := (fUpdateArmyIdx + 1) mod Length(fAlli2PL);
     UpdateMilitaryPresence(fUpdateArmyIdx);
-    {$IFDEF DEBUG_AIINFLUENCES}
+    {$IFDEF DEBUG_AIInfluences}
       Time := TimeGetUsec() - Time;
       fTimeSumPresence := fTimeSumPresence + Time;
       fTimePeakPresence := Max(fTimePeakPresence,Time);
