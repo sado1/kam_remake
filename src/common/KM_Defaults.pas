@@ -390,6 +390,7 @@ const
 type
   TKMHandID = {type} ShortInt;
   TKMHandIDArray = array of TKMHandID;
+  TKMHandID2Array = array of TKMHandIDArray;
   TKMHandEnabledArray = array [0..MAX_HANDS-1] of Boolean;
 
 const
