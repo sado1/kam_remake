@@ -220,8 +220,8 @@ var
   {Gameplay}
   LOBBY_SET_SPECS_DEFAULT :Boolean = DEBUG_CFG; //Set 'Allow spectators' flag in the lobby by default
   LOBBY_HOST_AS_SPECTATOR :Boolean = DEBUG_CFG; //Host lobby as spectator by default
-  USE_CUSTOM_SEED         :Boolean = False; //Use custom seed for every game
-  CUSTOM_SEED_VALUE       :Integer = 0;     //Custom seed value
+  USE_CUSTOM_SEED         :Boolean = True; //Use custom seed for every game
+  CUSTOM_SEED_VALUE       :Integer = 207542854;     //Custom seed value
   PAUSE_GAME_AFTER_TICK   :Integer = -1;    //Pause after specified game tick
   MAKE_SAVEPT_AFTER_TICK  :Integer = -1;    //Make savepoint after a certain tick (for both game and replay)
   ALLOW_SAVE_IN_REPLAY    :Boolean = DEBUG_CFG; //Allow to save game from replay, good for debug
@@ -912,6 +912,30 @@ const
   $FFFFFFFF, //White
   $FF000000  //Black
   );
+
+  // DEBUG colors (transparent color - opacity will be added by debug tools)
+  tcBlack      = $000000;
+  tcBlue       = $FF0000;
+  tcCream      = $F0FBFF;
+  tcCyan       = $FFFF00;
+  tcDarkGrey   = $808080;
+  tcFuchsia    = $FF00FF;
+  tcGreen      = $008000;
+  tcGrey       = $808080;
+  tcLightGrey  = $C0C0C0;
+  tcLimeGreen  = $00FF00;
+  tcMaroon     = $000080;
+  tcMediumGrey = $A4A0A0;
+  tcMintGreen  = $C0DCC0;
+  tcNavyBlue   = $800000;
+  tcOliveGreen = $008080;
+  tcPurple     = $800080;
+  tcRed        = $0000FF;
+  tcSilver     = $C0C0C0;
+  tcSkyBlue    = $F0CAA6;
+  tcTeal       = $808000;
+  tcWhite      = $FFFFFF;
+  tcYellow     = $00FFFF;
 
   //Interface colors
   icGreen  = $FF00C000;

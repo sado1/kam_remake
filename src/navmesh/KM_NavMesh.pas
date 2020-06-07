@@ -412,13 +412,6 @@ end;
 
 //Render debug symbols
 procedure TKMNavMesh.Paint(const aRect: TKMRect);
-const
-  COLOR_WHITE = $FFFFFF;
-  COLOR_BLACK = $000000;
-  COLOR_GREEN = $00FF00;
-  COLOR_RED = $7700FF;
-  COLOR_YELLOW = $00FFFF;
-  COLOR_BLUE = $FF0000;
 
   function GetCommonPoints(aIdx1, aIdx2: Word; var aPoint1, aPoint2: TKMPoint): Boolean;
   var
@@ -474,7 +467,7 @@ begin
         fNodes[ Indices[1] ].X,
         fNodes[ Indices[1] ].Y,
         fNodes[ Indices[2] ].X,
-        fNodes[ Indices[2] ].Y, $50000000 OR COLOR_BLACK);
+        fNodes[ Indices[2] ].Y, $50000000 OR tcBlack);
       for L := 0 to NearbyCount - 1 do
         if GetCommonPoints(K, Nearby[L], p1, p2) then
           gRenderAux.LineOnTerrain(p1, p2, $99000000 OR ((MAX_LINE_LENGTH-NearbyLineLength[L])*16 shl 24) OR $770000 OR (NearbyLineLength[L]*20 shl 16) OR ((250-NearbyLineLength[L]*40) shl 0))
@@ -486,7 +479,7 @@ begin
             fNodes[ Indices[1] ].X,
             fNodes[ Indices[1] ].Y,
             fNodes[ Indices[2] ].X,
-            fNodes[ Indices[2] ].Y, $90000000 OR COLOR_WHITE);
+            fNodes[ Indices[2] ].Y, $90000000 OR tcWhite);
         end;
       p1.X := Round( (fNodes[ Indices[0] ].X + fNodes[ Indices[1] ].X + fNodes[ Indices[2] ].X) / 3 );
       p1.Y := Round( (fNodes[ Indices[0] ].Y + fNodes[ Indices[1] ].Y + fNodes[ Indices[2] ].Y) / 3 );

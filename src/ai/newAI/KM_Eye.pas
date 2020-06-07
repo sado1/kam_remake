@@ -1181,13 +1181,6 @@ end;
 
 
 procedure TKMEye.Paint(aRect: TKMRect);
-const
-  COLOR_WHITE = $FFFFFF;
-  COLOR_BLACK = $000000;
-  COLOR_GREEN = $00FF00;
-  COLOR_RED = $8000FF;
-  COLOR_YELLOW = $00FFFF;
-  COLOR_BLUE = $FF0000;
 
   procedure DrawHMA();
   var
@@ -1215,7 +1208,7 @@ const
       for Idx := Low(HMA[HT].Tiles) to High(HMA[HT].Tiles) do
         begin
           Point := KMPointAdd(Loc, HMA[HT].Tiles[Idx]);
-          gRenderAux.Quad(Point.X, Point.Y, $80000000 OR COLOR_BLUE);
+          gRenderAux.Quad(Point.X, Point.Y, $80000000 OR tcBlue);
         end;
       for Dist := Low(HMA[HT].Surroundings) to High(HMA[HT].Surroundings) do
         for Dir := Low(HMA[HT].Surroundings[Dist]) to High(HMA[HT].Surroundings[Dist]) do
@@ -1223,10 +1216,10 @@ const
           //for Idx := Low(HMA[HT].Surroundings[Dist,Dir]) + Byte((Dir = dirE) OR (Dir = dirW)) to High(HMA[HT].Surroundings[Dist,Dir]) - Byte((Dir = dirE) OR (Dir = dirW)) do
           begin
             Point := KMPointAdd(Loc, HMA[HT].Surroundings[Dist,Dir,Idx]);
-            Color := ((255 - Round(200 / MAX_DIST * Dist)) shl 24) OR COLOR_WHITE;
+            Color := ((255 - Round(200 / MAX_DIST * Dist)) shl 24) OR tcWhite;
             gRenderAux.Quad(Point.X, Point.Y, Color);
           end;
-      gRenderAux.Quad(Loc.X, Loc.Y, $FF000000 OR COLOR_RED);
+      gRenderAux.Quad(Loc.X, Loc.Y, $FF000000 OR tcRed);
       gRenderAux.Text(Point.X, Point.Y, gRes.Houses[HT].HouseName, $FF000000);
     end;
   end;
@@ -1258,48 +1251,48 @@ begin
         //if (fBuildFF.Visited[Y,X] = fBuildFF.VisitIdxOwner[fOwner]) then
         //if (fBuildFF.Visited[Y,X] = fBuildFF.VisitIdx) then
           case fBuildFF.State[Y,X] of
-            bsNoBuild:   gRenderAux.Quad(X, Y, $BB000000 OR COLOR_BLACK);
-            bsHousePlan: gRenderAux.Quad(X, Y, $66000000 OR COLOR_BLACK);
-            bsFieldPlan: gRenderAux.Quad(X, Y, $55000000 OR COLOR_GREEN);
-            bsRoadPlan:  gRenderAux.Quad(X, Y, $55000000 OR COLOR_BLUE);
-            bsRoad:      gRenderAux.Quad(X, Y, $22000000 OR COLOR_BLUE);
-            bsBuild:     gRenderAux.Quad(X, Y, $11000000 OR COLOR_YELLOW);
-            bsTree:      gRenderAux.Quad(X, Y, $99000000 OR COLOR_GREEN);
-            bsForest:    gRenderAux.Quad(X, Y, $33000000 OR COLOR_GREEN);
-            bsCoal:      gRenderAux.Quad(X, Y, $66000000 OR COLOR_BLACK);
-            bsMine:      gRenderAux.Quad(X, Y, $33000000 OR COLOR_RED);
-            bsDebug:     gRenderAux.Quad(X, Y, $FF000000 OR COLOR_RED);
-            bsReserved:  gRenderAux.Quad(X, Y, $66000000 OR COLOR_RED);
+            bsNoBuild:   gRenderAux.Quad(X, Y, $BB000000 OR tcBlack);
+            bsHousePlan: gRenderAux.Quad(X, Y, $66000000 OR tcBlack);
+            bsFieldPlan: gRenderAux.Quad(X, Y, $55000000 OR tcGreen);
+            bsRoadPlan:  gRenderAux.Quad(X, Y, $55000000 OR tcBlue);
+            bsRoad:      gRenderAux.Quad(X, Y, $22000000 OR tcBlue);
+            bsBuild:     gRenderAux.Quad(X, Y, $11000000 OR tcYellow);
+            bsTree:      gRenderAux.Quad(X, Y, $99000000 OR tcGreen);
+            bsForest:    gRenderAux.Quad(X, Y, $33000000 OR tcGreen);
+            bsCoal:      gRenderAux.Quad(X, Y, $66000000 OR tcBlack);
+            bsMine:      gRenderAux.Quad(X, Y, $33000000 OR tcRed);
+            bsDebug:     gRenderAux.Quad(X, Y, $FF000000 OR tcRed);
+            bsReserved:  gRenderAux.Quad(X, Y, $66000000 OR tcRed);
             else begin end;
           end;
     //{ Build places of the last plan
     for I := 0 to fBuildFF.Locs.Count - 1 do
-      gRenderAux.Quad(fBuildFF.Locs.Items[I].X, fBuildFF.Locs.Items[I].Y, $99000000 OR COLOR_YELLOW);
+      gRenderAux.Quad(fBuildFF.Locs.Items[I].X, fBuildFF.Locs.Items[I].Y, $99000000 OR tcYellow);
     //}
     //{ Stone mining tiles
     for I := 0 to fStoneMiningTiles.Count - 1 do
-      gRenderAux.Quad(fStoneMiningTiles.Items[I].X, fStoneMiningTiles.Items[I].Y, $99000000 OR COLOR_RED); //}
+      gRenderAux.Quad(fStoneMiningTiles.Items[I].X, fStoneMiningTiles.Items[I].Y, $99000000 OR tcRed); //}
   end
   else if OVERLAY_AI_SOIL then
   begin
     //{ Soil
     for Y := 1 to fMapY - 1 do
       for X := 1 to fMapX - 1 do
-        gRenderAux.Quad(X, Y, (Soil[Y,X] shl 24) OR COLOR_RED); //}
+        gRenderAux.Quad(X, Y, (Soil[Y,X] shl 24) OR tcRed); //}
   end
   else if OVERLAY_AI_FLATAREA then
   begin
     //{ Flat Area
     for Y := 1 to fMapY - 1 do
       for X := 1 to fMapX - 1 do
-        gRenderAux.Quad(X, Y, (FlatArea[Y,X] shl 24) OR COLOR_RED); //}
+        gRenderAux.Quad(X, Y, (FlatArea[Y,X] shl 24) OR tcRed); //}
   end
   else if OVERLAY_AI_ROUTES then
   begin
     //{ Routes
     for Y := 1 to fMapY - 1 do
       for X := 1 to fMapX - 1 do
-        gRenderAux.Quad(X, Y, (Routes[Y,X] shl 24) OR COLOR_RED); //}
+        gRenderAux.Quad(X, Y, (Routes[Y,X] shl 24) OR tcRed); //}
   end;
 end;
 

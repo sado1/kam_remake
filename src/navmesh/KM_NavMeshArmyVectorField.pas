@@ -151,12 +151,6 @@ type
 
 
 const
-  COLOR_WHITE = $FFFFFF;
-  COLOR_BLACK = $000000;
-  COLOR_GREEN = $00FF00;
-  COLOR_RED = $7700FF;
-  COLOR_YELLOW = $00FFFF;
-  COLOR_BLUE = $FF0000;
   MAX_CLUSTER_DISTANCE = 10;
 
 
@@ -1188,10 +1182,10 @@ begin
       Result := Format('%s|%d. [$%s]###%s:',[Result, K, IntToHex(Color,6), STR_COLOR_WHITE]);
       Result := Format('%s Threat %.0f/%.0f..%2.0f%%;',[Result, ThreatNearby, Threat, ThreatNearby/Max(1,Threat/100)]);
       Result := Format('%s Opportunity (%d): %.0f/%.0f..%2.0f%%;',[Result, CounterWeight.InPositionCnt, CounterWeight.InPositionStrength, CounterWeight.Opportunity, CounterWeight.InPositionStrength / Max(1,CounterWeight.Opportunity/100)]);
-      Result := Format('%s [$%s]Attacking City%s,',[Result, IntToHex(COLOR_RED * Byte(AttackingCity            ) + $FFFFFF * Byte(not AttackingCity            ),6), STR_COLOR_WHITE]);
-      Result := Format('%s [$%s]Place%s,',         [Result, IntToHex(COLOR_RED * Byte(CounterWeight.InPlace    ) + $FFFFFF * Byte(not CounterWeight.InPlace    ),6), STR_COLOR_WHITE]);
-      Result := Format('%s [$%s]Advantage%s,',     [Result, IntToHex(COLOR_RED * Byte(CounterWeight.AtAdvantage) + $FFFFFF * Byte(not CounterWeight.AtAdvantage),6), STR_COLOR_WHITE]);
-      Result := Format('%s [$%s]Ambush%s',         [Result, IntToHex(COLOR_RED * Byte(CounterWeight.Ambushed   ) + $FFFFFF * Byte(not CounterWeight.Ambushed   ),6), STR_COLOR_WHITE]);
+      Result := Format('%s [$%s]Attacking City%s,',[Result, IntToHex(tcRed * Byte(AttackingCity            ) + $FFFFFF * Byte(not AttackingCity            ),6), STR_COLOR_WHITE]);
+      Result := Format('%s [$%s]Place%s,',         [Result, IntToHex(tcRed * Byte(CounterWeight.InPlace    ) + $FFFFFF * Byte(not CounterWeight.InPlace    ),6), STR_COLOR_WHITE]);
+      Result := Format('%s [$%s]Advantage%s,',     [Result, IntToHex(tcRed * Byte(CounterWeight.AtAdvantage) + $FFFFFF * Byte(not CounterWeight.AtAdvantage),6), STR_COLOR_WHITE]);
+      Result := Format('%s [$%s]Ambush%s',         [Result, IntToHex(tcRed * Byte(CounterWeight.Ambushed   ) + $FFFFFF * Byte(not CounterWeight.Ambushed   ),6), STR_COLOR_WHITE]);
       if (K = Idx) then
         Result := Format('%s <<<<<<',[Result]);
     end;
@@ -1285,16 +1279,16 @@ begin
                 BestIdx := NearbyIdx;
             end;
             if (fVectorField[K].Distance < fVectorField[BestIdx].Distance) then
-              DrawPolygon(K, $22, $44000000 OR COLOR_WHITE)
+              DrawPolygon(K, $22, $44000000 OR tcWhite)
             else
             begin
               P1 := Polygons[K].CenterPoint;
               P4 := Polygons[BestIdx].CenterPoint;
               P2 := KMPointAverage(P1,KMPointAverage(P1,P4));
               P3 := KMPointAverage(P2,KMPointAverage(P1,P4));
-              gRenderAux.LineOnTerrain(P4, P3, $FF000000 OR COLOR_RED);
-              gRenderAux.LineOnTerrain(P3, P2, $FF000000 OR COLOR_GREEN);
-              gRenderAux.LineOnTerrain(P2, P1, $FF000000 OR COLOR_BLUE);
+              gRenderAux.LineOnTerrain(P4, P3, $FF000000 OR tcRed);
+              gRenderAux.LineOnTerrain(P3, P2, $FF000000 OR tcGreen);
+              gRenderAux.LineOnTerrain(P2, P1, $FF000000 OR tcBlue);
             end;
           end;
 
@@ -1317,7 +1311,7 @@ begin
     begin
       Opacity := $BB000000;
       with fDbgVector[Team].CCT[K] do
-        gRenderAux.CircleOnTerrain(CenterPoint.X, CenterPoint.Y, 1, Opacity OR Color, $FF000000 OR COLOR_BLACK);
+        gRenderAux.CircleOnTerrain(CenterPoint.X, CenterPoint.Y, 1, Opacity OR Color, $FF000000 OR tcBlack);
     end;
     // Enemies
     with fDbgVector[Team].CCT[K].Cluster^ do
@@ -1326,13 +1320,13 @@ begin
       begin
         G := fDbgVector[Team].Enemy.Groups[ Groups[L] ];
         if FindGroup(G) then
-          gRenderAux.CircleOnTerrain(G.Position.X, G.Position.Y, 1, Opacity OR Color, $FF000000 OR COLOR_RED);
+          gRenderAux.CircleOnTerrain(G.Position.X, G.Position.Y, 1, Opacity OR Color, $FF000000 OR tcRed);
       end;
       for L := 0 to HousesCount - 1 do
       begin
         H := fDbgVector[Team].Enemy.Houses[ Houses[L] ];
         if FindHouse(H) then
-          gRenderAux.CircleOnTerrain(H.Position.X, H.Position.Y, 1, Opacity OR Color, $FF000000 OR COLOR_BLUE);
+          gRenderAux.CircleOnTerrain(H.Position.X, H.Position.Y, 1, Opacity OR Color, $FF000000 OR tcBlue);
       end;
     end;
     // Allied groups
@@ -1344,7 +1338,7 @@ begin
         if FindGroup(G) then
         begin
           gRenderAux.Line(G.Position.X, G.Position.Y, Groups[L].TargetPosition.Loc.X, Groups[L].TargetPosition.Loc.Y, $FF000000 OR Color);
-          gRenderAux.CircleOnTerrain(G.Position.X, G.Position.Y, 1, Opacity OR Color, $FF000000 OR COLOR_GREEN * Byte(Groups[L].Status) OR COLOR_BLUE * Byte(not Groups[L].Status));
+          gRenderAux.CircleOnTerrain(G.Position.X, G.Position.Y, 1, Opacity OR Color, $FF000000 OR tcGreen * Byte(Groups[L].Status) OR tcBlue * Byte(not Groups[L].Status));
         end;
       end;
 

@@ -128,15 +128,6 @@ type
   end;
 
 
-const
-  COLOR_WHITE = $FFFFFF;
-  COLOR_BLACK = $000000;
-  COLOR_GREEN = $00FF00;
-  COLOR_RED = $7700FF;
-  COLOR_YELLOW = $00FFFF;
-  COLOR_BLUE = $FF0000;
-
-
 implementation
 uses
   SysUtils,
@@ -234,11 +225,11 @@ begin
     Inc(fDebugCounter);
     if OVERLAY_AI_SUPERVISOR_A AND (fDebugCounter = Round(DateUtils.MilliSecondsBetween(Now, 0) * 0.01) mod fDebugDefPolyCnt) then
     begin
-      DrawPolygon(aIdx, -1, Min(250,75), COLOR_BLUE, IntToStr(aIdx));
+      DrawPolygon(aIdx, -1, Min(250,75), tcBlue, IntToStr(aIdx));
       Idx := fStartQueue;
       for K := 0 to fQueueCnt - 1 do
       begin
-        DrawPolygon(Idx, -1, Min(250,K + 75), COLOR_BLUE, IntToStr(K));
+        DrawPolygon(Idx, -1, Min(250,K + 75), tcBlue, IntToStr(K));
         Idx := fQueueArray[Idx].Next;
       end;
     end;
@@ -674,10 +665,10 @@ begin
     begin
       BattleLines := fBackwardFF.Paint(TargetEnemy, aOwners, fInflInfo, fQueueArray);
       for K := 0 to fCntEnemyPoly - 1 do
-        DrawPolygon(Enemy.GroupsPoly[K], 0, 20, COLOR_RED);
+        DrawPolygon(Enemy.GroupsPoly[K], 0, 20, tcRed);
       for K := 0 to Length(TargetPositions) - 1 do
         with TargetPositions[K].Loc do
-          gRenderAux.Quad(X, Y, ($77 shl 24) OR COLOR_RED);
+          gRenderAux.Quad(X, Y, ($77 shl 24) OR tcRed);
       if (BattleLines.Count > 0) then
         AssignDefencePositions();
     end;
@@ -716,11 +707,11 @@ begin
     Inc(fDebugCounter);
     if OVERLAY_AI_SUPERVISOR_A AND (fDebugCounter = Round(DateUtils.MilliSecondsBetween(Now, 0) * 0.005) mod fDebugDefPolyCnt) then
     begin
-      DrawPolygon(aIdx, -1, Min(250,75), COLOR_RED, IntToStr(aIdx));
+      DrawPolygon(aIdx, -1, Min(250,75), tcRed, IntToStr(aIdx));
       Idx := fStartQueue;
       for K := 0 to fQueueCnt - 1 do
       begin
-        DrawPolygon(Idx, -1, Min(250,K + 75), COLOR_RED, IntToStr(K));
+        DrawPolygon(Idx, -1, Min(250,K + 75), tcRed, IntToStr(K));
         Idx := fQueueArray[Idx].Next;
       end;
     end;
@@ -1045,7 +1036,7 @@ end;
 function TArmyBackwardFF.Paint(var aEnemy: TKMAllianceInfo; var aOwners: TKMHandIDArray; var aDefInfo: TKMInflInfoArray; var aQueueArray: TPolygonsQueueArr): TKMBattleLines;
 {$IFDEF DEBUG_BattleLines}
 const
-  COLOR_MIX: array [0..5] of Cardinal = (COLOR_BLUE, COLOR_YELLOW, COLOR_GREEN, COLOR_WHITE, COLOR_BLACK, COLOR_RED);
+  COLOR_MIX: array [0..5] of Cardinal = (tcBlue, tcYellow, tcGreen, tcWhite, tcBlack, tcRed);
 var
   K,L,MaxValue: Integer;
 {$ENDIF}
@@ -1061,7 +1052,7 @@ begin
     for K := 0 to Length(fQueueArray) - 1 do
       MaxValue := Max(MaxValue, fInflInfo[K].Distance);
     for K := 0 to Length(fQueueArray) - 1 do
-      DrawPolygon(K, 0, Round(fInflInfo[K].Distance / MaxValue * 220 + 35), COLOR_BLUE, IntToStr(fInflInfo[K].Distance));
+      DrawPolygon(K, 0, Round(fInflInfo[K].Distance / MaxValue * 220 + 35), tcBlue, IntToStr(fInflInfo[K].Distance));
   end;
   //}
 
@@ -1074,7 +1065,7 @@ begin
         MaxValue := Max(MaxValue, High(Word) - fInflInfo[K].Mark);
     for K := 0 to Length(fQueueArray) - 1 do
       if (fInflInfo[K].Mark > 40000) then
-        DrawPolygon(K, 0, Round((High(Word) - fInflInfo[K].Mark) / MaxValue * 220) + 35, COLOR_WHITE, IntToStr(High(Word) - fInflInfo[K].Mark));
+        DrawPolygon(K, 0, Round((High(Word) - fInflInfo[K].Mark) / MaxValue * 220) + 35, tcWhite, IntToStr(High(Word) - fInflInfo[K].Mark));
   end;
   //}
 
