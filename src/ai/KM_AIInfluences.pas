@@ -113,7 +113,7 @@ implementation
 uses
   Classes, Graphics, SysUtils,
   KM_RenderAux,
-  {$IFDEF DEBUG_NavMeshPathFinding}
+  {$IFDEF DEBUG_AIINFLUENCES}
     KM_CommonUtils,
   {$ENDIF}
   KM_Terrain, KM_Houses, KM_HouseCollection,

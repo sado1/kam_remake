@@ -15,6 +15,8 @@ uses
 type
   TKMTargetType = (ttNone, ttPoint, ttHouse, ttGroup, ttUnit);
   TKMCombatPhase = (cpIdle, cpWalk, cpAttack, cpDead);
+  TKMCombatGroup = class;
+  TKMCombatGroupArray = array of TKMCombatGroup;
 
   TKMCombatGroup = class
     fGroup: TKMUnitGroup;

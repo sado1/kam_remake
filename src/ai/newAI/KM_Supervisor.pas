@@ -72,7 +72,7 @@ type
     //procedure EvaluateArmies();
 
     procedure UpdateAttacks(aTeam: Byte; aTick: Cardinal);
-    procedure AttackCluster(aAttack: Boolean; aCCTIdx: Word; var A: TKMUnitGroupArray; const E: TKMUnitGroupArray; const H: TKMHouseArray);
+    procedure AttackCluster(aAttack: Boolean; aCCTIdx: Word; var A: pTKMGroupCounterWeightArray; const E: TKMUnitGroupArray; const H: TKMHouseArray);
   public
     constructor Create();
     destructor Destroy(); override;
@@ -363,7 +363,7 @@ end;
 
 
 
-procedure TKMSupervisor.AttackCluster(aAttack: Boolean; aCCTIdx: Word; var A: TKMUnitGroupArray; const E: TKMUnitGroupArray; const H: TKMHouseArray);
+procedure TKMSupervisor.AttackCluster(aAttack: Boolean; aCCTIdx: Word; var A: pTKMGroupCounterWeightArray; const E: TKMUnitGroupArray; const H: TKMHouseArray);
 
   function GetIdx(aLen, aA, aE: Integer): Integer; inline;
   begin
@@ -396,9 +396,9 @@ var
   IdxA,IdxE, CntA, CntE, Overflow, Overflow2, BestIdxE, BestIdxA: Integer;
   SqrDistFromRanged, SqrDist, BestSqrDistFromRanged, BestSqrDist, BestThreat, Opportunity, BestOpportunity: Single;
   G: TKMUnitGroup;
-  CG: TKMCombatGroup;
   U: TKMUnit;
   UW: TKMUnitWarrior;
+  pGCWA: pTKMGroupCounterWeight;
   TargetH: TKMHouse;
   Dist: array of Single;
   Threat: TThreatArray;
@@ -417,21 +417,21 @@ begin
     FillChar(AttackingHouseCnt[0], Length(AttackingHouseCnt) * SizeOf(AttackingHouseCnt[0]), #0);
     for IdxA := CntA - 1 downto 0 do
     begin
-      TargetH := A[IdxA].OrderTargetHouse;
-      if (TargetH <> nil) AND (A[IdxA].GroupType <> gtRanged) AND (KMDistanceSqr(A[IdxA].Position,TargetH.Entrance) < sqr_MAX_DISTANCE_FROM_HOUSE) then
+      TargetH := A[IdxA].Group.OrderTargetHouse;
+      if (TargetH <> nil) AND (A[IdxA].Group.GroupType <> gtRanged) AND (KMDistanceSqr(A[IdxA].Group.Position,TargetH.Entrance) < sqr_MAX_DISTANCE_FROM_HOUSE) then
       begin
         // Consider units if house is in the combat line
         for IdxE := 0 to Length(H) - 1 do
           if (H[IdxE] = TargetH) then
           begin
-            Inc(AttackingHouseCnt[IdxE],A[IdxA].Count);
+            Inc(AttackingHouseCnt[IdxE],A[IdxA].Group.Count);
             break;
           end;
         Dec(CntA);
         // Swap groups so groups < CntA waits for orders but threat is computed from all
-        G := A[IdxA];
+        pGCWA := A[IdxA];
         A[IdxA] := A[CntA];
-        A[CntA] := G;
+        A[CntA] := pGCWA;
       end;
     end;
   end;
@@ -441,19 +441,17 @@ begin
 
     // Set orders for ranged groups (the closest enemy, top prio)
     for IdxA := CntA - 1 downto 0 do
-      if (A[IdxA].GroupType = gtRanged) then
+      if (A[IdxA].Group.GroupType = gtRanged) then
       begin
-        U := gTerrain.UnitsHitTestWithinRad(A[IdxA].Position, 0.5, A[IdxA].GetAliveMember.GetFightMaxRange(True), A[IdxA].Owner, atEnemy, dirNA, True);
+        U := gTerrain.UnitsHitTestWithinRad(A[IdxA].Group.Position, 0.5, A[IdxA].Group.GetAliveMember.GetFightMaxRange(True), A[IdxA].Group.Owner, atEnemy, dirNA, True);
         if (U is TKMUnitWarrior) then
         begin
-          CG := gHands[ A[IdxA].Owner ].AI.ArmyManagement.AttackNew.CombatGroup[ A[IdxA] ];
-          if (CG <> nil) then
-            CG.TargetGroup := TKMUnitWarrior(U).Group;
+          A[IdxA].CG.TargetGroup := TKMUnitWarrior(U).Group;
           Dec(CntA);
           // Swap groups so groups < CntA waits for orders but threat is computed from all
-          G := A[IdxA];
+          pGCWA := A[IdxA];
           A[IdxA] := A[CntA];
-          A[CntA] := G;
+          A[CntA] := pGCWA;
         end;
       end;
 
@@ -461,7 +459,7 @@ begin
     SetLength(Dist, Length(A)*Length(E));
     for IdxA := 0 to Length(A) - 1 do
     for IdxE := 0 to Length(E) - 1 do
-      Dist[ GetIdx(CntE,IdxA,IdxE) ] := KMDistanceSqr(A[IdxA].Position,E[IdxE].Position);
+      Dist[ GetIdx(CntE,IdxA,IdxE) ] := KMDistanceSqr(A[IdxA].Group.Position,E[IdxE].Position);
 
     // Compute threat
     SetLength(Threat, Length(E));
@@ -470,7 +468,7 @@ begin
       Threat[IdxE].Distance := 1E6;
       Threat[IdxE].DistRanged := 1E6;
       for IdxA := 0 to Length(A) - 1 do // Over all groups
-        if (A[IdxA].GroupType = gtRanged) AND (Dist[ GetIdx(CntE,IdxA,IdxE) ] < Threat[IdxE].DistRanged) then
+        if (A[IdxA].Group.GroupType = gtRanged) AND (Dist[ GetIdx(CntE,IdxA,IdxE) ] < Threat[IdxE].DistRanged) then
           Threat[IdxE].DistRanged := Dist[ GetIdx(CntE,IdxA,IdxE) ]
         else if (Dist[ GetIdx(CntE,IdxA,IdxE) ] < Threat[IdxE].Distance) then
           Threat[IdxE].Distance := Dist[ GetIdx(CntE,IdxA,IdxE) ];
@@ -500,7 +498,7 @@ begin
     // Set targets
     // Archers - higher distance
     for IdxA := 0 to CntA - 1 do
-      if (A[IdxA].GroupType = gtRanged) then
+      if (A[IdxA].Group.GroupType = gtRanged) then
       begin
         BestOpportunity := abs(NO_THREAT);
         for IdxE := Low(Threat) to High(Threat) do
@@ -512,9 +510,7 @@ begin
         // Set order
         if (BestOpportunity <> abs(NO_THREAT)) then
         begin
-          CG := gHands[ A[IdxA].Owner ].AI.ArmyManagement.AttackNew.CombatGroup[ A[IdxA] ];
-          if (CG <> nil) then
-            CG.TargetGroup := E[BestIdxE];
+          A[IdxA].CG.TargetGroup := E[BestIdxE];
           // Remove group from selection
           A[IdxA] := nil;
         end;
@@ -544,7 +540,7 @@ begin
           for IdxA := 0 to CntA - 1 do
             if (A[IdxA] <> nil) then
             begin
-              Opportunity := + OpportunityArr[ A[IdxA].GroupType, E[BestIdxE].GroupType ] * AI_Par[ATTACK_SUPERVISOR_EvalTarget_OpportunityGain]
+              Opportunity := + OpportunityArr[ A[IdxA].Group.GroupType, E[BestIdxE].GroupType ] * AI_Par[ATTACK_SUPERVISOR_EvalTarget_OpportunityGain]
                              - Dist[ GetIdx(CntE,IdxA,BestIdxE) ]                        * AI_Par[ATTACK_SUPERVISOR_EvalTarget_OpportunityDistGain];
               if (BestOpportunity < Opportunity) then
               begin
@@ -555,13 +551,11 @@ begin
           if (BestOpportunity <> NO_THREAT) then
           begin
             // SetOrders
-            UW := A[BestIdxA].GetAliveMember;
+            UW := A[BestIdxA].Group.GetAliveMember;
             // Decrease risk
-            WeightedCount := WeightedCount - A[BestIdxA].Count * WarriorPrice[UW.UnitType];
+            WeightedCount := WeightedCount - A[BestIdxA].Group.Count * WarriorPrice[UW.UnitType];
             // Set order
-            CG := gHands[ A[BestIdxA].Owner ].AI.ArmyManagement.AttackNew.CombatGroup[ A[BestIdxA] ];
-            if (CG <> nil) then
-              CG.TargetGroup := E[BestIdxE];
+            A[BestIdxA].CG.TargetGroup := E[BestIdxE];
             // Remove group from selection
             A[BestIdxA] := nil;
           end
@@ -581,9 +575,9 @@ begin
       Inc(Overflow);
       BestOpportunity := abs(NO_THREAT);
       for IdxA := 0 to CntA - 1 do
-        if (A[IdxA] <> nil) AND (A[IdxA].GroupType <> gtRanged) then
+        if (A[IdxA] <> nil) AND (A[IdxA].Group.GroupType <> gtRanged) then
         begin
-          Opportunity := KMDistanceSqr(H[IdxE].Entrance, A[IdxA].Position);
+          Opportunity := KMDistanceSqr(H[IdxE].Entrance, A[IdxA].Group.Position);
           if (BestOpportunity > Opportunity) AND (Opportunity < sqr_INTEREST_DISTANCE_House) then
           begin
             BestIdxA := IdxA;
@@ -593,10 +587,8 @@ begin
       // Set order
       if (BestOpportunity <> abs(NO_THREAT)) then
       begin
-        Inc(AttackingHouseCnt[IdxE],A[BestIdxA].Count);
-        CG := gHands[ A[BestIdxA].Owner ].AI.ArmyManagement.AttackNew.CombatGroup[ A[BestIdxA] ];
-        if (CG <> nil) then
-          CG.TargetHouse := H[IdxE];
+        Inc(AttackingHouseCnt[IdxE],A[BestIdxA].Group.Count);
+        A[BestIdxA].CG.TargetHouse := H[IdxE];
         A[BestIdxA] := nil;
       end;
     end;
@@ -611,15 +603,21 @@ procedure TKMSupervisor.UpdateAttacks(aTeam: Byte; aTick: Cardinal);
 
   procedure EvaluateEnemy(aAttack: Boolean; aIdx: Word);
   var
-    K: Integer;
-    AG, EG: TKMUnitGroupArray;
+    K, Cnt: Integer;
+    EG: TKMUnitGroupArray;
+    pGCWA: pTKMGroupCounterWeightArray;
     H: TKMHouseArray;
-    CG: TKMCombatGroup;
   begin
     // Copy allied groups (they will be edited)
-    SetLength(AG, fArmyVector.CCT[aIdx].CounterWeight.GroupsCount);
-    for K := 0 to Length(AG) - 1 do
-      AG[K] := fArmyVector.CCT[aIdx].CounterWeight.Groups[K].Group;
+    SetLength(pGCWA, fArmyVector.CCT[aIdx].CounterWeight.CGCount);
+    Cnt := 0;
+    for K := 0 to fArmyVector.CCT[aIdx].CounterWeight.GroupsCount - 1 do
+    begin
+      pGCWA[Cnt] := @fArmyVector.CCT[aIdx].CounterWeight.Groups[K];
+      Inc(Cnt,Byte(pGCWA[Cnt].CG <> nil));
+      if (Cnt = fArmyVector.CCT[aIdx].CounterWeight.CGCount) then
+        break;
+    end;
     // Set orders to attack
     with fArmyVector.CCT[aIdx].Cluster^ do
     begin
@@ -629,16 +627,12 @@ procedure TKMSupervisor.UpdateAttacks(aTeam: Byte; aTick: Cardinal);
       SetLength(H, HousesCount);
       for K := 0 to HousesCount - 1 do
         H[K] := fArmyVector.Enemy.Houses[ Houses[K] ];
-      AttackCluster(aAttack, aIdx, AG, EG, H);
+      AttackCluster(aAttack, aIdx, pGCWA, EG, H);
     end;
     // Set orders to move
-    for K := Low(AG) to High(AG) do
-      if (AG[K] <> nil) then
-      begin
-        CG := gHands[ AG[K].Owner ].AI.ArmyManagement.AttackNew.CombatGroup[ AG[K] ];
-        if (CG <> nil) then
-          CG.TargetPosition := fArmyVector.CCT[aIdx].CounterWeight.Groups[K].TargetPosition;
-      end;
+    for K := Low(pGCWA) to High(pGCWA) do
+      if (pGCWA[K] <> nil) AND (pGCWA[K].CG <> nil) then
+        pGCWA[K].CG.TargetPosition := pGCWA[K].TargetPosition
   end;
 
 const
@@ -693,7 +687,7 @@ begin
   // Set orders
   for K := 0 to Length(fArmyVector.CCT) - 1 do
     with fArmyVector.CCT[K].CounterWeight do
-      if (GroupsCount > 0) then
+      if (CGCount > 0) then
         EvaluateEnemy(InPlace OR AtAdvantage OR Ambushed, K);
 end;
 

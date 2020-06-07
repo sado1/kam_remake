@@ -42,6 +42,8 @@ type
     Status: Boolean;
     CG: TKMCombatGroup;
   end;
+  pTKMGroupCounterWeight = ^TKMGroupCounterWeight;
+  pTKMGroupCounterWeightArray = array of pTKMGroupCounterWeight;
   TKMCombatClusterThreat = record
     AttackingCity: Boolean;
     ClusterIdx: Word;
@@ -82,7 +84,7 @@ type
   private
   protected
     fClusters: TKMCombatClusters;
-    fClusterMapping: TKMByteArray;
+    fClusterMapping: TKMWordArray;
 
     procedure InitQueue(var aEnemy: TKMAllianceAsset); reintroduce;
     function CanBeExpanded(const aIdx: Word): Boolean; override;
@@ -90,7 +92,7 @@ type
     procedure ExpandPolygon(aIdx: Word; aCanBeExpanded: Boolean);
     procedure Flood(var aEnemy: TKMAllianceAsset); reintroduce;
   public
-    function FindClusters(var aClusters: TKMCombatClusters; var aAllianceInfo: TKMAllianceAsset; var aClusterMapping: TKMByteArray; var aQueueArray: TPolygonsQueueArr): Word;
+    function FindClusters(var aClusters: TKMCombatClusters; var aAllianceInfo: TKMAllianceAsset; var aClusterMapping: TKMWordArray; var aQueueArray: TPolygonsQueueArr): Word;
   end;
 
 
@@ -100,7 +102,7 @@ type
     fOwner: TKMHandID;
     fOwners: TKMHandIDArray;
     fPolygonsCnt, fCntAllyPoly, fCntEnemyPoly: Word;
-    fClusterMapping: TKMByteArray;
+    fClusterMapping: TKMWordArray;
     fVectorField: TKMVectorField;
     fFindClusters: TKMFindClusters;
     fClusters: TKMCombatClusters;
@@ -137,7 +139,7 @@ type
 
     property Clusters: TKMCombatClusters read fClusters;
     property QueueArray: TPolygonsQueueArr read fQueueArray;
-    property ClusterMapping: TKMByteArray read fClusterMapping;
+    property ClusterMapping: TKMWordArray read fClusterMapping;
 
     function DetectEnemyPresence(var aOwners: TKMHandIDArray): Boolean;
     procedure DivideForces(aCS: TKMCombatStatus; var aCSA: TKMCombatStatusArray);
@@ -309,7 +311,7 @@ begin
 end;
 
 
-function TKMFindClusters.FindClusters(var aClusters: TKMCombatClusters; var aAllianceInfo: TKMAllianceAsset; var aClusterMapping: TKMByteArray; var aQueueArray: TPolygonsQueueArr): Word;
+function TKMFindClusters.FindClusters(var aClusters: TKMCombatClusters; var aAllianceInfo: TKMAllianceAsset; var aClusterMapping: TKMWordArray; var aQueueArray: TPolygonsQueueArr): Word;
 var
   K,L,Cnt: Integer;
 begin
@@ -521,6 +523,14 @@ var
   K, L, M, Cnt, OwnersCnt: Integer;
   G: TKMUnitGroup;
 begin
+  // Clear mess before FillChar
+  for K := Low(CCT) to High(CCT) do
+    with CCT[K] do
+    begin
+      SetLength(Owners,0);
+      SetLength(CounterWeight.Groups,0);
+    end;
+
   SetLength(CCT, fClusters.UnreferencedCount);
   if (Length(CCT) <= 0) then
     Exit;
