@@ -59,7 +59,7 @@ const
   ARMY_UNLOCK_FACTOR = 0.9;            //x0.9 multiplier, for balance
   AUTOFEED_TIME = 6000;                //Every 10 min
   SHOW_MAP_VERSION = False;            //False by default, true in debug mode
-  MAP_VERSION = '[$CD9B4B]3.1 RC1[]';  //Map version
+  MAP_VERSION = '[$CD9B4B]3.2 RC1[]';  //Map version
 
 
 type
@@ -4136,7 +4136,8 @@ begin
     if aTypes[I] = 21 then
       aTypes[I] := 22;
     if aTypes[I] = 18 then
-      if States.KaMRandom > 0.85 then
+      if (States.KaMRandom > 0.85)
+      and (Unlocked[aPlayer][23]) then
         aTypes[I] := Utils.IfThenI(States.KaMRandom < 0.5, 23, 26);
   end;
 
@@ -4189,28 +4190,12 @@ begin
 end;
 
 
-procedure OnPlanRoadPlaced(aIndex, aX, aY: Integer);
-var
-  aPlayer: Integer;
+procedure OnPlanRoadPlaced(aPlayer, aX, aY: Integer);
 begin
-  Actions.PlanRemove(aIndex, aX, aY);
-  if Wave >= RESCUE_WAVE then
-  begin
-    aPlayer := aIndex;
-    if (aX = RescueTileX[aPlayer])
-    and (aY = RescueTileY[aPlayer])
-    and (RescuesDelay[aPlayer] = 0)
-    and (RescuesCount[aPlayer] > 0)
-    and (States.StatArmyCount(aPlayer) <= Utils.RoundToUp(RESCUE_ARMY_COUNT / DifficultyFactor, 20))
-    and (States.StatUnitTypeCount(aPlayer, 13) <= Utils.RoundToUp(RESCUE_RECRUITS_COUNT / DifficultyFactor, 5)) then
-    begin
-      GetRescue(aPlayer);
-      ShowStatusStart[aPlayer] := States.GameTime;
-      StatusString[aPlayer] := '[$82AD11]<--- <$84>[]'
-      RescuesDelay[aPlayer] := Utils.RoundToUp(RESCUE_DELAY * DifficultyFactor, 300);
-      RescuesCount[aPlayer] := RescuesCount[aPlayer] - 1;
-    end;
-  end;
+  Actions.PlanRemove(aPlayer, aX, aY);
+  if (aX = RescueTileX[aPlayer])
+  and (aY = RescueTileY[aPlayer]) then
+    RescueSquads(aPlayer);
 end;
 
 
