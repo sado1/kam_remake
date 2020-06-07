@@ -1154,10 +1154,20 @@ end;
 
 
 function TKMRunnerDesyncTest.TickPlayed(aTick: Cardinal): Boolean;
+
+  procedure SetSymmetricalAlliance(aPL1, aPL2: TKMHandID; aAllianceType: TKMAllianceType);
+  begin
+    gGame.GameInputProcess.CmdPlayerAllianceSet(aPL1, aPL2, aAllianceType);
+    gGame.GameInputProcess.CmdPlayerAllianceSet(aPL2, aPL1, aAllianceType);
+  end;
+
 var
   tickCRC, T: Cardinal;
-  I, loc: Integer;
+  I, J, K, PL1, PL2, teamsCnt, teamMembersCnt, lastTeamCnt, cnt, rngIndex, membersCnt: Integer;
   allianceType: TKMAllianceType;
+  playersTeam: array[0..MAX_HANDS - 1] of Byte;
+  playerID: Byte;
+  players: set of Byte;
 begin
   Result := True;
 
@@ -1171,17 +1181,63 @@ begin
 //      //Just enable Advanced AI, do not override MapEd AI params
 //      gHands[0].AI.Setup.EnableAdvancedAI(AIType = aitAdvanced);
 
-    if RandomTeams then
-      for I := 0 to gHands.Count - 1 do
-      begin
-        loc := KaMRandomWSeed(fRunSeed, gHands.Count - 1);
-        if loc <> I then
-        begin
-          allianceType := TKMAllianceType(KaMRandomWSeed(fRunSeed, 2));
-          gGame.GameInputProcess.CmdPlayerAllianceSet(I, loc, allianceType);
-          gGame.GameInputProcess.CmdPlayerAllianceSet(loc, I, allianceType);
-        end;
-      end;
+    case TeamType of
+      rttFFA: ;
+      rttRngAlliances:  for PL1 := 0 to gHands.Count - 1 do
+                        begin
+                          PL2 := KaMRandomWSeed(fRunSeed, gHands.Count - 1);
+                          if PL2 <> PL1 then
+                          begin
+                            allianceType := TKMAllianceType(KaMRandomWSeed(fRunSeed, 2));
+                            SetSymmetricalAlliance(PL1, PL2, allianceType);
+                          end;
+                        end;
+      rttRngTeams:      begin
+                          cnt := gHands.Count;
+                          players := [];
+                          FillChar(playersTeam, Length(playersTeam) * SizeOf(playersTeam[0]), #255);
+                          for I := 0 to gHands.Count - 1 do
+                            Include(players, I);
+
+                          teamsCnt := KaMRandomWSeed(fRunSeed, Max(0, Min(gHands.Count div 2, 6) - 2)) + 2; //2..6 teams
+                          teamMembersCnt := Round(gHands.Count / teamsCnt);
+                          lastTeamCnt := gHands.Count - teamMembersCnt * (teamsCnt - 1);
+
+                          for I := 0 to teamsCnt - 1 do //except last team
+                          begin
+                            membersCnt := IfThen(I = teamsCnt - 1, lastTeamCnt, teamMembersCnt);
+                            for J := 0 to membersCnt - 1 do
+                            begin    
+                              rngIndex := KaMRandomWSeed(fRunSeed, cnt);
+                              K := 0;
+                              for playerID in players do
+                              begin
+                                if K = rngIndex then
+                                begin  
+                                  playersTeam[playerID] := I;
+                                  Exclude(players, playerID);
+                                  Break;
+                                end;
+                                Inc(K);
+                              end;
+
+                              Dec(cnt); 
+                            end;
+                          end;
+
+                          for PL1 := 0 to gHands.Count - 1 do
+                            for PL2 := 0 to gHands.Count - 1 do
+                            begin
+                              if PL1 = PL2 then Continue;
+                              
+                              if playersTeam[PL1] = playersTeam[PL2] then
+                                gGame.GameInputProcess.CmdPlayerAllianceSet(PL1, PL2, atAlly)
+                              else
+                                gGame.GameInputProcess.CmdPlayerAllianceSet(PL1, PL2, atEnemy);
+                            end;
+                        end;
+    end;
+
     SaveGame;
   end;
 

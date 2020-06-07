@@ -11,6 +11,7 @@ type
   TKMRunnerCommon = class;
   TKMRunnerClass = class of TKMRunnerCommon;
   TKMRunnerMapsType = (rmtClassic, rmtMP8, rmtFight, rmtCoop);
+  TKMRunnerTeamsType = (rttFFA, rttRngAlliances, rttRngTeams);
 
   TKMRunResults = record
     ChartsCount: Integer; //How many charts return
@@ -43,7 +44,7 @@ type
     Seed: Integer;
     AIType: TKMAIType;
     MapsType: TKMRunnerMapsType;
-    RandomTeams: Boolean;
+    TeamType: TKMRunnerTeamsType;
     OnProgress: TUnicodeStringEvent;
     OnProgress_Left: TUnicodeStringEvent;
     OnProgress_Left2: TUnicodeStringEvent;
