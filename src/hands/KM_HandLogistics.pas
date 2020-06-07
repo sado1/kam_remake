@@ -482,7 +482,9 @@ begin
               begin
                 fQueue.fBestBidCandidates.Push(bid);
                 bestImportance := bid.Importance;
-              end;
+              end
+              else
+                bid.Free;
             end;
 
       bid := fQueue.ChooseBestBid(bestImportance);
@@ -507,11 +509,12 @@ begin
         serfBid := fQueue.ChooseBestSerfBid(offerPos);
 
         if serfBid <> nil then
+        begin
           fQueue.AssignDelivery(bid.OfferID, bid.DemandID, serfBid.Serf);
-      end;
-
-      if bid <> nil then
+          serfBid.Free;
+        end;
         bid.Free;
+      end;
     end;
   finally
     {$IFDEF PERFLOG}
@@ -1467,7 +1470,9 @@ begin
       bestImportance := fDemand[oldD].Importance;
       bid := TKMDeliveryBid.Create(bestImportance, aSerf, iO, oldD);
       if TryCalculateBid(dckFast, bid, aSerf) then
-        fBestBidCandidates.Push(bid);
+        fBestBidCandidates.Push(bid)
+      else
+        bid.Free;
     end
     else
     begin
@@ -1487,7 +1492,9 @@ begin
         begin
           fBestBidCandidates.Push(bid);
           bestImportance := bid.Importance;
-        end;
+        end
+        else
+          bid.Free;
       end;
 
     bid := ChooseBestBid(bestImportance, aSerf);
@@ -1603,7 +1610,9 @@ procedure TKMDeliveries.DeliveryFindBestDemand(aSerf: TKMUnitSerf; aDeliveryId: 
         begin
           fBestBidCandidates.Push(bid);
           bestImportance := bid.Importance;
-        end;
+        end
+        else
+          bid.Free;
       end;
 
     bid := ChooseBestBidBasic(bestImportance, allowOffroad);
@@ -1625,7 +1634,9 @@ procedure TKMDeliveries.DeliveryFindBestDemand(aSerf: TKMUnitSerf; aDeliveryId: 
           begin
             fBestBidCandidates.Push(bid);
             bestImportance := bid.Importance;
-          end;
+          end
+          else
+            bid.Free;
         end;
 
         bid := ChooseBestBidBasic(bestImportance, allowOffroad);
@@ -1646,7 +1657,9 @@ procedure TKMDeliveries.DeliveryFindBestDemand(aSerf: TKMUnitSerf; aDeliveryId: 
             fBestBidCandidates.Push(bid);
             bestImportance := bid.Importance;
             aForceDelivery := True;
-          end;
+          end
+          else
+            bid.Free;
         end;
 
         bid := ChooseBestBidBasic(bestImportance, allowOffroad);
@@ -1734,15 +1747,24 @@ begin
     Result := fBestBidCandidates.Pop;
     // There could be bids with lower importance
     if Result.Importance < aBestImportance then
+    begin
+      Result.Free;
       Continue;
+    end;
 
     case aCalcEventType of
       bceBid:       if TryCalculateBid(dckAccurate, Result, aSerf) then
-                      fBestBids.Push(Result);
+                      fBestBids.Push(Result)
+                    else
+                      Result.Free;
       bceBidBasic:  if TryCalculateBidBasic(dckAccurate, Result.Serf.CurrPosition, 1, htNone, Result.Serf.Owner, Result, nil, aAllowOffroad) then
-                      fBestBids.Push(Result);
+                      fBestBids.Push(Result)
+                    else
+                      Result.Free;
       bceSerfBid:   if TryCalcSerfBidValue(dckAccurate, Result.Serf, aOfferPos, Result) then
-                      fBestBids.Push(Result);
+                      fBestBids.Push(Result)
+                    else
+                      Result.Free;
       else
         raise Exception.Create('Unknown CalcEventType');
     end;
@@ -1803,7 +1825,9 @@ begin
             begin
               fBestBidCandidates.Push(bid);
               bestImportance := bid.Importance;
-            end;
+            end
+            else
+              bid.Free;
           end;
 
     bid := ChooseBestBid(bestImportance, aSerf);
@@ -1811,6 +1835,7 @@ begin
     if bid <> nil then
     begin
       AssignDelivery(bid.OfferID, bid.DemandID, aSerf);
+      bid.Free;
       Result := True;
     end else
       //Try to find ongoing delivery task from specified house and took it from serf, which is on the way to that house
@@ -1830,7 +1855,9 @@ begin
             begin
               fBestBidCandidates.Push(bid);
               bestImportance := bid.Importance;
-            end;
+            end
+            else
+              bid.Free;
           end;
 
         bid := ChooseBestBid(bestImportance, aSerf);
@@ -1838,12 +1865,10 @@ begin
         if bid <> nil then
         begin
           ReAssignDelivery(bid.QueueID, aSerf);
+          bid.Free;
           Result := True;
         end;
       end;
-
-    if bid <> nil then
-      bid.Free;
   finally
     {$IFDEF PERFLOG}
     gPerfLogs.SectionLeave(psDelivery);
