@@ -35,7 +35,8 @@ type
     fUsedNodes: array of TNavMeshNode;
     fRouteID: Cardinal;
 
-    fOwner: TKMHandID;
+    fAllianceIdx: Integer;
+    //fOwner: TKMHandID;
     fGroupType: TKMGroupType;
     fMode: TPathfindingMode;
 
@@ -115,33 +116,13 @@ function TNavMeshPathFinding.MovementCost(aIdx, aFrom, aTo: Word; var aSPoint, a
 
   function AvoidTraffic(): Cardinal;
   begin
-    {
-    Result := Round(
-                + gAIFields.Influences.ArmyTraffic[fOwner, aTo] * AI_Par[ARMY_PATHFINDING_AvoidTraffic]
-                + (3 - gAIFields.NavMesh.Polygons[aTo].NearbyCount) * AI_Par[ARMY_PATHFINDING_AvoidEdges]
-              );
-    //}
-    Result := (MAX_LINE_LENGTH - gAIFields.NavMesh.Polygons[aFrom].NearbyLineLength[aIdx]) * 2;
+    Result := + gAIFields.Influences.GetArmyTraffic(fAllianceIdx, aTo)
+              + (MAX_LINE_LENGTH - gAIFields.NavMesh.Polygons[aFrom].NearbyLineLength[aIdx]) * 2;
   end;
 
   function AvoidSpecEnemy(): Cardinal;
-  const
-    CHANCES: array[TKMGroupType] of array[TKMGroupType] of Single = (
-    // gtMelee gtAntiHorse gtRanged gtMounted
-      (   1.0,        0.7,     0.5,       2.0 ), // gtMelee
-      (   2.0,        1.0,     0.7,       0.5 ), // gtAntiHorse
-      (   3.0,        2.0,     1.0,       5.0 ), // gtRanged
-      (   2.0,        5.0,     0.1,       1.0 )  // gtMounted
-    );
-  var
-    GT: TKMGroupType;
-    Weight: Single;
   begin
-    Weight := //+ gAIFields.Influences.ArmyTraffic[fOwner, aTo] * AI_Par[ARMY_PATHFINDING_AvoidTraffic]
-              + (3 - gAIFields.NavMesh.Polygons[aTo].NearbyCount) * AI_Par[ARMY_PATHFINDING_AvoidEdges];
-    for GT := Low(TKMGroupType) to High(TKMGroupType) do
-      Weight := Weight + CHANCES[fGroupType,GT] * gAIFields.Influences.EnemyGroupPresence[fOwner, aTo, GT] * AI_Par[ARMY_PATHFINDING_AvoidSpecEnemy];
-    Result := Round(Weight);
+    Result := AvoidTraffic() + gAIFields.Influences.Presence[fAllianceIdx, aTo, fGroupType];
   end;
 
 begin
@@ -398,7 +379,9 @@ begin
   {$IFDEF DEBUG_NavMeshPathFinding}
   Time := TimeGetUsec();
   {$ENDIF}
-  fOwner := aOwner;
+  //fOwner := aOwner;
+  if not gAIFields.Influences.GetAllianceIdx(aOwner,fAllianceIdx) then
+    Exit(False);
   fMode := pmAvoidTraffic;
   Result := InitRoute(aStart, aEnd, aDistance, aRoutePointArray);
   {$IFDEF DEBUG_NavMeshPathFinding}
@@ -417,7 +400,9 @@ begin
   {$IFDEF DEBUG_NavMeshPathFinding}
   Time := TimeGetUsec();
   {$ENDIF}
-  fOwner := aOwner;
+  //fOwner := aOwner;
+  if not gAIFields.Influences.GetAllianceIdx(aOwner,fAllianceIdx) then
+    Exit(False);
   fMode := pmAvoidSpecEnemy;
   fGroupType := aGroup;
   Result := InitRoute(aStart, aEnd, aDistance, aRoutePointArray);

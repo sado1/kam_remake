@@ -64,7 +64,7 @@ type
 
 implementation
 uses
-  KM_AIFields, KM_AIInfluences, KM_NavMesh, KM_Hand, KM_HandsCollection, KM_ResHouses, KM_ArmyAttack;
+  KM_AIFields, KM_AIInfluences, KM_NavMesh, KM_Hand, KM_HandsCollection, KM_ResHouses;
 
 
 { TNavMeshInfluenceSearch }
@@ -87,7 +87,8 @@ begin
   // Scan current polygon and try find enemies presence
   for I := 0 to fHighEnemiesIdx do
     if    (      fHouseInfluence AND (gAIFields.Influences.OwnPoint[ fEnemies[I], aPoint ] > HOUSE_INFLUENCE_LIMIT)  )
-       OR (  not fHouseInfluence AND (gAIFields.Influences.PresenceAllGroups[  fEnemies[I], aIdx  ] > ARMY_INFLUENCE_LIMIT) ) then
+       //OR (  not fHouseInfluence AND (gAIFields.Influences.PresenceAllGroups[  fEnemies[I], aIdx  ] > ARMY_INFLUENCE_LIMIT) )
+       then
     begin
       // Mark presence
       with fEnemiesStats[fHighStatsIdx] do
@@ -108,6 +109,8 @@ end;
 function TNavMeshInfluenceSearch.FindClosestEnemies(const aOwner: TKMHandID; var aCenterPoints: TKMPointArray; var aEnemiesStats: TKMEnemyStatisticsArray; aHouseInfluence: Boolean = True): Boolean;
   // Check if player is active in the meaning of threat for new AI
   function PlayerActive(aPL: TKMHandID): Boolean;
+  const
+    TARGET_HOUSES: THouseTypeSet = [htBarracks, htStore, htSchool, htTownhall];
   var
     HT: TKMHouseType;
   begin

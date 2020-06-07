@@ -2127,11 +2127,7 @@ begin
       fAI.CityManagement.Builder.Planner.Paint();
     end;
     if OVERLAY_AI_COMBAT then
-    begin
       fAI.ArmyManagement.Paint();
-      fAI.ArmyManagement.Attack.Paint();
-      fAI.ArmyManagement.Defence.Paint();
-    end;
   end;
 end;
 
