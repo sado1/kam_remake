@@ -195,9 +195,9 @@ var
   OVERLAY_AI_FLATAREA     :Boolean = False; //Show FlatArea vision of new AI
   OVERLAY_AI_ROUTES       :Boolean = False; //Show Routes to resources vision of new AI
   OVERLAY_AI_SUPERVISOR   :Boolean = False; //Show Supervisor vision of new AI
-  OVERLAY_AI_SUPERVISOR_A :Boolean = False; //Show Supervisor vision of new AI (Animation)
-  OVERLAY_AI_SUPERVISOR_D :Boolean = False; //Show Supervisor vision of new AI (Distances)
-  OVERLAY_AI_SUPERVISOR_M :Boolean = False; //Show Supervisor vision of new AI (Marks)
+  OVERLAY_AI_VECTOR_FIELD :Boolean = False; //Show Vector field (combat AI)
+  OVERLAY_AI_CLUSTERS     :Boolean = False; //Show combat clusters (combat AI)
+  OVERLAY_AI_ALLIEDGROUPS :Boolean = False; //Show show allied groups (combat AI)
   {Stats}
   SHOW_SPRITE_COUNT       :Boolean = False; //display rendered controls/sprites count
   SHOW_POINTER_COUNT      :Boolean = False; //Show debug total count of unit/house pointers being tracked
