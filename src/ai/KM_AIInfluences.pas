@@ -108,6 +108,8 @@ type
     procedure Paint(const aRect: TKMRect);
   end;
 
+const
+  AVOID_TRAFFIC_IDX = 4; // Index of avoid traffic in the fOwnership array (0-3 are group types)
 
 implementation
 uses
@@ -336,7 +338,7 @@ function TKMInfluences.GetArmyTraffic(const aAlliance, aIdx: Word): Word;
 const
   MAX_SOLDIERS_IN_POLYGON = 20; // Maximal count of soldiers in 1 triangle of NavMesh - it depends on NavMesh size!!!
 begin
-  Result := Min(MAX_SOLDIERS_IN_POLYGON, fPresence[ aAlliance*5*fPolygons + 5*aIdx + 4 ]);
+  Result := Min(MAX_SOLDIERS_IN_POLYGON, fPresence[ aAlliance*5*fPolygons + 5*aIdx + AVOID_TRAFFIC_IDX ]);
 end;
 
 
@@ -368,7 +370,7 @@ const
     (    1.0,      1.0,       1.0,      2.0), // gtRanged
     (    1.0,      2.0,       0.0,      1.0)  // gtMounted
   );
-  procedure EvaluatePolygon(aIdx, aEval: Word; aGT: TKMGroupType);
+  procedure EvaluatePolygon(aIdx: Cardinal; aEval: Word; aGT: TKMGroupType);
   begin
     Inc(fPresence[aIdx+0], Round(aEval*PENALIZATION_ARR[aGT,gtMelee]));
     Inc(fPresence[aIdx+1], Round(aEval*PENALIZATION_ARR[aGT,gtAntiHorse]));
@@ -402,7 +404,7 @@ begin
           if (U <> nil) AND not U.IsDeadOrDying then
           begin
             PolyIdx := fNavMesh.KMPoint2Polygon[ U.CurrPosition ];
-            Inc(fPresence[aAllianceIdx*5*fPolygons + 5*PolyIdx + 4],Increment);
+            Inc(fPresence[aAllianceIdx*5*fPolygons + 5*PolyIdx + AVOID_TRAFFIC_IDX],Increment);
           end;
           L := L + EACH_X_MEMBER_COEF;
         end;
@@ -425,10 +427,10 @@ begin
           if (U <> nil) AND not U.IsDeadOrDying then
           begin
             PolyIdx := fNavMesh.KMPoint2Polygon[ U.CurrPosition ];
-            EvaluatePolygon(aAllianceIdx*5*fPolygons + 5*PolyIdx, Increment, G.GroupType);
+            EvaluatePolygon(aAllianceIdx*5*fPolygons + 5*PolyIdx, Increment, GT);
             with fNavMesh.Polygons[PolyIdx] do
               for M := 0 to NearbyCount - 1 do
-                EvaluatePolygon(aAllianceIdx*5*fPolygons + 5*Nearby[M], Increment, G.GroupType);
+                EvaluatePolygon(aAllianceIdx*5*fPolygons + 5*Nearby[M], Increment, GT);
           end;
           L := L + EACH_X_MEMBER_COEF;
         end;
