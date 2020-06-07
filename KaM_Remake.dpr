@@ -206,7 +206,7 @@ uses
   KM_NavMeshFloodPositioning in 'src\navmesh\KM_NavMeshFloodPositioning.pas',
   KM_NavMeshInfluences in 'src\navmesh\KM_NavMeshInfluences.pas',
   KM_NavMeshDefences in 'src\navmesh\KM_NavMeshDefences.pas',
-  KM_NavMeshArmyPositioning in 'src\navmesh\KM_NavMeshArmyPositioning.pas',
+  //KM_NavMeshArmyPositioning in 'src\navmesh\KM_NavMeshArmyPositioning.pas',
   KM_NavMeshArmyVectorField in 'src\navmesh\KM_NavMeshArmyVectorField.pas',
 
   {$IFDEF USESECUREAUTH}

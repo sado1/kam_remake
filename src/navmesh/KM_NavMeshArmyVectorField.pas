@@ -146,7 +146,7 @@ type
     procedure FindPositions();
 
     function LogStatus(): UnicodeString;
-    procedure Paint(var aOwners: TKMHandIDArray; var aTargetGroups: TKMUnitGroupArray; var aTargetHouses: TKMHouseArray);
+    procedure Paint();
   end;
 
 
@@ -1198,7 +1198,7 @@ begin
 end;
 
 
-procedure TArmyVectorField.Paint(var aOwners: TKMHandIDArray; var aTargetGroups: TKMUnitGroupArray; var aTargetHouses: TKMHouseArray);
+procedure TArmyVectorField.Paint();
 {$IFDEF DEBUG_ArmyVectorField}
   function FindGroup(aG: TKMUnitGroup): Boolean;
   var
@@ -1228,8 +1228,6 @@ var
   P1,P2,P3,P4: TKMPoint;
   G: TKMUnitGroup;
   H: TKMHouse;
-  //PL: TKMHandID;
-  //P: TKMPoint;
 {$ENDIF}
 begin
   {$IFDEF DEBUG_ArmyVectorField}
@@ -1341,115 +1339,9 @@ begin
           gRenderAux.CircleOnTerrain(G.Position.X, G.Position.Y, 1, Opacity OR Color, $FF000000 OR tcGreen * Byte(Groups[L].Status) OR tcBlue * Byte(not Groups[L].Status));
         end;
       end;
-
   end;
-
   {$ENDIF}
 end;
 
-{
-procedure TArmyVectorField.FindPositions();
-var
-  BattleLineCnt: Word;
-  BattleLine: TKMWordArray;
-
-  procedure FindBattleLine(aInitIdx: Word);
-  var
-    K, Idx, NearbyIdx: Word;
-  begin
-    BattleLineCnt := 0;
-    fQueueCnt := 0;
-    fVisitedIdx := fVisitedIdx + 1;
-    InsertInQueue(aInitIdx);
-    fQueueArray[aInitIdx].Visited := fVisitedIdx;
-    while RemoveFromQueue(Idx) do
-      for K := 0 to gAIFields.NavMesh.Polygons[Idx].NearbyCount - 1 do
-      begin
-        NearbyIdx := gAIFields.NavMesh.Polygons[Idx].Nearby[K];
-        if (fQueueArray[NearbyIdx].Visited = 1) then // 1 is mark for initial FF of enemy groups
-        begin
-          fQueueArray[NearbyIdx].Visited := fVisitedIdx;
-          InsertInQueue(NearbyIdx);
-        end
-        else if (fQueueArray[NearbyIdx].Visited = 0) then
-        begin
-          fQueueArray[NearbyIdx].Visited := fVisitedIdx; // Mark as visited so the polygon is not added to BattleLine twice
-          if (Length(BattleLine) <= BattleLineCnt) then
-            SetLength(BattleLine, BattleLineCnt + 40);
-          BattleLine[BattleLineCnt] := NearbyIdx;
-          Inc(BattleLineCnt);
-        end;
-      end;
-  end;
-
-  procedure AssignPositions(aIdx: Integer);
-  const
-    SQR_IN_PLACE_TOLERANCE = 15*15;
-  var
-    NearEnemy: Boolean;
-    K, L, BestIdx: Integer;
-    BestDistance, Distance: Single;
-    G: TKMUnitGroup;
-  begin
-    BestIdx := 0;
-    for K := 0 to CCT[aIdx].CounterWeight.GroupsCount - 1 do
-    begin
-      G := CCT[aIdx].CounterWeight.Groups[K].Group;
-      BestDistance := 1E10;
-      for L := 0 to BattleLineCnt - 1 do
-      begin
-        Distance := KMDistanceSqr(gAIFields.NavMesh.Polygons[ BattleLine[L] ].CenterPoint,G.Position);
-        if (Distance < BestDistance) then
-        begin
-          BestDistance := Distance;
-          BestIdx := L;
-        end;
-      end;
-      if (BestDistance < 1E10) then
-      begin
-        NearEnemy := (fQueueArray[  Ally.GroupsPoly[ CCT[aIdx].CounterWeight.Groups[K].Idx]  ].Visited > 0);
-        CCT[aIdx].CounterWeight.Groups[K].TargetPosition.Loc := gAIFields.NavMesh.Polygons[ BattleLine[BestIdx] ].CenterPoint;
-        CCT[aIdx].CounterWeight.Groups[K].TargetPosition.Dir := dirN;
-        CCT[aIdx].CounterWeight.Groups[K].Status := (BestDistance < SQR_IN_PLACE_TOLERANCE) OR NearEnemy;
-        if CCT[aIdx].CounterWeight.Groups[K].Status then
-        begin
-          Inc(CCT[aIdx].CounterWeight.InPositionCnt);
-          Inc(CCT[aIdx].CounterWeight.NearEnemyCnt,Byte(NearEnemy));
-          CCT[aIdx].CounterWeight.InPositionStrength := CCT[aIdx].CounterWeight.InPositionStrength + CCT[aIdx].CounterWeight.Groups[K].Group.Count;
-        end;
-      end;
-    end;
-  end;
-
-var
-  K, InitIdx: Integer;
-begin
-
-  if (Enemy.GroupsCount = 0) AND (Enemy.HousesCount = 0) then
-    Exit;
-  if (fVisitedIdx = 0) then
-    fVisitedIdx := 1;
-  for K := Low(CCT) to High(CCT) do
-    if (CCT[K].CounterWeight.GroupsCount > 0) then
-    begin
-      if (CCT[K].Cluster.GroupsCount > 0) then
-        InitIdx := Enemy.GroupsPoly[ CCT[K].Cluster.Groups[0] ]
-      else
-        InitIdx := Enemy.HousesPoly[ CCT[K].Cluster.Houses[0] ];
-      FindBattleLine(InitIdx);
-      AssignPositions(K);
-    end;
-
-  for K := Low(CCT) to High(CCT) do
-    with CCT[K].CounterWeight do
-    begin
-      InPlace := InPositionCnt > GroupsCount * AI_Par[ATTACK_ArmyVectorField_EvalClusters_InPlace];
-      AtAdvantage := InPositionStrength > CCT[K].Threat * AI_Par[ATTACK_ArmyVectorField_EvalClusters_AtAdvantage];
-      Ambushed := NearEnemyCnt > GroupsCount * AI_Par[ATTACK_ArmyVectorField_EvalClusters_Ambushed];
-    end;
-
-
-end;
-}
 end.
 
