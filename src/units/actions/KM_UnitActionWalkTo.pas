@@ -553,6 +553,7 @@ var
   DistNext: Single;
   AllTilesAroundLocked: Boolean;
   U: TKMUnit;
+  animStep: Integer;
 begin
   Result := ocNoObstacle;
 
@@ -572,6 +573,33 @@ begin
     end;
   end;
 
+  // Check if there is an real obstacle first
+  if (not gTerrain.CheckPassability(T, GetEffectivePassability)) or
+     (not gTerrain.CanWalkDiagonaly(fUnit.CurrPosition, T.X, T.Y)) then
+  begin
+    //Try side stepping the obstacle.
+    //By making HighestInteractionCount be the required timeout, we assure the solution is always checked
+    if IntSolutionSideStep(T, SIDESTEP_TIMEOUT) then
+      Result := ocNoObstacle
+    else
+    //Completely re-route if no simple side step solution is available
+    if CanWalkToTarget(fUnit.CurrPosition, GetEffectivePassability) then
+    begin
+      U := fUnit; //Local copy since Self will get freed if TrySetActionWalk succeeds
+      animStep := fUnit.AnimStep; //Save anim step locally
+      fUnit.SetActionWalk(fWalkTo, fType, fDistance, fTargetUnit, fTargetHouse);
+      //Now Self = nil since the walk action was replaced! Don't access members and exit ASAP
+      //Restore direction, cause it usually looks unpleasant,
+      //when warrior turns to locked Loc and then immidiately (in 1 tick) turns away when on new route
+      U.Direction := aDir;
+      U.AnimStep := animStep; //Restore anim step as well, it looks smoother (otherwise unit will stay still for a 1 tick)
+      //Now Self = nil since the walk action was replaced! Don't access members and exit ASAP
+      Exit(ocReRouteMade);
+    end else
+      Result := ocNoRoute;
+  end
+  else
+  // And if there is no obstacle, then apply special for warriors attacking house
   // Warriors should replan when attacking houses if the chosen target tile is locked (by fellow attacking unit)
   if (fUnit is TKMUnitWarrior)
     and (TKMUnitWarrior(fUnit).Task <> nil)
@@ -580,7 +608,6 @@ begin
   begin
     if CanWalkToTarget(fUnit.CurrPosition, GetEffectivePassability) then
     begin
-
       AllTilesAroundLocked := CheckAllTilesAroundHouseLocked;
 
       if AllTilesAroundLocked then
@@ -590,12 +617,14 @@ begin
       else
       begin
         U := fUnit; //Local copy since Self will get freed if TrySetActionWalk succeeds
+        animStep := fUnit.AnimStep; //Save anim step locally
         if fUnit.TrySetActionWalk(fWalkTo, fType, fDistance, fTargetUnit, fTargetHouse, False) then
         begin
           //Now Self = nil since the walk action was replaced! Don't access members and exit ASAP
           //Restore direction, cause it usually looks unpleasant,
           //when warrior turns to locked Loc and then immidiately (in 1 tick) turns away when on new route
           U.Direction := aDir;
+          U.AnimStep := animStep; //Restore anim step as well, it looks smoother (otherwise unit will stay still for a 1 tick)
           Exit(ocReRouteMade);
         end else
           Exit(ocNoObstacle); //Same as when AllTilesAroundLocked
@@ -604,23 +633,6 @@ begin
       Result := ocNoRoute;
     Exit;
   end;
-
-  if (not gTerrain.CheckPassability(T, GetEffectivePassability)) or
-     (not gTerrain.CanWalkDiagonaly(fUnit.CurrPosition, T.X, T.Y)) then
-
-    //Try side stepping the obstacle.
-    //By making HighestInteractionCount be the required timeout, we assure the solution is always checked
-    if IntSolutionSideStep(T, SIDESTEP_TIMEOUT) then
-      Result := ocNoObstacle
-    else
-    //Completely re-route if no simple side step solution is available
-    if CanWalkToTarget(fUnit.CurrPosition, GetEffectivePassability) then
-    begin
-      fUnit.SetActionWalk(fWalkTo, fType, fDistance, fTargetUnit, fTargetHouse);
-      //Now Self = nil since the walk action was replaced! Don't access members and exit ASAP
-      Exit(ocReRouteMade);
-    end else
-      Result := ocNoRoute;
 end;
 
 
