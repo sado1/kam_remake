@@ -1263,82 +1263,90 @@ begin
   //}
 
   // Vector field
-  with fDbgVector[Team] do
-    if (SelectedIdx <> -1) AND (Length(VectorFields) > SelectedIdx) then
-      for K := 0 to fPolygonsCnt - 1 do
-        if (VectorFields[SelectedIdx,K].Distance > 0) then
-          with gAIFields.NavMesh do
-          begin
-            BestIdx := Polygons[K].Nearby[0];
-            for L := 1 to Polygons[K].NearbyCount - 1 do
+  if OVERLAY_AI_VECTOR_FIELD then
+    with fDbgVector[Team] do
+      if (SelectedIdx <> -1) AND (Length(VectorFields) > SelectedIdx) then
+        for K := 0 to fPolygonsCnt - 1 do
+          if (VectorFields[SelectedIdx,K].Distance > 0) then
+            with gAIFields.NavMesh do
             begin
-              NearbyIdx := Polygons[K].Nearby[L];
-              if (fVectorField[BestIdx].Distance > fVectorField[NearbyIdx].Distance) then
-                BestIdx := NearbyIdx;
+              BestIdx := Polygons[K].Nearby[0];
+              for L := 1 to Polygons[K].NearbyCount - 1 do
+              begin
+                NearbyIdx := Polygons[K].Nearby[L];
+                if (fVectorField[BestIdx].Distance > fVectorField[NearbyIdx].Distance) then
+                  BestIdx := NearbyIdx;
+              end;
+              if (fVectorField[K].Distance < fVectorField[BestIdx].Distance) then
+                DrawPolygon(K, $22, $44000000 OR tcWhite)
+              else
+              begin
+                P1 := Polygons[K].CenterPoint;
+                P4 := Polygons[BestIdx].CenterPoint;
+                P2 := KMPointAverage(P1,KMPointAverage(P1,P4));
+                P3 := KMPointAverage(P2,KMPointAverage(P1,P4));
+                gRenderAux.LineOnTerrain(P4, P3, $FF000000 OR tcRed);
+                gRenderAux.LineOnTerrain(P3, P2, $FF000000 OR tcGreen);
+                gRenderAux.LineOnTerrain(P2, P1, $FF000000 OR tcBlue);
+              end;
             end;
-            if (fVectorField[K].Distance < fVectorField[BestIdx].Distance) then
-              DrawPolygon(K, $22, $44000000 OR tcWhite)
-            else
-            begin
-              P1 := Polygons[K].CenterPoint;
-              P4 := Polygons[BestIdx].CenterPoint;
-              P2 := KMPointAverage(P1,KMPointAverage(P1,P4));
-              P3 := KMPointAverage(P2,KMPointAverage(P1,P4));
-              gRenderAux.LineOnTerrain(P4, P3, $FF000000 OR tcRed);
-              gRenderAux.LineOnTerrain(P3, P2, $FF000000 OR tcGreen);
-              gRenderAux.LineOnTerrain(P2, P1, $FF000000 OR tcBlue);
-            end;
-          end;
 
   // Polygon in cluster
-  with fDbgVector[Team] do
-    for K := 0 to Min(High(ClustersMapp),fPolygonsCnt - 1) do
-      if (ClustersMapp[K] <> High(Word)) then
-      begin
-        L := Clusters.Clusters[ ClustersMapp[K] ].ReferenceID;
-        Color := $00FFFFFF AND GenerateColorWSeed(L);
-        DrawPolygon(K, $22, $44000000 OR Color);
-      end;
+  if OVERLAY_AI_CLUSTERS then
+    with fDbgVector[Team] do
+      for K := 0 to Min(High(ClustersMapp),fPolygonsCnt - 1) do
+        if (ClustersMapp[K] <> High(Word)) then
+        begin
+          L := Clusters.Clusters[ ClustersMapp[K] ].ReferenceID;
+          Color := $00FFFFFF AND GenerateColorWSeed(L);
+          DrawPolygon(K, $22, $44000000 OR Color);
+        end;
 
   // Target of cluster
   for K := Low(fDbgVector[Team].CCT) to High(fDbgVector[Team].CCT) do
   begin
     Color := $00FFFFFF AND GenerateColorWSeed(fDbgVector[Team].CCT[K].ClusterIdx);
     Opacity := $88000000;
-    if (K = SelectedIdx) then
+    if OVERLAY_AI_CLUSTERS then
     begin
-      Opacity := $BB000000;
-      with fDbgVector[Team].CCT[K] do
-        gRenderAux.CircleOnTerrain(CenterPoint.X, CenterPoint.Y, 1, Opacity OR Color, $FF000000 OR tcBlack);
-    end;
-    // Enemies
-    with fDbgVector[Team].CCT[K].Cluster^ do
-    begin
-      for L := 0 to GroupsCount - 1 do
+      if (K = SelectedIdx) then
       begin
-        G := fDbgVector[Team].Enemy.Groups[ Groups[L] ];
-        if FindGroup(G) then
-          gRenderAux.CircleOnTerrain(G.Position.X, G.Position.Y, 1, Opacity OR Color, $FF000000 OR tcRed);
+        Opacity := $BB000000;
+        with fDbgVector[Team].CCT[K] do
+          gRenderAux.CircleOnTerrain(CenterPoint.X, CenterPoint.Y, 1, Opacity OR Color, $FF000000 OR tcBlack);
       end;
-      for L := 0 to HousesCount - 1 do
+      // Enemies
+      with fDbgVector[Team].CCT[K].Cluster^ do
       begin
-        H := fDbgVector[Team].Enemy.Houses[ Houses[L] ];
-        if FindHouse(H) then
-          gRenderAux.CircleOnTerrain(H.Position.X, H.Position.Y, 1, Opacity OR Color, $FF000000 OR tcBlue);
+        for L := 0 to GroupsCount - 1 do
+        begin
+          G := fDbgVector[Team].Enemy.Groups[ Groups[L] ];
+          if FindGroup(G) then
+            gRenderAux.CircleOnTerrain(G.Position.X, G.Position.Y, 1, Opacity OR Color, $FF000000 OR tcRed);
+        end;
+        for L := 0 to HousesCount - 1 do
+        begin
+          H := fDbgVector[Team].Enemy.Houses[ Houses[L] ];
+          if FindHouse(H) then
+            gRenderAux.CircleOnTerrain(H.Position.X, H.Position.Y, 1, Opacity OR Color, $FF000000 OR tcBlue);
+        end;
       end;
     end;
     // Allied groups
-    with fDbgVector[Team].CCT[K].CounterWeight do
-      for L := 0 to GroupsCount - 1 do
-      begin
-        gRenderAux.Quad(Groups[L].TargetPosition.Loc.X, Groups[L].TargetPosition.Loc.Y, ($99000000 - Byte(Groups[L].Status)*$44000000) OR Color);
-        G := Groups[L].Group;
-        if FindGroup(G) then
+    if OVERLAY_AI_ALLIEDGROUPS then
+    begin
+      with fDbgVector[Team].CCT[K].CounterWeight do
+        for L := 0 to GroupsCount - 1 do
         begin
-          gRenderAux.Line(G.Position.X, G.Position.Y, Groups[L].TargetPosition.Loc.X, Groups[L].TargetPosition.Loc.Y, $FF000000 OR Color);
-          gRenderAux.CircleOnTerrain(G.Position.X, G.Position.Y, 1, Opacity OR Color, $FF000000 OR tcGreen * Byte(Groups[L].Status) OR tcBlue * Byte(not Groups[L].Status));
+          gRenderAux.Quad(Groups[L].TargetPosition.Loc.X, Groups[L].TargetPosition.Loc.Y, ($99000000 - Byte(Groups[L].Status)*$44000000) OR Color);
+          G := Groups[L].Group;
+          if FindGroup(G) then
+          begin
+            gRenderAux.Line(G.Position.X, G.Position.Y, Groups[L].TargetPosition.Loc.X, Groups[L].TargetPosition.Loc.Y, $FF000000 OR Color);
+            gRenderAux.CircleOnTerrain(G.Position.X, G.Position.Y, 1, Opacity OR Color, $FF000000 OR tcGreen * Byte(Groups[L].Status) OR tcBlue * Byte(not Groups[L].Status));
+          end;
         end;
-      end;
+    end;
   end;
   {$ENDIF}
 end;

@@ -87,7 +87,6 @@ object FormMain: TFormMain
       Height = 179
       Caption = 'Logs'
       TabOrder = 0
-      ExplicitTop = 265
       object chkLogCommands: TCheckBox
         Left = 120
         Top = 8
@@ -179,7 +178,6 @@ object FormMain: TFormMain
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 1
-      ExplicitTop = 241
       ExpandedHeight = 133
       object Label1: TLabel
         Left = 101
@@ -291,7 +289,6 @@ object FormMain: TFormMain
       Caption = 'User Interface'
       Collapsed = True
       TabOrder = 2
-      ExplicitTop = 217
       ExpandedHeight = 72
       object chkUIControlsBounds: TCheckBox
         Left = 8
@@ -327,7 +324,6 @@ object FormMain: TFormMain
       Caption = 'Perf Logs'
       Collapsed = True
       TabOrder = 3
-      ExplicitTop = 193
       ExpandedHeight = 660
     end
     object cpAI: TCategoryPanel
@@ -337,6 +333,7 @@ object FormMain: TFormMain
       Collapsed = True
       TabOrder = 4
       ExplicitTop = 169
+      ExplicitWidth = 258
       object Label5: TLabel
         Left = 202
         Top = 111
@@ -511,30 +508,30 @@ object FormMain: TFormMain
         TabOrder = 15
         OnClick = ControlsUpdate
       end
-      object chkShowSupervisorAnimate: TCheckBox
-        Left = 25
-        Top = 102
+      object chkShowArmyVectorField: TCheckBox
+        Left = 8
+        Top = 104
         Width = 72
         Height = 17
-        Caption = 'Animate'
+        Caption = 'Vector Field'
         TabOrder = 16
         OnClick = ControlsUpdate
       end
-      object chkShowSupervisorDistances: TCheckBox
-        Left = 25
-        Top = 118
+      object chkShowClusters: TCheckBox
+        Left = 8
+        Top = 120
         Width = 72
         Height = 17
-        Caption = 'Distances'
+        Caption = 'Clusters'
         TabOrder = 17
         OnClick = ControlsUpdate
       end
-      object chkShowSupervisorMarks: TCheckBox
-        Left = 25
+      object chkShowAlliedGroups: TCheckBox
+        Left = 8
         Top = 135
         Width = 72
         Height = 17
-        Caption = 'Marks'
+        Caption = 'Allied Groups'
         TabOrder = 18
         OnClick = ControlsUpdate
       end
@@ -545,7 +542,6 @@ object FormMain: TFormMain
       Caption = 'Scripting'
       Collapsed = True
       TabOrder = 5
-      ExplicitTop = 145
       ExpandedHeight = 50
       object chkDebugScripting: TCheckBox
         Left = 8
@@ -569,6 +565,7 @@ object FormMain: TFormMain
       Collapsed = True
       TabOrder = 6
       ExplicitTop = 121
+      ExplicitWidth = 258
       ExpandedHeight = 136
       object chkLoadUnsupSaves: TCheckBox
         Left = 12
@@ -619,7 +616,7 @@ object FormMain: TFormMain
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 7
-      ExplicitWidth = 256
+      ExplicitWidth = 258
       object Label2: TLabel
         Left = 136
         Top = 5

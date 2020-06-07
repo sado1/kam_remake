@@ -137,9 +137,9 @@ type
     chkDebugScripting: TCheckBox;
     chkLogSkipTempCmd: TCheckBox;
     chkShowDefencesAnimate: TCheckBox;
-    chkShowSupervisorAnimate: TCheckBox;
-    chkShowSupervisorDistances: TCheckBox;
-    chkShowSupervisorMarks: TCheckBox;
+    chkShowArmyVectorField: TCheckBox;
+    chkShowClusters: TCheckBox;
+    chkShowAlliedGroups: TCheckBox;
     chkHeight: TCheckBox;
     chkTreeAge: TCheckBox;
     chkFieldAge: TCheckBox;
@@ -1066,9 +1066,9 @@ begin
     OVERLAY_AI_BUILD := chkBuild.Checked;
     OVERLAY_AI_COMBAT := chkCombat.Checked;
     OVERLAY_AI_SUPERVISOR := chkSupervisor.Checked;
-    OVERLAY_AI_SUPERVISOR_A := chkShowSupervisorAnimate.Checked;
-    OVERLAY_AI_SUPERVISOR_D := chkShowSupervisorDistances.Checked;
-    OVERLAY_AI_SUPERVISOR_M := chkShowSupervisorMarks.Checked;
+    OVERLAY_AI_VECTOR_FIELD := chkShowArmyVectorField.Checked;
+    OVERLAY_AI_CLUSTERS := chkShowClusters.Checked;
+    OVERLAY_AI_ALLIEDGROUPS := chkShowAlliedGroups.Checked;
     OVERLAY_AI_EYE := chkAIEye.Checked;
     OVERLAY_AI_SOIL := chkShowSoil.Checked;
     OVERLAY_AI_FLATAREA := chkShowFlatArea.Checked;

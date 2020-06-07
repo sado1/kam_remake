@@ -1200,6 +1200,9 @@ begin
     fArmyVector.Paint();
   {$ENDIF}
 
+  if not OVERLAY_AI_SUPERVISOR then
+    Exit;
+
   {$IFDEF DEBUG_Supervisor}
     Owner := gMySpectator.HandID;
     if (Owner = PLAYER_NONE) then
