@@ -15,6 +15,7 @@ begin
     mdEasy1:  Result := 144000;
     mdNormal: Result := 108000;
     mdHard1:  Result := 90000;
+    mdHard2:  Result := 72000;
   end;
 end;
 
@@ -25,6 +26,7 @@ begin
     mdEasy1:  Result := '4';
     mdNormal: Result := '3';
     mdHard1:  Result := '2,5';
+    mdHard2:  Result := '2';
   end;
 end;
 
