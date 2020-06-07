@@ -2634,6 +2634,7 @@ constructor TKMDeliveryBid.Create(aImportance: TKMDemandImportance; aSerf: TKMUn
 begin
   inherited Create;
 
+  Importance := aImportance;
   QueueID := iQ;
   OfferID := iO;
   DemandID := iD;
