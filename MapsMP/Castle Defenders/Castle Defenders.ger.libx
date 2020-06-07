@@ -47,9 +47,9 @@
 46:Jetzt ist es wirklich Wahnsinn
 47:Noch am Leben? Kein Problem!
 48:Zeit zu sterben!
-49:Gratulation! Du hast die 26. Welle erreicht! Neuer Bonus verfügbar: Rettungsmannschaft: Du bekommst sofort Verstärkung wenn du zu wenig Soldaten übrig hast.|Um den Bonus zu nutzen, platziere einen Straßenplan auf einem speziellen Rettungskachel.|ACHTUNG: Du kannst diesen Bonus nur viermal nützen. Jede weitere Verwendung ist verzögert.|Du kannst diesen Bonus nicht verwenden wenn du genug Soldaten und Rekruten hast!
+49:Gratulation! Du hast die 26. Welle erreicht! Neuer Bonus verfügbar: Rettungsmannschaft: Du bekommst sofort Verstärkung wenn du zu wenig Soldaten übrig hast.|Um den Bonus zu nutzen, gib den Befehl %s in den Chat ein oder platziere einen Straßenplan auf einem speziellen Rettungskachel.|ACHTUNG: Du kannst diesen Bonus nur viermal nützen. Jede weitere Verwendung ist verzögert.|Du kannst diesen Bonus nicht verwenden wenn du genug Soldaten und Rekruten hast!
 50:[$%s]Rettungsmannschaften verfügbar: %d |Verzögerung: %.2d:%.2d ||Deine Armee (AKTUELL/LIMIT): %d/%d|Deine Rekruten (AKTUELL/LIMIT): %d/%d[]
-51:[$FE437A]Castle Defenders 3.1 (10.04.2020)[]||In dieser Mission musst du die Burg verteidigen und 35 Angriffe abwehren. Jeder weitere Angriff ist stärker als der vorherige. Du hast eine Menge Waffen, aber nicht viel Gold und kannst am Anfang keine starken Soldaten ausrüsten. Du kannst neue Soldaten freischalten wenn du gegnerischen Truppen besiegst.||SOLDATEN-FREISCHALTUNG AUF NORMALER SCHWIERIGKEITARMY:||50 Kills - Lanzenträger;|100 Kills - Axtkämpfer;|160 Kills - Bogenschütze;|250 Kills - Armbrustschütze;|400 Kills - Pikenier;|500 Kills - Späher;|700 Kills - Schwertkämpfer;|1000 Kills - Barbar;|1250 Kills - Rittergarde.||Um Barbaren zu erhalten, aktiviere Kasernenreparatur und rüste Milizen aus sobald du 1000 Punkte hast.||Du kannst auch Knappen und zusätzliche Rekruten erhalten wenn du Milizen ausrüstest.|Und wenn du die 18. 26. und 31. Angriffswelle erreichst, erhältst du nützliche Boni!||Made by andreus.
+51:[$FE437A]Castle Defenders 3.2 (07.06.2020)[]||In dieser Mission musst du die Burg verteidigen und 35 Angriffe abwehren. Jeder weitere Angriff ist stärker als der vorherige. Du hast eine Menge Waffen, aber nicht viel Gold und kannst am Anfang keine starken Soldaten ausrüsten. Du kannst neue Soldaten freischalten wenn du gegnerischen Truppen besiegst.||SOLDATEN-FREISCHALTUNG AUF NORMALER SCHWIERIGKEITARMY:||50 Kills - Lanzenträger;|100 Kills - Axtkämpfer;|160 Kills - Bogenschütze;|250 Kills - Armbrustschütze;|400 Kills - Pikenier;|500 Kills - Späher;|700 Kills - Schwertkämpfer;|1000 Kills - Barbar;|1250 Kills - Rittergarde.||Um Barbaren zu erhalten, aktiviere Kasernenreparatur und rüste Milizen aus sobald du 1000 Punkte hast.||Du kannst auch Knappen und zusätzliche Rekruten erhalten wenn du Milizen ausrüstest.|Und wenn du die 18. 26. und 31. Angriffswelle erreichst, erhältst du nützliche Boni!||Made by andreus.
 52:Schützen-Division
 53:Es besteht die Chance zusätzliche Schützen zu erhalten wenn du Nahkämpfer ausrüstest.
 54:Barbaren im Anmarsch?
@@ -64,21 +64,21 @@
 63:Burggraben
 64:Gift
 65:Dürre
-66:Der Bonus Steinwall blockiert den Zugang zu verbündeten Kasernen für 3 Minuten. Um diesen Bonus zu nützen, platziere ein Weinfeld auf dem speziellen Feld neben dem großen Stein.
-67:Der Bonus Burggraben blockiert zufällig 3-4 Burgeingänge mit Gräben für 3 Minuten. Um diesen Bonus zu nützen, platziere ein Weinfeld auf dem speziellen Feld neben dem Schilfrohr.
-68:Der Bonus Gift tötet zufällig 50-70% der gegnerischen Soldaten, kann aber auch einige deiner Truppen treffen. Um diesen Bonus zu nützen, platziere ein Weinfeld auf dem speziellen Feld neben dem roten Pilz.
-69:Der Bonus Dürre setzt das Hungerlevel von 50-70% der gegnerischen Soldaten auf Kritisch, kann aber auch einige deiner Truppen treffen. m diesen Bonus zu nützen, platziere ein Weinfeld auf dem speziellen Feld neben dem Kaktus.
+66:Der Bonus Steinwall blockiert den Zugang zu verbündeten Kasernen für 3 Minuten. Um diesen Bonus zu nützen, gib den Befehl %s in den Chat ein oder platziere ein Weinfeld auf dem speziellen Feld neben dem großen Stein.
+67:Der Bonus Burggraben blockiert zufällig 3-4 Burgeingänge mit Gräben für 3 Minuten. Um diesen Bonus zu nützen, gib den Befehl %s in den Chat ein oder platziere ein Weinfeld auf dem speziellen Feld neben dem Schilfrohr.
+68:Der Bonus Gift tötet zufällig der gegnerischen Soldaten, kann aber auch einige deiner Truppen treffen. Um diesen Bonus zu nützen, gib den Befehl %s in den Chat ein oder platziere ein Weinfeld auf dem speziellen Feld neben dem roten Pilz.
+69:Der Bonus Dürre setzt das Hungerlevel von der gegnerischen Soldaten auf Kritisch, kann aber auch einige deiner Truppen treffen. Um diesen Bonus zu nützen, gib den Befehl %s in den Chat ein oder platziere ein Weinfeld auf dem speziellen Feld neben dem Kaktus.
 70:[$CD9B4B]Castle Defenders[]
 71:Verfügbare Team Boni: [$%s]%s[], [$%s]%s[], [$%s]%s[] |Delay: %.2d:%.2d
-72:Vergiss nicht deine Rettungsmannschaften - du kannst sie gleich jetzt einsetzen! Platziere einfach eine Straße auf dem speziellen Rettungskachel in der Mauerecke von woher diese Nachricht kommt!
+72:Vergiss nicht deine Rettungsmannschaften - du kannst sie gleich jetzt einsetzen! Gib den Befehl %s in den Chat ein oder platziere einfach eine Straße auf dem speziellen Rettungskachel in der Mauerecke von woher diese Nachricht kommt!
 73:Tipp #2: Verschwende kein Gold! Du hast nicht so viel Gold und zu früh eine Menge schwache Soldaten auszurüsten wird sich später als sinnlos herausstellen.
 74:Tipp #3: Macht euch die Verteidigungspositionen im Team aus. Der beste Weg ist die Ecken zu verteidigen (zwei Flanken und ein mittlerer Eingang pro Spieler).
 75:Tipp #4: Bis zur 13. Welle brauchst du nicht zu viele Soldaten ausschicken um die Flanken zu verteidigen. Nur wenige feindliche Soldaten werden dorthin kommen, also reicht eine kleine Truppe um diese zu töten.
 76:Tipp #5: Achte auf die Namen der Angriffswellen - manchmal können sie dir helfen die richtigen Truppen zur Verteidigung auszuwählen.
 77:Tipp #6: Ab jetzt musst du die Flanken verteidigen.
 78:Tipp #7: Um die Rettungsmannschaft anfordern zu können, darfst du nur mehr wenige Soldaten und Rekruten haben. Nutzungslimit: %d Soldaten und %d Rekruten.
-79:Tipp #9: Um den Lategame Bonus zu nützen, platziere ein Weinfeld ein Teil unterhalb der speziellen Objekte nahe verbündeter Kasernen.
-80:Tipp #8: Alle deine Gehilfen verloren? Keine Angst! Platziere ein Weinfeld innerhalb der Burg um sie wieder zu erhalten.
+79:Tipp #9: Um den Lategame Bonus zu nützen, gib den Befehl in den Chat ein oder platziere ein Weinfeld ein Teil unterhalb der speziellen Objekte nahe verbündeter Kasernen.
+80:Tipp #8: Alle deine Gehilfen verloren? Keine Angst! Gib den Befehl %s in den Chat ein oder platziere ein Weinfeld innerhalb der Burg um sie wieder zu erhalten.
 81:Tipp #10: Ab jetzt werden Feinde zusätzliche Truppen für einen Hinterhalt auf die Burg aussenden. Bereite dich auf lange Belagerungen vor!
 82:Hinterhalt!
 83:Freigeschaltet: 

@@ -38,6 +38,12 @@ const
   START_TOWERS = 2;                    //2 towers per player
   TOWER_COST = 50;                     //50 gold
   TOWER_COMMAND = '/tower';            //Enter /tower into chat to buy a tower
+  SERFS_COMMAND = '/serfs';            //Enter /serfs into chat to respawn died serfs
+  RESCUE_COMMAND = '/rescue';          //Enter /rescue into chat to get rescue squad
+  WALL_COMMAND = '/wall';              //Enter /wall into chat to use Stone Wall bonus
+  POISON_COMMAND = '/poison';          //Enter /poison into chat to use Poisoning bonus
+  MOAT_COMMAND = '/moat';              //Enter /moat into chat to use Moat bonus
+  DROUGHT_COMMAND = '/drought';        //Enter /drought into chat to use Stone Wall bonus
   DIFFICULTY_FACTOR_NORMAL = 1;        //Difficulty factor for normal mode
   DIFFICULTY_FACTOR_EASY = 0.8;        //Difficulty factor for easy mode
   DIFFICULTY_FACTOR_HARD = 1.2;        //Difficulty factor for hard mode
@@ -144,6 +150,18 @@ begin
     60:  Result := '<$67>';
     21:  Result := '<$68>';
     220: Result := '<$69>'
+    else Result := '';
+  end;
+end;
+
+
+function LateBonusCommand(X, Y: Integer): ANSIString;
+begin
+  case States.MapTileObject(X, Y) of
+    8:   Result := WALL_COMMAND;
+    60:  Result := MOAT_COMMAND;
+    21:  Result := POISON_COMMAND;
+    220: Result := DROUGHT_COMMAND
     else Result := '';
   end;
 end;
@@ -3457,7 +3475,7 @@ begin
 
     30: begin
 
-         Actions.ShowMsg(-1, '<$80>');
+         Actions.ShowMsgFormatted(-1, '<$80>', [SERFS_COMMAND]);
 
          AIGroup := Actions.GiveGroup(4, GroupRandomType[States.KaMRandomI(RANDOM_FACTOR)], 57, 10, 4, Utils.RoundToUp(20 * DifficultyFactor, 5), 5);
          Actions.GroupOrderWalk(AIGroup, 75, 55, 4);
@@ -4105,6 +4123,9 @@ var
   aTypes: array[0..4] of Integer;
   Group: Integer;
 begin
+  if not Utils.InRangeI(aPlayer, 0, 3) then
+    Exit;
+
   for I := 0 to 4 do
   begin
     aTypes[I] := States.KaMRandomI(8) + 15;
@@ -4127,6 +4148,47 @@ begin
 end;
 
 
+{$COMMAND rescue: RescueSquads}
+
+
+procedure RescueSquads(P: Integer);
+begin
+  if not Utils.InRangeI(P, 0, 3) then
+    Exit;
+
+  if (Wave >= RESCUE_WAVE)
+  and (RescuesDelay[P] = 0)
+  and (RescuesCount[P] > 0)
+  and (States.StatArmyCount(P) <= Utils.RoundToUp(RESCUE_ARMY_COUNT / DifficultyFactor, 20))
+  and (States.StatUnitTypeCount(P, 13) <= Utils.RoundToUp(RESCUE_RECRUITS_COUNT / DifficultyFactor, 5)) then
+  begin
+    GetRescue(P);
+    ShowStatusStart[P] := States.GameTime;
+    StatusString[P] := '[$82AD11]<--- <$84>[]'
+    RescuesDelay[P] := Utils.RoundToUp(RESCUE_DELAY * DifficultyFactor, 300);
+    RescuesCount[P] := RescuesCount[P] - 1;
+  end;
+
+end;
+
+
+{$COMMAND serfs: AddSerfs}
+
+
+procedure AddSerfs(P: Integer);
+var
+  Serf: Integer;
+begin
+  if not Utils.InRangeI(P, 0, 3) then
+    Exit;
+  while States.StatUnitTypeCount(P, 0) < START_SERFS do
+  begin
+    Serf := Actions.GiveUnit(P, 0, States.HousePositionX(Storehouse[P]), States.HousePositionY(Storehouse[P]) + 1, 4);
+    Actions.UnitHungerSet(Serf, States.UnitMaxHunger);
+  end;
+end;
+
+
 procedure OnPlanRoadPlaced(aIndex, aX, aY: Integer);
 var
   aPlayer: Integer;
@@ -4143,8 +4205,8 @@ begin
     and (States.StatUnitTypeCount(aPlayer, 13) <= Utils.RoundToUp(RESCUE_RECRUITS_COUNT / DifficultyFactor, 5)) then
     begin
       GetRescue(aPlayer);
-      ShowStatusStart[aIndex] := States.GameTime;
-      StatusString[aIndex] := '[$82AD11]<--- <$84>[]'
+      ShowStatusStart[aPlayer] := States.GameTime;
+      StatusString[aPlayer] := '[$82AD11]<--- <$84>[]'
       RescuesDelay[aPlayer] := Utils.RoundToUp(RESCUE_DELAY * DifficultyFactor, 300);
       RescuesCount[aPlayer] := RescuesCount[aPlayer] - 1;
     end;
@@ -4185,6 +4247,134 @@ begin
     LateBonusDelay := LATE_BONUS_DELAY;
   end;
   Actions.PlanRemove(aIndex, aX, aY);
+end;
+
+
+{$COMMAND wall: SetStoneWall}
+
+
+procedure SetStoneWall(P: Integer);
+var
+  CanUse: Boolean;
+begin
+  if not Utils.InRangeI(P, 0, 3) then
+    Exit;
+
+  if Wave < LATE_BONUS_WAVE then
+    Exit;
+
+  if LateBonusDelay > 0 then
+    Exit;
+
+  CanUse := (States.MapTileObject(74, 80) = 8)
+  or (States.MapTileObject(75, 80) = 8)
+  or (States.MapTileObject(76, 80) = 8);
+
+  if CanUse then
+  begin
+    UseLateBonus(lbWall, P);
+    LateBonusDelay := LATE_BONUS_DELAY;
+    for I := 74 to 76 do
+      if States.MapTileObject(I, 80) = 8 then
+        Actions.MapTileObjectSet(I, 80, 255);
+  end;
+
+end;
+
+
+{$COMMAND poison: SetPoison}
+
+
+procedure SetPoison(P: Integer);
+var
+  CanUse: Boolean;
+begin
+  if not Utils.InRangeI(P, 0, 3) then
+    Exit;
+
+  if Wave < LATE_BONUS_WAVE then
+    Exit;
+
+  if LateBonusDelay > 0 then
+    Exit;
+
+  CanUse := (States.MapTileObject(74, 80) = 21)
+  or (States.MapTileObject(75, 80) = 21)
+  or (States.MapTileObject(76, 80) = 21);
+
+  if CanUse then
+  begin
+    UseLateBonus(lbPoison, P);
+    LateBonusDelay := LATE_BONUS_DELAY;
+    for I := 74 to 76 do
+      if States.MapTileObject(I, 80) = 21 then
+        Actions.MapTileObjectSet(I, 80, 255);
+  end;
+
+end;
+
+
+{$COMMAND moat: SetMoat}
+
+
+procedure SetMoat(P: Integer);
+var
+  CanUse: Boolean;
+begin
+  if not Utils.InRangeI(P, 0, 3) then
+    Exit;
+
+  if Wave < LATE_BONUS_WAVE then
+    Exit;
+
+  if LateBonusDelay > 0 then
+    Exit;
+
+  CanUse := (States.MapTileObject(74, 80) = 60)
+  or (States.MapTileObject(75, 80) = 60)
+  or (States.MapTileObject(76, 80) = 60);
+
+  if CanUse then
+  begin
+    UseLateBonus(lbMoat, P);
+    LateBonusDelay := LATE_BONUS_DELAY;
+    for I := 74 to 76 do
+      if States.MapTileObject(I, 80) = 60 then
+        Actions.MapTileObjectSet(I, 80, 255);
+  end;
+
+end;
+
+
+{$COMMAND drought: SetDrought}
+
+
+procedure SetDrought(P: Integer);
+var
+  CanUse: Boolean;
+begin
+  if not Utils.InRangeI(P, 0, 3) then
+    Exit;
+
+  if Wave < LATE_BONUS_WAVE then
+    Exit;
+
+  if LateBonusDelay > 0 then
+    Exit;
+
+  CanUse := (States.MapTileObject(74, 80) = 220)
+  or (States.MapTileObject(75, 80) = 220)
+  or (States.MapTileObject(76, 80) = 220);
+
+  if CanUse then
+  begin
+    UseLateBonus(lbDrought, P);
+    LateBonusDelay := LATE_BONUS_DELAY;
+    for I := 74 to 76 do
+      if States.MapTileObject(I, 80) = 220 then
+        Actions.MapTileObjectSet(I, 80, 255);
+  end;
+
 end;
 
 
@@ -4375,9 +4565,9 @@ begin
     Actions.MapTileObjectSet(76, 80, 220);
 
   Actions.ShowMsgFormatted(-1, '<$61>', [LateBonusName(74, 80), LateBonusName(75, 80), LateBonusName(76, 80)]);
-  Actions.ShowMsgGoTo(-1, 74, 80, LateBonusDescription(74, 80));
-  Actions.ShowMsgGoTo(-1, 75, 80, LateBonusDescription(75, 80));
-  Actions.ShowMsgGoTo(-1, 76, 80, LateBonusDescription(76, 80));
+  Actions.ShowMsgGoToFormatted(-1, 74, 80, LateBonusDescription(74, 80), [LateBonusCommand(74, 80)]);
+  Actions.ShowMsgGoToFormatted(-1, 75, 80, LateBonusDescription(75, 80), [LateBonusCommand(75, 80)]);
+  Actions.ShowMsgGoToFormatted(-1, 76, 80, LateBonusDescription(76, 80), [LateBonusCommand(76, 80)]);
   LateBonusCheck := True;
 
 end;
@@ -4411,7 +4601,7 @@ begin
       and (RescuesCount[I] > 0)
       and (RescuesDelay[I] = 0)
       and (not States.PlayerDefeated(I)) then
-        Actions.ShowMsgGoTo(I, RescueTileX[I], RescueTileY[I], '<$72>');
+        Actions.ShowMsgGoToFormatted(I, RescueTileX[I], RescueTileY[I], '<$72>', [RESCUE_COMMAND]);
 end;
 
 
@@ -4570,7 +4760,7 @@ begin
     Actions.ShowMsg(P, '<$79>');
 
   if Wave >= 30 then
-    Actions.ShowMsg(P, '<$80>');
+    Actions.ShowMsgFormatted(P, '<$80>', [SERFS_COMMAND]);
 
   if Wave >= 32 then
     Actions.ShowMsg(P, '<$81>');
@@ -4660,7 +4850,7 @@ begin
   begin
     for I := 0 to 3 do
       if States.PlayerEnabled(I) then
-        Actions.ShowMsgGoTo(I, RescueTileX[I], RescueTileY[I], '<$49>');
+        Actions.ShowMsgGoToFormatted(I, RescueTileX[I], RescueTileY[I], '<$49>', [RESCUE_COMMAND]);
     bRescueMsg := True;
   end;
 
