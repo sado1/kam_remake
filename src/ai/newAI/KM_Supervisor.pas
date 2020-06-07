@@ -28,7 +28,6 @@ type
   TKMMineEvalArr = array of TKMMineEval;
 
   TKMHandByteArr = array[0..MAX_HANDS-1] of Byte;
-  TKMHandID2Arr = array of TKMHandIDArray;
 
   TKMCombatStatusPLArray = array[0..MAX_HANDS-1,0..MAX_HANDS-1] of TKMCombatStatus;
 
@@ -52,7 +51,7 @@ type
   private
     fFFA: Boolean;
     fPL2Alli: TKMHandByteArr;
-    fAlli2PL: TKMHandID2Arr;
+    fAlli2PL: TKMHandID2Array;
     fCombatStatus: TKMCombatStatusPLArray;
     fArmyPos: TArmyForwardFF;
     fArmyVector: TArmyVectorField;
@@ -81,7 +80,7 @@ type
     procedure Load(LoadStream: TKMemoryStream);
 
     property PL2Alli: TKMHandByteArr read fPL2Alli;
-    property Alli2PL: TKMHandID2Arr read fAlli2PL;
+    property Alli2PL: TKMHandID2Array read fAlli2PL;
     property CombatStatus: TKMCombatStatusPLArray read fCombatStatus;
     property FFA: boolean read fFFA;
 
@@ -671,34 +670,31 @@ begin
   if (CS = csNeutral) then
     Exit;
   // Check if team have groups
-  if not (fArmyVector.Ally.GroupsCount > 0) then
+  if not (fArmyVector.Ally.GroupsCount > 0) OR (fArmyVector.Clusters.Count = 0) then
     Exit;
 
-  for PL in fAlli2PL[aTeam] do
-    CSA[PL] := fCombatStatus[PL,PL];
+  // Add everything to defence if AI is defending
+  for K := Low(fArmyVector.CCT) to High(fArmyVector.CCT) do
+    if (fArmyVector.CCT[K].AttackingCity) then
+    begin
+      for PL in fAlli2PL[aTeam] do
+        if IsNewAI(PL) then
+          with gHands[PL].AI.ArmyManagement do
+            AttackNew.AddGroups( Defence.ReleaseAllGroups() );
+      break;
+    end;
 
   // Divide forces and find positions
+  for PL in fAlli2PL[aTeam] do
+    CSA[PL] := fCombatStatus[PL,PL];
   fArmyVector.DivideForces(CS, CSA);
   fArmyVector.FindPositions();
 
-  if (fArmyVector.Clusters.Count > 0) then
-  begin
-    // Add everything to defence if AI is defending
-    for K := Low(fArmyVector.CCT) to High(fArmyVector.CCT) do
-      if (fArmyVector.CCT[K].AttackingCity) then
-      begin
-        for PL in fAlli2PL[aTeam] do
-          if IsNewAI(PL) then
-            with gHands[PL].AI.ArmyManagement do
-              AttackNew.AddGroups( Defence.ReleaseAllGroups() );
-        break;
-      end;
-    // Set orders
-    for K := 0 to Length(fArmyVector.CCT) - 1 do
-      with fArmyVector.CCT[K].CounterWeight do
-        if (GroupsCount > 0) then
-          EvaluateEnemy(InPlace OR AtAdvantage OR Ambushed, K);
-  end;
+  // Set orders
+  for K := 0 to Length(fArmyVector.CCT) - 1 do
+    with fArmyVector.CCT[K].CounterWeight do
+      if (GroupsCount > 0) then
+        EvaluateEnemy(InPlace OR AtAdvantage OR Ambushed, K);
 end;
 
 
@@ -736,6 +732,7 @@ begin
     end;
   SetLength(fAlli2PL, AlliCnt);
   UpdateFFA();
+  gAIFields.Influences.UpdateAlliances(fAlli2PL);
 end;
 
 

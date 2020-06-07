@@ -9,14 +9,14 @@ interface
 uses
   Math, KM_Defaults, KM_CommonTypes,
   KM_Points, KM_UnitGroup, KM_Houses, KM_ResHouses,
-  KM_NavMeshFloodFill;
+  KM_NavMeshFloodFill, KM_ArmyAttackNew;
 
 type
 
   TKMCombatStatus = (csNeutral = 0, csDefending, csAttackingCity, csAttackingEverything);
   TKMCombatStatusArray = array[0..MAX_HANDS] of TKMCombatStatus;
 
-  TKMAllianceInfo2 = record
+  TKMAllianceAsset = record
     // GroupsNumber = real number of groups, GroupsCount = count of groups in arrays
     GroupsCount, HousesCount, GroupsNumber, OwnersCount: Word;
     Groups: TKMUnitGroupArray;
@@ -40,6 +40,7 @@ type
     Group: TKMUnitGroup;
     TargetPosition: TKMPointDir;
     Status: Boolean;
+    CG: TKMCombatGroup;
   end;
   TKMCombatClusterThreat = record
     AttackingCity: Boolean;
@@ -50,7 +51,7 @@ type
     Owners: TKMHandIDArray;
     CounterWeight: record
       InPlace, AtAdvantage, Ambushed: Boolean;
-      GroupsCount, InPositionCnt, NearEnemyCnt: Word;
+      GroupsCount, CGCount, InPositionCnt, NearEnemyCnt: Word;
       Opportunity, InPositionStrength: Single;
       WeightedCount: array[TKMGroupType] of Word;
       Groups: array of TKMGroupCounterWeight
@@ -64,8 +65,8 @@ type
   end;
   {$IFDEF DEBUG_ArmyVectorField}
     TDebugArmyVectorField = array of record //fDbgVector
-      Enemy: TKMAllianceInfo2;
-      Ally: TKMAllianceInfo2;
+      Enemy: TKMAllianceAsset;
+      Ally: TKMAllianceAsset;
       Alliance: TKMHandIDArray;
       Clusters: TKMCombatClusters;
       CCT: TKMCombatClusterThreatArray;
@@ -83,13 +84,13 @@ type
     fClusters: TKMCombatClusters;
     fClusterMapping: TKMByteArray;
 
-    procedure InitQueue(var aEnemy: TKMAllianceInfo2); reintroduce;
+    procedure InitQueue(var aEnemy: TKMAllianceAsset); reintroduce;
     function CanBeExpanded(const aIdx: Word): Boolean; override;
     procedure MarkAsVisited(const aIdx, aClusterID: Word; const aDistance: Cardinal; const aPoint: TKMPoint); reintroduce;
     procedure ExpandPolygon(aIdx: Word; aCanBeExpanded: Boolean);
-    procedure Flood(var aEnemy: TKMAllianceInfo2); reintroduce;
+    procedure Flood(var aEnemy: TKMAllianceAsset); reintroduce;
   public
-    function FindClusters(var aClusters: TKMCombatClusters; var aAllianceInfo: TKMAllianceInfo2; var aClusterMapping: TKMByteArray; var aQueueArray: TPolygonsQueueArr): Word;
+    function FindClusters(var aClusters: TKMCombatClusters; var aAllianceInfo: TKMAllianceAsset; var aClusterMapping: TKMByteArray; var aQueueArray: TPolygonsQueueArr): Word;
   end;
 
 
@@ -104,7 +105,8 @@ type
     fFindClusters: TKMFindClusters;
     fClusters: TKMCombatClusters;
     {$IFDEF DEBUG_ArmyVectorField}
-      fTimePeak, fTimeSamples, fTimeAvrg: Int64;
+      fTimeAvrgEnemyPresence, fTimeAvrgDivideForces, fTimeAvrgFindPositions: Int64;
+      fTimePeakEnemyPresence, fTimePeakDivideForces, fTimePeakFindPositions: Int64;
       fDbgVector: TDebugArmyVectorField;
     {$ENDIF}
 
@@ -112,8 +114,8 @@ type
     procedure InitQueue(const aCluster: pTKMCombatCluster); reintroduce;
     procedure Flood(); override;
 
-    function GetInitPolygonsGroups(aAllianceType: TKMAllianceType; var aAlliance: TKMAllianceInfo2): Boolean;
-    function GetInitPolygonsHouses(aAllianceType: TKMAllianceType; var aAlliance: TKMAllianceInfo2; aOnlyCompleted: Boolean = True): Boolean;
+    function GetInitPolygonsGroups(aAllianceType: TKMAllianceType; var aAlliance: TKMAllianceAsset): Boolean;
+    function GetInitPolygonsHouses(aAllianceType: TKMAllianceType; var aAlliance: TKMAllianceAsset; aOnlyCompleted: Boolean = True): Boolean;
 
     procedure InitClusterEvaluation();
 
@@ -126,8 +128,8 @@ type
       function GetCCTIdxFromGroup(aG: TKMUnitGroup): Integer;
     {$ENDIF}
   public
-    Enemy: TKMAllianceInfo2;
-    Ally: TKMAllianceInfo2;
+    Enemy: TKMAllianceAsset;
+    Ally: TKMAllianceAsset;
     CCT: TKMCombatClusterThreatArray;
 
     constructor Create(aSorted: Boolean = True); override;
@@ -204,7 +206,7 @@ begin
 end;
 
 
-procedure TKMFindClusters.InitQueue(var aEnemy: TKMAllianceInfo2);
+procedure TKMFindClusters.InitQueue(var aEnemy: TKMAllianceAsset);
   function CreateNewCluster(aPolyIdx: Word): Integer;
   begin
     Result := fClusters.Count;
@@ -292,7 +294,7 @@ begin
 end;
 
 
-procedure TKMFindClusters.Flood(var aEnemy: TKMAllianceInfo2);
+procedure TKMFindClusters.Flood(var aEnemy: TKMAllianceAsset);
 var
   Idx: Word;
 begin
@@ -307,7 +309,7 @@ begin
 end;
 
 
-function TKMFindClusters.FindClusters(var aClusters: TKMCombatClusters; var aAllianceInfo: TKMAllianceInfo2; var aClusterMapping: TKMByteArray; var aQueueArray: TPolygonsQueueArr): Word;
+function TKMFindClusters.FindClusters(var aClusters: TKMCombatClusters; var aAllianceInfo: TKMAllianceAsset; var aClusterMapping: TKMByteArray; var aQueueArray: TPolygonsQueueArr): Word;
 var
   K,L,Cnt: Integer;
 begin
@@ -364,9 +366,12 @@ begin
   fFindClusters := TKMFindClusters.Create(aSorted);
   {$IFDEF DEBUG_ArmyVectorField}
   SetLength(fDbgVector, 0);
-  fTimePeak := 0;
-  fTimeSamples := 0;
-  fTimeAvrg := 0;
+  fTimeAvrgEnemyPresence := 0;
+  fTimeAvrgDivideForces := 0;
+  fTimeAvrgFindPositions := 0;
+  fTimePeakEnemyPresence := 0;
+  fTimePeakDivideForces := 0;
+  fTimePeakFindPositions := 0;
   {$ENDIF}
 end;
 
@@ -379,7 +384,7 @@ begin
 end;
 
 
-function TArmyVectorField.GetInitPolygonsGroups(aAllianceType: TKMAllianceType; var aAlliance: TKMAllianceInfo2): Boolean;
+function TArmyVectorField.GetInitPolygonsGroups(aAllianceType: TKMAllianceType; var aAlliance: TKMAllianceAsset): Boolean;
   // Dont add the same polygon for 1 group twice
   function CheckIdenticalPolygons(aStartIdx: Integer): Word;
   var
@@ -441,7 +446,7 @@ begin
 end;
 
 
-function TArmyVectorField.GetInitPolygonsHouses(aAllianceType: TKMAllianceType; var aAlliance: TKMAllianceInfo2; aOnlyCompleted: Boolean = True): Boolean;
+function TArmyVectorField.GetInitPolygonsHouses(aAllianceType: TKMAllianceType; var aAlliance: TKMAllianceAsset; aOnlyCompleted: Boolean = True): Boolean;
 const
   SCAN_HOUSES: THouseTypeSet = [htBarracks, htStore, htSchool, htTownhall]; // htWatchTower
 var
@@ -481,7 +486,13 @@ end;
 
 
 function TArmyVectorField.DetectEnemyPresence(var aOwners: TKMHandIDArray): Boolean;
+{$IFDEF DEBUG_ArmyVectorField}
+  var Time: Int64;
+{$ENDIF}
 begin
+  {$IFDEF DEBUG_ArmyVectorField}
+    Time := TimeGetUsec();
+  {$ENDIF}
   fOwners := aOwners;
   fOwner := aOwners[0];
   GetInitPolygonsGroups(atEnemy, Enemy);
@@ -494,6 +505,11 @@ begin
     GetInitPolygonsGroups(atAlly, Ally);
     InitClusterEvaluation();
   end;
+  {$IFDEF DEBUG_ArmyVectorField}
+    Time := TimeGetUsec() - Time;
+    fTimeAvrgEnemyPresence := Round((fTimeAvrgEnemyPresence * 5 + Time) / 6);
+    fTimePeakEnemyPresence := Max(fTimePeakEnemyPresence, Time);
+  {$ENDIF}
 end;
 
 
@@ -592,7 +608,13 @@ var
   PL: TKMHandID;
   Distances: TSingleArray;
   G: TKMUnitGroup;
+{$IFDEF DEBUG_ArmyVectorField}
+  Time: Int64;
+{$ENDIF}
 begin
+  {$IFDEF DEBUG_ArmyVectorField}
+    Time := TimeGetUsec();
+  {$ENDIF}
   if (Ally.GroupsCount <= 0) then
     Exit;
 
@@ -755,6 +777,11 @@ begin
           AddGroup(K, BestCCTIdx);
       end;
   end;
+  {$IFDEF DEBUG_ArmyVectorField}
+    Time := TimeGetUsec() - Time;
+    fTimeAvrgDivideForces := Round((fTimeAvrgDivideForces * 5 + Time) / 6);
+    fTimePeakDivideForces := Max(fTimePeakDivideForces, Time);
+  {$ENDIF}
 end;
 
 
@@ -833,7 +860,8 @@ procedure TArmyVectorField.FindPositions();
 
   procedure AssignPositions(aIdx: Integer);
   const
-    IN_PLACE_TOLERANCE = 13;
+    NEAR_ENEMY_TOLERANCE = 13;
+    IN_PLACE_TOLERANCE = 10;
     MAX_WALKING_DISTANCE = 15;
   var
     K, L, M, PolyIdx, BestIdx, NearbyIdx: Integer;
@@ -867,9 +895,13 @@ procedure TArmyVectorField.FindPositions();
         // Get target position
         Groups[K].TargetPosition.Loc := gAIFields.NavMesh.Polygons[ PolyIdx ].CenterPoint;
         Groups[K].TargetPosition.Dir := KMGetDirection(InitP, Groups[K].TargetPosition.Loc );
+        Groups[K].CG := gHands[ Groups[K].Group.Owner ].AI.ArmyManagement.AttackNew.CombatGroup[ Groups[K].Group ];
+        Inc(CGCount, Byte(Groups[K].CG <> nil));
         // Check if group is in the place
         InPlace := False;
-        if (fVectorField[PolyIdx].Distance < fVectorField[BestIdx].Distance) OR (fQueueArray[PolyIdx].Distance < IN_PLACE_TOLERANCE) then // Distance from combat line
+        if (fVectorField[PolyIdx].Distance < fVectorField[BestIdx].Distance)
+          OR (fQueueArray[PolyIdx].Distance < NEAR_ENEMY_TOLERANCE)
+          OR (KMDistanceWalk(InitP,Groups[K].TargetPosition.Loc) < IN_PLACE_TOLERANCE)  then // Distance from combat line
         begin
           Inc(InPositionCnt);
           InPlace := True;
@@ -889,10 +921,14 @@ procedure TArmyVectorField.FindPositions();
 
 var
   K: Integer;
+{$IFDEF DEBUG_ArmyVectorField}
+  Time: Int64;
+{$ENDIF}
 begin
   {$IFDEF DEBUG_ArmyVectorField}
   // Array will be filled by Flood fill so debug must be saved now
   CopyVariablesForDebug1();
+  Time := TimeGetUsec();
   {$ENDIF}
 
   if (Enemy.GroupsCount = 0) AND (Enemy.HousesCount = 0) then
@@ -912,12 +948,15 @@ begin
   for K := Low(CCT) to High(CCT) do
     with CCT[K].CounterWeight do
     begin
-      InPlace     := InPositionCnt      > GroupsCount   * AI_Par[ATTACK_ArmyVectorField_EvalClusters_InPlace];
+      InPlace     := InPositionCnt      > CGCount       * AI_Par[ATTACK_ArmyVectorField_EvalClusters_InPlace];
       AtAdvantage := InPositionStrength > CCT[K].Threat * AI_Par[ATTACK_ArmyVectorField_EvalClusters_AtAdvantage];
-      Ambushed    := NearEnemyCnt       > GroupsCount   * AI_Par[ATTACK_ArmyVectorField_EvalClusters_Ambushed];
+      Ambushed    := NearEnemyCnt       > CGCount       * AI_Par[ATTACK_ArmyVectorField_EvalClusters_Ambushed];
     end;
 
   {$IFDEF DEBUG_ArmyVectorField}
+  Time := TimeGetUsec() - Time;
+  fTimeAvrgFindPositions := Round((fTimeAvrgFindPositions * 5 + Time) / 6);
+  fTimePeakFindPositions := Max(fTimePeakFindPositions, Time);
   CopyVariablesForDebug2();
   {$ENDIF}
 end;
@@ -980,7 +1019,7 @@ end;
 
 
 procedure TArmyVectorField.CopyVariablesForDebug2();
-  procedure CopyAlliance(var aFrom: TKMAllianceInfo2; var aTo: TKMAllianceInfo2);
+  procedure CopyAlliance(var aFrom: TKMAllianceAsset; var aTo: TKMAllianceAsset);
   begin
     aTo.GroupsCount  := aFrom.GroupsCount;
     aTo.HousesCount  := aFrom.HousesCount;
@@ -1041,6 +1080,7 @@ begin
       CounterWeight.AtAdvantage        := CCT[K].CounterWeight.AtAdvantage;
       CounterWeight.Ambushed           := CCT[K].CounterWeight.Ambushed;
       CounterWeight.GroupsCount        := CCT[K].CounterWeight.GroupsCount;
+      CounterWeight.CGCount            := CCT[K].CounterWeight.CGCount;
       CounterWeight.InPositionCnt      := CCT[K].CounterWeight.InPositionCnt;
       CounterWeight.NearEnemyCnt       := CCT[K].CounterWeight.NearEnemyCnt;
       CounterWeight.Opportunity        := CCT[K].CounterWeight.Opportunity;
@@ -1065,7 +1105,7 @@ end;
 
 
 function TArmyVectorField.GetCCTIdxFromGroup(aG: TKMUnitGroup): Integer;
-  function IsGroupInAlliance(var A: TKMAllianceInfo2): Boolean;
+  function IsGroupInAlliance(var A: TKMAllianceAsset): Boolean;
   var
     K: Integer;
   begin
@@ -1145,6 +1185,9 @@ begin
       if (K = Idx) then
         Result := Format('%s <<<<<<',[Result]);
     end;
+
+  Result := Format('%s|PerfLog (avrg/peak): EnemyPresence %d/%d; DivideForces%d/%d; FindPositions %d/%d;',[Result,fTimeAvrgEnemyPresence,fTimePeakEnemyPresence,fTimeAvrgDivideForces,fTimePeakDivideForces,fTimeAvrgFindPositions,fTimePeakFindPositions]);
+
   {$ELSE}
   Result := '';
   {$ENDIF}
@@ -1266,6 +1309,7 @@ begin
       with fDbgVector[Team].CCT[K] do
         gRenderAux.CircleOnTerrain(CenterPoint.X, CenterPoint.Y, 1, Opacity OR Color, $FF000000 OR COLOR_BLACK);
     end;
+    // Enemies
     with fDbgVector[Team].CCT[K].Cluster^ do
     begin
       for L := 0 to GroupsCount - 1 do
@@ -1281,6 +1325,7 @@ begin
           gRenderAux.CircleOnTerrain(H.Position.X, H.Position.Y, 1, Opacity OR Color, $FF000000 OR COLOR_BLUE);
       end;
     end;
+    // Allied groups
     with fDbgVector[Team].CCT[K].CounterWeight do
       for L := 0 to GroupsCount - 1 do
       begin
@@ -1289,7 +1334,7 @@ begin
         if FindGroup(G) then
         begin
           gRenderAux.Line(G.Position.X, G.Position.Y, Groups[L].TargetPosition.Loc.X, Groups[L].TargetPosition.Loc.Y, $FF000000 OR Color);
-          gRenderAux.CircleOnTerrain(G.Position.X, G.Position.Y, 1, Opacity OR Color, $FF000000 OR COLOR_GREEN);
+          gRenderAux.CircleOnTerrain(G.Position.X, G.Position.Y, 1, Opacity OR Color, $FF000000 OR COLOR_GREEN * Byte(Groups[L].Status) OR COLOR_BLUE * Byte(not Groups[L].Status));
         end;
       end;
 
