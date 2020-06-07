@@ -11,7 +11,7 @@ uses
   KM_CommonClasses, KM_Defaults, KM_Points,
   KM_Houses, KM_Units,
   KM_UnitGroup, KM_AISetup,
-  KM_HandStats, KM_ArmyDefence, KM_AIAttacks, KM_ArmyAttack, KM_ArmyAttackNew,
+  KM_HandStats, KM_ArmyDefence, KM_AIAttacks, KM_ArmyAttackNew,
   KM_NavMeshInfluences;
 
 type
@@ -31,7 +31,6 @@ type
     fLastEquippedTimeIron, fLastEquippedTimeLeather: Cardinal;
     fAttackRequest: TKMAttackRequest;
 
-    fAttack: TKMArmyAttack;
     fAttackNew: TKMArmyAttackNew;
     fDefence: TKMArmyDefence;
 
@@ -50,7 +49,6 @@ type
     procedure Load(LoadStream: TKMemoryStream);
     procedure SyncLoad();
 
-    property Attack: TKMArmyAttack read fAttack write fAttack;
     property AttackNew: TKMArmyAttackNew read fAttackNew;
     property Defence: TKMArmyDefence read fDefence write fDefence;
     property AttackRequest: TKMAttackRequest read fAttackRequest write SetAttackRequest;
@@ -81,15 +79,13 @@ begin
   fOwner := aPlayer;
   fSetup := aSetup;
 
-  fAttack := TKMArmyAttack.Create(aPlayer);
   fAttackNew := TKMArmyAttackNew.Create(aPlayer);
-  fDefence := TKMArmyDefence.Create(aPlayer, fAttack);
+  fDefence := TKMArmyDefence.Create(aPlayer);
 end;
 
 
 destructor TKMArmyManagement.Destroy();
 begin
-  fAttack.Free;
   fAttackNew.Free;
   fDefence.Free;
 
@@ -119,7 +115,6 @@ begin
       SaveStream.Write(Enemies[0], SizeOf(Enemies[0])*Length(Enemies));
   end;
 
-  fAttack.Save(SaveStream);
   fAttackNew.Save(SaveStream);
   fDefence.Save(SaveStream);
 end;
@@ -150,7 +145,6 @@ begin
       LoadStream.Read(Enemies[0], SizeOf(Enemies[0])*Length(Enemies));
   end;
 
-  fAttack.Load(LoadStream);
   fAttackNew.Load(LoadStream);
   fDefence.Load(LoadStream);
 end;
@@ -158,7 +152,6 @@ end;
 
 procedure TKMArmyManagement.SyncLoad();
 begin
-  fAttack.SyncLoad();
   fAttackNew.SyncLoad();
   fDefence.SyncLoad();
 end;
@@ -166,7 +159,6 @@ end;
 
 procedure TKMArmyManagement.AfterMissionInit();
 begin
-  fAttack.AfterMissionInit();
   fAttackNew.AfterMissionInit();
   fDefence.AfterMissionInit();
 end;
@@ -175,7 +167,6 @@ end;
 procedure TKMArmyManagement.OwnerUpdate(aPlayer: TKMHandID);
 begin
   fOwner := aPlayer;
-  fAttack.OwnerUpdate(aPlayer);
   fAttackNew.OwnerUpdate(aPlayer);
   fDefence.OwnerUpdate(aPlayer);
 end;
@@ -303,7 +294,7 @@ begin
         Continue;
 
       // Group is in combat classes
-      if fAttack.IsGroupInAction(Group) OR fAttackNew.IsGroupInAction(Group) then
+      if fAttackNew.IsGroupInAction(Group) then
         Continue;
 
       // Group is in defence position
@@ -354,7 +345,7 @@ type
       if (aMobilizationCoef = 1) then
       begin
         // Take all groups out of attack class
-        if not fAttack.IsGroupInAction(Group) OR fAttack.IsGroupInAction(Group) OR fAttackNew.IsGroupInAction(Group) then
+        if not fAttackNew.IsGroupInAction(Group) then
           Inc(AG.Count,1); // Confirm that the group should be in array GroupArr
       end
       else
@@ -548,7 +539,7 @@ type
             end;
         end;
         SetLength(Groups, GCnt);
-        fAttack.CreateCompany(aTargetPoint, Groups);
+        //fAttack.CreateCompany(aTargetPoint, Groups);
       end;
     end;
   end;
@@ -589,7 +580,7 @@ begin
     // Get array of pointers to available groups
     AG := GetGroups(MobilizationCoef);
     // If we dont have enought groups then exit (if we should take all check if there are already some combat groups)
-    if ((MobilizationCoef < 1) OR (fAttack.Count > 2)) AND (AG.Count < MIN_GROUPS_IN_ATTACK) then
+    if (MobilizationCoef < 1) AND (AG.Count < MIN_GROUPS_IN_ATTACK) then
       Exit;
     // Find best target of owner and order attack
     if FindBestTarget(fAttackRequest.BestEnemy, TargetPoint, MobilizationCoef = 1) then
@@ -643,10 +634,7 @@ begin
         RecruitSoldiers();
       end;
       CheckGroupsState();
-      if SP_OLD_ATTACK_AI then
-        fAttack.UpdateState(aTick)
-      else
-        fAttackNew.UpdateState(aTick);
+      fAttackNew.UpdateState(aTick);
       fDefence.UpdateState(aTick);
     end;
   finally
@@ -660,7 +648,6 @@ end;
 function TKMArmyManagement.CombineBalanceStrings(): UnicodeString;
 begin
   Result := fBalanceText;
-  fAttack.LogStatus(Result);
   fAttackNew.LogStatus(Result);
   fDefence.LogStatus(Result);
 end;
@@ -669,6 +656,7 @@ end;
 procedure TKMArmyManagement.Paint();
 begin
   fAttackNew.Paint();
+  fDefence.Paint();
 end;
 
 

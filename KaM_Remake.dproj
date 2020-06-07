@@ -160,7 +160,6 @@
         <DCCReference Include="src\ai\KM_AIMayor.pas"/>
         <DCCReference Include="src\ai\KM_AIMayorBalance.pas"/>
         <DCCReference Include="src\ai\KM_AISetup.pas"/>
-        <DCCReference Include="src\ai\newAI\KM_ArmyAttack.pas"/>
         <DCCReference Include="src\ai\newAI\KM_ArmyAttackNew.pas"/>
         <DCCReference Include="src\ai\newAI\KM_ArmyDefence.pas"/>
         <DCCReference Include="src\ai\newAI\KM_ArmyManagement.pas"/>
