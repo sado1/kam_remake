@@ -42,6 +42,8 @@ type
     Status: Boolean;
     CG: TKMCombatGroup;
   end;
+  pTKMGroupCounterWeight = ^TKMGroupCounterWeight;
+  pTKMGroupCounterWeightArray = array of pTKMGroupCounterWeight;
   TKMCombatClusterThreat = record
     AttackingCity: Boolean;
     ClusterIdx: Word;
