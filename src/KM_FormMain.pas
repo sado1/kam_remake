@@ -691,8 +691,8 @@ begin
   begin
     gResTexts.ForceDefaultLocale := True; //Use only eng for exported csv
     DateS := FormatDateTime('yyyy-mm-dd_hh-nn', Now);
-    gHands.ExportGameStatsToCSV(ExeDir + 'Export' + PathDelim + gGameParams.GameName + '_' + DateS + '.csv',
-                            Format('Statistics for game at map ''%s'' on %s', [gGameParams.GameName, DateS]));
+    gHands.ExportGameStatsToCSV(ExeDir + 'Export' + PathDelim + gGameParams.Name + '_' + DateS + '.csv',
+                            Format('Statistics for game at map ''%s'' on %s', [gGameParams.Name, DateS]));
     gResTexts.ForceDefaultLocale := False;
   end;
 end;

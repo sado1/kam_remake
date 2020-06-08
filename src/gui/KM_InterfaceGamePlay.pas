@@ -621,7 +621,7 @@ begin
       Panel_Save.Show;
       Label_MenuTitle.Caption := gResTexts[TX_MENU_SAVE_GAME];
       if fLastSaveName = '' then
-        Edit_Save.Text := gGameParams.GameName
+        Edit_Save.Text := gGameParams.Name
       else
         Edit_Save.Text := fLastSaveName;
       Menu_Save_EditChange(nil); // Displays "confirm overwrite" message if necessary
@@ -1734,8 +1734,8 @@ var
   IsMultiplayer: Boolean;
 begin
   IsMultiplayer := gGame.StartedFromMapEdAsMPMap;
-  MapPath := TKMapsCollection.FullPath(gGameParams.GameName, '.dat', IsMultiplayer);
-  GameName := gGameParams.GameName;
+  MapPath := TKMapsCollection.FullPath(gGameParams.Name, '.dat', IsMultiplayer);
+  GameName := gGameParams.Name;
   FreeThenNil(gGame);
   gGameApp.NewMapEditor(MapPath, 0, 0, TKMapsCollection.GetMapCRC(GameName, IsMultiplayer));
   TKMapEdInterface(gGame.ActiveInterface).SetLoadMode(IsMultiplayer);
@@ -2227,7 +2227,7 @@ begin
   Button_Menu_TrackDown.Height := IfThen(Label_Menu_Track.AutoWrap, 38, 30);
 
   Label_GameTime.Caption := TimeToString(gGame.MissionTime);
-  Label_MapName.Caption := Copy(gGameParams.GameName, 0, EnsureRange(Length(gGameParams.GameName), 1, MAX_MAPNAME_LENGTH));
+  Label_MapName.Caption := Copy(gGameParams.Name, 0, EnsureRange(Length(gGameParams.Name), 1, MAX_MAPNAME_LENGTH));
   if gGameParams.HasMissionDifficulty then
   begin
     Label_MapName.Caption := Format('%s|[$%s]( %s )[]', [Label_MapName.Caption,

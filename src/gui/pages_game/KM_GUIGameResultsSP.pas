@@ -133,7 +133,7 @@ begin
   fGameMode := gGameParams.Mode;
 
   //Remember which map we played so we could restart it
-  fRepeatGameName := gGameParams.GameName;
+  fRepeatGameName := gGameParams.Name;
   fRepeatMission := gGameParams.MissionFile;
   fRepeatSave := gGame.SaveFile;
   fRepeatCampName := gGame.CampaignName;
@@ -183,7 +183,7 @@ begin
   //Append mission name and time after the result message
   if Label_Results.Caption <> '' then
     Label_Results.Caption := Label_Results.Caption + ' - ';
-  Label_Results.Caption := Label_Results.Caption + gGameParams.GameName; //Don't show the mission time in SP because it's already shown elsewhere
+  Label_Results.Caption := Label_Results.Caption + gGameParams.Name; //Don't show the mission time in SP because it's already shown elsewhere
 
   //Append difficulty level to game results caption
   if gGameParams.MissionDifficulty <> mdNone then

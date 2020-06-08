@@ -484,7 +484,7 @@ begin
   gRes.Units.ResetToDefaults;
   gRes.Wares.ResetToDefaults;
 
-  fParams.GameName := aGameName;
+  fParams.Name := aGameName;
   fParams.GameMapSimpleCRC := aSimpleCRC;
   fParams.GameMapFullCRC := aFullCRC;
   if aCampaign <> nil then
@@ -908,7 +908,7 @@ end;
 procedure TKMGame.GameMPPlay;
 begin
   WaitingPlayersDisplay(False); //Finished waiting for players
-  gNetworking.AnnounceGameInfo(MissionTime, fParams.GameName);
+  gNetworking.AnnounceGameInfo(MissionTime, fParams.Name);
   gLog.AddTime('Net game began');
 end;
 
@@ -1231,13 +1231,13 @@ procedure TKMGame.MapEdStartEmptyMap(aSizeX, aSizeY: Integer);
 var
   I: Integer;
 begin
-  fParams.GameName := gResTexts[TX_MAPED_NEW_MISSION];
+  fParams.Name := gResTexts[TX_MAPED_NEW_MISSION];
 
   fSetMissionFileSP('');
   fSaveFile := '';
 
   fMapEditor := TKMMapEditor.Create(True, fTerrainPainter, fMapEditorInterface.HistoryUndoRedo, fMapEditorInterface.HistoryAddCheckpoint);
-  fMapEditor.MissionDefSavePath := fParams.GameName + '.dat';
+  fMapEditor.MissionDefSavePath := fParams.Name + '.dat';
   gTerrain.MakeNewMap(aSizeX, aSizeY, True);
   fTerrainPainter.InitEmpty;
   fMapEditor.History.MakeCheckpoint(caAll, gResTexts[TX_MAPED_HISTORY_CHPOINT_INITIAL]);
@@ -1396,7 +1396,7 @@ begin
                   end;
     end;
     // Update favorite map CRC if we resave favourite map with the same name
-    if fParams.GameName = MapInfo.FileName then
+    if fParams.Name = MapInfo.FileName then
     begin
       gGameSettings.FavouriteMaps.Replace(fParams.GameMapSimpleCRC, MapInfo.MapAndDatCRC);
       gGameSettings.ServerMapsRoster.Replace(fParams.GameMapFullCRC, MapInfo.CRC);
@@ -1404,7 +1404,7 @@ begin
     MapInfo.Free;
   end;
 
-  fParams.GameName := TruncateExt(ExtractFileName(aPathName));
+  fParams.Name := TruncateExt(ExtractFileName(aPathName));
   fSetMissionFileSP(ExtractRelativePath(ExeDir, aPathName));
 
   //Append empty players in place of removed ones
@@ -1849,7 +1849,7 @@ var
 begin
   GameInfo := TKMGameInfo.Create;
   try
-    GameInfo.Title := fParams.GameName;
+    GameInfo.Title := fParams.Name;
     GameInfo.MapFullCRC := fParams.GameMapFullCRC;
     GameInfo.MapSimpleCRC := fParams.GameMapSimpleCRC;
     GameInfo.TickCount := fParams.Tick;
@@ -2138,7 +2138,7 @@ begin
   GameInfo := TKMGameInfo.Create;
   try
     GameInfo.Load(LoadStream);
-    fParams.GameName := GameInfo.Title;
+    fParams.Name := GameInfo.Title;
     fParams.GameMapFullCRC := GameInfo.MapFullCRC;
     fParams.GameMapSimpleCRC := GameInfo.MapSimpleCRC;
     fSetGameTickEvent(GameInfo.TickCount);
@@ -2603,7 +2603,7 @@ begin
     if fParams.IsMultiPlayerOrSpec and gNetworking.IsHost
       and ((fParams.IsNormalMission and (fParams.Tick = ANNOUNCE_BUILD_MAP))
       or (fParams.IsTactic and (fParams.Tick = ANNOUNCE_BATTLE_MAP))) then
-    gNetworking.ServerQuery.SendMapInfo(fParams.GameName, fParams.GameMapFullCRC, gNetworking.NetPlayers.GetConnectedCount);
+    gNetworking.ServerQuery.SendMapInfo(fParams.Name, fParams.GameMapFullCRC, gNetworking.NetPlayers.GetConnectedCount);
 
     fScripting.UpdateState;
     UpdatePeacetime; //Send warning messages about peacetime if required

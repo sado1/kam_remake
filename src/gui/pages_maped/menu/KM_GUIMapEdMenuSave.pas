@@ -124,7 +124,7 @@ end;
 procedure TKMMapEdMenuSave.Show;
 begin
   SetLoadMode(fIsMultiplayer);
-  Edit_SaveName.Text := gGameParams.GameName;
+  Edit_SaveName.Text := gGameParams.Name;
   Menu_SaveClick(Edit_SaveName);
   Panel_Save.Show;
 end;

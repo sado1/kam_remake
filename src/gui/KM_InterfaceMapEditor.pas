@@ -511,7 +511,7 @@ begin
 
   UpdatePlayerSelectButtons;
 
-  Label_MissionName.Caption := gGameParams.GameName;
+  Label_MissionName.Caption := gGameParams.Name;
 end;
 
 

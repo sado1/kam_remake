@@ -136,7 +136,7 @@ var
   AIType: TKMAIType;
 begin
   MissionFile := gGameParams.MissionFile;
-  GameName := gGameParams.GameName;
+  GameName := gGameParams.Name;
   HandId := DropList_SelectHand.GetSelectedTag;
   Color := gHands[HandId].FlagColor;
   IsMultiplayer := fIsMultiplayer; //Somehow fIsMultiplayer sometimes change its value... have no time to debug it. Just save to local value for now
