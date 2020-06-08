@@ -2775,12 +2775,13 @@ end;
 
 procedure TKMControl.Focus;
 begin
-  if not IsFocused and Focusable and AutoFocusable then
+  if not IsFocused and Focusable then
   begin
     // Reset master control focus
     Parent.fMasterControl.CtrlFocus := nil;
     Parent.FocusedControlIndex := ControlIndex;
-    Parent.fMasterControl.UpdateFocus(Parent);
+    Parent.fMasterControl.CtrlFocus := Self;
+//    Parent.fMasterControl.UpdateFocus(Parent); // It looks like we can manually set focus, no need for update procedure
   end;
 end;
 

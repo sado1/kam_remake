@@ -626,6 +626,7 @@ begin
         Edit_Save.Text := gGameParams.Name
       else
         Edit_Save.Text := fLastSaveName;
+      Edit_Save.Focus;
       Menu_Save_EditChange(nil); // Displays "confirm overwrite" message if necessary
     end else
 
