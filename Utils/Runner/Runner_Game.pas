@@ -984,7 +984,7 @@ begin
       SetKaMSeed(Max(1,L));
 
       SimulateGame();
-      Score := gGameApp.Game.Params.GameTick;//Max(0,EvalGame());
+      Score := gGameApp.Game.Params.Tick;//Max(0,EvalGame());
       fAverageScore := fAverageScore + Score;
       //gGameApp.Game.Save(Format('%s__No_%.3d__Score_%.6d',[MapName, K, Round(Score)]), Now);
       if (Score < fWorstScore) AND (cnt_MAP_SIMULATIONS > 1) then
@@ -1078,7 +1078,7 @@ begin
   Assert(fRunKind = drkReplay);
 
   fRngMismatchFound := True;
-  fRngMismatchTick := gGameParams.GameTick;
+  fRngMismatchTick := gGameParams.Tick;
 
   OnProgress_Left2(Format('RNG mismatch: %d', [fRngMismatchTick]));
 end;
@@ -1094,7 +1094,7 @@ procedure TKMRunnerDesyncTest.SaveGame(aSaveName: string);
 var
   gameMode: TKMGameMode;
 begin
-  gameMode := gGameParams.GameMode;
+  gameMode := gGameParams.Mode;
 
   fGameModeSetEvent(gmSingle);
   gGame.SaveAndWait(aSaveName); //Save game and wait for async worker to complete all of his jobs
@@ -1135,7 +1135,7 @@ end;
 
 function TKMRunnerDesyncTest.GetSaveName: string;
 begin
-  Result := GetSaveName(fRunKind, gGameParams.GameTick);
+  Result := GetSaveName(fRunKind, gGameParams.Tick);
 end;
 
 
@@ -1172,7 +1172,7 @@ var
 begin
   Result := True;
 
-  if gGameParams.GameTick = 1 then
+  if gGameParams.Tick = 1 then
   begin
     gGame.GameInputProcess.CmdPlayerChanged(0, hndComputer, 'AI 1');
 
@@ -1248,30 +1248,30 @@ begin
                   end;
     drkReplay:    ;
     drkGameCRC:   begin
-                    if gGameParams.GameTick >= fSavePointTick then
+                    if gGameParams.Tick >= fSavePointTick then
                     begin
                       tickCRC := gGame.GetCurrectTickSaveCRC;
-                      fTickCRC[gGameParams.GameTick - fSavePointTick] := tickCRC;
+                      fTickCRC[gGameParams.Tick - fSavePointTick] := tickCRC;
 
                       //SaveGame();
                     end;
                   end;
     drkReplayCRC: begin
                     tickCRC := gGame.GetCurrectTickSaveCRC;
-                    if tickCRC <> fTickCRC[gGameParams.GameTick - fSavePointTick] then
+                    if tickCRC <> fTickCRC[gGameParams.Tick - fSavePointTick] then
                     begin
                       SaveGameAndMove;
-//                      MoveSave(GetSaveName(drkGameCRC, gGameParams.GameTick));
+//                      MoveSave(GetSaveName(drkGameCRC, gGameParams.Tick));
 
                       //Move last sync saves
                       if SAVE_LAST_SYNC_TICK then
                       begin
-                        MoveSave(GetSaveName(drkReplayCRC, gGameParams.GameTick - 1));
-                        MoveSave(GetSaveName(drkGameCRC, gGameParams.GameTick - 1));
+                        MoveSave(GetSaveName(drkReplayCRC, gGameParams.Tick - 1));
+                        MoveSave(GetSaveName(drkGameCRC, gGameParams.Tick - 1));
                       end;
 
                       fCRCDesyncFound := True;
-                      fCRCDesyncTick := gGameParams.GameTick;
+                      fCRCDesyncTick := gGameParams.Tick;
 
                       OnProgress_Left3(Format('CRC desync: %d', [fCRCDesyncTick]));
 
@@ -1279,10 +1279,10 @@ begin
                     end;
                   end;
     drkGameSave:  begin
-                    if gGameParams.GameTick = fCRCDesyncTick then
+                    if gGameParams.Tick = fCRCDesyncTick then
                       SaveGameAndMove
                     else
-                    if gGameParams.GameTick = fRngMismatchTick then
+                    if gGameParams.Tick = fRngMismatchTick then
                       SaveGameAndMove;
                   end;
   end;
@@ -1536,7 +1536,7 @@ begin
 
   // We use gRandom.Get for repeatability in Stadium
 
-  Log(Format('Tick: %5d %d' ,[gGameParams.GameTick, fRunSeed]));
+  Log(Format('Tick: %5d %d' ,[gGameParams.Tick, fRunSeed]));
   if KaMRandomWSeed(fRunSeed, FREQ) = 0 then
   begin
     gMySpectator.HandID := KaMRandomWSeed(fRunSeed, gHands.Count);
