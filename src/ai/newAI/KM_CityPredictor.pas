@@ -439,7 +439,7 @@ begin
   // 1 Storehouse
   RequiredHouses[htStore] := 1 - fCityStats.Houses[htStore];
   // 1 Barracks (build only when we have weapons and (from X tick or Y ticks before peace end -> avoid to build barracks in 1 minute when is still peace and we have predefined weapons in storehouse))
-  RequiredHouses[htBarracks] := Byte(aInitialization OR ((gHands[fOwner].Stats.GetWareBalance(wtWarfare) > 0) AND ((aTick > BARRACKS_PEACE_DELAY * 600) OR (aTick > (gGame.GameOptions.Peacetime - BARRACKS_BEFORE_PEACE_END) * 600)))) - fCityStats.Houses[htBarracks];
+  RequiredHouses[htBarracks] := Byte(aInitialization OR ((gHands[fOwner].Stats.GetWareBalance(wtWarfare) > 0) AND ((aTick > BARRACKS_PEACE_DELAY * 600) OR (aTick > (gGame.Options.Peacetime - BARRACKS_BEFORE_PEACE_END) * 600)))) - fCityStats.Houses[htBarracks];
   // Schools (at least 1 + WarriorsPerMinute criterium)
   with gHands[fOwner].AI.CityManagement do
     RequiredHouses[htSchool] := Max(
@@ -585,7 +585,7 @@ const
 begin
   // PeaceFactor: 0 = peace <= SCALE_MIN_PEACE_TIME; 1 = peace >= SCALE_MAX_PEACE_TIME
   fPeaceFactor := Max(0,
-                      (Min(SCALE_MAX_PEACE_TIME, gGame.GameOptions.Peacetime) - SCALE_MIN_PEACE_TIME)
+                      (Min(SCALE_MAX_PEACE_TIME, gGame.Options.Peacetime) - SCALE_MIN_PEACE_TIME)
                      ) * SCALE_PEACE_FACTOR;
 
   UpdateFinalProduction();
@@ -724,7 +724,7 @@ begin
   RequiredHouses[htTannery] := Min(RequiredHouses[htTannery], Ceil(Stats.GetHouseQty(htSwine)/2 - fCityStats.Houses[htTannery]));
   RequiredHouses[htArmorWorkshop] := Min(RequiredHouses[htArmorWorkshop], Stats.GetHouseTotal(htTannery)*2 - fCityStats.Houses[htArmorWorkshop]);
   // Consideration of wood production
-  RequiredHouses[htWeaponWorkshop] := RequiredHouses[htWeaponWorkshop] * Byte( (RequiredHouses[htTannery] > 0) OR (WEAP_WORKSHOP_DELAY < aTick) OR (aTick > (gGame.GameOptions.Peacetime-20) * 10 * 60) );
+  RequiredHouses[htWeaponWorkshop] := RequiredHouses[htWeaponWorkshop] * Byte( (RequiredHouses[htTannery] > 0) OR (WEAP_WORKSHOP_DELAY < aTick) OR (aTick > (gGame.Options.Peacetime-20) * 10 * 60) );
 
   // Coal mines are used by top priority houses (Metallurgists) and low priority houses (smithy)
   // To get reasonable production there should use something like following logic, good luck with understanding ;)

@@ -3219,7 +3219,7 @@ end;
 procedure TKMScriptActions.Peacetime(aPeacetime: Cardinal);
 begin
   try
-    gGame.GameOptions.Peacetime := aPeacetime div 600; //PT in minutes
+    gGame.Options.Peacetime := aPeacetime div 600; //PT in minutes
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

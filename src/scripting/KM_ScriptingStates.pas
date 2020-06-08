@@ -897,7 +897,7 @@ end;
 function TKMScriptStates.PeaceTime: Cardinal;
 begin
   try
-    Result := 600 * gGame.GameOptions.Peacetime;
+    Result := 600 * gGame.Options.Peacetime;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

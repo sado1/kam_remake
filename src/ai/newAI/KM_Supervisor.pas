@@ -226,7 +226,7 @@ begin
   if not gGame.IsPeaceTime then
   begin
     if (Modulo >= ATTACKS) AND (Modulo - ATTACKS < Length(fAlli2PL))
-    AND (  gGameParams.IsTactic OR (aTick > (gGame.GameOptions.Peacetime+3) * 10 * 60)  ) then // In normal mode wait 3 minutes after peace
+    AND (  gGameParams.IsTactic OR (aTick > (gGame.Options.Peacetime+3) * 10 * 60)  ) then // In normal mode wait 3 minutes after peace
     begin
       UpdateFFA();
       UpdateAttack(Modulo - ATTACKS);

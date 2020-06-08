@@ -1456,7 +1456,7 @@ begin
   // Watchtowers
   HT := htWatchTower;
   if (not Planner.DefenceTowersPlanned OR (gHands[fOwner].Stats.GetHouseTotal(HT) < Planner.PlannedHouses[HT].Count))
-    AND (aTick + BUILD_TOWER_DELAY > gGame.GameOptions.Peacetime * 600)
+    AND (aTick + BUILD_TOWER_DELAY > gGame.Options.Peacetime * 600)
     AND (aTick > MINIMAL_TOWER_DELAY)
     AND (AddToConstruction(HT, True, True) = csHousePlaced) then
     begin

@@ -22,7 +22,7 @@ type
   TKMGame = class
   private //Irrelevant to savegame
     fTimerGame: TTimer;
-    fGameOptions: TKMGameOptions;
+    fOptions: TKMGameOptions;
     fGameInputProcess: TKMGameInputProcess;
     fTextMission: TKMTextLibraryMulti;
     fPathfinding: TPathFinding;
@@ -238,7 +238,7 @@ type
 
     property Pathfinding: TPathFinding read fPathfinding;
     property GameInputProcess: TKMGameInputProcess read fGameInputProcess write fGameInputProcess;
-    property GameOptions: TKMGameOptions read fGameOptions;
+    property Options: TKMGameOptions read fOptions;
     property ActiveInterface: TKMUserInterfaceGame read fActiveInterface;
     property GamePlayInterface: TKMGamePlayInterface read fGamePlayInterface;
     property MapEditorInterface: TKMapEdInterface read fMapEditorInterface;
@@ -303,7 +303,7 @@ begin
   DoGameHold    := False;
   fSkipReplayEndCheck := False;
   fWaitingForNetwork := False;
-  fGameOptions  := TKMGameOptions.Create;
+  fOptions  := TKMGameOptions.Create;
   fGameSpeedChangeTick := 0;
   fGameSpeedChangeTime := 0;
   fGameSpeedChangeAllowed := True;
@@ -431,7 +431,7 @@ begin
   if fGameInputProcess <> nil then
     FreeAndNil(fGameInputProcess);
 
-  FreeAndNil(fGameOptions);
+  FreeAndNil(fOptions);
   FreeAndNil(fTextMission);
 
   //When leaving the game we should always reset the cursor in case the user had beacon or linking selected
@@ -648,7 +648,7 @@ begin
 
   fMapTxtInfo.LoadTXTInfo(ChangeFileExt(aMissionFile, '.txt'));
 
-  gLog.AddTime('Game options: ' + fGameOptions.ToString);
+  gLog.AddTime('Game options: ' + fOptions.ToString);
   gLog.AddTime('Gameplay initialized', True);
 end;
 
@@ -754,19 +754,19 @@ var
   playerNikname: AnsiString;
   oldSpeedPT, oldSpeedAfterPT: Single;
 begin
-  oldSpeedPT := fGameOptions.SpeedPT;
-  oldSpeedAfterPT := fGameOptions.SpeedAfterPT;
+  oldSpeedPT := fOptions.SpeedPT;
+  oldSpeedAfterPT := fOptions.SpeedAfterPT;
   //Copy game options from lobby to this game
-  fGameOptions.Peacetime := gNetworking.NetGameOptions.Peacetime;
-  fGameOptions.SpeedPT := gNetworking.NetGameOptions.SpeedPT;
-  fGameOptions.SpeedAfterPT := gNetworking.NetGameOptions.SpeedAfterPT;
+  fOptions.Peacetime := gNetworking.NetGameOptions.Peacetime;
+  fOptions.SpeedPT := gNetworking.NetGameOptions.SpeedPT;
+  fOptions.SpeedAfterPT := gNetworking.NetGameOptions.SpeedAfterPT;
 
   isPT := IsPeacetime;
 
   //Set game speed for new game or when game speed was changed in the lobby
   if aNewGame
-    or (    isPT and not SameValue(oldSpeedPT,      fGameOptions.SpeedPT,      0.01))
-    or (not isPT and not SameValue(oldSpeedAfterPT, fGameOptions.SpeedAfterPT, 0.01)) then
+    or (    isPT and not SameValue(oldSpeedPT,      fOptions.SpeedPT,      0.01))
+    or (not isPT and not SameValue(oldSpeedAfterPT, fOptions.SpeedAfterPT, 0.01)) then
     SetGameSpeed(GetNormalGameSpeed, False);
 
   //Check for default advanced AI's
@@ -1482,7 +1482,7 @@ end;
 
 function TKMGame.GetPeacetimeRemaining: TDateTime;
 begin
-  Result := Max(0, Int64(fGameOptions.Peacetime * 600) - fParams.GameTick) / 24 / 60 / 60 / 10;
+  Result := Max(0, Int64(fOptions.Peacetime * 600) - fParams.GameTick) / 24 / 60 / 60 / 10;
 end;
 
 
@@ -1610,7 +1610,7 @@ end;
 
 function TKMGame.IsPeaceTime: Boolean;
 begin
-  Result := not CheckTime(fGameOptions.Peacetime * 600);
+  Result := not CheckTime(fOptions.Peacetime * 600);
 end;
 
 
@@ -1618,13 +1618,13 @@ procedure TKMGame.UpdatePeaceTime;
 var
   PeaceTicksRemaining: Cardinal;
 begin
-  PeaceTicksRemaining := Max(0, Int64((fGameOptions.Peacetime * 600)) - fParams.GameTick);
+  PeaceTicksRemaining := Max(0, Int64((fOptions.Peacetime * 600)) - fParams.GameTick);
   if (PeaceTicksRemaining = 1) and fParams.IsMultiplayer then
   begin
     gSoundPlayer.Play(sfxnPeacetime, 1, True); //Fades music
     if fParams.IsMultiPlayerOrSpec then
     begin
-      SetGameSpeed(fGameOptions.SpeedAfterPT, False);
+      SetGameSpeed(fOptions.SpeedAfterPT, False);
       gNetworking.PostLocalMessage(gResTexts[TX_MP_PEACETIME_OVER], csNone);
       IssueAutosaveCommand(True);
 
@@ -1655,9 +1655,9 @@ begin
   if fParams.IsMultiPlayerOrSpec then
   begin
     if IsPeaceTime then
-      Result := fGameOptions.SpeedPT
+      Result := fOptions.SpeedPT
     else
-      Result := fGameOptions.SpeedAfterPT;
+      Result := fOptions.SpeedAfterPT;
   end
   else
     Result := GAME_SPEED_NORMAL;
@@ -1682,9 +1682,9 @@ begin
   if fParams.IsMultiPlayerOrSpec then
   begin
     if IsPeacetime then
-      fGameOptions.SpeedPT := aSpeed
+      fOptions.SpeedPT := aSpeed
     else
-      fGameOptions.SpeedAfterPT := aSpeed;
+      fOptions.SpeedAfterPT := aSpeed;
   end;
 
   fGameSpeedGIP := aSpeed;
@@ -1900,7 +1900,7 @@ begin
     FreeAndNil(GameInfo);
   end;
 
-  fGameOptions.Save(aSaveStream);
+  fOptions.Save(aSaveStream);
 
   //Because some stuff is only saved in singleplayer we need to know whether it is included in this save,
   //so we can load multiplayer saves in single player and vice versa.
@@ -2148,7 +2148,7 @@ begin
     FreeAndNil(GameInfo);
   end;
 
-  fGameOptions.Load(LoadStream);
+  fOptions.Load(LoadStream);
 
   //So we can allow loading of multiplayer saves in single player and vice versa we need to know which type THIS save is
   LoadStream.Read(SaveIsMultiplayer);
@@ -2414,7 +2414,7 @@ begin
 
   fIsStarted := True;
 
-  gLog.AddTime('Game options: ' + fGameOptions.ToString);
+  gLog.AddTime('Game options: ' + fOptions.ToString);
   gLog.AddTime('After game loading', True);
 end;
 
@@ -2558,7 +2558,7 @@ begin
 
   if (fParams.GameMode = gmReplayMulti)
     and gGameSettings.ReplayAutopause
-    and (fGameOptions.Peacetime * 600 = fParams.GameTick + 1) then
+    and (fOptions.Peacetime * 600 = fParams.GameTick + 1) then
   begin
     SetReplayPause;
     Exit(True);
@@ -2633,7 +2633,7 @@ begin
     if gGameSettings.SaveCheckpoints
       and (fSavePoints.Count <= gGameSettings.SaveCheckpointsLimit) //Do not allow to spam saves, could cause OUT_OF_MEMORY error
       and ((fParams.GameTick = MAKE_SAVEPT_BEFORE_TICK - 1)
-        or (fParams.GameTick = (fGameOptions.Peacetime*60*10)) //At PT end
+        or (fParams.GameTick = (fOptions.Peacetime*60*10)) //At PT end
         or ((fParams.GameTick mod gGameSettings.SaveCheckpointsFreq) = 0)) then
       MakeSavePoint;
 
@@ -2696,7 +2696,7 @@ begin
       and (fSavePoints.Count <= REPLAY_AUTOSAVE_CNT_MAX) //Do not allow to spam saves, could cause OUT_OF_MEMORY error
       and ((fParams.GameTick = 1) //First tick
         or (fParams.GameTick = MAKE_SAVEPT_BEFORE_TICK - 1)
-        or (fParams.GameTick = (fGameOptions.Peacetime*60*10)) //At PT end
+        or (fParams.GameTick = (fOptions.Peacetime*60*10)) //At PT end
         or ((fParams.GameTick mod GetReplayAutosaveEffectiveFrequency) = 0)) then
     begin
       MakeSavePoint;

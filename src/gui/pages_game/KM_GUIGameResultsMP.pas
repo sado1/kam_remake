@@ -1529,7 +1529,7 @@ procedure TKMGameResultsMP.ReinitChartEconomy;
     Chart^.Clear;
     Chart^.MaxLength := 0;
     Chart^.MaxTime   := gGameParams.GameTick div 10;
-    Chart^.Peacetime := 60*gGame.GameOptions.Peacetime;
+    Chart^.Peacetime := 60*gGame.Options.Peacetime;
     Chart^.SetSeparatorPositions(fChartSeparatorsPos[aStatType]);
   end;
 
@@ -1607,7 +1607,7 @@ const
     aChart^.Clear;
     aChart^.MaxLength := 0;
     aChart^.MaxTime   := gGameParams.GameTick div 10;
-    aChart^.Peacetime := 60*gGame.GameOptions.Peacetime;
+    aChart^.Peacetime := 60*gGame.Options.Peacetime;
     aChart^.SetSeparatorPositions(fChartSeparatorsPos[aStatType]);
 
     if aUseGDP then
@@ -1756,7 +1756,7 @@ begin
         Chart^.Clear;
         Chart^.MaxLength := 0;
         Chart^.MaxTime := gGameParams.GameTick div 10;
-        Chart^.Peacetime := 60*gGame.GameOptions.Peacetime;
+        Chart^.Peacetime := 60*gGame.Options.Peacetime;
         Chart^.SetSeparatorPositions(fChartSeparatorsPos[ST]);
         Chart^.Caption := ChartArmy^.ChartType.GUIName + ' - ' + gResTexts[CHART_ARMY_CAPTION_INDEX[CKind]];
 

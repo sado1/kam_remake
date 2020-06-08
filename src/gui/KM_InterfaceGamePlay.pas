@@ -4183,7 +4183,7 @@ begin
   fAlerts.UpdateState(aTickCount);
 
   // Update peacetime counter
-  if gGame.GameOptions.Peacetime <> 0 then
+  if gGame.Options.Peacetime <> 0 then
     Label_PeacetimeRemaining.Caption := Format(gResTexts[TX_MP_PEACETIME_REMAINING],
                                                [TimeToString(gGame.GetPeacetimeRemaining)])
   else
@@ -4198,7 +4198,7 @@ begin
                      gGame.SavedReplays.LastTick);
     // Replays can continue after end, keep the bar in 0..1 range
     ReplayBar_Replay.SetParameters(gGameParams.GameTick,
-                                   gGame.GameOptions.Peacetime*60*10,
+                                   gGame.Options.Peacetime*60*10,
                                    LastTick);
 
     Label_ReplayBar.Caption := TimeToString(gGame.MissionTime) + ' / ' +
