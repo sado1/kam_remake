@@ -165,6 +165,7 @@ uses
   KM_HandLogistics in 'src\hands\KM_HandLogistics.pas',
   KM_HandSpectator in 'src\hands\KM_HandSpectator.pas',
   KM_HandStats in 'src\hands\KM_HandStats.pas',
+  KM_HandTypes in 'src\hands\KM_HandTypes.pas',
 
   KM_HouseBarracks in 'src\houses\KM_HouseBarracks.pas',
   KM_HouseInn in 'src\houses\KM_HouseInn.pas',

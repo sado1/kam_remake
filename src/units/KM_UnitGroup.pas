@@ -255,7 +255,8 @@ uses
   KM_Game, KM_GameParams, KM_Hand, KM_HandsCollection, KM_Terrain, KM_CommonUtils, KM_ResTexts, KM_RenderPool,
   KM_Hungarian, KM_UnitActionWalkTo, KM_ResUnits, KM_ScriptingEvents,
   KM_UnitActionStormAttack, KM_CommonClassesExt, KM_RenderAux,
-  KM_GameTypes, KM_Log, KM_DevPerfLog, KM_DevPerfLogTypes;
+  KM_GameTypes, KM_Log, KM_DevPerfLog, KM_DevPerfLogTypes,
+  KM_HandTypes;
 
 
 const

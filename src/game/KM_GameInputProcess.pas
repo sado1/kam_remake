@@ -6,7 +6,8 @@ uses
   KM_Units, KM_UnitGroup,
   KM_Houses, KM_HouseWoodcutters, KM_Hand,
   KM_ResHouses, KM_ResWares, KM_ScriptingConsoleCommands,
-  KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Points, KM_WorkerThread;
+  KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Points, KM_WorkerThread,
+  KM_HandTypes;
 
 { A. This unit takes and adjoins players input from TGame and TGamePlayInterfaces clicks and keys
   Then passes it on to game events.
