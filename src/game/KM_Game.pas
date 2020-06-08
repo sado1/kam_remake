@@ -106,7 +106,7 @@ type
     procedure GameSpeedActualChanged(aFromSpeed, aToSpeed: Single);
     procedure SetSpeedActualValue(aSpeed: Single);
 
-    procedure IncGameTick;
+    procedure IncTick;
     function CheckPauseGameAtTick: Boolean;
     function IsReplayEnded: Boolean;
 
@@ -2526,7 +2526,7 @@ begin
 end;
 
 
-procedure TKMGame.IncGameTick;
+procedure TKMGame.IncTick;
 begin
   fSetGameTickEvent(fParams.Tick + 1); //Thats our tick counter for gameplay events
   if LOG_GAME_TICK then
@@ -2588,7 +2588,7 @@ begin
     if fWaitingForNetwork then
       WaitingPlayersDisplay(False);
 
-    IncGameTick;
+    IncTick;
 
     fGameInputProcess.TakePlannedCommands;
 
@@ -2661,7 +2661,7 @@ function TKMGame.PlayReplayTick: Boolean;
 begin
   Result := False;
 
-  IncGameTick;
+  IncTick;
   fLastUpdateState := TimeGet;
   {$IFDEF PERFLOG}
   gPerfLogs.TickBegin(fParams.Tick);
