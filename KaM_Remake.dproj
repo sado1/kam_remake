@@ -1,4 +1,4 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{CB64F5E8-91AE-4497-A8C4-89668924F870}</ProjectGuid>
         <MainSource>KaM_Remake.dpr</MainSource>
@@ -198,10 +198,10 @@
         <DCCReference Include="src\game\KM_GameInfo.pas"/>
         <DCCReference Include="src\game\KM_GameOptions.pas"/>
         <DCCReference Include="src\game\KM_GameParams.pas"/>
+        <DCCReference Include="src\game\KM_GameSavePoints.pas"/>
         <DCCReference Include="src\game\KM_GameInputProcess.pas"/>
         <DCCReference Include="src\game\KM_GameInputProcess_Multi.pas"/>
         <DCCReference Include="src\game\KM_GameInputProcess_Single.pas"/>
-        <DCCReference Include="src\game\KM_GameSavedReplays.pas"/>
         <DCCReference Include="src\gui\pages_game\KM_GUIGameBuild.pas"/>
         <DCCReference Include="src\gui\pages_game\KM_GUIGameChat.pas"/>
         <DCCReference Include="src\gui\pages_game\KM_GUIGameHouse.pas"/>
