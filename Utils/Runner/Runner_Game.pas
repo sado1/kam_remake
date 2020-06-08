@@ -1039,7 +1039,6 @@ begin
 //  Include(gLog.MessageTypes, lmtCommands);
 
 //  LOG_GAME_TICK := True;
-  USE_CUSTOM_SEED := True;
 
 //  LOG_GAME_TICK := True;
   CALC_EXPECTED_TICK := False;
@@ -1441,7 +1440,7 @@ begin
         else
           fSavePointTick := (I + Byte(MapsType <> rmtFight)*SKIP_FIRST_SAVEPT_CNT) * savesFreq;
 
-        if gGameApp.TryLoadSavedReplay(fSavePointTick) then
+        if gGameApp.TryLoadSavePoint(fSavePointTick) then
         begin
           Inc(totalLoads);
           OnProgress_Left(Format('Load: %d', [fSavePointTick]));
@@ -1472,7 +1471,7 @@ begin
             fCRCDesyncTick := -1;
 
             // Load at certain savepoint
-            if gGameApp.TryLoadSavedReplay(fSavePointTick) then
+            if gGameApp.TryLoadSavePoint(fSavePointTick) then
             begin
               fRunKind := drkReplayCRC;
               SimulateGame(fSavePointTick - 1, simulLastTick);
@@ -1728,7 +1727,6 @@ begin
 //  Include(gLog.MessageTypes, lmtCommands);
 
 //  LOG_GAME_TICK := True;
-  USE_CUSTOM_SEED := True;
 
   CALC_EXPECTED_TICK := False;
   CRASH_ON_REPLAY := False;
