@@ -179,9 +179,16 @@ type
     function GetSaveDir(aSaveName: string): string;
     procedure Log(const aString: string);
   protected
+    function DoCheckSavePoints: Boolean; virtual;
     procedure SetUp(); override;
     procedure TearDown(); override;
     procedure Execute(aRun: Integer); override;
+  end;
+
+
+  TKMRunnerCrashTest = class(TKMRunnerDesyncTest)
+  protected
+    function DoCheckSavePoints: Boolean; override;
   end;
 
 
@@ -1302,6 +1309,12 @@ begin
 end;
 
 
+function TKMRunnerDesyncTest.DoCheckSavePoints: Boolean;
+begin
+  Result := True;
+end;
+
+
 procedure TKMRunnerDesyncTest.Execute(aRun: Integer);
 const
   // Maps for simulation (I dont use for loop in this array)
@@ -1425,6 +1438,13 @@ begin
 
       SimulateGame(0, SIMUL_TIME_MAX);
 
+      if not DoCheckSavePoints then
+      begin
+        if Assigned(fOnStop) and fOnStop then
+          Exit;
+        Continue;
+      end;
+
       SaveGame;
 
 //      LOG_GAME_TICK := False;
@@ -1497,8 +1517,7 @@ begin
         else
           OnProgress_Left('');
 
-        if Assigned(fOnStop)
-          and fOnStop then
+        if Assigned(fOnStop) and fOnStop then
           Exit;
       end;
 
@@ -2489,8 +2508,16 @@ begin
 end;
 
 
+{ TKMRunnerCrashTest }
+function TKMRunnerCrashTest.DoCheckSavePoints: Boolean;
+begin
+  Result := False;
+end;
+
+
 initialization
   RegisterRunner(TKMRunnerDesyncTest);
+  RegisterRunner(TKMRunnerCrashTest);
   RegisterRunner(TKMRunnerAAIPerformanceTest);
   RegisterRunner(TKMRunnerCachePerformanceTest);
   RegisterRunner(TKMRunnerPushModes);
