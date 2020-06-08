@@ -140,12 +140,14 @@ const
     gicArmyLink, gicArmyAttackUnit, gicArmyAttackHouse, gicArmyHalt,
     gicArmyFormation,  gicArmyWalk, gicArmyStorm, gicHouseBarracksEquip, gicHouseTownHallEquip];
   ALLOWED_AFTER_DEFEAT: set of TKMGameInputCommandType =
-    [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameLoadSave, gicGameMessageLogRead, gicTempDoNothing];
+    [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameLoadSave,
+     gicGameMessageLogRead, gicTempDoNothing];
   ALLOWED_IN_CINEMATIC: set of TKMGameInputCommandType =
     [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameMessageLogRead,
      gicGamePlayerAllianceSet, gicGamePlayerAddDefGoals, gicTempDoNothing];
   ALLOWED_BY_SPECTATORS: set of TKMGameInputCommandType =
-    [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameLoadSave, gicGamePlayerDefeat, gicTempDoNothing];
+    [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameLoadSave,
+     gicGamePlayerDefeat, gicTempDoNothing];
   //Those commands should not have random check, because they they are not strictly happen, depends of player config and actions
   //We want to make it possible to reproduce AI city build knowing only seed + map config
   //Autosave and other commands random checks could break it, since every command have its own random check (and KaMRandom call)
