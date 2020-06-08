@@ -98,7 +98,7 @@ type
     procedure GameMPDisconnect(const aData: UnicodeString);
     procedure OtherPlayerDisconnected(aDefeatedPlayerHandId: Integer);
 
-    function GetGameTickDuration: Single;
+    function GetTickDuration: Single;
     procedure UpdateTickCounters;
     function GetTicksBehindCnt: Single;
     procedure SetIsPaused(aValue: Boolean);
@@ -200,7 +200,7 @@ type
     property SpeedActual: Single read fSpeedActual;
     property SpeedGIP: Single read fSpeedGIP;
     property SpeedChangeAllowed: Boolean read fSpeedChangeAllowed write fSpeedChangeAllowed;
-    property GameTickDuration: Single read GetGameTickDuration;
+    property TickDuration: Single read GetTickDuration;
     property SavedReplays: TKMSavePointCollection read fSavePoints write fSavePoints;
 
     function PlayerLoc: Byte; //Can used in SP game/replay only
@@ -2419,7 +2419,7 @@ begin
 end;
 
 
-function TKMGame.GetGameTickDuration: Single;
+function TKMGame.GetTickDuration: Single;
 begin
   Result := gGameSettings.SpeedPace / fSpeedActual;
 end;
