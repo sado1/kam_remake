@@ -229,7 +229,8 @@ begin
   // Decrease group requirements on number of soldiers that are not walked out of barracks yet
   for warrior in fUnitsEquipOrdered.Values do
     if not warrior.IsDeadOrDying then
-      Dec(GroupReq[UNIT_TO_GROUP_TYPE[warrior.UnitType]]);
+      // Group req could change while warrior was walking out of barracks, so we could get negative value here
+      GroupReq[UNIT_TO_GROUP_TYPE[warrior.UnitType]] := Max(0, GroupReq[UNIT_TO_GROUP_TYPE[warrior.UnitType]] - 1);
 
   //Train troops where possible in each barracks
   for I := 0 to High(Barracks) do
