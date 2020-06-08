@@ -78,7 +78,7 @@ type
     fLastUpdateState: Cardinal;
 
     fReadyToStop: Boolean;
-    fGameSeed: Integer;
+    fSeed: Integer;
 
     fLoadFromFile: UnicodeString; //Path to file, from which game was loaded. '.bas' file for replays
     fIsStarted: Boolean;
@@ -2522,7 +2522,7 @@ begin
   gLog.AddTime('Set game seed: ' + IntToStr(aSeed));
 
   KM_CommonUtils.SetKaMSeed(aSeed);
-  fGameSeed := aSeed; //Save it for debug only
+  fSeed := aSeed; //Save it for debug only
 end;
 
 
