@@ -1843,7 +1843,7 @@ procedure TKMGamePlayInterface.AddReplayMark(aTick: Cardinal);
 begin
   if Self = nil then Exit;
 
-  if (gGame.SavedReplays <> nil) then
+  if (gGame.SavePoints <> nil) then
     ReplayBar_Replay.AddMark(aTick);
 end;
 
@@ -1854,11 +1854,11 @@ var
   Tick: Cardinal;
   TicksList: TList<Cardinal>;
 begin
-  if (Self = nil) or (gGame.SavedReplays = nil) then Exit;
+  if (Self = nil) or (gGame.SavePoints = nil) then Exit;
 
   TicksList := TList<Cardinal>.Create;
   try
-    gGame.SavedReplays.FillTicks(TicksList);
+    gGame.SavePoints.FillTicks(TicksList);
 
     for Tick in TicksList do
       AddReplayMark(Tick);
@@ -2315,10 +2315,10 @@ begin
   ShowPlayerFOW := Checkbox_ReplayFOW.Checked;
   PlayersColorMode := Radio_PlayersColorMode.ItemIndex;
 
-  if not gGameApp.TryLoadSavedReplay( aTick ) then
+  if not gGameApp.TryLoadSavePoint( aTick ) then
     Exit;
 
-  if gGame.SavedReplays = nil then
+  if gGame.SavePoints = nil then
     Exit;
 
   //!!!!Carefull!!!!
@@ -4195,7 +4195,7 @@ begin
     LastTick := Max4(gGame.LastReplayTick,
                      gGame.GameInputProcess.GetLastTick,
                      gGameParams.Tick,
-                     gGame.SavedReplays.LastTick);
+                     gGame.SavePoints.LastTick);
     // Replays can continue after end, keep the bar in 0..1 range
     ReplayBar_Replay.SetParameters(gGameParams.Tick,
                                    gGame.Options.Peacetime*60*10,

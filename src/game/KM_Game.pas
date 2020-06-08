@@ -202,7 +202,7 @@ type
     property SpeedGIP: Single read fSpeedGIP;
     property SpeedChangeAllowed: Boolean read fSpeedChangeAllowed write fSpeedChangeAllowed;
     property TickDuration: Single read GetTickDuration;
-    property SavedReplays: TKMSavePointCollection read fSavePoints write fSavePoints;
+    property SavePoints: TKMSavePointCollection read fSavePoints write fSavePoints;
 
     function PlayerLoc: Byte; //Can used in SP game/replay only
     function PlayerColor: Cardinal; //Can used in SP game/replay only

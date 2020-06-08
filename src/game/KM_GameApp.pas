@@ -42,7 +42,7 @@ type
                                  aMap: Byte; aGameMode: TKMGameMode; aDesiredLoc: ShortInt; aDesiredColor: Cardinal;
                                  aDifficulty: TKMMissionDifficulty = mdNone; aAIType: TKMAIType = aitNone;
                                  aAutoselectHumanLoc: Boolean = False);
-    procedure LoadGameFromMemory(aTick: Cardinal);
+    procedure LoadGameSavePoint(aTick: Cardinal);
     procedure LoadGameFromScratch(aSizeX, aSizeY: Integer; aGameMode: TKMGameMode);
     function SaveName(const aName, aExt: UnicodeString; aIsMultiplayer: Boolean): UnicodeString;
 
@@ -93,7 +93,7 @@ type
                            aMapFullCRC: Cardinal = 0; aMapSimpleCRC: Cardinal = 0; aMultiplayerLoadMode: Boolean = False);
     procedure NewReplay(const aFilePath: UnicodeString);
     procedure NewSaveAndReplay(const aSavPath, aRplPath: UnicodeString);
-    function TryLoadSavedReplay(aTick: Integer): Boolean;
+    function TryLoadSavePoint(aTick: Integer): Boolean;
 
     procedure SaveMapEditor(const aPathName: UnicodeString);
 
@@ -770,7 +770,7 @@ begin
 end;
 
 
-procedure TKMGameApp.LoadGameFromMemory(aTick: Cardinal);
+procedure TKMGameApp.LoadGameSavePoint(aTick: Cardinal);
 var
   LoadError: string;
   SavedReplays: TKMSavePointCollection;
@@ -781,8 +781,8 @@ begin
   if (gGame = nil) then Exit;
 
   // Get existing configuration
-  SavedReplays := gGame.SavedReplays;
-  gGame.SavedReplays := nil;
+  SavedReplays := gGame.SavePoints;
+  gGame.SavePoints := nil;
   GameMode := gGame.Params.Mode;
   SaveFile := gGame.SaveFile;
   // Store GIP locally, to restore it later
@@ -801,8 +801,8 @@ begin
   try
     // SavedReplays have been just created, and we will reassign them in the next line.
     // Then Free the newly created save replays object first
-    gGame.SavedReplays.Free;
-    gGame.SavedReplays := SavedReplays;
+    gGame.SavePoints.Free;
+    gGame.SavePoints := SavedReplays;
     gGame.LoadSavePoint(aTick, SaveFile);
     gGame.LastReplayTick := Max(gGame.LastReplayTick, SavedReplays.LastTick);
     // Free GIP, which was created on game creation
@@ -1025,15 +1025,15 @@ begin
 end;
 
 
-function TKMGameApp.TryLoadSavedReplay(aTick: Integer): Boolean;
+function TKMGameApp.TryLoadSavePoint(aTick: Integer): Boolean;
 begin
   Result := False;
 
-  if (gGame = nil) or (gGame.SavedReplays = nil) then Exit;
+  if (gGame = nil) or (gGame.SavePoints = nil) then Exit;
   
-  if gGame.SavedReplays.Contains(aTick) then
+  if gGame.SavePoints.Contains(aTick) then
   begin
-    LoadGameFromMemory(aTick);
+    LoadGameSavePoint(aTick);
     Result := True;
 
     if Assigned(fOnGameStart) and (gGame <> nil) then
