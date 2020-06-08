@@ -2001,7 +2001,7 @@ begin
 
   if Sender = Button_ReplayExit then
   begin
-    gGame.GameHold(True, grReplayEnd);
+    gGame.Hold(True, grReplayEnd);
     UpdateReplayButtons(True);
   end;
 
@@ -2621,11 +2621,11 @@ begin
   else // GameStop has Destroyed our Sender by now
   if Sender = Button_PlayMore then
     case fPlayMoreMsg of
-      grWin:       gGame.GameHold(false, grWin);
-      grDefeat:    gGame.GameHold(false, grDefeat);
+      grWin:       gGame.Hold(false, grWin);
+      grDefeat:    gGame.Hold(false, grDefeat);
       grReplayEnd: begin
                       gGame.SkipReplayEndCheck := True;
-                      gGame.GameHold(False, grReplayEnd);
+                      gGame.Hold(False, grReplayEnd);
                     end;
     end;
 end;

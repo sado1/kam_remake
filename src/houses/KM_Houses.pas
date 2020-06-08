@@ -2422,14 +2422,14 @@ begin
                     begin
                       // Game results cheats should not be used in MP even in debug
                       // MP does Win/Defeat differently (without Hold)
-                      gGame.RequestGameHold(grWin);
+                      gGame.RequestHold(grWin);
                       Exit;
                     end;
         wtFish:    if not gGameParams.IsMultiPlayerOrSpec then
                     begin
                       // Game results cheats should not be used in MP even in debug
                       // MP does Win/Defeat differently (without Hold)
-                      gGame.RequestGameHold(grDefeat);
+                      gGame.RequestHold(grDefeat);
                       Exit;
                     end;
       end;

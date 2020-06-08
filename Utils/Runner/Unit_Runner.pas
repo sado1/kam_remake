@@ -247,7 +247,7 @@ begin
     fResults.Times[fRun, I] := TimeGet - fResults.Times[fRun, I];
 
     if gGameApp.Game.IsPaused then
-      gGameApp.Game.GameHold(False, grWin);
+      gGameApp.Game.Hold(False, grWin);
 
     if (I mod 60*10 = 0) and Assigned(OnProgress) then
       OnProgress(Format('%d (%d min)', [fRun + 1, I div 600]));

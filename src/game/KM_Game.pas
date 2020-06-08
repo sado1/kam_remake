@@ -124,8 +124,8 @@ type
     function PlayNextTick: Boolean;
   public
     GameResult: TKMGameResultMsg;
-    DoGameHold: Boolean; //Request to run GameHold after UpdateState has finished
-    DoGameHoldState: TKMGameResultMsg; //The type of GameHold we want to occur due to DoGameHold
+    DoHold: Boolean; //Request to run Hold after UpdateState has finished
+    DoHoldState: TKMGameResultMsg; //The type of Hold we want to occur due to DoGameHold
 
     StartedFromMapEditor: Boolean;    // True if we start game from map editor ('Try Map')
     StartedFromMapEdAsMPMap: Boolean; // True if we start game from map editor ('Try Map') with MP map
@@ -160,8 +160,8 @@ type
 
     procedure GameMPPlay;
     procedure GameMPReadyToPlay;
-    procedure GameHold(aDoHold: Boolean; Msg: TKMGameResultMsg); //Hold the game to ask if player wants to play after Victory/Defeat/ReplayEnd
-    procedure RequestGameHold(Msg: TKMGameResultMsg);
+    procedure Hold(aDoHold: Boolean; Msg: TKMGameResultMsg); //Hold the game to ask if player wants to play after Victory/Defeat/ReplayEnd
+    procedure RequestHold(Msg: TKMGameResultMsg);
     procedure PlayerVictory(aHandIndex: TKMHandID);
     procedure PlayerDefeat(aPlayerIndex: TKMHandID; aShowDefeatMessage: Boolean = True);
     procedure WaitingPlayersDisplay(aWaiting: Boolean);
@@ -300,7 +300,7 @@ begin
   fAdvanceFrame := False;
   fUIDTracker   := 0;
   GameResult   := grCancel;
-  DoGameHold    := False;
+  DoHold    := False;
   fSkipReplayEndCheck := False;
   fWaitingForNetwork := False;
   fOptions  := TKMGameOptions.Create;
@@ -1071,9 +1071,9 @@ end;
 
 
 //Put the game on Hold for Victory screen
-procedure TKMGame.GameHold(aDoHold: Boolean; Msg: TKMGameResultMsg);
+procedure TKMGame.Hold(aDoHold: Boolean; Msg: TKMGameResultMsg);
 begin
-  DoGameHold := False;
+  DoHold := False;
   fGamePlayInterface.ReleaseDirectionSelector; //In case of victory/defeat while moving troops
   gRes.Cursors.Cursor := kmcDefault;
 
@@ -1089,10 +1089,10 @@ begin
 end;
 
 
-procedure TKMGame.RequestGameHold(Msg: TKMGameResultMsg);
+procedure TKMGame.RequestHold(Msg: TKMGameResultMsg);
 begin
-  DoGameHold := true;
-  DoGameHoldState := Msg;
+  DoHold := true;
+  DoHoldState := Msg;
 end;
 
 
@@ -1127,7 +1127,7 @@ begin
     end;
   end
   else
-    RequestGameHold(grWin);
+    RequestHold(grWin);
 end;
 
 
@@ -1158,7 +1158,7 @@ begin
               if aPlayerIndex = gMySpectator.HandID then
               begin
                 PlayDefeatSound;
-                RequestGameHold(grDefeat);
+                RequestHold(grDefeat);
               end;
     gmMulti:  begin
                 if aShowDefeatMessage then
@@ -2458,8 +2458,8 @@ procedure TKMGame.UpdateGame(Sender: TObject);
   begin
     if not PlayNextTick then
       Inc(fPausedTicksCnt);
-    if DoGameHold then
-      GameHold(True, DoGameHoldState);
+    if DoHold then
+      Hold(True, DoHoldState);
   end;
 
 var
@@ -2704,7 +2704,7 @@ begin
     end;
 
     if not fSkipReplayEndCheck and IsReplayEnded then
-      RequestGameHold(grReplayEnd);
+      RequestHold(grReplayEnd);
 
     if fAdvanceFrame then
     begin
@@ -2717,7 +2717,7 @@ begin
     {$ENDIF}
   end;
 
-  if DoGameHold then
+  if DoHold then
     Exit;
 
   Result := True;
