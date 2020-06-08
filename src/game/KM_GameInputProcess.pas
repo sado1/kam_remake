@@ -933,7 +933,7 @@ begin
 
   doAddBeacon := False;
 
-  case gGameParams.GameMode of
+  case gGameParams.Mode of
     gmSingle,
     gmCampaign,
     gmMulti:          doAddBeacon := (aCommand.Params[3] <> PLAYER_NONE) and DoAddPlayerBeacon;

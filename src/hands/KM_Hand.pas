@@ -1558,7 +1558,7 @@ begin
 
   //Try to take player name from mission text if we are in SP
   //Do not use names in MP to avoid confusion of AI players with real player niknames
-  if gGameParams.GameMode in [gmSingle, gmCampaign, gmMapEd, gmReplaySingle] then
+  if gGameParams.Mode in [gmSingle, gmCampaign, gmMapEd, gmReplaySingle] then
     if gGame.TextMission.HasText(HANDS_NAMES_OFFSET + fID) then
       if IsHuman then
         Result := gResTexts[TX_PLAYER_YOU] + ' (' + gGame.TextMission[HANDS_NAMES_OFFSET + fID] + ')'
@@ -1589,7 +1589,7 @@ begin
 
   //Try to take player name from mission text if we are in SP
   //Do not use names in MP to avoid confusion of AI players with real player niknames
-  if (gGameParams.GameMode in [gmSingle, gmCampaign, gmMapEd, gmReplaySingle])
+  if (gGameParams.Mode in [gmSingle, gmCampaign, gmMapEd, gmReplaySingle])
     and gGame.TextMission.HasText(HANDS_NAMES_OFFSET + fID) then
   begin
     if IsHuman then

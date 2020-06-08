@@ -789,7 +789,7 @@ procedure TKMHouse.SetPosition(const aPos: TKMPoint);
 var
   WasOnSnow, IsRallyPointSet, newPos: Boolean;
 begin
-  Assert(gGameParams.GameMode = gmMapEd);
+  Assert(gGameParams.Mode = gmMapEd);
 
   newPos := fPosition <> aPos;
 
@@ -1218,7 +1218,7 @@ procedure TKMHouse.OwnerUpdate(aOwner: TKMHandID; aMoveToNewOwner: Boolean = Fal
 begin
   if aMoveToNewOwner and (fOwner <> aOwner) then
   begin
-    Assert(gGameParams.GameMode = gmMapEd); // Allow to move existing House directly only in MapEd
+    Assert(gGameParams.Mode = gmMapEd); // Allow to move existing House directly only in MapEd
     gHands[fOwner].Houses.DeleteHouseFromList(Self);
     gHands[aOwner].Houses.AddHouseToList(Self);
   end;
@@ -1245,7 +1245,7 @@ begin
     UpdateDamage;
   end;
 
-  if gGameParams.GameMode <> gmMapEd then
+  if gGameParams.Mode <> gmMapEd then
   begin
     //Let AI and script know when the damage is already applied, so they see actual state
     gHands[Owner].AI.HouseAttackNotification(Self, TKMUnitWarrior(aAttacker));
@@ -2404,7 +2404,7 @@ begin
   Assert(aWare in [WARE_MIN .. WARE_MAX]);
 
   // We need to skip cheats in MP replays too, not just MP games, so don't use fGame.IsMultiplayer
-  if CHEATS_SP_ENABLED and (MULTIPLAYER_CHEATS or not (gGameParams.GameMode in [gmMulti, gmMultiSpectate, gmReplayMulti])) then
+  if CHEATS_SP_ENABLED and (MULTIPLAYER_CHEATS or not (gGameParams.Mode in [gmMulti, gmMultiSpectate, gmReplayMulti])) then
   begin
     // Check the cheat pattern
     cheatPattern := True;

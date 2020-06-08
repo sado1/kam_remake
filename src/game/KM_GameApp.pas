@@ -601,7 +601,7 @@ begin
   end;
 
   if Assigned(fOnGameEnd) then
-    fOnGameEnd(gGame.Params.GameMode);
+    fOnGameEnd(gGame.Params.Mode);
 end;
 
 
@@ -621,7 +621,7 @@ begin
   case aMsg of
     grWin,
     grDefeat,
-    grCancel:      case gGame.Params.GameMode of
+    grCancel:      case gGame.Params.Mode of
                       gmSingle:         fMainMenuInterface.PageChange(gpSinglePlayer);
                       gmCampaign:       if aTextMsg = '' then //Rely on text message (for campaign it should contain CampaignID)
                                           fMainMenuInterface.PageChange(gpMainMenu) //Goto main menu in case we fail campaing mission
@@ -783,7 +783,7 @@ begin
   // Get existing configuration
   SavedReplays := gGame.SavedReplays;
   gGame.SavedReplays := nil;
-  GameMode := gGame.Params.GameMode;
+  GameMode := gGame.Params.Mode;
   SaveFile := gGame.SaveFile;
   // Store GIP locally, to restore it later
   // GIP is the same for every checkpoint, that is why its not stored in the saved replay checkpoint, so we can reuse it
@@ -878,7 +878,7 @@ begin
   LoadGameFromScript(camp.GetMissionFile(aMap), camp.GetMissionTitle(aMap), 0, 0, camp, aMap, gmCampaign, -1, 0, aDifficulty);
 
   if Assigned(fOnGameStart) and (gGame <> nil) then
-    fOnGameStart(gGame.Params.GameMode);
+    fOnGameStart(gGame.Params.Mode);
 end;
 
 
@@ -890,7 +890,7 @@ begin
                      aAutoselectHumanLoc);
 
   if Assigned(fOnGameStart) and (gGame <> nil) then
-    fOnGameStart(gGame.Params.GameMode);
+    fOnGameStart(gGame.Params.Mode);
 end;
 
 
@@ -900,7 +900,7 @@ begin
   LoadGameFromSave(SaveName(aSaveName, EXT_SAVE_MAIN, False), gmSingle);
 
   if Assigned(fOnGameStart) and (gGame <> nil) then
-    fOnGameStart(gGame.Params.GameMode);
+    fOnGameStart(gGame.Params.Mode);
 end;
 
 
@@ -921,7 +921,7 @@ begin
     gGame.GamePlayInterface.GameStarted;
 
     if Assigned(fOnGameStart) and (gGame <> nil) then
-      fOnGameStart(gGame.Params.GameMode);
+      fOnGameStart(gGame.Params.Mode);
   end;
 end;
 
@@ -942,7 +942,7 @@ begin
   gGame.GamePlayInterface.GameStarted;
 
   if Assigned(fOnGameStart) and (gGame <> nil) then
-    fOnGameStart(gGame.Params.GameMode);
+    fOnGameStart(gGame.Params.Mode);
 end;
 
 
@@ -959,7 +959,7 @@ begin
     fMainMenuInterface.PageChange(gpError, 'Can not repeat last mission');
 
   if Assigned(fOnGameStart) and (gGame <> nil) then
-    fOnGameStart(gGame.Params.GameMode);
+    fOnGameStart(gGame.Params.Mode);
 
 end;
 
@@ -970,7 +970,7 @@ begin
   LoadGameFromScratch(aSizeX, aSizeY, gmSingle);
 
   if Assigned(fOnGameStart) and (gGame <> nil) then
-    fOnGameStart(gGame.Params.GameMode);
+    fOnGameStart(gGame.Params.Mode);
 
 end;
 
@@ -995,7 +995,7 @@ begin
   end;
 
   if Assigned(fOnGameStart) and (gGame <> nil) then
-    fOnGameStart(gGame.Params.GameMode);
+    fOnGameStart(gGame.Params.Mode);
 end;
 
 
@@ -1012,7 +1012,7 @@ begin
   LoadGameFromSave(aFilePath, gmReplaySingle); //Will be changed to gmReplayMulti depending on save contents
 
   if Assigned(fOnGameStart) and (gGame <> nil) then
-    fOnGameStart(gGame.Params.GameMode);
+    fOnGameStart(gGame.Params.Mode);
 end;
 
 
@@ -1021,7 +1021,7 @@ begin
   LoadGameFromSave(aSavPath, gmReplaySingle, aRplPath); //Will be changed to gmReplayMulti depending on save contents
 
   if Assigned(fOnGameStart) and (gGame <> nil) then
-    fOnGameStart(gGame.Params.GameMode);
+    fOnGameStart(gGame.Params.Mode);
 end;
 
 
@@ -1037,7 +1037,7 @@ begin
     Result := True;
 
     if Assigned(fOnGameStart) and (gGame <> nil) then
-      fOnGameStart(gGame.Params.GameMode);
+      fOnGameStart(gGame.Params.Mode);
   end;
 end;
 

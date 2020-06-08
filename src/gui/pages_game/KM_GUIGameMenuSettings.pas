@@ -102,7 +102,7 @@ end;
 
 procedure TKMGameMenuSettings.UpdateView;
 begin
-  CheckBox_ReplayAutopauseAtPTEnd.Enabled := (gGameParams.GameMode = gmReplayMulti) and gGame.IsPeaceTime;
+  CheckBox_ReplayAutopauseAtPTEnd.Enabled := (gGameParams.Mode = gmReplayMulti) and gGame.IsPeaceTime;
   CheckBox_AllyEnemy_ColorMode.Checked := gGameSettings.PlayersColorMode = pcmAllyEnemy;
 end;
 
@@ -124,7 +124,7 @@ begin
   CheckBox_AllyEnemy_ColorMode.Show;
   Inc(Top, 40);
 
-  if gGameParams.GameMode = gmReplayMulti then
+  if gGameParams.Mode = gmReplayMulti then
   begin
     CheckBox_ReplayAutopauseAtPTEnd.Top := Top;
     CheckBox_ReplayAutopauseAtPTEnd.Show;
@@ -132,7 +132,7 @@ begin
   end else
     CheckBox_ReplayAutopauseAtPTEnd.Hide;
 
-  if gGameParams.GameMode in [gmReplaySingle, gmReplayMulti, gmMultiSpectate] then
+  if gGameParams.Mode in [gmReplaySingle, gmReplayMulti, gmMultiSpectate] then
   begin
     CheckBox_ReplaySpecShowBeacons.Top := Top;
     CheckBox_ReplaySpecShowBeacons.Show;
@@ -169,12 +169,12 @@ begin
 
   if gGameParams.IsReplay then
     CheckBox_ReplaySpecShowBeacons.Checked := gGameSettings.ReplayShowBeacons
-  else if gGameParams.GameMode = gmMultiSpectate then
+  else if gGameParams.Mode = gmMultiSpectate then
     CheckBox_ReplaySpecShowBeacons.Checked := gGameSettings.SpecShowBeacons;
 
   TrackBar_Music.Enabled           := not CheckBox_MusicOff.Checked;
   CheckBox_ShuffleOn.Enabled       := not CheckBox_MusicOff.Checked;
-  CheckBox_ReplayAutopauseAtPTEnd.Enabled := (gGameParams.GameMode = gmReplayMulti) and gGame.IsPeaceTime;
+  CheckBox_ReplayAutopauseAtPTEnd.Enabled := (gGameParams.Mode = gmReplayMulti) and gGame.IsPeaceTime;
   UpdateControlsPosition;
 end;
 
@@ -202,7 +202,7 @@ begin
 
   if gGameParams.IsReplay then
     gGameSettings.ReplayShowBeacons   := CheckBox_ReplaySpecShowBeacons.Checked
-  else if gGameParams.GameMode = gmMultiSpectate then
+  else if gGameParams.Mode = gmMultiSpectate then
     gGameSettings.SpecShowBeacons   := CheckBox_ReplaySpecShowBeacons.Checked;
 
   gSoundPlayer.UpdateSoundVolume(gGameSettings.SoundFXVolume);

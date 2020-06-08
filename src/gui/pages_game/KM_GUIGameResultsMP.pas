@@ -1405,7 +1405,7 @@ begin
   if fGameResultMsg = grGameContinues then
   begin
     Button_BackToGame.DoSetVisible;
-    case gGameParams.GameMode of
+    case gGameParams.Mode of
       gmSingle,
       gmCampaign,
       gmReplaySingle: begin
@@ -1423,7 +1423,7 @@ begin
   begin
     Button_BackToGame.Hide;
     Button_Back.DoSetVisible;
-    case gGameParams.GameMode of
+    case gGameParams.Mode of
       gmSingle,
       gmCampaign,
       gmReplaySingle: begin

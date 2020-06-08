@@ -92,7 +92,7 @@ end;
 procedure TKMSpectator.UpdateFogOfWarIndex;
 begin
   //fGame = nil in Tests
-  if (gGameParams <> nil) and (gGameParams.GameMode in [gmMultiSpectate, gmMapEd, gmReplaySingle, gmReplayMulti]) then
+  if (gGameParams <> nil) and (gGameParams.Mode in [gmMultiSpectate, gmMapEd, gmReplaySingle, gmReplayMulti]) then
     if FOWIndex = -1 then
       fFogOfWar := fFogOfWarOpen
     else
@@ -210,7 +210,7 @@ begin
 
   if Result is TKMUnitWarrior then
   begin
-    if gGameParams.GameMode in [gmMultiSpectate, gmMapEd, gmReplaySingle, gmReplayMulti]  then
+    if gGameParams.Mode in [gmMultiSpectate, gmMapEd, gmReplaySingle, gmReplayMulti]  then
       G := gHands.GetGroupByMember(TKMUnitWarrior(Result))
     else
       G := gHands[fHandIndex].UnitGroups.GetGroupByMember(TKMUnitWarrior(Result));
@@ -238,7 +238,7 @@ procedure TKMSpectator.UpdateNewSelected(var aNewSelected: TObject; aAllowSelect
 var
   OwnerIndex: TKMHandID;
 begin
-  if gGameParams.GameMode in [gmMultiSpectate, gmMapEd, gmReplaySingle, gmReplayMulti] then
+  if gGameParams.Mode in [gmMultiSpectate, gmMapEd, gmReplaySingle, gmReplayMulti] then
     Exit;
 
   OwnerIndex := GetGameObjectOwnerIndex(aNewSelected);
@@ -358,10 +358,10 @@ end;
 
 procedure TKMSpectator.SetHandIndex(const Value: TKMHandID);
 begin
-  Assert(MULTIPLAYER_CHEATS or (gGameParams.GameMode <> gmMulti));
+  Assert(MULTIPLAYER_CHEATS or (gGameParams.Mode <> gmMulti));
   fHandIndex := Value;
 
-  if not (gGameParams.GameMode in [gmMultiSpectate, gmMapEd, gmReplaySingle, gmReplayMulti]) then
+  if not (gGameParams.Mode in [gmMultiSpectate, gmMapEd, gmReplaySingle, gmReplayMulti]) then
     Selected := nil;
 
   UpdateFogOfWarIndex;

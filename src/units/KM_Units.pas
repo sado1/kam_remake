@@ -1073,7 +1073,7 @@ begin
   YPaintPos := V.PosF.Y + UNIT_OFF_Y + V.SlideY;
 
   //Make fish/watersnakes more visible in the MapEd
-  if (gGameParams.GameMode = gmMapEd) and (fType in [utFish, utWatersnake, utSeastar]) then
+  if (gGameParams.Mode = gmMapEd) and (fType in [utFish, utWatersnake, utSeastar]) then
     gRenderAux.Circle(fPositionF.X - 0.5,
                       gTerrain.FlatToHeight(fPositionF.X - 0.5, fPositionF.Y - 0.5),
                       0.5, $30FF8000, $60FF8000);
@@ -1458,7 +1458,7 @@ procedure TKMUnit.OwnerUpdate(aOwner: TKMHandID; aMoveToNewOwner: Boolean = Fals
 begin
   if aMoveToNewOwner and (fOwner <> aOwner) then
   begin
-    Assert(gGameParams.GameMode = gmMapEd); // Allow to move existing Unit directly only in MapEd
+    Assert(gGameParams.Mode = gmMapEd); // Allow to move existing Unit directly only in MapEd
     gHands[fOwner].Units.DeleteUnitFromList(Self);
     gHands[aOwner].Units.AddUnitToList(Self);
   end;

@@ -12,7 +12,7 @@ type
 
   TKMGameParams = class
   private
-    fGameMode: TKMGameMode;
+    fMode: TKMGameMode;
     fMissionMode: TKMissionMode;
     fTick: Cardinal;
     fVisibleLayers: TKMMapVisibleLayerSet;
@@ -37,7 +37,7 @@ type
     constructor Create(aGameMode: TKMGameMode; out aSetGameTickEvent: TCardinalEvent; out aSetGameModeEvent: TKMGameModeSetEvent; out aSetMissionFileSP: TUnicodeStringEvent);
     destructor Destroy; override;
 
-    property GameMode: TKMGameMode read fGameMode;
+    property Mode: TKMGameMode read fMode;
     property MissionMode: TKMissionMode read fMissionMode write fMissionMode;
     property Tick: Cardinal read fTick;
     property VisibleLayers: TKMMapVisibleLayerSet read fVisibleLayers write fVisibleLayers;
@@ -87,7 +87,7 @@ begin
 
   fVisibleLayers := [mlObjects, mlHouses, mlUnits, mlOverlays];
 
-  fGameMode := aGameMode;
+  fMode := aGameMode;
   fTick := 0;
   fMissionDifficulty := mdNone;
   DynamicFOW := False;
@@ -142,7 +142,7 @@ end;
 
 procedure TKMGameParams.SetGameMode(aGameMode: TKMGameMode);
 begin
-  fGameMode := aGameMode;
+  fMode := aGameMode;
 end;
 
 
@@ -160,13 +160,13 @@ end;
 
 function TKMGameParams.IsMapEditor: Boolean;
 begin
-  Result := fGameMode = gmMapEd;
+  Result := fMode = gmMapEd;
 end;
 
 
 function TKMGameParams.IsCampaign: Boolean;
 begin
-  Result := fGameMode = gmCampaign;
+  Result := fMode = gmCampaign;
 end;
 
 
@@ -184,50 +184,50 @@ end;
 
 function TKMGameParams.IsMultiplayerGame: Boolean;
 begin
-  Result := fGameMode = gmMulti;
+  Result := fMode = gmMulti;
 end;
 
 
 // We often need to see if game is MP
 function TKMGameParams.IsMultiPlayerOrSpec: Boolean;
 begin
-  Result := fGameMode in [gmMulti, gmMultiSpectate];
+  Result := fMode in [gmMulti, gmMultiSpectate];
 end;
 
 
 function TKMGameParams.IsMultiplayer: Boolean;
 begin
-  Result := fGameMode in [gmMulti, gmMultiSpectate, gmReplayMulti];
+  Result := fMode in [gmMulti, gmMultiSpectate, gmReplayMulti];
 end;
 
 
 function TKMGameParams.IsSingleplayerGame: Boolean;
 begin
-  Result := fGameMode in [gmSingle, gmCampaign];
+  Result := fMode in [gmSingle, gmCampaign];
 end;
 
 
 function TKMGameParams.IsSingleplayer: Boolean;
 begin
-  Result := fGameMode in [gmSingle, gmCampaign, gmReplaySingle];
+  Result := fMode in [gmSingle, gmCampaign, gmReplaySingle];
 end;
 
 
 function TKMGameParams.IsNormalGame: Boolean;
 begin
-  Result := fGameMode in [gmSingle, gmCampaign, gmMulti];
+  Result := fMode in [gmSingle, gmCampaign, gmMulti];
 end;
 
 
 function TKMGameParams.IsReplay: Boolean;
 begin
-  Result := fGameMode in [gmReplaySingle, gmReplayMulti];
+  Result := fMode in [gmReplaySingle, gmReplayMulti];
 end;
 
 
 function TKMGameParams.IsReplayOrSpectate: Boolean;
 begin
-  Result := fGameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti];
+  Result := fMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti];
 end;
 
 

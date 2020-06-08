@@ -400,7 +400,7 @@ begin
     CheckBox_SaveExists.Enabled := FileExists(gGame.SaveName(Edit_Save.Text,
                                                              EXT_SAVE_MAIN,
                                                              (fUIMode in [umMP, umSpectate])
-                                                             or (ALLOW_SAVE_IN_REPLAY and (gGameParams.GameMode = gmReplayMulti))));
+                                                             or (ALLOW_SAVE_IN_REPLAY and (gGameParams.Mode = gmReplayMulti))));
     Label_SaveExists.Visible := CheckBox_SaveExists.Enabled;
     CheckBox_SaveExists.Checked := False;
     // we should protect ourselves from empty names and whitespaces at beggining and at end of name
@@ -617,7 +617,7 @@ begin
       Menu_Save_RefreshList(nil); // Need to call it at last one time to setup GUI even if there are no saves
       // Initiate refresh and process each new save added
       fSaves.Refresh(Menu_Save_RefreshList, (fUIMode in [umMP, umSpectate])
-                                            or (ALLOW_SAVE_IN_REPLAY and (gGameParams.GameMode = gmReplayMulti)));
+                                            or (ALLOW_SAVE_IN_REPLAY and (gGameParams.Mode = gmReplayMulti)));
       Panel_Save.Show;
       Label_MenuTitle.Caption := gResTexts[TX_MENU_SAVE_GAME];
       if fLastSaveName = '' then
@@ -1700,7 +1700,7 @@ begin
 
   if ShowStats then
   begin
-    if (gGameParams.GameMode in [gmMulti, gmMultiSpectate, gmReplayMulti]) or MP_RESULTS_IN_SP then
+    if (gGameParams.Mode in [gmMulti, gmMultiSpectate, gmReplayMulti]) or MP_RESULTS_IN_SP then
       fGuiGameResultsMP.Show(aMsg)
     else begin
       if ReinitStatsLastTime then
@@ -2496,14 +2496,14 @@ begin
     Dropbox_ReplayFOW.Clear;
 
     // Set dropbox in different ways
-    case gGameParams.GameMode of
+    case gGameParams.Mode of
       gmReplaySingle:   Replay_Single_SetPlayersDropbox; // Do not show team, as its meaningless
       // Use team info from ally states:
       // consider team as a group of hands where all members are allied to each other and not allied to any other hands.
       gmReplayMulti,
       gmMultiSpectate:  Replay_Multi_SetPlayersDropbox;
       else              raise Exception.Create(Format('Wrong game mode [%s], while spectating/watching replay',
-                                                      [GetEnumName(TypeInfo(TKMGameMode), Integer(gGameParams.GameMode))]));
+                                                      [GetEnumName(TypeInfo(TKMGameMode), Integer(gGameParams.Mode))]));
     end;
     fGuiGameSpectator := TKMGUIGameSpectator.Create(Panel_Main, Replay_JumpToPlayer, SetViewportPos);
     gMySpectator.HandID := Dropbox_ReplayFOW.GetTag(Dropbox_ReplayFOW.ItemIndex); //Update HandIndex
@@ -3183,7 +3183,7 @@ begin
 
     // As we don't have names for teams in SP we only allow showing team names in MP or MP replays
   if (Key = gResKeys[SC_SHOW_TEAMS].Key) then
-    if SHOW_UIDs or (fUIMode in [umMP, umSpectate]) or (gGameParams.GameMode = gmReplayMulti) then //Only MP replays
+    if SHOW_UIDs or (fUIMode in [umMP, umSpectate]) or (gGameParams.Mode = gmReplayMulti) then //Only MP replays
     begin
       fShowTeamNames := True;
       // Update it immediately so there's no 300ms lag after pressing the key

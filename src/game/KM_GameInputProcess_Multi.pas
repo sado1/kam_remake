@@ -191,7 +191,7 @@ var
   I, Tick: Cardinal;
 begin
   Assert(fDelay < MAX_SCHEDULE, 'Error, fDelay >= MAX_SCHEDULE');
-  if ((gGameParams.GameMode = gmMultiSpectate) and not (aCommand.CommandType in ALLOWED_BY_SPECTATORS)) // Do not allow spectators to command smth
+  if ((gGameParams.Mode = gmMultiSpectate) and not (aCommand.CommandType in ALLOWED_BY_SPECTATORS)) // Do not allow spectators to command smth
     or (gGameParams.IsMultiplayerGame                  // in multiplayer game
       and IsSelectedObjectCommand(aCommand.CommandType) // block only commands for selected object
       and (gMySpectator.Selected <> nil)                // if there is selected object
@@ -205,7 +205,7 @@ begin
     Exit;
   end;
 
-  if (gGameParams.GameMode <> gmMultiSpectate)
+  if (gGameParams.Mode <> gmMultiSpectate)
   and gMySpectator.Hand.AI.HasLost
   and not (aCommand.CommandType in ALLOWED_AFTER_DEFEAT) then
   begin

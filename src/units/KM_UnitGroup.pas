@@ -1217,7 +1217,7 @@ var I: Integer;
 begin
   if aMoveToNewOwner and (fOwner <> aOwner) then
   begin
-    Assert(gGameParams.GameMode = gmMapEd); // Allow to move existing Unit directly only in MapEd
+    Assert(gGameParams.Mode = gmMapEd); // Allow to move existing Unit directly only in MapEd
     gHands[fOwner].UnitGroups.DeleteGroupFromList(Self);
     gHands[aOwner].UnitGroups.AddGroupToList(Self);
   end;
@@ -2161,7 +2161,7 @@ begin
   if FlagBearer.IsDeadOrDying then Exit;
 
   //In MapEd units fTicker always the same, use Terrain instead
-  FlagStep := IfThen(gGameParams.GameMode = gmMapEd, gTerrain.AnimStep, fTicker);
+  FlagStep := IfThen(gGameParams.Mode = gmMapEd, gTerrain.AnimStep, fTicker);
 
   //Paint virtual members in MapEd mode
   for I := 1 to fMapEdCount - 1 do
@@ -2250,7 +2250,7 @@ end;
 
 procedure TKMUnitGroups.AddGroupToList(aGroup: TKMUnitGroup);
 begin
-  Assert(gGameParams.GameMode = gmMapEd); // Allow to add existing Group directly only in MapEd
+  Assert(gGameParams.Mode = gmMapEd); // Allow to add existing Group directly only in MapEd
   if aGroup <> nil then
     fGroups.Add(aGroup);
 end;
@@ -2258,7 +2258,7 @@ end;
 
 procedure TKMUnitGroups.DeleteGroupFromList(aGroup: TKMUnitGroup);
 begin
-  Assert(gGameParams.GameMode = gmMapEd); // Allow to delete existing Group directly only in MapEd
+  Assert(gGameParams.Mode = gmMapEd); // Allow to delete existing Group directly only in MapEd
   if (aGroup <> nil) then
     fGroups.Extract(aGroup);  // use Extract instead of Delete, cause Delete nils inner objects somehow
 end;
@@ -2462,7 +2462,7 @@ end;
 
 procedure TKMUnitGroups.RemAllGroups;
 begin
-  Assert(gGameParams.GameMode = gmMapEd);
+  Assert(gGameParams.Mode = gmMapEd);
   fGroups.Clear;
 end;
 

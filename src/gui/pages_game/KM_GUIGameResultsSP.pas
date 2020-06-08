@@ -130,7 +130,7 @@ var
   ShowAIResults: Boolean;
   Cap: UnicodeString;
 begin
-  fGameMode := gGameParams.GameMode;
+  fGameMode := gGameParams.Mode;
 
   //Remember which map we played so we could restart it
   fRepeatGameName := gGameParams.GameName;

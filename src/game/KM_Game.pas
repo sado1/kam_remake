@@ -338,7 +338,7 @@ begin
     end
     else
     begin
-      fGamePlayInterface := TKMGamePlayInterface.Create(aRender, UIMode[fParams.GameMode]);
+      fGamePlayInterface := TKMGamePlayInterface.Create(aRender, UIMode[fParams.Mode]);
       fGamePlayInterface.OnUserAction := UserAction;
       fActiveInterface := fGamePlayInterface;
     end;
@@ -479,7 +479,7 @@ var
   CampaignDataTypeFile: UnicodeString;
 begin
   gLog.AddTime('GameStart');
-  Assert(fParams.GameMode in [gmMulti, gmMultiSpectate, gmMapEd, gmSingle, gmCampaign]);
+  Assert(fParams.Mode in [gmMulti, gmMultiSpectate, gmMapEd, gmSingle, gmCampaign]);
 
   gRes.Units.ResetToDefaults;
   gRes.Wares.ResetToDefaults;
@@ -507,7 +507,7 @@ begin
 
   //Disable players in MP to skip their assets from loading by MissionParser
   //In SP all players are enabled by default
-  case fParams.GameMode of
+  case fParams.Mode of
     gmMulti, gmMultiSpectate:
               begin
                 gNetworking.ResetPacketsStats;
@@ -530,7 +530,7 @@ begin
   end;
 
   //Choose how we will parse the script
-  ParseMode := GAME_PARSE[fParams.GameMode];
+  ParseMode := GAME_PARSE[fParams.Mode];
 
   if fParams.IsMapEditor then
   begin
@@ -619,7 +619,7 @@ begin
     end;
 
 
-    case fParams.GameMode of
+    case fParams.Mode of
       gmMulti, gmMultiSpectate:
                 begin
                   fGameInputProcess := TKMGameInputProcess_Multi.Create(gipRecording, gNetworking);
@@ -670,7 +670,7 @@ begin
   //We need to make basesave.bas since we don't know the savegame name
   //until after user saves it, but we need to attach replay base to it.
   //Basesave is sort of temp we save to HDD instead of keeping in RAM
-  if fParams.GameMode in [gmSingle, gmCampaign, gmMulti, gmMultiSpectate] then
+  if fParams.Mode in [gmSingle, gmCampaign, gmMulti, gmMultiSpectate] then
     {$IFDEF PARALLEL_RUNNER}
       SaveGameToFile(SaveName('basesave_thread_'+IntToStr(THREAD_NUMBER), EXT_SAVE_BASE, fParams.IsMultiplayerOrSpec), UTCNow);
     {$ELSE}
@@ -962,7 +962,7 @@ begin
   //Attempt to save the game, but if the state is too messed up it might fail
   fSaveWorkerThread.fSynchronousExceptionMode := True; //Do saving synchronously in main thread
   try
-    if (fParams.GameMode in [gmSingle, gmCampaign, gmMulti, gmMultiSpectate])
+    if (fParams.Mode in [gmSingle, gmCampaign, gmMulti, gmMultiSpectate])
       and not (fGamePlayInterface.UIMode = umReplay) then //In case game mode was altered or loaded with logical error
     begin
       Save('crashreport', UTCNow);
@@ -1111,7 +1111,7 @@ begin
       gNetworking.OnPlayersSetup; //Update players panel
   end;
 
-  if fParams.GameMode = gmMultiSpectate then
+  if fParams.Mode = gmMultiSpectate then
     Exit;
 
   if (aHandIndex = gMySpectator.HandID)
@@ -1153,7 +1153,7 @@ procedure TKMGame.PlayerDefeat(aPlayerIndex: TKMHandID; aShowDefeatMessage: Bool
   end;
 
 begin
-  case fParams.GameMode of
+  case fParams.Mode of
     gmSingle, gmCampaign:
               if aPlayerIndex = gMySpectator.HandID then
               begin
@@ -2152,13 +2152,13 @@ begin
 
   //So we can allow loading of multiplayer saves in single player and vice versa we need to know which type THIS save is
   LoadStream.Read(SaveIsMultiplayer);
-  if SaveIsMultiplayer and (fParams.GameMode = gmReplaySingle) then
+  if SaveIsMultiplayer and (fParams.Mode = gmReplaySingle) then
     fSetGameModeEvent(gmReplayMulti); //We only know which it is once we've read the save file, so update it now
 
   //If the player loads a multiplayer save in singleplayer or replay mode, we require a mutex lock to prevent cheating
   //If we're loading in multiplayer mode we have already locked the mutex when entering multiplayer menu,
   //which is better than aborting loading in a multiplayer game (spoils it for everyone else too)
-  if SaveIsMultiplayer and (fParams.GameMode in [gmSingle, gmCampaign, gmReplaySingle, gmReplayMulti]) then
+  if SaveIsMultiplayer and (fParams.Mode in [gmSingle, gmCampaign, gmReplaySingle, gmReplayMulti]) then
     if gMain.LockMutex then
       fGameLockedMutex := True //Remember so we unlock it in Destroy
     else
@@ -2291,7 +2291,7 @@ begin
     end;
 
     //Load MP game local data
-    if fParams.GameMode = gmReplayMulti then
+    if fParams.Mode = gmReplayMulti then
     begin
       GameMPLocalData := TKMGameMPLocalData.Create;
       try
@@ -2376,7 +2376,7 @@ begin
   if fParams.IsMultiPlayerOrSpec then
     MultiplayerRig(False);
 
-  if fParams.GameMode in [gmSingle, gmCampaign, gmMulti, gmMultiSpectate] then
+  if fParams.Mode in [gmSingle, gmCampaign, gmMulti, gmMultiSpectate] then
   begin
     DeleteFile(SaveName('basesave', EXT_SAVE_BASE, fParams.IsMultiPlayerOrSpec));
     ForceDirectories(SavePath('basesave', fParams.IsMultiPlayerOrSpec)); //basesave directory could not exist at this moment, if this is the first game ever, f.e.
@@ -2556,7 +2556,7 @@ function TKMGame.CheckPauseGameAtTick: Boolean;
 begin
   Result := False;
 
-  if (fParams.GameMode = gmReplayMulti)
+  if (fParams.Mode = gmReplayMulti)
     and gGameSettings.ReplayAutopause
     and (fOptions.Peacetime * 600 = fParams.Tick + 1) then
   begin
@@ -2740,7 +2740,7 @@ begin
 
   try
     try
-      case fParams.GameMode of
+      case fParams.Mode of
         gmSingle,
         gmCampaign:       Result := PlayGameTick;
         gmMulti,

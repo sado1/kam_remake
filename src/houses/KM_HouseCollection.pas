@@ -134,7 +134,7 @@ end;
 
 procedure TKMHousesCollection.AddHouseToList(aHouse: TKMHouse);
 begin
-  Assert(gGameParams.GameMode = gmMapEd); // Allow to add existing House directly only in MapEd
+  Assert(gGameParams.Mode = gmMapEd); // Allow to add existing House directly only in MapEd
   if (aHouse <> nil) then
     fHouses.Add(aHouse);
 end;

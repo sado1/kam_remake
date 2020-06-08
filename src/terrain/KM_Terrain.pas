@@ -1089,7 +1089,7 @@ begin
   else
   begin
     // Actualize terrain for map editor (brushes have array which helps them make smooth transitions)
-    if (gGameParams.GameMode = gmMapEd) then
+    if (gGameParams.Mode = gmMapEd) then
       for I := 1 to fMapY do
         for J := 1 to fMapX do
           gGame.TerrainPainter.RMG2MapEditor(J,I, Land[I, J].BaseLayer.Terrain);
