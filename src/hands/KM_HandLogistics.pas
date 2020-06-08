@@ -12,7 +12,7 @@ uses
   Generics.Collections, Generics.Defaults, System.Hash,
   {$ENDIF}
   KM_Units, KM_Houses, KM_ResHouses,
-  KM_ResWares, KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Points,
+  KM_ResWares, KM_CommonClasses, KM_Defaults, KM_Points,
   BinaryHeapGen;
 
 

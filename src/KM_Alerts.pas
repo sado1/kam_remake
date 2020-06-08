@@ -69,7 +69,7 @@ type
 
 implementation
 uses
-  KM_Hand, KM_RenderPool, KM_HandsCollection, KM_Sound, KM_FogOfWar;
+  KM_Hand, KM_RenderPool, KM_HandsCollection, KM_Sound;
 
 
 type

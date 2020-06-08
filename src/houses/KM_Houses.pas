@@ -362,7 +362,7 @@ type
 implementation
 uses
   TypInfo, SysUtils, Math, KromUtils,
-  KM_Game, KM_GameParams, KM_Terrain, KM_RenderPool, KM_RenderAux, KM_Sound, KM_FogOfWar,
+  KM_Game, KM_GameParams, KM_Terrain, KM_RenderPool, KM_RenderAux, KM_Sound,
   KM_Hand, KM_HandsCollection, KM_HandLogistics,
   KM_UnitWarrior, KM_HouseWoodcutters,
   KM_Resource, KM_ResSound, KM_ResTexts, KM_ResUnits, KM_ResMapElements,
