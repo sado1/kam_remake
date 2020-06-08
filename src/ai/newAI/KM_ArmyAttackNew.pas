@@ -270,7 +270,7 @@ begin
   SetTargetGroup(nil);
   SetTargetHouse(nil);
   fTargetPosition := aLoc;
-  fWalkTimeLimit := gGameParams.GameTick + KMDistanceAbs(fTargetPosition.Loc, Position) * 5;
+  fWalkTimeLimit := gGameParams.Tick + KMDistanceAbs(fTargetPosition.Loc, Position) * 5;
 end;
 
 
@@ -764,8 +764,8 @@ begin
                           Byte(CG.OnPlace),
                           Byte(CG.InFight),
                           Order,
-                          Max(0, Integer(CG.WalkTimeLimit)   - Integer(gGameParams.GameTick)),
-                          Max(0, Integer(CG.AttackTimeLimit) - Integer(gGameParams.GameTick)),
+                          Max(0, Integer(CG.WalkTimeLimit)   - Integer(gGameParams.Tick)),
+                          Max(0, Integer(CG.AttackTimeLimit) - Integer(gGameParams.Tick)),
                           CG.Position.X, CG.Position.Y,
                           CG.TargetAim.X, CG.TargetAim.Y,
                           KMDistanceSqr(CG.TargetAim,CG.Position), KMDistanceAbs(CG.TargetAim,CG.Position),

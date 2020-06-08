@@ -2354,7 +2354,7 @@ begin
 
   bid.Value := aValue;
   bid.RouteStep := aRouteStep;
-  bid.CreatedAt := gGameParams.GameTick;
+  bid.CreatedAt := gGameParams.Tick;
   inherited Add(aKey, bid);
 end;
 
@@ -2370,7 +2370,7 @@ begin
   key.ToP := ToP;
   bid.Value := aValue;
   bid.RouteStep := aKind;
-  bid.CreatedAt := gGameParams.GameTick;
+  bid.CreatedAt := gGameParams.Tick;
   inherited Add(key, bid);
 end;
 
@@ -2388,7 +2388,7 @@ begin
   Result := False;
   if inherited TryGetValue(aKey, aBid) then
   begin
-    if aBid.IsExpired(gGameParams.GameTick) then //Don't return expired records
+    if aBid.IsExpired(gGameParams.Tick) then //Don't return expired records
       Remove(aKey) //Remove expired record
     else
       Exit(True); // We found value
@@ -2549,7 +2549,7 @@ begin
   begin
     bid := bidPair.Value;
 
-    if bid.IsExpired(gGameParams.GameTick) then
+    if bid.IsExpired(gGameParams.Tick) then
       fRemoveKeysList.Add(bidPair.Key); // its not safe to remove dictionary value in the loop, will cause desyncs
   end;
 

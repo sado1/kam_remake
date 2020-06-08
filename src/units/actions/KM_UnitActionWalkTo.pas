@@ -243,7 +243,7 @@ begin
     Exit;
   ExplanationLog.Add(Format(
   '%d'+#9+'%d:%d > %d:%d > %d:%d'+#9+Explanation+'',
-  [ gGameParams.GameTick,
+  [ gGameParams.Tick,
     fUnit.PrevPosition.X,
     fUnit.PrevPosition.Y,
     fUnit.CurrPosition.X,

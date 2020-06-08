@@ -119,7 +119,7 @@ begin
               //Prevent rate of fire exploit by making archers pause for longer if they shot recently
               Cycle := Max(gRes.Units[UnitType].UnitAnim[uaWork, Direction].Count, 1) - FiringDelay;
               if NeedsToReload(Cycle) then
-                Delay := Delay + Cycle - (gGameParams.GameTick - LastShootTime);
+                Delay := Delay + Cycle - (gGameParams.Tick - LastShootTime);
 
               SetActionLockedStay(Delay,uaWork); //Pretend to aim
 

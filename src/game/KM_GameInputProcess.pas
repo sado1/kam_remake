@@ -699,7 +699,7 @@ end;
 procedure TKMGameInputProcess.TakeCommand(const aCommand: TKMGameInputCommand);
 begin
   if gGame.IsStarted
-    and (gGameParams.GameTick > 0) then //We could get some commands even before 1st game update (on tick 0)
+    and (gGameParams.Tick > 0) then //We could get some commands even before 1st game update (on tick 0)
     DoTakeCommand(aCommand)
   else
     fPlannedCommands.Add(aCommand);
@@ -790,7 +790,7 @@ begin
       Exit;
 
     if gLog.CanLogCommands() and not DoSkipLogCommand(aCommand) then
-      gLog.LogCommands(Format('Tick: %6d Exec command: %s', [gGameParams.GameTick, GIPCommandToString(aCommand)]));
+      gLog.LogCommands(Format('Tick: %6d Exec command: %s', [gGameParams.Tick, GIPCommandToString(aCommand)]));
 
     case CommandType of
       gicArmyFeed:         SrcGroup.OrderFood(True);
@@ -1288,7 +1288,7 @@ begin
   Inc(fCount);
   if Length(fQueue) <= fCount then SetLength(fQueue, fCount + 128);
 
-  fQueue[fCount].Tick    := gGameParams.GameTick;
+  fQueue[fCount].Tick    := gGameParams.Tick;
   fQueue[fCount].Command := aCommand;
   //Skip random check generation. We do not want KaMRandom to be called here
   if SKIP_RNG_CHECKS_FOR_SOME_GIC and (aCommand.CommandType in SKIP_RANDOM_CHECKS_FOR) then

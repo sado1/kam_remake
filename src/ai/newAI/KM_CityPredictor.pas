@@ -709,7 +709,7 @@ begin
 
   // Change house requirements due to nonlinear delay, toons of exceptions and unlock order
   // Dont build wineyard too early
-  if (gGameParams.GameTick < WINEYARD_DELAY) then
+  if (gGameParams.Tick < WINEYARD_DELAY) then
     RequiredHouses[htWineyard] := 0;
   // Consideration of corn delay - only remove all required houses, builder will find the right one if they are not removed
   if UpdateFarmHistory() AND not gHands[fOwner].Locks.HouseBlocked[htFarm] then

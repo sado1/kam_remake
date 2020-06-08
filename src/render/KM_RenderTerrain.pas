@@ -383,14 +383,14 @@ begin
   if not gGameParams.IsMapEditor
     and (fClipRect = fVBOLastClipRect)
     and (fVBOLastFOW = aFOW)
-    and (gGameParams.GameTick = fVBOLastGameTick) then
+    and (gGameParams.Tick = fVBOLastGameTick) then
     Exit;
   {$IFDEF PERFLOG}
   gPerfLogs.SectionEnter(psFrameUpdateVBO);
   {$ENDIF}
 
   fVBOLastClipRect := fClipRect;
-  fVBOLastGameTick := gGameParams.GameTick;
+  fVBOLastGameTick := gGameParams.Tick;
   fVBOLastFOW := aFOW;
 
   fLastBindVBOArrayType := vatNone;

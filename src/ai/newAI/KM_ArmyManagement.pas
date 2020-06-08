@@ -263,7 +263,7 @@ begin
           begin
             Barracks[K].Equip(UT, 1);
             Dec(GroupReq[GT]);
-            pEquippedTime^ := gGameParams.GameTick; // Only reset it when we actually trained something (in IronThenLeather mode we don't count them separately)
+            pEquippedTime^ := gGameParams.Tick; // Only reset it when we actually trained something (in IronThenLeather mode we don't count them separately)
           end;
         end;
       end;
@@ -591,7 +591,7 @@ begin
     begin
       AG := GetGroups(1);
       for K := 0 to Attacks.Count - 1 do
-        if Attacks.CanOccur(K, AG.MenAvailable, AG.GroupsAvailable, gGameParams.GameTick) then //Check conditions are right
+        if Attacks.CanOccur(K, AG.MenAvailable, AG.GroupsAvailable, gGameParams.Tick) then //Check conditions are right
         begin
           FilterGroups(Attacks[K].TotalMen, Attacks[K].GroupAmounts, AG);
           if FindScriptedTarget(AG.GroupArr[0], Attacks[K].Target, Attacks[K].CustomPosition, TargetPoint) then

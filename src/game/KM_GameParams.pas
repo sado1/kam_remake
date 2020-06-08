@@ -14,7 +14,7 @@ type
   private
     fGameMode: TKMGameMode;
     fMissionMode: TKMissionMode;
-    fGameTick: Cardinal;
+    fTick: Cardinal;
     fVisibleLayers: TKMMapVisibleLayerSet;
 
     fGameName: UnicodeString;
@@ -39,7 +39,7 @@ type
 
     property GameMode: TKMGameMode read fGameMode;
     property MissionMode: TKMissionMode read fMissionMode write fMissionMode;
-    property GameTick: Cardinal read fGameTick;
+    property Tick: Cardinal read fTick;
     property VisibleLayers: TKMMapVisibleLayerSet read fVisibleLayers write fVisibleLayers;
 
     property GameName: UnicodeString read fGameName write fGameName;
@@ -88,7 +88,7 @@ begin
   fVisibleLayers := [mlObjects, mlHouses, mlUnits, mlOverlays];
 
   fGameMode := aGameMode;
-  fGameTick := 0;
+  fTick := 0;
   fMissionDifficulty := mdNone;
   DynamicFOW := False;
 
@@ -148,7 +148,7 @@ end;
 
 procedure TKMGameParams.SetGameTick(aGameTick: Cardinal);
 begin
-  fGameTick := aGameTick;
+  fTick := aGameTick;
 end;
 
 

@@ -401,14 +401,14 @@ end;
 //Used to prevent rate of fire exploit
 function TKMUnitWarrior.NeedsToReload(aFightAnimLength: Byte): Boolean;
 begin
-  Result := (fLastShootTime <> 0) and ((gGameParams.GameTick - fLastShootTime) < aFightAnimLength);
+  Result := (fLastShootTime <> 0) and ((gGameParams.Tick - fLastShootTime) < aFightAnimLength);
 end;
 
 
 //Used to prevent rate of fire exploit
 procedure TKMUnitWarrior.SetLastShootTime;
 begin
-  fLastShootTime := gGameParams.GameTick;
+  fLastShootTime := gGameParams.Tick;
 end;
 
 
@@ -647,7 +647,7 @@ begin
   Cycle := Max(gRes.Units[UnitType].UnitAnim[aAction, Direction].Count, 1);
   if (TKMUnitWarrior(Self).IsRanged) and TKMUnitWarrior(Self).NeedsToReload(Cycle) then
     //Skip the unit's animation forward to 1 step AFTER firing
-    Step := (FiringDelay + (gGameParams.GameTick - TKMUnitWarrior(Self).LastShootTime)) mod Cycle;
+    Step := (FiringDelay + (gGameParams.Tick - TKMUnitWarrior(Self).LastShootTime)) mod Cycle;
 
   if (Action is TKMUnitActionWalkTo) and not TKMUnitActionWalkTo(Action).CanAbandonExternal then
     raise ELocError.Create('Unit fight overrides walk', fCurrPosition);
