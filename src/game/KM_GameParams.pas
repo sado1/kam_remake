@@ -26,8 +26,8 @@ type
 
     fDynamicFOW: Boolean;
 
-    procedure SetGameTick(aGameTick: Cardinal);
-    procedure SetGameMode(aGameMode: TKMGameMode);
+    procedure SetTick(aGameTick: Cardinal);
+    procedure SetMode(aGameMode: TKMGameMode);
     function GetMissionFile: UnicodeString;
     procedure SetMissionFileSP(const aMissionFileSP: UnicodeString);
 
@@ -92,8 +92,8 @@ begin
   fMissionDifficulty := mdNone;
   DynamicFOW := False;
 
-  aSetGameTickEvent := SetGameTick;
-  aSetGameModeEvent := SetGameMode;
+  aSetGameTickEvent := SetTick;
+  aSetGameModeEvent := SetMode;
   aSetMissionFileSP := SetMissionFileSP;
 
   gGameParams := Self;
@@ -111,7 +111,7 @@ end;
 {$IFDEF RUNNER}
 procedure TKMGameParams.GetGameModeSetEvent(out aSetGameModeEvent: TKMGameModeSetEvent);
 begin
-  aSetGameModeEvent := SetGameMode;
+  aSetGameModeEvent := SetMode;
 end;
 {$ENDIF}
 
@@ -140,13 +140,13 @@ begin
 end;
 
 
-procedure TKMGameParams.SetGameMode(aGameMode: TKMGameMode);
+procedure TKMGameParams.SetMode(aGameMode: TKMGameMode);
 begin
   fMode := aGameMode;
 end;
 
 
-procedure TKMGameParams.SetGameTick(aGameTick: Cardinal);
+procedure TKMGameParams.SetTick(aGameTick: Cardinal);
 begin
   fTick := aGameTick;
 end;
