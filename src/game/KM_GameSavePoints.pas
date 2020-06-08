@@ -43,6 +43,8 @@ type
 
     procedure NewSavePoint(aStream: TKMemoryStream; aTick: Cardinal);
 
+    function LatestPointTickBefore(aTick: Cardinal): Cardinal;
+
     procedure Save(aSaveStream: TKMemoryStream);
     procedure Load(aLoadStream: TKMemoryStream);
 
@@ -178,6 +180,19 @@ begin
   end;
 end;
 
+
+// Get latest savepoint tick, before aTick
+// 0 - if not found
+function TKMSavePointCollection.LatestPointTickBefore(aTick: Cardinal): Cardinal;
+var
+  key: Cardinal;
+begin
+  Result := 0;
+
+  for key in fSavePoints.Keys do
+    if (key <= aTick) and (key > Result) then
+      Result := key;
+end;
 
 procedure TKMSavePointCollection.Load(aLoadStream: TKMemoryStream);
 var

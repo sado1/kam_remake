@@ -94,6 +94,7 @@ type
     procedure NewReplay(const aFilePath: UnicodeString);
     procedure NewSaveAndReplay(const aSavPath, aRplPath: UnicodeString);
     function TryLoadSavePoint(aTick: Integer): Boolean;
+    procedure LoadPrevSavePoint;
 
     procedure SaveMapEditor(const aPathName: UnicodeString);
 
@@ -1025,20 +1026,28 @@ begin
 end;
 
 
+// Good for debug, when need to load savepoint from debugger before known crash during debugging tick
+procedure TKMGameApp.LoadPrevSavePoint;
+begin
+  if (gGame = nil) or (gGame.SavePoints = nil) then Exit;
+
+  TryLoadSavePoint(gGame.SavePoints.LatestPointTickBefore(gGame.Params.Tick));
+end;
+
+
 function TKMGameApp.TryLoadSavePoint(aTick: Integer): Boolean;
 begin
   Result := False;
 
   if (gGame = nil) or (gGame.SavePoints = nil) then Exit;
   
-  if gGame.SavePoints.Contains(aTick) then
-  begin
-    LoadGameSavePoint(aTick);
-    Result := True;
+  if not gGame.SavePoints.Contains(aTick) then Exit;
 
-    if Assigned(fOnGameStart) and (gGame <> nil) then
-      fOnGameStart(gGame.Params.Mode);
-  end;
+  LoadGameSavePoint(aTick);
+  Result := True;
+
+  if Assigned(fOnGameStart) and (gGame <> nil) then
+    fOnGameStart(gGame.Params.Mode);
 end;
 
 
