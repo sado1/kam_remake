@@ -57,7 +57,7 @@ type
     //Should be saved
     fCampaignMap: Byte;         //Which campaign map it is, so we can unlock next one on victory
     fCampaignName: TKMCampaignId;  //Is this a game part of some campaign
-    fGameSpeedGIP: Single; //GameSpeed, recorded to GIP, could be requested by scripts
+    fSpeedGIP: Single; //GameSpeed, recorded to GIP, could be requested by scripts
     fGameSpeedChangeAllowed: Boolean; //Is game speed change allowed?
 
     fBlockGetPointer: Boolean; //?? should be saved ??
@@ -198,7 +198,7 @@ type
     property CampaignName: TKMCampaignId read fCampaignName;
     property CampaignMap: Byte read fCampaignMap;
     property SpeedActual: Single read fSpeedActual;
-    property GameSpeedGIP: Single read fGameSpeedGIP;
+    property SpeedGIP: Single read fSpeedGIP;
     property GameSpeedChangeAllowed: Boolean read fGameSpeedChangeAllowed write fGameSpeedChangeAllowed;
     property GameTickDuration: Single read GetGameTickDuration;
     property SavedReplays: TKMSavePointCollection read fSavePoints write fSavePoints;
@@ -1668,7 +1668,7 @@ procedure TKMGame.UpdateClockUI;
 begin
   //don't show speed clock in MP since you can't turn it on/off
   if IsSpeedUpAllowed or gGameSettings.ShowGameTime or SHOW_GAME_TICK then
-    fGamePlayInterface.UpdateClock(fSpeedActual, fGameSpeedGIP, fParams.IsReplay);
+    fGamePlayInterface.UpdateClock(fSpeedActual, fSpeedGIP, fParams.IsReplay);
 end;
 
 
@@ -1676,7 +1676,7 @@ procedure TKMGame.SetGameSpeedGIP(aSpeed: Single; aUpdateActual: Boolean = False
 var
   speedChanged: Boolean;
 begin
-  speedChanged := fGameSpeedGIP <> aSpeed;
+  speedChanged := fSpeedGIP <> aSpeed;
 
   //Update gameOptions SpeedPT / SpeedAfterPT for MP game
   if fParams.IsMultiPlayerOrSpec then
@@ -1687,7 +1687,7 @@ begin
       fOptions.SpeedAfterPT := aSpeed;
   end;
 
-  fGameSpeedGIP := aSpeed;
+  fSpeedGIP := aSpeed;
   if aUpdateActual then
     SetSpeedActual(aSpeed) //will also UpdateClockUI
   else
@@ -1916,7 +1916,7 @@ begin
   aSaveStream.Write(fCampaignMap);
 
   aSaveStream.Write(fParams.DynamicFOW);
-  aSaveStream.Write(fGameSpeedGIP);
+  aSaveStream.Write(fSpeedGIP);
   aSaveStream.Write(fGameSpeedChangeAllowed);
 
   //We need to know which mission/savegame to try to restart. This is unused in MP
@@ -2175,11 +2175,11 @@ begin
 
   LoadStream.Read(dynamicFOW);
   fParams.DynamicFOW := dynamicFOW;
-  LoadStream.Read(fGameSpeedGIP);
+  LoadStream.Read(fSpeedGIP);
 
   // Set game actual speed, so we will have same speed after game load as it was when game was saved
   if not fParams.IsReplay then
-    SetSpeedActualValue(fGameSpeedGIP)
+    SetSpeedActualValue(fSpeedGIP)
   else
     UpdateClockUI; //To show actual game speed in the replay
 
@@ -2758,7 +2758,7 @@ begin
                               else
                               begin
                                 gipMP.WaitingForConfirmation(fParams.Tick);
-                                if gipMP.NumberConsecutiveWaits > Max(10, Round(fGameSpeedGIP)) then
+                                if gipMP.NumberConsecutiveWaits > Max(10, Round(fSpeedGIP)) then
                                   WaitingPlayersDisplay(True);
                               end;
                               gipMP.UpdateState(fParams.Tick); //Do maintenance
