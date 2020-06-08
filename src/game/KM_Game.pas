@@ -38,7 +38,7 @@ type
     fIsExiting: Boolean; //Set this to true on Exit and unit/house pointers will be released without cross-checking
     fIsPaused: Boolean;
     fSpeedActual: Single; //Actual speedup value, used to play the game
-    fGameSpeedMultiplier: Word; //How many ticks are compressed into one
+    fSpeedMultiplier: Word; //How many ticks are compressed into one
     fWaitingForNetwork: Boolean; //Indicates that we are waiting for other players commands in MP
     fAdvanceFrame: Boolean; //Replay variable to advance 1 frame, afterwards set to false
     fSaveFile: UnicodeString;  //Relative pathname to savegame we are playing, so it gets saved to crashreport
@@ -1734,12 +1734,12 @@ begin
   //by doing several updates per timer tick
   if fSpeedActual > 5 then
   begin
-    fGameSpeedMultiplier := Round(fSpeedActual / 4);
-    fTimerGame.Interval := Round(gGameSettings.SpeedPace / fSpeedActual * fGameSpeedMultiplier);
+    fSpeedMultiplier := Round(fSpeedActual / 4);
+    fTimerGame.Interval := Round(gGameSettings.SpeedPace / fSpeedActual * fSpeedMultiplier);
   end
   else
   begin
-    fGameSpeedMultiplier := 1;
+    fSpeedMultiplier := 1;
     fTimerGame.Interval := Round(gGameSettings.SpeedPace / fSpeedActual);
   end;
 
@@ -2484,7 +2484,7 @@ begin
   else
   begin
     // Always play several ticks per update. This is more convinient while using debugger
-    for I := 1 to fGameSpeedMultiplier - 1 do // 1 Tick we already played
+    for I := 1 to fSpeedMultiplier - 1 do // 1 Tick we already played
       DoUpdateGame;
   end;
 end;
