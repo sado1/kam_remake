@@ -2681,8 +2681,9 @@ begin
 
     //Issue stored commands
     fGameInputProcess.ReplayTimer(fParams.Tick);
-    if fParams.Tick > 1 then
-      KaMRandom(MaxInt, 'TKMGameInputProcess.StoreCommand');
+    //Used when need to run Runner replays sometimes (we could make replay at tick 1 and then need to 'simulate' gicTempDoNothing GIP cmd
+//    if AGGRESSIVE_REPLAYS and (fParams.Tick > 1) then
+//      KaMRandom(MaxInt, 'TKMGameInputProcess.StoreCommand');
 
     if gGame = nil then
       Exit; //Quit if the game was stopped by a replay mismatch
