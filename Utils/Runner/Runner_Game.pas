@@ -1229,12 +1229,16 @@ begin
                             for PL2 := 0 to gHands.Count - 1 do
                             begin
                               if PL1 = PL2 then Continue;
-                              
+
                               if playersTeam[PL1] = playersTeam[PL2] then
                                 gGame.GameInputProcess.CmdPlayerAllianceSet(PL1, PL2, atAlly)
                               else
                                 gGame.GameInputProcess.CmdPlayerAllianceSet(PL1, PL2, atEnemy);
                             end;
+
+                          //Add default goals for all players after alliances were set
+                          for PL1 := 0 to gHands.Count - 1 do
+                            gGame.GameInputProcess.CmdPlayerAddDefaultGoals(PL1, MapsType <> rmtFight);
                         end;
     end;
 

@@ -105,6 +105,7 @@ type
     gicGamePlayerChange,     //Players can be changed to AI when loading a save and player name could be changed
     gicGamePlayerDefeat,     //Player can be defeated after intentional quit from the game
     gicGamePlayerAllianceSet,//Set player alliance to other player
+    gicGamePlayerAddDefGoals,//Set player default goals
 
     //VII.
     gicScriptConsoleCommand,
@@ -141,7 +142,8 @@ const
   ALLOWED_AFTER_DEFEAT: set of TKMGameInputCommandType =
     [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameLoadSave, gicGameMessageLogRead, gicTempDoNothing];
   ALLOWED_IN_CINEMATIC: set of TKMGameInputCommandType =
-    [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameMessageLogRead, gicGamePlayerAllianceSet, gicTempDoNothing];
+    [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameMessageLogRead,
+     gicGamePlayerAllianceSet, gicGamePlayerAddDefGoals, gicTempDoNothing];
   ALLOWED_BY_SPECTATORS: set of TKMGameInputCommandType =
     [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameLoadSave, gicGamePlayerDefeat, gicTempDoNothing];
   //Those commands should not have random check, because they they are not strictly happen, depends of player config and actions
@@ -251,6 +253,7 @@ const
     gicpt_Ansi1Int2,// gicGamePlayerChange
     gicpt_Int1,     // gicGamePlayerDefeat
     gicpt_Int3,     // gicGamePlayerAllianceSet
+    gicpt_Int2,     // gicGameSetDefaultGoals
     //VII.     Scripting commands
     gicpt_Ansi1Uni4,
     //VIII.    Temporary and debug commands
@@ -359,6 +362,7 @@ type
     procedure CmdGame(aCommandType: TKMGameInputCommandType; aValue: Single); overload;
 
     procedure CmdPlayerAllianceSet(aForPlayer, aToPlayer: TKMHandID; aAllianceType: TKMAllianceType);
+    procedure CmdPlayerAddDefaultGoals(aPlayer: TKMHandID; aBuilding: Boolean);
     procedure CmdPlayerChanged(aPlayer: TKMHandID; aType: TKMHandType; aPlayerNikname: AnsiString);
 
     procedure CmdTemp(aCommandType: TKMGameInputCommandType; const aLoc: TKMPoint); overload;
@@ -899,6 +903,7 @@ begin
                                     gHands[Params[1]].AI.Defeat(False);
                                   end;
       gicGamePlayerAllianceSet:   gHands[Params[1]].Alliances[Params[2]] := TKMAllianceType(Params[3]);
+      gicGamePlayerAddDefGoals:     gHands[Params[1]].AI.AddDefaultGoals(IntToBool(Params[2]));
       gicScriptConsoleCommand:    gScriptEvents.CallConsoleCommand(HandIndex, AnsiStrParam, UnicodeStrParams);
       else                        raise Exception.Create('Unexpected gic command');
     end;
@@ -1157,6 +1162,12 @@ end;
 procedure TKMGameInputProcess.CmdPlayerAllianceSet(aForPlayer, aToPlayer: TKMHandID; aAllianceType: TKMAllianceType);
 begin
   TakeCommand(MakeCommand(gicGamePlayerAllianceSet, aForPlayer, aToPlayer, Byte(aAllianceType)));
+end;
+
+
+procedure TKMGameInputProcess.CmdPlayerAddDefaultGoals(aPlayer: TKMHandID; aBuilding: Boolean);
+begin
+  TakeCommand(MakeCommand(gicGamePlayerAddDefGoals, aPlayer, Byte(aBuilding)));
 end;
 
 
