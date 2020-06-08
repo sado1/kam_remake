@@ -636,7 +636,7 @@ begin
                       if gGame.Params.IsMultiPlayerOrSpec then
                         //After Error page User will go to the main menu, but Mutex will be still locked.
                         //We will need to unlock it on gGame destroy, so mark it with GameLockedMutex
-                        gGame.GameLockedMutex := True;
+                        gGame.LockedMutex := True;
                       fMainMenuInterface.PageChange(gpError, aTextMsg);
                     end;
     grSilent:      ;//Used when loading new savegame from gameplay UI

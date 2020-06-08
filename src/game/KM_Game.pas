@@ -42,7 +42,7 @@ type
     fWaitingForNetwork: Boolean; //Indicates that we are waiting for other players commands in MP
     fAdvanceFrame: Boolean; //Replay variable to advance 1 frame, afterwards set to false
     fSaveFile: UnicodeString;  //Relative pathname to savegame we are playing, so it gets saved to crashreport
-    fGameLockedMutex: Boolean;
+    fLockedMutex: Boolean;
     fOverlayText: array[0..MAX_HANDS] of UnicodeString; //Needed for replays. Not saved since it's translated
     fIgnoreConsistencyCheckErrors: Boolean; // User can ignore all consistency check errors while watching SP replay
 
@@ -217,7 +217,7 @@ type
     property SkipReplayEndCheck: Boolean read fSkipReplayEndCheck write fSkipReplayEndCheck;
     property IgnoreConsistencyCheckErrors: Boolean read fIgnoreConsistencyCheckErrors;
 
-    property GameLockedMutex: Boolean read fGameLockedMutex write fGameLockedMutex;
+    property LockedMutex: Boolean read fLockedMutex write fLockedMutex;
 
     function GetNewUID: Integer;
     function GetNormalSpeed: Single;
@@ -399,7 +399,7 @@ begin
   //We might have crashed part way through .Create, so we can't assume ANYTHING exists here.
   //Doing so causes a 2nd exception which overrides 1st. Hence check <> nil on everything except Frees, TObject.Free does that already.
 
-  if fGameLockedMutex then gMain.UnlockMutex;
+  if fLockedMutex then gMain.UnlockMutex;
   if fTimerGame <> nil then fTimerGame.Enabled := False;
   fIsExiting := True;
 
@@ -2160,7 +2160,7 @@ begin
   //which is better than aborting loading in a multiplayer game (spoils it for everyone else too)
   if SaveIsMultiplayer and (fParams.Mode in [gmSingle, gmCampaign, gmReplaySingle, gmReplayMulti]) then
     if gMain.LockMutex then
-      fGameLockedMutex := True //Remember so we unlock it in Destroy
+      fLockedMutex := True //Remember so we unlock it in Destroy
     else
       //Abort loading (exception will be caught in gGameApp and shown to the user)
       raise Exception.Create(gResTexts[TX_MULTIPLE_INSTANCES]);
