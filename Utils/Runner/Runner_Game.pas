@@ -304,9 +304,10 @@ type
 implementation
 uses
   TypInfo, StrUtils, KM_CampaignTypes,
-  KM_HandSpectator, KM_ResWares, KM_ResHouses, KM_Hand, KM_UnitsCollection, KM_UnitGroup, KM_GameSavedReplays, KM_Settings,
+  KM_HandSpectator, KM_ResWares, KM_ResHouses, KM_Hand, KM_UnitsCollection, KM_UnitGroup,
+  KM_GameSavePoints,
+  KM_Settings,
   KM_CommonTypes, KM_MapTypes, KM_RandomChecks, KM_FileIO, KM_Game, KM_GameInputProcess, KM_GameTypes, KM_InterfaceGame;
-
 
 
 

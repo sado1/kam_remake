@@ -1,4 +1,4 @@
-unit KM_GameSavedReplays;
+unit KM_GameSavePoints;
 {$I KaM_Remake.inc}
 interface
 uses
