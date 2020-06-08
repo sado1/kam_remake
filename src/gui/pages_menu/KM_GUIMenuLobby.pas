@@ -1645,6 +1645,8 @@ var
   FirstUnused: Boolean;
   AIOnlyColors: TKMCardinalArray;
   colorDist: Single;
+  players: set of Byte;
+  playersCnt, startLoc, rngPlayersTeam: Integer;
 begin
   UpdateMappings;
 
@@ -1903,13 +1905,51 @@ begin
   begin
     fMinimap.Update(not fNetworking.MapInfo.TxtInfo.BlockFullMapPreview);
     MinimapView.SetMinimap(fMinimap);
+
+    // We want to show teams even if player did not chose his location
+    // It possible if number of players with random loc = number of free locs and they all have same team chosen
+    players := [];
+    playersCnt := 0;
+    rngPlayersTeam := 0;
+
+    // We assume locs are in a row for now. From 1 to LocCount
+    for I := 1 to fNetworking.MapInfo.LocCount do
+      begin
+        Include(players, I);
+        Inc(playersCnt);
+      end;
+
+    // Find rngPlayersTeam
+    for I := 1 to gNetworking.NetPlayers.Count do
+    begin
+      startLoc := gNetworking.NetPlayers[I].StartLocation;
+      if startLoc > 0 then //Not LOC_RANDOM and not LOC_SPECTATE
+      begin
+        Exclude(players, I);
+        Dec(playersCnt);
+      end
+      else
+      if (startLoc = LOC_RANDOM)
+        and (fNetworking.NetPlayers[I].Team <> 0)
+        and ((rngPlayersTeam = 0) or (rngPlayersTeam = fNetworking.NetPlayers[I].Team)) then
+      begin
+        Dec(playersCnt);
+        rngPlayersTeam := fNetworking.NetPlayers[I].Team;
+      end;
+    end;
+
     for I := 0 to MAX_HANDS - 1 do
     begin
       ID := fNetworking.NetPlayers.StartingLocToLocal(I+1);
       if ID <> -1 then
         fMinimap.HandTeam[I] := fNetworking.NetPlayers[ID].Team
       else
-        fMinimap.HandTeam[I] := 0;
+      begin
+        if (playersCnt = 0) then
+          fMinimap.HandTeam[I] := rngPlayersTeam
+        else
+          fMinimap.HandTeam[I] := 0; // We can't set rng team for player without loc chosen
+      end;
     end;
   end;
 
