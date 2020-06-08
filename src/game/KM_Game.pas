@@ -70,7 +70,7 @@ type
 
     //DO not save
     fSpeedChangeTick: Single;
-    fGameSpeedChangeTime: Cardinal; //time of last game speed change
+    fSpeedChangeTime: Cardinal; //time of last game speed change
     fPausedTicksCnt: Cardinal;
 
     fLastTimeUserAction: Cardinal;
@@ -305,7 +305,7 @@ begin
   fWaitingForNetwork := False;
   fOptions  := TKMGameOptions.Create;
   fSpeedChangeTick := 0;
-  fGameSpeedChangeTime := 0;
+  fSpeedChangeTime := 0;
   fGameSpeedChangeAllowed := True;
   fPausedTicksCnt := 0;
   fBlockGetPointer := False;
@@ -354,7 +354,7 @@ begin
     fTimerGame.Enabled := True;
   end;
 
-  fGameSpeedChangeTime := TimeGet;
+  fSpeedChangeTime := TimeGet;
 
   //Here comes terrain/mission init
   SetKaMSeed(4); //Every time the game will be the same as previous. Good for debug.
@@ -2431,7 +2431,7 @@ var
   TimeSince: Cardinal;
 begin
   //Lets calculate tick, that shoud be at that moment in theory, depending of speed multiplier and game duration
-  TimeSince := GetTimeSince(fGameSpeedChangeTime);
+  TimeSince := GetTimeSince(fSpeedChangeTime);
   CalculatedTick := TimeSince*fSpeedActual/gGameSettings.SpeedPace - fPausedTicksCnt;
   //Calc how far behind are we, in ticks
   Result := CalculatedTick + fSpeedChangeTick - fParams.Tick;
@@ -2448,7 +2448,7 @@ begin
     // Important for MP game with many players, but can be omitted for SP and MP with only 1 player
     fSpeedChangeTick := fSpeedChangeTick + TicksBehind;
   //set fGameSpeedChangeTime after we invoke GetTicksBehindCnt !
-  fGameSpeedChangeTime := TimeGet;
+  fSpeedChangeTime := TimeGet;
   fPausedTicksCnt := 0;
 end;
 
