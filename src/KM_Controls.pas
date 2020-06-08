@@ -2279,10 +2279,10 @@ var
 begin
   Inc(CtrlPaintCount);
 
-  if SHOW_CONTROLS_FOCUS and (csFocus in State) then
+  if SHOW_FOCUSED_CONTROL and (csFocus in State) then
     TKMRenderUI.WriteOutline(AbsLeft-2, AbsTop-2, Width+4, Height+4, 2, $FF00D0FF);
 
-  if MODE_DESIGN_CONTROLS and (csOver in State) then
+  if (SHOW_CONTROL_OVER or MODE_DESIGN_CONTROLS) and (csOver in State) then
     TKMRenderUI.WriteOutline(AbsLeft-2, AbsTop-2, Width+4, Height+4, 2, $FFFFD000);
 
   if SHOW_CONTROLS_ID then

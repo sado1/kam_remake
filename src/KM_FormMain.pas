@@ -191,6 +191,8 @@ type
     Label11: TLabel;
     Label12: TLabel;
     seCustomSeed: TSpinEdit;
+    chkUIFocusedControl: TCheckBox;
+    chkUIControlOver: TCheckBox;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -1089,6 +1091,8 @@ begin
   SHOW_CONTROLS_OVERLAY := chkUIControlsBounds.Checked;
   SHOW_TEXT_OUTLINES := chkUITextBounds.Checked;
   SHOW_CONTROLS_ID := chkUIControlsID.Checked;
+  SHOW_FOCUSED_CONTROL := chkUIFocusedControl.Checked;
+  SHOW_CONTROL_OVER := chkUIControlOver.Checked;
 
   {$IFDEF WDC} //one day update .lfm for lazarus...
 //  ALLOW_SNOW_HOUSES := chkSnowHouses.Checked;
