@@ -216,8 +216,8 @@ begin
     and not aSilent then // do not log this error in silent mode (we could expect route could not be build in some cases (f.e. warrior reRoute when attack house)
     //NoFlush logging here because this log is not much important
   begin
-    errorStr := Format('Unable to make a route for %s from %s to %s with "%s" TargetWalkConnectSet = %s',
-                       [gRes.Units[aUnit.UnitType].GUIName, fWalkFrom.ToString, fWalkTo.ToString,
+    errorStr := Format('Unable to make a route for %s:%d from %s to %s with "%s" TargetWC_Set = %s',
+                       [gRes.Units[aUnit.UnitType].GUIName, aUnit.UID, fWalkFrom.ToString, fWalkTo.ToString,
                         PassabilityGuiText[fPass], TKMSetByteSet.SetToString(aTargetWalkConnectSet)]);
     gLog.AddNoTimeNoFlush(errorStr);
     {$IFDEF RUNNER}
