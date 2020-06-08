@@ -28,7 +28,7 @@ type
     function ProcessCommand(CommandType: TKMCommandType; P: array of Integer; const TextParam: AnsiString = ''): Boolean; override;
   public
     constructor Create(aMode: TKMMissionParsingMode); overload;
-    constructor Create(aMode: TKMMissionParsingMode; aPlayersEnabled: TKMHandEnabledArray); overload;
+    constructor Create(aMode: TKMMissionParsingMode; var aPlayersEnabled: TKMHandEnabledArray); overload;
     function LoadMission(const aFileName: string): Boolean; overload; override;
     procedure PostLoadMission;
 
@@ -78,7 +78,7 @@ begin
 end;
 
 
-constructor TKMMissionParserStandard.Create(aMode: TKMMissionParsingMode; aPlayersEnabled: TKMHandEnabledArray);
+constructor TKMMissionParserStandard.Create(aMode: TKMMissionParsingMode; var aPlayersEnabled: TKMHandEnabledArray);
 begin
   inherited Create;
   fParsingMode := aMode;
