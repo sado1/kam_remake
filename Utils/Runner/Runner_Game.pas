@@ -1352,7 +1352,7 @@ var
   end;
 
 begin
-  PAUSE_GAME_AFTER_TICK := -1;    //Pause at specified game tick
+  PAUSE_GAME_BEFORE_TICK := -1;    //Pause at specified game tick
 //  MAKE_SAVEPT_AFTER_TICK := 40800;
 
   M := 0;
@@ -1813,7 +1813,7 @@ var
   mapT1, mapT2, score: Cardinal;
 begin
   DEFAULT_PEACE_TIME := 60;
-  PAUSE_GAME_AFTER_TICK := -1;    //Pause at specified game tick
+  PAUSE_GAME_BEFORE_TICK := -1;    //Pause at specified game tick
 //  MAKE_SAVEPT_AFTER_TICK := 40800;
 
   totalRuns := 0;

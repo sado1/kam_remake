@@ -1031,7 +1031,7 @@ begin
     SKIP_LOG_TEMP_COMMANDS := chkLogSkipTempCmd.Checked;
 
     SHOW_GIP := chkGIP.Checked;
-    PAUSE_GAME_AFTER_TICK := sePauseAfterTick.Value;
+    PAUSE_GAME_BEFORE_TICK := sePauseAfterTick.Value;
     MAKE_SAVEPT_AFTER_TICK := seMakeSaveptAfterTick.Value;
 
     DEBUG_TEXT := edDebugText.Text;

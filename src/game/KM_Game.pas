@@ -105,7 +105,7 @@ type
     procedure SetGameSpeedActualValue(aSpeed: Single);
 
     procedure IncGameTick;
-    procedure CheckPauseGameAtTick;
+    function CheckPauseGameAtTick: Boolean;
     function IsReplayEnded: Boolean;
 
     function DoSaveRandomChecks: Boolean;
@@ -2541,7 +2541,7 @@ begin
 end;
 
 
-procedure TKMGame.CheckPauseGameAtTick;
+function TKMGame.CheckPauseGameAtTick: Boolean;
 
   procedure SetReplayPause;
   begin
@@ -2551,25 +2551,26 @@ procedure TKMGame.CheckPauseGameAtTick;
     fGamePlayInterface.UpdateState(fParams.GameTick);
   end;
 
-var
-  PeaceTimeLeft, PTTicks: Cardinal;
 begin
-  PeaceTimeLeft := 0;
-  PTTicks := fGameOptions.Peacetime * 600;
+  Result := False;
 
-  if (fParams.GameMode = gmReplayMulti) and (PTTicks >= fParams.GameTick) then
-    PeaceTimeLeft := PTTicks - fParams.GameTick;
+  if (fParams.GameMode = gmReplayMulti)
+    and gGameSettings.ReplayAutopause
+    and (fGameOptions.Peacetime * 600 = fParams.GameTick + 1) then
+  begin
+    SetReplayPause;
+    Exit(True);
+  end;
 
-  if fParams.GameTick = PAUSE_GAME_AFTER_TICK then
+  if fParams.GameTick = PAUSE_GAME_BEFORE_TICK - 1 then
   begin
     if fParams.IsReplay then
       SetReplayPause
     else
       fGamePlayInterface.SetPause(True);
-  end;
 
-  if (PeaceTimeLeft = 1) and gGameSettings.ReplayAutopause then
-    SetReplayPause;
+    Exit(True);
+  end;
 end;
 
 
@@ -2642,8 +2643,6 @@ begin
     if (fParams.GameTick mod gGameSettings.AutosaveFrequency) = 0 then
       IssueAutosaveCommand;
 
-    CheckPauseGameAtTick;
-
     Result := True;
 
     if DoSaveRandomChecks then
@@ -2679,6 +2678,8 @@ begin
 
     //Issue stored commands
     fGameInputProcess.ReplayTimer(fParams.GameTick);
+    if fParams.GameTick > 1 then
+      KaMRandom(MaxInt, 'TKMGameInputProcess.StoreCommand');
 
     if gGame = nil then
       Exit; //Quit if the game was stopped by a replay mismatch
@@ -2717,8 +2718,6 @@ begin
   if DoGameHold then
     Exit;
 
-  CheckPauseGameAtTick;
-
   Result := True;
 end;
 
@@ -2732,7 +2731,8 @@ begin
   //so we need to set it right before we do game logic processing
   Set8087CW($133F);
 
-  if fIsPaused or ReadyToStop then Exit;
+  if fIsPaused or ReadyToStop or CheckPauseGameAtTick then
+    Exit;
 
   fBlockGetPointer := False;
 
