@@ -70,7 +70,13 @@ type
     function GetFlagBearer: TKMUnitWarrior;
     function GetNearestMember(aUnit: TKMUnitWarrior): Integer; overload;
     function GetNearestMember(const aLoc: TKMPoint): TKMUnitWarrior; overload;
-    function GetMemberLoc(aIndex: Integer): TKMPointExact;
+
+
+    function GetMemberLoc(aIndex: Integer): TKMPoint; overload;
+    function GetMemberLocExact(aIndex: Integer): TKMPointExact; overload;
+    function GetMemberLocExact(aIndex: Integer; out aExact: Boolean): TKMPoint; overload;
+
+
     procedure SetMapEdCount(aCount: Word);
     procedure SetUnitsPerRow(aCount: Word);
     procedure SetDirection(Value: TKMDirection);
@@ -532,14 +538,30 @@ begin
 end;
 
 
-//Get member order location within formation
-function TKMUnitGroup.GetMemberLoc(aIndex: Integer): TKMPointExact;
+function TKMUnitGroup.GetMemberLoc(aIndex: Integer): TKMPoint;
+var
+  exact: Boolean;
+begin
+  Result := GetMemberLocExact(aIndex, exact);
+end;
+
+
+function TKMUnitGroup.GetMemberLocExact(aIndex: Integer; out aExact: Boolean): TKMPoint;
 begin
   //Allow off map positions so GetClosestTile works properly
-  Result.Loc := GetPositionInGroup2(fOrderLoc.Loc.X, fOrderLoc.Loc.Y,
-                                    fOrderLoc.Dir, aIndex, fUnitsPerRow,
-                                    gTerrain.MapX, gTerrain.MapY,
-                                    Result.Exact);
+  Result := GetPositionInGroup2(fOrderLoc.Loc.X, fOrderLoc.Loc.Y,
+                                fOrderLoc.Dir, aIndex, fUnitsPerRow,
+                                gTerrain.MapX, gTerrain.MapY,
+                                aExact);
+end;
+
+
+//Get member order location within formation
+function TKMUnitGroup.GetMemberLocExact(aIndex: Integer): TKMPointExact;
+begin
+  //Allow off map positions so GetClosestTile works properly
+  Result.Loc := GetMemberLocExact(aIndex, Result.Exact);
+
   //Fits on map and is on passable terrain and have same walkConnect as member current position
   Result.Exact :=     Result.Exact
                   and gTerrain.CheckPassability(Result.Loc, tpWalk)
@@ -930,7 +952,7 @@ begin
                             and (Members[I].IsIdle
                                  or ((Members[I].Action is TKMUnitActionWalkTo) and TKMUnitActionWalkTo(Members[I].Action).WasPushed)) then
                           begin
-                            P := GetMemberLoc(I);
+                            P := GetMemberLocExact(I);
                             Members[I].OrderWalk(P.Loc, P.Exact);
                             fMembersPushbackCommandsCnt := Min(fMembersPushbackCommandsCnt + 1, High(Word));
                           end;
@@ -956,7 +978,7 @@ begin
                             for I := 0 to Count - 1 do
                             if Members[I].IsIdle then
                             begin
-                              P := GetMemberLoc(I);
+                              P := GetMemberLocExact(I);
                               if KMSamePoint(Members[I].CurrPosition, P.Loc)
                               or (KMLength(Members[I].CurrPosition, OrderTargetUnit.CurrPosition) <= Members[I].GetFightMaxRange) then
                               begin
@@ -998,7 +1020,7 @@ begin
                           for I := 0 to Count - 1 do
                             if Members[I].IsIdle then
                             begin
-                              P := GetMemberLoc(I);
+                              P := GetMemberLocExact(I);
                               Members[I].OrderWalk(P.Loc, P.Exact);
                             end;
                         end;
@@ -1309,7 +1331,7 @@ begin
     for I := 0 to Count - 1 do
     begin
       //Check target in range, and if not - chase it / back up from it
-      P := GetMemberLoc(I);
+      P := GetMemberLocExact(I);
       if not KMSamePoint(Members[I].CurrPosition, P.Loc)
         and((KMLength(Members[I].NextPosition, OrderTargetUnit.CurrPosition) > Members[I].GetFightMaxRange)
         or (KMLength(Members[I].NextPosition, OrderTargetUnit.CurrPosition) < Members[I].GetFightMinRange)) then
@@ -1813,7 +1835,7 @@ begin
 
   for I := 0 to Count - 1 do
   begin
-    P := GetMemberLoc(I);
+    P := GetMemberLocExact(I);
     Members[I].OrderWalk(P.Loc, P.Exact, aForced);
     Members[I].FaceDir := NewDir;
   end;
@@ -1965,7 +1987,7 @@ begin
     for I := 1 to fMembers.Count - 1 do
     begin
       Agents.Add(Members[I].CurrPosition);
-      Tasks.Add(GetMemberLoc(I).Loc);
+      Tasks.Add(GetMemberLoc(I));
     end;
 
     //huIndividual as we'd prefer 20 members to take 1 step than 1 member to take 10 steps (minimize individual work rather than total work)
