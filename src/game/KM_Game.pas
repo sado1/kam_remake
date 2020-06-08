@@ -83,6 +83,9 @@ type
     fLoadFromFile: UnicodeString; //Path to file, from which game was loaded. '.bas' file for replays
     fIsStarted: Boolean;
 
+    fDoHold: Boolean; //Request to run Hold after UpdateState has finished
+    fDoHoldState: TKMGameResultMsg; //The type of Hold we want to occur due to DoGameHold
+
     fSaveWorkerThread: TKMWorkerThread;
 
     procedure IssueAutosaveCommand(aAfterPT: Boolean = False);
@@ -124,8 +127,6 @@ type
     function PlayNextTick: Boolean;
   public
     GameResult: TKMGameResultMsg;
-    DoHold: Boolean; //Request to run Hold after UpdateState has finished
-    DoHoldState: TKMGameResultMsg; //The type of Hold we want to occur due to DoGameHold
 
     StartedFromMapEditor: Boolean;    // True if we start game from map editor ('Try Map')
     StartedFromMapEdAsMPMap: Boolean; // True if we start game from map editor ('Try Map') with MP map
@@ -300,7 +301,7 @@ begin
   fAdvanceFrame := False;
   fUIDTracker   := 0;
   GameResult   := grCancel;
-  DoHold    := False;
+  fDoHold    := False;
   fSkipReplayEndCheck := False;
   fWaitingForNetwork := False;
   fOptions  := TKMGameOptions.Create;
@@ -1073,7 +1074,7 @@ end;
 //Put the game on Hold for Victory screen
 procedure TKMGame.Hold(aDoHold: Boolean; Msg: TKMGameResultMsg);
 begin
-  DoHold := False;
+  fDoHold := False;
   fGamePlayInterface.ReleaseDirectionSelector; //In case of victory/defeat while moving troops
   gRes.Cursors.Cursor := kmcDefault;
 
@@ -1091,8 +1092,8 @@ end;
 
 procedure TKMGame.RequestHold(Msg: TKMGameResultMsg);
 begin
-  DoHold := true;
-  DoHoldState := Msg;
+  fDoHold := true;
+  fDoHoldState := Msg;
 end;
 
 
@@ -2458,8 +2459,8 @@ procedure TKMGame.UpdateGame(Sender: TObject);
   begin
     if not PlayNextTick then
       Inc(fPausedTicksCnt);
-    if DoHold then
-      Hold(True, DoHoldState);
+    if fDoHold then
+      Hold(True, fDoHoldState);
   end;
 
 var
@@ -2717,7 +2718,7 @@ begin
     {$ENDIF}
   end;
 
-  if DoHold then
+  if fDoHold then
     Exit;
 
   Result := True;
