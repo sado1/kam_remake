@@ -2517,7 +2517,7 @@ end;
 
 procedure TKMGame.SetSeed(aSeed: Integer);
 begin
-  if USE_CUSTOM_SEED and not fParams.IsReplay then
+  if (CUSTOM_SEED_VALUE > 0) and not fParams.IsReplay then
     aSeed := CUSTOM_SEED_VALUE;
 
   gLog.AddTime('Set game seed: ' + IntToStr(aSeed));

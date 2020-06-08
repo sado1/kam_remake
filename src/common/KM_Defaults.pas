@@ -220,8 +220,7 @@ var
   {Gameplay}
   LOBBY_SET_SPECS_DEFAULT :Boolean = DEBUG_CFG; //Set 'Allow spectators' flag in the lobby by default
   LOBBY_HOST_AS_SPECTATOR :Boolean = DEBUG_CFG; //Host lobby as spectator by default
-  USE_CUSTOM_SEED         :Boolean = False; //Use custom seed for every game
-  CUSTOM_SEED_VALUE       :Integer = 0;     //Custom seed value
+  CUSTOM_SEED_VALUE       :Integer = 0;     //Custom seed value. Not applied if set to 0
   PAUSE_GAME_BEFORE_TICK  :Integer = -1;    //Pause after specified game tick
   MAKE_SAVEPT_BEFORE_TICK :Integer = -1;    //Make savepoint after a certain tick (for both game and replay)
   ALLOW_SAVE_IN_REPLAY    :Boolean = DEBUG_CFG; //Allow to save game from replay, good for debug
