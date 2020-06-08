@@ -440,7 +440,7 @@ begin
   fSent[Tick] := False;
 
   if aTick mod DELAY_ADJUST = 0 then
-    AdjustDelay(gGame.GameSpeedActual); //Adjust fDelay every X ticks
+    AdjustDelay(gGame.SpeedActual); //Adjust fDelay every X ticks
 end;
 
 
