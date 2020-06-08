@@ -18,7 +18,7 @@ type
     fVisibleLayers: TKMMapVisibleLayerSet;
 
     fName: UnicodeString;
-    fGameMapSimpleCRC: Cardinal; //CRC of map (based on Map and Dat) used in MapEd
+    fMapSimpleCRC: Cardinal; //CRC of map (based on Map and Dat) used in MapEd
     fGameMapFullCRC: Cardinal; //CRC of map for reporting stats to master server. Also used in MapEd
     fMissionFileSP: UnicodeString; //Relative pathname to mission we are playing, so it gets saved to crashreport. SP only, see GetMissionFile.
 
@@ -43,7 +43,7 @@ type
     property VisibleLayers: TKMMapVisibleLayerSet read fVisibleLayers write fVisibleLayers;
 
     property Name: UnicodeString read fName write fName;
-    property GameMapSimpleCRC: Cardinal read fGameMapSimpleCRC write fGameMapSimpleCRC;
+    property MapSimpleCRC: Cardinal read fMapSimpleCRC write fMapSimpleCRC;
     property GameMapFullCRC: Cardinal read fGameMapFullCRC write fGameMapFullCRC;
     property MissionFileSP: UnicodeString read fMissionFileSP;
     property MissionFile: UnicodeString read GetMissionFile;

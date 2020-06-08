@@ -485,7 +485,7 @@ begin
   gRes.Wares.ResetToDefaults;
 
   fParams.Name := aGameName;
-  fParams.GameMapSimpleCRC := aSimpleCRC;
+  fParams.MapSimpleCRC := aSimpleCRC;
   fParams.GameMapFullCRC := aFullCRC;
   if aCampaign <> nil then
     fCampaignName := aCampaign.CampaignId
@@ -1376,13 +1376,13 @@ begin
                     gGameSettings.MenuMapEdSPMapCRC := MapInfo.MapAndDatCRC;
                     gGameSettings.MenuMapEdMapType := 0;
                     // Update saved SP game list saved selected map position CRC if we resave this map
-                    if fParams.GameMapSimpleCRC = gGameSettings.MenuSPScenarioMapCRC then
+                    if fParams.MapSimpleCRC = gGameSettings.MenuSPScenarioMapCRC then
                       gGameSettings.MenuSPScenarioMapCRC := MapInfo.MapAndDatCRC;
-                    if fParams.GameMapSimpleCRC = gGameSettings.MenuSPMissionMapCRC then
+                    if fParams.MapSimpleCRC = gGameSettings.MenuSPMissionMapCRC then
                       gGameSettings.MenuSPMissionMapCRC := MapInfo.MapAndDatCRC;
-                    if fParams.GameMapSimpleCRC = gGameSettings.MenuSPTacticMapCRC then
+                    if fParams.MapSimpleCRC = gGameSettings.MenuSPTacticMapCRC then
                       gGameSettings.MenuSPTacticMapCRC := MapInfo.MapAndDatCRC;
-                    if fParams.GameMapSimpleCRC = gGameSettings.MenuSPSpecialMapCRC then
+                    if fParams.MapSimpleCRC = gGameSettings.MenuSPSpecialMapCRC then
                       gGameSettings.MenuSPSpecialMapCRC := MapInfo.MapAndDatCRC;
                   end;
       mfMP:       begin
@@ -1398,7 +1398,7 @@ begin
     // Update favorite map CRC if we resave favourite map with the same name
     if fParams.Name = MapInfo.FileName then
     begin
-      gGameSettings.FavouriteMaps.Replace(fParams.GameMapSimpleCRC, MapInfo.MapAndDatCRC);
+      gGameSettings.FavouriteMaps.Replace(fParams.MapSimpleCRC, MapInfo.MapAndDatCRC);
       gGameSettings.ServerMapsRoster.Replace(fParams.GameMapFullCRC, MapInfo.CRC);
     end;
     MapInfo.Free;
@@ -1851,7 +1851,7 @@ begin
   try
     GameInfo.Title := fParams.Name;
     GameInfo.MapFullCRC := fParams.GameMapFullCRC;
-    GameInfo.MapSimpleCRC := fParams.GameMapSimpleCRC;
+    GameInfo.MapSimpleCRC := fParams.MapSimpleCRC;
     GameInfo.TickCount := fParams.Tick;
     GameInfo.SaveTimestamp := aTimestamp;
     GameInfo.MissionMode := fParams.MissionMode;
@@ -2140,7 +2140,7 @@ begin
     GameInfo.Load(LoadStream);
     fParams.Name := GameInfo.Title;
     fParams.GameMapFullCRC := GameInfo.MapFullCRC;
-    fParams.GameMapSimpleCRC := GameInfo.MapSimpleCRC;
+    fParams.MapSimpleCRC := GameInfo.MapSimpleCRC;
     fSetGameTickEvent(GameInfo.TickCount);
     fParams.MissionMode := GameInfo.MissionMode;
     fParams.MissionDifficulty := GameInfo.MissionDifficulty;
