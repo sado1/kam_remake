@@ -2007,7 +2007,7 @@ begin
 
   if Sender = Button_ReplaySaveAt then
   begin
-    gGame.SaveReplayToMemory();
+    gGame.MakeSavePoint();
     AddReplayMark(gGameParams.GameTick);
   end;
 

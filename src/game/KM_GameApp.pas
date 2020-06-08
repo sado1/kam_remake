@@ -773,7 +773,7 @@ end;
 procedure TKMGameApp.LoadGameFromMemory(aTick: Cardinal);
 var
   LoadError: string;
-  SavedReplays: TKMSavedReplays;
+  SavedReplays: TKMSavePointCollection;
   GameMode: TKMGameMode;
   SaveFile: UnicodeString;
   gameInputProcess: TKMGameInputProcess;
@@ -803,7 +803,7 @@ begin
     // Then Free the newly created save replays object first
     gGame.SavedReplays.Free;
     gGame.SavedReplays := SavedReplays;
-    gGame.LoadSavedReplay(aTick, SaveFile);
+    gGame.LoadSavePoint(aTick, SaveFile);
     gGame.LastReplayTick := Max(gGame.LastReplayTick, SavedReplays.LastTick);
     // Free GIP, which was created on game creation
     gGame.GameInputProcess.Free;

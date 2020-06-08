@@ -31,7 +31,7 @@ type
     fMapEditorInterface: TKMapEdInterface;
     fMapEditor: TKMMapEditor;
     fTerrainPainter: TKMTerrainPainter;
-    fSavedReplays: TKMSavedReplays;
+    fSavePoints: TKMSavePointCollection;
     fScripting: TKMScripting;
     fOnDestroy: TEvent;
 
@@ -127,8 +127,8 @@ type
     DoGameHold: Boolean; //Request to run GameHold after UpdateState has finished
     DoGameHoldState: TKMGameResultMsg; //The type of GameHold we want to occur due to DoGameHold
 
-    StartedFromMapEditor: Boolean; //True if we start game from map editor ('Try Map')
-    StartedFromMapEdAsMPMap: Boolean;     //True if we start game from map editor ('Try Map') with MP map
+    StartedFromMapEditor: Boolean;    // True if we start game from map editor ('Try Map')
+    StartedFromMapEdAsMPMap: Boolean; // True if we start game from map editor ('Try Map') with MP map
 
     constructor Create(aGameMode: TKMGameMode; aRender: TRender; aOnDestroy: TEvent);
     destructor Destroy; override;
@@ -141,7 +141,7 @@ type
     procedure MapEdStartEmptyMap(aSizeX, aSizeY: Integer);
     procedure LoadFromStream(var LoadStream: TKMemoryStreamBinary);
     procedure LoadFromFile(const aPathName: UnicodeString; const aCustomReplayFile: UnicodeString = '');
-    procedure LoadSavedReplay(aTick: Cardinal; const aSaveFile: UnicodeString);
+    procedure LoadSavePoint(aTick: Cardinal; const aSaveFile: UnicodeString);
     procedure AfterLoad;
 
     procedure Save(const aSaveName: UnicodeString); overload;
@@ -150,7 +150,7 @@ type
 
     procedure AutoSave(aTimestamp: TDateTime);
     procedure AutoSaveAfterPT(aTimestamp: TDateTime);
-    procedure SaveReplayToMemory();
+    procedure MakeSavePoint();
     procedure SaveMapEditor(const aPathName: UnicodeString); overload;
     procedure SaveMapEditor(const aPathName: UnicodeString; const aInsetRect: TKMRect); overload;
 
@@ -201,7 +201,7 @@ type
     property GameSpeedGIP: Single read fGameSpeedGIP;
     property GameSpeedChangeAllowed: Boolean read fGameSpeedChangeAllowed write fGameSpeedChangeAllowed;
     property GameTickDuration: Single read GetGameTickDuration;
-    property SavedReplays: TKMSavedReplays read fSavedReplays write fSavedReplays;
+    property SavedReplays: TKMSavePointCollection read fSavePoints write fSavePoints;
 
     function PlayerLoc: Byte; //Can used in SP game/replay only
     function PlayerColor: Cardinal; //Can used in SP game/replay only
@@ -319,7 +319,7 @@ begin
 
   fTerrainPainter := TKMTerrainPainter.Create;
 
-  fSavedReplays := TKMSavedReplays.Create;
+  fSavePoints := TKMSavePointCollection.Create;
 
   fMapTxtInfo := TKMMapTxtInfo.Create;
 
@@ -421,8 +421,8 @@ begin
   FreeAndNil(fMapTxtInfo);
 
   //Could be nil, if want to reuse fGIP for other gGame instance (gGame could be recreated when jump between checkpoints in replay)
-  if fSavedReplays <> nil then
-    FreeAndNil(fSavedReplays);
+  if fSavePoints <> nil then
+    FreeAndNil(fSavePoints);
 
   FreeThenNil(fGamePlayInterface);
   FreeThenNil(fMapEditorInterface);
@@ -2101,7 +2101,7 @@ begin
 
     // Save checkpoints
     if gGameSettings.SaveCheckpoints and not SKIP_SAVE_SAVPTS_TO_FILE then
-      fSavedReplays.SaveToFileAsync(ChangeFileExt(fullPath, EXT_SAVE_GAME_SAVEPTS_DOT), fSaveWorkerThread);
+      fSavePoints.SaveToFileAsync(ChangeFileExt(fullPath, EXT_SAVE_GAME_SAVEPTS_DOT), fSaveWorkerThread);
 
     if DoSaveRandomChecks then
       try
@@ -2259,7 +2259,7 @@ procedure TKMGame.LoadFromFile(const aPathName: UnicodeString; const aCustomRepl
   procedure LoadReplayDataFromFile(const aFileName: string);
   begin
     fGameInputProcess.LoadFromFile(ChangeFileExt(aFileName, EXT_SAVE_REPLAY_DOT));
-    fSavedReplays.LoadFromFile(ChangeFileExt(aFileName, EXT_SAVE_GAME_SAVEPTS_DOT));
+    fSavePoints.LoadFromFile(ChangeFileExt(aFileName, EXT_SAVE_GAME_SAVEPTS_DOT));
   end;
 
 var
@@ -2321,7 +2321,7 @@ begin
 end;
 
 
-procedure TKMGame.LoadSavedReplay(aTick: Cardinal; const aSaveFile: UnicodeString);
+procedure TKMGame.LoadSavePoint(aTick: Cardinal; const aSaveFile: UnicodeString);
 var
   loadStream: TKMemoryStreamBinary;
   lastReplayTick: Cardinal;
@@ -2330,12 +2330,12 @@ begin
   gLog.AddTime('Loading replay from save');
   fSaveFile := aSaveFile;
 
-  if fSavedReplays.Contains(aTick) then
+  if fSavePoints.Contains(aTick) then
   begin
     lastReplayTick := fLastReplayTick;
     skipReplayEndCheck := fSkipReplayEndCheck;
 
-    loadStream := TKMemoryStreamBinary(fSavedReplays[aTick]);
+    loadStream := TKMemoryStreamBinary(fSavePoints[aTick]);
     loadStream.Position := 0;
     LoadFromStream(loadStream);
 
@@ -2348,11 +2348,11 @@ end;
 
 
 // Save game/replay savepoint
-procedure TKMGame.SaveReplayToMemory();
+procedure TKMGame.MakeSavePoint();
 var
   SaveStream: TKMemoryStreamBinary;
 begin
-  if (fSavedReplays = nil) or fSavedReplays.Contains(fParams.GameTick) then //No need to save twice on the same tick
+  if (fSavePoints = nil) or fSavePoints.Contains(fParams.GameTick) then //No need to save twice on the same tick
     Exit;
 
   gLog.AddTime('Make savepoint at tick ' + IntToStr(fParams.GameTick));
@@ -2360,7 +2360,7 @@ begin
   SaveStream := TKMemoryStreamBinary.Create;
   SaveGameToStream(0, SaveStream); // Date is not important
 
-  fSavedReplays.NewSave(SaveStream, fParams.GameTick);
+  fSavePoints.NewSavePoint(SaveStream, fParams.GameTick);
 end;
 
 
@@ -2626,16 +2626,16 @@ begin
     if AGGRESSIVE_REPLAYS then
       fGameInputProcess.CmdTemp(gicTempDoNothing); //do call cmd before SaveGameCheckpoint
 
-    fSavedReplays.LastTick := Max(fSavedReplays.LastTick, fParams.GameTick);
+    fSavePoints.LastTick := Max(fSavePoints.LastTick, fParams.GameTick);
 
     //Save replay to memory (to be able to load it later)
     //Make replay save only after everything is updated (UpdateState)
     if gGameSettings.SaveCheckpoints
-      and (fSavedReplays.Count <= gGameSettings.SaveCheckpointsLimit) //Do not allow to spam saves, could cause OUT_OF_MEMORY error
+      and (fSavePoints.Count <= gGameSettings.SaveCheckpointsLimit) //Do not allow to spam saves, could cause OUT_OF_MEMORY error
       and ((fParams.GameTick = MAKE_SAVEPT_BEFORE_TICK - 1)
         or (fParams.GameTick = (fGameOptions.Peacetime*60*10)) //At PT end
         or ((fParams.GameTick mod gGameSettings.SaveCheckpointsFreq) = 0)) then
-      SaveReplayToMemory;
+      MakeSavePoint;
 
     // Update our ware distributions from settings at the start of the game
     if (fParams.GameTick = 1)
@@ -2688,18 +2688,18 @@ begin
 
     //Only increase LastTick, since we could load replay earlier at earlier state
 //  if fSavedReplays <> nil then
-    fSavedReplays.LastTick := Max(fSavedReplays.LastTick, fParams.GameTick);
+    fSavePoints.LastTick := Max(fSavePoints.LastTick, fParams.GameTick);
 
     //Save replay to memory (to be able to load it later)
     //Make replay save only after everything is updated (UpdateState)
     if gGameSettings.ReplayAutosave
-      and (fSavedReplays.Count <= REPLAY_AUTOSAVE_CNT_MAX) //Do not allow to spam saves, could cause OUT_OF_MEMORY error
+      and (fSavePoints.Count <= REPLAY_AUTOSAVE_CNT_MAX) //Do not allow to spam saves, could cause OUT_OF_MEMORY error
       and ((fParams.GameTick = 1) //First tick
         or (fParams.GameTick = MAKE_SAVEPT_BEFORE_TICK - 1)
         or (fParams.GameTick = (fGameOptions.Peacetime*60*10)) //At PT end
         or ((fParams.GameTick mod GetReplayAutosaveEffectiveFrequency) = 0)) then
     begin
-      SaveReplayToMemory;
+      MakeSavePoint;
       fGamePlayInterface.AddReplayMark(fParams.GameTick);
     end;
 
