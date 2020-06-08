@@ -174,6 +174,7 @@ type
     function CanShowChat: Boolean;
     function CanShowAllies: Boolean;
     procedure UpdateMessageImages;
+    procedure UpdateReplayBar;
   protected
     Sidebar_Top: TKMImage;
     Sidebar_Middle: TKMImage;
@@ -369,6 +370,7 @@ const
   ALLIES_ROWS = 7;
   PANEL_ALLIES_WIDTH = 840;
   PANEL_TRACK_TOP = 285;
+  REPLAYBAR_DEFAULT_WIDTH = 400;
 
 
 procedure TKMGamePlayInterface.Menu_Save_ListChange(Sender: TObject);
@@ -909,6 +911,15 @@ begin
 end;
 
 
+procedure TKMGamePlayInterface.UpdateReplayBar;
+begin
+  if fGuiGameSpectator <> nil then
+    Panel_ReplayBar.Width := fGuiGameSpectator.DropBox.AbsLeft - Panel_ReplayBar.AbsLeft - 10
+  else
+    Panel_ReplayBar.Width := REPLAYBAR_DEFAULT_WIDTH;
+end;
+
+
 procedure TKMGamePlayInterface.Resize(X,Y: Word);
 var
   showSwords: Boolean;
@@ -933,6 +944,8 @@ begin
 
   if fGuiGameStats.Visible then
     fGuiGameStats.Resize;
+
+  UpdateReplayBar;
 
   fViewport.Resize(X, Y);
 end;
@@ -1077,10 +1090,12 @@ end;
 
 procedure TKMGamePlayInterface.Create_Replay;
 begin
-  Panel_ReplayBar := TKMPanel.Create(Panel_Main, 320, 8, 400, 45);
-    ReplayBar_Replay := TKMReplayBar.Create(Panel_ReplayBar, 0, 0, 400, 25);
+  Panel_ReplayBar := TKMPanel.Create(Panel_Main, 320, 5, REPLAYBAR_DEFAULT_WIDTH, 45);
+    ReplayBar_Replay := TKMReplayBar.Create(Panel_ReplayBar, 0, 0, REPLAYBAR_DEFAULT_WIDTH, 25);
+    ReplayBar_Replay.AnchorsStretch;
     Label_ReplayBar  := TKMLabel.Create(Panel_ReplayBar, ReplayBar_Replay.Width div 2,
                                                          ReplayBar_Replay.Height div 2 - 7, NO_TEXT, fntGrey, taCenter);
+    Label_ReplayBar.AnchorsCenter;
 
     ReplayBar_Replay.OnMarkClick := ReplayMarkClick;
     ReplayBar_Replay.HintResText := TX_REPLAY_LOAD_AT_HINT;
@@ -2506,6 +2521,7 @@ begin
                                                       [GetEnumName(TypeInfo(TKMGameMode), Integer(gGameParams.Mode))]));
     end;
     fGuiGameSpectator := TKMGUIGameSpectator.Create(Panel_Main, Replay_JumpToPlayer, SetViewportPos);
+    UpdateReplayBar;
     gMySpectator.HandID := Dropbox_ReplayFOW.GetTag(Dropbox_ReplayFOW.ItemIndex); //Update HandIndex
   end;
 end;
