@@ -344,7 +344,9 @@ end;
 
 //* Version: 12000+
 //* Gets the parameters of AI defence position
-//* parameters are returned in aX, aY, aGroupType, aRadius, aDefType variables
+//* Parameters are returned in aX, aY, aGroupType, aRadius, aDefType variables
+//* Group types: 0 = Melee; 1	= Anti-horse; 2	= Ranged; 3	= Mounted
+//* Defence type: 0 = Defenders; 1 = Attackers
 procedure TKMScriptStates.AIDefencePositionGet(aPlayer, aID: Byte; out aX, aY: Integer; out aGroupType: Byte; out aRadius: Word; out aDefType: Byte);
 var
   DP: TAIDefencePosition;
@@ -358,9 +360,9 @@ begin
       begin
         aX := DP.Position.Loc.X;
         aY := DP.Position.Loc.Y;
-        //aGroupType := 
+        aGroupType := Byte(DP.GroupType);
         aRadius := DP.Radius;
-        //aDefType := 
+        aDefType := Byte(DP.DefenceType);
       end;
     end
     else
