@@ -2016,7 +2016,7 @@ begin
   fSavesMP.TerminateScan;
   DropCol_Maps.Clear; //Clear previous items in case scanning finds no maps/saves
 
-  // can't use gNetworking.IsHost here, since we could just open lobby, and we didn't set fNetwroking.PlayerKind
+  // can't use gNetworking.IsHost here, since we could just open lobby, and we didn't set gNetworking.PlayerKind
   if aIsHost then
   begin
     DropCol_Maps.Show;
