@@ -278,10 +278,10 @@ begin
                     end;
     gpLobby:        begin
                       if aText = 'HOST' then
-                        fMenuLobby.Show(lpkHost, gNetworking, Panel_Menu.Height)
+                        fMenuLobby.Show(lpkHost, Panel_Menu.Height)
                       else
                       if aText = 'JOIN' then
-                        fMenuLobby.Show(lpkJoiner, gNetworking, Panel_Menu.Height)
+                        fMenuLobby.Show(lpkJoiner, Panel_Menu.Height)
                       else
                         raise Exception.Create('');
                       fMenuPage := fMenuLobby;
