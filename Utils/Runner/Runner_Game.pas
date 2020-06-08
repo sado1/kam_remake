@@ -1353,7 +1353,7 @@ var
 
 begin
   PAUSE_GAME_BEFORE_TICK := -1;    //Pause at specified game tick
-//  MAKE_SAVEPT_AFTER_TICK := 40800;
+//  MAKE_SAVEPT_BEFORE_TICK := 40800;
 
   M := 0;
   desyncCnt := 0;
@@ -1814,7 +1814,7 @@ var
 begin
   DEFAULT_PEACE_TIME := 60;
   PAUSE_GAME_BEFORE_TICK := -1;    //Pause at specified game tick
-//  MAKE_SAVEPT_AFTER_TICK := 40800;
+//  MAKE_SAVEPT_BEFORE_TICK := 40800;
 
   totalRuns := 0;
   fStartTime := TimeGet;

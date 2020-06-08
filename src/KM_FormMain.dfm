@@ -993,11 +993,11 @@ object FormMain: TFormMain
         Caption = 'Pause before tick'
       end
       object Label9: TLabel
-        Left = 33
+        Left = 24
         Top = 56
-        Width = 120
+        Width = 129
         Height = 13
-        Caption = 'Make savepoint after tick'
+        Caption = 'Make savepoint before tick'
       end
       object chkSuperSpeed: TCheckBox
         Left = 8

@@ -2630,7 +2630,7 @@ begin
     //Make replay save only after everything is updated (UpdateState)
     if gGameSettings.SaveCheckpoints
       and (fSavedReplays.Count <= gGameSettings.SaveCheckpointsLimit) //Do not allow to spam saves, could cause OUT_OF_MEMORY error
-      and ((fParams.GameTick = MAKE_SAVEPT_AFTER_TICK)
+      and ((fParams.GameTick = MAKE_SAVEPT_BEFORE_TICK - 1)
         or (fParams.GameTick = (fGameOptions.Peacetime*60*10)) //At PT end
         or ((fParams.GameTick mod gGameSettings.SaveCheckpointsFreq) = 0)) then
       SaveReplayToMemory;
@@ -2693,7 +2693,7 @@ begin
     if gGameSettings.ReplayAutosave
       and (fSavedReplays.Count <= REPLAY_AUTOSAVE_CNT_MAX) //Do not allow to spam saves, could cause OUT_OF_MEMORY error
       and ((fParams.GameTick = 1) //First tick
-        or (fParams.GameTick = MAKE_SAVEPT_AFTER_TICK)
+        or (fParams.GameTick = MAKE_SAVEPT_BEFORE_TICK - 1)
         or (fParams.GameTick = (fGameOptions.Peacetime*60*10)) //At PT end
         or ((fParams.GameTick mod GetReplayAutosaveEffectiveFrequency) = 0)) then
     begin

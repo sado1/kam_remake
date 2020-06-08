@@ -1032,7 +1032,7 @@ begin
 
     SHOW_GIP := chkGIP.Checked;
     PAUSE_GAME_BEFORE_TICK := sePauseAfterTick.Value;
-    MAKE_SAVEPT_AFTER_TICK := seMakeSaveptAfterTick.Value;
+    MAKE_SAVEPT_BEFORE_TICK := seMakeSaveptAfterTick.Value;
 
     DEBUG_TEXT := edDebugText.Text;
     DEBUG_VALUE := seDebugValue.Value;
