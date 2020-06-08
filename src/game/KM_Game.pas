@@ -69,7 +69,7 @@ type
     fSkipReplayEndCheck: Boolean;
 
     //DO not save
-    fGameSpeedChangeTick: Single;
+    fSpeedChangeTick: Single;
     fGameSpeedChangeTime: Cardinal; //time of last game speed change
     fPausedTicksCnt: Cardinal;
 
@@ -304,7 +304,7 @@ begin
   fSkipReplayEndCheck := False;
   fWaitingForNetwork := False;
   fOptions  := TKMGameOptions.Create;
-  fGameSpeedChangeTick := 0;
+  fSpeedChangeTick := 0;
   fGameSpeedChangeTime := 0;
   fGameSpeedChangeAllowed := True;
   fPausedTicksCnt := 0;
@@ -2434,7 +2434,7 @@ begin
   TimeSince := GetTimeSince(fGameSpeedChangeTime);
   CalculatedTick := TimeSince*fSpeedActual/gGameSettings.SpeedPace - fPausedTicksCnt;
   //Calc how far behind are we, in ticks
-  Result := CalculatedTick + fGameSpeedChangeTick - fParams.Tick;
+  Result := CalculatedTick + fSpeedChangeTick - fParams.Tick;
 end;
 
 
@@ -2442,11 +2442,11 @@ procedure TKMGame.UpdateTickCounters;
 var TicksBehind: Single;
 begin
   TicksBehind := GetTicksBehindCnt; // save number of ticks we are behind now
-  fGameSpeedChangeTick := fParams.Tick;
+  fSpeedChangeTick := fParams.Tick;
   if fParams.IsMultiPlayerOrSpec and not IsMPGameSpeedChangeAllowed then
     // Remember if we were some ticks behind at that moment.
     // Important for MP game with many players, but can be omitted for SP and MP with only 1 player
-    fGameSpeedChangeTick := fGameSpeedChangeTick + TicksBehind;
+    fSpeedChangeTick := fSpeedChangeTick + TicksBehind;
   //set fGameSpeedChangeTime after we invoke GetTicksBehindCnt !
   fGameSpeedChangeTime := TimeGet;
   fPausedTicksCnt := 0;
