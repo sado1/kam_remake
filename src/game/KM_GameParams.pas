@@ -19,7 +19,7 @@ type
 
     fName: UnicodeString;
     fMapSimpleCRC: Cardinal; //CRC of map (based on Map and Dat) used in MapEd
-    fGameMapFullCRC: Cardinal; //CRC of map for reporting stats to master server. Also used in MapEd
+    fMapFullCRC: Cardinal; //CRC of map for reporting stats to master server. Also used in MapEd
     fMissionFileSP: UnicodeString; //Relative pathname to mission we are playing, so it gets saved to crashreport. SP only, see GetMissionFile.
 
     fMissionDifficulty: TKMMissionDifficulty;
@@ -44,7 +44,7 @@ type
 
     property Name: UnicodeString read fName write fName;
     property MapSimpleCRC: Cardinal read fMapSimpleCRC write fMapSimpleCRC;
-    property GameMapFullCRC: Cardinal read fGameMapFullCRC write fGameMapFullCRC;
+    property MapFullCRC: Cardinal read fMapFullCRC write fMapFullCRC;
     property MissionFileSP: UnicodeString read fMissionFileSP;
     property MissionFile: UnicodeString read GetMissionFile;
     property MissionDifficulty: TKMMissionDifficulty read fMissionDifficulty write fMissionDifficulty;
@@ -130,7 +130,7 @@ begin
     Result := MissionFileSP //In SP we store it
   else
     //In MP we can't store it since it will be MapsMP or MapsDL on different clients
-    Result := GuessMPPath(fName, '.dat', fGameMapFullCRC);
+    Result := GuessMPPath(fName, '.dat', fMapFullCRC);
 end;
 
 

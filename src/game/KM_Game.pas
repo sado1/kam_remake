@@ -486,7 +486,7 @@ begin
 
   fParams.Name := aGameName;
   fParams.MapSimpleCRC := aSimpleCRC;
-  fParams.GameMapFullCRC := aFullCRC;
+  fParams.MapFullCRC := aFullCRC;
   if aCampaign <> nil then
     fCampaignName := aCampaign.CampaignId
   else
@@ -1399,7 +1399,7 @@ begin
     if fParams.Name = MapInfo.FileName then
     begin
       gGameSettings.FavouriteMaps.Replace(fParams.MapSimpleCRC, MapInfo.MapAndDatCRC);
-      gGameSettings.ServerMapsRoster.Replace(fParams.GameMapFullCRC, MapInfo.CRC);
+      gGameSettings.ServerMapsRoster.Replace(fParams.MapFullCRC, MapInfo.CRC);
     end;
     MapInfo.Free;
   end;
@@ -1850,7 +1850,7 @@ begin
   GameInfo := TKMGameInfo.Create;
   try
     GameInfo.Title := fParams.Name;
-    GameInfo.MapFullCRC := fParams.GameMapFullCRC;
+    GameInfo.MapFullCRC := fParams.MapFullCRC;
     GameInfo.MapSimpleCRC := fParams.MapSimpleCRC;
     GameInfo.TickCount := fParams.Tick;
     GameInfo.SaveTimestamp := aTimestamp;
@@ -2139,7 +2139,7 @@ begin
   try
     GameInfo.Load(LoadStream);
     fParams.Name := GameInfo.Title;
-    fParams.GameMapFullCRC := GameInfo.MapFullCRC;
+    fParams.MapFullCRC := GameInfo.MapFullCRC;
     fParams.MapSimpleCRC := GameInfo.MapSimpleCRC;
     fSetGameTickEvent(GameInfo.TickCount);
     fParams.MissionMode := GameInfo.MissionMode;
@@ -2603,7 +2603,7 @@ begin
     if fParams.IsMultiPlayerOrSpec and gNetworking.IsHost
       and ((fParams.IsNormalMission and (fParams.Tick = ANNOUNCE_BUILD_MAP))
       or (fParams.IsTactic and (fParams.Tick = ANNOUNCE_BATTLE_MAP))) then
-    gNetworking.ServerQuery.SendMapInfo(fParams.Name, fParams.GameMapFullCRC, gNetworking.NetPlayers.GetConnectedCount);
+    gNetworking.ServerQuery.SendMapInfo(fParams.Name, fParams.MapFullCRC, gNetworking.NetPlayers.GetConnectedCount);
 
     fScripting.UpdateState;
     UpdatePeacetime; //Send warning messages about peacetime if required
