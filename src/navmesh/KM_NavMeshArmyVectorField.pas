@@ -160,9 +160,9 @@ uses
   KM_Hand, KM_HandsCollection,
   KM_AIFields, KM_NavMesh, KM_AIParameters,
   {$IFDEF DEBUG_ArmyVectorField}
-  DateUtils,
+  DateUtils, KM_CommonUtils,
   {$ENDIF}
-  KM_CommonUtils,
+
   KM_RenderAux;
 
 

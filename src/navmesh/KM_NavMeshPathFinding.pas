@@ -73,12 +73,11 @@ type
 
 implementation
 uses
-   KM_AIFields, KM_NavMesh, KM_NavMeshGenerator,
+   KM_AIFields, KM_NavMesh, KM_NavMeshGenerator
    {$IFDEF DEBUG_NavMeshPathFinding}
-   KM_RenderAux, KM_CommonUtils,
+   ,KM_RenderAux, KM_CommonUtils
    {$ENDIF}
-   KM_AIParameters;
-
+   ;
 
 { TNavMeshPathFinding }
 constructor TNavMeshPathFinding.Create;
