@@ -144,6 +144,7 @@ constructor TKMUnitActionWalkTo.Create( aUnit: TKMUnit;
                                         aAvoidLockedByMovementCost: Boolean = True;
                                         aSilent: Boolean = False);
 var
+  errorStr: String;
   RouteWasBuilt: Boolean; //Check if route was built, otherwise return nil
 begin
   inherited Create(aUnit, aActionType, False);
@@ -214,10 +215,15 @@ begin
   if not RouteWasBuilt // Means it will exit in Execute
     and not aSilent then // do not log this error in silent mode (we could expect route could not be build in some cases (f.e. warrior reRoute when attack house)
     //NoFlush logging here because this log is not much important
-    gLog.AddNoTimeNoFlush('Unable to make a route for ' + gRes.Units[aUnit.UnitType].GUIName +
-                   ' from ' + KM_Points.TypeToString(fWalkFrom) + ' to ' + KM_Points.TypeToString(fWalkTo) +
-                   ' with "' + PassabilityGuiText[fPass] + '"' +
-                   ' TargetWalkConnectSet = ' + TKMSetByteSet.SetToString(aTargetWalkConnectSet));
+  begin
+    errorStr := Format('Unable to make a route for %s from %s to %s with "%s" TargetWalkConnectSet = %s',
+                       [gRes.Units[aUnit.UnitType].GUIName, fWalkFrom.ToString, fWalkTo.ToString,
+                        PassabilityGuiText[fPass], TKMSetByteSet.SetToString(aTargetWalkConnectSet)]);
+    gLog.AddNoTimeNoFlush(errorStr);
+    {$IFDEF RUNNER}
+    raise Exception.Create(errorStr);
+    {$ENDIF}
+  end;
 end;
 
 
