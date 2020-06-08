@@ -623,7 +623,7 @@ begin
     case fParams.Mode of
       gmMulti, gmMultiSpectate:
                 begin
-                  fGameInputProcess := TKMGameInputProcess_Multi.Create(gipRecording, gNetworking);
+                  fGameInputProcess := TKMGameInputProcess_Multi.Create(gipRecording);
                   fTextMission := TKMTextLibraryMulti.Create;
                   fTextMission.LoadLocale(ChangeFileExt(aMissionFile, '.%s.libx'));
                 end;
@@ -2247,7 +2247,7 @@ begin
     fGameInputProcess := TKMGameInputProcess_Single.Create(gipReplaying) //Replay
   else
     if fParams.IsMultiPlayerOrSpec then
-      fGameInputProcess := TKMGameInputProcess_Multi.Create(gipRecording, gNetworking) //Multiplayer
+      fGameInputProcess := TKMGameInputProcess_Multi.Create(gipRecording) //Multiplayer
     else
       fGameInputProcess := TKMGameInputProcess_Single.Create(gipRecording);
 
