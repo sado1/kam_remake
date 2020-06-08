@@ -3659,7 +3659,7 @@ end;
 procedure TKMScriptActions.GameSpeedChangeAllowed(aAllowed: Boolean);
 begin
   try
-    gGame.GameSpeedChangeAllowed := aAllowed;
+    gGame.SpeedChangeAllowed := aAllowed;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

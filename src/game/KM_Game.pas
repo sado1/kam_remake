@@ -58,7 +58,7 @@ type
     fCampaignMap: Byte;         //Which campaign map it is, so we can unlock next one on victory
     fCampaignName: TKMCampaignId;  //Is this a game part of some campaign
     fSpeedGIP: Single; //GameSpeed, recorded to GIP, could be requested by scripts
-    fGameSpeedChangeAllowed: Boolean; //Is game speed change allowed?
+    fSpeedChangeAllowed: Boolean; //Is game speed change allowed?
 
     fBlockGetPointer: Boolean; //?? should be saved ??
 
@@ -199,7 +199,7 @@ type
     property CampaignMap: Byte read fCampaignMap;
     property SpeedActual: Single read fSpeedActual;
     property SpeedGIP: Single read fSpeedGIP;
-    property GameSpeedChangeAllowed: Boolean read fGameSpeedChangeAllowed write fGameSpeedChangeAllowed;
+    property SpeedChangeAllowed: Boolean read fSpeedChangeAllowed write fSpeedChangeAllowed;
     property GameTickDuration: Single read GetGameTickDuration;
     property SavedReplays: TKMSavePointCollection read fSavePoints write fSavePoints;
 
@@ -306,7 +306,7 @@ begin
   fOptions  := TKMGameOptions.Create;
   fSpeedChangeTick := 0;
   fSpeedChangeTime := 0;
-  fGameSpeedChangeAllowed := True;
+  fSpeedChangeAllowed := True;
   fPausedTicksCnt := 0;
   fBlockGetPointer := False;
   fLastTimeUserAction := TimeGet;
@@ -1760,7 +1760,7 @@ begin
 
   if fParams.IsReplay then
     SetSpeedActual(aSpeed)
-  else if fGameSpeedChangeAllowed then
+  else if fSpeedChangeAllowed then
     fGameInputProcess.CmdGame(gicGameSpeed, aSpeed);
 end;
 
@@ -1917,7 +1917,7 @@ begin
 
   aSaveStream.Write(fParams.DynamicFOW);
   aSaveStream.Write(fSpeedGIP);
-  aSaveStream.Write(fGameSpeedChangeAllowed);
+  aSaveStream.Write(fSpeedChangeAllowed);
 
   //We need to know which mission/savegame to try to restart. This is unused in MP
   if not fParams.IsMultiPlayerOrSpec then
@@ -2183,7 +2183,7 @@ begin
   else
     UpdateClockUI; //To show actual game speed in the replay
 
-  LoadStream.Read(fGameSpeedChangeAllowed);
+  LoadStream.Read(fSpeedChangeAllowed);
 
   //Check if this save is Campaign game save
   IsCampaign := False;

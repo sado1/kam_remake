@@ -869,7 +869,7 @@ end;
 function TKMScriptStates.GameSpeedChangeAllowed: Boolean;
 begin
   try
-    Result := gGame.GameSpeedChangeAllowed;
+    Result := gGame.SpeedChangeAllowed;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
