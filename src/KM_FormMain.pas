@@ -118,7 +118,6 @@ type
     chkSelectedObjInfo: TCheckBox;
     chkShowFPS: TCheckBox;
     chkHands: TCheckBox;
-    btnUpdateUI: TButton;
     {$IFDEF WDC}
     mainGroup: TCategoryPanelGroup;
     cpGameControls: TCategoryPanel;
@@ -248,7 +247,6 @@ type
     procedure SaveSettingsClick(Sender: TObject);
     procedure SaveEditableMission1Click(Sender: TObject);
     procedure ValidateGameStatsClick(Sender: TObject);
-    procedure Button_UpdateUI_Click(Sender: TObject);
     procedure LoadSavThenRplClick(Sender: TObject);
     procedure ReloadLibxClick(Sender: TObject);
     procedure Debug_UnlockCmpMissionsClick(Sender: TObject);
@@ -781,15 +779,6 @@ begin
 end;
 
 
-procedure TFormMain.Button_UpdateUI_Click(Sender: TObject);
-begin
-  if gGameApp.Game <> nil then
-    gGameApp.Game.ActiveInterface.UpdateState(gGameApp.GlobalTickCount); //UpdateUI, even on game Pause
-
-  ActiveControl := nil; //Do not allow to focus on anything on debug panel
-end;
-
-
 procedure TFormMain.Civilians1Click(Sender: TObject);
 begin
   gRes.ExportUnitAnim(CITIZEN_MIN, CITIZEN_MAX);
@@ -1169,6 +1158,9 @@ begin
       else  raise Exception.Create('Unexpected RGLogNetPackets.ItemIndex = ' + IntToStr(RGLogNetPackets.ItemIndex));
     end;
   end;
+
+  if gGameApp.Game <> nil then
+    gGameApp.Game.ActiveInterface.UpdateState(gGameApp.GlobalTickCount);
 
   if    not (Sender is TSpinEdit)
     and not (Sender is TEdit) then // TSpinEdit need focus to enter value
