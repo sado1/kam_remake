@@ -529,13 +529,6 @@ end;
 
 
 procedure TKMArmyDefence.Paint();
-const
-  COLOR_WHITE = $FFFFFF;
-  COLOR_BLACK = $000000;
-  COLOR_GREEN = $00FF00;
-  COLOR_RED = $0000FF;
-  COLOR_YELLOW = $00FFFF;
-  COLOR_BLUE = $FF0000;
 var
   I, K, Idx, Threat, AllianceIdx: Integer;
   Col: Cardinal;
@@ -556,7 +549,7 @@ begin
     Col := $22;
     if (Positions[I].Group = nil) then
       Col := 0;
-    gRenderAux.CircleOnTerrain(Loc.X, Loc.Y, 1, (Col shl 24) OR COLOR_GREEN, $FFFFFFFF);
+    gRenderAux.CircleOnTerrain(Loc.X, Loc.Y, 1, (Col shl 24) OR tcGreen, $FFFFFFFF);
   end;
 
   // Draw defence position of selected unit
@@ -565,7 +558,7 @@ begin
       if (gMySpectator.Selected = Positions[I].Group) then
       begin
         Loc := Positions[I].Position.Loc;
-        gRenderAux.CircleOnTerrain(Loc.X, Loc.Y, 1, $AA000000 OR COLOR_RED, $FFFFFFFF);
+        gRenderAux.CircleOnTerrain(Loc.X, Loc.Y, 1, $AA000000 OR tcRed, $FFFFFFFF);
         break;
       end;
 
@@ -590,7 +583,7 @@ begin
           Nodes[Polygons[Idx].Indices[1]].X,
           Nodes[Polygons[Idx].Indices[1]].Y,
           Nodes[Polygons[Idx].Indices[2]].X,
-          Nodes[Polygons[Idx].Indices[2]].Y, (Col shl 24) OR COLOR_RED);
+          Nodes[Polygons[Idx].Indices[2]].Y, (Col shl 24) OR tcRed);
 
       // Draw hostile units around defensive lines
       if (Threat > 0) then
@@ -599,8 +592,8 @@ begin
         for K := 0 to Length(UGA) - 1 do
         begin
           Pos := UGA[K].Position;
-          gRenderAux.CircleOnTerrain(Pos.X, Pos.Y, 1, $44000000 OR COLOR_RED, $FF000000 OR COLOR_RED);
-          //gRenderAux.LineOnTerrain(Pos, Loc, $AA000000 OR COLOR_BLACK);
+          gRenderAux.CircleOnTerrain(Pos.X, Pos.Y, 1, $44000000 OR tcRed, $FF000000 OR tcRed);
+          //gRenderAux.LineOnTerrain(Pos, Loc, $AA000000 OR clBlack);
         end;
       end;
     end;

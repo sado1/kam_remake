@@ -776,15 +776,6 @@ end;
 
 
 procedure TKMArmyAttackNew.Paint;
-const
-  COLOR_WHITE = $FFFFFF;
-  COLOR_BLACK = $000000;
-  COLOR_GREEN = $00FF00;
-  COLOR_RED = $0000FF;
-  COLOR_YELLOW = $00FFFF;
-  COLOR_BLUE = $FF0000;
-  COLOR_PINK = $FF00FF;
-  COLOR_CYAN = $FFFF00;
 var
   Op1, Op2: Byte;
   K: Integer;
@@ -838,37 +829,37 @@ begin
         else begin end; // goStorm, goNone
       end;
       if not KMSamePoint(Position,KMPOINT_ZERO) then
-        gRenderAux.CircleOnTerrain(Position.X, Position.Y, 1.5, (Op1 shl 24) OR COLOR_BLUE, (Op2 shl 24) OR COLOR_BLUE);
-      gRenderAux.Quad(CG.TargetAim.X, CG.TargetAim.Y, $FF000000 OR COLOR_WHITE);
+        gRenderAux.CircleOnTerrain(Position.X, Position.Y, 1.5, (Op1 shl 24) OR tcBlue, (Op2 shl 24) OR tcBlue);
+      gRenderAux.Quad(CG.TargetAim.X, CG.TargetAim.Y, $FF000000 OR tcWhite);
       {$IFDEF DEBUG_NewAI}
       if not KMSamePoint(CG.TargetAim, KMPOINT_ZERO) AND (Length(CG.DEBUGPointPath) > 0) then
         with CG.DEBUGPointPath[Low(CG.DEBUGPointPath)] do
-          gRenderAux.Quad(X, Y, $FF000000 OR COLOR_CYAN);
+          gRenderAux.Quad(X, Y, $FF000000 OR tcCyan);
       {$ENDIF}
     end;
 
     // Combat group circle
-    Col1 := COLOR_WHITE;
+    Col1 := tcWhite;
     case CG.CombatPhase of
-      cpIdle:   Col1 := COLOR_WHITE;
-      cpWalk:   Col1 := COLOR_GREEN;
-      cpAttack: Col1 := COLOR_RED;
-      cpDead:   Col1 := COLOR_BLACK;
+      cpIdle:   Col1 := tcWhite;
+      cpWalk:   Col1 := tcGreen;
+      cpAttack: Col1 := tcRed;
+      cpDead:   Col1 := tcBlack;
     end;
-    Col2 := COLOR_WHITE;
+    Col2 := tcWhite;
     case CG.TargetType of
-      ttNone:  Col2 := COLOR_WHITE;
-      ttGroup: Col2 := COLOR_RED;
-      ttUnit:  Col2 := COLOR_YELLOW;
-      ttHouse: Col2 := COLOR_YELLOW;
-      ttPoint: Col2 := COLOR_GREEN;
+      ttNone:  Col2 := tcWhite;
+      ttGroup: Col2 := tcRed;
+      ttUnit:  Col2 := tcYellow;
+      ttHouse: Col2 := tcYellow;
+      ttPoint: Col2 := tcGreen;
     end;
     gRenderAux.CircleOnTerrain(CG.Position.X, CG.Position.Y, 1, (Op1 shl 24) OR Col1, (Op2 shl 24) OR Col2);
 
     // Select target
-    Col1 := COLOR_WHITE;
-    if      (CG.CombatPhase = cpWalk)   then Col1 := COLOR_GREEN
-    else if (CG.CombatPhase = cpAttack) then Col1 := COLOR_RED;
+    Col1 := tcWhite;
+    if      (CG.CombatPhase = cpWalk)   then Col1 := tcGreen
+    else if (CG.CombatPhase = cpAttack) then Col1 := tcRed;
     {$IFDEF DEBUG_NewAI}
     if not KMSamePoint(CG.TargetAim, KMPOINT_ZERO) then
       for L := 1 to Length(CG.DEBUGPointPath) - 1 do

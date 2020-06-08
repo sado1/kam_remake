@@ -416,13 +416,6 @@ end;
 
 {$IFDEF DEBUG_NavMeshPathFinding}
 procedure TNavMeshPathFinding.Paint();
-const
-  COLOR_WHITE = $FFFFFF;
-  COLOR_BLACK = $000000;
-  COLOR_GREEN = $00FF00;
-  COLOR_RED = $0000FF;
-  COLOR_YELLOW = $00FFFF;
-  COLOR_BLUE = $FF0000;
 var
   K: Integer;
   P1,P2,P3: TKMPoint;
@@ -441,7 +434,7 @@ begin
           Nodes[ Polygons[K].Indices[1] ].X,
           Nodes[ Polygons[K].Indices[1] ].Y,
           Nodes[ Polygons[K].Indices[2] ].X,
-          Nodes[ Polygons[K].Indices[2] ].Y, $90000000 OR COLOR_WHITE);
+          Nodes[ Polygons[K].Indices[2] ].Y, $90000000 OR tcWhite);
 
   // Draw parent child relation
   for K := 0 to gAIFields.NavMesh.PolygonsCnt - 1 do
@@ -454,8 +447,8 @@ begin
         P1 := Polygons[K].CenterPoint;
         P2 := Polygons[ NMNode.Idx ].CenterPoint;
         P3 := KMPointAverage(P1,P2);
-        gRenderAux.LineOnTerrain(P3, P2, $99000000 OR COLOR_RED);
-        gRenderAux.LineOnTerrain(P3, P1, $99000000 OR COLOR_BLUE);
+        gRenderAux.LineOnTerrain(P3, P2, $99000000 OR tcRed);
+        gRenderAux.LineOnTerrain(P3, P1, $99000000 OR tcBlue);
       end;
 end;
 {$ENDIF}

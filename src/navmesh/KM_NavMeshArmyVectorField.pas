@@ -146,17 +146,11 @@ type
     procedure FindPositions();
 
     function LogStatus(): UnicodeString;
-    procedure Paint(var aOwners: TKMHandIDArray; var aTargetGroups: TKMUnitGroupArray; var aTargetHouses: TKMHouseArray);
+    procedure Paint();
   end;
 
 
 const
-  COLOR_WHITE = $FFFFFF;
-  COLOR_BLACK = $000000;
-  COLOR_GREEN = $00FF00;
-  COLOR_RED = $7700FF;
-  COLOR_YELLOW = $00FFFF;
-  COLOR_BLUE = $FF0000;
   MAX_CLUSTER_DISTANCE = 10;
 
 
@@ -1188,10 +1182,10 @@ begin
       Result := Format('%s|%d. [$%s]###%s:',[Result, K, IntToHex(Color,6), STR_COLOR_WHITE]);
       Result := Format('%s Threat %.0f/%.0f..%2.0f%%;',[Result, ThreatNearby, Threat, ThreatNearby/Max(1,Threat/100)]);
       Result := Format('%s Opportunity (%d): %.0f/%.0f..%2.0f%%;',[Result, CounterWeight.InPositionCnt, CounterWeight.InPositionStrength, CounterWeight.Opportunity, CounterWeight.InPositionStrength / Max(1,CounterWeight.Opportunity/100)]);
-      Result := Format('%s [$%s]Attacking City%s,',[Result, IntToHex(COLOR_RED * Byte(AttackingCity            ) + $FFFFFF * Byte(not AttackingCity            ),6), STR_COLOR_WHITE]);
-      Result := Format('%s [$%s]Place%s,',         [Result, IntToHex(COLOR_RED * Byte(CounterWeight.InPlace    ) + $FFFFFF * Byte(not CounterWeight.InPlace    ),6), STR_COLOR_WHITE]);
-      Result := Format('%s [$%s]Advantage%s,',     [Result, IntToHex(COLOR_RED * Byte(CounterWeight.AtAdvantage) + $FFFFFF * Byte(not CounterWeight.AtAdvantage),6), STR_COLOR_WHITE]);
-      Result := Format('%s [$%s]Ambush%s',         [Result, IntToHex(COLOR_RED * Byte(CounterWeight.Ambushed   ) + $FFFFFF * Byte(not CounterWeight.Ambushed   ),6), STR_COLOR_WHITE]);
+      Result := Format('%s [$%s]Attacking City%s,',[Result, IntToHex(tcRed * Byte(AttackingCity            ) + $FFFFFF * Byte(not AttackingCity            ),6), STR_COLOR_WHITE]);
+      Result := Format('%s [$%s]Place%s,',         [Result, IntToHex(tcRed * Byte(CounterWeight.InPlace    ) + $FFFFFF * Byte(not CounterWeight.InPlace    ),6), STR_COLOR_WHITE]);
+      Result := Format('%s [$%s]Advantage%s,',     [Result, IntToHex(tcRed * Byte(CounterWeight.AtAdvantage) + $FFFFFF * Byte(not CounterWeight.AtAdvantage),6), STR_COLOR_WHITE]);
+      Result := Format('%s [$%s]Ambush%s',         [Result, IntToHex(tcRed * Byte(CounterWeight.Ambushed   ) + $FFFFFF * Byte(not CounterWeight.Ambushed   ),6), STR_COLOR_WHITE]);
       if (K = Idx) then
         Result := Format('%s <<<<<<',[Result]);
     end;
@@ -1204,7 +1198,7 @@ begin
 end;
 
 
-procedure TArmyVectorField.Paint(var aOwners: TKMHandIDArray; var aTargetGroups: TKMUnitGroupArray; var aTargetHouses: TKMHouseArray);
+procedure TArmyVectorField.Paint();
 {$IFDEF DEBUG_ArmyVectorField}
   function FindGroup(aG: TKMUnitGroup): Boolean;
   var
@@ -1234,8 +1228,6 @@ var
   P1,P2,P3,P4: TKMPoint;
   G: TKMUnitGroup;
   H: TKMHouse;
-  //PL: TKMHandID;
-  //P: TKMPoint;
 {$ENDIF}
 begin
   {$IFDEF DEBUG_ArmyVectorField}
@@ -1271,191 +1263,93 @@ begin
   //}
 
   // Vector field
-  with fDbgVector[Team] do
-    if (SelectedIdx <> -1) AND (Length(VectorFields) > SelectedIdx) then
-      for K := 0 to fPolygonsCnt - 1 do
-        if (VectorFields[SelectedIdx,K].Distance > 0) then
-          with gAIFields.NavMesh do
-          begin
-            BestIdx := Polygons[K].Nearby[0];
-            for L := 1 to Polygons[K].NearbyCount - 1 do
+  if OVERLAY_AI_VECTOR_FIELD then
+    with fDbgVector[Team] do
+      if (SelectedIdx <> -1) AND (Length(VectorFields) > SelectedIdx) then
+        for K := 0 to fPolygonsCnt - 1 do
+          if (VectorFields[SelectedIdx,K].Distance > 0) then
+            with gAIFields.NavMesh do
             begin
-              NearbyIdx := Polygons[K].Nearby[L];
-              if (fVectorField[BestIdx].Distance > fVectorField[NearbyIdx].Distance) then
-                BestIdx := NearbyIdx;
+              BestIdx := Polygons[K].Nearby[0];
+              for L := 1 to Polygons[K].NearbyCount - 1 do
+              begin
+                NearbyIdx := Polygons[K].Nearby[L];
+                if (fVectorField[BestIdx].Distance > fVectorField[NearbyIdx].Distance) then
+                  BestIdx := NearbyIdx;
+              end;
+              if (fVectorField[K].Distance < fVectorField[BestIdx].Distance) then
+                DrawPolygon(K, $22, $44000000 OR tcWhite)
+              else
+              begin
+                P1 := Polygons[K].CenterPoint;
+                P4 := Polygons[BestIdx].CenterPoint;
+                P2 := KMPointAverage(P1,KMPointAverage(P1,P4));
+                P3 := KMPointAverage(P2,KMPointAverage(P1,P4));
+                gRenderAux.LineOnTerrain(P4, P3, $FF000000 OR tcRed);
+                gRenderAux.LineOnTerrain(P3, P2, $FF000000 OR tcGreen);
+                gRenderAux.LineOnTerrain(P2, P1, $FF000000 OR tcBlue);
+              end;
             end;
-            if (fVectorField[K].Distance < fVectorField[BestIdx].Distance) then
-              DrawPolygon(K, $22, $44000000 OR COLOR_WHITE)
-            else
-            begin
-              P1 := Polygons[K].CenterPoint;
-              P4 := Polygons[BestIdx].CenterPoint;
-              P2 := KMPointAverage(P1,KMPointAverage(P1,P4));
-              P3 := KMPointAverage(P2,KMPointAverage(P1,P4));
-              gRenderAux.LineOnTerrain(P4, P3, $FF000000 OR COLOR_RED);
-              gRenderAux.LineOnTerrain(P3, P2, $FF000000 OR COLOR_GREEN);
-              gRenderAux.LineOnTerrain(P2, P1, $FF000000 OR COLOR_BLUE);
-            end;
-          end;
 
   // Polygon in cluster
-  with fDbgVector[Team] do
-    for K := 0 to Min(High(ClustersMapp),fPolygonsCnt - 1) do
-      if (ClustersMapp[K] <> High(Word)) then
-      begin
-        L := Clusters.Clusters[ ClustersMapp[K] ].ReferenceID;
-        Color := $00FFFFFF AND GenerateColorWSeed(L);
-        DrawPolygon(K, $22, $44000000 OR Color);
-      end;
+  if OVERLAY_AI_CLUSTERS then
+    with fDbgVector[Team] do
+      for K := 0 to Min(High(ClustersMapp),fPolygonsCnt - 1) do
+        if (ClustersMapp[K] <> High(Word)) then
+        begin
+          L := Clusters.Clusters[ ClustersMapp[K] ].ReferenceID;
+          Color := $00FFFFFF AND GenerateColorWSeed(L);
+          DrawPolygon(K, $22, $44000000 OR Color);
+        end;
 
   // Target of cluster
   for K := Low(fDbgVector[Team].CCT) to High(fDbgVector[Team].CCT) do
   begin
     Color := $00FFFFFF AND GenerateColorWSeed(fDbgVector[Team].CCT[K].ClusterIdx);
     Opacity := $88000000;
-    if (K = SelectedIdx) then
+    if OVERLAY_AI_CLUSTERS then
     begin
-      Opacity := $BB000000;
-      with fDbgVector[Team].CCT[K] do
-        gRenderAux.CircleOnTerrain(CenterPoint.X, CenterPoint.Y, 1, Opacity OR Color, $FF000000 OR COLOR_BLACK);
-    end;
-    // Enemies
-    with fDbgVector[Team].CCT[K].Cluster^ do
-    begin
-      for L := 0 to GroupsCount - 1 do
+      if (K = SelectedIdx) then
       begin
-        G := fDbgVector[Team].Enemy.Groups[ Groups[L] ];
-        if FindGroup(G) then
-          gRenderAux.CircleOnTerrain(G.Position.X, G.Position.Y, 1, Opacity OR Color, $FF000000 OR COLOR_RED);
+        Opacity := $BB000000;
+        with fDbgVector[Team].CCT[K] do
+          gRenderAux.CircleOnTerrain(CenterPoint.X, CenterPoint.Y, 1, Opacity OR Color, $FF000000 OR tcBlack);
       end;
-      for L := 0 to HousesCount - 1 do
+      // Enemies
+      with fDbgVector[Team].CCT[K].Cluster^ do
       begin
-        H := fDbgVector[Team].Enemy.Houses[ Houses[L] ];
-        if FindHouse(H) then
-          gRenderAux.CircleOnTerrain(H.Position.X, H.Position.Y, 1, Opacity OR Color, $FF000000 OR COLOR_BLUE);
+        for L := 0 to GroupsCount - 1 do
+        begin
+          G := fDbgVector[Team].Enemy.Groups[ Groups[L] ];
+          if FindGroup(G) then
+            gRenderAux.CircleOnTerrain(G.Position.X, G.Position.Y, 1, Opacity OR Color, $FF000000 OR tcRed);
+        end;
+        for L := 0 to HousesCount - 1 do
+        begin
+          H := fDbgVector[Team].Enemy.Houses[ Houses[L] ];
+          if FindHouse(H) then
+            gRenderAux.CircleOnTerrain(H.Position.X, H.Position.Y, 1, Opacity OR Color, $FF000000 OR tcBlue);
+        end;
       end;
     end;
     // Allied groups
-    with fDbgVector[Team].CCT[K].CounterWeight do
-      for L := 0 to GroupsCount - 1 do
-      begin
-        gRenderAux.Quad(Groups[L].TargetPosition.Loc.X, Groups[L].TargetPosition.Loc.Y, ($99000000 - Byte(Groups[L].Status)*$44000000) OR Color);
-        G := Groups[L].Group;
-        if FindGroup(G) then
+    if OVERLAY_AI_ALLIEDGROUPS then
+    begin
+      with fDbgVector[Team].CCT[K].CounterWeight do
+        for L := 0 to GroupsCount - 1 do
         begin
-          gRenderAux.Line(G.Position.X, G.Position.Y, Groups[L].TargetPosition.Loc.X, Groups[L].TargetPosition.Loc.Y, $FF000000 OR Color);
-          gRenderAux.CircleOnTerrain(G.Position.X, G.Position.Y, 1, Opacity OR Color, $FF000000 OR COLOR_GREEN * Byte(Groups[L].Status) OR COLOR_BLUE * Byte(not Groups[L].Status));
+          gRenderAux.Quad(Groups[L].TargetPosition.Loc.X, Groups[L].TargetPosition.Loc.Y, ($99000000 - Byte(Groups[L].Status)*$44000000) OR Color);
+          G := Groups[L].Group;
+          if FindGroup(G) then
+          begin
+            gRenderAux.Line(G.Position.X, G.Position.Y, Groups[L].TargetPosition.Loc.X, Groups[L].TargetPosition.Loc.Y, $FF000000 OR Color);
+            gRenderAux.CircleOnTerrain(G.Position.X, G.Position.Y, 1, Opacity OR Color, $FF000000 OR tcGreen * Byte(Groups[L].Status) OR tcBlue * Byte(not Groups[L].Status));
+          end;
         end;
-      end;
-
+    end;
   end;
-
   {$ENDIF}
 end;
 
-{
-procedure TArmyVectorField.FindPositions();
-var
-  BattleLineCnt: Word;
-  BattleLine: TKMWordArray;
-
-  procedure FindBattleLine(aInitIdx: Word);
-  var
-    K, Idx, NearbyIdx: Word;
-  begin
-    BattleLineCnt := 0;
-    fQueueCnt := 0;
-    fVisitedIdx := fVisitedIdx + 1;
-    InsertInQueue(aInitIdx);
-    fQueueArray[aInitIdx].Visited := fVisitedIdx;
-    while RemoveFromQueue(Idx) do
-      for K := 0 to gAIFields.NavMesh.Polygons[Idx].NearbyCount - 1 do
-      begin
-        NearbyIdx := gAIFields.NavMesh.Polygons[Idx].Nearby[K];
-        if (fQueueArray[NearbyIdx].Visited = 1) then // 1 is mark for initial FF of enemy groups
-        begin
-          fQueueArray[NearbyIdx].Visited := fVisitedIdx;
-          InsertInQueue(NearbyIdx);
-        end
-        else if (fQueueArray[NearbyIdx].Visited = 0) then
-        begin
-          fQueueArray[NearbyIdx].Visited := fVisitedIdx; // Mark as visited so the polygon is not added to BattleLine twice
-          if (Length(BattleLine) <= BattleLineCnt) then
-            SetLength(BattleLine, BattleLineCnt + 40);
-          BattleLine[BattleLineCnt] := NearbyIdx;
-          Inc(BattleLineCnt);
-        end;
-      end;
-  end;
-
-  procedure AssignPositions(aIdx: Integer);
-  const
-    SQR_IN_PLACE_TOLERANCE = 15*15;
-  var
-    NearEnemy: Boolean;
-    K, L, BestIdx: Integer;
-    BestDistance, Distance: Single;
-    G: TKMUnitGroup;
-  begin
-    BestIdx := 0;
-    for K := 0 to CCT[aIdx].CounterWeight.GroupsCount - 1 do
-    begin
-      G := CCT[aIdx].CounterWeight.Groups[K].Group;
-      BestDistance := 1E10;
-      for L := 0 to BattleLineCnt - 1 do
-      begin
-        Distance := KMDistanceSqr(gAIFields.NavMesh.Polygons[ BattleLine[L] ].CenterPoint,G.Position);
-        if (Distance < BestDistance) then
-        begin
-          BestDistance := Distance;
-          BestIdx := L;
-        end;
-      end;
-      if (BestDistance < 1E10) then
-      begin
-        NearEnemy := (fQueueArray[  Ally.GroupsPoly[ CCT[aIdx].CounterWeight.Groups[K].Idx]  ].Visited > 0);
-        CCT[aIdx].CounterWeight.Groups[K].TargetPosition.Loc := gAIFields.NavMesh.Polygons[ BattleLine[BestIdx] ].CenterPoint;
-        CCT[aIdx].CounterWeight.Groups[K].TargetPosition.Dir := dirN;
-        CCT[aIdx].CounterWeight.Groups[K].Status := (BestDistance < SQR_IN_PLACE_TOLERANCE) OR NearEnemy;
-        if CCT[aIdx].CounterWeight.Groups[K].Status then
-        begin
-          Inc(CCT[aIdx].CounterWeight.InPositionCnt);
-          Inc(CCT[aIdx].CounterWeight.NearEnemyCnt,Byte(NearEnemy));
-          CCT[aIdx].CounterWeight.InPositionStrength := CCT[aIdx].CounterWeight.InPositionStrength + CCT[aIdx].CounterWeight.Groups[K].Group.Count;
-        end;
-      end;
-    end;
-  end;
-
-var
-  K, InitIdx: Integer;
-begin
-
-  if (Enemy.GroupsCount = 0) AND (Enemy.HousesCount = 0) then
-    Exit;
-  if (fVisitedIdx = 0) then
-    fVisitedIdx := 1;
-  for K := Low(CCT) to High(CCT) do
-    if (CCT[K].CounterWeight.GroupsCount > 0) then
-    begin
-      if (CCT[K].Cluster.GroupsCount > 0) then
-        InitIdx := Enemy.GroupsPoly[ CCT[K].Cluster.Groups[0] ]
-      else
-        InitIdx := Enemy.HousesPoly[ CCT[K].Cluster.Houses[0] ];
-      FindBattleLine(InitIdx);
-      AssignPositions(K);
-    end;
-
-  for K := Low(CCT) to High(CCT) do
-    with CCT[K].CounterWeight do
-    begin
-      InPlace := InPositionCnt > GroupsCount * AI_Par[ATTACK_ArmyVectorField_EvalClusters_InPlace];
-      AtAdvantage := InPositionStrength > CCT[K].Threat * AI_Par[ATTACK_ArmyVectorField_EvalClusters_AtAdvantage];
-      Ambushed := NearEnemyCnt > GroupsCount * AI_Par[ATTACK_ArmyVectorField_EvalClusters_Ambushed];
-    end;
-
-
-end;
-}
 end.
 

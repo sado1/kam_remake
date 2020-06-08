@@ -129,7 +129,7 @@
         <VerInfo_Keys>CompanyName=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=$(MSBuildProjectName);ProductName=$(MSBuildProjectName)</VerInfo_Keys>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
-        <DCC_Define>madExcept;DEBUG;DEBUG_NewAI;DEBUG_ArmyVectorField;DEBUG_BattleLines;DEBUG_NavMesh;$(DCC_Define)</DCC_Define>
+        <DCC_Define>madExcept;DEBUG;DEBUG_NewAI;DEBUG_AIInfluences;DEBUG_Supervisor;DEBUG_ArmyVectorField;DEBUG_NavMeshPathFinding;$(DCC_Define)</DCC_Define>
         <BT_BuildType>Debug</BT_BuildType>
         <DCC_MapFile>3</DCC_MapFile>
     </PropertyGroup>
@@ -312,7 +312,6 @@
         <DCCReference Include="src\navmesh\KM_NavMeshFloodPositioning.pas"/>
         <DCCReference Include="src\navmesh\KM_NavMeshInfluences.pas"/>
         <DCCReference Include="src\navmesh\KM_NavMeshDefences.pas"/>
-        <DCCReference Include="src\navmesh\KM_NavMeshArmyPositioning.pas"/>
         <DCCReference Include="src\navmesh\KM_NavMeshArmyVectorField.pas"/>
         <DCCReference Include="src\net\KM_NetAuthSecure.pas"/>
         <DCCReference Include="src\net\KM_NetAuthUnsecure.pas"/>

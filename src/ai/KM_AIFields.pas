@@ -126,8 +126,7 @@ begin
 
   fEye.Paint(aRect);
 
-  if OVERLAY_AI_SUPERVISOR then
-    fSupervisor.Paint(aRect);
+  fSupervisor.Paint(aRect);
 end;
 
 

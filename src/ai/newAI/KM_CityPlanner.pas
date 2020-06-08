@@ -2543,13 +2543,6 @@ end;
 
 
 procedure TKMCityPlanner.Paint();
-const
-  COLOR_WHITE = $FFFFFF;
-  COLOR_BLACK = $000000;
-  COLOR_GREEN = $00FF00;
-  COLOR_RED = $0000FF;
-  COLOR_YELLOW = $00FFFF;
-  COLOR_BLUE = $FF0000;
 var
   K,L: Integer;
   Division: Single;
@@ -2571,7 +2564,7 @@ begin
       begin
         //Val := GA_PATHFINDING_BasePrice + Max(Max(GA_PATHFINDING_noBuildArea,GA_PATHFINDING_Field),Max(Max(GA_PATHFINDING_Coal,GA_PATHFINDING_Forest),GA_PATHFINDING_OtherCase));
         //Val := Cardinal(Max(0, Min(250, Round(Price[Y,X]/Single(Val)*250))));
-        //gRenderAux.Quad(X, Y, (Val shl 24) OR COLOR_RED);
+        //gRenderAux.Quad(X, Y, (Val shl 24) OR tcRed);
         //gRenderAux.Text(X, Y, IntToStr(Order[Y,X]), $FF000000);
       end;
     //fRoadPlanner: TPathFindingCityPlanner;
@@ -2589,30 +2582,30 @@ begin
     if gTerrain.TileInMapCoords(X,Y) then
     begin
       Val := Cardinal(Max(0, Min(250, Round(DA1[Y,X]/Division*250))));
-      gRenderAux.Quad(X, Y, (Val shl 24) OR COLOR_YELLOW);
+      gRenderAux.Quad(X, Y, (Val shl 24) OR tcYellow);
       //gRenderAux.Text(X, Y, IntToStr(Round(DA1[Y,X])), $FF000000);
-      //gRenderAux.Quad(X, Y, (Cardinal(Max(0, Min(127, DA2[Y,X]))) shl 24) OR COLOR_WHITE);
-      //gRenderAux.Quad(X, Y, (Cardinal(Max(0, Min(127, DA3[Y,X]))) shl 24) OR COLOR_BLUE);
-      //gRenderAux.Quad(X, Y, (Cardinal(Max(0, Min(127, DA4[Y,X]))) shl 24) OR COLOR_BLACK);
+      //gRenderAux.Quad(X, Y, (Cardinal(Max(0, Min(127, DA2[Y,X]))) shl 24) OR tcWhite);
+      //gRenderAux.Quad(X, Y, (Cardinal(Max(0, Min(127, DA3[Y,X]))) shl 24) OR tcBlue);
+      //gRenderAux.Quad(X, Y, (Cardinal(Max(0, Min(127, DA4[Y,X]))) shl 24) OR tcBlack);
     end;
   {$ENDIF}
 
   {$IFDEF DEBUG_NewAI}
   // Paint best places for last house
   for K := 0 to Length(fBestHouseLocs) - 1 do
-    gRenderAux.Quad(fBestHouseLocs[K].X, fBestHouseLocs[K].Y, (fBestHouseVal[K] shl 24) OR COLOR_BLACK);
+    gRenderAux.Quad(fBestHouseLocs[K].X, fBestHouseLocs[K].Y, (fBestHouseVal[K] shl 24) OR tcBlack);
   {$ENDIF}
 
   // Paint houses
   for HT := HOUSE_MIN to HOUSE_MAX do
   begin
     case HT of
-      htStore,htSchool,htInn,htMarketplace: Color := COLOR_BLACK;
-      htQuary,htWoodcutters,htSawmill: Color := COLOR_BLUE;
-      htGoldMine,htCoalMine,htIronMine,htMetallurgists: Color := COLOR_YELLOW;
-      htIronSmithy,htArmorSmithy,htWeaponSmithy,htTannery,htArmorWorkshop,htWeaponWorkshop,htBarracks: Color := COLOR_RED;
-      htBakery,htButchers,htMill,htSwine,htStables,htFarm,htWineyard: Color := COLOR_GREEN;
-      else Color := COLOR_WHITE;
+      htStore,htSchool,htInn,htMarketplace: Color := tcBlack;
+      htQuary,htWoodcutters,htSawmill: Color := tcBlue;
+      htGoldMine,htCoalMine,htIronMine,htMetallurgists: Color := tcYellow;
+      htIronSmithy,htArmorSmithy,htWeaponSmithy,htTannery,htArmorWorkshop,htWeaponWorkshop,htBarracks: Color := tcRed;
+      htBakery,htButchers,htMill,htSwine,htStables,htFarm,htWineyard: Color := tcGreen;
+      else Color := tcWhite;
     end;
     Color := $80000000 OR Color;
     for K := 0 to fPlannedHouses[HT].Count - 1 do
@@ -2633,7 +2626,7 @@ begin
     for K := 0 to fForestsInfo.Count - 1 do
     begin
       Loc := fForestsInfo.Forests[K].Loc;
-      Color := (Min(255,Max(50,Round((fForestsInfo.Forests[K].Bid - fForestsInfo.Forests[0].Bid) * Division))) shl 24) OR $000000FF;
+      Color := (Min(255,Max(50,Round((fForestsInfo.Forests[K].Bid - fForestsInfo.Forests[0].Bid) * Division))) shl 24) OR tcRed;
       gRenderAux.Quad(Loc.X, Loc.Y, Color);
     end;
   end;
@@ -2648,7 +2641,7 @@ begin
           with fFields.Farms[K] do
             for L := Low(Points) to High(Points) do
               if not KMSamePoint(Points[L],KMPOINT_ZERO) then
-                gRenderAux.Quad(Points[L].X, Points[L].Y, $AA000000 OR COLOR_RED);
+                gRenderAux.Quad(Points[L].X, Points[L].Y, $AA000000 OR tcRed);
   end;
 
   {
@@ -2659,7 +2652,7 @@ begin
           for X := Low(Points) to Min(High(Points), Byte(FieldType=ftWine)*8 + Byte(FieldType=ftCorn)*High(Points)) do
             if (L<>X) AND KMSamePoint(Points[L],Points[X]) then
             begin
-              gRenderAux.Quad(Points[L].X, Points[L].Y, $FF000000 OR COLOR_RED);
+              gRenderAux.Quad(Points[L].X, Points[L].Y, $FF000000 OR tcRed);
             end;
   //}
 end;

@@ -531,30 +531,30 @@ object FormMain: TFormMain
         TabOrder = 15
         OnClick = ControlsUpdate
       end
-      object chkShowSupervisorAnimate: TCheckBox
-        Left = 25
-        Top = 102
+      object chkShowArmyVectorField: TCheckBox
+        Left = 8
+        Top = 104
         Width = 72
         Height = 17
-        Caption = 'Animate'
+        Caption = 'Vector Field'
         TabOrder = 16
         OnClick = ControlsUpdate
       end
-      object chkShowSupervisorDistances: TCheckBox
-        Left = 25
-        Top = 118
+      object chkShowClusters: TCheckBox
+        Left = 8
+        Top = 120
         Width = 72
         Height = 17
-        Caption = 'Distances'
+        Caption = 'Clusters'
         TabOrder = 17
         OnClick = ControlsUpdate
       end
-      object chkShowSupervisorMarks: TCheckBox
-        Left = 25
+      object chkShowAlliedGroups: TCheckBox
+        Left = 8
         Top = 135
         Width = 72
         Height = 17
-        Caption = 'Marks'
+        Caption = 'Allied Groups'
         TabOrder = 18
         OnClick = ControlsUpdate
       end

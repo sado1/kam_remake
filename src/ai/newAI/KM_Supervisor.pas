@@ -9,7 +9,7 @@ interface
 uses
   Classes, KM_CommonClasses, KM_CommonTypes, KM_Defaults,
   KM_Points, KM_UnitGroup, KM_Units, KM_UnitWarrior, KM_Terrain,
-  KM_NavMeshDefences, KM_NavMeshInfluences, KM_NavMeshArmyPositioning, KM_ArmyManagement, KM_AIArmyEvaluation,
+  KM_NavMeshDefences, KM_NavMeshInfluences, KM_ArmyManagement, KM_AIArmyEvaluation,
   KM_ArmyAttackNew, KM_NavMeshArmyVectorField,
   KM_Houses, KM_ResHouses, KM_Sort;
 
@@ -34,7 +34,7 @@ type
   TThreatArray = array of record
     DistRanged, Distance, Risk, WeightedCount: Single;
   end;
-  {$IFDEF DEBUG_BattleLines}
+  {$IFDEF DEBUG_Supervisor}
     TCombatStatusDebug = record
       TargetGroups: array[0..MAX_HANDS-1] of TKMUnitGroupArray;
       TargetHouses: array[0..MAX_HANDS-1] of TKMHouseArray;
@@ -53,9 +53,8 @@ type
     fPL2Alli: TKMHandByteArr;
     fAlli2PL: TKMHandID2Array;
     fCombatStatus: TKMCombatStatusPLArray;
-    fArmyPos: TArmyForwardFF;
     fArmyVector: TArmyVectorField;
-    {$IFDEF DEBUG_BattleLines}
+    {$IFDEF DEBUG_Supervisor}
       fCombatStatusDebug: TCombatStatusDebug;
       fArmyAttackDebug: TArmyAttackDebug;
     {$ENDIF}
@@ -99,7 +98,7 @@ implementation
 uses
   SysUtils, Math,
   KM_Game, KM_GameParams, KM_HandsCollection, KM_Hand,
-  {$IFDEF DEBUG_BattleLines}
+  {$IFDEF DEBUG_Supervisor}
     KM_RenderAux,
   {$ENDIF}
   KM_AIFields, KM_CommonUtils, KM_AIParameters;
@@ -142,15 +141,14 @@ end;
 
 { TKMSupervisor }
 constructor TKMSupervisor.Create();
-{$IFDEF DEBUG_BattleLines}
+{$IFDEF DEBUG_Supervisor}
   var
     PL: Integer;
 {$ENDIF}
 begin
-  fArmyPos := TArmyForwardFF.Create(True);
   fArmyVector := TArmyVectorField.Create(True);
   FillChar(fCombatStatus,SizeOf(fCombatStatus),#0);
-  {$IFDEF DEBUG_BattleLines}
+  {$IFDEF DEBUG_Supervisor}
     SetLength(fArmyAttackDebug.Threat,0);
     for PL := 0 to MAX_HANDS - 1 do
     begin
@@ -162,7 +160,6 @@ end;
 
 destructor TKMSupervisor.Destroy();
 begin
-  fArmyPos.Free;
   fArmyVector.Free;
   inherited;
 end;
@@ -485,7 +482,7 @@ begin
                            - Threat[IdxE].Distance   * AI_Par[ATTACK_SUPERVISOR_EvalTarget_ThreatGainDist]  * Byte(Threat[IdxE].Distance <> 1E6);
     end;
 
-    {$IFDEF DEBUG_BattleLines}
+    {$IFDEF DEBUG_Supervisor}
       SetLength(fArmyAttackDebug.Groups, Length(Threat));
       SetLength(fArmyAttackDebug.Threat, Length(Threat));
       if (Length(Threat) > 0) then
@@ -1172,7 +1169,7 @@ begin
           end;
       end;
   end;
-  {$IFDEF DEBUG_BattleLines}
+  {$IFDEF DEBUG_Supervisor}
     if (gMySpectator.Selected is TKMUnitGroup) then
       for K := 0 to Length(fArmyAttackDebug.Groups) - 1 do
         if (TKMUnitGroup(gMySpectator.Selected) = fArmyAttackDebug.Groups[K]) then
@@ -1187,34 +1184,29 @@ end;
 
 
 procedure TKMSupervisor.Paint(aRect: TKMRect);
-const
-  COLOR_WHITE = $FFFFFF;
-  COLOR_BLACK = $000000;
-  COLOR_GREEN = $00FF00;
-  COLOR_RED = $0000FF;
-  COLOR_YELLOW = $00FFFF;
-  COLOR_BLUE = $FF0000;
-{$IFDEF DEBUG_BattleLines}
+{$IFDEF DEBUG_Supervisor}
   var
+    Owner: TKMHandID;
     InRange: Boolean;
     K, L, M, PL: Integer;
     MaxThreat,MinThreat: Single;
-    Owner: TKMHandID;
     G: TKMUnitGroup;
     CG: TKMCombatGroup;
 {$ENDIF}
 begin
   //EvaluateArmies();
 
-  {$IFDEF DEBUG_BattleLines}
+  {$IFDEF DEBUG_ArmyVectorField}
+    fArmyVector.Paint();
+  {$ENDIF}
+
+  if not OVERLAY_AI_SUPERVISOR then
+    Exit;
+
+  {$IFDEF DEBUG_Supervisor}
     Owner := gMySpectator.HandID;
     if (Owner = PLAYER_NONE) then
       Exit;
-
-    //fArmyPos.Paint(fAlli2PL[ fPL2Alli[Owner] ], fCombatStatusDebug.TargetGroups[Owner], fCombatStatusDebug.TargetHouses[Owner]);
-
-    fArmyVector.Paint(fAlli2PL[ fPL2Alli[Owner] ], fCombatStatusDebug.TargetGroups[Owner], fCombatStatusDebug.TargetHouses[Owner]);
-
 
     MaxThreat := -1E10;
     MinThreat := +1E10;
@@ -1236,7 +1228,7 @@ begin
                     if (TargetGroups[Owner,K] = fArmyAttackDebug.Groups[M]) then
                     begin
                       G := TargetGroups[Owner,K];
-                      gRenderAux.CircleOnTerrain(G.Position.X, G.Position.Y, 0.5, (Round(255 - (fArmyAttackDebug.Threat[M].Risk-MinThreat)/(MaxThreat-MinThreat)*220) shl 24) OR COLOR_RED, $11FFFFFF);
+                      gRenderAux.CircleOnTerrain(G.Position.X, G.Position.Y, 0.5, (Round(255 - (fArmyAttackDebug.Threat[M].Risk-MinThreat)/(MaxThreat-MinThreat)*220) shl 24) OR tcRed, $11FFFFFF);
                       InRange := True;
                       break;
                     end;
@@ -1254,7 +1246,7 @@ begin
           begin
             CG := gHands[PL].AI.ArmyManagement.AttackNew.CG[K];
             if (G = CG.TargetGroup) then
-              gRenderAux.Line(CG.Position.X, CG.Position.Y, G.Position.X, G.Position.Y, $FF000000 OR COLOR_RED);
+              gRenderAux.Line(CG.Position.X, CG.Position.Y, G.Position.X, G.Position.Y, $FF000000 OR tcRed);
           end;
     end;
   {$ENDIF}
@@ -1272,13 +1264,6 @@ type
     pHostileGroup: TKMPGroupEvalSup;
   end;
 const
-  COLOR_WHITE = $FFFFFF;
-  COLOR_BLACK = $000000;
-  COLOR_GREEN = $00FF00;
-  COLOR_RED = $0000FF;
-  COLOR_YELLOW = $00FFFF;
-  COLOR_BLUE = $FF0000;
-
   LIM_INFLUENCE = 1/255;
   LIM_CLOSEST = 15;
   LIM_AGGRESSIVE = 0.5;
@@ -1375,21 +1360,21 @@ begin
     for GIdx := Low(A[Alli]) to High(A[Alli]) do
     begin
       P := A[Alli,GIdx].Group.Position;
-      //gRenderAux.Quad(P.X, P.Y, $FF000000 OR COLOR_RED);
-      //gRenderAux.LineOnTerrain(Company.PointPath[K+1], Company.PointPath[K], $60000000 OR COLOR_YELLOW);
-      //gRenderAux.Line(P.X-0.5, P.Y-1, P.X-0.5, P.Y-1-A[Alli,GIdx].Attack/100, $FF000000 OR COLOR_BLACK);
+      //gRenderAux.Quad(P.X, P.Y, $FF000000 OR tcRed);
+      //gRenderAux.LineOnTerrain(Company.PointPath[K+1], Company.PointPath[K], $60000000 OR tcYellow);
+      //gRenderAux.Line(P.X-0.5, P.Y-1, P.X-0.5, P.Y-1-A[Alli,GIdx].Attack/100, $FF000000 OR tcBlack);
       // Strenght
-      gRenderAux.Triangle(P.X-1.5, P.Y, P.X-1.25, P.Y-A[Alli,GIdx].Own.Attack           /200, P.X-1.0, P.Y, $55000000 OR COLOR_RED);
-      gRenderAux.Triangle(P.X-1.5, P.Y, P.X-1.25, P.Y-A[Alli,GIdx].Own.AttackHorse      /200, P.X-1.0, P.Y, $AA000000 OR COLOR_RED);
-      gRenderAux.Triangle(P.X-1.0, P.Y, P.X-0.75, P.Y-A[Alli,GIdx].Own.Defence           /10, P.X-0.5, P.Y, $AA000000 OR COLOR_BLUE);
-      gRenderAux.Triangle(P.X-1.0, P.Y, P.X-0.75, P.Y-A[Alli,GIdx].Own.DefenceProjectiles/10, P.X-0.5, P.Y, $55000000 OR COLOR_BLUE);
-      gRenderAux.Triangle(P.X-0.5, P.Y, P.X-0.25, P.Y-A[Alli,GIdx].Own.HitPoints         /10, P.X-0.0, P.Y, $AA000000 OR COLOR_GREEN);
+      gRenderAux.Triangle(P.X-1.5, P.Y, P.X-1.25, P.Y-A[Alli,GIdx].Own.Attack           /200, P.X-1.0, P.Y, $55000000 OR tcRed);
+      gRenderAux.Triangle(P.X-1.5, P.Y, P.X-1.25, P.Y-A[Alli,GIdx].Own.AttackHorse      /200, P.X-1.0, P.Y, $AA000000 OR tcRed);
+      gRenderAux.Triangle(P.X-1.0, P.Y, P.X-0.75, P.Y-A[Alli,GIdx].Own.Defence           /10, P.X-0.5, P.Y, $AA000000 OR tcBlue);
+      gRenderAux.Triangle(P.X-1.0, P.Y, P.X-0.75, P.Y-A[Alli,GIdx].Own.DefenceProjectiles/10, P.X-0.5, P.Y, $55000000 OR tcBlue);
+      gRenderAux.Triangle(P.X-0.5, P.Y, P.X-0.25, P.Y-A[Alli,GIdx].Own.HitPoints         /10, P.X-0.0, P.Y, $AA000000 OR tcGreen);
       // Influence
-      gRenderAux.Triangle(P.X+0.0, P.Y, P.X+0.25, P.Y-A[Alli,GIdx].Nearby.Attack           /200, P.X+0.5, P.Y, $22000000 OR COLOR_RED);
-      gRenderAux.Triangle(P.X+0.0, P.Y, P.X+0.25, P.Y-A[Alli,GIdx].Nearby.AttackHorse      /200, P.X+0.5, P.Y, $55000000 OR COLOR_RED);
-      gRenderAux.Triangle(P.X+0.5, P.Y, P.X+0.75, P.Y-A[Alli,GIdx].Nearby.Defence           /10, P.X+1.0, P.Y, $55000000 OR COLOR_BLUE);
-      gRenderAux.Triangle(P.X+0.5, P.Y, P.X+0.75, P.Y-A[Alli,GIdx].Nearby.DefenceProjectiles/10, P.X+1.0, P.Y, $22000000 OR COLOR_BLUE);
-      gRenderAux.Triangle(P.X+1.0, P.Y, P.X+1.25, P.Y-A[Alli,GIdx].Nearby.HitPoints         /10, P.X+1.5, P.Y, $55000000 OR COLOR_GREEN);
+      gRenderAux.Triangle(P.X+0.0, P.Y, P.X+0.25, P.Y-A[Alli,GIdx].Nearby.Attack           /200, P.X+0.5, P.Y, $22000000 OR tcRed);
+      gRenderAux.Triangle(P.X+0.0, P.Y, P.X+0.25, P.Y-A[Alli,GIdx].Nearby.AttackHorse      /200, P.X+0.5, P.Y, $55000000 OR tcRed);
+      gRenderAux.Triangle(P.X+0.5, P.Y, P.X+0.75, P.Y-A[Alli,GIdx].Nearby.Defence           /10, P.X+1.0, P.Y, $55000000 OR tcBlue);
+      gRenderAux.Triangle(P.X+0.5, P.Y, P.X+0.75, P.Y-A[Alli,GIdx].Nearby.DefenceProjectiles/10, P.X+1.0, P.Y, $22000000 OR tcBlue);
+      gRenderAux.Triangle(P.X+1.0, P.Y, P.X+1.25, P.Y-A[Alli,GIdx].Nearby.HitPoints         /10, P.X+1.5, P.Y, $55000000 OR tcGreen);
     end;
 end;
 //}

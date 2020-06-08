@@ -196,9 +196,9 @@ var
   OVERLAY_AI_FLATAREA     :Boolean = False; //Show FlatArea vision of new AI
   OVERLAY_AI_ROUTES       :Boolean = False; //Show Routes to resources vision of new AI
   OVERLAY_AI_SUPERVISOR   :Boolean = False; //Show Supervisor vision of new AI
-  OVERLAY_AI_SUPERVISOR_A :Boolean = False; //Show Supervisor vision of new AI (Animation)
-  OVERLAY_AI_SUPERVISOR_D :Boolean = False; //Show Supervisor vision of new AI (Distances)
-  OVERLAY_AI_SUPERVISOR_M :Boolean = False; //Show Supervisor vision of new AI (Marks)
+  OVERLAY_AI_VECTOR_FIELD :Boolean = False; //Show Vector field (combat AI)
+  OVERLAY_AI_CLUSTERS     :Boolean = False; //Show combat clusters (combat AI)
+  OVERLAY_AI_ALLIEDGROUPS :Boolean = False; //Show show allied groups (combat AI)
   {Stats}
   SHOW_SPRITE_COUNT       :Boolean = False; //display rendered controls/sprites count
   SHOW_POINTER_COUNT      :Boolean = False; //Show debug total count of unit/house pointers being tracked
@@ -912,6 +912,30 @@ const
   $FFFFFFFF, //White
   $FF000000  //Black
   );
+
+  // DEBUG colors (transparent color - opacity will be added by debug tools)
+  tcBlack      = $000000;
+  tcBlue       = $FF0000;
+  tcCream      = $F0FBFF;
+  tcCyan       = $FFFF00;
+  tcDarkGrey   = $808080;
+  tcFuchsia    = $FF00FF;
+  tcGreen      = $008000;
+  tcGrey       = $808080;
+  tcLightGrey  = $C0C0C0;
+  tcLimeGreen  = $00FF00;
+  tcMaroon     = $000080;
+  tcMediumGrey = $A4A0A0;
+  tcMintGreen  = $C0DCC0;
+  tcNavyBlue   = $800000;
+  tcOliveGreen = $008080;
+  tcPurple     = $800080;
+  tcRed        = $0000FF;
+  tcSilver     = $C0C0C0;
+  tcSkyBlue    = $F0CAA6;
+  tcTeal       = $808000;
+  tcWhite      = $FFFFFF;
+  tcYellow     = $00FFFF;
 
   //Interface colors
   icGreen  = $FF00C000;

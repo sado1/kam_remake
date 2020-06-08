@@ -41,7 +41,7 @@ type
     fInfluenceSearch: TNavMeshInfluenceSearch;
     fNavMesh: TKMNavMesh;
 
-    {$IFDEF DEBUG_AIINFLUENCES}
+    {$IFDEF DEBUG_AIInfluences}
     fTimeSumOwnership, fTimeSumPresence: Int64;
     fTimePeakOwnership, fTimePeakPresence: Int64;
     {$ENDIF}
@@ -115,7 +115,7 @@ implementation
 uses
   Classes, Graphics, SysUtils,
   KM_RenderAux,
-  {$IFDEF DEBUG_AIINFLUENCES}
+  {$IFDEF DEBUG_AIInfluences}
     KM_CommonUtils,
   {$ENDIF}
   KM_Terrain, KM_Houses, KM_HouseCollection,
@@ -132,7 +132,7 @@ begin
   fUpdateArmyIdx := 0;
   fInfluenceFloodFill := TKMInfluenceFloodFill.Create(False); // Check if True is better
   fInfluenceSearch := TNavMeshInfluenceSearch.Create(False);
-  {$IFDEF DEBUG_AIINFLUENCES}
+  {$IFDEF DEBUG_AIInfluences}
     fTimeSumOwnership := 0;
     fTimeSumPresence := 0;
     fTimePeakOwnership := 0;
@@ -694,19 +694,19 @@ end;
 
 
 procedure TKMInfluences.UpdateState(aTick: Cardinal);
-{$IFDEF DEBUG_AIINFLUENCES}
+{$IFDEF DEBUG_AIInfluences}
   var Time: Int64;
 {$ENDIF}
 begin
   // City:
   if aTick mod 150 = 15 then // Update every 15 sec 1 player
   begin
-    {$IFDEF DEBUG_AIINFLUENCES}
+    {$IFDEF DEBUG_AIInfluences}
       Time := TimeGetUsec();
     {$ENDIF}
     fUpdateCityIdx := (fUpdateCityIdx + 1) mod gHands.Count;
     UpdateOwnership(fUpdateCityIdx);
-    {$IFDEF DEBUG_AIINFLUENCES}
+    {$IFDEF DEBUG_AIInfluences}
       Time := TimeGetUsec() - Time;
       fTimeSumOwnership := fTimeSumOwnership + Time;
       fTimePeakOwnership := Max(fTimePeakOwnership,Time);
@@ -715,12 +715,12 @@ begin
   // Army:
   if (aTick mod 5 = 0) AND (Length(fAlli2PL) > 0) then // Update every 0.5 sec 1 player
   begin
-    {$IFDEF DEBUG_AIINFLUENCES}
+    {$IFDEF DEBUG_AIInfluences}
       Time := TimeGetUsec();
     {$ENDIF}
     fUpdateArmyIdx := (fUpdateArmyIdx + 1) mod Length(fAlli2PL);
     UpdateMilitaryPresence(fUpdateArmyIdx);
-    {$IFDEF DEBUG_AIINFLUENCES}
+    {$IFDEF DEBUG_AIInfluences}
       Time := TimeGetUsec() - Time;
       fTimeSumPresence := fTimeSumPresence + Time;
       fTimePeakPresence := Max(fTimePeakPresence,Time);
@@ -749,13 +749,6 @@ end;
 
 //Render debug symbols
 procedure TKMInfluences.Paint(const aRect: TKMRect);
-const
-  COLOR_WHITE = $FFFFFF;
-  COLOR_BLACK = $000000;
-  COLOR_GREEN = $00FF00;
-  COLOR_RED = $0000FF;
-  COLOR_YELLOW = $00FFFF;
-  COLOR_BLUE = $FF0000;
 var
   PL, WatchedPL: TKMHandID;
   K, X,Y, TeamIdx, Cnt: Integer;
@@ -782,7 +775,7 @@ begin
       if (PL = PLAYER_NONE) then
         continue
       else
-        Col := (gHands[PL].FlagColor AND COLOR_WHITE) OR (OwnPoly[PL,K] shl 24);
+        Col := (gHands[PL].FlagColor AND tcWhite) OR (OwnPoly[PL,K] shl 24);
 
       //NavMesh polys coverage
       with fNavMesh do
@@ -820,7 +813,7 @@ begin
             Nodes[Polygons[K].Indices[1]].X,
             Nodes[Polygons[K].Indices[1]].Y,
             Nodes[Polygons[K].Indices[2]].X,
-            Nodes[Polygons[K].Indices[2]].Y, COLOR_RED OR (Byte(Min(Max(Cnt,$1F),$F0)) shl 24) );
+            Nodes[Polygons[K].Indices[2]].Y, tcRed OR (Byte(Min(Max(Cnt,$1F),$F0)) shl 24) );
       end;
       Cnt := GetArmyTraffic(TeamIdx, K);
       if (Cnt > 0) then
@@ -833,7 +826,7 @@ begin
             Nodes[Polygons[K].Indices[1]].X,
             Nodes[Polygons[K].Indices[1]].Y,
             Nodes[Polygons[K].Indices[2]].X,
-            Nodes[Polygons[K].Indices[2]].Y, COLOR_YELLOW OR (Byte(Min(Max(Cnt,$3F),$F0)) shl 24) );
+            Nodes[Polygons[K].Indices[2]].Y, tcYellow OR (Byte(Min(Max(Cnt,$3F),$F0)) shl 24) );
       end;
     end;
     {
@@ -847,11 +840,11 @@ begin
         begin
           BestCnt := Cnt;
           if (WatchedPL = PL) then
-            Col := COLOR_GREEN
+            Col := tcGreen
           else if (gHands[WatchedPL].Alliances[PL] = atAlly) then
-            Col := COLOR_BLUE
+            Col := tcBlue
           else
-            Col := COLOR_RED;
+            Col := tcRed;
         end;
       end;
       if (BestCnt > 0) then

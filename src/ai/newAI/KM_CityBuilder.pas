@@ -1722,15 +1722,6 @@ end;
 
 
 procedure TKMCityBuilder.Paint();
-const
-  COLOR_WHITE = $FFFFFF;
-  COLOR_BLACK = $000000;
-  COLOR_GREEN = $00FF00;
-  COLOR_RED = $0000FF;
-  COLOR_YELLOW = $00FFFF;
-  COLOR_BLUE = $FF0000;
-  COLOR_NEW = $FFFF00;
-  COLOR_NEW2 = $FF00FF;
 var
   K,L: Integer;
   Color: Cardinal;
@@ -1742,9 +1733,9 @@ begin
       if not IsDeadOrDying then
       begin
         if (gHands[fOwner].Units[K] is TKMUnitSerf) AND IsIdle then
-          gRenderAux.Quad(CurrPosition.X, CurrPosition.Y, $44000000 OR COLOR_BLUE)
+          gRenderAux.Quad(CurrPosition.X, CurrPosition.Y, $44000000 OR tcBlue)
         else if (gHands[fOwner].Units[K] is TKMUnitWorker) AND IsIdle then
-          gRenderAux.Quad(CurrPosition.X, CurrPosition.Y, $44000000 OR COLOR_NEW2);
+          gRenderAux.Quad(CurrPosition.X, CurrPosition.Y, $44000000 OR tcFuchsia);
       end;
 
   Color := 0; // For compiler
@@ -1753,14 +1744,14 @@ begin
       if Active then
       begin
         case FieldType of
-          ftCorn: Color := $40000000 OR COLOR_GREEN;
-          ftWine: Color := $88000000 OR COLOR_GREEN;
-          ftRoad: Color := $80000000 OR COLOR_NEW;//COLOR_YELLOW;
+          ftCorn: Color := $40000000 OR tcGreen;
+          ftWine: Color := $88000000 OR tcGreen;
+          ftRoad: Color := $80000000 OR tcCyan;
         end;
         if RemoveTreesMode then
-          Color := $60000000 OR COLOR_BLUE;
+          Color := $60000000 OR tcBlue;
         if ShortcutMode then
-          Color := $20000000 OR COLOR_BLACK;
+          Color := $20000000 OR tcBlack;
         for L := 0 to FieldList.Count - 1 do
         begin
           Point := FieldList.Items[L];
