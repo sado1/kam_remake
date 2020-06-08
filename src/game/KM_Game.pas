@@ -2648,6 +2648,8 @@ begin
 
     Result := True;
 
+    CheckPauseGameAtTick;
+
     if DoSaveRandomChecks then
       gRandomCheckLogger.UpdateState(fParams.Tick);
   finally
@@ -2722,6 +2724,8 @@ begin
   if fDoHold then
     Exit;
 
+  CheckPauseGameAtTick;
+
   Result := True;
 end;
 
@@ -2735,7 +2739,7 @@ begin
   //so we need to set it right before we do game logic processing
   Set8087CW($133F);
 
-  if fIsPaused or ReadyToStop or CheckPauseGameAtTick then
+  if fIsPaused or ReadyToStop then
     Exit;
 
   fBlockGetPointer := False;
