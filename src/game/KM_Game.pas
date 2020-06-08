@@ -220,15 +220,15 @@ type
     property GameLockedMutex: Boolean read fGameLockedMutex write fGameLockedMutex;
 
     function GetNewUID: Integer;
-    function GetNormalGameSpeed: Single;
+    function GetNormalSpeed: Single;
     procedure StepOneFrame;
 
-    procedure SetGameSpeed(aSpeed: Single); overload;
-    procedure SetGameSpeed(aSpeed: Single; aToggle: Boolean); overload;
-    procedure SetGameSpeed(aSpeed: Single; aToggle: Boolean; aToggleTo: Single); overload;
+    procedure SetSpeed(aSpeed: Single); overload;
+    procedure SetSpeed(aSpeed: Single; aToggle: Boolean); overload;
+    procedure SetSpeed(aSpeed: Single; aToggle: Boolean; aToggleTo: Single); overload;
 
     procedure SetSpeedActual(aSpeed: Single);
-    procedure SetGameSpeedGIP(aSpeed: Single; aUpdateActual: Boolean = False);
+    procedure SetSpeedGIP(aSpeed: Single; aUpdateActual: Boolean = False);
 
     class function SavePath(const aName: UnicodeString; aIsMultiplayer: Boolean): UnicodeString;
     class function SaveName(const aFolder, aName, aExt: UnicodeString; aIsMultiplayer: Boolean): UnicodeString; overload;
@@ -346,7 +346,7 @@ begin
 
   fTimerGame := TTimer.Create(nil);
   //pseudo GIP command, since we just want to initialize speed with default values
-  SetGameSpeedGIP(GAME_SPEED_NORMAL, True);
+  SetSpeedGIP(GAME_SPEED_NORMAL, True);
 
   if not GAME_NO_UPDATE_ON_TIMER then
   begin
@@ -767,7 +767,7 @@ begin
   if aNewGame
     or (    isPT and not SameValue(oldSpeedPT,      fOptions.SpeedPT,      0.01))
     or (not isPT and not SameValue(oldSpeedAfterPT, fOptions.SpeedAfterPT, 0.01)) then
-    SetGameSpeed(GetNormalGameSpeed, False);
+    SetSpeed(GetNormalSpeed, False);
 
   //Check for default advanced AI's
   if gNetworking.IsMap then
@@ -1624,7 +1624,7 @@ begin
     gSoundPlayer.Play(sfxnPeacetime, 1, True); //Fades music
     if fParams.IsMultiPlayerOrSpec then
     begin
-      SetGameSpeed(fOptions.SpeedAfterPT, False);
+      SetSpeed(fOptions.SpeedAfterPT, False);
       gNetworking.PostLocalMessage(gResTexts[TX_MP_PEACETIME_OVER], csNone);
       IssueAutosaveCommand(True);
 
@@ -1650,7 +1650,7 @@ begin
 end;
 
 
-function TKMGame.GetNormalGameSpeed: Single;
+function TKMGame.GetNormalSpeed: Single;
 begin
   if fParams.IsMultiPlayerOrSpec then
   begin
@@ -1672,7 +1672,7 @@ begin
 end;
 
 
-procedure TKMGame.SetGameSpeedGIP(aSpeed: Single; aUpdateActual: Boolean = False);
+procedure TKMGame.SetSpeedGIP(aSpeed: Single; aUpdateActual: Boolean = False);
 var
   speedChanged: Boolean;
 begin
@@ -1747,7 +1747,7 @@ begin
 end;
 
 
-procedure TKMGame.SetGameSpeed(aSpeed: Single);
+procedure TKMGame.SetSpeed(aSpeed: Single);
 begin
   Assert(aSpeed > 0);
 
@@ -1765,13 +1765,13 @@ begin
 end;
 
 
-procedure TKMGame.SetGameSpeed(aSpeed: Single; aToggle: Boolean);
+procedure TKMGame.SetSpeed(aSpeed: Single; aToggle: Boolean);
 begin
-  SetGameSpeed(aSpeed, aToggle, GetNormalGameSpeed);
+  SetSpeed(aSpeed, aToggle, GetNormalSpeed);
 end;
 
 
-procedure TKMGame.SetGameSpeed(aSpeed: Single; aToggle: Boolean; aToggleTo: Single);
+procedure TKMGame.SetSpeed(aSpeed: Single; aToggle: Boolean; aToggleTo: Single);
 var
   NewGameSpeed: Single;
 begin
@@ -1785,7 +1785,7 @@ begin
   else
     NewGameSpeed := aSpeed;
 
-  SetGameSpeed(NewGameSpeed);
+  SetSpeed(NewGameSpeed);
 end;
 
 
@@ -1835,7 +1835,7 @@ end;
 procedure TKMGame.StepOneFrame;
 begin
   Assert(fParams.IsReplay, 'We can work step-by-step only in Replay');
-  SetGameSpeed(1, False); //Make sure we step only one tick. Do not allow multiple updates in UpdateState loop
+  SetSpeed(1, False); //Make sure we step only one tick. Do not allow multiple updates in UpdateState loop
   fAdvanceFrame := True;
 end;
 

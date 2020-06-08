@@ -866,7 +866,7 @@ begin
       gicTempDoNothing:           ;
 
       gicGamePause:               ;//if fReplayState = gipRecording then fGame.fGamePlayInterface.SetPause(boolean(Params[1]));
-      gicGameSpeed:               gGame.SetGameSpeedGIP(FloatParam, fReplayState = gipRecording);
+      gicGameSpeed:               gGame.SetSpeedGIP(FloatParam, fReplayState = gipRecording);
       gicGameAutoSave:            if (fReplayState = gipRecording) and gGameSettings.Autosave then
                                     gGame.AutoSave(DateTimeParam); //Timestamp is synchronised
       gicGameAutoSaveAfterPT:     if (fReplayState = gipRecording) and gGameSettings.Autosave then

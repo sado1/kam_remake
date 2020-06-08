@@ -759,7 +759,7 @@ begin
       and not gGameApp.Game.Params.IsReplay) then
     Exit;
 
-  gGameApp.Game.SetGameSpeed(IfThen(chkSuperSpeed.Checked, DEBUG_SPEEDUP_SPEED, 1), False);
+  gGameApp.Game.SetSpeed(IfThen(chkSuperSpeed.Checked, DEBUG_SPEEDUP_SPEED, 1), False);
 
   ActiveControl := nil; //Do not allow to focus on anything on debug panel
 end;
