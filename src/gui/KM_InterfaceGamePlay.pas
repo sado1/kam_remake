@@ -1091,7 +1091,7 @@ end;
 
 procedure TKMGamePlayInterface.Create_Replay;
 begin
-  Panel_ReplayBar := TKMPanel.Create(Panel_Main, 320, 5, REPLAYBAR_DEFAULT_WIDTH, 45);
+  Panel_ReplayBar := TKMPanel.Create(Panel_Main, 320, 5, REPLAYBAR_DEFAULT_WIDTH, 25);
     ReplayBar_Replay := TKMReplayBar.Create(Panel_ReplayBar, 0, 0, REPLAYBAR_DEFAULT_WIDTH, 25);
     ReplayBar_Replay.AnchorsStretch;
     Label_ReplayBar  := TKMLabel.Create(Panel_ReplayBar, ReplayBar_Replay.Width div 2,
