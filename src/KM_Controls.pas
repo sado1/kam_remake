@@ -4819,8 +4819,6 @@ begin
   SetParameters(aPosition, aPeacetime, aMaxValue);
   fMarksPattern := $CF3; //Looks good for 25px height bar
 
-//  aParent.
-
   fHighlightMark := -1;
 
   fMarks := TList<Integer>.Create;
