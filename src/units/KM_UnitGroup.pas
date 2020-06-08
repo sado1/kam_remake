@@ -539,8 +539,10 @@ begin
                                     fOrderLoc.Dir, aIndex, fUnitsPerRow,
                                     gTerrain.MapX, gTerrain.MapY,
                                     Result.Exact);
-  //Fits on map and is on passable terrain
-  Result.Exact := Result.Exact and gTerrain.CheckPassability(Result.Loc, tpWalk);
+  //Fits on map and is on passable terrain and have same walkConnect as member current position
+  Result.Exact :=     Result.Exact
+                  and gTerrain.CheckPassability(Result.Loc, tpWalk)
+                  and (gTerrain.GetWalkConnectID(Result.Loc) = gTerrain.GetWalkConnectID(Members[aIndex].CurrPosition));
 end;
 
 
