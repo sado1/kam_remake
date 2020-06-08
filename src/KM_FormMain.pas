@@ -181,14 +181,16 @@ type
     N11: TMenuItem;
     mnExportRngChecks: TMenuItem;
     chkGIP: TCheckBox;
-    sePauseAfterTick: TSpinEdit;
+    sePauseBeforeTick: TSpinEdit;
     Label8: TLabel;
     Label9: TLabel;
-    seMakeSaveptAfterTick: TSpinEdit;
+    seMakeSaveptBeforeTick: TSpinEdit;
     edDebugText: TEdit;
     seDebugValue: TSpinEdit;
     Label10: TLabel;
     Label11: TLabel;
+    Label12: TLabel;
+    seCustomSeed: TSpinEdit;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -1031,8 +1033,9 @@ begin
     SKIP_LOG_TEMP_COMMANDS := chkLogSkipTempCmd.Checked;
 
     SHOW_GIP := chkGIP.Checked;
-    PAUSE_GAME_BEFORE_TICK := sePauseAfterTick.Value;
-    MAKE_SAVEPT_BEFORE_TICK := seMakeSaveptAfterTick.Value;
+    PAUSE_GAME_BEFORE_TICK := sePauseBeforeTick.Value;
+    MAKE_SAVEPT_BEFORE_TICK := seMakeSaveptBeforeTick.Value;
+    CUSTOM_SEED_VALUE := seCustomSeed.Value;
 
     DEBUG_TEXT := edDebugText.Text;
     DEBUG_VALUE := seDebugValue.Value;

@@ -83,11 +83,10 @@ object FormMain: TFormMain
     ParentDoubleBuffered = False
     TabOrder = 1
     object cpLogs: TCategoryPanel
-      Top = 664
+      Top = 692
       Height = 179
       Caption = 'Logs'
       TabOrder = 0
-      ExplicitWidth = 256
       object chkLogCommands: TCheckBox
         Left = 120
         Top = 8
@@ -172,14 +171,13 @@ object FormMain: TFormMain
       end
     end
     object cpGraphicTweaks: TCategoryPanel
-      Top = 640
+      Top = 668
       Height = 24
       Caption = 'Graphic tweaks'
       Collapsed = True
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 1
-      ExplicitWidth = 256
       ExpandedHeight = 133
       object Label1: TLabel
         Left = 101
@@ -286,12 +284,11 @@ object FormMain: TFormMain
       end
     end
     object cpUserInreface: TCategoryPanel
-      Top = 616
+      Top = 644
       Height = 24
       Caption = 'User Interface'
       Collapsed = True
       TabOrder = 2
-      ExplicitWidth = 256
       ExpandedHeight = 72
       object chkUIControlsBounds: TCheckBox
         Left = 8
@@ -322,21 +319,19 @@ object FormMain: TFormMain
       end
     end
     object cpPerfLogs: TCategoryPanel
-      Top = 592
+      Top = 620
       Height = 24
       Caption = 'Perf Logs'
       Collapsed = True
       TabOrder = 3
-      ExplicitWidth = 256
       ExpandedHeight = 660
     end
     object cpAI: TCategoryPanel
-      Top = 568
+      Top = 596
       Height = 24
       Caption = 'AI'
       Collapsed = True
       TabOrder = 4
-      ExplicitWidth = 256
       object Label5: TLabel
         Left = 202
         Top = 111
@@ -540,12 +535,11 @@ object FormMain: TFormMain
       end
     end
     object cpScripting: TCategoryPanel
-      Top = 544
+      Top = 572
       Height = 24
       Caption = 'Scripting'
       Collapsed = True
       TabOrder = 5
-      ExplicitWidth = 256
       ExpandedHeight = 50
       object chkDebugScripting: TCheckBox
         Left = 8
@@ -563,12 +557,11 @@ object FormMain: TFormMain
       end
     end
     object cpGameAdv: TCategoryPanel
-      Top = 520
+      Top = 548
       Height = 24
       Caption = 'Game additional'
       Collapsed = True
       TabOrder = 6
-      ExplicitWidth = 256
       ExpandedHeight = 136
       object chkLoadUnsupSaves: TCheckBox
         Left = 12
@@ -613,13 +606,12 @@ object FormMain: TFormMain
       end
     end
     object cpDebugRender: TCategoryPanel
-      Top = 97
+      Top = 125
       Height = 423
       Caption = 'Debug Render'
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 7
-      ExplicitWidth = 256
       object Label2: TLabel
         Left = 136
         Top = 5
@@ -990,10 +982,9 @@ object FormMain: TFormMain
     end
     object cpGameControls: TCategoryPanel
       Top = 0
-      Height = 97
+      Height = 125
       Caption = 'Game '
       TabOrder = 8
-      ExplicitWidth = 256
       object Label8: TLabel
         Left = 70
         Top = 30
@@ -1003,10 +994,17 @@ object FormMain: TFormMain
       end
       object Label9: TLabel
         Left = 24
-        Top = 56
+        Top = 54
         Width = 129
         Height = 13
         Caption = 'Make savepoint before tick'
+      end
+      object Label12: TLabel
+        Left = 92
+        Top = 78
+        Width = 61
+        Height = 13
+        Caption = 'Custom seed'
       end
       object chkSuperSpeed: TCheckBox
         Left = 8
@@ -1027,7 +1025,7 @@ object FormMain: TFormMain
         TabOrder = 1
         OnClick = Button_StopClick
       end
-      object sePauseAfterTick: TSpinEdit
+      object sePauseBeforeTick: TSpinEdit
         Left = 159
         Top = 28
         Width = 66
@@ -1040,9 +1038,9 @@ object FormMain: TFormMain
         Value = 0
         OnChange = ControlsUpdate
       end
-      object seMakeSaveptAfterTick: TSpinEdit
+      object seMakeSaveptBeforeTick: TSpinEdit
         Left = 159
-        Top = 53
+        Top = 52
         Width = 66
         Height = 22
         Ctl3D = True
@@ -1050,6 +1048,19 @@ object FormMain: TFormMain
         MinValue = 0
         ParentCtl3D = False
         TabOrder = 3
+        Value = 0
+        OnChange = ControlsUpdate
+      end
+      object seCustomSeed: TSpinEdit
+        Left = 159
+        Top = 76
+        Width = 66
+        Height = 22
+        Ctl3D = True
+        MaxValue = 9999999
+        MinValue = 0
+        ParentCtl3D = False
+        TabOrder = 4
         Value = 0
         OnChange = ControlsUpdate
       end
