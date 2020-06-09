@@ -235,7 +235,8 @@ type
     function DecOreDeposit(const Loc: TKMPoint; rt: TKMWareType): Boolean;
 
     function GetPassablePointWithinSegment(OriginPoint, TargetPoint: TKMPoint; aPass: TKMTerrainPassability; MaxDistance: Integer = -1): TKMPoint;
-    function CheckPassability(const Loc: TKMPoint; aPass: TKMTerrainPassability): Boolean;
+    function CheckPassability(X, Y: Integer; aPass: TKMTerrainPassability): Boolean; overload;
+    function CheckPassability(const Loc: TKMPoint; aPass: TKMTerrainPassability): Boolean; overload;
     function HasUnit(const Loc: TKMPoint): Boolean;
     function HasVertexUnit(const Loc: TKMPoint): Boolean;
     function GetRoadConnectID(const Loc: TKMPoint): Byte;
@@ -3759,6 +3760,12 @@ begin
     Dec(normDistance);
   end;
   Result := TargetPoint;
+end;
+
+
+function TKMTerrain.CheckPassability(X, Y: Integer; aPass: TKMTerrainPassability): Boolean;
+begin
+  Result := TileInMapCoords(X, Y) and (aPass in Land[Y, X].Passability);
 end;
 
 
