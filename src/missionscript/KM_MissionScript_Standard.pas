@@ -4,13 +4,15 @@ interface
 uses
   Generics.Collections,
   KM_MissionScript, KM_UnitGroup, KM_Units, KM_Houses,
-  KM_AIAttacks, KM_Points, KM_Defaults;
+  KM_AIAttacks, KM_Points, KM_Defaults, KM_UnitGroupTypes;
 
 
 type
-  TKMAttackPosition = record
+  TKMMissionScriptGroupOrder = record
     Group: TKMUnitGroup;
+    Kind: TKMGroupInitialOrder;
     Target: TKMPoint;
+    Dir: TKMDirection;
   end;
 
   TKMMissionParserStandard = class(TKMMissionParserCommon)
@@ -21,7 +23,7 @@ type
     fLastUnit: TKMUnit;
     fLastTroop: TKMUnitGroup;
     fAIAttack: TKMAIAttack;
-    fAttackPositions: TList<TKMAttackPosition>;
+    fGroupOrders: TList<TKMMissionScriptGroupOrder>;
     fDefaultLocation: ShortInt;
     procedure ProcessAttackPositions;
     procedure Init(aMode: TKMMissionParsingMode);
@@ -49,8 +51,7 @@ uses
   KM_AI, KM_AIDefensePos,
   KM_Resource, KM_ResHouses, KM_ResUnits, KM_ResWares,
   KM_CommonClasses, KM_CommonTypes, KM_Terrain,
-  KM_HandTypes,
-  KM_UnitGroupTypes;
+  KM_HandTypes;
 
 
 type
@@ -95,7 +96,7 @@ end;
 
 procedure TKMMissionParserStandard.Init(aMode: TKMMissionParsingMode);
 begin
-  fAttackPositions := TList<TKMAttackPosition>.Create;
+  fGroupOrders := TList<TKMMissionScriptGroupOrder>.Create;
   fParsingMode := aMode;
   fDefaultLocation := 0;
 end;
@@ -103,7 +104,7 @@ end;
 
 destructor TKMMissionParserStandard.Destroy;
 begin
-  fAttackPositions.Free;
+  fGroupOrders.Free;
 
   inherited;
 end;
@@ -160,21 +161,27 @@ var
   H: TKMHouse;
   U: TKMUnit;
 begin
-  Assert((fParsingMode <> mpmEditor) or (fAttackPositions.Count = 0), 'AttackPositions should be handled by MapEd');
+  Assert((fParsingMode <> mpmEditor) or (fGroupOrders.Count = 0), 'AttackPositions should be handled by MapEd');
 
-  for I := 0 to fAttackPositions.Count - 1 do
-    with fAttackPositions[I] do
+  for I := 0 to fGroupOrders.Count - 1 do
+    with fGroupOrders[I] do
     begin
-      H := gHands.HousesHitTest(Target.X, Target.Y); //Attack house
-      if (H <> nil) and (not H.IsDestroyed) and (gHands.CheckAlliance(Group.Owner, H.Owner) = atEnemy) then
-        Group.OrderAttackHouse(H, True)
-      else
-      begin
-        U := gTerrain.UnitsHitTest(Target.X, Target.Y); //Chase/attack unit
-        if (U <> nil) and (not U.IsDeadOrDying) and (gHands.CheckAlliance(Group.Owner, U.Owner) = atEnemy) then
-          Group.OrderAttackUnit(U, True)
-        else
-          Group.OrderWalk(Target, True, wtokMissionScript); //Just move to position
+      case Kind of
+        gioNoOrder:         ;
+        gioSendGroup:       Group.OrderWalk(Target, True, wtokMissionScript, Dir);
+        gioAttackPosition:  begin
+                              H := gHands.HousesHitTest(Target.X, Target.Y); //Attack house
+                              if (H <> nil) and (not H.IsDestroyed) and (gHands.CheckAlliance(Group.Owner, H.Owner) = atEnemy) then
+                                Group.OrderAttackHouse(H, True)
+                              else
+                              begin
+                                U := gTerrain.UnitsHitTest(Target.X, Target.Y); //Chase/attack unit
+                                if (U <> nil) and (not U.IsDeadOrDying) and (gHands.CheckAlliance(Group.Owner, U.Owner) = atEnemy) then
+                                  Group.OrderAttackUnit(U, True)
+                                else
+                                  Group.OrderWalk(Target, True, wtokMissionScript); //Just move to position
+                              end;
+                            end;
       end;
     end;
 end;
@@ -197,7 +204,7 @@ var
   UT: TKMUnitType;
   iPlayerAI: TKMHandAI;
   ChooseLoc: TKMChooseLoc;
-  attackPos: TKMAttackPosition;
+  groupOrder: TKMMissionScriptGroupOrder;
 begin
   Result := False; //Set it right from the start. There are several Exit points below
 
@@ -614,7 +621,13 @@ begin
                               fLastTroop.MapEdOrder.Pos := KMPointDir(P[0]+1, P[1]+1, TKMDirection(P[2]+1));
                             end
                             else
-                              fLastTroop.OrderWalk(KMPoint(P[0]+1, P[1]+1), True, wtokMissionScript, TKMDirection(P[2]+1))
+                            begin
+                              groupOrder.Group := fLastTroop;
+                              groupOrder.Kind := gioSendGroup;
+                              groupOrder.Target := KMPoint(P[0]+1,P[1]+1);
+                              groupOrder.Dir := TKMDirection(P[2]+1);
+                              fGroupOrders.Add(groupOrder);
+                            end
                           else
                             AddError('ct_SendGroup without prior declaration of Troop');
                         end;
@@ -701,9 +714,11 @@ begin
                             end
                             else
                             begin
-                              attackPos.Group := fLastTroop;
-                              attackPos.Target := KMPoint(P[0]+1,P[1]+1);
-                              fAttackPositions.Add(attackPos);
+                              groupOrder.Group := fLastTroop;
+                              groupOrder.Kind := gioAttackPosition;
+                              groupOrder.Target := KMPoint(P[0]+1,P[1]+1);
+                              groupOrder.Dir := dirNA;
+                              fGroupOrders.Add(groupOrder);
                             end
                           else
                             AddError('ct_AttackPosition without prior declaration of Troop');
