@@ -192,7 +192,7 @@ type
   end;
 
 
-  TKMRunnerAAIPerformanceTest = class(TKMRunnerCommon)
+  TKMRunnerAAIPerformance = class(TKMRunnerCommon)
   private
     fMap: string;
     fRun: Integer;
@@ -206,7 +206,7 @@ type
     procedure Execute(aRun: Integer); override;
   end;
 
-  TKMRunnerCachePerformanceTest = class(TKMRunnerCommon)
+  TKMRunnerCachePerformance = class(TKMRunnerCommon)
   type
     TKMRDeliveryBidKey = record
       FromP: TKMPoint; //House or Unit UID From where delivery path goes
@@ -1722,13 +1722,13 @@ end;
 
 
 { TKMRunnerAAIPerformanceTest }
-procedure TKMRunnerAAIPerformanceTest.Reset;
+procedure TKMRunnerAAIPerformance.Reset;
 begin
   fStartTime := TimeGet;
 end;
 
 
-procedure TKMRunnerAAIPerformanceTest.SetUp();
+procedure TKMRunnerAAIPerformance.SetUp();
 begin
   inherited;
 
@@ -1768,20 +1768,20 @@ begin
 end;
 
 
-procedure TKMRunnerAAIPerformanceTest.TearDown();
+procedure TKMRunnerAAIPerformance.TearDown();
 begin
 
   inherited;
 end;
 
 
-function TKMRunnerAAIPerformanceTest.TickPlayed(aTick: Cardinal): Boolean;
+function TKMRunnerAAIPerformance.TickPlayed(aTick: Cardinal): Boolean;
 begin
   // good for debug
 end;
 
 
-procedure TKMRunnerAAIPerformanceTest.Execute(aRun: Integer);
+procedure TKMRunnerAAIPerformance.Execute(aRun: Integer);
 const
   // Maps for simulation (I dont use for loop in this array)
   MAPS: array [1..17] of String = ('Across the Desert','Mountainous Region','Battle Sun','Neighborhood Clash','Valley of the Equilibrium','Wilderness',
@@ -2304,7 +2304,7 @@ end;
 
 
 { TKMRunnerCachePerformanceTest }
-procedure TKMRunnerCachePerformanceTest.Execute(aRun: Integer);
+procedure TKMRunnerCachePerformance.Execute(aRun: Integer);
 const
   SIZE = 13;
   SIZE_HUGE = 100000000; //100 millions
@@ -2350,12 +2350,12 @@ begin
 end;
 
 
-procedure TKMRunnerCachePerformanceTest.Reset;
+procedure TKMRunnerCachePerformance.Reset;
 begin
 
 end;
 
-procedure TKMRunnerCachePerformanceTest.SetUp;
+procedure TKMRunnerCachePerformance.SetUp;
 begin
   // inherited;
 
@@ -2366,7 +2366,7 @@ begin
 //  gLog.MessageTypes := [];
 end;
 
-procedure TKMRunnerCachePerformanceTest.TearDown;
+procedure TKMRunnerCachePerformance.TearDown;
 begin
   // inherited;
 
@@ -2393,7 +2393,7 @@ end;
   {$Q+}
 {$ENDIF}
 
-function TKMRunnerCachePerformanceTest.TKMRDeliveryBidKey.Compare(aOther: TKMRDeliveryBidKey): Integer;
+function TKMRunnerCachePerformance.TKMRDeliveryBidKey.Compare(aOther: TKMRDeliveryBidKey): Integer;
 begin
 //  Result := GetHashCode - aOther.GetHashCode;
   if FromP = aOther.FromP then
@@ -2403,7 +2403,7 @@ begin
 end;
 
 
-function TKMRunnerCachePerformanceTest.TKMRDeliveryBidKey.GetHashCode: Integer;
+function TKMRunnerCachePerformance.TKMRDeliveryBidKey.GetHashCode: Integer;
 var
 //  a,b,c,d,xTotal,yTotal: Integer;
 //  totalCard: Cardinal;
@@ -2437,19 +2437,19 @@ end;
 
 
 { TKMRunnerCachePerformanceTest.TKMRDeliveryBidKeyEqualityComparer }
-function TKMRunnerCachePerformanceTest.TKMRDeliveryBidKeyEqualityComparer.Equals(const Left, Right: TKMRDeliveryBidKey): Boolean;
+function TKMRunnerCachePerformance.TKMRDeliveryBidKeyEqualityComparer.Equals(const Left, Right: TKMRDeliveryBidKey): Boolean;
 begin
 
 end;
 
-function TKMRunnerCachePerformanceTest.TKMRDeliveryBidKeyEqualityComparer.GetHashCode(const Value: TKMRDeliveryBidKey): Integer;
+function TKMRunnerCachePerformance.TKMRDeliveryBidKeyEqualityComparer.GetHashCode(const Value: TKMRDeliveryBidKey): Integer;
 begin
 
 end;
 
 
 { TKMRunnerCachePerformanceTest.TKMRDeliveryCache }
-procedure TKMRunnerCachePerformanceTest.TKMRDeliveryCache.Add(const FromP: TKMPoint; ToP: TKMPoint; const aValue: Single;
+procedure TKMRunnerCachePerformance.TKMRDeliveryCache.Add(const FromP: TKMPoint; ToP: TKMPoint; const aValue: Single;
                                                               const aTimeToLive: Word);
 var
   key: TKMRDeliveryBidKey;
@@ -2464,7 +2464,7 @@ begin
   inherited Add(key, bid);
 end;
 
-procedure TKMRunnerCachePerformanceTest.TKMRDeliveryCache.Add(const aKey: TKMRDeliveryBidKey; const aValue: Single;
+procedure TKMRunnerCachePerformance.TKMRDeliveryCache.Add(const aKey: TKMRDeliveryBidKey; const aValue: Single;
                                                               const aTimeToLive: Word);
 var
   value: TKMRDeliveryBid;
@@ -2476,14 +2476,14 @@ begin
   inherited Add(aKey, value);
 end;
 
-procedure TKMRunnerCachePerformanceTest.TKMRDeliveryCache.Add(const aKey: TKMRDeliveryBidKey; const aBid: TKMRDeliveryBid);
+procedure TKMRunnerCachePerformance.TKMRDeliveryCache.Add(const aKey: TKMRDeliveryBidKey; const aBid: TKMRDeliveryBid);
 begin
   if not CACHE_DELIVERY_BIDS then Exit;
 
   inherited Add(aKey, aBid);
 end;
 
-function TKMRunnerCachePerformanceTest.TKMRDeliveryCache.TryGetValue(const aKey: TKMRDeliveryBidKey;
+function TKMRunnerCachePerformance.TKMRDeliveryCache.TryGetValue(const aKey: TKMRDeliveryBidKey;
                                                                      var aValue: TKMRDeliveryBid): Boolean;
 begin
   Result := False;
@@ -2499,7 +2499,7 @@ end;
 
 
 { TKMRunnerCachePerformanceTest.TKMRDeliveryBidKeyComparer }
-function TKMRunnerCachePerformanceTest.TKMRDeliveryBidKeyComparer.Compare(const Left, Right: TKMRDeliveryBidKey): Integer;
+function TKMRunnerCachePerformance.TKMRDeliveryBidKeyComparer.Compare(const Left, Right: TKMRDeliveryBidKey): Integer;
 begin
   //  Result := Left.GetHashCode - Right.GetHashCode;
   if Left.FromP = Right.FromP then
@@ -2519,8 +2519,8 @@ end;
 initialization
   RegisterRunner(TKMRunnerDesyncTest);
   RegisterRunner(TKMRunnerCrashTest);
-  RegisterRunner(TKMRunnerAAIPerformanceTest);
-  RegisterRunner(TKMRunnerCachePerformanceTest);
+  RegisterRunner(TKMRunnerAAIPerformance);
+  RegisterRunner(TKMRunnerCachePerformance);
   RegisterRunner(TKMRunnerPushModes);
   RegisterRunner(TKMRunnerGA_TestParRun);
   RegisterRunner(TKMRunnerGA_HandLogistics);
