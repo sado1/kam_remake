@@ -1,9 +1,9 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{CB64F5E8-91AE-4497-A8C4-89668924F870}</ProjectGuid>
         <MainSource>KaM_Remake.dpr</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Release</Config>
+        <Config Condition="'$(Config)'==''">Debug</Config>
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Application</AppType>
         <FrameworkType>VCL</FrameworkType>
@@ -274,6 +274,7 @@
         <DCCReference Include="src\hands\KM_HandLogistics.pas"/>
         <DCCReference Include="src\hands\KM_HandSpectator.pas"/>
         <DCCReference Include="src\hands\KM_HandStats.pas"/>
+        <DCCReference Include="src\hands\KM_HandTypes.pas"/>
         <DCCReference Include="src\houses\KM_HouseBarracks.pas"/>
         <DCCReference Include="src\houses\KM_HouseInn.pas"/>
         <DCCReference Include="src\houses\KM_HouseCollection.pas"/>

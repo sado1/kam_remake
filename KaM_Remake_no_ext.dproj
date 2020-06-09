@@ -1,9 +1,9 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{A5901296-43C7-446C-8113-93B25ADD188C}</ProjectGuid>
         <MainSource>KaM_Remake.dpr</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Release</Config>
+        <Config Condition="'$(Config)'==''">Debug</Config>
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Application</AppType>
         <FrameworkType>VCL</FrameworkType>
@@ -273,6 +273,7 @@
         <DCCReference Include="src\hands\KM_HandLogistics.pas"/>
         <DCCReference Include="src\hands\KM_HandSpectator.pas"/>
         <DCCReference Include="src\hands\KM_HandStats.pas"/>
+        <DCCReference Include="src\hands\KM_HandTypes.pas"/>
         <DCCReference Include="src\houses\KM_HouseBarracks.pas"/>
         <DCCReference Include="src\houses\KM_HouseInn.pas"/>
         <DCCReference Include="src\houses\KM_HouseCollection.pas"/>
@@ -311,7 +312,6 @@
         <DCCReference Include="src\navmesh\KM_NavMeshFloodPositioning.pas"/>
         <DCCReference Include="src\navmesh\KM_NavMeshInfluences.pas"/>
         <DCCReference Include="src\navmesh\KM_NavMeshDefences.pas"/>
-        <DCCReference Include="src\navmesh\KM_NavMeshArmyPositioning.pas"/>
         <DCCReference Include="src\navmesh\KM_NavMeshArmyVectorField.pas"/>
         <DCCReference Include="src\net\KM_NetAuthSecure.pas"/>
         <DCCReference Include="src\net\KM_NetAuthUnsecure.pas"/>
@@ -394,6 +394,7 @@
         <DCCReference Include="src\units\actions\KM_UnitActionStormAttack.pas"/>
         <DCCReference Include="src\units\actions\KM_UnitActionWalkTo.pas"/>
         <DCCReference Include="src\units\KM_UnitGroup.pas"/>
+        <DCCReference Include="src\units\KM_UnitGroupTypes.pas"/>
         <DCCReference Include="src\units\KM_Units.pas"/>
         <DCCReference Include="src\units\KM_UnitsCollection.pas"/>
         <DCCReference Include="src\units\KM_UnitVisual.pas"/>
