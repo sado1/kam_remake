@@ -121,7 +121,8 @@ uses
   {$IFDEF DEBUG_NewAI}
     KM_CommonUtils,
   {$ENDIF}
-  KM_UnitWarrior, KM_AIParameters, KM_UnitActionFight, KM_UnitActionWalkTo;
+  KM_UnitWarrior, KM_AIParameters, KM_UnitActionFight, KM_UnitActionWalkTo,
+  KM_UnitGroupTypes;
 
 
 

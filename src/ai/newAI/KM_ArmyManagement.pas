@@ -68,7 +68,8 @@ uses
   KM_Game, KM_GameParams, KM_Hand, KM_HandsCollection, KM_Terrain, KM_AIFields,
   KM_HouseBarracks, KM_Supervisor,
   KM_ResHouses, KM_CommonUtils,
-  KM_AIParameters, KM_DevPerfLog, KM_DevPerfLogTypes;
+  KM_AIParameters, KM_DevPerfLog, KM_DevPerfLogTypes,
+  KM_UnitGroupTypes;
 
 
 { TKMArmyManagement }

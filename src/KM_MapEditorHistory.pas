@@ -4,7 +4,8 @@ interface
 uses
   Classes, Generics.Collections, SysUtils,
   KM_Defaults, KM_Points, KM_CommonTypes, KM_Houses,
-  KM_ResWares, KM_ResHouses, KM_MapEdTypes, KM_Terrain, KM_UnitGroup;
+  KM_ResWares, KM_ResHouses, KM_MapEdTypes, KM_Terrain,
+  KM_UnitGroupTypes;
 
 
 type
@@ -159,7 +160,8 @@ implementation
 uses
   Math,
   KM_HandsCollection, KM_Hand, KM_Units, KM_UnitsCollection,
-  KM_Settings, KM_Game, KM_CommonUtils, KM_Resource, KM_HouseTownhall, KM_HouseBarracks;
+  KM_Settings, KM_Game, KM_CommonUtils, KM_Resource, KM_HouseTownhall, KM_HouseBarracks,
+  KM_UnitGroup;
 
 
 { TKMCheckpoint }

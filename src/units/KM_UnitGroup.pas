@@ -4,35 +4,13 @@ interface
 uses
   Classes, Math, SysUtils, Types,
   KM_Defaults, KM_CommonClasses, KM_CommonTypes, KM_Points, KM_Houses, KM_Units,
-  KM_UnitWarrior;
+  KM_UnitWarrior,
+  KM_UnitGroupTypes;
 
 type
   TKMUnitGroup = class;
   TKMUnitGroupArray = array of TKMUnitGroup;
   TKMUnitGroupEvent = procedure(aGroup: TKMUnitGroup) of object;
-  TKMTurnDirection = (tdNone, tdCW, tdCCW);
-  TKMGroupInitialOrder = (gioNoOrder, gioSendGroup, gioAttackPosition);
-  TKMOrderWalkKind = (wtokNone,
-                      wtokPlayerOrder,  //player order
-                      wtokHaltOrder,    //could be player order, or AI order (as part of OrderRepeat)
-                      wtokFlagPoint,    //after warrior get out of barracks/townhall
-                      wtokAISquad, wtokAIGotoDefencePos, wtokAIAttackCustomPos, //initiated by AI
-                      wtokMissionScript, wtokScript); //initiated by mission script or script
-  TKMOrderWalkKindSet = set of TKMOrderWalkKind;
-
-  TKMGroupOrder = (
-    goNone,         //Last order was executed and now we have nothing to do
-    goWalkTo,       //Ordered to walk somewhere or just change formation
-    goAttackHouse,  //Attack house
-    goAttackUnit,   //Attack specific unit
-    goStorm         //Run forward
-    );
-
-  //MapEd allows to set order for a group that will be executed on mission start
-  TKMMapEdOrder = record
-    Order: TKMGroupInitialOrder;
-    Pos: TKMPointDir;
-  end;
 
   //Group of warriors
   TKMUnitGroup = class

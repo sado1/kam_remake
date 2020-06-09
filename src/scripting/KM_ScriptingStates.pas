@@ -4,7 +4,8 @@ interface
 uses
   Classes, Math, SysUtils, StrUtils,
   KM_CommonTypes, KM_Defaults, KM_Points, KM_HandsCollection, KM_Houses, KM_ScriptingIdCache, KM_Units, KM_MapTypes,
-  KM_UnitGroup, KM_ResHouses, KM_HouseCollection, KM_ResWares, KM_ScriptingEvents, KM_Terrain, KM_ResTileset;
+  KM_UnitGroup, KM_ResHouses, KM_HouseCollection, KM_ResWares, KM_ScriptingEvents, KM_Terrain, KM_ResTileset,
+  KM_UnitGroupTypes;
 
 
 type

@@ -93,7 +93,8 @@ implementation
 uses
   Math,
   KM_GameParams, KM_HandsCollection, KM_Hand, KM_RenderAux,
-  KM_AIFields, KM_NavMesh;
+  KM_AIFields, KM_NavMesh,
+  KM_UnitGroupTypes;
 
 
 { TKMDefencePosition }

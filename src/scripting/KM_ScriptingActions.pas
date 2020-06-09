@@ -195,7 +195,8 @@ uses
   KM_HouseBarracks, KM_HouseSchool, KM_ResUnits, KM_CommonUtils, KM_HouseMarket,
   KM_Resource, KM_Hand, KM_AIDefensePos, KM_CommonClasses,
   KM_PathFindingRoad, KM_ResMapElements, KM_HandConstructions,
-  KM_HouseWoodcutters, KM_HouseTownHall;
+  KM_HouseWoodcutters, KM_HouseTownHall,
+  KM_UnitGroupTypes;
 
 const
   MIN_SOUND_AT_LOC_RADIUS = 28;
