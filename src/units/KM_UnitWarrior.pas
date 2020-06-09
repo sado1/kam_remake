@@ -813,7 +813,10 @@ begin
 
                         loc := gTerrain.GetClosestTile(fOrderLoc, CurrPosition, GetDesiredPassability, fUseExactTarget);
 
-                        SetActionWalkToSpot(loc, uaWalk);
+                        // No need to walk if we reached destination already
+                        if loc <> fCurrPosition then
+                          SetActionWalkToSpot(loc, uaWalk);
+
                         fNextOrder := woNone;
                         fOrder := woWalk;
                       end;

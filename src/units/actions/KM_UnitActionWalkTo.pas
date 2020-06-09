@@ -1091,6 +1091,8 @@ begin
   if not gTerrain.TileInMapCoords(aLoc.X, aLoc.Y) then
     raise ELocError.Create('Invalid Change Walk To for '+gRes.Units[fUnit.UnitType].GUIName, aLoc);
 
+  if fWalkTo = aLoc then Exit; //We are walking to the same loc
+
   //We are no longer being pushed
   if fInteractionStatus = kisPushed then
     fInteractionStatus := kisNone;
