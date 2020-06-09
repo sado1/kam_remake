@@ -2,6 +2,7 @@ unit KM_MissionScript_Standard;
 {$I KaM_Remake.inc}
 interface
 uses
+  Generics.Collections,
   KM_MissionScript, KM_UnitGroup, KM_Units, KM_Houses,
   KM_AIAttacks, KM_Points, KM_Defaults;
 
@@ -20,15 +21,17 @@ type
     fLastUnit: TKMUnit;
     fLastTroop: TKMUnitGroup;
     fAIAttack: TKMAIAttack;
-    fAttackPositions: array of TKMAttackPosition;
-    fAttackPositionsCount: Integer;
+    fAttackPositions: TList<TKMAttackPosition>;
     fDefaultLocation: ShortInt;
     procedure ProcessAttackPositions;
+    procedure Init(aMode: TKMMissionParsingMode);
   protected
     function ProcessCommand(CommandType: TKMCommandType; P: array of Integer; const TextParam: AnsiString = ''): Boolean; override;
   public
     constructor Create(aMode: TKMMissionParsingMode); overload;
     constructor Create(aMode: TKMMissionParsingMode; var aPlayersEnabled: TKMHandEnabledArray); overload;
+    destructor Destroy; override;
+
     function LoadMission(const aFileName: string): Boolean; overload; override;
     procedure PostLoadMission;
 
@@ -70,8 +73,8 @@ constructor TKMMissionParserStandard.Create(aMode: TKMMissionParsingMode);
 var I: Integer;
 begin
   inherited Create;
-  fParsingMode := aMode;
-  fDefaultLocation := 0;
+
+  Init(aMode);
 
   for I := 0 to High(fPlayerEnabled) do
     fPlayerEnabled[I] := True;
@@ -81,11 +84,27 @@ end;
 constructor TKMMissionParserStandard.Create(aMode: TKMMissionParsingMode; var aPlayersEnabled: TKMHandEnabledArray);
 begin
   inherited Create;
-  fParsingMode := aMode;
-  fDefaultLocation := 0;
+
+  Init(aMode);
 
   //Tells us which player should be enabled and which ignored/skipped
   fPlayerEnabled := aPlayersEnabled;
+end;
+
+
+procedure TKMMissionParserStandard.Init(aMode: TKMMissionParsingMode);
+begin
+  fAttackPositions := TList<TKMAttackPosition>.Create;
+  fParsingMode := aMode;
+  fDefaultLocation := 0;
+end;
+
+
+destructor TKMMissionParserStandard.Destroy;
+begin
+  fAttackPositions.Free;
+
+  inherited;
 end;
 
 
@@ -140,9 +159,9 @@ var
   H: TKMHouse;
   U: TKMUnit;
 begin
-  Assert((fParsingMode <> mpmEditor) or (fAttackPositionsCount = 0), 'AttackPositions should be handled by MapEd');
+  Assert((fParsingMode <> mpmEditor) or (fAttackPositions.Count = 0), 'AttackPositions should be handled by MapEd');
 
-  for I := 0 to fAttackPositionsCount - 1 do
+  for I := 0 to fAttackPositions.Count - 1 do
     with fAttackPositions[I] do
     begin
       H := gHands.HousesHitTest(Target.X, Target.Y); //Attack house
@@ -177,6 +196,7 @@ var
   UT: TKMUnitType;
   iPlayerAI: TKMHandAI;
   ChooseLoc: TKMChooseLoc;
+  attackPos: TKMAttackPosition;
 begin
   Result := False; //Set it right from the start. There are several Exit points below
 
@@ -680,10 +700,9 @@ begin
                             end
                             else
                             begin
-                              Inc(fAttackPositionsCount);
-                              SetLength(fAttackPositions, fAttackPositionsCount+1);
-                              fAttackPositions[fAttackPositionsCount-1].Group := fLastTroop;
-                              fAttackPositions[fAttackPositionsCount-1].Target := KMPoint(P[0]+1,P[1]+1);
+                              attackPos.Group := fLastTroop;
+                              attackPos.Target := KMPoint(P[0]+1,P[1]+1);
+                              fAttackPositions.Add(attackPos);
                             end
                           else
                             AddError('ct_AttackPosition without prior declaration of Troop');
