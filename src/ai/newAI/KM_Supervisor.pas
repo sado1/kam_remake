@@ -1140,7 +1140,7 @@ begin
   Cnt := 0;
   for PL := 0 to gHands.Count-1 do
     Cnt := Cnt + Byte(gHands[PL].Enabled);
-  Result := Format('Supervisor (Is FFA = %d; Teams = %d; Payers = %d)',[Byte(fFFA), Length(fAlli2PL), Cnt]);
+  Result := Format('Supervisor (Is FFA = %d; Teams = %d; Players = %d)',[Byte(fFFA), Length(fAlli2PL), Cnt]);
   // Diplomacy + combat status
   for Team := Low(fAlli2PL) to High(fAlli2PL) do
   begin
