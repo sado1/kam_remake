@@ -231,6 +231,7 @@ begin
   Result.TerKind            := aPaintedTile.TerKind;
   Result.Tiles              := aPaintedTile.Tiles;
   Result.HeightAdd          := aPaintedTile.HeightAdd;
+  Result.FieldAge           := aTile.FieldAge;
   Result.TileOverlay        := aTile.TileOverlay;
   Result.TileOwner          := aTile.TileOwner;
   Result.CornOrWine         := aTile.CornOrWine;
