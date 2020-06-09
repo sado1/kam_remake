@@ -799,10 +799,7 @@ begin
                       begin
                         FreeAndNil(fTask); //e.g. TaskAttackHouse
 
-                        if fUseExactTarget then
-                          loc := fOrderLoc
-                        else
-                          loc := gTerrain.GetClosestTile(fOrderLoc, CurrPosition, GetDesiredPassability, False);
+                        loc := gTerrain.GetClosestTile(fOrderLoc, CurrPosition, GetDesiredPassability, fUseExactTarget);
 
                         TKMUnitActionWalkTo(Action).ChangeWalkTo(loc, 0);
                         fNextOrder := woNone;
@@ -814,10 +811,7 @@ begin
                       begin
                         FreeAndNil(fTask);
 
-                        if fUseExactTarget then
-                          loc := fOrderLoc
-                        else
-                          loc := gTerrain.GetClosestTile(fOrderLoc, CurrPosition, GetDesiredPassability, False);
+                        loc := gTerrain.GetClosestTile(fOrderLoc, CurrPosition, GetDesiredPassability, fUseExactTarget);
 
                         SetActionWalkToSpot(loc, uaWalk);
                         fNextOrder := woNone;
