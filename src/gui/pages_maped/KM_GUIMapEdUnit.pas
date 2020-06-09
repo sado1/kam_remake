@@ -308,7 +308,7 @@ begin
   if Sender = Button_ArmyFood then
     UnitConditionsChange(Sender, []);
 
-  fGroup.MapEdOrder.Order := TKMInitialOrder(DropBox_ArmyOrder.ItemIndex);
+  fGroup.MapEdOrder.Order := TKMGroupInitialOrder(DropBox_ArmyOrder.ItemIndex);
   fGroup.MapEdOrder.Pos.Loc.X := Edit_ArmyOrderX.Value;
   fGroup.MapEdOrder.Pos.Loc.Y := Edit_ArmyOrderY.Value;
   fGroup.MapEdOrder.Pos.Dir := TKMDirection(Edit_ArmyOrderDir.Value + 1);

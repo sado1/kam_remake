@@ -966,7 +966,7 @@ begin
   if gMySpectator.Selected is TKMUnitGroup then
   begin
     G := TKMUnitGroup(gMySpectator.Selected);
-    if G.MapEdOrder.Order <> ioNoOrder then
+    if G.MapEdOrder.Order <> gioNoOrder then
     begin
       gRenderAux.Quad(G.MapEdOrder.Pos.Loc.X, G.MapEdOrder.Pos.Loc.Y, $40FF00FF);
       gRenderAux.LineOnTerrain(G.Position.X - 0.5, G.Position.Y - 0.5, G.MapEdOrder.Pos.Loc.X - 0.5, G.MapEdOrder.Pos.Loc.Y - 0.5, $FF0000FF);

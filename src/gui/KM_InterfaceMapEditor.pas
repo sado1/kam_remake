@@ -1378,14 +1378,14 @@ begin
                     //If there's any enemy unit or house on specified tile - set attack target
                     if ((U <> nil) and (gHands[U.Owner].Alliances[G.Owner] = atEnemy))
                     or ((H <> nil) and (gHands[H.Owner].Alliances[G.Owner] = atEnemy)) then
-                      G.MapEdOrder.Order := ioAttackPosition
+                      G.MapEdOrder.Order := gioAttackPosition
                     //Else order group walk to specified location
                     else
                     if G.CanWalkTo(KMPoint(gGameCursor.Cell.X, gGameCursor.Cell.Y), 0) then
-                      G.MapEdOrder.Order := ioSendGroup
+                      G.MapEdOrder.Order := gioSendGroup
                     else
                     //Can't take any orders: f.e. can't walk to unwalkable tile (water, mountain) or attack allied houses
-                      G.MapEdOrder.Order := ioNoOrder;
+                      G.MapEdOrder.Order := gioNoOrder;
                     //Save target coordinates
                     G.MapEdOrder.Pos.Loc.X := gGameCursor.Cell.X;
                     G.MapEdOrder.Pos.Loc.Y := gGameCursor.Cell.Y;

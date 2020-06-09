@@ -609,7 +609,7 @@ begin
                           if fLastTroop <> nil then
                             if fParsingMode = mpmEditor then
                             begin
-                              fLastTroop.MapEdOrder.Order := ioSendGroup;
+                              fLastTroop.MapEdOrder.Order := gioSendGroup;
                               fLastTroop.MapEdOrder.Pos := KMPointDir(P[0]+1, P[1]+1, TKMDirection(P[2]+1));
                             end
                             else
@@ -695,7 +695,7 @@ begin
                           if fLastTroop <> nil then
                             if fParsingMode = mpmEditor then
                             begin
-                              fLastTroop.MapEdOrder.Order := ioAttackPosition;
+                              fLastTroop.MapEdOrder.Order := gioAttackPosition;
                               fLastTroop.MapEdOrder.Pos := KMPointDir(P[0]+1, P[1]+1, dirNA);
                             end
                             else
@@ -1152,10 +1152,10 @@ begin
         AddCommand(ctSetGroupFood, [Group.FlagBearer.Condition]);
 
       case Group.MapEdOrder.Order of
-        ioNoOrder: ;
-        ioSendGroup:
+        gioNoOrder: ;
+        gioSendGroup:
           AddCommand(ctSendGroup, [Group.MapEdOrder.Pos.Loc.X-1 + aLeftInset, Group.MapEdOrder.Pos.Loc.Y-1 + aTopInset, Byte(Group.MapEdOrder.Pos.Dir)-1]);
-        ioAttackPosition:
+        gioAttackPosition:
           AddCommand(ctAttackPosition, [Group.MapEdOrder.Pos.Loc.X-1 + aLeftInset, Group.MapEdOrder.Pos.Loc.Y-1 + aTopInset]);
         else
           raise Exception.Create('Unexpected group order in MapEd');

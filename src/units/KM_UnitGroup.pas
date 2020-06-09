@@ -11,7 +11,7 @@ type
   TKMUnitGroupArray = array of TKMUnitGroup;
   TKMUnitGroupEvent = procedure(aGroup: TKMUnitGroup) of object;
   TKMTurnDirection = (tdNone, tdCW, tdCCW);
-  TKMInitialOrder = (ioNoOrder, ioSendGroup, ioAttackPosition);
+  TKMGroupInitialOrder = (gioNoOrder, gioSendGroup, gioAttackPosition);
   TKMOrderWalkKind = (wtokNone,
                       wtokPlayerOrder,  //player order
                       wtokHaltOrder,    //could be player order, or AI order (as part of OrderRepeat)
@@ -30,7 +30,7 @@ type
 
   //MapEd allows to set order for a group that will be executed on mission start
   TKMMapEdOrder = record
-    Order: TKMInitialOrder;
+    Order: TKMGroupInitialOrder;
     Pos: TKMPointDir;
   end;
 
