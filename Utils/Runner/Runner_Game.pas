@@ -1430,7 +1430,7 @@ begin
 
       gGameSettings.DebugSaveGameAsText := True;
 
-      gGameSettings.SaveCheckpoints := True;
+      gGameSettings.SaveCheckpoints := DoCheckSavePoints;
       gGameSettings.SaveCheckpointsFreq := savesFreq;
       gGameSettings.SaveCheckpointsLimit := savesCnt;
 
