@@ -1324,6 +1324,16 @@ function TKMTerrain.TileGoodForTree(X,Y: Word): Boolean;
       end;
   end;
 
+  // Do not allow to plant tree on vertex with NW-SE only passable tiles around
+  // It could trap woodcutter if he came from top-left tile or close some narrow path between areas
+  function Is_NW_SE_OnlyVertex: Boolean;
+  begin
+    Result :=       CheckPassability(X    , Y    , tpWalk)  // O | X   // O - walkable (OK)
+            and     CheckPassability(X - 1, Y - 1, tpWalk)  // --T--   // X - not walkable
+            and not CheckPassability(X    , Y - 1, tpWalk)  // X | W   // T - Tree to plant
+            and not CheckPassability(X - 1, Y    , tpWalk); //         // W - woodcutter
+  end;
+
 begin
   //todo: Optimize above functions. Recheck UpdatePass and WC if the check Rects can be made smaller
 
@@ -1333,6 +1343,7 @@ begin
     and (X > 1) and (Y > 1) //Not top/left of map, but bottom/right is ok
     and not (Land[Y,X].TileOverlay in ROAD_LIKE_OVERLAYS)
     and not HousesNearVertex
+    and not Is_NW_SE_OnlyVertex
     //Woodcutter will dig out other object in favour of his tree
     and ((Land[Y,X].Obj = OBJ_NONE) or (gMapElements[Land[Y,X].Obj].CanBeRemoved))
     and CheckHeightPass(KMPoint(X,Y), hpWalking);
