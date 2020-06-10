@@ -289,6 +289,7 @@ type
     function TileIsWineField(const Loc: TKMPoint): Boolean;
     function TileIsWalkableRoad(const Loc: TKMPoint): Boolean;
     function TileIsLocked(const aLoc: TKMPoint): Boolean;
+    function TileIsGoodToCutTree(const aLoc: TKMPoint): Boolean;
 
     function TileHasStone(X, Y: Word): Boolean;
     function TileHasCoal(X, Y: Word): Boolean;
@@ -1714,6 +1715,19 @@ begin
 end;
 
 
+function TKMTerrain.TileIsGoodToCutTree(const aLoc: TKMPoint): Boolean;
+var
+  U: TKMUnit;
+begin
+  U := Land[aLoc.Y,aLoc.X].IsUnit;
+
+  Result := (U = nil)
+            or U.IsAnimal
+            or (U.Action = nil)
+            or not U.Action.Locked;
+end;
+
+
 function TKMTerrain.TileIsLocked(const aLoc: TKMPoint): Boolean;
 var
   U: TKMUnit;
@@ -2746,10 +2760,10 @@ begin
       and ObjectIsChopableTree(T, caAgeFull)
       and (Land[T.Y,T.X].TreeAge >= TREE_AGE_FULL)
       //Woodcutter could be standing on any tile surrounding this tree
-      and not TileIsLocked(T)
-      and ((T.X = 1) or not TileIsLocked(KMPoint(T.X-1, T.Y))) //if K=1, K-1 will be off map
-      and ((T.Y = 1) or not TileIsLocked(KMPoint(T.X, T.Y-1)))
-      and ((T.X = 1) or (T.Y = 1) or not TileIsLocked(KMPoint(T.X-1, T.Y-1)))
+      and TileIsGoodToCutTree(T)
+      and ((T.X = 1) or TileIsGoodToCutTree(KMPoint(T.X - 1, T.Y))) //if K=1, K-1 will be off map
+      and ((T.Y = 1) or TileIsGoodToCutTree(KMPoint(T.X, T.Y - 1)))
+      and ((T.X = 1) or (T.Y = 1) or TileIsGoodToCutTree(KMPoint(T.X - 1, T.Y - 1)))
       and Route_CanBeMadeToVertex(aLoc, T, tpWalk) then
         if ChooseCuttingDirection(aLoc, T, cuttingPoint) then
           Trees.Add(cuttingPoint); //Tree

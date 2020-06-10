@@ -165,10 +165,10 @@ begin
   begin
     P := KMGetVertexTile(WorkPlan.Loc, WorkPlan.WorkDir);
     //Check all tiles around the tree, like we do in TKMTerrain.FindTree
-    Result := gTerrain.TileIsLocked(P)
-      or ((P.X > 1) and gTerrain.TileIsLocked(KMPoint(P.X-1, P.Y))) //if K=1, K-1 will be off map
-      or ((P.Y > 1) and gTerrain.TileIsLocked(KMPoint(P.X, P.Y-1)))
-      or ((P.X > 1) and (P.Y > 1) and gTerrain.TileIsLocked(KMPoint(P.X-1, P.Y-1)))
+    Result := not gTerrain.TileIsGoodToCutTree(P)
+      or ((P.X > 1) and not gTerrain.TileIsGoodToCutTree(KMPoint(P.X-1, P.Y))) //if K=1, K-1 will be off map
+      or ((P.Y > 1) and not gTerrain.TileIsGoodToCutTree(KMPoint(P.X, P.Y-1)))
+      or ((P.X > 1) and (P.Y > 1) and not gTerrain.TileIsGoodToCutTree(KMPoint(P.X-1, P.Y-1)))
   end
   else
     Result := gTerrain.TileIsLocked(WorkPlan.Loc);
