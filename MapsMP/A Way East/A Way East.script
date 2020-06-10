@@ -93,6 +93,108 @@ begin
 end;
 
 
+function GroupsFormation(P, GT: Integer): Integer;
+var
+  aCount, aColumns: Integer;
+begin
+  States.AIGroupsFormationGet(P, GT, aCount, aColumns);
+  Result := aCount;
+end;
+
+
+function DefenceSquadsCount(P, aGT: Integer): Integer;
+var
+  I, aX, aY: Integer;
+  GT, DT: Byte; 
+  R: Word;
+begin
+  if States.StatAIDefencePositionsCount(P) > 0 then
+    for I := 0 to States.StatAIDefencePositionsCount(P) - 1 do
+    begin
+      States.AIDefencePositionGet(P, I, aX, aY, GT, R, DT);
+      if (DT = 0)
+      and (GT = aGT) then
+        Result := Result + 1;
+    end;
+end;
+
+
+function SoldiersForDefence(P: Integer): Integer;
+var
+  I: Integer;
+begin
+  Result := 0;
+  for I := 0 to 3 do
+    Result := Result + DefenceSquadsCount(P, I) * GroupsFormation(P, I);
+end;
+
+
+function AttackAmount(P: Integer): Integer;
+begin
+  case P of
+    4..10: Result := 50
+    else   Result := 0;
+  end;
+end;
+
+
+function SoldiersToEquip(P: Integer): Integer;
+begin
+  Result := SoldiersForDefence(P) + AttackAmount(P) - States.StatArmyCount(P) - States.StatUnitTypeCount(P, 13) + States.StatHouseTypeCount(P, 17) + 7;
+end;
+
+
+function FirstAttackTimer(P: Integer): Integer;
+begin
+  case States.MissionDifficulty of
+    mdEasy1:
+      case P of
+        4:  Result := 45000;
+        5:  Result := 48000;
+        6:  Result := 63000;
+        7:  Result := 66000;
+        8:  Result := 42000;
+        9:  Result := 69000;
+        10: Result := 72000;
+      end;
+
+    mdNormal:
+      case P of
+        4:  Result := 39000;
+        5:  Result := 43000;
+        6:  Result := 59000;
+        7:  Result := 62000;
+        8:  Result := 36000;
+        9:  Result := 66000;
+        10: Result := 68000;
+      end;
+
+    mdHard1:
+      case P of
+        4:  Result := 40000;
+        5:  Result := 45000;
+        6:  Result := 54000;
+        7:  Result := 57000;
+        8:  Result := 36000;
+        9:  Result := 60000;
+        10: Result := 63000;
+      end;
+  end;
+end;
+
+
+function AttackFrequency(P: Integer): Integer;
+begin
+  Result := AttackAmount(P) * States.AIEquipRate(P, 1);
+end;
+
+
+function AttackTime(P, ID: Integer): Integer;
+begin
+  Result := FirstAttackTimer(P) + AttackFrequency(P) * (ID - 1);
+end;
+
+
 procedure UpdateAIEquipRates;
 var
   Pos: TKMPoint;
@@ -120,7 +222,7 @@ begin
                Pos.Y := 0;
                Actions.AIAttackAdd(8, True, 42000, 50, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
                Actions.AIAttackAdd(4, True, 45000, 50, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
-               Actions.AIAttackAdd(5, True, 48000, 30, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
+               Actions.AIAttackAdd(5, True, 48000, 50, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
                Actions.AIAttackAdd(6, True, 63000, 50, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
                Actions.AIAttackAdd(7, True, 66000, 50, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
                Actions.AIAttackAdd(9, True, 69000, 50, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
@@ -165,13 +267,17 @@ begin
                Pos.Y := 0;
                Actions.AIAttackAdd(8, True, 36000, 50, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
                Actions.AIAttackAdd(4, True, 40000, 50, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
-               Actions.AIAttackAdd(5, True, 45000, 30, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
+               Actions.AIAttackAdd(5, True, 45000, 50, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
                Actions.AIAttackAdd(6, True, 54000, 50, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
                Actions.AIAttackAdd(7, True, 57000, 50, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
                Actions.AIAttackAdd(9, True, 60000, 50, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
                Actions.AIAttackAdd(10, True, 63000, 50, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
              end;
   end;
+
+  for I := 4 to 11 do
+    Actions.AIRecruitDelay(I, Utils.MaxI(FirstAttackTimer(I) - SoldiersToEquip(I) * States.AIEquipRate(I, 1), 0));
+
 end;
 
 

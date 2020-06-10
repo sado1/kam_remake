@@ -8,7 +8,7 @@ const
 
 
 var
-  Barracks, AIGroup, Store0, Store1: Integer;
+  Barracks, AIGroup, Store0, Store1, ChangesCount: Integer;
   Msg: Boolean;
   Wolves: array of Integer;
   SoundAllowed: array[0..1] of Boolean;
@@ -103,12 +103,86 @@ begin
 end;
 
 
+function GroupsFormation(P, GT: Integer): Integer;
+var
+  aCount, aColumns: Integer;
+begin
+  States.AIGroupsFormationGet(P, GT, aCount, aColumns);
+  Result := aCount;
+end;
+
+
+function DefenceSquadsCount(P, aGT: Integer): Integer;
+var
+  I, aX, aY: Integer;
+  GT, DT: Byte; 
+  R: Word;
+begin
+  Result := 0;
+  if States.StatAIDefencePositionsCount(P) > 0 then
+    for I := 0 to States.StatAIDefencePositionsCount(P) - 1 do
+    begin
+      States.AIDefencePositionGet(P, I, aX, aY, GT, R, DT);
+      if (DT = 0)
+      and (GT = aGT) then
+        Result := Result + 1;
+    end;
+end;
+
+
+function SoldiersForDefence(P: Integer): Integer;
+var
+  I: Integer;
+begin
+  Result := 0;
+  for I := 0 to 3 do
+    Result := Result + DefenceSquadsCount(P, I) * GroupsFormation(P, I);
+end;
+
+
+function AttackAmount(P: Integer): Integer;
+begin
+  case P of
+    3,4,6,7: Result := 60
+    else     Result := 0;
+  end;
+end;
+
+
+function SoldiersToEquip(P: Integer): Integer;
+begin
+  Result := SoldiersForDefence(P) + AttackAmount(P) - States.StatArmyCount(P) - States.StatUnitTypeCount(P, 13) + States.StatHouseTypeCount(P, 17) + 5;
+end;
+
+
+function FirstAttackTimer(P: Integer): Integer;
+begin
+  case P of
+    3,7: Result := 48000;
+    4,6: Result := 39000;
+  end;
+end;
+
+
+function AttackFrequency(P: Integer): Integer;
+begin
+  Result := AttackAmount(P) * States.AIEquipRate(P, 1);
+end;
+
+
+function AttackTime(P, ID: Integer): Integer;
+begin
+  Result := FirstAttackTimer(P) + AttackFrequency(P) * (ID - 1);
+end;
+
+
 procedure OnMissionStart;
 var
   G, G1, G2, I: Integer;
   H: array of Integer;
 begin
   FindWolves;
+  ChangesCount := 0;
   for I := 0 to 1 do
     SoundAllowed[I] := True;
   Actions.ShowMsg(-1, '<$2>');
@@ -173,10 +247,6 @@ begin
     Actions.AIEquipRate(7, 1, 120);
     Actions.AIEquipRate(5, 0, 50);
     Actions.AIEquipRate(5, 1, 50);
-    Actions.AIRecruitDelay(3, 36000);
-    Actions.AIRecruitDelay(4, 28000);
-    Actions.AIRecruitDelay(6, 25000);
-    Actions.AIRecruitDelay(7, 34000);
   end;
 
   if States.MissionDifficulty = mdEasy1 then
@@ -192,10 +262,6 @@ begin
     Actions.AIEquipRate(7, 0, 300);
     Actions.AIEquipRate(7, 1, 300);
     Actions.AIRecruitDelay(2, 12000);
-    Actions.AIRecruitDelay(3, 20000);
-    Actions.AIRecruitDelay(4, 16000);
-    Actions.AIRecruitDelay(6, 8000);
-    Actions.AIRecruitDelay(7, 16000);
     if States.PlayerEnabled(0) then
     begin
       Actions.GiveWares(0, 7, 5);
@@ -233,23 +299,29 @@ begin
     Actions.AIEquipRate(7, 0, 200);
     Actions.AIEquipRate(7, 1, 200);
     Actions.AIRecruitDelay(2, 18000);
-    Actions.AIRecruitDelay(3, 29000);
-    Actions.AIRecruitDelay(4, 23000);
-    Actions.AIRecruitDelay(6, 17000);
-    Actions.AIRecruitDelay(7, 27500);
     Actions.GiveGroup(8, 22, 6, 24, 3, 10, 5);
   end;
+
+  for I := 3 to 7 do
+    if I <> 5 then
+      Actions.AIRecruitDelay(I, Utils.MaxI(FirstAttackTimer(I) - SoldiersToEquip(I) * States.AIEquipRate(I, 1), 0));
 
 end;
 
 
-procedure ChangeArmyType(P: Integer);
+procedure ChangeArmyType;
 var
-  K: Integer;
+  I, K: Integer;
 begin
-  for K := 15 to 22 do
-    if States.KaMRandom < K * 0.04 then
-      Actions.UnitBlock(P, K, Boolean(States.KaMRandomI(2)));
+  ChangesCount := ChangesCount + States.KaMRandomI(4);
+  for I := 3 to 8 do
+    for K := 15 to 22 do
+    begin
+      if ChangesCount mod 2 <> 0 then
+        Actions.UnitBlock(I, K, K mod 2 = 0);
+      if ChangesCount mod 2 = 0 then
+        Actions.UnitBlock(I, K, K mod 2 <> 0);
+    end;
 end;
 
 
@@ -305,8 +377,7 @@ begin
       CheckFences(I);
 
   if States.GameTime mod ARMY_TYPE_TIME = 0 then
-    for I := 3 to 8 do
-      ChangeArmyType(I);
+    ChangeArmyType;
 
   if States.GameTime = 30 then
     Actions.ShowMsg(-1, '<$0>');

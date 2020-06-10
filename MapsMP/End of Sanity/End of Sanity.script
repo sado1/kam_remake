@@ -76,18 +76,21 @@ begin
 end;
 
 
-function StartSquadsCount(P, GT: Integer): Integer;
+function DefenceSquadsCount(P, aGT: Integer): Integer;
 var
-  G: array of Integer;
-  I: Integer;
+  I, aX, aY: Integer;
+  GT, DT: Byte; 
+  R: Word;
 begin
   Result := 0;
-  G := States.PlayerGetAllGroups(P);
-  if Length(G) <= 0 then
-    Exit;
-  for I := Low(G) to High(G) do
-    if States.GroupType(G[I]) = GT then
-      Result := Result + 1;
+  if States.StatAIDefencePositionsCount(P) > 0 then
+    for I := 0 to States.StatAIDefencePositionsCount(P) - 1 do
+    begin
+      States.AIDefencePositionGet(P, I, aX, aY, GT, R, DT);
+      if (DT = 0)
+      and (GT = aGT) then
+        Result := Result + 1;
+    end;
 end;
 
 
@@ -97,7 +100,7 @@ var
 begin
   Result := 0;
   for I := 0 to 3 do
-    Result := Result + StartSquadsCount(P, I) * GroupsFormation(P, I);
+    Result := Result + DefenceSquadsCount(P, I) * GroupsFormation(P, I);
 end;
 
 
@@ -113,7 +116,7 @@ end;
 
 function SoldiersToEquip(P: Integer): Integer;
 begin
-  Result := SoldiersForDefence(P) + AttackAmount(P) - States.StatArmyCount(P) - States.StatUnitTypeCount(P, 13) + States.StatHouseTypeCount(P, 17);
+  Result := SoldiersForDefence(P) + AttackAmount(P) - States.StatArmyCount(P) - States.StatUnitTypeCount(P, 13) + States.StatHouseTypeCount(P, 17) + 5;
 end;
 
 
