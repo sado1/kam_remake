@@ -770,7 +770,9 @@ begin
   if aNewGame
     or (    isPT and not SameValue(oldSpeedPT,      fOptions.SpeedPT,      0.01))
     or (not isPT and not SameValue(oldSpeedAfterPT, fOptions.SpeedAfterPT, 0.01)) then
-    SetSpeed(GetNormalSpeed, False);
+    SetSpeed(GetNormalSpeed, False)
+  else
+    UpdateTickCounters; //We have to update game-speed-changed counters
 
   //Check for default advanced AI's
   if gNetworking.IsMap then
