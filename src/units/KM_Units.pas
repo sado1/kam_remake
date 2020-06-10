@@ -216,6 +216,8 @@ type
     function  IsDismissAvailable: Boolean;
     function  IsDismissCancelAvailable: Boolean;
 
+    function IsAnimal: Boolean; virtual;
+
     property  Thought: TKMUnitThought read fThought write SetThought;
     function  GetMovementVector: TKMPointF;
     function  IsIdle: Boolean;
@@ -331,6 +333,7 @@ type
     constructor Load(LoadStream: TKMemoryStream); override;
     property FishCount: byte read fFishCount;
     function ReduceFish: Boolean;
+    function IsAnimal: Boolean; override;
     procedure Save(SaveStream: TKMemoryStream); override;
     function UpdateState: Boolean; override;
     procedure Paint(aTickLag: Single); override;
@@ -975,6 +978,12 @@ begin
   //Always start with 5 fish in the group
   if aUnitType = utFish then
     fFishCount := 5;
+end;
+
+
+function TKMUnitAnimal.IsAnimal: Boolean;
+begin
+  Result := True;
 end;
 
 
@@ -1888,6 +1897,12 @@ end;
 function TKMUnit.IsHungry: Boolean;
 begin
   Result := fCondition < UNIT_MIN_CONDITION;
+end;
+
+
+function TKMUnit.IsAnimal: Boolean;
+begin
+  Result := False;
 end;
 
 
