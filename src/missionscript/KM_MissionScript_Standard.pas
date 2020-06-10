@@ -25,7 +25,7 @@ type
     fAIAttack: TKMAIAttack;
     fGroupOrders: TList<TKMMissionScriptGroupOrder>;
     fDefaultLocation: ShortInt;
-    procedure ProcessAttackPositions;
+    procedure HandleGroupOrders;
     procedure Init(aMode: TKMMissionParsingMode);
   protected
     function ProcessCommand(CommandType: TKMCommandType; P: array of Integer; const TextParam: AnsiString = ''): Boolean; override;
@@ -149,13 +149,13 @@ end;
 procedure TKMMissionParserStandard.PostLoadMission;
 begin
   //Post-processing of ctAttack_Position commands which must be done after mission has been loaded
-  ProcessAttackPositions;
+  HandleGroupOrders;
   gHands.PostLoadMission;
 end;
 
 
 //Determine what we are attacking: House, Unit or just walking to some place
-procedure TKMMissionParserStandard.ProcessAttackPositions;
+procedure TKMMissionParserStandard.HandleGroupOrders;
 var
   I: Integer;
   H: TKMHouse;
