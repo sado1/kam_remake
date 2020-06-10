@@ -277,7 +277,7 @@ type
     function TileGoodForIronMine(X, Y: Word): Boolean;
     function TileGoodForGoldmine(X, Y: Word): Boolean;
     function TileGoodForField(X, Y: Word): Boolean;
-    function TileGoodForTree(X, Y: Word): Boolean;
+    function TileGoodToPlantTree(X, Y: Word): Boolean;
     function TileIsWater(const Loc: TKMPoint): Boolean; overload;
     function TileIsWater(X, Y: Word): Boolean; overload;
     function TileIsStone(X, Y: Word): Byte;
@@ -1280,7 +1280,7 @@ begin
 end;
 
 
-function TKMTerrain.TileGoodForTree(X,Y: Word): Boolean;
+function TKMTerrain.TileGoodToPlantTree(X,Y: Word): Boolean;
   function IsObjectsNearby: Boolean;
   var
     I,K: Integer;
@@ -2755,7 +2755,7 @@ begin
           Trees.Add(cuttingPoint); //Tree
 
       if (aPlantAct in [taPlant, taAny])
-      and TileGoodForTree(T.X, T.Y)
+      and TileGoodToPlantTree(T.X, T.Y)
       and Route_CanBeMade(aLoc, T, tpWalk, 0)
       and not TileIsLocked(T) then //Taken by another woodcutter
         if ObjectIsChopableTree(T, caAgeStump) then
