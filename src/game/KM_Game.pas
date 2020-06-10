@@ -770,9 +770,8 @@ begin
   if aNewGame
     or (    isPT and not SameValue(oldSpeedPT,      fOptions.SpeedPT,      0.01))
     or (not isPT and not SameValue(oldSpeedAfterPT, fOptions.SpeedAfterPT, 0.01)) then
-    SetSpeed(GetNormalSpeed, False)
-  else
-    UpdateTickCounters; //We have to update game-speed-changed counters
+    SetSpeed(GetNormalSpeed, False);
+
 
   //Check for default advanced AI's
   if gNetworking.IsMap then
@@ -2377,6 +2376,8 @@ begin
 
   if fParams.IsMultiPlayerOrSpec then
     MultiplayerRig(False);
+
+  UpdateTickCounters; //We have to update game-speed-changed counters
 
   if fParams.Mode in [gmSingle, gmCampaign, gmMulti, gmMultiSpectate] then
   begin
