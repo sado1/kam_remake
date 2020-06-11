@@ -2421,7 +2421,7 @@ begin
       Self.Kill(PLAYER_NONE, False, True);
       //Explanation above
       {$ELSE}
-      raise ELocError.Create(Format('%s on unwalkable tile at %s pass: ''%s''', [gRes.Units[UnitType].GUIName, fNextPosition.ToString, PassabilityGuiText[DesiredPassability]]), fNextPosition);
+      raise ELocError.Create(Format('%s on unwalkable tile at %s pass: ''%s''', [gRes.Units[UnitType].GUIName, fNextPosition.ToString, PASSABILITY_GUI_TEXT[DesiredPassability]]), fNextPosition);
       {$ENDIF}
 
   //
