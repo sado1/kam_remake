@@ -75,6 +75,10 @@ uses
   KM_ScriptingEvents, KM_Sound,
   KM_CommonUtils;
 
+const
+  //Maximum number of Demands we can place at once (stops the delivery queue from becoming clogged with 1500 items)
+  MAX_RES_ORDERED = 10;
+
 
 { TKMHouseMarket }
 constructor TKMHouseMarket.Create(aUID: Integer; aHouseType: TKMHouseType; PosX, PosY: Integer; aOwner: TKMHandID; aBuildState: TKMHouseBuildState);
@@ -160,7 +164,7 @@ end;
 
 procedure TKMHouseMarket.ResAddToIn(aResource: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False);
 var
-  resRequired, ordersToDo: Integer;
+  ordersAllowed, ordersToDo: Integer;
 begin
   //If user cancelled the exchange (or began new one with different resources already)
   //then incoming resourced should be added to Offer list immediately
@@ -171,11 +175,16 @@ begin
   if (aResource = fResFrom) and TradeInProgress then
   begin
     SetResInCnt(aResource, fMarketResIn[aResource] + aCount); //Place the new resource in the IN list
+
     //As we only order 10 resources at one time, we might need to order another now to fill the gap made by the one delivered
-    resRequired := GetResRequired;
-    if resRequired > 0 then
+    ordersAllowed := MAX_RES_ORDERED - fMarketDeliveryCount[fResFrom];
+
+    Assert(ordersAllowed >= 0); //We must never have ordered more than we are allowed
+
+    ordersToDo := Min3(aCount, GetResRequired, ordersAllowed);
+
+    if ordersToDo > 0 then
     begin
-      ordersToDo := Min(aCount, resRequired);
       Inc(fMarketDeliveryCount[aResource], ordersToDo);
       gHands[fOwner].Deliveries.Queue.AddDemand(Self, nil, fResFrom, ordersToDo, dtOnce, diNorm);
     end;
@@ -401,9 +410,6 @@ end;
 
 //Player has changed the amount of order
 procedure TKMHouseMarket.SetResOrder(aId: Byte; aValue: Integer);
-const
-  //Maximum number of Demands we can place at once (stops the delivery queue from becoming clogged with 1500 items)
-  MAX_RES_ORDERED = 10;
 var
   resRequired, ordersAllowed, ordersRemoved, orderToDo, movedOut2In: Integer;
 begin
