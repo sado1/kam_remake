@@ -1074,7 +1074,7 @@ begin
   Assert((fType <> utFish) or (InRange(fFishCount, 1, 5)));
 
   if fType = utFish then
-    Act := FishCountAct[fFishCount]
+    Act := FISH_COUNT_ACT[fFishCount]
   else
     Act := V.Action;
 

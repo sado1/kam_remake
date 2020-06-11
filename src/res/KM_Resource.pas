@@ -351,7 +351,7 @@ begin
                   if not FolderCreated then
                   begin
                     //Use default locale for Unit GUIName, as translation could be not good for file system (like russian '����������/�������' with slash in it)
-                    FullFolder := Folder + resTexts.DefaultTexts[units[U].GUITextID] + PathDelim + UnitAct[A] + PathDelim;
+                    FullFolder := Folder + resTexts.DefaultTexts[units[U].GUITextID] + PathDelim + UNIT_ACT_STR[A] + PathDelim;
                     ForceDirectories(FullFolder);
                     FolderCreated := True;
                   end;
@@ -413,7 +413,7 @@ begin
       FullFolder := Folder + 'Thoughts' + PathDelim;
       ForceDirectories(FullFolder);
       for T := thEat to High(TKMUnitThought) do
-        for I := ThoughtBounds[T,1] to  ThoughtBounds[T,2] do
+        for I := THOUGHT_BOUNDS[T,1] to  THOUGHT_BOUNDS[T,2] do
         begin
           SpritePack.ExportFullImageData(FullFolder, I+1, SList);
           Used[I+1] := True;
@@ -479,7 +479,7 @@ begin
         for Ac := haWork1 to haFlag3 do
           for K := 1 to houses[ID].Anim[Ac].Count do
           begin                                      //HouseNameTextID    resTexts.DefaultTexts
-            FullFolder := Folder + resTexts.DefaultTexts[houses[ID].HouseNameTextID] + PathDelim + HouseAction[Ac] + PathDelim;
+            FullFolder := Folder + resTexts.DefaultTexts[houses[ID].HouseNameTextID] + PathDelim + HOUSE_ACTION_STR[Ac] + PathDelim;
             ForceDirectories(FullFolder);
             ci := houses[ID].Anim[Ac].Step[K] + 1;
             if ci <> 0 then

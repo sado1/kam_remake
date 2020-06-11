@@ -899,7 +899,7 @@ begin
 
   tbPassability.Max := Byte(High(TKMTerrainPassability));
   tbPassability.Position := SHOW_TERRAIN_PASS;
-  Label2.Caption := IfThen(SHOW_TERRAIN_PASS <> 0, PassabilityGuiText[TKMTerrainPassability(SHOW_TERRAIN_PASS)], '');
+  Label2.Caption := IfThen(SHOW_TERRAIN_PASS <> 0, PASSABILITY_GUI_TEXT[TKMTerrainPassability(SHOW_TERRAIN_PASS)], '');
 
   chkShowWires.SetCheckedWithoutClick       (SHOW_TERRAIN_WIRES);
   chkShowTerrainIds.SetCheckedWithoutClick  (SHOW_TERRAIN_IDS);
@@ -995,7 +995,7 @@ begin
   begin
     I := tbPassability.Position;
     tbPassability.Max := Byte(High(TKMTerrainPassability));
-    Label2.Caption := IfThen(I <> 0, PassabilityGuiText[TKMTerrainPassability(I)], '');
+    Label2.Caption := IfThen(I <> 0, PASSABILITY_GUI_TEXT[TKMTerrainPassability(I)], '');
     SHOW_TERRAIN_PASS := I;
     SHOW_TERRAIN_WIRES := chkShowWires.Checked;
     SHOW_TERRAIN_IDS := chkShowTerrainIds.Checked;

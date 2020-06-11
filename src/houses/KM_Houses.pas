@@ -1473,9 +1473,9 @@ begin
       if (ResOrder[Res] > 0) //Player has ordered some of this
       and (CheckResOut(Ware) < MAX_WARES_IN_HOUSE) //Output of this is not full
       //Check we have wares to produce this weapon. If both are the same type check > 1 not > 0
-      and ((WarfareCosts[Ware,1] <> WarfareCosts[Ware,2]) or (CheckResIn(WarfareCosts[Ware,1]) > 1))
-      and ((WarfareCosts[Ware,1] = wtNone) or (CheckResIn(WarfareCosts[Ware,1]) > 0))
-      and ((WarfareCosts[Ware,2] = wtNone) or (CheckResIn(WarfareCosts[Ware,2]) > 0)) then
+      and ((WARFARE_COSTS[Ware,1] <> WARFARE_COSTS[Ware,2]) or (CheckResIn(WARFARE_COSTS[Ware,1]) > 1))
+      and ((WARFARE_COSTS[Ware,1] = wtNone) or (CheckResIn(WARFARE_COSTS[Ware,1]) > 0))
+      and ((WARFARE_COSTS[Ware,2] = wtNone) or (CheckResIn(WARFARE_COSTS[Ware,2]) > 0)) then
       begin
         Result := Res;
         fLastOrderProduced := Res;

@@ -3725,10 +3725,10 @@ begin
     DeltaY := SelectingDirPosition.Y - Y;
     DeltaDistanceSqr := Sqr(DeltaX)+Sqr(DeltaY);
     // Manually force the cursor to remain within a circle (+2 to avoid infinite loop due to rounding)
-    if DeltaDistanceSqr > Sqr(DirCursorCircleRadius+2) then
+    if DeltaDistanceSqr > Sqr(DIR_CURSOR_CIRCLE_RAD+2) then
     begin
-      DeltaX := Round(DeltaX / Sqrt(DeltaDistanceSqr) * DirCursorCircleRadius);
-      DeltaY := Round(DeltaY / Sqrt(DeltaDistanceSqr) * DirCursorCircleRadius);
+      DeltaX := Round(DeltaX / Sqrt(DeltaDistanceSqr) * DIR_CURSOR_CIRCLE_RAD);
+      DeltaY := Round(DeltaY / Sqrt(DeltaDistanceSqr) * DIR_CURSOR_CIRCLE_RAD);
       NewPoint := gMain.ClientToScreen(SelectingDirPosition);
       NewPoint.X := NewPoint.X - DeltaX;
       NewPoint.Y := NewPoint.Y - DeltaY;

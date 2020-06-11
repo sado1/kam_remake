@@ -218,7 +218,7 @@ begin
   begin
     errorStr := Format('Unable to make a route for %s:%d from %s to %s with "%s" TargetWC_Set = %s',
                        [gRes.Units[aUnit.UnitType].GUIName, aUnit.UID, fWalkFrom.ToString, fWalkTo.ToString,
-                        PassabilityGuiText[fPass], TKMSetByteSet.SetToString(aTargetWalkConnectSet)]);
+                        PASSABILITY_GUI_TEXT[fPass], TKMSetByteSet.SetToString(aTargetWalkConnectSet)]);
     gLog.AddNoTimeNoFlush(errorStr);
     {$IFDEF RUNNER}
     raise Exception.Create(errorStr);

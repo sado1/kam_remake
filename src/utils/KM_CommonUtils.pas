@@ -563,7 +563,7 @@ function KMGetCursorDirection(X,Y: Integer): TKMDirection;
 var Ang, Dist: Single;
 begin
   Dist := GetLength(X, Y);
-  if Dist > DirCursorNARadius then
+  if Dist > DIR_CURSOR_NA_RAD then
   begin
     //Convert XY to angle value
     Ang := ArcTan2(Y/Dist, X/Dist) / Pi * 180;

@@ -290,7 +290,7 @@ end;
 // Update ware production
 procedure TKMCityPredictor.UpdateWareProduction(aWT: TKMWareType);
 begin
-  fWareBalance[aWT].Production := fCityStats.Houses[ PRODUCTION_WARE2HOUSE[aWT] ] * ProductionRate[aWT];
+  fWareBalance[aWT].Production := fCityStats.Houses[ PRODUCTION_WARE2HOUSE[aWT] ] * PRODUCTION_RATE[aWT];
 end;
 
 
@@ -380,7 +380,7 @@ begin
     Exhaustion := 99;
     if (ActualConsumption - Production > 0) then
       Exhaustion := Min( Exhaustion, gHands[fOwner].Stats.GetWareBalance(aWT) / (ActualConsumption - Production) );
-    HouseReqCnt := Ceil(( Max(ActualConsumption, FinalConsumption) - Production) / Max(0.0001, ProductionRate[aWT]*1.0));
+    HouseReqCnt := Ceil(( Max(ActualConsumption, FinalConsumption) - Production) / Max(0.0001, PRODUCTION_RATE[aWT]*1.0));
     Fraction := HouseReqCnt / Max(1.0,((fCityStats.Houses[HT] + HouseReqCnt)*1.0));
   end;
   RequiredHouses[HT] := HouseReqCnt;
@@ -535,12 +535,12 @@ begin
                         );
 
   // Iron weapons
-  MaxIronWeapProd := MaxIronWeapProd * ProductionRate[wtIronOre] * 0.5; // Division into half because of iron weapon and armor
+  MaxIronWeapProd := MaxIronWeapProd * PRODUCTION_RATE[wtIronOre] * 0.5; // Division into half because of iron weapon and armor
   for WT in IRON_WARFARE do
     fWareBalance[WT].FinalConsumption := MaxIronWeapProd;
 
   // Wooden weapons
-  MaxWoodWeapProd := MaxWoodWeapProd * ProductionRate[wtAxe]; // Production of weapons / armors is ~identical
+  MaxWoodWeapProd := MaxWoodWeapProd * PRODUCTION_RATE[wtAxe]; // Production of weapons / armors is ~identical
   for WT in WOOD_WARFARE do
     fWareBalance[WT].FinalConsumption := MaxWoodWeapProd;
   // Exceptions
@@ -640,7 +640,7 @@ procedure TKMCityPredictor.FilterRequiredHouses(aTick: Cardinal);
               + fWareBalance[wtPig].Production * 4
               + fWareBalance[wtHorse].Production * 4
               >=
-              + fFarmBuildHistory.Quantity[0] * ProductionRate[wtCorn]
+              + fFarmBuildHistory.Quantity[0] * PRODUCTION_RATE[wtCorn]
               + gHands[fOwner].Stats.GetWareBalance(wtCorn) * 0.25;
   end;
   {

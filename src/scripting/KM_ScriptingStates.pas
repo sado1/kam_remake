@@ -1119,9 +1119,9 @@ function TKMScriptStates.PlayerWareDistribution(aPlayer, aWareType, aHouseType: 
 begin
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-    and(aWareType in [Low(WareIndexToType) .. High(WareIndexToType)])
+    and(aWareType in [Low(WARE_ID_TO_TYPE) .. High(WARE_ID_TO_TYPE)])
     and HouseTypeValid(aHouseType) then
-      Result := gHands[aPlayer].Stats.WareDistribution[WareIndexToType[aWareType], HOUSE_ID_TO_TYPE[aHouseType]]
+      Result := gHands[aPlayer].Stats.WareDistribution[WARE_ID_TO_TYPE[aWareType], HOUSE_ID_TO_TYPE[aHouseType]]
     else
     begin
       Result := 0;
@@ -1442,9 +1442,9 @@ function TKMScriptStates.StatResourceProducedCount(aPlayer, aResType: Byte): Int
 begin
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-    and (aResType in [Low(WareIndexToType)..High(WareIndexToType)])
+    and (aResType in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)])
     then
-      Result := gHands[aPlayer].Stats.GetWaresProduced(WareIndexToType[aResType])
+      Result := gHands[aPlayer].Stats.GetWaresProduced(WARE_ID_TO_TYPE[aResType])
     else
     begin
       Result := 0;
@@ -1470,9 +1470,9 @@ begin
     if InRange(aPlayer, 0, gHands.Count - 1)
     and (gHands[aPlayer].Enabled) then
     begin
-      for B := Low(WareIndexToType) to High(WareIndexToType) do
+      for B := Low(WARE_ID_TO_TYPE) to High(WARE_ID_TO_TYPE) do
         if B in aTypes then
-          inc(Result, gHands[aPlayer].Stats.GetWaresProduced(WareIndexToType[B]));
+          inc(Result, gHands[aPlayer].Stats.GetWaresProduced(WARE_ID_TO_TYPE[B]));
     end
     else
       LogParamWarning('States.StatResourceProducedMultipleTypesCount', [aPlayer]);
@@ -2033,9 +2033,9 @@ var
 begin
   try
     Result := -1; //-1 if house id is invalid
-    if (aHouseID > 0) and (aResource in [Low(WareIndexToType)..High(WareIndexToType)]) then
+    if (aHouseID > 0) and (aResource in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)]) then
     begin
-      Res := WareIndexToType[aResource];
+      Res := WARE_ID_TO_TYPE[aResource];
       H := fIDCache.GetHouse(aHouseID);
       if H <> nil then
         Result := H.CheckResIn(Res) + H.CheckResOut(Res); //Count both in and out
@@ -2242,9 +2242,9 @@ var
 begin
   try
     Result := False;
-    if (aHouseID > 0) and (aWareType in [Low(WareIndexToType)..High(WareIndexToType)]) then
+    if (aHouseID > 0) and (aWareType in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)]) then
     begin
-      Res := WareIndexToType[aWareType];
+      Res := WARE_ID_TO_TYPE[aWareType];
       H := fIDCache.GetHouse(aHouseID);
       if (H is TKMHouseStore) then
         Result := TKMHouseStore(H).NotAcceptFlag[Res];
@@ -2271,9 +2271,9 @@ var
 begin
   try
     Result := 0;
-    if (aHouseID > 0) and (aWareType in [Low(WareIndexToType)..High(WareIndexToType)]) then
+    if (aHouseID > 0) and (aWareType in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)]) then
     begin
-      Res := WareIndexToType[aWareType];
+      Res := WARE_ID_TO_TYPE[aWareType];
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil) then
         for I := 1 to 4 do
@@ -3396,7 +3396,7 @@ begin
       and (TKMHouseMarket(H).ResTo in [WARE_MIN .. WARE_MAX]) then
       begin
         ResFrom := TKMHouseMarket(H).ResFrom;
-        Result := WareTypeToIndex[ResFrom];
+        Result := WARE_TY_TO_ID[ResFrom];
       end;
     end
     else
@@ -3472,7 +3472,7 @@ begin
       and (TKMHouseMarket(H).ResTo in [WARE_MIN .. WARE_MAX]) then
       begin
         ResTo := TKMHouseMarket(H).ResTo;
-        Result := WareTypeToIndex[ResTo];
+        Result := WARE_TY_TO_ID[ResTo];
       end;
     end
     else
@@ -3498,9 +3498,9 @@ var
 begin
   try
     Result := -1; //-1 if ware is invalid
-    if aRes in [Low(WareIndexToType)..High(WareIndexToType)] then
+    if aRes in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)] then
     begin
-      Res := WareIndexToType[aRes];
+      Res := WARE_ID_TO_TYPE[aRes];
       Result := gRes.Wares[Res].MarketPrice;
     end
     else
@@ -3804,8 +3804,8 @@ end;
 function TKMScriptStates.WareTypeName(aWareType: Byte): AnsiString;
 begin
   try
-    if (aWareType in [Low(WareIndexToType) .. High(WareIndexToType)]) then
-      Result := '<%' + AnsiString(IntToStr(gRes.Wares[WareIndexToType[aWareType]].TextID)) + '>'
+    if (aWareType in [Low(WARE_ID_TO_TYPE) .. High(WARE_ID_TO_TYPE)]) then
+      Result := '<%' + AnsiString(IntToStr(gRes.Wares[WARE_ID_TO_TYPE[aWareType]].TextID)) + '>'
     else
     begin
       Result := '';
@@ -3952,7 +3952,7 @@ begin
     begin
       U := fIDCache.GetUnit(aUnitID);
       if (U <> nil) and (U is TKMUnitSerf) and (TKMUnitSerf(U).Carry in [WARE_MIN..WARE_MAX]) then
-        Result := WareTypeToIndex[TKMUnitSerf(U).Carry];
+        Result := WARE_TY_TO_ID[TKMUnitSerf(U).Carry];
     end
     else
       LogParamWarning('States.UnitCarrying', [aUnitID]);

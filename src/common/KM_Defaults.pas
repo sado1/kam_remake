@@ -458,8 +458,8 @@ const
 
 
 const
-  DirCursorCircleRadius  = 32; //Radius of the direction selector cursor restriction area
-  DirCursorNARadius = 20;  //Radius of centeral part that has no direction
+  DIR_CURSOR_CIRCLE_RAD  = 32; //Radius of the direction selector cursor restriction area
+  DIR_CURSOR_NA_RAD = 20;  //Radius of centeral part that has no direction
 
 
 type
@@ -530,7 +530,7 @@ type
   TKMHeightPass = (hpWalking, hpBuilding, hpBuildingMines);
 
 const
-  PassabilityGuiText: array [TKMTerrainPassability] of UnicodeString = (
+  PASSABILITY_GUI_TEXT: array [TKMTerrainPassability] of UnicodeString = (
     'Unused',
     'Can walk',
     'Can walk road',
@@ -646,7 +646,7 @@ type
   TKMUnitThought = (thNone, thEat, thHome, thBuild, thStone, thWood, thDeath, thQuest, thDismiss);
 
 const //Corresponding indices in units.rx
-  ThoughtBounds: array [TKMUnitThought, 1..2] of Word = (
+  THOUGHT_BOUNDS: array [TKMUnitThought, 1..2] of Word = (
   (0,0), (6250,6257), (6258,6265), (6266,6273), (6274,6281), (6282,6289), (6290,6297), (6298,6305), (6314,6321)
   );
 
@@ -680,13 +680,13 @@ type
   TKMUnitActionTypeSet = set of TKMUnitActionType;
 
 const
-  UnitAct: array [TKMUnitActionType] of string = ('uaWalk', 'uaWork', 'uaSpec', 'uaDie', 'uaWork1',
+  UNIT_ACT_STR: array [TKMUnitActionType] of string = ('uaWalk', 'uaWork', 'uaSpec', 'uaDie', 'uaWork1',
              'uaWork2', 'uaWorkEnd', 'uaEat', 'uaWalkArm', 'uaWalkTool',
              'uaWalkBooty', 'uaWalkTool2', 'uaWalkBooty2', 'uaUnknown');
 
 
 const
-  FishCountAct: array [1..5] of TKMUnitActionType = (uaWalk, uaWork, uaSpec, uaDie, uaWork1);
+  FISH_COUNT_ACT: array [1..5] of TKMUnitActionType = (uaWalk, uaWork, uaSpec, uaDie, uaWork1);
 
 
 type
@@ -714,7 +714,7 @@ type
   TKMHouseActionSet = set of TKMHouseActionType;
 
 const
-  HouseAction: array [TKMHouseActionType] of string = (
+  HOUSE_ACTION_STR: array [TKMHouseActionType] of string = (
   'ha_Work1', 'ha_Work2', 'ha_Work3', 'ha_Work4', 'ha_Work5', //Start, InProgress, .., .., Finish
   'ha_Smoke', 'ha_FlagShtok', 'ha_Idle',
   'ha_Flag1', 'ha_Flag2', 'ha_Flag3',
@@ -787,10 +787,10 @@ type
 
 const
   //We discontinue support of other goals in favor of PascalScript scripts
-  GoalsSupported: set of TKMGoalCondition =
+  GOALS_SUPPORTED: set of TKMGoalCondition =
     [gcBuildings, gcTroops, gcMilitaryAssets, gcSerfsAndSchools, gcEconomyBuildings];
 
-  GoalConditionStr: array [TKMGoalCondition] of string = (
+  GOAL_CONDITION_STR: array [TKMGoalCondition] of string = (
     'Unknown 0',
     'Build Tannery',
     'Time',

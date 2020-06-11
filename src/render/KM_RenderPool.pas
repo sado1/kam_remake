@@ -1075,8 +1075,8 @@ begin
   Ground := Ground + THOUGHT_X_OFFSET;
 
   // Thought bubbles are animated in reverse
-  Id := ThoughtBounds[Thought, 2] + 1 -
-       (gGameParams.Tick mod Word(ThoughtBounds[Thought, 2] - ThoughtBounds[Thought, 1]));
+  Id := THOUGHT_BOUNDS[Thought, 2] + 1 -
+       (gGameParams.Tick mod Word(THOUGHT_BOUNDS[Thought, 2] - THOUGHT_BOUNDS[Thought, 1]));
 
   CornerX := pX + R.Pivot[Id].X / CELL_SIZE_PX;
   CornerY := gTerrain.RenderFlatToHeight(pX, pY) + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX - 1.5;
@@ -1131,7 +1131,7 @@ end;
 
 procedure TRenderPool.AddUnitWithDefaultArm(aUnit: TKMUnitType; aUID: Integer; aAct: TKMUnitActionType; aDir: TKMDirection; StepId: Integer; pX,pY: Single; FlagColor: TColor4; DoImmediateRender: Boolean = False; DoHignlight: Boolean = False; HighlightColor: TColor4 = 0);
 begin
-  if aUnit = utFish then aAct := FishCountAct[5]; // In map editor always render 5 fish
+  if aUnit = utFish then aAct := FISH_COUNT_ACT[5]; // In map editor always render 5 fish
   AddUnit(aUnit, aUID, aAct, aDir, StepId, pX, pY, FlagColor, True, DoImmediateRender, DoHignlight, HighlightColor);
   if gRes.Units[aUnit].SupportsAction(uaWalkArm) then
     AddUnit(aUnit, aUID, uaWalkArm, aDir, StepId, pX, pY, FlagColor, True, DoImmediateRender, DoHignlight, HighlightColor);

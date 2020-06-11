@@ -328,7 +328,7 @@ begin
                           Qty := EnsureRange(P[1], -1, High(Word)); //Sometimes user can define it to be 999999
                           if Qty = -1 then Qty := High(Word); //-1 means maximum resources
                           ChooseLoc := gHands[fLastHand].ChooseLocation;
-                          ChooseLoc.Resources[ WareIndexToType[P[0]] ] := Qty;
+                          ChooseLoc.Resources[ WARE_ID_TO_TYPE[P[0]] ] := Qty;
                           gHands[fLastHand].ChooseLocation := ChooseLoc;
                         end;
 
@@ -482,10 +482,10 @@ begin
                           Qty := EnsureRange(P[1], -1, High(Word)); //Sometimes user can define it to be 999999
                           if Qty = -1 then Qty := High(Word); //-1 means maximum resources
                           H := gHands[fLastHand].FindHouse(htStore,1);
-                          if (H <> nil) and H.ResCanAddToIn(WareIndexToType[P[0]]) then
+                          if (H <> nil) and H.ResCanAddToIn(WARE_ID_TO_TYPE[P[0]]) then
                           begin
-                            H.ResAddToIn(WareIndexToType[P[0]], Qty, True);
-                            gHands[fLastHand].Stats.WareInitial(WareIndexToType[P[0]], Qty);
+                            H.ResAddToIn(WARE_ID_TO_TYPE[P[0]], Qty, True);
+                            gHands[fLastHand].Stats.WareInitial(WARE_ID_TO_TYPE[P[0]], Qty);
                           end;
                         end;
     // @Deprecated, used AddWareToLast instead
@@ -495,10 +495,10 @@ begin
                           for I := 0 to gHands.Count - 1 do
                           begin
                             H := gHands[i].FindHouse(htStore, 1);
-                            if (H <> nil) and H.ResCanAddToIn(WareIndexToType[P[0]]) then
+                            if (H <> nil) and H.ResCanAddToIn(WARE_ID_TO_TYPE[P[0]]) then
                             begin
-                              H.ResAddToIn(WareIndexToType[P[0]], Qty, True);
-                              gHands[i].Stats.WareInitial(WareIndexToType[P[0]], Qty);
+                              H.ResAddToIn(WARE_ID_TO_TYPE[P[0]], Qty, True);
+                              gHands[i].Stats.WareInitial(WARE_ID_TO_TYPE[P[0]], Qty);
                             end;
                           end;
                         end;
@@ -509,10 +509,10 @@ begin
                           if Qty = -1 then Qty := High(Word); //-1 means maximum resources
 
                           H := TKMHouseStore(gHands[fLastHand].FindHouse(htStore, 2));
-                          if (H <> nil) and H.ResCanAddToIn(WareIndexToType[P[0]]) then
+                          if (H <> nil) and H.ResCanAddToIn(WARE_ID_TO_TYPE[P[0]]) then
                           begin
-                            H.ResAddToIn(WareIndexToType[P[0]], Qty, True);
-                            gHands[fLastHand].Stats.WareInitial(WareIndexToType[P[0]], Qty);
+                            H.ResAddToIn(WARE_ID_TO_TYPE[P[0]], Qty, True);
+                            gHands[fLastHand].Stats.WareInitial(WARE_ID_TO_TYPE[P[0]], Qty);
                           end;
                         end;
 
@@ -523,10 +523,10 @@ begin
                           if Qty = -1 then Qty := High(Word); //-1 means maximum resources
 
                           H := gHands[fLastHand].FindHouse(HOUSE_ID_TO_TYPE[P[0]], P[1]);
-                          if (H <> nil) and (H.ResCanAddToIn(WareIndexToType[P[2]]) or H.ResCanAddToOut(WareIndexToType[P[2]])) then
+                          if (H <> nil) and (H.ResCanAddToIn(WARE_ID_TO_TYPE[P[2]]) or H.ResCanAddToOut(WARE_ID_TO_TYPE[P[2]])) then
                           begin
-                            H.ResAddToEitherFromScript(WareIndexToType[P[2]], Qty);
-                            gHands[fLastHand].Stats.WareInitial(WareIndexToType[P[2]], Qty);
+                            H.ResAddToEitherFromScript(WARE_ID_TO_TYPE[P[2]], Qty);
+                            gHands[fLastHand].Stats.WareInitial(WARE_ID_TO_TYPE[P[2]], Qty);
                           end;
                         end;
 
@@ -535,12 +535,12 @@ begin
                           Qty := EnsureRange(P[1], -1, High(Word)); //Sometimes user can define it to be 999999
                           if Qty = -1 then Qty := High(Word); //-1 means maximum resources
 
-                          if (fLastHouse <> nil) and (fLastHouse.ResCanAddToIn(WareIndexToType[P[0]]) or fLastHouse.ResCanAddToOut(WareIndexToType[P[0]])) then
+                          if (fLastHouse <> nil) and (fLastHouse.ResCanAddToIn(WARE_ID_TO_TYPE[P[0]]) or fLastHouse.ResCanAddToOut(WARE_ID_TO_TYPE[P[0]])) then
                           begin
                             if not fLastHouse.IsDestroyed then //Could be destroyed already by damage
                             begin
-                              fLastHouse.ResAddToEitherFromScript(WareIndexToType[P[0]], Qty);
-                              gHands[fLastHand].Stats.WareInitial(WareIndexToType[P[0]], Qty);
+                              fLastHouse.ResAddToEitherFromScript(WARE_ID_TO_TYPE[P[0]], Qty);
+                              gHands[fLastHand].Stats.WareInitial(WARE_ID_TO_TYPE[P[0]], Qty);
                             end;
                           end
                           else
@@ -552,17 +552,17 @@ begin
                           Qty := EnsureRange(P[1], -1, High(Word)); //Sometimes user can define it to be 999999
                           if Qty = -1 then Qty := High(Word); //-1 means maximum weapons
                           H := gHands[fLastHand].FindHouse(htBarracks, 1);
-                          if (H <> nil) and H.ResCanAddToIn(WareIndexToType[P[0]]) then
+                          if (H <> nil) and H.ResCanAddToIn(WARE_ID_TO_TYPE[P[0]]) then
                           begin
-                            H.ResAddToIn(WareIndexToType[P[0]], Qty, True);
-                            gHands[fLastHand].Stats.WareInitial(WareIndexToType[P[0]], Qty);
+                            H.ResAddToIn(WARE_ID_TO_TYPE[P[0]], Qty, True);
+                            gHands[fLastHand].Stats.WareInitial(WARE_ID_TO_TYPE[P[0]], Qty);
                           end;
                         end;
 
     ctBlockTrade:       if fLastHand <> PLAYER_NONE then
                         begin
-                          if WareIndexToType[P[0]] in [WARE_MIN..WARE_MAX] then
-                            gHands[fLastHand].Locks.AllowToTrade[WareIndexToType[P[0]]] := False;
+                          if WARE_ID_TO_TYPE[P[0]] in [WARE_MIN..WARE_MAX] then
+                            gHands[fLastHand].Locks.AllowToTrade[WARE_ID_TO_TYPE[P[0]]] := False;
                         end;
 
     ctBlockUnit:        if fLastHand <> PLAYER_NONE then
@@ -729,8 +729,8 @@ begin
                           if not InRange(P[0], 0, Byte(High(TKMGoalCondition))) then
                             AddError('Add_Goal with unknown condition index ' + IntToStr(P[0]))
                           else
-                            if not (TKMGoalCondition(P[0]) in GoalsSupported) then
-                              AddError('Goal type ' + GoalConditionStr[TKMGoalCondition(P[0])] + ' is deprecated')
+                            if not (TKMGoalCondition(P[0]) in GOALS_SUPPORTED) then
+                              AddError('Goal type ' + GOAL_CONDITION_STR[TKMGoalCondition(P[0])] + ' is deprecated')
                             else
                               if (P[2] <> 0) then
                                 AddError('Goals messages are deprecated. Use .script instead')
@@ -747,8 +747,8 @@ begin
                           if InRange(P[3], 0, gHands.Count - 1)
                           and fPlayerEnabled[P[3]] then
                           begin
-                            if not (TKMGoalCondition(P[0]) in GoalsSupported) then
-                              AddError('LostGoal type ' + GoalConditionStr[TKMGoalCondition(P[0])] + ' is deprecated');
+                            if not (TKMGoalCondition(P[0]) in GOALS_SUPPORTED) then
+                              AddError('LostGoal type ' + GOAL_CONDITION_STR[TKMGoalCondition(P[0])] + ' is deprecated');
                             if (P[2] <> 0) then
                               AddError('LostGoals messages are deprecated. Use .script instead');
                             gHands[fLastHand].AI.Goals.AddGoal(gltSurvive, TKMGoalCondition(P[0]), P[3]); //Ignore not used parameters
@@ -944,7 +944,7 @@ begin
         // Add resources
         for WT := Low(Resources) to High(Resources) do
           if (Resources[WT] > 0) then
-            AddCommand(ctChooseLocAddWare, [WareTypeToIndex[WT], Resources[WT]]);
+            AddCommand(ctChooseLocAddWare, [WARE_TY_TO_ID[WT], Resources[WT]]);
         // Add units
         for UT := Low(Units) to High(Units) do
           if (Units[UT] > 0) then
@@ -1079,7 +1079,7 @@ begin
     //Block trades
     for WT := WARE_MIN to WARE_MAX do
       if not gHands[I].Locks.AllowToTrade[WT] then
-        AddCommand(ctBlockTrade, [WareTypeToIndex[WT]]);
+        AddCommand(ctBlockTrade, [WARE_TY_TO_ID[WT]]);
 
     //Houses
     StoreCount := 0;
@@ -1113,9 +1113,9 @@ begin
         for WT := WARE_MIN to WARE_MAX do
         begin
           if H.CheckResIn(WT) > 0 then
-            AddCommand(ctAddWareToLast, [WareTypeToIndex[WT], H.CheckResIn(WT)]);
+            AddCommand(ctAddWareToLast, [WARE_TY_TO_ID[WT], H.CheckResIn(WT)]);
           if H.CheckResOut(WT) > 0 then
-            AddCommand(ctAddWareToLast, [WareTypeToIndex[WT], H.CheckResOut(WT)]);
+            AddCommand(ctAddWareToLast, [WARE_TY_TO_ID[WT], H.CheckResOut(WT)]);
         end;
 
         //Set Delivery mode after Wares, so in case there are some wares and delivery mode TakeOut, then we will need to add proper Offers

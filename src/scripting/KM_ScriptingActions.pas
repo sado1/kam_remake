@@ -429,13 +429,13 @@ end;
 procedure TKMScriptActions.PlayerWareDistribution(aPlayer, aWareType, aHouseType, aAmount: Byte);
 begin
   try
-    if (aWareType in [Low(WareIndexToType) .. High(WareIndexToType)])
-    and (WareIndexToType[aWareType] in [wtSteel, wtCoal, wtWood, wtCorn])
+    if (aWareType in [Low(WARE_ID_TO_TYPE) .. High(WARE_ID_TO_TYPE)])
+    and (WARE_ID_TO_TYPE[aWareType] in [wtSteel, wtCoal, wtWood, wtCorn])
     and HouseTypeValid(aHouseType)
     and InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
     and InRange(aAmount, 0, 5) then
     begin
-      gHands[aPlayer].Stats.WareDistribution[WareIndexToType[aWareType], HOUSE_ID_TO_TYPE[aHouseType]] := aAmount;
+      gHands[aPlayer].Stats.WareDistribution[WARE_ID_TO_TYPE[aWareType], HOUSE_ID_TO_TYPE[aHouseType]] := aAmount;
       gHands[aPlayer].Houses.UpdateResRequest;
     end
     else
@@ -1581,14 +1581,14 @@ begin
     //Verify all input parameters
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
     and InRange(aCount, 0, High(Word))
-    and (aType in [Low(WareIndexToType) .. High(WareIndexToType)]) then
+    and (aType in [Low(WARE_ID_TO_TYPE) .. High(WARE_ID_TO_TYPE)]) then
     begin
       H := gHands[aPlayer].FindHouse(htStore, 1);
       if H <> nil then
       begin
-        H.ResAddToIn(WareIndexToType[aType], aCount);
-        gHands[aPlayer].Stats.WareProduced(WareIndexToType[aType], aCount);
-        gScriptEvents.ProcWareProduced(H, WareIndexToType[aType], aCount);
+        H.ResAddToIn(WARE_ID_TO_TYPE[aType], aCount);
+        gHands[aPlayer].Stats.WareProduced(WARE_ID_TO_TYPE[aType], aCount);
+        gScriptEvents.ProcWareProduced(H, WARE_ID_TO_TYPE[aType], aCount);
       end;
     end
     else
@@ -1610,15 +1610,15 @@ begin
     //Verify all input parameters
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
     and InRange(aCount, 0, High(Word))
-    and (aType in [Low(WareIndexToType) .. High(WareIndexToType)])
-    and (WareIndexToType[aType] in [WARFARE_MIN .. WARFARE_MAX]) then
+    and (aType in [Low(WARE_ID_TO_TYPE) .. High(WARE_ID_TO_TYPE)])
+    and (WARE_ID_TO_TYPE[aType] in [WARFARE_MIN .. WARFARE_MAX]) then
     begin
       H := gHands[aPlayer].FindHouse(htBarracks, 1);
       if H <> nil then
       begin
-        H.ResAddToIn(WareIndexToType[aType], aCount);
-        gHands[aPlayer].Stats.WareProduced(WareIndexToType[aType], aCount);
-        gScriptEvents.ProcWareProduced(H, WareIndexToType[aType], aCount);
+        H.ResAddToIn(WARE_ID_TO_TYPE[aType], aCount);
+        gHands[aPlayer].Stats.WareProduced(WARE_ID_TO_TYPE[aType], aCount);
+        gScriptEvents.ProcWareProduced(H, WARE_ID_TO_TYPE[aType], aCount);
       end;
     end
     else
@@ -1975,8 +1975,8 @@ begin
   try
     //Verify all input parameters
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-    and (aResType in [Low(WareIndexToType)..High(WareIndexToType)]) then
-      gHands[aPlayer].Locks.AllowToTrade[WareIndexToType[aResType]] := aAllowed
+    and (aResType in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)]) then
+      gHands[aPlayer].Locks.AllowToTrade[WARE_ID_TO_TYPE[aResType]] := aAllowed
     else
       LogParamWarning('Actions.SetTradeAllowed', [aPlayer, aResType, Byte(aAllowed)]);
   except
@@ -2126,9 +2126,9 @@ var
   Res: TKMWareType;
 begin
   try
-    if (aHouseID > 0) and (aType in [Low(WareIndexToType)..High(WareIndexToType)]) then
+    if (aHouseID > 0) and (aType in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)]) then
     begin
-      Res := WareIndexToType[aType];
+      Res := WARE_ID_TO_TYPE[aType];
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil) and not H.IsDestroyed and H.IsComplete then
         if H.ResCanAddToIn(Res) or H.ResCanAddToOut(Res) then
@@ -2162,9 +2162,9 @@ var
   Res: TKMWareType;
 begin
   try
-    if (aHouseID > 0) and (aType in [Low(WareIndexToType)..High(WareIndexToType)]) then
+    if (aHouseID > 0) and (aType in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)]) then
     begin
-      Res := WareIndexToType[aType];
+      Res := WARE_ID_TO_TYPE[aType];
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil) and not H.IsDestroyed and H.IsComplete then
         //Store/barracks mix input/output (add to input, take from output) so we must process them together
@@ -2402,9 +2402,9 @@ var
 begin
   try
     if (aHouseID > 0)
-    and (aWareType in [Low(WareIndexToType) .. High(WareIndexToType)]) then
+    and (aWareType in [Low(WARE_ID_TO_TYPE) .. High(WARE_ID_TO_TYPE)]) then
     begin
-      Res := WareIndexToType[aWareType];
+      Res := WARE_ID_TO_TYPE[aWareType];
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil)
         and (H is TKMHouseStore)
@@ -2436,9 +2436,9 @@ var
 begin
   try
     if (aHouseID > 0) and InRange(aAmount, 0, MAX_WARES_ORDER)
-    and (aWareType in [Low(WareIndexToType) .. High(WareIndexToType)]) then
+    and (aWareType in [Low(WARE_ID_TO_TYPE) .. High(WARE_ID_TO_TYPE)]) then
     begin
-      Res := WareIndexToType[aWareType];
+      Res := WARE_ID_TO_TYPE[aWareType];
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil)
         and not H.IsDestroyed
@@ -3070,12 +3070,12 @@ var
 begin
   try
     if (aMarketID > 0)
-    and (aFrom in [Low(WareIndexToType)..High(WareIndexToType)])
-    and (aTo in [Low(WareIndexToType)..High(WareIndexToType)]) then
+    and (aFrom in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)])
+    and (aTo in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)]) then
     begin
       H := fIDCache.GetHouse(aMarketID);
-      ResFrom := WareIndexToType[aFrom];
-      ResTo := WareIndexToType[aTo];
+      ResFrom := WARE_ID_TO_TYPE[aFrom];
+      ResTo := WARE_ID_TO_TYPE[aTo];
       if (H is TKMHouseMarket)
         and not H.IsDestroyed
         and H.IsComplete
