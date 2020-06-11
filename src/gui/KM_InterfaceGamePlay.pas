@@ -4447,7 +4447,10 @@ begin
   Label_DebugInfo.Caption := S;
   Label_DebugInfo.Visible := (Trim(S) <> '');
 
-  TextSize := gRes.Fonts[fntMini].GetMonospacedTextSize(S);
+  if Label_DebugInfo.Monospaced then
+    TextSize := gRes.Fonts[fntMini].GetMonospacedTextSize(S)
+  else
+    TextSize := gRes.Fonts[fntMini].GetTextSize(S);
 
   Bevel_DebugInfo.Width := IfThen(TextSize.X <= 1, 0, TextSize.X + 20);
   Bevel_DebugInfo.Height := IfThen(TextSize.Y <= 1, 0, TextSize.Y + 20);
