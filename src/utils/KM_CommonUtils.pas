@@ -1308,7 +1308,7 @@ begin
     Result := Random(aMax);
 
   if aLogRng then
-    LogKamRandom(Result, aCaller, 'C*');
+    LogKamRandom(Integer(Result), aCaller, 'C*');
 end;
 
 
@@ -1320,7 +1320,7 @@ begin
     Result := Random(aMax);
 
   if aLogRng then
-    LogKamRandom(Result, aCaller, 'I64*');
+    LogKamRandom(Integer(Result), aCaller, 'I64*');
 end;
 
 

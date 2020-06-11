@@ -2,7 +2,8 @@ unit KM_CommonClasses;
 {$I KaM_Remake.inc}
 interface
 uses
-  Classes, SysUtils, KM_Points, KM_CommonTypes, KM_WorkerThread;
+  Classes, SysUtils, KM_Points, KM_CommonTypes
+  {$IFDEF WDC OR FPC_FULLVERSION >= 30200}, KM_WorkerThread{$ENDIF};
 
 
 type
@@ -86,8 +87,10 @@ type
     procedure SaveToFileCompressed(const aFileName: string; const aMarker: string);
     procedure LoadFromFileCompressed(const aFileName: string; const aMarker: string);
 
+    {$IFDEF WDC OR FPC_FULLVERSION >= 30200}
     class procedure AsyncSaveToFileAndFree(var aStream; const aFileName: string; aWorkerThread: TKMWorkerThread);
     class procedure AsyncSaveToFileCompressedAndFree(var aStream; const aFileName: string; const aMarker: string; aWorkerThread: TKMWorkerThread);
+    {$ENDIF}
   end;
 
   // Extended with custom Read/Write commands which accept various types without asking for their length
@@ -455,6 +458,7 @@ begin
 end;
 
 
+{$IFDEF WDC OR FPC_FULLVERSION >= 30200}
 class procedure TKMemoryStream.AsyncSaveToFileAndFree(var aStream; const aFileName: string; aWorkerThread: TKMWorkerThread);
 var
   LocalStream: TKMemoryStream;
@@ -508,6 +512,7 @@ begin
     end;
   {$ENDIF}
 end;
+{$ENDIF}
 
 
 procedure TKMemoryStream.CopyFromDecompression(Source: TStream);

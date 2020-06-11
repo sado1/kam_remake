@@ -46,7 +46,8 @@ var
 
 implementation
 uses
-  KM_Defaults;
+  KM_Defaults
+  {$IFDEF FPC}, KM_FileIO{$ENDIF};
 
 
 { TKMLocales }

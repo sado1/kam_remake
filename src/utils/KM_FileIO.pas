@@ -6,8 +6,8 @@ uses
   {$IFDEF WDC} System.IOUtils, {$ENDIF}
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLType, {$ENDIF}
-  Classes, SysUtils,
-  KM_WorkerThread;
+  Classes, SysUtils
+  {$IFDEF WDC OR FPC_FULLVERSION >= 30200}, KM_WorkerThread{$ENDIF};
 
   //Read text file into ANSI string (scripts, locale texts)
   function ReadTextA(const afilename: UnicodeString): AnsiString;
@@ -19,7 +19,9 @@ uses
   procedure KMCopyFile(const aSrc, aDest: UnicodeString); overload;
   procedure KMCopyFile(const aSrc, aDest: UnicodeString; aOverwrite: Boolean); overload;
 
+  {$IFDEF WDC OR FPC_FULLVERSION >= 30200}
   procedure KMCopyFileAsync(const aSrc, aDest: UnicodeString; aOverwrite: Boolean; aWorkerThread: TKMWorkerThread);
+  {$ENDIF}
 
   //Delete a folder (DeleteFolder is different between Delphi and Lazarus)
   procedure KMDeleteFolder(const aPath: UnicodeString);
@@ -154,7 +156,7 @@ end;
 procedure KMCopyFile(const aSrc, aDest: UnicodeString);
 begin
   {$IFDEF FPC}
-  CopyFile(aSrc, aDest);
+  CopyFile(pchar(aSrc), pchar(aDest), True);
   {$ENDIF}
   {$IFDEF WDC}
   TFile.Copy(aSrc, aDest);
@@ -168,7 +170,7 @@ begin
     DeleteFile(aDest);
 
   {$IFDEF FPC}
-  CopyFile(aSrc, aDest);
+  CopyFile(pchar(aSrc), pchar(aDest), True);
   {$ENDIF}
   {$IFDEF WDC}
   TFile.Copy(aSrc, aDest);
@@ -176,6 +178,7 @@ begin
 end;
 
 
+{$IFDEF WDC OR FPC_FULLVERSION >= 30200}
 procedure KMCopyFileAsync(const aSrc, aDest: UnicodeString; aOverwrite: Boolean; aWorkerThread: TKMWorkerThread);
 begin
   {$IFDEF WDC}
@@ -187,6 +190,7 @@ begin
   KMCopyFile(aSrc, aDest, aOverwrite);
   {$ENDIF}
 end;
+{$ENDIF}
 
 
 procedure KMDeleteFolder(const aPath: UnicodeString);
