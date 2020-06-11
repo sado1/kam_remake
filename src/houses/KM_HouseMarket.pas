@@ -88,11 +88,11 @@ end;
 
 procedure TKMHouseMarket.DemolishHouse(aFrom: TKMHandID; IsSilent: Boolean = False);
 var
-  R: TKMWareType;
+  WT: TKMWareType;
 begin
   //Count resources as lost
-  for R := WARE_MIN to WARE_MAX do
-    gHands[fOwner].Stats.WareConsumed(R, fMarketResIn[R] + fMarketResOut[R]);
+  for WT := WARE_MIN to WARE_MAX do
+    gHands[fOwner].Stats.WareConsumed(WT, fMarketResIn[WT] + fMarketResOut[WT]);
 
   inherited;
 end;
@@ -124,28 +124,29 @@ end;
 
 function TKMHouseMarket.RatioFrom: Byte;
 var
-  CostFrom, CostTo: Single;
+  costFrom, costTo: Single;
 begin
   if (fResFrom <> wtNone) and (fResTo <> wtNone) then
   begin
     //When trading target ware is priced higher
-    CostFrom := gRes.Wares[fResFrom].MarketPrice;
-    CostTo := gRes.Wares[fResTo].MarketPrice * MARKET_TRADEOFF_FACTOR;
-    Result := Round(CostTo / Min(CostFrom, CostTo));
+    costFrom := gRes.Wares[fResFrom].MarketPrice;
+    costTo := gRes.Wares[fResTo].MarketPrice * MARKET_TRADEOFF_FACTOR;
+    Result := Round(costTo / Min(costFrom, costTo));
   end else
     Result := 1;
 end;
 
 
 function TKMHouseMarket.RatioTo: Byte;
-var CostFrom, CostTo: Single;
+var
+  costFrom, costTo: Single;
 begin
   if (fResFrom <> wtNone) and (fResTo <> wtNone) then
   begin
     //When trading target ware is priced higher
-    CostFrom := gRes.Wares[fResFrom].MarketPrice;
-    CostTo := gRes.Wares[fResTo].MarketPrice * MARKET_TRADEOFF_FACTOR;
-    Result := Round(CostFrom / Min(CostFrom, CostTo));
+    costFrom := gRes.Wares[fResFrom].MarketPrice;
+    costTo := gRes.Wares[fResTo].MarketPrice * MARKET_TRADEOFF_FACTOR;
+    Result := Round(costFrom / Min(costFrom, costTo));
   end else
     Result := 1;
 end;
@@ -159,23 +160,24 @@ end;
 
 procedure TKMHouseMarket.ResAddToIn(aResource: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False);
 var
-  ResRequired, OrdersToDo: Integer;
+  resRequired, ordersToDo: Integer;
 begin
   //If user cancelled the exchange (or began new one with different resources already)
   //then incoming resourced should be added to Offer list immediately
   //We don't want Marketplace to act like a Store
   if not aFromScript then
     Dec(fMarketDeliveryCount[aResource], aCount); //We must keep track of the number ordered, which is less now because this has arrived
+
   if (aResource = fResFrom) and TradeInProgress then
   begin
     SetResInCnt(aResource, fMarketResIn[aResource] + aCount); //Place the new resource in the IN list
     //As we only order 10 resources at one time, we might need to order another now to fill the gap made by the one delivered
     resRequired := GetResRequired;
-    if ResRequired > 0 then
+    if resRequired > 0 then
     begin
-      OrdersToDo := Min(aCount, ResRequired);
-      Inc(fMarketDeliveryCount[aResource], OrdersToDo);
-      gHands[fOwner].Deliveries.Queue.AddDemand(Self, nil, fResFrom, OrdersToDo, dtOnce, diNorm);
+      ordersToDo := Min(aCount, resRequired);
+      Inc(fMarketDeliveryCount[aResource], ordersToDo);
+      gHands[fOwner].Deliveries.Queue.AddDemand(Self, nil, fResFrom, ordersToDo, dtOnce, diNorm);
     end;
     AttemptExchange;
   end
@@ -202,7 +204,7 @@ end;
 
 procedure TKMHouseMarket.AttemptExchange;
 var
-  TradeCount: Word;
+  tradeCount: Integer;
 begin
   Assert((fResFrom <> wtNone) and (fResTo <> wtNone) and (fResFrom <> fResTo));
 
@@ -217,17 +219,17 @@ begin
   if TradeInProgress and (ResToTrade[fResFrom] >= RatioFrom) then
   begin
     //How much can we trade
-    TradeCount := Min((ResToTrade[fResFrom] div RatioFrom), fTradeAmount);
+    tradeCount := Min((ResToTrade[fResFrom] div RatioFrom), fTradeAmount);
 
-    ResToTrade[fResFrom] := ResToTrade[fResFrom] - TradeCount * RatioFrom;
-    gHands[fOwner].Stats.WareConsumed(fResFrom, TradeCount * RatioFrom);
-    Dec(fTradeAmount, TradeCount);
-    SetResOutCnt(fResTo, fMarketResOut[fResTo] + TradeCount * RatioTo);
-    gHands[fOwner].Stats.WareProduced(fResTo, TradeCount * RatioTo);
-    gHands[fOwner].Deliveries.Queue.AddOffer(Self, fResTo, TradeCount * RatioTo);
+    ResToTrade[fResFrom] := ResToTrade[fResFrom] - tradeCount * RatioFrom;
+    gHands[fOwner].Stats.WareConsumed(fResFrom, tradeCount * RatioFrom);
+    Dec(fTradeAmount, tradeCount);
+    SetResOutCnt(fResTo, fMarketResOut[fResTo] + tradeCount * RatioTo);
+    gHands[fOwner].Stats.WareProduced(fResTo, tradeCount * RatioTo);
+    gHands[fOwner].Deliveries.Queue.AddOffer(Self, fResTo, tradeCount * RatioTo);
 
     gScriptEvents.ProcMarketTrade(Self, fResFrom, fResTo);
-    gScriptEvents.ProcWareProduced(Self, fResTo, TradeCount * RatioTo);
+    gScriptEvents.ProcWareProduced(Self, fResTo, tradeCount * RatioTo);
     gSoundPlayer.Play(sfxnTrade, fPosition);
   end;
 end;
@@ -304,31 +306,31 @@ end;
 
 procedure TKMHouseMarket.SetResInCnt(aWareType: TKMWareType; aValue: Word);
 var
-  CntChange: Integer;
+  cntChange: Integer;
 begin
   Assert(aWareType in [WARE_MIN..WARE_MAX]);
 
-  CntChange := aValue - fMarketResIn[aWareType];
+  cntChange := aValue - fMarketResIn[aWareType];
 
   fMarketResIn[aWareType] := aValue;
 
-  if CntChange <> 0 then
-    gScriptEvents.ProcHouseWareCountChanged(Self, aWareType, ResToTrade[aWareType], CntChange);
+  if cntChange <> 0 then
+    gScriptEvents.ProcHouseWareCountChanged(Self, aWareType, ResToTrade[aWareType], cntChange);
 end;
 
 
 procedure TKMHouseMarket.SetResOutCnt(aWareType: TKMWareType; aValue: Word);
 var
-  CntChange: Integer;
+  cntChange: Integer;
 begin
   Assert(aWareType in [WARE_MIN..WARE_MAX]);
 
-  CntChange := aValue - fMarketResOut[aWareType];
+  cntChange := aValue - fMarketResOut[aWareType];
 
   fMarketResOut[aWareType] := aValue;
 
-  if CntChange <> 0 then
-    gScriptEvents.ProcHouseWareCountChanged(Self, aWareType, ResToTrade[aWareType], CntChange);
+  if cntChange <> 0 then
+    gScriptEvents.ProcHouseWareCountChanged(Self, aWareType, ResToTrade[aWareType], cntChange);
 end;
 
 
@@ -340,21 +342,21 @@ end;
 
 procedure TKMHouseMarket.SetResToTrade(aWare: TKMWareType; aCnt: Word);
 var
-  CurCnt, DecFromIn, DecFromOut: Word;
+  curCnt, decFromIn, decFromOut: Word;
 begin
-  CurCnt := GetResToTrade(aWare);
-  if aCnt > CurCnt then
-    SetResInCnt(aWare, fMarketResIn[aWare] + aCnt - CurCnt)
+  curCnt := GetResToTrade(aWare);
+  if aCnt > curCnt then
+    SetResInCnt(aWare, fMarketResIn[aWare] + aCnt - curCnt)
   else
-  if aCnt < CurCnt then
+  if aCnt < curCnt then
   begin
-    DecFromIn := Min(fMarketResIn[aWare], CurCnt - aCnt);
-    Dec(fMarketResIn[aWare], DecFromIn); //Dont call SetRes func, cause we don't need double script event calls
-    DecFromOut := CurCnt - aCnt - DecFromIn;
-    Dec(fMarketResOut[aWare], DecFromOut); //Dont call SetRes func, cause we don't need double script event calls
+    decFromIn := Min(fMarketResIn[aWare], curCnt - aCnt);
+    Dec(fMarketResIn[aWare], decFromIn); //Dont call SetRes func, cause we don't need double script event calls
+    decFromOut := curCnt - aCnt - decFromIn;
+    Dec(fMarketResOut[aWare], decFromOut); //Dont call SetRes func, cause we don't need double script event calls
 
-    gScriptEvents.ProcHouseWareCountChanged(Self, aWare, ResToTrade[aWare], - DecFromIn - DecFromOut);
-    gHands[fOwner].Deliveries.Queue.RemOffer(Self, aWare, DecFromOut);
+    gScriptEvents.ProcHouseWareCountChanged(Self, aWare, ResToTrade[aWare], - decFromIn - decFromOut);
+    gHands[fOwner].Deliveries.Queue.RemOffer(Self, aWare, decFromOut);
   end;
 end;
 
@@ -403,7 +405,7 @@ const
   //Maximum number of Demands we can place at once (stops the delivery queue from becoming clogged with 1500 items)
   MAX_RES_ORDERED = 10;
 var
-  ResRequired, OrdersAllowed, OrdersRemoved, OrderToDo, movedOut2In: Integer;
+  resRequired, ordersAllowed, ordersRemoved, orderToDo, movedOut2In: Integer;
 begin
   if (fResFrom = wtNone) or (fResTo = wtNone) or (fResFrom = fResTo) then Exit;
 
@@ -424,36 +426,36 @@ begin
   //it looks bad that serfs remove the stone then take it back. To be converted to todo item.
 
   //How much do we need to ask to add to delivery system = Needed - (Ordered + Arrived)
-  ResRequired := GetResRequired;
+  resRequired := GetResRequired;
 
   if fTradeAmount <> 0 then
   begin
-    movedOut2In := MoveResOut2In(fResFrom, ResRequired);
+    movedOut2In := MoveResOut2In(fResFrom, resRequired);
     if movedOut2In > 0 then
     begin
       //Remove demands, we took some of the wares from OUT queue
-      OrdersRemoved := gHands[fOwner].Deliveries.Queue.TryRemoveDemand(Self, fResFrom, movedOut2In);
-      Dec(fMarketDeliveryCount[fResFrom], OrdersRemoved);
+      ordersRemoved := gHands[fOwner].Deliveries.Queue.TryRemoveDemand(Self, fResFrom, movedOut2In);
+      Dec(fMarketDeliveryCount[fResFrom], ordersRemoved);
     end;
   end;
 
-  OrdersAllowed := MAX_RES_ORDERED - fMarketDeliveryCount[fResFrom];
+  ordersAllowed := MAX_RES_ORDERED - fMarketDeliveryCount[fResFrom];
 
-  Assert(OrdersAllowed >= 0); //We must never have ordered more than we are allowed
+  Assert(ordersAllowed >= 0); //We must never have ordered more than we are allowed
 
   //Order as many as we can within our limit
-  if (ResRequired > 0) and (OrdersAllowed > 0) then
+  if (resRequired > 0) and (ordersAllowed > 0) then
   begin
-    OrderToDo := Min(ResRequired, OrdersAllowed);
-    Inc(fMarketDeliveryCount[fResFrom], OrderToDo);
-    gHands[fOwner].Deliveries.Queue.AddDemand(Self, nil, fResFrom, OrderToDo, dtOnce, diNorm)
+    orderToDo := Min(resRequired, ordersAllowed);
+    Inc(fMarketDeliveryCount[fResFrom], orderToDo);
+    gHands[fOwner].Deliveries.Queue.AddDemand(Self, nil, fResFrom, orderToDo, dtOnce, diNorm)
   end
   else
     //There are too many resources ordered, so remove as many as we can from the delivery list (some will be being performed)
-    if (ResRequired < 0) then
+    if (resRequired < 0) then
     begin
-      OrdersRemoved := gHands[fOwner].Deliveries.Queue.TryRemoveDemand(Self, fResFrom, -ResRequired);
-      Dec(fMarketDeliveryCount[fResFrom], OrdersRemoved);
+      ordersRemoved := gHands[fOwner].Deliveries.Queue.TryRemoveDemand(Self, fResFrom, -resRequired);
+      Dec(fMarketDeliveryCount[fResFrom], ordersRemoved);
     end;
 end;
 
@@ -511,25 +513,25 @@ end;
 procedure TKMHouseMarket.Paint;
 var
   R: TKMWareType;
-  MaxCount: Word;
-  MaxRes: TKMWareType;
+  maxCount: Word;
+  maxRes: TKMWareType;
 begin
   inherited;
   if fBuildState < hbsDone then Exit;
 
   //Market can display only one ware at a time (lookup ware that has most count)
-  MaxCount := 0;
-  MaxRes := wtNone;
+  maxCount := 0;
+  maxRes := wtNone;
   for R := WARE_MIN to WARE_MAX do
-  if fMarketResIn[R] + fMarketResOut[R] > MaxCount then
+  if fMarketResIn[R] + fMarketResOut[R] > maxCount then
   begin
-    MaxCount := fMarketResIn[R] + fMarketResOut[R];
-    MaxRes := R;
+    maxCount := fMarketResIn[R] + fMarketResOut[R];
+    maxRes := R;
   end;
 
-  if MaxCount > 0 then
+  if maxCount > 0 then
     //FlagAnimStep is required for horses animation
-    gRenderPool.AddHouseMarketSupply(fPosition, MaxRes, MaxCount, FlagAnimStep);
+    gRenderPool.AddHouseMarketSupply(fPosition, maxRes, maxCount, FlagAnimStep);
 end;
 
 
