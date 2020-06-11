@@ -2837,8 +2837,7 @@ const
   PLAYER_AFK_TIME = 5; //in minutes. Notify other players, when this player is AFK
   PLAYER_AFK_MESSAGE_DELAY = 5*60*1000; //in ms, wait till next AFK message. do not spam players with messages
 begin
-  if gScriptSounds <> nil then
-    gScriptSounds.UpdateState;
+  gScriptSounds.UpdateState;
 
   if not fIsPaused then
   begin
@@ -2855,7 +2854,7 @@ begin
     end;
   end;
 
-  if (aGlobalTickCount mod 10 = 0) and (fMapEditor <> nil) then
+  if aGlobalTickCount mod 10 = 0 then
     fMapEditor.UpdateState;
 end;
 

@@ -851,6 +851,8 @@ procedure TKMScriptSoundsManager.UpdateState;
 var
   I: Integer;
 begin
+  if Self = nil then Exit;
+
   //Check whether a sound needs starting or stopping
   for I := fScriptSounds.Count - 1 downto 0 do
     if fScriptSounds[I].Looped then

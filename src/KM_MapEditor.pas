@@ -978,6 +978,8 @@ end;
 
 procedure TKMMapEditor.UpdateState;
 begin
+  if Self = nil then Exit;
+
   if melDeposits in fVisibleLayers then
     fDeposits.UpdateAreas([rdStone, rdCoal, rdIron, rdGold, rdFish]);
 
