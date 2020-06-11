@@ -304,6 +304,8 @@ const
 
   DYNAMIC_HOTKEYS_NUM  = 20; // Number of dynamic hotkeys
 
+  GLOBAL_TICK_UPDATE_FREQ = 100; // In ms.
+
 var
   HITPOINT_RESTORE_PACE: Word = 100;         //1 hitpoint is restored to units every X ticks (using Humbelum's advice)
 

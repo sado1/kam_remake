@@ -192,7 +192,7 @@ begin
   InitMainMenu(aScreenX, aScreenY);
 
   fTimerUI := TTimer.Create(nil);
-  fTimerUI.Interval := 100;
+  fTimerUI.Interval := GLOBAL_TICK_UPDATE_FREQ;
   fTimerUI.OnTimer  := UpdateState;
   fTimerUI.Enabled  := True;
 
