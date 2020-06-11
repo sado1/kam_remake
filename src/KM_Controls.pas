@@ -414,6 +414,7 @@ type
   protected
     function GetIsPainted: Boolean; override;
   public
+    Monospaced: Boolean;
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; const aCaption: UnicodeString;
                        aFont: TKMFont; aTextAlign: TKMTextAlign; aPaintLayer: Integer = 0); overload;
     constructor Create(aParent: TKMPanel; aLeft,aTop: Integer; const aCaption: UnicodeString; aFont: TKMFont;
@@ -3272,6 +3273,7 @@ begin
   fAutoWrap := False;
   fTabWidth := TAB_WIDTH;
   SetCaption(aCaption);
+  Monospaced := False;
 end;
 
 
@@ -3373,7 +3375,7 @@ begin
   if fEnabled then Col := FontColor
               else Col := $FF888888;
 
-  TKMRenderUI.WriteText(AbsLeft, AbsTop, Width, fText, fFont, fTextAlign, Col, False, False, False, fTabWidth, PaintingBaseLayer);
+  TKMRenderUI.WriteText(AbsLeft, AbsTop, Width, fText, fFont, fTextAlign, Col, False, False, False, fTabWidth, PaintingBaseLayer, Monospaced);
 
   if fStrikethrough then
     TKMRenderUI.WriteShape(TextLeft, AbsTop + fTextSize.Y div 2 - 2, fTextSize.X, 3, Col, $FF000000);

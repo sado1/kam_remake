@@ -97,6 +97,8 @@ type
              aTabWidth: Integer = TAB_WIDTH): UnicodeString;
     function CharsThatFit(const aText: UnicodeString; aMaxPxWidth: Integer; aRound: Boolean = False;
                           aConsiderEolSymbol: Boolean = False; aTabWidth: Integer = TAB_WIDTH): Integer;
+    function GetMonospacedTextSize(const aText: UnicodeString; aCountMarkup: Boolean = False; aConsiderEolSymbol: Boolean = False;
+                                   aTabWidth: Integer = TAB_WIDTH): TKMPoint;
     function GetTextSize(const aText: UnicodeString; var aLineCount: Integer; aCountMarkup: Boolean = False;
                          aConsiderEolSymbol: Boolean = False; aTabWidth: Integer = TAB_WIDTH; aMonospaced: Boolean = False): TKMPoint; overload;
     function GetTextSize(const aText: UnicodeString; aCountMarkup: Boolean = False; aConsiderEolSymbol: Boolean = False;
@@ -746,6 +748,13 @@ begin
       Exit;
     end;
   end;
+end;
+
+
+function TKMFontData.GetMonospacedTextSize(const aText: UnicodeString; aCountMarkup: Boolean = False; aConsiderEolSymbol: Boolean = False;
+                                           aTabWidth: Integer = TAB_WIDTH): TKMPoint;
+begin
+  Result := GetTextSize(aText, aCountMarkup, aConsiderEolSymbol, aTabWidth, True);
 end;
 
 
