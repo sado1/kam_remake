@@ -1204,7 +1204,7 @@ function TKMHandsCollection.ObjToString: String;
 var
   I: Integer;
 begin
-  Result := 'Hands: ';
+  Result := '|Hands: ';
   for I := 0 to fCount - 1 do
     Result := Format('%s|%d: %s', [Result, I, fHandsList[I].ObjToString]);
 

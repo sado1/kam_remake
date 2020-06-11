@@ -2077,7 +2077,7 @@ begin
   end;
 
 
-  Result := ObjToStringShort +
+  Result := '|' + ObjToStringShort +
             Format('|HasOwner = %s|Owner = %d|Action = %s|Repair = %s|IsClosedForWorker = %s|DeliveryMode = %s|NewDeliveryMode = %s|Damage = %d|' +
                    'BuildState = %s|BuildSupplyWood = %d|BuildSupplyStone = %d|BuildingProgress = %d|DoorwayUse = %d|' +
                    'ResIn = %d,%d,%d,%d|ResDeliveryCnt = %d,%d,%d,%d|ResOut = %d,%d,%d,%d|ResOrder = %d,%d,%d,%d|ResOutPool = %s',
