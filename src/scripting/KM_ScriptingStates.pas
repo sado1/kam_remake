@@ -3781,8 +3781,8 @@ begin
   try
     if InRange(aPlayer, 0, gHands.Count - 1)
     and (gHands[aPlayer].Enabled)
-    and (aUnitType in [UnitTypeToIndex[HUMANS_MIN]..UnitTypeToIndex[HUMANS_MAX]]) then
-      Result := not gHands[aPlayer].Locks.GetUnitBlocked(UnitIndexToType[aUnitType])
+    and (aUnitType in [UNIT_TYPE_TO_ID[HUMANS_MIN]..UNIT_TYPE_TO_ID[HUMANS_MAX]]) then
+      Result := not gHands[aPlayer].Locks.GetUnitBlocked(UNIT_ID_TO_TYPE[aUnitType])
     else
     begin
       Result := False;
