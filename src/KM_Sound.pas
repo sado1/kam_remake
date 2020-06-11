@@ -169,9 +169,9 @@ const
 { TKMSoundPlayer }
 constructor TKMSoundPlayer.Create(aVolume: Single);
 var
-  Context: PALCcontext;
+  context: PALCcontext;
   I: Integer;
-  NumMono,NumStereo: TALCint;
+  numMono, numStereo: TALCint;
 begin
   inherited Create;
 
@@ -202,9 +202,9 @@ begin
   end;
 
   //Create context(s)
-  Context := alcCreateContext(fALDevice, nil);
+  context := alcCreateContext(fALDevice, nil);
   Set8087CW($133F); //Above OpenAL call messes up FPU settings
-  if Context = nil then begin
+  if context = nil then begin
     gLog.AddNoTime('OpenAL warning. Context could not be created.');
     //MessageDlg works better than Application.MessageBox or others, it stays on top and pauses here until the user clicks ok.
     MessageDlg('OpenAL context could not be created. Please refer to Readme.html for solution', mtWarning, [mbOk], 0);
@@ -213,7 +213,7 @@ begin
   end;
 
   //Set active context
-  I := alcMakeContextCurrent(Context);
+  I := alcMakeContextCurrent(context);
   Set8087CW($133F); //Above OpenAL call messes up FPU settings
   if I > 1 then begin //valid returns are AL_NO_ERROR=0 and AL_TRUE=1
     gLog.AddNoTime('OpenAL warning. Context could not be made current.');
@@ -230,11 +230,11 @@ begin
   alDistanceModel(AL_LINEAR_DISTANCE_CLAMPED);
   gLog.AddTime('Pre-LoadSFX init', True);
 
-  alcGetIntegerv(fALDevice, ALC_MONO_SOURCES, 4, @NumMono);
-  alcGetIntegerv(fALDevice, ALC_STEREO_SOURCES, 4, @NumStereo);
+  alcGetIntegerv(fALDevice, ALC_MONO_SOURCES, 4, @numMono);
+  alcGetIntegerv(fALDevice, ALC_STEREO_SOURCES, 4, @numStereo);
 
-  gLog.AddTime('ALC_MONO_SOURCES',NumMono);
-  gLog.AddTime('ALC_STEREO_SOURCES',NumStereo);
+  gLog.AddTime('ALC_MONO_SOURCES',numMono);
+  gLog.AddTime('ALC_STEREO_SOURCES',numStereo);
 
   for I := Low(fALSounds) to High(fALSounds) do
   begin
@@ -273,20 +273,22 @@ end;
 
 
 procedure TKMSoundPlayer.CheckOpenALError;
-var ErrCode: Integer;
+var
+  errCode: Integer;
 begin
-  ErrCode := alcGetError(fALDevice);
-  if ErrCode <> ALC_NO_ERROR then begin
-    gLog.AddNoTime('OpenAL warning. There is OpenAL error '+inttostr(ErrCode)+' raised. Sound will be disabled.');
+  errCode := alcGetError(fALDevice);
+  if errCode <> ALC_NO_ERROR then begin
+    gLog.AddNoTime('OpenAL warning. There is OpenAL error '+inttostr(errCode)+' raised. Sound will be disabled.');
     //MessageDlg works better than Application.MessageBox or others, it stays on top and pauses here until the user clicks ok.
-    MessageDlg('There is OpenAL error '+IntToStr(ErrCode)+' raised. Sound will be disabled.', mtWarning, [mbOk], 0);
+    MessageDlg('There is OpenAL error '+IntToStr(errCode)+' raised. Sound will be disabled.', mtWarning, [mbOk], 0);
     fIsSoundInitialized := False;
   end;
 end;
 
 
 procedure TKMSoundPlayer.AbortAllFadeSounds;
-var I: Integer;
+var
+  I: Integer;
 begin
   if SKIP_SOUND or not fIsSoundInitialized then Exit;
 
@@ -298,7 +300,8 @@ end;
 
 
 procedure TKMSoundPlayer.AbortAllLongSounds;
-var I: Integer;
+var
+  I: Integer;
 begin
   if SKIP_SOUND or not fIsSoundInitialized then Exit;
 
@@ -327,12 +330,14 @@ end;
 
 { Update sound gain (global volume for all sounds) }
 procedure TKMSoundPlayer.UpdateSoundVolume(Value: Single);
+
   procedure UpdateSound(aI: Integer);
   begin
     AlSourcef(fALSounds[aI].ALSource, AL_GAIN, 1 * fALSounds[aI].Volume * fSoundGain);
   end;
 
-var I: Integer;
+var
+  I: Integer;
 begin
   if SKIP_SOUND or not fIsSoundInitialized then Exit;
   fSoundGain := Value;
@@ -642,31 +647,31 @@ end;
 
 procedure TKMSoundPlayer.PlayCitizen(aUnitType: TKMUnitType; aSound: TWarriorSpeech; const aLoc: TKMPointF);
 var
-  Wave: UnicodeString;
-  HasLoc: Boolean;
+  wave: UnicodeString;
+  hasLoc: Boolean;
 begin
   if SKIP_SOUND or not fIsSoundInitialized then Exit;
   if not (aUnitType in [CITIZEN_MIN..CITIZEN_MAX]) then Exit;
 
-  HasLoc := not KMSamePointF(aLoc, KMPOINTF_ZERO);
-  Wave := gRes.Sounds.FileOfCitizen(aUnitType, aSound);
-  if FileExists(Wave) then
-    PlayWave(Wave, aLoc, gRes.Sounds.GetSoundType(aSound), HasLoc, 1 + 3*byte(HasLoc)); //Attenuate sounds when aLoc is valid
+  hasLoc := not KMSamePointF(aLoc, KMPOINTF_ZERO);
+  wave := gRes.Sounds.FileOfCitizen(aUnitType, aSound);
+  if FileExists(wave) then
+    PlayWave(wave, aLoc, gRes.Sounds.GetSoundType(aSound), hasLoc, 1 + 3*byte(hasLoc)); //Attenuate sounds when aLoc is valid
 end;
 
 
 procedure TKMSoundPlayer.PlayNotification(aSound: TAttackNotification);
 var
-  Wave: UnicodeString;
-  Count: Byte;
+  wave: UnicodeString;
+  count: Byte;
 begin
   if SKIP_SOUND or not fIsSoundInitialized then Exit;
 
-  Count := gRes.Sounds.NotificationSoundCount[aSound];
+  count := gRes.Sounds.NotificationSoundCount[aSound];
 
-  Wave := gRes.Sounds.FileOfNotification(aSound, Random(Count));
-  if FileExists(Wave) then
-    PlayWave(Wave, KMPOINTF_ZERO, gRes.Sounds.GetSoundType(aSound), False, 1);
+  wave := gRes.Sounds.FileOfNotification(aSound, Random(count));
+  if FileExists(wave) then
+    PlayWave(wave, KMPOINTF_ZERO, gRes.Sounds.GetSoundType(aSound), False, 1);
 end;
 
 
@@ -684,33 +689,33 @@ end;
 
 procedure TKMSoundPlayer.PlayWarrior(aUnitType: TKMUnitType; aSound: TWarriorSpeech; const aLoc: TKMPointF);
 var
-  Wave: UnicodeString;
-  HasLoc: Boolean;
-  Count: Byte;
+  wave: UnicodeString;
+  hasLoc: Boolean;
+  count: Byte;
 begin
   if SKIP_SOUND or not fIsSoundInitialized then Exit;
   if not (aUnitType in [WARRIOR_MIN..WARRIOR_MAX]) then Exit;
 
-  Count := gRes.Sounds.WarriorSoundCount[aUnitType, aSound];
+  count := gRes.Sounds.WarriorSoundCount[aUnitType, aSound];
 
-  HasLoc := not KMSamePointF(aLoc, KMPOINTF_ZERO);
-  Wave := gRes.Sounds.FileOfWarrior(aUnitType, aSound, Random(Count));
-  if FileExists(Wave) then
-    PlayWave(Wave, aLoc, gRes.Sounds.GetSoundType(aSound), HasLoc, 1 + 3*Byte(HasLoc)); //Attenuate sounds when aLoc is valid
+  hasLoc := not KMSamePointF(aLoc, KMPOINTF_ZERO);
+  wave := gRes.Sounds.FileOfWarrior(aUnitType, aSound, Random(count));
+  if FileExists(wave) then
+    PlayWave(wave, aLoc, gRes.Sounds.GetSoundType(aSound), hasLoc, 1 + 3*Byte(hasLoc)); //Attenuate sounds when aLoc is valid
 end;
 
 
 function TKMSoundPlayer.CanAddLoopSound: Boolean;
 var
-  I, Cnt: Integer;
+  I, cnt: Integer;
 begin
   Result := True;
-  Cnt := 0;
+  cnt := 0;
   for I := Low(fScriptSoundALIndex) to High(fScriptSoundALIndex) do
   begin
     if (fScriptSoundALIndex[I] <> -1) and fALSounds[fScriptSoundALIndex[I]].Looped then
-      Inc(Cnt);
-    if Cnt >= MAX_LOOP_SOUNDS then
+      Inc(cnt);
+    if cnt >= MAX_LOOP_SOUNDS then
       Exit(False);
   end;
 end;
@@ -756,7 +761,8 @@ end;
 
 
 procedure TKMSoundPlayer.AbortAllScriptSounds;
-var I: Integer;
+var
+  I: Integer;
 begin
   for I := Low(fScriptSoundALIndex) to High(fScriptSoundALIndex) do
     StopScriptSound(I);
@@ -782,7 +788,8 @@ end;
 
 
 function TKMSoundPlayer.ActiveCount: Byte;
-var I: Integer;
+var
+  I: Integer;
 begin
   Result := 0;
   for I := Low(fALSounds) to High(fALSounds) do
@@ -794,7 +801,8 @@ end;
 
 
 procedure TKMSoundPlayer.Paint;
-var I: Integer;
+var
+  I: Integer;
 begin
   gRenderAux.CircleOnTerrain(fListener.Pos[1], fListener.Pos[2], MAX_DISTANCE, $00000000, $FFFFFFFF);
   for I := Low(fALSounds) to High(fALSounds) do
@@ -880,7 +888,7 @@ end;
 
 function TKMScriptSoundsManager.CanPlay(const aScriptSound: TKMScriptSound): Boolean;
 var
-  DistanceSqr: Single;
+  distanceSqr: Single;
 begin
   Result := ((aScriptSound.HandIndex = gMySpectator.HandID) or (aScriptSound.HandIndex = PLAYER_NONE))
              and (not aScriptSound.Attenuate
@@ -889,8 +897,8 @@ begin
 
   if aScriptSound.Attenuate then
   begin
-    DistanceSqr := KMDistanceSqr(KMPointF(aScriptSound.Loc), fListener);
-    Result := Result and (DistanceSqr < Sqr(aScriptSound.Radius));
+    distanceSqr := KMDistanceSqr(KMPointF(aScriptSound.Loc), fListener);
+    Result := Result and (distanceSqr < Sqr(aScriptSound.Radius));
   end;
 end;
 
@@ -934,7 +942,7 @@ function TKMScriptSoundsManager.AddSound(aHandIndex: TKMHandID; const aSoundName
 const
   ERROR_EXIT_CODE = -1;
 var
-  NewIndex: Integer;
+  newIndex: Integer;
   S: TKMScriptSound;
 begin
   if Self = nil then Exit(ERROR_EXIT_CODE);
@@ -955,11 +963,11 @@ begin
   S.Radius := aRadius;
   S.HandIndex := aHandIndex;
 
-  NewIndex := fScriptSounds.Add(S);
+  newIndex := fScriptSounds.Add(S);
 
   //Return -1 if sound (not looped) did not start successfully
   Result := ERROR_EXIT_CODE;
-  if (StartSound(NewIndex) <> -1) or aLooped then
+  if (StartSound(newIndex) <> -1) or aLooped then
     Result := fLastScriptUID; //Return ScriptSoundUID if all is OK, or for Looped sound, since we could start it later
 end;
 
@@ -1026,34 +1034,33 @@ end;
 
 procedure TKMScriptSoundsManager.Load(LoadStream: TKMemoryStream);
 var
-  I, SoundCount: Integer;
-  S: TKMScriptSound;
+  I, soundCount: Integer;
+  scriptSnd: TKMScriptSound;
 begin
   LoadStream.CheckMarker('ScriptSoundsManager');
   LoadStream.Read(fLastScriptUID);
-  LoadStream.Read(SoundCount);
+  LoadStream.Read(soundCount);
   fScriptSounds.Clear;
-  for I := 0 to SoundCount - 1 do
+  for I := 0 to soundCount - 1 do
   begin
-    S := TKMScriptSound.Create;
-    LoadStream.Read(S.Looped);
-    LoadStream.Read(S.FadeMusic);
-    LoadStream.Read(S.ScriptUID);
-    LoadStream.ReadA(S.SoundName);
-    LoadStream.Read(S.AudioFormat, SizeOf(S.AudioFormat));
-    LoadStream.Read(S.Volume);
-    LoadStream.Read(S.Radius);
-    LoadStream.Read(S.Attenuate);
-    LoadStream.Read(S.Loc);
-    LoadStream.Read(S.HandIndex);
-    S.PlayingIndex := -1; //Indicates that it is not currently playing
-    fScriptSounds.Add(S);
+    scriptSnd := TKMScriptSound.Create;
+    LoadStream.Read(scriptSnd.Looped);
+    LoadStream.Read(scriptSnd.FadeMusic);
+    LoadStream.Read(scriptSnd.ScriptUID);
+    LoadStream.ReadA(scriptSnd.SoundName);
+    LoadStream.Read(scriptSnd.AudioFormat, SizeOf(scriptSnd.AudioFormat));
+    LoadStream.Read(scriptSnd.Volume);
+    LoadStream.Read(scriptSnd.Radius);
+    LoadStream.Read(scriptSnd.Attenuate);
+    LoadStream.Read(scriptSnd.Loc);
+    LoadStream.Read(scriptSnd.HandIndex);
+    scriptSnd.PlayingIndex := -1; //Indicates that it is not currently playing
+    fScriptSounds.Add(scriptSnd);
   end;
 end;
 
 
 { TKMScriptSound }
-
 constructor TKMScriptSound.Create;
 begin
   PlayingIndex := -1;
