@@ -395,6 +395,7 @@
         <DCCReference Include="src\units\actions\KM_UnitActionStormAttack.pas"/>
         <DCCReference Include="src\units\actions\KM_UnitActionWalkTo.pas"/>
         <DCCReference Include="src\units\KM_UnitGroup.pas"/>
+        <DCCReference Include="src\units\KM_UnitGroupTypes.pas"/>
         <DCCReference Include="src\units\KM_Units.pas"/>
         <DCCReference Include="src\units\KM_UnitsCollection.pas"/>
         <DCCReference Include="src\units\KM_UnitVisual.pas"/>
