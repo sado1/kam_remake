@@ -25,6 +25,11 @@ type
     function GetResToTrade(aWare: TKMWareType): Word;
     procedure SetResToTrade(aWare: TKMWareType; aCnt: Word);
     property ResToTrade[aWare: TKMWareType]: Word read GetResToTrade write SetResToTrade;
+
+    function GetResRequired: Integer;
+
+    procedure MoveResIn2Out(aWare: TKMWareType; aCnt: Integer);
+    function MoveResOut2In(aWare: TKMWareType; aCnt: Integer): Integer;
   protected
     function GetResOrder(aId: Byte): Integer; override;
     procedure SetResOrder(aId: Byte; aValue: Integer); override;
@@ -146,6 +151,12 @@ begin
 end;
 
 
+function TKMHouseMarket.GetResRequired: Integer;
+begin
+  Result := fTradeAmount * RatioFrom - (fMarketDeliveryCount[fResFrom] + ResToTrade[fResFrom]);
+end;
+
+
 procedure TKMHouseMarket.ResAddToIn(aResource: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False);
 var
   ResRequired, OrdersToDo: Integer;
@@ -159,7 +170,7 @@ begin
   begin
     SetResInCnt(aResource, fMarketResIn[aResource] + aCount); //Place the new resource in the IN list
     //As we only order 10 resources at one time, we might need to order another now to fill the gap made by the one delivered
-    ResRequired := fTradeAmount*RatioFrom - (fMarketResIn[aResource]+fMarketDeliveryCount[aResource]);
+    resRequired := GetResRequired;
     if ResRequired > 0 then
     begin
       OrdersToDo := Min(aCount, ResRequired);
@@ -348,6 +359,32 @@ begin
 end;
 
 
+procedure TKMHouseMarket.MoveResIn2Out(aWare: TKMWareType; aCnt: Integer);
+begin
+  aCnt := Min(aCnt, fMarketResIn[aWare]);
+
+  if aCnt = 0 then Exit;
+
+  //No need to call SetRes functins here, since its just moving resource from In to Out
+  Inc(fMarketResOut[aWare], aCnt);
+  gHands[fOwner].Deliveries.Queue.AddOffer(Self, aWare, aCnt); //Add res as offer, since they are in 'out' queue
+  Dec(fMarketResIn[aWare], aCnt);
+end;
+
+
+function TKMHouseMarket.MoveResOut2In(aWare: TKMWareType; aCnt: Integer): Integer;
+begin
+  Result := Min(aCnt, fMarketResOut[aWare]);
+
+  if Result = 0 then Exit;
+
+  //No need to call SetRes functins here, since its just moving resource from Out to In
+  Dec(fMarketResOut[aWare], Result);
+  gHands[fOwner].Deliveries.Queue.RemOffer(Self, aWare, Result); //Remove offer, we moved wares to In
+  Inc(fMarketResIn[aWare], Result);
+end;
+
+
 function TKMHouseMarket.TradeInProgress: Boolean;
 begin
   Result := fTradeAmount > 0;
@@ -366,7 +403,7 @@ const
   //Maximum number of Demands we can place at once (stops the delivery queue from becoming clogged with 1500 items)
   MAX_RES_ORDERED = 10;
 var
-  ResRequired, OrdersAllowed, OrdersRemoved, OrderToDo: Integer;
+  ResRequired, OrdersAllowed, OrdersRemoved, OrderToDo, movedOut2In: Integer;
 begin
   if (fResFrom = wtNone) or (fResTo = wtNone) or (fResFrom = fResTo) then Exit;
 
@@ -376,13 +413,8 @@ begin
   AttemptExchange;
 
   //If player cancelled exchange then move all remainders of From resource to Offers list
-  if (fTradeAmount = 0) and (fMarketResIn[fResFrom] > 0) then
-  begin
-    //No need to call SetRes functins here, since its just moving resource from In to Out
-    Inc(fMarketResOut[fResFrom], fMarketResIn[fResFrom]);
-    gHands[fOwner].Deliveries.Queue.AddOffer(Self, fResFrom, fMarketResIn[fResFrom]);
-    fMarketResIn[fResFrom] := 0;
-  end;
+  if fTradeAmount = 0 then
+    MoveResIn2Out(fResFrom, fMarketResIn[fResFrom]);
 
   //@Lewin: If player has cancelled the exchange and then started it again resources will not be
   //removed from offers list and perhaps serf will carry them off the marketplace
@@ -392,7 +424,19 @@ begin
   //it looks bad that serfs remove the stone then take it back. To be converted to todo item.
 
   //How much do we need to ask to add to delivery system = Needed - (Ordered + Arrived)
-  ResRequired := (fTradeAmount * RatioFrom - (fMarketDeliveryCount[fResFrom]+fMarketResIn[fResFrom]));
+  ResRequired := GetResRequired;
+
+  if fTradeAmount <> 0 then
+  begin
+    movedOut2In := MoveResOut2In(fResFrom, ResRequired);
+    if movedOut2In > 0 then
+    begin
+      //Remove demands, we took some of the wares from OUT queue
+      OrdersRemoved := gHands[fOwner].Deliveries.Queue.TryRemoveDemand(Self, fResFrom, movedOut2In);
+      Dec(fMarketDeliveryCount[fResFrom], OrdersRemoved);
+    end;
+  end;
+
   OrdersAllowed := MAX_RES_ORDERED - fMarketDeliveryCount[fResFrom];
 
   Assert(OrdersAllowed >= 0); //We must never have ordered more than we are allowed
