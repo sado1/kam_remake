@@ -56,6 +56,8 @@ type
 
     procedure Save(SaveStream: TKMemoryStream); override;
     procedure Paint; override;
+
+    function ObjToString: String; override;
   end;
 
 
@@ -65,7 +67,8 @@ uses
   KM_RenderPool,
   KM_HandsCollection, KM_HandLogistics,
   KM_Resource, KM_ResSound,
-  KM_ScriptingEvents, KM_Sound;
+  KM_ScriptingEvents, KM_Sound,
+  KM_CommonUtils;
 
 
 { TKMHouseMarket }
@@ -483,6 +486,38 @@ begin
   if MaxCount > 0 then
     //FlagAnimStep is required for horses animation
     gRenderPool.AddHouseMarketSupply(fPosition, MaxRes, MaxCount, FlagAnimStep);
+end;
+
+
+function TKMHouseMarket.ObjToString: String;
+var
+  resInStr, resOutStr, deliveryCntStr, strIn, strOut, strDel: string;
+  WT: TKMWareType;
+  len: Integer;
+begin
+
+  resInStr := '';
+  resOutStr := '';
+  deliveryCntStr := '';
+
+  for WT := WARE_MIN to WARE_MAX do
+  begin
+    strIn  := IntToStr(fMarketResIn[WT]);
+    strOut := IntToStr(fMarketResOut[WT]);
+    strDel := IntToStr(fMarketDeliveryCount[WT]);
+    len := Max3(Length(strIn), Length(strOut), Length(strDel));
+    resInStr        := resInStr       + ' ' + StringOfChar(' ', len - Length(strIn))  + strIn;
+    resOutStr       := resOutStr      + ' ' + StringOfChar(' ', len - Length(strOut)) + strOut;
+    deliveryCntStr  := deliveryCntStr + ' ' + StringOfChar(' ', len - Length(strDel)) + strDel;
+  end;
+
+  Result := inherited +
+            Format('|MarketResFrom = %s|MarketResTo = %s|MarketResIn       = %s|MarketResOut      = %s|MarketDeliveryCnt = %s',
+                   [GetEnumName(TypeInfo(TKMWareType), Integer(fResFrom)),
+                    GetEnumName(TypeInfo(TKMWareType), Integer(fResTo)),
+                    resInStr,
+                    resOutStr,
+                    deliveryCntStr]);
 end;
 
 

@@ -267,7 +267,7 @@ type
 
     procedure Save(SaveStream: TKMemoryStream); virtual;
 
-    function ObjToString: String;
+    function ObjToString: String; virtual;
 
     procedure IncAnimStep;
     procedure UpdateResRequest;
