@@ -2,7 +2,7 @@ Author
 andreus & Andrey988 (Classic)
 
 Version
-1.4 (19.04.2020)
+1.5 (28.05.2020)
 
 SetCoop
 
@@ -14,4 +14,7 @@ BlockFullMapPreview
 
 DifficultyLevels
 mdEasy1,mdNormal,mdHard1
+
+BigDescLibx
+0
 

@@ -4,12 +4,47 @@ const
   AUTOFEED_TIME = 8000;
   GIFT_TIME = 9000;
   TARGETS_TIME = 6000;
-  WILD_TIME = 1200;
+  AMBIENT_TIME = 250;
 
 var
   Ware, Count: array[0..3] of Integer;
   AttackTargetY: array[4..10] of Integer;
-  I: Integer;
+  I, K: Integer;
+  Wolves: array of Integer;
+  SoundAllowed: array[0..3] of Boolean;
+
+
+procedure FindWolves;
+var
+  aX, aY, W: Integer;
+begin
+  for aX := 1 to States.MapWidth - 1 do
+    for aY := 1 to States.MapHeight - 1 do
+    begin
+      W := States.UnitAt(aX, aY);
+      if W > 0 then
+        if States.UnitType(W) = 30 then
+        begin
+          SetLength(Wolves, Length(Wolves) + 1);
+          if Length(Wolves) > 0 then
+            Wolves[Length(Wolves) - 1] := W;
+        end;
+    end;
+end;
+
+
+{$COMMAND sound: TurnSoundOnOff}
+
+
+procedure TurnSoundOnOff(P, Value: Integer);
+var
+  aValue: Integer;
+begin
+  if not Utils.InRangeI(P, 0, 3) then
+    Exit;
+  aValue := Utils.EnsureRangeI(Value, 0, 1);
+  SoundAllowed[P] := Boolean(aValue);
+end;
 
 
 procedure SetWareDistribution;
@@ -34,7 +69,6 @@ end;
 procedure BlockWares;
 var
   H: array of Integer;
-  K: Integer;
 begin
   for I := 4 to 10 do
   begin
@@ -59,9 +93,110 @@ begin
 end;
 
 
-procedure UpdateAIEquipRates;
+function GroupsFormation(P, GT: Integer): Integer;
+var
+  aCount, aColumns: Integer;
+begin
+  States.AIGroupsFormationGet(P, GT, aCount, aColumns);
+  Result := aCount;
+end;
+
+
+function DefenceSquadsCount(P, aGT: Integer): Integer;
+var
+  I, aX, aY: Integer;
+  GT, DT: Byte; 
+  R: Word;
+begin
+  if States.StatAIDefencePositionsCount(P) > 0 then
+    for I := 0 to States.StatAIDefencePositionsCount(P) - 1 do
+    begin
+      States.AIDefencePositionGet(P, I, aX, aY, GT, R, DT);
+      if (DT = 0)
+      and (GT = aGT) then
+        Result := Result + 1;
+    end;
+end;
+
+
+function SoldiersForDefence(P: Integer): Integer;
 var
   I: Integer;
+begin
+  Result := 0;
+  for I := 0 to 3 do
+    Result := Result + DefenceSquadsCount(P, I) * GroupsFormation(P, I);
+end;
+
+
+function AttackAmount(P: Integer): Integer;
+begin
+  case P of
+    4..10: Result := 50
+    else   Result := 0;
+  end;
+end;
+
+
+function SoldiersToEquip(P: Integer): Integer;
+begin
+  Result := SoldiersForDefence(P) + AttackAmount(P) - States.StatArmyCount(P) - States.StatUnitTypeCount(P, 13) + States.StatHouseTypeCount(P, 17) + 7;
+end;
+
+
+function FirstAttackTimer(P: Integer): Integer;
+begin
+  case States.MissionDifficulty of
+    mdEasy1:
+      case P of
+        4:  Result := 45000;
+        5:  Result := 48000;
+        6:  Result := 63000;
+        7:  Result := 66000;
+        8:  Result := 42000;
+        9:  Result := 69000;
+        10: Result := 72000;
+      end;
+
+    mdNormal:
+      case P of
+        4:  Result := 39000;
+        5:  Result := 43000;
+        6:  Result := 59000;
+        7:  Result := 62000;
+        8:  Result := 36000;
+        9:  Result := 66000;
+        10: Result := 68000;
+      end;
+
+    mdHard1:
+      case P of
+        4:  Result := 40000;
+        5:  Result := 45000;
+        6:  Result := 54000;
+        7:  Result := 57000;
+        8:  Result := 36000;
+        9:  Result := 60000;
+        10: Result := 63000;
+      end;
+  end;
+end;
+
+
+function AttackFrequency(P: Integer): Integer;
+begin
+  Result := AttackAmount(P) * States.AIEquipRate(P, 1);
+end;
+
+
+function AttackTime(P, ID: Integer): Integer;
+begin
+  Result := FirstAttackTimer(P) + AttackFrequency(P) * (ID - 1);
+end;
+
+
+procedure UpdateAIEquipRates;
+var
   Pos: TKMPoint;
 begin
   case States.MissionDifficulty of
@@ -87,7 +222,7 @@ begin
                Pos.Y := 0;
                Actions.AIAttackAdd(8, True, 42000, 50, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
                Actions.AIAttackAdd(4, True, 45000, 50, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
-               Actions.AIAttackAdd(5, True, 48000, 30, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
+               Actions.AIAttackAdd(5, True, 48000, 50, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
                Actions.AIAttackAdd(6, True, 63000, 50, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
                Actions.AIAttackAdd(7, True, 66000, 50, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
                Actions.AIAttackAdd(9, True, 69000, 50, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
@@ -132,13 +267,17 @@ begin
                Pos.Y := 0;
                Actions.AIAttackAdd(8, True, 36000, 50, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
                Actions.AIAttackAdd(4, True, 40000, 50, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
-               Actions.AIAttackAdd(5, True, 45000, 30, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
+               Actions.AIAttackAdd(5, True, 45000, 50, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
                Actions.AIAttackAdd(6, True, 54000, 50, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
                Actions.AIAttackAdd(7, True, 57000, 50, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
                Actions.AIAttackAdd(9, True, 60000, 50, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
                Actions.AIAttackAdd(10, True, 63000, 50, 0, 0, 0, 0, True, attClosestBuildingFromStartPos, Pos);
              end;
   end;
+
+  for I := 4 to 11 do
+    Actions.AIRecruitDelay(I, Utils.MaxI(FirstAttackTimer(I) - SoldiersToEquip(I) * States.AIEquipRate(I, 1), 0));
+
 end;
 
 
@@ -192,8 +331,6 @@ end;
 
 
 procedure OnMissionStart;
-var
-  K: Integer;
 begin
 {Sounds}
 {Waterfalls}
@@ -219,6 +356,12 @@ begin
 
   UpdatePlayers;
 
+  FindWolves;
+  for I := 0 to 3 do
+    SoundAllowed[I] := True;
+
+  Actions.ShowMsg(-1, '<$1>');
+
   for I := 4 to 11 do
   for K := 4 to 11 do
     if (I <> K)
@@ -229,8 +372,6 @@ end;
 
 
 procedure CheckGift;
-var
-  I: Integer;
 begin
   for I := 0 to 3 do
   begin
@@ -353,7 +494,6 @@ end;
 
 procedure AutoFeed(P: Integer);
 var
-  K: Integer;
   UnitsToFeed: array of Integer;
 begin
   UnitsToFeed := States.PlayerGetAllUnits(P);
@@ -365,8 +505,6 @@ end;
 
 
 procedure GiveGifts;
-var
-  I: Integer;
 begin
   CheckGift;
   for I := 0 to 3 do
@@ -402,8 +540,6 @@ end;
 
 
 procedure OnTick;
-var
-  I: Integer;
 begin
   if States.GameTime mod DEPOSITS_TIME = 0 then
     UpdateDeposits;
@@ -418,11 +554,40 @@ begin
   if States.GameTime mod TARGETS_TIME = 0 then
     UpdateTargets;
 
-  if States.GameTime mod WILD_TIME = 0 then
-  begin
-    Actions.PlayWAVAtLocation(-1, 'Wolf' + IntToStr(1 + States.KaMRandomI(4)), 2.5, 32 + States.KaMRandomI(10), Utils.RandomRangeI(140, 176), Utils.RandomRangeI(62, 82));
-    Actions.PlayWAVAtLocation(-1, 'Wolf' + IntToStr(1 + States.KaMRandomI(4)), 2.5, 32 + States.KaMRandomI(10), Utils.RandomRangeI(126, 142), Utils.RandomRangeI(169, 182));
-    Actions.PlayWAVAtLocation(-1, 'Wolf' + IntToStr(1 + States.KaMRandomI(4)), 2.5, 32 + States.KaMRandomI(10), Utils.RandomRangeI(137, 195), Utils.RandomRangeI(180, 188));
-  end;
+  for K := 0 to 3 do
+    if SoundAllowed[K] then
+    begin
+      if (States.KaMRandom > 0.6)
+      and (States.GameTime mod AMBIENT_TIME = 0) then
+      begin
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 40, 27);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 10, 55);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 3, 95);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 3, 130);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 22, 172);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 68, 170);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 45, 150);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 72, 198);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 122, 217);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 116, 180);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 146, 157);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 153, 118);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 163, 91);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 164, 50);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 133, 55);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 90, 64);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 93, 36);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 92, 5);
+      end;
+
+      if (States.KaMRandom < 0.3)
+      and (States.GameTime mod AMBIENT_TIME = 33) then
+        if Length(Wolves) > 0 then
+          for I := Low(Wolves) to High(Wolves) do
+            if not States.UnitDead(Wolves[I]) then
+              if States.KaMRandom < 0.25 then
+                 Actions.PlayWAVAtLocation(K, 'Wolf' + IntToStr(1 + States.KaMRandomI(4)), Utils.MinS(States.KaMRandom, 0.35), 32, States.UnitPositionX(Wolves[I]), States.UnitPositionY(Wolves[I]));
+
+    end;
 
 end;

@@ -16,4 +16,4 @@ Script is licensed under GPLv2, you can find its text here: http://www.gnu.org/l
 
 'Small Fall.wav' derived from waterfall_loop_01.mp3 by stuartduffield under http://www.freesfx.co.uk/license
 
-'Wolf.ogg' and 'Quack.ogg' deriver from NoiseFX sound library
+'Wolf.ogg' and 'Quack.ogg' derived from NoiseFX sound library

@@ -17,6 +17,7 @@ type
     function AIAutoDefence(aPlayer: Byte): Boolean;
     function AIAutoRepair(aPlayer: Byte): Boolean;
     function AIDefendAllies(aPlayer: Byte): Boolean;
+    procedure AIDefencePositionGet(aPlayer, aID: Byte; out aX, aY: Integer; out aGroupType: Byte; out aRadius: Word; out aDefType: Byte);
     function AIEquipRate(aPlayer: Byte; aType: Byte): Integer;
     procedure AIGroupsFormationGet(aPlayer, aType: Byte; out aCount, aColumns: Integer);
     function AIRecruitDelay(aPlayer: Byte): Integer;
@@ -117,6 +118,7 @@ type
     function MapTileIsCoal(X, Y: Integer): Word;
     function MapTileIsGold(X, Y: Integer): Word;
     function MapTileIsIce(X, Y: Integer): Boolean;
+    function MapTileIsInMapCoords(X, Y: Integer): Boolean;
     function MapTileIsIron(X, Y: Integer): Word;
     function MapTileIsSand(X, Y: Integer): Boolean;
     function MapTileIsSnow(X, Y: Integer): Boolean;
@@ -203,6 +205,7 @@ type
     function UnitsGroup(aUnitID: Integer): Integer;
     function UnitType(aUnitID: Integer): Integer;
     function UnitTypeName(aUnitType: Byte): AnsiString;
+    function UnitUnlocked(aPlayer: Word; aUnitType: Integer): Boolean;
 
     function WareTypeName(aWareType: Byte): AnsiString;
     function WarriorInFight(aUnitID: Integer; aCountCitizens: Boolean): Boolean;
@@ -340,6 +343,38 @@ begin
 end;
 
 
+//* Version: 12000+
+//* Gets the parameters of AI defence position
+//* Parameters are returned in aX, aY, aGroupType, aRadius, aDefType variables
+//* Group types: 0 = Melee; 1	= Anti-horse; 2	= Ranged; 3	= Mounted
+//* Defence type: 0 = Defenders; 1 = Attackers
+procedure TKMScriptStates.AIDefencePositionGet(aPlayer, aID: Byte; out aX, aY: Integer; out aGroupType: Byte; out aRadius: Word; out aDefType: Byte);
+var
+  DP: TAIDefencePosition;
+begin
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    and InRange(aID, 0, gHands[aPlayer].AI.General.DefencePositions.Count - 1) then
+    begin
+      DP := gHands[aPlayer].AI.General.DefencePositions.Positions[aID];
+      if DP <> nil then
+      begin
+        aX := DP.Position.Loc.X;
+        aY := DP.Position.Loc.Y;
+        aGroupType := Byte(DP.GroupType);
+        aRadius := DP.Radius;
+        aDefType := Byte(DP.DefenceType);
+      end;
+    end
+    else
+      LogParamWarning('States.AIDefencePositionGet', [aPlayer, aID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
 //* Version: 7000+
 //* Gets the warriors equip rate for AI.
 //* aType: type: 0 - leather, 1 - iron
@@ -383,7 +418,7 @@ begin
         aColumns := gHands[aPlayer].AI.ArmyManagement.Defence.TroopFormations[gt].UnitsPerRow;
       end
       else
-      begin;
+      begin
         aCount := gHands[aPlayer].AI.General.DefencePositions.TroopFormations[gt].NumUnits;
         aColumns := gHands[aPlayer].AI.General.DefencePositions.TroopFormations[gt].UnitsPerRow;
       end
@@ -2907,7 +2942,7 @@ end;
 //* Version: 6587
 //* Returns the tile type ID of the tile at the specified XY coordinates.
 //* Tile IDs can be seen by hovering over the tiles on the terrain tiles tab in the map editor.
-//* Result: Tile type (0..255)
+//* Result: Tile type (0..597)
 function TKMScriptStates.MapTileType(X, Y: Integer): Integer;
 begin
   try
@@ -3193,6 +3228,21 @@ begin
     Result := False;
     LogParamWarning('States.MapTileIsIce', [X, Y]);
   end;
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 11750
+//* Check if tile at the specified XY coordinates is within map borders (map has specified XY coordinates).
+//* F.e. coordinates (150, 200) are invalid for 128x128 map and not within map borders
+//* Result: tile is in map coordinates
+function TKMScriptStates.MapTileIsInMapCoords(X, Y: Integer): Boolean;
+begin
+  try
+    Result := gTerrain.TileInMapCoords(X, Y);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3715,6 +3765,28 @@ begin
     begin
       Result := '';
       LogParamWarning('States.UnitTypeName', [aUnitType]);
+    end;
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 11750
+//* Returns true if the specified player can train/equip the specified unit type
+//* Result: Unit unlocked
+function TKMScriptStates.UnitUnlocked(aPlayer: Word; aUnitType: Integer): Boolean;
+begin
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1)
+    and (gHands[aPlayer].Enabled)
+    and (aUnitType in [UnitTypeToIndex[HUMANS_MIN]..UnitTypeToIndex[HUMANS_MAX]]) then
+      Result := not gHands[aPlayer].Locks.GetUnitBlocked(UnitIndexToType[aUnitType])
+    else
+    begin
+      Result := False;
+      LogParamWarning('States.UnitUnlocked', [aPlayer, aUnitType]);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception

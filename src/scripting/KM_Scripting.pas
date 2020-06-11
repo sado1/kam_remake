@@ -423,6 +423,8 @@ begin
       + 'utWolf,         utFish,         utWatersnake,   utSeastar,'
       + 'utCrab,         utWaterflower,  utWaterleaf,    utDuck)');
 
+    Sender.AddTypeS('TReplaceFlags', '(rfReplaceAll, rfIgnoreCase)'); //Needed for string util Utils.StringReplace
+
     // Register classes and methods to the script engine.
     // After that they can be used from within the script.
     c := Sender.AddClassN(nil, AnsiString(fStates.ClassName));
@@ -431,6 +433,7 @@ begin
     RegisterMethodCheck(c, 'function AIAutoBuild(aPlayer: Byte): Boolean');
     RegisterMethodCheck(c, 'function AIAutoDefence(aPlayer: Byte): Boolean');
     RegisterMethodCheck(c, 'function AIAutoRepair(aPlayer: Byte): Boolean');
+    RegisterMethodCheck(c, 'procedure AIDefencePositionGet(aPlayer, aID: Byte; out aX, aY: Integer; out aGroupType: Byte; out aRadius: Word; out aDefType: Byte)');
     RegisterMethodCheck(c, 'function AIDefendAllies(aPlayer: Byte): Boolean');
     RegisterMethodCheck(c, 'function AIEquipRate(aPlayer: Byte; aType: Byte): Integer');
     RegisterMethodCheck(c, 'procedure AIGroupsFormationGet(aPlayer, aType: Byte; out aCount, aColumns: Integer)');
@@ -535,6 +538,7 @@ begin
     RegisterMethodCheck(c, 'function MapTileIsCoal(X, Y: Integer): Word');
     RegisterMethodCheck(c, 'function MapTileIsGold(X, Y: Integer): Word');
     RegisterMethodCheck(c, 'function MapTileIsIce(X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function MapTileIsInMapCoords(X, Y: Integer): Boolean');
     RegisterMethodCheck(c, 'function MapTileIsIron(X, Y: Integer): Word');
     RegisterMethodCheck(c, 'function MapTileIsSand(X, Y: Integer): Boolean');
     RegisterMethodCheck(c, 'function MapTileIsSnow(X, Y: Integer): Boolean');
@@ -619,6 +623,7 @@ begin
     RegisterMethodCheck(c, 'function UnitsGroup(aUnitID: Integer): Integer');
     RegisterMethodCheck(c, 'function UnitType(aUnitID: Integer): Integer');
     RegisterMethodCheck(c, 'function UnitTypeName(aUnitType: Byte): AnsiString');
+    RegisterMethodCheck(c, 'function UnitUnlocked(aPlayer: Word; aUnitType: Integer): Boolean');
 
     RegisterMethodCheck(c, 'function WareTypeName(aWareType: Byte): AnsiString');
     RegisterMethodCheck(c, 'function WarriorInFight(aUnitID: Integer; aCountCitizens: Boolean): Boolean');
@@ -819,6 +824,12 @@ begin
 
     RegisterMethodCheck(c, 'function ColorBrightness(const aHexColor: string): Single');
 
+    RegisterMethodCheck(c, 'function CompareString(const Str1, Str2: String): Integer');
+    RegisterMethodCheck(c, 'function CompareText(const Str1, Str2: String): Integer');
+    RegisterMethodCheck(c, 'function CopyString(Str: String; Index, Count: Integer): String');
+
+    RegisterMethodCheck(c, 'procedure DeleteString(var Str: String; Index, Count: Integer)');
+
     RegisterMethodCheck(c, 'function EnsureRangeS(aValue, aMin, aMax: Single): Single');
     RegisterMethodCheck(c, 'function EnsureRangeI(aValue, aMin, aMax: Integer): Integer');
 
@@ -835,7 +846,11 @@ begin
     RegisterMethodCheck(c, 'function InRangeI(aValue, aMin, aMax: Integer): Boolean');
     RegisterMethodCheck(c, 'function InRangeS(aValue, aMin, aMax: Single): Boolean');
 
+    RegisterMethodCheck(c, 'procedure InsertString(Source: String; var Target: String; Index: Integer)');
+
     RegisterMethodCheck(c, 'function KMPoint(X,Y: Integer): TKMPoint');
+
+    RegisterMethodCheck(c, 'function LowerCase(const Str: String): String');
 
     RegisterMethodCheck(c, 'function MaxI(A, B: Integer): Integer');
     RegisterMethodCheck(c, 'function MaxS(A, B: Single): Single');
@@ -849,6 +864,10 @@ begin
     RegisterMethodCheck(c, 'function MinInArrayI(aArray: array of Integer): Integer');
     RegisterMethodCheck(c, 'function MinInArrayS(aArray: array of Single): Single');
 
+    RegisterMethodCheck(c, 'procedure MoveString(const Source: String; var Destination: String; Count: Integer)');
+
+    RegisterMethodCheck(c, 'function Pos(SubStr, Str: String): Integer');
+
     RegisterMethodCheck(c, 'function Power(Base, Exponent: Extended): Extended');
 
     RegisterMethodCheck(c, 'function RandomRangeI(aFrom, aTo: Integer): Integer');
@@ -861,13 +880,21 @@ begin
 
     RegisterMethodCheck(c, 'function Sqr(A: Extended): Extended');
 
+    RegisterMethodCheck(c, 'function StringReplace(const Str, OldPattern, NewPattern: string; Flags: TReplaceFlags): String');
+
     RegisterMethodCheck(c, 'function SumI(aArray: array of Integer): Integer');
     RegisterMethodCheck(c, 'function SumS(aArray: array of Single): Single');
 
     RegisterMethodCheck(c, 'function TimeToString(aTicks: Integer): AnsiString');
     RegisterMethodCheck(c, 'function TimeToTick(aHours, aMinutes, aSeconds: Integer): Cardinal');
 
-    // Register objects
+    RegisterMethodCheck(c, 'function Trim(const Str: String): String');
+    RegisterMethodCheck(c, 'function TrimLeft(const Str: String): String');
+    RegisterMethodCheck(c, 'function TrimRight(const Str: String): String');
+
+    RegisterMethodCheck(c, 'function UpperCase(const Str: String): String');
+
+        // Register objects
     AddImportedClassVariable(Sender, 'States', AnsiString(fStates.ClassName));
     AddImportedClassVariable(Sender, 'Actions', AnsiString(fActions.ClassName));
     AddImportedClassVariable(Sender, 'Utils', AnsiString(fUtils.ClassName));
@@ -1070,6 +1097,7 @@ begin
       RegisterMethod(@TKMScriptStates.AIAutoBuild,                              'AIAutoBuild');
       RegisterMethod(@TKMScriptStates.AIAutoDefence,                            'AIAutoDefence');
       RegisterMethod(@TKMScriptStates.AIAutoRepair,                             'AIAutoRepair');
+      RegisterMethod(@TKMScriptStates.AIDefencePositionGet,                     'AIDefencePositionGet');
       RegisterMethod(@TKMScriptStates.AIDefendAllies,                           'AIDefendAllies');
       RegisterMethod(@TKMScriptStates.AIEquipRate,                              'AIEquipRate');
       RegisterMethod(@TKMScriptStates.AIGroupsFormationGet,                     'AIGroupsFormationGet');
@@ -1174,6 +1202,7 @@ begin
       RegisterMethod(@TKMScriptStates.MapTileIsCoal,                            'MapTileIsCoal');
       RegisterMethod(@TKMScriptStates.MapTileIsGold,                            'MapTileIsGold');
       RegisterMethod(@TKMScriptStates.MapTileIsIce,                             'MapTileIsIce');
+      RegisterMethod(@TKMScriptStates.MapTileIsInMapCoords,                     'MapTileIsInMapCoords');
       RegisterMethod(@TKMScriptStates.MapTileIsIron,                            'MapTileIsIron');
       RegisterMethod(@TKMScriptStates.MapTileIsSand,                            'MapTileIsSand');
       RegisterMethod(@TKMScriptStates.MapTileIsSnow,                            'MapTileIsSnow');
@@ -1258,6 +1287,7 @@ begin
       RegisterMethod(@TKMScriptStates.UnitsGroup,                               'UnitsGroup');
       RegisterMethod(@TKMScriptStates.UnitType,                                 'UnitType');
       RegisterMethod(@TKMScriptStates.UnitTypeName,                             'UnitTypeName');
+      RegisterMethod(@TKMScriptStates.UnitUnlocked,                             'UnitUnlocked');
 
       RegisterMethod(@TKMScriptStates.WareTypeName,                             'WareTypeName');
       RegisterMethod(@TKMScriptStates.WarriorInFight,                           'WarriorInFight');
@@ -1457,6 +1487,12 @@ begin
 
       RegisterMethod(@TKMScriptUtils.ColorBrightness,                           'ColorBrightness');
 
+      RegisterMethod(@TKMScriptUtils.CompareString,                             'CompareString');
+      RegisterMethod(@TKMScriptUtils.CompareText,                               'CompareText');
+      RegisterMethod(@TKMScriptUtils.CopyString,                                'CopyString');
+
+      RegisterMethod(@TKMScriptUtils.DeleteString,                              'DeleteString');
+
       RegisterMethod(@TKMScriptUtils.EnsureRangeI,                              'EnsureRangeI');
       RegisterMethod(@TKMScriptUtils.EnsureRangeS,                              'EnsureRangeS');
 
@@ -1473,7 +1509,11 @@ begin
       RegisterMethod(@TKMScriptUtils.InRangeI,                                  'InRangeI');
       RegisterMethod(@TKMScriptUtils.InRangeS,                                  'InRangeS');
 
+      RegisterMethod(@TKMScriptUtils.InsertString,                              'InsertString');
+
       RegisterMethod(@TKMScriptUtils.KMPoint,                                   'KMPoint');
+
+      RegisterMethod(@TKMScriptUtils.LowerCase,                                 'LowerCase');
 
       RegisterMethod(@TKMScriptUtils.MaxI,                                      'MaxI');
       RegisterMethod(@TKMScriptUtils.MaxS,                                      'MaxS');
@@ -1486,6 +1526,10 @@ begin
 
       RegisterMethod(@TKMScriptUtils.MinInArrayI,                               'MinInArrayI');
       RegisterMethod(@TKMScriptUtils.MinInArrayS,                               'MinInArrayS');
+
+      RegisterMethod(@TKMScriptUtils.MoveString,                                'MoveString');
+
+      RegisterMethod(@TKMScriptUtils.Pos,                                       'Pos');
 
       RegisterMethod(@TKMScriptUtils.Power,                                     'Power');
 
@@ -1502,8 +1546,16 @@ begin
 
       RegisterMethod(@TKMScriptUtils.Sqr,                                       'Sqr');
 
+      RegisterMethod(@TKMScriptUtils.StringReplace,                             'StringReplace');
+
       RegisterMethod(@TKMScriptUtils.TimeToString,                              'TimeToString');
       RegisterMethod(@TKMScriptUtils.TimeToTick,                                'TimeToTick');
+
+      RegisterMethod(@TKMScriptUtils.Trim,                                      'Trim');
+      RegisterMethod(@TKMScriptUtils.TrimLeft,                                  'TrimLeft');
+      RegisterMethod(@TKMScriptUtils.TrimRight,                                 'TrimRight');
+
+      RegisterMethod(@TKMScriptUtils.UpperCase,                                 'UpperCase');
 
     end;
 

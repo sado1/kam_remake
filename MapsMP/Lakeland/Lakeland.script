@@ -1,6 +1,45 @@
 const
   AUTOFEED_TIME = 6000;
   DEPOSITS_TIME = 600;
+  AMBIENT_TIME = 250;
+
+
+var
+  Wolves: array of Integer;
+  SoundAllowed: array[0..2] of Boolean;
+
+
+procedure FindWolves;
+var
+  aX, aY, W: Integer;
+begin
+  for aX := 1 to States.MapWidth - 1 do
+    for aY := 1 to States.MapHeight - 1 do
+    begin
+      W := States.UnitAt(aX, aY);
+      if W > 0 then
+        if States.UnitType(W) = 30 then
+        begin
+          SetLength(Wolves, Length(Wolves) + 1);
+          if Length(Wolves) > 0 then
+            Wolves[Length(Wolves) - 1] := W;
+        end;
+    end;
+end;
+
+
+{$COMMAND sound: TurnSoundOnOff}
+
+
+procedure TurnSoundOnOff(P, Value: Integer);
+var
+  aValue: Integer;
+begin
+  if not Utils.InRangeI(P, 0, 2) then
+    Exit;
+  aValue := Utils.EnsureRangeI(Value, 0, 1);
+  SoundAllowed[P] := Boolean(aValue);
+end;
 
 
 procedure SetWareDistribution;
@@ -50,65 +89,88 @@ begin
 end;
 
 
-procedure UpdateAIEquipRates;
+function SoldiersForDefence(P: Integer): Integer;
 begin
-  case States.MissionDifficulty of
-
-    mdEasy1: begin
-               Actions.AIEquipRate(3, 0, 320);
-               Actions.AIEquipRate(3, 1, 320);
-               Actions.AIEquipRate(4, 0, 320);
-               Actions.AIEquipRate(4, 1, 320);
-               Actions.AIEquipRate(5, 0, 320);
-               Actions.AIEquipRate(5, 1, 320);
-               Actions.AIEquipRate(6, 0, 320);
-               Actions.AIEquipRate(6, 1, 320);
-               Actions.AIEquipRate(7, 0, 320);
-               Actions.AIEquipRate(7, 1, 320);
-               Actions.AIEquipRate(8, 0, 320);
-               Actions.AIEquipRate(8, 1, 320);
-               Actions.AIEquipRate(9, 0, 320);
-               Actions.AIEquipRate(9, 1, 320);
-             end;
-
-    mdNormal: begin
-                Actions.AIEquipRate(3, 0, 240);
-                Actions.AIEquipRate(3, 1, 240);
-                Actions.AIEquipRate(4, 0, 240);
-                Actions.AIEquipRate(4, 1, 240);
-                Actions.AIEquipRate(5, 0, 240);
-                Actions.AIEquipRate(5, 1, 240);
-                Actions.AIEquipRate(6, 0, 240);
-                Actions.AIEquipRate(6, 1, 240);
-                Actions.AIEquipRate(7, 0, 240);
-                Actions.AIEquipRate(7, 1, 240);
-                Actions.AIEquipRate(8, 0, 240);
-                Actions.AIEquipRate(8, 1, 240);
-                Actions.AIEquipRate(9, 0, 240);
-                Actions.AIEquipRate(9, 1, 240);
-              end;
-
-    mdHard1: begin
-               Actions.AIEquipRate(3, 0, 170);
-               Actions.AIEquipRate(3, 1, 170);
-               Actions.AIEquipRate(4, 0, 170);
-               Actions.AIEquipRate(4, 1, 170);
-               Actions.AIEquipRate(5, 0, 170);
-               Actions.AIEquipRate(5, 1, 170);
-               Actions.AIEquipRate(6, 0, 170);
-               Actions.AIEquipRate(6, 1, 170);
-               Actions.AIEquipRate(7, 0, 170);
-               Actions.AIEquipRate(7, 1, 170);
-               Actions.AIEquipRate(8, 0, 170);
-               Actions.AIEquipRate(8, 1, 170);
-               Actions.AIEquipRate(9, 0, 170);
-               Actions.AIEquipRate(9, 1, 170);
-             end;
+  case P of
+    3: Result := 48;
+    5: Result := 84;
+    7: Result := 12;
   end;
 end;
 
 
+function AttackAmount(P: Integer): Integer;
+begin
+  case P of
+    3,7: Result := 45;
+    5:   Result := 50;
+  end;
+end;
+
+
+function SoldiersToEquip(P: Integer): Integer;
+begin
+  Result := SoldiersForDefence(P) + AttackAmount(P) - States.StatUnitTypeCount(P, 13) + States.StatHouseTypeCount(P, 17);
+end;
+
+
+function FirstAttackTimer(P: Integer): Integer;
+begin
+  case P of
+    3: Result := 42000;
+    5: Result := 36000;
+    7: Result := 48000;
+  end;
+end;
+
+
+function AttackFrequency(P: Integer): Integer;
+begin
+  Result := AttackAmount(P) * States.AIEquipRate(P, 1);
+end;
+
+
+function AttackTime(P, ID: Integer): Integer;
+begin
+  Result := FirstAttackTimer(P) + AttackFrequency(P) * (ID - 1);
+end;
+
+
+procedure UpdateAIEquipRates;
+var
+  I: Integer;
+begin
+  case States.MissionDifficulty of
+
+    mdEasy1: for I := 3 to 9 do
+             begin
+               Actions.AIEquipRate(3, 0, 285 + States.KaMRandomI(20) - States.KaMRandomI(15));
+               Actions.AIEquipRate(3, 1, 285 + States.KaMRandomI(20) - States.KaMRandomI(15));
+             end;
+
+    mdNormal: for I := 3 to 9 do
+             begin
+               Actions.AIEquipRate(3, 0, 220 + States.KaMRandomI(20) - States.KaMRandomI(15));
+               Actions.AIEquipRate(3, 1, 220 + States.KaMRandomI(20) - States.KaMRandomI(15));
+             end;
+
+    mdHard1: for I := 3 to 9 do
+             begin
+               Actions.AIEquipRate(3, 0, 150 + States.KaMRandomI(20) - States.KaMRandomI(15));
+               Actions.AIEquipRate(3, 1, 150 + States.KaMRandomI(20) - States.KaMRandomI(15));
+             end;
+  end;
+
+  Actions.AIRecruitDelay(3, Utils.MaxI(FirstAttackTimer(3) - SoldiersToEquip(3) * States.AIEquipRate(3, 1), 0));
+  Actions.AIRecruitDelay(5, Utils.MaxI(FirstAttackTimer(5) - SoldiersToEquip(5) * States.AIEquipRate(5, 0), 0));
+  Actions.AIRecruitDelay(7, Utils.MaxI(FirstAttackTimer(7) - SoldiersToEquip(7) * States.AIEquipRate(7, 1), 0));
+
+end;
+
+
 procedure OnMissionStart;
+var
+  I: Integer;
 begin
   Actions.PlayWAVAtLocationLooped(-1, 'Waterfall Creek', 2.5, 32, 29, 76);
   Actions.PlayWAVAtLocationLooped(-1, 'Fall', 2.5, 32, 160, 5);
@@ -116,6 +178,10 @@ begin
   BlockWares;
   SetWareDistribution;
   UpdateAIEquipRates;
+  FindWolves;
+  for I := 0 to 2 do
+    SoundAllowed[I] := True;
+  Actions.ShowMsg(-1, '<$0>');
 end;
 
 
@@ -140,7 +206,7 @@ end;
 
 procedure OnTick;
 var
-  I: Integer;
+  I, K: Integer;
 begin
   for I := 3 to 9 do
     if States.GameTime mod AUTOFEED_TIME = 5 * I then
@@ -148,5 +214,41 @@ begin
 
   if States.GameTime mod DEPOSITS_TIME = 0 then
     UpdateDeposits;
+
+  for K := 0 to 2 do
+    if SoundAllowed[K] then
+    begin
+      if (States.KaMRandom > 0.45)
+      and (States.GameTime mod AMBIENT_TIME = 0) then
+      begin
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 108, 12);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 160, 12);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 120, 40);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 190, 40);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 175, 65);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 170, 105);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 135, 125);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 85, 100);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 15, 80);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 11, 118);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 11, 150);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 30, 175);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 50, 180);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 120, 160);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 120, 190);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 182, 150);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 60, 130);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 32, 73);
+      end;
+
+      if (States.KaMRandom < 0.3)
+      and (States.GameTime mod AMBIENT_TIME = 33) then
+        if Length(Wolves) > 0 then
+          for I := Low(Wolves) to High(Wolves) do
+            if not States.UnitDead(Wolves[I]) then
+              if States.KaMRandom < 0.25 then
+                 Actions.PlayOGGAtLocation(K, 'Wolf' + IntToStr(1 + States.KaMRandomI(3)), Utils.MinS(States.KaMRandom, 0.35), 32, States.UnitPositionX(Wolves[I]), States.UnitPositionY(Wolves[I]));
+
+    end;
 
 end;
