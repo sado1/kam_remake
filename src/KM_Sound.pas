@@ -9,9 +9,9 @@ uses
 
 
 const
-  MAX_SOUNDS = 16; //64 looks like the limit, depends on hardware
-  MAX_SCRIPT_SOUNDS = 8; //Save rest for the game
-  MAX_LOOP_SOUNDS = 4;
+  MAX_SOUNDS = 32; //64 looks like the limit, depends on hardware
+  MAX_SCRIPT_SOUNDS = 12; //Save rest for the game
+  MAX_LOOP_SOUNDS = 6;
   WAV_FILE_EXT = '.wav';
   OGG_FILE_EXT = '.ogg';
 
