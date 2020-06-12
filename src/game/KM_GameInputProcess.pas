@@ -110,7 +110,7 @@ type
     gicGamePlayerAddDefGoals,//Set player default goals
 
     //VII.
-    gicScriptConsoleCommand,
+    gicScriptConsoleCommand, //Script console command invokation
 
     //VIII.     Temporary and debug commands
     gicTempAddScout,
@@ -141,15 +141,19 @@ const
   BLOCKED_BY_PEACETIME: set of TKMGameInputCommandType = [gicArmySplit, gicArmySplitSingle,
     gicArmyLink, gicArmyAttackUnit, gicArmyAttackHouse, gicArmyHalt,
     gicArmyFormation,  gicArmyWalk, gicArmyStorm, gicHouseBarracksEquip, gicHouseTownHallEquip];
+
   ALLOWED_AFTER_DEFEAT: set of TKMGameInputCommandType =
     [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameLoadSave,
      gicGameMessageLogRead, gicTempDoNothing];
+
   ALLOWED_IN_CINEMATIC: set of TKMGameInputCommandType =
     [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameMessageLogRead,
      gicGamePlayerAllianceSet, gicGamePlayerAddDefGoals, gicTempDoNothing];
+
   ALLOWED_BY_SPECTATORS: set of TKMGameInputCommandType =
     [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameLoadSave,
      gicGamePlayerDefeat, gicTempDoNothing];
+
   //Those commands should not have random check, because they they are not strictly happen, depends of player config and actions
   //We want to make it possible to reproduce AI city build knowing only seed + map config
   //Autosave and other commands random checks could break it, since every command have its own random check (and KaMRandom call)
@@ -259,7 +263,7 @@ const
     gicpt_Int3,     // gicGamePlayerAllianceSet
     gicpt_Int2,     // gicGameSetDefaultGoals
     //VII.     Scripting commands
-    gicpt_Ansi1Uni4,
+    gicpt_Ansi1Uni4,// gicScriptConsoleCommand
     //VIII.    Temporary and debug commands
     gicpt_Int2,     // gicTempAddScout
     gicpt_NoParams, // gicTempRevealMap
