@@ -1469,14 +1469,24 @@ end;
 
 //Tell fMain if we want to shut down the program
 procedure TFormMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-var MenuHidden: Boolean;
+var
+  menuHidden: Boolean;
 begin
+  if not QUERY_ON_FORM_CLOSE then
+  begin
+    CanClose := True;
+    Exit;
+  end;
+
   //Hacky solution to MessageBox getting stuck under main form: In full screen we must show
   //the menu while displaying a MessageBox otherwise it goes under the main form on some systems
-  MenuHidden := (BorderStyle = bsNone) and (Menu = nil);
-  if MenuHidden then Menu := MainMenu1;
+  menuHidden := (BorderStyle = bsNone) and (Menu = nil);
+
+  if menuHidden then Menu := MainMenu1;
+
   gMain.CloseQuery(CanClose);
-  if MenuHidden then Menu := nil;
+
+  if menuHidden then Menu := nil;
 end;
 
 
