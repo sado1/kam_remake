@@ -688,6 +688,12 @@ begin
   if AttacksCounter <= 2 then
     Actions.GiveGroup(8, 14, 32, 65, 2, Utils.RoundToUp(100 * Balancer, 20), 10);
 
+  if Utils.InRangeI(AttacksCounter, 3, 4) then
+    Actions.GiveGroup(8, 27, 32, 65, 2, Utils.RoundToUp(85 * Balancer, 20), 10);
+
+  if Utils.InRangeI(AttacksCounter, 5, 6) then
+    Actions.GiveGroup(8, 21, 32, 65, 2, Utils.RoundToUp(60 * Balancer, 20), 8);
+
   if AttacksCounter > 6 then
     if not States.PlayerDefeated(6) then
       for I := 0 to AttackersCount - 1 do
