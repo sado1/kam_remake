@@ -889,10 +889,13 @@ end;
 procedure TFormMain.ControlsRefill;
 begin
   {$IFDEF WDC}
-  chkSnowHouses.SetCheckedWithoutClick(gGameSettings.AllowSnowHouses); // Snow houses checkbox could be updated before game
+  chkSnowHouses.        SetCheckedWithoutClick(gGameSettings.AllowSnowHouses); // Snow houses checkbox could be updated before game
   chkInterpolatedRender.SetCheckedWithoutClick(gGameSettings.InterpolatedRender); // Snow houses checkbox could be updated before game
-  chkLoadUnsupSaves.SetCheckedWithoutClick(ALLOW_LOAD_UNSUP_VERSION_SAVE);
-  chkDebugScripting.SetCheckedWithoutClick(DEBUG_SCRIPTING_EXEC);
+  chkLoadUnsupSaves.    SetCheckedWithoutClick(ALLOW_LOAD_UNSUP_VERSION_SAVE);
+  chkDebugScripting.    SetCheckedWithoutClick(DEBUG_SCRIPTING_EXEC);
+  chkSkipRender.        SetCheckedWithoutClick(SKIP_RENDER);
+  chkSkipSound.         SetCheckedWithoutClick(SKIP_SOUND);
+  chkShowGameTick.      SetCheckedWithoutClick(SHOW_GAME_TICK);
   {$ENDIF}
 
   if (gGame = nil) or not gMain.IsDebugChangeAllowed then Exit;
@@ -901,29 +904,29 @@ begin
   tbPassability.Position := SHOW_TERRAIN_PASS;
   Label2.Caption := IfThen(SHOW_TERRAIN_PASS <> 0, PASSABILITY_GUI_TEXT[TKMTerrainPassability(SHOW_TERRAIN_PASS)], '');
 
-  chkShowWires.SetCheckedWithoutClick       (SHOW_TERRAIN_WIRES);
-  chkShowTerrainIds.SetCheckedWithoutClick  (SHOW_TERRAIN_IDS);
+  chkShowWires.       SetCheckedWithoutClick(SHOW_TERRAIN_WIRES);
+  chkShowTerrainIds.  SetCheckedWithoutClick(SHOW_TERRAIN_IDS);
   chkShowTerrainKinds.SetCheckedWithoutClick(SHOW_TERRAIN_KINDS);
-  chkTilesGrid.SetCheckedWithoutClick       (SHOW_TERRAIN_TILES_GRID);
-  chkTileOwner.SetCheckedWithoutClick       (SHOW_TILES_OWNER);
-  chkTileObject.SetCheckedWithoutClick      (SHOW_TILE_OBJECT_ID);
-  chkTreeAge.SetCheckedWithoutClick         (SHOW_TREE_AGE);
-  chkFieldAge.SetCheckedWithoutClick        (SHOW_FIELD_AGE);
-  chkTileLock.SetCheckedWithoutClick        (SHOW_TILE_LOCK);
-  chkTileUnit.SetCheckedWithoutClick        (SHOW_TILE_UNIT);
-  chkVertexUnit.SetCheckedWithoutClick      (SHOW_VERTEX_UNIT);
-  chkShowRoutes.SetCheckedWithoutClick      (SHOW_UNIT_ROUTES);
-  chkSelectionBuffer.SetCheckedWithoutClick (SHOW_SEL_BUFFER);
+  chkTilesGrid.       SetCheckedWithoutClick(SHOW_TERRAIN_TILES_GRID);
+  chkTileOwner.       SetCheckedWithoutClick(SHOW_TILES_OWNER);
+  chkTileObject.      SetCheckedWithoutClick(SHOW_TILE_OBJECT_ID);
+  chkTreeAge.         SetCheckedWithoutClick(SHOW_TREE_AGE);
+  chkFieldAge.        SetCheckedWithoutClick(SHOW_FIELD_AGE);
+  chkTileLock.        SetCheckedWithoutClick(SHOW_TILE_LOCK);
+  chkTileUnit.        SetCheckedWithoutClick(SHOW_TILE_UNIT);
+  chkVertexUnit.      SetCheckedWithoutClick(SHOW_VERTEX_UNIT);
+  chkShowRoutes.      SetCheckedWithoutClick(SHOW_UNIT_ROUTES);
+  chkSelectionBuffer. SetCheckedWithoutClick(SHOW_SEL_BUFFER);
 
-  chkShowObjects.SetCheckedWithoutClick     (mlObjects            in gGameParams.VisibleLayers);
-  chkShowHouses.SetCheckedWithoutClick      (mlHouses             in gGameParams.VisibleLayers);
-  chkShowUnits.SetCheckedWithoutClick       (mlUnits              in gGameParams.VisibleLayers);
-  chkShowOverlays.SetCheckedWithoutClick    (mlOverlays           in gGameParams.VisibleLayers);
+  chkShowObjects.     SetCheckedWithoutClick(mlObjects            in gGameParams.VisibleLayers);
+  chkShowHouses.      SetCheckedWithoutClick(mlHouses             in gGameParams.VisibleLayers);
+  chkShowUnits.       SetCheckedWithoutClick(mlUnits              in gGameParams.VisibleLayers);
+  chkShowOverlays.    SetCheckedWithoutClick(mlOverlays           in gGameParams.VisibleLayers);
   chkShowMiningRadius.SetCheckedWithoutClick(mlMiningRadius       in gGameParams.VisibleLayers);
-  chkShowTowerRadius.SetCheckedWithoutClick (mlTowersAttackRadius in gGameParams.VisibleLayers);
-  chkShowUnitRadius.SetCheckedWithoutClick  (mlUnitsAttackRadius  in gGameParams.VisibleLayers);
-  chkShowDefencePos.SetCheckedWithoutClick  (mlDefencesAll        in gGameParams.VisibleLayers);
-  chkShowFlatTerrain.SetCheckedWithoutClick (mlFlatTerrain        in gGameParams.VisibleLayers);
+  chkShowTowerRadius. SetCheckedWithoutClick(mlTowersAttackRadius in gGameParams.VisibleLayers);
+  chkShowUnitRadius.  SetCheckedWithoutClick(mlUnitsAttackRadius  in gGameParams.VisibleLayers);
+  chkShowDefencePos.  SetCheckedWithoutClick(mlDefencesAll        in gGameParams.VisibleLayers);
+  chkShowFlatTerrain. SetCheckedWithoutClick(mlFlatTerrain        in gGameParams.VisibleLayers);
 end;
 
 
