@@ -17,11 +17,11 @@ type
 
   TKMCommandsPack = class
   private
-    fCount: Byte;
+    fCount: Word;
     fItems: array of TKMGameInputCommand; //1..n
     function GetItem(aIndex: Integer): TKMGameInputCommand;
   public
-    property  Count: Byte read fCount;
+    property  Count: Word read fCount;
     procedure Clear;
     procedure Add(aCommand: TKMGameInputCommand);
     function CRC: Cardinal;
