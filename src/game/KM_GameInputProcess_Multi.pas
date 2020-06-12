@@ -101,7 +101,7 @@ end;
 
 procedure TKMCommandsPack.Add(aCommand: TKMGameInputCommand);
 begin
-  inc(fCount);
+  Inc(fCount);
   if fCount >= Length(fItems) then
     SetLength(fItems, fCount + 8);
 
