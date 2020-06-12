@@ -116,6 +116,7 @@ type
     fListener: TKMPointF;
     fLastScriptUID: Integer; //Last Unique ID for playing sound from script
     fScriptSounds: TObjectList<TKMScriptSound>;
+
     function CanPlay(aIndex: Integer): Boolean; overload;
     function CanPlay(const aScriptSound: TKMScriptSound): Boolean; overload;
     function StartSound(aIndex: Integer): Integer; overload;
@@ -130,12 +131,12 @@ type
     procedure Load(LoadStream: TKMemoryStream);
 
     function AddSound(aHandIndex: TKMHandID; const aSoundName: AnsiString; aSoundFormat: TKMAudioFormat; aLoc: TKMPoint;
-                          aAttenuate: Boolean; aVolume: Single; aRadius: Single; aFadeMusic, aLooped: Boolean): Integer;
+                      aAttenuate: Boolean; aVolume: Single; aRadius: Single; aFadeMusic, aLooped: Boolean): Integer;
     procedure RemoveLoopSoundByUID(aScriptIndex: Integer);
     procedure RemoveSoundByUID(aScriptUID: Integer; aLoopedOnly: Boolean = False);
     procedure UpdateListener(X,Y: Single);
 
-    procedure UpdateState;
+    procedure UpdateStateGlobal;
   end;
 
 
@@ -855,7 +856,7 @@ begin
 end;
 
 
-procedure TKMScriptSoundsManager.UpdateState;
+procedure TKMScriptSoundsManager.UpdateStateGlobal;
 var
   I: Integer;
 begin
