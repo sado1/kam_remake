@@ -88,7 +88,6 @@ object FormMain: TFormMain
       Caption = 'Logs'
       Collapsed = True
       TabOrder = 0
-      ExplicitWidth = 239
       ExpandedHeight = 179
       object chkLogCommands: TCheckBox
         Left = 120
@@ -181,7 +180,6 @@ object FormMain: TFormMain
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 1
-      ExplicitWidth = 239
       ExpandedHeight = 133
       object Label1: TLabel
         Left = 101
@@ -293,7 +291,6 @@ object FormMain: TFormMain
       Caption = 'User Interface'
       Collapsed = True
       TabOrder = 2
-      ExplicitWidth = 239
       ExpandedHeight = 85
       object chkUIControlsBounds: TCheckBox
         Left = 8
@@ -347,7 +344,6 @@ object FormMain: TFormMain
       Caption = 'Perf Logs'
       Collapsed = True
       TabOrder = 3
-      ExplicitWidth = 239
       ExpandedHeight = 660
     end
     object cpAI: TCategoryPanel
@@ -356,7 +352,6 @@ object FormMain: TFormMain
       Caption = 'AI'
       Collapsed = True
       TabOrder = 4
-      ExplicitWidth = 239
       object Label5: TLabel
         Left = 202
         Top = 111
@@ -565,7 +560,6 @@ object FormMain: TFormMain
       Caption = 'Scripting'
       Collapsed = True
       TabOrder = 5
-      ExplicitWidth = 239
       ExpandedHeight = 50
       object chkDebugScripting: TCheckBox
         Left = 8
@@ -588,7 +582,6 @@ object FormMain: TFormMain
       Caption = 'Game additional'
       Collapsed = True
       TabOrder = 6
-      ExplicitWidth = 239
       ExpandedHeight = 136
       object chkLoadUnsupSaves: TCheckBox
         Left = 12
@@ -639,7 +632,6 @@ object FormMain: TFormMain
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 7
-      ExplicitWidth = 239
       object Label2: TLabel
         Left = 136
         Top = 5
@@ -998,13 +990,21 @@ object FormMain: TFormMain
         Value = 0
         OnChange = ControlsUpdate
       end
+      object chkPaintSounds: TCheckBox
+        Left = 8
+        Top = 104
+        Width = 81
+        Height = 17
+        Caption = 'Paint Sounds'
+        TabOrder = 36
+        OnClick = ControlsUpdate
+      end
     end
     object cpGameControls: TCategoryPanel
       Top = 0
       Height = 121
       Caption = 'Game '
       TabOrder = 8
-      ExplicitWidth = 239
       object Label8: TLabel
         Left = 70
         Top = 30

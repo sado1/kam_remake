@@ -96,6 +96,7 @@ type
 
   TKMScriptSound = class
     PlayingIndex: Integer; //Index in gSoundPlayer.fScriptSoundALIndex, or -1 if not playing
+    RemoveRequestSent: Boolean; //Mark sound as 'to be removed' to don't send too many GIC commands
     //Fields below are saved
     Looped: Boolean;
     FadeMusic: Boolean;
@@ -117,6 +118,8 @@ type
     fLastScriptUID: Integer; //Last Unique ID for playing sound from script
     fScriptSounds: TObjectList<TKMScriptSound>;
 
+    fSoundRemoveRequests: TDictionary<Integer, TKMByteSet>;
+
     function CanPlay(aIndex: Integer): Boolean; overload;
     function CanPlay(const aScriptSound: TKMScriptSound): Boolean; overload;
     function StartSound(aIndex: Integer): Integer; overload;
@@ -134,9 +137,12 @@ type
                       aAttenuate: Boolean; aVolume: Single; aRadius: Single; aFadeMusic, aLooped: Boolean): Integer;
     procedure RemoveLoopSoundByUID(aScriptIndex: Integer);
     procedure RemoveSoundByUID(aScriptUID: Integer; aLoopedOnly: Boolean = False);
+    procedure AddRemoveRequest(aScriptSoundUID: Integer; aHandID: TKMHandID; aActiveHandIDs: TKMByteSet);
     procedure UpdateListener(X,Y: Single);
 
     procedure UpdateStateGlobal;
+
+    function ToString: String; override;
   end;
 
 
@@ -153,7 +159,7 @@ uses
   Codec, VorbisFile,
   {$ENDIF}
   KM_Game, KM_Resource, KM_HandsCollection, KM_RenderAux,
-  KM_Log, KM_CommonUtils;
+  KM_Log, KM_CommonUtils, KM_CommonClassesExt;
 
 
 const
@@ -844,15 +850,58 @@ begin
 
   fLastScriptUID := 0;
   fScriptSounds := TObjectList<TKMScriptSound>.Create;
+  fSoundRemoveRequests := TDictionary<Integer, TKMByteSet>.Create;
 end;
 
 
 destructor TKMScriptSoundsManager.Destroy;
 begin
   gSoundPlayer.AbortAllScriptSounds;
+  fSoundRemoveRequests.Free;
   fScriptSounds.Free;
 
   inherited;
+end;
+
+
+procedure TKMScriptSoundsManager.AddRemoveRequest(aScriptSoundUID: Integer; aHandID: TKMHandID; aActiveHandIDs: TKMByteSet);
+var
+  I: Integer;
+  requestHands: TKMByteSet;
+  found: Boolean;
+begin
+  // Check if this sound is no longer exists (we could get old GIC to remove it)
+  found := False;
+  for I := 0 to fScriptSounds.Count - 1 do
+    if aScriptSoundUID = fScriptSounds[I].ScriptUID then
+    begin
+      found := True;
+      Break;
+    end;
+
+  if not found then
+  begin
+    fSoundRemoveRequests.Remove(aScriptSoundUID); //Sound is not in a list anymore      
+    Exit;
+  end;
+    
+  if not fSoundRemoveRequests.TryGetValue(aScriptSoundUID, requestHands) then
+    requestHands := [];
+
+  Include(requestHands, aHandID);
+
+  
+  if requestHands * aActiveHandIDs <> aActiveHandIDs then
+  begin
+    // We have to wait for other requests to come, to remove script sound simultaneously, to keep save data in sync
+    fSoundRemoveRequests.AddOrSetValue(aScriptSoundUID, requestHands);
+    Exit;
+  end;
+
+  // We found all active hands in the requestsList, can remove sound now. It will keep save in sync
+  // Stop and Remove from list
+  RemoveSoundByUID(aScriptSoundUID);
+  fSoundRemoveRequests.Remove(aScriptSoundUID); // This sound is deleted, no need to keep it anymore
 end;
 
 
@@ -874,9 +923,15 @@ begin
     end
     else
     begin
-      if (fScriptSounds[I].PlayingIndex <> -1)
-        and not gSoundPlayer.IsScriptSoundPlaying(fScriptSounds[I].PlayingIndex) then
-        RemoveSoundByIndex(I); //Stop and Remove from list
+      if not fScriptSounds[I].RemoveRequestSent
+       and ((fScriptSounds[I].PlayingIndex = -1)
+         or not gSoundPlayer.IsScriptSoundPlaying(fScriptSounds[I].PlayingIndex)) then
+      begin
+        fScriptSounds[I].RemoveRequestSent := True; // Mark sound as 'remove requested', to avoid GIC spam
+        // We can't rely on local IsSoundPlaying, because it could easily get in desync with other players,
+        // because of network lags or desync in GlobalTickCount (there is no guarantee global tick is somehow in sync)
+        gGame.GameInputProcess.CmdScriptSoundRemoveRequest(fScriptSounds[I].ScriptUID); 
+      end;
     end;
 end;
 
@@ -1013,10 +1068,14 @@ end;
 procedure TKMScriptSoundsManager.Save(SaveStream: TKMemoryStream);
 var
   I: Integer;
+  key: Integer;
+  keyArray : TArray<Integer>;
+  handIDsSet: TKMByteSet;
 begin
   SaveStream.PlaceMarker('ScriptSoundsManager');
   SaveStream.Write(fLastScriptUID);
   SaveStream.Write(fScriptSounds.Count);
+
   for I := 0 to fScriptSounds.Count - 1 do
   begin
     SaveStream.Write(fScriptSounds[I].Looped);
@@ -1030,19 +1089,33 @@ begin
     SaveStream.Write(fScriptSounds[I].Loc);
     SaveStream.Write(fScriptSounds[I].HandIndex);
   end;
+
+  SaveStream.PlaceMarker('ScriptSoundsRemoveRq');
+  SaveStream.Write(fSoundRemoveRequests.Count);
+
+  keyArray := fSoundRemoveRequests.Keys.ToArray;
+  TArray.Sort<Integer>(keyArray);
+  for key in keyArray do
+  begin
+    SaveStream.Write(key);
+
+    handIDsSet := fSoundRemoveRequests[key];
+    SaveStream.Write(handIDsSet, SizeOf(TKMByteSet));
+  end;
 end;
 
 
 procedure TKMScriptSoundsManager.Load(LoadStream: TKMemoryStream);
 var
-  I, soundCount: Integer;
+  I, sndCount, key: Integer;
   scriptSnd: TKMScriptSound;
+  handIDsSet: TKMByteSet;
 begin
   LoadStream.CheckMarker('ScriptSoundsManager');
   LoadStream.Read(fLastScriptUID);
-  LoadStream.Read(soundCount);
+  LoadStream.Read(sndCount);
   fScriptSounds.Clear;
-  for I := 0 to soundCount - 1 do
+  for I := 0 to sndCount - 1 do
   begin
     scriptSnd := TKMScriptSound.Create;
     LoadStream.Read(scriptSnd.Looped);
@@ -1058,6 +1131,39 @@ begin
     scriptSnd.PlayingIndex := -1; //Indicates that it is not currently playing
     fScriptSounds.Add(scriptSnd);
   end;
+
+  LoadStream.CheckMarker('ScriptSoundsRemoveRq');
+  LoadStream.Read(sndCount);
+  for I := 0 to sndCount - 1 do
+  begin
+    LoadStream.Read(key);
+
+    LoadStream.Read(handIDsSet, SizeOf(TKMByteSet));
+
+    fSoundRemoveRequests.Add(key, handIDsSet);
+  end;
+end;
+
+
+function TKMScriptSoundsManager.ToString: String;
+var
+  I: Byte;
+  pair: TPair<Integer, TKMByteSet>;
+  str: string;
+begin
+  str := '';
+  
+  for pair in fSoundRemoveRequests do
+  begin
+    str := str + IntToStr(pair.Key) + '|';
+      
+    for I in pair.Value do
+      str := str + ' ' + IntToStr(I);
+      
+    str := str + '|';
+  end;
+
+  Result := Format('|Script sounds cnt = %d|RemoveRequests: CNT = %d:|%s', [fScriptSounds.Count, fSoundRemoveRequests.Count, str]);
 end;
 
 
@@ -1065,6 +1171,7 @@ end;
 constructor TKMScriptSound.Create;
 begin
   PlayingIndex := -1;
+  RemoveRequestSent := False;
   Looped := False;
   FadeMusic := False;
   ScriptUID := 0;

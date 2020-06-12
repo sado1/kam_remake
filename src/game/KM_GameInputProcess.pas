@@ -111,6 +111,7 @@ type
 
     //VII.
     gicScriptConsoleCommand, //Script console command invokation
+    gicScriptSoundRemoveRq,  //Request to remove script sound
 
     //VIII.     Temporary and debug commands
     gicTempAddScout,
@@ -144,11 +145,11 @@ const
 
   ALLOWED_AFTER_DEFEAT: set of TKMGameInputCommandType =
     [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameLoadSave,
-     gicGameMessageLogRead, gicTempDoNothing];
+     gicGameMessageLogRead, gicScriptSoundRemoveRq, gicTempDoNothing];
 
   ALLOWED_IN_CINEMATIC: set of TKMGameInputCommandType =
     [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameMessageLogRead,
-     gicGamePlayerAllianceSet, gicGamePlayerAddDefGoals, gicTempDoNothing];
+     gicGamePlayerAllianceSet, gicGamePlayerAddDefGoals, gicScriptSoundRemoveRq, gicTempDoNothing];
 
   ALLOWED_BY_SPECTATORS: set of TKMGameInputCommandType =
     [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameLoadSave,
@@ -264,6 +265,7 @@ const
     gicpt_Int2,     // gicGameSetDefaultGoals
     //VII.     Scripting commands
     gicpt_Ansi1Uni4,// gicScriptConsoleCommand
+    gicpt_Int1,     // gicScriptSoundRemoveRq
     //VIII.    Temporary and debug commands
     gicpt_Int2,     // gicTempAddScout
     gicpt_NoParams, // gicTempRevealMap
@@ -372,6 +374,8 @@ type
     procedure CmdPlayerAllianceSet(aForPlayer, aToPlayer: TKMHandID; aAllianceType: TKMAllianceType);
     procedure CmdPlayerAddDefaultGoals(aPlayer: TKMHandID; aBuilding: Boolean);
     procedure CmdPlayerChanged(aPlayer: TKMHandID; aType: TKMHandType; aPlayerNikname: AnsiString);
+
+    procedure CmdScriptSoundRemoveRequest(aScriptSoundUID: Integer);
 
     procedure CmdTemp(aCommandType: TKMGameInputCommandType; const aLoc: TKMPoint); overload;
     procedure CmdTemp(aCommandType: TKMGameInputCommandType); overload;
@@ -913,6 +917,7 @@ begin
       gicGamePlayerAllianceSet:   gHands[Params[1]].Alliances[Params[2]] := TKMAllianceType(Params[3]);
       gicGamePlayerAddDefGoals:     gHands[Params[1]].AI.AddDefaultGoals(IntToBool(Params[2]));
       gicScriptConsoleCommand:    gScriptEvents.CallConsoleCommand(HandIndex, AnsiStrParam, UnicodeStrParams);
+      gicScriptSoundRemoveRq:     gGame.AddScriptSoundRemoveRequest(Params[1], HandIndex);
       else                        raise Exception.Create('Unexpected gic command');
     end;
   end;
@@ -1183,6 +1188,12 @@ procedure TKMGameInputProcess.CmdPlayerChanged(aPlayer: TKMHandID; aType: TKMHan
 begin
   Assert(ReplayState = gipRecording);
   TakeCommand(MakeCommand(gicGamePlayerChange, aPlayerNikname, aPlayer, Byte(aType)));
+end;
+
+
+procedure TKMGameInputProcess.CmdScriptSoundRemoveRequest(aScriptSoundUID: Integer);
+begin
+  TakeCommand(MakeCommand(gicScriptSoundRemoveRq, aScriptSoundUID));
 end;
 
 

@@ -4360,7 +4360,9 @@ begin
     S := S + 'Network delay: ' + IntToStr(TKMGameInputProcess_Multi(gGame.GameInputProcess).GetNetworkDelay) + '|';
 
   if DISPLAY_SOUNDS then
-    S := S + IntToStr(gSoundPlayer.ActiveCount) + ' sounds playing|';
+  begin
+    S := S + IntToStr(gSoundPlayer.ActiveCount) + ' sounds playing' + gScriptSounds.ToString + '|';
+  end;
 
   if SHOW_FPS then
     S := S + gMain.FPSString;

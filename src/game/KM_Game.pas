@@ -100,6 +100,7 @@ type
 
     procedure GameMPDisconnect(const aData: UnicodeString);
     procedure OtherPlayerDisconnected(aDefeatedPlayerHandId: Integer);
+    function GetActiveHandIDs: TKMByteSet;
 
     function GetTickDuration: Single;
     procedure UpdateTickCounters;
@@ -213,6 +214,7 @@ type
     property Params: TKMGameParams read fParams;
     property SaveFile: UnicodeString read fSaveFile;
 
+    procedure AddScriptSoundRemoveRequest(aScriptSoundUID: Integer; aHandID: TKMHandID);
     function GetScriptSoundFile(const aSound: AnsiString; aAudioFormat: TKMAudioFormat): UnicodeString;
     property LastReplayTick: Cardinal read fLastReplayTick write fLastReplayTick;
     property SkipReplayEndCheck: Boolean read fSkipReplayEndCheck write fSkipReplayEndCheck;
@@ -278,6 +280,7 @@ uses
   KM_MissionScript, KM_MissionScript_Standard, KM_GameInputProcess_Multi, KM_GameInputProcess_Single,
   KM_Resource, KM_ResCursors, KM_ResSound, KM_InterfaceDefaults, KM_Settings,
   KM_Log, KM_ScriptingEvents, KM_Saves, KM_FileIO, KM_CommonUtils, KM_RandomChecks, KM_DevPerfLog, KM_DevPerfLogTypes,
+  KM_NetPlayersList,
   KM_HandTypes;
 
 //Create template for the Game
@@ -927,6 +930,35 @@ end;
 procedure TKMGame.OtherPlayerDisconnected(aDefeatedPlayerHandId: Integer);
 begin
   gGame.GameInputProcess.CmdGame(gicGamePlayerDefeat, aDefeatedPlayerHandId);
+end;
+
+
+// Get active hand ids as set (enabled hands for SP/replay or connected not spectators
+function TKMGame.GetActiveHandIDs: TKMByteSet;
+var
+  I: Integer;
+  netPlayer: TKMNetPlayerInfo;
+begin
+  Result := [];
+  if fParams.IsMultiPlayerOrSpec then
+  begin
+    for I := 1 to gNetworking.NetPlayers.Count do
+    begin
+      netPlayer := gNetworking.NetPlayers[I];
+      if not netPlayer.IsHuman
+        or netPlayer.IsSpectator
+        or not netPlayer.Connected
+        or (netPlayer.HandIndex = -1)
+        or not gHands[netPlayer.HandIndex].Enabled then
+        Continue;
+
+      Include(Result, netPlayer.HandIndex);
+    end;
+  end
+  else
+    for I := 0 to gHands.Count - 1 do
+      if gHands[I].Enabled then
+        Include(Result, I);
 end;
 
 
@@ -2829,6 +2861,13 @@ end;
 procedure TKMGame.UserAction(aActionType: TKMUserActionType);
 begin
   fLastTimeUserAction := Max(fLastTimeUserAction, TimeGet);
+end;
+
+
+// Add remove script sounds request to the script sounds manager
+procedure TKMGame.AddScriptSoundRemoveRequest(aScriptSoundUID: Integer; aHandID: TKMHandID);
+begin
+  gScriptSounds.AddRemoveRequest(aScriptSoundUID, aHandID, GetActiveHandIDs);
 end;
 
 
