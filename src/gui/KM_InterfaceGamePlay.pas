@@ -4228,11 +4228,7 @@ begin
     Image_Clock.TexID := ((Image_Clock.TexID - 556) + 1) mod 16 + 556;
 
   if Label_Clock.Visible then
-  begin
     Label_Clock.Caption := TimeToString(gGame.MissionTime);
-    if SHOW_GAME_TICK then
-      Label_Clock.Caption := Label_Clock.Caption + '|' + IntToStr(gGameParams.Tick);
-  end;
 
   // Keep on updating these menu pages as game data keeps on changing
   if fGuiGameBuild.Visible then
