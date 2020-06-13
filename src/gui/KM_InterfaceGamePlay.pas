@@ -175,6 +175,8 @@ type
     function CanShowAllies: Boolean;
     procedure UpdateMessageImages;
     procedure UpdateReplayBar;
+
+    function CanUpdateClockUI: Boolean;
   protected
     Sidebar_Top: TKMImage;
     Sidebar_Middle: TKMImage;
@@ -336,6 +338,7 @@ type
     property Alerts: TKMAlerts read fAlerts;
 
     procedure ExportPages(const aPath: string); override;
+    procedure UpdateClockUI;
 
     procedure Save(SaveStream: TKMemoryStream);
     procedure SaveMinimap(SaveStream: TKMemoryStream);
@@ -2757,7 +2760,7 @@ begin
   if Panel_ReplayFOW.Visible then
     OverlayTop := Panel_ReplayFOW.Top + Panel_ReplayFOW.Height - 5;
 
-  if gGame.IsSpeedUpAllowed then
+  if CanUpdateClockUI then
     OverlayTop := Max(OverlayTop, Image_Clock.Top + Image_Clock.Height + 25);
 
   Label_ScriptedOverlay.Top := OverlayTop + 19;
@@ -3034,6 +3037,21 @@ begin
 end;
 
 
+function TKMGamePlayInterface.CanUpdateClockUI: Boolean;
+begin
+  //Don't show speed clock in MP (unless there is not human players) since you can't turn it on/off
+  Result := gGame.IsSpeedUpAllowed or gGameSettings.ShowGameTime or SHOW_GAME_TICK;
+end;
+
+
+procedure TKMGamePlayInterface.UpdateClockUI;
+begin
+
+  if CanUpdateClockUI then
+    UpdateClock(gGame.SpeedActual, gGame.SpeedGIP, gGameParams.IsReplay);
+end;
+
+
 procedure TKMGamePlayInterface.AlliesOnPlayerSetup;
 var
   I, K, NetI: Integer;
@@ -3137,6 +3155,8 @@ begin
 
     Inc(I);
   end;
+
+  UpdateClockUI;
 end;
 
 
@@ -3452,7 +3472,17 @@ begin
       gGame.SetSpeed(gGameSettings.SpeedFast, True);
     if Key = gResKeys[SC_SPEEDUP_4].Key then
       gGame.SetSpeed(gGameSettings.SpeedVeryFast, True);
-  end;
+  end
+  else
+    if fUIMode in [umMP, umSpectate] then
+    begin
+      if not gGame.CanChangeMPGameSpeed then
+      begin
+        // Show local message why speedup is not allowed
+        gNetworking.PostLocalMessage(gResTexts[TX_GAME_CHANGE_IS_NOT_ALLOWED_MSG]);
+        gSoundPlayer.Play(sfxCantPlace);
+      end;
+    end;
 
   // First check if this key was associated with some Spectate/Replay key
   if (fUIMode in [umReplay, umSpectate]) then

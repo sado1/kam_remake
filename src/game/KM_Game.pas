@@ -95,7 +95,7 @@ type
     function GetControlledHandIndex: TKMHandID;
     procedure UserAction(aActionType: TKMUserActionType);
     function GetReplayAutosaveEffectiveFrequency: Integer;
-    procedure UpdateClockUI;
+
     function GetMapEditor: TKMMapEditor;
 
     procedure GameMPDisconnect(const aData: UnicodeString);
@@ -183,6 +183,7 @@ type
     function GetPeacetimeRemaining: TDateTime;
     function CheckTime(aTimeTicks: Cardinal): Boolean;
     function IsPeaceTime: Boolean;
+
     function IsSpeedUpAllowed: Boolean;
     function CanChangeMPGameSpeed: Boolean;
     function IsMPGameSpeedChangeAllowed: Boolean;
@@ -1528,7 +1529,9 @@ end;
 
 function TKMGame.IsSpeedUpAllowed: Boolean;
 begin
-  Result := not fParams.IsMultiPlayerOrSpec or CanChangeMPGameSpeed;
+  if Self = nil then Exit(False);
+  
+  Result := not fParams.IsMultiPlayerOrSpec or IsMPGameSpeedChangeAllowed;
 end;
 
 
@@ -1536,8 +1539,11 @@ end;
 function TKMGame.CanChangeMPGameSpeed: Boolean;
 begin
   Result := False;
+  if Self = nil then Exit;
 
-  if not fParams.IsMultiPlayerOrSpec or (gHands = nil) then Exit;
+  if not fParams.IsMultiPlayerOrSpec
+    or (gHands = nil)
+    or (gHands.Count = 0) then Exit;
 
   if (gNetworking = nil) or not gNetworking.IsHost then Exit; //Only host can change game speed in MP
 
@@ -1553,8 +1559,15 @@ var
   I, netI: Integer;
 begin
   Result := False;
+  if Self = nil then Exit;
 
-  if not fParams.IsMultiPlayerOrSpec or (gHands = nil) then Exit;
+  if not fParams.IsMultiPlayerOrSpec
+    or (gHands = nil) // Game is not started yet
+    or (gHands.Count = 0) then Exit; //Game is not loaded yet
+
+  // Allow to speedup game if there is only 1 MP human connected to the game (player or spectator)
+  if gNetworking.NetPlayers.GetConnectedCount = 1 then
+    Exit(True);
 
   for I := 0 to gHands.Count - 1 do
   begin
@@ -1697,14 +1710,6 @@ begin
 end;
 
 
-procedure TKMGame.UpdateClockUI;
-begin
-  //don't show speed clock in MP since you can't turn it on/off
-  if IsSpeedUpAllowed or gGameSettings.ShowGameTime or SHOW_GAME_TICK then
-    fGamePlayInterface.UpdateClock(fSpeedActual, fSpeedGIP, fParams.IsReplay);
-end;
-
-
 procedure TKMGame.SetSpeedGIP(aSpeed: Single; aUpdateActual: Boolean = False);
 var
   speedChanged: Boolean;
@@ -1724,7 +1729,7 @@ begin
   if aUpdateActual then
     SetSpeedActual(aSpeed) //will also UpdateClockUI
   else
-    UpdateClockUI;
+    fGamePlayInterface.UpdateClockUI;
 
   if speedChanged then
     gScriptEvents.ProcGameSpeedChanged(aSpeed); //Script events should trigger on GIP game speed, not on the actual speed
@@ -1776,7 +1781,7 @@ begin
     fTimerGame.Interval := Round(gGameSettings.SpeedPace / fSpeedActual);
   end;
 
-  UpdateClockUI;
+  fGamePlayInterface.UpdateClockUI;
 end;
 
 
@@ -2214,7 +2219,7 @@ begin
   if not fParams.IsReplay then
     SetSpeedActualValue(fSpeedGIP)
   else
-    UpdateClockUI; //To show actual game speed in the replay
+    fGamePlayInterface.UpdateClockUI; //To show actual game speed in the replay
 
   LoadStream.Read(fSpeedChangeAllowed);
 
