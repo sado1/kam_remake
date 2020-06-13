@@ -129,8 +129,8 @@ type
   public
     GameResult: TKMGameResultMsg;
 
-    StartedFromMapEditor: Boolean;    // True if we start game from map editor ('Try Map')
-    StartedFromMapEdAsMPMap: Boolean; // True if we start game from map editor ('Try Map') with MP map
+    StartedFromMapEditor: Boolean;    // True if we start game from map editor ('Quick Play')
+    StartedFromMapEdAsMPMap: Boolean; // True if we start game from map editor ('Quick Play') with MP map
 
     constructor Create(aGameMode: TKMGameMode; aRender: TRender; aOnDestroy: TEvent);
     destructor Destroy; override;
