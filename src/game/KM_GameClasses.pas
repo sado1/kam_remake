@@ -82,51 +82,51 @@ end;
 
 procedure TKMGameMPLocalData.SaveToFile(const aFilePath: String);
 var
-  SaveStream: TKMemoryStreamBinary;
+  saveStream: TKMemoryStreamBinary;
 begin
-  SaveStream := TKMemoryStreamBinary.Create;
+  saveStream := TKMemoryStreamBinary.Create;
   try
-    Save(SaveStream);
-    SaveStream.SaveToFile(aFilePath);
+    Save(saveStream);
+    saveStream.SaveToFile(aFilePath);
   finally
-    SaveStream.Free;
+    saveStream.Free;
   end;
 end;
 
 
 procedure TKMGameMPLocalData.SaveToFileAsync(const aFilePath: String; aWorkerThread: TKMWorkerThread);
 var
-  SaveStream: TKMemoryStreamBinary;
+  saveStream: TKMemoryStreamBinary;
 begin
-  SaveStream := TKMemoryStreamBinary.Create;
-  Save(SaveStream);
-  TKMemoryStream.AsyncSaveToFileAndFree(SaveStream, aFilePath, aWorkerThread);
+  saveStream := TKMemoryStreamBinary.Create;
+  Save(saveStream);
+  TKMemoryStream.AsyncSaveToFileAndFree(saveStream, aFilePath, aWorkerThread);
 end;
 
 
 function TKMGameMPLocalData.LoadFromFile(const aFilePath: String): Boolean;
 var
-  LoadStream: TKMemoryStreamBinary;
-  ChoosenStartLoc: Integer;
+  loadStream: TKMemoryStreamBinary;
+  choosenStartLoc: Integer;
 begin
   Result := False;
   if not FileExists(aFilePath) then Exit;
 
-  LoadStream := TKMemoryStreamBinary.Create;
+  loadStream := TKMemoryStreamBinary.Create;
   try
-    LoadStream.LoadFromFile(aFilePath);
-    ChoosenStartLoc := fStartLoc;
-    LoadHeader(LoadStream);
+    loadStream.LoadFromFile(aFilePath);
+    choosenStartLoc := fStartLoc;
+    LoadHeader(loadStream);
 
-    if (ChoosenStartLoc = LOC_ANY) // for not MP game, f.e.
-      or (ChoosenStartLoc = LOC_SPECTATE) // allow to see minimap for spectator loc
-      or (fStartLoc = ChoosenStartLoc) then // allow, if we was on the same loc
+    if (choosenStartLoc = LOC_ANY) // for not MP game, f.e.
+      or (choosenStartLoc = LOC_SPECTATE) // allow to see minimap for spectator loc
+      or (fStartLoc = choosenStartLoc) then // allow, if we was on the same loc
     begin
-      LoadMinimap(LoadStream, fMinimap);
+      LoadMinimap(loadStream, fMinimap);
       Result := True;
     end;
   finally
-    LoadStream.Free;
+    loadStream.Free;
   end;
 end;
 

@@ -398,7 +398,7 @@ end;
 
 procedure TKMapEdInterface.HidePages;
 var
-  I,K: Integer;
+  I, K: Integer;
 begin
   //Hide all existing pages (2 levels)
   for I := 0 to Panel_Common.ChildCount - 1 do
@@ -1084,7 +1084,7 @@ end;
 
 procedure TKMapEdInterface.UpdateCursor(X, Y: Integer; Shift: TShiftState);
 var
-  Marker: TKMMapEdMarker;
+  marker: TKMMapEdMarker;
 begin
   UpdateGameCursor(X, Y, Shift);
 
@@ -1102,8 +1102,8 @@ begin
   end else
   if gGameCursor.Mode = cmNone then
   begin
-    Marker := gGame.MapEditor.HitTest(gGameCursor.Cell.X, gGameCursor.Cell.Y);
-    if Marker.MarkerType <> mtNone then
+    marker := gGame.MapEditor.HitTest(gGameCursor.Cell.X, gGameCursor.Cell.Y);
+    if marker.MarkerType <> mtNone then
       gRes.Cursors.Cursor := kmcInfo
     else
     if gMySpectator.HitTestCursor <> nil then
@@ -1179,6 +1179,7 @@ end;
 
 //Start drag house move mode (with cursor mode cmHouse)
 procedure TKMapEdInterface.DragHouseModeStart(const aHouseNewPos, aHouseOldPos: TKMPoint);
+
   procedure SetCursorModeHouse(aHouseType: TKMHouseType);
   begin
     gGameCursor.Mode := cmHouses;
@@ -1186,7 +1187,9 @@ procedure TKMapEdInterface.DragHouseModeStart(const aHouseNewPos, aHouseOldPos: 
     //Update cursor DragOffset to render house markups at proper positions
     gGameCursor.DragOffset := fDragHouseOffset;
   end;
-var H: TKMHouse;
+
+var
+  H: TKMHouse;
 begin
   if fDragObject is TKMHouse then
   begin
@@ -1220,7 +1223,7 @@ end;
 procedure TKMapEdInterface.MoveObjectToCursorCell(aObjectToMove: TObject);
 var
   H: TKMHouse;
-  HouseNewPos, HouseOldPos: TKMPoint;
+  houseNewPos, houseOldPos: TKMPoint;
 begin
   if aObjectToMove = nil then Exit;
 
@@ -1229,15 +1232,15 @@ begin
   begin
     H := TKMHouse(aObjectToMove);
 
-    HouseOldPos := H.Position;
+    houseOldPos := H.Position;
 
-    HouseNewPos := KMPointAdd(gGameCursor.Cell, fDragHouseOffset);
+    houseNewPos := KMPointAdd(gGameCursor.Cell, fDragHouseOffset);
 
     if not fDragingObject then
-      H.SetPosition(HouseNewPos)  //handles Right click, when house is selected
+      H.SetPosition(houseNewPos)  //handles Right click, when house is selected
     else
       if not IsDragHouseModeOn then
-        DragHouseModeStart(HouseNewPos, HouseOldPos);
+        DragHouseModeStart(houseNewPos, houseOldPos);
   end;
 
   //Unit move
@@ -1472,8 +1475,8 @@ procedure TKMapEdInterface.Paint;
 var
   I: Integer;
   R: TKMRawDeposit;
-  LocF: TKMPointF;
-  ScreenLoc: TKMPoint;
+  locF: TKMPointF;
+  screenLoc: TKMPoint;
 begin
   if melDeposits in gGame.MapEditor.VisibleLayers then
   begin
@@ -1482,12 +1485,12 @@ begin
       //Ignore water areas with 0 fish in them
       if gGame.MapEditor.Deposits.Amount[R, I] > 0 then
       begin
-        LocF := gTerrain.FlatToHeight(gGame.MapEditor.Deposits.Location[R, I]);
-        ScreenLoc := fViewport.MapToScreen(LocF);
+        locF := gTerrain.FlatToHeight(gGame.MapEditor.Deposits.Location[R, I]);
+        screenLoc := fViewport.MapToScreen(locF);
 
         //At extreme zoom coords may become out of range of SmallInt used in controls painting
-        if KMInRect(ScreenLoc, fViewport.ViewRect) then
-          TKMRenderUI.WriteTextInShape(IntToStr(gGame.MapEditor.Deposits.Amount[R, I]), ScreenLoc.X, ScreenLoc.Y, DEPOSIT_COLORS[R], $FFFFFFFF);
+        if KMInRect(screenLoc, fViewport.ViewRect) then
+          TKMRenderUI.WriteTextInShape(IntToStr(gGame.MapEditor.Deposits.Amount[R, I]), screenLoc.X, screenLoc.Y, DEPOSIT_COLORS[R], $FFFFFFFF);
       end;
   end;
 

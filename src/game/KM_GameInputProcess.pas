@@ -725,21 +725,21 @@ end;
 procedure TKMGameInputProcess.ExecCommand(const aCommand: TKMGameInputCommand);
 var
   P: TKMHand;
-  IsSilent: Boolean;
-  SrcUnit: TKMUnit;
-  SrcGroup, TgtGroup: TKMUnitGroup;
-  TgtUnit: TKMUnit;
-  SrcHouse, TgtHouse: TKMHouse;
+  isSilent: Boolean;
+  srcUnit: TKMUnit;
+  srcGroup, TgtGroup: TKMUnitGroup;
+  tgtUnit: TKMUnit;
+  srcHouse, tgtHouse: TKMHouse;
 begin
   //NOTE: gMySpectator.PlayerIndex should not be used for important stuff here, use P instead (commands must be executed the same for all players)
-  IsSilent := (aCommand.HandIndex <> gMySpectator.HandID);
+  isSilent := (aCommand.HandIndex <> gMySpectator.HandID);
   P := gHands[aCommand.HandIndex];
-  SrcUnit := nil;
-  SrcGroup := nil;
+  srcUnit := nil;
+  srcGroup := nil;
   TgtGroup := nil;
-  SrcHouse := nil;
-  TgtHouse := nil;
-  TgtUnit := nil;
+  srcHouse := nil;
+  tgtHouse := nil;
+  tgtUnit := nil;
 
   with aCommand do
   begin
@@ -749,9 +749,9 @@ begin
                        gicArmyFormation, gicArmyWalk, gicArmyStorm]
     then
     begin
-      SrcGroup := gHands.GetGroupByUID(Params[1]);
-      if (SrcGroup = nil) or SrcGroup.IsDead //Group has died before command could be executed
-      or (SrcGroup.Owner <> aCommand.HandIndex) then //Potential exploit
+      srcGroup := gHands.GetGroupByUID(Params[1]);
+      if (srcGroup = nil) or srcGroup.IsDead //Group has died before command could be executed
+      or (srcGroup.Owner <> aCommand.HandIndex) then //Potential exploit
         Exit;
     end;
     if CommandType in [gicArmyLink] then
@@ -763,8 +763,8 @@ begin
     end;
     if CommandType in [gicArmyAttackUnit] then
     begin
-      TgtUnit := gHands.GetUnitByUID(Params[2]);
-      if (TgtUnit = nil) or TgtUnit.IsDeadOrDying then //Unit has died before command could be executed
+      tgtUnit := gHands.GetUnitByUID(Params[2]);
+      if (tgtUnit = nil) or tgtUnit.IsDeadOrDying then //Unit has died before command could be executed
         Exit;
     end;
     if CommandType in [gicHouseRepairToggle, gicHouseDeliveryModeNext, gicHouseDeliveryModePrev, gicHouseWoodcuttersCutting, gicHouseTownHallMaxGold,
@@ -774,22 +774,22 @@ begin
       gicHouseSchoolTrain, gicHouseSchoolTrainChOrder, gicHouseSchoolTrainChLastUOrder, gicHouseRemoveTrain,
       gicHouseWoodcutterMode, gicHBarracksAcceptRecruitsTgl, gicHouseArmorWSDeliveryToggle] then
     begin
-      SrcHouse := gHands.GetHouseByUID(Params[1]);
-      if (SrcHouse = nil) or SrcHouse.IsDestroyed //House has been destroyed before command could be executed
-      or (SrcHouse.Owner <> aCommand.HandIndex) then //Potential exploit
+      srcHouse := gHands.GetHouseByUID(Params[1]);
+      if (srcHouse = nil) or srcHouse.IsDestroyed //House has been destroyed before command could be executed
+      or (srcHouse.Owner <> aCommand.HandIndex) then //Potential exploit
         Exit;
     end;
     if CommandType in [gicArmyAttackHouse] then
     begin
-      TgtHouse := gHands.GetHouseByUID(Params[2]);
-      if (TgtHouse = nil) or TgtHouse.IsDestroyed then Exit; //House has been destroyed before command could be executed
+      tgtHouse := gHands.GetHouseByUID(Params[2]);
+      if (tgtHouse = nil) or tgtHouse.IsDestroyed then Exit; //House has been destroyed before command could be executed
     end;
 
     if CommandType in [gicUnitDismiss, gicUnitDismissCancel] then
     begin
-      SrcUnit := gHands.GetUnitByUID(Params[1]);
-      if (SrcUnit = nil) or SrcUnit.IsDeadOrDying //Unit has died before command could be executed
-        or (SrcUnit.Owner <> aCommand.HandIndex) then //Potential exploit
+      srcUnit := gHands.GetUnitByUID(Params[1]);
+      if (srcUnit = nil) or srcUnit.IsDeadOrDying //Unit has died before command could be executed
+        or (srcUnit.Owner <> aCommand.HandIndex) then //Potential exploit
         Exit;
     end;
 
@@ -809,57 +809,57 @@ begin
       gLog.LogCommands(Format('Tick: %6d Exec command: %s', [gGameParams.Tick, GIPCommandToString(aCommand)]));
 
     case CommandType of
-      gicArmyFeed:         SrcGroup.OrderFood(True);
-      gicArmySplit:        SrcGroup.OrderSplit;
-      gicArmySplitSingle:  SrcGroup.OrderSplit(True);
-      gicArmyStorm:        SrcGroup.OrderStorm(True);
-      gicArmyLink:         SrcGroup.OrderLinkTo(TgtGroup, True);
-      gicArmyAttackUnit:   SrcGroup.OrderAttackUnit(TgtUnit, True);
-      gicArmyAttackHouse:  SrcGroup.OrderAttackHouse(TgtHouse, True);
-      gicArmyHalt:         SrcGroup.OrderHalt(True);
-      gicArmyFormation:    SrcGroup.OrderFormation(TKMTurnDirection(Params[2]),Params[3], True);
-      gicArmyWalk:         SrcGroup.OrderWalk(KMPoint(Params[2],Params[3]), True, wtokPlayerOrder, TKMDirection(Params[4]));
+      gicArmyFeed:         srcGroup.OrderFood(True);
+      gicArmySplit:        srcGroup.OrderSplit;
+      gicArmySplitSingle:  srcGroup.OrderSplit(True);
+      gicArmyStorm:        srcGroup.OrderStorm(True);
+      gicArmyLink:         srcGroup.OrderLinkTo(TgtGroup, True);
+      gicArmyAttackUnit:   srcGroup.OrderAttackUnit(tgtUnit, True);
+      gicArmyAttackHouse:  srcGroup.OrderAttackHouse(tgtHouse, True);
+      gicArmyHalt:         srcGroup.OrderHalt(True);
+      gicArmyFormation:    srcGroup.OrderFormation(TKMTurnDirection(Params[2]),Params[3], True);
+      gicArmyWalk:         srcGroup.OrderWalk(KMPoint(Params[2],Params[3]), True, wtokPlayerOrder, TKMDirection(Params[4]));
 
-      gicUnitDismiss:        SrcUnit.Dismiss;
-      gicUnitDismissCancel:  SrcUnit.DismissCancel;
+      gicUnitDismiss:        srcUnit.Dismiss;
+      gicUnitDismissCancel:  srcUnit.DismissCancel;
 
       gicBuildToggleFieldPlan:   P.ToggleFieldPlan(KMPoint(Params[1],Params[2]), TKMFieldType(Params[3]), not gGameParams.IsMultiPlayerOrSpec); //Make sound in singleplayer mode only
       gicBuildRemoveFieldPlan:   P.RemFieldPlan(KMPoint(Params[1],Params[2]), not gGameParams.IsMultiPlayerOrSpec); //Make sound in singleplayer mode only
-      gicBuildRemoveHouse:       P.RemHouse(KMPoint(Params[1],Params[2]), IsSilent);
+      gicBuildRemoveHouse:       P.RemHouse(KMPoint(Params[1],Params[2]), isSilent);
       gicBuildRemoveHousePlan:   P.RemHousePlan(KMPoint(Params[1],Params[2]));
       gicBuildHousePlan:         if P.CanAddHousePlan(KMPoint(Params[2],Params[3]), TKMHouseType(Params[1])) then
                                     P.AddHousePlan(TKMHouseType(Params[1]), KMPoint(Params[2],Params[3]));
 
-      gicHouseRepairToggle:      SrcHouse.BuildingRepair := not SrcHouse.BuildingRepair;
+      gicHouseRepairToggle:      srcHouse.BuildingRepair := not srcHouse.BuildingRepair;
       gicHouseDeliveryModeNext:   //Delivery mode has to be delayed, to avoid occasional delivery mode button clicks
-                                  SrcHouse.SetNextDeliveryMode;
+                                  srcHouse.SetNextDeliveryMode;
       gicHouseDeliveryModePrev:   //Delivery mode has to be delayed, to avoid occasional delivery mode button clicks
-                                  SrcHouse.SetPrevDeliveryMode;
-      gicHouseClosedForWorkerTgl: SrcHouse.IsClosedForWorker := not SrcHouse.IsClosedForWorker;
-      gicHouseOrderProduct:      SrcHouse.ResOrder[Params[2]] := SrcHouse.ResOrder[Params[2]] + Params[3];
-      gicHouseMarketFrom:        TKMHouseMarket(SrcHouse).ResFrom := TKMWareType(Params[2]);
-      gicHouseMarketTo:          TKMHouseMarket(SrcHouse).ResTo := TKMWareType(Params[2]);
-      gicHouseStoreNotAcceptFlag:   TKMHouseStore(SrcHouse).ToggleNotAcceptFlag(TKMWareType(Params[2]));
+                                  srcHouse.SetPrevDeliveryMode;
+      gicHouseClosedForWorkerTgl: srcHouse.IsClosedForWorker := not srcHouse.IsClosedForWorker;
+      gicHouseOrderProduct:      srcHouse.ResOrder[Params[2]] := srcHouse.ResOrder[Params[2]] + Params[3];
+      gicHouseMarketFrom:        TKMHouseMarket(srcHouse).ResFrom := TKMWareType(Params[2]);
+      gicHouseMarketTo:          TKMHouseMarket(srcHouse).ResTo := TKMWareType(Params[2]);
+      gicHouseStoreNotAcceptFlag:   TKMHouseStore(srcHouse).ToggleNotAcceptFlag(TKMWareType(Params[2]));
       gicHStoreNotAllowTakeOutFlag:
-                                 TKMHouseStore(SrcHouse).ToggleNotAcceptTakeOutFlag(TKMWareType(Params[2]));
-      gicHouseWoodcutterMode:    TKMHouseWoodcutters(SrcHouse).WoodcutterMode := TKMWoodcutterMode(Params[2]);
+                                 TKMHouseStore(srcHouse).ToggleNotAcceptTakeOutFlag(TKMWareType(Params[2]));
+      gicHouseWoodcutterMode:    TKMHouseWoodcutters(srcHouse).WoodcutterMode := TKMWoodcutterMode(Params[2]);
       gicHouseBarracksAcceptFlag:
-                                  TKMHouseBarracks(SrcHouse).ToggleNotAcceptFlag(TKMWareType(Params[2]));
+                                  TKMHouseBarracks(srcHouse).ToggleNotAcceptFlag(TKMWareType(Params[2]));
       gicHBarracksNotAllowTakeOutFlag:
-                                  TKMHouseBarracks(SrcHouse).ToggleNotAllowTakeOutFlag(TKMWareType(Params[2]));
+                                  TKMHouseBarracks(srcHouse).ToggleNotAllowTakeOutFlag(TKMWareType(Params[2]));
       gicHBarracksAcceptRecruitsTgl:
-                                  TKMHouseBarracks(SrcHouse).ToggleAcceptRecruits;
-      gicHouseBarracksEquip:     TKMHouseBarracks(SrcHouse).Equip(TKMUnitType(Params[2]), Params[3]);
-      gicHouseBarracksRally:     TKMHouseBarracks(SrcHouse).FlagPoint := KMPoint(Params[2], Params[3]);
-      gicHouseTownHallEquip:     TKMHouseTownHall(SrcHouse).Equip(TKMUnitType(Params[2]), Params[3]);
-      gicHouseTownHallRally:     TKMHouseTownHall(SrcHouse).FlagPoint := KMPoint(Params[2], Params[3]);
-      gicHouseTownHallMaxGold:   TKMHouseTownHall(SrcHouse).GoldMaxCnt := EnsureRange(Params[2], 0, High(Word));
-      gicHouseSchoolTrain:       TKMHouseSchool(SrcHouse).AddUnitToQueue(TKMUnitType(Params[2]), Params[3]);
-      gicHouseSchoolTrainChOrder:TKMHouseSchool(SrcHouse).ChangeUnitTrainOrder(Params[2], Params[3]);
-      gicHouseSchoolTrainChLastUOrder: TKMHouseSchool(SrcHouse).ChangeUnitTrainOrder(Params[2]);
-      gicHouseRemoveTrain:       TKMHouseSchool(SrcHouse).RemUnitFromQueue(Params[2]);
-      gicHouseWoodcuttersCutting: TKMHouseWoodcutters(SrcHouse).FlagPoint := KMPoint(Params[2], Params[3]);
-      gicHouseArmorWSDeliveryToggle:   TKMHouseArmorWorkshop(SrcHouse).ToggleResDelivery(TKMWareType(Params[2]));
+                                  TKMHouseBarracks(srcHouse).ToggleAcceptRecruits;
+      gicHouseBarracksEquip:     TKMHouseBarracks(srcHouse).Equip(TKMUnitType(Params[2]), Params[3]);
+      gicHouseBarracksRally:     TKMHouseBarracks(srcHouse).FlagPoint := KMPoint(Params[2], Params[3]);
+      gicHouseTownHallEquip:     TKMHouseTownHall(srcHouse).Equip(TKMUnitType(Params[2]), Params[3]);
+      gicHouseTownHallRally:     TKMHouseTownHall(srcHouse).FlagPoint := KMPoint(Params[2], Params[3]);
+      gicHouseTownHallMaxGold:   TKMHouseTownHall(srcHouse).GoldMaxCnt := EnsureRange(Params[2], 0, High(Word));
+      gicHouseSchoolTrain:       TKMHouseSchool(srcHouse).AddUnitToQueue(TKMUnitType(Params[2]), Params[3]);
+      gicHouseSchoolTrainChOrder:TKMHouseSchool(srcHouse).ChangeUnitTrainOrder(Params[2], Params[3]);
+      gicHouseSchoolTrainChLastUOrder: TKMHouseSchool(srcHouse).ChangeUnitTrainOrder(Params[2]);
+      gicHouseRemoveTrain:       TKMHouseSchool(srcHouse).RemUnitFromQueue(Params[2]);
+      gicHouseWoodcuttersCutting: TKMHouseWoodcutters(srcHouse).FlagPoint := KMPoint(Params[2], Params[3]);
+      gicHouseArmorWSDeliveryToggle:   TKMHouseArmorWorkshop(srcHouse).ToggleResDelivery(TKMWareType(Params[2]));
 
       gicWareDistributionChange:  begin
                                     P.Stats.WareDistribution[TKMWareType(Params[1]), TKMHouseType(Params[2])] := Params[3];
@@ -1255,12 +1255,12 @@ end;
 
 procedure TKMGameInputProcess.LoadFromStream(LoadStream: TKMemoryStream);
 var
-  FileVersion: AnsiString;
   I: Integer;
+  fileVersion: AnsiString;
 begin
-  LoadStream.ReadA(FileVersion);
+  LoadStream.ReadA(fileVersion);
   //We could allow to load unsupported version files
-  Assert(ALLOW_LOAD_UNSUP_VERSION_SAVE or (FileVersion = GAME_REVISION),
+  Assert(ALLOW_LOAD_UNSUP_VERSION_SAVE or (fileVersion = GAME_REVISION),
          'Old or unexpected replay file. ' + UnicodeString(GAME_REVISION) + ' is required.');
 
   LoadStream.Read(fCount);
@@ -1440,15 +1440,15 @@ end;
 
 function GetGICCommandTypeMaxLength: Byte;
 var
-  Cmd: TKMGameInputCommandType;
-  Len: Byte;
+  cmd: TKMGameInputCommandType;
+  len: Byte;
 begin
   Result := 0;
-  for Cmd := Low(TKMGameInputCommandType) to High(TKMGameInputCommandType) do
+  for cmd := Low(TKMGameInputCommandType) to High(TKMGameInputCommandType) do
   begin
-    Len := Length(GetEnumName(TypeInfo(TKMGameInputCommandType), Integer(Cmd)));
-    if Len > Result then
-      Result := Len;
+    len := Length(GetEnumName(TypeInfo(TKMGameInputCommandType), Integer(cmd)));
+    if len > Result then
+      Result := len;
   end;
 end;
 

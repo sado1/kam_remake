@@ -239,7 +239,7 @@ end;
 procedure TKMUserInterfaceGame.KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean);
   {$IFDEF MSWindows}
 var
-  WindowRect: TRect;
+  windowRect: TRect;
   {$ENDIF}
 begin
   if Assigned(fOnUserAction) then
@@ -261,8 +261,8 @@ begin
    // Restrict the cursor to the window, for now.
    //TODO: Allow one to drag out of the window, and still capture.
    {$IFDEF MSWindows}
-     WindowRect := gMain.ClientRect(1); //Reduce ClientRect by 1 pixel, to fix 'jump viewport' bug when dragscrolling over the window border
-     ClipCursor(@WindowRect);
+     windowRect := gMain.ClientRect(1); //Reduce ClientRect by 1 pixel, to fix 'jump viewport' bug when dragscrolling over the window border
+     ClipCursor(@windowRect);
    {$ENDIF}
    fDragScrollingCursorPos.X := gGameCursor.Pixel.X;
    fDragScrollingCursorPos.Y := gGameCursor.Pixel.Y;
@@ -323,6 +323,7 @@ end;
 procedure TKMUserInterfaceGame.MouseDown(Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
 begin
   inherited;
+
   if Assigned(fOnUserAction) then
     fOnUserAction(uatMouseDown);
 end;
@@ -355,7 +356,7 @@ end;
 
 procedure TKMUserInterfaceGame.MouseWheel(Shift: TShiftState; WheelSteps, X, Y: Integer; var aHandled: Boolean);
 var
-  PrevCursor: TKMPointF;
+  prevCursor: TKMPointF;
 begin
   inherited;
 
@@ -368,15 +369,15 @@ begin
   if aHandled then Exit;
   
   UpdateGameCursor(X, Y, Shift); // Make sure we have the correct cursor position to begin with
-  PrevCursor := gGameCursor.Float;
+  prevCursor := gGameCursor.Float;
   // +1 for ScrollSpeed = 0.
   // Sqrt to reduce Scroll speed importance
   // 11 = 10 + 1, 10 is default scroll speed
   fViewport.Zoom := fViewport.Zoom * (1 + WheelSteps * Sqrt((gGameSettings.ScrollSpeed + 1) / 11) / 12);
   UpdateGameCursor(X, Y, Shift); // Zooming changes the cursor position
   // Move the center of the screen so the cursor stays on the same tile, thus pivoting the zoom around the cursor
-  fViewport.Position := KMPointF(fViewport.Position.X + PrevCursor.X-gGameCursor.Float.X,
-                                 fViewport.Position.Y + PrevCursor.Y-gGameCursor.Float.Y);
+  fViewport.Position := KMPointF(fViewport.Position.X + prevCursor.X-gGameCursor.Float.X,
+                                 fViewport.Position.Y + prevCursor.Y-gGameCursor.Float.Y);
   UpdateGameCursor(X, Y, Shift); // Recentering the map changes the cursor position
   aHandled := True;
 end;
@@ -386,24 +387,24 @@ procedure TKMUserInterfaceGame.PaintDefences;
 var
   I, K: Integer;
   DP: TAIDefencePosition;
-  LocF: TKMPointF;
-  ScreenLoc: TKMPoint;
+  locF: TKMPointF;
+  screenLoc: TKMPoint;
 begin
   for I := 0 to gHands.Count - 1 do
     for K := 0 to gHands[I].AI.General.DefencePositions.Count - 1 do
     begin
       DP := gHands[I].AI.General.DefencePositions[K];
-      LocF := gTerrain.FlatToHeight(KMPointF(DP.Position.Loc.X-0.5, DP.Position.Loc.Y-0.5));
-      ScreenLoc := fViewport.MapToScreen(LocF);
+      locF := gTerrain.FlatToHeight(KMPointF(DP.Position.Loc.X-0.5, DP.Position.Loc.Y-0.5));
+      screenLoc := fViewport.MapToScreen(locF);
 
-      if KMInRect(ScreenLoc, fViewport.ViewRect) then
+      if KMInRect(screenLoc, fViewport.ViewRect) then
       begin
         //Dir selector
-        TKMRenderUI.WritePicture(ScreenLoc.X, ScreenLoc.Y, 0, 0, [], rxGui,  510 + Byte(DP.Position.Dir));
-        TKMRenderUI.WriteTextInShape(IntToStr(K+1), ScreenLoc.X, ScreenLoc.Y - 28, DEFENCE_LINE_TYPE_COL[DP.DefenceType],
+        TKMRenderUI.WritePicture(screenLoc.X, screenLoc.Y, 0, 0, [], rxGui,  510 + Byte(DP.Position.Dir));
+        TKMRenderUI.WriteTextInShape(IntToStr(K+1), screenLoc.X, screenLoc.Y - 28, DEFENCE_LINE_TYPE_COL[DP.DefenceType],
                                      FlagColorToTextColor(GROUP_TXT_COLOR[DP.GroupType]), $80000000, IntToStr(I + 1), gHands[I].FlagColor, icWhite);
         //GroupType icon
-        TKMRenderUI.WritePicture(ScreenLoc.X, ScreenLoc.Y, 0, 0, [], rxGui, GROUP_IMG[DP.GroupType]);
+        TKMRenderUI.WritePicture(screenLoc.X, screenLoc.Y, 0, 0, [], rxGui, GROUP_IMG[DP.GroupType]);
       end;
     end;
 end;

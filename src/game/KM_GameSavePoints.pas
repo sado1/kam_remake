@@ -83,10 +83,10 @@ end;
 
 procedure TKMSavePointCollection.Clear;
 var
-  Replay: TKMSavePoint;
+  savePoint: TKMSavePoint;
 begin
-  for Replay in fSavePoints.Values do
-    Replay.Free;
+  for savePoint in fSavePoints.Values do
+    savePoint.Free;
 
   fSavePoints.Clear;
 end;
@@ -117,11 +117,11 @@ end;
 
 function TKMSavePointCollection.GetStream(aTick: Cardinal): TKMemoryStream;
 var
-  Rpl: TKMSavePoint;
+  savePoint: TKMSavePoint;
 begin
   Result := nil;
-  if fSavePoints.TryGetValue(aTick, Rpl) then
-    Result := Rpl.Stream;
+  if fSavePoints.TryGetValue(aTick, savePoint) then
+    Result := savePoint.Stream;
 end;
 
 
@@ -135,7 +135,7 @@ procedure TKMSavePointCollection.Save(aSaveStream: TKMemoryStream);
 var
   keyArray : TArray<Cardinal>;
   key: Cardinal;
-  rpl: TKMSavePoint;
+  savePoint: TKMSavePoint;
 begin
   aSaveStream.PlaceMarker('SavedReplays');
   aSaveStream.Write(fLastTick);
@@ -148,9 +148,9 @@ begin
   begin
     aSaveStream.PlaceMarker('SavePoint');
     aSaveStream.Write(key);
-    rpl := fSavePoints.Items[key];
-    aSaveStream.Write(Cardinal(rpl.fStream.Size));
-    aSaveStream.CopyFrom(rpl.fStream, 0);
+    savePoint := fSavePoints.Items[key];
+    aSaveStream.Write(Cardinal(savePoint.fStream.Size));
+    aSaveStream.CopyFrom(savePoint.fStream, 0);
   end;
 end;
 
@@ -198,7 +198,7 @@ procedure TKMSavePointCollection.Load(aLoadStream: TKMemoryStream);
 var
   I, cnt: Integer;
   tick, size: Cardinal;
-  rpl: TKMSavePoint;
+  savePoint: TKMSavePoint;
   stream: TKMemoryStream;
 begin
   fSavePoints.Clear;
@@ -216,9 +216,9 @@ begin
     stream := TKMemoryStreamBinary.Create;
     stream.CopyFrom(aLoadStream, size);
 
-    rpl := TKMSavePoint.Create(stream, tick);
+    savePoint := TKMSavePoint.Create(stream, tick);
 
-    fSavePoints.Add(tick, rpl);
+    fSavePoints.Add(tick, savePoint);
   end;
 end;
 
