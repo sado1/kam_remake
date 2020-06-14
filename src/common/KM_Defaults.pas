@@ -125,7 +125,7 @@ var
   GAME_NO_UPDATE_ON_TIMER :Boolean = False; //Block game update by timer (only allow to update it manually)
   GAME_SAVE_STRIP_FOR_CRC :Boolean = False; //Strip unsynced data from Game saves, to compare saves CRC
   ALLOW_LOAD_UNSUP_VERSION_SAVE:
-                           Boolean = True;  //Allow to try load saves / replay with unsupported version
+                           Boolean = DEBUG_CFG; //Allow to try load saves / replay with unsupported version
   SHOW_ENEMIES_STATS      :Boolean = False; //Do we allow to show enemies stats during the game
   SHOW_DEBUG_CONTROLS     :Boolean = False; //Show debug panel / Form1 menu (F11)
   SHOW_CONTROLS_OVERLAY   :Boolean = False; //Draw colored overlays ontop of controls! always Off here
