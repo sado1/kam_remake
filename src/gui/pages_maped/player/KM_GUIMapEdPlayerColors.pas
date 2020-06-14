@@ -144,7 +144,7 @@ procedure TKMMapEdPlayerColors.ColorCodeChange(Sender: TObject);
 var
   C: Cardinal;
 begin
-  Edit_ColorCode.UpdateText(UpperCase(Edit_ColorCode.Text), False); //Will not trigger OnChange event
+  Edit_ColorCode.SetTextSilently(UpperCase(Edit_ColorCode.Text)); //Will not trigger OnChange event
   if Length(Edit_ColorCode.Text) > 0 then
   begin
     C := StrToInt('$' + Edit_ColorCode.Text);

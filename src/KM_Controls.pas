@@ -721,6 +721,7 @@ type
     property AllowedChars: TKMAllowedChars read fAllowedChars write fAllowedChars;
     property Text: UnicodeString read fText write SetText;
     procedure UpdateText(const aText: UnicodeString; aTriggerOnChange: Boolean = True);
+    procedure SetTextSilently(const aText: UnicodeString);
 
     function HitTest(X, Y: Integer; aIncludeDisabled: Boolean = False; aIncludeNotHitable: Boolean = False): Boolean; override;
     procedure Paint; override;
@@ -4292,6 +4293,12 @@ begin
   fText := aText;
   ValidateText(aTriggerOnChange); //Validate first since it could change fText
   CursorPos := Math.Min(CursorPos, Length(fText));
+end;
+
+
+procedure TKMEdit.SetTextSilently(const aText: UnicodeString);
+begin
+  UpdateText(aText, False);
 end;
 
 
