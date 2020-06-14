@@ -564,9 +564,10 @@ begin
   end;
 
   Result := inherited +
-            Format('|MarketResFrom = %s|MarketResTo = %s|MarketResIn       = %s|MarketResOut      = %s|MarketDeliveryCnt = %s',
+            Format('|MarketResFrom = %s|MarketResTo = %s|TradeAmount = %d|MarketResIn       = %s|MarketResOut      = %s|MarketDeliveryCnt = %s',
                    [GetEnumName(TypeInfo(TKMWareType), Integer(fResFrom)),
                     GetEnumName(TypeInfo(TKMWareType), Integer(fResTo)),
+                    fTradeAmount,
                     resInStr,
                     resOutStr,
                     deliveryCntStr]);
