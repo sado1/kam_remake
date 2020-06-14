@@ -32,6 +32,7 @@ implementation
 constructor TKMHouseWoodcutters.Create(aUID: Integer; aHouseType: TKMHouseType; PosX, PosY: Integer; aOwner: TKMHandID; aBuildState: TKMHouseBuildState);
 begin
   inherited;
+
   WoodcutterMode := wcmChopAndPlant;
 end;
 
@@ -39,6 +40,7 @@ end;
 constructor TKMHouseWoodcutters.Load(LoadStream: TKMemoryStream);
 begin
   inherited;
+
   LoadStream.CheckMarker('HouseWoodcutters');
   LoadStream.Read(fWoodcutterMode, SizeOf(fWoodcutterMode));
 end;
@@ -47,6 +49,7 @@ end;
 procedure TKMHouseWoodcutters.Save(SaveStream: TKMemoryStream);
 begin
   inherited;
+
   SaveStream.PlaceMarker('HouseWoodcutters');
   SaveStream.Write(fWoodcutterMode, SizeOf(fWoodcutterMode));
 end;
@@ -66,12 +69,12 @@ end;
 
 procedure TKMHouseWoodcutters.SetFlagPoint(aFlagPoint: TKMPoint);
 var
-  OldFlagPoint: TKMPoint;
+  oldFlagPoint: TKMPoint;
 begin
-  OldFlagPoint := FlagPoint;
+  oldFlagPoint := FlagPoint;
   inherited;
 
-  if not KMSamePoint(OldFlagPoint, fCuttingPoint) then
+  if not KMSamePoint(oldFlagPoint, fCuttingPoint) then
     ResourceDepleted := False; //Reset resource depleted msg, if player changed CuttingPoint
 end;
 

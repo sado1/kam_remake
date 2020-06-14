@@ -73,15 +73,15 @@ end;
 
 constructor TKMHouseBarracks.Load(LoadStream: TKMemoryStream);
 var
-  I, NewCount: Integer;
+  I, newCount: Integer;
   U: TKMUnit;
 begin
   inherited;
   LoadStream.CheckMarker('HouseBarracks');
   LoadStream.Read(fResourceCount, SizeOf(fResourceCount));
   fRecruitsList := TList.Create;
-  LoadStream.Read(NewCount);
-  for I := 0 to NewCount - 1 do
+  LoadStream.Read(newCount);
+  for I := 0 to newCount - 1 do
   begin
     LoadStream.Read(U, 4); //subst on syncload
     fRecruitsList.Add(U);
@@ -93,7 +93,8 @@ end;
 
 
 procedure TKMHouseBarracks.SyncLoad;
-var I: Integer;
+var
+  I: Integer;
 begin
   inherited;
   for I := 0 to RecruitsCount - 1 do
@@ -104,27 +105,28 @@ end;
 destructor TKMHouseBarracks.Destroy;
 begin
   fRecruitsList.Free;
+
   inherited;
 end;
 
 
 procedure TKMHouseBarracks.Activate(aWasBuilt: Boolean);
 var
-  FirstBarracks: TKMHouseBarracks;
+  firstBarracks: TKMHouseBarracks;
   WT: TKMWareType;
 begin
   inherited;
   //A new Barracks should inherit the accept properies of the first Barracks of that player,
   //which stops a sudden flow of unwanted wares to it as soon as it is created.
-  FirstBarracks := TKMHouseBarracks(gHands[fOwner].FindHouse(htBarracks, 1));
-  if (FirstBarracks <> nil) and not FirstBarracks.IsDestroyed then
+  firstBarracks := TKMHouseBarracks(gHands[fOwner].FindHouse(htBarracks, 1));
+  if (firstBarracks <> nil) and not firstBarracks.IsDestroyed then
   begin
     for WT := WARFARE_MIN to WARFARE_MAX do
     begin
-      NotAcceptFlag[WT] := FirstBarracks.NotAcceptFlag[WT];
-      NotAllowTakeOutFlag[WT] := FirstBarracks.NotAllowTakeOutFlag[WT];
+      NotAcceptFlag[WT] := firstBarracks.NotAcceptFlag[WT];
+      NotAllowTakeOutFlag[WT] := firstBarracks.NotAllowTakeOutFlag[WT];
     end;
-    NotAcceptRecruitFlag := FirstBarracks.NotAcceptRecruitFlag;
+    NotAcceptRecruitFlag := firstBarracks.NotAcceptRecruitFlag;
   end;
 end;
 
@@ -164,28 +166,28 @@ end;
 
 procedure TKMHouseBarracks.SetWareCnt(aWareType: TKMWareType; aValue: Word);
 var
-  CntChange: Integer;
+  cntChange: Integer;
 begin
   Assert(aWareType in [WARE_MIN..WARE_MAX]);
 
-  CntChange := aValue - fResourceCount[aWareType];
+  cntChange := aValue - fResourceCount[aWareType];
 
   fResourceCount[aWareType] := aValue;
 
-  if CntChange <> 0 then
-    gScriptEvents.ProcHouseWareCountChanged(Self, aWareType, aValue, CntChange);
+  if cntChange <> 0 then
+    gScriptEvents.ProcHouseWareCountChanged(Self, aWareType, aValue, cntChange);
 end;
 
 
 procedure TKMHouseBarracks.ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False);
 var
-  OldCnt: Integer;
+  oldCnt: Integer;
 begin
   Assert(aWare in [WARFARE_MIN..WARFARE_MAX], 'Invalid resource added to barracks');
 
-  OldCnt := fResourceCount[aWare];
+  oldCnt := fResourceCount[aWare];
   SetWareCnt(aWare, EnsureRange(fResourceCount[aWare] + aCount, 0, High(Word)));
-  gHands[fOwner].Deliveries.Queue.AddOffer(Self, aWare, fResourceCount[aWare] - OldCnt);
+  gHands[fOwner].Deliveries.Queue.AddOffer(Self, aWare, fResourceCount[aWare] - oldCnt);
 end;
 
 
@@ -309,8 +311,8 @@ end;
 function TKMHouseBarracks.EquipWarrior(aUnitType: TKMUnitType): Pointer;
 var
   I: Integer;
-  TroopWareType: TKMWareType;
-  Soldier: TKMUnitWarrior;
+  troopWareType: TKMWareType;
+  soldier: TKMUnitWarrior;
 begin
   Result := nil;
 
@@ -321,8 +323,8 @@ begin
   for I := 1 to 4 do
   if TROOP_COST[aUnitType, I] <> wtNone then
   begin
-    TroopWareType := TROOP_COST[aUnitType, I];
-    SetWareCnt(TroopWareType, fResourceCount[TroopWareType] - 1);
+    troopWareType := TROOP_COST[aUnitType, I];
+    SetWareCnt(troopWareType, fResourceCount[troopWareType] - 1);
 
     gHands[fOwner].Stats.WareConsumed(TROOP_COST[aUnitType, I]);
     gHands[fOwner].Deliveries.Queue.RemOffer(Self, TROOP_COST[aUnitType, I], 1);
@@ -333,16 +335,16 @@ begin
   fRecruitsList.Delete(0); //Delete first recruit in the list
 
   //Make new unit
-  Soldier := TKMUnitWarrior(gHands[fOwner].TrainUnit(aUnitType, Entrance));
-  Soldier.InHouse := Self; //Put him in the barracks, so if it is destroyed while he is inside he is placed somewhere
-  Soldier.Visible := False; //Make him invisible as he is inside the barracks
-  Soldier.Condition := Round(TROOPS_TRAINED_CONDITION * UNIT_MAX_CONDITION); //All soldiers start with 3/4, so groups get hungry at the same time
+  soldier := TKMUnitWarrior(gHands[fOwner].TrainUnit(aUnitType, Entrance));
+  soldier.InHouse := Self; //Put him in the barracks, so if it is destroyed while he is inside he is placed somewhere
+  soldier.Visible := False; //Make him invisible as he is inside the barracks
+  soldier.Condition := Round(TROOPS_TRAINED_CONDITION * UNIT_MAX_CONDITION); //All soldiers start with 3/4, so groups get hungry at the same time
   //Soldier.OrderLoc := KMPointBelow(Entrance); //Position in front of the barracks facing north
-  Soldier.SetActionGoIn(uaWalk, gdGoOutside, Self);
-  if Assigned(Soldier.OnUnitTrained) then
-    Soldier.OnUnitTrained(Soldier);
+  soldier.SetActionGoIn(uaWalk, gdGoOutside, Self);
+  if Assigned(soldier.OnUnitTrained) then
+    soldier.OnUnitTrained(soldier);
 
-  Result := Soldier;
+  Result := soldier;
 end;
 
 
@@ -351,15 +353,15 @@ end;
 function TKMHouseBarracks.Equip(aUnitType: TKMUnitType; aCount: Integer): Integer;
 var
   K: Integer;
-  Soldier: TKMUnitWarrior;
+  soldier: TKMUnitWarrior;
 begin
   Result := 0;
   Assert(aUnitType in [WARRIOR_EQUIPABLE_BARRACKS_MIN..WARRIOR_EQUIPABLE_BARRACKS_MAX]);
 
   for K := 0 to aCount - 1 do
   begin
-    Soldier := TKMUnitWarrior(EquipWarrior(aUnitType));
-    if Soldier = nil then
+    soldier := TKMUnitWarrior(EquipWarrior(aUnitType));
+    if soldier = nil then
       Exit;
       
     Inc(Result);
@@ -368,7 +370,8 @@ end;
 
 
 procedure TKMHouseBarracks.CreateRecruitInside(aIsMapEd: Boolean);
-var U: TKMUnit;
+var
+  U: TKMUnit;
 begin
   if aIsMapEd then
     Inc(MapEdRecruitCount)

@@ -66,6 +66,7 @@ end;
 constructor TKMHouseSchool.Load(LoadStream: TKMemoryStream);
 begin
   inherited;
+
   LoadStream.CheckMarker('HouseSchool');
   LoadStream.Read(fUnitWip, 4);
   LoadStream.Read(fHideOneGold);
@@ -76,7 +77,8 @@ end;
 
 procedure TKMHouseSchool.SyncLoad;
 begin
-  Inherited;
+  inherited;
+
   fUnitWip := gHands.GetUnitByUID(Cardinal(fUnitWip));
 end;
 
@@ -237,7 +239,8 @@ end;
 
 
 procedure TKMHouseSchool.StartTrainingUnit;
-var I: Integer;
+var
+  I: Integer;
 begin
   if fQueue[0] <> utNone then exit; //If there's currently no unit in training
   if fQueue[1] = utNone then exit; //If there is a unit waiting to be trained
