@@ -696,6 +696,8 @@ var
   Idx: Integer;
   PL1,PL2,PL3: TKMHandID;
 begin
+  if gGameParams.IsMapEditor then Exit; //No need to work in the mapEd
+
   FillChar(fPL2Alli, SizeOf(fPL2Alli), #255); // TKMHandIndex = SmallInt => Byte(255) = -1 = PLAYER_NONE
   SetLength(fAlli2PL, gHands.Count, gHands.Count);
   AlliCnt := 0;
