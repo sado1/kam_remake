@@ -3466,19 +3466,24 @@ begin
 //    fMinimap.Update;
   end;
 
-  if SpeedChangeAllowed([umSP, umReplay]) then
+  if   (Key = gResKeys[SC_SPEEDUP_1].Key)
+    or (Key = gResKeys[SC_SPEEDUP_2].Key)
+    or (Key = gResKeys[SC_SPEEDUP_3].Key)
+    or (Key = gResKeys[SC_SPEEDUP_4].Key) then
   begin
-    // Game speed/pause: available in multiplayer mode if the only player left in the game
-    if Key = gResKeys[SC_SPEEDUP_1].Key then
-      gGame.SetSpeed(GAME_SPEED_NORMAL, True, gGame.SpeedGIP);
-    if Key = gResKeys[SC_SPEEDUP_2].Key then
-      gGame.SetSpeed(gGameSettings.SpeedMedium, True);
-    if Key = gResKeys[SC_SPEEDUP_3].Key then
-      gGame.SetSpeed(gGameSettings.SpeedFast, True);
-    if Key = gResKeys[SC_SPEEDUP_4].Key then
-      gGame.SetSpeed(gGameSettings.SpeedVeryFast, True);
-  end
-  else
+    if SpeedChangeAllowed([umSP, umReplay]) then
+    begin
+      // Game speed/pause: available in multiplayer mode if the only player left in the game
+      if Key = gResKeys[SC_SPEEDUP_1].Key then
+        gGame.SetSpeed(GAME_SPEED_NORMAL, True, gGame.SpeedGIP);
+      if Key = gResKeys[SC_SPEEDUP_2].Key then
+        gGame.SetSpeed(gGameSettings.SpeedMedium, True);
+      if Key = gResKeys[SC_SPEEDUP_3].Key then
+        gGame.SetSpeed(gGameSettings.SpeedFast, True);
+      if Key = gResKeys[SC_SPEEDUP_4].Key then
+        gGame.SetSpeed(gGameSettings.SpeedVeryFast, True);
+    end
+    else
     if fUIMode in [umMP, umSpectate] then
     begin
       if not gGame.CanChangeMPGameSpeed then
@@ -3488,6 +3493,7 @@ begin
         gSoundPlayer.Play(sfxCantPlace);
       end;
     end;
+  end;
 
   // First check if this key was associated with some Spectate/Replay key
   if (fUIMode in [umReplay, umSpectate]) then
