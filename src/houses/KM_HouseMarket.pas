@@ -374,7 +374,7 @@ procedure TKMHouseMarket.MoveResIn2Out(aWare: TKMWareType; aCnt: Integer);
 begin
   aCnt := Min(aCnt, fMarketResIn[aWare]);
 
-  if aCnt = 0 then Exit;
+  if aCnt <= 0 then Exit; // aCnt could be negative
 
   //No need to call SetRes functins here, since its just moving resource from In to Out
   Inc(fMarketResOut[aWare], aCnt);
@@ -387,7 +387,7 @@ function TKMHouseMarket.MoveResOut2In(aWare: TKMWareType; aCnt: Integer): Intege
 begin
   Result := Min(aCnt, fMarketResOut[aWare]);
 
-  if Result = 0 then Exit;
+  if Result <= 0 then Exit; // aCnt could be negative
 
   //No need to call SetRes functins here, since its just moving resource from Out to In
   Dec(fMarketResOut[aWare], Result);
@@ -448,6 +448,9 @@ begin
   ordersAllowed := MAX_RES_ORDERED - fMarketDeliveryCount[fResFrom];
 
   Assert(ordersAllowed >= 0); //We must never have ordered more than we are allowed
+
+  //Update required resource, after we moved some from Out to In queue
+  resRequired := GetResRequired;
 
   //Order as many as we can within our limit
   if (resRequired > 0) and (ordersAllowed > 0) then
