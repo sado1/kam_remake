@@ -1308,6 +1308,8 @@ end;
 
 procedure TKMHouse.SetIsClosedForWorker(aIsClosed: Boolean);
 begin
+  if fIsClosedForWorker = aIsClosed then Exit; // Nothing to do. Do not count house closed for worker in stats again and again
+
   fIsClosedForWorker := aIsClosed;
 
   if not gGameParams.IsMapEditor then
