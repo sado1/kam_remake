@@ -965,6 +965,22 @@ function TKMTerrain.ScriptTrySetTilesArray(var aTiles: array of TKMTerrainTileBr
     aResult := False;
   end;
 
+  procedure UpdateHeight(aTileBrief: TKMTerrainTileBrief; aHeightRect: TKMRect; aHasErrorOnTile: Boolean; aErrorTypesOnTile: TKMTileChangeTypeSet);
+  begin
+    // Update height if needed
+    if aTileBrief.UpdateHeight then
+    begin
+      if InRange(aTileBrief.Height, 0, 100) then
+      begin
+        if TrySetTileHeight(aTileBrief.X, aTileBrief.Y, aTileBrief.Height, False) then
+          UpdateRect(aHeightRect, aTileBrief.X, aTileBrief.Y)
+        else
+          SetErrorNSetResult(tctHeight, aHasErrorOnTile, aErrorTypesOnTile, Result);
+      end else
+        SetErrorNSetResult(tctHeight, aHasErrorOnTile, aErrorTypesOnTile, Result);
+    end;
+  end;
+
 var 
   I, J, terr, rot: Integer;
   T: TKMTerrainTileBrief;
@@ -1031,17 +1047,7 @@ begin
       end;
 
       // Update height if needed
-      if T.UpdateHeight then
-      begin
-        if InRange(T.Height, 0, 100) then
-        begin
-          if TrySetTileHeight(T.X, T.Y, T.Height, False) then
-            UpdateRect(heightRect, T.X, T.Y)
-          else
-            SetErrorNSetResult(tctHeight, hasErrorOnTile, errorTypesOnTile, Result);
-        end else
-          SetErrorNSetResult(tctHeight, hasErrorOnTile, errorTypesOnTile, Result);
-      end;
+      UpdateHeight(T, heightRect, hasErrorOnTile, errorTypesOnTile);
 
       //Update object if needed
       if T.UpdateObject then
@@ -1053,7 +1059,12 @@ begin
         end else
           SetErrorNSetResult(tctObject, hasErrorOnTile, errorTypesOnTile, Result);
       end;
-    end else
+    end
+    else
+    if VerticeInMapCoords(T.X, T.Y) then
+      // Update height if needed
+      UpdateHeight(T, heightRect, hasErrorOnTile, errorTypesOnTile)
+    else
     begin
       hasErrorOnTile := True;
       //When tile is out of map coordinates we treat it as all operations failure
