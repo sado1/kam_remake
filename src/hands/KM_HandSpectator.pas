@@ -105,16 +105,16 @@ end;
 //Return last seleted object for current chosen hand
 function TKMSpectator.GetLastSpecSelectedObj: TObject;
 var
-  Obj: TObject;
+  obj: TObject;
   UID: Integer;
 begin
   Result := nil;
   UID := fLastSpecSelectedObjUID[fHandIndex];
   if UID <> UID_NONE then
   begin
-    Obj := gHands.GetObjectByUID(UID);
-    if IsLastSelectObjectValid(Obj) then
-      Result := Obj
+    obj := gHands.GetObjectByUID(UID);
+    if IsLastSelectObjectValid(obj) then
+      Result := obj
     else
       fLastSpecSelectedObjUID[fHandIndex] := UID_NONE;  // Last selected object is not valid anymore, so reset UID
   end;
@@ -226,29 +226,29 @@ end;
 
 procedure TKMSpectator.UpdateNewSelected;
 var
-  TmpSelected: TObject;
+  tmpSelected: TObject;
 begin
   //We do not want to change Selected object actually, just update fIsSelectedMyObj field is good enought
-  TmpSelected := Selected;
-  UpdateNewSelected(TmpSelected);
+  tmpSelected := Selected;
+  UpdateNewSelected(tmpSelected);
 end;
 
 
 procedure TKMSpectator.UpdateNewSelected(var aNewSelected: TObject; aAllowSelectAllies: Boolean = False);
 var
-  OwnerIndex: TKMHandID;
+  ownerIndex: TKMHandID;
 begin
   if gGameParams.Mode in [gmMultiSpectate, gmMapEd, gmReplaySingle, gmReplayMulti] then
     Exit;
 
-  OwnerIndex := GetGameObjectOwnerIndex(aNewSelected);
-  if OwnerIndex <> -1 then
+  ownerIndex := GetGameObjectOwnerIndex(aNewSelected);
+  if ownerIndex <> -1 then
   begin
-    if OwnerIndex <> fHandIndex then  // check if we selected our unit/ally's or enemy's
+    if ownerIndex <> fHandIndex then  // check if we selected our unit/ally's or enemy's
     begin
       if ((ALLOW_SELECT_ALLY_UNITS or aAllowSelectAllies) 
-            and (Hand.Alliances[OwnerIndex] = atAlly))
-          or (ALLOW_SELECT_ENEMIES and (Hand.Alliances[OwnerIndex] = atEnemy)) then // Enemies can be selected for debug
+            and (Hand.Alliances[ownerIndex] = atAlly))
+          or (ALLOW_SELECT_ENEMIES and (Hand.Alliances[ownerIndex] = atEnemy)) then // Enemies can be selected for debug
         fIsSelectedMyObj := False
       else
         aNewSelected := nil;
@@ -261,57 +261,57 @@ end;
 //Select anything player CAN select below cursor
 procedure TKMSpectator.UpdateSelect(aCheckUnderCursor: Boolean = True);
 var
-  NewSelected: TObject;
+  newSelected: TObject;
   UID: Integer;
 begin
-  NewSelected := nil;
+  newSelected := nil;
 
   if aCheckUnderCursor then
   begin
-    NewSelected := gHands.GetUnitByUID(gGameCursor.ObjectUID);
+    newSelected := gHands.GetUnitByUID(gGameCursor.ObjectUID);
 
     //In-game player can select only own and ally Units
-    UpdateNewSelected(NewSelected);
+    UpdateNewSelected(newSelected);
 
     //Don't allow the player to select dead units
-    if ((NewSelected is TKMUnit) and TKMUnit(NewSelected).IsDeadOrDying)
-      or (NewSelected is TKMUnitAnimal) then //...or animals
-      NewSelected := nil;
+    if ((newSelected is TKMUnit) and TKMUnit(newSelected).IsDeadOrDying)
+      or (newSelected is TKMUnitAnimal) then //...or animals
+      newSelected := nil;
 
     //If Id belongs to some Warrior, try to select his group instead
-    if NewSelected is TKMUnitWarrior then
+    if newSelected is TKMUnitWarrior then
     begin
-      NewSelected := gHands.GetGroupByMember(TKMUnitWarrior(NewSelected));
-      UpdateNewSelected(NewSelected);
+      newSelected := gHands.GetGroupByMember(TKMUnitWarrior(newSelected));
+      UpdateNewSelected(newSelected);
     end;
 
     //Update selected groups selected unit
-    if NewSelected is TKMUnitGroup then
-      TKMUnitGroup(NewSelected).SelectedUnit := TKMUnitGroup(NewSelected).MemberByUID(gGameCursor.ObjectUID);
+    if newSelected is TKMUnitGroup then
+      TKMUnitGroup(newSelected).SelectedUnit := TKMUnitGroup(newSelected).MemberByUID(gGameCursor.ObjectUID);
 
     //If there's no unit try pick a house on the Cell below
-    if NewSelected = nil then
+    if newSelected = nil then
     begin
-      NewSelected := gHands.HousesHitTest(gGameCursor.Cell.X, gGameCursor.Cell.Y);
+      newSelected := gHands.HousesHitTest(gGameCursor.Cell.X, gGameCursor.Cell.Y);
 
       //In-game player can select only own and ally Units
-      if (NewSelected is TKMHouse) then
-        UpdateNewSelected(NewSelected, TKMHouse(NewSelected).AllowAllyToView);
+      if (newSelected is TKMHouse) then
+        UpdateNewSelected(newSelected, TKMHouse(newSelected).AllowAllyToView);
 
       //Don't allow the player to select destroyed houses
-      if (NewSelected is TKMHouse) and TKMHouse(NewSelected).IsDestroyed then
-        NewSelected := nil;
+      if (newSelected is TKMHouse) and TKMHouse(newSelected).IsDestroyed then
+        newSelected := nil;
     end;
 
     //Don't clear the old selection unless we found something new
-    if NewSelected <> nil then
-      Selected := NewSelected;
+    if newSelected <> nil then
+      Selected := newSelected;
   end
   else
   begin
-    NewSelected := Selected; //To avoid nil-ing of fSelected
+    newSelected := Selected; //To avoid nil-ing of fSelected
     //In-game player can select only own and ally Units
-    UpdateNewSelected(NewSelected, fSelected is TKMHouse); //Updates fIsSelectedMyObj
+    UpdateNewSelected(newSelected, fSelected is TKMHouse); //Updates fIsSelectedMyObj
   end;
 
   // In a replay we want in-game statistics (and other things) to be shown for the owner of the last select object

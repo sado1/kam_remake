@@ -250,6 +250,7 @@ const
 constructor TKMHandCommon.Create(aHandIndex: TKMHandID);
 begin
   inherited Create;
+
   fID  := aHandIndex;
   fUnits        := TKMUnitsCollection.Create;
 end;
@@ -258,6 +259,7 @@ end;
 destructor TKMHandCommon.Destroy;
 begin
   FreeThenNil(fUnits);
+
   inherited;
 end;
 
@@ -654,7 +656,7 @@ function TKMHand.GetNextHouseWSameType(aHouseType: TKMHouseType; aStartFromUID: 
                                        aVerifySketchBoolParam: Boolean): TKMHouse;
 
 var
-  ResultSet: Boolean;
+  resultSet: Boolean;
 
   procedure FillHSketchByHouse(out aHouseSketchTmp: TKMHouseSketchEdit; aHouse: TKMHouse);
   begin
@@ -681,29 +683,29 @@ var
 
   function GetNextHSketch(aIndex: Integer; out aHouseSketchTmp: TKMHouseSketchEdit): Boolean;
   var
-    Sketch2Verify: TKMHouseSketch;
+    sketch2Verify: TKMHouseSketch;
   begin
     aHouseSketchTmp.Clear;
 
-    Sketch2Verify := nil;
+    sketch2Verify := nil;
 
     if (hstHouse in aSketchTypesSet) and (aIndex < fHouses.Count) then
     begin
       FillHSketchByHouse(aHouseSketchTmp, fHouses[aIndex]);
-      Sketch2Verify := fHouses[aIndex];
+      sketch2Verify := fHouses[aIndex];
     end else if (hstHousePlan in aSketchTypesSet) then
     begin
       FillHSketchByHPlan(aHouseSketchTmp, fConstructions.HousePlanList.Plans[aIndex - Byte(hstHouse in aSketchTypesSet)*fHouses.Count]);
-      Sketch2Verify := aHouseSketchTmp;
+      sketch2Verify := aHouseSketchTmp;
     end;
 
     Result := not aHouseSketchTmp.IsEmpty
-              and (not Assigned(aVerifySketch) or aVerifySketch(Sketch2Verify, aVerifySketchBoolParam));
+              and (not Assigned(aVerifySketch) or aVerifySketch(sketch2Verify, aVerifySketchBoolParam));
   end;
 
   procedure FillResult(aIndex: Integer; aHSketch: TKMHouseSketchEdit);
   begin
-    ResultSet := True;
+    resultSet := True;
     if aHouseSketch <> nil then
       aHSketch.CopyTo(aHouseSketch);
     if aIndex < fHouses.Count then
@@ -711,27 +713,27 @@ var
   end;
 
 var
-  Found: Boolean; //Flag when we find house sketch (House or HousePlan) with specified Starting UID
-  I, FirstHSketchI, FoundSketchI, Cnt: Integer;
+  found: Boolean; //Flag when we find house sketch (House or HousePlan) with specified Starting UID
+  I, firstHSketchI, foundSketchI, cnt: Integer;
 begin
   Result := nil;
   aHouseSketch.Clear;
 
-  Found := False;
-  ResultSet := False;
+  found := False;
+  resultSet := False;
 
-  Cnt :=   Byte(hstHouse in aSketchTypesSet)*fHouses.Count
+  cnt :=   Byte(hstHouse in aSketchTypesSet)*fHouses.Count
          + Byte(hstHousePlan in aSketchTypesSet)*fConstructions.HousePlanList.Count;
 
   I := 0;
-  FirstHSketchI := 0;
-  FoundSketchI := 0;
+  firstHSketchI := 0;
+  foundSketchI := 0;
 
   fHSketch.Clear;
   fFirstHSketch.Clear;
   fFoundHSketch.Clear;
 
-  while I < Cnt do
+  while I < cnt do
   begin
     try
       if not GetNextHSketch(I, fHSketch) then
@@ -747,49 +749,49 @@ begin
       //Find first house from specified UID
       if (fHSketch.UID = aStartFromUID) then
       begin
-        Found := True;               // Mark that we found our house
+        found := True;               // Mark that we found our house
         fHSketch.CopyTo(fFoundHSketch);
-        FoundSketchI := I;
+        foundSketchI := I;
       end
-      else if Found then
+      else if found then
       begin
         FillResult(I, fHSketch);           // Save the next house after Found to Result and Break
         Break;
       end else if fFirstHSketch.IsEmpty then
       begin
         fHSketch.CopyTo(fFirstHSketch);            // Save 1st house in list in case our house is the last one
-        FirstHSketchI := I;
+        firstHSketchI := I;
       end;
     finally
       Inc(I);
     end;
   end;
 
-  if not ResultSet then // Found should be always True here
+  if not resultSet then // Found should be always True here
   begin
-    if Found then
+    if found then
     begin
       if fFirstHSketch.IsEmpty then
-        FillResult(FoundSketchI, fFoundHSketch)   //Could happen, when we have only 1 house with that type...
+        FillResult(foundSketchI, fFoundHSketch)   //Could happen, when we have only 1 house with that type...
       else
-        FillResult(FirstHSketchI, fFirstHSketch);
+        FillResult(firstHSketchI, fFirstHSketch);
     end else if not fFirstHSketch.IsEmpty then
-      FillResult(FirstHSketchI, fFirstHSketch);
+      FillResult(firstHSketchI, fFirstHSketch);
   end;
 end;
 
 
 function TKMHand.GetNextUnitWSameType(aUnitType: TKMUnitType; aStartFromUID: Cardinal): TKMUnit;
 var
-  U, FirstU, LastU: TKMUnit;
-  Found: Boolean;
   I: Integer;
+  U, firstU, lastU: TKMUnit;
+  found: Boolean;
 begin
   Result := nil;
 
-  Found := False;
-  FirstU := nil;
-  LastU := nil;
+  found := False;
+  firstU := nil;
+  lastU := nil;
 
   for I := 0 to fUnits.Count - 1 do
   begin
@@ -807,73 +809,73 @@ begin
       Break;
     end;
 
-    LastU := U;
+    lastU := U;
 
     if U.UID = aStartFromUID then
-      Found := True                // Mark that we found our unit
-    else if Found then
+      found := True                // Mark that we found our unit
+    else if found then
     begin
       Result := U;                 // Save the next unit after Found to Result and Break
       Break;
-    end else if FirstU = nil then
-      FirstU := U;                 // Save 1st unit in list in case our unit is the last one
+    end else if firstU = nil then
+      firstU := U;                 // Save 1st unit in list in case our unit is the last one
   end;
 
-  if (Result = nil) and Found then   // Found should be always True here
+  if (Result = nil) and found then   // Found should be always True here
   begin
-    if FirstU = nil then //Could happen, when we have only 1 unit with that type...
-      Result := LastU
+    if firstU = nil then //Could happen, when we have only 1 unit with that type...
+      Result := lastU
     else
-      Result := FirstU;
+      Result := firstU;
   end;
 end;
 
 
 function TKMHand.GetNextGroupWSameType(aUnitType: TKMUnitType; aStartFromUID: Cardinal): TKMUnitGroup;
 var
-  Group, FirstG, LastG: TKMUnitGroup;
-  Found: Boolean;
   I: Integer;
+  group, firstG, lastG: TKMUnitGroup;
+  found: Boolean;
 begin
   Result := nil;
 
-  Found := False;
-  FirstG := nil;
-  LastG := nil;
+  found := False;
+  firstG := nil;
+  lastG := nil;
 
   for I := 0 to UnitGroups.Count - 1 do
   begin
-    Group := UnitGroups[I];
+    group := UnitGroups[I];
 
-    if (Group = nil)
-      or Group.IsDead //check if group is dead
-      or not Group.HasUnitType(aUnitType) then // we are interested in groups with the same type only
+    if (group = nil)
+      or group.IsDead //check if group is dead
+      or not group.HasUnitType(aUnitType) then // we are interested in groups with the same type only
       Continue;
 
     //Just find any first house
     if (aStartFromUID = 0) then
     begin
-      Result := Group;
+      Result := group;
       Break;
     end;
 
-    LastG := Group;
+    lastG := group;
 
-    if Group.UID = aStartFromUID then
-      Found := True               // Mark that we found our group
-    else if Found then
+    if group.UID = aStartFromUID then
+      found := True               // Mark that we found our group
+    else if found then
     begin
-      Result := Group;            // Save the next group after Found to Result and Break
+      Result := group;            // Save the next group after Found to Result and Break
       Break;
-    end else if FirstG = nil then
-      FirstG := Group;            // Save 1st group in list in case our group is the last one
+    end else if firstG = nil then
+      firstG := group;            // Save 1st group in list in case our group is the last one
   end;
-  if (Result = nil) and Found then // Found should be always True here
+  if (Result = nil) and found then // Found should be always True here
   begin
-    if FirstG = nil then  //Could happen, when we have only 1 group with that type...
-      Result := LastG
+    if firstG = nil then  //Could happen, when we have only 1 group with that type...
+      Result := lastG
     else
-      Result := FirstG;
+      Result := firstG;
   end;
 end;
 
@@ -902,29 +904,29 @@ end;
 procedure TKMHand.AddField(const aLoc: TKMPoint; aFieldType: TKMFieldType; aStage: Byte = 0;
                            aKeepOldObject: Boolean = False; aRemoveOverlay: Boolean = True);
 var
-  IsFieldSet: Boolean;
-  Obj: Word;
+  isFieldSet: Boolean;
+  obj: Word;
 begin
-  IsFieldSet := False;
-  Obj := gTerrain.Land[aLoc.Y,aLoc.X].Obj;
+  isFieldSet := False;
+  obj := gTerrain.Land[aLoc.Y,aLoc.X].Obj;
   //If we have corn/wine object on that tile, set appropriate field/wine stage
   if (aFieldType = ftCorn) and not gTerrain.TileIsCornField(aLoc) then
   begin
-    if ObjectIsCorn(Obj) then
+    if ObjectIsCorn(obj) then
     begin
-      gTerrain.SetField(aLoc, fID, aFieldType, Obj - 54, True, aKeepOldObject, aRemoveOverlay);
-      IsFieldSet := True;
+      gTerrain.SetField(aLoc, fID, aFieldType, obj - 54, True, aKeepOldObject, aRemoveOverlay);
+      isFieldSet := True;
     end;
   end else if (aFieldType = ftWine) and not gTerrain.TileIsWineField(aLoc) then
   begin
-    if ObjectIsWine(Obj) then
+    if ObjectIsWine(obj) then
     begin
-      gTerrain.SetField(aLoc, fID, aFieldType, Obj - 54, True, aKeepOldObject, aRemoveOverlay);
-      IsFieldSet := True;
+      gTerrain.SetField(aLoc, fID, aFieldType, obj - 54, True, aKeepOldObject, aRemoveOverlay);
+      isFieldSet := True;
     end;
   end;
 
-  if not IsFieldSet then
+  if not isFieldSet then
     gTerrain.SetField(aLoc, fID, aFieldType, aStage, True, aKeepOldObject, aRemoveOverlay);
 end;
 
@@ -1007,7 +1009,7 @@ end;
 
 function TKMHand.CanAddHousePlan(const aLoc: TKMPoint; aHouseType: TKMHouseType): Boolean;
 var
-  I,K,J,S,T,Tx,Ty: Integer;
+  I, K, J, S, T, Tx, Ty: Integer;
   HA: THouseArea;
 begin
   Result := gTerrain.CanPlaceHouse(aLoc, aHouseType);
@@ -1046,8 +1048,8 @@ function TKMHand.CanAddHousePlanAI(aX, aY: Word; aHouseType: TKMHouseType; aChec
 var
   I, K, J, S, T, Tx, Ty: Integer;
   HA: THouseArea;
-  EnterOff: ShortInt;
-  TerOwner: TKMHandID;
+  enterOff: ShortInt;
+  terOwner: TKMHandID;
 begin
   Result := False;
 
@@ -1058,12 +1060,12 @@ begin
 
   //Perform additional cheks for AI
   HA := gRes.Houses[aHouseType].BuildArea;
-  EnterOff := gRes.Houses[aHouseType].EntranceOffsetX;
+  enterOff := gRes.Houses[aHouseType].EntranceOffsetX;
   for I := 1 to 4 do
   for K := 1 to 4 do
   if HA[I,K] <> 0 then
   begin
-    Tx := aX + K - 3 - EnterOff;
+    Tx := aX + K - 3 - enterOff;
     Ty := aY + I - 4;
 
     //Make sure we don't block existing roads
@@ -1080,8 +1082,8 @@ begin
       //Check ownership for entrance (good enough since it does not changes that fast)
       if (HA[I,K] = 2) then
       begin
-        TerOwner := gAIFields.Influences.GetBestOwner(Tx,Ty);
-        if ((TerOwner <> fID) and (TerOwner <> PLAYER_NONE)) then
+        terOwner := gAIFields.Influences.GetBestOwner(Tx,Ty);
+        if ((terOwner <> fID) and (terOwner <> PLAYER_NONE)) then
           Exit;
       end;
     end;
@@ -1125,12 +1127,13 @@ end;
 //Check if Plan can be placed once again, as we might have conflicting commands caused by lag
 //This is called by GIP when a place field command is processed
 procedure TKMHand.ToggleFieldPlan(const aLoc: TKMPoint; aFieldType: TKMFieldType; aMakeSound: Boolean);
-var Plan: TKMFieldType;
+var
+  plan: TKMFieldType;
 begin
   Assert(aFieldType in [ftRoad, ftCorn, ftWine], 'Placing wrong FieldType');
 
-  Plan := fConstructions.FieldworksList.HasField(aLoc);
-  if aFieldType = Plan then //Same plan - remove it
+  plan := fConstructions.FieldworksList.HasField(aLoc);
+  if aFieldType = plan then //Same plan - remove it
     RemFieldPlan(aLoc,aMakeSound)
   else
     if CanAddFieldPlan(aLoc, aFieldType) then
@@ -1152,7 +1155,7 @@ begin
       if aMakeSound and not gGameParams.IsReplayOrSpectate
         and (ID = gMySpectator.HandID) then
         gSoundPlayer.Play(sfxCantPlace, 4);
-      if Plan = ftNone then //If we can't build because there's some other plan, that's ok
+      if plan = ftNone then //If we can't build because there's some other plan, that's ok
       begin
         //Can't build here anymore because something changed between click and command processing, so remove any fake plans
         fConstructions.FieldworksList.RemFakeField(aLoc);
@@ -1165,12 +1168,13 @@ end;
 //This procedure does not effect gameplay, it only changes fake field plans to make it look better for the user
 //It is called when the user clicks to place a field plan
 procedure TKMHand.ToggleFakeFieldPlan(const aLoc: TKMPoint; aFieldType: TKMFieldType);
-var Plan: TKMFieldType;
+var
+  plan: TKMFieldType;
 begin
   Assert(aFieldType in [ftRoad, ftCorn, ftWine], 'Placing wrong fake FieldType');
 
-  Plan := fConstructions.FieldworksList.HasFakeField(aLoc);
-  if aFieldType = Plan then //Same plan - remove it
+  plan := fConstructions.FieldworksList.HasFakeField(aLoc);
+  if aFieldType = plan then //Same plan - remove it
   begin
     fConstructions.FieldworksList.RemFakeField(aLoc); //Remove our fake marker which is shown to the user
     fConstructions.FieldworksList.AddFakeDeletedField(aLoc); //This will hide the real field until it is deleted from game
@@ -1218,14 +1222,14 @@ end;
 //Add plan of a house, house is not created until after worker flattens the terrain
 procedure TKMHand.AddHousePlan(aHouseType: TKMHouseType; const aLoc: TKMPoint);
 var
-  Loc: TKMPoint;
+  loc: TKMPoint;
 begin
-  Loc.X := aLoc.X - gRes.Houses[aHouseType].EntranceOffsetX;
-  Loc.Y := aLoc.Y;
+  loc.X := aLoc.X - gRes.Houses[aHouseType].EntranceOffsetX;
+  loc.Y := aLoc.Y;
 
-  fConstructions.HousePlanList.AddPlan(aHouseType, Loc);
+  fConstructions.HousePlanList.AddPlan(aHouseType, loc);
   fStats.HousePlanned(aHouseType);
-  gScriptEvents.ProcHousePlanPlaced(fID, Loc.X, Loc.Y, aHouseType);
+  gScriptEvents.ProcHousePlanPlaced(fID, loc.X, loc.Y, aHouseType);
 
   if (ID = gMySpectator.HandID) and not gGameParams.IsReplayOrSpectate then
     gSoundPlayer.Play(sfxPlacemarker);
@@ -1243,7 +1247,8 @@ end;
 
 //Player wants to remove own house
 procedure TKMHand.RemHouse(const Position: TKMPoint; DoSilent: Boolean; IsEditor: Boolean = False);
-var H: TKMHouse;
+var
+  H: TKMHouse;
 begin
   //Sound is handled in DemolishHouse
   H := fHouses.HitTest(Position.X, Position.Y);
@@ -1255,14 +1260,14 @@ end;
 
 procedure TKMHand.RemHousePlan(const Position: TKMPoint);
 var
-  HPlan: TKMHousePlan;
+  hPlan: TKMHousePlan;
 begin
-  if not fConstructions.HousePlanList.TryGetPlan(Position, HPlan) then //Due to network delays house might not exist now
+  if not fConstructions.HousePlanList.TryGetPlan(Position, hPlan) then //Due to network delays house might not exist now
     Exit;
 
   fConstructions.HousePlanList.RemPlan(Position);
-  fStats.HousePlanRemoved(HPlan.HouseType);
-  gScriptEvents.ProcHousePlanRemoved(fID, HPlan.Loc.X, HPlan.Loc.Y, HPlan.HouseType);
+  fStats.HousePlanRemoved(hPlan.HouseType);
+  gScriptEvents.ProcHousePlanRemoved(fID, hPlan.Loc.X, hPlan.Loc.Y, hPlan.HouseType);
   if (ID = gMySpectator.HandID) and not gGameParams.IsReplayOrSpectate then
     gSoundPlayer.Play(sfxClick);
 end;
@@ -1293,14 +1298,14 @@ end;
 
 function TKMHand.RemGroup(const Position: TKMPoint): Boolean;
 var
-  Group: TKMUnitGroup;
+  group: TKMUnitGroup;
 begin
   Assert(gGameParams.IsMapEditor);
 
-  Group := fUnitGroups.HitTest(Position.X, Position.Y);
-  Result := Group <> nil;
+  group := fUnitGroups.HitTest(Position.X, Position.Y);
+  Result := group <> nil;
   if Result then
-    fUnitGroups.RemGroup(Group);
+    fUnitGroups.RemGroup(group);
 end;
 
 
@@ -1364,13 +1369,13 @@ function TKMHand.FindInn(Loc: TKMPoint; aUnit: TKMUnit; UnitIsAtHome: Boolean = 
 var
   H: TKMHouseInn;
   I: Integer;
-  Dist, BestMatch: Single;
+  dist, bestMatch: Single;
 begin
   //This function will return the best inn for a unit at Loc, base on distance, food available and space available.
   //Will return nil if no suitable inn is available
   Result := nil;
   I := 1;
-  BestMatch := MaxSingle;
+  bestMatch := MaxSingle;
   if UnitIsAtHome then Inc(Loc.Y); //From outside the door of the house
 
   H := TKMHouseInn(FindHouse(htInn));
@@ -1380,11 +1385,11 @@ begin
     and aUnit.CanWalkTo(Loc, H.PointBelowEntrance, tpWalk, 0) then
     begin
       //Take the closest inn out of the ones that are suitable
-      Dist := KMLengthSqr(H.Position, Loc);
-      if Dist < BestMatch then
+      dist := KMLengthSqr(H.Position, Loc);
+      if dist < bestMatch then
       begin
         Result := H;
-        BestMatch := Dist;
+        bestMatch := dist;
       end;
     end;
 
@@ -1534,21 +1539,21 @@ end;
 
 function TKMHand.CalcOwnerName: UnicodeString;
 var
-  NumberedAIs: Boolean;
+  numberedAIs: Boolean;
 begin
-  NumberedAIs := not gGameParams.IsSingleplayer;
+  numberedAIs := not gGameParams.IsSingleplayer;
   //Default names
   if IsHuman then
     Result := gResTexts[TX_PLAYER_YOU]
   else
     if AI.Setup.NewAI then
     begin
-      if NumberedAIs then
+      if numberedAIs then
         Result := Format(gResTexts[TX_ADVANCED_AI_PLAYER_SHORT_X], [fID + 1])
       else
         Result := gResTexts[TX_AI_PLAYER_ADVANCED_SHORT];
     end else begin
-      if NumberedAIs then
+      if numberedAIs then
         Result := Format(gResTexts[TX_CLASSIC_AI_PLAYER_SHORT_X], [fID + 1])
       else
         Result := gResTexts[TX_AI_PLAYER_CLASSIC_SHORT];
@@ -1703,7 +1708,7 @@ end;
   Might also be used to show Players strength (or builder/warrior balance) in Tavern }
 function TKMHand.GetFieldsCount: Integer;
 var
-  I,K: Integer;
+  I, K: Integer;
 begin
   Result := 0;
     for I := 1 to gTerrain.MapY do
@@ -1760,9 +1765,9 @@ procedure TKMHand.GetHouseMarks(const aLoc: TKMPoint; aHouseType: TKMHouseType; 
   end;
 
 var
-  I,K,J,S,T: Integer;
+  I, K, J, S, T: Integer;
   P2: TKMPoint;
-  AllowBuild: Boolean;
+  allowBuild: Boolean;
   HA: THouseArea;
 begin
   //Get basic Marks
@@ -1774,23 +1779,23 @@ begin
   for I := 1 to 4 do
     for K := 1 to 4 do
       if (HA[I,K] <> 0)
-        and gTerrain.TileInMapCoords(aLoc.X+K-3-gRes.Houses[aHouseType].EntranceOffsetX, aLoc.Y+I-4, 1) then
+        and gTerrain.TileInMapCoords(aLoc.X + K - 3 - gRes.Houses[aHouseType].EntranceOffsetX, aLoc.Y + I - 4, 1) then
       begin
         //This can't be done earlier since values can be off-map
-        P2 := KMPoint(aLoc.X+K-3-gRes.Houses[aHouseType].EntranceOffsetX, aLoc.Y+I-4);
+        P2 := KMPoint(aLoc.X + K - 3 - gRes.Houses[aHouseType].EntranceOffsetX, aLoc.Y + I - 4);
 
         //Forbid planning on unrevealed areas and fieldplans
-        AllowBuild := aIgnoreFOW
+        allowBuild := aIgnoreFOW
                       or (NeedToChooseFirstStorehouseInGame and fFogOfWar.CheckTileInitialRevelation(P2.X, P2.Y)) //Use initial revelation for first storehouse
                       or (not NeedToChooseFirstStorehouseInGame and (fFogOfWar.CheckTileRevelation(P2.X, P2.Y) > 0));
 
         //This tile must not contain fields/houses of allied players or self
-        if AllowBuild then
+        if allowBuild then
           for J := 0 to gHands.Count - 1 do
             if (gHands[fID].Alliances[J] = atAlly)
               and ((gHands[J].fConstructions.FieldworksList.HasField(P2) <> ftNone)
                 or gHands[J].fConstructions.HousePlanList.HasPlan(P2)) then
-              AllowBuild := False;
+              allowBuild := False;
 
         //Check surrounding tiles in +/- 1 range for other houses pressence
         for S := -1 to 1 do
@@ -1798,14 +1803,14 @@ begin
             if (S <> 0) or (T <> 0) then //This is a surrounding tile, not the actual tile
               for J := 0 to gHands.Count - 1 do
                 if (gHands[fID].Alliances[J] = atAlly)
-                  and gHands[J].fConstructions.HousePlanList.HasPlan(KMPoint(P2.X+S,P2.Y+T)) then
+                  and gHands[J].fConstructions.HousePlanList.HasPlan(KMPoint(P2.X + S, P2.Y + T)) then
                 begin
-                  BlockPoint(KMPoint(P2.X+S,P2.Y+T), TC_BLOCK); //Block surrounding points
-                  AllowBuild := False;
+                  BlockPoint(KMPoint(P2.X + S, P2.Y + T), TC_BLOCK); //Block surrounding points
+                  allowBuild := False;
                 end;
 
         //Mark the tile according to previous check results
-        if not AllowBuild then
+        if not allowBuild then
           if HA[I,K] = 2 then
             BlockPoint(P2, TC_BLOCK_ENTRANCE)
           else
@@ -1884,7 +1889,8 @@ end;
 
 
 procedure TKMHand.SyncLoad;
-var I: Integer;
+var
+  I: Integer;
 begin
   if not Enabled then Exit;
 
@@ -2014,8 +2020,8 @@ end;
 
 procedure TKMHand.ChooseFirstStorehouse();
 var
-  K: Integer;
-  Entrance: TKMPoint;
+  I: Integer;
+  entrance: TKMPoint;
 begin
   if IsComputer then
     fChooseLocation.Placed := True
@@ -2023,14 +2029,14 @@ begin
   else
   if (Stats.GetHouseTotal(htStore) > 0) then
   begin
-    for K := 0 to fConstructions.HousePlanList.Count - 1 do
-      with fConstructions.HousePlanList.Plans[K] do
+    for I := 0 to fConstructions.HousePlanList.Count - 1 do
+      with fConstructions.HousePlanList.Plans[I] do
         if (HouseType = htStore) then
         begin
-          Entrance := KMPointAdd( Loc, KMPoint(gRes.Houses[HouseType].EntranceOffsetX,0) );
-          RemHousePlan(Entrance);
-          if CanAddFieldPlan(KMPoint(Entrance.X, Entrance.Y+1), ftRoad) then
-            AddFirstStorehouse(Entrance);
+          entrance := KMPointAdd( Loc, KMPoint(gRes.Houses[HouseType].EntranceOffsetX,0) );
+          RemHousePlan(entrance);
+          if CanAddFieldPlan(KMPoint(entrance.X, entrance.Y+1), ftRoad) then
+            AddFirstStorehouse(entrance);
         end;
   end;
 
@@ -2060,7 +2066,7 @@ procedure TKMHand.AddFirstStorehouse(aEntrance: TKMPoint);
     end;
   end;
 var
-  K: Integer;
+  I: Integer;
   H: TKMHouse;
   WT: TKMWareType;
   UT: TKMUnitType;
@@ -2080,7 +2086,7 @@ begin
   AddRoad( KMPoint(aEntrance.X+1,aEntrance.Y+1) );
   // Add Units
   for UT := Low(fChooseLocation.Units) to High(fChooseLocation.Units) do
-    for K := 0 to fChooseLocation.Units[UT] - 1 do
+    for I := 0 to fChooseLocation.Units[UT] - 1 do
       AddUnit(UT, KMPoint(aEntrance.X,aEntrance.Y+1));
   // Finish action
   fChooseLocation.Placed := True;
@@ -2144,12 +2150,12 @@ end;
 { TKMHandAnimals }
 function TKMHandAnimals.GetFishInWaterBody(aWaterID: Byte; FindHighestCount: Boolean = True): TKMUnitAnimal;
 var
-  I, HighestGroupCount: Integer;
+  I, highestGroupCount: Integer;
   U: TKMUnit;
 begin
   Result := nil;
   if aWaterID = 0 then Exit; //Fish should always be in valid water
-  HighestGroupCount := 0;
+  highestGroupCount := 0;
 
   for I := 0 to fUnits.Count - 1 do
   begin
@@ -2159,12 +2165,12 @@ begin
     and (U.UnitType = utFish)
     and (not U.IsDeadOrDying) //Fish are killed when they are caught or become stuck
     and (gTerrain.Land[U.CurrPosition.Y, U.CurrPosition.X].WalkConnect[wcFish] = aWaterID)
-    and (TKMUnitAnimal(U).FishCount > HighestGroupCount) then
+    and (TKMUnitAnimal(U).FishCount > highestGroupCount) then
     begin
       Result := TKMUnitAnimal(U);
       //This is for time saving when we don't actually care which group is returned
       if not FindHighestCount then Exit;
-      HighestGroupCount := Result.FishCount;
+      highestGroupCount := Result.FishCount;
     end;
   end;
 end;

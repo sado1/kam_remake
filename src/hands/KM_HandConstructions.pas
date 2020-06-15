@@ -254,7 +254,8 @@ end;
 
 //Add new job to the list
 procedure TKMHouseList.AddHouse(aHouse: TKMHouse);
-var I: Integer;
+var
+  I: Integer;
 begin
   I := 0;
   while (I < fHousesCount) and (fHouses[I].House <> nil) do
@@ -274,7 +275,7 @@ end;
 function TKMHouseList.BestBid(aWorker: TKMUnitWorker; out aBid: Single): Integer;
 var
   I: Integer;
-  NewBid: Single;
+  newBid: Single;
 begin
   //We can weight the repairs by distance, severity, etc..
   //For now, each worker will go for the house closest to him
@@ -287,12 +288,12 @@ begin
   and aWorker.CanWalkTo(fHouses[i].House.PointBelowEntrance, 0)
   then
   begin
-    NewBid := KMLengthDiag(aWorker.CurrPosition, fHouses[I].House.Position);
-    NewBid := NewBid + fHouses[I].Assigned * BID_MODIF;
+    newBid := KMLengthDiag(aWorker.CurrPosition, fHouses[I].House.Position);
+    newBid := newBid + fHouses[I].Assigned * BID_MODIF;
 
-    if NewBid < aBid then
+    if newBid < aBid then
     begin
-      aBid := NewBid;
+      aBid := newBid;
       Result := I;
     end;
   end;
@@ -300,7 +301,8 @@ end;
 
 
 function TKMHouseList.GetAvailableJobsCount:Integer;
-var I: Integer;
+var
+  I: Integer;
 begin
   Result := 0;
   for I := 0 to fHousesCount - 1 do
@@ -326,7 +328,8 @@ end;
 
 //We can remove house only when there are no workers left to it (e.g. stuck on their way)
 procedure TKMHouseList.RemoveExtraHouses;
-var I: Integer;
+var
+  I: Integer;
 begin
   for I := 0 to fHousesCount - 1 do
   if (fHouses[i].House <> nil) and (fHouses[I].House.IsDestroyed or fHouses[I].House.IsComplete) and (fHouses[I].Assigned = 0) then
@@ -341,7 +344,8 @@ end;
 
 
 procedure TKMHouseList.Save(SaveStream: TKMemoryStream);
-var I: Integer;
+var
+  I: Integer;
 begin
   SaveStream.PlaceMarker('HouseList');
 
@@ -358,7 +362,8 @@ end;
 
 
 procedure TKMHouseList.Load(LoadStream: TKMemoryStream);
-var I: Integer;
+var
+  I: Integer;
 begin
   LoadStream.CheckMarker('HouseList');
 
@@ -373,7 +378,8 @@ end;
 
 
 procedure TKMHouseList.SyncLoad;
-var I: Integer;
+var
+  I: Integer;
 begin
   for I := 0 to fHousesCount - 1 do
     fHouses[i].House := gHands.GetHouseByUID(cardinal(fHouses[I].House));
@@ -384,7 +390,7 @@ end;
 function TKMFieldworksList.BestBid(aWorker: TKMUnitWorker; out aBid: Single): Integer;
 var
   I: Integer;
-  NewBid: Single;
+  newBid: Single;
 begin
   Result := -1;
   aBid := MaxSingle;
@@ -393,18 +399,19 @@ begin
   if (fFields[I].JobStatus = jsOpen)
   and aWorker.CanWalkTo(fFields[I].Loc, 0) then
   begin
-    NewBid := KMLengthDiag(aWorker.CurrPosition, fFields[I].Loc);
-    if NewBid < aBid then
+    newBid := KMLengthDiag(aWorker.CurrPosition, fFields[I].Loc);
+    if newBid < aBid then
     begin
       Result := I;
-      aBid := NewBid;
+      aBid := newBid;
     end;
   end;
 end;
 
 
 function TKMFieldworksList.GetAvailableJobsCount:Integer;
-var I: Integer;
+var
+  I: Integer;
 begin
   Result := 0;
   for I := 0 to fFieldsCount - 1 do
@@ -430,7 +437,8 @@ end;
 //aIncludeFake means the list of fields will be as the user should see it, with additional fake fields
 //and some of the real fields removed if the user has deleted them but the command has not yet been processed.
 procedure TKMFieldworksList.GetFields(aList: TKMPointTagList; const aRect: TKMRect; aIncludeFake: Boolean);
-var I: Integer;
+var
+  I: Integer;
 begin
   for I := 0 to fFieldsCount - 1 do
   if (fFields[I].FieldType <> ftNone) and KMInRect(fFields[I].Loc, aRect) then
@@ -452,7 +460,8 @@ end;
 
 
 function TKMFieldworksList.FieldCount(aFieldType: TKMFieldType): Integer;
-var I: Integer;
+var
+  I: Integer;
 begin
   Result := 0;
   for I := 0 to fFieldsCount - 1 do
@@ -471,7 +480,8 @@ end;
 
 //Fake plan that will be visible until real one is verified by Server
 procedure TKMFieldworksList.AddFakeField(const aLoc: TKMPoint; aFieldType: TKMFieldType);
-var I: Integer;
+var
+  I: Integer;
 begin
   I := 0;
   while (I < Length(fFakeFields)) and (fFakeFields[I].Active) do
@@ -488,7 +498,8 @@ end;
 
 //Indicator that the real plan on this tile has been deleted, so hide it from the user
 procedure TKMFieldworksList.AddFakeDeletedField(const aLoc: TKMPoint);
-var I: Integer;
+var
+  I: Integer;
 begin
   I := 0;
   while (I < Length(fFakeDeletedFields)) and (fFakeDeletedFields[I].Active) do
@@ -530,7 +541,8 @@ end;
 
 //Removes the fake marker showing the user he has placed a field here
 procedure TKMFieldworksList.RemFakeField(const aLoc: TKMPoint);
-var I: Integer;
+var
+  I: Integer;
 begin
   for I := 0 to Length(fFakeFields) - 1 do
     if fFakeFields[I].Active and KMSamePoint(fFakeFields[I].Loc, aLoc) then
@@ -540,7 +552,8 @@ end;
 
 //Removes the fake deleted field which is used to hide a real field until the command can be processed
 procedure TKMFieldworksList.RemFakeDeletedField(const aLoc: TKMPoint);
-var I: Integer;
+var
+  I: Integer;
 begin
   for I := 0 to Length(fFakeDeletedFields) - 1 do
     if fFakeDeletedFields[I].Active and KMSamePoint(fFakeDeletedFields[I].Loc, aLoc) then
@@ -549,7 +562,8 @@ end;
 
 
 procedure TKMFieldworksList.RemFieldPlan(const aLoc: TKMPoint);
-var I: Integer;
+var
+  I: Integer;
 begin
   RemFakeDeletedField(aLoc);
   for I := 0 to fFieldsCount - 1 do
@@ -585,7 +599,7 @@ end;
 function TKMFieldworksList.HasFakeField(const aLoc: TKMPoint): TKMFieldType;
 var
   I, K: Integer;
-  Found: Boolean;
+  found: Boolean;
 begin
   Result := ftNone;
 
@@ -601,14 +615,14 @@ begin
   for I := 0 to fFieldsCount - 1 do
   if KMSamePoint(fFields[I].Loc, aLoc) then
   begin
-    Found := False;
+    found := False;
     for K := 0 to Length(fFakeDeletedFields) - 1 do
       if fFakeDeletedFields[K].Active and KMSamePoint(fFakeDeletedFields[K].Loc, aLoc) then
       begin
-        Found := True; //This field is being deleted, so don't count it
+        found := True; //This field is being deleted, so don't count it
         Break;
       end;
-    if not Found then
+    if not found then
     begin
       Result := fFields[I].FieldType;
       Exit;
@@ -699,7 +713,7 @@ end;
 function TKMHousePlanList.BestBid(aWorker: TKMUnitWorker; out aBid: Single): Integer;
 var
   I: Integer;
-  NewBid: Single;
+  newBid: Single;
 begin
   Result := -1;
   aBid := MaxSingle;
@@ -709,11 +723,11 @@ begin
     and aWorker.CanWalkTo(fPlans[I].Loc, 0)
     then
     begin
-      NewBid := KMLengthDiag(aWorker.CurrPosition, fPlans[I].Loc);
-      if NewBid < aBid then
+      newBid := KMLengthDiag(aWorker.CurrPosition, fPlans[I].Loc);
+      if newBid < aBid then
       begin
         Result := I;
-        aBid := NewBid;
+        aBid := newBid;
       end;
     end;
 end;
@@ -743,24 +757,24 @@ end;
 function TKMHousePlanList.FindHousePlan(const aLoc: TKMPoint; aSkip: TKMPoint; out aOut: TKMPoint): Boolean;
 var
   I: Integer;
-  Entrance: TKMPoint;
-  Dist, Best: Single;
+  entrance: TKMPoint;
+  dist, best: Single;
   HD: TKMResHouses;
 begin
   Result := False;
-  Best := MaxSingle;
+  best := MaxSingle;
   HD := gRes.Houses;
 
   for I := 0 to fPlansCount - 1 do
   if (fPlans[I].HouseType <> htNone)
   and ((fPlans[I].Loc.X + HD[fPlans[I].HouseType].EntranceOffsetX <> aSkip.X) or (fPlans[I].Loc.Y <> aSkip.Y)) then
   begin
-    Entrance := KMPoint(fPlans[I].Loc.X + HD[fPlans[I].HouseType].EntranceOffsetX, fPlans[I].Loc.Y + 1);
-    Dist := KMLengthDiag(Entrance, aLoc);
-    if Dist < Best then
+    entrance := KMPoint(fPlans[I].Loc.X + HD[fPlans[I].HouseType].EntranceOffsetX, fPlans[I].Loc.Y + 1);
+    dist := KMLengthDiag(entrance, aLoc);
+    if dist < best then
     begin
-      Best := Dist;
-      aOut := Entrance;
+      best := dist;
+      aOut := entrance;
       Result := True;
     end;
   end;
@@ -866,18 +880,18 @@ end;
 
 procedure TKMHousePlanList.GetOutlines(aList: TKMPointDirList; const aRect: TKMRect);
 var
-  I,J,K: Integer;
-  Rect: TKMRect;
+  I, J, K: Integer;
+  rect: TKMRect;
   HA: THouseArea;
 begin
   //Expand the Rect by 2 to include plans near Rect borders
-  Rect := KMRectGrow(aRect, 2);
+  rect := KMRectGrow(aRect, 2);
 
   //Test all plans. We use Loc-2 to test plans centers
   for I := 0 to fPlansCount - 1 do
     if (fPlans[I].HouseType <> htNone)
-    and InRange(fPlans[I].Loc.X - 2, Rect.Left, Rect.Right)
-    and InRange(fPlans[I].Loc.Y - 2, Rect.Top, Rect.Bottom) then
+    and InRange(fPlans[I].Loc.X - 2, rect.Left, rect.Right)
+    and InRange(fPlans[I].Loc.Y - 2, rect.Top, rect.Bottom) then
     begin
       HA := gRes.Houses[fPlans[I].HouseType].BuildArea;
 
@@ -903,15 +917,15 @@ end;
 procedure TKMHousePlanList.GetTablets(aList: TKMPointTagList; const aRect: TKMRect);
 var
   I: Integer;
-  Rect: TKMRect;
+  rect: TKMRect;
 begin
   //Expand the Rect by 2 to include tablets near Rect borders
-  Rect := KMRectGrow(aRect, 2);
+  rect := KMRectGrow(aRect, 2);
 
   for I := 0 to fPlansCount - 1 do
   if (fPlans[I].HouseType <> htNone)
-  and InRange(fPlans[I].Loc.X - 2, Rect.Left, Rect.Right)
-  and InRange(fPlans[I].Loc.Y - 2, Rect.Top, Rect.Bottom) then
+  and InRange(fPlans[I].Loc.X - 2, rect.Left, rect.Right)
+  and InRange(fPlans[I].Loc.Y - 2, rect.Top, rect.Bottom) then
     aList.Add(KMPoint(fPlans[I].Loc.X + gRes.Houses[fPlans[I].HouseType].EntranceOffsetX, fPlans[I].Loc.Y), Byte(fPlans[I].HouseType));
 end;
 
@@ -938,7 +952,8 @@ end;
 
 
 procedure TKMHousePlanList.Load(LoadStream: TKMemoryStream);
-var I: Integer;
+var
+  I: Integer;
 begin
   LoadStream.CheckMarker('HousePlanList');
 
@@ -978,7 +993,8 @@ end;
 
 
 function TKMRepairList.HouseAlreadyInList(aHouse: TKMHouse): Boolean;
-var I: Integer;
+var
+  I: Integer;
 begin
   Result := False;
 
@@ -993,7 +1009,8 @@ end;
 
 //Include the House into the List
 procedure TKMRepairList.AddHouse(aHouse: TKMHouse);
-var I: Integer;
+var
+  I: Integer;
 begin
   if HouseAlreadyInList(aHouse) then Exit;
 
@@ -1015,7 +1032,7 @@ end;
 function TKMRepairList.BestBid(aWorker: TKMUnitWorker; out aBid: Single): Integer;
 var
   I: Integer;
-  NewBid: Single;
+  newBid: Single;
 begin
   //We can weight the repairs by distance, severity, etc..
   //For now, each worker will go for the house closest to him
@@ -1026,12 +1043,12 @@ begin
   if (fHouses[I].House <> nil)
   and (fHouses[I].Assigned < MAX_WORKERS[fHouses[i].House.HouseType]) then
   begin
-    NewBid := KMLengthDiag(aWorker.CurrPosition, fHouses[I].House.Position);
-    NewBid := NewBid + fHouses[I].Assigned * BID_MODIF;
+    newBid := KMLengthDiag(aWorker.CurrPosition, fHouses[I].House.Position);
+    newBid := newBid + fHouses[I].Assigned * BID_MODIF;
 
-    if NewBid < aBid then
+    if newBid < aBid then
     begin
-      aBid := NewBid;
+      aBid := newBid;
       Result := I;
     end;
   end;
@@ -1039,7 +1056,8 @@ end;
 
 
 function TKMRepairList.GetAvailableJobsCount:Integer;
-var I: Integer;
+var
+  I: Integer;
 begin
   Result := 0;
   for I := 0 to fHousesCount - 1 do
@@ -1101,7 +1119,8 @@ end;
 
 
 procedure TKMRepairList.Load(LoadStream: TKMemoryStream);
-var I: Integer;
+var
+  I: Integer;
 begin
   LoadStream.CheckMarker('RepairList');
 
@@ -1116,7 +1135,8 @@ end;
 
 
 procedure TKMRepairList.SyncLoad;
-var I: Integer;
+var
+  I: Integer;
 begin
   for I := 0 to fHousesCount - 1 do
     fHouses[I].House := gHands.GetHouseByUID(Cardinal(fHouses[I].House));
@@ -1206,7 +1226,8 @@ end;
 
 
 procedure TKMHandConstructions.Load(LoadStream: TKMemoryStream);
-var I: Integer;
+var
+  I: Integer;
 begin
   LoadStream.CheckMarker('WorkerList');
 
@@ -1223,7 +1244,9 @@ end;
 
 
 procedure TKMHandConstructions.SyncLoad;
-var I: Integer; U: TKMUnit;
+var
+  I: Integer;
+  U: TKMUnit;
 begin
   for I := 0 to fWorkersCount - 1 do
   begin
@@ -1240,7 +1263,8 @@ end;
 
 
 function TKMHandConstructions.GetIdleWorkerCount: Integer;
-var I: Integer;
+var
+  I: Integer;
 begin
   Result := 0;
   for I := 0 to fWorkersCount - 1 do
@@ -1252,18 +1276,18 @@ end;
 function TKMHandConstructions.GetBestWorker(const aPoint: TKMPoint): TKMUnitWorker;
 var
   I: Integer;
-  NewBid, BestBid: Single;
+  newBid, bestBid: Single;
 begin
   Result := nil;
-  BestBid := MaxSingle;
+  bestBid := MaxSingle;
   for I := 0 to fWorkersCount - 1 do
     if fWorkers[I].Worker.IsIdle and fWorkers[I].Worker.CanWalkTo(aPoint, 0) then
     begin
-      NewBid := KMLengthDiag(fWorkers[I].Worker.CurrPosition, aPoint);
-      if NewBid < BestBid then
+      newBid := KMLengthDiag(fWorkers[I].Worker.CurrPosition, aPoint);
+      if newBid < bestBid then
       begin
         Result := fWorkers[I].Worker;
-        BestBid := NewBid;
+        bestBid := newBid;
       end;
     end;
 end;
@@ -1271,79 +1295,79 @@ end;
 
 procedure TKMHandConstructions.AssignFieldworks;
 var
-  I, AvailableWorkers, AvailableJobs, JobID: Integer;
-  MyBid: Single;
-  BestWorker:TKMUnitWorker;
+  I, availableWorkers, availableJobs, jobID: Integer;
+  myBid: Single;
+  bestWorker:TKMUnitWorker;
 begin
-  AvailableWorkers := GetIdleWorkerCount;
-  AvailableJobs := fFieldworksList.GetAvailableJobsCount;
-  if AvailableWorkers*AvailableJobs = 0 then Exit;
+  availableWorkers := GetIdleWorkerCount;
+  availableJobs := fFieldworksList.GetAvailableJobsCount;
+  if availableWorkers*availableJobs = 0 then Exit;
 
-  if AvailableJobs > AvailableWorkers then
+  if availableJobs > availableWorkers then
   begin
     for I := 0 to fWorkersCount - 1 do
       if fWorkers[I].Worker.IsIdle then
       begin
-        JobID := fFieldworksList.BestBid(fWorkers[I].Worker, MyBid);
-        if JobID <> -1 then fFieldworksList.GiveTask(JobID, fWorkers[I].Worker);
+        jobID := fFieldworksList.BestBid(fWorkers[I].Worker, myBid);
+        if jobID <> -1 then fFieldworksList.GiveTask(jobID, fWorkers[I].Worker);
       end;
   end
   else
     for I := 0 to fFieldworksList.fFieldsCount - 1 do
       if fFieldworksList.fFields[I].JobStatus = jsOpen then
       begin
-        BestWorker := GetBestWorker(fFieldworksList.fFields[I].Loc);
-        if BestWorker <> nil then fFieldworksList.GiveTask(I, BestWorker);
+        bestWorker := GetBestWorker(fFieldworksList.fFields[I].Loc);
+        if bestWorker <> nil then fFieldworksList.GiveTask(I, bestWorker);
       end;
 end;
 
 
 procedure TKMHandConstructions.AssignHousePlans;
 var
-  I, AvailableWorkers, AvailableJobs, JobID: Integer;
-  MyBid: Single;
-  BestWorker:TKMUnitWorker;
+  I, availableWorkers, availableJobs, jobID: Integer;
+  myBid: Single;
+  bestWorker:TKMUnitWorker;
 begin
-  AvailableWorkers := GetIdleWorkerCount;
-  AvailableJobs := fHousePlanList.GetAvailableJobsCount;
-  if AvailableWorkers*AvailableJobs = 0 then Exit;
+  availableWorkers := GetIdleWorkerCount;
+  availableJobs := fHousePlanList.GetAvailableJobsCount;
+  if availableWorkers*availableJobs = 0 then Exit;
 
-  if AvailableJobs > AvailableWorkers then
+  if availableJobs > availableWorkers then
   begin
     for I := 0 to fWorkersCount - 1 do
       if fWorkers[I].Worker.IsIdle then
       begin
-        JobID := fHousePlanList.BestBid(fWorkers[I].Worker, MyBid);
-        if JobID <> -1 then fHousePlanList.GiveTask(JobID, fWorkers[I].Worker);
+        jobID := fHousePlanList.BestBid(fWorkers[I].Worker, myBid);
+        if jobID <> -1 then fHousePlanList.GiveTask(jobID, fWorkers[I].Worker);
       end;
   end
   else
     for I := 0 to fHousePlanList.fPlansCount - 1 do
       if fHousePlanList.fPlans[I].JobStatus = jsOpen then
       begin
-        BestWorker := GetBestWorker(fHousePlanList.fPlans[I].Loc);
-        if BestWorker <> nil then fHousePlanList.GiveTask(I, BestWorker);
+        bestWorker := GetBestWorker(fHousePlanList.fPlans[I].Loc);
+        if bestWorker <> nil then fHousePlanList.GiveTask(I, bestWorker);
       end;
 end;
 
 
 procedure TKMHandConstructions.AssignHouses;
 var
-  I, AvailableWorkers, AvailableJobs, JobID: Integer;
-  MyBid: Single;
-  BestWorker: TKMUnitWorker;
+  I, availableWorkers, availableJobs, jobID: Integer;
+  myBid: Single;
+  bestWorker: TKMUnitWorker;
 begin
-  AvailableWorkers := GetIdleWorkerCount;
-  AvailableJobs := fHouseList.GetAvailableJobsCount;
-  if AvailableWorkers*AvailableJobs = 0 then Exit;
+  availableWorkers := GetIdleWorkerCount;
+  availableJobs := fHouseList.GetAvailableJobsCount;
+  if availableWorkers*availableJobs = 0 then Exit;
 
-  if AvailableJobs > AvailableWorkers then
+  if availableJobs > availableWorkers then
   begin
     for I := 0 to fWorkersCount - 1 do
       if fWorkers[I].Worker.IsIdle then
       begin
-        JobID := fHouseList.BestBid(fWorkers[I].Worker, MyBid);
-        if JobID <> -1 then fHouseList.GiveTask(JobID, fWorkers[I].Worker);
+        jobID := fHouseList.BestBid(fWorkers[I].Worker, myBid);
+        if jobID <> -1 then fHouseList.GiveTask(jobID, fWorkers[I].Worker);
       end;
   end
   else
@@ -1351,29 +1375,29 @@ begin
       if (fHouseList.fHouses[i].House <> nil) and fHouseList.fHouses[i].House.CheckResToBuild
       and(fHouseList.fHouses[I].Assigned < MAX_WORKERS[fHouseList.fHouses[i].House.HouseType]) then
       begin
-        BestWorker := GetBestWorker(fHouseList.fHouses[I].House.PointBelowEntrance);
-        if BestWorker <> nil then fHouseList.GiveTask(I, BestWorker);
+        bestWorker := GetBestWorker(fHouseList.fHouses[I].House.PointBelowEntrance);
+        if bestWorker <> nil then fHouseList.GiveTask(I, bestWorker);
       end;
 end;
 
 
 procedure TKMHandConstructions.AssignRepairs;
 var
-  I, AvailableWorkers, AvailableJobs, JobID: Integer;
-  MyBid: Single;
-  BestWorker: TKMUnitWorker;
+  I, availableWorkers, availableJobs, jobID: Integer;
+  myBid: Single;
+  bestWorker: TKMUnitWorker;
 begin
-  AvailableWorkers := GetIdleWorkerCount;
-  AvailableJobs := fRepairList.GetAvailableJobsCount;
-  if AvailableWorkers*AvailableJobs = 0 then Exit;
+  availableWorkers := GetIdleWorkerCount;
+  availableJobs := fRepairList.GetAvailableJobsCount;
+  if availableWorkers*availableJobs = 0 then Exit;
 
-  if AvailableJobs > AvailableWorkers then
+  if availableJobs > availableWorkers then
   begin
     for I := 0 to fWorkersCount - 1 do
       if fWorkers[I].Worker.IsIdle then
       begin
-        JobID := fRepairList.BestBid(fWorkers[I].Worker, MyBid);
-        if JobID <> -1 then fRepairList.GiveTask(JobID, fWorkers[I].Worker);
+        jobID := fRepairList.BestBid(fWorkers[I].Worker, myBid);
+        if jobID <> -1 then fRepairList.GiveTask(jobID, fWorkers[I].Worker);
       end;
   end
   else
@@ -1381,8 +1405,8 @@ begin
       if (fRepairList.fHouses[i].House <> nil)
       and(fRepairList.fHouses[I].Assigned < MAX_WORKERS[fRepairList.fHouses[i].House.HouseType]) then
       begin
-        BestWorker := GetBestWorker(fRepairList.fHouses[I].House.PointBelowEntrance);
-        if BestWorker <> nil then fRepairList.GiveTask(I, BestWorker);
+        bestWorker := GetBestWorker(fRepairList.fHouses[I].House.PointBelowEntrance);
+        if bestWorker <> nil then fRepairList.GiveTask(I, bestWorker);
       end;
 end;
 
