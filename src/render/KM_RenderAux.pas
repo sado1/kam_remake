@@ -638,8 +638,8 @@ procedure TRenderAux.TileTerrainHeight(const aRect: TKMRect);
 var
   I, J: Integer;
 begin
-  for I := aRect.Top to aRect.Bottom do
-    for J := aRect.Left to aRect.Right do
+  for I := aRect.Top to aRect.Bottom + 1 do
+    for J := aRect.Left to aRect.Right + 1 do
       //Use fHeight to show real height, even when 'Flat terrain' is checked
       Text(J-0.5, I-0.5, IntToStr(gTerrain.Land[I,J].Height), icCyan);
 end;
