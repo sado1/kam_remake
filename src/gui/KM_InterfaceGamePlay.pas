@@ -3043,6 +3043,8 @@ end;
 
 function TKMGamePlayInterface.CanUpdateClockUI: Boolean;
 begin
+  if gGame = nil then Exit(False);
+  
   //Don't show speed clock in MP (unless there is not human players) since you can't turn it on/off
   Result := gGame.IsSpeedUpAllowed or gGameSettings.ShowGameTime or SHOW_GAME_TICK;
 end;
@@ -3050,6 +3052,7 @@ end;
 
 procedure TKMGamePlayInterface.UpdateClockUI;
 begin
+  if gGame = nil then Exit;
 
   if CanUpdateClockUI then
     UpdateClock(gGame.SpeedActual, gGame.SpeedGIP, gGameParams.IsReplay);
