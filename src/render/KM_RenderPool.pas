@@ -211,6 +211,8 @@ end;
 
 procedure TRenderPool.ReInit;
 begin
+  if Self = nil then Exit;
+
   fRenderDebug.ReInit;
 end;
 

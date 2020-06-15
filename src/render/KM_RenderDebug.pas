@@ -72,6 +72,8 @@ end;
 
 procedure TKMRenderDebug.ReInit;
 begin
+  if Self = nil then Exit;
+
   SetLength(fAreaTilesLand, gTerrain.MapY, gTerrain.MapX);
 end;
 
