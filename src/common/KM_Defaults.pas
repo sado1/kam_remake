@@ -27,9 +27,17 @@ const
   {$I KM_Revision.inc};
   {$I KM_NetProtocolRevision.inc};
   {$IFDEF USESECUREAUTH}
+    {$IFDEF DEBUG}
+    GAME_VERSION_POSTFIX  = ' [ DEBUG ]';
+    {$ELSE}
     GAME_VERSION_POSTFIX  = '';
+    {$ENDIF}
   {$ELSE}
-    GAME_VERSION_POSTFIX  = ' (UNSECURE!)';
+    {$IFDEF DEBUG}
+    GAME_VERSION_POSTFIX  = ' [ UNSECURE - DEBUG ]';
+    {$ELSE}
+    GAME_VERSION_POSTFIX  = ' [ UNSECURE ]';
+    {$ENDIF}
   {$ENDIF}
   GAME_VERSION_PREFIX   = ''; //Game version string displayed in menu corner
 var
