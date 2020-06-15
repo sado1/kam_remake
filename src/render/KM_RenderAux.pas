@@ -183,7 +183,7 @@ const
   SEC_COUNT = 24;
 var
   I: Integer;
-  C,S: Single;
+  C, S: Single;
 begin
   TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
   glColor4ubv(@Fill);
@@ -305,13 +305,13 @@ end;
 procedure TRenderAux.Line(const aPoints: TKMPointFArray; aColor: TKMColor4f; aThickness: Integer = -1; aLineMode: TKMLineMode = lmStrip;
                           aPattern: Word = $FFFF);
 var
-  I, LineWidth: Integer;
+  I, lineWidth: Integer;
 begin
   TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
 
   if aThickness <> -1 then
   begin
-    glGetIntegerv(GL_LINE_WIDTH, @LineWidth);
+    glGetIntegerv(GL_LINE_WIDTH, @lineWidth);
     glLineWidth(aThickness);
   end;
 
@@ -330,20 +330,20 @@ begin
 
   // Restore previous value for line width
   if aThickness <> -1 then
-    glLineWidth(LineWidth);
+    glLineWidth(lineWidth);
 end;
 
 
 procedure TRenderAux.LineOnTerrain(const aPoints: TKMPointFArray; aColor: Cardinal; aThickness: Integer = -1;
                                    aLineMode: TKMLineMode = lmStrip; aPattern: Word = $FFFF);
 var
-  I, LineWidth: Integer;
+  I, lineWidth: Integer;
 begin
   TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
 
   if aThickness <> -1 then
   begin
-    glGetIntegerv(GL_LINE_WIDTH, @LineWidth);
+    glGetIntegerv(GL_LINE_WIDTH, @lineWidth);
     glLineWidth(aThickness);
   end;
 
@@ -363,20 +363,20 @@ begin
 
   // Restore previous value for line width
   if aThickness <> -1 then
-    glLineWidth(LineWidth);
+    glLineWidth(lineWidth);
 end;
 
 
 procedure TRenderAux.LineOnTerrain(const aPoints: TKMPointArray; aColor: Cardinal; aThickness: Integer;
                                    aLineMode: TKMLineMode; aPattern: Word);
 var
-  I, LineWidth: Integer;
+  I, lineWidth: Integer;
 begin
   TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
 
   if aThickness <> -1 then
   begin
-    glGetIntegerv(GL_LINE_WIDTH, @LineWidth);
+    glGetIntegerv(GL_LINE_WIDTH, @lineWidth);
     glLineWidth(aThickness);
   end;
 
@@ -396,20 +396,20 @@ begin
 
   // Restore previous value for line width
   if aThickness <> -1 then
-    glLineWidth(LineWidth);
+    glLineWidth(lineWidth);
 end;
 
 
 procedure TRenderAux.LineOnTerrain(aPoints: TKMPointList; aColor: Cardinal; aInset: Single = 0; aThickness: Integer = -1;
                                    aLineMode: TKMLineMode = lmStrip; aPattern: Word = $FFFF);
 var
-  I, LineWidth: Integer;
+  I, lineWidth: Integer;
 begin
   TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
 
   if aThickness <> -1 then
   begin
-    glGetIntegerv(GL_LINE_WIDTH, @LineWidth);
+    glGetIntegerv(GL_LINE_WIDTH, @lineWidth);
     glLineWidth(aThickness);
   end;
 
@@ -429,7 +429,7 @@ begin
 
   // Restore previous value for line width
   if aThickness <> -1 then
-    glLineWidth(LineWidth);
+    glLineWidth(lineWidth);
 
 end;
 
@@ -462,28 +462,28 @@ end;
 
 procedure TRenderAux.TileTerrainIDs(const aRect: TKMRect);
 var
-  I, J, K, Cnt: Integer;
-  CustomStr: String;
+  I, J, K, cnt: Integer;
+  customStr: String;
 begin
 
   for I := aRect.Top to aRect.Bottom do
     for J := aRect.Left to aRect.Right do
     begin
-      CustomStr := '';
+      customStr := '';
       if gTerrain.Land[I,J].IsCustom then
-        CustomStr := '-C';
-      CustomStr := CustomStr + '-' + IntToStr(gTerrain.Land[I,J].BlendingLvl);
+        customStr := '-C';
+      customStr := customStr + '-' + IntToStr(gTerrain.Land[I,J].BlendingLvl);
       if gTerrain.Land[I,J].LayersCnt = 0 then
-        Text(J, I, IntToStr(gTerrain.Land[I,J].BaseLayer.Terrain)+ '-' + IntToStr(gTerrain.Land[I,J].BaseLayer.Rotation) + CustomStr,
+        Text(J, I, IntToStr(gTerrain.Land[I,J].BaseLayer.Terrain)+ '-' + IntToStr(gTerrain.Land[I,J].BaseLayer.Rotation) + customStr,
              TILE_TERRAIN_LAYERS_COLORS[0])
       else begin
-        Cnt := gTerrain.Land[I,J].LayersCnt + 1;
-        Text(J, I, IntToStr(gTerrain.Land[I,J].BaseLayer.Terrain) + '-' + IntToStr(gTerrain.Land[I,J].BaseLayer.Rotation) + CustomStr,
+        cnt := gTerrain.Land[I,J].LayersCnt + 1;
+        Text(J, I, IntToStr(gTerrain.Land[I,J].BaseLayer.Terrain) + '-' + IntToStr(gTerrain.Land[I,J].BaseLayer.Rotation) + customStr,
              TILE_TERRAIN_LAYERS_COLORS[0], KMPointF(0,-0.3));
         for K := 0 to gTerrain.Land[I,J].LayersCnt - 1 do
           Text(J, I, IntToStr(BASE_TERRAIN[gRes.Sprites.GetGenTerrainInfo(gTerrain.Land[I,J].Layer[K].Terrain).TerKind])
                      + '*' + IntToStr(gTerrain.Land[I,J].Layer[K].Rotation),
-               TILE_TERRAIN_LAYERS_COLORS[K+1], KMPointF(0,-0.3 + 0.7*(K+1)/Cnt));
+               TILE_TERRAIN_LAYERS_COLORS[K+1], KMPointF(0,-0.3 + 0.7*(K+1)/cnt));
       end;
     end;
 end;
@@ -493,17 +493,17 @@ procedure TRenderAux.TileTerrainKinds(const aRect: TKMRect);
 
   procedure DrawTerKind(X,Y: Integer);
   var
-    TerKind: TKMTerrainKind;
-    TerKindStr: String;
+    terKind: TKMTerrainKind;
+    terKindStr: String;
   begin
     if gGameParams.IsMapEditor then
     begin
-      TerKind := gGame.TerrainPainter.LandTerKind[Y,X].TerKind;
-      case TerKind of
-        tkCustom: TerKindStr := 'C';
-        else      TerKindStr := IntToStr(BASE_TERRAIN[TerKind]);
+      terKind := gGame.TerrainPainter.LandTerKind[Y,X].TerKind;
+      case terKind of
+        tkCustom: terKindStr := 'C';
+        else      terKindStr := IntToStr(BASE_TERRAIN[terKind]);
       end;
-      Text(X - 0.47, Y - 0.47, TerKindStr, icRed);
+      Text(X - 0.47, Y - 0.47, terKindStr, icRed);
     end;
   end;
 
@@ -618,15 +618,15 @@ procedure TRenderAux.TileTerrainJamMeter(const aRect: TKMRect);
 const
   JAM_DRAW_STEP = 3;
 var
-  I, J, K, Limit: Integer;
+  I, J, K, limit: Integer;
 begin
   for I := aRect.Top to aRect.Bottom do
     for J := aRect.Left to aRect.Right do
     begin
       if gTerrain.Land[I,J].JamMeter = 0 then Continue;
 
-      Limit := (gTerrain.Land[I,J].JamMeter + JAM_DRAW_STEP - 1) div JAM_DRAW_STEP;
-      for K := 0 to Limit - 1 do
+      limit := (gTerrain.Land[I,J].JamMeter + JAM_DRAW_STEP - 1) div JAM_DRAW_STEP;
+      for K := 0 to limit - 1 do
         Quad(J, I, $20FFFFFF and icOrange);
       //Draw text over quads
       Text(J, I, IntToStr(gTerrain.Land[I,J].JamMeter), icRed);
@@ -758,15 +758,15 @@ end;
 procedure TRenderAux.UnitMoves(const aRect: TKMRect);
 var
   I, K: Integer;
-  VertexUsage: Byte;
+  vertexUsage: Byte;
 begin
   for I := aRect.Top to aRect.Bottom do
   for K := aRect.Left to aRect.Right do
   begin
     if gTerrain.Land[I,K].IsVertexUnit <> vuNone then
     begin
-      VertexUsage := byte(gTerrain.Land[I,K].IsVertexUnit);
-      glColor4f(1-VertexUsage/3, VertexUsage/3, 0.6, 0.8);
+      vertexUsage := byte(gTerrain.Land[I,K].IsVertexUnit);
+      glColor4f(1-vertexUsage/3, vertexUsage/3, 0.6, 0.8);
       RenderDot(K, gTerrain.FlatToHeight(K,I), 0.3);
     end;
     if gTerrain.Land[I,K].IsUnit <> nil then
@@ -790,7 +790,7 @@ end;
 procedure TRenderAux.UnitRoute(NodeList: TKMPointList; Pos: Integer; aUID: Integer);
 var
   I, K: Integer;
-  FaceX, FaceY: Single;
+  faceX, faceY: Single;
   col: TKMColor3f;
 begin
   if NodeList.Count = 0 then Exit;
@@ -821,12 +821,12 @@ begin
   glColor4f(1,1,1,1); //Vector where unit is going to
   I := Pos;
   K := Min(Pos + 1, NodeList.Count - 1);
-  FaceX := Mix(NodeList[I].X - 0.5, NodeList[K].X - 0.5, 0.4);
-  FaceY := Mix(NodeList[I].Y - 0.5, NodeList[K].Y - 0.5, 0.4) + 0.2; //0.2 to render vector a bit lower so it won't gets overdrawned by another route
+  faceX := Mix(NodeList[I].X - 0.5, NodeList[K].X - 0.5, 0.4);
+  faceY := Mix(NodeList[I].Y - 0.5, NodeList[K].Y - 0.5, 0.4) + 0.2; //0.2 to render vector a bit lower so it won't gets overdrawned by another route
   RenderDotOnTile(NodeList[I].X + 0.5, NodeList[I].Y + 0.5 + 0.2);
   glBegin(GL_LINES);
     glVertex2f(NodeList[I].X-0.5, gTerrain.FlatToHeight(NodeList[I].X+0.5,NodeList[I].Y+0.5) + 0.2);
-    glVertex2f(FaceX, gTerrain.FlatToHeight(FaceX+1, FaceY+1));
+    glVertex2f(faceX, gTerrain.FlatToHeight(faceX+1, faceY+1));
   glEnd;
 end;
 

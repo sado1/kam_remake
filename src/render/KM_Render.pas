@@ -165,13 +165,13 @@ end;
 
 class function TRender.GenerateTextureCommon(aMinFilter, aMagFilter: TFilterType): GLuint;
 var
-  Texture: GLuint;
+  texture: GLuint;
 begin
   Result := 0;
   if not Assigned(glGenTextures) then Exit;
 
-  glGenTextures(1, @Texture);
-  BindTexture(Texture);
+  glGenTextures(1, @texture);
+  BindTexture(texture);
 
   {Enable color blending into texture}
   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -187,7 +187,7 @@ begin
   {Clamping UVs solves edge artifacts}
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-  Result := Texture;
+  Result := texture;
 end;
 
 
@@ -215,6 +215,7 @@ end;
 class procedure TRender.UpdateTexture(aTexture: GLuint; DestX, DestY: Word; Mode: TTexFormat; const Data: Pointer);
 begin
   if not Assigned(glTexImage2D) then Exit;
+
   Assert((DestX * DestY > 0) and (DestX = MakePOT(DestX)) and (DestY = MakePOT(DestY)),
          Format('Game designed to handle only POT textures. Texture size: [%d:%d]', [DestX,DestY]));
 
@@ -246,7 +247,7 @@ end;
 procedure TRender.DoPrintScreen(const aFileName: string);
 {$IFDEF WDC}
 var
-  i, k, W, H: integer;
+  I, K, W, H: integer;
   jpg: TJpegImage;
   mkbmp: TBitMap;
   bmp: array of Cardinal;
@@ -261,8 +262,8 @@ begin
 
   //Mirror verticaly
   for i := 0 to (H div 2) - 1 do
-    for k := 0 to W - 1 do
-      SwapInt(bmp[i * W + k], bmp[((H - 1) - i) * W + k]);
+    for K := 0 to W - 1 do
+      SwapInt(bmp[i * W + K], bmp[((H - 1) - i) * W + K]);
 
   mkbmp := TBitmap.Create;
   mkbmp.Handle := CreateBitmap(W, H, 1, 32, @bmp[0]);

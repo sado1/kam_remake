@@ -134,7 +134,7 @@ type
     procedure RenderSpriteOnTile(const aLoc: TKMPoint; aId: Word; aFlagColor: TColor4 = $FFFFFFFF);
     procedure RenderSpriteOnTerrain(const aLoc: TKMPointF; aId: Word; aFlagColor: TColor4 = $FFFFFFFF; aForced: Boolean = False);
     procedure RenderTile(aTerrainId: Word; pX,pY,Rot: Integer);
-    procedure RenderWireTile(const P: TKMPoint; Col: TColor4; aInset: Single = 0.0; aLineWidth: Single = -1);
+    procedure RenderWireTile(const P: TKMPoint; aCol: TColor4; aInset: Single = 0.0; aLineWidth: Single = -1);
 
     property RenderDebug: TKMRenderDebug read fRenderDebug;
 
@@ -217,7 +217,7 @@ begin
 end;
 
 
-procedure TRenderPool.SetRotation(aH,aP,aB: Integer);
+procedure TRenderPool.SetRotation(aH, aP, aB: Integer);
 begin
   rHeading := aH;
   rPitch   := aP;
@@ -227,10 +227,10 @@ end;
 
 procedure TRenderPool.ApplyTransform;
 var
-  ViewportPosRound: TKMPointF;
+  viewportPosRound: TKMPointF;
 begin
   //Need to round the viewport position so we only translate by whole pixels
-  ViewportPosRound := RoundToTilePixel(fViewport.Position);
+  viewportPosRound := RoundToTilePixel(fViewport.Position);
 
   glLoadIdentity; // Reset The View
 
@@ -239,7 +239,7 @@ begin
 
   glScalef(fViewport.Zoom*CELL_SIZE_PX, fViewport.Zoom*CELL_SIZE_PX, 1 / 256);
 
-  glTranslatef(-ViewportPosRound.X + gGame.ActiveInterface.ToolbarWidth/CELL_SIZE_PX/fViewport.Zoom, -ViewportPosRound.Y, 0);
+  glTranslatef(-viewportPosRound.X + gGame.ActiveInterface.ToolbarWidth/CELL_SIZE_PX/fViewport.Zoom, -viewportPosRound.Y, 0);
 
   if RENDER_3D then
   begin
@@ -249,14 +249,14 @@ begin
     glRotatef(rHeading,1,0,0);
     glRotatef(rPitch  ,0,1,0);
     glRotatef(rBank   ,0,0,1);
-    glTranslatef(-ViewportPosRound.X + gGame.ActiveInterface.ToolBarWidth/CELL_SIZE_PX/fViewport.Zoom, -ViewportPosRound.Y - 8, 10);
+    glTranslatef(-viewportPosRound.X + gGame.ActiveInterface.ToolBarWidth/CELL_SIZE_PX/fViewport.Zoom, -viewportPosRound.Y - 8, 10);
     glScalef(fViewport.Zoom, fViewport.Zoom, 1);
   end;
 
   glRotatef(rHeading,1,0,0);
   glRotatef(rPitch  ,0,1,0);
   glRotatef(rBank   ,0,0,1);
-  glTranslatef(0, 0, -ViewportPosRound.Y);
+  glTranslatef(0, 0, -viewportPosRound.Y);
 end;
 
 
@@ -275,7 +275,7 @@ end;
 // 4. Renders cursor highlights
 procedure TRenderPool.Render(aTickLag: Single);
 var
-  ClipRect: TKMRect;
+  clipRect: TKMRect;
 begin
   if fRender.Blind then Exit;
 
@@ -287,10 +287,10 @@ begin
     SetDefaultRenderParams;
 
     // Render only within visible area
-    ClipRect := fViewport.GetClip;
+    clipRect := fViewport.GetClip;
 
     // Collect players plans for terrain layer
-    CollectPlans(ClipRect);
+    CollectPlans(clipRect);
 
     // With depth test we can render all terrain tiles and then apply light/shadow without worrying about
     // foothills shadows going over mountain tops. Each tile strip is rendered an next Z plane.
@@ -301,7 +301,7 @@ begin
     {$IFDEF PERFLOG}
     gPerfLogs.SectionEnter(psFrameTerrain);
     {$ENDIF}
-    fRenderTerrain.ClipRect := ClipRect;
+    fRenderTerrain.ClipRect := clipRect;
     fRenderTerrain.RenderBase(gTerrain.AnimStep, gMySpectator.FogOfWar);
 
     // Disable depth test //and write to depth buffer,
@@ -323,15 +323,15 @@ begin
     {$ENDIF}
 
     // House highlight, debug display
-    RenderBackgroundUI(ClipRect);
+    RenderBackgroundUI(clipRect);
 
     // Sprites are added by Terrain/Players/Projectiles, then sorted by position
     fRenderList.Clear;
-    CollectTerrainObjects(ClipRect, gTerrain.AnimStep);
+    CollectTerrainObjects(clipRect, gTerrain.AnimStep);
 
     PaintFlagPoints(True);
 
-    gHands.Paint(ClipRect, aTickLag); // Units and houses
+    gHands.Paint(clipRect, aTickLag); // Units and houses
     gProjectiles.Paint(aTickLag);
 
     if gGame.GamePlayInterface <> nil then
@@ -487,7 +487,8 @@ procedure TRenderPool.PaintFlagPoint(const aHouseEntrance, aFlagPoint: TKMPoint;
     gRenderAux.LineOnTerrain(aHouseEntrance.X - 0.5, aHouseEntrance.Y - 0.5, aP.X, aP.Y, aColor, $F0F0, False);
   end;
 
-var P: TKMPointF;
+var
+  P: TKMPointF;
 begin
   P := KMPointF(aFlagPoint.X - 0.5, aFlagPoint.Y - 0.5);
   if not aDoImmediateRender then
@@ -546,7 +547,7 @@ procedure TRenderPool.RenderMapElement1(aIndex: Word; AnimStep: Cardinal; LocX,L
 var
   R: TRXData;
   pX, pY: Integer;
-  CornerX, CornerY: Single;
+  cornerX, cornerY: Single;
   gX, gY: Single;
   Id, Id0: Integer;
   FOW: Byte;
@@ -583,12 +584,12 @@ begin
     pY := LocY - 1;
     gX := pX + (R.Pivot[Id0].X + R.Size[Id0].X/2) / CELL_SIZE_PX;
     gY := pY + (R.Pivot[Id0].Y + R.Size[Id0].Y) / CELL_SIZE_PX;
-    CornerX := pX + R.Pivot[Id].X / CELL_SIZE_PX;
-    CornerY := pY - gTerrain.RenderHeightAt(gX, gY) + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX;
+    cornerX := pX + R.Pivot[Id].X / CELL_SIZE_PX;
+    cornerY := pY - gTerrain.RenderHeightAt(gX, gY) + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX;
     if DoImmediateRender then
-      RenderSprite(rxTrees, Id, CornerX, CornerY, $FFFFFFFF, Deleting, DELETE_COLOR)
+      RenderSprite(rxTrees, Id, cornerX, cornerY, $FFFFFFFF, Deleting, DELETE_COLOR)
     else
-      fRenderList.AddSpriteG(rxTrees, Id, 0, CornerX, CornerY, gX, gY);
+      fRenderList.AddSpriteG(rxTrees, Id, 0, cornerX, cornerY, gX, gY);
   end;
 end;
 
@@ -647,15 +648,15 @@ end;
 // Render alert
 procedure TRenderPool.AddAlert(const aLoc: TKMPointF; aId: Word; aFlagColor: TColor4);
 var
-  CornerX, CornerY: Single;
+  cornerX, cornerY: Single;
   R: TRXData;
 begin
   R := fRXData[rxGui];
 
-  CornerX := aLoc.X + R.Pivot[aId].X / CELL_SIZE_PX;
-  CornerY := gTerrain.RenderFlatToHeight(aLoc).Y + R.Pivot[aId].Y / CELL_SIZE_PX;
+  cornerX := aLoc.X + R.Pivot[aId].X / CELL_SIZE_PX;
+  cornerY := gTerrain.RenderFlatToHeight(aLoc).Y + R.Pivot[aId].Y / CELL_SIZE_PX;
 
-  fRenderList.AddSpriteG(rxGui, aId, 0, CornerX, CornerY, aLoc.X, aLoc.Y, aFlagColor);
+  fRenderList.AddSpriteG(rxGui, aId, 0, cornerX, cornerY, aLoc.X, aLoc.Y, aFlagColor);
 end;
 
 
@@ -663,7 +664,7 @@ end;
 procedure TRenderPool.AddHouseTablet(aHouse: TKMHouseType; const Loc: TKMPoint);
 var
   Id: Integer;
-  CornerX, CornerY, gX, gY: Single;
+  cornerX, cornerY, gX, gY: Single;
   R: TRXData;
 begin
   R := fRXData[rxGui];
@@ -671,9 +672,9 @@ begin
 
   gX := Loc.X + (R.Pivot[Id].X + R.Size[Id].X / 2) / CELL_SIZE_PX - 0.5;
   gY := Loc.Y + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX - 0.45;
-  CornerX := Loc.X + R.Pivot[Id].X / CELL_SIZE_PX - 0.25;
-  CornerY := Loc.Y - gTerrain.RenderHeightAt(gX, gY) + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX - 0.55;
-  fRenderList.AddSpriteG(rxGui, Id, 0, CornerX, CornerY, gX, gY);
+  cornerX := Loc.X + R.Pivot[Id].X / CELL_SIZE_PX - 0.25;
+  cornerY := Loc.Y - gTerrain.RenderHeightAt(gX, gY) + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX - 0.55;
+  fRenderList.AddSpriteG(rxGui, Id, 0, cornerX, cornerY, gX, gY);
 end;
 
 
@@ -724,8 +725,8 @@ end;
 procedure TRenderPool.AddHouse(aHouse: TKMHouseType; const aLoc: TKMPoint; aWoodStep, aStoneStep, aSnowStep: Single; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
 var
   R: TRXData;
-  PicWood, PicStone, PicSnow: Integer;
-  GroundWood, GroundStone, gX, gY: Single;
+  picWood, picStone, picSnow: Integer;
+  groundWood, groundStone, gX, gY: Single;
 
   function CornerX(aPic: Integer): Single;
   begin
@@ -744,15 +745,15 @@ begin
 
   R := fRXData[rxHouses];
 
-  PicWood := gRes.Houses[aHouse].WoodPic + 1;
-  PicStone := gRes.Houses[aHouse].StonePic + 1;
-  PicSnow := gRes.Houses[aHouse].SnowPic + 1;
+  picWood := gRes.Houses[aHouse].WoodPic + 1;
+  picStone := gRes.Houses[aHouse].StonePic + 1;
+  picSnow := gRes.Houses[aHouse].SnowPic + 1;
 
-  GroundWood := R.Pivot[PicWood].Y + R.Size[PicWood].Y;
-  GroundStone := R.Pivot[PicStone].Y + R.Size[PicStone].Y;
+  groundWood := R.Pivot[picWood].Y + R.Size[picWood].Y;
+  groundStone := R.Pivot[picStone].Y + R.Size[picStone].Y;
 
-  gX := aLoc.X + (R.Pivot[PicWood].X + R.Size[PicWood].X / 2) / CELL_SIZE_PX - 1;
-  gY := aLoc.Y + Max(GroundWood, GroundStone) / CELL_SIZE_PX - 1.5;
+  gX := aLoc.X + (R.Pivot[picWood].X + R.Size[picWood].X / 2) / CELL_SIZE_PX - 1;
+  gY := aLoc.Y + Max(groundWood, groundStone) / CELL_SIZE_PX - 1.5;
 
   // If it's fully built we can render without alpha
   if (aWoodStep = 1) and (aStoneStep = 1) then
@@ -760,29 +761,29 @@ begin
     // Snow only happens on fully built houses
     if gGameSettings.AllowSnowHouses
       and (aSnowStep > 0)
-      and (PicSnow <> 0) then
+      and (picSnow <> 0) then
     begin
       // If snow is 100% we only need to render snow sprite
       if aSnowStep = 1 then
-        fRenderList.AddSpriteG(rxHouses, PicSnow, 0, CornerX(PicSnow), CornerY(PicSnow), gX, gY, $0)
+        fRenderList.AddSpriteG(rxHouses, picSnow, 0, CornerX(picSnow), CornerY(picSnow), gX, gY, $0)
       else
       begin
         // Render stone with snow blended on top using AlphaTest
-        fRenderList.AddSpriteG(rxHouses, PicStone, 0, CornerX(PicStone), CornerY(PicStone), gX, gY, $0);
-        fRenderList.AddSpriteG(rxHouses, PicSnow, 0, CornerX(PicSnow), CornerY(PicSnow), gX, gY, $0, aSnowStep);
+        fRenderList.AddSpriteG(rxHouses, picStone, 0, CornerX(picStone), CornerY(picStone), gX, gY, $0);
+        fRenderList.AddSpriteG(rxHouses, picSnow, 0, CornerX(picSnow), CornerY(picSnow), gX, gY, $0, aSnowStep);
       end;
     end
     else if DoImmediateRender then
-      RenderSprite(rxHouses, PicStone, CornerX(PicStone), CornerY(PicStone), $0, DoHighlight, HighlightColor)
+      RenderSprite(rxHouses, picStone, CornerX(picStone), CornerY(picStone), $0, DoHighlight, HighlightColor)
     else
-      fRenderList.AddSpriteG(rxHouses, PicStone, 0, CornerX(PicStone), CornerY(PicStone), gX, gY, $0);
+      fRenderList.AddSpriteG(rxHouses, picStone, 0, CornerX(picStone), CornerY(picStone), gX, gY, $0);
   end
   else
   begin
     // Wood part of the house (may be seen below Stone part before construction is complete, e.g. Sawmill)
-    fRenderList.AddSpriteG(rxHouses, PicWood, 0, CornerX(PicWood), CornerY(PicWood), gX, gY, $0, aWoodStep);
+    fRenderList.AddSpriteG(rxHouses, picWood, 0, CornerX(picWood), CornerY(picWood), gX, gY, $0, aWoodStep);
     if aStoneStep > 0 then
-      fRenderList.AddSprite(rxHouses, PicStone, CornerX(PicStone), CornerY(PicStone), $0, aStoneStep);
+      fRenderList.AddSprite(rxHouses, picStone, CornerX(picStone), CornerY(picStone), $0, aStoneStep);
   end;
 end;
 
@@ -793,7 +794,7 @@ var
   AT: TKMHouseActionType;
   A: TKMAnimLoop;
   R: TRXData;
-  CornerX, CornerY: Single;
+  cornerX, cornerY: Single;
 begin
   if aActSet = [] then Exit;
 
@@ -807,14 +808,14 @@ begin
     if A.Count > 0 then
     begin
       Id := A.Step[AnimStep mod Byte(A.Count) + 1] + 1;
-      CornerX := Loc.X + (R.Pivot[Id].X + A.MoveX) / CELL_SIZE_PX - 1;
-      CornerY := Loc.Y + (R.Pivot[Id].Y + A.MoveY + R.Size[Id].Y) / CELL_SIZE_PX - 1
+      cornerX := Loc.X + (R.Pivot[Id].X + A.MoveX) / CELL_SIZE_PX - 1;
+      cornerY := Loc.Y + (R.Pivot[Id].Y + A.MoveY + R.Size[Id].Y) / CELL_SIZE_PX - 1
                        - gTerrain.Land[Loc.Y + 1, Loc.X].RenderHeight / CELL_HEIGHT_DIV;
 
       if DoImmediateRender then
-        RenderSprite(rxHouses, Id, CornerX, CornerY, FlagColor, DoHighlight, HighlightColor)
+        RenderSprite(rxHouses, Id, cornerX, cornerY, FlagColor, DoHighlight, HighlightColor)
       else
-        fRenderList.AddSprite(rxHouses, Id, CornerX, CornerY, FlagColor);
+        fRenderList.AddSprite(rxHouses, Id, cornerX, cornerY, FlagColor);
     end;
   end;
 end;
@@ -823,7 +824,7 @@ end;
 procedure TRenderPool.AddHouseSupply(aHouse: TKMHouseType; const Loc: TKMPoint; const R1, R2, R3: array of Byte;
                                      DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
 var
-  Id, I, K, I2, Count: Integer;
+  Id, I, K, I2, count: Integer;
   R: TRXData;
 
   procedure AddHouseSupplySprite(aId: Integer);
@@ -848,7 +849,7 @@ begin
   for I := 1 to 4 do
   if (R1[I - 1]) > 0 then
   begin
-    Count := Min(R1[I - 1], MAX_WARES_IN_HOUSE);
+    count := Min(R1[I - 1], MAX_WARES_IN_HOUSE);
     I2 := I;
 
     // Need to swap Coal and Steel for the ArmorSmithy
@@ -861,7 +862,7 @@ begin
     if (aHouse = htArmorWorkshop) and (I in [1,2]) then
       I2 := 3-I;
 
-    Id := gRes.Houses[aHouse].SupplyIn[I2, Count] + 1;
+    Id := gRes.Houses[aHouse].SupplyIn[I2, count] + 1;
     AddHouseSupplySprite(Id);
   end;
 
@@ -886,8 +887,8 @@ begin
     for I := 1 to 4 do
       if R2[I - 1] > 0 then
       begin
-        Count := Min(R2[I - 1], MAX_WARES_IN_HOUSE);
-        Id := gRes.Houses[aHouse].SupplyOut[I, Count] + 1;
+        count := Min(R2[I - 1], MAX_WARES_IN_HOUSE);
+        Id := gRes.Houses[aHouse].SupplyOut[I, count] + 1;
         AddHouseSupplySprite(Id);
       end;
   end;
@@ -897,7 +898,7 @@ end;
 procedure TRenderPool.AddHouseMarketSupply(const Loc: TKMPoint; ResType: TKMWareType; ResCount: Word; AnimStep: Integer);
 var
   I, Id: Integer;
-  CornerX, CornerY: Single;
+  cornerX, cornerY: Single;
   R: TRXData;
 begin
   if ResType = wtHorse then // Horses are a beast, BeastId is the count, age is 1
@@ -910,17 +911,17 @@ begin
     if Id = 0 then Exit;
 
     R := fRXData[rxHouses];
-    CornerX := Loc.X + (R.Pivot[Id].X + MARKET_WARES_OFF_X) / CELL_SIZE_PX - 1;
-    CornerY := Loc.Y + (R.Pivot[Id].Y + MARKET_WARES_OFF_Y + R.Size[Id].Y) / CELL_SIZE_PX - 1
+    cornerX := Loc.X + (R.Pivot[Id].X + MARKET_WARES_OFF_X) / CELL_SIZE_PX - 1;
+    cornerY := Loc.Y + (R.Pivot[Id].Y + MARKET_WARES_OFF_Y + R.Size[Id].Y) / CELL_SIZE_PX - 1
                      - gTerrain.Land[Loc.Y+1,Loc.X].RenderHeight / CELL_HEIGHT_DIV;
-    fRenderList.AddSprite(rxHouses, Id, CornerX, CornerY);
+    fRenderList.AddSprite(rxHouses, Id, cornerX, cornerY);
   end;
 end;
 
 
 procedure TRenderPool.AddHouseStableBeasts(aHouse: TKMHouseType; const Loc: TKMPoint; BeastId,BeastAge,AnimStep: Integer; aRX: TRXType = rxHouses);
 var
-  CornerX, CornerY: Single;
+  cornerX, cornerY: Single;
   Id: Integer;
   R: TRXData;
   A: TKMAnimLoop;
@@ -930,10 +931,10 @@ begin
   A := gRes.Houses.BeastAnim[aHouse,BeastId,BeastAge];
 
   Id := A.Step[AnimStep mod Byte(A.Count) + 1] + 1;
-  CornerX := Loc.X + (A.MoveX + R.Pivot[Id].X) / CELL_SIZE_PX - 1;
-  CornerY := Loc.Y + (A.MoveY + R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX - 1
+  cornerX := Loc.X + (A.MoveX + R.Pivot[Id].X) / CELL_SIZE_PX - 1;
+  cornerY := Loc.Y + (A.MoveY + R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX - 1
                    - gTerrain.Land[Loc.Y + 1, Loc.X].RenderHeight / CELL_HEIGHT_DIV;
-  fRenderList.AddSprite(aRX, Id, CornerX, CornerY);
+  fRenderList.AddSprite(aRX, Id, cornerX, cornerY);
 end;
 
 
@@ -941,10 +942,10 @@ end;
 procedure TRenderPool.AddProjectile(aProj: TKMProjectileType; const aRenderPos, aTilePos: TKMPointF; aDir: TKMDirection; aFlight: Single);
 var
   FOW: Byte;
-  Id: Integer;
+  id: Integer;
   R: TRXData;
-  CornerX, CornerY: Single;
-  Ground: Single;
+  cornerX, cornerY: Single;
+  ground: Single;
 begin
   // We don't care about off-map arrows, but still we get TKMPoint error if X/Y gets negative
   if not gTerrain.TileInMapCoords(Round(aRenderPos.X), Round(aRenderPos.Y)) then Exit;
@@ -957,100 +958,100 @@ begin
 
   case aProj of
     ptArrow:     with gRes.Units[utBowman].UnitAnim[uaSpec, aDir] do
-                    Id := Step[Round(Min(aFlight, 1) * (Count-1)) + 1] + 1;
+                    id := Step[Round(Min(aFlight, 1) * (Count-1)) + 1] + 1;
     ptBolt:      with gRes.Units[utArbaletman].UnitAnim[uaSpec, aDir] do
-                    Id := Step[Round(Min(aFlight, 1) * (Count-1)) + 1] + 1;
+                    id := Step[Round(Min(aFlight, 1) * (Count-1)) + 1] + 1;
     ptSlingRock: with gRes.Units[utSlingshot].UnitAnim[uaSpec, aDir] do
-                    Id := Step[Round(Min(aFlight, 1) * (Count-1)) + 1] + 1;
-    ptTowerRock: Id := ProjectileBounds[aProj, 1] + 1;
-    else          Id := 1; // Nothing?
+                    id := Step[Round(Min(aFlight, 1) * (Count-1)) + 1] + 1;
+    ptTowerRock: id := ProjectileBounds[aProj, 1] + 1;
+    else          id := 1; // Nothing?
   end;
 
   R := fRXData[rxUnits];
 
-  CornerX := R.Pivot[Id].X / CELL_SIZE_PX - 1;
-  CornerY := (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX - 1;
+  cornerX := R.Pivot[id].X / CELL_SIZE_PX - 1;
+  cornerY := (R.Pivot[id].Y + R.Size[id].Y) / CELL_SIZE_PX - 1;
 
   case aProj of
-    ptArrow, ptBolt, ptSlingRock:  Ground := aTilePos.Y + (0.5 - Abs(Min(aFlight, 1) - 0.5)) - 0.5;
-    ptTowerRock:                     Ground := aTilePos.Y + Min(aFlight, 1)/5 - 0.4;
-    else                              Ground := aTilePos.Y - 1; // Nothing?
+    ptArrow, ptBolt, ptSlingRock:  ground := aTilePos.Y + (0.5 - Abs(Min(aFlight, 1) - 0.5)) - 0.5;
+    ptTowerRock:                     ground := aTilePos.Y + Min(aFlight, 1)/5 - 0.4;
+    else                              ground := aTilePos.Y - 1; // Nothing?
   end;
 
-  fRenderList.AddSpriteG(rxUnits, Id, 0, aRenderPos.X + CornerX, aRenderPos.Y + CornerY, aTilePos.X - 1, Ground);
+  fRenderList.AddSpriteG(rxUnits, id, 0, aRenderPos.X + cornerX, aRenderPos.Y + cornerY, aTilePos.X - 1, ground);
 end;
 
 
 procedure TRenderPool.AddUnit(aUnit: TKMUnitType; aUID: Integer; aAct: TKMUnitActionType; aDir: TKMDirection; StepId: Integer; pX,pY: Single; FlagColor: TColor4; NewInst: Boolean; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
 var
-  CornerX, CornerY, Ground: Single;
-  Id, Id0: Integer;
+  cornerX, cornerY, ground: Single;
+  id, id0: Integer;
   A: TKMAnimLoop;
   R: TRXData;
 begin
   A := gRes.Units[aUnit].UnitAnim[aAct, aDir];
-  Id := A.Step[StepId mod Byte(A.Count) + 1] + 1;
-  Id0 := A.Step[UNIT_STILL_FRAMES[aDir] mod Byte(A.Count) + 1] + 1;
-  if Id <= 0 then exit;
+  id := A.Step[StepId mod Byte(A.Count) + 1] + 1;
+  id0 := A.Step[UNIT_STILL_FRAMES[aDir] mod Byte(A.Count) + 1] + 1;
+  if id <= 0 then exit;
   R := fRXData[rxUnits];
 
-  CornerX := pX + R.Pivot[Id].X / CELL_SIZE_PX;
-  CornerY := gTerrain.RenderFlatToHeight(pX, pY) + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX;
-  Ground := pY + (R.Pivot[Id0].Y + R.Size[Id0].Y) / CELL_SIZE_PX;
+  cornerX := pX + R.Pivot[id].X / CELL_SIZE_PX;
+  cornerY := gTerrain.RenderFlatToHeight(pX, pY) + (R.Pivot[id].Y + R.Size[id].Y) / CELL_SIZE_PX;
+  ground := pY + (R.Pivot[id0].Y + R.Size[id0].Y) / CELL_SIZE_PX;
 
   if DoImmediateRender then
-    RenderSprite(rxUnits, Id, CornerX, CornerY, FlagColor, DoHighlight, HighlightColor)
+    RenderSprite(rxUnits, id, cornerX, cornerY, FlagColor, DoHighlight, HighlightColor)
   else
     if NewInst then
-      fRenderList.AddSpriteG(rxUnits, Id, aUID, CornerX, CornerY, pX, Ground, FlagColor)
+      fRenderList.AddSpriteG(rxUnits, id, aUID, cornerX, cornerY, pX, ground, FlagColor)
     else
-      fRenderList.AddSprite(rxUnits, Id, CornerX, CornerY, FlagColor);
+      fRenderList.AddSprite(rxUnits, id, cornerX, cornerY, FlagColor);
 
   if SHOW_UNIT_MOVEMENT then
   if NewInst then
   begin
     gRenderAux.DotOnTerrain(pX, pY, FlagColor);
-    gRenderAux.Dot(CornerX, CornerY, $FF000080);
+    gRenderAux.Dot(cornerX, cornerY, $FF000080);
   end;
 end;
 
 
 procedure TRenderPool.AddHouseEater(const Loc: TKMPoint; aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; StepId: Integer; OffX,OffY: Single; FlagColor: TColor4);
 var
-  CornerX, CornerY: Single;
-  Id: Integer;
+  cornerX, cornerY: Single;
+  id: Integer;
   A: TKMAnimLoop;
   R: TRXData;
 begin
   A := gRes.Units[aUnit].UnitAnim[aAct, aDir];
-  Id := A.Step[StepId mod Byte(A.Count) + 1] + 1;
-  if Id <= 0 then exit;
+  id := A.Step[StepId mod Byte(A.Count) + 1] + 1;
+  if id <= 0 then exit;
   R := fRXData[rxUnits];
 
   // Eaters need to interpolate land height the same as the inn otherwise they are rendered at the wrong place
-  CornerX := Loc.X + OffX + R.Pivot[Id].X / CELL_SIZE_PX - 1;
-  CornerY := Loc.Y + OffY + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX - 1
+  cornerX := Loc.X + OffX + R.Pivot[id].X / CELL_SIZE_PX - 1;
+  cornerY := Loc.Y + OffY + (R.Pivot[id].Y + R.Size[id].Y) / CELL_SIZE_PX - 1
                    - gTerrain.Land[Loc.Y + 1, Loc.X].RenderHeight / CELL_HEIGHT_DIV;
 
-  fRenderList.AddSprite(rxUnits, Id, CornerX, CornerY, FlagColor);
+  fRenderList.AddSprite(rxUnits, id, cornerX, cornerY, FlagColor);
 end;
 
 
 procedure TRenderPool.AddUnitCarry(aCarry: TKMWareType; aUID: Integer; aDir: TKMDirection; StepId: Integer; pX,pY: Single);
 var
-  CornerX, CornerY: Single;
-  Id: Integer;
+  cornerX, cornerY: Single;
+  id: Integer;
   A: TKMAnimLoop;
   R: TRXData;
 begin
   A := gRes.Units.SerfCarry[aCarry, aDir];
-  Id := A.Step[StepId mod Byte(A.Count) + 1] + 1;
-  if Id <= 0 then Exit;
+  id := A.Step[StepId mod Byte(A.Count) + 1] + 1;
+  if id <= 0 then Exit;
   R := fRXData[rxUnits];
 
-  CornerX := pX + (R.Pivot[Id].X + a.MoveX) / CELL_SIZE_PX;
-  CornerY := gTerrain.RenderFlatToHeight(pX, pY) + (R.Pivot[Id].Y + R.Size[Id].Y + a.MoveY) / CELL_SIZE_PX;
-  fRenderList.AddSprite(rxUnits, Id, CornerX, CornerY);
+  cornerX := pX + (R.Pivot[id].X + a.MoveX) / CELL_SIZE_PX;
+  cornerY := gTerrain.RenderFlatToHeight(pX, pY) + (R.Pivot[id].Y + R.Size[id].Y + a.MoveY) / CELL_SIZE_PX;
+  fRenderList.AddSprite(rxUnits, id, cornerX, cornerY);
 end;
 
 
@@ -1059,30 +1060,30 @@ procedure TRenderPool.AddUnitThought(aUnit: TKMUnitType; aAct: TKMUnitActionType
                                      Thought: TKMUnitThought; pX,pY: Single);
 var
   Id: Integer;
-  CornerX, CornerY, Ground: Single;
+  cornerX, cornerY, ground: Single;
   R: TRXData;
   A: TKMAnimLoop;
-  Id0: Integer;
+  id0: Integer;
 begin
   if Thought = thNone then Exit;
   R := fRXData[rxUnits];
 
   // Unit position
   A := gRes.Units[aUnit].UnitAnim[aAct, aDir];
-  Id0 := A.Step[UNIT_STILL_FRAMES[aDir] mod Byte(A.Count) + 1] + 1;
+  id0 := A.Step[UNIT_STILL_FRAMES[aDir] mod Byte(A.Count) + 1] + 1;
 
   // Units feet
-  Ground := pY + (R.Pivot[Id0].Y + R.Size[Id0].Y) / CELL_SIZE_PX;
+  ground := pY + (R.Pivot[id0].Y + R.Size[id0].Y) / CELL_SIZE_PX;
   // The thought should be slightly lower than the unit so it goes OVER warrior flags
-  Ground := Ground + THOUGHT_X_OFFSET;
+  ground := ground + THOUGHT_X_OFFSET;
 
   // Thought bubbles are animated in reverse
   Id := THOUGHT_BOUNDS[Thought, 2] + 1 -
        (gGameParams.Tick mod Word(THOUGHT_BOUNDS[Thought, 2] - THOUGHT_BOUNDS[Thought, 1]));
 
-  CornerX := pX + R.Pivot[Id].X / CELL_SIZE_PX;
-  CornerY := gTerrain.RenderFlatToHeight(pX, pY) + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX - 1.5;
-  fRenderList.AddSpriteG(rxUnits, Id, 0, CornerX, CornerY, pX, Ground);
+  cornerX := pX + R.Pivot[Id].X / CELL_SIZE_PX;
+  cornerY := gTerrain.RenderFlatToHeight(pX, pY) + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX - 1.5;
+  fRenderList.AddSpriteG(rxUnits, Id, 0, cornerX, cornerY, pX, ground);
 end;
 
 
@@ -1104,36 +1105,38 @@ const
 var
   R: TRXData;
   A: TKMAnimLoop;
-  Id0, IdFlag: Integer;
-  FlagX, FlagY, Ground: Single;
+  id0, idFlag: Integer;
+  flagX, flagY, ground: Single;
 begin
   R := fRXData[rxUnits];
 
   // Unit position
   A := gRes.Units[aUnit].UnitAnim[aAct, aDir];
-  Id0 := A.Step[UNIT_STILL_FRAMES[aDir] mod Byte(A.Count) + 1] + 1;
+  id0 := A.Step[UNIT_STILL_FRAMES[aDir] mod Byte(A.Count) + 1] + 1;
 
   // Units feet
-  Ground := pY + (R.Pivot[Id0].Y + R.Size[Id0].Y) / CELL_SIZE_PX;
+  ground := pY + (R.Pivot[id0].Y + R.Size[id0].Y) / CELL_SIZE_PX;
 
   // Flag position
   A := gRes.Units[aUnit].UnitAnim[uaWalkArm, aDir];
-  IdFlag := A.Step[FlagAnim mod Byte(A.Count) + 1] + 1;
-  if IdFlag <= 0 then Exit;
+  idFlag := A.Step[FlagAnim mod Byte(A.Count) + 1] + 1;
+  if idFlag <= 0 then Exit;
 
-  FlagX := pX + (R.Pivot[IdFlag].X + FlagXOffset[UNIT_TO_GROUP_TYPE[aUnit], aDir]) / CELL_SIZE_PX - 0.5;
-  FlagY := gTerrain.RenderFlatToHeight(pX, pY) + (R.Pivot[IdFlag].Y + FlagYOffset[UNIT_TO_GROUP_TYPE[aUnit], aDir] + R.Size[IdFlag].Y) / CELL_SIZE_PX - 2.25;
+  flagX := pX + (R.Pivot[idFlag].X + FlagXOffset[UNIT_TO_GROUP_TYPE[aUnit], aDir]) / CELL_SIZE_PX - 0.5;
+  flagY := gTerrain.RenderFlatToHeight(pX, pY) + (R.Pivot[idFlag].Y + FlagYOffset[UNIT_TO_GROUP_TYPE[aUnit], aDir] + R.Size[idFlag].Y) / CELL_SIZE_PX - 2.25;
 
   if DoImmediateRender then
-    RenderSprite(rxUnits, IdFlag, FlagX, FlagY, FlagColor)
+    RenderSprite(rxUnits, idFlag, flagX, flagY, FlagColor)
   else
-    fRenderList.AddSpriteG(rxUnits, IdFlag, 0, FlagX, FlagY, pX, Ground, FlagColor);
+    fRenderList.AddSpriteG(rxUnits, idFlag, 0, flagX, flagY, pX, ground, FlagColor);
 end;
 
 
 procedure TRenderPool.AddUnitWithDefaultArm(aUnit: TKMUnitType; aUID: Integer; aAct: TKMUnitActionType; aDir: TKMDirection; StepId: Integer; pX,pY: Single; FlagColor: TColor4; DoImmediateRender: Boolean = False; DoHignlight: Boolean = False; HighlightColor: TColor4 = 0);
 begin
-  if aUnit = utFish then aAct := FISH_COUNT_ACT[5]; // In map editor always render 5 fish
+  if aUnit = utFish then
+    aAct := FISH_COUNT_ACT[5]; // In map editor always render 5 fish
+
   AddUnit(aUnit, aUID, aAct, aDir, StepId, pX, pY, FlagColor, True, DoImmediateRender, DoHignlight, HighlightColor);
   if gRes.Units[aUnit].SupportsAction(uaWalkArm) then
     AddUnit(aUnit, aUID, uaWalkArm, aDir, StepId, pX, pY, FlagColor, True, DoImmediateRender, DoHignlight, HighlightColor);
@@ -1176,7 +1179,7 @@ end;}
 procedure TRenderPool.RenderSprite(aRX: TRXType; aId: Word; pX,pY: Single; Col: TColor4; DoHighlight: Boolean = False;
                                    HighlightColor: TColor4 = 0; aForced: Boolean = False);
 var
-  X,Y: Integer;
+  X, Y: Integer;
 begin
   X := EnsureRange(Round(pX),1,gTerrain.MapX);
   Y := EnsureRange(Round(pY),1,gTerrain.MapY);
@@ -1223,11 +1226,10 @@ end;
 // white there will have sprite rendered
 // If there are two masks then we need to render sprite only there
 // where its mask is white AND where second mask is black
-procedure TRenderPool.RenderSpriteAlphaTest(
-  aRX: TRXType; aId: Word; aWoodProgress: Single; pX, pY: Single;
-  aId2: Word = 0; aStoneProgress: Single = 0; X2: Single = 0; Y2: Single = 0);
+procedure TRenderPool.RenderSpriteAlphaTest(aRX: TRXType; aId: Word; aWoodProgress: Single; pX, pY: Single;
+                                            aId2: Word = 0; aStoneProgress: Single = 0; X2: Single = 0; Y2: Single = 0);
 var
-  X,Y: Integer;
+  X, Y: Integer;
 begin
   X := EnsureRange(Round(pX),1,gTerrain.MapX);
   Y := EnsureRange(Round(pY),1,gTerrain.MapY);
@@ -1364,7 +1366,7 @@ end;
 //P - tile coords
 //Col - Color
 //aInset - Internal adjustment, to render wire "inside" tile
-procedure TRenderPool.RenderWireTile(const P: TKMPoint; Col: TColor4; aInset: Single = 0.0; aLineWidth: Single = -1);
+procedure TRenderPool.RenderWireTile(const P: TKMPoint; aCol: TColor4; aInset: Single = 0.0; aLineWidth: Single = -1);
 begin
   if not gTerrain.TileInMapCoords(P.X, P.Y) then Exit;
 
@@ -1374,7 +1376,7 @@ begin
   if aLineWidth > 0 then
     glLineWidth(aLineWidth);
 
-  gRenderAux.RenderWireTile(P, Col, aInset);
+  gRenderAux.RenderWireTile(P, aCol, aInset);
 
   if aLineWidth > 0 then
     SetDefaultRenderParams;
@@ -1385,8 +1387,8 @@ end;
 // Optimize later if needed
 procedure TRenderPool.RenderHouseOutline(aHouseSketch: TKMHouseSketch);
 var
-  Loc: TKMPoint;
   I: Integer;
+  loc: TKMPoint;
   X, Y: Word;
 begin
   if (aHouseSketch = nil) or aHouseSketch.IsEmpty then
@@ -1395,7 +1397,7 @@ begin
   // Get an outline of build area
   fHouseOutline.Clear;
 
-  Loc := aHouseSketch.Position;
+  loc := aHouseSketch.Position;
   gRes.Houses[aHouseSketch.HouseType].Outline(fHouseOutline);
 
   TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
@@ -1404,8 +1406,8 @@ begin
     with gTerrain do
     for I := 0 to fHouseOutline.Count - 1 do
     begin
-      X := Loc.X + fHouseOutline[I].X - 3;
-      Y := Loc.Y + fHouseOutline[I].Y - 4;
+      X := loc.X + fHouseOutline[I].X - 3;
+      Y := loc.Y + fHouseOutline[I].Y - 4;
       glVertex2f(X, Y - Land[Y+1, X+1].RenderHeight / CELL_HEIGHT_DIV);
     end;
   glEnd;
@@ -1441,12 +1443,12 @@ end;
 procedure TRenderPool.RenderWireHousePlan(const P: TKMPoint; aHouseType: TKMHouseType);
 var
   I: Integer;
-  ShowHMarksIgnoreFOW: Boolean;
+  showHMarksIgnoreFOW: Boolean;
 begin
   fMarksList.Clear;
   //Show house marks ignoring player FOW if we can see all map in replay/spec
-  ShowHMarksIgnoreFOW := gGameParams.IsReplayOrSpectate and (gMySpectator.FOWIndex = -1);
-  gMySpectator.Hand.GetHouseMarks(P, aHouseType, fMarksList, ShowHMarksIgnoreFOW);
+  showHMarksIgnoreFOW := gGameParams.IsReplayOrSpectate and (gMySpectator.FOWIndex = -1);
+  gMySpectator.Hand.GetHouseMarks(P, aHouseType, fMarksList, showHMarksIgnoreFOW);
 
   for I := 0 to fMarksList.Count - 1 do
   if fMarksList.Tag[I] = TC_OUTLINE then
@@ -1485,28 +1487,28 @@ end;
 procedure TRenderPool.RenderForegroundUI_ElevateEqualize;
 var
   I, K: Integer;
-  Tmp: Single;
-  Rad, Slope: Byte;
+  tmp: Single;
+  rad, slope: Byte;
   F: TKMPointF;
 begin
   F := gGameCursor.Float;
-  Rad := gGameCursor.MapEdSize;
-  Slope := gGameCursor.MapEdSlope;
-  for I := Max((Round(F.Y) - Rad), 1) to Min((Round(F.Y) + Rad), gTerrain.MapY -1) do
-    for K := Max((Round(F.X) - Rad), 1) to Min((Round(F.X) + Rad), gTerrain.MapX - 1) do
+  rad := gGameCursor.MapEdSize;
+  slope := gGameCursor.MapEdSlope;
+  for I := Max((Round(F.Y) - rad), 1) to Min((Round(F.Y) + rad), gTerrain.MapY -1) do
+    for K := Max((Round(F.X) - rad), 1) to Min((Round(F.X) + rad), gTerrain.MapX - 1) do
     begin
       case gGameCursor.MapEdShape of
-        hsCircle: Tmp := 1 - GetLength(I-Round(F.Y), K-Round(F.X)) / Rad;
-        hsSquare: Tmp := 1 - Math.max(abs(I-Round(F.Y)), abs(K-Round(F.X))) / Rad;
-        else                 Tmp := 0;
+        hsCircle: tmp := 1 - GetLength(I-Round(F.Y), K-Round(F.X)) / rad;
+        hsSquare: tmp := 1 - Math.max(abs(I-Round(F.Y)), abs(K-Round(F.X))) / rad;
+        else                 tmp := 0;
       end;
-      Tmp := Power(Abs(Tmp), (Slope + 1) / 6) * Sign(Tmp); // Modify slopes curve
-      Tmp := EnsureRange(Tmp * 2.5, 0, 1); // *2.5 makes dots more visible
-      gRenderAux.DotOnTerrain(K, I, $FF or (Round(Tmp*255) shl 24));
+      tmp := Power(Abs(tmp), (slope + 1) / 6) * Sign(tmp); // Modify slopes curve
+      tmp := EnsureRange(tmp * 2.5, 0, 1); // *2.5 makes dots more visible
+      gRenderAux.DotOnTerrain(K, I, $FF or (Round(tmp*255) shl 24));
     end;
     case gGameCursor.MapEdShape of
-      hsCircle: gRenderAux.CircleOnTerrain(round(F.X), round(F.Y), Rad, $00000000,  $FFFFFFFF);
-      hsSquare: gRenderAux.SquareOnTerrain(round(F.X) - Rad, round(F.Y) - Rad, round(F.X + Rad), round(F.Y) + Rad, $FFFFFFFF);
+      hsCircle: gRenderAux.CircleOnTerrain(round(F.X), round(F.Y), rad, $00000000,  $FFFFFFFF);
+      hsSquare: gRenderAux.SquareOnTerrain(round(F.X) - rad, round(F.Y) - rad, round(F.X + rad), round(F.Y) + rad, $FFFFFFFF);
     end;
 end;
 
@@ -1530,25 +1532,25 @@ end;
 procedure TRenderPool.RenderForegroundUI_Brush;
 var
   P, RP: TKMPoint;
-  Size: Integer;
-  IsSquare: Boolean;
+  size: Integer;
+  isSquare: Boolean;
 begin
   P := gGameCursor.Cell;
-  Size := gGameCursor.MapEdSize;
-  IsSquare := gGameCursor.MapEdShape = hsSquare;
+  size := gGameCursor.MapEdSize;
+  isSquare := gGameCursor.MapEdShape = hsSquare;
   if gGameCursor.MapEdUseMagicBrush then
-    IterateOverArea(P, Size, IsSquare, RenderWireTileInt)
+    IterateOverArea(P, size, isSquare, RenderWireTileInt)
   else
   if gGameCursor.Tag1 <> 0 then
   begin
     if SHOW_BRUSH_APPLY_AREA then
     begin
       RP := P;
-      if Size = 0 then
+      if size = 0 then
         RP := KMPoint(Round(gGameCursor.Float.X+1), Round(gGameCursor.Float.Y+1));
-      IterateOverArea(RP, Size, IsSquare, RenderWireTileInt, True); // Render surrounding tiles, that will be fixed with transitions
+      IterateOverArea(RP, size, isSquare, RenderWireTileInt, True); // Render surrounding tiles, that will be fixed with transitions
     end;
-    IterateOverArea(P, Size, IsSquare, RenderTileInt);
+    IterateOverArea(P, size, isSquare, RenderTileInt);
   end;
 end;
 
@@ -1672,9 +1674,10 @@ end;
 function TRenderPool.TryRenderUnitOrGroup(aObject: TObject; aUnitFilterFunc, aGroupFilterFunc: TBooleanFunc;
                                           aUseGroupFlagColor, aDoHighlight: Boolean;
                                           aHandColor, aFlagColor: Cardinal; aHighlightColor: Cardinal = 0): Boolean;
-var U: TKMUnit;
-    G: TKMUnitGroup;
-    GroupFlagColor: Cardinal;
+var
+  U: TKMUnit;
+  G: TKMUnitGroup;
+  groupFlagColor: Cardinal;
 begin
   Result := False;
   if (aObject is TKMUnit) then
@@ -1693,17 +1696,17 @@ begin
     begin
       U := G.FlagBearer;
       if aUseGroupFlagColor then
-        GroupFlagColor := G.FlagColor
+        groupFlagColor := G.FlagColor
       else
-        GroupFlagColor := aFlagColor;
+        groupFlagColor := aFlagColor;
 
       if G.IsFlagRenderBeforeUnit then
       begin
-        G.PaintHighlighted(aHandColor, GroupFlagColor, True, aDoHighlight, aHighlightColor);
+        G.PaintHighlighted(aHandColor, groupFlagColor, True, aDoHighlight, aHighlightColor);
         RenderUnit(U, U.CurrPosition, aHandColor, aDoHighlight, aHighlightColor);
       end else begin
         RenderUnit(U, U.CurrPosition, aHandColor, aDoHighlight, aHighlightColor);
-        G.PaintHighlighted(aHandColor, GroupFlagColor, True, aDoHighlight, aHighlightColor);
+        G.PaintHighlighted(aHandColor, groupFlagColor, True, aDoHighlight, aHighlightColor);
       end;
       Result := True;
     end;
@@ -1712,14 +1715,14 @@ end;
 
 
 procedure TRenderPool.RenderForegroundUI_Units;
-var 
-    Obj: TObject;
-    P: TKMPoint;
+var
+  obj: TObject;
+  P: TKMPoint;
 begin
   if gGameCursor.Tag1 = 255 then
   begin
-    Obj := gMySpectator.HitTestCursorWGroup(True);
-    TryRenderUnitOrGroup(Obj, nil, nil, True, True, DELETE_COLOR, 0, DELETE_COLOR);
+    obj := gMySpectator.HitTestCursorWGroup(True);
+    TryRenderUnitOrGroup(obj, nil, nil, True, True, DELETE_COLOR, 0, DELETE_COLOR);
   end
   else begin
     P := gGameCursor.Cell;
@@ -1732,29 +1735,30 @@ end;
 
 
 procedure TRenderPool.RenderForegroundUI_UniversalEraser(aHighlightAll: Boolean);
-var Obj: TObject;
-    P: TKMPoint;
-    IsRendered: Boolean;
+var
+  obj: TObject;
+  P: TKMPoint;
+  isRendered: Boolean;
 begin
   P := gGameCursor.Cell;
-  Obj := gMySpectator.HitTestCursorWGroup(True);
+  obj := gMySpectator.HitTestCursorWGroup(True);
 
-  IsRendered := TryRenderUnitOrGroup(Obj, nil, nil, True, True, DELETE_COLOR, 0, DELETE_COLOR);
+  isRendered := TryRenderUnitOrGroup(obj, nil, nil, True, True, DELETE_COLOR, 0, DELETE_COLOR);
 
-  if (Obj is TKMHouse) then
+  if (obj is TKMHouse) then
   begin
-    AddWholeHouse(TKMHouse(Obj), gHands[TKMHouse(Obj).Owner].FlagColor, True, True, DELETE_COLOR);
-    IsRendered := True;
+    AddWholeHouse(TKMHouse(obj), gHands[TKMHouse(obj).Owner].FlagColor, True, True, DELETE_COLOR);
+    isRendered := True;
   end;
 
   // Terrain object found on the cell
-  if (aHighlightAll or not IsRendered) and (gTerrain.Land[P.Y,P.X].Obj <> OBJ_NONE) then
+  if (aHighlightAll or not isRendered) and (gTerrain.Land[P.Y,P.X].Obj <> OBJ_NONE) then
   begin
     RenderMapElement(gTerrain.Land[P.Y,P.X].Obj, gTerrain.AnimStep, P.X, P.Y, True, True);
-    IsRendered := True;
+    isRendered := True;
   end;
 
-  if (aHighlightAll or not IsRendered) and
+  if (aHighlightAll or not isRendered) and
     (((gTerrain.Land[P.Y, P.X].TileOverlay <> toNone)
         and (gTerrain.Land[P.Y, P.X].TileLock = tlNone)) //Sometimes we can point road tile under the house, do not show Cyan quad then
       or (gTerrain.Land[P.Y, P.X].CornOrWine <> 0)) then
@@ -1776,26 +1780,27 @@ end;
 
 
 procedure TRenderPool.RenderForegroundUI_PaintBucket(aHighlightAll: Boolean);
-var Obj: TObject;
-    HighlightColor: Cardinal;
-    P: TKMPoint;
-    IsRendered: Boolean;
+var
+  obj: TObject;
+  highlightColor: Cardinal;
+  P: TKMPoint;
+  isRendered: Boolean;
 begin
   P := gGameCursor.Cell;
-  HighlightColor := MultiplyBrightnessByFactor(gMySpectator.Hand.FlagColor, 2, 0.3, 0.9);
-  Obj := gMySpectator.HitTestCursorWGroup;
+  highlightColor := MultiplyBrightnessByFactor(gMySpectator.Hand.FlagColor, 2, 0.3, 0.9);
+  obj := gMySpectator.HitTestCursorWGroup;
 
-  IsRendered := TryRenderUnitOrGroup(Obj, PaintBucket_UnitToRender, PaintBucket_GroupToRender,
+  isRendered := TryRenderUnitOrGroup(obj, PaintBucket_UnitToRender, PaintBucket_GroupToRender,
                                      False, True,
-                                     gMySpectator.Hand.FlagColor, gMySpectator.Hand.FlagColor, HighlightColor);
+                                     gMySpectator.Hand.FlagColor, gMySpectator.Hand.FlagColor, highlightColor);
 
-  if (Obj is TKMHouse) and (TKMHouse(Obj).Owner <> gMySpectator.HandID) then
+  if (obj is TKMHouse) and (TKMHouse(obj).Owner <> gMySpectator.HandID) then
   begin
-    AddWholeHouse(TKMHouse(Obj), gMySpectator.Hand.FlagColor, True, True, HighlightColor);
-    IsRendered := True;
+    AddWholeHouse(TKMHouse(obj), gMySpectator.Hand.FlagColor, True, True, highlightColor);
+    isRendered := True;
   end;
 
-  if (aHighlightAll or not IsRendered) and
+  if (aHighlightAll or not isRendered) and
     (((gTerrain.Land[P.Y, P.X].TileOverlay = toRoad)
         and (gTerrain.Land[P.Y, P.X].TileLock = tlNone)) //Sometimes we can point road tile under the house, do not show Cyan quad then
       or (gTerrain.Land[P.Y, P.X].CornOrWine <> 0))
@@ -1808,6 +1813,7 @@ end;
 constructor TRenderList.Create;
 begin
   inherited;
+
   fCount := 0;
   SetLength(RenderList, 512); // Allocate some space
 
@@ -1818,6 +1824,7 @@ end;
 destructor TRenderList.Destroy;
 begin
   SetLength(RenderList, 0);
+
   inherited;
 end;
 
@@ -1868,28 +1875,28 @@ end;
 // Sort all items in list from top-right to bottom-left
 procedure TRenderList.SortRenderList;
 var
-  RenderOrderAux: array of Word;
+  renderOrderAux: array of Word;
 
   procedure DoQuickSort(aLo, aHi: Integer);
   var
-    Lo, Hi: Integer;
-    Mid: Single;
+    lo, hi: Integer;
+    mid: Single;
   begin
-    Lo := aLo;
-    Hi := aHi;
-    Mid := RenderList[RenderOrder[(Lo + Hi) div 2]].Feet.Y;
+    lo := aLo;
+    hi := aHi;
+    mid := RenderList[RenderOrder[(lo + hi) div 2]].Feet.Y;
     repeat
-      while RenderList[RenderOrder[Lo]].Feet.Y < Mid do Inc(Lo);
-      while RenderList[RenderOrder[Hi]].Feet.Y > Mid do Dec(Hi);
-      if Lo <= Hi then
+      while RenderList[RenderOrder[lo]].Feet.Y < mid do Inc(lo);
+      while RenderList[RenderOrder[hi]].Feet.Y > mid do Dec(hi);
+      if lo <= hi then
       begin
-        SwapInt(RenderOrder[Lo], RenderOrder[Hi]);
-        Inc(Lo);
-        Dec(Hi);
+        SwapInt(RenderOrder[lo], RenderOrder[hi]);
+        Inc(lo);
+        Dec(hi);
       end;
-    until Lo > Hi;
-    if Hi > aLo then DoQuickSort(aLo, Hi);
-    if Lo < aHi then DoQuickSort(Lo, aHi);
+    until lo > hi;
+    if hi > aLo then DoQuickSort(aLo, hi);
+    if lo < aHi then DoQuickSort(lo, aHi);
   end;
 
   procedure Merge(aStart, aMid, aEnd: Integer);
@@ -1900,12 +1907,12 @@ var
     B := aMid;
     for I := aStart to aEnd - 1 do
       if (A < aMid) and ((B >= aEnd)
-      or (RenderList[RenderOrderAux[A]].Feet.Y <= RenderList[RenderOrderAux[B]].Feet.Y)) then
+      or (RenderList[renderOrderAux[A]].Feet.Y <= RenderList[renderOrderAux[B]].Feet.Y)) then
       begin
-        RenderOrder[I] := RenderOrderAux[A];
+        RenderOrder[I] := renderOrderAux[A];
         Inc(A);
       end else begin
-        RenderOrder[I] := RenderOrderAux[B];
+        RenderOrder[I] := renderOrderAux[B];
         Inc(B);
       end;
   end;
@@ -1921,10 +1928,10 @@ var
       if (A < aMid) and ((B >= aEnd)
       or (RenderList[RenderOrder[A]].Feet.Y <= RenderList[RenderOrder[B]].Feet.Y)) then
       begin
-        RenderOrderAux[I] := RenderOrder[A];
+        renderOrderAux[I] := RenderOrder[A];
         Inc(A);
       end else begin
-        RenderOrderAux[I] := RenderOrder[B];
+        renderOrderAux[I] := RenderOrder[B];
         Inc(B);
       end;
   end;
@@ -1932,24 +1939,24 @@ var
   // aUseAux tells us which array to store results in, it should flip each recurse
   procedure DoMergeSort(aStart, aEnd: Integer; aUseAux: Boolean);
   var
-    Mid: Integer;
+    mid: Integer;
   begin
     if aEnd - aStart < 2 then Exit;
-    Mid := (aStart + aEnd) div 2;
-    DoMergeSort(aStart, Mid, not aUseAux);
-    DoMergeSort(Mid, aEnd, not aUseAux);
+    mid := (aStart + aEnd) div 2;
+    DoMergeSort(aStart, mid, not aUseAux);
+    DoMergeSort(mid, aEnd, not aUseAux);
     if aUseAux then
-      MergeAux(aStart, Mid, aEnd)
+      MergeAux(aStart, mid, aEnd)
     else
-      Merge(aStart, Mid, aEnd);
+      Merge(aStart, mid, aEnd);
   end;
 
 begin
   ClipRenderList;
   if fCount > 0 then
   begin
-    SetLength(RenderOrderAux, Length(RenderOrder));
-    Move(RenderOrder[0], RenderOrderAux[0], Length(RenderOrder)*SizeOf(RenderOrder[0]));
+    SetLength(renderOrderAux, Length(RenderOrder));
+    Move(RenderOrder[0], renderOrderAux[0], Length(RenderOrder)*SizeOf(RenderOrder[0]));
     // Quicksort is unstable which causes Z fighting, so we use mergesort
     DoMergeSort(0, Length(RenderOrder), False);
     // DoQuickSort(0, Length(RenderOrder) - 1);
@@ -2015,37 +2022,37 @@ end;
 
 procedure TRenderList.SendToRender(aId: Integer);
 var
-  Sp1, Sp2: TKMRenderSprite;
-  Sp2Exists: Boolean;
+  sp1, sp2: TKMRenderSprite;
+  sp2Exists: Boolean;
 begin
   // Shortcuts to Sprites info
-  Sp1 := RenderList[aId];
-  Sp2Exists := (aId + 1 < fCount);
-  if Sp2Exists then
-    Sp2 := RenderList[aId + 1];
+  sp1 := RenderList[aId];
+  sp2Exists := (aId + 1 < fCount);
+  if sp2Exists then
+    sp2 := RenderList[aId + 1];
 
-  if Sp1.AlphaStep = -1 then
-    gRenderPool.RenderSprite(Sp1.RX, Sp1.Id, Sp1.Loc.X, Sp1.Loc.Y, Sp1.TeamColor)
+  if sp1.AlphaStep = -1 then
+    gRenderPool.RenderSprite(sp1.RX, sp1.Id, sp1.Loc.X, sp1.Loc.Y, sp1.TeamColor)
   else
   begin
     // Houses are rendered as Wood+Stone part. For Stone we want to skip
     // Wooden part where it is occluded (so that smooth shadows dont overlay)
 
     // Check if next comes our child, Stone layer
-    if Sp2Exists and not Sp2.NewInst and (Sp2.AlphaStep > 0) then
-      gRenderPool.RenderSpriteAlphaTest(Sp1.RX, Sp1.Id, Sp1.AlphaStep, Sp1.Loc.X, Sp1.Loc.Y,
-                                                Sp2.Id, Sp2.AlphaStep, Sp2.Loc.X, Sp2.Loc.Y)
+    if sp2Exists and not sp2.NewInst and (sp2.AlphaStep > 0) then
+      gRenderPool.RenderSpriteAlphaTest(sp1.RX, sp1.Id, sp1.AlphaStep, sp1.Loc.X, sp1.Loc.Y,
+                                                sp2.Id, sp2.AlphaStep, sp2.Loc.X, sp2.Loc.Y)
     else
-      gRenderPool.RenderSpriteAlphaTest(Sp1.RX, Sp1.Id, Sp1.AlphaStep, Sp1.Loc.X, Sp1.Loc.Y);
+      gRenderPool.RenderSpriteAlphaTest(sp1.RX, sp1.Id, sp1.AlphaStep, sp1.Loc.X, sp1.Loc.Y);
   end;
 
-  if SHOW_GROUND_LINES and Sp1.NewInst then
+  if SHOW_GROUND_LINES and sp1.NewInst then
   begin
     // Child ground lines are useless
     glBegin(GL_LINES);
       glColor3f(1,1,0.5);
-      glVertex2f(Sp1.Feet.X + 0.15, gTerrain.RenderFlatToHeight(Sp1.Feet).Y);
-      glVertex2f(Sp1.Feet.X - 0.15, gTerrain.RenderFlatToHeight(Sp1.Feet).Y);
+      glVertex2f(sp1.Feet.X + 0.15, gTerrain.RenderFlatToHeight(sp1.Feet).Y);
+      glVertex2f(sp1.Feet.X - 0.15, gTerrain.RenderFlatToHeight(sp1.Feet).Y);
     glEnd;
   end;
 end;
@@ -2054,16 +2061,16 @@ end;
 // Now render all these items from list
 procedure TRenderList.Render;
 var
-  I, K, ObjectsCount: Integer;
+  I, K, objectsCount: Integer;
 begin
   {$IFDEF PERFLOG}
   gPerfLogs.SectionEnter(psFrameRenderList);
   {$ENDIF}
   fStat_Sprites := fCount;
   fStat_Sprites2 := 0;
-  ObjectsCount := Length(RenderOrder);
+  objectsCount := Length(RenderOrder);
 
-  for I := 0 to ObjectsCount - 1 do
+  for I := 0 to objectsCount - 1 do
   begin
     K := RenderOrder[I];
     glPushMatrix;
