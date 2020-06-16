@@ -461,7 +461,7 @@ begin
     and (UNIT_TO_GROUP_TYPE[U.UnitType] = UNIT_TO_GROUP_TYPE[fType]) //They must be the same group type
     and TKMUnitWarrior(U).InAGroup then //Check if warrior belongs to some Group
     begin
-      L := KMLength(aLoc, U.CurrPosition);
+      L := KMLength(aLoc, U.Position);
       if (L < Best) then
       begin
         Best := L;
@@ -533,7 +533,7 @@ begin
   case fOrder of
     woNone:         Result := True;
     woWalk:         begin
-                      if not fUseExactTarget or KMSamePoint(CurrPosition, fOrderLoc) then
+                      if not fUseExactTarget or KMSamePoint(Position, fOrderLoc) then
                         Result := True
                       else
                       begin
@@ -589,7 +589,7 @@ begin
     OnPickedFight(Self, NewEnemy);
     //If the target is close enough attack it now, otherwise OnPickedFight will handle it through Group.OffendersList
     //Remember that AI's AutoAttackRange feature means a melee warrior can pick a fight with someone out of range
-    if WithinFightRange(NewEnemy.CurrPosition) then
+    if WithinFightRange(NewEnemy.Position) then
       FightEnemy(NewEnemy);
     Result := True; //Found someone
   end;
@@ -614,7 +614,7 @@ begin
 
     //Archers should only look for opponents when they are idle or when they are finishing another fight (function is called by TUnitActionFight)
     if (Action is TKMUnitActionWalkTo)
-    and ((GetOrderTarget = nil) or GetOrderTarget.IsDeadOrDying or not WithinFightRange(GetOrderTarget.CurrPosition))
+    and ((GetOrderTarget = nil) or GetOrderTarget.IsDeadOrDying or not WithinFightRange(GetOrderTarget.Position))
     then
       Exit;
   end;
@@ -630,7 +630,7 @@ begin
     Range := Max(Range, gHands[fOwner].AI.Setup.AutoAttackRange);
 
   //This function should not be run too often, as it will take some time to execute (e.g. with lots of warriors in the range area to check)
-  Result := gTerrain.UnitsHitTestWithinRad(CurrPosition, GetFightMinRange, Range, Owner, atEnemy, TestDir, not RANDOM_TARGETS);
+  Result := gTerrain.UnitsHitTestWithinRad(Position, GetFightMinRange, Range, Owner, atEnemy, TestDir, not RANDOM_TARGETS);
 
   //Only stop attacking a house if it's a warrior
   if (fTask <> nil) and (fTask is TKMTaskAttackHouse) and (Action is TKMUnitActionStay) and not (Result is TKMUnitWarrior) then
@@ -650,7 +650,7 @@ begin
     Step := (FiringDelay + (gGameParams.Tick - TKMUnitWarrior(Self).LastShootTime)) mod Cycle;
 
   if (Action is TKMUnitActionWalkTo) and not TKMUnitActionWalkTo(Action).CanAbandonExternal then
-    raise ELocError.Create('Unit fight overrides walk', fCurrPosition);
+    raise ELocError.Create('Unit fight overrides walk', fPosition);
   SetAction(TKMUnitActionFight.Create(Self, aAction, aOpponent), Step);
 end;
 
@@ -799,7 +799,7 @@ begin
                       begin
                         FreeAndNil(fTask); //e.g. TaskAttackHouse
 
-                        loc := gTerrain.GetClosestTile(fOrderLoc, CurrPosition, GetDesiredPassability, fUseExactTarget);
+                        loc := gTerrain.GetClosestTile(fOrderLoc, Position, GetDesiredPassability, fUseExactTarget);
 
                         TKMUnitActionWalkTo(Action).ChangeWalkTo(loc, 0);
                         fNextOrder := woNone;
@@ -811,10 +811,10 @@ begin
                       begin
                         FreeAndNil(fTask);
 
-                        loc := gTerrain.GetClosestTile(fOrderLoc, CurrPosition, GetDesiredPassability, fUseExactTarget);
+                        loc := gTerrain.GetClosestTile(fOrderLoc, Position, GetDesiredPassability, fUseExactTarget);
 
                         // No need to walk if we reached destination already
-                        if loc <> fCurrPosition then
+                        if loc <> fPosition then
                           SetActionWalkToSpot(loc, uaWalk);
 
                         fNextOrder := woNone;
@@ -828,7 +828,7 @@ begin
                         FreeAndNil(fTask); //e.g. TaskAttackHouse
                         fNextOrder := woNone;
                         fOrder := woAttackUnit;
-                        fOrderLoc := GetOrderTarget.CurrPosition;
+                        fOrderLoc := GetOrderTarget.Position;
                         FightEnemy(GetOrderTarget);
                       end;
                     end;
@@ -851,7 +851,7 @@ begin
                           FreeAndNil(fTask); //e.g. TaskAttackHouse
                           fTask := TKMTaskAttackHouse.Create(Self, GetOrderHouseTarget);
                           fOrder := woAttackHouse;
-                          fOrderLoc := CurrPosition; //Once the house is destroyed we will position where we are standing
+                          fOrderLoc := Position; //Once the house is destroyed we will position where we are standing
                           fNextOrder := woNone;
                         end;
                       end;
@@ -974,7 +974,7 @@ end;
 function TKMUnitWarrior.UpdateState: Boolean;
 begin
   if fAction = nil then
-    raise ELocError.Create(gRes.Units[UnitType].GUIName+' has no action at start of TKMUnitWarrior.UpdateState',fCurrPosition);
+    raise ELocError.Create(gRes.Units[UnitType].GUIName+' has no action at start of TKMUnitWarrior.UpdateState',fPosition);
 
   if IsDeadOrDying then
   begin
@@ -1042,7 +1042,7 @@ begin
         lineColor := icCyan;
       end;
 
-      gRenderPool.RenderDebug.RenderTiledArea(CurrPosition, GetFightMinRange, GetFightMaxRange, GetLength, fillColor, lineColor);
+      gRenderPool.RenderDebug.RenderTiledArea(Position, GetFightMinRange, GetFightMaxRange, GetLength, fillColor, lineColor);
     end;
 end;
 

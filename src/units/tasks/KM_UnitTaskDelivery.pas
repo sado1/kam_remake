@@ -476,7 +476,7 @@ begin
             SetActionWalkToSpot(fToHouse.PointBelowEntrance);
         end;
     7:  begin
-          Direction := KMGetDirection(CurrPosition, fToHouse.Entrance);
+          Direction := KMGetDirection(Position, fToHouse.Entrance);
           fToHouse.ResAddToBuild(Carry);
           gHands[Owner].Stats.WareConsumed(Carry);
           CarryTake;
@@ -496,7 +496,7 @@ begin
     5:  SetActionWalkToUnit(fToUnit, 1.42, uaWalk); //When approaching from diagonal
     6:  begin
           //See if the unit has moved. If so we must try again
-          if KMLengthDiag(fUnit.CurrPosition, fToUnit.CurrPosition) > 1.5 then
+          if KMLengthDiag(fUnit.Position, fToUnit.Position) > 1.5 then
           begin
             SetActionWalkToUnit(fToUnit, 1.42, uaWalk); //Walk to unit again
             fPhase := 6;
@@ -590,7 +590,7 @@ begin
     if fToHouse <> nil then
       gRenderAux.RenderWireTile(fToHouse.PointBelowEntrance, icLightRed);
     if fToUnit <> nil then
-      gRenderAux.RenderWireTile(fToUnit.CurrPosition, icRed);
+      gRenderAux.RenderWireTile(fToUnit.Position, icRed);
   end;
 
 end;

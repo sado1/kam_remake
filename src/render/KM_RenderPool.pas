@@ -1685,7 +1685,7 @@ begin
     U := TKMUnit(aObject);
     if not Assigned(aUnitFilterFunc) or aUnitFilterFunc(aObject) then
     begin
-      RenderUnit(U, U.CurrPosition, aHandColor, aDoHighlight, aHighlightColor);
+      RenderUnit(U, U.Position, aHandColor, aDoHighlight, aHighlightColor);
       Result := True;
     end;
   end else 
@@ -1703,9 +1703,9 @@ begin
       if G.IsFlagRenderBeforeUnit then
       begin
         G.PaintHighlighted(aHandColor, groupFlagColor, True, aDoHighlight, aHighlightColor);
-        RenderUnit(U, U.CurrPosition, aHandColor, aDoHighlight, aHighlightColor);
+        RenderUnit(U, U.Position, aHandColor, aDoHighlight, aHighlightColor);
       end else begin
-        RenderUnit(U, U.CurrPosition, aHandColor, aDoHighlight, aHighlightColor);
+        RenderUnit(U, U.Position, aHandColor, aDoHighlight, aHighlightColor);
         G.PaintHighlighted(aHandColor, groupFlagColor, True, aDoHighlight, aHighlightColor);
       end;
       Result := True;

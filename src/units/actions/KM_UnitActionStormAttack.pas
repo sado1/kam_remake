@@ -124,7 +124,7 @@ var
   WalkX, WalkY, Distance: Single;
 begin
   if KMSamePoint(fNextPos, KMPOINT_ZERO) then
-    fNextPos := fUnit.CurrPosition; //Set fNextPos to current pos so it initializes on the first run
+    fNextPos := fUnit.Position; //Set fNextPos to current pos so it initializes on the first run
 
   //Walk for the first step before running
   if fDelay > 0 then
@@ -169,7 +169,7 @@ begin
     Locked := True; //Finished CheckForEnemy, so lock again
 
     //Begin the next step
-    fNextPos := KMGetPointInDir(fUnit.CurrPosition, fUnit.Direction);
+    fNextPos := KMGetPointInDir(fUnit.Position, fUnit.Direction);
 
     //Action ends if: 1: Used up stamina. 2: There is an enemy to fight. 3: NextPos is an obsticle
     if (fTileSteps >= fStamina) or not fUnit.CanStepTo(fNextPos.X, fNextPos.Y, fUnit.DesiredPassability) then

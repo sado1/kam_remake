@@ -381,7 +381,7 @@ begin
       and not gHands.PlayerAnimals.Units[K].IsDeadOrDying then
     begin
       fUnits[L].UnitType := U.UnitType;
-      fUnits[L].Position := U.CurrPosition;
+      fUnits[L].Position := U.Position;
       fUnits[L].Owner := PLAYER_ANIMAL;
 
       fUnits[L].Condition := U.Condition;
@@ -400,7 +400,7 @@ begin
       if U.UnitType in [CITIZEN_MIN..CITIZEN_MAX] then
       begin
         fUnits[L].UnitType := U.UnitType;
-        fUnits[L].Position := U.CurrPosition;
+        fUnits[L].Position := U.Position;
         fUnits[L].Owner := I;
 
         fUnits[L].Condition := U.Condition;

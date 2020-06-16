@@ -3571,7 +3571,7 @@ begin
     begin
       U := fIDCache.GetUnit(aUnitID);
       if U <> nil then
-        Result := U.CurrPosition;
+        Result := U.Position;
     end
     else
       LogParamWarning('States.UnitPosition', [aUnitID]);
@@ -3595,7 +3595,7 @@ begin
     begin
       U := fIDCache.GetUnit(aUnitID);
       if U <> nil then
-        Result := U.CurrPosition.X;
+        Result := U.Position.X;
     end
     else
       LogParamWarning('States.UnitPositionX', [aUnitID]);
@@ -3619,7 +3619,7 @@ begin
     begin
       U := fIDCache.GetUnit(aUnitID);
       if U <> nil then
-        Result := U.CurrPosition.Y;
+        Result := U.Position.Y;
     end
     else
       LogParamWarning('States.UnitPositionY', [aUnitID]);

@@ -1962,7 +1962,7 @@ begin
 
     //Don't check tiles farther than closest Warrior
     if aClosest and (W[0] <> nil)
-    and (KMLengthSqr(aLoc, KMPoint(K,I)) >= KMLengthSqr(aLoc, W[0].CurrPosition)) then
+    and (KMLengthSqr(aLoc, KMPoint(K,I)) >= KMLengthSqr(aLoc, W[0].Position)) then
       Continue; //Since we check left-to-right we can't exit just yet (there are possible better enemies below)
 
     //In KaM archers can shoot further than sight radius (shoot further into explored areas)
@@ -1974,7 +1974,7 @@ begin
     //There was a crash caused by VertexUsageCompatible checking (k,i) instead of U.CurrPosition.
     //In that case aLoc = (37,54) and k,i = (39;52) but U.CurrPosition = (38;53).
     //This shows why you can't use (k,i) in checks because it is distance >2 from aLoc! (in melee fight)
-    P := U.CurrPosition;
+    P := U.Position;
 
     requiredMaxRad := MaxRad;
     if (MaxRad = 1) and KMStepIsDiag(aLoc, P) then
@@ -3889,7 +3889,7 @@ var
   tempUnit: TKMUnit;
 begin
   U := TKMUnit(aUnit);
-  loc := U.CurrPosition;
+  loc := U.Position;
 
   Result := loc;
   bestWeight := -1e30;

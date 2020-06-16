@@ -489,7 +489,7 @@ type
     if (TargetHouse <> nil) then
       aTargetP := TargetHouse.Position
     else if (TargetUnit <> nil) then
-      aTargetP := TargetUnit.CurrPosition
+      aTargetP := TargetUnit.Position
     else if (aTarget = attCustomPosition) then
       aTargetP := aCustomPos;
     Result := not KMSamePoint(aTargetP, KMPOINT_ZERO);

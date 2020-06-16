@@ -469,7 +469,7 @@ begin
            ) then
         //if (gHands[fOwner].Units[I].IsIdle) then
         begin
-          WorkersPos[fFreeWorkersCnt] := CurrPosition;
+          WorkersPos[fFreeWorkersCnt] := Position;
           fFreeWorkersCnt := fFreeWorkersCnt + 1;
         end;
       end;
@@ -1733,9 +1733,9 @@ begin
       if not IsDeadOrDying then
       begin
         if (gHands[fOwner].Units[K] is TKMUnitSerf) AND IsIdle then
-          gRenderAux.Quad(CurrPosition.X, CurrPosition.Y, $44000000 OR tcBlue)
+          gRenderAux.Quad(Position.X, Position.Y, $44000000 OR tcBlue)
         else if (gHands[fOwner].Units[K] is TKMUnitWorker) AND IsIdle then
-          gRenderAux.Quad(CurrPosition.X, CurrPosition.Y, $44000000 OR tcFuchsia);
+          gRenderAux.Quad(Position.X, Position.Y, $44000000 OR tcFuchsia);
       end;
 
   Color := 0; // For compiler

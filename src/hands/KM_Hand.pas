@@ -547,7 +547,7 @@ begin
     if G.Count = 1 then
     begin
       //If player is human and this is the first warrior in the group, send it to the rally point
-      H := HousesHitTest(aWarrior.CurrPosition.X, aWarrior.CurrPosition.Y-1);
+      H := HousesHitTest(aWarrior.Position.X, aWarrior.Position.Y-1);
       if (H is TKMHouseWFlagPoint) then
       begin
         HWFP := TKMHouseWFlagPoint(H);
@@ -2164,7 +2164,7 @@ begin
     if (U <> nil)
     and (U.UnitType = utFish)
     and (not U.IsDeadOrDying) //Fish are killed when they are caught or become stuck
-    and (gTerrain.Land[U.CurrPosition.Y, U.CurrPosition.X].WalkConnect[wcFish] = aWaterID)
+    and (gTerrain.Land[U.Position.Y, U.Position.X].WalkConnect[wcFish] = aWaterID)
     and (TKMUnitAnimal(U).FishCount > highestGroupCount) then
     begin
       Result := TKMUnitAnimal(U);

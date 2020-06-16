@@ -1153,7 +1153,7 @@ begin
       U := gHands[I].Units[K];
       if not (U is TKMUnitWarrior) then //Groups get saved separately
       begin
-        AddCommand(ctSetUnit, [UNIT_TYPE_TO_OLD_ID[U.UnitType], U.CurrPosition.X-1 + aLeftInset, U.CurrPosition.Y-1 + aTopInset]);
+        AddCommand(ctSetUnit, [UNIT_TYPE_TO_OLD_ID[U.UnitType], U.Position.X-1 + aLeftInset, U.Position.Y-1 + aTopInset]);
         if not U.StartWDefaultCondition then
           AddCommand(ctSetUnitFood, [U.Condition]);
       end;
@@ -1190,7 +1190,7 @@ begin
   for I := 0 to gHands.PlayerAnimals.Units.Count - 1 do
   begin
     U := gHands.PlayerAnimals.Units[I];
-    AddCommand(ctSetUnit, [UNIT_TYPE_TO_OLD_ID[U.UnitType], U.CurrPosition.X-1 + aLeftInset, U.CurrPosition.Y-1 + aTopInset]);
+    AddCommand(ctSetUnit, [UNIT_TYPE_TO_OLD_ID[U.UnitType], U.Position.X-1 + aLeftInset, U.Position.Y-1 + aTopInset]);
   end;
   AddData(''); //NL
 

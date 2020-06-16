@@ -95,7 +95,7 @@ type
     fKillASAPShowAnimation: Boolean;
     fPointerCount: Word;
     fInHouse: TKMHouse; //House we are currently in
-    fCurrPosition: TKMPoint; //Where we are now
+    fPosition: TKMPoint; //Where we are now
     fPrevPosition: TKMPoint; //Where we were
     fNextPosition: TKMPoint; //Where we will be. Next tile in route or same tile if stay on place
     fDirection: TKMDirection; //Direction
@@ -157,7 +157,7 @@ type
     procedure CloseUnit(aRemoveTileUsage: Boolean = True); dynamic;
 
     property UID: Integer read fUID;
-    property CurrPosition: TKMPoint read fCurrPosition;
+    property Position: TKMPoint read fPosition;
     property PositionF: TKMPointF read fPositionF write fPositionF;
     property PrevPosition: TKMPoint read fPrevPosition;
     property NextPosition: TKMPoint read fNextPosition write SetNextPosition;
@@ -380,7 +380,7 @@ begin
   Result := False;
   if IsHungry then
   begin
-    H := gHands[fOwner].FindInn(fCurrPosition, Self, InHouse <> nil);
+    H := gHands[fOwner].FindInn(fPosition, Self, InHouse <> nil);
     Result := GoEat(H);
   end;
 end;
@@ -418,7 +418,7 @@ function TKMSettledUnit.FindHome: Boolean;
 var H: TKMHouse;
 begin
   Result:=false;
-  H := gHands[fOwner].Houses.FindEmptyHouse(fType, fCurrPosition);
+  H := gHands[fOwner].Houses.FindEmptyHouse(fType, fPosition);
   if H <> nil then
   begin
     fHome  := H.GetHousePointer;
@@ -546,7 +546,7 @@ function TKMSettledUnit.UpdateState: Boolean;
 begin
   Result := True;
   if fAction = nil then
-    raise ELocError.Create(gRes.Units[UnitType].GUIName + ' has no action at start of TKMSettledUnit.UpdateState', fCurrPosition);
+    raise ELocError.Create(gRes.Units[UnitType].GUIName + ' has no action at start of TKMSettledUnit.UpdateState', fPosition);
 
   //Reset unit activity if home was destroyed, except when unit is dying or eating (finish eating/dying first)
   if (fHome <> nil)
@@ -604,7 +604,7 @@ begin
       end;
 
   if fAction = nil then
-    raise ELocError.Create(gRes.Units[UnitType].GUIName + ' has no action at end of TKMSettledUnit.UpdateState',fCurrPosition);
+    raise ELocError.Create(gRes.Units[UnitType].GUIName + ' has no action at end of TKMSettledUnit.UpdateState',fPosition);
 
   Result := False;
 end;
@@ -644,8 +644,8 @@ var
 begin
   Result := nil;
 
-  if not KMSamePoint(fCurrPosition, fHome.Entrance) then
-    raise ELocError.Create('Mining from wrong spot', fCurrPosition);
+  if not KMSamePoint(fPosition, fHome.Entrance) then
+    raise ELocError.Create('Mining from wrong spot', fPosition);
 
   Res := 1;
   //Check if House has production orders
@@ -705,7 +705,7 @@ begin
   if not (fHome is TKMHouseTower) or (fHome.CheckResIn(wtStone) <= 0) then
     Exit;
 
-  Enemy := gTerrain.UnitsHitTestWithinRad(fCurrPosition, RANGE_WATCHTOWER_MIN, RANGE_WATCHTOWER_MAX, fOwner, atEnemy, dirNA, not RANDOM_TARGETS);
+  Enemy := gTerrain.UnitsHitTestWithinRad(fPosition, RANGE_WATCHTOWER_MIN, RANGE_WATCHTOWER_MAX, fOwner, atEnemy, dirNA, not RANDOM_TARGETS);
 
   //Note: In actual game there might be two Towers nearby,
   //both throwing a stone into the same enemy. We should not
@@ -832,7 +832,7 @@ var
 begin
   Result := True; //Required for override compatibility
   WasIdle := IsIdle;
-  if fAction = nil then raise ELocError.Create(gRes.Units[UnitType].GUIName+' has no action at start of TKMUnitSerf.UpdateState',fCurrPosition);
+  if fAction = nil then raise ELocError.Create(gRes.Units[UnitType].GUIName+' has no action at start of TKMUnitSerf.UpdateState',fPosition);
   if inherited UpdateState then
     Exit;
 
@@ -851,7 +851,7 @@ begin
   end;
 
   if fAction = nil then
-    raise ELocError.Create(gRes.Units[UnitType].GUIName+' has no action at end of TKMUnitSerf.UpdateState', fCurrPosition);
+    raise ELocError.Create(gRes.Units[UnitType].GUIName+' has no action at end of TKMUnitSerf.UpdateState', fPosition);
 end;
 
 
@@ -913,7 +913,7 @@ begin
   //Scan the list and pick suitable locations
   MyCount := 0;
   for I := 0 to aList.Count - 1 do
-  if not KMSamePoint(aList[I].Loc, CurrPosition)
+  if not KMSamePoint(aList[I].Loc, Position)
   and CanWalkTo(aList[I].Loc, 0) then
   begin
     Spots[MyCount] := I;
@@ -953,7 +953,7 @@ function TKMUnitWorker.UpdateState: Boolean;
 begin
   Result := True; //Required for override compatibility
   if fAction = nil then
-    raise ELocError.Create(gRes.Units[UnitType].GUIName + ' has no action at start of TKMUnitWorker.UpdateState', fCurrPosition);
+    raise ELocError.Create(gRes.Units[UnitType].GUIName + ' has no action at start of TKMUnitWorker.UpdateState', fPosition);
   if inherited UpdateState then Exit;
 
   CheckCondition;
@@ -962,11 +962,11 @@ begin
     fThought := thNone; //Remove build thought if we are no longer doing anything
 
   //If we are still stuck on a house for some reason, get off it ASAP
-  Assert(gTerrain.Land[fCurrPosition.Y, fCurrPosition.X].TileLock <> tlHouse);
+  Assert(gTerrain.Land[fPosition.Y, fPosition.X].TileLock <> tlHouse);
 
   if (fTask = nil) and (fAction = nil) then SetActionStay(20, uaWalk);
 
-  if fAction=nil then raise ELocError.Create(gRes.Units[UnitType].GUIName+' has no action at end of TKMUnitWorker.UpdateState',fCurrPosition);
+  if fAction=nil then raise ELocError.Create(gRes.Units[UnitType].GUIName+' has no action at end of TKMUnitWorker.UpdateState',fPosition);
 end;
 
 
@@ -1022,7 +1022,7 @@ begin
   SetCurrPosition(KMPointRound(fPositionF));
 
   if fAction = nil then
-    raise ELocError.Create(gRes.Units[UnitType].GUIName + ' has no action at start of TKMUnitAnimal.UpdateState', fCurrPosition);
+    raise ELocError.Create(gRes.Units[UnitType].GUIName + ' has no action at start of TKMUnitAnimal.UpdateState', fPosition);
 
   if fKillASAP then
   begin
@@ -1046,8 +1046,8 @@ begin
   end;
 
   //First make sure the animal isn't stuck (check passibility of our position)
-  if (not gTerrain.CheckPassability(fCurrPosition, DesiredPassability))
-  or gTerrain.CheckAnimalIsStuck(fCurrPosition, DesiredPassability) then
+  if (not gTerrain.CheckPassability(fPosition, DesiredPassability))
+  or gTerrain.CheckAnimalIsStuck(fPosition, DesiredPassability) then
   begin
     Kill(PLAYER_NONE, True, False); //Animal is stuck so it dies
     Exit;
@@ -1056,7 +1056,7 @@ begin
   SetActionSteer;
 
   if fAction = nil then
-    raise ELocError.Create(gRes.Units[UnitType].GUIName + ' has no action at end of TKMUnitAnimal.UpdateState', fCurrPosition);
+    raise ELocError.Create(gRes.Units[UnitType].GUIName + ' has no action at end of TKMUnitAnimal.UpdateState', fPosition);
 end;
 
 
@@ -1106,7 +1106,7 @@ begin
   fHome         := nil;
   fInHouse      := nil;
   fPositionF     := KMPointF(aLoc);
-  fCurrPosition := aLoc;
+  fPosition := aLoc;
   fPrevPosition := aLoc; //Init values
   fNextPosition := aLoc; //Init values
   fOwner        := aOwner;
@@ -1141,7 +1141,7 @@ begin
 
   //The area around the unit should be visible at the start of the mission
   if InRange(fOwner, 0, MAX_HANDS - 1) then //Not animals
-    gHands.RevealForTeam(fOwner, fCurrPosition, gRes.Units[fType].Sight, FOG_OF_WAR_MAX);
+    gHands.RevealForTeam(fOwner, fPosition, gRes.Units[fType].Sight, FOG_OF_WAR_MAX);
 end;
 
 
@@ -1233,7 +1233,7 @@ begin
   LoadStream.Read(fUID);
   LoadStream.Read(AnimStep);
   LoadStream.Read(fDirection);
-  LoadStream.Read(fCurrPosition);
+  LoadStream.Read(fPosition);
   LoadStream.Read(fPrevPosition);
   LoadStream.Read(fNextPosition);
   LoadStream.Read(fDismissASAP);
@@ -1291,7 +1291,7 @@ begin
       ErrorMsg := ErrorMsg + ObjToStringShort(',');
     except
       on E: Exception do
-        ErrorMsg := ErrorMsg + IntToStr(UID) + ' Pos = ' + fCurrPosition.ToString;
+        ErrorMsg := ErrorMsg + IntToStr(UID) + ' Pos = ' + fPosition.ToString;
     end;
     raise ELocError.Create(ErrorMsg, PrevPosition);
   end;
@@ -1316,9 +1316,9 @@ begin
   fIsDead       := True;
   fThought      := thNone;
   fPositionF    := KMPOINTF_ZERO;
-  fCurrPosition := KMPOINT_ZERO;
-  fPrevPosition := fCurrPosition;
-  fNextPosition := fCurrPosition;
+  fPosition := KMPOINT_ZERO;
+  fPrevPosition := fPosition;
+  fNextPosition := fPosition;
   fOwner        := PLAYER_NONE;
   //Do not reset the unit type when they die as we still need to know during Load
   //fUnitType     := utNone;
@@ -1483,14 +1483,14 @@ begin
   Assert(gGameParams.IsMapEditor);
   if not gTerrain.CanPlaceUnit(aPos, UnitType) then Exit;
 
-  newPos := fCurrPosition <> aPos;
+  newPos := fPosition <> aPos;
 
-  gTerrain.UnitRem(fCurrPosition);
-  fCurrPosition := aPos;
+  gTerrain.UnitRem(fPosition);
+  fPosition := aPos;
   fNextPosition := aPos;
   fPrevPosition := aPos;
   fPositionF := KMPointF(aPos);
-  gTerrain.UnitAdd(fCurrPosition, Self);
+  gTerrain.UnitAdd(fPosition, Self);
 
   if newPos then
     gGame.MapEditor.History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_MOVE_SMTH],
@@ -1575,8 +1575,8 @@ end;
 
 function TKMUnit.HitTest(X,Y: Integer; const UT:TKMUnitType = utAny): Boolean;
 begin
-  Result := (X = fCurrPosition.X) and //Comparing X,Y to CurrentPosition separately, cos they can be negative numbers
-            (Y = fCurrPosition.Y) and
+  Result := (X = fPosition.X) and //Comparing X,Y to CurrentPosition separately, cos they can be negative numbers
+            (Y = fPosition.Y) and
             ((fType = UT) or (UT = utAny));
 end;
 
@@ -1596,10 +1596,10 @@ procedure TKMUnit.SetCurrPosition(const aLoc: TKMPoint);
 begin
   if {not gGameApp.DynamicFOWEnabled
     and }(fOwner <> PLAYER_ANIMAL)
-    and (fCurrPosition <> aLoc) then  //Update FOW only for new loc
+    and (fPosition <> aLoc) then  //Update FOW only for new loc
     gHands.RevealForTeam(fOwner, aLoc, gRes.Units[fType].Sight, FOG_OF_WAR_MAX);
 
-  fCurrPosition := aLoc;
+  fPosition := aLoc;
 end;
 
 
@@ -1740,7 +1740,7 @@ begin
 
   SetAction(TKMUnitActionWalkTo.Create( Self,               //Who's walking
                                       //Target position is the closest cell to our current position (only used for estimating in path finding)
-                                      aHouse.GetClosestCell(Self.CurrPosition),
+                                      aHouse.GetClosestCell(Self.Position),
                                       aActionType,        //
                                       aDistance,          //Proximity
                                       False,              //If we were pushed
@@ -1768,7 +1768,7 @@ begin
 
   Assert(aDistance >= 1, 'Should not walk to units place');
   SetAction(TKMUnitActionWalkTo.Create( Self,               //Who's walking
-                                      aUnit.fCurrPosition,//Target position
+                                      aUnit.fPosition,//Target position
                                       aActionType,        //
                                       aDistance,          //Proximity
                                       False,              //If we were pushed
@@ -1941,13 +1941,13 @@ end;
 
 function TKMUnit.CanWalkTo(const aTo: TKMPoint; aDistance: Single): Boolean;
 begin
-  Result := gTerrain.Route_CanBeMade(CurrPosition, aTo, DesiredPassability, aDistance);
+  Result := gTerrain.Route_CanBeMade(Position, aTo, DesiredPassability, aDistance);
 end;
 
 
 function TKMUnit.CanWalkTo(const aTo: TKMPoint; aPass: TKMTerrainPassability; aDistance: Single): Boolean;
 begin
-  Result := gTerrain.Route_CanBeMade(CurrPosition, aTo, aPass, aDistance);
+  Result := gTerrain.Route_CanBeMade(Position, aTo, aPass, aDistance);
 end;
 
 
@@ -1986,9 +1986,9 @@ begin
   Result := gTerrain.TileInMapCoords(X,Y)
         and (gTerrain.Land[Y,X].IsUnit = nil)
         and (gTerrain.CheckPassability(KMPoint(X,Y), aPass))
-        and (not KMStepIsDiag(CurrPosition, KMPoint(X,Y)) //Only check vertex usage if the step is diagonal
-             or (not gTerrain.HasVertexUnit(KMGetDiagVertex(CurrPosition, KMPoint(X,Y)))))
-        and (gTerrain.CanWalkDiagonaly(CurrPosition, X, Y));
+        and (not KMStepIsDiag(Position, KMPoint(X,Y)) //Only check vertex usage if the step is diagonal
+             or (not gTerrain.HasVertexUnit(KMGetDiagVertex(Position, KMPoint(X,Y)))))
+        and (gTerrain.CanWalkDiagonaly(Position, X, Y));
 end;
 
 
@@ -2044,17 +2044,17 @@ begin
       SetCurrPosition(NewCurrPosition); //will update FOW
 
       // Unit was occupying tile (he was walking inside house when house was destroyed)
-      placedOnOccupiedTile := gTerrain.Land[fCurrPosition.Y, fCurrPosition.X].IsUnit = Self;
+      placedOnOccupiedTile := gTerrain.Land[fPosition.Y, fPosition.X].IsUnit = Self;
       //Make sure these are reset properly
-      Assert(not gTerrain.HasUnit(fCurrPosition) or placedOnOccupiedTile);
+      Assert(not gTerrain.HasUnit(fPosition) or placedOnOccupiedTile);
       IsExchanging := False;
-      fPositionF := KMPointF(fCurrPosition);
-      fPrevPosition := fCurrPosition;
-      fNextPosition := fCurrPosition;
+      fPositionF := KMPointF(fPosition);
+      fPrevPosition := fPosition;
+      fNextPosition := fPosition;
 
       // Do not add unit to terrain, if he is already occupying house entrance tile
       if not placedOnOccupiedTile then
-        gTerrain.UnitAdd(fCurrPosition, Self); //Unit was not occupying tile while inside the house, hence just add do not remove
+        gTerrain.UnitAdd(fPosition, Self); //Unit was not occupying tile while inside the house, hence just add do not remove
 
       //OnWarriorWalkOut usually happens in TUnitActionGoInOut, otherwise the warrior doesn't get assigned a group
       //Do this after setting terrain usage since OnWarriorWalkOut calls script events
@@ -2235,7 +2235,7 @@ begin
                     GetEnumName(TypeInfo(TKMUnitType), Integer(fType)), aSeparator,
                     ActStr, aSeparator,
                     TaskStr, aSeparator,
-                    TypeToString(fCurrPosition), aSeparator,
+                    TypeToString(fPosition), aSeparator,
                     BoolToStr(fIsDead, True)]);
 end;
 
@@ -2330,7 +2330,7 @@ begin
   SaveStream.Write(fUID);
   SaveStream.Write(AnimStep);
   SaveStream.Write(fDirection);
-  SaveStream.Write(fCurrPosition);
+  SaveStream.Write(fPosition);
   SaveStream.Write(fPrevPosition);
   SaveStream.Write(fNextPosition);
   SaveStream.Write(fDismissASAP);
@@ -2351,7 +2351,7 @@ begin
   Result := True;
 
   if fAction = nil then
-    raise ELocError.Create(gRes.Units[UnitType].GUIName + ' has no action at start of TKMUnit.UpdateState', fCurrPosition);
+    raise ELocError.Create(gRes.Units[UnitType].GUIName + ' has no action at start of TKMUnit.UpdateState', fPosition);
 
   if not ((fAction is TKMUnitActionWalkTo) and TKMUnitActionWalkTo(fAction).DoingExchange) then
   begin
@@ -2392,7 +2392,7 @@ begin
 
   //We only need to update fog of war regularly if we're using dynamic fog of war, otherwise only update it when the unit moves
   if gGameParams.DynamicFOW and (fTicker mod FOW_PACE = 0) then
-    gHands.RevealForTeam(fOwner, fCurrPosition, gRes.Units[fType].Sight, FOG_OF_WAR_INC);
+    gHands.RevealForTeam(fOwner, fPosition, gRes.Units[fType].Sight, FOG_OF_WAR_INC);
 
   UpdateThoughts;
   UpdateHitPoints;
@@ -2428,7 +2428,7 @@ begin
   //Performing Tasks and Actions now
   //------------------------------------------------------------------------------------------------
   if fAction = nil then
-    raise ELocError.Create(gRes.Units[UnitType].GUIName + ' has no action in TKMUnit.UpdateState', fCurrPosition);
+    raise ELocError.Create(gRes.Units[UnitType].GUIName + ' has no action in TKMUnit.UpdateState', fPosition);
 
   SetCurrPosition(KMPointRound(fPositionF)); //will update FOW
 

@@ -430,7 +430,7 @@ begin
     //Delete unit/house
     if Obj is TKMUnit then
     begin
-      gHands.RemAnyUnit(TKMUnit(Obj).CurrPosition);
+      gHands.RemAnyUnit(TKMUnit(Obj).Position);
       if not aEraseAll then Exit;
     end
     else
@@ -578,7 +578,7 @@ begin
       Result := True;
       fHistory.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_CHOWNER_SMTH],
                                               [gRes.Units[TKMUnit(aObject).UnitType].GUIName,
-                                               TKMUnit(aObject).CurrPosition.ToString]));
+                                               TKMUnit(aObject).Position.ToString]));
     end;
   end
   else
@@ -589,7 +589,7 @@ begin
       Result := True;
       fHistory.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_CHOWNER_SMTH],
                                               [gRes.Units[TKMUnitGroup(aObject).FlagBearer.UnitType].GUIName,
-                                               TKMUnitGroup(aObject).FlagBearer.CurrPosition.ToString]));
+                                               TKMUnitGroup(aObject).FlagBearer.Position.ToString]));
     end
 end;
 
@@ -695,7 +695,7 @@ begin
   begin
     Obj := gMySpectator.HitTestCursor(True);
     if Obj is TKMUnit then
-      gHands.RemAnyUnit(TKMUnit(Obj).CurrPosition);
+      gHands.RemAnyUnit(TKMUnit(Obj).Position);
   end else
   if gTerrain.CanPlaceUnit(P, TKMUnitType(gGameCursor.Tag1)) then
   begin

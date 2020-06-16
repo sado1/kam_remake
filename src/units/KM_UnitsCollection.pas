@@ -166,7 +166,7 @@ begin
   newMapRect := KMRectGrow(gTerrain.MapRect, aInsetRect);
 
   for I := 0 to Count - 1 do
-    if not KMInRect(Units[I].CurrPosition, newMapRect) then
+    if not KMInRect(Units[I].Position, newMapRect) then
       Units[I].CloseUnit;
 end;
 
@@ -249,7 +249,7 @@ begin
   for I := 0 to Count - 1 do
     if not Units[I].IsDeadOrDying and Units[I].Visible and (Units[I].UnitType in aTypes) then
     begin
-      Dist := KMLengthSqr(Units[I].CurrPosition, aPoint);
+      Dist := KMLengthSqr(Units[I].Position, aPoint);
       if Dist < BestDist then
       begin
         BestDist := Dist;

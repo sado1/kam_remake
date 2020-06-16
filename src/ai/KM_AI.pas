@@ -412,7 +412,7 @@ begin
                   //otherwise you can make a unit walk backwards and forwards forever between two groups of archers
                   if not Group.InFight then
                     //Make sure the group could possibly reach the offenders
-                    if Group.CanWalkTo(aAttacker.CurrPosition, Group.FightMaxRange) then
+                    if Group.CanWalkTo(aAttacker.Position, Group.FightMaxRange) then
                       Group.OrderAttackUnit(aAttacker, True);
               end;
             end;
