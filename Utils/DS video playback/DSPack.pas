@@ -1238,7 +1238,7 @@ type
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState;
       X, Y: Integer); override;
     {@exclude}
-    procedure Timer; dynamic;
+    procedure Timer; virtual;
   public
     { constructor method. }
     constructor Create(AOwner: TComponent); override;

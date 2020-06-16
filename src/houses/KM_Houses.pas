@@ -134,7 +134,7 @@ type
     function GetResourceOutArray: TKMByteArray;
     function GetResourceOutPoolArray: TKMByteArray;
 
-    procedure MakeSound; dynamic; //Swine/stables make extra sounds
+    procedure MakeSound; virtual; //Swine/stables make extra sounds
     function GetResDistribution(aID: Byte): Byte; //Will use GetRatio from mission settings to find distribution amount
     procedure SetIsClosedForWorker(aIsClosed: Boolean);
     procedure UpdateDeliveryMode;

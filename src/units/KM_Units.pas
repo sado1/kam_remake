@@ -59,7 +59,7 @@ type
 
     property Phase: Byte read fPhase write fPhase;
     property TaskType: TKMUnitTaskType read fType;
-    function WalkShouldAbandon: Boolean; dynamic;
+    function WalkShouldAbandon: Boolean; virtual;
 
     function CouldBeCancelled: Boolean; virtual;
     function CanRestartAction(aLastActionResult: TKMActionResult): Boolean; virtual;
@@ -136,7 +136,7 @@ type
     Dismissable: Boolean; //Is it allowed to dismiss this unit ?
 
     constructor Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPoint; aOwner: TKMHandID; aInHouse: Boolean);
-    constructor Load(LoadStream: TKMemoryStream); dynamic;
+    constructor Load(LoadStream: TKMemoryStream); virtual;
     procedure SyncLoad; virtual;
     destructor Destroy; override;
 
@@ -154,7 +154,7 @@ type
     procedure DismissStarted;
     property DismissInProgress: Boolean read fDismissInProgress write fDismissInProgress;
 
-    procedure CloseUnit(aRemoveTileUsage: Boolean = True); dynamic;
+    procedure CloseUnit(aRemoveTileUsage: Boolean = True); virtual;
 
     property UID: Integer read fUID;
     property Position: TKMPoint read fPosition;
