@@ -367,7 +367,8 @@ uses
   KM_CommonUtils, KM_ResLocales, KM_ResSound, KM_Resource, KM_Log, KM_ResCursors, KM_ResFonts, KM_ResKeys,
   KM_Sound, KM_NetPlayersList, KM_MessageLog, KM_NetworkTypes,
   KM_InterfaceMapEditor, KM_HouseWoodcutters, KM_MapTypes,
-  KM_GameTypes, KM_GameParams, KM_Video, KM_Music;
+  KM_GameTypes, KM_GameParams, KM_Video, KM_Music,
+  KM_HandEntity;
 
 const
   ALLIES_ROWS = 7;
@@ -726,9 +727,8 @@ begin
       gSoundPlayer.PlayWarrior(group.UnitType, spMove);
     end;
   end;
-  if  ((gMySpectator.Selected is TKMHouseBarracks)
-    or (gMySpectator.Selected is TKMHouseTownHall)
-    or (gMySpectator.Selected is TKMHouseWoodcutters)) and not fPlacingBeacon
+  if  (gMySpectator.Selected is TKMHouseWFlagPoint)
+    and not fPlacingBeacon
     and (fUIMode in [umSP, umMP]) and not HasLostMPGame then
   begin
     if gTerrain.Route_CanBeMade(TKMHouse(gMySpectator.Selected).PointBelowEntrance, loc, tpWalk, 0) then
@@ -1901,32 +1901,23 @@ end;
 
 procedure TKMGamePlayInterface.Replay_JumpToPlayer(aHandIndex: Integer);
 var
-  lastSelectedObj: TObject;
+  lastSelectedEntity: TKMHandEntity;
   oldHandIndex: Integer;
 begin
   oldHandIndex := gMySpectator.HandID;
   gMySpectator.HandID := aHandIndex;
 
-  lastSelectedObj := gMySpectator.LastSpecSelectedObj;
-  if lastSelectedObj <> nil then
-  begin
+  lastSelectedEntity := gMySpectator.LastSpecSelectedEntity;
+  if lastSelectedEntity <> nil then
     // Center screen on last selected object for chosen hand
-    if lastSelectedObj is TKMUnit then begin
-      fViewport.Position := TKMUnit(lastSelectedObj).PositionF;
-    end else if lastSelectedObj is TKMHouse then
-      fViewport.Position := KMPointF(TKMHouse(lastSelectedObj).Entrance)
-    else if lastSelectedObj is TKMUnitGroup then
-      fViewport.Position := TKMUnitGroup(lastSelectedObj).FlagBearer.PositionF
-    else
-      raise Exception.Create('Could not determine last selected object type');
-  end
+    fViewport.Position := lastSelectedEntity.PositionF
   else
-    if not KMSamePoint(gHands[gMySpectator.HandID].CenterScreen, KMPOINT_ZERO) then
-      fViewport.Position := gHands[gMySpectator.HandID].CenterScreen.ToFloat //By default set viewport position to hand CenterScreen
-    else
-      fViewport.Position := gHands[gMySpectator.HandID].FindCityCenter.ToFloat;
+  if not KMSamePoint(gHands[gMySpectator.HandID].CenterScreen, KMPOINT_ZERO) then
+    fViewport.Position := gHands[gMySpectator.HandID].CenterScreen.ToFloat //By default set viewport position to hand CenterScreen
+  else
+    fViewport.Position := gHands[gMySpectator.HandID].FindCityCenter.ToFloat;
 
-  gMySpectator.Selected := lastSelectedObj;  // Change selected object to last one for this hand or Reset it to nil
+  gMySpectator.Selected := lastSelectedEntity;  // Change selected object to last one for this hand or Reset it to nil
 
   UpdateSelectedObject;
   Replay_UpdatePlayerInterface(oldHandIndex, gMySpectator.HandID);
@@ -3730,10 +3721,9 @@ procedure TKMGamePlayInterface.MouseMove(Shift: TShiftState; X,Y: Integer; var a
 var
   deltaX, deltaY, deltaDistanceSqr: Integer;
   newPoint: TPoint;
-  obj: TObject;
+  entity: TKMHandEntity;
   P: TKMPoint;
   group: TKMUnitGroup;
-  owner: TKMHandID;
 begin
   inherited MouseMove(Shift, X, Y, aHandled);
   if aHandled then Exit;
@@ -3826,16 +3816,16 @@ begin
     Exit;
   end;
 
-  obj := gMySpectator.HitTestCursor;
+  entity := gMySpectator.HitTestCursor;
 
   if fGuiGameUnit.JoiningGroups and (gMySpectator.Selected is TKMUnitGroup) then
   begin
     group := TKMUnitGroup(gMySpectator.Selected);
-    if (obj <> nil)
-    and (obj is TKMUnitWarrior)
-    and (TKMUnitWarrior(obj).Owner = gMySpectator.HandID)
-    and not group.HasMember(TKMUnitWarrior(obj))
-    and (UNIT_TO_GROUP_TYPE[TKMUnitWarrior(obj).UnitType] = group.GroupType) then
+    if (entity <> nil)
+    and (entity is TKMUnitWarrior)
+    and (entity.Owner = gMySpectator.HandID)
+    and not group.HasMember(TKMUnitWarrior(entity))
+    and (UNIT_TO_GROUP_TYPE[TKMUnitWarrior(entity).UnitType] = group.GroupType) then
       gRes.Cursors.Cursor := kmcJoinYes
     else
       gRes.Cursors.Cursor := kmcJoinNo;
@@ -3845,13 +3835,12 @@ begin
   if not gMySpectator.Hand.InCinematic then
   begin
     // Only own and ally units/houses can be selected
-    owner := GetGameObjectOwnerIndex(obj);
-    if (owner <> -1) and
-      ((owner = gMySpectator.HandID)
+    if (entity.Owner <> -1) and
+      ((entity.Owner = gMySpectator.HandID)
       or ((ALLOW_SELECT_ALLY_UNITS
-          or ((obj is TKMHouse) and TKMHouse(obj).AllowAllyToView))
-        and (gMySpectator.Hand.Alliances[owner] = atAlly))
-      or (ALLOW_SELECT_ENEMIES and (gMySpectator.Hand.Alliances[owner] = atEnemy)) // Enemies can be selected for debug
+          or ((entity is TKMHouse) and TKMHouse(entity).AllowAllyToView))
+        and (gMySpectator.Hand.Alliances[entity.Owner] = atAlly))
+      or (ALLOW_SELECT_ENEMIES and (gMySpectator.Hand.Alliances[entity.Owner] = atEnemy)) // Enemies can be selected for debug
       or (fUIMode in [umReplay, umSpectate])) then
     begin
       gRes.Cursors.Cursor := kmcInfo;
@@ -3859,13 +3848,12 @@ begin
     end;
   end;
 
-  if (gMySpectator.Selected is TKMUnitGroup)
+  if (gMySpectator.Selected.IsGroup)
     and (fUIMode in [umSP, umMP]) and not HasLostMPGame
     and not gMySpectator.Hand.InCinematic
     and (gMySpectator.FogOfWar.CheckTileRevelation(gGameCursor.Cell.X, gGameCursor.Cell.Y) > 0) then
   begin
-    if ((obj is TKMUnit) and (gMySpectator.Hand.Alliances[TKMUnit(obj).Owner] = atEnemy))
-      or ((obj is TKMHouse) and (gMySpectator.Hand.Alliances[TKMHouse(obj).Owner] = atEnemy)) then
+    if (entity <> nil) and (gMySpectator.Hand.Alliances[entity.Owner] = atEnemy) then
       gRes.Cursors.Cursor := kmcAttack
     else
       if not fViewport.Scrolling then
@@ -4419,13 +4407,13 @@ begin
   begin
     if (gMySpectator.Selected <> nil) and not gMySpectator.IsSelectedMyObj then
     begin
-      if gHands[GetGameObjectOwnerIndex(gMySpectator.Selected)].AI.Setup.NewAI then
+      if gHands[gMySpectator.Selected.Owner].AI.Setup.NewAI then
       begin
-        S := S + gHands[GetGameObjectOwnerIndex(gMySpectator.Selected)].AI.ArmyManagement.BalanceText + '|';
-        S := S + gHands[GetGameObjectOwnerIndex(gMySpectator.Selected)].AI.CityManagement.BalanceText + '|';
+        S := S + gHands[gMySpectator.Selected.Owner].AI.ArmyManagement.BalanceText + '|';
+        S := S + gHands[gMySpectator.Selected.Owner].AI.CityManagement.BalanceText + '|';
       end
       else
-        S := S + gHands[GetGameObjectOwnerIndex(gMySpectator.Selected)].AI.Mayor.BalanceText + '|'
+        S := S + gHands[gMySpectator.Selected.Owner].AI.Mayor.BalanceText + '|'
     end
     else
     begin

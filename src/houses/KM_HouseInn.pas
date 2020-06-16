@@ -169,7 +169,7 @@ begin
     gRenderPool.AddHouseEater(fPosition, fEater[I].UnitType, uaEat,
                               AnimDir(I), animStep,
                               offX[I mod 3], offY[I mod 3],
-                              gHands[fOwner].GameFlagColor);
+                              gHands[Owner].GameFlagColor);
   end;
 end;
 

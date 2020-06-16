@@ -3,7 +3,8 @@ unit KM_HandSpectator;
 interface
 uses
   KM_Hand, KM_FogOfWar,
-  KM_CommonClasses, KM_Defaults;
+  KM_CommonClasses, KM_Defaults,
+  KM_HandEntity;
 
 
 type
@@ -12,40 +13,39 @@ type
   TKMSpectator = class
   private
     fHandIndex: TKMHandID;
-    fHighlight: TObject; //Unit/House/Group that is shown highlighted to draw players attention
+    fHighlight: TKMHandEntity; //Unit/House/Group that is shown highlighted to draw players attention
     fHighlightEnd: Cardinal; //Highlight has a short time to live
-    fSelected: TObject;
-    fLastSelected: TObject;
+    fSelected: TKMHandEntity;
+    fLastSelected: TKMHandEntity;
     fIsSelectedMyObj: Boolean; // We can select ally's house/unit
     fLastSpecSelectedObjUID: array [0..MAX_HANDS-1] of Integer; //UIDs of last selected objects for each hand while spectating/watching replay
     fFOWIndex: TKMHandID; //Unit/House/Group selected by player and shown in UI
     fFogOfWarOpen: TKMFogOfWarOpen; //Stub for MapEd
     fFogOfWar: TKMFogOfWarCommon; //Pointer to current FOW view, updated by UpdateFogOfWarIndex
-    procedure SetHighlight(Value: TObject);
-    procedure SetSelected(Value: TObject);
-    function GetSelected: TObject;
+    procedure SetHighlight(Value: TKMHandEntity);
+    procedure SetSelected(Value: TKMHandEntity);
+    function GetSelected: TKMHandEntity;
     procedure SetHandIndex(const Value: TKMHandID);
     procedure SetFOWIndex(const Value: TKMHandID);
     procedure UpdateFogOfWarIndex;
-    function GetLastSpecSelectedObj: TObject;
-    function IsLastSelectObjectValid(aObject: TObject): Boolean;
-    procedure UpdateNewSelected(var aNewSelected: TObject; aAllowSelectAllies: Boolean = False); overload;
+    function GetLastSpecSelectedEntity: TKMHandEntity;
+    procedure UpdateNewSelected(var aNewSelected: TKMHandEntity; aAllowSelectAllies: Boolean = False); overload;
     function GetSelectedHandID: TKMHandID;
   public
     constructor Create(aHandIndex: TKMHandID);
     destructor Destroy; override;
-    property Highlight: TObject read fHighlight write SetHighlight;
-    property Selected: TObject read GetSelected write SetSelected;
-    property LastSelected: TObject read fLastSelected;
+    property Highlight: TKMHandEntity read fHighlight write SetHighlight;
+    property Selected: TKMHandEntity read GetSelected write SetSelected;
+    property LastSelected: TKMHandEntity read fLastSelected;
     property IsSelectedMyObj: Boolean read fIsSelectedMyObj write fIsSelectedMyObj;
     function Hand: TKMHand;
     property HandID: TKMHandID read fHandIndex write SetHandIndex;
     property SelectedHandID: TKMHandID read GetSelectedHandID;
     property FOWIndex: TKMHandID read fFOWIndex write SetFOWIndex;
     property FogOfWar: TKMFogOfWarCommon read fFogOfWar;
-    property LastSpecSelectedObj: TObject read GetLastSpecSelectedObj;
-    function HitTestCursor(aIncludeAnimals: Boolean = False): TObject;
-    function HitTestCursorWGroup(aIncludeAnimals: Boolean = False): TObject;
+    property LastSpecSelectedEntity: TKMHandEntity read GetLastSpecSelectedEntity;
+    function HitTestCursor(aIncludeAnimals: Boolean = False): TKMHandEntity;
+    function HitTestCursorWGroup(aIncludeAnimals: Boolean = False): TKMHandEntity;
     procedure UpdateNewSelected; overload;
     procedure UpdateSelect(aCheckUnderCursor: Boolean = True);
     procedure Load(LoadStream: TKMemoryStream);
@@ -103,25 +103,25 @@ end;
 
 
 //Return last seleted object for current chosen hand
-function TKMSpectator.GetLastSpecSelectedObj: TObject;
+function TKMSpectator.GetLastSpecSelectedEntity: TKMHandEntity;
 var
-  obj: TObject;
+  entity: TKMHandEntity;
   UID: Integer;
 begin
   Result := nil;
   UID := fLastSpecSelectedObjUID[fHandIndex];
   if UID <> UID_NONE then
   begin
-    obj := gHands.GetObjectByUID(UID);
-    if IsLastSelectObjectValid(obj) then
-      Result := obj
+    entity := gHands.GetObjectByUID(UID);
+    if entity.IsSelectable then
+      Result := entity
     else
       fLastSpecSelectedObjUID[fHandIndex] := UID_NONE;  // Last selected object is not valid anymore, so reset UID
   end;
 end;
 
 
-function TKMSpectator.GetSelected: TObject;
+function TKMSpectator.GetSelected: TKMHandEntity;
 begin
   if Self = nil then Exit(nil);
 
@@ -135,26 +135,7 @@ begin
   if Self = nil then Exit;
 
   if fSelected <> nil then
-  begin
-    if fSelected is TKMHouse then
-     Result := TKMHouse(fSelected).Owner
-    else
-    if fSelected is TKMUnit then
-      Result := TKMUnit(fSelected).Owner
-    else
-    if fSelected is TKMUnitGroup then
-      Result := TKMUnitGroup(fSelected).Owner;
-  end;
-end;
-
-
-function TKMSpectator.IsLastSelectObjectValid(aObject: TObject): Boolean;
-begin
-  Result := (aObject <> nil)
-    and not ((aObject is TKMUnit) and TKMUnit(aObject).IsDeadOrDying)    //Don't allow the player to select dead units
-    and not (aObject is TKMUnitAnimal)                                   //...or animals
-    and not ((aObject is TKMUnitGroup) and TKMUnitGroup(aObject).IsDead) //We can not select dead groups (with no warriors)
-    and not ((aObject is TKMHouse) and TKMHouse(aObject).IsDestroyed);   //Don't allow the player to select destroyed houses
+    Result := fSelected.Owner;
 end;
 
 
@@ -183,7 +164,7 @@ end;
 
 //Test if there's object below that player can interact with
 //Units and Houses, not Groups
-function TKMSpectator.HitTestCursor(aIncludeAnimals: Boolean = False): TObject;
+function TKMSpectator.HitTestCursor(aIncludeAnimals: Boolean = False): TKMHandEntity;
 begin
   Result := gHands.GetUnitByUID(gGameCursor.ObjectUID);
   if ((Result is TKMUnit) and TKMUnit(Result).IsDeadOrDying)
@@ -202,7 +183,7 @@ end;
 
 //Test if there's object below that player can interact with
 //Units and Houses and Groups
-function TKMSpectator.HitTestCursorWGroup(aIncludeAnimals: Boolean = False): TObject;
+function TKMSpectator.HitTestCursorWGroup(aIncludeAnimals: Boolean = False): TKMHandEntity;
 var
   G: TKMUnitGroup;
 begin
@@ -226,7 +207,7 @@ end;
 
 procedure TKMSpectator.UpdateNewSelected;
 var
-  tmpSelected: TObject;
+  tmpSelected: TKMHandEntity;
 begin
   //We do not want to change Selected object actually, just update fIsSelectedMyObj field is good enought
   tmpSelected := Selected;
@@ -234,21 +215,18 @@ begin
 end;
 
 
-procedure TKMSpectator.UpdateNewSelected(var aNewSelected: TObject; aAllowSelectAllies: Boolean = False);
-var
-  ownerIndex: TKMHandID;
+procedure TKMSpectator.UpdateNewSelected(var aNewSelected: TKMHandEntity; aAllowSelectAllies: Boolean = False);
 begin
   if gGameParams.Mode in [gmMultiSpectate, gmMapEd, gmReplaySingle, gmReplayMulti] then
     Exit;
 
-  ownerIndex := GetGameObjectOwnerIndex(aNewSelected);
-  if ownerIndex <> -1 then
+  if aNewSelected.Owner <> -1 then
   begin
-    if ownerIndex <> fHandIndex then  // check if we selected our unit/ally's or enemy's
+    if aNewSelected.Owner <> fHandIndex then  // check if we selected our unit/ally's or enemy's
     begin
       if ((ALLOW_SELECT_ALLY_UNITS or aAllowSelectAllies) 
-            and (Hand.Alliances[ownerIndex] = atAlly))
-          or (ALLOW_SELECT_ENEMIES and (Hand.Alliances[ownerIndex] = atEnemy)) then // Enemies can be selected for debug
+            and (Hand.Alliances[aNewSelected.Owner] = atAlly))
+          or (ALLOW_SELECT_ENEMIES and (Hand.Alliances[aNewSelected.Owner] = atEnemy)) then // Enemies can be selected for debug
         fIsSelectedMyObj := False
       else
         aNewSelected := nil;
@@ -261,7 +239,7 @@ end;
 //Select anything player CAN select below cursor
 procedure TKMSpectator.UpdateSelect(aCheckUnderCursor: Boolean = True);
 var
-  newSelected: TObject;
+  newSelected: TKMHandEntity;
   UID: Integer;
 begin
   newSelected := nil;
@@ -347,7 +325,7 @@ begin
 end;
 
 
-procedure TKMSpectator.SetHighlight(Value: TObject);
+procedure TKMSpectator.SetHighlight(Value: TKMHandEntity);
 begin
   //We don't increase PointersCount of object because of savegames identicality over MP
   //Objects report on their destruction and set it to nil
@@ -368,7 +346,7 @@ begin
 end;
 
 
-procedure TKMSpectator.SetSelected(Value: TObject);
+procedure TKMSpectator.SetSelected(Value: TKMHandEntity);
 begin
   if Self  = nil then Exit;
 

@@ -142,7 +142,7 @@ function TKMHouseTownHall.CanEquip(aUnitType: TKMUnitType): Boolean;
 var
   thUnitIndex: Integer;
 begin
-  Result := not gHands[fOwner].Locks.GetUnitBlocked(aUnitType, True);
+  Result := not gHands[Owner].Locks.GetUnitBlocked(aUnitType, True);
 
   thUnitIndex := GetTHUnitOrderIndex(aUnitType);
 
@@ -181,10 +181,10 @@ begin
     GoldDeliveryCnt := GoldDeliveryCnt - TH_TROOP_COST[thUnitIndex]; //Compensation for GoldDeliveryCnt
     ResTakeFromIn(wtGold, TH_TROOP_COST[thUnitIndex]); //Do the goldtaking
 
-    gHands[fOwner].Stats.WareConsumed(wtGold, TH_TROOP_COST[thUnitIndex]);
+    gHands[Owner].Stats.WareConsumed(wtGold, TH_TROOP_COST[thUnitIndex]);
       
     //Make new unit
-    soldier := TKMUnitWarrior(gHands[fOwner].TrainUnit(aUnitType, Entrance));
+    soldier := TKMUnitWarrior(gHands[Owner].TrainUnit(aUnitType, Entrance));
     soldier.InHouse := Self; //Put him in the barracks, so if it is destroyed while he is inside he is placed somewhere
     soldier.Visible := False; //Make him invisible as he is inside the barracks
     soldier.Condition := Round(TROOPS_TRAINED_CONDITION * UNIT_MAX_CONDITION); //All soldiers start with 3/4, so groups get hungry at the same time
@@ -263,7 +263,7 @@ begin
   if aFromScript then
   begin
     GoldDeliveryCnt := GoldDeliveryCnt + aCount;
-    ordersRemoved := gHands[fOwner].Deliveries.Queue.TryRemoveDemand(Self, aWare, aCount);
+    ordersRemoved := gHands[Owner].Deliveries.Queue.TryRemoveDemand(Self, aWare, aCount);
     GoldDeliveryCnt := GoldDeliveryCnt - ordersRemoved;
   end;
 
@@ -292,13 +292,13 @@ begin
   goldToOrder := Min(MAX_GOLD_DEMANDS - (GoldDeliveryCnt - fGoldCnt), fGoldMaxCnt - GoldDeliveryCnt);
   if goldToOrder > 0 then
   begin
-    gHands[fOwner].Deliveries.Queue.AddDemand(Self, nil, wtGold, goldToOrder, dtOnce, diNorm);
+    gHands[Owner].Deliveries.Queue.AddDemand(Self, nil, wtGold, goldToOrder, dtOnce, diNorm);
     GoldDeliveryCnt := GoldDeliveryCnt + goldToOrder;
   end
   else
   if goldToOrder < 0 then
   begin
-    ordersRemoved := gHands[fOwner].Deliveries.Queue.TryRemoveDemand(Self, wtGold, -goldToOrder);
+    ordersRemoved := gHands[Owner].Deliveries.Queue.TryRemoveDemand(Self, wtGold, -goldToOrder);
     GoldDeliveryCnt := GoldDeliveryCnt - ordersRemoved;
   end;
 end;
@@ -324,8 +324,8 @@ begin
     aCount := EnsureRange(aCount, 0, fGoldCnt);
     if aCount > 0 then
     begin
-      gHands[fOwner].Stats.WareConsumed(aWare, aCount);
-      gHands[fOwner].Deliveries.Queue.RemOffer(Self, aWare, aCount);
+      gHands[Owner].Stats.WareConsumed(aWare, aCount);
+      gHands[Owner].Deliveries.Queue.RemOffer(Self, aWare, aCount);
     end;
   end;
   Assert(aCount <= fGoldCnt);

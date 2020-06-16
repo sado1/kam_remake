@@ -258,7 +258,7 @@ procedure TKMUnitWarrior.OrderFood;
 begin
   if (fCondition < (UNIT_MAX_CONDITION * TROOPS_FEED_MAX)) and not fRequestedFood then
   begin
-    gHands[fOwner].Deliveries.Queue.AddDemand(nil, Self, wtFood, 1, dtOnce, diHigh2);
+    gHands[Owner].Deliveries.Queue.AddDemand(nil, Self, wtFood, 1, dtOnce, diHigh2);
     fRequestedFood := True;
   end;
 end;
@@ -439,7 +439,7 @@ begin
   Best := MaxSingle;
 
   FoundUnits := TList.Create;
-  gHands[fOwner].Units.GetUnitsInRect(KMRect(aLoc.X-LINK_RADIUS,
+  gHands[Owner].Units.GetUnitsInRect(KMRect(aLoc.X-LINK_RADIUS,
                                                aLoc.Y-LINK_RADIUS,
                                                aLoc.X+LINK_RADIUS,
                                                aLoc.Y+LINK_RADIUS),
@@ -618,8 +618,8 @@ begin
 
   Range := GetFightMaxRange(true);
   //AI has an "auto attack range" for melee like in TSK/TPR so you can't sneak past them (when idle)
-  if not IsRanged and IsIdle and gHands[fOwner].IsComputer then
-    Range := Max(Range, gHands[fOwner].AI.Setup.AutoAttackRange);
+  if not IsRanged and IsIdle and gHands[Owner].IsComputer then
+    Range := Max(Range, gHands[Owner].AI.Setup.AutoAttackRange);
 
   //This function should not be run too often, as it will take some time to execute (e.g. with lots of warriors in the range area to check)
   Result := gTerrain.UnitsHitTestWithinRad(Position, GetFightMinRange, Range, Owner, atEnemy, TestDir, not RANDOM_TARGETS);
@@ -1016,7 +1016,7 @@ begin
   UnitPos.X := V.PosF.X + UNIT_OFF_X + V.SlideX;
   UnitPos.Y := V.PosF.Y + UNIT_OFF_Y + V.SlideY;
 
-  gRenderPool.AddUnit(fType, UID, Act, V.Dir, V.AnimStep, UnitPos.X, UnitPos.Y, gHands[fOwner].GameFlagColor, True);
+  gRenderPool.AddUnit(fType, UID, Act, V.Dir, V.AnimStep, UnitPos.X, UnitPos.Y, gHands[Owner].GameFlagColor, True);
 
   if fThought <> thNone then
     gRenderPool.AddUnitThought(fType, Act, V.Dir, fThought, UnitPos.X, UnitPos.Y);

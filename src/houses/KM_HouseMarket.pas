@@ -96,7 +96,7 @@ var
 begin
   //Count resources as lost
   for WT := WARE_MIN to WARE_MAX do
-    gHands[fOwner].Stats.WareConsumed(WT, fMarketResIn[WT] + fMarketResOut[WT]);
+    gHands[Owner].Stats.WareConsumed(WT, fMarketResIn[WT] + fMarketResOut[WT]);
 
   inherited;
 end;
@@ -186,14 +186,14 @@ begin
     if ordersToDo > 0 then
     begin
       Inc(fMarketDeliveryCount[aResource], ordersToDo);
-      gHands[fOwner].Deliveries.Queue.AddDemand(Self, nil, fResFrom, ordersToDo, dtOnce, diNorm);
+      gHands[Owner].Deliveries.Queue.AddDemand(Self, nil, fResFrom, ordersToDo, dtOnce, diNorm);
     end;
     AttemptExchange;
   end
   else
   begin
     SetResOutCnt(aResource, fMarketResOut[aResource] + aCount); //Place the new resource in the OUT list
-    gHands[fOwner].Deliveries.Queue.AddOffer(Self, aResource, aCount);
+    gHands[Owner].Deliveries.Queue.AddOffer(Self, aResource, aCount);
   end;
 end;
 
@@ -231,11 +231,11 @@ begin
     tradeCount := Min((ResToTrade[fResFrom] div RatioFrom), fTradeAmount);
 
     ResToTrade[fResFrom] := ResToTrade[fResFrom] - tradeCount * RatioFrom;
-    gHands[fOwner].Stats.WareConsumed(fResFrom, tradeCount * RatioFrom);
+    gHands[Owner].Stats.WareConsumed(fResFrom, tradeCount * RatioFrom);
     Dec(fTradeAmount, tradeCount);
     SetResOutCnt(fResTo, fMarketResOut[fResTo] + tradeCount * RatioTo);
-    gHands[fOwner].Stats.WareProduced(fResTo, tradeCount * RatioTo);
-    gHands[fOwner].Deliveries.Queue.AddOffer(Self, fResTo, tradeCount * RatioTo);
+    gHands[Owner].Stats.WareProduced(fResTo, tradeCount * RatioTo);
+    gHands[Owner].Deliveries.Queue.AddOffer(Self, fResTo, tradeCount * RatioTo);
 
     gScriptEvents.ProcMarketTrade(Self, fResFrom, fResTo);
     gScriptEvents.ProcWareProduced(Self, fResTo, tradeCount * RatioTo);
@@ -251,8 +251,8 @@ begin
     aCount := Min(aCount, fMarketResOut[aWare]);
     if aCount > 0 then
     begin
-      gHands[fOwner].Stats.WareConsumed(aWare, aCount);
-      gHands[fOwner].Deliveries.Queue.RemOffer(Self, aWare, aCount);
+      gHands[Owner].Stats.WareConsumed(aWare, aCount);
+      gHands[Owner].Deliveries.Queue.RemOffer(Self, aWare, aCount);
     end;
   end;
 
@@ -287,7 +287,7 @@ end;
 
 function TKMHouseMarket.AllowedToTrade(aRes: TKMWareType): Boolean;
 begin
-  Result := gHands[fOwner].Locks.AllowToTrade[aRes];
+  Result := gHands[Owner].Locks.AllowToTrade[aRes];
 end;
 
 
@@ -365,7 +365,7 @@ begin
     Dec(fMarketResOut[aWare], decFromOut); //Dont call SetRes func, cause we don't need double script event calls
 
     gScriptEvents.ProcHouseWareCountChanged(Self, aWare, ResToTrade[aWare], - decFromIn - decFromOut);
-    gHands[fOwner].Deliveries.Queue.RemOffer(Self, aWare, decFromOut);
+    gHands[Owner].Deliveries.Queue.RemOffer(Self, aWare, decFromOut);
   end;
 end;
 
@@ -378,7 +378,7 @@ begin
 
   //No need to call SetRes functins here, since its just moving resource from In to Out
   Inc(fMarketResOut[aWare], aCnt);
-  gHands[fOwner].Deliveries.Queue.AddOffer(Self, aWare, aCnt); //Add res as offer, since they are in 'out' queue
+  gHands[Owner].Deliveries.Queue.AddOffer(Self, aWare, aCnt); //Add res as offer, since they are in 'out' queue
   Dec(fMarketResIn[aWare], aCnt);
 end;
 
@@ -391,7 +391,7 @@ begin
 
   //No need to call SetRes functins here, since its just moving resource from Out to In
   Dec(fMarketResOut[aWare], Result);
-  gHands[fOwner].Deliveries.Queue.RemOffer(Self, aWare, Result); //Remove offer, we moved wares to In
+  gHands[Owner].Deliveries.Queue.RemOffer(Self, aWare, Result); //Remove offer, we moved wares to In
   Inc(fMarketResIn[aWare], Result);
 end;
 
@@ -440,7 +440,7 @@ begin
     if movedOut2In > 0 then
     begin
       //Remove demands, we took some of the wares from OUT queue
-      ordersRemoved := gHands[fOwner].Deliveries.Queue.TryRemoveDemand(Self, fResFrom, movedOut2In);
+      ordersRemoved := gHands[Owner].Deliveries.Queue.TryRemoveDemand(Self, fResFrom, movedOut2In);
       Dec(fMarketDeliveryCount[fResFrom], ordersRemoved);
     end;
   end;
@@ -457,13 +457,13 @@ begin
   begin
     orderToDo := Min(resRequired, ordersAllowed);
     Inc(fMarketDeliveryCount[fResFrom], orderToDo);
-    gHands[fOwner].Deliveries.Queue.AddDemand(Self, nil, fResFrom, orderToDo, dtOnce, diNorm)
+    gHands[Owner].Deliveries.Queue.AddDemand(Self, nil, fResFrom, orderToDo, dtOnce, diNorm)
   end
   else
     //There are too many resources ordered, so remove as many as we can from the delivery list (some will be being performed)
     if (resRequired < 0) then
     begin
-      ordersRemoved := gHands[fOwner].Deliveries.Queue.TryRemoveDemand(Self, fResFrom, -resRequired);
+      ordersRemoved := gHands[Owner].Deliveries.Queue.TryRemoveDemand(Self, fResFrom, -resRequired);
       Dec(fMarketDeliveryCount[fResFrom], ordersRemoved);
     end;
 end;
@@ -478,7 +478,7 @@ begin
     for WT := WARE_MIN to WARE_MAX do
     begin
       if fMarketResIn[WT] > 0 then
-        gHands[fOwner].Deliveries.Queue.RemOffer(Self, WT, fMarketResIn[WT]);
+        gHands[Owner].Deliveries.Queue.RemOffer(Self, WT, fMarketResIn[WT]);
     end;
 
   if NewDeliveryMode = dmTakeOut then
@@ -486,7 +486,7 @@ begin
     for WT := WARE_MIN to WARE_MAX do
     begin
       if fMarketResIn[WT] > 0 then
-        gHands[fOwner].Deliveries.Queue.AddOffer(Self, WT, fMarketResIn[WT]);
+        gHands[Owner].Deliveries.Queue.AddOffer(Self, WT, fMarketResIn[WT]);
     end;
   end;
 end;

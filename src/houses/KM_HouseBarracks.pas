@@ -118,7 +118,7 @@ begin
   inherited;
   //A new Barracks should inherit the accept properies of the first Barracks of that player,
   //which stops a sudden flow of unwanted wares to it as soon as it is created.
-  firstBarracks := TKMHouseBarracks(gHands[fOwner].FindHouse(htBarracks, 1));
+  firstBarracks := TKMHouseBarracks(gHands[Owner].FindHouse(htBarracks, 1));
   if (firstBarracks <> nil) and not firstBarracks.IsDestroyed then
   begin
     for WT := WARFARE_MIN to WARFARE_MAX do
@@ -140,7 +140,7 @@ begin
   fRecruitsList.Clear;
 
   for R := WARFARE_MIN to WARFARE_MAX do
-    gHands[fOwner].Stats.WareConsumed(R, fResourceCount[R]);
+    gHands[Owner].Stats.WareConsumed(R, fResourceCount[R]);
 
   inherited;
 end;
@@ -187,7 +187,7 @@ begin
 
   oldCnt := fResourceCount[aWare];
   SetWareCnt(aWare, EnsureRange(fResourceCount[aWare] + aCount, 0, High(Word)));
-  gHands[fOwner].Deliveries.Queue.AddOffer(Self, aWare, fResourceCount[aWare] - oldCnt);
+  gHands[Owner].Deliveries.Queue.AddOffer(Self, aWare, fResourceCount[aWare] - oldCnt);
 end;
 
 
@@ -213,8 +213,8 @@ begin
     aCount := Min(aCount, fResourceCount[aWare]);
     if aCount > 0 then
     begin
-      gHands[fOwner].Stats.WareConsumed(aWare, aCount);
-      gHands[fOwner].Deliveries.Queue.RemOffer(Self, aWare, aCount);
+      gHands[Owner].Stats.WareConsumed(aWare, aCount);
+      gHands[Owner].Deliveries.Queue.RemOffer(Self, aWare, aCount);
     end;
   end;
   Assert(aCount <= fResourceCount[aWare]);
@@ -300,7 +300,7 @@ var
   I: Integer;
 begin
   Result := RecruitsCount > 0; //Can't equip anything without recruits
-  Result := Result and not gHands[fOwner].Locks.GetUnitBlocked(aUnitType);
+  Result := Result and not gHands[Owner].Locks.GetUnitBlocked(aUnitType);
 
   for I := 1 to 4 do
   if TROOP_COST[aUnitType, I] <> wtNone then //Can't equip if we don't have a required resource
@@ -326,8 +326,8 @@ begin
     troopWareType := TROOP_COST[aUnitType, I];
     SetWareCnt(troopWareType, fResourceCount[troopWareType] - 1);
 
-    gHands[fOwner].Stats.WareConsumed(TROOP_COST[aUnitType, I]);
-    gHands[fOwner].Deliveries.Queue.RemOffer(Self, TROOP_COST[aUnitType, I], 1);
+    gHands[Owner].Stats.WareConsumed(TROOP_COST[aUnitType, I]);
+    gHands[Owner].Deliveries.Queue.RemOffer(Self, TROOP_COST[aUnitType, I], 1);
   end;
 
   //Special way to kill the Recruit because it is in a house
@@ -335,7 +335,7 @@ begin
   fRecruitsList.Delete(0); //Delete first recruit in the list
 
   //Make new unit
-  soldier := TKMUnitWarrior(gHands[fOwner].TrainUnit(aUnitType, Entrance));
+  soldier := TKMUnitWarrior(gHands[Owner].TrainUnit(aUnitType, Entrance));
   soldier.InHouse := Self; //Put him in the barracks, so if it is destroyed while he is inside he is placed somewhere
   soldier.Visible := False; //Make him invisible as he is inside the barracks
   soldier.Condition := Round(TROOPS_TRAINED_CONDITION * UNIT_MAX_CONDITION); //All soldiers start with 3/4, so groups get hungry at the same time
@@ -377,12 +377,12 @@ begin
     Inc(MapEdRecruitCount)
   else
   begin
-    U := gHands[fOwner].TrainUnit(utRecruit, Entrance);
+    U := gHands[Owner].TrainUnit(utRecruit, Entrance);
     U.Visible := False;
     U.InHouse := Self;
     U.Home := Self; //When walking out Home is used to remove recruit from barracks
     RecruitsAdd(U);
-    gHands[fOwner].Stats.UnitCreated(utRecruit, False);
+    gHands[Owner].Stats.UnitCreated(utRecruit, False);
   end;
 end;
 

@@ -136,7 +136,7 @@ begin
     fHideOneGold := False;
     //Add 1 gold to offer to take it out
     if DeliveryMode = dmTakeOut then
-      gHands[fOwner].Deliveries.Queue.AddOffer(Self, wtGold, 1);
+      gHands[Owner].Deliveries.Queue.AddOffer(Self, wtGold, 1);
   end;
   fUnitWip := nil;
   PrivateQueue[0] := utNone; //Removed the in training unit
@@ -154,10 +154,10 @@ end;
 procedure TKMHouseSchool.SetQueue(aIndex: Integer; aValue: TKMUnitType);
 begin
   if fQueue[aIndex] <> utNone then
-    gHands[fOwner].Stats.UnitRemovedFromTrainingQueue(fQueue[aIndex]);
+    gHands[Owner].Stats.UnitRemovedFromTrainingQueue(fQueue[aIndex]);
 
   if aValue <> utNone then
-    gHands[fOwner].Stats.UnitAddedToTrainingQueue(aValue);
+    gHands[Owner].Stats.UnitAddedToTrainingQueue(aValue);
   fQueue[aIndex] := aValue;
 end;
 
@@ -228,10 +228,10 @@ begin
   fHideOneGold := True;
   //Remove 1 gold from offer to take it out
   if DeliveryMode = dmTakeOut then
-    gHands[fOwner].Deliveries.Queue.RemOffer(Self, wtGold, 1);
+    gHands[Owner].Deliveries.Queue.RemOffer(Self, wtGold, 1);
 
   //Create the Unit
-  fUnitWip := gHands[fOwner].TrainUnit(fQueue[0], Entrance);
+  fUnitWip := gHands[Owner].TrainUnit(fQueue[0], Entrance);
   TKMUnit(fUnitWip).TrainInHouse(Self); //Let the unit start the training task
 
   WorkAnimStep := 0;
@@ -265,7 +265,7 @@ begin
   if CheckResIn(wtGold) > 0 then
   begin
     ResTakeFromIn(wtGold); //Do the goldtaking
-    gHands[fOwner].Stats.WareConsumed(wtGold);
+    gHands[Owner].Stats.WareConsumed(wtGold);
   end;
   fHideOneGold := False;
   fTrainProgress := 0;

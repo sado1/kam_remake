@@ -5,7 +5,8 @@ uses
   Classes, Math,
   KM_Hand, KM_HandSpectator, KM_HouseCollection,
   KM_Houses, KM_ResHouses, KM_Units, KM_UnitGroup, KM_UnitWarrior,
-  KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Points;
+  KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Points,
+  KM_HandEntity;
 
 
 //Hands are identified by their starting location
@@ -57,7 +58,7 @@ type
     function GetHouseByUID(aUID: Integer): TKMHouse;
     function GetUnitByUID(aUID: Integer): TKMUnit;
     function GetGroupByUID(aUID: Integer): TKMUnitGroup;
-    function GetObjectByUID(aUID: Integer): TObject;
+    function GetObjectByUID(aUID: Integer): TKMHandEntity;
     function GetNextHouseWSameType(aHouse: TKMHouse): TKMHouse;
     function GetNextUnitWSameType(aUnit: TKMUnit): TKMUnit;
     function GetNextGroupWSameType(aUnitGroup: TKMUnitGroup): TKMUnitGroup;
@@ -514,7 +515,7 @@ begin
 end;
 
 
-function TKMHandsCollection.GetObjectByUID(aUID: Integer): TObject;
+function TKMHandsCollection.GetObjectByUID(aUID: Integer): TKMHandEntity;
 begin
   Result := GetHouseByUID(aUID);
   if Result = nil then

@@ -43,7 +43,7 @@ type
   end;
 
 
-  TKMHouseSketch = class(TKMHandEntity<TKMHouse>)
+  TKMHouseSketch = class(TKMHandEntityPointer<TKMHouse>)
   private
     fType: TKMHouseType; //House type
     function GetEntrance: TKMPoint;
@@ -53,7 +53,7 @@ type
     function GetPosition: TKMPoint; override;
     constructor Create; overload;
   public
-    constructor Create(aUID: Integer; aHouseType: TKMHouseType; PosX, PosY: Integer); overload;
+    constructor Create(aUID: Integer; aHouseType: TKMHouseType; PosX, PosY: Integer; aOwner: TKMHandID); overload;
 
     property HouseType: TKMHouseType read fType;
 
@@ -72,6 +72,8 @@ type
     fEditable: Boolean;
   protected
     function GetInstance: TKMHouse; override;
+    function GetPositionF: TKMPointF; override;
+    procedure SetPositionF(const aPositionF: TKMPointF); override;
   public
     constructor Create;
 
@@ -140,7 +142,6 @@ type
     procedure SetIsClosedForWorker(aIsClosed: Boolean);
     procedure UpdateDeliveryMode;
   protected
-    fOwner: TKMHandID; //House owner player, determines flag color as well
     fBuildState: TKMHouseBuildState; // = (hbsGlyph, hbsNoGlyph, hbsWood, hbsStone, hbsDone);
     FlagAnimStep: Cardinal; //Used for Flags and Burning animation
     //WorkAnimStep: Cardinal; //Used for Work and etc.. which is not in sync with Flags
@@ -164,6 +165,8 @@ type
     property ResDeliveryCnt[aIndex: Integer]: Word read GetResourceDeliveryCount write SetResourceDeliveryCount;
 
     function GetInstance: TKMHouse; override;
+    function GetPositionF: TKMPointF; override;
+    procedure SetPositionF(const aPositionF: TKMPointF); override;
   public
     CurrentAction: TKMHouseAction; //Current action, withing HouseTask or idle
     WorkAnimStep: Cardinal; //Used for Work and etc.. which is not in sync with Flags
@@ -181,7 +184,6 @@ type
     property BuildingProgress: Word read fBuildingProgress;
 
     procedure SetPosition(const aPos: TKMPoint); //Used only by map editor
-    property Owner: TKMHandID read fOwner;
     procedure OwnerUpdate(aOwner: TKMHandID; aMoveToNewOwner: Boolean = False);
 
     function GetClosestCell(const aPos: TKMPoint): TKMPoint;
@@ -222,6 +224,8 @@ type
     function GetBuildStoneDelivered: Byte;
     function GetBuildResourceDelivered: Byte;
     function GetBuildResDeliveredPercent: Single;
+
+    function IsSelectable: Boolean; override;
 
     property ResourceInArray: TKMByteArray read GetResourceInArray;
     property ResourceOutArray: TKMByteArray read GetResourceOutArray;
@@ -379,15 +383,15 @@ const
 { TKMHouseSketch }
 constructor TKMHouseSketch.Create;
 begin
-  inherited Create(etHouse, 0); //Just do nothing; (For house loading)
+  inherited Create(etHouse, 0, -1); //Just do nothing; (For house loading)
 end;
 
 
-constructor TKMHouseSketch.Create(aUID: Integer; aHouseType: TKMHouseType; PosX, PosY: Integer);
+constructor TKMHouseSketch.Create(aUID: Integer; aHouseType: TKMHouseType; PosX, PosY: Integer; aOwner: TKMHandID);
 begin
   Assert((PosX <> 0) and (PosY <> 0)); // Can create only on map
 
-  inherited Create(etHouse, aUID);
+  inherited Create(etHouse, aUID, aOwner);
 
   fPosition   := KMPoint (PosX, PosY);
   fType       := aHouseType;
@@ -436,16 +440,9 @@ end;
 { TKMHouseSketchEdit}
 constructor TKMHouseSketchEdit.Create;
 begin
-  inherited Create(-1, htNone, -1, -1);
+  inherited Create(-1, htNone, -1, -1, -1);
 
   fEditable := True;
-end;
-
-
-function TKMHouseSketchEdit.GetInstance: TKMHouse;
-begin
-  //Not used. Make compiler happy
-  raise Exception.Create('Can''t get instance of TKMHouseSketchEdit');
 end;
 
 
@@ -486,14 +483,33 @@ begin
 end;
 
 
+function TKMHouseSketchEdit.GetInstance: TKMHouse;
+begin
+  //Not used. Make compiler happy
+  raise Exception.Create('Can''t get instance of TKMHouseSketchEdit');
+end;
+
+
+function TKMHouseSketchEdit.GetPositionF: TKMPointF;
+begin
+  //Not used. Make compiler happy
+  raise Exception.Create('Can''t get positionF of TKMHouseSketchEdit');
+end;
+
+
+procedure TKMHouseSketchEdit.SetPositionF(const aPositionF: TKMPointF);
+begin
+  //Not used. Make compiler happy
+  raise Exception.Create('Can''t set positionF of TKMHouseSketchEdit');
+end;
+
+
 { TKMHouse }
 constructor TKMHouse.Create(aUID: Integer; aHouseType: TKMHouseType; PosX, PosY: Integer; aOwner: TKMHandID; aBuildState: TKMHouseBuildState);
 var
   I: Byte;
 begin
-  inherited Create(aUID, aHouseType, PosX, PosY);
-
-  fOwner := aOwner;
+  inherited Create(aUID, aHouseType, PosX, PosY, aOwner);
 
   fBuildState := aBuildState;
 
@@ -533,16 +549,16 @@ begin
   fOrderCompletedMsgIssued := False;
 
   //ByDefault allow to show all human player houses to allies, or AI's not in Campaign
-  fAllowAllyToView := gHands[fOwner].IsHuman or not gGameParams.IsCampaign;
+  fAllowAllyToView := gHands[Owner].IsHuman or not gGameParams.IsCampaign;
 
   if aBuildState = hbsDone then //House was placed on map already Built e.g. in mission maker
   begin
     Activate(False);
     fBuildingProgress := gRes.Houses[fType].MaxHealth;
-    gTerrain.SetHouse(fPosition, fType, hsBuilt, fOwner, (gGameParams <> nil) and not gGameParams.IsMapEditor); //Sets passability and flattens terrain if we're not in the map editor
+    gTerrain.SetHouse(fPosition, fType, hsBuilt, Owner, (gGameParams <> nil) and not gGameParams.IsMapEditor); //Sets passability and flattens terrain if we're not in the map editor
   end
   else
-    gTerrain.SetHouse(fPosition, fType, hsFence, fOwner); //Terrain remains neutral yet
+    gTerrain.SetHouse(fPosition, fType, hsFence, Owner); //Terrain remains neutral yet
 
   //Built houses accumulate snow slowly, pre-placed houses are already covered
   CheckOnSnow;
@@ -561,7 +577,6 @@ begin
   LoadStream.Read(fType, SizeOf(fType));
   LoadStream.Read(fPosition);
   LoadStream.Read(fBuildState, SizeOf(fBuildState));
-  LoadStream.Read(fOwner, SizeOf(fOwner));
   LoadStream.Read(fBuildSupplyWood);
   LoadStream.Read(fBuildSupplyStone);
   LoadStream.Read(fBuildReserve);
@@ -627,7 +642,7 @@ begin
   for I := 1 to 4 do
   begin
     Res := gRes.Houses[fType].ResInput[I];
-    with gHands[fOwner].Deliveries.Queue do
+    with gHands[Owner].Deliveries.Queue do
     case Res of
       wtNone:    ;
       wtWarfare: AddDemand(Self, nil, Res, 1, dtAlways, diNorm);
@@ -657,8 +672,8 @@ var
   HA: THouseArea;
 begin
   // Only activated houses count
-  gHands[fOwner].Locks.HouseCreated(fType);
-  gHands[fOwner].Stats.HouseCreated(fType, aWasBuilt);
+  gHands[Owner].Locks.HouseCreated(fType);
+  gHands[Owner].Stats.HouseCreated(fType, aWasBuilt);
 
 //  if not gGameApp.DynamicFOWEnabled then
 //  begin
@@ -667,7 +682,7 @@ begin
     for I := 1 to 4 do
       for K := 1 to 4 do
         if HA[I,K] <> 0 then
-          gHands.RevealForTeam(fOwner, KMPoint(fPosition.X + K - 4, fPosition.Y + I - 4), gRes.Houses[fType].Sight, FOG_OF_WAR_MAX);
+          gHands.RevealForTeam(Owner, KMPoint(fPosition.X + K - 4, fPosition.Y + I - 4), gRes.Houses[fType].Sight, FOG_OF_WAR_MAX);
 //  end;
 
   CurrentAction := TKMHouseAction.Create(Self, hstEmpty);
@@ -697,8 +712,8 @@ procedure TKMHouse.RemoveHouse;
 begin
   Assert(gGameParams.IsMapEditor, 'Operation allowed only in the MapEd');
 
-  DemolishHouse(fOwner, True);
-  gHands[fOwner].Houses.DeleteHouseFromList(Self);
+  DemolishHouse(Owner, True);
+  gHands[Owner].Houses.DeleteHouseFromList(Self);
 end;
 
 
@@ -730,10 +745,10 @@ begin
   begin
     R := gRes.Houses[fType].ResInput[I];
     if R in [WARE_MIN..WARE_MAX] then
-      gHands[fOwner].Stats.WareConsumed(R, ResIn[I]);
+      gHands[Owner].Stats.WareConsumed(R, ResIn[I]);
     R := gRes.Houses[fType].ResOutput[I];
     if R in [WARE_MIN..WARE_MAX] then
-      gHands[fOwner].Stats.WareConsumed(R, fResourceOut[I]);
+      gHands[Owner].Stats.WareConsumed(R, fResourceOut[I]);
   end;
 
   gTerrain.SetHouse(fPosition, fType, hsNone, PLAYER_NONE);
@@ -796,7 +811,7 @@ begin
     end;
   end;
 
-  gTerrain.SetHouse(fPosition, fType, hsBuilt, fOwner); // Update terrain tiles for house
+  gTerrain.SetHouse(fPosition, fType, hsBuilt, Owner); // Update terrain tiles for house
 
   //Do not remove all snow if house is moved from snow to snow
   WasOnSnow := fIsOnSnow;
@@ -823,7 +838,7 @@ begin
       Res := gRes.Houses[fType].ResInput[I];
       ResCnt := ResIn[I] - ResInLocked[I];
       if (Res <> wtNone) and (ResCnt > 0) then
-        gHands[fOwner].Deliveries.Queue.RemOffer(Self, Res, ResCnt);
+        gHands[Owner].Deliveries.Queue.RemOffer(Self, Res, ResCnt);
     end;
 
   if fNewDeliveryMode = dmTakeOut then
@@ -834,7 +849,7 @@ begin
       ResCnt := ResIn[I] - ResInLocked[I];
 
       if not (Res in [wtNone, wtAll, wtWarfare]) and (ResCnt > 0) then
-        gHands[fOwner].Deliveries.Queue.AddOffer(Self, Res, ResCnt);
+        gHands[Owner].Deliveries.Queue.AddOffer(Self, Res, ResCnt);
     end;
   end;
 end;
@@ -919,8 +934,16 @@ begin
   MsgID := GetResourceDepletedMessageId;
   Assert(MsgID <> 0, gRes.Houses[HouseType].HouseName + ' resource can''t be depleted');
 
-  gGame.ShowMessage(mkHouse, MsgID, Entrance, fOwner);
+  gGame.ShowMessage(mkHouse, MsgID, Entrance, Owner);
   ResourceDepleted := True;
+end;
+
+
+function TKMHouse.IsSelectable: Boolean;
+begin
+  if Self = nil then Exit(False);
+
+  Result := not IsDestroyed;
 end;
 
 
@@ -1116,6 +1139,18 @@ begin
 end;
 
 
+procedure TKMHouse.SetPositionF(const aPositionF: TKMPointF);
+begin
+  raise Exception.Create('Can''t set PositionF for House');
+end;
+
+
+function TKMHouse.GetPositionF: TKMPointF;
+begin
+  Result := Entrance.ToFloat;
+end;
+
+
 function TKMHouse.GetBuildWoodDelivered: Byte;
 begin
   case fBuildState of
@@ -1179,11 +1214,11 @@ begin
     and (fBuildingProgress - gRes.Houses[fType].WoodCost*50 = gRes.Houses[fType].StoneCost*50) then
   begin
     fBuildState := hbsDone;
-    gHands[fOwner].Stats.HouseEnded(fType);
+    gHands[Owner].Stats.HouseEnded(fType);
     Activate(True);
     //House was damaged while under construction, so set the repair mode now it is complete
     if (fDamage > 0) and BuildingRepair then
-      gHands[fOwner].Constructions.RepairList.AddHouse(Self);
+      gHands[Owner].Constructions.RepairList.AddHouse(Self);
 
     gScriptEvents.ProcHouseBuilt(Self); //At the end since it could destroy this house
   end;
@@ -1201,13 +1236,13 @@ end;
 
 procedure TKMHouse.OwnerUpdate(aOwner: TKMHandID; aMoveToNewOwner: Boolean = False);
 begin
-  if aMoveToNewOwner and (fOwner <> aOwner) then
+  if aMoveToNewOwner and (Owner <> aOwner) then
   begin
     Assert(gGameParams.Mode = gmMapEd); // Allow to move existing House directly only in MapEd
-    gHands[fOwner].Houses.DeleteHouseFromList(Self);
+    gHands[Owner].Houses.DeleteHouseFromList(Self);
     gHands[aOwner].Houses.AddHouseToList(Self);
   end;
-  fOwner := aOwner;
+  Owner := aOwner;
 end;
 
 
@@ -1224,7 +1259,7 @@ begin
   if IsComplete then
   begin
     if BuildingRepair then
-      gHands[fOwner].Constructions.RepairList.AddHouse(Self);
+      gHands[Owner].Constructions.RepairList.AddHouse(Self);
 
     //Update fire if the house is complete
     UpdateDamage;
@@ -1283,7 +1318,7 @@ begin
   if fBuildingRepair then
   begin
     if IsComplete and IsDamaged and not IsDestroyed then
-      gHands[fOwner].Constructions.RepairList.AddHouse(Self);
+      gHands[Owner].Constructions.RepairList.AddHouse(Self);
   end
   else
     //Worker checks on house and will cancel the walk if Repair is turned off
@@ -1298,7 +1333,7 @@ begin
   fIsClosedForWorker := aIsClosed;
 
   if not gGameParams.IsMapEditor then
-    gHands[fOwner].Stats.HouseClosed(aIsClosed, fType);
+    gHands[Owner].Stats.HouseClosed(aIsClosed, fType);
 end;
 
 
@@ -1516,7 +1551,7 @@ begin
       begin
         fNeedIssueOrderCompletedMsg := False;
         fOrderCompletedMsgIssued := True;
-        gGame.ShowMessage(mkHouse, TX_MSG_ORDER_COMPLETED, Entrance, fOwner);
+        gGame.ShowMessage(mkHouse, TX_MSG_ORDER_COMPLETED, Entrance, Owner);
       end;
 end;
 
@@ -1573,7 +1608,7 @@ begin
       if aFromScript then
       begin
         ResDeliveryCnt[I] := ResDeliveryCnt[I] + aCount;
-        OrdersRemoved := gHands[fOwner].Deliveries.Queue.TryRemoveDemand(Self, aWare, aCount);
+        OrdersRemoved := gHands[Owner].Deliveries.Queue.TryRemoveDemand(Self, aWare, aCount);
         ResDeliveryCnt[I] := ResDeliveryCnt[I] - OrdersRemoved;
       end;
     end;
@@ -1605,7 +1640,7 @@ begin
           end;
       end;
 
-      gHands[fOwner].Deliveries.Queue.AddOffer(Self, aWare, aCount);
+      gHands[Owner].Deliveries.Queue.AddOffer(Self, aWare, aCount);
     end;
 end;
 
@@ -1699,7 +1734,7 @@ begin
   if fDeliveryMode = dmTakeOut then
   begin
     if not (Res in [wtNone, wtAll, wtWarfare]) and (CntChange > 0) then
-      gHands[fOwner].Deliveries.Queue.AddOffer(Self, Res, CntChange);
+      gHands[Owner].Deliveries.Queue.AddOffer(Self, Res, CntChange);
   end;
 
   fResourceIn[aI] := aValue;
@@ -1764,7 +1799,7 @@ begin
     for K := 1 to aCount do
       if ResDeliveryCnt[I] < GetResDistribution(I) then
       begin
-        gHands[fOwner].Deliveries.Queue.AddDemand(Self, nil, aWare, 1, dtOnce, diNorm);
+        gHands[Owner].Deliveries.Queue.AddDemand(Self, nil, aWare, 1, dtOnce, diNorm);
         ResDeliveryCnt[I] := ResDeliveryCnt[I] + 1;
       end;
     Exit;
@@ -1786,8 +1821,8 @@ begin
       aCount := Min(aCount, fResourceOut[I]);
       if aCount > 0 then
       begin
-        gHands[fOwner].Stats.WareConsumed(aWare, aCount);
-        gHands[fOwner].Deliveries.Queue.RemOffer(Self, aWare, aCount);
+        gHands[Owner].Stats.WareConsumed(aWare, aCount);
+        gHands[Owner].Deliveries.Queue.RemOffer(Self, aWare, aCount);
       end;
     end;
     Assert(aCount <= fResourceOut[I]);
@@ -1816,7 +1851,7 @@ begin
     begin
       aCount := Min(aCount, ResIn[I]);
       if aCount > 0 then
-        gHands[fOwner].Deliveries.Queue.RemOffer(Self, aWare, aCount);
+        gHands[Owner].Deliveries.Queue.RemOffer(Self, aWare, aCount);
     end;
 
     //Keep track of how many are ordered
@@ -1828,7 +1863,7 @@ begin
     for K := 1 to aCount do
       if ResDeliveryCnt[I] < GetResDistribution(I) then
       begin
-        gHands[fOwner].Deliveries.Queue.AddDemand(Self, nil, aWare, 1, dtOnce, diNorm);
+        gHands[Owner].Deliveries.Queue.AddDemand(Self, nil, aWare, 1, dtOnce, diNorm);
         ResDeliveryCnt[I] := ResDeliveryCnt[I] + 1;
       end;
     Exit;
@@ -1838,7 +1873,7 @@ end;
 
 function TKMHouse.GetResDistribution(aID: Byte): Byte;
 begin
-  Result := gHands[fOwner].Stats.WareDistribution[gRes.Houses[fType].ResInput[aID],fType];
+  Result := gHands[Owner].Stats.WareDistribution[gRes.Houses[fType].ResInput[aID],fType];
 end;
 
 
@@ -1923,7 +1958,6 @@ begin
   SaveStream.Write(fType, SizeOf(fType));
   SaveStream.Write(fPosition);
   SaveStream.Write(fBuildState, SizeOf(fBuildState));
-  SaveStream.Write(fOwner, SizeOf(fOwner));
   SaveStream.Write(fBuildSupplyWood);
   SaveStream.Write(fBuildSupplyStone);
   SaveStream.Write(fBuildReserve);
@@ -2001,7 +2035,7 @@ begin
     for I := 1 to 4 do
       for K := 1 to 4 do
         if HA[I,K] <> 0 then
-          gHands.RevealForTeam(fOwner, KMPoint(fPosition.X + K - 4, fPosition.Y + I - 4), gRes.Houses[fType].Sight, FOG_OF_WAR_INC);
+          gHands.RevealForTeam(Owner, KMPoint(fPosition.X + K - 4, fPosition.Y + I - 4), gRes.Houses[fType].Sight, FOG_OF_WAR_INC);
   end;
 end;
 
@@ -2025,7 +2059,7 @@ begin
       if ResDeliveryCnt[I] < ResDistribution then
       begin
         Count := ResDistribution - ResDeliveryCnt[I];
-        gHands[fOwner].Deliveries.Queue.AddDemand(
+        gHands[Owner].Deliveries.Queue.AddDemand(
           Self, nil, gRes.Houses[fType].ResInput[I], Count, dtOnce, diNorm);
 
         ResDeliveryCnt[I] := ResDeliveryCnt[I] + Count;
@@ -2035,7 +2069,7 @@ begin
       if ResDeliveryCnt[I] > ResDistribution then
       begin
         Excess := ResDeliveryCnt[I] - ResDistribution;
-        Count := gHands[fOwner].Deliveries.Queue.TryRemoveDemand(Self, gRes.Houses[fType].ResInput[I], Excess);
+        Count := gHands[Owner].Deliveries.Queue.TryRemoveDemand(Self, gRes.Houses[fType].ResInput[I], Excess);
 
         ResDeliveryCnt[I] := ResDeliveryCnt[I] - Count; //Only reduce it by the number that were actually removed
       end;
@@ -2071,7 +2105,7 @@ begin
                    'ResIn = %d,%d,%d,%d%sResDeliveryCnt = %d,%d,%d,%d%sResOut = %d,%d,%d,%d%sResOrder = %d,%d,%d,%d%sResOutPool = %s',
                    [aSeparator,
                     BoolToStr(fHasOwner, True), aSeparator,
-                    fOwner, aSeparator,
+                    Owner, aSeparator,
                     ActStr, aSeparator,
                     BoolToStr(fBuildingRepair, True), aSeparator,
                     BoolToStr(fIsClosedForWorker, True), aSeparator,
@@ -2101,14 +2135,14 @@ var
 begin
   if not IsComplete then
   begin
-    if gGameParams.DynamicFOW and ((aTick + fOwner) mod FOW_PACE = 0) then
+    if gGameParams.DynamicFOW and ((aTick + Owner) mod FOW_PACE = 0) then
     begin
       HA := gRes.Houses[fType].BuildArea;
       //Reveal house from all points it covers
       for I := 1 to 4 do
         for K := 1 to 4 do
           if HA[I,K] <> 0 then
-            gHands.RevealForTeam(fOwner, KMPoint(fPosition.X + K - 4, fPosition.Y + I - 4), HOUSE_PLAN_SIGHT, FOG_OF_WAR_INC);
+            gHands.RevealForTeam(Owner, KMPoint(fPosition.X + K - 4, fPosition.Y + I - 4), HOUSE_PLAN_SIGHT, FOG_OF_WAR_INC);
     end;
     Exit; //Don't update unbuilt houses
   end;
@@ -2129,7 +2163,7 @@ begin
     begin
       HouseUnoccupiedMsgId := gRes.Houses[fType].UnoccupiedMsgId;
       if HouseUnoccupiedMsgId <> -1 then // HouseNotOccupMsgId should never be -1
-        gGame.ShowMessage(mkHouse, HouseUnoccupiedMsgId, Entrance, fOwner)
+        gGame.ShowMessage(mkHouse, HouseUnoccupiedMsgId, Entrance, Owner)
       else
         gLog.AddTime('Warning: HouseUnoccupiedMsgId for house type ord=' + IntToStr(Ord(fType)) + ' could not be determined.');
       fTimeSinceUnoccupiedReminder := TIME_BETWEEN_MESSAGES; //Don't show one again until it is time
@@ -2172,7 +2206,7 @@ begin
                       gRenderPool.AddHouse(fType, fPosition, 1, 1, 0);
                     gRenderPool.AddHouseSupply(fType, fPosition, fResourceIn, fResourceOut, fResourceOutPool);
                     if CurrentAction <> nil then
-                      gRenderPool.AddHouseWork(fType, fPosition, CurrentAction.SubAction, WorkAnimStep, gHands[fOwner].GameFlagColor);
+                      gRenderPool.AddHouseWork(fType, fPosition, CurrentAction.SubAction, WorkAnimStep, gHands[Owner].GameFlagColor);
                   end
                   else
                     gRenderPool.AddHouse(fType, fPosition,
@@ -2259,7 +2293,7 @@ begin
   if CurrentAction <> nil then
     gRenderPool.AddHouseWork(fType, fPosition,
                             CurrentAction.SubAction * [haWork1, haWork2, haWork3, haWork4, haWork5],
-                            WorkAnimStep, gHands[fOwner].GameFlagColor);
+                            WorkAnimStep, gHands[Owner].GameFlagColor);
 end;
 
 
@@ -2272,7 +2306,7 @@ begin
   inherited;
   //A new storehouse should inherrit the accept properies of the first storehouse of that player,
   //which stops a sudden flow of unwanted resources to it as soon as it is create.
-  FirstStore := TKMHouseStore(gHands[fOwner].FindHouse(htStore, 1));
+  FirstStore := TKMHouseStore(gHands[Owner].FindHouse(htStore, 1));
   if (FirstStore <> nil) and not FirstStore.IsDestroyed then
     for RT := WARE_MIN to WARE_MAX do
     begin
@@ -2313,12 +2347,12 @@ begin
   case aWare of
     wtAll:     for R := Low(fWaresCount) to High(fWaresCount) do begin
                   SetWareCnt(R, EnsureRange(fWaresCount[R] + aCount, 0, High(Word)));
-                  gHands[fOwner].Deliveries.Queue.AddOffer(Self, R, aCount);
+                  gHands[Owner].Deliveries.Queue.AddOffer(Self, R, aCount);
                 end;
     WARE_MIN..
     WARE_MAX:   begin
                   SetWareCnt(aWare, EnsureRange(fWaresCount[aWare] + aCount, 0, High(Word)));
-                  gHands[fOwner].Deliveries.Queue.AddOffer(Self,aWare,aCount);
+                  gHands[Owner].Deliveries.Queue.AddOffer(Self,aWare,aCount);
                 end;
     else        raise ELocError.Create('Cant''t add ' + gRes.Wares[aWare].Title, Position);
   end;
@@ -2352,7 +2386,7 @@ var
   R: TKMWareType;
 begin
   for R := WARE_MIN to WARE_MAX do
-    gHands[fOwner].Stats.WareConsumed(R, fWaresCount[R]);
+    gHands[Owner].Stats.WareConsumed(R, fWaresCount[R]);
 
   inherited;
 end;
@@ -2365,8 +2399,8 @@ begin
     aCount := Min(aCount, fWaresCount[aWare]);
     if aCount > 0 then
     begin
-      gHands[fOwner].Stats.WareConsumed(aWare, aCount);
-      gHands[fOwner].Deliveries.Queue.RemOffer(Self, aWare, aCount);
+      gHands[Owner].Stats.WareConsumed(aWare, aCount);
+      gHands[Owner].Deliveries.Queue.RemOffer(Self, aWare, aCount);
     end;
   end;
   Assert(aCount <= fWaresCount[aWare]);
@@ -2404,7 +2438,7 @@ begin
       case aWare of
         wtArbalet: begin
                       ResAddToIn(wtAll, 10);
-                      gHands[fOwner].Stats.WareProduced(wtAll, 10);
+                      gHands[Owner].Stats.WareProduced(wtAll, 10);
                       Exit;
                     end;
         wtHorse:   if not gGameParams.IsMultiPlayerOrSpec then

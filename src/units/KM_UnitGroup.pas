@@ -14,12 +14,10 @@ type
   TKMUnitGroupEvent = procedure(aGroup: TKMUnitGroup) of object;
 
   //Group of warriors
-  TKMUnitGroup = class(TKMHandEntity<TKMUnitGroup>)
+  TKMUnitGroup = class(TKMHandEntityPointer<TKMUnitGroup>)
   private
-//    fPointerCount: Cardinal;
     fTicker: Cardinal;
     fTargetFollowTicker: Cardinal;
-    fOwner: TKMHandID;
     fMembers: TList;
     fOffenders: TList;
     fSelected: TKMUnitWarrior; //Unit selected by player in GUI. Should not be saved or affect game logic for MP consistency.
@@ -91,6 +89,9 @@ type
   protected
     function GetPosition: TKMPoint; override;
     function GetInstance: TKMUnitGroup; override;
+    function GetPositionF: TKMPointF; override;
+    procedure SetPositionF(const aPositionF: TKMPointF); override;
+    procedure SetOwner(const aOwner: TKMHandID); override;
   public
     //Each group can have initial order
     //SendGroup - walk to some location
@@ -136,7 +137,6 @@ type
     property Members[aIndex: Integer]: TKMUnitWarrior read GetMember;
     function GetAliveMember: TKMUnitWarrior;
     property FlagBearer: TKMUnitWarrior read GetFlagBearer;
-    property Owner: TKMHandID read fOwner;
     procedure SetGroupPosition(const aValue: TKMPoint);
     property Direction: TKMDirection read GetDirection write SetDirection;
     property UnitsPerRow: Word read fUnitsPerRow write SetUnitsPerRow;
@@ -155,8 +155,9 @@ type
     property OrderTargetGroup: TKMUnitGroup read GetOrderTargetGroup;
     property OrderTargetHouse: TKMHouse read GetOrderTargetHouse write SetOrderTargetHouse;
 
-    procedure SetOwner(aOwner: TKMHandID);
     procedure OwnerUpdate(aOwner: TKMHandID; aMoveToNewOwner: Boolean = False);
+
+    function IsSelectable: Boolean; override;
 
     procedure OrderAttackHouse(aHouse: TKMHouse; aClearOffenders: Boolean; aForced: Boolean = True);
     procedure OrderAttackUnit(aUnit: TKMUnit; aClearOffenders: Boolean; aForced: Boolean = True);
@@ -249,9 +250,8 @@ const
 //Create a Group from a single warrior (short version)
 constructor TKMUnitGroup.Create(aID: Cardinal; aCreator: TKMUnitWarrior);
 begin
-  inherited Create(etGroup, aID);
+  inherited Create(etGroup, aID, aCreator.Owner);
 
-  fOwner := aCreator.Owner;
   fGroupType := UNIT_TO_GROUP_TYPE[aCreator.UnitType];
   fMembers := TList.Create;
   fOffenders := TList.Create;
@@ -276,9 +276,8 @@ var
   NewCondition: Word;
   DesiredArea: Byte;
 begin
-  inherited Create(etGroup, aID);
+  inherited Create(etGroup, aID, aOwner);
 
-  fOwner := aOwner;
   fGroupType := UNIT_TO_GROUP_TYPE[aUnitType];
   fMembers := TList.Create;
   fOffenders := TList.Create;
@@ -340,7 +339,6 @@ begin
   fOffenders := TList.Create;
 
   LoadStream.Read(fGroupType, SizeOf(fGroupType));
-  LoadStream.Read(fOwner);
   LoadStream.Read(NewCount);
   for I := 0 to NewCount - 1 do
   begin
@@ -428,7 +426,6 @@ begin
 
   SaveStream.PlaceMarker('UnitGroup');
   SaveStream.Write(fGroupType, SizeOf(fGroupType));
-  SaveStream.Write(fOwner);
   SaveStream.Write(fMembers.Count);
   for I := 0 to fMembers.Count - 1 do
     SaveStream.Write(Members[I].UID);
@@ -712,6 +709,14 @@ end;
 function TKMUnitGroup.IsRanged: Boolean;
 begin
   Result := (fGroupType = gtRanged);
+end;
+
+
+function TKMUnitGroup.IsSelectable: Boolean;
+begin
+  if Self = nil then Exit(False);
+
+  Result := not IsDead;
 end;
 
 
@@ -1107,19 +1112,19 @@ end;
 
 function TKMUnitGroup.IsAllyTo(aUnit: TKMUnit): Boolean;
 begin
-  Result := gHands[fOwner].Alliances[aUnit.Owner] = atAlly;
+  Result := gHands[Owner].Alliances[aUnit.Owner] = atAlly;
 end;
 
 
 function TKMUnitGroup.IsAllyTo(aUnitGroup: TKMUnitGroup): Boolean;
 begin
-  Result := gHands[fOwner].Alliances[aUnitGroup.Owner] = atAlly;
+  Result := gHands[Owner].Alliances[aUnitGroup.Owner] = atAlly;
 end;
 
 
 function TKMUnitGroup.IsAllyTo(aHouse: TKMHouse): Boolean;
 begin
-  Result := gHands[fOwner].Alliances[aHouse.Owner] = atAlly;
+  Result := gHands[Owner].Alliances[aHouse.Owner] = atAlly;
 end;
 
 
@@ -1159,10 +1164,12 @@ begin
 end;
 
 
-procedure TKMUnitGroup.SetOwner(aOwner: TKMHandID);
-var I: Integer;
+procedure TKMUnitGroup.SetOwner(const aOwner: TKMHandID);
+var
+  I: Integer;
 begin
-  fOwner := aOwner;
+  inherited SetOwner(aOwner);
+
   for I := 0 to fMembers.Count - 1 do
     TKMUnitWarrior(fMembers[I]).Owner := aOwner;
 end;
@@ -1171,13 +1178,13 @@ end;
 procedure TKMUnitGroup.OwnerUpdate(aOwner: TKMHandID; aMoveToNewOwner: Boolean = False);
 var I: Integer;
 begin
-  if aMoveToNewOwner and (fOwner <> aOwner) then
+  if aMoveToNewOwner and (Owner <> aOwner) then
   begin
     Assert(gGameParams.Mode = gmMapEd); // Allow to move existing Unit directly only in MapEd
-    gHands[fOwner].UnitGroups.DeleteGroupFromList(Self);
+    gHands[Owner].UnitGroups.DeleteGroupFromList(Self);
     gHands[aOwner].UnitGroups.AddGroupToList(Self);
   end;
-  fOwner := aOwner;
+  Owner := aOwner;
   for I := 0 to fMembers.Count - 1 do
     TKMUnitWarrior(fMembers[I]).OwnerUpdate(aOwner, aMoveToNewOwner);
 end;
@@ -1834,7 +1841,7 @@ begin
     begin
       gScriptEvents.ProcGroupHungry(Self);
       if not fDisableHungerMessage then
-        gGame.ShowMessage(mkUnit, TX_MSG_TROOP_HUNGRY, Position, fOwner);
+        gGame.ShowMessage(mkUnit, TX_MSG_TROOP_HUNGRY, Position, Owner);
       fTimeSinceHungryReminder := TIME_BETWEEN_MESSAGES; //Don't show one again until it is time
     end;
   end
@@ -1885,6 +1892,18 @@ end;
 function TKMUnitGroup.GetInstance: TKMUnitGroup;
 begin
   Result := Self;
+end;
+
+
+procedure TKMUnitGroup.SetPositionF(const aPositionF: TKMPointF);
+begin
+  raise Exception.Create('Can''t set PositionF for UnitGroup');
+end;
+
+
+function TKMUnitGroup.GetPositionF: TKMPointF;
+begin
+  Result := FlagBearer.PositionF;
 end;
 
 
@@ -2061,7 +2080,7 @@ begin
             Format('%sOwner = %d%sUnitsPerRow = %d%sGroupOrder = %s%sOrderLoc = %s%s' +
                    'OrderTargetUnit = [%s]%sOrderTargetGroup = [%s]%sOrderTargetHouse = [%s]%sPushbackCommandsCnt = [%d]',
                    [aSeparator,
-                    fOwner, aSeparator,
+                    Owner, aSeparator,
                     fUnitsPerRow, aSeparator,
                     GetEnumName(TypeInfo(TKMGroupOrder), Integer(fOrder)), aSeparator,
                     TypeToString(fOrderLoc), aSeparator,

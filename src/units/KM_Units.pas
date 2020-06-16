@@ -74,7 +74,7 @@ type
   end;
 
 
-  TKMUnit =  class abstract(TKMHandEntity<TKMUnit>)
+  TKMUnit =  class abstract(TKMHandEntityPointer<TKMUnit>)
   protected //Accessible for child classes
     fType: TKMUnitType;
     fTask: TKMUnitTask;
@@ -85,7 +85,6 @@ type
     fCondition: Integer; //Unit condition, when it reaches zero unit should die (rarely can be negative due to WalkExchange)
     fStartWDefaultCondition: Boolean; //For MapEditor only. Shows if this unit conditions will be set to default at the start of the game
     fTicker: Cardinal; //ticks of life for the unit (allows to spread updates)
-    fOwner: TKMHandID;
     fHome: TKMHouse;
     fPositionF: TKMPointF;
     fVisible: Boolean;
@@ -114,7 +113,6 @@ type
     procedure SetCondition(aValue: Integer);
     function CanAccessHome: Boolean;
     procedure SetHome(aHome: TKMHouse);
-    procedure SetOwner(aOwner: TKMHandID);
 
     procedure SetThought(aThought: TKMUnitThought);
     procedure SetInHouse(aInHouse: TKMHouse);
@@ -128,6 +126,8 @@ type
   protected
     function GetInstance: TKMUnit; override;
     function GetPosition: TKMPoint; override;
+    function GetPositionF: TKMPointF; override;
+    procedure SetPositionF(const aPositionF: TKMPointF); override;
   public
     AnimStep: Integer;
     IsExchanging: Boolean; //Current walk is an exchange, used for sliding
@@ -156,7 +156,6 @@ type
 
     procedure CloseUnit(aRemoveTileUsage: Boolean = True); virtual;
 
-    property PositionF: TKMPointF read fPositionF write fPositionF;
     property PrevPosition: TKMPoint read fPrevPosition;
     property NextPosition: TKMPoint read fNextPosition write SetNextPosition;
     procedure SetUnitPosition(aPos: TKMPoint);
@@ -191,7 +190,6 @@ type
     function IsHungry: Boolean;
     procedure AbandonWalk;
     property  DesiredPassability: TKMTerrainPassability read GetDesiredPassability;
-    property  Owner: TKMHandID read fOwner write SetOwner;
 
     property  Home: TKMHouse read fHome write SetHome;
     property  Action: TKMUnitAction read fAction;
@@ -215,6 +213,7 @@ type
     function  IsDismissCancelAvailable: Boolean;
 
     function IsAnimal: Boolean; virtual;
+    function IsSelectable: Boolean; override;
 
     property  Thought: TKMUnitThought read fThought write SetThought;
     function  GetMovementVector: TKMPointF;
@@ -331,6 +330,7 @@ type
     property FishCount: byte read fFishCount;
     function ReduceFish: Boolean;
     function IsAnimal: Boolean; override;
+    function IsSelectable: Boolean; override;
     procedure Save(SaveStream: TKMemoryStream); override;
     function UpdateState: Boolean; override;
     procedure Paint(aTickLag: Single); override;
@@ -378,7 +378,7 @@ begin
   Result := False;
   if IsHungry then
   begin
-    H := gHands[fOwner].FindInn(fPosition, Self, InHouse <> nil);
+    H := gHands[Owner].FindInn(fPosition, Self, InHouse <> nil);
     Result := GoEat(H);
   end;
 end;
@@ -416,7 +416,7 @@ function TKMSettledUnit.FindHome: Boolean;
 var H: TKMHouse;
 begin
   Result:=false;
-  H := gHands[fOwner].Houses.FindEmptyHouse(fType, fPosition);
+  H := gHands[Owner].Houses.FindEmptyHouse(fType, fPosition);
   if H <> nil then
   begin
     fHome  := H.GetPointer;
@@ -456,16 +456,16 @@ begin
   case fAction.fType of
     uaWalk:
       begin
-        gRenderPool.AddUnit(fType, ID, uaWalk, V.Dir, V.AnimStep, XPaintPos, YPaintPos, gHands[fOwner].GameFlagColor, True);
+        gRenderPool.AddUnit(fType, ID, uaWalk, V.Dir, V.AnimStep, XPaintPos, YPaintPos, gHands[Owner].GameFlagColor, True);
         if gRes.Units[fType].SupportsAction(uaWalkArm) then
-          gRenderPool.AddUnit(fType, ID, uaWalkArm, V.Dir, V.AnimStep, XPaintPos, YPaintPos, gHands[fOwner].GameFlagColor, False);
+          gRenderPool.AddUnit(fType, ID, uaWalkArm, V.Dir, V.AnimStep, XPaintPos, YPaintPos, gHands[Owner].GameFlagColor, False);
       end;
     uaWork..uaEat:
-        gRenderPool.AddUnit(fType, ID, Act, V.Dir, V.AnimStep, XPaintPos, YPaintPos, gHands[fOwner].GameFlagColor, True);
+        gRenderPool.AddUnit(fType, ID, Act, V.Dir, V.AnimStep, XPaintPos, YPaintPos, gHands[Owner].GameFlagColor, True);
     uaWalkArm .. uaWalkBooty2:
       begin
-        gRenderPool.AddUnit(fType, ID, uaWalk, V.Dir, V.AnimStep, XPaintPos, YPaintPos, gHands[fOwner].GameFlagColor, True);
-        gRenderPool.AddUnit(fType, ID, Act, V.Dir, V.AnimStep, XPaintPos, YPaintPos, gHands[fOwner].GameFlagColor, False);
+        gRenderPool.AddUnit(fType, ID, uaWalk, V.Dir, V.AnimStep, XPaintPos, YPaintPos, gHands[Owner].GameFlagColor, True);
+        gRenderPool.AddUnit(fType, ID, Act, V.Dir, V.AnimStep, XPaintPos, YPaintPos, gHands[Owner].GameFlagColor, False);
       end;
   end;
 
@@ -619,7 +619,7 @@ begin
                           //(it's very annoying if they do)
                           Result := True;
                           for I := 0 to gHands.Count - 1 do
-                            if gHands[fOwner].Alliances[I] = atAlly then
+                            if gHands[Owner].Alliances[I] = atAlly then
                               Result := Result and not gHands[I].Constructions.HousePlanList.HasPlan(aLoc);
                         end;
     else Result := True;
@@ -703,7 +703,7 @@ begin
   if not (fHome is TKMHouseTower) or (fHome.CheckResIn(wtStone) <= 0) then
     Exit;
 
-  Enemy := gTerrain.UnitsHitTestWithinRad(fPosition, RANGE_WATCHTOWER_MIN, RANGE_WATCHTOWER_MAX, fOwner, atEnemy, dirNA, not RANDOM_TARGETS);
+  Enemy := gTerrain.UnitsHitTestWithinRad(fPosition, RANGE_WATCHTOWER_MIN, RANGE_WATCHTOWER_MAX, Owner, atEnemy, dirNA, not RANDOM_TARGETS);
 
   //Note: In actual game there might be two Towers nearby,
   //both throwing a stone into the same enemy. We should not
@@ -795,14 +795,14 @@ begin
 
   ID := UID * Byte(not (Act in [uaDie, uaEat]));
 
-  gRenderPool.AddUnit(UnitType, ID, Act, V.Dir, V.AnimStep, XPaintPos, YPaintPos, gHands[fOwner].GameFlagColor, true);
+  gRenderPool.AddUnit(UnitType, ID, Act, V.Dir, V.AnimStep, XPaintPos, YPaintPos, gHands[Owner].GameFlagColor, true);
 
   if fTask is TKMTaskDie then Exit; //Do not show unnecessary arms
 
   if Carry <> wtNone then
     gRenderPool.AddUnitCarry(Carry, ID, V.Dir, V.AnimStep, XPaintPos, YPaintPos)
   else
-    gRenderPool.AddUnit(UnitType, ID, uaWalkArm, V.Dir, V.AnimStep, XPaintPos, YPaintPos, gHands[fOwner].GameFlagColor, false);
+    gRenderPool.AddUnit(UnitType, ID, uaWalkArm, V.Dir, V.AnimStep, XPaintPos, YPaintPos, gHands[Owner].GameFlagColor, false);
 
   if fThought <> thNone then
     gRenderPool.AddUnitThought(fType, Act, V.Dir, fThought, XPaintPos, YPaintPos);
@@ -940,7 +940,7 @@ begin
 
   ID := UID * Byte(not (V.Action in [uaDie, uaEat]));
 
-  gRenderPool.AddUnit(UnitType, ID, V.Action, V.Dir, V.AnimStep, XPaintPos, YPaintPos, gHands[fOwner].GameFlagColor, true);
+  gRenderPool.AddUnit(UnitType, ID, V.Action, V.Dir, V.AnimStep, XPaintPos, YPaintPos, gHands[Owner].GameFlagColor, true);
 
   if fThought <> thNone then
     gRenderPool.AddUnitThought(fType, V.Action, V.Dir, fThought, XPaintPos, YPaintPos);
@@ -982,6 +982,12 @@ end;
 function TKMUnitAnimal.IsAnimal: Boolean;
 begin
   Result := True;
+end;
+
+
+function TKMUnitAnimal.IsSelectable: Boolean;
+begin
+  Result := False;
 end;
 
 
@@ -1094,19 +1100,18 @@ end;
 { TKMUnit }
 constructor TKMUnit.Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPoint; aOwner: TKMHandID; aInHouse: Boolean);
 begin
-  inherited Create(etUnit, aID);
+  inherited Create(etUnit, aID, aOwner);
   fTicker       := aID; //Units update states will be spread more evenly that way
   fIsDead       := false;
   fKillASAP     := false;
   fThought      := thNone;
   fHome         := nil;
   fInHouse      := nil;
-  fPositionF     := KMPointF(aLoc);
-  fPosition := aLoc;
+  fPositionF    := KMPointF(aLoc);
+  fPosition     := aLoc;
   fPrevPosition := aLoc; //Init values
   fNextPosition := aLoc; //Init values
-  fOwner        := aOwner;
-  fType     := aUnitType;
+  fType         := aUnitType;
   fDirection    := dirS;
   fVisible      := True;
   IsExchanging  := False;
@@ -1136,8 +1141,8 @@ begin
     gTerrain.UnitAdd(NextPosition, Self);
 
   //The area around the unit should be visible at the start of the mission
-  if InRange(fOwner, 0, MAX_HANDS - 1) then //Not animals
-    gHands.RevealForTeam(fOwner, fPosition, gRes.Units[fType].Sight, FOG_OF_WAR_MAX);
+  if InRange(Owner, 0, MAX_HANDS - 1) then //Not animals
+    gHands.RevealForTeam(Owner, fPosition, gRes.Units[fType].Sight, FOG_OF_WAR_MAX);
 end;
 
 
@@ -1218,7 +1223,6 @@ begin
   LoadStream.Read(fHitPointCounter);
   LoadStream.Read(HitPointsInvulnerable);
   LoadStream.Read(fInHouse, 4);
-  LoadStream.Read(fOwner, SizeOf(fOwner));
   LoadStream.Read(fHome, 4); //Substitute it with reference on SyncLoad
   LoadStream.Read(fPositionF);
   LoadStream.Read(fVisible);
@@ -1280,7 +1284,7 @@ begin
   fPosition := KMPOINT_ZERO;
   fPrevPosition := fPosition;
   fNextPosition := fPosition;
-  fOwner        := PLAYER_NONE;
+  Owner        := PLAYER_NONE;
   //Do not reset the unit type when they die as we still need to know during Load
   //fUnitType     := utNone;
   fDirection    := dirNA;
@@ -1418,21 +1422,21 @@ begin
 end;
 
 
-procedure TKMUnit.SetOwner(aOwner: TKMHandID);
-begin
-  fOwner := aOwner;
-end;
+//procedure TKMUnit.SetOwner(aOwner: TKMHandID);
+//begin
+//  Owner := aOwner;
+//end;
 
 
 procedure TKMUnit.OwnerUpdate(aOwner: TKMHandID; aMoveToNewOwner: Boolean = False);
 begin
-  if aMoveToNewOwner and (fOwner <> aOwner) then
+  if aMoveToNewOwner and (Owner <> aOwner) then
   begin
     Assert(gGameParams.Mode = gmMapEd); // Allow to move existing Unit directly only in MapEd
-    gHands[fOwner].Units.DeleteUnitFromList(Self);
+    gHands[Owner].Units.DeleteUnitFromList(Self);
     gHands[aOwner].Units.AddUnitToList(Self);
   end;
-  fOwner := aOwner;
+  Owner := aOwner;
 end;
 
 
@@ -1560,12 +1564,30 @@ begin
 end;
 
 
+function TKMUnit.GetPosition: TKMPoint;
+begin
+  Result := fPosition;
+end;
+
+
+procedure TKMUnit.SetPositionF(const aPositionF: TKMPointF);
+begin
+  fPositionF := aPositionF;
+end;
+
+
+function TKMUnit.GetPositionF: TKMPointF;
+begin
+  Result := fPositionF;
+end;
+
+
 procedure TKMUnit.SetCurrPosition(const aLoc: TKMPoint);
 begin
   if {not gGameApp.DynamicFOWEnabled
-    and }(fOwner <> PLAYER_ANIMAL)
+    and }(Owner <> PLAYER_ANIMAL)
     and (fPosition <> aLoc) then  //Update FOW only for new loc
-    gHands.RevealForTeam(fOwner, aLoc, gRes.Units[fType].Sight, FOG_OF_WAR_MAX);
+    gHands.RevealForTeam(Owner, aLoc, gRes.Units[fType].Sight, FOG_OF_WAR_MAX);
 
   fPosition := aLoc;
 end;
@@ -1998,7 +2020,7 @@ begin
       begin
         //There is no space for this unit so it must be destroyed
         //todo: re-route to KillUnit and let it sort out that unit is invisible and cant be placed
-        if    (fOwner <> PLAYER_NONE)
+        if    (Owner <> PLAYER_NONE)
           and not IsDeadOrDying
           and Assigned(OnUnitDied) then
           OnUnitDied(Self, PLAYER_NONE);
@@ -2181,12 +2203,6 @@ begin
 end;
 
 
-function TKMUnit.GetPosition: TKMPoint;
-begin
-  Result := fPosition;
-end;
-
-
 //procedure TKMUnit.SetPosition(const aValue: TKMPoint);
 //begin
 //  raise Exception.Create('Set position is not allowed outside of TKMUnit');
@@ -2196,6 +2212,14 @@ end;
 function TKMUnit.IsIdle: Boolean;
 begin
   Result := (fTask = nil) and ((fAction is TKMUnitActionStay) and not TKMUnitActionStay(fAction).Locked);
+end;
+
+
+function TKMUnit.IsSelectable: Boolean;
+begin
+  if Self = nil then Exit(False);
+
+  Result := not IsDeadOrDying;
 end;
 
 
@@ -2244,7 +2268,7 @@ begin
                     fHitPoints, aSeparator,
                     fHitPointCounter, aSeparator,
                     fCondition, aSeparator,
-                    fOwner, aSeparator,
+                    Owner, aSeparator,
                     HomeStr, aSeparator,
                     InHouseStr, aSeparator,
                     BoolToStr(fVisible, True), aSeparator,
@@ -2290,7 +2314,6 @@ begin
   SaveStream.Write(HitPointsInvulnerable);
 
   SaveStream.Write(fInHouse.UID); //Store ID, then substitute it with reference on SyncLoad
-  SaveStream.Write(fOwner, SizeOf(fOwner));
   SaveStream.Write(fHome.UID); //Store ID, then substitute it with reference on SyncLoad
 
   SaveStream.Write(fPositionF);
@@ -2364,7 +2387,7 @@ begin
 
   //We only need to update fog of war regularly if we're using dynamic fog of war, otherwise only update it when the unit moves
   if gGameParams.DynamicFOW and (fTicker mod FOW_PACE = 0) then
-    gHands.RevealForTeam(fOwner, fPosition, gRes.Units[fType].Sight, FOG_OF_WAR_INC);
+    gHands.RevealForTeam(Owner, fPosition, gRes.Units[fType].Sight, FOG_OF_WAR_INC);
 
   UpdateThoughts;
   UpdateHitPoints;
