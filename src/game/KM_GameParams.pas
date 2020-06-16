@@ -26,6 +26,8 @@ type
 
     fDynamicFOW: Boolean;
 
+    fBlockPointerOperations: Boolean;
+
     procedure SetTick(aGameTick: Cardinal);
     procedure SetMode(aGameMode: TKMGameMode);
     function GetMissionFile: UnicodeString;
@@ -33,8 +35,10 @@ type
 
     function GetDynamicFOW: Boolean;
     procedure SetDynamicFOW(const aDynamicFOW: Boolean);
+    procedure SetBlockPointer(aBlockPointer: Boolean);
   public
-    constructor Create(aGameMode: TKMGameMode; out aSetGameTickEvent: TCardinalEvent; out aSetGameModeEvent: TKMGameModeSetEvent; out aSetMissionFileSP: TUnicodeStringEvent);
+    constructor Create(aGameMode: TKMGameMode; out aSetGameTickEvent: TCardinalEvent; out aSetGameModeEvent: TKMGameModeSetEvent;
+                       out aSetMissionFileSP: TUnicodeStringEvent; out aSetBlockPointer: TBooleanEvent);
     destructor Destroy; override;
 
     property Mode: TKMGameMode read fMode;
@@ -49,6 +53,7 @@ type
     property MissionFile: UnicodeString read GetMissionFile;
     property MissionDifficulty: TKMMissionDifficulty read fMissionDifficulty write fMissionDifficulty;
     property DynamicFOW: Boolean read GetDynamicFOW write SetDynamicFOW;
+    property BlockPointerOperations: Boolean read fBlockPointerOperations;
 
     function IsMapEditor: Boolean;
     function IsCampaign: Boolean;
@@ -66,6 +71,8 @@ type
 
     function HasMissionDifficulty: Boolean;
 
+    function AllowPointerOperations: Boolean;
+
     {$IFDEF RUNNER}
     procedure GetGameModeSetEvent(out aSetGameModeEvent: TKMGameModeSetEvent);
     {$ENDIF}
@@ -81,7 +88,8 @@ uses
 
 
 { TKMGameParams }
-constructor TKMGameParams.Create(aGameMode: TKMGameMode; out aSetGameTickEvent: TCardinalEvent; out aSetGameModeEvent: TKMGameModeSetEvent; out aSetMissionFileSP: TUnicodeStringEvent);
+constructor TKMGameParams.Create(aGameMode: TKMGameMode; out aSetGameTickEvent: TCardinalEvent; out aSetGameModeEvent: TKMGameModeSetEvent;
+                                 out aSetMissionFileSP: TUnicodeStringEvent; out aSetBlockPointer: TBooleanEvent);
 begin
   inherited Create;
 
@@ -95,6 +103,9 @@ begin
   aSetGameTickEvent := SetTick;
   aSetGameModeEvent := SetMode;
   aSetMissionFileSP := SetMissionFileSP;
+  aSetBlockPointer  := SetBlockPointer;
+
+  fBlockPointerOperations := False;
 
   gGameParams := Self;
 end;
@@ -131,6 +142,12 @@ begin
   else
     //In MP we can't store it since it will be MapsMP or MapsDL on different clients
     Result := GuessMPPath(fName, '.dat', fMapFullCRC);
+end;
+
+
+procedure TKMGameParams.SetBlockPointer(aBlockPointer: Boolean);
+begin
+  fBlockPointerOperations := aBlockPointer;
 end;
 
 
@@ -234,6 +251,12 @@ end;
 function TKMGameParams.HasMissionDifficulty: Boolean;
 begin
   Result := fMissionDifficulty <> mdNone;
+end;
+
+
+function TKMGameParams.AllowPointerOperations: Boolean;
+begin
+  Result := IsSingleplayerGame or IsMapEditor or not BlockPointerOperations {or SKIP_POINTER_REF_CHECK};
 end;
 
 

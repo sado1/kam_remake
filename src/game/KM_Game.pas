@@ -50,6 +50,7 @@ type
     fSetGameTickEvent: TCardinalEvent;
     fSetGameModeEvent: TKMGameModeSetEvent;
     fSetMissionFileSP: TUnicodeStringEvent;
+    fSetBlockPointer: TBooleanEvent;
 
     fAIType: TKMAIType;
     fMapTxtInfo: TKMMapTxtInfo;
@@ -59,8 +60,6 @@ type
     fCampaignName: TKMCampaignId;  //Is this a game part of some campaign
     fSpeedGIP: Single; //GameSpeed, recorded to GIP, could be requested by scripts
     fSpeedChangeAllowed: Boolean; //Is game speed change allowed?
-
-    fBlockGetPointer: Boolean; //?? should be saved ??
 
     fUIDTracker: Cardinal;       //Units-Houses tracker, to issue unique IDs
 
@@ -176,8 +175,6 @@ type
     property IsPaused: Boolean read fIsPaused write SetIsPaused;
     property IsStarted: Boolean read fIsStarted;
     property ReadyToStop: Boolean read fReadyToStop write fReadyToStop;
-    property BlockGetPointer: Boolean read fBlockGetPointer;
-    function AllowGetPointer: Boolean;
 
     function MissionTime: TDateTime;
     function GetPeacetimeRemaining: TDateTime;
@@ -299,7 +296,7 @@ begin
 
   fSaveWorkerThread := TKMWorkerThread.Create('SaveWorker');
 
-  fParams := TKMGameParams.Create(aGameMode, fSetGameTickEvent, fSetGameModeEvent, fSetMissionFileSP);
+  fParams := TKMGameParams.Create(aGameMode, fSetGameTickEvent, fSetGameModeEvent, fSetMissionFileSP, fSetBlockPointer);
 
   fOnDestroy := aOnDestroy;
 
@@ -314,7 +311,6 @@ begin
   fSpeedChangeTime := 0;
   fSpeedChangeAllowed := True;
   fPausedTicksCnt := 0;
-  fBlockGetPointer := False;
   fLastTimeUserAction := TimeGet;
   fLastAfkMessageSent := 0;
   fLoadFromFile := '';
@@ -1863,12 +1859,6 @@ begin
 end;
 
 
-function TKMGame.AllowGetPointer: Boolean;
-begin
-  Result := fParams.IsSingleplayerGame or fParams.IsMapEditor or not BlockGetPointer {or SKIP_POINTER_REF_CHECK};
-end;
-
-
 //In replay mode we can step the game by exactly one frame and then pause again
 procedure TKMGame.StepOneFrame;
 begin
@@ -2781,7 +2771,7 @@ begin
   if fIsPaused or ReadyToStop then
     Exit;
 
-  fBlockGetPointer := False;
+  fSetBlockPointer(False);
 
   try
     try
@@ -2826,7 +2816,7 @@ begin
         end;
     end;
   finally
-    fBlockGetPointer := True;
+    fSetBlockPointer(True);
   end;
 end;
 

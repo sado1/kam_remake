@@ -868,7 +868,7 @@ end;
 procedure TKMHandsCollection.CleanUpUnitPointer(var aUnit: TKMUnit);
 begin
   if (aUnit <> nil) and (gGame <> nil) and not gGame.IsExiting then
-    aUnit.ReleaseUnitPointer;
+    aUnit.ReleasePointer;
   aUnit := nil;
 end;
 
@@ -876,7 +876,7 @@ end;
 procedure TKMHandsCollection.CleanUpGroupPointer(var aGroup: TKMUnitGroup);
 begin
   if (aGroup <> nil) and (gGame <> nil) and not gGame.IsExiting then
-    aGroup.ReleaseGroupPointer;
+    aGroup.ReleasePointer;
   aGroup := nil;
 end;
 
@@ -884,7 +884,7 @@ end;
 procedure TKMHandsCollection.CleanUpHousePointer(var aHouse: TKMHouse);
 begin
   if (aHouse <> nil) and (gGame <> nil) and not gGame.IsExiting then
-    aHouse.ReleaseHousePointer;
+    aHouse.ReleasePointer;
   aHouse := nil;
 end;
 

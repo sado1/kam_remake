@@ -4,7 +4,8 @@ interface
 uses
   Classes, Math, SysUtils, KromUtils, Types,
   KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Points, KM_CommonUtils, KM_UnitVisual,
-  KM_Terrain, KM_ResHouses, KM_ResWares, KM_Houses, KM_HouseSchool, KM_HouseBarracks, KM_HouseInn;
+  KM_Terrain, KM_ResHouses, KM_ResWares, KM_Houses, KM_HouseSchool, KM_HouseBarracks, KM_HouseInn,
+  KM_HandEntity;
 
 //Memo on directives:
 //Dynamic - declared and used (overriden) occasionally
@@ -73,9 +74,8 @@ type
   end;
 
 
-  TKMUnit = class abstract
+  TKMUnit =  class abstract(TKMHandEntity<TKMUnit>)
   protected //Accessible for child classes
-    fUID: Integer; //unique unit ID, used for save/load to sync to
     fType: TKMUnitType;
     fTask: TKMUnitTask;
     fAction: TKMUnitAction;
@@ -93,7 +93,6 @@ type
     fKillASAP: Boolean;
     fDismissASAP: Boolean;
     fKillASAPShowAnimation: Boolean;
-    fPointerCount: Word;
     fInHouse: TKMHouse; //House we are currently in
     fPosition: TKMPoint; //Where we are now
     fPrevPosition: TKMPoint; //Where we were
@@ -126,6 +125,9 @@ type
     procedure DoDismiss;
 
     procedure UpdateLastTimeTrySetActionWalk;
+  protected
+    function GetInstance: TKMUnit; override;
+    function GetPosition: TKMPoint; override;
   public
     AnimStep: Integer;
     IsExchanging: Boolean; //Current walk is an exchange, used for sliding
@@ -136,13 +138,11 @@ type
     Dismissable: Boolean; //Is it allowed to dismiss this unit ?
 
     constructor Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPoint; aOwner: TKMHandID; aInHouse: Boolean);
-    constructor Load(LoadStream: TKMemoryStream); virtual;
-    procedure SyncLoad; virtual;
     destructor Destroy; override;
 
-    function GetUnitPointer: TKMUnit; //Returns self and adds one to the pointer counter
-    procedure ReleaseUnitPointer;  //Decreases the pointer counter
-    property GetPointerCount: Word read fPointerCount;
+    constructor Load(LoadStream: TKMemoryStream); override;
+    procedure SyncLoad; virtual;
+    procedure Save(SaveStream: TKMemoryStream); override;
 
     //Creates TTaskDie which then will Close the unit from further access
     procedure Kill(aFrom: TKMHandID; aShowAnimation, aForceDelay: Boolean); virtual;
@@ -156,12 +156,10 @@ type
 
     procedure CloseUnit(aRemoveTileUsage: Boolean = True); virtual;
 
-    property UID: Integer read fUID;
-    property Position: TKMPoint read fPosition;
     property PositionF: TKMPointF read fPositionF write fPositionF;
     property PrevPosition: TKMPoint read fPrevPosition;
     property NextPosition: TKMPoint read fNextPosition write SetNextPosition;
-    procedure SetPosition(aPos: TKMPoint);
+    procedure SetUnitPosition(aPos: TKMPoint);
 
     property Direction: TKMDirection read fDirection write SetDirection;
     property CurrentHitPoints: Byte read fHitPoints;
@@ -238,10 +236,9 @@ type
     function GetSlide(aCheck: TKMCheckAxis): Single;
     function PathfindingShouldAvoid: Boolean; virtual;
 
-    function ObjToString(const aSeparator: String = '|'): String; virtual;
-    function ObjToStringShort(const aSeparator: String = '|'): String; virtual;
+    function ObjToString(const aSeparator: String = '|'): String; override;
+    function ObjToStringShort(const aSeparator: String = '|'): String; override;
 
-    procedure Save(SaveStream: TKMemoryStream); virtual;
     function UpdateState: Boolean; virtual;
     procedure UpdateVisualState;
     procedure Paint(aTickLag: Single); virtual;
@@ -421,7 +418,7 @@ begin
   H := gHands[fOwner].Houses.FindEmptyHouse(fType, fPosition);
   if H <> nil then
   begin
-    fHome  := H.GetHousePointer;
+    fHome  := H.GetPointer;
     Result := true;
   end;
 end;
@@ -453,7 +450,7 @@ begin
   XPaintPos := V.PosF.X + UNIT_OFF_X + V.SlideX;
   YPaintPos := V.PosF.Y + UNIT_OFF_Y + V.SlideY;
 
-  ID := fUID * Byte(not (Act in [uaDie, uaEat]));
+  ID := UID * Byte(not (Act in [uaDie, uaEat]));
 
   case fAction.fType of
     uaWalk:
@@ -795,7 +792,7 @@ begin
   XPaintPos := V.PosF.X + UNIT_OFF_X + V.SlideX;
   YPaintPos := V.PosF.Y + UNIT_OFF_Y + V.SlideY;
 
-  ID := fUID * Byte(not (Act in [uaDie, uaEat]));
+  ID := UID * Byte(not (Act in [uaDie, uaEat]));
 
   gRenderPool.AddUnit(UnitType, ID, Act, V.Dir, V.AnimStep, XPaintPos, YPaintPos, gHands[fOwner].GameFlagColor, true);
 
@@ -940,7 +937,7 @@ begin
   XPaintPos := V.PosF.X + UNIT_OFF_X + V.SlideX;
   YPaintPos := V.PosF.Y + UNIT_OFF_Y + V.SlideY;
 
-  ID := fUID * Byte(not (V.Action in [uaDie, uaEat]));
+  ID := UID * Byte(not (V.Action in [uaDie, uaEat]));
 
   gRenderPool.AddUnit(UnitType, ID, V.Action, V.Dir, V.AnimStep, XPaintPos, YPaintPos, gHands[fOwner].GameFlagColor, true);
 
@@ -1089,17 +1086,15 @@ begin
 
   //Animals share the same WalkTo logic as other units and they exchange places if necessary
   //Animals can be picked only in MapEd
-  gRenderPool.AddUnit(fType, fUID * Byte(gGameParams.IsMapEditor), Act, V.Dir, V.AnimStep, XPaintPos, YPaintPos, $FFFFFFFF, True);
+  gRenderPool.AddUnit(fType, UID * Byte(gGameParams.IsMapEditor), Act, V.Dir, V.AnimStep, XPaintPos, YPaintPos, $FFFFFFFF, True);
 end;
 
 
 { TKMUnit }
 constructor TKMUnit.Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPoint; aOwner: TKMHandID; aInHouse: Boolean);
 begin
-  inherited Create;
-  fUID          := aID;
-  fTicker       := fUID; //Units update states will be spread more evenly that way
-  fPointerCount := 0;
+  inherited Create(etUnit, aID);
+  fTicker       := aID; //Units update states will be spread more evenly that way
   fIsDead       := false;
   fKillASAP     := false;
   fThought      := thNone;
@@ -1162,7 +1157,8 @@ var
   TaskName: TKMUnitTaskType;
   ActName: TKMUnitActionName;
 begin
-  inherited Create;
+  inherited;
+
   LoadStream.CheckMarker('Unit');
   LoadStream.Read(fType, SizeOf(fType));
   LoadStream.Read(HasTask);
@@ -1229,8 +1225,6 @@ begin
   LoadStream.Read(fKillASAP);
   LoadStream.Read(fKillASAPShowAnimation);
   LoadStream.Read(IsExchanging);
-  LoadStream.Read(fPointerCount);
-  LoadStream.Read(fUID);
   LoadStream.Read(AnimStep);
   LoadStream.Read(fDirection);
   LoadStream.Read(fPosition);
@@ -1263,40 +1257,6 @@ end;
 procedure TKMUnit.TrainInHouse(aSchool: TKMHouseSchool);
 begin
   fTask := TKMTaskSelfTrain.Create(Self, aSchool);
-end;
-
-
-// Returns self and adds on to the pointer counter
-function TKMUnit.GetUnitPointer: TKMUnit;
-begin
-  Assert(gGame.AllowGetPointer, 'GetUnitPointer is not allowed outside of game tick update procedure, it could cause game desync');
-
-  Inc(fPointerCount);
-  Result := Self;
-end;
-
-
-{Decreases the pointer counter}
-//Should be used only by gHands for clarity sake
-procedure TKMUnit.ReleaseUnitPointer;
-var
-  ErrorMsg: UnicodeString;
-begin
-  Assert(gGame.AllowGetPointer, 'ReleaseUnitPointer is not allowed outside of game tick update procedure, it could cause game desync');
-
-  if fPointerCount < 1 then
-  begin
-    ErrorMsg := 'Unit remove pointer for U: ';
-    try
-      ErrorMsg := ErrorMsg + ObjToStringShort(',');
-    except
-      on E: Exception do
-        ErrorMsg := ErrorMsg + IntToStr(UID) + ' Pos = ' + fPosition.ToString;
-    end;
-    raise ELocError.Create(ErrorMsg, PrevPosition);
-  end;
-
-  Dec(fPointerCount);
 end;
 
 
@@ -1475,12 +1435,13 @@ begin
 end;
 
 
-procedure TKMUnit.SetPosition(aPos: TKMPoint);
+procedure TKMUnit.SetUnitPosition(aPos: TKMPoint);
 var
   newPos: Boolean;
 begin
   //This is only used by the map editor, set all positions to aPos
   Assert(gGameParams.IsMapEditor);
+
   if not gTerrain.CanPlaceUnit(aPos, UnitType) then Exit;
 
   newPos := fPosition <> aPos;
@@ -1546,6 +1507,12 @@ begin
 end;
 
 
+function TKMUnit.GetInstance: TKMUnit;
+begin
+  Result := Self;
+end;
+
+
 procedure TKMUnit.CancelTask(aFreeTaskObject: Boolean = True);
 begin
   if (fTask <> nil)
@@ -1569,7 +1536,7 @@ procedure TKMUnit.SetInHouse(aInHouse: TKMHouse);
 begin
   gHands.CleanUpHousePointer(fInHouse);
   if aInHouse <> nil then
-    fInHouse := aInHouse.GetHousePointer;
+    fInHouse := aInHouse.GetPointer;
 end;
 
 
@@ -1858,7 +1825,7 @@ end;
 procedure TKMUnit.SetHome(aHome: TKMHouse);
 begin
   gHands.CleanUpHousePointer(fHome);
-  fHome := aHome.GetHousePointer;
+  fHome := aHome.GetPointer;
 end;
 
 
@@ -2213,6 +2180,18 @@ begin
 end;
 
 
+function TKMUnit.GetPosition: TKMPoint;
+begin
+  Result := fPosition;
+end;
+
+
+//procedure TKMUnit.SetPosition(const aValue: TKMPoint);
+//begin
+//  raise Exception.Create('Set position is not allowed outside of TKMUnit');
+//end;
+
+
 function TKMUnit.IsIdle: Boolean;
 begin
   Result := (fTask = nil) and ((fAction is TKMUnitActionStay) and not TKMUnitActionStay(fAction).Locked);
@@ -2231,7 +2210,7 @@ begin
     TaskStr := fTask.ObjToString;
 
   Result := Format('UID = %d%sType = %s%sAction = %s%sTask = [%s]%sCurrPosition = %s%sIsDead = %s',
-                   [fUID, aSeparator,
+                   [UID, aSeparator,
                     GetEnumName(TypeInfo(TKMUnitType), Integer(fType)), aSeparator,
                     ActStr, aSeparator,
                     TaskStr, aSeparator,
@@ -2277,6 +2256,8 @@ var
   HasTask, HasAct: Boolean;
   ActName: TKMUnitActionName;
 begin
+  inherited;
+
   SaveStream.PlaceMarker('Unit');
   SaveStream.Write(fType, SizeOf(fType));
 
@@ -2325,9 +2306,7 @@ begin
   SaveStream.Write(fKillASAP);
   SaveStream.Write(fKillASAPShowAnimation);
   SaveStream.Write(IsExchanging);
-  SaveStream.Write(fPointerCount);
 
-  SaveStream.Write(fUID);
   SaveStream.Write(AnimStep);
   SaveStream.Write(fDirection);
   SaveStream.Write(fPosition);
@@ -2479,10 +2458,10 @@ begin
     fTask.Paint;
 
   if SHOW_POINTER_DOTS then
-    gRenderAux.UnitPointers(fPositionF.X + 0.5 + GetSlide(axX), fPositionF.Y + 1   + GetSlide(axY), fPointerCount);
+    gRenderAux.UnitPointers(fPositionF.X + 0.5 + GetSlide(axX), fPositionF.Y + 1   + GetSlide(axY), PointerCount);
 
   if SHOW_TILE_UNIT then
-    gRenderAux.CircleOnTerrain(fPositionF.X - 0.5 + GetSlide(axX), fPositionF.Y - 0.5 + GetSlide(axY), 0.35, GetRandomColorWSeed(fUID));
+    gRenderAux.CircleOnTerrain(fPositionF.X - 0.5 + GetSlide(axX), fPositionF.Y - 0.5 + GetSlide(axY), 0.35, GetRandomColorWSeed(UID));
 end;
 
 
@@ -2500,7 +2479,7 @@ begin
   fType := uttUnknown;
   fLastActionResult := arActDone;
   Assert(aUnit <> nil);
-  fUnit := aUnit.GetUnitPointer;
+  fUnit := aUnit.GetPointer;
   fPhase  := 0;
   fPhase2 := 0;
 

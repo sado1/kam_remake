@@ -381,7 +381,7 @@ begin
   if fSerfCount >= Length(fSerfs) then
     SetLength(fSerfs, fSerfCount + LENGTH_INC);
 
-  fSerfs[fSerfCount].Serf := TKMUnitSerf(aSerf.GetUnitPointer);
+  fSerfs[fSerfCount].Serf := TKMUnitSerf(aSerf.GetPointer);
   Inc(fSerfCount);
 end;
 
@@ -750,7 +750,7 @@ begin
   with fOffer[I] do
   begin
     if aHouse <> nil then
-      Loc_House := aHouse.GetHousePointer;
+      Loc_House := aHouse.GetPointer;
     Ware := aWare;
     Count := aCount;
     Assert((BeingPerformed = 0) and not IsDeleted); //Make sure this item has been closed properly, if not there is a flaw
@@ -999,10 +999,10 @@ begin
     with fDemand[I] do
     begin
       if aHouse <> nil then
-        Loc_House := aHouse.GetHousePointer;
+        Loc_House := aHouse.GetPointer;
 
       if aUnit <> nil then
-        Loc_Unit := aUnit.GetUnitPointer;
+        Loc_Unit := aUnit.GetPointer;
 
       DemandType := aType; //Once or Always
       Ware := aResource;
@@ -1888,7 +1888,7 @@ begin
   fQueue[iQ].Serf.DelegateDelivery(aSerf);
 
   gHands.CleanUpUnitPointer(TKMUnit(fQueue[iQ].Serf));
-  fQueue[iQ].Serf := TKMUnitSerf(aSerf.GetUnitPointer);
+  fQueue[iQ].Serf := TKMUnitSerf(aSerf.GetPointer);
   UpdateQueueItem(iQ);
 end;
 
@@ -1911,7 +1911,7 @@ begin
   fQueue[I].DemandID := iD;
   fQueue[I].OfferID := iO;
   fQueue[I].JobStatus := jsTaken;
-  fQueue[I].Serf := TKMUnitSerf(aSerf.GetUnitPointer);
+  fQueue[I].Serf := TKMUnitSerf(aSerf.GetPointer);
   fQueue[I].Item := nil;
 
   UpdateQueueItem(I);

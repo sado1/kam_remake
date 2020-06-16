@@ -193,6 +193,9 @@ type
     chkUIFocusedControl: TCheckBox;
     chkUIControlOver: TCheckBox;
     chkPaintSounds: TCheckBox;
+    seFindObjByUID: TSpinEdit;
+    Label13: TLabel;
+    btFindObjByUID: TButton;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -254,6 +257,7 @@ type
     procedure mnExportRngChecksClick(Sender: TObject);
 
     procedure ControlsUpdate(Sender: TObject);
+    procedure btFindObjByUIDClick(Sender: TObject);
   private
     fStartVideoPlayed: Boolean;
     fUpdating: Boolean;
@@ -768,6 +772,11 @@ begin
 end;
 
 
+procedure TFormMain.btFindObjByUIDClick(Sender: TObject);
+begin
+  //
+end;
+
 procedure TFormMain.Button_StopClick(Sender: TObject);
 begin
   if gGameApp.Game <> nil then
@@ -1054,6 +1063,9 @@ begin
     SKIP_RENDER := chkSkipRender.Checked;
     SKIP_SOUND := chkSkipSound.Checked;
     DISPLAY_SOUNDS := chkPaintSounds.Checked;
+
+    if seFindObjByUID.Value <> 0 then
+      btFindObjByUIDClick(nil);
   end;
 
   //AI

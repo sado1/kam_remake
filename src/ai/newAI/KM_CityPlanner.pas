@@ -485,7 +485,7 @@ begin
             gHands[fOwner].AI.CityManagement.Builder.UnlockHouseLoc(HT, H.Entrance);
             if (fPlannedHouses[HT].Plans[K].House <> nil) then
               gHands.CleanUpHousePointer(fPlannedHouses[HT].Plans[K].House);
-            fPlannedHouses[HT].Plans[K].House := H.GetHousePointer;
+            fPlannedHouses[HT].Plans[K].House := H.GetPointer;
           end;
           CheckExistHouse := True;
           break;

@@ -161,6 +161,7 @@ uses
   KM_Hand in 'src\hands\KM_Hand.pas',
   KM_HandsCollection in 'src\hands\KM_HandsCollection.pas',
   KM_HandConstructions in 'src\hands\KM_HandConstructions.pas',
+  KM_HandEntity in 'src\hands\KM_HandEntity.pas',
   KM_HandLocks in 'src\hands\KM_HandLocks.pas',
   KM_HandLogistics in 'src\hands\KM_HandLogistics.pas',
   KM_HandSpectator in 'src\hands\KM_HandSpectator.pas',

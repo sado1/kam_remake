@@ -664,7 +664,7 @@ var
       and (aHouse.HouseType = aHouseType)
       {and (not aConsiderHousePlan or aHouse.IsComplete)} then
     begin
-      aHouseSketchTmp.SetUID(aHouse.UID);
+      aHouseSketchTmp.SetHouseUID(aHouse.UID);
       aHouseSketchTmp.SetHouseType(aHouse.HouseType);
       aHouseSketchTmp.SetPosition(aHouse.Position);
     end;
@@ -675,7 +675,7 @@ var
     if not aHousePlan.IsEmpty
       and (aHousePlan.HouseType = aHouseType) then
     begin
-      aHouseSketchTmp.SetUID(aHousePlan.UID);
+      aHouseSketchTmp.SetHouseUID(aHousePlan.UID);
       aHouseSketchTmp.SetHouseType(aHousePlan.HouseType);
       aHouseSketchTmp.SetPosition(aHousePlan.Loc);
     end;
@@ -749,17 +749,17 @@ begin
       //Find first house from specified UID
       if (fHSketch.UID = aStartFromUID) then
       begin
-        found := True;               // Mark that we found our house
+        found := True; // Mark that we found our house
         fHSketch.CopyTo(fFoundHSketch);
         foundSketchI := I;
       end
       else if found then
       begin
-        FillResult(I, fHSketch);           // Save the next house after Found to Result and Break
+        FillResult(I, fHSketch); // Save the next house after Found to Result and Break
         Break;
       end else if fFirstHSketch.IsEmpty then
       begin
-        fHSketch.CopyTo(fFirstHSketch);            // Save 1st house in list in case our house is the last one
+        fHSketch.CopyTo(fFirstHSketch); // Save 1st house in list in case our house is the last one
         firstHSketchI := I;
       end;
     finally

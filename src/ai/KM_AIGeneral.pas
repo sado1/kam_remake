@@ -266,7 +266,7 @@ begin
           //and register in the defence position groups
           //So we will order more units in that case, who will eventually exit the barracks and chill around,
           //because all defence groups are filled already
-          fUnitsEquipOrdered.Add(warrior.UID, TKMUnitWarrior(warrior.GetUnitPointer));
+          fUnitsEquipOrdered.Add(warrior.UID, TKMUnitWarrior(warrior.GetPointer));
 
           Dec(GroupReq[GT]);
           //Only reset it when we actually trained something (in IronThenLeather mode we don't count them separately)
@@ -731,7 +731,7 @@ procedure TKMGeneral.RemoveEquipOrderedWarrior(aWarrior: TKMUnitWarrior);
 begin
   if fUnitsEquipOrdered.ContainsKey(aWarrior.UID) then
   begin
-    fUnitsEquipOrdered[aWarrior.UID].ReleaseUnitPointer;
+    fUnitsEquipOrdered[aWarrior.UID].ReleasePointer;
     fUnitsEquipOrdered.Remove(aWarrior.UID);
   end;
 end;

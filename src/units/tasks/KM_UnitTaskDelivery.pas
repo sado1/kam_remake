@@ -73,8 +73,8 @@ begin
   if gLog.CanLogDelivery then
     gLog.LogDelivery('Serf ' + IntToStr(fUnit.UID) + ' created delivery task ' + IntToStr(fDeliverID));
 
-  FromHouse := aFrom.GetHousePointer; //Also will set fPointBelowFromHouse
-  ToHouse := aToHouse.GetHousePointer; //Also will set fPointBelowToHouse
+  FromHouse := aFrom.GetPointer; //Also will set fPointBelowFromHouse
+  ToHouse := aToHouse.GetPointer; //Also will set fPointBelowToHouse
   //Check it once to begin with as the house could become complete before the task exits (in rare circumstances when the task
   // does not exit until long after the ware has been delivered due to walk interactions)
   if aToHouse.IsComplete then
@@ -97,8 +97,8 @@ begin
   if gLog.CanLogDelivery then
     gLog.LogDelivery('Serf ' + IntToStr(fUnit.UID) + ' created delivery task ' + IntToStr(fDeliverID));
 
-  FromHouse := aFrom.GetHousePointer;
-  ToUnit    := aToUnit.GetUnitPointer;
+  FromHouse := aFrom.GetPointer;
+  ToUnit    := aToUnit.GetPointer;
   fDeliverKind := dkToUnit;
   fWareType := Res;
   fDeliverID := aID;
@@ -226,7 +226,7 @@ begin
   gHands.CleanUpUnitPointer(fToUnit);
   if NewToHouse <> nil then
   begin
-    ToHouse := NewToHouse.GetHousePointer; //Use Setter here to set up fPointBelowToHouse
+    ToHouse := NewToHouse.GetPointer; //Use Setter here to set up fPointBelowToHouse
     if fToHouse.IsComplete then
       fDeliverKind := dkToHouse
     else
@@ -234,7 +234,7 @@ begin
   end
   else
   begin
-    ToUnit := NewToUnit.GetUnitPointer; //Use Setter here to clean up fPointBelowToHouse
+    ToUnit := NewToUnit.GetPointer; //Use Setter here to clean up fPointBelowToHouse
     fDeliverKind := dkToUnit;
   end;
 end;
@@ -266,7 +266,7 @@ begin
   // New House
   if (NewToHouse <> nil) and (NewToUnit = nil) then
   begin
-    ToHouse := NewToHouse.GetHousePointer; //Use Setter here to set up fPointBelowToHouse
+    ToHouse := NewToHouse.GetPointer; //Use Setter here to set up fPointBelowToHouse
     if fToHouse.IsComplete then
       fDeliverKind := dkToHouse
     else
@@ -279,7 +279,7 @@ begin
   // New Unit
   if (NewToHouse = nil) and (NewToUnit <> nil) then
   begin
-    ToUnit := NewToUnit.GetUnitPointer; //Use Setter here to clean up fPointBelowToHouse
+    ToUnit := NewToUnit.GetPointer; //Use Setter here to clean up fPointBelowToHouse
     fDeliverKind := dkToUnit;
     Result := True;
     if fPhase > 4 then
@@ -352,7 +352,7 @@ begin
   Assert(DeliverStage = dsToFromHouse, 'DeliverStage <> dsToFromHouse');
 
   gHands.CleanUpUnitPointer(fUnit);
-  fUnit := aToSerf.GetUnitPointer;
+  fUnit := aToSerf.GetPointer;
 
   InitDefaultAction; //InitDefaultAction, otherwise serf will not have any action
 end;

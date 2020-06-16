@@ -690,7 +690,7 @@ begin
 
           fHouse := gHands[Owner].AddHouseWIP(fHouseType, fHouseLoc);
           Assert(fHouse <> nil, 'Failed to add wip house');
-          fHouse := fHouse.GetHousePointer; //We need to register a pointer to the house
+          fHouse := fHouse.GetPointer; //We need to register a pointer to the house
 
           HouseNeedsWorker := True; //The house placed on the map, if something happens with Worker the house will be removed
           SetActionLockedStay(2, uaWalk);
@@ -771,7 +771,7 @@ constructor TKMTaskBuildHouse.Create(aWorker: TKMUnitWorker; aHouse: TKMHouse; a
 begin
   inherited Create(aWorker);
   fType := uttBuildHouse;
-  fHouse    := aHouse.GetHousePointer;
+  fHouse    := aHouse.GetPointer;
   BuildID   := aID;
 
   Cells := TKMPointDirList.Create;
@@ -905,7 +905,7 @@ constructor TKMTaskBuildHouseRepair.Create(aWorker: TKMUnitWorker; aHouse: TKMHo
 begin
   inherited Create(aWorker);
   fType := uttBuildHouseRepair;
-  fHouse    := aHouse.GetHousePointer;
+  fHouse    := aHouse.GetPointer;
   fRepairID := aRepairID;
 
   Cells := TKMPointDirList.Create;

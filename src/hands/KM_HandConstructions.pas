@@ -267,7 +267,7 @@ begin
   if I >= Length(fHouses) then
     SetLength(fHouses, Length(fHouses) + LENGTH_INC);
 
-  fHouses[I].House := aHouse.GetHousePointer;
+  fHouses[I].House := aHouse.GetPointer;
   fHouses[I].Assigned := 0;
 end;
 
@@ -474,7 +474,7 @@ procedure TKMFieldworksList.GiveTask(aIndex: Integer; aWorker: TKMUnitWorker);
 begin
   aWorker.BuildField(fFields[aIndex].FieldType, fFields[aIndex].Loc, aIndex);
   fFields[aIndex].JobStatus := jsTaken;
-  fFields[aIndex].Worker := aWorker.GetUnitPointer;
+  fFields[aIndex].Worker := aWorker.GetPointer;
 end;
 
 
@@ -799,7 +799,7 @@ procedure TKMHousePlanList.GiveTask(aIndex: Integer; aWorker: TKMUnitWorker);
 begin
   aWorker.BuildHouseArea(fPlans[aIndex].HouseType, fPlans[aIndex].Loc, aIndex);
   fPlans[aIndex].JobStatus := jsTaken;
-  fPlans[aIndex].Worker := aWorker.GetUnitPointer;
+  fPlans[aIndex].Worker := aWorker.GetPointer;
 end;
 
 
@@ -1024,7 +1024,7 @@ begin
   if I >= Length(fHouses) then
     SetLength(fHouses, Length(fHouses) + LENGTH_INC);
 
-  fHouses[I].House := aHouse.GetHousePointer;
+  fHouses[I].House := aHouse.GetPointer;
   fHouses[I].Assigned := 0;
 end;
 
@@ -1176,7 +1176,7 @@ begin
   if fWorkersCount >= Length(fWorkers) then
     SetLength(fWorkers, fWorkersCount + LENGTH_INC);
 
-  fWorkers[fWorkersCount].Worker := TKMUnitWorker(aWorker.GetUnitPointer);
+  fWorkers[fWorkersCount].Worker := TKMUnitWorker(aWorker.GetPointer);
   Inc(fWorkersCount);
 end;
 

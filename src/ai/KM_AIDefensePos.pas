@@ -113,7 +113,7 @@ begin
 
   //Take new one
   if aGroup <> nil then
-    fCurrentGroup := aGroup.GetGroupPointer;
+    fCurrentGroup := aGroup.GetPointer;
 end;
 
 

@@ -225,7 +225,7 @@ end;
 procedure TKMUnitWarrior.SetGroup(aGroup: Pointer);
 begin
   gHands.CleanUpGroupPointer( TKMUnitGroup(fGroup) );
-  fGroup := TKMUnitGroup(aGroup).GetGroupPointer();
+  fGroup := TKMUnitGroup(aGroup).GetPointer();
 end;
 
 
@@ -307,7 +307,7 @@ begin
   //Remove previous value
   ClearOrderTarget;
   if aUnit <> nil then
-    fOrderTargetUnit := aUnit.GetUnitPointer; //Else it will be nil from ClearOrderTarget
+    fOrderTargetUnit := aUnit.GetPointer; //Else it will be nil from ClearOrderTarget
 end;
 
 
@@ -328,7 +328,7 @@ begin
   //Remove previous value
   ClearOrderTarget;
   if aHouse <> nil then
-    fOrderTargetHouse := aHouse.GetHousePointer; //Else it will be nil from ClearOrderTarget
+    fOrderTargetHouse := aHouse.GetPointer; //Else it will be nil from ClearOrderTarget
 end;
 
 
@@ -1024,7 +1024,7 @@ begin
   UnitPos.X := V.PosF.X + UNIT_OFF_X + V.SlideX;
   UnitPos.Y := V.PosF.Y + UNIT_OFF_Y + V.SlideY;
 
-  gRenderPool.AddUnit(fType, fUID, Act, V.Dir, V.AnimStep, UnitPos.X, UnitPos.Y, gHands[fOwner].GameFlagColor, True);
+  gRenderPool.AddUnit(fType, UID, Act, V.Dir, V.AnimStep, UnitPos.X, UnitPos.Y, gHands[fOwner].GameFlagColor, True);
 
   if fThought <> thNone then
     gRenderPool.AddUnitThought(fType, Act, V.Dir, fThought, UnitPos.X, UnitPos.Y);

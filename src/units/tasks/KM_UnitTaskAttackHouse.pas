@@ -43,7 +43,7 @@ constructor TKMTaskAttackHouse.Create(aWarrior: TKMUnitWarrior; aHouse: TKMHouse
 begin
   inherited Create(aWarrior);
   fType := uttAttackHouse;
-  fHouse := aHouse.GetHousePointer;
+  fHouse := aHouse.GetPointer;
 end;
 
 

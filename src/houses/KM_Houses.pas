@@ -3,7 +3,8 @@ unit KM_Houses;
 interface
 uses
   KM_ResHouses, KM_ResWares,
-  KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Points;
+  KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Points,
+  KM_HandEntity;
 
 //Houses are ruled by units, hence they don't know about  TKMUnits
 
@@ -41,26 +42,24 @@ type
   end;
 
 
-  TKMHouseSketch = class
+  TKMHouseSketch = class(TKMHandEntity<TKMHouse>)
   private
-    fUID: Integer; //unique ID, used for save/load to sync to
     fType: TKMHouseType; //House type
     function GetEntrance: TKMPoint;
     function GetPointBelowEntrance: TKMPoint;
   protected
     fPosition: TKMPoint; //House position on map, kinda virtual thing cos it doesn't match with entrance
+    function GetPosition: TKMPoint; override;
     constructor Create; overload;
   public
     constructor Create(aUID: Integer; aHouseType: TKMHouseType; PosX, PosY: Integer); overload;
 
-    property UID: Integer read fUID;
     property HouseType: TKMHouseType read fType;
-    property Position: TKMPoint read fPosition;
 
     property Entrance: TKMPoint read GetEntrance;
     property PointBelowEntrance: TKMPoint read GetPointBelowEntrance;
 
-    function ObjToStringShort(const aSeparator: String = '|'): String;
+    function ObjToStringShort(const aSeparator: String = '|'): String; override;
 
     function IsEmpty: Boolean;
   end;
@@ -70,13 +69,15 @@ type
   TKMHouseSketchEdit = class(TKMHouseSketch)
   private
     fEditable: Boolean;
+  protected
+    function GetInstance: TKMHouse; override;
   public
     constructor Create;
 
     procedure Clear;
     procedure CopyTo(var aHouseSketch: TKMHouseSketchEdit);
 
-    procedure SetUID(aUID: Integer);
+    procedure SetHouseUID(aUID: Integer);
     procedure SetHouseType(aHouseType: TKMHouseType);
     procedure SetPosition(aPosition: TKMPoint);
 
@@ -119,7 +120,6 @@ type
     fIsDestroyed: Boolean;
     fIsBeingDemolished: Boolean; //To prevent script calling HouseDestroy on same house within OnHouseDestroyed action.
                                  //Not saved because it is set and used within the same tick only.
-    fPointerCount: Cardinal;
     fTimeSinceUnoccupiedReminder: Integer;
     fDisableUnoccupiedMessage: Boolean;
     fResourceDepletedMsgIssued: Boolean;
@@ -161,6 +161,8 @@ type
     function GetResourceDeliveryCount(aIndex: Integer): Word;
 
     property ResDeliveryCnt[aIndex: Integer]: Word read GetResourceDeliveryCount write SetResourceDeliveryCount;
+
+    function GetInstance: TKMHouse; override;
   public
     CurrentAction: TKMHouseAction; //Current action, withing HouseTask or idle
     WorkAnimStep: Cardinal; //Used for Work and etc.. which is not in sync with Flags
@@ -168,12 +170,10 @@ type
     OnDestroyed: TKMHouseFromEvent;
 
     constructor Create(aUID: Integer; aHouseType: TKMHouseType; PosX, PosY: Integer; aOwner: TKMHandID; aBuildState: TKMHouseBuildState);
-    constructor Load(LoadStream: TKMemoryStream); virtual;
+    constructor Load(LoadStream: TKMemoryStream); override;
     procedure SyncLoad; virtual;
     destructor Destroy; override;
-    function GetHousePointer: TKMHouse; //Returns self and adds one to the pointer counter
-    procedure ReleaseHousePointer; //Decreases the pointer counter
-    property PointerCount: Cardinal read fPointerCount;
+    procedure Save(SaveStream: TKMemoryStream); override;
 
     procedure RemoveHouse;
     procedure DemolishHouse(aFrom: TKMHandID; IsSilent: Boolean = False); virtual;
@@ -265,9 +265,7 @@ type
 
     procedure PostLoadMission; virtual;
 
-    procedure Save(SaveStream: TKMemoryStream); virtual;
-
-    function ObjToString: String; virtual;
+    function ObjToString(const aSeparator: String = '|'): String; override;
 
     procedure IncAnimStep;
     procedure UpdateResRequest;
@@ -379,7 +377,7 @@ const
 { TKMHouseSketch }
 constructor TKMHouseSketch.Create;
 begin
-  inherited; //Just do nothing; (For house loading)
+  inherited Create(etHouse, 0); //Just do nothing; (For house loading)
 end;
 
 
@@ -387,9 +385,8 @@ constructor TKMHouseSketch.Create(aUID: Integer; aHouseType: TKMHouseType; PosX,
 begin
   Assert((PosX <> 0) and (PosY <> 0)); // Can create only on map
 
-  inherited Create;
+  inherited Create(etHouse, aUID);
 
-  fUID := aUID;
   fPosition   := KMPoint (PosX, PosY);
   fType       := aHouseType;
 end;
@@ -410,6 +407,12 @@ begin
 end;
 
 
+function TKMHouseSketch.GetPosition: TKMPoint;
+begin
+  Result := fPosition;
+end;
+
+
 function TKMHouseSketch.IsEmpty: Boolean;
 begin
   Result :=    (UID = -1)
@@ -422,7 +425,7 @@ end;
 function TKMHouseSketch.ObjToStringShort(const aSeparator: String = '|'): String;
 begin
   Result := Format('UID = %d%sType = %s%sEntrance = %s',
-                  [fUID, aSeparator,
+                  [UID, aSeparator,
                    GetEnumName(TypeInfo(TKMHouseType), Integer(fType)), aSeparator,
                    TypeToString(Entrance)]);
 end;
@@ -434,6 +437,13 @@ begin
   inherited Create(-1, htNone, -1, -1);
 
   fEditable := True;
+end;
+
+
+function TKMHouseSketchEdit.GetInstance: TKMHouse;
+begin
+  //Not used. Make compiler happy
+  raise Exception.Create('Can''t get instance of TKMHouseSketchEdit');
 end;
 
 
@@ -453,10 +463,10 @@ begin
 end;
 
 
-procedure TKMHouseSketchEdit.SetUID(aUID: Integer);
+procedure TKMHouseSketchEdit.SetHouseUID(aUID: Integer);
 begin
   if fEditable then
-    fUID := aUID;
+    SetUID(aUID);
 end;
 
 
@@ -513,7 +523,7 @@ begin
     fResourceOutPool[I] := 0;
 
   fIsDestroyed := False;
-  fPointerCount := 0;
+//  fPointerCount := 0;
   fTimeSinceUnoccupiedReminder := TIME_BETWEEN_MESSAGES;
 
   fResourceDepletedMsgIssued := False;
@@ -543,7 +553,8 @@ var
   I: Integer;
   HasAct: Boolean;
 begin
-  inherited Create;
+  inherited;
+
   LoadStream.CheckMarker('House');
   LoadStream.Read(fType, SizeOf(fType));
   LoadStream.Read(fPosition);
@@ -575,12 +586,10 @@ begin
   LoadStream.Read(fIsOnSnow);
   LoadStream.Read(fSnowStep);
   LoadStream.Read(fIsDestroyed);
-  LoadStream.Read(fPointerCount);
   LoadStream.Read(fTimeSinceUnoccupiedReminder);
   LoadStream.Read(fDisableUnoccupiedMessage);
   LoadStream.Read(fNeedIssueOrderCompletedMsg);
   LoadStream.Read(fOrderCompletedMsgIssued);
-  LoadStream.Read(fUID);
   LoadStream.Read(HasAct);
   if HasAct then
   begin
@@ -604,39 +613,8 @@ end;
 destructor TKMHouse.Destroy;
 begin
   FreeAndNil(CurrentAction);
+
   inherited;
-end;
-
-
-{Returns self and adds on to the pointer counter}
-function TKMHouse.GetHousePointer: TKMHouse;
-begin
-  Assert(gGame.AllowGetPointer, 'GetHousePointer is not allowed outside of game tick update procedure, it could cause game desync');
-
-  Inc(fPointerCount);
-  Result := Self;
-end;
-
-
-{Decreases the pointer counter}
-procedure TKMHouse.ReleaseHousePointer;
-var
-  ErrorMsg: UnicodeString;
-begin
-  Assert(gGame.AllowGetPointer, 'ReleaseHousePointer is not allowed outside of game tick update procedure, it could cause game desync');
-
-  if fPointerCount < 1 then
-  begin
-    ErrorMsg := 'House remove pointer for H: ';
-    try
-      ErrorMsg := ErrorMsg + ObjToStringShort(',');
-    except
-      on E: Exception do
-        ErrorMsg := ErrorMsg + IntToStr(UID) + ' Pos = ' + fPosition.ToString;
-    end;
-    raise ELocError.Create(ErrorMsg, fPosition);
-  end;
-  Dec(fPointerCount);
 end;
 
 
@@ -1128,6 +1106,12 @@ end;
 function TKMHouse.GetHealth:word;
 begin
   Result := max(fBuildingProgress - fDamage, 0);
+end;
+
+
+function TKMHouse.GetInstance: TKMHouse;
+begin
+  Result := Self;
 end;
 
 
@@ -1932,6 +1916,8 @@ var
   I: Integer;
   HasAct: Boolean;
 begin
+  inherited;
+
   SaveStream.PlaceMarker('House');
   SaveStream.Write(fType, SizeOf(fType));
   SaveStream.Write(fPosition);
@@ -1963,12 +1949,10 @@ begin
   SaveStream.Write(fIsOnSnow);
   SaveStream.Write(fSnowStep);
   SaveStream.Write(fIsDestroyed);
-  SaveStream.Write(fPointerCount);
   SaveStream.Write(fTimeSinceUnoccupiedReminder);
   SaveStream.Write(fDisableUnoccupiedMessage);
   SaveStream.Write(fNeedIssueOrderCompletedMsg);
   SaveStream.Write(fOrderCompletedMsgIssued);
-  SaveStream.Write(fUID);
   HasAct := CurrentAction <> nil;
   SaveStream.Write(HasAct);
   if HasAct then CurrentAction.Save(SaveStream);
@@ -2059,7 +2043,7 @@ begin
 end;
 
 
-function TKMHouse.ObjToString: String;
+function TKMHouse.ObjToString(const aSeparator: String = '|'): String;
 var
   I: Integer;
   ActStr,ResOutPoolStr: String;
@@ -2074,32 +2058,34 @@ begin
     if ResOutPoolStr <> '' then
       ResOutPoolStr := ResOutPoolStr + ',';
     if I = 10 then
-      ResOutPoolStr := ResOutPoolStr + '|';
+      ResOutPoolStr := ResOutPoolStr + aSeparator;
     ResOutPoolStr := ResOutPoolStr + IntToStr(fResourceOutPool[I]);
   end;
 
 
-  Result := '|' + ObjToStringShort +
-            Format('|HasOwner = %s|Owner = %d|Action = %s|Repair = %s|IsClosedForWorker = %s|DeliveryMode = %s|NewDeliveryMode = %s|Damage = %d|' +
-                   'BuildState = %s|BuildSupplyWood = %d|BuildSupplyStone = %d|BuildingProgress = %d|DoorwayUse = %d|' +
-                   'ResIn = %d,%d,%d,%d|ResDeliveryCnt = %d,%d,%d,%d|ResOut = %d,%d,%d,%d|ResOrder = %d,%d,%d,%d|ResOutPool = %s',
-                   [BoolToStr(fHasOwner, True),
-                    fOwner,
-                    ActStr,
-                    BoolToStr(fBuildingRepair, True),
-                    BoolToStr(fIsClosedForWorker, True),
-                    GetEnumName(TypeInfo(TKMDeliveryMode), Integer(fDeliveryMode)),
-                    GetEnumName(TypeInfo(TKMDeliveryMode), Integer(fNewDeliveryMode)),
-                    fDamage,
-                    GetEnumName(TypeInfo(TKMHouseBuildState), Integer(fBuildState)),
-                    fBuildSupplyWood,
-                    fBuildSupplyStone,
-                    fBuildingProgress,
-                    DoorwayUse,
-                    fResourceIn[1],fResourceIn[2],fResourceIn[3],fResourceIn[4],
-                    fResourceDeliveryCount[1],fResourceDeliveryCount[2],fResourceDeliveryCount[3],fResourceDeliveryCount[4],
-                    fResourceOut[1],fResourceOut[2],fResourceOut[3],fResourceOut[4],
-                    fResourceOrder[1],fResourceOrder[2],fResourceOrder[3],fResourceOrder[4],
+  Result := '|' + ObjToStringShort(aSeparator) +
+            Format('%sHasOwner = %s%sOwner = %d%sAction = %s%sRepair = %s%sIsClosedForWorker = %s%sDeliveryMode = %s%s' +
+                   'NewDeliveryMode = %s%sDamage = %d%s' +
+                   'BuildState = %s%sBuildSupplyWood = %d%sBuildSupplyStone = %d%sBuildingProgress = %d%sDoorwayUse = %d%s' +
+                   'ResIn = %d,%d,%d,%d%sResDeliveryCnt = %d,%d,%d,%d%sResOut = %d,%d,%d,%d%sResOrder = %d,%d,%d,%d%sResOutPool = %s',
+                   [aSeparator,
+                    BoolToStr(fHasOwner, True), aSeparator,
+                    fOwner, aSeparator,
+                    ActStr, aSeparator,
+                    BoolToStr(fBuildingRepair, True), aSeparator,
+                    BoolToStr(fIsClosedForWorker, True), aSeparator,
+                    GetEnumName(TypeInfo(TKMDeliveryMode), Integer(fDeliveryMode)), aSeparator,
+                    GetEnumName(TypeInfo(TKMDeliveryMode), Integer(fNewDeliveryMode)), aSeparator,
+                    fDamage, aSeparator,
+                    GetEnumName(TypeInfo(TKMHouseBuildState), Integer(fBuildState)), aSeparator,
+                    fBuildSupplyWood, aSeparator,
+                    fBuildSupplyStone, aSeparator,
+                    fBuildingProgress, aSeparator,
+                    DoorwayUse, aSeparator,
+                    fResourceIn[1], fResourceIn[2], fResourceIn[3], fResourceIn[4], aSeparator,
+                    fResourceDeliveryCount[1], fResourceDeliveryCount[2], fResourceDeliveryCount[3], fResourceDeliveryCount[4], aSeparator,
+                    fResourceOut[1], fResourceOut[2], fResourceOut[3], fResourceOut[4], aSeparator,
+                    fResourceOrder[1], fResourceOrder[2], fResourceOrder[3], fResourceOrder[4], aSeparator,
                     ResOutPoolStr]);
 end;
 
@@ -2196,7 +2182,7 @@ begin
   end;
 
   if SHOW_POINTER_DOTS then
-    gRenderAux.UnitPointers(fPosition.X + 0.5, fPosition.Y + 1, fPointerCount);
+    gRenderAux.UnitPointers(fPosition.X + 0.5, fPosition.Y + 1, PointerCount);
 end;
 
 

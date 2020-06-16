@@ -64,7 +64,7 @@ begin
   Assert(aUnit is TKMUnitWarrior, 'Can''t create fight action for not Warrior unit');
 
   fFightDelay     := -1;
-  fOpponent       := aOpponent.GetUnitPointer;
+  fOpponent       := aOpponent.GetPointer;
   aUnit.Direction := KMGetDirection(fUnit.PositionF, fOpponent.PositionF); //Face the opponent from the beginning
   fVertexOccupied := KMPOINT_ZERO;
   if KMStepIsDiag(fUnit.Position, fOpponent.Position) and not TKMUnitWarrior(fUnit).IsRanged then
@@ -196,7 +196,7 @@ begin
     if fOpponent <> nil then
     begin
       //Start fighting this opponent by resetting the action
-      fOpponent.GetUnitPointer; //Add to pointer count
+      fOpponent.GetPointer; //Add to pointer count
       TKMUnitWarrior(fUnit).OnPickedFight(TKMUnitWarrior(fUnit), fOpponent);
       Locked := true;
       fFightDelay := -1;

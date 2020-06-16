@@ -37,7 +37,7 @@ begin
   inherited Create(aUnit);
 
   fType := uttGoEat;
-  fInn      := TKMHouseInn(aInn.GetHousePointer);
+  fInn      := TKMHouseInn(aInn.GetPointer);
   fPlace    := -1;
   fFeedCnt  := 0;
 end;

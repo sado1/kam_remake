@@ -149,7 +149,7 @@ procedure TKMDefencePosition.SetGroup(aGroup: TKMUnitGroup);
 begin
   gHands.CleanUpGroupPointer(fGroup);
   if (aGroup <> nil) then
-    fGroup := aGroup.GetGroupPointer;
+    fGroup := aGroup.GetPointer;
 end;
 
 

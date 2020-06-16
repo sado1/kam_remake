@@ -62,7 +62,7 @@ type
     procedure Save(SaveStream: TKMemoryStream); override;
     procedure Paint; override;
 
-    function ObjToString: String; override;
+    function ObjToString(const aSeparator: String = '|'): String; override;
   end;
 
 
@@ -544,7 +544,7 @@ begin
 end;
 
 
-function TKMHouseMarket.ObjToString: String;
+function TKMHouseMarket.ObjToString(const aSeparator: String = '|'): String;
 var
   resInStr, resOutStr, deliveryCntStr, strIn, strOut, strDel: string;
   WT: TKMWareType;

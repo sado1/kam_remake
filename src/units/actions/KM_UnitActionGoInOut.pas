@@ -60,7 +60,7 @@ begin
 
   //We might stuck trying to exit when house gets destroyed (1)
   //and we might be dying in destroyed house (2)
-  fHouse          := aHouse.GetHousePointer;
+  fHouse          := aHouse.GetPointer;
   fDirection      := aDirection;
   fHasStarted     := False;
   fWaitingForPush := False;
@@ -225,7 +225,7 @@ begin
 
       if U <> nil then
       begin
-        fPushedUnit := U.GetUnitPointer;
+        fPushedUnit := U.GetPointer;
         fPushedUnit.SetActionWalkPushed(gTerrain.GetOutOfTheWay(U, KMPOINT_ZERO, tpWalk));
       end;
     end;

@@ -58,7 +58,7 @@ begin
       begin
         gHands.CleanUpUnitPointer(fUnitCache[I].U);
         if aUnit <> nil then
-          fUnitCache[I].U := aUnit.GetUnitPointer;
+          fUnitCache[I].U := aUnit.GetPointer;
       end;
       Exit;
     end;
@@ -70,7 +70,7 @@ begin
   fUnitCache[fUnitLastAdded].UID := aUID;
   //We could be asked to cache that certain UID is nil (saves us time scanning Units to find out that this UID is removed)
   if aUnit <> nil then
-    fUnitCache[fUnitLastAdded].U := aUnit.GetUnitPointer
+    fUnitCache[fUnitLastAdded].U := aUnit.GetPointer
   else
     fUnitCache[fUnitLastAdded].U := nil;
 
@@ -90,7 +90,7 @@ begin
       begin
         gHands.CleanUpHousePointer(fHouseCache[I].H);
         if aHouse <> nil then
-          fHouseCache[I].H := aHouse.GetHousePointer;
+          fHouseCache[I].H := aHouse.GetPointer;
       end;
       Exit;
     end;
@@ -102,7 +102,7 @@ begin
   fHouseCache[fHouseLastAdded].UID := aUID;
   //We could be asked to cache that certain UID is nil (saves us time scanning Houses to find out that this UID is removed)
   if aHouse <> nil then
-    fHouseCache[fHouseLastAdded].H := aHouse.GetHousePointer
+    fHouseCache[fHouseLastAdded].H := aHouse.GetPointer
   else
     fHouseCache[fHouseLastAdded].H := nil;
 
@@ -122,7 +122,7 @@ begin
       begin
         gHands.CleanUpGroupPointer(fGroupCache[I].G);
         if aGroup <> nil then
-          fGroupCache[I].G := aGroup.GetGroupPointer;
+          fGroupCache[I].G := aGroup.GetPointer;
       end;
       Exit;
     end;
@@ -134,7 +134,7 @@ begin
   fGroupCache[fGroupLastAdded].UID := aUID;
   //We could be asked to cache that certain UID is nil (saves us time scanning Groups to find out that this UID is removed)
   if aGroup <> nil then
-    fGroupCache[fGroupLastAdded].G := aGroup.GetGroupPointer
+    fGroupCache[fGroupLastAdded].G := aGroup.GetPointer
   else
     fGroupCache[fGroupLastAdded].G := nil;
 

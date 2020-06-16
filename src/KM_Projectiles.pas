@@ -230,7 +230,7 @@ begin
   fItems[I].fType   := aProjType;
   fItems[I].fSpeed  := aSpeed;
   fItems[I].fArc    := aArc;
-  fItems[I].fOwner  := aOwner.GetUnitPointer;
+  fItems[I].fOwner  := aOwner.GetPointer;
   fItems[I].fAim    := aAim;
   //Don't allow projectile to land off map, (we use fTaret for hit tests, FOW, etc.) but on borders is fine
   fItems[I].fTarget.X := EnsureRange(aEnd.X, 0, gTerrain.MapX-0.01);

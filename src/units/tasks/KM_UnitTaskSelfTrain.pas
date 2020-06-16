@@ -32,7 +32,7 @@ begin
   inherited Create(aUnit);
 
   fType := uttSelfTrain;
-  fSchool   := TKMHouseSchool(aSchool.GetHousePointer);
+  fSchool   := TKMHouseSchool(aSchool.GetPointer);
   fUnit.Visible := False;
 end;
 

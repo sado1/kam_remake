@@ -5,7 +5,8 @@ uses
   Classes, Math, SysUtils, Types,
   KM_Defaults, KM_CommonClasses, KM_CommonTypes, KM_Points, KM_Houses, KM_Units,
   KM_UnitWarrior,
-  KM_UnitGroupTypes;
+  KM_UnitGroupTypes,
+  KM_HandEntity;
 
 type
   TKMUnitGroup = class;
@@ -13,10 +14,9 @@ type
   TKMUnitGroupEvent = procedure(aGroup: TKMUnitGroup) of object;
 
   //Group of warriors
-  TKMUnitGroup = class
+  TKMUnitGroup = class(TKMHandEntity<TKMUnitGroup>)
   private
-    fUID: Integer;
-    fPointerCount: Cardinal;
+//    fPointerCount: Cardinal;
     fTicker: Cardinal;
     fTargetFollowTicker: Cardinal;
     fOwner: TKMHandID;
@@ -59,7 +59,6 @@ type
     procedure SetUnitsPerRow(aCount: Word);
     procedure SetDirection(Value: TKMDirection);
     procedure SetCondition(aValue: Integer);
-    procedure SetPosition(const aValue: TKMPoint);
     procedure ClearOrderTarget;
     procedure ClearOffenders;
     procedure HungarianReorderMembers;
@@ -87,9 +86,11 @@ type
 
     function GetCondition: Integer;
     function GetDirection: TKMDirection;
-    function GetPosition: TKMPoint;
     procedure SetSelected(aValue: TKMUnitWarrior);
     function GetSelected: TKMUnitWarrior;
+  protected
+    function GetPosition: TKMPoint; override;
+    function GetInstance: TKMUnitGroup; override;
   public
     //Each group can have initial order
     //SendGroup - walk to some location
@@ -100,13 +101,11 @@ type
     constructor Create(aID: Cardinal; aCreator: TKMUnitWarrior); overload;
     constructor Create(aID: Cardinal; aOwner: TKMHandID; aUnitType: TKMUnitType; PosX, PosY: Word; aDir: TKMDirection;
                        aUnitPerRow, aCount: Word); overload;
-    constructor Create(LoadStream: TKMemoryStream); overload;
+    constructor Load(LoadStream: TKMemoryStream); override;
     procedure SyncLoad;
-    procedure Save(SaveStream: TKMemoryStream);
+    procedure Save(SaveStream: TKMemoryStream); override;
     destructor Destroy; override;
 
-    function  GetGroupPointer: TKMUnitGroup;
-    procedure ReleaseGroupPointer;
     procedure AddMember(aWarrior: TKMUnitWarrior; aIndex: Integer = -1; aOnlyWarrior: Boolean = True);
     function  MemberByUID(aUID: Integer): TKMUnitWarrior;
     function  HitTest(X,Y: Integer): Boolean;
@@ -132,14 +131,13 @@ type
     function HasUnitType(aUnitType: TKMUnitType): Boolean;
     function GetOrderText: UnicodeString;
     property GroupType: TKMGroupType read fGroupType;
-    property UID: Integer read fUID;
     property Count: Integer read GetCount;
     property MapEdCount: Word read fMapEdCount write SetMapEdCount;
     property Members[aIndex: Integer]: TKMUnitWarrior read GetMember;
     function GetAliveMember: TKMUnitWarrior;
     property FlagBearer: TKMUnitWarrior read GetFlagBearer;
     property Owner: TKMHandID read fOwner;
-    property Position: TKMPoint read GetPosition write SetPosition;
+    procedure SetGroupPosition(const aValue: TKMPoint);
     property Direction: TKMDirection read GetDirection write SetDirection;
     property UnitsPerRow: Word read fUnitsPerRow write SetUnitsPerRow;
     property SelectedUnit: TKMUnitWarrior read GetSelected write SetSelected;
@@ -180,8 +178,8 @@ type
 
     procedure KillGroup;
 
-    function ObjToStringShort(const aSeparator: String = '|'): String;
-    function ObjToString(const aSeparator: String = '|'): String;
+    function ObjToStringShort(const aSeparator: String = '|'): String; override;
+    function ObjToString(const aSeparator: String = '|'): String; override;
 
     procedure UpdateState;
     procedure PaintHighlighted(aHandColor, aFlagColor: Cardinal; aDoImmediateRender: Boolean = False; aDoHighlight: Boolean = False; aHighlightColor: Cardinal = 0);
@@ -251,9 +249,8 @@ const
 //Create a Group from a single warrior (short version)
 constructor TKMUnitGroup.Create(aID: Cardinal; aCreator: TKMUnitWarrior);
 begin
-  inherited Create;
+  inherited Create(etGroup, aID);
 
-  fUID := aID;
   fOwner := aCreator.Owner;
   fGroupType := UNIT_TO_GROUP_TYPE[aCreator.UnitType];
   fMembers := TList.Create;
@@ -279,9 +276,8 @@ var
   NewCondition: Word;
   DesiredArea: Byte;
 begin
-  inherited Create;
+  inherited Create(etGroup, aID);
 
-  fUID := aID;
   fOwner := aOwner;
   fGroupType := UNIT_TO_GROUP_TYPE[aUnitType];
   fMembers := TList.Create;
@@ -332,18 +328,18 @@ end;
 
 
 //Load the Group from savegame
-constructor TKMUnitGroup.Create(LoadStream: TKMemoryStream);
+constructor TKMUnitGroup.Load(LoadStream: TKMemoryStream);
 var
   I, NewCount: Integer;
   W: TKMUnitWarrior;
 begin
-  inherited Create;
+  inherited;
+
   LoadStream.CheckMarker('UnitGroup');
   fMembers := TList.Create;
   fOffenders := TList.Create;
 
   LoadStream.Read(fGroupType, SizeOf(fGroupType));
-  LoadStream.Read(fUID);
   LoadStream.Read(fOwner);
   LoadStream.Read(NewCount);
   for I := 0 to NewCount - 1 do
@@ -365,7 +361,6 @@ begin
   LoadStream.Read(fOrderTargetGroup, 4); //subst on syncload
   LoadStream.Read(fOrderTargetHouse, 4); //subst on syncload
   LoadStream.Read(fOrderTargetUnit, 4); //subst on syncload
-  LoadStream.Read(fPointerCount);
   LoadStream.Read(fTicker);
   LoadStream.Read(fTargetFollowTicker);
   LoadStream.Read(fTimeSinceHungryReminder);
@@ -430,9 +425,9 @@ procedure TKMUnitGroup.Save(SaveStream: TKMemoryStream);
 var I: Integer;
 begin
   inherited;
+
   SaveStream.PlaceMarker('UnitGroup');
   SaveStream.Write(fGroupType, SizeOf(fGroupType));
-  SaveStream.Write(fUID);
   SaveStream.Write(fOwner);
   SaveStream.Write(fMembers.Count);
   for I := 0 to fMembers.Count - 1 do
@@ -455,7 +450,6 @@ begin
     SaveStream.Write(fOrderTargetUnit.UID)
   else
     SaveStream.Write(Integer(0));
-  SaveStream.Write(fPointerCount);
   SaveStream.Write(fTicker);
   SaveStream.Write(fTargetFollowTicker);
   SaveStream.Write(fTimeSinceHungryReminder);
@@ -587,39 +581,6 @@ begin
 end;
 
 
-//Returns self and adds on to the pointer counter
-function TKMUnitGroup.GetGroupPointer: TKMUnitGroup;
-begin
-  Assert(gGame.AllowGetPointer, 'GetGroupPointer is not allowed outside of game tick update procedure, it could cause game desync');
-
-  Inc(fPointerCount);
-  Result := Self;
-end;
-
-
-//Decreases the pointer counter
-//Should be used only by gHands for clarity sake
-procedure TKMUnitGroup.ReleaseGroupPointer;
-var
-  ErrorMsg: UnicodeString;
-begin
-  Assert(gGame.AllowGetPointer, 'ReleaseGroupPointer is not allowed outside of game tick update procedure, it could cause game desync');
-
-  if fPointerCount < 1 then
-  begin
-    ErrorMsg := 'Group remove pointer for G: ';
-    try
-      ErrorMsg := ErrorMsg + ObjToStringShort(',');
-    except
-      on E: Exception do
-        ErrorMsg := ErrorMsg + IntToStr(UID);
-    end;
-    raise ELocError.Create(ErrorMsg, Position);
-  end;
-  Dec(fPointerCount);
-end;
-
-
 //Get current groups location (we use flagholder)
 function TKMUnitGroup.GetPosition: TKMPoint;
 begin
@@ -630,10 +591,11 @@ begin
 end;
 
 
-procedure TKMUnitGroup.SetPosition(const aValue: TKMPoint);
+procedure TKMUnitGroup.SetGroupPosition(const aValue: TKMPoint);
 begin
   Assert(gGameParams.IsMapEditor);
-  Members[0].SetPosition(aValue);
+
+  Members[0].SetUnitPosition(aValue);
   fOrderLoc.Loc := Members[0].Position; //Don't assume we can move to aValue
 end;
 
@@ -711,9 +673,9 @@ procedure TKMUnitGroup.AddMember(aWarrior: TKMUnitWarrior; aIndex: Integer = -1;
 begin
   Assert(fMembers.IndexOf(aWarrior) = -1, 'We already have this Warrior in group');
   if aIndex <> -1 then
-    fMembers.Insert(aIndex, aWarrior.GetUnitPointer)
+    fMembers.Insert(aIndex, aWarrior.GetPointer)
   else
-    fMembers.Add(aWarrior.GetUnitPointer);
+    fMembers.Add(aWarrior.GetPointer);
 
   //Member reports to Group if something happens to him, so that Group can apply its logic
   aWarrior.OnPickedFight := Member_PickedFight;
@@ -831,7 +793,7 @@ end;
 procedure TKMUnitGroup.Member_PickedFight(aMember: TKMUnitWarrior; aEnemy: TKMUnit);
 begin
   if (aEnemy is TKMUnitWarrior) then
-    fOffenders.Add(aEnemy.GetUnitPointer);
+    fOffenders.Add(aEnemy.GetPointer);
 end;
 
 
@@ -1564,7 +1526,7 @@ begin
 
   UPerRow := fUnitsPerRow; //Save formation for later
   //Remove from the group
-  NewLeader.ReleaseUnitPointer;
+  NewLeader.ReleasePointer;
   fMembers.Remove(NewLeader);
 
   NewGroup := gHands[Owner].UnitGroups.AddGroup(NewLeader);
@@ -1703,7 +1665,7 @@ begin
   //Delete from group
   NewLeader := TKMUnitWarrior(aUnit);
   fMembers.Remove(NewLeader);
-  NewLeader.ReleaseUnitPointer;
+  NewLeader.ReleasePointer;
 
   //Give new group
   NewGroup := gHands[Owner].UnitGroups.AddGroup(NewLeader);
@@ -1929,6 +1891,12 @@ begin
 end;
 
 
+function TKMUnitGroup.GetInstance: TKMUnitGroup;
+begin
+  Result := Self;
+end;
+
+
 function TKMUnitGroup.GetFlagColor: Cardinal;
 begin
   //Highlight selected group
@@ -2032,13 +2000,13 @@ begin
   ClearOrderTarget;
   if (aUnit <> nil) and not (aUnit.IsDeadOrDying) then
   begin
-    fOrderTargetUnit := aUnit.GetUnitPointer; //Else it will be nil from ClearOrderTarget
+    fOrderTargetUnit := aUnit.GetPointer; //Else it will be nil from ClearOrderTarget
     if (aUnit is TKMUnitWarrior) and not IsRanged then
     begin
       G := gHands[aUnit.Owner].UnitGroups.GetGroupByMember(TKMUnitWarrior(aUnit));
       //Target warrior won't have a group while he's walking out of the barracks
       if G <> nil then
-        fOrderTargetGroup := G.GetGroupPointer;
+        fOrderTargetGroup := G.GetPointer;
     end;
   end;
 end;
@@ -2049,7 +2017,7 @@ begin
   //Remove previous value
   ClearOrderTarget;
   if (aHouse <> nil) and not aHouse.IsDestroyed then
-    fOrderTargetHouse := aHouse.GetHousePointer; //Else it will be nil from ClearOrderTarget
+    fOrderTargetHouse := aHouse.GetPointer; //Else it will be nil from ClearOrderTarget
 end;
 
 
@@ -2075,7 +2043,7 @@ end;
 function TKMUnitGroup.ObjToStringShort(const aSeparator: String = '|'): String;
 begin
   Result := Format('UID = %d%sType = %s%sMembersCount = %d',
-                   [fUID, aSeparator,
+                   [UID, aSeparator,
                     GetEnumName(TypeInfo(TKMGroupType), Integer(fGroupType)), aSeparator,
                     Count]);
 end;
@@ -2487,7 +2455,7 @@ begin
   LoadStream.CheckMarker('UnitGroups');
   LoadStream.Read(NewCount);
   for I := 0 to NewCount - 1 do
-    fGroups.Add(TKMUnitGroup.Create(LoadStream));
+    fGroups.Add(TKMUnitGroup.Load(LoadStream));
 end;
 
 
@@ -2510,7 +2478,7 @@ begin
   for I := Count - 1 downto 0 do
   if FREE_POINTERS
   and Groups[I].IsDead
-  and (Groups[I].fPointerCount = 0) then
+  and (Groups[I].PointerCount = 0) then
     fGroups.Delete(I);
 
   for I := 0 to Count - 1 do

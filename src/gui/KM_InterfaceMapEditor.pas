@@ -1249,13 +1249,13 @@ begin
     if aObjectToMove is TKMUnitWarrior then
       aObjectToMove := gHands.GetGroupByMember(TKMUnitWarrior(aObjectToMove))
     else
-      TKMUnit(aObjectToMove).SetPosition(gGameCursor.Cell);
+      TKMUnit(aObjectToMove).SetUnitPosition(gGameCursor.Cell);
   end;
 
   //Unit group move
   if aObjectToMove is TKMUnitGroup then
     //Just move group to specified location
-    TKMUnitGroup(aObjectToMove).Position := gGameCursor.Cell;
+    TKMUnitGroup(aObjectToMove).SetGroupPosition(gGameCursor.Cell);
 end;
 
 

@@ -265,7 +265,7 @@ var
 begin
   Result := 0;
   for I := 0 to Count - 1 do
-    Inc(Result, Units[I].GetPointerCount);
+    Inc(Result, Units[I].PointerCount);
 end;
 
 
@@ -296,11 +296,13 @@ begin
   begin
     LoadStream.Read(UnitType, SizeOf(UnitType));
     case UnitType of
-      utSerf:                  U := TKMUnitSerf.Load(LoadStream);
-      utWorker:                U := TKMUnitWorker.Load(LoadStream);
-      utWoodCutter..utFisher,{utWorker,}utStoneCutter..utMetallurgist:
+      utSerf:                   U := TKMUnitSerf.Load(LoadStream);
+      utWorker:                 U := TKMUnitWorker.Load(LoadStream);
+      utWoodCutter..utFisher,
+      {utWorker,}
+      utStoneCutter..utMetallurgist:
                                 U := TKMUnitCitizen.Load(LoadStream);
-      utRecruit:               U := TKMUnitRecruit.Load(LoadStream);
+      utRecruit:                U := TKMUnitRecruit.Load(LoadStream);
       WARRIOR_MIN..WARRIOR_MAX: U := TKMUnitWarrior.Load(LoadStream);
       ANIMAL_MIN..ANIMAL_MAX:   U := TKMUnitAnimal.Load(LoadStream);
       else                      U := nil;
@@ -351,7 +353,7 @@ begin
         Units[I].UpdateVisualState;
       end
       else
-        if FREE_POINTERS and (Units[I].GetPointerCount = 0) then
+        if FREE_POINTERS and (Units[I].PointerCount = 0) then
           fUnits.Delete(I);
   finally
     {$IFDEF PERFLOG}
@@ -366,8 +368,8 @@ begin
     //   --     ROUGH OUTLINE     --   //
     // - Units and houses have fPointerCount, which is the number of pointers to them. (e.g. tasks,
     //   deliveries) This is kept up to date by the thing that is using the pointer. On create it uses
-    //   GetUnitPointer to get the pointer and increase the pointer count and on destroy it decreases
-    //   it with ReleaseUnitPointer.
+    //   GetPointer to get the pointer and increase the pointer count and on destroy it decreases
+    //   it with ReleasePointer.
     // - When a unit dies, the object is not destroyed. Instead a flag (boolean) is set to say that we
     //   want to destroy but can't because there still might be pointers to the unit. From then on
     //   every update state it checks to see if the pointer count is 0 yet. If it is then the unit is

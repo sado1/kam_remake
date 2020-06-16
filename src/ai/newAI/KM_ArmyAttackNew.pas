@@ -139,7 +139,7 @@ begin
   fTargetAim := KMPOINT_ZERO;
   fWalkTimeLimit := 0;
   fAttackTimeLimit := 0;
-  fGroup := aGroup.GetGroupPointer();
+  fGroup := aGroup.GetPointer();
   fTargetGroup := nil;
   fTargetUnit := nil;
   fTargetHouse := nil;
@@ -219,7 +219,7 @@ begin
     SetTargetUnit(nil)
   else
   begin
-    fTargetGroup := aGroup.GetGroupPointer;
+    fTargetGroup := aGroup.GetPointer;
     ChangeTargetUnit( aGroup.GetAliveMember() );
   end;
 end;
@@ -245,7 +245,7 @@ begin
   fTargetChanged := (fTargetUnit = nil) OR not fTargetUnit.IsDeadOrDying
     OR ((aUnit is TKMUnitWarrior) AND (fTargetUnit is TKMUnitWarrior) AND (TKMUnitWarrior(fTargetUnit).Group <> TKMUnitWarrior(aUnit).Group));
   gHands.CleanUpUnitPointer(fTargetUnit);
-  fTargetUnit := aUnit.GetUnitPointer;
+  fTargetUnit := aUnit.GetPointer;
 end;
 
 
@@ -262,7 +262,7 @@ begin
   // Update target
   fTargetChanged := True;
   if (aHouse <> nil) then
-    fTargetHouse := aHouse.GetHousePointer;
+    fTargetHouse := aHouse.GetPointer;
 end;
 
 
@@ -319,7 +319,7 @@ procedure TKMCombatGroup.UpdateState(aTick: Cardinal);
         if (BestTgt <> nil) then
         begin
           gHands.CleanUpUnitPointer(fTargetUnit);
-          fTargetUnit := BestTgt.GetUnitPointer;
+          fTargetUnit := BestTgt.GetPointer;
         end;
       end;
     end;

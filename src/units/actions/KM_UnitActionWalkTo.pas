@@ -160,9 +160,9 @@ begin
   fAvoidLockedAsMovementCost := aAvoidLockedByMovementCost;
 
   if aTargetUnit  <> nil then
-    fTargetUnit  := aTargetUnit.GetUnitPointer;
+    fTargetUnit  := aTargetUnit.GetPointer;
   if aTargetHouse <> nil then
-    fTargetHouse := aTargetHouse.GetHousePointer;
+    fTargetHouse := aTargetHouse.GetPointer;
 
   fWalkFrom     := fUnit.Position;
   fNewWalkTo    := KMPOINT_ZERO;
@@ -1119,7 +1119,7 @@ begin
   gHands.CleanUpHousePointer(fTargetHouse);
   gHands.CleanUpUnitPointer(fTargetUnit);
   if aNewTargetUnit <> nil then
-    fTargetUnit := aNewTargetUnit.GetUnitPointer; //Change target
+    fTargetUnit := aNewTargetUnit.GetPointer; //Change target
 end;
 
 
