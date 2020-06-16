@@ -277,7 +277,7 @@ const
 type
   TKMGameInputCommand = record
     CommandType: TKMGameInputCommandType;
-    Params: array[1..MAX_PARAMS] of Integer;
+    Params: array[0..MAX_PARAMS - 1] of Integer;
     FloatParam: Single;
     AnsiStrParam: AnsiString;
     UnicodeStrParams: TKMScriptCommandParamsArray;
@@ -434,35 +434,35 @@ begin
     aMemoryStream.Write(CommandType, SizeOf(CommandType));
     case COMMAND_PACK_TYPES[CommandType] of
       gicpt_NoParams: ;
-      gicpt_Int1:     aMemoryStream.Write(Params[1]);
+      gicpt_Int1:     aMemoryStream.Write(Params[0]);
       gicpt_Int2:     begin
+                        aMemoryStream.Write(Params[0]);
                         aMemoryStream.Write(Params[1]);
-                        aMemoryStream.Write(Params[2]);
                       end;
       gicpt_Int3:     begin
+                        aMemoryStream.Write(Params[0]);
                         aMemoryStream.Write(Params[1]);
                         aMemoryStream.Write(Params[2]);
-                        aMemoryStream.Write(Params[3]);
                       end;
       gicpt_Int4:     begin
+                        aMemoryStream.Write(Params[0]);
                         aMemoryStream.Write(Params[1]);
                         aMemoryStream.Write(Params[2]);
                         aMemoryStream.Write(Params[3]);
-                        aMemoryStream.Write(Params[4]);
                       end;
       gicpt_Ansi1Int2:begin
                         aMemoryStream.WriteA(AnsiStrParam);
+                        aMemoryStream.Write(Params[0]);
                         aMemoryStream.Write(Params[1]);
-                        aMemoryStream.Write(Params[2]);
                       end;
       gicpt_Float:    aMemoryStream.Write(FloatParam);
       gicpt_UniStr1:  aMemoryStream.WriteW(UnicodeStrParams[0]);
       gicpt_Ansi1Uni4:begin
                         aMemoryStream.WriteA(AnsiStrParam);
                         aMemoryStream.WriteW(UnicodeStrParams[0]);
+                        aMemoryStream.WriteW(UnicodeStrParams[0]);
                         aMemoryStream.WriteW(UnicodeStrParams[1]);
                         aMemoryStream.WriteW(UnicodeStrParams[2]);
-                        aMemoryStream.WriteW(UnicodeStrParams[3]);
                       end;
       gicpt_Date:     aMemoryStream.Write(DateTimeParam);
     end;
@@ -478,35 +478,35 @@ begin
     aMemoryStream.Read(CommandType, SizeOf(CommandType));
     case COMMAND_PACK_TYPES[CommandType] of
       gicpt_NoParams: ;
-      gicpt_Int1:     aMemoryStream.Read(Params[1]);
+      gicpt_Int1:     aMemoryStream.Read(Params[0]);
       gicpt_Int2:     begin
+                        aMemoryStream.Read(Params[0]);
                         aMemoryStream.Read(Params[1]);
-                        aMemoryStream.Read(Params[2]);
                       end;
       gicpt_Int3:     begin
+                        aMemoryStream.Read(Params[0]);
                         aMemoryStream.Read(Params[1]);
                         aMemoryStream.Read(Params[2]);
-                        aMemoryStream.Read(Params[3]);
                       end;
       gicpt_Int4:     begin
+                        aMemoryStream.Read(Params[0]);
                         aMemoryStream.Read(Params[1]);
                         aMemoryStream.Read(Params[2]);
                         aMemoryStream.Read(Params[3]);
-                        aMemoryStream.Read(Params[4]);
                       end;
       gicpt_Ansi1Int2:begin
                         aMemoryStream.ReadA(AnsiStrParam);
+                        aMemoryStream.Read(Params[0]);
                         aMemoryStream.Read(Params[1]);
-                        aMemoryStream.Read(Params[2]);
                       end;
       gicpt_Float:    aMemoryStream.Read(FloatParam);
       gicpt_UniStr1:  aMemoryStream.ReadW(UnicodeStrParams[0]);
       gicpt_Ansi1Uni4:begin
                         aMemoryStream.ReadA(AnsiStrParam);
                         aMemoryStream.ReadW(UnicodeStrParams[0]);
+                        aMemoryStream.ReadW(UnicodeStrParams[0]);
                         aMemoryStream.ReadW(UnicodeStrParams[1]);
                         aMemoryStream.ReadW(UnicodeStrParams[2]);
-                        aMemoryStream.ReadW(UnicodeStrParams[3]);
                       end;
       gicpt_Date:     aMemoryStream.Read(DateTimeParam);
     end;
@@ -529,14 +529,14 @@ begin
                      [GetEnumName(TypeInfo(TKMGameInputCommandType), Integer(CommandType)), HandIndex]);
     case COMMAND_PACK_TYPES[CommandType] of
       gicpt_NoParams:   Result := Result + ' []';
-      gicpt_Int1:       Result := Result + Format('[%10d]', [Params[1]]);
-      gicpt_Int2:       Result := Result + Format('[%10d,%10d]', [Params[1], Params[2]]);
-      gicpt_Int3:       Result := Result + Format('[%10d,%10d,%10d]', [Params[1], Params[2], Params[3]]);
-      gicpt_Int4:       Result := Result + Format('[%10d,%10d,%10d,%10d]', [Params[1], Params[2], Params[3], Params[4]]);
-      gicpt_Ansi1Int2:  Result := Result + Format('[S1=%s,%10d,%10d]', [AnsiStrParam, Params[1], Params[2]]);
+      gicpt_Int1:       Result := Result + Format('[%10d]', [Params[0]]);
+      gicpt_Int2:       Result := Result + Format('[%10d,%10d]', [Params[0], Params[1]]);
+      gicpt_Int3:       Result := Result + Format('[%10d,%10d,%10d]', [Params[0], Params[1], Params[2]]);
+      gicpt_Int4:       Result := Result + Format('[%10d,%10d,%10d,%10d]', [Params[0], Params[1], Params[2], Params[3]]);
+      gicpt_Ansi1Int2:  Result := Result + Format('[S1=%s,%10d,%10d]', [AnsiStrParam, Params[0], Params[1]]);
       gicpt_UniStr1:    Result := Result + Format('[%s]', [UnicodeStrParams[0]]);
       gicpt_Float:      Result := Result + Format('[%f]', [FloatParam]);
-      gicpt_Ansi1Uni4:  Result := Result + Format('[S1=%s,S2=%s,S3=%s,S4=%s,S5=%s]', [AnsiStrParam, UnicodeStrParams[0], UnicodeStrParams[1],UnicodeStrParams[2],UnicodeStrParams[3]]);
+      gicpt_Ansi1Uni4:  Result := Result + Format('[S1=%s,S2=%s,S3=%s,S4=%s,S5=%s]', [AnsiStrParam, UnicodeStrParams[0], UnicodeStrParams[0],UnicodeStrParams[1],UnicodeStrParams[2]]);
       gicpt_Date:       Result := Result + Format('[%s]', [FormatDateTime('dd.mm.yy hh:nn:ss.zzz', DateTimeParam)]);
       else              ;
     end;
@@ -596,7 +596,7 @@ begin
                 [GetEnumName(TypeInfo(TKMGameInputCommandType), Integer(aGIC)),
                  GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(COMMAND_PACK_TYPES[aGIC]))]));
   Result := MakeEmptyCommand(aGIC);
-  Result.Params[1] := aParam1;
+  Result.Params[0] := aParam1;
 end;
 
 
@@ -607,8 +607,8 @@ begin
                 [GetEnumName(TypeInfo(TKMGameInputCommandType), Integer(aGIC)),
                  GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(COMMAND_PACK_TYPES[aGIC]))]));
   Result := MakeEmptyCommand(aGIC);
-  Result.Params[1] := aParam1;
-  Result.Params[2] := aParam2;
+  Result.Params[0] := aParam1;
+  Result.Params[1] := aParam2;
 end;
 
 
@@ -619,9 +619,9 @@ begin
                 [GetEnumName(TypeInfo(TKMGameInputCommandType), Integer(aGIC)),
                  GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(COMMAND_PACK_TYPES[aGIC]))]));
   Result := MakeEmptyCommand(aGIC);
-  Result.Params[1] := aParam1;
-  Result.Params[2] := aParam2;
-  Result.Params[3] := aParam3;
+  Result.Params[0] := aParam1;
+  Result.Params[1] := aParam2;
+  Result.Params[2] := aParam3;
 end;
 
 
@@ -632,10 +632,10 @@ begin
                 [GetEnumName(TypeInfo(TKMGameInputCommandType), Integer(aGIC)),
                  GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(COMMAND_PACK_TYPES[aGIC]))]));
   Result := MakeEmptyCommand(aGIC);
-  Result.Params[1] := aParam1;
-  Result.Params[2] := aParam2;
-  Result.Params[3] := aParam3;
-  Result.Params[4] := aParam4;
+  Result.Params[0] := aParam1;
+  Result.Params[1] := aParam2;
+  Result.Params[2] := aParam3;
+  Result.Params[3] := aParam4;
 end;
 
 
@@ -647,8 +647,8 @@ begin
                  GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(COMMAND_PACK_TYPES[aGIC]))]));
   Result := MakeEmptyCommand(aGIC);
   Result.AnsiStrParam := aAnsiTxtParam;
-  Result.Params[1] := aParam1;
-  Result.Params[2] := aParam2;
+  Result.Params[0] := aParam1;
+  Result.Params[1] := aParam2;
 end;
 
 
@@ -749,21 +749,21 @@ begin
                        gicArmyFormation, gicArmyWalk, gicArmyStorm]
     then
     begin
-      srcGroup := gHands.GetGroupByUID(Params[1]);
+      srcGroup := gHands.GetGroupByUID(Params[0]);
       if (srcGroup = nil) or srcGroup.IsDead //Group has died before command could be executed
       or (srcGroup.Owner <> aCommand.HandIndex) then //Potential exploit
         Exit;
     end;
     if CommandType in [gicArmyLink] then
     begin
-      TgtGroup := gHands.GetGroupByUID(Params[2]);
+      TgtGroup := gHands.GetGroupByUID(Params[1]);
       if (TgtGroup = nil) or TgtGroup.IsDead //Unit has died before command could be executed
       or (TgtGroup.Owner <> aCommand.HandIndex) then //Potential exploit
         Exit;
     end;
     if CommandType in [gicArmyAttackUnit] then
     begin
-      tgtUnit := gHands.GetUnitByUID(Params[2]);
+      tgtUnit := gHands.GetUnitByUID(Params[1]);
       if (tgtUnit = nil) or tgtUnit.IsDeadOrDying then //Unit has died before command could be executed
         Exit;
     end;
@@ -774,20 +774,20 @@ begin
       gicHouseSchoolTrain, gicHouseSchoolTrainChOrder, gicHouseSchoolTrainChLastUOrder, gicHouseRemoveTrain,
       gicHouseWoodcutterMode, gicHBarracksAcceptRecruitsTgl, gicHouseArmorWSDeliveryToggle] then
     begin
-      srcHouse := gHands.GetHouseByUID(Params[1]);
+      srcHouse := gHands.GetHouseByUID(Params[0]);
       if (srcHouse = nil) or srcHouse.IsDestroyed //House has been destroyed before command could be executed
       or (srcHouse.Owner <> aCommand.HandIndex) then //Potential exploit
         Exit;
     end;
     if CommandType in [gicArmyAttackHouse] then
     begin
-      tgtHouse := gHands.GetHouseByUID(Params[2]);
+      tgtHouse := gHands.GetHouseByUID(Params[1]);
       if (tgtHouse = nil) or tgtHouse.IsDestroyed then Exit; //House has been destroyed before command could be executed
     end;
 
     if CommandType in [gicUnitDismiss, gicUnitDismissCancel] then
     begin
-      srcUnit := gHands.GetUnitByUID(Params[1]);
+      srcUnit := gHands.GetUnitByUID(Params[0]);
       if (srcUnit = nil) or srcUnit.IsDeadOrDying //Unit has died before command could be executed
         or (srcUnit.Owner <> aCommand.HandIndex) then //Potential exploit
         Exit;
@@ -817,18 +817,18 @@ begin
       gicArmyAttackUnit:   srcGroup.OrderAttackUnit(tgtUnit, True);
       gicArmyAttackHouse:  srcGroup.OrderAttackHouse(tgtHouse, True);
       gicArmyHalt:         srcGroup.OrderHalt(True);
-      gicArmyFormation:    srcGroup.OrderFormation(TKMTurnDirection(Params[2]),Params[3], True);
-      gicArmyWalk:         srcGroup.OrderWalk(KMPoint(Params[2],Params[3]), True, wtokPlayerOrder, TKMDirection(Params[4]));
+      gicArmyFormation:    srcGroup.OrderFormation(TKMTurnDirection(Params[1]),Params[2], True);
+      gicArmyWalk:         srcGroup.OrderWalk(KMPoint(Params[1],Params[2]), True, wtokPlayerOrder, TKMDirection(Params[3]));
 
       gicUnitDismiss:        srcUnit.Dismiss;
       gicUnitDismissCancel:  srcUnit.DismissCancel;
 
-      gicBuildToggleFieldPlan:   P.ToggleFieldPlan(KMPoint(Params[1],Params[2]), TKMFieldType(Params[3]), not gGameParams.IsMultiPlayerOrSpec); //Make sound in singleplayer mode only
-      gicBuildRemoveFieldPlan:   P.RemFieldPlan(KMPoint(Params[1],Params[2]), not gGameParams.IsMultiPlayerOrSpec); //Make sound in singleplayer mode only
-      gicBuildRemoveHouse:       P.RemHouse(KMPoint(Params[1],Params[2]), isSilent);
-      gicBuildRemoveHousePlan:   P.RemHousePlan(KMPoint(Params[1],Params[2]));
-      gicBuildHousePlan:         if P.CanAddHousePlan(KMPoint(Params[2],Params[3]), TKMHouseType(Params[1])) then
-                                    P.AddHousePlan(TKMHouseType(Params[1]), KMPoint(Params[2],Params[3]));
+      gicBuildToggleFieldPlan:   P.ToggleFieldPlan(KMPoint(Params[0],Params[1]), TKMFieldType(Params[2]), not gGameParams.IsMultiPlayerOrSpec); //Make sound in singleplayer mode only
+      gicBuildRemoveFieldPlan:   P.RemFieldPlan(KMPoint(Params[0],Params[1]), not gGameParams.IsMultiPlayerOrSpec); //Make sound in singleplayer mode only
+      gicBuildRemoveHouse:       P.RemHouse(KMPoint(Params[0],Params[1]), isSilent);
+      gicBuildRemoveHousePlan:   P.RemHousePlan(KMPoint(Params[0],Params[1]));
+      gicBuildHousePlan:         if P.CanAddHousePlan(KMPoint(Params[1],Params[2]), TKMHouseType(Params[0])) then
+                                    P.AddHousePlan(TKMHouseType(Params[0]), KMPoint(Params[1],Params[2]));
 
       gicHouseRepairToggle:      srcHouse.BuildingRepair := not srcHouse.BuildingRepair;
       gicHouseDeliveryModeNext:   //Delivery mode has to be delayed, to avoid occasional delivery mode button clicks
@@ -836,33 +836,33 @@ begin
       gicHouseDeliveryModePrev:   //Delivery mode has to be delayed, to avoid occasional delivery mode button clicks
                                   srcHouse.SetPrevDeliveryMode;
       gicHouseClosedForWorkerTgl: srcHouse.IsClosedForWorker := not srcHouse.IsClosedForWorker;
-      gicHouseOrderProduct:      srcHouse.ResOrder[Params[2]] := srcHouse.ResOrder[Params[2]] + Params[3];
-      gicHouseMarketFrom:        TKMHouseMarket(srcHouse).ResFrom := TKMWareType(Params[2]);
-      gicHouseMarketTo:          TKMHouseMarket(srcHouse).ResTo := TKMWareType(Params[2]);
-      gicHouseStoreNotAcceptFlag:   TKMHouseStore(srcHouse).ToggleNotAcceptFlag(TKMWareType(Params[2]));
+      gicHouseOrderProduct:      srcHouse.ResOrder[Params[1]] := srcHouse.ResOrder[Params[1]] + Params[2];
+      gicHouseMarketFrom:        TKMHouseMarket(srcHouse).ResFrom := TKMWareType(Params[1]);
+      gicHouseMarketTo:          TKMHouseMarket(srcHouse).ResTo := TKMWareType(Params[1]);
+      gicHouseStoreNotAcceptFlag:   TKMHouseStore(srcHouse).ToggleNotAcceptFlag(TKMWareType(Params[1]));
       gicHStoreNotAllowTakeOutFlag:
-                                 TKMHouseStore(srcHouse).ToggleNotAcceptTakeOutFlag(TKMWareType(Params[2]));
-      gicHouseWoodcutterMode:    TKMHouseWoodcutters(srcHouse).WoodcutterMode := TKMWoodcutterMode(Params[2]);
+                                 TKMHouseStore(srcHouse).ToggleNotAcceptTakeOutFlag(TKMWareType(Params[1]));
+      gicHouseWoodcutterMode:    TKMHouseWoodcutters(srcHouse).WoodcutterMode := TKMWoodcutterMode(Params[1]);
       gicHouseBarracksAcceptFlag:
-                                  TKMHouseBarracks(srcHouse).ToggleNotAcceptFlag(TKMWareType(Params[2]));
+                                  TKMHouseBarracks(srcHouse).ToggleNotAcceptFlag(TKMWareType(Params[1]));
       gicHBarracksNotAllowTakeOutFlag:
-                                  TKMHouseBarracks(srcHouse).ToggleNotAllowTakeOutFlag(TKMWareType(Params[2]));
+                                  TKMHouseBarracks(srcHouse).ToggleNotAllowTakeOutFlag(TKMWareType(Params[1]));
       gicHBarracksAcceptRecruitsTgl:
                                   TKMHouseBarracks(srcHouse).ToggleAcceptRecruits;
-      gicHouseBarracksEquip:     TKMHouseBarracks(srcHouse).Equip(TKMUnitType(Params[2]), Params[3]);
-      gicHouseBarracksRally:     TKMHouseBarracks(srcHouse).FlagPoint := KMPoint(Params[2], Params[3]);
-      gicHouseTownHallEquip:     TKMHouseTownHall(srcHouse).Equip(TKMUnitType(Params[2]), Params[3]);
-      gicHouseTownHallRally:     TKMHouseTownHall(srcHouse).FlagPoint := KMPoint(Params[2], Params[3]);
-      gicHouseTownHallMaxGold:   TKMHouseTownHall(srcHouse).GoldMaxCnt := EnsureRange(Params[2], 0, High(Word));
-      gicHouseSchoolTrain:       TKMHouseSchool(srcHouse).AddUnitToQueue(TKMUnitType(Params[2]), Params[3]);
-      gicHouseSchoolTrainChOrder:TKMHouseSchool(srcHouse).ChangeUnitTrainOrder(Params[2], Params[3]);
-      gicHouseSchoolTrainChLastUOrder: TKMHouseSchool(srcHouse).ChangeUnitTrainOrder(Params[2]);
-      gicHouseRemoveTrain:       TKMHouseSchool(srcHouse).RemUnitFromQueue(Params[2]);
-      gicHouseWoodcuttersCutting: TKMHouseWoodcutters(srcHouse).FlagPoint := KMPoint(Params[2], Params[3]);
-      gicHouseArmorWSDeliveryToggle:   TKMHouseArmorWorkshop(srcHouse).ToggleResDelivery(TKMWareType(Params[2]));
+      gicHouseBarracksEquip:     TKMHouseBarracks(srcHouse).Equip(TKMUnitType(Params[1]), Params[2]);
+      gicHouseBarracksRally:     TKMHouseBarracks(srcHouse).FlagPoint := KMPoint(Params[1], Params[2]);
+      gicHouseTownHallEquip:     TKMHouseTownHall(srcHouse).Equip(TKMUnitType(Params[1]), Params[2]);
+      gicHouseTownHallRally:     TKMHouseTownHall(srcHouse).FlagPoint := KMPoint(Params[1], Params[2]);
+      gicHouseTownHallMaxGold:   TKMHouseTownHall(srcHouse).GoldMaxCnt := EnsureRange(Params[1], 0, High(Word));
+      gicHouseSchoolTrain:       TKMHouseSchool(srcHouse).AddUnitToQueue(TKMUnitType(Params[1]), Params[2]);
+      gicHouseSchoolTrainChOrder:TKMHouseSchool(srcHouse).ChangeUnitTrainOrder(Params[1], Params[2]);
+      gicHouseSchoolTrainChLastUOrder: TKMHouseSchool(srcHouse).ChangeUnitTrainOrder(Params[1]);
+      gicHouseRemoveTrain:       TKMHouseSchool(srcHouse).RemUnitFromQueue(Params[1]);
+      gicHouseWoodcuttersCutting: TKMHouseWoodcutters(srcHouse).FlagPoint := KMPoint(Params[1], Params[2]);
+      gicHouseArmorWSDeliveryToggle:   TKMHouseArmorWorkshop(srcHouse).ToggleResDelivery(TKMWareType(Params[1]));
 
       gicWareDistributionChange:  begin
-                                    P.Stats.WareDistribution[TKMWareType(Params[1]), TKMHouseType(Params[2])] := Params[3];
+                                    P.Stats.WareDistribution[TKMWareType(Params[0]), TKMHouseType(Params[1])] := Params[2];
                                     P.Houses.UpdateResRequest;
                                   end;
       gicWareDistributions:       begin
@@ -872,7 +872,7 @@ begin
 
       gicTempAddScout:            if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or not gGameParams.IsMultiPlayerOrSpec) then
                                     //Place a warrior
-                                    P.AddUnit(utHorseScout, KMPoint(Params[1], Params[2]), True, 0, True);
+                                    P.AddUnit(utHorseScout, KMPoint(Params[0], Params[1]), True, 0, True);
       gicTempRevealMap:           if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or not gGameParams.IsMultiPlayerOrSpec) then
                                     P.FogOfWar.RevealEverything;
       gicTempVictory:             if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or not gGameParams.IsMultiPlayerOrSpec) then
@@ -881,7 +881,7 @@ begin
                                     P.AI.Defeat;
       gicTempDoNothing:           ;
 
-      gicGamePause:               ;//if fReplayState = gipRecording then fGame.fGamePlayInterface.SetPause(boolean(Params[1]));
+      gicGamePause:               ;//if fReplayState = gipRecording then fGame.fGamePlayInterface.SetPause(boolean(Params[0]));
       gicGameSpeed:               gGame.SetSpeedGIP(FloatParam, fReplayState = gipRecording);
       gicGameAutoSave:            if (fReplayState = gipRecording) and gGameSettings.Autosave then
                                     gGame.AutoSave(DateTimeParam); //Timestamp is synchronised
@@ -895,29 +895,29 @@ begin
       gicGameLoadSave:            ; //Just a marker to know when game was loaded
       gicGameTeamChange:          begin
                                     //Currently unused, disabled to prevent potential exploitation
-                                    {fGame.Networking.NetPlayers[Params[1]].Team := Params[2];
+                                    {fGame.Networking.NetPlayers[Params[0]].Team := Params[1];
                                     fGame.UpdateMultiplayerTeams;
                                     fPlayers.SyncFogOfWar;
                                     if fGame.Networking.IsHost then
                                       fGame.Networking.SendPlayerListAndRefreshPlayersSetup;}
                                   end;
       gicGameAlertBeacon:         ExecGameAlertBeaconCmd(aCommand);
-      gicGameHotkeySet:           P.SelectionHotkeys[Params[1]] := Params[2];
-      gicGameMessageLogRead:      P.MessageLog[Params[1]].IsReadGIP := True;
+      gicGameHotkeySet:           P.SelectionHotkeys[Params[0]] := Params[1];
+      gicGameMessageLogRead:      P.MessageLog[Params[0]].IsReadGIP := True;
       gicGamePlayerChange:        begin
                                     Assert(not gGameParams.IsMapEditor);
-                                    gHands[Params[1]].HandType := TKMHandType(Params[2]);
-                                    gHands[Params[1]].OwnerNikname := AnsiStrParam;
+                                    gHands[Params[0]].HandType := TKMHandType(Params[1]);
+                                    gHands[Params[0]].OwnerNikname := AnsiStrParam;
                                     gGame.GamePlayInterface.UpdateUI; //Update players drop list
                                   end;
       gicGamePlayerDefeat:        begin
-                                    gHands.UpdateGoalsForHand(Params[1], False);
-                                    gHands[Params[1]].AI.Defeat(False);
+                                    gHands.UpdateGoalsForHand(Params[0], False);
+                                    gHands[Params[0]].AI.Defeat(False);
                                   end;
-      gicGamePlayerAllianceSet:   gHands[Params[1]].Alliances[Params[2]] := TKMAllianceType(Params[3]);
-      gicGamePlayerAddDefGoals:     gHands[Params[1]].AI.AddDefaultGoals(IntToBool(Params[2]));
+      gicGamePlayerAllianceSet:   gHands[Params[0]].Alliances[Params[1]] := TKMAllianceType(Params[2]);
+      gicGamePlayerAddDefGoals:     gHands[Params[0]].AI.AddDefaultGoals(IntToBool(Params[1]));
       gicScriptConsoleCommand:    gScriptEvents.CallConsoleCommand(HandIndex, AnsiStrParam, UnicodeStrParams);
-      gicScriptSoundRemoveRq:     gGame.AddScriptSoundRemoveRequest(Params[1], HandIndex);
+      gicScriptSoundRemoveRq:     gGame.AddScriptSoundRemoveRequest(Params[0], HandIndex);
       else                        raise Exception.Create('Unexpected gic command');
     end;
   end;
@@ -936,7 +936,7 @@ procedure TKMGameInputProcess.ExecGameAlertBeaconCmd(const aCommand: TKMGameInpu
   var
     handId: Integer;
   begin
-    handId := aCommand.Params[3];
+    handId := aCommand.Params[2];
 
     Result := (gHands.CheckAlliance(handId, gMySpectator.HandID) = atAlly)
       and (gHands[handId].ShareBeacons[gMySpectator.HandID])
@@ -947,26 +947,26 @@ var
   doAddBeacon: Boolean;
 begin
   // Beacon script event must always be run by all players for consistency
-  gScriptEvents.ProcBeacon(aCommand.Params[3], 1 + (aCommand.Params[1] div 10), 1 + (aCommand.Params[2] div 10));
+  gScriptEvents.ProcBeacon(aCommand.Params[2], 1 + (aCommand.Params[0] div 10), 1 + (aCommand.Params[1] div 10));
 
   doAddBeacon := False;
 
   case gGameParams.Mode of
     gmSingle,
     gmCampaign,
-    gmMulti:          doAddBeacon := (aCommand.Params[3] <> PLAYER_NONE) and DoAddPlayerBeacon;
-    gmMultiSpectate:  doAddBeacon := (aCommand.Params[3] = PLAYER_NONE) // Show spectators beacons while spectating
+    gmMulti:          doAddBeacon := (aCommand.Params[2] <> PLAYER_NONE) and DoAddPlayerBeacon;
+    gmMultiSpectate:  doAddBeacon := (aCommand.Params[2] = PLAYER_NONE) // Show spectators beacons while spectating
                                     or (gGameSettings.SpecShowBeacons and DoAddPlayerBeacon);
     gmReplaySingle,
-    gmReplayMulti:    doAddBeacon := (aCommand.Params[3] <> PLAYER_NONE)  // Do not show spectators beacons in replay
+    gmReplayMulti:    doAddBeacon := (aCommand.Params[2] <> PLAYER_NONE)  // Do not show spectators beacons in replay
                                     and gGameSettings.ReplayShowBeacons and DoAddPlayerBeacon;
   end;
 
   if doAddBeacon then
-    gGame.GamePlayInterface.Alerts.AddBeacon(KMPointF(aCommand.Params[1]/10,
-                                                      aCommand.Params[2]/10),
-                                                      aCommand.Params[3],
-                                                      (aCommand.Params[4] or $FF000000),
+    gGame.GamePlayInterface.Alerts.AddBeacon(KMPointF(aCommand.Params[0]/10,
+                                                      aCommand.Params[1]/10),
+                                                      aCommand.Params[2],
+                                                      (aCommand.Params[3] or $FF000000),
                                                       gGameApp.GlobalTickCount + ALERT_DURATION[atBeacon]);
 end;
 
