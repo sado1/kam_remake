@@ -249,10 +249,7 @@ begin
   for I := Low(fUnitCache) to High(fUnitCache) do
   begin
     SaveStream.Write(fUnitCache[I].UID);
-    if fUnitCache[I].U <> nil then
-      SaveStream.Write(fUnitCache[I].U.UID) //Store ID, then substitute it with reference on SyncLoad
-    else
-      SaveStream.Write(Integer(0));
+    SaveStream.Write(fUnitCache[I].U.UID); //Store ID, then substitute it with reference on SyncLoad
   end;
 
   SaveStream.PlaceMarker('ScriptingIdCache_Houses');
@@ -260,10 +257,7 @@ begin
   for I := Low(fHouseCache) to High(fHouseCache) do
   begin
     SaveStream.Write(fHouseCache[I].UID);
-    if fHouseCache[I].H <> nil then
-      SaveStream.Write(fHouseCache[I].H.UID) //Store ID, then substitute it with reference on SyncLoad
-    else
-      SaveStream.Write(Integer(0));
+    SaveStream.Write(fHouseCache[I].H.UID); //Store ID, then substitute it with reference on SyncLoad
   end;
 
   SaveStream.PlaceMarker('ScriptingIdCache_Groups');
@@ -271,10 +265,7 @@ begin
   for I := Low(fGroupCache) to High(fGroupCache) do
   begin
     SaveStream.Write(fGroupCache[I].UID);
-    if fGroupCache[I].G <> nil then
-      SaveStream.Write(fGroupCache[I].G.UID) //Store ID, then substitute it with reference on SyncLoad
-    else
-      SaveStream.Write(Integer(0));
+    SaveStream.Write(fGroupCache[I].G.UID); //Store ID, then substitute it with reference on SyncLoad
   end;
 end;
 

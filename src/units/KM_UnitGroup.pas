@@ -438,18 +438,9 @@ begin
   SaveStream.Write(fOrder, SizeOf(fOrder));
   SaveStream.Write(fOrderLoc);
   SaveStream.Write(fOrderWalkKind, SizeOf(fOrderWalkKind));
-  if fOrderTargetGroup <> nil then
-    SaveStream.Write(fOrderTargetGroup.UID)
-  else
-    SaveStream.Write(Integer(0));
-  if fOrderTargetHouse <> nil then
-    SaveStream.Write(fOrderTargetHouse.UID)
-  else
-    SaveStream.Write(Integer(0));
-  if fOrderTargetUnit <> nil then
-    SaveStream.Write(fOrderTargetUnit.UID)
-  else
-    SaveStream.Write(Integer(0));
+  SaveStream.Write(fOrderTargetGroup.UID);
+  SaveStream.Write(fOrderTargetHouse.UID);
+  SaveStream.Write(fOrderTargetUnit.UID);
   SaveStream.Write(fTicker);
   SaveStream.Write(fTargetFollowTicker);
   SaveStream.Write(fTimeSinceHungryReminder);

@@ -328,10 +328,7 @@ begin
         SaveStream.Write(RemoveTreeInPlanProcedure);
         SaveStream.Write(HouseReservation);
         SaveStream.Write(ChopOnly);
-        if (House <> nil) then
-          SaveStream.Write(House.UID) // Store ID
-        else
-          SaveStream.Write(Integer(0));
+        SaveStream.Write(House.UID); // Store ID
         SaveStream.Write(Loc, SizeOf(Loc));
         SaveStream.Write(SpecPoint, SizeOf(SpecPoint));
       end;

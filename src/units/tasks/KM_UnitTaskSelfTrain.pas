@@ -121,10 +121,7 @@ procedure TKMTaskSelfTrain.Save(SaveStream: TKMemoryStream);
 begin
   inherited;
   SaveStream.PlaceMarker('TaskSelfTrain');
-  if fSchool <> nil then
-    SaveStream.Write(fSchool.UID)
-  else
-    SaveStream.Write(Integer(0));
+  SaveStream.Write(fSchool.UID);
 end;
 
 

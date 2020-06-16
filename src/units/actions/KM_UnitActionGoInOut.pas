@@ -460,14 +460,8 @@ begin
   inherited;
   SaveStream.PlaceMarker('UnitActionGoInOut');
   SaveStream.Write(fStep);
-  if fHouse <> nil then
-    SaveStream.Write(fHouse.UID) //Store ID, then substitute it with reference on SyncLoad
-  else
-    SaveStream.Write(Integer(0));
-  if fPushedUnit <> nil then
-    SaveStream.Write(fPushedUnit.UID) //Store ID, then substitute it with reference on SyncLoad
-  else
-    SaveStream.Write(Integer(0));
+  SaveStream.Write(fHouse.UID); //Store ID, then substitute it with reference on SyncLoad
+  SaveStream.Write(fPushedUnit.UID); //Store ID, then substitute it with reference on SyncLoad
   SaveStream.Write(fDirection, SizeOf(fDirection));
   SaveStream.Write(fDoor);
   SaveStream.Write(fStreet);

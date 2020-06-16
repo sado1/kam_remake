@@ -204,10 +204,7 @@ begin
   inherited;
 
   SaveStream.PlaceMarker('TaskAttackHouse');
-  if fHouse <> nil then
-    SaveStream.Write(fHouse.UID)
-  else
-    SaveStream.Write(Integer(0));
+  SaveStream.Write(fHouse.UID);
 end;
 
 

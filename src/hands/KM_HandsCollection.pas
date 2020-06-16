@@ -111,7 +111,8 @@ uses
   KM_Game, KM_GameParams, KM_Terrain, KM_AIFields,
   KM_UnitsCollection, KM_MapEditorHistory,
   KM_Resource, KM_ResUnits, KM_ResTexts,
-  KM_Log, KM_CommonUtils, KM_DevPerfLog, KM_DevPerfLogTypes;
+  KM_Log, KM_CommonUtils, KM_DevPerfLog, KM_DevPerfLogTypes,
+  KM_HandTypes;
 
 
 { TKMHandsCollection }
@@ -468,7 +469,7 @@ var
   I: Integer;
 begin
   Result := nil;
-  if aUID = 0 then Exit;
+  if aUID = NO_ENTITY_UID then Exit;
 
   for I := 0 to fCount - 1 do
   begin
@@ -483,7 +484,7 @@ var
   I: Integer;
 begin
   Result := nil;
-  if aUID = 0 then Exit;
+  if aUID = NO_ENTITY_UID then Exit;
 
   for I := 0 to fCount - 1 do
   begin
@@ -503,7 +504,7 @@ var
   I: Integer;
 begin
   Result := nil;
-  if aUID = 0 then Exit;
+  if aUID = NO_ENTITY_UID then Exit;
 
   for I := 0 to fCount - 1 do
   begin

@@ -407,12 +407,7 @@ begin
       SaveStream.Write(fItems[I].fTarget);
       SaveStream.Write(fItems[I].fShotFrom);
       SaveStream.Write(fItems[I].fType, SizeOf(TKMProjectileType));
-
-      if fItems[I].fOwner <> nil then
-        SaveStream.Write(fItems[I].fOwner.UID) //Store ID
-      else
-        SaveStream.Write(Integer(0));
-
+      SaveStream.Write(fItems[I].fOwner.UID); //Store ID
       SaveStream.Write(fItems[I].fSpeed);
       SaveStream.Write(fItems[I].fArc);
       SaveStream.Write(fItems[I].fPosition);

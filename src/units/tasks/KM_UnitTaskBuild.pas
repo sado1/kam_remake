@@ -752,10 +752,7 @@ procedure TKMTaskBuildHouseArea.Save(SaveStream: TKMemoryStream);
 begin
   inherited;
   SaveStream.PlaceMarker('TaskBuildHouseArea');
-  if fHouse <> nil then
-    SaveStream.Write(fHouse.UID) //Store ID, then substitute it with reference on SyncLoad
-  else
-    SaveStream.Write(Integer(0));
+  SaveStream.Write(fHouse.UID); //Store ID, then substitute it with reference on SyncLoad
   SaveStream.Write(fHouseType, SizeOf(fHouseType));
   SaveStream.Write(fHouseLoc);
   SaveStream.Write(BuildID);
@@ -890,10 +887,7 @@ procedure TKMTaskBuildHouse.Save(SaveStream: TKMemoryStream);
 begin
   inherited;
   SaveStream.PlaceMarker('TaskBuildHouse');
-  if fHouse <> nil then
-    SaveStream.Write(fHouse.UID) //Store ID, then substitute it with reference on SyncLoad
-  else
-    SaveStream.Write(Integer(0));
+  SaveStream.Write(fHouse.UID); //Store ID, then substitute it with reference on SyncLoad
   SaveStream.Write(BuildID);
   SaveStream.Write(BuildFrom);
   Cells.SaveToStream(SaveStream);
@@ -1010,10 +1004,7 @@ procedure TKMTaskBuildHouseRepair.Save(SaveStream: TKMemoryStream);
 begin
   inherited;
   SaveStream.PlaceMarker('TaskBuildHouseRepair');
-  if fHouse <> nil then
-    SaveStream.Write(fHouse.UID) //Store ID, then substitute it with reference on SyncLoad
-  else
-    SaveStream.Write(Integer(0));
+  SaveStream.Write(fHouse.UID); //Store ID, then substitute it with reference on SyncLoad
   SaveStream.Write(fRepairID);
   SaveStream.Write(BuildFrom);
   Cells.SaveToStream(SaveStream);

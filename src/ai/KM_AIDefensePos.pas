@@ -145,10 +145,7 @@ begin
   SaveStream.Write(fGroupType, SizeOf(fGroupType));
   SaveStream.Write(fRadius);
   SaveStream.Write(fDefenceType, SizeOf(fDefenceType));
-  if fCurrentGroup <> nil then
-    SaveStream.Write(fCurrentGroup.UID) //Store ID
-  else
-    SaveStream.Write(Integer(0));
+  SaveStream.Write(fCurrentGroup.UID); //Store ID
 end;
 
 

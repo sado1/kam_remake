@@ -366,7 +366,8 @@ uses
   KM_UnitTaskMining,
   KM_UnitTaskSelfTrain,
   KM_UnitTaskThrowRock,
-  KM_GameTypes;
+  KM_GameTypes,
+  KM_HandTypes;
 
 
 { TKMCivilUnit }
@@ -2288,17 +2289,9 @@ begin
   SaveStream.Write(fHitPointCounter);
   SaveStream.Write(HitPointsInvulnerable);
 
-  if fInHouse <> nil then
-    SaveStream.Write(fInHouse.UID) //Store ID, then substitute it with reference on SyncLoad
-  else
-    SaveStream.Write(Integer(0));
-
+  SaveStream.Write(fInHouse.UID); //Store ID, then substitute it with reference on SyncLoad
   SaveStream.Write(fOwner, SizeOf(fOwner));
-
-  if fHome <> nil then
-    SaveStream.Write(fHome.UID) //Store ID, then substitute it with reference on SyncLoad
-  else
-    SaveStream.Write(Integer(0));
+  SaveStream.Write(fHome.UID); //Store ID, then substitute it with reference on SyncLoad
 
   SaveStream.Write(fPositionF);
   SaveStream.Write(fVisible);
@@ -2553,10 +2546,7 @@ procedure TKMUnitTask.Save(SaveStream: TKMemoryStream);
 begin
   SaveStream.PlaceMarker('UnitTask');
   SaveStream.Write(fType, SizeOf(fType)); //Save task type before anything else for it will be used on loading to create specific task type
-  if fUnit <> nil then
-    SaveStream.Write(fUnit.UID) //Store ID, then substitute it with reference on SyncLoad
-  else
-    SaveStream.Write(Integer(0));
+  SaveStream.Write(fUnit.UID); //Store ID, then substitute it with reference on SyncLoad
   SaveStream.Write(fPhase);
   SaveStream.Write(fPhase2);
   SaveStream.Write(fLastActionResult, SizeOf(fLastActionResult));
@@ -2604,10 +2594,7 @@ procedure TKMUnitAction.Save(SaveStream: TKMemoryStream);
 begin
   SaveStream.PlaceMarker('UnitAction');
   SaveStream.Write(fType, SizeOf(fType));
-  if fUnit <> nil then
-    SaveStream.Write(fUnit.UID) //Store ID, then substitute it with reference on SyncLoad
-  else
-    SaveStream.Write(Integer(0));
+  SaveStream.Write(fUnit.UID); //Store ID, then substitute it with reference on SyncLoad
   SaveStream.Write(Locked);
   SaveStream.Write(StepDone);
 end;

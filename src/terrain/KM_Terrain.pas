@@ -5037,10 +5037,7 @@ begin
       SaveStream.Write(Land[I,K].TileLock, SizeOf(Land[I,K].TileLock));
       SaveStream.Write(Land[I,K].JamMeter);
       SaveStream.Write(Land[I,K].TileOwner, SizeOf(Land[I,K].TileOwner));
-      if Land[I,K].IsUnit <> nil then
-        SaveStream.Write(TKMUnit(Land[I,K].IsUnit).UID) //Store ID, then substitute it with reference on SyncLoad
-      else
-        SaveStream.Write(Integer(0));
+      SaveStream.Write(TKMUnit(Land[I,K].IsUnit).UID); //Store ID, then substitute it with reference on SyncLoad
       SaveStream.Write(Land[I,K].IsVertexUnit, SizeOf(Land[I,K].IsVertexUnit));
     end;
 end;

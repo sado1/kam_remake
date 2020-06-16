@@ -187,14 +187,10 @@ begin
   SaveStream.Write(fTargetAim, SizeOf(fTargetAim));
   SaveStream.Write(fWalkTimeLimit, SizeOf(fWalkTimeLimit));
   SaveStream.Write(fAttackTimeLimit, SizeOf(fAttackTimeLimit));
-  if (fGroup <> nil) then       SaveStream.Write(fGroup.UID)
-  else                          SaveStream.Write(Integer(0));
-  if (fTargetGroup <> nil) then SaveStream.Write(fTargetGroup.UID)
-  else                          SaveStream.Write(Integer(0));
-  if (fTargetUnit <> nil) then  SaveStream.Write(fTargetUnit.UID)
-  else                          SaveStream.Write(Integer(0));
-  if (fTargetHouse <> nil) then SaveStream.Write(fTargetHouse.UID)
-  else                          SaveStream.Write(Integer(0));
+  SaveStream.Write(fGroup.UID);
+  SaveStream.Write(fTargetGroup.UID);
+  SaveStream.Write(fTargetUnit.UID);
+  SaveStream.Write(fTargetHouse.UID);
 end;
 
 

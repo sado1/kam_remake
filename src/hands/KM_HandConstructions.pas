@@ -352,10 +352,7 @@ begin
   SaveStream.Write(fHousesCount);
   for I := 0 to fHousesCount - 1 do
   begin
-    if fHouses[I].House <> nil then
-      SaveStream.Write(fHouses[I].House.UID)
-    else
-      SaveStream.Write(Integer(0));
+    SaveStream.Write(fHouses[I].House.UID);
     SaveStream.Write(fHouses[I].Assigned);
   end;
 end;
@@ -652,10 +649,7 @@ begin
     SaveStream.Write(fFields[I].Loc);
     SaveStream.Write(fFields[I].FieldType, SizeOf(fFields[I].FieldType));
     SaveStream.Write(fFields[I].JobStatus, SizeOf(fFields[I].JobStatus));
-    if fFields[I].Worker <> nil then
-      SaveStream.Write(fFields[I].Worker.UID)
-    else
-      SaveStream.Write(Integer(0));
+    SaveStream.Write(fFields[I].Worker.UID);
   end;
 end;
 
@@ -943,10 +937,7 @@ begin
     SaveStream.Write(HouseType, SizeOf(HouseType));
     SaveStream.Write(Loc);
     SaveStream.Write(JobStatus, SizeOf(JobStatus));
-    if Worker <> nil then
-      SaveStream.Write(Worker.UID)
-    else
-      SaveStream.Write(Integer(0));
+    SaveStream.Write(Worker.UID);
   end;
 end;
 
@@ -1109,10 +1100,7 @@ begin
   SaveStream.Write(fHousesCount);
   for I := 0 to fHousesCount - 1 do
   begin
-    if fHouses[I].House <> nil then
-      SaveStream.Write(fHouses[I].House.UID)
-    else
-      SaveStream.Write(Integer(0));
+    SaveStream.Write(fHouses[I].House.UID);
     SaveStream.Write(fHouses[I].Assigned);
   end;
 end;
@@ -1211,12 +1199,7 @@ begin
 
   SaveStream.Write(fWorkersCount);
   for I := 0 to fWorkersCount - 1 do
-  begin
-    if fWorkers[I].Worker <> nil then
-      SaveStream.Write(fWorkers[I].Worker.UID)
-    else
-      SaveStream.Write(Integer(0));
-  end;
+    SaveStream.Write(fWorkers[I].Worker.UID);
 
   fFieldworksList.Save(SaveStream);
   fHouseList.Save(SaveStream);

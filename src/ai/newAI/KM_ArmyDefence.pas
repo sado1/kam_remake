@@ -121,10 +121,7 @@ begin
   SaveStream.Write(fWeight);
   SaveStream.Write(fLine);
   SaveStream.Write(fPosition);
-  if (fGroup <> nil) then
-    SaveStream.Write(fGroup.UID) //Store ID
-  else
-    SaveStream.Write(Integer(0));
+  SaveStream.Write(fGroup.UID); //Store ID
 end;
 
 

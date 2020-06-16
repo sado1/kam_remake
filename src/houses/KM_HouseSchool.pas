@@ -79,7 +79,7 @@ procedure TKMHouseSchool.SyncLoad;
 begin
   inherited;
 
-  fUnitWip := gHands.GetUnitByUID(Cardinal(fUnitWip));
+  fUnitWip := gHands.GetUnitByUID(Integer(fUnitWip));
 end;
 
 
@@ -346,10 +346,7 @@ procedure TKMHouseSchool.Save(SaveStream: TKMemoryStream);
 begin
   inherited;
   SaveStream.PlaceMarker('HouseSchool');
-  if TKMUnit(fUnitWip) <> nil then
-    SaveStream.Write(TKMUnit(fUnitWip).UID) //Store ID, then substitute it with reference on SyncLoad
-  else
-    SaveStream.Write(Integer(0));
+  SaveStream.Write(TKMUnit(fUnitWip).UID); //Store ID, then substitute it with reference on SyncLoad
   SaveStream.Write(fHideOneGold);
   SaveStream.Write(fTrainProgress);
   SaveStream.Write(fQueue, SizeOf(fQueue));

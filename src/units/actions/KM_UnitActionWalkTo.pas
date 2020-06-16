@@ -1339,14 +1339,8 @@ begin
   SaveStream.Write(fWalkTo);
   SaveStream.Write(fNewWalkTo);
   SaveStream.Write(fDistance);
-  if fTargetUnit <> nil then
-    SaveStream.Write(fTargetUnit.UID) //Store ID, then substitute it with reference on SyncLoad
-  else
-    SaveStream.Write(Integer(0));
-  if fTargetHouse <> nil then
-    SaveStream.Write(fTargetHouse.UID) //Store ID, then substitute it with reference on SyncLoad
-  else
-    SaveStream.Write(Integer(0));
+  SaveStream.Write(fTargetUnit.UID); //Store ID, then substitute it with reference on SyncLoad
+  SaveStream.Write(fTargetHouse.UID); //Store ID, then substitute it with reference on SyncLoad
 
   SaveStream.Write(fPass,SizeOf(fPass));
   SaveStream.Write(fDoesWalking);

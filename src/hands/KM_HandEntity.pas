@@ -1,17 +1,16 @@
 unit KM_HandEntity;
 interface
 uses
-  KM_Points, KM_CommonClasses;
+  KM_Points, KM_CommonClasses, KM_HandTypes;
 
 type
-  TKMHandEntityType = (etUnit, etGroup, etHouse);
-
-
+  { Common class for TKMUnit / TKMHouse / TKMUnitGroup }
   TKMHandEntity<T> = class abstract
   private
     fUID: Integer; //unique entity ID
     fPointerCount: Cardinal;
     fType: TKMHandEntityType;
+    function GetUID: Integer;
   protected
     function GetInstance: T; virtual; abstract;
     procedure SetUID(aUID: Integer);
@@ -28,7 +27,7 @@ type
 
     property EntityType: TKMHandEntityType read fType;
 
-    property UID: Integer read fUID;
+    property UID: Integer read GetUID;
     property Position: TKMPoint read GetPosition;
 
     function ObjToString(const aSeparator: String = '|'): String; virtual;
@@ -79,6 +78,14 @@ begin
 
   Inc(fPointerCount);
   Result := GetInstance;
+end;
+
+
+function TKMHandEntity<T>.GetUID: Integer;
+begin
+  if Self = nil then Exit(NO_ENTITY_UID); // Exit with 0, if object is not set. Good UID is always > 0
+
+  Result := fUID;
 end;
 
 

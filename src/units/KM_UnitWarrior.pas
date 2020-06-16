@@ -178,22 +178,14 @@ end;
 procedure TKMUnitWarrior.Save(SaveStream: TKMemoryStream);
 begin
   inherited;
-  if (fGroup <> nil) then
-    SaveStream.Write( TKMUnitGroup(fGroup).UID) //Store ID
-  else
-    SaveStream.Write(Integer(0));
+
+  SaveStream.Write( TKMUnitGroup(fGroup).UID); //Store ID
   SaveStream.Write(fNextOrder, SizeOf(fNextOrder));
   SaveStream.Write(fNextOrderForced);
   SaveStream.Write(fOrder, SizeOf(fOrder));
   SaveStream.Write(fOrderLoc);
-  if fOrderTargetHouse <> nil then
-    SaveStream.Write(fOrderTargetHouse.UID) //Store ID
-  else
-    SaveStream.Write(Integer(0));
-  if fOrderTargetUnit <> nil then
-    SaveStream.Write(fOrderTargetUnit.UID) //Store ID
-  else
-    SaveStream.Write(Integer(0));
+  SaveStream.Write(fOrderTargetHouse.UID); //Store ID
+  SaveStream.Write(fOrderTargetUnit.UID); //Store ID
   SaveStream.Write(fRequestedFood);
   SaveStream.Write(fStormDelay);
   SaveStream.Write(fUseExactTarget);

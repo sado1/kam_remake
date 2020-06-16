@@ -124,18 +124,9 @@ procedure TKMTaskDeliver.Save(SaveStream: TKMemoryStream);
 begin
   inherited;
   SaveStream.PlaceMarker('TaskDeliver');
-  if fFrom <> nil then
-    SaveStream.Write(fFrom.UID) //Store ID, then substitute it with reference on SyncLoad
-  else
-    SaveStream.Write(Integer(0));
-  if fToHouse <> nil then
-    SaveStream.Write(fToHouse.UID) //Store ID, then substitute it with reference on SyncLoad
-  else
-    SaveStream.Write(Integer(0));
-  if fToUnit <> nil then
-    SaveStream.Write(fToUnit.UID) //Store ID, then substitute it with reference on SyncLoad
-  else
-    SaveStream.Write(Integer(0));
+  SaveStream.Write(fFrom.UID); //Store ID, then substitute it with reference on SyncLoad
+  SaveStream.Write(fToHouse.UID); //Store ID, then substitute it with reference on SyncLoad
+  SaveStream.Write(fToUnit.UID); //Store ID, then substitute it with reference on SyncLoad
   SaveStream.Write(fForceDelivery);
   SaveStream.Write(fWareType, SizeOf(fWareType));
   SaveStream.Write(fDeliverID);

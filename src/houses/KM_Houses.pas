@@ -39,6 +39,7 @@ type
     property SubAction: TKMHouseActionSet read fSubAction;
     procedure Save(SaveStream: TKMemoryStream);
     procedure Load(LoadStream: TKMemoryStream);
+    procedure SyncLoad;
   end;
 
 
@@ -365,7 +366,8 @@ uses
   KM_UnitWarrior, KM_HouseWoodcutters,
   KM_Resource, KM_ResSound, KM_ResTexts, KM_ResUnits, KM_ResMapElements,
   KM_Log, KM_ScriptingEvents, KM_CommonUtils, KM_MapEditorHistory,
-  KM_GameTypes, KM_RenderDebug;
+  KM_GameTypes, KM_RenderDebug,
+  KM_HandTypes;
 
 const
   //Delay, In ticks, from user click on DeliveryMode btn, to tick, when mode will be really set.
@@ -605,8 +607,7 @@ end;
 
 procedure TKMHouse.SyncLoad;
 begin
-  if CurrentAction <> nil then
-    CurrentAction.fHouse := gHands.GetHouseByUID(Cardinal(CurrentAction.fHouse));
+  CurrentAction.SyncLoad;
 end;
 
 
@@ -2560,10 +2561,7 @@ end;
 
 procedure TKMHouseAction.Save(SaveStream: TKMemoryStream);
 begin
-  if fHouse <> nil then
-    SaveStream.Write(fHouse.UID)
-  else
-    SaveStream.Write(Integer(0));
+  SaveStream.Write(fHouse.UID);
   SaveStream.Write(fHouseState, SizeOf(fHouseState));
   SaveStream.Write(fSubAction, SizeOf(fSubAction));
 end;
@@ -2574,6 +2572,14 @@ begin
   LoadStream.Read(fHouse, 4);
   LoadStream.Read(fHouseState, SizeOf(fHouseState));
   LoadStream.Read(fSubAction, SizeOf(fSubAction));
+end;
+
+
+procedure TKMHouseAction.SyncLoad;
+begin
+  if Self = nil then Exit;
+
+  fHouse := gHands.GetHouseByUID(Integer(fHouse));
 end;
 
 

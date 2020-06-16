@@ -193,10 +193,7 @@ procedure TKMTaskGoEat.Save(SaveStream: TKMemoryStream);
 begin
   inherited;
   SaveStream.PlaceMarker('TaskGoEat');
-  if fInn <> nil then
-    SaveStream.Write(fInn.UID) //Store ID, then substitute it with reference on SyncLoad
-  else
-    SaveStream.Write(Integer(0));
+  SaveStream.Write(fInn.UID); //Store ID, then substitute it with reference on SyncLoad
   SaveStream.Write(fPlace);
   SaveStream.Write(fFeedCnt);
 end;

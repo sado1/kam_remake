@@ -335,12 +335,7 @@ begin
 
   SaveStream.Write(fSerfCount);
   for I := 0 to fSerfCount - 1 do
-  begin
-    if fSerfs[I].Serf <> nil then
-      SaveStream.Write(fSerfs[I].Serf.UID)
-    else
-      SaveStream.Write(Integer(0));
-  end;
+    SaveStream.Write(fSerfs[I].Serf.UID);
 
   fQueue.Save(SaveStream);
 end;
@@ -2095,10 +2090,7 @@ begin
   begin
     SaveStream.Write(fOffer[I].Ware, SizeOf(fOffer[I].Ware));
     SaveStream.Write(fOffer[I].Count);
-    if fOffer[I].Loc_House <> nil then
-      SaveStream.Write(fOffer[I].Loc_House.UID)
-    else
-      SaveStream.Write(Integer(0));
+    SaveStream.Write(fOffer[I].Loc_House.UID);
     SaveStream.Write(fOffer[I].BeingPerformed);
     SaveStream.Write(fOffer[I].IsDeleted);
   end;
@@ -2112,15 +2104,8 @@ begin
     SaveStream.Write(DemandType, SizeOf(DemandType));
     SaveStream.Write(Importance, SizeOf(Importance));
 
-    if Loc_House <> nil then
-      SaveStream.Write(Loc_House.UID)
-    else
-      SaveStream.Write(Integer(0));
-
-    if Loc_Unit <> nil then
-      SaveStream.Write(Loc_Unit.UID )
-    else
-      SaveStream.Write(Integer(0));
+    SaveStream.Write(Loc_House.UID);
+    SaveStream.Write(Loc_Unit.UID );
 
     SaveStream.Write(BeingPerformed);
     SaveStream.Write(IsDeleted);
@@ -2135,10 +2120,7 @@ begin
     SaveStream.Write(fQueue[I].OfferID);
     SaveStream.Write(fQueue[I].DemandID);
     SaveStream.Write(fQueue[I].JobStatus, SizeOf(fQueue[I].JobStatus));
-    if fQueue[I].Serf  <> nil then
-      SaveStream.Write(fQueue[I].Serf.UID )
-    else
-      SaveStream.Write(Integer(0));
+    SaveStream.Write(fQueue[I].Serf.UID );
   end;
 
   fRouteEvaluator.Save(SaveStream);
