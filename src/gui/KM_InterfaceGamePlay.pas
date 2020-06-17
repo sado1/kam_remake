@@ -161,7 +161,6 @@ type
     procedure Replay_UpdatePlayerInterface(aFromPlayer, aToPlayer: Integer);
     procedure Replay_Single_SetPlayersDropbox;
     procedure Replay_Multi_SetPlayersDropbox;
-
     procedure ReplayMarkClick(aTick: Integer);
 
     procedure StopPlay(aMsg: TKMGameResultMsg; aPrepareToStopGame: Boolean = True);
@@ -334,6 +333,7 @@ type
     property GuiGameSpectator: TKMGUIGameSpectator read fGuiGameSpectator;
 
     function StatsOpened: Boolean;
+    procedure SelectEntityByUID(aUID: Integer);
 
     property Alerts: TKMAlerts read fAlerts;
 
@@ -368,7 +368,8 @@ uses
   KM_Sound, KM_NetPlayersList, KM_MessageLog, KM_NetworkTypes,
   KM_InterfaceMapEditor, KM_HouseWoodcutters, KM_MapTypes,
   KM_GameTypes, KM_GameParams, KM_Video, KM_Music,
-  KM_HandEntity;
+  KM_HandEntity,
+  KM_HandEntityHelper;
 
 const
   ALLIES_ROWS = 7;
@@ -1888,6 +1889,28 @@ begin
   finally
     FreeAndNil(ticksList);
   end;
+end;
+
+
+procedure TKMGamePlayInterface.SelectEntityByUID(aUID: Integer);
+var
+  entity: TKMHandEntity;
+begin
+  if gHands = nil then Exit;
+
+  entity := gHands.GetObjectByUID(aUID);
+  gMySpectator.HighlightDebug := entity;
+
+  if (entity = nil) or not entity.IsSelectable then Exit;
+
+  fViewport.Position := entity.PositionF;
+
+  if entity is TKMUnitWarrior then
+    gMySpectator.Selected := entity.AsUnitWarrior.Group
+  else
+    gMySpectator.Selected := entity;
+
+  UpdateSelectedObject;
 end;
 
 
@@ -4184,14 +4207,17 @@ end;
 procedure TKMGamePlayInterface.UpdateSelectedObject;
 var
   updateNewSelected: Boolean;
+  entity2UID: Integer;
 begin
   updateNewSelected := False;
+  entity2UID := 0;
   // Update unit/house information
   if gMySpectator.Selected is TKMUnitGroup then
   begin
     HidePages;
     fGuiGameUnit.ShowGroupInfo(TKMUnitGroup(gMySpectator.Selected), fGuiGameUnit.AskDismiss);
     updateNewSelected := True;
+    entity2UID := TKMUnitGroup(gMySpectator.Selected).SelectedUnit.UID;
   end else
   if gMySpectator.Selected is TKMUnit then
   begin
@@ -4217,6 +4243,8 @@ begin
 
   if updateNewSelected then
     gMySpectator.UpdateNewSelected;
+
+  gMain.FormMain.SetEntitySelected(gMySpectator.Selected.UID, gMySpectator.Selected.AsGroup.SelectedUnit.UID);
 end;
 
 

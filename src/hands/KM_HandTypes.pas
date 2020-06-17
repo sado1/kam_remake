@@ -6,7 +6,7 @@ type
         hndHuman,
         hndComputer);
 
-  TKMHandEntityType = (etUnit, etGroup, etHouse);
+  TKMHandEntityType = (etNone, etUnit, etGroup, etHouse);
 
 const
   NO_ENTITY_UID = 0;

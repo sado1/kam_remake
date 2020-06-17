@@ -156,7 +156,9 @@ uses
   KM_ResMapElements, KM_AIFields, KM_TerrainPainter, KM_GameCursor,
 
   KM_Hand, KM_UnitGroup, KM_CommonUtils,
-  KM_GameParams, KM_Utils, KM_ResTileset, KM_DevPerfLog, KM_DevPerfLogTypes;
+  KM_GameParams, KM_Utils, KM_ResTileset, KM_DevPerfLog, KM_DevPerfLogTypes,
+  KM_HandTypes,
+  KM_HandEntity;
 
 
 const
@@ -358,14 +360,43 @@ end;
 
 
 procedure TRenderPool.RenderBackgroundUI(const aRect: TKMRect);
+
+  procedure HighlightUnit(U: TKMUnit; aCol: Cardinal); inline;
+  begin
+    gRenderAux.CircleOnTerrain(U.PositionF.X - 0.5 + U.GetSlide(axX),
+                               U.PositionF.Y - 0.5 + U.GetSlide(axY),
+                               0.35, aCol, icCyan);
+  end;
+
+  procedure HighlightEntity(aEntity: TKMHandEntity);
+  var
+    I: Integer;
+    G: TKMUnitGroup;
+    col: Cardinal;
+  begin
+    if aEntity = nil then Exit;
+    
+    case aEntity.EntityType of
+      etHouse:  RenderHouseOutline(TKMHouseSketch(aEntity));  //fPositionF.X - 0.5 + GetSlide(axX), fPositionF.Y - 0.5 + GetSlide(axY), 0.35
+      etUnit:   HighlightUnit(TKMUnit(aEntity), GetRandomColorWSeed(aEntity.UID));
+      etGroup:  begin
+                  G := TKMUnitGroup(aEntity);
+                  col := GetRandomColorWSeed(G.UID);
+                  for I := 0 to G.Count - 1 do
+                    HighlightUnit(G.Members[I], col);
+                end;
+    end;
+  end;
+
+
 var
   I, K: Integer;
 begin
   //Reset Texture, just in case we forgot to do it inside some method
   TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
 
-  if gMySpectator.Highlight is TKMHouseSketch then
-    RenderHouseOutline(TKMHouseSketch(gMySpectator.Highlight));
+  HighlightEntity(gMySpectator.Highlight);
+  HighlightEntity(gMySpectator.HighlightDebug);
 
   if gGameParams.IsMapEditor then
     gGame.MapEditor.Paint(plTerrain, aRect);

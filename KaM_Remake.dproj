@@ -270,6 +270,8 @@
         <DCCReference Include="src\hands\KM_Hand.pas"/>
         <DCCReference Include="src\hands\KM_HandsCollection.pas"/>
         <DCCReference Include="src\hands\KM_HandConstructions.pas"/>
+        <DCCReference Include="src\hands\KM_HandEntity.pas"/>
+        <DCCReference Include="src\hands\KM_HandEntityHelper.pas"/>
         <DCCReference Include="src\hands\KM_HandLocks.pas"/>
         <DCCReference Include="src\hands\KM_HandLogistics.pas"/>
         <DCCReference Include="src\hands\KM_HandSpectator.pas"/>

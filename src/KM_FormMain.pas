@@ -184,18 +184,24 @@ type
     Label8: TLabel;
     Label9: TLabel;
     seMakeSaveptBeforeTick: TSpinEdit;
-    edDebugText: TEdit;
-    seDebugValue: TSpinEdit;
-    Label10: TLabel;
-    Label11: TLabel;
     Label12: TLabel;
     seCustomSeed: TSpinEdit;
     chkUIFocusedControl: TCheckBox;
     chkUIControlOver: TCheckBox;
     chkPaintSounds: TCheckBox;
+    GroupBox1: TGroupBox;
     seFindObjByUID: TSpinEdit;
-    Label13: TLabel;
     btFindObjByUID: TButton;
+    Label14: TLabel;
+    seEntityUID: TSpinEdit;
+    Label15: TLabel;
+    seWarriorUID: TSpinEdit;
+    GroupBox2: TGroupBox;
+    Label10: TLabel;
+    Label11: TLabel;
+    seDebugValue: TSpinEdit;
+    edDebugText: TEdit;
+    Label13: TLabel;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -255,9 +261,9 @@ type
     procedure ReloadLibxClick(Sender: TObject);
     procedure Debug_UnlockCmpMissionsClick(Sender: TObject);
     procedure mnExportRngChecksClick(Sender: TObject);
+    procedure btFindObjByUIDClick(Sender: TObject);
 
     procedure ControlsUpdate(Sender: TObject);
-    procedure btFindObjByUIDClick(Sender: TObject);
   private
     fStartVideoPlayed: Boolean;
     fUpdating: Boolean;
@@ -287,6 +293,7 @@ type
     procedure SetSaveEditableMission(aEnabled: Boolean);
     procedure SetExportGameStats(aEnabled: Boolean);
     procedure ShowFolderPermissionError;
+    procedure SetEntitySelected(aEntityUID: Integer; aEntity2UID: Integer = 0);
     property OnControlsUpdated: TObjectIntegerEvent read fOnControlsUpdated write fOnControlsUpdated;
   end;
 
@@ -315,7 +322,8 @@ uses
   KM_ResKeys, KM_FormLogistics, KM_Game,
   KM_RandomChecks,
   KM_Log, KM_CommonClasses, KM_Helpers, KM_Video,
-  KM_Settings;
+  KM_Settings,
+  KM_HandEntity;
 
 
 //Remove VCL panel and use flicker-free TMyPanel instead
@@ -774,8 +782,11 @@ end;
 
 procedure TFormMain.btFindObjByUIDClick(Sender: TObject);
 begin
-  //
+  if gGameApp.Game = nil then Exit;
+
+  gGameApp.Game.GamePlayInterface.SelectEntityByUID(seFindObjByUID.Value);
 end;
+
 
 procedure TFormMain.Button_StopClick(Sender: TObject);
 begin
@@ -893,6 +904,28 @@ begin
     FormLogistics.Clear;
 
   ControlsUpdate(nil);
+end;
+
+
+procedure TFormMain.SetEntitySelected(aEntityUID: Integer; aEntity2UID: Integer = 0);
+begin
+  // Update values only if Debug panel is opened or if we are debugging
+  if not SHOW_DEBUG_CONTROLS and {$IFDEF DEBUG} False {$ELSE} True {$ENDIF} then Exit;
+  // Can't change anything if debug change is not allowed
+  if not gMain.IsDebugChangeAllowed then Exit;
+
+  seEntityUID.SetValueWithoutChange(aEntityUID);
+  seWarriorUID.SetValueWithoutChange(aEntity2UID);
+
+  if GetKeyState(VK_CONTROL) < 0 then
+    seFindObjByUID.Value := aEntityUID // will trigger OnChange
+  else
+  if GetKeyState(VK_SHIFT) < 0 then
+  begin
+    if aEntity2UID = 0 then
+      aEntity2UID := aEntityUID;
+    seFindObjByUID.Value := aEntity2UID; // will trigger OnChange
+  end
 end;
 
 
@@ -1064,8 +1097,7 @@ begin
     SKIP_SOUND := chkSkipSound.Checked;
     DISPLAY_SOUNDS := chkPaintSounds.Checked;
 
-    if seFindObjByUID.Value <> 0 then
-      btFindObjByUIDClick(nil);
+    btFindObjByUIDClick(nil);
   end;
 
   //AI

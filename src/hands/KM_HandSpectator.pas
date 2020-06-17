@@ -15,6 +15,7 @@ type
     fHandIndex: TKMHandID;
     fHighlight: TKMHandEntity; //Unit/House/Group that is shown highlighted to draw players attention
     fHighlightEnd: Cardinal; //Highlight has a short time to live
+    fHighlightDebug: TKMHandEntity; //Unit/House/Group that is shown highlighted to draw players attention
     fSelected: TKMHandEntity;
     fLastSelected: TKMHandEntity;
     fIsSelectedMyObj: Boolean; // We can select ally's house/unit
@@ -35,6 +36,7 @@ type
     constructor Create(aHandIndex: TKMHandID);
     destructor Destroy; override;
     property Highlight: TKMHandEntity read fHighlight write SetHighlight;
+    property HighlightDebug: TKMHandEntity read fHighlightDebug write fHighlightDebug;
     property Selected: TKMHandEntity read GetSelected write SetSelected;
     property LastSelected: TKMHandEntity read fLastSelected;
     property IsSelectedMyObj: Boolean read fIsSelectedMyObj write fIsSelectedMyObj;

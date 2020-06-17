@@ -12,6 +12,7 @@ type
     fOwner: TKMHandID;
     function GetUID: Integer;
     function GetOwner: TKMHandID;
+    function GetType: TKMHandEntityType;
   protected
     procedure SetUID(aUID: Integer);
     function GetPosition: TKMPoint; virtual; abstract;
@@ -23,7 +24,7 @@ type
     constructor Load(LoadStream: TKMemoryStream); virtual;
     procedure Save(SaveStream: TKMemoryStream); virtual;
 
-    property EntityType: TKMHandEntityType read fType;
+    property EntityType: TKMHandEntityType read GetType;
     property Owner: TKMHandID read GetOwner write SetOwner;
 
     property UID: Integer read GetUID;
@@ -97,6 +98,14 @@ begin
   if Self = nil then Exit(-1);
 
   Result := fOwner;
+end;
+
+
+function TKMHandEntity.GetType: TKMHandEntityType;
+begin
+  if Self = nil then Exit(etNone);
+
+  Result := fType;
 end;
 
 
