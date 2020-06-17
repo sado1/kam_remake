@@ -1481,3 +1481,4 @@ TX_MAPED_VIEW_DEFENCES = 1435; //Show defence positions
 TX_MAPED_VIEW_FLAT_TERRAIN = 1436; //Show flat terrain
 
 TX_GAME_CHANGE_IS_NOT_ALLOWED_MSG = 1437; //Game speed could be changed by host only if there are no active player on the map
+TX_RESOURCE_EXPORT_DONE_MSG = 1438; //Resource export complete: [ %s ]

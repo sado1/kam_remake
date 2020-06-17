@@ -227,6 +227,7 @@ type
     procedure ExitClick(Sender: TObject);
     procedure Debug_PrintScreenClick(Sender: TObject);
     procedure MenuItem1Click(Sender: TObject);
+
     procedure Export_TreesRXClick(Sender: TObject);
     procedure Export_HousesRXClick(Sender: TObject);
     procedure Export_UnitsRXClick(Sender: TObject);
@@ -240,6 +241,10 @@ type
     procedure Export_TreeAnim1Click(Sender: TObject);
     procedure Export_Fonts1Click(Sender: TObject);
     procedure Export_DeliverLists1Click(Sender: TObject);
+    procedure UnitAnim_AllClick(Sender: TObject);
+    procedure SoldiersClick(Sender: TObject);
+    procedure Civilians1Click(Sender: TObject);
+
     procedure Button_StopClick(Sender: TObject);
     procedure RGPlayerClick(Sender: TObject);
     procedure Open_MissionMenuClick(Sender: TObject);
@@ -250,9 +255,6 @@ type
     procedure ExportGameStatsClick(Sender: TObject);
     procedure ResourceValues1Click(Sender: TObject);
     procedure Debug_ShowLogisticsClick(Sender: TObject);
-    procedure UnitAnim_AllClick(Sender: TObject);
-    procedure SoldiersClick(Sender: TObject);
-    procedure Civilians1Click(Sender: TObject);
     procedure ReloadSettingsClick(Sender: TObject);
     procedure SaveSettingsClick(Sender: TObject);
     procedure SaveEditableMission1Click(Sender: TObject);
@@ -324,6 +326,12 @@ uses
   KM_Log, KM_CommonClasses, KM_Helpers, KM_Video,
   KM_Settings,
   KM_HandEntity;
+
+
+procedure ExportDone(aResourceName: String);
+begin
+  MessageDlg(Format(gResTexts[TX_RESOURCE_EXPORT_DONE_MSG], [aResourceName]), mtInformation, [mbOk], 0);
+end;
 
 
 //Remove VCL panel and use flicker-free TMyPanel instead
@@ -617,17 +625,17 @@ end;
 //Exports
 procedure TFormMain.Export_TreesRXClick(Sender: TObject);
 begin
-  gRes.ExportSpritesToPNG(rxTrees);
+  gRes.ExportSpritesToPNG(rxTrees, ExportDone);
 end;
 
 procedure TFormMain.Export_HousesRXClick(Sender: TObject);
 begin
-  gRes.ExportSpritesToPNG(rxHouses);
+  gRes.ExportSpritesToPNG(rxHouses, ExportDone);
 end;
 
 procedure TFormMain.Export_UnitsRXClick(Sender: TObject);
 begin
-  gRes.ExportSpritesToPNG(rxUnits);
+  gRes.ExportSpritesToPNG(rxUnits, ExportDone);
 end;
 
 procedure TFormMain.Export_ScriptDataClick(Sender: TObject);
@@ -640,22 +648,22 @@ end;
 
 procedure TFormMain.Export_GUIClick(Sender: TObject);
 begin
-  gRes.ExportSpritesToPNG(rxGUI);
+  gRes.ExportSpritesToPNG(rxGUI, ExportDone);
 end;
 
 procedure TFormMain.Export_GUIMainRXClick(Sender: TObject);
 begin
-  gRes.ExportSpritesToPNG(rxGUIMain);
+  gRes.ExportSpritesToPNG(rxGUIMain, ExportDone);
 end;
 
 procedure TFormMain.Export_CustomClick(Sender: TObject);
 begin
-  gRes.ExportSpritesToPNG(rxCustom);
+  gRes.ExportSpritesToPNG(rxCustom, ExportDone);
 end;
 
 procedure TFormMain.Export_TilesetClick(Sender: TObject);
 begin
-  gRes.ExportSpritesToPNG(rxTiles);
+  gRes.ExportSpritesToPNG(rxTiles, ExportDone);
 end;
 
 procedure TFormMain.Export_Sounds1Click(Sender: TObject);
@@ -665,12 +673,12 @@ end;
 
 procedure TFormMain.Export_TreeAnim1Click(Sender: TObject);
 begin
-  gRes.ExportTreeAnim;
+  gRes.ExportTreeAnim(ExportDone);
 end;
 
 procedure TFormMain.Export_HouseAnim1Click(Sender: TObject);
 begin
-  gRes.ExportHouseAnim;
+  gRes.ExportHouseAnim(ExportDone);
 end;
 
 
@@ -759,9 +767,21 @@ begin
 end;
 
 
+procedure TFormMain.UnitAnim_AllClick(Sender: TObject);
+begin
+  gRes.ExportUnitAnim(UNIT_MIN, UNIT_MAX, True, ExportDone);
+end;
+
+
+procedure TFormMain.Civilians1Click(Sender: TObject);
+begin
+  gRes.ExportUnitAnim(CITIZEN_MIN, CITIZEN_MAX, False, ExportDone);
+end;
+
+
 procedure TFormMain.SoldiersClick(Sender: TObject);
 begin
-  gRes.ExportUnitAnim(WARRIOR_MIN, WARRIOR_MAX);
+  gRes.ExportUnitAnim(WARRIOR_MIN, WARRIOR_MAX, False, ExportDone);
 end;
 
 
@@ -797,12 +817,6 @@ begin
       gGameApp.StopGame(grCancel);
 
   ActiveControl := nil; //Do not allow to focus on anything on debug panel
-end;
-
-
-procedure TFormMain.Civilians1Click(Sender: TObject);
-begin
-  gRes.ExportUnitAnim(CITIZEN_MIN, CITIZEN_MAX);
 end;
 
 
@@ -1255,12 +1269,6 @@ begin
 
   //Make sure Panel is properly aligned
   RenderArea.Align := alClient;
-end;
-
-
-procedure TFormMain.UnitAnim_AllClick(Sender: TObject);
-begin
-  gRes.ExportUnitAnim(UNIT_MIN, UNIT_MAX, True);
 end;
 
 
