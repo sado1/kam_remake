@@ -88,6 +88,7 @@ object FormMain: TFormMain
       Caption = 'Misc'
       Collapsed = True
       TabOrder = 0
+      ExplicitTop = 985
       ExpandedHeight = 158
       object chkBevel: TCheckBox
         Left = 168
@@ -139,6 +140,7 @@ object FormMain: TFormMain
       Caption = 'Logs'
       Collapsed = True
       TabOrder = 1
+      ExplicitTop = 961
       ExpandedHeight = 179
       object chkLogCommands: TCheckBox
         Left = 120
@@ -231,6 +233,7 @@ object FormMain: TFormMain
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 2
+      ExplicitTop = 937
       ExpandedHeight = 133
       object Label1: TLabel
         Left = 101
@@ -342,6 +345,7 @@ object FormMain: TFormMain
       Caption = 'User Interface'
       Collapsed = True
       TabOrder = 3
+      ExplicitTop = 913
       ExpandedHeight = 85
       object chkUIControlsBounds: TCheckBox
         Left = 8
@@ -395,6 +399,7 @@ object FormMain: TFormMain
       Caption = 'Perf Logs'
       Collapsed = True
       TabOrder = 4
+      ExplicitTop = 889
       ExpandedHeight = 660
     end
     object cpAI: TCategoryPanel
@@ -403,6 +408,8 @@ object FormMain: TFormMain
       Caption = 'AI'
       Collapsed = True
       TabOrder = 5
+      ExplicitTop = 193
+      ExplicitWidth = 256
       object Label5: TLabel
         Left = 202
         Top = 111
@@ -587,7 +594,7 @@ object FormMain: TFormMain
       object chkShowAlliedGroups: TCheckBox
         Left = 8
         Top = 135
-        Width = 72
+        Width = 89
         Height = 17
         Caption = 'Allied Groups'
         TabOrder = 17
@@ -672,6 +679,7 @@ object FormMain: TFormMain
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 8
+      ExplicitWidth = 256
       object Label2: TLabel
         Left = 136
         Top = 5
