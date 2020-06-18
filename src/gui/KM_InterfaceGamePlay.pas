@@ -4207,17 +4207,14 @@ end;
 procedure TKMGamePlayInterface.UpdateSelectedObject;
 var
   updateNewSelected: Boolean;
-  entity2UID: Integer;
 begin
   updateNewSelected := False;
-  entity2UID := 0;
   // Update unit/house information
   if gMySpectator.Selected is TKMUnitGroup then
   begin
     HidePages;
     fGuiGameUnit.ShowGroupInfo(TKMUnitGroup(gMySpectator.Selected), fGuiGameUnit.AskDismiss);
     updateNewSelected := True;
-    entity2UID := TKMUnitGroup(gMySpectator.Selected).SelectedUnit.UID;
   end else
   if gMySpectator.Selected is TKMUnit then
   begin
