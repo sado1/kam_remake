@@ -1,7 +1,7 @@
 unit KM_Helpers;
 interface
 uses
-  Vcl.StdCtrls, Vcl.Samples.Spin;
+  Vcl.StdCtrls, Vcl.Samples.Spin, ExtCtrls;
 
 
 type
@@ -20,9 +20,17 @@ type
     procedure SetValueWithoutChange(const aValue: Integer);
   end;
 
+
+  TCategoryPanelHelper = class helper for TCategoryPanel
+  private
+    function GetXmlSectionName: string;
+  public
+    property XmlSectionName: string read GetXmlSectionName;
+  end;
+
 implementation
 uses
-  Classes;
+  Classes, SysUtils;
 
 
 { TCheckBoxHelper }
@@ -82,6 +90,13 @@ begin
     OnChange := bckEvent;
   end;
 
+end;
+
+
+{ TCategoryPanelHelper }
+function TCategoryPanelHelper.GetXmlSectionName: string;
+begin
+  Result := StringReplace(Caption, ' ', '_', [rfReplaceAll]);
 end;
 
 

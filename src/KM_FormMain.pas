@@ -270,6 +270,7 @@ type
 
     procedure ControlsUpdate(Sender: TObject);
   private
+    fDevSettingsFilepath: string;
     fStartVideoPlayed: Boolean;
     fUpdating: Boolean;
     fMissionDefOpenPath: UnicodeString;
@@ -278,6 +279,8 @@ type
     procedure FormKeyUpProc(aKey: Word; aShift: TShiftState);
 //    function ConfirmExport: Boolean;
     function GetMouseWheelStepsCnt(aWheelData: Integer): Integer;
+    procedure LoadDevSettings;
+    procedure SaveDevSettings;
     {$IFDEF MSWindows}
     function GetWindowParams: TKMWindowParamsRecord;
     procedure WMSysCommand(var Msg: TWMSysCommand); message WM_SYSCOMMAND;
@@ -328,7 +331,8 @@ uses
   KM_RandomChecks,
   KM_Log, KM_CommonClasses, KM_Helpers, KM_Video,
   KM_Settings,
-  KM_HandEntity;
+  KM_HandEntity,
+  KM_IoXML;
 
 
 procedure ExportDone(aResourceName: String);
@@ -337,9 +341,82 @@ begin
 end;
 
 
+// Load dev settings from kmr_dev.xml
+procedure TFormMain.LoadDevSettings;
+var
+  I: Integer;
+  newXML: TKMXMLDocument;
+  cp: TCategoryPanel;
+  cpName: string;
+  nRoot, nSection: TXMLNode;
+begin                           
+  // Apply default settings
+  if not FileExists(fDevSettingsFilepath) then
+  begin
+    for I := 0 to mainGroup.Panels.Count - 1 do
+      TCategoryPanel(mainGroup.Panels[I]).Collapsed := True;
+      
+    cpGameControls.Collapsed := False; //The only not collapsed section
+    Exit;
+  end;
+  
+  //Load dev data from XML
+  newXML := TKMXMLDocument.Create;
+  newXML.LoadFromFile(ExeDir + DEV_SETTINGS_XML_FILENAME);
+  nRoot := newXML.Root;
+
+  for I := 0 to mainGroup.Panels.Count - 1 do
+  begin
+    cp := TCategoryPanel(mainGroup.Panels[I]);
+    cpName := cp.XmlSectionName;
+
+    if nRoot.HasChild(cpName) then
+    begin
+      nSection := nRoot.ChildNodes.FindNode(cpName);
+      cp.Collapsed := nSection.Attributes['Collapsed'].AsBoolean(True);
+    end;
+  end;
+
+  newXML.Free;
+end;
+
+
+// Save dev settings to kmr_dev.xml
+procedure TFormMain.SaveDevSettings;
+var
+  I: Integer;
+  newXML: TKMXMLDocument;
+  cp: TCategoryPanel;
+  cpName: string;
+  nRoot, nSection: TXMLNode;
+begin
+  //Save dev data to XML
+  newXML := TKMXMLDocument.Create;
+  newXML.LoadFromFile(fDevSettingsFilepath);
+  nRoot := newXML.Root;
+
+  for I := 0 to mainGroup.Panels.Count - 1 do
+  begin
+    cp := TCategoryPanel(mainGroup.Panels[I]);
+    cpName := cp.XmlSectionName;
+
+    if not nRoot.HasChild(cpName) then
+      nSection := nRoot.AddChild(cpName)
+    else
+      nSection := nRoot.ChildNodes.FindNode(cpName);
+
+    nSection.Attributes['Collapsed'] := cp.Collapsed;
+  end;
+
+  newXML.SaveToFile(fDevSettingsFilepath);
+  newXML.Free;
+end;
+
+
 //Remove VCL panel and use flicker-free TMyPanel instead
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
+  fDevSettingsFilepath := ExeDir + DEV_SETTINGS_XML_FILENAME;
   fStartVideoPlayed := False;
   RenderArea := TKMRenderControl.Create(Self);
   RenderArea.Parent := Self;
@@ -375,6 +452,8 @@ begin
   {$ENDIF}
 
   chkShowFlatTerrain.Tag := Ord(dcFlatTerrain);
+
+  LoadDevSettings;
 end;
 
 procedure TFormMain.FormShow(Sender: TObject);
@@ -1569,6 +1648,7 @@ end;
 
 procedure TFormMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+  SaveDevSettings;
   gMain.Stop(Self);
 end;
 

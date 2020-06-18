@@ -864,6 +864,9 @@ type
 
   TKMDebugControls = (dcNone, dcFlatTerrain);
 
+const
+  DEV_SETTINGS_XML_FILENAME = 'kmr_dev.xml';
+
 
 const
   //Colors available for selection in multiplayer
