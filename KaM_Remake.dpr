@@ -332,6 +332,7 @@ uses
 
   KM_BinPacking in 'src\utils\KM_BinPacking.pas',
   KM_CommonUtils in 'src\utils\KM_CommonUtils.pas',
+  KM_IoXML in 'src\utils\KM_IoXML.pas',
   KM_FileIO in 'src\utils\KM_FileIO.pas',
   KM_FloodFill in 'src\utils\KM_FloodFill.pas',
   KM_Helpers in 'src\utils\KM_Helpers.pas',
