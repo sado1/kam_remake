@@ -1123,7 +1123,7 @@ object FormMain: TFormMain
     object cpGameControls: TCategoryPanel
       Top = 0
       Height = 121
-      Caption = 'Game '
+      Caption = 'Game'
       TabOrder = 9
       object Label8: TLabel
         Left = 70
