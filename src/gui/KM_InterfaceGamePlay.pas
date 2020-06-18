@@ -4509,11 +4509,15 @@ begin
 
   Label_DebugInfo.Caption := S;
   Label_DebugInfo.Visible := (Trim(S) <> '');
+  Label_DebugInfo.Monospaced := DEBUG_TEXT_MONOSPACED;
+
+  Assert(InRange(DEBUG_TEXT_FONT_ID, Byte(Low(TKMFont)), Byte(High(TKMFont))));
+  Label_DebugInfo.Font := TKMFont(DEBUG_TEXT_FONT_ID);
 
   if Label_DebugInfo.Monospaced then
-    textSize := gRes.Fonts[fntMini].GetMonospacedTextSize(S)
+    textSize := gRes.Fonts[Label_DebugInfo.Font].GetMonospacedTextSize(S)
   else
-    textSize := gRes.Fonts[fntMini].GetTextSize(S);
+    textSize := gRes.Fonts[Label_DebugInfo.Font].GetTextSize(S);
 
   Bevel_DebugInfo.Width := IfThen(textSize.X <= 1, 0, textSize.X + 20);
   Bevel_DebugInfo.Height := IfThen(textSize.Y <= 1, 0, textSize.Y + 20);

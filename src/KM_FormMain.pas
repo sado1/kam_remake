@@ -101,7 +101,6 @@ type
     SaveDialog1: TSaveDialog;
     chkLogCommands: TCheckBox;
     ScriptData1: TMenuItem;
-    chkBevel: TCheckBox;
     chkTilesGrid: TCheckBox;
     N6: TMenuItem;
     GameStats: TMenuItem;
@@ -202,6 +201,10 @@ type
     seDebugValue: TSpinEdit;
     edDebugText: TEdit;
     Label13: TLabel;
+    CategoryPanel1: TCategoryPanel;
+    chkBevel: TCheckBox;
+    rgDebugFont: TRadioGroup;
+    chkMonospacedFont: TCheckBox;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -860,7 +863,8 @@ procedure TFormMain.ControlsReset;
         if PanelSurface.Controls[I] is TTrackBar then
           TTrackBar(PanelSurface.Controls[I]).Position := 0
         else
-        if PanelSurface.Controls[I] is TRadioGroup then
+        if (PanelSurface.Controls[I] is TRadioGroup)
+          and (PanelSurface.Controls[I] <> rgDebugFont) then
           TRadioGroup(PanelSurface.Controls[I]).ItemIndex := 0;
       end;
     end;
@@ -945,46 +949,56 @@ end;
 
 procedure TFormMain.ControlsRefill;
 begin
-  {$IFDEF WDC}
-  chkSnowHouses.        SetCheckedWithoutClick(gGameSettings.AllowSnowHouses); // Snow houses checkbox could be updated before game
-  chkInterpolatedRender.SetCheckedWithoutClick(gGameSettings.InterpolatedRender); // Snow houses checkbox could be updated before game
-  chkLoadUnsupSaves.    SetCheckedWithoutClick(ALLOW_LOAD_UNSUP_VERSION_SAVE);
-  chkDebugScripting.    SetCheckedWithoutClick(DEBUG_SCRIPTING_EXEC);
-  chkPaintSounds.       SetCheckedWithoutClick(DISPLAY_SOUNDS);
-  chkSkipRender.        SetCheckedWithoutClick(SKIP_RENDER);
-  chkSkipSound.         SetCheckedWithoutClick(SKIP_SOUND);
-  chkShowGameTick.      SetCheckedWithoutClick(SHOW_GAME_TICK);
-  {$ENDIF}
+  fUpdating := True;
 
-  if (gGame = nil) or not gMain.IsDebugChangeAllowed then Exit;
+  try
+    {$IFDEF WDC}
+    chkSnowHouses.        SetCheckedWithoutClick(gGameSettings.AllowSnowHouses); // Snow houses checkbox could be updated before game
+    chkInterpolatedRender.SetCheckedWithoutClick(gGameSettings.InterpolatedRender); // Snow houses checkbox could be updated before game
+    chkLoadUnsupSaves.    SetCheckedWithoutClick(ALLOW_LOAD_UNSUP_VERSION_SAVE);
+    chkDebugScripting.    SetCheckedWithoutClick(DEBUG_SCRIPTING_EXEC);
+    chkPaintSounds.       SetCheckedWithoutClick(DISPLAY_SOUNDS);
+    chkSkipRender.        SetCheckedWithoutClick(SKIP_RENDER);
+    chkSkipSound.         SetCheckedWithoutClick(SKIP_SOUND);
+    chkShowGameTick.      SetCheckedWithoutClick(SHOW_GAME_TICK);
+    chkBevel.             SetCheckedWithoutClick(SHOW_DEBUG_OVERLAY_BEVEL);
+    chkMonospacedFont.    SetCheckedWithoutClick(DEBUG_TEXT_MONOSPACED);
+    rgDebugFont.ItemIndex := DEBUG_TEXT_FONT_ID;
+    {$ENDIF}
 
-  tbPassability.Max := Byte(High(TKMTerrainPassability));
-  tbPassability.Position := SHOW_TERRAIN_PASS;
-  Label2.Caption := IfThen(SHOW_TERRAIN_PASS <> 0, PASSABILITY_GUI_TEXT[TKMTerrainPassability(SHOW_TERRAIN_PASS)], '');
+    if (gGame = nil) or not gMain.IsDebugChangeAllowed then Exit;
 
-  chkShowWires.       SetCheckedWithoutClick(SHOW_TERRAIN_WIRES);
-  chkShowTerrainIds.  SetCheckedWithoutClick(SHOW_TERRAIN_IDS);
-  chkShowTerrainKinds.SetCheckedWithoutClick(SHOW_TERRAIN_KINDS);
-  chkTilesGrid.       SetCheckedWithoutClick(SHOW_TERRAIN_TILES_GRID);
-  chkTileOwner.       SetCheckedWithoutClick(SHOW_TILES_OWNER);
-  chkTileObject.      SetCheckedWithoutClick(SHOW_TILE_OBJECT_ID);
-  chkTreeAge.         SetCheckedWithoutClick(SHOW_TREE_AGE);
-  chkFieldAge.        SetCheckedWithoutClick(SHOW_FIELD_AGE);
-  chkTileLock.        SetCheckedWithoutClick(SHOW_TILE_LOCK);
-  chkTileUnit.        SetCheckedWithoutClick(SHOW_TILE_UNIT);
-  chkVertexUnit.      SetCheckedWithoutClick(SHOW_VERTEX_UNIT);
-  chkShowRoutes.      SetCheckedWithoutClick(SHOW_UNIT_ROUTES);
-  chkSelectionBuffer. SetCheckedWithoutClick(SHOW_SEL_BUFFER);
+    tbPassability.Max := Byte(High(TKMTerrainPassability));
+    tbPassability.Position := SHOW_TERRAIN_PASS;
+    Label2.Caption := IfThen(SHOW_TERRAIN_PASS <> 0, PASSABILITY_GUI_TEXT[TKMTerrainPassability(SHOW_TERRAIN_PASS)], '');
 
-  chkShowObjects.     SetCheckedWithoutClick(mlObjects            in gGameParams.VisibleLayers);
-  chkShowHouses.      SetCheckedWithoutClick(mlHouses             in gGameParams.VisibleLayers);
-  chkShowUnits.       SetCheckedWithoutClick(mlUnits              in gGameParams.VisibleLayers);
-  chkShowOverlays.    SetCheckedWithoutClick(mlOverlays           in gGameParams.VisibleLayers);
-  chkShowMiningRadius.SetCheckedWithoutClick(mlMiningRadius       in gGameParams.VisibleLayers);
-  chkShowTowerRadius. SetCheckedWithoutClick(mlTowersAttackRadius in gGameParams.VisibleLayers);
-  chkShowUnitRadius.  SetCheckedWithoutClick(mlUnitsAttackRadius  in gGameParams.VisibleLayers);
-  chkShowDefencePos.  SetCheckedWithoutClick(mlDefencesAll        in gGameParams.VisibleLayers);
-  chkShowFlatTerrain. SetCheckedWithoutClick(mlFlatTerrain        in gGameParams.VisibleLayers);
+    chkShowWires.       SetCheckedWithoutClick(SHOW_TERRAIN_WIRES);
+    chkShowTerrainIds.  SetCheckedWithoutClick(SHOW_TERRAIN_IDS);
+    chkShowTerrainKinds.SetCheckedWithoutClick(SHOW_TERRAIN_KINDS);
+    chkTilesGrid.       SetCheckedWithoutClick(SHOW_TERRAIN_TILES_GRID);
+    chkTileOwner.       SetCheckedWithoutClick(SHOW_TILES_OWNER);
+    chkTileObject.      SetCheckedWithoutClick(SHOW_TILE_OBJECT_ID);
+    chkTreeAge.         SetCheckedWithoutClick(SHOW_TREE_AGE);
+    chkFieldAge.        SetCheckedWithoutClick(SHOW_FIELD_AGE);
+    chkTileLock.        SetCheckedWithoutClick(SHOW_TILE_LOCK);
+    chkTileUnit.        SetCheckedWithoutClick(SHOW_TILE_UNIT);
+    chkVertexUnit.      SetCheckedWithoutClick(SHOW_VERTEX_UNIT);
+    chkShowRoutes.      SetCheckedWithoutClick(SHOW_UNIT_ROUTES);
+    chkSelectionBuffer. SetCheckedWithoutClick(SHOW_SEL_BUFFER);
+
+    chkShowObjects.     SetCheckedWithoutClick(mlObjects            in gGameParams.VisibleLayers);
+    chkShowHouses.      SetCheckedWithoutClick(mlHouses             in gGameParams.VisibleLayers);
+    chkShowUnits.       SetCheckedWithoutClick(mlUnits              in gGameParams.VisibleLayers);
+    chkShowOverlays.    SetCheckedWithoutClick(mlOverlays           in gGameParams.VisibleLayers);
+    chkShowMiningRadius.SetCheckedWithoutClick(mlMiningRadius       in gGameParams.VisibleLayers);
+    chkShowTowerRadius. SetCheckedWithoutClick(mlTowersAttackRadius in gGameParams.VisibleLayers);
+    chkShowUnitRadius.  SetCheckedWithoutClick(mlUnitsAttackRadius  in gGameParams.VisibleLayers);
+    chkShowDefencePos.  SetCheckedWithoutClick(mlDefencesAll        in gGameParams.VisibleLayers);
+    chkShowFlatTerrain. SetCheckedWithoutClick(mlFlatTerrain        in gGameParams.VisibleLayers);
+
+  finally
+    fUpdating := False;
+  end;
 end;
 
 
@@ -1118,7 +1132,6 @@ begin
   if AllowDebugChange then
   begin
     SHOW_AI_WARE_BALANCE := chkShowBalance.Checked;
-    SHOW_DEBUG_OVERLAY_BEVEL := chkBevel.Checked;
     OVERLAY_DEFENCES := chkShowDefences.Checked;
     OVERLAY_DEFENCES_A := chkShowDefencesAnimate.Checked;
     OVERLAY_AI_BUILD := chkBuild.Checked;
@@ -1222,6 +1235,15 @@ begin
       else  raise Exception.Create('Unexpected RGLogNetPackets.ItemIndex = ' + IntToStr(RGLogNetPackets.ItemIndex));
     end;
   end;
+
+  //Misc
+  if AllowDebugChange then
+  begin
+    SHOW_DEBUG_OVERLAY_BEVEL := chkBevel.Checked;
+    DEBUG_TEXT_MONOSPACED := chkMonospacedFont.Checked;
+    DEBUG_TEXT_FONT_ID := rgDebugFont.ItemIndex;
+  end;
+
 
   if gGameApp.Game <> nil then
     gGameApp.Game.ActiveInterface.UpdateState(gGameApp.GlobalTickCount);
