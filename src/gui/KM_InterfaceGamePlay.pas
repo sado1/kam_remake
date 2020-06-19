@@ -385,7 +385,7 @@ begin
     if InRange(TKMListBox(Sender).ItemIndex, 0, fSaves.Count-1) then
     begin
       fSave_Selected := TKMListBox(Sender).ItemIndex;
-      Edit_Save.Text := fSaves[ListBox_Save.ItemIndex].FileName;
+      Edit_Save.SetTextSilently(fSaves[ListBox_Save.ItemIndex].FileName);
       // We just selected something from the list so it exists
       CheckBox_SaveExists.Enabled := True;
       CheckBox_SaveExists.Checked := False;
