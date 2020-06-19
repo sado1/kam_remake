@@ -2460,6 +2460,8 @@ var
   calculatedTick: Single;
   timeSince: Cardinal;
 begin
+  if Self = nil then Exit(0);
+
   //Lets calculate tick, that shoud be at that moment in theory, depending of speed multiplier and game duration
   timeSince := GetTimeSince(fSpeedChangeTime);
   calculatedTick := timeSince*fSpeedActual/gGameSettings.SpeedPace - fPausedTicksCnt;
@@ -2472,6 +2474,8 @@ procedure TKMGame.UpdateTickCounters;
 var
   ticksBehind: Single;
 begin
+  if Self = nil then Exit;
+
   ticksBehind := GetTicksBehindCnt; // save number of ticks we are behind now
   fSpeedChangeTick := fParams.Tick;
   if fParams.IsMultiPlayerOrSpec and not IsMPGameSpeedChangeAllowed then
@@ -2497,6 +2501,8 @@ var
   I: Integer;
   ticksBehindCnt: Single;
 begin
+  if Self = nil then Exit;
+  
   DoUpdateGame;
 
   if CALC_EXPECTED_TICK then
