@@ -320,7 +320,7 @@ type
     function MakeCommand(aGIC: TKMGameInputCommandType; const aAnsiTxtParam: AnsiString; const aUniTxtArray: TKMScriptCommandParamsArray): TKMGameInputCommand; overload;
     function MakeCommand(aGIC: TKMGameInputCommandType; aDateTimeParam: TDateTime): TKMGameInputCommand; overload;
     procedure TakeCommand(const aCommand: TKMGameInputCommand);
-    procedure DoTakeCommand(const aCommand: TKMGameInputCommand); virtual; abstract;
+    procedure DoTakeCommand(const aCommand: TKMGameInputCommand); virtual;
     procedure ExecCommand(const aCommand: TKMGameInputCommand);
     procedure StoreCommand(const aCommand: TKMGameInputCommand);
     procedure ExecGameAlertBeaconCmd(const aCommand: TKMGameInputCommand);
@@ -710,6 +710,12 @@ end;
 function TKMGameInputProcess.DoSkipLogCommand(const aCommand: TKMGameInputCommand): Boolean;
 begin
   Result := SKIP_LOG_TEMP_COMMANDS and (aCommand.CommandType in [gicTempAddScout, gicTempRevealMap, gicTempVictory, gicTempDefeat, gicTempDoNothing]);
+end;
+
+
+procedure TKMGameInputProcess.DoTakeCommand(const aCommand: TKMGameInputCommand);
+begin
+  //Do nothing
 end;
 
 
