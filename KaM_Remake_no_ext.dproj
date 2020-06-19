@@ -1,4 +1,4 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{A5901296-43C7-446C-8113-93B25ADD188C}</ProjectGuid>
         <MainSource>KaM_Remake.dpr</MainSource>
@@ -269,6 +269,8 @@
         <DCCReference Include="src\hands\KM_Hand.pas"/>
         <DCCReference Include="src\hands\KM_HandsCollection.pas"/>
         <DCCReference Include="src\hands\KM_HandConstructions.pas"/>
+        <DCCReference Include="src\hands\KM_HandEntity.pas"/>
+        <DCCReference Include="src\hands\KM_HandEntityHelper.pas"/>
         <DCCReference Include="src\hands\KM_HandLocks.pas"/>
         <DCCReference Include="src\hands\KM_HandLogistics.pas"/>
         <DCCReference Include="src\hands\KM_HandSpectator.pas"/>
@@ -413,6 +415,7 @@
         <DCCReference Include="src\units\tasks\KM_UnitTaskThrowRock.pas"/>
         <DCCReference Include="src\utils\KM_BinPacking.pas"/>
         <DCCReference Include="src\utils\KM_CommonUtils.pas"/>
+        <DCCReference Include="src\utils\KM_IoXML.pas"/>
         <DCCReference Include="src\utils\KM_FileIO.pas"/>
         <DCCReference Include="src\utils\KM_FloodFill.pas"/>
         <DCCReference Include="src\utils\KM_Helpers.pas"/>
