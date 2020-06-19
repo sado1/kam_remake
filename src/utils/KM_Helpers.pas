@@ -1,7 +1,7 @@
 unit KM_Helpers;
 interface
 uses
-  Vcl.StdCtrls, Vcl.Samples.Spin, ExtCtrls;
+  Vcl.StdCtrls, Vcl.Samples.Spin, ExtCtrls, KM_IoXML;
 
 
 type
@@ -26,6 +26,11 @@ type
     function GetXmlSectionName: string;
   public
     property XmlSectionName: string read GetXmlSectionName;
+  end;
+
+
+  TXMLNodeHelper = class helper for TXMLNode
+    function AddOrFindChild(const aChildNodeName: string): TXMLNode;
   end;
 
 implementation
@@ -97,6 +102,16 @@ end;
 function TCategoryPanelHelper.GetXmlSectionName: string;
 begin
   Result := StringReplace(Caption, ' ', '_', [rfReplaceAll]);
+end;
+
+
+{ TXMLNodeHelper }
+function TXMLNodeHelper.AddOrFindChild(const aChildNodeName: string): TXMLNode;
+begin
+  if not HasChild(aChildNodeName) then
+    Result := AddChild(aChildNodeName)
+  else
+    Result := ChildNodes.FindNode(aChildNodeName);
 end;
 
 

@@ -279,8 +279,6 @@ type
     procedure FormKeyUpProc(aKey: Word; aShift: TShiftState);
 //    function ConfirmExport: Boolean;
     function GetMouseWheelStepsCnt(aWheelData: Integer): Integer;
-    procedure LoadDevSettings;
-    procedure SaveDevSettings;
     procedure ResetControl(aCtrl: TControl);
     procedure ResetSubPanel(aPanel: TWinControl);
     {$IFDEF MSWindows}
@@ -305,6 +303,8 @@ type
     procedure ShowFolderPermissionError;
     procedure SetEntitySelected(aEntityUID: Integer; aEntity2UID: Integer = 0);
     property OnControlsUpdated: TObjectIntegerEvent read fOnControlsUpdated write fOnControlsUpdated;
+    procedure LoadDevSettings;
+    procedure SaveDevSettings;
   end;
 
 
@@ -345,51 +345,145 @@ end;
 
 // Load dev settings from kmr_dev.xml
 procedure TFormMain.LoadDevSettings;
+
+  procedure ManageSubPanel(aPanel: TWinControl; anParent: TXMLNode);
+  var
+    I: Integer;
+    actrl: TControl;
+    nSection: TXMLNode;
+  begin
+    for I := 0 to aPanel.ControlCount - 1 do
+    begin
+      actrl := aPanel.Controls[I];
+
+      if aCtrl is TGroupBox then
+        ManageSubPanel(TGroupBox(aCtrl), anParent)
+      else
+      if   (aCtrl is TCheckBox)
+        or (aCtrl is TTrackBar)
+        or (aCtrl is TRadioGroup)
+        or (aCtrl is TSpinEdit)
+        or (aCtrl is TEdit) then
+        if anParent.HasChild(actrl.Name) then
+        begin
+          nSection := anParent.ChildNodes.FindNode(actrl.Name); // Add section only if its needed
+
+          if (aCtrl is TCheckBox) and nSection.HasAttribute('Checked') then
+            TCheckBox(aCtrl).Checked := nSection.Attributes['Checked'].AsBoolean
+          else
+          if (aCtrl is TTrackBar) and nSection.HasAttribute('Position') then
+            TTrackBar(aCtrl).Position := nSection.Attributes['Position'].AsInteger
+          else
+          if (aCtrl is TRadioGroup) and nSection.HasAttribute('ItemIndex')  then
+            TRadioGroup(aCtrl).ItemIndex := nSection.Attributes['ItemIndex'].AsInteger
+          else
+          if (aCtrl is TSpinEdit) and nSection.HasAttribute('Value')  then
+            TSpinEdit(aCtrl).Value := nSection.Attributes['Value'].AsInteger
+          else
+          if (aCtrl is TEdit) and nSection.HasAttribute('Text') then
+            TEdit(aCtrl).Text := nSection.Attributes['Text'].AsString;
+        end;
+    end;
+  end;
+
 var
   I: Integer;
   newXML: TKMXMLDocument;
   cp: TCategoryPanel;
+  cpSurface: TCategoryPanelSurface;
   cpName: string;
   nRoot, nSection: TXMLNode;
-begin                           
-  // Apply default settings
-  if not FileExists(fDevSettingsFilepath) then
-  begin
-    for I := 0 to mainGroup.Panels.Count - 1 do
-      TCategoryPanel(mainGroup.Panels[I]).Collapsed := True;
-      
-    cpGameControls.Collapsed := False; //The only not collapsed section
-    Exit;
-  end;
-  
-  //Load dev data from XML
-  newXML := TKMXMLDocument.Create;
-  newXML.LoadFromFile(ExeDir + DEV_SETTINGS_XML_FILENAME);
-  nRoot := newXML.Root;
+begin
+  fUpdating := True;
 
-  for I := 0 to mainGroup.Panels.Count - 1 do
-  begin
-    cp := TCategoryPanel(mainGroup.Panels[I]);
-    cpName := cp.XmlSectionName;
-
-    if nRoot.HasChild(cpName) then
+  try
+    // Apply default settings
+    if not FileExists(fDevSettingsFilepath) then
     begin
-      nSection := nRoot.ChildNodes.FindNode(cpName);
-      cp.Collapsed := nSection.Attributes['Collapsed'].AsBoolean(True);
+      for I := 0 to mainGroup.Panels.Count - 1 do
+        TCategoryPanel(mainGroup.Panels[I]).Collapsed := True;
+      
+      cpGameControls.Collapsed := False; //The only not collapsed section
+      Exit;
     end;
-  end;
+  
+    //Load dev data from XML
+    newXML := TKMXMLDocument.Create;
+    newXML.LoadFromFile(ExeDir + DEV_SETTINGS_XML_FILENAME);
+    nRoot := newXML.Root;
 
-  newXML.Free;
+    for I := 0 to mainGroup.Panels.Count - 1 do
+    begin
+      cp := TCategoryPanel(mainGroup.Panels[I]);
+      cpName := cp.XmlSectionName;
+
+      if nRoot.HasChild(cpName) then
+      begin
+        nSection := nRoot.ChildNodes.FindNode(cpName);
+        cp.Collapsed := nSection.Attributes['Collapsed'].AsBoolean(True);
+
+        if (cp.ControlCount > 0) and (cp.Controls[0] is TCategoryPanelSurface) then
+        begin
+          cpSurface := TCategoryPanelSurface(cp.Controls[0]);
+          ManageSubPanel(cpSurface, nSection);
+        end;
+      end;
+    end;
+
+    newXML.Free;
+  finally
+    fUpdating := False;
+    ControlsUpdate(nil); // Update controls after load all of them
+  end;
 end;
 
 
 // Save dev settings to kmr_dev.xml
 procedure TFormMain.SaveDevSettings;
+
+  procedure ManageSubPanel(aPanel: TWinControl; anParent: TXMLNode);
+  var
+    I: Integer;
+    actrl: TControl;
+    nSection: TXMLNode;
+  begin
+    for I := 0 to aPanel.ControlCount - 1 do
+    begin
+      actrl := aPanel.Controls[I];
+
+      if aCtrl is TGroupBox then
+        ManageSubPanel(TGroupBox(aCtrl), anParent)
+      else
+      if   (aCtrl is TCheckBox)
+        or (aCtrl is TTrackBar)
+        or (aCtrl is TRadioGroup)
+        or (aCtrl is TSpinEdit)
+        or (aCtrl is TEdit) then
+      begin
+        nSection := anParent.AddOrFindChild(actrl.Name); // Add section only if its needed
+        if aCtrl is TCheckBox then
+          nSection.Attributes['Checked'] := TCheckBox(aCtrl).Checked
+        else
+        if aCtrl is TTrackBar then
+          nSection.Attributes['Position'] := TTrackBar(aCtrl).Position
+        else
+        if aCtrl is TRadioGroup then
+          nSection.Attributes['ItemIndex'] := TRadioGroup(aCtrl).ItemIndex
+        else
+        if aCtrl is TSpinEdit then
+          nSection.Attributes['Value'] := TSpinEdit(aCtrl).Value
+        else
+        if aCtrl is TEdit then
+          nSection.Attributes['Text'] := TEdit(aCtrl).Text;
+      end;
+    end;
+  end;
+
 var
   I: Integer;
   newXML: TKMXMLDocument;
   cp: TCategoryPanel;
-  cpName: string;
+  cpSurface: TCategoryPanelSurface;
   nRoot, nSection: TXMLNode;
 begin
   //Save dev data to XML
@@ -400,14 +494,16 @@ begin
   for I := 0 to mainGroup.Panels.Count - 1 do
   begin
     cp := TCategoryPanel(mainGroup.Panels[I]);
-    cpName := cp.XmlSectionName;
 
-    if not nRoot.HasChild(cpName) then
-      nSection := nRoot.AddChild(cpName)
-    else
-      nSection := nRoot.ChildNodes.FindNode(cpName);
+    nSection := nRoot.AddOrFindChild(cp.XmlSectionName);
 
     nSection.Attributes['Collapsed'] := cp.Collapsed;
+
+    if (cp.ControlCount > 0) and (cp.Controls[0] is TCategoryPanelSurface) then
+    begin
+      cpSurface := TCategoryPanelSurface(cp.Controls[0]);
+      ManageSubPanel(cpSurface, nSection);
+    end;
   end;
 
   newXML.SaveToFile(fDevSettingsFilepath);
@@ -454,9 +550,8 @@ begin
   {$ENDIF}
 
   chkShowFlatTerrain.Tag := Ord(dcFlatTerrain);
-
-  LoadDevSettings;
 end;
+
 
 procedure TFormMain.FormShow(Sender: TObject);
 var BordersWidth, BordersHeight: Integer;
@@ -963,10 +1058,9 @@ procedure TFormMain.ControlsReset;
   {$IFDEF WDC}
   procedure ResetCategoryPanel(aPanel: TCategoryPanel);
   var
-    I: Integer;
     PanelSurface: TCategoryPanelSurface;
   begin
-    if aPanel.Controls[0] is TCategoryPanelSurface then
+    if (aPanel.ControlCount > 0) and (aPanel.Controls[0] is TCategoryPanelSurface) then
     begin
       PanelSurface := TCategoryPanelSurface(aPanel.Controls[0]);
       ResetSubPanel(PanelSurface);
@@ -1672,7 +1766,6 @@ end;
 
 procedure TFormMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  SaveDevSettings;
   gMain.Stop(Self);
 end;
 

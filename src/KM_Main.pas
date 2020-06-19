@@ -226,6 +226,8 @@ begin
   //Process messages in queue before hiding Loading, so that they all land on Loading form, not main one
   Application.ProcessMessages;
   fFormLoading.Hide;
+
+  fFormMain.LoadDevSettings;
 end;
 
 
@@ -307,6 +309,8 @@ begin
 
     if Assigned(gVideoPlayer) then
       gVideoPlayer.Free;
+
+    fFormMain.SaveDevSettings;
 
     if Sender <> fFormMain then
       fFormMain.Close;
