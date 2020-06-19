@@ -205,6 +205,7 @@ type
     chkBevel: TCheckBox;
     rgDebugFont: TRadioGroup;
     chkMonospacedFont: TCheckBox;
+    mnExportRPL: TMenuItem;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -267,6 +268,7 @@ type
     procedure Debug_UnlockCmpMissionsClick(Sender: TObject);
     procedure mnExportRngChecksClick(Sender: TObject);
     procedure btFindObjByUIDClick(Sender: TObject);
+    procedure mnExportRPLClick(Sender: TObject);
 
     procedure ControlsUpdate(Sender: TObject);
   private
@@ -334,7 +336,8 @@ uses
   KM_Log, KM_CommonClasses, KM_Helpers, KM_Video,
   KM_Settings,
   KM_HandEntity,
-  KM_IoXML;
+  KM_IoXML,
+  KM_GameInputProcess;
 
 
 procedure ExportDone(aResourceName: String);
@@ -739,6 +742,19 @@ begin
     rngLogger.SaveAsText(OpenDialog1.FileName + '.log');
 
     rngLogger.Free;
+  end;
+end;
+
+
+procedure TFormMain.mnExportRPLClick(Sender: TObject);
+var
+  gip: TKMGameInputProcess;
+begin
+  if RunOpenDialog(OpenDialog1, '', ExeDir, 'KaM Remake replay commands (*.rpl)|*.rpl') then
+  begin
+    gip := TKMGameInputProcess.Create(gipReplaying);
+    gip.LoadFromFile(OpenDialog1.FileName);
+    gip.SaveToFileAsText(OpenDialog1.FileName + '.log');
   end;
 end;
 

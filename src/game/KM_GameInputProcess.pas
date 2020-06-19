@@ -387,6 +387,7 @@ type
 
     //Replay methods
     procedure SaveToStream(SaveStream: TKMemoryStream);
+    procedure SaveToFileAsText(const aFileName: UnicodeString);
     procedure SaveToFile(const aFileName: UnicodeString);
     procedure SaveToFileAsync(const aFileName: UnicodeString; aWorkerThread: TKMWorkerThread);
     procedure LoadFromStream(LoadStream: TKMemoryStream);
@@ -408,7 +409,7 @@ type
 
 implementation
 uses
-  SysUtils, TypInfo, Math,
+  Classes, SysUtils, TypInfo, Math,
   KM_GameApp, KM_Game, KM_GameParams, KM_HandsCollection,
   KM_HouseMarket, KM_HouseBarracks, KM_HouseSchool, KM_HouseTownHall,
   KM_ScriptingEvents, KM_Alerts, KM_CommonUtils, KM_Log, KM_RenderUI,
@@ -1222,9 +1223,26 @@ begin
 
   for I := 1 to fCount do
   begin
+    if SaveStream is TKMemoryStreamText then
+      SaveStream.PlaceMarker(GetEnumName(TypeInfo(TKMGameInputCommandType), Integer(fQueue[I].Command.CommandType)));
+    
     SaveStream.Write(fQueue[I].Tick);
     SaveCommandToMemoryStream(fQueue[I].Command, SaveStream);
     SaveStream.Write(fQueue[I].Rand);
+  end;
+end;
+
+
+procedure TKMGameInputProcess.SaveToFileAsText(const aFileName: UnicodeString);
+var
+  S: TKMemoryStreamText;
+begin
+  S := TKMemoryStreamText.Create;
+  try
+    SaveToStream(S);
+    S.SaveToFile(aFileName);
+  finally
+    S.Free;
   end;
 end;
 

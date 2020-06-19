@@ -88,7 +88,7 @@ object FormMain: TFormMain
       Caption = 'Misc'
       Collapsed = True
       TabOrder = 0
-      ExplicitTop = 985
+      ExplicitWidth = 256
       ExpandedHeight = 158
       object chkBevel: TCheckBox
         Left = 168
@@ -140,7 +140,7 @@ object FormMain: TFormMain
       Caption = 'Logs'
       Collapsed = True
       TabOrder = 1
-      ExplicitTop = 961
+      ExplicitWidth = 256
       ExpandedHeight = 179
       object chkLogCommands: TCheckBox
         Left = 120
@@ -233,7 +233,7 @@ object FormMain: TFormMain
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 2
-      ExplicitTop = 937
+      ExplicitWidth = 256
       ExpandedHeight = 133
       object Label1: TLabel
         Left = 101
@@ -345,7 +345,7 @@ object FormMain: TFormMain
       Caption = 'User Interface'
       Collapsed = True
       TabOrder = 3
-      ExplicitTop = 913
+      ExplicitWidth = 256
       ExpandedHeight = 85
       object chkUIControlsBounds: TCheckBox
         Left = 8
@@ -399,7 +399,7 @@ object FormMain: TFormMain
       Caption = 'Perf Logs'
       Collapsed = True
       TabOrder = 4
-      ExplicitTop = 889
+      ExplicitWidth = 256
       ExpandedHeight = 660
     end
     object cpAI: TCategoryPanel
@@ -408,7 +408,6 @@ object FormMain: TFormMain
       Caption = 'AI'
       Collapsed = True
       TabOrder = 5
-      ExplicitTop = 193
       ExplicitWidth = 256
       object Label5: TLabel
         Left = 202
@@ -607,6 +606,7 @@ object FormMain: TFormMain
       Caption = 'Scripting'
       Collapsed = True
       TabOrder = 6
+      ExplicitWidth = 256
       ExpandedHeight = 50
       object chkDebugScripting: TCheckBox
         Left = 8
@@ -629,6 +629,7 @@ object FormMain: TFormMain
       Caption = 'Game additional'
       Collapsed = True
       TabOrder = 7
+      ExplicitWidth = 256
       ExpandedHeight = 136
       object chkLoadUnsupSaves: TCheckBox
         Left = 12
@@ -1133,6 +1134,7 @@ object FormMain: TFormMain
       Height = 121
       Caption = 'Game'
       TabOrder = 9
+      ExplicitWidth = 256
       object Label8: TLabel
         Left = 70
         Top = 30
@@ -1426,6 +1428,10 @@ object FormMain: TFormMain
       object mnExportRngChecks: TMenuItem
         Caption = 'Random checks'
         OnClick = mnExportRngChecksClick
+      end
+      object mnExportRPL: TMenuItem
+        Caption = 'GIC from .rpl'
+        OnClick = mnExportRPLClick
       end
     end
     object About1: TMenuItem
