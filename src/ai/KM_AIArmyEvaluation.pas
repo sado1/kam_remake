@@ -7,6 +7,7 @@ uses
 
 type
   TKMGroupEval = record
+    Count: Integer;
     HitPoints, Attack, AttackHorse, Defence, DefenceProjectiles: Single;
   end;
   TKMFoodState = record
@@ -25,10 +26,8 @@ type
   private
     fEvals: TKMGameEval; //Results of evaluation
 
-    function CalculateStrength(aEval: TKMArmyEval): TKMGroupStrengthArray;
-    function GetUnitEvaluation(aUT: TKMUnitType; aConsiderHitChance: Boolean = False): TKMGroupEval;
-    function GetEvaluation(aPlayer: TKMHandID): TKMArmyEval;
-    function GetAllianceStrength(aPlayer: TKMHandID; aAlliance: TKMAllianceType): TKMArmyEval;
+    function CompareStrength(A, E: TKMArmyEval): Single;
+    function GetAllianceStrength(var aAlliance: TKMHandIDArray): TKMArmyEval;
     procedure EvaluatePower(aPlayer: TKMHandID; aConsiderHitChance: Boolean = False);
   public
     constructor Create();
@@ -36,19 +35,20 @@ type
     procedure Save(SaveStream: TKMemoryStream);
     procedure Load(LoadStream: TKMemoryStream);
 
-    property UnitEvaluation[aUT: TKMUnitType; aConsiderHitChance: Boolean]: TKMGroupEval read GetUnitEvaluation;
+    function UnitEvaluation(aUT: TKMUnitType; aConsiderHitChance: Boolean = False): TKMGroupEval;
     function GroupEvaluation(aGroup: TKMUnitGroup; aConsiderHitChance: Boolean): TKMGroupEval;
-    property Evaluation[aPlayer: TKMHandID]: TKMArmyEval read GetEvaluation;
-    property AllianceEvaluation[aPlayer: TKMHandID; aAlliance: TKMAllianceType]: TKMArmyEval read GetAllianceStrength;
+    function PlayerEvaluation(aPlayer: TKMHandID): TKMArmyEval;
+    function AllianceEvaluation(aPlayer: TKMHandID; aAlliance: TKMAllianceType): TKMArmyEval;
 
-    function CompareStrength(aPlayer, aOponent: TKMHandID): Single;
-    function CompareAllianceStrength(aPlayer, aOponent: TKMHandID): Single;
+    function CompareAllianceStrength(var aAlly, aEnemy: TKMHandIDArray): Single;
     procedure AfterMissionInit();
     procedure UpdateState(aTick: Cardinal);
   end;
 
+
 const
   HIT_CHANCE_MODIFIER = 0.5;
+
 
 implementation
 uses
@@ -85,7 +85,7 @@ begin
 end;
 
 
-function TKMArmyEvaluation.GetUnitEvaluation(aUT: TKMUnitType; aConsiderHitChance: Boolean = False): TKMGroupEval;
+function TKMArmyEvaluation.UnitEvaluation(aUT: TKMUnitType; aConsiderHitChance: Boolean = False): TKMGroupEval;
 var
   US: TKMUnitSpec;
 begin
@@ -93,6 +93,7 @@ begin
   US := gRes.Units[aUT];
   with Result do
   begin
+    Count              := 1;
     Hitpoints          := US.Hitpoints;
     Attack             := US.Attack;
     AttackHorse        := US.AttackHorse;
@@ -110,9 +111,10 @@ var
   GE: TKMGroupEval;
 begin
   FillChar(Result, SizeOf(Result), #0);
+  Result.Count := aGroup.Count;
   for K := 0 to aGroup.Count-1 do
   begin
-    GE := UnitEvaluation[TKMUnit(aGroup.Members[K]).UnitType,aConsiderHitChance];
+    GE := UnitEvaluation(TKMUnit(aGroup.Members[K]).UnitType,aConsiderHitChance);
     with Result do
     begin
       Hitpoints          := Hitpoints          + GE.Hitpoints;
@@ -125,90 +127,102 @@ begin
 end;
 
 
-function TKMArmyEvaluation.GetEvaluation(aPlayer: TKMHandID): TKMArmyEval;
+function TKMArmyEvaluation.PlayerEvaluation(aPlayer: TKMHandID): TKMArmyEval;
 begin
   Move(fEvals[aPlayer], Result, SizeOf(fEvals[aPlayer]));
 end;
 
 
-function TKMArmyEvaluation.CalculateStrength(aEval: TKMArmyEval): TKMGroupStrengthArray;
-  var
-    GT: TKMGroupType;
-  begin
-    for GT := Low(TKMGroupType) to High(TKMGroupType) do
-      with aEval.Groups[GT] do
-        Result[GT] := Attack * Hitpoints * Defence;
-        //Result[GT] := Attack * Max(1, AttackHorse) * Hitpoints * Defence;
-  end;
-
-
-function TKMArmyEvaluation.CompareStrength(aPlayer, aOponent: TKMHandID): Single;
+function TKMArmyEvaluation.AllianceEvaluation(aPlayer: TKMHandID; aAlliance: TKMAllianceType): TKMArmyEval;
 var
-  Sum, Diff: Single;
-  GT: TKMGroupType;
-  PlayerArmy, EnemyArmy: TKMGroupStrengthArray;
+  Cnt: Integer;
+  PL: TKMHandID;
+  Alliance: TKMHandIDArray;
 begin
-  PlayerArmy := CalculateStrength( Evaluation[aPlayer] );
-  EnemyArmy := CalculateStrength( Evaluation[aOponent] );
-  Sum := 0;
-  Diff := 0;
-  for GT := Low(TKMGroupType) to High(TKMGroupType) do
+  Cnt := 0;
+  SetLength(Alliance, gHands.Count);
+  for PL := 0 to gHands.Count - 1 do
   begin
-    Sum := Sum + PlayerArmy[GT] + EnemyArmy[GT];
-    Diff := Diff + PlayerArmy[GT] - EnemyArmy[GT];
+    Alliance[Cnt] := PL;
+    Inc(Cnt, Byte( gHands[PL].Enabled AND (gHands[aPlayer].Alliances[PL] = aAlliance) ));
   end;
-  Result := Diff / Max(1,Sum); // => number in <-1,1> ... positive = we have advantage and vice versa
+  SetLength(Alliance,Cnt);
+  Result := GetAllianceStrength(Alliance);
 end;
 
 
-function TKMArmyEvaluation.GetAllianceStrength(aPlayer: TKMHandID; aAlliance: TKMAllianceType): TKMArmyEval;
+function TKMArmyEvaluation.CompareStrength(A, E: TKMArmyEval): Single;
+  // Sum power of all types of groups
+  procedure SumPower(var aEval: TKMGroupEval; var Army: TKMArmyEval);
+  var
+    GT: TKMGroupType;
+  begin
+    FillChar(aEval, SizeOf(aEval), #0);
+    for GT := Low(TKMGroupType) to High(TKMGroupType) do
+    begin
+      aEval.Count              := aEval.Count              + Army.Groups[GT].Count             ;
+      aEval.Hitpoints          := aEval.Hitpoints          + Army.Groups[GT].Hitpoints         ;
+      aEval.Attack             := aEval.Attack             + Army.Groups[GT].Attack            ;
+      aEval.AttackHorse        := aEval.AttackHorse        + Army.Groups[GT].AttackHorse       ;
+      aEval.Defence            := aEval.Defence            + Army.Groups[GT].Defence           ;
+      aEval.DefenceProjectiles := aEval.DefenceProjectiles + Army.Groups[GT].DefenceProjectiles;
+    end;
+  end;
+var
+  PowerA, PowerE: Single;
+  AEval, EEval: TKMGroupEval;
+begin
+  // Sum power of groups in alliance
+  SumPower(AEval,A);
+  SumPower(EEval,E);
+  // Get weighted power with consideration of hostile groups
+  AEval.AttackHorse := AEval.AttackHorse * E.Groups[gtMounted].Count / Max(1, EEval.Count);
+  EEval.AttackHorse := EEval.AttackHorse * A.Groups[gtMounted].Count / Max(1, AEval.Count);
+  AEval.DefenceProjectiles := AEval.DefenceProjectiles * E.Groups[gtRanged].Count / Max(1, EEval.Count);
+  EEval.DefenceProjectiles := EEval.DefenceProjectiles * A.Groups[gtRanged].Count / Max(1, AEval.Count);
+  // Get balance of power
+  PowerA := (AEval.Attack + AEval.AttackHorse) * (AEval.Hitpoints) * (AEval.Defence + AEval.DefenceProjectiles);
+  PowerE := (EEval.Attack + EEval.AttackHorse) * (EEval.Hitpoints) * (EEval.Defence + EEval.DefenceProjectiles);
+  Result := 1 - Min(2,PowerE / Max(1,PowerA));
+end;
+
+
+function TKMArmyEvaluation.GetAllianceStrength(var aAlliance: TKMHandIDArray): TKMArmyEval;
 var
   PL: Integer;
   GT: TKMGroupType;
 begin
   FillChar(Result, SizeOf(Result), #0);
-  for PL := 0 to gHands.Count - 1 do
-    if gHands[PL].Enabled AND (gHands[aPlayer].Alliances[PL] = aAlliance) then
-    begin
-      for GT := Low(TKMGroupType) to High(TKMGroupType) do
-        with Result.Groups[GT] do
-        begin
-          Hitpoints          := Hitpoints          + fEvals[PL].Groups[GT].Hitpoints;
-          Attack             := Attack             + fEvals[PL].Groups[GT].Attack;
-          AttackHorse        := AttackHorse        + fEvals[PL].Groups[GT].AttackHorse;
-          Defence            := Defence            + fEvals[PL].Groups[GT].Defence;
-          DefenceProjectiles := DefenceProjectiles + fEvals[PL].Groups[GT].DefenceProjectiles;
-        end;
-      with Result.FoodState do
+  for PL in aAlliance do
+  begin
+    for GT := Low(TKMGroupType) to High(TKMGroupType) do
+      with Result.Groups[GT] do
       begin
-        Inc(Full,fEvals[PL].FoodState.Full);
-        Inc(Middle,fEvals[PL].FoodState.Middle);
-        Inc(Low,fEvals[PL].FoodState.Low);
+        Count              := Count              + fEvals[PL].Groups[GT].Count;
+        Hitpoints          := Hitpoints          + fEvals[PL].Groups[GT].Hitpoints;
+        Attack             := Attack             + fEvals[PL].Groups[GT].Attack;
+        AttackHorse        := AttackHorse        + fEvals[PL].Groups[GT].AttackHorse;
+        Defence            := Defence            + fEvals[PL].Groups[GT].Defence;
+        DefenceProjectiles := DefenceProjectiles + fEvals[PL].Groups[GT].DefenceProjectiles;
       end;
+    with Result.FoodState do
+    begin
+      Inc(Full,fEvals[PL].FoodState.Full);
+      Inc(Middle,fEvals[PL].FoodState.Middle);
+      Inc(Low,fEvals[PL].FoodState.Low);
     end;
+  end;
 end;
 
 
 // Approximate way how to compute strength of 2 alliances
-function TKMArmyEvaluation.CompareAllianceStrength(aPlayer, aOponent: TKMHandID): Single;
+function TKMArmyEvaluation.CompareAllianceStrength(var aAlly, aEnemy: TKMHandIDArray): Single;
 var
-  Sum, Diff: Single;
-  GT: TKMGroupType;
   AllyEval, EnemyEval: TKMArmyEval;
-  AllyArmy, EnemyArmy: TKMGroupStrengthArray;
 begin
-  AllyEval := GetAllianceStrength(aPlayer, atAlly);
-  EnemyEval := GetAllianceStrength(aOponent, atAlly);
-  AllyArmy := CalculateStrength(AllyEval);
-  EnemyArmy := CalculateStrength(EnemyEval);
-  Sum := 0;
-  Diff := 0;
-  for GT := Low(TKMGroupType) to High(TKMGroupType) do
-  begin
-    Sum := Sum + AllyArmy[GT] + EnemyArmy[GT];
-    Diff := Diff + AllyArmy[GT] - EnemyArmy[GT];
-  end;
-  Result := Diff / Max(1,Sum); // => number in <-1,1> ... positive = we have advantage and vice versa
+  AllyEval := GetAllianceStrength(aAlly);
+  EnemyEval := GetAllianceStrength(aEnemy);
+  Result := CompareStrength(AllyEval, EnemyEval); // => number in <-1,1> ... positive = we have advantage and vice versa
 end;
 
 
@@ -281,10 +295,11 @@ begin
     GT := UNIT_TO_GROUP_TYPE[UT];
     with fEvals[aPlayer].Groups[GT] do
     begin
-      Hitpoints := Hitpoints + Qty * US.HitPoints;
-      Attack := Attack + Qty * US.Attack;
+      Count       := Count       + Qty;
+      Hitpoints   := Hitpoints   + Qty * US.HitPoints;
+      Attack      := Attack      + Qty * US.Attack;
       AttackHorse := AttackHorse + Qty * US.AttackHorse;
-      Defence := Defence + Qty * US.Defence;
+      Defence     := Defence     + Qty * US.Defence;
       DefenceProjectiles := DefenceProjectiles + Qty * US.GetDefenceVsProjectiles(False); // True = IsBolt -> calculation without bolts
     end;
   end;

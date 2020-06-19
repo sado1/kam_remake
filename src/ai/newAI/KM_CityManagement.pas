@@ -783,7 +783,7 @@ var
       if (UT = utNone) OR gHands[fOwner].Locks.GetUnitBlocked(UT) then
         continue;
       // Calculate required count of specific unit type
-      UnitEval := gAIFields.Eye.ArmyEvaluation.UnitEvaluation[UT, True];
+      UnitEval := gAIFields.Eye.ArmyEvaluation.UnitEvaluation(UT, True);
       with UnitEval do
         UnitStrength := Max(0, Attack + AttackHorse * Byte(aGT = gtMounted)
                                * ifthen( (aGT = gtRanged), DefenceProjectiles, Defence )
@@ -898,9 +898,9 @@ begin
 
   // Humans may spam archers -> AI will not produce long-range support because of balancing units in team
   // So it is better to calculate AllyEval just for Owner
-  //AllyEval := gAIFields.Eye.ArmyEvaluation.GetAllianceStrength(aPlayer, atAlly);
-  AllyEval := gAIFields.Eye.ArmyEvaluation.Evaluation[fOwner];
-  EnemyEval := gAIFields.Eye.ArmyEvaluation.AllianceEvaluation[fOwner, atEnemy];
+  //AllyEval := gAIFields.Eye.ArmyEvaluation.AllianceEvaluation(aPlayer, atAlly);
+  AllyEval := gAIFields.Eye.ArmyEvaluation.PlayerEvaluation(fOwner);
+  EnemyEval := gAIFields.Eye.ArmyEvaluation.AllianceEvaluation(fOwner, atEnemy);
 
   // Compute requirements of warriors
   for UT := Low(fWarriorsDemands) to High(fWarriorsDemands) do

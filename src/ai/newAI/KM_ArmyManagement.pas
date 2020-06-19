@@ -17,10 +17,9 @@ uses
 type
   // Agent interface (for Supervisor)
   TKMAttackRequest = record
-    Active, FoodShortage: Boolean;
+    Active, FoodShortage, FFA: Boolean;
     BestAllianceCmp,WorstAllianceCmp: Single;
-    BestEnemy, WorstEnemy: TKMHandID; // or index of Enemies array
-    BestPoint, WorstPoint: TKMPoint;
+    BestEnemy: TKMHandID; // or index of Enemies array
     Enemies: TKMHandIDArray;
   end;
 
@@ -105,12 +104,10 @@ begin
   begin
     SaveStream.Write(Active);
     SaveStream.Write(FoodShortage);
+    SaveStream.Write(FFA);
     SaveStream.Write(BestAllianceCmp);
     SaveStream.Write(WorstAllianceCmp);
     SaveStream.Write(BestEnemy);
-    SaveStream.Write(BestPoint);
-    SaveStream.Write(WorstEnemy);
-    SaveStream.Write(WorstPoint);
     SaveStream.Write( Integer(Length(Enemies)) );
     if (Length(Enemies) > 0) then
       SaveStream.Write(Enemies[0], SizeOf(Enemies[0])*Length(Enemies));
@@ -134,12 +131,10 @@ begin
   begin
     LoadStream.Read(Active);
     LoadStream.Read(FoodShortage);
+    LoadStream.Read(FFA);
     LoadStream.Read(BestAllianceCmp);
     LoadStream.Read(WorstAllianceCmp);
     LoadStream.Read(BestEnemy);
-    LoadStream.Read(BestPoint);
-    LoadStream.Read(WorstEnemy);
-    LoadStream.Read(WorstPoint);
     LoadStream.Read(Count);
     SetLength(Enemies,Count);
     if (Length(Enemies) > 0) then
@@ -406,61 +401,6 @@ type
     aAG.Count := ActIdx;
     SetLength(aAG.GroupArr, ActIdx);
   end;
-  // Find best target -> to secure that AI will be as universal as possible find only point in map and company will destroy everything around automatically
-  //function FindBestTarget(var aBestTargetPlayer, aTargetPlayer: TKMHandIndex; var aTargetPoint: TKMPoint; aForceToAttack: Boolean = False): Boolean;
-  function FindBestTarget(var aBestTargetPlayer: TKMHandID; var aTargetPoint: TKMPoint; aForceToAttack: Boolean): Boolean;
-  const
-    ALLIANCE_TARGET_COEF = 0.1;
-    BEST_ALLIANCE_TARGET_COEF = 0.2;
-    DISTANCE_TILE_PENALIZATION = 1/50;
-    DISTANCE_COEF = DISTANCE_TILE_PENALIZATION * 0.1; // Every 50 tiles from closest enemy increase comparison by 0.1
-    MIN_COMPARSION = -0.2; // advantage for defender (but we are attacking as a team and team have advantage)
-  var
-    I, K, MinDist: Integer;
-    Comparison, BestComparison: Single;
-    OwnerArr: TKMHandIDArray;
-    EnemyStats: TKMEnemyStatisticsArray;
-  begin
-    Result := False;
-    aTargetPoint := KMPOINT_ZERO;
-
-    // Try to find enemies from owners position
-    SetLength(OwnerArr,1);
-    OwnerArr[0] := fOwner;
-    if not gAIFields.Supervisor.FindClosestEnemies(OwnerArr, EnemyStats) then
-      Exit;
-
-    // Calculate strength of alliance, find best comparison - value in interval <-1,1>, positive value = advantage, negative = disadvantage
-    BestComparison := -1;
-    if (Length(EnemyStats) > 0) then
-    begin
-      // Find closest enemy
-      MinDist := High(Integer);
-      for I := 0 to Length(EnemyStats) - 1 do
-        MinDist := Min(MinDist, EnemyStats[I].Distance);
-
-      for I := 0 to Length(EnemyStats) - 1 do
-      begin
-        // Compute comparison
-        Comparison := + gAIFields.Eye.ArmyEvaluation.CompareStrength(fOwner, EnemyStats[I].Player) // <-1,1>
-                      + Byte(EnemyStats[I].Player = aBestTargetPlayer) * BEST_ALLIANCE_TARGET_COEF // (+0.1)
-                      - abs(EnemyStats[I].Distance - MinDist) * DISTANCE_COEF; // -0.1 per 50 tiles
-        // Consider teammates of best target which is selected by Supervisor
-        for K := 0 to Length(fAttackRequest.Enemies) - 1 do
-          if (fAttackRequest.Enemies[K] = EnemyStats[I].Player) then
-            Comparison := Comparison + ALLIANCE_TARGET_COEF; // (+0.1)
-        // Find the best
-        if (Comparison > BestComparison) then
-        begin
-          BestComparison := Comparison;
-          //aTargetOwner := EnemyStats[I].Player;
-          aTargetPoint := EnemyStats[I].ClosestPoint;
-        end;
-      end;
-    end;
-
-    Result := (Length(EnemyStats) > 0) AND (aForceToAttack OR (BestComparison > MIN_COMPARSION));
-  end;
 
   function FindScriptedTarget(aGroup: TKMUnitGroup; aTarget: TKMAIAttackTarget; aCustomPos: TKMPoint; var aTargetP: TKMPoint ): Boolean;
   var
@@ -495,54 +435,16 @@ type
     Result := not KMSamePoint(aTargetP, KMPOINT_ZERO);
   end;
 
-  // Order multiple companies with equally distributed group types
+  // Order attack by releasing Defensive groups and creating Combat groups
   procedure OrderAttack(aTargetPoint: TKMPoint; var aAG: TKMAvailableGroups);
   var
-    I, K, CompaniesCnt, GTMaxCnt, GCnt, HighAG: Integer;
-    GT: TKMGroupType;
-    GTArr: array[TKMGroupType] of Integer;
-    Groups: TKMUnitGroupArray;
+    K: Integer;
   begin
-    // Get count of available group types
-    FillChar(GTArr, SizeOf(GTArr), #0);
-
     for K := 0 to aAG.Count - 1 do
-    begin
       fDefence.ReleaseGroup(aAG.GroupArr[K]);
-      Inc(  GTArr[ aAG.GroupArr[K].GroupType ]  );
-    end;
 
-    if not SP_OLD_ATTACK_AI then
-      fAttackNew.AddGroups(aAG.GroupArr)
-    else
-    begin
-      CompaniesCnt := Max(1, Ceil(aAG.Count / Max(1,AI_Par[ARMY_MaxGgroupsInCompany])));
-      HighAG := aAG.Count - 1;
-      for I := 0 to CompaniesCnt - 1 do
-      begin
-        GCnt := 0;
-        for GT := Low(TKMGroupType) to High(TKMGroupType) do
-        begin
-          GTMaxCnt := Max(0, Round(GTArr[GT] / (CompaniesCnt - I)));
-          GTArr[GT] := GTArr[GT] - GTMaxCnt;
-          for K := HighAG downto 0 do
-            if (GTMaxCnt <= 0) then
-              break
-            else if (aAG.GroupArr[K].GroupType = GT) then
-            begin
-              if (Length(Groups) <= GCnt) then
-                SetLength(Groups, GCnt + Round(AI_Par[ARMY_MaxGgroupsInCompany]));
-              Groups[GCnt] := aAG.GroupArr[K];
-              GCnt := GCnt + 1;
-              aAG.GroupArr[K] := aAG.GroupArr[HighAG];
-              HighAG := HighAG - 1;
-              GTMaxCnt := GTMaxCnt - 1;
-            end;
-        end;
-        SetLength(Groups, GCnt);
-        //fAttack.CreateCompany(aTargetPoint, Groups);
-      end;
-    end;
+    fAttackNew.AddGroups(aAG.GroupArr);
+    //fAttackNew.AddGroups( fDefence.ReleaseAllGroups() );
   end;
 const
   MIN_DEF_RATIO = 1.2;
@@ -564,10 +466,10 @@ begin
     with fAttackRequest do
     begin
       // Exit if AI has NOT enought soldiers in defence AND there is NOT food or there are multiple oponents
-      if (DefRatio < MIN_DEF_RATIO) AND (FoodShortage OR (BestEnemy <> WorstEnemy)) AND (gGameParams.MissionMode <> mmTactic) then
+      if (DefRatio < MIN_DEF_RATIO) AND (FoodShortage OR not FFA) AND (gGameParams.MissionMode <> mmTactic) then
         Exit;
       // 1v1 or special game mode
-      if (BestEnemy = WorstEnemy) OR gGameParams.IsTactic then
+      if FFA OR gGameParams.IsTactic then
         MobilizationCoef := 1
       // Else compute if it is necessary to mobilize the first defence line (or fraction)
       else
@@ -583,9 +485,8 @@ begin
     // If we dont have enought groups then exit (if we should take all check if there are already some combat groups)
     if (MobilizationCoef < 1) AND (AG.Count < MIN_GROUPS_IN_ATTACK) then
       Exit;
-    // Find best target of owner and order attack
-    if FindBestTarget(fAttackRequest.BestEnemy, TargetPoint, MobilizationCoef = 1) then
-      OrderAttack(TargetPoint, AG);
+    // Order attack
+    OrderAttack(TargetPoint, AG);
   end
   else if not fSetup.AutoAttack then
     with gHands[fOwner].AI.General do
@@ -609,12 +510,11 @@ end;
 procedure TKMArmyManagement.SetAttackRequest(aAttackRequest: TKMAttackRequest);
 begin
   fAttackRequest.Active := aAttackRequest.Active;
+  fAttackRequest.FFA := aAttackRequest.FFA;
+  fAttackRequest.FoodShortage := aAttackRequest.FoodShortage;
   fAttackRequest.BestAllianceCmp := aAttackRequest.BestAllianceCmp;
   fAttackRequest.WorstAllianceCmp := aAttackRequest.WorstAllianceCmp;
   fAttackRequest.BestEnemy := aAttackRequest.BestEnemy;
-  fAttackRequest.BestPoint := aAttackRequest.BestPoint;
-  fAttackRequest.WorstEnemy := aAttackRequest.WorstEnemy;
-  fAttackRequest.WorstPoint := aAttackRequest.WorstPoint;
   SetLength(fAttackRequest.Enemies, Length(aAttackRequest.Enemies) );
   Move(aAttackRequest.Enemies[0], fAttackRequest.Enemies[0], SizeOf(fAttackRequest.Enemies[0])*Length(fAttackRequest.Enemies));
 end;

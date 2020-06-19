@@ -59,19 +59,21 @@ type
       fArmyAttackDebug: TArmyAttackDebug;
     {$ENDIF}
 
-    function HasAssets(aPL: TKMHandID; aIncludeArmy: Boolean = True): Boolean;
     procedure UpdateFFA();
-    function UpdateCombatStatus(aTeam: Byte; var aCityUnderAttack: Boolean): TKMCombatStatus;
-    procedure UpdateDefPos(aTeam: Byte);
-    procedure UpdateAttack(aTeam: Byte);
-    procedure DivideResources();
-    function GetInitPoints(var aPlayers: TKMHandIDArray): TKMPointArray;
     function IsNewAI(aID: TKMHandID): Boolean;
     function NewAIInTeam(aTeam: Byte; aAttack, aDefence: Boolean): Boolean;
-    //procedure EvaluateArmies();
+    function IsTeamAlive(aTeam: Byte): Boolean;
+    function HasAssets(aPL: TKMHandID; aIncludeArmy: Boolean = True): Boolean;
 
-    procedure UpdateAttacks(aTeam: Byte; aTick: Cardinal);
+    function GetInitPoints(var aPlayers: TKMHandIDArray): TKMPointArray;
+    function UpdateCombatStatus(aTeam: Byte; var aCityUnderAttack: Boolean): TKMCombatStatus;
     procedure AttackCluster(aAttack: Boolean; aCCTIdx: Word; var A: pTKMGroupCounterWeightArray; const E: TKMUnitGroupArray; const H: TKMHouseArray);
+    procedure UpdateAttacks(aTeam: Byte; aTick: Cardinal);
+    procedure AttackDecision(aTeam: Byte);
+
+    procedure UpdateDefPos(aTeam: Byte);
+    procedure DivideResources();
+    //procedure EvaluateArmies();
   public
     constructor Create();
     destructor Destroy(); override;
@@ -226,12 +228,109 @@ begin
     AND (  gGameParams.IsTactic OR (aTick > (gGame.Options.Peacetime+3) * 10 * 60)  ) then // In normal mode wait 3 minutes after peace
     begin
       UpdateFFA();
-      UpdateAttack(Modulo - ATTACKS);
+      AttackDecision(Modulo - ATTACKS);
     end;
     Modulo := (aTick mod MAX_HANDS);
     if (Modulo < Length(fAlli2PL)) then
       UpdateAttacks(Modulo,aTick);
   end;
+end;
+
+
+procedure TKMSupervisor.UpdateAlliances();
+var
+  Check: Boolean;
+  AlliCnt, PLCnt: Byte;
+  Idx: Integer;
+  PL1,PL2,PL3: TKMHandID;
+begin
+  if gGameParams.IsMapEditor then Exit; //No need to work in the mapEd
+
+  FillChar(fPL2Alli, SizeOf(fPL2Alli), #255); // TKMHandIndex = SmallInt => Byte(255) = -1 = PLAYER_NONE
+  SetLength(fAlli2PL, gHands.Count, gHands.Count);
+  AlliCnt := 0;
+  for PL1 := 0 to gHands.Count - 1 do
+    if gHands[PL1].Enabled AND (fPL2Alli[PL1] = 255) then
+    begin
+      PLCnt := 0;
+      for PL2 := 0 to gHands.Count - 1 do
+        if gHands[PL2].Enabled AND (fPL2Alli[PL2] = 255) AND ((PL1 = PL2) OR (gHands[PL1].Alliances[PL2] = atAlly)) then
+        begin
+          Check := True;
+          for Idx := 0 to PLCnt - 1 do
+          begin
+            PL3 := fAlli2PL[AlliCnt,Idx];
+            Check := Check AND ((gHands[PL3].Alliances[PL2] = atAlly) AND (gHands[PL2].Alliances[PL3] = atAlly));
+          end;
+          if not Check then
+            Continue;
+          fPL2Alli[PL2] := AlliCnt;
+          fAlli2PL[AlliCnt,PLCnt] := PL2;
+          Inc(PLCnt);
+        end;
+      SetLength(fAlli2PL[AlliCnt], PLCnt);
+      Inc(AlliCnt);
+    end;
+  SetLength(fAlli2PL, AlliCnt);
+  UpdateFFA();
+  gAIFields.Influences.UpdateAlliances(fAlli2PL);
+end;
+
+
+procedure TKMSupervisor.UpdateFFA();
+var
+  Team,PL,Cnt: Integer;
+begin
+  Cnt := 0;
+  for Team := Low(fAlli2PL) to High(fAlli2PL) do
+    for PL := Low(fAlli2PL[Team]) to High(fAlli2PL[Team]) do
+      if HasAssets(fAlli2PL[Team,PL]) then
+      begin
+        Inc(Cnt);
+        break;
+      end;
+  fFFA := Cnt > 2;
+end;
+
+
+function TKMSupervisor.IsNewAI(aID: TKMHandID): Boolean;
+begin
+  Result := gHands[aID].AI.Setup.NewAI;
+end;
+
+
+function TKMSupervisor.NewAIInTeam(aTeam: Byte; aAttack, aDefence: Boolean): Boolean;
+var
+  IdxPL: Integer;
+begin
+  Result := False;
+  for IdxPL := 0 to Length( fAlli2PL[aTeam] ) - 1 do
+    with gHands[ fAlli2PL[aTeam, IdxPL] ] do
+      if IsComputer
+        AND AI.Setup.NewAI
+        AND (not aAttack OR AI.Setup.AutoAttack)
+        AND (not aDefence OR AI.Setup.AutoDefend) then
+        Exit(True);
+end;
+
+
+function TKMSupervisor.IsTeamAlive(aTeam: Byte): Boolean;
+var
+  PL: Integer;
+begin
+  Result := False;
+  for PL in fAlli2PL[aTeam] do
+    if HasAssets(PL,True) then
+      Exit(True);
+end;
+
+
+function TKMSupervisor.HasAssets(aPL: TKMHandID; aIncludeArmy: Boolean = True): Boolean;
+const
+  HOUSE_TYPES: array of TKMHouseType = [htBarracks, htStore, htSchool, htTownhall];
+begin
+  with gHands[aPL] do
+    Result := Enabled AND ((Stats.GetHouseQty(HOUSE_TYPES) > 0) OR (aIncludeArmy AND (Stats.GetArmyCount() > 0)));
 end;
 
 
@@ -261,7 +360,7 @@ begin
   Result := csNeutral;
   aCityUnderAttack := False;
   // Check if team have newAI
-  if not NewAIInTeam(aTeam, False, False) OR (SP_OLD_ATTACK_AI = True) then
+  if not NewAIInTeam(aTeam, False, False) then
     Exit;
 
   // Set default state = csNeutral (except attack combat status)
@@ -632,8 +731,6 @@ procedure TKMSupervisor.UpdateAttacks(aTeam: Byte; aTick: Cardinal);
         pGCWA[K].CG.TargetPosition := pGCWA[K].TargetPosition
   end;
 
-const
-  GROUP_NEAR_LINE = 10*10;
 var
   PlayerInCombat, CityUnderAttack: Boolean;
   K, L: Integer;
@@ -642,7 +739,7 @@ var
   CSA: TKMCombatStatusArray;
 begin
   // Check if team have newAI
-  if not NewAIInTeam(aTeam, False, False) OR (SP_OLD_ATTACK_AI = True) then
+  if not NewAIInTeam(aTeam, False, False) then
     Exit;
   // Check if there are hostile units around
   CityUnderAttack := False;
@@ -689,69 +786,239 @@ begin
 end;
 
 
-procedure TKMSupervisor.UpdateAlliances();
+function TKMSupervisor.GetInitPoints(var aPlayers: TKMHandIDArray): TKMPointArray;
 var
-  Check: Boolean;
-  AlliCnt, PLCnt: Byte;
-  Idx: Integer;
-  PL1,PL2,PL3: TKMHandID;
+  IdxPL: Integer;
+  Player: TKMHandID;
+  Group: TKMUnitGroup;
+  CenterPoints: TKMPointArray;
 begin
-  if gGameParams.IsMapEditor then Exit; //No need to work in the mapEd
-
-  FillChar(fPL2Alli, SizeOf(fPL2Alli), #255); // TKMHandIndex = SmallInt => Byte(255) = -1 = PLAYER_NONE
-  SetLength(fAlli2PL, gHands.Count, gHands.Count);
-  AlliCnt := 0;
-  for PL1 := 0 to gHands.Count - 1 do
-    if gHands[PL1].Enabled AND (fPL2Alli[PL1] = 255) then
+  SetLength(Result,0);
+  // Find center points of cities / armies (where we should start scan - init point / center screen is useless for this)
+  for IdxPL := 0 to Length(aPlayers) - 1 do
+  begin
+    Player := aPlayers[IdxPL];
+    gAIFields.Eye.OwnerUpdate(Player);
+    CenterPoints := gAIFields.Eye.GetCityCenterPoints(True);
+    if (Length(CenterPoints) = 0) then // Important houses were not found -> try find soldier
     begin
-      PLCnt := 0;
-      for PL2 := 0 to gHands.Count - 1 do
-        if gHands[PL2].Enabled AND (fPL2Alli[PL2] = 255) AND ((PL1 = PL2) OR (gHands[PL1].Alliances[PL2] = atAlly)) then
-        begin
-          Check := True;
-          for Idx := 0 to PLCnt - 1 do
-          begin
-            PL3 := fAlli2PL[AlliCnt,Idx];
-            Check := Check AND ((gHands[PL3].Alliances[PL2] = atAlly) AND (gHands[PL2].Alliances[PL3] = atAlly));
-          end;
-          if not Check then
-            Continue;
-          fPL2Alli[PL2] := AlliCnt;
-          fAlli2PL[AlliCnt,PLCnt] := PL2;
-          Inc(PLCnt);
-        end;
-      SetLength(fAlli2PL[AlliCnt], PLCnt);
-      Inc(AlliCnt);
-    end;
-  SetLength(fAlli2PL, AlliCnt);
-  UpdateFFA();
-  gAIFields.Influences.UpdateAlliances(fAlli2PL);
-end;
-
-
-function TKMSupervisor.HasAssets(aPL: TKMHandID; aIncludeArmy: Boolean = True): Boolean;
-const
-  HOUSE_TYPES: array of TKMHouseType = [htBarracks, htStore, htSchool, htTownhall];
-begin
-  with gHands[aPL] do
-    Result := Enabled AND ((Stats.GetHouseQty(HOUSE_TYPES) > 0) OR (aIncludeArmy AND (Stats.GetArmyCount() > 0)));
-end;
-
-
-procedure TKMSupervisor.UpdateFFA();
-var
-  Team,PL,Cnt: Integer;
-begin
-  Cnt := 0;
-  for Team := Low(fAlli2PL) to High(fAlli2PL) do
-    for PL := Low(fAlli2PL[Team]) to High(fAlli2PL[Team]) do
-      if HasAssets(fAlli2PL[Team,PL]) then
+      if (gHands[Player].UnitGroups.Count = 0) then
+        continue;
+      Group := gHands[Player].UnitGroups.Groups[ KaMRandom(gHands[Player].UnitGroups.Count, 'TKMSupervisor.GetInitPoints') ];
+      if (Group <> nil) AND not Group.IsDead AND not KMSamePoint(KMPOINT_ZERO,Group.Position) then
       begin
-        Inc(Cnt);
-        break;
-      end;
-  fFFA := Cnt > 2;
+        SetLength(CenterPoints, 1);
+        CenterPoints[0] := Group.Position;
+      end
+      else
+        continue;
+    end;
+    SetLength(Result, Length(Result) + Length(CenterPoints));
+    Move(CenterPoints[0], Result[ Length(Result) - Length(CenterPoints) ], SizeOf(CenterPoints[0]) * Length(CenterPoints));
+  end;
 end;
+
+
+function TKMSupervisor.FindClosestEnemies(var aPlayers: TKMHandIDArray; var aEnemyStats: TKMEnemyStatisticsArray): Boolean;
+var
+  InitPoints: TKMPointArray;
+begin
+  // Get init points
+  InitPoints := GetInitPoints(aPlayers);
+  // Try find enemies by influence area
+  Result := (Length(InitPoints) <> 0)
+            AND (
+              gAIFields.Influences.InfluenceSearch.FindClosestEnemies(aPlayers[0], InitPoints, aEnemyStats, True)
+              //OR gAIFields.Influences.InfluenceSearch.FindClosestEnemies(aPlayers[0], InitPoints, aEnemyStats, False)
+            );
+end;
+
+
+// Find best target -> to secure that AI will be as universal as possible find only point in map and company will destroy everything around automatically
+procedure TKMSupervisor.AttackDecision(aTeam: Byte);
+
+  function FindTargetAssets(aTeamIdx: Byte; var aTargetSoldiers: Boolean; var aPolygons: TKMWordArray): Integer;
+  const
+    SCANNED_HOUSES = [htStore, htSchool, htBarracks, htTownhall];
+  var
+    K: Integer;
+    PL: TKMHandID;
+    H: TKMHouse;
+    G: TKMUnitGroup;
+  begin
+    aTargetSoldiers := False;
+    Result := 0;
+    FillChar(aPolygons[0], SizeOf(aPolygons[0])*Length(aPolygons), #0);
+    for PL in fAlli2PL[aTeamIdx] do
+    begin
+      for K := 0 to gHands[PL].Houses.Count - 1 do
+      begin
+        H := gHands[PL].Houses[K];
+        if (H <> nil) AND not H.IsDestroyed AND H.IsComplete AND (H.HouseType in SCANNED_HOUSES) then
+        begin
+          aPolygons[PL] := gAIFields.NavMesh.KMPoint2Polygon[ H.PointBelowEntrance ];
+          Inc(Result);
+          break;
+        end;
+      end;
+    end;
+    if (Result = 0) then
+    begin
+      aTargetSoldiers := True;
+      for PL in fAlli2PL[aTeamIdx] do
+        for K := 0 to gHands[PL].UnitGroups.Count - 1 do
+        begin
+          G := gHands[PL].UnitGroups.Groups[K];
+          if (G <> nil) AND not G.IsDead AND not KMSamePoint(KMPOINT_ZERO,G.Position) then
+          begin
+            aPolygons[PL] := gAIFields.NavMesh.KMPoint2Polygon[ G.Position ];
+            Inc(Result);
+            break;
+          end;
+        end;
+    end;
+  end;
+
+  function CompareAlliances(out aBestCmpTeam, aWorstCmpTeam: Byte; out aBestCmp, aAvrgCmp, aWorstCmp: Single; out aBestTarget: TKMHandID): Boolean;
+  const
+    // Decrease chance to attack enemy in distance
+    DISTANCE_COEF_1v1 = 0.4;
+    DISTANCE_COEF_FFA = 2;
+  var
+    ATargetSoldiers, ETargetSoldiers: Boolean;
+    Distance, BestDist, MinDist, MaxDist: Word;
+    K, L, ACnt, ECnt, TeamIdx: Integer;
+    Comparison, DistCoef: Single;
+    APL, EPL: TKMHandID;
+    TargetPL: TKMHandIDArray;
+    AllyPoly,EnemyPoly,RoutePoly,DistArr: TKMWordArray;
+  begin
+    Result := False;
+    ATargetSoldiers := False;
+    ETargetSoldiers := False;
+    SetLength(AllyPoly,MAX_HANDS);
+    SetLength(EnemyPoly,MAX_HANDS);
+    ACnt := FindTargetAssets(aTeam, ATargetSoldiers, AllyPoly);
+    aBestCmp := -1;
+    aAvrgCmp := 0;
+    aWorstCmp := 1;
+    aBestCmpTeam := 0;
+    aWorstCmpTeam := 0;
+
+    // Compute walking distance between alliances
+    Distance := 0;
+    MinDist := High(Word);
+    MaxDist := 0;
+    SetLength(DistArr, Length(fAlli2PL));
+    SetLength(TargetPL, Length(fAlli2PL));
+    for TeamIdx := Low(fAlli2PL) to High(fAlli2PL) do
+    begin
+      DistArr[TeamIdx] := High(Word);
+      if (TeamIdx <> aTeam) AND IsTeamAlive(TeamIdx) then
+      begin
+        ECnt := FindTargetAssets(TeamIdx, ATargetSoldiers, EnemyPoly);
+        if (ECnt <= 0) then
+          continue;
+        for K := Low(AllyPoly) to High(AllyPoly) do
+          if (AllyPoly[K] > 0) then
+            for L := Low(EnemyPoly) to High(EnemyPoly) do
+              if (EnemyPoly[L] > 0) AND gAIFields.NavMesh.Pathfinding.ShortestPolygonRoute(AllyPoly[K], EnemyPoly[L], Distance, RoutePoly) then
+              begin
+                DistArr[TeamIdx] := Min(DistArr[TeamIdx], Distance);
+                TargetPL[TeamIdx] := L;
+              end;
+        if (DistArr[TeamIdx] = High(Word)) then
+          continue;
+        Result := True;
+        MinDist := Min(MinDist, DistArr[TeamIdx]);
+        MaxDist := Max(MaxDist, DistArr[TeamIdx]);
+      end;
+    end;
+
+    // Compute comparison
+    DistCoef := ifthen(FFA, DISTANCE_COEF_FFA, DISTANCE_COEF_1v1);
+    for TeamIdx := Low(fAlli2PL) to High(fAlli2PL) do
+      if (DistArr[TeamIdx] <> High(Word)) then
+      begin
+        Comparison := + gAIFields.Eye.ArmyEvaluation.CompareAllianceStrength(fAlli2PL[aTeam], fAlli2PL[TeamIdx])
+                      - (DistArr[TeamIdx] - MinDist) / Max(1,(MaxDist - MinDist));
+        aAvrgCmp := aAvrgCmp + Comparison;
+        if (Comparison > aBestCmp) then
+        begin
+          aBestCmp := Comparison;
+          aBestCmpTeam := TeamIdx;
+          aBestTarget := TargetPL[TeamIdx];
+        end;
+        if (Comparison <= aWorstCmp) then
+        begin
+          aWorstCmp := Comparison;
+          aWorstCmpTeam := TeamIdx;
+        end;
+      end;
+    aAvrgCmp := aAvrgCmp / Max(1,Length(fAlli2PL)-1);
+  end;
+
+const
+  MIN_DEF_RATIO = 1.2;
+  FOOD_THRESHOLD = 0.55;
+  MIN_ADVANTAGE = 0.15; // 15% advantage for attacker
+var
+  BestCmpTeam, WorstCmpTeam: Byte;
+  IdxPL: Integer;
+  DefRatio, FoodLevel, BestCmp, AvrgCmp, WorstCmp: Single;
+  PL, BestTarget: TKMHandID;
+  ArmyState: TKMArmyEval;
+  AR: TKMAttackRequest;
+begin
+  if not NewAIInTeam(aTeam, True, False) OR not IsTeamAlive(aTeam) OR (Length(fAlli2PL) < 2) then // I sometimes use my loc as a spectator (alliance with everyone) so make sure that search for enemy will use AI loc
+    Exit;
+  // Check if alliance can attack (have available soldiers) in the FFA mode (if there are just 2 teams attack if we have advantage)
+  if FFA AND not gGameParams.IsTactic then
+  begin
+    DefRatio := 0;
+    for IdxPL := 0 to Length( fAlli2PL[aTeam] ) - 1 do
+      with gHands[ fAlli2PL[aTeam, IdxPL] ] do
+        if IsComputer AND AI.Setup.NewAI AND AI.Setup.AutoAttack then
+        begin
+          DefRatio := Max(DefRatio, AI.ArmyManagement.Defence.DefenceStatus);
+          KMSwapInt(fAlli2PL[aTeam, 0], fAlli2PL[aTeam, IdxPL]); // Make sure that player in first index is new AI
+        end;
+    // AI does not have enought soldiers
+    if (DefRatio < MIN_DEF_RATIO) then
+      Exit;
+  end;
+  // Try to find enemies, find best comparison - value in interval <-1,1>, positive value = advantage, negative = disadvantage
+  if CompareAlliances(BestCmpTeam, WorstCmpTeam, BestCmp, AvrgCmp, WorstCmp, BestTarget) then
+  begin
+    // Consider food
+    ArmyState := gAIFields.Eye.ArmyEvaluation.AllianceEvaluation( fAlli2PL[aTeam,0], atAlly );
+    with ArmyState.FoodState do
+      FoodLevel := (Full + Middle) / Max(1, (Full + Middle + Low));
+
+    if (BestCmpTeam > MIN_ADVANTAGE) OR (FoodLevel < FOOD_THRESHOLD) OR gGameParams.IsTactic then
+      for PL in fAlli2PL[aTeam] do
+        if gHands[PL].AI.Setup.AutoAttack then
+        begin
+          if gGameParams.IsTactic then
+            fCombatStatus[PL,BestTarget] := csAttackingEverything
+          else
+            fCombatStatus[PL,BestTarget] := csAttackingCity;
+          with AR do
+          begin
+            Active := True;
+            FFA := fFFA;
+            FoodShortage := FoodLevel < FOOD_THRESHOLD;
+            BestAllianceCmp := BestCmp;
+            WorstAllianceCmp := WorstCmp;
+            BestEnemy := BestTarget;
+            SetLength(Enemies, Length(fAlli2PL[BestCmpTeam]) );
+            Move(fAlli2PL[BestCmpTeam,0], Enemies[0], SizeOf(Enemies[0])*Length(Enemies));
+          end;
+          gHands[PL].AI.ArmyManagement.AttackRequest := AR;
+        end;
+  end;
+end;
+
 
 
 procedure TKMSupervisor.UpdateDefPos(aTeam: Byte);
@@ -859,165 +1126,6 @@ begin
 end;
 
 
-function TKMSupervisor.GetInitPoints(var aPlayers: TKMHandIDArray): TKMPointArray;
-var
-  IdxPL: Integer;
-  Player: TKMHandID;
-  Group: TKMUnitGroup;
-  CenterPoints: TKMPointArray;
-begin
-  SetLength(Result,0);
-  // Find center points of cities / armies (where we should start scan - init point / center screen is useless for this)
-  for IdxPL := 0 to Length(aPlayers) - 1 do
-  begin
-    Player := aPlayers[IdxPL];
-    gAIFields.Eye.OwnerUpdate(Player);
-    CenterPoints := gAIFields.Eye.GetCityCenterPoints(True);
-    if (Length(CenterPoints) = 0) then // Important houses were not found -> try find soldier
-    begin
-      if (gHands[Player].UnitGroups.Count = 0) then
-        continue;
-      Group := gHands[Player].UnitGroups.Groups[ KaMRandom(gHands[Player].UnitGroups.Count, 'TKMSupervisor.GetInitPoints') ];
-      if (Group <> nil) AND not Group.IsDead AND not KMSamePoint(KMPOINT_ZERO,Group.Position) then
-      begin
-        SetLength(CenterPoints, 1);
-        CenterPoints[0] := Group.Position;
-      end
-      else
-        continue;
-    end;
-    SetLength(Result, Length(Result) + Length(CenterPoints));
-    Move(CenterPoints[0], Result[ Length(Result) - Length(CenterPoints) ], SizeOf(CenterPoints[0]) * Length(CenterPoints));
-  end;
-end;
-
-
-function TKMSupervisor.FindClosestEnemies(var aPlayers: TKMHandIDArray; var aEnemyStats: TKMEnemyStatisticsArray): Boolean;
-var
-  InitPoints: TKMPointArray;
-begin
-  // Get init points
-  InitPoints := GetInitPoints(aPlayers);
-  // Try find enemies by influence area
-  Result := (Length(InitPoints) <> 0)
-            AND ( gAIFields.Influences.InfluenceSearch.FindClosestEnemies(aPlayers[0], InitPoints, aEnemyStats, True)
-               OR gAIFields.Influences.InfluenceSearch.FindClosestEnemies(aPlayers[0], InitPoints, aEnemyStats, False) );
-end;
-
-
-// Find best target -> to secure that AI will be as universal as possible find only point in map and company will destroy everything around automatically
-procedure TKMSupervisor.UpdateAttack(aTeam: Byte);
-
-  procedure GetBestComparison(aPlayer: TKMHandID; var aBestCmpIdx, aWorstCmpIdx: TKMHandID; var aBestCmp, aWorstCmp: Single; var aEnemyStats: TKMEnemyStatisticsArray);
-  const
-    // Decrease chance to attack enemy in distance
-    DISTANCE_COEF_1v1 = 0.4;
-    DISTANCE_COEF_FFA = 2;
-  var
-    I, MinDist, MaxDist: Integer;
-    Comparison, invDistInterval, DistCoef: Single;
-  begin
-    aBestCmp := -1;
-    aWorstCmp := 1;
-    aBestCmpIdx := 0;
-    aWorstCmpIdx := 0;
-    if (Length(aEnemyStats) > 0) then
-    begin
-      // Find closest enemy
-      MinDist := High(Integer);
-      MaxDist := 0;
-      for I := 0 to Length(aEnemyStats) - 1 do
-      begin
-          MinDist := Min(MinDist, aEnemyStats[I].Distance);
-          MaxDist := Max(MaxDist, aEnemyStats[I].Distance);
-      end;
-      invDistInterval := 1 / Max(1,MaxDist - MinDist);
-      DistCoef := ifthen(fFFA, DISTANCE_COEF_FFA, DISTANCE_COEF_1v1);
-
-      for I := 0 to Length(aEnemyStats) - 1 do
-      begin
-        Comparison := + gAIFields.Eye.ArmyEvaluation.CompareAllianceStrength(aPlayer, aEnemyStats[I].Player)
-                      - (aEnemyStats[I].Distance - MinDist) * invDistInterval * DistCoef;
-        if (Comparison > aBestCmp) then
-        begin
-          aBestCmp := Comparison;
-          aBestCmpIdx := I;
-        end;
-        if (Comparison <= aWorstCmp) then
-        begin
-          aWorstCmp := Comparison;
-          aWorstCmpIdx := I;
-        end;
-      end;
-    end;
-  end;
-const
-  MIN_DEF_RATIO = 1.2;
-  FOOD_THRESHOLD = 0.55;
-  MIN_ADVANTAGE = 0.15; // 15% advantage for attacker
-var
-  IdxPL, EnemyTeamIdx: Integer;
-  DefRatio, BestCmp, WorstCmp, FoodLevel: Single;
-  BestCmpIdx, WorstCmpIdx: TKMHandID;
-  ArmyState: TKMArmyEval;
-  EnemyStats: TKMEnemyStatisticsArray;
-  AR: TKMAttackRequest;
-begin
-  if not NewAIInTeam(aTeam, True, False) OR (Length(fAlli2PL) < 2) then // I sometimes use my loc as a spectator (alliance with everyone) so make sure that search for enemy will use AI loc
-    Exit;
-  // Check if alliance can attack (have available soldiers) in the FFA mode (if there are just 2 teams attack if we have advantage)
-  if fFFA AND not gGameParams.IsTactic then
-  begin
-    DefRatio := 0;
-    for IdxPL := 0 to Length( fAlli2PL[aTeam] ) - 1 do
-      with gHands[ fAlli2PL[aTeam, IdxPL] ] do
-        if IsComputer AND AI.Setup.NewAI AND AI.Setup.AutoAttack then
-        begin
-          DefRatio := Max(DefRatio, AI.ArmyManagement.Defence.DefenceStatus);
-          KMSwapInt(fAlli2PL[aTeam, 0], fAlli2PL[aTeam, IdxPL]); // Make sure that player in first index is new AI
-        end;
-    // AI does not have enought soldiers
-    if (DefRatio < MIN_DEF_RATIO) then
-      Exit;
-  end;
-  // Try find enemies by influence area
-  if FindClosestEnemies(fAlli2PL[aTeam], EnemyStats) then
-  begin
-    // Calculate strength of alliance, find best comparison - value in interval <-1,1>, positive value = advantage, negative = disadvantage
-    GetBestComparison(fAlli2PL[aTeam, 0], BestCmpIdx, WorstCmpIdx, BestCmp, WorstCmp, EnemyStats);
-    ArmyState := gAIFields.Eye.ArmyEvaluation.AllianceEvaluation[ fAlli2PL[aTeam,0], atAlly ];
-    with ArmyState.FoodState do
-      FoodLevel := (Full + Middle) / Max(1, (Full + Middle + Low));
-    if (BestCmpIdx <> -1) AND ((BestCmp > MIN_ADVANTAGE) OR (FoodLevel < FOOD_THRESHOLD) OR gGameParams.IsTactic) then
-    begin
-      EnemyTeamIdx := fPL2Alli[ EnemyStats[BestCmpIdx].Player ];
-      for IdxPL := 0 to Length( fAlli2PL[aTeam] ) - 1 do
-        if gHands[ fAlli2PL[aTeam,IdxPL] ].AI.Setup.AutoAttack then
-        begin
-          fCombatStatus[fAlli2PL[aTeam,IdxPL],EnemyStats[BestCmpIdx].Player] := csAttackingCity;
-          if gGameParams.IsTactic then
-            fCombatStatus[fAlli2PL[aTeam,IdxPL],EnemyStats[BestCmpIdx].Player] := csAttackingEverything;
-          with AR do
-          begin
-            Active := True;
-            FoodShortage := FoodLevel < FOOD_THRESHOLD;
-            BestAllianceCmp := BestCmp;
-            WorstAllianceCmp := WorstCmp;
-            BestEnemy := EnemyStats[BestCmpIdx].Player;
-            BestPoint := EnemyStats[BestCmpIdx].ClosestPoint;
-            WorstEnemy := EnemyStats[WorstCmpIdx].Player;
-            WorstPoint := EnemyStats[WorstCmpIdx].ClosestPoint;
-            SetLength(Enemies, Length(fAlli2PL[EnemyTeamIdx]) );
-            Move(fAlli2PL[EnemyTeamIdx,0], Enemies[0], SizeOf(Enemies[0])*Length(Enemies));
-          end;
-          gHands[ fAlli2PL[aTeam,IdxPL] ].AI.ArmyManagement.AttackRequest := AR;
-        end;
-    end;
-  end;
-end;
-
-
-
 procedure TKMSupervisor.DivideResources();
   function FindAndDivideMines(var aPlayers: TKMHandIDArray; var aMines: TKMPointArray): TKMWordArray;
   const
@@ -1103,28 +1211,6 @@ begin
         gHands[ fAlli2PL[Alli,IdxPL] ].AI.CityManagement.Predictor.MaxGoldMineCnt := MineCnt[IdxPL];
   end;
 end;
-
-
-function TKMSupervisor.IsNewAI(aID: TKMHandID): Boolean;
-begin
-  Result := gHands[aID].AI.Setup.NewAI;
-end;
-
-
-function TKMSupervisor.NewAIInTeam(aTeam: Byte; aAttack, aDefence: Boolean): Boolean;
-var
-  IdxPL: Integer;
-begin
-  Result := False;
-  for IdxPL := 0 to Length( fAlli2PL[aTeam] ) - 1 do
-    with gHands[ fAlli2PL[aTeam, IdxPL] ] do
-      if IsComputer
-        AND AI.Setup.NewAI
-        AND (not aAttack OR AI.Setup.AutoAttack)
-        AND (not aDefence OR AI.Setup.AutoDefend) then
-        Exit(True);
-end;
-
 
 
 function TKMSupervisor.LogStatus(): UnicodeString;
