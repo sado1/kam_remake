@@ -281,6 +281,8 @@ type
     function GetMouseWheelStepsCnt(aWheelData: Integer): Integer;
     procedure LoadDevSettings;
     procedure SaveDevSettings;
+    procedure ResetControl(aCtrl: TControl);
+    procedure ResetSubPanel(aPanel: TWinControl);
     {$IFDEF MSWindows}
     function GetWindowParams: TKMWindowParamsRecord;
     procedure WMSysCommand(var Msg: TWMSysCommand); message WM_SYSCOMMAND;
@@ -902,8 +904,7 @@ begin
 end;
 
 
-//Revert all controls to defaults (e.g. before MP session)
-procedure TFormMain.ControlsReset;
+procedure TFormMain.ResetControl(aCtrl: TControl);
 
   function SkipReset(aCtrl: TControl): Boolean;
   begin
@@ -915,6 +916,50 @@ procedure TFormMain.ControlsReset;
               {$IFDEF FPC} False; {$ENDIF}
   end;
 
+begin
+  if SkipReset(aCtrl) then Exit; //Skip reset for some controls
+
+  if aCtrl is TCheckBox then
+    TCheckBox(aCtrl).Checked :=   (aCtrl = chkBevel)
+                               or (aCtrl = chkLogNetConnection)
+                               or (aCtrl = chkLogSkipTempCmd)
+                               or ((aCtrl = chkSnowHouses) and gGameSettings.AllowSnowHouses)
+                               or ((aCtrl = chkInterpolatedRender) and gGameSettings.InterpolatedRender)
+                               or (aCtrl = chkShowObjects)
+                               or (aCtrl = chkShowHouses)
+                               or (aCtrl = chkShowUnits)
+                               or (aCtrl = chkShowOverlays)
+  else
+  if aCtrl is TTrackBar then
+    TTrackBar(aCtrl).Position := 0
+  else
+  if (aCtrl is TRadioGroup)
+    and (aCtrl <> rgDebugFont) then
+    TRadioGroup(aCtrl).ItemIndex := 0
+  else
+  if (aCtrl is TSpinEdit) then
+    TSpinEdit(aCtrl).Value := 0
+  else
+  if (aCtrl is TEdit) then
+    TEdit(aCtrl).Text := ''
+  else
+  if (aCtrl is TGroupBox) then
+    ResetSubPanel(TGroupBox(aCtrl));
+end;
+
+
+procedure TFormMain.ResetSubPanel(aPanel: TWinControl);
+var
+  I: Integer;
+begin
+  for I := 0 to aPanel.ControlCount - 1 do
+    ResetControl(aPanel.Controls[I]);
+end;
+
+
+//Revert all controls to defaults (e.g. before MP session)
+procedure TFormMain.ControlsReset;
+
   {$IFDEF WDC}
   procedure ResetCategoryPanel(aPanel: TCategoryPanel);
   var
@@ -924,28 +969,7 @@ procedure TFormMain.ControlsReset;
     if aPanel.Controls[0] is TCategoryPanelSurface then
     begin
       PanelSurface := TCategoryPanelSurface(aPanel.Controls[0]);
-      for I := 0 to PanelSurface.ControlCount - 1 do
-      begin
-        if SkipReset(PanelSurface.Controls[I]) then Continue; //Skip reset for some controls
-
-        if PanelSurface.Controls[I] is TCheckBox then
-          TCheckBox(PanelSurface.Controls[I]).Checked :=    (PanelSurface.Controls[I] = chkBevel)
-                                                         or (PanelSurface.Controls[I] = chkLogNetConnection)
-                                                         or (PanelSurface.Controls[I] = chkLogSkipTempCmd)
-                                                         or ((PanelSurface.Controls[I] = chkSnowHouses) and gGameSettings.AllowSnowHouses)
-                                                         or ((PanelSurface.Controls[I] = chkInterpolatedRender) and gGameSettings.InterpolatedRender)
-                                                         or (PanelSurface.Controls[I] = chkShowObjects)
-                                                         or (PanelSurface.Controls[I] = chkShowHouses)
-                                                         or (PanelSurface.Controls[I] = chkShowUnits)
-                                                         or (PanelSurface.Controls[I] = chkShowOverlays)
-        else
-        if PanelSurface.Controls[I] is TTrackBar then
-          TTrackBar(PanelSurface.Controls[I]).Position := 0
-        else
-        if (PanelSurface.Controls[I] is TRadioGroup)
-          and (PanelSurface.Controls[I] <> rgDebugFont) then
-          TRadioGroup(PanelSurface.Controls[I]).ItemIndex := 0;
-      end;
+      ResetSubPanel(PanelSurface);
     end;
   end;
 
