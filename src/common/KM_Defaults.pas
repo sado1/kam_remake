@@ -27,9 +27,17 @@ const
   {$I KM_Revision.inc};
   {$I KM_NetProtocolRevision.inc};
   {$IFDEF USESECUREAUTH}
+    {$IFDEF DEBUG}
+    GAME_VERSION_POSTFIX  = ' [ DEBUG ]';
+    {$ELSE}
     GAME_VERSION_POSTFIX  = '';
+    {$ENDIF}
   {$ELSE}
-    GAME_VERSION_POSTFIX  = ' (UNSECURE!)';
+    {$IFDEF DEBUG}
+    GAME_VERSION_POSTFIX  = ' [ UNSECURE - DEBUG ]';
+    {$ELSE}
+    GAME_VERSION_POSTFIX  = ' [ UNSECURE ]';
+    {$ENDIF}
   {$ENDIF}
   GAME_VERSION_PREFIX   = ''; //Game version string displayed in menu corner
 var
@@ -68,7 +76,8 @@ var
   FREE_POINTERS         :Boolean = True;  //If True, units/houses will be freed and removed from the list once they are no longer needed
   CAP_MAX_FPS           :Boolean = True;  //Should limit rendering performance to avoid GPU overheating (disable to measure debug performance)
   CRASH_ON_REPLAY       :Boolean = True;  //Crash as soon as replay consistency fails (random numbers mismatch)
-  BLOCK_DUPLICATE_APP   :Boolean = not DEBUG_CFG;  //Do not allow to run multiple games at once (to prevent MP cheating)
+  BLOCK_DUPLICATE_APP   :Boolean = not DEBUG_CFG; //Do not allow to run multiple games at once (to prevent MP cheating)
+  QUERY_ON_FORM_CLOSE   :Boolean = not DEBUG_CFG; //Do we ask player about lost changes on game exit ?
   SHOW_DISMISS_UNITS_BTN:Boolean = True; //The button to order citizens go back to school
   RESET_DEBUG_CONTROLS  :Boolean = not DEBUG_CFG; //Reset Debug controls (F11) on game start
   SKIP_LOG_TEMP_COMMANDS:Boolean = True;
@@ -124,12 +133,13 @@ var
   GAME_NO_UPDATE_ON_TIMER :Boolean = False; //Block game update by timer (only allow to update it manually)
   GAME_SAVE_STRIP_FOR_CRC :Boolean = False; //Strip unsynced data from Game saves, to compare saves CRC
   ALLOW_LOAD_UNSUP_VERSION_SAVE:
-                           Boolean = True;  //Allow to try load saves / replay with unsupported version
+                           Boolean = DEBUG_CFG; //Allow to try load saves / replay with unsupported version
   SHOW_ENEMIES_STATS      :Boolean = False; //Do we allow to show enemies stats during the game
   SHOW_DEBUG_CONTROLS     :Boolean = False; //Show debug panel / Form1 menu (F11)
   SHOW_CONTROLS_OVERLAY   :Boolean = False; //Draw colored overlays ontop of controls! always Off here
   SHOW_CONTROLS_ID        :Boolean = False; //Draw controls ID
-  SHOW_CONTROLS_FOCUS     :Boolean = False; //Outline focused control
+  SHOW_FOCUSED_CONTROL     :Boolean = False; //Outline focused control
+  SHOW_CONTROL_OVER       :Boolean = False; //Outline control with mouse over
   SHOW_TEXT_OUTLINES      :Boolean = False; //Display text areas outlines
   ENABLE_DESIGN_CONTORLS  :Boolean = False; //Enable special mode to allow to move/edit controls
   MODE_DESIGN_CONTROLS    :Boolean = False; //Special mode to move/edit controls activated by F7, it must block OnClick events! always Off here
@@ -217,13 +227,14 @@ var
   DO_PERF_LOGGING         :Boolean = False; //Write each ticks time to log (DEPRECATED PERF_LOGGER)
   MP_RESULTS_IN_SP        :Boolean = False; //Display each players stats in SP
   SHOW_DEBUG_OVERLAY_BEVEL:Boolean = True;  //Show debug text overlay Bevel (for better text readability)
+  DEBUG_TEXT_FONT_ID      :Integer = 4;     //Debug font ID (4 is fntMini)
+  DEBUG_TEXT_MONOSPACED   :Boolean = True;  //Debug font is drawn as monospaced
   {Gameplay}
   LOBBY_SET_SPECS_DEFAULT :Boolean = DEBUG_CFG; //Set 'Allow spectators' flag in the lobby by default
   LOBBY_HOST_AS_SPECTATOR :Boolean = DEBUG_CFG; //Host lobby as spectator by default
-  USE_CUSTOM_SEED         :Boolean = True; //Use custom seed for every game
-  CUSTOM_SEED_VALUE       :Integer = 207542854;     //Custom seed value
-  PAUSE_GAME_AFTER_TICK   :Integer = -1;    //Pause after specified game tick
-  MAKE_SAVEPT_AFTER_TICK  :Integer = -1;    //Make savepoint after a certain tick (for both game and replay)
+  CUSTOM_SEED_VALUE       :Integer = 0;     //Custom seed value. Not applied if set to 0
+  PAUSE_GAME_BEFORE_TICK  :Integer = -1;    //Pause after specified game tick
+  MAKE_SAVEPT_BEFORE_TICK :Integer = -1;    //Make savepoint after a certain tick (for both game and replay)
   ALLOW_SAVE_IN_REPLAY    :Boolean = DEBUG_CFG; //Allow to save game from replay, good for debug
   SAVE_GAME_AS_TEXT       :Boolean = True; //Save game serialized //Todo DEBUG. set to False before releases
 
@@ -303,6 +314,8 @@ const
   BEACON_COOLDOWN         = 400;  //Minimum time in milliseconds between beacons
 
   DYNAMIC_HOTKEYS_NUM  = 20; // Number of dynamic hotkeys
+
+  GLOBAL_TICK_UPDATE_FREQ = 100; // In ms.
 
 var
   HITPOINT_RESTORE_PACE: Word = 100;         //1 hitpoint is restored to units every X ticks (using Humbelum's advice)
@@ -458,8 +471,8 @@ const
 
 
 const
-  DirCursorCircleRadius  = 32; //Radius of the direction selector cursor restriction area
-  DirCursorNARadius = 20;  //Radius of centeral part that has no direction
+  DIR_CURSOR_CIRCLE_RAD  = 32; //Radius of the direction selector cursor restriction area
+  DIR_CURSOR_NA_RAD = 20;  //Radius of centeral part that has no direction
 
 
 type
@@ -530,7 +543,7 @@ type
   TKMHeightPass = (hpWalking, hpBuilding, hpBuildingMines);
 
 const
-  PassabilityGuiText: array [TKMTerrainPassability] of UnicodeString = (
+  PASSABILITY_GUI_TEXT: array [TKMTerrainPassability] of UnicodeString = (
     'Unused',
     'Can walk',
     'Can walk road',
@@ -646,7 +659,7 @@ type
   TKMUnitThought = (thNone, thEat, thHome, thBuild, thStone, thWood, thDeath, thQuest, thDismiss);
 
 const //Corresponding indices in units.rx
-  ThoughtBounds: array [TKMUnitThought, 1..2] of Word = (
+  THOUGHT_BOUNDS: array [TKMUnitThought, 1..2] of Word = (
   (0,0), (6250,6257), (6258,6265), (6266,6273), (6274,6281), (6282,6289), (6290,6297), (6298,6305), (6314,6321)
   );
 
@@ -680,13 +693,13 @@ type
   TKMUnitActionTypeSet = set of TKMUnitActionType;
 
 const
-  UnitAct: array [TKMUnitActionType] of string = ('uaWalk', 'uaWork', 'uaSpec', 'uaDie', 'uaWork1',
+  UNIT_ACT_STR: array [TKMUnitActionType] of string = ('uaWalk', 'uaWork', 'uaSpec', 'uaDie', 'uaWork1',
              'uaWork2', 'uaWorkEnd', 'uaEat', 'uaWalkArm', 'uaWalkTool',
              'uaWalkBooty', 'uaWalkTool2', 'uaWalkBooty2', 'uaUnknown');
 
 
 const
-  FishCountAct: array [1..5] of TKMUnitActionType = (uaWalk, uaWork, uaSpec, uaDie, uaWork1);
+  FISH_COUNT_ACT: array [1..5] of TKMUnitActionType = (uaWalk, uaWork, uaSpec, uaDie, uaWork1);
 
 
 type
@@ -714,7 +727,7 @@ type
   TKMHouseActionSet = set of TKMHouseActionType;
 
 const
-  HouseAction: array [TKMHouseActionType] of string = (
+  HOUSE_ACTION_STR: array [TKMHouseActionType] of string = (
   'ha_Work1', 'ha_Work2', 'ha_Work3', 'ha_Work4', 'ha_Work5', //Start, InProgress, .., .., Finish
   'ha_Smoke', 'ha_FlagShtok', 'ha_Idle',
   'ha_Flag1', 'ha_Flag2', 'ha_Flag3',
@@ -787,10 +800,10 @@ type
 
 const
   //We discontinue support of other goals in favor of PascalScript scripts
-  GoalsSupported: set of TKMGoalCondition =
+  GOALS_SUPPORTED: set of TKMGoalCondition =
     [gcBuildings, gcTroops, gcMilitaryAssets, gcSerfsAndSchools, gcEconomyBuildings];
 
-  GoalConditionStr: array [TKMGoalCondition] of string = (
+  GOAL_CONDITION_STR: array [TKMGoalCondition] of string = (
     'Unknown 0',
     'Build Tannery',
     'Time',
@@ -850,6 +863,9 @@ type
   TKMMapEdVisibleLayerSet = set of TKMMapEdVisibleLayers; //Set of above enum
 
   TKMDebugControls = (dcNone, dcFlatTerrain);
+
+const
+  DEV_SETTINGS_XML_FILENAME = 'kmr_dev.xml';
 
 
 const

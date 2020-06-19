@@ -93,6 +93,7 @@ end;
 procedure TKMHouseInn.UpdateEater(aIndex: ShortInt; aFoodKind: TKMWareType);
 begin
   if aIndex = -1 then Exit;
+
   Assert(aFoodKind in [wtWine, wtBread, wtSausages, wtFish], 'Wrong kind of food in Inn');
 
   fEater[aIndex].FoodKind := aFoodKind; //Order is Wine-Bread-Sausages-Fish
@@ -154,7 +155,7 @@ const
   offY: array [0..2] of Single = (-0.05, 0, 0.05);
 var
   I: Integer;
-  AnimStep: Cardinal;
+  animStep: Cardinal;
 begin
   inherited;
   if fBuildState <> hbsDone then exit;
@@ -163,12 +164,12 @@ begin
   begin
     if (fEater[I].UnitType = utNone) or (fEater[I].FoodKind = wtNone) then Continue;
 
-    AnimStep := FlagAnimStep - fEater[I].EatStep; //Delta is our AnimStep
+    animStep := FlagAnimStep - fEater[I].EatStep; //Delta is our AnimStep
 
     gRenderPool.AddHouseEater(fPosition, fEater[I].UnitType, uaEat,
-                              AnimDir(I), AnimStep,
+                              AnimDir(I), animStep,
                               offX[I mod 3], offY[I mod 3],
-                              gHands[fOwner].GameFlagColor);
+                              gHands[Owner].GameFlagColor);
   end;
 end;
 

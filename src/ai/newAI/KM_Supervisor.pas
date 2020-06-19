@@ -223,7 +223,7 @@ begin
   if not gGame.IsPeaceTime then
   begin
     if (Modulo >= ATTACKS) AND (Modulo - ATTACKS < Length(fAlli2PL))
-    AND (  gGameParams.IsTactic OR (aTick > (gGame.GameOptions.Peacetime+3) * 10 * 60)  ) then // In normal mode wait 3 minutes after peace
+    AND (  gGameParams.IsTactic OR (aTick > (gGame.Options.Peacetime+3) * 10 * 60)  ) then // In normal mode wait 3 minutes after peace
     begin
       UpdateFFA();
       UpdateAttack(Modulo - ATTACKS);
@@ -696,6 +696,8 @@ var
   Idx: Integer;
   PL1,PL2,PL3: TKMHandID;
 begin
+  if gGameParams.IsMapEditor then Exit; //No need to work in the mapEd
+
   FillChar(fPL2Alli, SizeOf(fPL2Alli), #255); // TKMHandIndex = SmallInt => Byte(255) = -1 = PLAYER_NONE
   SetLength(fAlli2PL, gHands.Count, gHands.Count);
   AlliCnt := 0;
@@ -1140,7 +1142,7 @@ begin
   Cnt := 0;
   for PL := 0 to gHands.Count-1 do
     Cnt := Cnt + Byte(gHands[PL].Enabled);
-  Result := Format('Supervisor (Is FFA = %d; Teams = %d; Payers = %d)',[Byte(fFFA), Length(fAlli2PL), Cnt]);
+  Result := Format('Supervisor (Is FFA = %d; Teams = %d; Players = %d)',[Byte(fFFA), Length(fAlli2PL), Cnt]);
   // Diplomacy + combat status
   for Team := Low(fAlli2PL) to High(fAlli2PL) do
   begin

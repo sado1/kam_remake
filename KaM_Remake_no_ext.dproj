@@ -1,4 +1,4 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{A5901296-43C7-446C-8113-93B25ADD188C}</ProjectGuid>
         <MainSource>KaM_Remake.dpr</MainSource>
@@ -197,10 +197,10 @@
         <DCCReference Include="src\game\KM_GameInfo.pas"/>
         <DCCReference Include="src\game\KM_GameOptions.pas"/>
         <DCCReference Include="src\game\KM_GameParams.pas"/>
+        <DCCReference Include="src\game\KM_GameSavePoints.pas"/>
         <DCCReference Include="src\game\KM_GameInputProcess.pas"/>
         <DCCReference Include="src\game\KM_GameInputProcess_Multi.pas"/>
         <DCCReference Include="src\game\KM_GameInputProcess_Single.pas"/>
-        <DCCReference Include="src\game\KM_GameSavedReplays.pas"/>
         <DCCReference Include="src\gui\pages_game\KM_GUIGameBuild.pas"/>
         <DCCReference Include="src\gui\pages_game\KM_GUIGameChat.pas"/>
         <DCCReference Include="src\gui\pages_game\KM_GUIGameHouse.pas"/>
@@ -269,10 +269,13 @@
         <DCCReference Include="src\hands\KM_Hand.pas"/>
         <DCCReference Include="src\hands\KM_HandsCollection.pas"/>
         <DCCReference Include="src\hands\KM_HandConstructions.pas"/>
+        <DCCReference Include="src\hands\KM_HandEntity.pas"/>
+        <DCCReference Include="src\hands\KM_HandEntityHelper.pas"/>
         <DCCReference Include="src\hands\KM_HandLocks.pas"/>
         <DCCReference Include="src\hands\KM_HandLogistics.pas"/>
         <DCCReference Include="src\hands\KM_HandSpectator.pas"/>
         <DCCReference Include="src\hands\KM_HandStats.pas"/>
+        <DCCReference Include="src\hands\KM_HandTypes.pas"/>
         <DCCReference Include="src\houses\KM_HouseBarracks.pas"/>
         <DCCReference Include="src\houses\KM_HouseInn.pas"/>
         <DCCReference Include="src\houses\KM_HouseCollection.pas"/>
@@ -311,7 +314,6 @@
         <DCCReference Include="src\navmesh\KM_NavMeshFloodPositioning.pas"/>
         <DCCReference Include="src\navmesh\KM_NavMeshInfluences.pas"/>
         <DCCReference Include="src\navmesh\KM_NavMeshDefences.pas"/>
-        <DCCReference Include="src\navmesh\KM_NavMeshArmyPositioning.pas"/>
         <DCCReference Include="src\navmesh\KM_NavMeshArmyVectorField.pas"/>
         <DCCReference Include="src\net\KM_NetAuthSecure.pas"/>
         <DCCReference Include="src\net\KM_NetAuthUnsecure.pas"/>
@@ -394,6 +396,7 @@
         <DCCReference Include="src\units\actions\KM_UnitActionStormAttack.pas"/>
         <DCCReference Include="src\units\actions\KM_UnitActionWalkTo.pas"/>
         <DCCReference Include="src\units\KM_UnitGroup.pas"/>
+        <DCCReference Include="src\units\KM_UnitGroupTypes.pas"/>
         <DCCReference Include="src\units\KM_Units.pas"/>
         <DCCReference Include="src\units\KM_UnitsCollection.pas"/>
         <DCCReference Include="src\units\KM_UnitVisual.pas"/>
@@ -412,6 +415,7 @@
         <DCCReference Include="src\units\tasks\KM_UnitTaskThrowRock.pas"/>
         <DCCReference Include="src\utils\KM_BinPacking.pas"/>
         <DCCReference Include="src\utils\KM_CommonUtils.pas"/>
+        <DCCReference Include="src\utils\KM_IoXML.pas"/>
         <DCCReference Include="src\utils\KM_FileIO.pas"/>
         <DCCReference Include="src\utils\KM_FloodFill.pas"/>
         <DCCReference Include="src\utils\KM_Helpers.pas"/>

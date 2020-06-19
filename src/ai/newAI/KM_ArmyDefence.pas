@@ -93,7 +93,8 @@ implementation
 uses
   Math,
   KM_GameParams, KM_HandsCollection, KM_Hand, KM_RenderAux,
-  KM_AIFields, KM_NavMesh;
+  KM_AIFields, KM_NavMesh,
+  KM_UnitGroupTypes;
 
 
 { TKMDefencePosition }
@@ -120,10 +121,7 @@ begin
   SaveStream.Write(fWeight);
   SaveStream.Write(fLine);
   SaveStream.Write(fPosition);
-  if (fGroup <> nil) then
-    SaveStream.Write(fGroup.UID) //Store ID
-  else
-    SaveStream.Write(Integer(0));
+  SaveStream.Write(fGroup.UID); //Store ID
 end;
 
 
@@ -148,7 +146,7 @@ procedure TKMDefencePosition.SetGroup(aGroup: TKMUnitGroup);
 begin
   gHands.CleanUpGroupPointer(fGroup);
   if (aGroup <> nil) then
-    fGroup := aGroup.GetGroupPointer;
+    fGroup := aGroup.GetPointer;
 end;
 
 

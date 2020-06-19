@@ -256,15 +256,15 @@ begin
       0:  Break;
       1:  begin
             Append(htQuary);
-            List[0] := List[0] + ProductionRate[wtStone];
+            List[0] := List[0] + PRODUCTION_RATE[wtStone];
           end;
       2:  begin
             Append(htWoodcutters);
-            List[1] := List[1] + ProductionRate[wtTrunk] * 2; //Each trunk brings 2 wood
+            List[1] := List[1] + PRODUCTION_RATE[wtTrunk] * 2; //Each trunk brings 2 wood
           end;
       3:  begin
             Append(htSawmill);
-            List[2] := List[2] + ProductionRate[wtWood];
+            List[2] := List[2] + PRODUCTION_RATE[wtWood];
           end;
     end;
 
@@ -423,28 +423,28 @@ begin
   with fWarfare do
   begin
     //Theoretical gold production
-    GoldPerMin := Min(HouseCount(htGoldMine) * ProductionRate[wtGoldOre] * 2,
-                      HouseCount(htMetallurgists) * ProductionRate[wtGold]);
+    GoldPerMin := Min(HouseCount(htGoldMine) * PRODUCTION_RATE[wtGoldOre] * 2,
+                      HouseCount(htMetallurgists) * PRODUCTION_RATE[wtGold]);
 
     //Theoretical steel production
-    SteelPerMin := Min(HouseCount(htIronMine) * ProductionRate[wtIronOre],
-                       HouseCount(htIronSmithy) * ProductionRate[wtSteel]);
+    SteelPerMin := Min(HouseCount(htIronMine) * PRODUCTION_RATE[wtIronOre],
+                       HouseCount(htIronSmithy) * PRODUCTION_RATE[wtSteel]);
 
     //Theoretical weapon production
-    WeaponsPerMin := Min(HouseCount(htWeaponSmithy) * ProductionRate[wtSword],
+    WeaponsPerMin := Min(HouseCount(htWeaponSmithy) * PRODUCTION_RATE[wtSword],
                          Warfare[wtSword].Demand
                          + Warfare[wtHallebard].Demand
                          + Warfare[wtArbalet].Demand);
 
     //Theoretical armor production
-    ArmorPerMin := Min(HouseCount(htArmorSmithy) * ProductionRate[wtMetalArmor],
+    ArmorPerMin := Min(HouseCount(htArmorSmithy) * PRODUCTION_RATE[wtMetalArmor],
                        Warfare[wtMetalShield].Demand + Warfare[wtMetalArmor].Demand);
 
     //Current coal consumption
     CoalConsumptionRate := GoldPerMin/2 + SteelPerMin + WeaponsPerMin + ArmorPerMin;
   end;
   CoalReserve := gHands[fOwner].Stats.GetWareBalance(wtCoal) / Max(1,CoalConsumptionRate);
-  CoalProductionRate := HouseCount(htCoalMine) * ProductionRate[wtCoal] + Max(CoalReserve - 30, 0);
+  CoalProductionRate := HouseCount(htCoalMine) * PRODUCTION_RATE[wtCoal] + Max(CoalReserve - 30, 0);
 
   if CoalProductionRate >= CoalConsumptionRate then
   begin
@@ -476,19 +476,19 @@ var
   IronPerMin, IronProduction, IronConsumption, IronReserve: Single;
   ExtraIron, RateIron: Single;
 begin
-  SteelPerMin := HouseCount(htIronSmithy) * ProductionRate[wtSteel];
-  IronPerMin := HouseCount(htIronMine) * ProductionRate[wtIronOre];
+  SteelPerMin := HouseCount(htIronSmithy) * PRODUCTION_RATE[wtSteel];
+  IronPerMin := HouseCount(htIronMine) * PRODUCTION_RATE[wtIronOre];
 
   with fWarfare do
   begin
     //Theoretical weapon production
-    WeaponsPerMin := Min(HouseCount(htWeaponSmithy) * ProductionRate[wtSword],
+    WeaponsPerMin := Min(HouseCount(htWeaponSmithy) * PRODUCTION_RATE[wtSword],
                       Warfare[wtSword].Demand
                       + Warfare[wtHallebard].Demand
                       + Warfare[wtArbalet].Demand);
 
     //Theoretical armor production
-    ArmorPerMin := Min(HouseCount(htArmorSmithy) * ProductionRate[wtMetalArmor],
+    ArmorPerMin := Min(HouseCount(htArmorSmithy) * PRODUCTION_RATE[wtMetalArmor],
                       Warfare[wtMetalArmor].Demand
                       + Warfare[wtMetalShield].Demand);
   end;
@@ -546,19 +546,19 @@ var
   ExtraTrunk, DeficitTrunk: Single;
 begin
   //Theoretical limit on Wood production
-  TrunkPerMin := HouseCount(htWoodcutters) * ProductionRate[wtTrunk];
-  WoodPerMin := HouseCount(htSawmill) * ProductionRate[wtWood];
+  TrunkPerMin := HouseCount(htWoodcutters) * PRODUCTION_RATE[wtTrunk];
+  WoodPerMin := HouseCount(htSawmill) * PRODUCTION_RATE[wtWood];
 
   with fWarfare do
   begin
     //Theoretical weapon production
-    WeaponsPerMin := Min(HouseCount(htWeaponWorkshop) * ProductionRate[wtAxe],
+    WeaponsPerMin := Min(HouseCount(htWeaponWorkshop) * PRODUCTION_RATE[wtAxe],
                       Warfare[wtAxe].Demand
                       + Warfare[wtPike].Demand
                       + Warfare[wtBow].Demand);
 
     //Min from available production (shields are only part of workshops orders) and demand
-    ShieldsPerMin := Min(HouseCount(htArmorWorkshop) * OrderRatio[wtShield] * ProductionRate[wtShield],
+    ShieldsPerMin := Min(HouseCount(htArmorWorkshop) * OrderRatio[wtShield] * PRODUCTION_RATE[wtShield],
                          Warfare[wtShield].Demand);
 
     //Current wood consumption
@@ -635,9 +635,9 @@ begin
 
     //How much gold in theory we could get
     //CoalTheory - coal calculated separately
-    GoldOreTheory := HouseCount(htGoldMine) * ProductionRate[wtGoldOre] * 2; //*2 since every Ore becomes 2 Gold
+    GoldOreTheory := HouseCount(htGoldMine) * PRODUCTION_RATE[wtGoldOre] * 2; //*2 since every Ore becomes 2 Gold
     GoldOreTheory := GoldOreTheory + Max(0, GoldOreReserve - 30);
-    GoldTheory := HouseCount(htMetallurgists) * ProductionRate[wtGold];
+    GoldTheory := HouseCount(htMetallurgists) * PRODUCTION_RATE[wtGold];
 
     //Actual production is minimum of the above
     Production := Min(CoalTheory, GoldOreTheory, GoldTheory);
@@ -661,7 +661,7 @@ begin
       //Trunk
       //Wood
       //All 3 produced at the same speed
-      WorkshopTheory := HouseCount(htWeaponWorkshop) * ProductionRate[wtPike];
+      WorkshopTheory := HouseCount(htWeaponWorkshop) * PRODUCTION_RATE[wtPike];
 
       Warfare[wtAxe].Production := Min(TrunkTheory, WoodTheory, WorkshopTheory) * OrderRatio[wtAxe];
       Warfare[wtPike].Production := Min(TrunkTheory, WoodTheory, WorkshopTheory) * OrderRatio[wtPike];
@@ -673,9 +673,9 @@ begin
       //Trunk
       //Wood
       //FarmTheory calculated above
-      SwineTheory := HouseCount(htSwine) * ProductionRate[wtSkin] * 2;
-      TanneryTheory := HouseCount(htTannery) * ProductionRate[wtLeather];
-      WorkshopTheory := HouseCount(htArmorWorkshop) * ProductionRate[wtArmor];
+      SwineTheory := HouseCount(htSwine) * PRODUCTION_RATE[wtSkin] * 2;
+      TanneryTheory := HouseCount(htTannery) * PRODUCTION_RATE[wtLeather];
+      WorkshopTheory := HouseCount(htArmorWorkshop) * PRODUCTION_RATE[wtArmor];
 
       Warfare[wtShield].Production := Min(TrunkTheory, WoodTheory, WorkshopTheory * OrderRatio[wtShield]);
       Warfare[wtArmor].Production := Min(Min(FarmTheory, SwineTheory), Min(TanneryTheory, WorkshopTheory * OrderRatio[wtArmor]));
@@ -693,7 +693,7 @@ begin
     with SteelWeapon do
     begin
       //Coal/steel/iron calculated above
-      SmithyTheory := HouseCount(htWeaponSmithy) * ProductionRate[wtHallebard];
+      SmithyTheory := HouseCount(htWeaponSmithy) * PRODUCTION_RATE[wtHallebard];
 
       //All 3 weapons are the same for now
       Warfare[wtSword].Production := Min(Min(CoalTheory, IronTheory), Min(SteelTheory, SmithyTheory)) * OrderRatio[wtSword];
@@ -706,7 +706,7 @@ begin
     with SteelArmor do
     begin
       //Coal/steel/iron calculated above
-      SmithyTheory := HouseCount(htArmorSmithy) * ProductionRate[wtMetalArmor];
+      SmithyTheory := HouseCount(htArmorSmithy) * PRODUCTION_RATE[wtMetalArmor];
 
       Warfare[wtMetalShield].Production := Min(Min(CoalTheory, IronTheory), Min(SteelTheory, SmithyTheory)) * OrderRatio[wtMetalShield];
       Warfare[wtMetalArmor].Production := Min(Min(CoalTheory, IronTheory), Min(SteelTheory, SmithyTheory)) * OrderRatio[wtMetalArmor];
@@ -726,7 +726,7 @@ begin
   with fWarfare do
   begin
     //Horse.FarmTheory calculated above
-    Horse.StablesTheory := HouseCount(htStables) * ProductionRate[wtHorse];
+    Horse.StablesTheory := HouseCount(htStables) * PRODUCTION_RATE[wtHorse];
     Warfare[wtHorse].Production := Min(Horse.FarmTheory, Horse.StablesTheory);
 
     for I := WARFARE_MIN to WARFARE_MAX do
@@ -799,14 +799,14 @@ begin
     else
     begin
       StoneReserve := gHands[fOwner].Stats.GetWareBalance(wtStone) / Max(0.001,StoneNeed);
-      StoneProduction := HouseCount(htQuary) * ProductionRate[wtStone] + Max(StoneReserve - 30, 0);
+      StoneProduction := HouseCount(htQuary) * PRODUCTION_RATE[wtStone] + Max(StoneReserve - 30, 0);
     end;
 
     WoodcutReserve := gHands[fOwner].Stats.GetWareBalance(wtTrunk) * 2 / Max(0.001,WoodNeed);
-    WoodcutTheory := HouseCount(htWoodcutters) * ProductionRate[wtTrunk] * 2 + Max(WoodcutReserve - 30, 0);
+    WoodcutTheory := HouseCount(htWoodcutters) * PRODUCTION_RATE[wtTrunk] * 2 + Max(WoodcutReserve - 30, 0);
 
     SawmillReserve := gHands[fOwner].Stats.GetWareBalance(wtWood) / Max(0.001,WoodNeed);
-    SawmillTheory := HouseCount(htSawmill) * ProductionRate[wtWood] + Max(SawmillReserve - 30, 0);
+    SawmillTheory := HouseCount(htSawmill) * PRODUCTION_RATE[wtWood] + Max(SawmillReserve - 30, 0);
     WoodProduction := Min(WoodcutTheory, SawmillTheory);
 
     StoneBalance    := StoneProduction - StoneNeed;
@@ -829,12 +829,12 @@ var
 begin
 
   //With stable production rate we can assume consumption rate that would be required
-  FlourPerMin := HouseCount(htMill) * ProductionRate[wtFlour];
-  PigPerMin   := HouseCount(htSwine) * ProductionRate[wtPig] * BEAST_COST;
-  HorsePerMin := HouseCount(htStables) * ProductionRate[wtHorse] * BEAST_COST;
+  FlourPerMin := HouseCount(htMill) * PRODUCTION_RATE[wtFlour];
+  PigPerMin   := HouseCount(htSwine) * PRODUCTION_RATE[wtPig] * BEAST_COST;
+  HorsePerMin := HouseCount(htStables) * PRODUCTION_RATE[wtHorse] * BEAST_COST;
   CornConsumption := FlourPerMin + PigPerMin + HorsePerMin;
   CornReserve := gHands[fOwner].Stats.GetWareBalance(wtCorn) / Max(CornConsumption,0.001);
-  CornProduction := HouseCount(htFarm) * ProductionRate[wtCorn] + Max(CornReserve - 30, 0);
+  CornProduction := HouseCount(htFarm) * PRODUCTION_RATE[wtCorn] + Max(CornReserve - 30, 0);
 
   if CornProduction >= CornConsumption then
   begin
@@ -870,20 +870,20 @@ begin
     //Bread
     //Calculate how much bread each link could possibly produce
     //Bread.FarmTheory calculated above
-    Bread.MillTheory := HouseCount(htMill) * ProductionRate[wtFlour] * 2;
-    Bread.BakeryTheory := HouseCount(htBakery) * ProductionRate[wtBread];
+    Bread.MillTheory := HouseCount(htMill) * PRODUCTION_RATE[wtFlour] * 2;
+    Bread.BakeryTheory := HouseCount(htBakery) * PRODUCTION_RATE[wtBread];
     BreadProduction := Min(Bread.FarmTheory, Bread.MillTheory, Bread.BakeryTheory);
 
     //Sausages
     //Calculate how many sausages each link could possibly produce
     //Sausages.FarmTheory calculated above
-    Sausages.SwineTheory := HouseCount(htSwine) * ProductionRate[wtPig] * 3;
-    Sausages.ButchersTheory := HouseCount(htButchers) * ProductionRate[wtSausages];
+    Sausages.SwineTheory := HouseCount(htSwine) * PRODUCTION_RATE[wtPig] * 3;
+    Sausages.ButchersTheory := HouseCount(htButchers) * PRODUCTION_RATE[wtSausages];
     SausagesProduction := Min(Sausages.FarmTheory, Sausages.SwineTheory, Sausages.ButchersTheory);
 
     //Wine, Fish
-    WineProduction := HouseCount(htWineyard) * ProductionRate[wtWine];
-    FishProduction := HouseCount(htFisherHut) * ProductionRate[wtFish];
+    WineProduction := HouseCount(htWineyard) * PRODUCTION_RATE[wtWine];
+    FishProduction := HouseCount(htFisherHut) * PRODUCTION_RATE[wtFish];
 
     //Count in "food units per minute"
     Production := BreadProduction * BREAD_RESTORE +

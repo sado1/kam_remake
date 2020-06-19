@@ -403,7 +403,7 @@ begin
           U := G.Members[L];
           if (U <> nil) AND not U.IsDeadOrDying then
           begin
-            PolyIdx := fNavMesh.KMPoint2Polygon[ U.CurrPosition ];
+            PolyIdx := fNavMesh.KMPoint2Polygon[ U.Position ];
             Inc(fPresence[aAllianceIdx*5*fPolygons + 5*PolyIdx + AVOID_TRAFFIC_IDX],Increment);
           end;
           L := L + EACH_X_MEMBER_COEF;
@@ -426,7 +426,7 @@ begin
           U := G.Members[L];
           if (U <> nil) AND not U.IsDeadOrDying then
           begin
-            PolyIdx := fNavMesh.KMPoint2Polygon[ U.CurrPosition ];
+            PolyIdx := fNavMesh.KMPoint2Polygon[ U.Position ];
             EvaluatePolygon(aAllianceIdx*5*fPolygons + 5*PolyIdx, Increment, GT);
             with fNavMesh.Polygons[PolyIdx] do
               for M := 0 to NearbyCount - 1 do

@@ -181,7 +181,7 @@ begin
 
   gGame.TerrainPainter.FixTerrainKindInfoAtBorders(False);
 
-  SaveName := TKMapsCollection.FullPath(gGameParams.GameName, '.dat', fIsMultiplayer);
+  SaveName := TKMapsCollection.FullPath(gGameParams.Name, '.dat', fIsMultiplayer);
   gGame.SaveMapEditor(SaveName, KMRect(NumEdit_Resize_Left.Value,  NumEdit_Resize_Top.Value,
                                        NumEdit_Resize_Right.Value, NumEdit_Resize_Bottom.Value));
   FreeThenNil(gGame);

@@ -5,7 +5,8 @@ uses
   {$IFDEF FPC}zstream, {$ENDIF}
   {$IFDEF WDC}ZLib, {$ENDIF}
   Generics.Collections,
-  KM_CommonClasses, KM_WorkerThread;
+  KM_CommonClasses
+  {$IFDEF WDC OR FPC_FULLVERSION >= 30200}, KM_WorkerThread{$ENDIF};
 
 type
   TKMLogRngType = (lrtNone, lrtInt, lrtSingle, lrtExt);
@@ -58,7 +59,9 @@ type
 
     property Enabled: Boolean read GetEnabled write fEnabled;
 
+    {$IFDEF WDC OR FPC_FULLVERSION >= 30200}
     procedure SaveToPathAsync(const aPath: String; aWorkerThread: TKMWorkerThread);
+    {$ENDIF}
 //    procedure ParseSaveStreamAndSaveAsText(aPath: String);
     procedure SaveAsText(const aPath: String);
     procedure LoadFromPath(const aPath: String);
@@ -410,6 +413,7 @@ end;
 //end;
 
 
+{$IFDEF WDC OR FPC_FULLVERSION >= 30200}
 procedure TKMRandomCheckLogger.SaveToPathAsync(const aPath: String; aWorkerThread: TKMWorkerThread);
 var
   SaveStream, TickStream: TKMemoryStreamBinary;
@@ -464,6 +468,7 @@ begin
 
   TKMemoryStream.AsyncSaveToFileCompressedAndFree(SaveStream, aPath, 'RNGCompressed', aWorkerThread);
 end;
+{$ENDIF}
 
 
 procedure TKMRandomCheckLogger.SaveAsText(const aPath: String);

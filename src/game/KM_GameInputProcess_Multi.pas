@@ -3,7 +3,7 @@ unit KM_GameInputProcess_Multi;
 interface
 uses
   KM_GameInputProcess,
-  KM_Hand, KM_Networking,
+  KM_Hand,
   KM_CommonClasses, KM_CommonTypes, KM_Defaults;
 
 const
@@ -17,11 +17,11 @@ type
 
   TKMCommandsPack = class
   private
-    fCount: Byte;
+    fCount: Word;
     fItems: array of TKMGameInputCommand; //1..n
     function GetItem(aIndex: Integer): TKMGameInputCommand;
   public
-    property  Count: Byte read fCount;
+    property  Count: Word read fCount;
     procedure Clear;
     procedure Add(aCommand: TKMGameInputCommand);
     function CRC: Cardinal;
@@ -38,7 +38,6 @@ type
 
   TKMGameInputProcess_Multi = class (TKMGameInputProcess)
   private
-    fNetworking: TKMNetworking;
     fDelay: Word; //How many ticks ahead the commands are scheduled
     fLastSentCmdsTick: Cardinal; //Needed for resync (last tick, for which commands were sent
 
@@ -67,7 +66,7 @@ type
   protected
     procedure DoTakeCommand(const aCommand: TKMGameInputCommand); override;
   public
-    constructor Create(aReplayState: TKMGIPReplayState; aNetworking: TKMNetworking);
+    constructor Create(aReplayState: TKMGIPReplayState);
     destructor Destroy; override;
     procedure WaitingForConfirmation(aTick: Cardinal);
     procedure AdjustDelay(aGameSpeed: Single);
@@ -89,7 +88,8 @@ uses
   SysUtils, Math, KromUtils,
   KM_Game, KM_GameParams, KM_HandsCollection, KM_NetworkTypes,
   KM_ResTexts, KM_ResSound, KM_Sound, KM_CommonUtils,
-  KM_GameTypes;
+  KM_GameTypes,
+  KM_Networking;
 
 
 { TKMCommandsPack }
@@ -101,7 +101,7 @@ end;
 
 procedure TKMCommandsPack.Add(aCommand: TKMGameInputCommand);
 begin
-  inc(fCount);
+  Inc(fCount);
   if fCount >= Length(fItems) then
     SetLength(fItems, fCount + 8);
 
@@ -152,24 +152,24 @@ end;
 
 
 { TKMGameInputProcess_Multi }
-constructor TKMGameInputProcess_Multi.Create(aReplayState: TKMGIPReplayState; aNetworking: TKMNetworking);
+constructor TKMGameInputProcess_Multi.Create(aReplayState: TKMGIPReplayState);
 var
   I: Integer;
-  k: ShortInt;
+  K: ShortInt;
 begin
   inherited Create(aReplayState);
 
-  fNetworking := aNetworking;
-  fNetworking.OnCommands := RecieveCommands;
-  fNetworking.OnResyncFromTick := ResyncFromTick;
+  gNetworking.OnCommands := RecieveCommands;
+  gNetworking.OnResyncFromTick := ResyncFromTick;
   AdjustDelay(1); //Initialise the delay
 
   //Allocate memory for all commands packs
-  for I:=0 to MAX_SCHEDULE-1 do for k:=1 to MAX_LOBBY_SLOTS do
-  begin
-    fSchedule[I,k] := TKMCommandsPack.Create;
-    fRandomCheck[I].PlayerCheckPending[k] := false; //We don't have anything to be checked yet
-  end;
+  for I := 0 to MAX_SCHEDULE - 1 do
+    for K := 1 to MAX_LOBBY_SLOTS do
+    begin
+      fSchedule[I, K] := TKMCommandsPack.Create;
+      fRandomCheck[I].PlayerCheckPending[K] := false; //We don't have anything to be checked yet
+    end;
 end;
 
 
@@ -188,10 +188,10 @@ end;
 // Stack the command into schedule
 procedure TKMGameInputProcess_Multi.DoTakeCommand(const aCommand: TKMGameInputCommand);
 var
-  I, Tick: Cardinal;
+  I, tick: Cardinal;
 begin
   Assert(fDelay < MAX_SCHEDULE, 'Error, fDelay >= MAX_SCHEDULE');
-  if ((gGameParams.GameMode = gmMultiSpectate) and not (aCommand.CommandType in ALLOWED_BY_SPECTATORS)) // Do not allow spectators to command smth
+  if ((gGameParams.Mode = gmMultiSpectate) and not (aCommand.CommandType in ALLOWED_BY_SPECTATORS)) // Do not allow spectators to command smth
     or (gGameParams.IsMultiplayerGame                  // in multiplayer game
       and IsSelectedObjectCommand(aCommand.CommandType) // block only commands for selected object
       and (gMySpectator.Selected <> nil)                // if there is selected object
@@ -205,7 +205,7 @@ begin
     Exit;
   end;
 
-  if (gGameParams.GameMode <> gmMultiSpectate)
+  if (gGameParams.Mode <> gmMultiSpectate)
   and gMySpectator.Hand.AI.HasLost
   and not (aCommand.CommandType in ALLOWED_AFTER_DEFEAT) then
   begin
@@ -214,21 +214,21 @@ begin
   end;
 
   //Find first unsent pack
-  Tick := MAX_SCHEDULE; //Out of range value
-  for I := gGameParams.GameTick + fDelay to gGameParams.GameTick + MAX_SCHEDULE - 1 do
+  tick := MAX_SCHEDULE; //Out of range value
+  for I := gGameParams.Tick + fDelay to gGameParams.Tick + MAX_SCHEDULE - 1 do
     if not fSent[I mod MAX_SCHEDULE] then
     begin
-      Tick := I mod MAX_SCHEDULE; //Place in a ring buffer
+      tick := I mod MAX_SCHEDULE; //Place in a ring buffer
       Break;
     end;
-  Assert(Tick < MAX_SCHEDULE, 'Could not find place for new commands');
+  Assert(tick < MAX_SCHEDULE, 'Could not find place for new commands');
 
-  if not fCommandIssued[Tick] then
+  if not fCommandIssued[tick] then
   begin
-    fSchedule[Tick, gNetworking.MyIndex].Clear; //Clear old data (it was kept in case it was required for resync)
-    fCommandIssued[Tick] := True;
+    fSchedule[tick, gNetworking.MyIndex].Clear; //Clear old data (it was kept in case it was required for resync)
+    fCommandIssued[tick] := True;
   end;
-  fSchedule[Tick, gNetworking.MyIndex].Add(aCommand);
+  fSchedule[tick, gNetworking.MyIndex].Add(aCommand);
 //  gLog.AddTime(Format('Scheduled cmd Tick: %d, CMD_TYPE = %s',
 //                      [Tick, GetEnumName(TypeInfo(TKMGameInputCommandType), Integer(aCommand.CommandType))]));
 end;
@@ -260,42 +260,42 @@ begin
   // Half of the maximum round trip is a good guess for delay. +1.2 is our safety net to account
   // for processing the packet and random variations in ping. It's always better for commands to
   // be slightly delayed than for the game to freeze/lag regularly.
-  if (fNetworking.NetPlayers.GetNotDroppedCount = 1) then
+  if (gNetworking.NetPlayers.GetNotDroppedCount = 1) then
     SetDelay(MIN_DELAY) //We can set the lowest delay if we are the only MP player
   else
-    SetDelay(Ceil(aGameSpeed * (fNetworking.NetPlayers.GetMaxHighestRoundTripLatency / 200 + 1.2)));
+    SetDelay(Ceil(aGameSpeed * (gNetworking.NetPlayers.GetMaxHighestRoundTripLatency / 200 + 1.2)));
 end;
 
 
 procedure TKMGameInputProcess_Multi.SendCommands(aTick: Cardinal; aPlayerIndex: ShortInt = -1);
 var
-  Msg: TKMemoryStreamBinary;
+  msg: TKMemoryStreamBinary;
 begin
-  Msg := TKMemoryStreamBinary.Create;
+  msg := TKMemoryStreamBinary.Create;
   try
-    Msg.Write(Byte(kdpCommands));
-    Msg.Write(aTick); //Target Tick in 1..n range
-    fSchedule[aTick mod MAX_SCHEDULE, gNetworking.MyIndex].Save(Msg); //Write all commands to the stream
+    msg.Write(Byte(kdpCommands));
+    msg.Write(aTick); //Target Tick in 1..n range
+    fSchedule[aTick mod MAX_SCHEDULE, gNetworking.MyIndex].Save(msg); //Write all commands to the stream
 
-    fNetworking.SendCommands(Msg, aPlayerIndex); //Send to all players by default
+    gNetworking.SendCommands(msg, aPlayerIndex); //Send to all players by default
   finally
-    Msg.Free;
+    msg.Free;
   end;
 end;
 
 
 procedure TKMGameInputProcess_Multi.SendRandomCheck(aTick: Cardinal);
 var
-  Msg: TKMemoryStreamBinary;
+  msg: TKMemoryStreamBinary;
 begin
-  Msg := TKMemoryStreamBinary.Create;
+  msg := TKMemoryStreamBinary.Create;
   try
-    Msg.Write(Byte(kdpRandomCheck));
-    Msg.Write(aTick); //Target Tick in 1..n range
-    Msg.Write(fRandomCheck[aTick mod MAX_SCHEDULE].OurCheck); //Write our random check to the stream
-    fNetworking.SendCommands(Msg); //Send to all opponents
+    msg.Write(Byte(kdpRandomCheck));
+    msg.Write(aTick); //Target Tick in 1..n range
+    msg.Write(fRandomCheck[aTick mod MAX_SCHEDULE].OurCheck); //Write our random check to the stream
+    gNetworking.SendCommands(msg); //Send to all opponents
   finally
-    Msg.Free;
+    msg.Free;
   end;
 end;
 
@@ -307,9 +307,9 @@ begin
     Assert(OurCheck = PlayerCheck[aPlayerIndex],Format('Random check mismatch for tick %d from net player %d [%s] [Hand %d] processed at tick %d',
                                                        [aTick,
                                                         aPlayerIndex,
-                                                        fNetworking.NetPlayers[aPlayerIndex].Nikname,
-                                                        fNetworking.NetPlayers[aPlayerIndex].HandIndex,
-                                                        gGameParams.GameTick]));
+                                                        gNetworking.NetPlayers[aPlayerIndex].Nikname,
+                                                        gNetworking.NetPlayers[aPlayerIndex].HandIndex,
+                                                        gGameParams.Tick]));
     PlayerCheckPending[aPlayerIndex] := False;
   end;
 end;
@@ -319,11 +319,11 @@ end;
 procedure TKMGameInputProcess_Multi.RecieveCommands(aStream: TKMemoryStream; aSenderIndex: ShortInt);
 var
   dataType: TKMDataType;
-  Tick: Cardinal;
+  tick: Cardinal;
   CRC: Cardinal;
 begin
   aStream.Read(dataType, 1); //Decode header
-  aStream.Read(Tick); //Target tick
+  aStream.Read(tick); //Target tick
 
 //  gLog.AddTime(Format('Received commands for Tick %d', [Tick]));
 
@@ -331,23 +331,23 @@ begin
     kdpCommands:
         begin
           //Recieving commands too late will happen during reconnections, so just ignore it
-          if (Tick > gGameParams.GameTick)
+          if (tick > gGameParams.Tick)
             //DO not check if player is dropped - we could receive scheduled commmands from already dropped player, that we should store/execute to be in sync with other players
             {and not gNetworking.NetPlayers[aSenderIndex].Dropped}
             then
           begin
-            fSchedule[Tick mod MAX_SCHEDULE, aSenderIndex].Load(aStream);
-            fRecievedData[Tick mod MAX_SCHEDULE, aSenderIndex] := True;
+            fSchedule[tick mod MAX_SCHEDULE, aSenderIndex].Load(aStream);
+            fRecievedData[tick mod MAX_SCHEDULE, aSenderIndex] := True;
           end;
         end;
     kdpRandomCheck: //Other player is confirming that random seeds matched at a tick in the past
         begin
           aStream.Read(CRC); //Read the random check from the message
-          fRandomCheck[Tick mod MAX_SCHEDULE].PlayerCheck[aSenderIndex] := CRC; //Store it for this player
-          fRandomCheck[Tick mod MAX_SCHEDULE].PlayerCheckPending[aSenderIndex] := True;
+          fRandomCheck[tick mod MAX_SCHEDULE].PlayerCheck[aSenderIndex] := CRC; //Store it for this player
+          fRandomCheck[tick mod MAX_SCHEDULE].PlayerCheckPending[aSenderIndex] := True;
           //If we have processed this tick already, check now
-          if Tick <= gGameParams.GameTick then
-            DoRandomCheck(Tick, aSenderIndex);
+          if tick <= gGameParams.Tick then
+            DoRandomCheck(tick, aSenderIndex);
         end;
   end;
 end;
@@ -369,9 +369,9 @@ var
   I: Integer;
 begin
   Result := True;
-  for I := 1 to fNetworking.NetPlayers.Count do
+  for I := 1 to gNetworking.NetPlayers.Count do
     Result := Result and
-                (fRecievedData[aTick mod MAX_SCHEDULE, I] or fNetworking.NetPlayers[I].NoNeedToWait(aTick));
+                (fRecievedData[aTick mod MAX_SCHEDULE, I] or gNetworking.NetPlayers[I].NoNeedToWait(aTick));
 end;
 
 
@@ -383,8 +383,8 @@ begin
   SetLength(Result, MAX_LOBBY_SLOTS);
 
   K := 0;
-  for I := 1 to fNetworking.NetPlayers.Count do
-    if not (fRecievedData[aTick mod MAX_SCHEDULE, I] or fNetworking.NetPlayers[I].NoNeedToWait(aTick)) then
+  for I := 1 to gNetworking.NetPlayers.Count do
+    if not (fRecievedData[aTick mod MAX_SCHEDULE, I] or gNetworking.NetPlayers[I].NoNeedToWait(aTick)) then
     begin
       Result[K] := I;
       Inc(K);
@@ -398,27 +398,27 @@ end;
 //upcoming commands will be stacked into next batch
 procedure TKMGameInputProcess_Multi.RunningTimer(aTick: Cardinal);
 var
-  I, K, Tick: Cardinal;
+  I, K, tick: Cardinal;
 begin
   inherited;
 
   fNumberConsecutiveWaits := 0; //We are not waiting if the game is running
-  Tick := aTick mod MAX_SCHEDULE; //Place in a ring buffer
-  fRandomCheck[Tick].OurCheck := Cardinal(KaMRandom(MaxInt, 'TKMGameInputProcess_Multi.RunningTimer')); //thats our CRC (must go before commands for replay compatibility)
+  tick := aTick mod MAX_SCHEDULE; //Place in a ring buffer
+  fRandomCheck[tick].OurCheck := Cardinal(KaMRandom(MaxInt, 'TKMGameInputProcess_Multi.RunningTimer')); //thats our CRC (must go before commands for replay compatibility)
 
   //Execute commands, in order players go (1,2,3..)
-  for I := 1 to fNetworking.NetPlayers.Count do
-    for K := 1 to fSchedule[Tick, I].Count do
+  for I := 1 to gNetworking.NetPlayers.Count do
+    for K := 1 to fSchedule[tick, I].Count do
     begin
       //we should store/execute commands from dropped players too to be in sync with other players,
       //that could receive mkDisconnect in other tick, then we do
       if {not fNetworking.NetPlayers[I].Dropped}
       //Don't allow exploits like moving enemy soldiers (but maybe one day you can control disconnected allies?)
-        (fNetworking.NetPlayers[I].HandIndex = fSchedule[Tick, I].Items[K].HandIndex)
-           or (fSchedule[Tick, I].Items[K].CommandType in ALLOWED_BY_SPECTATORS) then
+        (gNetworking.NetPlayers[I].HandIndex = fSchedule[tick, I].Items[K].HandIndex)
+           or (fSchedule[tick, I].Items[K].CommandType in ALLOWED_BY_SPECTATORS) then
       begin
-        StoreCommand(fSchedule[Tick, I].Items[K]); //Store the command first so if Exec fails we still have it in the replay
-        ExecCommand(fSchedule[Tick, I].Items[K]);
+        StoreCommand(fSchedule[tick, I].Items[K]); //Store the command first so if Exec fails we still have it in the replay
+        ExecCommand(fSchedule[tick, I].Items[K]);
         //Returning to the lobby ends the game
         if gGame = nil then Exit;
       end;
@@ -426,21 +426,21 @@ begin
 
   //If we miss a few random checks during reconnections no one cares, inconsistencies will be detected as soon as it is over
   //To reduce network load, send random checks once every 10 ticks
-  if fNetworking.Connected {and (aTick mod 10 = 1)} then //Todo: remove debug brackets: {} no need to check on every tick in release version
+  if gNetworking.Connected {and (aTick mod 10 = 1)} then //Todo: remove debug brackets: {} no need to check on every tick in release version
     SendRandomCheck(aTick);
 
   //It is possible that we have already recieved other player's random checks, if so check them now
-  for I := 1 to fNetworking.NetPlayers.Count do
+  for I := 1 to gNetworking.NetPlayers.Count do
   begin
-    if not fNetworking.NetPlayers[I].Dropped and fRandomCheck[Tick].PlayerCheckPending[I] then
+    if not gNetworking.NetPlayers[I].Dropped and fRandomCheck[tick].PlayerCheckPending[I] then
       DoRandomCheck(aTick, I);
   end;
 
-  FillChar(fRecievedData[Tick], SizeOf(fRecievedData[Tick]), #0); //Reset
-  fSent[Tick] := False;
+  FillChar(fRecievedData[tick], SizeOf(fRecievedData[tick]), #0); //Reset
+  fSent[tick] := False;
 
   if aTick mod DELAY_ADJUST = 0 then
-    AdjustDelay(gGame.GameSpeedActual); //Adjust fDelay every X ticks
+    AdjustDelay(gGame.SpeedActual); //Adjust fDelay every X ticks
 end;
 
 
@@ -452,8 +452,8 @@ begin
 
   for I := aTick + 1 to aTick + fDelay do
     //If the network is not connected then we must send the commands later (fSent will remain false)
-    if (not fSent[I mod MAX_SCHEDULE]) and fNetworking.Connected
-      and (fNetworking.NetGameState = lgsGame) then //Don't send commands unless game is running normally
+    if (not fSent[I mod MAX_SCHEDULE]) and gNetworking.Connected
+      and (gNetworking.NetGameState = lgsGame) then //Don't send commands unless game is running normally
     begin
       if not fCommandIssued[I mod MAX_SCHEDULE] then
         fSchedule[I mod MAX_SCHEDULE, gNetworking.MyIndex].Clear; //No one has used it since last time through the ring buffer

@@ -8,6 +8,7 @@ type
   TKMWorkerThreadTask = class
     WorkName: string;
     Proc: TProc;
+    Callback: TProc<String>;
   end;
 
   TKMWorkerThread = class(TThread)
@@ -26,7 +27,8 @@ type
     destructor Destroy; override;
     procedure Execute; override;
 
-    procedure QueueWork(aProc: TProc; aWorkName: string = '');
+    procedure QueueWork(aProc: TProc; aWorkName: string = ''); overload;
+    procedure QueueWork(aProc: TProc; aCallback: TProc<String> = nil; aWorkName: string = ''); overload;
     procedure WaitForAllWorkToComplete;
   end;
 
@@ -123,6 +125,10 @@ begin
     begin
       NameThread(Job.WorkName);
       Job.Proc();
+
+      if Assigned(Job.Callback) then
+        Job.Callback(Job.WorkName);
+
       FreeAndNil(Job);
     end;
 
@@ -130,7 +136,14 @@ begin
   end;
 end;
 
+
 procedure TKMWorkerThread.QueueWork(aProc: TProc; aWorkName: string = '');
+begin
+  QueueWork(aProc, nil, aWorkName);
+end;
+
+
+procedure TKMWorkerThread.QueueWork(aProc: TProc; aCallback: TProc<String> = nil; aWorkName: string = '');
 var
   Job: TKMWorkerThreadTask;
 begin
@@ -145,6 +158,7 @@ begin
 
     Job := TKMWorkerThreadTask.Create;
     Job.Proc := aProc;
+    Job.Callback := aCallback;
     Job.WorkName := aWorkName;
 
     TMonitor.Enter(fTaskQueue);

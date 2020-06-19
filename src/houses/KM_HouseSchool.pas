@@ -66,6 +66,7 @@ end;
 constructor TKMHouseSchool.Load(LoadStream: TKMemoryStream);
 begin
   inherited;
+
   LoadStream.CheckMarker('HouseSchool');
   LoadStream.Read(fUnitWip, 4);
   LoadStream.Read(fHideOneGold);
@@ -76,8 +77,9 @@ end;
 
 procedure TKMHouseSchool.SyncLoad;
 begin
-  Inherited;
-  fUnitWip := gHands.GetUnitByUID(Cardinal(fUnitWip));
+  inherited;
+
+  fUnitWip := gHands.GetUnitByUID(Integer(fUnitWip));
 end;
 
 
@@ -134,7 +136,7 @@ begin
     fHideOneGold := False;
     //Add 1 gold to offer to take it out
     if DeliveryMode = dmTakeOut then
-      gHands[fOwner].Deliveries.Queue.AddOffer(Self, wtGold, 1);
+      gHands[Owner].Deliveries.Queue.AddOffer(Self, wtGold, 1);
   end;
   fUnitWip := nil;
   PrivateQueue[0] := utNone; //Removed the in training unit
@@ -152,10 +154,10 @@ end;
 procedure TKMHouseSchool.SetQueue(aIndex: Integer; aValue: TKMUnitType);
 begin
   if fQueue[aIndex] <> utNone then
-    gHands[fOwner].Stats.UnitRemovedFromTrainingQueue(fQueue[aIndex]);
+    gHands[Owner].Stats.UnitRemovedFromTrainingQueue(fQueue[aIndex]);
 
   if aValue <> utNone then
-    gHands[fOwner].Stats.UnitAddedToTrainingQueue(aValue);
+    gHands[Owner].Stats.UnitAddedToTrainingQueue(aValue);
   fQueue[aIndex] := aValue;
 end;
 
@@ -226,10 +228,10 @@ begin
   fHideOneGold := True;
   //Remove 1 gold from offer to take it out
   if DeliveryMode = dmTakeOut then
-    gHands[fOwner].Deliveries.Queue.RemOffer(Self, wtGold, 1);
+    gHands[Owner].Deliveries.Queue.RemOffer(Self, wtGold, 1);
 
   //Create the Unit
-  fUnitWip := gHands[fOwner].TrainUnit(fQueue[0], Entrance);
+  fUnitWip := gHands[Owner].TrainUnit(fQueue[0], Entrance);
   TKMUnit(fUnitWip).TrainInHouse(Self); //Let the unit start the training task
 
   WorkAnimStep := 0;
@@ -237,7 +239,8 @@ end;
 
 
 procedure TKMHouseSchool.StartTrainingUnit;
-var I: Integer;
+var
+  I: Integer;
 begin
   if fQueue[0] <> utNone then exit; //If there's currently no unit in training
   if fQueue[1] = utNone then exit; //If there is a unit waiting to be trained
@@ -262,7 +265,7 @@ begin
   if CheckResIn(wtGold) > 0 then
   begin
     ResTakeFromIn(wtGold); //Do the goldtaking
-    gHands[fOwner].Stats.WareConsumed(wtGold);
+    gHands[Owner].Stats.WareConsumed(wtGold);
   end;
   fHideOneGold := False;
   fTrainProgress := 0;
@@ -343,10 +346,7 @@ procedure TKMHouseSchool.Save(SaveStream: TKMemoryStream);
 begin
   inherited;
   SaveStream.PlaceMarker('HouseSchool');
-  if TKMUnit(fUnitWip) <> nil then
-    SaveStream.Write(TKMUnit(fUnitWip).UID) //Store ID, then substitute it with reference on SyncLoad
-  else
-    SaveStream.Write(Integer(0));
+  SaveStream.Write(TKMUnit(fUnitWip).UID); //Store ID, then substitute it with reference on SyncLoad
   SaveStream.Write(fHideOneGold);
   SaveStream.Write(fTrainProgress);
   SaveStream.Write(fQueue, SizeOf(fQueue));

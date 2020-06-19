@@ -690,7 +690,7 @@ begin
 
           fHouse := gHands[Owner].AddHouseWIP(fHouseType, fHouseLoc);
           Assert(fHouse <> nil, 'Failed to add wip house');
-          fHouse := fHouse.GetHousePointer; //We need to register a pointer to the house
+          fHouse := fHouse.GetPointer; //We need to register a pointer to the house
 
           HouseNeedsWorker := True; //The house placed on the map, if something happens with Worker the house will be removed
           SetActionLockedStay(2, uaWalk);
@@ -730,7 +730,7 @@ begin
           //Walk away from building site, before we get trapped when house becomes stoned
           OutOfWay := gTerrain.GetOutOfTheWay(fUnit, KMPOINT_ZERO, tpWalk);
           //GetOutOfTheWay can return the input position (GetPosition in this case) if no others are possible
-          if KMSamePoint(OutOfWay, KMPOINT_ZERO) or KMSamePoint(OutOfWay, CurrPosition) then
+          if KMSamePoint(OutOfWay, KMPOINT_ZERO) or KMSamePoint(OutOfWay, Position) then
             OutOfWay := fHouse.PointBelowEntrance; //Don't get stuck in corners
           SetActionWalkToSpot(OutOfWay);
           HouseNeedsWorker := False; //House construction no longer needs the worker to continue
@@ -752,10 +752,7 @@ procedure TKMTaskBuildHouseArea.Save(SaveStream: TKMemoryStream);
 begin
   inherited;
   SaveStream.PlaceMarker('TaskBuildHouseArea');
-  if fHouse <> nil then
-    SaveStream.Write(fHouse.UID) //Store ID, then substitute it with reference on SyncLoad
-  else
-    SaveStream.Write(Integer(0));
+  SaveStream.Write(fHouse.UID); //Store ID, then substitute it with reference on SyncLoad
   SaveStream.Write(fHouseType, SizeOf(fHouseType));
   SaveStream.Write(fHouseLoc);
   SaveStream.Write(BuildID);
@@ -771,7 +768,7 @@ constructor TKMTaskBuildHouse.Create(aWorker: TKMUnitWorker; aHouse: TKMHouse; a
 begin
   inherited Create(aWorker);
   fType := uttBuildHouse;
-  fHouse    := aHouse.GetHousePointer;
+  fHouse    := aHouse.GetPointer;
   BuildID   := aID;
 
   Cells := TKMPointDirList.Create;
@@ -890,10 +887,7 @@ procedure TKMTaskBuildHouse.Save(SaveStream: TKMemoryStream);
 begin
   inherited;
   SaveStream.PlaceMarker('TaskBuildHouse');
-  if fHouse <> nil then
-    SaveStream.Write(fHouse.UID) //Store ID, then substitute it with reference on SyncLoad
-  else
-    SaveStream.Write(Integer(0));
+  SaveStream.Write(fHouse.UID); //Store ID, then substitute it with reference on SyncLoad
   SaveStream.Write(BuildID);
   SaveStream.Write(BuildFrom);
   Cells.SaveToStream(SaveStream);
@@ -905,7 +899,7 @@ constructor TKMTaskBuildHouseRepair.Create(aWorker: TKMUnitWorker; aHouse: TKMHo
 begin
   inherited Create(aWorker);
   fType := uttBuildHouseRepair;
-  fHouse    := aHouse.GetHousePointer;
+  fHouse    := aHouse.GetPointer;
   fRepairID := aRepairID;
 
   Cells := TKMPointDirList.Create;
@@ -1010,10 +1004,7 @@ procedure TKMTaskBuildHouseRepair.Save(SaveStream: TKMemoryStream);
 begin
   inherited;
   SaveStream.PlaceMarker('TaskBuildHouseRepair');
-  if fHouse <> nil then
-    SaveStream.Write(fHouse.UID) //Store ID, then substitute it with reference on SyncLoad
-  else
-    SaveStream.Write(Integer(0));
+  SaveStream.Write(fHouse.UID); //Store ID, then substitute it with reference on SyncLoad
   SaveStream.Write(fRepairID);
   SaveStream.Write(BuildFrom);
   Cells.SaveToStream(SaveStream);

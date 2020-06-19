@@ -240,12 +240,12 @@ procedure TKMMainMenuInterface.PageChange(Dest: TKMMenuPageType; const aText: Un
 var
   I: Integer;
   cmp: TKMCampaignId;
-  Version: UnicodeString;
+  version: UnicodeString;
 begin
-  Version := UnicodeString(GAME_VERSION) + ' / ' + gGameApp.RenderVersion;
+  version := UnicodeString(GAME_VERSION) + ' / ' + gGameApp.RenderVersion;
 
   if gMain <> nil then // could be nil if used from utils
-    gMain.StatusBarText(SB_ID_KMR_VER,'KMR ' +  Version);
+    gMain.StatusBarText(SB_ID_KMR_VER,'KMR ' +  version);
 
   //Hide all other pages
   for I := 0 to Panel_Menu.ChildCount - 1 do
@@ -256,7 +256,7 @@ begin
 
   case Dest of
     gpMainMenu:     begin
-                      Label_Version.Caption := 'KaM Remake - ' + Version;
+                      Label_Version.Caption := 'KaM Remake - ' + version;
                       fMenuMain.Show;
                       fMenuPage := fMenuMain;
                     end;
@@ -278,10 +278,10 @@ begin
                     end;
     gpLobby:        begin
                       if aText = 'HOST' then
-                        fMenuLobby.Show(lpkHost, gNetworking, Panel_Menu.Height)
+                        fMenuLobby.Show(lpkHost, Panel_Menu.Height)
                       else
                       if aText = 'JOIN' then
-                        fMenuLobby.Show(lpkJoiner, gNetworking, Panel_Menu.Height)
+                        fMenuLobby.Show(lpkJoiner, Panel_Menu.Height)
                       else
                         raise Exception.Create('');
                       fMenuPage := fMenuLobby;
@@ -327,8 +327,8 @@ end;
 
 procedure TKMMainMenuInterface.ExportPages(const aPath: string);
 var
-  path: string;
   I, K: Integer;
+  path: string;
 begin
   inherited;
 

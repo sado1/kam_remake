@@ -426,6 +426,8 @@ begin
   if Assigned(gGameApp) then
   begin
     gSoundPlayer.AbortAllFadeSounds;
+    gSoundPlayer.AbortAllScriptSounds;
+    gSoundPlayer.AbortAllLongSounds;
     gMusic.StopPlayingOtherFile;
     gMusic.Fade(FADE_MUSIC_TIME);
     // For unknown reason libzPlay lib will use higher volume when unfade (resume) music after video is stopped

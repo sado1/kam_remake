@@ -71,7 +71,8 @@ uses
   SysUtils, TypInfo, Math,
   KM_GameApp, KM_Game, KM_Hand, KM_HandsCollection, KM_HandStats, KM_UnitGroup,
   KM_ResHouses, KM_ResSound, KM_ScriptingEvents, KM_Alerts,
-  KM_AIFields, KM_Terrain, KM_ResMapElements, KM_DevPerfLog, KM_DevPerfLogTypes;
+  KM_AIFields, KM_Terrain, KM_ResMapElements, KM_DevPerfLog, KM_DevPerfLogTypes,
+  KM_HandTypes;
 
 
 { TKMHandAI }
@@ -411,7 +412,7 @@ begin
                   //otherwise you can make a unit walk backwards and forwards forever between two groups of archers
                   if not Group.InFight then
                     //Make sure the group could possibly reach the offenders
-                    if Group.CanWalkTo(aAttacker.CurrPosition, Group.FightMaxRange) then
+                    if Group.CanWalkTo(aAttacker.Position, Group.FightMaxRange) then
                       Group.OrderAttackUnit(aAttacker, True);
               end;
             end;

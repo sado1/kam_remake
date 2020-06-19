@@ -414,6 +414,7 @@ type
   protected
     function GetIsPainted: Boolean; override;
   public
+    Monospaced: Boolean;
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; const aCaption: UnicodeString;
                        aFont: TKMFont; aTextAlign: TKMTextAlign; aPaintLayer: Integer = 0); overload;
     constructor Create(aParent: TKMPanel; aLeft,aTop: Integer; const aCaption: UnicodeString; aFont: TKMFont;
@@ -720,6 +721,7 @@ type
     property AllowedChars: TKMAllowedChars read fAllowedChars write fAllowedChars;
     property Text: UnicodeString read fText write SetText;
     procedure UpdateText(const aText: UnicodeString; aTriggerOnChange: Boolean = True);
+    procedure SetTextSilently(const aText: UnicodeString);
 
     function HitTest(X, Y: Integer; aIncludeDisabled: Boolean = False; aIncludeNotHitable: Boolean = False): Boolean; override;
     procedure Paint; override;
@@ -2279,10 +2281,10 @@ var
 begin
   Inc(CtrlPaintCount);
 
-  if SHOW_CONTROLS_FOCUS and (csFocus in State) then
+  if SHOW_FOCUSED_CONTROL and (csFocus in State) then
     TKMRenderUI.WriteOutline(AbsLeft-2, AbsTop-2, Width+4, Height+4, 2, $FF00D0FF);
 
-  if MODE_DESIGN_CONTROLS and (csOver in State) then
+  if (SHOW_CONTROL_OVER or MODE_DESIGN_CONTROLS) and (csOver in State) then
     TKMRenderUI.WriteOutline(AbsLeft-2, AbsTop-2, Width+4, Height+4, 2, $FFFFD000);
 
   if SHOW_CONTROLS_ID then
@@ -2775,12 +2777,13 @@ end;
 
 procedure TKMControl.Focus;
 begin
-  if not IsFocused and Focusable and AutoFocusable then
+  if not IsFocused and Focusable then
   begin
     // Reset master control focus
     Parent.fMasterControl.CtrlFocus := nil;
     Parent.FocusedControlIndex := ControlIndex;
-    Parent.fMasterControl.UpdateFocus(Parent);
+    Parent.fMasterControl.CtrlFocus := Self;
+//    Parent.fMasterControl.UpdateFocus(Parent); // It looks like we can manually set focus, no need for update procedure
   end;
 end;
 
@@ -3271,6 +3274,7 @@ begin
   fAutoWrap := False;
   fTabWidth := TAB_WIDTH;
   SetCaption(aCaption);
+  Monospaced := False;
 end;
 
 
@@ -3372,7 +3376,7 @@ begin
   if fEnabled then Col := FontColor
               else Col := $FF888888;
 
-  TKMRenderUI.WriteText(AbsLeft, AbsTop, Width, fText, fFont, fTextAlign, Col, False, False, False, fTabWidth, PaintingBaseLayer);
+  TKMRenderUI.WriteText(AbsLeft, AbsTop, Width, fText, fFont, fTextAlign, Col, False, False, False, fTabWidth, PaintingBaseLayer, Monospaced);
 
   if fStrikethrough then
     TKMRenderUI.WriteShape(TextLeft, AbsTop + fTextSize.Y div 2 - 2, fTextSize.X, 3, Col, $FF000000);
@@ -4292,6 +4296,12 @@ begin
 end;
 
 
+procedure TKMEdit.SetTextSilently(const aText: UnicodeString);
+begin
+  UpdateText(aText, False);
+end;
+
+
 function TKMEdit.IsCharValid(aChar: WideChar): Boolean;
 begin
   Result := IsCharAllowed(aChar, fAllowedChars);
@@ -4818,8 +4828,6 @@ begin
 
   SetParameters(aPosition, aPeacetime, aMaxValue);
   fMarksPattern := $CF3; //Looks good for 25px height bar
-
-//  aParent.
 
   fHighlightMark := -1;
 

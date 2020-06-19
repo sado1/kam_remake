@@ -60,7 +60,7 @@ begin
 
   //We might stuck trying to exit when house gets destroyed (1)
   //and we might be dying in destroyed house (2)
-  fHouse          := aHouse.GetHousePointer;
+  fHouse          := aHouse.GetPointer;
   fDirection      := aDirection;
   fHasStarted     := False;
   fWaitingForPush := False;
@@ -225,7 +225,7 @@ begin
 
       if U <> nil then
       begin
-        fPushedUnit := U.GetUnitPointer;
+        fPushedUnit := U.GetPointer;
         fPushedUnit.SetActionWalkPushed(gTerrain.GetOutOfTheWay(U, KMPOINT_ZERO, tpWalk));
       end;
     end;
@@ -242,7 +242,7 @@ begin
 
   if gTerrain.TileInMapCoords(X,Y)
   and (gTerrain.CheckPassability(KMPoint(X,Y), fUnit.DesiredPassability))
-  and (gTerrain.CanWalkDiagonaly(fUnit.CurrPosition, X, Y))
+  and (gTerrain.CanWalkDiagonaly(fUnit.Position, X, Y))
   and (gTerrain.Land[Y,X].IsUnit <> nil) then //If there's some unit we need to do a better check on him
   begin
     U := gTerrain.UnitsHitTest(X,Y); //Let's see who is standing there
@@ -260,8 +260,8 @@ end;
 procedure TKMUnitActionGoInOut.WalkIn;
 begin
   fUnit.Direction := dirN;  //one cell up
-  fUnit.NextPosition := KMPointAbove(fUnit.CurrPosition);
-  gTerrain.UnitRem(fUnit.CurrPosition); // Release tile at point below house entrance
+  fUnit.NextPosition := KMPointAbove(fUnit.Position);
+  gTerrain.UnitRem(fUnit.Position); // Release tile at point below house entrance
   // Unit occupy a tile on a terrain while he is walking inside house
   // House could be destroyed while while unit was walking in it, so we need to have a tile occupied on terrain for that case
   // After house was destroyed other unit could go there / smth could be placed with as script,
@@ -320,8 +320,8 @@ begin
   if not fHasStarted then
   begin
     //Set Door and Street locations
-    fDoor := KMPoint(fUnit.CurrPosition.X, fUnit.CurrPosition.Y - Round(fStep));
-    fStreet := KMPoint(fUnit.CurrPosition.X, fUnit.CurrPosition.Y + 1 - Round(fStep));
+    fDoor := KMPoint(fUnit.Position.X, fUnit.Position.Y - Round(fStep));
+    fStreet := KMPoint(fUnit.Position.X, fUnit.Position.Y + 1 - Round(fStep));
 
     case fDirection of
       gdGoInside:   // House could be destroyed on the same tick Action was created
@@ -440,7 +440,7 @@ begin
       // we want to keep this place for exact this unit, so he will be not teleported to some other loc under the house
       // (do not allow other units inside house to get this place occasionaly on house destruction in FindPlaceForUnit method)
       if (fHouse <> nil) and not fHouse.IsDestroyed then
-        gTerrain.UnitRem(fUnit.CurrPosition);
+        gTerrain.UnitRem(fUnit.Position);
     end
     else
     begin
@@ -460,14 +460,8 @@ begin
   inherited;
   SaveStream.PlaceMarker('UnitActionGoInOut');
   SaveStream.Write(fStep);
-  if fHouse <> nil then
-    SaveStream.Write(fHouse.UID) //Store ID, then substitute it with reference on SyncLoad
-  else
-    SaveStream.Write(Integer(0));
-  if fPushedUnit <> nil then
-    SaveStream.Write(fPushedUnit.UID) //Store ID, then substitute it with reference on SyncLoad
-  else
-    SaveStream.Write(Integer(0));
+  SaveStream.Write(fHouse.UID); //Store ID, then substitute it with reference on SyncLoad
+  SaveStream.Write(fPushedUnit.UID); //Store ID, then substitute it with reference on SyncLoad
   SaveStream.Write(fDirection, SizeOf(fDirection));
   SaveStream.Write(fDoor);
   SaveStream.Write(fStreet);

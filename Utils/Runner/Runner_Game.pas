@@ -179,13 +179,20 @@ type
     function GetSaveDir(aSaveName: string): string;
     procedure Log(const aString: string);
   protected
+    function DoCheckSavePoints: Boolean; virtual;
     procedure SetUp(); override;
     procedure TearDown(); override;
     procedure Execute(aRun: Integer); override;
   end;
 
 
-  TKMRunnerAAIPerformanceTest = class(TKMRunnerCommon)
+  TKMRunnerCrashTest = class(TKMRunnerDesyncTest)
+  protected
+    function DoCheckSavePoints: Boolean; override;
+  end;
+
+
+  TKMRunnerAAIPerformance = class(TKMRunnerCommon)
   private
     fMap: string;
     fRun: Integer;
@@ -199,7 +206,7 @@ type
     procedure Execute(aRun: Integer); override;
   end;
 
-  TKMRunnerCachePerformanceTest = class(TKMRunnerCommon)
+  TKMRunnerCachePerformance = class(TKMRunnerCommon)
   type
     TKMRDeliveryBidKey = record
       FromP: TKMPoint; //House or Unit UID From where delivery path goes
@@ -304,9 +311,11 @@ type
 implementation
 uses
   TypInfo, StrUtils, KM_CampaignTypes,
-  KM_HandSpectator, KM_ResWares, KM_ResHouses, KM_Hand, KM_UnitsCollection, KM_UnitGroup, KM_GameSavedReplays, KM_Settings,
-  KM_CommonTypes, KM_MapTypes, KM_RandomChecks, KM_FileIO, KM_Game, KM_GameInputProcess, KM_GameTypes, KM_InterfaceGame;
-
+  KM_HandSpectator, KM_ResWares, KM_ResHouses, KM_Hand, KM_HandTypes, KM_UnitsCollection, KM_UnitGroup,
+  KM_GameSavePoints,
+  KM_Settings,
+  KM_CommonTypes, KM_MapTypes, KM_RandomChecks, KM_FileIO, KM_Game, KM_GameInputProcess, KM_GameTypes, KM_InterfaceGame,
+  KM_UnitGroupTypes;
 
 
 
@@ -983,7 +992,7 @@ begin
       SetKaMSeed(Max(1,L));
 
       SimulateGame();
-      Score := gGameApp.Game.Params.GameTick;//Max(0,EvalGame());
+      Score := gGameApp.Game.Params.Tick;//Max(0,EvalGame());
       fAverageScore := fAverageScore + Score;
       //gGameApp.Game.Save(Format('%s__No_%.3d__Score_%.6d',[MapName, K, Round(Score)]), Now);
       if (Score < fWorstScore) AND (cnt_MAP_SIMULATIONS > 1) then
@@ -1038,7 +1047,6 @@ begin
 //  Include(gLog.MessageTypes, lmtCommands);
 
 //  LOG_GAME_TICK := True;
-  USE_CUSTOM_SEED := True;
 
 //  LOG_GAME_TICK := True;
   CALC_EXPECTED_TICK := False;
@@ -1077,7 +1085,7 @@ begin
   Assert(fRunKind = drkReplay);
 
   fRngMismatchFound := True;
-  fRngMismatchTick := gGameParams.GameTick;
+  fRngMismatchTick := gGameParams.Tick;
 
   OnProgress_Left2(Format('RNG mismatch: %d', [fRngMismatchTick]));
 end;
@@ -1093,7 +1101,7 @@ procedure TKMRunnerDesyncTest.SaveGame(aSaveName: string);
 var
   gameMode: TKMGameMode;
 begin
-  gameMode := gGameParams.GameMode;
+  gameMode := gGameParams.Mode;
 
   fGameModeSetEvent(gmSingle);
   gGame.SaveAndWait(aSaveName); //Save game and wait for async worker to complete all of his jobs
@@ -1134,7 +1142,7 @@ end;
 
 function TKMRunnerDesyncTest.GetSaveName: string;
 begin
-  Result := GetSaveName(fRunKind, gGameParams.GameTick);
+  Result := GetSaveName(fRunKind, gGameParams.Tick);
 end;
 
 
@@ -1171,7 +1179,7 @@ var
 begin
   Result := True;
 
-  if gGameParams.GameTick = 1 then
+  if gGameParams.Tick = 1 then
   begin
     gGame.GameInputProcess.CmdPlayerChanged(0, hndComputer, 'AI 1');
 
@@ -1229,12 +1237,16 @@ begin
                             for PL2 := 0 to gHands.Count - 1 do
                             begin
                               if PL1 = PL2 then Continue;
-                              
+
                               if playersTeam[PL1] = playersTeam[PL2] then
                                 gGame.GameInputProcess.CmdPlayerAllianceSet(PL1, PL2, atAlly)
                               else
                                 gGame.GameInputProcess.CmdPlayerAllianceSet(PL1, PL2, atEnemy);
                             end;
+
+                          //Add default goals for all players after alliances were set
+                          for PL1 := 0 to gHands.Count - 1 do
+                            gGame.GameInputProcess.CmdPlayerAddDefaultGoals(PL1, MapsType <> rmtFight);
                         end;
     end;
 
@@ -1247,30 +1259,30 @@ begin
                   end;
     drkReplay:    ;
     drkGameCRC:   begin
-                    if gGameParams.GameTick >= fSavePointTick then
+                    if gGameParams.Tick >= fSavePointTick then
                     begin
                       tickCRC := gGame.GetCurrectTickSaveCRC;
-                      fTickCRC[gGameParams.GameTick - fSavePointTick] := tickCRC;
+                      fTickCRC[gGameParams.Tick - fSavePointTick] := tickCRC;
 
                       //SaveGame();
                     end;
                   end;
     drkReplayCRC: begin
                     tickCRC := gGame.GetCurrectTickSaveCRC;
-                    if tickCRC <> fTickCRC[gGameParams.GameTick - fSavePointTick] then
+                    if tickCRC <> fTickCRC[gGameParams.Tick - fSavePointTick] then
                     begin
                       SaveGameAndMove;
-//                      MoveSave(GetSaveName(drkGameCRC, gGameParams.GameTick));
+//                      MoveSave(GetSaveName(drkGameCRC, gGameParams.Tick));
 
                       //Move last sync saves
                       if SAVE_LAST_SYNC_TICK then
                       begin
-                        MoveSave(GetSaveName(drkReplayCRC, gGameParams.GameTick - 1));
-                        MoveSave(GetSaveName(drkGameCRC, gGameParams.GameTick - 1));
+                        MoveSave(GetSaveName(drkReplayCRC, gGameParams.Tick - 1));
+                        MoveSave(GetSaveName(drkGameCRC, gGameParams.Tick - 1));
                       end;
 
                       fCRCDesyncFound := True;
-                      fCRCDesyncTick := gGameParams.GameTick;
+                      fCRCDesyncTick := gGameParams.Tick;
 
                       OnProgress_Left3(Format('CRC desync: %d', [fCRCDesyncTick]));
 
@@ -1278,10 +1290,10 @@ begin
                     end;
                   end;
     drkGameSave:  begin
-                    if gGameParams.GameTick = fCRCDesyncTick then
+                    if gGameParams.Tick = fCRCDesyncTick then
                       SaveGameAndMove
                     else
-                    if gGameParams.GameTick = fRngMismatchTick then
+                    if gGameParams.Tick = fRngMismatchTick then
                       SaveGameAndMove;
                   end;
   end;
@@ -1295,6 +1307,12 @@ end;
 procedure TKMRunnerDesyncTest.Log(const aString: string);
 begin
   gLog.AddNoTime('[DESYNC] ' + aString);
+end;
+
+
+function TKMRunnerDesyncTest.DoCheckSavePoints: Boolean;
+begin
+  Result := True;
 end;
 
 
@@ -1352,8 +1370,8 @@ var
   end;
 
 begin
-  PAUSE_GAME_AFTER_TICK := -1;    //Pause at specified game tick
-//  MAKE_SAVEPT_AFTER_TICK := 40800;
+  PAUSE_GAME_BEFORE_TICK := -1;    //Pause at specified game tick
+//  MAKE_SAVEPT_BEFORE_TICK := 40800;
 
   M := 0;
   desyncCnt := 0;
@@ -1412,7 +1430,7 @@ begin
 
       gGameSettings.DebugSaveGameAsText := True;
 
-      gGameSettings.SaveCheckpoints := True;
+      gGameSettings.SaveCheckpoints := DoCheckSavePoints;
       gGameSettings.SaveCheckpointsFreq := savesFreq;
       gGameSettings.SaveCheckpointsLimit := savesCnt;
 
@@ -1420,6 +1438,13 @@ begin
 //      Include(gLog.MessageTypes, lmtCommands);
 
       SimulateGame(0, SIMUL_TIME_MAX);
+
+      if not DoCheckSavePoints then
+      begin
+        if Assigned(fOnStop) and fOnStop then
+          Exit;
+        Continue;
+      end;
 
       SaveGame;
 
@@ -1440,7 +1465,7 @@ begin
         else
           fSavePointTick := (I + Byte(MapsType <> rmtFight)*SKIP_FIRST_SAVEPT_CNT) * savesFreq;
 
-        if gGameApp.TryLoadSavedReplay(fSavePointTick) then
+        if gGameApp.TryLoadSavePoint(fSavePointTick) then
         begin
           Inc(totalLoads);
           OnProgress_Left(Format('Load: %d', [fSavePointTick]));
@@ -1471,7 +1496,7 @@ begin
             fCRCDesyncTick := -1;
 
             // Load at certain savepoint
-            if gGameApp.TryLoadSavedReplay(fSavePointTick) then
+            if gGameApp.TryLoadSavePoint(fSavePointTick) then
             begin
               fRunKind := drkReplayCRC;
               SimulateGame(fSavePointTick - 1, simulLastTick);
@@ -1493,8 +1518,7 @@ begin
         else
           OnProgress_Left('');
 
-        if Assigned(fOnStop)
-          and fOnStop then
+        if Assigned(fOnStop) and fOnStop then
           Exit;
       end;
 
@@ -1535,7 +1559,7 @@ begin
 
   // We use gRandom.Get for repeatability in Stadium
 
-  Log(Format('Tick: %5d %d' ,[gGameParams.GameTick, fRunSeed]));
+  Log(Format('Tick: %5d %d' ,[gGameParams.Tick, fRunSeed]));
   if KaMRandomWSeed(fRunSeed, FREQ) = 0 then
   begin
     gMySpectator.HandID := KaMRandomWSeed(fRunSeed, gHands.Count);
@@ -1698,13 +1722,13 @@ end;
 
 
 { TKMRunnerAAIPerformanceTest }
-procedure TKMRunnerAAIPerformanceTest.Reset;
+procedure TKMRunnerAAIPerformance.Reset;
 begin
   fStartTime := TimeGet;
 end;
 
 
-procedure TKMRunnerAAIPerformanceTest.SetUp();
+procedure TKMRunnerAAIPerformance.SetUp();
 begin
   inherited;
 
@@ -1727,7 +1751,6 @@ begin
 //  Include(gLog.MessageTypes, lmtCommands);
 
 //  LOG_GAME_TICK := True;
-  USE_CUSTOM_SEED := True;
 
   CALC_EXPECTED_TICK := False;
   CRASH_ON_REPLAY := False;
@@ -1745,20 +1768,20 @@ begin
 end;
 
 
-procedure TKMRunnerAAIPerformanceTest.TearDown();
+procedure TKMRunnerAAIPerformance.TearDown();
 begin
 
   inherited;
 end;
 
 
-function TKMRunnerAAIPerformanceTest.TickPlayed(aTick: Cardinal): Boolean;
+function TKMRunnerAAIPerformance.TickPlayed(aTick: Cardinal): Boolean;
 begin
   // good for debug
 end;
 
 
-procedure TKMRunnerAAIPerformanceTest.Execute(aRun: Integer);
+procedure TKMRunnerAAIPerformance.Execute(aRun: Integer);
 const
   // Maps for simulation (I dont use for loop in this array)
   MAPS: array [1..17] of String = ('Across the Desert','Mountainous Region','Battle Sun','Neighborhood Clash','Valley of the Equilibrium','Wilderness',
@@ -1813,8 +1836,8 @@ var
   mapT1, mapT2, score: Cardinal;
 begin
   DEFAULT_PEACE_TIME := 60;
-  PAUSE_GAME_AFTER_TICK := -1;    //Pause at specified game tick
-//  MAKE_SAVEPT_AFTER_TICK := 40800;
+  PAUSE_GAME_BEFORE_TICK := -1;    //Pause at specified game tick
+//  MAKE_SAVEPT_BEFORE_TICK := 40800;
 
   totalRuns := 0;
   fStartTime := TimeGet;
@@ -2281,7 +2304,7 @@ end;
 
 
 { TKMRunnerCachePerformanceTest }
-procedure TKMRunnerCachePerformanceTest.Execute(aRun: Integer);
+procedure TKMRunnerCachePerformance.Execute(aRun: Integer);
 const
   SIZE = 13;
   SIZE_HUGE = 100000000; //100 millions
@@ -2327,12 +2350,12 @@ begin
 end;
 
 
-procedure TKMRunnerCachePerformanceTest.Reset;
+procedure TKMRunnerCachePerformance.Reset;
 begin
 
 end;
 
-procedure TKMRunnerCachePerformanceTest.SetUp;
+procedure TKMRunnerCachePerformance.SetUp;
 begin
   // inherited;
 
@@ -2343,7 +2366,7 @@ begin
 //  gLog.MessageTypes := [];
 end;
 
-procedure TKMRunnerCachePerformanceTest.TearDown;
+procedure TKMRunnerCachePerformance.TearDown;
 begin
   // inherited;
 
@@ -2370,7 +2393,7 @@ end;
   {$Q+}
 {$ENDIF}
 
-function TKMRunnerCachePerformanceTest.TKMRDeliveryBidKey.Compare(aOther: TKMRDeliveryBidKey): Integer;
+function TKMRunnerCachePerformance.TKMRDeliveryBidKey.Compare(aOther: TKMRDeliveryBidKey): Integer;
 begin
 //  Result := GetHashCode - aOther.GetHashCode;
   if FromP = aOther.FromP then
@@ -2380,7 +2403,7 @@ begin
 end;
 
 
-function TKMRunnerCachePerformanceTest.TKMRDeliveryBidKey.GetHashCode: Integer;
+function TKMRunnerCachePerformance.TKMRDeliveryBidKey.GetHashCode: Integer;
 var
 //  a,b,c,d,xTotal,yTotal: Integer;
 //  totalCard: Cardinal;
@@ -2414,19 +2437,19 @@ end;
 
 
 { TKMRunnerCachePerformanceTest.TKMRDeliveryBidKeyEqualityComparer }
-function TKMRunnerCachePerformanceTest.TKMRDeliveryBidKeyEqualityComparer.Equals(const Left, Right: TKMRDeliveryBidKey): Boolean;
+function TKMRunnerCachePerformance.TKMRDeliveryBidKeyEqualityComparer.Equals(const Left, Right: TKMRDeliveryBidKey): Boolean;
 begin
 
 end;
 
-function TKMRunnerCachePerformanceTest.TKMRDeliveryBidKeyEqualityComparer.GetHashCode(const Value: TKMRDeliveryBidKey): Integer;
+function TKMRunnerCachePerformance.TKMRDeliveryBidKeyEqualityComparer.GetHashCode(const Value: TKMRDeliveryBidKey): Integer;
 begin
 
 end;
 
 
 { TKMRunnerCachePerformanceTest.TKMRDeliveryCache }
-procedure TKMRunnerCachePerformanceTest.TKMRDeliveryCache.Add(const FromP: TKMPoint; ToP: TKMPoint; const aValue: Single;
+procedure TKMRunnerCachePerformance.TKMRDeliveryCache.Add(const FromP: TKMPoint; ToP: TKMPoint; const aValue: Single;
                                                               const aTimeToLive: Word);
 var
   key: TKMRDeliveryBidKey;
@@ -2441,7 +2464,7 @@ begin
   inherited Add(key, bid);
 end;
 
-procedure TKMRunnerCachePerformanceTest.TKMRDeliveryCache.Add(const aKey: TKMRDeliveryBidKey; const aValue: Single;
+procedure TKMRunnerCachePerformance.TKMRDeliveryCache.Add(const aKey: TKMRDeliveryBidKey; const aValue: Single;
                                                               const aTimeToLive: Word);
 var
   value: TKMRDeliveryBid;
@@ -2453,14 +2476,14 @@ begin
   inherited Add(aKey, value);
 end;
 
-procedure TKMRunnerCachePerformanceTest.TKMRDeliveryCache.Add(const aKey: TKMRDeliveryBidKey; const aBid: TKMRDeliveryBid);
+procedure TKMRunnerCachePerformance.TKMRDeliveryCache.Add(const aKey: TKMRDeliveryBidKey; const aBid: TKMRDeliveryBid);
 begin
   if not CACHE_DELIVERY_BIDS then Exit;
 
   inherited Add(aKey, aBid);
 end;
 
-function TKMRunnerCachePerformanceTest.TKMRDeliveryCache.TryGetValue(const aKey: TKMRDeliveryBidKey;
+function TKMRunnerCachePerformance.TKMRDeliveryCache.TryGetValue(const aKey: TKMRDeliveryBidKey;
                                                                      var aValue: TKMRDeliveryBid): Boolean;
 begin
   Result := False;
@@ -2476,7 +2499,7 @@ end;
 
 
 { TKMRunnerCachePerformanceTest.TKMRDeliveryBidKeyComparer }
-function TKMRunnerCachePerformanceTest.TKMRDeliveryBidKeyComparer.Compare(const Left, Right: TKMRDeliveryBidKey): Integer;
+function TKMRunnerCachePerformance.TKMRDeliveryBidKeyComparer.Compare(const Left, Right: TKMRDeliveryBidKey): Integer;
 begin
   //  Result := Left.GetHashCode - Right.GetHashCode;
   if Left.FromP = Right.FromP then
@@ -2486,10 +2509,18 @@ begin
 end;
 
 
+{ TKMRunnerCrashTest }
+function TKMRunnerCrashTest.DoCheckSavePoints: Boolean;
+begin
+  Result := False;
+end;
+
+
 initialization
   RegisterRunner(TKMRunnerDesyncTest);
-  RegisterRunner(TKMRunnerAAIPerformanceTest);
-  RegisterRunner(TKMRunnerCachePerformanceTest);
+  RegisterRunner(TKMRunnerCrashTest);
+  RegisterRunner(TKMRunnerAAIPerformance);
+  RegisterRunner(TKMRunnerCachePerformance);
   RegisterRunner(TKMRunnerPushModes);
   RegisterRunner(TKMRunnerGA_TestParRun);
   RegisterRunner(TKMRunnerGA_HandLogistics);

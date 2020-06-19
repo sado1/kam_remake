@@ -2,14 +2,17 @@ unit KM_MissionScript_Standard;
 {$I KaM_Remake.inc}
 interface
 uses
+  Generics.Collections,
   KM_MissionScript, KM_UnitGroup, KM_Units, KM_Houses,
-  KM_AIAttacks, KM_Points, KM_Defaults;
+  KM_AIAttacks, KM_Points, KM_Defaults, KM_UnitGroupTypes;
 
 
 type
-  TKMAttackPosition = record
+  TKMMissionScriptGroupOrder = record
     Group: TKMUnitGroup;
+    Kind: TKMGroupInitialOrder;
     Target: TKMPoint;
+    Dir: TKMDirection;
   end;
 
   TKMMissionParserStandard = class(TKMMissionParserCommon)
@@ -20,15 +23,17 @@ type
     fLastUnit: TKMUnit;
     fLastTroop: TKMUnitGroup;
     fAIAttack: TKMAIAttack;
-    fAttackPositions: array of TKMAttackPosition;
-    fAttackPositionsCount: Integer;
+    fGroupOrders: TList<TKMMissionScriptGroupOrder>;
     fDefaultLocation: ShortInt;
-    procedure ProcessAttackPositions;
+    procedure HandleGroupOrders;
+    procedure Init(aMode: TKMMissionParsingMode);
   protected
     function ProcessCommand(CommandType: TKMCommandType; P: array of Integer; const TextParam: AnsiString = ''): Boolean; override;
   public
     constructor Create(aMode: TKMMissionParsingMode); overload;
-    constructor Create(aMode: TKMMissionParsingMode; aPlayersEnabled: TKMHandEnabledArray); overload;
+    constructor Create(aMode: TKMMissionParsingMode; var aPlayersEnabled: TKMHandEnabledArray); overload;
+    destructor Destroy; override;
+
     function LoadMission(const aFileName: string): Boolean; overload; override;
     procedure PostLoadMission;
 
@@ -45,7 +50,8 @@ uses
   KM_HouseCollection, KM_HouseBarracks,
   KM_AI, KM_AIDefensePos,
   KM_Resource, KM_ResHouses, KM_ResUnits, KM_ResWares,
-  KM_CommonClasses, KM_CommonTypes, KM_Terrain;
+  KM_CommonClasses, KM_CommonTypes, KM_Terrain,
+  KM_HandTypes;
 
 
 type
@@ -69,22 +75,38 @@ constructor TKMMissionParserStandard.Create(aMode: TKMMissionParsingMode);
 var I: Integer;
 begin
   inherited Create;
-  fParsingMode := aMode;
-  fDefaultLocation := 0;
+
+  Init(aMode);
 
   for I := 0 to High(fPlayerEnabled) do
     fPlayerEnabled[I] := True;
 end;
 
 
-constructor TKMMissionParserStandard.Create(aMode: TKMMissionParsingMode; aPlayersEnabled: TKMHandEnabledArray);
+constructor TKMMissionParserStandard.Create(aMode: TKMMissionParsingMode; var aPlayersEnabled: TKMHandEnabledArray);
 begin
   inherited Create;
-  fParsingMode := aMode;
-  fDefaultLocation := 0;
+
+  Init(aMode);
 
   //Tells us which player should be enabled and which ignored/skipped
   fPlayerEnabled := aPlayersEnabled;
+end;
+
+
+procedure TKMMissionParserStandard.Init(aMode: TKMMissionParsingMode);
+begin
+  fGroupOrders := TList<TKMMissionScriptGroupOrder>.Create;
+  fParsingMode := aMode;
+  fDefaultLocation := 0;
+end;
+
+
+destructor TKMMissionParserStandard.Destroy;
+begin
+  fGroupOrders.Free;
+
+  inherited;
 end;
 
 
@@ -127,33 +149,39 @@ end;
 procedure TKMMissionParserStandard.PostLoadMission;
 begin
   //Post-processing of ctAttack_Position commands which must be done after mission has been loaded
-  ProcessAttackPositions;
+  HandleGroupOrders;
   gHands.PostLoadMission;
 end;
 
 
 //Determine what we are attacking: House, Unit or just walking to some place
-procedure TKMMissionParserStandard.ProcessAttackPositions;
+procedure TKMMissionParserStandard.HandleGroupOrders;
 var
   I: Integer;
   H: TKMHouse;
   U: TKMUnit;
 begin
-  Assert((fParsingMode <> mpmEditor) or (fAttackPositionsCount = 0), 'AttackPositions should be handled by MapEd');
+  Assert((fParsingMode <> mpmEditor) or (fGroupOrders.Count = 0), 'AttackPositions should be handled by MapEd');
 
-  for I := 0 to fAttackPositionsCount - 1 do
-    with fAttackPositions[I] do
+  for I := 0 to fGroupOrders.Count - 1 do
+    with fGroupOrders[I] do
     begin
-      H := gHands.HousesHitTest(Target.X, Target.Y); //Attack house
-      if (H <> nil) and (not H.IsDestroyed) and (gHands.CheckAlliance(Group.Owner, H.Owner) = atEnemy) then
-        Group.OrderAttackHouse(H, True)
-      else
-      begin
-        U := gTerrain.UnitsHitTest(Target.X, Target.Y); //Chase/attack unit
-        if (U <> nil) and (not U.IsDeadOrDying) and (gHands.CheckAlliance(Group.Owner, U.Owner) = atEnemy) then
-          Group.OrderAttackUnit(U, True)
-        else
-          Group.OrderWalk(Target, True, wtokMissionScript); //Just move to position
+      case Kind of
+        gioNoOrder:         ;
+        gioSendGroup:       Group.OrderWalk(Target, True, wtokMissionScript, Dir);
+        gioAttackPosition:  begin
+                              H := gHands.HousesHitTest(Target.X, Target.Y); //Attack house
+                              if (H <> nil) and (not H.IsDestroyed) and (gHands.CheckAlliance(Group.Owner, H.Owner) = atEnemy) then
+                                Group.OrderAttackHouse(H, True)
+                              else
+                              begin
+                                U := gTerrain.UnitsHitTest(Target.X, Target.Y); //Chase/attack unit
+                                if (U <> nil) and (not U.IsDeadOrDying) and (gHands.CheckAlliance(Group.Owner, U.Owner) = atEnemy) then
+                                  Group.OrderAttackUnit(U, True)
+                                else
+                                  Group.OrderWalk(Target, True, wtokMissionScript); //Just move to position
+                              end;
+                            end;
       end;
     end;
 end;
@@ -176,6 +204,7 @@ var
   UT: TKMUnitType;
   iPlayerAI: TKMHandAI;
   ChooseLoc: TKMChooseLoc;
+  groupOrder: TKMMissionScriptGroupOrder;
 begin
   Result := False; //Set it right from the start. There are several Exit points below
 
@@ -299,7 +328,7 @@ begin
                           Qty := EnsureRange(P[1], -1, High(Word)); //Sometimes user can define it to be 999999
                           if Qty = -1 then Qty := High(Word); //-1 means maximum resources
                           ChooseLoc := gHands[fLastHand].ChooseLocation;
-                          ChooseLoc.Resources[ WareIndexToType[P[0]] ] := Qty;
+                          ChooseLoc.Resources[ WARE_ID_TO_TYPE[P[0]] ] := Qty;
                           gHands[fLastHand].ChooseLocation := ChooseLoc;
                         end;
 
@@ -453,10 +482,10 @@ begin
                           Qty := EnsureRange(P[1], -1, High(Word)); //Sometimes user can define it to be 999999
                           if Qty = -1 then Qty := High(Word); //-1 means maximum resources
                           H := gHands[fLastHand].FindHouse(htStore,1);
-                          if (H <> nil) and H.ResCanAddToIn(WareIndexToType[P[0]]) then
+                          if (H <> nil) and H.ResCanAddToIn(WARE_ID_TO_TYPE[P[0]]) then
                           begin
-                            H.ResAddToIn(WareIndexToType[P[0]], Qty, True);
-                            gHands[fLastHand].Stats.WareInitial(WareIndexToType[P[0]], Qty);
+                            H.ResAddToIn(WARE_ID_TO_TYPE[P[0]], Qty, True);
+                            gHands[fLastHand].Stats.WareInitial(WARE_ID_TO_TYPE[P[0]], Qty);
                           end;
                         end;
     // @Deprecated, used AddWareToLast instead
@@ -466,10 +495,10 @@ begin
                           for I := 0 to gHands.Count - 1 do
                           begin
                             H := gHands[i].FindHouse(htStore, 1);
-                            if (H <> nil) and H.ResCanAddToIn(WareIndexToType[P[0]]) then
+                            if (H <> nil) and H.ResCanAddToIn(WARE_ID_TO_TYPE[P[0]]) then
                             begin
-                              H.ResAddToIn(WareIndexToType[P[0]], Qty, True);
-                              gHands[i].Stats.WareInitial(WareIndexToType[P[0]], Qty);
+                              H.ResAddToIn(WARE_ID_TO_TYPE[P[0]], Qty, True);
+                              gHands[i].Stats.WareInitial(WARE_ID_TO_TYPE[P[0]], Qty);
                             end;
                           end;
                         end;
@@ -480,10 +509,10 @@ begin
                           if Qty = -1 then Qty := High(Word); //-1 means maximum resources
 
                           H := TKMHouseStore(gHands[fLastHand].FindHouse(htStore, 2));
-                          if (H <> nil) and H.ResCanAddToIn(WareIndexToType[P[0]]) then
+                          if (H <> nil) and H.ResCanAddToIn(WARE_ID_TO_TYPE[P[0]]) then
                           begin
-                            H.ResAddToIn(WareIndexToType[P[0]], Qty, True);
-                            gHands[fLastHand].Stats.WareInitial(WareIndexToType[P[0]], Qty);
+                            H.ResAddToIn(WARE_ID_TO_TYPE[P[0]], Qty, True);
+                            gHands[fLastHand].Stats.WareInitial(WARE_ID_TO_TYPE[P[0]], Qty);
                           end;
                         end;
 
@@ -494,10 +523,10 @@ begin
                           if Qty = -1 then Qty := High(Word); //-1 means maximum resources
 
                           H := gHands[fLastHand].FindHouse(HOUSE_ID_TO_TYPE[P[0]], P[1]);
-                          if (H <> nil) and (H.ResCanAddToIn(WareIndexToType[P[2]]) or H.ResCanAddToOut(WareIndexToType[P[2]])) then
+                          if (H <> nil) and (H.ResCanAddToIn(WARE_ID_TO_TYPE[P[2]]) or H.ResCanAddToOut(WARE_ID_TO_TYPE[P[2]])) then
                           begin
-                            H.ResAddToEitherFromScript(WareIndexToType[P[2]], Qty);
-                            gHands[fLastHand].Stats.WareInitial(WareIndexToType[P[2]], Qty);
+                            H.ResAddToEitherFromScript(WARE_ID_TO_TYPE[P[2]], Qty);
+                            gHands[fLastHand].Stats.WareInitial(WARE_ID_TO_TYPE[P[2]], Qty);
                           end;
                         end;
 
@@ -506,12 +535,12 @@ begin
                           Qty := EnsureRange(P[1], -1, High(Word)); //Sometimes user can define it to be 999999
                           if Qty = -1 then Qty := High(Word); //-1 means maximum resources
 
-                          if (fLastHouse <> nil) and (fLastHouse.ResCanAddToIn(WareIndexToType[P[0]]) or fLastHouse.ResCanAddToOut(WareIndexToType[P[0]])) then
+                          if (fLastHouse <> nil) and (fLastHouse.ResCanAddToIn(WARE_ID_TO_TYPE[P[0]]) or fLastHouse.ResCanAddToOut(WARE_ID_TO_TYPE[P[0]])) then
                           begin
                             if not fLastHouse.IsDestroyed then //Could be destroyed already by damage
                             begin
-                              fLastHouse.ResAddToEitherFromScript(WareIndexToType[P[0]], Qty);
-                              gHands[fLastHand].Stats.WareInitial(WareIndexToType[P[0]], Qty);
+                              fLastHouse.ResAddToEitherFromScript(WARE_ID_TO_TYPE[P[0]], Qty);
+                              gHands[fLastHand].Stats.WareInitial(WARE_ID_TO_TYPE[P[0]], Qty);
                             end;
                           end
                           else
@@ -523,17 +552,17 @@ begin
                           Qty := EnsureRange(P[1], -1, High(Word)); //Sometimes user can define it to be 999999
                           if Qty = -1 then Qty := High(Word); //-1 means maximum weapons
                           H := gHands[fLastHand].FindHouse(htBarracks, 1);
-                          if (H <> nil) and H.ResCanAddToIn(WareIndexToType[P[0]]) then
+                          if (H <> nil) and H.ResCanAddToIn(WARE_ID_TO_TYPE[P[0]]) then
                           begin
-                            H.ResAddToIn(WareIndexToType[P[0]], Qty, True);
-                            gHands[fLastHand].Stats.WareInitial(WareIndexToType[P[0]], Qty);
+                            H.ResAddToIn(WARE_ID_TO_TYPE[P[0]], Qty, True);
+                            gHands[fLastHand].Stats.WareInitial(WARE_ID_TO_TYPE[P[0]], Qty);
                           end;
                         end;
 
     ctBlockTrade:       if fLastHand <> PLAYER_NONE then
                         begin
-                          if WareIndexToType[P[0]] in [WARE_MIN..WARE_MAX] then
-                            gHands[fLastHand].Locks.AllowToTrade[WareIndexToType[P[0]]] := False;
+                          if WARE_ID_TO_TYPE[P[0]] in [WARE_MIN..WARE_MAX] then
+                            gHands[fLastHand].Locks.AllowToTrade[WARE_ID_TO_TYPE[P[0]]] := False;
                         end;
 
     ctBlockUnit:        if fLastHand <> PLAYER_NONE then
@@ -588,11 +617,17 @@ begin
                           if fLastTroop <> nil then
                             if fParsingMode = mpmEditor then
                             begin
-                              fLastTroop.MapEdOrder.Order := ioSendGroup;
+                              fLastTroop.MapEdOrder.Order := gioSendGroup;
                               fLastTroop.MapEdOrder.Pos := KMPointDir(P[0]+1, P[1]+1, TKMDirection(P[2]+1));
                             end
                             else
-                              fLastTroop.OrderWalk(KMPoint(P[0]+1, P[1]+1), True, wtokMissionScript, TKMDirection(P[2]+1))
+                            begin
+                              groupOrder.Group := fLastTroop;
+                              groupOrder.Kind := gioSendGroup;
+                              groupOrder.Target := KMPoint(P[0]+1,P[1]+1);
+                              groupOrder.Dir := TKMDirection(P[2]+1);
+                              fGroupOrders.Add(groupOrder);
+                            end
                           else
                             AddError('ct_SendGroup without prior declaration of Troop');
                         end;
@@ -674,15 +709,16 @@ begin
                           if fLastTroop <> nil then
                             if fParsingMode = mpmEditor then
                             begin
-                              fLastTroop.MapEdOrder.Order := ioAttackPosition;
+                              fLastTroop.MapEdOrder.Order := gioAttackPosition;
                               fLastTroop.MapEdOrder.Pos := KMPointDir(P[0]+1, P[1]+1, dirNA);
                             end
                             else
                             begin
-                              Inc(fAttackPositionsCount);
-                              SetLength(fAttackPositions, fAttackPositionsCount+1);
-                              fAttackPositions[fAttackPositionsCount-1].Group := fLastTroop;
-                              fAttackPositions[fAttackPositionsCount-1].Target := KMPoint(P[0]+1,P[1]+1);
+                              groupOrder.Group := fLastTroop;
+                              groupOrder.Kind := gioAttackPosition;
+                              groupOrder.Target := KMPoint(P[0]+1,P[1]+1);
+                              groupOrder.Dir := dirNA;
+                              fGroupOrders.Add(groupOrder);
                             end
                           else
                             AddError('ct_AttackPosition without prior declaration of Troop');
@@ -693,8 +729,8 @@ begin
                           if not InRange(P[0], 0, Byte(High(TKMGoalCondition))) then
                             AddError('Add_Goal with unknown condition index ' + IntToStr(P[0]))
                           else
-                            if not (TKMGoalCondition(P[0]) in GoalsSupported) then
-                              AddError('Goal type ' + GoalConditionStr[TKMGoalCondition(P[0])] + ' is deprecated')
+                            if not (TKMGoalCondition(P[0]) in GOALS_SUPPORTED) then
+                              AddError('Goal type ' + GOAL_CONDITION_STR[TKMGoalCondition(P[0])] + ' is deprecated')
                             else
                               if (P[2] <> 0) then
                                 AddError('Goals messages are deprecated. Use .script instead')
@@ -711,8 +747,8 @@ begin
                           if InRange(P[3], 0, gHands.Count - 1)
                           and fPlayerEnabled[P[3]] then
                           begin
-                            if not (TKMGoalCondition(P[0]) in GoalsSupported) then
-                              AddError('LostGoal type ' + GoalConditionStr[TKMGoalCondition(P[0])] + ' is deprecated');
+                            if not (TKMGoalCondition(P[0]) in GOALS_SUPPORTED) then
+                              AddError('LostGoal type ' + GOAL_CONDITION_STR[TKMGoalCondition(P[0])] + ' is deprecated');
                             if (P[2] <> 0) then
                               AddError('LostGoals messages are deprecated. Use .script instead');
                             gHands[fLastHand].AI.Goals.AddGoal(gltSurvive, TKMGoalCondition(P[0]), P[3]); //Ignore not used parameters
@@ -908,7 +944,7 @@ begin
         // Add resources
         for WT := Low(Resources) to High(Resources) do
           if (Resources[WT] > 0) then
-            AddCommand(ctChooseLocAddWare, [WareTypeToIndex[WT], Resources[WT]]);
+            AddCommand(ctChooseLocAddWare, [WARE_TY_TO_ID[WT], Resources[WT]]);
         // Add units
         for UT := Low(Units) to High(Units) do
           if (Units[UT] > 0) then
@@ -1043,7 +1079,7 @@ begin
     //Block trades
     for WT := WARE_MIN to WARE_MAX do
       if not gHands[I].Locks.AllowToTrade[WT] then
-        AddCommand(ctBlockTrade, [WareTypeToIndex[WT]]);
+        AddCommand(ctBlockTrade, [WARE_TY_TO_ID[WT]]);
 
     //Houses
     StoreCount := 0;
@@ -1077,9 +1113,9 @@ begin
         for WT := WARE_MIN to WARE_MAX do
         begin
           if H.CheckResIn(WT) > 0 then
-            AddCommand(ctAddWareToLast, [WareTypeToIndex[WT], H.CheckResIn(WT)]);
+            AddCommand(ctAddWareToLast, [WARE_TY_TO_ID[WT], H.CheckResIn(WT)]);
           if H.CheckResOut(WT) > 0 then
-            AddCommand(ctAddWareToLast, [WareTypeToIndex[WT], H.CheckResOut(WT)]);
+            AddCommand(ctAddWareToLast, [WARE_TY_TO_ID[WT], H.CheckResOut(WT)]);
         end;
 
         //Set Delivery mode after Wares, so in case there are some wares and delivery mode TakeOut, then we will need to add proper Offers
@@ -1117,7 +1153,7 @@ begin
       U := gHands[I].Units[K];
       if not (U is TKMUnitWarrior) then //Groups get saved separately
       begin
-        AddCommand(ctSetUnit, [UNIT_TYPE_TO_OLD_ID[U.UnitType], U.CurrPosition.X-1 + aLeftInset, U.CurrPosition.Y-1 + aTopInset]);
+        AddCommand(ctSetUnit, [UNIT_TYPE_TO_OLD_ID[U.UnitType], U.Position.X-1 + aLeftInset, U.Position.Y-1 + aTopInset]);
         if not U.StartWDefaultCondition then
           AddCommand(ctSetUnitFood, [U.Condition]);
       end;
@@ -1132,10 +1168,10 @@ begin
         AddCommand(ctSetGroupFood, [Group.FlagBearer.Condition]);
 
       case Group.MapEdOrder.Order of
-        ioNoOrder: ;
-        ioSendGroup:
+        gioNoOrder: ;
+        gioSendGroup:
           AddCommand(ctSendGroup, [Group.MapEdOrder.Pos.Loc.X-1 + aLeftInset, Group.MapEdOrder.Pos.Loc.Y-1 + aTopInset, Byte(Group.MapEdOrder.Pos.Dir)-1]);
-        ioAttackPosition:
+        gioAttackPosition:
           AddCommand(ctAttackPosition, [Group.MapEdOrder.Pos.Loc.X-1 + aLeftInset, Group.MapEdOrder.Pos.Loc.Y-1 + aTopInset]);
         else
           raise Exception.Create('Unexpected group order in MapEd');
@@ -1154,7 +1190,7 @@ begin
   for I := 0 to gHands.PlayerAnimals.Units.Count - 1 do
   begin
     U := gHands.PlayerAnimals.Units[I];
-    AddCommand(ctSetUnit, [UNIT_TYPE_TO_OLD_ID[U.UnitType], U.CurrPosition.X-1 + aLeftInset, U.CurrPosition.Y-1 + aTopInset]);
+    AddCommand(ctSetUnit, [UNIT_TYPE_TO_OLD_ID[U.UnitType], U.Position.X-1 + aLeftInset, U.Position.Y-1 + aTopInset]);
   end;
   AddData(''); //NL
 

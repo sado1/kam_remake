@@ -5,6 +5,7 @@ const
   DEPOSITS_TIME = 600;
   CONFIRM_TIME = 3000;
   IDLE_TIME = 50;
+  AMBIENT_TIME = 250;
 
 
 type
@@ -18,6 +19,41 @@ var
   Economy, Food, Military: array[0..1] of Offer;
   OffersAllowed: array[0..1] of Boolean;
   OffersTimer, ConfirmTimer, MilitaryOfferType: array[0..1] of Integer;
+  Wolves: array of Integer;
+  SoundAllowed: array[0..1] of Boolean;
+
+
+procedure FindWolves;
+var
+  aX, aY, W: Integer;
+begin
+  for aX := 1 to States.MapWidth - 1 do
+    for aY := 1 to States.MapHeight - 1 do
+    begin
+      W := States.UnitAt(aX, aY);
+      if W > 0 then
+        if States.UnitType(W) = 30 then
+        begin
+          SetLength(Wolves, Length(Wolves) + 1);
+          if Length(Wolves) > 0 then
+            Wolves[Length(Wolves) - 1] := W;
+        end;
+    end;
+end;
+
+
+{$COMMAND sound: TurnSoundOnOff}
+
+
+procedure TurnSoundOnOff(P, Value: Integer);
+var
+  aValue: Integer;
+begin
+  if not Utils.InRangeI(P, 0, 1) then
+    Exit;
+  aValue := Utils.EnsureRangeI(Value, 0, 1);
+  SoundAllowed[P] := Boolean(aValue);
+end;
 
 
 function EconomyWareType: Integer;
@@ -984,7 +1020,7 @@ end;
 
 procedure OnTick;
 var
-  I: Integer;
+  I, K: Integer;
 begin
   for I := 2 to 11 do
     if States.GameTime mod AUTOFEED_TIME = 5 * I then
@@ -1014,6 +1050,28 @@ begin
       if (States.PlayerIsAI(I))
       and (OffersTimer[I] = 0) then
         GetPlayerOffer(I, States.KaMRandomI(3) + 1);
+
+  for K := 0 to 1 do
+    if SoundAllowed[K] then
+    begin
+      if (States.KaMRandom > 0.5)
+      and (States.GameTime mod AMBIENT_TIME = 0) then
+      begin
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 10, 64);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 111, 75);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 126, 23);
+        Actions.PlayOGGAtLocation(K, 'Quack' + IntToStr(1 + States.KaMRandomI(3)), 0.75, 32, 141, 63);
+      end;
+
+      if (States.KaMRandom < 0.4)
+      and (States.GameTime mod AMBIENT_TIME = 33) then
+        if Length(Wolves) > 0 then
+          for I := Low(Wolves) to High(Wolves) do
+            if not States.UnitDead(Wolves[I]) then
+              if States.KaMRandom < 0.25 then
+                 Actions.PlayOGGAtLocation(K, 'Wolf' + IntToStr(1 + States.KaMRandomI(3)), Utils.MinS(States.KaMRandom, 0.35), 32, States.UnitPositionX(Wolves[I]), States.UnitPositionY(Wolves[I]));
+
+    end;
 
 end;
 
@@ -1193,5 +1251,12 @@ begin
   SetWareDistribution;
 
   BlockWares;
+
+  FindWolves;
+
+  for I := 0 to 1 do
+    SoundAllowed[I] := True;
+
+  Actions.ShowMsg(-1, '<$11>');
 
 end;

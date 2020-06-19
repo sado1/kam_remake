@@ -77,10 +77,11 @@ uses
   KM_GameInfo in 'src\game\KM_GameInfo.pas',
   KM_GameOptions in 'src\game\KM_GameOptions.pas',
   KM_GameParams in 'src\game\KM_GameParams.pas',
+  KM_GameSavePoints in 'src\game\KM_GameSavePoints.pas',
+  
   KM_GameInputProcess in 'src\game\KM_GameInputProcess.pas',
   KM_GameInputProcess_Multi in 'src\game\KM_GameInputProcess_Multi.pas',
   KM_GameInputProcess_Single in 'src\game\KM_GameInputProcess_Single.pas',
-  KM_GameSavedReplays in 'src\game\KM_GameSavedReplays.pas',
 
   KM_GUIGameBuild in 'src\gui\pages_game\KM_GUIGameBuild.pas',
   KM_GUIGameChat in 'src\gui\pages_game\KM_GUIGameChat.pas',
@@ -160,10 +161,13 @@ uses
   KM_Hand in 'src\hands\KM_Hand.pas',
   KM_HandsCollection in 'src\hands\KM_HandsCollection.pas',
   KM_HandConstructions in 'src\hands\KM_HandConstructions.pas',
+  KM_HandEntity in 'src\hands\KM_HandEntity.pas',
+  KM_HandEntityHelper in 'src\hands\KM_HandEntityHelper.pas',
   KM_HandLocks in 'src\hands\KM_HandLocks.pas',
   KM_HandLogistics in 'src\hands\KM_HandLogistics.pas',
   KM_HandSpectator in 'src\hands\KM_HandSpectator.pas',
   KM_HandStats in 'src\hands\KM_HandStats.pas',
+  KM_HandTypes in 'src\hands\KM_HandTypes.pas',
 
   KM_HouseBarracks in 'src\houses\KM_HouseBarracks.pas',
   KM_HouseInn in 'src\houses\KM_HouseInn.pas',
@@ -307,6 +311,7 @@ uses
   KM_UnitActionWalkTo in 'src\units\actions\KM_UnitActionWalkTo.pas',
   
   KM_UnitGroup in 'src\units\KM_UnitGroup.pas',
+  KM_UnitGroupTypes in 'src\units\KM_UnitGroupTypes.pas',
   KM_Units in 'src\units\KM_Units.pas',
   KM_UnitsCollection in 'src\units\KM_UnitsCollection.pas',
   KM_UnitVisual in 'src\units\KM_UnitVisual.pas',
@@ -327,6 +332,7 @@ uses
 
   KM_BinPacking in 'src\utils\KM_BinPacking.pas',
   KM_CommonUtils in 'src\utils\KM_CommonUtils.pas',
+  KM_IoXML in 'src\utils\KM_IoXML.pas',
   KM_FileIO in 'src\utils\KM_FileIO.pas',
   KM_FloodFill in 'src\utils\KM_FloodFill.pas',
   KM_Helpers in 'src\utils\KM_Helpers.pas',

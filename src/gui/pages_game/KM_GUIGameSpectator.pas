@@ -450,7 +450,7 @@ end;
 
 procedure TKMGUIGameSpectatorItemLine.PaintPanel(aPaintLayer: Integer);
 begin
-  Image.TexId := GUI_SPEC_HEADER_FLAG + gGameParams.GameTick mod GUI_SPEC_HEADER_FLAG_FRAME;
+  Image.TexId := GUI_SPEC_HEADER_FLAG + gGameParams.Tick mod GUI_SPEC_HEADER_FLAG_FRAME;
   Label_Text.Caption := gHands[FHandIndex].OwnerName(not gGameParams.IsSingleplayer);
 
   inherited;

@@ -121,7 +121,8 @@ uses
   {$IFDEF DEBUG_NewAI}
     KM_CommonUtils,
   {$ENDIF}
-  KM_UnitWarrior, KM_AIParameters, KM_UnitActionFight, KM_UnitActionWalkTo;
+  KM_UnitWarrior, KM_AIParameters, KM_UnitActionFight, KM_UnitActionWalkTo,
+  KM_UnitGroupTypes;
 
 
 
@@ -138,7 +139,7 @@ begin
   fTargetAim := KMPOINT_ZERO;
   fWalkTimeLimit := 0;
   fAttackTimeLimit := 0;
-  fGroup := aGroup.GetGroupPointer();
+  fGroup := aGroup.GetPointer();
   fTargetGroup := nil;
   fTargetUnit := nil;
   fTargetHouse := nil;
@@ -186,14 +187,10 @@ begin
   SaveStream.Write(fTargetAim, SizeOf(fTargetAim));
   SaveStream.Write(fWalkTimeLimit, SizeOf(fWalkTimeLimit));
   SaveStream.Write(fAttackTimeLimit, SizeOf(fAttackTimeLimit));
-  if (fGroup <> nil) then       SaveStream.Write(fGroup.UID)
-  else                          SaveStream.Write(Integer(0));
-  if (fTargetGroup <> nil) then SaveStream.Write(fTargetGroup.UID)
-  else                          SaveStream.Write(Integer(0));
-  if (fTargetUnit <> nil) then  SaveStream.Write(fTargetUnit.UID)
-  else                          SaveStream.Write(Integer(0));
-  if (fTargetHouse <> nil) then SaveStream.Write(fTargetHouse.UID)
-  else                          SaveStream.Write(Integer(0));
+  SaveStream.Write(fGroup.UID);
+  SaveStream.Write(fTargetGroup.UID);
+  SaveStream.Write(fTargetUnit.UID);
+  SaveStream.Write(fTargetHouse.UID);
 end;
 
 
@@ -218,7 +215,7 @@ begin
     SetTargetUnit(nil)
   else
   begin
-    fTargetGroup := aGroup.GetGroupPointer;
+    fTargetGroup := aGroup.GetPointer;
     ChangeTargetUnit( aGroup.GetAliveMember() );
   end;
 end;
@@ -244,7 +241,7 @@ begin
   fTargetChanged := (fTargetUnit = nil) OR not fTargetUnit.IsDeadOrDying
     OR ((aUnit is TKMUnitWarrior) AND (fTargetUnit is TKMUnitWarrior) AND (TKMUnitWarrior(fTargetUnit).Group <> TKMUnitWarrior(aUnit).Group));
   gHands.CleanUpUnitPointer(fTargetUnit);
-  fTargetUnit := aUnit.GetUnitPointer;
+  fTargetUnit := aUnit.GetPointer;
 end;
 
 
@@ -261,7 +258,7 @@ begin
   // Update target
   fTargetChanged := True;
   if (aHouse <> nil) then
-    fTargetHouse := aHouse.GetHousePointer;
+    fTargetHouse := aHouse.GetPointer;
 end;
 
 
@@ -270,7 +267,7 @@ begin
   SetTargetGroup(nil);
   SetTargetHouse(nil);
   fTargetPosition := aLoc;
-  fWalkTimeLimit := gGameParams.GameTick + KMDistanceAbs(fTargetPosition.Loc, Position) * 5;
+  fWalkTimeLimit := gGameParams.Tick + KMDistanceAbs(fTargetPosition.Loc, Position) * 5;
 end;
 
 
@@ -295,7 +292,7 @@ procedure TKMCombatGroup.UpdateState(aTick: Cardinal);
     BestTgt: TKMUnit;
     G: TKMUnitGroup;
   begin
-    Result := fTargetUnit.CurrPosition;
+    Result := fTargetUnit.Position;
     // Get closest warrior in enemy group if the squad is ranged
     if (fGroup.GroupType = gtRanged) AND (fTargetUnit is TKMUnitWarrior) then
     begin
@@ -308,7 +305,7 @@ procedure TKMCombatGroup.UpdateState(aTick: Cardinal);
         for K := 0 to G.Count - 1 do
           if not G.Members[K].IsDeadOrDying then
           begin
-            Dist := KMDistanceSqr(fGroup.Position,G.Members[K].CurrPosition);
+            Dist := KMDistanceSqr(fGroup.Position,G.Members[K].Position);
             if (Dist < BestDist) then
             begin
               BestTgt := G.Members[K];
@@ -318,7 +315,7 @@ procedure TKMCombatGroup.UpdateState(aTick: Cardinal);
         if (BestTgt <> nil) then
         begin
           gHands.CleanUpUnitPointer(fTargetUnit);
-          fTargetUnit := BestTgt.GetUnitPointer;
+          fTargetUnit := BestTgt.GetPointer;
         end;
       end;
     end;
@@ -362,7 +359,7 @@ procedure TKMCombatGroup.UpdateState(aTick: Cardinal);
       Exit;
     NodeList := TKMPointList.Create;
     try
-      if gGame.Pathfinding.Route_Make(Group.GetAliveMember.CurrPosition, TargetUnit.NextPosition, [tpWalk], Group.GetAliveMember.GetFightMaxRange, nil, NodeList) then
+      if gGame.Pathfinding.Route_Make(Group.GetAliveMember.Position, TargetUnit.NextPosition, [tpWalk], Group.GetAliveMember.GetFightMaxRange, nil, NodeList) then
       begin
         fTargetPosition := KMPointDir(NodeList[NodeList.Count-1],KMGetDirection(NodeList[NodeList.Count-1], TargetUnit.NextPosition));
         if KMSamePoint(fTargetPosition.Loc, Position) then
@@ -741,7 +738,7 @@ begin
         if (CG.TargetGroup <> nil) AND not CG.TargetGroup.IsDead then
           Order := Format('%s   Group [%d;%d] %s|',[Order, CG.TargetGroup.Position.X,CG.TargetGroup.Position.Y, GetEnumName(TypeInfo(TKMGroupType), Integer(CG.TargetGroup.GroupType))]);
         if (CG.TargetUnit <> nil) AND not CG.TargetUnit.IsDeadOrDying then
-          Order := Format('%s   Unit [%d;%d] %s|',[Order, CG.TargetUnit.CurrPosition.X,CG.TargetUnit.CurrPosition.Y, GetEnumName(TypeInfo(TKMUnitType), Integer(CG.TargetUnit.UnitType))]);
+          Order := Format('%s   Unit [%d;%d] %s|',[Order, CG.TargetUnit.Position.X,CG.TargetUnit.Position.Y, GetEnumName(TypeInfo(TKMUnitType), Integer(CG.TargetUnit.UnitType))]);
         if (CG.TargetHouse <> nil) AND not CG.TargetHouse.IsDestroyed then
           Order := Format('%s   House [%d;%d] %s|',[Order, CG.TargetHouse.Entrance.X, CG.TargetHouse.Entrance.Y, GetEnumName(TypeInfo(TKMHouseType), Integer(CG.TargetHouse.HouseType))]);
 
@@ -751,7 +748,7 @@ begin
         else if (CG.Group.Order in [goAttackHouse,goNone]) AND (CG.Group.OrderTargetHouse <> nil) then
           GroupOrder := Format('%s %d [%d;%d]|', [GroupOrder, Integer(CG.Group.OrderTargetHouse), CG.Group.OrderTargetHouse.Position.X, CG.Group.OrderTargetHouse.Position.Y])
         else if (CG.Group.Order in [goAttackUnit,goNone]) AND (CG.Group.OrderTargetUnit <> nil) then
-          GroupOrder := Format('%s %d [%d;%d]|', [GroupOrder, Integer(CG.Group.OrderTargetUnit), CG.Group.OrderTargetUnit.CurrPosition.X, CG.Group.OrderTargetUnit.CurrPosition.Y])
+          GroupOrder := Format('%s %d [%d;%d]|', [GroupOrder, Integer(CG.Group.OrderTargetUnit), CG.Group.OrderTargetUnit.Position.X, CG.Group.OrderTargetUnit.Position.Y])
         else if (CG.Group.Order = goNone) then
           GroupOrder := Format('%s [%d;%d]|', [GroupOrder, CG.Group.OrderLoc.Loc.X, CG.Group.OrderLoc.Loc.Y]);
 
@@ -764,8 +761,8 @@ begin
                           Byte(CG.OnPlace),
                           Byte(CG.InFight),
                           Order,
-                          Max(0, Integer(CG.WalkTimeLimit)   - Integer(gGameParams.GameTick)),
-                          Max(0, Integer(CG.AttackTimeLimit) - Integer(gGameParams.GameTick)),
+                          Max(0, Integer(CG.WalkTimeLimit)   - Integer(gGameParams.Tick)),
+                          Max(0, Integer(CG.AttackTimeLimit) - Integer(gGameParams.Tick)),
                           CG.Position.X, CG.Position.Y,
                           CG.TargetAim.X, CG.TargetAim.Y,
                           KMDistanceSqr(CG.TargetAim,CG.Position), KMDistanceAbs(CG.TargetAim,CG.Position),
@@ -815,14 +812,14 @@ begin
         goAttackUnit:
         begin
           if (CG.Group.OrderTargetUnit <> nil) then
-            Position := CG.Group.OrderTargetUnit.CurrPosition;
+            Position := CG.Group.OrderTargetUnit.Position;
         end;
         goNone:
         begin
           if (CG.Group.OrderTargetHouse <> nil) then
             Position := CG.Group.OrderTargetHouse.Position
           else if (CG.Group.OrderTargetUnit <> nil) then
-            Position := CG.Group.OrderTargetUnit.CurrPosition
+            Position := CG.Group.OrderTargetUnit.Position
           else
             Position := CG.Group.OrderLoc.Loc;
         end;

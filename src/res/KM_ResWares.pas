@@ -73,14 +73,14 @@ const
 
   MARKET_TRADEOFF_FACTOR = 2.2; //X resources buys 1 resource of equal value
 
-  WareTypeToIndex: array [TKMWareType] of byte = (0, //rtNone
+  WARE_TY_TO_ID: array [TKMWareType] of byte = (0, //rtNone
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
     11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
     22, 23, 24, 25, 26, 27,
     0, 0, 0); //rtAll, rtWarfare, rtFood
 
   RES_COUNT = 28;
-  WareIndexToType: array [0..RES_COUNT-1] of TKMWareType = (
+  WARE_ID_TO_TYPE: array [0..RES_COUNT-1] of TKMWareType = (
     wtTrunk, wtStone, wtWood, wtIronOre, wtGoldOre,
     wtCoal, wtSteel, wtGold, wtWine, wtCorn,
     wtBread, wtFlour, wtLeather, wtSausages, wtPig,
@@ -92,7 +92,7 @@ const
 
 
   //Aligned to right to use them in GUI costs display as well
-  WarfareCosts: array [WEAPON_MIN..WEAPON_MAX, 1..2] of TKMWareType = (
+  WARFARE_COSTS: array [WEAPON_MIN..WEAPON_MAX, 1..2] of TKMWareType = (
     (wtNone,   wtWood), //rtShield
     (wtCoal,  wtSteel), //rtMetalShield
     (wtNone,wtLeather), //rtArmor
@@ -107,7 +107,7 @@ const
 
   //How many of resource gets produced per minute on AVERAGE
   //Measured on a test map RES_COUNT / TIME in minutes
-  ProductionRate: array [WARE_MIN..WARE_MAX] of Single = (
+  PRODUCTION_RATE: array [WARE_MIN..WARE_MAX] of Single = (
      88/120, 414/120, 390/120, 160/120, 160/120,
     155/120, 218/120, 330/120, 120/120, 138/120,
     336/120, 162/120, 324/120, 510/120,  84/180,
@@ -125,7 +125,7 @@ const
   //Pigs 6
   //Skins 6
   //Horses 6
-  ProductionLag: array [WARE_MIN..WARE_MAX] of Byte = (
+  PRODUCTION_LAG: array [WARE_MIN..WARE_MAX] of Byte = (
      6, 1, 1, 1, 1,
      1, 1, 1, 4, 5,
      1, 1, 1, 1, 6,
@@ -181,7 +181,7 @@ end;
 function TKMWare.GetGUIIcon: Word;
 begin
   case fType of
-    WARE_MIN..WARE_MAX: Result := 351 + WareTypeToIndex[fType];
+    WARE_MIN..WARE_MAX: Result := 351 + WARE_TY_TO_ID[fType];
     wtAll:             Result := 657;
     wtWarfare:         Result := 658;
     wtFood:            Result := 659;
@@ -194,7 +194,7 @@ end;
 function TKMWare.GetTextID: Integer;
 begin
   case fType of
-    WARE_MIN..WARE_MAX: Result := TX_RESOURCES_NAMES__27 + WareTypeToIndex[fType];
+    WARE_MIN..WARE_MAX: Result := TX_RESOURCES_NAMES__27 + WARE_TY_TO_ID[fType];
     wtAll:             Result := TX_RESOURCES_ALL;
     wtWarfare:         Result := TX_RESOURCES_WARFARE;
     wtFood:            Result := TX_RESOURCES_FOOD;
@@ -307,34 +307,34 @@ const
 begin
   //Take advantage of the fact that we have both classes in same unit
   //and assign to private field directly
-  Wares[wtTrunk      ].fMarketPrice := (1/ProductionRate[wtTrunk]) + TREE_ADDN;
-  Wares[wtStone      ].fMarketPrice := NON_RENEW*(1/ProductionRate[wtStone]);
-  Wares[wtWood       ].fMarketPrice := (1/ProductionRate[wtWood]) + (1/2)*Wares[wtTrunk].MarketPrice;
-  Wares[wtIronOre    ].fMarketPrice := NON_RENEW*(1/ProductionRate[wtIronOre]) + ORE_ADDN;
-  Wares[wtGoldOre    ].fMarketPrice := NON_RENEW*(1/ProductionRate[wtGoldOre]) + ORE_ADDN;
-  Wares[wtCoal       ].fMarketPrice := NON_RENEW*(1/ProductionRate[wtCoal]);
-  Wares[wtSteel      ].fMarketPrice := (1/ProductionRate[wtSteel]) + Wares[wtIronOre].MarketPrice + Wares[wtCoal].MarketPrice;
-  Wares[wtGold       ].fMarketPrice := (1/ProductionRate[wtGold]) + (1/2)*(Wares[wtGoldOre].MarketPrice + Wares[wtCoal].MarketPrice);
-  Wares[wtWine       ].fMarketPrice := (1/ProductionRate[wtWine]) + WINE_ADDN;
-  Wares[wtCorn       ].fMarketPrice := (1/ProductionRate[wtCorn]);
-  Wares[wtFlour      ].fMarketPrice := (1/ProductionRate[wtFlour]) + Wares[wtCorn].MarketPrice;
-  Wares[wtBread      ].fMarketPrice := (1/ProductionRate[wtBread]) + (1/2)*Wares[wtFlour].MarketPrice;
-  Wares[wtPig        ].fMarketPrice := (1/ProductionRate[wtPig]) + (1/2)*4*Wares[wtCorn].MarketPrice; //1/2 because two products are made simultaneously
-  Wares[wtSkin       ].fMarketPrice := (1/ProductionRate[wtSkin]) + (1/2)*4*Wares[wtCorn].MarketPrice; //1/2 because two products are made simultaneously
-  Wares[wtLeather    ].fMarketPrice := (1/ProductionRate[wtLeather]) + (1/2)*Wares[wtSkin].MarketPrice;
-  Wares[wtSausages   ].fMarketPrice := (1/ProductionRate[wtSausages]) + (1/3)*Wares[wtPig].MarketPrice;
-  Wares[wtShield     ].fMarketPrice := (1/ProductionRate[wtShield]) + Wares[wtWood].MarketPrice;
-  Wares[wtMetalShield].fMarketPrice := (1/ProductionRate[wtMetalShield]) + Wares[wtSteel].MarketPrice + Wares[wtCoal].MarketPrice;
-  Wares[wtArmor      ].fMarketPrice := (1/ProductionRate[wtArmor]) + Wares[wtLeather].MarketPrice;
-  Wares[wtMetalArmor ].fMarketPrice := (1/ProductionRate[wtMetalArmor]) + Wares[wtSteel].MarketPrice + Wares[wtCoal].MarketPrice;
-  Wares[wtAxe        ].fMarketPrice := (1/ProductionRate[wtAxe]) + 2*Wares[wtWood].MarketPrice;
-  Wares[wtSword      ].fMarketPrice := (1/ProductionRate[wtSword]) + Wares[wtSteel].MarketPrice + Wares[wtCoal].MarketPrice;
-  Wares[wtPike       ].fMarketPrice := (1/ProductionRate[wtPike]) + 2*Wares[wtWood].MarketPrice;
-  Wares[wtHallebard  ].fMarketPrice := (1/ProductionRate[wtHallebard]) + Wares[wtSteel].MarketPrice + Wares[wtCoal].MarketPrice;
-  Wares[wtBow        ].fMarketPrice := (1/ProductionRate[wtBow]) + 2*Wares[wtWood].MarketPrice;
-  Wares[wtArbalet    ].fMarketPrice := (1/ProductionRate[wtArbalet]) + Wares[wtSteel].MarketPrice + Wares[wtCoal].MarketPrice;
-  Wares[wtHorse      ].fMarketPrice := (1/ProductionRate[wtHorse]) + 4*Wares[wtCorn].MarketPrice;
-  Wares[wtFish       ].fMarketPrice := NON_RENEW*(1/ProductionRate[wtFish]);
+  Wares[wtTrunk      ].fMarketPrice := (1/PRODUCTION_RATE[wtTrunk]) + TREE_ADDN;
+  Wares[wtStone      ].fMarketPrice := NON_RENEW*(1/PRODUCTION_RATE[wtStone]);
+  Wares[wtWood       ].fMarketPrice := (1/PRODUCTION_RATE[wtWood]) + (1/2)*Wares[wtTrunk].MarketPrice;
+  Wares[wtIronOre    ].fMarketPrice := NON_RENEW*(1/PRODUCTION_RATE[wtIronOre]) + ORE_ADDN;
+  Wares[wtGoldOre    ].fMarketPrice := NON_RENEW*(1/PRODUCTION_RATE[wtGoldOre]) + ORE_ADDN;
+  Wares[wtCoal       ].fMarketPrice := NON_RENEW*(1/PRODUCTION_RATE[wtCoal]);
+  Wares[wtSteel      ].fMarketPrice := (1/PRODUCTION_RATE[wtSteel]) + Wares[wtIronOre].MarketPrice + Wares[wtCoal].MarketPrice;
+  Wares[wtGold       ].fMarketPrice := (1/PRODUCTION_RATE[wtGold]) + (1/2)*(Wares[wtGoldOre].MarketPrice + Wares[wtCoal].MarketPrice);
+  Wares[wtWine       ].fMarketPrice := (1/PRODUCTION_RATE[wtWine]) + WINE_ADDN;
+  Wares[wtCorn       ].fMarketPrice := (1/PRODUCTION_RATE[wtCorn]);
+  Wares[wtFlour      ].fMarketPrice := (1/PRODUCTION_RATE[wtFlour]) + Wares[wtCorn].MarketPrice;
+  Wares[wtBread      ].fMarketPrice := (1/PRODUCTION_RATE[wtBread]) + (1/2)*Wares[wtFlour].MarketPrice;
+  Wares[wtPig        ].fMarketPrice := (1/PRODUCTION_RATE[wtPig]) + (1/2)*4*Wares[wtCorn].MarketPrice; //1/2 because two products are made simultaneously
+  Wares[wtSkin       ].fMarketPrice := (1/PRODUCTION_RATE[wtSkin]) + (1/2)*4*Wares[wtCorn].MarketPrice; //1/2 because two products are made simultaneously
+  Wares[wtLeather    ].fMarketPrice := (1/PRODUCTION_RATE[wtLeather]) + (1/2)*Wares[wtSkin].MarketPrice;
+  Wares[wtSausages   ].fMarketPrice := (1/PRODUCTION_RATE[wtSausages]) + (1/3)*Wares[wtPig].MarketPrice;
+  Wares[wtShield     ].fMarketPrice := (1/PRODUCTION_RATE[wtShield]) + Wares[wtWood].MarketPrice;
+  Wares[wtMetalShield].fMarketPrice := (1/PRODUCTION_RATE[wtMetalShield]) + Wares[wtSteel].MarketPrice + Wares[wtCoal].MarketPrice;
+  Wares[wtArmor      ].fMarketPrice := (1/PRODUCTION_RATE[wtArmor]) + Wares[wtLeather].MarketPrice;
+  Wares[wtMetalArmor ].fMarketPrice := (1/PRODUCTION_RATE[wtMetalArmor]) + Wares[wtSteel].MarketPrice + Wares[wtCoal].MarketPrice;
+  Wares[wtAxe        ].fMarketPrice := (1/PRODUCTION_RATE[wtAxe]) + 2*Wares[wtWood].MarketPrice;
+  Wares[wtSword      ].fMarketPrice := (1/PRODUCTION_RATE[wtSword]) + Wares[wtSteel].MarketPrice + Wares[wtCoal].MarketPrice;
+  Wares[wtPike       ].fMarketPrice := (1/PRODUCTION_RATE[wtPike]) + 2*Wares[wtWood].MarketPrice;
+  Wares[wtHallebard  ].fMarketPrice := (1/PRODUCTION_RATE[wtHallebard]) + Wares[wtSteel].MarketPrice + Wares[wtCoal].MarketPrice;
+  Wares[wtBow        ].fMarketPrice := (1/PRODUCTION_RATE[wtBow]) + 2*Wares[wtWood].MarketPrice;
+  Wares[wtArbalet    ].fMarketPrice := (1/PRODUCTION_RATE[wtArbalet]) + Wares[wtSteel].MarketPrice + Wares[wtCoal].MarketPrice;
+  Wares[wtHorse      ].fMarketPrice := (1/PRODUCTION_RATE[wtHorse]) + 4*Wares[wtCorn].MarketPrice;
+  Wares[wtFish       ].fMarketPrice := NON_RENEW*(1/PRODUCTION_RATE[wtFish]);
 end;
 
 

@@ -290,7 +290,7 @@ end;
 // Update ware production
 procedure TKMCityPredictor.UpdateWareProduction(aWT: TKMWareType);
 begin
-  fWareBalance[aWT].Production := fCityStats.Houses[ PRODUCTION_WARE2HOUSE[aWT] ] * ProductionRate[aWT];
+  fWareBalance[aWT].Production := fCityStats.Houses[ PRODUCTION_WARE2HOUSE[aWT] ] * PRODUCTION_RATE[aWT];
 end;
 
 
@@ -380,7 +380,7 @@ begin
     Exhaustion := 99;
     if (ActualConsumption - Production > 0) then
       Exhaustion := Min( Exhaustion, gHands[fOwner].Stats.GetWareBalance(aWT) / (ActualConsumption - Production) );
-    HouseReqCnt := Ceil(( Max(ActualConsumption, FinalConsumption) - Production) / Max(0.0001, ProductionRate[aWT]*1.0));
+    HouseReqCnt := Ceil(( Max(ActualConsumption, FinalConsumption) - Production) / Max(0.0001, PRODUCTION_RATE[aWT]*1.0));
     Fraction := HouseReqCnt / Max(1.0,((fCityStats.Houses[HT] + HouseReqCnt)*1.0));
   end;
   RequiredHouses[HT] := HouseReqCnt;
@@ -439,7 +439,7 @@ begin
   // 1 Storehouse
   RequiredHouses[htStore] := 1 - fCityStats.Houses[htStore];
   // 1 Barracks (build only when we have weapons and (from X tick or Y ticks before peace end -> avoid to build barracks in 1 minute when is still peace and we have predefined weapons in storehouse))
-  RequiredHouses[htBarracks] := Byte(aInitialization OR ((gHands[fOwner].Stats.GetWareBalance(wtWarfare) > 0) AND ((aTick > BARRACKS_PEACE_DELAY * 600) OR (aTick > (gGame.GameOptions.Peacetime - BARRACKS_BEFORE_PEACE_END) * 600)))) - fCityStats.Houses[htBarracks];
+  RequiredHouses[htBarracks] := Byte(aInitialization OR ((gHands[fOwner].Stats.GetWareBalance(wtWarfare) > 0) AND ((aTick > BARRACKS_PEACE_DELAY * 600) OR (aTick > (gGame.Options.Peacetime - BARRACKS_BEFORE_PEACE_END) * 600)))) - fCityStats.Houses[htBarracks];
   // Schools (at least 1 + WarriorsPerMinute criterium)
   with gHands[fOwner].AI.CityManagement do
     RequiredHouses[htSchool] := Max(
@@ -535,12 +535,12 @@ begin
                         );
 
   // Iron weapons
-  MaxIronWeapProd := MaxIronWeapProd * ProductionRate[wtIronOre] * 0.5; // Division into half because of iron weapon and armor
+  MaxIronWeapProd := MaxIronWeapProd * PRODUCTION_RATE[wtIronOre] * 0.5; // Division into half because of iron weapon and armor
   for WT in IRON_WARFARE do
     fWareBalance[WT].FinalConsumption := MaxIronWeapProd;
 
   // Wooden weapons
-  MaxWoodWeapProd := MaxWoodWeapProd * ProductionRate[wtAxe]; // Production of weapons / armors is ~identical
+  MaxWoodWeapProd := MaxWoodWeapProd * PRODUCTION_RATE[wtAxe]; // Production of weapons / armors is ~identical
   for WT in WOOD_WARFARE do
     fWareBalance[WT].FinalConsumption := MaxWoodWeapProd;
   // Exceptions
@@ -585,7 +585,7 @@ const
 begin
   // PeaceFactor: 0 = peace <= SCALE_MIN_PEACE_TIME; 1 = peace >= SCALE_MAX_PEACE_TIME
   fPeaceFactor := Max(0,
-                      (Min(SCALE_MAX_PEACE_TIME, gGame.GameOptions.Peacetime) - SCALE_MIN_PEACE_TIME)
+                      (Min(SCALE_MAX_PEACE_TIME, gGame.Options.Peacetime) - SCALE_MIN_PEACE_TIME)
                      ) * SCALE_PEACE_FACTOR;
 
   UpdateFinalProduction();
@@ -640,7 +640,7 @@ procedure TKMCityPredictor.FilterRequiredHouses(aTick: Cardinal);
               + fWareBalance[wtPig].Production * 4
               + fWareBalance[wtHorse].Production * 4
               >=
-              + fFarmBuildHistory.Quantity[0] * ProductionRate[wtCorn]
+              + fFarmBuildHistory.Quantity[0] * PRODUCTION_RATE[wtCorn]
               + gHands[fOwner].Stats.GetWareBalance(wtCorn) * 0.25;
   end;
   {
@@ -709,7 +709,7 @@ begin
 
   // Change house requirements due to nonlinear delay, toons of exceptions and unlock order
   // Dont build wineyard too early
-  if (gGameParams.GameTick < WINEYARD_DELAY) then
+  if (gGameParams.Tick < WINEYARD_DELAY) then
     RequiredHouses[htWineyard] := 0;
   // Consideration of corn delay - only remove all required houses, builder will find the right one if they are not removed
   if UpdateFarmHistory() AND not gHands[fOwner].Locks.HouseBlocked[htFarm] then
@@ -724,7 +724,7 @@ begin
   RequiredHouses[htTannery] := Min(RequiredHouses[htTannery], Ceil(Stats.GetHouseQty(htSwine)/2 - fCityStats.Houses[htTannery]));
   RequiredHouses[htArmorWorkshop] := Min(RequiredHouses[htArmorWorkshop], Stats.GetHouseTotal(htTannery)*2 - fCityStats.Houses[htArmorWorkshop]);
   // Consideration of wood production
-  RequiredHouses[htWeaponWorkshop] := RequiredHouses[htWeaponWorkshop] * Byte( (RequiredHouses[htTannery] > 0) OR (WEAP_WORKSHOP_DELAY < aTick) OR (aTick > (gGame.GameOptions.Peacetime-20) * 10 * 60) );
+  RequiredHouses[htWeaponWorkshop] := RequiredHouses[htWeaponWorkshop] * Byte( (RequiredHouses[htTannery] > 0) OR (WEAP_WORKSHOP_DELAY < aTick) OR (aTick > (gGame.Options.Peacetime-20) * 10 * 60) );
 
   // Coal mines are used by top priority houses (Metallurgists) and low priority houses (smithy)
   // To get reasonable production there should use something like following logic, good luck with understanding ;)

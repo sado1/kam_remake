@@ -83,7 +83,8 @@ type
 implementation
 uses
   Math, SysUtils,
-  KM_GameParams, KM_HandsCollection, KM_RenderAux, KM_RenderPool, KM_Hand;
+  KM_GameParams, KM_HandsCollection, KM_RenderAux, KM_RenderPool, KM_Hand,
+  KM_UnitGroupTypes;
 
 
 { TAIDefencePosition }
@@ -112,7 +113,7 @@ begin
 
   //Take new one
   if aGroup <> nil then
-    fCurrentGroup := aGroup.GetGroupPointer;
+    fCurrentGroup := aGroup.GetPointer;
 end;
 
 
@@ -144,10 +145,7 @@ begin
   SaveStream.Write(fGroupType, SizeOf(fGroupType));
   SaveStream.Write(fRadius);
   SaveStream.Write(fDefenceType, SizeOf(fDefenceType));
-  if fCurrentGroup <> nil then
-    SaveStream.Write(fCurrentGroup.UID) //Store ID
-  else
-    SaveStream.Write(Integer(0));
+  SaveStream.Write(fCurrentGroup.UID); //Store ID
 end;
 
 

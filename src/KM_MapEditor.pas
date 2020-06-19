@@ -105,7 +105,8 @@ uses
   KM_AIDefensePos, KM_ResTexts,
   KM_Units, KM_UnitGroup, KM_Houses, KM_HouseCollection,
   KM_GameParams, KM_GameCursor, KM_ResMapElements, KM_ResHouses, KM_Resource, KM_ResUnits,
-  KM_RenderAux, KM_Hand, KM_HandsCollection, KM_CommonUtils, KM_RenderDebug;
+  KM_RenderAux, KM_Hand, KM_HandsCollection, KM_CommonUtils, KM_RenderDebug,
+  KM_UnitGroupTypes;
 
 //defines default defence position radius for static AI 
 const
@@ -429,7 +430,7 @@ begin
     //Delete unit/house
     if Obj is TKMUnit then
     begin
-      gHands.RemAnyUnit(TKMUnit(Obj).CurrPosition);
+      gHands.RemAnyUnit(TKMUnit(Obj).Position);
       if not aEraseAll then Exit;
     end
     else
@@ -577,7 +578,7 @@ begin
       Result := True;
       fHistory.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_CHOWNER_SMTH],
                                               [gRes.Units[TKMUnit(aObject).UnitType].GUIName,
-                                               TKMUnit(aObject).CurrPosition.ToString]));
+                                               TKMUnit(aObject).Position.ToString]));
     end;
   end
   else
@@ -588,7 +589,7 @@ begin
       Result := True;
       fHistory.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_CHOWNER_SMTH],
                                               [gRes.Units[TKMUnitGroup(aObject).FlagBearer.UnitType].GUIName,
-                                               TKMUnitGroup(aObject).FlagBearer.CurrPosition.ToString]));
+                                               TKMUnitGroup(aObject).FlagBearer.Position.ToString]));
     end
 end;
 
@@ -694,7 +695,7 @@ begin
   begin
     Obj := gMySpectator.HitTestCursor(True);
     if Obj is TKMUnit then
-      gHands.RemAnyUnit(TKMUnit(Obj).CurrPosition);
+      gHands.RemAnyUnit(TKMUnit(Obj).Position);
   end else
   if gTerrain.CanPlaceUnit(P, TKMUnitType(gGameCursor.Tag1)) then
   begin
@@ -966,7 +967,7 @@ begin
   if gMySpectator.Selected is TKMUnitGroup then
   begin
     G := TKMUnitGroup(gMySpectator.Selected);
-    if G.MapEdOrder.Order <> ioNoOrder then
+    if G.MapEdOrder.Order <> gioNoOrder then
     begin
       gRenderAux.Quad(G.MapEdOrder.Pos.Loc.X, G.MapEdOrder.Pos.Loc.Y, $40FF00FF);
       gRenderAux.LineOnTerrain(G.Position.X - 0.5, G.Position.Y - 0.5, G.MapEdOrder.Pos.Loc.X - 0.5, G.MapEdOrder.Pos.Loc.Y - 0.5, $FF0000FF);
@@ -977,6 +978,8 @@ end;
 
 procedure TKMMapEditor.UpdateState;
 begin
+  if Self = nil then Exit;
+
   if melDeposits in fVisibleLayers then
     fDeposits.UpdateAreas([rdStone, rdCoal, rdIron, rdGold, rdFish]);
 

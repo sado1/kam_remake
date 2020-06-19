@@ -156,7 +156,8 @@ uses
   KM_HandsCollection, KM_ResTexts, KM_Game, KM_GameParams, KM_GameCursor,
   KM_Resource, KM_TerrainDeposits, KM_ResCursors, KM_ResKeys, KM_GameApp,
   KM_Hand, KM_AIDefensePos, KM_RenderUI, KM_ResFonts, KM_CommonClasses, KM_UnitWarrior,
-  KM_ResHouses, KM_Utils;
+  KM_ResHouses, KM_Utils,
+  KM_UnitGroupTypes;
 
 
 { TKMapEdInterface }
@@ -397,7 +398,7 @@ end;
 
 procedure TKMapEdInterface.HidePages;
 var
-  I,K: Integer;
+  I, K: Integer;
 begin
   //Hide all existing pages (2 levels)
   for I := 0 to Panel_Common.ChildCount - 1 do
@@ -511,7 +512,7 @@ begin
 
   UpdatePlayerSelectButtons;
 
-  Label_MissionName.Caption := gGameParams.GameName;
+  Label_MissionName.Caption := gGameParams.Name;
 end;
 
 
@@ -1083,7 +1084,7 @@ end;
 
 procedure TKMapEdInterface.UpdateCursor(X, Y: Integer; Shift: TShiftState);
 var
-  Marker: TKMMapEdMarker;
+  marker: TKMMapEdMarker;
 begin
   UpdateGameCursor(X, Y, Shift);
 
@@ -1101,8 +1102,8 @@ begin
   end else
   if gGameCursor.Mode = cmNone then
   begin
-    Marker := gGame.MapEditor.HitTest(gGameCursor.Cell.X, gGameCursor.Cell.Y);
-    if Marker.MarkerType <> mtNone then
+    marker := gGame.MapEditor.HitTest(gGameCursor.Cell.X, gGameCursor.Cell.Y);
+    if marker.MarkerType <> mtNone then
       gRes.Cursors.Cursor := kmcInfo
     else
     if gMySpectator.HitTestCursor <> nil then
@@ -1178,6 +1179,7 @@ end;
 
 //Start drag house move mode (with cursor mode cmHouse)
 procedure TKMapEdInterface.DragHouseModeStart(const aHouseNewPos, aHouseOldPos: TKMPoint);
+
   procedure SetCursorModeHouse(aHouseType: TKMHouseType);
   begin
     gGameCursor.Mode := cmHouses;
@@ -1185,7 +1187,9 @@ procedure TKMapEdInterface.DragHouseModeStart(const aHouseNewPos, aHouseOldPos: 
     //Update cursor DragOffset to render house markups at proper positions
     gGameCursor.DragOffset := fDragHouseOffset;
   end;
-var H: TKMHouse;
+
+var
+  H: TKMHouse;
 begin
   if fDragObject is TKMHouse then
   begin
@@ -1219,7 +1223,7 @@ end;
 procedure TKMapEdInterface.MoveObjectToCursorCell(aObjectToMove: TObject);
 var
   H: TKMHouse;
-  HouseNewPos, HouseOldPos: TKMPoint;
+  houseNewPos, houseOldPos: TKMPoint;
 begin
   if aObjectToMove = nil then Exit;
 
@@ -1228,15 +1232,15 @@ begin
   begin
     H := TKMHouse(aObjectToMove);
 
-    HouseOldPos := H.Position;
+    houseOldPos := H.Position;
 
-    HouseNewPos := KMPointAdd(gGameCursor.Cell, fDragHouseOffset);
+    houseNewPos := KMPointAdd(gGameCursor.Cell, fDragHouseOffset);
 
     if not fDragingObject then
-      H.SetPosition(HouseNewPos)  //handles Right click, when house is selected
+      H.SetPosition(houseNewPos)  //handles Right click, when house is selected
     else
       if not IsDragHouseModeOn then
-        DragHouseModeStart(HouseNewPos, HouseOldPos);
+        DragHouseModeStart(houseNewPos, houseOldPos);
   end;
 
   //Unit move
@@ -1245,13 +1249,13 @@ begin
     if aObjectToMove is TKMUnitWarrior then
       aObjectToMove := gHands.GetGroupByMember(TKMUnitWarrior(aObjectToMove))
     else
-      TKMUnit(aObjectToMove).SetPosition(gGameCursor.Cell);
+      TKMUnit(aObjectToMove).SetUnitPosition(gGameCursor.Cell);
   end;
 
   //Unit group move
   if aObjectToMove is TKMUnitGroup then
     //Just move group to specified location
-    TKMUnitGroup(aObjectToMove).Position := gGameCursor.Cell;
+    TKMUnitGroup(aObjectToMove).SetGroupPosition(gGameCursor.Cell);
 end;
 
 
@@ -1378,14 +1382,14 @@ begin
                     //If there's any enemy unit or house on specified tile - set attack target
                     if ((U <> nil) and (gHands[U.Owner].Alliances[G.Owner] = atEnemy))
                     or ((H <> nil) and (gHands[H.Owner].Alliances[G.Owner] = atEnemy)) then
-                      G.MapEdOrder.Order := ioAttackPosition
+                      G.MapEdOrder.Order := gioAttackPosition
                     //Else order group walk to specified location
                     else
                     if G.CanWalkTo(KMPoint(gGameCursor.Cell.X, gGameCursor.Cell.Y), 0) then
-                      G.MapEdOrder.Order := ioSendGroup
+                      G.MapEdOrder.Order := gioSendGroup
                     else
                     //Can't take any orders: f.e. can't walk to unwalkable tile (water, mountain) or attack allied houses
-                      G.MapEdOrder.Order := ioNoOrder;
+                      G.MapEdOrder.Order := gioNoOrder;
                     //Save target coordinates
                     G.MapEdOrder.Pos.Loc.X := gGameCursor.Cell.X;
                     G.MapEdOrder.Pos.Loc.Y := gGameCursor.Cell.Y;
@@ -1471,8 +1475,8 @@ procedure TKMapEdInterface.Paint;
 var
   I: Integer;
   R: TKMRawDeposit;
-  LocF: TKMPointF;
-  ScreenLoc: TKMPoint;
+  locF: TKMPointF;
+  screenLoc: TKMPoint;
 begin
   if melDeposits in gGame.MapEditor.VisibleLayers then
   begin
@@ -1481,12 +1485,12 @@ begin
       //Ignore water areas with 0 fish in them
       if gGame.MapEditor.Deposits.Amount[R, I] > 0 then
       begin
-        LocF := gTerrain.FlatToHeight(gGame.MapEditor.Deposits.Location[R, I]);
-        ScreenLoc := fViewport.MapToScreen(LocF);
+        locF := gTerrain.FlatToHeight(gGame.MapEditor.Deposits.Location[R, I]);
+        screenLoc := fViewport.MapToScreen(locF);
 
         //At extreme zoom coords may become out of range of SmallInt used in controls painting
-        if KMInRect(ScreenLoc, fViewport.ViewRect) then
-          TKMRenderUI.WriteTextInShape(IntToStr(gGame.MapEditor.Deposits.Amount[R, I]), ScreenLoc.X, ScreenLoc.Y, DEPOSIT_COLORS[R], $FFFFFFFF);
+        if KMInRect(screenLoc, fViewport.ViewRect) then
+          TKMRenderUI.WriteTextInShape(IntToStr(gGame.MapEditor.Deposits.Amount[R, I]), screenLoc.X, screenLoc.Y, DEPOSIT_COLORS[R], $FFFFFFFF);
       end;
   end;
 

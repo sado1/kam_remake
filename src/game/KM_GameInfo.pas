@@ -2,7 +2,8 @@ unit KM_GameInfo;
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_Hand, KM_CommonClasses, KM_MapTypes, KM_Defaults;
+  KM_CommonClasses, KM_MapTypes, KM_Defaults,
+  KM_HandTypes;
 
 
 type
@@ -118,13 +119,13 @@ procedure TKMGameInfo.Load(LoadStream: TKMemoryStream);
   end;
 
 var
-  s: AnsiString;
+  ansiStr: AnsiString;
 begin
   ResetParseError;
-  LoadStream.ReadA(s);
-  if s <> 'KaM_GameInfo' then
+  LoadStream.ReadA(ansiStr);
+  if ansiStr <> 'KaM_GameInfo' then
   begin
-    fParseError.ErrorString := Format(gResTexts[TX_SAVE_UNSUPPORTED_FORMAT], [Copy(s, 1, 8)]);
+    fParseError.ErrorString := Format(gResTexts[TX_SAVE_UNSUPPORTED_FORMAT], [Copy(ansiStr, 1, 8)]);
     fParseError.ErrorType := gipetUnsupportedFormat;
     Exit;
   end;

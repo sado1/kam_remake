@@ -5,7 +5,8 @@ uses
   Classes, Math,
   KM_Hand, KM_HandSpectator, KM_HouseCollection,
   KM_Houses, KM_ResHouses, KM_Units, KM_UnitGroup, KM_UnitWarrior,
-  KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Points;
+  KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Points,
+  KM_HandEntity;
 
 
 //Hands are identified by their starting location
@@ -57,7 +58,7 @@ type
     function GetHouseByUID(aUID: Integer): TKMHouse;
     function GetUnitByUID(aUID: Integer): TKMUnit;
     function GetGroupByUID(aUID: Integer): TKMUnitGroup;
-    function GetObjectByUID(aUID: Integer): TObject;
+    function GetObjectByUID(aUID: Integer): TKMHandEntity;
     function GetNextHouseWSameType(aHouse: TKMHouse): TKMHouse;
     function GetNextUnitWSameType(aUnit: TKMUnit): TKMUnit;
     function GetNextGroupWSameType(aUnitGroup: TKMUnitGroup): TKMUnitGroup;
@@ -111,7 +112,8 @@ uses
   KM_Game, KM_GameParams, KM_Terrain, KM_AIFields,
   KM_UnitsCollection, KM_MapEditorHistory,
   KM_Resource, KM_ResUnits, KM_ResTexts,
-  KM_Log, KM_CommonUtils, KM_DevPerfLog, KM_DevPerfLogTypes;
+  KM_Log, KM_CommonUtils, KM_DevPerfLog, KM_DevPerfLogTypes,
+  KM_HandTypes;
 
 
 { TKMHandsCollection }
@@ -327,53 +329,53 @@ end;
 
 function TKMHandsCollection.GetGroupsInRadius(const aLoc: TKMPoint; aSqrRadius: Single; aIndex: TKMHandID; aAlliance: TKMAllianceType; aTypes: TKMGroupTypeSet = [Low(TKMGroupType)..High(TKMGroupType)]): TKMUnitGroupArray;
 var
-  I,K,Idx: Integer;
+  I, K, idx: Integer;
   UGA: TKMUnitGroupArray;
 begin
-  Idx := 0;
+  idx := 0;
   for I := 0 to fCount - 1 do
   if (I <> aIndex) and (fHandsList[aIndex].Alliances[I] = aAlliance) then
   begin
     UGA := fHandsList[I].UnitGroups.GetGroupsInRadius(aLoc, aSqrRadius, aTypes);
-    if (Idx + Length(UGA) > Length(Result)) then
-      SetLength(Result, Idx + Length(UGA) + 12);
+    if (idx + Length(UGA) > Length(Result)) then
+      SetLength(Result, idx + Length(UGA) + 12);
     for K := Low(UGA) to High(UGA) do
     begin
-      Result[Idx] := UGA[K];
-      Idx := Idx + 1;
+      Result[idx] := UGA[K];
+      idx := idx + 1;
     end;
   end;
 
-  SetLength(Result, Idx);
+  SetLength(Result, idx);
 end;
 
 
 // Aproximative function to get closest units in specific radius
 function TKMHandsCollection.GetGroupsMemberInRadius(const aLoc: TKMPoint; aSqrRadius: Single; aIndex: TKMHandID; aAlliance: TKMAllianceType; var aUGA: TKMUnitGroupArray; aTypes: TKMGroupTypeSet = [Low(TKMGroupType)..High(TKMGroupType)]): TKMUnitArray;
 var
-  I,K,Idx: Integer;
+  I, K, idx: Integer;
   UA: TKMUnitArray;
   UGA: TKMUnitGroupArray;
 begin
-  Idx := 0;
+  idx := 0;
   for I := 0 to fCount - 1 do
   if (I <> aIndex) and (fHandsList[aIndex].Alliances[I] = aAlliance) then
   begin
     UA := fHandsList[I].UnitGroups.GetGroupsMemberInRadius(aLoc, aSqrRadius, UGA, aTypes);
-    if (Idx + Length(UA) > Length(Result)) then
+    if (idx + Length(UA) > Length(Result)) then
     begin
-      SetLength(Result, Idx + Length(UA) + 12);
-      SetLength(aUGA, Idx + Length(UA) + 12);
+      SetLength(Result, idx + Length(UA) + 12);
+      SetLength(aUGA, idx + Length(UA) + 12);
     end;
     for K := Low(UA) to High(UA) do
     begin
-      Result[Idx] := UA[K];
-      aUGA[Idx] := UGA[K];
-      Idx := Idx + 1;
+      Result[idx] := UA[K];
+      aUGA[idx] := UGA[K];
+      idx := idx + 1;
     end;
   end;
 
-  SetLength(Result, Idx);
+  SetLength(Result, idx);
 end;
 
 
@@ -418,25 +420,25 @@ end;
 
 function TKMHandsCollection.GetHousesInRadius(const aLoc: TKMPoint; aSqrRadius: Single; aIndex: TKMHandID; aAlliance: TKMAllianceType; aTypes: THouseTypeSet = [HOUSE_MIN..HOUSE_MAX]; aOnlyCompleted: Boolean = True): TKMHouseArray;
 var
-  I,K,Idx: Integer;
+  I, K, idx: Integer;
   HA: TKMHouseArray;
 begin
   SetLength(Result, 12);
 
-  Idx := 0;
+  idx := 0;
   for I := 0 to fCount - 1 do
   if (I <> aIndex) and (Hands[aIndex].Alliances[I] = aAlliance) then
   begin
     HA := fHandsList[I].Houses.FindHousesInRadius(aLoc, aSqrRadius, aTypes, aOnlyCompleted);
-    if (Idx + Length(HA) > Length(Result)) then
-      SetLength(Result, Idx + Length(HA) + 12);
+    if (idx + Length(HA) > Length(Result)) then
+      SetLength(Result, idx + Length(HA) + 12);
     for K := Low(HA) to High(HA) do
     begin
-      Result[Idx] := HA[K];
-      Idx := Idx + 1;
+      Result[idx] := HA[K];
+      idx := idx + 1;
     end;
   end;
-  SetLength(Result, Idx);
+  SetLength(Result, idx);
 end;
 
 
@@ -468,7 +470,7 @@ var
   I: Integer;
 begin
   Result := nil;
-  if aUID = 0 then Exit;
+  if aUID = NO_ENTITY_UID then Exit;
 
   for I := 0 to fCount - 1 do
   begin
@@ -483,7 +485,7 @@ var
   I: Integer;
 begin
   Result := nil;
-  if aUID = 0 then Exit;
+  if aUID = NO_ENTITY_UID then Exit;
 
   for I := 0 to fCount - 1 do
   begin
@@ -503,7 +505,7 @@ var
   I: Integer;
 begin
   Result := nil;
-  if aUID = 0 then Exit;
+  if aUID = NO_ENTITY_UID then Exit;
 
   for I := 0 to fCount - 1 do
   begin
@@ -513,7 +515,7 @@ begin
 end;
 
 
-function TKMHandsCollection.GetObjectByUID(aUID: Integer): TObject;
+function TKMHandsCollection.GetObjectByUID(aUID: Integer): TKMHandEntity;
 begin
   Result := GetHouseByUID(aUID);
   if Result = nil then
@@ -687,17 +689,17 @@ function TKMHandsCollection.FindPlaceForUnit(aX, aY: Integer; aUnit: TKMUnit; aU
 var
   I: Integer;
   P: TKMPoint;
-  Pass: TKMTerrainPassability; //temp for required passability
+  pass: TKMTerrainPassability; //temp for required passability
 begin
   Result := False; // if function fails to find valid position
-  Pass := gRes.Units[aUnitType].AllowedPassability;
+  pass := gRes.Units[aUnitType].AllowedPassability;
 
   for I := 0 to MAX_UNITS_AROUND_HOUSE do
   begin
     P := GetPositionFromIndex(KMPoint(aX, aY), I);
     if gTerrain.TileInMapCoords(P.X, P.Y) then
     begin
-      if gTerrain.CheckPassability(P, Pass)
+      if gTerrain.CheckPassability(P, pass)
         and CanPlaceUnitOnTerrain(P)
         //If RequiredWalkConnect is invalid (0) it means we don't care
         and ((aRequiredWalkConnect = 0) or (gTerrain.GetWalkConnectID(P) = aRequiredWalkConnect)) then
@@ -729,12 +731,12 @@ end;
 //other example - 1-2-3 ally/4-5-6 ally/1-7 ally - we have one standart team here: 4-5-6. 1 is allied to 7, but 2 is not, so non of them can be considered as a 'team'
 function TKMHandsCollection.GetTeamsOfAllies: TKMByteSetArray;
 var
-  Allies: TKMByteSetArray;
   I, J, K: Byte;
-  HandsChecked: set of Byte;
-  CollisionFound: Boolean;
+  allies: TKMByteSetArray;
+  handsChecked: set of Byte;
+  collisionFound: Boolean;
 begin
-  SetLength(Allies, Count);
+  SetLength(allies, Count);
   SetLength(Result, Count);
 
   //Gather aliance info into 'Allies' variable
@@ -743,42 +745,42 @@ begin
     if not fHandsList[I].Enabled then
       Continue;
 
-    Allies[I] := [I]; // every hand is Ally to himself by default
+    allies[I] := [I]; // every hand is Ally to himself by default
     for J := 0 to Count - 1 do
       if (I <> J) and (CheckAlliance(I,J) = atAlly) then
-        Include(Allies[I], J);
+        Include(allies[I], J);
   end;
 
   K := 0;
-  HandsChecked := [];
+  handsChecked := [];
   for I := 0 to Count - 1 do
   begin
     if not fHandsList[I].Enabled then
       Continue;
-    CollisionFound := False;
-    if (Allies[I] = [I])          //hand has no allies, so we can ignore it
-      or (I in HandsChecked) then //hand was checked in other iteration before, ignore it
+    collisionFound := False;
+    if (allies[I] = [I])          //hand has no allies, so we can ignore it
+      or (I in handsChecked) then //hand was checked in other iteration before, ignore it
       Continue;
     //Loop throught hand allies and check if all of them has same ally group
-    for J in Allies[I] do
+    for J in allies[I] do
     begin
       if I = J then
         Continue;
       //Check if I-hand and all its allias has absolutely same allies
       //If not - that means all I-Hand allies and J-hand allies can not be in any of teams
       //(f.e. 1-hand allied with 2 and 3, when 2 allied with 1,3 and 4, means all 1234 can not be in any of team (or what we called by standart 'team'))
-      if Allies[I] <> Allies[J] then
+      if allies[I] <> allies[J] then
       begin
-        HandsChecked := HandsChecked + Allies[I];
-        HandsChecked := HandsChecked + Allies[J];
-        CollisionFound := True;
+        handsChecked := handsChecked + allies[I];
+        handsChecked := handsChecked + allies[J];
+        collisionFound := True;
       end;
     end;
     //If no team collisions were found, means that is correct team and we have to save it.
-    if not CollisionFound then
+    if not collisionFound then
     begin
-      Result[K] := Allies[I];
-      HandsChecked := HandsChecked + Allies[I];
+      Result[K] := allies[I];
+      handsChecked := handsChecked + allies[I];
       Inc(K);
     end;
   end;
@@ -789,30 +791,30 @@ end;
 //Return Teams and NonTeam members as team with 1 hand only
 function TKMHandsCollection.GetTeams: TKMByteSetArray;
 var
-  I,K: Integer;
-  Teams: TKMByteSetArray;
-  NonTeamHands: set of Byte;
+  I, K: Integer;
+  teams: TKMByteSetArray;
+  nonTeamHands: set of Byte;
 begin
   SetLength(Result, Count);
   K := 0;
 
-  Teams := gHands.GetTeamsOfAllies;
-  NonTeamHands := [0..gHands.Count - 1];
+  teams := gHands.GetTeamsOfAllies;
+  nonTeamHands := [0..gHands.Count - 1];
 
   //Get non team hands
-  for I := Low(Teams) to High(Teams) do
-    NonTeamHands := NonTeamHands - Teams[I];
+  for I := Low(teams) to High(teams) do
+    nonTeamHands := nonTeamHands - teams[I];
 
-  for I in NonTeamHands do
+  for I in nonTeamHands do
     if fHandsList[I].Enabled then
     begin
       Include(Result[K], I);
       Inc(K);
     end;
 
-  for I := Low(Teams) to High(Teams) do
+  for I := Low(teams) to High(teams) do
   begin
-    Result[K] := Teams[I];
+    Result[K] := teams[I];
     Inc(K);
   end;
 
@@ -836,7 +838,7 @@ end;
 
 procedure TKMHandsCollection.SetHandsTeamColors;
 var
-  I,J: Integer;
+  I, J: Integer;
   TeamColorInit: Boolean;
   TeamColor: Cardinal;
 begin
@@ -868,7 +870,7 @@ end;
 procedure TKMHandsCollection.CleanUpUnitPointer(var aUnit: TKMUnit);
 begin
   if (aUnit <> nil) and (gGame <> nil) and not gGame.IsExiting then
-    aUnit.ReleaseUnitPointer;
+    aUnit.ReleasePointer;
   aUnit := nil;
 end;
 
@@ -876,7 +878,7 @@ end;
 procedure TKMHandsCollection.CleanUpGroupPointer(var aGroup: TKMUnitGroup);
 begin
   if (aGroup <> nil) and (gGame <> nil) and not gGame.IsExiting then
-    aGroup.ReleaseGroupPointer;
+    aGroup.ReleasePointer;
   aGroup := nil;
 end;
 
@@ -884,7 +886,7 @@ end;
 procedure TKMHandsCollection.CleanUpHousePointer(var aHouse: TKMHouse);
 begin
   if (aHouse <> nil) and (gGame <> nil) and not gGame.IsExiting then
-    aHouse.ReleaseHousePointer;
+    aHouse.ReleasePointer;
   aHouse := nil;
 end;
 
@@ -912,22 +914,22 @@ end;
 function TKMHandsCollection.RemAnyUnit(const Position: TKMPoint): Boolean;
 var
   I: Integer;
-  UnitType: TKMUnitType;
+  UT: TKMUnitType;
 begin
   Assert(gGameParams.IsMapEditor, 'RemAnyUnit is not allowed outside of MapEditor');
 
-  UnitType := utNone;
+  UT := utNone;
   Result := False;
   for I := 0 to fCount - 1 do
     Result := fHandsList[I].RemGroup(Position); //We just remove group from list there, no actual unit was removed yet
   for I := 0 to fCount - 1 do
-    Result := fHandsList[I].RemUnit(Position, UnitType) or Result; //Should remove Unit as well after remove group
+    Result := fHandsList[I].RemUnit(Position, UT) or Result; //Should remove Unit as well after remove group
 
-  Result := fPlayerAnimals.RemUnit(Position, UnitType) or Result;
+  Result := fPlayerAnimals.RemUnit(Position, UT) or Result;
 
   if Result then
     gGame.MapEditor.History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH],
-                                                           [gRes.Units[UnitType].GUIName, Position.ToString]));
+                                                           [gRes.Units[UT].GUIName, Position.ToString]));
 end;
 
 
@@ -1096,10 +1098,10 @@ end;
 
 procedure TKMHandsCollection.ExportGameStatsToCSV(const aPath: String; const aHeader: String = '');
 var
-  I,J,K: Integer;
+  I, J, K: Integer;
   SL: TStringList;
-  Teams: TKMByteSetArray;
-  TStr: UnicodeString;
+  teams: TKMByteSetArray;
+  tStr: UnicodeString;
   MS: TKMemoryStreamBinary;
   CRC: Cardinal;
 begin
@@ -1113,29 +1115,29 @@ begin
     SL.Append('Game time:;' + TimeToString(gGame.MissionTime));
 
     //Teams info
-    Teams := GetTeams;
+    teams := GetTeams;
 
-    TStr := 'Teams: ';
-    for J := Low(Teams) to High(Teams) do
+    tStr := 'Teams: ';
+    for J := Low(teams) to High(teams) do
     begin
-      if J <> Low(Teams) then
-        TStr := TStr + ' vs ';
+      if J <> Low(teams) then
+        tStr := tStr + ' vs ';
 
-      TStr := TStr + '[ ';
+      tStr := tStr + '[ ';
       K := 0;
-      for I in Teams[J] do
+      for I in teams[J] do
       begin
         if K > 0 then
-          TStr := TStr + ' + ';
+          tStr := tStr + ' + ';
 
-        TStr := TStr + fHandsList[I].CalcOwnerName;
+        tStr := tStr + fHandsList[I].CalcOwnerName;
 
         Inc(K);
       end;
-      TStr := TStr + ' ]';
+      tStr := tStr + ' ]';
     end;
 
-    SL.Append(TStr);
+    SL.Append(tStr);
     SL.Append('');
 
     //Game stats
@@ -1204,7 +1206,7 @@ function TKMHandsCollection.ObjToString: String;
 var
   I: Integer;
 begin
-  Result := 'Hands: ';
+  Result := '|Hands: ';
   for I := 0 to fCount - 1 do
     Result := Format('%s|%d: %s', [Result, I, fHandsList[I].ObjToString]);
 

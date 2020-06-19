@@ -235,7 +235,8 @@ type
     function DecOreDeposit(const Loc: TKMPoint; rt: TKMWareType): Boolean;
 
     function GetPassablePointWithinSegment(OriginPoint, TargetPoint: TKMPoint; aPass: TKMTerrainPassability; MaxDistance: Integer = -1): TKMPoint;
-    function CheckPassability(const Loc: TKMPoint; aPass: TKMTerrainPassability): Boolean;
+    function CheckPassability(X, Y: Integer; aPass: TKMTerrainPassability): Boolean; overload;
+    function CheckPassability(const Loc: TKMPoint; aPass: TKMTerrainPassability): Boolean; overload;
     function HasUnit(const Loc: TKMPoint): Boolean;
     function HasVertexUnit(const Loc: TKMPoint): Boolean;
     function GetRoadConnectID(const Loc: TKMPoint): Byte;
@@ -263,7 +264,7 @@ type
     function CoordsWithinMap(X, Y: Single; aInset: Byte = 0): Boolean;
     function PointFInMapCoords(const aPointF: TKMPointF; aInset: Byte = 0): Boolean;
     function TileInMapCoords(X, Y: Integer; Inset: Byte = 0): Boolean; overload;
-    function TileInMapCoords(aCell: TKMPoint; Inset: Byte = 0): Boolean; overload;
+    function TileInMapCoords(const aCell: TKMPoint; Inset: Byte = 0): Boolean; overload;
     function TileInMapCoords(X,Y: Integer; InsetRect: TKMRect): Boolean; overload;
     function VerticeInMapCoords(X, Y: Integer; Inset: Byte = 0): Boolean; overload;
     function VerticeInMapCoords(const aCell: TKMPoint; Inset: Byte = 0): Boolean; overload;
@@ -276,7 +277,7 @@ type
     function TileGoodForIronMine(X, Y: Word): Boolean;
     function TileGoodForGoldmine(X, Y: Word): Boolean;
     function TileGoodForField(X, Y: Word): Boolean;
-    function TileGoodForTree(X, Y: Word): Boolean;
+    function TileGoodToPlantTree(X, Y: Word): Boolean;
     function TileIsWater(const Loc: TKMPoint): Boolean; overload;
     function TileIsWater(X, Y: Word): Boolean; overload;
     function TileIsStone(X, Y: Word): Byte;
@@ -288,6 +289,7 @@ type
     function TileIsWineField(const Loc: TKMPoint): Boolean;
     function TileIsWalkableRoad(const Loc: TKMPoint): Boolean;
     function TileIsLocked(const aLoc: TKMPoint): Boolean;
+    function TileIsGoodToCutTree(const aLoc: TKMPoint): Boolean;
 
     function TileHasStone(X, Y: Word): Boolean;
     function TileHasCoal(X, Y: Word): Boolean;
@@ -963,6 +965,22 @@ function TKMTerrain.ScriptTrySetTilesArray(var aTiles: array of TKMTerrainTileBr
     aResult := False;
   end;
 
+  procedure UpdateHeight(aTileBrief: TKMTerrainTileBrief; aHeightRect: TKMRect; aHasErrorOnTile: Boolean; aErrorTypesOnTile: TKMTileChangeTypeSet);
+  begin
+    // Update height if needed
+    if aTileBrief.UpdateHeight then
+    begin
+      if InRange(aTileBrief.Height, 0, 100) then
+      begin
+        if TrySetTileHeight(aTileBrief.X, aTileBrief.Y, aTileBrief.Height, False) then
+          UpdateRect(aHeightRect, aTileBrief.X, aTileBrief.Y)
+        else
+          SetErrorNSetResult(tctHeight, aHasErrorOnTile, aErrorTypesOnTile, Result);
+      end else
+        SetErrorNSetResult(tctHeight, aHasErrorOnTile, aErrorTypesOnTile, Result);
+    end;
+  end;
+
 var 
   I, J, terr, rot: Integer;
   T: TKMTerrainTileBrief;
@@ -1029,17 +1047,7 @@ begin
       end;
 
       // Update height if needed
-      if T.UpdateHeight then
-      begin
-        if InRange(T.Height, 0, 100) then
-        begin
-          if TrySetTileHeight(T.X, T.Y, T.Height, False) then
-            UpdateRect(heightRect, T.X, T.Y)
-          else
-            SetErrorNSetResult(tctHeight, hasErrorOnTile, errorTypesOnTile, Result);
-        end else
-          SetErrorNSetResult(tctHeight, hasErrorOnTile, errorTypesOnTile, Result);
-      end;
+      UpdateHeight(T, heightRect, hasErrorOnTile, errorTypesOnTile);
 
       //Update object if needed
       if T.UpdateObject then
@@ -1051,7 +1059,12 @@ begin
         end else
           SetErrorNSetResult(tctObject, hasErrorOnTile, errorTypesOnTile, Result);
       end;
-    end else
+    end
+    else
+    if VerticeInMapCoords(T.X, T.Y) then
+      // Update height if needed
+      UpdateHeight(T, heightRect, hasErrorOnTile, errorTypesOnTile)
+    else
     begin
       hasErrorOnTile := True;
       //When tile is out of map coordinates we treat it as all operations failure
@@ -1089,7 +1102,7 @@ begin
   else
   begin
     // Actualize terrain for map editor (brushes have array which helps them make smooth transitions)
-    if (gGameParams.GameMode = gmMapEd) then
+    if (gGameParams.Mode = gmMapEd) then
       for I := 1 to fMapY do
         for J := 1 to fMapX do
           gGame.TerrainPainter.RMG2MapEditor(J,I, Land[I, J].BaseLayer.Terrain);
@@ -1151,7 +1164,7 @@ begin
 end;
 
 
-function TKMTerrain.TileInMapCoords(aCell: TKMPoint; Inset: Byte = 0): Boolean;
+function TKMTerrain.TileInMapCoords(const aCell: TKMPoint; Inset: Byte = 0): Boolean;
 begin
   Result := TileInMapCoords(aCell.X, aCell.Y, Inset);
 end;
@@ -1279,7 +1292,7 @@ begin
 end;
 
 
-function TKMTerrain.TileGoodForTree(X,Y: Word): Boolean;
+function TKMTerrain.TileGoodToPlantTree(X,Y: Word): Boolean;
   function IsObjectsNearby: Boolean;
   var
     I,K: Integer;
@@ -1323,6 +1336,16 @@ function TKMTerrain.TileGoodForTree(X,Y: Word): Boolean;
       end;
   end;
 
+  // Do not allow to plant tree on vertex with NW-SE only passable tiles around
+  // It could trap woodcutter if he came from top-left tile or close some narrow path between areas
+  function Is_NW_SE_OnlyVertex: Boolean;
+  begin
+    Result :=       CheckPassability(X    , Y    , tpWalk)  // O | X   // O - walkable (OK)
+            and     CheckPassability(X - 1, Y - 1, tpWalk)  // --T--   // X - not walkable
+            and not CheckPassability(X    , Y - 1, tpWalk)  // X | W   // T - Tree to plant
+            and not CheckPassability(X - 1, Y    , tpWalk); //         // W - woodcutter
+  end;
+
 begin
   //todo: Optimize above functions. Recheck UpdatePass and WC if the check Rects can be made smaller
 
@@ -1332,6 +1355,7 @@ begin
     and (X > 1) and (Y > 1) //Not top/left of map, but bottom/right is ok
     and not (Land[Y,X].TileOverlay in ROAD_LIKE_OVERLAYS)
     and not HousesNearVertex
+    and not Is_NW_SE_OnlyVertex
     //Woodcutter will dig out other object in favour of his tree
     and ((Land[Y,X].Obj = OBJ_NONE) or (gMapElements[Land[Y,X].Obj].CanBeRemoved))
     and CheckHeightPass(KMPoint(X,Y), hpWalking);
@@ -1702,6 +1726,19 @@ begin
 end;
 
 
+function TKMTerrain.TileIsGoodToCutTree(const aLoc: TKMPoint): Boolean;
+var
+  U: TKMUnit;
+begin
+  U := Land[aLoc.Y,aLoc.X].IsUnit;
+
+  Result := (U = nil)
+            or U.IsAnimal
+            or (U.Action = nil)
+            or not U.Action.Locked;
+end;
+
+
 function TKMTerrain.TileIsLocked(const aLoc: TKMPoint): Boolean;
 var
   U: TKMUnit;
@@ -1925,7 +1962,7 @@ begin
 
     //Don't check tiles farther than closest Warrior
     if aClosest and (W[0] <> nil)
-    and (KMLengthSqr(aLoc, KMPoint(K,I)) >= KMLengthSqr(aLoc, W[0].CurrPosition)) then
+    and (KMLengthSqr(aLoc, KMPoint(K,I)) >= KMLengthSqr(aLoc, W[0].Position)) then
       Continue; //Since we check left-to-right we can't exit just yet (there are possible better enemies below)
 
     //In KaM archers can shoot further than sight radius (shoot further into explored areas)
@@ -1937,7 +1974,7 @@ begin
     //There was a crash caused by VertexUsageCompatible checking (k,i) instead of U.CurrPosition.
     //In that case aLoc = (37,54) and k,i = (39;52) but U.CurrPosition = (38;53).
     //This shows why you can't use (k,i) in checks because it is distance >2 from aLoc! (in melee fight)
-    P := U.CurrPosition;
+    P := U.Position;
 
     requiredMaxRad := MaxRad;
     if (MaxRad = 1) and KMStepIsDiag(aLoc, P) then
@@ -2734,16 +2771,16 @@ begin
       and ObjectIsChopableTree(T, caAgeFull)
       and (Land[T.Y,T.X].TreeAge >= TREE_AGE_FULL)
       //Woodcutter could be standing on any tile surrounding this tree
-      and not TileIsLocked(T)
-      and ((T.X = 1) or not TileIsLocked(KMPoint(T.X-1, T.Y))) //if K=1, K-1 will be off map
-      and ((T.Y = 1) or not TileIsLocked(KMPoint(T.X, T.Y-1)))
-      and ((T.X = 1) or (T.Y = 1) or not TileIsLocked(KMPoint(T.X-1, T.Y-1)))
+      and TileIsGoodToCutTree(T)
+      and ((T.X = 1) or TileIsGoodToCutTree(KMPoint(T.X - 1, T.Y))) //if K=1, K-1 will be off map
+      and ((T.Y = 1) or TileIsGoodToCutTree(KMPoint(T.X, T.Y - 1)))
+      and ((T.X = 1) or (T.Y = 1) or TileIsGoodToCutTree(KMPoint(T.X - 1, T.Y - 1)))
       and Route_CanBeMadeToVertex(aLoc, T, tpWalk) then
         if ChooseCuttingDirection(aLoc, T, cuttingPoint) then
           Trees.Add(cuttingPoint); //Tree
 
       if (aPlantAct in [taPlant, taAny])
-      and TileGoodForTree(T.X, T.Y)
+      and TileGoodToPlantTree(T.X, T.Y)
       and Route_CanBeMade(aLoc, T, tpWalk, 0)
       and not TileIsLocked(T) then //Taken by another woodcutter
         if ObjectIsChopableTree(T, caAgeStump) then
@@ -3762,6 +3799,12 @@ begin
 end;
 
 
+function TKMTerrain.CheckPassability(X, Y: Integer; aPass: TKMTerrainPassability): Boolean;
+begin
+  Result := TileInMapCoords(X, Y) and (aPass in Land[Y, X].Passability);
+end;
+
+
 function TKMTerrain.CheckPassability(const Loc: TKMPoint; aPass: TKMTerrainPassability): Boolean;
 begin
   Result := TileInMapCoords(Loc.X,Loc.Y) and (aPass in Land[Loc.Y,Loc.X].Passability);
@@ -3846,7 +3889,7 @@ var
   tempUnit: TKMUnit;
 begin
   U := TKMUnit(aUnit);
-  loc := U.CurrPosition;
+  loc := U.Position;
 
   Result := loc;
   bestWeight := -1e30;
@@ -4994,10 +5037,7 @@ begin
       SaveStream.Write(Land[I,K].TileLock, SizeOf(Land[I,K].TileLock));
       SaveStream.Write(Land[I,K].JamMeter);
       SaveStream.Write(Land[I,K].TileOwner, SizeOf(Land[I,K].TileOwner));
-      if Land[I,K].IsUnit <> nil then
-        SaveStream.Write(TKMUnit(Land[I,K].IsUnit).UID) //Store ID, then substitute it with reference on SyncLoad
-      else
-        SaveStream.Write(Integer(0));
+      SaveStream.Write(TKMUnit(Land[I,K].IsUnit).UID); //Store ID, then substitute it with reference on SyncLoad
       SaveStream.Write(Land[I,K].IsVertexUnit, SizeOf(Land[I,K].IsVertexUnit));
     end;
 end;

@@ -68,7 +68,8 @@ uses
   KM_Game, KM_GameParams, KM_Hand, KM_HandsCollection, KM_Terrain, KM_AIFields,
   KM_HouseBarracks, KM_Supervisor,
   KM_ResHouses, KM_CommonUtils,
-  KM_AIParameters, KM_DevPerfLog, KM_DevPerfLogTypes;
+  KM_AIParameters, KM_DevPerfLog, KM_DevPerfLogTypes,
+  KM_UnitGroupTypes;
 
 
 { TKMArmyManagement }
@@ -263,7 +264,7 @@ begin
           begin
             Barracks[K].Equip(UT, 1);
             Dec(GroupReq[GT]);
-            pEquippedTime^ := gGameParams.GameTick; // Only reset it when we actually trained something (in IronThenLeather mode we don't count them separately)
+            pEquippedTime^ := gGameParams.Tick; // Only reset it when we actually trained something (in IronThenLeather mode we don't count them separately)
           end;
         end;
       end;
@@ -488,7 +489,7 @@ type
     if (TargetHouse <> nil) then
       aTargetP := TargetHouse.Position
     else if (TargetUnit <> nil) then
-      aTargetP := TargetUnit.CurrPosition
+      aTargetP := TargetUnit.Position
     else if (aTarget = attCustomPosition) then
       aTargetP := aCustomPos;
     Result := not KMSamePoint(aTargetP, KMPOINT_ZERO);
@@ -591,7 +592,7 @@ begin
     begin
       AG := GetGroups(1);
       for K := 0 to Attacks.Count - 1 do
-        if Attacks.CanOccur(K, AG.MenAvailable, AG.GroupsAvailable, gGameParams.GameTick) then //Check conditions are right
+        if Attacks.CanOccur(K, AG.MenAvailable, AG.GroupsAvailable, gGameParams.Tick) then //Check conditions are right
         begin
           FilterGroups(Attacks[K].TotalMen, Attacks[K].GroupAmounts, AG);
           if FindScriptedTarget(AG.GroupArr[0], Attacks[K].Target, Attacks[K].CustomPosition, TargetPoint) then

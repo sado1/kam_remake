@@ -72,6 +72,8 @@ end;
 
 procedure TKMRenderDebug.ReInit;
 begin
+  if Self = nil then Exit;
+
   SetLength(fAreaTilesLand, gTerrain.MapY, gTerrain.MapX);
 end;
 
@@ -219,13 +221,13 @@ const
   var
     I, K, L: Integer;
     lineColor, fillColor: Cardinal;
-    Coef: Single;
+    coef: Single;
   begin
-    Coef := 0.15;
+    coef := 0.15;
     if aHighlight then
     begin
       Color := SELECTED_ORE_COLOR;
-      Coef := 0.3;
+      coef := 0.3;
     end;
 
     ResetAreaData;
@@ -233,7 +235,7 @@ const
     for I := 1 to Length(aOreP) - 1 do
     begin
       Color := Color and $40FFFFFF; //Add some transparency
-      Color := MultiplyBrightnessByFactor(Color, Coef);
+      Color := MultiplyBrightnessByFactor(Color, coef);
       for K := Length(aOreP) - 1 downto 0 do
         for L := 0 to aOreP[K].Count - 1 do
         begin
@@ -259,15 +261,15 @@ const
                               aVertexes: Boolean = False);
   var
     I: Integer;
-    Coef: Single;
+    coef: Single;
     lineColor: Cardinal;
     inset: Single;
   begin
-    Coef := 0.15;
+    coef := 0.15;
     if aHighlight then
     begin
       Color := SELECTED_ORE_COLOR;
-      Coef := 0.3;
+      coef := 0.3;
     end;
 
     inset := 0;
@@ -280,7 +282,7 @@ const
       Color := Color and $80FFFFFF //Add some transparency
     else
       Color := Color and $40FFFFFF; //Add more transparency
-    Color := MultiplyBrightnessByFactor(Color, Coef);
+    Color := MultiplyBrightnessByFactor(Color, coef);
 
     ResetAreaData;
 
@@ -304,87 +306,87 @@ const
 var
   I, J, K: Integer;
   H: TKMHouse;
-  IronOreP, GoldOreP, CoalOreP, OreP, SelectedOreP: TKMPointListArray;
-  WoodcutterPts, QuarryPts, FisherHutPts, FarmPts, WineyardPts: TKMPointList;
-  HouseDirPts: TKMPointDirList;
-  HousePts, SelectedPts: TKMPointList;
+  ironOreP, goldOreP, coalOreP, oreP, selectedOreP: TKMPointListArray;
+  woodcutterPts, quarryPts, fisherHutPts, farmPts, wineyardPts: TKMPointList;
+  houseDirPts: TKMPointDirList;
+  housePts, selectedPts: TKMPointList;
 begin
   if gGame = nil then Exit;
 
-  SetLength(OreP, 3);
-  SetLength(IronOreP, 3);
-  SetLength(GoldOreP, 3);
-  SetLength(CoalOreP, 3);
-  SetLength(SelectedOreP, 3);
+  SetLength(oreP, 3);
+  SetLength(ironOreP, 3);
+  SetLength(goldOreP, 3);
+  SetLength(coalOreP, 3);
+  SetLength(selectedOreP, 3);
 
-  for I := 0 to Length(OreP) - 1 do
+  for I := 0 to Length(oreP) - 1 do
   begin
-    OreP[I] := TKMPointList.Create;
-    IronOreP[I] := TKMPointList.Create;
-    GoldOreP[I] := TKMPointList.Create;
-    CoalOreP[I] := TKMPointList.Create;
-    SelectedOreP[I] := TKMPointList.Create;
+    oreP[I] := TKMPointList.Create;
+    ironOreP[I] := TKMPointList.Create;
+    goldOreP[I] := TKMPointList.Create;
+    coalOreP[I] := TKMPointList.Create;
+    selectedOreP[I] := TKMPointList.Create;
   end;
 
-  WoodcutterPts := TKMPointList.Create;
-  QuarryPts := TKMPointList.Create;
-  FisherHutPts := TKMPointList.Create;
-  FarmPts := TKMPointList.Create;
-  WineyardPts := TKMPointList.Create;
-  HousePts := TKMPointList.Create;
-  HouseDirPts := TKMPointDirList.Create;
-  SelectedPts := TKMPointList.Create;
+  woodcutterPts := TKMPointList.Create;
+  quarryPts := TKMPointList.Create;
+  fisherHutPts := TKMPointList.Create;
+  farmPts := TKMPointList.Create;
+  wineyardPts := TKMPointList.Create;
+  housePts := TKMPointList.Create;
+  houseDirPts := TKMPointDirList.Create;
+  selectedPts := TKMPointList.Create;
 
   for I := 0 to gHands.Count - 1 do
   begin
     for J := 0 to gHands[I].Houses.Count - 1 do
     begin
-      HousePts.Clear;
-      HouseDirPts.Clear;
+      housePts.Clear;
+      houseDirPts.Clear;
       H := gHands[I].Houses[J];
       case H.HouseType of
         htIronMine:   begin
-                        gTerrain.FindOrePointsByDistance(H.PointBelowEntrance, wtIronOre, OreP);
-                        AddOrePoints(OreP, IronOreP);
+                        gTerrain.FindOrePointsByDistance(H.PointBelowEntrance, wtIronOre, oreP);
+                        AddOrePoints(oreP, ironOreP);
                       end;
         htGoldMine:   begin
-                        gTerrain.FindOrePointsByDistance(H.PointBelowEntrance, wtGoldOre, OreP);
-                        AddOrePoints(OreP, GoldOreP);
+                        gTerrain.FindOrePointsByDistance(H.PointBelowEntrance, wtGoldOre, oreP);
+                        AddOrePoints(oreP, goldOreP);
                       end;
         htCoalMine:   begin
-                        gTerrain.FindOrePointsByDistance(H.PointBelowEntrance, wtCoal, OreP);
-                        AddOrePoints(OreP, CoalOreP);
+                        gTerrain.FindOrePointsByDistance(H.PointBelowEntrance, wtCoal, oreP);
+                        AddOrePoints(oreP, coalOreP);
                       end;
         htWoodcutters:begin
                         gTerrain.FindPossibleTreePoints(TKMHouseWoodcutters(H).FlagPoint,
                                                         gRes.Units[utWoodcutter].MiningRange,
-                                                        HousePts);
-                        WoodcutterPts.AddList(HousePts);
+                                                        housePts);
+                        woodcutterPts.AddList(housePts);
                       end;
         htQuary:      begin
                         gTerrain.FindStoneLocs(H.PointBelowEntrance,
                                                gRes.Units[utStoneCutter].MiningRange,
-                                               KMPOINT_ZERO, True, HousePts);
-                        QuarryPts.AddList(HousePts);
+                                               KMPOINT_ZERO, True, housePts);
+                        quarryPts.AddList(housePts);
                       end;
         htFisherHut:  begin
                         gTerrain.FindFishWaterLocs(H.PointBelowEntrance,
                                                    gRes.Units[utFisher].MiningRange,
-                                                   KMPOINT_ZERO, True, HouseDirPts);
-                        HouseDirPts.ToPointList(HousePts, True);
-                        FisherHutPts.AddList(HousePts);
+                                                   KMPOINT_ZERO, True, houseDirPts);
+                        houseDirPts.ToPointList(housePts, True);
+                        fisherHutPts.AddList(housePts);
                       end;
         htFarm:       begin
                         gTerrain.FindCornFieldLocs(H.PointBelowEntrance,
                                                    gRes.Units[utFarmer].MiningRange,
-                                                   HousePts);
-                        FarmPts.AddList(HousePts);
+                                                   housePts);
+                        farmPts.AddList(housePts);
                       end;
         htWineyard:   begin
                         gTerrain.FindWineFieldLocs(H.PointBelowEntrance,
                                                    gRes.Units[utFarmer].MiningRange,
-                                                   HousePts);
-                        WineyardPts.AddList(HousePts);
+                                                   housePts);
+                        wineyardPts.AddList(housePts);
                       end;
         else Continue;
       end;
@@ -393,47 +395,47 @@ begin
       begin
         if H.HouseType in [htIronMine, htGoldMine, htCoalMine] then
         begin
-          for K := 0 to Length(OreP) - 1 do
-            SelectedOreP[K].AddList(OreP[K]);
+          for K := 0 to Length(oreP) - 1 do
+            selectedOreP[K].AddList(oreP[K]);
         end
         else
-          SelectedPts.AddList(HousePts);
+          selectedPts.AddList(housePts);
       end;
 
-      for K := 0 to Length(OreP) - 1 do
-        OreP[K].Clear;
+      for K := 0 to Length(oreP) - 1 do
+        oreP[K].Clear;
     end;
   end;
 
-  PaintOrePoints(IronOreP, IRON_ORE_COLOR);
-  PaintOrePoints(GoldOreP, GOLD_ORE_COLOR);
-  PaintOrePoints(CoalOreP, COAL_ORE_COLOR);
-  PaintOrePoints(SelectedOreP, 0, True);
+  PaintOrePoints(ironOreP, IRON_ORE_COLOR);
+  PaintOrePoints(goldOreP, GOLD_ORE_COLOR);
+  PaintOrePoints(coalOreP, COAL_ORE_COLOR);
+  PaintOrePoints(selectedOreP, 0, True);
 
-  PaintMiningPoints(WoodcutterPts, WOODCUTTER_COLOR, False, False, True);
-  PaintMiningPoints(QuarryPts, QUARRY_COLOR);
-  PaintMiningPoints(FisherHutPts, FISHERHUT_COLOR);
-  PaintMiningPoints(FarmPts, FARM_COLOR, False, True);
-  PaintMiningPoints(WineyardPts, WINEYARD_COLOR);
+  PaintMiningPoints(woodcutterPts, WOODCUTTER_COLOR, False, False, True);
+  PaintMiningPoints(quarryPts, QUARRY_COLOR);
+  PaintMiningPoints(fisherHutPts, FISHERHUT_COLOR);
+  PaintMiningPoints(farmPts, FARM_COLOR, False, True);
+  PaintMiningPoints(wineyardPts, WINEYARD_COLOR);
   // Show selected points as vertexes if woodcutter house is selected
-  PaintMiningPoints(SelectedPts, 0, True, False, (gMySpectator.Selected is TKMHouse) and (TKMHouse(gMySpectator.Selected).HouseType = htWoodcutters));
+  PaintMiningPoints(selectedPts, 0, True, False, (gMySpectator.Selected is TKMHouse) and (TKMHouse(gMySpectator.Selected).HouseType = htWoodcutters));
 
-  for I := 0 to Length(OreP) - 1 do
+  for I := 0 to Length(oreP) - 1 do
   begin
-    OreP[I].Free;
-    IronOreP[I].Free;
-    GoldOreP[I].Free;
-    CoalOreP[I].Free;
-    SelectedOreP[I].Free;
+    oreP[I].Free;
+    ironOreP[I].Free;
+    goldOreP[I].Free;
+    coalOreP[I].Free;
+    selectedOreP[I].Free;
   end;
-  WoodcutterPts.Free;
-  QuarryPts.Free;
-  FisherHutPts.Free;
-  FarmPts.Free;
-  WineyardPts.Free;
-  HousePts.Free;
-  HouseDirPts.Free;
-  SelectedPts.Free;
+  woodcutterPts.Free;
+  quarryPts.Free;
+  fisherHutPts.Free;
+  farmPts.Free;
+  wineyardPts.Free;
+  housePts.Free;
+  houseDirPts.Free;
+  selectedPts.Free;
 end;
 
 

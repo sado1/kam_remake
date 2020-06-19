@@ -141,7 +141,7 @@ begin
   SHOW_TILES_OWNER         := CheckBox_ShowTilesOwner.Checked;
 
   if TrackBar_Passability.Position <> 0 then
-    Label_Passability.Caption := PassabilityGuiText[TKMTerrainPassability(SHOW_TERRAIN_PASS)]
+    Label_Passability.Caption := PASSABILITY_GUI_TEXT[TKMTerrainPassability(SHOW_TERRAIN_PASS)]
   else
     Label_Passability.Caption := gResTexts[TX_MAPED_PASSABILITY_OFF];
 

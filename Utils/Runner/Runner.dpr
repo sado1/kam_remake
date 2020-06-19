@@ -47,20 +47,20 @@ var
 begin
   Application.Initialize;
   Application.CreateForm(TForm2, Form2);
-  if (ParamCount > 0) then
-  begin
-    //DebugLogString();
-    ParRun := TKMParallelRun.Create(Form2);
-    try
-      PARALLEL_RUN := True;
-      ParRun.InitSimulation();
-      ParRun.RunSimulation();
-      ParRun.LogResults();
-    finally
-      ParRun.Free();
-    end;
-    Application.Terminate;
-  end;
+//  if (ParamCount > 0) then
+//  begin
+//    //DebugLogString();
+//    ParRun := TKMParallelRun.Create(Form2);
+//    try
+//      PARALLEL_RUN := True;
+//      ParRun.InitSimulation();
+//      ParRun.RunSimulation();
+//      ParRun.LogResults();
+//    finally
+//      ParRun.Free();
+//    end;
+//    Application.Terminate;
+//  end;
   
   Application.Run;
 end.

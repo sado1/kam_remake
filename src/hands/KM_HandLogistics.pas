@@ -12,7 +12,7 @@ uses
   Generics.Collections, Generics.Defaults, System.Hash,
   {$ENDIF}
   KM_Units, KM_Houses, KM_ResHouses,
-  KM_ResWares, KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Points,
+  KM_ResWares, KM_CommonClasses, KM_Defaults, KM_Points,
   BinaryHeapGen;
 
 
@@ -335,12 +335,7 @@ begin
 
   SaveStream.Write(fSerfCount);
   for I := 0 to fSerfCount - 1 do
-  begin
-    if fSerfs[I].Serf <> nil then
-      SaveStream.Write(fSerfs[I].Serf.UID)
-    else
-      SaveStream.Write(Integer(0));
-  end;
+    SaveStream.Write(fSerfs[I].Serf.UID);
 
   fQueue.Save(SaveStream);
 end;
@@ -381,7 +376,7 @@ begin
   if fSerfCount >= Length(fSerfs) then
     SetLength(fSerfs, fSerfCount + LENGTH_INC);
 
-  fSerfs[fSerfCount].Serf := TKMUnitSerf(aSerf.GetUnitPointer);
+  fSerfs[fSerfCount].Serf := TKMUnitSerf(aSerf.GetPointer);
   Inc(fSerfCount);
 end;
 
@@ -750,7 +745,7 @@ begin
   with fOffer[I] do
   begin
     if aHouse <> nil then
-      Loc_House := aHouse.GetHousePointer;
+      Loc_House := aHouse.GetPointer;
     Ware := aWare;
     Count := aCount;
     Assert((BeingPerformed = 0) and not IsDeleted); //Make sure this item has been closed properly, if not there is a flaw
@@ -999,10 +994,10 @@ begin
     with fDemand[I] do
     begin
       if aHouse <> nil then
-        Loc_House := aHouse.GetHousePointer;
+        Loc_House := aHouse.GetPointer;
 
       if aUnit <> nil then
-        Loc_Unit := aUnit.GetUnitPointer;
+        Loc_Unit := aUnit.GetPointer;
 
       DemandType := aType; //Once or Always
       Ware := aResource;
@@ -1110,7 +1105,7 @@ begin
             or
             ( //House-Unit delivery can be performed without connecting road
             (fDemand[iD].Loc_Unit <> nil) and
-            (gTerrain.Route_CanBeMade(fOffer[iO].Loc_House.PointBelowEntrance, fDemand[iD].Loc_Unit.CurrPosition, tpWalk, 1))
+            (gTerrain.Route_CanBeMade(fOffer[iO].Loc_House.PointBelowEntrance, fDemand[iD].Loc_Unit.Position, tpWalk, 1))
             ));
 end;
 
@@ -1135,7 +1130,7 @@ end;
 
 function TKMDeliveries.GetSerfActualPos(aSerf: TKMUnit): TKMPoint;
 begin
-  Result := aSerf.CurrPosition;
+  Result := aSerf.Position;
 
   //If the serf is inside the house (invisible) test from point below
   if not aSerf.Visible then
@@ -1337,7 +1332,7 @@ begin
     begin
       aBidBasicCost.OfferToDemand.Pass := tpWalk;
       //Calc bid cost between offer house and demand Unit (digged worker or hungry warrior)
-      Result := TryCalcRouteCost(aCalcKind, aOfferPos, fDemand[iD].Loc_Unit.CurrPosition, drsOfferToDemand, aBidBasicCost.OfferToDemand);
+      Result := TryCalcRouteCost(aCalcKind, aOfferPos, fDemand[iD].Loc_Unit.Position, drsOfferToDemand, aBidBasicCost.OfferToDemand);
     end;
 
     // There is no route, Exit immidiately
@@ -1606,7 +1601,7 @@ procedure TKMDeliveries.DeliveryFindBestDemand(aSerf: TKMUnitSerf; aDeliveryId: 
         and ValidBestDemand(iD, oldDemandId) then
       begin
         bid := TKMDeliveryBid.Create(fDemand[iD].Importance, aSerf, 0, iD);
-        if TryCalculateBidBasic(dckFast, aSerf.CurrPosition, 1, htNone, aSerf.Owner, bid, nil, allowOffroad) then
+        if TryCalculateBidBasic(dckFast, aSerf.Position, 1, htNone, aSerf.Owner, bid, nil, allowOffroad) then
         begin
           fBestBidCandidates.Push(bid);
           bestImportance := bid.Importance;
@@ -1630,7 +1625,7 @@ procedure TKMDeliveries.DeliveryFindBestDemand(aSerf: TKMUnitSerf; aDeliveryId: 
           and not TKMHouseStore(fDemand[iD].Loc_House).NotAcceptFlag[aResource] then
         begin
           bid := TKMDeliveryBid.Create(fDemand[iD].Importance, aSerf, 0, iD);
-          if TryCalculateBidBasic(dckFast, aSerf.CurrPosition, 1, htNone, aSerf.Owner, bid, nil, allowOffroad) then
+          if TryCalculateBidBasic(dckFast, aSerf.Position, 1, htNone, aSerf.Owner, bid, nil, allowOffroad) then
           begin
             fBestBidCandidates.Push(bid);
             bestImportance := bid.Importance;
@@ -1652,7 +1647,7 @@ procedure TKMDeliveries.DeliveryFindBestDemand(aSerf: TKMUnitSerf; aDeliveryId: 
           and not fDemand[iD].Loc_House.IsDestroyed then //choose between all storages, including current delivery. But not destroyed
         begin
           bid := TKMDeliveryBid.Create(fDemand[iD].Importance, aSerf, 0, iD);
-          if TryCalculateBidBasic(dckFast, aSerf.CurrPosition, 1, htNone, aSerf.Owner, bid, nil, allowOffroad) then
+          if TryCalculateBidBasic(dckFast, aSerf.Position, 1, htNone, aSerf.Owner, bid, nil, allowOffroad) then
           begin
             fBestBidCandidates.Push(bid);
             bestImportance := bid.Importance;
@@ -1757,7 +1752,7 @@ begin
                       fBestBids.Push(Result)
                     else
                       Result.Free;
-      bceBidBasic:  if TryCalculateBidBasic(dckAccurate, Result.Serf.CurrPosition, 1, htNone, Result.Serf.Owner, Result, nil, aAllowOffroad) then
+      bceBidBasic:  if TryCalculateBidBasic(dckAccurate, Result.Serf.Position, 1, htNone, Result.Serf.Owner, Result, nil, aAllowOffroad) then
                       fBestBids.Push(Result)
                     else
                       Result.Free;
@@ -1888,7 +1883,7 @@ begin
   fQueue[iQ].Serf.DelegateDelivery(aSerf);
 
   gHands.CleanUpUnitPointer(TKMUnit(fQueue[iQ].Serf));
-  fQueue[iQ].Serf := TKMUnitSerf(aSerf.GetUnitPointer);
+  fQueue[iQ].Serf := TKMUnitSerf(aSerf.GetPointer);
   UpdateQueueItem(iQ);
 end;
 
@@ -1911,7 +1906,7 @@ begin
   fQueue[I].DemandID := iD;
   fQueue[I].OfferID := iO;
   fQueue[I].JobStatus := jsTaken;
-  fQueue[I].Serf := TKMUnitSerf(aSerf.GetUnitPointer);
+  fQueue[I].Serf := TKMUnitSerf(aSerf.GetPointer);
   fQueue[I].Item := nil;
 
   UpdateQueueItem(I);
@@ -2095,10 +2090,7 @@ begin
   begin
     SaveStream.Write(fOffer[I].Ware, SizeOf(fOffer[I].Ware));
     SaveStream.Write(fOffer[I].Count);
-    if fOffer[I].Loc_House <> nil then
-      SaveStream.Write(fOffer[I].Loc_House.UID)
-    else
-      SaveStream.Write(Integer(0));
+    SaveStream.Write(fOffer[I].Loc_House.UID);
     SaveStream.Write(fOffer[I].BeingPerformed);
     SaveStream.Write(fOffer[I].IsDeleted);
   end;
@@ -2112,15 +2104,8 @@ begin
     SaveStream.Write(DemandType, SizeOf(DemandType));
     SaveStream.Write(Importance, SizeOf(Importance));
 
-    if Loc_House <> nil then
-      SaveStream.Write(Loc_House.UID)
-    else
-      SaveStream.Write(Integer(0));
-
-    if Loc_Unit <> nil then
-      SaveStream.Write(Loc_Unit.UID )
-    else
-      SaveStream.Write(Integer(0));
+    SaveStream.Write(Loc_House.UID);
+    SaveStream.Write(Loc_Unit.UID );
 
     SaveStream.Write(BeingPerformed);
     SaveStream.Write(IsDeleted);
@@ -2135,10 +2120,7 @@ begin
     SaveStream.Write(fQueue[I].OfferID);
     SaveStream.Write(fQueue[I].DemandID);
     SaveStream.Write(fQueue[I].JobStatus, SizeOf(fQueue[I].JobStatus));
-    if fQueue[I].Serf  <> nil then
-      SaveStream.Write(fQueue[I].Serf.UID )
-    else
-      SaveStream.Write(Integer(0));
+    SaveStream.Write(fQueue[I].Serf.UID );
   end;
 
   fRouteEvaluator.Save(SaveStream);
@@ -2354,7 +2336,7 @@ begin
 
   bid.Value := aValue;
   bid.RouteStep := aRouteStep;
-  bid.CreatedAt := gGameParams.GameTick;
+  bid.CreatedAt := gGameParams.Tick;
   inherited Add(aKey, bid);
 end;
 
@@ -2370,7 +2352,7 @@ begin
   key.ToP := ToP;
   bid.Value := aValue;
   bid.RouteStep := aKind;
-  bid.CreatedAt := gGameParams.GameTick;
+  bid.CreatedAt := gGameParams.Tick;
   inherited Add(key, bid);
 end;
 
@@ -2388,7 +2370,7 @@ begin
   Result := False;
   if inherited TryGetValue(aKey, aBid) then
   begin
-    if aBid.IsExpired(gGameParams.GameTick) then //Don't return expired records
+    if aBid.IsExpired(gGameParams.Tick) then //Don't return expired records
       Remove(aKey) //Remove expired record
     else
       Exit(True); // We found value
@@ -2549,7 +2531,7 @@ begin
   begin
     bid := bidPair.Value;
 
-    if bid.IsExpired(gGameParams.GameTick) then
+    if bid.IsExpired(gGameParams.Tick) then
       fRemoveKeysList.Add(bidPair.Key); // its not safe to remove dictionary value in the loop, will cause desyncs
   end;
 

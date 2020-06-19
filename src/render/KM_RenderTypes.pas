@@ -8,6 +8,7 @@ type
     tfRGBA8,
     tfAlpha8 //Mask used for team colors and house construction steps (GL_ALPHA)
     );
+
   TFilterType = (
     ftNearest,
     ftLinear

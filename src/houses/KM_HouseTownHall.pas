@@ -93,6 +93,7 @@ end;
 procedure TKMHouseTownHall.Save(SaveStream: TKMemoryStream);
 begin
   inherited;
+
   SaveStream.PlaceMarker('HouseTownHall');
   SaveStream.Write(fGoldCnt);
   SaveStream.Write(fGoldMaxCnt);
@@ -107,14 +108,14 @@ end;
 
 procedure TKMHouseTownHall.SetGoldCnt(aValue: Word; aLimitMaxGoldCnt: Boolean);
 var
-  OldValue: Integer;
+  oldValue: Integer;
 begin
-  OldValue := fGoldCnt;
+  oldValue := fGoldCnt;
 
   fGoldCnt := EnsureRange(aValue, 0, IfThen(aLimitMaxGoldCnt, fGoldMaxCnt, High(Word)));
 
-  if OldValue <> fGoldCnt then
-    gScriptEvents.ProcHouseWareCountChanged(Self, wtGold, fGoldCnt, fGoldCnt - OldValue);
+  if oldValue <> fGoldCnt then
+    gScriptEvents.ProcHouseWareCountChanged(Self, wtGold, fGoldCnt, fGoldCnt - oldValue);
 end;
 
 
@@ -139,14 +140,14 @@ end;
 
 function TKMHouseTownHall.CanEquip(aUnitType: TKMUnitType): Boolean;
 var
-  THUnitIndex: Integer;
+  thUnitIndex: Integer;
 begin
-  Result := not gHands[fOwner].Locks.GetUnitBlocked(aUnitType, True);
+  Result := not gHands[Owner].Locks.GetUnitBlocked(aUnitType, True);
 
-  THUnitIndex := GetTHUnitOrderIndex(aUnitType);
+  thUnitIndex := GetTHUnitOrderIndex(aUnitType);
 
-  if THUnitIndex <> -1 then
-    Result := Result and (fGoldCnt >= TH_TROOP_COST[THUnitIndex]);  //Can't equip if we don't have a required resource
+  if thUnitIndex <> -1 then
+    Result := Result and (fGoldCnt >= TH_TROOP_COST[thUnitIndex]);  //Can't equip if we don't have a required resource
 end;
 
 
@@ -154,22 +155,22 @@ end;
 //Return the number of units successfully equipped
 function TKMHouseTownHall.Equip(aUnitType: TKMUnitType; aCount: Integer): Integer;
 var
-  I, K, THUnitIndex: Integer;
-  Soldier: TKMUnitWarrior;
-  FoundTPR: Boolean;
+  I, K, thUnitIndex: Integer;
+  soldier: TKMUnitWarrior;
+  foundTPR: Boolean;
 begin
   Result := 0;
-  FoundTPR := False;
+  foundTPR := False;
   for I := Low(TownHall_Order) to High(TownHall_Order) do
     if TownHall_Order[I] = aUnitType then
     begin
-      FoundTPR := True;
+      foundTPR := True;
       Break;
     end;
-  Assert(FoundTPR);
+  Assert(foundTPR);
 
-  THUnitIndex := GetTHUnitOrderIndex(aUnitType);
-  if THUnitIndex = -1 then Exit;
+  thUnitIndex := GetTHUnitOrderIndex(aUnitType);
+  if thUnitIndex = -1 then Exit;
   
   for K := 0 to aCount - 1 do
   begin
@@ -177,19 +178,19 @@ begin
     if not CanEquip(aUnitType) then Exit;
 
     //Take resources
-    GoldDeliveryCnt := GoldDeliveryCnt - TH_TROOP_COST[THUnitIndex]; //Compensation for GoldDeliveryCnt
-    ResTakeFromIn(wtGold, TH_TROOP_COST[THUnitIndex]); //Do the goldtaking
+    GoldDeliveryCnt := GoldDeliveryCnt - TH_TROOP_COST[thUnitIndex]; //Compensation for GoldDeliveryCnt
+    ResTakeFromIn(wtGold, TH_TROOP_COST[thUnitIndex]); //Do the goldtaking
 
-    gHands[fOwner].Stats.WareConsumed(wtGold, TH_TROOP_COST[THUnitIndex]);
+    gHands[Owner].Stats.WareConsumed(wtGold, TH_TROOP_COST[thUnitIndex]);
       
     //Make new unit
-    Soldier := TKMUnitWarrior(gHands[fOwner].TrainUnit(aUnitType, Entrance));
-    Soldier.InHouse := Self; //Put him in the barracks, so if it is destroyed while he is inside he is placed somewhere
-    Soldier.Visible := False; //Make him invisible as he is inside the barracks
-    Soldier.Condition := Round(TROOPS_TRAINED_CONDITION * UNIT_MAX_CONDITION); //All soldiers start with 3/4, so groups get hungry at the same time
-    Soldier.SetActionGoIn(uaWalk, gdGoOutside, Self);
-    if Assigned(Soldier.OnUnitTrained) then
-      Soldier.OnUnitTrained(Soldier);
+    soldier := TKMUnitWarrior(gHands[Owner].TrainUnit(aUnitType, Entrance));
+    soldier.InHouse := Self; //Put him in the barracks, so if it is destroyed while he is inside he is placed somewhere
+    soldier.Visible := False; //Make him invisible as he is inside the barracks
+    soldier.Condition := Round(TROOPS_TRAINED_CONDITION * UNIT_MAX_CONDITION); //All soldiers start with 3/4, so groups get hungry at the same time
+    soldier.SetActionGoIn(uaWalk, gdGoOutside, Self);
+    if Assigned(soldier.OnUnitTrained) then
+      soldier.OnUnitTrained(soldier);
     Inc(Result);
   end;
 end;
@@ -249,7 +250,7 @@ end;
 
 procedure TKMHouseTownHall.ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False);
 var
-  OrdersRemoved : Integer;
+  ordersRemoved : Integer;
 begin
   Assert(aWare = wtGold, 'Invalid resource added to TownHall');
 
@@ -262,8 +263,8 @@ begin
   if aFromScript then
   begin
     GoldDeliveryCnt := GoldDeliveryCnt + aCount;
-    OrdersRemoved := gHands[fOwner].Deliveries.Queue.TryRemoveDemand(Self, aWare, aCount);
-    GoldDeliveryCnt := GoldDeliveryCnt - OrdersRemoved;
+    ordersRemoved := gHands[Owner].Deliveries.Queue.TryRemoveDemand(Self, aWare, aCount);
+    GoldDeliveryCnt := GoldDeliveryCnt - ordersRemoved;
   end;
 
   UpdateDemands;
@@ -286,19 +287,19 @@ procedure TKMHouseTownHall.UpdateDemands;
 const
   MAX_GOLD_DEMANDS = 20; //Limit max number of demands by townhall to not to overfill demands list
 var
-  GoldToOrder, OrdersRemoved: Integer;
+  goldToOrder, ordersRemoved: Integer;
 begin
-  GoldToOrder := Min(MAX_GOLD_DEMANDS - (GoldDeliveryCnt - fGoldCnt), fGoldMaxCnt - GoldDeliveryCnt);
-  if GoldToOrder > 0 then
+  goldToOrder := Min(MAX_GOLD_DEMANDS - (GoldDeliveryCnt - fGoldCnt), fGoldMaxCnt - GoldDeliveryCnt);
+  if goldToOrder > 0 then
   begin
-    gHands[fOwner].Deliveries.Queue.AddDemand(Self, nil, wtGold, GoldToOrder, dtOnce, diNorm);
-    GoldDeliveryCnt := GoldDeliveryCnt + GoldToOrder;
+    gHands[Owner].Deliveries.Queue.AddDemand(Self, nil, wtGold, goldToOrder, dtOnce, diNorm);
+    GoldDeliveryCnt := GoldDeliveryCnt + goldToOrder;
   end
   else
-  if GoldToOrder < 0 then
+  if goldToOrder < 0 then
   begin
-    OrdersRemoved := gHands[fOwner].Deliveries.Queue.TryRemoveDemand(Self, wtGold, -GoldToOrder);
-    GoldDeliveryCnt := GoldDeliveryCnt - OrdersRemoved;
+    ordersRemoved := gHands[Owner].Deliveries.Queue.TryRemoveDemand(Self, wtGold, -goldToOrder);
+    GoldDeliveryCnt := GoldDeliveryCnt - ordersRemoved;
   end;
 end;
 
@@ -323,8 +324,8 @@ begin
     aCount := EnsureRange(aCount, 0, fGoldCnt);
     if aCount > 0 then
     begin
-      gHands[fOwner].Stats.WareConsumed(aWare, aCount);
-      gHands[fOwner].Deliveries.Queue.RemOffer(Self, aWare, aCount);
+      gHands[Owner].Stats.WareConsumed(aWare, aCount);
+      gHands[Owner].Deliveries.Queue.RemOffer(Self, aWare, aCount);
     end;
   end;
   Assert(aCount <= fGoldCnt);

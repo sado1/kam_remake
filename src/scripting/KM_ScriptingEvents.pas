@@ -618,7 +618,7 @@ begin
   if MethodAssigned(evtMarketTrade) then
   begin
     fIDCache.CacheHouse(aMarket, aMarket.UID); //Improves cache efficiency since aMarket will probably be accessed soon
-    CallEventHandlers(evtMarketTrade, [aMarket.UID, WareTypeToIndex[aFrom], WareTypeToIndex[aTo]]);
+    CallEventHandlers(evtMarketTrade, [aMarket.UID, WARE_TY_TO_ID[aFrom], WARE_TY_TO_ID[aTo]]);
   end;
 end;
 
@@ -708,7 +708,7 @@ begin
   if MethodAssigned(evtHouseWareCountChanged) then
   begin
     fIDCache.CacheHouse(aHouse, aHouse.UID); //Improves cache efficiency since aHouse will probably be accessed soon
-    CallEventHandlers(evtHouseWareCountChanged, [aHouse.UID, WareTypeToIndex[aWare], aCnt, aChangeCnt]);
+    CallEventHandlers(evtHouseWareCountChanged, [aHouse.UID, WARE_TY_TO_ID[aWare], aCnt, aChangeCnt]);
   end;
 end;
 
@@ -1095,7 +1095,7 @@ begin
   if MethodAssigned(evtWareProduced) then
   begin
     if (aType <> wtNone) then
-      CallEventHandlers(evtWareProduced, [aHouse.UID, WareTypeToIndex[aType], aCount]);
+      CallEventHandlers(evtWareProduced, [aHouse.UID, WARE_TY_TO_ID[aType], aCount]);
   end;
 end;
 

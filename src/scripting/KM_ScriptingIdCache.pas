@@ -58,7 +58,7 @@ begin
       begin
         gHands.CleanUpUnitPointer(fUnitCache[I].U);
         if aUnit <> nil then
-          fUnitCache[I].U := aUnit.GetUnitPointer;
+          fUnitCache[I].U := aUnit.GetPointer;
       end;
       Exit;
     end;
@@ -70,7 +70,7 @@ begin
   fUnitCache[fUnitLastAdded].UID := aUID;
   //We could be asked to cache that certain UID is nil (saves us time scanning Units to find out that this UID is removed)
   if aUnit <> nil then
-    fUnitCache[fUnitLastAdded].U := aUnit.GetUnitPointer
+    fUnitCache[fUnitLastAdded].U := aUnit.GetPointer
   else
     fUnitCache[fUnitLastAdded].U := nil;
 
@@ -90,7 +90,7 @@ begin
       begin
         gHands.CleanUpHousePointer(fHouseCache[I].H);
         if aHouse <> nil then
-          fHouseCache[I].H := aHouse.GetHousePointer;
+          fHouseCache[I].H := aHouse.GetPointer;
       end;
       Exit;
     end;
@@ -102,7 +102,7 @@ begin
   fHouseCache[fHouseLastAdded].UID := aUID;
   //We could be asked to cache that certain UID is nil (saves us time scanning Houses to find out that this UID is removed)
   if aHouse <> nil then
-    fHouseCache[fHouseLastAdded].H := aHouse.GetHousePointer
+    fHouseCache[fHouseLastAdded].H := aHouse.GetPointer
   else
     fHouseCache[fHouseLastAdded].H := nil;
 
@@ -122,7 +122,7 @@ begin
       begin
         gHands.CleanUpGroupPointer(fGroupCache[I].G);
         if aGroup <> nil then
-          fGroupCache[I].G := aGroup.GetGroupPointer;
+          fGroupCache[I].G := aGroup.GetPointer;
       end;
       Exit;
     end;
@@ -134,7 +134,7 @@ begin
   fGroupCache[fGroupLastAdded].UID := aUID;
   //We could be asked to cache that certain UID is nil (saves us time scanning Groups to find out that this UID is removed)
   if aGroup <> nil then
-    fGroupCache[fGroupLastAdded].G := aGroup.GetGroupPointer
+    fGroupCache[fGroupLastAdded].G := aGroup.GetPointer
   else
     fGroupCache[fGroupLastAdded].G := nil;
 
@@ -218,7 +218,7 @@ begin
   try
     //Clear out dead IDs every now and again
     //Leave them in the cache as nils, because we still might need to lookup that UID
-    if gGameParams.GameTick mod 11 = 0 then
+    if gGameParams.Tick mod 11 = 0 then
     begin
       for I := Low(fUnitCache) to High(fUnitCache) do
         if (fUnitCache[I].U <> nil) and fUnitCache[I].U.IsDeadOrDying then
@@ -249,10 +249,7 @@ begin
   for I := Low(fUnitCache) to High(fUnitCache) do
   begin
     SaveStream.Write(fUnitCache[I].UID);
-    if fUnitCache[I].U <> nil then
-      SaveStream.Write(fUnitCache[I].U.UID) //Store ID, then substitute it with reference on SyncLoad
-    else
-      SaveStream.Write(Integer(0));
+    SaveStream.Write(fUnitCache[I].U.UID); //Store ID, then substitute it with reference on SyncLoad
   end;
 
   SaveStream.PlaceMarker('ScriptingIdCache_Houses');
@@ -260,10 +257,7 @@ begin
   for I := Low(fHouseCache) to High(fHouseCache) do
   begin
     SaveStream.Write(fHouseCache[I].UID);
-    if fHouseCache[I].H <> nil then
-      SaveStream.Write(fHouseCache[I].H.UID) //Store ID, then substitute it with reference on SyncLoad
-    else
-      SaveStream.Write(Integer(0));
+    SaveStream.Write(fHouseCache[I].H.UID); //Store ID, then substitute it with reference on SyncLoad
   end;
 
   SaveStream.PlaceMarker('ScriptingIdCache_Groups');
@@ -271,10 +265,7 @@ begin
   for I := Low(fGroupCache) to High(fGroupCache) do
   begin
     SaveStream.Write(fGroupCache[I].UID);
-    if fGroupCache[I].G <> nil then
-      SaveStream.Write(fGroupCache[I].G.UID) //Store ID, then substitute it with reference on SyncLoad
-    else
-      SaveStream.Write(Integer(0));
+    SaveStream.Write(fGroupCache[I].G.UID); //Store ID, then substitute it with reference on SyncLoad
   end;
 end;
 

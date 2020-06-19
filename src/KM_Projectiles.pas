@@ -230,7 +230,7 @@ begin
   fItems[I].fType   := aProjType;
   fItems[I].fSpeed  := aSpeed;
   fItems[I].fArc    := aArc;
-  fItems[I].fOwner  := aOwner.GetUnitPointer;
+  fItems[I].fOwner  := aOwner.GetPointer;
   fItems[I].fAim    := aAim;
   //Don't allow projectile to land off map, (we use fTaret for hit tests, FOW, etc.) but on borders is fine
   fItems[I].fTarget.X := EnsureRange(aEnd.X, 0, gTerrain.MapX-0.01);
@@ -407,12 +407,7 @@ begin
       SaveStream.Write(fItems[I].fTarget);
       SaveStream.Write(fItems[I].fShotFrom);
       SaveStream.Write(fItems[I].fType, SizeOf(TKMProjectileType));
-
-      if fItems[I].fOwner <> nil then
-        SaveStream.Write(fItems[I].fOwner.UID) //Store ID
-      else
-        SaveStream.Write(Integer(0));
-
+      SaveStream.Write(fItems[I].fOwner.UID); //Store ID
       SaveStream.Write(fItems[I].fSpeed);
       SaveStream.Write(fItems[I].fArc);
       SaveStream.Write(fItems[I].fPosition);

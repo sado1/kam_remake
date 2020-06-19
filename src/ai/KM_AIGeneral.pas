@@ -52,7 +52,8 @@ uses
   Classes, Math,
   KM_Game, KM_GameParams, KM_Hand, KM_HandsCollection, KM_Terrain, KM_AIFields,
   KM_Houses, KM_HouseBarracks,
-  KM_ResHouses, KM_CommonUtils, KM_DevPerfLog, KM_DevPerfLogTypes;
+  KM_ResHouses, KM_CommonUtils, KM_DevPerfLog, KM_DevPerfLogTypes,
+  KM_UnitGroupTypes;
 
 
 const
@@ -229,7 +230,8 @@ begin
   // Decrease group requirements on number of soldiers that are not walked out of barracks yet
   for warrior in fUnitsEquipOrdered.Values do
     if not warrior.IsDeadOrDying then
-      Dec(GroupReq[UNIT_TO_GROUP_TYPE[warrior.UnitType]]);
+      // Group req could change while warrior was walking out of barracks, so we could get negative value here
+      GroupReq[UNIT_TO_GROUP_TYPE[warrior.UnitType]] := Max(0, GroupReq[UNIT_TO_GROUP_TYPE[warrior.UnitType]] - 1);
 
   //Train troops where possible in each barracks
   for I := 0 to High(Barracks) do
@@ -264,14 +266,14 @@ begin
           //and register in the defence position groups
           //So we will order more units in that case, who will eventually exit the barracks and chill around,
           //because all defence groups are filled already
-          fUnitsEquipOrdered.Add(warrior.UID, TKMUnitWarrior(warrior.GetUnitPointer));
+          fUnitsEquipOrdered.Add(warrior.UID, TKMUnitWarrior(warrior.GetPointer));
 
           Dec(GroupReq[GT]);
           //Only reset it when we actually trained something (in IronThenLeather mode we don't count them separately)
           if (UT in WARRIORS_IRON) or (fSetup.ArmyType = atIronThenLeather) then
-            fLastEquippedTimeIron := gGameParams.GameTick;
+            fLastEquippedTimeIron := gGameParams.Tick;
           if not (UT in WARRIORS_IRON) or (fSetup.ArmyType = atIronThenLeather) then
-            fLastEquippedTimeLeather := gGameParams.GameTick;
+            fLastEquippedTimeLeather := gGameParams.Tick;
         end;
     end;
   end;
@@ -402,7 +404,7 @@ begin
 
     //Now process AI attacks (we have compiled a list of warriors available to attack)
     for I := 0 to Attacks.Count - 1 do
-    if Attacks.CanOccur(I, MenAvailable, GroupsAvailable, gGameParams.GameTick) then //Check conditions are right
+    if Attacks.CanOccur(I, MenAvailable, GroupsAvailable, gGameParams.Tick) then //Check conditions are right
     begin
       AttackLaunched := True;
       //Order groups to attack
@@ -719,7 +721,7 @@ begin
     //@Krom: Yes it's right the way it is now. It should be the attacker not the victim.
     //Otherwise the AI sends much more groups when you shoot them with 1 bowmen in the campaigns.
     //Right now it seems to be working almost the same as in the original game.
-    and (KMLengthDiag(Group.Position, aAttacker.CurrPosition) <= fDefencePositions[I].Radius) then
+    and (KMLengthDiag(Group.Position, aAttacker.Position) <= fDefencePositions[I].Radius) then
       Group.OrderAttackUnit(aAttacker, True);
   end;
 end;
@@ -729,7 +731,7 @@ procedure TKMGeneral.RemoveEquipOrderedWarrior(aWarrior: TKMUnitWarrior);
 begin
   if fUnitsEquipOrdered.ContainsKey(aWarrior.UID) then
   begin
-    fUnitsEquipOrdered[aWarrior.UID].ReleaseUnitPointer;
+    fUnitsEquipOrdered[aWarrior.UID].ReleasePointer;
     fUnitsEquipOrdered.Remove(aWarrior.UID);
   end;
 end;

@@ -1782,12 +1782,12 @@ var
 begin
   Planner := gHands[fOwner].AI.CityManagement.Builder.Planner;
 
-  if (fUpdateTick = 0) OR (fUpdateTick < gGameParams.GameTick) then // Dont scan multile times terrain in 1 tick
+  if (fUpdateTick = 0) OR (fUpdateTick < gGameParams.Tick) then // Dont scan multile times terrain in 1 tick
   begin
     InitQueue(False);
     fOwnerUpdateInfo[fOwner] := fVisitIdx; // Debug tool
 
-    if (gGameParams.GameTick <= MAX_HANDS) then // Make sure that Planner is already updated otherwise take only available houses
+    if (gGameParams.Tick <= MAX_HANDS) then // Make sure that Planner is already updated otherwise take only available houses
     begin
       for K := 0 to gHands[fOwner].Houses.Count - 1 do
       begin
@@ -1806,7 +1806,7 @@ begin
     end;
     TerrainFF(aMaxFFDistance);
 
-    fUpdateTick := gGameParams.GameTick;
+    fUpdateTick := gGameParams.Tick;
     MarkPlans(); // Plans may change during placing houses but this event is caught in CityBuilder
   end;
 end;
@@ -1821,7 +1821,7 @@ end;
 
 procedure TKMBuildFF.ActualizeTile(aX, aY: Word);
 begin
-  if (fUpdateTick = gGameParams.GameTick) then // Actualize tile only when we need scan in this tick
+  if (fUpdateTick = gGameParams.Tick) then // Actualize tile only when we need scan in this tick
     State[aY, aX] := GetTerrainState(aX,aY);
 end;
 

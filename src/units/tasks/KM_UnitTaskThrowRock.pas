@@ -32,7 +32,7 @@ constructor TKMTaskThrowRock.Create(aUnit, aTarget: TKMUnit);
 begin
   inherited Create(aUnit);
   fType := uttThrowRock;
-  fTarget := aTarget.GetUnitPointer;
+  fTarget := aTarget.GetPointer;
 end;
 
 

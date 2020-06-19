@@ -328,10 +328,7 @@ begin
         SaveStream.Write(RemoveTreeInPlanProcedure);
         SaveStream.Write(HouseReservation);
         SaveStream.Write(ChopOnly);
-        if (House <> nil) then
-          SaveStream.Write(House.UID) // Store ID
-        else
-          SaveStream.Write(Integer(0));
+        SaveStream.Write(House.UID); // Store ID
         SaveStream.Write(Loc, SizeOf(Loc));
         SaveStream.Write(SpecPoint, SizeOf(SpecPoint));
       end;
@@ -485,7 +482,7 @@ begin
             gHands[fOwner].AI.CityManagement.Builder.UnlockHouseLoc(HT, H.Entrance);
             if (fPlannedHouses[HT].Plans[K].House <> nil) then
               gHands.CleanUpHousePointer(fPlannedHouses[HT].Plans[K].House);
-            fPlannedHouses[HT].Plans[K].House := H.GetHousePointer;
+            fPlannedHouses[HT].Plans[K].House := H.GetPointer;
           end;
           CheckExistHouse := True;
           break;
@@ -2089,7 +2086,7 @@ begin
       begin
         Loc := BuildFF.Locs.Items[I];
         Gain := - ObstaclesInHousePlan(HT,Loc) * AI_Par[PLANNER_FindPlaceForQuary_Obstacle]
-                - BuildFF.Distance[Loc] * AI_Par[PLANNER_FindPlaceForQuary_DistCity] * Max(1, AI_Par[PLANNER_FindPlaceForQuary_DistTimer] - gGameParams.GameTick)
+                - BuildFF.Distance[Loc] * AI_Par[PLANNER_FindPlaceForQuary_DistCity] * Max(1, AI_Par[PLANNER_FindPlaceForQuary_DistTimer] - gGameParams.Tick)
                 - BuildFF.DistanceInitPoint[Loc] * AI_Par[PLANNER_FindPlaceForQuary_DistStone]
                 + SnapCrit(HT, Loc) * AI_Par[PLANNER_FindPlaceForQuary_SnapCrit];
         if (Gain > BestGain) then
@@ -2260,8 +2257,8 @@ var
     P: TKMPoint;
   begin
     P := FI.Forests[aIdx].Loc;
-    TreeCnt   := + FI.Forests[aIdx].TreeCout           * AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_TreeCnt] * Max(1, AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_TreeCntTimer] - gGameParams.GameTick);
-    DistCrit  := - FI.Forests[aIdx].Distance           * AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_DistCrit] * Max(1, AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_DistTimer] - gGameParams.GameTick);
+    TreeCnt   := + FI.Forests[aIdx].TreeCout           * AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_TreeCnt] * Max(1, AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_TreeCntTimer] - gGameParams.Tick);
+    DistCrit  := - FI.Forests[aIdx].Distance           * AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_DistCrit] * Max(1, AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_DistTimer] - gGameParams.Tick);
     ExistFrs  := + Byte(FI.Forests[aIdx].PartOfForest) * AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_ExistForest];
     Routes    := + gAIFields.Eye.Routes[P.Y, P.X]      * AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_Routes];
     FlatArea  := + gAIFields.Eye.FlatArea[P.Y, P.X]    * AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_FlatArea];

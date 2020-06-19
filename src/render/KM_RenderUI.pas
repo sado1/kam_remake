@@ -195,36 +195,36 @@ end;
 
 class procedure TKMRenderUI.Write3DButton(aLeft, aTop, aWidth, aHeight: SmallInt; aRX: TRXType; aID: Word; aFlagColor: TColor4; aState: TKMButtonStateSet; aStyle: TKMButtonStyle; aImageEnabled: Boolean = True);
 var
-  Down: Byte;
-  Chamfer: Byte;
-  A,B: TKMPointF;
-  InsetX,InsetY: Single;
-  c1,c2: Byte;
-  BackRX: TRXType;
-  BackID: Word;
+  down: Byte;
+  chamfer: Byte;
+  A, B: TKMPointF;
+  insetX, insetY: Single;
+  c1, c2: Byte;
+  backRX: TRXType;
+  backID: Word;
 begin
   TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
 
   if aStyle = bsMenu then
   begin
-    BackRX := rxGuiMain;
-    BackID := 9; //GuiMain-3 is a metal background used in main menu
+    backRX := rxGuiMain;
+    backID := 9; //GuiMain-3 is a metal background used in main menu
   end else
   begin
-    BackRX := rxGui;
-    BackID := 402; //Gui-402 is a stone background
+    backRX := rxGui;
+    backID := 402; //Gui-402 is a stone background
   end;
 
-  Down := Byte(bsDown in aState);
+  down := Byte(bsDown in aState);
 
-  with gGFXData[BackRX, BackID] do
-  with gGFXData[BackRX, BackID].Tex do
+  with gGFXData[backRX, backID] do
+  with gGFXData[backRX, backID].Tex do
   if PxWidth * PxHeight <> 0 then //Make sure data was loaded properly
   begin
-    A.X := u1 + (u2 - u1) * (aLeft - Down) / 2 / PxWidth;
-    B.X := u1 + (u2 - u1) * (aLeft + aWidth - Down) / 2 / PxWidth;
-    A.Y := v1 + (v2 - v1) * (aTop - Down) / 2 / PxHeight;
-    B.Y := v1 + (v2 - v1) * (aTop + aHeight - Down) / 2 / PxHeight;
+    A.X := u1 + (u2 - u1) * (aLeft - down) / 2 / PxWidth;
+    B.X := u1 + (u2 - u1) * (aLeft + aWidth - down) / 2 / PxWidth;
+    A.Y := v1 + (v2 - v1) * (aTop - down) / 2 / PxHeight;
+    B.Y := v1 + (v2 - v1) * (aTop + aHeight - down) / 2 / PxHeight;
     A.X := A.X - (u2 - u1) * ((aLeft + aWidth div 2) div PxWidth) / 2;
     B.X := B.X - (u2 - u1) * ((aLeft + aWidth div 2) div PxWidth) / 2;
     A.Y := A.Y - (v2 - v1) * ((aTop + aHeight div 2) div PxHeight) / 2;
@@ -240,7 +240,7 @@ begin
 
       //Background
       glColor4f(1, 1, 1, 1);
-      TRender.BindTexture(gGFXData[BackRX, BackID].Tex.ID);
+      TRender.BindTexture(gGFXData[backRX, backID].Tex.ID);
       glBegin(GL_QUADS);
         glTexCoord2f(A.x,A.y); glVertex2f(0,0);
         glTexCoord2f(B.x,A.y); glVertex2f(aWidth,0);
@@ -251,20 +251,20 @@ begin
       //Render beveled edges
       TRender.BindTexture(0);
 
-      c1 := 1 - Down;
-      c2 := Down;
-      Chamfer := 2 + Byte(Min(aWidth, aHeight) > 25);
+      c1 := 1 - down;
+      c2 := down;
+      chamfer := 2 + Byte(Min(aWidth, aHeight) > 25);
 
       glPushMatrix;
         //Scale to save on XY+/-Inset coordinates calculations
         glScalef(aWidth, aHeight, 0);
-        InsetX := Chamfer / aWidth;
-        InsetY := Chamfer / aHeight;
+        insetX := chamfer / aWidth;
+        insetY := chamfer / aHeight;
         glBegin(GL_QUADS);
-          glColor4f(c1,c1,c1,0.7); glkQuad(0, 0, 1,        0,        1-InsetX, 0+InsetY, 0+InsetX, 0+InsetY);
-          glColor4f(c1,c1,c1,0.6); glkQuad(0, 0, 0+InsetX, 0+InsetY, 0+InsetX, 1-InsetY, 0,        1       );
-          glColor4f(c2,c2,c2,0.5); glkQuad(1, 0, 1,        1,        1-InsetX, 1-InsetY, 1-InsetX, 0+InsetY);
-          glColor4f(c2,c2,c2,0.4); glkQuad(0, 1, 0+InsetX, 1-InsetY, 1-InsetX, 1-InsetY, 1,        1       );
+          glColor4f(c1,c1,c1,0.7); glkQuad(0, 0, 1,        0,        1-insetX, 0+insetY, 0+insetX, 0+insetY);
+          glColor4f(c1,c1,c1,0.6); glkQuad(0, 0, 0+insetX, 0+insetY, 0+insetX, 1-insetY, 0,        1       );
+          glColor4f(c2,c2,c2,0.5); glkQuad(1, 0, 1,        1,        1-insetX, 1-insetY, 1-insetX, 0+insetY);
+          glColor4f(c2,c2,c2,0.4); glkQuad(0, 1, 0+insetX, 1-insetY, 1-insetX, 1-insetY, 1,        1       );
         glEnd;
       glPopMatrix;
 
@@ -272,7 +272,7 @@ begin
     if aID <> 0 then
     begin
       glColor4f(1, 1, 1, 1);
-      WritePicture(Down, Down, aWidth, aHeight, [], aRX, aID, aImageEnabled, aFlagColor);
+      WritePicture(down, down, aWidth, aHeight, [], aRX, aID, aImageEnabled, aFlagColor);
     end;
 
     //Render MouseOver highlight
@@ -343,7 +343,7 @@ class procedure TKMRenderUI.WritePercentBar(aLeft,aTop,aWidth,aHeight: SmallInt;
                                             aMainColor: Cardinal = icBarColorGreen; aAddColor: Cardinal = icBarColorBlue;
                                             aResetTexture: Boolean = True);
 var
-  BarWidth: Word;
+  barWidth: Word;
 begin
 //  if aResetTexture then
     TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
@@ -354,19 +354,19 @@ begin
     WriteBevel(0, 0, aWidth, aHeight);
 
     //At least 2px wide to show up from under the shadow
-    BarWidth := Round((aWidth - 2) * (aPos)) + 2;
+    barWidth := Round((aWidth - 2) * (aPos)) + 2;
     glColor4ubv(@aMainColor);
     glBegin(GL_QUADS);
-      glkRect(1, 1, BarWidth-1, aHeight-1);
+      glkRect(1, 1, barWidth-1, aHeight-1);
     glEnd;
 
     if (aSeam > 0) then
     begin
       //At least 2px wide to show up from under the shadow
-      BarWidth := Round((aWidth - 2) * Min(aPos, aSeam)) + 2;
+      barWidth := Round((aWidth - 2) * Min(aPos, aSeam)) + 2;
       glColor4ubv(@aAddColor);
       glBegin(GL_QUADS);
-        glkRect(1, 1, BarWidth-1, aHeight-1);
+        glkRect(1, 1, barWidth-1, aHeight-1);
       glEnd;
 
       //Skip the seam if it matches high border
@@ -409,8 +409,8 @@ const
   end;
 
 var
-  PTPos, Pos: Word;
-  Mark: Integer;
+  PTPos, pos: Word;
+  mark: Integer;
 begin
   TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
 
@@ -420,13 +420,13 @@ begin
     WriteBevel(0, 0, aWidth, aHeight);
 
     PTPos := GetPos(aPeacetime);
-    Pos := GetPos(aPos);
+    pos := GetPos(aPos);
 
     if aPos < aPeacetime then
     begin
       glColor4ubv(@BAR_COLOR_GREEN);
       glBegin(GL_QUADS);
-        glkRect(1, 1, Pos - 1, aHeight - 1);
+        glkRect(1, 1, pos - 1, aHeight - 1);
       glEnd;
 
       WriteWideLine(PTPos, icCyan);
@@ -440,12 +440,12 @@ begin
 
       glColor4ubv(@BAR_COLOR_BLUE);
       glBegin(GL_QUADS);
-        glkRect(PTPos, 1, Pos - 1, aHeight - 1);
+        glkRect(PTPos, 1, pos - 1, aHeight - 1);
       glEnd;
     end;
 
-    for Mark in aMarks do
-      WriteWideLine(GetPos(Mark), icYellow, aPattern);
+    for mark in aMarks do
+      WriteWideLine(GetPos(mark), icYellow, aPattern);
 
     if aHighlightedMark <> -1 then
       WriteWideLine(GetPos(aHighlightedMark), icOrange);
@@ -468,56 +468,56 @@ class procedure TKMRenderUI.WritePicture(aLeft, aTop, aWidth, aHeight: SmallInt;
                                          aID: Word; aEnabled: Boolean = True; aColor: TColor4 = $FFFF00FF; aLightness: Single = 0;
                                          aResetTexture: Boolean = True);
 var
-  OffX, OffY: Integer;
-  DrawWidth, DrawHeight: Integer;
+  offX, offY: Integer;
+  drawWidth, drawHeight: Integer;
 begin
   if aID = 0 then Exit;
 
   if aResetTexture then
     TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
 
-  OffX  := 0;
-  OffY  := 0;
-  DrawWidth   := gGFXData[aRX, aID].PxWidth;
-  DrawHeight  := gGFXData[aRX, aID].PxHeight;
+  offX  := 0;
+  offY  := 0;
+  drawWidth   := gGFXData[aRX, aID].PxWidth;
+  drawHeight  := gGFXData[aRX, aID].PxHeight;
 
   //Both aAnchors means that we will need to stretch the image
   if (anLeft in aAnchors) and (anRight in aAnchors) then
-    DrawWidth := aWidth
+    drawWidth := aWidth
   else
   if anLeft in aAnchors then
     //Use defaults
   else
   if anRight in aAnchors then
-    OffX := aWidth - DrawWidth
+    offX := aWidth - drawWidth
   else
     //No aAnchors means: draw the image in center
-    OffX := (aWidth - DrawWidth) div 2;
+    offX := (aWidth - drawWidth) div 2;
 
   if (anTop in aAnchors) and (anBottom in aAnchors) then
-    DrawHeight  := aHeight
+    drawHeight  := aHeight
   else
   if anTop in aAnchors then
     //Use defaults
   else
   if anBottom in aAnchors then
-    OffY := aHeight - DrawHeight
+    offY := aHeight - drawHeight
   else
-    OffY := (aHeight - DrawHeight) div 2;
+    offY := (aHeight - drawHeight) div 2;
 
   with gGFXData[aRX, aID] do
   begin
     glPushMatrix;
-      glTranslatef(aLeft + OffX, aTop + OffY, 0);
+      glTranslatef(aLeft + offX, aTop + offY, 0);
 
       //Base layer
       TRender.BindTexture(Tex.ID);
       if aEnabled then glColor3f(1,1,1) else glColor3f(0.33,0.33,0.33);
       glBegin(GL_QUADS);
         glTexCoord2f(Tex.u1,Tex.v1); glVertex2f(0            , 0             );
-        glTexCoord2f(Tex.u2,Tex.v1); glVertex2f(0 + DrawWidth, 0             );
-        glTexCoord2f(Tex.u2,Tex.v2); glVertex2f(0 + DrawWidth, 0 + DrawHeight);
-        glTexCoord2f(Tex.u1,Tex.v2); glVertex2f(0            , 0 + DrawHeight);
+        glTexCoord2f(Tex.u2,Tex.v1); glVertex2f(0 + drawWidth, 0             );
+        glTexCoord2f(Tex.u2,Tex.v2); glVertex2f(0 + drawWidth, 0 + drawHeight);
+        glTexCoord2f(Tex.u1,Tex.v2); glVertex2f(0            , 0 + drawHeight);
       glEnd;
 
       //Color overlay for unit icons and scrolls
@@ -530,9 +530,9 @@ begin
           glColor3f(aColor AND $FF / 768, aColor SHR 8 AND $FF / 768, aColor SHR 16 AND $FF / 768);
         glBegin(GL_QUADS);
           glTexCoord2f(Alt.u1,Alt.v1); glVertex2f(0            , 0             );
-          glTexCoord2f(Alt.u2,Alt.v1); glVertex2f(0 + DrawWidth, 0             );
-          glTexCoord2f(Alt.u2,Alt.v2); glVertex2f(0 + DrawWidth, 0 + DrawHeight);
-          glTexCoord2f(Alt.u1,Alt.v2); glVertex2f(0            , 0 + DrawHeight);
+          glTexCoord2f(Alt.u2,Alt.v1); glVertex2f(0 + drawWidth, 0             );
+          glTexCoord2f(Alt.u2,Alt.v2); glVertex2f(0 + drawWidth, 0 + drawHeight);
+          glTexCoord2f(Alt.u1,Alt.v2); glVertex2f(0            , 0 + drawHeight);
         glEnd;
       end;
 
@@ -549,9 +549,9 @@ begin
         glColor3f(aLightness, aLightness, aLightness);
         glBegin(GL_QUADS);
           glTexCoord2f(Tex.u1,Tex.v1); glVertex2f(0            , 0             );
-          glTexCoord2f(Tex.u2,Tex.v1); glVertex2f(0 + DrawWidth, 0             );
-          glTexCoord2f(Tex.u2,Tex.v2); glVertex2f(0 + DrawWidth, 0 + DrawHeight);
-          glTexCoord2f(Tex.u1,Tex.v2); glVertex2f(0            , 0 + DrawHeight);
+          glTexCoord2f(Tex.u2,Tex.v1); glVertex2f(0 + drawWidth, 0             );
+          glTexCoord2f(Tex.u2,Tex.v2); glVertex2f(0 + drawWidth, 0 + drawHeight);
+          glTexCoord2f(Tex.u1,Tex.v2); glVertex2f(0            , 0 + drawHeight);
         glEnd;
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       end;
@@ -621,7 +621,8 @@ end;
 
 //Renders polygon shape with given color
 class procedure TKMRenderUI.WritePolyShape(aPoints: TKMPointArray; aColor: TColor4; aPattern: Word = $FFFF);
-var I: Integer;
+var
+  I: Integer;
 begin
   TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
 
@@ -637,7 +638,8 @@ end;
 
 
 class procedure TKMRenderUI.WritePolyShape(aPoints: TKMPointFArray; aColor: TColor4; aPattern: Word = $FFFF);
-var I: Integer;
+var
+  I: Integer;
 begin
   TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
 
@@ -687,139 +689,139 @@ class procedure TKMRenderUI.WriteText(aLeft, aTop, aWidth: SmallInt; aText: Unic
                                       aShowEolSymbol: Boolean = False; aTabWidth: Integer = TAB_WIDTH; aResetTexture: Boolean = True;
                                       aMonospaced: Boolean = False);
 var
-  I, K, Off, letW, adj: Integer;
-  LineCount,dx,dy,LineHeight,BlockWidth,PrevAtlas, LineWidthInc: Integer;
-  LineWidth: array of Integer; //Use signed format since some fonts may have negative CharSpacing
-  FontData: TKMFontData;
-  Let: TKMLetter;
-  TmpColor: Integer;
-  Colors: array of record
+  I, K, off, letW, adj: Integer;
+  lineCount, dx, dy, lineHeight, blockWidth, prevAtlas, lineWidthInc: Integer;
+  lineWidth: array of Integer; //Use signed format since some fonts may have negative CharSpacing
+  fontData: TKMFontData;
+  let: TKMLetter;
+  tmpColor: Integer;
+  colors: array of record
     FirstChar: Word;
     Color: TColor4;
   end;
 
   procedure DrawLetter;
   begin
-    Let := FontData.GetLetter(aText[I]);
+    let := fontData.GetLetter(aText[I]);
 
-    if (PrevAtlas = -1) or (PrevAtlas <> Let.AtlasId) then
+    if (prevAtlas = -1) or (prevAtlas <> let.AtlasId) then
     begin
-      if PrevAtlas <> -1 then
+      if prevAtlas <> -1 then
         glEnd; //End previous draw
-      PrevAtlas := Let.AtlasId;
-      TRender.BindTexture(FontData.TexID[Let.AtlasId]);
+      prevAtlas := let.AtlasId;
+      TRender.BindTexture(fontData.TexID[let.AtlasId]);
       glBegin(GL_QUADS);
     end;
 
-    letW := IfThen(aMonospaced, FONT_INFO[aFont].MaxAnsiCharWidth, Let.Width);
+    letW := IfThen(aMonospaced, FONT_INFO[aFont].MaxAnsiCharWidth, let.Width);
     // Small adjustment to draw letter i nthe center of its place. Looks better
-    adj := IfThen(aMonospaced, (FONT_INFO[aFont].MaxAnsiCharWidth - Let.Width) div 2, 0);
+    adj := IfThen(aMonospaced, (FONT_INFO[aFont].MaxAnsiCharWidth - let.Width) div 2, 0);
 
-    glTexCoord2f(Let.u1, Let.v1); glVertex2f(dx + adj           , dy            + Let.YOffset);
-    glTexCoord2f(Let.u2, Let.v1); glVertex2f(dx + adj+ Let.Width, dy            + Let.YOffset);
-    glTexCoord2f(Let.u2, Let.v2); glVertex2f(dx + adj+ Let.Width, dy+Let.Height + Let.YOffset);
-    glTexCoord2f(Let.u1, Let.v2); glVertex2f(dx + adj           , dy+Let.Height + Let.YOffset);
-    Inc(dx, letW + FontData.CharSpacing);
+    glTexCoord2f(let.u1, let.v1); glVertex2f(dx + adj           , dy            + let.YOffset);
+    glTexCoord2f(let.u2, let.v1); glVertex2f(dx + adj+ let.Width, dy            + let.YOffset);
+    glTexCoord2f(let.u2, let.v2); glVertex2f(dx + adj+ let.Width, dy+let.Height + let.YOffset);
+    glTexCoord2f(let.u1, let.v2); glVertex2f(dx + adj           , dy+let.Height + let.YOffset);
+    Inc(dx, letW + fontData.CharSpacing);
   end;
 
 var
-  SetupClipXApplied: Boolean;
+  setupClipXApplied: Boolean;
 begin
   if (aText = '') or (aColor = $00000000) then Exit;
 
   if aResetTexture then
     TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
 
-  SetLength(Colors, 0);
+  SetLength(colors, 0);
 
-  SetupClipXApplied := aWidth <> 0;
-  if SetupClipXApplied then
+  setupClipXApplied := aWidth <> 0;
+  if setupClipXApplied then
     SetupClipX(aLeft, aLeft + aWidth);
 
   //Look for [$FFFFFF][] patterns that markup text color
-  Off := 1;
+  off := 1;
   if not aIgnoreMarkup then
   repeat
-    I := PosEx('[', aText, Off);
+    I := PosEx('[', aText, off);
 
     //Check for reset
     if (I <> 0) and (I+1 <= Length(aText)) and (aText[I+1] = ']') then
     begin
-      SetLength(Colors, Length(Colors) + 1);
-      Colors[High(Colors)].FirstChar := I;
-      Colors[High(Colors)].Color := 0;
+      SetLength(colors, Length(colors) + 1);
+      colors[High(colors)].FirstChar := I;
+      colors[High(colors)].Color := 0;
       if not aShowMarkup then Delete(aText, I, 2);
     end;
 
     //Check for new color
     if (I <> 0) and (I+8 <= Length(aText))
     and (aText[I+1] = '$') and (aText[I+8] = ']')
-    and TryStrToInt(Copy(aText, I+1, 7), TmpColor) then
+    and TryStrToInt(Copy(aText, I+1, 7), tmpColor) then
     begin
-      SetLength(Colors, Length(Colors) + 1);
-      Colors[High(Colors)].FirstChar := I;
+      SetLength(colors, Length(colors) + 1);
+      colors[High(colors)].FirstChar := I;
       if aShowMarkup then
-        Inc(Colors[High(Colors)].FirstChar, 9); //Don't color the markup itself
-      Colors[High(Colors)].Color := Abs(TmpColor) or $FF000000;
+        Inc(colors[High(colors)].FirstChar, 9); //Don't color the markup itself
+      colors[High(colors)].Color := Abs(tmpColor) or $FF000000;
       if not aShowMarkup then
       begin
         Delete(aText, I, 9);
-        Off := I; //We could try to find 1 more color right after this one (could happen in case of wrap colors)
+        off := I; //We could try to find 1 more color right after this one (could happen in case of wrap colors)
       end else
-        Off := I + 1; //Continue search from the next letter
+        off := I + 1; //Continue search from the next letter
     end
     else
-      Off := I + 1; //Continue search from the next letter
+      off := I + 1; //Continue search from the next letter
 
   until(I = 0);
 
 
-  FontData := gRes.Fonts[aFont]; //Shortcut
+  fontData := gRes.Fonts[aFont]; //Shortcut
 
   //Calculate line count and each lines width to be able to properly aAlign them
-  LineCount := 1;
+  lineCount := 1;
   if not aShowEolSymbol then
     for I := 1 to Length(aText) do
       if aText[I] = #124 then
-        Inc(LineCount);
+        Inc(lineCount);
 
-  SetLength(LineWidth, LineCount+2); //1..n+1 (for last line)
+  SetLength(lineWidth, lineCount+2); //1..n+1 (for last line)
 
-  LineCount := 1;
+  lineCount := 1;
 
   for I := 1 to Length(aText) do
   begin
     if aText[I] = #9 then // Tab char
-      LineWidthInc := (Floor(LineWidth[LineCount] / aTabWidth) + 1) * aTabWidth - LineWidth[LineCount]
+      lineWidthInc := (Floor(lineWidth[lineCount] / aTabWidth) + 1) * aTabWidth - lineWidth[lineCount]
     else
-      LineWidthInc := FontData.GetCharWidth(aText[I], aShowEolSymbol);
-    Inc(LineWidth[LineCount], LineWidthInc);
+      lineWidthInc := fontData.GetCharWidth(aText[I], aShowEolSymbol);
+    Inc(lineWidth[lineCount], lineWidthInc);
 
     //If EOL or aText end
     if (not aShowEolSymbol and (aText[I] = #124)) or (I = Length(aText)) then
     begin
       if aText[I] <> #9 then // for Tab reduce line width for CharSpacing and also for TAB 'jump'
-        LineWidthInc := 0;
-      LineWidth[LineCount] := Math.max(0, LineWidth[LineCount] - FontData.CharSpacing - LineWidthInc); //Remove last interletter space and negate double EOLs
-      Inc(LineCount);
+        lineWidthInc := 0;
+      lineWidth[lineCount] := Math.max(0, lineWidth[lineCount] - fontData.CharSpacing - lineWidthInc); //Remove last interletter space and negate double EOLs
+      Inc(lineCount);
     end;
   end;
 
-  LineHeight := FontData.BaseHeight + FontData.LineSpacing;
+  lineHeight := fontData.BaseHeight + fontData.LineSpacing;
 
-  dec(LineCount);
-  BlockWidth := 0;
-  for I := 1 to LineCount do
-    BlockWidth := Math.Max(BlockWidth, LineWidth[I]);
+  dec(lineCount);
+  blockWidth := 0;
+  for I := 1 to lineCount do
+    blockWidth := Math.Max(blockWidth, lineWidth[I]);
 
   case aAlign of
     taLeft:   dx := aLeft;
-    taCenter: dx := aLeft + (aWidth - LineWidth[1]) div 2;
-    taRight:  dx := aLeft + aWidth - LineWidth[1];
+    taCenter: dx := aLeft + (aWidth - lineWidth[1]) div 2;
+    taRight:  dx := aLeft + aWidth - lineWidth[1];
     else      dx := aLeft;
   end;
   dy := aTop;
-  LineCount := 1;
+  lineCount := 1;
 
   glColor4ubv(@aColor);
 
@@ -827,39 +829,39 @@ begin
     TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
 
   K := 0;
-  PrevAtlas := -1;
+  prevAtlas := -1;
   for I := 1 to Length(aText) do
   begin
     //Loop as there might be adjoined tags on same position
-    while (K < Length(Colors)) and (I = Colors[K].FirstChar) do
+    while (K < Length(colors)) and (I = colors[K].FirstChar) do
     begin
-      if Colors[K].Color = 0 then
+      if colors[K].Color = 0 then
         glColor4ubv(@aColor)
       else
-        glColor4ubv(@Colors[K].Color);
+        glColor4ubv(@colors[K].Color);
       Inc(K);
     end;
 
     case aText[I] of
       #9:   dx := aLeft + (Floor((dx - aLeft) / aTabWidth) + 1) * aTabWidth;
-      #32:  Inc(dx, IfThen(aMonospaced, FONT_INFO[aFont].MaxAnsiCharWidth + FontData.CharSpacing, FontData.WordSpacing));
+      #32:  Inc(dx, IfThen(aMonospaced, FONT_INFO[aFont].MaxAnsiCharWidth + fontData.CharSpacing, fontData.WordSpacing));
       #124: if aShowEolSymbol then
               DrawLetter
             else begin
               //KaM uses #124 or vertical bar (|) for new lines in the LIB files,
               //so lets do the same here. Saves complex conversions...
-              Inc(dy, LineHeight);
-              Inc(LineCount);
+              Inc(dy, lineHeight);
+              Inc(lineCount);
               case aAlign of
                 taLeft:   dx := aLeft;
-                taCenter: dx := aLeft + (aWidth - LineWidth[LineCount]) div 2;
-                taRight:  dx := aLeft + aWidth - LineWidth[LineCount];
+                taCenter: dx := aLeft + (aWidth - lineWidth[lineCount]) div 2;
+                taRight:  dx := aLeft + aWidth - lineWidth[lineCount];
               end;
             end;
       else  DrawLetter;
     end;
     //When we reach the end, if we painted something then we need to end it
-    if (I = Length(aText)) and (PrevAtlas <> -1) then
+    if (I = Length(aText)) and (prevAtlas <> -1) then
       glEnd;
   end;
 
@@ -871,28 +873,28 @@ begin
     glPushMatrix;
       case aAlign of
         taLeft:   glTranslatef(aLeft,                               aTop, 0);
-        taCenter: glTranslatef(aLeft + (aWidth - BlockWidth) div 2, aTop, 0);
-        taRight:  glTranslatef(aLeft + (aWidth - BlockWidth),       aTop, 0);
+        taCenter: glTranslatef(aLeft + (aWidth - blockWidth) div 2, aTop, 0);
+        taRight:  glTranslatef(aLeft + (aWidth - blockWidth),       aTop, 0);
       end;
 
       glColor4f(1,0,0,0.5);
       glBegin(GL_LINE_LOOP);
         glVertex2f(0.5           , 0.5       );
-        glVertex2f(BlockWidth+0.5, 0.5       );
-        glVertex2f(BlockWidth+0.5, LineHeight*LineCount+0.5);
-        glVertex2f(0.5           , LineHeight*LineCount+0.5);
+        glVertex2f(blockWidth+0.5, 0.5       );
+        glVertex2f(blockWidth+0.5, lineHeight*lineCount+0.5);
+        glVertex2f(0.5           , lineHeight*lineCount+0.5);
       glEnd;
 
       glBegin(GL_LINE_LOOP);
         glVertex2f(0.5           , 0.5       );
-        glVertex2f(BlockWidth+0.5, 0.5       );
-        glVertex2f(BlockWidth+0.5, LineHeight+0.5);
-        glVertex2f(0.5           , LineHeight+0.5);
+        glVertex2f(blockWidth+0.5, 0.5       );
+        glVertex2f(blockWidth+0.5, lineHeight+0.5);
+        glVertex2f(0.5           , lineHeight+0.5);
       glEnd;
     glPopMatrix;
   end;
 
-  if SetupClipXApplied then
+  if setupClipXApplied then
     ReleaseClipX;
 end;
 
@@ -949,7 +951,7 @@ end;
 
 class procedure TKMRenderUI.WriteCircle(aCenterX, aCenterY: SmallInt; aRadius: Byte; aFillColor: TColor4);
 var
-  Ang: Single;
+  ang: Single;
   I: Byte;
 begin
   if aRadius = 0 then Exit;
@@ -960,19 +962,21 @@ begin
   glBegin(GL_POLYGON);
     for I := 0 to 15 do
     begin
-      Ang := I / 8 * Pi;
-      glVertex2f(aCenterX + Sin(Ang) * aRadius, aCenterY + Cos(Ang) * aRadius);
+      ang := I / 8 * Pi;
+      glVertex2f(aCenterX + Sin(ang) * aRadius, aCenterY + Cos(ang) * aRadius);
     end;
   glEnd;
 end;
 
 
 class procedure TKMRenderUI.WriteShadow(aLeft, aTop, aWidth, aHeight: SmallInt; aBlur: Byte; aCol: TColor4);
+
   procedure DoNode(aX, aY: Single; aColor: TColor4);
   begin
     glColor4ubv(@aColor);
     glVertex2f(aX, aY);
   end;
+
 var
   bCol: TColor4;
 begin

@@ -862,15 +862,15 @@ begin
         ResRow_Costs[I].Caption := gRes.Wares[Res].Title;
         ResRow_Costs[I].RX := rxGui;
         //Hide the icons when they are not used
-        if WarfareCosts[Res, 1] = wtNone then
+        if WARFARE_COSTS[Res, 1] = wtNone then
           ResRow_Costs[I].TexID1 := 0
         else
-          ResRow_Costs[I].TexID1 := gRes.Wares[WarfareCosts[Res, 1]].GUIIcon;
+          ResRow_Costs[I].TexID1 := gRes.Wares[WARFARE_COSTS[Res, 1]].GUIIcon;
 
-        if WarfareCosts[Res, 2] = wtNone then
+        if WARFARE_COSTS[Res, 2] = wtNone then
           ResRow_Costs[I].TexID2 := 0
         else
-          ResRow_Costs[I].TexID2 := gRes.Wares[WarfareCosts[Res, 2]].GUIIcon;
+          ResRow_Costs[I].TexID2 := gRes.Wares[WARFARE_COSTS[Res, 2]].GUIIcon;
 
         ResRow_Costs[I].Show;
         ResRow_Costs[I].Top := Base + Line * LINE_HEIGHT - 2*I - 6; //Pack them closer so they fit on 1024x576

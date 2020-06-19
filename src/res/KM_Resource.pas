@@ -75,10 +75,10 @@ type
 
     function IsMsgHouseUnnocupied(aMsgId: Word): Boolean;
 
-    procedure ExportTreeAnim;
-    procedure ExportHouseAnim;
-    procedure ExportUnitAnim(aUnitFrom, aUnitTo: TKMUnitType; aExportUnused: Boolean = False);
-    procedure ExportSpritesToPNG(aRT: TRXType);
+    procedure ExportTreeAnim(aOnDone: TProc<String> = nil);
+    procedure ExportHouseAnim(aOnDone: TProc<String> = nil);
+    procedure ExportUnitAnim(aUnitFrom, aUnitTo: TKMUnitType; aExportUnused: Boolean = False; aOnDone: TProc<String> = nil);
+    procedure ExportSpritesToPNG(aRT: TRXType; aOnDone: TProc<String> = nil);
   end;
 
 
@@ -277,7 +277,7 @@ begin
 end;
 
 
-procedure TKMResource.ExportSpritesToPNG(aRT: TRXType);
+procedure TKMResource.ExportSpritesToPNG(aRT: TRXType; aOnDone: TProc<String> = nil);
 begin
   GetOrCreateExportWorker.QueueWork(procedure
   var
@@ -293,12 +293,12 @@ begin
     finally
       sprites.Free;
     end;
-  end, 'Export ' + GetEnumName(TypeInfo(TRXType), Integer(aRT)));
+  end, aOnDone, 'Export ' + GetEnumName(TypeInfo(TRXType), Integer(aRT)));
 end;
 
 
 //Export Units graphics categorized by Unit and Action
-procedure TKMResource.ExportUnitAnim(aUnitFrom, aUnitTo: TKMUnitType; aExportUnused: Boolean = False);
+procedure TKMResource.ExportUnitAnim(aUnitFrom, aUnitTo: TKMUnitType; aExportUnused: Boolean = False; aOnDone: TProc<String> = nil);
 begin
 
   // Asynchroniously export data
@@ -351,7 +351,7 @@ begin
                   if not FolderCreated then
                   begin
                     //Use default locale for Unit GUIName, as translation could be not good for file system (like russian '����������/�������' with slash in it)
-                    FullFolder := Folder + resTexts.DefaultTexts[units[U].GUITextID] + PathDelim + UnitAct[A] + PathDelim;
+                    FullFolder := Folder + resTexts.DefaultTexts[units[U].GUITextID] + PathDelim + UNIT_ACT_STR[A] + PathDelim;
                     ForceDirectories(FullFolder);
                     FolderCreated := True;
                   end;
@@ -413,7 +413,7 @@ begin
       FullFolder := Folder + 'Thoughts' + PathDelim;
       ForceDirectories(FullFolder);
       for T := thEat to High(TKMUnitThought) do
-        for I := ThoughtBounds[T,1] to  ThoughtBounds[T,2] do
+        for I := THOUGHT_BOUNDS[T,1] to  THOUGHT_BOUNDS[T,2] do
         begin
           SpritePack.ExportFullImageData(FullFolder, I+1, SList);
           Used[I+1] := True;
@@ -439,12 +439,12 @@ begin
       resTexts.Free;
       SList.Free;
     end;
-  end, 'Export units anim');
+  end, aOnDone, 'Export units anim');
 end;
 
 
 //Export Houses graphics categorized by House and Action
-procedure TKMResource.ExportHouseAnim;
+procedure TKMResource.ExportHouseAnim(aOnDone: TProc<String> = nil);
 begin
 
   // Asynchroniously export data
@@ -479,7 +479,7 @@ begin
         for Ac := haWork1 to haFlag3 do
           for K := 1 to houses[ID].Anim[Ac].Count do
           begin                                      //HouseNameTextID    resTexts.DefaultTexts
-            FullFolder := Folder + resTexts.DefaultTexts[houses[ID].HouseNameTextID] + PathDelim + HouseAction[Ac] + PathDelim;
+            FullFolder := Folder + resTexts.DefaultTexts[houses[ID].HouseNameTextID] + PathDelim + HOUSE_ACTION_STR[Ac] + PathDelim;
             ForceDirectories(FullFolder);
             ci := houses[ID].Anim[Ac].Step[K] + 1;
             if ci <> 0 then
@@ -516,12 +516,12 @@ begin
       sprites.ClearTemp;
       sprites.Free;
     end;
-  end, 'Export house anim');
+  end, aOnDone, 'Export house anim');
 end;
 
 
 //Export Trees graphics categorized by ID
-procedure TKMResource.ExportTreeAnim;
+procedure TKMResource.ExportTreeAnim(aOnDone: TProc<String> = nil);
 begin
   // Asynchroniously export data
   GetOrCreateExportWorker.QueueWork(procedure
@@ -570,7 +570,7 @@ begin
       sprites.Free;
       SList.Free;
     end;
-  end, 'Export tree anim');
+  end, aOnDone, 'Export tree anim');
 end;
 
 

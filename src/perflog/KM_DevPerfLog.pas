@@ -119,31 +119,28 @@ end;
 
 function TKMPerfLogs.GetItem(aSection: TPerfSectionDev): TKMPerfLogSingle;
 begin
+  if Self = nil then Exit(nil);
+
   // This easy check allows us to exit if the Log was not initialized, e.g. in utils
-  if Self <> nil then
-    Result := fItems[aSection]
-  else
-    Result := nil;
+  Result := fItems[aSection]
 end;
 
 
 function TKMPerfLogs.GetStackGFX: TKMPerfLogStackGFX;
 begin
+  if Self = nil then Exit(nil);
+
   // This easy check allows us to exit if the Log was not initialized, e.g. in utils
-  if Self <> nil then
-    Result := fStackGFX
-  else
-    Result := nil;
+  Result := fStackGFX
 end;
 
 
 function TKMPerfLogs.GetStackCPU: TKMPerfLogStackCPU;
 begin
+  if Self = nil then Exit(nil);
+
   // This easy check allows us to exit if the Log was not initialized, e.g. in utils
-  if Self <> nil then
-    Result := fStackCPU
-  else
-    Result := nil;
+  Result := fStackCPU
 end;
 
 

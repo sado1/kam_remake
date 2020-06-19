@@ -469,7 +469,7 @@ begin
            ) then
         //if (gHands[fOwner].Units[I].IsIdle) then
         begin
-          WorkersPos[fFreeWorkersCnt] := CurrPosition;
+          WorkersPos[fFreeWorkersCnt] := Position;
           fFreeWorkersCnt := fFreeWorkersCnt + 1;
         end;
       end;
@@ -1456,7 +1456,7 @@ begin
   // Watchtowers
   HT := htWatchTower;
   if (not Planner.DefenceTowersPlanned OR (gHands[fOwner].Stats.GetHouseTotal(HT) < Planner.PlannedHouses[HT].Count))
-    AND (aTick + BUILD_TOWER_DELAY > gGame.GameOptions.Peacetime * 600)
+    AND (aTick + BUILD_TOWER_DELAY > gGame.Options.Peacetime * 600)
     AND (aTick > MINIMAL_TOWER_DELAY)
     AND (AddToConstruction(HT, True, True) = csHousePlaced) then
     begin
@@ -1733,9 +1733,9 @@ begin
       if not IsDeadOrDying then
       begin
         if (gHands[fOwner].Units[K] is TKMUnitSerf) AND IsIdle then
-          gRenderAux.Quad(CurrPosition.X, CurrPosition.Y, $44000000 OR tcBlue)
+          gRenderAux.Quad(Position.X, Position.Y, $44000000 OR tcBlue)
         else if (gHands[fOwner].Units[K] is TKMUnitWorker) AND IsIdle then
-          gRenderAux.Quad(CurrPosition.X, CurrPosition.Y, $44000000 OR tcFuchsia);
+          gRenderAux.Quad(Position.X, Position.Y, $44000000 OR tcFuchsia);
       end;
 
   Color := 0; // For compiler

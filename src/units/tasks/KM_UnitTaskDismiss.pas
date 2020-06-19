@@ -97,10 +97,10 @@ var
 begin
   fSchool := nil;
 
-  S := gHands[fUnit.Owner].FindHouse(htSchool, fUnit.CurrPosition);
+  S := gHands[fUnit.Owner].FindHouse(htSchool, fUnit.Position);
 
-  if (S <> nil) and fUnit.CanWalkTo(fUnit.CurrPosition, S.PointBelowEntrance, tpWalk, 0) then
-    fSchool := S.GetHousePointer;
+  if (S <> nil) and fUnit.CanWalkTo(fUnit.Position, S.PointBelowEntrance, tpWalk, 0) then
+    fSchool := S.GetPointer;
 
   Result := fSchool;
 end;

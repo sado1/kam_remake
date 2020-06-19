@@ -1,4 +1,4 @@
-unit KM_GameSavedReplays;
+unit KM_GameSavePoints;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -6,7 +6,7 @@ uses
   KM_CommonClasses, KM_WorkerThread;
 
 type
-  TKMSavedReplay = class
+  TKMSavePoint = class
   private
     fStream: TKMemoryStream;
     fTick: Cardinal;
@@ -19,14 +19,14 @@ type
     property Tick: Cardinal read fTick;
   end;
 
-  TKMSavedReplays = class
+  TKMSavePointCollection = class
   private
-    fReplaySaves: TDictionary<Cardinal, TKMSavedReplay>;
+    fSavePoints: TDictionary<Cardinal, TKMSavePoint>;
     //Properties to restore after load saved replay
     fLastTick: Cardinal;
 
     function GetCount(): Integer;
-    function GetSave(aTick: Cardinal): TKMSavedReplay;
+    function GetSavePoint(aTick: Cardinal): TKMSavePoint;
     function GetStream(aTick: Cardinal): TKMemoryStream;
   public
     constructor Create();
@@ -36,12 +36,14 @@ type
     procedure Clear;
 
     property Count: Integer read GetCount;
-    property Replay[aTick: Cardinal]: TKMSavedReplay read GetSave;
+    property SavePoint[aTick: Cardinal]: TKMSavePoint read GetSavePoint;
     property Stream[aTick: Cardinal]: TKMemoryStream read GetStream; default;
     function Contains(aTick: Cardinal): Boolean;
     procedure FillTicks(aTicksList: TList<Cardinal>);
 
-    procedure NewSave(aStream: TKMemoryStream; aTick: Cardinal);
+    procedure NewSavePoint(aStream: TKMemoryStream; aTick: Cardinal);
+
+    function LatestPointTickBefore(aTick: Cardinal): Cardinal;
 
     procedure Save(aSaveStream: TKMemoryStream);
     procedure Load(aLoadStream: TKMemoryStream);
@@ -55,103 +57,105 @@ uses
   SysUtils, Classes;
 
 { TKMSavedReplays }
-constructor TKMSavedReplays.Create();
+constructor TKMSavePointCollection.Create();
 begin
-  fReplaySaves := TDictionary<Cardinal, TKMSavedReplay>.Create();
+  inherited;
+
+  fSavePoints := TDictionary<Cardinal, TKMSavePoint>.Create();
   fLastTick := 0;
 end;
 
 
-destructor TKMSavedReplays.Destroy();
+destructor TKMSavePointCollection.Destroy();
 begin
   Clear;
+  fSavePoints.Free; // TKMList will free all objects of the list
 
-  fReplaySaves.Free; // TKMList will free all objects of the list
   inherited;
 end;
 
 
-function TKMSavedReplays.GetCount(): Integer;
+function TKMSavePointCollection.GetCount(): Integer;
 begin
-  Result := fReplaySaves.Count;
+  Result := fSavePoints.Count;
 end;
 
 
-procedure TKMSavedReplays.Clear;
+procedure TKMSavePointCollection.Clear;
 var
-  Replay: TKMSavedReplay;
+  savePoint: TKMSavePoint;
 begin
-  for Replay in fReplaySaves.Values do
-    Replay.Free;
+  for savePoint in fSavePoints.Values do
+    savePoint.Free;
 
-  fReplaySaves.Clear;
+  fSavePoints.Clear;
 end;
 
 
-function TKMSavedReplays.Contains(aTick: Cardinal): Boolean;
+function TKMSavePointCollection.Contains(aTick: Cardinal): Boolean;
 begin
-  Result := fReplaySaves.ContainsKey(aTick);
+  Result := fSavePoints.ContainsKey(aTick);
 end;
 
 
-procedure TKMSavedReplays.FillTicks(aTicksList: TList<Cardinal>);
+procedure TKMSavePointCollection.FillTicks(aTicksList: TList<Cardinal>);
 var
   Tick: Cardinal;
 begin
-  for Tick in fReplaySaves.Keys do
+  for Tick in fSavePoints.Keys do
     aTicksList.Add(Tick);
 end;
 
 
-function TKMSavedReplays.GetSave(aTick: Cardinal): TKMSavedReplay;
+function TKMSavePointCollection.GetSavePoint(aTick: Cardinal): TKMSavePoint;
 begin
   Result := nil;
-  if fReplaySaves.ContainsKey(aTick) then
-    Result := fReplaySaves[aTick];
+  if fSavePoints.ContainsKey(aTick) then
+    Result := fSavePoints[aTick];
 end;
 
 
-function TKMSavedReplays.GetStream(aTick: Cardinal): TKMemoryStream;
+function TKMSavePointCollection.GetStream(aTick: Cardinal): TKMemoryStream;
 var
-  Rpl: TKMSavedReplay;
+  savePoint: TKMSavePoint;
 begin
   Result := nil;
-  if fReplaySaves.TryGetValue(aTick, Rpl) then
-    Result := Rpl.Stream;
+  if fSavePoints.TryGetValue(aTick, savePoint) then
+    Result := savePoint.Stream;
 end;
 
 
-procedure TKMSavedReplays.NewSave(aStream: TKMemoryStream; aTick: Cardinal);
+procedure TKMSavePointCollection.NewSavePoint(aStream: TKMemoryStream; aTick: Cardinal);
 begin
-  fReplaySaves.Add(aTick, TKMSavedReplay.Create(aStream, aTick) );
+  fSavePoints.Add(aTick, TKMSavePoint.Create(aStream, aTick) );
 end;
 
 
-procedure TKMSavedReplays.Save(aSaveStream: TKMemoryStream);
+procedure TKMSavePointCollection.Save(aSaveStream: TKMemoryStream);
 var
   keyArray : TArray<Cardinal>;
   key: Cardinal;
-  rpl: TKMSavedReplay;
+  savePoint: TKMSavePoint;
 begin
   aSaveStream.PlaceMarker('SavedReplays');
   aSaveStream.Write(fLastTick);
-  aSaveStream.Write(fReplaySaves.Count);
+  aSaveStream.Write(fSavePoints.Count);
 
-  keyArray := fReplaySaves.Keys.ToArray;
+  keyArray := fSavePoints.Keys.ToArray;
   TArray.Sort<Cardinal>(keyArray);
 
   for key in keyArray do
   begin
     aSaveStream.PlaceMarker('SavePoint');
     aSaveStream.Write(key);
-    rpl := fReplaySaves.Items[key];
-    aSaveStream.Write(Cardinal(rpl.fStream.Size));
-    aSaveStream.CopyFrom(rpl.fStream, 0);
+    savePoint := fSavePoints.Items[key];
+    aSaveStream.Write(Cardinal(savePoint.fStream.Size));
+    aSaveStream.CopyFrom(savePoint.fStream, 0);
   end;
 end;
 
 
-procedure TKMSavedReplays.SaveToFileAsync(const aFileName: UnicodeString; aWorkerThread: TKMWorkerThread);
+procedure TKMSavePointCollection.SaveToFileAsync(const aFileName: UnicodeString; aWorkerThread: TKMWorkerThread);
 var
   S: TKMemoryStreamBinary;
 begin
@@ -161,7 +165,7 @@ begin
 end;
 
 
-procedure TKMSavedReplays.LoadFromFile(const aFileName: UnicodeString);
+procedure TKMSavePointCollection.LoadFromFile(const aFileName: UnicodeString);
 var
   S: TKMemoryStreamBinary;
 begin
@@ -177,14 +181,27 @@ begin
 end;
 
 
-procedure TKMSavedReplays.Load(aLoadStream: TKMemoryStream);
+// Get latest savepoint tick, before aTick
+// 0 - if not found
+function TKMSavePointCollection.LatestPointTickBefore(aTick: Cardinal): Cardinal;
+var
+  key: Cardinal;
+begin
+  Result := 0;
+
+  for key in fSavePoints.Keys do
+    if (key <= aTick) and (key > Result) then
+      Result := key;
+end;
+
+procedure TKMSavePointCollection.Load(aLoadStream: TKMemoryStream);
 var
   I, cnt: Integer;
   tick, size: Cardinal;
-  rpl: TKMSavedReplay;
+  savePoint: TKMSavePoint;
   stream: TKMemoryStream;
 begin
-  fReplaySaves.Clear;
+  fSavePoints.Clear;
 
   aLoadStream.CheckMarker('SavedReplays');
   aLoadStream.Read(fLastTick);
@@ -199,15 +216,15 @@ begin
     stream := TKMemoryStreamBinary.Create;
     stream.CopyFrom(aLoadStream, size);
 
-    rpl := TKMSavedReplay.Create(stream, tick);
+    savePoint := TKMSavePoint.Create(stream, tick);
 
-    fReplaySaves.Add(tick, rpl);
+    fSavePoints.Add(tick, savePoint);
   end;
 end;
 
 
 { TKMSavedReplay }
-constructor TKMSavedReplay.Create(aStream: TKMemoryStream; aTick: Cardinal);
+constructor TKMSavePoint.Create(aStream: TKMemoryStream; aTick: Cardinal);
 begin
   inherited Create;
 
@@ -216,7 +233,7 @@ begin
 end;
 
 
-destructor TKMSavedReplay.Destroy();
+destructor TKMSavePoint.Destroy();
 begin
   fStream.Free;
 

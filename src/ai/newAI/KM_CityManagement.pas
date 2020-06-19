@@ -67,7 +67,8 @@ type
 implementation
 uses
   Classes, KM_Game, KM_Houses, KM_HouseSchool, KM_HandsCollection, KM_Hand, KM_Resource,
-  KM_AIFields, KM_Units, KM_UnitsCollection, KM_HouseMarket, KM_DevPerfLog, KM_DevPerfLogTypes;
+  KM_AIFields, KM_Units, KM_UnitsCollection, KM_HouseMarket, KM_DevPerfLog, KM_DevPerfLogTypes,
+  KM_HandTypes;
 
 
 { TKMCityManagement }
@@ -211,7 +212,7 @@ var
   begin
     Output := aCompletedWatchtowers;
 
-    if (aTick + RECRUIT_PEACE_DELAY > gGame.GameOptions.Peacetime * MIN_2_TICK)
+    if (aTick + RECRUIT_PEACE_DELAY > gGame.Options.Peacetime * MIN_2_TICK)
       AND (Stats.GetHouseQty(htBarracks) > 0)
       AND (aTick > fSetup.RecruitDelay * MIN_2_TICK) then
     begin
@@ -934,7 +935,7 @@ begin
       Fraction := Available / Max(1,Required);
 
   // Dont produce bows and spears when we dont produce leather
-  if (gGame.GameOptions.Peacetime < 45) AND (
+  if (gGame.Options.Peacetime < 45) AND (
     (gHands[fOwner].Stats.GetWareBalance(wtLeather) = 0) AND
     (gHands[fOwner].Stats.GetWareBalance(wtArmor) = 0) ) then
   begin

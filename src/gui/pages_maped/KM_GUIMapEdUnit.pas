@@ -57,7 +57,8 @@ implementation
 uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLType, {$ENDIF}
-  KM_HandsCollection, KM_RenderUI, KM_Resource, KM_ResFonts, KM_ResTexts, KM_ResUnits, KM_Utils, KM_Terrain;
+  KM_HandsCollection, KM_RenderUI, KM_Resource, KM_ResFonts, KM_ResTexts, KM_ResUnits, KM_Utils, KM_Terrain,
+  KM_UnitGroupTypes;
 
 
 { TKMMapEdUnit }
@@ -308,7 +309,7 @@ begin
   if Sender = Button_ArmyFood then
     UnitConditionsChange(Sender, []);
 
-  fGroup.MapEdOrder.Order := TKMInitialOrder(DropBox_ArmyOrder.ItemIndex);
+  fGroup.MapEdOrder.Order := TKMGroupInitialOrder(DropBox_ArmyOrder.ItemIndex);
   fGroup.MapEdOrder.Pos.Loc.X := Edit_ArmyOrderX.Value;
   fGroup.MapEdOrder.Pos.Loc.Y := Edit_ArmyOrderY.Value;
   fGroup.MapEdOrder.Pos.Dir := TKMDirection(Edit_ArmyOrderDir.Value + 1);

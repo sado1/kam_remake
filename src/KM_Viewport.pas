@@ -213,7 +213,7 @@ begin
   fPanFrom := fPosition;
   fPanImmidiately := aTicksCnt = 0;
   fPanProgress := 0;
-  fPanDuration := Round(aTicksCnt * gGameApp.Game.GameTickDuration);
+  fPanDuration := Round(aTicksCnt * gGameApp.Game.TickDuration);
   //Panning will be skipped when duration is zero
   if fPanImmidiately then
     SetPosition(aLoc);

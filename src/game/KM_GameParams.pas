@@ -12,43 +12,48 @@ type
 
   TKMGameParams = class
   private
-    fGameMode: TKMGameMode;
+    fMode: TKMGameMode;
     fMissionMode: TKMissionMode;
-    fGameTick: Cardinal;
+    fTick: Cardinal;
     fVisibleLayers: TKMMapVisibleLayerSet;
 
-    fGameName: UnicodeString;
-    fGameMapSimpleCRC: Cardinal; //CRC of map (based on Map and Dat) used in MapEd
-    fGameMapFullCRC: Cardinal; //CRC of map for reporting stats to master server. Also used in MapEd
+    fName: UnicodeString;
+    fMapSimpleCRC: Cardinal; //CRC of map (based on Map and Dat) used in MapEd
+    fMapFullCRC: Cardinal; //CRC of map for reporting stats to master server. Also used in MapEd
     fMissionFileSP: UnicodeString; //Relative pathname to mission we are playing, so it gets saved to crashreport. SP only, see GetMissionFile.
 
     fMissionDifficulty: TKMMissionDifficulty;
 
     fDynamicFOW: Boolean;
 
-    procedure SetGameTick(aGameTick: Cardinal);
-    procedure SetGameMode(aGameMode: TKMGameMode);
+    fBlockPointerOperations: Boolean;
+
+    procedure SetTick(aGameTick: Cardinal);
+    procedure SetMode(aGameMode: TKMGameMode);
     function GetMissionFile: UnicodeString;
     procedure SetMissionFileSP(const aMissionFileSP: UnicodeString);
 
     function GetDynamicFOW: Boolean;
     procedure SetDynamicFOW(const aDynamicFOW: Boolean);
+    procedure SetBlockPointer(aBlockPointer: Boolean);
   public
-    constructor Create(aGameMode: TKMGameMode; out aSetGameTickEvent: TCardinalEvent; out aSetGameModeEvent: TKMGameModeSetEvent; out aSetMissionFileSP: TUnicodeStringEvent);
+    constructor Create(aGameMode: TKMGameMode; out aSetGameTickEvent: TCardinalEvent; out aSetGameModeEvent: TKMGameModeSetEvent;
+                       out aSetMissionFileSP: TUnicodeStringEvent; out aSetBlockPointer: TBooleanEvent);
     destructor Destroy; override;
 
-    property GameMode: TKMGameMode read fGameMode;
+    property Mode: TKMGameMode read fMode;
     property MissionMode: TKMissionMode read fMissionMode write fMissionMode;
-    property GameTick: Cardinal read fGameTick;
+    property Tick: Cardinal read fTick;
     property VisibleLayers: TKMMapVisibleLayerSet read fVisibleLayers write fVisibleLayers;
 
-    property GameName: UnicodeString read fGameName write fGameName;
-    property GameMapSimpleCRC: Cardinal read fGameMapSimpleCRC write fGameMapSimpleCRC;
-    property GameMapFullCRC: Cardinal read fGameMapFullCRC write fGameMapFullCRC;
+    property Name: UnicodeString read fName write fName;
+    property MapSimpleCRC: Cardinal read fMapSimpleCRC write fMapSimpleCRC;
+    property MapFullCRC: Cardinal read fMapFullCRC write fMapFullCRC;
     property MissionFileSP: UnicodeString read fMissionFileSP;
     property MissionFile: UnicodeString read GetMissionFile;
     property MissionDifficulty: TKMMissionDifficulty read fMissionDifficulty write fMissionDifficulty;
     property DynamicFOW: Boolean read GetDynamicFOW write SetDynamicFOW;
+    property BlockPointerOperations: Boolean read fBlockPointerOperations;
 
     function IsMapEditor: Boolean;
     function IsCampaign: Boolean;
@@ -66,6 +71,8 @@ type
 
     function HasMissionDifficulty: Boolean;
 
+    function AllowPointerOperations: Boolean;
+
     {$IFDEF RUNNER}
     procedure GetGameModeSetEvent(out aSetGameModeEvent: TKMGameModeSetEvent);
     {$ENDIF}
@@ -81,20 +88,24 @@ uses
 
 
 { TKMGameParams }
-constructor TKMGameParams.Create(aGameMode: TKMGameMode; out aSetGameTickEvent: TCardinalEvent; out aSetGameModeEvent: TKMGameModeSetEvent; out aSetMissionFileSP: TUnicodeStringEvent);
+constructor TKMGameParams.Create(aGameMode: TKMGameMode; out aSetGameTickEvent: TCardinalEvent; out aSetGameModeEvent: TKMGameModeSetEvent;
+                                 out aSetMissionFileSP: TUnicodeStringEvent; out aSetBlockPointer: TBooleanEvent);
 begin
   inherited Create;
 
   fVisibleLayers := [mlObjects, mlHouses, mlUnits, mlOverlays];
 
-  fGameMode := aGameMode;
-  fGameTick := 0;
+  fMode := aGameMode;
+  fTick := 0;
   fMissionDifficulty := mdNone;
   DynamicFOW := False;
 
-  aSetGameTickEvent := SetGameTick;
-  aSetGameModeEvent := SetGameMode;
+  aSetGameTickEvent := SetTick;
+  aSetGameModeEvent := SetMode;
   aSetMissionFileSP := SetMissionFileSP;
+  aSetBlockPointer  := SetBlockPointer;
+
+  fBlockPointerOperations := False;
 
   gGameParams := Self;
 end;
@@ -111,7 +122,7 @@ end;
 {$IFDEF RUNNER}
 procedure TKMGameParams.GetGameModeSetEvent(out aSetGameModeEvent: TKMGameModeSetEvent);
 begin
-  aSetGameModeEvent := SetGameMode;
+  aSetGameModeEvent := SetMode;
 end;
 {$ENDIF}
 
@@ -130,7 +141,13 @@ begin
     Result := MissionFileSP //In SP we store it
   else
     //In MP we can't store it since it will be MapsMP or MapsDL on different clients
-    Result := GuessMPPath(fGameName, '.dat', fGameMapFullCRC);
+    Result := GuessMPPath(fName, '.dat', fMapFullCRC);
+end;
+
+
+procedure TKMGameParams.SetBlockPointer(aBlockPointer: Boolean);
+begin
+  fBlockPointerOperations := aBlockPointer;
 end;
 
 
@@ -140,15 +157,15 @@ begin
 end;
 
 
-procedure TKMGameParams.SetGameMode(aGameMode: TKMGameMode);
+procedure TKMGameParams.SetMode(aGameMode: TKMGameMode);
 begin
-  fGameMode := aGameMode;
+  fMode := aGameMode;
 end;
 
 
-procedure TKMGameParams.SetGameTick(aGameTick: Cardinal);
+procedure TKMGameParams.SetTick(aGameTick: Cardinal);
 begin
-  fGameTick := aGameTick;
+  fTick := aGameTick;
 end;
 
 
@@ -160,13 +177,13 @@ end;
 
 function TKMGameParams.IsMapEditor: Boolean;
 begin
-  Result := fGameMode = gmMapEd;
+  Result := fMode = gmMapEd;
 end;
 
 
 function TKMGameParams.IsCampaign: Boolean;
 begin
-  Result := fGameMode = gmCampaign;
+  Result := fMode = gmCampaign;
 end;
 
 
@@ -184,56 +201,62 @@ end;
 
 function TKMGameParams.IsMultiplayerGame: Boolean;
 begin
-  Result := fGameMode = gmMulti;
+  Result := fMode = gmMulti;
 end;
 
 
 // We often need to see if game is MP
 function TKMGameParams.IsMultiPlayerOrSpec: Boolean;
 begin
-  Result := fGameMode in [gmMulti, gmMultiSpectate];
+  Result := fMode in [gmMulti, gmMultiSpectate];
 end;
 
 
 function TKMGameParams.IsMultiplayer: Boolean;
 begin
-  Result := fGameMode in [gmMulti, gmMultiSpectate, gmReplayMulti];
+  Result := fMode in [gmMulti, gmMultiSpectate, gmReplayMulti];
 end;
 
 
 function TKMGameParams.IsSingleplayerGame: Boolean;
 begin
-  Result := fGameMode in [gmSingle, gmCampaign];
+  Result := fMode in [gmSingle, gmCampaign];
 end;
 
 
 function TKMGameParams.IsSingleplayer: Boolean;
 begin
-  Result := fGameMode in [gmSingle, gmCampaign, gmReplaySingle];
+  Result := fMode in [gmSingle, gmCampaign, gmReplaySingle];
 end;
 
 
 function TKMGameParams.IsNormalGame: Boolean;
 begin
-  Result := fGameMode in [gmSingle, gmCampaign, gmMulti];
+  Result := fMode in [gmSingle, gmCampaign, gmMulti];
 end;
 
 
 function TKMGameParams.IsReplay: Boolean;
 begin
-  Result := fGameMode in [gmReplaySingle, gmReplayMulti];
+  Result := fMode in [gmReplaySingle, gmReplayMulti];
 end;
 
 
 function TKMGameParams.IsReplayOrSpectate: Boolean;
 begin
-  Result := fGameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti];
+  Result := fMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti];
 end;
 
 
 function TKMGameParams.HasMissionDifficulty: Boolean;
 begin
   Result := fMissionDifficulty <> mdNone;
+end;
+
+
+function TKMGameParams.AllowPointerOperations: Boolean;
+begin
+  Result := IsSingleplayerGame or IsMapEditor or not BlockPointerOperations {or SKIP_POINTER_REF_CHECK};
 end;
 
 

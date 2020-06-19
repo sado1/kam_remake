@@ -1383,7 +1383,7 @@ begin
   if ResultsLabelCap <> '' then
     Label_ResultsMP.Caption := Label_ResultsMP.Caption + ' - ';
 
-  Label_ResultsMP.Caption := Label_ResultsMP.Caption + gGameParams.GameName;
+  Label_ResultsMP.Caption := Label_ResultsMP.Caption + gGameParams.Name;
 
   //Append difficulty level to game results caption
   if gGameParams.MissionDifficulty <> mdNone then
@@ -1405,7 +1405,7 @@ begin
   if fGameResultMsg = grGameContinues then
   begin
     Button_BackToGame.DoSetVisible;
-    case gGameParams.GameMode of
+    case gGameParams.Mode of
       gmSingle,
       gmCampaign,
       gmReplaySingle: begin
@@ -1423,7 +1423,7 @@ begin
   begin
     Button_BackToGame.Hide;
     Button_Back.DoSetVisible;
-    case gGameParams.GameMode of
+    case gGameParams.Mode of
       gmSingle,
       gmCampaign,
       gmReplaySingle: begin
@@ -1528,8 +1528,8 @@ procedure TKMGameResultsMP.ReinitChartEconomy;
     Chart := GetEconomyChart(aStatType, aEcoStatKind);
     Chart^.Clear;
     Chart^.MaxLength := 0;
-    Chart^.MaxTime   := gGameParams.GameTick div 10;
-    Chart^.Peacetime := 60*gGame.GameOptions.Peacetime;
+    Chart^.MaxTime   := gGameParams.Tick div 10;
+    Chart^.Peacetime := 60*gGame.Options.Peacetime;
     Chart^.SetSeparatorPositions(fChartSeparatorsPos[aStatType]);
   end;
 
@@ -1606,8 +1606,8 @@ const
   begin
     aChart^.Clear;
     aChart^.MaxLength := 0;
-    aChart^.MaxTime   := gGameParams.GameTick div 10;
-    aChart^.Peacetime := 60*gGame.GameOptions.Peacetime;
+    aChart^.MaxTime   := gGameParams.Tick div 10;
+    aChart^.Peacetime := 60*gGame.Options.Peacetime;
     aChart^.SetSeparatorPositions(fChartSeparatorsPos[aStatType]);
 
     if aUseGDP then
@@ -1755,8 +1755,8 @@ begin
         Chart := @ChartArmy^.Chart;
         Chart^.Clear;
         Chart^.MaxLength := 0;
-        Chart^.MaxTime := gGameParams.GameTick div 10;
-        Chart^.Peacetime := 60*gGame.GameOptions.Peacetime;
+        Chart^.MaxTime := gGameParams.Tick div 10;
+        Chart^.Peacetime := 60*gGame.Options.Peacetime;
         Chart^.SetSeparatorPositions(fChartSeparatorsPos[ST]);
         Chart^.Caption := ChartArmy^.ChartType.GUIName + ' - ' + gResTexts[CHART_ARMY_CAPTION_INDEX[CKind]];
 

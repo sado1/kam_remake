@@ -43,7 +43,7 @@ constructor TKMTaskAttackHouse.Create(aWarrior: TKMUnitWarrior; aHouse: TKMHouse
 begin
   inherited Create(aWarrior);
   fType := uttAttackHouse;
-  fHouse := aHouse.GetHousePointer;
+  fHouse := aHouse.GetPointer;
 end;
 
 
@@ -92,11 +92,11 @@ begin
   with TKMUnitWarrior(fUnit) do
     case fPhase of
       0:  if IsRanged then
-            if fHouse.GetDistance(CurrPosition) < GetFightMinRange then
+            if fHouse.GetDistance(Position) < GetFightMinRange then
               //Archer is too close, try to step back to the minimum range
               SetActionWalkFromHouse(fHouse, GetFightMinRange)
             else
-            if fHouse.GetDistance(CurrPosition) > GetFightMaxRange then
+            if fHouse.GetDistance(Position) > GetFightMaxRange then
               SetActionWalkToHouse(fHouse, GetFightMaxRange)
             else
               SetActionStay(0, uaWalk)
@@ -106,7 +106,7 @@ begin
             if IsRanged then
             begin
               //Check if the walk failed
-              if (fHouse.GetDistance(CurrPosition) < GetFightMinRange) or (fHouse.GetDistance(CurrPosition) > GetFightMaxRange) then
+              if (fHouse.GetDistance(Position) < GetFightMinRange) or (fHouse.GetDistance(Position) > GetFightMaxRange) then
               begin
                 SetActionStay(0, uaWalk);
                 Result := trTaskDone;
@@ -119,12 +119,12 @@ begin
               //Prevent rate of fire exploit by making archers pause for longer if they shot recently
               Cycle := Max(gRes.Units[UnitType].UnitAnim[uaWork, Direction].Count, 1) - FiringDelay;
               if NeedsToReload(Cycle) then
-                Delay := Delay + Cycle - (gGameParams.GameTick - LastShootTime);
+                Delay := Delay + Cycle - (gGameParams.Tick - LastShootTime);
 
               SetActionLockedStay(Delay,uaWork); //Pretend to aim
 
-              if not KMSamePoint(CurrPosition, fHouse.GetClosestCell(CurrPosition)) then //Unbuilt houses can be attacked from within
-                Direction := KMGetDirection(CurrPosition, fHouse.Entrance); //Look at house
+              if not KMSamePoint(Position, fHouse.GetClosestCell(Position)) then //Unbuilt houses can be attacked from within
+                Direction := KMGetDirection(Position, fHouse.Entrance); //Look at house
 
               if gMySpectator.FogOfWar.CheckTileRevelation(Round(PositionF.X), Round(PositionF.Y)) >= 255 then
               case UnitType of
@@ -137,15 +137,15 @@ begin
             else
             begin
               //Check if the walk failed
-              if fHouse.GetDistance(CurrPosition) > GetFightMaxRange then
+              if fHouse.GetDistance(Position) > GetFightMaxRange then
               begin
                 SetActionStay(0, uaWalk);
                 Result := trTaskDone;
                 Exit;
               end;
               SetActionLockedStay(0,uaWork,False); //Melee units pause after the hit
-              if not KMSamePoint(CurrPosition, fHouse.GetClosestCell(CurrPosition)) then //Unbuilt houses can be attacked from within
-                Direction := KMGetDirection(CurrPosition, fHouse.GetClosestCell(CurrPosition)); //Look at house
+              if not KMSamePoint(Position, fHouse.GetClosestCell(Position)) then //Unbuilt houses can be attacked from within
+                Direction := KMGetDirection(Position, fHouse.GetClosestCell(Position)); //Look at house
 
             end;
           end;
@@ -187,7 +187,7 @@ begin
               fHouse.AddDamage(2, fUnit);
 
               //Play a sound. We should not use KaMRandom here because sound playback depends on FOW and is individual for each player
-              if gMySpectator.FogOfWar.CheckTileRevelation(CurrPosition.X, CurrPosition.Y) >= 255 then
+              if gMySpectator.FogOfWar.CheckTileRevelation(Position.X, Position.Y) >= 255 then
                 gSoundPlayer.Play(MeleeSoundsHouse[Random(Length(MeleeSoundsHouse))], PositionF);
 
               fPhase := 1; //Go for another hit (will be 2 after inc below)
@@ -204,10 +204,7 @@ begin
   inherited;
 
   SaveStream.PlaceMarker('TaskAttackHouse');
-  if fHouse <> nil then
-    SaveStream.Write(fHouse.UID)
-  else
-    SaveStream.Write(Integer(0));
+  SaveStream.Write(fHouse.UID);
 end;
 
 

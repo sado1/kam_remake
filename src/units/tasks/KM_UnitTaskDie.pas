@@ -84,7 +84,7 @@ begin
               SetActionLockedStay(SequenceLength, uaDie, False);
               //Do not play sounds if unit is invisible to gMySpectator
               //We should not use KaMRandom below this line because sound playback depends on FOW and is individual for each player
-              if gMySpectator.FogOfWar.CheckTileRevelation(fUnit.CurrPosition.X, fUnit.CurrPosition.Y) >= 255 then
+              if gMySpectator.FogOfWar.CheckTileRevelation(fUnit.Position.X, fUnit.Position.Y) >= 255 then
               begin
                 if fUnit is TKMUnitWarrior then
                   gSoundPlayer.PlayWarrior(fUnit.UnitType, spDeath, fUnit.PositionF)
@@ -97,8 +97,8 @@ begin
             //Store them before they get lost forever
             TempOwner := fUnit.Owner;
             TempUnitType := fUnit.UnitType;
-            TempX := fUnit.CurrPosition.X;
-            TempY := fUnit.CurrPosition.Y;
+            TempX := fUnit.Position.X;
+            TempY := fUnit.Position.Y;
 
             fUnit.CloseUnit;          //This will FreeAndNil the Task and mark unit as "closed"
 

@@ -411,8 +411,8 @@ procedure TKMMapEdMissionMode.UpdateMapParams;
 var
   MD: TKMMissionDifficulty;
 begin
-  Edit_Author.Text := gGame.MapTxtInfo.Author;
-  Edit_Version.Text := gGame.MapTxtInfo.Version;
+  Edit_Author.SetTextSilently(gGame.MapTxtInfo.Author);   // Will not trigger OnChange event
+  Edit_Version.SetTextSilently(gGame.MapTxtInfo.Version); // Will not trigger OnChange event
 
   if gGame.MapTxtInfo.IsSmallDescLibxSet then
     Radio_SmallDescType.ItemIndex := 1
@@ -424,9 +424,9 @@ begin
   else
     Radio_BigDescType.ItemIndex := 0;
 
-  Edit_SmallDesc.Text     := gGame.MapTxtInfo.SmallDesc;
+  Edit_SmallDesc.SetTextSilently(gGame.MapTxtInfo.SmallDesc); // Will not trigger OnChange event
   NumEdit_SmallDesc.Value := gGame.MapTxtInfo.SmallDescLibx;
-  Edit_BigDesc.Text       := gGame.MapTxtInfo.GetBigDesc;
+  Edit_BigDesc.SetTextSilently(gGame.MapTxtInfo.GetBigDesc);  // Will not trigger OnChange event
   NumEdit_BigDesc.Value   := gGame.MapTxtInfo.BigDescLibx;
   Memo_BigDesc.Text       := Edit_BigDesc.Text;
 
