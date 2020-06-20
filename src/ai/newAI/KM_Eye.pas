@@ -1113,7 +1113,7 @@ end;
 
 function TKMEye.GetCityCenterPoints(aMultiplePoints: Boolean = False): TKMPointArray;
 const
-  SCANNED_HOUSES = [htStore, htSchool, htBarracks];
+  SCANNED_HOUSES = [htStore, htSchool, htBarracks, htTownhall];
 var
   K, Cnt: Integer;
   HT: TKMHouseType;

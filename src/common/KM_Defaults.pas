@@ -122,7 +122,6 @@ var
   {AI}
   SP_BOOST_AI_BUILD       :Boolean = False; //Boost build algorithm of the new AI (performance impact)
   SP_DEFAULT_ADVANCED_AI  :Boolean = False; //Set advanced AI as default for SP games
-  SP_OLD_ATTACK_AI        :Boolean = False; //Set old algorithm of advanced AI as default
   {User interface options}
   DEBUG_SPEEDUP_SPEED     :Integer = 300;   //Speed for speedup from debug menu
   DEBUG_LOGS              :Boolean = True;  //Log debug info
