@@ -4241,7 +4241,8 @@ begin
   if updateNewSelected then
     gMySpectator.UpdateNewSelected;
 
-  gMain.FormMain.SetEntitySelected(gMySpectator.Selected.UID, gMySpectator.Selected.AsGroup.SelectedUnit.UID);
+  if gMain <> nil then
+    gMain.FormMain.SetEntitySelected(gMySpectator.Selected.UID, gMySpectator.Selected.AsGroup.SelectedUnit.UID);
 end;
 
 
