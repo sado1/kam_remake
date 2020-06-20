@@ -423,8 +423,8 @@ begin
     // Estimate threat
     with fArmyVector.CCT[K] do
     begin
-      ThreatNearby := (CounterWeight.WeightedCount[gtMelee] + CounterWeight.WeightedCount[gtMounted] + CounterWeight.WeightedCount[gtRanged] + CounterWeight.WeightedCount[gtAntiHorse]);
-      Threat := Byte((BestDist < 1E4) OR AttackingCity) * ThreatNearby
+      Threat := (CounterWeight.WeightedCount[gtMelee] + CounterWeight.WeightedCount[gtMounted] + CounterWeight.WeightedCount[gtRanged] + CounterWeight.WeightedCount[gtAntiHorse]);
+      ThreatNearby := Byte((BestDist < 1E4) OR AttackingCity) * Threat
                 + Byte( (CSNum >= Byte(csAttackingCity)) AND (pCluster.HousesCount > 0) );
     end;
   end;
@@ -438,7 +438,7 @@ begin
       if (gHands[Owner].Alliances[PL] = atEnemy) then
       begin
         // Check if units are closer to enemy city and if so, then change status to attacker
-        if (fCombatStatus[Owner,PL] in [csNeutral, csDefending]) then
+        if (fCombatStatus[Owner,PL] in [csNeutral, csDefending]) AND HasAssets(PL,False) then
           for K := 0 to gHands[Owner].UnitGroups.Count - 1 do
           begin
             G := gHands[Owner].UnitGroups.Groups[K];
@@ -1279,6 +1279,7 @@ begin
           end;
       end;
   end;
+  Result := Format('%s|%s',[Result, fArmyVector.LogStatus()]);
   {$IFDEF DEBUG_Supervisor}
     if (gMySpectator.Selected is TKMUnitGroup) then
       for K := 0 to Length(fArmyAttackDebug.Groups) - 1 do
@@ -1289,7 +1290,6 @@ begin
             break;
           end;
   {$ENDIF}
-  Result := Format('%s|%s',[Result, fArmyVector.LogStatus()]);
 end;
 
 

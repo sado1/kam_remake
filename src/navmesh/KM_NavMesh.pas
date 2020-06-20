@@ -29,7 +29,13 @@ type
 
     fNavMeshGenerator: TKMNavMeshGenerator; // NavMesh generator
 
+    {$IFDEF DEBUG_NavMesh}
+    fTimeAvrgGenerator, fTimeAvrgCopyNavMesh, fTimeAvrgTieUpTwP, fTimeAvrgTieUpPwT, fTimeAvrgSum: Int64;
+    fTimePeakGenerator, fTimePeakCopyNavMesh, fTimePeakTieUpTwP, fTimePeakTieUpPwT, fTimePeakSum: Int64;
+    {$ENDIF}
+
     //Building the navmesh from terrain
+    procedure GenerateNavMesh(aStep: Integer);
     procedure FindClosestPolygon();
     procedure TieUpTilesWithPolygons();
     procedure TieUpPolygonsWithTiles();
@@ -67,7 +73,7 @@ const
 implementation
 uses
   SysUtils, Math,
-  KM_Terrain, KM_RenderAux,
+  KM_Terrain, KM_RenderAux, KM_AIFields,
   Dialogs;
 
 
@@ -80,6 +86,18 @@ begin
   fDefences := TForwardFF.Create(True);
   fPathfinding := TNavMeshPathFinding.Create();
   fPositioning := TNavMeshFloodPositioning.Create();
+  {$IFDEF DEBUG_NavMesh}
+    fTimeAvrgGenerator   := 0;
+    fTimeAvrgCopyNavMesh := 0;
+    fTimeAvrgTieUpTwP    := 0;
+    fTimeAvrgTieUpPwT    := 0;
+    fTimeAvrgSum         := 0;
+    fTimePeakGenerator   := 0;
+    fTimePeakCopyNavMesh := 0;
+    fTimePeakTieUpTwP    := 0;
+    fTimePeakTieUpPwT    := 0;
+    fTimePeakSum         := 0;
+  {$ENDIF}
 end;
 
 
@@ -177,24 +195,67 @@ procedure TKMNavMesh.AfterMissionInit();
 begin
   fMapX := gTerrain.MapX;
   fMapY := gTerrain.MapY;
-
-  fNavMeshGenerator.GenerateNewNavMesh();
-
-  fNodeCount := fNavMeshGenerator.NodeCount;
-  fPolyCount := fNavMeshGenerator.PolygonCount;
-  fInnerNodesStartIdx := fNavMeshGenerator.InnerPointStartIdx;
-  fNodes := fNavMeshGenerator.Nodes;
-  fPolygons := fNavMeshGenerator.Polygons;
-
-  //Mapp all map tiles to its polygons and vice versa
-  TieUpTilesWithPolygons();
-  TieUpPolygonsWithTiles();
+  GenerateNavMesh(-1);
 end;
 
 
 procedure TKMNavMesh.UpdateState(aTick: Cardinal);
 begin
+  if (aTick mod (MAX_HANDS*330) = 15) then // The normal game has 12 players so ticks with 13-18 should be cheaper for performance
+    GenerateNavMesh(-1);
+end;
 
+
+procedure TKMNavMesh.GenerateNavMesh(aStep: Integer);
+  {$IFDEF DEBUG_NavMesh}
+  var
+    tStart,tStop,tSum: Int64;
+  procedure UpdateTimer(var aTimeAvrg, aTimePeak: Int64);
+  begin
+    tStop := TimeGetUsec() - tStart;
+    tSum := tSum + tStop;
+    aTimePeak := Max(aTimePeak, tStop);
+    aTimeAvrg := Round((aTimeAvrg * 5 + tStop)/6);
+    tStart := TimeGetUsec();
+  end;
+  {$ENDIF}
+begin
+  {$IFDEF DEBUG_NavMesh}
+    tSum := 0;
+    tStart := TimeGetUsec();
+  {$ENDIF}
+
+  //if (aStep = 0) OR (aStep = -1) then
+  fNavMeshGenerator.GenerateNewNavMesh();
+  {$IFDEF DEBUG_NavMesh}
+    UpdateTimer(fTimeAvrgGenerator, fTimePeakGenerator);
+  {$ENDIF}
+
+  //if (aStep = 1) OR (aStep = -1) then
+  fNodeCount := fNavMeshGenerator.NodeCount;
+  fPolyCount := fNavMeshGenerator.PolygonCount;
+  fInnerNodesStartIdx := fNavMeshGenerator.InnerPointStartIdx;
+  fNodes := fNavMeshGenerator.Nodes;
+  fPolygons := fNavMeshGenerator.Polygons;
+  {$IFDEF DEBUG_NavMesh}
+    UpdateTimer(fTimeAvrgCopyNavMesh, fTimePeakCopyNavMesh);
+  {$ENDIF}
+
+  //Mapp all map tiles to its polygons and vice versa
+  //if (aStep = 2) OR (aStep = -1) then
+  TieUpTilesWithPolygons();
+  {$IFDEF DEBUG_NavMesh}
+    UpdateTimer(fTimeAvrgTieUpTwP, fTimePeakTieUpTwP);
+  {$ENDIF}
+  //if (aStep = 3) OR (aStep = -1) then
+  TieUpPolygonsWithTiles();
+  {$IFDEF DEBUG_NavMesh}
+    UpdateTimer(fTimeAvrgTieUpPwT, fTimePeakTieUpPwT);
+    fTimePeakSum := Max(fTimePeakSum, tSum);
+    fTimeAvrgSum := Round((fTimeAvrgSum * 5 + tSum)/6);
+  {$ENDIF}
+  //if (aStep = 4) OR (aStep = -1) then
+  gAIFields.Influences.InitInfluences();
 end;
 
 

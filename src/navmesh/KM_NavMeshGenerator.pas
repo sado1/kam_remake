@@ -65,6 +65,8 @@ type
     fBorderNodeCount: Integer;
     fDL: TDebugLines;
     fBorderNodes: TKMPointArray;
+    fTimeAvrgExtrNodes, fTimeAvrgAddInNodes, fTimeAvrgPolyTrian, fTimeAvrgPrettyPoly, fTimeAvrgSum: Int64;
+    fTimePeakExtrNodes, fTimePeakAddInNodes, fTimePeakPolyTrian, fTimePeakPrettyPoly, fTimePeakSum: Int64;
     {$ENDIF}
 
     //Working data
@@ -128,12 +130,22 @@ const
 { TKMNavMeshGenerator }
 constructor TKMNavMeshGenerator.Create();
 begin
-  fInnerPointStartIdx := 0;
-  fInnerPointEndIdx := 0;
-  fNodeCount := 0;
-  fPolyCount := 0;
+  fInnerPointStartIdx   := 0;
+  fInnerPointEndIdx     := 0;
+  fNodeCount            := 0;
+  fPolyCount            := 0;
   {$IFDEF DEBUG_NavMesh}
-  fBorderNodeCount := 0;
+    fBorderNodeCount    := 0;
+    fTimeAvrgExtrNodes  := 0;
+    fTimeAvrgAddInNodes := 0;
+    fTimeAvrgPolyTrian  := 0;
+    fTimeAvrgPrettyPoly := 0;
+    fTimeAvrgSum        := 0;
+    fTimePeakExtrNodes  := 0;
+    fTimePeakAddInNodes := 0;
+    fTimePeakPolyTrian  := 0;
+    fTimePeakPrettyPoly := 0;
+    fTimePeakSum        := 0;
   {$ENDIF}
   inherited Create;
 end;
@@ -162,37 +174,47 @@ end;
 
 
 procedure TKMNavMeshGenerator.GenerateNewNavMesh();
+  {$IFDEF DEBUG_NavMesh}
+  var
+    tStart,tStop,tSum: Int64;
+  procedure UpdateTimer(var aTimeAvrg, aTimePeak: Int64);
+  begin
+    tStop := TimeGetUsec() - tStart;
+    tSum := tSum + tStop;
+    aTimePeak := Max(aTimePeak, tStop);
+    aTimeAvrg := Round((aTimeAvrg * 5 + tStop)/6);
+    tStart := TimeGetUsec();
+  end;
+  {$ENDIF}
 var
   W: TKMNavMeshByteArray;
-{$IFDEF DEBUG_NavMesh}
-  tStart,tExtrNodes,tAddInNodes,tPolyTrian,tPrettyPoly, tSum: UInt64;
-{$ENDIF}
 begin
-    {$IFDEF DEBUG_NavMesh}
+  {$IFDEF DEBUG_NavMesh}
+    tSum := 0;
     tStart := TimeGetUsec();
-    {$ENDIF}
+  {$ENDIF}
 
   W := ExtractNodes();
-    {$IFDEF DEBUG_NavMesh}
-    tExtrNodes := TimeGetUsec() - tStart;
-    {$ENDIF}
-  AddInnerNodes(W);
-    {$IFDEF DEBUG_NavMesh}
-    tAddInNodes := TimeGetUsec() - tStart - tExtrNodes;
-    {$ENDIF}
-  PolygonTriangulation();
-    {$IFDEF DEBUG_NavMesh}
-    tPolyTrian := TimeGetUsec() - tStart - tAddInNodes;
-    {$ENDIF}
-  PrettyPoly();
-    {$IFDEF DEBUG_NavMesh}
-    tPrettyPoly := TimeGetUsec() - tStart - tPolyTrian;
-    {$ENDIF}
+  {$IFDEF DEBUG_NavMesh}
+    UpdateTimer(fTimeAvrgExtrNodes, fTimePeakExtrNodes);
+  {$ENDIF}
 
-    {$IFDEF DEBUG_NavMesh}
-    tSum := tExtrNodes + tAddInNodes + tPolyTrian + tPrettyPoly;
-    if (tSum > 0) then tSum := tSum * 1; // Make sure that compiler does not f--ck up the variable TimeDiff
-    {$ENDIF}
+  AddInnerNodes(W);
+  {$IFDEF DEBUG_NavMesh}
+    UpdateTimer(fTimeAvrgAddInNodes, fTimePeakAddInNodes);
+  {$ENDIF}
+
+  PolygonTriangulation();
+  {$IFDEF DEBUG_NavMesh}
+    UpdateTimer(fTimeAvrgPolyTrian, fTimePeakPolyTrian);
+  {$ENDIF}
+
+  PrettyPoly();
+  {$IFDEF DEBUG_NavMesh}
+    UpdateTimer(fTimeAvrgPrettyPoly, fTimePeakPrettyPoly);
+    fTimePeakSum := Max(fTimePeakSum, tSum);
+    fTimeAvrgSum := Round((fTimeAvrgSum * 5 + tSum)/6);
+  {$ENDIF}
 
   SetLength(fNodes, fNodeCount);
   SetLength(fPolygons, fPolyCount);
