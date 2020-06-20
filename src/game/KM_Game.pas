@@ -2501,7 +2501,7 @@ var
   I: Integer;
   ticksBehindCnt: Single;
 begin
-  if Self = nil then Exit;
+  if (Self = nil) or fIsExiting then Exit;
   
   DoUpdateGame;
 
