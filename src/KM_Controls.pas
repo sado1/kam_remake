@@ -7555,7 +7555,7 @@ end;
 function TKMSearchableList.KeyEventHandled(Key: Word; Shift: TShiftState): Boolean;
 begin
   //We want these keys to be ignored
-  if Key in [VK_F1..VK_F12, VK_ESCAPE, VK_RETURN, VK_TAB] then
+  if Key in [VK_F1..VK_F12, VK_ESCAPE, VK_RETURN, VK_DELETE, VK_TAB] then
     Result := False
   else
     Result := CanSearch or (Key in [VK_UP, VK_DOWN, VK_HOME, VK_END, VK_PRIOR, VK_NEXT]);
