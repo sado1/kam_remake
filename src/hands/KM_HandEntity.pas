@@ -95,7 +95,7 @@ end;
 
 function TKMHandEntity.GetOwner: TKMHandID;
 begin
-  if Self = nil then Exit(-1);
+  if Self = nil then Exit(-1); //@Rey: Better to use constant here, e.g. HAND_NONE
 
   Result := fOwner;
 end;
@@ -119,9 +119,10 @@ end;
 
 function TKMHandEntity.IsUnit: Boolean;
 begin
+  //@Rey: Why no `if Self = nil` check here?
+  
   Result := fType = etUnit;
 end;
-
 
 
 function TKMHandEntity.IsGroup: Boolean;
@@ -232,4 +233,3 @@ end;
 
 
 end.
-

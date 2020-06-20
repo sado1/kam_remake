@@ -15,12 +15,14 @@ type
   
 implementation
 
+
 { TKMHandEntityHelper }
 function TKMHandEntityHelper.AsGroup: TKMUnitGroup;
 begin
-  if  (Self = nil)
-    or not IsGroup
-    or not (Self is TKMUnitGroup) then Exit(nil);
+  if (Self = nil)
+  or not IsGroup
+  or not (Self is TKMUnitGroup) then
+    Exit(nil);
 
   Result := TKMUnitGroup(Self);
 end;
@@ -28,9 +30,10 @@ end;
 
 function TKMHandEntityHelper.AsHouse: TKMHouse;
 begin
-  if  (Self = nil)
-    or not IsHouse
-    or not (Self is TKMHouse) then Exit(nil);
+  if (Self = nil)
+  or not IsHouse
+  or not (Self is TKMHouse) then
+    Exit(nil);
 
   Result := TKMHouse(Self);
 end;
@@ -38,9 +41,10 @@ end;
 
 function TKMHandEntityHelper.AsUnit: TKMUnit;
 begin
-  if  (Self = nil)
-    or not IsUnit
-    or not (Self is TKMUnit) then Exit(nil);
+  if (Self = nil)
+  or not IsUnit
+  or not (Self is TKMUnit) then
+    Exit(nil);
 
   Result := TKMUnit(Self);
 end;
@@ -48,9 +52,10 @@ end;
 
 function TKMHandEntityHelper.AsUnitWarrior: TKMUnitWarrior;
 begin
- if  (Self = nil)
-    or not IsUnit
-    or not (Self is TKMUnitWarrior) then Exit(nil);
+  if (Self = nil)
+  or not IsUnit
+  or not (Self is TKMUnitWarrior) then
+    Exit(nil);
 
   Result := TKMUnitWarrior(Self);
 end;
