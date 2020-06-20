@@ -332,7 +332,7 @@ type
       Group := gHands[fOwner].UnitGroups[K];
       if (Group = nil)
         OR Group.IsDead
-        OR not Group.IsIdleToAI([wtokFlagPoint, wtokHaltOrder])
+        //OR not Group.IsIdleToAI([wtokFlagPoint, wtokHaltOrder])
         OR ((aMobilizationCoef < 1) AND (Group.Count < MIN_TROOPS_IN_GROUP)) then
         Continue;
       // Add grop pointer to array (but dont increase count now so it will be ignored)
@@ -469,7 +469,7 @@ begin
       if FFA AND not FoodShortage AND (DefRatio < MIN_DEF_RATIO) AND (gGameParams.MissionMode <> mmTactic) then
         Exit;
       // 1v1 or special game mode
-      if FFA OR gGameParams.IsTactic then
+      if not FFA OR gGameParams.IsTactic then
         MobilizationCoef := 1
       // Else compute if it is necessary to mobilize the first defence line (or fraction)
       else

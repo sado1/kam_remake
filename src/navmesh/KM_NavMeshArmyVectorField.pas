@@ -654,10 +654,11 @@ begin
     BestGIdx := -1;
     BestCCTIdx := -1;
     for K := 0 to Length(CCT) - 1 do
-      if (CCT[K].AttackingCity) AND ((BestCCTIdx < 0) OR (CCT[BestCCTIdx].Threat - CCT[BestCCTIdx].CounterWeight.Opportunity * AI_Par[ATTACK_ArmyVectorField_DivideForces_DefendCityAdv] < CCT[K].Threat - CCT[K].CounterWeight.Opportunity * AI_Par[ATTACK_ArmyVectorField_DivideForces_DefendCityAdv])) then
+      if (CCT[K].AttackingCity) AND ((BestCCTIdx < 0)
+        OR (CCT[BestCCTIdx].ThreatNearby - CCT[BestCCTIdx].CounterWeight.Opportunity * AI_Par[ATTACK_ArmyVectorField_DivideForces_DefendCityAdv] < CCT[K].ThreatNearby - CCT[K].CounterWeight.Opportunity * AI_Par[ATTACK_ArmyVectorField_DivideForces_DefendCityAdv])) then
         BestCCTIdx := K;
     // Find closest groups
-    if (BestCCTIdx >= 0) AND (CCT[BestCCTIdx].AttackingCity) AND (CCT[BestCCTIdx].Threat > 0) then
+    if (BestCCTIdx >= 0) AND (CCT[BestCCTIdx].AttackingCity) AND (CCT[BestCCTIdx].ThreatNearby > 0) then
     begin
       if (Length(Distances) < Ally.GroupsCount) then
         SetLength(Distances,Ally.GroupsCount);
@@ -665,7 +666,7 @@ begin
         Distances[K] := KMDistanceSqr(CCT[BestCCTIdx].CenterPoint,Ally.Groups[K].Position);
 
       Overflow2 := 0;
-      while (Overflow2 < 1000) AND (CCT[BestCCTIdx].Threat > CCT[BestCCTIdx].CounterWeight.Opportunity * AI_Par[ATTACK_ArmyVectorField_DivideForces_DefendCityAdv]) do
+      while (Overflow2 < 1000) AND (CCT[BestCCTIdx].ThreatNearby > CCT[BestCCTIdx].CounterWeight.Opportunity * AI_Par[ATTACK_ArmyVectorField_DivideForces_DefendCityAdv]) do
       begin
         Inc(Overflow2);
         BestGIdx := -1;
@@ -690,7 +691,7 @@ begin
     BestGIdx := -1;
     BestCCTIdx := -1;
     for K := 0 to Length(CCT) - 1 do
-      if (CCT[K].CounterWeight.Opportunity > 0) AND ((BestCCTIdx < 0) OR (CCT[BestCCTIdx].Threat - CCT[BestCCTIdx].CounterWeight.Opportunity * AI_Par[ATTACK_ArmyVectorField_DivideForces_DefendCityAdv] < CCT[K].Threat - CCT[K].CounterWeight.Opportunity * AI_Par[ATTACK_ArmyVectorField_DivideForces_DefendCityAdv])) then
+      if (CCT[K].CounterWeight.Opportunity > 0) AND ((BestCCTIdx < 0) OR (CCT[BestCCTIdx].ThreatNearby - CCT[BestCCTIdx].CounterWeight.Opportunity * AI_Par[ATTACK_ArmyVectorField_DivideForces_DefendCityAdv] < CCT[K].ThreatNearby - CCT[K].CounterWeight.Opportunity * AI_Par[ATTACK_ArmyVectorField_DivideForces_DefendCityAdv])) then
         BestCCTIdx := K;
     // Find closest groups
     if (BestCCTIdx >= 0) then
@@ -701,7 +702,7 @@ begin
         Distances[K] := KMDistanceSqr(CCT[BestCCTIdx].CenterPoint,Ally.Groups[K].Position);
 
       Overflow2 := 0;
-      while (Overflow2 < 1000) AND (CCT[BestCCTIdx].Threat > CCT[BestCCTIdx].CounterWeight.Opportunity * AI_Par[ATTACK_ArmyVectorField_DivideForces_DefendCityAdv]) do
+      while (Overflow2 < 1000) AND (CCT[BestCCTIdx].ThreatNearby > CCT[BestCCTIdx].CounterWeight.Opportunity * AI_Par[ATTACK_ArmyVectorField_DivideForces_DefendCityAdv]) do
       begin
         Inc(Overflow2);
         BestGIdx := -1;
@@ -952,9 +953,9 @@ begin
   for K := Low(CCT) to High(CCT) do
     with CCT[K].CounterWeight do
     begin
-      InPlace     := InPositionCnt      > CGCount       * AI_Par[ATTACK_ArmyVectorField_EvalClusters_InPlace];
-      AtAdvantage := InPositionStrength > CCT[K].Threat * AI_Par[ATTACK_ArmyVectorField_EvalClusters_AtAdvantage];
-      Ambushed    := NearEnemyCnt       > CGCount       * AI_Par[ATTACK_ArmyVectorField_EvalClusters_Ambushed];
+      InPlace     := InPositionCnt      > CGCount             * AI_Par[ATTACK_ArmyVectorField_EvalClusters_InPlace];
+      AtAdvantage := InPositionStrength > CCT[K].ThreatNearby * AI_Par[ATTACK_ArmyVectorField_EvalClusters_AtAdvantage];
+      Ambushed    := NearEnemyCnt       > CGCount             * AI_Par[ATTACK_ArmyVectorField_EvalClusters_Ambushed];
     end;
 
   {$IFDEF DEBUG_ArmyVectorField}
@@ -1179,9 +1180,9 @@ begin
     with fDbgVector[Team].CCT[K] do
     begin
       Color := GenerateColorWSeed(ClusterIdx) AND $FFFFFF;
-      Result := Format('%s|%d. [$%s]###%s:',[Result, K, IntToHex(Color,6), STR_COLOR_WHITE]);
-      Result := Format('%s Threat %.0f/%.0f..%2.0f%%;',[Result, ThreatNearby, Threat, ThreatNearby/Max(1,Threat/100)]);
-      Result := Format('%s Opportunity (%d): %.0f/%.0f..%2.0f%%;',[Result, CounterWeight.InPositionCnt, CounterWeight.InPositionStrength, CounterWeight.Opportunity, CounterWeight.InPositionStrength / Max(1,CounterWeight.Opportunity/100)]);
+      Result := Format('%s|%2d. [$%s]###%s:',[Result, K, IntToHex(Color,6), STR_COLOR_WHITE]);
+      Result := Format('%s Threat %4.0f/%4.0f..%3d%%;',[Result, ThreatNearby, Threat, Round(ThreatNearby/Max(1,Threat)*100)]);
+      Result := Format('%s Opportunity (%2d): %4.0f/%4.0f..%3d%%;',[Result, CounterWeight.InPositionCnt, CounterWeight.InPositionStrength, CounterWeight.Opportunity, Round(CounterWeight.InPositionStrength / Max(1,CounterWeight.Opportunity)*100)]);
       Result := Format('%s [$%s]Attacking City%s,',[Result, IntToHex(tcRed * Byte(AttackingCity            ) + $FFFFFF * Byte(not AttackingCity            ),6), STR_COLOR_WHITE]);
       Result := Format('%s [$%s]Place%s,',         [Result, IntToHex(tcRed * Byte(CounterWeight.InPlace    ) + $FFFFFF * Byte(not CounterWeight.InPlace    ),6), STR_COLOR_WHITE]);
       Result := Format('%s [$%s]Advantage%s,',     [Result, IntToHex(tcRed * Byte(CounterWeight.AtAdvantage) + $FFFFFF * Byte(not CounterWeight.AtAdvantage),6), STR_COLOR_WHITE]);
@@ -1190,7 +1191,7 @@ begin
         Result := Format('%s <<<<<<',[Result]);
     end;
 
-  Result := Format('%s|PerfLog (avrg/peak): EnemyPresence %d/%d; DivideForces%d/%d; FindPositions %d/%d;',[Result,fTimeAvrgEnemyPresence,fTimePeakEnemyPresence,fTimeAvrgDivideForces,fTimePeakDivideForces,fTimeAvrgFindPositions,fTimePeakFindPositions]);
+  Result := Format('%s|PerfLog (avrg/peak): EnemyPresence %d/%d; DivideForces %d/%d; FindPositions %d/%d;',[Result,fTimeAvrgEnemyPresence,fTimePeakEnemyPresence,fTimeAvrgDivideForces,fTimePeakDivideForces,fTimeAvrgFindPositions,fTimePeakFindPositions]);
 
   {$ELSE}
   Result := '';
