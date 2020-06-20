@@ -465,8 +465,8 @@ begin
     DefRatio := fDefence.DefenceStatus();
     with fAttackRequest do
     begin
-      // Exit if AI has NOT enought soldiers in defence AND there is NOT food or there are multiple oponents
-      if (DefRatio < MIN_DEF_RATIO) AND (FoodShortage OR not FFA) AND (gGameParams.MissionMode <> mmTactic) then
+      // Exit if AI has NOT enought soldiers for defences in the FFA mode
+      if FFA AND not FoodShortage AND (DefRatio < MIN_DEF_RATIO) AND (gGameParams.MissionMode <> mmTactic) then
         Exit;
       // 1v1 or special game mode
       if FFA OR gGameParams.IsTactic then

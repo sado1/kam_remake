@@ -27,7 +27,7 @@ type
     fEvals: TKMGameEval; //Results of evaluation
 
     function CompareStrength(A, E: TKMArmyEval): Single;
-    function GetAllianceStrength(var aAlliance: TKMHandIDArray): TKMArmyEval;
+    function GetAllianceStrength(const aAlliance: TKMHandIDArray): TKMArmyEval;
     procedure EvaluatePower(aPlayer: TKMHandID; aConsiderHitChance: Boolean = False);
   public
     constructor Create();
@@ -40,7 +40,8 @@ type
     function PlayerEvaluation(aPlayer: TKMHandID): TKMArmyEval;
     function AllianceEvaluation(aPlayer: TKMHandID; aAlliance: TKMAllianceType): TKMArmyEval;
 
-    function CompareAllianceStrength(var aAlly, aEnemy: TKMHandIDArray): Single;
+    function CompareAllianceStrength(const aAlly, aEnemy: TKMHandIDArray): Single;
+    function CheckFoodProblems(const aAlly: TKMHandIDArray): Boolean;
     procedure AfterMissionInit();
     procedure UpdateState(aTick: Cardinal);
   end;
@@ -169,7 +170,6 @@ function TKMArmyEvaluation.CompareStrength(A, E: TKMArmyEval): Single;
     end;
   end;
 var
-  PowerA, PowerE: Single;
   AEval, EEval: TKMGroupEval;
 begin
   // Sum power of groups in alliance
@@ -181,13 +181,15 @@ begin
   AEval.DefenceProjectiles := AEval.DefenceProjectiles * E.Groups[gtRanged].Count / Max(1, EEval.Count);
   EEval.DefenceProjectiles := EEval.DefenceProjectiles * A.Groups[gtRanged].Count / Max(1, AEval.Count);
   // Get balance of power
-  PowerA := (AEval.Attack + AEval.AttackHorse) * (AEval.Hitpoints) * (AEval.Defence + AEval.DefenceProjectiles);
-  PowerE := (EEval.Attack + EEval.AttackHorse) * (EEval.Hitpoints) * (EEval.Defence + EEval.DefenceProjectiles);
-  Result := 1 - Min(2,PowerE / Max(1,PowerA));
+  Result := (
+    + 1 - Min(2,(EEval.Attack + EEval.AttackHorse        ) / Max(1,(AEval.Attack + AEval.AttackHorse        )))
+    + 1 - Min(2,(EEval.Hitpoints                         ) / Max(1,(AEval.Hitpoints                         )))
+    + 1 - Min(2,(EEval.Defence + EEval.DefenceProjectiles) / Max(1,(AEval.Defence + AEval.DefenceProjectiles)))
+  ) / 3;
 end;
 
 
-function TKMArmyEvaluation.GetAllianceStrength(var aAlliance: TKMHandIDArray): TKMArmyEval;
+function TKMArmyEvaluation.GetAllianceStrength(const aAlliance: TKMHandIDArray): TKMArmyEval;
 var
   PL: Integer;
   GT: TKMGroupType;
@@ -216,13 +218,35 @@ end;
 
 
 // Approximate way how to compute strength of 2 alliances
-function TKMArmyEvaluation.CompareAllianceStrength(var aAlly, aEnemy: TKMHandIDArray): Single;
+function TKMArmyEvaluation.CompareAllianceStrength(const aAlly, aEnemy: TKMHandIDArray): Single;
 var
   AllyEval, EnemyEval: TKMArmyEval;
 begin
   AllyEval := GetAllianceStrength(aAlly);
   EnemyEval := GetAllianceStrength(aEnemy);
   Result := CompareStrength(AllyEval, EnemyEval); // => number in <-1,1> ... positive = we have advantage and vice versa
+end;
+
+
+function TKMArmyEvaluation.CheckFoodProblems(const aAlly: TKMHandIDArray): Boolean;
+const
+  FOOD_THRESHOLD = 0.55;
+var
+  Full, Middle, Low: Cardinal;
+  PL: TKMHandID;
+begin
+  Result := False;
+  Full := 0;
+  Middle := 0;
+  Low := 0;
+  for PL in aAlly do
+  begin
+    Inc(Full  ,fEvals[PL].FoodState.Full);
+    Inc(Middle,fEvals[PL].FoodState.Middle);
+    Inc(Low   ,fEvals[PL].FoodState.Low);
+  end;
+  if ((Full + Middle + Low) > 0) then
+    Result := ((Full + Middle) / Max(1, (Full + Middle + Low))) < FOOD_THRESHOLD;
 end;
 
 

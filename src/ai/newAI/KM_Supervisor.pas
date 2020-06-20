@@ -960,14 +960,13 @@ procedure TKMSupervisor.AttackDecision(aTeam: Byte);
 
 const
   MIN_DEF_RATIO = 1.2;
-  FOOD_THRESHOLD = 0.55;
   MIN_ADVANTAGE = 0.15; // 15% advantage for attacker
 var
+  FoodProblems: Boolean;
   BestCmpTeam, WorstCmpTeam: Byte;
   IdxPL: Integer;
-  DefRatio, FoodLevel, BestCmp, AvrgCmp, WorstCmp: Single;
+  DefRatio, BestCmp, AvrgCmp, WorstCmp: Single;
   PL, BestTarget: TKMHandID;
-  ArmyState: TKMArmyEval;
   AR: TKMAttackRequest;
 begin
   if not NewAIInTeam(aTeam, True, False) OR not IsTeamAlive(aTeam) OR (Length(fAlli2PL) < 2) then // I sometimes use my loc as a spectator (alliance with everyone) so make sure that search for enemy will use AI loc
@@ -991,31 +990,31 @@ begin
   if CompareAlliances(BestCmpTeam, WorstCmpTeam, BestCmp, AvrgCmp, WorstCmp, BestTarget) then
   begin
     // Consider food
-    ArmyState := gAIFields.Eye.ArmyEvaluation.AllianceEvaluation( fAlli2PL[aTeam,0], atAlly );
-    with ArmyState.FoodState do
-      FoodLevel := (Full + Middle) / Max(1, (Full + Middle + Low));
-
-    if (BestCmpTeam > MIN_ADVANTAGE) OR (FoodLevel < FOOD_THRESHOLD) OR gGameParams.IsTactic then
+    FoodProblems := gAIFields.Eye.ArmyEvaluation.CheckFoodProblems(fAlli2PL[aTeam]);
+    // Make decision
+    if (BestCmp > MIN_ADVANTAGE) OR FoodProblems OR gGameParams.IsTactic then
+    begin
+      with AR do
+      begin
+        Active := True;
+        FFA := fFFA;
+        FoodShortage := FoodProblems;
+        BestAllianceCmp := BestCmp;
+        WorstAllianceCmp := WorstCmp;
+        BestEnemy := BestTarget;
+        SetLength(Enemies, Length(fAlli2PL[BestCmpTeam]) );
+        Move(fAlli2PL[BestCmpTeam,0], Enemies[0], SizeOf(Enemies[0])*Length(Enemies));
+      end;
       for PL in fAlli2PL[aTeam] do
         if gHands[PL].AI.Setup.AutoAttack then
         begin
+          gHands[PL].AI.ArmyManagement.AttackRequest := AR;
           if gGameParams.IsTactic then
             fCombatStatus[PL,BestTarget] := csAttackingEverything
           else
             fCombatStatus[PL,BestTarget] := csAttackingCity;
-          with AR do
-          begin
-            Active := True;
-            FFA := fFFA;
-            FoodShortage := FoodLevel < FOOD_THRESHOLD;
-            BestAllianceCmp := BestCmp;
-            WorstAllianceCmp := WorstCmp;
-            BestEnemy := BestTarget;
-            SetLength(Enemies, Length(fAlli2PL[BestCmpTeam]) );
-            Move(fAlli2PL[BestCmpTeam,0], Enemies[0], SizeOf(Enemies[0])*Length(Enemies));
-          end;
-          gHands[PL].AI.ArmyManagement.AttackRequest := AR;
         end;
+    end;
   end;
 end;
 
@@ -1216,19 +1215,26 @@ end;
 function TKMSupervisor.LogStatus(): UnicodeString;
 const
   STR_COLOR_WHITE = '[$FFFFFF]';
+  STR_COLOR_RED = '[$0000FF]';
 var
-  Team, K: Integer;
+  Team, SelectedTeam, K: Integer;
+  Color: Cardinal;
+  Power: Single;
   PL,PL2, Cnt: TKMHandID;
   CombatStatusText: UnicodeString;
 begin
   Result := '';
   if not OVERLAY_AI_SUPERVISOR then
     Exit;
+  SelectedTeam := -1;
+  if (gMySpectator.HandID <> PLAYER_NONE) then
+    SelectedTeam := fPL2Alli[ gMySpectator.HandID ];
   // Head
   Cnt := 0;
   for PL := 0 to gHands.Count-1 do
     Cnt := Cnt + Byte(gHands[PL].Enabled);
-  Result := Format('Supervisor (Is FFA = %d; Teams = %d; Players = %d)',[Byte(fFFA), Length(fAlli2PL), Cnt]);
+  Result := Format('Supervisor (%sFFA = %d%s; Teams = %d; Players = %d)',[STR_COLOR_RED, Byte(fFFA), STR_COLOR_WHITE, Length(fAlli2PL), Cnt]);
+
   // Diplomacy + combat status
   for Team := Low(fAlli2PL) to High(fAlli2PL) do
   begin
@@ -1238,6 +1244,22 @@ begin
       PL := Alli2PL[Team,K];
       if not gHands[ Alli2PL[Team,K] ].AI.Setup.NewAI then
         Result := Format('%s[$%s] PL %s %d (%d;%d), ',[Result,IntToHex(gHands[PL].FlagColor AND $FFFFFF,6),STR_COLOR_WHITE,PL,Byte(gHands[PL].Enabled),Byte(not HasAssets(PL))]);
+    end;
+    if (SelectedTeam = Team) then
+    begin
+      Result := Format('%s SELECTED TEAM',[Result]);
+      if gAIFields.Eye.ArmyEvaluation.CheckFoodProblems(fAlli2PL[Team]) then
+        Result := Format('%s %sFOOD PROBLEMS%s',[Result, STR_COLOR_RED, STR_COLOR_WHITE]);
+    end
+    else if (SelectedTeam <> -1) then
+    begin
+      Power := gAIFields.Eye.ArmyEvaluation.CompareAllianceStrength(fAlli2PL[SelectedTeam], fAlli2PL[Team]);
+      if      (Power < -0.5) then Color := tcRed
+      else if (Power < -0.1) then Color := tcFuchsia
+      else if (Power < +0.1) then Color := tcWhite
+      else if (Power < +0.5) then Color := tcTeal
+      else                        Color := tcGreen;
+      Result := Format('%s [$%s]Power = %.2f%s',[Result, IntToHex(Color,6), Power, STR_COLOR_WHITE]);
     end;
     for K := Low(fAlli2PL[Team]) to High(fAlli2PL[Team]) do
       if gHands[ Alli2PL[Team,K] ].AI.Setup.NewAI then
