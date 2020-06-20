@@ -117,20 +117,20 @@ end;
 
 //This event is executed right after installing, use this time to install OpenAL
 function NeedRestart(): Boolean;
-var ResultCode: Integer; MyText:String;
+var
+  ResultCode: Integer;
+  settingsText: String;
 begin
   Result := false; //We never require a restart, this is just a handy event for post install
 
   //First create the ini file with the right language selected
-  MyText := '[Game]'+#13+#10+'Locale='+ExpandConstant('{language}');
-  SaveStringToFile(ExpandConstant('{app}\KaM_Remake_Settings.ini'), MyText, False);
+  settingsText := '[Game]'+#13+#10+'Locale='+ExpandConstant('{language}');
+  SaveStringToFile(ExpandConstant('{app}\KaM_Remake_Settings.ini'), settingsText, False);
   
   //Now install OpenAL, if needed
-  if FileExists(ExpandConstant('{sys}')+'\OpenAL32.dll') then exit; //User already has OpenAL installed
-  if MsgBox(ExpandConstant('{cm:OpenAL}'), mbConfirmation, MB_YESNO) = idYes then
-  begin
-    Exec(ExpandConstant('{app}\oalinst.exe'), '/S', '', SW_SHOW, ewWaitUntilTerminated, ResultCode);
-  end;
+  if not FileExists(ExpandConstant('{sys}')+'\OpenAL32.dll') then 
+    if MsgBox(ExpandConstant('{cm:OpenAL}'), mbConfirmation, MB_YESNO) = idYes then
+      Exec(ExpandConstant('{app}\oalinst.exe'), '/S', '', SW_SHOW, ewWaitUntilTerminated, ResultCode);
 end;
 
 function GetReadmeLang(Param: String): string;
