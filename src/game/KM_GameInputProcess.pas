@@ -153,7 +153,7 @@ const
 
   ALLOWED_BY_SPECTATORS: set of TKMGameInputCommandType =
     [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameLoadSave,
-     gicGamePlayerDefeat, gicTempDoNothing];
+     gicGamePlayerChange, gicGamePlayerDefeat, gicTempDoNothing];
 
   //Those commands should not have random check, because they they are not strictly happen, depends of player config and actions
   //We want to make it possible to reproduce AI city build knowing only seed + map config
