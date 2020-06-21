@@ -2542,7 +2542,7 @@ begin
       else              raise Exception.Create(Format('Wrong game mode [%s], while spectating/watching replay',
                                                       [GetEnumName(TypeInfo(TKMGameMode), Integer(gGameParams.Mode))]));
     end;
-    // We could update UI while watching replay, when some player role/name was updated
+    // We could update UI while watching replay, when some player type/name was updated
     if fGuiGameSpectator = nil then
       fGuiGameSpectator := TKMGUIGameSpectator.Create(Panel_Main, Replay_JumpToPlayer, SetViewportPos);
 

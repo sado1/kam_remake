@@ -969,7 +969,6 @@ begin
   for I := Low(FLinesAggregator) to High(FLinesAggregator) do
     if FLinesAggregator[I] <> nil then
       FreeAndNil(FLinesAggregator[I]);
-
 end;
 
 procedure TKMGUIGameSpectator.AddLineType(aParent: TKMPanel; AIndex: Integer; ALineClass: TKMGUIGameSpectatorItemLineClass);
