@@ -2470,6 +2470,8 @@ var
 begin
   UpdateMessageImages;
 
+  AlliesOnPlayerSetup;
+
   isTactic := gGameParams.IsTactic;
 
   Button_Main[tbBuild].Enabled := not isTactic and not HasLostMPGame and not gMySpectator.Hand.InCinematic; //Allow to 'test build' if we are in replay / spectate mode
@@ -2542,7 +2544,10 @@ begin
       else              raise Exception.Create(Format('Wrong game mode [%s], while spectating/watching replay',
                                                       [GetEnumName(TypeInfo(TKMGameMode), Integer(gGameParams.Mode))]));
     end;
-    fGuiGameSpectator := TKMGUIGameSpectator.Create(Panel_Main, Replay_JumpToPlayer, SetViewportPos);
+    // We could update UI while watching replay, when some player type/name was updated
+    if fGuiGameSpectator = nil then
+      fGuiGameSpectator := TKMGUIGameSpectator.Create(Panel_Main, Replay_JumpToPlayer, SetViewportPos);
+
     UpdateReplayBar;
     gMySpectator.HandID := Dropbox_ReplayFOW.GetTag(Dropbox_ReplayFOW.ItemIndex); //Update HandIndex
   end;
@@ -3078,6 +3083,8 @@ var
   I, K, netI: Integer;
   localeID: Integer;
 begin
+  if not gGameParams.IsMultiPlayerOrSpec then Exit;
+
   Image_AlliesHostStar.Hide;
   // Can't vote if we already have, and spectators don't get to vote unless there's only spectators left
   Button_Menu_ReturnLobby.Enabled := not gNetworking.MyNetPlayer.VotedYes

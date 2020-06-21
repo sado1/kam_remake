@@ -623,6 +623,7 @@ begin
                 else if PopUp_Delete.Visible and Button_DeleteConfirm.IsClickable then
                   DeleteClick(Button_DeleteConfirm);
     VK_F2:      RenameClick(Button_Rename);
+    VK_DELETE:  DeleteClick(Button_Delete);
   end;
 end;
 

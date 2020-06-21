@@ -599,7 +599,8 @@ begin
   begin
     GameFinished;
     if fGameSettings.AutosaveAtGameEnd then
-      gGame.Save(Format('%s %s #%d', [gGame.Params.Name, FormatDateTime('yyyy-mm-dd', Now), fGameSettings.DayGamesCount]), Now);
+      // We have to use local time for local save name (Now) and UTC time inside the save (UTCNow, it will be converted back to local on read)
+      gGame.Save(Format('%s %s #%d', [gGame.Params.Name, FormatDateTime('yyyy-mm-dd', Now), fGameSettings.DayGamesCount]), UTCNow);
   end;
 
   if Assigned(fOnGameEnd) then

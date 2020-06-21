@@ -6,7 +6,9 @@ uses
   KM_Hand, KM_HandSpectator, KM_HouseCollection,
   KM_Houses, KM_ResHouses, KM_Units, KM_UnitGroup, KM_UnitWarrior,
   KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Points,
-  KM_HandEntity;
+  KM_HandEntity,
+  KM_HandTypes,
+  KM_GameTypes;
 
 
 //Hands are identified by their starting location
@@ -37,6 +39,8 @@ type
     property PlayerAnimals: TKMHandAnimals read fPlayerAnimals;
 
     procedure AddPlayers(aCount: Byte); //Batch add several players
+
+    procedure UpdateHandState(aHandID: TKMHandID; aHandType: TKMHandType; aAIType: TKMAIType);
 
     procedure RemoveEmptyPlayers;
     procedure RemoveEmptyPlayer(aIndex: TKMHandID);
@@ -112,8 +116,7 @@ uses
   KM_Game, KM_GameParams, KM_Terrain, KM_AIFields,
   KM_UnitsCollection, KM_MapEditorHistory,
   KM_Resource, KM_ResUnits, KM_ResTexts,
-  KM_Log, KM_CommonUtils, KM_DevPerfLog, KM_DevPerfLogTypes,
-  KM_HandTypes;
+  KM_Log, KM_CommonUtils, KM_DevPerfLog, KM_DevPerfLogTypes;
 
 
 { TKMHandsCollection }
@@ -176,6 +179,31 @@ begin
   end;
 
   fCount := fCount + aCount;
+end;
+
+
+// Update hand state (AI type)
+procedure TKMHandsCollection.UpdateHandState(aHandID: TKMHandID; aHandType: TKMHandType; aAIType: TKMAIType);
+begin
+  fHandsList[aHandID].HandType := aHandType;
+
+  if fHandsList[aHandID].IsComputer then
+  begin
+    //For MP locs we will set AI MP setup only when loc is allowed for humans too.
+    //For only AI locs there we should use AI params set from MapEd
+    if fHandsList[aHandID].CanBeHuman then
+      fHandsList[aHandID].AI.Setup.ApplyMultiplayerSetup(aAIType = aitAdvanced)
+    else
+      //Just enable Advanced AI, do not override MapEd AI params
+      fHandsList[aHandID].AI.Setup.EnableAdvancedAI(aAIType = aitAdvanced);
+  end
+  else
+  //We can start to play for defeated hand, f.e. if player just left the game and we restart from save with other player
+  if fHandsList[aHandID].IsHuman and fHandsList[aHandID].AI.HasLost then
+  begin
+    fHandsList[aHandID].AI.ResetWonOrLost; //Reset WonOrLost status
+    UpdateGoalsForHand(aHandID, True); //Enable this hand goals for all other hands
+  end;
 end;
 
 

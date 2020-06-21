@@ -8,7 +8,8 @@ uses
   KM_ResHouses, KM_ResWares, KM_ScriptingConsoleCommands,
   KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Points, KM_WorkerThread,
   KM_HandTypes,
-  KM_UnitGroupTypes;
+  KM_UnitGroupTypes,
+  KM_GameTypes;
 
 { A. This unit takes and adjoins players input from TGame and TGamePlayInterfaces clicks and keys
   Then passes it on to game events.
@@ -133,6 +134,7 @@ type
     gicpt_Int3,
     gicpt_Int4,
     gicpt_Ansi1Int2,
+    gicpt_Ansi1Int3,
     gicpt_Float,
     gicpt_UniStr1,
     gicpt_Ansi1Uni4,
@@ -153,13 +155,13 @@ const
 
   ALLOWED_BY_SPECTATORS: set of TKMGameInputCommandType =
     [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameLoadSave,
-     gicGamePlayerDefeat, gicTempDoNothing];
+     gicGamePlayerChange, gicGamePlayerDefeat, gicTempDoNothing];
 
   //Those commands should not have random check, because they they are not strictly happen, depends of player config and actions
   //We want to make it possible to reproduce AI city build knowing only seed + map config
   //Autosave and other commands random checks could break it, since every command have its own random check (and KaMRandom call)
   SKIP_RANDOM_CHECKS_FOR: set of TKMGameInputCommandType =
-    [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby];
+    [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameLoadSave];
 
   ARMY_ORDER_COMMANDS: set of TKMGameInputCommandType = [
     gicArmyFeed,
@@ -259,7 +261,7 @@ const
     gicpt_Int2,     // gicGameTeamChange
     gicpt_Int2,     // gicGameHotkeySet
     gicpt_Int1,     // gicGameMessageLogRead
-    gicpt_Ansi1Int2,// gicGamePlayerChange
+    gicpt_Ansi1Int3,// gicGamePlayerChange
     gicpt_Int1,     // gicGamePlayerDefeat
     gicpt_Int3,     // gicGamePlayerAllianceSet
     gicpt_Int2,     // gicGameSetDefaultGoals
@@ -315,6 +317,7 @@ type
     function MakeCommand(aGIC: TKMGameInputCommandType; const aParam1, aParam2, aParam3: Integer): TKMGameInputCommand; overload;
     function MakeCommand(aGIC: TKMGameInputCommandType; const aParam1, aParam2, aParam3, aParam4: Integer): TKMGameInputCommand; overload;
     function MakeCommand(aGIC: TKMGameInputCommandType; const aAnsiTxtParam: AnsiString; const aParam1, aParam2: Integer): TKMGameInputCommand; overload;
+    function MakeCommand(aGIC: TKMGameInputCommandType; const aAnsiTxtParam: AnsiString; const aParam1, aParam2, aParam3: Integer): TKMGameInputCommand; overload;
     function MakeCommandNoHand(aGIC: TKMGameInputCommandType; const aParam1: Single): TKMGameInputCommand;
     function MakeCommand(aGIC: TKMGameInputCommandType; const aTextParam: UnicodeString): TKMGameInputCommand; overload;
     function MakeCommand(aGIC: TKMGameInputCommandType; const aAnsiTxtParam: AnsiString; const aUniTxtArray: TKMScriptCommandParamsArray): TKMGameInputCommand; overload;
@@ -373,7 +376,7 @@ type
 
     procedure CmdPlayerAllianceSet(aForPlayer, aToPlayer: TKMHandID; aAllianceType: TKMAllianceType);
     procedure CmdPlayerAddDefaultGoals(aPlayer: TKMHandID; aBuilding: Boolean);
-    procedure CmdPlayerChanged(aPlayer: TKMHandID; aType: TKMHandType; aPlayerNikname: AnsiString);
+    procedure CmdPlayerChanged(aPlayer: TKMHandID; aPlayerNikname: AnsiString; aType: TKMHandType; aAIType: TKMAIType);
 
     procedure CmdScriptSoundRemoveRequest(aScriptSoundUID: Integer);
 
@@ -413,7 +416,7 @@ uses
   KM_GameApp, KM_Game, KM_GameParams, KM_HandsCollection,
   KM_HouseMarket, KM_HouseBarracks, KM_HouseSchool, KM_HouseTownHall,
   KM_ScriptingEvents, KM_Alerts, KM_CommonUtils, KM_Log, KM_RenderUI,
-  KM_GameTypes, KM_ResFonts, KM_Settings, KM_Resource;
+  KM_ResFonts, KM_Settings, KM_Resource;
 
 const 
   NO_LAST_TICK_VALUE = 0;
@@ -455,6 +458,12 @@ begin
                         aMemoryStream.WriteA(AnsiStrParam);
                         aMemoryStream.Write(Params[0]);
                         aMemoryStream.Write(Params[1]);
+                      end;
+      gicpt_Ansi1Int3:begin
+                        aMemoryStream.WriteA(AnsiStrParam);
+                        aMemoryStream.Write(Params[0]);
+                        aMemoryStream.Write(Params[1]);
+                        aMemoryStream.Write(Params[2]);
                       end;
       gicpt_Float:    aMemoryStream.Write(FloatParam);
       gicpt_UniStr1:  aMemoryStream.WriteW(UnicodeStrParams[0]);
@@ -500,6 +509,12 @@ begin
                         aMemoryStream.Read(Params[0]);
                         aMemoryStream.Read(Params[1]);
                       end;
+      gicpt_Ansi1Int3:begin
+                        aMemoryStream.ReadA(AnsiStrParam);
+                        aMemoryStream.Read(Params[0]);
+                        aMemoryStream.Read(Params[1]);
+                        aMemoryStream.Read(Params[2]);
+                      end;
       gicpt_Float:    aMemoryStream.Read(FloatParam);
       gicpt_UniStr1:  aMemoryStream.ReadW(UnicodeStrParams[0]);
       gicpt_Ansi1Uni4:begin
@@ -535,6 +550,7 @@ begin
       gicpt_Int3:       Result := Result + Format('[%10d,%10d,%10d]', [Params[0], Params[1], Params[2]]);
       gicpt_Int4:       Result := Result + Format('[%10d,%10d,%10d,%10d]', [Params[0], Params[1], Params[2], Params[3]]);
       gicpt_Ansi1Int2:  Result := Result + Format('[S1=%s,%10d,%10d]', [AnsiStrParam, Params[0], Params[1]]);
+      gicpt_Ansi1Int3:  Result := Result + Format('[S1=%s,%10d,%10d,%10d]', [AnsiStrParam, Params[0], Params[1], Params[2]]);
       gicpt_UniStr1:    Result := Result + Format('[%s]', [UnicodeStrParams[0]]);
       gicpt_Float:      Result := Result + Format('[%f]', [FloatParam]);
       gicpt_Ansi1Uni4:  Result := Result + Format('[S1=%s,S2=%s,S3=%s,S4=%s,S5=%s]', [AnsiStrParam, UnicodeStrParams[0], UnicodeStrParams[0],UnicodeStrParams[1],UnicodeStrParams[2]]);
@@ -650,6 +666,20 @@ begin
   Result.AnsiStrParam := aAnsiTxtParam;
   Result.Params[0] := aParam1;
   Result.Params[1] := aParam2;
+end;
+
+
+function TKMGameInputProcess.MakeCommand(aGIC: TKMGameInputCommandType; const aAnsiTxtParam: AnsiString; const aParam1, aParam2, aParam3: Integer): TKMGameInputCommand;
+begin
+  Assert(COMMAND_PACK_TYPES[aGIC] = gicpt_Ansi1Int3,
+         Format('Wrong packing type for command %s: Expected: gicpt_Ansi1Int2 Actual: [%s]',
+                [GetEnumName(TypeInfo(TKMGameInputCommandType), Integer(aGIC)),
+                 GetEnumName(TypeInfo(TKMGameInputCommandPackType), Integer(COMMAND_PACK_TYPES[aGIC]))]));
+  Result := MakeEmptyCommand(aGIC);
+  Result.AnsiStrParam := aAnsiTxtParam;
+  Result.Params[0] := aParam1;
+  Result.Params[1] := aParam2;
+  Result.Params[2] := aParam3;
 end;
 
 
@@ -913,8 +943,9 @@ begin
       gicGameMessageLogRead:      P.MessageLog[Params[0]].IsReadGIP := True;
       gicGamePlayerChange:        begin
                                     Assert(not gGameParams.IsMapEditor);
-                                    gHands[Params[0]].HandType := TKMHandType(Params[1]);
+//                                    gHands[Params[0]].HandType := TKMHandType(Params[1]);
                                     gHands[Params[0]].OwnerNikname := AnsiStrParam;
+                                    gHands.UpdateHandState(Params[0], TKMHandType(Params[1]), TKMAIType(Params[2]));
                                     gGame.GamePlayInterface.UpdateUI; //Update players drop list
                                   end;
       gicGamePlayerDefeat:        begin
@@ -1191,10 +1222,10 @@ begin
 end;
 
 
-procedure TKMGameInputProcess.CmdPlayerChanged(aPlayer: TKMHandID; aType: TKMHandType; aPlayerNikname: AnsiString);
+procedure TKMGameInputProcess.CmdPlayerChanged(aPlayer: TKMHandID; aPlayerNikname: AnsiString; aType: TKMHandType; aAIType: TKMAIType);
 begin
   Assert(ReplayState = gipRecording);
-  TakeCommand(MakeCommand(gicGamePlayerChange, aPlayerNikname, aPlayer, Byte(aType)));
+  TakeCommand(MakeCommand(gicGamePlayerChange, aPlayerNikname, aPlayer, Byte(aType), Byte(aAIType)));
 end;
 
 

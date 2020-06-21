@@ -829,6 +829,7 @@ begin
                 else if Button_MapMoveConfirm.IsClickable then
                   MoveClick(Button_MapMoveConfirm);
     VK_F2:      RenameClick(Button_MapRename);
+    VK_DELETE:  DeleteClick(Button_MapDelete);
   end;
 end;
 
