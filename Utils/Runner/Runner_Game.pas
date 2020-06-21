@@ -1181,7 +1181,7 @@ begin
 
   if gGameParams.Tick = 1 then
   begin
-    gGame.GameInputProcess.CmdPlayerChanged(0, hndComputer, 'AI 1');
+    gGame.GameInputProcess.CmdPlayerChanged(0, 'AI 1', hndComputer, AIType);
 
 //    if gHands[0].CanBeHuman then
 //      gHands[0].AI.Setup.ApplyMultiplayerSetup(AIType = aitAdvanced)
