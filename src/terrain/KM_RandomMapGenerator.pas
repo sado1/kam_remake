@@ -3409,13 +3409,13 @@ begin
     for X1 := 1 to fMapX-1 do
       TilesPartsArr.Height[Y1,X1] := Min(100, Min(90,Max(5, -H1[Y1,X1] + H2[Y1,X1] + H3[Y1,X1])) + fRNG.RandomI(HeightVariance[ A[Y1,X1] ]));
 
-  for Y_1 := 1 to fMapY-1 do
+  for Y_1 := 1 to fMapY do
   begin
     Y2 := Y_1 shl 1;
     Y1 := Y2 - 1;
     Y_0 := Max(0, Y_1 - 2);
     Y_2 := Min(fMapY, Y_1 + 1);
-    for X_1 := 1 to fMapX-1 do
+    for X_1 := 1 to fMapX do
     begin
       X2 := X_1 shl 1;
       X1 := X2 - 1;
