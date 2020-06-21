@@ -750,6 +750,8 @@ end;
 
 //All setup data gets taken from gNetworking class
 procedure TKMGame.MultiplayerRig(aNewGame: Boolean);
+const
+  NETPLAYERTYPE_TO_AITYPE: array[TKMNetPlayerType] of TKMAIType = (aitNone, aitNone, aitClassic, aitAdvanced);
 var
   I: Integer;
   handIndex: TKMHandID;
@@ -786,26 +788,7 @@ begin
     if not gNetworking.NetPlayers[I].IsSpectator then
     begin
       handIndex := gNetworking.NetPlayers[I].HandIndex;
-      gHands[handIndex].HandType := gNetworking.NetPlayers[I].GetPlayerType;
       gHands[handIndex].FlagColor := gNetworking.NetPlayers[I].FlagColor;
-
-      if gNetworking.NetPlayers[I].IsComputer then
-      begin
-        //For MP locs we will set AI MP setup only when loc is allowed for humans too.
-        //For only AI locs there we should use AI params set from MapEd
-        if gHands[handIndex].CanBeHuman then
-          gHands[handIndex].AI.Setup.ApplyMultiplayerSetup(gNetworking.NetPlayers[I].IsAdvancedComputer)
-        else
-          //Just enable Advanced AI, do not override MapEd AI params
-          gHands[handIndex].AI.Setup.EnableAdvancedAI(gNetworking.NetPlayers[I].IsAdvancedComputer);
-      end
-      else
-      //We can start to play for defeated hand, f.e. if player just left the game and we restart from save with other player
-      if gNetworking.NetPlayers[I].IsHuman and gHands[handIndex].AI.HasLost then
-      begin
-        gHands[handIndex].AI.ResetWonOrLost; //Reset WonOrLost status
-        gHands.UpdateGoalsForHand(handIndex, True); //Enable this hand goals for all other hands
-      end;
 
       //In saves players can be changed to AIs, which needs to be stored in the replay
       //Also one player could replace another, we have to update its player name
@@ -816,8 +799,12 @@ begin
         else
           playerNikname := '';
 
-        fGameInputProcess.CmdPlayerChanged(handIndex, gHands[handIndex].HandType, playerNikname);
-      end;
+        //Command execution will update player, same way as it will be updated in the replay
+        fGameInputProcess.CmdPlayerChanged(handIndex, playerNikname, gNetworking.NetPlayers[I].GetPlayerType,
+                                           NETPLAYERTYPE_TO_AITYPE[gNetworking.NetPlayers[I].PlayerNetType]);
+      end
+      else
+        gHands.UpdateHandState(handIndex, gNetworking.NetPlayers[I].GetPlayerType, NETPLAYERTYPE_TO_AITYPE[gNetworking.NetPlayers[I].PlayerNetType]);
 
       //Update player nikname to show in the list for specs, in the stats etc
       gHands[handIndex].OwnerNikname := gNetworking.NetPlayers[I].Nikname;
