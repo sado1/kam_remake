@@ -2470,6 +2470,8 @@ var
 begin
   UpdateMessageImages;
 
+  AlliesOnPlayerSetup;
+
   isTactic := gGameParams.IsTactic;
 
   Button_Main[tbBuild].Enabled := not isTactic and not HasLostMPGame and not gMySpectator.Hand.InCinematic; //Allow to 'test build' if we are in replay / spectate mode
@@ -3081,6 +3083,8 @@ var
   I, K, netI: Integer;
   localeID: Integer;
 begin
+  if not gGameParams.IsMultiPlayerOrSpec then Exit;
+
   Image_AlliesHostStar.Hide;
   // Can't vote if we already have, and spectators don't get to vote unless there's only spectators left
   Button_Menu_ReturnLobby.Enabled := not gNetworking.MyNetPlayer.VotedYes
