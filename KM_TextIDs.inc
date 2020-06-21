@@ -1038,6 +1038,25 @@ TX_KEY_HOUSE = 1434; //House Keys
 TX_KEY_CTRL_MOUSEWHEEL = 1194; //Ctrl + Mouse wheel
 TX_KEY_ALT_MOUSEWHEEL = 1195; //Alt + Mouse wheel
 TX_KEY_SHIFT_MOUSEWHEEL = 1196; //Shift + Mouse wheel
+TX_KEY_BROWSER_BACK = 1439; //Browser back
+TX_KEY_BROWSER_FORWARD = 1440; //Browser forward
+TX_KEY_BROWSER_REFRESH = 1441; //Browser refresh
+TX_KEY_BROWSER_STOP = 1442; //Browser stop
+TX_KEY_BROWSER_SEARCH = 1443; //Browser search
+TX_KEY_BROWSER_FAVORITES = 1444; //Browser favorites
+TX_KEY_BROWSER_HOME = 1445; //Browser home
+TX_KEY_VOLUME_MUTE = 1446; //Volume mute
+TX_KEY_VOLUME_DOWN = 1447; //Volume down
+TX_KEY_VOLUME_UP = 1448; //Volume up
+TX_KEY_MEDIA_NEXT_TRACK = 1449; //Media next track
+TX_KEY_MEDIA_PREV_TRACK = 1450; //Media previous track
+TX_KEY_MEDIA_STOP = 1451; //Media stop
+TX_KEY_MEDIA_PLAY_PAUSE = 1452; //Media play/pause
+TX_KEY_LAUNCH_MAIL = 1453; //Launch mail
+TX_KEY_LAUNCH_MEDIA_SELECT = 1454; //Launch media select
+TX_KEY_LAUNCH_APP1 = 1455; //Launch application 1
+TX_KEY_LAUNCH_APP2 = 1456; //Launch application 2
+
 
 TX_MSG_HOUSE_UNOCCUPIED__22 = 966; //This armor smithy is not occupied
 TX_MSG_HOUSE_UNOCCUPIED_ARMORYWORKSHOP = 967; //This armory workshop is not occupied

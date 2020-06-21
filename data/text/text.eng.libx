@@ -1,4 +1,4 @@
-﻿0:Sawmill
+0:Sawmill
 1:Iron smithy
 2:Weapon smithy
 3:Coal mine
@@ -1350,7 +1350,6 @@
 1400:Stretch
 1401:Show at startup
 1402:Volume
-
 1403:Test video
 1404:Mods
 1405:Snow houses
@@ -1387,3 +1386,21 @@
 1436:Show flat terrain
 1437:Game speed could be changed by host only if there are no active player on the map
 1438:Resource export complete: [ %s ]
+1439:Browser back
+1440:Browser forward
+1441:Browser refresh
+1442:Browser stop
+1443:Browser search
+1444:Browser favorites
+1445:Browser home
+1446:Volume mute
+1447:Volume down
+1448:Volume up
+1449:Media next track
+1450:Media previous track
+1451:Media stop
+1452:Media play/pause
+1453:Launch mail
+1454:Launch media select
+1455:Launch application 1
+1456:Launch application 2
