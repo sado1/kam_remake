@@ -692,8 +692,7 @@ end;
 
 procedure TFormMain.RenderAreaMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
 begin
-  if gGameApp <> nil then
-    gGameApp.MouseWheel(Shift, WheelDelta, MousePos.X, MousePos.Y);
+  gGameApp.MouseWheel(Shift, WheelDelta, MousePos.X, MousePos.Y);
 end;
 
 

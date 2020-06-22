@@ -330,8 +330,8 @@ end;
 
 procedure TKMGameApp.Resize(X,Y: Integer);
 begin
-  if fIsExiting then
-    Exit;
+  if Self = nil then Exit;
+  if fIsExiting then Exit;
 
   gRender.Resize(X, Y);
   gVideoPlayer.Resize(X, Y);
@@ -478,6 +478,8 @@ procedure TKMGameApp.MouseWheel(Shift: TShiftState; WheelSteps: Integer; X, Y: I
 var
   handled: Boolean;
 begin
+  if Self = nil then Exit;
+
   if gVideoPlayer.IsActive then
   begin
     gVideoPlayer.MouseWheel(Shift, WheelSteps, X,Y);
@@ -494,12 +496,14 @@ end;
 
 procedure TKMGameApp.FPSMeasurement(aFPS: Cardinal);
 begin
-  if fNetworking <> nil then fNetworking.FPSMeasurement(aFPS);
+  fNetworking.FPSMeasurement(aFPS);
 end;
 
 
 function TKMGameApp.Game: TKMGame;
 begin
+  if Self = nil then Exit(nil);
+
   Result := gGame;
 end;
 
@@ -1154,6 +1158,7 @@ end;
 
 procedure TKMGameApp.Render(aForPrintScreen: Boolean = False);
 begin
+  if Self = nil then Exit;
   if SKIP_RENDER then Exit;
   if fIsExiting then Exit;
   if gRender.Blind then Exit;

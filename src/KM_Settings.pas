@@ -25,6 +25,7 @@ type
     procedure SetFullScreen(aValue: Boolean);
     procedure SetResolution(const Value: TKMScreenRes);
     procedure SetVSync(aValue: Boolean);
+    function GetWindowParams: TKMWindowParams;
   protected
     procedure Changed;
     function LoadFromINI(const aFileName: UnicodeString): Boolean;
@@ -39,7 +40,7 @@ type
     property FPSCap: Integer read fFPSCap;
     property FullScreen: Boolean read fFullScreen write SetFullScreen;
     property Resolution: TKMScreenRes read fResolution write SetResolution;
-    property WindowParams: TKMWindowParams read fWindowParams;
+    property WindowParams: TKMWindowParams read GetWindowParams;
     property VSync: Boolean read fVSync write SetVSync;
     property NoRenderMaxTime: Integer read fNoRenderMaxTime;
 
@@ -445,6 +446,14 @@ begin
   SaveToINI(ExeDir+SETTINGS_FILE);
   FreeAndNil(fWindowParams);
   inherited;
+end;
+
+
+function TKMainSettings.GetWindowParams: TKMWindowParams;
+begin
+  if Self = nil then Exit(nil);
+
+  Result := fWindowParams;
 end;
 
 

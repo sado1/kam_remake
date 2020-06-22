@@ -658,8 +658,9 @@ end;
 
 procedure TKMMain.Render;
 begin
-  if gGameApp <> nil then
-    gGameApp.Render;
+  if Self = nil then Exit;
+
+  gGameApp.Render;
 end;
 
 
@@ -672,38 +673,43 @@ end;
 
 procedure TKMMain.Resize(aWidth, aHeight: Integer);
 begin
-  if gGameApp <> nil then
-    gGameApp.Resize(aWidth, aHeight);
+  if Self = nil then Exit;
+
+  gGameApp.Resize(aWidth, aHeight);
 end;
 
 
 
 procedure TKMMain.Resize(aWidth, aHeight: Integer; const aWindowParams: TKMWindowParamsRecord);
 begin
-  if gGameApp <> nil then
-  begin
-    gGameApp.Resize(aWidth, aHeight);
-    UpdateWindowParams(aWindowParams);
-  end;
+  if gGameApp = nil then Exit;
+
+  gGameApp.Resize(aWidth, aHeight);
+  UpdateWindowParams(aWindowParams);
 end;
 
 
 procedure TKMMain.Move(const aWindowParams: TKMWindowParamsRecord);
 begin
+  if Self = nil then Exit;
+
   UpdateWindowParams(aWindowParams);
 end;
 
 
 procedure TKMMain.UpdateWindowParams(const aWindowParams: TKMWindowParamsRecord);
 begin
-  if (gGameApp <> nil)
-    and (fMainSettings <> nil) and (fMainSettings.WindowParams <> nil) then //just in case...
-    fMainSettings.WindowParams.ApplyWindowParams(aWindowParams);
+  if gGameApp = nil then Exit;
+  if fMainSettings.WindowParams = nil then Exit; //just in case...
+
+  fMainSettings.WindowParams.ApplyWindowParams(aWindowParams);
 end;
 
 
 procedure TKMMain.ShowAbout;
 begin
+  if Self = nil then Exit;
+
   fFormLoading.Position := poScreenCenter;
   fFormLoading.Bar1.Position := 0;
   fFormLoading.Label1.Caption := '';

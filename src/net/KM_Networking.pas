@@ -2662,6 +2662,8 @@ end;
 
 procedure TKMNetworking.FPSMeasurement(aFPS: Cardinal);
 begin
+  if Self = nil then Exit;
+
   fMyPlayerCurrentFPS := aFPS;
   if fNetGameState = lgsGame then
   begin
