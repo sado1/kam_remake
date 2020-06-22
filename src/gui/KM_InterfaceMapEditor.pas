@@ -938,11 +938,16 @@ begin
   if keyHandled then Exit;
 
   //F1-F5 menu shortcuts
-  if Key = gResKeys[SC_MAPEDIT_TERRAIN].Key   then Button_Main[1].Click;
-  if Key = gResKeys[SC_MAPEDIT_VILLAGE].Key   then Button_Main[2].Click;
-  if Key = gResKeys[SC_MAPEDIT_VISUAL].Key    then Button_Main[3].Click;
-  if Key = gResKeys[SC_MAPEDIT_GLOBAL].Key    then Button_Main[4].Click;
-  if Key = gResKeys[SC_MAPEDIT_MAIN_MANU].Key then Button_Main[5].Click;
+  if Key = gResKeys[SC_MAPEDIT_TERRAIN].Key   then
+    Button_Main[1].Click;
+  if Key = gResKeys[SC_MAPEDIT_VILLAGE].Key   then
+    Button_Main[2].Click;
+  if Key = gResKeys[SC_MAPEDIT_VISUAL].Key    then
+    Button_Main[3].Click;
+  if Key = gResKeys[SC_MAPEDIT_GLOBAL].Key    then
+    Button_Main[4].Click;
+  if Key = gResKeys[SC_MAPEDIT_MAIN_MANU].Key then
+    Button_Main[5].Click;
 
   //1-6 submenu shortcuts
   for I := Low(MAPED_SUBMENU_HOTKEYS) to High(MAPED_SUBMENU_HOTKEYS) do

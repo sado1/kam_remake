@@ -247,13 +247,20 @@ begin
 
   aHandled := True;
   //Scrolling
-  if Key = gResKeys[SC_SCROLL_LEFT].Key       then fViewport.ScrollKeyLeft  := True
-  else if Key = gResKeys[SC_SCROLL_RIGHT].Key then fViewport.ScrollKeyRight := True
-  else if Key = gResKeys[SC_SCROLL_UP].Key    then fViewport.ScrollKeyUp    := True
-  else if Key =  gResKeys[SC_SCROLL_DOWN].Key then fViewport.ScrollKeyDown  := True
-  else if Key = gResKeys[SC_ZOOM_IN].Key      then fViewport.ZoomKeyIn      := True
-  else if Key = gResKeys[SC_ZOOM_OUT].Key     then fViewport.ZoomKeyOut     := True
-  else if Key = gResKeys[SC_ZOOM_RESET].Key   then fViewport.ResetZoom
+  if Key = gResKeys[SC_SCROLL_LEFT].Key       then
+    fViewport.ScrollKeyLeft  := True
+  else if Key = gResKeys[SC_SCROLL_RIGHT].Key then
+    fViewport.ScrollKeyRight := True
+  else if Key = gResKeys[SC_SCROLL_UP].Key    then
+    fViewport.ScrollKeyUp    := True
+  else if Key =  gResKeys[SC_SCROLL_DOWN].Key then
+    fViewport.ScrollKeyDown  := True
+  else if Key = gResKeys[SC_ZOOM_IN].Key      then
+    fViewport.ZoomKeyIn      := True
+  else if Key = gResKeys[SC_ZOOM_OUT].Key     then
+    fViewport.ZoomKeyOut     := True
+  else if Key = gResKeys[SC_ZOOM_RESET].Key   then
+    fViewport.ResetZoom
   else if (Key = gResKeys[SC_MAP_DRAG_SCROLL].Key)
       and IsDragScrollingAllowed then
   begin
@@ -282,13 +289,20 @@ begin
 
   aHandled := True;
   //Scrolling
-  if Key = gResKeys[SC_SCROLL_LEFT].Key       then fViewport.ScrollKeyLeft  := False
-  else if Key = gResKeys[SC_SCROLL_RIGHT].Key then fViewport.ScrollKeyRight := False
-  else if Key = gResKeys[SC_SCROLL_UP].Key    then fViewport.ScrollKeyUp    := False
-  else if Key =  gResKeys[SC_SCROLL_DOWN].Key then fViewport.ScrollKeyDown  := False
-  else if Key = gResKeys[SC_ZOOM_IN].Key      then fViewport.ZoomKeyIn      := False
-  else if Key = gResKeys[SC_ZOOM_OUT].Key     then fViewport.ZoomKeyOut     := False
-  else if Key = gResKeys[SC_ZOOM_RESET].Key   then fViewport.ResetZoom
+  if Key = gResKeys[SC_SCROLL_LEFT].Key       then
+    fViewport.ScrollKeyLeft := False
+  else if Key = gResKeys[SC_SCROLL_RIGHT].Key then
+    fViewport.ScrollKeyRight := False
+  else if Key = gResKeys[SC_SCROLL_UP].Key    then
+    fViewport.ScrollKeyUp := False
+  else if Key =  gResKeys[SC_SCROLL_DOWN].Key then
+    fViewport.ScrollKeyDown  := False
+  else if Key = gResKeys[SC_ZOOM_IN].Key      then
+    fViewport.ZoomKeyIn := False
+  else if Key = gResKeys[SC_ZOOM_OUT].Key     then
+    fViewport.ZoomKeyOut := False
+  else if Key = gResKeys[SC_ZOOM_RESET].Key   then
+    fViewport.ResetZoom
   else if Key = gResKeys[SC_MAP_DRAG_SCROLL].Key then
   begin
     if fDragScrolling then
