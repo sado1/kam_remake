@@ -369,7 +369,8 @@ uses
   KM_InterfaceMapEditor, KM_HouseWoodcutters, KM_MapTypes,
   KM_GameTypes, KM_GameParams, KM_Video, KM_Music,
   KM_HandEntity,
-  KM_HandEntityHelper;
+  KM_HandEntityHelper,
+  KM_ResTypes;
 
 const
   ALLIES_ROWS = 7;
@@ -3249,7 +3250,7 @@ begin
   if keyHandled then Exit;
 
     // As we don't have names for teams in SP we only allow showing team names in MP or MP replays
-  if (Key = gResKeys[SC_SHOW_TEAMS].Key) then
+  if (Key = gResKeys[kfShowTeams].Key) then
     if SHOW_UIDs or (fUIMode in [umMP, umSpectate]) or (gGameParams.Mode = gmReplayMulti) then //Only MP replays
     begin
       fShowTeamNames := True;
@@ -3303,7 +3304,7 @@ var
   msg: TKMLogMessage;
 begin
   // Messages
-  if Key = gResKeys[SC_CENTER_ALERT].Key then
+  if Key = gResKeys[kfCenterAlert].Key then
   begin
     // Spacebar centers you on the latest alert
     lastAlert := fAlerts.GetLatestAlert;
@@ -3325,11 +3326,11 @@ begin
     end;
   end;
 
-  if Key = gResKeys[SC_DELETE_MSG].Key then
+  if Key = gResKeys[kfDeleteMsg].Key then
     Button_MessageDelete.Click;
 
   // Enter is the shortcut to bring up chat in multiplayer
-  if (Key = gResKeys[SC_CHAT].Key) and CanShowChat then
+  if (Key = gResKeys[kfChat].Key) and CanShowChat then
   begin
     if not fGuiGameChat.Visible then
     begin
@@ -3367,10 +3368,10 @@ begin
     and (SpeedChangeAllowed([umSP])
       or ((PAUSE_GAME_BEFORE_TICK <> -1) and (fUIMode <> umReplay))) then
   begin
-    if Key = gResKeys[SC_PAUSE].Key then
+    if Key = gResKeys[kfPause].Key then
       SetPause(False);
 
-    if (fUIMode = umReplay) and (Key = gResKeys[SC_REPLAY_PLAY_NEXT_TICK].Key) and Button_ReplayStep.Enabled then
+    if (fUIMode = umReplay) and (Key = gResKeys[kfReplayPlayNextTick].Key) and Button_ReplayStep.Enabled then
       ReplayClick(Button_ReplayStep);
     Exit;
   end;
@@ -3380,7 +3381,7 @@ begin
   inherited KeyUp(Key, Shift, keyHandled);
   if keyHandled then Exit;
 
-  if (fUIMode = umReplay) and (Key = gResKeys[SC_PAUSE].Key) then
+  if (fUIMode = umReplay) and (Key = gResKeys[kfPause].Key) then
   begin
     if Button_ReplayPause.Enabled or not gGame.IsPaused then
       ReplayClick(Button_ReplayPause)
@@ -3389,15 +3390,15 @@ begin
   end;
 
   // These keys are allowed during replays
-  if Key = gResKeys[SC_SHOW_TEAMS].Key then fShowTeamNames := False;
-  if Key = gResKeys[SC_BEACON].Key then
+  if Key = gResKeys[kfShowTeams].Key then fShowTeamNames := False;
+  if Key = gResKeys[kfBeacon].Key then
     if not SelectingTroopDirection then
     begin
       fPlacingBeacon := True;
       MinimapView.ClickableOnce := True;
       gRes.Cursors.Cursor := kmcBeacon;
     end;
-  if Key = gResKeys[SC_CLOSE_MENU].Key then
+  if Key = gResKeys[kfCloseMenu].Key then
   begin
     // Progressively hide open elements on Esc
     if fGuiGameUnit.JoiningGroups then
@@ -3420,26 +3421,26 @@ begin
   end;
 
   // Dynamic key-binding means we cannot use "case of"
-  if Key = gResKeys[SC_SELECT_1].Key  then selectId := 0 else
-  if Key = gResKeys[SC_SELECT_2].Key  then selectId := 1 else
-  if Key = gResKeys[SC_SELECT_3].Key  then selectId := 2 else
-  if Key = gResKeys[SC_SELECT_4].Key  then selectId := 3 else
-  if Key = gResKeys[SC_SELECT_5].Key  then selectId := 4 else
-  if Key = gResKeys[SC_SELECT_6].Key  then selectId := 5 else
-  if Key = gResKeys[SC_SELECT_7].Key  then selectId := 6 else
-  if Key = gResKeys[SC_SELECT_8].Key  then selectId := 7 else
-  if Key = gResKeys[SC_SELECT_9].Key  then selectId := 8 else
-  if Key = gResKeys[SC_SELECT_10].Key then selectId := 9 else
-  if Key = gResKeys[SC_SELECT_11].Key  then selectId := 10 else
-  if Key = gResKeys[SC_SELECT_12].Key  then selectId := 11 else
-  if Key = gResKeys[SC_SELECT_13].Key  then selectId := 12 else
-  if Key = gResKeys[SC_SELECT_14].Key  then selectId := 13 else
-  if Key = gResKeys[SC_SELECT_15].Key  then selectId := 14 else
-  if Key = gResKeys[SC_SELECT_16].Key  then selectId := 15 else
-  if Key = gResKeys[SC_SELECT_17].Key  then selectId := 16 else
-  if Key = gResKeys[SC_SELECT_18].Key  then selectId := 17 else
-  if Key = gResKeys[SC_SELECT_19].Key  then selectId := 18 else
-  if Key = gResKeys[SC_SELECT_20].Key then selectId := 19 else
+  if Key = gResKeys[kfSelect1].Key  then selectId := 0 else
+  if Key = gResKeys[kfSelect2].Key  then selectId := 1 else
+  if Key = gResKeys[kfSelect3].Key  then selectId := 2 else
+  if Key = gResKeys[kfSelect4].Key  then selectId := 3 else
+  if Key = gResKeys[kfSelect5].Key  then selectId := 4 else
+  if Key = gResKeys[kfSelect6].Key  then selectId := 5 else
+  if Key = gResKeys[kfSelect7].Key  then selectId := 6 else
+  if Key = gResKeys[kfSelect8].Key  then selectId := 7 else
+  if Key = gResKeys[kfSelect9].Key  then selectId := 8 else
+  if Key = gResKeys[kfSelect10].Key then selectId := 9 else
+  if Key = gResKeys[kfSelect11].Key  then selectId := 10 else
+  if Key = gResKeys[kfSelect12].Key  then selectId := 11 else
+  if Key = gResKeys[kfSelect13].Key  then selectId := 12 else
+  if Key = gResKeys[kfSelect14].Key  then selectId := 13 else
+  if Key = gResKeys[kfSelect15].Key  then selectId := 14 else
+  if Key = gResKeys[kfSelect16].Key  then selectId := 15 else
+  if Key = gResKeys[kfSelect17].Key  then selectId := 16 else
+  if Key = gResKeys[kfSelect18].Key  then selectId := 17 else
+  if Key = gResKeys[kfSelect19].Key  then selectId := 18 else
+  if Key = gResKeys[kfSelect20].Key then selectId := 19 else
     selectId := -1;
 
   if selectId <> -1 then
@@ -3452,29 +3453,29 @@ begin
       Selection_Select(selectId);
 
   // Menu shortcuts
-  if Key = gResKeys[SC_MENU_BUILD].Key then
+  if Key = gResKeys[kfMenuBuild].Key then
     if Button_Main[tbBuild].Enabled then
       SwitchPage(Button_Main[tbBuild]);
 
-  if Key = gResKeys[SC_MENU_RATIO].Key then
+  if Key = gResKeys[kfMenuRatio].Key then
     if Button_Main[tbRatio].Enabled then
       SwitchPage(Button_Main[tbRatio]);
 
-  if Key = gResKeys[SC_MENU_STATS].Key then
+  if Key = gResKeys[kfMenuStats].Key then
     if Button_Main[tbStats].Enabled then
       SwitchPage(Button_Main[tbStats]);
 
-  if Key = gResKeys[SC_MENU_MENU].Key then
+  if Key = gResKeys[kfMenuMenu].Key then
     SwitchPage(Button_Main[tbMenu]);
 
   // Switch between same type buildings/units/groups
-  if (Key = gResKeys[SC_NEXT_BLD_UNIT_SAME_TYPE].Key)
+  if (Key = gResKeys[kfNextEntitySameType].Key)
     and (gMySpectator.Selected <> nil) then
   begin
     SelectNextGameObjWSameType;
   end;
 
-  if (Key = gResKeys[SC_PLAYER_COLOR_MODE].Key) then
+  if (Key = gResKeys[kfPlayerColorMode].Key) then
   begin
     if fUIMode in [umReplay, umSpectate] then
       gGameSettings.PlayersColorMode := TKMPlayerColorMode((Byte(gGameSettings.PlayersColorMode) mod 3) + 1)
@@ -3490,21 +3491,21 @@ begin
 //    fMinimap.Update;
   end;
 
-  if   (Key = gResKeys[SC_SPEEDUP_1].Key)
-    or (Key = gResKeys[SC_SPEEDUP_2].Key)
-    or (Key = gResKeys[SC_SPEEDUP_3].Key)
-    or (Key = gResKeys[SC_SPEEDUP_4].Key) then
+  if   (Key = gResKeys[kfSpeedup1].Key)
+    or (Key = gResKeys[kfSpeedup2].Key)
+    or (Key = gResKeys[kfSpeedup3].Key)
+    or (Key = gResKeys[kfSpeedup4].Key) then
   begin
     if SpeedChangeAllowed([umSP, umReplay]) then
     begin
       // Game speed/pause: available in multiplayer mode if the only player left in the game
-      if Key = gResKeys[SC_SPEEDUP_1].Key then
+      if Key = gResKeys[kfSpeedup1].Key then
         gGame.SetSpeed(GAME_SPEED_NORMAL, True, gGame.SpeedGIP);
-      if Key = gResKeys[SC_SPEEDUP_2].Key then
+      if Key = gResKeys[kfSpeedup2].Key then
         gGame.SetSpeed(gGameSettings.SpeedMedium, True);
-      if Key = gResKeys[SC_SPEEDUP_3].Key then
+      if Key = gResKeys[kfSpeedup3].Key then
         gGame.SetSpeed(gGameSettings.SpeedFast, True);
-      if Key = gResKeys[SC_SPEEDUP_4].Key then
+      if Key = gResKeys[kfSpeedup4].Key then
         gGame.SetSpeed(gGameSettings.SpeedVeryFast, True);
     end
     else
@@ -3522,32 +3523,32 @@ begin
   // First check if this key was associated with some Spectate/Replay key
   if (fUIMode in [umReplay, umSpectate]) then
   begin
-    if Key = gResKeys[SC_SPECPANEL_SELECT_DROPBOX].Key then
+    if Key = gResKeys[kfSpecpanelSelectDropbox].Key then
       fGuiGameSpectator.DropBox.SwitchOpen;
 
-    if Key = gResKeys[SC_SPECTATE_PLAYER_1].Key then
+    if Key = gResKeys[kfSpectatePlayer1].Key then
       specPlayerIndex := 1
-    else if Key = gResKeys[SC_SPECTATE_PLAYER_2].Key then
+    else if Key = gResKeys[kfSpectatePlayer2].Key then
       specPlayerIndex := 2
-    else if Key = gResKeys[SC_SPECTATE_PLAYER_3].Key then
+    else if Key = gResKeys[kfSpectatePlayer3].Key then
       specPlayerIndex := 3
-    else if Key = gResKeys[SC_SPECTATE_PLAYER_4].Key then
+    else if Key = gResKeys[kfSpectatePlayer4].Key then
       specPlayerIndex := 4
-    else if Key = gResKeys[SC_SPECTATE_PLAYER_5].Key then
+    else if Key = gResKeys[kfSpectatePlayer5].Key then
       specPlayerIndex := 5
-    else if Key = gResKeys[SC_SPECTATE_PLAYER_6].Key then
+    else if Key = gResKeys[kfSpectatePlayer6].Key then
       specPlayerIndex := 6
-    else if Key = gResKeys[SC_SPECTATE_PLAYER_7].Key then
+    else if Key = gResKeys[kfSpectatePlayer7].Key then
       specPlayerIndex := 7
-    else if Key = gResKeys[SC_SPECTATE_PLAYER_8].Key then
+    else if Key = gResKeys[kfSpectatePlayer8].Key then
       specPlayerIndex := 8
-    else if Key = gResKeys[SC_SPECTATE_PLAYER_9].Key then
+    else if Key = gResKeys[kfSpectatePlayer9].Key then
       specPlayerIndex := 9
-    else if Key = gResKeys[SC_SPECTATE_PLAYER_10].Key then
+    else if Key = gResKeys[kfSpectatePlayer10].Key then
       specPlayerIndex := 10
-    else if Key = gResKeys[SC_SPECTATE_PLAYER_11].Key then
+    else if Key = gResKeys[kfSpectatePlayer11].Key then
       specPlayerIndex := 11
-    else if Key = gResKeys[SC_SPECTATE_PLAYER_12].Key then
+    else if Key = gResKeys[kfSpectatePlayer12].Key then
       specPlayerIndex := 12
     else
       specPlayerIndex := -1;
@@ -3566,7 +3567,7 @@ begin
       end;
     end;
 
-    if (Key = gResKeys[SC_REPLAY_PLAY_NEXT_TICK].Key) and Button_ReplayStep.Enabled then
+    if (Key = gResKeys[kfReplayPlayNextTick].Key) and Button_ReplayStep.Enabled then
       ReplayClick(Button_ReplayStep);
   end;
 
@@ -3581,28 +3582,28 @@ begin
   // Field plans hotkeys
   if Button_Main[tbBuild].Enabled then
   begin
-    if Key = gResKeys[SC_PLAN_ROAD].Key then
+    if Key = gResKeys[kfPlanRoad].Key then
     begin
       if not fGuiGameBuild.Visible then
         SwitchPage(Button_Main[tbBuild]);
       fGuiGameBuild.PlanRoad;
     end;
 
-    if Key = gResKeys[SC_PLAN_FIELD].Key then
+    if Key = gResKeys[kfPlanField].Key then
     begin
       if not fGuiGameBuild.Visible then
         SwitchPage(Button_Main[tbBuild]);
       fGuiGameBuild.PlanField;
     end;
 
-    if Key = gResKeys[SC_PLAN_WINE].Key then
+    if Key = gResKeys[kfPlanWine].Key then
     begin
       if not fGuiGameBuild.Visible then
         SwitchPage(Button_Main[tbBuild]);
       fGuiGameBuild.PlanWine;
     end;
 
-    if Key = gResKeys[SC_ERASE_PLAN].Key then
+    if Key = gResKeys[kfErasePlan].Key then
     begin
       if not fGuiGameBuild.Visible then
         SwitchPage(Button_Main[tbBuild]);
@@ -3612,17 +3613,17 @@ begin
   end;
 
   // General function keys
-  if (Key = gResKeys[SC_PAUSE].Key)
+  if (Key = gResKeys[kfPause].Key)
     and SpeedChangeAllowed([umSP]) then
       SetPause(True); // Display pause overlay
 
   { Temporary cheat codes }
   if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or (fUIMode = umSP)) then
   begin
-    if Key = gResKeys[SC_DEBUG_REVEALMAP].Key then gGame.GameInputProcess.CmdTemp(gicTempRevealMap);
-    if Key = gResKeys[SC_DEBUG_VICTORY].Key   then gGame.GameInputProcess.CmdTemp(gicTempVictory);
-    if Key = gResKeys[SC_DEBUG_DEFEAT].Key    then gGame.GameInputProcess.CmdTemp(gicTempDefeat);
-    if Key = gResKeys[SC_DEBUG_ADDSCOUT].Key  then gGame.GameInputProcess.CmdTemp(gicTempAddScout, gGameCursor.Cell);
+    if Key = gResKeys[kfDebugRevealmap].Key then gGame.GameInputProcess.CmdTemp(gicTempRevealMap);
+    if Key = gResKeys[kfDebugVictory].Key   then gGame.GameInputProcess.CmdTemp(gicTempVictory);
+    if Key = gResKeys[kfDebugDefeat].Key    then gGame.GameInputProcess.CmdTemp(gicTempDefeat);
+    if Key = gResKeys[kfDebugAddscout].Key  then gGame.GameInputProcess.CmdTemp(gicTempAddScout, gGameCursor.Cell);
   end;
 end;
 

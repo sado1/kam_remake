@@ -2,23 +2,12 @@ unit KM_ResKeys;
 {$I KaM_Remake.inc}
 interface
 uses
-  Classes, SysUtils, StrUtils, Math,
-  KM_Defaults, KM_ResTexts;
-
-type
-  TKMFuncArea = (faCommon,
-                 faGame,
-                   faUnit,
-                   faHouse,
-                 faSpecReplay,
-                 faMapEdit);
+  Classes, SysUtils, StrUtils, Math, Generics.Collections,
+  KM_Defaults, KM_ResTexts,
+  KM_ResTypes;
 
 const
-  // Total number of different functions in the game that can have a shortcut
-  FUNC_COUNT = 104;
-
-  // Load key IDs from inc file
-  {$I KM_KeyIDs.inc}
+  KEY_FUNC_LOW = Succ(kfNone); // 1st key function
 
 type
   TKMFuncInfo = record
@@ -30,22 +19,25 @@ type
 
   TKMKeyLibrary = class
   private
-    fFuncs: array [0..FUNC_COUNT-1] of TKMFuncInfo;
+    fFuncs: array [TKMKeyFunction] of TKMFuncInfo;
     fKeymapPath: string;
-    function GetFunc(aIndex: Word): TKMFuncInfo;
-    procedure SetFunc(aIndex: Word; const aFuncInfo: TKMFuncInfo);
+    function GetFunc(aKeyFunc: TKMKeyFunction): TKMFuncInfo;
+    procedure SetFunc(aKeyFunc: TKMKeyFunction; const aFuncInfo: TKMFuncInfo);
   public
     constructor Create;
     function GetKeyName(aKey: Word): string;
-    function GetKeyNameById(aId: Word): string;
-    function GetFunctionNameById(aId: Integer): string;
+    function GetKeyNameById(aKeyFunc: TKMKeyFunction): string;
+    function GetFunctionNameById(aKeyFunc: TKMKeyFunction): string;
     function AllowKeySet(aArea: TKMFuncArea; aKey: Word): Boolean;
-    procedure SetKey(aId: Integer; aKey: Word);
+    procedure SetKey(aKeyFunc: TKMKeyFunction; aKey: Word);
     function Count: Integer;
-    property Funcs[aIndex: Word]: TKMFuncInfo read GetFunc write SetFunc; default;
+    property Funcs[aKeyFunc: TKMKeyFunction]: TKMFuncInfo read GetFunc write SetFunc; default;
     procedure LoadKeymapFile;
     procedure ResetKeymap;
     procedure SaveKeymap;
+
+    class function GetKeyFunction(aKeyFunStr: string): TKMKeyFunction;
+    class function GetKeyFunctionStr(aKeyFun: TKMKeyFunction): string;
   end;
 
 var
@@ -53,11 +45,17 @@ var
   gResKeys: TKMKeyLibrary;
 
 implementation
+uses
+  TypInfo, RTTI;
 
 const
+  DELIM_1 = ':';
+  DELIM_2 = '; //';
+
   // Default keys
-  DEF_KEYS: array [0..FUNC_COUNT-1] of Byte = (
+  DEF_KEYS: array [TKMKeyFunction] of Byte = (
     //Common Keys
+    0,
     37, 39, 38, 40,                         // Scroll Left, Right, Up, Down (Arrow keys)
     4,                                      // Map drag scroll (Middle mouse btn)
     34, 33, 8,                              // Zoom In/Out/Reset (Page Down, Page Up, Backspace)
@@ -101,8 +99,9 @@ const
   );
 
   // Function text values
-  KEY_FUNC_TX: array [0..FUNC_COUNT-1] of Word = (
+  KEY_FUNC_TX: array [TKMKeyFunction] of Word = (
     //Common Keys
+    0,
     TX_KEY_FUNC_SCROLL_LEFT, TX_KEY_FUNC_SCROLL_RIGHT, TX_KEY_FUNC_SCROLL_UP, TX_KEY_FUNC_SCROLL_DOWN,    // Scroll Left, Right, Up, Down
     TX_KEY_FUNC_MAP_DRAG_SCROLL,                                                                          // Map drag scroll
     TX_KEY_FUNC_ZOOM_IN, TX_KEY_FUNC_ZOOM_OUT, TX_KEY_FUNC_ZOOM_RESET,                                    // Zoom In/Out/Reset
@@ -157,7 +156,7 @@ const
 { TKMKeyLibrary }
 constructor TKMKeyLibrary.Create;
 var
-  I: Integer;
+  KF: TKMKeyFunction;
 begin
   inherited;
 
@@ -165,27 +164,27 @@ begin
 
   LoadKeymapFile;
 
-  for I := 0 to FUNC_COUNT - 1 do
+  for KF := KEY_FUNC_LOW to High(TKMKeyFunction) do
   begin
-    fFuncs[I].TextId := KEY_FUNC_TX[I];
+    fFuncs[KF].TextId := KEY_FUNC_TX[KF];
 
-    case I of
-      0..13:  fFuncs[I].Area := faCommon;
-      14..53: fFuncs[I].Area := faGame;
-      54..62: fFuncs[I].Area := faUnit;
-      63..65: fFuncs[I].Area := faHouse;
-      66..79: fFuncs[I].Area := faSpecReplay;
-      else    fFuncs[I].Area := faMapEdit;
+    case KF of
+      kfScrollLeft..kfDebugAddscout:    fFuncs[KF].Area := faCommon;
+      kfMenuBuild..kfSelect20:          fFuncs[KF].Area := faGame;
+      kfArmyHalt..kfArmyRotateCcw:      fFuncs[KF].Area := faUnit;
+      kfTrainGotoPrev..kfTrainGotoNext: fFuncs[KF].Area := faHouse;
+      kfSpecpanelSelectDropbox..kfSpectatePlayer12: fFuncs[KF].Area := faSpecReplay;
+      else    fFuncs[KF].Area := faMapEdit;
     end;
 
-    fFuncs[I].IsChangableByPlayer := (I in [10..13]);
+    fFuncs[KF].IsChangableByPlayer := (KF in [kfDebugRevealmap..kfDebugAddscout]);
   end;
 end;
 
 
 function TKMKeyLibrary.Count: Integer;
 begin
-  Result := FUNC_COUNT;
+  Result := Integer(High(TKMKeyFunction));
 end;
 
 
@@ -195,7 +194,8 @@ var
   I: Integer;
   SL: TStringList;
   delim1, delim2: Integer;
-  funcId, keyVal: Integer;
+  funcId: TKMKeyFunction;
+  keyVal: Integer;
 begin
   if not FileExists(fKeymapPath) then
   begin
@@ -211,15 +211,14 @@ begin
   // Parse text
   for I := 0 to SL.Count - 1 do
   begin
-    delim1 := Pos(':', SL[I]);
-    delim2 := Pos('//', SL[I]);
+    delim1 := Pos(DELIM_1, SL[I]);
+    delim2 := Pos(DELIM_2, SL[I]);
     if (delim1 = 0) or (delim2 = 0) or (delim1 > delim2) then Continue;
 
-    funcId := StrToIntDef(Copy(SL[I], 0, delim1 - 1), -1);
+    funcId := GetKeyFunction(Copy(SL[I], 0, delim1 - 1));//StrToIntDef(Copy(SL[I], 0, delim1 - 1), -1);
     keyVal := StrToIntDef(Copy(SL[I], delim1 + 1, delim2 - delim1 - 1), -1);
 
-    if not InRange(funcId, 0, FUNC_COUNT - 1) or (keyVal = -1) then Continue;
-    if not InRange(keyVal, 0, 255) then Continue;
+    if (keyVal = -1) or not InRange(keyVal, 0, 255) then Continue;
 
     fFuncs[funcId].Key := keyVal;
   end;
@@ -228,53 +227,50 @@ begin
 end;
 
 
-function TKMKeyLibrary.GetFunc(aIndex: Word): TKMFuncInfo;
+function TKMKeyLibrary.GetFunc(aKeyFunc: TKMKeyFunction): TKMFuncInfo;
 begin
-  Result := fFuncs[aIndex];
+  Result := fFuncs[aKeyFunc];
 end;
 
 
-procedure TKMKeyLibrary.SetFunc(aIndex: Word; const aFuncInfo :TKMFuncInfo);
+procedure TKMKeyLibrary.SetFunc(aKeyFunc: TKMKeyFunction; const aFuncInfo :TKMFuncInfo);
 begin
-  fFuncs[aIndex] := aFuncInfo;
+  fFuncs[aKeyFunc] := aFuncInfo;
 end;
 
 
 procedure TKMKeyLibrary.SaveKeymap;
 var
-  Keystring: string;
-  KeyStringList: TStringList;
-  I: Integer;
+  KF: TKMKeyFunction;
+  keyStr: string;
+  keyStringList: TStringList;
 begin
-  KeyStringList := TStringList.Create;
-  {$IFDEF WDC}KeyStringList.DefaultEncoding := TEncoding.UTF8;{$ENDIF}
+  keyStringList := TStringList.Create;
+  {$IFDEF WDC}keyStringList.DefaultEncoding := TEncoding.UTF8;{$ENDIF}
 
-  for I := 0 to FUNC_COUNT - 1 do
+  for KF := KEY_FUNC_LOW to High(TKMKeyFunction)  do
   begin
-    Keystring := IntToStr(I) + ':' + IntToStr(fFuncs[I].Key) + '// ' + GetFunctionNameById(I);
-    KeyStringList.Add(Keystring);
+    keyStr := GetKeyFunctionStr(KF) + DELIM_1 + IntToStr(fFuncs[KF].Key) + DELIM_2 + gResTexts[KEY_FUNC_TX[KF]];
+    keyStringList.Add(keyStr);
   end;
 
-  KeyStringList.SaveToFile(fKeymapPath{$IFDEF WDC}, TEncoding.UTF8{$ENDIF});
-  KeyStringList.Free;
+  keyStringList.SaveToFile(fKeymapPath{$IFDEF WDC}, TEncoding.UTF8{$ENDIF});
+  keyStringList.Free;
 end;
 
 
 procedure TKMKeyLibrary.ResetKeymap;
 var
-  I: Integer;
+  KF: TKMKeyFunction;
 begin
-  for I := 0 to FUNC_COUNT - 1 do
-    fFuncs[I].Key := DEF_KEYS[I];
+  for KF := KEY_FUNC_LOW to High(TKMKeyFunction) do
+    fFuncs[KF].Key := DEF_KEYS[KF];
 end;
 
 
-function TKMKeyLibrary.GetFunctionNameById(aId: Integer): string;
+function TKMKeyLibrary.GetFunctionNameById(aKeyFunc: TKMKeyFunction): string;
 begin
-  if InRange(aId, 0, FUNC_COUNT - 1) then
-    Result := gResTexts[KEY_FUNC_TX[aId]]
-  else
-    Result := gResTexts[TX_KEY_FUNC_UNKNOWN] + ' ' + IntToStr(aId) + '! ~~~';
+  Result := gResTexts[KEY_FUNC_TX[aKeyFunc]];
 end;
 
 
@@ -368,6 +364,7 @@ begin
     163: Result := gResTexts[TX_KEY_RIGHT_CTRL];
     164: Result := gResTexts[TX_KEY_LEFT_ALT];
     165: Result := gResTexts[TX_KEY_RIGHT_ALT];
+    // Media keys (additional keys on some keyboards)
     166: Result := gResTexts[TX_KEY_BROWSER_BACK];
     167: Result := gResTexts[TX_KEY_BROWSER_FORWARD];
     168: Result := gResTexts[TX_KEY_BROWSER_REFRESH];
@@ -405,9 +402,9 @@ begin
 end;
 
 
-function TKMKeyLibrary.GetKeyNameById(aId: Word): string;
+function TKMKeyLibrary.GetKeyNameById(aKeyFunc: TKMKeyFunction): string;
 begin
-  Result := GetKeyName(fFuncs[aId].Key);
+  Result := GetKeyName(fFuncs[aKeyFunc].Key);
 end;
 
 
@@ -418,29 +415,42 @@ begin
 end;
 
 
-procedure TKMKeyLibrary.SetKey(aId: Integer; aKey: Word);
+procedure TKMKeyLibrary.SetKey(aKeyFunc: TKMKeyFunction; aKey: Word);
 var
-  I: Integer;
+  KF: TKMKeyFunction;
 begin
   // Reset previous key binding if Key areas overlap
   if aKey <> 0 then
-    for I := 0 to FUNC_COUNT - 1 do
-      if fFuncs[I].Key = aKey then
-        case fFuncs[I].Area of
-          faCommon:     fFuncs[I].Key := 0;
-          faGame:       if (fFuncs[aId].Area in [faGame, faUnit, faHouse, faCommon]) then
-                          fFuncs[I].Key := 0;
-          faUnit:       if (fFuncs[aId].Area in [faUnit, faGame, faCommon]) then
-                          fFuncs[I].Key := 0;
-          faHouse:      if (fFuncs[aId].Area in [faHouse, faGame, faCommon]) then
-                          fFuncs[I].Key := 0;
-          faSpecReplay: if (fFuncs[aId].Area in [faSpecReplay, faCommon]) then
-                          fFuncs[I].Key := 0;
-          faMapEdit:    if (fFuncs[aId].Area in [faMapEdit, faCommon]) then
-                          fFuncs[I].Key := 0;
+    for KF := KEY_FUNC_LOW to High(TKMKeyFunction) do
+      if fFuncs[KF].Key = aKey then
+        case fFuncs[KF].Area of
+          faCommon:     fFuncs[KF].Key := 0;
+          faGame:       if (fFuncs[aKeyFunc].Area in [faGame, faUnit, faHouse, faCommon]) then
+                          fFuncs[KF].Key := 0;
+          faUnit:       if (fFuncs[aKeyFunc].Area in [faUnit, faGame, faCommon]) then
+                          fFuncs[KF].Key := 0;
+          faHouse:      if (fFuncs[aKeyFunc].Area in [faHouse, faGame, faCommon]) then
+                          fFuncs[KF].Key := 0;
+          faSpecReplay: if (fFuncs[aKeyFunc].Area in [faSpecReplay, faCommon]) then
+                          fFuncs[KF].Key := 0;
+          faMapEdit:    if (fFuncs[aKeyFunc].Area in [faMapEdit, faCommon]) then
+                          fFuncs[KF].Key := 0;
         end;
 
-  fFuncs[aId].Key := aKey;
+  fFuncs[aKeyFunc].Key := aKey;
+end;
+
+
+class function TKMKeyLibrary.GetKeyFunction(aKeyFunStr: string): TKMKeyFunction;
+begin
+  Result := TRttiEnumerationType.GetValue<TKMKeyFunction>(aKeyFunStr);
+end;
+
+
+class function TKMKeyLibrary.GetKeyFunctionStr(aKeyFun: TKMKeyFunction): string;
+begin
+  Result := TRttiEnumerationType.GetName(aKeyFun);
+//  Result := GetEnumName(TypeInfo(TKMKeyFunction), Integer(aKeyFun));
 end;
 
 

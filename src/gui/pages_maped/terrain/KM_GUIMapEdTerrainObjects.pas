@@ -80,7 +80,8 @@ type
 implementation
 uses
   KM_Resource, KM_ResFonts, KM_ResMapElements, KM_ResTexts, KM_ResKeys, KM_Terrain,
-  KM_HandsCollection, KM_RenderUI, KM_InterfaceGame, KM_Utils;
+  KM_HandsCollection, KM_RenderUI, KM_InterfaceGame, KM_Utils,
+  KM_ResTypes;
 
 const
   OBJECTS_PALETTE_MAX_COLS_CNT = 17;
@@ -127,13 +128,13 @@ begin
       ObjectsTable[I*3+J].OnMouseWheel := ObjectsScroll.MouseWheel;
     end;
   ObjectErase := TKMButtonFlat.Create(Panel_Objects, 9, 4, 32, 32, 340);
-  ObjectErase.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_OBJECTS_REMOVE, SC_MAPEDIT_SUB_MENU_ACTION_1);
+  ObjectErase.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_OBJECTS_REMOVE, kfMapedSubMenuAction1);
   ObjectErase.Tag := OBJ_NONE_TAG; //no object
   ObjectErase.OnClick := ObjectsChange;
 
   ObjectBlock := TKMButtonFlat.Create(Panel_Objects, Panel_Objects.Width - 32, 4, 32, 32, 254,rxTrees);
   ObjectBlock.Anchors := [anTop, anRight];
-  ObjectBlock.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_OBJECTS_BLOCK, SC_MAPEDIT_SUB_MENU_ACTION_2);
+  ObjectBlock.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_OBJECTS_BLOCK, kfMapedSubMenuAction2);
   ObjectBlock.Tag := OBJ_BLOCK_TAG; //block object
   ObjectBlock.OnClick := ObjectsChange;
 
@@ -141,7 +142,7 @@ begin
   ObjectsPalette_Button.Anchors := [anLeft, anTop, anRight];
   ObjectsPalette_Button.Caption := gResTexts[TX_MAPED_TERRAIN_OBJECTS_PALETTE];
   ObjectsPalette_Button.CapOffsetY := -11;
-  ObjectsPalette_Button.Hint := GetHintWHotKey(TX_MAPED_TERRAIN_OBJECTS_PALETTE, SC_MAPEDIT_OBJ_PALETTE);
+  ObjectsPalette_Button.Hint := GetHintWHotKey(TX_MAPED_TERRAIN_OBJECTS_PALETTE, kfMapedObjPalette);
   ObjectsPalette_Button.OnClick := ObjectsPaletteButton_Click;
 
   PopUp_ObjectsPalette := TKMPopUpMenu.Create(aParent.MasterParent, aParent.MasterParent.Width - 50);
@@ -591,7 +592,7 @@ procedure TKMMapEdTerrainObjects.KeyDown(Key: Word; Shift: TShiftState; var aHan
 begin
   if aHandled then Exit;
 
-  aHandled := Key = gResKeys[SC_MAPEDIT_OBJ_PALETTE].Key;
+  aHandled := Key = gResKeys[kfMapedObjPalette].Key;
   if (Key = VK_ESCAPE) and PopUp_ObjectsPalette.Visible then
   begin
     PopUp_ObjectsPalette.Hide;
@@ -602,7 +603,7 @@ end;
 
 procedure TKMMapEdTerrainObjects.KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
 begin
-  aHandled := Key = gResKeys[SC_MAPEDIT_OBJ_PALETTE].Key;
+  aHandled := Key = gResKeys[kfMapedObjPalette].Key;
   if aHandled then
   begin
     //Reset selected and hide all pages

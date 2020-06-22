@@ -157,7 +157,8 @@ uses
   KM_Resource, KM_TerrainDeposits, KM_ResCursors, KM_ResKeys, KM_GameApp,
   KM_Hand, KM_AIDefensePos, KM_RenderUI, KM_ResFonts, KM_CommonClasses, KM_UnitWarrior,
   KM_ResHouses, KM_Utils,
-  KM_UnitGroupTypes;
+  KM_UnitGroupTypes,
+  KM_ResTypes;
 
 
 { TKMapEdInterface }
@@ -202,12 +203,12 @@ begin
   Button_History.TexOffsetX := -1;
   Button_History.Down := False; // History is hidden by default
   Button_History.OnClick := History_Click;
-  Button_History.Hint := GetHintWHotKey(TX_MAPED_HISTORY_HINT, SC_MAPEDIT_HISTORY);
+  Button_History.Hint := GetHintWHotKey(TX_MAPED_HISTORY_HINT, kfMapedHistory);
 
   Button_ChangeOwner := TKMButtonFlat.Create(Panel_Main, MAPED_TOOLBAR_WIDTH - 44 - 30 + TB_PAD, 190, 30, 32, 662);
   Button_ChangeOwner.Down := False;
   Button_ChangeOwner.OnClick := ChangeOwner_Click;
-  Button_ChangeOwner.Hint := GetHintWHotKey(TX_MAPED_PAINT_BUCKET_CH_OWNER, SC_MAPEDIT_PAINT_BUCKET);
+  Button_ChangeOwner.Hint := GetHintWHotKey(TX_MAPED_PAINT_BUCKET_CH_OWNER, kfMapedPaintBucket);
 
   //Button_TerrainUndo := TKMButton.Create(Panel_Terrain, Panel_Terrain.Width - 20, 0, 10, SMALL_TAB_H + 4, '<', bsGame);
   Button_Undo := TKMButtonFlat.Create(Panel_Main, Button_PlayerSelect[5].Right + 3, 227, 15, 32, 0);
@@ -228,13 +229,13 @@ begin
   Button_UniversalEraser := TKMButtonFlat.Create(Panel_Main, MAPED_TOOLBAR_WIDTH - 44 - 30 + TB_PAD, 227, 30, 32, 340);
   Button_UniversalEraser.Down := False;
   Button_UniversalEraser.OnClick := UniversalEraser_Click;
-  Button_UniversalEraser.Hint := GetHintWHotKey(TX_MAPED_UNIVERSAL_ERASER, SC_MAPEDIT_UNIV_ERASOR);
+  Button_UniversalEraser.Hint := GetHintWHotKey(TX_MAPED_UNIVERSAL_ERASER, kfMapedUnivErasor);
 
   Image_Extra := TKMImage.Create(Panel_Main, MAPED_TOOLBAR_WIDTH, Panel_Main.Height - 48, 30, 48, 494);
   Image_Extra.Anchors := [anLeft, anBottom];
   Image_Extra.HighlightOnMouseOver := True;
   Image_Extra.OnClick := Message_Click;
-  Image_Extra.Hint := GetHintWHotKey(TX_KEY_FUNC_MAPEDIT_EXTRA, SC_MAPEDIT_EXTRA);
+  Image_Extra.Hint := GetHintWHotKey(TX_KEY_FUNC_MAPEDIT_EXTRA, kfMapedExtra);
 
   Image_Message := TKMImage.Create(Panel_Main, MAPED_TOOLBAR_WIDTH, Panel_Main.Height - 48*2, 30, 48, 496);
   Image_Message.Anchors := [anLeft, anBottom];
@@ -255,11 +256,11 @@ begin
   Button_Main[3] := TKMButton.Create(Panel_Common, TB_PAD_MBTN_LEFT + BIG_PAD_W*2, 0, BIG_TAB_W, BIG_TAB_H, 392, rxGui, bsGame);
   Button_Main[4] := TKMButton.Create(Panel_Common, TB_PAD_MBTN_LEFT + BIG_PAD_W*3, 0, BIG_TAB_W, BIG_TAB_H, 441, rxGui, bsGame);
   Button_Main[5] := TKMButton.Create(Panel_Common, TB_PAD_MBTN_LEFT + BIG_PAD_W*4, 0, BIG_TAB_W, BIG_TAB_H, 389, rxGui, bsGame);
-  Button_Main[1].Hint := GetHintWHotKey(TX_MAPED_TERRAIN, SC_MAPEDIT_TERRAIN);
-  Button_Main[2].Hint := GetHintWHotKey(TX_MAPED_VILLAGE, SC_MAPEDIT_VILLAGE);
-  Button_Main[3].Hint := GetHintWHotKey(TX_MAPED_SCRIPTS_VISUAL, SC_MAPEDIT_VISUAL);
-  Button_Main[4].Hint := GetHintWHotKey(TX_MAPED_SCRIPTS_GLOBAL, SC_MAPEDIT_GLOBAL);
-  Button_Main[5].Hint := GetHintWHotKey(TX_MAPED_MENU, SC_MAPEDIT_MAIN_MANU);
+  Button_Main[1].Hint := GetHintWHotKey(TX_MAPED_TERRAIN, kfMapedTerrain);
+  Button_Main[2].Hint := GetHintWHotKey(TX_MAPED_VILLAGE, kfMapedVillage);
+  Button_Main[3].Hint := GetHintWHotKey(TX_MAPED_SCRIPTS_VISUAL, kfMapedVisual);
+  Button_Main[4].Hint := GetHintWHotKey(TX_MAPED_SCRIPTS_GLOBAL, kfMapedGlobal);
+  Button_Main[5].Hint := GetHintWHotKey(TX_MAPED_MENU, kfMapedMainMenu);
   for I := 1 to 5 do
     Button_Main[I].OnClick := Main_ButtonClick;
 
@@ -883,11 +884,11 @@ begin
     keyPassedToModal := True;
 
   //For now enter can open up Extra panel
-  if not keyPassedToModal and (Key = gResKeys[SC_MAPEDIT_EXTRA].Key) then
+  if not keyPassedToModal and (Key = gResKeys[kfMapedExtra].Key) then
     Message_Click(Image_Extra);
 
   // If modals are closed or they did not handle key
-  if not keyPassedToModal and (Key = gResKeys[SC_CLOSE_MENU].Key) then
+  if not keyPassedToModal and (Key = gResKeys[kfCloseMenu].Key) then
   begin
     Cancel_Clicked(False, keyHandled);
     if not keyHandled then
@@ -938,15 +939,15 @@ begin
   if keyHandled then Exit;
 
   //F1-F5 menu shortcuts
-  if Key = gResKeys[SC_MAPEDIT_TERRAIN].Key   then
+  if Key = gResKeys[kfMapedTerrain].Key   then
     Button_Main[1].Click;
-  if Key = gResKeys[SC_MAPEDIT_VILLAGE].Key   then
+  if Key = gResKeys[kfMapedVillage].Key   then
     Button_Main[2].Click;
-  if Key = gResKeys[SC_MAPEDIT_VISUAL].Key    then
+  if Key = gResKeys[kfMapedVisual].Key    then
     Button_Main[3].Click;
-  if Key = gResKeys[SC_MAPEDIT_GLOBAL].Key    then
+  if Key = gResKeys[kfMapedGlobal].Key    then
     Button_Main[4].Click;
-  if Key = gResKeys[SC_MAPEDIT_MAIN_MANU].Key then
+  if Key = gResKeys[kfMapedMainMenu].Key then
     Button_Main[5].Click;
 
   //1-6 submenu shortcuts
@@ -963,15 +964,15 @@ begin
     end;
 
   //Universal erasor
-  if Key = gResKeys[SC_MAPEDIT_UNIV_ERASOR].Key then
+  if Key = gResKeys[kfMapedUnivErasor].Key then
     UniversalEraser_Click(Button_UniversalEraser);
 
   //Universal erasor
-  if Key = gResKeys[SC_MAPEDIT_PAINT_BUCKET].Key then
+  if Key = gResKeys[kfMapedPaintBucket].Key then
     ChangeOwner_Click(Button_ChangeOwner);
 
   //History
-  if Key = gResKeys[SC_MAPEDIT_HISTORY].Key then
+  if Key = gResKeys[kfMapedHistory].Key then
     History_Click(Button_History);
 
 

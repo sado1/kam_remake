@@ -337,7 +337,8 @@ uses
   KM_Settings,
   KM_HandEntity,
   KM_IoXML,
-  KM_GameInputProcess;
+  KM_GameInputProcess,
+  KM_ResTypes;
 
 
 procedure ExportDone(aResourceName: String);
@@ -603,7 +604,7 @@ end;
 
 procedure TFormMain.FormKeyDownProc(aKey: Word; aShift: TShiftState);
 begin
-  if aKey = gResKeys[SC_DEBUG_WINDOW].Key then
+  if aKey = gResKeys[kfDebugWindow].Key then
   begin
     SHOW_DEBUG_CONTROLS := not SHOW_DEBUG_CONTROLS;
     ControlsSetVisibile(SHOW_DEBUG_CONTROLS, not (ssCtrl in aShift)); //Hide groupbox when Ctrl is pressed

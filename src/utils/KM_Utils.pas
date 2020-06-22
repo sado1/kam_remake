@@ -12,13 +12,14 @@ uses
   {$IFDEF WDC} IOUtils, {$ENDIF}
 	SysUtils, StrUtils, Classes, Controls,
   KM_Terrain,
-  KM_Defaults, KM_CommonTypes, KM_CommonClasses, KM_Points;
+  KM_Defaults, KM_CommonTypes, KM_CommonClasses, KM_Points,
+  KM_ResTypes;
 
   function KMPathLength(aNodeList: TKMPointList): Single;
 
-  function GetHintWHotKey(const aText: String; aHotkeyId: Integer): String; overload;
+  function GetHintWHotKey(const aText: String; aKeyFunc: TKMKeyFunction): String; overload;
   function GetHintWHotKey(aTextId: Integer; const aHotkeyStr: String): String; overload;
-  function GetHintWHotKey(aTextId, aHotkeyId: Integer): String; overload;
+  function GetHintWHotKey(aTextId: Integer; aKeyFunc: TKMKeyFunction): String; overload;
 
 	function GetShiftState(aButton: TMouseButton): TShiftState;
   function GetMultiplicator(aButton: TMouseButton): Word; overload;
@@ -306,12 +307,12 @@ begin
 end;
 
 
-function GetHintWHotKey(const aText: String; aHotkeyId: Integer): String; overload;
+function GetHintWHotKey(const aText: String; aKeyFunc: TKMKeyFunction): String; overload;
 var
   hotKeyStr: String;
 begin
   Result := aText;
-  hotKeyStr := gResKeys.GetKeyNameById(aHotkeyId);
+  hotKeyStr := gResKeys.GetKeyNameById(aKeyFunc);
   if hotKeyStr <> '' then
     Result := Result + Format(' (''%s'')', [hotKeyStr]);
 end;
@@ -328,9 +329,9 @@ begin
 end;
 
 
-function GetHintWHotKey(aTextId, aHotkeyId: Integer): String;
+function GetHintWHotKey(aTextId: Integer; aKeyFunc: TKMKeyFunction): String;
 begin
-  Result := GetHintWHotKey(aTextId, gResKeys.GetKeyNameById(aHotkeyId));
+  Result := GetHintWHotKey(aTextId, gResKeys.GetKeyNameById(aKeyFunc));
 end;
 
 

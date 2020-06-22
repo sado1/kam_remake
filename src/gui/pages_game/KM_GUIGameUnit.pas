@@ -73,7 +73,8 @@ uses
   KM_Game, KM_GameInputProcess, KM_HandsCollection, KM_Hand, KM_HandSpectator, KM_InterfaceGame, KM_RenderUI,
   KM_Resource, KM_ResFonts, KM_ResTexts, KM_ResKeys, KM_ResHouses, KM_ResSound, KM_ResCursors, KM_ResUnits, KM_Pics,
   KM_UnitWarrior, KM_Utils, KM_Defaults, KM_Sound, KM_CommonUtils,
-  KM_UnitGroupTypes;
+  KM_UnitGroupTypes,
+  KM_ResTypes;
 
 const
   UNIT_FLAG_TEX_ID = 1159;
@@ -154,15 +155,15 @@ begin
 
     // Hints
     Button_Army_GoTo.Hint     := gResTexts[TX_ARMY_GOTO_HINT];
-    Button_Army_Stop.Hint     := GetHintWHotKey(TX_TROOP_HALT_HINT, SC_ARMY_HALT);
+    Button_Army_Stop.Hint     := GetHintWHotKey(TX_TROOP_HALT_HINT, kfArmyHalt);
     Button_Army_Attack.Hint   := gResTexts[TX_ARMY_ATTACK_HINT];
-    Button_Army_RotCW.Hint    := GetHintWHotKey(TX_ARMY_ROTATE_CW_HINT, SC_ARMY_ROTATE_CW);
-    Button_Army_Storm.Hint    := GetHintWHotKey(TX_ARMY_STORM_HINT, SC_ARMY_STORM);
-    Button_Army_RotCCW.Hint   := GetHintWHotKey(TX_ARMY_ROTATE_CCW_HINT, SC_ARMY_ROTATE_CCW);
-    Button_Army_ForDown.Hint  := GetHintWHotKey(TX_ARMY_LINE_ADD_HINT, SC_ARMY_ADD_LINE);
-    Button_Army_ForUp.Hint    := GetHintWHotKey(TX_ARMY_LINE_REM_HINT, SC_ARMY_DEL_LINE);
+    Button_Army_RotCW.Hint    := GetHintWHotKey(TX_ARMY_ROTATE_CW_HINT, kfArmyRotateCw);
+    Button_Army_Storm.Hint    := GetHintWHotKey(TX_ARMY_STORM_HINT, kfArmyStorm);
+    Button_Army_RotCCW.Hint   := GetHintWHotKey(TX_ARMY_ROTATE_CCW_HINT, kfArmyRotateCcw);
+    Button_Army_ForDown.Hint  := GetHintWHotKey(TX_ARMY_LINE_ADD_HINT, kfArmyAddLine);
+    Button_Army_ForUp.Hint    := GetHintWHotKey(TX_ARMY_LINE_REM_HINT, kfArmyDelLine);
 
-    SplitKeyStr := gResKeys.GetKeyNameById(SC_ARMY_SPLIT);
+    SplitKeyStr := gResKeys.GetKeyNameById(kfArmySplit);
 
     //Check if we have new hint with separate 1 unit action hint (Ctrl + S)
     if CountOccurrences('%s', gResTexts[TX_TROOP_SPLIT_HINT]) = 2 then
@@ -170,8 +171,8 @@ begin
     else
       Button_Army_Split.Hint     := GetHintWHotKey(TX_TROOP_SPLIT_HINT, SplitKeyStr); //Old hint
 
-    Button_Army_Join.Hint     := GetHintWHotKey(TX_TROOP_LINK_HINT, SC_ARMY_LINK);
-    Button_Army_Feed.Hint     := GetHintWHotKey(TX_ARMY_FEED_HINT, SC_ARMY_FOOD);
+    Button_Army_Join.Hint     := GetHintWHotKey(TX_TROOP_LINK_HINT, kfArmyLink);
+    Button_Army_Feed.Hint     := GetHintWHotKey(TX_ARMY_FEED_HINT, kfArmyFood);
 
     { Army controls...
     Go to     Stop      Attack
@@ -514,21 +515,21 @@ begin
   if aHandled then Exit;
 
   // Standard army shortcuts from KaM
-  if Key = gResKeys[SC_ARMY_HALT].Key then
+  if Key = gResKeys[kfArmyHalt].Key then
     if Panel_Army.Visible and Button_Army_Stop.Enabled and not OnSelectingTroopDirection(nil) then
     begin
       Button_Army_Stop.Click;
       aHandled := True;
     end;
 
-  if Key = gResKeys[SC_ARMY_LINK].Key then
+  if Key = gResKeys[kfArmyLink].Key then
     if Panel_Army.Visible and Button_Army_Join.Enabled and not OnSelectingTroopDirection(nil) then
     begin
       Button_Army_Join.Click;
       aHandled := True;
     end;
 
-  if Key = gResKeys[SC_ARMY_SPLIT].Key then
+  if Key = gResKeys[kfArmySplit].Key then
     if Panel_Army.Visible and Button_Army_Split.Enabled and not OnSelectingTroopDirection(nil) then
     begin
       Button_Army_Split.Click;
@@ -536,42 +537,42 @@ begin
     end;
 
   // Additional hotkeys for all group orders
-  if Key = gResKeys[SC_ARMY_FOOD].Key then
+  if Key = gResKeys[kfArmyFood].Key then
     if Panel_Army.Visible and Button_Army_Feed.Enabled and not OnSelectingTroopDirection(nil) then
     begin
       Button_Army_Feed.Click;
       aHandled := True;
     end;
 
-  if Key = gResKeys[SC_ARMY_STORM].Key then
+  if Key = gResKeys[kfArmyStorm].Key then
     if Panel_Army.Visible and Button_Army_Storm.Enabled and not OnSelectingTroopDirection(nil) then
     begin
       Button_Army_Storm.Click;
       aHandled := True;
     end;
 
-  if Key = gResKeys[SC_ARMY_ADD_LINE].Key then
+  if Key = gResKeys[kfArmyAddLine].Key then
     if Panel_Army.Visible and Button_Army_ForDown.Enabled and not OnSelectingTroopDirection(nil) then
     begin
       Button_Army_ForDown.Click;
       aHandled := True;
     end;
 
-  if Key = gResKeys[SC_ARMY_DEL_LINE].Key then
+  if Key = gResKeys[kfArmyDelLine].Key then
     if Panel_Army.Visible and Button_Army_ForUp.Enabled and not OnSelectingTroopDirection(nil) then
     begin
       Button_Army_ForUp.Click;
       aHandled := True;
     end;
 
-  if Key = gResKeys[SC_ARMY_ROTATE_CW].Key then
+  if Key = gResKeys[kfArmyRotateCw].Key then
     if Panel_Army.Visible and Button_Army_RotCW.Enabled and not OnSelectingTroopDirection(nil) then
     begin
       Button_Army_RotCW.Click;
       aHandled := True;
     end;
 
-  if Key = gResKeys[SC_ARMY_ROTATE_CCW].Key then
+  if Key = gResKeys[kfArmyRotateCcw].Key then
     if Panel_Army.Visible and Button_Army_RotCCW.Enabled and not OnSelectingTroopDirection(nil) then
     begin
       Button_Army_RotCCW.Click;

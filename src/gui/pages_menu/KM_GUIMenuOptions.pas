@@ -97,7 +97,8 @@ type
 
 implementation
 uses
-  KM_Main, KM_Music, KM_Sound, KM_RenderUI, KM_Resource, KM_ResTexts, KM_ResLocales, KM_ResFonts, KM_ResSound, KM_Video;
+  KM_Main, KM_Music, KM_Sound, KM_RenderUI, KM_Resource, KM_ResTexts, KM_ResLocales, KM_ResFonts, KM_ResSound, KM_Video,
+  KM_ResTypes;
 
 
 { TKMGUIMainOptions }
@@ -621,7 +622,8 @@ end;
 
 
 procedure TKMMenuOptions.KeysClick(Sender: TObject);
-var I: Integer;
+var
+  KF: TKMKeyFunction;
 begin
   if Sender = Button_OptionsKeys then
   begin
@@ -629,8 +631,8 @@ begin
     gResKeys.LoadKeymapFile;
 
     // Update TempKeys from gResKeys
-    for I := 0 to gResKeys.Count - 1 do
-      fTempKeys[I] := gResKeys[I];
+    for KF := Low(TKMKeyFunction) to High(TKMKeyFunction) do
+      fTempKeys[KF] := gResKeys[KF];
 
     KeysRefreshList;
     PopUp_OptionsKeys.Show;
@@ -641,8 +643,8 @@ begin
     PopUp_OptionsKeys.Hide;
 
     // Save TempKeys to gResKeys
-    for I := 0 to gResKeys.Count - 1 do
-      gResKeys[I] := fTempKeys[I];
+    for KF := Low(TKMKeyFunction) to High(TKMKeyFunction) do
+      gResKeys[KF] := fTempKeys[KF];
 
     gResKeys.SaveKeymap;
   end;
@@ -680,11 +682,12 @@ procedure TKMMenuOptions.KeysRefreshList;
 const
   KEY_TX: array [TKMFuncArea] of Word = (TX_KEY_COMMON, TX_KEY_GAME, TX_KEY_UNIT, TX_KEY_HOUSE, TX_KEY_SPECTATE_REPLAY, TX_KEY_MAPEDIT);
 var
-  I, prevI: Integer;
+  KF: TKMKeyFunction;
+  prevTopIndex: Integer;
   K: TKMFuncArea;
   KeyName: UnicodeString;
 begin
-  prevI := ColumnBox_OptionsKeys.TopIndex;
+  prevTopIndex := ColumnBox_OptionsKeys.TopIndex;
 
   ColumnBox_OptionsKeys.Clear;
 
@@ -694,41 +697,42 @@ begin
     ColumnBox_OptionsKeys.AddItem(MakeListRow([gResTexts[KEY_TX[K]], ' '], [$FF3BB5CF, $FF3BB5CF], [$FF0000FF, $FF0000FF], -1));
 
     // Do not show the debug keys
-    for I := 0 to fTempKeys.Count - 1 do
-      if (fTempKeys[I].Area = K) and not fTempKeys[I].IsChangableByPlayer then
+    for KF := KEY_FUNC_LOW to High(TKMKeyFunction) do
+      if (fTempKeys[KF].Area = K) and not fTempKeys[KF].IsChangableByPlayer then
       begin
-        KeyName := fTempKeys.GetKeyNameById(I);
-        if (I = SC_DEBUG_WINDOW) and (KeyName <> '') then
+        KeyName := fTempKeys.GetKeyNameById(KF);
+        if (KF = kfDebugWindow) and (KeyName <> '') then
           KeyName := KeyName + ' / Ctrl + ' + KeyName; //Also show Ctrl + F11, for debug window hotkey
-        ColumnBox_OptionsKeys.AddItem(MakeListRow([GetFunctionName(fTempKeys[I].TextId), KeyName],
-                                                  [$FFFFFFFF, $FFFFFFFF], [$FF0000FF, $FF0000FF], I));
+        ColumnBox_OptionsKeys.AddItem(MakeListRow([GetFunctionName(fTempKeys[KF].TextId), KeyName],
+                                                  [$FFFFFFFF, $FFFFFFFF], [$FF0000FF, $FF0000FF], Integer(KF)));
       end;
   end;
 
-  ColumnBox_OptionsKeys.TopIndex := prevI;
+  ColumnBox_OptionsKeys.TopIndex := prevTopIndex;
 end;
 
 
 function TKMMenuOptions.KeysUpdate(Sender: TObject; Key: Word; Shift: TShiftState): Boolean;
 var
-  id: Integer;
+  KF: TKMKeyFunction;
 begin
   Result := True; // We handle all keys here
   if ColumnBox_OptionsKeys.ItemIndex = -1 then Exit;
 
   ColumnBox_OptionsKeys.HighlightError := False;
-  id := ColumnBox_OptionsKeys.Rows[ColumnBox_OptionsKeys.ItemIndex].Tag;
 
-  if not InRange(id, 0, fTempKeys.Count - 1) then Exit;
+  if not InRange(ColumnBox_OptionsKeys.Rows[ColumnBox_OptionsKeys.ItemIndex].Tag, 1, fTempKeys.Count) then Exit;
 
-  if not fTempKeys.AllowKeySet(fTempKeys[id].Area, Key) then
+  KF := TKMKeyFunction(ColumnBox_OptionsKeys.Rows[ColumnBox_OptionsKeys.ItemIndex].Tag);
+
+  if not fTempKeys.AllowKeySet(fTempKeys[KF].Area, Key) then
   begin
     ColumnBox_OptionsKeys.HighlightError := True;
     gSoundPlayer.Play(sfxnError);
     Exit;
   end;
 
-  fTempKeys.SetKey(id, Key);
+  fTempKeys.SetKey(KF, Key);
 
   KeysRefreshList;
 end;
