@@ -39,7 +39,7 @@ type
 implementation
 uses
   KM_ResFonts, KM_ResTexts,
-  KM_Game, KM_GameCursor, KM_RenderUI, KM_ResKeys,
+  KM_Game, KM_GameCursor, KM_RenderUI,
   KM_TerrainSelection, KM_MapEditorHistory,
   KM_InterfaceGame,
   KM_ResTypes;

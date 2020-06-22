@@ -136,7 +136,7 @@ const
 
 implementation
 uses
-  SysUtils, KM_Resource, KM_ResKeys, KM_RenderUI, KM_Defaults, KM_DevPerfLog, KM_DevPerfLogTypes;
+  SysUtils, KM_Resource, KM_RenderUI, KM_Defaults, KM_DevPerfLog, KM_DevPerfLogTypes;
 
 
 { TKMUserInterface }

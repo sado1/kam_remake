@@ -335,7 +335,7 @@ uses
   KM_RandomChecks,
   KM_Log, KM_CommonClasses, KM_Helpers, KM_Video,
   KM_Settings,
-  KM_HandEntity,
+
   KM_IoXML,
   KM_GameInputProcess,
   KM_ResTypes;

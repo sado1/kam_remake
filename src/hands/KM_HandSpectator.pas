@@ -60,7 +60,7 @@ implementation
 uses
   KM_GameParams, KM_GameCursor, KM_HandsCollection,
   KM_Units, KM_UnitGroup, KM_UnitWarrior, KM_Houses,
-  KM_Utils, KM_CommonUtils,
+  KM_CommonUtils,
   KM_GameTypes;
 
 

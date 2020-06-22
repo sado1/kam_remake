@@ -40,7 +40,7 @@ implementation
 uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLType, {$ENDIF}
-  KM_Main, KM_ResFonts, KM_ResTexts, KM_GameCursor, KM_RenderUI, KM_ResKeys,
+  KM_Main, KM_ResFonts, KM_ResTexts, KM_GameCursor, KM_RenderUI,
   KM_InterfaceGame, KM_Utils,
   KM_ResTypes;
 
