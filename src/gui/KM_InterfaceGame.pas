@@ -288,6 +288,10 @@ begin
   if Assigned(fOnUserAction) then
     fOnUserAction(uatKeyUp);
 
+  inherited;
+
+  if aHandled then Exit;
+
   aHandled := True;
   //Scrolling
   if Key = gResKeys[kfScrollLeft].Key       then

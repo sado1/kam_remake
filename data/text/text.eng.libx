@@ -1,4 +1,4 @@
-0:Sawmill
+﻿0:Sawmill
 1:Iron smithy
 2:Weapon smithy
 3:Coal mine
@@ -1403,4 +1403,15 @@
 1453:Launch mail
 1454:Launch media select
 1455:Launch application 1
-1456:Launch application 2
+1456:Launch application 2
+1457:Music previous track
+1458:Music next track
+1459:Disable music
+1460:Shuffle music
+1461:Music volume up
+1462:Music volume down
+1463:Mute music
+1464:Sound volume up
+1465:Sound volume down
+1466:Mute sounds
+1467:Mute all (music and sounds)

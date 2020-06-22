@@ -13,7 +13,7 @@ type
   TKMFuncInfo = record
     Key: Byte;        // Key assigned to this function
     TextId: Word;     // Text description of the function
-    Area: TKMFuncArea; // Area of effect for the function (common, game, maped)
+    Area: TKMKeyFuncArea; // Area of effect for the function (common, game, maped)
     IsChangableByPlayer: Boolean; // Hide debug key and its function from UI
   end;
 
@@ -27,8 +27,9 @@ type
     constructor Create;
     function GetKeyName(aKey: Word): string;
     function GetKeyNameById(aKeyFunc: TKMKeyFunction): string;
-    function GetFunctionNameById(aKeyFunc: TKMKeyFunction): string;
-    function AllowKeySet(aArea: TKMFuncArea; aKey: Word): Boolean;
+    function GetKeyFunctionForKey(aKey: Word; aAreaSet: TKMKeyFuncAreaSet): TKMKeyFunction;
+    function GetKeyFunctionName(aKeyFunc: TKMKeyFunction): string;
+    function AllowKeySet(aArea: TKMKeyFuncArea; aKey: Word): Boolean;
     procedure SetKey(aKeyFunc: TKMKeyFunction; aKey: Word);
     function Count: Integer;
     property Funcs[aKeyFunc: TKMKeyFunction]: TKMFuncInfo read GetFunc write SetFunc; default;
@@ -60,6 +61,10 @@ const
     4,                                      // Map drag scroll (Middle mouse btn)
     34, 33, 8,                              // Zoom In/Out/Reset (Page Down, Page Up, Backspace)
     27,                                     // Close opened menu (Esc)
+    177, 176,                               // Music controls (Media previous track, Media next track)
+    178, 179, 175, 174, 0,                  // Music disable / shuffle / volume up / down / mute
+    107, 109, 0,                            // Sound volume up / down /mute
+    173,                                    // Mute music (disable) and sound (volume = 0)
     122,                                    // Debug Window hotkey (F11)
 
     // These keys are not changable by Player in Options menu
@@ -106,6 +111,12 @@ const
     TX_KEY_FUNC_MAP_DRAG_SCROLL,                                                                          // Map drag scroll
     TX_KEY_FUNC_ZOOM_IN, TX_KEY_FUNC_ZOOM_OUT, TX_KEY_FUNC_ZOOM_RESET,                                    // Zoom In/Out/Reset
     TX_KEY_FUNC_CLOSE_MENU,                                                                               // Close opened menu
+    TX_KEY_FUNC_MUSIC_PREV_TRACK, TX_KEY_FUNC_MUSIC_NEXT_TRACK,                                           // Music track prev / next
+    TX_KEY_FUNC_MUSIC_DISABLE, TX_KEY_FUNC_MUSIC_SHUFFLE,                                                 // Music disable / shuffle
+    TX_KEY_FUNC_MUSIC_VOLUME_UP, TX_KEY_FUNC_MUSIC_VOLUME_DOWN, TX_KEY_FUNC_MUSIC_MUTE,                   // Music volume up / down / mute
+    TX_KEY_FUNC_SOUND_VOLUME_UP, TX_KEY_FUNC_SOUND_VOLUME_DOWN, TX_KEY_FUNC_SOUND_MUTE,                   // Sound volume up / down / mute
+    TX_KEY_FUNC_MUTE_ALL,                                                                                 // Mute music (disable) and sound (volume = 0)
+
     TX_KEY_FUNC_DBG_WINDOW,                                                                               // Debug window
 
     // These keys are not changable by Player in Options menu
@@ -268,9 +279,60 @@ begin
 end;
 
 
-function TKMKeyLibrary.GetFunctionNameById(aKeyFunc: TKMKeyFunction): string;
+function TKMKeyLibrary.GetKeyFunctionName(aKeyFunc: TKMKeyFunction): string;
 begin
   Result := gResTexts[KEY_FUNC_TX[aKeyFunc]];
+end;
+
+
+function TKMKeyLibrary.GetKeyNameById(aKeyFunc: TKMKeyFunction): string;
+begin
+  Result := GetKeyName(fFuncs[aKeyFunc].Key);
+end;
+
+
+function TKMKeyLibrary.GetKeyFunctionForKey(aKey: Word; aAreaSet: TKMKeyFuncAreaSet): TKMKeyFunction;
+var
+  KF: TKMKeyFunction;
+begin
+  Result := kfNone;
+
+  for KF := KEY_FUNC_LOW to High(TKMKeyFunction) do
+    if (fFuncs[KF].Key = aKey) and (fFuncs[KF].Area in aAreaSet) then
+      Exit(KF);
+end;
+
+
+function TKMKeyLibrary.AllowKeySet(aArea: TKMKeyFuncArea; aKey: Word): Boolean;
+begin
+  // False if Key equals to Shift or Ctrl, which are used in game for specific bindings
+  Result := not (aKey in [16, 17]);
+end;
+
+
+procedure TKMKeyLibrary.SetKey(aKeyFunc: TKMKeyFunction; aKey: Word);
+var
+  KF: TKMKeyFunction;
+begin
+  // Reset previous key binding if Key areas overlap
+  if aKey <> 0 then
+    for KF := KEY_FUNC_LOW to High(TKMKeyFunction) do
+      if fFuncs[KF].Key = aKey then
+        case fFuncs[KF].Area of
+          faCommon:     fFuncs[KF].Key := 0;
+          faGame:       if (fFuncs[aKeyFunc].Area in [faGame, faUnit, faHouse, faCommon]) then
+                          fFuncs[KF].Key := 0;
+          faUnit:       if (fFuncs[aKeyFunc].Area in [faUnit, faGame, faCommon]) then
+                          fFuncs[KF].Key := 0;
+          faHouse:      if (fFuncs[aKeyFunc].Area in [faHouse, faGame, faCommon]) then
+                          fFuncs[KF].Key := 0;
+          faSpecReplay: if (fFuncs[aKeyFunc].Area in [faSpecReplay, faCommon]) then
+                          fFuncs[KF].Key := 0;
+          faMapEdit:    if (fFuncs[aKeyFunc].Area in [faMapEdit, faCommon]) then
+                          fFuncs[KF].Key := 0;
+        end;
+
+  fFuncs[aKeyFunc].Key := aKey;
 end;
 
 
@@ -399,45 +461,6 @@ begin
   else
     Result := Char(aKey);
   end;
-end;
-
-
-function TKMKeyLibrary.GetKeyNameById(aKeyFunc: TKMKeyFunction): string;
-begin
-  Result := GetKeyName(fFuncs[aKeyFunc].Key);
-end;
-
-
-function TKMKeyLibrary.AllowKeySet(aArea: TKMFuncArea; aKey: Word): Boolean;
-begin
-  // False if Key equals to Shift or Ctrl, which are used in game for specific bindings
-  Result := not (aKey in [16, 17]);
-end;
-
-
-procedure TKMKeyLibrary.SetKey(aKeyFunc: TKMKeyFunction; aKey: Word);
-var
-  KF: TKMKeyFunction;
-begin
-  // Reset previous key binding if Key areas overlap
-  if aKey <> 0 then
-    for KF := KEY_FUNC_LOW to High(TKMKeyFunction) do
-      if fFuncs[KF].Key = aKey then
-        case fFuncs[KF].Area of
-          faCommon:     fFuncs[KF].Key := 0;
-          faGame:       if (fFuncs[aKeyFunc].Area in [faGame, faUnit, faHouse, faCommon]) then
-                          fFuncs[KF].Key := 0;
-          faUnit:       if (fFuncs[aKeyFunc].Area in [faUnit, faGame, faCommon]) then
-                          fFuncs[KF].Key := 0;
-          faHouse:      if (fFuncs[aKeyFunc].Area in [faHouse, faGame, faCommon]) then
-                          fFuncs[KF].Key := 0;
-          faSpecReplay: if (fFuncs[aKeyFunc].Area in [faSpecReplay, faCommon]) then
-                          fFuncs[KF].Key := 0;
-          faMapEdit:    if (fFuncs[aKeyFunc].Area in [faMapEdit, faCommon]) then
-                          fFuncs[KF].Key := 0;
-        end;
-
-  fFuncs[aKeyFunc].Key := aKey;
 end;
 
 

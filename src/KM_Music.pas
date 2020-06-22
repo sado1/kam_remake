@@ -38,6 +38,8 @@ type
     //MIDICount,MIDIIndex:integer;
     //MIDITracks:array[1..256]of string;
     fIsInitialized: Boolean;
+    fEnabled: Boolean;
+    fPrevVolume: Single; // Volume before mute
     fVolume: Single;
     {$IFDEF USEBASS} fBassStream, fBassOtherStream: Cardinal; {$ENDIF}
     {$IFDEF USELIBZPLAY} ZPlayer, ZPlayerOther: ZPlay; {$ENDIF} //I dislike that it's not TZPlay... Guess they don't know Delphi conventions.
@@ -55,11 +57,17 @@ type
 
     procedure SetVolume(aValue: Single);
     function GetVolume: Single;
+    procedure SetMuted(const aMuted: Boolean);
+    function GetMuted: Boolean;
+    function GetPrevVolume: Single;
+
+    property PrevVolume: Single read GetPrevVolume write fPrevVolume;
   public
     constructor Create(aVolume: Single);
     destructor Destroy; override;
 
     property Volume: Single read GetVolume write SetVolume;
+    property Muted: Boolean read GetMuted write SetMuted;
     procedure SetPlayerVolume(aValue: Single);
 
     procedure PlayMenuTrack;
@@ -70,6 +78,7 @@ type
     procedure Pause;
     procedure Resume;
     procedure Stop;
+    procedure ToggleMuted;
     procedure ToggleEnabled(aEnableMusic: Boolean);
     procedure ToggleShuffle(aEnableShuffle: Boolean);
     procedure Fade; overload;
@@ -107,6 +116,7 @@ var
 begin
   inherited Create;
   fIsInitialized := True;
+  fEnabled := True;
 
   if not DirectoryExists(ExeDir + 'Music') then
     ForceDirectories(ExeDir + 'Music');
@@ -246,7 +256,13 @@ end;
 procedure TKMMusicLib.SetVolume(aValue: Single);
 begin
   if not fIsInitialized then Exit; //Keep silent
+  if not fEnabled then Exit;
+
   fVolume := aValue;
+
+  if fVolume > 0 then
+    fPrevVolume := fVolume;
+
   SetPlayerVolume(aValue);
 end;
 
@@ -409,7 +425,7 @@ end;
 
 procedure TKMMusicLib.Stop;
 begin
-  if not fIsInitialized then exit;
+  if not fIsInitialized then Exit;
   {$IFDEF USELIBZPLAY} ZPlayer.StopPlayback; {$ENDIF}
   {$IFDEF USEBASS} BASS_ChannelStop(fBassStream); {$ENDIF}
   fIndex := -1;
@@ -418,10 +434,46 @@ end;
 
 procedure TKMMusicLib.ToggleEnabled(aEnableMusic: Boolean);
 begin
+  fEnabled := aEnableMusic;
   if aEnableMusic then
     PlayMenuTrack //Start with the default track
   else
     Stop;
+end;
+
+
+function TKMMusicLib.GetMuted: Boolean;
+begin
+  Result := (fVolume = 0);
+end;
+
+
+function TKMMusicLib.GetPrevVolume: Single;
+begin
+  Result := IfThen(fPrevVolume = 0, 0.5, fPrevVolume);
+end;
+
+
+procedure TKMMusicLib.SetMuted(const aMuted: Boolean);
+begin
+  if Muted = aMuted then Exit;  // Nothing to change, just exit to avoid fPrevVolume overwrite
+
+  if aMuted then
+  begin
+    fPrevVolume := fVolume;
+    Volume := 0;
+  end
+  else
+  begin
+    Volume := PrevVolume;
+    fPrevVolume := 0;
+  end;
+end;
+
+
+procedure TKMMusicLib.ToggleMuted;
+begin
+  SetMuted(not GetMuted);
 end;
 
 

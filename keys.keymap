@@ -7,6 +7,17 @@ kfZoomIn:34; //Zoom In
 kfZoomOut:33; //Zoom Out
 kfZoomReset:8; //Reset Zoom
 kfCloseMenu:27; //Close Menu's
+kfMusicPrevTrack:177; //Music previous track
+kfMusicNextTrack:176; //Music next track
+kfMusicDisable:178; //Disable music
+kfMusicShuffle:179; //Shuffle music
+kfMusicVolumeUp:175; //Music volume up
+kfMusicVolumeDown:174; //Music volume down
+kfMusicMute:0; //Mute music
+kfSoundVolumeUp:107; //Sound volume up
+kfSoundVolumeDown:109; //Sound volume down
+kfSoundMute:0; //Mute sounds
+kfMuteAll:173; //Mute all (music and sounds)
 kfDebugWindow:122; //Debug window
 kfDebugRevealmap:77; //Debug Show Map
 kfDebugVictory:86; //Debug Victory

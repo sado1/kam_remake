@@ -702,15 +702,15 @@ begin
     fReplayAutosave     := F.ReadBool       ('Replay', 'ReplayAutosave',          True); //Should be ON by default
     SetReplayAutosaveFrequency(F.ReadInteger('Replay', 'ReplayAutosaveFrequency', REPLAY_AUTOSAVE_FREQUENCY_DEF));
 
-    fSoundFXVolume  := F.ReadFloat  ('SFX',  'SFXVolume',      0.5);
-    fMusicVolume    := F.ReadFloat  ('SFX',  'MusicVolume',    0.5);
+    SoundFXVolume  := F.ReadFloat  ('SFX',  'SFXVolume',      0.5);
+    MusicVolume    := F.ReadFloat  ('SFX',  'MusicVolume',    0.5);
     fMusicOff       := F.ReadBool   ('SFX',  'MusicDisabled',  False);
     fShuffleOn      := F.ReadBool   ('SFX',  'ShuffleEnabled', False);
 
     fVideoOn      := F.ReadBool ('Video',  'Enabled', False);
     fVideoStretch := F.ReadBool ('Video',  'Stretch', True);
     fVideoStartup := F.ReadBool ('Video',  'Startup', True);
-    fVideoVolume  := F.ReadFloat('Video',  'Volume',   0.5);
+    VideoVolume  := F.ReadFloat('Video',  'Volume',   0.5);
 
     SetMapEdHistoryDepth(F.ReadInteger('MapEd', 'HistoryDepth', MAPED_HISTORY_DEPTH_DEF));
 

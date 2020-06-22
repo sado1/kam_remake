@@ -927,14 +927,16 @@ var
   I: Integer;
   keyHandled: Boolean;
 begin
-  aHandled := True; // assume we handle all keys here
-
   if fMyControls.KeyUp(Key, Shift) then Exit; //Handled by Controls
 
-  inherited KeyUp(Key, Shift, keyHandled);
-  if keyHandled then Exit;
+  inherited;
 
-  //For undo/redo shortcuts and Objects Palette
+  if aHandled then Exit;
+
+  aHandled := True; // assume we handle all keys here
+
+  keyHandled := False;
+  //For undo/redo shortcuts, palettes and other
   fGuiTerrain.KeyUp(Key, Shift, keyHandled);
   if keyHandled then Exit;
 

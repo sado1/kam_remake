@@ -394,6 +394,8 @@ begin
   //  F4 and F9 are used in debug to control run-flow
   //  others.. unknown
 
+  keyHandled := False;
+
   if gGame <> nil then
     gGame.ActiveInterface.KeyUp(Key, Shift, keyHandled)
   else

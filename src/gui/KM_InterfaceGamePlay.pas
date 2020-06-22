@@ -370,13 +370,17 @@ uses
   KM_GameTypes, KM_GameParams, KM_Video, KM_Music,
   KM_HandEntity,
   KM_HandEntityHelper,
-  KM_ResTypes;
+  KM_ResTypes,
+  KM_Utils;
 
 const
   ALLIES_ROWS = 7;
   PANEL_ALLIES_WIDTH = 840;
   PANEL_TRACK_TOP = 285;
   REPLAYBAR_DEFAULT_WIDTH = 400;
+
+  KEY_FUNCS_ALLOWED_ON_PAUSE: set of TKMKeyFunction = [kfMusicPrevTrack, kfMusicNextTrack, kfChat,
+                                                       kfSpecpanelSelectDropbox, kfReplayPlayNextTick];
 
 
 procedure TKMGamePlayInterface.Menu_Save_ListChange(Sender: TObject);
@@ -1400,8 +1404,8 @@ begin
 
   Button_Menu_TrackUp := TKMButton.Create(Panel_Track, 160, 15, 20, 30, '>', bsGame);
   Button_Menu_TrackDown := TKMButton.Create(Panel_Track, 0, 15, 20, 30, '<', bsGame);
-  Button_Menu_TrackUp.Hint := gResTexts[TX_MUSIC_NEXT_HINT];
-  Button_Menu_TrackDown.Hint := gResTexts[TX_MUSIC_PREV_HINT];
+  Button_Menu_TrackUp.Hint := GetHintWHotKey(TX_MUSIC_NEXT_HINT, kfMusicNextTrack);
+  Button_Menu_TrackDown.Hint := GetHintWHotKey(TX_MUSIC_PREV_HINT, kfMusicPrevTrack);
   Button_Menu_TrackUp.OnClick := Menu_NextTrack;
   Button_Menu_TrackDown.OnClick := Menu_PreviousTrack;
 end;
@@ -3357,27 +3361,41 @@ procedure TKMGamePlayInterface.KeyUp(Key: Word; Shift: TShiftState; var aHandled
               or MULTIPLAYER_SPEEDUP;
   end;
 
+  function OnPause: Boolean;
+  begin
+    Result := gGame.IsPaused
+              and (SpeedChangeAllowed([umSP])
+                or ((PAUSE_GAME_BEFORE_TICK <> -1) and (fUIMode <> umReplay)));
+  end;
+
 var
   selectId: Integer;
   specPlayerIndex: ShortInt;
+  keyFunc: TKMKeyFunction;
+  keyAreas: TKMKeyFuncAreaSet;
   keyHandled: Boolean;
 begin
   aHandled := True; // assume we handle all keys here
 
-  if gGame.IsPaused
-    and (SpeedChangeAllowed([umSP])
-      or ((PAUSE_GAME_BEFORE_TICK <> -1) and (fUIMode <> umReplay))) then
+  if OnPause then
   begin
     if Key = gResKeys[kfPause].Key then
       SetPause(False);
 
-    if (fUIMode = umReplay) and (Key = gResKeys[kfReplayPlayNextTick].Key) and Button_ReplayStep.Enabled then
-      ReplayClick(Button_ReplayStep);
-    Exit;
+    keyAreas := [faCommon, faGame];
+
+    if (fUIMode in [umReplay, umSpectate]) then
+      Include(keyAreas, faSpecReplay);
+
+    keyFunc := gResKeys.GetKeyFunctionForKey(Key, keyAreas);
+
+    if (keyFunc = kfNone) or not (keyFunc in KEY_FUNCS_ALLOWED_ON_PAUSE) then
+      Exit;
   end;
 
   if fMyControls.KeyUp(Key, Shift) then Exit;
 
+  keyHandled := False;
   inherited KeyUp(Key, Shift, keyHandled);
   if keyHandled then Exit;
 
@@ -3567,7 +3585,7 @@ begin
       end;
     end;
 
-    if (Key = gResKeys[kfReplayPlayNextTick].Key) and Button_ReplayStep.Enabled then
+    if (Key = gResKeys[kfReplayPlayNextTick].Key) and Button_ReplayStep.IsClickable then
       ReplayClick(Button_ReplayStep);
   end;
 

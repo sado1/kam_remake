@@ -34,6 +34,8 @@ type
     procedure KeysClick(Sender: TObject);
     procedure KeysRefreshList;
     function KeysUpdate(Sender: TObject; Key: Word; Shift: TShiftState): Boolean;
+
+    procedure Init;
   protected
     Panel_Options: TKMPanel;
       Panel_Options_GFX: TKMPanel;
@@ -362,6 +364,8 @@ end;
 // hence we need to pass either gGameApp.Settings or a direct Settings link
 procedure TKMMenuOptions.Refresh;
 begin
+  Init;
+
   CheckBox_Options_Autosave.Checked        := gGameSettings.Autosave;
   CheckBox_Options_AutosaveAtGameEnd.Checked := gGameSettings.AutosaveAtGameEnd;
   CheckBox_Options_ReplayAutopause.Checked := gGameSettings.ReplayAutopause;
@@ -606,16 +610,19 @@ begin
 end;
 
 
-procedure TKMMenuOptions.Show;
+procedure TKMMenuOptions.Init;
 begin
   // Remember what we are working with
   // (we do that on Show because Create gets called from Main/Game constructor and fMain/gGameApp are not yet assigned)
   // Ideally we could pass them as parameters here
   fMainSettings := gMain.Settings;
-  gGameSettings := gGameSettings;
   fResolutions := gMain.Resolutions;
   fLastAlphaShadows := gGameSettings.AlphaShadows;
+end;
 
+
+procedure TKMMenuOptions.Show;
+begin
   Refresh;
   Panel_Options.Show;
 end;
@@ -680,18 +687,18 @@ procedure TKMMenuOptions.KeysRefreshList;
   end;
 
 const
-  KEY_TX: array [TKMFuncArea] of Word = (TX_KEY_COMMON, TX_KEY_GAME, TX_KEY_UNIT, TX_KEY_HOUSE, TX_KEY_SPECTATE_REPLAY, TX_KEY_MAPEDIT);
+  KEY_TX: array [TKMKeyFuncArea] of Word = (TX_KEY_COMMON, TX_KEY_GAME, TX_KEY_UNIT, TX_KEY_HOUSE, TX_KEY_SPECTATE_REPLAY, TX_KEY_MAPEDIT);
 var
   KF: TKMKeyFunction;
   prevTopIndex: Integer;
-  K: TKMFuncArea;
+  K: TKMKeyFuncArea;
   KeyName: UnicodeString;
 begin
   prevTopIndex := ColumnBox_OptionsKeys.TopIndex;
 
   ColumnBox_OptionsKeys.Clear;
 
-  for K := Low(TKMFuncArea) to High(TKMFuncArea) do
+  for K := Low(TKMKeyFuncArea) to High(TKMKeyFuncArea) do
   begin
     // Section
     ColumnBox_OptionsKeys.AddItem(MakeListRow([gResTexts[KEY_TX[K]], ' '], [$FF3BB5CF, $FF3BB5CF], [$FF0000FF, $FF0000FF], -1));

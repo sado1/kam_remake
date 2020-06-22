@@ -19,6 +19,20 @@ type
 
     kfCloseMenu,  // Close opened menu
 
+    kfMusicPrevTrack,   // Music previous track
+    kfMusicNextTrack,   // Music next track
+    kfMusicDisable,     // Music disable
+    kfMusicShuffle,     // Music shuffle
+    kfMusicVolumeUp,    // Music volume up
+    kfMusicVolumeDown,  // Music volume down
+    kfMusicMute,        // Music mute
+
+    kfSoundVolumeUp,    // Sound volume up
+    kfSoundVolumeDown,  // Sound volume down
+    kfSoundMute,        // Sound mute
+
+    kfMuteAll,          // Mute music (disable) and sound (volume = 0)
+
     kfDebugWindow,    // Debug window
     kfDebugRevealmap, // Debug Menu Reveal Map
     kfDebugVictory,   // Debug Menu Victory
@@ -45,7 +59,7 @@ type
     kfChat,         // Show the chat
 
     kfNextEntitySameType,  // Select next building/unit with same type
-    kfPlayerColorMode,      // Switch player color mode
+    kfPlayerColorMode,     // Switch player color mode
 
     kfPlanRoad,   // Plan road
     kfPlanField,  // Plan field
@@ -133,12 +147,14 @@ type
   );
 
 
-  TKMFuncArea = (faCommon,
+  TKMKeyFuncArea = (faCommon,
                  faGame,
                    faUnit,
                    faHouse,
                  faSpecReplay,
                  faMapEdit);
+
+  TKMKeyFuncAreaSet = set of TKMKeyFuncArea;
 
 implementation
 

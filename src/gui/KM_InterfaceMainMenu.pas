@@ -381,9 +381,18 @@ end;
 
 procedure TKMMainMenuInterface.KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
 begin
-  aHandled := True; // assume we handle all keys here
+  if fMyControls.KeyUp(Key, Shift) then
+  begin
+    aHandled := True;
+    Exit; //Handled by Controls
+  end;
 
-  if fMyControls.KeyUp(Key, Shift) then Exit; //Handled by Controls
+  inherited;
+
+  if aHandled then
+    fMenuOptions.Refresh;
+
+  aHandled := True; // assume we handle all keys here
 end;
 
 

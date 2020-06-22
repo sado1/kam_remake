@@ -73,7 +73,7 @@ type
 
     procedure KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean); virtual; abstract;
     procedure KeyPress(Key: Char); virtual;
-    procedure KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean); virtual; abstract;
+    procedure KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean); virtual;
     //Child classes don't pass these events to controls depending on their state
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X,Y: Integer); virtual; abstract;
     procedure MouseMove(Shift: TShiftState; X,Y: Integer); overload;
@@ -136,7 +136,10 @@ const
 
 implementation
 uses
-  SysUtils, KM_Resource, KM_RenderUI, KM_Defaults, KM_DevPerfLog, KM_DevPerfLogTypes;
+  SysUtils, KM_Resource, KM_ResKeys, KM_RenderUI, KM_Defaults, KM_DevPerfLog, KM_DevPerfLogTypes,
+  KM_Music,
+  KM_Sound,
+  KM_Settings;
 
 
 { TKMUserInterface }
@@ -226,6 +229,93 @@ end;
 procedure TKMUserInterfaceCommon.KeyPress(Key: Char);
 begin
   fMyControls.KeyPress(Key);
+end;
+
+
+procedure TKMUserInterfaceCommon.KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
+var
+  mutedAll: Boolean;
+begin
+  if aHandled then Exit;
+
+  if Key = gResKeys[kfMusicPrevTrack].Key then
+  begin
+    gMusic.PlayPreviousTrack;
+    aHandled := True;
+  end;
+
+  if Key = gResKeys[kfMusicNextTrack].Key then
+  begin
+    gMusic.PlayNextTrack;
+    aHandled := True;
+  end;
+
+  if Key = gResKeys[kfMusicDisable].Key then
+  begin
+    gGameSettings.MusicOff := not gGameSettings.MusicOff;
+    gMusic.ToggleEnabled(not gGameSettings.MusicOff);
+    aHandled := True;
+  end;
+
+  if Key = gResKeys[kfMusicShuffle].Key then
+  begin
+    gGameSettings.ShuffleOn := not gGameSettings.ShuffleOn;
+    gMusic.ToggleShuffle(gGameSettings.ShuffleOn);
+    aHandled := True;
+  end;
+
+  if Key = gResKeys[kfMusicVolumeUp].Key then
+  begin
+    gGameSettings.MusicVolume := gGameSettings.MusicVolume + 1 / OPT_SLIDER_MAX;
+    gMusic.Volume := gGameSettings.MusicVolume;
+    aHandled := True;
+  end;
+
+  if Key = gResKeys[kfMusicVolumeDown].Key then
+  begin
+    gGameSettings.MusicVolume := gGameSettings.MusicVolume - 1 / OPT_SLIDER_MAX;
+    gMusic.Volume := gGameSettings.MusicVolume;
+    aHandled := True;
+  end;
+
+  if Key = gResKeys[kfMusicMute].Key then
+  begin
+    gMusic.ToggleMuted;
+    gGameSettings.MusicVolume := gMusic.Volume;
+    aHandled := True;
+  end;
+
+  if Key = gResKeys[kfSoundVolumeUp].Key then
+  begin
+    gGameSettings.SoundFXVolume := gGameSettings.SoundFXVolume + 1 / OPT_SLIDER_MAX;
+    gSoundPlayer.UpdateSoundVolume(gGameSettings.SoundFXVolume);
+    aHandled := True;
+  end;
+
+  if Key = gResKeys[kfSoundVolumeDown].Key then
+  begin
+    gGameSettings.SoundFXVolume := gGameSettings.SoundFXVolume - 1 / OPT_SLIDER_MAX;
+    gSoundPlayer.UpdateSoundVolume(gGameSettings.SoundFXVolume);
+    aHandled := True;
+  end;
+
+  if Key = gResKeys[kfSoundMute].Key then
+  begin
+    gSoundPlayer.ToggleMuted;
+    gGameSettings.SoundFXVolume := gSoundPlayer.Volume;
+    aHandled := True;
+  end;
+
+  if Key = gResKeys[kfMuteAll].Key then
+  begin
+    mutedAll := gSoundPlayer.Muted and gMusic.Muted;
+    
+    gSoundPlayer.Muted := not mutedAll;
+    gMusic.Muted := not mutedAll;
+    gGameSettings.SoundFXVolume := gSoundPlayer.Volume;
+    gGameSettings.MusicVolume := gMusic.Volume;
+    aHandled := True;
+  end;
 end;
 
 
