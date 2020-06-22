@@ -557,15 +557,16 @@ end;
 
 
 procedure TFormMain.FormShow(Sender: TObject);
-var BordersWidth, BordersHeight: Integer;
+var
+  bordersWidth, bordersHeight: Integer;
 begin
   //We do this in OnShow rather than OnCreate as the window borders aren't
   //counted properly in OnCreate
-  BordersWidth := Width - ClientWidth;
-  BordersHeight := Height - ClientHeight;
+  bordersWidth := Width - ClientWidth;
+  bordersHeight := Height - ClientHeight;
   //Constraints includes window borders, so we add them on as Margin
-  Constraints.MinWidth := MIN_RESOLUTION_WIDTH + BordersWidth;
-  Constraints.MinHeight := MIN_RESOLUTION_HEIGHT + BordersHeight;
+  Constraints.MinWidth := MIN_RESOLUTION_WIDTH + bordersWidth;
+  Constraints.MinHeight := MIN_RESOLUTION_HEIGHT + bordersHeight;
 
   // We have to put it here, to proper window positioning for multimonitor systems
   if not gMain.Settings.FullScreen then
@@ -884,17 +885,17 @@ end;
 
 procedure TFormMain.LoadSavThenRplClick(Sender: TObject);
 var
-  SavPath, RplPath: UnicodeString;
+  savPath, rplPath: UnicodeString;
 begin
   if RunOpenDialog(OpenDialog1, '', fMissionDefOpenPath, 'Knights & Merchants Save (*.sav)|*.sav') then
   begin
-    SavPath := OpenDialog1.FileName;
+    savPath := OpenDialog1.FileName;
     fMissionDefOpenPath := ExtractFileDir(OpenDialog1.FileName);
     if RunOpenDialog(OpenDialog1, '', fMissionDefOpenPath, 'Knights & Merchants Replay (*.rpl)|*.rpl') then
     begin
-      RplPath := OpenDialog1.FileName;
+      rplPath := OpenDialog1.FileName;
 
-      gGameApp.NewSaveAndReplay(SavPath, RplPath);
+      gGameApp.NewSaveAndReplay(savPath, rplPath);
     end;
   end;
 end;
@@ -902,14 +903,14 @@ end;
 
 procedure TFormMain.ExportGameStatsClick(Sender: TObject);
 var
-  DateS: UnicodeString;
+  dateS: UnicodeString;
 begin
   if (gGame <> nil) and not gGame.Params.IsMapEditor then
   begin
     gResTexts.ForceDefaultLocale := True; //Use only eng for exported csv
-    DateS := FormatDateTime('yyyy-mm-dd_hh-nn', Now);
-    gHands.ExportGameStatsToCSV(ExeDir + 'Export' + PathDelim + gGameParams.Name + '_' + DateS + '.csv',
-                            Format('Statistics for game at map ''%s'' on %s', [gGameParams.Name, DateS]));
+    dateS := FormatDateTime('yyyy-mm-dd_hh-nn', Now);
+    gHands.ExportGameStatsToCSV(ExeDir + 'Export' + PathDelim + gGameParams.Name + '_' + dateS + '.csv',
+                            Format('Statistics for game at map ''%s'' on %s', [gGameParams.Name, dateS]));
     gResTexts.ForceDefaultLocale := False;
   end;
 end;
@@ -1073,12 +1074,12 @@ procedure TFormMain.ControlsReset;
   {$IFDEF WDC}
   procedure ResetCategoryPanel(aPanel: TCategoryPanel);
   var
-    PanelSurface: TCategoryPanelSurface;
+    panelSurface: TCategoryPanelSurface;
   begin
     if (aPanel.ControlCount > 0) and (aPanel.Controls[0] is TCategoryPanelSurface) then
     begin
-      PanelSurface := TCategoryPanelSurface(aPanel.Controls[0]);
-      ResetSubPanel(PanelSurface);
+      panelSurface := TCategoryPanelSurface(aPanel.Controls[0]);
+      ResetSubPanel(panelSurface);
     end;
   end;
 
@@ -1118,8 +1119,7 @@ procedure TFormMain.ControlsReset;
   {$ENDIF}
 
 begin
-  if not RESET_DEBUG_CONTROLS then
-    Exit;
+  if not RESET_DEBUG_CONTROLS then Exit;
 
   fUpdating := True;
   
@@ -1269,16 +1269,16 @@ procedure TFormMain.ControlsUpdate(Sender: TObject);
 
 var
   I: Integer;
-  AllowDebugChange: Boolean;
+  allowDebugChange: Boolean;
 begin
   if fUpdating then Exit;
 
   //You could possibly cheat in multiplayer by seeing debug render info
-  AllowDebugChange := gMain.IsDebugChangeAllowed
+  allowDebugChange := gMain.IsDebugChangeAllowed
                       or (Sender = nil); //Happens in ControlsReset only (using this anywhere else could allow MP cheating)
 
   //Debug render
-  if AllowDebugChange then
+  if allowDebugChange then
   begin
     I := tbPassability.Position;
     tbPassability.Max := Byte(High(TKMTerrainPassability));
@@ -1341,7 +1341,7 @@ begin
   end;
 
   //AI
-  if AllowDebugChange then
+  if allowDebugChange then
   begin
     SHOW_AI_WARE_BALANCE := chkShowBalance.Checked;
     OVERLAY_DEFENCES := chkShowDefences.Checked;
@@ -1382,7 +1382,7 @@ begin
 
 
   //Graphics
-  if AllowDebugChange then
+  if allowDebugChange then
   begin
     //Otherwise it could crash on the main menu
     if gRenderPool <> nil then
@@ -1401,7 +1401,7 @@ begin
   SHOW_LOGS_IN_CHAT := chkLogsShowInChat.Checked;
   LOG_GAME_TICK := chkLogGameTick.Checked;
 
-  if AllowDebugChange then
+  if allowDebugChange then
   begin
     if chkLogDelivery.Checked then
       Include(gLog.MessageTypes, lmtDelivery)
@@ -1449,7 +1449,7 @@ begin
   end;
 
   //Misc
-  if AllowDebugChange then
+  if allowDebugChange then
   begin
     SHOW_DEBUG_OVERLAY_BEVEL := chkBevel.Checked;
     DEBUG_TEXT_MONOSPACED := chkMonospacedFont.Checked;
@@ -1520,11 +1520,11 @@ var
   MS: TKMemoryStreamBinary;
   SL: TStringList;
   CRC: Int64;
-  IsValid: Boolean;
+  isValid: Boolean;
 begin
   if RunOpenDialog(OpenDialog1, '', ExeDir, 'KaM Remake statistics (*.csv)|*.csv') then
   begin
-    IsValid := False;
+    isValid := False;
     SL := TStringList.Create;
     try
       try
@@ -1536,13 +1536,13 @@ begin
           try
             MS.WriteHugeString(AnsiString(SL.Text));
             if CRC = Adler32CRC(MS) then
-              IsValid := True;
+              isValid := True;
           finally
             FreeAndNil(MS);
           end;
         end;
 
-        if IsValid then
+        if isValid then
           MessageDlg('Game statistics from file [ ' + OpenDialog1.FileName + ' ] is valid', mtInformation , [mbOK ], 0)
         else
           MessageDlg('Game statistics from file [ ' + OpenDialog1.FileName + ' ] is NOT valid !', mtError, [mbClose], 0);
@@ -1588,9 +1588,9 @@ function TFormMain.GetWindowParams: TKMWindowParamsRecord;
     {$ENDIF}
   end;
 var
-  Wp: TWindowPlacement;
-  BordersWidth, BordersHeight: SmallInt;
-  Rect: TRect;
+  wp: TWindowPlacement;
+  bordersWidth, bordersHeight: SmallInt;
+  rect: TRect;
 begin
   Result.State := WindowState;
   case WindowState of
@@ -1602,31 +1602,31 @@ begin
                     Result.Top := Top;
                   end;
     wsMaximized:  begin
-                    Wp.length := SizeOf(TWindowPlacement);
-                    GetWindowPlacement(Handle, @Wp);
+                    wp.length := SizeOf(TWindowPlacement);
+                    GetWindowPlacement(Handle, @wp);
 
                     // Get current borders width/height
-                    BordersWidth := Width - ClientWidth;
-                    BordersHeight := Height - ClientHeight;
+                    bordersWidth := Width - ClientWidth;
+                    bordersHeight := Height - ClientHeight;
 
                     // rcNormalPosition do not have ClientWidth/ClientHeight
                     // so we have to calc it manually via substracting borders width/height
-                    Result.Width := Wp.rcNormalPosition.Right - Wp.rcNormalPosition.Left - BordersWidth;
-                    Result.Height := Wp.rcNormalPosition.Bottom - Wp.rcNormalPosition.Top - BordersHeight;
+                    Result.Width := wp.rcNormalPosition.Right - wp.rcNormalPosition.Left - bordersWidth;
+                    Result.Height := wp.rcNormalPosition.Bottom - wp.rcNormalPosition.Top - bordersHeight;
 
                     // Adjustment of window position due to TaskBar position/size
-                    case FindTaskBar(Rect) of
+                    case FindTaskBar(rect) of
                       ABE_LEFT: begin
-                                  Result.Left := Wp.rcNormalPosition.Left + Rect.Right;
-                                  Result.Top := Wp.rcNormalPosition.Top;
+                                  Result.Left := wp.rcNormalPosition.Left + rect.Right;
+                                  Result.Top := wp.rcNormalPosition.Top;
                                 end;
                       ABE_TOP:  begin
-                                  Result.Left := Wp.rcNormalPosition.Left;
-                                  Result.Top := Wp.rcNormalPosition.Top + Rect.Bottom;
+                                  Result.Left := wp.rcNormalPosition.Left;
+                                  Result.Top := wp.rcNormalPosition.Top + rect.Bottom;
                                 end
                       else      begin
-                                  Result.Left := Wp.rcNormalPosition.Left;
-                                  Result.Top := Wp.rcNormalPosition.Top;
+                                  Result.Left := wp.rcNormalPosition.Left;
+                                  Result.Top := wp.rcNormalPosition.Top;
                                 end;
                     end;
                   end;
@@ -1663,20 +1663,21 @@ procedure TFormMain.WMAppCommand(var Msg: TMessage);
       Include(Result, ssShift);
   end;
 
-var dwKeys,uDevice,cmd: Word;
-  ShiftState: TShiftState;
+var
+  dwKeys, uDevice, cmd: Word;
+  shiftState: TShiftState;
 begin
-  ShiftState := [];
+  shiftState := [];
   {$IFDEF WDC}
   uDevice := GET_DEVICE_LPARAM(Msg.lParam);
   if uDevice = FAPPCOMMAND_MOUSE then
   begin
     dwKeys := GET_KEYSTATE_LPARAM(Msg.lParam);
-    ShiftState := GetShiftState(dwKeys);
+    shiftState := GetShiftState(dwKeys);
     cmd := GET_APPCOMMAND_LPARAM(Msg.lParam);
     case cmd of
-       APPCOMMAND_BROWSER_FORWARD:  FormKeyUpProc(VK_XBUTTON1, ShiftState);
-       APPCOMMAND_BROWSER_BACKWARD: FormKeyUpProc(VK_XBUTTON2, ShiftState);
+       APPCOMMAND_BROWSER_FORWARD:  FormKeyUpProc(VK_XBUTTON1, shiftState);
+       APPCOMMAND_BROWSER_BACKWARD: FormKeyUpProc(VK_XBUTTON2, shiftState);
        else
          inherited;
      end;
@@ -1706,29 +1707,28 @@ end;
 //F.e. on Win10 it was reported, that we got event 3 times on single turn of mouse wheel, if use default form event handler
 procedure TFormMain.WMMouseWheel(var Msg: TMessage);
 var
-  MousePos : TPoint;
-  KeyState : TKeyboardState;
-  WheelDelta: Integer;
+  mousePos : TPoint;
+  keyState : TKeyboardState;
+  wheelDelta: Integer;
 begin
-  MousePos.X := SmallInt(Msg.LParamLo);
-  MousePos.Y := SmallInt(Msg.LParamHi);
-  WheelDelta := SmallInt(Msg.WParamHi);
-  GetKeyboardState(KeyState);
+  mousePos.X := SmallInt(Msg.LParamLo);
+  mousePos.Y := SmallInt(Msg.LParamHi);
+  wheelDelta := SmallInt(Msg.WParamHi);
+  GetKeyboardState(keyState);
 
   if gGameApp <> nil then
-    gGameApp.MouseWheel(KeyboardStateToShiftState(KeyState), GetMouseWheelStepsCnt(WheelDelta),
-                        RenderArea.ScreenToClient(MousePos).X, RenderArea.ScreenToClient(MousePos).Y);
+    gGameApp.MouseWheel(KeyboardStateToShiftState(keyState), GetMouseWheelStepsCnt(wheelDelta),
+                        RenderArea.ScreenToClient(mousePos).X, RenderArea.ScreenToClient(mousePos).Y);
 end;
 {$ENDIF}
 
 
 procedure TFormMain.FormMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
 begin
-//We use WM_MOUSEWHEEL message handler on Windows, since it prevents some bugs from happaning
-//F.e. on Win10 it was reported, that we got event 3 times on single turn of mouse wheel, if use default form event handler
+  // We use WM_MOUSEWHEEL message handler on Windows, since it prevents some bugs from happaning
+  // F.e. on Win10 it was reported, that we got event 3 times on single turn of mouse wheel, if use default form event handler
 {$IFNDEF MSWINDOWS}
-  if gGameApp <> nil then
-    gGameApp.MouseWheel(Shift, GetMouseWheelStepsCnt(WheelDelta), RenderArea.ScreenToClient(MousePos).X, RenderArea.ScreenToClient(MousePos).Y);
+  gGameApp.MouseWheel(Shift, GetMouseWheelStepsCnt(WheelDelta), RenderArea.ScreenToClient(MousePos).X, RenderArea.ScreenToClient(MousePos).Y);
 {$ENDIF}
 end;
 

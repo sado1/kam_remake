@@ -41,7 +41,7 @@ type
     destructor Destroy; override;
 
     function Start: Boolean;
-    procedure CloseQuery(var CanClose: Boolean);
+    procedure CloseQuery(var aCanClose: Boolean);
     procedure Stop(Sender: TObject);
 
     procedure UpdateWindowParams(const aWindowParams: TKMWindowParamsRecord);
@@ -134,6 +134,7 @@ end;
 
 // Return False in case we had difficulties on the start
 function TKMMain.Start: Boolean;
+
   function GetScreenMonitorsInfo: TKMPointArray;
   var
     I: Integer;
@@ -244,31 +245,31 @@ begin
 end;
 
 
-procedure TKMMain.CloseQuery(var CanClose: Boolean);
+procedure TKMMain.CloseQuery(var aCanClose: Boolean);
 var
-  WasRunning: Boolean;
+  wasRunning: Boolean;
 begin
   //MessageDlg works better than Application.MessageBox or others, it stays on top and
   //pauses here until the user clicks ok. However for some reason we chose MessageBox
   //thus we need to pause the game manually
 
-  CanClose := (gGameApp = nil) or (gGameApp.Game = nil) or gGameApp.Game.Params.IsReplay;
+  aCanClose := (gGameApp = nil) or (gGameApp.Game = nil) or gGameApp.Game.Params.IsReplay;
 
-  if not CanClose then
+  if not aCanClose then
   begin
     //We want to pause the game for the time user verifies he really wants to close
-    WasRunning := not gGameApp.Game.Params.IsMultiPlayerOrSpec
+    wasRunning := not gGameApp.Game.Params.IsMultiPlayerOrSpec
                   and not gGameApp.Game.Params.IsMapEditor
                   and not gGameApp.Game.IsPaused;
 
     //Pause the game
-    if WasRunning then
+    if wasRunning then
       gGameApp.Game.IsPaused := True;
 
     //Ask the Player
     {$IFDEF MSWindows}
     //MessageBox works best in Windows (gets stuck under main form less)
-    CanClose := MessageBox( fFormMain.Handle,
+    aCanClose := MessageBox( fFormMain.Handle,
                             PChar('Any unsaved changes will be lost. Exit?'),
                             PChar('Warning'),
                             MB_YESNO or MB_ICONWARNING or MB_SETFOREGROUND or MB_TASKMODAL
@@ -279,7 +280,7 @@ begin
     {$ENDIF}
 
     //Resume the game
-    if not CanClose and WasRunning then
+    if not aCanClose and wasRunning then
       gGameApp.Game.IsPaused := False;
   end;
 end;
@@ -357,10 +358,10 @@ end;
 
 procedure TKMMain.DoIdle(Sender: TObject; var Done: Boolean);
 var
-  FrameTime: Cardinal;
-  FPSLag: Integer;
+  frameTime: Cardinal;
+  fpsLag: Integer;
 begin
-  FrameTime := 0;
+  frameTime := 0;
 
   if CHECK_8087CW then
     //$1F3F is used to mask out reserved/undefined bits
@@ -371,17 +372,17 @@ begin
   //Counting FPS
   if fMainSettings <> nil then //fMainSettings could be nil on Game Exit ?? Just check if its not nil
   begin
-    FrameTime  := GetTimeSince(fOldTimeFPS);
+    frameTime  := GetTimeSince(fOldTimeFPS);
     fOldTimeFPS := TimeGet;
 
-    FPSLag := Floor(1000 / fMainSettings.FPSCap);
-    if CAP_MAX_FPS and (FPSLag <> 1) and (FrameTime < FPSLag) then
+    fpsLag := Floor(1000 / fMainSettings.FPSCap);
+    if CAP_MAX_FPS and (fpsLag <> 1) and (frameTime < fpsLag) then
     begin
-      Sleep(FPSLag - FrameTime);
-      FrameTime := FPSLag;
+      Sleep(fpsLag - frameTime);
+      frameTime := fpsLag;
     end;
 
-    Inc(fOldFrameTimes, FrameTime);
+    Inc(fOldFrameTimes, frameTime);
     Inc(fFrameCount);
     if fOldFrameTimes >= FPS_INTERVAL then
     begin
@@ -389,7 +390,7 @@ begin
       if gGameApp <> nil then
         gGameApp.FPSMeasurement(Round(fFPS));
 
-      fFPSString := Format('%.1f FPS', [fFPS]) + IfThen(CAP_MAX_FPS, ' (' + IntToStr(FPSLag) + ')');
+      fFPSString := Format('%.1f FPS', [fFPS]) + IfThen(CAP_MAX_FPS, ' (' + IntToStr(fpsLag) + ')');
       StatusBarText(SB_ID_FPS, fFPSString);
       fOldFrameTimes := 0;
       fFrameCount := 0;
@@ -402,7 +403,7 @@ begin
   Set8087CW($133F);
   if gGameApp <> nil then
   begin
-    gGameApp.UpdateStateIdle(FrameTime);
+    gGameApp.UpdateStateIdle(frameTime);
     gGameApp.Render;
   end;
 
@@ -721,14 +722,15 @@ end;
 //For multiple monitors, it's very annoying if you play a fullscreen game and your cursor slides
 //onto second monitor instead of stopping at the edge as expected.
 procedure TKMMain.ApplyCursorRestriction;
-var Rect: TRect;
+var
+  rect: TRect;
 begin
   //This restriction is removed when alt-tabbing out, and added again when alt-tabbing back
   {$IFDEF MSWindows}
   if fMainSettings.FullScreen then
   begin
-    Rect := fFormMain.BoundsRect;
-    ClipCursor(@Rect);
+    rect := fFormMain.BoundsRect;
+    ClipCursor(@rect);
   end
   else
     ClipCursor(nil); //Otherwise have no restriction
