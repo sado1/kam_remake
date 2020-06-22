@@ -5,6 +5,7 @@ type
   TKMKeyFunction = (
     kfNone,
 
+    // faCommon
     kfScrollLeft,   // Scroll Left
     kfScrollRight,  // Scroll Right
     kfScrollUp,     // Scroll Up
@@ -24,6 +25,7 @@ type
     kfDebugDefeat,    // Debug Menu Defeat
     kfDebugAddscout,  // Debug Menu Add Scout
 
+    // faGame
     kfMenuBuild,  // Build Menu
     kfMenuRatio,  // Ratio Menu
     kfMenuStats,  // Stats Menu
@@ -71,6 +73,7 @@ type
     kfSelect19, // Select 19
     kfSelect20, // Select 20
 
+    // faUnit
     kfArmyHalt,       // Halt Command
     kfArmySplit,      // Split up Command
     kfArmyLink,       // Linkup Command
@@ -81,10 +84,12 @@ type
     kfArmyRotateCw,   // Turn Right Command
     kfArmyRotateCcw,  // Turn Left Command
 
+    // faHouse
     kfTrainGotoPrev,  // Goto previuos unit
     kfTrainEquipUnit, // Train or Equip unit
     kfTrainGotoNext,  // Goto next unit
 
+    // faSpecReplay
     kfSpecpanelSelectDropbox, // Select dropbox on spectator panel
     kfReplayPlayNextTick,     // Play next tick in replay
     kfSpectatePlayer1,  // Spectate player 1
@@ -100,6 +105,7 @@ type
     kfSpectatePlayer11, // Spectate player 11
     kfSpectatePlayer12, // Spectate player 12
 
+    // faMapEdit
     kfMapedExtra,     // Maped Extra's menu
     kfMapedTerrain,   // Maped Terrain Editing
     kfMapedVillage,   // Maped Village Planning
