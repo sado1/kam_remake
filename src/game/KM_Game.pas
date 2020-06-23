@@ -2075,8 +2075,17 @@ procedure TKMGame.Save(const aSaveName: UnicodeString; aTimestamp: TDateTime);
 var
   fullPath, rngPath, mpLocalDataPath, newSaveName: UnicodeString;
 begin
+  {$IFDEF PERFLOG}
+  gPerfLogs.SectionEnter(psGameSaveWait);
+  {$ENDIF}
+  try
   //Wait for previous save async tasks to complete before proceeding
   fSaveWorkerThread.WaitForAllWorkToComplete;
+  finally
+    {$IFDEF PERFLOG}
+    gPerfLogs.SectionLeave(psGameSaveWait);
+    {$ENDIF}
+  end;
 
   {$IFDEF PERFLOG}
   gPerfLogs.SectionEnter(psGameSave);
