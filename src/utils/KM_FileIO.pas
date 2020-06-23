@@ -38,28 +38,7 @@ uses
 
   function IsFilePath(const aPath: UnicodeString): Boolean;
 
-{$IFDEF WDC}
-const
-  FILE_READ_DATA = $0001;
-  FILE_WRITE_DATA = $0002;
-  FILE_APPEND_DATA = $0004;
-  FILE_READ_EA = $0008;
-  FILE_WRITE_EA = $0010;
-  FILE_EXECUTE = $0020;
-  FILE_READ_ATTRIBUTES = $0080;
-  FILE_WRITE_ATTRIBUTES = $0100;
-  FILE_GENERIC_READ = (STANDARD_RIGHTS_READ or FILE_READ_DATA or
-    FILE_READ_ATTRIBUTES or FILE_READ_EA or SYNCHRONIZE);
-  FILE_GENERIC_WRITE = (STANDARD_RIGHTS_WRITE or FILE_WRITE_DATA or
-    FILE_WRITE_ATTRIBUTES or FILE_WRITE_EA or FILE_APPEND_DATA or SYNCHRONIZE);
-  FILE_GENERIC_EXECUTE = (STANDARD_RIGHTS_EXECUTE or FILE_READ_ATTRIBUTES or
-    FILE_EXECUTE or SYNCHRONIZE);
-  FILE_ALL_ACCESS = STANDARD_RIGHTS_REQUIRED or SYNCHRONIZE or $1FF;
-
-  // example from https://stackoverflow.com/questions/6908152/how-to-get-permission-level-of-a-folder
-  function CheckFileAccess(const FileName: string; const CheckedAccess: Cardinal): Cardinal;
-{$ENDIF}
-
+  procedure CheckFolderPermission(const aPath: string; var aRead, aWrite, aExec: Boolean);
 
 implementation
 uses
@@ -374,21 +353,41 @@ end;
 
 
 {$IFDEF WDC}
-function CheckFileAccess(const FileName: string; const CheckedAccess: Cardinal): Cardinal;
-var Token: THandle;
-    Status: LongBool;
-    Access: Cardinal;
-    SecDescSize: Cardinal;
-    PrivSetSize: Cardinal;
-    PrivSet: PRIVILEGE_SET;
-    Mapping: GENERIC_MAPPING;
-    SecDesc: PSECURITY_DESCRIPTOR;
+const
+  FILE_READ_DATA = $0001;
+  FILE_WRITE_DATA = $0002;
+  FILE_APPEND_DATA = $0004;
+  FILE_READ_EA = $0008;
+  FILE_WRITE_EA = $0010;
+  FILE_EXECUTE = $0020;
+  FILE_READ_ATTRIBUTES = $0080;
+  FILE_WRITE_ATTRIBUTES = $0100;
+  FILE_GENERIC_READ = (STANDARD_RIGHTS_READ or FILE_READ_DATA or
+    FILE_READ_ATTRIBUTES or FILE_READ_EA or SYNCHRONIZE);
+  FILE_GENERIC_WRITE = (STANDARD_RIGHTS_WRITE or FILE_WRITE_DATA or
+    FILE_WRITE_ATTRIBUTES or FILE_WRITE_EA or FILE_APPEND_DATA or SYNCHRONIZE);
+  FILE_GENERIC_EXECUTE = (STANDARD_RIGHTS_EXECUTE or FILE_READ_ATTRIBUTES or
+    FILE_EXECUTE or SYNCHRONIZE);
+  FILE_ALL_ACCESS = STANDARD_RIGHTS_REQUIRED or SYNCHRONIZE or $1FF;
+
+
+// example from https://stackoverflow.com/questions/6908152/how-to-get-permission-level-of-a-folder
+function CheckFileAccess(const aFileName: string; const aCheckedAccess: Cardinal): Cardinal;
+var
+  Token: THandle;
+  Status: LongBool;
+  Access: Cardinal;
+  SecDescSize: Cardinal;
+  PrivSetSize: Cardinal;
+  PrivSet: PRIVILEGE_SET;
+  Mapping: GENERIC_MAPPING;
+  SecDesc: PSECURITY_DESCRIPTOR;
 begin
   Result := 0;
-  GetFileSecurity(PChar(Filename), OWNER_SECURITY_INFORMATION or GROUP_SECURITY_INFORMATION or DACL_SECURITY_INFORMATION, nil, 0, SecDescSize);
+  GetFileSecurity(PChar(aFileName), OWNER_SECURITY_INFORMATION or GROUP_SECURITY_INFORMATION or DACL_SECURITY_INFORMATION, nil, 0, SecDescSize);
   SecDesc := GetMemory(SecDescSize);
 
-  if GetFileSecurity(PChar(Filename), OWNER_SECURITY_INFORMATION or GROUP_SECURITY_INFORMATION or DACL_SECURITY_INFORMATION, SecDesc, SecDescSize, SecDescSize) then
+  if GetFileSecurity(PChar(aFileName), OWNER_SECURITY_INFORMATION or GROUP_SECURITY_INFORMATION or DACL_SECURITY_INFORMATION, SecDesc, SecDescSize, SecDescSize) then
   begin
     ImpersonateSelf(SecurityImpersonation);
     OpenThreadToken(GetCurrentThread, TOKEN_QUERY, False, Token);
@@ -401,7 +400,7 @@ begin
 
       MapGenericMask(Access, Mapping);
       PrivSetSize := SizeOf(PrivSet);
-      AccessCheck(SecDesc, Token, CheckedAccess, Mapping, PrivSet, PrivSetSize, Access, Status);
+      AccessCheck(SecDesc, Token, aCheckedAccess, Mapping, PrivSet, PrivSetSize, Access, Status);
       CloseHandle(Token);
       if Status then
         Result := Access;
@@ -411,6 +410,23 @@ begin
   FreeMem(SecDesc, SecDescSize);
 end;
 {$ENDIF}
+
+
+// Check game execution dir generic permissions
+procedure CheckFolderPermission(const aPath: string; var aRead, aWrite, aExec: Boolean);
+begin
+  {$IFDEF WDC}
+  aRead   := (CheckFileAccess(aPath, FILE_GENERIC_READ) = FILE_GENERIC_READ);
+  aWrite  := (CheckFileAccess(aPath, FILE_GENERIC_WRITE) = FILE_GENERIC_WRITE);
+  aExec   := (CheckFileAccess(aPath, FILE_GENERIC_EXECUTE) = FILE_GENERIC_EXECUTE);
+  {$ENDIF}
+  {$IFDEF FPC}
+  // No folder permissions check for FPC yet
+  aRead   := True;
+  aWrite  := True;
+  aExec   := True;
+  {$ENDIF}
+end;
 
 
 end.
