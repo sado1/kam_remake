@@ -1259,13 +1259,11 @@ procedure TFormMain.ControlsUpdate(Sender: TObject);
 
   procedure UpdateVisibleLayers(aCheckBox: TCheckBox; aLayer: TKMGameVisibleLayer);
   begin
-    if (Sender = aCheckBox) then
-    begin
+    if Sender = aCheckBox then
       if aCheckBox.Checked then
         gGameParams.VisibleLayers := gGameParams.VisibleLayers + [aLayer]
       else
         gGameParams.VisibleLayers := gGameParams.VisibleLayers - [aLayer];
-    end;
   end;
 
 var
@@ -1457,7 +1455,6 @@ begin
     DEBUG_TEXT_FONT_ID := rgDebugFont.ItemIndex;
   end;
 
-
   if gGameApp.Game <> nil then
     gGameApp.Game.ActiveInterface.UpdateState(gGameApp.GlobalTickCount);
 
@@ -1547,7 +1544,6 @@ begin
           MessageDlg('Game statistics from file [ ' + OpenDialog1.FileName + ' ] is valid', mtInformation , [mbOK ], 0)
         else
           MessageDlg('Game statistics from file [ ' + OpenDialog1.FileName + ' ] is NOT valid !', mtError, [mbClose], 0);
-
       except
         on E: Exception do
           MessageDlg('Error while validating game statistics from file [ ' + OpenDialog1.FileName + ' ] :' + EolW
@@ -1681,7 +1677,7 @@ begin
        APPCOMMAND_BROWSER_BACKWARD: FormKeyUpProc(VK_XBUTTON2, shiftState);
        else
          inherited;
-     end;
+    end;
   end;
   {$ENDIF}
 end;
