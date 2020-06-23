@@ -364,12 +364,6 @@ end;
 
 procedure TKMGameApp.KeyPress(Key: Char);
 begin
-  if gVideoPlayer.IsActive then
-  begin
-    gVideoPlayer.KeyPress(Key);
-    Exit;
-  end;
-
   if gGame <> nil then
     gGame.ActiveInterface.KeyPress(Key)
   else
@@ -381,12 +375,6 @@ procedure TKMGameApp.KeyUp(Key: Word; Shift: TShiftState);
 var
   keyHandled: Boolean;
 begin
-  if gVideoPlayer.IsActive then
-  begin
-    gVideoPlayer.KeyUp(Key, Shift);
-    Exit;
-  end;
-
   //List of conflicting keys that we should try to avoid using in debug/game:
   //  F12 Pauses Execution and switches to debug
   //  F10 sets focus on MainMenu1
@@ -423,12 +411,6 @@ var
   ctrl: TKMControl;
   ctrlID: Integer;
 begin
-  if gVideoPlayer.IsActive then
-  begin
-    gVideoPlayer.MouseMove(Shift, X,Y);
-    Exit;
-  end;
-
   if not InRange(X, 1, gRender.ScreenX - 1)
   or not InRange(Y, 1, gRender.ScreenY - 1) then
     Exit; // Exit if Cursor is outside of frame
@@ -463,12 +445,6 @@ end;
 
 procedure TKMGameApp.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  if gVideoPlayer.IsActive then
-  begin
-    gVideoPlayer.MouseUp(Button, Shift, X,Y);
-    Exit;
-  end;
-
   if gGame <> nil then
     gGame.ActiveInterface.MouseUp(Button,Shift,X,Y)
   else

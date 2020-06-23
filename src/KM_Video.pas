@@ -80,12 +80,7 @@ type
     procedure Paint;
 
     procedure KeyDown(Key: Word; Shift: TShiftState);
-    procedure KeyPress(Key: Char);
-    procedure KeyUp(Key: Word; Shift: TShiftState);
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
-    procedure MouseMove(Shift: TShiftState; X,Y: Integer);
-    procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
-    procedure MouseWheel(Shift: TShiftState; WheelSteps: Integer; X,Y: Integer);
 
     function IsActive: Boolean;
     function IsPlay: Boolean;
@@ -552,24 +547,6 @@ begin
 {$ENDIF}
 end;
 
-procedure TKMVideoPlayer.KeyPress(Key: Char);
-begin
-  if Self = nil then
-    Exit;
-{$IFDEF VIDEOS}
-
-{$ENDIF}
-end;
-
-procedure TKMVideoPlayer.KeyUp(Key: Word; Shift: TShiftState);
-begin
-  if Self = nil then
-    Exit;
-{$IFDEF VIDEOS}
-
-{$ENDIF}
-end;
-
 procedure TKMVideoPlayer.MouseDown(Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
 begin
   if Self = nil then
@@ -582,35 +559,7 @@ begin
 {$ENDIF}
 end;
 
-procedure TKMVideoPlayer.MouseMove(Shift: TShiftState; X,Y: Integer);
-begin
-  if Self = nil then
-    Exit;
 {$IFDEF VIDEOS}
-
-{$ENDIF}
-end;
-
-procedure TKMVideoPlayer.MouseUp(Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
-begin
-  if Self = nil then
-    Exit;
-{$IFDEF VIDEOS}
-
-{$ENDIF}
-end;
-
-procedure TKMVideoPlayer.MouseWheel(Shift: TShiftState; WheelSteps: Integer; X,Y: Integer);
-begin
-  if Self = nil then
-    Exit;
-{$IFDEF VIDEOS}
-
-{$ENDIF}
-end;
-
-{$IFDEF VIDEOS}
-
 function TKMVideoPlayer.TryGetPathFile(const aPath: string; var aFileName: string): Boolean;
 var
   i: Integer;
