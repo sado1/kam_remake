@@ -157,7 +157,7 @@ end;
 
 procedure TKMSavePointCollection.SaveToFileAsync(const aFileName: UnicodeString; aWorkerThread: TKMWorkerThread);
 var
-  S: TKMemoryStreamBinary;
+  S: TKMemoryStream;
 begin
   S := TKMemoryStreamBinary.Create;
   Save(S);
@@ -167,7 +167,7 @@ end;
 
 procedure TKMSavePointCollection.LoadFromFile(const aFileName: UnicodeString);
 var
-  S: TKMemoryStreamBinary;
+  S: TKMemoryStream;
 begin
   if not FileExists(aFileName) then Exit;
 

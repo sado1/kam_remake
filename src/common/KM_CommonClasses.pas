@@ -88,8 +88,8 @@ type
     procedure LoadFromFileCompressed(const aFileName: string; const aMarker: string);
 
     {$IFDEF WDC OR FPC_FULLVERSION >= 30200}
-    class procedure AsyncSaveToFileAndFree(var aStream; const aFileName: string; aWorkerThread: TKMWorkerThread);
-    class procedure AsyncSaveToFileCompressedAndFree(var aStream; const aFileName: string; const aMarker: string; aWorkerThread: TKMWorkerThread);
+    class procedure AsyncSaveToFileAndFree(var aStream: TKMemoryStream; const aFileName: string; aWorkerThread: TKMWorkerThread);
+    class procedure AsyncSaveToFileCompressedAndFree(var aStream: TKMemoryStream; const aFileName: string; const aMarker: string; aWorkerThread: TKMWorkerThread);
     {$ENDIF}
   end;
 
@@ -444,13 +444,12 @@ end;
 
 
 {$IFDEF WDC OR FPC_FULLVERSION >= 30200}
-class procedure TKMemoryStream.AsyncSaveToFileAndFree(var aStream; const aFileName: string; aWorkerThread: TKMWorkerThread);
+class procedure TKMemoryStream.AsyncSaveToFileAndFree(var aStream: TKMemoryStream; const aFileName: string; aWorkerThread: TKMWorkerThread);
 var
   localStream: TKMemoryStream;
 begin
-  Assert(TObject(aStream) is TKMemoryStream);
-  localStream := TKMemoryStream(aStream);
-  Pointer(aStream) := nil; //So caller doesn't use it by mistake
+  localStream := aStream;
+  aStream := nil; //So caller doesn't use it by mistake
 
   {$IFDEF WDC}
     aWorkerThread.QueueWork(procedure
@@ -471,22 +470,21 @@ begin
 end;
 
 
-class procedure TKMemoryStream.AsyncSaveToFileCompressedAndFree(var aStream; const aFileName: string; const aMarker: string;
+class procedure TKMemoryStream.AsyncSaveToFileCompressedAndFree(var aStream: TKMemoryStream; const aFileName: string; const aMarker: string;
                                                                 aWorkerThread: TKMWorkerThread);
 var
-  LocalStream: TKMemoryStream;
+  localStream: TKMemoryStream;
 begin
-  Assert(TObject(aStream) is TKMemoryStream);
-  LocalStream := TKMemoryStream(aStream);
-  Pointer(aStream) := nil; //So caller doesn't use it by mistake
+  localStream := aStream;
+  aStream := nil; //So caller doesn't use it by mistake
 
   {$IFDEF WDC}
     aWorkerThread.QueueWork(procedure
     begin
       try
-        LocalStream.SaveToFileCompressed(aFileName, aMarker);
+        localStream.SaveToFileCompressed(aFileName, aMarker);
       finally
-        LocalStream.Free;
+        localStream.Free;
       end;
     end, 'AsyncSaveToFileCompressed ' + aMarker);
   {$ELSE}

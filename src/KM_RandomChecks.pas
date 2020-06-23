@@ -33,7 +33,7 @@ type
 //    fRngLogStream: TKMemoryStream;
     fCallers: TDictionary<Byte, AnsiString>;
     fRngLog: TDictionary<Cardinal, TKMRLRecordList>;
-    fTickStreamQueue: TObjectQueue<TKMemoryStreamBinary>;
+    fTickStreamQueue: TObjectQueue<TKMemoryStream>;
 
     function GetCallerID(const aCaller: AnsiString; aValue: Extended; aValueType: TKMLogRngType): Byte;
     procedure AddRecordToList(aTick: Cardinal; const aRec: TKMRngLogRecord);
@@ -92,7 +92,7 @@ begin
 //  fRngLogStream := TKMemoryStream.Create;
   fCallers := TDictionary<Byte, AnsiString>.Create;
   fRngLog := TDictionary<Cardinal, TKMRLRecordList>.Create;
-  fTickStreamQueue := TObjectQueue<TKMemoryStreamBinary>.Create;
+  fTickStreamQueue := TObjectQueue<TKMemoryStream>.Create;
   fTickStreamQueue.OwnsObjects := True; // Set the OwnsObjects to true - the Queue will free them automatically
   fRngChecksInTick := TKMRLRecordList.Create;
   fSavedTicksCnt := 0;
@@ -283,7 +283,7 @@ procedure TKMRandomCheckLogger.LoadFromPath(const aPath: String);
 var
   I: Integer;
   tickStreamSize: Cardinal;
-  LoadStream, tickStream: TKMemoryStreamBinary;
+  LoadStream, tickStream: TKMemoryStream;
 begin
   if Self = nil then Exit;
 
@@ -416,10 +416,10 @@ end;
 {$IFDEF WDC OR FPC_FULLVERSION >= 30200}
 procedure TKMRandomCheckLogger.SaveToPathAsync(const aPath: String; aWorkerThread: TKMWorkerThread);
 var
-  SaveStream, TickStream: TKMemoryStreamBinary;
+  SaveStream, TickStream: TKMemoryStream;
 //  CompressionStream: TCompressionStream;
   CallerPair: TPair<Byte, AnsiString>;
-  enumerator: TEnumerator<TKMemoryStreamBinary>;
+  enumerator: TEnumerator<TKMemoryStream>;
 begin
   if (Self = nil) then Exit;
 

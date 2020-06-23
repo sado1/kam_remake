@@ -82,7 +82,7 @@ end;
 
 procedure TKMGameMPLocalData.SaveToFile(const aFilePath: String);
 var
-  saveStream: TKMemoryStreamBinary;
+  saveStream: TKMemoryStream;
 begin
   saveStream := TKMemoryStreamBinary.Create;
   try
@@ -96,7 +96,7 @@ end;
 
 procedure TKMGameMPLocalData.SaveToFileAsync(const aFilePath: String; aWorkerThread: TKMWorkerThread);
 var
-  saveStream: TKMemoryStreamBinary;
+  saveStream: TKMemoryStream;
 begin
   saveStream := TKMemoryStreamBinary.Create;
   Save(saveStream);
