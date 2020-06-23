@@ -9,4 +9,4 @@ erase /F /Q /S "%kam_folder%.7z"
 REM ============================================================
 REM Create archive
 REM ============================================================
-"C:\Program Files\7-Zip\7z.exe" a "%kam_folder%.7z" "%kam_folder%"
+"C:\Program Files\7-Zip\7z.exe" a -mx=9 "%kam_folder%.7z" "%kam_folder%"
