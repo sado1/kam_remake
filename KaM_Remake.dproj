@@ -177,6 +177,7 @@
         <DCCReference Include="src\KM_Console.pas"/>
         <DCCReference Include="src\common\KM_CommonClasses.pas"/>
         <DCCReference Include="src\common\KM_CommonClassesExt.pas"/>
+        <DCCReference Include="src\common\KM_CommonExceptions.pas"/>
         <DCCReference Include="src\common\KM_CommonTypes.pas"/>
         <DCCReference Include="src\common\KM_Defaults.pas"/>
         <DCCReference Include="src\common\KM_MarchingSquares.pas"/>
@@ -366,6 +367,7 @@
         <DCCReference Include="src\res\KM_ResSound.pas"/>
         <DCCReference Include="src\res\KM_ResSprites.pas"/>
         <DCCReference Include="src\res\KM_ResTexts.pas"/>
+        <DCCReference Include="src\res\KM_ResTypes.pas"/>
         <DCCReference Include="src\res\KM_ResTileset.pas"/>
         <DCCReference Include="src\res\KM_ResUnits.pas"/>
         <DCCReference Include="src\res\KM_ResWares.pas"/>

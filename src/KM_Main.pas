@@ -87,7 +87,8 @@ uses
   {$IFDEF USE_MAD_EXCEPT} KM_Exceptions, {$ENDIF}
   SysUtils, StrUtils, Math, KromUtils, KM_FileIO,
   KM_GameApp, KM_Helpers,
-  KM_Log, KM_CommonUtils, KM_Defaults, KM_Points, KM_DevPerfLog;
+  KM_Log, KM_CommonUtils, KM_Defaults, KM_Points, KM_DevPerfLog,
+  KM_CommonExceptions;
 
 
 const
@@ -170,7 +171,7 @@ begin
       gLog.DeleteOldLogs;
     except
       on E: Exception do
-        gLog := nil; // Ignore Log creation error. We will exit later with proper error message
+        raise EGameInitError.Create('Error initializing logging:' + sLineBreak + E.Message);
     end;
   end;
 

@@ -371,7 +371,8 @@ uses
   KM_Resource, KM_ResSound, KM_ResTexts, KM_ResUnits, KM_ResMapElements,
   KM_Log, KM_ScriptingEvents, KM_CommonUtils, KM_MapEditorHistory,
   KM_GameTypes, KM_RenderDebug,
-  KM_HandTypes;
+  KM_HandTypes,
+  KM_CommonExceptions;
 
 const
   //Delay, In ticks, from user click on DeliveryMode btn, to tick, when mode will be really set.

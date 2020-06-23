@@ -387,13 +387,6 @@ type
   end;
 
 
-  //Custom Exception that includes a TKMPoint
-  ELocError = class(Exception)
-    Loc: TKMPoint;
-    constructor Create(const aMsg: UnicodeString; const aLoc: TKMPoint);
-  end;
-
-
 implementation
 uses
   Math,
@@ -415,14 +408,6 @@ begin
   Val(S2, i2, e2);
   Assert((e2 = 0) or (S2[e2] = NameValueSeparator));
   Result := CompareValue(i1, i2);
-end;
-
-
-{ ELocError }
-constructor ELocError.Create(const aMsg: UnicodeString; const aLoc: TKMPoint);
-begin
-  inherited Create(aMsg);
-  Loc := aLoc;
 end;
 
 

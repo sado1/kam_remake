@@ -367,7 +367,8 @@ uses
   KM_UnitTaskSelfTrain,
   KM_UnitTaskThrowRock,
   KM_GameTypes,
-  KM_HandTypes;
+  KM_HandTypes,
+  KM_CommonExceptions;
 
 
 { TKMCivilUnit }

@@ -129,7 +129,8 @@ uses
   KM_ResTexts, KM_HandsCollection, KM_RenderPool, KM_UnitTaskAttackHouse, KM_HandLogistics,
   KM_UnitActionFight, KM_UnitActionGoInOut, KM_UnitActionWalkTo, KM_UnitActionStay,
   KM_UnitActionStormAttack, KM_Resource, KM_ResUnits, KM_Hand, KM_UnitGroup,
-  KM_ResWares, KM_GameParams, KM_ResHouses, KM_CommonUtils, KM_RenderDebug, KM_UnitVisual;
+  KM_ResWares, KM_GameParams, KM_ResHouses, KM_CommonUtils, KM_RenderDebug, KM_UnitVisual,
+  KM_CommonExceptions;
 
 
 { TKMUnitWarrior }

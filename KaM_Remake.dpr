@@ -11,6 +11,8 @@ uses
   {$ENDIF}
   {$IFDEF UNIX} cthreads, {$ENDIF} //Required for thread support on Unix/Linux
   Forms,
+  Dialogs,
+  {$IFDEF WDC} UITypes, {$ENDIF} // For MessageDlg invoked from this file
   {$IFDEF FPC} Interfaces, {$ENDIF}
   KM_FormMain in 'src\KM_FormMain.pas' {FormMain},
   KM_FormLogistics in 'src\KM_FormLogistics.pas' {FormLogistics},
@@ -52,6 +54,7 @@ uses
   KM_Console in 'src\KM_Console.pas',
   KM_CommonClasses in 'src\common\KM_CommonClasses.pas',
   KM_CommonClassesExt in 'src\common\KM_CommonClassesExt.pas',
+  KM_CommonExceptions in 'src\common\KM_CommonExceptions.pas',
   KM_CommonTypes in 'src\common\KM_CommonTypes.pas',
   KM_Defaults in 'src\common\KM_Defaults.pas',
   KM_MarchingSquares in 'src\common\KM_MarchingSquares.pas',
@@ -377,9 +380,20 @@ begin
   Application.Initialize;
   Application.Title := 'KaM Remake';
 
-  gMain := TKMMain.Create;
-  if gMain.Start then
-    Application.Run;
+  try
+    gMain := TKMMain.Create;
+    try
+      if gMain.Start then
+        Application.Run;
+    finally
+      gMain.Free; //Prevents memory leak of TKMMain showing up in FastMM
+    end;
+  except
+    // We know and control EGameInitError instances and can show them without generating a crashreport
+    // Other exceptions will be catched by madExcept
+    on E: EGameInitError do
+      // MessageDlg works better than Application.MessageBox or others, it stays on top and pauses here until the user clicks ok
+      MessageDlg(E.Message, mtWarning, [mbOk], 0);
+  end;
 
-  gMain.Free; //Prevents memory leak of TKMMain showing up in FastMM
 end.
