@@ -1675,7 +1675,9 @@ begin
        else
          inherited;
     end;
-  end;
+  end
+  else
+    inherited;
   {$ENDIF}
 end;
 
@@ -1694,6 +1696,7 @@ end;
 procedure TFormMain.WMExitSizeMove(var Msg: TMessage) ;
 begin
   gMain.Move(GetWindowParams);
+  inherited;
 end;
 
 
