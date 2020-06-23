@@ -1689,7 +1689,7 @@ begin
     and (Message.WParam = SC_KEYMENU)
     and SuppressAltForMenu then Exit;
 
-  inherited WndProc(Message);
+  inherited;
 end;
 
 
