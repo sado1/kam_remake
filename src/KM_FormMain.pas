@@ -5,16 +5,13 @@ uses
   Classes, ComCtrls, Controls, Buttons, Dialogs, ExtCtrls, Forms, Graphics, Math, Menus, StdCtrls, SysUtils, StrUtils,
   KM_RenderControl, KM_CommonTypes,
   KM_WindowParams,
-
   {$IFDEF FPC} LResources, {$ENDIF}
   {$IFDEF MSWindows} ShellAPI, Windows, Messages, Vcl.Samples.Spin; {$ENDIF}
   {$IFDEF Unix} LCLIntf, LCLType; {$ENDIF}
 
 
 type
-
   { TFormMain }
-
   TFormMain = class(TForm)
     chkAIEye: TCheckBox;
     chkLogGameTick: TCheckBox;
@@ -818,6 +815,7 @@ begin
   end;
 end;
 
+
 //Exports
 procedure TFormMain.Export_TreesRXClick(Sender: TObject);
 begin
@@ -1208,7 +1206,6 @@ begin
     chkShowUnitRadius.  SetCheckedWithoutClick(mlUnitsAttackRadius  in gGameParams.VisibleLayers);
     chkShowDefencePos.  SetCheckedWithoutClick(mlDefencesAll        in gGameParams.VisibleLayers);
     chkShowFlatTerrain. SetCheckedWithoutClick(mlFlatTerrain        in gGameParams.VisibleLayers);
-
   finally
     fUpdating := False;
   end;

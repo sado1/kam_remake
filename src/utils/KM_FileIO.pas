@@ -36,7 +36,6 @@ uses
   //Rename all the files inside folder (MoveFolder is different between Delphi and Lazarus)
   procedure KMRenameFilesInFolder(const aPathToFolder, aFromName, aToName: UnicodeString);
 
-
   function IsFilePath(const aPath: UnicodeString): Boolean;
 
 {$IFDEF WDC}
@@ -60,7 +59,6 @@ const
   // example from https://stackoverflow.com/questions/6908152/how-to-get-permission-level-of-a-folder
   function CheckFileAccess(const FileName: string; const CheckedAccess: Cardinal): Cardinal;
 {$ENDIF}
-
 
 
 implementation
