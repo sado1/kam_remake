@@ -35,6 +35,8 @@ type
     procedure Lock;
     procedure Unlock;
 
+    procedure InitLog;
+
     procedure AddLineTime(const aText: UnicodeString; aLogType: TKMLogMessageType; aDoCloseFile: Boolean = True); overload;
     procedure AddLineTime(const aText: UnicodeString; aFlushImmidiately: Boolean = True); overload;
     procedure AddLineNoTime(const aText: UnicodeString; aWithPrefix: Boolean = True; aDoCloseFile: Boolean = True); overload;
@@ -44,7 +46,7 @@ type
     MessageTypes: TKMLogMessageTypeSet;
     constructor Create(const aPath: UnicodeString);
     destructor Destroy; override;
-    procedure InitLog;
+
     // AppendLog adds the line to Log along with time passed since previous line added
     procedure AddTime(const aText: UnicodeString); overload;
     procedure AddTimeNoFlush(const aText: UnicodeString); overload;
