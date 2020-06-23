@@ -31,7 +31,7 @@ type
     kfSoundVolumeDown,  // Sound volume down
     kfSoundMute,        // Sound mute
 
-    kfMuteAll,          // Mute music (disable) and sound (volume = 0)
+    kfMuteAll,          // Mute music and sound
 
     kfDebugWindow,    // Debug window
     kfDebugRevealmap, // Debug Menu Reveal Map

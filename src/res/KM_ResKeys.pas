@@ -64,7 +64,7 @@ const
     177, 176,                               // Music controls (Media previous track, Media next track)
     178, 179, 175, 174, 0,                  // Music disable / shuffle / volume up / down / mute
     107, 109, 0,                            // Sound volume up / down /mute
-    173,                                    // Mute music (disable) and sound (volume = 0)
+    173,                                    // Mute music and sound
     122,                                    // Debug Window hotkey (F11)
 
     // These keys are not changable by Player in Options menu
@@ -115,7 +115,7 @@ const
     TX_KEY_FUNC_MUSIC_DISABLE, TX_KEY_FUNC_MUSIC_SHUFFLE,                                                 // Music disable / shuffle
     TX_KEY_FUNC_MUSIC_VOLUME_UP, TX_KEY_FUNC_MUSIC_VOLUME_DOWN, TX_KEY_FUNC_MUSIC_MUTE,                   // Music volume up / down / mute
     TX_KEY_FUNC_SOUND_VOLUME_UP, TX_KEY_FUNC_SOUND_VOLUME_DOWN, TX_KEY_FUNC_SOUND_MUTE,                   // Sound volume up / down / mute
-    TX_KEY_FUNC_MUTE_ALL,                                                                                 // Mute music (disable) and sound (volume = 0)
+    TX_KEY_FUNC_MUTE_ALL,                                                                                 // Mute music and sound
 
     TX_KEY_FUNC_DBG_WINDOW,                                                                               // Debug window
 
