@@ -26,8 +26,8 @@ type
     fOpenRef: array [0..MAX_MAP_SIZE, 0..MAX_MAP_SIZE] of TANodeRec; //References to OpenList, Sized as map
     fRouteID: Cardinal;
     function HeapCmp(A,B: Pointer): Boolean;
-    function GetNodeAt(X,Y: SmallInt): PANodeRec;
   protected
+    function GetNodeAt(X,Y: SmallInt): PANodeRec;
     function MakeRoute: Boolean; override;
     procedure ReturnRoute(NodeList: TKMPointList); override;
   public

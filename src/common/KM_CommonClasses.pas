@@ -471,7 +471,7 @@ begin
 end;
 
 
-class procedure TKMemoryStream.AsyncSaveToFileCompressedAndFree(var aHeaderStream, aMainStream; const aFileName: string; const aMarker: string;
+class procedure TKMemoryStream.AsyncSaveToFileCompressedAndFree(var aStream; const aFileName: string; const aMarker: string;
                                                                 aWorkerThread: TKMWorkerThread);
 var
   LocalStream: TKMemoryStream;
