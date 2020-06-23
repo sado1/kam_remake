@@ -113,7 +113,7 @@ type
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
     procedure MouseMove(Shift: TShiftState; X,Y: Integer);
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
-    procedure MouseWheel(Shift: TShiftState; WheelSteps: Integer; X,Y: Integer);
+    procedure MouseWheel(Shift: TShiftState; WheelSteps: Integer; X,Y: Integer; var aHandled: Boolean);
     procedure FPSMeasurement(aFPS: Cardinal);
 
     procedure UnlockAllCampaigns;
@@ -476,23 +476,15 @@ begin
 end;
 
 
-procedure TKMGameApp.MouseWheel(Shift: TShiftState; WheelSteps: Integer; X, Y: Integer);
-var
-  handled: Boolean;
+procedure TKMGameApp.MouseWheel(Shift: TShiftState; WheelSteps: Integer; X, Y: Integer; var aHandled: Boolean);
 begin
+  aHandled := False;
   if Self = nil then Exit;
 
-  if gVideoPlayer.IsActive then
-  begin
-    gVideoPlayer.MouseWheel(Shift, WheelSteps, X,Y);
-    Exit;
-  end;
-
-  handled := False; // False by Default
   if gGame <> nil then
-    gGame.ActiveInterface.MouseWheel(Shift, WheelSteps, X, Y, handled)
+    gGame.ActiveInterface.MouseWheel(Shift, WheelSteps, X, Y, aHandled)
   else
-    fMainMenuInterface.MouseWheel(Shift, WheelSteps, X, Y, handled);
+    fMainMenuInterface.MouseWheel(Shift, WheelSteps, X, Y, aHandled);
 end;
 
 
