@@ -28,9 +28,9 @@ uses
   function RoundToTilePixel(aVal: Single): Single; inline; overload;
   function RoundToTilePixel(aVal: TKMPointF): TKMPointF; inline; overload;
 
-  procedure LoadMapHeader(aStream: TKMemoryStreamBinary; var aMapX: Integer; var aMapY: Integer); overload;
-  procedure LoadMapHeader(aStream: TKMemoryStreamBinary; var aMapX: Integer; var aMapY: Integer; var aGameRev: Integer); overload;
-  procedure LoadMapHeader(aStream: TKMemoryStreamBinary; var aMapX: Integer; var aMapY: Integer; var aGameRev: Integer; var aMapDataSize: Cardinal); overload;
+  procedure LoadMapHeader(aStream: TKMemoryStream; var aMapX: Integer; var aMapY: Integer); overload;
+  procedure LoadMapHeader(aStream: TKMemoryStream; var aMapX: Integer; var aMapY: Integer; var aGameRev: Integer); overload;
+  procedure LoadMapHeader(aStream: TKMemoryStream; var aMapX: Integer; var aMapY: Integer; var aGameRev: Integer; var aMapDataSize: Cardinal); overload;
 
   function GetGameObjectOwnerIndex(aObject: TObject): TKMHandID;
 
@@ -67,7 +67,7 @@ begin
 end;
 
 
-procedure LoadMapHeader(aStream: TKMemoryStreamBinary; var aMapX: Integer; var aMapY: Integer);
+procedure LoadMapHeader(aStream: TKMemoryStream; var aMapX: Integer; var aMapY: Integer);
 var
   GameRev: Integer;
 begin
@@ -75,7 +75,7 @@ begin
 end;
 
 
-procedure LoadMapHeader(aStream: TKMemoryStreamBinary; var aMapX: Integer; var aMapY: Integer; var aGameRev: Integer);
+procedure LoadMapHeader(aStream: TKMemoryStream; var aMapX: Integer; var aMapY: Integer; var aGameRev: Integer);
 var
   MapDataSize: Cardinal;
 begin
@@ -83,7 +83,7 @@ begin
 end;
 
 
-procedure LoadMapHeader(aStream: TKMemoryStreamBinary; var aMapX: Integer; var aMapY: Integer; var aGameRev: Integer; var aMapDataSize: Cardinal);
+procedure LoadMapHeader(aStream: TKMemoryStream; var aMapX: Integer; var aMapY: Integer; var aGameRev: Integer; var aMapDataSize: Cardinal);
 var
   GameRevision: UnicodeString;
   GameRev: Integer;

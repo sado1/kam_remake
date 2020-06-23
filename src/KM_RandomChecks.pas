@@ -29,7 +29,7 @@ type
     fGameTick: Cardinal;
     fSavedTicksCnt: Cardinal;
     fRngChecksInTick: TKMRLRecordList;
-//    fSaveStream: TKMemoryStreamBinary;
+//    fSaveStream: TKMemoryStream;
 //    fRngLogStream: TKMemoryStream;
     fCallers: TDictionary<Byte, AnsiString>;
     fRngLog: TDictionary<Cardinal, TKMRLRecordList>;
@@ -235,7 +235,7 @@ end;
 
 procedure TKMRandomCheckLogger.UpdateState(aGameTick: Cardinal);
 var
-  tickStream: TKMemoryStreamBinary;
+  tickStream: TKMemoryStream;
 begin
   if (Self = nil) or not fEnabled then Exit;
 
@@ -329,7 +329,7 @@ end;
 
 procedure TKMRandomCheckLogger.LoadFromPathAndParseToDict(const aPath: String);
 var
-  LoadStream: TKMemoryStreamBinary;
+  LoadStream: TKMemoryStream;
 begin
   if Self = nil then Exit;
 
@@ -533,7 +533,7 @@ end;
 procedure TKMRandomCheckLogger.Clear;
 var
   list: TList<TKMRngLogRecord>;
-//  TickStream: TKMemoryStreamBinary;
+//  TickStream: TKMemoryStream;
 //  enumerator: TEnumerator<TKMemoryStreamBinary>;
 begin
   if Self = nil then Exit;

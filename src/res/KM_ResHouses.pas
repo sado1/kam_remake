@@ -858,7 +858,7 @@ end;
 //CRC should be calculated right away, cos file may be swapped after loading
 function TKMResHouses.LoadHouseDat(const aPath: string): Cardinal;
 var
-  S: TKMemoryStreamBinary;
+  S: TKMemoryStream;
   i:integer;
 begin
   Assert(FileExists(aPath));

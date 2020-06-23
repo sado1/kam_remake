@@ -422,7 +422,7 @@ end;
 function TKMResSounds.LoadWarriorSoundsFromFile(const aFile: string): Boolean;
 var
   S: AnsiString;
-  MS: TKMemoryStreamBinary;
+  MS: TKMemoryStream;
 begin
   Result := False;
   if not FileExists(aFile) then Exit;
@@ -446,7 +446,7 @@ end;
 
 procedure TKMResSounds.SaveWarriorSoundsToFile(const aFile: string);
 var
-  MS: TKMemoryStreamBinary;
+  MS: TKMemoryStream;
 begin
   MS := TKMemoryStreamBinary.Create;
   try

@@ -140,7 +140,7 @@ type
 
     procedure AfterStart;
     procedure MapEdStartEmptyMap(aSizeX, aSizeY: Integer);
-    procedure LoadFromStream(var LoadStream: TKMemoryStreamBinary);
+    procedure LoadFromStream(var LoadStream: TKMemoryStream);
     procedure LoadFromFile(const aPathName: UnicodeString; const aCustomReplayFile: UnicodeString = '');
     procedure LoadSavePoint(aTick: Cardinal; const aSaveFile: UnicodeString);
     procedure AfterLoad;
@@ -477,7 +477,7 @@ var
   parseMode: TKMMissionParsingMode;
   playerEnabled: TKMHandEnabledArray;
   parser: TKMMissionParserStandard;
-  campaignData: TKMemoryStreamBinary;
+  campaignData: TKMemoryStream;
   campaignDataTypeFile: UnicodeString;
 begin
   gLog.AddTime('GameStart');
@@ -1827,7 +1827,7 @@ end;
 
 function TKMGame.GetCurrectTickSaveCRC: Cardinal;
 var
-  stream: TKMemoryStreamBinary;
+  stream: TKMemoryStream;
 begin
   stream := TKMemoryStreamBinary.Create;
   try
@@ -2141,7 +2141,7 @@ begin
 end;
 
 
-procedure TKMGame.LoadFromStream(var LoadStream: TKMemoryStreamBinary);
+procedure TKMGame.LoadFromStream(var LoadStream: TKMemoryStream);
 var
   gameInfo: TKMGameInfo;
   loadedSeed: LongInt;
@@ -2278,7 +2278,7 @@ procedure TKMGame.LoadFromFile(const aPathName: UnicodeString; const aCustomRepl
   end;
 
 var
-  loadStream: TKMemoryStreamBinary;
+  loadStream: TKMemoryStream;
   gameMPLocalData: TKMGameMPLocalData;
   rngPath: UnicodeString;
 begin
@@ -2338,7 +2338,7 @@ end;
 
 procedure TKMGame.LoadSavePoint(aTick: Cardinal; const aSaveFile: UnicodeString);
 var
-  loadStream: TKMemoryStreamBinary;
+  loadStream: TKMemoryStream;
   lastReplayTick: Cardinal;
   skipReplayEndCheck: Boolean;
 begin
@@ -2365,7 +2365,7 @@ end;
 // Save game/replay savepoint
 procedure TKMGame.MakeSavePoint();
 var
-  saveStream: TKMemoryStreamBinary;
+  saveStream: TKMemoryStream;
 begin
   if (fSavePoints = nil) or fSavePoints.Contains(fParams.Tick) then //No need to save twice on the same tick
     Exit;

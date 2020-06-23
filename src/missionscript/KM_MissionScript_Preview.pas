@@ -69,7 +69,7 @@ end;
 function TKMMissionParserPreview.LoadMapData(const aFileName: string): Boolean;
 var
   I: Integer;
-  S: TKMemoryStreamBinary;
+  S: TKMemoryStream;
   TileBasic: TKMTerrainTileBasic;
   GameRev: Integer;
 begin

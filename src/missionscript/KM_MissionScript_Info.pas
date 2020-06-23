@@ -131,7 +131,7 @@ end;
 //Acquire essential terrain details
 function TKMMissionParserInfo.LoadMapInfo(const aFileName: string): Boolean;
 var
-  S: TKMemoryStreamBinary;
+  S: TKMemoryStream;
   newX, newY: Integer;
   ErrorStr: UnicodeString;
 begin

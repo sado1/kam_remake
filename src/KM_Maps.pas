@@ -604,7 +604,7 @@ end;
 
 procedure TKMapInfo.LoadFromStreamObj(aStreamObj: TObject; const aPath: UnicodeString);
 var
-  S: TKMemoryStreamBinary;
+  S: TKMemoryStream;
 begin
   Assert(aStreamObj is TKMemoryStreamBinary, 'Wrong stream object class');
 
@@ -633,7 +633,7 @@ end;
 
 procedure TKMapInfo.LoadFromFile(const aPath: UnicodeString);
 var
-  S: TKMemoryStreamBinary;
+  S: TKMemoryStream;
   ErrorStr: UnicodeString;
 begin
   if not FileExists(aPath) then Exit;
@@ -653,7 +653,7 @@ end;
 
 procedure TKMapInfo.SaveToStreamObj(aStreamObj: TObject; const aPath: UnicodeString);
 var
-  S: TKMemoryStreamBinary;
+  S: TKMemoryStream;
 begin
   Assert(aStreamObj is TKMemoryStreamBinary, 'Wrong stream object class');
 
@@ -665,7 +665,7 @@ end;
 
 procedure TKMapInfo.SaveToFile(const aPath: UnicodeString);
 var
-  S: TKMemoryStreamBinary;
+  S: TKMemoryStream;
   ErrorStr: UnicodeString;
 begin
   S := TKMemoryStreamBinary.Create;

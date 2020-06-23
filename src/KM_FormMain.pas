@@ -1512,7 +1512,7 @@ end;
 
 procedure TFormMain.ValidateGameStatsClick(Sender: TObject);
 var
-  MS: TKMemoryStreamBinary;
+  MS: TKMemoryStream;
   SL: TStringList;
   CRC: Int64;
   isValid: Boolean;

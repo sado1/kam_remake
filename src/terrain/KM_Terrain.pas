@@ -504,7 +504,7 @@ end;
 procedure TKMTerrain.LoadFromFile(const FileName: UnicodeString; aMapEditor: Boolean);
 var
   I, J, L: Integer;
-  S: TKMemoryStreamBinary;
+  S: TKMemoryStream;
   newX, newY: Integer;
   gameRev: Integer;
   tileBasic: TKMTerrainTileBasic;
@@ -590,7 +590,7 @@ const
   H_RND_HALF = HEIGHT_RAND_VALUE div 2;
 
   //aDir - direction of enlarge for new generated tile
-  procedure SetNewLand(var S: TKMemoryStreamBinary; aToX, aToY, aFromX, aFromY: Word;
+  procedure SetNewLand(var S: TKMemoryStream; aToX, aToY, aFromX, aFromY: Word;
                        aNewGenTile: Boolean; aDir: TKMDirection = dirNA);
   var
     L, D, adj, hMid: Integer;
@@ -654,7 +654,7 @@ const
     WriteTileToStream(S, TileBasic, tileOwner, False, mapDataSize);
   end;
 
-  procedure WriteFileHeader(S: TKMemoryStreamBinary);
+  procedure WriteFileHeader(S: TKMemoryStream);
   begin
     S.Write(Integer(0));     //Indicates this map has not standart KaM format, Can use 0, as we can't have maps with 0 width
     S.WriteW(UnicodeString(GAME_REVISION)); //Write KaM version, in case we will change format in future
@@ -662,7 +662,7 @@ const
   end;
 
 var
-  S: TKMemoryStreamBinary;
+  S: TKMemoryStream;
   //MapInnerRect: TKMRect;
   NewGenTileI, NewGenTileK, extLeft, extRight, extTop, extBot: Boolean;
   I, K, IFrom, KFrom, D: Integer;

@@ -174,7 +174,7 @@ end;
 
 procedure TKMSaveInfo.ScanSave;
 var
-  LoadStream: TKMemoryStreamBinary;
+  LoadStream: TKMemoryStream;
 begin
   if not FileExists(fPath + fFileName + EXT_SAVE_MAIN_DOT) then
   begin
@@ -251,7 +251,7 @@ function TKMSaveInfo.LoadMinimap(aMinimap: TKMMinimap; aChoosenStartLoc: Integer
 
   function LoadSPMinimap: Boolean;
   var
-    loadStream: TKMemoryStreamBinary;
+    loadStream: TKMemoryStream;
     dummyGameInfo: TKMGameInfo;
     dummyGameOptions: TKMGameOptions;
     isMultiplayerFlagInSave: Boolean;

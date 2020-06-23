@@ -106,7 +106,7 @@ end;
 
 function TKMGameMPLocalData.LoadFromFile(const aFilePath: String): Boolean;
 var
-  loadStream: TKMemoryStreamBinary;
+  loadStream: TKMemoryStream;
   choosenStartLoc: Integer;
 begin
   Result := False;

@@ -522,7 +522,7 @@ end;
 
 procedure TKMemoryStream.SaveToFileCompressed(const aFileName: string; const aMarker: string);
 var
-  S: TKMemoryStreamBinary;
+  S: TKMemoryStream;
   CS: TCompressionStream;
 begin
   S := TKMemoryStreamBinary.Create;
@@ -545,7 +545,7 @@ end;
 
 procedure TKMemoryStream.LoadFromFileCompressed(const aFileName: string; const aMarker: string);
 var
-  S: TKMemoryStreamBinary;
+  S: TKMemoryStream;
   DS: TDecompressionStream;
 begin
   S := TKMemoryStreamBinary.Create;

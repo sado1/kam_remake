@@ -115,7 +115,7 @@ end;
 
 procedure TKMNetUDPAnnounce.Receive(const aAddress: string; aData: Pointer; aLength: Cardinal);
 var
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
   S: AnsiString;
 begin
   M := TKMemoryStreamBinary.Create;
@@ -152,7 +152,7 @@ end;
 { TKMNetUDPDetect }
 procedure TKMNetUDPScan.ScanForServers;
 var
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
 begin
   //Prepare to receive responses
   fUDP.StopListening;
@@ -197,7 +197,7 @@ end;
 
 procedure TKMNetUDPScan.Receive(const aAddress: String; aData: Pointer; aLength: Cardinal);
 var
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
   S, ServerName: AnsiString;
   ServerPort: Word;
 begin

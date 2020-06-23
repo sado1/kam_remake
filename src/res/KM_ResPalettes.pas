@@ -98,7 +98,7 @@ end;
 
 procedure TKMPaletteInfo.LoadFromFile(const aFileName: UnicodeString);
 var
-  S: TKMemoryStreamBinary;
+  S: TKMemoryStream;
 begin
   if FileExists(aFileName) then
   begin

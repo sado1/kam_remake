@@ -35,7 +35,7 @@ type
     fPath: UnicodeString;
     fTextLib: TKMTextLibrarySingle;
     fUnlockedMap: Byte;
-    fScriptData: TKMemoryStreamBinary;
+    fScriptData: TKMemoryStream;
 
     //Saved in CMP
     fCampaignId: TKMCampaignId; //Used to identify the campaign
@@ -78,7 +78,7 @@ type
     property CampaignId: TKMCampaignId read fCampaignId write SetCampaignId;
     property ShortName: UnicodeString read fShortName;
     property UnlockedMap: Byte read fUnlockedMap write SetUnlockedMap;
-    property ScriptData: TKMemoryStreamBinary read fScriptData;
+    property ScriptData: TKMemoryStream read fScriptData;
     property MapsInfo: TKMCampaignMapDataArray read fMapsInfo;
     property MapsProgressData: TKMCampaignMapProgressDataArray read fMapsProgressData;
     property Viewed: Boolean read fViewed write fViewed;
@@ -239,7 +239,7 @@ end;
 //Read progress from file trying to find matching campaigns
 procedure TKMCampaignsCollection.LoadProgress(const aFileName: UnicodeString);
 var
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
   C: TKMCampaign;
   I, J, campCount: Integer;
   campName: TKMCampaignId;
@@ -290,7 +290,7 @@ end;
 
 procedure TKMCampaignsCollection.SaveProgress;
 var
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
   I,J: Integer;
   FilePath: UnicodeString;
 begin
@@ -411,7 +411,7 @@ end;
 //It should be private, but it is used by CampaignBuilder
 procedure TKMCampaign.LoadFromFile(const aFileName: UnicodeString);
 var
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
   I, K: Integer;
   cmp: TBytes;
 begin
@@ -447,7 +447,7 @@ end;
 
 procedure TKMCampaign.SaveToFile(const aFileName: UnicodeString);
 var
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
   I, K: Integer;
   cmp: TBytes;
 begin

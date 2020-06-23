@@ -1334,7 +1334,7 @@ end;
 
 procedure TKMGameInputProcess.LoadFromFile(const aFileName: UnicodeString);
 var
-  S: TKMemoryStreamBinary;
+  S: TKMemoryStream;
 begin
   if not FileExists(aFileName) then Exit;
 

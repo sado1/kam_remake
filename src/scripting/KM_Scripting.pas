@@ -162,7 +162,7 @@ type
     function GetErrorMessage(const aErrorType, aShortErrorDescription, aModule: String; aRow, aCol, aPos: Integer): TKMScriptErrorMessage; overload;
 
     property ValidationIssues: TScriptValidatorResult read fValidationIssues;
-    procedure LoadFromFile(const aFileName, aCampaignDataTypeFile: UnicodeString; aCampaignData: TKMemoryStreamBinary);
+    procedure LoadFromFile(const aFileName, aCampaignDataTypeFile: UnicodeString; aCampaignData: TKMemoryStream);
     procedure ExportDataToText;
 
     procedure Save(SaveStream: TKMemoryStream);
@@ -304,7 +304,7 @@ begin
 end;
 
 
-procedure TKMScripting.LoadFromFile(const aFileName, aCampaignDataTypeFile: UnicodeString; aCampaignData: TKMemoryStreamBinary);
+procedure TKMScripting.LoadFromFile(const aFileName, aCampaignDataTypeFile: UnicodeString; aCampaignData: TKMemoryStream);
 begin
   RecreateValidationIssues;
 
