@@ -446,19 +446,19 @@ end;
 {$IFDEF WDC OR FPC_FULLVERSION >= 30200}
 class procedure TKMemoryStream.AsyncSaveToFileAndFree(var aStream; const aFileName: string; aWorkerThread: TKMWorkerThread);
 var
-  LocalStream: TKMemoryStream;
+  localStream: TKMemoryStream;
 begin
   Assert(TObject(aStream) is TKMemoryStream);
-  LocalStream := TKMemoryStream(aStream);
+  localStream := TKMemoryStream(aStream);
   Pointer(aStream) := nil; //So caller doesn't use it by mistake
 
   {$IFDEF WDC}
     aWorkerThread.QueueWork(procedure
     begin
       try
-        LocalStream.SaveToFile(aFileName);
+        localStream.SaveToFile(aFileName);
       finally
-        LocalStream.Free;
+        localStream.Free;
       end;
     end, 'AsyncSaveToFile');
   {$ELSE}
@@ -471,7 +471,7 @@ begin
 end;
 
 
-class procedure TKMemoryStream.AsyncSaveToFileCompressedAndFree(var aStream; const aFileName: string; const aMarker: string;
+class procedure TKMemoryStream.AsyncSaveToFileCompressedAndFree(var aHeaderStream, aMainStream; const aFileName: string; const aMarker: string;
                                                                 aWorkerThread: TKMWorkerThread);
 var
   LocalStream: TKMemoryStream;
@@ -502,22 +502,22 @@ end;
 
 procedure TKMemoryStream.CopyFromDecompression(Source: TStream);
 const
-  MaxBufSize = $F000;
+  MAX_BUF_SIZE = $F000;
 var
-  Count: Integer;
-  Buffer: PByte;
+  count: Integer;
+  buffer: PByte;
 begin
   Source.Position := 0;
-  GetMem(Buffer, MaxBufSize);
+  GetMem(buffer, MAX_BUF_SIZE);
   try
-    Count := Source.Read(Buffer^, MaxBufSize);
-    while Count > 0 do
+    count := Source.Read(buffer^, MAX_BUF_SIZE);
+    while count > 0 do
     begin
-      WriteBuffer(Buffer^, Count);
-      Count := Source.Read(Buffer^, MaxBufSize);
+      WriteBuffer(buffer^, count);
+      count := Source.Read(buffer^, MAX_BUF_SIZE);
     end;
   finally
-    FreeMem(Buffer, MaxBufSize);
+    FreeMem(buffer, MAX_BUF_SIZE);
   end;
 end;
 
@@ -769,27 +769,27 @@ end;
 //and add all the missing nodes inbetween like so: (A123456B)
 procedure TKMPointList.SparseToDense;
 var
-  I,K,J: Integer;
-  Tmp: array of TKMPoint;
-  Span: Word;
-  C,N: ^TKMPoint;
+  I, K, J: Integer;
+  tmp: array of TKMPoint;
+  span: Word;
+  C, N: ^TKMPoint;
 begin
   K := 0;
-  SetLength(Tmp, 8192);
+  SetLength(tmp, 8192);
   for I := 0 to fCount - 1 do
   begin
-    Tmp[K] := fItems[I];
+    tmp[K] := fItems[I];
     Inc(K);
 
     if (I <> fCount - 1) then
     begin
       C := @fItems[I];
       N := @fItems[I+1];
-      Span := Max(Abs(N.X - C.X), Abs(N.Y - C.Y));
-      for J := 1 to Span - 1 do
+      span := Max(Abs(N.X - C.X), Abs(N.Y - C.Y));
+      for J := 1 to span - 1 do
       begin
-        Tmp[K].X := C.X + Round((N.X - C.X) / Span * J);
-        Tmp[K].Y := C.Y + Round((N.Y - C.Y) / Span * J);
+        tmp[K].X := C.X + Round((N.X - C.X) / span * J);
+        tmp[K].Y := C.Y + Round((N.Y - C.Y) / span * J);
         Inc(K);
       end;
     end;
@@ -797,12 +797,13 @@ begin
 
   fCount := K;
   SetLength(fItems, fCount);
-  Move(Tmp[0], fItems[0], SizeOf(fItems[0]) * fCount);
+  Move(tmp[0], fItems[0], SizeOf(fItems[0]) * fCount);
 end;
 
 
 function TKMPointList.GetBounds(out Bounds: TKMRect): Boolean;
-var I: Integer;
+var
+  I: Integer;
 begin
   Result := fCount <> 0;
 
@@ -856,27 +857,27 @@ end;
 function TKMWeightedPointList.GetWeightedRandom(out Point: TKMPoint): Boolean;
 var
   I: Integer;
-  WeightsSum, Rnd: Extended;
+  weightsSum, rnd: Extended;
 begin
   Result := False;
 
   if Count = 0 then
     Exit;
 
-  WeightsSum := 0;
+  weightsSum := 0;
   for I := 0 to fCount - 1 do
-    WeightsSum := WeightsSum + fWeight[I];
+    weightsSum := weightsSum + fWeight[I];
 
-  Rnd := KaMRandomS1(WeightsSum, 'TKMPointCenteredList.GetWeightedRandom');
+  rnd := KaMRandomS1(weightsSum, 'TKMPointCenteredList.GetWeightedRandom');
 
   for I := 0 to fCount - 1 do
   begin
-    if Rnd < fWeight[I] then
+    if rnd < fWeight[I] then
     begin
       Point := fItems[I];
       Exit(True);
     end;
-    Rnd := Rnd - fWeight[I];
+    rnd := rnd - fWeight[I];
   end;
   Assert(False, 'Error getting weighted random');
 end;
@@ -977,7 +978,7 @@ procedure TKMPointTagList.SortByTag;
   // Quicksort implementation (because there is not specified count of elements buble does not give any sense)
   procedure QuickSort(MinIdx,MaxIdx: Integer);
   var
-    I,K,X: Integer;
+    I, K, X: Integer;
   begin
     I := MinIdx;
     K := MaxIdx;
@@ -1107,46 +1108,46 @@ procedure TKMPointDirCenteredList.Add(const aLoc: TKMPointDir);
 const
   BASE_VAL = 100;
 var
-  Len: Single;
+  len: Single;
 begin
   inherited;
 
   if fCount >= Length(fWeight) then
     SetLength(fWeight, fCount + 32);
 
-  Len := KMLength(fCenter, aLoc.Loc);
+  len := KMLength(fCenter, aLoc.Loc);
   //Special case when we aLoc is in the center
-  if Len = 0 then
+  if len = 0 then
     fWeight[fCount - 1] := BASE_VAL * 2
   else
-    fWeight[fCount - 1] := BASE_VAL / Len; //smaller weight for distant locs
+    fWeight[fCount - 1] := BASE_VAL / len; //smaller weight for distant locs
 end;
 
 
 function TKMPointDirCenteredList.GetWeightedRandom(out Point: TKMPointDir): Boolean;
 var
   I: Integer;
-  WeightsSum, Rnd: Single;
+  weightsSum, rnd: Single;
 begin
   Result := False;
 
   if Count = 0 then
     Exit;
 
-  WeightsSum := 0;
+  weightsSum := 0;
   for I := 0 to fCount - 1 do
-    WeightsSum := WeightsSum + fWeight[I];
+    weightsSum := weightsSum + fWeight[I];
 
-  Rnd := KaMRandomS1(WeightsSum, 'TKMPointDirCenteredList.GetWeightedRandom');
+  rnd := KaMRandomS1(weightsSum, 'TKMPointDirCenteredList.GetWeightedRandom');
 
   for I := 0 to fCount - 1 do
   begin
-    if Rnd < fWeight[I] then
+    if rnd < fWeight[I] then
     begin
       Point := fItems[I];
       Exit(True);
     end;
-    Rnd := Rnd - fWeight[I];
+    rnd := rnd - fWeight[I];
   end;
   Assert(False, 'Error getting weighted random');
 end;
@@ -1198,11 +1199,11 @@ end;
 { TKMPointCounterList }
 procedure TKMPointCounterList.Add(const aLoc: TKMPoint; aTag2: Cardinal = 0);
 var
-  Ind: Integer;
+  ind: Integer;
 begin
-  Ind := IndexOf(aLoc);
-  if Ind <> -1 then
-    Tag[Ind] := Tag[Ind] + 1
+  ind := IndexOf(aLoc);
+  if ind <> -1 then
+    Tag[ind] := Tag[ind] + 1
   else
     inherited Add(aLoc, 1, aTag2);
 end;
@@ -1224,13 +1225,13 @@ end;
 
 function TKMPointCounterList.GetPointsCnt(const aLoc: TKMPoint): Word;
 var
-  Ind: Integer;
+  ind: Integer;
 begin
-  Ind := IndexOf(aLoc);
-  if Ind = -1 then
+  ind := IndexOf(aLoc);
+  if ind = -1 then
     Result := 0
   else
-    Result := Tag[Ind];
+    Result := Tag[ind];
 end;
 
 
@@ -1271,25 +1272,25 @@ end;
 procedure TKMMapsCRCList.LoadFromString(const aString: UnicodeString);
 var
   I: Integer;
-  MapCRC : Int64;
-  StringList: TStringList;
+  mapCRC : Int64;
+  stringList: TStringList;
 begin
   if not fEnabled then Exit;
 
   fMapsList.Clear;
-  StringList := TStringList.Create;
-  StringList.Delimiter := MAPS_CRC_DELIMITER;
-  StringList.DelimitedText   := Trim(aString);
+  stringList := TStringList.Create;
+  stringList.Delimiter := MAPS_CRC_DELIMITER;
+  stringList.DelimitedText   := Trim(aString);
 
-  for I := 0 to StringList.Count - 1 do
+  for I := 0 to stringList.Count - 1 do
   begin
-    if TryStrToInt64(Trim(StringList[I]), MapCRC)
-      and (MapCRC > 0)
-      and not Contains(Cardinal(MapCRC)) then
-      fMapsList.Add(Trim(StringList[I]));
+    if TryStrToInt64(Trim(stringList[I]), mapCRC)
+      and (mapCRC > 0)
+      and not Contains(Cardinal(mapCRC)) then
+      fMapsList.Add(Trim(stringList[I]));
   end;
 
-  StringList.Free;
+  stringList.Free;
 end;
 
 
@@ -1311,8 +1312,10 @@ end;
 
 //Remove missing Favourites Maps from list, check if are of them are presented in the given maps CRC array.
 procedure TKMMapsCRCList.RemoveMissing(aMapsCRCArray: TKMCardinalArray);
+
   function ArrayContains(aValue: Cardinal): Boolean;
-  var I: Integer;
+  var
+    I: Integer;
   begin
     Result := False;
     for I := Low(aMapsCRCArray) to High(aMapsCRCArray) do
@@ -1322,7 +1325,9 @@ procedure TKMMapsCRCList.RemoveMissing(aMapsCRCArray: TKMCardinalArray);
         Break;
       end;
   end;
-var I: Integer;
+
+var
+  I: Integer;
 begin
   if not fEnabled then Exit;
 
@@ -1389,7 +1394,8 @@ end;
 
 { TKMemoryStream }
 procedure TKMemoryStream.ReadHugeString(out Value: AnsiString);
-var I: Cardinal;
+var
+  I: Cardinal;
 begin
   Read(I, SizeOf(I));
   SetLength(Value, I);
@@ -1399,7 +1405,8 @@ end;
 
 
 procedure TKMemoryStream.WriteHugeString(const Value: AnsiString);
-var I: Cardinal;
+var
+  I: Cardinal;
 begin
   I := Length(Value);
   inherited Write(I, SizeOf(I));
@@ -1463,7 +1470,8 @@ end;
 
 //{$IFDEF DESKTOP}
 procedure TKMemoryStreamBinary.ReadA(out Value: AnsiString);
-var I: Word;
+var
+  I: Word;
 begin
   Read(I, SizeOf(I));
   SetLength(Value, I);
@@ -1472,7 +1480,8 @@ begin
 end;
 
 procedure TKMemoryStreamBinary.WriteA(const Value: AnsiString);
-var I: Word;
+var
+  I: Word;
 begin
   I := Length(Value);
   inherited Write(I, SizeOf(I));
@@ -1504,7 +1513,8 @@ end;
 
 
 procedure TKMemoryStreamBinary.ReadW(out Value: UnicodeString);
-var I: Word;
+var
+  I: Word;
 begin
   Read(I, SizeOf(I));
   SetLength(Value, I);
@@ -1514,7 +1524,8 @@ end;
 
 
 procedure TKMemoryStreamBinary.WriteW(const Value: UnicodeString);
-var I: Word;
+var
+  I: Word;
 begin
   I := Length(Value);
   inherited Write(I, SizeOf(I));
@@ -1699,10 +1710,10 @@ end;
 
 procedure TKMemoryStreamText.Write(const Value: TDateTime);
 var
-  Str: String;
+  str: String;
 begin
-  DateTimeToString(Str, 'dd.mm.yyyy hh:nn:ss.zzz', Value);
-  WriteText(Str);
+  DateTimeToString(str, 'dd.mm.yyyy hh:nn:ss.zzz', Value);
+  WriteText(str);
 end;
 
 
