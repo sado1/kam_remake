@@ -137,7 +137,7 @@ var
   key: Cardinal;
   savePoint: TKMSavePoint;
 begin
-  aSaveStream.PlaceMarker('SavedReplays');
+  aSaveStream.PlaceMarker('SavePoints');
   aSaveStream.Write(fLastTick);
   aSaveStream.Write(fSavePoints.Count);
 
@@ -203,7 +203,7 @@ var
 begin
   fSavePoints.Clear;
 
-  aLoadStream.CheckMarker('SavedReplays');
+  aLoadStream.CheckMarker('SavePoints');
   aLoadStream.Read(fLastTick);
   aLoadStream.Read(cnt);
 
