@@ -966,7 +966,7 @@ function TKMTerrain.ScriptTrySetTilesArray(var aTiles: array of TKMTerrainTileBr
     aResult := False;
   end;
 
-  procedure UpdateHeight(aTileBrief: TKMTerrainTileBrief; aHeightRect: TKMRect; aHasErrorOnTile: Boolean; aErrorTypesOnTile: TKMTileChangeTypeSet);
+  procedure UpdateHeight(aTileBrief: TKMTerrainTileBrief; var aHeightRect: TKMRect; var aHasErrorOnTile: Boolean; var aErrorTypesOnTile: TKMTileChangeTypeSet);
   begin
     // Update height if needed
     if aTileBrief.UpdateHeight then
