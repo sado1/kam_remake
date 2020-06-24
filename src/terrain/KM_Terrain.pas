@@ -4892,11 +4892,11 @@ begin
   //Valid range of tiles is 0..MapXY-2 because we check height from (Xc+1,Yc+1) to (Xc+2,Yc+2)
   //We cannot ask for height at the bottom row (MapY-1) because that row is not on the visible map,
   //and does not have a vertex below it
-  Xc := EnsureRange(Trunc(inX), 0, fMapX-2);
-  Yc := EnsureRange(Trunc(inY), 0, fMapY-2);
+  Xc := EnsureRange(Trunc(inX), 0, fMapX-1);
+  Yc := EnsureRange(Trunc(inY), 0, fMapY-1);
 
-  tmp1 := Mix(Land[Yc+1, Xc+2].Height, Land[Yc+1, Xc+1].Height, Frac(inX));
-  tmp2 := Mix(Land[Yc+2, Xc+2].Height, Land[Yc+2, Xc+1].Height, Frac(inX));
+  tmp1 := Mix(Land[Yc+1, Min(Xc+2, fMapX)].Height, Land[Yc+1, Xc+1].Height, Frac(inX));
+  tmp2 := Mix(Land[Min(Yc+2, fMapY), Min(Xc+2, fMapX)].Height, Land[Min(Yc+2, fMapY), Xc+1].Height, Frac(inX));
   Result := inY - Mix(tmp2, tmp1, Frac(inY)) / CELL_HEIGHT_DIV;
 end;
 
@@ -4918,11 +4918,11 @@ begin
   //Valid range of tiles is 0..MapXY-2 because we check height from (Xc+1,Yc+1) to (Xc+2,Yc+2)
   //We cannot ask for height at the bottom row (MapY-1) because that row is not on the visible map,
   //and does not have a vertex below it
-  Xc := EnsureRange(Trunc(inX), 0, fMapX-2);
-  Yc := EnsureRange(Trunc(inY), 0, fMapY-2);
+  Xc := EnsureRange(Trunc(inX), 0, fMapX-1);
+  Yc := EnsureRange(Trunc(inY), 0, fMapY-1);
 
-  tmp1 := Mix(Land[Yc+1, Xc+2].RenderHeight, Land[Yc+1, Xc+1].RenderHeight, Frac(inX));
-  tmp2 := Mix(Land[Yc+2, Xc+2].RenderHeight, Land[Yc+2, Xc+1].RenderHeight, Frac(inX));
+  tmp1 := Mix(Land[Yc+1, Min(Xc+2, fMapX)].RenderHeight, Land[Yc+1, Xc+1].RenderHeight, Frac(inX));
+  tmp2 := Mix(Land[Min(Yc+2, fMapY), Min(Xc+2, fMapX)].RenderHeight, Land[Min(Yc+2, fMapY), Xc+1].RenderHeight, Frac(inX));
   Result := inY - Mix(tmp2, tmp1, Frac(inY)) / CELL_HEIGHT_DIV;
 end;
 
@@ -4946,11 +4946,11 @@ begin
   //Valid range of tiles is 0..MapXY-2 because we check height from (Xc+1,Yc+1) to (Xc+2,Yc+2)
   //We cannot ask for height at the bottom row (MapY-1) because that row is not on the visible map,
   //and does not have a vertex below it
-  Xc := EnsureRange(Trunc(inX), 0, fMapX-2);
-  Yc := EnsureRange(Trunc(inY), 0, fMapY-2);
+  Xc := EnsureRange(Trunc(inX), 0, fMapX-1);
+  Yc := EnsureRange(Trunc(inY), 0, fMapY-1);
 
-  tmp1 := Mix(Land[Yc+1, Xc+2].Height, Land[Yc+1, Xc+1].Height, Frac(inX));
-  tmp2 := Mix(Land[Yc+2, Xc+2].Height, Land[Yc+2, Xc+1].Height, Frac(inX));
+  tmp1 := Mix(Land[Yc+1, Min(Xc+2, fMapX)].Height, Land[Yc+1, Xc+1].Height, Frac(inX));
+  tmp2 := Mix(Land[Min(Yc+2, fMapY), Min(Xc+2, fMapX)].Height, Land[Min(Yc+2, fMapY), Xc+1].Height, Frac(inX));
   Result := Mix(tmp2, tmp1, Frac(inY)) / CELL_HEIGHT_DIV;
 end;
 
@@ -4965,11 +4965,11 @@ begin
   //Valid range of tiles is 0..MapXY-2 because we check height from (Xc+1,Yc+1) to (Xc+2,Yc+2)
   //We cannot ask for height at the bottom row (MapY-1) because that row is not on the visible map,
   //and does not have a vertex below it
-  Xc := EnsureRange(Trunc(inX), 0, fMapX-2);
-  Yc := EnsureRange(Trunc(inY), 0, fMapY-2);
+  Xc := EnsureRange(Trunc(inX), 0, fMapX-1);
+  Yc := EnsureRange(Trunc(inY), 0, fMapY-1);
 
-  tmp1 := Mix(Land[Yc+1, Xc+2].RenderHeight, Land[Yc+1, Xc+1].RenderHeight, Frac(inX));
-  tmp2 := Mix(Land[Yc+2, Xc+2].RenderHeight, Land[Yc+2, Xc+1].RenderHeight, Frac(inX));
+  tmp1 := Mix(Land[Yc+1, Min(Xc+2, fMapX)].RenderHeight, Land[Yc+1, Xc+1].RenderHeight, Frac(inX));
+  tmp2 := Mix(Land[Min(Yc+2, fMapY), Min(Xc+2, fMapX)].RenderHeight, Land[Min(Yc+2, fMapY), Xc+1].RenderHeight, Frac(inX));
   Result := Mix(tmp2, tmp1, Frac(inY)) / CELL_HEIGHT_DIV;
 end;
 
