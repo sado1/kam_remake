@@ -2655,6 +2655,10 @@ end;
 
 
 function TKMGame.PlayGameTick: Boolean;
+const
+  // Spread savepoints / autosaves and autosave at PT end (at 0 tick) among ticks to avoid async / main threads overload
+  MAKE_SAVEPOINT_TICK_SHIFT = 4;
+  AUTOSAVE_TICK_SHIFT = 2;
 begin
   Result := False;
 
@@ -2712,7 +2716,7 @@ begin
       and (fSavePoints.Count <= gGameSettings.SaveCheckpointsLimit) //Do not allow to spam saves, could cause OUT_OF_MEMORY error
       and ((fParams.Tick = MAKE_SAVEPT_BEFORE_TICK - 1)
         or (fParams.Tick = (fOptions.Peacetime*60*10)) //At PT end
-        or ((fParams.Tick mod gGameSettings.SaveCheckpointsFreq) = 0)) then
+        or ((fParams.Tick mod gGameSettings.SaveCheckpointsFreq) = MAKE_SAVEPOINT_TICK_SHIFT)) then
       MakeSavePoint;
 
     // Update our ware distributions from settings at the start of the game
@@ -2720,7 +2724,7 @@ begin
     and IsWareDistributionStoredBetweenGames then
       fGameInputProcess.CmdWareDistribution(gicWareDistributions, gGameSettings.WareDistribution.PackToStr);
 
-    if (fParams.Tick mod gGameSettings.AutosaveFrequency) = 0 then
+    if (fParams.Tick mod gGameSettings.AutosaveFrequency) = AUTOSAVE_TICK_SHIFT then
       IssueAutosaveCommand;
 
     Result := True;
