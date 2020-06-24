@@ -1461,6 +1461,8 @@ begin
 
   if Assigned (fOnControlsUpdated) and (Sender is TControl) then
     fOnControlsUpdated(Sender, TControl(Sender).Tag);
+
+  SaveDevSettings;
 end;
 
 
