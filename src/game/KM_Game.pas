@@ -2011,7 +2011,7 @@ var
 begin
   if BLOCK_SAVE then // This must be here because of paraller Runner
     Exit;
-  gLog.AddTime('Saving game start: ' + aPathName);
+  gLog.AddTime('Saving game: ' + aPathName);
 
   Assert(not fParams.IsMapEditor and (ALLOW_SAVE_IN_REPLAY or not fParams.IsReplay), 'Saving from wrong state');
 
@@ -2069,8 +2069,6 @@ begin
     SaveGameToStream(aTimestamp, saveStreamTxt);
     TKMemoryStream.AsyncSaveToFileAndFree(saveStreamTxt, aPathName + EXT_SAVE_TXT_DOT, fSaveWorkerThread);
   end;
-
-  gLog.AddTime('Saving game end: ' + aPathName);
 end;
 
 
@@ -2140,7 +2138,6 @@ begin
       {$ENDIF}
 
     //Save replay queue
-    gLog.AddTime('Saving replay info');
     // Save replay info
     fGameInputProcess.SaveToFileAsync(ChangeFileExt(fullPath, EXT_SAVE_REPLAY_DOT), fSaveWorkerThread);
 
@@ -2161,7 +2158,6 @@ begin
     gPerfLogs.SectionLeave(psGameSave);
     {$ENDIF}
   end;
-  gLog.AddTime('Saving game', True);
 end;
 
 
