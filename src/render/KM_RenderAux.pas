@@ -738,7 +738,7 @@ begin
 
   TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
   glColor4ubv(@aCol);
-  glRasterPos2f(pX + aInset.X - 0.5 - Byte(aConsiderTextLength)*Length(aText)/20, gTerrain.FlatToHeight(pX + aInset.X - 0.5, pY + aInset.Y - 0.5));
+  glRasterPos2f(pX + aInset.X - 0.5 - Byte(aConsiderTextLength)*Length(aText)/20, gTerrain.RenderFlatToHeight(pX + aInset.X - 0.5, pY + aInset.Y - 0.5));
   glPrint(AnsiString(aText));
 end;
 
