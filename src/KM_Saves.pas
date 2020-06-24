@@ -76,7 +76,7 @@ type
     fCount: Word;
     fSaves: array of TKMSaveInfo;
     fSortMethod: TKMSavesSortMethod;
-    CS: TCriticalSection;
+    fCriticalSection: TCriticalSection;
     fScanner: TKMSavesScanner;
     fScanning: Boolean;
     fScanFinished: Boolean;
@@ -359,7 +359,7 @@ begin
   //CS is used to guard sections of code to allow only one thread at once to access them
   //We mostly don't need it, as UI should access Maps only when map events are signaled
   //it acts as a safenet mostly
-  CS := TCriticalSection.Create;
+  fCriticalSection := TCriticalSection.Create;
 end;
 
 
@@ -371,20 +371,20 @@ begin
   //Release TKMapInfo objects
   Clear;
 
-  CS.Free;
+  fCriticalSection.Free;
   inherited;
 end;
 
 
 procedure TKMSavesCollection.Lock;
 begin
-  CS.Enter;
+  fCriticalSection.Enter;
 end;
 
 
 procedure TKMSavesCollection.Unlock;
 begin
-  CS.Leave;
+  fCriticalSection.Leave;
 end;
 
 
