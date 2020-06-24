@@ -2097,8 +2097,8 @@ begin
   gPerfLogs.SectionEnter(psGameSaveWait);
   {$ENDIF}
   try
-  //Wait for previous save async tasks to complete before proceeding
-  fSaveWorkerThread.WaitForAllWorkToComplete;
+    //Wait for previous save async tasks to complete before proceeding
+    fSaveWorkerThread.WaitForAllWorkToComplete;
   finally
     {$IFDEF PERFLOG}
     gPerfLogs.SectionLeave(psGameSaveWait);
@@ -2137,7 +2137,6 @@ begin
         KMCopyFileAsync(SaveName('basesave', EXT_SAVE_BASE, fParams.IsMultiplayer), newSaveName, True, fSaveWorkerThread);
       {$ENDIF}
 
-    //Save replay queue
     // Save replay info
     fGameInputProcess.SaveToFileAsync(ChangeFileExt(fullPath, EXT_SAVE_REPLAY_DOT), fSaveWorkerThread);
 
