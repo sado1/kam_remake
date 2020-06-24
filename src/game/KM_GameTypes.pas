@@ -4,6 +4,10 @@ interface
 uses
   KM_MapTypes, KM_CampaignTypes;
 
+const
+  SAVE_HEADER_MARKER = 'Header';
+  SAVE_BODY_MARKER = 'BodyCompressed';
+
 type
   TKMGameMode = (
     gmSingle,

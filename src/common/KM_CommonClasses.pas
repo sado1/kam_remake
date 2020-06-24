@@ -10,7 +10,14 @@ type
   TKMSaveStreamFormat = (ssfBinary, ssfText);
 
   TKMemoryStream = class(TMemoryStream)
+  private
+    fShouldBeCompressed: Boolean; // Flag to show if current stream should be compressed (either while save or load operations)
+
+    procedure AppendNotCompressedStream(aStream: TKMemoryStream; const aMarker: string);
+    procedure CompressAndAppendStream(aStream: TKMemoryStream; const aMarker: string);
   public
+    constructor Create(aShouldBeCompressed: Boolean = False);
+
     // Assert savegame sections
     procedure CheckMarker(const aTitle: string); virtual; abstract;
     procedure PlaceMarker(const aTitle: string); virtual; abstract;
@@ -87,9 +94,16 @@ type
     procedure SaveToFileCompressed(const aFileName: string; const aMarker: string);
     procedure LoadFromFileCompressed(const aFileName: string; const aMarker: string);
 
+    procedure AppendStream(aStream: TKMemoryStream; const aMarker: string);
+
+    procedure LoadToStream(aStream: TKMemoryStream; const aMarker: string);
+    procedure LoadToStreams(aStream1, aStream2: TKMemoryStream; const aMarker1, aMarker2: string);
+
     {$IFDEF WDC OR FPC_FULLVERSION >= 30200}
     class procedure AsyncSaveToFileAndFree(var aStream: TKMemoryStream; const aFileName: string; aWorkerThread: TKMWorkerThread);
-    class procedure AsyncSaveToFileCompressedAndFree(var aStream: TKMemoryStream; const aFileName: string; const aMarker: string; aWorkerThread: TKMWorkerThread);
+    class procedure AsyncSaveToFileCompressedAndFree(var aStream: TKMemoryStream; const aFileName: string; const aMarker: string; aWorkerThread: TKMWorkerThread); 
+    class procedure AsyncSaveStreamsToFileAndFree(var aMainStream, aSubStream1, aSubStream2: TKMemoryStream; const aFileName: string;
+                                                  const aMarker1, aMarker2: string; aWorkerThread: TKMWorkerThread);
     {$ENDIF}
   end;
 
@@ -396,6 +410,7 @@ uses
 
 const
   MAPS_CRC_DELIMITER = ':';
+  STREAM_COMPRESSION_LEVEL: TCompressionLevel = clDefault;
 
 {TXStringList}
 //List custom comparation, using Integer value, instead of its String represantation
@@ -418,6 +433,13 @@ begin
   inherited;
   if (Action = lnDeleted) then
     TObject(Ptr).Free;
+end;
+
+
+{ TKMemoryStream }
+constructor TKMemoryStream.Create(aShouldBeCompressed: Boolean);
+begin
+  fShouldBeCompressed := aShouldBeCompressed;
 end;
 
 
@@ -495,7 +517,130 @@ begin
     end;
   {$ENDIF}
 end;
+
+
+class procedure TKMemoryStream.AsyncSaveStreamsToFileAndFree(var aMainStream, aSubStream1, aSubStream2: TKMemoryStream; const aFileName: string;
+                                                             const aMarker1, aMarker2: string; aWorkerThread: TKMWorkerThread);
+var
+  localSubStream1, localSubStream2, localMainStream: TKMemoryStream;
+begin
+  localMainStream := aMainStream;
+  localSubStream1 := aSubStream1;
+  localSubStream2 := aSubStream2;
+  aMainStream := nil;  //So caller doesn't use it by mistake
+  aSubStream1 := nil; //So caller doesn't use it by mistake
+  aSubStream2 := nil; //So caller doesn't use it by mistake
+
+  {$IFDEF WDC}
+    aWorkerThread.QueueWork(procedure
+    begin
+      try
+        localMainStream.AppendStream(localSubStream1, aMarker1);
+        localMainStream.AppendStream(localSubStream2, aMarker2);
+        localMainStream.SaveToFile(aFileName);
+      finally
+        localSubStream1.Free;
+        localSubStream2.Free;
+        localMainStream.Free;
+      end;
+    end, 'AsyncSaveStreamsToFileAndFree ' + aMarker1 + ' ' + aMarker2);
+  {$ELSE}
+    try
+      mainStream.AppendStream(localStream1, aMarker1);
+      mainStream.AppendStream(localStream2, aMarker2);
+      mainStream.SaveToFile(aFileName);
+    finally
+      localStream1.Free;
+      localStream2.Free;
+      mainStream.Free;
+    end;
+  {$ENDIF}
+end;
 {$ENDIF}
+
+
+procedure TKMemoryStream.AppendStream(aStream: TKMemoryStream; const aMarker: string);
+begin
+  if aStream.fShouldBeCompressed then
+    CompressAndAppendStream(aStream, aMarker)
+  else
+    AppendNotCompressedStream(aStream, aMarker);
+end;
+
+
+procedure TKMemoryStream.AppendNotCompressedStream(aStream: TKMemoryStream; const aMarker: string);
+begin
+  PlaceMarker(aMarker);
+  Write(aStream.fShouldBeCompressed);
+  Write(Cardinal(aStream.Size));
+  CopyFrom(aStream, 0);
+end;
+
+
+procedure TKMemoryStream.CompressAndAppendStream(aStream: TKMemoryStream; const aMarker: string);
+var
+  S: TKMemoryStream;
+  CS: TCompressionStream;
+begin
+  S := TKMemoryStreamBinary.Create(True);
+  try
+    CS := TCompressionStream.Create(STREAM_COMPRESSION_LEVEL, S);
+    try
+      CS.CopyFrom(aStream, 0);
+    finally
+      CS.Free;
+    end;
+
+    AppendNotCompressedStream(S, aMarker);
+  finally
+    S.Free;
+  end;
+end;
+
+
+procedure TKMemoryStream.LoadToStream(aStream: TKMemoryStream; const aMarker: string);
+var
+  isCompressed: Boolean;
+  streamSize: Cardinal;
+  S: TKMemoryStream;
+  DS: TDecompressionStream;
+begin
+  if Position >= Size then Exit;
+
+  CheckMarker(aMarker);
+  Read(isCompressed);
+  Read(streamSize);
+    
+  if isCompressed then
+  begin
+    S := TKMemoryStreamBinary.Create(True);
+    try
+      S.CopyFrom(Self, streamSize);
+      S.Position := 0;
+      DS := TDecompressionStream.Create(S);
+      try
+        aStream.CopyFromDecompression(DS);
+        aStream.Position := 0;
+      finally
+        DS.Free;
+      end;
+    finally
+      S.Free;
+    end;
+  end
+  else
+  begin
+    aStream.CopyFrom(Self, streamSize);
+    aStream.Position := 0;
+  end;
+end;
+
+
+procedure TKMemoryStream.LoadToStreams(aStream1, aStream2: TKMemoryStream; const aMarker1, aMarker2: string);
+begin
+  LoadToStream(aStream1, aMarker1);
+  LoadToStream(aStream2, aMarker2);
+end;
 
 
 procedure TKMemoryStream.CopyFromDecompression(Source: TStream);
@@ -529,7 +674,7 @@ begin
   try
     S.PlaceMarker(aMarker);
 
-    CS := TCompressionStream.Create(cldefault, S);
+    CS := TCompressionStream.Create(STREAM_COMPRESSION_LEVEL, S);
     try
       CS.CopyFrom(Self, 0);
     finally
