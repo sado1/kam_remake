@@ -161,7 +161,7 @@ var
 begin
   S := TKMemoryStreamBinary.Create;
   Save(S);
-  TKMemoryStream.AsyncSaveToFileCompressedAndFree(S, aFileName, 'SavedReplaysCompressed', aWorkerThread);
+  TKMemoryStream.AsyncSaveToFileCompressedAndFree(S, aFileName, 'SavePointsCompressed', aWorkerThread);
 end;
 
 
@@ -173,7 +173,7 @@ begin
 
   S := TKMemoryStreamBinary.Create;
   try
-    S.LoadFromFileCompressed(aFileName, 'SavedReplaysCompressed');
+    S.LoadFromFileCompressed(aFileName, 'SavePointsCompressed');
     Load(S);
   finally
     S.Free;
