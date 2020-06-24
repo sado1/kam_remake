@@ -410,6 +410,17 @@ uses
 
 const
   MAPS_CRC_DELIMITER = ':';
+
+  // Compression level
+  //------------------------------------
+  // Test results:
+  //            Time     Size
+  // clNone     110ms  26503Kb
+  // clFastest  227ms   3130Kb
+  // clDefault  803ms   2424Kb
+  // clMax     9995ms   2304Kb
+  //------------------------------------
+  // clDefault is optimal by time / compression ratio factor
   STREAM_COMPRESSION_LEVEL: TCompressionLevel = clDefault;
 
 {TXStringList}
