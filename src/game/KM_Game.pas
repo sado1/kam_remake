@@ -85,6 +85,8 @@ type
     fDoHold: Boolean; //Request to run Hold after UpdateState has finished
     fDoHoldState: TKMGameResultMsg; //The type of Hold we want to occur due to DoGameHold
 
+    fLastSaveStreamSize: Cardinal;
+
     // Worker threads
     fSaveWorkerThread: TKMWorkerThread; // Worker thread for normal saves and save at the end of PT
     fBaseSaveWorkerThread: TKMWorkerThread; // Worker thread for base save only
@@ -1875,11 +1877,17 @@ var
   gameInfo: TKMGameInfo;
   I, netIndex: Integer;
   gameRes: TKMGameResultMsg;
+  sizeToAllocate: Cardinal;
 begin
   gameInfo := TKMGameInfo.Create;
 
   // Allocate memory for save stream, could save up to 25% of save time
-  aBodyStream.SetSize(gTerrain.MapX*gTerrain.MapY*32 + 10*1024*1024);
+  if fLastSaveStreamSize = 0 then
+    sizeToAllocate := gTerrain.MapX*gTerrain.MapY*32 + 20*1024*1024 // Allocate a lot first time
+  else
+    sizeToAllocate := Round(fLastSaveStreamSize*1.5); // Assume save didn't grow more then 1.5 times
+  
+  aBodyStream.SetSize(MakePOT(sizeToAllocate));
 
   if aHeaderStream = nil then
     aHeaderStream := aBodyStream; //Write into the body stream, since we don't use compression
@@ -2004,7 +2012,7 @@ begin
     fGamePlayInterface.Save(aBodyStream); //Saves message queue and school/barracks selected units
 
   // Trim stream size to current position
-  aBodyStream.SetSize(aBodyStream.Position);
+  aBodyStream.TrimToPosition;
 
   //If we want stuff like the MessageStack and screen center to be stored in multiplayer saves,
   //we must send those "commands" through the GIP so all players know about them and they're in sync.
