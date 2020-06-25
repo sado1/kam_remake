@@ -511,7 +511,6 @@ begin
   if (aSoundType = stGame) and (gGame <> nil) and (gGame.ReadyToStop) then
     Exit;
 
-
   if aAttenuated then
   begin
     Distance := GetLength(Loc.X-fListener.Pos[1], Loc.Y-fListener.Pos[2]);
