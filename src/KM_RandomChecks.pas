@@ -80,7 +80,8 @@ var
 implementation
 uses
   Math,
-  KM_Log, Classes, SysUtils;
+  KM_Log, Classes, SysUtils,
+  KromUtils;
 
 var
   MAX_TICKS_CNT: Integer = 10*60*10; // 10 minutes
@@ -425,6 +426,9 @@ begin
 
   SaveStream := TKMemoryStreamBinary.Create;
 
+  // Allocate memory for save stream, could save up to 25% of save time
+  SaveStream.SetSize(MakePOT(fTickStreamQueue.Count * 2 * 1024));
+
   SaveStream.PlaceMarker('CallersTable');
   SaveStream.Write(Integer(fCallers.Count));
 
@@ -449,8 +453,8 @@ begin
 
   enumerator.Free;
 
+  SaveStream.TrimToPosition;
 //  SaveStream.CopyFrom(fSaveStream, 0);
-
 
 //  for LogPair in fRngLog do
 //  begin
