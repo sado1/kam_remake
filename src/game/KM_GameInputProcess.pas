@@ -470,9 +470,9 @@ begin
       gicpt_Ansi1Uni4:begin
                         aMemoryStream.WriteA(AnsiStrParam);
                         aMemoryStream.WriteW(UnicodeStrParams[0]);
-                        aMemoryStream.WriteW(UnicodeStrParams[0]);
                         aMemoryStream.WriteW(UnicodeStrParams[1]);
                         aMemoryStream.WriteW(UnicodeStrParams[2]);
+                        aMemoryStream.WriteW(UnicodeStrParams[3]);
                       end;
       gicpt_Date:     aMemoryStream.Write(DateTimeParam);
     end;
@@ -520,9 +520,9 @@ begin
       gicpt_Ansi1Uni4:begin
                         aMemoryStream.ReadA(AnsiStrParam);
                         aMemoryStream.ReadW(UnicodeStrParams[0]);
-                        aMemoryStream.ReadW(UnicodeStrParams[0]);
                         aMemoryStream.ReadW(UnicodeStrParams[1]);
                         aMemoryStream.ReadW(UnicodeStrParams[2]);
+                        aMemoryStream.ReadW(UnicodeStrParams[3]);
                       end;
       gicpt_Date:     aMemoryStream.Read(DateTimeParam);
     end;
