@@ -1874,12 +1874,7 @@ var
   I, K: Integer;
 begin
   for I := 1 to gTerrain.MapY do
-    for K := 1 to gTerrain.MapX do
-    begin
-      SaveStream.Write(LandTerKind[I,K].TerKind, SizeOf(LandTerKind[I,K].TerKind));
-      SaveStream.Write(LandTerKind[I,K].Tiles);
-      SaveStream.Write(LandTerKind[I,K].HeightAdd);
-    end;
+    SaveStream.Write(LandTerKind[I,1], SizeOf(LandTerKind[I,1]) * gTerrain.MapX);
 end;
 
 
@@ -1889,12 +1884,7 @@ var
 begin
   InitSize(gTerrain.MapX, gTerrain.MapY);
   for I := 1 to gTerrain.MapY do
-    for K := 1 to gTerrain.MapX do
-    begin
-      LoadStream.Read(LandTerKind[I,K].TerKind, SizeOf(LandTerKind[I,K].TerKind));
-      LoadStream.Read(LandTerKind[I,K].Tiles);
-      LoadStream.Read(LandTerKind[I,K].HeightAdd);
-    end;
+    LoadStream.Read(LandTerKind[I,1], SizeOf(LandTerKind[I,1]) * gTerrain.MapX);
 end;
 
 
