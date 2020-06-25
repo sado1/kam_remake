@@ -95,6 +95,7 @@ type
     procedure LoadFromFileCompressed(const aFileName: string; const aMarker: string);
 
     procedure AppendStream(aStream: TKMemoryStream; const aMarker: string);
+    procedure TrimToPosition;
 
     procedure LoadToStream(aStream: TKMemoryStream; const aMarker: string);
     procedure LoadToStreams(aStream1, aStream2: TKMemoryStream; const aMarker1, aMarker2: string);
@@ -651,6 +652,13 @@ procedure TKMemoryStream.LoadToStreams(aStream1, aStream2: TKMemoryStream; const
 begin
   LoadToStream(aStream1, aMarker1);
   LoadToStream(aStream2, aMarker2);
+end;
+
+
+// Set size to current position
+procedure TKMemoryStream.TrimToPosition;
+begin
+  SetSize(Position);
 end;
 
 
