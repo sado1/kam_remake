@@ -2540,13 +2540,13 @@ end;
 function TKMGame.GetTicksBehindCnt: Single;
 var
   calculatedTick: Single;
-  timeSince: Cardinal;
+  timeS: Cardinal;
 begin
   if Self = nil then Exit(0);
 
   //Lets calculate tick, that shoud be at that moment in theory, depending of speed multiplier and game duration
-  timeSince := TimeSince(fSpeedChangeTime);
-  calculatedTick := timeSince*fSpeedActual/gGameSettings.SpeedPace - fPausedTicksCnt;
+  timeS := TimeSince(fSpeedChangeTime);
+  calculatedTick := timeS*fSpeedActual/gGameSettings.SpeedPace - fPausedTicksCnt;
   //Calc how far behind are we, in ticks
   Result := calculatedTick + fSpeedChangeTick - fParams.Tick;
 end;
