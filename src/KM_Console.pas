@@ -178,7 +178,7 @@ end;
 
 function TKMConsole.IsPostAllowed : Boolean;
 begin
-  Result := (Trim(Text) <> '') and (GetTimeSince(fLastConsoleTime) >= CHAT_COOLDOWN)
+  Result := (Trim(Text) <> '') and (TimeSince(fLastConsoleTime) >= CHAT_COOLDOWN)
 end;
 
 

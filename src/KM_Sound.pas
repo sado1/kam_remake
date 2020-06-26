@@ -328,7 +328,7 @@ begin
 
   //This is used to abort long sounds from the game when you quit so they don't play in the menu
   for I := Low(fALSounds) to High(fALSounds) do
-    if (fALSounds[I].PlaySince <> 0) and (GetTimeSince(fALSounds[I].PlaySince) < fALSounds[I].Duration)
+    if (fALSounds[I].PlaySince <> 0) and (TimeSince(fALSounds[I].PlaySince) < fALSounds[I].Duration)
     and not fALSounds[I].FromScript //Looped sounds manage themselves
     and (fALSounds[I].Duration > 8000) then //Sounds <= 8 seconds can keep playing (e.g. victory music)
     begin
@@ -409,7 +409,7 @@ begin
   //Update the volume of all other playing sounds
   for I := Low(fALSounds) to High(fALSounds) do
     if not fALSounds[I].FromScript //Looped sounds are handled above
-      and (fALSounds[I].PlaySince <> 0) and (GetTimeSince(fALSounds[I].PlaySince) < fALSounds[I].Duration) then
+      and (fALSounds[I].PlaySince <> 0) and (TimeSince(fALSounds[I].PlaySince) < fALSounds[I].Duration) then
       UpdateSound(I);//AlSourcef(fSound[I].ALSource, AL_GAIN, 1 * fSound[I].Volume * fSoundGain);
 end;
 
@@ -425,7 +425,7 @@ begin
   if aSoundID = sfxMessageNotice then
   begin
     if (fLastMessageNoticeTime > 0)
-      and (GetTimeSince(fLastMessageNoticeTime) < MAX_DURATION_FROM_LAST_SND_MESSAGE_NOTICE) then
+      and (TimeSince(fLastMessageNoticeTime) < MAX_DURATION_FROM_LAST_SND_MESSAGE_NOTICE) then
       Exit
     else
       fLastMessageNoticeTime := TimeGet;
@@ -831,7 +831,7 @@ begin
   if aIndex < 0 then Exit(False);
 
   Result := (fALSounds[aIndex].PlaySince <> 0)
-      and ((GetTimeSince(fALSounds[aIndex].PlaySince) < fALSounds[aIndex].Duration) or fALSounds[aIndex].Looped)
+      and ((TimeSince(fALSounds[aIndex].PlaySince) < fALSounds[aIndex].Duration) or fALSounds[aIndex].Looped)
 end;
 
 
@@ -881,7 +881,7 @@ begin
   for I := Low(fALSounds) to High(fALSounds) do
     if fALSounds[I].FadesMusic then
     begin
-      if (fALSounds[I].PlaySince <> 0) and (GetTimeSince(fALSounds[I].PlaySince) < fALSounds[I].Duration) then
+      if (fALSounds[I].PlaySince <> 0) and (TimeSince(fALSounds[I].PlaySince) < fALSounds[I].Duration) then
         Exit //There is still a faded sound playing
       else
         fALSounds[I].FadesMusic := False; //Make sure we don't resume more than once for this sound

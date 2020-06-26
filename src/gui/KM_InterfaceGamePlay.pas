@@ -2298,7 +2298,7 @@ end;
 
 procedure TKMGamePlayInterface.Beacon_Place(const aLoc: TKMPointF);
 begin
-  if (GetTimeSince(fLastBeaconTime) >= BEACON_COOLDOWN) then
+  if (TimeSince(fLastBeaconTime) >= BEACON_COOLDOWN) then
   begin
     fLastBeaconTime := TimeGet;
     // In replays we show the beacon directly without GIP. In spectator we use -1 for hand index
@@ -2922,7 +2922,7 @@ var
   begin
     // Selecting an object twice (during short period of time) is the shortcut to center on that unit
     if (oldSelected = gMySpectator.Selected)
-      and (GetTimeSince(fLastKbdSelectionTime) < SELECT_TWICE_MAX_DELAY) then
+      and (TimeSince(fLastKbdSelectionTime) < SELECT_TWICE_MAX_DELAY) then
       fViewport.Position := aPos;
     fLastKbdSelectionTime := TimeGet;
   end;
@@ -4366,7 +4366,7 @@ begin
       Label_NetDropPlayersDelay.Caption := ''
     else
     begin
-      i := NET_DROP_PLAYER_MIN_WAIT - EnsureRange(GetTimeSince(fNetWaitDropPlayersDelayStarted) div 1000, 0, NET_DROP_PLAYER_MIN_WAIT);
+      i := NET_DROP_PLAYER_MIN_WAIT - EnsureRange(TimeSince(fNetWaitDropPlayersDelayStarted) div 1000, 0, NET_DROP_PLAYER_MIN_WAIT);
       if i > 0 then
         Label_NetDropPlayersDelay.Caption := Format(gResTexts[TX_GAMEPLAY_DROP_PLAYERS_DELAY], [i])
       else
@@ -4501,7 +4501,7 @@ begin
     sPackets := '';
     receivedTotal := 0;
     sentTotal := 0;
-    period := GetTimeSince(gNetworking.PacketsStatsStartTime);
+    period := TimeSince(gNetworking.PacketsStatsStartTime);
     for mKind := Low(TKMessageKind) to High(TKMessageKind) do
     begin
       received := gNetworking.PacketsReceived[mKind];

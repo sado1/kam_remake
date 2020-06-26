@@ -529,9 +529,9 @@ begin
 
   // Get us time from previous frame
   if HighPrecision then
-    Result := GetTimeUsecSince(fEnterTime)
+    Result := TimeSinceUSec(fEnterTime)
   else
-    Result := GetTimeSince(fEnterTime) * 1000;
+    Result := TimeSince(fEnterTime) * 1000;
 end;
 
 

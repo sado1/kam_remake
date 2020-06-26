@@ -2630,18 +2630,18 @@ end;
 procedure TKMNetworking.UpdateState(aTick: cardinal);
 begin
   // Reconnection delay
-  if (fReconnectRequested <> 0) and (GetTimeSince(fReconnectRequested) > RECONNECT_PAUSE) then DoReconnection;
+  if (fReconnectRequested <> 0) and (TimeSince(fReconnectRequested) > RECONNECT_PAUSE) then DoReconnection;
 
   // Joining timeout
   if fNetGameState in [lgsConnecting,lgsReconnecting,lgsQuery] then
-    if (GetTimeSince(fJoinTimeout) > JOIN_TIMEOUT) and not fEnteringPassword
+    if (TimeSince(fJoinTimeout) > JOIN_TIMEOUT) and not fEnteringPassword
     and (fReconnectRequested = 0) then
       if Assigned(OnJoinFail) then
         OnJoinFail(gResTexts[TX_NET_QUERY_TIMED_OUT]);
 
   // Vote expiring
   if (fNetGameState in [lgsLoading, lgsGame]) and IsHost
-  and fNetPlayers.VoteActive and (GetTimeSince(fLastVoteTime) > VOTE_TIMEOUT) then
+  and fNetPlayers.VoteActive and (TimeSince(fLastVoteTime) > VOTE_TIMEOUT) then
   begin
     PostMessage(TX_NET_VOTE_FAILED, csSystem);
     fNetPlayers.ResetVote;

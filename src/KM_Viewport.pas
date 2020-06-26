@@ -322,7 +322,7 @@ begin
   begin
     if fScrollStarted = 0 then
       fScrollStarted := TimeGet;
-    TimeSinceStarted := GetTimeSince(fScrollStarted);
+    TimeSinceStarted := TimeSince(fScrollStarted);
     if TimeSinceStarted < SCROLL_ACCEL_TIME then
       ScrollAdv := Mix(ScrollAdv, 0, TimeSinceStarted / SCROLL_ACCEL_TIME);
   end;
