@@ -261,40 +261,40 @@ type
     function VertexUsageCompatible(const LocFrom, LocTo: TKMPoint): Boolean;
     function GetVertexUsageType(const LocFrom, LocTo: TKMPoint): TKMVertexUsage;
 
-    function CoordsWithinMap(X, Y: Single; aInset: Byte = 0): Boolean;
-    function PointFInMapCoords(const aPointF: TKMPointF; aInset: Byte = 0): Boolean;
-    function TileInMapCoords(X, Y: Integer; Inset: Byte = 0): Boolean; overload;
-    function TileInMapCoords(const aCell: TKMPoint; Inset: Byte = 0): Boolean; overload;
-    function TileInMapCoords(X,Y: Integer; InsetRect: TKMRect): Boolean; overload;
-    function VerticeInMapCoords(X, Y: Integer; Inset: Byte = 0): Boolean; overload;
-    function VerticeInMapCoords(const aCell: TKMPoint; Inset: Byte = 0): Boolean; overload;
-    procedure EnsureCoordsWithinMap(var X, Y: Single; aInset: Byte = 0);
-    function EnsureTilesRectWithinMap(const aRectF: TKMRectF; aInset: Single = 0): TKMRectF;
-    function EnsureVerticesRectWithinMap(const aRectF: TKMRectF; aInset: Single = 0): TKMRectF;
-    function EnsureTileInMapCoords(X, Y: Integer; aInset: Byte = 0): TKMPoint; overload;
-    function EnsureTileInMapCoords(const aLoc: TKMPoint; aInset: Byte = 0): TKMPoint; overload;
+    function CoordsWithinMap(X, Y: Single; aInset: Byte = 0): Boolean; inline;
+    function PointFInMapCoords(const aPointF: TKMPointF; aInset: Byte = 0): Boolean; inline;
+    function TileInMapCoords(X, Y: Integer; Inset: Byte = 0): Boolean; overload; inline;
+    function TileInMapCoords(const aCell: TKMPoint; Inset: Byte = 0): Boolean; overload; inline;
+    function TileInMapCoords(X,Y: Integer; InsetRect: TKMRect): Boolean; overload; inline;
+    function VerticeInMapCoords(X, Y: Integer; Inset: Byte = 0): Boolean; overload; inline;
+    function VerticeInMapCoords(const aCell: TKMPoint; Inset: Byte = 0): Boolean; overload; inline;
+    procedure EnsureCoordsWithinMap(var X, Y: Single; aInset: Byte = 0); inline;
+    function EnsureTilesRectWithinMap(const aRectF: TKMRectF; aInset: Single = 0): TKMRectF; inline;
+    function EnsureVerticesRectWithinMap(const aRectF: TKMRectF; aInset: Single = 0): TKMRectF; inline;
+    function EnsureTileInMapCoords(X, Y: Integer; aInset: Byte = 0): TKMPoint; overload; inline;
+    function EnsureTileInMapCoords(const aLoc: TKMPoint; aInset: Byte = 0): TKMPoint; overload; inline;
 
     function TileGoodForIronMine(X, Y: Word): Boolean;
     function TileGoodForGoldmine(X, Y: Word): Boolean;
     function TileGoodForField(X, Y: Word): Boolean;
     function TileGoodToPlantTree(X, Y: Word): Boolean;
-    function TileIsWater(const Loc: TKMPoint): Boolean; overload;
-    function TileIsWater(X, Y: Word): Boolean; overload;
-    function TileIsStone(X, Y: Word): Byte;
-    function TileIsSnow(X, Y: Word): Boolean;
-    function TileIsCoal(X, Y: Word): Byte;
-    function TileIsIron(X, Y: Word): Byte;
-    function TileIsGold(X, Y: Word): Byte;
+    function TileIsWater(const Loc: TKMPoint): Boolean; overload; inline;
+    function TileIsWater(X, Y: Word): Boolean; overload; inline;
+    function TileIsStone(X, Y: Word): Byte; inline;
+    function TileIsSnow(X, Y: Word): Boolean; inline;
+    function TileIsCoal(X, Y: Word): Byte; inline;
+    function TileIsIron(X, Y: Word): Byte; inline;
+    function TileIsGold(X, Y: Word): Byte; inline;
     function TileIsCornField(const Loc: TKMPoint): Boolean;
     function TileIsWineField(const Loc: TKMPoint): Boolean;
     function TileIsWalkableRoad(const Loc: TKMPoint): Boolean;
     function TileIsLocked(const aLoc: TKMPoint): Boolean;
     function TileIsGoodToCutTree(const aLoc: TKMPoint): Boolean;
 
-    function TileHasStone(X, Y: Word): Boolean;
-    function TileHasCoal(X, Y: Word): Boolean;
-    function TileHasIron(X, Y: Word): Boolean;
-    function TileHasGold(X, Y: Word): Boolean;
+    function TileHasStone(X, Y: Word): Boolean; inline;
+    function TileHasCoal(X, Y: Word): Boolean; inline;
+    function TileHasIron(X, Y: Word): Boolean; inline;
+    function TileHasGold(X, Y: Word): Boolean; inline;
 
     function TileHasTerrainKindPart(X, Y: Word; aTerKind: TKMTerrainKind): Boolean; overload;
     function TileHasTerrainKindPart(X, Y: Word; aTerKind: TKMTerrainKind; aDir: TKMDirection): Boolean; overload;
@@ -303,14 +303,14 @@ type
 
     function TileTryGetTerKind(X, Y: Word; var aTerKind: TKMTerrainKind): Boolean;
 
-    function TileIsSand(const Loc: TKMPoint): Boolean;
-    function TileIsSoil(X,Y: Word): Boolean; overload;
-    function TileIsSoil(const Loc: TKMPoint): Boolean; overload;
-    function TileIsIce(X, Y: Word): Boolean;
-    function TileHasWater(X, Y: Word): Boolean;
+    function TileIsSand(const Loc: TKMPoint): Boolean; inline;
+    function TileIsSoil(X,Y: Word): Boolean; overload; inline;
+    function TileIsSoil(const Loc: TKMPoint): Boolean; overload; inline;
+    function TileIsIce(X, Y: Word): Boolean; inline;
+    function TileHasWater(X, Y: Word): Boolean; inline;
     function VerticeIsFactorable(const Loc: TKMPoint): Boolean;
-    function TileIsWalkable(const Loc: TKMPoint): Boolean;
-    function TileIsRoadable(const Loc: TKMPoint): Boolean;
+    function TileIsWalkable(const Loc: TKMPoint): Boolean; inline;
+    function TileIsRoadable(const Loc: TKMPoint): Boolean; inline;
 
     function TileCornerTerrain(aX, aY: Word; aCorner: Byte): Word;
     function TileCornersTerrains(aX, aY: Word): TKMWordArray;
@@ -319,8 +319,8 @@ type
 
     procedure GetVerticeTerKinds(const aLoc: TKMPoint; out aVerticeTerKinds: TKMTerrainKindCorners);
 
-    function TileHasRoad(const Loc: TKMPoint): Boolean; overload;
-    function TileHasRoad(X,Y: Integer): Boolean; overload;
+    function TileHasRoad(const Loc: TKMPoint): Boolean; overload; inline;
+    function TileHasRoad(X,Y: Integer): Boolean; overload; inline;
 
     function UnitsHitTest(X, Y: Word): Pointer;
     function UnitsHitTestF(const aLoc: TKMPointF): Pointer;
@@ -332,15 +332,15 @@ type
     function ScriptTrySetTileObject(X, Y: Integer; aObject: Word): Boolean;
     function ScriptTrySetTilesArray(var aTiles: array of TKMTerrainTileBrief; aRevertOnFail: Boolean; var aErrors: TKMTerrainTileChangeErrorArray): Boolean;
 
-    function ObjectIsCorn(const Loc: TKMPoint): Boolean; overload;
-    function ObjectIsCorn(X,Y: Word): Boolean; overload;
+    function ObjectIsCorn(const Loc: TKMPoint): Boolean; overload; inline;
+    function ObjectIsCorn(X,Y: Word): Boolean; overload; inline;
 
-    function ObjectIsWine(const Loc: TKMPoint): Boolean; overload;
-    function ObjectIsWine(X,Y: Word): Boolean; overload;
+    function ObjectIsWine(const Loc: TKMPoint): Boolean; overload; inline;
+    function ObjectIsWine(X,Y: Word): Boolean; overload; inline;
 
-    function ObjectIsChopableTree(X,Y: Word): Boolean; overload;
-    function ObjectIsChopableTree(const Loc: TKMPoint; aStage: TKMChopableAge): Boolean; overload;
-    function ObjectIsChopableTree(const Loc: TKMPoint; aStages: TKMChopableAgeSet): Boolean; overload;
+    function ObjectIsChopableTree(X,Y: Word): Boolean; overload; inline;
+    function ObjectIsChopableTree(const Loc: TKMPoint; aStage: TKMChopableAge): Boolean; overload; inline;
+    function ObjectIsChopableTree(const Loc: TKMPoint; aStages: TKMChopableAgeSet): Boolean; overload; inline;
     function CanWalkDiagonaly(const aFrom: TKMPoint; bX, bY: SmallInt): Boolean;
 
     function GetFieldStage(const Loc: TKMPoint): Byte;
