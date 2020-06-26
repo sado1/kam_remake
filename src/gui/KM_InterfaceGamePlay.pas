@@ -1889,6 +1889,8 @@ begin
   try
     gGame.SavePoints.FillTicks(ticksList);
 
+    ReplayBar_Replay.Clear; // Clear marks, we are going to refill them all
+
     for tick in ticksList do
       AddReplayMark(tick);
   finally
