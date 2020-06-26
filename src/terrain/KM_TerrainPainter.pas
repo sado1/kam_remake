@@ -1871,7 +1871,7 @@ end;
 
 procedure TKMTerrainPainter.Save(SaveStream: TKMemoryStream);
 var
-  I, K: Integer;
+  I: Integer;
 begin
   for I := 1 to gTerrain.MapY do
     SaveStream.Write(LandTerKind[I,1], SizeOf(LandTerKind[I,1]) * gTerrain.MapX);
@@ -1880,7 +1880,7 @@ end;
 
 procedure TKMTerrainPainter.Load(LoadStream: TKMemoryStream);
 var
-  I, K: Integer;
+  I: Integer;
 begin
   InitSize(gTerrain.MapX, gTerrain.MapY);
   for I := 1 to gTerrain.MapY do
