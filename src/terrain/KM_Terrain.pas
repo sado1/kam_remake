@@ -80,7 +80,7 @@ type
     //Tells us the stage of house construction or workers making a road
     TileLock: TKMTileLock;
 
-    JamMeter: Integer; //How much this tile is jammed with units, pushing each other
+    JamMeter: Byte; //How much this tile is jammed with units, pushing each other
 
     //Used to display half-dug road
     TileOverlay: TKMTileOverlay; //toNone toDig1, toDig2, toDig3, toDig4 + toRoad
@@ -103,6 +103,7 @@ type
     FenceSide: Byte; //Bitfield whether the fences are enabled
 
     function RenderHeight: Byte;
+    procedure IncJamMeter(aValue: Integer);
   end;
 
   TKMTerrainTileArray = array of TKMTerrainTile;
@@ -157,8 +158,6 @@ type
     property MapY: Word read fMapY;
     property MapRect: TKMRect read fMapRect;
 
-    procedure IncTileJamMeter(const aLoc: TKMPoint; aValue: Integer);
-    function GetTileJamMeter(const aLoc: TKMPoint): Integer;
     procedure SetTileLock(const aLoc: TKMPoint; aTileLock: TKMTileLock);
     procedure UnlockTile(const aLoc: TKMPoint);
     procedure SetRoads(aList: TKMPointList; aOwner: TKMHandID; aUpdateWalkConnects: Boolean = True);
@@ -2091,22 +2090,6 @@ begin
 end;
 
 
-procedure TKMTerrain.IncTileJamMeter(const aLoc: TKMPoint; aValue: Integer);
-begin
-  if not TileInMapCoords(aLoc) then Exit;
-
-  Land[aLoc.Y, aLoc.X].JamMeter := Max(0, Land[aLoc.Y, aLoc.X].JamMeter + aValue);
-end;
-
-
-function TKMTerrain.GetTileJamMeter(const aLoc: TKMPoint): Integer;
-begin
-  if not TileInMapCoords(aLoc) then Exit(0);
-
-  Result := Land[aLoc.Y, aLoc.X].JamMeter;
-end;
-
-
 //Place lock on tile, any new TileLock replaces old one, thats okay
 procedure TKMTerrain.SetTileLock(const aLoc: TKMPoint; aTileLock: TKMTileLock);
 var
@@ -3953,7 +3936,7 @@ begin
   //Punish very bad positions, where we decided to exchange with pushed pusher's loc
   //(non-profitable exchange was choosen as the only possibility), so we will mark this pos as very unpleasant
   if exchWithPushedPusherChoosen then
-    IncTileJamMeter(loc, 50);
+    Land[loc.Y, loc.X].IncJamMeter(50);
 end;
 
 
@@ -5210,7 +5193,7 @@ begin
       I := (A div fMapX) + 1;
 
       //Reduce JamMeter over time
-      Land[I,K].JamMeter := Max(0, Land[I,K].JamMeter - 1);
+      Land[I,K].IncJamMeter(-3);
 
       if InRange(Land[I,K].FieldAge, 1, CORN_AGE_MAX-1) then
       begin
@@ -5476,6 +5459,12 @@ end;
 
 
 { TKMTerrainTile }
+procedure TKMTerrainTile.IncJamMeter(aValue: Integer);
+begin
+  JamMeter := EnsureRange(JamMeter + aValue, 0, 255);
+end;
+
+
 function TKMTerrainTile.RenderHeight: Byte;
 begin
   if mlFlatTerrain in gGameParams.VisibleLayers then
