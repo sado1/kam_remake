@@ -5,7 +5,8 @@ uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLType, {$ENDIF}
   Controls, Classes,
-  KM_Controls, KM_Points, KM_ResFonts;
+  KM_Controls, KM_Points, KM_ResFonts,
+  KM_ResTypes;
 
 
 type
@@ -72,7 +73,7 @@ type
 
     procedure KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean); virtual; abstract;
     procedure KeyPress(Key: Char); virtual;
-    procedure KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean); virtual; abstract;
+    procedure KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean); virtual;
     //Child classes don't pass these events to controls depending on their state
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X,Y: Integer); virtual; abstract;
     procedure MouseMove(Shift: TShiftState; X,Y: Integer); overload;
@@ -125,8 +126,8 @@ const
   RESULTS_X_PADDING = 50;
 
 var
-  MAPED_SUBMENU_HOTKEYS: array[0..5] of Word;
-  MAPED_SUBMENU_ACTIONS_HOTKEYS: array[0..SUB_MENU_ACTIONS_CNT - 1] of Word;
+  MAPED_SUBMENU_HOTKEYS: array[0..5] of TKMKeyFunction;
+  MAPED_SUBMENU_ACTIONS_HOTKEYS: array[0..SUB_MENU_ACTIONS_CNT - 1] of TKMKeyFunction;
 
 
 const
@@ -135,7 +136,10 @@ const
 
 implementation
 uses
-  SysUtils, KM_Resource, KM_ResKeys, KM_RenderUI, KM_Defaults, KM_DevPerfLog, KM_DevPerfLogTypes;
+  SysUtils, KM_Resource, KM_ResKeys, KM_RenderUI, KM_Defaults, KM_DevPerfLog, KM_DevPerfLogTypes,
+  KM_Music,
+  KM_Sound,
+  KM_Settings;
 
 
 { TKMUserInterface }
@@ -225,6 +229,93 @@ end;
 procedure TKMUserInterfaceCommon.KeyPress(Key: Char);
 begin
   fMyControls.KeyPress(Key);
+end;
+
+
+procedure TKMUserInterfaceCommon.KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
+var
+  mutedAll: Boolean;
+begin
+  if aHandled then Exit;
+
+  if Key = gResKeys[kfMusicPrevTrack].Key then
+  begin
+    gMusic.PlayPreviousTrack;
+    aHandled := True;
+  end;
+
+  if Key = gResKeys[kfMusicNextTrack].Key then
+  begin
+    gMusic.PlayNextTrack;
+    aHandled := True;
+  end;
+
+  if Key = gResKeys[kfMusicDisable].Key then
+  begin
+    gGameSettings.MusicOff := not gGameSettings.MusicOff;
+    gMusic.ToggleEnabled(not gGameSettings.MusicOff);
+    aHandled := True;
+  end;
+
+  if Key = gResKeys[kfMusicShuffle].Key then
+  begin
+    gGameSettings.ShuffleOn := not gGameSettings.ShuffleOn;
+    gMusic.ToggleShuffle(gGameSettings.ShuffleOn);
+    aHandled := True;
+  end;
+
+  if Key = gResKeys[kfMusicVolumeUp].Key then
+  begin
+    gGameSettings.MusicVolume := gGameSettings.MusicVolume + 1 / OPT_SLIDER_MAX;
+    gMusic.Volume := gGameSettings.MusicVolume;
+    aHandled := True;
+  end;
+
+  if Key = gResKeys[kfMusicVolumeDown].Key then
+  begin
+    gGameSettings.MusicVolume := gGameSettings.MusicVolume - 1 / OPT_SLIDER_MAX;
+    gMusic.Volume := gGameSettings.MusicVolume;
+    aHandled := True;
+  end;
+
+  if Key = gResKeys[kfMusicMute].Key then
+  begin
+    gMusic.ToggleMuted;
+    gGameSettings.MusicVolume := gMusic.Volume;
+    aHandled := True;
+  end;
+
+  if Key = gResKeys[kfSoundVolumeUp].Key then
+  begin
+    gGameSettings.SoundFXVolume := gGameSettings.SoundFXVolume + 1 / OPT_SLIDER_MAX;
+    gSoundPlayer.UpdateSoundVolume(gGameSettings.SoundFXVolume);
+    aHandled := True;
+  end;
+
+  if Key = gResKeys[kfSoundVolumeDown].Key then
+  begin
+    gGameSettings.SoundFXVolume := gGameSettings.SoundFXVolume - 1 / OPT_SLIDER_MAX;
+    gSoundPlayer.UpdateSoundVolume(gGameSettings.SoundFXVolume);
+    aHandled := True;
+  end;
+
+  if Key = gResKeys[kfSoundMute].Key then
+  begin
+    gSoundPlayer.ToggleMuted;
+    gGameSettings.SoundFXVolume := gSoundPlayer.Volume;
+    aHandled := True;
+  end;
+
+  if Key = gResKeys[kfMuteAll].Key then
+  begin
+    mutedAll := gSoundPlayer.Muted and gMusic.Muted;
+    
+    gSoundPlayer.Muted := not mutedAll;
+    gMusic.Muted := not mutedAll;
+    gGameSettings.SoundFXVolume := gSoundPlayer.Volume;
+    gGameSettings.MusicVolume := gMusic.Volume;
+    aHandled := True;
+  end;
 end;
 
 
@@ -361,20 +452,20 @@ end;
 
 initialization
 begin
-  MAPED_SUBMENU_HOTKEYS[0] := SC_MAPEDIT_SUB_MENU_1;
-  MAPED_SUBMENU_HOTKEYS[1] := SC_MAPEDIT_SUB_MENU_2;
-  MAPED_SUBMENU_HOTKEYS[2] := SC_MAPEDIT_SUB_MENU_3;
-  MAPED_SUBMENU_HOTKEYS[3] := SC_MAPEDIT_SUB_MENU_4;
-  MAPED_SUBMENU_HOTKEYS[4] := SC_MAPEDIT_SUB_MENU_5;
-  MAPED_SUBMENU_HOTKEYS[5] := SC_MAPEDIT_SUB_MENU_6;
+  MAPED_SUBMENU_HOTKEYS[0] := kfMapedSubMenu1;
+  MAPED_SUBMENU_HOTKEYS[1] := kfMapedSubMenu2;
+  MAPED_SUBMENU_HOTKEYS[2] := kfMapedSubMenu3;
+  MAPED_SUBMENU_HOTKEYS[3] := kfMapedSubMenu4;
+  MAPED_SUBMENU_HOTKEYS[4] := kfMapedSubMenu5;
+  MAPED_SUBMENU_HOTKEYS[5] := kfMapedSubMenu6;
 
-  MAPED_SUBMENU_ACTIONS_HOTKEYS[0] := SC_MAPEDIT_SUB_MENU_ACTION_1;
-  MAPED_SUBMENU_ACTIONS_HOTKEYS[1] := SC_MAPEDIT_SUB_MENU_ACTION_2;
-  MAPED_SUBMENU_ACTIONS_HOTKEYS[2] := SC_MAPEDIT_SUB_MENU_ACTION_3;
-  MAPED_SUBMENU_ACTIONS_HOTKEYS[3] := SC_MAPEDIT_SUB_MENU_ACTION_4;
-  MAPED_SUBMENU_ACTIONS_HOTKEYS[4] := SC_MAPEDIT_SUB_MENU_ACTION_5;
-  MAPED_SUBMENU_ACTIONS_HOTKEYS[5] := SC_MAPEDIT_SUB_MENU_ACTION_6;
-  MAPED_SUBMENU_ACTIONS_HOTKEYS[6] := SC_MAPEDIT_SUB_MENU_ACTION_7;
+  MAPED_SUBMENU_ACTIONS_HOTKEYS[0] := kfMapedSubMenuAction1;
+  MAPED_SUBMENU_ACTIONS_HOTKEYS[1] := kfMapedSubMenuAction2;
+  MAPED_SUBMENU_ACTIONS_HOTKEYS[2] := kfMapedSubMenuAction3;
+  MAPED_SUBMENU_ACTIONS_HOTKEYS[3] := kfMapedSubMenuAction4;
+  MAPED_SUBMENU_ACTIONS_HOTKEYS[4] := kfMapedSubMenuAction5;
+  MAPED_SUBMENU_ACTIONS_HOTKEYS[5] := kfMapedSubMenuAction6;
+  MAPED_SUBMENU_ACTIONS_HOTKEYS[6] := kfMapedSubMenuAction7;
 end;
 
 

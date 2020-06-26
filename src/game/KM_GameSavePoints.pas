@@ -2,7 +2,7 @@ unit KM_GameSavePoints;
 {$I KaM_Remake.inc}
 interface
 uses
-  Generics.Collections,
+  SyncObjs, Generics.Collections,
   KM_CommonClasses, KM_WorkerThread;
 
 type
@@ -21,6 +21,9 @@ type
 
   TKMSavePointCollection = class
   private
+    fAsyncSaveThreadsCnt: Byte; //Number of threads doing save atm. Usually should be not more then 1
+    fWaitCS: TCriticalSection;
+    fSaveCS: TCriticalSection;
     fSavePoints: TDictionary<Cardinal, TKMSavePoint>;
     //Properties to restore after load saved replay
     fLastTick: Cardinal;
@@ -28,12 +31,17 @@ type
     function GetCount(): Integer;
     function GetSavePoint(aTick: Cardinal): TKMSavePoint;
     function GetStream(aTick: Cardinal): TKMemoryStream;
+    function GetLastTick: Cardinal;
+    procedure SetLastTick(const aLastTick: Cardinal);
   public
     constructor Create();
     destructor Destroy; override;
 
-    property LastTick: Cardinal read fLastTick write fLastTick;
+    property LastTick: Cardinal read GetLastTick write SetLastTick;
     procedure Clear;
+
+    procedure Lock;
+    procedure Unlock;
 
     property Count: Integer read GetCount;
     property SavePoint[aTick: Cardinal]: TKMSavePoint read GetSavePoint;
@@ -54,13 +62,15 @@ type
 
 implementation
 uses
-  SysUtils, Classes;
+  SysUtils, Classes, KM_CommonUtils;
 
 { TKMSavedReplays }
 constructor TKMSavePointCollection.Create();
 begin
   inherited;
 
+  fSaveCS := TCriticalSection.Create;
+  fWaitCS := TCriticalSection.Create;
   fSavePoints := TDictionary<Cardinal, TKMSavePoint>.Create();
   fLastTick := 0;
 end;
@@ -68,8 +78,30 @@ end;
 
 destructor TKMSavePointCollection.Destroy();
 begin
-  Clear;
-  fSavePoints.Free; // TKMList will free all objects of the list
+  {$IFDEF WDC}
+  // Wait till all threads release waitLock
+  while True do
+  begin
+    fWaitCS.Enter;
+    try
+      if fAsyncSaveThreadsCnt = 0 then
+        Break;
+    finally
+      fWaitCS.Leave;
+    end;
+    Sleep(100);
+  end;
+  {$ENDIF}
+
+  Lock; // Lock even in destructor
+  try
+    Clear;
+    fSavePoints.Free; // TKMList will free all objects of the list
+  finally
+    Unlock;
+  end;
+  fSaveCS.Free;
+  fWaitCS.Free;
 
   inherited;
 end;
@@ -77,7 +109,30 @@ end;
 
 function TKMSavePointCollection.GetCount(): Integer;
 begin
-  Result := fSavePoints.Count;
+  if Self = nil then Exit(0);
+
+  Lock;
+  try
+    Result := fSavePoints.Count;
+  finally
+    Unlock;
+  end;
+end;
+
+
+function TKMSavePointCollection.GetLastTick: Cardinal;
+begin
+  if Self = nil then Exit(0);
+
+  Result := fLastTick;
+end;
+
+
+procedure TKMSavePointCollection.SetLastTick(const aLastTick: Cardinal);
+begin
+  if Self = nil then Exit;
+
+  fLastTick := aLastTick;
 end;
 
 
@@ -85,16 +140,30 @@ procedure TKMSavePointCollection.Clear;
 var
   savePoint: TKMSavePoint;
 begin
-  for savePoint in fSavePoints.Values do
-    savePoint.Free;
+  if Self = nil then Exit;
 
-  fSavePoints.Clear;
+  Lock;
+  try
+    for savePoint in fSavePoints.Values do
+      savePoint.Free;
+
+    fSavePoints.Clear;
+  finally
+    Unlock;
+  end;
 end;
 
 
 function TKMSavePointCollection.Contains(aTick: Cardinal): Boolean;
 begin
-  Result := fSavePoints.ContainsKey(aTick);
+  if Self = nil then Exit(False);
+
+  Lock;
+  try
+    Result := fSavePoints.ContainsKey(aTick);
+  finally
+    Unlock;
+  end;
 end;
 
 
@@ -102,16 +171,30 @@ procedure TKMSavePointCollection.FillTicks(aTicksList: TList<Cardinal>);
 var
   Tick: Cardinal;
 begin
-  for Tick in fSavePoints.Keys do
-    aTicksList.Add(Tick);
+  if Self = nil then Exit;
+
+  Lock;
+  try
+    for Tick in fSavePoints.Keys do
+      aTicksList.Add(Tick);
+  finally
+    Unlock;
+  end;
 end;
 
 
 function TKMSavePointCollection.GetSavePoint(aTick: Cardinal): TKMSavePoint;
 begin
   Result := nil;
-  if fSavePoints.ContainsKey(aTick) then
-    Result := fSavePoints[aTick];
+  if Self = nil then Exit;
+
+  Lock;
+  try
+    if fSavePoints.ContainsKey(aTick) then
+      Result := fSavePoints[aTick];
+  finally
+    Unlock;
+  end;
 end;
 
 
@@ -120,14 +203,29 @@ var
   savePoint: TKMSavePoint;
 begin
   Result := nil;
-  if fSavePoints.TryGetValue(aTick, savePoint) then
-    Result := savePoint.Stream;
+  if Self = nil then Exit;
+
+  Lock;
+  try
+    if fSavePoints.TryGetValue(aTick, savePoint) then
+      Result := savePoint.Stream;
+  finally
+    Unlock;
+  end;
 end;
 
 
 procedure TKMSavePointCollection.NewSavePoint(aStream: TKMemoryStream; aTick: Cardinal);
 begin
-  fSavePoints.Add(aTick, TKMSavePoint.Create(aStream, aTick) );
+  if Self = nil then Exit;
+
+  Lock;
+  try
+    if not fSavePoints.ContainsKey(aTick) then // Check if we don't have same tick save here too, since we work in multithread enviroment
+      fSavePoints.Add(aTick, TKMSavePoint.Create(aStream, aTick));
+  finally
+    Unlock;
+  end;
 end;
 
 
@@ -137,43 +235,104 @@ var
   key: Cardinal;
   savePoint: TKMSavePoint;
 begin
-  aSaveStream.PlaceMarker('SavedReplays');
-  aSaveStream.Write(fLastTick);
-  aSaveStream.Write(fSavePoints.Count);
+  if Self = nil then Exit;
 
-  keyArray := fSavePoints.Keys.ToArray;
-  TArray.Sort<Cardinal>(keyArray);
+  Lock;
+  try
+    aSaveStream.PlaceMarker('SavePoints');
+    aSaveStream.Write(fLastTick);
+    aSaveStream.Write(fSavePoints.Count);
 
-  for key in keyArray do
-  begin
-    aSaveStream.PlaceMarker('SavePoint');
-    aSaveStream.Write(key);
-    savePoint := fSavePoints.Items[key];
-    aSaveStream.Write(Cardinal(savePoint.fStream.Size));
-    aSaveStream.CopyFrom(savePoint.fStream, 0);
+    keyArray := fSavePoints.Keys.ToArray;
+    TArray.Sort<Cardinal>(keyArray);
+
+    for key in keyArray do
+    begin
+      aSaveStream.PlaceMarker('SavePoint');
+      aSaveStream.Write(key);
+      savePoint := fSavePoints.Items[key];
+      aSaveStream.Write(Cardinal(savePoint.fStream.Size));
+      aSaveStream.CopyFrom(savePoint.fStream, 0);
+    end;
+  finally
+    Unlock;
   end;
 end;
 
 
 procedure TKMSavePointCollection.SaveToFileAsync(const aFileName: UnicodeString; aWorkerThread: TKMWorkerThread);
+{$IFNDEF WDC}
 var
-  S: TKMemoryStreamBinary;
+  localStream: TKMemoryStream;
+{$ENDIF}
 begin
-  S := TKMemoryStreamBinary.Create;
-  Save(S);
-  TKMemoryStream.AsyncSaveToFileCompressedAndFree(S, aFileName, 'SavedReplaysCompressed', aWorkerThread);
+  if Self = nil then Exit;
+
+  {$IFDEF WDC}
+    fWaitCS.Enter;
+    try
+      Inc(fAsyncSaveThreadsCnt); // Increase save threads counter in main thread
+    finally
+      fWaitCS.Leave;
+    end;
+
+    aWorkerThread.QueueWork(
+      procedure
+      var
+        localStream: TKMemoryStream;
+      begin
+        localStream := TKMemoryStreamBinary.Create;
+        try
+          Save(localStream); // Save has Lock / Unlock inside already
+          fWaitCS.Enter;
+          try
+            Dec(fAsyncSaveThreadsCnt); // Decrease thread counter since we saved all data into thread local stream
+          finally
+            fWaitCS.Leave;
+          end;
+          localStream.SaveToFileCompressed(aFileName, 'SavePointsCompressed');
+        finally
+          localStream.Free;
+        end;
+      end, 'SavePointCollection.SaveToFileAsync');
+  {$ELSE}
+    localStream := TKMemoryStreamBinary.Create;
+    try
+      Save(localStream);
+      localStream.SaveToFileCompressed(aFileName, 'SavePointsCompressed');
+    finally
+      localStream.Free;
+    end;
+  {$ENDIF}
+end;
+
+
+procedure TKMSavePointCollection.Lock;
+begin
+  if Self = nil then Exit;
+
+  fSaveCS.Enter;
+end;
+
+
+procedure TKMSavePointCollection.Unlock;
+begin
+  if Self = nil then Exit;
+
+  fSaveCS.Leave;
 end;
 
 
 procedure TKMSavePointCollection.LoadFromFile(const aFileName: UnicodeString);
 var
-  S: TKMemoryStreamBinary;
+  S: TKMemoryStream;
 begin
+  if Self = nil then Exit;
   if not FileExists(aFileName) then Exit;
 
   S := TKMemoryStreamBinary.Create;
   try
-    S.LoadFromFileCompressed(aFileName, 'SavedReplaysCompressed');
+    S.LoadFromFileCompressed(aFileName, 'SavePointsCompressed');
     Load(S);
   finally
     S.Free;
@@ -188,10 +347,16 @@ var
   key: Cardinal;
 begin
   Result := 0;
+  if Self = nil then Exit;
 
-  for key in fSavePoints.Keys do
-    if (key <= aTick) and (key > Result) then
-      Result := key;
+  Lock;
+  try
+    for key in fSavePoints.Keys do
+      if (key <= aTick) and (key > Result) then
+        Result := key;
+  finally
+    Unlock;
+  end;
 end;
 
 procedure TKMSavePointCollection.Load(aLoadStream: TKMemoryStream);
@@ -201,29 +366,36 @@ var
   savePoint: TKMSavePoint;
   stream: TKMemoryStream;
 begin
-  fSavePoints.Clear;
+  if Self = nil then Exit;
 
-  aLoadStream.CheckMarker('SavedReplays');
-  aLoadStream.Read(fLastTick);
-  aLoadStream.Read(cnt);
+  Lock;
+  try
+    fSavePoints.Clear;
 
-  for I := 0 to cnt - 1 do
-  begin
-    aLoadStream.CheckMarker('SavePoint');
-    aLoadStream.Read(tick);
-    aLoadStream.Read(size);
+    aLoadStream.CheckMarker('SavePoints');
+    aLoadStream.Read(fLastTick);
+    aLoadStream.Read(cnt);
 
-    stream := TKMemoryStreamBinary.Create;
-    stream.CopyFrom(aLoadStream, size);
+    for I := 0 to cnt - 1 do
+    begin
+      aLoadStream.CheckMarker('SavePoint');
+      aLoadStream.Read(tick);
+      aLoadStream.Read(size);
 
-    savePoint := TKMSavePoint.Create(stream, tick);
+      stream := TKMemoryStreamBinary.Create;
+      stream.CopyFrom(aLoadStream, size);
 
-    fSavePoints.Add(tick, savePoint);
+      savePoint := TKMSavePoint.Create(stream, tick);
+
+      fSavePoints.Add(tick, savePoint);
+    end;
+  finally
+    Unlock;
   end;
 end;
 
 
-{ TKMSavedReplay }
+{ TKMSavePoint }
 constructor TKMSavePoint.Create(aStream: TKMemoryStream; aTick: Cardinal);
 begin
   inherited Create;

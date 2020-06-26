@@ -45,7 +45,9 @@ type
 
     fLastMessageNoticeTime: Cardinal; // Last time message notice were played
 
-    fSoundGain: Single; //aka "Global volume"
+    fVolume: Single; // aka "Global volume"
+    fPrevVolume: Single; // Volume before sound was 'muted'
+
     fMusicIsFaded: Boolean;
 
     fOnFadeMusic: TEvent;
@@ -58,6 +60,13 @@ type
     function PlaySound(aSoundID: TSoundFX; const aFile: UnicodeString; const Loc: TKMPointF; aSoundType: TKMSoundType;
                        aAttenuated: Boolean; aVolume: Single; aRadius: Single; aFadeMusic, aLooped: Boolean; aFromScript: Boolean = False): Integer;
     function CanAddLoopSound: Boolean;
+
+    function GetMuted: Boolean;
+    procedure SetMuted(const aMuted: Boolean);
+
+    function GetPrevVolume: Single;
+
+    property PrevVolume: Single read GetPrevVolume write fPrevVolume;
   public
     constructor Create(aVolume: Single);
     destructor Destroy; override;
@@ -71,6 +80,10 @@ type
 
     procedure UpdateListener(X,Y: Single);
     procedure UpdateSoundVolume(aValue: Single);
+    property Volume: Single read fVolume write UpdateSoundVolume;
+    procedure ToggleMuted;
+
+    property Muted: Boolean read GetMuted write SetMuted;
 
     function IsScriptSoundPlaying(aScriptIndex: Integer): Boolean;
 
@@ -256,7 +269,8 @@ begin
   fListener.Ori[1] := 0; fListener.Ori[2] := 0; fListener.Ori[3] := -1; //Look-at vector
   fListener.Ori[4] := 0; fListener.Ori[5] := 1; fListener.Ori[6] := 0; //Up vector
   AlListenerfv(AL_ORIENTATION, @fListener.Ori);
-  fSoundGain := aVolume;
+  fVolume := aVolume;
+  fPrevVolume := aVolume;
 
   gLog.AddTime('OpenAL init done');
 end;
@@ -324,6 +338,41 @@ begin
 end;
 
 
+function TKMSoundPlayer.GetPrevVolume: Single;
+begin
+  Result := IfThen(fPrevVolume = 0, 0.5, fPrevVolume);
+end;
+
+
+function TKMSoundPlayer.GetMuted: Boolean;
+begin
+  Result := (fVolume = 0);
+end;
+
+
+procedure TKMSoundPlayer.SetMuted(const aMuted: Boolean);
+begin
+  if Muted = aMuted then Exit; // Nothing to change, just exit to avoid fPrevVolume overwrite
+
+  if aMuted then
+  begin
+    fPrevVolume := fVolume;
+    UpdateSoundVolume(0);
+  end
+  else
+  begin
+    UpdateSoundVolume(PrevVolume);
+    fPrevVolume := 0;
+  end;
+end;
+
+
+procedure TKMSoundPlayer.ToggleMuted;
+begin
+  SetMuted(not GetMuted);
+end;
+
+
 {Update listener position in 3D space}
 procedure TKMSoundPlayer.UpdateListener(X,Y:single);
 begin
@@ -340,14 +389,16 @@ procedure TKMSoundPlayer.UpdateSoundVolume(aValue: Single);
 
   procedure UpdateSound(aI: Integer);
   begin
-    AlSourcef(fALSounds[aI].ALSource, AL_GAIN, 1 * fALSounds[aI].Volume * fSoundGain);
+    AlSourcef(fALSounds[aI].ALSource, AL_GAIN, 1 * fALSounds[aI].Volume * fVolume);
   end;
 
 var
   I: Integer;
 begin
   if SKIP_SOUND or not fIsSoundInitialized then Exit;
-  fSoundGain := aValue;
+  fVolume := aValue;
+  if fVolume > 0 then
+    fPrevVolume := fVolume;
   //alListenerf(AL_GAIN, fSoundGain); //Set in source property
 
   //Loop sounds must be updated separately
@@ -460,7 +511,6 @@ begin
   if (aSoundType = stGame) and (gGame <> nil) and (gGame.ReadyToStop) then
     Exit;
 
-
   if aAttenuated then
   begin
     Distance := GetLength(Loc.X-fListener.Pos[1], Loc.Y-fListener.Pos[2]);
@@ -496,7 +546,7 @@ begin
   if FreeBuf = -1 then Exit;//Don't play if there's no room left
 
   //Fade music if required (don't fade it if the user has SoundGain = 0, that's confusing)
-  if aFadeMusic and (fSoundGain > 0) and not fMusicIsFaded then
+  if aFadeMusic and (fVolume > 0) and not fMusicIsFaded then
   begin
     if Assigned(fOnFadeMusic) then fOnFadeMusic;
     fMusicIsFaded := true;
@@ -600,7 +650,7 @@ begin
   //Set source properties
   AlSourcei(fALSounds[FreeBuf].ALSource, AL_BUFFER, fALSounds[FreeBuf].ALBuffer);
   AlSourcef(fALSounds[FreeBuf].ALSource, AL_PITCH, 1);
-  AlSourcef(fALSounds[FreeBuf].ALSource, AL_GAIN, 1 * aVolume * fSoundGain);
+  AlSourcef(fALSounds[FreeBuf].ALSource, AL_GAIN, 1 * aVolume * fVolume);
   if aAttenuated then
   begin
     Dif[1]:=Loc.X; Dif[2]:=Loc.Y; Dif[3]:=0;

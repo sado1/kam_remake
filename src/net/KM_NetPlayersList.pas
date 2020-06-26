@@ -142,7 +142,7 @@ type
 
     //Import/Export
     procedure SaveToStream(aStream: TKMemoryStream); //Gets all relevant information as text string
-    procedure LoadFromStream(aStream: TKMemoryStreamBinary); //Sets all relevant information
+    procedure LoadFromStream(aStream: TKMemoryStream); //Sets all relevant information
     function GetSlotNames: UnicodeString; //Gets just names as a text string seperated by |
     function GetPlayersWithIDs: UnicodeString;
   end;
@@ -1677,7 +1677,7 @@ begin
 end;
 
 
-procedure TKMNetPlayersList.LoadFromStream(aStream: TKMemoryStreamBinary);
+procedure TKMNetPlayersList.LoadFromStream(aStream: TKMemoryStream);
 var
   I: Integer;
 begin

@@ -11,8 +11,7 @@ uses
   KM_CommonClasses, KM_Defaults, KM_Points,
   KM_Houses, KM_Units,
   KM_UnitGroup, KM_AISetup,
-  KM_HandStats, KM_ArmyDefence, KM_AIAttacks, KM_ArmyAttackNew,
-  KM_NavMeshInfluences;
+  KM_HandStats, KM_ArmyDefence, KM_AIAttacks, KM_ArmyAttackNew;
 
 type
   // Agent interface (for Supervisor)
@@ -64,11 +63,10 @@ type
 
 implementation
 uses
-  KM_Game, KM_GameParams, KM_Hand, KM_HandsCollection, KM_Terrain, KM_AIFields,
-  KM_HouseBarracks, KM_Supervisor,
+  KM_Game, KM_GameParams, KM_Hand, KM_HandsCollection, KM_Terrain,
+  KM_HouseBarracks,
   KM_ResHouses, KM_CommonUtils,
-  KM_AIParameters, KM_DevPerfLog, KM_DevPerfLogTypes,
-  KM_UnitGroupTypes;
+  KM_DevPerfLog, KM_DevPerfLogTypes;
 
 
 { TKMArmyManagement }

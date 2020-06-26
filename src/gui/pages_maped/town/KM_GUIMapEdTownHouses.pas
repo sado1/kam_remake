@@ -39,7 +39,8 @@ type
 implementation
 uses
   KM_ResTexts, KM_GameCursor, KM_Resource, KM_ResHouses, KM_ResFonts,
-  KM_RenderUI, KM_Terrain, KM_Points, KM_ResKeys, KM_Utils;
+  KM_RenderUI, KM_Terrain, KM_Points, KM_Utils,
+  KM_ResTypes;
 
 
 { TKMMapEdTownHouses }
@@ -65,10 +66,10 @@ begin
   Button_BuildField.OnClick := Town_BuildChange;
   Button_BuildWine.OnClick  := Town_BuildChange;
   Button_BuildCancel.OnClick:= Town_BuildChange;
-  Button_BuildRoad.Hint     := GetHintWHotkey(TX_BUILD_ROAD_HINT, SC_MAPEDIT_SUB_MENU_ACTION_1);
-  Button_BuildField.Hint    := GetHintWHotkey(TX_BUILD_FIELD_HINT, SC_MAPEDIT_SUB_MENU_ACTION_2);
-  Button_BuildWine.Hint     := GetHintWHotkey(TX_BUILD_WINE_HINT, SC_MAPEDIT_SUB_MENU_ACTION_3);
-  Button_BuildCancel.Hint   := GetHintWHotkey(TX_BUILD_CANCEL_HINT, SC_MAPEDIT_SUB_MENU_ACTION_4);
+  Button_BuildRoad.Hint     := GetHintWHotkey(TX_BUILD_ROAD_HINT, kfMapedSubMenuAction1);
+  Button_BuildField.Hint    := GetHintWHotkey(TX_BUILD_FIELD_HINT, kfMapedSubMenuAction2);
+  Button_BuildWine.Hint     := GetHintWHotkey(TX_BUILD_WINE_HINT, kfMapedSubMenuAction3);
+  Button_BuildCancel.Hint   := GetHintWHotkey(TX_BUILD_CANCEL_HINT, kfMapedSubMenuAction4);
 
   with TKMLabel.Create(Panel_Build,0,65,Panel_Build.Width,0,gResTexts[TX_MAPED_HOUSES_TITLE],fntOutline,taCenter) do
     Anchors := [anLeft, anTop, anRight];

@@ -1130,7 +1130,7 @@ var
   SL: TStringList;
   teams: TKMByteSetArray;
   tStr: UnicodeString;
-  MS: TKMemoryStreamBinary;
+  MS: TKMemoryStream;
   CRC: Cardinal;
 begin
   SL := TStringList.Create;

@@ -269,7 +269,7 @@ end;
 
 procedure TKMGameInputProcess_Multi.SendCommands(aTick: Cardinal; aPlayerIndex: ShortInt = -1);
 var
-  msg: TKMemoryStreamBinary;
+  msg: TKMemoryStream;
 begin
   msg := TKMemoryStreamBinary.Create;
   try
@@ -286,7 +286,7 @@ end;
 
 procedure TKMGameInputProcess_Multi.SendRandomCheck(aTick: Cardinal);
 var
-  msg: TKMemoryStreamBinary;
+  msg: TKMemoryStream;
 begin
   msg := TKMemoryStreamBinary.Create;
   try

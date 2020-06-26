@@ -59,7 +59,8 @@ type
 
 implementation
 uses
-  SysUtils, KM_GameParams;
+  SysUtils, KM_GameParams,
+  KM_CommonExceptions;
 
 
 { TKMHandEntity }

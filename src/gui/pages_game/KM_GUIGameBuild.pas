@@ -40,7 +40,8 @@ type
 implementation
 uses
   KM_RenderUI, KM_GameCursor, KM_HandsCollection, KM_ResTexts, KM_Resource, KM_ResFonts,
-  KM_ResKeys, KM_Utils;
+  KM_Utils,
+  KM_ResTypes;
 
 
 { TKMGUIGameBuild }
@@ -69,10 +70,10 @@ begin
     Button_BuildField.OnClick   := Build_ButtonClick;
     Button_BuildWine.OnClick    := Build_ButtonClick;
     Button_BuildCancel.OnClick  := Build_ButtonClick;
-    Button_BuildRoad.Hint   := GetHintWHotKey(TX_BUILD_ROAD_HINT, SC_PLAN_ROAD);
-    Button_BuildField.Hint  := GetHintWHotKey(TX_BUILD_FIELD_HINT, SC_PLAN_FIELD);
-    Button_BuildWine.Hint   := GetHintWHotKey(TX_BUILD_WINE_HINT, SC_PLAN_WINE);
-    Button_BuildCancel.Hint := GetHintWHotKey(TX_BUILD_CANCEL_HINT, SC_ERASE_PLAN);
+    Button_BuildRoad.Hint   := GetHintWHotKey(TX_BUILD_ROAD_HINT, kfPlanRoad);
+    Button_BuildField.Hint  := GetHintWHotKey(TX_BUILD_FIELD_HINT, kfPlanField);
+    Button_BuildWine.Hint   := GetHintWHotKey(TX_BUILD_WINE_HINT, kfPlanWine);
+    Button_BuildCancel.Hint := GetHintWHotKey(TX_BUILD_CANCEL_HINT, kfErasePlan);
 
     for I := 1 to GUI_HOUSE_COUNT do
     if GUIHouseOrder[I] <> htNone then

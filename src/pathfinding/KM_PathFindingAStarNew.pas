@@ -7,14 +7,14 @@ uses
 
 
 type
+  PANodeRec = ^TANodeRec; // Delphi allows forward declaration for record pointers
   TANodeRec = record
-                RouteID: Cardinal;
-                X,Y: SmallInt;
-                CostTo: Word;
-                Estim: Word;
-                Parent: Pointer; //PANodeRec
-              end;
-  PANodeRec = ^TANodeRec;
+    RouteID: Cardinal;
+    X,Y: SmallInt;
+    CostTo: Word;
+    Estim: Word;
+    Parent: PANodeRec;
+  end;
 
   //This is a helper class for TTerrain
   //Here should be pathfinding and all associated stuff
@@ -23,7 +23,7 @@ type
   private
     fHeap: TBinaryHeap;
     fMinN: PANodeRec;
-    fOpenRef: array[0..MAX_MAP_SIZE, 0..MAX_MAP_SIZE] of TANodeRec; //References to OpenList, Sized as map
+    fOpenRef: array [0..MAX_MAP_SIZE, 0..MAX_MAP_SIZE] of TANodeRec; //References to OpenList, Sized as map
     fRouteID: Cardinal;
     function HeapCmp(A,B: Pointer): Boolean;
   protected
@@ -55,7 +55,6 @@ begin
       fOpenRef[Y, X].X := X;
       fOpenRef[Y, X].Y := Y;
     end;
-
 end;
 
 
@@ -77,19 +76,17 @@ end;
 
 function TPathFindingAStarNew.HeapCmp(A, B: Pointer): Boolean;
 begin
-  if A = nil then
-    Result := True
-  else
-    Result := (B = nil) or (PANodeRec(A).Estim + PANodeRec(A).CostTo < PANodeRec(B).Estim + PANodeRec(B).CostTo);
+  Result := (A = nil) or (B = nil) or (PANodeRec(A).Estim + PANodeRec(A).CostTo < PANodeRec(B).Estim + PANodeRec(B).CostTo);
 end;
 
 
 function TPathFindingAStarNew.MakeRoute: Boolean;
-const c_closed = 65535;
+const
+  C_CLOSED = 65535;
 var
   N: PANodeRec;
   X, Y: Word;
-  NewCost: Word;
+  newCost: Word;
 begin
   // Do not build the route in case destination is not walkable
   if not IsWalkableTile(fLocA.X, fLocA.Y) then Exit(False);
@@ -118,12 +115,11 @@ begin
 
   while (fMinN <> nil) and not DestinationReached(fMinN.X, fMinN.Y) do
   begin
-
-    fMinN.Estim := c_closed;
+    fMinN.Estim := C_CLOSED;
 
     //Check all surrounding cells and issue costs to them
-    for Y := Math.max(fMinN.Y-1,1) to Math.min(fMinN.Y+1, gTerrain.MapY-1) do
-    for X := Math.max(fMinN.X-1,1) to Math.min(fMinN.X+1, gTerrain.MapX-1) do
+    for Y := Max(fMinN.Y-1,1) to Min(fMinN.Y+1, gTerrain.MapY-1) do
+    for X := Max(fMinN.X-1,1) to Min(fMinN.X+1, gTerrain.MapX-1) do
     begin
       N := @fOpenRef[Y,X];
       if N.RouteID <> fRouteID then //Cell is new
@@ -139,23 +135,21 @@ begin
             N.Estim := EstimateToFinish(X,Y);
             fHeap.Push(N);
           end
-          else //If cell doen't meets Passability then mark it as Closed
-            N.Estim := c_closed;
-
+          else //If cell doesn't meets Passability then mark it as Closed
+            N.Estim := C_CLOSED;
         end;
       end
       else //Else cell is old
       begin
-
         //Node N is valid. If route through new cell is shorter than previous
-        if N.Estim <> c_closed then
+        if N.Estim <> C_CLOSED then
         if CanWalkTo(KMPoint(fMinN.X, fMinN.Y), X, Y) then
         begin
-          NewCost := MovementCost(fMinN.X, fMinN.Y, X, Y);
-          if fMinN.CostTo + NewCost < N.CostTo then
+          newCost := MovementCost(fMinN.X, fMinN.Y, X, Y);
+          if fMinN.CostTo + newCost < N.CostTo then
           begin
             N.Parent := fMinN;
-            N.CostTo := fMinN.CostTo + NewCost;
+            N.CostTo := fMinN.CostTo + newCost;
           end;
         end;
       end;

@@ -12,13 +12,14 @@ uses
   {$IFDEF WDC} IOUtils, {$ENDIF}
 	SysUtils, StrUtils, Classes, Controls,
   KM_Terrain,
-  KM_Defaults, KM_CommonTypes, KM_CommonClasses, KM_Points;
+  KM_Defaults, KM_CommonTypes, KM_CommonClasses, KM_Points,
+  KM_ResTypes;
 
   function KMPathLength(aNodeList: TKMPointList): Single;
 
-  function GetHintWHotKey(const aText: String; aHotkeyId: Integer): String; overload;
+  function GetHintWHotKey(const aText: String; aKeyFunc: TKMKeyFunction): String; overload;
   function GetHintWHotKey(aTextId: Integer; const aHotkeyStr: String): String; overload;
-  function GetHintWHotKey(aTextId, aHotkeyId: Integer): String; overload;
+  function GetHintWHotKey(aTextId: Integer; aKeyFunc: TKMKeyFunction): String; overload;
 
 	function GetShiftState(aButton: TMouseButton): TShiftState;
   function GetMultiplicator(aButton: TMouseButton): Word; overload;
@@ -27,9 +28,9 @@ uses
   function RoundToTilePixel(aVal: Single): Single; inline; overload;
   function RoundToTilePixel(aVal: TKMPointF): TKMPointF; inline; overload;
 
-  procedure LoadMapHeader(aStream: TKMemoryStreamBinary; var aMapX: Integer; var aMapY: Integer); overload;
-  procedure LoadMapHeader(aStream: TKMemoryStreamBinary; var aMapX: Integer; var aMapY: Integer; var aGameRev: Integer); overload;
-  procedure LoadMapHeader(aStream: TKMemoryStreamBinary; var aMapX: Integer; var aMapY: Integer; var aGameRev: Integer; var aMapDataSize: Cardinal); overload;
+  procedure LoadMapHeader(aStream: TKMemoryStream; var aMapX: Integer; var aMapY: Integer); overload;
+  procedure LoadMapHeader(aStream: TKMemoryStream; var aMapX: Integer; var aMapY: Integer; var aGameRev: Integer); overload;
+  procedure LoadMapHeader(aStream: TKMemoryStream; var aMapX: Integer; var aMapY: Integer; var aGameRev: Integer; var aMapDataSize: Cardinal); overload;
 
   function GetGameObjectOwnerIndex(aObject: TObject): TKMHandID;
 
@@ -66,7 +67,7 @@ begin
 end;
 
 
-procedure LoadMapHeader(aStream: TKMemoryStreamBinary; var aMapX: Integer; var aMapY: Integer);
+procedure LoadMapHeader(aStream: TKMemoryStream; var aMapX: Integer; var aMapY: Integer);
 var
   GameRev: Integer;
 begin
@@ -74,7 +75,7 @@ begin
 end;
 
 
-procedure LoadMapHeader(aStream: TKMemoryStreamBinary; var aMapX: Integer; var aMapY: Integer; var aGameRev: Integer);
+procedure LoadMapHeader(aStream: TKMemoryStream; var aMapX: Integer; var aMapY: Integer; var aGameRev: Integer);
 var
   MapDataSize: Cardinal;
 begin
@@ -82,7 +83,7 @@ begin
 end;
 
 
-procedure LoadMapHeader(aStream: TKMemoryStreamBinary; var aMapX: Integer; var aMapY: Integer; var aGameRev: Integer; var aMapDataSize: Cardinal);
+procedure LoadMapHeader(aStream: TKMemoryStream; var aMapX: Integer; var aMapY: Integer; var aGameRev: Integer; var aMapDataSize: Cardinal);
 var
   GameRevision: UnicodeString;
   GameRev: Integer;
@@ -306,12 +307,12 @@ begin
 end;
 
 
-function GetHintWHotKey(const aText: String; aHotkeyId: Integer): String; overload;
+function GetHintWHotKey(const aText: String; aKeyFunc: TKMKeyFunction): String; overload;
 var
   hotKeyStr: String;
 begin
   Result := aText;
-  hotKeyStr := gResKeys.GetKeyNameById(aHotkeyId);
+  hotKeyStr := gResKeys.GetKeyNameById(aKeyFunc);
   if hotKeyStr <> '' then
     Result := Result + Format(' (''%s'')', [hotKeyStr]);
 end;
@@ -328,9 +329,9 @@ begin
 end;
 
 
-function GetHintWHotKey(aTextId, aHotkeyId: Integer): String;
+function GetHintWHotKey(aTextId: Integer; aKeyFunc: TKMKeyFunction): String;
 begin
-  Result := GetHintWHotKey(aTextId, gResKeys.GetKeyNameById(aHotkeyId));
+  Result := GetHintWHotKey(aTextId, gResKeys.GetKeyNameById(aKeyFunc));
 end;
 
 

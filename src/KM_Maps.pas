@@ -199,7 +199,7 @@ type
     fMapFolders: TKMapFolderSet;
     fSortMethod: TKMapsSortMethod;
     fDoSortWithFavourites: Boolean;
-    CS: TCriticalSection;
+    fCriticalSection: TCriticalSection;
     fScanner: TTMapsScanner;
     fScanning: Boolean; //Flag if scan is in progress
     fUpdateNeeded: Boolean;
@@ -604,7 +604,7 @@ end;
 
 procedure TKMapInfo.LoadFromStreamObj(aStreamObj: TObject; const aPath: UnicodeString);
 var
-  S: TKMemoryStreamBinary;
+  S: TKMemoryStream;
 begin
   Assert(aStreamObj is TKMemoryStreamBinary, 'Wrong stream object class');
 
@@ -633,7 +633,7 @@ end;
 
 procedure TKMapInfo.LoadFromFile(const aPath: UnicodeString);
 var
-  S: TKMemoryStreamBinary;
+  S: TKMemoryStream;
   ErrorStr: UnicodeString;
 begin
   if not FileExists(aPath) then Exit;
@@ -653,7 +653,7 @@ end;
 
 procedure TKMapInfo.SaveToStreamObj(aStreamObj: TObject; const aPath: UnicodeString);
 var
-  S: TKMemoryStreamBinary;
+  S: TKMemoryStream;
 begin
   Assert(aStreamObj is TKMemoryStreamBinary, 'Wrong stream object class');
 
@@ -665,7 +665,7 @@ end;
 
 procedure TKMapInfo.SaveToFile(const aPath: UnicodeString);
 var
-  S: TKMemoryStreamBinary;
+  S: TKMemoryStream;
   ErrorStr: UnicodeString;
 begin
   S := TKMemoryStreamBinary.Create;
@@ -1243,7 +1243,7 @@ begin
   //CS is used to guard sections of code to allow only one thread at once to access them
   //We mostly don't need it, as UI should access Maps only when map events are signaled
   //it mostly acts as a safenet
-  CS := TCriticalSection.Create;
+  fCriticalSection := TCriticalSection.Create;
 end;
 
 
@@ -1276,7 +1276,7 @@ begin
   //Release TKMapInfo objects
   Clear;
 
-  CS.Free;
+  fCriticalSection.Free;
   inherited;
 end;
 
@@ -1303,13 +1303,13 @@ end;
 
 procedure TKMapsCollection.Lock;
 begin
-  CS.Enter;
+  fCriticalSection.Enter;
 end;
 
 
 procedure TKMapsCollection.Unlock;
 begin
-  CS.Leave;
+  fCriticalSection.Leave;
 end;
 
 

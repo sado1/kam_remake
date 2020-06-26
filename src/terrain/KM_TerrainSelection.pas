@@ -204,7 +204,7 @@ var
     hMem: THandle;
     BufPtr: Pointer;
   {$ENDIF}
-  BufferStream: TKMemoryStreamBinary;
+  BufferStream: TKMemoryStream;
 begin
   Sx := fSelectionRect.Right - fSelectionRect.Left;
   Sy := fSelectionRect.Bottom - fSelectionRect.Top;
@@ -265,7 +265,7 @@ var
   hMem: THandle;
   BufPtr: Pointer;
   {$ENDIF}
-  BufferStream: TKMemoryStreamBinary;
+  BufferStream: TKMemoryStream;
 begin
   BufferStream := TKMemoryStreamBinary.Create;
   {$IFDEF WDC}

@@ -67,7 +67,7 @@ type
 
     fVoteReturnToLobbySucceeded: Boolean;
 
-    procedure DecodePingInfo(aStream: TKMemoryStreamBinary);
+    procedure DecodePingInfo(aStream: TKMemoryStream);
     procedure ForcedDisconnect(Sender: TObject);
     procedure StartGame;
     procedure TryPlayGame;
@@ -76,17 +76,17 @@ type
     procedure SendMapOrSave(Recipient: TKMNetHandleIndex = NET_ADDRESS_OTHERS);
     procedure DoReconnection;
     function IsPlayerHandStillInGame(aPlayerIndex: Integer): Boolean;
-    procedure ReassignHost(aSenderIndex: TKMNetHandleIndex; M: TKMemoryStreamBinary);
+    procedure ReassignHost(aSenderIndex: TKMNetHandleIndex; M: TKMemoryStream);
     procedure PlayerJoined(aServerIndex: TKMNetHandleIndex; const aPlayerName: AnsiString);
     procedure PlayerDisconnected(aSenderIndex: TKMNetHandleIndex; aLastSentCommandsTick: Integer);
-    procedure PlayersListReceived(aM: TKMemoryStreamBinary);
+    procedure PlayersListReceived(aM: TKMemoryStream);
     procedure ReturnToLobbyVoteSucceeded;
     procedure ResetReturnToLobbyVote;
     procedure TransferOnCompleted(aClientIndex: TKMNetHandleIndex);
-    procedure TransferOnPacket(aClientIndex: TKMNetHandleIndex; aStream: TKMemoryStreamBinary; out SendBufferEmpty: Boolean);
+    procedure TransferOnPacket(aClientIndex: TKMNetHandleIndex; aStream: TKMemoryStream; out SendBufferEmpty: Boolean);
     function GetMyNetPlayer: TKMNetPlayerInfo;
     procedure SetDownloadlInProgress(aSenderIndex: TKMNetHandleIndex; aValue: Boolean);
-    procedure FileRequestReceived(aSenderIndex: TKMNetHandleIndex; aM: TKMemoryStreamBinary);
+    procedure FileRequestReceived(aSenderIndex: TKMNetHandleIndex; aM: TKMemoryStream);
 
     procedure ConnectSucceed(Sender:TObject);
     procedure ConnectFailed(const aText: string);
@@ -95,7 +95,7 @@ type
     procedure PostLogMessageToChat(const aLogMessage: UnicodeString);
     procedure PacketRecieve(aNetClient: TKMNetClient; aSenderIndex: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal); //Process all commands
     procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind); overload;
-    procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aStream: TKMemoryStreamBinary); overload;
+    procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aStream: TKMemoryStream); overload;
     procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aParam: Integer); overload;
     procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aParam: Cardinal); overload;
 //    procedure PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; const aParams: array of Integer);
@@ -223,7 +223,7 @@ type
     property MissingFileType: TKMNetGameKind read fMissingFileType;
     property MissingFileName: UnicodeString read fMissingFileName;
     procedure GameCreated;
-    procedure SendCommands(aStream: TKMemoryStreamBinary; aPlayerIndex: ShortInt = -1);
+    procedure SendCommands(aStream: TKMemoryStream; aPlayerIndex: ShortInt = -1);
     procedure AttemptReconnection;
     procedure ReturnToLobby;
 
@@ -486,7 +486,7 @@ begin
 end;
 
 
-procedure TKMNetworking.DecodePingInfo(aStream: TKMemoryStreamBinary);
+procedure TKMNetworking.DecodePingInfo(aStream: TKMemoryStream);
 var
   i: Integer;
   PingCount: Integer;
@@ -520,7 +520,7 @@ end;
 
 
 procedure TKMNetworking.SendMapOrSave(Recipient: TKMNetHandleIndex = NET_ADDRESS_OTHERS);
-var M: TKMemoryStreamBinary;
+var M: TKMemoryStream;
 begin
   M := TKMemoryStreamBinary.Create;
   case fSelectGameKind of
@@ -843,7 +843,7 @@ end;
 
 procedure TKMNetworking.SendPassword(const aPassword: AnsiString);
 var
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
 begin
   M := TKMemoryStreamBinary.Create;
 
@@ -954,7 +954,7 @@ procedure TKMNetworking.StartClick;
 var
   HumanUsableLocs, AIUsableLocs, AdvancedAIUsableLocs: TKMHandIDArray;
   ErrorMessage: UnicodeString;
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
   CheckMapInfo: TKMapInfo;
   FixedLocsColors: TKMCardinalArray;
 begin
@@ -1026,7 +1026,7 @@ end;
 procedure TKMNetworking.SendPlayerListAndRefreshPlayersSetup(aPlayerIndex: TKMNetHandleIndex = NET_ADDRESS_OTHERS);
 var
   I: Integer;
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
   AIOnlyColors: TKMCardinalArray;
 begin
   Assert(IsHost, 'Only host can send player list');
@@ -1093,7 +1093,7 @@ end;
 
 procedure TKMNetworking.SendGameOptions;
 var
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
 begin
   Assert(IsHost, 'Only host can send game options');
 
@@ -1178,7 +1178,7 @@ end;
 procedure TKMNetworking.PostChat(const aText: UnicodeString; aMode: TKMChatMode; aRecipientServerIndex: TKMNetHandleIndex = NET_ADDRESS_OTHERS);
 var
   I: Integer;
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
 begin
   //Sending chat during reconnections at best causes messages to be lost and at worst causes crashes due to intermediate connecting states
   if IsReconnecting then
@@ -1218,7 +1218,7 @@ end;
 
 procedure TKMNetworking.PostMessage(aTextID: Integer; aSound: TKMChatSound; const aText1: UnicodeString = '';
                                     const aText2: UnicodeString = ''; aRecipient: TKMNetHandleIndex = NET_ADDRESS_ALL; aTextID2: Integer = -1);
-var M: TKMemoryStreamBinary;
+var M: TKMemoryStream;
 begin
   M := TKMemoryStreamBinary.Create;
   M.Write(aTextID);
@@ -1260,7 +1260,7 @@ end;
 
 
 //Send our commands to either to all players, or to specified one
-procedure TKMNetworking.SendCommands(aStream: TKMemoryStreamBinary; aPlayerIndex: ShortInt = -1);
+procedure TKMNetworking.SendCommands(aStream: TKMemoryStream; aPlayerIndex: ShortInt = -1);
 begin
   if aPlayerIndex = -1 then
     PacketSend(NET_ADDRESS_OTHERS, mkCommands, aStream)
@@ -1316,7 +1316,7 @@ end;
 
 
 // Handle mkReassignHost message
-procedure TKMNetworking.ReassignHost(aSenderIndex: TKMNetHandleIndex; M: TKMemoryStreamBinary);
+procedure TKMNetworking.ReassignHost(aSenderIndex: TKMNetHandleIndex; M: TKMemoryStream);
 var NewHostIndex, OldHostIndex: TKMNetHandleIndex;
     PasswordA: AnsiString;
     DescriptionW: UnicodeString;
@@ -1392,7 +1392,7 @@ end;
 
 
 // Handle mkPLayerList message
-procedure TKMNetworking.PlayersListReceived(aM: TKMemoryStreamBinary);
+procedure TKMNetworking.PlayersListReceived(aM: TKMemoryStream);
 var
   OldLoc: Integer;
   IsPlayerInitBefore: Boolean;
@@ -1596,7 +1596,7 @@ end;
 
 procedure TKMNetworking.PacketRecieve(aNetClient: TKMNetClient; aSenderIndex: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal);
 var
-  M, M2: TKMemoryStreamBinary;
+  M, M2: TKMemoryStream;
   Kind: TKMessageKind;
   err: UnicodeString;
   tmpInteger, tmpInteger2: Integer;
@@ -2321,7 +2321,7 @@ end;
 //MessageKind.Data(depends on Kind)
 procedure TKMNetworking.PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind);
 var
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
 begin
   Assert(NetPacketType[aKind] = pfNoData);
 
@@ -2335,9 +2335,9 @@ begin
 end;
 
 
-procedure TKMNetworking.PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aStream: TKMemoryStreamBinary);
+procedure TKMNetworking.PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aStream: TKMemoryStream);
 var
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
 begin
   Assert(NetPacketType[aKind] = pfBinary);
 
@@ -2356,7 +2356,7 @@ end;
 
 procedure TKMNetworking.PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aParam: Cardinal);
 var
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
 begin
   Assert(NetPacketType[aKind] = pfNumber);
 
@@ -2374,7 +2374,7 @@ end;
 
 procedure TKMNetworking.PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aParam: Integer);
 var
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
 begin
   Assert(NetPacketType[aKind] = pfNumber);
 
@@ -2393,7 +2393,7 @@ end;
 //procedure TKMNetworking.PacketSend(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; const aParams: array of Integer);
 //var
 //  I: Integer;
-//  M: TKMemoryStreamBinary;
+//  M: TKMemoryStream;
 //begin
 //  Assert(NetPacketType[aKind] = pfBinary); //Several numbers are considered as binary
 //
@@ -2412,7 +2412,7 @@ end;
 
 procedure TKMNetworking.PacketSendInd(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aIndexOnServer: TKMNetHandleIndex);
 var
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
 begin
   Assert(NetPacketType[aKind] = pfNumber);
 
@@ -2430,7 +2430,7 @@ end;
 
 procedure TKMNetworking.PacketSendA(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; const aText: AnsiString);
 var
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
 begin
   Assert(NetPacketType[aKind] = pfStringA);
 
@@ -2448,7 +2448,7 @@ end;
 
 procedure TKMNetworking.PacketSendW(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; const aText: UnicodeString);
 var
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
 begin
   Assert(NetPacketType[aKind] = pfStringW);
 
@@ -2554,7 +2554,7 @@ end;
 procedure TKMNetworking.AnnounceGameInfo(aGameTime: TDateTime; aMap: UnicodeString);
 var
   MPGameInfo: TKMPGameInfo;
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
   I: Integer;
 begin
   //Only one player per game should send the info - Host
@@ -2620,7 +2620,7 @@ begin
 end;
 
 
-procedure TKMNetworking.TransferOnPacket(aClientIndex: TKMNetHandleIndex; aStream: TKMemoryStreamBinary; out SendBufferEmpty: Boolean);
+procedure TKMNetworking.TransferOnPacket(aClientIndex: TKMNetHandleIndex; aStream: TKMemoryStream; out SendBufferEmpty: Boolean);
 begin
   PacketSend(aClientIndex, mkFileChunk, aStream);
   SendBufferEmpty := fNetClient.SendBufferEmpty;
@@ -2662,6 +2662,8 @@ end;
 
 procedure TKMNetworking.FPSMeasurement(aFPS: Cardinal);
 begin
+  if Self = nil then Exit;
+
   fMyPlayerCurrentFPS := aFPS;
   if fNetGameState = lgsGame then
   begin
@@ -2719,7 +2721,7 @@ begin
 end;
 
 
-procedure TKMNetworking.FileRequestReceived(aSenderIndex: TKMNetHandleIndex; aM: TKMemoryStreamBinary);
+procedure TKMNetworking.FileRequestReceived(aSenderIndex: TKMNetHandleIndex; aM: TKMemoryStream);
 
   procedure AbortSend;
   begin

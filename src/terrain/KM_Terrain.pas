@@ -404,7 +404,8 @@ implementation
 uses
   KM_Log, KM_HandsCollection, KM_TerrainWalkConnect, KM_Resource, KM_Units, KM_DevPerfLog,
   KM_ResSound, KM_Sound, KM_UnitActionStay, KM_UnitWarrior, KM_TerrainPainter, KM_Houses,
-  KM_ResUnits, KM_ResSprites, KM_Hand, KM_Game, KM_GameParams, KM_GameTypes, KM_ScriptingEvents, KM_Utils, KM_DevPerfLogTypes;
+  KM_ResUnits, KM_ResSprites, KM_Hand, KM_Game, KM_GameParams, KM_GameTypes, KM_ScriptingEvents, KM_Utils, KM_DevPerfLogTypes,
+  KM_CommonExceptions;
 
 const
   HEIGHT_DEFAULT = 30;
@@ -503,7 +504,7 @@ end;
 procedure TKMTerrain.LoadFromFile(const FileName: UnicodeString; aMapEditor: Boolean);
 var
   I, J, L: Integer;
-  S: TKMemoryStreamBinary;
+  S: TKMemoryStream;
   newX, newY: Integer;
   gameRev: Integer;
   tileBasic: TKMTerrainTileBasic;
@@ -589,7 +590,7 @@ const
   H_RND_HALF = HEIGHT_RAND_VALUE div 2;
 
   //aDir - direction of enlarge for new generated tile
-  procedure SetNewLand(var S: TKMemoryStreamBinary; aToX, aToY, aFromX, aFromY: Word;
+  procedure SetNewLand(var S: TKMemoryStream; aToX, aToY, aFromX, aFromY: Word;
                        aNewGenTile: Boolean; aDir: TKMDirection = dirNA);
   var
     L, D, adj, hMid: Integer;
@@ -653,7 +654,7 @@ const
     WriteTileToStream(S, TileBasic, tileOwner, False, mapDataSize);
   end;
 
-  procedure WriteFileHeader(S: TKMemoryStreamBinary);
+  procedure WriteFileHeader(S: TKMemoryStream);
   begin
     S.Write(Integer(0));     //Indicates this map has not standart KaM format, Can use 0, as we can't have maps with 0 width
     S.WriteW(UnicodeString(GAME_REVISION)); //Write KaM version, in case we will change format in future
@@ -661,7 +662,7 @@ const
   end;
 
 var
-  S: TKMemoryStreamBinary;
+  S: TKMemoryStream;
   //MapInnerRect: TKMRect;
   NewGenTileI, NewGenTileK, extLeft, extRight, extTop, extBot: Boolean;
   I, K, IFrom, KFrom, D: Integer;
@@ -965,7 +966,7 @@ function TKMTerrain.ScriptTrySetTilesArray(var aTiles: array of TKMTerrainTileBr
     aResult := False;
   end;
 
-  procedure UpdateHeight(aTileBrief: TKMTerrainTileBrief; aHeightRect: TKMRect; aHasErrorOnTile: Boolean; aErrorTypesOnTile: TKMTileChangeTypeSet);
+  procedure UpdateHeight(aTileBrief: TKMTerrainTileBrief; var aHeightRect: TKMRect; var aHasErrorOnTile: Boolean; var aErrorTypesOnTile: TKMTileChangeTypeSet);
   begin
     // Update height if needed
     if aTileBrief.UpdateHeight then
@@ -4891,11 +4892,11 @@ begin
   //Valid range of tiles is 0..MapXY-2 because we check height from (Xc+1,Yc+1) to (Xc+2,Yc+2)
   //We cannot ask for height at the bottom row (MapY-1) because that row is not on the visible map,
   //and does not have a vertex below it
-  Xc := EnsureRange(Trunc(inX), 0, fMapX-2);
-  Yc := EnsureRange(Trunc(inY), 0, fMapY-2);
+  Xc := EnsureRange(Trunc(inX), 0, fMapX-1);
+  Yc := EnsureRange(Trunc(inY), 0, fMapY-1);
 
-  tmp1 := Mix(Land[Yc+1, Xc+2].Height, Land[Yc+1, Xc+1].Height, Frac(inX));
-  tmp2 := Mix(Land[Yc+2, Xc+2].Height, Land[Yc+2, Xc+1].Height, Frac(inX));
+  tmp1 := Mix(Land[Yc+1, Min(Xc+2, fMapX)].Height, Land[Yc+1, Xc+1].Height, Frac(inX));
+  tmp2 := Mix(Land[Min(Yc+2, fMapY), Min(Xc+2, fMapX)].Height, Land[Min(Yc+2, fMapY), Xc+1].Height, Frac(inX));
   Result := inY - Mix(tmp2, tmp1, Frac(inY)) / CELL_HEIGHT_DIV;
 end;
 
@@ -4917,11 +4918,11 @@ begin
   //Valid range of tiles is 0..MapXY-2 because we check height from (Xc+1,Yc+1) to (Xc+2,Yc+2)
   //We cannot ask for height at the bottom row (MapY-1) because that row is not on the visible map,
   //and does not have a vertex below it
-  Xc := EnsureRange(Trunc(inX), 0, fMapX-2);
-  Yc := EnsureRange(Trunc(inY), 0, fMapY-2);
+  Xc := EnsureRange(Trunc(inX), 0, fMapX-1);
+  Yc := EnsureRange(Trunc(inY), 0, fMapY-1);
 
-  tmp1 := Mix(Land[Yc+1, Xc+2].RenderHeight, Land[Yc+1, Xc+1].RenderHeight, Frac(inX));
-  tmp2 := Mix(Land[Yc+2, Xc+2].RenderHeight, Land[Yc+2, Xc+1].RenderHeight, Frac(inX));
+  tmp1 := Mix(Land[Yc+1, Min(Xc+2, fMapX)].RenderHeight, Land[Yc+1, Xc+1].RenderHeight, Frac(inX));
+  tmp2 := Mix(Land[Min(Yc+2, fMapY), Min(Xc+2, fMapX)].RenderHeight, Land[Min(Yc+2, fMapY), Xc+1].RenderHeight, Frac(inX));
   Result := inY - Mix(tmp2, tmp1, Frac(inY)) / CELL_HEIGHT_DIV;
 end;
 
@@ -4945,11 +4946,11 @@ begin
   //Valid range of tiles is 0..MapXY-2 because we check height from (Xc+1,Yc+1) to (Xc+2,Yc+2)
   //We cannot ask for height at the bottom row (MapY-1) because that row is not on the visible map,
   //and does not have a vertex below it
-  Xc := EnsureRange(Trunc(inX), 0, fMapX-2);
-  Yc := EnsureRange(Trunc(inY), 0, fMapY-2);
+  Xc := EnsureRange(Trunc(inX), 0, fMapX-1);
+  Yc := EnsureRange(Trunc(inY), 0, fMapY-1);
 
-  tmp1 := Mix(Land[Yc+1, Xc+2].Height, Land[Yc+1, Xc+1].Height, Frac(inX));
-  tmp2 := Mix(Land[Yc+2, Xc+2].Height, Land[Yc+2, Xc+1].Height, Frac(inX));
+  tmp1 := Mix(Land[Yc+1, Min(Xc+2, fMapX)].Height, Land[Yc+1, Xc+1].Height, Frac(inX));
+  tmp2 := Mix(Land[Min(Yc+2, fMapY), Min(Xc+2, fMapX)].Height, Land[Min(Yc+2, fMapY), Xc+1].Height, Frac(inX));
   Result := Mix(tmp2, tmp1, Frac(inY)) / CELL_HEIGHT_DIV;
 end;
 
@@ -4964,11 +4965,11 @@ begin
   //Valid range of tiles is 0..MapXY-2 because we check height from (Xc+1,Yc+1) to (Xc+2,Yc+2)
   //We cannot ask for height at the bottom row (MapY-1) because that row is not on the visible map,
   //and does not have a vertex below it
-  Xc := EnsureRange(Trunc(inX), 0, fMapX-2);
-  Yc := EnsureRange(Trunc(inY), 0, fMapY-2);
+  Xc := EnsureRange(Trunc(inX), 0, fMapX-1);
+  Yc := EnsureRange(Trunc(inY), 0, fMapY-1);
 
-  tmp1 := Mix(Land[Yc+1, Xc+2].RenderHeight, Land[Yc+1, Xc+1].RenderHeight, Frac(inX));
-  tmp2 := Mix(Land[Yc+2, Xc+2].RenderHeight, Land[Yc+2, Xc+1].RenderHeight, Frac(inX));
+  tmp1 := Mix(Land[Yc+1, Min(Xc+2, fMapX)].RenderHeight, Land[Yc+1, Xc+1].RenderHeight, Frac(inX));
+  tmp2 := Mix(Land[Min(Yc+2, fMapY), Min(Xc+2, fMapX)].RenderHeight, Land[Min(Yc+2, fMapY), Xc+1].RenderHeight, Frac(inX));
   Result := Mix(tmp2, tmp1, Frac(inY)) / CELL_HEIGHT_DIV;
 end;
 

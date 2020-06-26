@@ -76,7 +76,7 @@ type
     fCount: Word;
     fSaves: array of TKMSaveInfo;
     fSortMethod: TKMSavesSortMethod;
-    CS: TCriticalSection;
+    fCriticalSection: TCriticalSection;
     fScanner: TKMSavesScanner;
     fScanning: Boolean;
     fScanFinished: Boolean;
@@ -126,7 +126,8 @@ uses
   SysUtils, Math, KromUtils,
   KM_GameClasses,
   KM_Resource, KM_ResTexts, KM_FileIO,
-  KM_CommonClasses, KM_Defaults, KM_CommonUtils, KM_Log;
+  KM_CommonClasses, KM_Defaults, KM_CommonUtils, KM_Log,
+  KM_GameTypes;
 
 
 { TKMSaveInfo }
@@ -174,7 +175,8 @@ end;
 
 procedure TKMSaveInfo.ScanSave;
 var
-  LoadStream: TKMemoryStreamBinary;
+  loadStream, headerStream: TKMemoryStream;
+  compressedSaveBody: Boolean;
 begin
   if not FileExists(fPath + fFileName + EXT_SAVE_MAIN_DOT) then
   begin
@@ -185,11 +187,15 @@ begin
 
   fCrcCalculated := False; //make lazy load for CRC
 
-  LoadStream := TKMemoryStreamBinary.Create; //Read data from file into stream
-  LoadStream.LoadFromFile(fPath + fFileName + EXT_SAVE_MAIN_DOT);
+  loadStream := TKMemoryStreamBinary.Create; //Read data from file into stream
+  headerStream := TKMemoryStreamBinary.Create;
+  loadStream.LoadFromFile(fPath + fFileName + EXT_SAVE_MAIN_DOT);
 
-  fGameInfo.Load(LoadStream);
-  fGameOptions.Load(LoadStream);
+  loadStream.Read(compressedSaveBody);
+  loadStream.LoadToStream(headerStream, SAVE_HEADER_MARKER);
+
+  fGameInfo.Load(headerStream);
+  fGameOptions.Load(headerStream);
 
   fSaveError.ErrorString := fGameInfo.ParseError.ErrorString;
   case fGameInfo.ParseError.ErrorType of
@@ -208,7 +214,8 @@ begin
       or (ALLOW_LOAD_UNSUP_VERSION_SAVE and (fSaveError.ErrorType = sietUnsupportedVersion))) then
     fGameInfo.Title := fSaveError.ErrorString;
 
-  LoadStream.Free;
+  headerStream.Free;
+  loadStream.Free;
 end;
 
 
@@ -251,33 +258,38 @@ function TKMSaveInfo.LoadMinimap(aMinimap: TKMMinimap; aChoosenStartLoc: Integer
 
   function LoadSPMinimap: Boolean;
   var
-    loadStream: TKMemoryStreamBinary;
+    loadStream, headerS: TKMemoryStream;
     dummyGameInfo: TKMGameInfo;
     dummyGameOptions: TKMGameOptions;
-    isMultiplayerFlagInSave: Boolean;
+    compressedSaveBody, isMultiplayerFlagInSave: Boolean;
   begin
     Result := False;
-    loadStream := TKMemoryStreamBinary.Create; //Read data from file into stream
     dummyGameInfo := TKMGameInfo.Create;
     dummyGameOptions := TKMGameOptions.Create;
+    loadStream := TKMemoryStreamBinary.Create; //Read data from file into stream
+    headerS := TKMemoryStreamBinary.Create;
     try
       loadStream.LoadFromFile(fPath + fFileName + EXT_SAVE_MAIN_DOT);
+      loadStream.Read(compressedSaveBody); // Should be always True
 
-      dummyGameInfo.Load(loadStream); //We don't care, we just need to skip past it correctly
-      dummyGameOptions.Load(loadStream); //We don't care, we just need to skip past it correctly
-      loadStream.Read(isMultiplayerFlagInSave);
+      loadStream.LoadToStream(headerS, SAVE_HEADER_MARKER);
+
+      dummyGameInfo.Load(headerS);
+      dummyGameOptions.Load(headerS);
+      headerS.Read(isMultiplayerFlagInSave);
 
       // Skip minimap load if save is actually made in MP game.
       // We store MP minimap in a separate file .sloc
       if not isMultiplayerFlagInSave then
       begin
-        aMinimap.LoadFromStream(loadStream);
+        aMinimap.LoadFromStream(headerS);
         Result := True;
       end;  
     finally
+      headerS.Free;
+      loadStream.Free;
       dummyGameOptions.Free;
       dummyGameInfo.Free;
-      loadStream.Free;
     end;
   end;
 
@@ -347,7 +359,7 @@ begin
   //CS is used to guard sections of code to allow only one thread at once to access them
   //We mostly don't need it, as UI should access Maps only when map events are signaled
   //it acts as a safenet mostly
-  CS := TCriticalSection.Create;
+  fCriticalSection := TCriticalSection.Create;
 end;
 
 
@@ -359,20 +371,20 @@ begin
   //Release TKMapInfo objects
   Clear;
 
-  CS.Free;
+  fCriticalSection.Free;
   inherited;
 end;
 
 
 procedure TKMSavesCollection.Lock;
 begin
-  CS.Enter;
+  fCriticalSection.Enter;
 end;
 
 
 procedure TKMSavesCollection.Unlock;
 begin
-  CS.Leave;
+  fCriticalSection.Leave;
 end;
 
 

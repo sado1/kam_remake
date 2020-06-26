@@ -1,104 +1,115 @@
-﻿0:37// Scroll Left
-1:39// Scroll Right
-2:38// Scroll Up
-3:40// Scroll Down
-4:4// Map drag scroll
-5:34// Zoom In
-6:33// Zoom Out
-7:8// Reset Zoom
-8:27// Close Menu's
-9:122// Debug window
-10:77// Debug Show Map
-11:86// Debug Victory
-12:69// Debug Defeat
-13:67// Debug Add Scout
-14:112// Build Menu
-15:113// Ratio Menu
-16:114// Statistics Menu
-17:115// Options Menu
-18:116// Normal Game Speed (x1)
-19:117// Game Speed x%s
-20:118// Game Speed x%s
-21:119// Game Speed x%s
-22:66// Beacon
-23:80// Pause
-24:84// Show Teams (MP)
-25:32// Center to Alert
-26:46// Delete Message
-27:13// Show Game Chat (MP)
-28:9// Select next house/unit with same type
-29:0// Switch players color mode
-30:81// Construct road
-31:87// Plough field
-32:69// Lay out wine field
-33:82// Remove building/highlights
-34:49// Select Group 1
-35:50// Select Group 2
-36:51// Select Group 3
-37:52// Select Group 4
-38:53// Select Group 5
-39:54// Select Group 6
-40:55// Select Group 7
-41:56// Select Group 8
-42:57// Select Group 9
-43:48// Select Group 10
-44:0// Select Group 11
-45:0// Select Group 12
-46:0// Select Group 13
-47:0// Select Group 14
-48:0// Select Group 15
-49:0// Select Group 16
-50:0// Select Group 17
-51:0// Select Group 18
-52:0// Select Group 19
-53:0// Select Group 20
-54:72// Halt Command
-55:83// Splitup Command
-56:76// Linkup Command
-57:70// Food Command
-58:88// Storm Command
-59:187// Increase Formation
-60:189// Decrease Formation
-61:190// Turn Clockwise
-62:188// Turn Counterclockwise
-63:65// Goto previuos unit
-64:83// Train or Equip unit
-65:68// Goto next unit
-66:0// Open/Close spectator stats panel
-67:78// Play next tick in replay
-68:49// Spectate player 1
-69:50// Spectate player 2
-70:51// Spectate player 3
-71:52// Spectate player 4
-72:53// Spectate player 5
-73:54// Spectate player 6
-74:55// Spectate player 7
-75:56// Spectate player 8
-76:57// Spectate player 9
-77:48// Spectate player 10
-78:189// Spectate player 11
-79:61// Spectate player 12
-80:13// Extra's Menu
-81:112// Terrain Editor
-82:113// Village Planning
-83:114// Visual Scripting
-84:115// Global Scripting
-85:116// Main Menu
-86:49// Sub-menu 1
-87:50// Sub-menu 2
-88:51// Sub-menu 3
-89:52// Sub-menu 4
-90:53// Sub-menu 5
-91:54// Sub-menu 6
-92:81// Sub-menu action 1
-93:87// Sub-menu action 2
-94:69// Sub-menu action 3
-95:82// Sub-menu action 4
-96:84// Sub-menu action 5
-97:89// Sub-menu action 6
-98:85// Sub-menu action 7
-99:32// Objects palette
-100:119// Tiles palette
-101:46// Universal eraser
-102:45// Paint bucket (change owner)
-103:72// History
+﻿kfScrollLeft:37; //Scroll Left
+kfScrollRight:39; //Scroll Right
+kfScrollUp:38; //Scroll Up
+kfScrollDown:40; //Scroll Down
+kfMapDragScroll:4; //Map drag scroll
+kfZoomIn:34; //Zoom In
+kfZoomOut:33; //Zoom Out
+kfZoomReset:8; //Reset Zoom
+kfCloseMenu:27; //Close Menu's
+kfMusicPrevTrack:177; //Music previous track
+kfMusicNextTrack:176; //Music next track
+kfMusicDisable:178; //Disable music
+kfMusicShuffle:179; //Shuffle music
+kfMusicVolumeUp:175; //Music volume up
+kfMusicVolumeDown:174; //Music volume down
+kfMusicMute:0; //Mute music
+kfSoundVolumeUp:107; //Sound volume up
+kfSoundVolumeDown:109; //Sound volume down
+kfSoundMute:0; //Mute sounds
+kfMuteAll:173; //Mute all (music and sounds)
+kfDebugWindow:122; //Debug window
+kfDebugRevealmap:77; //Debug Show Map
+kfDebugVictory:86; //Debug Victory
+kfDebugDefeat:69; //Debug Defeat
+kfDebugAddscout:67; //Debug Add Scout
+kfMenuBuild:112; //Build Menu
+kfMenuRatio:113; //Ratio Menu
+kfMenuStats:114; //Statistics Menu
+kfMenuMenu:115; //Options Menu
+kfSpeedup1:116; //Normal Game Speed (x1)
+kfSpeedup2:117; //Game Speed x%s
+kfSpeedup3:118; //Game Speed x%s
+kfSpeedup4:119; //Game Speed x%s
+kfBeacon:66; //Beacon
+kfPause:80; //Pause
+kfShowTeams:84; //Show Teams (MP)
+kfCenterAlert:32; //Center to Alert
+kfDeleteMsg:46; //Delete Message
+kfChat:13; //Show Game Chat (MP)
+kfNextEntitySameType:9; //Select next house/unit with same type
+kfPlayerColorMode:0; //Switch players color mode
+kfPlanRoad:81; //Construct road
+kfPlanField:87; //Plough field
+kfPlanWine:69; //Lay out wine field
+kfErasePlan:82; //Remove building/highlights
+kfSelect1:49; //Select Group 1
+kfSelect2:50; //Select Group 2
+kfSelect3:51; //Select Group 3
+kfSelect4:52; //Select Group 4
+kfSelect5:53; //Select Group 5
+kfSelect6:54; //Select Group 6
+kfSelect7:55; //Select Group 7
+kfSelect8:56; //Select Group 8
+kfSelect9:57; //Select Group 9
+kfSelect10:48; //Select Group 10
+kfSelect11:0; //Select Group 11
+kfSelect12:0; //Select Group 12
+kfSelect13:0; //Select Group 13
+kfSelect14:0; //Select Group 14
+kfSelect15:0; //Select Group 15
+kfSelect16:0; //Select Group 16
+kfSelect17:0; //Select Group 17
+kfSelect18:0; //Select Group 18
+kfSelect19:0; //Select Group 19
+kfSelect20:0; //Select Group 20
+kfArmyHalt:72; //Halt Command
+kfArmySplit:83; //Splitup Command
+kfArmyLink:76; //Linkup Command
+kfArmyFood:70; //Food Command
+kfArmyStorm:88; //Storm Command
+kfArmyAddLine:187; //Increase Formation
+kfArmyDelLine:189; //Decrease Formation
+kfArmyRotateCw:190; //Turn Clockwise
+kfArmyRotateCcw:188; //Turn Counterclockwise
+kfTrainGotoPrev:65; //Goto previuos unit
+kfTrainEquipUnit:83; //Train or Equip unit
+kfTrainGotoNext:68; //Goto next unit
+kfSpecpanelSelectDropbox:0; //Open/Close spectator stats panel
+kfReplayPlayNextTick:78; //Play next tick in replay
+kfSpectatePlayer1:49; //Spectate player 1
+kfSpectatePlayer2:50; //Spectate player 2
+kfSpectatePlayer3:51; //Spectate player 3
+kfSpectatePlayer4:52; //Spectate player 4
+kfSpectatePlayer5:53; //Spectate player 5
+kfSpectatePlayer6:54; //Spectate player 6
+kfSpectatePlayer7:55; //Spectate player 7
+kfSpectatePlayer8:56; //Spectate player 8
+kfSpectatePlayer9:57; //Spectate player 9
+kfSpectatePlayer10:48; //Spectate player 10
+kfSpectatePlayer11:189; //Spectate player 11
+kfSpectatePlayer12:61; //Spectate player 12
+kfMapedExtra:13; //Extra's Menu
+kfMapedTerrain:112; //Terrain Editor
+kfMapedVillage:113; //Village Planning
+kfMapedVisual:114; //Visual Scripting
+kfMapedGlobal:115; //Global Scripting
+kfMapedMainMenu:116; //Main Menu
+kfMapedSubMenu1:49; //Sub-menu 1
+kfMapedSubMenu2:50; //Sub-menu 2
+kfMapedSubMenu3:51; //Sub-menu 3
+kfMapedSubMenu4:52; //Sub-menu 4
+kfMapedSubMenu5:53; //Sub-menu 5
+kfMapedSubMenu6:54; //Sub-menu 6
+kfMapedSubMenuAction1:81; //Sub-menu action 1
+kfMapedSubMenuAction2:87; //Sub-menu action 2
+kfMapedSubMenuAction3:69; //Sub-menu action 3
+kfMapedSubMenuAction4:82; //Sub-menu action 4
+kfMapedSubMenuAction5:84; //Sub-menu action 5
+kfMapedSubMenuAction6:89; //Sub-menu action 6
+kfMapedSubMenuAction7:85; //Sub-menu action 7
+kfMapedObjPalette:32; //Objects palette
+kfMapedTilesPalette:119; //Tiles palette
+kfMapedUnivErasor:46; //Universal eraser
+kfMapedPaintBucket:45; //Paint bucket (change owner)
+kfMapedHistory:72; //History

@@ -50,7 +50,8 @@ uses
   SysUtils,
   KM_Game, KM_GameParams, KM_HandsCollection, KM_Log, KM_Resource, KM_ResUnits, KM_UnitWarrior,
   KM_UnitActionWalkTo,
-  KM_DevPerfLog, KM_DevPerfLogTypes;
+  KM_DevPerfLog, KM_DevPerfLogTypes,
+  KM_CommonExceptions;
 
 
 { TKMUnitsCollection }

@@ -40,8 +40,9 @@ implementation
 uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLType, {$ENDIF}
-  KM_Main, KM_ResFonts, KM_ResTexts, KM_GameCursor, KM_RenderUI, KM_ResKeys,
-  KM_InterfaceGame, KM_Utils;
+  KM_Main, KM_ResFonts, KM_ResTexts, KM_GameCursor, KM_RenderUI,
+  KM_InterfaceGame, KM_Utils,
+  KM_ResTypes;
 
 
 { TKMMapEdTerrainHeights }
@@ -59,12 +60,12 @@ begin
 
   HeightCircle := TKMButtonFlat.Create(Panel_Heights, Panel_Heights.Width - 48 - 9, 30, 24, 24, 592);
   HeightCircle.Anchors := [anTop, anRight];
-  HeightCircle.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_CIRCLE, SC_MAPEDIT_SUB_MENU_ACTION_1);
+  HeightCircle.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_CIRCLE, kfMapedSubMenuAction1);
   HeightCircle.OnClick  := HeightChange;
 
   HeightSquare := TKMButtonFlat.Create(Panel_Heights, Panel_Heights.Width - 24, 30, 24, 24, 593);
   HeightSquare.Anchors := [anTop, anRight];
-  HeightSquare.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_SQUARE, SC_MAPEDIT_SUB_MENU_ACTION_2);
+  HeightSquare.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_SQUARE, kfMapedSubMenuAction2);
   HeightSquare.OnClick  := HeightChange;
 
   HeightSize          := TKMTrackBar.Create(Panel_Heights, 9, 60, Panel_Heights.Width - 9, 1, 15); //1..15(4bit) for size
@@ -91,14 +92,14 @@ begin
   HeightElevate.Down          := True;
   HeightElevate.Caption       := gResTexts[TX_MAPED_TERRAIN_HEIGHTS_ELEVATE];
   HeightElevate.CapOffsetY    := -12;
-  HeightElevate.Hint          := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_ELEVATE_HINT, SC_MAPEDIT_SUB_MENU_ACTION_3);
+  HeightElevate.Hint          := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_ELEVATE_HINT, kfMapedSubMenuAction3);
 
   HeightUnequalize            := TKMButtonFlat.Create(Panel_Heights, 9, 255, Panel_Heights.Width - 9, 20, 0);
   HeightUnequalize.Anchors := [anLeft, anTop, anRight];
   HeightUnequalize.OnClick    := HeightChange;
   HeightUnequalize.Caption    := gResTexts[TX_MAPED_TERRAIN_HEIGHTS_UNEQUALIZE];
   HeightUnequalize.CapOffsetY := -12;
-  HeightUnequalize.Hint       := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_UNEQUALIZE_HINT, SC_MAPEDIT_SUB_MENU_ACTION_4);
+  HeightUnequalize.Hint       := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_UNEQUALIZE_HINT, kfMapedSubMenuAction4);
 
   fSubMenuActionsEvents[0] := HeightChange;
   fSubMenuActionsEvents[1] := HeightChange;

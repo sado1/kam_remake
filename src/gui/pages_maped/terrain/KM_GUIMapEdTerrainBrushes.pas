@@ -49,8 +49,9 @@ implementation
 uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLType, {$ENDIF}
-  TypInfo, KM_ResFonts, KM_ResTexts, KM_Game, KM_GameCursor, KM_RenderUI, KM_ResKeys,
-  KM_TerrainPainter, KM_InterfaceGame, KM_Utils;
+  TypInfo, KM_ResFonts, KM_ResTexts, KM_Game, KM_GameCursor, KM_RenderUI,
+  KM_TerrainPainter, KM_InterfaceGame, KM_Utils,
+  KM_ResTypes;
 
 const
   BTN_BRUSH_SIZE = 24;
@@ -115,14 +116,14 @@ begin
   BrushCircle := TKMButtonFlat.Create(Panel_Brushes, Panel_Brushes.Width - (BTN_BRUSH_SIZE * 2) - 18,
                                                      25, BTN_BRUSH_SIZE, BTN_BRUSH_SIZE, 592);
   BrushCircle.Anchors := [anTop, anRight];
-  BrushCircle.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_CIRCLE, SC_MAPEDIT_SUB_MENU_ACTION_1);
+  BrushCircle.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_CIRCLE, kfMapedSubMenuAction1);
   BrushCircle.OnClick := BrushChange;
   BrushCircle.TexOffsetX := 1;
   BrushCircle.TexOffsetY := 1;
 
   BrushSquare := TKMButtonFlat.Create(Panel_Brushes, Panel_Brushes.Width - BTN_BRUSH_SIZE - 9, 25, BTN_BRUSH_SIZE, BTN_BRUSH_SIZE, 593);
   BrushSquare.Anchors := [anTop, anRight];
-  BrushSquare.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_SQUARE, SC_MAPEDIT_SUB_MENU_ACTION_2);
+  BrushSquare.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_SQUARE, kfMapedSubMenuAction2);
   BrushSquare.OnClick := BrushChange;
   BrushSquare.TexOffsetX := 1;
   BrushSquare.TexOffsetY := 1;

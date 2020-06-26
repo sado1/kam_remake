@@ -1,5 +1,5 @@
 @echo off
-call make_beta.bat
+call create_beta.bat
 
 if errorlevel 2 (goto exit2)
 

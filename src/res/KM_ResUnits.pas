@@ -539,7 +539,7 @@ end;
 function TKMResUnits.LoadUnitsDat(const aPath: UnicodeString): Cardinal;
 const UNIT_DAT_COUNT = 41;
 var
-  S: TKMemoryStreamBinary;
+  S: TKMemoryStream;
   I: Integer;
 begin
   Assert(FileExists(aPath));

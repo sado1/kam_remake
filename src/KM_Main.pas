@@ -41,7 +41,7 @@ type
     destructor Destroy; override;
 
     function Start: Boolean;
-    procedure CloseQuery(var CanClose: Boolean);
+    procedure CloseQuery(var aCanClose: Boolean);
     procedure Stop(Sender: TObject);
 
     procedure UpdateWindowParams(const aWindowParams: TKMWindowParamsRecord);
@@ -87,7 +87,8 @@ uses
   {$IFDEF USE_MAD_EXCEPT} KM_Exceptions, {$ENDIF}
   SysUtils, StrUtils, Math, KromUtils, KM_FileIO,
   KM_GameApp, KM_Helpers,
-  KM_Log, KM_CommonUtils, KM_Defaults, KM_Points, KM_DevPerfLog;
+  KM_Log, KM_CommonUtils, KM_Defaults, KM_Points, KM_DevPerfLog,
+  KM_CommonExceptions;
 
 
 const
@@ -134,6 +135,7 @@ end;
 
 // Return False in case we had difficulties on the start
 function TKMMain.Start: Boolean;
+
   function GetScreenMonitorsInfo: TKMPointArray;
   var
     I: Integer;
@@ -169,7 +171,7 @@ begin
       gLog.DeleteOldLogs;
     except
       on E: Exception do
-        gLog := nil; // Ignore Log creation error. We will exit later with proper error message
+        raise EGameInitError.Create('Error initializing logging:' + sLineBreak + E.Message);
     end;
   end;
 
@@ -244,31 +246,31 @@ begin
 end;
 
 
-procedure TKMMain.CloseQuery(var CanClose: Boolean);
+procedure TKMMain.CloseQuery(var aCanClose: Boolean);
 var
-  WasRunning: Boolean;
+  wasRunning: Boolean;
 begin
   //MessageDlg works better than Application.MessageBox or others, it stays on top and
   //pauses here until the user clicks ok. However for some reason we chose MessageBox
   //thus we need to pause the game manually
 
-  CanClose := (gGameApp = nil) or (gGameApp.Game = nil) or gGameApp.Game.Params.IsReplay;
+  aCanClose := (gGameApp = nil) or (gGameApp.Game = nil) or gGameApp.Game.Params.IsReplay;
 
-  if not CanClose then
+  if not aCanClose then
   begin
     //We want to pause the game for the time user verifies he really wants to close
-    WasRunning := not gGameApp.Game.Params.IsMultiPlayerOrSpec
+    wasRunning := not gGameApp.Game.Params.IsMultiPlayerOrSpec
                   and not gGameApp.Game.Params.IsMapEditor
                   and not gGameApp.Game.IsPaused;
 
     //Pause the game
-    if WasRunning then
+    if wasRunning then
       gGameApp.Game.IsPaused := True;
 
     //Ask the Player
     {$IFDEF MSWindows}
     //MessageBox works best in Windows (gets stuck under main form less)
-    CanClose := MessageBox( fFormMain.Handle,
+    aCanClose := MessageBox( fFormMain.Handle,
                             PChar('Any unsaved changes will be lost. Exit?'),
                             PChar('Warning'),
                             MB_YESNO or MB_ICONWARNING or MB_SETFOREGROUND or MB_TASKMODAL
@@ -279,7 +281,7 @@ begin
     {$ENDIF}
 
     //Resume the game
-    if not CanClose and WasRunning then
+    if not aCanClose and wasRunning then
       gGameApp.Game.IsPaused := False;
   end;
 end;
@@ -357,10 +359,10 @@ end;
 
 procedure TKMMain.DoIdle(Sender: TObject; var Done: Boolean);
 var
-  FrameTime: Cardinal;
-  FPSLag: Integer;
+  frameTime: Cardinal;
+  fpsLag: Integer;
 begin
-  FrameTime := 0;
+  frameTime := 0;
 
   if CHECK_8087CW then
     //$1F3F is used to mask out reserved/undefined bits
@@ -371,17 +373,17 @@ begin
   //Counting FPS
   if fMainSettings <> nil then //fMainSettings could be nil on Game Exit ?? Just check if its not nil
   begin
-    FrameTime  := GetTimeSince(fOldTimeFPS);
+    frameTime  := GetTimeSince(fOldTimeFPS);
     fOldTimeFPS := TimeGet;
 
-    FPSLag := Floor(1000 / fMainSettings.FPSCap);
-    if CAP_MAX_FPS and (FPSLag <> 1) and (FrameTime < FPSLag) then
+    fpsLag := Floor(1000 / fMainSettings.FPSCap);
+    if CAP_MAX_FPS and (fpsLag <> 1) and (frameTime < fpsLag) then
     begin
-      Sleep(FPSLag - FrameTime);
-      FrameTime := FPSLag;
+      Sleep(fpsLag - frameTime);
+      frameTime := fpsLag;
     end;
 
-    Inc(fOldFrameTimes, FrameTime);
+    Inc(fOldFrameTimes, frameTime);
     Inc(fFrameCount);
     if fOldFrameTimes >= FPS_INTERVAL then
     begin
@@ -389,7 +391,7 @@ begin
       if gGameApp <> nil then
         gGameApp.FPSMeasurement(Round(fFPS));
 
-      fFPSString := Format('%.1f FPS', [fFPS]) + IfThen(CAP_MAX_FPS, ' (' + IntToStr(FPSLag) + ')');
+      fFPSString := Format('%.1f FPS', [fFPS]) + IfThen(CAP_MAX_FPS, ' (' + IntToStr(fpsLag) + ')');
       StatusBarText(SB_ID_FPS, fFPSString);
       fOldFrameTimes := 0;
       fFrameCount := 0;
@@ -402,7 +404,7 @@ begin
   Set8087CW($133F);
   if gGameApp <> nil then
   begin
-    gGameApp.UpdateStateIdle(FrameTime);
+    gGameApp.UpdateStateIdle(frameTime);
     gGameApp.Render;
   end;
 
@@ -412,24 +414,15 @@ end;
 
 // Check game execution dir generic permissions
 function TKMMain.DoHaveGenericPermission: Boolean;
-{$IFDEF WDC}
 const
   GRANTED: array[Boolean] of string = ('blocked', 'granted');
 var
   readAcc, writeAcc, execAcc: Boolean;
-{$ENDIF}
 begin
-  {$IFDEF WDC}
-  readAcc   := (CheckFileAccess(ExeDir, FILE_GENERIC_READ) = FILE_GENERIC_READ);
-  writeAcc  := (CheckFileAccess(ExeDir, FILE_GENERIC_WRITE) = FILE_GENERIC_WRITE);
-  execAcc   := (CheckFileAccess(ExeDir, FILE_GENERIC_EXECUTE) = FILE_GENERIC_EXECUTE);
+  CheckFolderPermission(ExeDir, readAcc, writeAcc, execAcc);
   gLog.AddTime(Format('Check game folder ''%s'' generic permissions: READ: %s; WRITE: %s; EXECUTE: %s',
                       [ExeDir, GRANTED[readAcc], GRANTED[writeAcc], GRANTED[execAcc]]));
   Result := readAcc and writeAcc and execAcc;
-  {$ENDIF}
-  {$IFDEF FPC}
-  Result := True; // No folder permissions check for FPC yet
-  {$ENDIF}
 end;
 
 
@@ -658,8 +651,9 @@ end;
 
 procedure TKMMain.Render;
 begin
-  if gGameApp <> nil then
-    gGameApp.Render;
+  if Self = nil then Exit;
+
+  gGameApp.Render;
 end;
 
 
@@ -672,38 +666,43 @@ end;
 
 procedure TKMMain.Resize(aWidth, aHeight: Integer);
 begin
-  if gGameApp <> nil then
-    gGameApp.Resize(aWidth, aHeight);
+  if Self = nil then Exit;
+
+  gGameApp.Resize(aWidth, aHeight);
 end;
 
 
 
 procedure TKMMain.Resize(aWidth, aHeight: Integer; const aWindowParams: TKMWindowParamsRecord);
 begin
-  if gGameApp <> nil then
-  begin
-    gGameApp.Resize(aWidth, aHeight);
-    UpdateWindowParams(aWindowParams);
-  end;
+  if gGameApp = nil then Exit;
+
+  gGameApp.Resize(aWidth, aHeight);
+  UpdateWindowParams(aWindowParams);
 end;
 
 
 procedure TKMMain.Move(const aWindowParams: TKMWindowParamsRecord);
 begin
+  if Self = nil then Exit;
+
   UpdateWindowParams(aWindowParams);
 end;
 
 
 procedure TKMMain.UpdateWindowParams(const aWindowParams: TKMWindowParamsRecord);
 begin
-  if (gGameApp <> nil)
-    and (fMainSettings <> nil) and (fMainSettings.WindowParams <> nil) then //just in case...
-    fMainSettings.WindowParams.ApplyWindowParams(aWindowParams);
+  if gGameApp = nil then Exit;
+  if fMainSettings.WindowParams = nil then Exit; //just in case...
+
+  fMainSettings.WindowParams.ApplyWindowParams(aWindowParams);
 end;
 
 
 procedure TKMMain.ShowAbout;
 begin
+  if Self = nil then Exit;
+
   fFormLoading.Position := poScreenCenter;
   fFormLoading.Bar1.Position := 0;
   fFormLoading.Label1.Caption := '';
@@ -715,14 +714,15 @@ end;
 //For multiple monitors, it's very annoying if you play a fullscreen game and your cursor slides
 //onto second monitor instead of stopping at the edge as expected.
 procedure TKMMain.ApplyCursorRestriction;
-var Rect: TRect;
+var
+  rect: TRect;
 begin
   //This restriction is removed when alt-tabbing out, and added again when alt-tabbing back
   {$IFDEF MSWindows}
   if fMainSettings.FullScreen then
   begin
-    Rect := fFormMain.BoundsRect;
-    ClipCursor(@Rect);
+    rect := fFormMain.BoundsRect;
+    ClipCursor(@rect);
   end
   else
     ClipCursor(nil); //Otherwise have no restriction

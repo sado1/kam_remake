@@ -133,15 +133,15 @@ type
     procedure SendMessageInd(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aIndexOnServer: TKMNetHandleIndex; aImmidiate: Boolean = False);
     procedure SendMessageA(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; const aText: AnsiString);
     procedure SendMessageW(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; const aText: UnicodeString);
-    procedure SendMessage(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aStream: TKMemoryStreamBinary); overload;
-    procedure SendMessageToRoom(aKind: TKMessageKind; aRoom: Integer; aStream: TKMemoryStreamBinary); overload;
-    procedure SendMessageAct(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aStream: TKMemoryStreamBinary; aImmidiate: Boolean = False);
+    procedure SendMessage(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aStream: TKMemoryStream); overload;
+    procedure SendMessageToRoom(aKind: TKMessageKind; aRoom: Integer; aStream: TKMemoryStream); overload;
+    procedure SendMessageAct(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aStream: TKMemoryStream; aImmidiate: Boolean = False);
     procedure ScheduleSendData(aRecipient: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal; aFlushQueue: Boolean = False);
     procedure SendScheduledData(aServerClient: TKMServerClient);
     procedure DoSendData(aRecipient: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal);
     procedure RecieveMessage(aSenderHandle: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal);
     procedure DataAvailable(aHandle: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal);
-    procedure SaveToStream(aStream: TKMemoryStreamBinary);
+    procedure SaveToStream(aStream: TKMemoryStream);
     function IsValidHandle(aHandle: TKMNetHandleIndex): Boolean;
     function AddNewRoom: Boolean;
     function GetFirstAvailableRoom: Integer;
@@ -400,7 +400,7 @@ end;
 
 procedure TKMNetServer.MeasurePings;
 var
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
   I: Integer;
   TickCount: DWord;
 begin
@@ -493,7 +493,7 @@ end;
 procedure TKMNetServer.AddClientToRoom(aHandle: TKMNetHandleIndex; aRoom: Integer; aGameRevision: TKMGameRevision);
 var
   I: Integer;
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
 begin
   if fClientList.GetByHandle(aHandle).Room <> -1 then exit; //Changing rooms is not allowed yet
 
@@ -578,7 +578,7 @@ procedure TKMNetServer.ClientDisconnect(aHandle: TKMNetHandleIndex);
 var
   Room: Integer;
   Client: TKMServerClient;
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
 begin
   Client := fClientList.GetByHandle(aHandle);
   if Client = nil then
@@ -628,7 +628,7 @@ end;
 
 procedure TKMNetServer.SendMessage(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind);
 var
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
 begin
   M := TKMemoryStreamBinary.Create; //Send empty stream
   SendMessageAct(aRecipient, aKind, M);
@@ -638,7 +638,7 @@ end;
 
 procedure TKMNetServer.SendMessage(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aParam: Integer; aImmidiate: Boolean = False);
 var
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
 begin
   M := TKMemoryStreamBinary.Create;
   M.Write(aParam);
@@ -649,7 +649,7 @@ end;
 
 procedure TKMNetServer.SendMessageInd(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aIndexOnServer: TKMNetHandleIndex; aImmidiate: Boolean = False);
 var
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
 begin
   M := TKMemoryStreamBinary.Create;
   M.Write(aIndexOnServer);
@@ -660,7 +660,7 @@ end;
 
 procedure TKMNetServer.SendMessageA(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; const aText: AnsiString);
 var
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
 begin
   Assert(NetPacketType[aKind] = pfStringA);
 
@@ -673,7 +673,7 @@ end;
 
 procedure TKMNetServer.SendMessageW(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; const aText: UnicodeString);
 var
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
 begin
   Assert(NetPacketType[aKind] = pfStringW);
 
@@ -684,14 +684,14 @@ begin
 end;
 
 
-procedure TKMNetServer.SendMessage(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aStream: TKMemoryStreamBinary);
+procedure TKMNetServer.SendMessage(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aStream: TKMemoryStream);
 begin
   //Send stream without changes
   SendMessageAct(aRecipient, aKind, aStream);
 end;
 
 
-procedure TKMNetServer.SendMessageToRoom(aKind: TKMessageKind; aRoom: Integer; aStream: TKMemoryStreamBinary);
+procedure TKMNetServer.SendMessageToRoom(aKind: TKMessageKind; aRoom: Integer; aStream: TKMemoryStream);
 var I: Integer;
 begin
   //Iterate backwards because sometimes calling Send results in ClientDisconnect (LNet only?)
@@ -702,10 +702,10 @@ end;
 
 
 //Assemble the packet as [Sender.Recepient.Length.Data]
-procedure TKMNetServer.SendMessageAct(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aStream: TKMemoryStreamBinary; aImmidiate: Boolean = False);
+procedure TKMNetServer.SendMessageAct(aRecipient: TKMNetHandleIndex; aKind: TKMessageKind; aStream: TKMemoryStream; aImmidiate: Boolean = False);
 var
   I: Integer;
-  M: TKMemoryStreamBinary;
+  M: TKMemoryStream;
 begin
   M := TKMemoryStreamBinary.Create;
 
@@ -820,7 +820,7 @@ end;
 procedure TKMNetServer.RecieveMessage(aSenderHandle: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal);
 var
   Kind: TKMessageKind;
-  M, M2: TKMemoryStreamBinary;
+  M, M2: TKMemoryStream;
   tmpInt: Integer;
   gameRev: TKMGameRevision;
   tmpSmallInt: TKMNetHandleIndex;
@@ -1054,7 +1054,7 @@ begin
 end;
 
 
-procedure TKMNetServer.SaveToStream(aStream: TKMemoryStreamBinary);
+procedure TKMNetServer.SaveToStream(aStream: TKMemoryStream);
 var
   I, RoomsNeeded, EmptyRoomID: Integer;
   NeedEmptyRoom: boolean;

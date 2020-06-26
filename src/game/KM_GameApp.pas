@@ -113,7 +113,7 @@ type
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
     procedure MouseMove(Shift: TShiftState; X,Y: Integer);
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
-    procedure MouseWheel(Shift: TShiftState; WheelSteps: Integer; X,Y: Integer);
+    procedure MouseWheel(Shift: TShiftState; WheelSteps: Integer; X,Y: Integer; var aHandled: Boolean);
     procedure FPSMeasurement(aFPS: Cardinal);
 
     procedure UnlockAllCampaigns;
@@ -330,8 +330,8 @@ end;
 
 procedure TKMGameApp.Resize(X,Y: Integer);
 begin
-  if fIsExiting then
-    Exit;
+  if Self = nil then Exit;
+  if fIsExiting then Exit;
 
   gRender.Resize(X, Y);
   gVideoPlayer.Resize(X, Y);
@@ -364,12 +364,6 @@ end;
 
 procedure TKMGameApp.KeyPress(Key: Char);
 begin
-  if gVideoPlayer.IsActive then
-  begin
-    gVideoPlayer.KeyPress(Key);
-    Exit;
-  end;
-
   if gGame <> nil then
     gGame.ActiveInterface.KeyPress(Key)
   else
@@ -381,18 +375,14 @@ procedure TKMGameApp.KeyUp(Key: Word; Shift: TShiftState);
 var
   keyHandled: Boolean;
 begin
-  if gVideoPlayer.IsActive then
-  begin
-    gVideoPlayer.KeyUp(Key, Shift);
-    Exit;
-  end;
-
   //List of conflicting keys that we should try to avoid using in debug/game:
   //  F12 Pauses Execution and switches to debug
   //  F10 sets focus on MainMenu1
   //  F9 is the default key in Fraps for video capture
   //  F4 and F9 are used in debug to control run-flow
   //  others.. unknown
+
+  keyHandled := False;
 
   if gGame <> nil then
     gGame.ActiveInterface.KeyUp(Key, Shift, keyHandled)
@@ -421,12 +411,6 @@ var
   ctrl: TKMControl;
   ctrlID: Integer;
 begin
-  if gVideoPlayer.IsActive then
-  begin
-    gVideoPlayer.MouseMove(Shift, X,Y);
-    Exit;
-  end;
-
   if not InRange(X, 1, gRender.ScreenX - 1)
   or not InRange(Y, 1, gRender.ScreenY - 1) then
     Exit; // Exit if Cursor is outside of frame
@@ -461,12 +445,6 @@ end;
 
 procedure TKMGameApp.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  if gVideoPlayer.IsActive then
-  begin
-    gVideoPlayer.MouseUp(Button, Shift, X,Y);
-    Exit;
-  end;
-
   if gGame <> nil then
     gGame.ActiveInterface.MouseUp(Button,Shift,X,Y)
   else
@@ -474,32 +452,28 @@ begin
 end;
 
 
-procedure TKMGameApp.MouseWheel(Shift: TShiftState; WheelSteps: Integer; X, Y: Integer);
-var
-  handled: Boolean;
+procedure TKMGameApp.MouseWheel(Shift: TShiftState; WheelSteps: Integer; X, Y: Integer; var aHandled: Boolean);
 begin
-  if gVideoPlayer.IsActive then
-  begin
-    gVideoPlayer.MouseWheel(Shift, WheelSteps, X,Y);
-    Exit;
-  end;
+  aHandled := False;
+  if Self = nil then Exit;
 
-  handled := False; // False by Default
   if gGame <> nil then
-    gGame.ActiveInterface.MouseWheel(Shift, WheelSteps, X, Y, handled)
+    gGame.ActiveInterface.MouseWheel(Shift, WheelSteps, X, Y, aHandled)
   else
-    fMainMenuInterface.MouseWheel(Shift, WheelSteps, X, Y, handled);
+    fMainMenuInterface.MouseWheel(Shift, WheelSteps, X, Y, aHandled);
 end;
 
 
 procedure TKMGameApp.FPSMeasurement(aFPS: Cardinal);
 begin
-  if fNetworking <> nil then fNetworking.FPSMeasurement(aFPS);
+  fNetworking.FPSMeasurement(aFPS);
 end;
 
 
 function TKMGameApp.Game: TKMGame;
 begin
+  if Self = nil then Exit(nil);
+
   Result := gGame;
 end;
 
@@ -1154,6 +1128,7 @@ end;
 
 procedure TKMGameApp.Render(aForPrintScreen: Boolean = False);
 begin
+  if Self = nil then Exit;
   if SKIP_RENDER then Exit;
   if fIsExiting then Exit;
   if gRender.Blind then Exit;
