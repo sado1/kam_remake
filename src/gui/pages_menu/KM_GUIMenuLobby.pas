@@ -2085,12 +2085,12 @@ end;
 
 procedure TKMMenuLobby.MapTypeChanged(Sender: TObject);
 var
-  RMG: Boolean; //RMG
+  isRngChosen: Boolean; //RMG
 begin
-  RMG := Radio_MapType.ItemIndex = 5; //RMG
+  isRngChosen := Radio_MapType.ItemIndex = MAP_TYPE_INDEX_RMG; //RMG
   UpdateMapList(gNetworking.IsHost);
   gGameSettings.MenuLobbyMapType := Radio_MapType.ItemIndex;
-  if not RMG then //RMG
+  if not isRngChosen then //RMG
     gNetworking.SelectNoMap('');
 end;
 
