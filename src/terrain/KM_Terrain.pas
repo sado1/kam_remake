@@ -45,7 +45,7 @@ type
     Terrain: Word;
     Rotation: Byte;
     Corners: TKMTileCorners; //Corners, that this layer 'owns' (corners are distributed between all layers, so any layer can own 1-4 corners)
-    procedure SetCorners(aCorners: TKMByteSet);
+    procedure SetCorners(const aCorners: TKMByteSet);
     procedure ClearCorners;
   end;
 
@@ -407,7 +407,7 @@ const
 
 
 { TKMTerrainLayer }
-procedure TKMTerrainLayer.SetCorners(aCorners: TKMByteSet);
+procedure TKMTerrainLayer.SetCorners(const aCorners: TKMByteSet);
 var
   I: Integer;
 begin
