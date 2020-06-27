@@ -203,6 +203,7 @@ type
     rgDebugFont: TRadioGroup;
     chkMonospacedFont: TCheckBox;
     mnExportRPL: TMenuItem;
+    chkPathfinding: TCheckBox;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -1344,6 +1345,7 @@ begin
     OVERLAY_DEFENCES_A := chkShowDefencesAnimate.Checked;
     OVERLAY_AI_BUILD := chkBuild.Checked;
     OVERLAY_AI_COMBAT := chkCombat.Checked;
+    OVERLAY_AI_PATHFINDING := chkPathfinding.Checked;
     OVERLAY_AI_SUPERVISOR := chkSupervisor.Checked;
     OVERLAY_AI_VECTOR_FIELD := chkShowArmyVectorField.Checked;
     OVERLAY_AI_CLUSTERS := chkShowClusters.Checked;

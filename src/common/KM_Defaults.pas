@@ -199,6 +199,7 @@ var
   OVERLAY_AVOID           :Boolean = False; //Show avoidance map
   OVERLAY_AI_BUILD        :Boolean = False; //Show build progress of new AI
   OVERLAY_AI_COMBAT       :Boolean = False; //Show combat marks of new AI
+  OVERLAY_AI_PATHFINDING  :Boolean = False; //Show combat marks of new AI
   OVERLAY_AI_EYE          :Boolean = False; //Show Eye vision of new AI
   OVERLAY_AI_SOIL         :Boolean = False; //Show Soil vision of new AI
   OVERLAY_AI_FLATAREA     :Boolean = False; //Show FlatArea vision of new AI
