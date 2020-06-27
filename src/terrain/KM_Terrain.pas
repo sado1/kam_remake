@@ -2947,8 +2947,10 @@ end;
 
 
 procedure TKMTerrain.GetHouseMarks(const aLoc: TKMPoint; aHouseType: TKMHouseType; aList: TKMPointTagList);
+
   procedure MarkPoint(aPoint: TKMPoint; aID: Integer);
-  var I: Integer;
+  var
+    I: Integer;
   begin
     for I := 0 to aList.Count - 1 do //Skip wires from comparison
       if (aList.Tag[I] <> TC_OUTLINE) and KMSamePoint(aList[I], aPoint) then
@@ -3202,6 +3204,7 @@ end;
 
 
 procedure TKMTerrain.RemoveObjectsKilledByRoad(const Loc: TKMPoint);
+
   procedure RemoveIfWest(Loc: TKMPoint);
   begin
     if gMapElements[Land[Loc.Y,Loc.X].Obj].KillByRoad = kbrWest then
@@ -3271,6 +3274,7 @@ end;
 procedure TKMTerrain.SetField(const Loc: TKMPoint; aOwner: TKMHandID; aFieldType: TKMFieldType; aStage: Byte = 0;
                               aRandomAge: Boolean = False; aKeepOldObject: Boolean = False; aRemoveOverlay: Boolean = True;
                               aDoUpdate: Boolean = True);
+
   procedure SetLand(aFieldAge: Byte; aTerrain: Byte; aObj: Integer = -1);
   begin
     Land[Loc.Y, Loc.X].FieldAge := aFieldAge;
@@ -3636,10 +3640,12 @@ end;
 
 
 procedure TKMTerrain.UpdatePassability(const Loc: TKMPoint);
+
   procedure AddPassability(aPass: TKMTerrainPassability);
   begin
     Land[Loc.Y,Loc.X].Passability := Land[Loc.Y,Loc.X].Passability + [aPass];
   end;
+
 var
   I, K: Integer;
   hasHousesNearTile, housesNearVertex, isBuildNoObj: Boolean;
@@ -3752,10 +3758,12 @@ end;
 function TKMTerrain.GetPassablePointWithinSegment(OriginPoint, TargetPoint: TKMPoint;
                                                   aPass: TKMTerrainPassability;
                                                   MaxDistance: Integer = -1): TKMPoint;
-  function IsDistBetweenPointsAllowed(const OriginPoint, TargetPoint: TKMPoint): Boolean;
+
+  function IsDistBetweenPointsAllowed(const OriginPoint, TargetPoint: TKMPoint; aMaxDistance: Integer): Boolean; inline;
   begin
-    Result := (MaxDistance = -1) or (KMDistanceSqr(OriginPoint, TargetPoint) <= Sqr(MaxDistance));
+    Result := (aMaxDistance = -1) or (KMDistanceSqr(OriginPoint, TargetPoint) <= Sqr(aMaxDistance));
   end;
+
 var
   normVector: TKMPoint;
   normDistance: Integer;
@@ -3766,7 +3774,7 @@ begin
     normDistance := Min(MaxDistance, Floor(KMLength(OriginPoint, TargetPoint)));
 
   while (normDistance >= 0)
-    and (not IsDistBetweenPointsAllowed(OriginPoint, TargetPoint)
+    and (not IsDistBetweenPointsAllowed(OriginPoint, TargetPoint, MaxDistance)
          or not CheckPassability(TargetPoint, aPass)) do
   begin
     normVector := KMNormVector(KMPoint(TargetPoint.X - OriginPoint.X, TargetPoint.Y - OriginPoint.Y), normDistance);
