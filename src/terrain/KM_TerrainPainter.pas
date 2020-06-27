@@ -1758,12 +1758,7 @@ end;
 
 
 procedure TKMTerrainPainter.InitSize(X, Y: Word);
-//var
-//  I: Integer;
 begin
-//  for I := 0 to High(fUndos) do
-//    SetLength(fUndos[I].Data, Y+1, X+1);
-
   fBrushAreaTerKindCnt := 0;
 
   SetLength(LandTerKind, Y+1, X+1);
