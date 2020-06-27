@@ -44,6 +44,7 @@ type
 
     function MapIsPlayable: Boolean;
   public
+    Land: array [1..MAX_MAP_SIZE, 1..MAX_MAP_SIZE] of TKMMapEdTerrainTile;
     MissionDefSavePath: UnicodeString;
 
     ActiveMarker: TKMMapEdMarker;
@@ -117,6 +118,8 @@ begin
 
   fVisibleLayers := [melDeposits];
   fIsNewMap := aNewMap;
+
+  FillChar(Land[1,1], SizeOf(Land[1,1])*MAX_MAP_SIZE*MAX_MAP_SIZE, #0);
 
   for I := 0 to MAX_HANDS - 1 do
   begin
@@ -532,7 +535,7 @@ begin
   //Fisrt try to change owner of object on tile
   if not ChangeObjectOwner(gMySpectator.HitTestCursorWGroup, gMySpectator.HandID) or aChangeOwnerForAll then
     //then try to change owner tile (road/field/wine)
-    if ((gTerrain.Land[P.Y, P.X].TileOverlay = toRoad) or (gTerrain.Land[P.Y, P.X].CornOrWine <> 0))
+    if ((gTerrain.Land[P.Y, P.X].TileOverlay = toRoad) or (Land[P.Y, P.X].CornOrWine <> 0))
       and (gTerrain.Land[P.Y, P.X].TileOwner <> gMySpectator.HandID) then
     begin
       gTerrain.Land[P.Y, P.X].TileOwner := gMySpectator.HandID;

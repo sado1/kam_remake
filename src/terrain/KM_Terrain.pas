@@ -89,10 +89,6 @@ type
     IsUnit: Pointer; //Whenever there's a unit on that tile mark the tile as occupied and count the number
     IsVertexUnit: TKMVertexUsage; //Whether there are units blocking the vertex. (walking diagonally or fighting)
 
-    //MAPEDITOR
-    CornOrWine: Byte; //Indicate Corn or Wine field placed on the tile (without altering terrain)
-    CornOrWineTerrain: Byte; //We use fake terrain for maped to be able delete or alter it if needed
-
     //DEDUCTED
     Light: Single; //KaM stores node lighting in 0..32 range (-16..16), but I want to use -1..1 range
     Passability: TKMTerrainPassabilitySet; //Meant to be set of allowed actions on the tile
@@ -480,7 +476,6 @@ begin
         TileOverlay  := toNone;
         TileLock     := tlNone;
         JamMeter     := 0;
-        CornOrWine   := 0;
         Passability  := []; //Gets recalculated later
         TileOwner    := -1;
         IsUnit       := nil;
@@ -533,7 +528,6 @@ begin
       begin
         Land[I,J].TileLock     := tlNone;
         Land[I,J].JamMeter     := 0;
-        Land[I,J].CornOrWine   := 0;
         Land[I,J].Passability  := []; //Gets recalculated later
         Land[I,J].TileOwner    := PLAYER_NONE;
         Land[I,J].IsUnit       := nil;
@@ -1670,7 +1664,7 @@ begin
     Result := fTileset.TileIsCornField(Land[Loc.Y, Loc.X].BaseLayer.Terrain)
               and (Land[Loc.Y,Loc.X].TileOverlay = toNone)
   else
-    Result := (Land[Loc.Y,Loc.X].CornOrWine = 1) and (Land[Loc.Y,Loc.X].TileOverlay = toNone);
+    Result := (gGame.MapEditor.Land[Loc.Y,Loc.X].CornOrWine = 1) and (Land[Loc.Y,Loc.X].TileOverlay = toNone);
 end;
 
 
@@ -1687,7 +1681,7 @@ begin
               and (Land[Loc.Y,Loc.X].TileOverlay = toNone)
               and ObjectIsWine(Loc)
   else
-    Result := (Land[Loc.Y,Loc.X].CornOrWine = 2) and (Land[Loc.Y,Loc.X].TileOverlay = toNone);
+    Result := (gGame.MapEditor.Land[Loc.Y,Loc.X].CornOrWine = 2) and (Land[Loc.Y,Loc.X].TileOverlay = toNone);
 end;
 
 
@@ -2195,8 +2189,8 @@ begin
 
   if fMapEditor then
   begin
-    Land[Loc.Y,Loc.X].CornOrWine := 0;
-    Land[Loc.Y,Loc.X].CornOrWineTerrain := 0;
+    gGame.MapEditor.Land[Loc.Y,Loc.X].CornOrWine := 0;
+    gGame.MapEditor.Land[Loc.Y,Loc.X].CornOrWineTerrain := 0;
   end;
 
   if Land[Loc.Y,Loc.X].Obj in [54..59] then
@@ -2233,8 +2227,8 @@ begin
 
   if fMapEditor then
   begin
-    Land[Loc.Y,Loc.X].CornOrWine := 0;
-    Land[Loc.Y,Loc.X].CornOrWineTerrain := 0;
+    gGame.MapEditor.Land[Loc.Y,Loc.X].CornOrWine := 0;
+    gGame.MapEditor.Land[Loc.Y,Loc.X].CornOrWineTerrain := 0;
   end;
 
   if Land[Loc.Y,Loc.X].Obj in [54..59] then
@@ -3102,7 +3096,7 @@ begin
         RemRoad(Loc);
 
       Land[Loc.Y, Loc.X].TileOverlay := aOverlay;
-      Land[Loc.Y, Loc.X].CornOrWine := 0;
+      gGame.MapEditor.Land[Loc.Y, Loc.X].CornOrWine := 0;
       UpdateFences(Loc);
 
       if (aOverlay in ROAD_LIKE_OVERLAYS) and gMapElements[Land[Loc.Y, Loc.X].Obj].WineOrCorn then
@@ -3282,7 +3276,7 @@ procedure TKMTerrain.SetField(const Loc: TKMPoint; aOwner: TKMHandID; aFieldType
     Land[Loc.Y, Loc.X].FieldAge := aFieldAge;
 
     if fMapEditor then
-      Land[Loc.Y, Loc.X].CornOrWineTerrain := aTerrain
+      gGame.MapEditor.Land[Loc.Y, Loc.X].CornOrWineTerrain := aTerrain
     else begin
       Land[Loc.Y, Loc.X].BaseLayer.Terrain := aTerrain;
       Land[Loc.Y, Loc.X].BaseLayer.Rotation := 0;
@@ -3315,7 +3309,7 @@ begin
     and (InRange(aStage, 0, CORN_STAGES_COUNT - 1)) then
   begin
     if fMapEditor then
-      Land[Loc.Y,Loc.X].CornOrWine := 1;
+      gGame.MapEditor.Land[Loc.Y,Loc.X].CornOrWine := 1;
 
     case aStage of
       0:  SetLand(0, 62, GetObj); //empty field
@@ -3353,7 +3347,7 @@ begin
     and (InRange(aStage, 0, WINE_STAGES_COUNT - 1)) then
   begin
     if fMapEditor then
-      Land[Loc.Y,Loc.X].CornOrWine := 2;
+      gGame.MapEditor.Land[Loc.Y,Loc.X].CornOrWine := 2;
 
     case aStage of
       0:  begin //Set new fruits
@@ -5109,7 +5103,7 @@ begin
   fieldAge := Land[Loc.Y,Loc.X].FieldAge;
   if fieldAge = 0 then
   begin
-    if (fMapEditor and (Land[Loc.Y,Loc.X].CornOrWineTerrain = 63))
+    if (fMapEditor and (gGame.MapEditor.Land[Loc.Y,Loc.X].CornOrWineTerrain = 63))
       or (Land[Loc.Y,Loc.X].BaseLayer.Terrain = 63) then
       Result := 6
     else

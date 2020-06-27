@@ -103,6 +103,7 @@ type
 
 implementation
 uses
+  KM_Game,
   KM_GameParams, KM_Render, KM_RenderTypes, KM_Resource, KM_DevPerfLog, KM_DevPerfLogTypes;
 
 type
@@ -816,10 +817,11 @@ begin
   if TileHasToBeRendered(False,pX,pY,aFow) then
   begin
     //Fake tiles for MapEd fields
-    case gTerrain.Land[pY, pX].CornOrWine of
-      1:  RenderTile(gTerrain.Land[pY, pX].CornOrWineTerrain, pX, pY, 0, DoHighlight, HighlightColor);
-      2:  RenderTile(55, pX, pY, 0, DoHighlight, HighlightColor);
-    end;
+    if gGame.MapEditor <> nil then
+      case gGame.MapEditor.Land[pY, pX].CornOrWine of
+        1:  RenderTile(gGame.MapEditor.Land[pY, pX].CornOrWineTerrain, pX, pY, 0, DoHighlight, HighlightColor);
+        2:  RenderTile(55, pX, pY, 0, DoHighlight, HighlightColor);
+      end;
 
     if gTerrain.Land[pY, pX].TileOverlay = toRoad then
     begin

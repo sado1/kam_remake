@@ -5,12 +5,17 @@ uses
   KM_Defaults, KM_ResTileset, KM_Terrain;
 
 type
-  TKMMarkerType = (mtNone, mtDefence, mtRevealFOW);
+  TKMMapEdMarkerType = (mmtNone, mmtDefence, mmtRevealFOW);
 
   TKMMapEdMarker = record
-    MarkerType: TKMMarkerType;
+    MarkerType: TKMMapEdMarkerType;
     Owner: TKMHandID;
     Index: SmallInt;
+  end;
+
+  TKMMapEdTerrainTile = record
+    CornOrWine: Byte; //Indicate Corn or Wine field placed on the tile (without altering terrain)
+    CornOrWineTerrain: Byte; //We use fake terrain for maped to be able delete or alter it if needed
   end;
 
   // same as TKMTerrainLayer, but packed
