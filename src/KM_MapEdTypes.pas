@@ -22,8 +22,8 @@ type
   TKMTerrainLayerPacked = packed record
     Terrain: Word;
     RotationAndCorners: Byte;
-    procedure PackRotNCorners(aRotation: Byte; aCorners: TKMTileCorners);
-    procedure UnpackRotAndCorners(out aRotation: Byte; out aCorners: TKMTileCorners);
+    procedure PackRotNCorners(aRotation: Byte; aCorners: Byte);
+    procedure UnpackRotAndCorners(out aRotation: Byte; out aCorners: Byte);
   end;
 
   //Tile data that we store in undo checkpoints
@@ -58,23 +58,16 @@ uses
 
 
 { TKMTerrainLayerPacked }
-procedure TKMTerrainLayerPacked.PackRotNCorners(aRotation: Byte; aCorners: TKMTileCorners);
-var
-  I: Integer;
+procedure TKMTerrainLayerPacked.PackRotNCorners(aRotation: Byte; aCorners: Byte);
 begin
-  RotationAndCorners := aRotation shl 4;
-  for I := 0 to 3 do
-    RotationAndCorners := RotationAndCorners or (Ord(aCorners[I]) shl I);
+  RotationAndCorners := (aRotation shl 4) or aCorners;
 end;
 
 
-procedure TKMTerrainLayerPacked.UnpackRotAndCorners(out aRotation: Byte; out aCorners: TKMTileCorners);
-var
-  I: Integer;
+procedure TKMTerrainLayerPacked.UnpackRotAndCorners(out aRotation: Byte; out aCorners: Byte);
 begin
   aRotation := RotationAndCorners shr 4;
-  for I := 0 to 3 do
-    aCorners[I] := ToBoolean((RotationAndCorners shr I) and $1);
+  aCorners := RotationAndCorners and $F;
 end;
 
 

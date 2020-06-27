@@ -718,7 +718,7 @@ begin
                   Exit;
 
                 if BlendingLvl > 0 then
-                  RenderQuadTextureBlended(texC, tX, tY, Layer[L].Corners, BlendingLvl)
+                  RenderQuadTextureBlended(texC, tX, tY, Layer[L].GetCorners, BlendingLvl)
                 else
                   RenderQuadTexture(texC, tX, tY);
                 glEnd;
@@ -1338,7 +1338,7 @@ begin
 
   // Render other Layers
   for L := 0 to aTileBasic.LayersCnt - 1 do
-    DoRenderTile(aTileBasic.Layer[L].Terrain, pX, pY, aTileBasic.Layer[L].Rotation, aTileBasic.Layer[L].Corners,
+    DoRenderTile(aTileBasic.Layer[L].Terrain, pX, pY, aTileBasic.Layer[L].Rotation, aTileBasic.Layer[L].GetCorners,
                  doBindTexture, False, DoHighlight, HighlightColor, aTileBasic.BlendingLvl);
     
 end;

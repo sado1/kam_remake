@@ -623,7 +623,7 @@ begin
     if Found and ((Nodes = 4) or (fBrushMask = mkNone)) then
     begin
       gTerrain.Land[pY,pX].BaseLayer.Terrain := T;
-      gTerrain.Land[pY,pX].BaseLayer.SetCorners([0,1,2,3]);
+      gTerrain.Land[pY,pX].BaseLayer.SetAllCorners;
       gTerrain.Land[pY,pX].LayersCnt := 0;
       gTerrain.Land[pY,pX].BaseLayer.Rotation := Rot mod 4;
     end
@@ -748,11 +748,11 @@ begin
     for I := 0 to 3 do
       if not terKindFound[I] then
       begin
-        if tile.BaseLayer.Corners[I] then
+        if tile.BaseLayer.Corner[I] then
           aCornersTerKinds[I] := TILE_CORNERS_TERRAIN_KINDS[tile.BaseLayer.Terrain, (I + 4 - tile.BaseLayer.Rotation) mod 4]
         else
           for L := 0 to tile.LayersCnt - 1 do
-            if tile.Layer[L].Corners[I] then
+            if tile.Layer[L].Corner[I] then
               aCornersTerKinds[I] := gRes.Sprites.GetGenTerrainInfo(tile.Layer[L].Terrain).TerKind;
       end;
   end;
@@ -1184,7 +1184,7 @@ procedure TKMTerrainPainter.MagicBrush(const X,Y: Integer; aMaskKind: TKMTileMas
 
         BaseLayer.Terrain := BASE_TERRAIN[LayerOrder[0].TerKind];
         BaseLayer.Rotation := 0;
-        BaseLayer.Corners := LayerOrder[0].Corners;
+        BaseLayer.SetCorners(LayerOrder[0].Corners);
         LayersCnt := TILE_MASKS_LAYERS_CNT[MaskType] - 1;
 
         if MaskType = TKMTileMaskType.mtNone then Exit;
@@ -1193,7 +1193,7 @@ procedure TKMTerrainPainter.MagicBrush(const X,Y: Integer; aMaskKind: TKMTileMas
         begin
           Layer[I-1].Terrain := gGenTerrainTransitions[LayerOrder[I].TerKind, MaskKind, MaskType, LayerOrder[I].SubType];
           Layer[I-1].Rotation := LayerOrder[I].Rotation;
-          Layer[I-1].Corners := LayerOrder[I].Corners;
+          Layer[I-1].SetCorners(LayerOrder[I].Corners);
         end;
       end
   end;
@@ -1218,7 +1218,7 @@ begin
     case aMaskKind of
       mkNone:  begin
                   gTerrain.Land[Y,X].LayersCnt := 0; // Simple way to clear all layers
-                  gTerrain.Land[Y,X].BaseLayer.SetCorners([0,1,2,3]);
+                  gTerrain.Land[Y,X].BaseLayer.SetAllCorners;
                 end;
       else      for L := 0 to gTerrain.Land[Y,X].LayersCnt - 1 do
                 begin
@@ -1462,7 +1462,7 @@ begin
 
   gTerrain.Land[aLoc.Y, aLoc.X].IsCustom := aIsCustom;
   gTerrain.Land[aLoc.Y, aLoc.X].BaseLayer.Terrain := aTile;
-  gTerrain.Land[aLoc.Y, aLoc.X].BaseLayer.SetCorners([0,1,2,3]);
+  gTerrain.Land[aLoc.Y, aLoc.X].BaseLayer.SetAllCorners;
   gTerrain.Land[aLoc.Y, aLoc.X].LayersCnt := 0;
   gTerrain.Land[aLoc.Y, aLoc.X].BaseLayer.Rotation := aRotation;
 
@@ -1965,14 +1965,10 @@ procedure TKMTerrainPainter.RotateTile(const aLoc: TKMPoint);
 
   procedure RotateCorners(var aLayer: TKMTerrainLayer);
   var
-    I: Integer;
-    Corners: TKMTileCorners;
+    tmp: Byte;
   begin
-    Corners := aLayer.Corners;
-    aLayer.ClearCorners;
-    for I := 0 to 3 do
-      if Corners[I] then
-        aLayer.Corners[(I + 1) mod 4] := True;
+    tmp := aLayer.Corners;
+    aLayer.Corners := ((tmp shl 1) and $F) or (tmp shr 3);
   end;
 
 var

@@ -222,7 +222,7 @@ begin
         By := I - fSelectionRect.Top;
         fSelectionBuffer[By,Bx].BaseLayer.Terrain  := gTerrain.Land[I+1, K+1].BaseLayer.Terrain;
         fSelectionBuffer[By,Bx].BaseLayer.Rotation := gTerrain.Land[I+1, K+1].BaseLayer.Rotation;
-        fSelectionBuffer[By,Bx].BaseLayer.Corners  := gTerrain.Land[I+1, K+1].BaseLayer.Corners;
+        fSelectionBuffer[By,Bx].BaseLayer.CopyCorners(gTerrain.Land[I+1, K+1].BaseLayer);
         fSelectionBuffer[By,Bx].LayersCnt   := gTerrain.Land[I+1, K+1].LayersCnt;
         fSelectionBuffer[By,Bx].Height      := gTerrain.Land[I+1, K+1].Height;
         fSelectionBuffer[By,Bx].Obj         := gTerrain.Land[I+1, K+1].Obj;
@@ -234,7 +234,7 @@ begin
         begin
           fSelectionBuffer[By,Bx].Layer[L].Terrain  := gTerrain.Land[I+1, K+1].Layer[L].Terrain;
           fSelectionBuffer[By,Bx].Layer[L].Rotation := gTerrain.Land[I+1, K+1].Layer[L].Rotation;
-          fSelectionBuffer[By,Bx].Layer[L].Corners  := gTerrain.Land[I+1, K+1].Layer[L].Corners;
+          fSelectionBuffer[By,Bx].Layer[L].CopyCorners(gTerrain.Land[I+1, K+1].Layer[L]);
         end;
 
         BufferStream.Write(fSelectionBuffer[By,Bx], SizeOf(fSelectionBuffer[By,Bx]));
@@ -309,7 +309,7 @@ begin
         By := I - fSelectionRect.Top;
         gTerrain.Land[I+1, K+1].BaseLayer.Terrain  := fSelectionBuffer[By,Bx].BaseLayer.Terrain;
         gTerrain.Land[I+1, K+1].BaseLayer.Rotation := fSelectionBuffer[By,Bx].BaseLayer.Rotation;
-        gTerrain.Land[I+1, K+1].BaseLayer.Corners  := fSelectionBuffer[By,Bx].BaseLayer.Corners;
+        gTerrain.Land[I+1, K+1].BaseLayer.CopyCorners(fSelectionBuffer[By,Bx].BaseLayer);
         gTerrain.Land[I+1, K+1].LayersCnt   := fSelectionBuffer[By,Bx].LayersCnt;
         gTerrain.Land[I+1, K+1].Height     := fSelectionBuffer[By,Bx].Height;
         gTerrain.Land[I+1, K+1].Obj         := fSelectionBuffer[By,Bx].Obj;
@@ -321,7 +321,7 @@ begin
         begin
           gTerrain.Land[I+1, K+1].Layer[L].Terrain  := fSelectionBuffer[By,Bx].Layer[L].Terrain;
           gTerrain.Land[I+1, K+1].Layer[L].Rotation := fSelectionBuffer[By,Bx].Layer[L].Rotation;
-          gTerrain.Land[I+1, K+1].Layer[L].Corners  := fSelectionBuffer[By,Bx].Layer[L].Corners;
+          gTerrain.Land[I+1, K+1].Layer[L].CopyCorners(fSelectionBuffer[By,Bx].Layer[L]);
         end;
       end;
 
@@ -347,7 +347,7 @@ procedure TKMSelection.Selection_Flip(aAxis: TKMFlipAxis);
     SwapInt(Layer1.Terrain, Layer2.Terrain);
     SwapInt(Layer1.Rotation, Layer2.Rotation);
     for I := 0 to 3 do
-      SwapBool(Layer1.Corners[I], Layer2.Corners[I]);
+      Layer1.SwapCorners(Layer2);
   end;
 
   procedure SwapTiles(X1, Y1, X2, Y2: Word);
@@ -385,7 +385,7 @@ procedure TKMSelection.Selection_Flip(aAxis: TKMFlipAxis);
       J := 0;
 
       for I := 0 to 3 do
-        if aLayer.Corners[I] then
+        if aLayer.Corner[I] then
         begin
           Corners[J] := I;
           Inc(J);
@@ -440,8 +440,8 @@ procedure TKMSelection.Selection_Flip(aAxis: TKMFlipAxis);
                   Rot := (Rot+1) mod 4
                 else
                   Rot := (Rot+3) mod 4;
-                aLayer.SetCorners([0,1,2,3]);
-                aLayer.Corners[(Rot + 2) mod 4] := False; // all corners except opposite to rotation
+                aLayer.SetAllCorners;
+                aLayer.Corner[(Rot + 2) mod 4] := False; // all corners except opposite to rotation
               end;
         else  raise Exception.Create('Wrong number of corners');
       end;
