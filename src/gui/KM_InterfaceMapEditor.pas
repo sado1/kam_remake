@@ -675,13 +675,13 @@ begin
   HidePages; // HidePages first. That will also reset old marker;
 
   gGame.MapEditor.ActiveMarker := aMarker;
-  Assert((aMarker.MarkerType <> mtNone) and (aMarker.Owner <> PLAYER_NONE) and (aMarker.Index <> -1));
+  Assert((aMarker.MarkerType <> mmtNone) and (aMarker.Owner <> PLAYER_NONE) and (aMarker.Index <> -1));
 
   Player_SetActive(aMarker.Owner);
 
   case aMarker.MarkerType of
-    mtDefence:    fGuiMarkerDefence.Show(aMarker.Owner, aMarker.Index);
-    mtRevealFOW:  fGuiMarkerReveal.Show(aMarker.Owner, aMarker.Index);
+    mmtDefence:    fGuiMarkerDefence.Show(aMarker.Owner, aMarker.Index);
+    mmtRevealFOW:  fGuiMarkerReveal.Show(aMarker.Owner, aMarker.Index);
   end;
 
   Layers_UpdateVisibility;
@@ -698,7 +698,7 @@ end;
 //When marker page is done we want to return to markers control page
 procedure TKMapEdInterface.Marker_Done(Sender: TObject);
 begin
-  gGame.MapEditor.ActiveMarker.MarkerType := mtNone;
+  gGame.MapEditor.ActiveMarker.MarkerType := mmtNone;
   if Sender = fGuiMarkerReveal then
   begin
     HidePages;
@@ -1112,7 +1112,7 @@ begin
   if gGameCursor.Mode = cmNone then
   begin
     marker := gGame.MapEditor.HitTest(gGameCursor.Cell.X, gGameCursor.Cell.Y);
-    if marker.MarkerType <> mtNone then
+    if marker.MarkerType <> mmtNone then
       gRes.Cursors.Cursor := kmcInfo
     else
     if gMySpectator.HitTestCursor <> nil then
@@ -1344,7 +1344,7 @@ begin
                 //since they are rendered ontop of Houses/Objects
                 marker := gGame.MapEditor.HitTest(gGameCursor.Cell.X, gGameCursor.Cell.Y);
 
-                if marker.MarkerType <> mtNone then
+                if marker.MarkerType <> mmtNone then
                 begin
                   ShowMarkerInfo(marker);
                   gMySpectator.Selected := nil; //We might have had a unit/group/house selected
@@ -1353,7 +1353,7 @@ begin
                 begin
                   UpdateSelection;
                   if gMySpectator.Selected <> nil then
-                    gGame.MapEditor.ActiveMarker.MarkerType := mtNone;
+                    gGame.MapEditor.ActiveMarker.MarkerType := mmtNone;
                 end;
               end;
     mbRight:  begin

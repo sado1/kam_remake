@@ -305,7 +305,7 @@ begin
         if (gHands[I].AI.General.DefencePositions[K].Position.Loc.X = X)
         and (gHands[I].AI.General.DefencePositions[K].Position.Loc.Y = Y) then
         begin
-          Result.MarkerType := mtDefence;
+          Result.MarkerType := mmtDefence;
           Result.Owner := I;
           Result.Index := K;
           Exit;
@@ -318,7 +318,7 @@ begin
       for K := 0 to fRevealers[I].Count - 1 do
         if (fRevealers[I][K].X = X) and (fRevealers[I][K].Y = Y) then
         begin
-          Result.MarkerType := mtRevealFOW;
+          Result.MarkerType := mmtRevealFOW;
           Result.Owner := I;
           Result.Index := K;
           Exit;
@@ -326,7 +326,7 @@ begin
   end;
 
   //Else nothing is found
-  Result.MarkerType := mtNone;
+  Result.MarkerType := mmtNone;
   Result.Owner := PLAYER_NONE;
   Result.Index := -1;
 end;
@@ -708,7 +708,7 @@ procedure TKMMapEditor.Reset;
 begin
   if Self = nil then Exit;
   
-  ActiveMarker.MarkerType := mtNone;
+  ActiveMarker.MarkerType := mmtNone;
 end;
 
 
@@ -837,7 +837,7 @@ begin
   if not (melDefences in fVisibleLayers) then Exit;
 
   case aLayer of
-    plTerrain:  if ActiveMarker.MarkerType = mtDefence then
+    plTerrain:  if ActiveMarker.MarkerType = mmtDefence then
                   //Render defence position tiles covered
                   if InRange(ActiveMarker.Index, 0, gHands[ActiveMarker.Owner].AI.General.DefencePositions.Count - 1) then
                   begin
