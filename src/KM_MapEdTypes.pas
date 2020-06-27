@@ -5,6 +5,14 @@ uses
   KM_Defaults, KM_ResTileset, KM_Terrain;
 
 type
+  TKMMarkerType = (mtNone, mtDefence, mtRevealFOW);
+
+  TKMMapEdMarker = record
+    MarkerType: TKMMarkerType;
+    Owner: TKMHandID;
+    Index: SmallInt;
+  end;
+
   // same as TKMTerrainLayer, but packed
   TKMTerrainLayerPacked = packed record
     Terrain: Word;

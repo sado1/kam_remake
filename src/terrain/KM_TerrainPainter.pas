@@ -765,7 +765,7 @@ var
   I, J, Tmp: Integer;
   CornerI: array[0..3] of Integer;
 begin
-  Result := mtNone; // makes compiler happy
+  Result := TKMTileMaskType.mtNone; // makes compiler happy
   // A B
   // D C
   A := aCornerTerKinds[0];
@@ -777,7 +777,7 @@ begin
   // A A
   if (A = B) and (A = C) and (A = D) then
   begin
-    Result := mtNone;
+    Result := TKMTileMaskType.mtNone;
     aLayerOrder[0].TerKind := A;
     aLayerOrder[0].SetCorners([0,1,2,3]);
     aLayerOrder[0].Rotation := 0;
@@ -1187,7 +1187,7 @@ procedure TKMTerrainPainter.MagicBrush(const X,Y: Integer; aMaskKind: TKMTileMas
         BaseLayer.Corners := LayerOrder[0].Corners;
         LayersCnt := TILE_MASKS_LAYERS_CNT[MaskType] - 1;
 
-        if MaskType = mtNone then Exit;
+        if MaskType = TKMTileMaskType.mtNone then Exit;
 
         for I := 1 to LayersCnt do // start from 1, just for convinience
         begin

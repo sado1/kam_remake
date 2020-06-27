@@ -23,7 +23,8 @@ uses
    KM_GUIMapEdMenu,
    KM_GUIMapEdMenuQuickPlay,
    KM_GUIMapEdUnit,
-   KM_GUIMapEdRMG;
+   KM_GUIMapEdRMG,
+   KM_MapEdTypes;
 
 type
   TKMapEdInterface = class (TKMUserInterfaceGame)

@@ -4,18 +4,11 @@ interface
 uses
   Classes, Controls,
   KM_RenderPool, KM_TerrainPainter, KM_TerrainDeposits, KM_TerrainSelection,
-  KM_CommonTypes, KM_CommonClasses, KM_Defaults, KM_Points, KM_MapEditorHistory;
+  KM_CommonTypes, KM_CommonClasses, KM_Defaults, KM_Points, KM_MapEditorHistory,
+  KM_MapEdTypes;
 
 
 type
-  TKMMarkerType = (mtNone, mtDefence, mtRevealFOW);
-
-  TKMMapEdMarker = record
-    MarkerType: TKMMarkerType;
-    Owner: TKMHandID;
-    Index: SmallInt;
-  end;
-
   //Collection of map editing classes and map editor specific data
   TKMMapEditor = class
   private
