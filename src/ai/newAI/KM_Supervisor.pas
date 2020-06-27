@@ -943,7 +943,7 @@ procedure TKMSupervisor.AttackDecision(aTeam: Byte);
         Comparison := + gAIFields.Eye.ArmyEvaluation.CompareAllianceStrength(fAlli2PL[aTeam], fAlli2PL[TeamIdx])
                       - (DistArr[TeamIdx] - MinDist) / Max(1,(MaxDist - MinDist));
         aAvrgCmp := aAvrgCmp + Comparison;
-        if (Comparison > aBestCmp) then
+        if (Comparison >= aBestCmp) then
         begin
           aBestCmp := Comparison;
           aBestCmpTeam := TeamIdx;
