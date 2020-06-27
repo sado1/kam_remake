@@ -373,7 +373,7 @@ begin
   //Counting FPS
   if fMainSettings <> nil then //fMainSettings could be nil on Game Exit ?? Just check if its not nil
   begin
-    frameTime  := GetTimeSince(fOldTimeFPS);
+    frameTime  := TimeSince(fOldTimeFPS);
     fOldTimeFPS := TimeGet;
 
     fpsLag := Floor(1000 / fMainSettings.FPSCap);

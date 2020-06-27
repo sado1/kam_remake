@@ -595,10 +595,10 @@ begin
   if not fIsInitialized then Exit;
 
   case fFadeState of
-    fsFadeIn:   if GetTimeSince(fFadeStarted) > fFadeTime then
+    fsFadeIn:   if TimeSince(fFadeStarted) > fFadeTime then
                   fFadeState := fsNone;
     fsFadeOut:  begin
-                  if GetTimeSince(fFadeStarted) > fFadeTime then
+                  if TimeSince(fFadeStarted) > fFadeTime then
                   begin
                     fFadeState := fsFaded;
                     {$IFDEF USELIBZPLAY} ZPlayer.PausePlayback; {$ENDIF}
@@ -606,7 +606,7 @@ begin
                   end
                   else
                   //Start playback of other file half way through the fade
-                  if (GetTimeSince(fFadeStarted) > fFadeTime div 2)
+                  if (TimeSince(fFadeStarted) > fFadeTime div 2)
                     and (fToPlayAfterFade <> '') then
                   begin
                     fFadedToPlayOther := True;

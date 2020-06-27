@@ -2085,7 +2085,7 @@ begin
 //  if fKeyPressList.Count = 0 then
 //    keyPress.Time := TimeGetUSec
 //  else
-//    keyPress.Time := GetTImeUSecSince(fKeyPressList[0].Time);
+//    keyPress.Time := TimeSinceUSec(fKeyPressList[0].Time);
 
 //  keyPress.Key := Key;
 //  keyPress.C := Char(Key);
@@ -2115,7 +2115,7 @@ begin
 //  if fKeyPressList.Count = 0 then
 //    keyPress.Time := TimeGetUSec
 //  else
-//    keyPress.Time := GetTImeUSecSince(fKeyPressList[0].Time);
+//    keyPress.Time := TimeSinceUSec(fKeyPressList[0].Time);
 ////  keyPress.Key := 0;
 //  keyPress.C := Key;
 //  keyPress.Kind := kpkPress;
@@ -2573,7 +2573,7 @@ begin
   if (Button = mbLeft)
     and Assigned(fOnDoubleClick)
     and KMSamePoint(fLastClickPos, KMPoint(X,Y))
-    and (GetTimeSince(fTimeOfLastClick) <= GetDoubleClickTime) then
+    and (TimeSince(fTimeOfLastClick) <= GetDoubleClickTime) then
   begin
     fTimeOfLastClick := 0;
     fOnDoubleClick(Self);
@@ -2680,7 +2680,7 @@ procedure TKMControl.UpdateState(aTickCount: Cardinal);
 var
   SameMouseBtn: Boolean;
 begin
-  if (csDown in State) and fClickHoldMode and (GetTimeSince(fTimeOfLastMouseDown) > CLICK_HOLD_TIME_THRESHOLD)  then
+  if (csDown in State) and fClickHoldMode and (TimeSince(fTimeOfLastMouseDown) > CLICK_HOLD_TIME_THRESHOLD)  then
   begin
     SameMouseBtn := False;
     case fLastMouseDownButton of
@@ -3395,7 +3395,7 @@ procedure TKMLabelScroll.Paint;
 var NewTop: Integer; Col: Cardinal;
 begin
   TKMRenderUI.SetupClipY(AbsTop, AbsTop + Height);
-  NewTop := EnsureRange(AbsTop + Height - GetTimeSince(SmoothScrollToTop) div 50, -MINSHORT, MAXSHORT); //Compute delta and shift by it upwards (Credits page)
+  NewTop := EnsureRange(AbsTop + Height - TimeSince(SmoothScrollToTop) div 50, -MINSHORT, MAXSHORT); //Compute delta and shift by it upwards (Credits page)
 
   if fEnabled then Col := FontColor
               else Col := $FF888888;
@@ -7532,7 +7532,7 @@ begin
   OldIndex := GetItemIndex;
 
   //Allow to type several characters in a row to pick some item
-  if GetTimeSince(fLastKeyTime) < 1000 then
+  if TimeSince(fLastKeyTime) < 1000 then
     fSearch := fSearch + Key
   else
     fSearch := Key;

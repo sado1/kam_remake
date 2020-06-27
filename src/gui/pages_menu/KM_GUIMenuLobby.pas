@@ -2085,12 +2085,12 @@ end;
 
 procedure TKMMenuLobby.MapTypeChanged(Sender: TObject);
 var
-  RMG: Boolean; //RMG
+  isRngChosen: Boolean; //RMG
 begin
-  RMG := Radio_MapType.ItemIndex = 5; //RMG
+  isRngChosen := Radio_MapType.ItemIndex = MAP_TYPE_INDEX_RMG; //RMG
   UpdateMapList(gNetworking.IsHost);
   gGameSettings.MenuLobbyMapType := Radio_MapType.ItemIndex;
-  if not RMG then //RMG
+  if not isRngChosen then //RMG
     gNetworking.SelectNoMap('');
 end;
 
@@ -2154,7 +2154,7 @@ end;
 
 procedure TKMMenuLobby.WakeUpNotReadyClick(Sender: TObject);
 begin
-  if GetTimeSince(fLastTimeAskReady) > ASK_READY_COOLDOWN then
+  if TimeSince(fLastTimeAskReady) > ASK_READY_COOLDOWN then
   begin
     gNetworking.WakeUpNotReady;
     Button_SettingsAskReady.Disable;
@@ -2934,7 +2934,7 @@ begin
 
   if Sender = Button_SettingsResetBans then
   begin
-    if GetTimeSince(fLastTimeResetBans) > RESET_BANS_COOLDOWN then
+    if TimeSince(fLastTimeResetBans) > RESET_BANS_COOLDOWN then
     begin
       gNetworking.ResetBans;
       Button_SettingsResetBans.Disable;
@@ -2983,13 +2983,13 @@ begin
   if fMapsMP <> nil then fMapsMP.UpdateState;
   if fSavesMP <> nil then fSavesMP.UpdateState;
 
-  if (fLastTimeResetBans <> 0) and (GetTimeSince(fLastTimeResetBans) > RESET_BANS_COOLDOWN) then
+  if (fLastTimeResetBans <> 0) and (TimeSince(fLastTimeResetBans) > RESET_BANS_COOLDOWN) then
   begin
     Button_SettingsResetBans.Enable;
     fLastTimeResetBans := 0;
   end;
 
-  if (fLastTimeAskReady <> 0) and (GetTimeSince(fLastTimeAskReady) > ASK_READY_COOLDOWN) then
+  if (fLastTimeAskReady <> 0) and (TimeSince(fLastTimeAskReady) > ASK_READY_COOLDOWN) then
   begin
     StartBtnChangeEnabled(Button_Start, Button_Start.Enabled);
     fLastTimeAskReady := 0;

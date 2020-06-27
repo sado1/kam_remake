@@ -242,8 +242,8 @@ begin
     end;
     WriteLn(fl, Format('%12s %9.3fs %7dms     %s', [
                   FormatDateTime('hh:nn:ss.zzz', Now),
-                  GetTimeSince(fFirstTick) / 1000,
-                  GetTimeSince(fPreviousTick),
+                  TimeSince(fFirstTick) / 1000,
+                  TimeSince(fPreviousTick),
                   aText]));
 
     if aDoCloseFile then

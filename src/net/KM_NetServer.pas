@@ -427,7 +427,7 @@ begin
     end
     else
       //If they don't respond within a reasonable time, kick them
-      if GetTimeSince(fClientList[I].fPingStarted) > fKickTimeout*1000 then
+      if TimeSince(fClientList[I].fPingStarted) > fKickTimeout*1000 then
       begin
         Status('Client timed out ' + inttostr(fClientList[I].fHandle));
         SendMessage(fClientList[I].fHandle, mkKicked, TX_NET_KICK_TIMEOUT, True);
@@ -946,7 +946,7 @@ begin
 //              Client.FPS := tmpInteger;
               if (Client.fPingStarted <> 0) then
               begin
-                Client.Ping := Math.Min(GetTimeSince(Client.fPingStarted), High(Word));
+                Client.Ping := Math.Min(TimeSince(Client.fPingStarted), High(Word));
                 Client.fPingStarted := 0;
               end;
             end;

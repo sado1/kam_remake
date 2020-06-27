@@ -80,7 +80,7 @@ begin
   begin
     fDedicatedServer.UpdateState;
     //Reload the INI file if it has changed, by checking the file age every 5 seconds
-    if GetTimeSince(fLastSettingsFileCheck) >= 5000 then
+    if TimeSince(fLastSettingsFileCheck) >= 5000 then
     begin
       fLastSettingsFileCheck := TimeGet;
       if FileAge(ExeDir+SETTINGS_FILE) <> fSettingsLastModified then

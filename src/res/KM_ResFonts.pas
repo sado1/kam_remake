@@ -519,7 +519,7 @@ begin
     fFontData[F].Compact;
   end;
 
-  TotalTime := GetTimeSince(StartTime);
+  TotalTime := TimeSince(StartTime);
   gLog.AddTime('Font load took ' + IntToStr(TotalTime) + 'ms');
 end;
 

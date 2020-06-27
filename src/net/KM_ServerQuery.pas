@@ -329,7 +329,7 @@ procedure TKMQuery.UpdateStateIdle;
 begin
   if not fQueryActive then exit;
   fNetClient.UpdateStateIdle;
-  if GetTimeSince(fQueryStarted) > QUERY_TIMEOUT then
+  if TimeSince(fQueryStarted) > QUERY_TIMEOUT then
     fQueryIsDone := true; //Give up
   if fQueryIsDone then
   begin
@@ -496,7 +496,7 @@ end;
 procedure TKMServerQuery.ServerDataReceive(aServerID: Integer; aStream: TKMemoryStream; aPingStarted: Cardinal);
 begin
   fRoomList.LoadData(aServerID, aStream); //Tell RoomsList to load data about rooms
-  fServerList.SetPing(aServerID, GetTimeSince(aPingStarted)); //Tell ServersList ping
+  fServerList.SetPing(aServerID, TimeSince(aPingStarted)); //Tell ServersList ping
 
   Sort; //Apply sorting
   if Assigned(fOnListUpdated) then
@@ -534,7 +534,7 @@ begin
 
   //Once we've received the master list, finished all queries and waited long enough for UDP scan
   //we should update the list (this removes 'Refreshing...' when no servers respond)
-  if fReceivedMasterServerList and (ActiveQueryCount = 0) and (GetTimeSince(fRefreshStartedTime) > MIN_UDP_SCAN_TIME) then
+  if fReceivedMasterServerList and (ActiveQueryCount = 0) and (TimeSince(fRefreshStartedTime) > MIN_UDP_SCAN_TIME) then
   begin
     fReceivedMasterServerList := False; //Don't do this again until the next refresh
     fUDPScanner.TerminateScan; //Closes UDP listen

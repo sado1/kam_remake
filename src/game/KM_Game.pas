@@ -1455,7 +1455,7 @@ begin
     //How far in the past should we render? (0.0=Current tick, 1.0=Previous tick)
     if gGameSettings.InterpolatedRender then
     begin
-      tickLag := GetTimeSince(fLastUpdateState) / fSpeedActual / gGameSettings.SpeedPace;
+      tickLag := TimeSince(fLastUpdateState) / fSpeedActual / gGameSettings.SpeedPace;
       tickLag := 1.0 - tickLag;
       tickLag := EnsureRange(tickLag, 0.0, 1.0);
     end
@@ -2540,13 +2540,13 @@ end;
 function TKMGame.GetTicksBehindCnt: Single;
 var
   calculatedTick: Single;
-  timeSince: Cardinal;
+  timeS: Cardinal;
 begin
   if Self = nil then Exit(0);
 
   //Lets calculate tick, that shoud be at that moment in theory, depending of speed multiplier and game duration
-  timeSince := GetTimeSince(fSpeedChangeTime);
-  calculatedTick := timeSince*fSpeedActual/gGameSettings.SpeedPace - fPausedTicksCnt;
+  timeS := TimeSince(fSpeedChangeTime);
+  calculatedTick := timeS*fSpeedActual/gGameSettings.SpeedPace - fPausedTicksCnt;
   //Calc how far behind are we, in ticks
   Result := calculatedTick + fSpeedChangeTick - fParams.Tick;
 end;
@@ -2975,11 +2975,11 @@ begin
 
     //Notify about player being AFK
     if fParams.IsMultiplayerGame //Only for MP game players, not specs
-      and (GetTimeSince(fLastTimeUserAction) > PLAYER_AFK_TIME*60*1000)
-      and (GetTimeSince(fLastAfkMessageSent) > PLAYER_AFK_MESSAGE_DELAY) then
+      and (TimeSince(fLastTimeUserAction) > PLAYER_AFK_TIME*60*1000)
+      and (TimeSince(fLastAfkMessageSent) > PLAYER_AFK_MESSAGE_DELAY) then
     begin
       gNetworking.PostMessage(TX_PLAYER_AFK_MESSAGE, csSystem, gNetworking.MyNetPlayer.NiknameColoredU,
-                              WrapColor(IntToStr(GetTimeSince(fLastTimeUserAction) div 60000), icGoldenYellow));
+                              WrapColor(IntToStr(TimeSince(fLastTimeUserAction) div 60000), icGoldenYellow));
       fLastAfkMessageSent := TimeGet;
     end;
   end;

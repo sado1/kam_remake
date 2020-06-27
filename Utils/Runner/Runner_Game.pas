@@ -1298,7 +1298,7 @@ begin
                   end;
   end;
 
-  T := GetTimeSince(fStartTime);
+  T := TimeSince(fStartTime);
   OnProgress2(Format('%s: %s R%d T%d', [GetRunKindStr, LeftStr(fMap, Min(Length(fMap), 17)), fRun, aTick]));
   OnProgress5(Format('Time elapsed: %.2d:%.2d:%.2d', [T div (60*60*1000), (T div (60*1000)) mod 60, (T div 1000) mod 60]));
 end;
@@ -1885,7 +1885,7 @@ begin
 
       mapT1 := TimeGet;
       SimulateGame(0, DEFAULT_PEACE_TIME*60*10);
-      mapT2 := GetTimeSince(mapT1);
+      mapT2 := TimeSince(mapT1);
       score := score + mapT2;
 
 //      LOG_GAME_TICK := False;
@@ -2061,8 +2061,8 @@ begin
 
   gLog.AddTime('==================================================================');
   gLog.AddTime(Format('HAver: %3.2f  WAver: %3.2f  WFAver: %3.2f  GAver: %5.2f', [HAver, WAver, WFAver, GAver]));
-  gLog.AddTime('TimeAver: ' + IntToStr(Round(GetTimeSince(Time)/Runs)));
-  gLog.AddTime('Time: ' + IntToStr(GetTimeSince(Time)));
+  gLog.AddTime('TimeAver: ' + IntToStr(Round(TimeSince(Time)/Runs)));
+  gLog.AddTime('Time: ' + IntToStr(TimeSince(Time)));
   inherited;
 end;
 
@@ -2133,7 +2133,7 @@ begin
   end;
   gLog.AddTime(Format('HRunAver: %3.2f  WRunAver: %3.2f  WFRunAver: %3.2f  GRunAver: %5.2f',
                [HRunT/HandsCnt, WRunT/HandsCnt, WFRunT/HandsCnt,  GRunT/HandsCnt]));
-  gLog.AddTime('Time: ' + IntToStr(GetTimeSince(StartT)));
+  gLog.AddTime('Time: ' + IntToStr(TimeSince(StartT)));
 
   gGameApp.StopGame(grSilent);
 end;
@@ -2269,8 +2269,8 @@ end;
 procedure TKMStabilityTest.TearDown;
 begin
   // Do something after simulation
-  gLog.AddTime('TimeAver: ' + IntToStr(Round(GetTimeSince(fTime)/fRuns)));
-  gLog.AddTime('Time: ' + IntToStr(GetTimeSince(fTime)));
+  gLog.AddTime('TimeAver: ' + IntToStr(Round(TimeSince(fTime)/fRuns)));
+  gLog.AddTime('Time: ' + IntToStr(TimeSince(fTime)));
 
   inherited;
 end;
@@ -2344,7 +2344,7 @@ begin
 //        end;
 //    end;
 
-  T2 := GetTimeUsecSince(T1);
+  T2 := TimeSinceUSec(T1);
 
   OnProgress_Left(Format('Score: %d', [T2 div 1000]));
 end;

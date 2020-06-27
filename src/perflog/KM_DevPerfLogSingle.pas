@@ -218,9 +218,9 @@ var
   T: Int64;
 begin
   if HighPrecision then
-    T := GetTimeUsecSince(fEnterTime)
+    T := TimeSinceUSec(fEnterTime)
   else
-    T := GetTimeSince(fEnterTime) * 1000;
+    T := TimeSince(fEnterTime) * 1000;
 
   if fEnterTick = -1 then
     tgt := fCount + 1
