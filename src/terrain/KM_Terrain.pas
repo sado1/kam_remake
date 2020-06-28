@@ -15,7 +15,7 @@ type
   TKMVertexUsage = (vuNone=0,  //Nobody is on this vertex
                     vuNWSE,    //Vertex is used NW-SE like this: \
                     vuNESW);   //Vertex is used NE-SW like this: /
-  TKMFenceType = (fncNone, fncCorn, fncWine, fncHousePlan, fncHouseFence);
+  TKMFenceKind = (fncNone, fncCorn, fncWine, fncHousePlan, fncHouseFence);
 
   TKMTileChangeType = (tctTerrain, tctRotation, tctHeight, tctObject);
 
@@ -105,11 +105,14 @@ type
 
     WalkConnect: array [TKMWalkConnect] of Byte; //Whole map is painted into interconnected areas
 
-    Fence: TKMFenceType; //Fences (ropes, planks, stones)
-    FenceSide: Byte; //Bitfield whether the fences are enabled
 
     function RenderHeight: Byte;
     procedure IncJamMeter(aValue: Integer);
+  end;
+
+  TKMTerrainTileFence = record
+    Kind: TKMFenceKind; //Fences (ropes, planks, stones)
+    Side: Byte; //Bitfield whether the fences are enabled
   end;
 
   TKMTerrainTileArray = array of TKMTerrainTile;
@@ -151,6 +154,7 @@ type
     function HousesNearTile(X,Y: Word): Boolean;
   public
     Land: array [1..MAX_MAP_SIZE, 1..MAX_MAP_SIZE] of TKMTerrainTile;
+    LandFences: array [1..MAX_MAP_SIZE, 1..MAX_MAP_SIZE] of TKMTerrainTileFence;
     FallingTrees: TKMPointTagList;
 
     constructor Create;
@@ -524,6 +528,7 @@ begin
 
   for I := 1 to fMapY do
     for K := 1 to fMapX do
+    begin
       with Land[I, K] do
       begin
         //Apply some random tiles for artisticity
@@ -549,9 +554,10 @@ begin
         IsVertexUnit := vuNone;
         FieldAge     := 0;
         TreeAge      := IfThen(ObjectIsChopableTree(KMPoint(K, I), caAgeFull), TREE_AGE_FULL, 0);
-        Fence        := fncNone;
-        FenceSide    := 0;
       end;
+      LandFences[I, K].Kind := fncNone;
+      LandFences[I, K].Side := 0;
+    end;
 
   fFinder := TKMTerrainFinder.Create;
   UpdateLighting;
@@ -601,8 +607,8 @@ begin
         Land[I,J].IsVertexUnit := vuNone;
         Land[I,J].FieldAge     := 0;
         Land[I,J].TreeAge      := 0;
-        Land[I,J].Fence        := fncNone;
-        Land[I,J].FenceSide    := 0;
+        LandFences[I,J].Kind   := fncNone;
+        LandFences[I,J].Side   := 0;
 
         ReadTileFromStream(S, tileBasic, gameRev);
 
@@ -4853,7 +4859,7 @@ end;
 
 {Check 4 surrounding tiles, and if they are different place a fence}
 procedure TKMTerrain.UpdateFences(const Loc: TKMPoint; CheckSurrounding: Boolean = True);
-  function GetFenceType: TKMFenceType;
+  function GetFenceType: TKMFenceKind;
   begin
     if TileIsCornField(Loc) then
       Result := fncCorn
@@ -4882,16 +4888,16 @@ procedure TKMTerrain.UpdateFences(const Loc: TKMPoint; CheckSurrounding: Boolean
 begin
   if not TileInMapCoords(Loc.X, Loc.Y) then Exit;
 
-  Land[Loc.Y,Loc.X].Fence := GetFenceType;
+  LandFences[Loc.Y,Loc.X].Kind := GetFenceType;
 
-  if Land[Loc.Y, Loc.X].Fence = fncNone then
-    Land[Loc.Y, Loc.X].FenceSide := 0
+  if LandFences[Loc.Y, Loc.X].Kind = fncNone then
+    LandFences[Loc.Y, Loc.X].Side := 0
   else
   begin
-    Land[Loc.Y, Loc.X].FenceSide := Byte(GetFenceEnabled(Loc.X,   Loc.Y - 1)) + //N
-                                    Byte(GetFenceEnabled(Loc.X - 1, Loc.Y)) * 2 + //E
-                                    Byte(GetFenceEnabled(Loc.X + 1, Loc.Y)) * 4 + //W
-                                    Byte(GetFenceEnabled(Loc.X,   Loc.Y + 1)) * 8; //S
+    LandFences[Loc.Y, Loc.X].Side := Byte(GetFenceEnabled(Loc.X,     Loc.Y - 1)) + //N
+                                     Byte(GetFenceEnabled(Loc.X - 1, Loc.Y)) * 2 + //E
+                                     Byte(GetFenceEnabled(Loc.X + 1, Loc.Y)) * 4 + //W
+                                     Byte(GetFenceEnabled(Loc.X,     Loc.Y + 1)) * 8; //S
   end;
 
   if CheckSurrounding then

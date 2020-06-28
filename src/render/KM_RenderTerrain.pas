@@ -78,7 +78,7 @@ type
     procedure DoWater(aAnimStep: Integer; aFOW: TKMFogOfWarCommon);
     procedure DoShadows(aFOW: TKMFogOfWarCommon);
     function VBOSupported: Boolean;
-    procedure RenderFence(aFence: TKMFenceType; Pos: TKMDirection; pX,pY: Integer);
+    procedure RenderFence(aFence: TKMFenceKind; Pos: TKMDirection; pX,pY: Integer);
     procedure RenderMarkup(pX, pY: Word; aFieldType: TKMFieldType);
     procedure DoRenderTile(aTerrainId: Word; pX,pY,Rot: Integer; aDoBindTexture: Boolean; aUseTileLookup: Boolean;
                            DoHighlight: Boolean = False; HighlightColor: Cardinal = 0;
@@ -877,14 +877,14 @@ begin
       begin
         if TileHasToBeRendered(False,K,I,aFow) then
         begin
-          if Land[I,K].FenceSide and 1 = 1 then
-            RenderFence(Land[I,K].Fence, dirN, K, I);
-          if Land[I,K].FenceSide and 2 = 2 then 
-            RenderFence(Land[I,K].Fence, dirE, K, I);
-          if Land[I,K].FenceSide and 4 = 4 then 
-            RenderFence(Land[I,K].Fence, dirW, K, I);
-          if Land[I,K].FenceSide and 8 = 8 then 
-            RenderFence(Land[I,K].Fence, dirS, K, I);
+          if LandFences[I,K].Side and 1 = 1 then
+            RenderFence(LandFences[I,K].Kind, dirN, K, I);
+          if LandFences[I,K].Side and 2 = 2 then
+            RenderFence(LandFences[I,K].Kind, dirE, K, I);
+          if LandFences[I,K].Side and 4 = 4 then
+            RenderFence(LandFences[I,K].Kind, dirW, K, I);
+          if LandFences[I,K].Side and 8 = 8 then
+            RenderFence(LandFences[I,K].Kind, dirS, K, I);
         end;
       end;
 end;
@@ -1344,7 +1344,7 @@ begin
 end;
 
 
-procedure TRenderTerrain.RenderFence(aFence: TKMFenceType; Pos: TKMDirection; pX,pY: Integer);
+procedure TRenderTerrain.RenderFence(aFence: TKMFenceKind; Pos: TKMDirection; pX,pY: Integer);
 const
   FO = 4; //Fence overlap
   VO = -4; //Move fences a little down to avoid visible overlap when unit stands behind fence, but is rendered ontop of it, due to Z sorting algo we use
