@@ -159,7 +159,7 @@ type
     function HousesNearTile(X,Y: Word): Boolean;
   public
     Land: array [1..MAX_MAP_SIZE, 1..MAX_MAP_SIZE] of TKMTerrainTile;
-    LandFences: array [1..MAX_MAP_SIZE, 1..MAX_MAP_SIZE] of TKMTerrainTileFence;
+    Fences: array [1..MAX_MAP_SIZE, 1..MAX_MAP_SIZE] of TKMTerrainTileFence;
     FallingTrees: TKMPointTagList;
 
     constructor Create;
@@ -568,8 +568,8 @@ begin
         FieldAge     := 0;
         TreeAge      := IfThen(ObjectIsChopableTree(KMPoint(K, I), caAgeFull), TREE_AGE_FULL, 0);
       end;
-      LandFences[I, K].Kind := fncNone;
-      LandFences[I, K].Side := 0;
+      Fences[I, K].Kind := fncNone;
+      Fences[I, K].Side := 0;
     end;
 
   fFinder := TKMTerrainFinder.Create;
@@ -620,8 +620,8 @@ begin
         Land[I,J].IsVertexUnit := vuNone;
         Land[I,J].FieldAge     := 0;
         Land[I,J].TreeAge      := 0;
-        LandFences[I,J].Kind   := fncNone;
-        LandFences[I,J].Side   := 0;
+        Fences[I,J].Kind   := fncNone;
+        Fences[I,J].Side   := 0;
 
         ReadTileFromStream(S, tileBasic, gameRev);
 
@@ -4901,16 +4901,16 @@ procedure TKMTerrain.UpdateFences(const Loc: TKMPoint; CheckSurrounding: Boolean
 begin
   if not TileInMapCoords(Loc.X, Loc.Y) then Exit;
 
-  LandFences[Loc.Y,Loc.X].Kind := GetFenceType;
+  Fences[Loc.Y,Loc.X].Kind := GetFenceType;
 
-  if LandFences[Loc.Y, Loc.X].Kind = fncNone then
-    LandFences[Loc.Y, Loc.X].Side := 0
+  if Fences[Loc.Y, Loc.X].Kind = fncNone then
+    Fences[Loc.Y, Loc.X].Side := 0
   else
   begin
-    LandFences[Loc.Y, Loc.X].Side := Byte(GetFenceEnabled(Loc.X,     Loc.Y - 1)) + //N
-                                     Byte(GetFenceEnabled(Loc.X - 1, Loc.Y)) * 2 + //E
-                                     Byte(GetFenceEnabled(Loc.X + 1, Loc.Y)) * 4 + //W
-                                     Byte(GetFenceEnabled(Loc.X,     Loc.Y + 1)) * 8; //S
+    Fences[Loc.Y, Loc.X].Side := Byte(GetFenceEnabled(Loc.X,     Loc.Y - 1))      + //N
+                                 Byte(GetFenceEnabled(Loc.X - 1, Loc.Y))      * 2 + //E
+                                 Byte(GetFenceEnabled(Loc.X + 1, Loc.Y))      * 4 + //W
+                                 Byte(GetFenceEnabled(Loc.X,     Loc.Y + 1))  * 8;  //S
   end;
 
   if CheckSurrounding then

@@ -877,14 +877,14 @@ begin
       begin
         if TileHasToBeRendered(False,K,I,aFow) then
         begin
-          if LandFences[I,K].Side and 1 = 1 then
-            RenderFence(LandFences[I,K].Kind, dirN, K, I);
-          if LandFences[I,K].Side and 2 = 2 then
-            RenderFence(LandFences[I,K].Kind, dirE, K, I);
-          if LandFences[I,K].Side and 4 = 4 then
-            RenderFence(LandFences[I,K].Kind, dirW, K, I);
-          if LandFences[I,K].Side and 8 = 8 then
-            RenderFence(LandFences[I,K].Kind, dirS, K, I);
+          if Fences[I,K].Side and 1 = 1 then
+            RenderFence(Fences[I,K].Kind, dirN, K, I);
+          if Fences[I,K].Side and 2 = 2 then
+            RenderFence(Fences[I,K].Kind, dirE, K, I);
+          if Fences[I,K].Side and 4 = 4 then
+            RenderFence(Fences[I,K].Kind, dirW, K, I);
+          if Fences[I,K].Side and 8 = 8 then
+            RenderFence(Fences[I,K].Kind, dirS, K, I);
         end;
       end;
 end;
