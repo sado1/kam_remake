@@ -57,6 +57,8 @@ type
     procedure CopyCorners(aLayer: TKMTerrainLayer);
     procedure SwapCorners(aLayer: TKMTerrainLayer);
     procedure SetAllCOrners;
+
+    procedure Save(aSaveStream: TKMemoryStream);
   end;
 
 
@@ -131,6 +133,8 @@ type
     fFinder: TKMTerrainFinder;
 
     fBoundsWC: TKMRect; //WC rebuild bounds used in FlattenTerrain (put outside to fight with recursion SO error in FlattenTerrain EnsureWalkable)
+
+    fUnitPointersTemp: array [1..MAX_MAP_SIZE, 1..MAX_MAP_SIZE] of Pointer;
 
     function TileHasParameter(X,Y: Word; aCheckTileFunc: TBooleanWordFunc; aAllow2CornerTiles: Boolean = False;
                               aStrictCheck: Boolean = False): Boolean;
@@ -446,6 +450,14 @@ var
 begin
   for I := 0 to 3 do
     Result[I] := Corner[I];
+end;
+
+
+procedure TKMTerrainLayer.Save(aSaveStream: TKMemoryStream);
+begin
+  aSaveStream.Write(Terrain);
+  aSaveStream.Write(Rotation);
+  aSaveStream.Write(Corners);
 end;
 
 
@@ -5056,7 +5068,6 @@ end;
 procedure TKMTerrain.Save(SaveStream: TKMemoryStream);
 var
   I, K, L: Integer;
-  tileBasic: TKMTerrainTileBasic;
   isTxtStream: Boolean;
 begin
   Assert(not fMapEditor, 'MapEd mode is not intended to be saved into savegame');
@@ -5070,43 +5081,62 @@ begin
   FallingTrees.SaveToStream(SaveStream);
   isTxtStream := SaveStream is TKMemoryStreamText;
 
-  for I := 1 to fMapY do
-    for K := 1 to fMapX do
-    begin
-      if isTxtStream then
+  if isTxtStream then
+    for I := 1 to fMapY do
+      for K := 1 to fMapX do
+      begin
         SaveStream.PlaceMarker(KMPoint(K,I).ToString);
 
-      //Only save fields that cannot be recalculated after loading
-      tileBasic.BaseLayer   := Land[I,K].BaseLayer;
-      tileBasic.Height      := Land[I,K].Height;
-      tileBasic.Obj         := Land[I,K].Obj;
-      tileBasic.IsCustom    := Land[I,K].IsCustom;
-      tileBasic.BlendingLvl := Land[I,K].BlendingLvl;
-      tileBasic.LayersCnt   := Land[I,K].LayersCnt;
-      tileBasic.TileOverlay := Land[I,K].TileOverlay;
+        with Land[I,K] do
+        begin
+          BaseLayer.Save(SaveStream);
+          for L := 0 to 2 do
+            Layer[L].Save(SaveStream);
+          SaveStream.Write(LayersCnt);
+          SaveStream.Write(Height);
+          SaveStream.Write(Obj);
+          SaveStream.Write(IsCustom);
+          SaveStream.Write(BlendingLvl);
+          SaveStream.Write(TreeAge);
+          SaveStream.Write(FieldAge);
+          SaveStream.Write(TileLock, SizeOf(TileLock));
+          SaveStream.Write(JamMeter);
+          SaveStream.Write(TileOverlay, SizeOf(TileOverlay));
+          SaveStream.Write(TileOwner, SizeOf(TileOwner));
+          SaveStream.Write(TKMUnit(Land[I,K].IsUnit).UID);
+          SaveStream.Write(IsVertexUnit, SizeOf(IsVertexUnit));
 
-      for L := 0 to 2 do
-        tileBasic.Layer[L] := Land[I,K].Layer[L];
+          SaveStream.Write(Passability, SizeOf(Passability));
+          SaveStream.Write(WalkConnect, SizeOf(WalkConnect));
+          SaveStream.Write(Light);
+        end;
+      end
+  else
+  begin
+    // Save Unit pointer in temp array
+    for I := 1 to fMapY do
+      for K := 1 to fMapX do
+      begin
+        fUnitPointersTemp[I,K] := Land[I,K].IsUnit;
+        Land[I,K].IsUnit := Pointer(TKMUnit(Land[I,K].IsUnit).UID);
+      end;
 
-      WriteTileToStream(SaveStream, tileBasic, Land[I,K].TileOwner, True);
+    for I := 1 to fMapY do
+      SaveStream.Write(Land[I,1], SizeOf(Land[I,1]) * fMapX);
 
-      SaveStream.Write(Land[I,K].Passability, SizeOf(Land[I,K].Passability));
-      SaveStream.Write(Land[I,K].WalkConnect, SizeOf(Land[I,K].WalkConnect));
-      SaveStream.Write(Land[I,K].TreeAge);
-      SaveStream.Write(Land[I,K].FieldAge);
-      SaveStream.Write(Land[I,K].TileLock, SizeOf(Land[I,K].TileLock));
-      SaveStream.Write(Land[I,K].JamMeter);
-      SaveStream.Write(Land[I,K].TileOwner, SizeOf(Land[I,K].TileOwner));
-      SaveStream.Write(TKMUnit(Land[I,K].IsUnit).UID); //Store ID, then substitute it with reference on SyncLoad
-      SaveStream.Write(Land[I,K].IsVertexUnit, SizeOf(Land[I,K].IsVertexUnit));
-    end;
+    // Restore unit pointers
+    for I := 1 to fMapY do
+      for K := 1 to fMapX do
+      begin
+        Land[I,K].IsUnit := fUnitPointersTemp[I,K];
+      end;
+  end;
 end;
 
 
 procedure TKMTerrain.Load(LoadStream: TKMemoryStream);
 var
-  I, J, L: Integer;
-  tileBasic: TKMTerrainTileBasic;
+  I, J: Integer;
 begin
   LoadStream.CheckMarker('Terrain');
   LoadStream.Read(fMapX);
@@ -5117,30 +5147,7 @@ begin
   FallingTrees.LoadFromStream(LoadStream);
 
   for I := 1 to fMapY do
-    for J := 1 to fMapX do
-    begin
-      ReadTileFromStream(LoadStream, tileBasic, GAME_REVISION_NUM);
-      Land[I,J].BaseLayer := tileBasic.BaseLayer;
-      Land[I,J].Height := tileBasic.Height;
-      Land[I,J].Obj := tileBasic.Obj;
-      Land[I,J].IsCustom := tileBasic.IsCustom;
-      Land[I,J].BlendingLvl := tileBasic.BlendingLvl;
-      Land[I,J].TileOverlay := tileBasic.TileOverlay;
-      Land[I,J].LayersCnt := tileBasic.LayersCnt;
-
-      for L := 0 to 2 do
-        Land[I,J].Layer[L] := tileBasic.Layer[L];
-
-      LoadStream.Read(Land[I,J].Passability, SizeOf(Land[I,J].Passability));
-      LoadStream.Read(Land[I,J].WalkConnect, SizeOf(Land[I,J].WalkConnect));
-      LoadStream.Read(Land[I,J].TreeAge);
-      LoadStream.Read(Land[I,J].FieldAge);
-      LoadStream.Read(Land[I,J].TileLock,SizeOf(Land[I,J].TileLock));
-      LoadStream.Read(Land[I,J].JamMeter);
-      LoadStream.Read(Land[I,J].TileOwner,SizeOf(Land[I,J].TileOwner));
-      LoadStream.Read(Land[I,J].IsUnit, 4);
-      LoadStream.Read(Land[I,J].IsVertexUnit,SizeOf(Land[I,J].IsVertexUnit));
-    end;
+    LoadStream.Read(Land[I,1], SizeOf(Land[I,1]) * fMapX);
 
   for I := 1 to fMapY do
     for J := 1 to fMapX do
@@ -5148,8 +5155,6 @@ begin
 
   fFinder := TKMTerrainFinder.Create;
 
-  UpdateLighting;
-  // Do not update Passability and WalkConnect, since we loaded it from the stream
   gLog.AddTime('Terrain loaded');
 end;
 
