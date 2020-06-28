@@ -17,6 +17,18 @@ uses
   WinAPI.TlHelp32;
 
 
+// If we want to nam all thread we can do that with delay via anonymous thread, f.e.
+//TThread.CreateAnonymousThread(
+//    procedure
+//    var
+//      vSnapshot:THandle;
+//      vProcessId:THandle;
+//      vTE32:TThreadEntry32;
+//      i:Integer;
+//    begin
+//      Sleep(4000);
+//      .... // Rest code
+// example from: https://en.delphipraxis.net/topic/2677-do-you-name-your-threads-for-debugging/
 procedure NameDelphiThreads(const pMainThreadId:THandle);
 var
   vSnapshot:THandle;
@@ -43,7 +55,8 @@ begin
             end
             else
             begin
-              TThread.NameThreadForDebugging('DelphiCreated_' + AnsiString(IntToStr(i)), vTE32.th32ThreadID);
+              // skip naming for now, since we will change madExcept thread debug name
+//              TThread.NameThreadForDebugging('DelphiCreated_' + AnsiString(IntToStr(i)), vTE32.th32ThreadID);
               Inc(i);
             end;
           end;
