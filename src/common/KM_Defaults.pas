@@ -281,6 +281,8 @@ const
   GAME_SP_SPEED_MAX = 10;
   GAME_MP_SPEED_MAX = 2.5;
 
+  SPEED_PACE_DEFAULT = 100; // ms, frequency of game updates
+
 
   AUTOSAVE_COUNT          = 5;    //How many autosaves to backup - this MUST be variable (Parallel Runner)
   AUTOSAVE_COUNT_MIN      = 2;

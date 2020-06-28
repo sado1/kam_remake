@@ -278,6 +278,7 @@ type
     //Debug
     procedure SetDebugSaveRandomChecks(aValue: Boolean);
     procedure SetDebugSaveGameAsText(aValue: Boolean);
+    procedure SetSpeedPace(const aValue: Word);
   protected
     function LoadFromINI(const FileName: UnicodeString): Boolean;
     procedure SaveToINI(const FileName: UnicodeString);
@@ -313,7 +314,7 @@ type
 
     property ScrollSpeed: Byte read fScrollSpeed write SetScrollSpeed;
     property Locale: AnsiString read fLocale write SetLocale;
-    property SpeedPace: Word read fSpeedPace;
+    property SpeedPace: Word read fSpeedPace write SetSpeedPace;
     property SpeedMedium: Single read fSpeedMedium;
     property SpeedFast: Single read fSpeedFast;
     property SpeedVeryFast: Single read fSpeedVeryFast;
@@ -679,7 +680,7 @@ begin
       fPlayerColorEnemy := clPlayerEnemy;
 
     fScrollSpeed        := F.ReadInteger  ('Game', 'ScrollSpeed',       10);
-    fSpeedPace          := F.ReadInteger  ('Game', 'SpeedPace',         100);
+    SpeedPace           := F.ReadInteger  ('Game', 'SpeedPace',         SPEED_PACE_DEFAULT);
     fSpeedMedium        := F.ReadFloat    ('Game', 'SpeedMedium',       3);
     fSpeedFast          := F.ReadFloat    ('Game', 'SpeedFast',         6);
     fSpeedVeryFast      := F.ReadFloat    ('Game', 'SpeedVeryFast',     10);
@@ -1146,6 +1147,20 @@ procedure TKMGameSettings.SetSpecShowBeacons(aValue: Boolean);
 begin
   fSpecShowBeacons := aValue;
   Changed;
+end;
+
+
+procedure TKMGameSettings.SetSpeedPace(const aValue: Word);
+begin
+  // Allow to set speed pace only while in debug mode.
+  // Its possible to alter game speed now, so there is no need actual need for speed pace change
+  // And actual game speed is recorded in the game / replay, but speed pace is not.
+  // So its better to show on what actual speed some speedrunner made his crazy run
+  {$IFDEF DEBUG}
+  fSpeedPace := aValue;
+  {$ELSE}
+  fSpeedPace := SPEED_PACE_DEFAULT;
+  {$ENDIF}
 end;
 
 
