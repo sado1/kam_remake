@@ -1340,7 +1340,7 @@ begin
     fAutoSaveWorkerThread.QueueWork(procedure
     begin
       DoAutoSaveRename(localIsMultiPlayerOrSpec);
-    end, 'AutoSave');
+    end, 'AutoSaveRename');
   {$ELSE}
     DoAutoSaveRename(fParams.IsMultiPlayerOrSpec);
   {$ENDIF}

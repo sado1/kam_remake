@@ -271,7 +271,7 @@ end;
 function TKMResource.GetOrCreateExportWorker: TKMWorkerThread;
 begin
   if fExportWorker = nil then
-    fExportWorker := TKMWorkerThread.Create('Export worker');
+    fExportWorker := TKMWorkerThread.Create('ExportWorker');
 
   Result := fExportWorker;
 end;

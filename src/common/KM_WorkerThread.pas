@@ -19,6 +19,7 @@ type
 
     procedure NameThread; overload;
     procedure NameThread(aThreadName: string); overload;
+    function GetBaseThreadName: string;
   public
     //Special mode for exception handling. Runs work synchronously inside QueueWork
     fSynchronousExceptionMode: Boolean;
@@ -70,16 +71,21 @@ begin
   fTaskQueue.Free; // Free task queue after Worker thread is destroyed so we don't wait for it
 end;
 
+function TKMWorkerThread.GetBaseThreadName: string;
+begin
+  Result := fWorkerThreadName + ' Jobs=' + IntToStr(fTaskQueue.Count);
+end;
+
 procedure TKMWorkerThread.NameThread;
 begin
-  NameThread(fWorkerThreadName);
+  NameThread('');
 end;
 
 procedure TKMWorkerThread.NameThread(aThreadName: string);
 begin
   {$IFDEF DEBUG}
   if fWorkerThreadName <> '' then
-    TThread.NameThreadForDebugging(fWorkerThreadName);
+    TThread.NameThreadForDebugging(GetBaseThreadName + ' ' + aThreadName);
   {$ENDIF}
 end;
 

@@ -294,7 +294,7 @@ begin
         finally
           localStream.Free;
         end;
-      end, 'SavePointCollection.SaveToFileAsync');
+      end, 'Save SavePoints');
   {$ELSE}
     localStream := TKMemoryStreamBinary.Create;
     try

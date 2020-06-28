@@ -493,7 +493,7 @@ begin
       finally
         localStream.Free;
       end;
-    end, 'AsyncSaveToFile');
+    end, 'SaveToFile');
   {$ELSE}
     try
       LocalStream.SaveToFile(aFileName);
@@ -520,7 +520,7 @@ begin
       finally
         localStream.Free;
       end;
-    end, 'AsyncSaveToFileCompressed ' + aMarker);
+    end, 'SaveToFileCompressed ' + aMarker);
   {$ELSE}
     try
       LocalStream.SaveToFileCompressed(aFileName, aMarker);
@@ -555,7 +555,7 @@ begin
         localSubStream2.Free;
         localMainStream.Free;
       end;
-    end, 'AsyncSaveStreamsToFileAndFree ' + aMarker1 + ' ' + aMarker2);
+    end, 'SaveStreamsToFile ' + aMarker1 + ' ' + aMarker2);
   {$ELSE}
     try
       mainStream.AppendStream(localStream1, aMarker1);
