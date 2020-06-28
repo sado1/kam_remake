@@ -43,7 +43,7 @@ type
   private
     // Each Undo step stores whole terrain for simplicity
     fData: array of array of TKMUndoTile;
-    function MakeUndoTile(aTile: TKMTerrainTile; aPaintedTile: TKMPainterTile; aMapEdTile: TKMMapEdTerrainTile): TKMUndoTile;
+    function MakeUndoTile(const aTile: TKMTerrainTile; const aPaintedTile: TKMPainterTile; const aMapEdTile: TKMMapEdTerrainTile): TKMUndoTile;
     procedure RestoreTileFromUndo(var aTile: TKMTerrainTile; var aPaintedTile: TKMPainterTile; var aMapEdTile: TKMMapEdTerrainTile; aUndoTile: TKMUndoTile;
                                   aUnderHouse: Boolean);
   public
@@ -216,7 +216,7 @@ begin
 end;
 
 
-function TKMCheckpointTerrain.MakeUndoTile(aTile: TKMTerrainTile; aPaintedTile: TKMPainterTile; aMapEdTile: TKMMapEdTerrainTile): TKMUndoTile;
+function TKMCheckpointTerrain.MakeUndoTile(const aTile: TKMTerrainTile; const aPaintedTile: TKMPainterTile; const aMapEdTile: TKMMapEdTerrainTile): TKMUndoTile;
 var
   L: Integer;
 begin
