@@ -8,7 +8,8 @@ uses
   KM_CommonTypes, KM_Defaults, KM_RenderControl, KM_Video,
   KM_Campaigns, KM_Game, KM_InterfaceMainMenu, KM_Resource,
   KM_Music, KM_Maps, KM_MapTypes, KM_CampaignTypes, KM_Networking, KM_Settings, KM_Render,
-  KM_GameTypes, KM_Points, KM_Console;
+  KM_GameTypes, KM_Points, KM_Console,
+  KM_WorkerThread;
 
 type
   //Methods relevant to gameplay
@@ -33,6 +34,13 @@ type
     fOnGameEnd: TKMGameModeChangeEvent;
 
     fOnOptionsChange: TEvent;
+
+    // Worker threads
+    fSaveWorkerThread: TKMWorkerThread; // Worker thread for normal saves and save at the end of PT
+    fBaseSaveWorkerThread: TKMWorkerThread; // Worker thread for base save only
+    fAutoSaveWorkerThread: TKMWorkerThread; // Worker thread for autosaves only
+
+    procedure CreateGame(aGameMode: TKMGameMode);
 
     procedure SaveCampaignsProgress;
     procedure GameLoadingStep(const aText: UnicodeString);
@@ -115,6 +123,10 @@ type
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
     procedure MouseWheel(Shift: TShiftState; WheelSteps: Integer; X,Y: Integer; var aHandled: Boolean);
     procedure FPSMeasurement(aFPS: Cardinal);
+
+    property SaveWorkerThread: TKMWorkerThread read fSaveWorkerThread;
+    property BaseSaveWorkerThread: TKMWorkerThread read fBaseSaveWorkerThread;
+    property AutoSaveWorkerThread: TKMWorkerThread read fAutoSaveWorkerThread;
 
     procedure UnlockAllCampaigns;
 
@@ -202,6 +214,10 @@ begin
 
   fMusic.ToggleShuffle(fGameSettings.ShuffleOn); //Determine track order
 
+  fSaveWorkerThread := TKMWorkerThread.Create('SaveWorker');
+  fAutoSaveWorkerThread := TKMWorkerThread.Create('AutoSaveWorker');
+  fBaseSaveWorkerThread := TKMWorkerThread.Create('BaseSaveWorker');
+
   fOnGameStart := GameStarted;
   fOnGameEnd := GameEnded;
 end;
@@ -231,6 +247,11 @@ begin
   if fMusic <> nil then fMusic.Stop;
 
   StopGame(grSilent);
+
+  //This will ensure all queued work is completed before destruction
+  FreeAndNil(fSaveWorkerThread);
+  FreeAndNil(fAutoSaveWorkerThread);
+  FreeAndNil(fBaseSaveWorkerThread);
 
   FreeAndNil(fChat);
   FreeAndNil(fTimerUI);
@@ -520,6 +541,12 @@ begin
 end;
 
 
+procedure TKMGameApp.CreateGame(aGameMode: TKMGameMode);
+begin
+  gGame := TKMGame.Create(aGameMode, gRender, GameDestroyed, fSaveWorkerThread, fBaseSaveWorkerThread, fAutoSaveWorkerThread);
+end;
+
+
 procedure TKMGameApp.PrepageStopGame(aMsg: TKMGameResultMsg);
 var
   lastSentCmdsTick: Integer;
@@ -671,7 +698,7 @@ begin
   if gMain <> nil then
     gMain.FormMain.ControlsReset;
 
-  gGame := TKMGame.Create(aGameMode, gRender, GameDestroyed);
+  CreateGame(aGameMode);
   try
     gGame.LoadFromFile(filePath, aGIPPath);
   except
@@ -717,7 +744,7 @@ begin
   if gMain <> nil then
     gMain.FormMain.ControlsReset;
 
-  gGame := TKMGame.Create(aGameMode, gRender, GameDestroyed);
+  CreateGame(aGameMode);
   try
     gGame.Start(missionFile, gameName, aFullCRC, aSimpleCRC, aCampaign, aMap, aDesiredLoc, aDesiredColor, aDifficulty, aAIType, aAutoselectHumanLoc);
   except
@@ -774,7 +801,7 @@ begin
   if gMain <> nil then
     gMain.FormMain.ControlsReset;
 
-  gGame := TKMGame.Create(gameMode, gRender, GameDestroyed);
+  CreateGame(gameMode);
   try
     // SavedReplays have been just created, and we will reassign them in the next line.
     // Then Free the newly created save replays object first
@@ -822,7 +849,7 @@ begin
   if gMain <> nil then
     gMain.FormMain.ControlsReset;
 
-  gGame := TKMGame.Create(aGameMode, gRender, GameDestroyed);
+  CreateGame(aGameMode);
   gGame.SetSeed(4); //Every time the game will be the same as previous. Good for debug.
   try
     gGame.MapEdStartEmptyMap(aSizeX, aSizeY);

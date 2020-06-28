@@ -137,7 +137,8 @@ type
     StartedFromMapEditor: Boolean;    // True if we start game from map editor ('Quick Play')
     StartedFromMapEdAsMPMap: Boolean; // True if we start game from map editor ('Quick Play') with MP map
 
-    constructor Create(aGameMode: TKMGameMode; aRender: TRender; aOnDestroy: TEvent);
+    constructor Create(aGameMode: TKMGameMode; aRender: TRender; aOnDestroy: TEvent;
+                       aSaveWorkerThread: TKMWorkerThread; aBaseSaveWorkerThread: TKMWorkerThread; aAutoSaveWorkerThread: TKMWorkerThread);
     destructor Destroy; override;
 
     procedure Start(const aMissionFile, aName: UnicodeString; aFullCRC, aSimpleCRC: Cardinal; aCampaign: TKMCampaign;
@@ -291,7 +292,8 @@ uses
 //Create template for the Game
 //aRender - who will be rendering the Game session
 //aNetworking - access to MP stuff
-constructor TKMGame.Create(aGameMode: TKMGameMode; aRender: TRender; aOnDestroy: TEvent);
+constructor TKMGame.Create(aGameMode: TKMGameMode; aRender: TRender; aOnDestroy: TEvent;
+                           aSaveWorkerThread: TKMWorkerThread; aBaseSaveWorkerThread: TKMWorkerThread; aAutoSaveWorkerThread: TKMWorkerThread);
 const
   UIMode: array[TKMGameMode] of TUIMode = (umSP, umSP, umMP, umSpectate, umSP, umReplay, umReplay);
 begin
@@ -301,11 +303,11 @@ begin
   if gMain <> nil then
     gMain.FormMain.SuppressAltForMenu := True;
 
-  fSaveWorkerThread := TKMWorkerThread.Create('SaveWorker');
-  fAutoSaveWorkerThread := TKMWorkerThread.Create('AutoSaveWorker');
-  fBaseSaveWorkerThread := TKMWorkerThread.Create('BaseSaveWorker');
-
   fParams := TKMGameParams.Create(aGameMode, fSetGameTickEvent, fSetGameModeEvent, fSetMissionFileSP, fSetBlockPointer);
+
+  fSaveWorkerThread := aSaveWorkerThread;
+  fBaseSaveWorkerThread := aBaseSaveWorkerThread;
+  fAutoSaveWorkerThread := aAutoSaveWorkerThread;
 
   fOnDestroy := aOnDestroy;
 
@@ -457,14 +459,6 @@ begin
 
   if Assigned(fOnDestroy) then
     fOnDestroy();
-
-  //This will ensure all queued work is completed before destruction
-  FreeAndNil(fSaveWorkerThread);
-  FreeAndNil(fAutoSaveWorkerThread);
-
-  // BaseSaveWorker could be already destroyed
-  if fBaseSaveWorkerThread <> nil then
-    FreeAndNil(fBaseSaveWorkerThread);
 
   inherited;
 end;
@@ -2121,12 +2115,9 @@ begin
   gPerfLogs.SectionEnter(psGameSaveWait);
   {$ENDIF}
   try
-    if (fBaseSaveWorkerThread <> nil) and (aSaveWorkerThread <> fBaseSaveWorkerThread) then
-    begin
+    if (aSaveWorkerThread <> fBaseSaveWorkerThread) then
       // We have to wait until basesave is made before first game save
       fBaseSaveWorkerThread.WaitForAllWorkToComplete;
-      FreeAndNil(fBaseSaveWorkerThread); //fBaseSaveWorkerThread has done its job, We can destroy it now to free resources and release thread
-    end;
 
     //Wait for previous save async tasks to complete before proceeding
     aSaveWorkerThread.WaitForAllWorkToComplete;
