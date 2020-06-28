@@ -2026,7 +2026,6 @@ procedure TKMGame.SaveGameToFile(const aPathName: String; aSaveWorkerThread: TKM
 var
   mainStream, headerStream, bodyStream, saveStreamTxt: TKMemoryStream;
   gameMPLocalData: TKMGameMPLocalData;
-  path: string;
 begin
   if BLOCK_SAVE then // This must be here because of paraller Runner
     Exit;
@@ -2048,17 +2047,17 @@ begin
   //Should do before save Minimap file for MP game
   if (aPathName <> '') then
   begin
-    //Doing this async would mean that every part of saving must be done async
-    //Seems error prone so I disabled it for now. It only takes ~0.3ms in my tests
-    path := ExtractFilePath(aPathName);
-    if DirectoryExists(path) then
-      KMDeleteFolderContent(path) // Delete save folder content, since we want to overwrite old saves
-    else
-      ForceDirectories(path);
-    {fSaveWorkerThread.QueueWork(procedure
+    // We can make directories in async too, since all save parts are made in async now
+    aSaveWorkerThread.QueueWork(procedure
+    var
+      path: string;
     begin
-      ForceDirectories(ExtractFilePath(aPathName));
-    end);}
+      path := ExtractFilePath(aPathName);
+      if DirectoryExists(path) then
+        KMDeleteFolderContent(path) // Delete save folder content, since we want to overwrite old saves
+      else
+        ForceDirectories(path);
+    end, 'Prepare save dir');
   end;
 
   //In MP each player has his own perspective, hence we dont save minimaps in the main save file to avoid cheating,
