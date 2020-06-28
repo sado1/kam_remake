@@ -180,7 +180,7 @@ begin
 
   //Only after we read settings (fullscreen property and resolutions)
   //we can decide whenever we want to create Game fullscreen or not (OpenGL init depends on that)
-  fMainSettings := TKMainSettings.Create;
+  fMainSettings := TKMainSettings.Create(Screen.Width, Screen.Height);
   //We need to verify INI values, as they can be from another display
   if not fResolutions.IsValid(fMainSettings.Resolution) then
   begin
