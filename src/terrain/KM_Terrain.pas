@@ -103,7 +103,7 @@ type
     Light: Single; //KaM stores node lighting in 0..32 range (-16..16), but I want to use -1..1 range
     Passability: TKMTerrainPassabilitySet; //Meant to be set of allowed actions on the tile
 
-    WalkConnect: array [TKMWalkConnect] of Word; //Whole map is painted into interconnected areas
+    WalkConnect: array [TKMWalkConnect] of Byte; //Whole map is painted into interconnected areas
 
     Fence: TKMFenceType; //Fences (ropes, planks, stones)
     FenceSide: Byte; //Bitfield whether the fences are enabled
