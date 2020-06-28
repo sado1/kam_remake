@@ -62,8 +62,8 @@ type
 
   TKMTerrainTileBasic = record
     BaseLayer: TKMTerrainLayer;
-    LayersCnt: Byte;
     Layer: array [0..2] of TKMTerrainLayer;
+    LayersCnt: Byte;
     Height: Byte;
     Obj: Word;
     IsCustom: Boolean;
@@ -71,15 +71,15 @@ type
     TileOverlay: TKMTileOverlay;
   end;
 
+  // Notice fields order, because of record 4-bytes alignment
   TKMTerrainTile = record
     BaseLayer: TKMTerrainLayer;
-    LayersCnt: Byte;
     Layer: array [0..2] of TKMTerrainLayer;
-//    StoneLayer: TKMTerrainLayer;
+    LayersCnt: Byte;
     Height: Byte;
     Obj: Word;
-    IsCustom: Boolean; //Custom tile (rotated tile, atm)
-    BlendingLvl: Byte; //Use blending for layers transitions
+    IsCustom: Boolean; // Custom tile (rotated tile, atm)
+    BlendingLvl: Byte; // Use blending for layers transitions
 
     //Age of tree, another independent variable since trees can grow on fields
     TreeAge: Byte; //Not init=0 .. Full=TreeAgeFull Depending on this tree gets older and thus could be chopped
@@ -99,12 +99,13 @@ type
     IsUnit: Pointer; //Whenever there's a unit on that tile mark the tile as occupied and count the number
     IsVertexUnit: TKMVertexUsage; //Whether there are units blocking the vertex. (walking diagonally or fighting)
 
-    //DEDUCTED
-    Light: Single; //KaM stores node lighting in 0..32 range (-16..16), but I want to use -1..1 range
     Passability: TKMTerrainPassabilitySet; //Meant to be set of allowed actions on the tile
-
     WalkConnect: array [TKMWalkConnect] of Byte; //Whole map is painted into interconnected areas
 
+    // Used from Land in runtime for better performance, since its loaded to CPU cache at the same time as Height and other terrain properties
+    // But no actually need to save it.
+    // But we will save it to the stream anyway, since its much faster to save all Land by rows, instead of by separate fields
+    Light: Single; //KaM stores node lighting in 0..32 range (-16..16), but I want to use -1..1 range
 
     function RenderHeight: Byte;
     procedure IncJamMeter(aValue: Integer);
