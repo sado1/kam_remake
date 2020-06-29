@@ -101,16 +101,18 @@ type
     IsUnit: Pointer; //Whenever there's a unit on that tile mark the tile as occupied and count the number
     IsVertexUnit: TKMVertexUsage; //Whether there are units blocking the vertex. (walking diagonally or fighting)
 
+    // Used from Land in runtime for better performance (not proved yet, but anyway),
+    // since its loaded to CPU cache at the same time as Height and other terrain properties
+    // But no actually need to save it.
+    // But we will save it to the stream anyway, since its much faster to save all Land by rows, instead of by separate fields
+    Light: Byte; //KaM stores node lighting in 0..32 range (-16..16), but we can use 0..255
+
     Passability: TKMTerrainPassabilitySet; //Meant to be set of allowed actions on the tile
     WalkConnect: array [TKMWalkConnect] of Byte; //Whole map is painted into interconnected areas
 
-    // Used from Land in runtime for better performance, since its loaded to CPU cache at the same time as Height and other terrain properties
-    // But no actually need to save it.
-    // But we will save it to the stream anyway, since its much faster to save all Land by rows, instead of by separate fields
-    Light: Single; //KaM stores node lighting in 0..32 range (-16..16), but I want to use -1..1 range
-
     function RenderHeight: Byte;
     procedure IncJamMeter(aValue: Integer);
+    function RenderLight: Single;
   end;
 
   TKMTerrainTileFence = record
@@ -4481,15 +4483,15 @@ var
 begin
   x0 := Max(X - 1, 1);
   y2 := Min(Y + 1, fMapY);
-  Land[Y,X].Light := EnsureRange((Land[Y,X].RenderHeight - (Land[y2,X].RenderHeight + Land[Y,x0].RenderHeight)/2)/22,-1,1); //  1.33*16 ~=22
+  Land[Y,X].Light := Round((EnsureRange((Land[Y,X].RenderHeight - (Land[y2,X].RenderHeight + Land[Y,x0].RenderHeight)/2)/22, -1, 1) + 1) * 127.5); //  1.33*16 ~=22.
 
   //Use more contrast lighting for Waterbeds
   if fTileset.TileIsWater(Land[Y, X].BaseLayer.Terrain) then
-    Land[Y,X].Light := EnsureRange(Land[Y,X].Light * 1.3 + 0.1, -1, 1);
+    Land[Y,X].Light := Round(EnsureRange(Land[Y,X].Light * 1.3 + 0.1, 0, 255));
 
   //Map borders always fade to black
   if (Y = 1) or (Y = fMapY) or (X = 1) or (X = fMapX) then
-    Land[Y,X].Light := -1;
+    Land[Y,X].Light := 0;
 end;
 
 
@@ -5552,6 +5554,13 @@ begin
     Result := HEIGHT_DEFAULT
   else
     Result := Height;
+end;
+
+
+// Returns Light in -1..1 range
+function TKMTerrainTile.RenderLight: Single;
+begin
+  Result := Light / 127.5 - 1;
 end;
 
 
