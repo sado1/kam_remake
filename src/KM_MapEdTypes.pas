@@ -53,8 +53,7 @@ type
   end;
   
 implementation
-uses
-  KM_CommonUtils;
+
 
 
 { TKMTerrainLayerPacked }
