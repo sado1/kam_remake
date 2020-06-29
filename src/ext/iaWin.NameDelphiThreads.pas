@@ -34,7 +34,7 @@ var
   vSnapshot:THandle;
   vProcessId:THandle;
   vTE32:TThreadEntry32;
-  i:Integer;
+//  i:Integer;
 begin
   vProcessId := GetCurrentProcessId();
 
@@ -45,7 +45,7 @@ begin
       vTE32.dwSize := SizeOf(vTE32); //If you do not initialize dwSize, Thread32First fails.
       if Thread32First(vSnapshot, vTE32) then
       begin
-        i := 1;
+//        i := 1;
         repeat
           if vTE32.th32OwnerProcessID = vProcessId then
           begin
@@ -57,7 +57,7 @@ begin
             begin
               // skip naming for now, since we will change madExcept thread debug name
 //              TThread.NameThreadForDebugging('DelphiCreated_' + AnsiString(IntToStr(i)), vTE32.th32ThreadID);
-              Inc(i);
+//              Inc(i);
             end;
           end;
         until not Thread32Next(vSnapshot, vTE32);
