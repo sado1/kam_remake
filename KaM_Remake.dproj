@@ -64,7 +64,7 @@
         <DCC_IntegerOverflowCheck>true</DCC_IntegerOverflowCheck>
         <DCC_Namespace>Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;System;Xml;Data;Datasnap;Web;Soap;Winapi;$(DCC_Namespace)</DCC_Namespace>
         <DCC_RangeChecking>true</DCC_RangeChecking>
-        <DCC_UnitSearchPath>.\src\ext;.\src\ext\BGRABitmap;.\src\ext\Overbyte ICS 8;.\src\ext\pascalscript\source;.\src\ext\OggVorbis;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>.\src\ext;.\src\ext\BGRABitmap;.\src\ext\Overbyte ICS 8\Source;.\src\ext\pascalscript\source;.\src\ext\OggVorbis;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_GenerateStackFrames>true</DCC_GenerateStackFrames>
         <DCC_K>false</DCC_K>
         <DCC_N>true</DCC_N>
