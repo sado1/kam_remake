@@ -407,7 +407,7 @@ uses
   Math,
   {$IFDEF FPC} zstream, {$ENDIF}
   {$IFDEF WDC} ZLib, {$ENDIF}
-  KM_CommonUtils;
+  KM_CommonUtils, KM_Defaults;
 
 const
   MAPS_CRC_DELIMITER = ':';
@@ -423,6 +423,15 @@ const
   //------------------------------------
   // clDefault is optimal by time / compression ratio factor
   STREAM_COMPRESSION_LEVEL: TCompressionLevel = clDefault;
+
+function GetCompressionLvl: TCompressionLevel;
+begin
+  if not NO_SAVE_COMPRESSION then
+    Result := STREAM_COMPRESSION_LEVEL
+  else
+    Result := clNone;
+end;
+
 
 {TXStringList}
 //List custom comparation, using Integer value, instead of its String represantation
@@ -596,7 +605,7 @@ var
 begin
   S := TKMemoryStreamBinary.Create(True);
   try
-    CS := TCompressionStream.Create(STREAM_COMPRESSION_LEVEL, S);
+    CS := TCompressionStream.Create(GetCompressionLvl, S);
     try
       CS.CopyFrom(aStream, 0);
     finally
@@ -693,7 +702,7 @@ begin
   try
     S.PlaceMarker(aMarker);
 
-    CS := TCompressionStream.Create(STREAM_COMPRESSION_LEVEL, S);
+    CS := TCompressionStream.Create(GetCompressionLvl, S);
     try
       CS.CopyFrom(Self, 0);
     finally
