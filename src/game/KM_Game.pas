@@ -1648,12 +1648,16 @@ end;
 
 function TKMGame.IsPeaceTime: Boolean;
 begin
+  if (Self = nil) or (fOptions = nil) then Exit(False);
+
   Result := not CheckTime(fOptions.Peacetime * 600);
 end;
 
 
 function TKMGame.CheckIfPieceTimeJustEnded: Boolean;
 begin
+  if (Self = nil) or (fOptions = nil) then Exit(False);
+
   Result := False;
   if fOptions.Peacetime = 0 then Exit;
 
