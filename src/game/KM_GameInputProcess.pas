@@ -507,15 +507,15 @@ begin
                         end;
       gicpt_AnsiStr1:   aMemoryStream.WriteA(AnsiStrParam);
       gicpt_Ansi1Int2:  begin
-                          aMemoryStream.WriteA(AnsiStrParam);
                           aMemoryStream.Write(Params[0]);
                           aMemoryStream.Write(Params[1]);
+                          aMemoryStream.WriteA(AnsiStrParam);
                         end;
       gicpt_Ansi1Int3:  begin
-                          aMemoryStream.WriteA(AnsiStrParam);
                           aMemoryStream.Write(Params[0]);
                           aMemoryStream.Write(Params[1]);
                           aMemoryStream.Write(Params[2]);
+                          aMemoryStream.WriteA(AnsiStrParam);
                         end;
       gicpt_Float:      aMemoryStream.Write(FloatParam);
       gicpt_UniStr1:    aMemoryStream.WriteW(UnicodeStrParams[0]);
@@ -557,17 +557,17 @@ begin
                         aMemoryStream.Read(Params[3]);
                       end;
       gicpt_AnsiStr1: aMemoryStream.ReadA(AnsiStrParam);
-      gicpt_Ansi1Int2:begin
-                        aMemoryStream.ReadA(AnsiStrParam);
-                        aMemoryStream.Read(Params[0]);
-                        aMemoryStream.Read(Params[1]);
+      gicpt_Ansi1Int2:  begin
+                          aMemoryStream.Read(Params[0]);
+                          aMemoryStream.Read(Params[1]);
+                          aMemoryStream.ReadA(AnsiStrParam);
                       end;
-      gicpt_Ansi1Int3:begin
-                        aMemoryStream.ReadA(AnsiStrParam);
-                        aMemoryStream.Read(Params[0]);
-                        aMemoryStream.Read(Params[1]);
-                        aMemoryStream.Read(Params[2]);
-                      end;
+      gicpt_Ansi1Int3:  begin
+                          aMemoryStream.Read(Params[0]);
+                          aMemoryStream.Read(Params[1]);
+                          aMemoryStream.Read(Params[2]);
+                          aMemoryStream.ReadA(AnsiStrParam);
+                        end;
       gicpt_Float:    aMemoryStream.Read(FloatParam);
       gicpt_UniStr1:  aMemoryStream.ReadW(UnicodeStrParams[0]);
       gicpt_Ansi1Uni4:begin
