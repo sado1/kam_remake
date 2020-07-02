@@ -1584,7 +1584,7 @@ procedure TKMResSprites.ManageResLoader;
 var
   NextRXTypeI: Integer;
 begin
-  if gGameSettings.AsyncGameResLoad
+  if (gGameSettings <> nil) and gGameSettings.AsyncGameResLoad
     and (fGameResLoader <> nil)
     and fGameResLoader.LoadStepDone then
   begin
