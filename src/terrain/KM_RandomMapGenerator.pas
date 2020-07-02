@@ -195,32 +195,56 @@ type
     False  // 23 btDark
   );
 
-  WT: array[0..399] of Boolean = ( // Walkable tiles
-  //  0      1      2      3      4        5      6      7      8      9       10     11     12     13     14       15
+  WT: array[0..399] of Boolean = ( // Walkable tiles (For RMG it cannot be copy/paste of KaM tiles)
+  // 000    001    002    003    004      005    006    007    008    009      010    011    012    013    014      015
     True,  True,  True,  True,  False,   True,  True,  False, True,  True,    False, True,  False, True,  True,    False,
+  // 016    017    018    019    020      021    022    023    024    025      026    027    028    029    030      031
     True,  True,  True,  True,  True,    True,  True,  False, False, True,    True,  True,  True,  True,  True,    True,
+  // 032    033    034    035    036      037    038    039    040    041      042    043    044    045    046      047
     True,  True,  True,  True,  True,    True,  True,  True,  False, False,   False, False, True,  True,  True,    True,
+  // 048    049    050    051    052      053    054    055    056    057      058    059    060    061    062      063
     False, True,  False, False, True,    False, False, True,  True,  True,    True,  True,  True,  True,  True,    True,
+  // 064    065    066    067    068      069    070    071    072    073      074    075    076    077    078      079
     True,  True,  True,  True,  True,    True,  True,  True,  True,  True,    True,  True,  True,  True,  True,    True,
+  // 080    081    082    083    084      085    086    087    088    089      090    091    092    093    094      095
     True,  True,  True,  True,  True,    True,  True,  True,  True,  True,    True,  True,  True,  True,  True,    True,
+  // 096    097    098    099    100      101    102    103    104    105      106    107    108    109    110      111
     True,  True,  True,  True,  True,    True,  True,  True,  True,  False,   True,  True,  True,  True,  False,   True,
+  // 112    113    114    115    116      117    118    119    120    121      122    123    124    125    126      127
     True,  True,  False, False, True,    True,  False, False, True,  True,    True,  True,  True,  True,  False,   False,
+  // 128    129    130    131    132      133    134    135    136    137      138    139    140    141    142      143
     False, False, False, False, False,   False, False, False, False, False,   False, True,  False, False, False,   False,
+  // 144    145    146    147    148      149    150    151    152    153      154    155    156    157    158      159
     False, False, False, False, False,   False, False, False, True,  True,    True,  True,  False, False, False,   False,
+  // 160    161    162    163    164      165    166    167    168    169      170    171    172    173    174      175
     False, False, False, False, False,   False, True,  True,  True,  True,    True,  True,  True,  True,  True,    True,
+  // 176    177    178    179    180      181    182    183    184    185      186    187    188    189    190      191
     False, False, False, False, True,    True,  True,  True,  False, False,   False, False, True,  True,  True,    True,
+  // 192    193    194    195    196      197    198    199    200    201      202    203    204    205    206      207
     False, False, False, False, False,   True,  False, False, False, False,   True,  True,  True,  True,  False,   True,
+  // 208    209    210    211    212      213    214    215    216    217      218    219    220    221    222      223
     False, False, False, False, True,    True,  True,  True,  False, False,   False, False, True,  True,  True,    True,
+  // 224    225    226    227    228      229    230    231    232    233      234    235    236    237    238      239
     False, False, False, False, False,   False, False, False, False, False,   False, False, False, False, False,   False,
+  // 240    241    242    243    244      245    246    247    248    249      250    251    252    253    254      255
     False, False, True,  True,  False,   False, True,  True,  True,  True,    True,  True,  True,  True,  True,    True,
-	  True,  True,  False, False, False,   True,  True,  False, False, False,   False, False, False, True,  True,    True,
+  // 256    257    258    259    260      261    262    263    264    265      266    267    268    269    270      271
+    True,  True,  False, False, False,   True,  True,  False, False, False,   False, False, False, True,  True,    True,
+  // 272    273    274    275    276      277    278    279    280    281      282    283    284    285    286      287
     False, True,  False, False, False,   False, True,  True,  True,  False,   True,  False, False, False, True,    True,
-    True,  False, True,  False, False,   False, True,  True,  True,  False,   True,  False, False, False, True,    True,
-    False, True,  True,  False, False,   False, False, False, False, False,   False, False, False, False, False,   False,
+  // 288    289    290    291    292      293    294    295    296    297      298    299    200    301    302      303
+    True,  True,  True,  False, False,   False, True,  True,  True,  True,    True,  False, False, False, True,    True,
+  // 304    305    306    307    308      309    310    311    312    313      314    315    316    317    318      319
+    True,  True,  True,  False,  True,   False, False, True,  True,  True,    True,  True,  True,  True,   True,   False,
+  // 320    321    322    323    324      325    326    327    328    329      330    331    332    333    334      335
     False, False, False, False, False,   False, False, False, False, False,   False, False, False, False, False,   False,
+  // 336    337    338    339    340      341    342    343    344    345      346    347    348    349    350      351
+    False,  True,  True, False, False,   False, False, False, False, False,   False, False, False, False, False,   False,
+  // 352    353    354    355    356      357    358    359    360    361      362    363    364    365    366      367
     False, False, False, False, False,   False, False, False, False, False,   False, False, False, False, False,   False,
+  // 368    369    370    371    372      373    374    375    376    377      378    379    380    381    382      383
     False, False, False, False, False,   False, False, False, False, False,   False, False, False, False, False,   False,
-    False, False, False, False, False,   False, False, False, False, False,   False, False, False, False, False,   False,
+  // 384    385    386    387    388      389    390    391    392    393      394    395    396    397    398      399
     False, False, False, False, False,   False, False, False, False, False,   False, False, False, False, False,   False
   );
 
@@ -2694,15 +2718,26 @@ const
       Output[I,K] := count[I];
       cntRes := cntRes + count[I];
     end;
+    // At the moment there is no 5x stone texture
+    if (Resource = Byte(btStone)) then
+    begin
+      for I := Low(Output) to High(Output) do
+      begin
+        Output[I,4] := Output[I,5];
+        Output[I,5] := 0;
+      end;
+      K := Max(1,K-1);
+    end;
+
     cntRes := cntRes * (K * incPerATile + 3*Byte(Resource = Byte(btStone))); // Maximal capacity of shape
 
     // Decrease maximal resource capacity of shape by move specific tiles into lower levels of Output array
-    incK := High(Output[0]);
+    incK := K;
     while (cntRes > Quantity) AND (incK >= -5) do // incK anti overflow condition
     begin
       I := 0;
       K := incK;
-      while (cntRes > Quantity) AND (I <= High(Output)) AND (K <= High(Output[I])) do
+      while (cntRes > Quantity) AND (I <= High(Output)) AND (K <= High(Output[I])-Byte(Resource = Byte(btStone))) do // 5x stone is missing
       begin
         if (K >= 1) then
         begin
@@ -2776,7 +2811,7 @@ begin
               if (B[Y1,X1] = Byte(btStone)) OR (B[Y1,X1] = Byte(btGold)) OR (B[Y1,X1] = Byte(btIron)) OR (B[Y1,X1] = Byte(btCoal)) then
               begin
                 S[Y1 shr 1,X1 shr 1] := B[Y1,X1];
-                //Terrain := GetFullTexture(FT[ B[Y1,X1] ,4]); // Place empty resources there and replace them with full variants later
+                Terrain := FT[ B[Y1,X1],3 ]; // Place dummy resources there and replace them with full variants later
               end
             // Other textures
               else

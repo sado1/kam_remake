@@ -420,7 +420,7 @@ var
   P1,P2,P3: TKMPoint;
   NMNode: PNavMeshNode;
 begin
-  if (Length(fUsedNodes) < gAIFields.NavMesh.PolygonsCnt) then
+  if (Length(fUsedNodes) < gAIFields.NavMesh.PolygonsCnt) OR not OVERLAY_AI_PATHFINDING then
     Exit;
 
   // Draw polygon
