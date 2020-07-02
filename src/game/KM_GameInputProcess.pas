@@ -1647,12 +1647,16 @@ end;
 { TKMGicDataPacked }
 function TKMGicDataPacked.AsAnsiString(aStartByte: Integer): AnsiString;
 begin
+  if aStartByte >= GIC_PACKED_DATA_SIZE then Exit('');
+
   SetString(Result, PAnsiChar(@Bytes[aStartByte]), GIC_PACKED_DATA_SIZE - aStartByte);
 end;
 
 
 function TKMGicDataPacked.AsUnicodeString(aStartByte: Integer): UnicodeString;
 begin
+  if aStartByte >= GIC_PACKED_DATA_SIZE then Exit('');
+
   SetString(Result, PWideChar(@Bytes[aStartByte*2]), (GIC_PACKED_DATA_SIZE - aStartByte) div 2);
 end;
 
