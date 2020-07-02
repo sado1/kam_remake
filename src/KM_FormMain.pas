@@ -198,7 +198,7 @@ type
     seDebugValue: TSpinEdit;
     edDebugText: TEdit;
     Label13: TLabel;
-    CategoryPanel1: TCategoryPanel;
+    cpMisc: TCategoryPanel;
     chkBevel: TCheckBox;
     rgDebugFont: TRadioGroup;
     chkMonospacedFont: TCheckBox;
