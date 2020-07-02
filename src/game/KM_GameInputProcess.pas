@@ -505,6 +505,7 @@ begin
                           aMemoryStream.Write(Params[2]);
                           aMemoryStream.Write(Params[3]);
                         end;
+      gicpt_AnsiStr1:   aMemoryStream.WriteA(AnsiStrParam);
       gicpt_Ansi1Int2:  begin
                           aMemoryStream.WriteA(AnsiStrParam);
                           aMemoryStream.Write(Params[0]);
@@ -517,7 +518,6 @@ begin
                           aMemoryStream.Write(Params[2]);
                         end;
       gicpt_Float:      aMemoryStream.Write(FloatParam);
-      gicpt_AnsiStr1:   aMemoryStream.WriteW(UnicodeStrParams[0]);
       gicpt_UniStr1:    aMemoryStream.WriteW(UnicodeStrParams[0]);
       gicpt_Ansi1Uni4:  begin
                           aMemoryStream.WriteA(AnsiStrParam);
@@ -556,6 +556,7 @@ begin
                         aMemoryStream.Read(Params[2]);
                         aMemoryStream.Read(Params[3]);
                       end;
+      gicpt_AnsiStr1: aMemoryStream.ReadA(AnsiStrParam);
       gicpt_Ansi1Int2:begin
                         aMemoryStream.ReadA(AnsiStrParam);
                         aMemoryStream.Read(Params[0]);
