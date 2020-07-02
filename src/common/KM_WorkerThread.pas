@@ -73,19 +73,25 @@ end;
 
 function TKMWorkerThread.GetBaseThreadName: string;
 begin
-  Result := fWorkerThreadName + ' Jobs=' + IntToStr(fTaskQueue.Count);
+  {$IFDEF DEBUG}
+  Result := fWorkerThreadName + ' Jobs=' + IntToStr(fTaskQueue.Count); // Has to be synced!
+  {$ELSE}
+  Result := '';
+  {$ENDIF}
 end;
 
 procedure TKMWorkerThread.NameThread;
 begin
-  NameThread('');
+  {$IFDEF DEBUG}
+  NameThread(fWorkerThreadName);
+  {$ENDIF}
 end;
 
 procedure TKMWorkerThread.NameThread(aThreadName: string);
 begin
   {$IFDEF DEBUG}
   if fWorkerThreadName <> '' then
-    TThread.NameThreadForDebugging(GetBaseThreadName + ' ' + aThreadName);
+    TThread.NameThreadForDebugging(aThreadName);
   {$ENDIF}
 end;
 
@@ -93,14 +99,17 @@ procedure TKMWorkerThread.Execute;
 var
   job: TKMWorkerThreadTask;
   loopRunning: Boolean;
+  threadName: string;
 begin
   job := nil;
   loopRunning := True;
+  threadName := '';
 
   while loopRunning do
   begin
     TMonitor.Enter(fTaskQueue);
     try
+      threadName := GetBaseThreadName; // get name under TMonitor, cause we access fTaskQueue
       if fTaskQueue.Count > 0 then
       begin
         job := fTaskQueue.Dequeue;
@@ -129,7 +138,7 @@ begin
 
     if job <> nil then
     begin
-      NameThread(job.WorkName);
+      NameThread(threadName);
       job.Proc();
 
       if Assigned(job.Callback) then
