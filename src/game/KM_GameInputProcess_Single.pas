@@ -34,6 +34,7 @@ end;
 procedure TKMGameInputProcess_Single.ReplayTimer(aTick: Cardinal);
 var
   myRand: Cardinal;
+  gicCommand: TKMGameInputCommand;
 begin
   //This is to match up with multiplayer random check generation, so multiplayer replays can be replayed in singleplayer mode
   KaMRandom(MaxInt, 'TKMGameInputProcess_Single.ReplayTimer');
@@ -41,18 +42,22 @@ begin
   //There are still more commands left
   if fCursor <= Count then
   begin
-    while (aTick > fQueue[fCursor].Tick) and (fQueue[fCursor].Command.CommandType <> gicNone) and (fCursor < Count) do
+    while (aTick > fQueue[fCursor].Tick) and (fQueue[fCursor].Command.CmdType <> gicNone) and (fCursor < Count) do
       Inc(fCursor);
 
     while (fCursor <= Count) and (aTick = fQueue[fCursor].Tick) do //Could be several commands in one Tick
     begin
       //Call to KaMRandom, just like in StoreCommand
       //We did not generate random checks for those commands
-      if SKIP_RNG_CHECKS_FOR_SOME_GIC and (fQueue[fCursor].Command.CommandType in SKIP_RANDOM_CHECKS_FOR) then
+      if SKIP_RNG_CHECKS_FOR_SOME_GIC and (fQueue[fCursor].Command.CmdType in SKIP_RANDOM_CHECKS_FOR) then
         myRand := 0
       else
         myRand := Cardinal(KaMRandom(MaxInt, 'TKMGameInputProcess_Single.ReplayTimer 2'));
-      ExecCommand(fQueue[fCursor].Command); //Should always be called to maintain randoms flow
+
+      while not fGic2StoredConverter.ParseNextStoredPackedCommand(fQueue[fCursor].Command, gicCommand) do
+        Inc(fCursor);
+
+      ExecCommand(gicCommand); //Should always be called to maintain randoms flow
       //CRC check after the command
       if (fQueue[fCursor].Rand <> myRand)
         and not gGame.IgnoreConsistencyCheckErrors then

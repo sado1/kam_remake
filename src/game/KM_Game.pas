@@ -2745,7 +2745,7 @@ begin
     // Update our ware distributions from settings at the start of the game
     if (fParams.Tick = 1)
     and IsWareDistributionStoredBetweenGames then
-      fGameInputProcess.CmdWareDistribution(gicWareDistributions, gGameSettings.WareDistribution.PackToStr);
+      fGameInputProcess.CmdWareDistribution(gicWareDistributions, AnsiString(gGameSettings.WareDistribution.PackToStr));
 
     //Save game to memory (to be able to load it later)
     //Make savepoint only after everything is updated (UpdateState)
