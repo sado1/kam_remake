@@ -88,7 +88,6 @@ object FormMain: TFormMain
       Caption = 'Misc'
       Collapsed = True
       TabOrder = 0
-      ExplicitWidth = 256
       ExpandedHeight = 158
       object chkBevel: TCheckBox
         Left = 168
@@ -140,7 +139,6 @@ object FormMain: TFormMain
       Caption = 'Logs'
       Collapsed = True
       TabOrder = 1
-      ExplicitWidth = 256
       ExpandedHeight = 179
       object chkLogCommands: TCheckBox
         Left = 120
@@ -233,7 +231,6 @@ object FormMain: TFormMain
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 2
-      ExplicitWidth = 256
       ExpandedHeight = 133
       object Label1: TLabel
         Left = 101
@@ -345,7 +342,6 @@ object FormMain: TFormMain
       Caption = 'User Interface'
       Collapsed = True
       TabOrder = 3
-      ExplicitWidth = 256
       ExpandedHeight = 85
       object chkUIControlsBounds: TCheckBox
         Left = 8
@@ -399,7 +395,6 @@ object FormMain: TFormMain
       Caption = 'Perf Logs'
       Collapsed = True
       TabOrder = 4
-      ExplicitWidth = 256
       ExpandedHeight = 660
     end
     object cpAI: TCategoryPanel
@@ -408,7 +403,6 @@ object FormMain: TFormMain
       Caption = 'AI'
       Collapsed = True
       TabOrder = 5
-      ExplicitWidth = 256
       object Label5: TLabel
         Left = 202
         Top = 111
@@ -606,7 +600,6 @@ object FormMain: TFormMain
       Caption = 'Scripting'
       Collapsed = True
       TabOrder = 6
-      ExplicitWidth = 256
       ExpandedHeight = 50
       object chkDebugScripting: TCheckBox
         Left = 8
@@ -629,7 +622,6 @@ object FormMain: TFormMain
       Caption = 'Game additional'
       Collapsed = True
       TabOrder = 7
-      ExplicitWidth = 256
       ExpandedHeight = 136
       object chkLoadUnsupSaves: TCheckBox
         Left = 12
@@ -680,7 +672,6 @@ object FormMain: TFormMain
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 8
-      ExplicitWidth = 256
       object Label2: TLabel
         Left = 136
         Top = 5
@@ -1000,7 +991,7 @@ object FormMain: TFormMain
       object chkGIP: TCheckBox
         Left = 120
         Top = 280
-        Width = 76
+        Width = 41
         Height = 17
         Caption = 'GIP'
         TabOrder = 33
@@ -1128,13 +1119,21 @@ object FormMain: TFormMain
           OnChange = ControlsUpdate
         end
       end
+      object chkGipAsBytes: TCheckBox
+        Left = 167
+        Top = 280
+        Width = 66
+        Height = 17
+        Caption = 'as Bytes'
+        TabOrder = 37
+        OnClick = ControlsUpdate
+      end
     end
     object cpGameControls: TCategoryPanel
       Top = 0
       Height = 121
       Caption = 'Game'
       TabOrder = 9
-      ExplicitWidth = 256
       object Label8: TLabel
         Left = 70
         Top = 30

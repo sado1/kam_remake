@@ -203,6 +203,7 @@ type
     rgDebugFont: TRadioGroup;
     chkMonospacedFont: TCheckBox;
     mnExportRPL: TMenuItem;
+    chkGipAsBytes: TCheckBox;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -1307,6 +1308,7 @@ begin
     SKIP_LOG_TEMP_COMMANDS := chkLogSkipTempCmd.Checked;
 
     SHOW_GIP := chkGIP.Checked;
+    SHOW_GIP_AS_BYTES := chkGipAsBytes.Checked;
     PAUSE_GAME_BEFORE_TICK := sePauseBeforeTick.Value;
     MAKE_SAVEPT_BEFORE_TICK := seMakeSaveptBeforeTick.Value;
     CUSTOM_SEED_VALUE := seCustomSeed.Value;

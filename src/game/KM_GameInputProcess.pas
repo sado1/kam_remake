@@ -304,12 +304,12 @@ type
     function AsAnsiString(aStartByte: Integer): AnsiString;
     function AsUnicodeString(aStartByte: Integer): UnicodeString;
     case Integer of
-      0: (Integers: array [0..(GIC_PACKED_DATA_SIZE div 4)-1] of Integer);
-      1: (Words: array [0..(GIC_PACKED_DATA_SIZE div 2)-1] of Word);
-      2: (Bytes: array [0..GIC_PACKED_DATA_SIZE-1] of Byte);
-      3: (AnsiChars: array [0..GIC_PACKED_DATA_SIZE-1] of AnsiChar);
-      4: (WideChars: array [0..(GIC_PACKED_DATA_SIZE div 2)-1] of WideChar);
-      5: (Singles: array [0..(GIC_PACKED_DATA_SIZE div 4)-1] of Single);
+      0: (Integers:   array [0..(GIC_PACKED_DATA_SIZE div 4)-1] of Integer);
+      1: (Words:      array [0..(GIC_PACKED_DATA_SIZE div 2)-1] of Word);
+      2: (Bytes:      array [0.. GIC_PACKED_DATA_SIZE-1] of Byte);
+      3: (AnsiChars:  array [0.. GIC_PACKED_DATA_SIZE-1] of AnsiChar);
+      4: (WideChars:  array [0..(GIC_PACKED_DATA_SIZE div 2)-1] of WideChar);
+      5: (Singles:    array [0..(GIC_PACKED_DATA_SIZE div 4)-1] of Single);
       6: (DateT: TDateTime);
   end;
 
@@ -319,6 +319,7 @@ type
     HandID: TKMHandID;
     Data: TKMGicDataPacked;
     procedure ClearData;
+    function DataToString: string;
   end;
 
   TKMStoredGicPackedList = TList<TKMGameInputCommandPacked>;
@@ -385,9 +386,8 @@ type
     procedure LoadExtra(LoadStream: TKMemoryStream); virtual;
 
     function GetNetPlayerName(aHandIndex: TKMHandID): String; virtual;
-    function IsPlayerMuted(aHandIndex: Integer): Boolean; virtual;
-
     function GICHeaderToString(aCommandType: TKMGameInputCommandType; aHandIndex: Integer): string;
+    function IsPlayerMuted(aHandIndex: Integer): Boolean; virtual;
   public
     constructor Create(aReplayState: TKMGIPReplayState);
     destructor Destroy; override;
@@ -454,8 +454,8 @@ type
 
     property OnReplayDesync: TIntegerEvent read fOnReplayDesync write fOnReplayDesync;
 
-    function GIPCommandToString(aGIC: TKMGameInputCommand): UnicodeString;
-    function StoredGIPCommandToString(aCommand: TKMStoredGIPCommand): String;
+    function GIPCommandToString(const aGIC: TKMGameInputCommand): UnicodeString;
+    function StoredGIPCommandToString(const aCommand: TKMStoredGIPCommand): String;
 
     procedure Paint;
   end;
@@ -463,7 +463,7 @@ type
 
 implementation
 uses
-  Classes, SysUtils, TypInfo, Math,
+  Classes, SysUtils, StrUtils, TypInfo, Math,
   KM_GameApp, KM_Game, KM_GameParams, KM_HandsCollection,
   KM_HouseMarket, KM_HouseBarracks, KM_HouseSchool, KM_HouseTownHall,
   KM_ScriptingEvents, KM_Alerts, KM_CommonUtils, KM_Log, KM_RenderUI,
@@ -596,7 +596,7 @@ begin
 end;
 
 
-function TKMGameInputProcess.GIPCommandToString(aGIC: TKMGameInputCommand): UnicodeString;
+function TKMGameInputProcess.GIPCommandToString(const aGIC: TKMGameInputCommand): UnicodeString;
 begin
   with aGIC do
   begin
@@ -607,11 +607,12 @@ begin
       gicpt_Int2:       Result := Result + Format('[%10d,%10d]', [Params[0], Params[1]]);
       gicpt_Int3:       Result := Result + Format('[%10d,%10d,%10d]', [Params[0], Params[1], Params[2]]);
       gicpt_Int4:       Result := Result + Format('[%10d,%10d,%10d,%10d]', [Params[0], Params[1], Params[2], Params[3]]);
-      gicpt_Ansi1Int2:  Result := Result + Format('[S1=%s,%10d,%10d]', [AnsiStrParam, Params[0], Params[1]]);
-      gicpt_Ansi1Int3:  Result := Result + Format('[S1=%s,%10d,%10d,%10d]', [AnsiStrParam, Params[0], Params[1], Params[2]]);
+      gicpt_AnsiStr1:   Result := Result + Format('[%s]', [AnsiStrParam]);
+      gicpt_Ansi1Int2:  Result := Result + Format('[%s,%10d,%10d]', [AnsiStrParam, Params[0], Params[1]]);
+      gicpt_Ansi1Int3:  Result := Result + Format('[%s,%10d,%10d,%10d]', [AnsiStrParam, Params[0], Params[1], Params[2]]);
       gicpt_UniStr1:    Result := Result + Format('[%s]', [UnicodeStrParams[0]]);
       gicpt_Float:      Result := Result + Format('[%f]', [FloatParam]);
-      gicpt_Ansi1Uni4:  Result := Result + Format('[S1=%s,S2=%s,S3=%s,S4=%s,S5=%s]', [AnsiStrParam, UnicodeStrParams[0], UnicodeStrParams[0],UnicodeStrParams[1],UnicodeStrParams[2]]);
+      gicpt_Ansi1Uni4:  Result := Result + Format('[%s,%s,%s,%s,%s]', [AnsiStrParam, UnicodeStrParams[0], UnicodeStrParams[0],UnicodeStrParams[1],UnicodeStrParams[2]]);
       gicpt_Date:       Result := Result + Format('[%s]', [FormatDateTime('dd.mm.yy hh:nn:ss.zzz', DateTimeParam)]);
       else              ;
     end;
@@ -1578,14 +1579,21 @@ begin
 end;
 
 
-function TKMGameInputProcess.StoredGIPCommandToString(aCommand: TKMStoredGIPCommand): String;
+function TKMGameInputProcess.StoredGIPCommandToString(const aCommand: TKMStoredGIPCommand): String;
 var
   I: Integer;
   str: string;
 begin
   str := GICHeaderToString(aCommand.Command.CmdType, aCommand.Command.HandId);
-  for I := 0 to GIC_PACKED_DATA_SIZE - 1 do
-    str := str + ' ' + IntToStr(aCommand.Command.Data.Bytes[I]);
+
+  if SHOW_GIP_AS_BYTES then
+  begin
+    for I := 0 to GIC_PACKED_DATA_SIZE - 1 do
+      str := Format('%s%4d', [str, aCommand.Command.Data.Bytes[I]]);
+  end
+  else
+    str := Format('%s%s', [str, aCommand.Command.DataToString]);
+
 
   Result := Format('Tick %6d Rand %10d Cmd: %s', [aCommand.Tick, aCommand.Rand, str]);
 end;
@@ -1610,6 +1618,28 @@ end;
 procedure TKMGameInputCommandPacked.ClearData;
 begin
   FillChar(Data, GIC_PACKED_DATA_SIZE, #0);
+end;
+
+
+function TKMGameInputCommandPacked.DataToString: string;
+begin
+  {$WARN IMPLICIT_STRING_CAST OFF} // We don't care about Ansistring casting here
+  case COMMAND_PACK_TYPES[CmdType] of
+    gicpt_NoParams:   Result := Result + ' []';
+    gicpt_Int1:       Result := Result + Format('[%10d]', [Data.Integers[0]]);
+    gicpt_Int2:       Result := Result + Format('[%10d,%10d]', [Data.Integers[0], Data.Integers[1]]);
+    gicpt_Int3:       Result := Result + Format('[%10d,%10d,%10d]', [Data.Integers[0], Data.Integers[1], Data.Integers[2]]);
+    gicpt_Int4:       Result := Result + Format('[%10d,%10d,%10d,%10d]', [Data.Integers[0], Data.Integers[1], Data.Integers[2], Data.Integers[3]]);
+    gicpt_AnsiStr1:   Result := Result + Format('[%s]', [ReplaceStr(Data.AsAnsiString(0), #0, '#')]);
+    gicpt_Ansi1Int2:  Result := Result + Format('[%s]', [ReplaceStr(Data.AsAnsiString(0), #0, '#')]);
+    gicpt_Ansi1Int3:  Result := Result + Format('[%s]', [ReplaceStr(Data.AsAnsiString(0), #0, '#')]);
+    gicpt_UniStr1:    Result := Result + Format('[%s]', [ReplaceStr(Data.AsUnicodeString(0), #0, '#')]);
+    gicpt_Float:      Result := Result + Format('[%f]', [Data.Singles[0]]);
+    gicpt_Ansi1Uni4:  Result := Result + Format('[%s]', [ReplaceStr(Data.AsAnsiString(0), #0, '#')]);
+    gicpt_Date:       Result := Result + Format('[%s]', [FormatDateTime('dd.mm.yy hh:nn:ss.zzz', Data.DateT)]);
+    else              ;
+  end;
+  {$WARN IMPLICIT_STRING_CAST ON}
 end;
 
 
