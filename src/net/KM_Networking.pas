@@ -144,6 +144,7 @@ type
     OnTextMessage: TUnicodeStringEvent;   // Text message recieved
 
     constructor Create(const aMasterServerAddress: string; aKickTimeout, aPingInterval, aAnnounceInterval, aServerUDPScanPort: Word;
+                       const aPacketsAccDelay: Integer;
                        aDynamicFOW, aMapsFilterEnabled: Boolean; const aMapsCRCListStr: UnicodeString; const aPeacetimeRng: TKMRangeInt;
                        const aSpeedRng: TKMRangeSingle; const aSpeedRngAfterPT: TKMRangeSingle);
     destructor Destroy; override;
@@ -255,6 +256,7 @@ uses
 
 { TKMNetworking }
 constructor TKMNetworking.Create(const aMasterServerAddress: string; aKickTimeout, aPingInterval, aAnnounceInterval, aServerUDPScanPort: Word;
+                                 const aPacketsAccDelay: Integer;
                                  aDynamicFOW, aMapsFilterEnabled: Boolean; const aMapsCRCListStr: UnicodeString; const aPeacetimeRng: TKMRangeInt;
                                  const aSpeedRng: TKMRangeSingle; const aSpeedRngAfterPT: TKMRangeSingle);
 var
@@ -264,7 +266,8 @@ begin
 
   SetGameState(lgsNone);
 
-  fNetServer := TKMDedicatedServer.Create(1, aKickTimeout, aPingInterval, aAnnounceInterval, aServerUDPScanPort, aMasterServerAddress, '', '', False);
+  fNetServer := TKMDedicatedServer.Create(1, aKickTimeout, aPingInterval, aAnnounceInterval, aServerUDPScanPort,
+                                          aMasterServerAddress, '', '', aPacketsAccDelay, False);
   GameFilter := TKMPGameFilter.Create(aDynamicFOW, aMapsFilterEnabled, aMapsCRCListStr, aPeacetimeRng, aSpeedRng, aSpeedRngAfterPT);
   fNetServer.Server.GameFilter := GameFilter;
 

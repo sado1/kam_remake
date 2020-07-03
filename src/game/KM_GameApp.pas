@@ -1118,6 +1118,7 @@ begin
                                         fGameSettings.PingInterval,
                                         fGameSettings.MasterAnnounceInterval,
                                         fGameSettings.ServerUDPScanPort,
+                                        fGameSettings.ServerPacketsAccumulatingDelay,
                                         fGameSettings.ServerDynamicFOW,
                                         fGameSettings.ServerMapsRosterEnabled,
                                         fGameSettings.ServerMapsRosterStr,
