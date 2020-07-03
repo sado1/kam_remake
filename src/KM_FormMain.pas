@@ -337,7 +337,8 @@ uses
 
   KM_IoXML,
   KM_GameInputProcess,
-  KM_ResTypes;
+  KM_ResTypes,
+  KM_XmlHelper;
 
 
 procedure ExportDone(aResourceName: String);
