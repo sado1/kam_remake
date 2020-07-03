@@ -2,13 +2,15 @@ unit KM_MapTypes;
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_ResTexts, KM_Defaults, KM_CommonTypes;
+  KM_Defaults, KM_CommonTypes;
 
 type
   TKMMissionDifficulty = (mdNone, mdEasy3, mdEasy2, mdEasy1, mdNormal, mdHard1, mdHard2, mdHard3);
   TKMMissionDifficultySet = set of TKMMissionDifficulty;
 
 const
+  {$I KM_TextIDs.inc}
+
   MISSION_DIFFICULTY_MIN = mdEasy3;
   MISSION_DIFFICULTY_MAX = mdHard3;
 
