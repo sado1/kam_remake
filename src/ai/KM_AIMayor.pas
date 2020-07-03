@@ -6,7 +6,8 @@ uses
   KM_PathfindingRoad,
   KM_ResHouses, KM_HouseCollection,
   KM_CommonClasses, KM_Defaults, KM_Points,
-  KM_NavMeshDefences;
+  KM_NavMeshDefences,
+  KM_ResTypes;
 
 
 type

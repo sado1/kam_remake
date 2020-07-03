@@ -4,7 +4,8 @@ interface
 uses
   SysUtils,
   KM_CommonClasses, KM_Defaults, KM_Points,
-  KM_Houses, KM_Terrain, KM_Units, KM_ResHouses;
+  KM_Houses, KM_Terrain, KM_Units, KM_ResHouses,
+  KM_ResTypes;
 
 
 //Do the building

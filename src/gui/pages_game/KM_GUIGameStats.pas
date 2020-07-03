@@ -39,7 +39,8 @@ type
 implementation
 uses
   KM_RenderUI, KM_HandsCollection, KM_ResTexts, KM_Resource, KM_ResFonts, KM_ResUnits,
-  KM_Hand, KM_Pics, KM_Points;
+  KM_Hand, KM_Pics, KM_Points,
+  KM_ResTypes;
 
 
 { TKMGUIGameStats }

@@ -13,7 +13,8 @@ uses
   {$ENDIF}
   KM_Units, KM_Houses, KM_ResHouses,
   KM_ResWares, KM_CommonClasses, KM_Defaults, KM_Points,
-  BinaryHeapGen;
+  BinaryHeapGen,
+  KM_ResTypes;
 
 
 type

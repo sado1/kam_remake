@@ -88,7 +88,8 @@ var
 
 implementation
 uses
-  TypInfo, KromUtils, KM_Log, KM_Points, KM_ResTexts, KM_ResKeys;
+  TypInfo, KromUtils, KM_Log, KM_Points, KM_ResTexts, KM_ResKeys,
+  KM_ResTypes;
 
 
 { TKMResource }

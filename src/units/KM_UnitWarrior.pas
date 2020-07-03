@@ -130,7 +130,8 @@ uses
   KM_UnitActionFight, KM_UnitActionGoInOut, KM_UnitActionWalkTo, KM_UnitActionStay,
   KM_UnitActionStormAttack, KM_Resource, KM_ResUnits, KM_Hand, KM_UnitGroup,
   KM_ResWares, KM_GameParams, KM_ResHouses, KM_CommonUtils, KM_RenderDebug, KM_UnitVisual,
-  KM_CommonExceptions;
+  KM_CommonExceptions,
+  KM_ResTypes;
 
 
 { TKMUnitWarrior }

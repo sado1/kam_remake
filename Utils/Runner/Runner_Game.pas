@@ -315,7 +315,8 @@ uses
   KM_GameSavePoints,
   KM_Settings,
   KM_CommonTypes, KM_MapTypes, KM_RandomChecks, KM_FileIO, KM_Game, KM_GameInputProcess, KM_GameTypes, KM_InterfaceGame,
-  KM_UnitGroupTypes;
+  KM_UnitGroupTypes,
+  KM_ResTypes;
 
 
 

@@ -4,20 +4,8 @@ interface
 uses
   Classes, Math, SysUtils,
   KM_CommonClasses, KM_CommonTypes, KM_Defaults,
-  KM_ResWares;
-
-
-type
-  TKMHouseType = (htNone, htAny,
-    htArmorSmithy,     htArmorWorkshop,   htBakery,        htBarracks,      htButchers,
-    htCoalMine,        htFarm,            htFisherHut,     htGoldMine,      htInn,
-    htIronMine,        htIronSmithy,      htMarketplace,   htMetallurgists, htMill,
-    htQuary,           htSawmill,         htSchool,        htSiegeWorkshop, htStables,
-    htStore,           htSwine,           htTannery,       htTownHall,      htWatchTower,
-    htWeaponSmithy,    htWeaponWorkshop,  htWineyard,      htWoodcutters    );
-
-  THouseTypeSet = set of TKMHouseType;
-  TKMHouseTypeArray = array of TKMHouseType;
+  KM_ResWares,
+  KM_ResTypes;
 
 const
   HOUSE_MIN = htArmorSmithy;

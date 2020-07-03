@@ -8,7 +8,8 @@ uses
   KM_HandLogistics, KM_HandLocks, KM_HandStats, KM_GameTypes,
   KM_FogOfWar, KM_HandConstructions, KM_MessageLog, KM_ResHouses,
   KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_ResWares, KM_Points,
-  KM_HandTypes;
+  KM_HandTypes,
+  KM_ResTypes;
 
 
 type

@@ -10,7 +10,8 @@ uses
   KromUtils, Math, SysUtils,
   KM_Defaults, KM_CommonClasses, KM_Points, KM_Sort,
   KM_ResHouses, KM_ResWares, KM_HandConstructions, KM_Houses,
-  KM_AIInfluences, KM_CityPlanner, KM_CityPredictor, KM_Eye, KM_AIParameters;
+  KM_AIInfluences, KM_CityPlanner, KM_CityPredictor, KM_Eye, KM_AIParameters,
+  KM_ResTypes;
 
 const
   NODE_PRIO_RoadsUnlockHouse = 1;

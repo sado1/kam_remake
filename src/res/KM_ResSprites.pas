@@ -205,7 +205,8 @@ uses
 
   {$ENDIF}
   KM_SoftShadows, KM_Resource, KM_ResUnits, KM_Render,
-  KM_Log, KM_BinPacking, KM_CommonUtils, KM_Points, KM_Settings;
+  KM_Log, KM_BinPacking, KM_CommonUtils, KM_Points, KM_Settings,
+  KM_ResTypes;
 
 type
   TSpriteAtlasType = (saBase, saMask);

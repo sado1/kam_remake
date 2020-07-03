@@ -3,7 +3,8 @@ unit KM_AIMayorBalance;
 interface
 uses
   KM_ResWares, KM_ResHouses,
-  KM_CommonClasses, KM_Defaults;
+  KM_CommonClasses, KM_Defaults,
+  KM_ResTypes;
 
 type
   //MayorBalance is a cluster of functions that choose optimal houses to build

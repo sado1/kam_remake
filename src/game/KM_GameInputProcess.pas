@@ -9,7 +9,8 @@ uses
   KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Points, KM_WorkerThread,
   KM_HandTypes,
   KM_UnitGroupTypes,
-  KM_GameTypes;
+  KM_GameTypes,
+  KM_ResTypes;
 
 { A. This unit takes and adjoins players input from TGame and TGamePlayInterfaces clicks and keys
   Then passes it on to game events.

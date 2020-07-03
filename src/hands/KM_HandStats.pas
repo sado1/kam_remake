@@ -5,7 +5,8 @@ uses
   Classes,
   KM_WareDistribution,
   KM_ResWares, KM_ResHouses,
-  KM_CommonClasses, KM_CommonTypes, KM_Defaults;
+  KM_CommonClasses, KM_CommonTypes, KM_Defaults,
+  KM_ResTypes;
 
 
 //These are stats for each player

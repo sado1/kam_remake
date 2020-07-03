@@ -37,7 +37,8 @@ type
 
 implementation
 uses
-  KM_SoftShadows;
+  KM_SoftShadows,
+  KM_ResTypes;
 
 
 var

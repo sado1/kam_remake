@@ -2,22 +2,12 @@ unit KM_ResWares;
 {$I KaM_Remake.inc}
 interface
 uses
-  Classes, SysUtils, KM_CommonClasses;
+  Classes, SysUtils, KM_CommonClasses,
+  KM_ResTypes;
 
   //Collection of types and arrays for Wares usage
 
 type
-  TKMWareType = (
-    wtNone,
-    wtTrunk,   wtStone,   wtWood,        wtIronOre,   wtGoldOre,
-    wtCoal,    wtSteel,   wtGold,        wtWine,      wtCorn,
-    wtBread,   wtFlour,   wtLeather,     wtSausages,  wtPig,
-    wtSkin,    wtShield,  wtMetalShield, wtArmor,     wtMetalArmor,
-    wtAxe,     wtSword,   wtPike,        wtHallebard, wtBow,
-    wtArbalet, wtHorse,   wtFish,
-    wtAll,     wtWarfare, wtFood //Special ware types
-  );
-
   TKMWare = class
   private
     fType: TKMWareType;

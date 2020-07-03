@@ -4,7 +4,8 @@ interface
 uses
   KM_ResHouses, KM_ResWares,
   KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Points,
-  KM_HandEntity;
+  KM_HandEntity,
+  KM_ResTypes;
 
 //Houses are ruled by units, hence they don't know about  TKMUnits
 

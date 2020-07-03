@@ -3,7 +3,8 @@ unit KM_UnitWorkPlan;
 interface
 uses
   KM_Defaults, KM_CommonClasses, KM_Points, KM_Terrain, KM_Units,
-  KM_ResHouses, KM_ResWares;
+  KM_ResHouses, KM_ResWares,
+  KM_ResTypes;
 
 
 const

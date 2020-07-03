@@ -5,7 +5,8 @@ uses
   Classes, Math, SysUtils, KromUtils, Types,
   KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Points, KM_CommonUtils, KM_UnitVisual,
   KM_Terrain, KM_ResHouses, KM_ResWares, KM_Houses, KM_HouseSchool, KM_HouseBarracks, KM_HouseInn,
-  KM_HandEntity;
+  KM_HandEntity,
+  KM_ResTypes;
 
 //Memo on directives:
 //Dynamic - declared and used (overriden) occasionally

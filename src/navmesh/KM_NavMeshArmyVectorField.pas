@@ -162,8 +162,8 @@ uses
   {$IFDEF DEBUG_ArmyVectorField}
   DateUtils, KM_CommonUtils,
   {$ENDIF}
-
-  KM_RenderAux;
+  KM_RenderAux,
+  KM_ResTypes;
 
 
 

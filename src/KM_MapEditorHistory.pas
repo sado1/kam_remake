@@ -5,7 +5,8 @@ uses
   Classes, Generics.Collections, SysUtils,
   KM_Defaults, KM_Points, KM_CommonTypes, KM_Houses,
   KM_ResWares, KM_ResHouses, KM_MapEdTypes, KM_Terrain,
-  KM_UnitGroupTypes;
+  KM_UnitGroupTypes,
+  KM_ResTypes;
 
 
 type

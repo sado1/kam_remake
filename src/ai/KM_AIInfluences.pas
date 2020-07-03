@@ -120,7 +120,8 @@ uses
     KM_CommonUtils,
   {$ENDIF}
   KM_Terrain, KM_Houses, KM_HouseCollection,
-  KM_Hand, KM_HandsCollection, KM_ResHouses;
+  KM_Hand, KM_HandsCollection, KM_ResHouses,
+  KM_ResTypes;
 
 
 { TKMInfluenceMaps }

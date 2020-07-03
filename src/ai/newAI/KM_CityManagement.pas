@@ -68,7 +68,8 @@ implementation
 uses
   Classes, KM_Game, KM_Houses, KM_HouseSchool, KM_HandsCollection, KM_Hand, KM_Resource,
   KM_AIFields, KM_Units, KM_UnitsCollection, KM_HouseMarket, KM_DevPerfLog, KM_DevPerfLogTypes,
-  KM_HandTypes;
+  KM_HandTypes,
+  KM_ResTypes;
 
 
 { TKMCityManagement }

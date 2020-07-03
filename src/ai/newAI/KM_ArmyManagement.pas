@@ -66,7 +66,8 @@ uses
   KM_Game, KM_GameParams, KM_Hand, KM_HandsCollection, KM_Terrain,
   KM_HouseBarracks,
   KM_ResHouses, KM_CommonUtils,
-  KM_DevPerfLog, KM_DevPerfLogTypes;
+  KM_DevPerfLog, KM_DevPerfLogTypes,
+  KM_ResTypes;
 
 
 { TKMArmyManagement }

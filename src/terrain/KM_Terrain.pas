@@ -5,7 +5,8 @@ uses
   Classes, KromUtils, Math, SysUtils, Graphics,
   KM_CommonClasses, KM_Defaults, KM_Points, KM_CommonUtils, KM_ResTileset,
   KM_ResHouses, KM_ResWares, KM_TerrainFinder, KM_ResMapElements,
-  KM_CommonTypes;
+  KM_CommonTypes,
+  KM_ResTypes;
 
 
 type

@@ -4,7 +4,8 @@ interface
 uses
   Math,
   KM_CommonClasses, KM_Defaults,
-  KM_ResHouses, KM_ResWares, KM_Houses;
+  KM_ResHouses, KM_ResWares, KM_Houses,
+  KM_ResTypes;
 
 
 type

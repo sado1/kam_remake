@@ -5,7 +5,8 @@ uses
   Classes,
   KM_Houses,
   KM_ResHouses,
-  KM_CommonClasses, KM_Defaults, KM_Points;
+  KM_CommonClasses, KM_Defaults, KM_Points,
+  KM_ResTypes;
 
 type
   TKMHousesCollection = class

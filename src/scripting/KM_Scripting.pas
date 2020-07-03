@@ -203,7 +203,9 @@ const
 
 implementation
 uses
-  TypInfo, Math, KromUtils, KM_GameParams, KM_Resource, KM_ResUnits, KM_Log, KM_CommonUtils, KM_ResWares, KM_ScriptingConsoleCommands;
+  TypInfo, Math, KromUtils, KM_GameParams, KM_Resource, KM_ResUnits, KM_Log, KM_CommonUtils, KM_ResWares,
+  KM_ScriptingConsoleCommands,
+  KM_ResTypes;
 
 const
   SCRIPT_LOG_EXT = '.log.txt';
