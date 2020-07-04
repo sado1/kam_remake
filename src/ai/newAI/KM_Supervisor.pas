@@ -103,7 +103,8 @@ uses
   {$IFDEF DEBUG_Supervisor}
     KM_RenderAux,
   {$ENDIF}
-  KM_AIFields, KM_CommonUtils, KM_AIParameters;
+  KM_AIFields, KM_CommonUtils, KM_AIParameters,
+  KM_ResTypes;
 
 type
   TByteArray = array [Word] of byte;

@@ -5,7 +5,8 @@ uses
   Classes, KromUtils, Math, SysUtils, Graphics,
   KM_CommonClasses, KM_Defaults, KM_Points, KM_CommonUtils, KM_ResTileset,
   KM_ResHouses, KM_ResWares, KM_TerrainFinder, KM_ResMapElements,
-  KM_CommonTypes;
+  KM_CommonTypes,
+  KM_ResTypes;
 
 
 type
@@ -15,7 +16,7 @@ type
   TKMVertexUsage = (vuNone=0,  //Nobody is on this vertex
                     vuNWSE,    //Vertex is used NW-SE like this: \
                     vuNESW);   //Vertex is used NE-SW like this: /
-  TKMFenceType = (fncNone, fncCorn, fncWine, fncHousePlan, fncHouseFence);
+  TKMFenceKind = (fncNone, fncCorn, fncWine, fncHousePlan, fncHouseFence);
 
   TKMTileChangeType = (tctTerrain, tctRotation, tctHeight, tctObject);
 
@@ -42,18 +43,30 @@ type
   TKMTileCorners = array [0..3] of Boolean;
 
   TKMTerrainLayer = record
+  private
+    function GetCorner(aCorner: Byte): Boolean;
+    procedure SetCorner(aCorner: Byte; const aValue: Boolean);
+  public
     Terrain: Word;
     Rotation: Byte;
-    Corners: TKMTileCorners; //Corners, that this layer 'owns' (corners are distributed between all layers, so any layer can own 1-4 corners)
-    procedure SetCorners(aCorners: TKMByteSet);
+    Corners: Byte; //Corners, that this layer 'owns' (corners are distributed between all layers, so any layer can own 1-4 corners)
+    property Corner[aCorner: Byte]: Boolean read GetCorner write SetCorner;
+    function GetCorners: TKMTileCorners;
+    procedure SetCorners(const aCorners: TKMTileCorners); overload;
+    procedure SetCorners(const aCorners: TKMByteSet); overload;
     procedure ClearCorners;
+    procedure CopyCorners(aLayer: TKMTerrainLayer);
+    procedure SwapCorners(aLayer: TKMTerrainLayer);
+    procedure SetAllCOrners;
+
+    procedure Save(aSaveStream: TKMemoryStream);
   end;
 
 
   TKMTerrainTileBasic = record
     BaseLayer: TKMTerrainLayer;
-    LayersCnt: Byte;
     Layer: array [0..2] of TKMTerrainLayer;
+    LayersCnt: Byte;
     Height: Byte;
     Obj: Word;
     IsCustom: Boolean;
@@ -61,15 +74,15 @@ type
     TileOverlay: TKMTileOverlay;
   end;
 
+  // Notice fields order, because of record 4-bytes alignment
   TKMTerrainTile = record
     BaseLayer: TKMTerrainLayer;
-    LayersCnt: Byte;
     Layer: array [0..2] of TKMTerrainLayer;
-//    StoneLayer: TKMTerrainLayer;
+    LayersCnt: Byte;
     Height: Byte;
     Obj: Word;
-    IsCustom: Boolean; //Custom tile (rotated tile, atm)
-    BlendingLvl: Byte; //Use blending for layers transitions
+    IsCustom: Boolean; // Custom tile (rotated tile, atm)
+    BlendingLvl: Byte; // Use blending for layers transitions
 
     //Age of tree, another independent variable since trees can grow on fields
     TreeAge: Byte; //Not init=0 .. Full=TreeAgeFull Depending on this tree gets older and thus could be chopped
@@ -89,21 +102,23 @@ type
     IsUnit: Pointer; //Whenever there's a unit on that tile mark the tile as occupied and count the number
     IsVertexUnit: TKMVertexUsage; //Whether there are units blocking the vertex. (walking diagonally or fighting)
 
-    //MAPEDITOR
-    CornOrWine: Byte; //Indicate Corn or Wine field placed on the tile (without altering terrain)
-    CornOrWineTerrain: Byte; //We use fake terrain for maped to be able delete or alter it if needed
+    // Used from Land in runtime for better performance (not proved yet, but anyway),
+    // since its loaded to CPU cache at the same time as Height and other terrain properties
+    // But no actually need to save it.
+    // But we will save it to the stream anyway, since its much faster to save all Land by rows, instead of by separate fields
+    Light: Byte; //KaM stores node lighting in 0..32 range (-16..16), but we can use 0..255
 
-    //DEDUCTED
-    Light: Single; //KaM stores node lighting in 0..32 range (-16..16), but I want to use -1..1 range
     Passability: TKMTerrainPassabilitySet; //Meant to be set of allowed actions on the tile
-
-    WalkConnect: array [TKMWalkConnect] of Word; //Whole map is painted into interconnected areas
-
-    Fence: TKMFenceType; //Fences (ropes, planks, stones)
-    FenceSide: Byte; //Bitfield whether the fences are enabled
+    WalkConnect: array [TKMWalkConnect] of Byte; //Whole map is painted into interconnected areas
 
     function RenderHeight: Byte;
     procedure IncJamMeter(aValue: Integer);
+    function RenderLight: Single;
+  end;
+
+  TKMTerrainTileFence = record
+    Kind: TKMFenceKind; //Fences (ropes, planks, stones)
+    Side: Byte; //Bitfield whether the fences are enabled
   end;
 
   TKMTerrainTileArray = array of TKMTerrainTile;
@@ -121,6 +136,8 @@ type
     fFinder: TKMTerrainFinder;
 
     fBoundsWC: TKMRect; //WC rebuild bounds used in FlattenTerrain (put outside to fight with recursion SO error in FlattenTerrain EnsureWalkable)
+
+    fUnitPointersTemp: array [1..MAX_MAP_SIZE, 1..MAX_MAP_SIZE] of Pointer;
 
     function TileHasParameter(X,Y: Word; aCheckTileFunc: TBooleanWordFunc; aAllow2CornerTiles: Boolean = False;
                               aStrictCheck: Boolean = False): Boolean;
@@ -145,6 +162,7 @@ type
     function HousesNearTile(X,Y: Word): Boolean;
   public
     Land: array [1..MAX_MAP_SIZE, 1..MAX_MAP_SIZE] of TKMTerrainTile;
+    Fences: array [1..MAX_MAP_SIZE, 1..MAX_MAP_SIZE] of TKMTerrainTileFence;
     FallingTrees: TKMPointTagList;
 
     constructor Create;
@@ -411,21 +429,86 @@ const
 
 
 { TKMTerrainLayer }
-procedure TKMTerrainLayer.SetCorners(aCorners: TKMByteSet);
+procedure TKMTerrainLayer.CopyCorners(aLayer: TKMTerrainLayer);
+begin
+  Corners := aLayer.Corners;
+end;
+
+
+function TKMTerrainLayer.GetCorner(aCorner: Byte): Boolean;
+begin
+  case aCorner of
+    0:  Result := ToBoolean(Corners and $1); // and 0001
+    1:  Result := ToBoolean(Corners and $2); // and 0010
+    2:  Result := ToBoolean(Corners and $4); // and 0100
+    3:  Result := ToBoolean(Corners and $8); // and 1000
+    else raise Exception.Create('Wrong conner id');
+  end;
+end;
+
+
+function TKMTerrainLayer.GetCorners: TKMTileCorners;
 var
   I: Integer;
 begin
   for I := 0 to 3 do
-    Corners[I] := I in aCorners;
+    Result[I] := Corner[I];
+end;
+
+
+procedure TKMTerrainLayer.Save(aSaveStream: TKMemoryStream);
+begin
+  aSaveStream.Write(Terrain);
+  aSaveStream.Write(Rotation);
+  aSaveStream.Write(Corners);
+end;
+
+
+procedure TKMTerrainLayer.SetAllCOrners;
+begin
+  Corners := $F;
+end;
+
+
+procedure TKMTerrainLayer.SetCorner(aCorner: Byte; const aValue: Boolean);
+begin
+  case aCorner of
+    0:  Corners := (Corners and $E) or  Byte(aValue);         // 1110 or aValue
+    1:  Corners := (Corners and $D) or (Byte(aValue) shl 1);  // 1101 or aValue
+    2:  Corners := (Corners and $B) or (Byte(aValue) shl 2);  // 1011 or aValue
+    3:  Corners := (Corners and $7) or (Byte(aValue) shl 3);  // 0111 or aValue
+    else raise Exception.Create('Wrong conner id');
+  end;
+end;
+
+
+procedure TKMTerrainLayer.SetCorners(const aCorners: TKMTileCorners);
+var
+  I: Integer;
+begin
+  for I := 0 to 3 do
+    Corner[I] := aCorners[I];
+end;
+
+
+procedure TKMTerrainLayer.SetCorners(const aCorners: TKMByteSet);
+var
+  I: Integer;
+begin
+  for I := 0 to 3 do
+    Corner[I] := I in aCorners;
+end;
+
+
+procedure TKMTerrainLayer.SwapCorners(aLayer: TKMTerrainLayer);
+begin
+  SwapInt(Corners, aLayer.Corners);
 end;
 
 
 procedure TKMTerrainLayer.ClearCorners;
-var
-  I: Integer;
 begin
-  for I := 0 to 3 do
-    Corners[I] := False;
+  Corners := 0;
 end;
 
 
@@ -461,6 +544,7 @@ begin
 
   for I := 1 to fMapY do
     for K := 1 to fMapX do
+    begin
       with Land[I, K] do
       begin
         //Apply some random tiles for artisticity
@@ -469,7 +553,7 @@ begin
         else
           BaseLayer.Terrain := 0;
         LayersCnt    := 0;
-        BaseLayer.SetCorners([0,1,2,3]);
+        BaseLayer.SetAllCorners;
         Height      := HEIGHT_DEFAULT + KaMRandom(HEIGHT_RAND_VALUE, 'TKMTerrain.MakeNewMap 3');  //variation in Height
         BaseLayer.Rotation     := KaMRandom(4, 'TKMTerrain.MakeNewMap 4');  //Make it random
         Obj          := OBJ_NONE;             //none
@@ -480,16 +564,16 @@ begin
         TileOverlay  := toNone;
         TileLock     := tlNone;
         JamMeter     := 0;
-        CornOrWine   := 0;
         Passability  := []; //Gets recalculated later
         TileOwner    := -1;
         IsUnit       := nil;
         IsVertexUnit := vuNone;
         FieldAge     := 0;
         TreeAge      := IfThen(ObjectIsChopableTree(KMPoint(K, I), caAgeFull), TREE_AGE_FULL, 0);
-        Fence        := fncNone;
-        FenceSide    := 0;
       end;
+      Fences[I, K].Kind := fncNone;
+      Fences[I, K].Side := 0;
+    end;
 
   fFinder := TKMTerrainFinder.Create;
   UpdateLighting;
@@ -533,15 +617,14 @@ begin
       begin
         Land[I,J].TileLock     := tlNone;
         Land[I,J].JamMeter     := 0;
-        Land[I,J].CornOrWine   := 0;
         Land[I,J].Passability  := []; //Gets recalculated later
         Land[I,J].TileOwner    := PLAYER_NONE;
         Land[I,J].IsUnit       := nil;
         Land[I,J].IsVertexUnit := vuNone;
         Land[I,J].FieldAge     := 0;
         Land[I,J].TreeAge      := 0;
-        Land[I,J].Fence        := fncNone;
-        Land[I,J].FenceSide    := 0;
+        Fences[I,J].Kind   := fncNone;
+        Fences[I,J].Side   := 0;
 
         ReadTileFromStream(S, tileBasic, gameRev);
 
@@ -625,7 +708,7 @@ const
       //Apply some random tiles for artisticity
       TileBasic.BaseLayer.Terrain  := gGame.TerrainPainter.PickRandomTile(terKind, True);
       TileBasic.BaseLayer.Rotation := Random(4);
-      TileBasic.BaseLayer.SetCorners([0,1,2,3]);
+      TileBasic.BaseLayer.SetAllCorners;
       //find height mid point to make random elevation even for close to 0 or 100 height
       hMid := Max(0, Land[aFromY,aFromX].Height - H_RND_HALF) + H_RND_HALF;
       hMid := Min(100, hMid + H_RND_HALF) - H_RND_HALF;
@@ -1670,7 +1753,7 @@ begin
     Result := fTileset.TileIsCornField(Land[Loc.Y, Loc.X].BaseLayer.Terrain)
               and (Land[Loc.Y,Loc.X].TileOverlay = toNone)
   else
-    Result := (Land[Loc.Y,Loc.X].CornOrWine = 1) and (Land[Loc.Y,Loc.X].TileOverlay = toNone);
+    Result := (gGame.MapEditor.Land[Loc.Y,Loc.X].CornOrWine = 1) and (Land[Loc.Y,Loc.X].TileOverlay = toNone);
 end;
 
 
@@ -1687,7 +1770,7 @@ begin
               and (Land[Loc.Y,Loc.X].TileOverlay = toNone)
               and ObjectIsWine(Loc)
   else
-    Result := (Land[Loc.Y,Loc.X].CornOrWine = 2) and (Land[Loc.Y,Loc.X].TileOverlay = toNone);
+    Result := (gGame.MapEditor.Land[Loc.Y,Loc.X].CornOrWine = 2) and (Land[Loc.Y,Loc.X].TileOverlay = toNone);
 end;
 
 
@@ -1764,11 +1847,11 @@ begin
   Result := TOO_BIG_VALUE;
   with gTerrain.Land[aY,aX] do
   begin
-    if BaseLayer.Corners[aCorner] then
+    if BaseLayer.Corner[aCorner] then
       Result := BASE_TERRAIN[TILE_CORNERS_TERRAIN_KINDS[BaseLayer.Terrain, (aCorner + 4 - BaseLayer.Rotation) mod 4]]
     else
       for L := 0 to LayersCnt - 1 do
-        if Layer[L].Corners[aCorner] then
+        if Layer[L].Corner[aCorner] then
           Result := BASE_TERRAIN[gRes.Sprites.GetGenTerrainInfo(Layer[L].Terrain).TerKind];
   end;
   Assert(Result <> TOO_BIG_VALUE, Format('[TileCornerTerrain] Can''t determine tile [%d:%d] terrain at Corner [%d]', [aX, aY, aCorner]));
@@ -1797,11 +1880,11 @@ begin
   Result := tkCustom;
   with gTerrain.Land[aY,aX] do
   begin
-    if BaseLayer.Corners[aCorner] then
+    if BaseLayer.Corner[aCorner] then
       Result := TILE_CORNERS_TERRAIN_KINDS[BaseLayer.Terrain, (aCorner + 4 - BaseLayer.Rotation) mod 4]
     else
       for L := 0 to LayersCnt - 1 do
-        if Layer[L].Corners[aCorner] then
+        if Layer[L].Corner[aCorner] then
         begin
           Result := gRes.Sprites.GetGenTerrainInfo(Layer[L].Terrain).TerKind;
           Break;
@@ -2195,8 +2278,8 @@ begin
 
   if fMapEditor then
   begin
-    Land[Loc.Y,Loc.X].CornOrWine := 0;
-    Land[Loc.Y,Loc.X].CornOrWineTerrain := 0;
+    gGame.MapEditor.Land[Loc.Y,Loc.X].CornOrWine := 0;
+    gGame.MapEditor.Land[Loc.Y,Loc.X].CornOrWineTerrain := 0;
   end;
 
   if Land[Loc.Y,Loc.X].Obj in [54..59] then
@@ -2233,8 +2316,8 @@ begin
 
   if fMapEditor then
   begin
-    Land[Loc.Y,Loc.X].CornOrWine := 0;
-    Land[Loc.Y,Loc.X].CornOrWineTerrain := 0;
+    gGame.MapEditor.Land[Loc.Y,Loc.X].CornOrWine := 0;
+    gGame.MapEditor.Land[Loc.Y,Loc.X].CornOrWineTerrain := 0;
   end;
 
   if Land[Loc.Y,Loc.X].Obj in [54..59] then
@@ -2953,8 +3036,10 @@ end;
 
 
 procedure TKMTerrain.GetHouseMarks(const aLoc: TKMPoint; aHouseType: TKMHouseType; aList: TKMPointTagList);
+
   procedure MarkPoint(aPoint: TKMPoint; aID: Integer);
-  var I: Integer;
+  var
+    I: Integer;
   begin
     for I := 0 to aList.Count - 1 do //Skip wires from comparison
       if (aList.Tag[I] <> TC_OUTLINE) and KMSamePoint(aList[I], aPoint) then
@@ -3102,7 +3187,7 @@ begin
         RemRoad(Loc);
 
       Land[Loc.Y, Loc.X].TileOverlay := aOverlay;
-      Land[Loc.Y, Loc.X].CornOrWine := 0;
+      gGame.MapEditor.Land[Loc.Y, Loc.X].CornOrWine := 0;
       UpdateFences(Loc);
 
       if (aOverlay in ROAD_LIKE_OVERLAYS) and gMapElements[Land[Loc.Y, Loc.X].Obj].WineOrCorn then
@@ -3208,6 +3293,7 @@ end;
 
 
 procedure TKMTerrain.RemoveObjectsKilledByRoad(const Loc: TKMPoint);
+
   procedure RemoveIfWest(Loc: TKMPoint);
   begin
     if gMapElements[Land[Loc.Y,Loc.X].Obj].KillByRoad = kbrWest then
@@ -3277,12 +3363,13 @@ end;
 procedure TKMTerrain.SetField(const Loc: TKMPoint; aOwner: TKMHandID; aFieldType: TKMFieldType; aStage: Byte = 0;
                               aRandomAge: Boolean = False; aKeepOldObject: Boolean = False; aRemoveOverlay: Boolean = True;
                               aDoUpdate: Boolean = True);
+
   procedure SetLand(aFieldAge: Byte; aTerrain: Byte; aObj: Integer = -1);
   begin
     Land[Loc.Y, Loc.X].FieldAge := aFieldAge;
 
     if fMapEditor then
-      Land[Loc.Y, Loc.X].CornOrWineTerrain := aTerrain
+      gGame.MapEditor.Land[Loc.Y, Loc.X].CornOrWineTerrain := aTerrain
     else begin
       Land[Loc.Y, Loc.X].BaseLayer.Terrain := aTerrain;
       Land[Loc.Y, Loc.X].BaseLayer.Rotation := 0;
@@ -3315,7 +3402,7 @@ begin
     and (InRange(aStage, 0, CORN_STAGES_COUNT - 1)) then
   begin
     if fMapEditor then
-      Land[Loc.Y,Loc.X].CornOrWine := 1;
+      gGame.MapEditor.Land[Loc.Y,Loc.X].CornOrWine := 1;
 
     case aStage of
       0:  SetLand(0, 62, GetObj); //empty field
@@ -3353,7 +3440,7 @@ begin
     and (InRange(aStage, 0, WINE_STAGES_COUNT - 1)) then
   begin
     if fMapEditor then
-      Land[Loc.Y,Loc.X].CornOrWine := 2;
+      gGame.MapEditor.Land[Loc.Y,Loc.X].CornOrWine := 2;
 
     case aStage of
       0:  begin //Set new fruits
@@ -3642,10 +3729,12 @@ end;
 
 
 procedure TKMTerrain.UpdatePassability(const Loc: TKMPoint);
+
   procedure AddPassability(aPass: TKMTerrainPassability);
   begin
     Land[Loc.Y,Loc.X].Passability := Land[Loc.Y,Loc.X].Passability + [aPass];
   end;
+
 var
   I, K: Integer;
   hasHousesNearTile, housesNearVertex, isBuildNoObj: Boolean;
@@ -3758,10 +3847,12 @@ end;
 function TKMTerrain.GetPassablePointWithinSegment(OriginPoint, TargetPoint: TKMPoint;
                                                   aPass: TKMTerrainPassability;
                                                   MaxDistance: Integer = -1): TKMPoint;
-  function IsDistBetweenPointsAllowed(const OriginPoint, TargetPoint: TKMPoint): Boolean;
+
+  function IsDistBetweenPointsAllowed(const OriginPoint, TargetPoint: TKMPoint; aMaxDistance: Integer): Boolean; inline;
   begin
-    Result := (MaxDistance = -1) or (KMDistanceSqr(OriginPoint, TargetPoint) <= Sqr(MaxDistance));
+    Result := (aMaxDistance = -1) or (KMDistanceSqr(OriginPoint, TargetPoint) <= Sqr(aMaxDistance));
   end;
+
 var
   normVector: TKMPoint;
   normDistance: Integer;
@@ -3772,7 +3863,7 @@ begin
     normDistance := Min(MaxDistance, Floor(KMLength(OriginPoint, TargetPoint)));
 
   while (normDistance >= 0)
-    and (not IsDistBetweenPointsAllowed(OriginPoint, TargetPoint)
+    and (not IsDistBetweenPointsAllowed(OriginPoint, TargetPoint, MaxDistance)
          or not CheckPassability(TargetPoint, aPass)) do
   begin
     normVector := KMNormVector(KMPoint(TargetPoint.X - OriginPoint.X, TargetPoint.Y - OriginPoint.Y), normDistance);
@@ -4393,15 +4484,15 @@ var
 begin
   x0 := Max(X - 1, 1);
   y2 := Min(Y + 1, fMapY);
-  Land[Y,X].Light := EnsureRange((Land[Y,X].RenderHeight - (Land[y2,X].RenderHeight + Land[Y,x0].RenderHeight)/2)/22,-1,1); //  1.33*16 ~=22
+  Land[Y,X].Light := Round((EnsureRange((Land[Y,X].RenderHeight - (Land[y2,X].RenderHeight + Land[Y,x0].RenderHeight)/2)/22, -1, 1) + 1) * 127.5); //  1.33*16 ~=22.
 
   //Use more contrast lighting for Waterbeds
   if fTileset.TileIsWater(Land[Y, X].BaseLayer.Terrain) then
-    Land[Y,X].Light := EnsureRange(Land[Y,X].Light * 1.3 + 0.1, -1, 1);
+    Land[Y,X].Light := Round(EnsureRange(Land[Y,X].Light * 1.3 + 0.1, 0, 255));
 
   //Map borders always fade to black
   if (Y = 1) or (Y = fMapY) or (X = 1) or (X = fMapX) then
-    Land[Y,X].Light := -1;
+    Land[Y,X].Light := 0;
 end;
 
 
@@ -4784,7 +4875,7 @@ end;
 
 {Check 4 surrounding tiles, and if they are different place a fence}
 procedure TKMTerrain.UpdateFences(const Loc: TKMPoint; CheckSurrounding: Boolean = True);
-  function GetFenceType: TKMFenceType;
+  function GetFenceType: TKMFenceKind;
   begin
     if TileIsCornField(Loc) then
       Result := fncCorn
@@ -4813,16 +4904,16 @@ procedure TKMTerrain.UpdateFences(const Loc: TKMPoint; CheckSurrounding: Boolean
 begin
   if not TileInMapCoords(Loc.X, Loc.Y) then Exit;
 
-  Land[Loc.Y,Loc.X].Fence := GetFenceType;
+  Fences[Loc.Y,Loc.X].Kind := GetFenceType;
 
-  if Land[Loc.Y, Loc.X].Fence = fncNone then
-    Land[Loc.Y, Loc.X].FenceSide := 0
+  if Fences[Loc.Y, Loc.X].Kind = fncNone then
+    Fences[Loc.Y, Loc.X].Side := 0
   else
   begin
-    Land[Loc.Y, Loc.X].FenceSide := Byte(GetFenceEnabled(Loc.X,   Loc.Y - 1)) + //N
-                                    Byte(GetFenceEnabled(Loc.X - 1, Loc.Y)) * 2 + //E
-                                    Byte(GetFenceEnabled(Loc.X + 1, Loc.Y)) * 4 + //W
-                                    Byte(GetFenceEnabled(Loc.X,   Loc.Y + 1)) * 8; //S
+    Fences[Loc.Y, Loc.X].Side := Byte(GetFenceEnabled(Loc.X,     Loc.Y - 1))      + //N
+                                 Byte(GetFenceEnabled(Loc.X - 1, Loc.Y))      * 2 + //E
+                                 Byte(GetFenceEnabled(Loc.X + 1, Loc.Y))      * 4 + //W
+                                 Byte(GetFenceEnabled(Loc.X,     Loc.Y + 1))  * 8;  //S
   end;
 
   if CheckSurrounding then
@@ -4980,7 +5071,6 @@ end;
 procedure TKMTerrain.Save(SaveStream: TKMemoryStream);
 var
   I, K, L: Integer;
-  tileBasic: TKMTerrainTileBasic;
   isTxtStream: Boolean;
 begin
   Assert(not fMapEditor, 'MapEd mode is not intended to be saved into savegame');
@@ -4994,43 +5084,62 @@ begin
   FallingTrees.SaveToStream(SaveStream);
   isTxtStream := SaveStream is TKMemoryStreamText;
 
-  for I := 1 to fMapY do
-    for K := 1 to fMapX do
-    begin
-      if isTxtStream then
+  if isTxtStream then
+    for I := 1 to fMapY do
+      for K := 1 to fMapX do
+      begin
         SaveStream.PlaceMarker(KMPoint(K,I).ToString);
 
-      //Only save fields that cannot be recalculated after loading
-      tileBasic.BaseLayer   := Land[I,K].BaseLayer;
-      tileBasic.Height      := Land[I,K].Height;
-      tileBasic.Obj         := Land[I,K].Obj;
-      tileBasic.IsCustom    := Land[I,K].IsCustom;
-      tileBasic.BlendingLvl := Land[I,K].BlendingLvl;
-      tileBasic.LayersCnt   := Land[I,K].LayersCnt;
-      tileBasic.TileOverlay := Land[I,K].TileOverlay;
+        with Land[I,K] do
+        begin
+          BaseLayer.Save(SaveStream);
+          for L := 0 to 2 do
+            Layer[L].Save(SaveStream);
+          SaveStream.Write(LayersCnt);
+          SaveStream.Write(Height);
+          SaveStream.Write(Obj);
+          SaveStream.Write(IsCustom);
+          SaveStream.Write(BlendingLvl);
+          SaveStream.Write(TreeAge);
+          SaveStream.Write(FieldAge);
+          SaveStream.Write(TileLock, SizeOf(TileLock));
+          SaveStream.Write(JamMeter);
+          SaveStream.Write(TileOverlay, SizeOf(TileOverlay));
+          SaveStream.Write(TileOwner, SizeOf(TileOwner));
+          SaveStream.Write(TKMUnit(Land[I,K].IsUnit).UID);
+          SaveStream.Write(IsVertexUnit, SizeOf(IsVertexUnit));
 
-      for L := 0 to 2 do
-        tileBasic.Layer[L] := Land[I,K].Layer[L];
+          SaveStream.Write(Passability, SizeOf(Passability));
+          SaveStream.Write(WalkConnect, SizeOf(WalkConnect));
+          SaveStream.Write(Light);
+        end;
+      end
+  else
+  begin
+    // Save Unit pointer in temp array
+    for I := 1 to fMapY do
+      for K := 1 to fMapX do
+      begin
+        fUnitPointersTemp[I,K] := Land[I,K].IsUnit;
+        Land[I,K].IsUnit := Pointer(TKMUnit(Land[I,K].IsUnit).UID);
+      end;
 
-      WriteTileToStream(SaveStream, tileBasic, Land[I,K].TileOwner, True);
+    for I := 1 to fMapY do
+      SaveStream.Write(Land[I,1], SizeOf(Land[I,1]) * fMapX);
 
-      SaveStream.Write(Land[I,K].Passability, SizeOf(Land[I,K].Passability));
-      SaveStream.Write(Land[I,K].WalkConnect, SizeOf(Land[I,K].WalkConnect));
-      SaveStream.Write(Land[I,K].TreeAge);
-      SaveStream.Write(Land[I,K].FieldAge);
-      SaveStream.Write(Land[I,K].TileLock, SizeOf(Land[I,K].TileLock));
-      SaveStream.Write(Land[I,K].JamMeter);
-      SaveStream.Write(Land[I,K].TileOwner, SizeOf(Land[I,K].TileOwner));
-      SaveStream.Write(TKMUnit(Land[I,K].IsUnit).UID); //Store ID, then substitute it with reference on SyncLoad
-      SaveStream.Write(Land[I,K].IsVertexUnit, SizeOf(Land[I,K].IsVertexUnit));
-    end;
+    // Restore unit pointers
+    for I := 1 to fMapY do
+      for K := 1 to fMapX do
+      begin
+        Land[I,K].IsUnit := fUnitPointersTemp[I,K];
+      end;
+  end;
 end;
 
 
 procedure TKMTerrain.Load(LoadStream: TKMemoryStream);
 var
-  I, J, L: Integer;
-  tileBasic: TKMTerrainTileBasic;
+  I, J: Integer;
 begin
   LoadStream.CheckMarker('Terrain');
   LoadStream.Read(fMapX);
@@ -5041,30 +5150,7 @@ begin
   FallingTrees.LoadFromStream(LoadStream);
 
   for I := 1 to fMapY do
-    for J := 1 to fMapX do
-    begin
-      ReadTileFromStream(LoadStream, tileBasic, GAME_REVISION_NUM);
-      Land[I,J].BaseLayer := tileBasic.BaseLayer;
-      Land[I,J].Height := tileBasic.Height;
-      Land[I,J].Obj := tileBasic.Obj;
-      Land[I,J].IsCustom := tileBasic.IsCustom;
-      Land[I,J].BlendingLvl := tileBasic.BlendingLvl;
-      Land[I,J].TileOverlay := tileBasic.TileOverlay;
-      Land[I,J].LayersCnt := tileBasic.LayersCnt;
-
-      for L := 0 to 2 do
-        Land[I,J].Layer[L] := tileBasic.Layer[L];
-
-      LoadStream.Read(Land[I,J].Passability, SizeOf(Land[I,J].Passability));
-      LoadStream.Read(Land[I,J].WalkConnect, SizeOf(Land[I,J].WalkConnect));
-      LoadStream.Read(Land[I,J].TreeAge);
-      LoadStream.Read(Land[I,J].FieldAge);
-      LoadStream.Read(Land[I,J].TileLock,SizeOf(Land[I,J].TileLock));
-      LoadStream.Read(Land[I,J].JamMeter);
-      LoadStream.Read(Land[I,J].TileOwner,SizeOf(Land[I,J].TileOwner));
-      LoadStream.Read(Land[I,J].IsUnit, 4);
-      LoadStream.Read(Land[I,J].IsVertexUnit,SizeOf(Land[I,J].IsVertexUnit));
-    end;
+    LoadStream.Read(Land[I,1], SizeOf(Land[I,1]) * fMapX);
 
   for I := 1 to fMapY do
     for J := 1 to fMapX do
@@ -5072,8 +5158,6 @@ begin
 
   fFinder := TKMTerrainFinder.Create;
 
-  UpdateLighting;
-  // Do not update Passability and WalkConnect, since we loaded it from the stream
   gLog.AddTime('Terrain loaded');
 end;
 
@@ -5109,7 +5193,7 @@ begin
   fieldAge := Land[Loc.Y,Loc.X].FieldAge;
   if fieldAge = 0 then
   begin
-    if (fMapEditor and (Land[Loc.Y,Loc.X].CornOrWineTerrain = 63))
+    if (fMapEditor and (gGame.MapEditor.Land[Loc.Y,Loc.X].CornOrWineTerrain = 63))
       or (Land[Loc.Y,Loc.X].BaseLayer.Terrain = 63) then
       Result := 6
     else
@@ -5272,11 +5356,11 @@ class procedure TKMTerrain.WriteTileToStream(S: TKMemoryStream; const aTileBasic
     layersCnt := 0;
     for I := 3 downto 0 do  // go from 3 to 0, as we pack 3 corner to the most left
     begin
-      if aTileBasic.BaseLayer.Corners[I] then
+      if aTileBasic.BaseLayer.Corner[I] then
         layersCnt := 0
       else
         for L := 0 to 2 do
-          if aTileBasic.Layer[L].Corners[I] then
+          if aTileBasic.Layer[L].Corner[I] then
           begin
             layersCnt := L + 1;
             Break;
@@ -5376,7 +5460,7 @@ begin
     aStream.Seek(1, soFromCurrent);
     aStream.Read(objectB);     //6
     aTileBasic.Obj := objectB;
-    aTileBasic.BaseLayer.SetCorners([0,1,2,3]);
+    aTileBasic.BaseLayer.SetAllCorners;
     aTileBasic.LayersCnt := 0;
     aTileBasic.IsCustom := False;
     aTileBasic.BlendingLvl := TERRAIN_DEF_BLENDING_LVL;
@@ -5399,7 +5483,7 @@ begin
     // First get layers count
     aStream.Read(aTileBasic.LayersCnt);         //9
     if aTileBasic.LayersCnt = 0 then            // No need to save corners, if we have no layers on that tile
-      aTileBasic.BaseLayer.SetCorners([0,1,2,3]) // Set all corners then
+      aTileBasic.BaseLayer.SetAllCorners // Set all corners then
     else begin
       // if there are some layers, then load base layer corners first
       aStream.Read(corners);
@@ -5446,8 +5530,8 @@ begin
       for I := 0 to 3 do
       begin
         case layersCorners[I] of
-          0:    aTileBasic.BaseLayer.Corners[I] := True;
-          else  aTileBasic.Layer[layersCorners[I]-1].Corners[I] := True;
+          0:    aTileBasic.BaseLayer.Corner[I] := True;
+          else  aTileBasic.Layer[layersCorners[I]-1].Corner[I] := True;
         end;
       end;
     end;
@@ -5471,6 +5555,13 @@ begin
     Result := HEIGHT_DEFAULT
   else
     Result := Height;
+end;
+
+
+// Returns Light in -1..1 range
+function TKMTerrainTile.RenderLight: Single;
+begin
+  Result := Light / 127.5 - 1;
 end;
 
 

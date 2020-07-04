@@ -100,7 +100,8 @@ uses
   {$IFDEF Unix} LCLType, {$ENDIF}
   KM_HandsCollection, KM_ResTexts, KM_Resource, KM_RenderUI, KM_ResUnits,
   KM_ResWares, KM_HouseBarracks, KM_HouseTownHall,
-  KM_ResFonts, KM_GameCursor, KM_Utils;
+  KM_ResFonts, KM_GameCursor, KM_Utils,
+  KM_ResTypes;
 
 
 { TKMMapEdHouse }

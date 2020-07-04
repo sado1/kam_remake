@@ -9,7 +9,8 @@ interface
 uses
   Classes, Graphics, KromUtils, Math, SysUtils,
   KM_Defaults, KM_CommonClasses, KM_CommonTypes,
-  KM_AISetup, KM_ResHouses, KM_ResWares, KM_HandStats, KM_AIParameters;
+  KM_AISetup, KM_ResHouses, KM_ResWares, KM_HandStats, KM_AIParameters,
+  KM_ResTypes;
 
 type
   TWareBalance = record

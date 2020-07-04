@@ -3,7 +3,8 @@ unit KM_HandLocks;
 interface
 uses
   KM_ResHouses, KM_ResWares,
-  KM_CommonClasses, KM_Defaults;
+  KM_CommonClasses, KM_Defaults,
+  KM_ResTypes;
 
 
 type

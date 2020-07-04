@@ -88,7 +88,8 @@ var
 
 implementation
 uses
-  TypInfo, KromUtils, KM_Log, KM_Points, KM_ResTexts, KM_ResKeys;
+  TypInfo, KromUtils, KM_Log, KM_Points, KM_ResTexts, KM_ResKeys,
+  KM_ResTypes;
 
 
 { TKMResource }
@@ -271,7 +272,7 @@ end;
 function TKMResource.GetOrCreateExportWorker: TKMWorkerThread;
 begin
   if fExportWorker = nil then
-    fExportWorker := TKMWorkerThread.Create('Export worker');
+    fExportWorker := TKMWorkerThread.Create('ExportWorker');
 
   Result := fExportWorker;
 end;

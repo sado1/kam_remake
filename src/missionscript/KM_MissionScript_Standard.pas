@@ -52,7 +52,8 @@ uses
   KM_Resource, KM_ResHouses, KM_ResUnits, KM_ResWares,
   KM_CommonClasses, KM_CommonTypes, KM_Terrain,
   KM_HandTypes,
-  KM_CommonExceptions;
+  KM_CommonExceptions,
+  KM_ResTypes;
 
 
 type

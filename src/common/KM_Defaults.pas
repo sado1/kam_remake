@@ -220,6 +220,7 @@ var
   SHOW_SELECTED_OBJ_INFO  :Boolean = False; //Show selected object (Unit/Group + Unit/House) data (UID/order/action etc)
   SHOW_HANDS_INFO         :Boolean = False; //Show hands info
   SHOW_GIP                :Boolean = False; //Show GIP commands
+  SHOW_GIP_AS_BYTES       :Boolean = False; //Show GIP commands as bytes (or as 'parsed type' if False)
   INI_HITPOINT_RESTORE    :Boolean = False; //Use the hitpoint restore rate from the INI file to compare with KaM
   SLOW_MAP_SCAN           :Boolean = False; //Scan maps with a pause to emulate uncached file access
   SLOW_SAVE_SCAN          :Boolean = False; //Scan saves with a pause to emulate uncached file access
@@ -232,6 +233,7 @@ var
   {Gameplay}
   LOBBY_SET_SPECS_DEFAULT :Boolean = DEBUG_CFG; //Set 'Allow spectators' flag in the lobby by default
   LOBBY_HOST_AS_SPECTATOR :Boolean = DEBUG_CFG; //Host lobby as spectator by default
+  NO_SAVE_COMPRESSION     :Boolean = False; //Do not apply compression on save files, to make them more readable
   CUSTOM_SEED_VALUE       :Integer = 0;     //Custom seed value. Not applied if set to 0
   PAUSE_GAME_BEFORE_TICK  :Integer = -1;    //Pause after specified game tick
   MAKE_SAVEPT_BEFORE_TICK :Integer = -1;    //Make savepoint after a certain tick (for both game and replay)
@@ -281,6 +283,8 @@ const
   GAME_SPEED_NORMAL = 1;
   GAME_SP_SPEED_MAX = 10;
   GAME_MP_SPEED_MAX = 2.5;
+
+  SPEED_PACE_DEFAULT = 100; // ms, frequency of game updates
 
 
   AUTOSAVE_COUNT          = 5;    //How many autosaves to backup - this MUST be variable (Parallel Runner)

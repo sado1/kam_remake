@@ -2,7 +2,7 @@
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_ResWares, KM_ResHouses,
+  KM_ResTypes,
   KM_CommonClasses;
 
 

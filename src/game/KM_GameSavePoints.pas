@@ -62,7 +62,7 @@ type
 
 implementation
 uses
-  SysUtils, Classes, KM_CommonUtils;
+  SysUtils, Classes;
 
 { TKMSavedReplays }
 constructor TKMSavePointCollection.Create();
@@ -294,7 +294,7 @@ begin
         finally
           localStream.Free;
         end;
-      end, 'SavePointCollection.SaveToFileAsync');
+      end, 'Save SavePoints');
   {$ELSE}
     localStream := TKMemoryStreamBinary.Create;
     try

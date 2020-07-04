@@ -198,12 +198,13 @@ type
     seDebugValue: TSpinEdit;
     edDebugText: TEdit;
     Label13: TLabel;
-    CategoryPanel1: TCategoryPanel;
+    cpMisc: TCategoryPanel;
     chkBevel: TCheckBox;
     rgDebugFont: TRadioGroup;
     chkMonospacedFont: TCheckBox;
     mnExportRPL: TMenuItem;
     chkPathfinding: TCheckBox;
+    chkGipAsBytes: TCheckBox;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -336,7 +337,8 @@ uses
 
   KM_IoXML,
   KM_GameInputProcess,
-  KM_ResTypes;
+  KM_ResTypes,
+  KM_XmlHelper;
 
 
 procedure ExportDone(aResourceName: String);
@@ -1308,6 +1310,7 @@ begin
     SKIP_LOG_TEMP_COMMANDS := chkLogSkipTempCmd.Checked;
 
     SHOW_GIP := chkGIP.Checked;
+    SHOW_GIP_AS_BYTES := chkGipAsBytes.Checked;
     PAUSE_GAME_BEFORE_TICK := sePauseBeforeTick.Value;
     MAKE_SAVEPT_BEFORE_TICK := seMakeSaveptBeforeTick.Value;
     CUSTOM_SEED_VALUE := seCustomSeed.Value;

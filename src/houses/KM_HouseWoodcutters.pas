@@ -3,7 +3,8 @@ unit KM_HouseWoodcutters;
 interface
 uses
   KM_Houses, KM_ResHouses,
-  KM_CommonClasses, KM_Points, KM_Defaults;
+  KM_CommonClasses, KM_Points, KM_Defaults,
+  KM_ResTypes;
   
 type
   TKMWoodcutterMode = (wcmChopAndPlant, wcmChop, wcmPlant);

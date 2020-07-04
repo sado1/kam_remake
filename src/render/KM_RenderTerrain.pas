@@ -78,7 +78,7 @@ type
     procedure DoWater(aAnimStep: Integer; aFOW: TKMFogOfWarCommon);
     procedure DoShadows(aFOW: TKMFogOfWarCommon);
     function VBOSupported: Boolean;
-    procedure RenderFence(aFence: TKMFenceType; Pos: TKMDirection; pX,pY: Integer);
+    procedure RenderFence(aFence: TKMFenceKind; Pos: TKMDirection; pX,pY: Integer);
     procedure RenderMarkup(pX, pY: Word; aFieldType: TKMFieldType);
     procedure DoRenderTile(aTerrainId: Word; pX,pY,Rot: Integer; aDoBindTexture: Boolean; aUseTileLookup: Boolean;
                            DoHighlight: Boolean = False; HighlightColor: Cardinal = 0;
@@ -103,6 +103,7 @@ type
 
 implementation
 uses
+  KM_Game,
   KM_GameParams, KM_Render, KM_RenderTypes, KM_Resource, KM_DevPerfLog, KM_DevPerfLogTypes;
 
 type
@@ -297,8 +298,8 @@ var
       aVert.Z := aTY - Byte(aIsBottomRow);
       aVert.UTile := aUTile;
       aVert.VTile := aVTile;
-      aVert.ULit := Land[aTY+1, aTX+1].Light;
-      aVert.UShd := -Land[aTY+1, aTX+1].Light;
+      aVert.ULit := Land[aTY+1, aTX+1].RenderLight;
+      aVert.UShd := -Land[aTY+1, aTX+1].RenderLight;
     end;
   end;
 
@@ -717,7 +718,7 @@ begin
                   Exit;
 
                 if BlendingLvl > 0 then
-                  RenderQuadTextureBlended(texC, tX, tY, Layer[L].Corners, BlendingLvl)
+                  RenderQuadTextureBlended(texC, tX, tY, Layer[L].GetCorners, BlendingLvl)
                 else
                   RenderQuadTexture(texC, tX, tY);
                 glEnd;
@@ -816,10 +817,11 @@ begin
   if TileHasToBeRendered(False,pX,pY,aFow) then
   begin
     //Fake tiles for MapEd fields
-    case gTerrain.Land[pY, pX].CornOrWine of
-      1:  RenderTile(gTerrain.Land[pY, pX].CornOrWineTerrain, pX, pY, 0, DoHighlight, HighlightColor);
-      2:  RenderTile(55, pX, pY, 0, DoHighlight, HighlightColor);
-    end;
+    if gGame.MapEditor <> nil then
+      case gGame.MapEditor.Land[pY, pX].CornOrWine of
+        1:  RenderTile(gGame.MapEditor.Land[pY, pX].CornOrWineTerrain, pX, pY, 0, DoHighlight, HighlightColor);
+        2:  RenderTile(55, pX, pY, 0, DoHighlight, HighlightColor);
+      end;
 
     if gTerrain.Land[pY, pX].TileOverlay = toRoad then
     begin
@@ -875,14 +877,14 @@ begin
       begin
         if TileHasToBeRendered(False,K,I,aFow) then
         begin
-          if Land[I,K].FenceSide and 1 = 1 then
-            RenderFence(Land[I,K].Fence, dirN, K, I);
-          if Land[I,K].FenceSide and 2 = 2 then 
-            RenderFence(Land[I,K].Fence, dirE, K, I);
-          if Land[I,K].FenceSide and 4 = 4 then 
-            RenderFence(Land[I,K].Fence, dirW, K, I);
-          if Land[I,K].FenceSide and 8 = 8 then 
-            RenderFence(Land[I,K].Fence, dirS, K, I);
+          if Fences[I,K].Side and 1 = 1 then
+            RenderFence(Fences[I,K].Kind, dirN, K, I);
+          if Fences[I,K].Side and 2 = 2 then
+            RenderFence(Fences[I,K].Kind, dirE, K, I);
+          if Fences[I,K].Side and 4 = 4 then
+            RenderFence(Fences[I,K].Kind, dirW, K, I);
+          if Fences[I,K].Side and 8 = 8 then
+            RenderFence(Fences[I,K].Kind, dirS, K, I);
         end;
       end;
 end;
@@ -949,17 +951,17 @@ begin
             if RENDER_3D then
             begin
               glBegin(GL_TRIANGLE_FAN);
-                glTexCoord1f(Land[  tY,   tX].Light); glVertex3f(tX-1, tY-1, -Land[  tY,   tX].RenderHeight / CELL_HEIGHT_DIV);
-                glTexCoord1f(Land[tY+1,   tX].Light); glVertex3f(tX-1,   tY, -Land[tY+1,   tX].RenderHeight / CELL_HEIGHT_DIV);
-                glTexCoord1f(Land[tY+1, tX+1].Light); glVertex3f(  tX,   tY, -Land[tY+1, tX+1].RenderHeight / CELL_HEIGHT_DIV);
-                glTexCoord1f(Land[  tY, tX+1].Light); glVertex3f(  tX, tY-1, -Land[  tY, tX+1].RenderHeight / CELL_HEIGHT_DIV);
+                glTexCoord1f(Land[  tY,   tX].RenderLight); glVertex3f(tX-1, tY-1, -Land[  tY,   tX].RenderHeight / CELL_HEIGHT_DIV);
+                glTexCoord1f(Land[tY+1,   tX].RenderLight); glVertex3f(tX-1,   tY, -Land[tY+1,   tX].RenderHeight / CELL_HEIGHT_DIV);
+                glTexCoord1f(Land[tY+1, tX+1].RenderLight); glVertex3f(  tX,   tY, -Land[tY+1, tX+1].RenderHeight / CELL_HEIGHT_DIV);
+                glTexCoord1f(Land[  tY, tX+1].RenderLight); glVertex3f(  tX, tY-1, -Land[  tY, tX+1].RenderHeight / CELL_HEIGHT_DIV);
               glEnd;
             end else begin
               glBegin(GL_TRIANGLE_FAN);
-                glTexCoord1f(Land[  tY,   tX].Light); glVertex3f(tX-1, tY-1 - Land[  tY,   tX].RenderHeight / CELL_HEIGHT_DIV, tY-1);
-                glTexCoord1f(Land[tY+1,   tX].Light); glVertex3f(tX-1,   tY - Land[tY+1,   tX].RenderHeight / CELL_HEIGHT_DIV, tY-1);
-                glTexCoord1f(Land[tY+1, tX+1].Light); glVertex3f(  tX,   tY - Land[tY+1, tX+1].RenderHeight / CELL_HEIGHT_DIV, tY-1);
-                glTexCoord1f(Land[  tY, tX+1].Light); glVertex3f(  tX, tY-1 - Land[  tY, tX+1].RenderHeight / CELL_HEIGHT_DIV, tY-1);
+                glTexCoord1f(Land[  tY,   tX].RenderLight); glVertex3f(tX-1, tY-1 - Land[  tY,   tX].RenderHeight / CELL_HEIGHT_DIV, tY-1);
+                glTexCoord1f(Land[tY+1,   tX].RenderLight); glVertex3f(tX-1,   tY - Land[tY+1,   tX].RenderHeight / CELL_HEIGHT_DIV, tY-1);
+                glTexCoord1f(Land[tY+1, tX+1].RenderLight); glVertex3f(  tX,   tY - Land[tY+1, tX+1].RenderHeight / CELL_HEIGHT_DIV, tY-1);
+                glTexCoord1f(Land[  tY, tX+1].RenderLight); glVertex3f(  tX, tY-1 - Land[  tY, tX+1].RenderHeight / CELL_HEIGHT_DIV, tY-1);
               glEnd;
             end;
           end;
@@ -1017,17 +1019,17 @@ begin
             if RENDER_3D then
             begin
               glBegin(GL_TRIANGLE_FAN);
-                glTexCoord1f(-Land[  tY,   tX].Light); glVertex3f(tX-1, tY-1, -Land[  tY,   tX].RenderHeight / CELL_HEIGHT_DIV);
-                glTexCoord1f(-Land[tY+1,   tX].Light); glVertex3f(tX-1,   tY, -Land[tY+1,   tX].RenderHeight / CELL_HEIGHT_DIV);
-                glTexCoord1f(-Land[tY+1, tX+1].Light); glVertex3f(  tX,   tY, -Land[tY+1, tX+1].RenderHeight / CELL_HEIGHT_DIV);
-                glTexCoord1f(-Land[  tY, tX+1].Light); glVertex3f(  tX, tY-1, -Land[  tY, tX+1].RenderHeight / CELL_HEIGHT_DIV);
+                glTexCoord1f(-Land[  tY,   tX].RenderLight); glVertex3f(tX-1, tY-1, -Land[  tY,   tX].RenderHeight / CELL_HEIGHT_DIV);
+                glTexCoord1f(-Land[tY+1,   tX].RenderLight); glVertex3f(tX-1,   tY, -Land[tY+1,   tX].RenderHeight / CELL_HEIGHT_DIV);
+                glTexCoord1f(-Land[tY+1, tX+1].RenderLight); glVertex3f(  tX,   tY, -Land[tY+1, tX+1].RenderHeight / CELL_HEIGHT_DIV);
+                glTexCoord1f(-Land[  tY, tX+1].RenderLight); glVertex3f(  tX, tY-1, -Land[  tY, tX+1].RenderHeight / CELL_HEIGHT_DIV);
               glEnd;
             end else begin
               glBegin(GL_TRIANGLE_FAN);
-                glTexCoord1f(-Land[  tY,   tX].Light); glVertex3f(tX-1, tY-1 - Land[  tY,   tX].RenderHeight / CELL_HEIGHT_DIV, tY-1);
-                glTexCoord1f(-Land[tY+1,   tX].Light); glVertex3f(tX-1,   tY - Land[tY+1,   tX].RenderHeight / CELL_HEIGHT_DIV, tY-1);
-                glTexCoord1f(-Land[tY+1, tX+1].Light); glVertex3f(  tX,   tY - Land[tY+1, tX+1].RenderHeight / CELL_HEIGHT_DIV, tY-1);
-                glTexCoord1f(-Land[  tY, tX+1].Light); glVertex3f(  tX, tY-1 - Land[  tY, tX+1].RenderHeight / CELL_HEIGHT_DIV, tY-1);
+                glTexCoord1f(-Land[  tY,   tX].RenderLight); glVertex3f(tX-1, tY-1 - Land[  tY,   tX].RenderHeight / CELL_HEIGHT_DIV, tY-1);
+                glTexCoord1f(-Land[tY+1,   tX].RenderLight); glVertex3f(tX-1,   tY - Land[tY+1,   tX].RenderHeight / CELL_HEIGHT_DIV, tY-1);
+                glTexCoord1f(-Land[tY+1, tX+1].RenderLight); glVertex3f(  tX,   tY - Land[tY+1, tX+1].RenderHeight / CELL_HEIGHT_DIV, tY-1);
+                glTexCoord1f(-Land[  tY, tX+1].RenderLight); glVertex3f(  tX, tY-1 - Land[  tY, tX+1].RenderHeight / CELL_HEIGHT_DIV, tY-1);
               glEnd;
             end;
           end;
@@ -1336,13 +1338,13 @@ begin
 
   // Render other Layers
   for L := 0 to aTileBasic.LayersCnt - 1 do
-    DoRenderTile(aTileBasic.Layer[L].Terrain, pX, pY, aTileBasic.Layer[L].Rotation, aTileBasic.Layer[L].Corners,
+    DoRenderTile(aTileBasic.Layer[L].Terrain, pX, pY, aTileBasic.Layer[L].Rotation, aTileBasic.Layer[L].GetCorners,
                  doBindTexture, False, DoHighlight, HighlightColor, aTileBasic.BlendingLvl);
     
 end;
 
 
-procedure TRenderTerrain.RenderFence(aFence: TKMFenceType; Pos: TKMDirection; pX,pY: Integer);
+procedure TRenderTerrain.RenderFence(aFence: TKMFenceKind; Pos: TKMDirection; pX,pY: Integer);
 const
   FO = 4; //Fence overlap
   VO = -4; //Move fences a little down to avoid visible overlap when unit stands behind fence, but is rendered ontop of it, due to Z sorting algo we use

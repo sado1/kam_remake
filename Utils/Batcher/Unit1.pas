@@ -305,7 +305,7 @@ begin
     Memo1.Lines.Append(IntToStr(PathToMaps.Count) + ' maps');
     Memo1.Lines.Append('Win / Def');
     for GC := Low(TKMGoalCondition) to High(TKMGoalCondition) do
-      Memo1.Lines.Append(Format('%3d / %3d ' + GoalConditionStr[GC], [WinCond[GC], DefeatCond[GC]]));
+      Memo1.Lines.Append(Format('%3d / %3d ' + GOAL_CONDITION_STR[GC], [WinCond[GC], DefeatCond[GC]]));
   finally
     PathToMaps.Free;
   end;

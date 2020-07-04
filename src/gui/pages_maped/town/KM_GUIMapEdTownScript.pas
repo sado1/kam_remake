@@ -44,7 +44,8 @@ uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLType, {$ENDIF}
   KM_Game, KM_HandsCollection, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_InterfaceGame, KM_GameCursor,
-  KM_Defaults, KM_Pics, KM_Hand, KM_ResHouses, KM_Utils;
+  KM_Defaults, KM_Pics, KM_Hand, KM_ResHouses, KM_Utils,
+  KM_ResTypes;
 
 
 { TKMMapEdTownScript }

@@ -137,7 +137,8 @@ type
     StartedFromMapEditor: Boolean;    // True if we start game from map editor ('Quick Play')
     StartedFromMapEdAsMPMap: Boolean; // True if we start game from map editor ('Quick Play') with MP map
 
-    constructor Create(aGameMode: TKMGameMode; aRender: TRender; aOnDestroy: TEvent);
+    constructor Create(aGameMode: TKMGameMode; aRender: TRender; aOnDestroy: TEvent;
+                       aSaveWorkerThread: TKMWorkerThread; aBaseSaveWorkerThread: TKMWorkerThread; aAutoSaveWorkerThread: TKMWorkerThread);
     destructor Destroy; override;
 
     procedure Start(const aMissionFile, aName: UnicodeString; aFullCRC, aSimpleCRC: Cardinal; aCampaign: TKMCampaign;
@@ -291,7 +292,8 @@ uses
 //Create template for the Game
 //aRender - who will be rendering the Game session
 //aNetworking - access to MP stuff
-constructor TKMGame.Create(aGameMode: TKMGameMode; aRender: TRender; aOnDestroy: TEvent);
+constructor TKMGame.Create(aGameMode: TKMGameMode; aRender: TRender; aOnDestroy: TEvent;
+                           aSaveWorkerThread: TKMWorkerThread; aBaseSaveWorkerThread: TKMWorkerThread; aAutoSaveWorkerThread: TKMWorkerThread);
 const
   UIMode: array[TKMGameMode] of TUIMode = (umSP, umSP, umMP, umSpectate, umSP, umReplay, umReplay);
 begin
@@ -301,11 +303,11 @@ begin
   if gMain <> nil then
     gMain.FormMain.SuppressAltForMenu := True;
 
-  fSaveWorkerThread := TKMWorkerThread.Create('SaveWorker');
-  fAutoSaveWorkerThread := TKMWorkerThread.Create('AutoSaveWorker');
-  fBaseSaveWorkerThread := TKMWorkerThread.Create('BaseSaveWorker');
-
   fParams := TKMGameParams.Create(aGameMode, fSetGameTickEvent, fSetGameModeEvent, fSetMissionFileSP, fSetBlockPointer);
+
+  fSaveWorkerThread := aSaveWorkerThread;
+  fBaseSaveWorkerThread := aBaseSaveWorkerThread;
+  fAutoSaveWorkerThread := aAutoSaveWorkerThread;
 
   fOnDestroy := aOnDestroy;
 
@@ -457,14 +459,6 @@ begin
 
   if Assigned(fOnDestroy) then
     fOnDestroy();
-
-  //This will ensure all queued work is completed before destruction
-  FreeAndNil(fSaveWorkerThread);
-  FreeAndNil(fAutoSaveWorkerThread);
-
-  // BaseSaveWorker could be already destroyed
-  if fBaseSaveWorkerThread <> nil then
-    FreeAndNil(fBaseSaveWorkerThread);
 
   inherited;
 end;
@@ -1346,7 +1340,7 @@ begin
     fAutoSaveWorkerThread.QueueWork(procedure
     begin
       DoAutoSaveRename(localIsMultiPlayerOrSpec);
-    end, 'AutoSave');
+    end, 'AutoSaveRename');
   {$ELSE}
     DoAutoSaveRename(fParams.IsMultiPlayerOrSpec);
   {$ENDIF}
@@ -1654,12 +1648,16 @@ end;
 
 function TKMGame.IsPeaceTime: Boolean;
 begin
+  if (Self = nil) or (fOptions = nil) then Exit(False);
+
   Result := not CheckTime(fOptions.Peacetime * 600);
 end;
 
 
 function TKMGame.CheckIfPieceTimeJustEnded: Boolean;
 begin
+  if (Self = nil) or (fOptions = nil) then Exit(False);
+
   Result := False;
   if fOptions.Peacetime = 0 then Exit;
 
@@ -2026,7 +2024,6 @@ procedure TKMGame.SaveGameToFile(const aPathName: String; aSaveWorkerThread: TKM
 var
   mainStream, headerStream, bodyStream, saveStreamTxt: TKMemoryStream;
   gameMPLocalData: TKMGameMPLocalData;
-  path: string;
 begin
   if BLOCK_SAVE then // This must be here because of paraller Runner
     Exit;
@@ -2048,17 +2045,17 @@ begin
   //Should do before save Minimap file for MP game
   if (aPathName <> '') then
   begin
-    //Doing this async would mean that every part of saving must be done async
-    //Seems error prone so I disabled it for now. It only takes ~0.3ms in my tests
-    path := ExtractFilePath(aPathName);
-    if DirectoryExists(path) then
-      KMDeleteFolderContent(path) // Delete save folder content, since we want to overwrite old saves
-    else
-      ForceDirectories(path);
-    {fSaveWorkerThread.QueueWork(procedure
+    // We can make directories in async too, since all save parts are made in async now
+    aSaveWorkerThread.QueueWork(procedure
+    var
+      path: string;
     begin
-      ForceDirectories(ExtractFilePath(aPathName));
-    end);}
+      path := ExtractFilePath(aPathName);
+      if DirectoryExists(path) then
+        KMDeleteFolderContent(path) // Delete save folder content, since we want to overwrite old saves
+      else
+        ForceDirectories(path);
+    end, 'Prepare save dir');
   end;
 
   //In MP each player has his own perspective, hence we dont save minimaps in the main save file to avoid cheating,
@@ -2122,12 +2119,9 @@ begin
   gPerfLogs.SectionEnter(psGameSaveWait);
   {$ENDIF}
   try
-    if (fBaseSaveWorkerThread <> nil) and (aSaveWorkerThread <> fBaseSaveWorkerThread) then
-    begin
+    if (aSaveWorkerThread <> fBaseSaveWorkerThread) then
       // We have to wait until basesave is made before first game save
       fBaseSaveWorkerThread.WaitForAllWorkToComplete;
-      FreeAndNil(fBaseSaveWorkerThread); //fBaseSaveWorkerThread has done its job, We can destroy it now to free resources and release thread
-    end;
 
     //Wait for previous save async tasks to complete before proceeding
     aSaveWorkerThread.WaitForAllWorkToComplete;
@@ -2751,7 +2745,7 @@ begin
     // Update our ware distributions from settings at the start of the game
     if (fParams.Tick = 1)
     and IsWareDistributionStoredBetweenGames then
-      fGameInputProcess.CmdWareDistribution(gicWareDistributions, gGameSettings.WareDistribution.PackToStr);
+      fGameInputProcess.CmdWareDistribution(gicWareDistributions, AnsiString(gGameSettings.WareDistribution.PackToStr));
 
     //Save game to memory (to be able to load it later)
     //Make savepoint only after everything is updated (UpdateState)

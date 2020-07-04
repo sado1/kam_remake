@@ -4,7 +4,8 @@ interface
 uses
   KM_Houses,
   KM_ResHouses, KM_ResWares,
-  KM_CommonClasses, KM_Defaults;
+  KM_CommonClasses, KM_Defaults,
+  KM_ResTypes;
 
 const
   TH_MAX_GOLDMAX_VALUE = 999; //Max value for TownHall MaxGold parameter

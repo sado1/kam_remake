@@ -7,7 +7,8 @@ uses
   dglOpenGL, SysUtils, KromOGLUtils, KromUtils, Math,
   KM_Defaults, KM_CommonTypes, KM_CommonClasses, KM_Pics, KM_Points, KM_Render, KM_Viewport,
   KM_RenderTerrain, KM_ResHouses, KM_ResSprites, KM_ResWares, KM_Units,
-  KM_Houses, KM_Terrain, KM_Projectiles, KM_RenderDebug;
+  KM_Houses, KM_Terrain, KM_Projectiles, KM_RenderDebug,
+  KM_ResTypes;
 
 type
   TKMPaintLayer = (plTerrain, plObjects, plCursors);
@@ -1792,7 +1793,7 @@ begin
   if (aHighlightAll or not isRendered) and
     (((gTerrain.Land[P.Y, P.X].TileOverlay <> toNone)
         and (gTerrain.Land[P.Y, P.X].TileLock = tlNone)) //Sometimes we can point road tile under the house, do not show Cyan quad then
-      or (gTerrain.Land[P.Y, P.X].CornOrWine <> 0)) then
+      or (gGame.MapEditor.Land[P.Y, P.X].CornOrWine <> 0)) then
     RenderWireTile(P, icCyan); // Cyan quad
 end;
 
@@ -1834,7 +1835,7 @@ begin
   if (aHighlightAll or not isRendered) and
     (((gTerrain.Land[P.Y, P.X].TileOverlay = toRoad)
         and (gTerrain.Land[P.Y, P.X].TileLock = tlNone)) //Sometimes we can point road tile under the house, do not show Cyan quad then
-      or (gTerrain.Land[P.Y, P.X].CornOrWine <> 0))
+      or (gGame.MapEditor.Land[P.Y, P.X].CornOrWine <> 0))
     and (gTerrain.Land[P.Y, P.X].TileOwner <> gMySpectator.HandID) then //Only if tile has other owner
     RenderWireTile(P, icCyan); // Cyan quad
 end;

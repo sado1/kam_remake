@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="10"/>
+    <Version Value="9"/>
     <PathDelim Value="\"/>
     <General>
       <Flags>
@@ -35,22 +35,24 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="13">
+    <Units Count="14">
       <Unit0>
         <Filename Value="KaM_DedicatedServer.dpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <TopLine Value="7"/>
-        <CursorPos X="14" Y="16"/>
-        <UsageCount Value="30"/>
+        <CursorPos X="44" Y="19"/>
+        <UsageCount Value="31"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
         <Filename Value="..\..\KaM_Remake.lpr"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
         <TopLine Value="59"/>
         <CursorPos X="15" Y="4"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
@@ -113,7 +115,7 @@
       </Unit10>
       <Unit11>
         <Filename Value="KM_ServerEventHandler.pas"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="3"/>
         <TopLine Value="3"/>
         <CursorPos X="15" Y="13"/>
         <UsageCount Value="10"/>
@@ -122,14 +124,21 @@
       </Unit11>
       <Unit12>
         <Filename Value="C:\lazarus\fpc\3.0.2\source\rtl\win\wininc\defines.inc"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="1340"/>
         <CursorPos X="6" Y="1350"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit12>
+      <Unit13>
+        <Filename Value="..\..\src\res\KM_ResTexts.pas"/>
+        <EditorIndex Value="1"/>
+        <CursorPos X="4" Y="15"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit13>
     </Units>
-    <JumpHistory Count="20" HistoryIndex="19">
+    <JumpHistory Count="22" HistoryIndex="21">
       <Position1>
         <Filename Value="KaM_DedicatedServer.dpr"/>
         <Caret Line="52" Column="23" TopLine="38"/>
@@ -210,6 +219,13 @@
         <Filename Value="KaM_DedicatedServer.dpr"/>
         <Caret Line="190" TopLine="170"/>
       </Position20>
+      <Position21>
+        <Filename Value="..\..\src\res\KM_ResTexts.pas"/>
+      </Position21>
+      <Position22>
+        <Filename Value="..\..\src\res\KM_ResTexts.pas"/>
+        <Caret Line="15" Column="4"/>
+      </Position22>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

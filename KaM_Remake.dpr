@@ -346,6 +346,7 @@ uses
   KM_SoftShadows in 'src\utils\KM_SoftShadows.pas',
   KM_Sort in 'src\utils\KM_Sort.pas',
   KM_Utils in 'src\utils\KM_Utils.pas',
+  KM_XmlHelper in 'src\utils\KM_XmlHelper.pas',
   
   KromOGLUtils in 'src\utils\KromOGLUtils.pas',
   KromUtils in 'src\utils\KromUtils.pas',

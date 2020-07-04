@@ -4,7 +4,8 @@ interface
 uses
   KM_Houses,
   KM_ResWares, KM_ResHouses,
-  KM_CommonClasses, KM_Defaults;
+  KM_CommonClasses, KM_Defaults,
+  KM_ResTypes;
 
 const
   INN_MAX_EATERS = 6;

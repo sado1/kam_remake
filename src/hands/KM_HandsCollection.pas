@@ -8,7 +8,8 @@ uses
   KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Points,
   KM_HandEntity,
   KM_HandTypes,
-  KM_GameTypes;
+  KM_GameTypes,
+  KM_ResTypes;
 
 
 //Hands are identified by their starting location

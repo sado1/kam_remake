@@ -154,7 +154,7 @@ type
     procedure SetGameFilter(aGameFilter: TKMPGameFilter);
   public
     constructor Create(aMaxRooms, aKickTimeout: Word; const aHTMLStatusFile, aWelcomeMessage: UnicodeString;
-                       aPacketsAccDelay: Integer = -1);
+                       aPacketsAccDelay: Integer);
     destructor Destroy; override;
     procedure StartListening(aPort: Word; const aServerName: AnsiString);
     procedure StopListening;
@@ -286,7 +286,7 @@ end;
 
 { TKMNetServer }
 constructor TKMNetServer.Create(aMaxRooms, aKickTimeout: Word; const aHTMLStatusFile, aWelcomeMessage: UnicodeString;
-                                aPacketsAccDelay: Integer = -1);
+                                aPacketsAccDelay: Integer);
 begin
   inherited Create;
   fEmptyGameInfo := TKMPGameInfo.Create;

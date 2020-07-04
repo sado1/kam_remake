@@ -93,7 +93,7 @@ end;
 procedure TRenderAux.RenderDotOnTile(pX, pY: Single; aSize: Single = 0.1);
 begin
   TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
-  pY := gTerrain.FlatToHeight(pX, pY);
+  pY := gTerrain.RenderFlatToHeight(pX, pY);
   glBegin(GL_QUADS);
     glkRect(pX - aSize/2, pY + aSize/2, pX + aSize/2, pY - aSize/2);
   glEnd;
@@ -105,8 +105,8 @@ begin
   // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
   TRender.BindTexture(0);
   glBegin(GL_LINES);
-    glVertex2f(x1, gTerrain.FlatToHeight(x1, y1));
-    glVertex2f(x2, gTerrain.FlatToHeight(x2, y2));
+    glVertex2f(x1, gTerrain.RenderFlatToHeight(x1, y1));
+    glVertex2f(x2, gTerrain.RenderFlatToHeight(x2, y2));
   glEnd;
 end;
 
@@ -137,10 +137,10 @@ begin
   TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
   glBegin(GL_QUADS);
     with gTerrain do
-    glkQuad(rect.Left,  gTerrain.FlatToHeight(rect.Left,  rect.Top),
-            rect.Right, gTerrain.FlatToHeight(rect.Right, rect.Top),
-            rect.Right, gTerrain.FlatToHeight(rect.Right, rect.Bottom),
-            rect.Left,  gTerrain.FlatToHeight(rect.Left,  rect.Bottom));
+    glkQuad(rect.Left,  gTerrain.RenderFlatToHeight(rect.Left,  rect.Top),
+            rect.Right, gTerrain.RenderFlatToHeight(rect.Right, rect.Top),
+            rect.Right, gTerrain.RenderFlatToHeight(rect.Right, rect.Bottom),
+            rect.Left,  gTerrain.RenderFlatToHeight(rect.Left,  rect.Bottom));
   glEnd;
 end;
 
@@ -192,7 +192,7 @@ begin
     begin
       C := Cos(I / SEC_COUNT * Pi) * Rad;
       S := Sin(I / SEC_COUNT * Pi) * Rad;
-      glVertex2f(X + C, gTerrain.FlatToHeight(X + C, Y + S));
+      glVertex2f(X + C, gTerrain.RenderFlatToHeight(X + C, Y + S));
     end;
   glEnd;
   glColor4ubv(@Line);
@@ -201,7 +201,7 @@ begin
     begin
       C := Cos(I / SEC_COUNT * Pi) * Rad;
       S := Sin(I / SEC_COUNT * Pi) * Rad;
-      glVertex2f(X + C, gTerrain.FlatToHeight(X + C, Y + S));
+      glVertex2f(X + C, gTerrain.RenderFlatToHeight(X + C, Y + S));
     end;
   glEnd;
 end;
@@ -214,15 +214,15 @@ begin
   TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
   glColor4ubv(@aLineColor);
   glBegin(GL_LINE_LOOP);
-    glVertex2f(X1, gTerrain.FlatToHeight(X1, Y1));
+    glVertex2f(X1, gTerrain.RenderFlatToHeight(X1, Y1));
     for I := Ceil(X1) to Trunc(X2) do
-      glVertex2f(I, gTerrain.FlatToHeight(I, Y1));
-    glVertex2f(X2, gTerrain.FlatToHeight(X2, Y1));
+      glVertex2f(I, gTerrain.RenderFlatToHeight(I, Y1));
+    glVertex2f(X2, gTerrain.RenderFlatToHeight(X2, Y1));
 
-    glVertex2f(X2, gTerrain.FlatToHeight(X2, Y2));
+    glVertex2f(X2, gTerrain.RenderFlatToHeight(X2, Y2));
     for I := Trunc(X2) downto Ceil(X1) do
-      glVertex2f(I, gTerrain.FlatToHeight(I, Y2));
-    glVertex2f(X1, gTerrain.FlatToHeight(X1, Y2));
+      glVertex2f(I, gTerrain.RenderFlatToHeight(I, Y2));
+    glVertex2f(X1, gTerrain.RenderFlatToHeight(X1, Y2));
   glEnd;
 end;
 
@@ -239,7 +239,7 @@ procedure TRenderAux.DotOnTerrain(x, y: Single; aCol: TColor4; aSize: Single = 0
 begin
   TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
   glColor4ubv(@aCol);
-  RenderDot(X, gTerrain.FlatToHeight(X, Y), aSize);
+  RenderDot(X, gTerrain.RenderFlatToHeight(X, Y), aSize);
 end;
 
 
@@ -253,8 +253,8 @@ begin
   glDisable(GL_LINE_STIPPLE);
   if aDots then
   begin
-    RenderDot(X1, gTerrain.FlatToHeight(X1, Y1));
-    RenderDot(X2, gTerrain.FlatToHeight(X2, Y2));
+    RenderDot(X1, gTerrain.RenderFlatToHeight(X1, Y1));
+    RenderDot(X2, gTerrain.RenderFlatToHeight(X2, Y2));
   end;
 end;
 
@@ -357,7 +357,7 @@ begin
   end;
 
   for I := 0 to High(aPoints) do
-    glVertex2f(aPoints[I].X, gTerrain.FlatToHeight(aPoints[I].X, aPoints[I].Y));
+    glVertex2f(aPoints[I].X, gTerrain.RenderFlatToHeight(aPoints[I].X, aPoints[I].Y));
 
   glEnd;
 
@@ -390,7 +390,7 @@ begin
   end;
 
   for I := 0 to High(aPoints) do
-    glVertex2f(aPoints[I].X, gTerrain.FlatToHeight(aPoints[I].X, aPoints[I].Y));
+    glVertex2f(aPoints[I].X, gTerrain.RenderFlatToHeight(aPoints[I].X, aPoints[I].Y));
 
   glEnd;
 
@@ -423,7 +423,7 @@ begin
   end;
 
   for I := 0 to aPoints.Count - 1 do
-    glVertex2f(aPoints[I].X + aInset, gTerrain.FlatToHeight(aPoints[I].X + aInset, aPoints[I].Y + aInset));
+    glVertex2f(aPoints[I].X + aInset, gTerrain.RenderFlatToHeight(aPoints[I].X + aInset, aPoints[I].Y + aInset));
 
   glEnd;
 
@@ -453,9 +453,9 @@ begin
   glColor4ubv(@aCol);
 
   glBegin(GL_TRIANGLES);
-    glVertex2f(x1, gTerrain.FlatToHeight(x1, y1));
-    glVertex2f(x2, gTerrain.FlatToHeight(x2, y2));
-    glVertex2f(x3, gTerrain.FlatToHeight(x3, y3));
+    glVertex2f(x1, gTerrain.RenderFlatToHeight(x1, y1));
+    glVertex2f(x2, gTerrain.RenderFlatToHeight(x2, y2));
+    glVertex2f(x3, gTerrain.RenderFlatToHeight(x3, y3));
   glEnd;
 end;
 
@@ -517,12 +517,12 @@ begin
       for K := 0 to 3 do
         with gTerrain.Land[I,J] do
         begin
-          if BaseLayer.Corners[K] then
+          if BaseLayer.Corner[K] then
             TextAtCorner(J, I, K,
                          IntToStr(BASE_TERRAIN[TILE_CORNERS_TERRAIN_KINDS[BaseLayer.Terrain, (K + 4 - BaseLayer.Rotation) mod 4]]),
                          TILE_TERRAIN_LAYERS_COLORS[0]);
           for L := 0 to LayersCnt - 1 do
-            if Layer[L].Corners[K] then
+            if Layer[L].Corner[K] then
               TextAtCorner(J, I, K,
                            IntToStr(BASE_TERRAIN[gRes.Sprites.GetGenTerrainInfo(Layer[L].Terrain).TerKind]),
                            TILE_TERRAIN_LAYERS_COLORS[L+1]);
@@ -767,7 +767,7 @@ begin
     begin
       vertexUsage := byte(gTerrain.Land[I,K].IsVertexUnit);
       glColor4f(1-vertexUsage/3, vertexUsage/3, 0.6, 0.8);
-      RenderDot(K, gTerrain.FlatToHeight(K,I), 0.3);
+      RenderDot(K, gTerrain.RenderFlatToHeight(K,I), 0.3);
     end;
     if gTerrain.Land[I,K].IsUnit <> nil then
     begin
@@ -783,7 +783,7 @@ var
   I: Integer;
 begin
   for I := 1 to Count do
-    RenderDot(pX+I/5, gTerrain.FlatToHeight(pX,pY));
+    RenderDot(pX+I/5, gTerrain.RenderFlatToHeight(pX,pY));
 end;
 
 
@@ -812,7 +812,7 @@ begin
 
   glBegin(GL_LINE_STRIP);
     for I := 0 to NodeList.Count - 1 do
-      glVertex2f(NodeList[I].X-0.5, gTerrain.FlatToHeight(NodeList[I].X-0.5, NodeList[I].Y-0.5));
+      glVertex2f(NodeList[I].X-0.5, gTerrain.RenderFlatToHeight(NodeList[I].X-0.5, NodeList[I].Y-0.5));
   glEnd;
 
   for I := 0 to NodeList.Count - 1 do
@@ -825,8 +825,8 @@ begin
   faceY := Mix(NodeList[I].Y - 0.5, NodeList[K].Y - 0.5, 0.4) + 0.2; //0.2 to render vector a bit lower so it won't gets overdrawned by another route
   RenderDotOnTile(NodeList[I].X + 0.5, NodeList[I].Y + 0.5 + 0.2);
   glBegin(GL_LINES);
-    glVertex2f(NodeList[I].X-0.5, gTerrain.FlatToHeight(NodeList[I].X+0.5,NodeList[I].Y+0.5) + 0.2);
-    glVertex2f(faceX, gTerrain.FlatToHeight(faceX+1, faceY+1));
+    glVertex2f(NodeList[I].X-0.5, gTerrain.RenderFlatToHeight(NodeList[I].X+0.5,NodeList[I].Y+0.5) + 0.2);
+    glVertex2f(faceX, gTerrain.RenderFlatToHeight(faceX+1, faceY+1));
   glEnd;
 end;
 
@@ -854,7 +854,7 @@ begin
     for K := aRect.Left to aRect.Right + 1 do
     begin
       //glColor4f(gTerrain.Land[I,K].Height/100,0,0,1.2-sqrt(sqr(I-MapYc)+sqr(K-MapXc))/10);
-      glColor4f(Byte(gTerrain.Land[I,K].Fence = fncHousePlan), Byte(gTerrain.Land[I,K].Fence = fncHousePlan), 0, 1);
+      glColor4f(Byte(gTerrain.Fences[I,K].Kind = fncHousePlan), Byte(gTerrain.Fences[I,K].Kind = fncHousePlan), 0, 1);
       glVertex2d(K - 1, I - 1 - gTerrain.Land[I, K].RenderHeight / CELL_HEIGHT_DIV);
     end;
     glEnd;

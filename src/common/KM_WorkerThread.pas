@@ -19,6 +19,7 @@ type
 
     procedure NameThread; overload;
     procedure NameThread(aThreadName: string); overload;
+    function GetBaseThreadName: string;
   public
     //Special mode for exception handling. Runs work synchronously inside QueueWork
     fSynchronousExceptionMode: Boolean;
@@ -70,16 +71,27 @@ begin
   fTaskQueue.Free; // Free task queue after Worker thread is destroyed so we don't wait for it
 end;
 
+function TKMWorkerThread.GetBaseThreadName: string;
+begin
+  {$IFDEF DEBUG}
+  Result := fWorkerThreadName + ' Jobs=' + IntToStr(fTaskQueue.Count); // Has to be synced!
+  {$ELSE}
+  Result := '';
+  {$ENDIF}
+end;
+
 procedure TKMWorkerThread.NameThread;
 begin
+  {$IFDEF DEBUG}
   NameThread(fWorkerThreadName);
+  {$ENDIF}
 end;
 
 procedure TKMWorkerThread.NameThread(aThreadName: string);
 begin
   {$IFDEF DEBUG}
   if fWorkerThreadName <> '' then
-    TThread.NameThreadForDebugging(fWorkerThreadName);
+    TThread.NameThreadForDebugging(aThreadName);
   {$ENDIF}
 end;
 
@@ -87,14 +99,17 @@ procedure TKMWorkerThread.Execute;
 var
   job: TKMWorkerThreadTask;
   loopRunning: Boolean;
+  threadName: string;
 begin
   job := nil;
   loopRunning := True;
+  threadName := '';
 
   while loopRunning do
   begin
     TMonitor.Enter(fTaskQueue);
     try
+      threadName := GetBaseThreadName; // get name under TMonitor, cause we access fTaskQueue
       if fTaskQueue.Count > 0 then
       begin
         job := fTaskQueue.Dequeue;
@@ -123,7 +138,7 @@ begin
 
     if job <> nil then
     begin
-      NameThread(job.WorkName);
+      NameThread(threadName);
       job.Proc();
 
       if Assigned(job.Callback) then

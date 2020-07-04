@@ -4,18 +4,11 @@ interface
 uses
   Classes, Controls,
   KM_RenderPool, KM_TerrainPainter, KM_TerrainDeposits, KM_TerrainSelection,
-  KM_CommonTypes, KM_CommonClasses, KM_Defaults, KM_Points, KM_MapEditorHistory;
+  KM_CommonTypes, KM_CommonClasses, KM_Defaults, KM_Points, KM_MapEditorHistory,
+  KM_MapEdTypes;
 
 
 type
-  TKMMarkerType = (mtNone, mtDefence, mtRevealFOW);
-
-  TKMMapEdMarker = record
-    MarkerType: TKMMarkerType;
-    Owner: TKMHandID;
-    Index: SmallInt;
-  end;
-
   //Collection of map editing classes and map editor specific data
   TKMMapEditor = class
   private
@@ -51,6 +44,7 @@ type
 
     function MapIsPlayable: Boolean;
   public
+    Land: array [1..MAX_MAP_SIZE, 1..MAX_MAP_SIZE] of TKMMapEdTerrainTile;
     MissionDefSavePath: UnicodeString;
 
     ActiveMarker: TKMMapEdMarker;
@@ -106,7 +100,8 @@ uses
   KM_Units, KM_UnitGroup, KM_Houses, KM_HouseCollection,
   KM_GameParams, KM_GameCursor, KM_ResMapElements, KM_ResHouses, KM_Resource, KM_ResUnits,
   KM_RenderAux, KM_Hand, KM_HandsCollection, KM_CommonUtils, KM_RenderDebug,
-  KM_UnitGroupTypes;
+  KM_UnitGroupTypes,
+  KM_ResTypes;
 
 //defines default defence position radius for static AI 
 const
@@ -124,6 +119,8 @@ begin
 
   fVisibleLayers := [melDeposits];
   fIsNewMap := aNewMap;
+
+  FillChar(Land[1,1], SizeOf(Land[1,1])*MAX_MAP_SIZE*MAX_MAP_SIZE, #0);
 
   for I := 0 to MAX_HANDS - 1 do
   begin
@@ -312,7 +309,7 @@ begin
         if (gHands[I].AI.General.DefencePositions[K].Position.Loc.X = X)
         and (gHands[I].AI.General.DefencePositions[K].Position.Loc.Y = Y) then
         begin
-          Result.MarkerType := mtDefence;
+          Result.MarkerType := mmtDefence;
           Result.Owner := I;
           Result.Index := K;
           Exit;
@@ -325,7 +322,7 @@ begin
       for K := 0 to fRevealers[I].Count - 1 do
         if (fRevealers[I][K].X = X) and (fRevealers[I][K].Y = Y) then
         begin
-          Result.MarkerType := mtRevealFOW;
+          Result.MarkerType := mmtRevealFOW;
           Result.Owner := I;
           Result.Index := K;
           Exit;
@@ -333,7 +330,7 @@ begin
   end;
 
   //Else nothing is found
-  Result.MarkerType := mtNone;
+  Result.MarkerType := mmtNone;
   Result.Owner := PLAYER_NONE;
   Result.Index := -1;
 end;
@@ -539,7 +536,7 @@ begin
   //Fisrt try to change owner of object on tile
   if not ChangeObjectOwner(gMySpectator.HitTestCursorWGroup, gMySpectator.HandID) or aChangeOwnerForAll then
     //then try to change owner tile (road/field/wine)
-    if ((gTerrain.Land[P.Y, P.X].TileOverlay = toRoad) or (gTerrain.Land[P.Y, P.X].CornOrWine <> 0))
+    if ((gTerrain.Land[P.Y, P.X].TileOverlay = toRoad) or (Land[P.Y, P.X].CornOrWine <> 0))
       and (gTerrain.Land[P.Y, P.X].TileOwner <> gMySpectator.HandID) then
     begin
       gTerrain.Land[P.Y, P.X].TileOwner := gMySpectator.HandID;
@@ -715,7 +712,7 @@ procedure TKMMapEditor.Reset;
 begin
   if Self = nil then Exit;
   
-  ActiveMarker.MarkerType := mtNone;
+  ActiveMarker.MarkerType := mmtNone;
 end;
 
 
@@ -844,7 +841,7 @@ begin
   if not (melDefences in fVisibleLayers) then Exit;
 
   case aLayer of
-    plTerrain:  if ActiveMarker.MarkerType = mtDefence then
+    plTerrain:  if ActiveMarker.MarkerType = mmtDefence then
                   //Render defence position tiles covered
                   if InRange(ActiveMarker.Index, 0, gHands[ActiveMarker.Owner].AI.General.DefencePositions.Count - 1) then
                   begin

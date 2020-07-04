@@ -80,8 +80,10 @@ type
     function RGBDecToBGRHex(aR, aG, aB: Byte): AnsiString;
     function RGBToBGRHex(const aHexColor: string): AnsiString;
 
-    function RoundToDown(aValue: Single; aBase: Integer): Integer;
-    function RoundToUp(aValue: Single; aBase: Integer): Integer;
+    function CeilTo(aValue: Single; aBase: Integer): Integer;
+    function FloorTo(aValue: Single; aBase: Integer): Integer;
+    function RoundTo(aValue: Single; aBase: Integer): Integer;
+    function TruncTo(aValue: Single; aBase: Integer): Integer;
 
     function Sqr(A: Extended): Extended;
 
@@ -888,11 +890,12 @@ end;
 
 
 //* Version: 7000+
-//* Rounds specified single number aValue to nearest multiple of specified base aBase. Rounding down. F.e. RoundToDown(11.7, 5) = 10
-function TKMScriptUtils.RoundToDown(aValue: Single; aBase: Integer): Integer;
+//* Rounds specified single number aValue to nearest multiple of specified base aBase. Rounding up.
+//* F.e. CeilTo(11.7, 5) = 15 while CeilTo(-11.7, 5) = -10
+function TKMScriptUtils.CeilTo(aValue: Single; aBase: Integer): Integer;
 begin
   try
-    Result := Trunc(aValue / aBase) * aBase
+    Result := Ceil(aValue / aBase) * aBase
   except
     gScriptEvents.ExceptionOutsideScript := True;
     raise;
@@ -901,11 +904,42 @@ end;
 
 
 //* Version: 7000+
-//* Rounds specified single number aValue to nearest multiple of specified base aBase. Rounding up. F.e. RoundToUp(11.7, 5) = 15
-function TKMScriptUtils.RoundToUp(aValue: Single; aBase: Integer): Integer;
+//* Rounds specified single number aValue to nearest multiple of specified base aBase. Rounding down.
+//* F.e. FloorTo(11.7, 5) = 10 while FloorTo(-11.7, 5) = -15
+function TKMScriptUtils.FloorTo(aValue: Single; aBase: Integer): Integer;
 begin
   try
-    Result := Ceil(aValue / aBase) * aBase
+    Result := Floor(aValue / aBase) * aBase
+  except
+    gScriptEvents.ExceptionOutsideScript := True;
+    raise;
+  end;
+end;
+
+
+//* Version: 12400+
+//* Rounds specified single number aValue to nearest multiple of specified base aBase. Rounding to the nearest integer.
+//* If the number is exactly midway between two integers, then it rounds towards the even one (multiplied on aBase).
+//* F.e. RoundTo(11.7, 5) = 10 while RoundTo(-11.7, 5) = -10
+//* RoundTo(12.5, 5) = 10 while RoundTo(17.5, 5) = 20
+function TKMScriptUtils.RoundTo(aValue: Single; aBase: Integer): Integer;
+begin
+  try
+    Result := Round(aValue / aBase) * aBase
+  except
+    gScriptEvents.ExceptionOutsideScript := True;
+    raise;
+  end;
+end;
+
+
+//* Version: 12400+
+//* Rounds specified single number aValue to nearest multiple of specified base aBase. Rounding to zero.
+//* F.e. TruncTo(11.7, 5) = 10 while TruncTo(-11.7, 5) = -10
+function TKMScriptUtils.TruncTo(aValue: Single; aBase: Integer): Integer;
+begin
+  try
+    Result := Trunc(aValue / aBase) * aBase
   except
     gScriptEvents.ExceptionOutsideScript := True;
     raise;

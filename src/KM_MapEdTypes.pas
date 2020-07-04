@@ -5,12 +5,25 @@ uses
   KM_Defaults, KM_ResTileset, KM_Terrain;
 
 type
+  TKMMapEdMarkerType = (mmtNone, mmtDefence, mmtRevealFOW);
+
+  TKMMapEdMarker = record
+    MarkerType: TKMMapEdMarkerType;
+    Owner: TKMHandID;
+    Index: SmallInt;
+  end;
+
+  TKMMapEdTerrainTile = record
+    CornOrWine: Byte; //Indicate Corn or Wine field placed on the tile (without altering terrain)
+    CornOrWineTerrain: Byte; //We use fake terrain for maped to be able delete or alter it if needed
+  end;
+
   // same as TKMTerrainLayer, but packed
   TKMTerrainLayerPacked = packed record
     Terrain: Word;
     RotationAndCorners: Byte;
-    procedure PackRotNCorners(aRotation: Byte; aCorners: TKMTileCorners);
-    procedure UnpackRotAndCorners(out aRotation: Byte; out aCorners: TKMTileCorners);
+    procedure PackRotNCorners(aRotation: Byte; aCorners: Byte);
+    procedure UnpackRotAndCorners(out aRotation: Byte; out aCorners: Byte);
   end;
 
   //Tile data that we store in undo checkpoints
@@ -40,28 +53,20 @@ type
   end;
   
 implementation
-uses
-  KM_CommonUtils;
+
 
 
 { TKMTerrainLayerPacked }
-procedure TKMTerrainLayerPacked.PackRotNCorners(aRotation: Byte; aCorners: TKMTileCorners);
-var
-  I: Integer;
+procedure TKMTerrainLayerPacked.PackRotNCorners(aRotation: Byte; aCorners: Byte);
 begin
-  RotationAndCorners := aRotation shl 4;
-  for I := 0 to 3 do
-    RotationAndCorners := RotationAndCorners or (Ord(aCorners[I]) shl I);
+  RotationAndCorners := (aRotation shl 4) or aCorners;
 end;
 
 
-procedure TKMTerrainLayerPacked.UnpackRotAndCorners(out aRotation: Byte; out aCorners: TKMTileCorners);
-var
-  I: Integer;
+procedure TKMTerrainLayerPacked.UnpackRotAndCorners(out aRotation: Byte; out aCorners: Byte);
 begin
   aRotation := RotationAndCorners shr 4;
-  for I := 0 to 3 do
-    aCorners[I] := ToBoolean((RotationAndCorners shr I) and $1);
+  aCorners := RotationAndCorners and $F;
 end;
 
 

@@ -25,7 +25,7 @@ type
   public
     constructor Create(aMaxRooms, aKickTimeout, aPingInterval, aAnnounceInterval, aServerUDPScanPort: Word;
                        const aMasterServerAddress: String; const aHTMLStatusFile: String;
-                       const aWelcomeMessage: UnicodeString; aDedicated: Boolean);
+                       const aWelcomeMessage: UnicodeString; const aPacketsAccDelay: Integer; aDedicated: Boolean);
     destructor Destroy; override;
 
     procedure Start(const aServerName: AnsiString; const aPort: Word; aPublishServer, aAnnounceUDP: Boolean);
@@ -56,10 +56,10 @@ const
 //Announce interval of -1 means the server will not be published (LAN)
 constructor TKMDedicatedServer.Create(aMaxRooms, aKickTimeout, aPingInterval, aAnnounceInterval, aServerUDPScanPort: Word;
                                       const aMasterServerAddress: String; const aHTMLStatusFile: String;
-                                      const aWelcomeMessage: UnicodeString; aDedicated: Boolean);
+                                      const aWelcomeMessage: UnicodeString; const aPacketsAccDelay: Integer; aDedicated: Boolean);
 begin
   inherited Create;
-  fNetServer := TKMNetServer.Create(aMaxRooms, aKickTimeout, aHTMLStatusFile, aWelcomeMessage);
+  fNetServer := TKMNetServer.Create(aMaxRooms, aKickTimeout, aHTMLStatusFile, aWelcomeMessage, aPacketsAccDelay);
   fMasterServer := TKMMasterServer.Create(aMasterServerAddress, aDedicated);
   fMasterServer.OnError := MasterServerError;
   fUDPAnnounce := TKMNetUDPAnnounce.Create(aServerUDPScanPort);

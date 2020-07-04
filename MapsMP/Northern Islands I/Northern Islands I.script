@@ -686,13 +686,13 @@ begin
     end;
 
   if AttacksCounter <= 2 then
-    Actions.GiveGroup(8, 14, 32, 65, 2, Utils.RoundToUp(100 * Balancer, 20), 10);
+    Actions.GiveGroup(8, 14, 32, 65, 2, Utils.CeilTo(100 * Balancer, 20), 10);
 
   if Utils.InRangeI(AttacksCounter, 3, 4) then
-    Actions.GiveGroup(8, 27, 32, 65, 2, Utils.RoundToUp(85 * Balancer, 20), 10);
+    Actions.GiveGroup(8, 27, 32, 65, 2, Utils.CeilTo(85 * Balancer, 20), 10);
 
   if Utils.InRangeI(AttacksCounter, 5, 6) then
-    Actions.GiveGroup(8, 21, 32, 65, 2, Utils.RoundToUp(60 * Balancer, 20), 8);
+    Actions.GiveGroup(8, 21, 32, 65, 2, Utils.CeilTo(60 * Balancer, 20), 8);
 
   if AttacksCounter > 6 then
     if not States.PlayerDefeated(6) then
@@ -765,18 +765,18 @@ begin
 
   if States.GameTime = 300 then
   begin
-    axe1 := Actions.GiveGroup(2, 15, 17, 91, 4, Utils.RoundToUp(8 * Balancer, 4), 6);
-    axe2 := Actions.GiveGroup(2, 15, 177, 87, 4, Utils.RoundToUp(8 * Balancer, 4), 6);
-    sw1 := Actions.GiveGroup(2, 16, 15, 89, 4, Utils.RoundToUp(10 * Balancer, 5), 6);
-    sw2 := Actions.GiveGroup(2, 16, 175, 85, 4, Utils.RoundToUp(10 * Balancer, 5), 6);
+    axe1 := Actions.GiveGroup(2, 15, 17, 91, 4, Utils.CeilTo(8 * Balancer, 4), 6);
+    axe2 := Actions.GiveGroup(2, 15, 177, 87, 4, Utils.CeilTo(8 * Balancer, 4), 6);
+    sw1 := Actions.GiveGroup(2, 16, 15, 89, 4, Utils.CeilTo(10 * Balancer, 5), 6);
+    sw2 := Actions.GiveGroup(2, 16, 175, 85, 4, Utils.CeilTo(10 * Balancer, 5), 6);
     Actions.GroupOrderLink(axe1, sw1);
     Actions.GroupOrderLink(axe2, sw2);
   end;
  
   if States.GameTime = 900 then
   begin
-    sw3 := Actions.GiveGroup(2, 16, 138, 88, 5, Utils.RoundToUp(20 * Balancer, 5), 5);
-    sw4 := Actions.GiveGroup(2, 16, 60, 93, 3, Utils.RoundToUp(20 * Balancer, 5), 5);
+    sw3 := Actions.GiveGroup(2, 16, 138, 88, 5, Utils.CeilTo(20 * Balancer, 5), 5);
+    sw4 := Actions.GiveGroup(2, 16, 60, 93, 3, Utils.CeilTo(20 * Balancer, 5), 5);
   end;
 
 //Update coal and ores deposits

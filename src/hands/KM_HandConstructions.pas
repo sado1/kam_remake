@@ -4,7 +4,8 @@ interface
 uses
   KM_Units, KM_Houses,
   KM_ResHouses,
-  KM_Defaults, KM_CommonClasses, KM_Points;
+  KM_Defaults, KM_CommonClasses, KM_Points,
+  KM_ResTypes;
 
 
 type

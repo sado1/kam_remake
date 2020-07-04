@@ -11,7 +11,8 @@ uses
   KM_Defaults, KM_Points, KM_CommonClasses, KM_CommonTypes, KM_CommonUtils,
   KM_Houses, KM_ResHouses, KM_ResWares, KM_Sort,
   KM_PathFindingRoad, KM_PathFindingAStarNew, KM_Eye, KM_AIParameters,
-  KM_AIInfluences, KM_NavMeshDefences;
+  KM_AIInfluences, KM_NavMeshDefences,
+  KM_ResTypes;
 
 const
   FARM_RADIUS = 11;

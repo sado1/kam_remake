@@ -199,6 +199,7 @@ begin
                                                       fSettings.MasterServerAddress,
                                                       fSettings.HTMLStatusFile,
                                                       fSettings.ServerWelcomeMessage,
+                                                      fSettings.ServerPacketsAccumulatingDelay,
                                                       True);
         GameFilter := TKMPGameFilter.Create(fSettings.ServerDynamicFOW,
                                             fSettings.ServerMapsRosterEnabled,

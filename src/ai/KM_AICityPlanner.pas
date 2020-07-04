@@ -4,7 +4,8 @@ interface
 uses
   KM_TerrainFinder,
   KM_ResHouses, KM_ResWares,
-  KM_CommonClasses, KM_Defaults, KM_Points;
+  KM_CommonClasses, KM_Defaults, KM_Points,
+  KM_ResTypes;
 
 
 type

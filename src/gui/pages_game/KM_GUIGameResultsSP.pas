@@ -74,7 +74,8 @@ implementation
 uses
   KM_ResTexts, KM_Game, KM_GameApp, KM_GameParams, KM_HandsCollection,
   KM_CommonUtils, KM_Resource, KM_Hand, KM_RenderUI, KM_ResFonts,
-  KM_ResWares, KM_HandStats;
+  KM_ResWares, KM_HandStats,
+  KM_ResTypes;
 
 
 { TKMGUIMenuResultsSP }

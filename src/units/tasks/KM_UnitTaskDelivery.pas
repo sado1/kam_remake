@@ -4,7 +4,8 @@ interface
 uses
   Classes, SysUtils,
   KM_CommonClasses, KM_Defaults, KM_Points,
-  KM_Houses, KM_Units, KM_ResWares;
+  KM_Houses, KM_Units, KM_ResWares,
+  KM_ResTypes;
 
 
 type

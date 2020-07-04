@@ -229,7 +229,8 @@ implementation
 uses
   KM_InterfaceGame, KM_GameParams, KM_RenderUI, KM_ResFonts, KM_Resource, KM_ResTexts, KM_ResUnits,
   KM_UnitGroup, KM_HouseTownhall,
-  KM_CommonUtils;
+  KM_CommonUtils,
+  KM_ResTypes;
 
 const
   GUI_SPEC_ITEM_WIDTH = 28;
