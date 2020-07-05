@@ -8,7 +8,7 @@ unit KM_RandomMapGenerator;
 interface
 uses
   KM_CommonTypes, KM_Terrain, Math,  // KM_Utils = random number
-  KM_Points, KM_RMGUtils, KM_Defaults, KM_ResWares;
+  KM_Points, KM_RMGUtils, KM_Defaults;
 
 
 type

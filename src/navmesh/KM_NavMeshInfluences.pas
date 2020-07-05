@@ -64,7 +64,7 @@ type
 
 implementation
 uses
-  KM_AIFields, KM_AIInfluences, KM_NavMesh, KM_Hand, KM_HandsCollection, KM_ResHouses,
+  KM_AIFields, KM_AIInfluences, KM_NavMesh, KM_Hand, KM_HandsCollection,
   KM_ResTypes;
 
 

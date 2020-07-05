@@ -30,7 +30,7 @@ type
 
 implementation
 uses
-  KM_ResHouses, KM_HandsCollection, KM_Hand,
+  KM_HandsCollection, KM_Hand,
   KM_ResTypes;
 
 

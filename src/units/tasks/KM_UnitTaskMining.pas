@@ -5,7 +5,7 @@ uses
   Math, SysUtils,
   KM_CommonClasses, KM_Defaults, KM_Points,
   KM_Units, KM_UnitWorkplan, KM_Terrain,
-  KM_ResWares,
+
   KM_ResTypes;
 
 
@@ -36,7 +36,7 @@ type
 implementation
 uses
   KM_Houses, KM_HouseWoodcutters, KM_HandsCollection,
-  KM_Resource, KM_ResMapElements, KM_ResTexts, KM_ResHouses,
+  KM_Resource, KM_ResMapElements, KM_ResTexts,
   KM_Hand, KM_ResUnits, KM_ScriptingEvents;
 
 

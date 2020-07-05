@@ -11,7 +11,7 @@ uses
   KM_Points, KM_UnitGroup, KM_Units, KM_UnitWarrior, KM_Terrain,
   KM_NavMeshDefences, KM_NavMeshInfluences, KM_ArmyManagement, KM_AIArmyEvaluation,
   KM_ArmyAttackNew, KM_NavMeshArmyVectorField,
-  KM_Houses, KM_ResHouses, KM_Sort;
+  KM_Houses, KM_Sort;
 
 type
   TKMCompFunc = function (const aElem1, aElem2): Integer;

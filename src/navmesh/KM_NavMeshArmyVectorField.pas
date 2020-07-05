@@ -8,7 +8,7 @@ unit KM_NavMeshArmyVectorField;
 interface
 uses
   Math, KM_Defaults, KM_CommonTypes,
-  KM_Points, KM_UnitGroup, KM_Houses, KM_ResHouses,
+  KM_Points, KM_UnitGroup, KM_Houses,
   KM_NavMeshFloodFill, KM_ArmyAttackNew;
 
 type

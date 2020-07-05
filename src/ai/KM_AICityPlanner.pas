@@ -3,7 +3,7 @@ unit KM_AICityPlanner;
 interface
 uses
   KM_TerrainFinder,
-  KM_ResHouses, KM_ResWares,
+
   KM_CommonClasses, KM_Defaults, KM_Points,
   KM_ResTypes;
 

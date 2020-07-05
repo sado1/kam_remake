@@ -2,7 +2,7 @@ unit KM_HouseWoodcutters;
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_Houses, KM_ResHouses,
+  KM_Houses,
   KM_CommonClasses, KM_Points, KM_Defaults,
   KM_ResTypes;
   

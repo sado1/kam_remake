@@ -3,7 +3,7 @@ unit KM_HouseInn;
 interface
 uses
   KM_Houses,
-  KM_ResWares, KM_ResHouses,
+
   KM_CommonClasses, KM_Defaults,
   KM_ResTypes;
 

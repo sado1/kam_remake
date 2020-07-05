@@ -4,11 +4,11 @@ interface
 uses
   Forms, Unit_Runner, Windows, SysUtils, Classes, KromUtils, Math,
   Generics.Collections, Generics.Defaults, System.Hash,
-  KM_CommonClasses, KM_Defaults, KM_Points, KM_CommonUtils, KM_HandLogistics,
-  KM_GameApp, KM_ResLocales, KM_Log, KM_HandsCollection, KM_HouseCollection, KM_ResTexts, KM_Resource,
-  KM_Terrain, KM_Units, KM_UnitWarrior, KM_Campaigns, KM_AIFields, KM_Houses,
-  GeneticAlgorithm, GeneticAlgorithmParameters, KM_AIParameters, KM_GameParams,
-  ComInterface, KM_RenderControl;
+  KM_CommonClasses, KM_Defaults, KM_Points, KM_CommonUtils,
+  KM_GameApp, KM_Log, KM_HandsCollection, KM_HouseCollection, KM_Resource,
+  KM_Terrain, KM_Units, KM_Campaigns, KM_Houses,
+  GeneticAlgorithm, GeneticAlgorithmParameters, KM_GameParams,
+  ComInterface;
 
 
 type
@@ -311,10 +311,10 @@ type
 implementation
 uses
   TypInfo, StrUtils, KM_CampaignTypes,
-  KM_HandSpectator, KM_ResWares, KM_ResHouses, KM_Hand, KM_HandTypes, KM_UnitsCollection, KM_UnitGroup,
-  KM_GameSavePoints,
+  KM_HandSpectator, KM_ResHouses, KM_Hand, KM_HandTypes, KM_UnitsCollection, KM_UnitGroup,
+
   KM_Settings,
-  KM_CommonTypes, KM_MapTypes, KM_RandomChecks, KM_FileIO, KM_Game, KM_GameInputProcess, KM_GameTypes, KM_InterfaceGame,
+  KM_CommonTypes, KM_MapTypes, KM_FileIO, KM_Game, KM_GameInputProcess, KM_GameTypes, KM_InterfaceGame,
   KM_UnitGroupTypes,
   KM_ResTypes;
 

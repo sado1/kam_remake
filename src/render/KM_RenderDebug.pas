@@ -44,7 +44,7 @@ implementation
 uses
   Math, SysUtils,
   KM_Game, KM_RenderAux,
-  KM_Resource, KM_Terrain, KM_Houses, KM_HouseWoodcutters, KM_ResHouses, KM_ResWares, KM_ResUnits,
+  KM_Resource, KM_Terrain, KM_Houses, KM_HouseWoodcutters, KM_ResUnits,
   KM_HandsCollection, KM_Hand, KM_CommonUtils,
   KM_ResTypes;
 

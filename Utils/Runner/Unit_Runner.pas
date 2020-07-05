@@ -4,7 +4,7 @@ interface
 uses
   Classes, Math, SysUtils,
   KM_Defaults, KM_CommonClasses, KM_CommonTypes, KromUtils, KM_GameTypes,
-  KM_GameApp, KM_ResLocales, KM_Log, KM_ResTexts, KM_CommonUtils, KM_RenderControl, ComInterface;
+  KM_GameApp, KM_Log, KM_CommonUtils, KM_RenderControl, ComInterface;
 
 
 type
@@ -64,7 +64,7 @@ var
 
 implementation
 uses
-  KM_HouseInn, KM_HouseBarracks, KM_HandsCollection, KM_Settings;
+  KM_Settings;
 
 
 procedure RegisterRunner(aRunner: TKMRunnerClass);

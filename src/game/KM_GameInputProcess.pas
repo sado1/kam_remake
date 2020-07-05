@@ -5,7 +5,7 @@ uses
   Generics.Collections,
   KM_Units, KM_UnitGroup,
   KM_Houses, KM_HouseWoodcutters, KM_Hand,
-  KM_ResHouses, KM_ResWares, KM_ScriptingConsoleCommands,
+  KM_ScriptingConsoleCommands,
   KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Points, KM_WorkerThread,
   KM_HandTypes,
   KM_UnitGroupTypes,

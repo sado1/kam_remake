@@ -4,7 +4,7 @@ interface
 uses
   Classes,
   KM_Houses,
-  KM_ResWares, KM_ResHouses,
+  KM_ResWares,
   KM_CommonClasses, KM_Defaults,
   KM_ResTypes;
 

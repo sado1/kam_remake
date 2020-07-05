@@ -71,7 +71,7 @@ implementation
 uses
   Math,
   KM_Game, KM_GameInputProcess, KM_HandsCollection, KM_Hand, KM_HandSpectator, KM_InterfaceGame, KM_RenderUI,
-  KM_Resource, KM_ResFonts, KM_ResTexts, KM_ResKeys, KM_ResHouses, KM_ResSound, KM_ResCursors, KM_ResUnits, KM_Pics,
+  KM_Resource, KM_ResFonts, KM_ResTexts, KM_ResKeys, KM_ResSound, KM_ResCursors, KM_ResUnits, KM_Pics,
   KM_UnitWarrior, KM_Utils, KM_Defaults, KM_Sound, KM_CommonUtils,
   KM_UnitGroupTypes,
   KM_ResTypes;

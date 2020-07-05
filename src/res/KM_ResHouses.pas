@@ -4,7 +4,7 @@ interface
 uses
   Classes, Math, SysUtils,
   KM_CommonClasses, KM_CommonTypes, KM_Defaults,
-  KM_ResWares,
+
   KM_ResTypes;
 
 const

@@ -3,7 +3,7 @@ unit KM_HouseTownHall;
 interface
 uses
   KM_Houses,
-  KM_ResHouses, KM_ResWares,
+
   KM_CommonClasses, KM_Defaults,
   KM_ResTypes;
 

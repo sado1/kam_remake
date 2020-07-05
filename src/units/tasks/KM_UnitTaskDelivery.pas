@@ -4,7 +4,7 @@ interface
 uses
   Classes, SysUtils,
   KM_CommonClasses, KM_Defaults, KM_Points,
-  KM_Houses, KM_Units, KM_ResWares,
+  KM_Houses, KM_Units,
   KM_ResTypes;
 
 
@@ -58,7 +58,7 @@ type
 implementation
 uses
   Math, TypInfo,
-  KM_HandsCollection, KM_Hand, KM_ResHouses,
+  KM_HandsCollection, KM_Hand,
   KM_UnitWarrior, KM_HouseInn,
   KM_UnitTaskBuild, KM_Log, KM_RenderAux;
 
