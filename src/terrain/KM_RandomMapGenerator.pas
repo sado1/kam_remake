@@ -57,7 +57,7 @@ type
       ObjectDensity, ForestDensity, Trees: Byte;
     end;
     Seed: Integer;
-    BasicTiles, CA: Boolean;
+    Decomposition, BasicTiles, CA: Boolean;
   end;
 
 
@@ -262,9 +262,77 @@ begin
   fRNG := TKMRandomNumberGenerator.Create;
   fRes := TKMBalancedResources.Create;
 
-  // Default configuration
   with RMGSettings do
   begin
+    // Debug configuration
+    {$IFDEF DEBUG_RMG}
+    with Locs do
+    begin
+      Active := False;
+      Players := 4;
+      Layout := 0;
+      ProtectedRadius := 6;
+      with Resource do
+      begin
+        Active := True;
+        ConnectLocs := True;
+        MineFix := True;
+        Stone := 1000;
+        Gold := 300;
+        Iron := 250;
+      end;
+    end;
+    with Obstacle do
+    begin
+      Active := True;
+      Density := 20;
+      Size := 20;
+      Variance := 10;
+      Ratio[otEgold] := 4;
+      Ratio[otEIron] := 4;
+      Ratio[otSwamp] := 0;
+      Ratio[otWetland] := 0;
+      Ratio[otWater] := 4;
+    end;
+    with Walkable do
+    begin
+      Active := False;
+      Grass := True;
+      Ground := True;
+      Snow := True;
+      Sand := True;
+      FirstLayerStep := 5;
+      FirstLayerLimit := 6;
+      SecondLayerStep := 5;
+      SecondLayerLimit := 6;
+    end;
+    with OnePath do
+    begin
+      NoGoZones := True;
+      ReplaceTerrain := True;
+    end;
+    with Height do
+    begin
+      Active := False;
+      Step := 4;
+      Slope := 40;
+      Height := 10;
+      HideNonSmoothTransition := True;
+    end;
+    with Objects do
+    begin
+      Active := False;
+      ObjectDensity := 6;
+      ForestDensity := 70;
+      Trees := 20;
+      Animals := True;
+    end;
+    Seed := 0;
+    Decomposition := False;
+    BasicTiles := False;
+    CA := True;
+    // Default configuration
+    {$ELSE}
     with Locs do
     begin
       Active := True;
@@ -276,7 +344,7 @@ begin
         Active := True;
         ConnectLocs := True;
         MineFix := True;
-        Stone := 1000;
+        Stone := 1200;
         Gold := 350;
         Iron := 300;
       end;
@@ -284,9 +352,9 @@ begin
     with Obstacle do
     begin
       Active := True;
+      Size := 8;
       Density := 10;
-      Size := 10;
-      Variance := 10;
+      Variance := 5;
       Ratio[otEgold] := 8;
       Ratio[otEIron] := 7;
       Ratio[otSwamp] := 1;
@@ -315,20 +383,22 @@ begin
       Active := True;
       Step := 4;
       Slope := 40;
-      Height := 10;
+      Height := 70;
       HideNonSmoothTransition := True;
     end;
     with Objects do
     begin
       Active := True;
-      ObjectDensity := 6;
-      ForestDensity := 10;
-      Trees := 20;
       Animals := True;
+      ObjectDensity := 6;
+      ForestDensity := 5;
+      Trees := 17;
     end;
     Seed := 0;
+    Decomposition := False;
     BasicTiles := False;
     CA := True;
+    {$ENDIF}
   end;
 end;
 
@@ -423,9 +493,11 @@ begin
   fRNG.Seed := RMGSettings.Seed;
   TileTemplateArr := TileTemplate(A);
 
-  // Generate correct  tiles
+  // Generate correct tiles
   fRNG.Seed := RMGSettings.Seed;
-  if RMGSettings.BasicTiles then
+  if RMGSettings.Decomposition then
+    GenerateBasicTiles(TilesPartsArr,TileTemplateArr)
+  else if RMGSettings.BasicTiles then
     GenerateBasicTiles(TilesPartsArr,A)
   else
     GenerateTiles(TilesPartsArr, A, TileTemplateArr);
@@ -2190,10 +2262,10 @@ begin
     begin
       X := X1 shl 1;
       // Create mask
-      sum := (Byte(B[Y1,X1,1,1] = B[Y1,X1,1,0]) shl 0) OR
-             (Byte(B[Y1,X1,1,1] = B[Y1,X1,0,1]) shl 1) OR
-             (Byte(B[Y1,X1,1,1] = B[Y1,X1,1,2]) shl 2) OR
-             (Byte(B[Y1,X1,1,1] = B[Y1,X1,2,1]) shl 3);
+      sum := (Byte(B[Y1,X1,1,1] = B[Y1,X1,1,0]) shl 0) OR // 0001 Left
+             (Byte(B[Y1,X1,1,1] = B[Y1,X1,0,1]) shl 1) OR // 0010 Top
+             (Byte(B[Y1,X1,1,1] = B[Y1,X1,1,2]) shl 2) OR // 0100 Right
+             (Byte(B[Y1,X1,1,1] = B[Y1,X1,2,1]) shl 3);   // 1000 Down
 
       case sum of
       // 1 side is equal
@@ -2218,27 +2290,31 @@ begin
       // Note: conditions are for special transitions between iron and gold mountains
         // Left Top Right %0111
         7: begin
-          if (B[Y1,X1,1,1] <= Byte(btStone)) OR (B[Y1,X1,1,1] = Byte(btDark)) then
-            begin LT := B[Y1,X1,1,1]; RT := B[Y1,X1,1,1]; RD := B[Y1,X1,2,1]; LD := B[Y1,X1,2,1]; end else
-            begin LT := B[Y1,X1,1,1]; RT := B[Y1,X1,1,1]; RD := B[Y1,X1,2,2]; LD := B[Y1,X1,2,0]; end;
+          LT := B[Y1,X1,1,1]; RT := B[Y1,X1,1,1]; RD := B[Y1,X1,2,1]; LD := B[Y1,X1,2,1];
+          //if (B[Y1,X1,1,1] <= Byte(btStone)) OR (B[Y1,X1,1,1] = Byte(btDark)) then
+          //  begin LT := B[Y1,X1,1,1]; RT := B[Y1,X1,1,1]; RD := B[Y1,X1,2,1]; LD := B[Y1,X1,2,1]; end else
+          //  begin LT := B[Y1,X1,1,1]; RT := B[Y1,X1,1,1]; RD := B[Y1,X1,2,2]; LD := B[Y1,X1,2,0]; end;
         end;
         // Left Down Right %1101
        13: begin
-         if (B[Y1,X1,1,1] <= Byte(btStone)) OR (B[Y1,X1,1,1] = Byte(btDark)) then
-           begin LT := B[Y1,X1,0,1]; RT := B[Y1,X1,0,1]; RD := B[Y1,X1,1,1]; LD := B[Y1,X1,1,1]; end else
-           begin LT := B[Y1,X1,0,0]; RT := B[Y1,X1,0,2]; RD := B[Y1,X1,1,1]; LD := B[Y1,X1,1,1]; end;
+         LT := B[Y1,X1,0,1]; RT := B[Y1,X1,0,1]; RD := B[Y1,X1,1,1]; LD := B[Y1,X1,1,1];
+         //if (B[Y1,X1,1,1] <= Byte(btStone)) OR (B[Y1,X1,1,1] = Byte(btDark)) then
+         //  begin LT := B[Y1,X1,0,1]; RT := B[Y1,X1,0,1]; RD := B[Y1,X1,1,1]; LD := B[Y1,X1,1,1]; end else
+         //  begin LT := B[Y1,X1,0,0]; RT := B[Y1,X1,0,2]; RD := B[Y1,X1,1,1]; LD := B[Y1,X1,1,1]; end;
        end;
         // Top Right Down %1110
        14: begin
-         if (B[Y1,X1,1,1] <= Byte(btStone)) OR (B[Y1,X1,1,1] = Byte(btDark)) then
-           begin LT := B[Y1,X1,1,0]; RT := B[Y1,X1,1,1]; RD := B[Y1,X1,1,1]; LD := B[Y1,X1,1,0]; end else
-           begin LT := B[Y1,X1,0,0]; RT := B[Y1,X1,1,1]; RD := B[Y1,X1,1,1]; LD := B[Y1,X1,2,0]; end;
+         LT := B[Y1,X1,1,0]; RT := B[Y1,X1,1,1]; RD := B[Y1,X1,1,1]; LD := B[Y1,X1,1,0];
+         //if (B[Y1,X1,1,1] <= Byte(btStone)) OR (B[Y1,X1,1,1] = Byte(btDark)) then
+         //  begin LT := B[Y1,X1,1,0]; RT := B[Y1,X1,1,1]; RD := B[Y1,X1,1,1]; LD := B[Y1,X1,1,0]; end else
+         //  begin LT := B[Y1,X1,0,0]; RT := B[Y1,X1,1,1]; RD := B[Y1,X1,1,1]; LD := B[Y1,X1,2,0]; end;
        end;
         // Top Left Down %1011
        11: begin
-         if (B[Y1,X1,1,1] <= Byte(btStone)) OR (B[Y1,X1,1,1] = Byte(btDark)) then
-           begin LT := B[Y1,X1,1,1]; RT := B[Y1,X1,1,2]; RD := B[Y1,X1,1,2]; LD := B[Y1,X1,1,1]; end else
-           begin LT := B[Y1,X1,1,1]; RT := B[Y1,X1,0,2]; RD := B[Y1,X1,2,2]; LD := B[Y1,X1,1,1]; end;
+         LT := B[Y1,X1,1,1]; RT := B[Y1,X1,1,2]; RD := B[Y1,X1,1,2]; LD := B[Y1,X1,1,1];
+         //if (B[Y1,X1,1,1] <= Byte(btStone)) OR (B[Y1,X1,1,1] = Byte(btDark)) then
+         //  begin LT := B[Y1,X1,1,1]; RT := B[Y1,X1,1,2]; RD := B[Y1,X1,1,2]; LD := B[Y1,X1,1,1]; end else
+         //  begin LT := B[Y1,X1,1,1]; RT := B[Y1,X1,0,2]; RD := B[Y1,X1,2,2]; LD := B[Y1,X1,1,1]; end;
         end;
       // All sides are equal
         else // or 15: begin end;
