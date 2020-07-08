@@ -655,7 +655,7 @@ begin
     end else
 
     if Sender = Button_Menu_Settings then begin
-      fGuiMenuSettings.Menu_Settings_Fill;
+      fGuiMenuSettings.Refresh;
       fGuiMenuSettings.Show;
       Label_MenuTitle.Caption := gResTexts[TX_MENU_SETTINGS];
     end else
@@ -3399,7 +3399,8 @@ begin
 
   keyHandled := False;
   inherited KeyUp(Key, Shift, keyHandled);
-  if keyHandled then Exit;
+  if keyHandled then
+    fGuiMenuSettings.Refresh;
 
   if (fUIMode = umReplay) and (Key = gResKeys[kfPause].Key) then
   begin

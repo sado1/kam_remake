@@ -26,7 +26,7 @@ type
   public
     constructor Create(aParent: TKMPanel; aOnChangeSetting: TEvent);
 
-    procedure Menu_Settings_Fill;
+    procedure Refresh;
     procedure SetAutosaveEnabled(aEnabled: Boolean);
     procedure Show;
     procedure Hide;
@@ -116,18 +116,18 @@ begin
   if gGameParams.IsReplay then
     CheckBox_Autosave.Hide
   else begin
-    CheckBox_Autosave.Show;
+    CheckBox_Autosave.DoSetVisible;
     Inc(Top, 25);
   end;
 
   CheckBox_AllyEnemy_ColorMode.Top := Top;
-  CheckBox_AllyEnemy_ColorMode.Show;
+  CheckBox_AllyEnemy_ColorMode.DoSetVisible;
   Inc(Top, 40);
 
   if gGameParams.Mode = gmReplayMulti then
   begin
     CheckBox_ReplayAutopauseAtPTEnd.Top := Top;
-    CheckBox_ReplayAutopauseAtPTEnd.Show;
+    CheckBox_ReplayAutopauseAtPTEnd.DoSetVisible;
     Inc(Top, 40);
   end else
     CheckBox_ReplayAutopauseAtPTEnd.Hide;
@@ -135,7 +135,7 @@ begin
   if gGameParams.Mode in [gmReplaySingle, gmReplayMulti, gmMultiSpectate] then
   begin
     CheckBox_ReplaySpecShowBeacons.Top := Top;
-    CheckBox_ReplaySpecShowBeacons.Show;
+    CheckBox_ReplaySpecShowBeacons.DoSetVisible;
     Inc(Top, 25);
   end else
     CheckBox_ReplaySpecShowBeacons.Hide;
@@ -155,7 +155,7 @@ begin
   Panel_Settings.Height := CheckBox_ShuffleOn.Top + CheckBox_ShuffleOn.Height + 2;
 end;
 
-procedure TKMGameMenuSettings.Menu_Settings_Fill;
+procedure TKMGameMenuSettings.Refresh;
 begin
   TrackBar_Brightness.Position     := gGameSettings.Brightness;
   CheckBox_Autosave.Checked        := gGameSettings.Autosave;
