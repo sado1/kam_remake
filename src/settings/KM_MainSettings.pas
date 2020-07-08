@@ -118,7 +118,7 @@ begin
     fWindowParams.Top    := nWindow.Attributes['Top'].AsInteger(-1);
     fWindowParams.Width  := nWindow.Attributes['Width'].AsInteger(Max(MENU_DESIGN_X, fScreenWidth));
     fWindowParams.Height := nWindow.Attributes['Height'].AsInteger(Max(MENU_DESIGN_Y, fScreenHeight));
-    fWindowParams.State  := TWindowState(EnsureRange(nWindow.Attributes['WindowState'].AsInteger(0), 0, 2));
+    fWindowParams.State  := TWindowState(EnsureRange(nWindow.Attributes['State'].AsInteger(0), 0, 2));
   end else
     fWindowParams.NeedResetToDefaults := True;
 

@@ -34,6 +34,7 @@ type
     procedure RegisterSettingPart(aSettingPart: TKMGameAppSettingsPart);
     procedure UnRegisterSettingPart(aSettingPart: TKMGameAppSettingsPart);
   protected
+    procedure LoadFromFile(const aPath: string); override;
     procedure SaveToFile(const aPath: string); override;
     function GetDefaultSettingsName: string; override;
     function GetSettingsName: string; override;
@@ -142,6 +143,17 @@ end;
 procedure TKMGameAppSettings.UnRegisterSettingPart(aSettingPart: TKMGameAppSettingsPart);
 begin
   fSettingParts.Remove(aSettingPart);
+end;
+
+
+procedure TKMGameAppSettings.LoadFromFile(const aPath: string);
+var
+  I: Integer;
+begin
+  inherited;
+
+  for I := 0 to fSettingParts.Count - 1 do
+    fSettingParts[I].LoadFromXML;
 end;
 
 
