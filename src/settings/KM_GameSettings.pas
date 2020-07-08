@@ -420,11 +420,11 @@ begin
     fLocale := AnsiString(nGameCommon.Attributes['Locale'].AsString(UnicodeString(DEFAULT_LOCALE)));
     // Speed
     nGameSpeed := nGameCommon.AddOrFindChild('Speed');
-      fScrollSpeed    := nGameSpeed.Attributes['ScrollSpeed'].AsInteger(10);
-      SpeedPace       := nGameSpeed.Attributes['Pace'].AsInteger(SPEED_PACE_DEFAULT); // Set SpeedPace via setter
       fSpeedMedium    := nGameSpeed.Attributes['Medium'].AsFloat(3);
       fSpeedFast      := nGameSpeed.Attributes['Fast'].AsFloat(6);
       fSpeedVeryFast  := nGameSpeed.Attributes['VeryFast'].AsFloat(10);
+      SpeedPace       := nGameSpeed.Attributes['Pace'].AsInteger(SPEED_PACE_DEFAULT); // Set SpeedPace via setter
+      fScrollSpeed    := nGameSpeed.Attributes['ScrollSpeed'].AsInteger(10);
 
     // Autosave
     nGameAutosave := nGameCommon.AddOrFindChild('Autosave');
@@ -612,11 +612,11 @@ begin
     nGameCommon.Attributes['Locale'] := UnicodeString(fLocale);
     // Speed
     nGameSpeed := nGameCommon.AddOrFindChild('Speed');
-      nGameSpeed.Attributes['ScrollSpeed']  := fScrollSpeed;
-      nGameSpeed.Attributes['Pace']         := fSpeedPace;
       nGameSpeed.Attributes['Medium']       := fSpeedMedium;
       nGameSpeed.Attributes['Fast']         := fSpeedFast;
       nGameSpeed.Attributes['VeryFast']     := fSpeedVeryFast;
+      nGameSpeed.Attributes['Pace']         := fSpeedPace;
+      nGameSpeed.Attributes['ScrollSpeed']  := fScrollSpeed;
 
     // Autosave
     nGameAutosave := nGameCommon.AddOrFindChild('Autosave');
