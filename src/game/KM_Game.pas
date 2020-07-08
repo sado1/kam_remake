@@ -101,6 +101,7 @@ type
     function GetReplayAutosaveEffectiveFrequency: Integer;
 
     function GetMapEditor: TKMMapEditor;
+    function GetGamePlayInterface: TKMGamePlayInterface;
 
     procedure GameMPDisconnect(const aData: UnicodeString);
     procedure OtherPlayerDisconnected(aDefeatedPlayerHandId: Integer);
@@ -249,7 +250,7 @@ type
     property GameInputProcess: TKMGameInputProcess read fGameInputProcess write fGameInputProcess;
     property Options: TKMGameOptions read fOptions;
     property ActiveInterface: TKMUserInterfaceGame read fActiveInterface;
-    property GamePlayInterface: TKMGamePlayInterface read fGamePlayInterface;
+    property GamePlayInterface: TKMGamePlayInterface read GetGamePlayInterface;
     property MapEditorInterface: TKMapEdInterface read fMapEditorInterface;
     property MapEditor: TKMMapEditor read GetMapEditor;
     property TerrainPainter: TKMTerrainPainter read fTerrainPainter;
@@ -1844,6 +1845,14 @@ begin
   finally
     stream.Free;
   end;
+end;
+
+
+function TKMGame.GetGamePlayInterface: TKMGamePlayInterface;
+begin
+  if Self = nil then Exit(nil);
+
+  Result := fGamePlayInterface;
 end;
 
 

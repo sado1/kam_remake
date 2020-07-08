@@ -998,7 +998,7 @@ end;
 
 procedure TFormMain.btFindObjByUIDClick(Sender: TObject);
 begin
-  if gGameApp.Game = nil then Exit;
+  if gGameApp.Game.GamePlayInterface = nil then Exit;
 
   gGameApp.Game.GamePlayInterface.SelectEntityByUID(seFindObjByUID.Value);
 end;

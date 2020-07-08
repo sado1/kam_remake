@@ -1903,6 +1903,7 @@ procedure TKMGamePlayInterface.SelectEntityByUID(aUID: Integer);
 var
   entity: TKMHandEntity;
 begin
+  if Self = nil then Exit;
   if gHands = nil then Exit;
 
   entity := gHands.GetObjectByUID(aUID);
