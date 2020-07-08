@@ -21,6 +21,7 @@ type
     function Execute: TKMTaskResult; override;
 
     function CouldBeCancelled: Boolean; override;
+    function WalkShouldAbandon: Boolean; override;
 
     procedure Save(SaveStream: TKMemoryStream); override;
   end;
@@ -60,6 +61,12 @@ begin
   inherited;
 
   fInn := TKMHouseInn(gHands.GetHouseByUID(Cardinal(fInn)));
+end;
+
+
+function TKMTaskGoEat.WalkShouldAbandon: Boolean;
+begin
+  Result := fInn.IsDestroyed;
 end;
 
 
