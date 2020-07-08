@@ -63,7 +63,7 @@ type
 
 implementation
 uses
-  KM_Log, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_Pics, KM_Settings;
+  KM_Log, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_Pics, KM_GameSettings;
 
 
 { TKMGUIMenuLoad }

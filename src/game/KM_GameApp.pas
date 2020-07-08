@@ -7,7 +7,11 @@ uses
   Classes, Dialogs, ExtCtrls,
   KM_CommonTypes, KM_Defaults, KM_RenderControl, KM_Video,
   KM_Campaigns, KM_Game, KM_InterfaceMainMenu, KM_Resource,
-  KM_Music, KM_Maps, KM_MapTypes, KM_CampaignTypes, KM_Networking, KM_Settings, KM_Render,
+  KM_Music, KM_Maps, KM_MapTypes, KM_CampaignTypes, KM_Networking,
+  KM_GameSettings,
+  KM_KeysSettings,
+  KM_ServerSettings,
+  KM_Render,
   KM_GameTypes, KM_Points, KM_Console,
   KM_WorkerThread;
 
@@ -20,6 +24,8 @@ type
 
     fCampaigns: TKMCampaignsCollection;
     fGameSettings: TKMGameSettings;
+    fKeysSettings: TKMKeysSettings;
+    fServerSettings: TKMServerSettings;
     fMusic: TKMMusicLib;
     fNetworking: TKMNetworking;
     fTimerUI: TTimer;
@@ -170,6 +176,8 @@ begin
 
   fGameSettings := TKMGameSettings.Create;
 
+  fServerSettings := TKMServerSettings.Create;
+
   fLastTimeRender := 0;
 
   gRender := TRender.Create(aRenderControl, aScreenX, aScreenY, aVSync);
@@ -183,6 +191,7 @@ begin
 
   gRes := TKMResource.Create(aOnLoadingStep, aOnLoadingText);
   gRes.LoadMainResources(fGameSettings.Locale, fGameSettings.LoadFullFonts);
+  fKeysSettings := TKMKeysSettings.Create;
 
   {$IFDEF USE_MAD_EXCEPT}gExceptions.LoadTranslation;{$ENDIF}
 
@@ -257,6 +266,8 @@ begin
   FreeAndNil(fTimerUI);
   FreeThenNil(fCampaigns);
   FreeThenNil(fGameSettings);
+  FreeThenNil(fKeysSettings);
+  FreeThenNil(fServerSettings);
   FreeThenNil(fMainMenuInterface);
   FreeThenNil(gRes);
   FreeThenNil(gSoundPlayer);
@@ -1113,18 +1124,18 @@ end;
 procedure TKMGameApp.NetworkInit;
 begin
   if fNetworking = nil then
-    fNetworking := TKMNetworking.Create(fGameSettings.MasterServerAddress,
-                                        fGameSettings.AutoKickTimeout,
-                                        fGameSettings.PingInterval,
-                                        fGameSettings.MasterAnnounceInterval,
-                                        fGameSettings.ServerUDPScanPort,
-                                        fGameSettings.ServerPacketsAccumulatingDelay,
-                                        fGameSettings.ServerDynamicFOW,
-                                        fGameSettings.ServerMapsRosterEnabled,
-                                        fGameSettings.ServerMapsRosterStr,
-                                        KMRange(fGameSettings.ServerLimitPTFrom, fGameSettings.ServerLimitPTTo),
-                                        KMRange(fGameSettings.ServerLimitSpeedFrom, fGameSettings.ServerLimitSpeedTo),
-                                        KMRange(fGameSettings.ServerLimitSpeedAfterPTFrom, fGameSettings.ServerLimitSpeedAfterPTTo));
+    fNetworking := TKMNetworking.Create(fServerSettings.MasterServerAddress,
+                                        fServerSettings.AutoKickTimeout,
+                                        fServerSettings.PingInterval,
+                                        fServerSettings.MasterAnnounceInterval,
+                                        fServerSettings.ServerUDPScanPort,
+                                        fServerSettings.ServerPacketsAccumulatingDelay,
+                                        fServerSettings.ServerDynamicFOW,
+                                        fServerSettings.ServerMapsRosterEnabled,
+                                        fServerSettings.ServerMapsRosterStr,
+                                        KMRange(fServerSettings.ServerLimitPTFrom, fServerSettings.ServerLimitPTTo),
+                                        KMRange(fServerSettings.ServerLimitSpeedFrom, fServerSettings.ServerLimitSpeedTo),
+                                        KMRange(fServerSettings.ServerLimitSpeedAfterPTFrom, fServerSettings.ServerLimitSpeedAfterPTTo));
 
   // Set event handlers anyway. Those could be reset by someone
   fNetworking.OnMPGameInfoChanged := SendMPGameInfo;

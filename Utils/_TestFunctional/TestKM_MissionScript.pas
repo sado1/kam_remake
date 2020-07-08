@@ -18,7 +18,7 @@ type
 
 implementation
 uses 
-  KM_Maps, KM_Settings;
+  KM_Maps, KM_GameSettings;
 
 
 procedure TestKMMissionScript.SetUp;

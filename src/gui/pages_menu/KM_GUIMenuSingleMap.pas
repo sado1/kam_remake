@@ -91,7 +91,7 @@ type
 
 implementation
 uses
-  KM_ResTexts, KM_CommonUtils, KM_RenderUI, KM_ResFonts, KM_Settings;
+  KM_ResTexts, KM_CommonUtils, KM_RenderUI, KM_ResFonts, KM_GameSettings;
 
 const
   PAD_VERT = 44; //Padding from top/bottom

@@ -121,7 +121,9 @@ type
 
 implementation
 uses
-  KM_ResTexts, KM_Settings,
+  KM_ResTexts, 
+  KM_GameSettings, 
+  KM_ServerSettings,
   KM_RenderUI, KM_Resource, KM_ResFonts,
   KM_Pics, KM_CommonUtils;
 
@@ -446,10 +448,10 @@ begin
       if fMaps[I].IsFavourite then
       begin
         gGameSettings.FavouriteMaps.Add(fMaps[I].MapAndDatCRC);
-        gGameSettings.ServerMapsRoster.Add(fMaps[I].CRC);
+        gServerSettings.ServerMapsRoster.Add(fMaps[I].CRC);
       end else begin
         gGameSettings.FavouriteMaps.Remove(fMaps[I].MapAndDatCRC);
-        gGameSettings.ServerMapsRoster.Remove(fMaps[I].CRC);
+        gServerSettings.ServerMapsRoster.Remove(fMaps[I].CRC);
       end;
 
       //Update pic
@@ -662,13 +664,13 @@ begin
       MapsSimpleCRCArray[I] := fMaps[I].MapAndDatCRC;
       MapsFullCRCArray[I] := fMaps[I].CRC;
 
-      if gGameSettings.ServerMapsRosterEnabled
+      if gServerSettings.ServerMapsRosterEnabled
         and gGameSettings.FavouriteMaps.Contains(MapsSimpleCRCArray[I]) then
-        gGameSettings.ServerMapsRoster.Add(MapsFullCRCArray[I]);
+        gServerSettings.ServerMapsRoster.Add(MapsFullCRCArray[I]);
     end;
 
     gGameSettings.FavouriteMaps.RemoveMissing(MapsSimpleCRCArray);
-    gGameSettings.ServerMapsRoster.RemoveMissing(MapsFullCRCArray);
+    gServerSettings.ServerMapsRoster.RemoveMissing(MapsFullCRCArray);
   end;
 end;
 

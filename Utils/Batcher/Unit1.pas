@@ -80,7 +80,7 @@ var
 
 implementation
 uses
-  KM_Campaigns, KM_Game, KM_Settings, KM_Hand, KM_MissionScript_Standard, KM_CampaignTypes;
+  KM_Campaigns, KM_Game, KM_GameSettings, KM_Hand, KM_MissionScript_Standard, KM_CampaignTypes;
 
 {$R *.dfm}
 

@@ -4,8 +4,9 @@ interface
 uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   KM_FormMain, KM_FormLoading, KM_Maps,
-  KM_Settings, KM_Resolutions, KM_Video,
-  KM_WindowParams;
+  KM_MainSettings, KM_Resolutions, KM_Video,
+  KM_WindowParams,
+  KM_GameAppSettings;
 
 
 type
@@ -20,6 +21,7 @@ type
     {$ENDIF}
     fMutex: THandle;
 
+    fGameAppSettings: TKMGameAppSettings;
     fMainSettings: TKMainSettings;
     fResolutions: TKMResolutions;
     fMapCacheUpdater: TTMapsCacheUpdater;
@@ -180,6 +182,7 @@ begin
 
   //Only after we read settings (fullscreen property and resolutions)
   //we can decide whenever we want to create Game fullscreen or not (OpenGL init depends on that)
+  fGameAppSettings := TKMGameAppSettings.Create;
   fMainSettings := TKMainSettings.Create(Screen.Width, Screen.Height);
   //We need to verify INI values, as they can be from another display
   if not fResolutions.IsValid(fMainSettings.Resolution) then
@@ -293,9 +296,11 @@ begin
     //Reset the resolution
     FreeThenNil(fResolutions);
     FreeThenNil(fMainSettings);
+
     if fMapCacheUpdater <> nil then
       fMapCacheUpdater.Stop;
     FreeThenNil(gGameApp);
+    FreeThenNil(fGameAppSettings); // After GameApp is destroyed
     FreeThenNil(gLog);
 
     {$IFDEF MSWindows}

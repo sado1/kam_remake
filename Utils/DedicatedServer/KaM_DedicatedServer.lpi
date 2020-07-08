@@ -35,23 +35,23 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="14">
+    <Units Count="15">
       <Unit0>
         <Filename Value="KaM_DedicatedServer.dpr"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <TopLine Value="7"/>
-        <CursorPos X="44" Y="19"/>
-        <UsageCount Value="31"/>
+        <CursorPos X="36" Y="23"/>
+        <UsageCount Value="33"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
         <Filename Value="..\..\KaM_Remake.lpr"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
         <TopLine Value="59"/>
-        <CursorPos X="15" Y="4"/>
-        <UsageCount Value="10"/>
+        <CursorPos X="29" Y="79"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
@@ -115,10 +115,10 @@
       </Unit10>
       <Unit11>
         <Filename Value="KM_ServerEventHandler.pas"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="4"/>
         <TopLine Value="3"/>
         <CursorPos X="15" Y="13"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit11>
@@ -133,12 +133,20 @@
         <Filename Value="..\..\src\res\KM_ResTexts.pas"/>
         <EditorIndex Value="1"/>
         <CursorPos X="4" Y="15"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="11"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit13>
+      <Unit14>
+        <Filename Value="..\..\src\ext\Xml.VerySimple.pas"/>
+        <EditorIndex Value="3"/>
+        <CursorPos X="29" Y="12"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit14>
     </Units>
-    <JumpHistory Count="22" HistoryIndex="21">
+    <JumpHistory Count="23" HistoryIndex="22">
       <Position1>
         <Filename Value="KaM_DedicatedServer.dpr"/>
         <Caret Line="52" Column="23" TopLine="38"/>
@@ -226,6 +234,9 @@
         <Filename Value="..\..\src\res\KM_ResTexts.pas"/>
         <Caret Line="15" Column="4"/>
       </Position22>
+      <Position23>
+        <Filename Value="..\..\src\ext\Xml.VerySimple.pas"/>
+      </Position23>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

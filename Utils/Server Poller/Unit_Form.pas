@@ -3,7 +3,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, StrUtils, Math,
   Controls, Forms, Dialogs, Grids, StdCtrls, ExtCtrls,
-  KM_Defaults, KM_Settings, KM_ServerQuery, KM_CommonUtils;
+  KM_Defaults, KM_ServerSettings, KM_ServerQuery, KM_CommonUtils;
 
 type
   TForm1 = class(TForm)
@@ -18,7 +18,7 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure CheckBox1Click(Sender: TObject);
   private
-    fGameSettings: TKMGameSettings;
+    fServerSettings: TKMServerSettings;
     fServerQuery: TKMServerQuery;
     fBaseTime: TDateTime;
     fBase: array [0..63] of record
@@ -46,11 +46,11 @@ begin
   Application.OnIdle := DoIdle;
   ExeDir := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\');
 
-  fGameSettings := TKMGameSettings.Create;
+  fServerSettings := TKMServerSettings.Create;
 
-  Label1.Caption := 'Master-server: ' + fGameSettings.MasterServerAddress;
+  Label1.Caption := 'Master-server: ' + fServerSettings.MasterServerAddress;
 
-  fServerQuery := TKMServerQuery.Create(fGameSettings.MasterServerAddress, fGameSettings.ServerUDPScanPort);
+  fServerQuery := TKMServerQuery.Create(fServerSettings.MasterServerAddress, fServerSettings.ServerUDPScanPort);
 
   fServerQuery.OnAnnouncements := AnnouncementsUpdate;
   fServerQuery.FetchAnnouncements(AnsiString('eng'));

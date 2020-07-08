@@ -250,7 +250,7 @@ implementation
 uses
   Math, StrUtils,
   KM_NetworkConsts, KM_Sound, KM_Log, KM_CommonUtils, KM_HandsCollection, KM_Hand,
-  KM_Main, KM_GameApp, KM_Settings,
+  KM_Main, KM_GameApp, KM_GameSettings,
   KM_Resource, KM_ResSound, KM_ResTexts;
 
 

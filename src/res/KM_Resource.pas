@@ -121,7 +121,6 @@ begin
   FreeAndNil(fUnits);
   FreeAndNil(gResKeys);
 
-
   if fExportWorker <> nil then
     //This will ensure all queued work is completed before destruction
     FreeAndNil(fExportWorker);

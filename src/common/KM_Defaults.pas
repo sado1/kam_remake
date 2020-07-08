@@ -46,7 +46,9 @@ var
   GAME_VERSION: AnsiString;
   NET_PROTOCOL_REVISON: AnsiString; //Clients of this version may connect to the dedicated server
 const
-  SETTINGS_FILE         = 'KaM_Remake_Settings.ini';
+  GAME_TITLE            = 'Knights and Merchants Remake';
+  SETTINGS_FILE         = 'KaM_Remake_Settings.xml';
+  SERVER_SETTINGS_FILE  = 'KaM_Remake_Server_Settings.ini';
   FONTS_FOLDER          = 'data' + PathDelim + 'gfx' + PathDelim + 'fonts' + PathDelim;
   DEFAULT_LOCALE: AnsiString = 'eng';
 
@@ -83,6 +85,7 @@ var
   SKIP_LOG_TEMP_COMMANDS:Boolean = True;
 
   //Implemented
+  FEAT_SETTINGS_IN_MYDOC:Boolean = True; //Save settings in the C:\Users\Username\My Documents\My Games\GAME_TITLE\ folder
   DO_UNIT_INTERACTION   :Boolean = True; //Debug for unit interaction
   DO_WEIGHT_ROUTES      :Boolean = True; //Add additional cost to tiles in A* if they are occupied by other units (IsUnit=1)
   CUSTOM_RANDOM         :Boolean = True; //Use our custom random number generator or the built in "Random()"
@@ -287,7 +290,7 @@ const
   SPEED_PACE_DEFAULT = 100; // ms, frequency of game updates
 
 
-  AUTOSAVE_COUNT          = 5;    //How many autosaves to backup - this MUST be variable (Parallel Runner)
+  AUTOSAVE_COUNT_DEF      = 5;    //How many autosaves to backup by default - this MUST be variable (Parallel Runner)
   AUTOSAVE_COUNT_MIN      = 2;
   AUTOSAVE_COUNT_MAX      = 10;
   AUTOSAVE_FREQUENCY_MIN  = 600;
@@ -296,10 +299,10 @@ const
   AUTOSAVE_ATTACH_TO_CRASHREPORT_MAX = 5; //Max number of autosaves to be included into crashreport
 
   // Checkpoint, which are made in the memory while watching replay
-  REPLAY_AUTOSAVE_FREQUENCY_MIN = 30*10; //30 sec
-  REPLAY_AUTOSAVE_FREQUENCY_MAX = 10*60*60; // 1 hour
-  REPLAY_AUTOSAVE_FREQUENCY_DEF = 5*60*10; // 5 min
-  REPLAY_AUTOSAVE_CNT_MAX       = 40; // Max number of replay autosaves
+  REPLAY_SAVEPOINT_FREQUENCY_MIN = 30*10; //30 sec
+  REPLAY_SAVEPOINT_FREQUENCY_MAX = 10*60*60; // 1 hour
+  REPLAY_SAVEPOINT_FREQUENCY_DEF = 5*60*10; // 5 min
+  REPLAY_SAVEPOINT_CNT_MAX       = 40; // Max number of replay autosaves
 
   // Checkpoints, which are made during the game and saved in the .rpl file
 {$IFDEF DEBUG}
@@ -472,6 +475,9 @@ const
   MARKER_CENTERSCREEN = 3;
   MARKER_AISTART = 4;
   MARKER_RALLY_POINT = 5;
+
+const
+  DATE_TIME_ZERO: TDateTime = 0; // DateTime as 0, for simplicity. Some compilers (Delphi Berlin, f.e.) can't handle TDateTime(0)
 
 
 const

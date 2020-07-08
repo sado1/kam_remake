@@ -172,7 +172,7 @@ uses
   Codec, VorbisFile,
   {$ENDIF}
   KM_Game, KM_Resource, KM_HandsCollection, KM_RenderAux,
-  KM_Log, KM_CommonUtils, KM_CommonClassesExt;
+  KM_Log, KM_CommonUtils;
 
 
 const

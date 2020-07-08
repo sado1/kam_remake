@@ -5,7 +5,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls,
   ExtCtrls, Spin, ComCtrls,
   KM_Defaults,
-  KM_Settings,
+  KM_ServerSettings,
   KM_DedicatedServer,
   KM_Log,
   KM_NetworkClasses;
@@ -78,7 +78,7 @@ type
     procedure ApplicationIdle(Sender: TObject; var Done: Boolean);
     procedure FillPlayersList;
   private
-    fSettings: TKMGameSettings;
+    fSettings: TKMServerSettings;
     fSettingsLastModified: integer;
     fServerStatus: TKMServerStatus;
     fDedicatedServer: TKMDedicatedServer;
@@ -125,7 +125,7 @@ begin
 //  ServerStatusMessageNoTime('');
   ServerStatusMessage('Using protocol for clients running ' + NET_PROTOCOL_REVISON);
 
-  fSettings := TKMGameSettings.Create;
+  fSettings := TKMServerSettings.Create;
   fSettings.SaveSettings(true);
   fSettingsLastModified := FileAge(ExeDir+SETTINGS_FILE);
 

@@ -113,7 +113,10 @@ type
 
 implementation
 uses
-  KM_Main, KM_Settings, KM_Networking, KM_NetworkTypes, KM_ResTexts, KM_ResLocales, KM_GUIMenuLobby, KM_MapTypes,
+  KM_Main, 
+  KM_GameSettings, 
+  KM_ServerSettings,
+  KM_Networking, KM_NetworkTypes, KM_ResTexts, KM_ResLocales, KM_GUIMenuLobby, KM_MapTypes,
   KM_CommonUtils, KM_Sound, KM_ResSound, KM_RenderUI, KM_ResFonts, KM_Console;
 
 
@@ -346,8 +349,8 @@ begin
 
   Edit_MP_PlayerName.Text := UnicodeString(gGameSettings.MultiplayerName);
 
-  Edit_MP_ServerName.Text := UnicodeString(gGameSettings.ServerName);
-  Edit_MP_ServerPort.Text := gGameSettings.ServerPort;
+  Edit_MP_ServerName.Text := UnicodeString(gServerSettings.ServerName);
+  Edit_MP_ServerPort.Text := gServerSettings.ServerPort;
 
   Edit_MP_FindIP.Text := gGameSettings.LastIP;
   Edit_MP_FindPort.Text := gGameSettings.LastPort;
@@ -421,8 +424,8 @@ begin
   gGameSettings.MultiplayerName := AnsiString(Edit_MP_PlayerName.Text);
 
   //Create Server popup
-  gGameSettings.ServerName := AnsiString(Edit_MP_ServerName.Text);
-  gGameSettings.ServerPort := Edit_MP_ServerPort.Text;
+  gServerSettings.ServerName := AnsiString(Edit_MP_ServerName.Text);
+  gServerSettings.ServerPort := Edit_MP_ServerPort.Text;
 
   //Join server popup
   gGameSettings.LastPort := Edit_MP_FindPort.Text;
@@ -809,7 +812,7 @@ begin
   gNetworking.OnHostFail := MP_HostFail;
   gNetworking.Host(AnsiString(Edit_MP_ServerName.Text), serverPort,
                    AnsiString(Edit_MP_PlayerName.Text), (Sender = Button_MP_CreateWAN),
-                   gGameSettings.ServerUDPAnnounce);
+                   gServerSettings.ServerUDPAnnounce);
 end;
 
 

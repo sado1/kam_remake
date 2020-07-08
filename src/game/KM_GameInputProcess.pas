@@ -470,7 +470,8 @@ uses
   KM_GameApp, KM_Game, KM_GameParams, KM_HandsCollection,
   KM_HouseMarket, KM_HouseBarracks, KM_HouseSchool, KM_HouseTownHall,
   KM_ScriptingEvents, KM_Alerts, KM_CommonUtils, KM_Log, KM_RenderUI,
-  KM_ResFonts, KM_Settings, KM_Resource;
+  KM_ResFonts, KM_Resource,
+  KM_GameSettings;
 
 const 
   NO_LAST_TICK_VALUE = 0;

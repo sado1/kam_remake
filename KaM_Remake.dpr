@@ -294,8 +294,14 @@ uses
   KM_ScriptingUtils in 'src\scripting\KM_ScriptingUtils.pas',
 
   KM_ServerQuery in 'src\net\KM_ServerQuery.pas',
-  KM_Settings in 'src\KM_Settings.pas',
   KM_Sound in 'src\KM_Sound.pas',
+  
+  KM_Settings in 'src\settings\KM_Settings.pas',  
+  KM_GameAppSettings in 'src\settings\KM_GameAppSettings.pas',  
+  KM_KeysSettings in 'src\settings\KM_KeysSettings.pas',  
+  KM_GameSettings in 'src\settings\KM_GameSettings.pas',
+  KM_MainSettings in 'src\settings\KM_MainSettings.pas',
+  KM_ServerSettings in 'src\settings\KM_ServerSettings.pas',
 
   KM_RandomMapGenerator in 'src\terrain\KM_RandomMapGenerator.pas',
   KM_RMGUtils in 'src\terrain\KM_RMGUtils.pas',

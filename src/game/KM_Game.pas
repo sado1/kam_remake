@@ -284,10 +284,11 @@ uses
   KM_Main, KM_GameApp, KM_RenderPool, KM_GameInfo, KM_GameClasses,
   KM_Terrain, KM_HandsCollection, KM_HandSpectator, KM_MapEditorHistory,
   KM_MissionScript, KM_MissionScript_Standard, KM_GameInputProcess_Multi, KM_GameInputProcess_Single,
-  KM_Resource, KM_ResCursors, KM_ResSound, KM_InterfaceDefaults, KM_Settings,
+  KM_Resource, KM_ResCursors, KM_ResSound, KM_InterfaceDefaults, KM_GameSettings,
   KM_Log, KM_ScriptingEvents, KM_Saves, KM_FileIO, KM_CommonUtils, KM_RandomChecks, KM_DevPerfLog, KM_DevPerfLogTypes,
   KM_NetPlayersList,
-  KM_HandTypes;
+  KM_HandTypes,
+  KM_ServerSettings;
 
 //Create template for the Game
 //aRender - who will be rendering the Game session
@@ -1423,7 +1424,7 @@ begin
     if fParams.Name = mapInfo.FileName then
     begin
       gGameSettings.FavouriteMaps.Replace(fParams.MapSimpleCRC, mapInfo.MapAndDatCRC);
-      gGameSettings.ServerMapsRoster.Replace(fParams.MapFullCRC, mapInfo.CRC);
+      gServerSettings.ServerMapsRoster.Replace(fParams.MapFullCRC, mapInfo.CRC);
     end;
     mapInfo.Free;
   end;
@@ -2816,8 +2817,8 @@ begin
 
     //Save replay to memory (to be able to load it later)
     //Make replay save only after everything is updated (UpdateState)
-    if gGameSettings.ReplayAutosave
-      and (fSavePoints.Count <= REPLAY_AUTOSAVE_CNT_MAX) //Do not allow to spam saves, could cause OUT_OF_MEMORY error
+    if gGameSettings.ReplaySavepoint
+      and (fSavePoints.Count <= REPLAY_SAVEPOINT_CNT_MAX) //Do not allow to spam saves, could cause OUT_OF_MEMORY error
       and ((fParams.Tick = 1) //First tick
         or (fParams.Tick = MAKE_SAVEPT_BEFORE_TICK - 1)
         or (fParams.Tick = (fOptions.Peacetime*60*10)) //At PT end
@@ -2936,9 +2937,9 @@ end;
 function TKMGame.GetReplayAutosaveEffectiveFrequency: Integer;
 begin
   Assert(fParams.IsReplay, 'Wrong game mode');
-  Result := Math.Max(gGameSettings.ReplayAutosaveFrequency,
+  Result := Math.Max(gGameSettings.ReplaySavepointFrequency,
                      //Do not save too often, that could cause OUT_OF_MEMORY error
-                     fGameInputProcess.GetLastTick div (REPLAY_AUTOSAVE_CNT_MAX - 2)); // - 2 for starting one and for PT
+                     fGameInputProcess.GetLastTick div (REPLAY_SAVEPOINT_CNT_MAX - 2)); // - 2 for starting one and for PT
   Result := Ceil(Result / 300)*300; //Ceil to every 30 sec
 end;
 

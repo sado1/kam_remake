@@ -139,7 +139,7 @@ uses
   SysUtils, KM_Resource, KM_ResKeys, KM_RenderUI, KM_Defaults, KM_DevPerfLog, KM_DevPerfLogTypes,
   KM_Music,
   KM_Sound,
-  KM_Settings;
+  KM_GameSettings;
 
 
 { TKMUserInterface }

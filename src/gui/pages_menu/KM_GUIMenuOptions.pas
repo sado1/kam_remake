@@ -3,7 +3,9 @@ unit KM_GUIMenuOptions;
 interface
 uses
   Classes, Controls, KromOGLUtils, Math, SysUtils,
-  KM_Controls, KM_Settings, KM_Pics, KM_Resolutions, KM_ResKeys,
+  KM_Controls,
+  KM_MainSettings,
+  KM_Pics, KM_Resolutions, KM_ResKeys,
   KM_InterfaceDefaults, KM_CommonTypes;
 
 
@@ -100,7 +102,9 @@ type
 implementation
 uses
   KM_Main, KM_Music, KM_Sound, KM_RenderUI, KM_Resource, KM_ResTexts, KM_ResLocales, KM_ResFonts, KM_ResSound, KM_Video,
-  KM_ResTypes;
+  KM_ResTypes,
+  KM_GameSettings,
+  KM_GameAppSettings;
 
 
 { TKMGUIMainOptions }
@@ -635,7 +639,7 @@ begin
   if Sender = Button_OptionsKeys then
   begin
     // Reload the keymap in case player changed it and checks his changes in game
-    gResKeys.LoadKeymapFile;
+    gResKeys.Load;
 
     // Update TempKeys from gResKeys
     for KF := Low(TKMKeyFunction) to High(TKMKeyFunction) do
@@ -653,7 +657,7 @@ begin
     for KF := Low(TKMKeyFunction) to High(TKMKeyFunction) do
       gResKeys[KF] := fTempKeys[KF];
 
-    gResKeys.SaveKeymap;
+    gResKeys.Save;
   end;
 
   if Sender = Button_OptionsKeysCancel then
@@ -748,7 +752,7 @@ end;
 procedure TKMMenuOptions.BackClick(Sender: TObject);
 begin
   // Return to MainMenu and restore resolution changes
-  fMainSettings.SaveSettings;
+  gGameAppSettings.SaveSettings;
 
   if    (fLastAlphaShadows <> gGameSettings.AlphaShadows)
     and Assigned(OnPreloadGameResources) then

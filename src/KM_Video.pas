@@ -91,7 +91,7 @@ var
 
 implementation
 uses
-  KM_Render, KM_RenderTypes, KM_RenderUI, dglOpenGL, KM_ResLocales, KM_GameApp, KM_Settings, KM_Music, KM_Sound;
+  KM_Render, KM_RenderTypes, KM_RenderUI, dglOpenGL, KM_ResLocales, KM_GameApp, KM_GameSettings, KM_Music, KM_Sound;
 
 const
   FADE_MUSIC_TIME   = 500; // Music fade time, in ms

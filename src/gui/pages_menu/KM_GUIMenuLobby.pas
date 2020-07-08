@@ -216,9 +216,10 @@ var
 
 implementation
 uses
-  KM_Log, KM_CommonTypes, KM_Settings, KM_ResLocales, KM_CommonUtils, KM_Sound, KM_ResSound, KM_RenderUI,
+  KM_Log, KM_CommonTypes, KM_GameSettings, KM_ResLocales, KM_CommonUtils, KM_Sound, KM_ResSound, KM_RenderUI,
   KM_Resource, KM_ResFonts, KM_NetPlayersList, KM_Points, KM_MapTypes,
-  KM_Networking; //RMG
+  KM_Networking,
+  KM_ServerSettings;
 
 const
   PANEL_SETUP_OPTIONS_TOP = 548;
@@ -2431,10 +2432,10 @@ begin
       if fMapsMP[I].IsFavourite then
       begin
         gGameSettings.FavouriteMaps.Add(fMapsMP[I].MapAndDatCRC);
-        gGameSettings.ServerMapsRoster.Add(fMapsMP[I].CRC);
+        gServerSettings.ServerMapsRoster.Add(fMapsMP[I].CRC);
       end else begin
         gGameSettings.FavouriteMaps.Remove(fMapsMP[I].MapAndDatCRC);
-        gGameSettings.ServerMapsRoster.Remove(fMapsMP[I].CRC);
+        gServerSettings.ServerMapsRoster.Remove(fMapsMP[I].CRC);
       end;
 
       //Update pic

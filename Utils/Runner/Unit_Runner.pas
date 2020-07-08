@@ -64,7 +64,7 @@ var
 
 implementation
 uses
-  KM_Settings;
+  KM_GameSettings;
 
 
 procedure RegisterRunner(aRunner: TKMRunnerClass);

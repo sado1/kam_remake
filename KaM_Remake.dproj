@@ -1,4 +1,4 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{CB64F5E8-91AE-4497-A8C4-89668924F870}</ProjectGuid>
         <MainSource>KaM_Remake.dpr</MainSource>
@@ -381,8 +381,13 @@
         <DCCReference Include="src\scripting\KM_ScriptingTypes.pas"/>
         <DCCReference Include="src\scripting\KM_ScriptingUtils.pas"/>
         <DCCReference Include="src\net\KM_ServerQuery.pas"/>
-        <DCCReference Include="src\KM_Settings.pas"/>
         <DCCReference Include="src\KM_Sound.pas"/>
+        <DCCReference Include="src\settings\KM_Settings.pas"/>
+        <DCCReference Include="src\settings\KM_GameAppSettings.pas"/>
+        <DCCReference Include="src\settings\KM_KeysSettings.pas"/>
+        <DCCReference Include="src\settings\KM_GameSettings.pas"/>
+        <DCCReference Include="src\settings\KM_MainSettings.pas"/>
+        <DCCReference Include="src\settings\KM_ServerSettings.pas"/>
         <DCCReference Include="src\terrain\KM_RandomMapGenerator.pas"/>
         <DCCReference Include="src\terrain\KM_RMGUtils.pas"/>
         <DCCReference Include="src\terrain\KM_Terrain.pas"/>
@@ -428,6 +433,7 @@
         <DCCReference Include="src\utils\KM_SoftShadows.pas"/>
         <DCCReference Include="src\utils\KM_Sort.pas"/>
         <DCCReference Include="src\utils\KM_Utils.pas"/>
+        <DCCReference Include="src\utils\KM_XmlHelper.pas"/>
         <DCCReference Include="src\utils\KromOGLUtils.pas"/>
         <DCCReference Include="src\utils\KromUtils.pas"/>
         <DCCReference Include="src\utils\KromShellUtils.pas"/>

@@ -80,7 +80,7 @@ type
 
 implementation
 uses
-  KM_Log, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_Settings;
+  KM_Log, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_GameSettings;
 
 const
   MINIMAP_NOT_LOADED = -100; // smth, but not -1, as -1 is used for ColumnBox.ItemIndex, when no item is selected

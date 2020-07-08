@@ -313,7 +313,7 @@ uses
   TypInfo, StrUtils, KM_CampaignTypes,
   KM_HandSpectator, KM_ResHouses, KM_Hand, KM_HandTypes, KM_UnitsCollection, KM_UnitGroup,
 
-  KM_Settings,
+  KM_GameSettings,
   KM_CommonTypes, KM_MapTypes, KM_FileIO, KM_Game, KM_GameInputProcess, KM_GameTypes, KM_InterfaceGame,
   KM_UnitGroupTypes,
   KM_ResTypes;

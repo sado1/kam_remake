@@ -3,24 +3,28 @@ unit KM_ResKeys;
 interface
 uses
   Classes, SysUtils, StrUtils, Math, Generics.Collections,
-  KM_Defaults, KM_ResTexts,
-  KM_ResTypes;
+  KM_ResTexts,
+  KM_ResTypes,
+  KM_KeysSettings;
 
 const
   KEY_FUNC_LOW = Succ(kfNone); // 1st key function
 
 type
   TKMFuncInfo = record
-    Key: Byte;        // Key assigned to this function
+  private
+    fKey: Integer;    // Key assigned to this function
+    procedure SetKey(const aKey: Integer);
+  public
     TextId: Word;     // Text description of the function
     Area: TKMKeyFuncArea; // Area of effect for the function (common, game, maped)
     IsChangableByPlayer: Boolean; // Hide debug key and its function from UI
+    property Key: Integer read fKey write SetKey;
   end;
 
   TKMKeyLibrary = class
   private
     fFuncs: array [TKMKeyFunction] of TKMFuncInfo;
-    fKeymapPath: string;
     function GetFunc(aKeyFunc: TKMKeyFunction): TKMFuncInfo;
     procedure SetFunc(aKeyFunc: TKMKeyFunction; const aFuncInfo: TKMFuncInfo);
   public
@@ -33,11 +37,11 @@ type
     procedure SetKey(aKeyFunc: TKMKeyFunction; aKey: Word);
     function Count: Integer;
     property Funcs[aKeyFunc: TKMKeyFunction]: TKMFuncInfo read GetFunc write SetFunc; default;
-    procedure LoadKeymapFile;
+    procedure Load;
+    procedure Save;
     procedure ResetKeymap;
-    procedure SaveKeymap;
 
-    class function GetKeyFunction(aKeyFunStr: string): TKMKeyFunction;
+//    class function GetKeyFunction(aKeyFunStr: string): TKMKeyFunction;
     class function GetKeyFunctionStr(aKeyFun: TKMKeyFunction): string;
   end;
 
@@ -47,12 +51,9 @@ var
 
 implementation
 uses
-  TypInfo, RTTI;
+  TypInfo{, RTTI};
 
 const
-  DELIM_1 = ':';
-  DELIM_2 = '; //';
-
   // Default keys
   DEF_KEYS: array [TKMKeyFunction] of Byte = (
     //Common Keys
@@ -171,9 +172,7 @@ var
 begin
   inherited;
 
-  fKeymapPath := (ExeDir + 'keys.keymap');
-
-  LoadKeymapFile;
+  ResetKeymap;
 
   for KF := KEY_FUNC_LOW to High(TKMKeyFunction) do
   begin
@@ -199,45 +198,6 @@ begin
 end;
 
 
-// Each line in .keymap file has an index and a key value. Lines without index are skipped
-procedure TKMKeyLibrary.LoadKeymapFile;
-var
-  I: Integer;
-  SL: TStringList;
-  delim1, delim2: Integer;
-  funcId: TKMKeyFunction;
-  keyVal: Integer;
-begin
-  if not FileExists(fKeymapPath) then
-  begin
-    ResetKeymap;
-    Exit;
-  end;
-
-  SL := TStringList.Create;
-  {$IFDEF WDC} SL.LoadFromFile(fKeymapPath); {$ENDIF}
-  // In FPC TStringList can't cope with BOM (or UnicodeStrings at all really)
-  {$IFDEF FPC} SL.Text := ReadTextU(fKeymapPath, 1252); {$ENDIF}
-
-  // Parse text
-  for I := 0 to SL.Count - 1 do
-  begin
-    delim1 := Pos(DELIM_1, SL[I]);
-    delim2 := Pos(DELIM_2, SL[I]);
-    if (delim1 = 0) or (delim2 = 0) or (delim1 > delim2) then Continue;
-
-    funcId := GetKeyFunction(Copy(SL[I], 0, delim1 - 1));//StrToIntDef(Copy(SL[I], 0, delim1 - 1), -1);
-    keyVal := StrToIntDef(Copy(SL[I], delim1 + 1, delim2 - delim1 - 1), -1);
-
-    if (keyVal = -1) or not InRange(keyVal, 0, 255) then Continue;
-
-    fFuncs[funcId].Key := keyVal;
-  end;
-
-  SL.Free;
-end;
-
-
 function TKMKeyLibrary.GetFunc(aKeyFunc: TKMKeyFunction): TKMFuncInfo;
 begin
   Result := fFuncs[aKeyFunc];
@@ -247,26 +207,6 @@ end;
 procedure TKMKeyLibrary.SetFunc(aKeyFunc: TKMKeyFunction; const aFuncInfo :TKMFuncInfo);
 begin
   fFuncs[aKeyFunc] := aFuncInfo;
-end;
-
-
-procedure TKMKeyLibrary.SaveKeymap;
-var
-  KF: TKMKeyFunction;
-  keyStr: string;
-  keyStringList: TStringList;
-begin
-  keyStringList := TStringList.Create;
-  {$IFDEF WDC}keyStringList.DefaultEncoding := TEncoding.UTF8;{$ENDIF}
-
-  for KF := KEY_FUNC_LOW to High(TKMKeyFunction)  do
-  begin
-    keyStr := GetKeyFunctionStr(KF) + DELIM_1 + IntToStr(fFuncs[KF].Key) + DELIM_2 + gResTexts[KEY_FUNC_TX[KF]];
-    keyStringList.Add(keyStr);
-  end;
-
-  keyStringList.SaveToFile(fKeymapPath{$IFDEF WDC}, TEncoding.UTF8{$ENDIF});
-  keyStringList.Free;
 end;
 
 
@@ -288,6 +228,18 @@ end;
 function TKMKeyLibrary.GetKeyNameById(aKeyFunc: TKMKeyFunction): string;
 begin
   Result := GetKeyName(fFuncs[aKeyFunc].Key);
+end;
+
+
+procedure TKMKeyLibrary.Load;
+begin
+  gKeySettings.LoadFromXML;
+end;
+
+
+procedure TKMKeyLibrary.Save;
+begin
+  gKeySettings.SaveToXML;
 end;
 
 
@@ -464,16 +416,25 @@ begin
 end;
 
 
-class function TKMKeyLibrary.GetKeyFunction(aKeyFunStr: string): TKMKeyFunction;
-begin
-  Result := TRttiEnumerationType.GetValue<TKMKeyFunction>(aKeyFunStr);
-end;
+//class function TKMKeyLibrary.GetKeyFunction(aKeyFunStr: string): TKMKeyFunction;
+//begin
+//  Result := TRttiEnumerationType.GetValue<TKMKeyFunction>(aKeyFunStr);
+//end;
 
 
 class function TKMKeyLibrary.GetKeyFunctionStr(aKeyFun: TKMKeyFunction): string;
 begin
-  Result := TRttiEnumerationType.GetName(aKeyFun);
-//  Result := GetEnumName(TypeInfo(TKMKeyFunction), Integer(aKeyFun));
+//  Result := TRttiEnumerationType.GetName(aKeyFun);
+  Result := GetEnumName(TypeInfo(TKMKeyFunction), Integer(aKeyFun));
+end;
+
+
+{ TKMFuncInfo }
+procedure TKMFuncInfo.SetKey(const aKey: Integer);
+begin
+  if (aKey = -1) or not InRange(aKey, 0, 255) then Exit;
+
+  fKey := aKey;
 end;
 
 

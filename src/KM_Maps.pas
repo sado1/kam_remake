@@ -252,7 +252,7 @@ implementation
 uses
   SysUtils, StrUtils, TypInfo, Math,
   KromShellUtils, KromUtils,
-  KM_GameApp, KM_Settings, KM_FileIO,
+  KM_GameApp, KM_GameSettings, KM_FileIO,
   KM_MissionScript_Info, KM_Scripting,
   KM_CommonUtils, KM_Log;
 

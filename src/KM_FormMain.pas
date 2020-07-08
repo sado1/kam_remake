@@ -333,12 +333,13 @@ uses
   KM_ResKeys, KM_FormLogistics, KM_Game,
   KM_RandomChecks,
   KM_Log, KM_CommonClasses, KM_Helpers, KM_Video,
-  KM_Settings,
+  KM_GameSettings,
 
   KM_IoXML,
   KM_GameInputProcess,
   KM_ResTypes,
-  KM_XmlHelper;
+  KM_XmlHelper,
+  KM_GameAppSettings;
 
 
 procedure ExportDone(aResourceName: String);
@@ -650,8 +651,7 @@ end;
 
 procedure TFormMain.ReloadSettingsClick(Sender: TObject);
 begin
-  gMain.Settings.ReloadSettings;
-  gGameSettings.ReloadSettings;
+  gGameAppSettings.ReloadSettings;
 end;
 
 
@@ -951,8 +951,7 @@ end;
 
 procedure TFormMain.SaveSettingsClick(Sender: TObject);
 begin
-  gMain.Settings.SaveSettings(True);
-  gGameSettings.SaveSettings(True);
+  gGameAppSettings.SaveSettings(True);
 end;
 
 

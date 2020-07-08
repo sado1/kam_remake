@@ -161,7 +161,7 @@ implementation
 uses
   Math,
   KM_HandsCollection, KM_Hand, KM_Units, KM_UnitsCollection,
-  KM_Settings, KM_Game, KM_CommonUtils, KM_Resource, KM_HouseTownhall, KM_HouseBarracks,
+  KM_GameSettings, KM_Game, KM_CommonUtils, KM_Resource, KM_HouseTownhall, KM_HouseBarracks,
   KM_UnitGroup;
 
 

@@ -2,7 +2,7 @@
 {$I KaM_Remake.inc}
 interface
 uses
-  {$IFDEF FPC} lconvencoding, FileUtil, LazUTF8, {$ENDIF}
+  {$IFDEF FPC} lconvencoding, FileUtil, LazUTF8, windirs, {$ENDIF}
   {$IFDEF WDC} System.IOUtils, {$ENDIF}
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLType, {$ENDIF}
@@ -38,11 +38,14 @@ uses
 
   function IsFilePath(const aPath: UnicodeString): Boolean;
 
+  function GetDocumentsSavePath: string;
+
   procedure CheckFolderPermission(const aPath: string; var aRead, aWrite, aExec: Boolean);
 
 implementation
 uses
-  StrUtils, KM_CommonUtils;
+  StrUtils, KM_CommonUtils,
+  KM_Defaults;
 
 
 function ReadTextA(const aFilename: UnicodeString): AnsiString;
@@ -349,6 +352,21 @@ begin
   KMRenameFilesInFolder(aDestFolder, SrcName, DestName);
 
   Result := True;
+end;
+
+
+function GetDocumentsSavePath: string;
+begin
+  // Returns C:\Users\Username\My Documents\My Games\GAME_TITLE\
+  // According to GDSE this is the most commonly used savegame location (https://gamedev.stackexchange.com/a/108243)
+  if FEAT_SETTINGS_IN_MYDOC then
+  {$IFDEF WDC}
+    Result := TPath.GetDocumentsPath + PathDelim + 'My Games' + PathDelim + GAME_TITLE + PathDelim
+  {$ELSE}
+    Result := GetWindowsSpecialDir(CSIDL_PERSONAL) + PathDelim + 'My Games' + PathDelim + GAME_TITLE + PathDelim
+  {$ENDIF}
+  else
+    Result := ExtractFilePath(ParamStr(0));
 end;
 
 

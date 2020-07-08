@@ -14,7 +14,7 @@ type
 implementation
 uses
   SysUtils,
-  KM_Sound, KM_Music, KM_Settings;
+  KM_Sound, KM_Music, KM_GameSettings;
 
 
 class procedure TKMAudio.PauseMusicToPlayFile(const aFileName: UnicodeString);

@@ -93,6 +93,8 @@ uses
   function MapSizeText(X,Y: Word): UnicodeString; overload;
   function MapSizeText(aMapSize: TKMMapSize): UnicodeString; overload;
 
+  function GetDocumentsSavePath: string;
+
   //Taken from KromUtils to reduce dependancies (required so the dedicated server compiles on Linux without using Controls)
   procedure KMSwapInt(var A,B: Byte); overload;
   procedure KMSwapInt(var A,B: Shortint); overload;
@@ -556,6 +558,17 @@ end;
 function MapSizeText(aMapSize: TKMMapSize): UnicodeString;
 begin
   Result := MAP_SIZES[aMapSize];
+end;
+
+
+function GetDocumentsSavePath: string;
+begin
+  // Returns C:\Users\Username\My Documents\My Games\GAME_TITLE\
+  // According to GDSE this is the most commonly used savegame location (https://gamedev.stackexchange.com/a/108243)
+//  if FEAT_SETTINGS_IN_MYDOC then
+//    Result := TPath.GetDocumentsPath + PathDelim + 'My Games' + PathDelim + GAME_TITLE + PathDelim
+//  else
+    Result := ExtractFilePath(ParamStr(0));
 end;
 
 
