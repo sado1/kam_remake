@@ -464,8 +464,8 @@ end;
 
 procedure TKMUserInterfaceGame.SyncUIView(const aCenter: TKMPointF; aZoom: Single = 1);
 begin
+  fViewport.Zoom := aZoom; // Set Zoom first, since it can apply restrictions on Position near map borders
   fViewport.Position := aCenter;
-  fViewport.Zoom := aZoom;
 end;
 
 
