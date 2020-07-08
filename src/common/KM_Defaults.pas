@@ -47,8 +47,8 @@ var
   NET_PROTOCOL_REVISON: AnsiString; //Clients of this version may connect to the dedicated server
 const
   GAME_TITLE            = 'Knights and Merchants Remake';
-  SETTINGS_FILE         = 'KaM_Remake_Settings.xml';
-  SERVER_SETTINGS_FILE  = 'KaM_Remake_Server_Settings.ini';
+  SETTINGS_FILE         = 'KaM Remake Settings.xml';
+  SERVER_SETTINGS_FILE  = 'KaM Remake Server Settings.ini';
   FONTS_FOLDER          = 'data' + PathDelim + 'gfx' + PathDelim + 'fonts' + PathDelim;
   DEFAULT_LOCALE: AnsiString = 'eng';
 
