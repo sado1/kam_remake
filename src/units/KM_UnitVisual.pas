@@ -21,8 +21,8 @@ type
   TKMUnitVisual = class
   private
     fUnit: TObject;
-    Curr: TKMUnitVisualState;
-    Prev: TKMUnitVisualState;
+    fCurr: TKMUnitVisualState;
+    fPrev: TKMUnitVisualState;
   public
     constructor Create(aUnit: TObject);
 
@@ -81,21 +81,21 @@ constructor TKMUnitVisual.Create(aUnit: TObject);
 begin
   inherited Create;
   fUnit := TKMUnit(aUnit);
-  Prev.SetFromUnit(fUnit);
-  Curr.SetFromUnit(fUnit);
+  fPrev.SetFromUnit(fUnit);
+  fCurr.SetFromUnit(fUnit);
 end;
 
 
 function TKMUnitVisual.GetLerp(aLag: Single): TKMUnitVisualState;
 begin
-  Result := TKMUnitVisualState.Lerp(Curr, Prev, aLag);
+  Result := TKMUnitVisualState.Lerp(fCurr, fPrev, aLag);
 end;
 
 
 procedure TKMUnitVisual.UpdateState;
 begin
-  Prev := Curr;
-  Curr.SetFromUnit(fUnit);
+  fPrev := fCurr;
+  fCurr.SetFromUnit(fUnit);
 end;
 
 end.
