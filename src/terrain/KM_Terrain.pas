@@ -4940,8 +4940,8 @@ begin
   for ii:=-2 to 4 do //make an array of tile heights above and below cursor (-2..4)
   begin
     Tmp       := EnsureRange(Yc + ii, 1, fMapY);
-    Ycoef[ii] := (Yc - 1) + ii - (Land[Tmp, Xc].Height * (1 - frac(inX))
-                          + Land[Tmp, Xc + 1].Height * frac(inX)) / CELL_HEIGHT_DIV;
+    Ycoef[ii] := (Yc - 1) + ii - (Land[Tmp, Xc].RenderHeight * (1 - frac(inX))
+                          + Land[Tmp, Xc + 1].RenderHeight * frac(inX)) / CELL_HEIGHT_DIV;
   end;
 
   Result := Yc; //Assign something incase following code returns nothing
