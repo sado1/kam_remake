@@ -667,7 +667,8 @@ begin
   {$IFDEF USELIBZPLAY} ZPlayerOther.StopPlayback; {$ENDIF}
   {$IFDEF USEBASS} BASS_ChannelStop(fBassOtherStream); {$ENDIF}
   fToPlayAfterFade := '';
-  if fFadeState = fsFadeOut then fFadedToPlayOther := True; //Make sure the music starts again if we are currently fading out
+  if fFadeState = fsFadeOut then
+    fFadedToPlayOther := True; //Make sure the music starts again if we are currently fading out
 end;
 
 

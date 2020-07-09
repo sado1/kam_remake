@@ -404,7 +404,7 @@ end;
 procedure TKMVideoPlayer.Play;
 {$IFDEF VIDEOS}
 var
-  i: Integer;
+  I: Integer;
   path: string;
   Media: PVLCMedia;
   Tracks: TVLCMediaTrackList;
@@ -412,11 +412,9 @@ var
   Track: PVLCMediaTrack;
 {$ENDIF}
 begin
-  if Self = nil then
-    Exit;
+  if Self = nil then Exit;
 {$IFDEF VIDEOS}
-  if FIndex >= FVideoList.Count then
-    Exit;
+  if FIndex >= FVideoList.Count then Exit;
 
   if Assigned(gGameApp) then
   begin
@@ -444,9 +442,9 @@ begin
 
     if TrackCount > 0 then
     begin
-      for i := 0 to TrackCount - 1 do
+      for I := 0 to TrackCount - 1 do
       begin
-        Track := tracks[i];
+        Track := tracks[I];
         case Track.TrackType of
           vlcttVideo:
             begin

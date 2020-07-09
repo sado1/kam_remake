@@ -29,7 +29,7 @@ type
     procedure StartClick(Sender: TObject);
     procedure Difficulty_Change(Sender: TObject);
     procedure AnimNodes(aTickCount: Cardinal);
-    procedure PlayBrifingAudioTrack;
+    procedure PlayBriefingAudioTrack;
   protected
     Panel_Campaign: TKMPanel;
       Image_CampaignBG: TKMImage;
@@ -287,7 +287,7 @@ begin
   PlayBrifingAudioTrack;
 end;
 
-procedure TKMMenuCampaign.PlayBrifingAudioTrack;
+procedure TKMMenuCampaign.PlayBriefingAudioTrack;
 begin
   TKMAudio.PauseMusicToPlayFile(fCampaign.GetBreifingAudioFile(fMapIndex));
 end;
@@ -378,7 +378,7 @@ begin
 
     gVideoPlayer.AddCampaignVideo(fCampaign.Path, 'Logo');
     gVideoPlayer.AddCampaignVideo(fCampaign.Path, 'Intro');
-    gVideoPlayer.SetCallback(PlayBrifingAudioTrack);
+    gVideoPlayer.SetCallback(PlayBriefingAudioTrack); // Start briefing audio after logo and intro videos
     gVideoPlayer.Play;
   end;
 end;
