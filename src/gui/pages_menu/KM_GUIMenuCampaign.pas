@@ -24,6 +24,7 @@ type
     procedure BackClick(Sender: TObject);
     procedure Scroll_Toggle(Sender: TObject);
 
+    procedure SelectMap(aMapIndex: Byte);
     procedure Campaign_SelectMap(Sender: TObject);
     procedure UpdateDifficultyLevel;
     procedure StartClick(Sender: TObject);
@@ -180,8 +181,8 @@ begin
     Label_CampaignFlags[I].AbsTop := Image_CampaignFlags[I].AbsTop + FLAG_LABEL_OFFSET_Y;
   end;
 
-  //Select last map to play by 'clicking' last node
-  Campaign_SelectMap(Image_CampaignFlags[fCampaign.UnlockedMap]);
+  //Select last map, no brifing will be played, since its set as
+  SelectMap(fCampaign.UnlockedMap);
 end;
 
 
@@ -238,25 +239,23 @@ begin
 end;
 
 
-procedure TKMMenuCampaign.Campaign_SelectMap(Sender: TObject);
+procedure TKMMenuCampaign.SelectMap(aMapIndex: Byte);
 var
   I: Integer;
-  Color: Cardinal;
+  color: Cardinal;
 begin
-  if TKMControl(Sender).Tag > fCampaign.UnlockedMap then exit; //Skip closed maps
-
-  fMapIndex := TKMControl(Sender).Tag;
+  fMapIndex := aMapIndex;
 
   UpdateDifficultyLevel;
-  
+
   // Place highlight
   for I := 0 to High(Image_CampaignFlags) do
   begin
     Image_CampaignFlags[I].Highlight := (fMapIndex = I);
-    Color := icLightGray2;
+    color := icLightGray2;
     if I < fCampaign.MapCount then
-      Color := DIFFICULTY_LEVELS_COLOR[fCampaign.MapsProgressData[I].BestCompleteDifficulty];
-    Label_CampaignFlags[I].FontColor := Color;
+      color := DIFFICULTY_LEVELS_COLOR[fCampaign.MapsProgressData[I].BestCompleteDifficulty];
+    Label_CampaignFlags[I].FontColor := color;
   end;
 
   //Connect by sub-nodes
@@ -282,13 +281,23 @@ begin
 
   Image_ScrollRestore.Hide;
   Panel_CampScroll.Show;
+end;
 
-  gMusic.StopPlayingOtherFile; //Stop playing the previous breifing even if this one doesn't exist
-  PlayBrifingAudioTrack;
+
+// Flag was clicked on the Map
+procedure TKMMenuCampaign.Campaign_SelectMap(Sender: TObject);
+begin
+  if TKMControl(Sender).Tag > fCampaign.UnlockedMap then Exit; //Skip closed maps
+
+  SelectMap(TKMControl(Sender).Tag);
+
+  // Play briefing
+  PlayBriefingAudioTrack;
 end;
 
 procedure TKMMenuCampaign.PlayBriefingAudioTrack;
 begin
+  gMusic.StopPlayingOtherFile; //Stop playing the previous briefing even if this one doesn't exist
   TKMAudio.PauseMusicToPlayFile(fCampaign.GetBreifingAudioFile(fMapIndex));
 end;
 
@@ -381,6 +390,10 @@ begin
     gVideoPlayer.SetCallback(PlayBriefingAudioTrack); // Start briefing audio after logo and intro videos
     gVideoPlayer.Play;
   end;
+
+  // Start briefing audio immidiately, if video was not started (disabled / no video file etc)
+  if not gVideoPlayer.IsActive then
+    PlayBriefingAudioTrack;
 end;
 
 procedure TKMMenuCampaign.BackClick(Sender: TObject);
