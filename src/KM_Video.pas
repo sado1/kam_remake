@@ -422,7 +422,12 @@ begin
     gSoundPlayer.AbortAllScriptSounds;
     gSoundPlayer.AbortAllLongSounds;
     gMusic.StopPlayingOtherFile;
-    gMusic.Fade(FADE_MUSIC_TIME);
+
+    // Fade music immediately for starting video
+    if ( FVideoList[FIndex].Kind = vfkStarting ) then
+      gMusic.Fade(0)
+    else
+      gMusic.Fade(FADE_MUSIC_TIME);
     // For unknown reason libzPlay lib will use higher volume when unfade (resume) music after video is stopped
     // We either can use BASS or set player volume to 0 here. Let's try the latter option for now
     gMusic.SetPlayerVolume(0);
