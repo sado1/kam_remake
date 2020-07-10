@@ -54,7 +54,7 @@ type
     procedure SetServerMapsRosterStr(const aValue: UnicodeString);
   protected
     procedure LoadFromFile(const aPath: string); override;
-    procedure SaveToFile(const aPath: string); override;
+    procedure SaveToFile(const aFilename: string); override;
 
     function GetDefaultSettingsName: string; override;
     function GetSettingsName: string; override;
@@ -192,13 +192,16 @@ end;
 
 
 //Don't rewrite the file for each individual change, do it in one batch for simplicity
-procedure TKMServerSettings.SaveToFile(const aPath: string);
+procedure TKMServerSettings.SaveToFile(const aFilename: string);
 var
   F: TMemIniFile;
 begin
   if BLOCK_FILE_WRITE then
     Exit;
-  F := TMemIniFile.Create(aPath {$IFDEF WDC}, TEncoding.UTF8 {$ENDIF} );
+
+  ForceDirectories(ExtractFilePath(ExpandFileName(aFilename))); // Create folder, if it does not exist
+
+  F := TMemIniFile.Create(aFilename {$IFDEF WDC}, TEncoding.UTF8 {$ENDIF} );
   try
     F.WriteString ('Server','ServerName',                   '''' + UnicodeString(fServerName) + ''''); //Add single quotes for server name
     F.WriteString ('Server','WelcomeMessage',               {$IFDEF FPC} UTF8Encode {$ENDIF}(fServerWelcomeMessage));
