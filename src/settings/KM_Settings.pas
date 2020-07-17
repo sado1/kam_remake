@@ -42,6 +42,9 @@ begin
   inherited;
 
   LoadFromDefaultFile;
+  // Save settings to default directory immidiately
+  // If there were any problems with settings then we want to be able to customise them
+  SaveToDefaultFile;
 
   fNeedsSave := False;
 end;
