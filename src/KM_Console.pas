@@ -188,15 +188,19 @@ begin
   if gGame = nil then //Can't manage console commands while not in the game
     Exit;
 
-  if (Length(Text) > 0) and (Text[1] = '/') and (Text[2] <> '/') then
+  // Text starts with / and its long enought to have some script command in there
+  if (Length(Text) > 1) and (Text[1] = '/') then
   begin
-    TryDoCallConsoleCommand;
-    //Add command to history, but do not propagate post to others
-    Post(False);
-    Result := True;
-  end else
-  if (Length(Text) > 1) and (Text[1] = '/') and (Text[2] = '/') then
-    Delete(Text, 1, 1); //Remove one of the /'s
+    if (Text[2] = '/') then
+      Delete(Text, 1, 1) //Remove one of the /'s
+    else
+    begin
+      TryDoCallConsoleCommand;
+      //Add command to history, but do not propagate post to others
+      Post(False);
+      Result := True;
+    end;
+  end;
 end;
 
 
