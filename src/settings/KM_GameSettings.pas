@@ -410,7 +410,7 @@ begin
 
   // Video
   nVideo := nGameSettings.AddOrFindChild('Video');
-    fVideoOn      := nVideo.Attributes['Enabled'].AsBoolean(True);
+    fVideoOn      := nVideo.Attributes['Enabled'].AsBoolean(False); //Disabled by default
     fVideoStretch := nVideo.Attributes['Stretch'].AsBoolean(True);
     fVideoStartup := nVideo.Attributes['Startup'].AsBoolean(True);
     fVideoVolume  := nVideo.Attributes['Volume'].AsFloat(0.5);
