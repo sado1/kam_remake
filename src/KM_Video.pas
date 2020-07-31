@@ -5,9 +5,10 @@ unit KM_Video;
 interface
 
 uses
-  SysUtils, SyncObjs, Types, Messages, Classes, Dialogs, KromOGLUtils, KM_VLC, Generics.Collections
+  SysUtils, SyncObjs, Types, Messages, Classes, Dialogs, KromOGLUtils, Generics.Collections
   {$IFDEF WDC} , UITypes {$ENDIF}
   {$IFDEF FPC} , Controls {$ENDIF}
+  {$IFDEF VIDEOS} , KM_VLC {$ENDIF}
   ;
 
 {$IFDEF VIDEOS}
@@ -148,6 +149,7 @@ begin
 end;
 
 
+{$IFDEF VIDEOS}
 procedure TKMVideoPlayer.AddVideoToList(aPath: string; aKind: TKMVideoFileKind = vfkNone);
 var
   videoFileData: TKMVideoFile;
@@ -156,6 +158,7 @@ begin
   videoFileData.Kind := aKind;
   FVideoList.Add(videoFileData);
 end;
+{$ENDIF}
 
 
 procedure TKMVideoPlayer.AddCampaignVideo(const aCampaignPath, aVideoName: string);
@@ -519,8 +522,10 @@ end;
 {$ENDIF}
 
 procedure TKMVideoPlayer.Stop;
+{$IFDEF VIDEOS}
 var
   startingVideo: Boolean;
+{$ENDIF}
 begin
 {$IFDEF VIDEOS}
   StopVideo;
