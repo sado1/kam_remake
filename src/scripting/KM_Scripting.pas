@@ -317,7 +317,6 @@ begin
   if gScriptEvents.HasConsoleCommands then
     try
       gScriptEvents.ParseConsoleCommandsProcedures(fScriptCode);
-
     except
       on E: EConsoleCommandParseError do
       begin
