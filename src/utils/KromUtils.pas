@@ -508,14 +508,17 @@ var
 begin
   A := 1;
   B := 0; // A is initialized to 1, B to 0
-  for I := 1 to aLength do
+
+  if aLength <> 0 then // Check to avoid CardinalOverflow on -1
+  for I := 0 to aLength - 1 do
   begin
-    Inc(A, pByte(Cardinal(aPointer) + I - 1)^);
-    Inc(B, A);
+    Inc(A, pByte(Cardinal(aPointer) + I)^);
+    // We need to MOD B within cos it may overflow in files larger than 65kb, A overflows with files larger than 16mb
+    B := (B + A) mod MAX_PRIME_16BIT;
   end;
+
   A := A mod MAX_PRIME_16BIT;
-  B := B mod MAX_PRIME_16BIT;
-  Adler32CRC := B + A shl 16; // reverse order for smaller numbers
+  Adler32CRC := B + A shl 16; // Reverse order for smaller numbers
 end;
 
 
@@ -538,23 +541,8 @@ end;
 
 
 function Adler32CRC(S: TMemoryStream): Cardinal;
-const
-  MAX_PRIME_16BIT = 65521; // 65521 is the largest prime number smaller than 2^16
-var
-  I, A, B: Cardinal;
 begin
-  A := 1;
-  B := 0; // A is initialized to 1, B to 0
-
-  // We need to MOD B within cos it may overflow in files larger than 65kb, A overflows with files larger than 16mb
-  if S.Size <> 0 then
-    for I := 0 to S.Size - 1 do
-    begin
-      Inc(A, pByte(Cardinal(S.Memory) + I)^);
-      B := (B + A) mod MAX_PRIME_16BIT;
-    end;
-  A := A mod MAX_PRIME_16BIT;
-  Result := B + A shl 16; // reverse order for smaller numbers
+  Result := Adler32CRC(S.Memory, S.Size);
 end;
 
 
