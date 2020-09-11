@@ -988,7 +988,7 @@ var
 begin
   gLog.AddTime('Creating crash report...');
 
-  //Attempt to save the game, but if the state is too messed up it might fail
+  // Attempt to save the game, but if the state is too messed up it might fail
   fSaveWorkerThread.fSynchronousExceptionMode := True; //Do saving synchronously in main thread
   try
     if (fParams.Mode in [gmSingle, gmCampaign, gmMulti, gmMultiSpectate])
@@ -1012,10 +1012,11 @@ begin
   missionFile := fParams.MissionFile;
   path := ExtractFilePath(ExeDir + missionFile);
 
+  // Try to attach the dat+map
   AttachFile(ExeDir + missionFile);
-  AttachFile(ExeDir + ChangeFileExt(missionFile, '.map')); //Try to attach the map
+  AttachFile(ExeDir + ChangeFileExt(missionFile, '.map'));
 
-  //Try to add main script file and all other scripts, because they could be included
+  // Try to add main script file and all other scripts, because they could be included
   if FileExists(ExeDir + ChangeFileExt(missionFile, '.script')) then
   begin
     FindFirst(path + '*.script', faAnyFile - faDirectory, searchRec);
@@ -1028,6 +1029,8 @@ begin
       FindClose(searchRec);
     end;
   end;
+
+  //@Rey: I found it might be helpful to also attach the fSaveFile (savegame from which the game was loaded and crashed)
 
   if fParams.IsReplay or (fGamePlayInterface.UIMode = umReplay) then //In case game mode was altered or loaded with logical error
   begin
