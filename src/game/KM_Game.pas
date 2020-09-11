@@ -976,13 +976,11 @@ end;
 
 {$IFDEF USE_MAD_EXCEPT}
 procedure TKMGame.AttachCrashReport(const ExceptIntf: IMEException; const aZipFile: UnicodeString);
-
   procedure AttachFile(const aFile: UnicodeString);
   begin
-    if (aFile = '') or not FileExists(aFile) then Exit;
-    ExceptIntf.AdditionalAttachments.Add(aFile, '', aZipFile);
+    if (aFile <> '') and FileExists(aFile) then
+      ExceptIntf.AdditionalAttachments.Add(aFile, '', aZipFile);
   end;
-
 var
   I: Integer;
   missionFile, path: UnicodeString;
