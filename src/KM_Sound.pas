@@ -16,7 +16,6 @@ const
   OGG_FILE_EXT = '.ogg';
 
 type
-
   TKMSoundPlayer = class
   private
     fALDevice: PALCdevice;
@@ -1233,5 +1232,6 @@ begin
   Loc := KMPoint(0,0);
   HandIndex := 0;
 end;
+
 
 end.
