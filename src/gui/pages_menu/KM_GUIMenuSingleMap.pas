@@ -635,7 +635,7 @@ begin
     fMinimap.Update;
     MinimapView.SetMinimap(fMinimap);
 
-    //Populate goals section
+    // Populate goals section
     for I := 0 to Min(MAX_UI_GOALS, M.GoalsVictoryCount[fSingleLoc]) - 1 do
     begin
       G := M.GoalsVictory[fSingleLoc,I];
@@ -653,24 +653,22 @@ begin
       Label_SurvGoal[I].Caption := IntToStr(G.Play + 1);
     end;
 
-    //Populate alliances section
+    // Populate alliances section
     J := 0; K := 0;
     for I := 0 to M.LocCount - 1 do
     if I <> fSingleLoc then
-    begin
       case M.Alliances[fSingleLoc, I] of
-        atEnemy: begin
+        atEnemy:  begin
                     Image_Enemies[J].Show;
                     Image_Enemies[J].FlagColor := M.FlagColors[I];
                     Inc(J);
                   end;
-        atAlly:  begin
+        atAlly:   begin
                     Image_Allies[K].Show;
                     Image_Allies[K].FlagColor := M.FlagColors[I];
                     Inc(K);
                   end;
       end;
-    end;
 
     for I := 0 to MAX_HANDS - 1 do
     begin
