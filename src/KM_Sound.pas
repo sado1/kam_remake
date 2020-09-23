@@ -107,6 +107,7 @@ type
   end;
 
   TKMScriptSound = class
+  public
     PlayingIndex: Integer; //Index in gSoundPlayer.fScriptSoundALIndex, or -1 if not playing
     RemoveRequestSent: Boolean; //Mark sound as 'to be removed' to don't send too many GIC commands
     //Fields below are saved
@@ -175,14 +176,14 @@ uses
 
 
 const
-  MAX_ATTENUATED_SOUNDS = (3/4)*MAX_SOUNDS; //Attenuated sounds are less important, always save space for others
-  MAX_FAR_SOUNDS = (1/2)*MAX_SOUNDS; //Sounds that are too far away can only access this many slots
+  MAX_ATTENUATED_SOUNDS = (3/4) * MAX_SOUNDS; // Attenuated sounds are less important, always save space for others
+  MAX_FAR_SOUNDS = (1/2) * MAX_SOUNDS;        // Sounds that are too far away can only access this many slots
 
-  MAX_BUFFERS = 16; //16/24/32 looks like the limit, depends on hardware
-  MAX_SOURCES = 32; //depends on hardware as well
-  MAX_DISTANCE = 32; //After this distance sounds are completely mute
-  MAX_PRIORITY_DISTANCE_FACTOR = (1/2); //Sounds past this distance will not play if there are few slots left (gives close sounds priority)
-  MAX_DURATION_FROM_LAST_SND_MESSAGE_NOTICE = 100; //Maximum time in ms from lsat message notite. To avoid 'echo' effect for multiple messages at one time
+  MAX_BUFFERS = 16;  // 16/24/32 looks like the limit, depends on hardware
+  MAX_SOURCES = 32;  // Depends on hardware as well
+  MAX_DISTANCE = 32; // After this distance sounds are completely mute
+  MAX_PRIORITY_DISTANCE_FACTOR = (1/2); // Sounds past this distance will not play if there are few slots left (gives close sounds priority)
+  MAX_DURATION_FROM_LAST_SND_MESSAGE_NOTICE = 100; // Maximum time in ms from last message notice. To avoid 'echo' effect for multiple messages at one time
 
 
 { TKMSoundPlayer }
