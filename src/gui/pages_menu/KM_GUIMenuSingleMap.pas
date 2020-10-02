@@ -140,7 +140,6 @@ begin
 end;
 
 
-
 procedure TKMMenuSingleMap.Create_SingleMap(aParent: TKMPanel);
 var
   I: Integer;

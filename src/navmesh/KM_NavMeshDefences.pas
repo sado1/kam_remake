@@ -175,8 +175,6 @@ uses
   KM_AIFields, KM_AIInfluences, KM_NavMesh, KM_RenderAux;
 
 
-
-
 { TForwardFF }
 constructor TForwardFF.Create(aSorted: Boolean = False);
 begin
@@ -409,8 +407,6 @@ begin
     fDebugDefPolyCnt := fDebugCounter;
   {$ENDIF}
 end;
-
-
 
 
 { TBackwardFF }
@@ -935,8 +931,6 @@ begin
 
   fFilterFF.Paint();
 end;
-
-
 
 
 { TFilterFF }

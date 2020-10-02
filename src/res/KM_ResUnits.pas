@@ -156,7 +156,6 @@ const
   );
 
 
-
   //The frame shown when a unit is standing still in uaWalk. Same for all units!
   UNIT_STILL_FRAMES: array [TKMDirection] of Byte = (0,3,2,2,1,6,7,6,6);
 

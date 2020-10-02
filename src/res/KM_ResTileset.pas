@@ -172,7 +172,6 @@ const
 //      ((0,0), (0,0))); // mt_4Square
 
 
-
   TERRAIN_EQUALITY_PAIRS: array[0..1] of record
       TK1, TK2: TKMTerrainKind;
     end =

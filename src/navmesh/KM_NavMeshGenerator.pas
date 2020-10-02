@@ -288,8 +288,6 @@ begin
 end;
 
 
-
-
 function TKMNavMeshGenerator.ExtractNodes(): TKMNavMeshByteArray;
   type
     TStartEndIdxs = record
@@ -573,8 +571,6 @@ begin
 end;
 
 
-
-
 procedure TKMNavMeshGenerator.AddInnerNodes(var aW: TKMNavMeshByteArray);
 var
   E: TKMNavMeshByteArray;
@@ -620,8 +616,6 @@ begin
   for Y := Y to High(fIdxArr) do
     fIdxArr[Y] := fInnerPointEndIdx;
 end;
-
-
 
 
 procedure TKMNavMeshGenerator.PolygonTriangulation();
@@ -1032,8 +1026,6 @@ begin
 end;
 
 
-
-
 // Polygon optimalization
 procedure TKMNavMeshGenerator.PrettyPoly();
 var
@@ -1184,8 +1176,6 @@ begin
     if not Chck[ActIdx] then
         BeautifyPoly(ActIdx);
 end;
-
-
 
 
 function TKMNavMeshGenerator.Paint(const aRect: TKMRect): Boolean;
