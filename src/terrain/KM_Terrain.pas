@@ -1536,7 +1536,6 @@ begin
 end;
 
 
-
 function TKMTerrain.TileHasTerrainKindPart(X, Y: Word; aTerKind: TKMTerrainKind; aDir: TKMDirection): Boolean;
 var
   cornersTKinds: TKMTerrainKindCorners;
@@ -4999,7 +4998,6 @@ begin
   tmp2 := Mix(Land[Min(Yc+2, fMapY), Min(Xc+2, fMapX)].RenderHeight, Land[Min(Yc+2, fMapY), Xc+1].RenderHeight, Frac(inX));
   Result := inY - Mix(tmp2, tmp1, Frac(inY)) / CELL_HEIGHT_DIV;
 end;
-
 
 
 //Convert point from flat position to height position on terrain

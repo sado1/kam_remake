@@ -109,7 +109,6 @@ type
   end;
 
 
-
   const
   len_BIOME = 24;
   BT: array[0..len_BIOME-1,0..len_BIOME-1] of Integer = (
@@ -253,7 +252,6 @@ implementation
 uses
   SysUtils, KM_HandsCollection, KM_CommonClasses, KM_Game, KM_ResMapElements, KM_Hand, Dialogs,
   KM_ResTypes;
-
 
 
 { TKMRandomMapGenerator }
@@ -638,8 +636,6 @@ begin
 end;
 
 
-
-
 // Linear interpolation for grid of random points (for GenerateHeight or CreateBiomes functions)
 // aStep = step of linear interpolation (size of shapes)
 // aMaxNum = generated numbers will be in interval <0, aMaxNum)
@@ -705,7 +701,6 @@ begin
 
   Result := Output;
 end;
-
 
 
 // Create shapes using specific limits from TInteger2Array
@@ -846,8 +841,6 @@ begin
 
   Result := Output;
 end;
-
-
 
 
 // Generator of random points with best possible distance between them (quite slow algorithm, only for Locs)
@@ -1065,7 +1058,6 @@ begin
 end;
 
 
-
 // Generator of random points with minimal distance between them (algorithmic from division into areas with indetical size = very fast)
 // aCnt = minimal count (it will adapt to map size to secure that it is balanced
 // aSpace = minimal space between generated points (points will be in grid if it is equal to infinity)
@@ -1145,7 +1137,6 @@ begin
   Result.X := Min(  aMax.X, Max( aMin.X,Round(aCenter.X + radius * cos(angle)) )  );
   Result.Y := Min(  aMax.Y, Max( aMin.Y,Round(aCenter.Y + radius * sin(angle)) )  );
 end;
-
 
 
 // Biomes generator (basic ACCESSIBLE terrain)
@@ -1550,7 +1541,6 @@ end;
 //}
 
 
-
 // Create obstacles (eIron, eGold, watter, swamp and wetland) - obstacles are created via seeds and array of probabilities it is basicaly RANDOM WALK in probability array
 // aLocs = expected player's position (those will have protected radius to secure that player have place for city)
 // A = TKMByte2Array for obstacles
@@ -1852,9 +1842,6 @@ begin
 end;
 
 
-
-
-
 // Fixer of mountains with iron or gold to be able to place mines there
 procedure TKMRandomMapGenerator.MineFix(var A: TKMByte2Array);
 type
@@ -2013,9 +2000,6 @@ begin
 end;
 
 
-
-
-
 // Cellular automaton - CA will secure that each tile has in his surrounding at leas another 3 tiles and together they make square
 // A = TKMByte2Array of biomes
 procedure TKMRandomMapGenerator.CellularAutomaton(var A: TKMByte2Array);
@@ -2120,7 +2104,6 @@ begin
     end;
   end;
 end;
-
 
 
 // This function will try to create smooth transitions with special decomposition of basic tiles
@@ -2511,7 +2494,6 @@ begin
 end;
 
 
-
 // Replace textures which are surrounded by mountains by snow biome
 // A = TKMByte2Array of biomes
 procedure TKMRandomMapGenerator.SnowMountains(var A: TKMByte2Array);
@@ -2630,7 +2612,6 @@ begin
     FillObject.Free;
   end;
 end;
-
 
 
 // Converts biomes into numbers which represents specific tiles with right direction and nice variance, it also make balanced resources
@@ -3176,7 +3157,6 @@ begin
 end;
 
 
-
 // Debug function (only full textures without transitions)
 // TilesPartsArr = tiles composition array
 // A = array of biomes
@@ -3218,7 +3198,6 @@ begin
       TilesPartsArr.Rotation[Y,X] := 0;
 		end;
 end;
-
 
 
 // Height generator
@@ -3575,7 +3554,6 @@ begin
 end;
 
 
-
 // Objects generator
 // TilesPartsArr = tiles composition array
 // A = array of biomes
@@ -3791,7 +3769,6 @@ begin
   //}
   end;
 end;
-
 
 
 // TileTemplate with Cellular automaton (developed but unfinished because of performance impact and results)
@@ -4158,7 +4135,6 @@ end;
 //end;
 
 
-
 // Old version of TileTemplate (version with CA and actual version provides better results)
 //function TKMRandomMapGenerator.TileTemplateOLD(var A: TKMByte2Array; const Settings: Byte): TKMByte2Array;
 //var
@@ -4425,7 +4401,6 @@ end;
 //
 //  Result := B;
 //end;
-
 
 
 // JUNK
@@ -4787,9 +4762,6 @@ end;
 //}
 
 
-
-
-
 {
 // Generator of random points in 2d grid with minimal distance between them (brute force)
 function TKMRandomMapGenerator.RNDPointsInGridBF(const cnt: Integer; Minimum,Maximum: TKMPoint): TKMPointArray;
@@ -4850,8 +4822,6 @@ begin
   end;
 end;
 //}
-
-
 
 
 {
@@ -4967,9 +4937,6 @@ begin
   end;
 end;
 //}
-
-
-
 
 
 {
@@ -5406,10 +5373,6 @@ begin
     end;
 end;
 //}
-
-
-
-
 
 
 {

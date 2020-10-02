@@ -1974,7 +1974,6 @@ begin
 end;
 
 
-
 procedure TKMScriptErrorHandler.HandleErrors;
 begin
   HandleScriptError(seCompileError, AppendErrorPrefix('Script compile errors:' + EolW, fErrorString));
