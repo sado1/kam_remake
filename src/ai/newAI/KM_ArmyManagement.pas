@@ -519,7 +519,6 @@ begin
 end;
 
 
-
 procedure TKMArmyManagement.UpdateState(aTick: Cardinal);
 begin
   {$IFDEF PERFLOG}

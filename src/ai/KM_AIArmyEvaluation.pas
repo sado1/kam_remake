@@ -336,7 +336,6 @@ begin
 end;
 
 
-
 procedure TKMArmyEvaluation.AfterMissionInit();
 var
   PL: TKMHandID;

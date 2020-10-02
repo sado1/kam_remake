@@ -1471,8 +1471,6 @@ begin
 end;
 
 
-
-
 procedure TKMCityBuilder.CreateShortcuts();
 const
   MAX_SHORTCUTS_PER_HOUSE_TYPE = 2;
@@ -1764,9 +1762,6 @@ end;
 
 
 {
-
-
-
 // Remove units when is game in GA mode (avoid to place houses at unit)
 if GA_PLANNER then
   for I := 0 to gHands[fOwner].Units.Count - 1 do

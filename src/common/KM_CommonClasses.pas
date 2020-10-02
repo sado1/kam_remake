@@ -1888,7 +1888,6 @@ begin
 end;
 
 
-
 //Not implemented methods 
 procedure TKMemoryStreamText.CheckMarker(const aTitle: string);
 begin

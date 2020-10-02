@@ -335,7 +335,6 @@ begin
 end;
 
 
-
 function TKMSupervisor.UpdateCombatStatus(aTeam: Byte; var aCityUnderAttack: Boolean): TKMCombatStatus;
   procedure UpdateCS(aOwner,aEnemy: TKMHandID; aStatus: TKMCombatStatus);
   begin
@@ -456,8 +455,6 @@ begin
     fCombatStatus[Owner,Owner] := CS; // Overall combat status of player
   end;
 end;
-
-
 
 
 procedure TKMSupervisor.AttackCluster(aAttack: Boolean; aCCTIdx: Word; var A: pTKMGroupCounterWeightArray; const E: TKMUnitGroupArray; const H: TKMHouseArray);
@@ -1018,7 +1015,6 @@ begin
     end;
   end;
 end;
-
 
 
 procedure TKMSupervisor.UpdateDefPos(aTeam: Byte);

@@ -224,8 +224,6 @@ begin
 end;
 
 
-
-
 //Make the area around to be avoided by common houses
 procedure TKMInfluences.AddAvoidBuilding(aX,aY: Word; aRad: Single);
 var

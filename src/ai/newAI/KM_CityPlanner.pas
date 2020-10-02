@@ -227,7 +227,6 @@ uses
   KM_RenderAux, KM_ResMapElements;
 
 
-
 { Procedural functions }
 function CompareForests(const aElem1, aElem2): Integer;
 var
@@ -238,7 +237,6 @@ begin
   else if (val1.Bid < val2.Bid) then Result := -1
   else                               Result := +1;
 end;
-
 
 
 { TKMCityPlanner }
@@ -399,7 +397,6 @@ begin
 end;
 
 
-
 procedure TKMCityPlanner.AfterMissionInit();
 begin
   // Actual houses will be added in UpdateState (script may remove / add something after mission init ...)
@@ -413,8 +410,6 @@ begin
   fRoadShortcutPlanner.OwnerUpdate(aPlayer);
   fFieldEval.OwnerUpdate(aPlayer);
 end;
-
-
 
 
 procedure TKMCityPlanner.UpdateState(aTick: Cardinal);
@@ -2656,11 +2651,6 @@ begin
 end;
 
 
-
-
-
-
-
 { TPathFindingCityPlanner }
 {$IFDEF DEBUG_NewAI}
 function TPathFindingCityPlanner.Route_Make(const aLocA, aLocB: TKMPoint; NodeList: TKMPointList): Boolean;
@@ -2785,8 +2775,6 @@ begin
 end;
 
 
-
-
 { TKMFieldEvaluation }
 constructor TKMFieldEvaluation.Create(aMapX, aMapY: Word; aOwner: TKMHandID);
 begin
@@ -2899,7 +2887,6 @@ procedure TKMFieldEvaluation.OwnerUpdate(aPlayer: TKMHandID);
 begin
   fOwner := aPlayer;
 end;
-
 
 
 { JUNK:
@@ -3020,9 +3007,6 @@ begin
   Result := Output - GA_PLANNER_DistCrit_CenterStore * DistFromHouse([htStore]);
 end;
 //}
-
-
-
 
 
 // Faster method for placing house
