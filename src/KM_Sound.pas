@@ -732,7 +732,6 @@ begin
 end;
 
 
-
 procedure TKMSoundPlayer.PlayWarrior(aUnitType: TKMUnitType; aSound: TWarriorSpeech);
 begin
   if SKIP_SOUND

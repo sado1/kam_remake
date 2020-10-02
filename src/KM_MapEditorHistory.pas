@@ -299,7 +299,6 @@ begin
 end;
 
 
-
 { TKMCheckpointFields }
 //constructor TKMCheckpointFields.Create(const aCaption: string);
 //var

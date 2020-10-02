@@ -680,7 +680,6 @@ begin
 end;
 
 
-
 procedure TKMMain.Resize(aWidth, aHeight: Integer; const aWindowParams: TKMWindowParamsRecord);
 begin
   if gGameApp = nil then Exit;
