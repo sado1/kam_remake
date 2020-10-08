@@ -472,7 +472,7 @@ begin
 end;
 
 
-//New mission
+// New mission
 procedure TKMGame.Start(const aMissionFile, aName: UnicodeString; aFullCRC, aSimpleCRC: Cardinal; aCampaign: TKMCampaign;
                             aCampMap: Byte; aLocation: ShortInt; aColor: Cardinal;
                             aMapDifficulty: TKMMissionDifficulty = mdNone; aAIType: TKMAIType = aitNone;
@@ -554,8 +554,8 @@ begin
 
   parser := TKMMissionParserStandard.Create(parseMode, playerEnabled);
   try
-    if not parser.LoadMission(aMissionFile) then
-      raise Exception.Create(parser.FatalErrors);
+    // Any fatal errors in parsing will be raised as exceptions and caught up higher
+    parser.LoadMission(aMissionFile);
 
     if fParams.IsMapEditor then
     begin
