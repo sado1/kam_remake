@@ -12,7 +12,6 @@ uses
   KM_NavMeshFloodFill, KM_ArmyAttackNew;
 
 type
-
   TKMCombatStatus = (csNeutral = 0, csDefending, csAttackingCity, csAttackingEverything);
   TKMCombatStatusArray = array[0..MAX_HANDS] of TKMCombatStatus;
 
@@ -166,8 +165,6 @@ uses
   KM_ResTypes;
 
 
-
-
 procedure DrawPolygon(aIdx: Integer; aOpacity: Byte; aFillColor: Cardinal; aOffset: Single = 0; aText: String = '');
 var
   P0,P1,P2: TKMPoint;
@@ -184,8 +181,6 @@ begin
       gRenderAux.Text(Polygons[aIdx].CenterPoint.X, Polygons[aIdx].CenterPoint.Y + aOffset, aText, $FFFFFFFF);
   end;
 end;
-
-
 
 
 { TKMFindClusters }
@@ -1351,6 +1346,7 @@ begin
   end;
   {$ENDIF}
 end;
+
 
 end.
 

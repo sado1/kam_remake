@@ -94,7 +94,6 @@ type
 
 
   TBackwardFF = class(TNavMeshFloodFill)
-  private
   protected
     fDefLinesRequired: Boolean;
     fOwner: TKMHandID;
@@ -135,7 +134,6 @@ type
   private
     fPolyCnt: Word;
     fBestDefLines, fAllDefLines: TKMDefenceLines;
-
   protected
     procedure InitQueue(aMaxIdx: Integer; aInitIdxArray: TKMWordArray); reintroduce;
     function IsVisited(const aIdx: Word): Boolean; override;
