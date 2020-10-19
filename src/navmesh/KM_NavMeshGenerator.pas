@@ -21,7 +21,6 @@ const
 
 
 type
-
   TKMNavMeshByteArray = array[-1..257,-1..257] of Byte;
 
   // Borders

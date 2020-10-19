@@ -10,12 +10,12 @@ uses
   Math, KM_CommonTypes, KM_Points,
   BinaryHeap, KM_Defaults;
 
-
 type
-  TPathfindingMode = ( pmShortestWay,   // Find shortest way in NavMesh
-                       pmAvoidTraffic,  // Try avoid traffic
-                       pmAvoidSpecEnemy // Try avoid anti type units (cav will keep distance form spears etc)
-                     );
+  TPathfindingMode = (
+    pmShortestWay,   // Find shortest way in NavMesh
+    pmAvoidTraffic,  // Try avoid traffic
+    pmAvoidSpecEnemy // Try avoid anti type units (cav will keep distance form spears etc)
+  );
 
   TNavMeshNode = record
     Idx: Word; // Index of NavMeshNode in NavMesh
