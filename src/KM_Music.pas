@@ -49,8 +49,8 @@ type
     fToPlayAfterFade: UnicodeString;
     fFadedToPlayOther: Boolean;
     fOtherVolume: Single;
-    function PlayFile(const FileName: UnicodeString): Boolean;
-    function PlayOtherFile(const FileName: UnicodeString): Boolean;
+    procedure PlayFile(const FileName: UnicodeString);
+    procedure PlayOtherFile(const FileName: UnicodeString);
     procedure ScanTracks(const aPath: UnicodeString);
     procedure ShuffleSongs; //should not be seen outside of this class
     procedure UnshuffleSongs;
@@ -172,13 +172,12 @@ begin
 end;
 
 
-function TKMMusicLib.PlayFile(const FileName: UnicodeString): Boolean;
+procedure TKMMusicLib.PlayFile(const FileName: UnicodeString);
 {$IFDEF USEBASS}
 var
   errorCode: Integer;
 {$ENDIF}
 begin
-  Result := False;
   if not fIsInitialized then Exit;
   if fFadeState <> fsNone then exit; //Don't start a new track while fading or faded
 
@@ -205,17 +204,15 @@ begin
   {$ENDIF}
 
   SetVolume(fVolume); //Need to reset music volume after starting playback
-  Result := True;
 end;
 
 
-function TKMMusicLib.PlayOtherFile(const FileName: UnicodeString): Boolean;
+procedure TKMMusicLib.PlayOtherFile(const FileName: UnicodeString);
 {$IFDEF USEBASS}
 var
   errorCode: Integer;
 {$ENDIF}
 begin
-  Result := False;
   if not fIsInitialized then exit;
 
   //Cancel previous sound
@@ -247,8 +244,6 @@ begin
   {$IFDEF USEBASS}
   BASS_ChannelSetAttribute(fBassOtherStream, BASS_ATTRIB_VOL, fOtherVolume); //0=silent, 1=max
   {$ENDIF}
-
-  Result := True;
 end;
 
 
@@ -263,7 +258,7 @@ begin
   if fVolume > 0 then
     fPrevVolume := fVolume;
 
-  SetPlayerVolume(aValue);
+  SetPlayerVolume(fVolume);
 end;
 
 
