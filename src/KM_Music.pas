@@ -185,10 +185,10 @@ begin
   if not FileExists(FileName) then Exit; //Make it silent
 
   {$IFDEF USELIBZPLAY}
-  Result := ZPlayer.OpenFile(AnsiString(FileName), sfAutodetect); //Detect file type automatically
-  if not Result then Exit; //File failed to load
-  Result := ZPlayer.StartPlayback;
-  if not Result then Exit; //Playback failed to start
+  if not ZPlayer.OpenFile(AnsiString(FileName), sfAutodetect) then //Detect file type automatically
+    Exit; //File failed to load
+  if not ZPlayer.StartPlayback then
+    Exit; //Playback failed to start
   {$ENDIF}
   {$IFDEF USEBASS}
   BASS_StreamFree(fBassStream); //Free the existing stream (will just return false if the stream is invalid)
@@ -219,10 +219,10 @@ begin
   if not FileExists(FileName) then Exit; //Make it silent
 
   {$IFDEF USELIBZPLAY}
-  Result := ZPlayerOther.OpenFile(AnsiString(FileName), sfAutodetect); //Detect file type automatically
-  if not Result then Exit; //File failed to load
-  Result := ZPlayerOther.StartPlayback;
-  if not Result then Exit; //Playback failed to start
+  if not ZPlayerOther.OpenFile(AnsiString(FileName), sfAutodetect) then //Detect file type automatically
+    Exit; //File failed to load
+  if not ZPlayerOther.StartPlayback then
+    Exit; //Playback failed to start
   {$ENDIF}
   {$IFDEF USEBASS}
   BASS_StreamFree(fBassOtherStream); //Free the existing stream (will just return false if the stream is invalid)
