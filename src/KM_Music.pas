@@ -145,8 +145,6 @@ begin
   for I := 0 to fCount - 1 do
     fTrackOrder[I] := I;
 
-  gMusic := Self;
-
   gLog.AddTime('Music init done, ' + IntToStr(fCount) + ' tracks found');
 end;
 
@@ -166,8 +164,6 @@ begin
   BASS_Free; //Frees this usage of BASS, allowing it to be recreated successfully
   {$ENDIF}
 
-  gMusic := nil;
-
   inherited;
 end;
 
@@ -179,19 +175,19 @@ var
 {$ENDIF}
 begin
   if not fIsInitialized then Exit;
-  if fFadeState <> fsNone then exit; //Don't start a new track while fading or faded
+  if fFadeState <> fsNone then Exit; //Don't start a new track while fading or faded
 
   //Cancel previous sound
   {$IFDEF USELIBZPLAY} ZPlayer.StopPlayback; {$ENDIF}
   {$IFDEF USEBASS} BASS_ChannelStop(fBassStream); {$ENDIF}
 
-  if not FileExists(FileName) then exit; //Make it silent
+  if not FileExists(FileName) then Exit; //Make it silent
 
   {$IFDEF USELIBZPLAY}
   Result := ZPlayer.OpenFile(AnsiString(FileName), sfAutodetect); //Detect file type automatically
-  if not Result then exit; //File failed to load
+  if not Result then Exit; //File failed to load
   Result := ZPlayer.StartPlayback;
-  if not Result then exit; //Playback failed to start
+  if not Result then Exit; //Playback failed to start
   {$ENDIF}
   {$IFDEF USEBASS}
   BASS_StreamFree(fBassStream); //Free the existing stream (will just return false if the stream is invalid)
@@ -200,7 +196,7 @@ begin
   BASS_ChannelPlay(fBassStream, True); //Start playback from the beggining
 
   errorCode := BASS_ErrorGetCode;
-  if errorCode <> BASS_OK then exit; //Error
+  if errorCode <> BASS_OK then Exit; //Error
   {$ENDIF}
 
   SetVolume(fVolume); //Need to reset music volume after starting playback
@@ -213,19 +209,19 @@ var
   errorCode: Integer;
 {$ENDIF}
 begin
-  if not fIsInitialized then exit;
+  if not fIsInitialized then Exit;
 
   //Cancel previous sound
   {$IFDEF USELIBZPLAY} ZPlayerOther.StopPlayback; {$ENDIF}
   {$IFDEF USEBASS} BASS_ChannelStop(fBassOtherStream); {$ENDIF}
 
-  if not FileExists(FileName) then exit; //Make it silent
+  if not FileExists(FileName) then Exit; //Make it silent
 
   {$IFDEF USELIBZPLAY}
   Result := ZPlayerOther.OpenFile(AnsiString(FileName), sfAutodetect); //Detect file type automatically
-  if not Result then exit; //File failed to load
+  if not Result then Exit; //File failed to load
   Result := ZPlayerOther.StartPlayback;
-  if not Result then exit; //Playback failed to start
+  if not Result then Exit; //Playback failed to start
   {$ENDIF}
   {$IFDEF USEBASS}
   BASS_StreamFree(fBassOtherStream); //Free the existing stream (will just return false if the stream is invalid)
@@ -234,7 +230,7 @@ begin
   BASS_ChannelPlay(fBassOtherStream, True); //Start playback from the beggining
 
   errorCode := BASS_ErrorGetCode;
-  if errorCode <> BASS_OK then exit; //Error
+  if errorCode <> BASS_OK then Exit; //Error
   {$ENDIF}
 
   //Now set the volume to the desired level
@@ -359,9 +355,9 @@ end;
 
 procedure TKMMusicLib.PlayNextTrack;
 begin
-  if not fIsInitialized then exit;
-  if fCount = 0 then exit; //no music files found
-  if fFadeState <> fsNone then exit;
+  if not fIsInitialized then Exit;
+  if fCount = 0 then Exit; //no music files found
+  if fFadeState <> fsNone then Exit;
 
   //Set next index, looped or random
   fIndex := (fIndex + 1) mod fCount;
@@ -371,9 +367,9 @@ end;
 
 procedure TKMMusicLib.PlayPreviousTrack;
 begin
-  if not fIsInitialized then exit;
-  if fCount = 0 then exit; //no music files found
-  if fFadeState <> fsNone then exit;
+  if not fIsInitialized then Exit;
+  if fCount = 0 then Exit; //no music files found
+  if fFadeState <> fsNone then Exit;
 
   fIndex := (fIndex + fCount - 1) mod fCount;
   PlayFile(fTracks[fTrackOrder[fIndex]]);
@@ -698,7 +694,7 @@ begin
   mciopen.lpstrDeviceType := 'sequencer';
   mciopen.lpstrElementName := pchar (filename);
   Result := mciSendCommand ($0, mci_open , mci_open_type or mci_open_element, longint (@mciopen));
-  if Result <> 0 then exit;
+  if Result <> 0 then Exit;
   // The device opened successfully; get the device ID.
   // Check if the output port is the MIDI mapper.
   wDeviceID := mciOpen.wDeviceID;
@@ -707,7 +703,7 @@ begin
   if Result <> 0 then
   begin
     mciSendCommand (wDeviceID, MCI_CLOSE, 0, 0);
-    exit;
+    Exit;
   end;
   // Begin playback. The window procedure function for the parent
   // Window will be notified with an MM_MCINOTIFY message when
@@ -719,7 +715,7 @@ begin
   if Result <> 0 then
   begin
     mciSendCommand (wDeviceID, MCI_CLOSE, 0, 0);
-    exit;
+    Exit;
   end;
 end;
 *)
