@@ -6,9 +6,9 @@ interface
 //BASS: Free for non-commercial projects. Requires bass.dll. Website: http://www.un4seen.com/
 //ZLibPlay: GNU GPL license. Requires libzplay.dll. Website: http://libzplay.sourceforge.net/
 
-//Comparision:  - BASS's DLL is much smaller (102kb vs 2.13mb(!)) and BASS seems faster at loading tracks.
-//              - ZLibPlay supports more formats, (FLAC, AC-3, AAC, PCM) but we don't care
-//              - ZLibPlay is GPL but BASS is not, and BASS can only be used for free in non-commercial products
+//Comparison: - BASS's DLL is much smaller (102kb vs 2.13mb(!)) and BASS seems faster at loading tracks.
+//            - ZLibPlay supports more formats, (FLAC, AC-3, AAC, PCM) but we don't care
+//            - ZLibPlay is GPL but BASS is not, and BASS can only be used for free in non-commercial products
 
 {$IFNDEF NO_MUSIC}
   {$DEFINE USEBASS}
@@ -24,12 +24,13 @@ uses
   ;
 
 type
-  TKMFadeState = (fsNone,
-                  fsFadeOut, // Unfade
-                  fsFadeIn,  // Fade
-                  fsFaded);
-
+  // We have two kinds of playable music:
+  // Track/Song - song we are playing now from the list
+  // Other/Briefing - voice file we play for campaign briefing
+  //todo: Would be nice to choose just 2 terms and stick to them
   TKMMusicLib = class
+  private type
+    TKMFadeState = (fsNone, fsFadeOut, fsFadeIn, fsFaded);
   private
     fCount: Integer;
     fIndex: Integer; //Points to the index in TrackOrder of the current track
