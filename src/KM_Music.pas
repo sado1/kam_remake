@@ -479,22 +479,21 @@ end;
 
 procedure TKMMusicLib.ShuffleSongs;
 var
-  I, R, newIndex: Integer;
+  I, R, curSong: Integer;
 begin
   if fIndex = -1 then Exit; // Music is disabled
 
-  newIndex := fIndex;
+  // Stay on the current song
+  curSong := fTrackOrder[fIndex];
 
-  //Shuffle everything except for first (menu) track
+  // Shuffle everything except for first (menu) track
   for I := fCount - 1 downto 1 do
   begin
     R := RandomRange(1, I);
-    //Remember the track number of the current track
-    if fTrackOrder[R] = fIndex then
-      newIndex := I;
     KromUtils.SwapInt(fTrackOrder[R], fTrackOrder[I]);
+    if fTrackOrder[I] = curSong then
+      fIndex := I;
   end;
-  fIndex := newIndex;
 end;
 
 
