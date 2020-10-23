@@ -2,7 +2,9 @@ unit TranslationManagerUtils;
 {$I ..\..\KaM_Remake.inc}
 interface
 
+
 	function GetWorkDir(aShowWarningMess: Boolean = False): UnicodeString;
+
 
 implementation
 uses
