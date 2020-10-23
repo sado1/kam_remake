@@ -103,20 +103,17 @@ type
   end;
 
 
-var
-  Form1: TForm1;
-
-
 implementation
-{$R *.dfm}
 uses
   TranslationManagerUtils;
 
+{$R *.dfm}
 
 const
   eol: string = #13#10; // EndOfLine
 
 
+{ TForm1 }
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   Caption := 'KaM Remake Translation Manager (' + GAME_REVISION + ')';
@@ -405,12 +402,12 @@ begin
   SetLength(TransLabels, gResLocales.Count);
   for I := 0 to gResLocales.Count - 1 do
   begin
-    TransLabels[I] := TLabel.Create(Form1);
+    TransLabels[I] := TLabel.Create(Self);
     TransLabels[I].Parent := ScrollBox1;
     TransLabels[I].Caption := gResLocales[I].Title + ' (' + gResLocales[I].Code + ')';
     TransLabels[I].Hide;
 
-    TransMemos[I] := TMemo.Create(Form1);
+    TransMemos[I] := TMemo.Create(Self);
     TransMemos[I].Parent := ScrollBox1;
     TransMemos[I].Anchors := [akLeft, akRight, akTop];
     TransMemos[I].Font.Name := 'Arial Unicode MS'; //If not found, parent font is used
