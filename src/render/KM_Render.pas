@@ -38,7 +38,8 @@ type
     class procedure DeleteTexture(aTex: GLUint);
     class procedure UpdateTexture(aTexture: GLuint; DestX, DestY: Word; Mode: TTexFormat; const Data: Pointer);
     class procedure BindTexture(aTexId: Cardinal);
-    class procedure FakeRender(aID: Cardinal);
+    // This is pointless. OGL does its own RAM/VRAM management. To be deleted in 2021
+    //class procedure FakeRender(aID: Cardinal);
     class property MaxTextureSize: Cardinal read fMaxTextureSize;
 
     property RendererVersion: UnicodeString read fOpenGL_Version;
@@ -325,6 +326,8 @@ begin
 end;
 
 
+// This is pointless. OGL does its own RAM/VRAM management. To be deleted in 2021
+{
 //Fake Render from Atlas, to force copy of it into video RAM, where it is supposed to be
 class procedure TRender.FakeRender(aID: Cardinal);
 begin
@@ -337,6 +340,7 @@ begin
     glVertex2f(0, 0);
   glEnd;
 end;
+}
 
 
 end.
