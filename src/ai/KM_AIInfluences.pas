@@ -238,6 +238,7 @@ begin
       AvoidBuilding[Y,X] := 255;
 end;
 
+
 procedure TKMInfluences.RemAvoidBuilding(aArea: TKMRect);
 var
   X,Y: Integer;
@@ -397,7 +398,7 @@ begin
       begin
         G := gHands[PL].UnitGroups.Groups[K];
         if (G = nil) OR G.IsDead then
-          continue;
+          Continue;
         Increment := Min(G.Count, EACH_X_MEMBER_COEF);
         L := 0;
         while (L < G.Count) do
@@ -419,7 +420,7 @@ begin
       begin
         G := gHands[PL].UnitGroups.Groups[K];
         if (G = nil) OR G.IsDead then
-          continue;
+          Continue;
         Increment := Min(G.Count, EACH_X_MEMBER_COEF);
         GT := G.GroupType;
         L := 0;
@@ -781,7 +782,7 @@ begin
     begin
       PL := GetBestOwner(K);
       if (PL = PLAYER_NONE) then
-        continue
+        Continue
       else
         Col := (gHands[PL].FlagColor AND tcWhite) OR (OwnPoly[PL,K] shl 24);
 

@@ -870,7 +870,7 @@ begin
         if gHands[PL].Constructions.HousePlanList.HasPlan(Point) then
           Exit;
     if (aHT in [htGoldMine, htIronMine]) then
-      continue;
+      Continue;
     // Quarry / Woodcutters / CoalMine / Towers may take place for mine so its arena must be scaned completely
     if aIgnoreAvoidBuilding then
     begin
@@ -1683,7 +1683,7 @@ begin
         begin
           HT := HouseType;
           if (HT = htNone) then
-            continue;
+            Continue;
           P1 := KMPointAdd( Loc, KMPoint(gRes.Houses[HT].EntranceOffsetX,0) ); // Plans have moved offset so fix it (because there is never enought exceptions ;)
           // Internal house tiles
           for L := Low(gAIFields.Eye.HousesMapping[HT].Tiles) to High(gAIFields.Eye.HousesMapping[HT].Tiles) do
@@ -1706,7 +1706,7 @@ begin
       for K := 0 to gHands[PL].Constructions.FieldworksList.Count - 1 do
         with gHands[PL].Constructions.FieldworksList.Fields[K] do
           case FieldType of
-            ftNone: continue;
+            ftNone: Continue;
             ftRoad: State[Loc.Y, Loc.X] := bsRoadPlan;
             else State[Loc.Y, Loc.X] := bsFieldPlan;
           end;
@@ -1722,7 +1722,7 @@ begin
   begin
     Distance := fInfoArr[Idx].Distance + 1;
     if (Distance > aMaxDistance) then
-      break;
+      Break;
     if (Y-1 >= 1      ) AND CanBeVisited(X,Y-1,Idx-fMapX) then MarkAsVisited(Y-1, InsertInQueue(Idx-fMapX), Distance, GetTerrainState(X,Y-1));
     if (X-1 >= 1      ) AND CanBeVisited(X-1,Y,Idx-1    ) then MarkAsVisited(Y,   InsertInQueue(Idx-1)    , Distance, GetTerrainState(X-1,Y));
     if (X+1 <= fMapX-1) AND CanBeVisited(X+1,Y,Idx+1    ) then MarkAsVisited(Y,   InsertInQueue(Idx+1)    , Distance, GetTerrainState(X+1,Y));

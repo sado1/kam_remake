@@ -670,7 +670,7 @@ begin
         if RemoveTreeInPlanProcedure OR gAIFields.Eye.CanAddHousePlan(Loc, aHT, True, True) then
         begin
           if (aHT in [htGoldMine, htIronMine, htCoalMine, htQuary]) AND CheckMine(I) then // Filter mines / chop-only woodcutters
-            continue;
+            Continue;
           Bid := //+ DistFromStore(Loc)
                  + ObstaclesInHousePlan(aHT, Loc)
                  - gAIFields.Influences.OwnPoint[fOwner, Loc]
@@ -681,7 +681,7 @@ begin
             BestIdx := I;
           end;
           if aOnlyLatest then
-            break;
+            Break;
         end
         else
           RemovePlan(aHT, I);
@@ -1795,11 +1795,11 @@ const
               AND not ( (Loc.Y <> Locs.Items[I].Y) OR (Abs(Loc.X - Locs.Items[I].X) > (3 + Byte(aMine = htIronMine))) ) then
             begin
               Check := False;
-              continue;
+              Continue;
             end;
           end;
           if not Check then
-            continue;
+            Continue;
           Gain := Locs.Tag[I] + DistCrit(aMine, Locs.Items[I]) * 4;
           if (Gain > BestGain) then
           begin
@@ -1876,7 +1876,7 @@ const
     Result := (BestIdx <> -1);
   end;
 var
-  Output: Boolean;
+  Output: Boolean; //@Toxic: This kind of temp "Output" for "Result" is pointless
   {$IFDEF DEBUG_NewAI}
     Time: Cardinal;
   {$ENDIF}
@@ -2044,7 +2044,7 @@ begin
           else if (BuildFF.VisitIdx = BuildFF.Visited[ Y, Min(Items[I].X+1,gTerrain.MapX-1) ]) then
             Items[I] := KMPoint( Min(Items[I].X+1,gTerrain.MapX-1), Y)
           else
-            continue;
+            Continue;
           // Update tag
           Tag[I] := Max(0, 10000
                            + gAIFields.Influences.OwnPoint[fOwner, Items[I]]
@@ -2306,7 +2306,7 @@ begin
     begin
       Dec(FI.Count);
       FI.Forests[K] := FI.Forests[ FI.Count ];
-      continue;
+      Continue;
     end;
     // Delete forests around chop-only woodcutters
     for L := 0 to fPlannedHouses[htWoodcutters].Count - 1 do
@@ -2511,7 +2511,7 @@ begin
     if not (BuildFF.VisitIdx = BuildFF.Visited[ round(abs(P1.Y+P2.Y)/2), round(abs(P1.X+P2.X)/2) ])
       AND not (BuildFF.VisitIdx = BuildFF.Visited[ P1.Y, P1.X ])
       AND not (BuildFF.VisitIdx = BuildFF.Visited[ P2.Y, P2.X ]) then
-      continue;
+      Continue;
     DefCount := Ceil( KMLength(P1,P2) / DISTANCE_BETWEEN_TOWERS );
     for K := 0 to DefCount - 1 do
     begin
@@ -3102,7 +3102,7 @@ var
             if not (gTerrain.TileInMapCoords(Loc.X, Loc.Y, 1))
               OR (fPerfArr[Loc.Y,Loc.X] >= fPerfIdx)
               OR (Dist > 4) AND (gAIFields.Influences.OwnPoint[fOwner, Loc] < INFLUENCE_LIMIT) then
-              continue;
+              Continue;
 
             fPerfArr[Loc.Y,Loc.X] := fPerfIdx;
             if gAIFields.Eye.CanAddHousePlan(Loc, aHT, False, not aUnlockProcedure) then
@@ -3388,7 +3388,7 @@ begin
     for Dir := Low(HMA[HT].Surroundings[Dist]) to High(HMA[HT].Surroundings[Dist]) do
     begin
       if (Dist = 1) AND (Dir = dirS) then // Don't plan fields 1 tile under farm plan
-        continue;
+        Continue;
       for I := Low(HMA[HT].Surroundings[Dist,Dir]) to High(HMA[HT].Surroundings[Dist,Dir]) do
       begin
         FieldLoc := KMPointAdd(aLoc, HMA[HT].Surroundings[Dist,Dir,I]);

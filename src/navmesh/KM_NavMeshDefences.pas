@@ -1059,9 +1059,9 @@ begin
       begin
         for K := Low(aPLDefAreas) to High(aPLDefAreas) do
           if (aPLDefAreas[K] = VisitMark-1) then // fVisitedIdx starts with number 1, first player in array have 0 => decrease it
-            continue;
+            Continue;
         AddPLDefArea(VisitMark);
-        continue;
+        Continue;
       end;
       inherited InitQueue(0, StartPolygon); // Fill new defence area
     end;

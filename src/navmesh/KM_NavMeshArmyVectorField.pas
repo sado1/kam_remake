@@ -732,7 +732,7 @@ begin
             Pf.Y := Pf.Y + Position.Y * Count;
           end;
       if (SoldiersCnt = 0) then
-        continue;
+        Continue;
       P := KMPoint(  Round(Pf.X / SoldiersCnt), Round(Pf.Y / SoldiersCnt)  );
       // Target = city (clusters with houses) OR every cluster if there are no houses
       for K := Low(CCT) to High(CCT) do
@@ -874,7 +874,7 @@ procedure TArmyVectorField.FindPositions();
         PolyIdx := Ally.GroupsPoly[ Groups[K].Idx ];
         InitP := gAIFields.NavMesh.Polygons[PolyIdx].CenterPoint;
         if not IsVisited(PolyIdx) then
-          continue;
+          Continue;
 
         Distance := 0;
         for L := 0 to 10 do

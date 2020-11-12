@@ -989,7 +989,7 @@ function TKMRandomMapGenerator.RandomPlayerLocs(): TKMPointArray;
           break;
         end;
       if PointSelected then
-        continue;
+        Continue;
       // Try to replace the point
       for RemIdx := Low(LocIdx) to High(LocIdx) do
       begin
@@ -1991,7 +1991,7 @@ begin
     else if (Resources[I].Resource = Byte(btIron)) then
       RESOURCE := 3
     else // Coal and Stone are always fine
-      continue;
+      Continue;
     for K := Low(Resources[I].Points) to High(Resources[I].Points) do
       if not Visited[ Resources[I].Points[K].Y, Resources[I].Points[K].X ]
          AND (A[ Resources[I].Points[K].Y, Resources[I].Points[K].X ] = Resources[I].Resource) then
@@ -2930,7 +2930,7 @@ begin
           Resources[I].Points[K].X := X1;
           Resources[I].Points[K].Y := Y1;
           K := K + 1;
-          continue;
+          Continue;
         end
         // Already scanned tile from different shape (make 1 big shape with sum of all needed resources)
         // (for example coal tiles created as a part of gold tiles and coal tiles created as a part of iron tiles can be sometimes merged together but GenerateResources doesn't see it because CA can change it)
@@ -3148,7 +3148,7 @@ begin
   //  else if (Resources[I].Resource = Byte(btIron)) then
   //    RESOURCE := 3
   //  else // Coal and Stone are always fine
-  //    continue;
+  //    Continue;
   //  for K := Low(Resources[I].Points) to High(Resources[I].Points) do
   //    if not Visited[ Resources[I].Points[K].Y, Resources[I].Points[K].X ]
   //       AND (A[ Resources[I].Points[K].Y, Resources[I].Points[K].X ] = Resources[I].Resource) then
@@ -3319,7 +3319,7 @@ procedure TKMRandomMapGenerator.GenerateHeight(var aLocs: TKMPointArray; var Til
                 P1 := Points[I];
                 P2 := Points[K];
                 if (Abs(H[P1.Y,P1.X]) > 10) OR (Abs(H[P2.Y,P2.X]) > 10) then
-                  continue;
+                  Continue;
                 if (H[P1.Y,P1.X] > H[P2.Y,P2.X]) // Make sure that cliff is just on 1 side
                    OR (H[P1.Y,P1.X] = 0) AND (H[P2.Y,P2.X] = 0) AND (fRNG.Random > 0.5) then // Random element
                   KMSwapPoints(P1,P2);
@@ -4687,7 +4687,7 @@ begin
         else if (Output[I].Resource = Byte(btIron)) then
           RESOURCE := 3
         else // Coal and Stone are always fine
-          continue;
+          Continue;
         for K := Low(Output[I].Points) to High(Output[I].Points) do
           if not Visited[ Output[I].Points[K].Y , Output[I].Points[K].X ] then
             MineFix(Output[I].Points[K], RESOURCE, Output[I].Resource, Visited, A);
@@ -5154,7 +5154,7 @@ var
     for i := Low(CenterPoints) to High(CenterPoints) do
     begin
       if BASE_PROBABILITY < fRNG.Random() then
-        continue;
+        Continue;
       TP_S := CenterPoints[I];
       len := 9 - fRNG.RandomI(9);
       TP_E.X := Min(High(PointsArr[0]), CenterPoints[I].X + len);
@@ -5367,7 +5367,7 @@ begin
       else if Result[I].Resource = Byte(btIron) then
         RESOURCE := 3
       else // Coal and Stone are always fine
-        continue;
+        Continue;
       if not Visited[ Result[I].Point.Y , Result[I].Point.X ] then
         MinerFixer(Result[I].Point, RESOURCE, Result[I].Resource, Visited, A);
     end;

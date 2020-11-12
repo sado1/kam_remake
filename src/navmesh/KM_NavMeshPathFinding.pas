@@ -442,7 +442,7 @@ begin
       begin
         NMNode := fUsedNodes[K].Parent;
         if (NMNode = nil) then
-          continue;
+          Continue;
         P1 := Polygons[K].CenterPoint;
         P2 := Polygons[ NMNode.Idx ].CenterPoint;
         P3 := KMPointAverage(P1,P2);
@@ -451,5 +451,6 @@ begin
       end;
 end;
 {$ENDIF}
+
 
 end.

@@ -4173,7 +4173,7 @@ begin
   //As we Cannot reach our destination we are "low priority" so do not choose a tile with another unit on it (don't bump important units)
   for I := 0 to testDepth do begin
     P := GetPositionFromIndex(TargetLoc, I);
-    if not TileInMapCoords(P.X,P.Y) then continue;
+    if not TileInMapCoords(P.X,P.Y) then Continue;
     T := KMPoint(P.X,P.Y);
     if CheckPassability(T, aPass)
       and (walkConnectID = Land[T.Y,T.X].WalkConnect[wcType])
