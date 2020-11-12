@@ -336,7 +336,7 @@ begin
       if Length(fAtlases[I].TexData) <> 0 then
       begin
         fAtlases[I].TexID := TRender.GenTexture(fTexSizeX, fTexSizeY, @fAtlases[I].TexData[0], aTexMode, ftNearest, ftNearest);
-        Inc(TextureRAM, fTexSizeX * fTexSizeY * TexFormatSize[aTexMode]);
+        Inc(TextureRAM, fTexSizeX * fTexSizeY * TEX_FORMAT_SIZE[aTexMode]);
       end
       else
         fAtlases[I].TexID := 0;
