@@ -1194,7 +1194,8 @@ begin
     gPerfLogs.StackGFX.FrameEnd;
   end;
 
-  gPerfLogs.Render(TOOLBAR_WIDTH + 10, gMain.FormMain.RenderArea.Width - 10, gMain.FormMain.RenderArea.Height - 10);
+  if gMain <> nil then
+    gPerfLogs.Render(TOOLBAR_WIDTH + 10, gMain.FormMain.RenderArea.Width - 10, gMain.FormMain.RenderArea.Height - 10);
   {$ENDIF}
 
   gRender.EndFrame;
