@@ -147,6 +147,9 @@ uses
   KM_CommonUtils, KM_Log;
 
 
+const
+  FONTS_FOLDER = 'data' + PathDelim + 'gfx' + PathDelim + 'fonts' + PathDelim;
+
 var
   LOG_EXTRA_FONTS: Boolean = False;
 

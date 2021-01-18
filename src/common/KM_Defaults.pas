@@ -49,7 +49,6 @@ const
   GAME_TITLE            = 'Knights and Merchants Remake';
   SETTINGS_FILE         = 'KaM Remake Settings.xml';
   SERVER_SETTINGS_FILE  = 'KaM Remake Server Settings.ini';
-  FONTS_FOLDER          = 'data' + PathDelim + 'gfx' + PathDelim + 'fonts' + PathDelim;
   DEFAULT_LOCALE: AnsiString = 'eng';
 
   MAX_NIKNAME_LENGTH = 16;
@@ -738,10 +737,11 @@ type
 
 const
   HOUSE_ACTION_STR: array [TKMHouseActionType] of string = (
-  'ha_Work1', 'ha_Work2', 'ha_Work3', 'ha_Work4', 'ha_Work5', //Start, InProgress, .., .., Finish
-  'ha_Smoke', 'ha_FlagShtok', 'ha_Idle',
-  'ha_Flag1', 'ha_Flag2', 'ha_Flag3',
-  'ha_Fire1', 'ha_Fire2', 'ha_Fire3', 'ha_Fire4', 'ha_Fire5', 'ha_Fire6', 'ha_Fire7', 'ha_Fire8');
+    'ha_Work1', 'ha_Work2', 'ha_Work3', 'ha_Work4', 'ha_Work5', //Start, InProgress, .., .., Finish
+    'ha_Smoke', 'ha_FlagShtok', 'ha_Idle',
+    'ha_Flag1', 'ha_Flag2', 'ha_Flag3',
+    'ha_Fire1', 'ha_Fire2', 'ha_Fire3', 'ha_Fire4', 'ha_Fire5', 'ha_Fire6', 'ha_Fire7', 'ha_Fire8'
+  );
 
 
 {Terrain}
@@ -752,7 +752,7 @@ type
     ftCorn,
     ftWine,
     ftInitWine //Reset rotation and set grapes ground, but without Grapes yet
-    );
+  );
 
   TKMHouseStage = (
     hsNone,        //Nothing, clear area
@@ -768,7 +768,7 @@ type
   //    The Worker will push out any unit on his way.
   //    sidenote: CanElevate is per-vertex property, hence it's not identical to CanWorker
   // 3. Set the tile as fully blocked
-  TKMTileLock = (     // CanBuild CanWalk CanWorker CanElevate House Digged Fenced
+  TKMTileLock = (   // CanBuild CanWalk CanWorker CanElevate House Digged Fenced
         tlNone,     // X        X         X       X          -     -      -
         tlFenced,   // -        X         X       X          X     -      X
         tlDigged,   // -        -         X       X          X     X      X
@@ -858,7 +858,7 @@ type
     mlUnitsAttackRadius,
     mlDefencesAll,
     mlFlatTerrain
-    );
+  );
 
   TKMMapVisibleLayerSet = set of TKMGameVisibleLayer; //Set of above enum
 
@@ -886,28 +886,28 @@ const
   //Colors available for selection in multiplayer
   MP_COLOR_COUNT = 22;
   MP_TEAM_COLORS: array [1..MP_COLOR_COUNT] of Cardinal = (
-  $FF0000EB, // Red
-  $FF076CF8, // Orange
-  $FF00B5FF, // Gold
-  $FF07FFFF, // Lauenburg yellow
-  $FF0EC5A2, // Lime green
-  $FF07FF07, // Neon green
-  $FF00A100, // Bright green
-  $FF134B00, // Dark green
-  $FF7A9E00, // Teal
-  $FFFACE64, // Sky blue
-  $FF973400, // Blue
-  $FFCB3972, // Violet (Amethyst)
-  $FF720468, // Purple
-  $FFDE8FFB, // Pink
-  $FFFF07FF, // Magenta
-  $FF4A00A8, // Dark pink
-  $FF00005E, // Maroon
-  $FF103C52, // Brown
-  $FF519EC9, // Tan
-  $FFFFFFFF, // White
-  $FF838383, // Grey
-  $FF1B1B1B  // Black
+    $FF0000EB, // Red
+    $FF076CF8, // Orange
+    $FF00B5FF, // Gold
+    $FF07FFFF, // Lauenburg yellow
+    $FF0EC5A2, // Lime green
+    $FF07FF07, // Neon green
+    $FF00A100, // Bright green
+    $FF134B00, // Dark green
+    $FF7A9E00, // Teal
+    $FFFACE64, // Sky blue
+    $FF973400, // Blue
+    $FFCB3972, // Violet (Amethyst)
+    $FF720468, // Purple
+    $FFDE8FFB, // Pink
+    $FFFF07FF, // Magenta
+    $FF4A00A8, // Dark pink
+    $FF00005E, // Maroon
+    $FF103C52, // Brown
+    $FF519EC9, // Tan
+    $FFFFFFFF, // White
+    $FF838383, // Grey
+    $FF1B1B1B  // Black
   );
 
   //Players colors, as they appear in KaM when the color is not specified in the script, copied from palette values.
@@ -923,24 +923,24 @@ const
   3,   //Black
   255  //White}
   DefaultTeamColors: array [0..MAX_HANDS-1] of Cardinal = (
-  $FF0707FF, //Red
-  $FFE3BB5B, //Cyan
-  $FF27A700, //Green
-  $FFFF67FF, //Magenta
-  $FF07FFFF, //Yellow
-  $FF577B7B, //Grey
-  $FF2383FB, //Orange
-  $FFFF0707, //Blue
-  $FF0BE73F, //Light green
-  $FF720468, //Purple
-  $FF22B3EE, //Yellowish
-  $FF668ACC, //Peach
-  $FF1A50B2, //Brownish
-  $FFB2611A, //Blueish
-  $FF60CC00, //Greenish + blue
-  $FF4F1AB2, //Purpleish
-  $FFFFFFFF, //White
-  $FF000000  //Black
+    $FF0707FF, //Red
+    $FFE3BB5B, //Cyan
+    $FF27A700, //Green
+    $FFFF67FF, //Magenta
+    $FF07FFFF, //Yellow
+    $FF577B7B, //Grey
+    $FF2383FB, //Orange
+    $FFFF0707, //Blue
+    $FF0BE73F, //Light green
+    $FF720468, //Purple
+    $FF22B3EE, //Yellowish
+    $FF668ACC, //Peach
+    $FF1A50B2, //Brownish
+    $FFB2611A, //Blueish
+    $FF60CC00, //Greenish + blue
+    $FF4F1AB2, //Purpleish
+    $FFFFFFFF, //White
+    $FF000000  //Black
   );
 
   // DEBUG colors (transparent color - opacity will be added by debug tools)
