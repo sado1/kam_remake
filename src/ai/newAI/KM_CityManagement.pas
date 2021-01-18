@@ -790,7 +790,7 @@ var
                                * IfThen( (aGT = gtRanged), DefenceProjectiles, Defence )
                                * HitPoints);
 
-      UnitsRequired := Power(EnemyStrength / UnitStrength, 1/3) * ifthen( (I = 1), aIronRatio, 1-aIronRatio );
+      UnitsRequired := Power(EnemyStrength / UnitStrength, 1/3) * IfThen( (I = 1), aIronRatio, 1-aIronRatio );
       fWarriorsDemands[UT] := fWarriorsDemands[UT] + Max(0, Round(UnitsRequired)   );
       if (I = 2) then // In case that utAxeFighter is not blocked skip militia
         Break;

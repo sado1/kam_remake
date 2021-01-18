@@ -993,7 +993,7 @@ begin
   if (aHT = htWineyard) then
     aFieldType := ftWine;
   aField.Clear;
-  PlanFields( ifthen(aHT = htWineyard,FIELDS_PER_WINE,FIELDS_PER_FARM), fPlannedHouses[aHT].Plans[aIdx].Loc, aFieldType, aField );
+  PlanFields( IfThen(aHT = htWineyard,FIELDS_PER_WINE,FIELDS_PER_FARM), fPlannedHouses[aHT].Plans[aIdx].Loc, aFieldType, aField );
 end;
 
 
@@ -1280,7 +1280,7 @@ begin
         {$ENDIF}
       end;
     TagList.SortByTag;
-    with fFields.Farms[ ifthen(aReplaceFarmIdx <> -1, aReplaceFarmIdx, fFields.Count) ] do
+    with fFields.Farms[ IfThen(aReplaceFarmIdx <> -1, aReplaceFarmIdx, fFields.Count) ] do
     begin
       X2 := aReplaceFieldIdx;
       for X := TagList.Count - 1 downto Max(0, TagList.Count - aCnt) do

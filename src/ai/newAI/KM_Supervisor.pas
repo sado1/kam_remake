@@ -935,7 +935,7 @@ procedure TKMSupervisor.AttackDecision(aTeam: Byte);
     end;
 
     // Compute comparison
-    DistCoef := ifthen(FFA, DISTANCE_COEF_FFA, DISTANCE_COEF_1v1);
+    DistCoef := IfThen(FFA, DISTANCE_COEF_FFA, DISTANCE_COEF_1v1);
     for TeamIdx := Low(fAlli2PL) to High(fAlli2PL) do
       if (DistArr[TeamIdx] <> High(Word)) then
       begin

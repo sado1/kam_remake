@@ -3215,7 +3215,7 @@ procedure TKMRandomMapGenerator.GenerateHeight(var aLocs: TKMPointArray; var Til
     X := aStartPoint.X;
     Y := aStartPoint.Y;
     v := aInitDir; // Init vector
-    //Dir := ifthen(aRightHanded, -1, 1); // Determine direction of rotation
+    //Dir := IfThen(aRightHanded, -1, 1); // Determine direction of rotation
     Counter := 0;
     aPointsCnt := 0;
     Overflow := 0;
