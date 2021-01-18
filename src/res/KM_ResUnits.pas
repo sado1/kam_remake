@@ -114,11 +114,11 @@ const
 
   //and the corresponing unit that will be created (matches KaM behavior)
   UNIT_TYPE_TO_OLD_ID: array[TKMUnitType] of integer = (
-  -1, -1, //utNone, utAny
-  0,1,2,3,4,5,6,7,8,9,10,11,12,13, //Citizens
-  14,15,16,17,18,19,20,21,22,23, //Warriors
-  -1,-1,-1,-1, {-1,-1,} //TPR warriors (can't be placed with SET_UNIT)
-  24,25,26,27,28,29,30,31); //Animals
+    -1, -1, //utNone, utAny
+    0,1,2,3,4,5,6,7,8,9,10,11,12,13, //Citizens
+    14,15,16,17,18,19,20,21,22,23, //Warriors
+    -1,-1,-1,-1, {-1,-1,} //TPR warriors (can't be placed with SET_UNIT)
+    24,25,26,27,28,29,30,31); //Animals
 
   //This is a map of the valid values for !SET_GROUP, and the corresponing unit that will be created (matches KaM behavior)
   UNIT_ID_TO_TYPE: array[0..40] of TKMUnitType = (
@@ -135,11 +135,11 @@ const
     );
 
   UNIT_TYPE_TO_ID: array[TKMUnitType] of ShortInt = (
-  -1, -1, //utNone, utAny
-  0,1,2,3,4,5,6,7,8,9,10,11,12,13, //Citizens
-  14,15,16,17,18,19,20,21,22,23, //Warriors
-  24,25,26,27, {28,29,} //TPR warriors
-  30,31,32,33,34,35,36,37); //Animals
+    -1, -1, //utNone, utAny
+    0,1,2,3,4,5,6,7,8,9,10,11,12,13, //Citizens
+    14,15,16,17,18,19,20,21,22,23, //Warriors
+    24,25,26,27, {28,29,} //TPR warriors
+    30,31,32,33,34,35,36,37); //Animals
 
 
   //Number means ResourceType as it is stored in Barracks, hence it's not rtSomething
@@ -235,7 +235,8 @@ end;
 
 
 function TKMUnitSpec.SupportsAction(aAct: TKMUnitActionType): Boolean;
-const UnitSupportedActions: array [TKMUnitType] of TKMUnitActionTypeSet = (
+const
+  UnitSupportedActions: array [TKMUnitType] of TKMUnitActionTypeSet = (
     [], [], //None, Any
     [uaWalk, uaDie, uaEat, uaWalkArm], //Serf
     [uaWalk, uaWork, uaDie, uaWork1, uaEat..uaWalkTool2],
@@ -265,25 +266,28 @@ const UnitSupportedActions: array [TKMUnitType] of TKMUnitActionTypeSet = (
     [uaWalk, uaWork, uaSpec, uaDie, uaEat], //Slingshot
     [uaWalk, uaWork, uaSpec, uaDie, uaEat], //Warrior
     [uaWalk, uaWork, uaDie, uaEat],
-    [uaWalk], [uaWalk], [uaWalk], [uaWalk], [uaWalk], [uaWalk], [uaWalk], [uaWalk]); //Animals
+    [uaWalk], [uaWalk], [uaWalk], [uaWalk], [uaWalk], [uaWalk], [uaWalk], [uaWalk] //Animals
+  );
 begin
   Result := aAct in UnitSupportedActions[fUnitType];
 end;
 
 
 function TKMUnitSpec.GetAllowedPassability: TKMTerrainPassability;
-//Defines which animal prefers which terrain
-const AnimalTerrain: array[ANIMAL_MIN .. ANIMAL_MAX] of TKMTerrainPassability = (
+const
+  // Defines which animal prefers which terrain
+  AnimalTerrain: array[ANIMAL_MIN .. ANIMAL_MAX] of TKMTerrainPassability = (
     tpWolf, tpFish, tpFish, tpFish, tpCrab, tpFish, tpFish, tpFish);
 begin
   case fUnitType of
     ANIMAL_MIN..ANIMAL_MAX:  Result := AnimalTerrain[fUnitType]; //Animals
-    else                     Result := tpWalk; //Worker, Warriors
+  else
+    Result := tpWalk; // Worker, Warriors
   end;
 end;
 
 
-//Where unit would like to be
+// Where unit would like to be
 function TKMUnitSpec.GetDesiredPassability: TKMTerrainPassability;
 begin
   if fUnitType in [CITIZEN_MIN..CITIZEN_MAX] - [utWorker] then
@@ -344,7 +348,7 @@ end;
 //Animals don't have team and thus are rendered in their own prefered clors
 function TKMUnitSpec.GetMinimapColor: Cardinal;
 const
-  MMColor:array[TKMUnitType] of Cardinal = (
+  MMColor: array[TKMUnitType] of Cardinal = (
     0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,
@@ -384,20 +388,20 @@ end;
 
 function TKMUnitSpec.GetUnitTextID: Integer;
 begin
-  if IsValid then
-    case fUnitType of
-      utWolf:        Result := TX_UNITS_WOLF;
-      utFish:        Result := TX_UNITS_FISH;
-      utWatersnake:  Result := TX_UNITS_WATERSNAKE;
-      utSeastar:     Result := TX_UNITS_SEASTAR;
-      utCrab:        Result := TX_UNITS_CRAB;
-      utWaterflower: Result := TX_UNITS_WATERFLOWER;
-      utWaterleaf:   Result := TX_UNITS_WATERLEAF;
-      utDuck:        Result := TX_UNITS_DUCK;
-      else            Result := TX_UNITS_NAMES__29 + UNIT_TYPE_TO_ID[fUnitType];
-    end
+  if not IsValid then Exit(-1);
+
+  case fUnitType of
+    utWolf:        Result := TX_UNITS_WOLF;
+    utFish:        Result := TX_UNITS_FISH;
+    utWatersnake:  Result := TX_UNITS_WATERSNAKE;
+    utSeastar:     Result := TX_UNITS_SEASTAR;
+    utCrab:        Result := TX_UNITS_CRAB;
+    utWaterflower: Result := TX_UNITS_WATERFLOWER;
+    utWaterleaf:   Result := TX_UNITS_WATERLEAF;
+    utDuck:        Result := TX_UNITS_DUCK;
   else
-    Result := -1;
+    Result := TX_UNITS_NAMES__29 + UNIT_TYPE_TO_ID[fUnitType];
+  end;
 end;
 
 
@@ -470,52 +474,52 @@ var
   ft: textfile;
   ii: TKMUnitType;
 begin
-    AssignFile(ft,aPath); rewrite(ft);
-    writeln(ft,'Name;HitPoints;Attack;AttackHorse;Defence;Speed;Sight;');
-    for ii:=Low(TKMUnitType) to High(TKMUnitType) do
-    if Items[ii].IsValid then
-    begin
-      write(ft,Items[ii].GUIName+';');
-      write(ft,inttostr(Items[ii].HitPoints)+';');
-      write(ft,inttostr(Items[ii].Attack)+';');
-      write(ft,inttostr(Items[ii].AttackHorse)+';');
-      //write(ft,inttostr(Items[ii].x4)+';');
-      write(ft,inttostr(Items[ii].Defence)+';');
-      write(ft,floattostr(Items[ii].Speed)+';');
-      //write(ft,inttostr(Items[ii].x7)+';');
-      write(ft,inttostr(Items[ii].Sight)+';');
-      //write(ft,inttostr(Items[ii].x9)+';');
-      //write(ft,inttostr(Items[ii].x10)+';');
-      //write(ft,inttostr(Items[ii].CanWalkOut)+';');
-      //write(ft,inttostr(Items[ii].x11)+';');
-      //for kk:=1 to 18 do
-      //  write(ft,inttostr(UnitSprite2[ii,kk])+';');
-      writeln(ft);
-    end;
-    closefile(ft);
+  AssignFile(ft,aPath); rewrite(ft);
+  writeln(ft,'Name;HitPoints;Attack;AttackHorse;Defence;Speed;Sight;');
+  for ii := Low(TKMUnitType) to High(TKMUnitType) do
+  if Items[ii].IsValid then
+  begin
+    write(ft,Items[ii].GUIName+';');
+    write(ft,inttostr(Items[ii].HitPoints)+';');
+    write(ft,inttostr(Items[ii].Attack)+';');
+    write(ft,inttostr(Items[ii].AttackHorse)+';');
+    //write(ft,inttostr(Items[ii].x4)+';');
+    write(ft,inttostr(Items[ii].Defence)+';');
+    write(ft,floattostr(Items[ii].Speed)+';');
+    //write(ft,inttostr(Items[ii].x7)+';');
+    write(ft,inttostr(Items[ii].Sight)+';');
+    //write(ft,inttostr(Items[ii].x9)+';');
+    //write(ft,inttostr(Items[ii].x10)+';');
+    //write(ft,inttostr(Items[ii].CanWalkOut)+';');
+    //write(ft,inttostr(Items[ii].x11)+';');
+    //for kk:=1 to 18 do
+    //  write(ft,inttostr(UnitSprite2[ii,kk])+';');
+    writeln(ft);
+  end;
+  closefile(ft);
 
-    {AssignFile(ft,ExeDir+'Units.txt'); rewrite(ft);
-    for ii:=Low(TKMUnitType) to High(TKMUnitType) do
-    if UnitsDat[ii].IsValid then
-    begin
-      writeln(ft);
-      writeln(ft);
-      writeln(ft,'NewUnit'+inttostr(ii));
-      for kk:=1 to 14 do
-      for hh:=1 to 8 do
-      //  if UnitSprite[ii].Act[kk].Dir[hh].Step[1]>0 then
-          begin
-            write(ft,inttostr(kk)+'.'+inttostr(hh)+#9);
-            for jj:=1 to 30 do
-            if UnitSprite[ii].Act[kk].Dir[hh].Step[jj]>0 then //write(ft,'#');
-            write(ft,inttostr(UnitSprite[ii].Act[kk].Dir[hh].Step[jj])+'. ');
-            write(ft,inttostr(UnitSprite[ii].Act[kk].Dir[hh].Count)+' ');
-            write(ft,inttostr(UnitSprite[ii].Act[kk].Dir[hh].MoveX)+' ');
-            write(ft,inttostr(UnitSprite[ii].Act[kk].Dir[hh].MoveY)+' ');
-            writeln(ft);
-          end;
-    end;
-    closefile(ft);}
+  {AssignFile(ft,ExeDir+'Units.txt'); rewrite(ft);
+  for ii:=Low(TKMUnitType) to High(TKMUnitType) do
+  if UnitsDat[ii].IsValid then
+  begin
+    writeln(ft);
+    writeln(ft);
+    writeln(ft,'NewUnit'+inttostr(ii));
+    for kk:=1 to 14 do
+    for hh:=1 to 8 do
+    //  if UnitSprite[ii].Act[kk].Dir[hh].Step[1]>0 then
+        begin
+          write(ft,inttostr(kk)+'.'+inttostr(hh)+#9);
+          for jj:=1 to 30 do
+          if UnitSprite[ii].Act[kk].Dir[hh].Step[jj]>0 then //write(ft,'#');
+          write(ft,inttostr(UnitSprite[ii].Act[kk].Dir[hh].Step[jj])+'. ');
+          write(ft,inttostr(UnitSprite[ii].Act[kk].Dir[hh].Count)+' ');
+          write(ft,inttostr(UnitSprite[ii].Act[kk].Dir[hh].MoveX)+' ');
+          write(ft,inttostr(UnitSprite[ii].Act[kk].Dir[hh].MoveY)+' ');
+          writeln(ft);
+        end;
+  end;
+  closefile(ft);}
 end;
 
 
