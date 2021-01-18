@@ -12,8 +12,9 @@ const
   TAB_WIDTH = 30;
 
 type
-  TKMFont = (fntAntiqua, fntGame, fntGrey,
-    fntMetal, fntMini, fntOutline, fntArial);
+  TKMFont = (
+    fntAntiqua, fntGame, fntGrey, fntMetal, fntMini, fntOutline, fntArial
+  );
 
   TKMFontLoadLevel = (fllFull, fllMinimal);
   {
@@ -32,19 +33,19 @@ type
   }
 
   TKMFontInfo = record
-      FontFile: string;
-      Pal: TKMPal; //Palette fnt needs
-      TexMode: TTexFormat; //Format font texture needs to be in
-      MaxAnsiCharWidth: Byte; //max char width amond ansi chars (0-255), pre-calculated
-      MaxCharWidth: Byte;     //max char width among all chars in the font, pre-calculated
-    end;
+    FontFile: string;
+    Pal: TKMPal; //Palette fnt needs
+    TexMode: TTexFormat; //Format font texture needs to be in
+    MaxAnsiCharWidth: Byte; //max char width amond ansi chars (0-255), pre-calculated
+    MaxCharWidth: Byte;     //max char width among all chars in the font, pre-calculated
+  end;
 
   TKMLetter = packed record
-      Width, Height: Word;
-      YOffset: SmallInt;
-      AtlasId: Word; //Was Unknown field, we use it for multi-atlas fonts to mark the letters location
-      u1,v1,u2,v2: Single; //Location within texture atlas
-    end;
+    Width, Height: Word;
+    YOffset: SmallInt;
+    AtlasId: Word; //Was Unknown field, we use it for multi-atlas fonts to mark the letters location
+    u1,v1,u2,v2: Single; //Location within texture atlas
+  end;
 
   TKMFontData = class
   private
@@ -837,7 +838,8 @@ end;
 
 // Return maximum of the width of specified strings when printed on screen with specified font.
 function TKMFontData.GetMaxPrintWidthOfStrings(aStrings: array of string): Integer;
-var I, Width: Integer;
+var
+  I, Width: Integer;
 begin
   Result := 0;
   for I := Low(aStrings) to High(aStrings) do
