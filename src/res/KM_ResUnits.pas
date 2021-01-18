@@ -8,9 +8,9 @@ uses
   KM_ResTypes;
 
 
-//Used to separate close-combat units from archers (they use different fighting logic)
 type
-  TFightType = (ftMelee, ftRanged);
+  // Used to separate close-combat units from archers (they use different fighting logic)
+  TKMFightType = (ftMelee, ftRanged);
 
   TKMUnitDat = packed record
     HitPoints, Attack, AttackHorse, x4, Defence, Speed, x7, Sight: SmallInt;
@@ -35,7 +35,7 @@ type
     function GetAllowedPassability: TKMTerrainPassability;
     function GetDescription: UnicodeString;
     function GetDesiredPassability: TKMTerrainPassability;
-    function GetFightType: TFightType;
+    function GetFightType: TKMFightType;
     function GetGUIIcon: Word;
     function GetGUIScroll: Word;
     function GetMinimapColor: Cardinal;
@@ -54,23 +54,23 @@ type
     function GetDefenceVsProjectiles(aIsBolt: Boolean): Single;
     procedure LoadFromStream(Stream: TMemoryStream);
     //Derived from KaM
-    property HitPoints:smallint read fUnitDat.HitPoints;
-    property Attack:smallint read fUnitDat.Attack;
-    property AttackHorse:smallint read fUnitDat.AttackHorse;
-    property Defence:smallint read fUnitDat.Defence;
+    property HitPoints: SmallInt read fUnitDat.HitPoints;
+    property Attack: SmallInt read fUnitDat.Attack;
+    property AttackHorse: SmallInt read fUnitDat.AttackHorse;
+    property Defence: SmallInt read fUnitDat.Defence;
     property Description: UnicodeString read GetDescription;
-    property Sight:smallint read fUnitDat.Sight;
+    property Sight: SmallInt read fUnitDat.Sight;
     //Additional properties added by Remake
-    property AllowedPassability:TKMTerrainPassability read GetAllowedPassability;
-    property DesiredPassability:TKMTerrainPassability read GetDesiredPassability;
-    property FightType:TFightType read GetFightType;
-    property GUIIcon:word read GetGUIIcon;
-    property GUIScroll:word read GetGUIScroll;
+    property AllowedPassability: TKMTerrainPassability read GetAllowedPassability;
+    property DesiredPassability: TKMTerrainPassability read GetDesiredPassability;
+    property FightType: TKMFightType read GetFightType;
+    property GUIIcon: Word read GetGUIIcon;
+    property GUIScroll: Word read GetGUIScroll;
     property MinimapColor: Cardinal read GetMinimapColor;
-    property MiningRange:byte read GetMiningRange;
-    property Speed:single read GetSpeed;
-    function SupportsAction(aAct: TKMUnitActionType):boolean;
-    property UnitAnim[aAction:TKMUnitActionType; aDir:TKMDirection]: TKMAnimLoop read GetUnitAnim;
+    property MiningRange: Byte read GetMiningRange;
+    property Speed: Single read GetSpeed;
+    function SupportsAction(aAct: TKMUnitActionType): Boolean;
+    property UnitAnim[aAction: TKMUnitActionType; aDir: TKMDirection]: TKMAnimLoop read GetUnitAnim;
     property GUIName: UnicodeString read GetUnitName;
     property GUITextID: Integer read GetUnitTextID;
   end;
@@ -293,8 +293,9 @@ begin
 end;
 
 
-function TKMUnitSpec.GetFightType: TFightType;
-const WarriorFightType: array[WARRIOR_MIN..WARRIOR_MAX] of TFightType = (
+function TKMUnitSpec.GetFightType: TKMFightType;
+const
+  WarriorFightType: array[WARRIOR_MIN..WARRIOR_MAX] of TKMFightType = (
     ftMelee,ftMelee,ftMelee, //Militia, AxeFighter, Swordsman
     ftRanged,ftRanged,        //Bowman, Arbaletman
     ftMelee,ftMelee,          //Pikeman, Hallebardman,
@@ -305,7 +306,7 @@ const WarriorFightType: array[WARRIOR_MIN..WARRIOR_MAX] of TFightType = (
     ftMelee,                   //utMetalBarbarian
     ftMelee                    //utHorseman
     {ftRanged,ftRanged,       //utCatapult, utBallista,}
-    );
+  );
 begin
   Assert(fUnitType in [Low(WarriorFightType)..High(WarriorFightType)]);
   Result := WarriorFightType[fUnitType];
@@ -316,7 +317,7 @@ function TKMUnitSpec.GetGUIIcon: Word;
 begin
   case fUnitType of
     utNone, utAny:  Result := 0;
-    utBarbarian:     Result := 70;
+    utBarbarian:    Result := 70;
   else
     if IsCitizen then
       Result := 141 + UNIT_TYPE_TO_ID[fUnitType]
@@ -361,7 +362,8 @@ begin
     utFarmer:      Result := 10;
     utStonecutter: Result := 16;
     utFisher:      Result := 14;
-    else            raise Exception.Create(GUIName + ' has no mining range');
+  else
+    raise Exception.Create(GUIName + ' has no mining range');
   end;
 end;
 
@@ -404,7 +406,8 @@ begin
   case fUnitType of
     utAny:             Result := gResTexts[TX_UNITS_ALL];
     utNone:            Result := 'N/A';
-    else                Result := gResTexts[GetUnitTextID];
+  else
+    Result := gResTexts[GetUnitTextID];
   end;
 end;
 
@@ -463,7 +466,9 @@ end;
 
 
 procedure TKMResUnits.ExportCSV(const aPath: UnicodeString);
-var ft:textfile; ii:TKMUnitType;
+var
+  ft: textfile;
+  ii: TKMUnitType;
 begin
     AssignFile(ft,aPath); rewrite(ft);
     writeln(ft,'Name;HitPoints;Attack;AttackHorse;Defence;Speed;Sight;');
@@ -537,7 +542,8 @@ end;
 
 
 function TKMResUnits.LoadUnitsDat(const aPath: UnicodeString): Cardinal;
-const UNIT_DAT_COUNT = 41;
+const
+  UNIT_DAT_COUNT = 41;
 var
   S: TKMemoryStream;
   I: Integer;
