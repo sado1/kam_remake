@@ -767,13 +767,13 @@ var
     // Compute strength of specific enemy group
     with EnemyEval.Groups[aGT] do
       EnemyStrength := (Attack + AttackHorse * Byte(antiGT = gtMounted))
-                        * ifthen( (antiGT = gtRanged), DefenceProjectiles, Defence )
+                        * IfThen( (antiGT = gtRanged), DefenceProjectiles, Defence )
                         * HitPoints;
 
     // Decrease strength by owner's existing units
     with AllyEval.Groups[antiGT] do
       EnemyStrength := Max(0, EnemyStrength - (Attack + AttackHorse * Byte(aGT = gtMounted))
-                                               * ifthen( (aGT = gtRanged), DefenceProjectiles, Defence )
+                                               * IfThen( (aGT = gtRanged), DefenceProjectiles, Defence )
                                                * HitPoints);
 
     // Compute unit requirements
@@ -787,7 +787,7 @@ var
       UnitEval := gAIFields.Eye.ArmyEvaluation.UnitEvaluation(UT, True);
       with UnitEval do
         UnitStrength := Max(0, Attack + AttackHorse * Byte(aGT = gtMounted)
-                               * ifthen( (aGT = gtRanged), DefenceProjectiles, Defence )
+                               * IfThen( (aGT = gtRanged), DefenceProjectiles, Defence )
                                * HitPoints);
 
       UnitsRequired := Power(EnemyStrength / UnitStrength, 1/3) * ifthen( (I = 1), aIronRatio, 1-aIronRatio );
