@@ -162,6 +162,7 @@ begin
   fFont := aFont;
 end;
 
+
 procedure TKMFontData.LoadFont(const aFileName: string; aPalette: TKMPaletteInfo);
 const
   TEX_SIZE = 256; //Static texture size, all KaM fonts fit within 256^2 space
