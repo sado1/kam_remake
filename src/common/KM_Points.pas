@@ -192,7 +192,6 @@ type
   function TypeToString(const P: TKMPointDir): string; overload;
   function TypeToString(const P: TKMPointF): string; overload;
   function TypeToString(const T: TKMDirection): string; overload;
-  function TypeToString(const aRect: TKMRect): string; overload;
 
   function StringToType(const Str: String): TKMPoint; overload;
 
@@ -582,7 +581,8 @@ begin
     dirSE: Result := KMRectGrowBottomRight(aRect, aInset);
     dirSW: Result := KMRectGrowBottomLeft(aRect, aInset);
     dirNW: Result := KMRectGrowTopLeft(aRect, aInset);
-    dirN, dirE, dirS, dirW: Result := aRect; //not implemented yet
+  else
+    Result := aRect; //not implemented yet
   end;
 end;
 
@@ -649,10 +649,10 @@ end;
 
 function KMRectIntersect(const aRect1: TKMRect; X1,Y1,X2,Y2: Integer): TKMRect;
 begin
-  if   (aRect1.Right  < X1) 
-    or (aRect1.Left   > X2)
-    or (aRect1.Bottom < Y1)
-    or (aRect1.Top    > Y2) then
+  if (aRect1.Right  < X1) 
+  or (aRect1.Left   > X2)
+  or (aRect1.Bottom < Y1)
+  or (aRect1.Top    > Y2) then
     Result := KMRECT_INVALID_TILES
   else
     Result := KMClipRect(aRect1, X1,Y1,X2,Y2);
@@ -870,10 +870,8 @@ function KMPointsAround(const P: TKMPoint; aIncludeSelf: Boolean = False): TKMPo
 var
   I,J,K: Integer;
 begin
-  if aIncludeSelf then
-    SetLength(Result, 9)
-  else
-    SetLength(Result, 8);
+  SetLength(Result, 8 + Ord(aIncludeSelf));
+
   K := 0;
   for I := -1 to 1 do
     for J := -1 to 1 do
@@ -887,9 +885,9 @@ end;
 
 function KMGetDiagVertex(const P1,P2: TKMPoint): TKMPoint;
 begin
-  //Returns the position of the vertex inbetween the two diagonal points (points must be diagonal)
-  Result.X := max(P1.X,P2.X);
-  Result.Y := max(P1.Y,P2.Y);
+  // Returns the position of the vertex inbetween the two diagonal points (points must be diagonal)
+  Result.X := Max(P1.X,P2.X);
+  Result.Y := Max(P1.Y,P2.Y);
 end;
 
 
@@ -1151,7 +1149,6 @@ begin
       and TryStrToInt(Copy(Str, DelimPos + 2, Length(Str) - DelimPos - 2), Y) then
       Result := KMPoint(X,Y);
   end;
-
 end;
 
 
@@ -1160,12 +1157,6 @@ const
   S: array [TKMDirection] of string = ('N/A', 'N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW');
 begin
   Result := S[T];
-end;
-
-
-function TypeToString(const aRect: TKMRect): string; overload;
-begin
-
 end;
 
 
