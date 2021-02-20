@@ -320,22 +320,22 @@ end;
 procedure TKMMapEdHouse.ShowCommonResources;
 var
   I: Integer;
-  Res: TKMWareType;
-  HouseDat: TKMHouseSpec;
+  ware: TKMWareType; //todo: Change to wareSpec
+  houseSpec: TKMHouseSpec;
 begin
-  HouseDat := gRes.Houses[fHouse.HouseType];
+  houseSpec := gRes.Houses[fHouse.HouseType];
 
   Label_House_Input.Hide;
   for I := 0 to 3 do
   begin
-    Res := HouseDat.ResInput[I+1];
-    if gRes.Wares[Res].IsValid then
+    ware := houseSpec.ResInput[I+1];
+    if gRes.Wares[ware].IsValid then
     begin
-      ResRow_Ware_Input[I].WareRow.TexID := gRes.Wares[Res].GUIIcon;
-      ResRow_Ware_Input[I].WareRow.Caption := gRes.Wares[Res].Title;
-      ResRow_Ware_Input[I].Hint := gRes.Wares[Res].Title;
-      ResRow_Ware_Input[I].WareRow.WareCount := fHouse.CheckResIn(Res);
-      ResRow_Ware_Input[I].OrderCount := fHouse.CheckResIn(Res);
+      ResRow_Ware_Input[I].WareRow.TexID := gRes.Wares[ware].GUIIcon;
+      ResRow_Ware_Input[I].WareRow.Caption := gRes.Wares[ware].Title;
+      ResRow_Ware_Input[I].Hint := gRes.Wares[ware].Title;
+      ResRow_Ware_Input[I].WareRow.WareCount := fHouse.CheckResIn(ware);
+      ResRow_Ware_Input[I].OrderCount := fHouse.CheckResIn(ware);
       ResRow_Ware_Input[I].Show;
       Label_House_Input.Show;
     end
@@ -346,14 +346,14 @@ begin
   Label_House_Output.Hide;
   for I := 0 to 3 do
   begin
-    Res := HouseDat.ResOutput[I+1];
-    if gRes.Wares[Res].IsValid then
+    ware := houseSpec.ResOutput[I+1];
+    if gRes.Wares[ware].IsValid then
     begin
-      ResRow_Ware_Output[I].WareRow.TexID := gRes.Wares[Res].GUIIcon;
-      ResRow_Ware_Output[I].WareRow.Caption := gRes.Wares[Res].Title;
-      ResRow_Ware_Output[I].Hint := gRes.Wares[Res].Title;
-      ResRow_Ware_Output[I].WareRow.WareCount := fHouse.CheckResOut(Res);
-      ResRow_Ware_Output[I].OrderCount := fHouse.CheckResOut(Res);
+      ResRow_Ware_Output[I].WareRow.TexID := gRes.Wares[ware].GUIIcon;
+      ResRow_Ware_Output[I].WareRow.Caption := gRes.Wares[ware].Title;
+      ResRow_Ware_Output[I].Hint := gRes.Wares[ware].Title;
+      ResRow_Ware_Output[I].WareRow.WareCount := fHouse.CheckResOut(ware);
+      ResRow_Ware_Output[I].OrderCount := fHouse.CheckResOut(ware);
       ResRow_Ware_Output[I].Show;
       Label_House_Output.Show;
     end
@@ -378,19 +378,19 @@ end;
 
 procedure TKMMapEdHouse.Show(aHouse: TKMHouse);
 var
-  HouseDat: TKMHouseSpec;
+  houseSpec: TKMHouseSpec;
 begin
   fHouse := aHouse;
   if fHouse = nil then Exit;
 
-  HouseDat := gRes.Houses[fHouse.HouseType];
+  houseSpec := gRes.Houses[fHouse.HouseType];
 
   {Common data}
-  Label_House.Caption := HouseDat.HouseName;
-  Image_House_Logo.TexID := HouseDat.GUIIcon;
+  Label_House.Caption := houseSpec.HouseName;
+  Image_House_Logo.TexID := houseSpec.GUIIcon;
 
-  HealthBar_House.Caption := IntToStr(Round(fHouse.GetHealth)) + '/' + IntToStr(HouseDat.MaxHealth);
-  HealthBar_House.Position := fHouse.GetHealth / HouseDat.MaxHealth;
+  HealthBar_House.Caption := IntToStr(Round(fHouse.GetHealth)) + '/' + IntToStr(houseSpec.MaxHealth);
+  HealthBar_House.Position := fHouse.GetHealth / houseSpec.MaxHealth;
 
   if fHouse.HouseType <> htTownHall then //Do not show common resources input/output for TownHall
     ShowCommonResources
@@ -509,21 +509,21 @@ end;
 
 procedure TKMMapEdHouse.HouseHealthChange(Sender: TObject; Shift: TShiftState);
 var
-  HouseDat: TKMHouseSpec;
+  houseSpec: TKMHouseSpec;
 begin
   if Sender = Button_HouseHealthDec then fHouse.AddDamage(GetMultiplicator(Shift), nil, True);
   if Sender = Button_HouseHealthInc then fHouse.AddRepair(GetMultiplicator(Shift));
 
-  HouseDat := gRes.Houses[fHouse.HouseType];
-  HealthBar_House.Caption := IntToStr(Round(fHouse.GetHealth)) + '/' + IntToStr(HouseDat.MaxHealth);
-  HealthBar_House.Position := fHouse.GetHealth / HouseDat.MaxHealth;
+  houseSpec := gRes.Houses[fHouse.HouseType];
+  HealthBar_House.Caption := IntToStr(Round(fHouse.GetHealth)) + '/' + IntToStr(houseSpec.MaxHealth);
+  HealthBar_House.Position := fHouse.GetHealth / houseSpec.MaxHealth;
 end;
 
 
 procedure TKMMapEdHouse.TownHallChange(Sender: TObject; aValue: Integer);
 var
   TH: TKMHouseTownHall;
-  NewCountAdd: Integer;
+  newCountAdd: Integer;
 begin
   TH := TKMHouseTownHall(fHouse);
   if aValue > 0 then
@@ -537,8 +537,8 @@ begin
   begin
     if TH.GoldMaxCnt > aValue + TH.GoldCnt then
       TH.GoldMaxCnt := Max(0, aValue + TH.GoldCnt);
-    NewCountAdd := Math.Min(Abs(aValue), fHouse.CheckResIn(wtGold));
-    fHouse.ResTakeFromIn(wtGold, NewCountAdd);
+    newCountAdd := Math.Min(Abs(aValue), fHouse.CheckResIn(wtGold));
+    fHouse.ResTakeFromIn(wtGold, newCountAdd);
   end;
   WaresRow_TH_Gold_Input.OrderCount := fHouse.CheckResIn(wtGold);
   WaresRow_TH_Gold_Input.WareRow.WareCount := Min(MAX_WARES_IN_HOUSE, WaresRow_TH_Gold_Input.OrderCount);
@@ -548,54 +548,54 @@ end;
 procedure TKMMapEdHouse.HouseChange(Sender: TObject; aValue: Integer);
 var
   I: Integer;
-  Res: TKMWareType;
-  NewCountAdd: Integer;
-  HouseDat: TKMHouseSpec;
+  ware: TKMWareType;
+  newCountAdd: Integer;
+  houseSpec: TKMHouseSpec;
 begin
   House_RefreshCommon;
 
-  HouseDat := gRes.Houses[fHouse.HouseType];
+  houseSpec := gRes.Houses[fHouse.HouseType];
   for I := 0 to 3 do
   begin
-    Res := HouseDat.ResInput[I+1];
-    if not (Res in [WARE_MIN..WARE_MAX]) then Continue;
+    ware := houseSpec.ResInput[I+1];
+    if not (ware in [WARE_MIN..WARE_MAX]) then Continue;
 
     if (Sender = ResRow_Ware_Input[I]) and (aValue > 0) then
     begin
-      NewCountAdd := Math.Min(aValue, MAX_WARES_IN_HOUSE - fHouse.CheckResIn(Res));
-      fHouse.ResAddToIn(Res, NewCountAdd);
+      newCountAdd := Math.Min(aValue, MAX_WARES_IN_HOUSE - fHouse.CheckResIn(ware));
+      fHouse.ResAddToIn(ware, newCountAdd);
     end;
 
     if (Sender = ResRow_Ware_Input[I]) and (aValue < 0) then
     begin
-      NewCountAdd := Math.Min(Abs(aValue), fHouse.CheckResIn(Res));
-      fHouse.ResTakeFromIn(Res, NewCountAdd);
+      newCountAdd := Math.Min(Abs(aValue), fHouse.CheckResIn(ware));
+      fHouse.ResTakeFromIn(ware, newCountAdd);
     end;
 
-    ResRow_Ware_Input[I].OrderCount := fHouse.CheckResIn(Res);
+    ResRow_Ware_Input[I].OrderCount := fHouse.CheckResIn(ware);
     ResRow_Ware_Input[I].WareRow.WareCount := ResRow_Ware_Input[I].OrderCount;
   end;
 
   for I := 0 to 3 do
   begin
-    Res := HouseDat.ResOutput[I+1];
-    if not (Res in [WARE_MIN..WARE_MAX]) then Continue;
+    ware := houseSpec.ResOutput[I+1];
+    if not (ware in [WARE_MIN..WARE_MAX]) then Continue;
 
     if (Sender = ResRow_Ware_Output[I]) and (aValue > 0) then
     begin
-      NewCountAdd := Math.Min(aValue, MAX_WARES_IN_HOUSE - fHouse.CheckResOut(Res));
+      newCountAdd := Math.Min(aValue, MAX_WARES_IN_HOUSE - fHouse.CheckResOut(ware));
       if fHouse.HouseType in HOUSE_WORKSHOP then
-        NewCountAdd := Math.Min(NewCountAdd, MAX_WARES_OUT_WORKSHOP - fHouse.CheckResOut(wtAll));
-      fHouse.ResAddToOut(Res, NewCountAdd);
+        newCountAdd := Math.Min(newCountAdd, MAX_WARES_OUT_WORKSHOP - fHouse.CheckResOut(wtAll));
+      fHouse.ResAddToOut(ware, newCountAdd);
     end;
 
     if (Sender = ResRow_Ware_Output[I]) and (aValue < 0) then
     begin
-      NewCountAdd := Math.Min(Abs(aValue), fHouse.CheckResOut(Res));
-      fHouse.ResTakeFromOut(Res, NewCountAdd);
+      newCountAdd := Math.Min(Abs(aValue), fHouse.CheckResOut(ware));
+      fHouse.ResTakeFromOut(ware, newCountAdd);
     end;
 
-    ResRow_Ware_Output[I].OrderCount := fHouse.CheckResOut(Res);
+    ResRow_Ware_Output[I].OrderCount := fHouse.CheckResOut(ware);
     ResRow_Ware_Output[I].WareRow.WareCount := ResRow_Ware_Output[I].OrderCount;
   end;
 end;

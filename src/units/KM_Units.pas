@@ -681,7 +681,7 @@ begin
     and (fHome.CheckResOut(TM.WorkPlan.Product1) < MAX_WARES_IN_HOUSE)
     and (fHome.CheckResOut(TM.WorkPlan.Product2) < MAX_WARES_IN_HOUSE) then
   begin
-    //if fResource.HouseDat[fHome.HouseType].DoesOrders then
+    //if gRes.Houses[fHome.HouseType].DoesOrders then
       //Take order to production
       //fHome.ResOrder[Res] := fHome.ResOrder[Res] - 1;
     Result := TM;
