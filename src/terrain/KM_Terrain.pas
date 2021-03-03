@@ -442,7 +442,7 @@ begin
     1:  Result := ToBoolean(Corners and $2); // and 0010
     2:  Result := ToBoolean(Corners and $4); // and 0100
     3:  Result := ToBoolean(Corners and $8); // and 1000
-    else raise Exception.Create('Wrong conner id');
+    else raise Exception.Create('Wrong corner id');
   end;
 end;
 
