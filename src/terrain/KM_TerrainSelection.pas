@@ -346,8 +346,7 @@ procedure TKMSelection.Selection_Flip(aAxis: TKMFlipAxis);
   begin
     SwapInt(Layer1.Terrain, Layer2.Terrain);
     SwapInt(Layer1.Rotation, Layer2.Rotation);
-    for I := 0 to 3 do
-      Layer1.SwapCorners(Layer2);
+    Layer1.SwapCorners(Layer2);
   end;
 
   procedure SwapTiles(X1, Y1, X2, Y2: Word);

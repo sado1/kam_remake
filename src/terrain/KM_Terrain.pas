@@ -56,7 +56,7 @@ type
     procedure SetCorners(const aCorners: TKMByteSet); overload;
     procedure ClearCorners;
     procedure CopyCorners(aLayer: TKMTerrainLayer);
-    procedure SwapCorners(aLayer: TKMTerrainLayer);
+    procedure SwapCorners(var aLayer: TKMTerrainLayer);
     procedure SetAllCOrners;
 
     procedure Save(aSaveStream: TKMemoryStream);
@@ -500,7 +500,7 @@ begin
 end;
 
 
-procedure TKMTerrainLayer.SwapCorners(aLayer: TKMTerrainLayer);
+procedure TKMTerrainLayer.SwapCorners(var aLayer: TKMTerrainLayer);
 begin
   SwapInt(Corners, aLayer.Corners);
 end;
