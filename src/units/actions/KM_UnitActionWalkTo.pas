@@ -102,7 +102,7 @@ type
     function Execute: TKMActionResult; override;
     procedure Save(SaveStream: TKMemoryStream); override;
     procedure Paint; override; //Used only for debug so far
-    function NeedToPaint(aRect: TKMRect): Boolean; //Used only for debug so far
+    function NeedToPaint(const aRect: TKMRect): Boolean; //Used only for debug so far
   end;
 
 
@@ -1136,43 +1136,42 @@ end;
 
 function TKMUnitActionWalkTo.Execute: TKMActionResult;
 var
-  DX,DY: Shortint;
-  WalkX,WalkY,Distance: Single;
-  OldDir: TKMDirection;
+  dx, dy: Shortint;
+  walkX, walkY, distance: Single;
+  oldDir: TKMDirection;
 begin
   Result := arActContinues;
   StepDone := False;
-  fDoesWalking := False; //Set it to false at start of update
+  fDoesWalking := False; // Set it to false at start of update
 
-  //Happens whe e.g. Serf stays in front of Store and gets Deliver task
+  // Happens whe e.g. Serf stays in front of Store and gets Deliver task
   if KMSamePoint(fWalkFrom, fWalkTo) then
   begin
     Result := arActDone;
     Exit;
   end;
 
-  //Route was not built
+  // Route was not built
   if NodeList.Count = 0 then
   begin
     Result := arActAborted;
     Exit;
   end;
 
-  //Walk complete - NodePos cannot be greater than NodeCount (this should not happen, cause is unknown but for now this check stops crashes)
+  // Walk complete - NodePos cannot be greater than NodeCount (this should not happen, cause is unknown but for now this check stops crashes)
   if NodePos > NodeList.Count - 1 then
   begin
     if KMStepIsDiag(fUnit.PrevPosition, fUnit.NextPosition) then
-      DecVertex; //Unoccupy vertex
-    fUnit.IsExchanging := False; //Disable sliding (in case it was set in previous step)
-    Result := arActDone;
-    Exit;
+      DecVertex; // Unoccupy vertex
+    fUnit.IsExchanging := False; // Disable sliding (in case it was set in previous step)
+    Exit(arActDone);
   end;
 
-  //Execute the route in series of moves
-  Distance := gRes.Units[fUnit.UnitType].Speed;
+  // Execute the route in series of moves
+  distance := gRes.Units[fUnit.UnitType].Speed;
 
   //Check if unit has arrived on tile
-  if KMSamePointF(fUnit.PositionF, KMPointF(NodeList[NodePos]), Distance/2) then
+  if KMSamePointF(fUnit.PositionF, KMPointF(NodeList[NodePos]), distance/2) then
   begin
 
     //Set precise position to avoid rounding errors
@@ -1205,10 +1204,7 @@ begin
 
     //Check if we need to walk to a new destination
     if CanAbandonInternal and (CheckForNewDestination = dcNoRoute) then
-    begin
-      Result := arActAborted;
-      Exit;
-    end;
+      Exit(arActAborted);
 
     //Check for units nearby to fight
     if CanAbandonInternal and (fUnit is TKMUnitWarrior) then
@@ -1221,19 +1217,15 @@ begin
     if not fDoExchange and CheckWalkComplete then
     begin
       if (fDistance > 0) and ((fUnit.Task = nil) or (not fUnit.Task.WalkShouldAbandon))
-        and not KMSamePoint(NodeList[NodePos], fWalkTo) then //Happens rarely when we asked to sidestep towards our not locked target (Warrior)
+      and not KMSamePoint(NodeList[NodePos], fWalkTo) then //Happens rarely when we asked to sidestep towards our not locked target (Warrior)
         fUnit.Direction := KMGetDirection(NodeList[NodePos], fWalkTo); //Face tile (e.g. worker)
-      Result := arActDone;
-      Exit;
+      Exit(arActDone);
     end;
 
     //Check if target unit (warrior) has died and if so abandon our walk and so delivery task can exit itself
     if CanAbandonInternal then
       if CheckTargetHasDied then
-      begin
-        Result := arActAborted;
-        Exit;
-      end;
+        Exit(arActAborted);
 
     //This is sometimes caused by unit interaction changing the route so simply ignore it
     if KMSamePoint(NodeList[NodePos], NodeList[NodePos+1]) then
@@ -1252,7 +1244,7 @@ begin
       fPass := CanWalk;}
 
     //Save unit dir in case we will need to restore it
-    OldDir := fUnit.Direction;
+    oldDir := fUnit.Direction;
 
     //Update unit direction according to next Node
     fUnit.Direction := KMGetDirection(NodeList[NodePos], NodeList[NodePos+1]);
@@ -1260,10 +1252,10 @@ begin
     //Check if we can walk to next tile in the route
     //Don't use CanAbandonInternal because skipping this check can cause crashes
     if not fDoExchange then
-      case CheckForObstacle(OldDir) of
+      case CheckForObstacle(oldDir) of
         ocNoObstacle:   ;
         ocReRouteMade:  Exit; //Self was freed so exit immediately. New route will pick-up
-        ocNoRoute:      begin Result := arActAborted; Exit; end; //
+        ocNoRoute:      Exit(arActAborted);
       end;
 
     //Perform exchange
@@ -1315,16 +1307,16 @@ begin
   if NodePos > NodeList.Count - 1 then
     raise ELocError.Create('WalkTo overrun', fUnit.Position);
 
-  WalkX := NodeList[NodePos].X - fUnit.PositionF.X;
-  WalkY := NodeList[NodePos].Y - fUnit.PositionF.Y;
-  DX := Sign(WalkX); //-1,0,1
-  DY := Sign(WalkY); //-1,0,1
+  walkX := NodeList[NodePos].X - fUnit.PositionF.X;
+  walkY := NodeList[NodePos].Y - fUnit.PositionF.Y;
+  dx := Sign(walkX); //-1,0,1
+  dy := Sign(walkY); //-1,0,1
 
-  if (DX <> 0) and (DY <> 0) then
-    Distance := Distance / 1.41; {sqrt (2) = 1.41421 }
+  if (dx <> 0) and (dy <> 0) then
+    distance := distance / 1.41; {sqrt (2) = 1.41421 }
 
-  fUnit.PositionF := KMPointF(fUnit.PositionF.X + DX*min(Distance,abs(WalkX)),
-                              fUnit.PositionF.Y + DY*min(Distance,abs(WalkY)));
+  fUnit.PositionF := KMPointF(fUnit.PositionF.X + dx * Min(distance, Abs(walkX)),
+                              fUnit.PositionF.Y + dy * Min(distance, Abs(walkY)));
 
   Inc(fUnit.AnimStep);
   StepDone := False; //We are not actually done because now we have just taken another step
@@ -1378,7 +1370,7 @@ end;
 
 
 // Check if our path is through viewport, to show debug unit route
-function TKMUnitActionWalkTo.NeedToPaint(aRect: TKMRect): Boolean;
+function TKMUnitActionWalkTo.NeedToPaint(const aRect: TKMRect): Boolean;
 var
   I: Integer;
 begin
