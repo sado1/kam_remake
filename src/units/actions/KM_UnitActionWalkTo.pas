@@ -7,7 +7,7 @@ uses
   KM_Houses, KM_Units;
 
 type
-  TInteractionStatus = (
+  TKMInteractionStatus = (
     kisNone,       //We have not yet encountered an interaction (we are just walking)
     kisPushing,    //We are pushing an idle unit out of the way
     kisPushed,     //We were pushed (idle then asked to move)
@@ -16,7 +16,7 @@ type
   );
 
 const
-  TInteractionStatusNames: array [TInteractionStatus] of string = (
+  InteractionStatusName: array [TKMInteractionStatus] of string = (
     'None', 'Pushing', 'Pushed', 'Trying', 'Waiting'
   );
 
@@ -38,7 +38,7 @@ type
     fDestBlocked: Boolean; //Our route is blocked by busy units, so we must wait for them to clear. Give way to all other units (who might be carrying stone for the worker blocking us)
     fDoExchange: Boolean; //Command to make exchange maneuver with other unit, should use MakeExchange when vertex use needs to be set
     fInteractionCount, fLastSideStepNodePos: Integer;
-    fInteractionStatus: TInteractionStatus;
+    fInteractionStatus: TKMInteractionStatus;
     fAvoidLockedAsMovementCost: Boolean; //Avoid locked as 'movement cost' if true and means 'as unwalkable' if false
     function AssembleTheRoute: Boolean;
     function CanWalkToTarget(const aFrom: TKMPoint; aPass: TKMTerrainPassability): Boolean;
@@ -355,7 +355,7 @@ end;
 
 function TKMUnitActionWalkTo.GetExplanation: UnicodeString;
 begin
-  Result := TInteractionStatusNames[fInteractionStatus] + ': ' + Explanation;
+  Result := InteractionStatusName[fInteractionStatus] + ': ' + Explanation;
 end;
 
 
