@@ -84,6 +84,8 @@ type
 
   TKMTerrainKindsArray = array of TKMTerrainKind;
 
+  TKMTerrainKindSet = set of TKMTerrainKind;
+
   TKMTerrainKindCorners = array[0..3] of TKMTerrainKind;
 
 const
@@ -576,10 +578,12 @@ const
   (tkIronMount,tkSnowOnDirt,tkDirt,tkDirt), (tkIronMount,tkDirt,tkDirt,tkDirt), (tkIronMount,tkDirt,tkDirt,tkSnowOnDirt), (tkIronMount,tkDirt,tkSnowOnDirt,tkDirt)
   );
 
-
 var
-  MirrorTilesH: array [0..MAX_TILE_TO_SHOW-1] of Integer;
-  MirrorTilesV: array [0..MAX_TILE_TO_SHOW-1] of Integer;
+  // Mirror tiles arrays, according to the tiles corners terrain kinds
+  // If no mirror tile is found, then self tile is set by default
+  // for tiles below 256 we set default tiles (themselfs)
+  ResTileset_MirrorTilesH: array [0..TILES_CNT-1] of Integer; // mirror horisontally
+  ResTileset_MirrorTilesV: array [0..TILES_CNT-1] of Integer; // mirror vertically
 
 type
   TKMResTileset = class
@@ -589,6 +593,8 @@ type
       Tile1, Tile2, Tile3: Byte;
       b1, b2, b3, b4, b5, b6, b7: Boolean;
     end;
+
+    function GetTerKindsCnt(aTile: Word): Integer;
 
     function LoadPatternDAT(const FileName: string): Boolean;
     procedure InitRemakeTiles;
@@ -629,13 +635,16 @@ type
     function TileIsGoodForIronMine(aTile: Word): Boolean;
     function TileIsGoodForGoldMine(aTile: Word): Boolean;
 
+    function TileIsCorner(aTile: Word): Boolean;
+    function TileIsEdge(aTile: Word): Boolean;
+
     class function TileIsAllowedToSet(aTile: Word): Boolean;
   end;
 
 
 implementation
 uses
-  KM_CommonUtils;
+  KM_CommonUtils, KM_CommonClassesExt;
 
 const
   TILES_NOT_ALLOWED_TO_SET: array [0..16] of Word = (
@@ -677,8 +686,10 @@ const
   NoWalkNoBuild: array[0..44] of Integer = (259,260,261,265,266,267,268,273,276,277,282,284,285,290,292,293,298,300,301,307,//20
                                             308,323,324,325,326,327,328,329,330,331,332,333,334,335,336,337,340,341,342,343,//40
                                             344,345,346,354,357);
+  MIRROR_TILES_INIT_FROM = 256;
 var
-  I: Integer;
+  I, J, K: Integer;
+  skipH, skipV: Boolean;
 begin
   for I := Low(WalkBuild) to High(WalkBuild) do
   begin
@@ -699,6 +710,66 @@ begin
     Assert(NoWalkNoBuild[I] > 255); //We init only new tiles with ID > 255
     PatternDAT[NoWalkNoBuild[I]].Walkable := 0;
     PatternDAT[NoWalkNoBuild[I]].Buildable := 0;
+  end;
+
+  // Init MirrorTilesH and MirrorTilesV
+  // We can put into const arrays though, if needed for speedup the process
+  for I := Low(TILE_CORNERS_TERRAIN_KINDS) to High(TILE_CORNERS_TERRAIN_KINDS) do
+  begin
+    skipH := False;
+    skipV := False;
+
+    // 'Self' mirror by default
+    ResTileset_MirrorTilesH[I] := I;
+    ResTileset_MirrorTilesV[I] := I;
+
+    if I < MIRROR_TILES_INIT_FROM then
+      Continue;
+
+    // Skip if we have custom terrain here (maybe we can use it too?)
+    for J := 0 to 3 do
+      if TILE_CORNERS_TERRAIN_KINDS[I][J] = tkCustom then
+      begin
+        skipH := True;
+        skipV := True;
+        Break;
+      end;
+
+    // Check if mirror tile is needed
+    if (TILE_CORNERS_TERRAIN_KINDS[I][0] = TILE_CORNERS_TERRAIN_KINDS[I][1])
+      and (TILE_CORNERS_TERRAIN_KINDS[I][2] = TILE_CORNERS_TERRAIN_KINDS[I][3]) then
+      skipH := True;
+
+    if (TILE_CORNERS_TERRAIN_KINDS[I][0] = TILE_CORNERS_TERRAIN_KINDS[I][3])
+      and (TILE_CORNERS_TERRAIN_KINDS[I][1] = TILE_CORNERS_TERRAIN_KINDS[I][2]) then
+      skipV := True;
+
+    // try to find mirror tiles based on corners terrain kinds
+    for K := MIRROR_TILES_INIT_FROM to High(TILE_CORNERS_TERRAIN_KINDS) do
+    begin
+      if skipH and skipV then
+        Break;
+
+      if not skipH
+        and (TILE_CORNERS_TERRAIN_KINDS[I][0] = TILE_CORNERS_TERRAIN_KINDS[K][1])
+        and (TILE_CORNERS_TERRAIN_KINDS[I][1] = TILE_CORNERS_TERRAIN_KINDS[K][0])
+        and (TILE_CORNERS_TERRAIN_KINDS[I][2] = TILE_CORNERS_TERRAIN_KINDS[K][3])
+        and (TILE_CORNERS_TERRAIN_KINDS[I][3] = TILE_CORNERS_TERRAIN_KINDS[K][2]) then
+      begin
+        ResTileset_MirrorTilesH[I] := K;
+        skipH := True;
+      end;
+
+      if not skipV
+        and (TILE_CORNERS_TERRAIN_KINDS[I][0] = TILE_CORNERS_TERRAIN_KINDS[K][3])
+        and (TILE_CORNERS_TERRAIN_KINDS[I][3] = TILE_CORNERS_TERRAIN_KINDS[K][0])
+        and (TILE_CORNERS_TERRAIN_KINDS[I][1] = TILE_CORNERS_TERRAIN_KINDS[K][2])
+        and (TILE_CORNERS_TERRAIN_KINDS[I][2] = TILE_CORNERS_TERRAIN_KINDS[K][1]) then
+      begin
+        ResTileset_MirrorTilesV[I] := K;
+        skipV := True;
+      end;
+    end;
   end;
 end;
 
@@ -767,6 +838,49 @@ begin
     writeln(ft);
   end;
   closefile(ft);
+end;
+
+
+function TKMResTileset.GetTerKindsCnt(aTile: Word): Integer;
+var
+  I: Integer;
+  terKinds: TKMTerrainKindSet;
+begin
+  terKinds := [];
+
+  for I := 0 to 3 do
+    Include(terKinds, TILE_CORNERS_TERRAIN_KINDS[aTile][I]);
+
+  Result := TSet<TKMTerrainKindSet>.Cardinality(terKinds);
+end;
+
+
+function TKMResTileset.TileIsCorner(aTile: Word): Boolean;
+const
+  CORNERS = [10,15,18,21..23,25,38,49,51..54,56,58,65,66,68..69,71,72,74,78,80,81,83,84,86..87,89,90,92,93,95,96,98,99,
+             101,102,104,105,107..108,110..111,113,114,116,118,119,120,122,123,126..127,138,142,143,165,176..193,196,
+             202,203,205,213,220,234..241,243,247];
+begin
+  if aTile in CORNERS then
+    Exit(True);
+
+  Result := GetTerKindsCnt(aTile) = 2;
+end;
+
+
+function TKMResTileset.TileIsEdge(aTile: Word): Boolean;
+const
+  EDGES = [4,12,19,39,50,57,64,67,70,73,76,79,82,85,88,91,94,97,
+           100,103,106,109,112,115,117,121,124..125,139,141,166..175,194,198..200,
+           204,206..212,216..219,223,224..233,242,244];
+begin
+  if aTile in EDGES then
+    Exit(True);
+
+  Result :=    ((TILE_CORNERS_TERRAIN_KINDS[aTile][0] = TILE_CORNERS_TERRAIN_KINDS[aTile][1])
+            and (TILE_CORNERS_TERRAIN_KINDS[aTile][2] = TILE_CORNERS_TERRAIN_KINDS[aTile][3]))
+          or   ((TILE_CORNERS_TERRAIN_KINDS[aTile][0] = TILE_CORNERS_TERRAIN_KINDS[aTile][3])
+            and (TILE_CORNERS_TERRAIN_KINDS[aTile][1] = TILE_CORNERS_TERRAIN_KINDS[aTile][2]));
 end;
 
 

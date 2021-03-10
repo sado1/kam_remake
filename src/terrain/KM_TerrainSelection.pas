@@ -58,6 +58,7 @@ var
 implementation
 uses
   SysUtils,
+  KM_Resource,
   KM_GameCursor, KM_RenderAux, KM_Defaults;
 
 
@@ -341,8 +342,6 @@ end;
 procedure TKMSelection.Selection_Flip(aAxis: TKMFlipAxis);
 
   procedure SwapLayers(var Layer1, Layer2: TKMTerrainLayer);
-  var
-    I: Integer;
   begin
     SwapInt(Layer1.Terrain, Layer2.Terrain);
     SwapInt(Layer1.Rotation, Layer2.Rotation);
@@ -448,12 +447,31 @@ procedure TKMSelection.Selection_Flip(aAxis: TKMFlipAxis);
         aLayer.Rotation := rot;
     end;
 
+    procedure FixObject;
+    const
+      OBJ_MIDDLE_X = [8,9,54..61,80,81,212,213,215];
+      OBJ_MIDDLE_Y = [8,9,54..61,80,81,212,213,215,  1..5,10..12,17..19,21..24,63,126,210,211,249..253];
+    begin
+      //Horizontal flip: Vertex (not middle) objects must be moved right by 1
+      if (aAxis = faHorizontal) and (X < fSelectionRect.Right)
+      and (gTerrain.Land[Y,X+1].Obj = OBJ_NONE) and not (gTerrain.Land[Y,X].Obj in OBJ_MIDDLE_X) then
+      begin
+        gTerrain.Land[Y,X+1].Obj := gTerrain.Land[Y,X].Obj;
+        gTerrain.Land[Y,X].Obj := OBJ_NONE;
+      end;
+
+      //Vertical flip: Vertex (not middle) objects must be moved down by 1
+      if (aAxis = faVertical) and (Y < fSelectionRect.Bottom)
+      and (gTerrain.Land[Y+1,X].Obj = OBJ_NONE) and not (gTerrain.Land[Y,X].Obj in OBJ_MIDDLE_Y) then
+      begin
+        gTerrain.Land[Y+1,X].Obj := gTerrain.Land[Y,X].Obj;
+        gTerrain.Land[Y,X].Obj := OBJ_NONE;
+      end;
+    end;
+
   const
-    CORNERS = [10,15,18,21..23,25,38,49,51..54,56,58,65,66,68..69,71,72,74,78,80,81,83,84,86..87,89,90,92,93,95,96,98,99,101,102,104,105,107..108,110..111,113,114,116,118,119,120,122,123,126..127,138,142,143,165,176..193,196,202,203,205,213,220,234..241,243,247];
     CORNERS_REVERSED = [15,21,142,234,235,238];
-    EDGES = [4,12,19,39,50,57,64,67,70,73,76,79,82,85,88,91,94,97,100,103,106,109,112,115,117,121,124..125,139,141,166..175,194,198..200,204,206..212,216..219,223,224..233,242,244];
-    OBJ_MIDDLE_X = [8,9,54..61,80,81,212,213,215];
-    OBJ_MIDDLE_Y = [8,9,54..61,80,81,212,213,215,  1..5,10..12,17..19,21..24,63,126,210,211,249..253];
+
   var
     L: Integer;
     ter: Word;
@@ -463,16 +481,53 @@ procedure TKMSelection.Selection_Flip(aAxis: TKMFlipAxis);
     rot := gTerrain.Land[Y,X].BaseLayer.Rotation mod 4; //Some KaM maps contain rotations > 3 which must be fixed by modding
 
     //Edges
-    if (ter in EDGES) and ((rot in [1,3]) xor (aAxis = faVertical)) then
-      gTerrain.Land[Y,X].BaseLayer.Rotation := (rot+2) mod 4;
-
+    if gRes.Tileset.TileIsEdge(ter) then
+    begin
+      if (rot in [1,3]) xor (aAxis = faVertical) then
+        gTerrain.Land[Y,X].BaseLayer.Rotation := (rot + 2) mod 4
+    end else
     //Corners
-    if ter in CORNERS then
+    if gRes.Tileset.TileIsCorner(ter) then
     begin
       if (rot in [1,3]) xor (ter in CORNERS_REVERSED) xor (aAxis = faVertical) then
         gTerrain.Land[Y,X].BaseLayer.Rotation := (rot+1) mod 4
       else
         gTerrain.Land[Y,X].BaseLayer.Rotation := (rot+3) mod 4;
+    end
+    else
+    begin
+      case aAxis of
+        faHorizontal: begin
+                        if ter <> ResTileset_MirrorTilesH[ter] then
+                        begin
+                          gTerrain.Land[Y,X].BaseLayer.Terrain := ResTileset_MirrorTilesH[ter];
+                          gTerrain.Land[Y,X].BaseLayer.Rotation := (8 - rot) mod 4; // Rotate left (in the opposite direction to normal rotation)
+                        end
+                        else
+                        if ter <> ResTileset_MirrorTilesV[ter] then
+                        begin
+                          gTerrain.Land[Y,X].BaseLayer.Terrain := ResTileset_MirrorTilesV[ter];
+                          // do not rotate mirrored tile on odd rotation
+                          if (rot mod 2) = 0 then
+                            gTerrain.Land[Y,X].BaseLayer.Rotation := (rot + 2) mod 4; // rotate 180 degrees
+                        end;
+                      end;
+        faVertical:   begin
+                        if ter <> ResTileset_MirrorTilesV[ter] then
+                        begin
+                          gTerrain.Land[Y,X].BaseLayer.Terrain := ResTileset_MirrorTilesV[ter];
+                          gTerrain.Land[Y,X].BaseLayer.Rotation := (8 - rot) mod 4; // Rotate left (in the opposite direction to normal rotation)
+                        end
+                        else
+                        if ter <> ResTileset_MirrorTilesH[ter] then
+                        begin
+                          gTerrain.Land[Y,X].BaseLayer.Terrain := ResTileset_MirrorTilesH[ter];
+                          // do not rotate mirrored tile on odd rotation
+                          if (rot mod 2) = 0 then
+                            gTerrain.Land[Y,X].BaseLayer.Rotation := (rot + 2) mod 4; // rotate 180 degrees
+                        end;
+                      end;
+      end;
     end;
 
     FixLayer(gTerrain.Land[Y,X].BaseLayer, False);
@@ -480,21 +535,7 @@ procedure TKMSelection.Selection_Flip(aAxis: TKMFlipAxis);
     for L := 0 to gTerrain.Land[Y,X].LayersCnt - 1 do
       FixLayer(gTerrain.Land[Y,X].Layer[L], True);
 
-    //Horizontal flip: Vertex (not middle) objects must be moved right by 1
-    if (aAxis = faHorizontal) and (X < fSelectionRect.Right)
-    and (gTerrain.Land[Y,X+1].Obj = OBJ_NONE) and not (gTerrain.Land[Y,X].Obj in OBJ_MIDDLE_X) then
-    begin
-      gTerrain.Land[Y,X+1].Obj := gTerrain.Land[Y,X].Obj;
-      gTerrain.Land[Y,X].Obj := OBJ_NONE;
-    end;
-
-    //Vertical flip: Vertex (not middle) objects must be moved down by 1
-    if (aAxis = faVertical) and (Y < fSelectionRect.Bottom)
-    and (gTerrain.Land[Y+1,X].Obj = OBJ_NONE) and not (gTerrain.Land[Y,X].Obj in OBJ_MIDDLE_Y) then
-    begin
-      gTerrain.Land[Y+1,X].Obj := gTerrain.Land[Y,X].Obj;
-      gTerrain.Land[Y,X].Obj := OBJ_NONE;
-    end;
+    FixObject;
   end;
 
 var
