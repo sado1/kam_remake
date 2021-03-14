@@ -619,7 +619,7 @@ begin
     //gGameParams.IsNormalMission;
 
     if (Length(gGame.MapTxtInfo.Author) = 0) then
-      gGame.MapTxtInfo.Author := 'Random number generator';
+      gGame.MapTxtInfo.Author := 'Random map generator';
     if (Length(gGame.MapTxtInfo.SmallDesc) = 0) then
       gGame.MapTxtInfo.SmallDesc := 'Randomly generated map';
     if (Length(gGame.MapTxtInfo.GetBigDesc) = 0) then
