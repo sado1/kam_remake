@@ -86,7 +86,8 @@ type
     procedure SoftenShadows(aIdList: TStringList); overload;
     procedure SoftenShadows(aStart: Integer = 1; aEnd: Integer = -1; aOnlyShadows: Boolean = True); overload;
     procedure SoftenShadows(aID: Integer; aOnlyShadows: Boolean = True); overload;
-    procedure DetermineImagesObjectSize(aStart: Integer = 1; aEnd: Integer = -1);
+    procedure DetermineImagesObjectSize(aStart: Integer = 1; aEnd: Integer = -1); overload;
+    procedure DetermineImagesObjectSize(aIdList: TStringList); overload;
     procedure RemoveMarketWaresShadows(aResHouses: TKMResHouses);
     procedure RemoveSnowHouseShadows(aResHouses: TKMResHouses);
 
@@ -372,6 +373,25 @@ begin
 end;
 
 
+procedure TKMSpritePack.DetermineImagesObjectSize(aIdList: TStringList);
+var
+  I, ID: Integer;
+  ShadowConverter: TKMSoftShadowConverter;
+begin
+  ShadowConverter := TKMSoftShadowConverter.Create(Self);
+  try
+    for I := 0 to aIdList.Count - 1 do
+    begin
+      ID := StrToInt(aIdList[I]);
+      if (fRXData.Flag[ID] <> 0) then
+        ShadowConverter.DetermineImageObjectSize(ID);
+    end;
+  finally
+    ShadowConverter.Free;
+  end;
+end;
+
+
 procedure TKMSpritePack.RemoveSnowHouseShadows(aResHouses: TKMResHouses);
 var
   SnowID: Integer;
@@ -623,7 +643,7 @@ end;
 
 //Parse all valid files in Sprites folder and load them additionaly to or replacing original sprites
 procedure TKMSpritePack.OverloadFromFolder(const aFolder: string; aSoftenShadows: Boolean = True);
-  procedure ProcessFolder(const aProcFolder: string);
+  procedure ProcessFolder(const aProcFolder: string; aRT: TRXType);
   var
     FileList, IDList: TStringList;
     SearchRec: TSearchRec;
@@ -658,6 +678,11 @@ procedure TKMSpritePack.OverloadFromFolder(const aFolder: string; aSoftenShadows
         if aSoftenShadows then
           SoftenShadows(IDList); // Soften shadows for overloaded sprites
 
+        // Determine objects size only for units (used for hitbox)
+        // TODO do we need it for houses too ?
+        if aRT = rxUnits then
+          DetermineImagesObjectSize(IDList);
+
         try
           //Delete following sprites
           if FindFirst(aProcFolder + IntToStr(Byte(fRT) + 1) + '_????', faAnyFile - faDirectory, SearchRec) = 0 then
@@ -678,8 +703,8 @@ procedure TKMSpritePack.OverloadFromFolder(const aFolder: string; aSoftenShadows
 begin
   if SKIP_RENDER then Exit;
 
-  ProcessFolder(aFolder);
-  ProcessFolder(aFolder + IntToStr(Byte(fRT) + 1) + PathDelim);
+  ProcessFolder(aFolder, fRT);
+  ProcessFolder(aFolder + IntToStr(Byte(fRT) + 1) + PathDelim, fRT);
 end;
 
 
