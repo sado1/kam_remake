@@ -3186,7 +3186,10 @@ begin
         RemRoad(Loc);
 
       Land[Loc.Y, Loc.X].TileOverlay := aOverlay;
-      gGame.MapEditor.Land[Loc.Y, Loc.X].CornOrWine := 0;
+
+      if fMapEditor then
+        gGame.MapEditor.Land[Loc.Y, Loc.X].CornOrWine := 0;
+
       UpdateFences(Loc);
 
       if (aOverlay in ROAD_LIKE_OVERLAYS) and gMapElements[Land[Loc.Y, Loc.X].Obj].WineOrCorn then
