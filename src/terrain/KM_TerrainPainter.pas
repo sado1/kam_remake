@@ -401,10 +401,6 @@ begin
   Result := GetRandomTile(aTerrainKind, not aRandom);
 end;
 
-function TKMTerrainPainter.PickRandomObject(aTerrainKind: TKMTerrainKind; ObjType:Integer): Integer;
-var ObjectType:array[0..9] of array of Integer;
-    fObjRandom:Integer;
-begin
   if ObjType = 0 then
     case aTerrainKind of
         tkGrass: ObjectType[0]:=[1,2,3,4,5,6,7,10,11,12,13,14,16,22,23,24,39,41,42,43,45,46,47,190,191,192,193,194,9];
@@ -424,25 +420,60 @@ begin
         tkGrassyWater: ObjectType[0]:=[60,62,63,59,57,60,62,63,60,62,63];
         else ObjectType[0]:=[255];
     end;
-  case ObjType of
-       0:;
-       1:;
-       2: ObjectType[ObjType]:=[22,23,24];
-       3: ObjectType[ObjType]:=[17,18,19,21];
-       4: ObjectType[ObjType]:=[10,11,12,13,14,15,16,20,25,26,27,29,30,31,33,34,35,37,38,39,41,42,43,45,46,47,49,50,51,64,65,66,10,11,12,10,11,12,10,11,12];
-       5: ObjectType[ObjType]:=[190,191,192,193,194];
-       6: ObjectType[ObjType]:=[0,1,2,3,4,0,1,2,3,4,0,1,2,3,4,8,9];
-       7: ObjectType[ObjType]:=[210,211,212,213,214,215];
-       8: ObjectType[ObjType]:=[216,217,218,219,220];
-       9: ObjectType[ObjType]:=[68,69,70,71,72,73];
-       else ObjectType[ObjType] :=[255];
+  case aTerrainKind of
+      tkCoastSand,tkGrassSand1, tkGrassSand2,tkGrassSand3,tkSand,tkCobbleStone..tkLava,tkCustom: begin
+        ObjectType[2]:=[255];
+        ObjectType[3]:=[255];
+      end;
+      else begin
+        ObjectType[2]:=[22,23,24];
+        ObjectType[3]:=[17,18,19,21];
+      end;
+  end;
+  case aTerrainKind of
+      tkCustom,       tkGrass,        tkMoss,         tkPaleGrass,
+      tkGrassSand1,   tkGrassSand2,   tkGrassSand3,   tkGrassDirt,
+      tkDirt, tkSnowOnGrass,  tkSnowOnDirt : begin
+        ObjectType[4]:=[10,11,12,13,14,15,16,20,25,26,27,29,30,31,33,34,35,37,38,39,41,42,43,45,46,47,49,50,51,64,65,66,10,11,12,10,11,12,10,11,12];
+        ObjectType[5]:=[190,191,192,193,194];
+      end;
+      else begin
+        ObjectType[4]:=[255];
+        ObjectType[5]:=[255];
+      end;
   end;
 
-  fObjRandom :=Random(High(ObjectType[ObjType]));
 
+  case aTerrainKind of
+      tkGrass,        tkMoss,         tkPaleGrass, tkCoastSand,
+      tkGrassSand1,   tkGrassSand2,   tkGrassSand3,   tkGrassDirt,tkDirt,tkSnowOnGrass,
+      tkSnowOnDirt,   tkSnow,         tkGravel,    tkCoal: begin
+        ObjectType[6]:=[0,1,2,3,4,0,1,2,3,4,0,1,2,3,4,8,9];
+      end;
+      else begin
+        ObjectType[6]:=[255];
+      end;
+  end;
 
-  Result := ObjectType[ObjType][fObjRandom];
-end;
+  case aTerrainKind of
+      tkGrassSand2,   tkGrassSand3,   tkSand: begin
+      ObjectType[7]:=[210,211,212,213,214,215];
+      ObjectType[8]:=[216,217,218,219,220];
+      end;
+      else begin
+        ObjectType[7]:=[255];
+        ObjectType[8]:=[255];
+      end;
+  end;
+
+  case aTerrainKind of
+      tkCustom, tkSand,tkGrassyWater,  tkSwamp,     tkIce,tkDeepSnow,tkStone,
+      tkGoldMount,    tkIronMount,    tkAbyss,        tkGravel,    tkCoal,
+      tkGold,         tkIron,         tkWater,        tkFastWater, tkLava
+      :  ObjectType[9]:=[255];
+      else ObjectType[9]:=[68,69,70,71,72,73];
+  end;
+
 
 
 
