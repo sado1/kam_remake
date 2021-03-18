@@ -131,7 +131,7 @@ procedure TForm1.btnSaveClick(Sender: TObject);
 begin
   dlgSave.DefaultExt := TKMFontData.DEFAULT_EXT;
   dlgSave.FileName := cbFontName.Text;
-  dlgSave.InitialDir := ExpandFileName(ExeDir + '..\..\data\gfx\fonts\');
+  dlgSave.InitialDir := ExpandFileName(ExeDir + '..\..\' + TKMFontData.FONTS_FOLDER);
   if not dlgSave.Execute then Exit;
 
   fFontData.SaveToFontX(dlgSave.FileName);

@@ -52,8 +52,8 @@ type
   TKMFontData = class
   const
     DEFAULT_EXT = 'fntx';
-    //todo: DEFAULT_PATH = 'data\gfx\fonts'; or FONTS_FOLDER ?
     FNTX_HEAD: AnsiString = 'FNTX';
+    FONTS_FOLDER = 'data' + PathDelim + 'gfx' + PathDelim + 'fonts' + PathDelim;
   private
     fFont: TKMFont;
     function GetTexID(aIndex: Integer): Cardinal;
@@ -152,9 +152,6 @@ uses
   KM_Render,
   KM_CommonUtils, KM_Log;
 
-
-const
-  FONTS_FOLDER = 'data' + PathDelim + 'gfx' + PathDelim + 'fonts' + PathDelim;
 
 var
   LOG_EXTRA_FONTS: Boolean = False;
@@ -522,7 +519,7 @@ begin
 
   for F := Low(TKMFont) to High(TKMFont) do
   begin
-    FntPath := ExeDir + FONTS_FOLDER + FONT_INFO[F].FontFile + '.' + TKMFontData.DEFAULT_EXT;
+    FntPath := ExeDir + TKMFontData.FONTS_FOLDER + FONT_INFO[F].FontFile + '.' + TKMFontData.DEFAULT_EXT;
     fFontData[F].LoadFontX(FntPath, aLoadLevel);
     fFontData[F].GenerateTextures(FONT_INFO[F].TexMode);
     fFontData[F].Compact;
@@ -550,7 +547,7 @@ begin
     maxW := 0;
     maxAnsiW := 0;
 
-    FntPath := ExeDir + FONTS_FOLDER + FONT_INFO[F].FontFile + '.' + TKMFontData.DEFAULT_EXT;
+    FntPath := ExeDir + TKMFontData.FONTS_FOLDER + FONT_INFO[F].FontFile + '.' + TKMFontData.DEFAULT_EXT;
     fFontData[F].LoadFontX(FntPath);
 
     //Calc max font width

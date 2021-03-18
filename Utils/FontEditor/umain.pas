@@ -7,7 +7,7 @@ uses
   {$IFDEF Unix} LCLType, {$ENDIF}
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs, ExtCtrls,
   StdCtrls, Math, ComCtrls, Buttons, Spin, StrUtils, KromUtils,
-  KM_Defaults,
+  KM_Defaults, KM_ResFonts,
   Constants; //Declared last to override TKMFont (we could redesign that later, but for now it works okay)
 
 
@@ -92,15 +92,13 @@ type
   end;
 
 
-
 implementation
-//{$IFDEF WDC}
-{$R *.dfm}
-//{$ENDIF}
-
 uses
   KromShellUtils;
 
+//{$IFDEF WDC}
+{$R *.dfm}
+//{$ENDIF}
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
@@ -108,9 +106,9 @@ begin
 
   ExeDir := ExtractFilePath(ParamStr(0));
   DataDir := ExeDir;
-  if DirectoryExists(ExeDir + '..\..\Data\gfx\Fonts\') then //Remake project location
+  if DirectoryExists(ExeDir + '..\..\' + TKMFontData.FONTS_FOLDER) then //Remake project location
     DataDir := ExeDir + '..\..\';
-  if DirectoryExists(ExeDir + 'Data\gfx\Fonts\') then //Default location
+  if DirectoryExists(ExeDir + TKMFontData.FONTS_FOLDER) then //Default location
     DataDir := ExeDir;
 
   ScanDataForPalettesAndFonts(DataDir);
@@ -145,7 +143,7 @@ begin
     Exit;
   end;
 
-  if not RunSaveDialog(SaveDialog1, ListBox1.Items[ListBox1.ItemIndex], DataDir + 'Data\Gfx\Fonts\', 'KaM Fonts|*.fnt', 'fnt') then
+  if not RunSaveDialog(SaveDialog1, ListBox1.Items[ListBox1.ItemIndex], DataDir + TKMFontData.FONTS_FOLDER, 'KaM Fonts|*.fnt', 'fnt') then
     Exit;
 
   assignfile(f,SaveDialog1.FileName);
@@ -187,9 +185,9 @@ begin
    LoadPalette(aPath+'data\gfx\'+PalFiles[I],I);
 
   //2. Fonts
-  if not DirectoryExists(aPath+'data\gfx\fonts\') then Exit;
+  if not DirectoryExists(aPath + TKMFontData.FONTS_FOLDER) then Exit;
 
-  FindFirst(aPath+'data\gfx\fonts\*.fnt', faAnyFile - faDirectory, SearchRec);
+  FindFirst(aPath + TKMFontData.FONTS_FOLDER + '*.fnt', faAnyFile - faDirectory, SearchRec);
   repeat
     ListBox1.Items.Add(SearchRec.Name);
   until (FindNext(SearchRec)<>0);
@@ -199,7 +197,7 @@ end;
 
 procedure TfrmMain.ListBox1Click(Sender: TObject);
 begin
-  LoadFont(DataDir+'data\gfx\fonts\'+ListBox1.Items[ListBox1.ItemIndex], GetFontFromFileName(ListBox1.Items[ListBox1.ItemIndex]));
+  LoadFont(DataDir + TKMFontData.FONTS_FOLDER+ListBox1.Items[ListBox1.ItemIndex], GetFontFromFileName(ListBox1.Items[ListBox1.ItemIndex]));
   RGPalette.ItemIndex := FontPal[FontData.Title] - 1;
   ShowBigImage(CheckCells.Checked, false);
   PaintBox1.Repaint;

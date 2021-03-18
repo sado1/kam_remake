@@ -62,7 +62,7 @@ begin
   for I := Low(aFiles) to High(aFiles) do
   begin
     srcFonts[I] := TKMFontDataEdit.Create(fntArial); //fntArial, why not, it looks like we dont care
-    srcFontFile := ExeDir + '..\..\data\gfx\fonts\' + aFiles[I];
+    srcFontFile := ExeDir + '..\..\' + TKMFontData.FONTS_FOLDER + aFiles[I];
 
     //Guess font palette from filename
     pals := TKMResPalettes.Create;

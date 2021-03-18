@@ -109,9 +109,9 @@ begin
 
   ExeDir := ExtractFilePath(ParamStr(0));
   DataDir := ExeDir;
-  if DirectoryExists(ExeDir + '..\..\data\gfx\fonts\') then //Remake project location
+  if DirectoryExists(ExeDir + '..\..\' + TKMFontData.FONTS_FOLDER) then //Remake project location
     DataDir := ExeDir + '..\..\';
-  if DirectoryExists(ExeDir + 'data\gfx\fonts\') then //Default location
+  if DirectoryExists(ExeDir + TKMFontData.FONTS_FOLDER) then //Default location
     DataDir := ExeDir;
 
   ScanFonts(DataDir);
@@ -155,7 +155,7 @@ begin
   if not RunSaveDialog(
     SaveDialog1,
     lbFonts.Items[lbFonts.ItemIndex],
-    DataDir + 'Data\Gfx\Fonts\',
+    DataDir + TKMFontData.FONTS_FOLDER,
     'KaM FontX|*.' + TKMFontData.DEFAULT_EXT,
     TKMFontData.DEFAULT_EXT) then
     Exit;
@@ -170,9 +170,9 @@ var
 begin
   lbFonts.Clear;
 
-  if not DirectoryExists(aPath + 'data\gfx\fonts\') then Exit;
+  if not DirectoryExists(aPath + TKMFontData.FONTS_FOLDER) then Exit;
 
-  FindFirst(aPath + 'data\gfx\fonts\*.' + TKMFontData.DEFAULT_EXT, faAnyFile - faDirectory, SearchRec);
+  FindFirst(aPath + TKMFontData.FONTS_FOLDER + '*.' + TKMFontData.DEFAULT_EXT, faAnyFile - faDirectory, SearchRec);
   repeat
     lbFonts.Items.Add(SearchRec.Name);
   until (FindNext(SearchRec) <> 0);
@@ -182,7 +182,7 @@ end;
 
 procedure TfrmMain.lbFontsClick(Sender: TObject);
 begin
-  LoadFont(DataDir + 'data\gfx\fonts\' + lbFonts.Items[lbFonts.ItemIndex]);
+  LoadFont(DataDir + TKMFontData.FONTS_FOLDER + lbFonts.Items[lbFonts.ItemIndex]);
 
   ShowBigImage(CheckCells.Checked);
   pbFont.Repaint;

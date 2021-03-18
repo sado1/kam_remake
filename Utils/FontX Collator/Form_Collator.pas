@@ -63,7 +63,7 @@ begin
   fCollator := TKMFontCollator.Create;
 
   //Scan fonts folder
-  fCollator.ListFonts(ExeDir + '..\..\data\gfx\fonts\');
+  fCollator.ListFonts(ExeDir + '..\..\' + TKMFontData.FONTS_FOLDER);
 
   //Available fonts
   for I := 0 to fCollator.Fonts.Count - 1 do
@@ -90,7 +90,7 @@ procedure TForm1.btnSaveClick(Sender: TObject);
 begin
   dlgSave.DefaultExt := TKMFontData.DEFAULT_EXT;
   dlgSave.FileName := ListBox1.Items[ListBox1.ItemIndex];
-  dlgSave.InitialDir := ExpandFileName(ExeDir + '..\..\data\gfx\fonts\');
+  dlgSave.InitialDir := ExpandFileName(ExeDir + '..\..\' + TKMFontData.FONTS_FOLDER);
   if not dlgSave.Execute then Exit;
 
   fFontData.SaveToFontX(dlgSave.FileName);
