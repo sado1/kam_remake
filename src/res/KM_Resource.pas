@@ -183,7 +183,7 @@ begin
   fCursors.MakeCursors(fSprites[rxGui]);
   fCursors.Cursor := kmcDefault;
 
-  gResKeys := TKMKeyLibrary.Create;
+  gResKeys := TKMResKeys.Create;
 
   LoadLocaleAndFonts(aLocale, aLoadFullFonts);
 
