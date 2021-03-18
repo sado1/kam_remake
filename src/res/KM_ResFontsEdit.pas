@@ -12,6 +12,7 @@ uses
 
 type
   TWideCharArray = array of WideChar;
+
   //Child class that has the advanced editing methods
   TKMFontDataEdit = class(TKMFontData)
   private

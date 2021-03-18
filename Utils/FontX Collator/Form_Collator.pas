@@ -40,8 +40,8 @@ type
     procedure ListBox1Click(Sender: TObject);
     procedure tbAtlasChange(Sender: TObject);
   private
-    Fnt: TKMFontDataEdit;
-    Collator: TKMFontCollator;
+    fFontData: TKMFontDataEdit;
+    fCollator: TKMFontCollator;
   end;
 
 
@@ -60,28 +60,28 @@ begin
   Caption := 'KaM FontX Collator (' + GAME_REVISION + ')';
   ExeDir := ExtractFilePath(ParamStr(0));
 
-  Collator := TKMFontCollator.Create;
+  fCollator := TKMFontCollator.Create;
 
   //Scan fonts folder
-  Collator.ListFonts(ExeDir + '..\..\data\gfx\fonts\');
+  fCollator.ListFonts(ExeDir + '..\..\data\gfx\fonts\');
 
   //Available fonts
-  for I := 0 to Collator.Fonts.Count - 1 do
-    ListBox1.Items.Add(Collator.Fonts[I]);
+  for I := 0 to fCollator.Fonts.Count - 1 do
+    ListBox1.Items.Add(fCollator.Fonts[I]);
 end;
 
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
-  FreeAndNil(Collator);
-  FreeAndNil(Fnt);
+  FreeAndNil(fCollator);
+  FreeAndNil(fFontData);
 end;
 
 
 procedure TForm1.ListBox1Click(Sender: TObject);
 begin
   ListBox2.Clear;
-  ListBox2.Items.Text := Collator.FontCodepages(ListBox1.ItemIndex);
+  ListBox2.Items.Text := fCollator.FontCodepages(ListBox1.ItemIndex);
   ListBox2.SelectAll;
 end;
 
@@ -93,20 +93,20 @@ begin
   dlgSave.InitialDir := ExpandFileName(ExeDir + '..\..\data\gfx\fonts\');
   if not dlgSave.Execute then Exit;
 
-  Fnt.SaveToFontX(dlgSave.FileName);
+  fFontData.SaveToFontX(dlgSave.FileName);
 end;
 
 
 procedure TForm1.btnCollateClick(Sender: TObject);
 var
-  I,K: Integer;
+  I, K: Integer;
   files: TKMStringArray;
 begin
   if ListBox1.ItemIndex = -1 then Exit;
 
   //Recreate clean Font
-  FreeAndNil(Fnt);
-  Fnt := TKMFontDataEdit.Create(fntArial); //fntArial, why not, it looks like we dont care
+  FreeAndNil(fFontData);
+  fFontData := TKMFontDataEdit.Create(fntArial); //fntArial, why not, it looks like we dont care
 
   K := 0;
   SetLength(files, ListBox2.Count);
@@ -120,23 +120,23 @@ begin
 
   if K = 0 then Exit;
 
-  Collator.Collate(ListBox1.ItemIndex,
+  fCollator.Collate(ListBox1.ItemIndex,
                    StrToInt(rgSizeX.Items[rgSizeX.ItemIndex]),
                    StrToInt(rgSizeY.Items[rgSizeY.ItemIndex]),
                    sePadding.Value,
                    files,
-                   Fnt);
+                   fFontData);
 
-  tbAtlas.Max := Fnt.AtlasCount - 1;
+  tbAtlas.Max := fFontData.AtlasCount - 1;
 
-  Fnt.ExportAtlasBmp(Image1.Picture.Bitmap, tbAtlas.Position, cbCells.Checked);
+  fFontData.ExportAtlasBmp(Image1.Picture.Bitmap, tbAtlas.Position, cbCells.Checked);
   Image1.Repaint;
 end;
 
 
 procedure TForm1.tbAtlasChange(Sender: TObject);
 begin
-  Fnt.ExportAtlasBmp(Image1.Picture.Bitmap, tbAtlas.Position, cbCells.Checked);
+  fFontData.ExportAtlasBmp(Image1.Picture.Bitmap, tbAtlas.Position, cbCells.Checked);
   Image1.Repaint;
 end;
 
@@ -146,7 +146,7 @@ begin
   dlgSave.DefaultExt := 'png';
   if not dlgSave.Execute then Exit;
 
-  Fnt.ExportAtlasPng(dlgSave.FileName, tbAtlas.Position);
+  fFontData.ExportAtlasPng(dlgSave.FileName, tbAtlas.Position);
 end;
 
 
@@ -154,7 +154,7 @@ procedure TForm1.btnImportTexClick(Sender: TObject);
 begin
   if not dlgOpen.Execute then Exit;
 
-  Fnt.ImportPng(dlgOpen.FileName, tbAtlas.Position);
+  fFontData.ImportPng(dlgOpen.FileName, tbAtlas.Position);
 end;
 
 
