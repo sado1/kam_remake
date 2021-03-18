@@ -582,7 +582,7 @@ var
   // Mirror tiles arrays, according to the tiles corners terrain kinds
   // If no mirror tile is found, then self tile is set by default
   // for tiles below 256 we set default tiles (themselfs)
-  ResTileset_MirrorTilesH: array [0..TILES_CNT-1] of Integer; // mirror horisontally
+  ResTileset_MirrorTilesH: array [0..TILES_CNT-1] of Integer; // mirror horizontally
   ResTileset_MirrorTilesV: array [0..TILES_CNT-1] of Integer; // mirror vertically
 
 type
