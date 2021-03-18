@@ -1680,7 +1680,7 @@ begin
                     RenderMapElement(gTerrain.Land[P.Y,P.X].Obj, gTerrain.AnimStep, P.X, P.Y, True, True);
                     RenderMapElement(gGameCursor.Tag1, gTerrain.AnimStep, P.X, P.Y, True);
                   end;
-    cmMagicWater: ; //TODO: Render some effect to show magic water is selected
+    cmMagicWater: ; //todo: Render some effect to show magic water is selected
     cmEyeDropper: RenderWireTile(P, icCyan); // Cyan quad
     cmRotateTile: RenderWireTile(P, icCyan); // Cyan quad
     cmElevate,

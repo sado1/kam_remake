@@ -679,7 +679,7 @@ procedure TKMSpritePack.OverloadFromFolder(const aFolder: string; aSoftenShadows
           SoftenShadows(IDList); // Soften shadows for overloaded sprites
 
         // Determine objects size only for units (used for hitbox)
-        // TODO do we need it for houses too ?
+        //todo: do we need it for houses too ?
         if aRT = rxUnits then
           DetermineImagesObjectSize(IDList);
 

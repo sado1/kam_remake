@@ -954,7 +954,7 @@ begin
     for K := aClipRect.Left to aClipRect.Right do
     if gTerrain.TileIsWater(K,I) then
     begin
-      //TODO: Waterflow indication here
+      //todo: Waterflow indication here
       //gRenderPool.RenderSpriteOnTile(KMPoint(K,I), )
     end;
   end;

@@ -23,7 +23,7 @@ const
 
 type
   //tbNone is the last, since we use Byte(Value) at some places
-  //TODO refactor
+  //todo: refactor
   TKMTabButtons = (tbBuild, tbRatio, tbStats, tbMenu, tbNone);
 
   TKMGamePlayInterface = class (TKMUserInterfaceGame)
@@ -1152,7 +1152,7 @@ begin
     Button_ReplaySaveAt     := TKMButton.Create(Panel_ReplayCtrl,125, 0, 24, 24, 592, rxGui, bsGame);
 
     Button_ShowStatsReplay  := TKMButton.Create(Panel_ReplayCtrl, 185 - 24, 0, 24, 24, 669, rxGui, bsGame);
-    //TODO: Button_ReplayFF       := TKMButton.Create(Panel_ReplayCtrl,125, 24, 24, 24, 393, rxGui, bsGame);
+    //todo: Button_ReplayFF       := TKMButton.Create(Panel_ReplayCtrl,125, 24, 24, 24, 393, rxGui, bsGame);
     Button_ReplayRestart.OnClick := ReplayClick;
     Button_ReplayPause.OnClick   := ReplayClick;
     Button_ReplayStep.OnClick    := ReplayClick;

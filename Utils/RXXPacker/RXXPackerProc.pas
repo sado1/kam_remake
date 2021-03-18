@@ -78,7 +78,7 @@ begin
       end;
 
       // Determine objects size only for units (used for hitbox)
-      // TODO do we need it for houses too ?
+      //todo: do we need it for houses too ?
       if RT = rxUnits then
         SpritePack.DetermineImagesObjectSize;
 

@@ -72,7 +72,7 @@ uses
   KromUtils, KM_Maps, KM_Saves, KM_Scripting, KM_Log, KM_FileIO;
 
 const
-  //TODO: Add LIBX and WAV support for maps
+  //todo: Add LIBX and WAV support for maps
   VALID_MAP_EXTENSIONS:  array[1..5] of UnicodeString =         ('map','dat',EXT_FILE_SCRIPT,'txt','pdf');
   VALID_MAP_EXTENSIONS_POSTFIX:  array[1..3] of UnicodeString = ('libx','wav','ogg');
   VALID_SAVE_EXTENSIONS: array[1..3] of UnicodeString =         (EXT_SAVE_MAIN, EXT_SAVE_BASE, EXT_SAVE_REPLAY);

@@ -3161,7 +3161,7 @@ end;
 
 
 // Set Tile Overlay
-// TODO: Do not update walkConnect and passability multiple times here
+//todo: Do not update walkConnect and passability multiple times here
 procedure TKMTerrain.SetOverlay(const Loc: TKMPoint; aOverlay: TKMTileOverlay; aOverwrite: Boolean);
 var
   changed: Boolean;
@@ -3337,7 +3337,7 @@ end;
 
 function TKMTerrain.CutCorn(const Loc: TKMPoint): Boolean;
 begin
-  Result := TileIsCornField(Loc) and (GetCornStage(Loc) = 5); //TODO refactor: use enum instead of magic numbers !
+  Result := TileIsCornField(Loc) and (GetCornStage(Loc) = 5); //todo: refactor: use enum instead of magic numbers !
   if not Result then Exit; //We have no corn here actually, nothing to cut
   
   Land[Loc.Y,Loc.X].FieldAge := 0;

@@ -317,7 +317,7 @@ begin
                      [aEventHandlerName, GetEnumName(TypeInfo(TKMScriptEventType), Integer(aEventType))]));
 
   Len := Length(fEventHandlers[aEventType]);
-  //TODO: rewrite it not to enlarge array by 1 element
+  //todo: rewrite it not to enlarge array by 1 element
   SetLength(fEventHandlers[aEventType], Len + 1);
   fEventHandlers[aEventType][Len].ProcName := aEventHandlerName;
 end;
