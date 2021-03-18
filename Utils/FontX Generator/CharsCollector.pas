@@ -5,15 +5,15 @@ uses
   {$IFDEF WDC} Windows, {$ENDIF} //Declared first to get TBitmap overriden with VCL version
   {$IFDEF FPC} lconvencoding, {$ENDIF}
   Classes, StrUtils, SysUtils,
-  KM_CommonTypes, KM_Defaults, KM_FileIO,
-  KM_ResFontsEdit, KM_ResPalettes;
+  KM_CommonTypes, KM_Defaults, KM_FileIO;
 
 
   function CollectChars(aProgress: TUnicodeStringEvent): UnicodeString;
 
 
 implementation
-uses KM_ResLocales, KM_ResFonts;
+uses
+  KM_ResLocales, KM_ResFonts;
 
 
 function CollectChars(aProgress: TUnicodeStringEvent): UnicodeString;
