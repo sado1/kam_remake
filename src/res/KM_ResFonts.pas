@@ -33,6 +33,7 @@ type
   }
 
   TKMFontInfo = record
+  public
     FontFile: string;
     Pal: TKMPal; //Palette fnt needs
     TexMode: TTexFormat; //Format font texture needs to be in
@@ -41,10 +42,11 @@ type
   end;
 
   TKMLetter = packed record
+  public
     Width, Height: Word;
     YOffset: SmallInt;
     AtlasId: Word; //Was Unknown field, we use it for multi-atlas fonts to mark the letters location
-    u1,v1,u2,v2: Single; //Location within texture atlas
+    u1, v1, u2, v2: Single; //Location within texture atlas
   end;
 
   TKMFontData = class
@@ -95,15 +97,15 @@ type
 
     function GetCharWidth(aChar: WideChar; aConsiderEolSymbol: Boolean = False; aMonospaced: Boolean = False): Integer;
     function WordWrap(aText: UnicodeString; aMaxPxWidth: Integer; aForced: Boolean; aIndentAfterNL: Boolean;
-             aTabWidth: Integer = TAB_WIDTH): UnicodeString;
+      aTabWidth: Integer = TAB_WIDTH): UnicodeString;
     function CharsThatFit(const aText: UnicodeString; aMaxPxWidth: Integer; aRound: Boolean = False;
-                          aConsiderEolSymbol: Boolean = False; aTabWidth: Integer = TAB_WIDTH): Integer;
+      aConsiderEolSymbol: Boolean = False; aTabWidth: Integer = TAB_WIDTH): Integer;
     function GetMonospacedTextSize(const aText: UnicodeString; aCountMarkup: Boolean = False; aConsiderEolSymbol: Boolean = False;
-                                   aTabWidth: Integer = TAB_WIDTH): TKMPoint;
+      aTabWidth: Integer = TAB_WIDTH): TKMPoint;
     function GetTextSize(const aText: UnicodeString; var aLineCount: Integer; aCountMarkup: Boolean = False;
-                         aConsiderEolSymbol: Boolean = False; aTabWidth: Integer = TAB_WIDTH; aMonospaced: Boolean = False): TKMPoint; overload;
+      aConsiderEolSymbol: Boolean = False; aTabWidth: Integer = TAB_WIDTH; aMonospaced: Boolean = False): TKMPoint; overload;
     function GetTextSize(const aText: UnicodeString; aCountMarkup: Boolean = False; aConsiderEolSymbol: Boolean = False;
-                         aTabWidth: Integer = TAB_WIDTH; aMonospaced: Boolean = False): TKMPoint; overload;
+      aTabWidth: Integer = TAB_WIDTH; aMonospaced: Boolean = False): TKMPoint; overload;
     function GetMaxPrintWidthOfStrings(aStrings: array of string): Integer;
   end;
 
@@ -128,7 +130,7 @@ type
 
 
 const
-  PLACEHOLDER_CHAR = 0; //Box, used for characters missing from font
+  PLACEHOLDER_CHAR = 0; // Box, used for characters missing from font
 
   FONT_INFO: array [TKMFont] of TKMFontInfo = (
     (FontFile: 'antiqua';     Pal: pal0;         TexMode: tfRGB5A1; MaxAnsiCharWidth: 15; MaxCharWidth: 21),
@@ -165,8 +167,8 @@ end;
 
 procedure TKMFontData.LoadFont(const aFileName: string; aPalette: TKMPaletteInfo);
 const
-  TEX_SIZE = 256; //Static texture size, all KaM fonts fit within 256^2 space
-  FONT_INTERLINE = 5; //Spacing between lines of text
+  FONT_TEX_SIZE = 256; // Static texture size, all KaM fonts fit within 256^2 space
+  FONT_INTERLINE = 5; // Spacing between lines of text
   PAD = 1;
 var
   S: TMemoryStream;
@@ -225,8 +227,8 @@ begin
   //Compile texture
   pX := PAD;
   pY := PAD;
-  fTexSizeX := TEX_SIZE * (1 + Byte(fIsUnicode) * 3); //256 / 1024
-  fTexSizeY := TEX_SIZE * (1 + Byte(fIsUnicode) * 1); //256 / 512
+  fTexSizeX := IfThen(fIsUnicode, FONT_TEX_SIZE * 4, FONT_TEX_SIZE); //256 / 1024
+  fTexSizeY := IfThen(fIsUnicode, FONT_TEX_SIZE * 2, FONT_TEX_SIZE); //256 / 512
   fAtlasCount := 1;
   SetLength(fAtlases, 0);
   SetLength(fAtlases, fAtlasCount);

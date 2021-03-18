@@ -13,19 +13,10 @@ uses
 type
   TWideCharArray = array of WideChar;
 
-  //Child class that has the advanced editing methods
+  // Child class that has the advanced editing methods
   TKMFontDataEdit = class(TKMFontData)
   private
     fTexPadding: Byte;
-    fCodepage: Word;
-    fIsUnicode: Boolean;
-    fTexSizeX: Word;
-    fTexSizeY: Word;
-    fUnknown: SmallInt;
-    fLineSpacing: Byte;
-    fBaseHeight: SmallInt;
-    fWordSpacing: SmallInt;
-    fCharSpacing: SmallInt;
     function GetTexData(aIndex: Integer): TKMCardinalArray;
   public
     procedure CreateFont(aFontName: string; aFontSize: Byte; aFontStyle: TFontStyles; aAntialias: Boolean; const aChars: TWideCharArray);
@@ -46,7 +37,7 @@ type
     property IsUnicode: Boolean read fIsUnicode;
     property Codepage: Word read fCodepage;
 
-    //Same as in TKMFontData, but writeable
+    // Same as in TKMFontData, but writeable
     property CharSpacing: SmallInt read fCharSpacing write fCharSpacing;
     property LineSpacing: Byte read fLineSpacing write fLineSpacing;
     property BaseHeight: SmallInt read fBaseHeight write fBaseHeight;
@@ -66,7 +57,7 @@ const
 { TKMFontDataEdit }
 procedure TKMFontDataEdit.CreateFont(aFontName: string; aFontSize: Byte; aFontStyle: TFontStyles; aAntialias: Boolean; const aChars: TWideCharArray);
 const
-  FONT_INTERLINE = 5; //Spacing between lines of text
+  FONT_INTERLINE = 5; // Spacing between lines of text
 var
   bmp:  TBitmap;
   I, J, K, pX, pY: Integer;
