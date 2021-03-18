@@ -50,6 +50,10 @@ type
   end;
 
   TKMFontData = class
+  const
+    DEFAULT_EXT = 'fntx';
+    //todo: DEFAULT_PATH = 'data\gfx\fonts'; or FONTS_FOLDER ?
+    FNTX_HEAD: AnsiString = 'FNTX';
   private
     fFont: TKMFont;
     function GetTexID(aIndex: Integer): Cardinal;
@@ -261,8 +265,6 @@ end;
 
 
 procedure TKMFontData.LoadFontX(const aFileName: string; aLoadLevel: TKMFontLoadLevel = fllFull);
-const
-  FNTX_HEAD: AnsiString = 'FNTX';
 var
   InputStream: TFileStream;
   DecompressionStream: TDecompressionStream;
@@ -520,7 +522,7 @@ begin
 
   for F := Low(TKMFont) to High(TKMFont) do
   begin
-    FntPath := ExeDir + FONTS_FOLDER + FONT_INFO[F].FontFile + '.fntx';
+    FntPath := ExeDir + FONTS_FOLDER + FONT_INFO[F].FontFile + '.' + TKMFontData.DEFAULT_EXT;
     fFontData[F].LoadFontX(FntPath, aLoadLevel);
     fFontData[F].GenerateTextures(FONT_INFO[F].TexMode);
     fFontData[F].Compact;
@@ -548,7 +550,7 @@ begin
     maxW := 0;
     maxAnsiW := 0;
 
-    FntPath := ExeDir + FONTS_FOLDER + FONT_INFO[F].FontFile + '.fntx';
+    FntPath := ExeDir + FONTS_FOLDER + FONT_INFO[F].FontFile + '.' + TKMFontData.DEFAULT_EXT;
     fFontData[F].LoadFontX(FntPath);
 
     //Calc max font width

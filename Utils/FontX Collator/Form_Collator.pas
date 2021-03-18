@@ -88,7 +88,7 @@ end;
 
 procedure TForm1.btnSaveClick(Sender: TObject);
 begin
-  dlgSave.DefaultExt := 'fntx';
+  dlgSave.DefaultExt := TKMFontData.DEFAULT_EXT;
   dlgSave.FileName := ListBox1.Items[ListBox1.ItemIndex];
   dlgSave.InitialDir := ExpandFileName(ExeDir + '..\..\data\gfx\fonts\');
   if not dlgSave.Execute then Exit;

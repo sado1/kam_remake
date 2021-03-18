@@ -152,7 +152,12 @@ begin
     Exit;
   end;
 
-  if not RunSaveDialog(SaveDialog1, lbFonts.Items[lbFonts.ItemIndex], DataDir + 'Data\Gfx\Fonts\', 'KaM FontX|*.fntx', 'fntx') then
+  if not RunSaveDialog(
+    SaveDialog1,
+    lbFonts.Items[lbFonts.ItemIndex],
+    DataDir + 'Data\Gfx\Fonts\',
+    'KaM FontX|*.' + TKMFontData.DEFAULT_EXT,
+    TKMFontData.DEFAULT_EXT) then
     Exit;
 
   fFnt.SaveToFontX(SaveDialog1.FileName);
@@ -167,7 +172,7 @@ begin
 
   if not DirectoryExists(aPath + 'data\gfx\fonts\') then Exit;
 
-  FindFirst(aPath + 'data\gfx\fonts\*.fntx', faAnyFile - faDirectory, SearchRec);
+  FindFirst(aPath + 'data\gfx\fonts\*.' + TKMFontData.DEFAULT_EXT, faAnyFile - faDirectory, SearchRec);
   repeat
     lbFonts.Items.Add(SearchRec.Name);
   until (FindNext(SearchRec) <> 0);

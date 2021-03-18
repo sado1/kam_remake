@@ -500,10 +500,8 @@ begin
 end;
 
 
-//Save font in extended format (with unicode and 32bit support)
+// Save font in extended format (with unicode and 32bit support)
 procedure TKMFontDataEdit.SaveToFontX(const aFilename: string);
-const
-  FNTX_HEAD: AnsiString = 'FNTX';
 var
   I: Integer;
   InputStream: TMemoryStream;

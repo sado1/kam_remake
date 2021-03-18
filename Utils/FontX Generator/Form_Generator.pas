@@ -129,7 +129,7 @@ end;
 
 procedure TForm1.btnSaveClick(Sender: TObject);
 begin
-  dlgSave.DefaultExt := 'fntx';
+  dlgSave.DefaultExt := TKMFontData.DEFAULT_EXT;
   dlgSave.FileName := cbFontName.Text;
   dlgSave.InitialDir := ExpandFileName(ExeDir + '..\..\data\gfx\fonts\');
   if not dlgSave.Execute then Exit;
