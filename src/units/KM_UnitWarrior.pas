@@ -68,7 +68,7 @@ type
     destructor Destroy; override;
 
     property Group: pointer read fGroup; // Property for GetGroupByMember function
-    procedure SetGroup(aGroup: Pointer); // This procedure should not be called by anyone except UnitGroups class (it is out of property)
+    procedure SetGroup(aGroup: Pointer); // This procedure should not be called by anyone except UnitGroups class(it is out of property)
 
     function GetWarriorActivityText(aIsAttackingUnit: Boolean): UnicodeString;
     procedure Kill(aFrom: TKMHandID; aShowAnimation, aForceDelay: Boolean); override;

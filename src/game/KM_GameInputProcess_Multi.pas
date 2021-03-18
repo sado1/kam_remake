@@ -36,7 +36,7 @@ type
     PlayerCheckPending: array [1..MAX_LOBBY_SLOTS] of Boolean;
   end;
 
-  TKMGameInputProcess_Multi = class (TKMGameInputProcess)
+  TKMGameInputProcess_Multi = class(TKMGameInputProcess)
   private
     fDelay: Word; //How many ticks ahead the commands are scheduled
     fLastSentCmdsTick: Cardinal; //Needed for resync (last tick, for which commands were sent

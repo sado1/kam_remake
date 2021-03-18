@@ -13,7 +13,7 @@ const
 
 
 type
-  TKMMenuSingleMap = class (TKMMenuPageCommon)
+  TKMMenuSingleMap = class(TKMMenuPageCommon)
   private
     fOnPageChange: TKMMenuChangeEventText;
 

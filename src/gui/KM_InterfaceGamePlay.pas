@@ -26,7 +26,7 @@ type
   //todo: refactor
   TKMTabButtons = (tbBuild, tbRatio, tbStats, tbMenu, tbNone);
 
-  TKMGamePlayInterface = class (TKMUserInterfaceGame)
+  TKMGamePlayInterface = class(TKMUserInterfaceGame)
   private
     fAlerts: TKMAlerts;
 

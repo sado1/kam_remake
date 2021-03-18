@@ -9,7 +9,7 @@ uses
 
 type
   //Terrain height editing
-  TKMMapEdTerrainHeights = class (TKMMapEdSubMenuPage)
+  TKMMapEdTerrainHeights = class(TKMMapEdSubMenuPage)
   private
     fLastCursorMode: TKMCursorMode;
     fLastShape: TKMMapEdShape;

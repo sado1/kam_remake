@@ -10,7 +10,7 @@ uses
 
 type
   //Painting on terrain with terrain brushes
-  TKMMapEdTerrainBrushes = class (TKMMapEdSubMenuPage)
+  TKMMapEdTerrainBrushes = class(TKMMapEdSubMenuPage)
   private
     fLastShape: TKMMapEdShape;
     fLastBrush: Integer;

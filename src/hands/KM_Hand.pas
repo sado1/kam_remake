@@ -226,7 +226,7 @@ type
   end;
 
 
-  TKMHandAnimals = class (TKMHandCommon)
+  TKMHandAnimals = class(TKMHandCommon)
   public
     function GetFishInWaterBody(aWaterID: Byte; FindHighestCount: Boolean = True): TKMUnitAnimal;
   end;

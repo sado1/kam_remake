@@ -13,7 +13,7 @@ type
 
   TKMTerrainObjectAttributeSet = set of TKMTerrainObjectAttribute;
 
-  TKMMapEdTerrainObjects = class (TKMMapEdSubMenuPage)
+  TKMMapEdTerrainObjects = class(TKMMapEdSubMenuPage)
   private
     fHideAllPages: TEvent;
     //Objects in MapElem are placed sparsely, so we need to compact them

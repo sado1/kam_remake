@@ -10,7 +10,7 @@ uses
 
 
 type
-  TKMMenuMapEditor = class (TKMMenuPageCommon)
+  TKMMenuMapEditor = class(TKMMenuPageCommon)
   private
     fOnPageChange: TKMMenuChangeEventText; //will be in ancestor class
 

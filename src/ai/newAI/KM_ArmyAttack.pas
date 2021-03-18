@@ -751,7 +751,7 @@ var
         begin
           Output := True;
           // Make sure that unit will not hunt target over the whole map and better stay inside company
-          if (GT <> gtRanged) then // ranged units are fixed in Squad class (set / reset target cause that they dont shoot and just reset animation)
+          if (GT <> gtRanged) then // ranged units are fixed in Squad class(set / reset target cause that they dont shoot and just reset animation)
           begin
             Squad.TargetUnit := nil;
             //Squad.TargetHouse := nil; // This cause same problem like with archers

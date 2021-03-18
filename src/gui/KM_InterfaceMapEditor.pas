@@ -27,7 +27,7 @@ uses
    KM_MapEdTypes;
 
 type
-  TKMapEdInterface = class (TKMUserInterfaceGame)
+  TKMapEdInterface = class(TKMUserInterfaceGame)
   private
     fMouseDownOnMap: Boolean;
 

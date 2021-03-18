@@ -846,7 +846,7 @@ type
   end;
 
 
-  TKMReplayBar = class (TKMPercentBar)
+  TKMReplayBar = class(TKMPercentBar)
   private
     fIsDirty: Boolean; //True is Marks are not not sorted yet
     fPosition: Integer;
@@ -1243,7 +1243,7 @@ type
     Offset: Word; //Offsets are easier to handle than widths
   end;
 
-  TKMListHeader = class (TKMControl)
+  TKMListHeader = class(TKMControl)
   private
     fFont: TKMFont;
     fCount: Integer;

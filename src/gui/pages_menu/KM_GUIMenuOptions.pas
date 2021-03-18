@@ -10,7 +10,7 @@ uses
 
 
 type
-  TKMMenuOptions = class (TKMMenuPageCommon)
+  TKMMenuOptions = class(TKMMenuPageCommon)
   private
     fTempKeys: TKMKeyLibrary;
     fLastAlphaShadows: Boolean;
