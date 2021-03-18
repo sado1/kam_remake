@@ -46,6 +46,7 @@ type
                                    aGetOnlyTileCornersTK: Boolean = False; aGetOnlyLandNodeTK: Boolean = False);
     procedure BrushTile(const X, Y: Integer);
     procedure BrushTerrainTile(const X, Y: Integer; aTerKind: TKMTerrainKind);
+    procedure BrushObjects(const X, Y: Integer);
     procedure MagicBrush(const X,Y: Integer); overload;
     procedure MagicBrush(const X,Y: Integer; aMaskKind: TKMTileMaskKind); overload;
     procedure UseMagicBrush(X,Y,aSize: Integer; aSquare: Boolean; aAroundTiles: Boolean = False);
@@ -95,6 +96,7 @@ type
 
     procedure ApplyBrush;
     procedure ApplyHeight;
+    procedure ApplyObjectsBrush;
 
     procedure RebuildMap; overload;
     procedure RebuildMap(const aRect: TKMRect; aRandomTiles: Boolean = False); overload;
@@ -104,6 +106,9 @@ type
 
     function PickRandomTile(aTerrainKind: TKMTerrainKind): Word; overload;
     function PickRandomTile(aTerrainKind: TKMTerrainKind; aRandom: Boolean): Word; overload;
+
+    function PickRandomObject(aTerrainKind: TKMTerrainKind; ObjType:Integer): Integer; overload;
+    function PickRandomTree(aTerrainKind: TKMTerrainKind): Integer; overload;
 
     procedure FixTerrainKindInfoAtBorders(aMakeCheckpoint: Boolean = True);
     procedure FixTerrainKindInfo(aMakeCheckpoint: Boolean = True); overload;
@@ -354,6 +359,8 @@ begin
   if not gTerrain.TileInMapCoords(X, Y) then
     Exit;
 
+  if gGameCursor.MapEdUseTerrainObjects then
+    IterateOverArea(KMPoint(fMapXc,fMapYc), fSize, fShape = hsSquare, BrushObjects);
   LandTerKind[Y,   X].TerKind   := aTerKind;
   LandTerKind[Y,   X+1].TerKind := aTerKind;
   LandTerKind[Y+1, X+1].TerKind := aTerKind;
@@ -393,6 +400,104 @@ function TKMTerrainPainter.PickRandomTile(aTerrainKind: TKMTerrainKind; aRandom:
 begin
   Result := GetRandomTile(aTerrainKind, not aRandom);
 end;
+
+function TKMTerrainPainter.PickRandomObject(aTerrainKind: TKMTerrainKind; ObjType:Integer): Integer;
+var ObjectType:array[0..9] of array of Integer;
+    fObjRandom:Integer;
+begin
+  if ObjType = 0 then
+    case aTerrainKind of
+        tkGrass: ObjectType[0]:=[1,2,3,4,5,6,7,10,11,12,13,14,16,22,23,24,39,41,42,43,45,46,47,190,191,192,193,194,9];
+        tkMoss: ObjectType[0]:=[17,18,19,20,15,21,25,26,27,29,30,31,33,34,35,1,2,3,4,5,6,7,190,191,192,193,194];
+        tkPaleGrass: ObjectType[0]:=[1,2,3,4,5,6,7,10,11,12,13,14,16,22,23,24,39,41,42,43,45,46,47,25,26,27,29,30,31,33,34,35,190,191,192,193,194,8,9];
+        tkCoastSand: ObjectType[0]:=[0,0,0,1,2,3,1,2,3,0,1,2,3,4,8,9,68,190,191,192];
+        tkGrassSand1: ObjectType[0]:=[0,1,2,3,4,31,34,38,45,68,214,211,210,212,190,191,192,8];
+        tkGrassSand2: ObjectType[0]:=[0,1,2,3,4,31,34,38,45,68,214,211,210,212,195,196,190,191,192,9];
+        tkGrassSand3: ObjectType[0]:=[0,1,2,3,4,31,34,38,45,68,214,211,210,212,195,196,216,217,190,191,192,8];
+        tkSand: ObjectType[0]:=[0,1,2,3,4,31,34,38,45,68,214,211,210,212,195,196,216,217,218,219,220,213,8,9];
+        tkGrassDirt: ObjectType[0]:=[1,2,3,4,10,11,12,13,14,15,20,17,18,19,25,26,27,29,30,31,33,34,35,37,38,39,41,42,43,45,46,47,190,191,192];
+        tkDirt: ObjectType[0]:=[0,1,2,3,4,15,20,25,26,27,29,30,31,33,34,35,64,65,66,190,191,192,8,9];
+        tkSnowOnGrass: ObjectType[0]:=[13,14,10,11,15,16,37,38,39,46,30,51,33,34,35,0,1,2,3,4,190,191,192,8,9];
+        tkSnowOnDirt: ObjectType[0]:=[10,11,12,0,1,2,3,4,26,20,25,26,27,29,30,31,33,34,35,64,65,66,190,191,192,8,9];
+        tkSnow: ObjectType[0]:=[10,11,15,33,34,35,30,29,27,25,26,64,65,66,49,50,51,190,191,192];
+        tkGravel,tkCoal: ObjectType[0]:=[0,1,2,3,4,68,0,0,0,0,1,2,3,1,2,3,0,1,2,3,4,68,0,0,0,0,1,2,3,1,2,3,8,9];
+        tkGrassyWater: ObjectType[0]:=[60,62,63,59,57,60,62,63,60,62,63];
+        else ObjectType[0]:=[255];
+    end;
+  case ObjType of
+       0:;
+       1:;
+       2: ObjectType[ObjType]:=[22,23,24];
+       3: ObjectType[ObjType]:=[17,18,19,21];
+       4: ObjectType[ObjType]:=[10,11,12,13,14,15,16,20,25,26,27,29,30,31,33,34,35,37,38,39,41,42,43,45,46,47,49,50,51,64,65,66,10,11,12,10,11,12,10,11,12];
+       5: ObjectType[ObjType]:=[190,191,192,193,194];
+       6: ObjectType[ObjType]:=[0,1,2,3,4,0,1,2,3,4,0,1,2,3,4,8,9];
+       7: ObjectType[ObjType]:=[210,211,212,213,214,215];
+       8: ObjectType[ObjType]:=[216,217,218,219,220];
+       9: ObjectType[ObjType]:=[68,69,70,71,72,73];
+       else ObjectType[ObjType] :=[255];
+  end;
+
+  fObjRandom :=Random(High(ObjectType[ObjType]));
+
+
+  Result := ObjectType[ObjType][fObjRandom];
+end;
+
+
+
+function TKMTerrainPainter.PickRandomTree(aTerrainKind: TKMTerrainKind): Integer;
+var ObjectType:array of Integer;
+    fObjRandom:Integer;
+begin
+  case gGameCursor.MapEdForestAge of
+    1:case aTerrainKind of
+          tkGrass: ObjectType:=[88,89,90,92,93,94,95,97,98,99,100,102,103,104,105];
+          tkMoss: ObjectType:=[107,108,109,109,110,112,113,114,116,117,118,119,149,150,151,154,155,168,167,169,170];
+          tkPaleGrass: ObjectType:=[97,98,99,100,107,108,109,110,116,117,118,119,121,122,123,124];
+          tkGrassSand1: ObjectType:=[92,93,94,95,102,103,104,105,116,117,118,119,121,122,123,124];
+          tkGrassSand2: ObjectType:=[92,93,94,95,121,122,123,124,112,113,114,107,108,109,110];
+          tkGrassSand3: ObjectType:=[121,122,123,124,107,108,109,110,92,93,94,95];
+          tkGrassDirt: ObjectType:=[88,89,90,92,93,94,95,97,98,99,100,102,103,104,105,107,108,109,110,112,113,114,116,117,118,119,149,150,151,153,154,155,157,158,159,160,162,163,164,165,169,170];
+          tkDirt: ObjectType:=[149,150,151,153,154,155,157,158,159,160,162,163,164,165,169,170,92,93,94,95];
+          tkSnowOnGrass: ObjectType:=[149,150,151,153,154,155,157,158,159,160,162,163,164,165,167,168,169,170,112,113,114,116,117,118,119,102,103,104,105];
+          tkSnowOnDirt: ObjectType:=[149,150,151,153,154,155,157,158,159,160,162,163,164,165,167,168,169,170];
+          tkSnow: ObjectType:=[167,168,169,170,172,162,163,164,165,157,158,159,160];
+          else ObjectType:=[255];
+       end;
+    2:case aTerrainKind of
+          tkGrass: ObjectType:=[89,90,93,94,95,99,100,104,105];
+          tkMoss: ObjectType:=[109,110,113,114,150,151,154,155,169,170];
+          tkPaleGrass: ObjectType:=[99,100,109,110,118,119,123,124];
+          tkGrassSand1: ObjectType:=[93,94,95,104,105,118,119,123,124];
+          tkGrassSand2: ObjectType:=[93,94,95,123,124,113,114,109,110];
+          tkGrassSand3: ObjectType:=[123,124,109,110,94,95];
+          tkGrassDirt: ObjectType:=[89,90,93,94,95,99,100,104,105,109,110,113,114,118,119,150,151,154,155,159,160,164,165,169,170];
+          tkDirt: ObjectType:=[150,151,154,155,159,160,164,165,169,170,94,95];
+          tkSnowOnGrass: ObjectType:=[150,151,154,155,159,160,164,165,169,170,113,114,118,119,104,105];
+          tkSnowOnDirt: ObjectType:=[150,151,154,155,159,160,164,165,169,170];
+          tkSnow: ObjectType:=[169,170,172,164,165,159,160];
+          else ObjectType:=[255];
+       end;
+    3:case aTerrainKind of
+          tkGrass: ObjectType:=[90,95,100,105];
+          tkMoss: ObjectType:=[110,114,151,155,170];
+          tkPaleGrass: ObjectType:=[100,110,119,124,194];
+          tkGrassSand1: ObjectType:=[95,105,119,124];
+          tkGrassSand2: ObjectType:=[95,124,114,110];
+          tkGrassSand3: ObjectType:=[124,110,95];
+          tkGrassDirt: ObjectType:=[90,95,100,105,110,114,119,151,155,160,165,170];
+          tkDirt: ObjectType:=[151,155,160,165,170,95];
+          tkSnowOnGrass: ObjectType:=[151,155,160,165,170,114,119,105];
+          tkSnowOnDirt: ObjectType:=[151,155,160,165,170];
+          tkSnow: ObjectType:=[170,172,165,160];
+          else ObjectType:=[255];
+       end;
+  end;
+  fObjRandom :=Random(High(ObjectType));
+  Result := ObjectType[fObjRandom];
+end;
+
 
 
 function TKMTerrainPainter.TryGetVertexEffectiveTerKind(X, Y: Word; var aEffectiveTKind: TKMTerrainKind): Boolean;
@@ -1371,6 +1476,69 @@ begin
 end;
 
 
+procedure TKMTerrainPainter.ApplyObjectsBrush;
+var
+  X, Y: Integer;
+  rect: TKMRect;
+begin
+  // Clear fBrushAreaTerKind array. It will be refilled in BrushTerrainTile
+  fBrushAreaTerKindCnt := 0;
+  IterateOverArea(KMPoint(fMapXc+1,fMapYc+1), fSize, fShape = hsSquare, BrushObjects);
+
+  if fSize = 0 then
+  begin
+    X := fMapXn;
+    Y := fMapYn;
+  end else begin
+    X := fMapXc;
+    Y := fMapYc;
+  end;
+  RebuildMap(X, Y, fSize, fShape = hsSquare, True);
+
+  if fBrushMask <> mkNone then
+    UseMagicBrush(X, Y, fSize, (fShape = hsSquare), True);
+
+  rect := KMRectGrow(KMRect(KMPoint(fMapXc, fMapYc)), (fSize div 2) + 1);
+  gTerrain.UpdatePassability(rect);
+  gTerrain.UpdateLighting(rect); //Also update lighting because of water
+end;
+
+procedure TKMTerrainPainter.BrushObjects(const X, Y: Integer);
+var Key,I:Integer;
+    ObjectWasSet:Boolean;
+begin
+    if not gTerrain.TileInMapCoords(X, Y) then
+    Exit;
+
+    if gGameCursor.MapEdCleanBrush then
+       gTerrain.Land[Y, X].Obj := 255
+    else begin
+
+    gTerrain.Land[Y, X].Obj := 255;
+    ObjectWasSet:=false;
+    if gGameCursor.MapEdObjectsType[0] then
+    begin
+      Key:=Random(200 div gGameCursor.MapEdObjectsDensity);
+        If Key<2 then begin gTerrain.Land[Y, X].Obj := PickRandomTree(LandTerKind[Y, X].TerKind); ObjectWasSet:=true;end;
+    end;
+    if ObjectWasSet = false then begin
+
+      if gGameCursor.MapEdObjectsType[1]  then
+      begin
+        Key:=Random(300 div gGameCursor.MapEdObjectsDensity);
+          If Key<2 then  begin gTerrain.Land[Y, X].Obj := PickRandomObject(LandTerKind[Y, X].TerKind,0); ObjectWasSet:=true;end;
+       end;
+    end;
+    for I := 2 to 9 do
+      if gGameCursor.MapEdObjectsType[I]  then
+      begin
+        Key:=Random(400 div gGameCursor.MapEdObjectsDensity);
+        If Key<2 then  begin gTerrain.Land[Y, X].Obj := PickRandomObject(LandTerKind[Y, X].TerKind,I);end;
+      end;
+  end;
+end;
+
+
 procedure TKMTerrainPainter.ApplyHeight;
 var
   I, K: Integer;
@@ -2012,6 +2180,12 @@ begin
                       EditTile(gGameCursor.Cell, gGameCursor.Tag1, KaMRandom(4, 'TKMTerrainPainter.UpdateStateIdle'));
     cmObjects:    if (ssLeft in gGameCursor.SState) then
                     gTerrain.SetObject(gGameCursor.Cell, gGameCursor.Tag1);
+
+    cmObjectsBrush:if (ssLeft in gGameCursor.SState) then
+                  begin
+                    SetMapEdParams; //Set mapEd params from gGameCursor
+                    ApplyObjectsBrush;
+                  end;
     cmOverlays:   if (ssLeft in gGameCursor.SState) then
                     gTerrain.SetOverlay(gGameCursor.Cell, TKMTileOverlay(gGameCursor.Tag1), ssShift in gGameCursor.SState); //Holding shift allows overwrite roads
   end;
