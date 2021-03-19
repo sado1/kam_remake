@@ -58,7 +58,7 @@ type
     class procedure WriteLine      (aFromX, aFromY, aToX, aToY: Single; aCol: TColor4; aPattern: Word = $FFFF; aLineWidth: Integer = -1);
     class procedure WriteText      (aLeft, aTop, aWidth: SmallInt; aText: UnicodeString; aFont: TKMFont; aAlign: TKMTextAlign;
                                     aColor: TColor4 = $FFFFFFFF; aIgnoreMarkup: Boolean = False; aShowMarkup: Boolean = False;
-                                    aShowEolSymbol: Boolean = False; aTabWidth: Integer = TAB_WIDTH; aResetTexture: Boolean = True; aMonospaced: Boolean = False);
+                                    aShowEolSymbol: Boolean = False; aTabWidth: Integer = TAB_WIDTH; aResetTexture: Boolean = True);
     class procedure WriteTextInShape(const aText: string; X,Y: SmallInt; aLineColor, aTextColor: Cardinal; aShapeColor1: Cardinal = $80000000; aText2: string = ''; aShapeColor2: Cardinal = 0; aTextColor2: Cardinal = 0);
     class procedure WriteTexture   (aLeft, aTop, aWidth, aHeight: SmallInt; const aTexture: TTexture; aCol: TColor4);
     class procedure WriteCircle    (aCenterX, aCenterY: SmallInt; aRadius: Byte; aFillColor: TColor4);
@@ -682,14 +682,13 @@ begin
 end;
 
 
-{Renders a line of text}
-{By default color must be non-transparent white}
+// Renders a line of text
+// By default color must be non-transparent white
 class procedure TKMRenderUI.WriteText(aLeft, aTop, aWidth: SmallInt; aText: UnicodeString; aFont: TKMFont; aAlign: TKMTextAlign;
-                                      aColor: TColor4 = $FFFFFFFF; aIgnoreMarkup: Boolean = False; aShowMarkup: Boolean = False;
-                                      aShowEolSymbol: Boolean = False; aTabWidth: Integer = TAB_WIDTH; aResetTexture: Boolean = True;
-                                      aMonospaced: Boolean = False);
+  aColor: TColor4 = $FFFFFFFF; aIgnoreMarkup: Boolean = False; aShowMarkup: Boolean = False; aShowEolSymbol: Boolean = False;
+  aTabWidth: Integer = TAB_WIDTH; aResetTexture: Boolean = True);
 var
-  I, K, off, letW, adj: Integer;
+  I, K, off: Integer;
   lineCount, dx, dy, lineHeight, blockWidth, prevAtlas, lineWidthInc: Integer;
   lineWidth: array of Integer; //Use signed format since some fonts may have negative CharSpacing
   fontSpec: TKMFontSpec;
@@ -707,21 +706,17 @@ var
     if (prevAtlas = -1) or (prevAtlas <> let.AtlasId) then
     begin
       if prevAtlas <> -1 then
-        glEnd; //End previous draw
+        glEnd; // End previous draw
       prevAtlas := let.AtlasId;
       TRender.BindTexture(fontSpec.TexID[let.AtlasId]);
       glBegin(GL_QUADS);
     end;
 
-    letW := IfThen(aMonospaced, FONT_INFO[aFont].MaxAnsiCharWidth, let.Width);
-    // Small adjustment to draw letter i nthe center of its place. Looks better
-    adj := IfThen(aMonospaced, (FONT_INFO[aFont].MaxAnsiCharWidth - let.Width) div 2, 0);
-
-    glTexCoord2f(let.u1, let.v1); glVertex2f(dx + adj           , dy            + let.YOffset);
-    glTexCoord2f(let.u2, let.v1); glVertex2f(dx + adj+ let.Width, dy            + let.YOffset);
-    glTexCoord2f(let.u2, let.v2); glVertex2f(dx + adj+ let.Width, dy+let.Height + let.YOffset);
-    glTexCoord2f(let.u1, let.v2); glVertex2f(dx + adj           , dy+let.Height + let.YOffset);
-    Inc(dx, letW + fontSpec.CharSpacing);
+    glTexCoord2f(let.u1, let.v1); glVertex2f(dx            , dy            + let.YOffset);
+    glTexCoord2f(let.u2, let.v1); glVertex2f(dx + let.Width, dy            + let.YOffset);
+    glTexCoord2f(let.u2, let.v2); glVertex2f(dx + let.Width, dy+let.Height + let.YOffset);
+    glTexCoord2f(let.u1, let.v2); glVertex2f(dx            , dy+let.Height + let.YOffset);
+    Inc(dx, let.Width + fontSpec.CharSpacing);
   end;
 
 var
@@ -844,7 +839,7 @@ begin
 
     case aText[I] of
       #9:   dx := aLeft + (Floor((dx - aLeft) / aTabWidth) + 1) * aTabWidth;
-      #32:  Inc(dx, IfThen(aMonospaced, FONT_INFO[aFont].MaxAnsiCharWidth + fontSpec.CharSpacing, fontSpec.WordSpacing));
+      #32:  Inc(dx, fontSpec.WordSpacing);
       #124: if aShowEolSymbol then
               DrawLetter
             else begin

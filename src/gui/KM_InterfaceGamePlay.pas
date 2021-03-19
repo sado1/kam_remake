@@ -838,8 +838,7 @@ begin
   Bevel_DebugInfo.BackAlpha := 0.5;
   Bevel_DebugInfo.Hitable := False;
   Bevel_DebugInfo.Hide;
-  Label_DebugInfo := TKMLabel.Create(Panel_Main, 224+8, 133, '', fntMini, taLeft);
-  Label_DebugInfo.Monospaced := True;
+  Label_DebugInfo := TKMLabel.Create(Panel_Main, 224+8, 133, '', fntMonospaced, taLeft);
   Label_DebugInfo.Hide;
 
 { I plan to store all possible layouts on different pages which gets displayed one at a time }
@@ -4552,15 +4551,11 @@ begin
 
   Label_DebugInfo.Caption := S;
   Label_DebugInfo.Visible := (Trim(S) <> '');
-  Label_DebugInfo.Monospaced := DEBUG_TEXT_MONOSPACED;
 
-  Assert(InRange(DEBUG_TEXT_FONT_ID, Byte(Low(TKMFont)), Byte(High(TKMFont))));
+  Assert(InRange(DEBUG_TEXT_FONT_ID, Ord(Low(TKMFont)), Ord(High(TKMFont))));
   Label_DebugInfo.Font := TKMFont(DEBUG_TEXT_FONT_ID);
 
-  if Label_DebugInfo.Monospaced then
-    textSize := gRes.Fonts[Label_DebugInfo.Font].GetMonospacedTextSize(S)
-  else
-    textSize := gRes.Fonts[Label_DebugInfo.Font].GetTextSize(S);
+  textSize := gRes.Fonts[Label_DebugInfo.Font].GetTextSize(S);
 
   Bevel_DebugInfo.Width := IfThen(textSize.X <= 1, 0, textSize.X + 20);
   Bevel_DebugInfo.Height := IfThen(textSize.Y <= 1, 0, textSize.Y + 20);

@@ -13,12 +13,20 @@ const
 
 type
   TKMFont = (
-    fntAntiqua, fntGame, fntGrey, fntMetal, fntMini, fntOutline, fntArial
+    fntAntiqua,
+    fntGame,
+    fntGrey,
+    fntMetal,
+    fntMini,
+    fntOutline,
+    fntArial, // Arial for MP chat
+    fntMonospaced // Debug overlay font (Consolas 8. Set WordSpacing to any Char.Width)
   );
 
 const
   FontTypeName: array [TKMFont] of string = (
     // Used in:
+    //  - data\gfx\fonts\filenames
     //  - utils\FontX Generator\fonts.xml
 
     'antiqua',
@@ -27,7 +35,8 @@ const
     'metal',
     'mini',
     'outline',
-    'arial'
+    'arial',
+    'consolas8'
   );
 
 type
@@ -51,8 +60,6 @@ type
   public
     Pal: TKMPal; //Palette fnt needs
     TexMode: TTexFormat; //Format font texture needs to be in
-    MaxAnsiCharWidth: Byte; //max char width amond ansi chars (0-255), pre-calculated
-    MaxCharWidth: Byte;     //max char width among all chars in the font, pre-calculated
   end;
 
   TKMLetter = packed record
@@ -113,17 +120,15 @@ type
     property BaseHeight: SmallInt read fBaseHeight;
     property WordSpacing: SmallInt read fWordSpacing;
 
-    function GetCharWidth(aChar: WideChar; aConsiderEolSymbol: Boolean = False; aMonospaced: Boolean = False): Integer;
+    function GetCharWidth(aChar: WideChar; aConsiderEolSymbol: Boolean = False): Integer;
     function WordWrap(aText: UnicodeString; aMaxPxWidth: Integer; aForced: Boolean; aIndentAfterNL: Boolean;
       aTabWidth: Integer = TAB_WIDTH): UnicodeString;
     function CharsThatFit(const aText: UnicodeString; aMaxPxWidth: Integer; aRound: Boolean = False;
       aConsiderEolSymbol: Boolean = False; aTabWidth: Integer = TAB_WIDTH): Integer;
-    function GetMonospacedTextSize(const aText: UnicodeString; aCountMarkup: Boolean = False; aConsiderEolSymbol: Boolean = False;
-      aTabWidth: Integer = TAB_WIDTH): TKMPoint;
     function GetTextSize(const aText: UnicodeString; var aLineCount: Integer; aCountMarkup: Boolean = False;
-      aConsiderEolSymbol: Boolean = False; aTabWidth: Integer = TAB_WIDTH; aMonospaced: Boolean = False): TKMPoint; overload;
+      aConsiderEolSymbol: Boolean = False; aTabWidth: Integer = TAB_WIDTH): TKMPoint; overload;
     function GetTextSize(const aText: UnicodeString; aCountMarkup: Boolean = False; aConsiderEolSymbol: Boolean = False;
-      aTabWidth: Integer = TAB_WIDTH; aMonospaced: Boolean = False): TKMPoint; overload;
+      aTabWidth: Integer = TAB_WIDTH): TKMPoint; overload;
     function GetMaxPrintWidthOfStrings(aStrings: array of string): Integer;
   end;
 
@@ -151,13 +156,14 @@ const
   PLACEHOLDER_CHAR = 0; // Box, used for characters missing from font
 
   FONT_INFO: array [TKMFont] of TKMFontInfo = (
-    (Pal: pal0;         TexMode: tfRGB5A1; MaxAnsiCharWidth: 15; MaxCharWidth: 21),
-    (Pal: palbw;        TexMode: tfAlpha8; MaxAnsiCharWidth: 17; MaxCharWidth: 18),
-    (Pal: pal0;         TexMode: tfRGB5A1; MaxAnsiCharWidth: 19; MaxCharWidth: 20),
-    (Pal: pal0;         TexMode: tfRGB5A1; MaxAnsiCharWidth: 14; MaxCharWidth: 21),
-    (Pal: palbw;        TexMode: tfAlpha8; MaxAnsiCharWidth: 7;  MaxCharWidth: 11),
-    (Pal: pal0;         TexMode: tfRGB5A1; MaxAnsiCharWidth: 21; MaxCharWidth: 31),
-    (Pal: pal0;         TexMode: tfRGBA8;  MaxAnsiCharWidth: 17; MaxCharWidth: 20)
+    (Pal: pal0;  TexMode: tfRGB5A1),
+    (Pal: palbw; TexMode: tfAlpha8),
+    (Pal: pal0;  TexMode: tfRGB5A1),
+    (Pal: pal0;  TexMode: tfRGB5A1),
+    (Pal: palbw; TexMode: tfAlpha8),
+    (Pal: pal0;  TexMode: tfRGB5A1),
+    (Pal: pal0;  TexMode: tfRGBA8 ),
+    (Pal: pal0;  TexMode: tfRGBA8 )
   );
 
 
@@ -559,50 +565,21 @@ end;
 
 
 procedure TKMResFonts.ExportFonts;
-const
-  // Non-printable or rare ansi chars we can skip when calc max ansi char width
-  SKIP_ANSI_CHARS: set of Byte = [140, 156, 168, 183, 198, 230];
 var
   F: TKMFont;
   FntPath: string;
-  I, maxW, maxAnsiW: Integer;
-  sl: TStringList;
+  I: Integer;
 begin
-  sl := TStringList.Create;
-  //We need to reload fonts to regenerate TexData
+  // We need to reload fonts to regenerate TexData
   for F := Low(TKMFont) to High(TKMFont) do
   begin
-    maxW := 0;
-    maxAnsiW := 0;
-
     FntPath := ExeDir + TKMFontSpec.FONTS_FOLDER + FontTypeName[F] + '.' + TKMFontSpec.DEFAULT_EXT;
     fFontData[F].LoadFontX(FntPath);
-
-    //Calc max font width
-    for I := 1 to High(fFontData[F].Letters) do
-    begin
-      if FONT_INFO[F].MaxCharWidth = fFontData[F].Letters[I].Width then
-        sl.Add(Format('MaxW=%d char=%d %s', [FONT_INFO[F].MaxCharWidth, I, WideChar(I)]));
-
-      maxW := Max(maxW, fFontData[F].Letters[I].Width);
-
-      if (I < 256) and not (I in SKIP_ANSI_CHARS) then
-      begin
-        if FONT_INFO[F].MaxAnsiCharWidth = fFontData[F].Letters[I].Width then
-          sl.Add(Format('AnsiW=%d char=%d %s', [FONT_INFO[F].MaxAnsiCharWidth, I, WideChar(I)]));
-
-        maxAnsiW := Max(maxAnsiW, fFontData[F].Letters[I].Width);
-      end;
-    end;
-
-    sl.Add(Format('%s: max ansi char width = %d; max char width = %d', [FontTypeName[F], maxAnsiW, maxW]));
 
     for I := 0 to fFontData[F].AtlasCount - 1 do
       fFontData[F].ExportAtlasBmp(ExeDir + 'Export' + PathDelim + 'Fonts' + PathDelim + FontTypeName[F] + IntToStr(I) + '.bmp', I);
     fFontData[F].Compact;
   end;
-  sl.SaveToFile(ExeDir + 'Export' + PathDelim + 'fonts_widths.txt', TEncoding.UTF8);
-  sl.Free;
 end;
 
 
@@ -612,13 +589,10 @@ begin
 end;
 
 
-function TKMFontSpec.GetCharWidth(aChar: WideChar; aConsiderEolSymbol: Boolean = False; aMonospaced: Boolean = False): Integer;
+function TKMFontSpec.GetCharWidth(aChar: WideChar; aConsiderEolSymbol: Boolean = False): Integer;
 begin
   if (not aConsiderEolSymbol and (aChar = #124)) or (aChar = #9) then
     Result := 0
-  else
-  if aMonospaced then
-    Result := FONT_INFO[fFont].MaxAnsiCharWidth + CharSpacing
   else
   if aChar = #32 then
     Result := WordSpacing
@@ -785,24 +759,17 @@ begin
 end;
 
 
-function TKMFontSpec.GetMonospacedTextSize(const aText: UnicodeString; aCountMarkup: Boolean = False; aConsiderEolSymbol: Boolean = False;
-                                           aTabWidth: Integer = TAB_WIDTH): TKMPoint;
-begin
-  Result := GetTextSize(aText, aCountMarkup, aConsiderEolSymbol, aTabWidth, True);
-end;
-
-
 function TKMFontSpec.GetTextSize(const aText: UnicodeString; aCountMarkup: Boolean = False; aConsiderEolSymbol: Boolean = False;
-                                 aTabWidth: Integer = TAB_WIDTH; aMonospaced: Boolean = False): TKMPoint;
+  aTabWidth: Integer = TAB_WIDTH): TKMPoint;
 var
-  LineCount: Integer;
+  lineCount: Integer;
 begin
-  Result := GetTextSize(aText, LineCount, aCountMarkup, aConsiderEolSymbol, aTabWidth, aMonospaced);
+  Result := GetTextSize(aText, lineCount, aCountMarkup, aConsiderEolSymbol, aTabWidth);
 end;
 
 
 function TKMFontSpec.GetTextSize(const aText: UnicodeString; var aLineCount: Integer; aCountMarkup: Boolean = False;
-                                 aConsiderEolSymbol: Boolean = False; aTabWidth: Integer = TAB_WIDTH; aMonospaced: Boolean = False): TKMPoint;
+                                 aConsiderEolSymbol: Boolean = False; aTabWidth: Integer = TAB_WIDTH): TKMPoint;
 var
   I: Integer;
   LineWidthInc, TmpColor: Integer;
@@ -831,7 +798,7 @@ begin
       if aText[I] = #9 then // Tab char
         LineWidthInc := (Floor(LineWidth[aLineCount] / aTabWidth) + 1) * aTabWidth - LineWidth[aLineCount]
       else
-        LineWidthInc := GetCharWidth(aText[I], aConsiderEolSymbol, aMonospaced);
+        LineWidthInc := GetCharWidth(aText[I], aConsiderEolSymbol);
       Inc(LineWidth[aLineCount], LineWidthInc);
     end else
       //Ignore color markups [$FFFFFF][]
@@ -847,7 +814,7 @@ begin
           if aText[I] = #9 then // Tab char
             LineWidthInc := (Floor(LineWidth[aLineCount] / aTabWidth) + 1) * aTabWidth - LineWidth[aLineCount]
           else
-            LineWidthInc := GetCharWidth(aText[I], aConsiderEolSymbol, aMonospaced);
+            LineWidthInc := GetCharWidth(aText[I], aConsiderEolSymbol);
           Inc(LineWidth[aLineCount], LineWidthInc);
         end;
 
@@ -879,7 +846,7 @@ begin
   begin
     Width := GetTextSize(aStrings[I]).X;
     if (Width > Result) then
-      Result := Width;
+      Result := Width; //todo: Replace with Result := Max(Result, GetTextSize(aStrings[I]).X);
   end;
 end;
 
