@@ -40,8 +40,8 @@ type
     procedure ListBox1Click(Sender: TObject);
     procedure tbAtlasChange(Sender: TObject);
   private
-    fFontData: TKMFontDataEdit;
-    fCollator: TKMFontCollator;
+    fFontData: TKMFontSpecEdit;
+    fFontCollator: TKMFontCollator;
   end;
 
 
@@ -60,20 +60,20 @@ begin
   Caption := 'KaM FontX Collator (' + GAME_REVISION + ')';
   ExeDir := ExtractFilePath(ParamStr(0));
 
-  fCollator := TKMFontCollator.Create;
+  fFontCollator := TKMFontCollator.Create;
 
   //Scan fonts folder
-  fCollator.ListFonts(ExeDir + '..\..\' + TKMFontData.FONTS_FOLDER);
+  fFontCollator.ListFonts(ExeDir + '..\..\' + TKMFontSpec.FONTS_FOLDER);
 
   //Available fonts
-  for I := 0 to fCollator.Fonts.Count - 1 do
-    ListBox1.Items.Add(fCollator.Fonts[I]);
+  for I := 0 to fFontCollator.Fonts.Count - 1 do
+    ListBox1.Items.Add(fFontCollator.Fonts[I]);
 end;
 
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
-  FreeAndNil(fCollator);
+  FreeAndNil(fFontCollator);
   FreeAndNil(fFontData);
 end;
 
@@ -81,16 +81,16 @@ end;
 procedure TForm1.ListBox1Click(Sender: TObject);
 begin
   ListBox2.Clear;
-  ListBox2.Items.Text := fCollator.FontCodepages(ListBox1.ItemIndex);
+  ListBox2.Items.Text := fFontCollator.FontCodepages(ListBox1.ItemIndex);
   ListBox2.SelectAll;
 end;
 
 
 procedure TForm1.btnSaveClick(Sender: TObject);
 begin
-  dlgSave.DefaultExt := TKMFontData.DEFAULT_EXT;
+  dlgSave.DefaultExt := TKMFontSpec.DEFAULT_EXT;
   dlgSave.FileName := ListBox1.Items[ListBox1.ItemIndex];
-  dlgSave.InitialDir := ExpandFileName(ExeDir + '..\..\' + TKMFontData.FONTS_FOLDER);
+  dlgSave.InitialDir := ExpandFileName(ExeDir + '..\..\' + TKMFontSpec.FONTS_FOLDER);
   if not dlgSave.Execute then Exit;
 
   fFontData.SaveToFontX(dlgSave.FileName);
@@ -106,7 +106,7 @@ begin
 
   //Recreate clean Font
   FreeAndNil(fFontData);
-  fFontData := TKMFontDataEdit.Create(fntArial); //fntArial, why not, it looks like we dont care
+  fFontData := TKMFontSpecEdit.Create(fntArial); //fntArial, why not, it looks like we dont care
 
   K := 0;
   SetLength(files, ListBox2.Count);
@@ -120,7 +120,7 @@ begin
 
   if K = 0 then Exit;
 
-  fCollator.Collate(ListBox1.ItemIndex,
+  fFontCollator.Collate(ListBox1.ItemIndex,
                    StrToInt(rgSizeX.Items[rgSizeX.ItemIndex]),
                    StrToInt(rgSizeY.Items[rgSizeY.ItemIndex]),
                    sePadding.Value,
