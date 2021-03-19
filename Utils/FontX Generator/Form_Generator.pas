@@ -77,7 +77,7 @@ begin
 
   fFontGen.LoadPresetsXML(ExeDir + 'fonts.xml');
 
-  cbFontName.Items.AddStrings(Screen.Fonts);
+  TKMFontXGenerator.ListFonts(Self, cbFontName.Items);
 end;
 
 

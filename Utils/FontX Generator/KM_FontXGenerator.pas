@@ -1,9 +1,9 @@
-unit KM_FontXGenerator;
+﻿unit KM_FontXGenerator;
 {$I ..\..\KaM_Remake.inc}
 interface
 uses
-  Windows,
-  Classes, StrUtils, SysUtils,
+  {$IFDEF WDC} Windows, Forms, StdCtrls, {$ENDIF} //Declared first to get TBitmap overriden with VCL version
+  Controls, Classes, StrUtils, SysUtils,
   KM_CommonTypes,
   KM_ResFontsEdit;
 
@@ -14,6 +14,8 @@ type
     Fonts: array of TKMFontGenInfo;
 
     class function CollectChars(aExeDir: string; aProgress: TUnicodeStringEvent): string;
+    class function TestContainsChars(aDC: HDC; aString: string): Boolean;
+    class procedure ListFonts(aForm: TWinControl; aList: TStrings);
 
     procedure LoadPresetsXML(aXMLPath: string);
     procedure SavePresetsXML(aXMLPath: string);
@@ -131,6 +133,48 @@ begin
     libxList.Free;
     gResLocales.Free;
   end;
+end;
+
+
+class function TKMFontXGenerator.TestContainsChars(aDC: HDC; aString: string): Boolean;
+var
+  buf: array of WORD;
+  len, I: Integer;
+  count: Cardinal;
+begin
+  Result := True;
+
+  len := Length(aString);
+  SetLength(buf, len);
+  count := GetGlyphIndicesW(aDC, PWideChar(aString), len, @buf[0], GGI_MARK_NONEXISTING_GLYPHS);
+
+  // Happens for font named "TeamViewer13"
+  if count = High(Cardinal) then Exit(False);
+
+  for I := 0 to count-1 do
+    Result := Result and (buf[I] <> $FFFF);
+end;
+
+
+class procedure TKMFontXGenerator.ListFonts(aForm: TWinControl; aList: TStrings);
+var
+  I: Integer;
+  L: TLabel;
+begin
+  aList.Clear;
+  aList.Text := Screen.Fonts.Text;
+
+  L := TLabel.Create(aForm);
+  L.Parent := aForm;
+
+  for I := aList.Count - 1 downto 0 do
+  begin
+    L.Font.Name := aList[I];
+    if not TestContainsChars(L.Canvas.Handle, 'ABCDEabcde АБВГДЕабвгде') then
+      aList.Delete(I);
+  end;
+
+  L.Free;
 end;
 
 
