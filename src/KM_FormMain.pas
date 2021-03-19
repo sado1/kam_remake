@@ -1163,6 +1163,8 @@ procedure TFormMain.ControlsRefill;
 begin
   fUpdating := True;
 
+  //todo: Fill in rgDebugFont with font names on init, instead of hardcode
+
   try
     {$IFDEF WDC}
     chkSnowHouses.        SetCheckedWithoutClick(gGameSettings.AllowSnowHouses); // Snow houses checkbox could be updated before game
