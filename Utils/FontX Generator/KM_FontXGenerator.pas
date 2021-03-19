@@ -29,14 +29,12 @@ uses
 
 
 class function TKMFontXGenerator.CollectChars(aExeDir: string; aProgress: TUnicodeStringEvent): string;
-  procedure GetAllTextPaths(const aPath: string; aList: TStringList);
+  procedure AppendLibxPaths(const aPath: string; aList: TStringList);
   var
     slFolders: TStringList;
     searchRec: TSearchRec;
     I: Integer;
   begin
-    aList.Clear;
-
     slFolders := TStringList.Create;
     try
       // Sample alphabets
@@ -105,7 +103,7 @@ begin
   libxList := TStringList.Create;
   gResLocales := TKMLocales.Create(BaseDir + 'data\locales.txt', DEFAULT_LOCALE);
   try
-    GetAllTextPaths(BaseDir, libxList);
+    AppendLibxPaths(BaseDir, libxList);
 
     for I := 0 to libxList.Count - 1 do
     if FileExists(libxList[I]) then

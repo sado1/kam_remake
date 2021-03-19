@@ -21,7 +21,7 @@ type
     property Fonts: TStringList read fFonts;
     procedure Collate(aIndex: Integer; aX, aY, aPad: Word; aFiles: TKMStringArray; var aFont: TKMFontDataEdit);
     function FontCodepages(aIndex: Integer): string;
-    procedure ListFonts(aPath: string);
+    procedure ListFonts(const aPath: string);
   end;
 
 
@@ -101,7 +101,7 @@ begin
 end;
 
 
-procedure TKMFontCollator.ListFonts(aPath: string);
+procedure TKMFontCollator.ListFonts(const aPath: string);
 var
   SearchRec: TSearchRec;
   I: Integer;
