@@ -16,6 +16,21 @@ type
     fntAntiqua, fntGame, fntGrey, fntMetal, fntMini, fntOutline, fntArial
   );
 
+const
+  FontTypeName: array [TKMFont] of string = (
+    // Used in:
+    //  - utils\FontX Generator\fonts.xml
+
+    'antiqua',
+    'game',
+    'grey',
+    'metal',
+    'mini',
+    'outline',
+    'arial'
+  );
+
+type
   TKMFontLoadLevel = (fllFull, fllMinimal);
   {
   Removed fonts that were in KaM:
@@ -34,7 +49,6 @@ type
 
   TKMFontInfo = record
   public
-    FontFile: string;
     Pal: TKMPal; //Palette fnt needs
     TexMode: TTexFormat; //Format font texture needs to be in
     MaxAnsiCharWidth: Byte; //max char width amond ansi chars (0-255), pre-calculated
@@ -137,14 +151,17 @@ const
   PLACEHOLDER_CHAR = 0; // Box, used for characters missing from font
 
   FONT_INFO: array [TKMFont] of TKMFontInfo = (
-    (FontFile: 'antiqua';     Pal: pal0;         TexMode: tfRGB5A1; MaxAnsiCharWidth: 15; MaxCharWidth: 21),
-    (FontFile: 'game';        Pal: palbw;        TexMode: tfAlpha8; MaxAnsiCharWidth: 17; MaxCharWidth: 18),
-    (FontFile: 'grey';        Pal: pal0;         TexMode: tfRGB5A1; MaxAnsiCharWidth: 19; MaxCharWidth: 20),
-    (FontFile: 'metal';       Pal: pal0;         TexMode: tfRGB5A1; MaxAnsiCharWidth: 14; MaxCharWidth: 21),
-    (FontFile: 'mini';        Pal: palbw;        TexMode: tfAlpha8; MaxAnsiCharWidth: 7;  MaxCharWidth: 11),
-    (FontFile: 'outline';     Pal: pal0;         TexMode: tfRGB5A1; MaxAnsiCharWidth: 21; MaxCharWidth: 31),
-    (FontFile: 'arial';       Pal: pal0;         TexMode: tfRGBA8;  MaxAnsiCharWidth: 17; MaxCharWidth: 20)
+    (Pal: pal0;         TexMode: tfRGB5A1; MaxAnsiCharWidth: 15; MaxCharWidth: 21),
+    (Pal: palbw;        TexMode: tfAlpha8; MaxAnsiCharWidth: 17; MaxCharWidth: 18),
+    (Pal: pal0;         TexMode: tfRGB5A1; MaxAnsiCharWidth: 19; MaxCharWidth: 20),
+    (Pal: pal0;         TexMode: tfRGB5A1; MaxAnsiCharWidth: 14; MaxCharWidth: 21),
+    (Pal: palbw;        TexMode: tfAlpha8; MaxAnsiCharWidth: 7;  MaxCharWidth: 11),
+    (Pal: pal0;         TexMode: tfRGB5A1; MaxAnsiCharWidth: 21; MaxCharWidth: 31),
+    (Pal: pal0;         TexMode: tfRGBA8;  MaxAnsiCharWidth: 17; MaxCharWidth: 20)
   );
+
+
+function NameToFont(const aName: string): TKMFont;
 
 
 implementation
@@ -155,6 +172,17 @@ uses
 
 var
   LOG_EXTRA_FONTS: Boolean = False;
+
+
+function NameToFont(const aName: string): TKMFont;
+var
+  I: TKMFont;
+begin
+  Result := fntAntiqua;
+  for I := Low(TKMFont) to High(TKMFont) do
+  if FontTypeName[I] = aName then
+    Exit(I);
+end;
 
 
 { TKMFontData }
@@ -494,7 +522,7 @@ var
   fileName: string;
   filePart: string;
   I: Integer;
-  K: TKMFontInfo;
+  F: TKMFont;
 begin
   Result := palmap;
 
@@ -502,9 +530,9 @@ begin
   I := Pos('.', fileName);
   filePart := Copy(fileName, 1, I-1);
 
-  for K in FONT_INFO do
-    if K.FontFile = filePart then
-      Result := K.Pal;
+  for F := Low(TKMFont) to High(TKMFont) do
+    if FontTypeName[F] = filePart then
+      Result := FONT_INFO[F].Pal;
 end;
 
 
@@ -519,7 +547,7 @@ begin
 
   for F := Low(TKMFont) to High(TKMFont) do
   begin
-    FntPath := ExeDir + TKMFontData.FONTS_FOLDER + FONT_INFO[F].FontFile + '.' + TKMFontData.DEFAULT_EXT;
+    FntPath := ExeDir + TKMFontData.FONTS_FOLDER + FontTypeName[F] + '.' + TKMFontData.DEFAULT_EXT;
     fFontData[F].LoadFontX(FntPath, aLoadLevel);
     fFontData[F].GenerateTextures(FONT_INFO[F].TexMode);
     fFontData[F].Compact;
@@ -547,7 +575,7 @@ begin
     maxW := 0;
     maxAnsiW := 0;
 
-    FntPath := ExeDir + TKMFontData.FONTS_FOLDER + FONT_INFO[F].FontFile + '.' + TKMFontData.DEFAULT_EXT;
+    FntPath := ExeDir + TKMFontData.FONTS_FOLDER + FontTypeName[F] + '.' + TKMFontData.DEFAULT_EXT;
     fFontData[F].LoadFontX(FntPath);
 
     //Calc max font width
@@ -567,10 +595,10 @@ begin
       end;
     end;
 
-    sl.Add(Format('%s: max ansi char width = %d; max char width = %d', [FONT_INFO[F].FontFile, maxAnsiW, maxW]));
+    sl.Add(Format('%s: max ansi char width = %d; max char width = %d', [FontTypeName[F], maxAnsiW, maxW]));
 
     for I := 0 to fFontData[F].AtlasCount - 1 do
-      fFontData[F].ExportAtlasBmp(ExeDir + 'Export' + PathDelim + 'Fonts' + PathDelim + FONT_INFO[F].FontFile + IntToStr(I) + '.bmp', I);
+      fFontData[F].ExportAtlasBmp(ExeDir + 'Export' + PathDelim + 'Fonts' + PathDelim + FontTypeName[F] + IntToStr(I) + '.bmp', I);
     fFontData[F].Compact;
   end;
   sl.SaveToFile(ExeDir + 'Export' + PathDelim + 'fonts_widths.txt', TEncoding.UTF8);

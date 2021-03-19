@@ -5,13 +5,43 @@ uses
   Windows,
   {$IFDEF FPC} lconvencoding, {$ENDIF}
   Classes, Graphics, Math, SysUtils, Types,
-  KM_CommonTypes, KM_ResFonts
+  KM_CommonTypes, KM_ResFonts, KM_ResTypes, KM_IoXML
   {$IFDEF FPC}, zstream {$ENDIF}
   {$IFDEF WDC}, ZLib {$ENDIF};
 
 
 type
   TWideCharArray = array of WideChar;
+
+  // Carried over from KP - needs rigging
+  // Font generation setup
+  // Part of this gets written to fntx
+  TKMFontGenInfo = record
+  public
+    Font: TKMFont;
+    FontName: string; // Name of the font to use
+    Size: Byte;
+    IsBold: Boolean;
+    IsItalic: Boolean;
+    AntiAlias: Boolean;
+    Fill: Cardinal;
+    OutlineWidth: Byte;
+    Outline: Cardinal;
+    CharSpacing: ShortInt;
+    LineSpacing: ShortInt;
+    CharYOffset: ShortInt;
+    WordSpacing: ShortInt;
+    TexPadding: Byte;
+    TexSizeX: Word;
+    TexSizeY: Word;
+//    TexFormat: TKMTextureFormat;
+//    TexMin: TKMTextureFilter;
+//    TexMag: TKMTextureFilter;
+    TexMipmaps: Boolean;
+    procedure LoadFromXml(aNode: TXMLNode);
+    procedure SaveToXml(aNode: TXMLNode);
+  end;
+  PKMFontGenInfo = ^TKMFontGenInfo;
 
   // Child class that has the advanced editing methods
   TKMFontDataEdit = class(TKMFontData)
@@ -52,6 +82,57 @@ uses
 
 const
   BG_COLOR = $FFAF6B6B;
+
+
+{ TKMFontGenInfo }
+procedure TKMFontGenInfo.LoadFromXml(aNode: TXMLNode);
+begin
+  Font := NameToFont(aNode.Attributes['Font'].AsString);
+  FontName := aNode.Attributes['FontName'].AsString;
+  Size := aNode.Attributes['Size'].AsInteger;
+  IsBold := aNode.Attributes['IsBold'].AsBoolean;
+  IsItalic := aNode.Attributes['IsItalic'].AsBoolean;
+  AntiAlias := aNode.Attributes['AntiAlias'].AsBoolean;
+  Fill := aNode.Attributes['Fill'].AsCardinal;
+  OutlineWidth := aNode.Attributes['OutlineWidth'].AsInteger;
+  Outline := aNode.Attributes['Outline'].AsCardinal;
+  CharSpacing := aNode.Attributes['CharSpacing'].AsInteger;
+  LineSpacing := aNode.Attributes['LineSpacing'].AsInteger(5);
+  CharYOffset := aNode.Attributes['CharYOffset'].AsInteger;
+  WordSpacing := aNode.Attributes['WordSpacing'].AsInteger;
+  TexPadding := aNode.Attributes['TexPadding'].AsInteger;
+  TexSizeX := aNode.Attributes['TexSizeX'].AsInteger;
+  TexSizeY := aNode.Attributes['TexSizeY'].AsInteger;
+//  TexFormat := TKMTextureFormat(aNode.Attributes['TexFormat'].AsInteger);
+//  TexMin := TKMTextureFilter(aNode.Attributes['TexMin'].AsInteger);
+//  TexMag := TKMTextureFilter(aNode.Attributes['TexMag'].AsInteger);
+  TexMipmaps := aNode.Attributes['TexMipmaps'].AsBoolean;
+end;
+
+
+procedure TKMFontGenInfo.SaveToXml(aNode: TXMLNode);
+begin
+  aNode.Attributes['Font'] := FontTypeName[Font];
+  aNode.Attributes['FontName'] := FontName;
+  aNode.Attributes['Size'] := Size;
+  aNode.Attributes['IsBold'] := IsBold;
+  aNode.Attributes['IsItalic'] := IsItalic;
+  aNode.Attributes['AntiAlias'] := AntiAlias;
+  aNode.Attributes['Fill'] := Fill;
+  aNode.Attributes['OutlineWidth'] := OutlineWidth;
+  aNode.Attributes['Outline'] := Outline;
+  aNode.Attributes['CharSpacing'] := CharSpacing;
+  aNode.Attributes['LineSpacing'] := LineSpacing;
+  aNode.Attributes['CharYOffset'] := CharYOffset;
+  aNode.Attributes['WordSpacing'] := WordSpacing;
+  aNode.Attributes['TexPadding'] := TexPadding;
+  aNode.Attributes['TexSizeX'] := TexSizeX;
+  aNode.Attributes['TexSizeY'] := TexSizeY;
+//  aNode.Attributes['TexFormat'] := Ord(TexFormat);
+//  aNode.Attributes['TexMin'] := Ord(TexMin);
+//  aNode.Attributes['TexMag'] := Ord(TexMag);
+  aNode.Attributes['TexMipmaps'] := TexMipmaps;
+end;
 
 
 { TKMFontDataEdit }

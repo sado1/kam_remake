@@ -7,6 +7,7 @@ uses
 
 
 type
+  //todo: Rename to TKMLocaleSpec
   TKMLocaleInfo = record
     Code: AnsiString;                // 3-letter code: 'eng', 'rus'
     Title: string;                   // Full name: 'English', 'Russian'
@@ -17,6 +18,7 @@ type
     TranslatorCredit: UnicodeString; // Who did the translation
   end;
 
+  //todo: Rename to TKMResLocales
   TKMLocales = class
   private
     fCount: Integer;
@@ -154,10 +156,8 @@ var
 begin
   for I := 0 to fCount - 1 do
     if fLocaleList[I].Code = aCode then
-    begin
-      Result := fLocaleList[I];
-      Exit;
-    end;
+      Exit(fLocaleList[I]);
+
   raise Exception.Create(String(aCode) + ' is not a valid Locale');
 end;
 
@@ -169,10 +169,7 @@ begin
   Result := -1;
   for I := 0 to Count - 1 do
     if fLocaleList[I].Code = aLocaleCode then
-    begin
-      Result := I;
-      Exit;
-    end;
+      Exit(I);
 end;
 
 

@@ -4,8 +4,9 @@ interface
 uses
   {$IFDEF WDC} Windows, {$ENDIF} //Declared first to get TBitmap overriden with VCL version
   {$IFDEF FPC} lconvencoding, {$ENDIF}
-  SysUtils, Classes, Graphics, Controls, Forms, Dialogs, ExtCtrls, StdCtrls, Spin, StrUtils,
-  KM_CommonTypes, KM_Defaults, KM_ResFonts, KM_ResFontsEdit, Vcl.ComCtrls;
+  SysUtils, Classes, Graphics, Controls, Forms, Dialogs, ExtCtrls, StdCtrls, Spin, StrUtils, Vcl.ComCtrls,
+  KM_CommonTypes, KM_Defaults, KM_ResFonts, KM_ResFontsEdit,
+  KM_FontXGenerator;
 
 
 type
@@ -54,6 +55,7 @@ type
     procedure btnKorRangeClick(Sender: TObject);
   private
     fFontData: TKMFontDataEdit;
+    fFontGen: TKMFontXGenerator;
   end;
 
 
@@ -62,18 +64,18 @@ var
 
 
 implementation
-uses
-  CharsCollector;
-
 
 {$R *.dfm}
-
 
 { TForm1 }
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   Caption := 'KaM FontX Generator (' + GAME_REVISION + ')';
   ExeDir := ExtractFilePath(ParamStr(0));
+
+  fFontGen := TKMFontXGenerator.Create;
+
+  fFontGen.LoadPresetsXML(ExeDir + 'fonts.xml');
 
   cbFontName.Items.AddStrings(Screen.Fonts);
 end;
@@ -82,6 +84,7 @@ end;
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
   FreeAndNil(fFontData);
+  FreeAndNil(fFontGen);
 end;
 
 
@@ -231,12 +234,12 @@ end;
 
 procedure TForm1.btnCollectCharsClick(Sender: TObject);
 var
-  lab: string;
+  prevCaption: string;
   uniText: UnicodeString;
 begin
-  lab := btnCollectChars.Caption;
+  prevCaption := btnCollectChars.Caption;
   try
-    uniText := CollectChars(UpdateCaption);
+    uniText := TKMFontXGenerator.CollectChars(ExeDir, UpdateCaption);
 
     {$IFDEF WDC}
       Memo1.Text := uniText;
@@ -246,7 +249,7 @@ begin
       Memo1.Text := UTF8Encode(uniText);
     {$ENDIF}
   finally
-    btnCollectChars.Caption := lab;
+    btnCollectChars.Caption := prevCaption;
   end;
 end;
 
