@@ -9,7 +9,7 @@ uses
 
 
 const
-  TAB_WIDTH = 30;
+  FONT_TAB_WIDTH = 30;
 
 type
   TKMFont = (
@@ -122,13 +122,13 @@ type
 
     function GetCharWidth(aChar: WideChar; aConsiderEolSymbol: Boolean = False): Integer;
     function WordWrap(aText: UnicodeString; aMaxPxWidth: Integer; aForced: Boolean; aIndentAfterNL: Boolean;
-      aTabWidth: Integer = TAB_WIDTH): UnicodeString;
+      aTabWidth: Integer = FONT_TAB_WIDTH): UnicodeString;
     function CharsThatFit(const aText: UnicodeString; aMaxPxWidth: Integer; aRound: Boolean = False;
-      aConsiderEolSymbol: Boolean = False; aTabWidth: Integer = TAB_WIDTH): Integer;
+      aConsiderEolSymbol: Boolean = False; aTabWidth: Integer = FONT_TAB_WIDTH): Integer;
     function GetTextSize(const aText: UnicodeString; var aLineCount: Integer; aCountMarkup: Boolean = False;
-      aConsiderEolSymbol: Boolean = False; aTabWidth: Integer = TAB_WIDTH): TKMPoint; overload;
+      aConsiderEolSymbol: Boolean = False; aTabWidth: Integer = FONT_TAB_WIDTH): TKMPoint; overload;
     function GetTextSize(const aText: UnicodeString; aCountMarkup: Boolean = False; aConsiderEolSymbol: Boolean = False;
-      aTabWidth: Integer = TAB_WIDTH): TKMPoint; overload;
+      aTabWidth: Integer = FONT_TAB_WIDTH): TKMPoint; overload;
     function GetMaxPrintWidthOfStrings(aStrings: array of string): Integer;
   end;
 
@@ -601,7 +601,8 @@ begin
 end;
 
 
-function TKMFontSpec.WordWrap(aText: UnicodeString; aMaxPxWidth: Integer; aForced: Boolean; aIndentAfterNL: Boolean; aTabWidth: Integer = TAB_WIDTH): UnicodeString;
+function TKMFontSpec.WordWrap(aText: UnicodeString; aMaxPxWidth: Integer; aForced: Boolean; aIndentAfterNL: Boolean;
+  aTabWidth: Integer = FONT_TAB_WIDTH): UnicodeString;
 const
   INDENT = '   ';
 var
@@ -730,7 +731,7 @@ end;
 
 
 function TKMFontSpec.CharsThatFit(const aText: UnicodeString; aMaxPxWidth: Integer; aRound: Boolean = False;
-                                  aConsiderEolSymbol: Boolean = False; aTabWidth: Integer = TAB_WIDTH): Integer;
+  aConsiderEolSymbol: Boolean = False; aTabWidth: Integer = FONT_TAB_WIDTH): Integer;
 var
   I, dx, PrevX, LastCharW: Integer;
 begin
@@ -760,7 +761,7 @@ end;
 
 
 function TKMFontSpec.GetTextSize(const aText: UnicodeString; aCountMarkup: Boolean = False; aConsiderEolSymbol: Boolean = False;
-  aTabWidth: Integer = TAB_WIDTH): TKMPoint;
+  aTabWidth: Integer = FONT_TAB_WIDTH): TKMPoint;
 var
   lineCount: Integer;
 begin
@@ -769,7 +770,7 @@ end;
 
 
 function TKMFontSpec.GetTextSize(const aText: UnicodeString; var aLineCount: Integer; aCountMarkup: Boolean = False;
-                                 aConsiderEolSymbol: Boolean = False; aTabWidth: Integer = TAB_WIDTH): TKMPoint;
+  aConsiderEolSymbol: Boolean = False; aTabWidth: Integer = FONT_TAB_WIDTH): TKMPoint;
 var
   I: Integer;
   LineWidthInc, TmpColor: Integer;

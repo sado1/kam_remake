@@ -40,16 +40,15 @@ type
     class procedure ReleaseClipX;
     class procedure ReleaseClipY;
     class procedure Write3DButton  (aLeft, aTop, aWidth, aHeight: SmallInt; aRX: TRXType; aID: Word; aFlagColor: TColor4;
-                                    aState: TKMButtonStateSet; aStyle: TKMButtonStyle; aImageEnabled: Boolean = True);
+      aState: TKMButtonStateSet; aStyle: TKMButtonStyle; aImageEnabled: Boolean = True);
     class procedure WriteBevel     (aLeft, aTop, aWidth, aHeight: SmallInt; aEdgeAlpha: Single = 1; aBackAlpha: Single = 0.5; aResetTexture: Boolean = True);
     class procedure WritePercentBar(aLeft, aTop, aWidth, aHeight: SmallInt; aPos: Single; aSeam: Single;
-                                    aMainColor: Cardinal = icBarColorGreen; aAddColor: Cardinal = icBarColorBlue;
-                                    aResetTexture: Boolean = True);
+      aMainColor: Cardinal = icBarColorGreen; aAddColor: Cardinal = icBarColorBlue; aResetTexture: Boolean = True);
     class procedure WriteReplayBar (aLeft, aTop, aWidth, aHeight: SmallInt; aPos, aPeacetime, aMaxValue: Integer; aMarks: TList<Integer>; aPattern: Word; aHighlightedMark: Integer = -1);
     class procedure WritePicture   (aLeft, aTop, aWidth, aHeight: SmallInt; aAnchors: TKMAnchorsSet; aRX: TRXType; aID: Word;
-                                    aEnabled: Boolean = True; aColor: TColor4 = $FFFF00FF; aLightness: Single = 0; aResetTexture: Boolean = True);
+      aEnabled: Boolean = True; aColor: TColor4 = $FFFF00FF; aLightness: Single = 0; aResetTexture: Boolean = True);
     class procedure WritePlot      (aLeft, aTop, aWidth, aHeight: SmallInt; aValues: TKMCardinalArray; aMaxValue: Cardinal;
-                                    aColor: TColor4; aLineWidth: Byte);
+      aColor: TColor4; aLineWidth: Byte);
     class procedure WriteOutline   (aLeft, aTop, aWidth, aHeight, aLineWidth: SmallInt; Col: TColor4);
     class procedure WriteShape     (aLeft, aTop, aWidth, aHeight: SmallInt; Col: TColor4; Outline: TColor4 = $00000000);
     class procedure WritePolyShape (aPoints: TKMPointArray; aColor: TColor4; aPattern: Word = $FFFF); overload;
@@ -57,8 +56,8 @@ type
 //    class procedure WritePolyShape (aPoints: TKMPointFArray; aColor: TKMColor4f; aPattern: Word = $FFFF); overload;
     class procedure WriteLine      (aFromX, aFromY, aToX, aToY: Single; aCol: TColor4; aPattern: Word = $FFFF; aLineWidth: Integer = -1);
     class procedure WriteText      (aLeft, aTop, aWidth: SmallInt; aText: UnicodeString; aFont: TKMFont; aAlign: TKMTextAlign;
-                                    aColor: TColor4 = $FFFFFFFF; aIgnoreMarkup: Boolean = False; aShowMarkup: Boolean = False;
-                                    aShowEolSymbol: Boolean = False; aTabWidth: Integer = TAB_WIDTH; aResetTexture: Boolean = True);
+      aColor: TColor4 = $FFFFFFFF; aIgnoreMarkup: Boolean = False; aShowMarkup: Boolean = False;
+      aShowEolSymbol: Boolean = False; aTabWidth: Integer = FONT_TAB_WIDTH; aResetTexture: Boolean = True);
     class procedure WriteTextInShape(const aText: string; X,Y: SmallInt; aLineColor, aTextColor: Cardinal; aShapeColor1: Cardinal = $80000000; aText2: string = ''; aShapeColor2: Cardinal = 0; aTextColor2: Cardinal = 0);
     class procedure WriteTexture   (aLeft, aTop, aWidth, aHeight: SmallInt; const aTexture: TTexture; aCol: TColor4);
     class procedure WriteCircle    (aCenterX, aCenterY: SmallInt; aRadius: Byte; aFillColor: TColor4);
@@ -686,7 +685,7 @@ end;
 // By default color must be non-transparent white
 class procedure TKMRenderUI.WriteText(aLeft, aTop, aWidth: SmallInt; aText: UnicodeString; aFont: TKMFont; aAlign: TKMTextAlign;
   aColor: TColor4 = $FFFFFFFF; aIgnoreMarkup: Boolean = False; aShowMarkup: Boolean = False; aShowEolSymbol: Boolean = False;
-  aTabWidth: Integer = TAB_WIDTH; aResetTexture: Boolean = True);
+  aTabWidth: Integer = FONT_TAB_WIDTH; aResetTexture: Boolean = True);
 var
   I, K, off: Integer;
   lineCount, dx, dy, lineHeight, blockWidth, prevAtlas, lineWidthInc: Integer;

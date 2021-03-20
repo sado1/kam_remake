@@ -3270,7 +3270,7 @@ begin
   fFontColor := $FFFFFFFF;
   fTextAlign := aTextAlign;
   fAutoWrap := False;
-  fTabWidth := TAB_WIDTH;
+  fTabWidth := FONT_TAB_WIDTH;
   SetCaption(aCaption);
 end;
 
