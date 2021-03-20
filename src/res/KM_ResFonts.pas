@@ -176,8 +176,8 @@ uses
   KM_CommonUtils, KM_Log;
 
 
-var
-  LOG_EXTRA_FONTS: Boolean = False;
+const
+  LOG_FONTS_RAM_USAGE = False;
 
 
 function NameToFont(const aName: string): TKMFont;
@@ -209,13 +209,13 @@ var
   S: TMemoryStream;
   fileName: string;
   I, K, M, L: Integer;
-  MaxHeight: Integer;
+  maxHeight: Integer;
   pX, pY: Integer;
 begin
-  MaxHeight := 0;
   if not FileExists(aFileName) then
     Exit;
 
+  maxHeight := 0;
   S := TMemoryStream.Create;
   S.LoadFromFile(aFileName);
 
@@ -249,7 +249,7 @@ begin
     S.Read(Letters[I].YOffset, 2);
     S.Seek(2, soFromCurrent); //Unknown field
 
-    MaxHeight := Math.max(MaxHeight, Letters[I].Height);
+    maxHeight := Math.max(maxHeight, Letters[I].Height);
 
     if Letters[I].Width * Letters[I].Height = 0 then
       raise Exception.Create('Font data Width * Height = 0'); //Font01.fnt seems to be damaged..
@@ -276,7 +276,7 @@ begin
     if pX + Letters[I].Width + PAD > fTexSizeX then
     begin
       pX := PAD;
-      Inc(pY, MaxHeight + PAD);
+      Inc(pY, maxHeight + PAD);
     end;
 
     //Fill in colors
@@ -350,7 +350,7 @@ begin
 end;
 
 
-//After font has been loaded and texture generated we can flush temp data
+// After font has been loaded and texture generated we can flush temp data
 procedure TKMFontSpec.Compact;
 var
   I: Integer;
@@ -364,25 +364,25 @@ begin
 end;
 
 
-//Generate color texture from prepared data
+// Generate color texture from prepared data
 procedure TKMFontSpec.GenerateTextures(aTexMode: TTexFormat);
 var
   I: Integer;
-  TextureRAM: Cardinal;
+  textureRAM: Cardinal;
 begin
-  TextureRAM := 0;
+  textureRAM := 0;
   for I := 0 to fAtlasCount - 1 do
     if fAtlases[I].TexID = 0 then //Don't load atlases twice if switching from minimal to full
       if Length(fAtlases[I].TexData) <> 0 then
       begin
         fAtlases[I].TexID := TRender.GenTexture(fTexSizeX, fTexSizeY, @fAtlases[I].TexData[0], aTexMode, ftNearest, ftNearest);
-        Inc(TextureRAM, fTexSizeX * fTexSizeY * TEX_FORMAT_SIZE[aTexMode]);
+        Inc(textureRAM, fTexSizeX * fTexSizeY * TEX_FORMAT_SIZE[aTexMode]);
       end
       else
         fAtlases[I].TexID := 0;
 
-  if LOG_EXTRA_FONTS then
-    gLog.AddNoTime( 'Font RAM usage: '+IntToStr(TextureRAM));
+  if LOG_FONTS_RAM_USAGE then
+    gLog.AddNoTime('Font RAM usage: ' + IntToStr(textureRAM));
 end;
 
 
@@ -401,7 +401,7 @@ begin
 end;
 
 
-//Export texture atlas into bitmap (just for looks)
+// Export texture atlas into bitmap (just for looks)
 procedure TKMFontSpec.ExportAtlasBmp(aBitmap: TBitmap; aIndex: Integer; aShowCells: Boolean);
 const
   BG: Integer = $AF6B6B;
@@ -455,7 +455,7 @@ begin
 end;
 
 
-//Export texture atlas into a bitmap file (just for looks)
+// Export texture atlas into a bitmap file (just for looks)
 procedure TKMFontSpec.ExportAtlasBmp(const aPath: string; aIndex: Integer);
 var
   exportBmp: TBitmap;
@@ -494,7 +494,7 @@ begin
 end;
 
 
-{ TResourceFont }
+{ TKMResFonts }
 constructor TKMResFonts.Create;
 var
   F: TKMFont;
