@@ -451,7 +451,7 @@ procedure TestTKMPointDirList.FillDefaults;
 var I: Integer;
 begin
   for I := 0 to 255 do
-    FKMPointDirList.Add(KMPointDir(I, I, dir_N));
+    FKMPointDirList.Add(KMPointDir(I, I, dirN));
 end;
 
 procedure TestTKMPointDirList.TestClear;
@@ -509,14 +509,14 @@ begin
   SaveStream.Free;
 
   //Single entry list
-  FKMPointDirList.Add(KMPointDir(7, 8, dir_SW));
+  FKMPointDirList.Add(KMPointDir(7, 8, dirSW));
   SaveStream := TKMemoryStream.Create;
   FKMPointDirList.SaveToStream(SaveStream);
   SaveStream.Position := 0;
   FKMPointDirList.Clear;
   FKMPointDirList.LoadFromStream(SaveStream);
   Check(FKMPointDirList.Count = 1);
-  Check(KMSamePointDir(FKMPointDirList[0], KMPointDir(7, 8, dir_SW)));
+  Check(KMSamePointDir(FKMPointDirList[0], KMPointDir(7, 8, dirSW)));
   SaveStream.Free;
 
   //Filled list
@@ -528,8 +528,8 @@ begin
   FKMPointDirList.Clear;
   FKMPointDirList.LoadFromStream(SaveStream);
   Check(FKMPointDirList.Count = 256);
-  Check(KMSamePointDir(FKMPointDirList[0], KMPointDir(0,0, dir_N)));
-  Check(KMSamePointDir(FKMPointDirList[255], KMPointDir(255,255, dir_N)));
+  Check(KMSamePointDir(FKMPointDirList[0], KMPointDir(0,0, dirN)));
+  Check(KMSamePointDir(FKMPointDirList[255], KMPointDir(255,255, dirN)));
   SaveStream.Free;
 end;
 

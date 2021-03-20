@@ -23,7 +23,7 @@ type
 
 implementation
 uses
-  KM_Log, KM_HandsCollection, KM_HandSpectator, KM_Resource, KM_ResSound, KM_Terrain, KM_CommonUtils, KM_ResHouses;
+  KM_Log, KM_HandsCollection, KM_HandSpectator, KM_Resource, KM_ResSound, KM_ResTypes, KM_Terrain, KM_CommonUtils, KM_ResHouses;
 
 
 procedure TestTUnitActionGoInOut.SetUp;
@@ -42,9 +42,9 @@ begin
   gHands.AddPlayers(1);
   gMySpectator := TKMSpectator.Create(0);
 
-  fUnit := TKMUnit.Create(0, ut_Serf, KMPoint(8, 10), 0);
-  fHouse := TKMHouse.Create(0, htStore, 9, 9, 0, hbs_Done);
-  FUnitActionGoInOut := TKMUnitActionGoInOut.Create(fUnit, ua_Walk, gd_GoInside, fHouse);
+  fUnit := TKMUnit.Create(0, utSerf, KMPoint(8, 10), 0, False);
+  fHouse := TKMHouse.Create(0, htStore, 9, 9, 0, hbsDone);
+  FUnitActionGoInOut := TKMUnitActionGoInOut.Create(fUnit, uaWalk, gdGoInside, fHouse);
 end;
 
 

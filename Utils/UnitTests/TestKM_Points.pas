@@ -74,17 +74,17 @@ end;
 
 procedure TestKMPoints.TestKMAddDirection;
 begin
-  Check(KMAddDirection(dir_N, 1) = dir_NE);
-  Check(KMAddDirection(dir_N, 2) = dir_E);
-  Check(KMAddDirection(dir_N, 3) = dir_SE);
-  Check(KMAddDirection(dir_N, 4) = dir_S);
-  Check(KMAddDirection(dir_N, 5) = dir_SW);
-  Check(KMAddDirection(dir_N, 6) = dir_W);
-  Check(KMAddDirection(dir_N, 7) = dir_NW);
-  Check(KMAddDirection(dir_N, 8) = dir_N);
-  Check(KMAddDirection(dir_N, 9) = dir_NE);
-  Check(KMAddDirection(dir_N, 160) = dir_N);
-  Check(KMAddDirection(dir_N, 161) = dir_NE);
+  Check(KMAddDirection(dirN, 1) = dirNE);
+  Check(KMAddDirection(dirN, 2) = dirE);
+  Check(KMAddDirection(dirN, 3) = dirSE);
+  Check(KMAddDirection(dirN, 4) = dirS);
+  Check(KMAddDirection(dirN, 5) = dirSW);
+  Check(KMAddDirection(dirN, 6) = dirW);
+  Check(KMAddDirection(dirN, 7) = dirNW);
+  Check(KMAddDirection(dirN, 8) = dirN);
+  Check(KMAddDirection(dirN, 9) = dirNE);
+  Check(KMAddDirection(dirN, 160) = dirN);
+  Check(KMAddDirection(dirN, 161) = dirNE);
 end;
 
 
