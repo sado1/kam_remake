@@ -101,7 +101,7 @@ type
 
     constructor Create(aFont: TKMFont);
 
-    procedure LoadFont(const aFileName: string; aPalette: TKMPaletteInfo);
+    procedure LoadFont(const aFileName: string; aPalette: TKMPaletteSpec);
     procedure LoadFontX(const aFileName: string; aLoadLevel: TKMFontLoadLevel = fllFull);
     procedure GenerateTextures(aTexMode: TTexFormat);
     procedure Compact;
@@ -200,7 +200,7 @@ begin
 end;
 
 
-procedure TKMFontSpec.LoadFont(const aFileName: string; aPalette: TKMPaletteInfo);
+procedure TKMFontSpec.LoadFont(const aFileName: string; aPalette: TKMPaletteSpec);
 const
   FONT_TEX_SIZE = 256; // Static texture size, all KaM fonts fit within 256^2 space
   FONT_INTERLINE = 5; // Spacing between lines of text
