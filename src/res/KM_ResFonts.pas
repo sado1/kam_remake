@@ -94,7 +94,7 @@ type
     fIsUnicode: Boolean;
 
     fMaxWidth: Integer;
-    rawData: array [0..High(Word)] of array of Byte; //Raw data for ANSI fonts
+    fRawData: array [0..High(Word)] of array of Byte; //Raw data for ANSI fonts
   public
     Used: array [0..High(Word)] of Byte;
     Letters: array [0..High(Word)] of TKMLetter;
@@ -254,8 +254,8 @@ begin
     if Letters[I].Width * Letters[I].Height = 0 then
       raise Exception.Create('Font data Width * Height = 0'); //Font01.fnt seems to be damaged..
 
-    SetLength(rawData[I], Letters[I].Width*Letters[I].Height);
-    S.Read(rawData[I,0], Letters[I].Width*Letters[I].Height);
+    SetLength(fRawData[I], Letters[I].Width * Letters[I].Height);
+    S.Read(fRawData[I,0], Letters[I].Width * Letters[I].Height);
   end;
   S.Free;
 
@@ -283,7 +283,7 @@ begin
     for L := 0 to Letters[I].Height - 1 do
     for M := 0 to Letters[I].Width - 1 do
       fAtlases[fAtlasCount - 1].TexData[(pY + L) * fTexSizeX + pX + M] :=
-        aPalette.Color32(rawData[I, L * Letters[I].Width + M]);
+        aPalette.Color32(fRawData[I, L * Letters[I].Width + M]);
 
     Letters[I].u1 := pX / fTexSizeX;
     Letters[I].v1 := pY / fTexSizeY;

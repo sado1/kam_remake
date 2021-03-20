@@ -571,7 +571,7 @@ begin
       S.Write(Letters[I].YOffset, 2);
       S.Write(Zero, 2); //Unknown field
 
-      S.Write(rawData[I,0], Letters[I].Width * Letters[I].Height);
+      S.Write(fRawData[I,0], Letters[I].Width * Letters[I].Height);
     end;
 
     S.SaveToFile(aFilename);
