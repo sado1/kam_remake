@@ -547,6 +547,8 @@ function TKMTaskDeliver.ObjToString(const aSeparator: String = ', '): String;
 var
   FromStr, ToUStr, ToHStr: String;
 begin
+  if Self = nil then Exit('nil');
+
   FromStr := 'nil';
   ToHStr := 'nil';
   ToUStr := 'nil';

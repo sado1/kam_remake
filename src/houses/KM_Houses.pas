@@ -431,6 +431,8 @@ end;
 
 function TKMHouseSketch.ObjToStringShort(const aSeparator: String = '|'): String;
 begin
+  if Self = nil then Exit('nil');
+
   Result := Format('UID = %d%sType = %s%sEntrance = %s',
                   [UID, aSeparator,
                    GetEnumName(TypeInfo(TKMHouseType), Integer(fType)), aSeparator,
@@ -2083,6 +2085,8 @@ var
   I: Integer;
   ActStr,ResOutPoolStr: String;
 begin
+  if Self = nil then Exit('nil');
+
   ActStr := 'nil';
   if CurrentAction <> nil then
     ActStr := CurrentAction.ClassName;

@@ -820,6 +820,8 @@ end;
 
 function TKMUnitSerf.ObjToString(const aSeparator: String = '|'): String;
 begin
+  if Self = nil then Exit('nil');
+
   Result := inherited ObjToString(aSeparator)
           + Format('%sCarry = %s', [aSeparator, GetEnumName(TypeInfo(TKMWareType), Integer(fCarry))]);
 end;
@@ -2228,6 +2230,8 @@ function TKMUnit.ObjToStringShort(const aSeparator: String = '|'): String;
 var
   ActStr, TaskStr: String;
 begin
+  if Self = nil then Exit('nil');
+
   ActStr := 'nil';
   TaskStr := 'nil';
   if fAction <> nil then
@@ -2249,6 +2253,8 @@ function TKMUnit.ObjToString(const aSeparator: String = '|'): String;
 var
   HomeStr, InHouseStr: String;
 begin
+  if Self = nil then Exit('nil');
+
   HomeStr := 'nil';
   InHouseStr := 'nil';
 
@@ -2559,6 +2565,8 @@ end;
 
 function TKMUnitTask.ObjToString(const aSeparator: String = ', '): String;
 begin
+  if Self = nil then Exit('nil');
+
   Result := Format('Type %s%sPhase = %d%sPhase2 = %d',
                    [GetEnumName(TypeInfo(TKMUnitTaskType), Integer(fType)), aSeparator,
                     fPhase, aSeparator,

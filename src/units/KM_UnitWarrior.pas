@@ -926,6 +926,8 @@ end;}
 
 function TKMUnitWarrior.ObjToStringShort(const aSeparator: String = '|'): String;
 begin
+  if Self = nil then Exit('nil');
+
   Result := inherited ObjToStringShort(aSeparator) +
             Format('%sWarriorOrder = %s%sNextOrder = %s%sNextOrderForced = %s%sOrderLoc = %s%sHasOrderTargetUnit = [%s]%sHasOrderTargetHouse = [%s]',
                    [aSeparator,
@@ -942,6 +944,8 @@ function TKMUnitWarrior.ObjToString(const aSeparator: String = '|'): String;
 var
   unitStr, houseStr, groupStr: String;
 begin
+  if Self = nil then Exit('nil');
+
   groupStr := 'nil';
   unitStr := 'nil';
   houseStr := 'nil';

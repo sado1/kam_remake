@@ -2052,6 +2052,8 @@ end;
 
 function TKMUnitGroup.ObjToStringShort(const aSeparator: String = '|'): String;
 begin
+  if Self = nil then Exit('nil');
+
   Result := Format('UID = %d%sType = %s%sMembersCount = %d',
                    [UID, aSeparator,
                     GetEnumName(TypeInfo(TKMGroupType), Integer(fGroupType)), aSeparator,
@@ -2063,6 +2065,8 @@ function TKMUnitGroup.ObjToString(const aSeparator: String = '|'): String;
 var
   TargetUnitStr, TargetHouseStr, TargetGroupStr: String;
 begin
+  if Self = nil then Exit('nil');
+
   TargetUnitStr := 'nil';
   TargetHouseStr := 'nil';
   TargetGroupStr := 'nil';
