@@ -715,7 +715,7 @@ var
     glTexCoord2f(let.u2, let.v1); glVertex2f(dx + let.Width, dy            + let.YOffset);
     glTexCoord2f(let.u2, let.v2); glVertex2f(dx + let.Width, dy+let.Height + let.YOffset);
     glTexCoord2f(let.u1, let.v2); glVertex2f(dx            , dy+let.Height + let.YOffset);
-    Inc(dx, let.Width + fontSpec.CharSpacing);
+    Inc(dx, Max(0, let.Width + fontSpec.CharSpacing)); // CharSpacing could be negative
   end;
 
 var

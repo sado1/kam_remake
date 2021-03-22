@@ -598,6 +598,9 @@ begin
     Result := WordSpacing
   else
     Result := GetLetter(aChar).Width + CharSpacing;
+
+  // CharSpacing could be negative
+  Result := Max(0, Result);
 end;
 
 
