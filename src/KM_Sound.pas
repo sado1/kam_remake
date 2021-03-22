@@ -1047,7 +1047,6 @@ function TKMScriptSoundsManager.AddSound(aHandIndex: TKMHandID; const aSoundName
 const
   ERROR_EXIT_CODE = -1;
 var
-  newIndex: Integer;
   S: TKMScriptSound;
 begin
   if Self = nil then Exit(ERROR_EXIT_CODE);
@@ -1068,12 +1067,10 @@ begin
   S.Radius := aRadius;
   S.HandIndex := aHandIndex;
 
-  newIndex := fScriptSounds.Add(S);
+  StartSound(fScriptSounds.Add(S));
 
-  //Return -1 if sound (not looped) did not start successfully
-  Result := ERROR_EXIT_CODE;
-  if (StartSound(newIndex) <> -1) or aLooped then
-    Result := fLastScriptUID; //Return ScriptSoundUID if all is OK, or for Looped sound, since we could start it later
+  // Always return ScriptUID, since game logic should not depend on client sound subsystem
+  Result := fLastScriptUID;
 end;
 
 
