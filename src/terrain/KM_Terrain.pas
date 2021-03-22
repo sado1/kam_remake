@@ -344,9 +344,9 @@ type
     function UnitsHitTestWithinRad(const aLoc: TKMPoint; MinRad, MaxRad: Single; aPlayer: TKMHandID; aAlliance: TKMAllianceType;
                                    Dir: TKMDirection; const aClosest: Boolean): Pointer;
 
-    function ScriptTrySetTile(X, Y: Integer; aType, aRot: Byte): Boolean;
-    function ScriptTrySetTileHeight(X, Y: Integer; aHeight: Byte): Boolean;
-    function ScriptTrySetTileObject(X, Y: Integer; aObject: Word): Boolean;
+    function ScriptTrySetTile(X, Y, aType, aRot: Integer): Boolean;
+    function ScriptTrySetTileHeight(X, Y, aHeight: Integer): Boolean;
+    function ScriptTrySetTileObject(X, Y, aObject: Integer): Boolean;
     function ScriptTrySetTilesArray(var aTiles: array of TKMTerrainTileBrief; aRevertOnFail: Boolean; var aErrors: TKMTerrainTileChangeErrorArray): Boolean;
 
     function ObjectIsCorn(const Loc: TKMPoint): Boolean; overload; inline;
@@ -1204,21 +1204,21 @@ end;
 
 
 // Try to set an tile (Terrain and Rotation) from the script. Failure is an option
-function TKMTerrain.ScriptTrySetTile(X, Y: Integer; aType, aRot: Byte): Boolean;
+function TKMTerrain.ScriptTrySetTile(X, Y, aType, aRot: Integer): Boolean;
 begin
   Result := TileInMapCoords(X, Y) and TrySetTile(X, Y, aType, aRot);
 end;
 
 
 // Try to set an tile Height from the script. Failure is an option
-function TKMTerrain.ScriptTrySetTileHeight(X, Y: Integer; aHeight: Byte): Boolean;
+function TKMTerrain.ScriptTrySetTileHeight(X, Y, aHeight: Integer): Boolean;
 begin
   Result := TileInMapCoords(X, Y) and TrySetTileHeight(X, Y, aHeight);
 end;
 
 
 // Try to set an object from the script. Failure is an option
-function TKMTerrain.ScriptTrySetTileObject(X, Y: Integer; aObject: Word): Boolean;
+function TKMTerrain.ScriptTrySetTileObject(X, Y, aObject: Integer): Boolean;
 begin
   Result := TileInMapCoords(X, Y) and TrySetTileObject(X, Y, aObject);
 end;
