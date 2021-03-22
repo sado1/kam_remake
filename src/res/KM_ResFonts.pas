@@ -176,8 +176,8 @@ uses
   KM_CommonUtils, KM_Log;
 
 
-const
-  LOG_FONTS_RAM_USAGE = False;
+var
+  LOG_FONTS_RAM_USAGE: Boolean = False;
 
 
 function NameToFont(const aName: string): TKMFont;
@@ -371,12 +371,14 @@ var
   textureRAM: Cardinal;
 begin
   textureRAM := 0;
+    
   for I := 0 to fAtlasCount - 1 do
     if fAtlases[I].TexID = 0 then //Don't load atlases twice if switching from minimal to full
       if Length(fAtlases[I].TexData) <> 0 then
       begin
         fAtlases[I].TexID := TRender.GenTexture(fTexSizeX, fTexSizeY, @fAtlases[I].TexData[0], aTexMode, ftNearest, ftNearest);
-        Inc(textureRAM, fTexSizeX * fTexSizeY * TEX_FORMAT_SIZE[aTexMode]);
+        if LOG_FONTS_RAM_USAGE then        
+          Inc(textureRAM, fTexSizeX * fTexSizeY * TEX_FORMAT_SIZE[aTexMode]);
       end
       else
         fAtlases[I].TexID := 0;
