@@ -51,6 +51,7 @@ var
   KF: TKMKeyFunction;
   nHotkeys, nKey: TXMLNode;
   keyFuncName: string;
+  keySpec: TKMKeySpec;
 begin
   if Self = nil then Exit;
   inherited;
@@ -64,7 +65,11 @@ begin
     begin
       nKey := nHotkeys.AddOrFindChild(keyFuncName);
       if nKey.HasAttribute('Key') then
-        gResKeys[KF].Key := nKey.Attributes['Key'].AsInteger;
+      begin
+        keySpec := gResKeys[KF];
+        keySpec.Key := nKey.Attributes['Key'].AsInteger;
+        gResKeys[KF] := keySpec;
+      end;
     end;
   end;
 end;
