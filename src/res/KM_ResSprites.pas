@@ -93,6 +93,8 @@ type
 
     function GetSpriteColors(aCount: Word): TRGBArray;
 
+    function IsEmpty: Boolean;
+
     procedure ExportAll(const aFolder: string);
     procedure ExportFullImageData(const aFolder: string; aIndex: Integer; aTempList: TStringList = nil);
     procedure ExportImage(const aFile: string; aIndex: Integer);
@@ -881,6 +883,12 @@ begin
     Result[I-1].G := Round(G / PixelCount);
     Result[I-1].B := Round(B / PixelCount);
   end;
+end;
+
+
+function TKMSpritePack.IsEmpty: Boolean;
+begin
+  Result := fRXData.Count = 0;
 end;
 
 

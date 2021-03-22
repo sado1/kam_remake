@@ -474,6 +474,9 @@ var
   OutputStream: TFileStream;
   CompressionStream: TCompressionStream;
 begin
+  // No image was loaded yet
+  if IsEmpty then Exit;
+
   ForceDirectories(ExtractFilePath(aFileName));
 
   InputStream := TMemoryStream.Create;
