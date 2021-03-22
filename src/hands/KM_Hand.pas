@@ -8,7 +8,7 @@ uses
   KM_HandLogistics, KM_HandLocks, KM_HandStats, KM_GameTypes,
   KM_FogOfWar, KM_HandConstructions, KM_MessageLog, KM_ResHouses,
   KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_ResWares, KM_Points,
-  KM_HandTypes,
+  KM_HandEntity, KM_HandTypes,
   KM_ResTypes;
 
 
@@ -87,9 +87,12 @@ type
     procedure SetShareFOW(aIndex: Integer; aValue: Boolean);
     function  GetShareBeacons(aIndex: Integer): Boolean;
     procedure SetShareBeacons(aIndex: Integer; aValue: Boolean);
+
+    procedure EntityDestroyed(aEntity: TKMHandEntity);
     procedure GroupDied(aGroup: TKMUnitGroup);
     procedure HouseDestroyed(aHouse: TKMHouse; aFrom: TKMHandID);
     procedure UnitDied(aUnit: TKMUnit; aFrom: TKMHandID);
+
     procedure UnitTrained(aUnit: TKMUnit);
     procedure WarriorWalkedOut(aWarrior: TKMUnitWarrior);
     function LocHasNoAllyPlans(const aLoc: TKMPoint): Boolean;
@@ -1456,6 +1459,23 @@ begin
 end;
 
 
+// Some entity was destroyed, but gMySpectator could have pointer to this entity, we have to nil it then
+procedure TKMHand.EntityDestroyed(aEntity: TKMHandEntity);
+begin
+  //gMySpectator is nil during loading, when houses can be destroyed at the start
+  if gMySpectator = nil then Exit;
+
+  if gMySpectator.Selected = aEntity then
+    gMySpectator.Selected := nil;
+  if gMySpectator.LastSelected = aEntity then
+    gMySpectator.NilLastSelected;
+  if gMySpectator.Highlight = aEntity then
+    gMySpectator.Highlight := nil;
+  if gMySpectator.HighlightDebug = aEntity then
+    gMySpectator.HighlightDebug := nil;
+end;
+
+
 //Which house whas destroyed and by whom
 procedure TKMHand.HouseDestroyed(aHouse: TKMHouse; aFrom: TKMHandID);
 begin
@@ -1490,14 +1510,7 @@ begin
   //Scripting events happen AFTER updating statistics
   gScriptEvents.ProcHouseDestroyed(aHouse, aFrom);
 
-  //gMySpectator is nil during loading, when houses can be destroyed at the start
-  if gMySpectator <> nil then
-  begin
-    if gMySpectator.Highlight = aHouse then
-      gMySpectator.Highlight := nil;
-    if gMySpectator.Selected = aHouse then
-      gMySpectator.Selected := nil;
-  end;
+  EntityDestroyed(aHouse);
 end;
 
 
@@ -1947,24 +1960,13 @@ begin
   //Call script event after updating statistics
   gScriptEvents.ProcUnitDied(aUnit, aFrom);
 
-  //gMySpectator is nil during loading
-  if gMySpectator <> nil then
-  begin
-    if gMySpectator.Highlight = aUnit then
-      gMySpectator.Highlight := nil;
-    if gMySpectator.Selected = aUnit then
-      gMySpectator.Selected := nil;
-  end;
+  EntityDestroyed(aUnit);
 end;
 
 
 procedure TKMHand.GroupDied(aGroup: TKMUnitGroup);
 begin
-  //Groups arent counted in statistics
-  if gMySpectator.Highlight = aGroup then
-    gMySpectator.Highlight := nil;
-  if gMySpectator.Selected = aGroup then
-    gMySpectator.Selected := nil;
+  EntityDestroyed(aGroup);
 end;
 
 

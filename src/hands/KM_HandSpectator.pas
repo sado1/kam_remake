@@ -39,6 +39,7 @@ type
     property HighlightDebug: TKMHandEntity read fHighlightDebug write fHighlightDebug;
     property Selected: TKMHandEntity read GetSelected write SetSelected;
     property LastSelected: TKMHandEntity read fLastSelected;
+    procedure NilLastSelected;
     property IsSelectedMyObj: Boolean read fIsSelectedMyObj write fIsSelectedMyObj;
     function Hand: TKMHand;
     property HandID: TKMHandID read fHandIndex write SetHandIndex;
@@ -357,6 +358,12 @@ begin
   //We don't increase PointersCount of object because of savegames identicality over MP
   //Objects report on their destruction and set it to nil
   fSelected := Value;
+end;
+
+
+procedure TKMSpectator.NilLastSelected;
+begin
+  fLastSelected := nil;
 end;
 
 
