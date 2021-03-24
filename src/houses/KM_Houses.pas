@@ -129,7 +129,6 @@ type
     fResourceDepletedMsgIssued: Boolean;
     fOrderCompletedMsgIssued: Boolean;
     fNeedIssueOrderCompletedMsg: Boolean;
-    fAllowAllyToView: Boolean;
     fPlacedOverRoad: Boolean; //Is house entrance placed over road
 
     procedure CheckOnSnow;
@@ -207,8 +206,6 @@ type
 
     procedure IssueResourceDepletedMsg;
     function GetResourceDepletedMessageId: Word;
-
-    property AllowAllyToView: Boolean read fAllowAllyToView write fAllowAllyToView;
 
     property ResourceDepleted: Boolean read fResourceDepletedMsgIssued write fResourceDepletedMsgIssued;
     property OrderCompletedMsgIssued: Boolean read fOrderCompletedMsgIssued;
@@ -552,8 +549,8 @@ begin
   fNeedIssueOrderCompletedMsg := False;
   fOrderCompletedMsgIssued := False;
 
-  //ByDefault allow to show all human player houses to allies, or AI's not in Campaign
-  fAllowAllyToView := gHands[Owner].IsHuman or not gGameParams.IsCampaign;
+  //ByDefault allow to show all human player houses to allies, or AI's not in Campaign and on SP maps
+  AllowAllyToSelect := gHands[Owner].IsHuman or not gGameParams.IsSingleplayerGame;
 
   if aBuildState = hbsDone then //House was placed on map already Built e.g. in mission maker
   begin
@@ -619,7 +616,6 @@ begin
   end;
   LoadStream.Read(fResourceDepletedMsgIssued);
   LoadStream.Read(DoorwayUse);
-  LoadStream.Read(fAllowAllyToView);
   LoadStream.Read(fPlacedOverRoad);
 end;
 
@@ -1996,7 +1992,6 @@ begin
   if HasAct then CurrentAction.Save(SaveStream);
   SaveStream.Write(fResourceDepletedMsgIssued);
   SaveStream.Write(DoorwayUse);
-  SaveStream.Write(fAllowAllyToView);
   SaveStream.Write(fPlacedOverRoad);
 end;
 

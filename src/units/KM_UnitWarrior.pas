@@ -55,6 +55,9 @@ type
     function GetRangeMax: Single;
     function GetProjectileType: TKMProjectileType;
     function GetAimSoundDelay: Byte;
+  protected
+    function GetAllowAllyToSelect: Boolean; override;
+    procedure SetAllowAllyToSelect(aAllow: Boolean); override;
   public
     OnWarriorDied: TKMWarriorEvent; //Separate event from OnUnitDied to report to Group
     OnPickedFight: TKMWarrior2Event;
@@ -725,6 +728,22 @@ begin
   Result := 0;
   if UnitType = utSlingShot then
     Result := SLINGSHOT_AIMING_SOUND_DELAY;
+end;
+
+
+function TKMUnitWarrior.GetAllowAllyToSelect: Boolean;
+begin
+  // Warriors considered to be allowed to select by allies at the same time as his group is
+  Result := (fGroup <> nil) and TKMUnitGroup(fGroup).AllowAllyToSelect;
+end;
+
+
+procedure TKMUnitWarrior.SetAllowAllyToSelect(aAllow: Boolean);
+begin
+  if fGroup = nil then Exit;
+
+  // Warriors considered to be allowed to select by allies at the same time as his group is
+  TKMUnitGroup(fGroup).AllowAllyToSelect := aAllow;
 end;
 
 
