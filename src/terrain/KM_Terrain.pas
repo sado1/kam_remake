@@ -329,10 +329,10 @@ type
     function TileIsWalkable(const Loc: TKMPoint): Boolean; inline;
     function TileIsRoadable(const Loc: TKMPoint): Boolean; inline;
 
-    function TileCornerTerrain(aX, aY: Word; aCorner: Byte): Word;
-    function TileCornersTerrains(aX, aY: Word): TKMWordArray;
-    function TileCornerTerKind(aX, aY: Word; aCorner: Byte): TKMTerrainKind;
-    procedure GetTileCornersTerKinds(aX, aY: Word; out aCornerTerKinds: TKMTerrainKindCorners);
+    function TileCornerTerrain(aX, aY: Integer; aCorner: Byte): Word;
+    function TileCornersTerrains(aX, aY: Integer): TKMWordArray;
+    function TileCornerTerKind(aX, aY: Integer; aCorner: Byte): TKMTerrainKind;
+    procedure GetTileCornersTerKinds(aX, aY: Integer; out aCornerTerKinds: TKMTerrainKindCorners);
 
     procedure GetVerticeTerKinds(const aLoc: TKMPoint; out aVerticeTerKinds: TKMTerrainKindCorners);
 
@@ -1836,7 +1836,7 @@ end;
 
 
 //Get tile corner terrain id
-function TKMTerrain.TileCornerTerrain(aX, aY: Word; aCorner: Byte): Word;
+function TKMTerrain.TileCornerTerrain(aX, aY: Integer; aCorner: Byte): Word;
 const
   TOO_BIG_VALUE = 50000;
 var
@@ -1858,7 +1858,7 @@ end;
 
 
 //Get tile corners terrain id
-function TKMTerrain.TileCornersTerrains(aX, aY: Word): TKMWordArray;
+function TKMTerrain.TileCornersTerrains(aX, aY: Integer): TKMWordArray;
 var
   K: Integer;
   cornersTKinds: TKMTerrainKindCorners;
@@ -1870,7 +1870,7 @@ begin
 end;
 
 
-function TKMTerrain.TileCornerTerKind(aX, aY: Word; aCorner: Byte): TKMTerrainKind;
+function TKMTerrain.TileCornerTerKind(aX, aY: Integer; aCorner: Byte): TKMTerrainKind;
 var
   L: Integer;
 begin
@@ -1893,7 +1893,7 @@ end;
 
 
 //Get tile corners terrain kinds
-procedure TKMTerrain.GetTileCornersTerKinds(aX, aY: Word; out aCornerTerKinds: TKMTerrainKindCorners);
+procedure TKMTerrain.GetTileCornersTerKinds(aX, aY: Integer; out aCornerTerKinds: TKMTerrainKindCorners);
 var
   K: Integer;
 begin
