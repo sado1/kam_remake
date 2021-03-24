@@ -2253,7 +2253,8 @@ var
   I: Integer;
   pad: Integer;
 begin
-  pad := Byte(fUIMode in [umMP, umSpectate]) * 2 +
+  pad := Byte(CanShowChat) +
+         Byte(CanShowAllies) +
          Byte(Image_MessageLog.Visible);
   for I := 0 to MAX_VISIBLE_MSGS do
     Image_Message[I].Top := Panel_Main.Height - 48 - (I + pad) * 48;
@@ -2466,6 +2467,10 @@ procedure TKMGamePlayInterface.UpdateMessageImages;
 var
   I: Integer;
 begin
+  Image_MessageLog.Top := Panel_Main.Height - 48
+                                            - IfThen(CanShowAllies, 48)
+                                            - IfThen(CanShowChat, 48);
+
   for I := 0 to MAX_VISIBLE_MSGS do
     Image_Message[I].Top := Panel_Main.Height - 48 - I * 48
                             - IfThen(CanShowChat, 48)
