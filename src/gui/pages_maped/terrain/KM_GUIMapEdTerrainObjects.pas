@@ -267,6 +267,7 @@ begin
   BrushSquare.TexOffsetY := 1;
   J:=0;
   K:=0;
+  RxIndex:=226;
   for I := 0 to 9 do begin
     case I of
        0: begin RxIndex:=226;ObjectsHint:= gResTexts[TX_MAPED_OBJECTS_BRUSH_TREES];end;
@@ -308,6 +309,7 @@ begin
   ForestAge.Position := 1;
   ForestAge.OnChange := ObjectsChange;
   ForestAge.Hint := gResTexts[TX_MAPED_OBJECTS_BRUSH_AGE_HINT];
+
 
   gGameCursor.MapEdObjectsType[0]:=true;
   gGameCursor.MapEdObjectsType[1]:=true;
@@ -567,9 +569,10 @@ end;
 
 procedure TKMMapEdTerrainObjects.ObjectsChange(Sender: TObject);
 var
-  ObjIndex: Integer;
+  ObjIndex,I: Integer;
 begin
-  gGameCursor.MapEdSize := BrushSize.Position;
+
+
   case TKMButtonFlat(Sender).Tag of
     OBJ_BLOCK_TAG,
     OBJ_NONE_TAG:  ObjIndex := TKMButtonFlat(Sender).Tag; // Block or Erase
@@ -586,11 +589,12 @@ begin
     Scroll_ObjectsPalette.Position := ((ObjIndex - 1) div fObjPaletteTableSize.X);
 
 
-  for I:= 0 to 9 do
+   for I:= 0 to 9 do
     if Sender=ObjectTypeSet[I] then begin
-        If gGameCursor.MapEdObjectsType[I] = false then begin ObjectTypeSet[I].Down:=true; gGameCursor.MapEdObjectsType[I] := true end else begin ObjectTypeSet[I].Down:=false; gGameCursor.MapEdObjectsType[I] := false;end;
+        If gGameCursor.MapEdObjectsType[I] = false then gGameCursor.MapEdObjectsType[I] := true else gGameCursor.MapEdObjectsType[I] := false;
         gGameCursor.Mode := cmObjectsBrush;
     end;
+
   if (Sender=ForestAge)or(Sender=ForestDensity)or(Sender=BrushSize) then
    if gGameCursor.Mode = cmObjects then
       gGameCursor.Mode :=  cmObjectsBrush;
@@ -620,6 +624,7 @@ begin
       BrushSquare.Down :=true;
    end;
 
+  gGameCursor.MapEdSize := BrushSize.Position;
 
   gGameCursor.MapEdForestAge := ForestAge.Position;
   gGameCursor.MapEdObjectsDensity := ForestDensity.Position;
@@ -690,6 +695,8 @@ begin
                              and (ObjIndex = fMapElemToCompact[gGameCursor.Tag1]);
   end;
 
+  for I := 0 to 9 do
+    ObjectTypeSet[I].Down:=gGameCursor.MapEdObjectsType[I];
   ObjectErase.Down := (gGameCursor.Mode = cmObjects) and (gGameCursor.Tag1 = OBJ_NONE);  //or delete button
   ObjectBlock.Down := (gGameCursor.Mode = cmObjects) and (gGameCursor.Tag1 = OBJ_BLOCK); //or block button
 end;
