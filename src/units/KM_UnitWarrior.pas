@@ -929,7 +929,8 @@ begin
   if Self = nil then Exit('nil');
 
   Result := inherited ObjToStringShort(aSeparator) +
-            Format('%sWarriorOrder = %s%sNextOrder = %s%sNextOrderForced = %s%sOrderLoc = %s%sHasOrderTargetUnit = [%s]%sHasOrderTargetHouse = [%s]',
+            Format('%sWarriorOrder = %s%sNextOrder = %s%sNextOrderForced = %s%sOrderLoc = %s%s' +
+                   'HasOrderTargetUnit = [%s]%sHasOrderTargetHouse = [%s]',
                    [aSeparator,
                     GetEnumName(TypeInfo(TKMWarriorOrder), Integer(fOrder)), aSeparator,
                     GetEnumName(TypeInfo(TKMWarriorOrder), Integer(fNextOrder)), aSeparator,
@@ -960,13 +961,8 @@ begin
     houseStr := fOrderTargetHouse.ObjToStringShort('; ');
 
   Result := inherited ObjToString(aSeparator) +
-            Format('%sWarriorOrder = %s%sNextOrder = %s%sNextOrderForced = %s%s' +
-                   'OrderLoc = %s%sOrderTargetUnit = [%s]%sOrderTargetHouse = [%s]%sGroup = %s%s',
+            Format('%sOrderTargetUnit = [%s]%sOrderTargetHouse = [%s]%sGroup = %s%s',
                    [aSeparator,
-                    GetEnumName(TypeInfo(TKMWarriorOrder), Integer(fOrder)), aSeparator,
-                    GetEnumName(TypeInfo(TKMWarriorOrder), Integer(fNextOrder)), aSeparator,
-                    BoolToStr(fNextOrderForced, True), aSeparator,
-                    TypeToString(fOrderLoc), aSeparator,
                     unitStr, aSeparator,
                     houseStr, aSeparator,
                     groupStr, aSeparator]);
