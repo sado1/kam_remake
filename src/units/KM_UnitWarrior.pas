@@ -951,7 +951,7 @@ begin
   houseStr := 'nil';
 
   if fGroup <> nil then
-    groupStr := TKMUnitGroup(fGroup).ObjToString(aSeparator);
+    groupStr := TKMUnitGroup(fGroup).ObjToString('|  ');
 
   if fOrderTargetUnit <> nil then
     unitStr := fOrderTargetUnit.ObjToStringShort('; ');
@@ -960,7 +960,8 @@ begin
     houseStr := fOrderTargetHouse.ObjToStringShort('; ');
 
   Result := inherited ObjToString(aSeparator) +
-            Format('%sWarriorOrder = %s%sNextOrder = %s%sNextOrderForced = %s%sOrderLoc = %s%sOrderTargetUnit = [%s]%sOrderTargetHouse = [%s]%sGroup = %s%s',
+            Format('%sWarriorOrder = %s%sNextOrder = %s%sNextOrderForced = %s%s' +
+                   'OrderLoc = %s%sOrderTargetUnit = [%s]%sOrderTargetHouse = [%s]%sGroup = %s%s',
                    [aSeparator,
                     GetEnumName(TypeInfo(TKMWarriorOrder), Integer(fOrder)), aSeparator,
                     GetEnumName(TypeInfo(TKMWarriorOrder), Integer(fNextOrder)), aSeparator,

@@ -433,8 +433,9 @@ function TKMHouseSketch.ObjToStringShort(const aSeparator: String = '|'): String
 begin
   if Self = nil then Exit('nil');
 
-  Result := Format('UID = %d%sType = %s%sEntrance = %s',
-                  [UID, aSeparator,
+  Result := inherited ObjToStringShort(aSeparator) +
+            Format('%sType = %s%sEntr = %s',
+                  [aSeparator,
                    GetEnumName(TypeInfo(TKMHouseType), Integer(fType)), aSeparator,
                    TypeToString(Entrance)]);
 end;
@@ -2102,14 +2103,13 @@ begin
   end;
 
 
-  Result := '|' + ObjToStringShort(aSeparator) +
-            Format('%sHasOwner = %s%sOwner = %d%sAction = %s%sRepair = %s%sIsClosedForWorker = %s%sDeliveryMode = %s%s' +
+  Result := inherited ObjToString(aSeparator) +
+            Format('%sHasOwner = %s%sAction = %s%sRepair = %s%sIsClosedForWorker = %s%sDeliveryMode = %s%s' +
                    'NewDeliveryMode = %s%sDamage = %d%s' +
                    'BuildState = %s%sBuildSupplyWood = %d%sBuildSupplyStone = %d%sBuildingProgress = %d%sDoorwayUse = %d%s' +
                    'ResIn = %d,%d,%d,%d%sResDeliveryCnt = %d,%d,%d,%d%sResOut = %d,%d,%d,%d%sResOrder = %d,%d,%d,%d%sResOutPool = %s',
                    [aSeparator,
                     BoolToStr(fHasOwner, True), aSeparator,
-                    Owner, aSeparator,
                     ActStr, aSeparator,
                     BoolToStr(fBuildingRepair, True), aSeparator,
                     BoolToStr(fIsClosedForWorker, True), aSeparator,

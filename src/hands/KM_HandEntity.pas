@@ -162,13 +162,19 @@ end;
 
 function TKMHandEntity.ObjToString(const aSeparator: String = '|'): String;
 begin
-  Result := ''; // stub implementation
+  Result := ObjToStringShort(aSeparator) +
+            Format('%sOwner = %d%sPositionF = %s',
+                   [aSeparator,
+                    Owner, aSeparator,
+                    PositionF.ToString]);
 end;
 
 
 function TKMHandEntity.ObjToStringShort(const aSeparator: String = '|'): String;
 begin
-  Result := ''; // stub implementation
+  Result := Format('UID = %d%sPos = %s',
+                   [UID, aSeparator,
+                    Position.ToString]);
 end;
 
 
