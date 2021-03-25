@@ -1906,18 +1906,14 @@ begin
 end;
 
 
-//Get vertice terrain kinds
+// Get vertice terrain kinds
 procedure TKMTerrain.GetVerticeTerKinds(const aLoc: TKMPoint; out aVerticeTerKinds: TKMTerrainKindCorners);
-
   function GetTerKind(aX, aY, aCorner: Integer): TKMTerrainKind;
   begin
     Result := tkCustom;
     if TileInMapCoords(aX, aY) then
       Result := TileCornerTerKind(aX, aY, aCorner);
   end;
-
-var
-  I, X, Y: Integer;
 begin
   aVerticeTerKinds[0] := GetTerKind(aLoc.X - 1, aLoc.Y - 1, 2); //  0 | 1
   aVerticeTerKinds[1] := GetTerKind(aLoc.X    , aLoc.Y - 1, 3); //  __|__
@@ -1926,9 +1922,9 @@ begin
 end;
 
 
-//Check if there's unit on the tile
-//Note that IsUnit refers to where unit started walking to, not the actual unit position
-//(which is what we used in unit interaction), so check all 9 tiles to get accurate result
+// Check if there's unit on the tile
+// Note that IsUnit refers to where unit started walking to, not the actual unit position
+// (which is what we used in unit interaction), so check all 9 tiles to get accurate result
 function TKMTerrain.UnitsHitTest(X,Y: Word): Pointer;
 var
   I, K: Integer;
