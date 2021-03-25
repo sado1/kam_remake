@@ -1931,8 +1931,8 @@ var
   U: TKMUnit;
 begin
   Result := nil;
-  for I := max(Y - 1, 1) to Min(Y + 1, fMapY) do
-  for K := max(X - 1, 1) to Min(X + 1, fMapX) do
+  for I := Max(Y - 1, 1) to Min(Y + 1, fMapY) do
+  for K := Max(X - 1, 1) to Min(X + 1, fMapX) do
   begin
     U := Land[I,K].IsUnit;
     if (U <> nil) and U.HitTest(X,Y) then

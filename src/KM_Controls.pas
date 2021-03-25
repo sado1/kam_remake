@@ -494,7 +494,7 @@ type
     fColumnCount: Byte;
     fRowCount: Byte;
     fColorIndex: Integer;
-    Colors:array of TColor4;
+    Colors: array of TColor4;
     fOnChange: TNotifyEvent;
     fInclRandom: Boolean;
   public
