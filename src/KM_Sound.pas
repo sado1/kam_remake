@@ -1051,7 +1051,7 @@ var
 begin
   if Self = nil then Exit(ERROR_EXIT_CODE);
 
-  Inc(fLastScriptUID); //fLastScriptUID only increases
+  Inc(fLastScriptUID); // fLastScriptUID always increases
 
   S := TKMScriptSound.Create;
 
@@ -1074,7 +1074,7 @@ begin
 end;
 
 
-//Remove sound by its index in list
+// Remove sound by its index in list
 procedure TKMScriptSoundsManager.RemoveSoundByIndex(aIndex: Integer);
 begin
   StopSound(aIndex);

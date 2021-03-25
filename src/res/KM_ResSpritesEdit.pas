@@ -475,6 +475,7 @@ var
   CompressionStream: TCompressionStream;
 begin
   // No image was loaded yet
+  //@Rey: Perhaps we should erase the file in such case, otherwise mapmaker will have to go into folder to delete rxx himself if he decided to "clear" it
   if IsEmpty then Exit;
 
   ForceDirectories(ExtractFilePath(aFileName));

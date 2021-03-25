@@ -1570,6 +1570,7 @@ begin
 end;
 
 
+//@Rey: When signature changes it is good to update the description too (with new version and sometimes reference to old name)
 //* Version: 10940
 //* Return if specified house is allowed to be selected and viewed by his allies
 function TKMScriptStates.HouseAllowAllyToSelect(aHouseID: Integer): Boolean;

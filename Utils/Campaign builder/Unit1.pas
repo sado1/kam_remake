@@ -546,6 +546,8 @@ begin
 
   C.SaveToFile(dlgSaveCampaign.FileName);
 
+  // Campaign might have no images yet
+  //@Rey: If campaign images ar cleared by mapmaker we should delete the rxx then
   if not fSprites.IsEmpty then
     fSprites.SaveToRXXFile(ExtractFilePath(dlgSaveCampaign.FileName) + 'images.rxx');
 

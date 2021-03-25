@@ -2253,9 +2253,10 @@ var
   I: Integer;
   pad: Integer;
 begin
-  pad := Byte(CanShowChat) +
-         Byte(CanShowAllies) +
-         Byte(Image_MessageLog.Visible);
+  pad := Ord(CanShowChat) +
+         Ord(CanShowAllies) +
+         Ord(Image_MessageLog.Visible);
+
   for I := 0 to MAX_VISIBLE_MSGS do
     Image_Message[I].Top := Panel_Main.Height - 48 - (I + pad) * 48;
 end;
