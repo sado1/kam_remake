@@ -176,11 +176,6 @@ uses
   KM_CommonUtils, KM_Log;
 
 
-const
-  //@Rey: This is a debug const, is it ever used as a var?
-  LOG_FONTS_RAM_USAGE = False;
-
-
 function NameToFont(const aName: string): TKMFont;
 var
   I: TKMFont;
