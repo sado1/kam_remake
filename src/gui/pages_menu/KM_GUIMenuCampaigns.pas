@@ -10,7 +10,7 @@ uses
 
 
 type
-  TKMMenuCampaigns = class (TKMMenuPageCommon)
+  TKMMenuCampaigns = class(TKMMenuPageCommon)
   private
     fOnPageChange: TKMMenuChangeEventText; //will be in ancestor class
 

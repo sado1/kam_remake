@@ -10,9 +10,9 @@ uses
 
 
 type
-  TKMMenuOptions = class (TKMMenuPageCommon)
+  TKMMenuOptions = class(TKMMenuPageCommon)
   private
-    fTempKeys: TKMKeyLibrary;
+    fTempKeys: TKMResKeys;
     fLastAlphaShadows: Boolean;
 
     fOnPageChange: TKMMenuChangeEventText; // will be in ancestor class
@@ -125,7 +125,7 @@ var
 begin
   inherited Create(gpOptions);
 
-  fTempKeys := TKMKeyLibrary.Create;
+  fTempKeys := TKMResKeys.Create;
 
   fOnPageChange := aOnPageChange;
   OnEscKeyDown := EscKeyDown;

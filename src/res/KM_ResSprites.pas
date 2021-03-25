@@ -93,6 +93,8 @@ type
 
     function GetSpriteColors(aCount: Word): TRGBArray;
 
+    function IsEmpty: Boolean;
+
     procedure ExportAll(const aFolder: string);
     procedure ExportFullImageData(const aFolder: string; aIndex: Integer; aTempList: TStringList = nil);
     procedure ExportImage(const aFile: string; aIndex: Integer);
@@ -679,7 +681,7 @@ procedure TKMSpritePack.OverloadFromFolder(const aFolder: string; aSoftenShadows
           SoftenShadows(IDList); // Soften shadows for overloaded sprites
 
         // Determine objects size only for units (used for hitbox)
-        // TODO do we need it for houses too ?
+        //todo: do we need it for houses too ?
         if aRT = rxUnits then
           DetermineImagesObjectSize(IDList);
 
@@ -881,6 +883,12 @@ begin
     Result[I-1].G := Round(G / PixelCount);
     Result[I-1].B := Round(B / PixelCount);
   end;
+end;
+
+
+function TKMSpritePack.IsEmpty: Boolean;
+begin
+  Result := fRXData.Count = 0;
 end;
 
 

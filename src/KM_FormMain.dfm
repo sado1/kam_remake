@@ -117,20 +117,10 @@ object FormMain: TFormMain
           'fntMetal'
           'fntMini'
           'fntOutline'
-          'fntArial')
+          'fntArial'
+          'fntMonospaced')
         ParentCtl3D = False
         TabOrder = 1
-        OnClick = ControlsUpdate
-      end
-      object chkMonospacedFont: TCheckBox
-        Left = 8
-        Top = 100
-        Width = 116
-        Height = 17
-        Caption = 'Monospaced font'
-        Checked = True
-        State = cbChecked
-        TabOrder = 2
         OnClick = ControlsUpdate
       end
     end

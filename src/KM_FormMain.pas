@@ -201,7 +201,6 @@ type
     cpMisc: TCategoryPanel;
     chkBevel: TCheckBox;
     rgDebugFont: TRadioGroup;
-    chkMonospacedFont: TCheckBox;
     mnExportRPL: TMenuItem;
     chkPathfinding: TCheckBox;
     chkGipAsBytes: TCheckBox;
@@ -1164,6 +1163,8 @@ procedure TFormMain.ControlsRefill;
 begin
   fUpdating := True;
 
+  //todo: Fill in rgDebugFont with font names on init, instead of hardcode
+
   try
     {$IFDEF WDC}
     chkSnowHouses.        SetCheckedWithoutClick(gGameSettings.AllowSnowHouses); // Snow houses checkbox could be updated before game
@@ -1175,7 +1176,6 @@ begin
     chkSkipSound.         SetCheckedWithoutClick(SKIP_SOUND);
     chkShowGameTick.      SetCheckedWithoutClick(SHOW_GAME_TICK);
     chkBevel.             SetCheckedWithoutClick(SHOW_DEBUG_OVERLAY_BEVEL);
-    chkMonospacedFont.    SetCheckedWithoutClick(DEBUG_TEXT_MONOSPACED);
     rgDebugFont.ItemIndex := DEBUG_TEXT_FONT_ID;
     {$ENDIF}
 
@@ -1279,7 +1279,7 @@ begin
   if allowDebugChange then
   begin
     I := tbPassability.Position;
-    tbPassability.Max := Byte(High(TKMTerrainPassability));
+    tbPassability.Max := Ord(High(TKMTerrainPassability));
     Label2.Caption := IfThen(I <> 0, PASSABILITY_GUI_TEXT[TKMTerrainPassability(I)], '');
     SHOW_TERRAIN_PASS := I;
     SHOW_TERRAIN_WIRES := chkShowWires.Checked;
@@ -1452,7 +1452,6 @@ begin
   if allowDebugChange then
   begin
     SHOW_DEBUG_OVERLAY_BEVEL := chkBevel.Checked;
-    DEBUG_TEXT_MONOSPACED := chkMonospacedFont.Checked;
     DEBUG_TEXT_FONT_ID := rgDebugFont.ItemIndex;
   end;
 

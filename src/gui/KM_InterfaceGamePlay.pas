@@ -23,10 +23,10 @@ const
 
 type
   //tbNone is the last, since we use Byte(Value) at some places
-  //TODO refactor
+  //todo: refactor
   TKMTabButtons = (tbBuild, tbRatio, tbStats, tbMenu, tbNone);
 
-  TKMGamePlayInterface = class (TKMUserInterfaceGame)
+  TKMGamePlayInterface = class(TKMUserInterfaceGame)
   private
     fAlerts: TKMAlerts;
 
@@ -838,8 +838,7 @@ begin
   Bevel_DebugInfo.BackAlpha := 0.5;
   Bevel_DebugInfo.Hitable := False;
   Bevel_DebugInfo.Hide;
-  Label_DebugInfo := TKMLabel.Create(Panel_Main, 224+8, 133, '', fntMini, taLeft);
-  Label_DebugInfo.Monospaced := True;
+  Label_DebugInfo := TKMLabel.Create(Panel_Main, 224+8, 133, '', fntMonospaced, taLeft);
   Label_DebugInfo.Hide;
 
 { I plan to store all possible layouts on different pages which gets displayed one at a time }
@@ -1152,7 +1151,7 @@ begin
     Button_ReplaySaveAt     := TKMButton.Create(Panel_ReplayCtrl,125, 0, 24, 24, 592, rxGui, bsGame);
 
     Button_ShowStatsReplay  := TKMButton.Create(Panel_ReplayCtrl, 185 - 24, 0, 24, 24, 669, rxGui, bsGame);
-    //TODO: Button_ReplayFF       := TKMButton.Create(Panel_ReplayCtrl,125, 24, 24, 24, 393, rxGui, bsGame);
+    //todo: Button_ReplayFF       := TKMButton.Create(Panel_ReplayCtrl,125, 24, 24, 24, 393, rxGui, bsGame);
     Button_ReplayRestart.OnClick := ReplayClick;
     Button_ReplayPause.OnClick   := ReplayClick;
     Button_ReplayStep.OnClick    := ReplayClick;
@@ -2254,7 +2253,8 @@ var
   I: Integer;
   pad: Integer;
 begin
-  pad := Byte(fUIMode in [umMP, umSpectate]) * 2 +
+  pad := Byte(CanShowChat) +
+         Byte(CanShowAllies) +
          Byte(Image_MessageLog.Visible);
   for I := 0 to MAX_VISIBLE_MSGS do
     Image_Message[I].Top := Panel_Main.Height - 48 - (I + pad) * 48;
@@ -2467,6 +2467,10 @@ procedure TKMGamePlayInterface.UpdateMessageImages;
 var
   I: Integer;
 begin
+  Image_MessageLog.Top := Panel_Main.Height - 48
+                                            - IfThen(CanShowAllies, 48)
+                                            - IfThen(CanShowChat, 48);
+
   for I := 0 to MAX_VISIBLE_MSGS do
     Image_Message[I].Top := Panel_Main.Height - 48 - I * 48
                             - IfThen(CanShowChat, 48)
@@ -3714,7 +3718,8 @@ begin
     and not HasLostMPGame
     and not fGuiGameUnit.JoiningGroups
     and not fPlacingBeacon
-    and (gMySpectator.Selected is TKMUnitGroup) then
+    and (gMySpectator.Selected is TKMUnitGroup)
+    and gMySpectator.IsSelectedMyObj then
   begin
     group := TKMUnitGroup(gMySpectator.Selected);
     obj := gMySpectator.HitTestCursor;
@@ -3892,10 +3897,8 @@ begin
     // Only own and ally units/houses can be selected
     if (entity.Owner <> -1) and
       ((entity.Owner = gMySpectator.HandID)
-      or ((ALLOW_SELECT_ALLY_UNITS
-          or ((entity is TKMHouse) and TKMHouse(entity).AllowAllyToView))
-        and (gMySpectator.Hand.Alliances[entity.Owner] = atAlly))
-      or (ALLOW_SELECT_ENEMIES and (gMySpectator.Hand.Alliances[entity.Owner] = atEnemy)) // Enemies can be selected for debug
+      or ALLOW_SELECT_ALL
+      or (entity.AllowAllyToSelect and (gMySpectator.Hand.Alliances[entity.Owner] = atAlly))
       or (fUIMode in [umReplay, umSpectate])) then
     begin
       gRes.Cursors.Cursor := kmcInfo;
@@ -3903,7 +3906,8 @@ begin
     end;
   end;
 
-  if (gMySpectator.Selected.IsGroup)
+  if gMySpectator.Selected.IsGroup
+    and gMySpectator.IsSelectedMyObj
     and (fUIMode in [umSP, umMP]) and not HasLostMPGame
     and not gMySpectator.Hand.InCinematic
     and (gMySpectator.FogOfWar.CheckTileRevelation(gGameCursor.Cell.X, gGameCursor.Cell.Y) > 0) then
@@ -4552,15 +4556,11 @@ begin
 
   Label_DebugInfo.Caption := S;
   Label_DebugInfo.Visible := (Trim(S) <> '');
-  Label_DebugInfo.Monospaced := DEBUG_TEXT_MONOSPACED;
 
-  Assert(InRange(DEBUG_TEXT_FONT_ID, Byte(Low(TKMFont)), Byte(High(TKMFont))));
+  Assert(InRange(DEBUG_TEXT_FONT_ID, Ord(Low(TKMFont)), Ord(High(TKMFont))));
   Label_DebugInfo.Font := TKMFont(DEBUG_TEXT_FONT_ID);
 
-  if Label_DebugInfo.Monospaced then
-    textSize := gRes.Fonts[Label_DebugInfo.Font].GetMonospacedTextSize(S)
-  else
-    textSize := gRes.Fonts[Label_DebugInfo.Font].GetTextSize(S);
+  textSize := gRes.Fonts[Label_DebugInfo.Font].GetTextSize(S);
 
   Bevel_DebugInfo.Width := IfThen(textSize.X <= 1, 0, textSize.X + 20);
   Bevel_DebugInfo.Height := IfThen(textSize.Y <= 1, 0, textSize.Y + 20);

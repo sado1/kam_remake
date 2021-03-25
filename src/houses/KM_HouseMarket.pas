@@ -551,6 +551,7 @@ var
   WT: TKMWareType;
   len: Integer;
 begin
+  if Self = nil then Exit('nil');
 
   resInStr := '';
   resOutStr := '';

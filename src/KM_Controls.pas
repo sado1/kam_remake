@@ -414,7 +414,6 @@ type
   protected
     function GetIsPainted: Boolean; override;
   public
-    Monospaced: Boolean;
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; const aCaption: UnicodeString;
                        aFont: TKMFont; aTextAlign: TKMTextAlign; aPaintLayer: Integer = 0); overload;
     constructor Create(aParent: TKMPanel; aLeft,aTop: Integer; const aCaption: UnicodeString; aFont: TKMFont;
@@ -846,7 +845,7 @@ type
   end;
 
 
-  TKMReplayBar = class (TKMPercentBar)
+  TKMReplayBar = class(TKMPercentBar)
   private
     fIsDirty: Boolean; //True is Marks are not not sorted yet
     fPosition: Integer;
@@ -1243,7 +1242,7 @@ type
     Offset: Word; //Offsets are easier to handle than widths
   end;
 
-  TKMListHeader = class (TKMControl)
+  TKMListHeader = class(TKMControl)
   private
     fFont: TKMFont;
     fCount: Integer;
@@ -3271,9 +3270,8 @@ begin
   fFontColor := $FFFFFFFF;
   fTextAlign := aTextAlign;
   fAutoWrap := False;
-  fTabWidth := TAB_WIDTH;
+  fTabWidth := FONT_TAB_WIDTH;
   SetCaption(aCaption);
-  Monospaced := False;
 end;
 
 
@@ -3375,7 +3373,7 @@ begin
   if fEnabled then Col := FontColor
               else Col := $FF888888;
 
-  TKMRenderUI.WriteText(AbsLeft, AbsTop, Width, fText, fFont, fTextAlign, Col, False, False, False, fTabWidth, PaintingBaseLayer, Monospaced);
+  TKMRenderUI.WriteText(AbsLeft, AbsTop, Width, fText, fFont, fTextAlign, Col, False, False, False, fTabWidth, PaintingBaseLayer);
 
   if fStrikethrough then
     TKMRenderUI.WriteShape(TextLeft, AbsTop + fTextSize.Y div 2 - 2, fTextSize.X, 3, Col, $FF000000);

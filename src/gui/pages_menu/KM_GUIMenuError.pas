@@ -7,7 +7,7 @@ uses
 
 
 type
-  TKMMenuError = class (TKMMenuPageCommon)
+  TKMMenuError = class(TKMMenuPageCommon)
   private
     fOnPageChange: TKMMenuChangeEventText;
     procedure BackClick(Sender: TObject);

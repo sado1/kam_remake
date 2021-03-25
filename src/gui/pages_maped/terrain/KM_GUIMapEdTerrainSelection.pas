@@ -10,7 +10,7 @@ uses
    KM_GUIMapEdRMG;
 
 type
-  TKMMapEdTerrainSelection = class (TKMMapEdSubMenuPage)
+  TKMMapEdTerrainSelection = class(TKMMapEdSubMenuPage)
   private
     fRMGPopUp: TKMMapEdRMG;
     procedure SelectionClick(Sender: TObject);

@@ -10,7 +10,7 @@ uses
 
 
 type
-  TKMMenuMultiplayer = class (TKMMenuPageCommon)
+  TKMMenuMultiplayer = class(TKMMenuPageCommon)
   private
     fOnPageChange: TKMMenuChangeEventText; //will be in ancestor class
 

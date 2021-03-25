@@ -70,11 +70,12 @@ end;
 
 procedure TKMSettings.SaveToDefaultFile;
 var
-  path: string;
+  saveFolder, path: string;
 begin
-  path := GetDocumentsSavePath;
-  ForceDirectories(path);
-  SaveToFile(path + GetDefaultSettingsName);
+  saveFolder := GetDocumentsSavePath;
+  ForceDirectories(saveFolder);
+  path := saveFolder + GetDefaultSettingsName;
+  SaveToFile(path);
   gLog.AddTime(GetSettingsName + ' saved to ' + path);
 end;
 

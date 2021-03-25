@@ -545,7 +545,9 @@ begin
   if not dlgSaveCampaign.Execute then Exit;
 
   C.SaveToFile(dlgSaveCampaign.FileName);
-  fSprites.SaveToRXXFile(ExtractFilePath(dlgSaveCampaign.FileName) + 'images.rxx');
+
+  if not fSprites.IsEmpty then
+    fSprites.SaveToRXXFile(ExtractFilePath(dlgSaveCampaign.FileName) + 'images.rxx');
 
   if FileExists(ExtractFilePath(dlgSaveCampaign.FileName) +
   Format(TEMPLATE_LIBX_FILE_TEXT, [Locale])) then

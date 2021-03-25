@@ -84,16 +84,16 @@ begin
   inherited;
   fRXData.Count := aCount;
 
-  SetLength(fRXData.Data,     aCount);
+  SetLength(fRXData.Data, aCount);
 end;
 
 
-//Convert paletted data into RGBA and select Team color layer from it
+// Convert paletted data into RGBA and select Team color layer from it
 procedure TKMSpritePackEdit.Expand;
-  function HouseWIP(aID: Integer): TKMPaletteInfo;
+  function HouseWIP(aID: Integer): TKMPaletteSpec;
   const
-    //These are sprites with house building steps
-    WIP: array[0..55] of word = (3,4,25,43,44,116,118,119,120,121,123,126,127,136,137,140,141,144,145,148,149,213,214,237,238,241,242,243,246,247,252,253,257,258,275,276,336,338,360,361,365,366,370,371,380,381,399,400,665,666,670,671,1658,1660,1682,1684);
+    // These are sprites with house building steps
+    WIP: array[0..55] of Word = (3,4,25,43,44,116,118,119,120,121,123,126,127,136,137,140,141,144,145,148,149,213,214,237,238,241,242,243,246,247,252,253,257,258,275,276,336,338,360,361,365,366,370,371,380,381,399,400,665,666,670,671,1658,1660,1682,1684);
   var
     I: Byte;
   begin
@@ -101,16 +101,13 @@ procedure TKMSpritePackEdit.Expand;
 
     for I := 0 to High(WIP) do
     if aID = WIP[I] then
-    begin
-      Result := fPalettes[pallin];
-      Exit;
-    end;
+      Exit(fPalettes[pallin]);
   end;
 var
   H: Integer;
   K, I: Integer;
-  Palette: TKMPaletteInfo;
-  L: byte;
+  Palette: TKMPaletteSpec;
+  L: Byte;
   Pixel: Integer;
 begin
   with fRXData do
@@ -120,7 +117,8 @@ begin
     case fRT of
       rxHouses:   Palette := HouseWIP(H);
       rxGuiMain:  Palette := fPalettes[RX5Pal[H]];
-      else        Palette := fPalettes.DefaultPalette;
+    else
+      Palette := fPalettes.DefaultPalette;
     end;
 
     if Flag[H] = 1 then
@@ -476,6 +474,9 @@ var
   OutputStream: TFileStream;
   CompressionStream: TCompressionStream;
 begin
+  // No image was loaded yet
+  if IsEmpty then Exit;
+
   ForceDirectories(ExtractFilePath(aFileName));
 
   InputStream := TMemoryStream.Create;

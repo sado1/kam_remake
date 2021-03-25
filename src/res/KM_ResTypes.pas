@@ -10,7 +10,9 @@ type
     wtSkin,    wtShield,  wtMetalShield, wtArmor,     wtMetalArmor,
     wtAxe,     wtSword,   wtPike,        wtHallebard, wtBow,
     wtArbalet, wtHorse,   wtFish,
-    wtAll,     wtWarfare, wtFood //Special ware types
+
+    // Special ware types
+    wtAll,     wtWarfare, wtFood
   );
 
 

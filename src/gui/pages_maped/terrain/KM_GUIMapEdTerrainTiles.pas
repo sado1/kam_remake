@@ -16,7 +16,7 @@ const
   TABLE_ELEMS = 608;
 
 type
-  TKMMapEdTerrainTiles = class (TKMMapEdSubMenuPage)
+  TKMMapEdTerrainTiles = class(TKMMapEdSubMenuPage)
   private
     fLastTile: Word;
 

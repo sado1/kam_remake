@@ -7,7 +7,7 @@ uses
 
 
 type
-  TKMMenuMain = class (TKMMenuPageCommon)
+  TKMMenuMain = class(TKMMenuPageCommon)
   private
     fOnPageChange: TKMMenuChangeEventText;
     procedure ButtonClick(Sender: TObject);

@@ -30,7 +30,7 @@ type
     procedure SetFOWIndex(const Value: TKMHandID);
     procedure UpdateFogOfWarIndex;
     function GetLastSpecSelectedEntity: TKMHandEntity;
-    procedure UpdateNewSelected(var aNewSelected: TKMHandEntity; aAllowSelectAllies: Boolean = False); overload;
+    procedure UpdateNewSelected(var aNewSelected: TKMHandEntity); overload;
     function GetSelectedHandID: TKMHandID;
   public
     constructor Create(aHandIndex: TKMHandID);
@@ -39,6 +39,7 @@ type
     property HighlightDebug: TKMHandEntity read fHighlightDebug write fHighlightDebug;
     property Selected: TKMHandEntity read GetSelected write SetSelected;
     property LastSelected: TKMHandEntity read fLastSelected;
+    procedure NilLastSelected;
     property IsSelectedMyObj: Boolean read fIsSelectedMyObj write fIsSelectedMyObj;
     function Hand: TKMHand;
     property HandID: TKMHandID read fHandIndex write SetHandIndex;
@@ -217,7 +218,7 @@ begin
 end;
 
 
-procedure TKMSpectator.UpdateNewSelected(var aNewSelected: TKMHandEntity; aAllowSelectAllies: Boolean = False);
+procedure TKMSpectator.UpdateNewSelected(var aNewSelected: TKMHandEntity);
 begin
   if gGameParams.Mode in [gmMultiSpectate, gmMapEd, gmReplaySingle, gmReplayMulti] then
     Exit;
@@ -226,9 +227,8 @@ begin
   begin
     if aNewSelected.Owner <> fHandIndex then  // check if we selected our unit/ally's or enemy's
     begin
-      if ((ALLOW_SELECT_ALLY_UNITS or aAllowSelectAllies) 
-            and (Hand.Alliances[aNewSelected.Owner] = atAlly))
-          or (ALLOW_SELECT_ENEMIES and (Hand.Alliances[aNewSelected.Owner] = atEnemy)) then // Enemies can be selected for debug
+      if ALLOW_SELECT_ALL
+        or (aNewSelected.AllowAllyToSelect and (Hand.Alliances[aNewSelected.Owner] = atAlly)) then
         fIsSelectedMyObj := False
       else
         aNewSelected := nil;
@@ -276,7 +276,7 @@ begin
 
       //In-game player can select only own and ally Units
       if (newSelected is TKMHouse) then
-        UpdateNewSelected(newSelected, TKMHouse(newSelected).AllowAllyToView);
+        UpdateNewSelected(newSelected);
 
       //Don't allow the player to select destroyed houses
       if (newSelected is TKMHouse) and TKMHouse(newSelected).IsDestroyed then
@@ -291,7 +291,7 @@ begin
   begin
     newSelected := Selected; //To avoid nil-ing of fSelected
     //In-game player can select only own and ally Units
-    UpdateNewSelected(newSelected, fSelected is TKMHouse); //Updates fIsSelectedMyObj
+    UpdateNewSelected(newSelected); //Updates fIsSelectedMyObj
   end;
 
   // In a replay we want in-game statistics (and other things) to be shown for the owner of the last select object
@@ -316,7 +316,6 @@ begin
     if (Selected <> nil) and (UID <> UID_NONE) then
       fLastSpecSelectedObjUID[fHandIndex] := UID;
   end;
-
 end;
 
 
@@ -357,6 +356,12 @@ begin
   //We don't increase PointersCount of object because of savegames identicality over MP
   //Objects report on their destruction and set it to nil
   fSelected := Value;
+end;
+
+
+procedure TKMSpectator.NilLastSelected;
+begin
+  fLastSelected := nil;
 end;
 
 

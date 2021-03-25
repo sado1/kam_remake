@@ -8,7 +8,7 @@ uses
 
 
 type
-  TKMMenuSinglePlayer = class (TKMMenuPageCommon)
+  TKMMenuSinglePlayer = class(TKMMenuPageCommon)
   private
     fOnPageChange: TKMMenuChangeEventText;
 

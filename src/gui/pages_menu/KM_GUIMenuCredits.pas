@@ -11,7 +11,7 @@ uses
 
 
 type
-  TKMMenuCredits = class (TKMMenuPageCommon)
+  TKMMenuCredits = class(TKMMenuPageCommon)
   private
     fOnPageChange: TKMMenuChangeEventText;
 

@@ -9,7 +9,7 @@ uses
 
 
 type
-  TKMMenuLoad = class (TKMMenuPageCommon)
+  TKMMenuLoad = class(TKMMenuPageCommon)
   private
     fOnPageChange: TKMMenuChangeEventText;
 

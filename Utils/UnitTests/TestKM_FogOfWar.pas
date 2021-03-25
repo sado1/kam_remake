@@ -26,7 +26,7 @@ implementation
 
 procedure TestTKMFogOfWar.SetUp;
 begin
-  FKMFogOfWar := TKMFogOfWar.Create(8, 8);
+  FKMFogOfWar := TKMFogOfWar.Create(8, 8, True);
 end;
 
 procedure TestTKMFogOfWar.TearDown;
@@ -132,7 +132,7 @@ end;
 
 procedure TestTKMFogOfWar.TestUpdateState;
 begin
-  FKMFogOfWar.UpdateState;
+  FKMFogOfWar.UpdateState(True);
   // TODO: Validate method results
 end;
 

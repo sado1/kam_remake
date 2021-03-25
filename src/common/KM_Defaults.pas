@@ -129,8 +129,8 @@ var
   DEBUG_LOGS              :Boolean = True;  //Log debug info
   DEBUG_SCRIPTING_EXEC    :Boolean = False; //Use slow debug executor (about 3 times slower! never use on release version). Using it we can find exact position of execution time error (row/col/pos/module)
   SKIP_RNG_CHECKS_FOR_SOME_GIC: Boolean = True; //Skip rng checks for Autosave and few other commands to have same AI city with predefined seed + mapconfig
-  ALLOW_SELECT_ALLY_UNITS :Boolean = DEBUG_CFG; //Do we allow to select ally units or groups
-  ALLOW_SELECT_ENEMIES    :Boolean = DEBUG_CFG; //Do we allow to select enemies houses/units/groups
+  ALLOW_SELECT_ALLIES     :Boolean = True;  //Do we allow to select ally units or groups
+  ALLOW_SELECT_ALL        :Boolean = DEBUG_CFG; //Do we allow to select all entities (allies and enemies)
   GAME_NO_UPDATE_ON_TIMER :Boolean = False; //Block game update by timer (only allow to update it manually)
   GAME_SAVE_STRIP_FOR_CRC :Boolean = False; //Strip unsynced data from Game saves, to compare saves CRC
   ALLOW_LOAD_UNSUP_VERSION_SAVE:
@@ -231,7 +231,7 @@ var
   MP_RESULTS_IN_SP        :Boolean = False; //Display each players stats in SP
   SHOW_DEBUG_OVERLAY_BEVEL:Boolean = True;  //Show debug text overlay Bevel (for better text readability)
   DEBUG_TEXT_FONT_ID      :Integer = 4;     //Debug font ID (4 is fntMini)
-  DEBUG_TEXT_MONOSPACED   :Boolean = True;  //Debug font is drawn as monospaced
+
   {Gameplay}
   LOBBY_SET_SPECS_DEFAULT :Boolean = DEBUG_CFG; //Set 'Allow spectators' flag in the lobby by default
   LOBBY_HOST_AS_SPECTATOR :Boolean = DEBUG_CFG; //Host lobby as spectator by default
@@ -240,7 +240,7 @@ var
   PAUSE_GAME_BEFORE_TICK  :Integer = -1;    //Pause after specified game tick
   MAKE_SAVEPT_BEFORE_TICK :Integer = -1;    //Make savepoint after a certain tick (for both game and replay)
   ALLOW_SAVE_IN_REPLAY    :Boolean = DEBUG_CFG; //Allow to save game from replay, good for debug
-  SAVE_GAME_AS_TEXT       :Boolean = True; //Save game serialized //Todo DEBUG. set to False before releases
+  SAVE_GAME_AS_TEXT       :Boolean = True; {Save game serialized} //todo: DEBUG. set to False before releases
 
   DEBUG_TEXT              :String = '';    //Debug text
   DEBUG_VALUE             :Integer = 0;    //Debug value

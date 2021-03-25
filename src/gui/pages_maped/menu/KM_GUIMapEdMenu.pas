@@ -13,7 +13,7 @@ uses
    KM_CommonTypes;
 
 type
-  TKMMapEdMenu = class (TKMMapEdMenuPage)
+  TKMMapEdMenu = class(TKMMapEdMenuPage)
   private
     fGuiMenuResize: TKMMapEdMenuResize;
     fGuiMenuQuickPlay: TKMMapEdMenuQuickPlay;

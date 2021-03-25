@@ -8,7 +8,7 @@ uses
 
 
 type
-  TKMMenuCampaign = class (TKMMenuPageCommon)
+  TKMMenuCampaign = class(TKMMenuPageCommon)
   private
     fOnPageChange: TKMMenuChangeEventText; //will be in ancestor class
 

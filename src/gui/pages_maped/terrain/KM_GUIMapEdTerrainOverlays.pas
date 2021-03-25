@@ -8,7 +8,7 @@ uses
 
 
 type
-  TKMMapEdTerrainOverlays = class (TKMMapEdSubMenuPage)
+  TKMMapEdTerrainOverlays = class(TKMMapEdSubMenuPage)
   private
     fLastOverlay: Word;
 

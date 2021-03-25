@@ -582,7 +582,7 @@ var
   // Mirror tiles arrays, according to the tiles corners terrain kinds
   // If no mirror tile is found, then self tile is set by default
   // for tiles below 256 we set default tiles (themselfs)
-  ResTileset_MirrorTilesH: array [0..TILES_CNT-1] of Integer; // mirror horisontally
+  ResTileset_MirrorTilesH: array [0..TILES_CNT-1] of Integer; // mirror horizontally
   ResTileset_MirrorTilesV: array [0..TILES_CNT-1] of Integer; // mirror vertically
 
 type
@@ -647,9 +647,9 @@ uses
   KM_CommonUtils, KM_CommonClassesExt;
 
 const
-  TILES_NOT_ALLOWED_TO_SET: array [0..16] of Word = (
+  TILES_NOT_ALLOWED_TO_SET: array [0..13] of Word = (
     55,59,60,61,62,63,              // wine and corn
-    189,169,185,                    // duplicates of 108,109,110
+    //189,169,185,                  // duplicates of 108,109,110
     248,249,250,251,252,253,254,255 // roads and overlays
   );
 

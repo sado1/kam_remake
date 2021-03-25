@@ -17,7 +17,7 @@ type
   TKMTerrainTab = (ttBrush, ttHeights, ttTile, ttOverlays, ttObject, ttSelection);
 
   //Collection of terrain editing controls
-  TKMMapEdTerrain = class (TKMMapEdMenuPage)
+  TKMMapEdTerrain = class(TKMMapEdMenuPage)
   private
     fOnPageChange: TNotifyEvent;
 

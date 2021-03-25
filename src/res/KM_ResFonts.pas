@@ -9,13 +9,37 @@ uses
 
 
 const
-  TAB_WIDTH = 30;
+  FONT_TAB_WIDTH = 30;
 
 type
   TKMFont = (
-    fntAntiqua, fntGame, fntGrey, fntMetal, fntMini, fntOutline, fntArial
+    fntAntiqua,
+    fntGame,
+    fntGrey,
+    fntMetal,
+    fntMini,
+    fntOutline,
+    fntArial, // Arial for MP chat
+    fntMonospaced // Debug overlay font (Consolas 8. Set WordSpacing to any Char.Width)
   );
 
+const
+  FontTypeName: array [TKMFont] of string = (
+    // Used in:
+    //  - data\gfx\fonts\filenames
+    //  - utils\FontX Generator\fonts.xml
+
+    'antiqua',
+    'game',
+    'grey',
+    'metal',
+    'mini',
+    'outline',
+    'arial',
+    'consolas8'
+  );
+
+type
   TKMFontLoadLevel = (fllFull, fllMinimal);
   {
   Removed fonts that were in KaM:
@@ -33,21 +57,24 @@ type
   }
 
   TKMFontInfo = record
-    FontFile: string;
+  public
     Pal: TKMPal; //Palette fnt needs
     TexMode: TTexFormat; //Format font texture needs to be in
-    MaxAnsiCharWidth: Byte; //max char width amond ansi chars (0-255), pre-calculated
-    MaxCharWidth: Byte;     //max char width among all chars in the font, pre-calculated
   end;
 
   TKMLetter = packed record
+  public
     Width, Height: Word;
     YOffset: SmallInt;
     AtlasId: Word; //Was Unknown field, we use it for multi-atlas fonts to mark the letters location
-    u1,v1,u2,v2: Single; //Location within texture atlas
+    u1, v1, u2, v2: Single; //Location within texture atlas
   end;
 
-  TKMFontData = class
+  TKMFontSpec = class
+  const
+    DEFAULT_EXT = 'fntx';
+    FNTX_HEAD: AnsiString = 'FNTX';
+    FONTS_FOLDER = 'data' + PathDelim + 'gfx' + PathDelim + 'fonts' + PathDelim;
   private
     fFont: TKMFont;
     function GetTexID(aIndex: Integer): Cardinal;
@@ -67,14 +94,14 @@ type
     fIsUnicode: Boolean;
 
     fMaxWidth: Integer;
-    rawData: array [0..High(Word)] of array of Byte; //Raw data for ANSI fonts
+    fRawData: array [0..High(Word)] of array of Byte; //Raw data for ANSI fonts
   public
     Used: array [0..High(Word)] of Byte;
     Letters: array [0..High(Word)] of TKMLetter;
 
     constructor Create(aFont: TKMFont);
 
-    procedure LoadFont(const aFileName: string; aPalette: TKMPaletteInfo);
+    procedure LoadFont(const aFileName: string; aPalette: TKMPaletteSpec);
     procedure LoadFontX(const aFileName: string; aLoadLevel: TKMFontLoadLevel = fllFull);
     procedure GenerateTextures(aTexMode: TTexFormat);
     procedure Compact;
@@ -93,17 +120,15 @@ type
     property BaseHeight: SmallInt read fBaseHeight;
     property WordSpacing: SmallInt read fWordSpacing;
 
-    function GetCharWidth(aChar: WideChar; aConsiderEolSymbol: Boolean = False; aMonospaced: Boolean = False): Integer;
+    function GetCharWidth(aChar: WideChar; aConsiderEolSymbol: Boolean = False): Integer;
     function WordWrap(aText: UnicodeString; aMaxPxWidth: Integer; aForced: Boolean; aIndentAfterNL: Boolean;
-             aTabWidth: Integer = TAB_WIDTH): UnicodeString;
+      aTabWidth: Integer = FONT_TAB_WIDTH): UnicodeString;
     function CharsThatFit(const aText: UnicodeString; aMaxPxWidth: Integer; aRound: Boolean = False;
-                          aConsiderEolSymbol: Boolean = False; aTabWidth: Integer = TAB_WIDTH): Integer;
-    function GetMonospacedTextSize(const aText: UnicodeString; aCountMarkup: Boolean = False; aConsiderEolSymbol: Boolean = False;
-                                   aTabWidth: Integer = TAB_WIDTH): TKMPoint;
+      aConsiderEolSymbol: Boolean = False; aTabWidth: Integer = FONT_TAB_WIDTH): Integer;
     function GetTextSize(const aText: UnicodeString; var aLineCount: Integer; aCountMarkup: Boolean = False;
-                         aConsiderEolSymbol: Boolean = False; aTabWidth: Integer = TAB_WIDTH; aMonospaced: Boolean = False): TKMPoint; overload;
+      aConsiderEolSymbol: Boolean = False; aTabWidth: Integer = FONT_TAB_WIDTH): TKMPoint; overload;
     function GetTextSize(const aText: UnicodeString; aCountMarkup: Boolean = False; aConsiderEolSymbol: Boolean = False;
-                         aTabWidth: Integer = TAB_WIDTH; aMonospaced: Boolean = False): TKMPoint; overload;
+      aTabWidth: Integer = FONT_TAB_WIDTH): TKMPoint; overload;
     function GetMaxPrintWidthOfStrings(aStrings: array of string): Integer;
   end;
 
@@ -112,13 +137,13 @@ type
   TKMResFonts = class
   private
     fLoadLevel: TKMFontLoadLevel;
-    fFontData: array [TKMFont] of TKMFontData;
-    function GetFontData(aIndex: TKMFont): TKMFontData;
+    fFontData: array [TKMFont] of TKMFontSpec;
+    function GetFontData(aIndex: TKMFont): TKMFontSpec;
   public
     constructor Create;
     destructor Destroy; override;
 
-    property FontData[aIndex: TKMFont]: TKMFontData read GetFontData; default;
+    property FontData[aIndex: TKMFont]: TKMFontSpec read GetFontData; default;
     property LoadLevel: TKMFontLoadLevel read fLoadLevel;
     class function GuessPalette(const aFileName: string): TKMPal;
 
@@ -128,17 +153,21 @@ type
 
 
 const
-  PLACEHOLDER_CHAR = 0; //Box, used for characters missing from font
+  PLACEHOLDER_CHAR = 0; // Box, used for characters missing from font
 
   FONT_INFO: array [TKMFont] of TKMFontInfo = (
-    (FontFile: 'antiqua';     Pal: pal0;         TexMode: tfRGB5A1; MaxAnsiCharWidth: 15; MaxCharWidth: 21),
-    (FontFile: 'game';        Pal: palbw;        TexMode: tfAlpha8; MaxAnsiCharWidth: 17; MaxCharWidth: 18),
-    (FontFile: 'grey';        Pal: pal0;         TexMode: tfRGB5A1; MaxAnsiCharWidth: 19; MaxCharWidth: 20),
-    (FontFile: 'metal';       Pal: pal0;         TexMode: tfRGB5A1; MaxAnsiCharWidth: 14; MaxCharWidth: 21),
-    (FontFile: 'mini';        Pal: palbw;        TexMode: tfAlpha8; MaxAnsiCharWidth: 7;  MaxCharWidth: 11),
-    (FontFile: 'outline';     Pal: pal0;         TexMode: tfRGB5A1; MaxAnsiCharWidth: 21; MaxCharWidth: 31),
-    (FontFile: 'arial';       Pal: pal0;         TexMode: tfRGBA8;  MaxAnsiCharWidth: 17; MaxCharWidth: 20)
+    (Pal: pal0;  TexMode: tfRGB5A1),
+    (Pal: palbw; TexMode: tfAlpha8),
+    (Pal: pal0;  TexMode: tfRGB5A1),
+    (Pal: pal0;  TexMode: tfRGB5A1),
+    (Pal: palbw; TexMode: tfAlpha8),
+    (Pal: pal0;  TexMode: tfRGB5A1),
+    (Pal: pal0;  TexMode: tfRGBA8 ),
+    (Pal: pal0;  TexMode: tfRGBA8 )
   );
+
+
+function NameToFont(const aName: string): TKMFont;
 
 
 implementation
@@ -147,15 +176,23 @@ uses
   KM_CommonUtils, KM_Log;
 
 
-const
-  FONTS_FOLDER = 'data' + PathDelim + 'gfx' + PathDelim + 'fonts' + PathDelim;
-
 var
-  LOG_EXTRA_FONTS: Boolean = False;
+  LOG_FONTS_RAM_USAGE: Boolean = False;
 
 
-{ TKMFontData }
-constructor TKMFontData.Create(aFont: TKMFont);
+function NameToFont(const aName: string): TKMFont;
+var
+  I: TKMFont;
+begin
+  Result := fntAntiqua;
+  for I := Low(TKMFont) to High(TKMFont) do
+  if FontTypeName[I] = aName then
+    Exit(I);
+end;
+
+
+{ TKMFontSpec }
+constructor TKMFontSpec.Create(aFont: TKMFont);
 begin
   inherited Create;
 
@@ -163,22 +200,22 @@ begin
 end;
 
 
-procedure TKMFontData.LoadFont(const aFileName: string; aPalette: TKMPaletteInfo);
+procedure TKMFontSpec.LoadFont(const aFileName: string; aPalette: TKMPaletteSpec);
 const
-  TEX_SIZE = 256; //Static texture size, all KaM fonts fit within 256^2 space
-  FONT_INTERLINE = 5; //Spacing between lines of text
+  FONT_TEX_SIZE = 256; // Static texture size, all KaM fonts fit within 256^2 space
+  FONT_INTERLINE = 5; // Spacing between lines of text
   PAD = 1;
 var
   S: TMemoryStream;
   fileName: string;
   I, K, M, L: Integer;
-  MaxHeight: Integer;
+  maxHeight: Integer;
   pX, pY: Integer;
 begin
-  MaxHeight := 0;
   if not FileExists(aFileName) then
     Exit;
 
+  maxHeight := 0;
   S := TMemoryStream.Create;
   S.LoadFromFile(aFileName);
 
@@ -212,21 +249,21 @@ begin
     S.Read(Letters[I].YOffset, 2);
     S.Seek(2, soFromCurrent); //Unknown field
 
-    MaxHeight := Math.max(MaxHeight, Letters[I].Height);
+    maxHeight := Math.max(maxHeight, Letters[I].Height);
 
     if Letters[I].Width * Letters[I].Height = 0 then
       raise Exception.Create('Font data Width * Height = 0'); //Font01.fnt seems to be damaged..
 
-    SetLength(rawData[I], Letters[I].Width*Letters[I].Height);
-    S.Read(rawData[I,0], Letters[I].Width*Letters[I].Height);
+    SetLength(fRawData[I], Letters[I].Width * Letters[I].Height);
+    S.Read(fRawData[I,0], Letters[I].Width * Letters[I].Height);
   end;
   S.Free;
 
   //Compile texture
   pX := PAD;
   pY := PAD;
-  fTexSizeX := TEX_SIZE * (1 + Byte(fIsUnicode) * 3); //256 / 1024
-  fTexSizeY := TEX_SIZE * (1 + Byte(fIsUnicode) * 1); //256 / 512
+  fTexSizeX := IfThen(fIsUnicode, FONT_TEX_SIZE * 4, FONT_TEX_SIZE); //256 / 1024
+  fTexSizeY := IfThen(fIsUnicode, FONT_TEX_SIZE * 2, FONT_TEX_SIZE); //256 / 512
   fAtlasCount := 1;
   SetLength(fAtlases, 0);
   SetLength(fAtlases, fAtlasCount);
@@ -239,14 +276,14 @@ begin
     if pX + Letters[I].Width + PAD > fTexSizeX then
     begin
       pX := PAD;
-      Inc(pY, MaxHeight + PAD);
+      Inc(pY, maxHeight + PAD);
     end;
 
     //Fill in colors
     for L := 0 to Letters[I].Height - 1 do
     for M := 0 to Letters[I].Width - 1 do
       fAtlases[fAtlasCount - 1].TexData[(pY + L) * fTexSizeX + pX + M] :=
-        aPalette.Color32(rawData[I, L * Letters[I].Width + M]);
+        aPalette.Color32(fRawData[I, L * Letters[I].Width + M]);
 
     Letters[I].u1 := pX / fTexSizeX;
     Letters[I].v1 := pY / fTexSizeY;
@@ -258,9 +295,7 @@ begin
 end;
 
 
-procedure TKMFontData.LoadFontX(const aFileName: string; aLoadLevel: TKMFontLoadLevel = fllFull);
-const
-  FNTX_HEAD: AnsiString = 'FNTX';
+procedure TKMFontSpec.LoadFontX(const aFileName: string; aLoadLevel: TKMFontLoadLevel = fllFull);
 var
   InputStream: TFileStream;
   DecompressionStream: TDecompressionStream;
@@ -315,8 +350,8 @@ begin
 end;
 
 
-//After font has been loaded and texture generated we can flush temp data
-procedure TKMFontData.Compact;
+// After font has been loaded and texture generated we can flush temp data
+procedure TKMFontSpec.Compact;
 var
   I: Integer;
 begin
@@ -329,29 +364,31 @@ begin
 end;
 
 
-//Generate color texture from prepared data
-procedure TKMFontData.GenerateTextures(aTexMode: TTexFormat);
+// Generate color texture from prepared data
+procedure TKMFontSpec.GenerateTextures(aTexMode: TTexFormat);
 var
   I: Integer;
-  TextureRAM: Cardinal;
+  textureRAM: Cardinal;
 begin
-  TextureRAM := 0;
+  textureRAM := 0;
+    
   for I := 0 to fAtlasCount - 1 do
     if fAtlases[I].TexID = 0 then //Don't load atlases twice if switching from minimal to full
       if Length(fAtlases[I].TexData) <> 0 then
       begin
         fAtlases[I].TexID := TRender.GenTexture(fTexSizeX, fTexSizeY, @fAtlases[I].TexData[0], aTexMode, ftNearest, ftNearest);
-        Inc(TextureRAM, fTexSizeX * fTexSizeY * TEX_FORMAT_SIZE[aTexMode]);
+        if LOG_FONTS_RAM_USAGE then        
+          Inc(textureRAM, fTexSizeX * fTexSizeY * TEX_FORMAT_SIZE[aTexMode]);
       end
       else
         fAtlases[I].TexID := 0;
 
-  if LOG_EXTRA_FONTS then
-    gLog.AddNoTime( 'Font RAM usage: '+IntToStr(TextureRAM));
+  if LOG_FONTS_RAM_USAGE then
+    gLog.AddNoTime('Font RAM usage: ' + IntToStr(textureRAM));
 end;
 
 
-function TKMFontData.GetLetter(aChar: WideChar): TKMLetter;
+function TKMFontSpec.GetLetter(aChar: WideChar): TKMLetter;
 begin
   if Used[Ord(aChar)] <> 0 then
     Result := Letters[Ord(aChar)]
@@ -360,14 +397,14 @@ begin
 end;
 
 
-function TKMFontData.GetTexID(aIndex: Integer): Cardinal;
+function TKMFontSpec.GetTexID(aIndex: Integer): Cardinal;
 begin
   Result := fAtlases[aIndex].TexID;
 end;
 
 
-//Export texture atlas into bitmap (just for looks)
-procedure TKMFontData.ExportAtlasBmp(aBitmap: TBitmap; aIndex: Integer; aShowCells: Boolean);
+// Export texture atlas into bitmap (just for looks)
+procedure TKMFontSpec.ExportAtlasBmp(aBitmap: TBitmap; aIndex: Integer; aShowCells: Boolean);
 const
   BG: Integer = $AF6B6B;
 var
@@ -420,8 +457,8 @@ begin
 end;
 
 
-//Export texture atlas into a bitmap file (just for looks)
-procedure TKMFontData.ExportAtlasBmp(const aPath: string; aIndex: Integer);
+// Export texture atlas into a bitmap file (just for looks)
+procedure TKMFontSpec.ExportAtlasBmp(const aPath: string; aIndex: Integer);
 var
   exportBmp: TBitmap;
 begin
@@ -439,7 +476,7 @@ begin
 end;
 
 
-procedure TKMFontData.ExportAtlasPng(const aFilename: string; aIndex: Integer);
+procedure TKMFontSpec.ExportAtlasPng(const aFilename: string; aIndex: Integer);
 var
   I, K: Integer;
   pngWidth, pngHeight: Word;
@@ -459,7 +496,7 @@ begin
 end;
 
 
-{ TResourceFont }
+{ TKMResFonts }
 constructor TKMResFonts.Create;
 var
   F: TKMFont;
@@ -467,7 +504,7 @@ begin
   inherited;
 
   for F := Low(TKMFont) to High(TKMFont) do
-    fFontData[F] := TKMFontData.Create(F);
+    fFontData[F] := TKMFontSpec.Create(F);
 end;
 
 
@@ -482,7 +519,7 @@ begin
 end;
 
 
-function TKMResFonts.GetFontData(aIndex: TKMFont): TKMFontData;
+function TKMResFonts.GetFontData(aIndex: TKMFont): TKMFontSpec;
 begin
   Result := fFontData[aIndex];
 end;
@@ -493,7 +530,7 @@ var
   fileName: string;
   filePart: string;
   I: Integer;
-  K: TKMFontInfo;
+  F: TKMFont;
 begin
   Result := palmap;
 
@@ -501,9 +538,9 @@ begin
   I := Pos('.', fileName);
   filePart := Copy(fileName, 1, I-1);
 
-  for K in FONT_INFO do
-    if K.FontFile = filePart then
-      Result := K.Pal;
+  for F := Low(TKMFont) to High(TKMFont) do
+    if FontTypeName[F] = filePart then
+      Result := FONT_INFO[F].Pal;
 end;
 
 
@@ -518,7 +555,7 @@ begin
 
   for F := Low(TKMFont) to High(TKMFont) do
   begin
-    FntPath := ExeDir + FONTS_FOLDER + FONT_INFO[F].FontFile + '.fntx';
+    FntPath := ExeDir + TKMFontSpec.FONTS_FOLDER + FontTypeName[F] + '.' + TKMFontSpec.DEFAULT_EXT;
     fFontData[F].LoadFontX(FntPath, aLoadLevel);
     fFontData[F].GenerateTextures(FONT_INFO[F].TexMode);
     fFontData[F].Compact;
@@ -530,75 +567,47 @@ end;
 
 
 procedure TKMResFonts.ExportFonts;
-const
-  // Non-printable or rare ansi chars we can skip when calc max ansi char width
-  SKIP_ANSI_CHARS: set of Byte = [140, 156, 168, 183, 198, 230];
 var
   F: TKMFont;
   FntPath: string;
-  I, maxW, maxAnsiW: Integer;
-  sl: TStringList;
+  I: Integer;
 begin
-  sl := TStringList.Create;
-  //We need to reload fonts to regenerate TexData
+  // We need to reload fonts to regenerate TexData
   for F := Low(TKMFont) to High(TKMFont) do
   begin
-    maxW := 0;
-    maxAnsiW := 0;
-
-    FntPath := ExeDir + FONTS_FOLDER + FONT_INFO[F].FontFile + '.fntx';
+    FntPath := ExeDir + TKMFontSpec.FONTS_FOLDER + FontTypeName[F] + '.' + TKMFontSpec.DEFAULT_EXT;
     fFontData[F].LoadFontX(FntPath);
 
-    //Calc max font width
-    for I := 1 to High(fFontData[F].Letters) do
-    begin
-      if FONT_INFO[F].MaxCharWidth = fFontData[F].Letters[I].Width then
-        sl.Add(Format('MaxW=%d char=%d %s', [FONT_INFO[F].MaxCharWidth, I, WideChar(I)]));
-
-      maxW := Max(maxW, fFontData[F].Letters[I].Width);
-
-      if (I < 256) and not (I in SKIP_ANSI_CHARS) then
-      begin
-        if FONT_INFO[F].MaxAnsiCharWidth = fFontData[F].Letters[I].Width then
-          sl.Add(Format('AnsiW=%d char=%d %s', [FONT_INFO[F].MaxAnsiCharWidth, I, WideChar(I)]));
-
-        maxAnsiW := Max(maxAnsiW, fFontData[F].Letters[I].Width);
-      end;
-    end;
-
-    sl.Add(Format('%s: max ansi char width = %d; max char width = %d', [FONT_INFO[F].FontFile, maxAnsiW, maxW]));
-
     for I := 0 to fFontData[F].AtlasCount - 1 do
-      fFontData[F].ExportAtlasBmp(ExeDir + 'Export' + PathDelim + 'Fonts' + PathDelim + FONT_INFO[F].FontFile + IntToStr(I) + '.bmp', I);
+      fFontData[F].ExportAtlasBmp(ExeDir + 'Export' + PathDelim + 'Fonts' + PathDelim + FontTypeName[F] + IntToStr(I) + '.bmp', I);
     fFontData[F].Compact;
   end;
-  sl.SaveToFile(ExeDir + 'Export' + PathDelim + 'fonts_widths.txt', TEncoding.UTF8);
-  sl.Free;
 end;
 
 
-function TKMFontData.GetLineHeight: SmallInt;
+function TKMFontSpec.GetLineHeight: SmallInt;
 begin
   Result := BaseHeight + LineSpacing;
 end;
 
 
-function TKMFontData.GetCharWidth(aChar: WideChar; aConsiderEolSymbol: Boolean = False; aMonospaced: Boolean = False): Integer;
+function TKMFontSpec.GetCharWidth(aChar: WideChar; aConsiderEolSymbol: Boolean = False): Integer;
 begin
   if (not aConsiderEolSymbol and (aChar = #124)) or (aChar = #9) then
     Result := 0
-  else
-  if aMonospaced then
-    Result := FONT_INFO[fFont].MaxAnsiCharWidth + CharSpacing
   else
   if aChar = #32 then
     Result := WordSpacing
   else
     Result := GetLetter(aChar).Width + CharSpacing;
+
+  // CharSpacing could be negative
+  Result := Max(0, Result);
 end;
 
 
-function TKMFontData.WordWrap(aText: UnicodeString; aMaxPxWidth: Integer; aForced: Boolean; aIndentAfterNL: Boolean; aTabWidth: Integer = TAB_WIDTH): UnicodeString;
+function TKMFontSpec.WordWrap(aText: UnicodeString; aMaxPxWidth: Integer; aForced: Boolean; aIndentAfterNL: Boolean;
+  aTabWidth: Integer = FONT_TAB_WIDTH): UnicodeString;
 const
   INDENT = '   ';
 var
@@ -726,8 +735,8 @@ begin
 end;
 
 
-function TKMFontData.CharsThatFit(const aText: UnicodeString; aMaxPxWidth: Integer; aRound: Boolean = False;
-                                  aConsiderEolSymbol: Boolean = False; aTabWidth: Integer = TAB_WIDTH): Integer;
+function TKMFontSpec.CharsThatFit(const aText: UnicodeString; aMaxPxWidth: Integer; aRound: Boolean = False;
+  aConsiderEolSymbol: Boolean = False; aTabWidth: Integer = FONT_TAB_WIDTH): Integer;
 var
   I, dx, PrevX, LastCharW: Integer;
 begin
@@ -756,24 +765,17 @@ begin
 end;
 
 
-function TKMFontData.GetMonospacedTextSize(const aText: UnicodeString; aCountMarkup: Boolean = False; aConsiderEolSymbol: Boolean = False;
-                                           aTabWidth: Integer = TAB_WIDTH): TKMPoint;
-begin
-  Result := GetTextSize(aText, aCountMarkup, aConsiderEolSymbol, aTabWidth, True);
-end;
-
-
-function TKMFontData.GetTextSize(const aText: UnicodeString; aCountMarkup: Boolean = False; aConsiderEolSymbol: Boolean = False;
-                                 aTabWidth: Integer = TAB_WIDTH; aMonospaced: Boolean = False): TKMPoint;
+function TKMFontSpec.GetTextSize(const aText: UnicodeString; aCountMarkup: Boolean = False; aConsiderEolSymbol: Boolean = False;
+  aTabWidth: Integer = FONT_TAB_WIDTH): TKMPoint;
 var
-  LineCount: Integer;
+  lineCount: Integer;
 begin
-  Result := GetTextSize(aText, LineCount, aCountMarkup, aConsiderEolSymbol, aTabWidth, aMonospaced);
+  Result := GetTextSize(aText, lineCount, aCountMarkup, aConsiderEolSymbol, aTabWidth);
 end;
 
 
-function TKMFontData.GetTextSize(const aText: UnicodeString; var aLineCount: Integer; aCountMarkup: Boolean = False;
-                                 aConsiderEolSymbol: Boolean = False; aTabWidth: Integer = TAB_WIDTH; aMonospaced: Boolean = False): TKMPoint;
+function TKMFontSpec.GetTextSize(const aText: UnicodeString; var aLineCount: Integer; aCountMarkup: Boolean = False;
+  aConsiderEolSymbol: Boolean = False; aTabWidth: Integer = FONT_TAB_WIDTH): TKMPoint;
 var
   I: Integer;
   LineWidthInc, TmpColor: Integer;
@@ -802,7 +804,7 @@ begin
       if aText[I] = #9 then // Tab char
         LineWidthInc := (Floor(LineWidth[aLineCount] / aTabWidth) + 1) * aTabWidth - LineWidth[aLineCount]
       else
-        LineWidthInc := GetCharWidth(aText[I], aConsiderEolSymbol, aMonospaced);
+        LineWidthInc := GetCharWidth(aText[I], aConsiderEolSymbol);
       Inc(LineWidth[aLineCount], LineWidthInc);
     end else
       //Ignore color markups [$FFFFFF][]
@@ -818,7 +820,7 @@ begin
           if aText[I] = #9 then // Tab char
             LineWidthInc := (Floor(LineWidth[aLineCount] / aTabWidth) + 1) * aTabWidth - LineWidth[aLineCount]
           else
-            LineWidthInc := GetCharWidth(aText[I], aConsiderEolSymbol, aMonospaced);
+            LineWidthInc := GetCharWidth(aText[I], aConsiderEolSymbol);
           Inc(LineWidth[aLineCount], LineWidthInc);
         end;
 
@@ -841,7 +843,7 @@ end;
 
 
 // Return maximum of the width of specified strings when printed on screen with specified font.
-function TKMFontData.GetMaxPrintWidthOfStrings(aStrings: array of string): Integer;
+function TKMFontSpec.GetMaxPrintWidthOfStrings(aStrings: array of string): Integer;
 var
   I, Width: Integer;
 begin
@@ -850,7 +852,7 @@ begin
   begin
     Width := GetTextSize(aStrings[I]).X;
     if (Width > Result) then
-      Result := Width;
+      Result := Width; //todo: Replace with Result := Max(Result, GetTextSize(aStrings[I]).X);
   end;
 end;
 

@@ -27,7 +27,7 @@ type
   end;
 
   //Tile data that we store in undo checkpoints
-  //TODO: pack UndoTile (f.e. blendingLvl + IsCustom could be packed into 1 byte etc)
+  //todo: pack UndoTile (f.e. blendingLvl + IsCustom could be packed into 1 byte etc)
   TKMUndoTile = packed record
     BaseLayer: TKMTerrainLayerPacked;
     LayersCnt: Byte;

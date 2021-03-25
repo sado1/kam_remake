@@ -13,7 +13,7 @@ uses
 type
   TKMLobbyTab = (ltDesc, ltOptions);
 
-  TKMMenuLobby = class (TKMMenuPageCommon)
+  TKMMenuLobby = class(TKMMenuPageCommon)
   private
     fOnPageChange: TKMMenuChangeEventText; //will be in ancestor class
     fGuiRMG: TKMMapEdRMG; //RMG
