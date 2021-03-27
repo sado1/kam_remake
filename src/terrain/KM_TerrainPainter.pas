@@ -576,59 +576,42 @@ begin
     2:  if (tpWolf in gTerrain.Land[aY, aX].Passability) then begin
           objRandom := Random(High(RandomFlowers));
           Result := RandomFlowers[objRandom];
-        end
-        else
-          Result := OBJ_NONE;
+        end;
     3:  if InRange(Byte(aTerrainKind),1,3) or InRange(Byte(aTerrainKind),5,6) or InRange(Byte(aTerrainKind),9,10) then
         begin
           objRandom := Random(High(RandomMushrooms));
           Result := RandomMushrooms[objRandom];
-        end
-        else
-          Result := OBJ_NONE;
+        end;
     4:  if InRange(Byte(aTerrainKind),1,7) or InRange(Byte(aTerrainKind),9,10) then
         begin
           objRandom := Random(High(RandomTrunks));
           Result := RandomTrunks[objRandom];
-        end
-        else
-          Result := OBJ_NONE;
+        end;
     5:  if InRange(Byte(aTerrainKind),1,7) or InRange(Byte(aTerrainKind),9,10) then
         begin
           objRandom := Random(High(RandomDeadTrees));
           Result := RandomDeadTrees[objRandom];
-        end
-        else
-          Result := OBJ_NONE;
+        end;
     6:  if (tpMakeRoads in gTerrain.Land[aY, aX].Passability) then
         begin
           objRandom := Random(High(RandomStones));
           Result := RandomStones[objRandom];
-        end
-        else
-          Result := OBJ_NONE;
+        end;
     7:  if InRange(Byte(aTerrainKind),7,8) then
         begin
           objRandom := Random(High(RandomBush));
           Result := RandomBush[objRandom];
-        end
-        else
-          Result := OBJ_NONE;
+        end;
     8:  if InRange(Byte(aTerrainKind),7,8) then
         begin
           objRandom := Random(High(RandomCactus));
           Result := RandomCactus[objRandom];
-        end
-        else
-          Result := OBJ_NONE;
+        end;
     9:  if (tpMakeRoads in gTerrain.Land[aY, aX].Passability) then
         begin
           objRandom := Random(High(RandomRuins));
           Result := RandomRuins[objRandom];
-        end
-        else
-          Result := OBJ_NONE;
-    else Result := OBJ_NONE;
+        end;
   end;
 end;
 
@@ -1679,7 +1662,7 @@ begin
           else
           if tmp <> 0 then // Tmp = 0 outside of hsCircle area
             //Add random value (-1/0/1) so absolutely flat surface will be unequlized too
-            tmp := KamRandom(2, 'TKMTerrainPainter.ApplyHeight')*3 - 2;
+            tmp := KaMRandom(2, 'TKMTerrainPainter.ApplyHeight')*3 - 2;
         end
         else
           tmp := 0;
