@@ -34,8 +34,8 @@ type
     MapEdUseTerrainObjects: Boolean;
 
     //Objects Brush
-    MapEdCleanBrush:Boolean;
-    MapEdObjectsType:array[0..9]of Boolean;
+    MapEdCleanBrush: Boolean;
+    MapEdObjectsType: array[0..9] of Boolean;
     MapEdForestAge: Integer;
     MapEdObjectsDensity: Integer;
 

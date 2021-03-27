@@ -37,7 +37,7 @@ type
     fTracks: TStringDynArray;
     fTrackOrder: TIntegerDynArray; //Each index points to an index of MusicTracks
     //MIDICount,MIDIIndex:integer;
-    //MIDITracks:array[1..256]of string;
+    //MIDITracks: array[1..256]of string;
     fIsInitialized: Boolean;
     fEnabled: Boolean;
     fPrevVolume: Single; // Volume before mute

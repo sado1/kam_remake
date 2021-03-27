@@ -228,10 +228,10 @@ end;
 procedure TKMResSounds.LoadSoundsDAT;
 var
   S: TMemoryStream;
-  Head:record Size,Count:word; end;
-  Tab1:array[1..200]of integer;
-  Tab2:array[1..200]of smallint;
-  i,Tmp:integer;
+  Head: record Size,Count: Word; end;
+  Tab1: array[1..200]of Integer;
+  Tab2: array[1..200]of SmallInt;
+  i,Tmp: Integer;
 begin
   if not FileExists(ExeDir + 'data' + PathDelim + 'sfx' + PathDelim + 'sounds.dat') then Exit;
 
@@ -244,7 +244,8 @@ begin
   fWavesCount := Head.Count;
   SetLength(fWaves, fWavesCount+1);
 
-  for i:=1 to Head.Count do begin
+  for i:=1 to Head.Count do
+  begin
     S.Read(Tmp, 4); //Always '1' for existing waves
     if Tab1[i]<>0 then begin
       S.Read(fWaves[i].Head, SizeOf(fWaves[i].Head));

@@ -108,7 +108,6 @@ begin
 end;
 
 
-
 function TKMHandEntity.GetAllowAllyToSelect: Boolean;
 begin
   Result := ALLOW_SELECT_ALLIES and fAllowAllyToSelect;

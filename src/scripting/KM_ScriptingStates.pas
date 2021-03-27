@@ -86,6 +86,7 @@ type
     function HouseTypeToOccupantType(aHouseType: Integer): Integer;
     function HouseUnlocked(aPlayer, aHouseType: Word): Boolean;
     function HouseWareBlocked(aHouseID, aWareType: Integer): Boolean;
+    function HouseWareBlockedTakeOut(aHouseID, aWareType: Integer): Boolean;
     function HouseWeaponsOrdered(aHouseID, aWareType: Integer): Integer;
     function HouseWoodcutterChopOnly(aHouseID: Integer): Boolean;
     function HouseWoodcutterMode(aHouseID: Integer): Integer;
@@ -1570,6 +1571,7 @@ begin
 end;
 
 
+//@Rey: When signature changes it is good to update the description too (with new version and sometimes reference to old name)
 //* Version: 10940
 //* Return if specified house is allowed to be selected and viewed by his allies
 function TKMScriptStates.HouseAllowAllyToSelect(aHouseID: Integer): Boolean;
@@ -2253,6 +2255,34 @@ begin
     end
     else
       LogParamWarning('States.HouseWareBlocked', [aHouseID, aWareType]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 12600
+//* Returns true if the specified ware in the specified storehouse or barracks is blocked for taking out (yellow triangle)
+//* Result: Ware blocked for taking out
+function TKMScriptStates.HouseWareBlockedTakeOut(aHouseID, aWareType: Integer): Boolean;
+var
+  H: TKMHouse;
+  Res: TKMWareType;
+begin
+  try
+    Result := False;
+    if (aHouseID > 0) and (aWareType in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)]) then
+    begin
+      Res := WARE_ID_TO_TYPE[aWareType];
+      H := fIDCache.GetHouse(aHouseID);
+      if (H is TKMHouseStore) then
+        Result := TKMHouseStore(H).NotAllowTakeOutFlag[Res];
+      if (H is TKMHouseBarracks) and (Res in [WARFARE_MIN..WARFARE_MAX]) then
+        Result := TKMHouseBarracks(H).NotAllowTakeOutFlag[Res];
+    end
+    else
+      LogParamWarning('States.HouseWareBlockedTakeOut', [aHouseID, aWareType]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

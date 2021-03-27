@@ -44,6 +44,7 @@ type
 
 var
   Form1: TForm1;
+
 implementation
 uses
   KM_Maps, KM_CommonUtils, KM_ScriptingEvents;
@@ -52,7 +53,7 @@ uses
 
 procedure TForm1.FindFiles(aPath: String; out aList: TStringList);
 var
-  SearchRec:TSearchRec;
+  SearchRec: TSearchRec;
 begin
   FindFirst(aPath + PathDelim + '*', faAnyFile, SearchRec);
   repeat
@@ -99,7 +100,7 @@ end;
 
 procedure TForm1.btnBrowsePathClick(Sender: TObject);
 var
-  DirToValidate : String;
+  DirToValidate: String;
 begin
   if Win32MajorVersion >= 6 then // For Vista+ Windows version we can use FileOpenDlg
   begin
