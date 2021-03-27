@@ -512,7 +512,7 @@ begin
   LandTerKind[Y+1, X].TerKind   := aTerKind;
 
   gTerrain.Land[Y, X].BaseLayer.Terrain := PickRandomTile(aTerKind);
-  gTerrain.Land[Y, X].BaseLayer.Rotation := Random(4); //Random direction for all plain tiles
+  gTerrain.Land[Y, X].BaseLayer.Rotation := KaMRandom(4, 'TKMTerrainPainter.BrushTerrainTile'); //Random direction for all plain tiles
   gTerrain.Land[Y, X].IsCustom := False;
 
   AddBrushAreaTerKind(X,  Y);
@@ -830,8 +830,7 @@ begin
   if ter1 = ter2 then
   begin
     T := PickRandomTile(ter1, aRandomTiles);
-
-    rot := Random(4); //random direction for all plain tiles
+    rot := KaMRandom(4, 'TKMTerrainPainter.RebuildTile'); //random direction for all plain tiles
   end;
 
   //Need to check if this tile was already smart-painted, "4-Nodes" hence default value is 0
