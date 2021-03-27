@@ -28,7 +28,7 @@ type
       BrushMasks: array [TKMTileMaskKind] of TKMButtonFlat;
       MagicBrush: TKMButtonFlat;
       BrushBlending: TKMTrackBar;
-      RandomElements, OverrideCustomTiles,UseTerrainObjects: TKMCheckBox;
+      RandomElements, OverrideCustomTiles, UseTerrainObjects: TKMCheckBox;
       Button_FixTerrainBrushes: TKMButton;
       PopUp_FixTerrainConfirm: TKMPopUpPanel;
         Button_FixTerrain_Yes, Button_FixTerrain_No: TKMButton;
@@ -93,7 +93,7 @@ const
 var
   I,K: Integer;
   MK: TKMTileMaskKind;
-  HintStr: String;
+  hintStr: String;
 begin
   inherited Create;
 
@@ -136,8 +136,8 @@ begin
       BrushTable[I,K].Anchors := [anTop];
       BrushTable[I,K].Tag := Byte(SURFACES[I,K]);
       BrushTable[I,K].Tag2 := Byte(bbtBrush);
-      HintStr := GetEnumName(TypeInfo(TKMTerrainKind), Integer(SURFACES[I,K]));
-      BrushTable[I,K].Hint := Copy(HintStr, 3, Length(HintStr) - 2);
+      hintStr := GetEnumName(TypeInfo(TKMTerrainKind), Integer(SURFACES[I,K]));
+      BrushTable[I,K].Hint := Copy(hintStr, 3, Length(hintStr) - 2);
       BrushTable[I,K].OnClick := BrushChange;
     end;
 
@@ -202,12 +202,14 @@ begin
   gGameCursor.MapEdOverrideCustomTiles := OverrideCustomTiles.Checked;
   gGameCursor.MapEdBlendingLvl := BrushBlending.Position;
 
-  if Sender = UseTerrainObjects then begin
+  if Sender = UseTerrainObjects then
+  begin
     gGameCursor.MapEdUseTerrainObjects:= UseTerrainObjects.Checked;
-    if gGameCursor.MapEdObjectsDensity = 0 then  begin
-      gGameCursor.MapEdObjectsType[0]:=true;
-      gGameCursor.MapEdObjectsType[1]:=true;
-      gGameCursor.MapEdObjectsDensity:=10;
+    if gGameCursor.MapEdObjectsDensity = 0 then
+    begin
+      gGameCursor.MapEdObjectsType[0] := True;
+      gGameCursor.MapEdObjectsType[1] := True;
+      gGameCursor.MapEdObjectsDensity := 10;
     end;
   end;
 

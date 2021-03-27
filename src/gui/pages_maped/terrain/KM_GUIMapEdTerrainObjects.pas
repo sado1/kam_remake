@@ -62,9 +62,9 @@ type
       Image_ObjectAttributes: array[0..2] of array of TKMImage;
 
       //Objects brush
-      ForestDensity,ForestAge,BrushSize: TKMTrackBar;
-      ObjectTypeSet:array [0..9] of  TKMButtonFlat;
-      BrushCircle,BrushSquare: TKMButtonFlat;
+      ForestDensity, ForestAge, BrushSize: TKMTrackBar;
+      ObjectTypeSet: array [0..9] of  TKMButtonFlat;
+      BrushCircle, BrushSquare: TKMButtonFlat;
       CleanBrush: TKMButtonFlat;
 
       Scroll_ObjectsPalette: TKMScrollBar;
@@ -109,8 +109,8 @@ var
   I, J: Integer;
 //  TOA: TKMTerrainObjectAttribute;
   //For brushes
-  RxIndex,K:Integer;
-  ObjectsHint:String;
+  rxIndex, K: Integer;
+  objectsHint: String;
 begin
   inherited Create;
 
@@ -238,14 +238,13 @@ begin
 
 
   with TKMLabel.Create(Panel_Objects, 9, 345, Panel_Objects.Width, 0, gResTexts[TX_MAPED_OBJECTS_BRUSH], fntOutline, taCenter) do
-  Anchors := [anLeft, anTop, anRight];
+    Anchors := [anLeft, anTop, anRight];
 
   BrushSize   := TKMTrackBar.Create(Panel_Objects, 9, 373, (Panel_Objects.Width - (BTN_BRUSH_SIZE * 2) - 18) - 18, 4, 20);
   BrushSize.Anchors := [anLeft, anTop, anRight];
   BrushSize.Position := 1;
   BrushSize.OnChange := ObjectsChange;
   BrushSize.Hint := GetHintWHotKey(TX_MAPED_TERRAIN_HEIGHTS_SIZE_HINT, gResTexts[TX_KEY_CTRL_MOUSEWHEEL]);
-
 
   CleanBrush := TKMButtonFlat.Create(Panel_Objects, 15, 400, 34, 34, 673, rxGui);
   CleanBrush.Anchors := [anTop];
@@ -265,34 +264,39 @@ begin
   BrushSquare.OnClick := ObjectsChange;
   BrushSquare.TexOffsetX := 1;
   BrushSquare.TexOffsetY := 1;
-  J:=0;
-  K:=0;
-  RxIndex:=226;
+
+  J := 0;
+  K := 0;
+  rxIndex := 226;
+
   for I := 0 to 9 do begin
     case I of
-       0: begin RxIndex:=226;ObjectsHint:= gResTexts[TX_MAPED_OBJECTS_BRUSH_TREES];end;
-       1: begin RxIndex:=34;ObjectsHint:= gResTexts[TX_MAPED_OBJECTS_BRUSH_ALL];end;
-       2: begin RxIndex:=14;ObjectsHint:= gResTexts[TX_MAPED_OBJECTS_BRUSH_FLOWERS];end;
-       3: begin RxIndex:=4;ObjectsHint:= gResTexts[TX_MAPED_OBJECTS_BRUSH_MUSHROOMS];end;
-       4: begin RxIndex:=26;ObjectsHint:= gResTexts[TX_MAPED_OBJECTS_BRUSH_TRUNKS];end;
+       0: begin rxIndex := 226; objectsHint := gResTexts[TX_MAPED_OBJECTS_BRUSH_TREES];     end;
+       1: begin rxIndex := 34;  objectsHint := gResTexts[TX_MAPED_OBJECTS_BRUSH_ALL];       end;
+       2: begin rxIndex := 14;  objectsHint := gResTexts[TX_MAPED_OBJECTS_BRUSH_FLOWERS];   end;
+       3: begin rxIndex := 4;   objectsHint := gResTexts[TX_MAPED_OBJECTS_BRUSH_MUSHROOMS]; end;
+       4: begin rxIndex := 26;  objectsHint := gResTexts[TX_MAPED_OBJECTS_BRUSH_TRUNKS];    end;
 
-       5: begin RxIndex:=39;ObjectsHint:= gResTexts[TX_MAPED_OBJECTS_BRUSH_DEAD];end;
-       6: begin RxIndex:=21;ObjectsHint:= gResTexts[TX_MAPED_OBJECTS_BRUSH_STONES];end;
-       7: begin RxIndex:=143;ObjectsHint:= gResTexts[TX_MAPED_OBJECTS_BRUSH_BUSH];end;
-       8: begin RxIndex:=173;ObjectsHint:= gResTexts[TX_MAPED_OBJECTS_BRUSH_CACTUS];end;
-       9: begin RxIndex:=245;ObjectsHint:= gResTexts[TX_MAPED_OBJECTS_BRUSH_RUINS];end;
+       5: begin rxIndex := 39;  objectsHint := gResTexts[TX_MAPED_OBJECTS_BRUSH_DEAD];      end;
+       6: begin rxIndex := 21;  objectsHint := gResTexts[TX_MAPED_OBJECTS_BRUSH_STONES];    end;
+       7: begin rxIndex := 143; objectsHint := gResTexts[TX_MAPED_OBJECTS_BRUSH_BUSH];      end;
+       8: begin rxIndex := 173; objectsHint := gResTexts[TX_MAPED_OBJECTS_BRUSH_CACTUS];    end;
+       9: begin rxIndex := 245; objectsHint := gResTexts[TX_MAPED_OBJECTS_BRUSH_RUINS];     end;
     end;
-    if I=5 then begin
-    J:=0;
-    K:=1;
+
+    if I = 5 then
+    begin
+      J := 0;
+      K := 1;
     end;
-    ObjectTypeSet[I] := TKMButtonFlat.Create(Panel_Objects, 9+BTN_BRUSH_SIZE*J, 450+BTN_BRUSH_SIZE*K, 34, 34, RxIndex, rxTrees);
+    ObjectTypeSet[I] := TKMButtonFlat.Create(Panel_Objects, 9+BTN_BRUSH_SIZE*J, 450+BTN_BRUSH_SIZE*K, 34, 34, rxIndex, rxTrees);
 
     ObjectTypeSet[I].OnClick := ObjectsChange;
-    ObjectTypeSet[I].Hint := ObjectsHint;
-    J:=J+1;
+    ObjectTypeSet[I].Hint := objectsHint;
+    J := J+1;
   end;
-   with TKMLabel.Create(Panel_Objects, 9, 520, Panel_Objects.Width - 9, 20, gResTexts[TX_MAPED_OBJECTS_BRUSH_DENSITY], fntMetal, taLeft) do
+
+  with TKMLabel.Create(Panel_Objects, 9, 520, Panel_Objects.Width - 9, 20, gResTexts[TX_MAPED_OBJECTS_BRUSH_DENSITY], fntMetal, taLeft) do
     Hint := gResTexts[TX_MAPED_OBJECTS_BRUSH_DENSITY_HINT];
 
   ForestDensity   := TKMTrackBar.Create(Panel_Objects, 9, 545, (Panel_Objects.Width) - 18, 1, 30);
@@ -302,7 +306,7 @@ begin
   ForestDensity.Hint := gResTexts[TX_MAPED_OBJECTS_BRUSH_DENSITY_HINT];
 
   with TKMLabel.Create(Panel_Objects, 9, 570, Panel_Objects.Width - 9, 20, gResTexts[TX_MAPED_OBJECTS_BRUSH_AGE], fntMetal, taLeft) do
-  Hint := gResTexts[TX_MAPED_OBJECTS_BRUSH_AGE_HINT];
+    Hint := gResTexts[TX_MAPED_OBJECTS_BRUSH_AGE_HINT];
 
   ForestAge   := TKMTrackBar.Create(Panel_Objects, 9, 595, (Panel_Objects.Width) - 18, 1, 3);
   ForestAge.Anchors := [anLeft, anTop, anRight];
@@ -311,16 +315,21 @@ begin
   ForestAge.Hint := gResTexts[TX_MAPED_OBJECTS_BRUSH_AGE_HINT];
 
 
-  gGameCursor.MapEdObjectsType[0]:=true;
-  gGameCursor.MapEdObjectsType[1]:=true;
+  gGameCursor.MapEdObjectsType[0] := True;
+  gGameCursor.MapEdObjectsType[1] := True;
 
-  If  gGameCursor.MapEdObjectsType[0] then ObjectTypeSet[1].Down:=true else  ObjectTypeSet[1].Down:=false;
-  If  gGameCursor.MapEdObjectsType[1] then ObjectTypeSet[0].Down:=true else  ObjectTypeSet[0].Down:=false;
-  gGameCursor.MapEdForestAge:=1;
-  If gGameCursor.MapEdShape = hsCircle then BrushCircle.Down:=true;
-  If gGameCursor.MapEdShape = hsSquare then BrushSquare.Down:=true;
-  gGameCursor.MapEdCleanBrush:=false;
+//  ObjectTypeSet[0].Down := True;
+//  ObjectTypeSet[1].Down := True;
 
+//  If  gGameCursor.MapEdObjectsType[0] then ObjectTypeSet[1].Down:=true else  ObjectTypeSet[1].Down:=false;
+//  If  gGameCursor.MapEdObjectsType[1] then ObjectTypeSet[0].Down:=true else  ObjectTypeSet[0].Down:=false;
+
+  gGameCursor.MapEdForestAge := 1;
+
+//  If gGameCursor.MapEdShape = hsCircle then BrushCircle.Down:=true;
+//  If gGameCursor.MapEdShape = hsSquare then BrushSquare.Down:=true;
+
+  gGameCursor.MapEdCleanBrush := False;
 end;
 
 
@@ -569,60 +578,70 @@ end;
 
 procedure TKMMapEdTerrainObjects.ObjectsChange(Sender: TObject);
 var
-  ObjIndex,I: Integer;
+  objIndex, I: Integer;
 begin
 
 
   case TKMButtonFlat(Sender).Tag of
     OBJ_BLOCK_TAG,
-    OBJ_NONE_TAG:  ObjIndex := TKMButtonFlat(Sender).Tag; // Block or Erase
-    else           ObjIndex := ObjectsScroll.Position * 3 + TKMButtonFlat(Sender).Tag; //0..n-1
+    OBJ_NONE_TAG:  objIndex := TKMButtonFlat(Sender).Tag; // Block or Erase
+    else           objIndex := ObjectsScroll.Position * 3 + TKMButtonFlat(Sender).Tag; //0..n-1
   end;
 
-  ObjectsUpdate(ObjIndex);
+  ObjectsUpdate(objIndex);
 
   // Update Objects Palette scroll position
-  if (ObjIndex <> OBJ_BLOCK_TAG) and (ObjIndex <> OBJ_NONE_TAG)
-    and not InRange(ObjIndex,
+  if (objIndex <> OBJ_BLOCK_TAG) and (objIndex <> OBJ_NONE_TAG)
+    and not InRange(objIndex,
                     Scroll_ObjectsPalette.Position*fObjPaletteTableSize.X,
                     Scroll_ObjectsPalette.Position*fObjPaletteTableSize.X + fObjPaletteTableSize.X*fObjPaletteTableSize.Y - 1) then
-    Scroll_ObjectsPalette.Position := ((ObjIndex - 1) div fObjPaletteTableSize.X);
+    Scroll_ObjectsPalette.Position := ((objIndex - 1) div fObjPaletteTableSize.X);
 
 
-   for I:= 0 to 9 do
-    if Sender=ObjectTypeSet[I] then begin
-        If gGameCursor.MapEdObjectsType[I] = false then gGameCursor.MapEdObjectsType[I] := true else gGameCursor.MapEdObjectsType[I] := false;
-        gGameCursor.Mode := cmObjectsBrush;
-    end;
-
-  if (Sender=ForestAge)or(Sender=ForestDensity)or(Sender=BrushSize) then
-   if gGameCursor.Mode = cmObjects then
-      gGameCursor.Mode :=  cmObjectsBrush;
-
-    if Sender = CleanBrush then begin
-      gGameCursor.Mode :=  cmObjectsBrush;
-       If CleanBrush.Down=false then begin
-        gGameCursor.MapEdCleanBrush:=true; CleanBrush.Down:=true end
-         else begin gGameCursor.MapEdCleanBrush:=false; CleanBrush.Down:=false;
-      end;
-    end;
-    if Sender = BrushCircle then
+  for I := 0 to 9 do
+    if Sender = ObjectTypeSet[I] then
     begin
-      gGameCursor.MapEdShape := hsCircle;
-      gGameCursor.Mode :=  cmObjectsBrush;
-      BrushCircle.Down :=true;
-      BrushSquare.Down :=false;
+      gGameCursor.MapEdObjectsType[I] := not gGameCursor.MapEdObjectsType[I];
+      gGameCursor.Mode := cmObjectsBrush;
+    end;
+
+  if (Sender = ForestAge) or (Sender = ForestDensity) or (Sender = BrushSize) then
+    if gGameCursor.Mode = cmObjects then
+      gGameCursor.Mode := cmObjectsBrush;
+
+  if Sender = CleanBrush then
+  begin
+    gGameCursor.Mode := cmObjectsBrush;
+    if CleanBrush.Down=false then
+    begin
+      gGameCursor.MapEdCleanBrush := True;
+      CleanBrush.Down := True;
     end
     else
-    if Sender = BrushSquare then
     begin
-      gGameCursor.MapEdShape := hsSquare;
-      gGameCursor.Mode :=  cmObjectsBrush;
+      gGameCursor.MapEdCleanBrush := False;
+      CleanBrush.Down := False;
     end;
-   if gGameCursor.MapEdShape = hsSquare then begin
-      BrushCircle.Down :=false;
-      BrushSquare.Down :=true;
-   end;
+  end;
+
+  if Sender = BrushCircle then
+  begin
+    gGameCursor.MapEdShape := hsCircle;
+    gGameCursor.Mode := cmObjectsBrush;
+    BrushCircle.Down := True;
+    BrushSquare.Down := False;
+  end
+  else
+  if Sender = BrushSquare then
+  begin
+    gGameCursor.MapEdShape := hsSquare;
+    gGameCursor.Mode := cmObjectsBrush;
+  end;
+  if gGameCursor.MapEdShape = hsSquare then
+  begin
+    BrushCircle.Down := False;
+    BrushSquare.Down := True;
+  end;
 
   gGameCursor.MapEdSize := BrushSize.Position;
 
@@ -696,7 +715,8 @@ begin
   end;
 
   for I := 0 to 9 do
-    ObjectTypeSet[I].Down:=gGameCursor.MapEdObjectsType[I];
+    ObjectTypeSet[I].Down := gGameCursor.MapEdObjectsType[I];
+
   ObjectErase.Down := (gGameCursor.Mode = cmObjects) and (gGameCursor.Tag1 = OBJ_NONE);  //or delete button
   ObjectBlock.Down := (gGameCursor.Mode = cmObjects) and (gGameCursor.Tag1 = OBJ_BLOCK); //or block button
 end;
