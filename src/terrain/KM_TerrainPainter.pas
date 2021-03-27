@@ -556,60 +556,60 @@ begin
     0:  begin
         case gGameCursor.MapEdForestAge of
           1:  begin
-                objRandom := Random(High(RandomTrees1[aTerrainKind]));
+                objRandom := KaMRandom(High(RandomTrees1[aTerrainKind]), 'TKMTerrainPainter.PickRandomObject');
                 Result := RandomTrees1[aTerrainKind, objRandom];
               end;
           2:  begin
-                objRandom := Random(High(RandomTrees2[aTerrainKind]));
+                objRandom := KaMRandom(High(RandomTrees2[aTerrainKind]), 'TKMTerrainPainter.PickRandomObject');
                 Result := RandomTrees2[aTerrainKind, objRandom];
               end;
           3:  begin
-                objRandom := Random(High(RandomTrees3[aTerrainKind]));
+                objRandom := KaMRandom(High(RandomTrees3[aTerrainKind]), 'TKMTerrainPainter.PickRandomObject');
                 Result := RandomTrees3[aTerrainKind, objRandom];
               end;
         end;
     end;
     1:  begin
-          objRandom := Random(High(RandomObjects[aTerrainKind]));
+          objRandom := KaMRandom(High(RandomObjects[aTerrainKind]), 'TKMTerrainPainter.PickRandomObject');
           Result := RandomObjects[aTerrainKind, objRandom];
         end;
     2:  if (tpWolf in gTerrain.Land[aY, aX].Passability) then begin
-          objRandom := Random(High(RandomFlowers));
+          objRandom := KaMRandom(High(RandomFlowers), 'TKMTerrainPainter.PickRandomObject');
           Result := RandomFlowers[objRandom];
         end;
     3:  if InRange(Byte(aTerrainKind),1,3) or InRange(Byte(aTerrainKind),5,6) or InRange(Byte(aTerrainKind),9,10) then
         begin
-          objRandom := Random(High(RandomMushrooms));
+          objRandom := KaMRandom(High(RandomMushrooms), 'TKMTerrainPainter.PickRandomObject');
           Result := RandomMushrooms[objRandom];
         end;
     4:  if InRange(Byte(aTerrainKind),1,7) or InRange(Byte(aTerrainKind),9,10) then
         begin
-          objRandom := Random(High(RandomTrunks));
+          objRandom := KaMRandom(High(RandomTrunks), 'TKMTerrainPainter.PickRandomObject');
           Result := RandomTrunks[objRandom];
         end;
     5:  if InRange(Byte(aTerrainKind),1,7) or InRange(Byte(aTerrainKind),9,10) then
         begin
-          objRandom := Random(High(RandomDeadTrees));
+          objRandom := KaMRandom(High(RandomDeadTrees), 'TKMTerrainPainter.PickRandomObject');
           Result := RandomDeadTrees[objRandom];
         end;
     6:  if (tpMakeRoads in gTerrain.Land[aY, aX].Passability) then
         begin
-          objRandom := Random(High(RandomStones));
+          objRandom := KaMRandom(High(RandomStones), 'TKMTerrainPainter.PickRandomObject');
           Result := RandomStones[objRandom];
         end;
     7:  if InRange(Byte(aTerrainKind),7,8) then
         begin
-          objRandom := Random(High(RandomBush));
+          objRandom := KaMRandom(High(RandomBush), 'TKMTerrainPainter.PickRandomObject');
           Result := RandomBush[objRandom];
         end;
     8:  if InRange(Byte(aTerrainKind),7,8) then
         begin
-          objRandom := Random(High(RandomCactus));
+          objRandom := KaMRandom(High(RandomCactus), 'TKMTerrainPainter.PickRandomObject');
           Result := RandomCactus[objRandom];
         end;
     9:  if (tpMakeRoads in gTerrain.Land[aY, aX].Passability) then
         begin
-          objRandom := Random(High(RandomRuins));
+          objRandom := KaMRandom(High(RandomRuins), 'TKMTerrainPainter.PickRandomObject');
           Result := RandomRuins[objRandom];
         end;
   end;
@@ -1616,7 +1616,7 @@ begin
     for I := 0 to 9 do
       if gGameCursor.MapEdObjectsType[I]  then
       begin
-        key := Random(400 div gGameCursor.MapEdObjectsDensity);
+        key := KaMRandom(400 div gGameCursor.MapEdObjectsDensity, 'TKMTerrainPainter.BrushObjects');
         if key < 2 then
         begin
           gTerrain.Land[Y, X].Obj := PickRandomObject(LandTerKind[Y, X].TerKind,I,X,Y);
