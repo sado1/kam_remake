@@ -1592,11 +1592,15 @@ end;
 
 
 procedure TKMTerrainPainter.ApplyObjectsBrush;
+var
+  rect: TKMRect;
 begin
   if (fLastPosition <> KMPoint(fMapXc,fMapYc)) then
   begin
     fLastPosition := KMPoint(fMapXc,fMapYc);
     IterateOverArea(KMPoint(fMapXc+1,fMapYc+1), fSize, fShape = hsSquare, BrushObjects);
+    rect := KMRectGrow(KMRect(fLastPosition), (fSize div 2) + 1);
+    gTerrain.UpdatePassability(rect);
   end;
 end;
 
