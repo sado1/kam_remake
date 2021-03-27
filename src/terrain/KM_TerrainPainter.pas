@@ -499,12 +499,12 @@ begin
   if not gTerrain.TileInMapCoords(X, Y) then
     Exit;
 
-  if gGameCursor.MapEdUseTerrainObjects then
-    if (fLastPosition <> KMPoint(fMapXc,fMapYc)) then
-    begin
-      fLastPosition := KMPoint(fMapXc,fMapYc);
-      IterateOverArea(KMPoint(fMapXc+1,fMapYc+1), fSize, fShape = hsSquare, BrushObjects);
-    end;
+  if gGameCursor.MapEdUseTerrainObjects
+    and (fLastPosition <> KMPoint(fMapXc,fMapYc)) then
+  begin
+    fLastPosition := KMPoint(fMapXc,fMapYc);
+    IterateOverArea(KMPoint(fMapXc+1,fMapYc+1), fSize, fShape = hsSquare, BrushObjects);
+  end;
 
   LandTerKind[Y,   X].TerKind   := aTerKind;
   LandTerKind[Y,   X+1].TerKind := aTerKind;
@@ -1618,7 +1618,7 @@ begin
   begin
     gTerrain.Land[Y, X].Obj := OBJ_NONE;
     for I := 0 to 9 do
-      if gGameCursor.MapEdObjectsType[I]  then
+      if gGameCursor.MapEdObjectsType[I] then
       begin
         key := KaMRandom(400 div gGameCursor.MapEdObjectsDensity, 'TKMTerrainPainter.BrushObjects');
         if key < 2 then
