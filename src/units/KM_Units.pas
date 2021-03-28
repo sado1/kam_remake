@@ -964,9 +964,6 @@ begin
   if (fThought = thBuild) and (fTask = nil) then
     fThought := thNone; //Remove build thought if we are no longer doing anything
 
-  //If we are still stuck on a house for some reason, get off it ASAP
-  Assert(gTerrain.Land[fPosition.Y, fPosition.X].TileLock <> tlHouse);
-
   if (fTask = nil) and (fAction = nil) then SetActionStay(20, uaWalk);
 
   if fAction = nil then
