@@ -956,6 +956,7 @@ begin
   Result := True; //Required for override compatibility
   if fAction = nil then
     raise ELocError.Create(gRes.Units[UnitType].GUIName + ' has no action at start of TKMUnitWorker.UpdateState', fPosition);
+
   if inherited UpdateState then Exit;
 
   CheckCondition;
@@ -968,7 +969,8 @@ begin
 
   if (fTask = nil) and (fAction = nil) then SetActionStay(20, uaWalk);
 
-  if fAction=nil then raise ELocError.Create(gRes.Units[UnitType].GUIName+' has no action at end of TKMUnitWorker.UpdateState',fPosition);
+  if fAction = nil then
+    raise ELocError.Create(gRes.Units[UnitType].GUIName + ' has no action at end of TKMUnitWorker.UpdateState', fPosition);
 end;
 
 
