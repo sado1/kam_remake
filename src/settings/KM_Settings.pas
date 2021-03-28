@@ -63,8 +63,9 @@ var
   path: string;
 begin
   path := GetDocumentsSavePath + GetDefaultSettingsName;
+  gLog.AddTime(Format('Start loading ''%s'' from ''%s''', [GetSettingsName, path]));
   LoadFromFile(path);
-  gLog.AddTime(GetSettingsName + ' loaded from ' + path);
+  gLog.AddTime(Format('''%s'' was successfully loaded from ''%s''', [GetSettingsName, path]));
 end;
 
 
@@ -75,8 +76,9 @@ begin
   saveFolder := GetDocumentsSavePath;
   ForceDirectories(saveFolder);
   path := saveFolder + GetDefaultSettingsName;
+  gLog.AddTime(Format('Start saving ''%s'' to ''%s''', [GetSettingsName, path]));
   SaveToFile(path);
-  gLog.AddTime(GetSettingsName + ' saved to ' + path);
+  gLog.AddTime(Format('''%s'' was successfully saved to ''%s''', [GetSettingsName, path]));
 end;
 
 
