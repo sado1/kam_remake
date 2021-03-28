@@ -281,6 +281,8 @@ type
     procedure ResetControl(aCtrl: TControl);
     procedure ResetSubPanel(aPanel: TWinControl);
     function GetDevSettingsPath: UnicodeString;
+    procedure DoLoadDevSettings;
+    procedure DoSaveDevSettings;
     {$IFDEF MSWindows}
     function GetWindowParams: TKMWindowParamsRecord;
     procedure WMSysCommand(var Msg: TWMSysCommand); message WM_SYSCOMMAND;
@@ -354,7 +356,7 @@ end;
 
 
 // Load dev settings from kmr_dev.xml
-procedure TFormMain.LoadDevSettings;
+procedure TFormMain.DoLoadDevSettings;
 
   procedure ManageSubPanel(aPanel: TWinControl; anParent: TXMLNode);
   var
@@ -406,9 +408,8 @@ var
   nRoot, nSection: TXMLNode;
 begin
   fUpdating := True;
+  devSettingsPath := GetDevSettingsPath;
   try
-    devSettingsPath := GetDevSettingsPath;
-
     gLog.AddTime('Loading dev settings from file ''' + devSettingsPath + '''');
 
     // Apply default settings
@@ -416,11 +417,11 @@ begin
     begin
       for I := 0 to mainGroup.Panels.Count - 1 do
         TCategoryPanel(mainGroup.Panels[I]).Collapsed := True;
-      
+
       cpGameControls.Collapsed := False; //The only not collapsed section
       Exit;
     end;
-  
+
     //Load dev data from XML
     newXML := TKMXMLDocument.Create;
     newXML.LoadFromFile(devSettingsPath);
@@ -453,7 +454,7 @@ end;
 
 
 // Save dev settings to kmr_dev.xml
-procedure TFormMain.SaveDevSettings;
+procedure TFormMain.DoSaveDevSettings;
 
   procedure ManageSubPanel(aPanel: TWinControl; anParent: TXMLNode);
   var
@@ -527,6 +528,50 @@ begin
 
   newXML.SaveToFile(devSettingsPath);
   newXML.Free;
+end;
+
+
+// Load dev settings from kmr_dev.xml
+procedure TFormMain.LoadDevSettings;
+begin
+  {$IFDEF DEBUG}
+  // allow crash while debugging
+  DoLoadDevSettings;
+  {$ELSE}
+  try
+    // Skip crash on released version, only log the error
+    DoLoadDevSettings;
+  except
+    on E: Exception do
+    begin
+      gLog.AddTime('Error while loading dev settings from ''' + GetDevSettingsPath + ''':' + sLineBreak + E.Message
+          {$IFDEF WDC}+ sLineBreak + E.StackTrace{$ENDIF}
+        );
+    end;
+  end;
+  {$ENDIF}
+end;
+
+
+// Save dev settings to kmr_dev.xml
+procedure TFormMain.SaveDevSettings;
+begin
+  {$IFDEF DEBUG}
+  // allow crash while debugging
+  DoSaveDevSettings;
+  {$ELSE}
+  try
+    // Skip crash on released version, only log the error
+    DoSaveDevSettings;
+  except
+    on E: Exception do
+    begin
+      gLog.AddTime('Error while saving dev settings to ''' + GetDevSettingsPath + ''':' + sLineBreak + E.Message
+          {$IFDEF WDC}+ sLineBreak + E.StackTrace{$ENDIF}
+        );
+    end;
+  end;
+  {$ENDIF}
 end;
 
 
