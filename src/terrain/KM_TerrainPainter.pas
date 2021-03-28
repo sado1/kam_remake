@@ -47,7 +47,8 @@ type
                                    aGetOnlyTileCornersTK: Boolean = False; aGetOnlyLandNodeTK: Boolean = False);
     procedure BrushTile(const X, Y: Integer);
     procedure BrushTerrainTile(const X, Y: Integer; aTerKind: TKMTerrainKind);
-    procedure BrushObjects(const X, Y: Integer);
+    procedure BrushObjects(const X, Y: Integer; aTerKind: TKMTerrainKind);
+    procedure ApplyBrushObjects(const X, Y: Integer);
     procedure MagicBrush(const X,Y: Integer); overload;
     procedure MagicBrush(const X,Y: Integer; aMaskKind: TKMTileMaskKind); overload;
     procedure UseMagicBrush(X,Y,aSize: Integer; aSquare: Boolean; aAroundTiles: Boolean = False);
@@ -229,8 +230,7 @@ const
     (255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255),      // FastWater
     (255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255)       // Lava
     );
-
-    RandomTrees1: array[tkCustom..tkLava, 0..24] of Byte = (
+    RandomTreesAll: array[tkCustom..tkLava, 0..24] of Byte = (
     //age 1
     (255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255),//tkCustom
     (88,89,90,92,93,94,95,97,98,99,100,102,103,104,105,112,113,114,88,89,90,92,93,94,95), // Grass - reduced chance for "eye-catching" tiles
@@ -263,71 +263,106 @@ const
     (255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255),      // FastWater
     (255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255)       // Lava
     );
-    //age 2
-    RandomTrees2: array[tkCustom..tkLava, 0..17] of Byte = (
-    (255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255),//tkCustom
-    (89,90,93,94,95,99,100,104,105,113,114,89,90,93,94,95,99,100), // Grass - reduced chance for "eye-catching" tiles
-    (109,110,113,114,150,151,154,155,169,170,113,114,150,151,154,155,169,170),     // Moss
-    (99,100,109,110,118,119,123,124,99,100,109,110,118,119,123,124,123,124),    // PaleGrass
-    (255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255),   // CoastSand
-    (93,94,95,104,105,118,119,123,124,93,94,95,104,105,118,119,123,124),     // GrassSand1
-    (93,94,95,123,124,113,114,109,110,93,94,95,123,124,113,114,109,110),     // GrassSand2
-    (123,124,109,110,94,95,123,124,109,110,94,95,123,124,109,110,94,95),     // GrassSand3
-    (255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255),    // Sand
-    (104,105,109,110,113,114,118,119,150,151,154,155,159,160,164,165,169,170),     // GrassDirt
-    (150,151,154,155,159,160,164,165,169,170,94,95,164,165,169,170,94,95),   // Dirt
-    (255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255),     // Cobblestone
-    (255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255),     // GrassyWater
-    (255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255),  // Swamp
-    (255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255),     // Ice
-    (89,90,93,94,95,99,100,104,105,113,114,95,99,100,104,105,113,114),     // SnowOnGrass
-    (150,151,154,155,159,160,164,165,169,170,94,95,164,165,169,170,94,95),     // SnowOnDirt
-    (169,170,172,164,165,159,160,169,170,172,164,165,159,160,169,170,172,164),// Snow
-    (255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255),// DeepSnow
-    (255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255),// StoneMount
-    (255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255),// GoldMount
-    (255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255),// IronMount
-    (255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255),// Abyss
-    (255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255), // Gravel
-    (255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255),  // Coal (enriched pattern)
-    (255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255),  // Gold
-    (255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255),  // Iron
-    (255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255),  // Water
-    (255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255),      // FastWater
-    (255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255));       // Lava
-    //age 3
-    RandomTrees3: array[tkCustom..tkLava, 0..8] of Byte = (
-    (255,255,255,255,255,255,255,255,255),//tkCustom
-    (90,95,100,105,114,90,95,100,105), // Grass - reduced chance for "eye-catching" tiles
-    (110,114,151,155,110,114,151,155,170),     // Moss
-    (100,110,119,124,100,110,119,124,194),    // PaleGrass
-    (255,255,255,255,255,255,255,255,255),   // CoastSand
-    (95,105,119,124,95,105,119,124,124),     // GrassSand1
-    (95,124,114,110,95,124,114,110,110),     // GrassSand2
-    (124,110,95,124,110,95,124,110,95),     // GrassSand3
-    (255,255,255,255,255,255,255,255,255),    // Sand
-    (105,110,114,119,151,155,160,165,170),     // GrassDirt
-    (151,155,160,165,170,95,165,170,95),   // Dirt
-    (255,255,255,255,255,255,255,255,255),     // Cobblestone
-    (255,255,255,255,255,255,255,255,255),    // GrassyWater
-    (255,255,255,255,255,255,255,255,255),  // Swamp
-    (255,255,255,255,255,255,255,255,255),     // Ice
-    (90,95,100,105,114,90,95,100,105),     // SnowOnGrass
-    (151,155,160,165,170,95,165,170,95),     // SnowOnDirt
-    (170,172,165,160,170,172,165,160,170),// Snow
-    (255,255,255,255,255,255,255,255,255),// DeepSnow
-    (255,255,255,255,255,255,255,255,255),// StoneMount
-    (255,255,255,255,255,255,255,255,255),// GoldMount
-    (255,255,255,255,255,255,255,255,255),// IronMount
-    (255,255,255,255,255,255,255,255,255),// Abyss
-    (255,255,255,255,255,255,255,255,255), // Gravel
-    (255,255,255,255,255,255,255,255,255),  // Coal (enriched pattern)
-    (255,255,255,255,255,255,255,255,255),  // Gold
-    (255,255,255,255,255,255,255,255,255),  // Iron
-    (255,255,255,255,255,255,255,255,255),  // Water
-    (255,255,255,255,255,255,255,255,255),      // FastWater
-    (255,255,255,255,255,255,255,255,255));       // Lava
 
+    RandomTrees1: array[tkCustom..tkLava, 0..6] of Byte = (
+    //age 1
+    (255,255,255,255,255,255,255),    //tkCustom
+    (88,92,97,102,112,88,92),            // Grass
+    (107,112,116,149,153,167,107),    // Moss
+    (97,107,116,121,97,107,116),      // PaleGrass
+    (255,255,255,255,255,255,255),    // CoastSand
+    (92,102,116,121,92,102,116),      // GrassSand1
+    (92,121,112,107,92,121,112),      // GrassSand2
+    (121,107,92,121,107,92,121),       // GrassSand3
+    (255,255,255,255,255,255,255),    // Sand
+    (102,107,116,153,157,162,167),     // GrassDirt
+    (149,153,157,162,92,149,157),   // Dirt
+    (255,255,255,255,255,255,255),     // Cobblestone
+    (255,255,255,255,255,255,255),     // GrassyWater
+    (255,255,255,255,255,255,255),     // Swamp
+    (255,255,255,255,255,255,255),     // Ice
+    (88,92,97,102,112,88,92),                     // SnowOnGrass
+    (149,153,157,162,92,149,153),        // SnowOnDirt
+    (167,162,157,167,162,157,167),    // Snow
+    (255,255,255,255,255,255,255),      // DeepSnow
+    (255,255,255,255,255,255,255),      // StoneMount
+    (255,255,255,255,255,255,255),      // GoldMount
+    (255,255,255,255,255,255,255),      // IronMount
+    (255,255,255,255,255,255,255),      // Abyss
+    (255,255,255,255,255,255,255),      // Gravel
+    (255,255,255,255,255,255,255),      // Coal (enriched pattern)
+    (255,255,255,255,255,255,255),      // Gold
+    (255,255,255,255,255,255,255),      // Iron
+    (255,255,255,255,255,255,255),      // Water
+    (255,255,255,255,255,255,255),      // FastWater
+    (255,255,255,255,255,255,255)       // Lava
+    );
+    //age 2
+    RandomTrees2: array[tkCustom..tkLava, 0..6] of Byte = (
+    (255,255,255,255,255,255,255),    //tkCustom
+    (89,93,98,103,113,89,93),            // Grass
+    (108,113,117,150,154,168,108),    // Moss
+    (98,108,117,122,98,108,117),      // PaleGrass
+    (255,255,255,255,255,255,255),    // CoastSand
+    (93,103,117,122,93,103,117),      // GrassSand1
+    (93,122,113,108,93,122,113),      // GrassSand2
+    (122,108,93,122,108,92,122),       // GrassSand3
+    (255,255,255,255,255,255,255),    // Sand
+    (103,108,117,154,158,163,167),     // GrassDirt
+    (150,154,158,163,93,150,158),   // Dirt
+    (255,255,255,255,255,255,255),     // Cobblestone
+    (255,255,255,255,255,255,255),     // GrassyWater
+    (255,255,255,255,255,255,255),     // Swamp
+    (255,255,255,255,255,255,255),     // Ice
+    (89,93,98,103,113,89,93),                     // SnowOnGrass
+    (150,154,158,163,93,150,158),        // SnowOnDirt
+    (168,163,158,168,163,158,168),    // Snow
+    (255,255,255,255,255,255,255),      // DeepSnow
+    (255,255,255,255,255,255,255),      // StoneMount
+    (255,255,255,255,255,255,255),      // GoldMount
+    (255,255,255,255,255,255,255),      // IronMount
+    (255,255,255,255,255,255,255),      // Abyss
+    (255,255,255,255,255,255,255),      // Gravel
+    (255,255,255,255,255,255,255),      // Coal (enriched pattern)
+    (255,255,255,255,255,255,255),      // Gold
+    (255,255,255,255,255,255,255),      // Iron
+    (255,255,255,255,255,255,255),      // Water
+    (255,255,255,255,255,255,255),      // FastWater
+    (255,255,255,255,255,255,255)       // Lava
+    );
+    //age 3
+    RandomTrees3: array[tkCustom..tkLava, 0..6] of Byte = (
+    (255,255,255,255,255,255,255),    //tkCustom
+    (90,95,100,105,114,90,85),            // Grass
+    (110,114,119,151,155,170,160),    // Moss
+    (100,110,119,124,100,110,119),      // PaleGrass
+    (255,255,255,255,255,255,255),    // CoastSand
+    (95,105,119,124,95,105,119),      // GrassSand1
+    (95,124,114,110,95,124,114),      // GrassSand2
+    (124,110,95,124,110,95,124),       // GrassSand3
+    (255,255,255,255,255,255,255),    // Sand
+    (105,110,119,155,160,165,170),     // GrassDirt
+    (151,155,160,165,95,151,160),   // Dirt
+    (255,255,255,255,255,255,255),     // Cobblestone
+    (255,255,255,255,255,255,255),     // GrassyWater
+    (255,255,255,255,255,255,255),     // Swamp
+    (255,255,255,255,255,255,255),     // Ice
+    (90,95,100,105,114,90,85),                     // SnowOnGrass
+    (151,155,160,165,95,151,160),        // SnowOnDirt
+    (170,165,160,170,165,160,170),    // Snow
+    (255,255,255,255,255,255,255),      // DeepSnow
+    (255,255,255,255,255,255,255),      // StoneMount
+    (255,255,255,255,255,255,255),      // GoldMount
+    (255,255,255,255,255,255,255),      // IronMount
+    (255,255,255,255,255,255,255),      // Abyss
+    (255,255,255,255,255,255,255),      // Gravel
+    (255,255,255,255,255,255,255),      // Coal (enriched pattern)
+    (255,255,255,255,255,255,255),      // Gold
+    (255,255,255,255,255,255,255),      // Iron
+    (255,255,255,255,255,255,255),      // Water
+    (255,255,255,255,255,255,255),      // FastWater
+    (255,255,255,255,255,255,255)       // Lava
+    );
     RandomMushrooms: array[0..3]  of Byte = (17,18,19,21);
     RandomStones:    array[0..11] of Byte = (0,1,2,3,4,8,9,0,1,2,3,4);
     RandomFlowers:   array[0..2]  of Byte = (22,23,24);
@@ -471,6 +506,12 @@ begin
 end;
 
 
+procedure TKMTerrainPainter.ApplyBrushObjects(const X, Y: Integer);
+begin
+  BrushObjects(X,Y, fTerKind);
+end;
+
+
 procedure TKMTerrainPainter.BrushTerrainTile(const X, Y: Integer; aTerKind: TKMTerrainKind);
 
   procedure AddBrushAreaTerKind(aX,aY: Integer);
@@ -498,14 +539,6 @@ begin
 
   if not gTerrain.TileInMapCoords(X, Y) then
     Exit;
-
-  if gGameCursor.MapEdUseTerrainObjects
-    and (fLastPosition <> KMPoint(fMapXc,fMapYc)) then
-  begin
-    fLastPosition := KMPoint(fMapXc,fMapYc);
-    IterateOverArea(KMPoint(fMapXc+1,fMapYc+1), fSize, fShape = hsSquare, BrushObjects);
-  end;
-
   LandTerKind[Y,   X].TerKind   := aTerKind;
   LandTerKind[Y,   X+1].TerKind := aTerKind;
   LandTerKind[Y+1, X+1].TerKind := aTerKind;
@@ -519,6 +552,13 @@ begin
   AddBrushAreaTerKind(X+1,Y);
   AddBrushAreaTerKind(X+1,Y+1);
   AddBrushAreaTerKind(X,  Y+1);
+
+  if gGameCursor.MapEdUseTerrainObjects
+    and (fLastPosition <> KMPoint(fMapXc,fMapYc)) then
+    begin
+      fLastPosition := KMPoint(fMapXc,fMapYc);
+      IterateOverArea(KMPoint(fMapXc,fMapYc), fSize, fShape = hsSquare, ApplyBrushObjects);
+    end;
 end;
 
 
@@ -552,9 +592,17 @@ var
   objRandom: Integer;
 begin
   Result := OBJ_NONE;
+  if ( LandTerKind[aY+1, aX].TerKind = aTerrainKind )
+    and ( LandTerKind[aY-1, aX].TerKind = aTerrainKind )
+    and ( LandTerKind[aY, aX-1].TerKind = aTerrainKind )
+    and ( LandTerKind[aY, aX+1].TerKind = aTerrainKind ) then
   case aObjType of
     0:  begin
         case gGameCursor.MapEdForestAge of
+          0:  begin
+                objRandom := KaMRandom(High(RandomTreesAll[aTerrainKind]), 'TKMTerrainPainter.PickRandomObject');
+                Result := RandomTreesAll[aTerrainKind, objRandom];
+              end;
           1:  begin
                 objRandom := KaMRandom(High(RandomTrees1[aTerrainKind]), 'TKMTerrainPainter.PickRandomObject');
                 Result := RandomTrees1[aTerrainKind, objRandom];
@@ -1598,14 +1646,14 @@ begin
   if (fLastPosition <> KMPoint(fMapXc,fMapYc)) then
   begin
     fLastPosition := KMPoint(fMapXc,fMapYc);
-    IterateOverArea(KMPoint(fMapXc+1,fMapYc+1), fSize, fShape = hsSquare, BrushObjects);
+    IterateOverArea(KMPoint(fMapXc,fMapYc), fSize, fShape = hsSquare, ApplyBrushObjects);
     rect := KMRectGrow(KMRect(fLastPosition), (fSize div 2) + 1);
     gTerrain.UpdatePassability(rect);
   end;
 end;
 
 
-procedure TKMTerrainPainter.BrushObjects(const X, Y: Integer);
+procedure TKMTerrainPainter.BrushObjects(const X, Y: Integer; aTerKind: TKMTerrainKind);
 var
   key, I: Integer;
 begin
@@ -1623,7 +1671,10 @@ begin
         key := KaMRandom(400 div gGameCursor.MapEdObjectsDensity, 'TKMTerrainPainter.BrushObjects');
         if key < 2 then
         begin
-          gTerrain.Land[Y, X].Obj := PickRandomObject(LandTerKind[Y, X].TerKind,I,X,Y);
+          if Byte(aTerKind) > 1 then
+            gTerrain.Land[Y, X].Obj := PickRandomObject(aTerKind,I,X,Y)
+          else
+            gTerrain.Land[Y, X].Obj := PickRandomObject(LandTerKind[Y, X].TerKind,I,X,Y)
         end;
       end;
   end;
