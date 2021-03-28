@@ -270,7 +270,6 @@ type
 
     procedure ControlsUpdate(Sender: TObject);
   private
-    fDevSettingsFilepath: string;
     fStartVideoPlayed: Boolean;
     fUpdating: Boolean;
     fMissionDefOpenPath: UnicodeString;
@@ -281,6 +280,7 @@ type
     function GetMouseWheelStepsCnt(aWheelData: Integer): Integer;
     procedure ResetControl(aCtrl: TControl);
     procedure ResetSubPanel(aPanel: TWinControl);
+    function GetDevSettingsPath: UnicodeString;
     {$IFDEF MSWindows}
     function GetWindowParams: TKMWindowParamsRecord;
     procedure WMSysCommand(var Msg: TWMSysCommand); message WM_SYSCOMMAND;
@@ -347,6 +347,12 @@ begin
 end;
 
 
+function TFormMain.GetDevSettingsPath: UnicodeString;
+begin
+  Result := ExeDir + DEV_SETTINGS_XML_FILENAME;
+end;
+
+
 // Load dev settings from kmr_dev.xml
 procedure TFormMain.LoadDevSettings;
 
@@ -392,6 +398,7 @@ procedure TFormMain.LoadDevSettings;
 
 var
   I: Integer;
+  devSettingsPath: UnicodeString;
   newXML: TKMXMLDocument;
   cp: TCategoryPanel;
   cpSurface: TCategoryPanelSurface;
@@ -399,10 +406,13 @@ var
   nRoot, nSection: TXMLNode;
 begin
   fUpdating := True;
-
   try
+    devSettingsPath := GetDevSettingsPath;
+
+    gLog.AddTime('Loading dev settings from file ''' + devSettingsPath + '''');
+
     // Apply default settings
-    if not FileExists(fDevSettingsFilepath) then
+    if not FileExists(devSettingsPath) then
     begin
       for I := 0 to mainGroup.Panels.Count - 1 do
         TCategoryPanel(mainGroup.Panels[I]).Collapsed := True;
@@ -413,7 +423,7 @@ begin
   
     //Load dev data from XML
     newXML := TKMXMLDocument.Create;
-    newXML.LoadFromFile(ExeDir + DEV_SETTINGS_XML_FILENAME);
+    newXML.LoadFromFile(devSettingsPath);
     nRoot := newXML.Root;
 
     for I := 0 to mainGroup.Panels.Count - 1 do
@@ -485,14 +495,19 @@ procedure TFormMain.SaveDevSettings;
 
 var
   I: Integer;
+  devSettingsPath: UnicodeString;
   newXML: TKMXMLDocument;
   cp: TCategoryPanel;
   cpSurface: TCategoryPanelSurface;
   nRoot, nSection: TXMLNode;
 begin
+  devSettingsPath := GetDevSettingsPath;
+
+  gLog.AddTime('Saving dev settings to file ''' + devSettingsPath + '''');
+
   //Save dev data to XML
   newXML := TKMXMLDocument.Create;
-  newXML.LoadFromFile(fDevSettingsFilepath);
+  newXML.LoadFromFile(devSettingsPath);
   nRoot := newXML.Root;
 
   for I := 0 to mainGroup.Panels.Count - 1 do
@@ -510,7 +525,7 @@ begin
     end;
   end;
 
-  newXML.SaveToFile(fDevSettingsFilepath);
+  newXML.SaveToFile(devSettingsPath);
   newXML.Free;
 end;
 
@@ -518,7 +533,6 @@ end;
 //Remove VCL panel and use flicker-free TMyPanel instead
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
-  fDevSettingsFilepath := ExeDir + DEV_SETTINGS_XML_FILENAME;
   fStartVideoPlayed := False;
   RenderArea := TKMRenderControl.Create(Self);
   RenderArea.Parent := Self;
