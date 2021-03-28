@@ -66,6 +66,7 @@ type
       ObjectTypeSet: array [0..9] of  TKMButtonFlat;
       BrushCircle, BrushSquare: TKMButtonFlat;
       CleanBrush: TKMButtonFlat;
+      Label_ForestAge: TKMLabel;
 
       Scroll_ObjectsPalette: TKMScrollBar;
   public
@@ -308,15 +309,17 @@ begin
   with TKMLabel.Create(Panel_Objects, 9, 570, Panel_Objects.Width - 9, 20, gResTexts[TX_MAPED_OBJECTS_BRUSH_AGE], fntMetal, taLeft) do
     Hint := gResTexts[TX_MAPED_OBJECTS_BRUSH_AGE_HINT];
 
-  ForestAge   := TKMTrackBar.Create(Panel_Objects, 9, 595, (Panel_Objects.Width) - 18, 1, 3);
+  ForestAge   := TKMTrackBar.Create(Panel_Objects, 9, 595, (Panel_Objects.Width) - 18, 0, 3);
   ForestAge.Anchors := [anLeft, anTop, anRight];
-  ForestAge.Position := 1;
+  ForestAge.Position := 0;
   ForestAge.OnChange := ObjectsChange;
   ForestAge.Hint := gResTexts[TX_MAPED_OBJECTS_BRUSH_AGE_HINT];
 
+  Label_ForestAge := TKMLabel.Create(Panel_Objects, 9, 620, Panel_Objects.Width - 9, 20, 'All ages', fntMetal, taLeft);
 
-  gGameCursor.MapEdObjectsType[0] := True;
-  gGameCursor.MapEdObjectsType[1] := True;
+
+//  gGameCursor.MapEdObjectsType[0] := True;
+//  gGameCursor.MapEdObjectsType[1] := True;
 
 //  ObjectTypeSet[0].Down := True;
 //  ObjectTypeSet[1].Down := True;
@@ -581,7 +584,12 @@ var
   objIndex, I: Integer;
 begin
 
-
+  case ForestAge.Position of
+      0: Label_ForestAge.Caption := 'All Ages';
+      1: Label_ForestAge.Caption := 'Young trees';
+      2: Label_ForestAge.Caption := 'Medium trees';
+      3: Label_ForestAge.Caption := 'Trees ready to chop';
+  end;
   case TKMButtonFlat(Sender).Tag of
     OBJ_BLOCK_TAG,
     OBJ_NONE_TAG:  objIndex := TKMButtonFlat(Sender).Tag; // Block or Erase
