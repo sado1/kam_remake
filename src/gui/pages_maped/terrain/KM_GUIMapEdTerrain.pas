@@ -1,4 +1,4 @@
-﻿unit KM_GUIMapEdTerrain;
+unit KM_GUIMapEdTerrain;
 {$I KaM_Remake.inc}
 interface
 uses
