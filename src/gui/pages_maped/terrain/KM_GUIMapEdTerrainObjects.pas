@@ -74,6 +74,7 @@ type
 
     procedure KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean);
     procedure KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
+    procedure MouseWheel(Shift: TShiftState; WheelSteps: Integer; X,Y: Integer; var aHandled: Boolean);
 
     procedure Show;
     function Visible: Boolean; override;
@@ -588,21 +589,15 @@ procedure TKMMapEdTerrainObjects.ObjectsBrushChange(Sender: TObject);
 var
   I: Integer;
 begin
+  gGameCursor.Mode := cmObjectsBrush;
+
   for I := 0 to 9 do
     if Sender = ObjectTypeSet[I] then
-    begin
       gGameCursor.MapEdObjectsType[I] := not gGameCursor.MapEdObjectsType[I];
-      gGameCursor.Mode := cmObjectsBrush;
-    end;
-
-  if (Sender = ForestAge) or (Sender = ForestDensity) or (Sender = BrushSize) then
-    if gGameCursor.Mode = cmObjects then
-      gGameCursor.Mode := cmObjectsBrush;
 
   if Sender = CleanBrush then
   begin
-    gGameCursor.Mode := cmObjectsBrush;
-    if CleanBrush.Down=false then
+    if CleanBrush.Down = False then
     begin
       gGameCursor.MapEdCleanBrush := True;
       CleanBrush.Down := True;
@@ -617,7 +612,6 @@ begin
   if Sender = BrushCircle then
   begin
     gGameCursor.MapEdShape := hsCircle;
-    gGameCursor.Mode := cmObjectsBrush;
     BrushCircle.Down := True;
     BrushSquare.Down := False;
   end
@@ -625,7 +619,6 @@ begin
   if Sender = BrushSquare then
   begin
     gGameCursor.MapEdShape := hsSquare;
-    gGameCursor.Mode := cmObjectsBrush;
   end;
   if gGameCursor.MapEdShape = hsSquare then
   begin
@@ -644,8 +637,6 @@ procedure TKMMapEdTerrainObjects.ObjectsChange(Sender: TObject);
 var
   objIndex: Integer;
 begin
-
-
   case TKMButtonFlat(Sender).Tag of
     OBJ_BLOCK_TAG,
     OBJ_NONE_TAG:  objIndex := TKMButtonFlat(Sender).Tag; // Block or Erase
@@ -760,6 +751,17 @@ procedure TKMMapEdTerrainObjects.Hide;
 begin
   Panel_Objects.Hide;
   PopUp_ObjectsPalette.Hide;
+end;
+
+
+procedure TKMMapEdTerrainObjects.MouseWheel(Shift: TShiftState; WheelSteps, X, Y: Integer; var aHandled: Boolean);
+begin
+  if not aHandled and Visible and (GetKeyState(VK_CONTROL) < 0) then // Do not use ssCtrl in Shift here, as it can sometimes be wrong values inside Shift (ssShift instead of ssCtrl)
+  begin
+    BrushSize.Position := Max(0, BrushSize.Position - WheelSteps); //can't set negative number
+    ObjectsBrushChange(nil);
+    aHandled := True;
+  end;
 end;
 
 

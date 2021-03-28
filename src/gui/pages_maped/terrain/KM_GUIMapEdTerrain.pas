@@ -1,4 +1,4 @@
-unit KM_GUIMapEdTerrain;
+﻿unit KM_GUIMapEdTerrain;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -134,6 +134,7 @@ procedure TKMMapEdTerrain.MouseWheel(Shift: TShiftState; WheelSteps, X, Y: Integ
 begin
   fGuiBrushes.MouseWheel(Shift, WheelSteps, X, Y, aHandled);
   fGuiHeights.MouseWheel(Shift, WheelSteps, X, Y, aHandled);
+  fGuiObjects.MouseWheel(Shift, WheelSteps, X, Y, aHandled);
 end;
 
 
