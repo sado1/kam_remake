@@ -976,6 +976,9 @@ end;
 
 {$IFDEF USE_MAD_EXCEPT}
 procedure TKMGame.AttachCrashReport(const ExceptIntf: IMEException; const aZipFile: UnicodeString);
+const
+  CRASHREPORT = 'crashreport';
+
   procedure AttachFile(const aFile: UnicodeString);
   begin
     if (aFile <> '') and FileExists(aFile) then
@@ -991,23 +994,26 @@ begin
   // Attempt to save the game, but if the state is too messed up it might fail
   fSaveWorkerThread.fSynchronousExceptionMode := True; //Do saving synchronously in main thread
   try
-    if (fParams.Mode in [gmSingle, gmCampaign, gmMulti, gmMultiSpectate])
-      and not (fGamePlayInterface.UIMode = umReplay) then //In case game mode was altered or loaded with logical error
-    begin
-      Save('crashreport', UTCNow, fSaveWorkerThread);
-      fSaveWorkerThread.WaitForAllWorkToComplete; //Wait till save is made
-      AttachFile(SaveName('crashreport', EXT_SAVE_MAIN, fParams.IsMultiPlayerOrSpec));
-//      AttachFile(SaveName('crashreport', EXT_SAVE_MAIN_TXT, fParams.IsMultiPlayerOrSpec)); //todo: Debug. remove before release
-      AttachFile(SaveName('crashreport', EXT_SAVE_BASE, fParams.IsMultiPlayerOrSpec));
-      AttachFile(SaveName('crashreport', EXT_SAVE_REPLAY, fParams.IsMultiPlayerOrSpec));
-      AttachFile(SaveName('crashreport', EXT_SAVE_MP_LOCAL, fParams.IsMultiPlayerOrSpec));
-      AttachFile(SaveName('crashreport', EXT_SAVE_RNG_LOG, fParams.IsMultiPlayerOrSpec));
+    try
+      if (fParams.Mode in [gmSingle, gmCampaign, gmMulti, gmMultiSpectate])
+        and not (fGamePlayInterface.UIMode = umReplay) then //In case game mode was altered or loaded with logical error
+      begin
+        Save(CRASHREPORT, UTCNow, fSaveWorkerThread);
+        fSaveWorkerThread.WaitForAllWorkToComplete; //Wait till save is made
+        AttachFile(SaveName(CRASHREPORT, EXT_SAVE_MAIN, fParams.IsMultiPlayerOrSpec));
+  //      AttachFile(SaveName(CRASHREPORT, EXT_SAVE_MAIN_TXT, fParams.IsMultiPlayerOrSpec)); //todo: Debug. remove before release
+        AttachFile(SaveName(CRASHREPORT, EXT_SAVE_BASE, fParams.IsMultiPlayerOrSpec));
+        AttachFile(SaveName(CRASHREPORT, EXT_SAVE_REPLAY, fParams.IsMultiPlayerOrSpec));
+        AttachFile(SaveName(CRASHREPORT, EXT_SAVE_MP_LOCAL, fParams.IsMultiPlayerOrSpec));
+        AttachFile(SaveName(CRASHREPORT, EXT_SAVE_RNG_LOG, fParams.IsMultiPlayerOrSpec));
+      end;
+    except
+      on E : Exception do
+        gLog.AddTime('Exception while trying to save game for crash report: ' + E.ClassName + ': ' + E.Message);
     end;
-  except
-    on E : Exception do
-      gLog.AddTime('Exception while trying to save game for crash report: ' + E.ClassName + ': ' + E.Message);
+  finally
+    fSaveWorkerThread.fSynchronousExceptionMode := False;
   end;
-  fSaveWorkerThread.fSynchronousExceptionMode := False;
 
   missionFile := fParams.MissionFile;
   path := ExtractFilePath(ExeDir + missionFile);

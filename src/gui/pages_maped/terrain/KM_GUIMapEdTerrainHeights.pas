@@ -180,30 +180,30 @@ end;
 
 procedure TKMMapEdTerrainHeights.MouseWheel(Shift: TShiftState; WheelSteps, X, Y: Integer; var aHandled: Boolean);
 begin
-  if not aHandled and Visible then
+  if aHandled or not Visible then
+    Exit;
+
+  // Do not use ssCtrl in Shift here, as it can sometimes be wrong values inside Shift (ssShift instead of ssCtrl)
+  if GetKeyState(VK_CONTROL) < 0 then
   begin
-    // Do not use ssCtrl in Shift here, as it can sometimes be wrong values inside Shift (ssShift instead of ssCtrl)
-    if (GetKeyState(VK_CONTROL) < 0) then
-    begin
-      HeightSize.Position := Max(0, HeightSize.Position - WheelSteps); //can't set negative number
-      aHandled := True;
-    end;
-
-    if (GetKeyState(VK_MENU) < 0) then
-    begin
-      HeightSlope.Position := Max(0, HeightSlope.Position - WheelSteps); //can't set negative number
-      aHandled := True;
-    end;
-
-    if (GetKeyState(VK_SHIFT) < 0) then
-    begin
-      HeightSpeed.Position := Max(0, HeightSpeed.Position - WheelSteps); //can't set negative number
-      aHandled := True;
-    end;
-
-    if aHandled then
-      UpdateHeightParams;
+    HeightSize.Position := Max(0, HeightSize.Position - WheelSteps); //can't set negative number
+    aHandled := True;
   end;
+
+  if GetKeyState(VK_MENU) < 0 then
+  begin
+    HeightSlope.Position := Max(0, HeightSlope.Position - WheelSteps); //can't set negative number
+    aHandled := True;
+  end;
+
+  if GetKeyState(VK_SHIFT) < 0 then
+  begin
+    HeightSpeed.Position := Max(0, HeightSpeed.Position - WheelSteps); //can't set negative number
+    aHandled := True;
+  end;
+
+  if aHandled then
+    UpdateHeightParams;
 end;
 
 

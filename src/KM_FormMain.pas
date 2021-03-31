@@ -1387,7 +1387,7 @@ begin
       UpdateVisibleLayers(chkShowUnitRadius,    mlUnitsAttackRadius);
       UpdateVisibleLayers(chkShowDefencePos,    mlDefencesAll);
       UpdateVisibleLayers(chkShowFlatTerrain,   mlFlatTerrain);
-    chkShowTowerRadius.Tag := 5;
+      chkShowTowerRadius.Tag := 5;
     end;
     {$ENDIF}
 

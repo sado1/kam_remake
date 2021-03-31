@@ -307,7 +307,7 @@ begin
 end;
 
 
-function GetHintWHotKey(const aText: String; aKeyFunc: TKMKeyFunction): String; overload;
+function GetHintWHotKey(const aText: String; aKeyFunc: TKMKeyFunction): String;
 var
   hotKeyStr: String;
 begin
