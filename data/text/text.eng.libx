@@ -1431,5 +1431,12 @@
 1481:Density
 1482:Objects / forest density
 1483:Forest age
-1484:1 - all trees ages, 3 - all trees are ready to chop
-1485:Clean brush - clean all objects
+1484:Cleaning brush, removes all objects
+1485:All
+1486:Young
+1487:Medium
+1488:Chop
+1489:All ages
+1490:Young trees
+1491:Medium trees
+1492:Trees ready to chop

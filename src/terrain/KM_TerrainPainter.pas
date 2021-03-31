@@ -47,8 +47,9 @@ type
                                    aGetOnlyTileCornersTK: Boolean = False; aGetOnlyLandNodeTK: Boolean = False);
     procedure BrushTile(const X, Y: Integer);
     procedure BrushTerrainTile(const X, Y: Integer; aTerKind: TKMTerrainKind);
-    procedure BrushObjects(const X, Y: Integer; aTerKind: TKMTerrainKind);
+    procedure BrushObjects(const X, Y: Integer; aUseLandTKind: Boolean = True; aTerKind: TKMTerrainKind = tkCustom);
     procedure ApplyBrushObjects(const X, Y: Integer);
+    procedure ApplyBrushObjectsWTerKind(const X, Y: Integer);
     procedure MagicBrush(const X,Y: Integer); overload;
     procedure MagicBrush(const X,Y: Integer; aMaskKind: TKMTileMaskKind); overload;
     procedure UseMagicBrush(X,Y,aSize: Integer; aSquare: Boolean; aAroundTiles: Boolean = False);
@@ -508,7 +509,13 @@ end;
 
 procedure TKMTerrainPainter.ApplyBrushObjects(const X, Y: Integer);
 begin
-  BrushObjects(X,Y, fTerKind);
+  BrushObjects(X, Y);
+end;
+
+
+procedure TKMTerrainPainter.ApplyBrushObjectsWTerKind(const X, Y: Integer);
+begin
+  BrushObjects(X, Y, False, fTerKind);
 end;
 
 
@@ -557,7 +564,7 @@ begin
     and (fLastPosition <> KMPoint(fMapXc,fMapYc)) then
     begin
       fLastPosition := KMPoint(fMapXc,fMapYc);
-      IterateOverArea(KMPoint(fMapXc,fMapYc), fSize, fShape = hsSquare, ApplyBrushObjects);
+      IterateOverArea(KMPoint(fMapXc,fMapYc), fSize, fShape = hsSquare, ApplyBrushObjectsWTerKind);
     end;
 end;
 
@@ -1653,7 +1660,7 @@ begin
 end;
 
 
-procedure TKMTerrainPainter.BrushObjects(const X, Y: Integer; aTerKind: TKMTerrainKind);
+procedure TKMTerrainPainter.BrushObjects(const X, Y: Integer; aUseLandTKind: Boolean = True; aTerKind: TKMTerrainKind = tkCustom);
 var
   key, I: Integer;
 begin
@@ -1671,10 +1678,10 @@ begin
         key := KaMRandom(400 div gGameCursor.MapEdObjectsDensity, 'TKMTerrainPainter.BrushObjects');
         if key < 2 then
         begin
-          if Byte(aTerKind) > 1 then
-            gTerrain.Land[Y, X].Obj := PickRandomObject(aTerKind,I,X,Y)
-          else
-            gTerrain.Land[Y, X].Obj := PickRandomObject(LandTerKind[Y, X].TerKind,I,X,Y)
+          if aUseLandTKind then
+            aTerKind := LandTerKind[Y, X].TerKind;
+
+          gTerrain.Land[Y, X].Obj := PickRandomObject(aTerKind, I, X, Y);
         end;
       end;
   end;

@@ -63,7 +63,7 @@ type
       Image_ObjectAttributes: array[0..2] of array of TKMImage;
 
       //Objects brush
-      ForestDensity, ForestAge, BrushSize: TKMTrackBar;
+      BrushSize, ForestDensity, ForestAge: TKMTrackBar;
       ObjectTypeSet: array [0..9] of  TKMButtonFlat;
       BrushCircle, BrushSquare: TKMButtonFlat;
       CleanBrush: TKMButtonFlat;
@@ -88,9 +88,12 @@ type
 
 implementation
 uses
-  KM_Resource, KM_ResFonts, KM_ResMapElements, KM_ResTexts, KM_ResKeys, KM_Terrain,
+  KM_Main, KM_Resource, KM_ResFonts, KM_ResMapElements, KM_ResTexts, KM_ResKeys, KM_Terrain,
   KM_HandsCollection, KM_RenderUI, KM_InterfaceGame, KM_Utils,
   KM_ResTypes;
+
+type
+  TKMObjBrushForestAge = (faAll, faYoung, faMedium, faChop);
 
 const
   OBJECTS_PALETTE_MAX_COLS_CNT = 17;
@@ -105,6 +108,8 @@ const
   //Objects brush bins
   BTN_BRUSH_TYPE_S = 30;
   BTN_BRUSH_SIZE = 36;
+
+  OBJECT_MAX_DENSITY = 30;
 
 
 { TKMMapEdTerrainObjects }
@@ -274,7 +279,7 @@ begin
 
   CleanBrush := TKMButtonFlat.Create(Panel_Objects, 9, NextTop(45), 34, 34, 673, rxGui);
   CleanBrush.Anchors := [anTop];
-  CleanBrush.Hint := gResTexts[TX_MAPED_OBJECTS_BRUSH_CLEAN];
+  CleanBrush.Hint := GetHintWHotkey(TX_MAPED_OBJECTS_BRUSH_CLEAN, kfMapedSubMenuAction5);
   CleanBrush.OnClick := ObjectsBrushChange;
 
   rxIndex := 226;
@@ -282,8 +287,8 @@ begin
   for I := 0 to 9 do
   begin
     case I of
-       0: begin rxIndex := 226; objectsHint := gResTexts[TX_MAPED_OBJECTS_BRUSH_TREES];     end;
-       1: begin rxIndex := 34;  objectsHint := gResTexts[TX_MAPED_OBJECTS_BRUSH_ALL];       end;
+       0: begin rxIndex := 226; objectsHint := GetHintWHotkey(TX_MAPED_OBJECTS_BRUSH_TREES, kfMapedSubMenuAction6); end;
+       1: begin rxIndex := 34;  objectsHint := GetHintWHotkey(TX_MAPED_OBJECTS_BRUSH_ALL,   kfMapedSubMenuAction7); end;
        2: begin rxIndex := 14;  objectsHint := gResTexts[TX_MAPED_OBJECTS_BRUSH_FLOWERS];   end;
        3: begin rxIndex := 4;   objectsHint := gResTexts[TX_MAPED_OBJECTS_BRUSH_MUSHROOMS]; end;
        4: begin rxIndex := 26;  objectsHint := gResTexts[TX_MAPED_OBJECTS_BRUSH_TRUNKS];    end;
@@ -306,21 +311,26 @@ begin
 
   NextTop(80);
 
-  ForestDensity   := TKMTrackBar.Create(Panel_Objects, 9, NextTop(50), (Panel_Objects.Width) - 18, 1, 30);
+  ForestDensity   := TKMTrackBar.Create(Panel_Objects, 9, NextTop(50), (Panel_Objects.Width) - 18, 1, OBJECT_MAX_DENSITY);
   ForestDensity.Anchors := [anLeft, anTop, anRight];
   ForestDensity.Caption := gResTexts[TX_MAPED_OBJECTS_BRUSH_DENSITY];
   ForestDensity.Position := 10;
   ForestDensity.OnChange := ObjectsBrushChange;
-  ForestDensity.Hint := gResTexts[TX_MAPED_OBJECTS_BRUSH_DENSITY_HINT];
+  ForestDensity.Hint := GetHintWHotKey(TX_MAPED_OBJECTS_BRUSH_DENSITY_HINT, gResTexts[TX_KEY_ALT_MOUSEWHEEL]);
 
-  ForestAge   := TKMTrackBar.Create(Panel_Objects, 9, NextTop(50), (Panel_Objects.Width) - 18, 0, 3);
+  ForestAge := TKMTrackBar.Create(Panel_Objects, 9, NextTop(50), (Panel_Objects.Width) - 18,
+                                  Ord(Low(TKMObjBrushForestAge)), Ord(High(TKMObjBrushForestAge)));
   ForestAge.Anchors := [anLeft, anTop, anRight];
   ForestAge.Caption := gResTexts[TX_MAPED_OBJECTS_BRUSH_AGE];
-  ForestAge.Position := 0;
+  ForestAge.Position := Ord(faAll); // All ages by default
   ForestAge.OnChange := ObjectsBrushChange;
-  ForestAge.Hint := gResTexts[TX_MAPED_OBJECTS_BRUSH_AGE_HINT];
+  ForestAge.ThumbText := gResTexts[TX_MAPED_OBJECTS_BRUSH_TREES_AGE_ALL];
+  ForestAge.Hint := GetHintWHotKey(TX_MAPED_OBJECTS_BRUSH_TREES_AGE_ALL, gResTexts[TX_KEY_SHIFT_MOUSEWHEEL]);
+  ForestAge.AutoThumbWidth := True; // Auto calc thumb width
 
-  Label_ForestAge := TKMLabel.Create(Panel_Objects, 9, NextTop(25), Panel_Objects.Width - 9, 20, 'All ages', fntMetal, taLeft);
+  Label_ForestAge := TKMLabel.Create(Panel_Objects, 9, NextTop(20) - 8, Panel_Objects.Width - 18, 20,
+                                     gResTexts[TX_MAPED_OBJECTS_BRUSH_TREES_AGE_ALL], fntGrey, taRight);
+  Label_ForestAge.Anchors := [anLeft, anTop, anRight];
 
   gGameCursor.MapEdObjectsType[0] := True;
   gGameCursor.MapEdObjectsType[1] := True;
@@ -328,19 +338,22 @@ begin
   gGameCursor.MapEdForestAge := 1;
   gGameCursor.MapEdCleanBrush := False;
 
-
   // hotkeys for object functions
   fSubMenuActionsEvents[0] := ObjectsChange;
   fSubMenuActionsEvents[1] := ObjectsChange;
   fSubMenuActionsEvents[2] := ObjectsBrushChange;
   fSubMenuActionsEvents[3] := ObjectsBrushChange;
-  fSubMenuActionsEvents[4] := ObjectsPaletteButton_Click;
+  fSubMenuActionsEvents[4] := ObjectsBrushChange;
+  fSubMenuActionsEvents[5] := ObjectsBrushChange;
+  fSubMenuActionsEvents[6] := ObjectsBrushChange;
 
   fSubMenuActionsCtrls[0,0] := ObjectErase;
   fSubMenuActionsCtrls[1,0] := ObjectBlock;
   fSubMenuActionsCtrls[2,0] := BrushCircle;
   fSubMenuActionsCtrls[3,0] := BrushSquare;
-  fSubMenuActionsCtrls[4,0] := ObjectsPalette_Button;
+  fSubMenuActionsCtrls[4,0] := CleanBrush;
+  fSubMenuActionsCtrls[5,0] := ObjectTypeSet[0];
+  fSubMenuActionsCtrls[6,0] := ObjectTypeSet[1];
 end;
 
 
@@ -588,17 +601,28 @@ end;
 
 
 procedure TKMMapEdTerrainObjects.ObjectsBrushChange(Sender: TObject);
+const
+  FOREST_AGE_THUMB_TX: array[TKMObjBrushForestAge] of Integer = (TX_MAPED_OBJECTS_BRUSH_TREES_AGE_ALL,
+                                                                 TX_MAPED_OBJECTS_BRUSH_TREES_AGE_YOUNG,
+                                                                 TX_MAPED_OBJECTS_BRUSH_TREES_AGE_MEDIUM,
+                                                                 TX_MAPED_OBJECTS_BRUSH_TREES_AGE_RDY_2CHOP);
+
+  FOREST_AGE_HINT_TX: array[TKMObjBrushForestAge] of Integer = (TX_MAPED_OBJECTS_BRUSH_TREES_AGE_ALL_HINT,
+                                                                TX_MAPED_OBJECTS_BRUSH_TREES_AGE_YOUNG_HINT,
+                                                                TX_MAPED_OBJECTS_BRUSH_TREES_AGE_MEDIUM_HINT,
+                                                                TX_MAPED_OBJECTS_BRUSH_TREES_AGE_RDY_2CHOP_HINT);
+
 var
-  I: Integer;
+  I, treeAgeTX: Integer;
 begin
   gGameCursor.Mode := cmObjectsBrush;
-  
-  case ForestAge.Position of
-	0: Label_ForestAge.Caption := 'All Ages';
-	1: Label_ForestAge.Caption := 'Young trees';
-	2: Label_ForestAge.Caption := 'Medium trees';
-	3: Label_ForestAge.Caption := 'Trees ready to chop';
-  end;
+
+  ForestAge.ThumbText := gResTexts[FOREST_AGE_THUMB_TX[TKMObjBrushForestAge(ForestAge.Position)]];
+  treeAgeTX := FOREST_AGE_HINT_TX[TKMObjBrushForestAge(ForestAge.Position)];
+
+  Label_ForestAge.Caption := gResTexts[treeAgeTX];
+
+  ForestAge.Hint := GetHintWHotKey(treeAgeTX, gResTexts[TX_KEY_SHIFT_MOUSEWHEEL]);
 
   for I := 0 to 9 do
     if Sender = ObjectTypeSet[I] then
@@ -636,7 +660,6 @@ begin
   end;
 
   gGameCursor.MapEdSize := BrushSize.Position;
-
   gGameCursor.MapEdForestAge := ForestAge.Position;
   gGameCursor.MapEdObjectsDensity := ForestDensity.Position;
 end;
@@ -737,6 +760,8 @@ end;
 
 procedure TKMMapEdTerrainObjects.Show;
 begin
+  gMain.FormMain.SuppressAltForMenu := True;
+  
   case fLastObjectIndex of
     -1:   ; // Do not update Objects if no last object was selected
     OBJ_BLOCK_TAG: ObjectsChange(ObjectBlock);
@@ -760,17 +785,36 @@ procedure TKMMapEdTerrainObjects.Hide;
 begin
   Panel_Objects.Hide;
   PopUp_ObjectsPalette.Hide;
+  gMain.FormMain.SuppressAltForMenu := False;
 end;
 
 
 procedure TKMMapEdTerrainObjects.MouseWheel(Shift: TShiftState; WheelSteps, X, Y: Integer; var aHandled: Boolean);
 begin
-  if not aHandled and Visible and (GetKeyState(VK_CONTROL) < 0) then // Do not use ssCtrl in Shift here, as it can sometimes be wrong values inside Shift (ssShift instead of ssCtrl)
+  // Do not use ssCtrl in Shift here, as it can sometimes be wrong values inside Shift (ssShift instead of ssCtrl)
+  if aHandled or not Visible then
+    Exit;
+
+  if GetKeyState(VK_CONTROL) < 0 then
   begin
     BrushSize.Position := Max(0, BrushSize.Position - WheelSteps); //can't set negative number
-    ObjectsBrushChange(nil);
     aHandled := True;
   end;
+
+  if GetKeyState(VK_MENU) < 0 then
+  begin
+    ForestDensity.Position := Max(0, ForestDensity.Position - WheelSteps); //can't set negative number
+    aHandled := True;
+  end;
+
+  if GetKeyState(VK_SHIFT) < 0 then
+  begin
+    ForestAge.Position := Max(0, ForestAge.Position - WheelSteps); //can't set negative number
+    aHandled := True;
+  end;
+
+  if aHandled then
+    ObjectsBrushChange(nil);   
 end;
 
 
