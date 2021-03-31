@@ -1,4 +1,4 @@
-﻿unit KM_Controls;
+unit KM_Controls;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -994,18 +994,21 @@ type
     fPosition: Word;
     fFont: TKMFont;
     fRange: TKMRangeInt;
+    fThumbText: UnicodeString;
+    fAutoThumbWidth: Boolean;
     procedure SetCaption(const aValue: UnicodeString);
     procedure SetPosition(aValue: Word);
     procedure SetRange(const aRange: TKMRangeInt);
+    procedure UpdateThumbWidth;
+    procedure SetThumbText(const Value: UnicodeString);
+    procedure SetAutoThumbWidth(const aValue: Boolean);
   protected
     function DoHandleMouseWheelByDefault: Boolean; override;
   public
     Step: Byte; //Change Position by this amount each time
-    ThumbText: UnicodeString;
     ThumbWidth: Word;
     CaptionWidth: Integer;
     SliderFont: TKMFont;
-
 
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth: Integer; aMin, aMax: Word);
 
@@ -1015,6 +1018,8 @@ type
     property Font: TKMFont read fFont write fFont;
     property MinValue: Word read fMinValue;
     property MaxValue: Word read fMaxValue;
+    property ThumbText: UnicodeString read fThumbText write SetThumbText;
+    property AutoThumbWidth: Boolean read fAutoThumbWidth write SetAutoThumbWidth;
     procedure ResetRange;
     property OnChange: TNotifyEvent read fOnChange write fOnChange;
     procedure MouseDown(X,Y: Integer; Shift: TShiftState; Button: TMouseButton); override;
@@ -5506,18 +5511,40 @@ end;
 constructor TKMTrackBar.Create(aParent: TKMPanel; aLeft, aTop, aWidth: Integer; aMin, aMax: Word);
 begin
   inherited Create(aParent, aLeft,aTop,aWidth,0);
+  Assert(aMax > aMin, 'TKMTrackBar''s minValue >= maxValue');
   fMinValue := aMin;
   fMaxValue := aMax;
   fTrackHeight := 20;
   fRange := KMRange(aMin, aMax); //set Range before position
   Position := (fMinValue + fMaxValue) div 2;
   Caption := '';
-  ThumbWidth := gRes.Fonts[fFont].GetTextSize(IntToStr(MaxValue)).X + 24;
-  CaptionWidth := -1;
-
   Font := fntMetal;
   SliderFont := fntMetal;
+  CaptionWidth := -1;
+
   Step := 1;
+  AutoThumbWidth := False;
+
+  UpdateThumbWidth;
+end;
+
+
+procedure TKMTrackBar.UpdateThumbWidth;
+begin
+  if AutoThumbWidth then
+    ThumbWidth := Max(gRes.Fonts[SliderFont].GetTextSize(IntToStr(MaxValue)).X,
+                      gRes.Fonts[SliderFont].GetTextSize(ThumbText).X)
+  else
+    ThumbWidth := gRes.Fonts[SliderFont].GetTextSize(IntToStr(MaxValue)).X;
+
+  ThumbWidth := ThumbWidth + 24;
+end;
+
+
+procedure TKMTrackBar.SetAutoThumbWidth(const aValue: Boolean);
+begin
+  fAutoThumbWidth := aValue;
+  UpdateThumbWidth;
 end;
 
 
@@ -5553,6 +5580,13 @@ begin
 end;
 
 
+procedure TKMTrackBar.SetThumbText(const Value: UnicodeString);
+begin
+  fThumbText := Value;
+  UpdateThumbWidth;
+end;
+
+
 procedure TKMTrackBar.ResetRange;
 begin
   fRange.Min := MinValue;
@@ -5570,12 +5604,24 @@ end;
 procedure TKMTrackBar.MouseMove(X,Y: Integer; Shift: TShiftState);
 var
   NewPos: Integer;
+  posX, stepX: Single;
 begin
   inherited;
 
   NewPos := Position;
-  if (ssLeft in Shift) and InRange(Y - AbsTop - fTrackTop, 0, fTrackHeight) then
-    NewPos := EnsureRange(fMinValue + Round(((X-AbsLeft-ThumbWidth div 2) / (Width - ThumbWidth - 4))*(fMaxValue - fMinValue)/Step)*Step, fMinValue, fMaxValue);
+  if (ssLeft in Shift)
+    and InRange(Y - AbsTop - fTrackTop, 0, fTrackHeight) then
+  begin
+    posX := 0;
+    if AutoThumbWidth then
+    begin
+      stepX := (Width - ThumbWidth) / (fMaxValue - fMinValue) / Step; // width between marks
+      posX := stepX * (Position / Step) + (ThumbWidth div 2); // actual marks positions on track
+    end;
+    if not AutoThumbWidth 
+      or not InRange(X - AbsLeft, posX - ThumbWidth div 2, posX + ThumbWidth div 2) then // do not update pos, if we hover over thumb
+      NewPos := EnsureRange(fMinValue + Round(((X-AbsLeft-ThumbWidth div 2) / (Width - ThumbWidth - 4))*(fMaxValue - fMinValue)/Step)*Step, fMinValue, fMaxValue);
+  end;
 
   if NewPos <> Position then
   begin
