@@ -1,4 +1,4 @@
-unit KM_Controls;
+﻿unit KM_Controls;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -10400,7 +10400,7 @@ begin
         gRes.Cursors.Cursor := kmcDefault; //Reset the cursor from these two special cursors
 
   HintControl := HitControl(X, Y, True, True); //Include disabled and not hitable controls
-  if (CtrlDown = nil) and (HintControl <> nil) and Assigned(fOnHint) then
+  if ((CtrlDown = nil) or (CtrlDown = CtrlOver)) and (HintControl <> nil) and Assigned(fOnHint) then
     fOnHint(HintControl);
 end;
 
