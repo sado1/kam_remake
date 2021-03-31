@@ -659,6 +659,14 @@ TX_MAPED_PASSABILITY_OFF = 681; //Off
 TX_MAPED_NEW_MISSION = 499; //New Mission
 TX_MAPED_UNDO_HINT = 783; //Undo
 TX_MAPED_REDO_HINT = 782; //Redo
+
+
+TX_MAPED_PASTE_HEIGHTS = 1493; //Object Brushes - clean brush - hint
+TX_MAPED_PASTE_OBJECTS = 1494; //Object Brushes - clean brush - hint
+TX_MAPED_PASTE_TERRAIN = 1495; //Object Brushes - clean brush - hint
+TX_MAPED_PASTE_OVERLAYS = 1496; //Object Brushes - clean brush - hint
+
+
 TX_MAPED_AI_DEFAULTS_HEADING = 813; //Apply AI defaults
 TX_MAPED_AI_DEFAULTS_MP_BUILDER = 814; //Multiplayer builder
 TX_MAPED_AI_DEFAULTS_MP_BUILDER_HINT = 815; //Applies aggressive AI builder settings to all players (for multiplayer building maps)

@@ -7,7 +7,7 @@ uses
    Classes, Math, SysUtils, KM_Utils,
    KM_Controls, KM_Defaults,
    KM_InterfaceDefaults,
-   KM_GUIMapEdRMG;
+   KM_GUIMapEdRMG, KM_Pics;
 
 type
   TKMMapEdTerrainSelection = class(TKMMapEdSubMenuPage)
@@ -23,6 +23,8 @@ type
       Button_SelectPasteCancel: TKMButton;
       Button_SelectFlipH, Button_SelectFlipV: TKMButton;
       Button_RMGRND: TKMButton;
+      Map_PasteType:array [0..3] of  TKMButtonFlat;
+
   public
     constructor Create(aParent: TKMPanel);
     destructor Destroy; override;
@@ -47,6 +49,8 @@ uses
 
 { TKMMapEdTerrainSelection }
 constructor TKMMapEdTerrainSelection.Create(aParent: TKMPanel);
+var I,rxIndex:Integer;
+    objectsHint:String;
 begin
   inherited Create;
 
@@ -74,20 +78,33 @@ begin
   Button_SelectPasteCancel.Hint := GetHintWHotKey(TX_MAPED_COPY_PASTE_HINT, kfMapedSubMenuAction4);
   Button_SelectPasteCancel.OnClick := SelectionClick;
 
-  Button_SelectFlipH := TKMButton.Create(Panel_Selection, 9, 180, Panel_Selection.Width - 9, 20, gResTexts[TX_MAPED_COPY_PASTE_HFLIP], bsGame);
+   for I := 0 to 3 do begin
+    case I of
+       0: begin RxIndex:=383;ObjectsHint:= gResTexts[TX_MAPED_PASTE_TERRAIN];end;
+       1: begin RxIndex:=388;ObjectsHint:= gResTexts[TX_MAPED_PASTE_HEIGHTS];end;
+       2: begin RxIndex:=385;ObjectsHint:= gResTexts[TX_MAPED_PASTE_OBJECTS];end;
+       3: begin RxIndex:=400;ObjectsHint:= gResTexts[TX_MAPED_PASTE_OVERLAYS];end;
+    end;
+    Map_PasteType[I] := TKMButtonFlat.Create(Panel_Selection, 17+50*I, 150, 34, 34, RxIndex, rxGui);
+    Map_PasteType[I].OnClick := SelectionClick;
+    Map_PasteType[I].Hint := ObjectsHint;
+    Map_PasteType[I].Down := true;
+  end;
+
+  Button_SelectFlipH := TKMButton.Create(Panel_Selection, 9, 210, Panel_Selection.Width - 9, 20, gResTexts[TX_MAPED_COPY_PASTE_HFLIP], bsGame);
   Button_SelectFlipH.Anchors := [anLeft, anTop, anRight];
   Button_SelectFlipH.Hint := GetHintWHotKey(TX_MAPED_COPY_PASTE_HFLIP_HINT, kfMapedSubMenuAction5);
   Button_SelectFlipH.OnClick := SelectionClick;
 
-  Button_SelectFlipV := TKMButton.Create(Panel_Selection, 9, 210, Panel_Selection.Width - 9, 20, gResTexts[TX_MAPED_COPY_PASTE_VFLIP], bsGame);
+  Button_SelectFlipV := TKMButton.Create(Panel_Selection, 9, 240, Panel_Selection.Width - 9, 20, gResTexts[TX_MAPED_COPY_PASTE_VFLIP], bsGame);
   Button_SelectFlipV.Anchors := [anLeft, anTop, anRight];
   Button_SelectFlipV.Hint := GetHintWHotKey(TX_MAPED_COPY_PASTE_VFLIP_HINT, kfMapedSubMenuAction6);
   Button_SelectFlipV.OnClick := SelectionClick;
 
-  with TKMLabel.Create(Panel_Selection, 9, 250, Panel_Selection.Width - 9, 80, gResTexts[TX_MAPED_COPY_SELECT_HINT], fntGrey, taLeft) do
+  with TKMLabel.Create(Panel_Selection, 9, 280, Panel_Selection.Width - 9, 80, gResTexts[TX_MAPED_COPY_SELECT_HINT], fntGrey, taLeft) do
     AutoWrap := True;
 
-  Button_RMGRND := TKMButton.Create(Panel_Selection, 9, 300, Panel_Selection.Width - 9, 20, gResTexts[TX_MAPED_RMG_BUTTON_TITLE], bsGame);
+  Button_RMGRND := TKMButton.Create(Panel_Selection, 9, 330, Panel_Selection.Width - 9, 20, gResTexts[TX_MAPED_RMG_BUTTON_TITLE], bsGame);
   Button_RMGRND.Anchors := [anLeft, anTop, anRight];
   Button_RMGRND.Hint := GetHintWHotKey(gResTexts[TX_MAPED_RMG_BUTTON_HINT], kfMapedSubMenuAction7);
   Button_RMGRND.OnClick := GenerateMapClick;
@@ -123,7 +140,14 @@ end;
 
 
 procedure TKMMapEdTerrainSelection.SelectionClick(Sender: TObject);
+var I: Integer;
 begin
+
+ for I:= 0 to 3 do
+ if Sender = Map_PasteType[I] then
+    if Map_PasteType[I].Down = true then
+      Map_PasteType[I].Down := false else Map_PasteType[I].Down := true;
+
   gGameCursor.Mode := cmSelection;
   gGameCursor.Tag1 := 0;
 
@@ -150,7 +174,7 @@ begin
   if Sender = Button_SelectPasteApply then
   begin
     //Apply paste
-    gGame.MapEditor.Selection.Selection_PasteApply;
+    gGame.MapEditor.Selection.Selection_PasteApply(Map_PasteType[0].Down,Map_PasteType[1].Down,Map_PasteType[2].Down,Map_PasteType[3].Down);
     gGame.MapEditor.History.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_PASTE]);
 
     Button_SelectPasteApply.Disable;
