@@ -97,7 +97,7 @@ type
     procedure RenderFOW(aFOW: TKMFogOfWarCommon; aUseContrast: Boolean = False);
     procedure RenderTile(aTerrainId: Word; pX,pY,Rot: Integer; DoHighlight: Boolean = False; HighlightColor: Cardinal = 0); overload;
     procedure RenderTile(pX,pY: Integer; aTileBasic: TKMTerrainTileBasic; DoHighlight: Boolean = False; HighlightColor: Cardinal = 0); overload;
-    procedure RenderTileOverlay(aFOW: TKMFogOfWarCommon; pX, pY: Integer; DoHighlight: Boolean = False; HighlightColor: Cardinal = 0);
+    procedure RenderTileOverlay(pX, pY: Integer; DoHighlight: Boolean = False; HighlightColor: Cardinal = 0);
   end;
 
 
@@ -801,7 +801,7 @@ end;
 
 
 //Render single tile overlay
-procedure TRenderTerrain.RenderTileOverlay(aFOW: TKMFogOfWarCommon; pX, pY: Integer; DoHighlight: Boolean = False; HighlightColor: Cardinal = 0);
+procedure TRenderTerrain.RenderTileOverlay(pX, pY: Integer; DoHighlight: Boolean = False; HighlightColor: Cardinal = 0);
 //   1      //Select road tile and rotation
 //  8*2     //depending on surrounding tiles
 //   4      //Bitfield
@@ -814,33 +814,30 @@ const
 var
   road, ID, rot: Byte;
 begin
-  if TileHasToBeRendered(False,pX,pY,aFow) then
-  begin
-    //Fake tiles for MapEd fields
-    if gGame.MapEditor <> nil then
-      case gGame.MapEditor.Land[pY, pX].CornOrWine of
-        1:  RenderTile(gGame.MapEditor.Land[pY, pX].CornOrWineTerrain, pX, pY, 0, DoHighlight, HighlightColor);
-        2:  RenderTile(55, pX, pY, 0, DoHighlight, HighlightColor);
-      end;
+  //Fake tiles for MapEd fields
+  if gGame.MapEditor <> nil then
+    case gGame.MapEditor.Land[pY, pX].CornOrWine of
+      1:  RenderTile(gGame.MapEditor.Land[pY, pX].CornOrWineTerrain, pX, pY, 0, DoHighlight, HighlightColor);
+      2:  RenderTile(55, pX, pY, 0, DoHighlight, HighlightColor);
+    end;
 
-    if gTerrain.Land[pY, pX].TileOverlay = toRoad then
-    begin
-      road := 0;
-      if (pY - 1 >= 1) then
-        road := road + byte(gTerrain.Land[pY - 1, pX].TileOverlay = toRoad) shl 0;
-      if (pX + 1 <= gTerrain.MapX - 1) then
-        road := road + byte(gTerrain.Land[pY, pX + 1].TileOverlay = toRoad) shl 1;
-      if (pY + 1 <= gTerrain.MapY - 1) then
-        road := road + byte(gTerrain.Land[pY + 1, pX].TileOverlay = toRoad) shl 2;
-      if (pX - 1 >= 1) then
-        road := road + byte(gTerrain.Land[pY, pX - 1].TileOverlay = toRoad) shl 3;
-      ID := RoadsConnectivity[road, 1];
-      rot := RoadsConnectivity[road, 2];
-      RenderTile(ID, pX, pY, rot, DoHighlight, HighlightColor);
-    end
-    else if gTerrain.Land[pY, pX].TileOverlay <> toNone then
-      RenderTile(TILE_OVERLAY_IDS[gTerrain.Land[pY, pX].TileOverlay], pX, pY, 0, DoHighlight, HighlightColor);
-  end;
+  if gTerrain.Land[pY, pX].TileOverlay = toRoad then
+  begin
+    road := 0;
+    if (pY - 1 >= 1) then
+      road := road + byte(gTerrain.Land[pY - 1, pX].TileOverlay = toRoad) shl 0;
+    if (pX + 1 <= gTerrain.MapX - 1) then
+      road := road + byte(gTerrain.Land[pY, pX + 1].TileOverlay = toRoad) shl 1;
+    if (pY + 1 <= gTerrain.MapY - 1) then
+      road := road + byte(gTerrain.Land[pY + 1, pX].TileOverlay = toRoad) shl 2;
+    if (pX - 1 >= 1) then
+      road := road + byte(gTerrain.Land[pY, pX - 1].TileOverlay = toRoad) shl 3;
+    ID := RoadsConnectivity[road, 1];
+    rot := RoadsConnectivity[road, 2];
+    RenderTile(ID, pX, pY, rot, DoHighlight, HighlightColor);
+  end
+  else if gTerrain.Land[pY, pX].TileOverlay <> toNone then
+    RenderTile(TILE_OVERLAY_IDS[gTerrain.Land[pY, pX].TileOverlay], pX, pY, 0, DoHighlight, HighlightColor);
 end;
 
 
@@ -856,7 +853,8 @@ begin
 
   for I := fClipRect.Top to fClipRect.Bottom do
     for K := fClipRect.Left to fClipRect.Right do
-      RenderTileOverlay(aFOW, K, I);
+      if TileHasToBeRendered(False,K,I,aFow) then
+        RenderTileOverlay(K, I);
 
   {$IFDEF PERFLOG}
   gPerfLogs.SectionLeave(psFrameOverlays);
