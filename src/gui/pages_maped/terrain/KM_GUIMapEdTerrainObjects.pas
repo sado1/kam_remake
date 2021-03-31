@@ -325,11 +325,11 @@ begin
   ForestAge.Position := Ord(faAll); // All ages by default
   ForestAge.OnChange := ObjectsBrushChange;
   ForestAge.ThumbText := gResTexts[TX_MAPED_OBJECTS_BRUSH_TREES_AGE_ALL];
-  ForestAge.Hint := GetHintWHotKey(TX_MAPED_OBJECTS_BRUSH_TREES_AGE_ALL, gResTexts[TX_KEY_SHIFT_MOUSEWHEEL]);
+  ForestAge.Hint := GetHintWHotKey(TX_MAPED_OBJECTS_BRUSH_TREES_AGE_ALL_HINT, gResTexts[TX_KEY_SHIFT_MOUSEWHEEL]);
   ForestAge.AutoThumbWidth := True; // Auto calc thumb width
 
   Label_ForestAge := TKMLabel.Create(Panel_Objects, 9, NextTop(20) - 8, Panel_Objects.Width - 18, 20,
-                                     gResTexts[TX_MAPED_OBJECTS_BRUSH_TREES_AGE_ALL], fntGrey, taRight);
+                                     gResTexts[TX_MAPED_OBJECTS_BRUSH_TREES_AGE_ALL_HINT], fntGrey, taRight);
   Label_ForestAge.Anchors := [anLeft, anTop, anRight];
 
   gGameCursor.MapEdObjectsType[0] := True;
@@ -613,16 +613,16 @@ const
                                                                 TX_MAPED_OBJECTS_BRUSH_TREES_AGE_RDY_2CHOP_HINT);
 
 var
-  I, treeAgeTX: Integer;
+  I, treeAgeHintTX: Integer;
 begin
   gGameCursor.Mode := cmObjectsBrush;
 
   ForestAge.ThumbText := gResTexts[FOREST_AGE_THUMB_TX[TKMObjBrushForestAge(ForestAge.Position)]];
-  treeAgeTX := FOREST_AGE_HINT_TX[TKMObjBrushForestAge(ForestAge.Position)];
+  treeAgeHintTX := FOREST_AGE_HINT_TX[TKMObjBrushForestAge(ForestAge.Position)];
 
-  Label_ForestAge.Caption := gResTexts[treeAgeTX];
+  Label_ForestAge.Caption := gResTexts[treeAgeHintTX];
 
-  ForestAge.Hint := GetHintWHotKey(treeAgeTX, gResTexts[TX_KEY_SHIFT_MOUSEWHEEL]);
+  ForestAge.Hint := GetHintWHotKey(treeAgeHintTX, gResTexts[TX_KEY_SHIFT_MOUSEWHEEL]);
 
   for I := 0 to 9 do
     if Sender = ObjectTypeSet[I] then
