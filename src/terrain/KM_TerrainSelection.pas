@@ -42,7 +42,7 @@ type
     function Selection_DataInBuffer: Boolean;
     procedure Selection_Copy; //Copies the selected are into buffer
     procedure Selection_PasteBegin; //Pastes the area from buffer and lets move it with cursor
-    procedure Selection_PasteApply; //Do the actual paste from buffer to terrain
+    procedure Selection_PasteApply(Terrain,Heights,Objects,Overlays:Boolean); //Do the actual paste from buffer to terrain
     procedure Selection_PasteCancel;
     procedure Selection_Flip(aAxis: TKMFlipAxis);
 
@@ -297,7 +297,7 @@ begin
 end;
 
 
-procedure TKMSelection.Selection_PasteApply;
+procedure TKMSelection.Selection_PasteApply(Terrain,Heights,Objects,Overlays:Boolean);
 var
   I, K, L: Integer;
   Bx, By: Word;
@@ -308,7 +308,7 @@ begin
       begin
         Bx := K - fSelectionRect.Left;
         By := I - fSelectionRect.Top;
-        gTerrain.Land[I+1, K+1].BaseLayer.Terrain  := fSelectionBuffer[By,Bx].BaseLayer.Terrain;
+        {gTerrain.Land[I+1, K+1].BaseLayer.Terrain  := fSelectionBuffer[By,Bx].BaseLayer.Terrain;
         gTerrain.Land[I+1, K+1].BaseLayer.Rotation := fSelectionBuffer[By,Bx].BaseLayer.Rotation;
         gTerrain.Land[I+1, K+1].BaseLayer.CopyCorners(fSelectionBuffer[By,Bx].BaseLayer);
         gTerrain.Land[I+1, K+1].LayersCnt   := fSelectionBuffer[By,Bx].LayersCnt;
@@ -323,7 +323,27 @@ begin
           gTerrain.Land[I+1, K+1].Layer[L].Terrain  := fSelectionBuffer[By,Bx].Layer[L].Terrain;
           gTerrain.Land[I+1, K+1].Layer[L].Rotation := fSelectionBuffer[By,Bx].Layer[L].Rotation;
           gTerrain.Land[I+1, K+1].Layer[L].CopyCorners(fSelectionBuffer[By,Bx].Layer[L]);
+        end;}
+        If Terrain then begin
+            gTerrain.Land[I+1, K+1].BaseLayer.Terrain  := fSelectionBuffer[By,Bx].BaseLayer.Terrain;
+            gTerrain.Land[I+1, K+1].BaseLayer.Rotation := fSelectionBuffer[By,Bx].BaseLayer.Rotation;
+            gTerrain.Land[I+1, K+1].BaseLayer.CopyCorners(fSelectionBuffer[By,Bx].BaseLayer);
+            gTerrain.Land[I+1, K+1].LayersCnt   := fSelectionBuffer[By,Bx].LayersCnt;
+            gTerrain.Land[I+1, K+1].IsCustom    := fSelectionBuffer[By,Bx].IsCustom;
+            gTerrain.Land[I+1, K+1].BlendingLvl := fSelectionBuffer[By,Bx].BlendingLvl;
+            fTerrainPainter.LandTerKind[I+1, K+1].TerKind := fSelectionBuffer[By,Bx].TerKind;
+            for L := 0 to 2 do
+            begin
+              gTerrain.Land[I+1, K+1].Layer[L].Terrain  := fSelectionBuffer[By,Bx].Layer[L].Terrain;
+              gTerrain.Land[I+1, K+1].Layer[L].Rotation := fSelectionBuffer[By,Bx].Layer[L].Rotation;
+              gTerrain.Land[I+1, K+1].Layer[L].CopyCorners(fSelectionBuffer[By,Bx].Layer[L]);
+            end;
+
         end;
+        If Objects then gTerrain.Land[I+1, K+1].Obj         := fSelectionBuffer[By,Bx].Obj;
+        If Heights then gTerrain.Land[I+1, K+1].Height     := fSelectionBuffer[By,Bx].Height;
+
+        If Overlays then gterrain.Land[I+1, K+1].TileOverlay := fSelectionBuffer[By,Bx].TileOverlay;
       end;
 
   gTerrain.UpdateLighting(fSelectionRect);
