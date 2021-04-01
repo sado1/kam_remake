@@ -34,7 +34,7 @@ type
 
 implementation
 uses
-  KM_ResTexts, KM_RenderUI, KM_Resource, KM_ResFonts, KM_ResLocales, KM_GameSettings, KM_CommonUtils;
+  KM_ResCursors, KM_ResTexts, KM_RenderUI, KM_Resource, KM_ResFonts, KM_ResLocales, KM_GameSettings, KM_CommonUtils;
 
 
 { TKMGUIMainCredits }
@@ -105,8 +105,11 @@ begin
   // Load asian fonts, since there are some credits information on asian languages
   // No need to redraw all UI, as we do on the Options page, since there is no info rendered on the credits page yet
   if gRes.Fonts.LoadLevel <> fllFull then
-    // todo: swap cursor to some 'loading' cursor, to indicate loading process
+  begin
+    gRes.Cursors.Cursor := kmcAnimatedDirSelector;
     gRes.LoadLocaleFonts(gGameSettings.Locale, True);
+    gRes.Cursors.Cursor := kmcDefault;
+  end;
 
   //Set initial position
   Label_Credits_KaM.SmoothScrollToTop := TimeGet;
