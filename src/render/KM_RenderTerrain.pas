@@ -3,7 +3,7 @@ unit KM_RenderTerrain;
 interface
 uses
   dglOpenGL, SysUtils, KromUtils, Math, KM_ResTileset,
-  KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_FogOfWar, KM_Pics, KM_ResSprites, KM_Points, KM_Terrain;
+  KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_FogOfWar, KM_Pics, KM_ResSprites, KM_Points, KM_TerrainTypes;
 
 type
   TVBOArrayType = (vatNone, vatTile, vatTileLayer, vatAnimTile, vatFOW);
@@ -104,7 +104,8 @@ type
 implementation
 uses
   KM_Game,
-  KM_GameParams, KM_Render, KM_RenderTypes, KM_TerrainTypes, KM_Resource, KM_DevPerfLog, KM_DevPerfLogTypes;
+  KM_GameParams, KM_Render, KM_RenderTypes, KM_Resource, KM_DevPerfLog, KM_DevPerfLogTypes,
+  KM_Terrain;
 
 type
   TAnimLayer = (alWater, alFalls, alSwamp);

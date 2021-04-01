@@ -90,7 +90,7 @@ implementation
 uses
   KM_Main, KM_Resource, KM_ResFonts, KM_ResMapElements, KM_ResTexts, KM_ResKeys, KM_Terrain,
   KM_HandsCollection, KM_RenderUI, KM_InterfaceGame, KM_Utils,
-  KM_ResTypes;
+  KM_ResTypes, KM_TerrainTypes;
 
 type
   TKMObjBrushForestAge = (faAll, faYoung, faMedium, faChop);

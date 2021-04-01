@@ -252,7 +252,7 @@ const
 implementation
 uses
   SysUtils, KM_HandsCollection, KM_CommonClasses, KM_Game, KM_ResMapElements, KM_Hand, Dialogs,
-  KM_ResTypes;
+  KM_ResTypes, KM_TerrainTypes;
 
 
 { TKMRandomMapGenerator }

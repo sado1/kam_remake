@@ -95,7 +95,7 @@ type
 implementation
 uses
   SysUtils, StrUtils, Math,
-  KM_Terrain, KM_FileIO,
+  KM_TerrainTypes, KM_Terrain, KM_FileIO,
   KM_AIDefensePos, KM_ResTexts,
   KM_Units, KM_UnitGroup, KM_Houses, KM_HouseCollection,
   KM_GameParams, KM_GameCursor, KM_ResMapElements, KM_ResHouses, KM_Resource, KM_ResUnits,

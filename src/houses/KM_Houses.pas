@@ -368,6 +368,7 @@ uses
   KM_Log, KM_ScriptingEvents, KM_CommonUtils, KM_MapEditorHistory,
   KM_GameTypes, KM_RenderDebug,
   KM_HandTypes,
+  KM_TerrainTypes,
   KM_CommonExceptions,
   KM_ResTileset;
 

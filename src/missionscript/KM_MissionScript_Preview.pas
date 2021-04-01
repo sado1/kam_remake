@@ -50,7 +50,7 @@ uses
   KM_Terrain,
   KM_Resource, KM_ResHouses, KM_ResUnits,
   KM_CommonClasses, KM_CommonUtils, KM_Utils,
-  KM_ResTypes;
+  KM_ResTypes, KM_TerrainTypes;
 
 
 { TMissionParserPreview }

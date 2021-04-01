@@ -4,7 +4,7 @@ interface
 uses
   Classes, KromUtils, Math, SysUtils,
   KM_CommonClasses, KM_Defaults, KM_Points,
-  KM_Terrain, KM_ResTileset, KM_CommonTypes, KM_MapEdTypes;
+  KM_TerrainTypes, KM_ResTileset, KM_CommonTypes, KM_MapEdTypes;
 
 type
   //Terrain helper that is used to paint terrain types in Map Editor
@@ -405,7 +405,7 @@ const
 implementation
 uses
   KM_Game, KM_GameCursor, KM_Resource, KM_Log, KM_CommonUtils, KM_Utils,
-  KM_ResSprites, KM_MapEditorHistory, KM_ResTexts;
+  KM_ResSprites, KM_MapEditorHistory, KM_ResTexts, KM_Terrain;
 
 
 type

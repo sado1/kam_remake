@@ -42,7 +42,7 @@ type
 
 implementation
 uses
-  KM_HandsCollection, KM_Terrain, KM_Hand;
+  KM_HandsCollection, KM_TerrainTypes, KM_Terrain, KM_Hand;
 
 
 { TPathFindingRoad }

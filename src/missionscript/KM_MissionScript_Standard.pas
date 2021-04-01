@@ -53,7 +53,8 @@ uses
   KM_CommonClasses, KM_CommonTypes, KM_Terrain,
   KM_HandTypes,
   KM_CommonExceptions,
-  KM_ResTypes;
+  KM_ResTypes,
+  KM_TerrainTypes;
 
 
 type
