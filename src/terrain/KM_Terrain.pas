@@ -313,8 +313,6 @@ begin
   fAnimStep := 0;
   FallingTrees := TKMPointTagList.Create;
   fTileset := gRes.Tileset; //Local shortcut
-
-  SetLength(Land, MAX_MAP_SIZE + 1, MAX_MAP_SIZE + 1);
 end;
 
 
