@@ -86,7 +86,7 @@ var
   KMC: TKMCursor;
   I, sx,sy,x,y: Integer;
   bm,bm2: TBitmap;
-  IconInfo: TIconInfo;
+  iconInfo: TIconInfo;
   Px: PRGBQuad;
   h : THandle;
   path: PChar;
@@ -106,8 +106,8 @@ begin
       bm.Width  := 1; bm.Height  := 1;
       bm2.Width := 1; bm2.Height := 1;
       bm2.Canvas.Pixels[0,0] := clWhite; //Invisible mask, we don't care for Image color
-      IconInfo.xHotspot := 0;
-      IconInfo.yHotspot := 0;
+      iconInfo.xHotspot := 0;
+      iconInfo.yHotspot := 0;
     end
     else
     begin
@@ -133,22 +133,22 @@ begin
         end;
       end;
       //Load hotspot offsets from RX file, adding the manual offsets (normally 0)
-      IconInfo.xHotspot := Math.max(-fRXData.Pivot[CURSOR_SPRITE_INDEX[KMC]].x+CURSOR_OFFSET_X[KMC],0);
-      IconInfo.yHotspot := Math.max(-fRXData.Pivot[CURSOR_SPRITE_INDEX[KMC]].y+CURSOR_OFFSET_Y[KMC],0);
+      iconInfo.xHotspot := Math.max(-fRXData.Pivot[CURSOR_SPRITE_INDEX[KMC]].x+CURSOR_OFFSET_X[KMC],0);
+      iconInfo.yHotspot := Math.max(-fRXData.Pivot[CURSOR_SPRITE_INDEX[KMC]].y+CURSOR_OFFSET_Y[KMC],0);
     end;
 
     //Release the Mask, otherwise there is black rect in Lazarus
     //it works only from within the loop, means mask is recreated when we access canvas or something like that
     bm2.ReleaseMaskHandle;
 
-    IconInfo.fIcon := false; //true=Icon, false=Cursor
-    IconInfo.hbmColor := bm.Handle;
+    iconInfo.fIcon := false; //true=Icon, false=Cursor
+    iconInfo.hbmColor := bm.Handle;
 
     //I have a suspicion that maybe Windows could create icon delayed, at a time when bitmap data is
     //no longer valid (replaced by other bitmap or freed). Hence issues with transparency.
     {$IFDEF MSWindows}
-      IconInfo.hbmMask  := bm2.Handle;
-      Screen.Cursors[Byte(KMC) + COUNT_OFFSET] := CreateIconIndirect(IconInfo);
+      iconInfo.hbmMask  := bm2.Handle;
+      Screen.Cursors[Byte(KMC) + COUNT_OFFSET] := CreateIconIndirect(iconInfo);
     {$ENDIF}
     {$IFDEF Unix}
       bm2.Mask(clWhite);
