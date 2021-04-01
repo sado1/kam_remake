@@ -172,7 +172,10 @@ begin
                LR_LOADFROMFILE);
                
     if h <> 0 then
-      Screen.Cursors[Byte(CUSTOM_CURSORS[I]) + COUNT_OFFSET] := h;
+      Screen.Cursors[Byte(CUSTOM_CURSORS[I]) + COUNT_OFFSET] := h
+    else
+      // Use default cursor, in case of missing cursor file
+      Screen.Cursors[Byte(CUSTOM_CURSORS[I]) + COUNT_OFFSET] := Screen.Cursors[Byte(kmcDefault) + COUNT_OFFSET];
   end;
 end;
 
