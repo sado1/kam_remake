@@ -15,7 +15,8 @@ type
     kmcScroll0, kmcScroll1, kmcScroll2, kmcScroll3, kmcScroll4, kmcScroll5, kmcScroll6, kmcScroll7,
     kmcBeacon, kmcDrag,
     kmcInvisible, // for some reason kmcInvisible should be at its current position in enum. Otherwise 1px dot will appear while TroopSelection is on
-    kmcPaintBucket
+    kmcPaintBucket,
+    kmcAnimatedDirSelector
   );
 
   TKMResCursors = class
@@ -44,11 +45,15 @@ const
     1, 452, 457, 460, 450, 453, 449,
     511,  512, 513, 514, 515, 516, 517, 518, 519,
     4, 7, 3, 9, 5, 8, 2, 6,
-    456, 451, 999, 661);
+    456, 451, 999, 661, 0);
 
   // Which cursor is used for which direction
   DIRECTION_CURSOR: array [TKMDirection] of TKMCursor = (
     kmcDirNA, kmcDir0, kmcDir1, kmcDir2, kmcDir3, kmcDir4, kmcDir5, kmcDir6, kmcDir7);
+
+  CUSTOM_CUR_CNT = 1;
+
+  CUSTOM_CURSORS: array [0..CUSTOM_CUR_CNT-1] of TKMCursor = (kmcAnimatedDirSelector);
 
 
 { TKMResCursors }
@@ -73,14 +78,18 @@ const
   SF = 17; //Full width/height of a scroll cursor
   SH = 8; //Half width/height of a scroll cursor
   // Measured manually
-  CURSOR_OFFSET_X: array [TKMCursor] of Integer = (0,0,20, 0, 0,-8, 9,0, 1,1,1,0,-1,-1,-1,0, SH,SF,SF,SF,SH, 0, 0,0, 0,0,0,27);
-  CURSOR_OFFSET_Y: array [TKMCursor] of Integer = (0,9,10,18,20,44,13,0,-1,0,1,1, 1, 0,-1,0, 0 ,0 ,SH,SF,SF,SF,SH,0,28,0,0,28);
+  CURSOR_OFFSET_X: array [TKMCursor] of Integer = (0,0,20, 0, 0,-8, 9,0, 1,1,1,0,-1,-1,-1,0, SH,SF,SF,SF,SH, 0, 0,0, 0,0,0,27,0);
+  CURSOR_OFFSET_Y: array [TKMCursor] of Integer = (0,9,10,18,20,44,13,0,-1,0,1,1, 1, 0,-1,0, 0 ,0 ,SH,SF,SF,SF,SH,0,28,0,0,28,0);
+
+  CUSTOM_CUR_FILENAME: array[0..CUSTOM_CUR_CNT-1] of UnicodeString = ('cur1.ani');
 var
   KMC: TKMCursor;
-  sx,sy,x,y: Integer;
+  I, sx,sy,x,y: Integer;
   bm,bm2: TBitmap;
   IconInfo: TIconInfo;
   Px: PRGBQuad;
+  h : THandle;
+  path: PChar;
 begin
   if SKIP_RENDER then Exit;
 
@@ -89,7 +98,7 @@ begin
   bm  := TBitmap.Create; bm.HandleType  := bmDIB; bm.PixelFormat  := pf32bit;
   bm2 := TBitmap.Create; bm2.HandleType := bmDIB; bm2.PixelFormat := pf32bit;
 
-  for KMC := Low(TKMCursor) to High(TKMCursor) do
+  for KMC := Low(TKMCursor) to kmcPaintBucket do
   begin
     // Special case for invisible cursor
     if KMC = kmcInvisible then
@@ -150,6 +159,21 @@ begin
 
   bm.Free;
   bm2.Free;
+
+  for I := Low(CUSTOM_CURSORS) to High(CUSTOM_CURSORS) do
+  begin
+    path := PChar(ExeDir + 'data' + PathDelim + 'cursors' + PathDelim + CUSTOM_CUR_FILENAME[I]);
+    h := LoadImage(0,
+               path,
+               IMAGE_CURSOR,
+               35,
+               36,
+               LR_DEFAULTSIZE or
+               LR_LOADFROMFILE);
+               
+    if h <> 0 then
+      Screen.Cursors[Byte(CUSTOM_CURSORS[I]) + COUNT_OFFSET] := h;
+  end;
 end;
 
 
