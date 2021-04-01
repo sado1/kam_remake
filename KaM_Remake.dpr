@@ -185,6 +185,7 @@ uses
   KM_InterfaceGamePlay in 'src\gui\KM_InterfaceGamePlay.pas',
   KM_InterfaceMainMenu in 'src\gui\KM_InterfaceMainMenu.pas',
   KM_InterfaceMapEditor in 'src\gui\KM_InterfaceMapEditor.pas',
+  KM_InterfaceTypes in 'src\gui\KM_InterfaceTypes.pas',
   KM_Log in 'src\KM_Log.pas',
   KM_Main in 'src\KM_Main.pas',
   KM_Maps in 'src\KM_Maps.pas',

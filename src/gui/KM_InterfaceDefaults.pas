@@ -6,30 +6,10 @@ uses
   {$IFDEF Unix} LCLType, {$ENDIF}
   Controls, Classes,
   KM_Controls, KM_Points, KM_ResFonts,
-  KM_ResTypes;
+  KM_ResTypes, KM_InterfaceTypes;
 
 
 type
-  TUIMode = (umSP, umMP, umReplay, umSpectate);
-  TUIModeSet = set of TUIMode;
-
-  TKMMenuPageType =  (gpMainMenu,
-                        gpSinglePlayer,
-                          gpCampaign,
-                          gpCampSelect,
-                          gpSingleMap,
-                          gpLoad,
-                        gpMultiplayer,
-                          gpLobby,
-                        gpReplays,
-                        gpMapEditor,
-                        gpOptions,
-                        gpCredits,
-                      gpLoading,
-                      gpError);
-  TGUIEvent = procedure (Sender: TObject; Dest: TKMMenuPageType) of object;
-  TKMMenuChangeEventText = procedure (Dest: TKMMenuPageType; const aText: UnicodeString = '') of object;
-
   TKMMenuPageCommon = class
   protected
     fMenuType: TKMMenuPageType;
@@ -113,25 +93,9 @@ type
   end;
 
 
-const
-  //Options sliders
-  OPT_SLIDER_MIN = 0;
-  OPT_SLIDER_MAX = 20;
-  MAX_SAVENAME_LENGTH = 50;
-
-  CHAT_MENU_ALL = -1;
-  CHAT_MENU_TEAM = -2;
-  CHAT_MENU_SPECTATORS = -3;
-
-  RESULTS_X_PADDING = 50;
-
 var
   MAPED_SUBMENU_HOTKEYS: array[0..5] of TKMKeyFunction;
   MAPED_SUBMENU_ACTIONS_HOTKEYS: array[0..SUB_MENU_ACTIONS_CNT - 1] of TKMKeyFunction;
-
-
-const
-  ITEM_NOT_LOADED = -100; // smth, but not -1, as -1 is used for ColumnBox.ItemIndex, when no item is selected
 
 
 implementation

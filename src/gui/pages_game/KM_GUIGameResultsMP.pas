@@ -179,7 +179,7 @@ implementation
 uses
   KM_Main, KM_ResTexts, KM_Game, KM_HandsCollection, KM_CommonUtils, KM_Resource, KM_ResFonts,
   KM_RenderUI, KM_Hand, KM_ResUnits, KM_MapTypes,
-  KM_GameParams, KM_GameTypes;
+  KM_GameParams, KM_GameTypes, KM_InterfaceTypes;
 
 
 const

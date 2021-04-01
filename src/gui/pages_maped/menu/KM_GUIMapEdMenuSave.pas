@@ -34,7 +34,7 @@ type
 
 implementation
 uses
-  KM_Game, KM_GameParams, KM_RenderUI, KM_ResFonts, KM_ResTexts, KM_InterfaceDefaults;
+  KM_Game, KM_GameParams, KM_RenderUI, KM_ResFonts, KM_ResTexts, KM_InterfaceDefaults, KM_InterfaceTypes;
 
 
 { TKMMapEdMenuSave }

@@ -6,7 +6,7 @@ uses
   KM_Controls,
   KM_MainSettings,
   KM_Pics, KM_Resolutions, KM_ResKeys,
-  KM_InterfaceDefaults, KM_CommonTypes;
+  KM_InterfaceDefaults, KM_InterfaceTypes, KM_CommonTypes;
 
 
 type
