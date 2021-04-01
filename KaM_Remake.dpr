@@ -310,6 +310,7 @@ uses
   KM_TerrainFinder in 'src\terrain\KM_TerrainFinder.pas',
   KM_TerrainPainter in 'src\terrain\KM_TerrainPainter.pas',
   KM_TerrainSelection in 'src\terrain\KM_TerrainSelection.pas',
+  KM_TerrainTypes in 'src\terrain\KM_TerrainTypes.pas',
   KM_TerrainWalkConnect in 'src\terrain\KM_TerrainWalkConnect.pas',
 
   KM_UnitActionAbandonWalk in 'src\units\actions\KM_UnitActionAbandonWalk.pas',

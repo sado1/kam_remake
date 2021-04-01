@@ -7,7 +7,7 @@ uses
    Classes, Math, SysUtils, KM_Utils,
    KM_Controls, KM_Defaults,
    KM_InterfaceDefaults,
-   KM_GUIMapEdRMG, KM_Pics;
+   KM_GUIMapEdRMG, KM_Pics, KM_TerrainTypes;
 
 type
   TKMMapEdTerrainSelection = class(TKMMapEdSubMenuPage)
@@ -23,7 +23,7 @@ type
       Button_SelectPasteCancel: TKMButton;
       Button_SelectFlipH, Button_SelectFlipV: TKMButton;
       Button_RMGRND: TKMButton;
-      Map_PasteType:array [0..3] of  TKMButtonFlat;
+      Map_PasteType: array [TKMTerrainSelectionPasteType] of  TKMButtonFlat;
 
   public
     constructor Create(aParent: TKMPanel);
@@ -49,8 +49,15 @@ uses
 
 { TKMMapEdTerrainSelection }
 constructor TKMMapEdTerrainSelection.Create(aParent: TKMPanel);
-var I,rxIndex:Integer;
-    objectsHint:String;
+const
+  PAST_TYPE_RX_INDEX: array[TKMTerrainSelectionPasteType] of Integer = (383, 388, 385, 400);
+
+  PAST_TYPE_HINT: array[TKMTerrainSelectionPasteType] of Integer = (TX_MAPED_COPY_PASTE_TERRAIN_HINT,
+                                                                    TX_MAPED_COPY_PASTE_HEIGHTS_HINT,
+                                                                    TX_MAPED_COPY_PASTE_OBJECTS_HINT,
+                                                                    TX_MAPED_COPY_PASTE_OVERLAYS_HINT);
+var
+  PT: TKMTerrainSelectionPasteType;
 begin
   inherited Create;
 
@@ -78,17 +85,12 @@ begin
   Button_SelectPasteCancel.Hint := GetHintWHotKey(TX_MAPED_COPY_PASTE_HINT, kfMapedSubMenuAction4);
   Button_SelectPasteCancel.OnClick := SelectionClick;
 
-   for I := 0 to 3 do begin
-    case I of
-       0: begin RxIndex:=383;ObjectsHint:= gResTexts[TX_MAPED_PASTE_TERRAIN];end;
-       1: begin RxIndex:=388;ObjectsHint:= gResTexts[TX_MAPED_PASTE_HEIGHTS];end;
-       2: begin RxIndex:=385;ObjectsHint:= gResTexts[TX_MAPED_PASTE_OBJECTS];end;
-       3: begin RxIndex:=400;ObjectsHint:= gResTexts[TX_MAPED_PASTE_OVERLAYS];end;
-    end;
-    Map_PasteType[I] := TKMButtonFlat.Create(Panel_Selection, 17+50*I, 150, 34, 34, RxIndex, rxGui);
-    Map_PasteType[I].OnClick := SelectionClick;
-    Map_PasteType[I].Hint := ObjectsHint;
-    Map_PasteType[I].Down := true;
+  for PT := Low(TKMTerrainSelectionPasteType) to High(TKMTerrainSelectionPasteType) do
+  begin
+    Map_PasteType[PT] := TKMButtonFlat.Create(Panel_Selection, 17 + 50 * Ord(PT), 150, 34, 34, PAST_TYPE_RX_INDEX[PT], rxGui);
+    Map_PasteType[PT].OnClick := SelectionClick;
+    Map_PasteType[PT].Hint := gResTexts[PAST_TYPE_HINT[PT]];
+    Map_PasteType[PT].Down := true;
   end;
 
   Button_SelectFlipH := TKMButton.Create(Panel_Selection, 9, 210, Panel_Selection.Width - 9, 20, gResTexts[TX_MAPED_COPY_PASTE_HFLIP], bsGame);
@@ -140,16 +142,23 @@ end;
 
 
 procedure TKMMapEdTerrainSelection.SelectionClick(Sender: TObject);
-var I: Integer;
+var
+  PT: TKMTerrainSelectionPasteType;
 begin
-
- for I:= 0 to 3 do
- if Sender = Map_PasteType[I] then
-    if Map_PasteType[I].Down = true then
-      Map_PasteType[I].Down := false else Map_PasteType[I].Down := true;
-
   gGameCursor.Mode := cmSelection;
   gGameCursor.Tag1 := 0;
+
+  for PT := Low(TKMTerrainSelectionPasteType) to High(TKMTerrainSelectionPasteType) do
+    if Sender = Map_PasteType[PT] then
+    begin
+      Map_PasteType[PT].Down := not Map_PasteType[PT].Down;
+      if Map_PasteType[PT].Down then
+        gGame.MapEditor.Selection.IncludePasteType(PT)
+      else
+        gGame.MapEditor.Selection.ExcludePasteType(PT);
+
+      Break;
+    end;
 
   if Sender = Button_SelectCopy then
   begin
@@ -174,7 +183,7 @@ begin
   if Sender = Button_SelectPasteApply then
   begin
     //Apply paste
-    gGame.MapEditor.Selection.Selection_PasteApply(Map_PasteType[0].Down,Map_PasteType[1].Down,Map_PasteType[2].Down,Map_PasteType[3].Down);
+    gGame.MapEditor.Selection.Selection_PasteApply;
     gGame.MapEditor.History.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_PASTE]);
 
     Button_SelectPasteApply.Disable;

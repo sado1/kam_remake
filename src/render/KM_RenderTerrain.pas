@@ -104,7 +104,7 @@ type
 implementation
 uses
   KM_Game,
-  KM_GameParams, KM_Render, KM_RenderTypes, KM_Resource, KM_DevPerfLog, KM_DevPerfLogTypes;
+  KM_GameParams, KM_Render, KM_RenderTypes, KM_TerrainTypes, KM_Resource, KM_DevPerfLog, KM_DevPerfLogTypes;
 
 type
   TAnimLayer = (alWater, alFalls, alSwamp);
@@ -817,8 +817,8 @@ begin
   //Fake tiles for MapEd fields
   if gGame.MapEditor <> nil then
     case gGame.MapEditor.Land[pY, pX].CornOrWine of
-      1:  RenderTile(gGame.MapEditor.Land[pY, pX].CornOrWineTerrain, pX, pY, 0, DoHighlight, HighlightColor);
-      2:  RenderTile(55, pX, pY, 0, DoHighlight, HighlightColor);
+      1:  RenderTile(gGame.MapEditor.Land[pY, pX].CornOrWineTerrain, pX, pY, 0, DoHighlight, HighlightColor); // Corn
+      2:  RenderTile(WINE_TERRAIN_ID, pX, pY, 0, DoHighlight, HighlightColor); //Wine
     end;
 
   if gTerrain.Land[pY, pX].TileOverlay = toRoad then

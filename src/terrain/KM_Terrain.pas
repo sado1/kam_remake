@@ -116,6 +116,7 @@ type
     function RenderHeight: Byte;
     procedure IncJamMeter(aValue: Integer);
     function RenderLight: Single;
+    function GetBasic: TKMTerrainTileBasic;
   end;
 
   TKMTerrainTileFence = record
@@ -425,7 +426,7 @@ uses
   KM_Log, KM_HandsCollection, KM_TerrainWalkConnect, KM_Resource, KM_Units, KM_DevPerfLog,
   KM_ResSound, KM_Sound, KM_UnitActionStay, KM_UnitWarrior, KM_TerrainPainter, KM_Houses,
   KM_ResUnits, KM_ResSprites, KM_Hand, KM_Game, KM_GameParams, KM_GameTypes, KM_ScriptingEvents, KM_Utils, KM_DevPerfLogTypes,
-  KM_CommonExceptions;
+  KM_CommonExceptions, KM_TerrainTypes;
 
 const
   HEIGHT_DEFAULT = 30;
@@ -3455,22 +3456,22 @@ begin
     case aStage of
       0:  begin //Set new fruits
             fieldAge := 1 + Ord(aRandomAge) * KaMRandom((WINE_AGE_1 - 1) div 2, 'TKMTerrain.SetField 5');
-            SetLand(fieldAge, 55, 54);
+            SetLand(fieldAge, WINE_TERRAIN_ID, 54);
           end;
 
       1:  begin //Fruits start to grow
             fieldAge := WINE_AGE_1 + Ord(aRandomAge) * KaMRandom((WINE_AGE_1 - WINE_AGE_1) div 2, 'TKMTerrain.SetField 6');
-            SetLand(fieldAge, 55, 55);
+            SetLand(fieldAge, WINE_TERRAIN_ID, 55);
           end;
 
       2:  begin //Fruits continue to grow
             fieldAge := WINE_AGE_2 + Ord(aRandomAge) * KaMRandom((WINE_AGE_FULL - WINE_AGE_2) div 2, 'TKMTerrain.SetField 7');
-            SetLand(fieldAge, 55, 56);
+            SetLand(fieldAge, WINE_TERRAIN_ID, 56);
           end;
 
       3:  begin //Ready to be harvested
             fieldAge := WINE_AGE_FULL - 1; //-1 because it is increased in update state, otherwise it wouldn't be noticed
-            SetLand(fieldAge, 55, 57);
+            SetLand(fieldAge, WINE_TERRAIN_ID, 57);
           end;
     end;
   end;
@@ -5305,11 +5306,11 @@ begin
         else
         if TileIsWineField(KMPoint(K,I)) then
           case Land[I,K].FieldAge of
-            WINE_AGE_1:     SetLand(55,K,I,55);
-            WINE_AGE_2:     SetLand(55,K,I,56);
+            WINE_AGE_1:     SetLand(WINE_TERRAIN_ID,K,I,55);
+            WINE_AGE_2:     SetLand(WINE_TERRAIN_ID,K,I,56);
             WINE_AGE_FULL:  begin
                               //Skip to the end
-                              SetLand(55,K,I,57);
+                              SetLand(WINE_TERRAIN_ID,K,I,57);
                               Land[I,K].FieldAge := CORN_AGE_MAX;
                             end;
           end;
@@ -5552,6 +5553,22 @@ end;
 
 
 { TKMTerrainTile }
+function TKMTerrainTile.GetBasic: TKMTerrainTileBasic;
+var
+  L: Integer;
+begin
+  Result.BaseLayer    := BaseLayer;
+  Result.LayersCnt    := LayersCnt;
+  Result.Height       := Height;
+  Result.Obj          := Obj;
+  Result.IsCustom     := IsCustom;
+  Result.BlendingLvl  := BlendingLvl;
+  Result.TileOverlay  := TileOverlay;
+  for L := 0 to 2 do
+    Result.Layer[L] := Layer[L];
+end;
+
+
 procedure TKMTerrainTile.IncJamMeter(aValue: Integer);
 begin
   JamMeter := EnsureRange(JamMeter + aValue, 0, 255);

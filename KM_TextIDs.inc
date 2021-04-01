@@ -660,12 +660,10 @@ TX_MAPED_NEW_MISSION = 499; //New Mission
 TX_MAPED_UNDO_HINT = 783; //Undo
 TX_MAPED_REDO_HINT = 782; //Redo
 
-
-TX_MAPED_PASTE_HEIGHTS = 1493; //Object Brushes - clean brush - hint
-TX_MAPED_PASTE_OBJECTS = 1494; //Object Brushes - clean brush - hint
-TX_MAPED_PASTE_TERRAIN = 1495; //Object Brushes - clean brush - hint
-TX_MAPED_PASTE_OVERLAYS = 1496; //Object Brushes - clean brush - hint
-
+TX_MAPED_COPY_PASTE_TERRAIN_HINT = 1493; //Apply terrain from copied area
+TX_MAPED_COPY_PASTE_HEIGHTS_HINT = 1494; //Apply heights from copied area
+TX_MAPED_COPY_PASTE_OBJECTS_HINT = 1495; //Apply objects from copied area
+TX_MAPED_COPY_PASTE_OVERLAYS_HINT = 1496; //Apply terrain overlays from copied area
 
 TX_MAPED_AI_DEFAULTS_HEADING = 813; //Apply AI defaults
 TX_MAPED_AI_DEFAULTS_MP_BUILDER = 814; //Multiplayer builder
