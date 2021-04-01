@@ -25,15 +25,16 @@ type
     Button_CreditsFacebook: TKMButton;
     Button_CreditsBack: TKMButton;
   public
-    constructor Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText);
+    OnToggleLocale: TKMToggleLocaleEvent;
 
+    constructor Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText);
     procedure Show;
   end;
 
 
 implementation
 uses
-  KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_ResLocales, KM_CommonUtils;
+  KM_ResTexts, KM_RenderUI, KM_Resource, KM_ResFonts, KM_ResLocales, KM_GameSettings, KM_CommonUtils;
 
 
 { TKMGUIMainCredits }
@@ -101,6 +102,12 @@ end;
 
 procedure TKMMenuCredits.Show;
 begin
+  // Load asian fonts, since there are some credits information on asian languages
+  // No need to redraw all UI, as we do on the Options page, since there is no info rendered on the credits page yet
+  if gRes.Fonts.LoadLevel <> fllFull then
+    // todo: swap cursor to some 'loading' cursor, to indicate loading process
+    gRes.LoadLocaleFonts(gGameSettings.Locale, True);
+
   //Set initial position
   Label_Credits_KaM.SmoothScrollToTop := TimeGet;
   Label_Credits_Remake.SmoothScrollToTop := TimeGet;

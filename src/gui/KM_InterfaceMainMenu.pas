@@ -56,7 +56,7 @@ type
                         aOnNewMapEditor: TKMNewMapEditorEvent;
                         aOnNewReplay: TUnicodeStringEvent;
                         aOnNewSingleSave: TUnicodeStringEvent;
-                        aOnToggleLocale: TAnsiStringEvent;
+                        aOnToggleLocale: TKMToggleLocaleEvent;
                         aOnPreloadGameResources: TEvent;
                         aOnNetworkInit: TEvent);
     destructor Destroy; override;
@@ -94,7 +94,7 @@ constructor TKMMainMenuInterface.Create(X,Y: Word; aCampaigns: TKMCampaignsColle
                                         aOnNewMapEditor: TKMNewMapEditorEvent;
                                         aOnNewReplay: TUnicodeStringEvent;
                                         aOnNewSingleSave: TUnicodeStringEvent;
-                                        aOnToggleLocale: TAnsiStringEvent;
+                                        aOnToggleLocale: TKMToggleLocaleEvent;
                                         aOnPreloadGameResources: TEvent;
                                         aOnNetworkInit: TEvent);
 var
@@ -137,6 +137,8 @@ begin
 
   fMenuOptions.OnToggleLocale         := aOnToggleLocale;
   fMenuOptions.OnPreloadGameResources := aOnPreloadGameResources;
+
+  fMenuCredits.OnToggleLocale         := aOnToggleLocale;
 
   fMenuMultiplayer.OnNetworkInit      := aOnNetworkInit;
 

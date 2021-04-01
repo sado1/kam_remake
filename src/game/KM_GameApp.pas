@@ -6,7 +6,7 @@ uses
   {$IFDEF FPC} Controls, {$ENDIF}
   Classes, Dialogs, ExtCtrls,
   KM_CommonTypes, KM_Defaults, KM_RenderControl, KM_Video,
-  KM_Campaigns, KM_Game, KM_InterfaceMainMenu, KM_Resource,
+  KM_Campaigns, KM_Game, KM_InterfaceMainMenu, KM_InterfaceTypes, KM_Resource,
   KM_Music, KM_Maps, KM_MapTypes, KM_CampaignTypes, KM_Networking,
   KM_GameSettings,
   KM_KeysSettings,
@@ -80,7 +80,7 @@ type
     procedure StopGameReturnToLobby;
     function CanClose: Boolean;
     procedure Resize(X,Y: Integer);
-    procedure ToggleLocale(const aLocale: AnsiString);
+    procedure ToggleLocale(const aLocale: AnsiString; aReturnToMenuPage: TKMMenuPageType);
     procedure NetworkInit;
     procedure SendMPGameInfo;
     function RenderVersion: UnicodeString;
@@ -160,7 +160,7 @@ uses
   KM_FormLogistics,
   KM_Main, KM_Controls, KM_Log, KM_Sound, KM_GameInputProcess, KM_GameInputProcess_Multi,
   KM_GameSavePoints,
-  KM_InterfaceDefaults, KM_InterfaceTypes, KM_GameCursor, KM_ResTexts,
+  KM_InterfaceDefaults, KM_GameCursor, KM_ResTexts,
   KM_Saves, KM_CommonUtils, KM_RandomChecks, KM_DevPerfLog, KM_DevPerfLogTypes;
 
 
@@ -306,7 +306,7 @@ begin
 end;
 
 
-procedure TKMGameApp.ToggleLocale(const aLocale: AnsiString);
+procedure TKMGameApp.ToggleLocale(const aLocale: AnsiString; aReturnToMenuPage: TKMMenuPageType);
 begin
   Assert(gGame = nil, 'We don''t want to recreate whole fGame for that. Let''s limit it only to MainMenu');
 
@@ -341,7 +341,7 @@ begin
   fCampaigns := TKMCampaignsCollection.Create;
   fCampaigns.Load;
   InitMainMenu(gRender.ScreenX, gRender.ScreenY);
-  fMainMenuInterface.PageChange(gpOptions);
+  fMainMenuInterface.PageChange(aReturnToMenuPage);
   Resize(gRender.ScreenX, gRender.ScreenY); //Force the recreated main menu to resize to the user's screen
   fTimerUI.Enabled := True; //Safe to enable the timer again
 end;
