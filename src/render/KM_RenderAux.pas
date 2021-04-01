@@ -538,10 +538,16 @@ end;
 procedure TRenderAux.TileTerrainOverlays(const aRect: TKMRect);
 var
   I, J: Integer;
+  str: string;
 begin
   for I := aRect.Top to aRect.Bottom do
     for J := aRect.Left to aRect.Right do
-      Text(J, I, IntToStr(Byte(gTerrain.Land[I,J].TileOverlay)), icDarkPink);
+    begin
+      str := IntToStr(Byte(gTerrain.Land[I,J].TileOverlay));
+      if gGame.Params.IsMapEditor and (gGame.MapEditor.Land[I,J].CornOrWine > 0) then
+        str := str + '-' + IntToStr(gGame.MapEditor.Land[I,J].CornOrWineTerrain);
+      Text(J, I, str, icDarkPink);
+    end;
 end;
 
 
