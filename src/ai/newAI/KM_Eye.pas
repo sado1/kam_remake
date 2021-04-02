@@ -826,7 +826,7 @@ begin
   if not CanBeRoad(aLoc.X,aLoc.Y+1) then
     Exit;
 
-  // Make sure that we dont put new house into another plan (just entrance is enought because houses have similar size)
+  // Make sure that we dont put new house into another plan (just entrance is enough because houses have similar size)
   //if gHands[fOwner].Constructions.HousePlanList.HasPlan(KMPoint(aLoc.X,aLoc.Y)) then
   //  Exit;
 
@@ -1684,7 +1684,7 @@ begin
           HT := HouseType;
           if (HT = htNone) then
             Continue;
-          P1 := KMPointAdd( Loc, KMPoint(gRes.Houses[HT].EntranceOffsetX,0) ); // Plans have moved offset so fix it (because there is never enought exceptions ;)
+          P1 := KMPointAdd( Loc, KMPoint(gRes.Houses[HT].EntranceOffsetX,0) ); // Plans have moved offset so fix it (because there is never enough exceptions ;)
           // Internal house tiles
           for L := Low(gAIFields.Eye.HousesMapping[HT].Tiles) to High(gAIFields.Eye.HousesMapping[HT].Tiles) do
           begin

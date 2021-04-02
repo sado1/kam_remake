@@ -102,7 +102,7 @@ type
 
   TKMPlayerColorMode = (pcmNone, pcmDefault, pcmAllyEnemy, pcmTeams);
 
-  TKMGameRevision = Word; //Word looks enought for now...
+  TKMGameRevision = Word; // Word looks enough for now...
 
   TKMColor3f = record
     R,G,B: Single;

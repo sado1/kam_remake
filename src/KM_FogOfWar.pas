@@ -107,8 +107,8 @@ uses
   SysUtils, KM_DevPerfLog, KM_DevPerfLogTypes;
 
 const
-  //Addition to Revelation radius for Render revelation
-  RENDER_RADIUS_ADD = 5; //4 is not enought sometimes (Barracks?), 5 looks good
+  // Addition to Revelation radius for Render revelation
+  RENDER_RADIUS_ADD = 5; // 4 is not enough sometimes (Barracks?), 5 looks good
 
 
 { TKMFogOfWar }

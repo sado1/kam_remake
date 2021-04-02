@@ -1746,13 +1746,13 @@ begin
           Inc(I);
           if WType <> cwtArmyPower then
             fNoArmyChartData := False;
-          Break; // Found warriors data for at least 1 hand, that's enought to show warrior type in column box
+          Break; // Found warriors data for at least 1 hand, that's enough to show warrior type in column box
         end;
     end;
     SetLength(fColumnBoxArmy_Rows[CKind], I); //Cut unused elements, so we will show only needed lines in ArmyChange
   end;
 
-  //Fill in chart values
+  // Fill in chart values
   for ST := Low(TKMStatType) to High(TKMStatType) do
     for CKind := Low(TKMChartArmyKind) to High(TKMChartArmyKind) do
       for WType := Low(TKMChartWarriorType) to High(TKMChartWarriorType) do

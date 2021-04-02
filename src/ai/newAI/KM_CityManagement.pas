@@ -567,7 +567,7 @@ begin
         S.NotAcceptFlag[wtStone] := (aTick > STONE_STORE_DELAY) OR (S.CheckResIn(wtStone)*2 > Stats.GetUnitQty(utWorker));
         S.NotAcceptFlag[wtGold] := S.CheckResIn(wtGold) > 400; // Everyone needs as much gold as possible
 
-        // Food - don't store food when we have enought (it will cause trafic before storehouse)
+        // Food - don't store food when we have enough (it will cause trafic before storehouse)
         S.NotAcceptFlag[wtWine] := Stats.GetWareBalance(wtWine) > 100;
         S.NotAcceptFlag[wtSausages] := Stats.GetWareBalance(wtSausages) > 100;
         S.NotAcceptFlag[wtBread] := Stats.GetWareBalance(wtBread) > 100;
@@ -958,7 +958,7 @@ begin
     ArmorFraction := ArmorFraction / 2.0;
   end
   else
-    ArmorFraction := fRequiredWeapons[wtMetalArmor].Fraction; // Consider only metal armor in case that we have enought metal shields
+    ArmorFraction := fRequiredWeapons[wtMetalArmor].Fraction; // Consider only metal armor in case that we have enough metal shields
   // We always want the higher requirements equal to 5 + something between 1 <-> 5 for second production
   IronShare := 5 * (WeaponFraction + ArmorFraction) / Max(WeaponFraction, ArmorFraction);
   // Ware distribution = fraction / sum of fractions * 5

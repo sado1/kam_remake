@@ -1371,7 +1371,7 @@ begin
   //every ball can go to 1 basket with allowed color
   //How to fill them?
 
-  //Simple solution - try all possible ways to fill, and if we find solution, then its good enought.
+  //Simple solution - try all possible ways to fill, and if we find solution, then its good enough.
   //First Fill order - Abc means first we put A ball to all A only baskets, then A+B basket, then A+C and then A+B+C
   //Second fill order - Bac, which goes after first - same, but for the B ball, so we fill all remaining baskets:
   // first B ball goes to B-only baskets, then B+A then B+C then B+A+C
