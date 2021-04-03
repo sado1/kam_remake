@@ -2323,10 +2323,12 @@ begin
                       ApplyBrush;
                     end;
     cmTiles:        if (ssLeft in gGameCursor.SState) then
+                    begin
                       if gGameCursor.MapEdDir in [0..3] then //Defined direction
                         EditTile(gGameCursor.Cell, gGameCursor.Tag1, gGameCursor.MapEdDir)
                       else //Random direction
                         EditTile(gGameCursor.Cell, gGameCursor.Tag1, KaMRandom(4, 'TKMTerrainPainter.UpdateStateIdle'));
+                    end;
 
     cmObjectsBrush: if (ssLeft in gGameCursor.SState) then
                     begin
