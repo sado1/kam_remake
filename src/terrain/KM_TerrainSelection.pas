@@ -239,8 +239,8 @@ begin
         fSelectionBuffer[By,Bx].TerKind     := fTerrainPainter.LandTerKind[I+1, K+1].TerKind;
         fSelectionBuffer[By,Bx].TileOverlay := gTerrain.Land[I+1, K+1].TileOverlay;
         fSelectionBuffer[By,Bx].TileOwner   := gTerrain.Land[I+1, K+1].TileOwner;
-        fSelectionBuffer[By,Bx].CornOrWine  := gGame.MapEditor.Land[I+1, K+1].CornOrWine;
-        fSelectionBuffer[By,Bx].CornOrWineTerrain := gGame.MapEditor.Land[I+1, K+1].CornOrWineTerrain;
+        fSelectionBuffer[By,Bx].CornOrWine  := gGame.MapEditor.LandMapEd[I+1, K+1].CornOrWine;
+        fSelectionBuffer[By,Bx].CornOrWineTerrain := gGame.MapEditor.LandMapEd[I+1, K+1].CornOrWineTerrain;
         for L := 0 to 2 do
         begin
           fSelectionBuffer[By,Bx].Layer[L].Terrain  := gTerrain.Land[I+1, K+1].Layer[L].Terrain;
@@ -347,8 +347,8 @@ begin
         begin
           gTerrain.Land[I+1, K+1].TileOverlay := fSelectionBuffer[By,Bx].TileOverlay;
           gTerrain.Land[I+1, K+1].TileOwner := fSelectionBuffer[By,Bx].TileOwner; // Owner is nessecery to set for CornOrWine
-          gGame.MapEditor.Land[I+1, K+1].CornOrWine := fSelectionBuffer[By,Bx].CornOrWine;
-          gGame.MapEditor.Land[I+1, K+1].CornOrWineTerrain := fSelectionBuffer[By,Bx].CornOrWineTerrain;
+          gGame.MapEditor.LandMapEd[I+1, K+1].CornOrWine := fSelectionBuffer[By,Bx].CornOrWine;
+          gGame.MapEditor.LandMapEd[I+1, K+1].CornOrWineTerrain := fSelectionBuffer[By,Bx].CornOrWineTerrain;
           gTerrain.UpdateFences(KMPoint(K+1, I+1));
         end;
       end;

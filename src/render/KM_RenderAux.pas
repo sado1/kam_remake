@@ -544,8 +544,8 @@ begin
     for J := aRect.Left to aRect.Right do
     begin
       str := IntToStr(Byte(gTerrain.Land[I,J].TileOverlay));
-      if gGame.Params.IsMapEditor and (gGame.MapEditor.Land[I,J].CornOrWine > 0) then
-        str := str + '-' + IntToStr(gGame.MapEditor.Land[I,J].CornOrWineTerrain);
+      if gGame.Params.IsMapEditor and (gGame.MapEditor.LandMapEd[I,J].CornOrWine > 0) then
+        str := str + '-' + IntToStr(gGame.MapEditor.LandMapEd[I,J].CornOrWineTerrain);
       Text(J, I, str, icDarkPink);
     end;
 end;

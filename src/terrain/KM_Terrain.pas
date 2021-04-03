@@ -268,14 +268,17 @@ type
     procedure UpdateLighting; overload;
     procedure UpdateLighting(const aRect: TKMRect); overload;
     procedure UpdateLighting(X, Y: Integer); overload;
+
     procedure UpdatePassability; overload;
     procedure UpdatePassability(const aRect: TKMRect); overload;
     procedure UpdatePassability(const Loc: TKMPoint); overload;
 
-    procedure UpdateFences(const aRect: TKMRect; CheckSurrounding: Boolean = True); overload;
-    procedure UpdateFences(const Loc: TKMPoint; CheckSurrounding: Boolean = True); overload;
+    procedure UpdateFences(aCheckSurrounding: Boolean = True); overload;
+    procedure UpdateFences(const aRect: TKMRect; aCheckSurrounding: Boolean = True); overload;
+    procedure UpdateFences(const Loc: TKMPoint; aCheckSurrounding: Boolean = True); overload;
 
-    procedure UpdateAll(const aRect: TKMRect);
+    procedure UpdateAll; overload;
+    procedure UpdateAll(const aRect: TKMRect); overload;
 
     procedure IncAnimStep; //Lite-weight UpdateState for MapEd
     property AnimStep: Cardinal read fAnimStep;
@@ -1546,7 +1549,7 @@ begin
     Result := fTileset.TileIsCornField(Land[Loc.Y, Loc.X].BaseLayer.Terrain)
               and (Land[Loc.Y,Loc.X].TileOverlay = toNone)
   else
-    Result := (gGame.MapEditor.Land[Loc.Y,Loc.X].CornOrWine = 1) and (Land[Loc.Y,Loc.X].TileOverlay = toNone);
+    Result := (gGame.MapEditor.LandMapEd[Loc.Y,Loc.X].CornOrWine = 1) and (Land[Loc.Y,Loc.X].TileOverlay = toNone);
 end;
 
 
@@ -1563,7 +1566,7 @@ begin
               and (Land[Loc.Y,Loc.X].TileOverlay = toNone)
               and ObjectIsWine(Loc)
   else
-    Result := (gGame.MapEditor.Land[Loc.Y,Loc.X].CornOrWine = 2) and (Land[Loc.Y,Loc.X].TileOverlay = toNone);
+    Result := (gGame.MapEditor.LandMapEd[Loc.Y,Loc.X].CornOrWine = 2) and (Land[Loc.Y,Loc.X].TileOverlay = toNone);
 end;
 
 
@@ -2077,8 +2080,8 @@ begin
 
   if fMapEditor then
   begin
-    gGame.MapEditor.Land[Loc.Y,Loc.X].CornOrWine := 0;
-    gGame.MapEditor.Land[Loc.Y,Loc.X].CornOrWineTerrain := 0;
+    gGame.MapEditor.LandMapEd[Loc.Y,Loc.X].CornOrWine := 0;
+    gGame.MapEditor.LandMapEd[Loc.Y,Loc.X].CornOrWineTerrain := 0;
   end;
 
   if Land[Loc.Y,Loc.X].Obj in [54..59] then
@@ -2115,8 +2118,8 @@ begin
 
   if fMapEditor then
   begin
-    gGame.MapEditor.Land[Loc.Y,Loc.X].CornOrWine := 0;
-    gGame.MapEditor.Land[Loc.Y,Loc.X].CornOrWineTerrain := 0;
+    gGame.MapEditor.LandMapEd[Loc.Y,Loc.X].CornOrWine := 0;
+    gGame.MapEditor.LandMapEd[Loc.Y,Loc.X].CornOrWineTerrain := 0;
   end;
 
   if Land[Loc.Y,Loc.X].Obj in [54..59] then
@@ -2986,7 +2989,7 @@ begin
       Land[Loc.Y, Loc.X].TileOverlay := aOverlay;
 
       if fMapEditor then
-        gGame.MapEditor.Land[Loc.Y, Loc.X].CornOrWine := 0;
+        gGame.MapEditor.LandMapEd[Loc.Y, Loc.X].CornOrWine := 0;
 
       UpdateFences(Loc);
 
@@ -3169,7 +3172,7 @@ procedure TKMTerrain.SetField(const Loc: TKMPoint; aOwner: TKMHandID; aFieldType
     Land[Loc.Y, Loc.X].FieldAge := aFieldAge;
 
     if fMapEditor then
-      gGame.MapEditor.Land[Loc.Y, Loc.X].CornOrWineTerrain := aTerrain
+      gGame.MapEditor.LandMapEd[Loc.Y, Loc.X].CornOrWineTerrain := aTerrain
     else begin
       Land[Loc.Y, Loc.X].BaseLayer.Terrain := aTerrain;
       Land[Loc.Y, Loc.X].BaseLayer.Rotation := 0;
@@ -3202,7 +3205,7 @@ begin
     and (InRange(aStage, 0, CORN_STAGES_COUNT - 1)) then
   begin
     if fMapEditor then
-      gGame.MapEditor.Land[Loc.Y,Loc.X].CornOrWine := 1;
+      gGame.MapEditor.LandMapEd[Loc.Y,Loc.X].CornOrWine := 1;
 
     case aStage of
       0:  SetLand(0, 62, GetObj); //empty field
@@ -3240,7 +3243,7 @@ begin
     and (InRange(aStage, 0, WINE_STAGES_COUNT - 1)) then
   begin
     if fMapEditor then
-      gGame.MapEditor.Land[Loc.Y,Loc.X].CornOrWine := 2;
+      gGame.MapEditor.LandMapEd[Loc.Y,Loc.X].CornOrWine := 2;
 
     case aStage of
       0:  begin //Set new fruits
@@ -4654,13 +4657,25 @@ begin
 end;
 
 
-procedure TKMTerrain.UpdateFences(const aRect: TKMRect; CheckSurrounding: Boolean = True);
+procedure TKMTerrain.UpdateFences(aCheckSurrounding: Boolean = True);
+begin
+  UpdateFences(fMapRect);
+end;
+
+
+procedure TKMTerrain.UpdateFences(const aRect: TKMRect; aCheckSurrounding: Boolean = True);
 var
   I, K: Integer;
 begin
   for I := Max(aRect.Top, 1) to Min(aRect.Bottom, fMapY - 1) do
     for K := Max(aRect.Left, 1) to Min(aRect.Right, fMapX - 1) do
-      UpdateFences(KMPoint(K, I), CheckSurrounding);
+      UpdateFences(KMPoint(K, I), aCheckSurrounding);
+end;
+
+
+procedure TKMTerrain.UpdateAll;
+begin
+  UpdateAll(fMapRect);
 end;
 
 
@@ -4674,7 +4689,7 @@ end;
 
 
 {Check 4 surrounding tiles, and if they are different place a fence}
-procedure TKMTerrain.UpdateFences(const Loc: TKMPoint; CheckSurrounding: Boolean = True);
+procedure TKMTerrain.UpdateFences(const Loc: TKMPoint; aCheckSurrounding: Boolean = True);
   function GetFenceType: TKMFenceKind;
   begin
     if TileIsCornField(Loc) then
@@ -4716,7 +4731,7 @@ begin
                                  Byte(GetFenceEnabled(Loc.X,     Loc.Y + 1))  * 8;  //S
   end;
 
-  if CheckSurrounding then
+  if aCheckSurrounding then
   begin
     UpdateFences(KMPoint(Loc.X - 1, Loc.Y), False);
     UpdateFences(KMPoint(Loc.X + 1, Loc.Y), False);
@@ -4992,7 +5007,7 @@ begin
   fieldAge := Land[Loc.Y,Loc.X].FieldAge;
   if fieldAge = 0 then
   begin
-    if (fMapEditor and (gGame.MapEditor.Land[Loc.Y,Loc.X].CornOrWineTerrain = 63))
+    if (fMapEditor and (gGame.MapEditor.LandMapEd[Loc.Y,Loc.X].CornOrWineTerrain = 63))
       or (Land[Loc.Y,Loc.X].BaseLayer.Terrain = 63) then
       Result := 6
     else
