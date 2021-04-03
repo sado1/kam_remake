@@ -249,7 +249,7 @@ end;
 function TPathFinding.IsWalkableTile(aX, aY: Word): Boolean;
 begin
   //If cell meets Passability then estimate it
-  Result := ((fPass * gTerrain.Land[aY,aX].Passability) <> [])
+  Result := ((fPass * gTerrain.Land^[aY,aX].Passability) <> [])
             and ((fAvoidLocked <> palAvoidAsUnwalkable) or not gTerrain.TileIsLocked(KMPoint(aX,aY)));
 end;
 
@@ -270,7 +270,7 @@ begin
   //Do not add extra cost if the tile is the target, as it can cause a longer route to be chosen
   if (aToX <> fLocB.X) or (aToY <> fLocB.Y) then
   begin
-    U := gTerrain.Land[aToY,aToX].IsUnit;
+    U := gTerrain.Land^[aToY,aToX].IsUnit;
     //Always avoid congested areas on roads
     if DO_WEIGHT_ROUTES and (U <> nil) and ((tpWalkRoad in fPass) or U.PathfindingShouldAvoid) then
       Inc(Result, 15); //Unit = 1.5 extra tiles

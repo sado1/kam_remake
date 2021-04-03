@@ -441,11 +441,11 @@ begin
     isWine := gTerrain.TileIsWineField(P);
 
     //Delete tile object (including corn/wine objects as well)
-    if (gTerrain.Land[P.Y,P.X].Obj <> OBJ_NONE) then
+    if (gTerrain.Land^[P.Y,P.X].Obj <> OBJ_NONE) then
     begin
       if isCorn and (gTerrain.GetCornStage(P) in [4,5]) then
       begin
-        gTerrain.SetField(P, gTerrain.Land[P.Y,P.X].TileOwner, ftCorn, 3); // For corn, when delete corn object reduce field stage to 3
+        gTerrain.SetField(P, gTerrain.Land^[P.Y,P.X].TileOwner, ftCorn, 3); // For corn, when delete corn object reduce field stage to 3
         removeTxID := TX_WORD_CORN_FIELD;
       end
       else
@@ -465,7 +465,7 @@ begin
     end;
 
     //Delete tile overlay (road/corn/wine)
-    if gTerrain.Land[P.Y,P.X].TileOverlay = toRoad then
+    if gTerrain.Land^[P.Y,P.X].TileOverlay = toRoad then
     begin
       if not fieldsChanged then
         removeTxID := TX_WORD_ROAD;
@@ -473,7 +473,7 @@ begin
       gTerrain.RemRoad(P);
       fieldsChanged := True;
     end else
-    if gTerrain.Land[P.Y,P.X].TileOverlay <> toNone then
+    if gTerrain.Land^[P.Y,P.X].TileOverlay <> toNone then
     begin
       if not fieldsChanged then
         removeTxID := TX_WORD_OVERLAY;
@@ -536,10 +536,10 @@ begin
   //Fisrt try to change owner of object on tile
   if not ChangeObjectOwner(gMySpectator.HitTestCursorWGroup, gMySpectator.HandID) or aChangeOwnerForAll then
     //then try to change owner tile (road/field/wine)
-    if ((gTerrain.Land[P.Y, P.X].TileOverlay = toRoad) or (LandMapEd[P.Y, P.X].CornOrWine <> 0))
-      and (gTerrain.Land[P.Y, P.X].TileOwner <> gMySpectator.HandID) then
+    if ((gTerrain.Land^[P.Y, P.X].TileOverlay = toRoad) or (LandMapEd[P.Y, P.X].CornOrWine <> 0))
+      and (gTerrain.Land^[P.Y, P.X].TileOwner <> gMySpectator.HandID) then
     begin
-      gTerrain.Land[P.Y, P.X].TileOwner := gMySpectator.HandID;
+      gTerrain.Land^[P.Y, P.X].TileOwner := gMySpectator.HandID;
       fHistory.MakeCheckpoint(caTerrain, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_CHOWNER_SMTH], [P.ToString, '']));
     end;
 end;
@@ -631,13 +631,13 @@ var
 begin
   P := gGameCursor.Cell;
   gHands.RemAnyHouse(P);
-  if gTerrain.Land[P.Y,P.X].TileOverlay = toRoad then
+  if gTerrain.Land^[P.Y,P.X].TileOverlay = toRoad then
   begin
     gTerrain.RemRoad(P);
     fHistory.MakeCheckpoint(caTerrain, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH],
                                              [gResTexts[TX_WORD_ROAD], P.ToString]));
   end else
-  if gTerrain.Land[P.Y,P.X].TileOverlay <> toNone then
+  if gTerrain.Land^[P.Y,P.X].TileOverlay <> toNone then
   begin
     gTerrain.SetOverlay(P, toNone, True);
     fHistory.MakeCheckpoint(caTerrain, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH],
@@ -933,7 +933,7 @@ begin
     if gGameCursor.Mode = cmErase then
       if gTerrain.TileIsCornField(P)
         or gTerrain.TileIsWineField(P)
-        or (gTerrain.Land[P.Y,P.X].TileOverlay = toRoad)
+        or (gTerrain.Land^[P.Y,P.X].TileOverlay = toRoad)
         or (gHands.HousesHitTest(P.X, P.Y) <> nil) then
         gRenderPool.RenderWireTile(P, icCyan) //Cyan quad
       else

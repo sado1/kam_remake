@@ -551,9 +551,9 @@ begin
   LandTerKind[Y+1, X+1].TerKind := aTerKind;
   LandTerKind[Y+1, X].TerKind   := aTerKind;
 
-  gTerrain.Land[Y, X].BaseLayer.Terrain := PickRandomTile(aTerKind);
-  gTerrain.Land[Y, X].BaseLayer.Rotation := KaMRandom(4, 'TKMTerrainPainter.BrushTerrainTile'); //Random direction for all plain tiles
-  gTerrain.Land[Y, X].IsCustom := False;
+  gTerrain.Land^[Y, X].BaseLayer.Terrain := PickRandomTile(aTerKind);
+  gTerrain.Land^[Y, X].BaseLayer.Rotation := KaMRandom(4, 'TKMTerrainPainter.BrushTerrainTile'); //Random direction for all plain tiles
+  gTerrain.Land^[Y, X].IsCustom := False;
 
   AddBrushAreaTerKind(X,  Y);
   AddBrushAreaTerKind(X+1,Y);
@@ -628,7 +628,7 @@ begin
           objRandom := KaMRandom(High(RandomObjects[aTerrainKind]), 'TKMTerrainPainter.PickRandomObject');
           Result := RandomObjects[aTerrainKind, objRandom];
         end;
-    2:  if (tpWolf in gTerrain.Land[aY, aX].Passability) then begin
+    2:  if (tpWolf in gTerrain.Land^[aY, aX].Passability) then begin
           objRandom := KaMRandom(High(RandomFlowers), 'TKMTerrainPainter.PickRandomObject');
           Result := RandomFlowers[objRandom];
         end;
@@ -647,7 +647,7 @@ begin
           objRandom := KaMRandom(High(RandomDeadTrees), 'TKMTerrainPainter.PickRandomObject');
           Result := RandomDeadTrees[objRandom];
         end;
-    6:  if (tpMakeRoads in gTerrain.Land[aY, aX].Passability) then
+    6:  if (tpMakeRoads in gTerrain.Land^[aY, aX].Passability) then
         begin
           objRandom := KaMRandom(High(RandomStones), 'TKMTerrainPainter.PickRandomObject');
           Result := RandomStones[objRandom];
@@ -662,7 +662,7 @@ begin
           objRandom := KaMRandom(High(RandomCactus), 'TKMTerrainPainter.PickRandomObject');
           Result := RandomCactus[objRandom];
         end;
-    9:  if (tpMakeRoads in gTerrain.Land[aY, aX].Passability) then
+    9:  if (tpMakeRoads in gTerrain.Land^[aY, aX].Passability) then
         begin
           objRandom := KaMRandom(High(RandomRuins), 'TKMTerrainPainter.PickRandomObject');
           Result := RandomRuins[objRandom];
@@ -822,7 +822,7 @@ begin
 //    or (LandTerKind[pY  ,pX+1].TerKind <> tkCustom)
 //    or (LandTerKind[pY+1,pX].TerKind <> tkCustom)
 //    or (LandTerKind[pY+1,pX+1].TerKind <> tkCustom) then
-  if not fOverrideCustomTiles and gTerrain.Land[pY,pX].IsCustom then Exit;
+  if not fOverrideCustomTiles and gTerrain.Land^[pY,pX].IsCustom then Exit;
 
   A := (LandTerKind[pY    , pX    ].TerKind);
   B := (LandTerKind[pY    , pX + 1].TerKind);
@@ -890,16 +890,16 @@ begin
 
   //Need to check if this tile was already smart-painted, "4-Nodes" hence default value is 0
   if (LandTerKind[pY,pX].Tiles <> Byte(ter1)*Byte(ter2)*(4-nodes))
-    or ((nodes = 4) and not IsTerrainRepresentTerKind(gTerrain.Land[pY,pX].BaseLayer.Terrain, ter1)) //All nodes, but terrain is different from needed TerKind
-    or (gTerrain.Land[pY,pX].LayersCnt > 0) then
+    or ((nodes = 4) and not IsTerrainRepresentTerKind(gTerrain.Land^[pY,pX].BaseLayer.Terrain, ter1)) //All nodes, but terrain is different from needed TerKind
+    or (gTerrain.Land^[pY,pX].LayersCnt > 0) then
   begin
     LandTerKind[pY,pX].Tiles := Byte(ter1)*Byte(ter2)*(4-nodes);//store not only nodes info, but also terrain type used
     if found and ((nodes = 4) or (fBrushMask = mkNone)) then
     begin
-      gTerrain.Land[pY,pX].BaseLayer.Terrain := T;
-      gTerrain.Land[pY,pX].BaseLayer.SetAllCorners;
-      gTerrain.Land[pY,pX].LayersCnt := 0;
-      gTerrain.Land[pY,pX].BaseLayer.Rotation := rot mod 4;
+      gTerrain.Land^[pY,pX].BaseLayer.Terrain := T;
+      gTerrain.Land^[pY,pX].BaseLayer.SetAllCorners;
+      gTerrain.Land^[pY,pX].LayersCnt := 0;
+      gTerrain.Land^[pY,pX].BaseLayer.Rotation := rot mod 4;
     end
   end;
 end;
@@ -1017,7 +1017,7 @@ begin
     if fUseTempLand then
       tile := fTempLand[aCell.Y, aCell.X]
     else
-      tile := GetTerrainTileBasic(gTerrain.Land[aCell.Y, aCell.X]);
+      tile := GetTerrainTileBasic(gTerrain.Land^[aCell.Y, aCell.X]);
 
     for I := 0 to 3 do
       if not terKindFound[I] then
@@ -1448,7 +1448,7 @@ procedure TKMTerrainPainter.MagicBrush(const X,Y: Integer; aMaskKind: TKMTileMas
       end;
 
     if CollisionFound then  //Need to apply MagicBrush
-      with gTerrain.Land[Y,X] do
+      with gTerrain.Land^[Y,X] do
       begin
         SetLength(LayerOrder, 4);
         for I := 0 to 3 do
@@ -1476,7 +1476,7 @@ var
   L: Integer;
   genInfo: TKMGenTerrainInfo;
 begin
-  if not gTerrain.TileInMapCoords(X, Y) or (not fOverrideCustomTiles and gTerrain.Land[Y,X].IsCustom) then Exit;
+  if not gTerrain.TileInMapCoords(X, Y) or (not fOverrideCustomTiles and gTerrain.Land^[Y,X].IsCustom) then Exit;
 
   if (aMaskKind = mkNone) and not fReplaceLayers then Exit;
 
@@ -1484,21 +1484,21 @@ begin
     ApplyMagicBrush(aMaskKind);
 
   //No need to update BlendingLvl for basic tiles (without auto transitions)
-  if gTerrain.Land[Y,X].LayersCnt > 0 then
-    gTerrain.Land[Y,X].BlendingLvl := fBlendingLvl;
+  if gTerrain.Land^[Y,X].LayersCnt > 0 then
+    gTerrain.Land^[Y,X].BlendingLvl := fBlendingLvl;
 
   if fReplaceLayers then
   begin
     case aMaskKind of
       mkNone:  begin
-                  gTerrain.Land[Y,X].LayersCnt := 0; // Simple way to clear all layers
-                  gTerrain.Land[Y,X].BaseLayer.SetAllCorners;
+                  gTerrain.Land^[Y,X].LayersCnt := 0; // Simple way to clear all layers
+                  gTerrain.Land^[Y,X].BaseLayer.SetAllCorners;
                 end;
-      else      for L := 0 to gTerrain.Land[Y,X].LayersCnt - 1 do
+      else      for L := 0 to gTerrain.Land^[Y,X].LayersCnt - 1 do
                 begin
-                  genInfo := gRes.Sprites.GetGenTerrainInfo(gTerrain.Land[Y,X].Layer[L].Terrain);
+                  genInfo := gRes.Sprites.GetGenTerrainInfo(gTerrain.Land^[Y,X].Layer[L].Terrain);
                   if genInfo.Mask.Kind <> aMaskKind then
-                    gTerrain.Land[Y,X].Layer[L].Terrain :=
+                    gTerrain.Land^[Y,X].Layer[L].Terrain :=
                       gGenTerrainTransitions[genInfo.TerKind, aMaskKind, genInfo.Mask.MType, genInfo.Mask.SubType];
                 end;
     end;
@@ -1515,12 +1515,12 @@ begin
   for I := 1 to gTerrain.MapY do
     for J := 1 to gTerrain.MapX do
     begin
-      fTempLand[I,J].BaseLayer := gTerrain.Land[I,J].BaseLayer;
-      fTempLand[I,J].LayersCnt := gTerrain.Land[I,J].LayersCnt;
-      fTempLand[I,J].Height := gTerrain.Land[I,J].Height;
-      fTempLand[I,J].Obj := gTerrain.Land[I,J].Obj;
+      fTempLand[I,J].BaseLayer := gTerrain.Land^[I,J].BaseLayer;
+      fTempLand[I,J].LayersCnt := gTerrain.Land^[I,J].LayersCnt;
+      fTempLand[I,J].Height := gTerrain.Land^[I,J].Height;
+      fTempLand[I,J].Obj := gTerrain.Land^[I,J].Obj;
       for L := 0 to 2 do
-        fTempLand[I,J].Layer[L] := gTerrain.Land[I,J].Layer[L];
+        fTempLand[I,J].Layer[L] := gTerrain.Land^[I,J].Layer[L];
     end;
 end;
 
@@ -1668,10 +1668,10 @@ begin
   Exit;
 
   if gGameCursor.MapEdCleanBrush then
-     gTerrain.Land[Y, X].Obj := OBJ_NONE
+     gTerrain.Land^[Y, X].Obj := OBJ_NONE
   else
   begin
-    gTerrain.Land[Y, X].Obj := OBJ_NONE;
+    gTerrain.Land^[Y, X].Obj := OBJ_NONE;
     for I := 0 to 9 do
       if gGameCursor.MapEdObjectsType[I] then
       begin
@@ -1681,7 +1681,7 @@ begin
           if aUseLandTKind then
             aTerKind := LandTerKind[Y, X].TerKind;
 
-          gTerrain.Land[Y, X].Obj := PickRandomObject(aTerKind, I, X, Y);
+          gTerrain.Land^[Y, X].Obj := PickRandomObject(aTerKind, I, X, Y);
         end;
       end;
   end;
@@ -1715,11 +1715,11 @@ begin
         if (I > 1) and (K >= 1) and (I < gTerrain.MapY) and (K < gTerrain.MapX) then
         begin
           // Unequalize compares heights of adjacent tiles and increases differences
-          if (gTerrain.Land[I,K].Height < gTerrain.Land[I-1,K+1].Height) then
-            tmp := -Min(gTerrain.Land[I-1,K+1].Height - gTerrain.Land[I,K].Height, tmp)
+          if (gTerrain.Land^[I,K].Height < gTerrain.Land^[I-1,K+1].Height) then
+            tmp := -Min(gTerrain.Land^[I-1,K+1].Height - gTerrain.Land^[I,K].Height, tmp)
           else
-          if (gTerrain.Land[I,K].Height > gTerrain.Land[I-1,K+1].Height) then
-            tmp := Min(gTerrain.Land[I,K].Height - gTerrain.Land[I-1,K+1].Height, tmp)
+          if (gTerrain.Land^[I,K].Height > gTerrain.Land^[I-1,K+1].Height) then
+            tmp := Min(gTerrain.Land^[I,K].Height - gTerrain.Land^[I-1,K+1].Height, tmp)
           else
           if tmp <> 0 then // Tmp = 0 outside of hsCircle area
             //Add random value (-1/0/1) so absolutely flat surface will be unequlized too
@@ -1732,14 +1732,14 @@ begin
       // START Flatten
       begin
         //Base value for flatten terrain
-        base := gTerrain.Land[fMapYn, fMapXn].Height;
+        base := gTerrain.Land^[fMapYn, fMapXn].Height;
 
         //Flatten compares heights of mouse click and active tile then it increases/decreases height of active tile
-        if (gTerrain.Land[I,K].Height < base) then
-          tmp := - Min(base - gTerrain.Land[I,K].Height, tmp)
+        if (gTerrain.Land^[I,K].Height < base) then
+          tmp := - Min(base - gTerrain.Land^[I,K].Height, tmp)
         else
-        if (gTerrain.Land[I,K].Height > base) then
-          tmp := Min(gTerrain.Land[I,K].Height - base, tmp)
+        if (gTerrain.Land^[I,K].Height > base) then
+          tmp := Min(gTerrain.Land^[I,K].Height - base, tmp)
         else
           tmp := 0;
       end;
@@ -1749,7 +1749,7 @@ begin
     //Compute resulting floating-point height
     tmp := Power(Abs(tmp),(fSlope+1)/6)*Sign(tmp); //Modify slopes curve
     tmp := tmp * (4.75/14*(fSpeed - 1) + 0.25);
-    tmp := EnsureRange(gTerrain.Land[I,K].Height + LandTerKind[I,K].HeightAdd/255 + tmp * (Byte(fRaise)*2 - 1), 0, 100); // (Byte(aRaise)*2 - 1) - LeftButton pressed it equals 1, otherwise equals -1
+    tmp := EnsureRange(gTerrain.Land^[I,K].Height + LandTerKind[I,K].HeightAdd/255 + tmp * (Byte(fRaise)*2 - 1), 0, 100); // (Byte(aRaise)*2 - 1) - LeftButton pressed it equals 1, otherwise equals -1
 
     //For flatten only
     if (base <> -1) then
@@ -1758,12 +1758,12 @@ begin
       //Problem is if one time H > base, next time H < base and so on in infinite loop
       //then those dots will be seen as flickering (shaking / trembling) which is not looking good
       //So in case we come so close to base value, so we overhead it, then just cut it to base value
-      if ((gTerrain.Land[I,K].Height >= base) and (tmp < base))
-        or ((gTerrain.Land[I,K].Height <= base) and (tmp > base)) then
+      if ((gTerrain.Land^[I,K].Height >= base) and (tmp < base))
+        or ((gTerrain.Land^[I,K].Height <= base) and (tmp > base)) then
         tmp := base;
     end;
 
-    gTerrain.Land[I,K].Height := Trunc(tmp);
+    gTerrain.Land^[I,K].Height := Trunc(tmp);
     LandTerKind[I,K].HeightAdd := Round(Frac(tmp)*255); //write Fractional part in 0..255 range (1Byte) to save us mem
   end;
 
@@ -1777,11 +1777,11 @@ procedure TKMTerrainPainter.EditTile(const aLoc: TKMPoint; aTile: Word; aRotatio
 begin
   if not gTerrain.TileInMapCoords(aLoc.X, aLoc.Y) then Exit;
 
-  gTerrain.Land[aLoc.Y, aLoc.X].IsCustom := aIsCustom;
-  gTerrain.Land[aLoc.Y, aLoc.X].BaseLayer.Terrain := aTile;
-  gTerrain.Land[aLoc.Y, aLoc.X].BaseLayer.SetAllCorners;
-  gTerrain.Land[aLoc.Y, aLoc.X].LayersCnt := 0;
-  gTerrain.Land[aLoc.Y, aLoc.X].BaseLayer.Rotation := aRotation;
+  gTerrain.Land^[aLoc.Y, aLoc.X].IsCustom := aIsCustom;
+  gTerrain.Land^[aLoc.Y, aLoc.X].BaseLayer.Terrain := aTile;
+  gTerrain.Land^[aLoc.Y, aLoc.X].BaseLayer.SetAllCorners;
+  gTerrain.Land^[aLoc.Y, aLoc.X].LayersCnt := 0;
+  gTerrain.Land^[aLoc.Y, aLoc.X].BaseLayer.Rotation := aRotation;
 
   gTerrain.UpdatePassability(aLoc);
   gTerrain.UpdateLighting(aLoc.X, aLoc.Y); //Also update lighting because of water
@@ -1814,15 +1814,15 @@ var
       Exit;
 
     //Detect rotateable shores
-    if (gTerrain.Land[y,x].BaseLayer.Terrain in [126, 127]) then
+    if (gTerrain.Land^[y,x].BaseLayer.Terrain in [126, 127]) then
       filledTiles[y,x] := mtShore;
 
     //Detect full ice tiles
-    if (gTerrain.Land[y, x].BaseLayer.Terrain = 44) then
+    if (gTerrain.Land^[y, x].BaseLayer.Terrain = 44) then
       filledTiles[y, x] := mtIce;
 
     //Detect water
-    if CanRotate(gTerrain.Land[y,x].BaseLayer.Terrain) then
+    if CanRotate(gTerrain.Land^[y,x].BaseLayer.Terrain) then
     begin
       filledTiles[y,x] := mtWater;
 
@@ -1849,36 +1849,36 @@ var
   I, K: Integer;
   newRot: Byte;
 begin
-  if not CanRotate(gTerrain.Land[aLoc.Y, aLoc.X].BaseLayer.Terrain) then
+  if not CanRotate(gTerrain.Land^[aLoc.Y, aLoc.X].BaseLayer.Terrain) then
     Exit;
 
   SetLength(filledTiles, gTerrain.MapY+1, gTerrain.MapX+1);
 
   MagicFillArea(aLoc.X,aLoc.Y);
 
-  newRot := (gTerrain.Land[aLoc.Y,aLoc.X].BaseLayer.Rotation + 1) mod 4;
+  newRot := (gTerrain.Land^[aLoc.Y,aLoc.X].BaseLayer.Rotation + 1) mod 4;
   for I := 1 to gTerrain.MapY do
     for K := 1 to gTerrain.MapX do
       case filledTiles[I,K] of
         mtWater,
         mtIce:    begin
-                    gTerrain.Land[I,K].BaseLayer.Rotation := newRot;
+                    gTerrain.Land^[I,K].BaseLayer.Rotation := newRot;
                   end;
         mtShore:  begin
                     //These shores can be flipped
-                    if (gTerrain.Land[I,K].BaseLayer.Terrain in [126, 127]) then
-                      case gTerrain.Land[I,K].BaseLayer.Rotation of
-                        0: if newRot = 3 then gTerrain.Land[I,K].BaseLayer.Terrain := 126 else
-                           if newRot = 1 then gTerrain.Land[I,K].BaseLayer.Terrain := 127;
+                    if (gTerrain.Land^[I,K].BaseLayer.Terrain in [126, 127]) then
+                      case gTerrain.Land^[I,K].BaseLayer.Rotation of
+                        0: if newRot = 3 then gTerrain.Land^[I,K].BaseLayer.Terrain := 126 else
+                           if newRot = 1 then gTerrain.Land^[I,K].BaseLayer.Terrain := 127;
 
-                        1: if newRot = 0 then gTerrain.Land[I,K].BaseLayer.Terrain := 126 else
-                           if newRot = 2 then gTerrain.Land[I,K].BaseLayer.Terrain := 127;
+                        1: if newRot = 0 then gTerrain.Land^[I,K].BaseLayer.Terrain := 126 else
+                           if newRot = 2 then gTerrain.Land^[I,K].BaseLayer.Terrain := 127;
 
-                        2: if newRot = 1 then gTerrain.Land[I,K].BaseLayer.Terrain := 126 else
-                           if newRot = 3 then gTerrain.Land[I,K].BaseLayer.Terrain := 127;
+                        2: if newRot = 1 then gTerrain.Land^[I,K].BaseLayer.Terrain := 126 else
+                           if newRot = 3 then gTerrain.Land^[I,K].BaseLayer.Terrain := 127;
 
-                        3: if newRot = 2 then gTerrain.Land[I,K].BaseLayer.Terrain := 126 else
-                           if newRot = 0 then gTerrain.Land[I,K].BaseLayer.Terrain := 127;
+                        3: if newRot = 2 then gTerrain.Land^[I,K].BaseLayer.Terrain := 126 else
+                           if newRot = 0 then gTerrain.Land^[I,K].BaseLayer.Terrain := 127;
                       end;
                   end;
       end;
@@ -1943,18 +1943,18 @@ begin
   for I := 1 to gTerrain.MapY do
   for K := 1 to gTerrain.MapX do
     //Special tiles such as bridges should remain as tkCustom
-    if ArrayContains(gTerrain.Land[I,K].BaseLayer.Terrain, SPECIAL_TILES) then
+    if ArrayContains(gTerrain.Land^[I,K].BaseLayer.Terrain, SPECIAL_TILES) then
       SetTerrainKindTile(K, I, tkCustom, ACC_MAX) //Maximum accuracy
     else
       //Water tiles not used in painting (fast, straight, etc.)
-      if gTerrain.Land[I,K].BaseLayer.Terrain in OTHER_WATER_TILES then
+      if gTerrain.Land^[I,K].BaseLayer.Terrain in OTHER_WATER_TILES then
         SetTerrainKindTile(K, I, tkWater, ACC_MED) //Same accuracy as random tiling (see below)
       else
         for T := Low(TKMTerrainKind) to High(TKMTerrainKind) do
           if T <> tkCustom then
           begin
             //METHOD 1: Terrain type is the primary tile for this terrain
-            if gTerrain.Land[I,K].BaseLayer.Terrain = Abs(Combo[T,T,1]) then
+            if gTerrain.Land^[I,K].BaseLayer.Terrain = Abs(Combo[T,T,1]) then
             begin
               SetTerrainKindTile(K, I, T, ACC_HIGH);
               Break; //Neither of the methods below can beat this one, so save time and don't check more TerrainKinds
@@ -1962,7 +1962,7 @@ begin
 
             //METHOD 2: Terrain type is in RandomTiling
             for J := 1 to RandomTiling[T,0] do
-              if gTerrain.Land[I,K].BaseLayer.Terrain = RandomTiling[T,J] then
+              if gTerrain.Land^[I,K].BaseLayer.Terrain = RandomTiling[T,J] then
               begin
                 A := ACC_MED; //Random tiling is fairly accurate
                 if T = tkCoal then A := ACC_MIN; //Random coal tiles are also used for edges, so edges are more accurate
@@ -1974,9 +1974,9 @@ begin
             for T2 := Low(TKMTerrainKind) to High(TKMTerrainKind) do
             begin
               //1 vertex is T, 3 vertexes are T2
-              if gTerrain.Land[I,K].BaseLayer.Terrain = Abs(Combo[T,T2,1]) then
+              if gTerrain.Land^[I,K].BaseLayer.Terrain = Abs(Combo[T,T2,1]) then
               begin
-                rot := gTerrain.Land[I,K].BaseLayer.Rotation mod 4;
+                rot := gTerrain.Land^[I,K].BaseLayer.Rotation mod 4;
                 if Combo[T,T2,1] < 0 then rot := (rot+2) mod 4; //Flip
                 case rot of
                   0: begin
@@ -2006,9 +2006,9 @@ begin
                 end;
               end;
               //Half T, half T2
-              if gTerrain.Land[I,K].BaseLayer.Terrain = Abs(Combo[T,T2,2]) then
+              if gTerrain.Land^[I,K].BaseLayer.Terrain = Abs(Combo[T,T2,2]) then
               begin
-                rot := gTerrain.Land[I,K].BaseLayer.Rotation mod 4;
+                rot := gTerrain.Land^[I,K].BaseLayer.Rotation mod 4;
                 if Combo[T,T2,2] < 0 then rot := (rot+2) mod 4; //Flip
                 case rot of
                   0: begin
@@ -2038,9 +2038,9 @@ begin
                 end;
               end;
               //3 vertex are T, 1 vertexes is T2
-              if gTerrain.Land[I,K].BaseLayer.Terrain = Abs(Combo[T,T2,3]) then
+              if gTerrain.Land^[I,K].BaseLayer.Terrain = Abs(Combo[T,T2,3]) then
               begin
-                rot := gTerrain.Land[I,K].BaseLayer.Rotation mod 4;
+                rot := gTerrain.Land^[I,K].BaseLayer.Rotation mod 4;
                 if Combo[T,T2,3] < 0 then rot := (rot+2) mod 4; //Flip
                 case rot of
                   0: begin
@@ -2273,8 +2273,8 @@ end;
 procedure TKMTerrainPainter.Eyedropper(const aLoc: TKMPoint);
 begin
   //Save specified loc's terrain info
-  gGameCursor.Tag1 := gTerrain.Land[aLoc.Y, aLoc.X].BaseLayer.Terrain;
-  gGameCursor.MapEdDir := gTerrain.Land[aLoc.Y, aLoc.X].BaseLayer.Rotation;
+  gGameCursor.Tag1 := gTerrain.Land^[aLoc.Y, aLoc.X].BaseLayer.Terrain;
+  gGameCursor.MapEdDir := gTerrain.Land^[aLoc.Y, aLoc.X].BaseLayer.Rotation;
 end;
 
 
@@ -2293,14 +2293,14 @@ var
 begin
   if not gTerrain.TileInMapCoords(aLoc.X, aLoc.Y) then Exit;
 
-  gTerrain.Land[aLoc.Y, aLoc.X].IsCustom := True;
-  gTerrain.Land[aLoc.Y, aLoc.X].BaseLayer.Rotation := (gTerrain.Land[aLoc.Y, aLoc.X].BaseLayer.Rotation + 1) mod 4;
-  RotateCorners(gTerrain.Land[aLoc.Y, aLoc.X].BaseLayer);
+  gTerrain.Land^[aLoc.Y, aLoc.X].IsCustom := True;
+  gTerrain.Land^[aLoc.Y, aLoc.X].BaseLayer.Rotation := (gTerrain.Land^[aLoc.Y, aLoc.X].BaseLayer.Rotation + 1) mod 4;
+  RotateCorners(gTerrain.Land^[aLoc.Y, aLoc.X].BaseLayer);
 
-  for L := 0 to gTerrain.Land[aLoc.Y, aLoc.X].LayersCnt - 1 do
+  for L := 0 to gTerrain.Land^[aLoc.Y, aLoc.X].LayersCnt - 1 do
   begin
-    gTerrain.Land[aLoc.Y, aLoc.X].Layer[L].Rotation := (gTerrain.Land[aLoc.Y, aLoc.X].Layer[L].Rotation + 1) mod 4;
-    RotateCorners(gTerrain.Land[aLoc.Y, aLoc.X].Layer[L]);
+    gTerrain.Land^[aLoc.Y, aLoc.X].Layer[L].Rotation := (gTerrain.Land^[aLoc.Y, aLoc.X].Layer[L].Rotation + 1) mod 4;
+    RotateCorners(gTerrain.Land^[aLoc.Y, aLoc.X].Layer[L]);
   end;
 
   gTerrain.UpdatePassability(aLoc);

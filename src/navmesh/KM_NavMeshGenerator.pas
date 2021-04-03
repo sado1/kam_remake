@@ -545,7 +545,7 @@ begin
   FillChar(W, SizeOf(W), #0);
   for Y := 1 to fMapY - 1 do
   for X := 1 to fMapX - 1 do
-    if not (tpOwn in gTerrain.Land[Y,X].Passability) then
+    if not (tpOwn in gTerrain.Land^[Y,X].Passability) then
       W[Y,X] := UNVISITED_OBSTACLE;
   // Fill borders
   for Y := 0 to fMapY do

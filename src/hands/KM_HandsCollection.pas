@@ -712,7 +712,7 @@ function TKMHandsCollection.FindPlaceForUnit(aX, aY: Integer; aUnit: TKMUnit; aU
   //Unit can be placed on terrain if this tile is not occupied, or if its already occupied by this one unit
   function CanPlaceUnitOnTerrain(P: TKMPoint): Boolean;
   begin
-    Result := (gTerrain.Land[P.Y,P.X].IsUnit = nil) or (aUnit = gTerrain.Land[P.Y,P.X].IsUnit);
+    Result := (gTerrain.Land^[P.Y,P.X].IsUnit = nil) or (aUnit = gTerrain.Land^[P.Y,P.X].IsUnit);
   end;
 
 var

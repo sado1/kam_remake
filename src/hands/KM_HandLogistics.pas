@@ -1210,7 +1210,7 @@ end;
 //begin
 //  Result := 0;
 //  for I := 1 to aNodeList.Count - 1 do
-//    Inc(Result, Byte(gTerrain.Land[aNodeList[I].Y,aNodeList[I].X].IsUnit <> nil));
+//    Inc(Result, Byte(gTerrain.Land^[aNodeList[I].Y,aNodeList[I].X].IsUnit <> nil));
 //end;
 
 

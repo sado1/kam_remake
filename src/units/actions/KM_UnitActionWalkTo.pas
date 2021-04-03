@@ -201,8 +201,8 @@ begin
   if aSetPushed then
   begin
     //Mark destination and current position as 'jammed', so as bad place to be pushed to
-    gTerrain.Land[aLocB.Y, aLocB.X].IncJamMeter(1);
-    gTerrain.Land[fUnit.Position.Y, fUnit.Position.X].IncJamMeter(1);
+    gTerrain.Land^[aLocB.Y, aLocB.X].IncJamMeter(1);
+    gTerrain.Land^[fUnit.Position.Y, fUnit.Position.X].IncJamMeter(1);
 
     fInteractionStatus := kisPushed; //So that unit knows it was pushed not just walking somewhere
     Explanation := 'We were asked to get out of the way';
@@ -439,7 +439,7 @@ begin
         Exit;
 
     //Check if candidate is walkable and doesn't have a unit
-    if (fPass in gTerrain.Land[Candidate.Y, Candidate.X].Passability)
+    if (fPass in gTerrain.Land^[Candidate.Y, Candidate.X].Passability)
     and not gTerrain.HasUnit(Candidate) then
     begin
       //Candidate is better, so update route
@@ -777,7 +777,7 @@ begin
     //Diagonal vertex must not be in use
     and ((not KMStepIsDiag(fUnit.Position,NodeList[NodePos+1])) or (not gTerrain.HasVertexUnit(KMGetDiagVertex(fUnit.Position,NodeList[NodePos+1])))) then
       //Check that our tile is walkable for the opponent! (we could be a worker on a building site)
-      if (TKMUnitActionWalkTo(aOpponent.Action).GetEffectivePassability in gTerrain.Land[fUnit.Position.Y,fUnit.Position.X].Passability) then
+      if (TKMUnitActionWalkTo(aOpponent.Action).GetEffectivePassability in gTerrain.Land^[fUnit.Position.Y,fUnit.Position.X].Passability) then
       begin
         //Check unit's future position is where we are now and exchange (use NodeList rather than direction as it's not always right)
         if TKMUnitActionWalkTo(aOpponent.Action).GetNextNextPosition(opponentNextNextPos) then
@@ -863,7 +863,7 @@ begin
       //First make sure tile is on map and walkable!
       if gTerrain.TileInMapCoords(tempPos.X, tempPos.Y)
       and gTerrain.CanWalkDiagonaly(fUnit.Position, tempPos.X, tempPos.Y)
-      and (GetEffectivePassability in gTerrain.Land[tempPos.Y, tempPos.X].Passability) then
+      and (GetEffectivePassability in gTerrain.Land^[tempPos.Y, tempPos.X].Passability) then
 
         if gTerrain.HasUnit(tempPos) then //Now see if it has a unit
         begin
@@ -880,7 +880,7 @@ begin
             if TKMUnitActionWalkTo(altOpponent.Action).GetNextNextPosition(opponentNextNextPos) then
               if KMSamePoint(opponentNextNextPos, fUnit.Position) //Now see if they want to exchange with us
               //Check that our tile is walkable for the opponent! (we could be a worker on a building site)
-              and (TKMUnitActionWalkTo(altOpponent.Action).GetEffectivePassability in gTerrain.Land[fUnit.Position.Y,fUnit.Position.X].Passability) then
+              and (TKMUnitActionWalkTo(altOpponent.Action).GetEffectivePassability in gTerrain.Land^[fUnit.Position.Y,fUnit.Position.X].Passability) then
               begin
                 //Perform exchange from our position to tempPos
                 TKMUnitActionWalkTo(altOpponent.Action).PerformExchange(KMPOINT_ZERO); //Request unforced exchange
@@ -1264,7 +1264,7 @@ begin
       fUnit.NextPosition := NodeList[NodePos];
 
       //Check if we are the first or second unit (has the swap already been performed?)
-      if fUnit = gTerrain.Land[fUnit.PrevPosition.Y,fUnit.PrevPosition.X].IsUnit then
+      if fUnit = gTerrain.Land^[fUnit.PrevPosition.Y,fUnit.PrevPosition.X].IsUnit then
         gTerrain.UnitSwap(fUnit.PrevPosition,fUnit.NextPosition,fUnit);
 
       fInteractionStatus := kisNone;
@@ -1285,7 +1285,7 @@ begin
       if KMLength(fUnit.PrevPosition, fUnit.NextPosition) > 1.5 then
         raise ELocError.Create('Unit walk length > 1.5', fUnit.PrevPosition);
 
-      if gTerrain.Land[fUnit.PrevPosition.Y, fUnit.PrevPosition.X].IsUnit = nil then
+      if gTerrain.Land^[fUnit.PrevPosition.Y, fUnit.PrevPosition.X].IsUnit = nil then
         raise ELocError.Create('Unit walk Prev position IsUnit = nil', fUnit.PrevPosition);
 
       fUnit.Walk(fUnit.PrevPosition, fUnit.NextPosition); //Pre-occupy next tile

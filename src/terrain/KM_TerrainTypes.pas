@@ -125,7 +125,9 @@ type
 
   TKMTerrainTileBriefArray = array of TKMTerrainTileBrief;
 
-  TKMTerrainLand = array [1..MAX_MAP_SIZE, 1..MAX_MAP_SIZE] of TKMTerrainTile;
+  TKMLand = array [1..MAX_MAP_SIZE, 1..MAX_MAP_SIZE] of TKMTerrainTile;
+
+  PKMLand = ^TKMLand;
 
   TKMTerrainSelectionPasteType = (ptTerrain, ptHeight, ptObject, ptOverlay);
 

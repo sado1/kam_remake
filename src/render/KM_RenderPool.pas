@@ -413,7 +413,7 @@ begin
 
       for I := aRect.Top to aRect.Bottom do
       for K := aRect.Left to aRect.Right do
-        gRenderAux.Text(K, I, IntToStr(gTerrain.Land[I,K].WalkConnect[wcWalk]), $FFFFFFFF);
+        gRenderAux.Text(K, I, IntToStr(gTerrain.Land^[I,K].WalkConnect[wcWalk]), $FFFFFFFF);
 
     glPopAttrib;
   end;
@@ -481,11 +481,11 @@ begin
     for I := aRect.Top to aRect.Bottom do
       for K := aRect.Left to aRect.Right do
       begin
-        if (Land[I, K].Obj <> 255)
+        if (Land^[I, K].Obj <> OBJ_NONE)
         // In the map editor we shouldn't render terrain objects within the paste preview
         and (not gGameParams.IsMapEditor or not (melSelection in gGame.MapEditor.VisibleLayers)
              or not gGame.MapEditor.Selection.TileWithinPastePreview(K, I)) then
-          RenderMapElement(Land[I, K].Obj, AnimStep, K, I);
+          RenderMapElement(Land^[I, K].Obj, AnimStep, K, I);
       end;
 
   // Falling trees are in a separate list
@@ -727,7 +727,7 @@ begin
     id := 260 + Wood - 1;
     cornerX := Loc.X + supply[1, Wood].MoveX / CELL_SIZE_PX - 1;
     cornerY := Loc.Y + (supply[1, Wood].MoveY + rx.Size[id].Y) / CELL_SIZE_PX - 1
-                     - gTerrain.Land[Loc.Y + 1, Loc.X].RenderHeight / CELL_HEIGHT_DIV;
+                     - gTerrain.Land^[Loc.Y + 1, Loc.X].RenderHeight / CELL_HEIGHT_DIV;
     fRenderList.AddSprite(rxHouses, id, cornerX, cornerY);
   end;
 
@@ -736,7 +736,7 @@ begin
     id := 267 + Stone - 1;
     cornerX := Loc.X + supply[2, Stone].MoveX / CELL_SIZE_PX - 1;
     cornerY := Loc.Y + (supply[2, Stone].MoveY + rx.Size[id].Y) / CELL_SIZE_PX - 1
-                     - gTerrain.Land[Loc.Y + 1, Loc.X].RenderHeight / CELL_HEIGHT_DIV;
+                     - gTerrain.Land^[Loc.Y + 1, Loc.X].RenderHeight / CELL_HEIGHT_DIV;
     fRenderList.AddSprite(rxHouses, id, cornerX, cornerY);
   end;
 end;
@@ -769,7 +769,7 @@ var
   function CornerY(aPic: Integer): Single;
   begin
     Result := aLoc.Y + (R.Pivot[aPic].Y + R.Size[aPic].Y) / CELL_SIZE_PX - 1
-                     - gTerrain.Land[aLoc.Y + 1, aLoc.X].RenderHeight / CELL_HEIGHT_DIV;
+                     - gTerrain.Land^[aLoc.Y + 1, aLoc.X].RenderHeight / CELL_HEIGHT_DIV;
   end;
 
 begin
@@ -843,7 +843,7 @@ begin
       Id := A.Step[AnimStep mod Byte(A.Count) + 1] + 1;
       cornerX := Loc.X + (R.Pivot[Id].X + A.MoveX) / CELL_SIZE_PX - 1;
       cornerY := Loc.Y + (R.Pivot[Id].Y + A.MoveY + R.Size[Id].Y) / CELL_SIZE_PX - 1
-                       - gTerrain.Land[Loc.Y + 1, Loc.X].RenderHeight / CELL_HEIGHT_DIV;
+                       - gTerrain.Land^[Loc.Y + 1, Loc.X].RenderHeight / CELL_HEIGHT_DIV;
 
       if DoImmediateRender then
         RenderSprite(rxHouses, Id, cornerX, cornerY, FlagColor, DoHighlight, HighlightColor)
@@ -868,7 +868,7 @@ var
 
     CornerX := Loc.X + R.Pivot[aId].X / CELL_SIZE_PX - 1;
     CornerY := Loc.Y + (R.Pivot[aId].Y + R.Size[aId].Y) / CELL_SIZE_PX - 1
-                     - gTerrain.Land[Loc.Y + 1, Loc.X].RenderHeight / CELL_HEIGHT_DIV;
+                     - gTerrain.Land^[Loc.Y + 1, Loc.X].RenderHeight / CELL_HEIGHT_DIV;
     if DoImmediateRender then
     begin
       RenderSprite(rxHouses, aId, CornerX, CornerY, $0, DoHighlight, HighlightColor)
@@ -946,7 +946,7 @@ begin
     R := fRXData[rxHouses];
     cornerX := Loc.X + (R.Pivot[Id].X + MARKET_WARES_OFF_X) / CELL_SIZE_PX - 1;
     cornerY := Loc.Y + (R.Pivot[Id].Y + MARKET_WARES_OFF_Y + R.Size[Id].Y) / CELL_SIZE_PX - 1
-                     - gTerrain.Land[Loc.Y+1,Loc.X].RenderHeight / CELL_HEIGHT_DIV;
+                     - gTerrain.Land^[Loc.Y+1,Loc.X].RenderHeight / CELL_HEIGHT_DIV;
     fRenderList.AddSprite(rxHouses, Id, cornerX, cornerY);
   end;
 end;
@@ -966,7 +966,7 @@ begin
   Id := A.Step[AnimStep mod Byte(A.Count) + 1] + 1;
   cornerX := Loc.X + (A.MoveX + R.Pivot[Id].X) / CELL_SIZE_PX - 1;
   cornerY := Loc.Y + (A.MoveY + R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX - 1
-                   - gTerrain.Land[Loc.Y + 1, Loc.X].RenderHeight / CELL_HEIGHT_DIV;
+                   - gTerrain.Land^[Loc.Y + 1, Loc.X].RenderHeight / CELL_HEIGHT_DIV;
   fRenderList.AddSprite(aRX, Id, cornerX, cornerY);
 end;
 
@@ -1064,7 +1064,7 @@ begin
   // Eaters need to interpolate land height the same as the inn otherwise they are rendered at the wrong place
   cornerX := Loc.X + OffX + R.Pivot[id].X / CELL_SIZE_PX - 1;
   cornerY := Loc.Y + OffY + (R.Pivot[id].Y + R.Size[id].Y) / CELL_SIZE_PX - 1
-                   - gTerrain.Land[Loc.Y + 1, Loc.X].RenderHeight / CELL_HEIGHT_DIV;
+                   - gTerrain.Land^[Loc.Y + 1, Loc.X].RenderHeight / CELL_HEIGHT_DIV;
 
   fRenderList.AddSprite(rxUnits, id, cornerX, cornerY, FlagColor);
 end;
@@ -1441,7 +1441,7 @@ begin
     begin
       X := loc.X + fHouseOutline[I].X - 3;
       Y := loc.Y + fHouseOutline[I].Y - 4;
-      glVertex2f(X, Y - Land[Y+1, X+1].RenderHeight / CELL_HEIGHT_DIV);
+      glVertex2f(X, Y - Land^[Y+1, X+1].RenderHeight / CELL_HEIGHT_DIV);
     end;
   glEnd;
 end;
@@ -1626,11 +1626,11 @@ begin
     for K := aRect.Left to aRect.Right do
     begin
       P := KMPoint(K, I);
-      if    (gTerrain.Land[I, K].TileOwner <> PLAYER_NONE) //owner is set for tile
+      if    (gTerrain.Land^[I, K].TileOwner <> PLAYER_NONE) //owner is set for tile
         and (gTerrain.TileIsCornField(P)                   // show only for corn + wine + roads
           or gTerrain.TileIsWineField(P)
-          or (gTerrain.Land[I, K].TileOverlay = toRoad)) then
-        RenderWireTile(P, gHands[gTerrain.Land[I, K].TileOwner].FlagColor, 0.05);
+          or (gTerrain.Land^[I, K].TileOverlay = toRoad)) then
+        RenderWireTile(P, gHands[gTerrain.Land^[I, K].TileOwner].FlagColor, 0.05);
     end;
 end;
 
@@ -1706,7 +1706,7 @@ begin
                     end;
     cmObjects:    begin
                     // If there's object below - paint it in Red
-                    RenderMapElement(gTerrain.Land[P.Y,P.X].Obj, gTerrain.AnimStep, P.X, P.Y, True, True);
+                    RenderMapElement(gTerrain.Land^[P.Y,P.X].Obj, gTerrain.AnimStep, P.X, P.Y, True, True);
                     RenderMapElement(gGameCursor.Tag1, gTerrain.AnimStep, P.X, P.Y, True);
                   end;
     cmObjectsBrush: RenderForegroundUI_ObjectsBrush;
@@ -1814,15 +1814,15 @@ begin
   end;
 
   // Terrain object found on the cell
-  if (aHighlightAll or not isRendered) and (gTerrain.Land[P.Y,P.X].Obj <> OBJ_NONE) then
+  if (aHighlightAll or not isRendered) and (gTerrain.Land^[P.Y,P.X].Obj <> OBJ_NONE) then
   begin
-    RenderMapElement(gTerrain.Land[P.Y,P.X].Obj, gTerrain.AnimStep, P.X, P.Y, True, True);
+    RenderMapElement(gTerrain.Land^[P.Y,P.X].Obj, gTerrain.AnimStep, P.X, P.Y, True, True);
     isRendered := True;
   end;
 
   if (aHighlightAll or not isRendered) and
-    (((gTerrain.Land[P.Y, P.X].TileOverlay <> toNone)
-        and (gTerrain.Land[P.Y, P.X].TileLock = tlNone)) //Sometimes we can point road tile under the house, do not show Cyan quad then
+    (((gTerrain.Land^[P.Y, P.X].TileOverlay <> toNone)
+        and (gTerrain.Land^[P.Y, P.X].TileLock = tlNone)) //Sometimes we can point road tile under the house, do not show Cyan quad then
       or (gGame.MapEditor.LandMapEd[P.Y, P.X].CornOrWine <> 0)) then
     RenderWireTile(P, icCyan); // Cyan quad
 end;
@@ -1863,10 +1863,10 @@ begin
   end;
 
   if (aHighlightAll or not isRendered) and
-    (((gTerrain.Land[P.Y, P.X].TileOverlay = toRoad)
-        and (gTerrain.Land[P.Y, P.X].TileLock = tlNone)) //Sometimes we can point road tile under the house, do not show Cyan quad then
+    (((gTerrain.Land^[P.Y, P.X].TileOverlay = toRoad)
+        and (gTerrain.Land^[P.Y, P.X].TileLock = tlNone)) //Sometimes we can point road tile under the house, do not show Cyan quad then
       or (gGame.MapEditor.LandMapEd[P.Y, P.X].CornOrWine <> 0))
-    and (gTerrain.Land[P.Y, P.X].TileOwner <> gMySpectator.HandID) then //Only if tile has other owner
+    and (gTerrain.Land^[P.Y, P.X].TileOwner <> gMySpectator.HandID) then //Only if tile has other owner
     RenderWireTile(P, icCyan); // Cyan quad
 end;
 

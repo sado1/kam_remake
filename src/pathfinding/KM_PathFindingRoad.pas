@@ -88,9 +88,9 @@ function TPathFindingRoad.MovementCost(aFromX, aFromY, aToX, aToY: Word): Word;
 var
   isRoad: Boolean;
 begin
-  isRoad := (tpWalkRoad in gTerrain.Land[aToY, aToX].Passability)
+  isRoad := (tpWalkRoad in gTerrain.Land^[aToY, aToX].Passability)
             or (gHands[fOwner].Constructions.FieldworksList.HasField(KMPoint(aToX, aToY)) = ftRoad)
-            or (gTerrain.Land[aToY, aToX].TileLock = tlRoadWork);
+            or (gTerrain.Land^[aToY, aToX].TileLock = tlRoadWork);
 
   //Since we don't allow roads to be built diagonally we can assume
   //path is always 1 tile = 1 point
@@ -121,7 +121,7 @@ end;
 
 function TPathFindingRoad.IsWalkableTile(aX, aY: Word): Boolean;
 begin
-  Result := ( ([tpMakeRoads, tpWalkRoad] * gTerrain.Land[aY,aX].Passability <> []) OR (gTerrain.Land[aY, aX].TileLock = tlRoadWork) )
+  Result := ( ([tpMakeRoads, tpWalkRoad] * gTerrain.Land^[aY,aX].Passability <> []) OR (gTerrain.Land^[aY, aX].TileLock = tlRoadWork) )
             and (gHands[fOwner].Constructions.FieldworksList.HasField(KMPoint(aX, aY)) in [ftNone, ftRoad])
             and not gHands[fOwner].Constructions.HousePlanList.HasPlan(KMPoint(aX, aY)); // This will ignore allied plans but I guess that it will not cause trouble
 end;
@@ -130,7 +130,7 @@ end;
 function TPathFindingRoad.DestinationReached(aX, aY: Word): Boolean;
 begin
   Result := ((aX = fLocB.X) and (aY = fLocB.Y)) //We reached destination point
-            or ((gTerrain.Land[aY, aX].TileOverlay = toRoad) //We reached destination road network
+            or ((gTerrain.Land^[aY, aX].TileOverlay = toRoad) //We reached destination road network
                and (fRoadConnectID <> 0) //No network
                and (gTerrain.GetRoadConnectID(KMPoint(aX, aY)) = fRoadConnectID));
 end;
@@ -160,9 +160,9 @@ begin
   Result := 1;
 
   //Off road costs extra
-  isRoad := (tpWalkRoad in gTerrain.Land[aToY, aToX].Passability)
+  isRoad := (tpWalkRoad in gTerrain.Land^[aToY, aToX].Passability)
             or (gHands[fOwner].Constructions.FieldworksList.HasField(KMPoint(aToX, aToY)) = ftRoad)
-            or (gTerrain.Land[aToY, aToX].TileLock = tlRoadWork);
+            or (gTerrain.Land^[aToY, aToX].TileLock = tlRoadWork);
 
   if not isRoad then
     Inc(Result, 3);

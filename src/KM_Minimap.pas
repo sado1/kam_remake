@@ -234,7 +234,7 @@ begin
       if FOW = 0 then
         fBase[I*fMapX + K] := $FF000000
       else begin
-        LandPtr := @fMyTerrain.Land[MY,MX];
+        LandPtr := @fMyTerrain.Land^[MY,MX];
         TileOwner := -1;
         if LandPtr.TileOwner <> -1 then
         begin
@@ -261,8 +261,8 @@ begin
           else
           begin
             ID := LandPtr.BaseLayer.Terrain;
-            // Do not use fMyTerrain.Land[].Light for borders of the map, because it is set to -1 for fading effect
-            // So assume fMyTerrain.Land[].Light as medium value in this case
+            // Do not use fMyTerrain.Land^[].Light for borders of the map, because it is set to -1 for fading effect
+            // So assume fMyTerrain.Land^[].Light as medium value in this case
             if (I = 0) or (I = fMapY - 1) or (K = 0) or (K = fMapX - 1) then
               Light := 255-FOW
             else

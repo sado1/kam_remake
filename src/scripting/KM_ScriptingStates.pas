@@ -2385,7 +2385,7 @@ begin
     //-1 stands for any player
     if InRange(aPlayer, -1, gHands.Count - 1) and gTerrain.TileInMapCoords(X, Y) then
       Result := gTerrain.TileIsCornField(KMPoint(X,Y))
-                and ((aPlayer = -1) or (gTerrain.Land[Y, X].TileOwner = aPlayer))
+                and ((aPlayer = -1) or (gTerrain.Land^[Y, X].TileOwner = aPlayer))
     else
       LogParamWarning('States.IsFieldAt', [aPlayer, X, Y]);
   except
@@ -2405,8 +2405,8 @@ begin
     Result := False;
     //-1 stands for any player
     if InRange(aPlayer, -1, gHands.Count - 1) and gTerrain.TileInMapCoords(X, Y) then
-      Result := (gTerrain.Land[Y,X].TileOverlay = toRoad)
-                and ((aPlayer = -1) or (gTerrain.Land[Y, X].TileOwner = aPlayer))
+      Result := (gTerrain.Land^[Y,X].TileOverlay = toRoad)
+                and ((aPlayer = -1) or (gTerrain.Land^[Y, X].TileOwner = aPlayer))
     else
       LogParamWarning('States.IsRoadAt', [aPlayer, X, Y]);
   except
@@ -2427,7 +2427,7 @@ begin
     //-1 stands for any player
     if InRange(aPlayer, -1, gHands.Count - 1) and gTerrain.TileInMapCoords(X, Y) then
       Result := gTerrain.TileIsWineField(KMPoint(X,Y))
-                and ((aPlayer = -1) or (gTerrain.Land[Y, X].TileOwner = aPlayer))
+                and ((aPlayer = -1) or (gTerrain.Land^[Y, X].TileOwner = aPlayer))
     else
       LogParamWarning('States.IsWinefieldAt', [aPlayer, X, Y]);
   except
@@ -2975,7 +2975,7 @@ function TKMScriptStates.MapTileType(X, Y: Integer): Integer;
 begin
   try
     if gTerrain.TileInMapCoords(X, Y) then
-      Result := gTerrain.Land[Y, X].BaseLayer.Terrain
+      Result := gTerrain.Land^[Y, X].BaseLayer.Terrain
     else
     begin
       Result := -1;
@@ -2996,7 +2996,7 @@ begin
   try
     if gTerrain.TileInMapCoords(X, Y) then
       //In KaM map format values can be >= 4. Convert again just in case it was missed by gTerrain
-      Result := gTerrain.Land[Y, X].BaseLayer.Rotation mod 4
+      Result := gTerrain.Land^[Y, X].BaseLayer.Rotation mod 4
     else
     begin
       Result := -1;
@@ -3044,7 +3044,7 @@ function TKMScriptStates.MapTileHeight(X, Y: Integer): Integer;
 begin
   try
     if gTerrain.TileInMapCoords(X, Y) then
-      Result := gTerrain.Land[Y, X].Height
+      Result := gTerrain.Land^[Y, X].Height
     else
     begin
       Result := -1;
@@ -3067,7 +3067,7 @@ function TKMScriptStates.MapTileObject(X, Y: Integer): Integer;
 begin
   try
     if gTerrain.TileInMapCoords(X, Y) then
-      Result := gTerrain.Land[Y, X].Obj
+      Result := gTerrain.Land^[Y, X].Obj
     else
     begin
       Result := -1;
@@ -3087,7 +3087,7 @@ function TKMScriptStates.MapTileOverlay(X, Y: Integer): TKMTileOverlay;
 begin
   try
     if gTerrain.TileInMapCoords(X, Y) then
-      Result := gTerrain.Land[Y, X].TileOverlay
+      Result := gTerrain.Land^[Y, X].TileOverlay
     else
     begin
       Result := toNone;
@@ -3107,7 +3107,7 @@ function TKMScriptStates.MapTileOwner(X, Y: Integer): Integer;
 begin
   try
     if gTerrain.TileInMapCoords(X, Y) then
-      Result := gTerrain.Land[Y, X].TileOwner
+      Result := gTerrain.Land^[Y, X].TileOwner
     else
     begin
       Result := -1;
@@ -3129,7 +3129,7 @@ begin
   try
     if (gTerrain.TileInMapCoords(X, Y))
     and (TKMTerrainPassability(aPassability) in [Low(TKMTerrainPassability)..High(TKMTerrainPassability)]) then
-      Result := TKMTerrainPassability(aPassability) in gTerrain.Land[Y, X].Passability
+      Result := TKMTerrainPassability(aPassability) in gTerrain.Land^[Y, X].Passability
     else
     begin
       Result := False;
