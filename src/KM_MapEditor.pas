@@ -5,7 +5,7 @@ uses
   Classes, Controls,
   KM_RenderPool, KM_TerrainPainter, KM_TerrainDeposits, KM_TerrainSelection,
   KM_CommonTypes, KM_CommonClasses, KM_Defaults, KM_Points, KM_MapEditorHistory,
-  KM_MapEdTypes;
+  KM_MapEdTypes, KM_ResTexts;
 
 
 type
@@ -24,11 +24,15 @@ type
     //saving if the path is different
     fAttachedFiles: array of UnicodeString;
 
+    fLastErasedObjectLoc: TKMPoint;
+    fLastRemoveTxID: Integer;
+
     function GetRevealer(aIndex: Byte): TKMPointTagList;
     procedure ProceedRoadCursorMode;
     procedure ProceedUnitsCursorMode;
     procedure ProceedEraseCursorMode;
     procedure UpdateField(aStageIncrement: Integer; aCheckPrevCell: Boolean);
+    function EraseTerrainObject(var aRemoveTxID: Integer): Boolean;
     procedure EraseObject(aEraseAll: Boolean);
     function ChangeObjectOwner(aObject: TObject; aOwner: TKMHandID): Boolean;
     procedure ChangeOwner(aChangeOwnerForAll: Boolean);
@@ -39,7 +43,8 @@ type
 
     procedure AddDefenceMarker(const aLoc: TKMPoint);
 
-    function GetCheckpointObjectsStr: string;
+    function GetCheckpointObjectsStr(removeTxID: Integer = TX_WORD_OBJECT): string; overload;
+    function GetCheckpointObjectsStr(aCell: TKMPoint; removeTxID: Integer = TX_WORD_OBJECT): string; overload;
     function GetHistory: TKMMapEditorHistory;
 
     function MapIsPlayable: Boolean;
@@ -96,7 +101,7 @@ implementation
 uses
   SysUtils, StrUtils, Math,
   KM_TerrainTypes, KM_Terrain, KM_FileIO,
-  KM_AIDefensePos, KM_ResTexts,
+  KM_AIDefensePos,
   KM_Units, KM_UnitGroup, KM_Houses, KM_HouseCollection,
   KM_GameParams, KM_GameCursor, KM_ResMapElements, KM_ResHouses, KM_Resource, KM_ResUnits,
   KM_RenderAux, KM_Hand, KM_HandsCollection, KM_CommonUtils, KM_RenderDebug,
@@ -410,6 +415,40 @@ begin
 end;
 
 
+function TKMMapEditor.EraseTerrainObject(var aRemoveTxID: Integer): Boolean;
+var
+  P: TKMPoint;
+  isCorn, isWine: Boolean;
+begin
+  Result := False;
+  P := gGameCursor.Cell;
+  isCorn := gTerrain.TileIsCornField(P);
+  isWine := gTerrain.TileIsWineField(P);
+
+  //Delete tile object (including corn/wine objects as well)
+  if (gTerrain.Land^[P.Y,P.X].Obj <> OBJ_NONE) then
+  begin
+    if isCorn and (gTerrain.GetCornStage(P) in [4,5]) then
+    begin
+      gTerrain.SetField(P, gTerrain.Land^[P.Y,P.X].TileOwner, ftCorn, 3); // For corn, when delete corn object reduce field stage to 3
+      aRemoveTxID := TX_WORD_CORN_FIELD;
+    end
+    else
+    if isWine then
+    begin
+      gTerrain.RemField(P);
+      aRemoveTxID := TX_WORD_WINE_FIELD;
+    end
+    else
+    begin
+      gTerrain.SetObject(P, OBJ_NONE);
+      aRemoveTxID := TX_WORD_OBJECT;
+    end;
+    Result := True; // We deleted smth here
+  end;
+end;
+
+
 //aEraseAll - if true all objects under the cursor will be deleted
 procedure TKMMapEditor.EraseObject(aEraseAll: Boolean);
 var
@@ -440,29 +479,8 @@ begin
     isCorn := gTerrain.TileIsCornField(P);
     isWine := gTerrain.TileIsWineField(P);
 
-    //Delete tile object (including corn/wine objects as well)
-    if (gTerrain.Land^[P.Y,P.X].Obj <> OBJ_NONE) then
-    begin
-      if isCorn and (gTerrain.GetCornStage(P) in [4,5]) then
-      begin
-        gTerrain.SetField(P, gTerrain.Land^[P.Y,P.X].TileOwner, ftCorn, 3); // For corn, when delete corn object reduce field stage to 3
-        removeTxID := TX_WORD_CORN_FIELD;
-      end
-      else
-      if isWine then
-      begin
-        gTerrain.RemField(P);
-        removeTxID := TX_WORD_WINE_FIELD;
-      end
-      else
-      begin
-        gTerrain.SetObject(P, OBJ_NONE);
-        removeTxID := TX_WORD_OBJECT;
-      end;
-
-      fieldsChanged := True; // We deleted smth here
-      if not aEraseAll then Exit;
-    end;
+    if EraseTerrainObject(removeTxID) and not aEraseAll then
+      Exit;
 
     //Delete tile overlay (road/corn/wine)
     if gTerrain.Land^[P.Y,P.X].TileOverlay = toRoad then
@@ -604,6 +622,10 @@ begin
       cmSelection:  fSelection.Selection_Start;
       cmField,
       cmWine:       UpdateField(1, False);
+      cmObjects:    begin
+                      fLastErasedObjectLoc := KMPOINT_INVALID_TILE;
+                      fLastRemoveTxID := -1;
+                    end;
   end;
 end;
 
@@ -675,6 +697,8 @@ begin
     cmUnits:      ProceedUnitsCursorMode;
     cmErase:      ProceedEraseCursorMode;
     cmSelection:  fSelection.Selection_Resize;
+    cmObjects:    if EraseTerrainObject(fLastRemoveTxID) then
+                    fLastErasedObjectLoc := gGameCursor.Cell;
     cmPaintBucket:      ChangeOwner(ssShift in gGameCursor.SState);
     cmUniversalEraser:  EraseObject(ssShift in gGameCursor.SState);
   end;
@@ -716,12 +740,18 @@ begin
 end;
 
 
-function TKMMapEditor.GetCheckpointObjectsStr: string;
+function TKMMapEditor.GetCheckpointObjectsStr(removeTxID: Integer = TX_WORD_OBJECT): string;
+begin
+  Result := GetCheckpointObjectsStr(gGameCursor.Cell, removeTxID);
+end;
+
+
+function TKMMapEditor.GetCheckpointObjectsStr(aCell: TKMPoint; removeTxID: Integer = TX_WORD_OBJECT): string;
 begin
   if gGameCursor.Tag1 = OBJ_NONE then
-    Result := Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH], [gResTexts[TX_WORD_OBJECT], gGameCursor.Cell.ToString])
+    Result := Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH], [gResTexts[removeTxID], aCell.ToString])
   else
-    Result := Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH] + ' %s', [gResTexts[TX_WORD_OBJECT], IntToStr(gGameCursor.Tag1), gGameCursor.Cell.ToString])
+    Result := Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH] + ' %s', [gResTexts[removeTxID], IntToStr(gGameCursor.Tag1), aCell.ToString])
 end;
 
 
@@ -753,8 +783,16 @@ end;
 
 
 procedure TKMMapEditor.MouseUp(Button: TMouseButton; aOverMap: Boolean);
+
+  procedure ManageCMObjects;
+  begin
+    if (fLastErasedObjectLoc <> KMPOINT_INVALID_TILE) and (fLastRemoveTxID <> -1) then
+      fHistory.MakeCheckpoint(caTerrain, GetCheckpointObjectsStr(fLastErasedObjectLoc, fLastRemoveTxID));
+  end;
+
 var
   P: TKMPoint;
+  removeTxID: Integer;
 begin
   //If the mouse is released over controls, most actions don't happen
   if not aOverMap then
@@ -764,7 +802,7 @@ begin
       cmElevate:  fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_TERRAIN_HEIGHTS_ELEVATE]);
       cmEqualize: fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_TERRAIN_HEIGHTS_UNEQUALIZE]);
       cmBrush:    fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_TERRAIN_BRUSH]);
-      cmObjects:  fHistory.MakeCheckpoint(caTerrain, GetCheckpointObjectsStr);
+      cmObjects:  ManageCMObjects;
       cmObjectsBrush: fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_OBJECTS_BRUSH]);
       cmTiles:    fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_TERRAIN_HINTS_TILES]);
       cmOverlays: fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_TERRAIN_OVERLAYS]);
@@ -793,7 +831,10 @@ begin
                 cmElevate:    fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_TERRAIN_HEIGHTS_ELEVATE]);
                 cmEqualize:   fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_TERRAIN_HEIGHTS_UNEQUALIZE]);
                 cmBrush:      fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_TERRAIN_BRUSH]);
-                cmObjects:    fHistory.MakeCheckpoint(caTerrain, GetCheckpointObjectsStr);
+                cmObjects:    if EraseTerrainObject(removeTxID) then
+                                fHistory.MakeCheckpoint(caTerrain, GetCheckpointObjectsStr(removeTxID))
+                              else
+                                ManageCMObjects;
                 cmObjectsBrush: fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_OBJECTS_BRUSH]);
                 cmTiles:      fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_TERRAIN_HINTS_TILES] + ' ' + P.ToString);
                 cmOverlays:   fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_TERRAIN_OVERLAYS] + ' ' + P.ToString);

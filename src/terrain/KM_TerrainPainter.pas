@@ -2327,8 +2327,6 @@ begin
                         EditTile(gGameCursor.Cell, gGameCursor.Tag1, gGameCursor.MapEdDir)
                       else //Random direction
                         EditTile(gGameCursor.Cell, gGameCursor.Tag1, KaMRandom(4, 'TKMTerrainPainter.UpdateStateIdle'));
-    cmObjects:      if (ssLeft in gGameCursor.SState) then
-                      gTerrain.SetObject(gGameCursor.Cell, gGameCursor.Tag1);
 
     cmObjectsBrush: if (ssLeft in gGameCursor.SState) then
                     begin
