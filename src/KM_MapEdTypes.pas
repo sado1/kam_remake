@@ -18,6 +18,10 @@ type
     CornOrWineTerrain: Byte; //We use fake terrain for maped to be able delete or alter it if needed
   end;
 
+  TKMMapEdLand = array [1..MAX_MAP_SIZE, 1..MAX_MAP_SIZE] of TKMMapEdTerrainTile;
+
+  PKMMapEdLand = ^TKMMapEdLand;
+
   // same as TKMTerrainLayer, but packed
   TKMTerrainLayerPacked = packed record
     Terrain: Word;

@@ -817,8 +817,8 @@ var
 begin
   //Fake tiles for MapEd fields
   if gGame.MapEditor <> nil then
-    case gGame.MapEditor.LandMapEd[pY, pX].CornOrWine of
-      1:  RenderTile(gGame.MapEditor.LandMapEd[pY, pX].CornOrWineTerrain, pX, pY, 0, DoHighlight, HighlightColor); // Corn
+    case gGame.MapEditor.LandMapEd^[pY, pX].CornOrWine of
+      1:  RenderTile(gGame.MapEditor.LandMapEd^[pY, pX].CornOrWineTerrain, pX, pY, 0, DoHighlight, HighlightColor); // Corn
       2:  RenderTile(WINE_TERRAIN_ID, pX, pY, 0, DoHighlight, HighlightColor); //Wine
     end;
 

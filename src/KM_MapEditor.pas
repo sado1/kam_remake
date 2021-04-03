@@ -12,6 +12,8 @@ type
   //Collection of map editing classes and map editor specific data
   TKMMapEditor = class
   private
+    fLandMapEd: TKMMapEdLand;
+    fDefaultLandMapEd: PKMMapEdLand;
     fIsNewMap: Boolean;
     fSavedMapIsPlayable: Boolean; // Saved map is playable if there is at elast 1 enabled human loc with assets
     fTerrainPainter: TKMTerrainPainter;
@@ -49,7 +51,8 @@ type
 
     function MapIsPlayable: Boolean;
   public
-    LandMapEd: array [1..MAX_MAP_SIZE, 1..MAX_MAP_SIZE] of TKMMapEdTerrainTile;
+    LandMapEd: PKMMapEdLand;
+
     MissionDefSavePath: UnicodeString;
 
     ActiveMarker: TKMMapEdMarker;
@@ -67,6 +70,10 @@ type
     destructor Destroy; override;
 
     procedure AfterCreated;
+
+    procedure SetDefaultLandMapEd;
+
+    property DefaultLandMapEd: PKMMapEdLand read fDefaultLandMapEd; //readonly
 
     property Deposits: TKMDeposits read fDeposits;
     property VisibleLayers: TKMMapEdVisibleLayerSet read fVisibleLayers write fVisibleLayers;
@@ -120,12 +127,15 @@ var
 begin
   inherited Create;
 
+  SetDefaultLandMapEd;
+  fDefaultLandMapEd := @fLandMapEd;
+
   MissionDefSavePath := '';
 
   fVisibleLayers := [melDeposits];
   fIsNewMap := aNewMap;
 
-  FillChar(LandMapEd[1,1], SizeOf(LandMapEd[1,1])*MAX_MAP_SIZE*MAX_MAP_SIZE, #0);
+  FillChar(LandMapEd^[1,1], SizeOf(LandMapEd^[1,1])*MAX_MAP_SIZE*MAX_MAP_SIZE, #0);
 
   for I := 0 to MAX_HANDS - 1 do
   begin
@@ -249,6 +259,12 @@ end;
 procedure TKMMapEditor.AfterCreated;
 begin
   fSavedMapIsPlayable := MapIsPlayable;
+end;
+
+
+procedure TKMMapEditor.SetDefaultLandMapEd;
+begin
+  LandMapEd := @fLandMapEd;
 end;
 
 
@@ -554,7 +570,7 @@ begin
   //Fisrt try to change owner of object on tile
   if not ChangeObjectOwner(gMySpectator.HitTestCursorWGroup, gMySpectator.HandID) or aChangeOwnerForAll then
     //then try to change owner tile (road/field/wine)
-    if ((gTerrain.Land^[P.Y, P.X].TileOverlay = toRoad) or (LandMapEd[P.Y, P.X].CornOrWine <> 0))
+    if ((gTerrain.Land^[P.Y, P.X].TileOverlay = toRoad) or (LandMapEd^[P.Y, P.X].CornOrWine <> 0))
       and (gTerrain.Land^[P.Y, P.X].TileOwner <> gMySpectator.HandID) then
     begin
       gTerrain.Land^[P.Y, P.X].TileOwner := gMySpectator.HandID;

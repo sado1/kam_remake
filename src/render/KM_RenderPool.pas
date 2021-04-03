@@ -1823,7 +1823,7 @@ begin
   if (aHighlightAll or not isRendered) and
     (((gTerrain.Land^[P.Y, P.X].TileOverlay <> toNone)
         and (gTerrain.Land^[P.Y, P.X].TileLock = tlNone)) //Sometimes we can point road tile under the house, do not show Cyan quad then
-      or (gGame.MapEditor.LandMapEd[P.Y, P.X].CornOrWine <> 0)) then
+      or (gGame.MapEditor.LandMapEd^[P.Y, P.X].CornOrWine <> 0)) then
     RenderWireTile(P, icCyan); // Cyan quad
 end;
 
@@ -1865,7 +1865,7 @@ begin
   if (aHighlightAll or not isRendered) and
     (((gTerrain.Land^[P.Y, P.X].TileOverlay = toRoad)
         and (gTerrain.Land^[P.Y, P.X].TileLock = tlNone)) //Sometimes we can point road tile under the house, do not show Cyan quad then
-      or (gGame.MapEditor.LandMapEd[P.Y, P.X].CornOrWine <> 0))
+      or (gGame.MapEditor.LandMapEd^[P.Y, P.X].CornOrWine <> 0))
     and (gTerrain.Land^[P.Y, P.X].TileOwner <> gMySpectator.HandID) then //Only if tile has other owner
     RenderWireTile(P, icCyan); // Cyan quad
 end;

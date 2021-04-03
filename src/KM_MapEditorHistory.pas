@@ -213,7 +213,7 @@ begin
 
   for I := 0 to gTerrain.MapY - 1 do
   for K := 0 to gTerrain.MapX - 1 do
-    fData[I,K] := MakeUndoTile(gTerrain.Land^[I+1,K+1], gGame.TerrainPainter.LandTerKind[I+1,K+1], gGame.MapEditor.LandMapEd[I+1,K+1]);
+    fData[I,K] := MakeUndoTile(gTerrain.Land^[I+1,K+1], gGame.TerrainPainter.LandTerKind[I+1,K+1], gGame.MapEditor.LandMapEd^[I+1,K+1]);
 end;
 
 
@@ -288,7 +288,7 @@ var
 begin
   for I := 0 to gTerrain.MapY-1 do
   for K := 0 to gTerrain.MapX-1 do
-    RestoreTileFromUndo(gTerrain.Land^[I+1,K+1], gGame.TerrainPainter.LandTerKind[I+1,K+1], gGame.MapEditor.LandMapEd[I+1,K+1],
+    RestoreTileFromUndo(gTerrain.Land^[I+1,K+1], gGame.TerrainPainter.LandTerKind[I+1,K+1], gGame.MapEditor.LandMapEd^[I+1,K+1],
                         fData[I,K], gHands.HousesHitTest(K+1,I+1) <> nil);
 
   if not aUpdateImmidiately then Exit;
