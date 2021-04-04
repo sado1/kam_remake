@@ -13,7 +13,7 @@ type
   TKMMapEditor = class
   private
     fLandMapEd: TKMMapEdLand;
-    fDefaultLandMapEd: PKMMapEdLand;
+    fMainLandMapEd: PKMMapEdLand;
     fIsNewMap: Boolean;
     fSavedMapIsPlayable: Boolean; // Saved map is playable if there is at elast 1 enabled human loc with assets
     fTerrainPainter: TKMTerrainPainter;
@@ -71,9 +71,9 @@ type
 
     procedure AfterCreated;
 
-    procedure SetDefaultLandMapEd;
+    procedure SetMainLandMapEd;
 
-    property DefaultLandMapEd: PKMMapEdLand read fDefaultLandMapEd; //readonly
+    property MainLandMapEd: PKMMapEdLand read fMainLandMapEd; //readonly
 
     property Deposits: TKMDeposits read fDeposits;
     property VisibleLayers: TKMMapEdVisibleLayerSet read fVisibleLayers write fVisibleLayers;
@@ -127,8 +127,8 @@ var
 begin
   inherited Create;
 
-  SetDefaultLandMapEd;
-  fDefaultLandMapEd := @fLandMapEd;
+  SetMainLandMapEd;
+  fMainLandMapEd := @fLandMapEd;
 
   MissionDefSavePath := '';
 
@@ -262,8 +262,10 @@ begin
 end;
 
 
-procedure TKMMapEditor.SetDefaultLandMapEd;
+procedure TKMMapEditor.SetMainLandMapEd;
 begin
+  if Self = nil then Exit;
+
   LandMapEd := @fLandMapEd;
 end;
 
@@ -635,7 +637,7 @@ procedure TKMMapEditor.MouseDown(Button: TMouseButton);
 begin
   if (Button = mbLeft) then
     case gGameCursor.Mode of
-      cmSelection:  fSelection.Selection_Start;
+      cmSelection:  fSelection.Start;
       cmField,
       cmWine:       UpdateField(1, False);
       cmObjects:    begin

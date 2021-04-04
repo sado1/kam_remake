@@ -44,8 +44,13 @@ type
   private
     // Each Undo step stores whole terrain for simplicity
     fData: array of array of TKMUndoTile;
-    function MakeUndoTile(const aTile: TKMTerrainTile; const aPaintedTile: TKMPainterTile; const aMapEdTile: TKMMapEdTerrainTile): TKMUndoTile;
-    procedure RestoreTileFromUndo(var aTile: TKMTerrainTile; var aPaintedTile: TKMPainterTile; var aMapEdTile: TKMMapEdTerrainTile; aUndoTile: TKMUndoTile;
+    function MakeUndoTile(const aTile: TKMTerrainTile;
+                          const aPaintedTile: TKMPainterTile;
+                          const aMapEdTile: TKMMapEdTerrainTile): TKMUndoTile;
+    procedure RestoreTileFromUndo(var aTile: TKMTerrainTile;
+                                  var aPaintedTile: TKMPainterTile;
+                                  var aMapEdTile: TKMMapEdTerrainTile;
+                                  aUndoTile: TKMUndoTile;
                                   aUnderHouse: Boolean);
   public
     constructor Create(const aCaption: string);
@@ -213,11 +218,15 @@ begin
 
   for I := 0 to gTerrain.MapY - 1 do
   for K := 0 to gTerrain.MapX - 1 do
-    fData[I,K] := MakeUndoTile(gTerrain.Land^[I+1,K+1], gGame.TerrainPainter.LandTerKind[I+1,K+1], gGame.MapEditor.LandMapEd^[I+1,K+1]);
+    fData[I,K] := MakeUndoTile(gTerrain.MainLand^[I+1,K+1],
+                               gGame.TerrainPainter.MainLandTerKind[I+1,K+1],
+                               gGame.MapEditor.MainLandMapEd^[I+1,K+1]);
 end;
 
 
-function TKMCheckpointTerrain.MakeUndoTile(const aTile: TKMTerrainTile; const aPaintedTile: TKMPainterTile; const aMapEdTile: TKMMapEdTerrainTile): TKMUndoTile;
+function TKMCheckpointTerrain.MakeUndoTile(const aTile: TKMTerrainTile;
+                                           const aPaintedTile: TKMPainterTile;
+                                           const aMapEdTile: TKMMapEdTerrainTile): TKMUndoTile;
 var
   L: Integer;
 begin
@@ -288,14 +297,17 @@ var
 begin
   for I := 0 to gTerrain.MapY-1 do
   for K := 0 to gTerrain.MapX-1 do
-    RestoreTileFromUndo(gTerrain.Land^[I+1,K+1], gGame.TerrainPainter.LandTerKind[I+1,K+1], gGame.MapEditor.LandMapEd^[I+1,K+1],
+    RestoreTileFromUndo(gTerrain.MainLand^[I+1,K+1],
+                        gGame.TerrainPainter.MainLandTerKind[I+1,K+1],
+                        gGame.MapEditor.MainLandMapEd^[I+1,K+1],
                         fData[I,K], gHands.HousesHitTest(K+1,I+1) <> nil);
 
   if not aUpdateImmidiately then Exit;
 
 //  gTerrain.UpdatePassability(gTerrain.MapRect);
 //  gTerrain.UpdateLighting(gTerrain.MapRect);
-  gTerrain.UpdateAll(gTerrain.MapRect);
+
+  gTerrain.CallOnDefaultLand(gTerrain.UpdateAll);
 end;
 
 
@@ -806,7 +818,7 @@ end;
 
 procedure TKMMapEditorHistory.UpdateAll;
 begin
-  gTerrain.UpdateAll(gTerrain.MapRect);
+  gTerrain.CallOnDefaultLand(gTerrain.UpdateAll);
 end;
 
 

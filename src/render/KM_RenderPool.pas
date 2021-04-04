@@ -316,7 +316,6 @@ begin
     begin
       fRenderTerrain.RenderFences(gMySpectator.FogOfWar);
       fRenderTerrain.RenderPlayerPlans(fFieldsList, fHousePlansList);
-
     end;
 
     if mlMiningRadius in gGameParams.VisibleLayers then
@@ -481,10 +480,7 @@ begin
     for I := aRect.Top to aRect.Bottom do
       for K := aRect.Left to aRect.Right do
       begin
-        if (Land^[I, K].Obj <> OBJ_NONE)
-        // In the map editor we shouldn't render terrain objects within the paste preview
-        and (not gGameParams.IsMapEditor or not (melSelection in gGame.MapEditor.VisibleLayers)
-             or not gGame.MapEditor.Selection.TileWithinPastePreview(K, I)) then
+        if (Land^[I, K].Obj <> OBJ_NONE) then
           RenderMapElement(Land^[I, K].Obj, AnimStep, K, I);
       end;
 

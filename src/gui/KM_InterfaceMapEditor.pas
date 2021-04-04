@@ -379,6 +379,9 @@ begin
   //Reset shown item when user clicks on any of the main buttons
   gMySpectator.Selected := nil;
 
+  if fGuiTerrain.GuiSelection.Visible then
+    gGame.MapEditor.Selection.Cancel;
+
   HidePages;
 
   if (Sender = Button_Main[1]) then fGuiTerrain.Show(ttBrush) else
@@ -1151,6 +1154,8 @@ begin
   if Self = nil then Exit;
 
   HistoryUpdateUI;
+
+  gGame.MapEditor.Selection.RefreshLand;
 
   if fGuiHouse.Visible or fGuiUnit.Visible then
   begin

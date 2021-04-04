@@ -68,6 +68,10 @@ type
     fVBOLastClipRect: TKMRect;
     fVBOLastGameTick: Cardinal;
     fVBOLastFOW: TKMFogOfWarCommon;
+
+    procedure RenderQuadTexture(var TexC: TUVRect; tX,tY: Word); inline;
+    procedure RenderQuadTextureBlended(var TexC: TUVRect; tX,tY: Word; aCorners: TKMTileCorners; aBlendingLevel: Byte); inline;
+
     function GetTileUV(Index: Word; Rot: Byte): TUVRect; inline;
     procedure BindVBOArray(aVBOArrayType: TVBOArrayType); inline;
     procedure UpdateVBO(aAnimStep: Integer; aFOW: TKMFogOfWarCommon);
@@ -530,7 +534,7 @@ begin
 end;
 
 
-procedure RenderQuadTexture(var TexC: TUVRect; tX,tY: Word); inline;
+procedure TRenderTerrain.RenderQuadTexture(var TexC: TUVRect; tX,tY: Word);
 begin
   with gTerrain do
     if RENDER_3D then
@@ -548,7 +552,7 @@ begin
 end;
 
 
-procedure RenderQuadTextureBlended(var TexC: TUVRect; tX,tY: Word; aCorners: TKMTileCorners; aBlendingLevel: Byte);
+procedure TRenderTerrain.RenderQuadTextureBlended(var TexC: TUVRect; tX,tY: Word; aCorners: TKMTileCorners; aBlendingLevel: Byte);
 var
   blendFactor: Single;
 begin

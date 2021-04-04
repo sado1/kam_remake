@@ -38,6 +38,8 @@ type
     Side: Byte; //Bitfield whether the fences are enabled
   end;
 
+  TKMLandFences = array [1..MAX_MAP_SIZE, 1..MAX_MAP_SIZE] of TKMTerrainTileFence;
+
   TKMTerrainLayer = record
   private
     function GetCorner(aCorner: Byte): Boolean;
@@ -144,6 +146,8 @@ const
   TILE_OVERLAY_IDS: array[toNone..toRoad] of Integer = (0, 249, 251, 253, 255, 254);   //toNone, toDig1, toDig2, toDig3, toDig4, toRoad
 
   WINE_TERRAIN_ID = 55;
+  CORN_STAGE5_OBJ_ID = 58;
+  CORN_STAGE6_OBJ_ID = 59;
   HEIGHT_DEFAULT = 30;
 
 implementation

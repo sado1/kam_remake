@@ -163,14 +163,14 @@ begin
   if Sender = Button_SelectCopy then
   begin
     //Copy selection into cursor
-    gGame.MapEditor.Selection.Selection_Copy;
-    Button_SelectPaste.Enabled := gGame.MapEditor.Selection.Selection_DataInBuffer;
+    gGame.MapEditor.Selection.CopyLandToBuffer;
+    Button_SelectPaste.Enabled := gGame.MapEditor.Selection.HasDataInBuffer;
   end
   else
   if Sender = Button_SelectPaste then
   begin
     //Paste selection
-    gGame.MapEditor.Selection.Selection_PasteBegin;
+    gGame.MapEditor.Selection.PasteBegin;
 
     Button_SelectPasteApply.Enable;
     Button_SelectPasteCancel.Enable;
@@ -183,7 +183,7 @@ begin
   if Sender = Button_SelectPasteApply then
   begin
     //Apply paste
-    gGame.MapEditor.Selection.Selection_PasteApply;
+    gGame.MapEditor.Selection.PasteApply;
     gGame.MapEditor.History.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_PASTE]);
 
     Button_SelectPasteApply.Disable;
@@ -197,7 +197,7 @@ begin
   if Sender = Button_SelectPasteCancel then
   begin
     //Cancel pasting
-    gGame.MapEditor.Selection.Selection_PasteCancel;
+    gGame.MapEditor.Selection.PasteCancel;
     Button_SelectPasteApply.Disable;
     Button_SelectPasteCancel.Disable;
     Button_SelectCopy.Enable;
@@ -209,14 +209,14 @@ begin
   if Sender = Button_SelectFlipH then
   begin
     //Flip selected
-    gGame.MapEditor.Selection.Selection_Flip(faHorizontal);
+    gGame.MapEditor.Selection.Flip(faHorizontal);
     gGame.MapEditor.History.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_COPY_PASTE_HFLIP]);
   end
   else
   if Sender = Button_SelectFlipV then
   begin
     //Flip selected
-    gGame.MapEditor.Selection.Selection_Flip(faVertical);
+    gGame.MapEditor.Selection.Flip(faVertical);
     gGame.MapEditor.History.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_COPY_PASTE_VFLIP]);
   end;
 end;
@@ -226,14 +226,14 @@ procedure TKMMapEdTerrainSelection.Show;
 begin
   gGameCursor.Mode := cmSelection;
   gGameCursor.Tag1 := 0;
-  gGame.MapEditor.Selection.Selection_PasteCancel; //Could be leftover from last time we were visible
+  gGame.MapEditor.Selection.Prepare; //Could be leftover from last time we were visible
 
   Button_SelectPasteApply.Disable;
   Button_SelectPasteCancel.Disable;
   Button_SelectCopy.Enable;
   Button_SelectFlipH.Enable;
   Button_SelectFlipV.Enable;
-  Button_SelectPaste.Enabled := gGame.MapEditor.Selection.Selection_DataInBuffer;
+  Button_SelectPaste.Enabled := gGame.MapEditor.Selection.HasDataInBuffer;
 
   Panel_Selection.Show;
 end;
@@ -247,13 +247,15 @@ end;
 
 procedure TKMMapEdTerrainSelection.Hide;
 begin
+  if Panel_Selection.Visible then
+    gGame.MapEditor.Selection.Cancel;
   Panel_Selection.Hide;
 end;
 
 
 procedure TKMMapEdTerrainSelection.UpdateState;
 begin
-  Button_SelectPaste.Enabled := gGame.MapEditor.Selection.Selection_DataInBuffer;
+  Button_SelectPaste.Enabled := gGame.MapEditor.Selection.HasDataInBuffer;
 end;
 
 

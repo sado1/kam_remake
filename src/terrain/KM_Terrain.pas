@@ -15,6 +15,7 @@ type
   TKMTerrain = class
   private
     fLand: TKMLand;
+    fMainLand: PKMLand; // pointer to the actual fLand with all terrain data
 
     fAnimStep: Cardinal;
     fMapEditor: Boolean; //In MapEd mode some features behave differently
@@ -52,19 +53,25 @@ type
     function HousesNearTile(X,Y: Word): Boolean;
   public
     Land: PKMLand;
-    Fences: array [1..MAX_MAP_SIZE, 1..MAX_MAP_SIZE] of TKMTerrainTileFence;
+
+    Fences: TKMLandFences;
     FallingTrees: TKMPointTagList;
 
     constructor Create;
     destructor Destroy; override;
+
     procedure MakeNewMap(aWidth, aHeight: Integer; aMapEditor: Boolean);
     procedure LoadFromFile(const FileName: UnicodeString; aMapEditor: Boolean);
     procedure SaveToFile(const aFile: UnicodeString); overload;
     procedure SaveToFile(const aFile: UnicodeString; const aInsetRect: TKMRect); overload;
 
+    property MainLand: PKMLand read fMainLand; // readonly
+
     property MapX: Word read fMapX;
     property MapY: Word read fMapY;
     property MapRect: TKMRect read fMapRect;
+
+    procedure SetMainLand;
 
     procedure SetTileLock(const aLoc: TKMPoint; aTileLock: TKMTileLock);
     procedure UnlockTile(const aLoc: TKMPoint);
@@ -282,6 +289,8 @@ type
     procedure UpdateAll; overload;
     procedure UpdateAll(const aRect: TKMRect); overload;
 
+    procedure CallOnDefaultLand(aProc: TProc);
+
     procedure IncAnimStep; //Lite-weight UpdateState for MapEd
     property AnimStep: Cardinal read fAnimStep;
 
@@ -318,7 +327,9 @@ begin
   fAnimStep := 0;
   FallingTrees := TKMPointTagList.Create;
   fTileset := gRes.Tileset; //Local shortcut
-  Land := @fLand;
+
+  fMainLand := @fLand;
+  SetMainLand;
 end;
 
 
@@ -328,6 +339,14 @@ begin
   FreeAndNil(fFinder);
 
   inherited;
+end;
+
+
+procedure TKMTerrain.SetMainLand;
+begin
+  if Self = nil then Exit;
+
+  Land := @fLand;
 end;
 
 
@@ -520,17 +539,18 @@ const
     end
     else
     begin
-      TileBasic.BaseLayer   := Land^[aFromY,aFromX].BaseLayer;
-      TileBasic.Height      := Land^[aFromY,aFromX].Height;
-      TileBasic.Obj         := Land^[aFromY,aFromX].Obj;
-      TileBasic.LayersCnt   := Land^[aFromY,aFromX].LayersCnt;
-      TileBasic.IsCustom    := Land^[aFromY,aFromX].IsCustom;
-      TileBasic.BlendingLvl := Land^[aFromY,aFromX].BlendingLvl;
-      TileBasic.TileOverlay := Land^[aFromY,aFromX].TileOverlay;
+      // Use fLand, to be sure we save actual Land
+      TileBasic.BaseLayer   := fLand[aFromY,aFromX].BaseLayer;
+      TileBasic.Height      := fLand[aFromY,aFromX].Height;
+      TileBasic.Obj         := fLand[aFromY,aFromX].Obj;
+      TileBasic.LayersCnt   := fLand[aFromY,aFromX].LayersCnt;
+      TileBasic.IsCustom    := fLand[aFromY,aFromX].IsCustom;
+      TileBasic.BlendingLvl := fLand[aFromY,aFromX].BlendingLvl;
+      TileBasic.TileOverlay := fLand[aFromY,aFromX].TileOverlay;
       for L := 0 to 2 do
-        TileBasic.Layer[L] := Land^[aFromY,aFromX].Layer[L];
+        TileBasic.Layer[L] := fLand[aFromY,aFromX].Layer[L];
 
-      tileOwner := Land^[aFromY,aFromX].TileOwner;
+      tileOwner := fLand[aFromY,aFromX].TileOwner;
     end;
     WriteTileToStream(S, TileBasic, tileOwner, False, mapDataSize);
   end;
@@ -4290,11 +4310,11 @@ var
 begin
   x0 := Max(X - 1, 1);
   y2 := Min(Y + 1, fMapY);
-  Land[Y,X].Light := Round((EnsureRange((Land[Y,X].RenderHeight - (Land[y2,X].RenderHeight + Land^[Y,x0].RenderHeight)/2)/22, -1, 1) + 1) * 127.5); //  1.33*16 ~=22.
+  Land^[Y,X].Light := Round((EnsureRange((Land^[Y,X].RenderHeight - (Land^[y2,X].RenderHeight + Land^[Y,x0].RenderHeight)/2)/22, -1, 1) + 1) * 127.5); //  1.33*16 ~=22.
 
   //Use more contrast lighting for Waterbeds
   if fTileset.TileIsWater(Land^[Y, X].BaseLayer.Terrain) then
-    Land[Y,X].Light := Round(EnsureRange(Land^[Y,X].Light * 1.3 + 0.1, 0, 255));
+    Land^[Y,X].Light := Round(EnsureRange(Land^[Y,X].Light * 1.3 + 0.1, 0, 255));
 
   //Map borders always fade to black
   if (Y = 1) or (Y = fMapY) or (X = 1) or (X = fMapX) then
@@ -4673,6 +4693,18 @@ begin
   for I := Max(aRect.Top, 1) to Min(aRect.Bottom, fMapY - 1) do
     for K := Max(aRect.Left, 1) to Min(aRect.Right, fMapX - 1) do
       UpdateFences(KMPoint(K, I), aCheckSurrounding);
+end;
+
+
+// Make call on DefaultLand, instead of Land, which could be replaced on smth else
+procedure TKMTerrain.CallOnDefaultLand(aProc: TProc);
+var
+  tempLand: PKMLand;
+begin
+  tempLand := Land;
+  SetMainLand;
+  aProc;
+  Land := tempLand;
 end;
 
 

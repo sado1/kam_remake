@@ -60,7 +60,6 @@ type
 
   TKMLandTerKind = array of TKMPainterTileArray;
 
-  
 implementation
 
 

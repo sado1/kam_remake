@@ -76,8 +76,10 @@ type
     function TryGetVertexEffectiveTerKind(X, Y: Word; var aEffectiveTKind: TKMTerrainKind): Boolean;
   public
     LandTerKind: TKMLandTerKind;
-    property DefaultLandTerKind: TKMLandTerKind read fLandTerKind; // readonly
-    procedure SetDefaultLandTerKind;
+
+    property MainLandTerKind: TKMLandTerKind read fLandTerKind; // readonly
+	
+    procedure SetMainLandTerKind;
 
     procedure InitEmpty;
 
@@ -2102,8 +2104,10 @@ begin
 end;
 
 
-procedure TKMTerrainPainter.SetDefaultLandTerKind;
+procedure TKMTerrainPainter.SetMainLandTerKind;
 begin
+  if Self = nil then Exit;
+
   LandTerKind := fLandTerKind;
 end;
 
