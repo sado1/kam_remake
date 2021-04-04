@@ -10,6 +10,7 @@ type
   //Terrain helper that is used to paint terrain types in Map Editor
   TKMTerrainPainter = class
   private
+    fLandTerKind: TKMLandTerKind;
     // Temp data, do not saved
     fUseTempLand: Boolean;
     fReplaceLayers: Boolean;
@@ -74,9 +75,10 @@ type
 
     function TryGetVertexEffectiveTerKind(X, Y: Word; var aEffectiveTKind: TKMTerrainKind): Boolean;
   public
+    LandTerKind: TKMLandTerKind;
+    property DefaultLandTerKind: TKMLandTerKind read fLandTerKind; // readonly
+    procedure SetDefaultLandTerKind;
 
-    LandTerKind: array of array of TKMPainterTile;
-	
     procedure InitEmpty;
 
     procedure LoadFromFile(const aFileName: UnicodeString);
@@ -1910,13 +1912,13 @@ var
     //Special rules to fix stone hill corners:
     // - Never overwrite tkStone with tkGrass
     // - Always allow tkStone to overwrite tkGrass
-    if (LandTerKind[Y,X].TerKind = tkStone) and (T = tkGrass) then Exit;
-    if (LandTerKind[Y,X].TerKind = tkGrass) and (T = tkStone) then aAccuracy := ACC_MAX;
+    if (fLandTerKind[Y,X].TerKind = tkStone) and (T = tkGrass) then Exit;
+    if (fLandTerKind[Y,X].TerKind = tkGrass) and (T = tkStone) then aAccuracy := ACC_MAX;
 
     //Skip if already set more accurately
     if aAccuracy < accuracy[Y,X] then Exit;
 
-    LandTerKind[Y,X].TerKind := T;
+    fLandTerKind[Y,X].TerKind := T;
     accuracy[Y,X] := aAccuracy;
   end;
 
@@ -1938,7 +1940,7 @@ begin
   for I := 1 to gTerrain.MapY do
   for K := 1 to gTerrain.MapX do
   begin
-    LandTerKind[I,K].TerKind := tkCustom; //Everything custom by default
+    fLandTerKind[I,K].TerKind := tkCustom; //Everything custom by default
     accuracy[I,K] := ACC_NONE;
   end;
 
@@ -2080,7 +2082,8 @@ procedure TKMTerrainPainter.InitSize(X, Y: Word);
 begin
   fBrushAreaTerKindCnt := 0;
 
-  SetLength(LandTerKind, Y+1, X+1);
+  SetLength(fLandTerKind, Y+1, X+1);
+  LandTerKind := fLandTerKind;
   SetLength(fTempLand, Y+1, X+1);
   SetLength(fBrushAreaTerKind, Sqr(MAPED_BRUSH_MAX_SIZE+1));
 end;
@@ -2095,7 +2098,13 @@ begin
   //Fill in default terain type - Grass
   for I := 1 to gTerrain.MapY do
     for K := 1 to gTerrain.MapX do
-      LandTerKind[I,K].TerKind := tkGrass;
+      fLandTerKind[I,K].TerKind := tkGrass;
+end;
+
+
+procedure TKMTerrainPainter.SetDefaultLandTerKind;
+begin
+  LandTerKind := fLandTerKind;
 end;
 
 
@@ -2158,7 +2167,7 @@ begin
           begin
             //Krom's editor saves negative numbers for tiles placed manually
             S.Read(terType, 1);
-            LandTerKind[I,K].TerKind := GetTerKind(terType, useKaMFormat);
+            fLandTerKind[I,K].TerKind := GetTerKind(terType, useKaMFormat);
           end;
           mapEdChunkFound := True; //Only set it once it's all loaded successfully
         end
@@ -2188,7 +2197,7 @@ var
   I: Integer;
 begin
   for I := 1 to gTerrain.MapY do
-    SaveStream.Write(LandTerKind[I,1], SizeOf(LandTerKind[I,1]) * gTerrain.MapX);
+    SaveStream.Write(fLandTerKind[I,1], SizeOf(fLandTerKind[I,1]) * gTerrain.MapX);
 end;
 
 
@@ -2198,7 +2207,7 @@ var
 begin
   InitSize(gTerrain.MapX, gTerrain.MapY);
   for I := 1 to gTerrain.MapY do
-    LoadStream.Read(LandTerKind[I,1], SizeOf(LandTerKind[I,1]) * gTerrain.MapX);
+    LoadStream.Read(fLandTerKind[I,1], SizeOf(fLandTerKind[I,1]) * gTerrain.MapX);
 end;
 
 
@@ -2261,7 +2270,7 @@ begin
           or (KFrom <> K - aInsetRect.Left) then
             S.Write(Byte(tkGrass)) // Its ok if we fill all with grass
         else
-          S.Write(LandTerKind[ifrom,KFrom].TerKind, 1);
+          S.Write(fLandTerKind[ifrom,KFrom].TerKind, 1);
       end;
     end;
 

@@ -55,6 +55,11 @@ type
     Tiles: SmallInt;  //Stores kind of transition tile used, no need to save into MAP footer
     HeightAdd: Byte; //Fraction part of height, for smooth height editing
   end;
+
+  TKMPainterTileArray = array of TKMPainterTile;
+
+  TKMLandTerKind = array of TKMPainterTileArray;
+
   
 implementation
 
