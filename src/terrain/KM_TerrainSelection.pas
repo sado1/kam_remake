@@ -355,6 +355,7 @@ end;
 procedure TKMSelection.Cancel;
 begin
   SetMainLands;
+  gTerrain.UpdateAll;
 end;
 
 
