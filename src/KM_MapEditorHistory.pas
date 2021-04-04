@@ -307,7 +307,7 @@ begin
 //  gTerrain.UpdatePassability(gTerrain.MapRect);
 //  gTerrain.UpdateLighting(gTerrain.MapRect);
 
-  gTerrain.CallOnDefaultLand(gTerrain.UpdateAll);
+  gTerrain.CallOnMainLand(gTerrain.UpdateAll);
 end;
 
 
@@ -818,7 +818,7 @@ end;
 
 procedure TKMMapEditorHistory.UpdateAll;
 begin
-  gTerrain.CallOnDefaultLand(gTerrain.UpdateAll);
+  gTerrain.CallOnMainLand(gTerrain.UpdateAll);
 end;
 
 

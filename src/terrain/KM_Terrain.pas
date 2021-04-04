@@ -289,7 +289,7 @@ type
     procedure UpdateAll; overload;
     procedure UpdateAll(const aRect: TKMRect); overload;
 
-    procedure CallOnDefaultLand(aProc: TProc);
+    procedure CallOnMainLand(aProc: TProc);
 
     procedure IncAnimStep; //Lite-weight UpdateState for MapEd
     property AnimStep: Cardinal read fAnimStep;
@@ -4697,7 +4697,7 @@ end;
 
 
 // Make call on DefaultLand, instead of Land, which could be replaced on smth else
-procedure TKMTerrain.CallOnDefaultLand(aProc: TProc);
+procedure TKMTerrain.CallOnMainLand(aProc: TProc);
 var
   tempLand: PKMLand;
 begin
