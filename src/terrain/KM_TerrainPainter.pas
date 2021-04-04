@@ -74,7 +74,9 @@ type
 
     function TryGetVertexEffectiveTerKind(X, Y: Word; var aEffectiveTKind: TKMTerrainKind): Boolean;
   public
+
     LandTerKind: array of array of TKMPainterTile;
+	
     procedure InitEmpty;
 
     procedure LoadFromFile(const aFileName: UnicodeString);
@@ -2329,7 +2331,8 @@ begin
                       else //Random direction
                         EditTile(gGameCursor.Cell, gGameCursor.Tag1, KaMRandom(4, 'TKMTerrainPainter.UpdateStateIdle'));
                     end;
-
+    cmObjects:      if ssLeft in gGameCursor.SState then
+                      gTerrain.SetObject(gGameCursor.Cell, gGameCursor.Tag1);
     cmObjectsBrush: if (ssLeft in gGameCursor.SState) then
                     begin
                       SetMapEdParams; //Set mapEd params from gGameCursor

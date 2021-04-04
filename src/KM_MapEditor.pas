@@ -712,9 +712,12 @@ begin
     cmWine:       UpdateField(1, True);
     cmUnits:      ProceedUnitsCursorMode;
     cmErase:      ProceedEraseCursorMode;
-    cmSelection:  fSelection.Selection_Resize;
-    cmObjects:    if EraseTerrainObject(fLastRemoveTxID) then
-                    fLastErasedObjectLoc := gGameCursor.Cell;
+    cmSelection:  fSelection.Resize;
+    cmObjects:    if gGameCursor.Tag1 = OBJ_NONE then
+                  begin
+                    if EraseTerrainObject(fLastRemoveTxID) then
+                      fLastErasedObjectLoc := gGameCursor.Cell;
+                  end;
     cmPaintBucket:      ChangeOwner(ssShift in gGameCursor.SState);
     cmUniversalEraser:  EraseObject(ssShift in gGameCursor.SState);
   end;
@@ -800,10 +803,20 @@ end;
 
 procedure TKMMapEditor.MouseUp(Button: TMouseButton; aOverMap: Boolean);
 
-  procedure ManageCMObjects;
+  function IsObjectDeleting: Boolean;
   begin
-    if (fLastErasedObjectLoc <> KMPOINT_INVALID_TILE) and (fLastRemoveTxID <> -1) then
-      fHistory.MakeCheckpoint(caTerrain, GetCheckpointObjectsStr(fLastErasedObjectLoc, fLastRemoveTxID));
+    Result := gGameCursor.Tag1 = OBJ_NONE;
+  end;
+
+  procedure ManageObjects;
+  begin
+    if IsObjectDeleting then
+    begin
+      if (fLastErasedObjectLoc <> KMPOINT_INVALID_TILE) and (fLastRemoveTxID <> -1) then
+        fHistory.MakeCheckpoint(caTerrain, GetCheckpointObjectsStr(fLastErasedObjectLoc, fLastRemoveTxID));
+    end
+    else
+      fHistory.MakeCheckpoint(caTerrain, GetCheckpointObjectsStr);
   end;
 
 var
@@ -818,7 +831,7 @@ begin
       cmElevate:  fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_TERRAIN_HEIGHTS_ELEVATE]);
       cmEqualize: fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_TERRAIN_HEIGHTS_UNEQUALIZE]);
       cmBrush:    fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_TERRAIN_BRUSH]);
-      cmObjects:  ManageCMObjects;
+      cmObjects:  ManageObjects;
       cmObjectsBrush: fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_OBJECTS_BRUSH]);
       cmTiles:    fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_TERRAIN_HINTS_TILES]);
       cmOverlays: fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_TERRAIN_OVERLAYS]);
@@ -847,10 +860,15 @@ begin
                 cmElevate:    fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_TERRAIN_HEIGHTS_ELEVATE]);
                 cmEqualize:   fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_TERRAIN_HEIGHTS_UNEQUALIZE]);
                 cmBrush:      fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_TERRAIN_BRUSH]);
-                cmObjects:    if EraseTerrainObject(removeTxID) then
-                                fHistory.MakeCheckpoint(caTerrain, GetCheckpointObjectsStr(removeTxID))
+                cmObjects:    if IsObjectDeleting then
+                              begin
+                                if EraseTerrainObject(removeTxID) then
+                                  fHistory.MakeCheckpoint(caTerrain, GetCheckpointObjectsStr(removeTxID))
+                                else
+                                  ManageObjects;
+                              end
                               else
-                                ManageCMObjects;
+                                fHistory.MakeCheckpoint(caTerrain, GetCheckpointObjectsStr);
                 cmObjectsBrush: fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_OBJECTS_BRUSH]);
                 cmTiles:      fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_TERRAIN_HINTS_TILES] + ' ' + P.ToString);
                 cmOverlays:   fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_TERRAIN_OVERLAYS] + ' ' + P.ToString);
