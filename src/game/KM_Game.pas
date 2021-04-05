@@ -2906,9 +2906,15 @@ begin
         gmReplaySingle,
         gmReplayMulti:    Result := PlayReplayTick;
         gmMapEd:          begin
+                            {$IFDEF PERFLOG}
+                            gPerfLogs.TickBegin(gGameApp.GlobalTickCount);
+                            {$ENDIF}
                             gTerrain.IncAnimStep;
                             gHands.IncAnimStep;
                             gHands.UpdateVisualState;
+                            {$IFDEF PERFLOG}
+                            gPerfLogs.TickEnd;
+                            {$ENDIF}
                           end;
       end;
     except
