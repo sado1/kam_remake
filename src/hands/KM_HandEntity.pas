@@ -16,6 +16,9 @@ type
     procedure Save(SaveStream: TKMemoryStream); virtual;
 
     property UID: Integer read GetUID;
+
+    function ObjToString(const aSeparator: String = '|'): String; virtual;
+    function ObjToStringShort(const aSeparator: String = '|'): String; virtual;
   end;
 
   { Common class for TKMUnit / TKMHouse / TKMUnitGroup }
@@ -53,8 +56,8 @@ type
     function IsGroup: Boolean;
     function IsHouse: Boolean;
 
-    function ObjToString(const aSeparator: String = '|'): String; virtual;
-    function ObjToStringShort(const aSeparator: String = '|'): String; virtual;
+    function ObjToString(const aSeparator: String = '|'): String; override;
+    function ObjToStringShort(const aSeparator: String = '|'): String; override;
   end;
 
   TKMHandEntityPointer<T> = class abstract(TKMHandEntity)
@@ -114,6 +117,19 @@ begin
   if Self = nil then Exit(NO_ENTITY_UID); // Exit with 0, if object is not set. Good UID is always > 0
 
   Result := fUID;
+end;
+
+
+
+function TKMEntity.ObjToStringShort(const aSeparator: String = '|'): String;
+begin
+  Result := Format('UID = %d', [UID]);
+end;
+
+
+function TKMEntity.ObjToString(const aSeparator: String = '|'): String;
+begin
+  Result := ObjToStringShort(aSeparator);
 end;
 
 
@@ -214,15 +230,14 @@ end;
 
 function TKMHandEntity.ObjToStringShort(const aSeparator: String = '|'): String;
 begin
-  Result := Format('UID = %d%sPos = %s',
-                   [UID, aSeparator,
-                    Position.ToString]);
+  Result := inherited ObjToStringShort(aSeparator) +
+            Format('%sPos = %s', [aSeparator, Position.ToString]);
 end;
 
 
 function TKMHandEntity.ObjToString(const aSeparator: String = '|'): String;
 begin
-  Result := ObjToStringShort(aSeparator) +
+  Result := inherited ObjToString(aSeparator) +
             Format('%sOwner = %d%sPositionF = %s%sAllowAllyToSel = %s',
                    [aSeparator,
                     Owner, aSeparator,
