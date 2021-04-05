@@ -1237,7 +1237,7 @@ var
 begin
   Result := '|Hands: ';
   for I := 0 to fCount - 1 do
-    Result := Format('%s|%d: %s', [Result, I, fHandsList[I].ObjToString]);
+    Result := Format('%s|%d:' + #9 + '%s', [Result, I, fHandsList[I].ObjToString(#9)]);
 
 end;
 

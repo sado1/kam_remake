@@ -225,7 +225,7 @@ type
     procedure IncAnimStep;
     procedure UpdateState(aTick: Cardinal); override;
     procedure Paint(const aRect: TKMRect; aTickLag: Single); override;
-    function ObjToString: String;
+    function ObjToString(aSeparator: String = ' '): String;
   end;
 
 
@@ -2139,13 +2139,13 @@ begin
 end;
 
 
-function TKMHand.ObjToString: String;
+function TKMHand.ObjToString(aSeparator: String = ' '): String;
 begin
-  Result := Format('Enabled = %5s ID = %d AI: [%s] Owner = %s HandType = %s',
-                   [BoolToStr(Enabled, True),
-                    fID,
-                    AI.ObjToString,
-                    OwnerName,
+  Result := Format('Enabled = %5s%sID = %d%sAI: [%s]%sOwner = %s%sHandType = %s',
+                   [BoolToStr(Enabled, True), aSeparator,
+                    fID, aSeparator,
+                    AI.ObjToString, aSeparator,
+                    OwnerName, aSeparator,
                     GetEnumName(TypeInfo(TKMHandType), Integer(HandType))]);
 end;
 
