@@ -34,6 +34,16 @@ type
     function IdentifyPerimeter(out aPerimeterVertexes: TKMPointList; const aInitialX, aInitialY: Integer): Boolean;
   end;
 
+  // todo: There is a known bug, when area has single cells, connected diagonally, then half of them will be not bordered
+  //
+  //   Before        After      Expected
+  //         X             X          |X|
+  //       X            |X|         |X|
+  //     X     ->      X          |X|
+  //   X            |X|         |X|
+  //
+
+
 
 const
   POINT_ADJ: array[TKMDirection4] of TKMPoint = (
