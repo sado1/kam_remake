@@ -10,11 +10,13 @@ type
 
   TKMRenderDebug = class
   private
+    fClipRect: TKMRect;
     fAreaTilesLand: TBoolean2Array;
     fAreaData: IKMData2D<Boolean>;
     fMarchingSquares: TKMMarchingSquares;
     fBorderPoints: TList<TKMPointList>;
     procedure ResetAreaData;
+    function IsAreaInClip(aLoc: TKMPoint; aRadius: Integer): Boolean;
     procedure CollectAreaTiles(var aPoints: TBoolean2Array; const aLoc: TKMPoint; aMinRadius, aMaxRadius: Single;
                                aDistanceFunc: TCoordDistanceFn);
   public
@@ -22,6 +24,8 @@ type
     destructor Destroy; override;
 
     procedure ReInit;
+
+    property ClipRect: TKMRect read fClipRect write fClipRect;
 
     procedure PaintMiningRadius;
     procedure PaintDefences;
@@ -89,6 +93,9 @@ begin
   gPerfLogs.SectionEnter(psRenderDebug);
   {$ENDIF}
   try
+    if not IsAreaInClip(aLoc, Ceil(aMaxRadius)) then
+      Exit;
+
     ResetAreaData;
 
     for I := -Round(aMaxRadius) - 1 to Round(aMaxRadius) do
@@ -138,6 +145,16 @@ begin
 end;
 
 
+function TKMRenderDebug.IsAreaInClip(aLoc: TKMPoint; aRadius: Integer): Boolean;
+begin
+  // Rough filter for distant locs
+  Result := KMRectArea(KMRectIntersect(fClipRect, KMRect(aLoc.X - aRadius,
+                                                         aLoc.Y - aRadius,
+                                                         aLoc.X + aRadius,
+                                                         aLoc.Y + aRadius))) > 0;
+end;
+
+
 procedure TKMRenderDebug.PaintDefences;
 var
   I, J, K: Integer;
@@ -147,7 +164,6 @@ begin
   if SKIP_RENDER or (gGame = nil) then Exit;
 
   Assert(Length(fAreaTilesLand) > 0, 'TKMRenderDebug was not initialized');
-
 
   {$IFDEF PERFLOG}
   gPerfLogs.SectionEnter(psRenderDebug);
@@ -172,6 +188,9 @@ begin
     for K := 0 to gHands[I].AI.General.DefencePositions.Count - 1 do
     begin
       DP := gHands[I].AI.General.DefencePositions[K];
+
+      if not IsAreaInClip(DP.Position.Loc, DP.Radius) then
+        Continue;
 
       CollectAreaTiles(fAreaTilesLand, DP.Position.Loc, 0, DP.Radius, KMLengthDiag);
     end;
@@ -369,30 +388,48 @@ begin
       H := gHands[I].Houses[J];
       case H.HouseType of
         htIronMine:   begin
+                        if not IsAreaInClip(H.PointBelowEntrance, 11) then
+                          Continue;
+
                         gTerrain.FindOrePointsByDistance(H.PointBelowEntrance, wtIronOre, oreP);
                         AddOrePoints(oreP, ironOreP);
                       end;
         htGoldMine:   begin
+                        if not IsAreaInClip(H.PointBelowEntrance, 11) then
+                          Continue;
+
                         gTerrain.FindOrePointsByDistance(H.PointBelowEntrance, wtGoldOre, oreP);
                         AddOrePoints(oreP, goldOreP);
                       end;
         htCoalMine:   begin
+                        if not IsAreaInClip(H.PointBelowEntrance, 5) then
+                          Continue;
+
                         gTerrain.FindOrePointsByDistance(H.PointBelowEntrance, wtCoal, oreP);
                         AddOrePoints(oreP, coalOreP);
                       end;
         htWoodcutters:begin
+                        if not IsAreaInClip(TKMHouseWoodcutters(H).FlagPoint, gRes.Units[utWoodcutter].MiningRange) then
+                          Continue;
+
                         gTerrain.FindPossibleTreePoints(TKMHouseWoodcutters(H).FlagPoint,
                                                         gRes.Units[utWoodcutter].MiningRange,
                                                         housePts);
                         woodcutterPts.AddList(housePts);
                       end;
         htQuary:      begin
+                        if not IsAreaInClip(H.PointBelowEntrance, gRes.Units[utStoneCutter].MiningRange) then
+                          Continue;
+
                         gTerrain.FindStoneLocs(H.PointBelowEntrance,
                                                gRes.Units[utStoneCutter].MiningRange,
                                                KMPOINT_ZERO, True, housePts);
                         quarryPts.AddList(housePts);
                       end;
         htFisherHut:  begin
+                        if not IsAreaInClip(H.PointBelowEntrance, gRes.Units[utFisher].MiningRange) then
+                          Continue;
+
                         gTerrain.FindFishWaterLocs(H.PointBelowEntrance,
                                                    gRes.Units[utFisher].MiningRange,
                                                    KMPOINT_ZERO, True, houseDirPts);
@@ -400,12 +437,18 @@ begin
                         fisherHutPts.AddList(housePts);
                       end;
         htFarm:       begin
+                        if not IsAreaInClip(H.PointBelowEntrance, gRes.Units[utFarmer].MiningRange) then
+                          Continue;
+
                         gTerrain.FindCornFieldLocs(H.PointBelowEntrance,
                                                    gRes.Units[utFarmer].MiningRange,
                                                    housePts);
                         farmPts.AddList(housePts);
                       end;
         htWineyard:   begin
+                        if not IsAreaInClip(H.PointBelowEntrance, gRes.Units[utFarmer].MiningRange) then
+                          Continue;
+
                         gTerrain.FindWineFieldLocs(H.PointBelowEntrance,
                                                    gRes.Units[utFarmer].MiningRange,
                                                    housePts);

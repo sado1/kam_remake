@@ -293,6 +293,8 @@ begin
     // Render only within visible area
     clipRect := fViewport.GetClip;
 
+    fRenderDebug.ClipRect := clipRect;
+
     // Collect players plans for terrain layer
     CollectPlans(clipRect);
 
