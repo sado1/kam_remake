@@ -31,6 +31,8 @@ type
       psScripting,
       psMinimap,
       psFrameUpdateVBO,
+      psRenderDebug,
+        psMarchingSquares,
     psFrameFullC,                 // Full render frame as seen by gMain
     psFrameFullG,                 // Full render frame on GPU (doublecheck TKMPerfLogGFXStack)
         psFrameTerrain,
@@ -82,6 +84,8 @@ const
     (Name: '   Scripting';            Kind: plkCPU; Color: (R:1;G:0.5;B:0.75);),
     (Name: '   Minimap';              Kind: plkCPU; Color: (R:0.7;G:0;B:0.9);),
     (Name: '   UpdateVBO';            Kind: plkCPU; Color: (R:0.3;G:0;B:0.6);),
+    (Name: '   RenderDebug';          Kind: plkCPU; Color: (R:0;G:0.2;B:0.7);),
+    (Name: '     Marching squares';   Kind: plkCPU; Color: (R:0.9;G:0.2;B:0.8);),
     (Name: 'Render.CPU';              Kind: plkCPU; Color: (R:1.0;G:0;B:0.5);),
     (Name: 'Render.GFX';              Kind: plkGFX; Color: (R:0;G:1;B:1);),
     (Name: '     Terrain';            Kind: plkGFX; Color: (R:0;G:0.25;B:0.25);),

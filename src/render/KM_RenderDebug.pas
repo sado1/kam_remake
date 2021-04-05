@@ -46,7 +46,7 @@ uses
   KM_Game, KM_RenderAux,
   KM_Resource, KM_Terrain, KM_Houses, KM_HouseWoodcutters, KM_ResUnits,
   KM_HandsCollection, KM_Hand, KM_CommonUtils,
-  KM_ResTypes;
+  KM_ResTypes, KM_DevPerfLog, KM_DevPerfLogTypes;
 
 
 { TKMRenderDebug }
@@ -85,21 +85,30 @@ procedure TKMRenderDebug.RenderTiledArea(const aLoc: TKMPoint; aMinRadius, aMaxR
 var
   I, K: Integer;
 begin
-  ResetAreaData;
+  {$IFDEF PERFLOG}
+  gPerfLogs.SectionEnter(psRenderDebug);
+  {$ENDIF}
+  try
+    ResetAreaData;
 
-  for I := -Round(aMaxRadius) - 1 to Round(aMaxRadius) do
-    for K := -Round(aMaxRadius) - 1 to Round(aMaxRadius) do
-      if InRange(aDistanceFunc(K, I), aMinRadius, aMaxRadius) and gTerrain.TileInMapCoords(aLoc.X+K, aLoc.Y+I) then
-      begin
-        fAreaTilesLand[aLoc.Y+I - 1, aLoc.X+K - 1] := True; // fDefLand is 0-based
-        gRenderAux.Quad(aLoc.X+K, aLoc.Y+I, aFillColor);
-      end;
+    for I := -Round(aMaxRadius) - 1 to Round(aMaxRadius) do
+      for K := -Round(aMaxRadius) - 1 to Round(aMaxRadius) do
+        if InRange(aDistanceFunc(K, I), aMinRadius, aMaxRadius) and gTerrain.TileInMapCoords(aLoc.X+K, aLoc.Y+I) then
+        begin
+          fAreaTilesLand[aLoc.Y+I - 1, aLoc.X+K - 1] := True; // fDefLand is 0-based
+          gRenderAux.Quad(aLoc.X+K, aLoc.Y+I, aFillColor);
+        end;
 
-  if not fMarchingSquares.IdentifyPerimeters(fBorderPoints) then
-    Exit;
+    if not fMarchingSquares.IdentifyPerimeters(fBorderPoints) then
+      Exit;
 
-  for K := 0 to fBorderPoints.Count - 1 do
-    gRenderAux.LineOnTerrain(fBorderPoints[K], aLineColor);
+    for K := 0 to fBorderPoints.Count - 1 do
+      gRenderAux.LineOnTerrain(fBorderPoints[K], aLineColor);
+  finally
+    {$IFDEF PERFLOG}
+    gPerfLogs.SectionLeave(psRenderDebug);
+    {$ENDIF}
+  end;
 end;
 
 
@@ -139,6 +148,11 @@ begin
 
   Assert(Length(fAreaTilesLand) > 0, 'TKMRenderDebug was not initialized');
 
+
+  {$IFDEF PERFLOG}
+  gPerfLogs.SectionEnter(psRenderDebug);
+  {$ENDIF}
+
   //Draw tiles and shared borders first for all players
   for I := 0 to gHands.Count - 1 do
   begin
@@ -175,6 +189,10 @@ begin
     for K := 0 to fBorderPoints.Count - 1 do
       gRenderAux.LineOnTerrain(fBorderPoints[K], lineColor);
   end;
+
+  {$IFDEF PERFLOG}
+  gPerfLogs.SectionLeave(psRenderDebug);
+  {$ENDIF}
 end;
 
 
@@ -314,6 +332,10 @@ var
 begin
   if gGame = nil then Exit;
 
+  {$IFDEF PERFLOG}
+  gPerfLogs.SectionEnter(psRenderDebug);
+  {$ENDIF}
+
   SetLength(oreP, 3);
   SetLength(ironOreP, 3);
   SetLength(goldOreP, 3);
@@ -420,6 +442,11 @@ begin
   PaintMiningPoints(wineyardPts, WINEYARD_COLOR);
   // Show selected points as vertexes if woodcutter house is selected
   PaintMiningPoints(selectedPts, 0, True, False, (gMySpectator.Selected is TKMHouse) and (TKMHouse(gMySpectator.Selected).HouseType = htWoodcutters));
+
+
+  {$IFDEF PERFLOG}
+  gPerfLogs.SectionLeave(psRenderDebug);
+  {$ENDIF}
 
   for I := 0 to Length(oreP) - 1 do
   begin
