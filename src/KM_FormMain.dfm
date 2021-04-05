@@ -70,7 +70,6 @@ object FormMain: TFormMain
     Top = 0
     Width = 260
     Height = 765
-    VertScrollBar.Position = 72
     VertScrollBar.Tracking = True
     Align = alRight
     DoubleBuffered = False
@@ -84,12 +83,12 @@ object FormMain: TFormMain
     ParentDoubleBuffered = False
     TabOrder = 1
     object cpMisc: TCategoryPanel
-      Top = 737
+      Top = 337
       Height = 24
       Caption = 'Misc'
       Collapsed = True
       TabOrder = 0
-      ExpandedHeight = 158
+      ExpandedHeight = 144
       object chkBevel: TCheckBox
         Left = 168
         Top = 100
@@ -125,7 +124,7 @@ object FormMain: TFormMain
       end
     end
     object cpLogs: TCategoryPanel
-      Top = 713
+      Top = 313
       Height = 24
       Caption = 'Logs'
       Collapsed = True
@@ -215,7 +214,7 @@ object FormMain: TFormMain
       end
     end
     object cpGraphicTweaks: TCategoryPanel
-      Top = 689
+      Top = 289
       Height = 24
       Caption = 'Graphic tweaks'
       Collapsed = True
@@ -328,7 +327,7 @@ object FormMain: TFormMain
       end
     end
     object cpUserInreface: TCategoryPanel
-      Top = 665
+      Top = 265
       Height = 24
       Caption = 'User Interface'
       Collapsed = True
@@ -381,7 +380,7 @@ object FormMain: TFormMain
       end
     end
     object cpPerfLogs: TCategoryPanel
-      Top = 641
+      Top = 241
       Height = 24
       Caption = 'Perf Logs'
       Collapsed = True
@@ -389,7 +388,7 @@ object FormMain: TFormMain
       ExpandedHeight = 660
     end
     object cpAI: TCategoryPanel
-      Top = 617
+      Top = 217
       Height = 24
       Caption = 'AI'
       Collapsed = True
@@ -595,7 +594,7 @@ object FormMain: TFormMain
       end
     end
     object cpScripting: TCategoryPanel
-      Top = 593
+      Top = 193
       Height = 24
       Caption = 'Scripting'
       Collapsed = True
@@ -617,7 +616,7 @@ object FormMain: TFormMain
       end
     end
     object cpGameAdv: TCategoryPanel
-      Top = 569
+      Top = 169
       Height = 24
       Caption = 'Game additional'
       Collapsed = True
@@ -665,13 +664,146 @@ object FormMain: TFormMain
         OnClick = RGPlayerClick
       end
     end
+    object cpDebugInput: TCategoryPanel
+      Top = 145
+      Height = 24
+      Caption = 'Debug Input'
+      Collapsed = True
+      TabOrder = 8
+      ExpandedHeight = 210
+      object gbFindObjByUID: TGroupBox
+        Left = 8
+        Top = 28
+        Width = 225
+        Height = 91
+        Caption = 'Find object by UID'
+        Enabled = False
+        TabOrder = 0
+        object Label14: TLabel
+          Left = 8
+          Top = 43
+          Width = 79
+          Height = 13
+          Caption = 'Selected G/U/H'
+        end
+        object Label15: TLabel
+          Left = 112
+          Top = 44
+          Width = 79
+          Height = 13
+          Caption = 'Selected Warrior'
+        end
+        object Label13: TLabel
+          Left = 86
+          Top = 19
+          Width = 22
+          Height = 13
+          Caption = 'UID:'
+        end
+        object seFindObjByUID: TSpinEdit
+          Left = 112
+          Top = 16
+          Width = 97
+          Height = 22
+          MaxValue = 2147483647
+          MinValue = 0
+          TabOrder = 0
+          Value = 0
+          OnChange = ControlsUpdate
+        end
+        object btFindObjByUID: TButton
+          Left = 8
+          Top = 16
+          Width = 60
+          Height = 20
+          Caption = 'Find'
+          TabOrder = 1
+          OnClick = btFindObjByUIDClick
+        end
+        object seEntityUID: TSpinEdit
+          Left = 8
+          Top = 62
+          Width = 90
+          Height = 22
+          MaxValue = 2147483647
+          MinValue = -2147483648
+          TabOrder = 2
+          Value = 0
+          OnChange = ControlsUpdate
+        end
+        object seWarriorUID: TSpinEdit
+          Left = 112
+          Top = 63
+          Width = 97
+          Height = 22
+          MaxValue = 2147483647
+          MinValue = -2147483648
+          TabOrder = 3
+          Value = 0
+          OnChange = ControlsUpdate
+        end
+      end
+      object GroupBox2: TGroupBox
+        Left = 8
+        Top = 122
+        Width = 225
+        Height = 62
+        Caption = 'Debug input'
+        TabOrder = 1
+        object Label10: TLabel
+          Left = 8
+          Top = 16
+          Width = 27
+          Height = 13
+          Caption = 'Value'
+        end
+        object Label11: TLabel
+          Left = 112
+          Top = 16
+          Width = 21
+          Height = 13
+          Caption = 'Text'
+        end
+        object seDebugValue: TSpinEdit
+          Left = 8
+          Top = 32
+          Width = 90
+          Height = 22
+          MaxValue = 2147483647
+          MinValue = -2147483648
+          TabOrder = 0
+          Value = 0
+          OnChange = ControlsUpdate
+        end
+        object edDebugText: TEdit
+          AlignWithMargins = True
+          Left = 112
+          Top = 32
+          Width = 105
+          Height = 21
+          TabOrder = 1
+          OnChange = ControlsUpdate
+        end
+      end
+      object chkFindObjByUID: TCheckBox
+        Left = 8
+        Top = 6
+        Width = 145
+        Height = 17
+        Caption = 'Enable '#39'Find object by UID'#39
+        TabOrder = 2
+        OnClick = ControlsUpdate
+      end
+    end
     object cpDebugRender: TCategoryPanel
-      Top = 49
-      Height = 520
+      Top = 121
+      Height = 24
       Caption = 'Debug Render'
+      Collapsed = True
       DoubleBuffered = True
       ParentDoubleBuffered = False
-      TabOrder = 8
+      TabOrder = 9
+      ExpandedHeight = 360
       object Label2: TLabel
         Left = 136
         Top = 5
@@ -1006,134 +1138,21 @@ object FormMain: TFormMain
         TabOrder = 34
         OnClick = ControlsUpdate
       end
-      object GroupBox1: TGroupBox
-        Left = 8
-        Top = 340
-        Width = 225
-        Height = 91
-        Caption = 'Find object by UID'
-        TabOrder = 35
-        object Label14: TLabel
-          Left = 8
-          Top = 43
-          Width = 79
-          Height = 13
-          Caption = 'Selected G/U/H'
-        end
-        object Label15: TLabel
-          Left = 112
-          Top = 44
-          Width = 79
-          Height = 13
-          Caption = 'Selected Warrior'
-        end
-        object Label13: TLabel
-          Left = 76
-          Top = 18
-          Width = 22
-          Height = 13
-          Caption = 'UID:'
-        end
-        object seFindObjByUID: TSpinEdit
-          Left = 112
-          Top = 16
-          Width = 97
-          Height = 22
-          MaxValue = 2147483647
-          MinValue = 0
-          TabOrder = 0
-          Value = 0
-          OnChange = ControlsUpdate
-        end
-        object btFindObjByUID: TButton
-          Left = 8
-          Top = 16
-          Width = 60
-          Height = 20
-          Caption = 'Find'
-          TabOrder = 1
-          OnClick = btFindObjByUIDClick
-        end
-        object seEntityUID: TSpinEdit
-          Left = 8
-          Top = 62
-          Width = 90
-          Height = 22
-          MaxValue = 2147483647
-          MinValue = -2147483648
-          TabOrder = 2
-          Value = 0
-          OnChange = ControlsUpdate
-        end
-        object seWarriorUID: TSpinEdit
-          Left = 112
-          Top = 63
-          Width = 97
-          Height = 22
-          MaxValue = 2147483647
-          MinValue = -2147483648
-          TabOrder = 3
-          Value = 0
-          OnChange = ControlsUpdate
-        end
-      end
-      object GroupBox2: TGroupBox
-        Left = 8
-        Top = 433
-        Width = 225
-        Height = 62
-        Caption = 'Debug input'
-        TabOrder = 36
-        object Label10: TLabel
-          Left = 8
-          Top = 16
-          Width = 27
-          Height = 13
-          Caption = 'Value'
-        end
-        object Label11: TLabel
-          Left = 112
-          Top = 16
-          Width = 21
-          Height = 13
-          Caption = 'Text'
-        end
-        object seDebugValue: TSpinEdit
-          Left = 8
-          Top = 32
-          Width = 90
-          Height = 22
-          MaxValue = 2147483647
-          MinValue = -2147483648
-          TabOrder = 0
-          Value = 0
-          OnChange = ControlsUpdate
-        end
-        object edDebugText: TEdit
-          AlignWithMargins = True
-          Left = 112
-          Top = 32
-          Width = 105
-          Height = 21
-          TabOrder = 1
-          OnChange = ControlsUpdate
-        end
-      end
       object chkGipAsBytes: TCheckBox
         Left = 167
         Top = 280
         Width = 66
         Height = 17
         Caption = 'as Bytes'
-        TabOrder = 37
+        TabOrder = 35
         OnClick = ControlsUpdate
       end
     end
     object cpGameControls: TCategoryPanel
-      Top = -72
+      Top = 0
       Height = 121
       Caption = 'Game'
-      TabOrder = 9
+      TabOrder = 10
       object Label8: TLabel
         Left = 70
         Top = 30
