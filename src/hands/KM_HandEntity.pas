@@ -4,18 +4,30 @@ uses
   KM_Defaults, KM_Points, KM_CommonClasses, KM_HandTypes;
 
 type
-  { Common class for TKMUnit / TKMHouse / TKMUnitGroup }
-  TKMHandEntity = class abstract
+  TKMEntity = class abstract
   private
     fUID: Integer; //unique entity ID
+  protected
+    function GetUID: Integer;
+    procedure SetUID(aUID: Integer);
+  public
+    constructor Create(aUID: Integer);
+    constructor Load(LoadStream: TKMemoryStream); virtual;
+    procedure Save(SaveStream: TKMemoryStream); virtual;
+
+    property UID: Integer read GetUID;
+  end;
+
+  { Common class for TKMUnit / TKMHouse / TKMUnitGroup }
+  TKMHandEntity = class abstract(TKMEntity)
+  private
     fType: TKMHandEntityType;
     fOwner: TKMHandID;
     fAllowAllyToSelect: Boolean; // Allow ally to select entity
-    function GetUID: Integer;
     function GetOwner: TKMHandID;
     function GetType: TKMHandEntityType;
   protected
-    procedure SetUID(aUID: Integer);
+
     function GetPosition: TKMPoint; virtual; abstract;
     function GetPositionF: TKMPointF; virtual; abstract;
     procedure SetPositionF(const aPositionF: TKMPointF); virtual; abstract;
@@ -24,13 +36,12 @@ type
     procedure SetAllowAllyToSelect(aAllow: Boolean); virtual;
   public
     constructor Create(aType: TKMHandEntityType; aUID: Integer; aOwner: TKMHandID);
-    constructor Load(LoadStream: TKMemoryStream); virtual;
-    procedure Save(SaveStream: TKMemoryStream); virtual;
+    constructor Load(LoadStream: TKMemoryStream); override;
+    procedure Save(SaveStream: TKMemoryStream); override;
 
     property EntityType: TKMHandEntityType read GetType;
     property Owner: TKMHandID read GetOwner write SetOwner;
 
-    property UID: Integer read GetUID;
     property Position: TKMPoint read GetPosition;
     property PositionF: TKMPointF read GetPositionF write SetPositionF;
 
@@ -68,13 +79,50 @@ uses
   KM_CommonExceptions;
 
 
-{ TKMHandEntity }
-constructor TKMHandEntity.Create(aType: TKMHandEntityType; aUID: Integer; aOwner: TKMHandID);
+constructor TKMEntity.Create(aUID: Integer);
 begin
   inherited Create;
 
-  fType := aType;
   fUID := aUID;
+end;
+
+
+constructor TKMEntity.Load(LoadStream: TKMemoryStream);
+begin
+  inherited Create;
+
+  LoadStream.CheckMarker('Entity');
+  LoadStream.Read(fUID);
+end;
+
+
+procedure TKMEntity.Save(SaveStream: TKMemoryStream);
+begin
+  SaveStream.PlaceMarker('Entity');
+  SaveStream.Write(fUID);
+end;
+
+
+procedure TKMEntity.SetUID(aUID: Integer);
+begin
+  fUID := aUID;
+end;
+
+
+function TKMEntity.GetUID: Integer;
+begin
+  if Self = nil then Exit(NO_ENTITY_UID); // Exit with 0, if object is not set. Good UID is always > 0
+
+  Result := fUID;
+end;
+
+
+{ TKMHandEntity }
+constructor TKMHandEntity.Create(aType: TKMHandEntityType; aUID: Integer; aOwner: TKMHandID);
+begin
+  inherited Create(aUID);
+
+  fType := aType;
   fOwner := aOwner;
   fAllowAllyToSelect := False; // Entity view for allies is blocked by default
 end;
@@ -82,10 +130,8 @@ end;
 
 constructor TKMHandEntity.Load(LoadStream: TKMemoryStream);
 begin
-  inherited Create;
+  inherited;
 
-  LoadStream.CheckMarker('Entity');
-  LoadStream.Read(fUID);
   LoadStream.Read(fType, SizeOf(fType));
   LoadStream.Read(fOwner, SizeOf(fOwner));
   LoadStream.Read(fAllowAllyToSelect);
@@ -94,8 +140,8 @@ end;
 
 procedure TKMHandEntity.Save(SaveStream: TKMemoryStream);
 begin
-  SaveStream.PlaceMarker('Entity');
-  SaveStream.Write(fUID);
+  inherited;
+
   SaveStream.Write(fType, SizeOf(fType));
   SaveStream.Write(fOwner, SizeOf(fOwner));
   SaveStream.Write(fAllowAllyToSelect);
@@ -127,14 +173,6 @@ begin
   if Self = nil then Exit(etNone);
 
   Result := fType;
-end;
-
-
-function TKMHandEntity.GetUID: Integer;
-begin
-  if Self = nil then Exit(NO_ENTITY_UID); // Exit with 0, if object is not set. Good UID is always > 0
-
-  Result := fUID;
 end;
 
 
@@ -171,12 +209,6 @@ end;
 procedure TKMHandEntity.SetOwner(const aOwner: TKMHandID);
 begin
   fOwner := aOwner;
-end;
-
-
-procedure TKMHandEntity.SetUID(aUID: Integer);
-begin
-  fUID := aUID;
 end;
 
 
