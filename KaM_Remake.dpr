@@ -57,6 +57,7 @@ uses
   KM_CommonExceptions in 'src\common\KM_CommonExceptions.pas',
   KM_CommonTypes in 'src\common\KM_CommonTypes.pas',
   KM_Defaults in 'src\common\KM_Defaults.pas',
+  KM_Entity in 'src\common\KM_Entity.pas',
   KM_MarchingSquares in 'src\common\KM_MarchingSquares.pas',
   KM_Points in 'src\common\KM_Points.pas',
   KM_WorkerThread in 'src\common\KM_WorkerThread.pas',
