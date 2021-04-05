@@ -20,7 +20,7 @@ type
   end;
 
   //Player manages its assets
-  TKMHandCommon = class
+  TKMHandCommon = class abstract
   private
     fID: TKMHandID; //Index of this hand in gHands
     fUnits: TKMUnitsCollection;
