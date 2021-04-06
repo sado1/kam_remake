@@ -68,6 +68,7 @@ type
       BrushCircle, BrushSquare: TKMButtonFlat;
       CleanBrush: TKMButtonFlat;
       Label_ForestAge: TKMLabel;
+      OverrideObjects: TKMCheckBox;
 
       Scroll_ObjectsPalette: TKMScrollBar;
   public
@@ -281,6 +282,11 @@ begin
   CleanBrush.Anchors := [anTop];
   CleanBrush.Hint := GetHintWHotkey(TX_MAPED_OBJECTS_BRUSH_CLEAN, kfMapedSubMenuAction5);
   CleanBrush.OnClick := ObjectsBrushChange;
+
+  OverrideObjects := TKMCheckBox.Create(Panel_Objects, 9, NextTop(40), Panel_Objects.Width - 9, 40, gResTexts[TX_MAPED_OBJECTS_BRUSH_OVERRIDE_OBJECTS], fntMetal);
+  OverrideObjects.OnClick := ObjectsBrushChange;
+  OverrideObjects.Hint := gResTexts[TX_MAPED_OBJECTS_BRUSH_OVERRIDE_OBJECTS_HINT];
+
 
   rxIndex := 226;
 
@@ -641,7 +647,6 @@ begin
       CleanBrush.Down := False;
     end;
   end;
-
   if Sender = BrushCircle then
   begin
     gGameCursor.MapEdShape := hsCircle;
@@ -659,6 +664,7 @@ begin
     BrushSquare.Down := True;
   end;
 
+  gGameCursor.MapEdOverrideObjects := OverrideObjects.Checked;
   gGameCursor.MapEdSize := BrushSize.Position;
   gGameCursor.MapEdForestAge := ForestAge.Position;
   gGameCursor.MapEdObjectsDensity := ForestDensity.Position;
