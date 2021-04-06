@@ -3,7 +3,7 @@ unit KM_ScriptingActions;
 interface
 uses
   Classes, Math, SysUtils, StrUtils, KM_AIAttacks, KM_ResTileset,
-  KM_CommonTypes, KM_Defaults, KM_Points, KM_Houses, KM_ScriptingIdCache, KM_Units, KM_Terrain, KM_Sound,
+  KM_CommonTypes, KM_Defaults, KM_Points, KM_Houses, KM_ScriptingIdCache, KM_Units, KM_TerrainTypes, KM_Sound,
   KM_UnitGroup, KM_ResHouses, KM_HouseCollection, KM_ResWares, KM_ScriptingEvents, KM_ScriptingTypes;
 
 
@@ -200,7 +200,8 @@ uses
   KM_PathFindingRoad, KM_ResMapElements, KM_HandConstructions,
   KM_HouseWoodcutters, KM_HouseTownHall,
   KM_UnitGroupTypes,
-  KM_ResTypes;
+  KM_ResTypes,
+  KM_Terrain;
 
 const
   MIN_SOUND_AT_LOC_RADIUS = 28;
@@ -901,7 +902,7 @@ begin
     if gTerrain.TileInMapCoords(X, Y) then
     begin
       //Can't remove if tile is locked (house or roadwork)
-      if (gTerrain.Land[Y, X].TileOverlay = toRoad) and (gTerrain.Land[Y, X].TileLock = tlNone) then
+      if (gTerrain.Land^[Y, X].TileOverlay = toRoad) and (gTerrain.Land^[Y, X].TileLock = tlNone) then
         gTerrain.RemRoad(Pos);
     end
     else
@@ -1562,7 +1563,7 @@ begin
         gTerrain.SetRoad(KMPoint(X, Y), aPlayer);
         //Terrain under roads is flattened (fields are not)
         gTerrain.FlattenTerrain(KMPoint(X, Y));
-        if gMapElements[gTerrain.Land[Y,X].Obj].WineOrCorn then
+        if gMapElements[gTerrain.Land^[Y,X].Obj].WineOrCorn then
           gTerrain.RemoveObject(KMPoint(X,Y)); //Remove corn/wine like normally built road does
       end
     else
@@ -2044,7 +2045,7 @@ begin
         begin
           H.IncBuildingProgress;
           if H.IsStone
-          and (gTerrain.Land[H.Position.Y, H.Position.X].TileLock <> tlHouse) then
+          and (gTerrain.Land^[H.Position.Y, H.Position.X].TileLock <> tlHouse) then
             gTerrain.SetHouse(H.Position, H.HouseType, hsBuilt, H.Owner);
         end;
     end
@@ -3356,7 +3357,7 @@ begin
             begin
               gTerrain.SetRoad(Points[I], aPlayer);
               gTerrain.FlattenTerrain(Points[I]);
-              if gMapElements[gTerrain.Land[Points[I].Y,Points[I].X].Obj].WineOrCorn then
+              if gMapElements[gTerrain.Land^[Points[I].Y,Points[I].X].Obj].WineOrCorn then
                 gTerrain.RemoveObject(Points[I]); //Remove corn/wine like normally built road does
             end;
         Result := True;

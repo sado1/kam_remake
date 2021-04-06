@@ -1277,7 +1277,7 @@ begin
   end;
 
   if aRemoveTileUsage
-    and (gTerrain.Land[NextPosition.Y, NextPosition.X].IsUnit = Self) then //remove lock only if it was made by this unit
+    and (gTerrain.Land^[NextPosition.Y, NextPosition.X].IsUnit = Self) then //remove lock only if it was made by this unit
     gTerrain.UnitRem(fNextPosition); //Must happen before we nil NextPosition
 
   fIsDead       := True;
@@ -1976,7 +1976,7 @@ end;
 function TKMUnit.CanStepTo(X,Y: Integer; aPass: TKMTerrainPassability): Boolean;
 begin
   Result := gTerrain.TileInMapCoords(X,Y)
-        and (gTerrain.Land[Y,X].IsUnit = nil)
+        and (gTerrain.Land^[Y,X].IsUnit = nil)
         and (gTerrain.CheckPassability(KMPoint(X,Y), aPass))
         and (not KMStepIsDiag(Position, KMPoint(X,Y)) //Only check vertex usage if the step is diagonal
              or (not gTerrain.HasVertexUnit(KMGetDiagVertex(Position, KMPoint(X,Y)))))
@@ -2036,7 +2036,7 @@ begin
       SetCurrPosition(NewCurrPosition); //will update FOW
 
       // Unit was occupying tile (he was walking inside house when house was destroyed)
-      placedOnOccupiedTile := gTerrain.Land[fPosition.Y, fPosition.X].IsUnit = Self;
+      placedOnOccupiedTile := gTerrain.Land^[fPosition.Y, fPosition.X].IsUnit = Self;
       //Make sure these are reset properly
       Assert(not gTerrain.HasUnit(fPosition) or placedOnOccupiedTile);
       IsExchanging := False;

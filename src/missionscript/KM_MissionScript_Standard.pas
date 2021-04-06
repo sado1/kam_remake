@@ -53,7 +53,8 @@ uses
   KM_CommonClasses, KM_CommonTypes, KM_Terrain,
   KM_HandTypes,
   KM_CommonExceptions,
-  KM_ResTypes;
+  KM_ResTypes,
+  KM_TerrainTypes;
 
 
 type
@@ -1119,9 +1120,9 @@ begin
     CommandLayerCount := 0; //Enable command layering
     for iY := 1 to gTerrain.MapY do
       for iX := 1 to gTerrain.MapX do
-        if gTerrain.Land[iY,iX].TileOwner = gHands[I].ID then
+        if gTerrain.Land^[iY,iX].TileOwner = gHands[I].ID then
         begin
-          if gTerrain.Land[iY,iX].TileOverlay = toRoad then
+          if gTerrain.Land^[iY,iX].TileOverlay = toRoad then
           begin
             H := gHands.HousesHitTest(iX, iY);
             //Don't place road under the entrance of houses (it will be placed there if the house is destroyed on mission start)

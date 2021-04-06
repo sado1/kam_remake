@@ -937,7 +937,7 @@ begin
     end;
 
   if aRemoveBeingPerformed then
-    //If we didn't find enought not performed demands, mark found performing demands as deleted to be removed soon
+    //If we didn't find enough not performed demands, mark found performing demands as deleted to be removed soon
     for I := 0 to Min(aPlannedToRemove, aCount - Result) - 1 do
     begin
       fDemand[PlannedIDs[I]].IsDeleted := True;
@@ -1210,7 +1210,7 @@ end;
 //begin
 //  Result := 0;
 //  for I := 1 to aNodeList.Count - 1 do
-//    Inc(Result, Byte(gTerrain.Land[aNodeList[I].Y,aNodeList[I].X].IsUnit <> nil));
+//    Inc(Result, Byte(gTerrain.Land^[aNodeList[I].Y,aNodeList[I].X].IsUnit <> nil));
 //end;
 
 

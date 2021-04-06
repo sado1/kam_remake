@@ -182,7 +182,7 @@ begin
   if gGame = nil then //Can't manage console commands while not in the game
     Exit;
 
-  // Text starts with / and its long enought to have some script command in there
+  // Text starts with / and its long enough to have some script command in there
   if (Length(Text) > 1) and (Text[1] = '/') then
   begin
     if (Text[2] = '/') then

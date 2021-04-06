@@ -3,7 +3,7 @@ unit KM_GUIMenuLoading;
 interface
 uses
   Controls, Math, SysUtils,
-  KM_Controls, KM_InterfaceDefaults;
+  KM_Controls, KM_InterfaceDefaults, KM_InterfaceTypes;
 
 
 type

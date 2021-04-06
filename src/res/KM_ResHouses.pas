@@ -628,21 +628,21 @@ end;
 procedure TKMHouseSpec.Outline(aList: TKMPointList);
 var
   I, K: Integer;
-  Tmp: TKMByte2Array;
-  Outlines: TKMShapesArray;
+  tmp: TKMByte2Array;
+  outlines: TKMShapesArray;
 begin
   aList.Clear;
-  SetLength(Tmp, 6, 6);
+  SetLength(tmp, 6, 6);
 
   for I := 0 to 3 do
   for K := 0 to 3 do
-    Tmp[I+1,K+1] := Byte(HOUSE_DAT_X[fHouseType].PlanYX[I+1,K+1] > 0);
+    tmp[I+1,K+1] := Byte(HOUSE_DAT_X[fHouseType].PlanYX[I+1,K+1] > 0);
 
-  GenerateOutline(Tmp, 2, Outlines);
-  Assert(Outlines.Count = 1, 'Houses are expected to have single outline');
+  GenerateOutline(tmp, 2, outlines);
+  Assert(outlines.Count = 1, 'Houses are expected to have single outline');
 
-  for I := 0 to Outlines.Shape[0].Count - 1 do
-    aList.Add(KMPoint(Outlines.Shape[0].Nodes[I].X, Outlines.Shape[0].Nodes[I].Y));
+  for I := 0 to outlines.Shape[0].Count - 1 do
+    aList.Add(KMPoint(outlines.Shape[0].Nodes[I].X, outlines.Shape[0].Nodes[I].Y));
 end;
 
 
@@ -700,12 +700,12 @@ end;
 
 function TKMHouseSpec.GetUnoccupiedMsgId: SmallInt;
 var
-  HouseUnnocupiedMsgIndex: ShortInt;
+  houseUnnocupiedMsgIndex: ShortInt;
 begin
   Result := -1;
-  HouseUnnocupiedMsgIndex := HouseTypeToUnoccupiedMsgIndex[fHouseType];
-  if HouseUnnocupiedMsgIndex <> -1 then
-    Result := TX_MSG_HOUSE_UNOCCUPIED__22 + HouseUnnocupiedMsgIndex;
+  houseUnnocupiedMsgIndex := HouseTypeToUnoccupiedMsgIndex[fHouseType];
+  if houseUnnocupiedMsgIndex <> -1 then
+    Result := TX_MSG_HOUSE_UNOCCUPIED__22 + houseUnnocupiedMsgIndex;
 end;
 
 
@@ -719,7 +719,8 @@ end;
 constructor TKMResHouses.Create;
 
   procedure AddAnimation(aHouse: TKMHouseType; aAnim: TKMHouseActionType; aMoveX, aMoveY: Integer; const aSteps: array of SmallInt);
-  var I: Integer;
+  var
+    I: Integer;
   begin
     with fItems[aHouse].fHouseDat.Anim[aAnim] do
     begin
@@ -732,7 +733,8 @@ constructor TKMResHouses.Create;
   end;
 
   procedure AddMarketBeastAnim(aBeast: Integer; const aStep: array of SmallInt);
-  var I: Integer;
+  var
+    I: Integer;
   begin
     // Beast anims are 0 indexed
     for I := 1 to 30 do
@@ -811,7 +813,8 @@ end;
 
 
 destructor TKMResHouses.Destroy;
-var H: TKMHouseType;
+var
+  H: TKMHouseType;
 begin
   for H := HOUSE_MIN to HOUSE_MAX do
     FreeAndNil(fItems[H]);
@@ -850,7 +853,7 @@ end;
 function TKMResHouses.LoadHouseDat(const aPath: string): Cardinal;
 var
   S: TKMemoryStream;
-  i:integer;
+  i: Integer;
 begin
   Assert(FileExists(aPath));
 

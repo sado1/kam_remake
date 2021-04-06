@@ -981,7 +981,7 @@ begin
           DefRatio := Max(DefRatio, AI.ArmyManagement.Defence.DefenceStatus);
           KMSwapInt(fAlli2PL[aTeam, 0], fAlli2PL[aTeam, IdxPL]); // Make sure that player in first index is new AI
         end;
-    // AI does not have enought soldiers
+    // AI does not have enough soldiers
     if (DefRatio < MIN_DEF_RATIO) then
       Exit;
   end;

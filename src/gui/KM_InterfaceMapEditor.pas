@@ -379,6 +379,9 @@ begin
   //Reset shown item when user clicks on any of the main buttons
   gMySpectator.Selected := nil;
 
+  if fGuiTerrain.GuiSelection.Visible then
+    gGame.MapEditor.Selection.Cancel;
+
   HidePages;
 
   if (Sender = Button_Main[1]) then fGuiTerrain.Show(ttBrush) else
@@ -1037,7 +1040,7 @@ end;
 procedure TKMapEdInterface.Update_Label_Coordinates;
 begin
   Label_Coordinates.Caption := Format('X: %d, Y: %d, Z: %d', [gGameCursor.Cell.X, gGameCursor.Cell.Y,
-                                                              gTerrain.Land[EnsureRange(Round(gGameCursor.Float.Y + 1), 1, gTerrain.MapY),
+                                                              gTerrain.Land^[EnsureRange(Round(gGameCursor.Float.Y + 1), 1, gTerrain.MapY),
                                                                             EnsureRange(Round(gGameCursor.Float.X + 1), 1, gTerrain.MapX)].RenderHeight]);
 end;
 
@@ -1151,6 +1154,8 @@ begin
   if Self = nil then Exit;
 
   HistoryUpdateUI;
+
+  gGame.MapEditor.Selection.RefreshLand;
 
   if fGuiHouse.Visible or fGuiUnit.Visible then
   begin

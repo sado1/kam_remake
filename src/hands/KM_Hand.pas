@@ -20,7 +20,7 @@ type
   end;
 
   //Player manages its assets
-  TKMHandCommon = class
+  TKMHandCommon = class abstract
   private
     fID: TKMHandID; //Index of this hand in gHands
     fUnits: TKMUnitsCollection;
@@ -225,7 +225,7 @@ type
     procedure IncAnimStep;
     procedure UpdateState(aTick: Cardinal); override;
     procedure Paint(const aRect: TKMRect; aTickLag: Single); override;
-    function ObjToString: String;
+    function ObjToString(aSeparator: String = ' '): String;
   end;
 
 
@@ -912,7 +912,7 @@ var
   obj: Word;
 begin
   isFieldSet := False;
-  obj := gTerrain.Land[aLoc.Y,aLoc.X].Obj;
+  obj := gTerrain.Land^[aLoc.Y,aLoc.X].Obj;
   //If we have corn/wine object on that tile, set appropriate field/wine stage
   if (aFieldType = ftCorn) and not gTerrain.TileIsCornField(aLoc) then
   begin
@@ -1094,17 +1094,17 @@ begin
 
     //Avoid placing houses in choke-points _/house\_ by checking upper corners
     if not (aHouseType in [htGoldMine, htIronMine]) then
-      if (gTerrain.Land[Ty-1, Tx - 1].Passability * [tpMakeRoads, tpWalkRoad] = [])
-      or (gTerrain.Land[Ty-1, Tx + 1].Passability * [tpMakeRoads, tpWalkRoad] = [])
+      if (gTerrain.Land^[Ty-1, Tx - 1].Passability * [tpMakeRoads, tpWalkRoad] = [])
+      or (gTerrain.Land^[Ty-1, Tx + 1].Passability * [tpMakeRoads, tpWalkRoad] = [])
       then
         Exit;
 
     //Make sure we can add road below house, full width + 1 on each side
     //Terrain already checked we are 1 tile away from map edge
     if (I = 4) and not (aHouseType in [htGoldMine, htIronMine]) then
-      if (gTerrain.Land[Ty+1, Tx - 1].Passability * [tpMakeRoads, tpWalkRoad] = [])
-      or (gTerrain.Land[Ty+1, Tx    ].Passability * [tpMakeRoads, tpWalkRoad] = [])
-      or (gTerrain.Land[Ty+1, Tx + 1].Passability * [tpMakeRoads, tpWalkRoad] = [])
+      if (gTerrain.Land^[Ty+1, Tx - 1].Passability * [tpMakeRoads, tpWalkRoad] = [])
+      or (gTerrain.Land^[Ty+1, Tx    ].Passability * [tpMakeRoads, tpWalkRoad] = [])
+      or (gTerrain.Land^[Ty+1, Tx + 1].Passability * [tpMakeRoads, tpWalkRoad] = [])
       then
         Exit;
 
@@ -1727,7 +1727,7 @@ begin
   Result := 0;
     for I := 1 to gTerrain.MapY do
       for K := 1 to gTerrain.MapX do
-        if gTerrain.Land[I,K].TileOwner = fID then
+        if gTerrain.Land^[I,K].TileOwner = fID then
           Inc(Result);
 end;
 
@@ -2064,7 +2064,7 @@ procedure TKMHand.AddFirstStorehouse(aEntrance: TKMPoint);
       gTerrain.SetRoad(aPoint, fID);
       //Terrain under roads is flattened (fields are not)
       gTerrain.FlattenTerrain(aPoint);
-      if gMapElements[gTerrain.Land[aPoint.Y,aPoint.X].Obj].WineOrCorn then
+      if gMapElements[gTerrain.Land^[aPoint.Y,aPoint.X].Obj].WineOrCorn then
         gTerrain.RemoveObject(aPoint);
     end;
   end;
@@ -2139,13 +2139,13 @@ begin
 end;
 
 
-function TKMHand.ObjToString: String;
+function TKMHand.ObjToString(aSeparator: String = ' '): String;
 begin
-  Result := Format('Enabled = %5s ID = %d AI: [%s] Owner = %s HandType = %s',
-                   [BoolToStr(Enabled, True),
-                    fID,
-                    AI.ObjToString,
-                    OwnerName,
+  Result := Format('Enabled = %5s%sID = %d%sAI: [%s]%sOwner = %s%sHandType = %s',
+                   [BoolToStr(Enabled, True), aSeparator,
+                    fID, aSeparator,
+                    AI.ObjToString, aSeparator,
+                    OwnerName, aSeparator,
                     GetEnumName(TypeInfo(TKMHandType), Integer(HandType))]);
 end;
 
@@ -2167,7 +2167,7 @@ begin
     if (U <> nil)
     and (U.UnitType = utFish)
     and (not U.IsDeadOrDying) //Fish are killed when they are caught or become stuck
-    and (gTerrain.Land[U.Position.Y, U.Position.X].WalkConnect[wcFish] = aWaterID)
+    and (gTerrain.Land^[U.Position.Y, U.Position.X].WalkConnect[wcFish] = aWaterID)
     and (TKMUnitAnimal(U).FishCount > highestGroupCount) then
     begin
       Result := TKMUnitAnimal(U);

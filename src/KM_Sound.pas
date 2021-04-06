@@ -414,14 +414,14 @@ begin
 end;
 
 
-{Wrapper with fewer options for non-attenuated sounds}
+// Wrapper with fewer options for non-attenuated sounds
 procedure TKMSoundPlayer.Play(aSoundID: TSoundFX; aVolume: Single = 1);
 begin
   if SKIP_SOUND or not fIsSoundInitialized then Exit;
 
   // Check for consecutive messageNotices
   // When many warrior groups are hungry at the same time or many houses are not occupied at the same time
-  // Sound should not be played N times, 1 is enought
+  // Sound should not be played N times, 1 is enough
   if aSoundID = sfxMessageNotice then
   begin
     if (fLastMessageNoticeTime > 0)
@@ -431,7 +431,7 @@ begin
       fLastMessageNoticeTime := TimeGet;
   end;
 
-  Play(aSoundID, KMPOINTF_ZERO, false, aVolume); //Redirect
+  Play(aSoundID, KMPOINTF_ZERO, false, aVolume); // Redirect
 end;
 
 

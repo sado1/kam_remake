@@ -185,25 +185,27 @@ type
     chkUIFocusedControl: TCheckBox;
     chkUIControlOver: TCheckBox;
     chkPaintSounds: TCheckBox;
-    GroupBox1: TGroupBox;
-    seFindObjByUID: TSpinEdit;
-    btFindObjByUID: TButton;
-    Label14: TLabel;
-    seEntityUID: TSpinEdit;
-    Label15: TLabel;
-    seWarriorUID: TSpinEdit;
-    GroupBox2: TGroupBox;
-    Label10: TLabel;
-    Label11: TLabel;
-    seDebugValue: TSpinEdit;
-    edDebugText: TEdit;
-    Label13: TLabel;
     cpMisc: TCategoryPanel;
     chkBevel: TCheckBox;
     rgDebugFont: TRadioGroup;
     mnExportRPL: TMenuItem;
     chkPathfinding: TCheckBox;
     chkGipAsBytes: TCheckBox;
+    cpDebugInput: TCategoryPanel;
+    gbFindObjByUID: TGroupBox;
+    Label14: TLabel;
+    Label15: TLabel;
+    Label13: TLabel;
+    seFindObjByUID: TSpinEdit;
+    btFindObjByUID: TButton;
+    seEntityUID: TSpinEdit;
+    seWarriorUID: TSpinEdit;
+    GroupBox2: TGroupBox;
+    Label10: TLabel;
+    Label11: TLabel;
+    seDebugValue: TSpinEdit;
+    edDebugText: TEdit;
+    chkFindObjByUID: TCheckBox;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -283,6 +285,9 @@ type
     function GetDevSettingsPath: UnicodeString;
     procedure DoLoadDevSettings;
     procedure DoSaveDevSettings;
+
+    procedure FindObjByUID(aUID: Integer);
+    function AllowFindObjByUID: Boolean;
     {$IFDEF MSWindows}
     function GetWindowParams: TKMWindowParamsRecord;
     procedure WMSysCommand(var Msg: TWMSysCommand); message WM_SYSCOMMAND;
@@ -1054,11 +1059,17 @@ begin
 end;
 
 
-procedure TFormMain.btFindObjByUIDClick(Sender: TObject);
+procedure TFormMain.FindObjByUID(aUID: Integer);
 begin
   if gGameApp.Game.GamePlayInterface = nil then Exit;
 
-  gGameApp.Game.GamePlayInterface.SelectEntityByUID(seFindObjByUID.Value);
+  gGameApp.Game.GamePlayInterface.SelectEntityByUID(aUID);
+end;
+
+
+procedure TFormMain.btFindObjByUIDClick(Sender: TObject);
+begin
+  FindObjByUID(seFindObjByUID.Value);
 end;
 
 
@@ -1196,16 +1207,23 @@ begin
 end;
 
 
+function TFormMain.AllowFindObjByUID: Boolean;
+begin
+  Result := // Update values only if Debug panel is opened or if we are debugging
+        ((SHOW_DEBUG_CONTROLS and not cpDebugInput.Collapsed)
+          or {$IFDEF DEBUG} True {$ELSE} False {$ENDIF}) // But its ok if we are in Debug build
+        and chkFindObjByUID.Checked     // and checkbox is checked
+        and gMain.IsDebugChangeAllowed; // and not in MP
+end;
+
+
 procedure TFormMain.SetEntitySelected(aEntityUID: Integer; aEntity2UID: Integer = 0);
 begin
-  // Update values only if Debug panel is opened or if we are debugging
-  if not SHOW_DEBUG_CONTROLS and {$IFDEF DEBUG} False {$ELSE} True {$ENDIF} then Exit;
-  // Can't change anything if debug change is not allowed
-  if not gMain.IsDebugChangeAllowed then Exit;
+  if not AllowFindObjByUID then Exit;
 
   seEntityUID.SetValueWithoutChange(aEntityUID);
   seWarriorUID.SetValueWithoutChange(aEntity2UID);
-
+                                                                {TODO -oOwner -cGeneral : ActionItem}
   if GetKeyState(VK_CONTROL) < 0 then
     seFindObjByUID.Value := aEntityUID // will trigger OnChange
   else
@@ -1395,7 +1413,12 @@ begin
     SKIP_SOUND := chkSkipSound.Checked;
     DISPLAY_SOUNDS := chkPaintSounds.Checked;
 
-    btFindObjByUIDClick(nil);
+    gbFindObjByUID.Enabled := chkFindObjByUID.Checked;
+
+    if AllowFindObjByUID then
+      btFindObjByUIDClick(nil)
+    else
+      FindObjByUID(0);
   end;
 
   //AI

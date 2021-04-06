@@ -6,7 +6,7 @@ uses
   KM_Controls,
   KM_MainSettings,
   KM_Pics, KM_Resolutions, KM_ResKeys,
-  KM_InterfaceDefaults, KM_CommonTypes;
+  KM_InterfaceDefaults, KM_InterfaceTypes, KM_CommonTypes;
 
 
 type
@@ -87,7 +87,7 @@ type
             Button_OptionsKeysCancel: TKMButton;
       Button_OptionsBack: TKMButton;
   public
-    OnToggleLocale: TAnsiStringEvent;
+    OnToggleLocale: TKMToggleLocaleEvent;
     OnOptionsChange: TEvent;
     OnPreloadGameResources: TEvent;
 
@@ -453,7 +453,7 @@ begin
     begin
       // When enabling full fonts, use ToggleLocale reload the entire interface
       if Assigned(OnToggleLocale) then
-        OnToggleLocale(gResLocales[Radio_Options_Lang.ItemIndex].Code);
+        OnToggleLocale(gResLocales[Radio_Options_Lang.ItemIndex].Code, gpOptions);
       Exit; // Exit ASAP because whole interface will be recreated
     end;
   end;
@@ -461,7 +461,7 @@ begin
   if Sender = Radio_Options_Lang then
   begin
     if Assigned(OnToggleLocale) then
-      OnToggleLocale(gResLocales[Radio_Options_Lang.ItemIndex].Code);
+      OnToggleLocale(gResLocales[Radio_Options_Lang.ItemIndex].Code, gpOptions);
     Exit; // Exit ASAP because whole interface will be recreated
   end;
 

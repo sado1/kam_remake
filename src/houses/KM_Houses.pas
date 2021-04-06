@@ -368,6 +368,7 @@ uses
   KM_Log, KM_ScriptingEvents, KM_CommonUtils, KM_MapEditorHistory,
   KM_GameTypes, KM_RenderDebug,
   KM_HandTypes,
+  KM_TerrainTypes,
   KM_CommonExceptions,
   KM_ResTileset;
 
@@ -764,7 +765,7 @@ begin
     begin
       gTerrain.RemRoad(Entrance);
       if not IsSilent then
-        gTerrain.Land[Entrance.Y, Entrance.X].TileOverlay := toDig3; //Remove road and leave dug earth behind
+        gTerrain.Land^[Entrance.Y, Entrance.X].TileOverlay := toDig3; //Remove road and leave dug earth behind
     end;
   end;
 

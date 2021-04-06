@@ -7,6 +7,7 @@ uses
   Classes, Controls, Math, SysUtils, KromUtils, KM_Campaigns,
   KM_Controls, KM_Points, KM_Defaults, KM_Pics, KM_Networking, KM_ResFonts, KM_CommonTypes, KM_GameTypes,
   KM_InterfaceDefaults,
+  KM_InterfaceTypes,
   KM_GUIMenuCampaign,
   KM_GUIMenuCampaigns,
   KM_GUIMenuCredits,
@@ -55,7 +56,7 @@ type
                         aOnNewMapEditor: TKMNewMapEditorEvent;
                         aOnNewReplay: TUnicodeStringEvent;
                         aOnNewSingleSave: TUnicodeStringEvent;
-                        aOnToggleLocale: TAnsiStringEvent;
+                        aOnToggleLocale: TKMToggleLocaleEvent;
                         aOnPreloadGameResources: TEvent;
                         aOnNetworkInit: TEvent);
     destructor Destroy; override;
@@ -93,7 +94,7 @@ constructor TKMMainMenuInterface.Create(X,Y: Word; aCampaigns: TKMCampaignsColle
                                         aOnNewMapEditor: TKMNewMapEditorEvent;
                                         aOnNewReplay: TUnicodeStringEvent;
                                         aOnNewSingleSave: TUnicodeStringEvent;
-                                        aOnToggleLocale: TAnsiStringEvent;
+                                        aOnToggleLocale: TKMToggleLocaleEvent;
                                         aOnPreloadGameResources: TEvent;
                                         aOnNetworkInit: TEvent);
 var
@@ -136,6 +137,8 @@ begin
 
   fMenuOptions.OnToggleLocale         := aOnToggleLocale;
   fMenuOptions.OnPreloadGameResources := aOnPreloadGameResources;
+
+  fMenuCredits.OnToggleLocale         := aOnToggleLocale;
 
   fMenuMultiplayer.OnNetworkInit      := aOnNetworkInit;
 

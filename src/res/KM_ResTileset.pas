@@ -1032,7 +1032,7 @@ end;
 function TKMResTileset.TileIsWalkable(aTile: Word): Boolean;
 begin
   //Includes 1/2 and 3/4 walkable as walkable
-  //Result := Land[Loc.Y,Loc.X].BaseLayer.Terrain in [0..6, 8..11,13,14, 16..22, 25..31, 32..39, 44..47, 49,52,55, 56..63,
+  //Result := Land^[Loc.Y,Loc.X].BaseLayer.Terrain in [0..6, 8..11,13,14, 16..22, 25..31, 32..39, 44..47, 49,52,55, 56..63,
   //                                        64..71, 72..79, 80..87, 88..95, 96..103, 104,106..109,111, 112,113,116,117, 123..125,
   //                                        138..139, 152..155, 166,167, 168..175, 180..183, 188..191,
   //                                        197, 203..205,207, 212..215, 220..223, 242,243,247];
@@ -1045,7 +1045,7 @@ end;
 function TKMResTileset.TileIsRoadable(aTile: Word): Boolean;
 begin
   //Do not include 1/2 and 1/4 walkable as roadable
-  //Result := Land[Loc.Y,Loc.X].BaseLayer.Terrain in [0..3,5,6, 8,9,11,13,14, 16..21, 26..31, 32..39, 45..47, 49, 52, 55, 56..63,
+  //Result := Land^[Loc.Y,Loc.X].BaseLayer.Terrain in [0..3,5,6, 8,9,11,13,14, 16..21, 26..31, 32..39, 45..47, 49, 52, 55, 56..63,
   //                                        64..71, 72..79, 80..87, 88..95, 96..103, 104,108,111, 112,113,
   //                                        152..155,180..183,188..191,
   //                                        203..205, 212,213,215, 220, 247];

@@ -252,7 +252,7 @@ const
 implementation
 uses
   SysUtils, KM_HandsCollection, KM_CommonClasses, KM_Game, KM_ResMapElements, KM_Hand, Dialogs,
-  KM_ResTypes;
+  KM_ResTypes, KM_TerrainTypes;
 
 
 { TKMRandomMapGenerator }
@@ -1508,7 +1508,7 @@ begin
             // Try find unused shape
             if not FindBestResLoc((RESOURCE <> Byte(btCoal)), BASE_RES_RADIUS[I] * RMGSettings.Locs.ProtectedRadius, TP_S,TP_E,Locs[Loc], CountArr, ResLoc) then
               break;
-            // Check if there is enought points to create mountains with specific size
+            // Check if there is enough points to create mountains with specific size
             SetSizeOfMountain(ResLoc, sizeMountain, newSize, CountArr, PointsArr, PointArr);
             // Merge shapes from Voronoi until we reach desired size
             if (RESOURCES[I] = btIron) OR (RESOURCES[I] = btGold) then

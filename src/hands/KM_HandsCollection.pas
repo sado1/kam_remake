@@ -117,7 +117,7 @@ uses
   KM_Game, KM_GameParams, KM_Terrain, KM_AIFields,
   KM_UnitsCollection, KM_MapEditorHistory,
   KM_Resource, KM_ResUnits, KM_ResTexts,
-  KM_Log, KM_CommonUtils, KM_DevPerfLog, KM_DevPerfLogTypes;
+  KM_Log, KM_CommonUtils, KM_DevPerfLog, KM_DevPerfLogTypes, KM_Entity;
 
 
 { TKMHandsCollection }
@@ -712,7 +712,7 @@ function TKMHandsCollection.FindPlaceForUnit(aX, aY: Integer; aUnit: TKMUnit; aU
   //Unit can be placed on terrain if this tile is not occupied, or if its already occupied by this one unit
   function CanPlaceUnitOnTerrain(P: TKMPoint): Boolean;
   begin
-    Result := (gTerrain.Land[P.Y,P.X].IsUnit = nil) or (aUnit = gTerrain.Land[P.Y,P.X].IsUnit);
+    Result := (gTerrain.Land^[P.Y,P.X].IsUnit = nil) or (aUnit = gTerrain.Land^[P.Y,P.X].IsUnit);
   end;
 
 var
@@ -1237,7 +1237,7 @@ var
 begin
   Result := '|Hands: ';
   for I := 0 to fCount - 1 do
-    Result := Format('%s|%d: %s', [Result, I, fHandsList[I].ObjToString]);
+    Result := Format('%s|%d:' + #9 + '%s', [Result, I, fHandsList[I].ObjToString(#9)]);
 
 end;
 

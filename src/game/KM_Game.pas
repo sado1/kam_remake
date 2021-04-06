@@ -14,7 +14,8 @@ uses
   KM_Render, KM_Sound, KM_Scripting,
   KM_InterfaceGame, KM_InterfaceGamePlay, KM_InterfaceMapEditor,
   KM_ResTexts, KM_Hand,
-  KM_Defaults, KM_Points, KM_CommonTypes, KM_CommonClasses;
+  KM_Defaults, KM_Points, KM_CommonTypes, KM_CommonClasses,
+  KM_GameUIDTracker;
 
 type
 
@@ -61,7 +62,7 @@ type
     fSpeedGIP: Single; //GameSpeed, recorded to GIP, could be requested by scripts
     fSpeedChangeAllowed: Boolean; //Is game speed change allowed?
 
-    fUIDTracker: Cardinal;       //Units-Houses tracker, to issue unique IDs
+    fUIDTracker: TKMGameUIDTracker;       //Units-Houses tracker, to issue unique IDs
 
     //Saved to local data
     fLastReplayTick: Cardinal;
@@ -285,7 +286,8 @@ uses
   KM_Main, KM_GameApp, KM_RenderPool, KM_GameInfo, KM_GameClasses,
   KM_Terrain, KM_HandsCollection, KM_HandSpectator, KM_MapEditorHistory,
   KM_MissionScript, KM_MissionScript_Standard, KM_GameInputProcess_Multi, KM_GameInputProcess_Single,
-  KM_Resource, KM_ResCursors, KM_ResSound, KM_InterfaceDefaults, KM_GameSettings,
+  KM_Resource, KM_ResCursors, KM_ResSound,
+  KM_InterfaceDefaults, KM_InterfaceTypes, KM_GameSettings,
   KM_Log, KM_ScriptingEvents, KM_Saves, KM_FileIO, KM_CommonUtils, KM_RandomChecks, KM_DevPerfLog, KM_DevPerfLogTypes,
   KM_NetPlayersList,
   KM_HandTypes,
@@ -314,7 +316,7 @@ begin
   fOnDestroy := aOnDestroy;
 
   fAdvanceFrame := False;
-  fUIDTracker   := 0;
+  fUIDTracker   := TKMGameUIDTracker.Create;
   GameResult   := grCancel;
   fDoHold    := False;
   fSkipReplayEndCheck := False;
@@ -447,6 +449,7 @@ begin
     FreeAndNil(fGameInputProcess);
 
   FreeAndNil(fOptions);
+  FreeAndNil(fUIDTracker);
   FreeAndNil(fTextMission);
 
   //When leaving the game we should always reset the cursor in case the user had beacon or linking selected
@@ -1684,18 +1687,8 @@ end;
 
 
 function TKMGame.GetNewUID: Integer;
-const
-  //Prime numbers let us generate sequence of non-repeating values of max_value length
-  MAX_VALUE = 16777213;
-  STEP = 8765423;
 begin
-  //UIDs have the following properties:
-  // - allow -1 to indicate no UID (const UID_NONE = -1)
-  // - fit within 24bit (we can use that much for RGB colorcoding in unit picking)
-  // - Start from 1, so that black colorcode can be detected in render and then re-mapped to -1
-
-  fUIDTracker := (fUIDTracker + STEP) mod MAX_VALUE + 1; //1..N range, 0 is nothing for colorpicker
-  Result := fUIDTracker;
+  Result := fUIDTracker.GetNewUID;
 end;
 
 
@@ -1991,7 +1984,7 @@ begin
   if not fParams.IsMultiPlayerOrSpec then
     aBodyStream.WriteW(fParams.MissionFileSP);
 
-  aBodyStream.Write(fUIDTracker); //Units-Houses ID tracker
+  fUIDTracker.Save(aBodyStream); //Units-Houses ID tracker
   aBodyStream.Write(GetKaMSeed); //Include the random seed in the save file to ensure consistency in replays
 
   if not fParams.IsMultiPlayerOrSpec then
@@ -2312,7 +2305,7 @@ begin
       fSetMissionFileSP(missionFileSP);
     end;
 
-    bodyStream.Read(fUIDTracker);
+    fUIDTracker.Load(bodyStream);
     bodyStream.Read(loadedSeed);
 
     if not saveIsMultiplayer then
@@ -2913,9 +2906,15 @@ begin
         gmReplaySingle,
         gmReplayMulti:    Result := PlayReplayTick;
         gmMapEd:          begin
+                            {$IFDEF PERFLOG}
+                            gPerfLogs.TickBegin(gGameApp.GlobalTickCount);
+                            {$ENDIF}
                             gTerrain.IncAnimStep;
                             gHands.IncAnimStep;
                             gHands.UpdateVisualState;
+                            {$IFDEF PERFLOG}
+                            gPerfLogs.TickEnd;
+                            {$ENDIF}
                           end;
       end;
     except

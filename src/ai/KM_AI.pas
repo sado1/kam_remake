@@ -556,7 +556,7 @@ procedure TKMHandAI.PlaceFirstStorehouse(aLoc: TKMPoint);
       gTerrain.SetRoad(aPoint, fOwner);
       //Terrain under roads is flattened (fields are not)
       gTerrain.FlattenTerrain(aPoint);
-      if gMapElements[gTerrain.Land[aPoint.Y,aPoint.X].Obj].WineOrCorn then
+      if gMapElements[gTerrain.Land^[aPoint.Y,aPoint.X].Obj].WineOrCorn then
         gTerrain.RemoveObject(aPoint);
     end;
   end;

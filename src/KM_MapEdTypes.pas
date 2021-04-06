@@ -2,7 +2,7 @@ unit KM_MapEdTypes;
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_Defaults, KM_ResTileset, KM_Terrain;
+  KM_Defaults, KM_ResTileset, KM_TerrainTypes;
 
 type
   TKMMapEdMarkerType = (mmtNone, mmtDefence, mmtRevealFOW);
@@ -17,6 +17,10 @@ type
     CornOrWine: Byte; //Indicate Corn or Wine field placed on the tile (without altering terrain)
     CornOrWineTerrain: Byte; //We use fake terrain for maped to be able delete or alter it if needed
   end;
+
+  TKMMapEdLand = array [1..MAX_MAP_SIZE, 1..MAX_MAP_SIZE] of TKMMapEdTerrainTile;
+
+  PKMMapEdLand = ^TKMMapEdLand;
 
   // same as TKMTerrainLayer, but packed
   TKMTerrainLayerPacked = packed record
@@ -51,7 +55,11 @@ type
     Tiles: SmallInt;  //Stores kind of transition tile used, no need to save into MAP footer
     HeightAdd: Byte; //Fraction part of height, for smooth height editing
   end;
-  
+
+  TKMPainterTileArray = array of TKMPainterTile;
+
+  TKMLandTerKind = array of TKMPainterTileArray;
+
 implementation
 
 

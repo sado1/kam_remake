@@ -212,7 +212,7 @@ procedure TKMSpectator.UpdateNewSelected;
 var
   tmpSelected: TKMHandEntity;
 begin
-  //We do not want to change Selected object actually, just update fIsSelectedMyObj field is good enought
+  //We do not want to change Selected object actually, just update fIsSelectedMyObj field is good enough
   tmpSelected := Selected;
   UpdateNewSelected(tmpSelected);
 end;
