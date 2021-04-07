@@ -3902,10 +3902,11 @@ end;
 procedure TKMSelectableEdit.DeleteSelectedText;
 begin
   Delete(fText, fSelectionStart+1, fSelectionEnd-fSelectionStart);
+
   if CursorPos = fSelectionEnd then
     CursorPos := CursorPos - (fSelectionEnd-fSelectionStart);
+
   ResetSelection;
-  Changed;
 end;
 
 
@@ -4063,6 +4064,7 @@ begin
                 begin
                   Clipboard.AsText := GetSelectedText;
                   DeleteSelectedText;
+                  ValidateText;
                 end;
       Ord('V'): begin
                   if HasSelection then
@@ -4085,18 +4087,25 @@ begin
 
   case Key of
     VK_BACK:    if HasSelection then
-                  DeleteSelectedText
-                else begin
+                begin
+                  DeleteSelectedText;
+                  ValidateText;
+                end
+                else
+                begin
                   Delete(fText, CursorPos, 1);
                   CursorPos := CursorPos - 1;
-                  Changed;
+                  ValidateText;
                 end;
     VK_DELETE:  if HasSelection then
-                  DeleteSelectedText
+                begin
+                  DeleteSelectedText;
+                  ValidateText;
+                end
                 else
                 begin
                   Delete(fText, CursorPos + 1, 1);
-                  Changed;
+                  ValidateText;
                 end;
   end;
 
@@ -4127,11 +4136,11 @@ begin
   if HasSelection and IsCharValid(Key) then
     DeleteSelectedText
   else
-    if Length(fText) >= GetMaxLength then Exit;
+  if Length(fText) >= GetMaxLength then Exit;
 
   Insert(Key, fText, CursorPos + 1);
   CursorPos := CursorPos + 1; //Before ValidateText so it moves the cursor back if the new char was invalid
-  ValidateText;
+  ValidateText; //Validate text at the end of all changes (delete selected and insert)
 end;
 
 
@@ -5203,7 +5212,7 @@ end;
 
 function TKMNumericEdit.IsCharValid(Key: WideChar): Boolean;
 begin
-  Result := SysUtils.CharInSet(Key, ['0'..'9']);
+  Result := SysUtils.CharInSet(Key, ['0'..'9']) or ((Key = '-') and (ValueMin < 0));
 end;
 
 
