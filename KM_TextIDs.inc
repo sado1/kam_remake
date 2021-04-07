@@ -476,6 +476,8 @@ TX_MAPED_OBJECTS_BRUSH_TREES_AGE_ALL_HINT = 1489; //All ages
 TX_MAPED_OBJECTS_BRUSH_TREES_AGE_YOUNG_HINT = 1490; //Young trees
 TX_MAPED_OBJECTS_BRUSH_TREES_AGE_MEDIUM_HINT = 1491; //Medium trees
 TX_MAPED_OBJECTS_BRUSH_TREES_AGE_RDY_2CHOP_HINT = 1492; //Trees ready to chop
+TX_MAPED_OBJECTS_BRUSH_OVERRIDE_OBJECTS = 1503; //Override Objects
+TX_MAPED_OBJECTS_BRUSH_OVERRIDE_OBJECTS_HINT = 1504; //Objects will be replaced by other objects or deleted
 
 TX_MAPED_TERRAIN_BRUSH_RANDOM = 388; //Random elements
 TX_MAPED_TERRAIN_TILES_RANDOM = 389; //Random Direction
@@ -1494,6 +1496,13 @@ TX_MAPED_RMG_SETTINGS_LOW = 1373; //Low
 TX_MAPED_RMG_SETTINGS_MEDIUM = 1374; //Medium
 TX_MAPED_RMG_SETTINGS_HIGH = 1375; //High
 TX_MAPED_RMG_SETTINGS_MAP_SIZE_HINT = 1376; //Select size of the map
+
+TX_MAPED_HEIGHTS_CONST = 1497; //Const height tool
+TX_MAPED_HEIGHTS_CONST_HINT = 1498; //Const height tool - hint
+TX_MAPED_HEIGHTS_LEVEL_SET = 1499; //Const height tool - level set
+TX_MAPED_HEIGHTS_LEVEL_SET_HINT = 1500; //Const height tool - level set - hint
+TX_MAPED_HEIGHTS_ELEVATE_ALL = 1501; //Const height tool - level set - hint
+TX_MAPED_HEIGHTS_ELEVATE_ALL_HINT = 1502; //Const height tool - level set - hint
 
 TX_MENU_LOBBY_TRY_TO_START = 1377; //Try to start
 TX_MENU_SAVE_TRY_TO_LOAD = 1378; //Try to load save

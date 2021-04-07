@@ -1708,11 +1708,18 @@ begin
                     RenderMapElement(gGameCursor.Tag1, gTerrain.AnimStep, P.X, P.Y, True);
                   end;
     cmObjectsBrush: RenderForegroundUI_ObjectsBrush;
-    cmMagicWater: ; //todo: Render some effect to show magic water is selected
+    cmMagicWater: begin
+                    If gTerrain.Land[P.Y, P.X].BaseLayer.Rotation+1 <=3 then
+                      RenderTile(192, P.X, P.Y, gTerrain.Land[P.Y, P.X].BaseLayer.Rotation+1)
+                    else
+                      RenderTile(192, P.X, P.Y, 0);
+                    RenderWireTile(P, icCyan);
+                  end;
     cmEyeDropper: RenderWireTile(P, icCyan); // Cyan quad
     cmRotateTile: RenderWireTile(P, icCyan); // Cyan quad
     cmElevate,
-    cmEqualize:   RenderForegroundUI_ElevateEqualize;
+    cmEqualize:      RenderForegroundUI_ElevateEqualize;
+    cmConstHeight:   RenderForegroundUI_ElevateEqualize;
     cmUnits:      RenderForegroundUI_Units;
     cmMarkers:    RenderForegroundUI_Markers;
     cmPaintBucket:      RenderForegroundUI_PaintBucket(ssShift in gGameCursor.SState);

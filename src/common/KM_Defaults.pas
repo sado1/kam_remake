@@ -445,6 +445,8 @@ type
     //Map Editor
     cmElevate, //Height elevation
     cmEqualize, //Height equalization
+    cmConstHeight, //Constant height brush
+    cmElevateAll, //Terrain kind elevation
     cmBrush, //Terrain brush
     cmTiles, // Individual tiles
     cmObjects, //Terrain objects

@@ -106,6 +106,8 @@ type
     procedure ApplyBrush;
     procedure ApplyHeight;
     procedure ApplyObjectsBrush;
+    procedure ApplyConstHeight;
+    procedure ApplyElevateKind(aTerKind: TKMTerrainKind);
 
     procedure RebuildMap; overload;
     procedure RebuildMap(const aRect: TKMRect; aRandomTiles: Boolean = False); overload;
@@ -1668,7 +1670,7 @@ end;
 
 procedure TKMTerrainPainter.BrushObjects(const X, Y: Integer; aUseLandTKind: Boolean = True; aTerKind: TKMTerrainKind = tkCustom);
 var
-  key, I: Integer;
+  key, I, aRandomObject: Integer;
 begin
   if not gTerrain.TileInMapCoords(X, Y) then
   Exit;
@@ -1677,7 +1679,7 @@ begin
      gTerrain.Land^[Y, X].Obj := OBJ_NONE
   else
   begin
-    gTerrain.Land^[Y, X].Obj := OBJ_NONE;
+    If gGameCursor.MapEdOverrideObjects then gTerrain.Land^[Y, X].Obj := OBJ_NONE;
     for I := 0 to 9 do
       if gGameCursor.MapEdObjectsType[I] then
       begin
@@ -1687,12 +1689,64 @@ begin
           if aUseLandTKind then
             aTerKind := LandTerKind[Y, X].TerKind;
 
-          gTerrain.Land^[Y, X].Obj := PickRandomObject(aTerKind, I, X, Y);
+          aRandomObject:= PickRandomObject(aTerKind, I, X, Y);
+          if gGameCursor.MapEdOverrideObjects then
+            gTerrain.Land^[Y, X].Obj := aRandomObject
+          else
+            if gTerrain.Land^[Y, X].Obj = OBJ_NONE then
+              gTerrain.Land^[Y, X].Obj := aRandomObject;
         end;
       end;
   end;
 end;
 
+
+procedure TKMTerrainPainter.ApplyConstHeight;
+var
+  I, K,aSize: Integer;
+  R: TKMRect;
+begin
+  if fLastPosition <> KMPoint(Max(fMapXn, 1),Max(fMapYn, 1)) then
+  begin
+    aSize:=fSize - 1;
+    fLastPosition := KMPoint(Max(fMapXn, 1),Max(fMapYn, 1));
+    for I := Max(fMapYn - aSize, 1) to Min(fMapYn + aSize, gTerrain.MapY) do
+      for K := Max(fMapXn - aSize, 1) to Min(fMapXn + aSize, gTerrain.MapX) do
+        begin
+          case fShape of
+            hsCircle: If sqr(I-fMapYn)+ sqr(K-fMapXn) <= sqr(aSize) then gTerrain.Land[I,K].Height := gGameCursor.MapEdConstHeight;   // Negative number means that point is outside circle
+            hsSquare:  gTerrain.Land[I,K].Height := gGameCursor.MapEdConstHeight;
+          end;
+      end;
+
+    R := KMRectGrow(KMRect(KMPointF(fMapXn, fMapYn)), fSize);
+    gTerrain.UpdateLighting(R);
+    gTerrain.UpdatePassability(R);
+  end;
+end;
+
+procedure TKMTerrainPainter.ApplyElevateKind(aTerKind: TKMTerrainKind);
+var
+  aX, aY: Integer;
+begin
+    if (byte(aTerKind) > 0 ) then
+    begin
+      for aY := 0 to gTerrain.MapY do
+        for aX := 0 to gTerrain.MapX do
+          if LandTerKind[aY, aX].TerKind = aTerKind then
+            if fRaise then
+            begin
+             if gTerrain.Land[aY,aX].Height < 100 then
+              gTerrain.Land[aY,aX].Height := gTerrain.Land[aY,aX].Height+1
+            end
+            else
+            if gTerrain.Land[aY,aX].Height > 0 then
+              gTerrain.Land[aY,aX].Height := gTerrain.Land[aY,aX].Height-1;
+
+      gTerrain.UpdateLighting(KMRect(1, 1, gTerrain.MapX, gTerrain.MapY));
+      gTerrain.UpdatePassability(KMRect(1, 1, gTerrain.MapX, gTerrain.MapY));
+    end;
+end;
 
 procedure TKMTerrainPainter.ApplyHeight;
 var
@@ -2331,6 +2385,16 @@ begin
                     begin
                       SetMapEdParams; //Set mapEd params from gGameCursor
                       ApplyHeight;
+                    end;
+    cmConstHeight:     if (ssLeft in gGameCursor.SState) then
+                    begin
+                      SetMapEdParams; //Set mapEd params from gGameCursor
+                      ApplyConstHeight;
+                    end;
+    cmElevateAll:     if (ssLeft in gGameCursor.SState) or (ssRight in gGameCursor.SState) then
+                    begin
+                      SetMapEdParams; //Set mapEd params from gGameCursor
+                      ApplyElevateKind(LandTerKind[fMapYc, fMapXc].TerKind);
                     end;
     cmBrush:        if (ssLeft in gGameCursor.SState) then
                     begin

@@ -1444,3 +1444,11 @@
 1494:Apply heights from copied area
 1495:Apply objects from copied area
 1496:Apply terrain overlays from copied area
+1497:Constant Height
+1498:Brush constant height level
+1499:Height level
+1500:Height level is used in 'Constant Height'
+1501:Elevate all
+1502:Elevate (left click) / Lower (right click) all tiles on map with terrain kind at game cursor
+1503:Override Objects
+1504:Objects will be replaced by other objects or deleted
