@@ -1670,7 +1670,7 @@ end;
 
 procedure TKMTerrainPainter.BrushObjects(const X, Y: Integer; aUseLandTKind: Boolean = True; aTerKind: TKMTerrainKind = tkCustom);
 var
-  key, I, aRandomObject: Integer;
+  key, I, randomObject: Integer;
 begin
   if not gTerrain.TileInMapCoords(X, Y) then
   Exit;
@@ -1689,12 +1689,12 @@ begin
           if aUseLandTKind then
             aTerKind := LandTerKind[Y, X].TerKind;
 
-          aRandomObject:= PickRandomObject(aTerKind, I, X, Y);
+          randomObject:= PickRandomObject(aTerKind, I, X, Y);
           if gGameCursor.MapEdOverrideObjects then
-            gTerrain.Land^[Y, X].Obj := aRandomObject
+            gTerrain.Land^[Y, X].Obj := randomObject
           else
             if gTerrain.Land^[Y, X].Obj = OBJ_NONE then
-              gTerrain.Land^[Y, X].Obj := aRandomObject;
+              gTerrain.Land^[Y, X].Obj := randomObject;
         end;
       end;
   end;
@@ -1703,19 +1703,20 @@ end;
 
 procedure TKMTerrainPainter.ApplyConstHeight;
 var
-  I, K,aSize: Integer;
+  I, K, size: Integer;
   R: TKMRect;
 begin
-  if fLastPosition <> KMPoint(Max(fMapXn, 1),Max(fMapYn, 1)) then
+  if fLastPosition <> KMPoint(Max(fMapXn, 1), Max(fMapYn, 1)) then
   begin
-    aSize:=fSize - 1;
-    fLastPosition := KMPoint(Max(fMapXn, 1),Max(fMapYn, 1));
-    for I := Max(fMapYn - aSize, 1) to Min(fMapYn + aSize, gTerrain.MapY) do
-      for K := Max(fMapXn - aSize, 1) to Min(fMapXn + aSize, gTerrain.MapX) do
+    size := fSize - 1;
+    fLastPosition := KMPoint(Max(fMapXn, 1), Max(fMapYn, 1));
+    for I := Max(fMapYn - size, 1) to Min(fMapYn + size, gTerrain.MapY) do
+      for K := Max(fMapXn - size, 1) to Min(fMapXn + size, gTerrain.MapX) do
         begin
           case fShape of
-            hsCircle: If sqr(I-fMapYn)+ sqr(K-fMapXn) <= sqr(aSize) then gTerrain.Land[I,K].Height := gGameCursor.MapEdConstHeight;   // Negative number means that point is outside circle
-            hsSquare:  gTerrain.Land[I,K].Height := gGameCursor.MapEdConstHeight;
+            hsCircle: if Sqr(I - fMapYn) + sqr(K - fMapXn) <= Sqr(size) then
+                        gTerrain.Land[I,K].Height := gGameCursor.MapEdConstHeight;   // Negative number means that point is outside circle
+            hsSquare: gTerrain.Land[I,K].Height := gGameCursor.MapEdConstHeight;
           end;
       end;
 
@@ -1729,22 +1730,16 @@ procedure TKMTerrainPainter.ApplyElevateKind(aTerKind: TKMTerrainKind);
 var
   aX, aY: Integer;
 begin
-    if (byte(aTerKind) > 0 ) then
+    if aTerKind <> tkCustom then
     begin
       for aY := 0 to gTerrain.MapY do
         for aX := 0 to gTerrain.MapX do
           if LandTerKind[aY, aX].TerKind = aTerKind then
-            if fRaise then
-            begin
-             if gTerrain.Land[aY,aX].Height < 100 then
-              gTerrain.Land[aY,aX].Height := gTerrain.Land[aY,aX].Height+1
-            end
-            else
-            if gTerrain.Land[aY,aX].Height > 0 then
-              gTerrain.Land[aY,aX].Height := gTerrain.Land[aY,aX].Height-1;
+            // Inc or Dec height by 1
+            gTerrain.Land[aY,aX].Height := EnsureRange(gTerrain.Land[aY,aX].Height + (Byte(fRaise) * 2 - 1), 0, HEIGHT_MAX);
 
-      gTerrain.UpdateLighting(KMRect(1, 1, gTerrain.MapX, gTerrain.MapY));
-      gTerrain.UpdatePassability(KMRect(1, 1, gTerrain.MapX, gTerrain.MapY));
+      gTerrain.UpdateLighting;
+      gTerrain.UpdatePassability;
     end;
 end;
 
@@ -1809,7 +1804,7 @@ begin
     //Compute resulting floating-point height
     tmp := Power(Abs(tmp),(fSlope+1)/6)*Sign(tmp); //Modify slopes curve
     tmp := tmp * (4.75/14*(fSpeed - 1) + 0.25);
-    tmp := EnsureRange(gTerrain.Land^[I,K].Height + LandTerKind[I,K].HeightAdd/255 + tmp * (Byte(fRaise)*2 - 1), 0, 100); // (Byte(aRaise)*2 - 1) - LeftButton pressed it equals 1, otherwise equals -1
+    tmp := EnsureRange(gTerrain.Land^[I,K].Height + LandTerKind[I,K].HeightAdd/255 + tmp * (Byte(fRaise)*2 - 1), 0, HEIGHT_MAX); // (Byte(aRaise)*2 - 1) - LeftButton pressed it equals 1, otherwise equals -1
 
     //For flatten only
     if (base <> -1) then

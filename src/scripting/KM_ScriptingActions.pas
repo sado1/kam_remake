@@ -3040,7 +3040,7 @@ function TKMScriptActions.MapTileHeightSet(X, Y, Height: Integer): Boolean;
 begin
   try
     //Height is vertex based not tile based
-    if gTerrain.VerticeInMapCoords(X, Y) and InRange(Height, 0, 100) then
+    if gTerrain.VerticeInMapCoords(X, Y) and InRange(Height, 0, HEIGHT_MAX) then
       Result := gTerrain.ScriptTrySetTileHeight(X, Y, Height)
     else
     begin
