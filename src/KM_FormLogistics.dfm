@@ -17,19 +17,19 @@ object FormLogistics: TFormLogistics
   TextHeight = 13
   object vstPageCtrl: TPageControl
     Left = 0
-    Top = 145
+    Top = 105
     Width = 870
-    Height = 681
+    Height = 721
     ActivePage = tabSheetDeliveries
     Align = alClient
     TabOrder = 0
     OnChange = vstPageCtrlChange
     ExplicitTop = 143
     ExplicitWidth = 707
+    ExplicitHeight = 681
     object tabSheetDeliveries: TTabSheet
       Caption = 'Deliveries'
-      ExplicitWidth = 281
-      ExplicitHeight = 165
+      ExplicitLeft = 8
     end
     object tabSheetOffers: TTabSheet
       Caption = 'Offers'
@@ -48,12 +48,10 @@ object FormLogistics: TFormLogistics
     Left = 0
     Top = 0
     Width = 870
-    Height = 145
+    Height = 105
     Align = alTop
     Caption = 'Filter'
     TabOrder = 1
-    ExplicitLeft = -8
-    ExplicitWidth = 707
     object Label1: TLabel
       Left = 10
       Top = 16
@@ -64,10 +62,10 @@ object FormLogistics: TFormLogistics
     object clbHandsFilter: TCheckListBox
       Left = 10
       Top = 35
-      Width = 135
-      Height = 102
+      Width = 191
+      Height = 62
       OnClickCheck = FilterUpdated
-      Columns = 3
+      Columns = 6
       CheckBoxPadding = 2
       ItemHeight = 15
       Items.Strings = (
@@ -92,10 +90,10 @@ object FormLogistics: TFormLogistics
       TabOrder = 0
     end
     object gbToFromID: TGroupBox
-      Left = 168
-      Top = 16
+      Left = 216
+      Top = 18
       Width = 177
-      Height = 121
+      Height = 81
       Caption = 'To / From ID'
       TabOrder = 1
       object seToID: TSpinEdit
@@ -138,6 +136,24 @@ object FormLogistics: TFormLogistics
         TabOrder = 3
         OnClick = FilterUpdated
       end
+    end
+    object btnUncheckAll: TButton
+      Left = 127
+      Top = 15
+      Width = 74
+      Height = 18
+      Caption = 'Uncheck all'
+      TabOrder = 2
+      OnClick = btnUncheckAllClick
+    end
+    object btnCheckAll: TButton
+      Left = 65
+      Top = 15
+      Width = 56
+      Height = 18
+      Caption = 'Check all'
+      TabOrder = 3
+      OnClick = btnCheckAllClick
     end
   end
 end

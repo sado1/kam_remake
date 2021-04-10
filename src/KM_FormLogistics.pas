@@ -52,6 +52,8 @@ type
     seFromID: TSpinEdit;
     cbToID: TCheckBox;
     cbFromID: TCheckBox;
+    btnUncheckAll: TButton;
+    btnCheckAll: TButton;
     {$IFDEF USE_VIRTUAL_TREEVIEW}
     VSTDeliveries: TKMHandLogisticsVST;
     VSTOffers: TKMHandLogisticsVST;
@@ -61,9 +63,13 @@ type
     procedure vstPageCtrlChange(Sender: TObject);
     procedure FilterUpdated(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure btnCheckAllClick(Sender: TObject);
+    procedure btnUncheckAllClick(Sender: TObject);
   private
     {$IFDEF USE_VIRTUAL_TREEVIEW}
     fLastNodeHitInfo: THitInfo;
+
+    procedure VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
 
     procedure VSTDeliveriesGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
     procedure VSTOffersGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
@@ -110,13 +116,6 @@ type
 
 const
   DEF_SORT_COLUMN_ID = 1; //HandID by default
-
-  DEL_FROM_ID_COL = 5;
-  DEL_TO_ID_COL = 7;
-
-  OFF_FROM_ID_COL = 5;
-
-  DEM_TO_ID_COL = 5;
 
 
   DEF_DELIVERIES_COLUMNS: TKMDeliveriesColumnsArray = (
@@ -178,6 +177,7 @@ procedure TFormLogistics.FormCreate(Sender: TObject);
     aVST.DefaultNodeHeight := 20;
     aVST.NodeDataSize := SizeOf(TKMLogisticsIDs);
 
+    aVST.OnGetText := VSTGetText;
     aVST.OnCompareNodes := VSTCompareNodes;
     aVST.OnFreeNode := VSTFreeNode;
     aVST.OnHeaderClick := VSTHeaderClick;
@@ -218,10 +218,6 @@ begin
   InitVST(VSTDeliveries);
   InitVST(VSTOffers);
   InitVST(VSTDemands);
-
-  VSTDeliveries.OnGetText := VSTDeliveriesGetText;
-  VSTOffers.OnGetText := VSTOffersGetText;
-  VSTDemands.OnGetText := VSTDemandsGetText;
   {$ENDIF}
 end;
 
@@ -276,6 +272,20 @@ begin
 end;
 
 
+procedure TFormLogistics.btnCheckAllClick(Sender: TObject);
+begin
+  clbHandsFilter.CheckAll(cbChecked, True, True);
+  VSTUpdate;
+end;
+
+
+procedure TFormLogistics.btnUncheckAllClick(Sender: TObject);
+begin
+  clbHandsFilter.CheckAll(cbUnchecked, True, True);
+  VSTUpdate;
+end;
+
+
 procedure TFormLogistics.Clear;
 begin
   {$IFDEF USE_VIRTUAL_TREEVIEW}
@@ -288,6 +298,31 @@ end;
 
 {$IFDEF USE_VIRTUAL_TREEVIEW}
 procedure TFormLogistics.ApplyFilter;
+const
+  DEL_FROM_ID_COL = 5;
+  DEL_TO_ID_COL = 7;
+
+  OFF_FROM_ID_COL = 5;
+
+  DEM_TO_ID_COL = 5;
+
+  function GetFromColumn(aKind: TKMVSTKind): Integer;
+  begin
+    case aKind of
+      vstkDelivery: Result := DEL_FROM_ID_COL;
+      vstkOffer:    Result := OFF_FROM_ID_COL;
+      else          Result := 0;
+    end;
+  end;
+
+  function GetToColumn(aKind: TKMVSTKind): Integer;
+  begin
+    case aKind of
+      vstkDelivery: Result := DEL_TO_ID_COL;
+      vstkDemand:   Result := DEM_TO_ID_COL;
+      else          Result := 0;
+    end;
+  end;
 
   procedure FilterVST(aVST: TKMHandLogisticsVST);
   var
@@ -309,30 +344,16 @@ procedure TFormLogistics.ApplyFilter;
       badToID := False;
       badFromID := False;
 
-      case aVST.Kind of
-        vstkDelivery: begin
-                        if cbFromID.Enabled and cbFromID.Checked then
-                        begin
-                          VSTDeliveriesGetText(aVST, C, DEL_FROM_ID_COL, ttNormal, cellText);
-                          badFromID := StrToInt(cellText) <> seFromID.Value;
-                        end;
+      if cbFromID.Enabled and cbFromID.Checked then
+      begin
+        VSTGetText(aVST, C, GetFromColumn(aVST.Kind), ttNormal, cellText);
+        badFromID := StrToInt(cellText) <> seFromID.Value;
+      end;
 
-                        if cbToID.Enabled and cbToID.Checked then
-                        begin
-                          VSTDeliveriesGetText(aVST, C, DEL_TO_ID_COL, ttNormal, cellText);
-                          badToID := StrToInt(cellText) <> seToID.Value;
-                        end;
-                      end;
-        vstkOffer:    if cbFromID.Enabled and cbFromID.Checked then
-                      begin
-                        VSTOffersGetText(aVST, C, OFF_FROM_ID_COL, ttNormal, cellText);
-                        badFromID := StrToInt(cellText) <> seFromID.Value;
-                      end;
-        vstkDemand:   if cbToID.Enabled and cbToID.Checked then
-                      begin
-                        VSTDemandsGetText(aVST, C, DEM_TO_ID_COL, ttNormal, cellText);
-                        badToID := StrToInt(cellText) <> seToID.Value;
-                      end;
+      if cbToID.Enabled and cbToID.Checked then
+      begin
+        VSTGetText(aVST, C, GetToColumn(aVST.Kind), ttNormal, cellText);
+        badToID := StrToInt(cellText) <> seToID.Value;
       end;
 
       aVST.IsFiltered[C] := badHand or badToID or badFromID;
@@ -352,6 +373,14 @@ procedure TFormLogistics.VSTFocusChanged(Sender: TBaseVirtualTree; Node: PVirtua
 begin
   fLastNodeHitInfo.HitNode := Node;
   fLastNodeHitInfo.HitColumn := Column;
+
+  Assert(Sender is TKMHandLogisticsVST);
+
+  case TKMHandLogisticsVST(Sender).Kind of
+    vstkDelivery: ;
+    vstkOffer:    ;
+    vstkDemand:   ;
+  end;
 end;
 
 
@@ -381,23 +410,14 @@ begin
   if Column = -1 then Exit;
 
   case TKMHandLogisticsVST(Sender).Kind of
-    vstkDelivery: begin
-                    columnType := DEF_DELIVERIES_COLUMNS[Column].ColumnType;
-                    VSTDeliveriesGetText(Sender, Node1, Column, ttNormal, cellText1);
-                    VSTDeliveriesGetText(Sender, Node2, Column, ttNormal, cellText2);
-                  end;
-    vstkOffer:    begin
-                    columnType := DEF_OFFERS_COLUMNS[Column].ColumnType;
-                    VSTOffersGetText(Sender, Node1, Column, ttNormal, cellText1);
-                    VSTOffersGetText(Sender, Node2, Column, ttNormal, cellText2);
-                  end;
-    vstkDemand:   begin
-                    columnType := DEF_DEMANDS_COLUMNS[Column].ColumnType;
-                    VSTDemandsGetText(Sender, Node1, Column, ttNormal, cellText1);
-                    VSTDemandsGetText(Sender, Node2, Column, ttNormal, cellText2);
-                  end;
+    vstkDelivery: columnType := DEF_DELIVERIES_COLUMNS[Column].ColumnType;
+    vstkOffer:    columnType := DEF_OFFERS_COLUMNS[Column].ColumnType;
+    vstkDemand:   columnType := DEF_DEMANDS_COLUMNS[Column].ColumnType;
     else          columnType := cctText; //make compiler happy
   end;
+
+  VSTGetText(Sender, Node1, Column, ttNormal, cellText1);
+  VSTGetText(Sender, Node2, Column, ttNormal, cellText2);
 
   case columnType of
     cctText:    Result := CompareText(cellText1, cellText2);
@@ -430,8 +450,20 @@ begin
 end;
 
 
+procedure TFormLogistics.VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
+begin
+  Assert(Sender is TKMHandLogisticsVST);
+
+  case TKMHandLogisticsVST(Sender).Kind of
+    vstkDelivery: VSTDeliveriesGetText(Sender, Node, Column, TextType, CellText);
+    vstkOffer:    VSTOffersGetText(Sender, Node, Column, TextType, CellText);
+    vstkDemand:   VSTDemandsGetText(Sender, Node, Column, TextType, CellText);
+  end;
+end;
+
+
 procedure TFormLogistics.VSTDeliveriesGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
-                                    TextType: TVSTTextType; var CellText: string);
+                                              TextType: TVSTTextType; var CellText: string);
 var
   handID, iQ: Integer;
   data: PKMLogisticsIDs;
@@ -483,7 +515,8 @@ begin
 end;
 
 
-procedure TFormLogistics.VSTOffersGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
+procedure TFormLogistics.VSTOffersGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
+                                          TextType: TVSTTextType; var CellText: string);
 var
   handID, iO: Integer;
   data: PKMLogisticsIDs;
@@ -523,7 +556,8 @@ begin
 end;
 
 
-procedure TFormLogistics.VSTDemandsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
+procedure TFormLogistics.VSTDemandsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
+                                           TextType: TVSTTextType; var CellText: string);
 var
   handID, iD: Integer;
   data: PKMLogisticsIDs;
