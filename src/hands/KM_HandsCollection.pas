@@ -31,11 +31,12 @@ type
     procedure AllianceChanged;
 
     function FindPlaceForUnit(aX, aY: Integer; aUnit: TKMUnit; aUnitType: TKMUnitType; out aPlacePoint: TKMPoint; aRequiredWalkConnect: Byte): Boolean; overload;
+    function GetCount: Byte;
   public
     constructor Create;
     destructor Destroy; override;
 
-    property Count: Byte read fCount;
+    property Count: Byte read GetCount;
     property Hands[aIndex: Integer]: TKMHand read GetHand; default;
     property PlayerAnimals: TKMHandAnimals read fPlayerAnimals;
 
@@ -424,6 +425,14 @@ begin
     and ((Result = nil) or (KMLengthSqr(U.PositionF, KMPointF(aLoc)) < KMLengthSqr(Result.PositionF, KMPointF(aLoc)))) then
       Result := U;
   end;
+end;
+
+
+function TKMHandsCollection.GetCount: Byte;
+begin
+  if Self = nil then Exit(0);
+
+  Result := fCount;
 end;
 
 
