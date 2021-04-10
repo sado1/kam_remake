@@ -500,7 +500,7 @@ const
     tileOwner: TKMHandID;
   begin
     tileOwner := PLAYER_NONE;
-    // new appended terrain
+    // new appended terrain, generate tile then
     if aNewGenTile then
     begin
       //Check if terrainKind is same for all 4 corners
@@ -528,7 +528,7 @@ const
       TileBasic.BaseLayer.Rotation := Random(4);
       TileBasic.BaseLayer.SetAllCorners;
       //find height mid point to make random elevation even for close to 0 or 100 height
-      hMid := Max(0, Land^[aFromY,aFromX].Height - H_RND_HALF) + H_RND_HALF;
+      hMid := Max(0, fLand[aFromY,aFromX].Height - H_RND_HALF) + H_RND_HALF;
       hMid := Min(100, hMid + H_RND_HALF) - H_RND_HALF;
       TileBasic.Height    := EnsureRange(hMid - H_RND_HALF + Random(HEIGHT_RAND_VALUE), 0, 100);
       TileBasic.Obj       := OBJ_NONE; // No object
@@ -586,6 +586,8 @@ begin
     //                       EnsureRange(fMapX + aInsetRect.Left, fMapX + aInsetRect.Left, fMapX + aInsetRect.Left + aInsetRect.Right),
     //                       EnsureRange(fMapY + aInsetRect.Top, fMapY + aInsetRect.Top, fMapY + aInsetRect.Top + aInsetRect.Bottom));
 
+
+    // Check if we need to generate some of the tiles, if we expand terrain land
     for I := 1 to SizeY do
     begin
       IFrom := EnsureRange(I - aInsetRect.Top, 1, fMapY - 1); //-1 because last row is not part of the map
