@@ -1,60 +1,644 @@
 unit KM_FormLogistics;
+{$I KaM_Remake.inc}
 interface
 uses
   {$IFDEF FPC} LResources, {$ENDIF}
   {$IFDEF MSWindows} Windows, Messages, {$ENDIF}
   {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
+  {$IFDEF USE_VIRTUAL_TREEVIEW}VirtualTrees, {$ENDIF}
   SysUtils, Variants, Classes, Graphics,
-  Controls, Forms, Dialogs, ComCtrls;
+  Controls, Forms, Dialogs, ComCtrls,
+  Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.CheckLst, Vcl.Samples.Spin, Vcl.Clipbrd;
 
 type
-  TFormLogistics = class(TForm)
-    DeliveriesList: TListView;
-    OffersList: TListView;
-    DemandsList: TListView;
-    TabControl1: TTabControl;
-    procedure TabControl1Change(Sender: TObject);
+  {$IFDEF USE_VIRTUAL_TREEVIEW}
+  TKMColumnContentType = (cctText, cctNumber);
+
+  TKMVSTColumn = record
+    ID: Byte;
+    Title: string;
+    Alignment: TAlignment;
+    Width: Word;
+    Visible: Boolean;
+    Position: Integer;
+    ColumnType: TKMColumnContentType;
+  end;
+
+  TKMVSTKind = (vstkDelivery, vstkOffer, vstkDemand);
+
+  TKMHandLogisticsVST = class (TVirtualStringTree)
   private
+    function GetDefColumn(aIndex: Integer): TKMVSTColumn;
+    function GetColumnsCnt: Integer;
   public
+    Kind: TKMVSTKind;
+    constructor Create(aOwner: TComponent; aKind: TKMVSTKind); reintroduce;
+    property DefColumn[aIndex: Integer]: TKMVSTColumn read GetDefColumn;
+    property ColumnsCnt: Integer read GetColumnsCnt;
+  end;
+  {$ENDIF}
+
+
+  TFormLogistics = class(TForm)
+    vstPageCtrl: TPageControl;
+    tabSheetDeliveries: TTabSheet;
+    tabSheetOffers: TTabSheet;
+    tabSheetDemands: TTabSheet;
+    gbFilter: TGroupBox;
+    clbHandsFilter: TCheckListBox;
+    Label1: TLabel;
+    gbToFromID: TGroupBox;
+    seToID: TSpinEdit;
+    seFromID: TSpinEdit;
+    cbToID: TCheckBox;
+    cbFromID: TCheckBox;
+    {$IFDEF USE_VIRTUAL_TREEVIEW}
+    VSTDeliveries: TKMHandLogisticsVST;
+    VSTOffers: TKMHandLogisticsVST;
+    VSTDemands: TKMHandLogisticsVST;
+    {$ENDIF}
+    procedure FormCreate(Sender: TObject);
+    procedure vstPageCtrlChange(Sender: TObject);
+    procedure FilterUpdated(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+  private
+    {$IFDEF USE_VIRTUAL_TREEVIEW}
+    fLastNodeHitInfo: THitInfo;
+
+    procedure VSTDeliveriesGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
+    procedure VSTOffersGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
+    procedure VSTDemandsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
+
+    procedure VSTFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure VSTHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
+    procedure VSTCompareNodes(Sender: TBaseVirtualTree; Node1, Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
+    procedure VSTFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
+    procedure VSTKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure VSTAfterCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; CellRect: TRect);
+
+    procedure ApplyFilter;
+    {$ENDIF}
+  public
+    procedure VSTUpdate;
+
+    procedure UpdateView(aHandsCnt: Integer);
+
     procedure Clear;
   end;
+
 
 var
   FormLogistics: TFormLogistics;
 
 implementation
+uses
+  Math, TypInfo,
+  KM_HandLogistics, KM_Resource, KM_HandsCollection,
+  KM_Defaults, KM_ResHouses, KM_ResUnits, KM_ResTypes, KM_Hand; // Make compiler happy, regarding inline methods
+
+{$IFDEF USE_VIRTUAL_TREEVIEW}
+const
+  DELIVERIES_COL_COUNT = 9;
+  OFFERS_COL_COUNT = 9;
+  DEMANDS_COL_COUNT = 10;
+
+type
+  TKMDeliveriesColumnsArray = array [0..DELIVERIES_COL_COUNT-1] of TKMVSTColumn;
+  TKMOffersColumnsArray     = array [0..OFFERS_COL_COUNT-1] of TKMVSTColumn;
+  TKMDemandsColumnsArray    = array [0..DEMANDS_COL_COUNT-1] of TKMVSTColumn;
+
+
+const
+  DEF_SORT_COLUMN_ID = 1; //HandID by default
+
+  DEL_FROM_ID_COL = 5;
+  DEL_TO_ID_COL = 7;
+
+  OFF_FROM_ID_COL = 5;
+
+  DEM_TO_ID_COL = 5;
+
+
+  DEF_DELIVERIES_COLUMNS: TKMDeliveriesColumnsArray = (
+    (ID: 0;  Title: '#';          Alignment: taRightJustify;  Width: 30;  Visible: True; ColumnType: cctNumber),
+    (ID: 1;  Title: 'Hand';       Alignment: taRightJustify;  Width: 40;  Visible: True; ColumnType: cctNumber),
+    (ID: 2;  Title: 'iQ';         Alignment: taRightJustify;  Width: 30;  Visible: True; ColumnType: cctNumber),
+    (ID: 3;  Title: 'Resource';   Alignment: taLeftJustify;   Width: 100; Visible: True; ColumnType: cctText),
+    (ID: 4;  Title: 'From house'; Alignment: taLeftJustify;   Width: 120; Visible: True; ColumnType: cctText),
+    (ID: 5;  Title: 'From ID';    Alignment: taRightJustify;  Width: 70;  Visible: True; ColumnType: cctNumber),
+    (ID: 6;  Title: 'To';         Alignment: taLeftJustify;   Width: 120; Visible: True; ColumnType: cctText),
+    (ID: 7;  Title: 'To ID';      Alignment: taRightJustify;  Width: 70;  Visible: True; ColumnType: cctNumber),
+    (ID: 8;  Title: 'Serf';       Alignment: taRightJustify;  Width: 70;  Visible: True; ColumnType: cctNumber)
+  );
+
+  DEF_OFFERS_COLUMNS: TKMOffersColumnsArray = (
+    (ID: 0;  Title: '#';          Alignment: taRightJustify;  Width: 30;  Visible: True; ColumnType: cctNumber),
+    (ID: 1;  Title: 'Hand';       Alignment: taRightJustify;  Width: 40;  Visible: True; ColumnType: cctNumber),
+    (ID: 2;  Title: 'iO';         Alignment: taRightJustify;  Width: 30;  Visible: True; ColumnType: cctNumber),
+    (ID: 3;  Title: 'Resource';   Alignment: taLeftJustify;   Width: 100; Visible: True; ColumnType: cctText),
+    (ID: 4;  Title: 'From house'; Alignment: taLeftJustify;   Width: 120; Visible: True; ColumnType: cctText),
+    (ID: 5;  Title: 'From ID';    Alignment: taRightJustify;  Width: 70;  Visible: True; ColumnType: cctNumber),
+    (ID: 6;  Title: 'Count';      Alignment: taRightJustify;  Width: 60;  Visible: True; ColumnType: cctNumber),
+    (ID: 7;  Title: 'Performed';  Alignment: taRightJustify;  Width: 70;  Visible: True; ColumnType: cctNumber),
+    (ID: 8;  Title: 'Deleted';    Alignment: taLeftJustify;   Width: 60;  Visible: True; ColumnType: cctText)
+  );
+
+  DEF_DEMANDS_COLUMNS: TKMDemandsColumnsArray = (
+    (ID: 0;  Title: '#';          Alignment: taRightJustify;  Width: 30;  Visible: True; ColumnType: cctNumber),
+    (ID: 1;  Title: 'Hand';       Alignment: taRightJustify;  Width: 40;  Visible: True; ColumnType: cctNumber),
+    (ID: 2;  Title: 'iD';         Alignment: taRightJustify;  Width: 30;  Visible: True; ColumnType: cctNumber),
+    (ID: 3;  Title: 'Resource';   Alignment: taLeftJustify;   Width: 100; Visible: True; ColumnType: cctText),
+    (ID: 4;  Title: 'To';         Alignment: taLeftJustify;   Width: 120; Visible: True; ColumnType: cctText),
+    (ID: 5;  Title: 'To ID';      Alignment: taRightJustify;  Width: 70;  Visible: True; ColumnType: cctNumber),
+    (ID: 6;  Title: 'Type';       Alignment: taLeftJustify;   Width: 60;  Visible: True; ColumnType: cctText),
+    (ID: 7;  Title: 'Importance'; Alignment: taLeftJustify;   Width: 60;  Visible: True; ColumnType: cctText),
+    (ID: 8;  Title: 'Performed';  Alignment: taLeftJustify;   Width: 70;  Visible: True; ColumnType: cctNumber),
+    (ID: 9;  Title: 'Deleted';    Alignment: taLeftJustify;   Width: 60;  Visible: True; ColumnType: cctText)
+  );
+{$ENDIF}
+
 
 {$R *.dfm}
 
 
-procedure TFormLogistics.TabControl1Change(Sender: TObject);
-begin
-  case TabControl1.TabIndex of
-    0:  begin
-          DeliveriesList.Visible := True;
-          OffersList.Visible := False;
-          DemandsList.Visible := False;
-        end;
-    1:  begin
-          DeliveriesList.Visible := False;
-          OffersList.Visible := True;
-          DemandsList.Visible := False;
-        end;
-    2:  begin
-          DeliveriesList.Visible := False;
-          OffersList.Visible := False;
-          DemandsList.Visible := True;
-        end;
+procedure TFormLogistics.FormCreate(Sender: TObject);
+  {$IFDEF USE_VIRTUAL_TREEVIEW}
+  procedure InitVST(aVST: TKMHandLogisticsVST);
+  var
+    I: Integer;
+    c: TVirtualTreeColumn;
+  begin
+    aVST.Header.Options := [hoColumnResize, hoDrag, hoShowHint, hoShowImages, hoShowSortGlyphs, hoVisible];
+    aVST.TreeOptions.MiscOptions := [toAcceptOLEDrop, toFullRepaintOnResize, toGridExtensions, toInitOnSave, toToggleOnDblClick, toWheelPanning, toEditOnClick];
+    aVST.TreeOptions.PaintOptions := [toHideFocusRect, toShowButtons, toShowDropmark, toShowTreeLines, toThemeAware, toUseBlendedImages];
+    aVST.TreeOptions.SelectionOptions := [toExtendedFocus, toFullRowSelect];
+
+    aVST.Align := alClient;
+    aVST.EmptyListMessage := 'No data ...';
+    aVST.DefaultNodeHeight := 20;
+    aVST.NodeDataSize := SizeOf(TKMLogisticsIDs);
+
+    aVST.OnCompareNodes := VSTCompareNodes;
+    aVST.OnFreeNode := VSTFreeNode;
+    aVST.OnHeaderClick := VSTHeaderClick;
+    aVST.OnKeyDown := VSTKeyDown;
+    aVST.OnFocusChanged := VSTFocusChanged;
+    aVST.OnAfterCellPaint := VSTAfterCellPaint;
+
+    aVST.Header.SortColumn := DEF_SORT_COLUMN_ID;
+
+    for I := 0 to aVST.ColumnsCnt - 1 do
+    begin
+      c := aVST.Header.Columns.Add;
+      c.Text := aVST.DefColumn[I].Title;
+      c.Width := aVST.DefColumn[I].Width + 15;
+      c.Tag := aVST.DefColumn[I].ID;
+      c.Alignment := aVST.DefColumn[I].Alignment;
+
+      if aVST.DefColumn[I].Visible then
+        c.Options := c.Options + [coVisible]
+      else
+        c.Options := c.Options - [coVisible];
+    end;
   end;
+
+  {$ENDIF}
+begin
+  // Form creation
+  {$IFDEF USE_VIRTUAL_TREEVIEW}
+  VSTDeliveries := TKMHandLogisticsVST.Create(tabSheetDeliveries, vstkDelivery);
+  VSTDeliveries.Parent := tabSheetDeliveries;
+
+  VSTOffers := TKMHandLogisticsVST.Create(tabSheetOffers, vstkOffer);
+  VSTOffers.Parent := tabSheetOffers;
+
+  VSTDemands := TKMHandLogisticsVST.Create(tabSheetDemands, vstkDemand);
+  VSTDemands.Parent := tabSheetDemands;
+
+  InitVST(VSTDeliveries);
+  InitVST(VSTOffers);
+  InitVST(VSTDemands);
+
+  VSTDeliveries.OnGetText := VSTDeliveriesGetText;
+  VSTOffers.OnGetText := VSTOffersGetText;
+  VSTDemands.OnGetText := VSTDemandsGetText;
+  {$ENDIF}
+end;
+
+
+procedure TFormLogistics.FormShow(Sender: TObject);
+var
+  I: Integer;
+begin
+  // Update all logistics tables
+  Clear;
+
+  UpdateView(gHands.Count);
+
+  for I := 0 to gHands.Count - 1 do
+    gHands[I].Deliveries.Queue.Form_UpdateAllItems;
+end;
+
+
+procedure TFormLogistics.UpdateView(aHandsCnt: Integer);
+var
+  I: Integer;
+begin
+  clbHandsFilter.Items.Clear;
+  for I := 0 to aHandsCnt - 1 do
+    clbHandsFilter.Items.Add(IntToStr(I));
+
+  clbHandsFilter.CheckAll(cbChecked, True, True);
+end;
+
+
+procedure TFormLogistics.VSTUpdate;
+
+  {$IFDEF USE_VIRTUAL_TREEVIEW}
+  procedure DoSort(aVST: TKMHandLogisticsVST);
+  begin
+    aVST.Sort(aVST.RootNode, aVST.Header.SortColumn, aVST.Header.SortDirection, True);
+  end;
+  {$ENDIF}
+
+begin
+  if not Visible then Exit;
+
+  {$IFDEF USE_VIRTUAL_TREEVIEW}
+  ApplyFilter;
+
+  case vstPageCtrl.ActivePageIndex of
+    0:  DoSort(VSTDeliveries);
+    1:  DoSort(VSTOffers);
+    2:  DoSort(VSTDemands);
+  end;
+  {$ENDIF}
 end;
 
 
 procedure TFormLogistics.Clear;
 begin
-  DeliveriesList.Clear;
-  OffersList.Clear;
-  DemandsList.Clear;
+  {$IFDEF USE_VIRTUAL_TREEVIEW}
+  VSTDeliveries.Clear;
+  VSTOffers.Clear;
+  VSTDemands.Clear;
+  {$ENDIF}
 end;
 
 
+{$IFDEF USE_VIRTUAL_TREEVIEW}
+procedure TFormLogistics.ApplyFilter;
+
+  procedure FilterVST(aVST: TKMHandLogisticsVST);
+  var
+    I: Integer;
+    data: PKMLogisticsIDs;
+    C: PVirtualNode;
+    badHand, badToID, badFromID: Boolean;
+    cellText: string;
+  begin
+    for C in aVST.InitializedNodes(False) do
+    begin
+      data := aVST.GetNodeData(C);
+      badHand := True;
+
+      for I := 0 to clbHandsFilter.Items.Count - 1 do
+        if (clbHandsFilter.State[I] = cbChecked) and (I = data.HandID) then
+          badHand := False;
+
+      badToID := False;
+      badFromID := False;
+
+      case aVST.Kind of
+        vstkDelivery: begin
+                        if cbFromID.Enabled and cbFromID.Checked then
+                        begin
+                          VSTDeliveriesGetText(aVST, C, DEL_FROM_ID_COL, ttNormal, cellText);
+                          badFromID := StrToInt(cellText) <> seFromID.Value;
+                        end;
+
+                        if cbToID.Enabled and cbToID.Checked then
+                        begin
+                          VSTDeliveriesGetText(aVST, C, DEL_TO_ID_COL, ttNormal, cellText);
+                          badToID := StrToInt(cellText) <> seToID.Value;
+                        end;
+                      end;
+        vstkOffer:    if cbFromID.Enabled and cbFromID.Checked then
+                      begin
+                        VSTOffersGetText(aVST, C, OFF_FROM_ID_COL, ttNormal, cellText);
+                        badFromID := StrToInt(cellText) <> seFromID.Value;
+                      end;
+        vstkDemand:   if cbToID.Enabled and cbToID.Checked then
+                      begin
+                        VSTDemandsGetText(aVST, C, DEM_TO_ID_COL, ttNormal, cellText);
+                        badToID := StrToInt(cellText) <> seToID.Value;
+                      end;
+      end;
+
+      aVST.IsFiltered[C] := badHand or badToID or badFromID;
+    end;
+  end;
+
+begin
+  case vstPageCtrl.ActivePageIndex of
+    0:  FilterVST(VSTDeliveries);
+    1:  FilterVST(VSTOffers);
+    2:  FilterVST(VSTDemands);
+  end;
+end;
+
+
+procedure TFormLogistics.VSTFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
+begin
+  fLastNodeHitInfo.HitNode := Node;
+  fLastNodeHitInfo.HitColumn := Column;
+end;
+
+
+procedure TFormLogistics.VSTKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  //Copy selected cell text to clipboard
+  if (ssCtrl in Shift) and (Key = Ord('C')) then
+  begin
+    ClipBoard.AsText := TVirtualStringTree(Sender).Text[fLastNodeHitInfo.HitNode, fLastNodeHitInfo.HitColumn];
+  end;
+end;
+
+
+procedure TFormLogistics.VSTAfterCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; CellRect: TRect);
+begin
+  // Draw focus rect for the last selected cell
+  if (fLastNodeHitInfo.HitNode = Node) and (fLastNodeHitInfo.HitColumn = Column) then
+    TargetCanvas.DrawFocusRect(CellRect);
+end;
+
+
+procedure TFormLogistics.VSTCompareNodes(Sender: TBaseVirtualTree; Node1, Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
+var
+  cellText1, cellText2 : string;
+  columnType: TKMColumnContentType;
+begin
+  if Column = -1 then Exit;
+
+  case TKMHandLogisticsVST(Sender).Kind of
+    vstkDelivery: begin
+                    columnType := DEF_DELIVERIES_COLUMNS[Column].ColumnType;
+                    VSTDeliveriesGetText(Sender, Node1, Column, ttNormal, cellText1);
+                    VSTDeliveriesGetText(Sender, Node2, Column, ttNormal, cellText2);
+                  end;
+    vstkOffer:    begin
+                    columnType := DEF_OFFERS_COLUMNS[Column].ColumnType;
+                    VSTOffersGetText(Sender, Node1, Column, ttNormal, cellText1);
+                    VSTOffersGetText(Sender, Node2, Column, ttNormal, cellText2);
+                  end;
+    vstkDemand:   begin
+                    columnType := DEF_DEMANDS_COLUMNS[Column].ColumnType;
+                    VSTDemandsGetText(Sender, Node1, Column, ttNormal, cellText1);
+                    VSTDemandsGetText(Sender, Node2, Column, ttNormal, cellText2);
+                  end;
+    else          columnType := cctText; //make compiler happy
+  end;
+
+  case columnType of
+    cctText:    Result := CompareText(cellText1, cellText2);
+    cctNumber:  Result := CompareValue(StrToInt(cellText1), StrToInt(cellText2));
+  end;
+
+end;
+
+
+procedure TFormLogistics.VSTHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
+begin
+  if HitInfo.Button <> mbLeft then Exit;
+
+  if HitInfo.Column = Sender.SortColumn then
+    Sender.SortDirection := TSortDirection(1 - Ord(Sender.SortDirection));
+
+  Sender.SortColumn := HitInfo.Column;
+
+  // Keep focused node in center
+  Sender.Treeview.ScrollIntoView(Sender.Treeview.FocusedNode, True);
+end;
+
+
+procedure TFormLogistics.VSTFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
+var
+ data: PKMLogisticsIDs;
+begin
+ data := Sender.GetNodeData(Node);
+ Finalize(data^);
+end;
+
+
+procedure TFormLogistics.VSTDeliveriesGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
+                                    TextType: TVSTTextType; var CellText: string);
+var
+  handID, iQ: Integer;
+  data: PKMLogisticsIDs;
+  del: TKMDeliveries;
+begin
+  data := Sender.GetNodeData(Node);
+  handID := data.HandID;
+
+  del := gHands[handID].Deliveries.Queue;
+
+  iQ := data.ID;
+  if (iQ = 0) or (iQ > del.DeliveryCount) then
+  begin
+    CellText := '0';
+    Exit;
+  end;
+
+  case VSTDeliveries.Header.Columns[Column].Tag of
+    0:  CellText := IntToStr(Node.Index);
+    1:  CellText := IntToStr(handID);
+    2:  CellText := IntToStr(iQ);
+    3:  CellText := gRes.Wares[del.Demand[del.Delivery[iQ].DemandID].Ware].Title;
+    4:  if del.Offer[del.Delivery[iQ].OfferID].Loc_House = nil then
+          CellText := 'nil'
+        else
+          CellText := gRes.Houses[del.Offer[del.Delivery[iQ].OfferID].Loc_House.HouseType].HouseName;
+
+    5:  if del.Offer[del.Delivery[iQ].OfferID].Loc_House = nil then
+          CellText := '0'
+        else
+          CellText := IntToStr(del.Offer[del.Delivery[iQ].OfferID].Loc_House.UID);
+
+    6:  if del.Demand[del.Delivery[iQ].DemandID].Loc_House <> nil then
+          CellText := 'H: ' + gRes.Houses[del.Demand[del.Delivery[iQ].DemandID].Loc_House.HouseType].HouseName
+        else
+        if del.Demand[del.Delivery[iQ].DemandID].Loc_Unit <> nil then
+          CellText := 'U: ' + gRes.Units[del.Demand[del.Delivery[iQ].DemandID].Loc_Unit.UnitType].GUIName
+        else
+          CellText := 'nil';
+    7:  if del.Demand[del.Delivery[iQ].DemandID].Loc_House <> nil then
+          CellText := IntToStr(del.Demand[del.Delivery[iQ].DemandID].Loc_House.UID)
+        else
+        if del.Demand[del.Delivery[iQ].DemandID].Loc_Unit <> nil then
+          CellText := IntToStr(del.Demand[del.Delivery[iQ].DemandID].Loc_Unit.UID)
+        else
+          CellText := 'nil';
+    8:  CellText := IntToStr(del.Delivery[iQ].Serf.UID);
+  end;
+end;
+
+
+procedure TFormLogistics.VSTOffersGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
+var
+  handID, iO: Integer;
+  data: PKMLogisticsIDs;
+  off: TKMDeliveryOffer;
+begin
+  data := Sender.GetNodeData(Node);
+  handID := data.HandID;
+  iO := data.ID;
+
+  if (iO = 0) or (iO > gHands[handID].Deliveries.Queue.OfferCount) then
+  begin
+    CellText := '0';
+    Exit;
+  end;
+
+  off := gHands[handID].Deliveries.Queue.Offer[iO];
+
+  case VSTOffers.Header.Columns[Column].Tag of
+    0:  CellText := IntToStr(Node.Index);
+    1:  CellText := IntToStr(handID);
+    2:  CellText := IntToStr(iO);
+    3:  CellText := gRes.Wares[off.Ware].Title;
+    4:  if off.Loc_House = nil then
+          CellText := 'nil'
+        else
+          CellText := gRes.Houses[off.Loc_House.HouseType].HouseName;
+
+    5:  if off.Loc_House = nil then
+          CellText := '0'
+        else
+          CellText := IntToStr(off.Loc_House.UID);
+
+    6:  CellText := IntToStr(off.Count);
+    7:  CellText := IntToStr(off.BeingPerformed);
+    8:  CellText := BoolToStr(off.IsDeleted, True);
+  end;
+end;
+
+
+procedure TFormLogistics.VSTDemandsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
+var
+  handID, iD: Integer;
+  data: PKMLogisticsIDs;
+  dem: TKMDeliveryDemand;
+begin
+  data := Sender.GetNodeData(Node);
+  handID := data.HandID;
+  iD := data.ID;
+
+  if (iD = 0) or (iD > gHands[handID].Deliveries.Queue.DemandCount) then
+  begin
+    CellText := '0';
+    Exit;
+  end;
+
+  dem := gHands[handID].Deliveries.Queue.Demand[iD];
+
+  case VSTDemands.Header.Columns[Column].Tag of
+    0:  CellText := IntToStr(Node.Index);
+    1:  CellText := IntToStr(handID);
+    2:  CellText := IntToStr(iD);
+    3:  CellText := gRes.Wares[dem.Ware].Title;
+    4:  if dem.Loc_House <> nil then
+          CellText := 'H: ' + gRes.Houses[dem.Loc_House.HouseType].HouseName
+        else
+        if dem.Loc_Unit <> nil then
+          CellText := 'U: ' + gRes.Units[dem.Loc_Unit.UnitType].GUIName
+        else
+          CellText := 'nil';
+
+    5:  if dem.Loc_House <> nil then
+          CellText := IntToStr(dem.Loc_House.UID)
+        else
+        if dem.Loc_Unit <> nil then
+          CellText := IntToStr(dem.Loc_Unit.UID)
+        else
+          CellText := '0';
+
+    6:  CellText := GetEnumName(TypeInfo(TKMDemandType), Integer(dem.demandType));
+    7:  CellText := GetEnumName(TypeInfo(TKMDemandImportance), Integer(dem.Importance));
+    8:  CellText := IntToStr(dem.BeingPerformed);
+    9:  CellText := BoolToStr(dem.IsDeleted, True);
+  end;
+end;
+{$ENDIF}
+
+
+procedure TFormLogistics.vstPageCtrlChange(Sender: TObject);
+begin
+  case vstPageCtrl.ActivePageIndex of
+    0:  begin
+          // Deliveries
+          cbFromID.Enabled := True;
+          seFromID.Enabled := True;
+          cbToID.Enabled := True;
+          seToID.Enabled := True;
+        end;
+    1:  begin
+          // Offers
+          cbFromID.Enabled := True;
+          seFromID.Enabled := True;
+          cbToID.Enabled := False;
+          seToID.Enabled := False;
+        end;
+    2:  begin
+          // Demands
+          cbFromID.Enabled := False;
+          seFromID.Enabled := False;
+          cbToID.Enabled := True;
+          seToID.Enabled := True;
+        end;
+  end;
+  FilterUpdated(Sender);
+end;
+
+
+procedure TFormLogistics.FilterUpdated(Sender: TObject);
+begin
+  {$IFDEF USE_VIRTUAL_TREEVIEW}
+  ApplyFilter;
+  {$ENDIF}
+end;
+
+
+{$IFDEF USE_VIRTUAL_TREEVIEW}
+{ TKMHandLogisticsVST }
+constructor TKMHandLogisticsVST.Create(aOwner: TComponent; aKind: TKMVSTKind);
+begin
+  inherited Create(AOwner);
+
+  Kind := aKind;
+end;
+
+
+function TKMHandLogisticsVST.GetColumnsCnt: Integer;
+begin
+  Result := 0;
+  case Kind of
+    vstkDelivery:  Result := DELIVERIES_COL_COUNT;
+    vstkOffer:     Result := OFFERS_COL_COUNT;
+    vstkDemand:    Result := DEMANDS_COL_COUNT;
+  end;
+end;
+
+
+function TKMHandLogisticsVST.GetDefColumn(aIndex: Integer): TKMVSTColumn;
+begin
+  case Kind of
+    vstkDelivery:  Result := DEF_DELIVERIES_COLUMNS[aIndex];
+    vstkOffer:     Result := DEF_OFFERS_COLUMNS[aIndex];
+    vstkDemand:    Result := DEF_DEMANDS_COLUMNS[aIndex];
+  end;
+end;
+{$ENDIF}
+
+
 end.
+

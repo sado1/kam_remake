@@ -1070,6 +1070,9 @@ begin
     gMain.FormMain.SetExportGameStats(aGameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti]);
     gMain.FormMain.SetSaveEditableMission(aGameMode = gmMapEd);
   end;
+
+  if Assigned(FormLogistics) then
+    FormLogistics.UpdateView(gGame.GetHandsCount);
 end;
 
 

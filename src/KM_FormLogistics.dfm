@@ -2,8 +2,8 @@ object FormLogistics: TFormLogistics
   Left = 0
   Top = 0
   Caption = 'FormLogistics'
-  ClientHeight = 615
-  ClientWidth = 707
+  ClientHeight = 826
+  ClientWidth = 870
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,173 +11,133 @@ object FormLogistics: TFormLogistics
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnCreate = FormCreate
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object TabControl1: TTabControl
+  object vstPageCtrl: TPageControl
+    Left = 0
+    Top = 145
+    Width = 870
+    Height = 681
+    ActivePage = tabSheetDeliveries
+    Align = alClient
+    TabOrder = 0
+    OnChange = vstPageCtrlChange
+    ExplicitTop = 143
+    ExplicitWidth = 707
+    object tabSheetDeliveries: TTabSheet
+      Caption = 'Deliveries'
+      ExplicitWidth = 281
+      ExplicitHeight = 165
+    end
+    object tabSheetOffers: TTabSheet
+      Caption = 'Offers'
+      ImageIndex = 1
+      ExplicitWidth = 691
+      ExplicitHeight = 395
+    end
+    object tabSheetDemands: TTabSheet
+      Caption = 'Demands'
+      ImageIndex = 2
+      ExplicitWidth = 691
+      ExplicitHeight = 395
+    end
+  end
+  object gbFilter: TGroupBox
     Left = 0
     Top = 0
-    Width = 700
-    Height = 617
-    Font.Charset = RUSSIAN_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 0
-    Tabs.Strings = (
-      'Deliveries'
-      'Offers'
-      'Demands')
-    TabIndex = 0
-    OnChange = TabControl1Change
-    object DeliveriesList: TListView
-      Left = 4
-      Top = 24
-      Width = 692
-      Height = 589
-      Align = alClient
-      Columns = <
-        item
-          Caption = '#'
-          Width = 30
-        end
-        item
-          Caption = 'Hand'
-          Width = 40
-        end
-        item
-          Caption = 'iQ'
-          Width = 30
-        end
-        item
-          Caption = 'Resource'
-          Width = 100
-        end
-        item
-          Caption = 'From house'
-          Width = 120
-        end
-        item
-          Caption = 'FrID'
-          Width = 70
-        end
-        item
-          Caption = 'To'
-          Width = 120
-        end
-        item
-          Caption = 'ToID'
-          Width = 70
-        end
-        item
-          Caption = 'Serf'
-          Width = 70
-        end>
-      HideSelection = False
-      RowSelect = True
-      SortType = stBoth
-      TabOrder = 1
-      ViewStyle = vsReport
+    Width = 870
+    Height = 145
+    Align = alTop
+    Caption = 'Filter'
+    TabOrder = 1
+    ExplicitLeft = -8
+    ExplicitWidth = 707
+    object Label1: TLabel
+      Left = 10
+      Top = 16
+      Width = 30
+      Height = 13
+      Caption = 'Hands'
     end
-    object DemandsList: TListView
-      Left = 4
-      Top = 24
-      Width = 692
-      Height = 589
-      Align = alClient
-      Columns = <
-        item
-          Caption = '#'
-          Width = 30
-        end
-        item
-          Caption = 'Hand'
-          Width = 40
-        end
-        item
-          Caption = 'iD'
-          Width = 30
-        end
-        item
-          Caption = 'Resource'
-          Width = 100
-        end
-        item
-          Caption = 'To'
-          Width = 120
-        end
-        item
-          Caption = 'ToID'
-          Width = 70
-        end
-        item
-          Caption = 'Type'
-          Width = 60
-        end
-        item
-          Caption = 'Importance'
-          Width = 60
-        end
-        item
-          Caption = 'Performed'
-          Width = 70
-        end
-        item
-          Caption = 'Deleted'
-          Width = 60
-        end>
-      RowSelect = True
-      TabOrder = 2
-      ViewStyle = vsReport
-      Visible = False
-    end
-    object OffersList: TListView
-      Left = 4
-      Top = 24
-      Width = 692
-      Height = 589
-      Align = alClient
-      Columns = <
-        item
-          Caption = '#'
-          Width = 30
-        end
-        item
-          Caption = 'Hand'
-          Width = 40
-        end
-        item
-          Caption = 'iO'
-          Width = 30
-        end
-        item
-          Caption = 'Resource'
-          Width = 100
-        end
-        item
-          Caption = 'HouseFrom'
-          Width = 120
-        end
-        item
-          Caption = 'FromID'
-          Width = 70
-        end
-        item
-          Caption = 'Count'
-        end
-        item
-          Caption = 'Performed'
-          Width = 70
-        end
-        item
-          Caption = 'Deleted'
-          Width = 60
-        end>
-      RowSelect = True
+    object clbHandsFilter: TCheckListBox
+      Left = 10
+      Top = 35
+      Width = 135
+      Height = 102
+      OnClickCheck = FilterUpdated
+      Columns = 3
+      CheckBoxPadding = 2
+      ItemHeight = 15
+      Items.Strings = (
+        '0'
+        '1'
+        '2'
+        '3'
+        '4'
+        '5'
+        '6'
+        '7'
+        '8'
+        '9'
+        '10'
+        '11'
+        '12'
+        '13'
+        '14'
+        '15'
+        '16'
+        '17')
       TabOrder = 0
-      ViewStyle = vsReport
-      Visible = False
+    end
+    object gbToFromID: TGroupBox
+      Left = 168
+      Top = 16
+      Width = 177
+      Height = 121
+      Caption = 'To / From ID'
+      TabOrder = 1
+      object seToID: TSpinEdit
+        Left = 68
+        Top = 19
+        Width = 97
+        Height = 22
+        MaxValue = 2147483647
+        MinValue = 0
+        TabOrder = 0
+        Value = 0
+        OnChange = FilterUpdated
+      end
+      object seFromID: TSpinEdit
+        Left = 68
+        Top = 47
+        Width = 97
+        Height = 22
+        MaxValue = 2147483647
+        MinValue = 0
+        TabOrder = 1
+        Value = 0
+        OnChange = FilterUpdated
+      end
+      object cbToID: TCheckBox
+        Left = 8
+        Top = 21
+        Width = 49
+        Height = 17
+        Caption = 'To ID'
+        TabOrder = 2
+        OnClick = FilterUpdated
+      end
+      object cbFromID: TCheckBox
+        Left = 8
+        Top = 44
+        Width = 54
+        Height = 17
+        Caption = 'From ID'
+        TabOrder = 3
+        OnClick = FilterUpdated
+      end
     end
   end
 end
