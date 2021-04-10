@@ -1603,7 +1603,9 @@ begin
   else
     Exit;
 
-  fSprites[aRT].OverloadFromFolder(ExeDir + 'Sprites' + PathDelim);
+  fSprites[aRT].OverloadFromFolder(ExeDir + 'Sprites' + PathDelim); // Legacy support
+  // 'Sprites' folder name confused some of the players, cause there is already data/Sprites folder
+  fSprites[aRT].OverloadFromFolder(ExeDir + 'Modding graphics' + PathDelim);
 
   if aRT = rxTiles then
   begin
