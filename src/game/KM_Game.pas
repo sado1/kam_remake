@@ -247,6 +247,8 @@ type
 
     procedure UpdateMultiplayerTeams;
 
+    function GetHandsCount: Integer;
+
     property Pathfinding: TPathFinding read fPathfinding;
     property GameInputProcess: TKMGameInputProcess read fGameInputProcess write fGameInputProcess;
     property Options: TKMGameOptions read fOptions;
@@ -1857,6 +1859,12 @@ begin
   if Self = nil then Exit(nil);
 
   Result := fGamePlayInterface;
+end;
+
+
+function TKMGame.GetHandsCount: Integer;
+begin
+  Result := gHands.Count;
 end;
 
 
