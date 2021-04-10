@@ -1224,7 +1224,7 @@ begin
   seEntityUID.SetValueWithoutChange(aEntityUID);
   seWarriorUID.SetValueWithoutChange(aEntity2UID);
                                                                 {TODO -oOwner -cGeneral : ActionItem}
-  if GetKeyState(VK_CONTROL) < 0 then
+  if GetKeyState(VK_MENU) < 0 then
     seFindObjByUID.Value := aEntityUID // will trigger OnChange
   else
   if GetKeyState(VK_SHIFT) < 0 then
