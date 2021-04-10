@@ -170,6 +170,10 @@ const
   INDENTATION_Bevel = 5;
   SIZE_Bevel_X = WIDTH_Column;
   SIZE_Bevel_Y = SIZE_Y - 140;
+  // Resources
+  STONE_MAX = 3000;
+  GOLD_MAX = 1000;
+  IRON_MAX = 1000;
 var
   Img: TKMImage;
   Column_X,Column_Y: Integer;
@@ -263,21 +267,21 @@ begin
     // Stones
     Lab := TKMLabel.Create(Panel_Settings, Column_X+OFFSET_1, NextLine(Column_Y), BOX_X, BOX_Y, gResTexts[TX_RESOURCES_STONES], fntMetal, taLeft);
       Lab.Hint := gResTexts[TX_MAPED_RMG_SETTINGS_STONE_HINT];
-      TBar_Res_Stone := TKMTrackBar.Create(Panel_Settings, Column_X+OFFSET_1, NextLine(Column_Y), WIDTH_TrackBar-OFFSET_1, 0+200*Ord(aMP), 2000);
+      TBar_Res_Stone := TKMTrackBar.Create(Panel_Settings, Column_X+OFFSET_1, NextLine(Column_Y), WIDTH_TrackBar-OFFSET_1, 0+200*Ord(aMP), STONE_MAX);
       TBar_Res_Stone.Position := fRMG.RMGSettings.Locs.Resource.Stone;
       TBar_Res_Stone.Step := 200;
       TBar_Res_Stone.Hint := gResTexts[TX_MAPED_RMG_SETTINGS_STONE_HINT];
     // Gold
     Lab := TKMLabel.Create(Panel_Settings, Column_X+OFFSET_1, NextLine(Column_Y), BOX_X, BOX_Y, gResTexts[TX_RESOURCES_GOLD], fntMetal, taLeft);
       Lab.Hint := gResTexts[TX_MAPED_RMG_SETTINGS_GOLD_HINT];
-      TBar_Res_Gold := TKMTrackBar.Create(Panel_Settings, Column_X+OFFSET_1, NextLine(Column_Y), WIDTH_TrackBar-OFFSET_1, 0, 500);
+      TBar_Res_Gold := TKMTrackBar.Create(Panel_Settings, Column_X+OFFSET_1, NextLine(Column_Y), WIDTH_TrackBar-OFFSET_1, 0, GOLD_MAX);
       TBar_Res_Gold.Position := fRMG.RMGSettings.Locs.Resource.Gold;
       TBar_Res_Gold.Step := 50;
       TBar_Res_Gold.Hint := gResTexts[TX_MAPED_RMG_SETTINGS_GOLD_HINT];
     // Iron
     Lab := TKMLabel.Create(Panel_Settings, Column_X+OFFSET_1, NextLine(Column_Y), BOX_X, BOX_Y, gResTexts[TX_RESOURCES_IRON], fntMetal, taLeft);
       Lab.Hint := gResTexts[TX_MAPED_RMG_SETTINGS_IRON_HINT];
-      TBar_Res_Iron := TKMTrackBar.Create(Panel_Settings, Column_X+OFFSET_1, NextLine(Column_Y), WIDTH_TrackBar-OFFSET_1, 0, 500);
+      TBar_Res_Iron := TKMTrackBar.Create(Panel_Settings, Column_X+OFFSET_1, NextLine(Column_Y), WIDTH_TrackBar-OFFSET_1, 0, IRON_MAX);
       TBar_Res_Iron.Position := fRMG.RMGSettings.Locs.Resource.Iron;
       TBar_Res_Iron.Step := 50;
       TBar_Res_Iron.Hint := gResTexts[TX_MAPED_RMG_SETTINGS_IRON_HINT];
