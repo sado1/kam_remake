@@ -14,6 +14,7 @@ uses
   Generics.Collections, Generics.Defaults, System.Hash,
   {$ENDIF}
   KM_Units, KM_Houses, KM_ResHouses,
+  KM_HandEntity,
   KM_ResWares, KM_CommonClasses, KM_Defaults, KM_Points,
   BinaryHeapGen,
   KM_ResTypes;
@@ -67,6 +68,7 @@ type
     Node: PVirtualNode;
     {$ENDIF}
     procedure Cleanup;
+    function GetDemandEntity: TKMHandEntity;
   end;
 
   PKMDeliveryQueueItem = ^TKMDeliveryQueueItem;
@@ -220,9 +222,9 @@ type
     {$IFDEF USE_VIRTUAL_TREEVIEW}
     procedure SetVSTData(aVST: TVirtualStringTree; Node: PVirtualNode; aHandID, aID: Integer);
     {$ENDIF}
-    procedure Form_UpdateOfferItem(aI: Integer; aUpdateForm: Boolean = True);
-    procedure Form_UpdateDemandItem(aI: Integer; aUpdateForm: Boolean = True);
-    procedure Form_UpdateQueueItem(aI: Integer; aUpdateForm: Boolean = True);
+    procedure Form_UpdateOfferNode(aI: Integer);
+    procedure Form_UpdateDemandNode(aI: Integer);
+    procedure Form_UpdateQueueNode(aI: Integer);
 
     function CompareBids(A, B: TKMDeliveryBid): Boolean;
 
@@ -296,7 +298,8 @@ type
 
     procedure UpdateState;
 
-    procedure Form_UpdateAllItems;
+    procedure Form_UpdateAllNodes;
+    procedure Form_NilAllNodes;
 
     procedure ExportToFile(const aFileName: UnicodeString);
   end;
@@ -584,7 +587,7 @@ end;
 
 function TKMDeliveries.AllowFormLogisticsChange: Boolean;
 begin
-  Result := gMain.IsDebugChangeAllowed and Assigned(FormLogistics);
+  Result := gMain.IsDebugChangeAllowed and Assigned(FormLogistics) and FormLogistics.IsEnabled;
 end;
 
 
@@ -601,7 +604,7 @@ end;
 
 
 // Update FormLogistics offer item
-procedure TKMDeliveries.Form_UpdateOfferItem(aI: Integer; aUpdateForm: Boolean = True);
+procedure TKMDeliveries.Form_UpdateOfferNode(aI: Integer);
 begin
   {$IFDEF USE_VIRTUAL_TREEVIEW}
   if aI >= fOfferCount then Exit;
@@ -615,16 +618,13 @@ begin
         Node := FormLogistics.VSTOffers.AddChild(nil); //Add to root
 
       SetVSTData(FormLogistics.VSTOffers, Node, fOwner, aI);
-
-      if aUpdateForm then
-        FormLogistics.VSTUpdate;
     end;
   {$ENDIF}
 end;
 
 
 // Update FormLogistics demand item
-procedure TKMDeliveries.Form_UpdateDemandItem(aI: Integer; aUpdateForm: Boolean = True);
+procedure TKMDeliveries.Form_UpdateDemandNode(aI: Integer);
 begin
   {$IFDEF USE_VIRTUAL_TREEVIEW}
   if aI >= fDemandCount then Exit;
@@ -638,16 +638,13 @@ begin
         Node := FormLogistics.VSTDemands.AddChild(nil); //Add to root
 
       SetVSTData(FormLogistics.VSTDemands, Node, fOwner, aI);
-
-      if aUpdateForm then
-        FormLogistics.VSTUpdate;
     end;
   {$ENDIF}
 end;
 
 
 // Update FormLogistics queue item
-procedure TKMDeliveries.Form_UpdateQueueItem(aI: Integer; aUpdateForm: Boolean = True);
+procedure TKMDeliveries.Form_UpdateQueueNode(aI: Integer);
 begin
   {$IFDEF USE_VIRTUAL_TREEVIEW}
   if aI >= fQueueCount then Exit;
@@ -661,31 +658,45 @@ begin
         Node := FormLogistics.VSTDeliveries.AddChild(nil); //Add to root
 
       SetVSTData(FormLogistics.VSTDeliveries, Node, fOwner, aI);
-
-      if aUpdateForm then
-        FormLogistics.VSTUpdate;
     end;
   {$ENDIF}
 end;
 
 
 // Update FormLogistics items (all of them)
-procedure TKMDeliveries.Form_UpdateAllItems;
+procedure TKMDeliveries.Form_UpdateAllNodes;
 var
   I: Integer;
 begin
   {$IFDEF USE_VIRTUAL_TREEVIEW}
   for I := 1 to fQueueCount do
-    Form_UpdateQueueItem(I, False);
+    Form_UpdateQueueNode(I);
 
   for I := 1 to fOfferCount do
-    Form_UpdateOfferItem(I, False);
+    Form_UpdateOfferNode(I);
 
   for I := 1 to fDemandCount do
-    Form_UpdateDemandItem(I, False);
+    Form_UpdateDemandNode(I);
 
   // Update form only once, after all Nodes were created
   FormLogistics.VSTUpdate;
+  {$ENDIF}
+end;
+
+
+procedure TKMDeliveries.Form_NilAllNodes;
+var
+  I: Integer;
+begin
+  {$IFDEF USE_VIRTUAL_TREEVIEW}
+  for I := 1 to fQueueCount do
+     fQueue[I].Node := nil;
+
+  for I := 1 to fOfferCount do
+    fOffer[I].Node := nil;
+
+  for I := 1 to fDemandCount do
+    fDemand[I].Node := nil;
   {$ENDIF}
 end;
 
@@ -714,14 +725,14 @@ begin
         fOffer[I].Count :=  aCount;
         fOffer[I].IsDeleted := False;
 
-        Form_UpdateOfferItem(I);
+        Form_UpdateOfferNode(I);
         Exit; //Count added, thats all
       end
       else
       begin
         Inc(fOffer[I].Count, aCount);
 
-        Form_UpdateOfferItem(I);
+        Form_UpdateOfferNode(I);
 
         Exit; //Count added, thats all
       end;
@@ -748,7 +759,7 @@ begin
     Count := aCount;
     Assert((BeingPerformed = 0) and not IsDeleted); //Make sure this item has been closed properly, if not there is a flaw
 
-    Form_UpdateOfferItem(I);
+    Form_UpdateOfferNode(I);
   end;
 end;
 
@@ -770,7 +781,7 @@ begin
       //Keep it until all associated deliveries are abandoned
       fOffer[I].IsDeleted := True; //Don't reset it until serfs performing this offer are done with it
       fOffer[I].Count := 0; //Make the count 0 so no one else tries to take this offer
-      Form_UpdateOfferItem(I);
+      Form_UpdateOfferNode(I);
     end
     else
       CloseOffer(I);
@@ -801,7 +812,7 @@ begin
         else
           CloseOffer(i);
       end;
-      Form_UpdateOfferItem(I);
+      Form_UpdateOfferNode(I);
       Exit; //Count decreased, that's all
     end;
   raise Exception.Create('Failed to remove offer');
@@ -1030,7 +1041,7 @@ begin
         and (Loc_House <> nil) and (Loc_House.HouseType = htInn) then
         Importance := diHigh3;
 
-      Form_UpdateDemandItem(I);
+      Form_UpdateDemandNode(I);
     end;
   end;
 end;
@@ -1526,13 +1537,13 @@ begin
       if (fDemand[oldD].BeingPerformed = 0) and fDemand[oldD].IsDeleted then
         CloseDemand(oldD);
 
-      Form_UpdateDemandItem(oldD);
+      Form_UpdateDemandNode(oldD);
 
       //Take new demand
       fQueue[aDeliveryID].DemandID := bestD;
       Inc(fDemand[bestD].BeingPerformed); //Places a virtual "Reserved" sign on Demand
 
-      Form_UpdateDemandItem(bestD);
+      Form_UpdateDemandNode(bestD);
     end;
 
     //Return chosen unit and house
@@ -1700,7 +1711,7 @@ begin
       if (fDemand[oldDemandId].BeingPerformed = 0) and fDemand[oldDemandId].IsDeleted then
         CloseDemand(oldDemandId);
 
-      Form_UpdateDemandItem(oldDemandId);
+      Form_UpdateDemandNode(oldDemandId);
 
       // Delivery should be cancelled now
       CloseDelivery(aDeliveryId);
@@ -1717,15 +1728,15 @@ begin
         if (fDemand[oldDemandId].BeingPerformed = 0) and fDemand[oldDemandId].IsDeleted then
           CloseDemand(oldDemandId);
 
-        Form_UpdateDemandItem(oldDemandId);
+        Form_UpdateDemandNode(oldDemandId);
 
         // Take new demand
         fQueue[aDeliveryId].DemandId := bestDemandId;
         Inc(fDemand[bestDemandId].BeingPerformed); //Places a virtual "Reserved" sign on Demand
         fQueue[aDeliveryId].IsFromUnit := True; //Now this delivery will always start from serfs hands
 
-        Form_UpdateDemandItem(bestDemandId);
-        Form_UpdateQueueItem(aDeliveryId);
+        Form_UpdateDemandNode(bestDemandId);
+        Form_UpdateQueueNode(aDeliveryId);
       end;
 
       // Return chosen unit and house
@@ -1900,7 +1911,7 @@ begin
 
   gHands.CleanUpUnitPointer(TKMUnit(fQueue[iQ].Serf));
   fQueue[iQ].Serf := TKMUnitSerf(aSerf.GetPointer);
-  Form_UpdateQueueItem(iQ);
+  Form_UpdateQueueNode(iQ);
 end;
 
 
@@ -1929,12 +1940,12 @@ begin
   fQueue[I].Node := nil;
   {$ENDIF}
 
-  Form_UpdateQueueItem(I);
+  Form_UpdateQueueNode(I);
 
   Inc(fOffer[iO].BeingPerformed); //Places a virtual "Reserved" sign on Offer
   Inc(fDemand[iD].BeingPerformed); //Places a virtual "Reserved" sign on Demand
-  Form_UpdateOfferItem(iO);
-  Form_UpdateDemandItem(iD);
+  Form_UpdateOfferNode(iO);
+  Form_UpdateDemandNode(iD);
 
   gLog.LogDelivery('Creating delivery ID ' + IntToStr(I));
 
@@ -1965,8 +1976,8 @@ begin
     else
       CloseOffer(iO);
 
-  Form_UpdateQueueItem(aID);
-  Form_UpdateOfferItem(iO);
+  Form_UpdateQueueNode(aID);
+  Form_UpdateOfferNode(iO);
 end;
 
 
@@ -1986,7 +1997,7 @@ begin
   if (fDemand[iD].DemandType = dtOnce)
     or (fDemand[iD].IsDeleted and (fDemand[iD].BeingPerformed = 0)) then
     CloseDemand(iD); //Remove resource from Demand list
-  Form_UpdateDemandItem(iD);
+  Form_UpdateDemandNode(iD);
 end;
 
 
@@ -2006,7 +2017,7 @@ begin
       if fOffer[fQueue[aID].OfferID].IsDeleted and (fOffer[fQueue[aID].OfferID].BeingPerformed = 0) then
         CloseOffer(fQueue[aID].OfferID);
 
-      Form_UpdateOfferItem(fQueue[aID].OfferID);
+      Form_UpdateOfferNode(fQueue[aID].OfferID);
     end;
 
     if fQueue[aID].DemandID <> 0 then
@@ -2015,7 +2026,7 @@ begin
       if fDemand[fQueue[aID].DemandID].IsDeleted and (fDemand[fQueue[aID].DemandID].BeingPerformed = 0) then
         CloseDemand(fQueue[aID].DemandID);
 
-      Form_UpdateDemandItem(fQueue[aID].DemandID);
+      Form_UpdateDemandNode(fQueue[aID].DemandID);
     end;
 
     CloseDelivery(aID);
@@ -2199,7 +2210,7 @@ begin
   for I := 1 to fOfferCount do
   begin
     fOffer[I].Loc_House := gHands.GetHouseByUID(Cardinal(fOffer[I].Loc_House));
-    Form_UpdateOfferItem(I);
+    Form_UpdateOfferNode(I);
   end;
 
   for I := 1 to fDemandCount do
@@ -2207,13 +2218,13 @@ begin
     begin
       Loc_House := gHands.GetHouseByUID(Cardinal(Loc_House));
       Loc_Unit := gHands.GetUnitByUID(Cardinal(Loc_Unit));
-      Form_UpdateDemandItem(I);
+      Form_UpdateDemandNode(I);
     end;
 
   for I := 1 to fQueueCount do
   begin
     fQueue[I].Serf := TKMUnitSerf(gHands.GetUnitByUID(Cardinal(fQueue[I].Serf)));
-    Form_UpdateQueueItem(I);
+    Form_UpdateQueueNode(I);
   end;
 end;
 
@@ -2221,6 +2232,10 @@ end;
 procedure TKMDeliveries.UpdateState;
 begin
   fRouteEvaluator.UpdateState;
+
+  // Update form logistics
+  if AllowFormLogisticsChange then
+    FormLogistics.VSTUpdate;
 end;
 
 
@@ -2739,6 +2754,17 @@ begin
 
   Node := nil;
   {$ENDIF}
+end;
+
+
+function TKMDeliveryDemand.GetDemandEntity: TKMHandEntity;
+begin
+  Result := nil;
+  if Loc_House <> nil then
+    Result := Loc_House
+  else
+  if Loc_Unit <> nil then
+    Result := Loc_Unit;
 end;
 
 

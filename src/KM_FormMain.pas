@@ -1063,7 +1063,7 @@ procedure TFormMain.FindObjByUID(aUID: Integer);
 begin
   if gGameApp.Game.GamePlayInterface = nil then Exit;
 
-  gGameApp.Game.GamePlayInterface.SelectEntityByUID(aUID);
+  gGameApp.Game.GamePlayInterface.SelectNHighlightEntityByUID(aUID);
 end;
 
 

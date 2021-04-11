@@ -8,6 +8,7 @@ uses
   KM_Controls, KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Pics, KM_Points,
   KM_InterfaceTypes, KM_InterfaceGame, KM_Terrain, KM_Houses, KM_Units, KM_Minimap, KM_Viewport, KM_Render,
   KM_UnitGroup, KM_UnitWarrior, KM_Saves, KM_MessageStack, KM_ResHouses, KM_Alerts, KM_Networking,
+  KM_HandEntity,
   KM_GUIGameResultsSP,
   KM_GUIGameResultsMP,
   KM_GUIGameBuild, KM_GUIGameChat, KM_GUIGameHouse, KM_GUIGameUnit, KM_GUIGameRatios, KM_GUIGameStats,KM_GUIGameMenuSettings,
@@ -333,7 +334,8 @@ type
     property GuiGameSpectator: TKMGUIGameSpectator read fGuiGameSpectator;
 
     function StatsOpened: Boolean;
-    procedure SelectEntityByUID(aUID: Integer);
+    procedure SelectEntity(aEntity: TKMHandEntity);
+    procedure SelectNHighlightEntityByUID(aUID: Integer);
 
     property Alerts: TKMAlerts read fAlerts;
 
@@ -368,7 +370,6 @@ uses
   KM_Sound, KM_NetPlayersList, KM_MessageLog, KM_NetworkTypes,
   KM_InterfaceMapEditor, KM_HouseWoodcutters, KM_MapTypes,
   KM_GameTypes, KM_GameParams, KM_Video, KM_Music,
-  KM_HandEntity,
   KM_HandEntityHelper,
   KM_ResTypes,
   KM_Utils;
@@ -1900,7 +1901,25 @@ begin
 end;
 
 
-procedure TKMGamePlayInterface.SelectEntityByUID(aUID: Integer);
+procedure TKMGamePlayInterface.SelectEntity(aEntity: TKMHandEntity);
+begin
+  if Self = nil then Exit;
+  if gHands = nil then Exit;
+
+  if (aEntity = nil) or not aEntity.IsSelectable then Exit;
+
+  fViewport.Position := aEntity.PositionF;
+
+  if aEntity is TKMUnitWarrior then
+    gMySpectator.Selected := aEntity.AsUnitWarrior.Group
+  else
+    gMySpectator.Selected := aEntity;
+
+  UpdateSelectedObject;
+end;
+
+
+procedure TKMGamePlayInterface.SelectNHighlightEntityByUID(aUID: Integer);
 var
   entity: TKMHandEntity;
 begin
@@ -1908,18 +1927,8 @@ begin
   if gHands = nil then Exit;
 
   entity := gHands.GetObjectByUID(aUID);
-  gMySpectator.HighlightDebug := entity;
-
-  if (entity = nil) or not entity.IsSelectable then Exit;
-
-  fViewport.Position := entity.PositionF;
-
-  if entity is TKMUnitWarrior then
-    gMySpectator.Selected := entity.AsUnitWarrior.Group
-  else
-    gMySpectator.Selected := entity;
-
-  UpdateSelectedObject;
+  SelectEntity(entity);
+  gMySpectator.HighlightDebug := TKMHighlightEntity.New(entity, icCyan);
 end;
 
 

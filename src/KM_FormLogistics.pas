@@ -54,17 +54,21 @@ type
     cbFromID: TCheckBox;
     btnUncheckAll: TButton;
     btnCheckAll: TButton;
+    panel1: TPanel;
+    cbFormEnabled: TCheckBox;
     {$IFDEF USE_VIRTUAL_TREEVIEW}
     VSTDeliveries: TKMHandLogisticsVST;
     VSTOffers: TKMHandLogisticsVST;
     VSTDemands: TKMHandLogisticsVST;
     {$ENDIF}
     procedure FormCreate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure vstPageCtrlChange(Sender: TObject);
     procedure FilterUpdated(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure btnCheckAllClick(Sender: TObject);
     procedure btnUncheckAllClick(Sender: TObject);
+    procedure cbFormEnabledClick(Sender: TObject);
   private
     {$IFDEF USE_VIRTUAL_TREEVIEW}
     fLastNodeHitInfo: THitInfo;
@@ -75,19 +79,24 @@ type
     procedure VSTOffersGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
     procedure VSTDemandsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
 
+    procedure VSTFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
+    procedure VSTNodeClick(Sender: TBaseVirtualTree; const HitInfo: THitInfo);
+
     procedure VSTFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure VSTHeaderClick(Sender: TVTHeader; HitInfo: TVTHeaderHitInfo);
     procedure VSTCompareNodes(Sender: TBaseVirtualTree; Node1, Node2: PVirtualNode; Column: TColumnIndex; var Result: Integer);
-    procedure VSTFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
     procedure VSTKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure VSTAfterCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; CellRect: TRect);
 
     procedure ApplyFilter;
+    procedure UpdateAll;
     {$ENDIF}
   public
     procedure VSTUpdate;
 
     procedure UpdateView(aHandsCnt: Integer);
+
+    function IsEnabled: Boolean;
 
     procedure Clear;
   end;
@@ -99,12 +108,14 @@ var
 implementation
 uses
   Math, TypInfo,
+  KM_GameApp,
+  KM_HandEntity,
   KM_HandLogistics, KM_Resource, KM_HandsCollection,
   KM_Defaults, KM_ResHouses, KM_ResUnits, KM_ResTypes, KM_Hand; // Make compiler happy, regarding inline methods
 
 {$IFDEF USE_VIRTUAL_TREEVIEW}
 const
-  DELIVERIES_COL_COUNT = 9;
+  DELIVERIES_COL_COUNT = 10;
   OFFERS_COL_COUNT = 9;
   DEMANDS_COL_COUNT = 10;
 
@@ -119,45 +130,52 @@ const
 
 
   DEF_DELIVERIES_COLUMNS: TKMDeliveriesColumnsArray = (
-    (ID: 0;  Title: '#';          Alignment: taRightJustify;  Width: 30;  Visible: True; ColumnType: cctNumber),
-    (ID: 1;  Title: 'Hand';       Alignment: taRightJustify;  Width: 40;  Visible: True; ColumnType: cctNumber),
-    (ID: 2;  Title: 'iQ';         Alignment: taRightJustify;  Width: 30;  Visible: True; ColumnType: cctNumber),
-    (ID: 3;  Title: 'Resource';   Alignment: taLeftJustify;   Width: 100; Visible: True; ColumnType: cctText),
-    (ID: 4;  Title: 'From house'; Alignment: taLeftJustify;   Width: 120; Visible: True; ColumnType: cctText),
-    (ID: 5;  Title: 'From ID';    Alignment: taRightJustify;  Width: 70;  Visible: True; ColumnType: cctNumber),
-    (ID: 6;  Title: 'To';         Alignment: taLeftJustify;   Width: 120; Visible: True; ColumnType: cctText),
-    (ID: 7;  Title: 'To ID';      Alignment: taRightJustify;  Width: 70;  Visible: True; ColumnType: cctNumber),
-    (ID: 8;  Title: 'Serf';       Alignment: taRightJustify;  Width: 70;  Visible: True; ColumnType: cctNumber)
+    (ID: 0;  Title: '#';          Alignment: taRightJustify;  Width: 40;  Visible: True; ColumnType: cctNumber),
+    (ID: 1;  Title: 'Hand';       Alignment: taRightJustify;  Width: 50;  Visible: True; ColumnType: cctNumber),
+    (ID: 2;  Title: 'iQ';         Alignment: taRightJustify;  Width: 40;  Visible: True; ColumnType: cctNumber),
+    (ID: 3;  Title: 'Resource';   Alignment: taLeftJustify;   Width: 110; Visible: True; ColumnType: cctText),
+    (ID: 4;  Title: 'From house'; Alignment: taLeftJustify;   Width: 130; Visible: True; ColumnType: cctText),
+    (ID: 5;  Title: 'From ID';    Alignment: taRightJustify;  Width: 80;  Visible: True; ColumnType: cctNumber),
+    (ID: 6;  Title: 'To';         Alignment: taLeftJustify;   Width: 130; Visible: True; ColumnType: cctText),
+    (ID: 7;  Title: 'To ID';      Alignment: taRightJustify;  Width: 80;  Visible: True; ColumnType: cctNumber),
+    (ID: 8;  Title: 'Serf';       Alignment: taRightJustify;  Width: 80;  Visible: True; ColumnType: cctNumber),
+    (ID: 9;  Title: 'Stage';      Alignment: taLeftJustify;   Width: 50;  Visible: True; ColumnType: cctText)
   );
 
   DEF_OFFERS_COLUMNS: TKMOffersColumnsArray = (
-    (ID: 0;  Title: '#';          Alignment: taRightJustify;  Width: 30;  Visible: True; ColumnType: cctNumber),
-    (ID: 1;  Title: 'Hand';       Alignment: taRightJustify;  Width: 40;  Visible: True; ColumnType: cctNumber),
-    (ID: 2;  Title: 'iO';         Alignment: taRightJustify;  Width: 30;  Visible: True; ColumnType: cctNumber),
-    (ID: 3;  Title: 'Resource';   Alignment: taLeftJustify;   Width: 100; Visible: True; ColumnType: cctText),
-    (ID: 4;  Title: 'From house'; Alignment: taLeftJustify;   Width: 120; Visible: True; ColumnType: cctText),
-    (ID: 5;  Title: 'From ID';    Alignment: taRightJustify;  Width: 70;  Visible: True; ColumnType: cctNumber),
-    (ID: 6;  Title: 'Count';      Alignment: taRightJustify;  Width: 60;  Visible: True; ColumnType: cctNumber),
-    (ID: 7;  Title: 'Performed';  Alignment: taRightJustify;  Width: 70;  Visible: True; ColumnType: cctNumber),
-    (ID: 8;  Title: 'Deleted';    Alignment: taLeftJustify;   Width: 60;  Visible: True; ColumnType: cctText)
+    (ID: 0;  Title: '#';          Alignment: taRightJustify;  Width: 40;  Visible: True; ColumnType: cctNumber),
+    (ID: 1;  Title: 'Hand';       Alignment: taRightJustify;  Width: 50;  Visible: True; ColumnType: cctNumber),
+    (ID: 2;  Title: 'iO';         Alignment: taRightJustify;  Width: 40;  Visible: True; ColumnType: cctNumber),
+    (ID: 3;  Title: 'Resource';   Alignment: taLeftJustify;   Width: 110; Visible: True; ColumnType: cctText),
+    (ID: 4;  Title: 'From house'; Alignment: taLeftJustify;   Width: 130; Visible: True; ColumnType: cctText),
+    (ID: 5;  Title: 'From ID';    Alignment: taRightJustify;  Width: 80;  Visible: True; ColumnType: cctNumber),
+    (ID: 6;  Title: 'Count';      Alignment: taRightJustify;  Width: 70;  Visible: True; ColumnType: cctNumber),
+    (ID: 7;  Title: 'Performed';  Alignment: taRightJustify;  Width: 80;  Visible: True; ColumnType: cctNumber),
+    (ID: 8;  Title: 'Deleted';    Alignment: taLeftJustify;   Width: 70;  Visible: True; ColumnType: cctText)
   );
 
   DEF_DEMANDS_COLUMNS: TKMDemandsColumnsArray = (
-    (ID: 0;  Title: '#';          Alignment: taRightJustify;  Width: 30;  Visible: True; ColumnType: cctNumber),
-    (ID: 1;  Title: 'Hand';       Alignment: taRightJustify;  Width: 40;  Visible: True; ColumnType: cctNumber),
-    (ID: 2;  Title: 'iD';         Alignment: taRightJustify;  Width: 30;  Visible: True; ColumnType: cctNumber),
-    (ID: 3;  Title: 'Resource';   Alignment: taLeftJustify;   Width: 100; Visible: True; ColumnType: cctText),
-    (ID: 4;  Title: 'To';         Alignment: taLeftJustify;   Width: 120; Visible: True; ColumnType: cctText),
-    (ID: 5;  Title: 'To ID';      Alignment: taRightJustify;  Width: 70;  Visible: True; ColumnType: cctNumber),
-    (ID: 6;  Title: 'Type';       Alignment: taLeftJustify;   Width: 60;  Visible: True; ColumnType: cctText),
-    (ID: 7;  Title: 'Importance'; Alignment: taLeftJustify;   Width: 60;  Visible: True; ColumnType: cctText),
-    (ID: 8;  Title: 'Performed';  Alignment: taLeftJustify;   Width: 70;  Visible: True; ColumnType: cctNumber),
-    (ID: 9;  Title: 'Deleted';    Alignment: taLeftJustify;   Width: 60;  Visible: True; ColumnType: cctText)
+    (ID: 0;  Title: '#';          Alignment: taRightJustify;  Width: 40;  Visible: True; ColumnType: cctNumber),
+    (ID: 1;  Title: 'Hand';       Alignment: taRightJustify;  Width: 50;  Visible: True; ColumnType: cctNumber),
+    (ID: 2;  Title: 'iD';         Alignment: taRightJustify;  Width: 40;  Visible: True; ColumnType: cctNumber),
+    (ID: 3;  Title: 'Resource';   Alignment: taLeftJustify;   Width: 110; Visible: True; ColumnType: cctText),
+    (ID: 4;  Title: 'To';         Alignment: taLeftJustify;   Width: 130; Visible: True; ColumnType: cctText),
+    (ID: 5;  Title: 'To ID';      Alignment: taRightJustify;  Width: 80;  Visible: True; ColumnType: cctNumber),
+    (ID: 6;  Title: 'Type';       Alignment: taLeftJustify;   Width: 70;  Visible: True; ColumnType: cctText),
+    (ID: 7;  Title: 'Importance'; Alignment: taLeftJustify;   Width: 70;  Visible: True; ColumnType: cctText),
+    (ID: 8;  Title: 'Performed';  Alignment: taLeftJustify;   Width: 80;  Visible: True; ColumnType: cctNumber),
+    (ID: 9;  Title: 'Deleted';    Alignment: taLeftJustify;   Width: 70;  Visible: True; ColumnType: cctText)
   );
 {$ENDIF}
 
 
 {$R *.dfm}
+
+
+procedure TFormLogistics.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  gMySpectator.ResetHighlightDebug;
+end;
 
 
 procedure TFormLogistics.FormCreate(Sender: TObject);
@@ -184,6 +202,7 @@ procedure TFormLogistics.FormCreate(Sender: TObject);
     aVST.OnKeyDown := VSTKeyDown;
     aVST.OnFocusChanged := VSTFocusChanged;
     aVST.OnAfterCellPaint := VSTAfterCellPaint;
+    aVST.OnNodeClick := VSTNodeClick;
 
     aVST.Header.SortColumn := DEF_SORT_COLUMN_ID;
 
@@ -191,7 +210,7 @@ procedure TFormLogistics.FormCreate(Sender: TObject);
     begin
       c := aVST.Header.Columns.Add;
       c.Text := aVST.DefColumn[I].Title;
-      c.Width := aVST.DefColumn[I].Width + 15;
+      c.Width := aVST.DefColumn[I].Width;
       c.Tag := aVST.DefColumn[I].ID;
       c.Alignment := aVST.DefColumn[I].Alignment;
 
@@ -222,7 +241,7 @@ begin
 end;
 
 
-procedure TFormLogistics.FormShow(Sender: TObject);
+procedure TFormLogistics.UpdateAll;
 var
   I: Integer;
 begin
@@ -232,7 +251,20 @@ begin
   UpdateView(gHands.Count);
 
   for I := 0 to gHands.Count - 1 do
-    gHands[I].Deliveries.Queue.Form_UpdateAllItems;
+    gHands[I].Deliveries.Queue.Form_UpdateAllNodes;
+
+end;
+
+
+procedure TFormLogistics.FormShow(Sender: TObject);
+begin
+  UpdateAll;
+end;
+
+
+function TFormLogistics.IsEnabled: Boolean;
+begin
+  Result := cbFormEnabled.Checked;
 end;
 
 
@@ -286,9 +318,27 @@ begin
 end;
 
 
+procedure TFormLogistics.cbFormEnabledClick(Sender: TObject);
+begin
+  if cbFormEnabled.Checked then
+    UpdateAll
+  else
+    Clear;
+
+  vstPageCtrl.Enabled := cbFormEnabled.Checked;
+  gbFilter.Enabled    := cbFormEnabled.Checked;
+end;
+
+
 procedure TFormLogistics.Clear;
+var
+  I: Integer;
 begin
   {$IFDEF USE_VIRTUAL_TREEVIEW}
+  // nil all nodes, since we are going to clear all VST's
+  for I := 0 to gHands.Count - 1 do
+    gHands[I].Deliveries.Queue.Form_NilAllNodes;
+
   VSTDeliveries.Clear;
   VSTOffers.Clear;
   VSTDemands.Clear;
@@ -336,27 +386,37 @@ const
     begin
       data := aVST.GetNodeData(C);
       badHand := True;
-
-      for I := 0 to clbHandsFilter.Items.Count - 1 do
-        if (clbHandsFilter.State[I] = cbChecked) and (I = data.HandID) then
-          badHand := False;
-
       badToID := False;
       badFromID := False;
 
-      if cbFromID.Enabled and cbFromID.Checked then
-      begin
-        VSTGetText(aVST, C, GetFromColumn(aVST.Kind), ttNormal, cellText);
-        badFromID := StrToInt(cellText) <> seFromID.Value;
-      end;
+      try
+        for I := 0 to clbHandsFilter.Items.Count - 1 do
+          if (clbHandsFilter.State[I] = cbChecked) and (I = data.HandID) then
+          begin
+            badHand := False;
+            Break;
+          end;
 
-      if cbToID.Enabled and cbToID.Checked then
-      begin
-        VSTGetText(aVST, C, GetToColumn(aVST.Kind), ttNormal, cellText);
-        badToID := StrToInt(cellText) <> seToID.Value;
-      end;
+        // Continue AFAP
+        if badHand then Continue;
 
-      aVST.IsFiltered[C] := badHand or badToID or badFromID;
+        if cbFromID.Enabled and cbFromID.Checked then
+        begin
+          VSTGetText(aVST, C, GetFromColumn(aVST.Kind), ttNormal, cellText);
+          badFromID := StrToInt(cellText) <> seFromID.Value;
+        end;
+
+        // Continue AFAP
+        if badFromID then Continue;
+
+        if cbToID.Enabled and cbToID.Checked then
+        begin
+          VSTGetText(aVST, C, GetToColumn(aVST.Kind), ttNormal, cellText);
+          badToID := StrToInt(cellText) <> seToID.Value;
+        end;
+      finally
+        aVST.IsFiltered[C] := badHand or badToID or badFromID;
+      end;
     end;
   end;
 
@@ -373,13 +433,76 @@ procedure TFormLogistics.VSTFocusChanged(Sender: TBaseVirtualTree; Node: PVirtua
 begin
   fLastNodeHitInfo.HitNode := Node;
   fLastNodeHitInfo.HitColumn := Column;
+end;
 
+
+procedure TFormLogistics.VSTNodeClick(Sender: TBaseVirtualTree; const HitInfo: THitInfo);
+const
+  OFF_COLOR = icYellow;
+  DEM_COLOR = icRed;
+  DEL_FROM_COLUMNS = [4..5];
+  DEL_TO_COLUMNS = [6..7];
+  DEL_SERF_COLUMN = 8;
+
+var
+  data: PKMLogisticsIDs;
+  del: TKMDeliveries;
+  offerEntity, demandEntity, serfEntity, selectEntity: TKMHandEntity;
+begin
   Assert(Sender is TKMHandLogisticsVST);
 
+  data := Sender.GetNodeData(HitInfo.HitNode);
+  if not Assigned(data) then Exit;
+
+  del := gHands[data.handID].Deliveries.Queue;
+
+
   case TKMHandLogisticsVST(Sender).Kind of
-    vstkDelivery: ;
-    vstkOffer:    ;
-    vstkDemand:   ;
+    vstkDelivery: begin
+                    gMySpectator.ResetHighlightDebug;
+
+                    offerEntity := del.Offer[del.Delivery[data.ID].OfferID].Loc_House;
+                    demandEntity := del.Demand[del.Delivery[data.ID].DemandID].GetDemandEntity;
+                    serfEntity := del.Delivery[data.ID].Serf;
+
+                    // Check if click was on a specified column
+                    if HitInfo.HitColumn in DEL_FROM_COLUMNS then
+                      selectEntity := offerEntity
+                    else
+                    if HitInfo.HitColumn in DEL_TO_COLUMNS then
+                      selectEntity := demandEntity
+                    else
+                    if HitInfo.HitColumn = DEL_SERF_COLUMN then
+                      selectEntity := serfEntity
+                    else
+                    // otherwise circle through entities
+                    if offerEntity = gMySpectator.Selected then
+                      selectEntity := demandEntity
+                    else
+                    if demandEntity = gMySpectator.Selected then
+                      selectEntity := serfEntity
+                    else
+                      selectEntity := offerEntity;
+
+                    gGameApp.Game.GamePlayInterface.SelectEntity(selectEntity);
+
+                    gMySpectator.HighlightDebug  := TKMHighlightEntity.New(offerEntity, OFF_COLOR);
+                    gMySpectator.HighlightDebug2 := TKMHighlightEntity.New(demandEntity, DEM_COLOR);
+                    gMySpectator.HighlightDebug3.SetEntity(serfEntity);
+                    gMySpectator.HighlightRoute.SetEntity(serfEntity);
+                  end;
+    vstkOffer:    begin
+                    gMySpectator.ResetHighlightDebug;
+                    offerEntity := del.Offer[data.ID].Loc_House;
+                    gGameApp.Game.GamePlayInterface.SelectEntity(offerEntity);
+                    gMySpectator.HighlightDebug := TKMHighlightEntity.New(offerEntity, OFF_COLOR);
+                  end;
+    vstkDemand:   begin
+                    gMySpectator.ResetHighlightDebug;
+                    demandEntity := del.Demand[data.ID].GetDemandEntity;
+                    gGameApp.Game.GamePlayInterface.SelectEntity(demandEntity);
+                    gMySpectator.HighlightDebug := TKMHighlightEntity.New(demandEntity, DEM_COLOR);
+                  end;
   end;
 end;
 
@@ -389,7 +512,8 @@ begin
   //Copy selected cell text to clipboard
   if (ssCtrl in Shift) and (Key = Ord('C')) then
   begin
-    ClipBoard.AsText := TVirtualStringTree(Sender).Text[fLastNodeHitInfo.HitNode, fLastNodeHitInfo.HitColumn];
+    if Assigned(fLastNodeHitInfo.HitNode) then
+      ClipBoard.AsText := TVirtualStringTree(Sender).Text[fLastNodeHitInfo.HitNode, fLastNodeHitInfo.HitColumn];
   end;
 end;
 
@@ -511,6 +635,7 @@ begin
         else
           CellText := 'nil';
     8:  CellText := IntToStr(del.Delivery[iQ].Serf.UID);
+    9:  CellText := IntToStr(del.Delivery[iQ].Serf.Task.Phase);
   end;
 end;
 

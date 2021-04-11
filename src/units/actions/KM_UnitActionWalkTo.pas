@@ -1343,14 +1343,22 @@ end;
 
 
 procedure TKMUnitActionWalkTo.Paint;
+var
+  showRoute: Boolean;
 begin
+  showRoute := False;
   if SHOW_UNIT_ROUTES then
     if not ((gMySpectator.Selected is TKMUnit) or (gMySpectator.Selected is TKMUnitGroup))
       or (gMySpectator.Selected = fUnit)
       or ((fUnit is TKMUnitWarrior)
         and (gMySpectator.Selected is TKMUnitGroup)
         and (TKMUnitGroup(gMySpectator.Selected).SelectedUnit = fUnit)) then
-      gRenderAux.UnitRoute(NodeList, NodePos, fUnit.UID);
+      showRoute := True;
+
+  showRoute := showRoute or (gMySpectator.HighlightRoute.Entity = fUnit);
+
+  if showRoute then
+    gRenderAux.UnitRoute(NodeList, NodePos, fUnit.UID);
 end;
 
 

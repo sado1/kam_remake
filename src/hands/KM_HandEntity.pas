@@ -1,7 +1,7 @@
 unit KM_HandEntity;
 interface
 uses
-  KM_Defaults, KM_Points, KM_CommonClasses, KM_HandTypes, KM_Entity;
+  KM_Defaults, KM_Points, KM_CommonClasses, KM_HandTypes, KM_Entity, KromOGLUtils;
 
 type
   { Common class for TKMUnit / TKMHouse / TKMUnitGroup }
@@ -57,6 +57,22 @@ type
     procedure ReleasePointer;  //Decreases the pointer counter
     property PointerCount: Cardinal read fPointerCount;
   end;
+
+  TKMHighlightEntity = record
+    Entity: TKMHandEntity;
+    Color: TColor4;
+    constructor New(aEntity: TKMHandEntity); overload;
+    constructor New(aEntity: TKMHandEntity; aColor: TColor4); overload;
+
+    procedure SetEntity(aEntity: TKMHandEntity);
+    procedure SetColor(aColor: TColor4);
+
+    function IsSet: Boolean;
+    procedure Reset;
+  end;
+
+const
+  DEFAULT_HIGHLIGHT_COL = icCyan;
 
 
 implementation
@@ -234,6 +250,46 @@ begin
   end;
 
   Dec(fPointerCount);
+end;
+
+
+{ TKMHighlightEntity }
+constructor TKMHighlightEntity.New(aEntity: TKMHandEntity; aColor: TColor4);
+begin
+  Entity := aEntity;
+  Color := aColor;
+end;
+
+
+constructor TKMHighlightEntity.New(aEntity: TKMHandEntity);
+begin
+  Entity := aEntity;
+  Color := DEFAULT_HIGHLIGHT_COL;
+end;
+
+
+function TKMHighlightEntity.IsSet: Boolean;
+begin
+  Result := Entity <> nil;
+end;
+
+
+procedure TKMHighlightEntity.Reset;
+begin
+  Entity := nil;
+  Color := DEFAULT_HIGHLIGHT_COL;
+end;
+
+
+procedure TKMHighlightEntity.SetColor(aColor: TColor4);
+begin
+  Color := aColor;
+end;
+
+
+procedure TKMHighlightEntity.SetEntity(aEntity: TKMHandEntity);
+begin
+  Entity := aEntity;
 end;
 
 

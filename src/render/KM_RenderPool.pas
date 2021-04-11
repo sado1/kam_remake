@@ -93,7 +93,7 @@ type
     procedure RenderSpriteAlphaTest(aRX: TRXType; aId: Word; aWoodProgress: Single; pX, pY: Single; aId2: Word = 0; aStoneProgress: Single = 0; X2: Single = 0; Y2: Single = 0);
     procedure RenderMapElement1(aIndex: Word; AnimStep: Cardinal; LocX,LocY: Integer; DoImmediateRender: Boolean = False; Deleting: Boolean = False);
     procedure RenderMapElement4(aIndex: Word; AnimStep: Cardinal; pX,pY: Integer; IsDouble: Boolean; DoImmediateRender: Boolean = False; Deleting: Boolean = False);
-    procedure RenderHouseOutline(aHouseSketch: TKMHouseSketch);
+    procedure RenderHouseOutline(aHouseSketch: TKMHouseSketch; aCol: Cardinal = icCyan);
 
     // Terrain rendering sub-class
     procedure CollectPlans(const aRect: TKMRect);
@@ -371,19 +371,19 @@ procedure TRenderPool.RenderBackgroundUI(const aRect: TKMRect);
                                0.35, aCol, icCyan);
   end;
 
-  procedure HighlightEntity(aEntity: TKMHandEntity);
+  procedure HighlightEntity(aEntityH: TKMHighlightEntity);
   var
     I: Integer;
     G: TKMUnitGroup;
     col: Cardinal;
   begin
-    if aEntity = nil then Exit;
+    if aEntityH.Entity = nil then Exit;
     
-    case aEntity.EntityType of
-      etHouse:  RenderHouseOutline(TKMHouseSketch(aEntity));  //fPositionF.X - 0.5 + GetSlide(axX), fPositionF.Y - 0.5 + GetSlide(axY), 0.35
-      etUnit:   HighlightUnit(TKMUnit(aEntity), GetRandomColorWSeed(aEntity.UID));
+    case aEntityH.Entity.EntityType of
+      etHouse:  RenderHouseOutline(TKMHouseSketch(aEntityH.Entity), aEntityH.Color); //fPositionF.X - 0.5 + GetSlide(axX), fPositionF.Y - 0.5 + GetSlide(axY), 0.35
+      etUnit:   HighlightUnit(TKMUnit(aEntityH.Entity), GetRandomColorWSeed(aEntityH.Entity.UID));
       etGroup:  begin
-                  G := TKMUnitGroup(aEntity);
+                  G := TKMUnitGroup(aEntityH.Entity);
                   col := GetRandomColorWSeed(G.UID);
                   for I := 0 to G.Count - 1 do
                     HighlightUnit(G.Members[I], col);
@@ -398,8 +398,10 @@ begin
   //Reset Texture, just in case we forgot to do it inside some method
   TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
 
-  HighlightEntity(gMySpectator.Highlight);
+  HighlightEntity(gMySpectator.HighlightEntity);
   HighlightEntity(gMySpectator.HighlightDebug);
+  HighlightEntity(gMySpectator.HighlightDebug2);
+  HighlightEntity(gMySpectator.HighlightDebug3);
 
   if gGameParams.IsMapEditor then
     gGame.MapEditor.Paint(plTerrain, aRect);
@@ -1416,7 +1418,7 @@ end;
 
 // Until profiling we use straightforward approach of recreating outline each frame
 // Optimize later if needed
-procedure TRenderPool.RenderHouseOutline(aHouseSketch: TKMHouseSketch);
+procedure TRenderPool.RenderHouseOutline(aHouseSketch: TKMHouseSketch; aCol: TColor4 = icCyan);
 var
   I: Integer;
   loc: TKMPoint;
@@ -1432,7 +1434,8 @@ begin
   gRes.Houses[aHouseSketch.HouseType].Outline(fHouseOutline);
 
   TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
-  glColor3f(0, 1, 1);
+//  glColor3f(0, 1, 1);
+  glColor4ubv(@aCol);
   glBegin(GL_LINE_LOOP);
     with gTerrain do
     for I := 0 to fHouseOutline.Count - 1 do

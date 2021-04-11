@@ -1471,8 +1471,14 @@ begin
     gMySpectator.NilLastSelected;
   if gMySpectator.Highlight = aEntity then
     gMySpectator.Highlight := nil;
-  if gMySpectator.HighlightDebug = aEntity then
-    gMySpectator.HighlightDebug := nil;
+  if gMySpectator.HighlightDebug.Entity = aEntity then
+    gMySpectator.HighlightDebug.Reset;
+  if gMySpectator.HighlightDebug2.Entity = aEntity then
+    gMySpectator.HighlightDebug2.Reset;
+  if gMySpectator.HighlightDebug3.Entity = aEntity then
+    gMySpectator.HighlightDebug3.Reset;
+  if gMySpectator.HighlightRoute.Entity = aEntity then
+    gMySpectator.HighlightRoute.Reset;
 end;
 
 
