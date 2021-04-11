@@ -46,6 +46,8 @@ type
   TKMTaskResult = (trTaskContinues, trTaskDone); //There's no difference between Done and Aborted
 
   TKMUnitTask = class abstract
+  private
+    function GetPhase: Byte;
   protected
     fType: TKMUnitTaskType;
     fUnit: TKMUnit; //Unit who's performing the Task
@@ -59,7 +61,7 @@ type
     procedure SyncLoad; virtual;
     destructor Destroy; override;
 
-    property Phase: Byte read fPhase write fPhase;
+    property Phase: Byte read GetPhase write fPhase;
     property TaskType: TKMUnitTaskType read fType;
     function WalkShouldAbandon: Boolean; virtual;
 
@@ -124,6 +126,8 @@ type
     procedure DoDismiss;
 
     procedure UpdateLastTimeTrySetActionWalk;
+  private
+    function GetTask: TKMUnitTask;
   protected
     function GetInstance: TKMUnit; override;
     function GetPosition: TKMPoint; override;
@@ -194,7 +198,7 @@ type
 
     property  Home: TKMHouse read fHome write SetHome;
     property  Action: TKMUnitAction read fAction;
-    property  Task: TKMUnitTask read fTask;
+    property  Task: TKMUnitTask read GetTask;
     property  UnitType: TKMUnitType read fType;
     function  GetActionText: UnicodeString;
     property  Condition: Integer read fCondition write SetCondition;
@@ -2182,6 +2186,14 @@ begin
 end;
 
 
+function TKMUnit.GetTask: TKMUnitTask;
+begin
+  if Self = nil then Exit(nil);
+
+  Result := fTask;
+end;
+
+
 function TKMUnit.PathfindingShouldAvoid: Boolean;
 begin
   Result := not (fAction is TKMUnitActionWalkTo); //If we're walking, pathfinding should not route around us
@@ -2533,6 +2545,14 @@ begin
   fPhase        := High(Byte) - 1; //-1 so that if it is increased on the next run it won't overrun before exiting
   fPhase2       := High(Byte) - 1;
   inherited;
+end;
+
+
+function TKMUnitTask.GetPhase: Byte;
+begin
+  if Self = nil then Exit(0);
+
+  Result := fPhase;
 end;
 
 
