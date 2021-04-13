@@ -56,6 +56,7 @@ type
     btnCheckAll: TButton;
     panel1: TPanel;
     cbFormEnabled: TCheckBox;
+    panel2: TPanel;
     {$IFDEF USE_VIRTUAL_TREEVIEW}
     VSTDeliveries: TKMHandLogisticsVST;
     VSTOffers: TKMHandLogisticsVST;
@@ -89,12 +90,16 @@ type
     procedure VSTAfterCellPaint(Sender: TBaseVirtualTree; TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex; CellRect: TRect);
 
     procedure ApplyFilter;
-    procedure UpdateAll;
     {$ENDIF}
+    procedure UpdateAll;
   public
     procedure VSTUpdate;
 
-    procedure UpdateView(aHandsCnt: Integer);
+    procedure UpdateView(aHandsCnt: Integer; aCheckAll: Boolean);
+
+    {$IFDEF USE_VIRTUAL_TREEVIEW}
+    procedure FilterNode(aVST: TKMHandLogisticsVST; aNode: PVirtualNode);
+    {$ENDIF}
 
     function IsEnabled: Boolean;
 
@@ -248,11 +253,11 @@ begin
   // Update all logistics tables
   Clear;
 
-  UpdateView(gHands.Count);
+  UpdateView(gHands.Count, False);
+
 
   for I := 0 to gHands.Count - 1 do
     gHands[I].Deliveries.Queue.Form_UpdateAllNodes;
-
 end;
 
 
@@ -268,7 +273,7 @@ begin
 end;
 
 
-procedure TFormLogistics.UpdateView(aHandsCnt: Integer);
+procedure TFormLogistics.UpdateView(aHandsCnt: Integer; aCheckAll: Boolean);
 var
   I: Integer;
 begin
@@ -276,7 +281,8 @@ begin
   for I := 0 to aHandsCnt - 1 do
     clbHandsFilter.Items.Add(IntToStr(I));
 
-  clbHandsFilter.CheckAll(cbChecked, True, True);
+  if aCheckAll then
+    clbHandsFilter.CheckAll(cbChecked, True, True);
 end;
 
 
@@ -331,8 +337,10 @@ end;
 
 
 procedure TFormLogistics.Clear;
+{$IFDEF USE_VIRTUAL_TREEVIEW}
 var
   I: Integer;
+{$ENDIF}
 begin
   {$IFDEF USE_VIRTUAL_TREEVIEW}
   // nil all nodes, since we are going to clear all VST's
@@ -347,7 +355,7 @@ end;
 
 
 {$IFDEF USE_VIRTUAL_TREEVIEW}
-procedure TFormLogistics.ApplyFilter;
+procedure TFormLogistics.FilterNode(aVST: TKMHandLogisticsVST; aNode: PVirtualNode);
 const
   DEL_FROM_ID_COL = 5;
   DEL_TO_ID_COL = 7;
@@ -374,50 +382,56 @@ const
     end;
   end;
 
+var
+  I: Integer;
+  data: PKMLogisticsIDs;
+  badHand, badToID, badFromID: Boolean;
+  cellText: string;
+begin
+  data := aVST.GetNodeData(aNode);
+  badHand := True;
+  badToID := False;
+  badFromID := False;
+
+  try
+    for I := 0 to clbHandsFilter.Items.Count - 1 do
+      if (clbHandsFilter.State[I] = cbChecked) and (I = data.HandID) then
+      begin
+        badHand := False;
+        Break;
+      end;
+
+    // Continue AFAP
+    if badHand then Exit;
+
+    if cbFromID.Enabled and cbFromID.Checked then
+    begin
+      VSTGetText(aVST, aNode, GetFromColumn(aVST.Kind), ttNormal, cellText);
+      badFromID := StrToInt(cellText) <> seFromID.Value;
+    end;
+
+    // Continue AFAP
+    if badFromID then Exit;
+
+    if cbToID.Enabled and cbToID.Checked then
+    begin
+      VSTGetText(aVST, aNode, GetToColumn(aVST.Kind), ttNormal, cellText);
+      badToID := StrToInt(cellText) <> seToID.Value;
+    end;
+  finally
+    aVST.IsFiltered[aNode] := badHand or badToID or badFromID;
+  end;
+end;
+
+
+procedure TFormLogistics.ApplyFilter;
+
   procedure FilterVST(aVST: TKMHandLogisticsVST);
   var
-    I: Integer;
-    data: PKMLogisticsIDs;
     C: PVirtualNode;
-    badHand, badToID, badFromID: Boolean;
-    cellText: string;
   begin
     for C in aVST.InitializedNodes(False) do
-    begin
-      data := aVST.GetNodeData(C);
-      badHand := True;
-      badToID := False;
-      badFromID := False;
-
-      try
-        for I := 0 to clbHandsFilter.Items.Count - 1 do
-          if (clbHandsFilter.State[I] = cbChecked) and (I = data.HandID) then
-          begin
-            badHand := False;
-            Break;
-          end;
-
-        // Continue AFAP
-        if badHand then Continue;
-
-        if cbFromID.Enabled and cbFromID.Checked then
-        begin
-          VSTGetText(aVST, C, GetFromColumn(aVST.Kind), ttNormal, cellText);
-          badFromID := StrToInt(cellText) <> seFromID.Value;
-        end;
-
-        // Continue AFAP
-        if badFromID then Continue;
-
-        if cbToID.Enabled and cbToID.Checked then
-        begin
-          VSTGetText(aVST, C, GetToColumn(aVST.Kind), ttNormal, cellText);
-          badToID := StrToInt(cellText) <> seToID.Value;
-        end;
-      finally
-        aVST.IsFiltered[C] := badHand or badToID or badFromID;
-      end;
-    end;
+      FilterNode(aVST, C);
   end;
 
 begin
@@ -476,6 +490,9 @@ begin
                       selectEntity := serfEntity
                     else
                     // otherwise circle through entities
+                    if (gMySpectator.Selected = nil) then
+                      selectEntity := serfEntity
+                    else
                     if offerEntity = gMySpectator.Selected then
                       selectEntity := demandEntity
                     else

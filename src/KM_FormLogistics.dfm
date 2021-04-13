@@ -3,7 +3,7 @@ object FormLogistics: TFormLogistics
   Top = 0
   Caption = 'FormLogistics'
   ClientHeight = 826
-  ClientWidth = 870
+  ClientWidth = 821
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,45 +19,39 @@ object FormLogistics: TFormLogistics
   object vstPageCtrl: TPageControl
     Left = 0
     Top = 113
-    Width = 870
+    Width = 821
     Height = 713
     ActivePage = tabSheetDeliveries
     Align = alClient
     TabOrder = 0
     OnChange = vstPageCtrlChange
-    ExplicitTop = 41
-    ExplicitHeight = 785
     object tabSheetDeliveries: TTabSheet
       Caption = 'Deliveries'
-      ExplicitHeight = 693
     end
     object tabSheetOffers: TTabSheet
       Caption = 'Offers'
       ImageIndex = 1
-      ExplicitHeight = 693
     end
     object tabSheetDemands: TTabSheet
       Caption = 'Demands'
       ImageIndex = 2
-      ExplicitHeight = 693
     end
   end
   object panel1: TPanel
     Left = 0
     Top = 0
-    Width = 870
+    Width = 821
     Height = 113
     Align = alTop
     TabOrder = 1
     object gbFilter: TGroupBox
-      Left = 104
+      Left = 96
       Top = 1
       Width = 765
       Height = 111
-      Align = alRight
+      Align = alLeft
       Caption = 'Filter'
       TabOrder = 0
-      ExplicitHeight = 106
       object Label1: TLabel
         Left = 10
         Top = 16
@@ -162,16 +156,24 @@ object FormLogistics: TFormLogistics
         OnClick = btnCheckAllClick
       end
     end
-    object cbFormEnabled: TCheckBox
-      Left = 16
-      Top = 49
-      Width = 65
-      Height = 17
-      Caption = 'Enabled'
-      Checked = True
-      State = cbChecked
+    object panel2: TPanel
+      Left = 1
+      Top = 1
+      Width = 95
+      Height = 111
+      Align = alLeft
       TabOrder = 1
-      OnClick = cbFormEnabledClick
+      object cbFormEnabled: TCheckBox
+        Left = 16
+        Top = 37
+        Width = 65
+        Height = 21
+        Caption = 'Enabled'
+        Checked = True
+        State = cbChecked
+        TabOrder = 0
+        OnClick = cbFormEnabledClick
+      end
     end
   end
 end

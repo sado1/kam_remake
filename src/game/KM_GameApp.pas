@@ -1072,7 +1072,7 @@ begin
   end;
 
   if Assigned(FormLogistics) then
-    FormLogistics.UpdateView(gGame.GetHandsCount);
+    FormLogistics.UpdateView(gGame.GetHandsCount, True);
 end;
 
 

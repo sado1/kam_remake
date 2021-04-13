@@ -75,7 +75,7 @@ type
   TKMDeliveryQueueItem = record
     Serf: TKMUnitSerf;
     IsFromUnit: Boolean; //Delivery was redispatched, so now we start delivery from current serf position
-    ID, OfferID, DemandID: Integer;
+    OfferID, DemandID: Integer;
     JobStatus: TKMDeliveryJobStatus; //Empty slot, resource Taken, job Done
     {$IFDEF USE_VIRTUAL_TREEVIEW}
     Node: PVirtualNode;
@@ -607,7 +607,7 @@ end;
 procedure TKMDeliveries.Form_UpdateOfferNode(aI: Integer);
 begin
   {$IFDEF USE_VIRTUAL_TREEVIEW}
-  if aI >= fOfferCount then Exit;
+  if aI > fOfferCount then Exit;
 
   with fOffer[aI] do
     if AllowFormLogisticsChange
@@ -618,6 +618,8 @@ begin
         Node := FormLogistics.VSTOffers.AddChild(nil); //Add to root
 
       SetVSTData(FormLogistics.VSTOffers, Node, fOwner, aI);
+
+      FormLogistics.FilterNode(FormLogistics.VSTOffers, Node);
     end;
   {$ENDIF}
 end;
@@ -627,7 +629,7 @@ end;
 procedure TKMDeliveries.Form_UpdateDemandNode(aI: Integer);
 begin
   {$IFDEF USE_VIRTUAL_TREEVIEW}
-  if aI >= fDemandCount then Exit;
+  if aI > fDemandCount then Exit;
 
   with fDemand[aI] do
     if AllowFormLogisticsChange
@@ -638,6 +640,8 @@ begin
         Node := FormLogistics.VSTDemands.AddChild(nil); //Add to root
 
       SetVSTData(FormLogistics.VSTDemands, Node, fOwner, aI);
+
+      FormLogistics.FilterNode(FormLogistics.VSTDemands, Node);
     end;
   {$ENDIF}
 end;
@@ -647,17 +651,19 @@ end;
 procedure TKMDeliveries.Form_UpdateQueueNode(aI: Integer);
 begin
   {$IFDEF USE_VIRTUAL_TREEVIEW}
-  if aI >= fQueueCount then Exit;
+  if aI > fQueueCount then Exit;
 
   if AllowFormLogisticsChange then
     with fQueue[aI] do
     begin
-      if fOffer[OfferID].Ware = wtNone then Exit;
+      if fDemand[DemandID].Ware = wtNone then Exit; // Check via DemandID, since OfferID could be 0 for redispatched deliveries
 
       if Node = nil then
         Node := FormLogistics.VSTDeliveries.AddChild(nil); //Add to root
 
       SetVSTData(FormLogistics.VSTDeliveries, Node, fOwner, aI);
+
+      FormLogistics.FilterNode(FormLogistics.VSTDeliveries, Node);
     end;
   {$ENDIF}
 end;
@@ -665,8 +671,10 @@ end;
 
 // Update FormLogistics items (all of them)
 procedure TKMDeliveries.Form_UpdateAllNodes;
+{$IFDEF USE_VIRTUAL_TREEVIEW}
 var
   I: Integer;
+{$ENDIF}
 begin
   {$IFDEF USE_VIRTUAL_TREEVIEW}
   for I := 1 to fQueueCount do
@@ -685,8 +693,10 @@ end;
 
 
 procedure TKMDeliveries.Form_NilAllNodes;
+{$IFDEF USE_VIRTUAL_TREEVIEW}
 var
   I: Integer;
+{$ENDIF}
 begin
   {$IFDEF USE_VIRTUAL_TREEVIEW}
   for I := 1 to fQueueCount do
@@ -1930,7 +1940,6 @@ begin
     SetLength(fQueue, fQueueCount + 1);
   end;
 
-  fQueue[I].ID := I;
   fQueue[I].DemandID := iD;
   fQueue[I].OfferID := iO;
   fQueue[I].JobStatus := jsTaken;
@@ -2139,7 +2148,6 @@ begin
   for I := 1 to fQueueCount do
   begin
     SaveStream.Write(fQueue[I].IsFromUnit);
-    SaveStream.Write(fQueue[I].ID);
     SaveStream.Write(fQueue[I].OfferID);
     SaveStream.Write(fQueue[I].DemandID);
     SaveStream.Write(fQueue[I].JobStatus, SizeOf(fQueue[I].JobStatus));
@@ -2192,7 +2200,6 @@ begin
   for I := 1 to fQueueCount do
   begin
     LoadStream.Read(fQueue[I].IsFromUnit);
-    LoadStream.Read(fQueue[I].ID);
     LoadStream.Read(fQueue[I].OfferID);
     LoadStream.Read(fQueue[I].DemandID);
     LoadStream.Read(fQueue[I].JobStatus, SizeOf(fQueue[I].JobStatus));
