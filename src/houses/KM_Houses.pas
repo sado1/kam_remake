@@ -833,6 +833,8 @@ var
   ResCnt: Word;
   Res: TKMWareType;
 begin
+  // House had dmTakeOut delivery mode
+  // Remove offers from this house then
   if fDeliveryMode = dmTakeOut then
     for I := 1 to 4 do
     begin
@@ -842,6 +844,8 @@ begin
         gHands[Owner].Deliveries.Queue.RemOffer(Self, Res, ResCnt);
     end;
 
+  // House will get dmTakeOut delivery mode
+  // Add offers to this house then
   if fNewDeliveryMode = dmTakeOut then
   begin
     for I := 1 to 4 do
