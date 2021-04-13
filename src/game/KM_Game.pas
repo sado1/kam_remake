@@ -2922,6 +2922,7 @@ begin
     begin
       fAdvanceFrame := False;
       fIsPaused := True;
+      fGamePlayInterface.UpdateDebugInfo;
     end;
   finally
     {$IFDEF PERFLOG}

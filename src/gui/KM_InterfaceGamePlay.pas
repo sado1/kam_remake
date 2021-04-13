@@ -151,7 +151,6 @@ type
     procedure DirectionCursorShow(X,Y: Integer; Dir: TKMDirection);
     procedure DirectionCursorHide;
     function HasLostMPGame: Boolean;
-    procedure UpdateDebugInfo;
     procedure UpdateSelectedObject;
     procedure HidePages;
     procedure HideOverlay(Sender: TObject);
@@ -354,6 +353,7 @@ type
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X,Y: Integer); override;
     procedure Resize(X,Y: Word); override;
     procedure SyncUI(aMoveViewport: Boolean = True); override;
+    procedure UpdateDebugInfo;
     procedure UpdateState(aTickCount: Cardinal); override;
     procedure UpdateStateIdle(aFrameTime: Cardinal); override;
     procedure Paint; override;
@@ -2046,6 +2046,7 @@ begin
     gGame.StepOneFrame;
     gGame.IsPaused := False;
     UpdateReplayButtons(False);
+    UpdateDebugInfo;
   end;
 
   if Sender = Button_ReplayResume then
@@ -4066,6 +4067,8 @@ begin
                     and ((oldSelected <> group) or (oldSelectedUnit <> group.SelectedUnit)) then
                       gSoundPlayer.PlayWarrior(group.SelectedUnit.UnitType, spSelect);
                 end;
+
+                UpdateDebugInfo;
               end;
 
             cmRoad:  gGameCursor.Tag1 := Ord(cfmNone);
