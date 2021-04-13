@@ -104,6 +104,7 @@ type
     procedure SetFlagColor(const Value: Cardinal);
 
     procedure SetOwnerNikname(const aName: AnsiString);
+    function GetDeliveries: TKMHandLogistics;
   public
     Enabled: Boolean;
     InCinematic: Boolean;
@@ -116,7 +117,7 @@ type
 
     property AI: TKMHandAI read GetAI;
     property Constructions: TKMHandConstructions read fConstructions;
-    property Deliveries: TKMHandLogistics read fDeliveries;
+    property Deliveries: TKMHandLogistics read GetDeliveries;
     property Houses: TKMHousesCollection read fHouses;
     property Locks: TKMHandLocks read fLocks;
     property Stats: TKMHandStats read fStats;
@@ -1554,6 +1555,14 @@ begin
   for I := 0 to 255 do
     if gRes.Palettes.DefaultPalette.Color32(I) = fFlagColor then
       Result := I;
+end;
+
+
+function TKMHand.GetDeliveries: TKMHandLogistics;
+begin
+  if Self = nil then Exit(nil);
+
+  Result := fDeliveries;
 end;
 
 

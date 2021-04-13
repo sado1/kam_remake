@@ -316,12 +316,13 @@ type
     procedure RemSerf(aIndex: Integer);
     procedure RemoveExtraSerfs;
     function GetIdleSerfCount: Integer;
+    function GetQueue: TKMDeliveries;
   public
     constructor Create(aHandIndex: TKMHandID);
     destructor Destroy; override;
 
     procedure AddSerf(aSerf: TKMUnitSerf);
-    property Queue: TKMDeliveries read fQueue;
+    property Queue: TKMDeliveries read GetQueue;
 
     procedure Save(SaveStream: TKMemoryStream);
     procedure Load(LoadStream: TKMemoryStream);
@@ -441,6 +442,14 @@ begin
   for I := 0 to fSerfCount - 1 do
     if fSerfs[I].Serf.IsIdle then
       Inc(Result);
+end;
+
+
+function TKMHandLogistics.GetQueue: TKMDeliveries;
+begin
+  if Self = nil then Exit(nil);
+
+  Result := fQueue;
 end;
 
 
@@ -676,6 +685,8 @@ var
   I: Integer;
 {$ENDIF}
 begin
+  if Self = nil then Exit;
+
   {$IFDEF USE_VIRTUAL_TREEVIEW}
   for I := 1 to fQueueCount do
     Form_UpdateQueueNode(I);
@@ -698,6 +709,8 @@ var
   I: Integer;
 {$ENDIF}
 begin
+  if Self = nil then Exit;
+
   {$IFDEF USE_VIRTUAL_TREEVIEW}
   for I := 1 to fQueueCount do
      fQueue[I].Node := nil;
