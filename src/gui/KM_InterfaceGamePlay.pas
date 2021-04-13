@@ -3698,6 +3698,8 @@ var
   windowRect: TRect;
   {$ENDIF}
 begin
+  inherited;
+
   fMyControls.MouseDown(X, Y, Shift, Button);
 
   if (gGame.IsPaused and (fUIMode in [umSP, umMP])) or (fMyControls.CtrlOver <> nil)

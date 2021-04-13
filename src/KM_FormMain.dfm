@@ -108,7 +108,7 @@ object FormMain: TFormMain
         Caption = 'Debug Font'
         Columns = 2
         Ctl3D = True
-        ItemIndex = 4
+        ItemIndex = 7
         Items.Strings = (
           'fntAntiqua'
           'fntGame'
@@ -121,6 +121,7 @@ object FormMain: TFormMain
         ParentCtl3D = False
         TabOrder = 1
         OnClick = ControlsUpdate
+        OnExit = radioGroupExit
       end
     end
     object cpLogs: TCategoryPanel
@@ -200,6 +201,7 @@ object FormMain: TFormMain
           'All packets')
         TabOrder = 6
         OnClick = ControlsUpdate
+        OnExit = radioGroupExit
       end
       object chkLogSkipTempCmd: TCheckBox
         Left = 120
@@ -221,6 +223,7 @@ object FormMain: TFormMain
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 2
+      ExplicitWidth = 239
       ExpandedHeight = 133
       object Label1: TLabel
         Left = 101
@@ -332,6 +335,7 @@ object FormMain: TFormMain
       Caption = 'User Interface'
       Collapsed = True
       TabOrder = 3
+      ExplicitWidth = 239
       ExpandedHeight = 85
       object chkUIControlsBounds: TCheckBox
         Left = 8
@@ -385,6 +389,7 @@ object FormMain: TFormMain
       Caption = 'Perf Logs'
       Collapsed = True
       TabOrder = 4
+      ExplicitWidth = 239
       ExpandedHeight = 660
     end
     object cpAI: TCategoryPanel
@@ -393,6 +398,7 @@ object FormMain: TFormMain
       Caption = 'AI'
       Collapsed = True
       TabOrder = 5
+      ExplicitWidth = 239
       object Label5: TLabel
         Left = 202
         Top = 111
@@ -599,6 +605,7 @@ object FormMain: TFormMain
       Caption = 'Scripting'
       Collapsed = True
       TabOrder = 6
+      ExplicitWidth = 239
       ExpandedHeight = 50
       object chkDebugScripting: TCheckBox
         Left = 8
@@ -621,6 +628,7 @@ object FormMain: TFormMain
       Caption = 'Game additional'
       Collapsed = True
       TabOrder = 7
+      ExplicitWidth = 239
       ExpandedHeight = 136
       object chkLoadUnsupSaves: TCheckBox
         Left = 12
@@ -662,6 +670,7 @@ object FormMain: TFormMain
         ParentBiDiMode = False
         TabOrder = 1
         OnClick = RGPlayerClick
+        OnExit = radioGroupExit
       end
     end
     object cpDebugInput: TCategoryPanel
@@ -670,6 +679,7 @@ object FormMain: TFormMain
       Caption = 'Debug Input'
       Collapsed = True
       TabOrder = 8
+      ExplicitWidth = 239
       ExpandedHeight = 210
       object gbFindObjByUID: TGroupBox
         Left = 8
@@ -769,6 +779,7 @@ object FormMain: TFormMain
           Top = 32
           Width = 90
           Height = 22
+          TabStop = False
           MaxValue = 2147483647
           MinValue = -2147483648
           TabOrder = 0
@@ -781,6 +792,7 @@ object FormMain: TFormMain
           Top = 32
           Width = 105
           Height = 21
+          TabStop = False
           TabOrder = 1
           OnChange = ControlsUpdate
         end
@@ -803,6 +815,7 @@ object FormMain: TFormMain
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 9
+      ExplicitWidth = 239
       ExpandedHeight = 360
       object Label2: TLabel
         Left = 136
@@ -1153,6 +1166,7 @@ object FormMain: TFormMain
       Height = 121
       Caption = 'Game'
       TabOrder = 10
+      ExplicitWidth = 239
       object Label8: TLabel
         Left = 70
         Top = 30

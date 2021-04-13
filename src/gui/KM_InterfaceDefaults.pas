@@ -55,7 +55,7 @@ type
     procedure KeyPress(Key: Char); virtual;
     procedure KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean); virtual;
     //Child classes don't pass these events to controls depending on their state
-    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X,Y: Integer); virtual; abstract;
+    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X,Y: Integer); virtual;
     procedure MouseMove(Shift: TShiftState; X,Y: Integer); overload;
     procedure MouseMove(Shift: TShiftState; X,Y: Integer; var aHandled: Boolean); overload; virtual; abstract;
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X,Y: Integer); virtual; abstract;
@@ -103,7 +103,8 @@ uses
   SysUtils, KM_Resource, KM_ResKeys, KM_RenderUI, KM_Defaults, KM_DevPerfLog, KM_DevPerfLogTypes,
   KM_Music,
   KM_Sound,
-  KM_GameSettings;
+  KM_GameSettings,
+  KM_Main;
 
 
 { TKMUserInterface }
@@ -187,6 +188,13 @@ begin
   end;
 
   fPrevHint := Sender;
+end;
+
+
+procedure TKMUserInterfaceCommon.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  // Defocus debug controls on any inout in the player GUI
+  gMain.FormMain.Defocus;
 end;
 
 

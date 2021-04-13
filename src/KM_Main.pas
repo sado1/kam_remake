@@ -238,7 +238,7 @@ begin
   Application.ProcessMessages;
   fFormLoading.Hide;
 
-  fFormMain.LoadDevSettings;
+  fFormMain.AfterFormCreated;
 end;
 
 

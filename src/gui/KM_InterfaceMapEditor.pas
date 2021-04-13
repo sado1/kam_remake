@@ -1006,6 +1006,8 @@ var
   obj: TObject;
   keyHandled: Boolean;
 begin
+  inherited;
+
   fMyControls.MouseDown(X,Y,Shift,Button);
 
   if fMyControls.CtrlOver <> nil then

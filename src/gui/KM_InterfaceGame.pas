@@ -243,6 +243,8 @@ var
   windowRect: TRect;
   {$ENDIF}
 begin
+  inherited;
+
   if Assigned(fOnUserAction) then
     fOnUserAction(uatKeyDown);
 

@@ -269,6 +269,7 @@ type
     procedure mnExportRngChecksClick(Sender: TObject);
     procedure btFindObjByUIDClick(Sender: TObject);
     procedure mnExportRPLClick(Sender: TObject);
+    procedure radioGroupExit(Sender: TObject);
 
     procedure ControlsUpdate(Sender: TObject);
   private
@@ -280,8 +281,14 @@ type
     procedure FormKeyUpProc(aKey: Word; aShift: TShiftState);
 //    function ConfirmExport: Boolean;
     function GetMouseWheelStepsCnt(aWheelData: Integer): Integer;
+
+    procedure ConstrolsDisableTabStops;
+    procedure ControlDisableTabStop(aCtrl: TControl);
+    procedure SubPanelDisableTabStop(aPanel: TWinControl);
+
     procedure ResetControl(aCtrl: TControl);
     procedure ResetSubPanel(aPanel: TWinControl);
+
     function GetDevSettingsPath: UnicodeString;
     procedure DoLoadDevSettings;
     procedure DoSaveDevSettings;
@@ -310,8 +317,13 @@ type
     procedure ShowFolderPermissionError;
     procedure SetEntitySelected(aEntityUID: Integer; aEntity2UID: Integer = 0);
     property OnControlsUpdated: TObjectIntegerEvent read fOnControlsUpdated write fOnControlsUpdated;
+
     procedure LoadDevSettings;
     procedure SaveDevSettings;
+
+    procedure Defocus;
+
+    procedure AfterFormCreated;
   end;
 
 
@@ -882,6 +894,13 @@ begin
 end;
 
 
+procedure TFormMain.Defocus;
+begin
+  if Assigned(Self.ActiveControl) then
+    Self.DefocusControl(Self.ActiveControl, True);
+end;
+
+
 //Exports
 procedure TFormMain.Export_TreesRXClick(Sender: TObject);
 begin
@@ -1085,6 +1104,80 @@ begin
 end;
 
 
+procedure TFormMain.ConstrolsDisableTabStops;
+
+  {$IFDEF WDC}
+  procedure CategoryPanelDisableTabStops(aPanel: TCategoryPanel);
+  var
+    panelSurface: TCategoryPanelSurface;
+  begin
+    if (aPanel.ControlCount > 0) and (aPanel.Controls[0] is TCategoryPanelSurface) then
+    begin
+      panelSurface := TCategoryPanelSurface(aPanel.Controls[0]);
+      SubPanelDisableTabStop(panelSurface);
+    end;
+  end;
+
+  procedure GroupDisableTabStops(aGroup: TCategoryPanelGroup);
+  var
+    I: Integer;
+  begin
+    for I := 0 to aGroup.ControlCount - 1 do
+      if (aGroup.Controls[I] is TCategoryPanel) then
+        CategoryPanelDisableTabStops(TCategoryPanel(aGroup.Controls[I]));
+  end;
+  {$ENDIF}
+
+begin
+  {$IFDEF WDC}
+  GroupDisableTabStops(mainGroup);
+  {$ENDIF}
+end;
+
+
+procedure TFormMain.ControlDisableTabStop(aCtrl: TControl);
+begin
+  if aCtrl is TButton then
+    TButton(aCtrl).TabStop := False
+  else
+  if aCtrl is TCheckBox then
+    TCheckBox(aCtrl).TabStop := False
+  else
+  if aCtrl is TTrackBar then
+    TTrackBar(aCtrl).TabStop := False
+  else
+  if (aCtrl is TRadioGroup) then
+  begin
+// TRadioGroup.TabStop should not be accessed in the 'outside' code, its used for internal use
+    radioGroupExit(aCtrl); // Tricky way to disable TabStop on TRadioGroup
+  end
+  else
+  if (aCtrl is TSpinEdit) then
+    TSpinEdit(aCtrl).TabStop := False
+  else
+  if (aCtrl is TEdit) then
+    TEdit(aCtrl).TabStop := False
+  else
+  if (aCtrl is TGroupBox) then
+  begin
+    TGroupBox(aCtrl).TabStop := False;
+    SubPanelDisableTabStop(TGroupBox(aCtrl));
+  end;
+end;
+
+
+procedure TFormMain.SubPanelDisableTabStop(aPanel: TWinControl);
+var
+  I: Integer;
+begin
+  for I := 0 to aPanel.ControlCount - 1 do
+  begin
+    aPanel.TabStop := False;
+    ControlDisableTabStop(aPanel.Controls[I]);
+  end;
+end;
+
+
 procedure TFormMain.ResetControl(aCtrl: TControl);
 
   function SkipReset(aCtrl: TControl): Boolean;
@@ -1204,6 +1297,13 @@ begin
     FormLogistics.Clear;
 
   ControlsUpdate(nil);
+end;
+
+
+procedure TFormMain.AfterFormCreated;
+begin
+  LoadDevSettings;
+  ConstrolsDisableTabStops;
 end;
 
 
@@ -1881,6 +1981,16 @@ end;
 procedure TFormMain.ResourceValues1Click(Sender: TObject);
 begin
   gRes.Wares.ExportCostsTable('ResourceValues.txt');
+end;
+
+
+procedure TFormMain.radioGroupExit(Sender: TObject);
+var
+  I: Integer;
+begin
+  // Tricky way to disable TabStop on TRadioGroup
+  for I := 0 to TRadioGroup(Sender).ControlCount - 1 do
+    TRadioButton(TRadioGroup(Sender).Controls[I]).TabStop := False;
 end;
 
 

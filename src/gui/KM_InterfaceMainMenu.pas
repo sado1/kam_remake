@@ -373,6 +373,8 @@ end;
 
 procedure TKMMainMenuInterface.KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean);
 begin
+  inherited;
+
   aHandled := True; // assume we handle all keys here
 
   if fMyControls.KeyDown(Key, Shift) then Exit; //Handled by Controls
@@ -401,6 +403,8 @@ end;
 
 procedure TKMMainMenuInterface.MouseDown(Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
 begin
+  inherited;
+
   fMyControls.MouseDown(X, Y, Shift, Button);
 end;
 
