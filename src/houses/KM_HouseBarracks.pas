@@ -134,14 +134,14 @@ end;
 
 procedure TKMHouseBarracks.DemolishHouse(aFrom: TKMHandID; IsSilent: Boolean = False);
 var
-  R: TKMWareType;
+  W: TKMWareType;
 begin
   //Recruits are no longer under our control so we forget about them (UpdateVisibility will sort it out)
   //Otherwise it can cause crashes while saving under the right conditions when a recruit is then killed.
   fRecruitsList.Clear;
 
-  for R := WARFARE_MIN to WARFARE_MAX do
-    gHands[Owner].Stats.WareConsumed(R, fResourceCount[R]);
+  for W := WARFARE_MIN to WARFARE_MAX do
+    gHands[Owner].Stats.WareConsumed(W, fResourceCount[W]);
 
   inherited;
 end;

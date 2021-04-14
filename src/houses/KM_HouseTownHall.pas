@@ -85,6 +85,7 @@ end;
 constructor TKMHouseTownHall.Load(LoadStream: TKMemoryStream);
 begin
   inherited;
+
   LoadStream.CheckMarker('HouseTownHall');
   LoadStream.Read(fGoldCnt);
   LoadStream.Read(fGoldMaxCnt);
