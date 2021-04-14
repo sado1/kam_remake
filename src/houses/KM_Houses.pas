@@ -151,6 +151,7 @@ type
     function GetResIn(aI: Byte): Word; virtual;
     function GetResOut(aI: Byte): Word; virtual;
     function GetResInLocked(aI: Byte): Word; virtual;
+    procedure SetResInManageTakeOutDeliveryMode(aRes: TKMWareType; aCntChange: Integer);
     procedure SetResIn(aI: Byte; aValue: Word); virtual;
     procedure SetResOut(aI: Byte; aValue: Word); virtual;
     procedure SetBuildingRepair(aValue: Boolean);
@@ -1723,13 +1724,8 @@ begin
 end;
 
 
-procedure TKMHouse.SetResIn(aI: Byte; aValue: Word);
-var
-  CntChange: Integer;
-  Res: TKMWareType;
+procedure TKMHouse.SetResInManageTakeOutDeliveryMode(aRes: TKMWareType; aCntChange: Integer);
 begin
-  Res := gRes.Houses[fType].ResInput[aI];
-  CntChange := aValue - fResourceIn[aI];
   //In case we brought smth to house with TakeOut delivery mode,
   //then we need to add it to offer
   //Usually it can happens when we changed delivery mode while serf was going inside house
@@ -1737,9 +1733,21 @@ begin
   //then it was not offered to other houses
   if fDeliveryMode = dmTakeOut then
   begin
-    if not (Res in [wtNone, wtAll, wtWarfare]) and (CntChange > 0) then
-      gHands[Owner].Deliveries.Queue.AddOffer(Self, Res, CntChange);
+    if not (aRes in [wtNone, wtAll, wtWarfare]) and (aCntChange > 0) then
+      gHands[Owner].Deliveries.Queue.AddOffer(Self, aRes, aCntChange);
   end;
+end;
+
+
+procedure TKMHouse.SetResIn(aI: Byte; aValue: Word);
+var
+  CntChange: Integer;
+  Res: TKMWareType;
+begin
+  Res := gRes.Houses[fType].ResInput[aI];
+  CntChange := aValue - fResourceIn[aI];
+
+  SetResInManageTakeOutDeliveryMode(Res, CntChange);
 
   fResourceIn[aI] := aValue;
 

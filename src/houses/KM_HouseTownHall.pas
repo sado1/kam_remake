@@ -115,6 +115,8 @@ begin
 
   fGoldCnt := EnsureRange(aValue, 0, IfThen(aLimitMaxGoldCnt, fGoldMaxCnt, High(Word)));
 
+  SetResInManageTakeOutDeliveryMode(wtGold, fGoldCnt - oldValue);
+
   if oldValue <> fGoldCnt then
     gScriptEvents.ProcHouseWareCountChanged(Self, wtGold, fGoldCnt, fGoldCnt - oldValue);
 end;
