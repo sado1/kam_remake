@@ -4310,7 +4310,7 @@ procedure TKMTerrain.UpdateLighting(X, Y: Integer);
 
   function ConvertLightToByte(aSLight: Single): Byte;
   begin
-    REsult := Round((aSLight + 1) * 127.5);
+    Result := Round((aSLight + 1) * 127.5);
   end;
 
 var
@@ -4320,7 +4320,7 @@ begin
   x0 := Max(X - 1, 1);
   y2 := Min(Y + 1, fMapY);
   sLight := EnsureRange((Land^[Y,X].RenderHeight - (Land^[y2,X].RenderHeight + Land^[Y,x0].RenderHeight)/2)/22, -1, 1); // 1.33*16 ~=22.
-  sLightWater := EnsureRange(sLight*1.3 + 0.1, -1, 1);
+  sLightWater := EnsureRange(sLight*WATER_LIGHT_MULTIPLIER + 0.1, -1, 1);
   Land^[Y,X].Light := ConvertLightToByte(sLight); //  1.33*16 ~=22.
 
   //Use more contrast lighting for Waterbeds
