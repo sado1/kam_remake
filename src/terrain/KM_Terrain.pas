@@ -4307,16 +4307,25 @@ end;
 
 
 procedure TKMTerrain.UpdateLighting(X, Y: Integer);
+
+  function ConvertLightToByte(aSLight: Single): Byte;
+  begin
+    REsult := Round((aSLight + 1) * 127.5);
+  end;
+
 var
   x0, y2: Integer;
+  sLight, sLightWater: Single;
 begin
   x0 := Max(X - 1, 1);
   y2 := Min(Y + 1, fMapY);
-  Land^[Y,X].Light := Round((EnsureRange((Land^[Y,X].RenderHeight - (Land^[y2,X].RenderHeight + Land^[Y,x0].RenderHeight)/2)/22, -1, 1) + 1) * 127.5); //  1.33*16 ~=22.
+  sLight := EnsureRange((Land^[Y,X].RenderHeight - (Land^[y2,X].RenderHeight + Land^[Y,x0].RenderHeight)/2)/22, -1, 1); // 1.33*16 ~=22.
+  sLightWater := EnsureRange(sLight*1.3 + 0.1, -1, 1);
+  Land^[Y,X].Light := ConvertLightToByte(sLight); //  1.33*16 ~=22.
 
   //Use more contrast lighting for Waterbeds
   if fTileset.TileIsWater(Land^[Y, X].BaseLayer.Terrain) then
-    Land^[Y,X].Light := Round(EnsureRange(Land^[Y,X].Light * 1.3 + 0.1, 0, 255));
+    Land^[Y,X].Light := ConvertLightToByte(sLightWater);
 
   //Map borders always fade to black
   if (Y = 1) or (Y = fMapY) or (X = 1) or (X = fMapX) then
