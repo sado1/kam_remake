@@ -3,7 +3,7 @@ unit KM_GUIMenuSingleMap;
 interface
 uses
   Controls, Math, SysUtils,
-  KM_Defaults,
+  KM_Defaults, KM_Console,
   KM_Maps, KM_MapTypes, KM_GameTypes,
   KM_Controls, KM_Pics, KM_InterfaceDefaults, KM_InterfaceTypes, KM_Minimap, KM_CommonTypes;
 
@@ -52,6 +52,7 @@ type
     procedure StartClick(Sender: TObject);
     procedure ListSort(aColumn: Integer);
     procedure MinimapLocClick(aValue: Integer);
+    procedure ReadmeClick(Sender: TObject);
 
     procedure BackClick(Sender: TObject);
   protected
@@ -78,6 +79,7 @@ type
         Image_SurvGoalSt: array [0..MAX_UI_GOALS-1] of TKMImage;
       ColumnBox_Maps: TKMColumnBox;
       Button_Back, Button_Start: TKMButton;
+          Button_SetupReadme: TKMButton;
   public
     OnNewSingleMap: TKMNewSingleMapEvent;
 
@@ -91,7 +93,8 @@ type
 
 implementation
 uses
-  KM_ResTexts, KM_CommonUtils, KM_RenderUI, KM_ResFonts, KM_GameSettings;
+  KM_ResTexts, KM_CommonUtils, KM_RenderUI, KM_ResFonts, KM_GameSettings,
+  KM_Networking;
 
 const
   PAD_VERT = 44; //Padding from top/bottom
@@ -235,6 +238,10 @@ begin
       DropBox_AIPlayerType.OnChange := OptionsChange;
       DropBox_AIPlayerType.Hide;
 
+      Button_SetupReadme := TKMButton.Create(Panel_Desc, 200, 480, 240, 25, gResTexts[TX_LOBBY_VIEW_README], bsMenu);
+      Button_SetupReadme.Anchors := [anLeft,anBottom];
+      Button_SetupReadme.OnClick := ReadmeClick;
+      Button_SetupReadme.Hide;
       //Goals
       B := TKMBevel.Create(Panel_Desc, 0, 530, Half, 30);
       B.Anchors := [anLeft, anBottom];
@@ -320,7 +327,7 @@ var
 begin
   PrevTop := ColumnBox_Maps.TopIndex;
   ColumnBox_Maps.Clear;
-
+  Button_SetupReadme.Hide;
   fMaps.Lock;
   try
     ListI := 0;
@@ -512,6 +519,12 @@ begin
 end;
 
 
+procedure TKMMenuSingleMap.ReadmeClick(Sender: TObject);
+begin
+  if not gNetworking.MapInfo.ViewReadme then
+    gChat.AddLine(gResTexts[TX_LOBBY_PDF_ERROR]);
+end;
+
 procedure TKMMenuSingleMap.OptionsChange(Sender: TObject);
 begin
   UpdateDropBoxes;
@@ -548,6 +561,7 @@ begin
   Label_Difficulty.Hide;
   DropBox_Difficulty.Hide;
 
+  Button_SetupReadme.Hide;
   ResetExtraInfo;
 end;
 
@@ -618,6 +632,7 @@ begin
   fUpdatedLastListId := MapId;
 
   ResetExtraInfo;
+  Button_SetupReadme.Hide;
 
   fMaps.Lock;
   try
@@ -676,6 +691,11 @@ begin
 
       if Image_Enemies[I].Right > GetPanelHalf then
         Image_Enemies[I].Hide;
+    end;
+
+    if M.HasReadme then
+    begin
+      Button_SetupReadme.Show;
     end;
   finally
     fMaps.Unlock;
