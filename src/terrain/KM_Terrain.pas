@@ -1296,25 +1296,25 @@ end;
 //Check if requested tile is Stone and returns Stone deposit
 function TKMTerrain.TileIsStone(X,Y: Word): Byte;
 begin
-  Result := IfThen(Land[Y, X].LayersCnt = 0, fTileset.TileIsStone(Land^[Y, X].BaseLayer.Terrain), 0);
+  Result := IfThen(Land[Y, X].HasNoLayers, fTileset.TileIsStone(Land^[Y, X].BaseLayer.Terrain), 0);
 end;
 
 
 function TKMTerrain.TileIsCoal(X,Y: Word): Byte;
 begin
-  Result := IfThen(Land[Y, X].LayersCnt = 0, fTileset.TileIsCoal(Land^[Y, X].BaseLayer.Terrain), 0);
+  Result := IfThen(Land[Y, X].HasNoLayers, fTileset.TileIsCoal(Land^[Y, X].BaseLayer.Terrain), 0);
 end;
 
 
 function TKMTerrain.TileIsIron(X,Y: Word): Byte;
 begin
-  Result := IfThen(Land[Y, X].LayersCnt = 0, fTileset.TileIsIron(Land^[Y, X].BaseLayer.Terrain), 0);
+  Result := IfThen(Land[Y, X].HasNoLayers, fTileset.TileIsIron(Land^[Y, X].BaseLayer.Terrain), 0);
 end;
 
 
 function TKMTerrain.TileIsGold(X,Y: Word): Byte;
 begin
-  Result := IfThen(Land[Y, X].LayersCnt = 0, fTileset.TileIsGold(Land^[Y, X].BaseLayer.Terrain), 0);
+  Result := IfThen(Land[Y, X].HasNoLayers, fTileset.TileIsGold(Land^[Y, X].BaseLayer.Terrain), 0);
 end;
 
 
@@ -1473,7 +1473,7 @@ begin
 
   if not TileInMapCoords(X, Y) then Exit;
 
-  if Land^[Y,X].LayersCnt = 0 then
+  if Land^[Y,X].HasNoLayers then
     Result := aCheckTileFunc(Land^[Y, X].BaseLayer.Terrain)
   else
   begin
