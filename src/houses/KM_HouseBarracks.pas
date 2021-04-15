@@ -78,6 +78,7 @@ var
   U: TKMUnit;
 begin
   inherited;
+
   LoadStream.CheckMarker('HouseBarracks');
   LoadStream.Read(fResourceCount, SizeOf(fResourceCount));
   fRecruitsList := TList.Create;
@@ -98,6 +99,7 @@ var
   I: Integer;
 begin
   inherited;
+
   for I := 0 to RecruitsCount - 1 do
     fRecruitsList.Items[I] := gHands.GetUnitByUID(Cardinal(fRecruitsList.Items[I]));
 end;
@@ -349,17 +351,17 @@ begin
 end;
 
 
-//Equip a new soldier and make him walk out of the house
-//Return the number of units successfully equipped
+// Equip a new soldier and make him walk out of the house
+// Return the number of units successfully equipped
 function TKMHouseBarracks.Equip(aUnitType: TKMUnitType; aCount: Integer): Integer;
 var
-  K: Integer;
+  I: Integer;
   soldier: TKMUnitWarrior;
 begin
   Result := 0;
   Assert(aUnitType in [WARRIOR_EQUIPABLE_BARRACKS_MIN..WARRIOR_EQUIPABLE_BARRACKS_MAX]);
 
-  for K := 0 to aCount - 1 do
+  for I := 0 to aCount - 1 do
   begin
     soldier := TKMUnitWarrior(EquipWarrior(aUnitType));
     if soldier = nil then
@@ -393,6 +395,7 @@ var
   I: Integer;
 begin
   inherited;
+
   SaveStream.PlaceMarker('HouseBarracks');
   SaveStream.Write(fResourceCount, SizeOf(fResourceCount));
   SaveStream.Write(RecruitsCount);

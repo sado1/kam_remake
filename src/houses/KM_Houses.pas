@@ -1085,8 +1085,8 @@ begin
   loc := fPosition;
   houseArea := gRes.Houses[fType].BuildArea;
 
-  for I := max(loc.Y - 3, 1) to loc.Y do
-    for K := max(loc.X - 2, 1) to min(loc.X + 1, gTerrain.MapX) do
+  for I := Max(loc.Y - 3, 1) to loc.Y do
+    for K := Max(loc.X - 2, 1) to Min(loc.X + 1, gTerrain.MapX) do
       if houseArea[I - loc.Y + 4, K - loc.X + 3] <> 0 then
         aCells.Add(KMPoint(K, I));
 end;
@@ -1102,8 +1102,8 @@ begin
   loc := fPosition;
   groundVisibleArea := gRes.Houses[fType].GroundVisibleArea;
 
-  for I := max(loc.Y - 3, 1) to loc.Y do
-    for K := max(loc.X - 2, 1) to min(loc.X + 1, gTerrain.MapX) do
+  for I := Max(loc.Y - 3, 1) to loc.Y do
+    for K := Max(loc.X - 2, 1) to Min(loc.X + 1, gTerrain.MapX) do
     begin
       ground := groundVisibleArea[I - loc.Y + 4, K - loc.X + 3];
       if ground <> 0 then
@@ -1432,7 +1432,7 @@ begin
 end;
 
 
-{How much resources house has in Input}
+// How much resources house has in Input
 function TKMHouse.CheckResIn(aWare: TKMWareType): Word;
 var
   I: Integer;
@@ -1444,7 +1444,7 @@ begin
 end;
 
 
-{How much resources house has in Output}
+// How much resources house has in Output
 function TKMHouse.CheckResOut(aWare: TKMWareType): Word;
 var
   I: Integer;
@@ -1456,7 +1456,7 @@ begin
 end;
 
 
-{Check amount of placed order for given ID}
+// Check amount of placed order for given ID
 function TKMHouse.GetResOrder(aID: Byte): Integer;
 begin
   Result := fResourceOrder[aID];

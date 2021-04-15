@@ -187,20 +187,15 @@ begin
   Result := ctUnknown;
 
   for CT := Low(TKMCommandType) to High(TKMCommandType) do
-  begin
     if ACommandText = '!' + COMMANDVALUES[CT] then
-    begin
-      Result := CT;
-      Break;
-    end;
-  end;
+      Exit(CT);
 
-  //Commented out because it slows down mission scanning
-  //if Result = ctUnknown then gLog.AddToLog(String(ACommandText));
+  // Commented out because it slows down mission scanning
+  //gLog.AddToLog(String(ACommandText));
 end;
 
 
-//Read mission file to a string and if necessary - decode it
+// Read mission file to a string and if necessary - decode it
 function TKMMissionParserCommon.ReadMissionFile(const aFileName: string): AnsiString;
 var
   I, Num: Cardinal;
@@ -332,7 +327,7 @@ end;
 // Shows the error to the user so they know exactly what they did wrong.
 procedure TKMMissionParserCommon.AddError(const ErrorMsg: string);
 begin
-    fMinorErrors := fMinorErrors + ErrorMsg + '|';
+  fMinorErrors := fMinorErrors + ErrorMsg + '|';
 end;
 
 

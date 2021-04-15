@@ -8,17 +8,17 @@ uses
 
 type
   TKMTilePreview = record
-                       TileID: Word;
-                       TileHeight: Byte; //Used for calculating light
-                       TileOwner: TKMHandID;
-                       Revealed: Boolean;
-                     end;
+    TileID: Word;
+    TileHeight: Byte; //Used for calculating light
+    TileOwner: TKMHandID;
+    Revealed: Boolean;
+  end;
 
   TKMHandPreview = record
-                       Color: Cardinal;
-                       StartingLoc: TKMPoint;
-                       CanHuman, CanAI: Boolean;
-                     end;
+    Color: Cardinal;
+    StartingLoc: TKMPoint;
+    CanHuman, CanAI: Boolean;
+  end;
 
   //Specially optimized mission parser for map previews
   TKMMissionParserPreview = class(TKMMissionParserCommon)
@@ -229,10 +229,10 @@ begin
 end;
 
 
-//We use custom mission loader for speed (compare only used commands)
+// We use custom mission loader for speed (compare only used commands)
 procedure TKMMissionParserPreview.LoadMission(const aFileName: string; const aRevealFor: array of TKMHandID);
 const
-  Commands: array [0..16] of AnsiString = (
+  ALLOWED_COMMANDS: array [0..16] of AnsiString = (
     '!SET_MAP', '!SET_MAP_COLOR', '!SET_RGB_COLOR', '!SET_AI_PLAYER', '!SET_ADVANCED_AI_PLAYER', '!CENTER_SCREEN',
     '!SET_CURR_PLAYER', '!SET_HUMAN_PLAYER', '!SET_USER_PLAYER',
     '!SET_STREET', '!SET_FIELD', '!SET_WINEFIELD', '!SET_STOCK',
@@ -258,7 +258,7 @@ begin
   // We need to load map dimensions first, so that SetGroup could access map bounds
   LoadMapData(ChangeFileExt(fMissionFileName, '.map'));
 
-  TokenizeScript(fileText, 6, Commands);
+  TokenizeScript(fileText, 6, ALLOWED_COMMANDS);
 end;
 
 
