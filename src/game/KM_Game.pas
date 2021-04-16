@@ -554,6 +554,11 @@ begin
                     playerEnabled[I] := True;
               end;
     gmSingle, gmCampaign: //Setup should tell us which player is AI and which not
+              // Set all hands in the SP game as Enabled
+              // In theory we could allow to prohibit some locs for AI
+              // In this case its better to delete all hand content after parser made his work done
+              // But there was no such a case or request yet, so we can simply set all hands as enabled
+              // So parser will load all hands assets
               for I := 0 to MAX_HANDS - 1 do
                 playerEnabled[I] := True;
     else      FillChar(playerEnabled, SizeOf(playerEnabled), #255);
@@ -609,6 +614,7 @@ begin
 
       Assert(InRange(aLocation, 0, gHands.Count - 1), 'No human player detected');
       gHands[aLocation].HandType := hndHuman;
+
       gMySpectator := TKMSpectator.Create(aLocation);
 
       // If no color specified use default from mission file (don't overwrite it)
@@ -689,7 +695,7 @@ var
   viewPos: TKMPointF;
 begin
   gLog.AddTime('After game start');
-  gHands.AfterMissionInit(not fParams.IsMapEditor); //Don't flatten roads in MapEd
+  gHands.AfterMissionInit;
 
   //Random after StartGame and ViewReplay should match
   if fParams.IsMultiPlayerOrSpec then
@@ -1346,7 +1352,7 @@ begin
   gMySpectator := TKMSpectator.Create(0);
   gMySpectator.FOWIndex := PLAYER_NONE;
 
-  gHands.AfterMissionInit(false);
+  gHands.AfterMissionInit;
 
   if fParams.IsSingleplayerGame then
     fGameInputProcess := TKMGameInputProcess_Single.Create(gipRecording);
@@ -2060,7 +2066,10 @@ begin
   gHands.Save(aBodyStream, fParams.IsMultiPlayerOrSpec); //Saves all players properties individually
   if not fParams.IsMultiPlayerOrSpec then
     gMySpectator.Save(aBodyStream);
-  gAIFields.Save(aBodyStream);
+
+  if gHands.CanHaveAI() then
+    gAIFields.Save(aBodyStream);
+
   fPathfinding.Save(aBodyStream);
   gProjectiles.Save(aBodyStream);
   fScripting.Save(aBodyStream);
@@ -2395,7 +2404,10 @@ begin
     gMySpectator := TKMSpectator.Create(0);
     if not saveIsMultiplayer then
       gMySpectator.Load(bodyStream);
-    gAIFields.Load(bodyStream);
+
+    if gHands.CanHaveAI() then
+      gAIFields.Load(bodyStream);
+
     fPathfinding.Load(bodyStream);
     gProjectiles.Load(bodyStream);
     fScripting.Load(bodyStream);
@@ -2811,7 +2823,10 @@ begin
 
     fScripting.UpdateState;
     gTerrain.UpdateState;
-    gAIFields.UpdateState(fParams.Tick);
+
+    if gHands.CanHaveAI() then
+      gAIFields.UpdateState(fParams.Tick);
+
     gHands.UpdateState(fParams.Tick); //Quite slow
 
     if gGame = nil then Exit; //Quit the update if game was stopped for some reason
