@@ -44,7 +44,7 @@ type
     property Included[I: Integer]: TKMScriptFileInfo read GetIncluded; default;
     property IncludedCount: Integer read fIncludedCnt;
     procedure AddIncludeInfo(const aIncludeInfo: TKMScriptFileInfo);
-    function FindCodeLine(const aLine: AnsiString; out aFileNamesArr: TKMStringArray; out aRowsArr: TIntegerArray): Integer;
+//    function FindCodeLine(const aLine: AnsiString; out aFileNamesArr: TKMStringArray; out aRowsArr: TIntegerArray): Integer;
   end;
 
 
@@ -352,16 +352,17 @@ function TKMScripting.ScriptOnUses(Sender: TPSPascalCompiler; const Name: AnsiSt
     if not aClass.RegisterMethod(AnsiString(aDecl)) then
       Assert(False, Format('Error registering "%s"', [aDecl]));
   end;
+
 var
-  CampaignDataType: TPSType;
+  campaignDataType: TPSType;
   c: TPSCompileTimeClass;
 begin
   if Name = 'SYSTEM' then
   begin
     if fCampaignDataTypeCode <> '' then
       try
-        CampaignDataType := Sender.AddTypeS(CAMPAIGN_DATA_TYPE, fCampaignDataTypeCode);
-        Sender.AddUsedVariable(CAMPAIGN_DATA_VAR, CampaignDataType);
+        campaignDataType := Sender.AddTypeS(CAMPAIGN_DATA_TYPE, fCampaignDataTypeCode);
+        Sender.AddUsedVariable(CAMPAIGN_DATA_VAR, campaignDataType);
       except
         on E: Exception do
         begin
@@ -934,7 +935,7 @@ end;
   A result type of 0 means no result}
 function TKMScripting.ScriptOnExportCheck(Sender: TPSPascalCompiler; Proc: TPSInternalProcedure; const ProcDecl: AnsiString): Boolean;
 const
-  Procs: array [0..33] of record
+  PROCS: array [0..33] of record
     Names: AnsiString;
     ParamCount: Byte;
     Typ: array [0..4] of Byte;
@@ -990,13 +991,13 @@ var
   I: Integer;
 begin
   Result := True;
-  for I := Low(Procs) to High(Procs) do
-    if (Proc.Name = Procs[I].Names) then
-      if not ExportCheck(Sender, Proc, Slice(Procs[I].Typ, Procs[I].ParamCount+1), Slice(Procs[I].Dir, Procs[I].ParamCount)) then
+  for I := Low(PROCS) to High(PROCS) do
+    if (Proc.Name = PROCS[I].Names) then
+      if not ExportCheck(Sender, Proc, Slice(PROCS[I].Typ, PROCS[I].ParamCount+1), Slice(PROCS[I].Dir, PROCS[I].ParamCount)) then
       begin
         //Something is wrong, show an error
         //todo: Sender.MakeError reports the wrong line number so the user has no idea what the error is
-        Sender.MakeError(Procs[I].Names, ecTypeMismatch, '');
+        Sender.MakeError(PROCS[I].Names, ecTypeMismatch, '');
         Result := False;
         Exit;
       end;
@@ -1013,47 +1014,47 @@ end;
 procedure TKMScripting.CompileScript;
 var
   I: Integer;
-  Compiler: TPSPascalCompiler;
+  compiler: TPSPascalCompiler;
   compileSuccess: Boolean;
-  Msg: TPSPascalCompilerMessage;
+  msg: TPSPascalCompilerMessage;
 begin
-  Compiler := TPSPascalCompiler.Create; // create an instance of the compiler
+  compiler := TPSPascalCompiler.Create; // create an instance of the compiler
   try
-    Compiler.OnUses := ScriptOnUsesFunc; // assign the OnUses event
-    Compiler.OnUseVariable := ScriptOnUseVariableProc;
-    Compiler.OnExportCheck := ScriptOnExportCheckFunc; // Assign the onExportCheck event
+    compiler.OnUses := ScriptOnUsesFunc; // assign the OnUses event
+    compiler.OnUseVariable := ScriptOnUseVariableProc;
+    compiler.OnExportCheck := ScriptOnExportCheckFunc; // Assign the onExportCheck event
 
-    Compiler.AllowNoEnd := True; //Scripts only use event handlers now, main section is unused
-    Compiler.BooleanShortCircuit := True; //Like unchecking "Complete booolean evaluation" in Delphi compiler options
+    compiler.AllowNoEnd := True; //Scripts only use event handlers now, main section is unused
+    compiler.BooleanShortCircuit := True; //Like unchecking "Complete booolean evaluation" in Delphi compiler options
 
-    compileSuccess := Compiler.Compile(fScriptCode); // Compile the Pascal script into bytecode
+    compileSuccess := compiler.Compile(fScriptCode); // Compile the Pascal script into bytecode
 
-    fPreProcessor.fPSPreProcessor.AdjustMessages(Compiler);
+    fPreProcessor.fPSPreProcessor.AdjustMessages(compiler);
 
-    for I := 0 to Compiler.MsgCount - 1 do
+    for I := 0 to compiler.MsgCount - 1 do
     begin
-      Msg := Compiler.Msg[I];
+      msg := compiler.Msg[I];
 
-      if Msg.ErrorType = 'Hint' then
+      if msg.ErrorType = 'Hint' then
       begin
-        fErrorHandler.AppendHint(GetErrorMessage(Msg));
-        fValidationIssues.AddHint(Msg.Row, Msg.Col, Msg.Param, Msg.ShortMessageToString);
+        fErrorHandler.AppendHint(GetErrorMessage(msg));
+        fValidationIssues.AddHint(msg.Row, msg.Col, msg.Param, msg.ShortMessageToString);
       end
-      else if Msg.ErrorType = 'Warning' then
+      else if msg.ErrorType = 'Warning' then
       begin
-        fErrorHandler.AppendWarning(GetErrorMessage(Msg));
-        fValidationIssues.AddWarning(Msg.Row, Msg.Col, Msg.Param, Msg.ShortMessageToString);
+        fErrorHandler.AppendWarning(GetErrorMessage(msg));
+        fValidationIssues.AddWarning(msg.Row, msg.Col, msg.Param, msg.ShortMessageToString);
       end else
-        AddError(Msg);
+        AddError(msg);
     end;
 
     if not compileSuccess then
       Exit;
 
-    Compiler.GetOutput(fByteCode);            // Save the output of the compiler in the string Data.
-    Compiler.GetDebugOutput(fDebugByteCode);  // Save the debug output of the compiler
+    compiler.GetOutput(fByteCode);            // Save the output of the compiler in the string Data.
+    compiler.GetDebugOutput(fDebugByteCode);  // Save the debug output of the compiler
   finally
-    Compiler.Free;
+    compiler.Free;
   end;
 
   LinkRuntime;
@@ -1089,17 +1090,17 @@ procedure TKMScripting.LinkRuntime;
   end;
 
 var
-  ClassImp: TPSRuntimeClassImporter;
+  classImp: TPSRuntimeClassImporter;
   I: Integer;
   V: PIFVariant;
   errStr: string;
 begin
   //Create an instance of the runtime class importer
-  ClassImp := TPSRuntimeClassImporter.Create;
+  classImp := TPSRuntimeClassImporter.Create;
   try
     //Register classes and their exposed methods to Runtime
     //(uppercase is not needed, FastUpperCase does this well. See uPSRuntime.pas, line 11387)
-    with ClassImp.Add(TKMScriptStates) do
+    with classImp.Add(TKMScriptStates) do
     begin
       RegisterMethod(@TKMScriptStates.AIArmyType,                               'AIArmyType');
       RegisterMethod(@TKMScriptStates.AIAutoAttackRange,                        'AIAutoAttackRange');
@@ -1305,7 +1306,7 @@ begin
       RegisterMethod(@TKMScriptStates.WarriorInFight,                           'WarriorInFight');
     end;
 
-    with ClassImp.Add(TKMScriptActions) do
+    with classImp.Add(TKMScriptActions) do
     begin
       RegisterMethod(@TKMScriptActions.AIArmyType,                              'AIArmyType');
       RegisterMethod(@TKMScriptActions.AIAttackAdd,                             'AIAttackAdd');
@@ -1480,7 +1481,7 @@ begin
       RegisterMethod(@TKMScriptActions.UnitOrderWalk,                           'UnitOrderWalk');
     end;
 
-    with ClassImp.Add(TKMScriptUtils) do
+    with classImp.Add(TKMScriptUtils) do
     begin
       RegisterMethod(@TKMScriptUtils.AbsI,                                      'AbsI');
       RegisterMethod(@TKMScriptUtils.AbsS,                                      'AbsS');
@@ -1578,7 +1579,7 @@ begin
     end;
 
     //Append classes info to Exec
-    RegisterClassLibraryRuntime(fExec, ClassImp);
+    RegisterClassLibraryRuntime(fExec, classImp);
 
     if not fExec.LoadData(fByteCode) then // Load the data from the Data string.
     begin
@@ -1622,7 +1623,7 @@ begin
     SetVariantToClass(fExec.GetVarNo(fExec.GetVar('A')), fActions);
     SetVariantToClass(fExec.GetVarNo(fExec.GetVar('U')), fUtils);
   finally
-    ClassImp.Free;
+    classImp.Free;
   end;
 
   //Link events into the script
@@ -1649,9 +1650,9 @@ end;
 
 procedure TKMScripting.LoadVar(LoadStream: TKMemoryStream; Src: Pointer; aType: TPSTypeRec);
 var
-  ElemCount: Integer;
   I: Integer;
-  Offset: Cardinal;
+  elemCount: Integer;
+  offset: Cardinal;
 begin
   //See uPSRuntime line 1630 for algo idea
   case aType.BaseType of
@@ -1665,36 +1666,36 @@ begin
     btString:        LoadStream.ReadA(tbtString(Src^));
     btUnicodeString: LoadStream.ReadW(tbtUnicodeString(Src^));
     btStaticArray:begin
-                    LoadStream.Read(ElemCount);
-                    Assert(ElemCount = TPSTypeRec_StaticArray(aType).Size, 'Script array element count mismatches saved count');
-                    for I := 0 to ElemCount - 1 do
+                    LoadStream.Read(elemCount);
+                    Assert(elemCount = TPSTypeRec_StaticArray(aType).Size, 'Script array element count mismatches saved count');
+                    for I := 0 to elemCount - 1 do
                     begin
-                      Offset := TPSTypeRec_Array(aType).ArrayType.RealSize * I;
-                      LoadVar(LoadStream, Pointer(IPointer(Src) + Offset), TPSTypeRec_Array(aType).ArrayType);
+                      offset := TPSTypeRec_Array(aType).ArrayType.RealSize * I;
+                      LoadVar(LoadStream, Pointer(IPointer(Src) + offset), TPSTypeRec_Array(aType).ArrayType);
                     end;
                   end;
     btArray:      begin
-                    LoadStream.Read(ElemCount);
-                    PSDynArraySetLength(Pointer(Src^), aType, ElemCount);
-                    for I := 0 to ElemCount - 1 do
+                    LoadStream.Read(elemCount);
+                    PSDynArraySetLength(Pointer(Src^), aType, elemCount);
+                    for I := 0 to elemCount - 1 do
                     begin
-                      Offset := TPSTypeRec_Array(aType).ArrayType.RealSize * I;
-                      LoadVar(LoadStream, Pointer(IPointer(Src^) + Offset), TPSTypeRec_Array(aType).ArrayType);
+                      offset := TPSTypeRec_Array(aType).ArrayType.RealSize * I;
+                      LoadVar(LoadStream, Pointer(IPointer(Src^) + offset), TPSTypeRec_Array(aType).ArrayType);
                     end;
                   end;
     btRecord:     begin
-                    LoadStream.Read(ElemCount);
-                    Assert(ElemCount = TPSTypeRec_Record(aType).FieldTypes.Count, 'Script record element count mismatches saved count');
-                    for I := 0 to ElemCount - 1 do
+                    LoadStream.Read(elemCount);
+                    Assert(elemCount = TPSTypeRec_Record(aType).FieldTypes.Count, 'Script record element count mismatches saved count');
+                    for I := 0 to elemCount - 1 do
                     begin
-                      Offset := Cardinal(TPSTypeRec_Record(aType).RealFieldOffsets[I]);
-                      LoadVar(LoadStream, Pointer(IPointer(Src) + Offset), TPSTypeRec_Record(aType).FieldTypes[I]);
+                      offset := Cardinal(TPSTypeRec_Record(aType).RealFieldOffsets[I]);
+                      LoadVar(LoadStream, Pointer(IPointer(Src) + offset), TPSTypeRec_Record(aType).FieldTypes[I]);
                     end;
                   end;
     btSet:        begin
-                    LoadStream.Read(ElemCount);
-                    Assert(ElemCount = TPSTypeRec_Set(aType).RealSize, 'Script set element count mismatches saved count');
-                    LoadStream.Read(Src^, ElemCount);
+                    LoadStream.Read(elemCount);
+                    Assert(elemCount = TPSTypeRec_Set(aType).RealSize, 'Script set element count mismatches saved count');
+                    LoadStream.Read(Src^, elemCount);
                   end;
     //Already checked and reported as an error in LinkRuntime, no need to crash it here
     //else Assert(False);
@@ -1770,9 +1771,9 @@ end;
 
 procedure TKMScripting.SaveVar(SaveStream: TKMemoryStream; Src: Pointer; aType: TPSTypeRec);
 var
-  ElemCount: Integer;
   I: Integer;
-  Offset: Cardinal;
+  elemCount: Integer;
+  offset: Cardinal;
 begin
   //See uPSRuntime line 1630 for algo idea
   case aType.BaseType of
@@ -1786,36 +1787,36 @@ begin
     btString:        SaveStream.WriteA(tbtString(Src^));
     btUnicodeString: SaveStream.WriteW(tbtUnicodeString(Src^));
     btStaticArray:begin
-                    ElemCount := TPSTypeRec_StaticArray(aType).Size;
-                    SaveStream.Write(ElemCount);
-                    for I := 0 to ElemCount - 1 do
+                    elemCount := TPSTypeRec_StaticArray(aType).Size;
+                    SaveStream.Write(elemCount);
+                    for I := 0 to elemCount - 1 do
                     begin
-                      Offset := TPSTypeRec_Array(aType).ArrayType.RealSize * I;
-                      SaveVar(SaveStream, Pointer(IPointer(Src) + Offset), TPSTypeRec_Array(aType).ArrayType);
+                      offset := TPSTypeRec_Array(aType).ArrayType.RealSize * I;
+                      SaveVar(SaveStream, Pointer(IPointer(Src) + offset), TPSTypeRec_Array(aType).ArrayType);
                     end;
                   end;
     btArray:      begin
-                    ElemCount := PSDynArrayGetLength(Pointer(Src^), aType);
-                    SaveStream.Write(ElemCount);
-                    for I := 0 to ElemCount - 1 do
+                    elemCount := PSDynArrayGetLength(Pointer(Src^), aType);
+                    SaveStream.Write(elemCount);
+                    for I := 0 to elemCount - 1 do
                     begin
-                      Offset := TPSTypeRec_Array(aType).ArrayType.RealSize * I;
-                      SaveVar(SaveStream, Pointer(IPointer(Src^) + Offset), TPSTypeRec_Array(aType).ArrayType);
+                      offset := TPSTypeRec_Array(aType).ArrayType.RealSize * I;
+                      SaveVar(SaveStream, Pointer(IPointer(Src^) + offset), TPSTypeRec_Array(aType).ArrayType);
                     end;
                   end;
     btRecord:     begin
-                    ElemCount := TPSTypeRec_Record(aType).FieldTypes.Count;
-                    SaveStream.Write(ElemCount);
-                    for I := 0 to ElemCount - 1 do
+                    elemCount := TPSTypeRec_Record(aType).FieldTypes.Count;
+                    SaveStream.Write(elemCount);
+                    for I := 0 to elemCount - 1 do
                     begin
-                      Offset := Cardinal(TPSTypeRec_Record(aType).RealFieldOffsets[I]);
-                      SaveVar(SaveStream, Pointer(IPointer(Src) + Offset), TPSTypeRec_Record(aType).FieldTypes[I]);
+                      offset := Cardinal(TPSTypeRec_Record(aType).RealFieldOffsets[I]);
+                      SaveVar(SaveStream, Pointer(IPointer(Src) + offset), TPSTypeRec_Record(aType).FieldTypes[I]);
                     end;
                   end;
     btSet:        begin
-                    ElemCount := TPSTypeRec_Set(aType).RealSize;
-                    SaveStream.Write(ElemCount);
-                    SaveStream.Write(Src^, ElemCount);
+                    elemCount := TPSTypeRec_Set(aType).RealSize;
+                    SaveStream.Write(elemCount);
+                    SaveStream.Write(Src^, elemCount);
                   end;
     //Already checked and reported as an error in LinkRuntime, no need to crash it here
     //else Assert(False);
@@ -1873,12 +1874,13 @@ end;
 
 
 //function TKMScripting.GetCodeLine(aRowNum: Cardinal): AnsiString;
-//var Strings: TStringList;
+//var
+//  strings: TStringList;
 //begin
-//  Strings := TStringList.Create;
-//  Strings.Text := fScriptCode;
-//  Result := AnsiString(Strings[aRowNum - 1]);
-//  Strings.Free;
+//  strings := TStringList.Create;
+//  strings.Text := fScriptCode;
+//  Result := AnsiString(strings[aRowNum - 1]);
+//  strings.Free;
 //end;
 
 
@@ -1897,17 +1899,17 @@ end;
 
 function TKMScripting.GetErrorMessage(const aErrorType, aShortErrorDescription, aModule: String; aRow, aCol, aPos: Integer): TKMScriptErrorMessage;
 var
-  ErrorMsg: UnicodeString;
+  errorMsg: UnicodeString;
 begin
-  ErrorMsg := Format(aShortErrorDescription + 'in ''%s'' at [%d:%d]' + EolW, [aModule, aRow, aCol]);
+  errorMsg := Format(aShortErrorDescription + 'in ''%s'' at [%d:%d]' + EolW, [aModule, aRow, aCol]);
 
   // Show game message only for errors. Do not show it for hints or warnings.
   if aErrorType = 'Error' then
-    Result.GameMessage := ErrorMsg
+    Result.GameMessage := errorMsg
   else
     Result.GameMessage := '';
 
-   Result.LogMessage := ErrorMsg;
+   Result.LogMessage := errorMsg;
 end;
 
 
@@ -2023,19 +2025,19 @@ procedure TKMScriptErrorHandler.HandleScriptErrorString(aType: TKMScriptErrorTyp
                                                         const aDetailedErrorString: UnicodeString = '');
 var
   fl: TextFile;
-  LogErrorMsg, errorStr: UnicodeString;
+  logErrorMsg, errorStr: UnicodeString;
 begin
   if BLOCK_FILE_WRITE then Exit;
 
   if aDetailedErrorString <> '' then
-    LogErrorMsg := aDetailedErrorString
+    logErrorMsg := aDetailedErrorString
   else
-    LogErrorMsg := aErrorString;
+    logErrorMsg := aErrorString;
 
-  if LogErrorMsg = '' then //No errors occur
+  if logErrorMsg = '' then //No errors occur
     Exit;
 
-  gLog.AddTime('Script: ' + LogErrorMsg); //Always log the error to global game log
+  gLog.AddTime('Script: ' + logErrorMsg); //Always log the error to global game log
 
   //Log to map specific log file
   if fScriptLogFile <> '' then
@@ -2053,7 +2055,7 @@ begin
       end
       else
         Append(fl);
-    WriteLn(fl, Format('%23s   %s', [FormatDateTime('yyyy/mm/dd hh:nn:ss.zzz', Now), LogErrorMsg]));
+    WriteLn(fl, Format('%23s   %s', [FormatDateTime('yyyy/mm/dd hh:nn:ss.zzz', Now), logErrorMsg]));
     CloseFile(fl);
   end;
 
@@ -2078,10 +2080,10 @@ end;
 {TKMScriptingPreProcessor}
 constructor TKMScriptingPreProcessor.Create;
 var
-  OnScriptError: TUnicodeStringEvent;
+  onScriptError: TUnicodeStringEvent;
 begin
-  OnScriptError := nil;
-  Create(OnScriptError);
+  onScriptError := nil;
+  Create(onScriptError);
 end;
 
 
@@ -2157,15 +2159,15 @@ end;
 
 function TKMScriptingPreProcessor.PreProcessFile(const aFileName: UnicodeString): Boolean;
 var
-  ScriptCode: AnsiString;
+  scriptCode: AnsiString;
 begin
-  Result := PreProcessFile(aFileName, ScriptCode);
+  Result := PreProcessFile(aFileName, scriptCode);
 end;
 
 
 function TKMScriptingPreProcessor.PreProcessFile(const aFileName: UnicodeString; var aScriptCode: AnsiString): Boolean;
 var
-  MainScriptCode: AnsiString;
+  mainScriptCode: AnsiString;
 begin
   Result := False;
   fErrorHandler.ScriptLogFile := ChangeFileExt(aFileName, SCRIPT_LOG_EXT);
@@ -2176,11 +2178,11 @@ begin
     Exit;
   end;
 
-  MainScriptCode := ReadTextA(aFileName);
+  mainScriptCode := ReadTextA(aFileName);
 
   fPSPreProcessor.MainFileName := AnsiString(aFileName);
-  fPSPreProcessor.MainFile := MainScriptCode;
-  BeforePreProcess(aFileName, MainScriptCode);
+  fPSPreProcessor.MainFile := mainScriptCode;
+  BeforePreProcess(aFileName, mainScriptCode);
   try
     fPSPreProcessor.PreProcess(fPSPreProcessor.MainFileName, aScriptCode);
     AfterPreProcess;
@@ -2213,9 +2215,9 @@ const
 
   procedure LoadCustomEventDirectives;
   var
-    ErrorStr: UnicodeString;
-    EventType: Integer;
-    DirectiveParamSL: TStringList;
+    errorStr: UnicodeString;
+    eventType: Integer;
+    directiveParamSL: TStringList;
   begin
     //Load custom event handlers
     if UpperCase(DirectiveName) = UpperCase(CUSTOM_EVENT_DIRECTIVE) then
@@ -2228,27 +2230,27 @@ const
       if not AllowGameUpdate then Exit;
 
       try
-        DirectiveParamSL := TStringList.Create;
+        directiveParamSL := TStringList.Create;
         try
-          StringSplit(DirectiveParam, ':', DirectiveParamSL);
-          EventType := GetEnumValue(TypeInfo(TKMScriptEventType), Trim(DirectiveParamSL[0]));
+          StringSplit(DirectiveParam, ':', directiveParamSL);
+          eventType := GetEnumValue(TypeInfo(TKMScriptEventType), Trim(directiveParamSL[0]));
 
-          if EventType = -1 then
+          if eventType = -1 then
           begin
             fErrorHandler.AppendErrorStr(Format('Unknown directive ''%s'' at [%d:%d]' + sLineBreak,
-                                                [Trim(DirectiveParamSL[0]), Parser.Row, Parser.Col]));
+                                                [Trim(directiveParamSL[0]), Parser.Row, Parser.Col]));
             if fValidationIssues <> nil then
-              fValidationIssues.AddError(Parser.Row, Parser.Col, Trim(DirectiveParamSL[0]), 'Unknown directive');
+              fValidationIssues.AddError(Parser.Row, Parser.Col, Trim(directiveParamSL[0]), 'Unknown directive');
           end else
-            gScriptEvents.AddEventHandlerName(TKMScriptEventType(EventType), AnsiString(Trim(DirectiveParamSL[1])));
+            gScriptEvents.AddEventHandlerName(TKMScriptEventType(eventType), AnsiString(Trim(directiveParamSL[1])));
         finally
-          DirectiveParamSL.Free;
+          directiveParamSL.Free;
         end;
       except
         on E: Exception do
           begin
-            ErrorStr := Format('Error loading directive ''%s'' at [%d:%d]', [Parser.Token, Parser.Row, Parser.Col]);
-            fErrorHandler.AppendErrorStr(ErrorStr, ErrorStr + ' Exception: ' + E.Message
+            errorStr := Format('Error loading directive ''%s'' at [%d:%d]', [Parser.Token, Parser.Row, Parser.Col]);
+            fErrorHandler.AppendErrorStr(errorStr, errorStr + ' Exception: ' + E.Message
               {$IFDEF WDC} + sLineBreak + E.StackTrace {$ENDIF});
             if fValidationIssues <> nil then
               fValidationIssues.AddError(Parser.Row, Parser.Col, Parser.Token, 'Error loading directive');
@@ -2259,8 +2261,8 @@ const
 
   procedure LoadCustomConsoleCommands;
   var
-    CmdName, ProcName: AnsiString;
-    ErrorStr: UnicodeString;
+    cmdName, procName: AnsiString;
+    errorStr: UnicodeString;
     SL: TStringList;
   begin
     //Load custom event handlers
@@ -2278,18 +2280,18 @@ const
         SL := TStringList.Create;
         try
           StringSplit(DirectiveParam, ':', SL);
-          CmdName := AnsiString(Trim(SL[0]));
-          ProcName := AnsiString(Trim(SL[1]));
+          cmdName := AnsiString(Trim(SL[0]));
+          procName := AnsiString(Trim(SL[1]));
 
-          gScriptEvents.AddConsoleCommand(CmdName, ProcName);
+          gScriptEvents.AddConsoleCommand(cmdName, procName);
         finally
           FreeAndNil(SL);
         end;
       except
         on E: Exception do
           begin
-            ErrorStr := Format('Error loading command ''%s'' at [%d:%d]', [Parser.Token, Parser.Row, Parser.Col]);
-            fErrorHandler.AppendErrorStr(ErrorStr, ErrorStr + ' Exception: ' + E.Message
+            errorStr := Format('Error loading command ''%s'' at [%d:%d]', [Parser.Token, Parser.Row, Parser.Col]);
+            fErrorHandler.AppendErrorStr(errorStr, errorStr + ' Exception: ' + E.Message
               {$IFDEF WDC} + sLineBreak + E.StackTrace {$ENDIF});
             if fValidationIssues <> nil then
               fValidationIssues.AddError(Parser.Row, Parser.Col, Parser.Token, 'Error loading command');
@@ -2300,47 +2302,47 @@ const
 
   procedure LoadCustomTHTroopCost;
   var
-    I, TroopCost: Integer;
-    ErrorStr: UnicodeString;
-    DirectiveParamSL: TStringList;
-    HasError: Boolean;
-    THTroopCost: array[Low(TH_TROOP_COST)..High(TH_TROOP_COST)] of Integer;
+    I, troopCost: Integer;
+    errorStr: UnicodeString;
+    directiveParamSL: TStringList;
+    hasError: Boolean;
+    thTroopCost: array[Low(TH_TROOP_COST)..High(TH_TROOP_COST)] of Integer;
   begin
     if UpperCase(DirectiveName) = UpperCase(CUSTOM_TH_TROOP_COST_DIRECTIVE) then
     begin
       aContinue := False; //Custom directive should not be proccesed any further by pascal script preprocessor, as it will cause an error
 
       try
-        DirectiveParamSL := TStringList.Create;
+        directiveParamSL := TStringList.Create;
         try
-          StringSplit(DirectiveParam, ',', DirectiveParamSL);
+          StringSplit(DirectiveParam, ',', directiveParamSL);
 
-          HasError := False;
-          if DirectiveParamSL.Count <> Length(THTroopCost) then
+          hasError := False;
+          if directiveParamSL.Count <> Length(thTroopCost) then
           begin
-            HasError := True;
+            hasError := True;
             fErrorHandler.AppendErrorStr(Format('Directive ''%s'' has wrong number of parameters: expected %d, actual: %d. At [%d:%d]' + sLineBreak,
-                                                [CUSTOM_TH_TROOP_COST_DIRECTIVE, Length(THTroopCost), DirectiveParamSL.Count,
+                                                [CUSTOM_TH_TROOP_COST_DIRECTIVE, Length(thTroopCost), directiveParamSL.Count,
                                                  Parser.Row, Parser.Col]));
             if fValidationIssues <> nil then
               fValidationIssues.AddError(Parser.Row, Parser.Col, CUSTOM_TH_TROOP_COST_DIRECTIVE,
                                          Format('Wrong number of parameters: expected %d, actual: %d',
-                                                [Length(THTroopCost), DirectiveParamSL.Count]));
+                                                [Length(thTroopCost), directiveParamSL.Count]));
           end;
 
-          for I := Low(THTroopCost) to High(THTroopCost) do
-            if TryStrToInt(DirectiveParamSL[I], TroopCost) then
-              THTroopCost[I] := EnsureRange(TroopCost, 1, 255)
+          for I := Low(thTroopCost) to High(thTroopCost) do
+            if TryStrToInt(directiveParamSL[I], troopCost) then
+              thTroopCost[I] := EnsureRange(troopCost, 1, 255)
             else begin
-              HasError := True;
+              hasError := True;
               fErrorHandler.AppendErrorStr(Format('Directive ''%s'' wrong parameter: [%s] is not a number. At [%d:%d]' + sLineBreak,
-                                                  [CUSTOM_TH_TROOP_COST_DIRECTIVE, DirectiveParamSL[I], Parser.Row, Parser.Col]));
+                                                  [CUSTOM_TH_TROOP_COST_DIRECTIVE, directiveParamSL[I], Parser.Row, Parser.Col]));
               if fValidationIssues <> nil then
                 fValidationIssues.AddError(Parser.Row, Parser.Col, CUSTOM_TH_TROOP_COST_DIRECTIVE,
-                                           Format('Wrong directive parameter: [%s] is not a number', [DirectiveParamSL[I]]));
+                                           Format('Wrong directive parameter: [%s] is not a number', [directiveParamSL[I]]));
             end;
 
-          if not HasError then
+          if not hasError then
           begin
             fCustomScriptParams[cspTHTroopCosts].Added := True;
             fCustomScriptParams[cspTHTroopCosts].Data := DirectiveParam;
@@ -2354,16 +2356,16 @@ const
 
           //Update actual troop cost
           for I := Low(TH_TROOP_COST) to High(TH_TROOP_COST) do
-            TH_TROOP_COST[I] := THTroopCost[I];
+            TH_TROOP_COST[I] := thTroopCost[I];
 
         finally
-          DirectiveParamSL.Free;
+          directiveParamSL.Free;
         end;
       except
         on E: Exception do
           begin
-            ErrorStr := Format('Error loading directive ''%s'' at [%d:%d]', [Parser.Token, Parser.Row, Parser.Col]);
-            fErrorHandler.AppendErrorStr(ErrorStr, ErrorStr + ' Exception: ' + E.Message
+            errorStr := Format('Error loading directive ''%s'' at [%d:%d]', [Parser.Token, Parser.Row, Parser.Col]);
+            fErrorHandler.AppendErrorStr(errorStr, errorStr + ' Exception: ' + E.Message
               {$IFDEF WDC} + sLineBreak + E.StackTrace {$ENDIF});
             if fValidationIssues <> nil then
               fValidationIssues.AddError(Parser.Row, Parser.Col, Parser.Token, 'Error loading directive');
@@ -2374,37 +2376,37 @@ const
 
   procedure LoadCustomMarketGoldPrice;
   var
-    ErrorStr: UnicodeString;
-    DirectiveParamSL: TStringList;
-    HasError: Boolean;
-    GoldOrePriceX, GoldPriceX: Single;
+    errorStr: UnicodeString;
+    directiveParamSL: TStringList;
+    hasError: Boolean;
+    goldOrePriceX, goldPriceX: Single;
   begin
     if UpperCase(DirectiveName) = UpperCase(CUSTOM_MARKET_GOLD_PRICE_DIRECTIVE) then
     begin
       aContinue := False; //Custom directive should not be proccesed any further by pascal script preprocessor, as it will cause an error
 
       try
-        DirectiveParamSL := TStringList.Create;
+        directiveParamSL := TStringList.Create;
         try
-          StringSplit(DirectiveParam, ',', DirectiveParamSL);
+          StringSplit(DirectiveParam, ',', directiveParamSL);
 
-          if DirectiveParamSL.Count <> 2 then
+          if directiveParamSL.Count <> 2 then
           begin
             fErrorHandler.AppendErrorStr(Format('Directive ''%s'' has wrong number of parameters: expected 2, actual: %d. At [%d:%d]' + sLineBreak,
-                                                [CUSTOM_MARKET_GOLD_PRICE_DIRECTIVE, DirectiveParamSL.Count, Parser.Row, Parser.Col]));
+                                                [CUSTOM_MARKET_GOLD_PRICE_DIRECTIVE, directiveParamSL.Count, Parser.Row, Parser.Col]));
             if fValidationIssues <> nil then
               fValidationIssues.AddError(Parser.Row, Parser.Col, CUSTOM_MARKET_GOLD_PRICE_DIRECTIVE,
-                                         'Wrong number of parameters: expected 2, actual: ' + IntToStr(DirectiveParamSL.Count));
+                                         'Wrong number of parameters: expected 2, actual: ' + IntToStr(directiveParamSL.Count));
           end;
 
-          HasError := False;
-            if TryStrToFloat(StringReplace(DirectiveParamSL[0], '.', ',', [rfReplaceAll]), GoldOrePriceX)
-              and TryStrToFloat(StringReplace(DirectiveParamSL[1], '.', ',', [rfReplaceAll]), GoldPriceX) then
+          hasError := False;
+            if TryStrToFloat(StringReplace(directiveParamSL[0], '.', ',', [rfReplaceAll]), goldOrePriceX)
+              and TryStrToFloat(StringReplace(directiveParamSL[1], '.', ',', [rfReplaceAll]), goldPriceX) then
             begin
-              GoldOrePriceX := EnsureRange(GoldOrePriceX, 0.1, 10);
-              GoldPriceX := EnsureRange(GoldPriceX, 0.1, 10);
+              goldOrePriceX := EnsureRange(goldOrePriceX, 0.1, 10);
+              goldPriceX := EnsureRange(goldPriceX, 0.1, 10);
             end else begin
-              HasError := True;
+              hasError := True;
               fErrorHandler.AppendErrorStr(Format('Directive ''%s'' has not a number parameter: [%s]. At [%d:%d]' + sLineBreak,
                                                   [CUSTOM_MARKET_GOLD_PRICE_DIRECTIVE, DirectiveParam, Parser.Row, Parser.Col]));
               if fValidationIssues <> nil then
@@ -2412,12 +2414,12 @@ const
                                            'Wrong directive parameters type, Integer required');
             end;
 
-          if not HasError then
+          if not hasError then
           begin
             fCustomScriptParams[cspMarketGoldPrice].Added := True;
             fCustomScriptParams[cspMarketGoldPrice].Data :=
-              Format('%s: x%s %s: x%s', [gRes.Wares[wtGoldOre].Title, FormatFloat('#0.#', GoldOrePriceX),
-                                         gRes.Wares[wtGold].Title,    FormatFloat('#0.#', GoldPriceX)]);
+              Format('%s: x%s %s: x%s', [gRes.Wares[wtGoldOre].Title, FormatFloat('#0.#', goldOrePriceX),
+                                         gRes.Wares[wtGold].Title,    FormatFloat('#0.#', goldPriceX)]);
           end else
             Exit;
 
@@ -2427,17 +2429,17 @@ const
           if not AllowGameUpdate then Exit;
 
           //Update actual troop cost
-          gRes.Wares[wtGoldOre].MarketPriceMultiplier := GoldOrePriceX;
-          gRes.Wares[wtGold].MarketPriceMultiplier := GoldPriceX;
+          gRes.Wares[wtGoldOre].MarketPriceMultiplier := goldOrePriceX;
+          gRes.Wares[wtGold].MarketPriceMultiplier := goldPriceX;
 
         finally
-          DirectiveParamSL.Free;
+          directiveParamSL.Free;
         end;
       except
         on E: Exception do
           begin
-            ErrorStr := Format('Error loading directive ''%s'' at [%d:%d]', [Parser.Token, Parser.Row, Parser.Col]);
-            fErrorHandler.AppendErrorStr(ErrorStr, ErrorStr + ' Exception: ' + E.Message
+            errorStr := Format('Error loading directive ''%s'' at [%d:%d]', [Parser.Token, Parser.Row, Parser.Col]);
+            fErrorHandler.AppendErrorStr(errorStr, errorStr + ' Exception: ' + E.Message
               {$IFDEF WDC} + sLineBreak + E.StackTrace {$ENDIF});
             if fValidationIssues <> nil then
               fValidationIssues.AddError(Parser.Row, Parser.Col, Parser.Token, 'Error loading directive');
@@ -2467,8 +2469,8 @@ end;
 
 function TKMScriptingPreProcessor.ScriptOnNeedFile(Sender: TPSPreProcessor; const aCallingFileName: AnsiString; var aFileName, aOutput: AnsiString): Boolean;
 var
-  S, FileExt: String;
-  IncludedScriptFileInfo: TKMScriptFileInfo;
+  S, fileExt: String;
+  includedScriptFileInfo: TKMScriptFileInfo;
 begin
   Result := False;
 
@@ -2476,11 +2478,11 @@ begin
   if S = '' then S := ExtractFilePath(ParamStr(0));
   aFileName := AnsiString(S) + AnsiString(Trim(aFileName));
 
-  FileExt := ExtractFileExt(aFileName);
+  fileExt := ExtractFileExt(aFileName);
   // Check included file extension
-  if FileExt <> EXT_FILE_SCRIPT_DOT then
+  if fileExt <> EXT_FILE_SCRIPT_DOT then
     raise Exception.Create(Format('Error including ''%s'' from ''%s'': |Wrong extension: ''%s''',
-                                  [ExtractFileName(aFileName), ExtractFileName(aCallingFileName), FileExt]));
+                                  [ExtractFileName(aFileName), ExtractFileName(aCallingFileName), fileExt]));
 
   // Check included file folder
   if ExtractFilePath(aFileName) <> fScriptFilesInfo.fMainFilePath then
@@ -2491,11 +2493,11 @@ begin
   begin
     aOutput := ReadTextA(aFileName);
 
-    IncludedScriptFileInfo.FullFilePath := aFileName;
-    IncludedScriptFileInfo.FileName := ExtractFileName(aFileName);
-    IncludedScriptFileInfo.FileText := aOutput;
+    includedScriptFileInfo.FullFilePath := aFileName;
+    includedScriptFileInfo.FileName := ExtractFileName(aFileName);
+    includedScriptFileInfo.FileText := aOutput;
 
-    fScriptFilesInfo.AddIncludeInfo(IncludedScriptFileInfo);
+    fScriptFilesInfo.AddIncludeInfo(includedScriptFileInfo);
 
     Result := True;
   end;
@@ -2527,53 +2529,57 @@ begin
 end;
 
 
-//Try to find line of code in all script files
-//Returns number of occurences
-function TKMScriptFilesCollection.FindCodeLine(const aLine: AnsiString; out aFileNamesArr: TKMStringArray;
-                                               out aRowsArr: TIntegerArray): Integer;
-
-  procedure AddFoundLineInfo(var aFoundCnt: Integer; const aFileNameFound: String; aRowFound: Integer);
-  begin
-    if (aFoundCnt >= Length(aFileNamesArr))
-      or (aFoundCnt >= Length(aRowsArr)) then
-    begin
-      SetLength(aFileNamesArr, aFoundCnt + 8);
-      SetLength(aRowsArr, aFoundCnt + 8);
-    end;
-
-    aFileNamesArr[aFoundCnt] := aFileNameFound;
-    aRowsArr[aFoundCnt] := aRowFound;
-
-    Inc(aFoundCnt);
-  end;
-
-  procedure FindLine(var aFoundCnt: Integer; const aScriptFileInfo: TKMScriptFileInfo; var aStrings: TStringList);
-  var I: Integer;
-  begin
-    aStrings.Clear;
-    aStrings.Text := aScriptFileInfo.FileText;
-
-    //Find all occurences of aLine in FileText
-    for I := 0 to aStrings.Count - 1 do
-      if aStrings[I] = aLine then
-        AddFoundLineInfo(aFoundCnt, aScriptFileInfo.FileName, I + 1);
-  end;
-var Strings: TStringList;
-    I, aFoundCnt: Integer;
-begin
-  Strings := TStringList.Create; // Create TStringList only once for all files
-
-  aFoundCnt := 0;
-  //Find in main script file first
-  FindLine(aFoundCnt, fMainFileInfo, Strings);
-
-  for I := 0 to fIncludedCnt - 1 do
-    //then find in included script files
-    FindLine(aFoundCnt, fIncluded[I], Strings);
-
-  Result := aFoundCnt;
-  Strings.Free;
-end;
+//
+////Try to find line of code in all script files
+////Returns number of occurences
+//function TKMScriptFilesCollection.FindCodeLine(const aLine: AnsiString; out aFileNamesArr: TKMStringArray;
+//                                               out aRowsArr: TIntegerArray): Integer;
+//
+//  procedure AddFoundLineInfo(var aFoundCnt: Integer; const aFileNameFound: String; aRowFound: Integer);
+//  begin
+//    if (aFoundCnt >= Length(aFileNamesArr))
+//      or (aFoundCnt >= Length(aRowsArr)) then
+//    begin
+//      SetLength(aFileNamesArr, aFoundCnt + 8);
+//      SetLength(aRowsArr, aFoundCnt + 8);
+//    end;
+//
+//    aFileNamesArr[aFoundCnt] := aFileNameFound;
+//    aRowsArr[aFoundCnt] := aRowFound;
+//
+//    Inc(aFoundCnt);
+//  end;
+//
+//  procedure FindLine(var aFoundCnt: Integer; const aScriptFileInfo: TKMScriptFileInfo; var aStrings: TStringList);
+//  var
+//    I: Integer;
+//  begin
+//    aStrings.Clear;
+//    aStrings.Text := aScriptFileInfo.FileText;
+//
+//    //Find all occurences of aLine in FileText
+//    for I := 0 to aStrings.Count - 1 do
+//      if aStrings[I] = aLine then
+//        AddFoundLineInfo(aFoundCnt, aScriptFileInfo.FileName, I + 1);
+//  end;
+//
+//var
+//  strings: TStringList;
+//  I, aFoundCnt: Integer; // Same name as a parameter?
+//begin
+//  strings := TStringList.Create; // Create TStringList only once for all files
+//
+//  aFoundCnt := 0;
+//  //Find in main script file first
+//  FindLine(aFoundCnt, fMainFileInfo, strings);
+//
+//  for I := 0 to fIncludedCnt - 1 do
+//    //then find in included script files
+//    FindLine(aFoundCnt, fIncluded[I], strings);
+//
+//  Result := aFoundCnt;
+//  strings.Free;
+//end;
 
 
 end.
