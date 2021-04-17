@@ -8,6 +8,9 @@ type
   TKMCampaignId = array [0..2] of Byte;
 
 
+const
+  CAMPAIGN_DATA_FILENAME = 'campaigndata';
+
 implementation
 
 end.

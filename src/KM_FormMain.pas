@@ -661,7 +661,7 @@ begin
 
   if not fStartVideoPlayed and (gGameSettings <> nil) and gGameSettings.VideoStartup then
   begin
-    gVideoPlayer.AddVideo('Campaigns' + PathDelim + 'The Peasants Rebellion' + PathDelim + 'Logo', vfkStarting);
+    gVideoPlayer.AddVideo(CAMPAIGNS_FOLDER_NAME + PathDelim + 'The Peasants Rebellion' + PathDelim + 'Logo', vfkStarting);
     gVideoPlayer.AddVideo('KaM', vfkStarting);
     gVideoPlayer.Play;
     fStartVideoPlayed := True;
