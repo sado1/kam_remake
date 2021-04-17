@@ -92,6 +92,8 @@ type
     fCustomScriptParams: TKMCustomScriptParamDataArray;
     fPSPreProcessor: TPSPreProcessor;
 
+    function IsCampaignMissionScript: Boolean;
+
     function GetCustomScriptParamData(aParam: TKMCustomScriptParam): TKMCustomScriptParamData;
 
     procedure AfterPreProcess;
@@ -205,7 +207,7 @@ implementation
 uses
   TypInfo, Math, KromUtils, KM_GameParams, KM_Resource, KM_ResUnits, KM_Log, KM_CommonUtils, KM_ResWares,
   KM_ScriptingConsoleCommands,
-  KM_ResTypes;
+  KM_ResTypes, KM_CampaignTypes;
 
 const
   SCRIPT_LOG_EXT = '.log.txt';
@@ -2157,6 +2159,23 @@ begin
 end;
 
 
+// Check if main script file is a campaign mission
+function TKMScriptingPreProcessor.IsCampaignMissionScript: Boolean;
+begin
+  if gGameParams <> nil then
+    Exit(gGameParams.IsCampaign)
+  else
+    // We could run pre processor from script validator, f.e., so we will have no gGameParams initialized
+
+    // fScriptFilesInfo.fMainFilePath could have absolute or relative path
+    // ScriptValidator ExeDir could lead to some different folder
+    Result :=  (Pos(ExeDir + CAMPAIGNS_FOLDER_NAME, fScriptFilesInfo.fMainFilePath) = 1)
+            or (Pos(CAMPAIGNS_FOLDER_NAME, fScriptFilesInfo.fMainFilePath) = 1)
+            // Use PathDelims for script validator, to avoid abusing maps with names like 'Better_then_any_Campaigns_map' which contains 'Campaigns' string
+            or (Pos(PathDelim + CAMPAIGNS_FOLDER_NAME + PathDelim, fScriptFilesInfo.fMainFilePath) > 0);
+end;
+
+
 function TKMScriptingPreProcessor.PreProcessFile(const aFileName: UnicodeString): Boolean;
 var
   scriptCode: AnsiString;
@@ -2469,25 +2488,72 @@ end;
 
 function TKMScriptingPreProcessor.ScriptOnNeedFile(Sender: TPSPreProcessor; const aCallingFileName: AnsiString; var aFileName, aOutput: AnsiString): Boolean;
 var
-  S, fileExt: String;
+  path, fileName, fileExt, errorStr: string;
+  inclFile: AnsiString;
   includedScriptFileInfo: TKMScriptFileInfo;
+  isCmpScript: Boolean;
 begin
   Result := False;
 
-  S := ExtractFilePath(aCallingFileName);
-  if S = '' then S := ExtractFilePath(ParamStr(0));
-  aFileName := AnsiString(S) + AnsiString(Trim(aFileName));
+  // Always should check main script folder first, instead of using aCallingFileName, since it could be invoked from included script
+  // We want to always allow to overwrite included file from main script folder                           \
+  //
+  // So f.e. main.script includes A.script in the Campaign's Scripts folder
+  // A.script includes B.script, which is also in the Campaign's Scripts folder
+  // But if main script folder contains other B.script, then it should be used instead of Scripts/B.script
+  path := fScriptFilesInfo.fMainFilePath;
 
-  fileExt := ExtractFileExt(aFileName);
+  inclFile := AnsiString(Trim(aFileName));
+
+  fileName := path + inclFile;
+
+  isCmpScript := IsCampaignMissionScript;
+
+  fileExt := ExtractFileExt(fileName);
   // Check included file extension
   if fileExt <> EXT_FILE_SCRIPT_DOT then
-    raise Exception.Create(Format('Error including ''%s'' from ''%s'': |Wrong extension: ''%s''',
-                                  [ExtractFileName(aFileName), ExtractFileName(aCallingFileName), fileExt]));
+  begin
+    errorStr := Format('Error including ''%s'' from ''%s'':|wrong extension: ''%s''',
+                       [inclFile, ExtractFileName(aCallingFileName), fileExt]);
+    fErrorHandler.AppendErrorStr(errorStr, errorStr);
+    raise Exception.Create(errorStr); // We should raise Exception here, to stop Including process by PascalScript
+  end;
 
-  // Check included file folder
-  if ExtractFilePath(aFileName) <> fScriptFilesInfo.fMainFilePath then
-    raise Exception.Create(Format('Error including ''%s'' from ''%s'': |included script files should be in the same folder as main script file',
-                                  [aFileName, ExtractFileName(aCallingFileName)]));
+  // Do not allow to include campaigndata.script, since we can include scripts from the root folder now
+  if inclFile = CAMPAIGN_DATA_FILENAME + EXT_FILE_SCRIPT_DOT then
+  begin
+    errorStr := Format('Error including ''%s'' from ''%s'':|filename ''%s'' is reserved for campaign data',
+                       [inclFile, ExtractFileName(aCallingFileName), CAMPAIGN_DATA_FILENAME + EXT_FILE_SCRIPT_DOT]);
+    fErrorHandler.AppendErrorStr(errorStr, errorStr);
+    raise Exception.Create(errorStr); // We should raise Exception here, to stop Including process by PascalScript
+  end;
+
+  // Check if file has some path in it
+  if ExtractFilePath(fileName) <> fScriptFilesInfo.fMainFilePath then
+  begin
+    if isCmpScript then
+      errorStr := Format('Error including ''%s'' from ''%s'':|included script files should be in the same folder as main script file ' +
+                         'or in the campaign folder: ''%s''',
+                         [fileName, ExtractFileName(aCallingFileName), CAMPAIGN_SCRIPTS_FOLDER_NAME])
+    else
+      errorStr := Format('Error including ''%s'' from ''%s'':|included script files should be in the same folder as main script file',
+                         [fileName, ExtractFileName(aCallingFileName)]);
+    fErrorHandler.AppendErrorStr(errorStr, errorStr);
+    raise Exception.Create(errorStr); // We should raise Exception here, to stop Including process by PascalScript
+  end;
+
+  aFileName := fileName;
+
+  // If file not found in the main script folder and main script is from campaign mission (checked via folder path),
+  // then we should try to find this script in the 'Scripts' folder inside campaign main folder
+  if isCmpScript and not FileExists(aFileName) then
+  begin
+    fileName := AnsiString(path) + '..' + PathDelim + CAMPAIGN_SCRIPTS_FOLDER_NAME + PathDelim + inclFile;
+
+    // If not found, then set aFileName to an initial name
+    if FileExists(fileName) then
+      aFileName := fileName;
+  end;
 
   if FileExists(aFileName) then
   begin

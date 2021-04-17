@@ -11,6 +11,8 @@ type
 const
   CAMPAIGN_DATA_FILENAME = 'campaigndata';
 
+  CAMPAIGN_SCRIPTS_FOLDER_NAME = 'Scripts';
+
 implementation
 
 end.
