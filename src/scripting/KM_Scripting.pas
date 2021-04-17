@@ -2453,6 +2453,7 @@ begin
     and Active
     and ((DirectiveName = 'IFDEF')
       or (DirectiveName = 'IFNDEF')
+      or (DirectiveName = 'ELSE')
       or (DirectiveName = 'DEFINE')
       or (DirectiveName = 'UNDEF')) then
     fScriptFilesInfo.fHasDefDirectives := True;
