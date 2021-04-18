@@ -46,7 +46,7 @@ type
     procedure ObjectsPaletteButton_Click(Sender: TObject);
     procedure ObjectsPaletteClose_Click(Sender: TObject);
   protected
-    Panel_Objects: TKMPanel;
+    Panel_Objects: TKMScrollPanel;
       ObjectErase: TKMButtonFlat;
       ObjectBlock: TKMButtonFlat;
       ObjectsPalette_Button: TKMButtonFlat;
@@ -168,10 +168,15 @@ begin
 
   CompactMapElements;
 
-  Panel_Objects := TKMScrollPanel.Create(aParent, 0, 28, aParent.Width, aParent.Height - 40, [saVertical], bsMenu, ssCommon);
+  Panel_Objects := TKMScrollPanel.Create(aParent, 0, 28, aParent.Width, aParent.Height - 28, [saVertical], bsMenu, ssCommon);
+  Panel_Objects.Padding.SetBottom(10);
+  Panel_Objects.ScrollV_PadTop := 10;
+  Panel_Objects.ScrollV_PadBottom := 10;
   Panel_Objects.AnchorsStretch;
+
   with TKMLabel.Create(Panel_Objects, 0, TERRAIN_PAGE_TITLE_Y, Panel_Objects.Width, 0, gResTexts[TX_MAPED_OBJECTS], fntOutline, taCenter) do
     Anchors := [anLeft, anTop, anRight];
+
   ObjectsScroll := TKMScrollBar.Create(Panel_Objects, 9, 295, Panel_Objects.Width - 9, 20, saHorizontal, bsGame);
   ObjectsScroll.Anchors := [anLeft, anTop, anRight];
   ObjectsScroll.MinValue := 0;

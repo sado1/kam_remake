@@ -1089,6 +1089,8 @@ type
     fScrollAxisSet: TKMScrollAxisSet;
 
     fPadding: TKMRect;
+    fScrollV_PadTop: Integer;
+    fScrollV_PadBottom: Integer;
 
     procedure UpdateScrolls(Sender: TObject; aValue: Boolean); overload;
     procedure UpdateScrolls(Sender: TObject); overload;
@@ -1103,6 +1105,8 @@ type
 
     function AllowScrollV: Boolean;
     function AllowScrollH: Boolean;
+    procedure SetScrollVPadTop(const Value: Integer);
+    procedure SetScrollVPadBottom(const Value: Integer);
   protected
     procedure SetVisible(aValue: Boolean); override;
 
@@ -1129,6 +1133,8 @@ type
     function AddChild(aChild: TKMControl): Integer; override;
     property ClipRect: TKMRect read fClipRect;
     property Padding: TKMRect read fPadding write fPadding;
+    property ScrollV_PadTop: Integer read fScrollV_PadTop write SetScrollVPadTop;
+    property ScrollV_PadBottom: Integer read fScrollV_PadBottom write SetScrollVPadBottom;
 
     procedure MouseWheel(Sender: TObject; WheelSteps: Integer; var aHandled: Boolean); override;
 
@@ -5993,6 +5999,9 @@ begin
 
   fIsHitTestUseDrawRect := True; // We want DrawRect to be used on the ScrollPanel
 
+  fScrollV_PadTop := 0;
+  fScrollV_PadBottom := 0;
+
 //  if aEnlargeParents then
 //  begin
 //    if saHorizontal in aScrollAxisSet then
@@ -6178,7 +6187,7 @@ begin
       fTop := fClipRect.Top; //Set directrly to avoid SetTop call
   end;
 
-  fScrollBarV.Height := Height;
+  fScrollBarV.Height := Height - fScrollV_PadTop - fScrollV_PadBottom;
   if ShowScroll <> fScrollBarV.Visible then
   begin
     fScrollBarV.Visible := ShowScroll;
@@ -6209,6 +6218,21 @@ begin
   Inc(fClipRect.Right, Left - OldValue);
 
   UpdateScrolls(nil);
+end;
+
+
+procedure TKMScrollPanel.SetScrollVPadBottom(const Value: Integer);
+begin
+  fScrollV_PadBottom := Value;
+  fScrollBarV.Height := fScrollBarV.Height - Value;
+end;
+
+
+procedure TKMScrollPanel.SetScrollVPadTop(const Value: Integer);
+begin
+  fScrollV_PadTop := Value;
+  fScrollBarV.Top := fScrollBarV.Top + Value;
+  fScrollBarV.Height := fScrollBarV.Height - Value;
 end;
 
 
@@ -8551,7 +8575,7 @@ constructor TKMPopUpPanel.Create(aParent: TKMPanel; aWidth, aHeight: Integer; co
                                  aImageType: TKMPopUpBGImageType = pubgitYellow; aShowBevel: Boolean = True;
                                  aShowShadeBevel: Boolean = True);
 var
-  imgWPad, imgTop, topMargin: Integer;
+  imgWPad, imgTop, topMargin, l, t, w, h: Integer;
 begin
   topMargin := 0;
   case aImageType of
@@ -8560,7 +8584,12 @@ begin
     pubgitScrollWCross: topMargin := 20;
   end;
 
-  inherited Create(aParent, Max(0, (aParent.Width div 2) - (aWidth div 2)), Max(topMargin, (aParent.Height div 2) - (aHeight div 2)), aWidth, aHeight);
+  l := Max(0, (aParent.Width div 2) - (aWidth div 2));
+  t := Max(topMargin, (aParent.Height div 2) - (aHeight div 2));
+  w := Min(aParent.Width, aWidth);
+  h := Min(aParent.Height, aHeight);
+
+  inherited Create(aParent, l, t, w, h);
 
   fBGImageType := aImageType;
 
