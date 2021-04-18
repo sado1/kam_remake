@@ -69,7 +69,11 @@ end;
 
 function TKMSettings.GetDir: string;
 begin
+  {$IFDEF LINUX_DEDI_SERVER}
+  Result := ExeDir; // Use executable dir for a linux dedicated server
+  {$ELSE}
   Result := GetDocumentsSavePath; // Use %My documents%/My Games/
+  {$ENDIF}
 end;
 
 
