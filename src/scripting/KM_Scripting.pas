@@ -2542,7 +2542,7 @@ begin
     raise Exception.Create(errorStr); // We should raise Exception here, to stop Including process by PascalScript
   end;
 
-  aFileName := fileName;
+  aFileName := AnsiString(fileName);
 
   // If file not found in the main script folder and main script is from campaign mission (checked via folder path),
   // then we should try to find this script in the 'Scripts' folder inside campaign main folder
@@ -2552,7 +2552,7 @@ begin
 
     // If not found, then set aFileName to an initial name
     if FileExists(fileName) then
-      aFileName := fileName;
+      aFileName := AnsiString(fileName);
   end;
 
   if FileExists(aFileName) then
