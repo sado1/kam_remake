@@ -52,6 +52,7 @@ type
     procedure StartClick(Sender: TObject);
     procedure ListSort(aColumn: Integer);
     procedure MinimapLocClick(aValue: Integer);
+    procedure ReadmeClick(Sender: TObject);
 
     procedure BackClick(Sender: TObject);
   protected
@@ -78,6 +79,7 @@ type
         Image_SurvGoalSt: array [0..MAX_UI_GOALS-1] of TKMImage;
       ColumnBox_Maps: TKMColumnBox;
       Button_Back, Button_Start: TKMButton;
+      Button_SetupReadme: TKMButton;
   public
     OnNewSingleMap: TKMNewSingleMapEvent;
 
@@ -104,7 +106,7 @@ const
 constructor TKMMenuSingleMap.Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText);
 begin
   inherited Create(gpSingleMap);
-              
+
   fOnPageChange := aOnPageChange;
   OnEscKeyDown := BackClick;
 
@@ -154,10 +156,10 @@ begin
 
     TKMBevel.Create(Panel_Single, (aParent.Width + PAD_SIDE) div 2, PAD_VERT + 20, Half, 70);
 
-    Label_MapType := TKMLabel.Create(Panel_Single, (aParent.Width + PAD_SIDE) div 2 + 5, PAD_VERT, gResTexts[TX_MENU_MAP_TYPE], fntOutline, taLeft); 
+    Label_MapType := TKMLabel.Create(Panel_Single, (aParent.Width + PAD_SIDE) div 2 + 5, PAD_VERT, gResTexts[TX_MENU_MAP_TYPE], fntOutline, taLeft);
 
     Radio_MapType := TKMRadioGroup.Create(Panel_Single, (aParent.Width + PAD_SIDE) div 2 + 5, PAD_VERT + 25, Half - 10, 60, fntMetal);
-    Radio_MapType.Add(gResTexts[TX_MENU_SP_MAP_SCENARIO]); 
+    Radio_MapType.Add(gResTexts[TX_MENU_SP_MAP_SCENARIO]);
     Radio_MapType.Add(gResTexts[TX_LOBBY_MAP_BUILD]);
     Radio_MapType.Add(gResTexts[TX_LOBBY_MAP_FIGHT]);
     Radio_MapType.Add(gResTexts[TX_LOBBY_MAP_SPECIAL]);
@@ -236,6 +238,11 @@ begin
       DropBox_AIPlayerType.Anchors := [anLeft, anBottom];
       DropBox_AIPlayerType.OnChange := OptionsChange;
       DropBox_AIPlayerType.Hide;
+
+      Button_SetupReadme := TKMButton.Create(Panel_Desc, DescL, 523 - 25, Half - DescL, 25, gResTexts[TX_LOBBY_VIEW_README], bsMenu);
+      Button_SetupReadme.Anchors := [anLeft,anBottom];
+      Button_SetupReadme.OnClick := ReadmeClick;
+      Button_SetupReadme.Hide;
 
       //Goals
       B := TKMBevel.Create(Panel_Desc, 0, 530, Half, 30);
@@ -322,7 +329,6 @@ var
 begin
   PrevTop := ColumnBox_Maps.TopIndex;
   ColumnBox_Maps.Clear;
-
   fMaps.Lock;
   try
     ListI := 0;
@@ -402,6 +408,8 @@ begin
       Label_Difficulty.Hide;
       DropBox_Difficulty.Hide;
 
+      Button_SetupReadme.Hide;
+
       Label_AIPlayerType.Hide;
       DropBox_AIPlayerType.Hide;
 
@@ -468,6 +476,8 @@ begin
         DropBox_AIPlayerType.Hide;
       end;
 
+      Button_SetupReadme.Visible := fMaps[MapId].HasReadme;
+
       DropBox_Loc.SelectByTag(fMaps[MapId].DefaultHuman);
 
       //Color
@@ -514,6 +524,13 @@ begin
 end;
 
 
+procedure TKMMenuSingleMap.ReadmeClick(Sender: TObject);
+begin
+  if ColumnBox_Maps.IsSelected then
+    fMaps[ ColumnBox_Maps.SelectedItemTag ].ViewReadme;
+end;
+
+
 procedure TKMMenuSingleMap.OptionsChange(Sender: TObject);
 begin
   UpdateDropBoxes;
@@ -551,6 +568,7 @@ begin
   DropBox_Difficulty.Hide;
   Label_AIPlayerType.Hide;
   DropBox_AIPlayerType.Hide;
+  Button_SetupReadme.Hide;
 
   ResetExtraInfo;
 end;
@@ -681,6 +699,7 @@ begin
       if Image_Enemies[I].Right > GetPanelHalf then
         Image_Enemies[I].Hide;
     end;
+
   finally
     fMaps.Unlock;
   end;
