@@ -367,7 +367,7 @@ begin
   {$ELSE}
     // GetWindowsSpecialDir does not work under old lazarus (1.8.0) / FPC versions, which we use to make linux dedi server
     //Result := GetWindowsSpecialDir(CSIDL_PERSONAL) + PathDelim + 'My Games' + PathDelim + GAME_TITLE + PathDelim
-    Result := GetUserDir + PathDelim + 'My Games' + PathDelim + GAME_TITLE + PathDelim
+    Result := GetUserDir + 'My Games' + PathDelim + GAME_TITLE + PathDelim
   {$ENDIF}
   else
     Result := ExtractFilePath(ParamStr(0));
