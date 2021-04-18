@@ -996,6 +996,7 @@ type
     fRange: TKMRangeInt;
     fThumbText: UnicodeString;
     fAutoThumbWidth: Boolean;
+    fFixedThumbWidth: Boolean;
     procedure SetCaption(const aValue: UnicodeString);
     procedure SetPosition(aValue: Word);
     procedure SetRange(const aRange: TKMRangeInt);
@@ -1020,12 +1021,15 @@ type
     property MaxValue: Word read fMaxValue;
     property ThumbText: UnicodeString read fThumbText write SetThumbText;
     property AutoThumbWidth: Boolean read fAutoThumbWidth write SetAutoThumbWidth;
+    property FixedThumbWidth: Boolean read fAutoThumbWidth write fFixedThumbWidth;
     procedure ResetRange;
     property OnChange: TNotifyEvent read fOnChange write fOnChange;
     procedure MouseDown(X,Y: Integer; Shift: TShiftState; Button: TMouseButton); override;
     procedure MouseMove(X,Y: Integer; Shift: TShiftState); override;
     procedure MouseWheel(Sender: TObject; WheelSteps: Integer; var aHandled: Boolean); override;
     procedure Paint; override;
+  const
+    THUMB_WIDTH_ADD = 24;
   end;
 
 
@@ -5532,7 +5536,8 @@ begin
   CaptionWidth := -1;
 
   Step := 1;
-  AutoThumbWidth := False;
+  fAutoThumbWidth := False;
+  fFixedThumbWidth := False;
 
   UpdateThumbWidth;
 end;
@@ -5540,13 +5545,15 @@ end;
 
 procedure TKMTrackBar.UpdateThumbWidth;
 begin
+  if fFixedThumbWidth then Exit;
+  
   if AutoThumbWidth then
     ThumbWidth := Max(gRes.Fonts[SliderFont].GetTextSize(IntToStr(MaxValue)).X,
                       gRes.Fonts[SliderFont].GetTextSize(ThumbText).X)
   else
     ThumbWidth := gRes.Fonts[SliderFont].GetTextSize(IntToStr(MaxValue)).X;
 
-  ThumbWidth := ThumbWidth + 24;
+  ThumbWidth := ThumbWidth + THUMB_WIDTH_ADD;
 end;
 
 
@@ -5627,7 +5634,7 @@ begin
       stepX := (Width - ThumbWidth) / (fMaxValue - fMinValue) / Step; // width between marks
       posX := stepX * (Position / Step) + (ThumbWidth div 2); // actual marks positions on track
     end;
-    if not AutoThumbWidth 
+    if not AutoThumbWidth
       or not InRange(X - AbsLeft, posX - ThumbWidth div 2, posX + ThumbWidth div 2) then // do not update pos, if we hover over thumb
       NewPos := EnsureRange(fMinValue + Round(((X-AbsLeft-ThumbWidth div 2) / (Width - ThumbWidth - 4))*(fMaxValue - fMinValue)/Step)*Step, fMinValue, fMaxValue);
   end;
