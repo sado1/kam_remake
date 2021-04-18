@@ -143,7 +143,7 @@ end;
 procedure TKMMenuSingleMap.Create_SingleMap(aParent: TKMPanel);
 var
   I: Integer;
-  Half, ButtonW: Word; //Half width for panes
+  Half, DescL, ButtonW: Word; //Half width for panes
   L: TKMLabel;
   B: TKMBevel;
 begin
@@ -197,21 +197,23 @@ begin
       Memo_Desc.AutoWrap := True;
 
       //Minimap preview
-      MinimapView := TKMMinimapView.Create(Panel_Desc, 2, 332, 191, 191, True);
+      MinimapView := TKMMinimapView.Create(Panel_Desc, 4, 332, 191, 191, True);
       MinimapView.Anchors := [anLeft, anBottom];
       MinimapView.OnLocClick := MinimapLocClick;
 
+      DescL := MinimapView.Right + 10;
+
       //Setup (loc and flag placed alongside just like in MP lobby)
       //Other setup settings can go below
-      L := TKMLabel.Create(Panel_Desc, 200, 330, 150, 20, gResTexts[TX_LOBBY_HEADER_STARTLOCATION], fntMetal, taLeft);
+      L := TKMLabel.Create(Panel_Desc, DescL, 330, 150, 20, gResTexts[TX_LOBBY_HEADER_STARTLOCATION], fntMetal, taLeft);
       L.Anchors := [anLeft, anBottom];
-      DropBox_Loc := TKMDropList.Create(Panel_Desc, 200, 350, 150, 20, fntMetal, gResTexts[TX_MENU_MAP_LOCATION], bsMenu);
+      DropBox_Loc := TKMDropList.Create(Panel_Desc, DescL, 350, 150, 20, fntMetal, gResTexts[TX_MENU_MAP_LOCATION], bsMenu);
       DropBox_Loc.Anchors := [anLeft, anBottom];
       DropBox_Loc.OnChange := OptionsChange;
 
-      L := TKMLabel.Create(Panel_Desc, 360, 330, 80, 20, gResTexts[TX_LOBBY_HEADER_FLAGCOLOR], fntMetal, taLeft);
+      L := TKMLabel.Create(Panel_Desc, Half - 80, 330, 80, 20, gResTexts[TX_LOBBY_HEADER_FLAGCOLOR], fntMetal, taLeft);
       L.Anchors := [anLeft, anBottom];
-      DropBox_Color := TKMDropColumns.Create(Panel_Desc, 360, 350, 80, 20, fntGrey, '', bsMenu);
+      DropBox_Color := TKMDropColumns.Create(Panel_Desc, Half - 80, 350, 80, 20, fntGrey, '', bsMenu);
       DropBox_Color.Anchors := [anLeft, anBottom];
       DropBox_Color.SetColumns(fntOutline, [''], [0]);
       DropBox_Color.List.ShowHeader := False;
@@ -219,18 +221,18 @@ begin
       DropBox_Color.Add(MakeListRow([''], [$FFFFFFFF], [MakePic(rxGuiMain, 31)], 0));
       DropBox_Color.OnChange := OptionsChange;
 
-      Label_Difficulty := TKMLabel.Create(Panel_Desc, 200, 385, gResTexts[TX_MISSION_DIFFICULTY], fntMetal, taLeft);
+      Label_Difficulty := TKMLabel.Create(Panel_Desc, DescL, 385, gResTexts[TX_MISSION_DIFFICULTY], fntMetal, taLeft);
       Label_Difficulty.Anchors := [anLeft, anBottom];
       Label_Difficulty.Hide;
-      DropBox_Difficulty := TKMDropList.Create(Panel_Desc, 200, 405, 150, 20, fntMetal, gResTexts[TX_MISSION_DIFFICULTY], bsMenu);
+      DropBox_Difficulty := TKMDropList.Create(Panel_Desc, DescL, 405, 150, 20, fntMetal, gResTexts[TX_MISSION_DIFFICULTY], bsMenu);
       DropBox_Difficulty.Anchors := [anLeft, anBottom];
       DropBox_Difficulty.OnChange := OptionsChange;
       DropBox_Difficulty.Hide;
 
-      Label_AIPlayerType := TKMLabel.Create(Panel_Desc, 200, 440, gResTexts[TX_AI_PLAYER_TYPE], fntMetal, taLeft);
+      Label_AIPlayerType := TKMLabel.Create(Panel_Desc, DescL, 435, gResTexts[TX_AI_PLAYER_TYPE], fntMetal, taLeft);
       Label_AIPlayerType.Anchors := [anLeft, anBottom];
       Label_AIPlayerType.Hide;
-      DropBox_AIPlayerType := TKMDropList.Create(Panel_Desc, 200, 460, 240, 20, fntMetal, gResTexts[TX_AI_PLAYER_TYPE], bsMenu);
+      DropBox_AIPlayerType := TKMDropList.Create(Panel_Desc, DescL, 455, Half - DescL, 20, fntMetal, gResTexts[TX_AI_PLAYER_TYPE], bsMenu);
       DropBox_AIPlayerType.Anchors := [anLeft, anBottom];
       DropBox_AIPlayerType.OnChange := OptionsChange;
       DropBox_AIPlayerType.Hide;
@@ -547,6 +549,8 @@ begin
   DropBox_Difficulty.Clear;
   Label_Difficulty.Hide;
   DropBox_Difficulty.Hide;
+  Label_AIPlayerType.Hide;
+  DropBox_AIPlayerType.Hide;
 
   ResetExtraInfo;
 end;
