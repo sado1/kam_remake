@@ -5,6 +5,9 @@ interface
 type
   // Abstract settings entity
   TKMSettings = class abstract
+  private
+    procedure LoadFromDefaultFile;
+    procedure SaveToDefaultFile;
   protected
     fNeedsSave: Boolean;
 
@@ -15,13 +18,13 @@ type
     procedure LoadFromFile(const aPath: string); virtual; abstract;
     procedure SaveToFile(const aPath: string); virtual; abstract;
 
-    procedure LoadFromDefaultFile;
-    procedure SaveToDefaultFile;
-
     function GetSettingsName: string; virtual; abstract;
   public
     constructor Create;
     destructor Destroy; override;
+
+    function GetDir: string;
+    function GetPath: string;
 
     procedure ReloadSettings;
     procedure SaveSettings(aForce: Boolean = False);
@@ -58,11 +61,23 @@ begin
 end;
 
 
+function TKMSettings.GetPath: string;
+begin
+  Result := GetDir + GetDefaultSettingsName;
+end;
+
+
+function TKMSettings.GetDir: string;
+begin
+  Result := GetDocumentsSavePath; // Use %My documents%/My Games/
+end;
+
+
 procedure TKMSettings.LoadFromDefaultFile;
 var
   path: string;
 begin
-  path := GetDocumentsSavePath + GetDefaultSettingsName;
+  path := GetPath;
   gLog.AddTime(Format('Start loading ''%s'' from ''%s''', [GetSettingsName, path]));
   LoadFromFile(path);
   gLog.AddTime(Format('''%s'' was successfully loaded from ''%s''', [GetSettingsName, path]));
@@ -73,7 +88,7 @@ procedure TKMSettings.SaveToDefaultFile;
 var
   saveFolder, path: string;
 begin
-  saveFolder := GetDocumentsSavePath;
+  saveFolder := GetDir;
   ForceDirectories(saveFolder);
   path := saveFolder + GetDefaultSettingsName;
   gLog.AddTime(Format('Start saving ''%s'' to ''%s''', [GetSettingsName, path]));
