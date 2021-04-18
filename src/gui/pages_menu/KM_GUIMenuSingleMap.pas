@@ -521,8 +521,8 @@ end;
 
 procedure TKMMenuSingleMap.ReadmeClick(Sender: TObject);
 begin
-  if not gNetworking.MapInfo.ViewReadme then
-    gChat.AddLine(gResTexts[TX_LOBBY_PDF_ERROR]);
+  if ColumnBox_Maps.IsSelected then
+    fMaps[ ColumnBox_Maps.SelectedItemTag ].ViewReadme;
 end;
 
 procedure TKMMenuSingleMap.OptionsChange(Sender: TObject);
