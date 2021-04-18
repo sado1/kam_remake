@@ -482,6 +482,7 @@ begin
     RegisterMethodCheck(c, 'function HouseAllowAllyToSelect(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseBarracksRallyPointX(aBarracks: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseBarracksRallyPointY(aBarracks: Integer): Integer');
+    RegisterMethodCheck(c, 'function HouseBarracksRecruitsCount(aBarracks: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseBuildingProgress(aHouseID: Integer): Word');
     RegisterMethodCheck(c, 'function HouseCanReachResources(aHouseID: Integer): Boolean)');
     RegisterMethodCheck(c, 'function HouseDamage(aHouseID: Integer): Integer');
@@ -1154,6 +1155,7 @@ begin
       RegisterMethod(@TKMScriptStates.HouseAt,                                  'HouseAt');
       RegisterMethod(@TKMScriptStates.HouseBarracksRallyPointX,                 'HouseBarracksRallyPointX');
       RegisterMethod(@TKMScriptStates.HouseBarracksRallyPointY,                 'HouseBarracksRallyPointY');
+      RegisterMethod(@TKMScriptStates.HouseBarracksRecruitsCount,               'HouseBarracksRecruitsCount');
       RegisterMethod(@TKMScriptStates.HouseBuildingProgress,                    'HouseBuildingProgress');
       RegisterMethod(@TKMScriptStates.HouseCanReachResources,                   'HouseCanReachResources');
       RegisterMethod(@TKMScriptStates.HouseDamage,                              'HouseDamage');
