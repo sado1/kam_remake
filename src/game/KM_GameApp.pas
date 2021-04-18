@@ -817,7 +817,7 @@ begin
     gGame.SavePoints.Free;
     gGame.SavePoints := savedReplays;
     gGame.LoadSavePoint(aTick, saveFile);
-    gGame.LastReplayTick := Max(gGame.LastReplayTick, savedReplays.LastTick);
+    gGame.LastReplayTickLocal := Max(gGame.LastReplayTickLocal, savedReplays.LastTick);
     // Free GIP, which was created on game creation
     gGame.GameInputProcess.Free;
     // Restore GIP

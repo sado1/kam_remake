@@ -4316,6 +4316,7 @@ procedure TKMGamePlayInterface.UpdateState(aTickCount: Cardinal);
 var
   I, lastTick: Integer;
   rect: TKMRect;
+  str: string;
 begin
   inherited;
   // Update minimap every 1000ms
@@ -4336,17 +4337,18 @@ begin
   // Update replay counters
   if fUIMode = umReplay then
   begin
-    lastTick := Max4(gGame.LastReplayTick,
-                     gGame.GameInputProcess.GetLastTick,
-                     gGameParams.Tick,
-                     gGame.SavePoints.LastTick);
+    lastTick := gGame.GetReplayLastTick;
     // Replays can continue after end, keep the bar in 0..1 range
     ReplayBar_Replay.SetParameters(gGameParams.Tick,
                                    gGame.Options.Peacetime*60*10,
                                    lastTick);
 
-    Label_ReplayBar.Caption := TimeToString(gGame.MissionTime) + ' / ' +
-                            TickToTimeStr(lastTick);
+    if lastTick = gGameParams.Tick then
+      str := TickToTimeStr(lastTick)
+    else
+      str := TimeToString(gGame.MissionTime) + ' / ' + TickToTimeStr(lastTick);
+
+    Label_ReplayBar.Caption := str;
   end;
 
   // Update speedup clocks

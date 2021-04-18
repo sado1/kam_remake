@@ -65,7 +65,7 @@ type
     fUIDTracker: TKMGameUIDTracker;       //Units-Houses tracker, to issue unique IDs
 
     //Saved to local data
-    fLastReplayTick: Cardinal;
+    fLastReplayTickLocal: Cardinal; // stored / loaded in the .sloc file, if available
     fSkipReplayEndCheck: Boolean;
 
     //DO not save
@@ -230,8 +230,11 @@ type
 
     procedure AddScriptSoundRemoveRequest(aScriptSoundUID: Integer; aHandID: TKMHandID);
     function GetScriptSoundFilePath(const aSound: AnsiString; aAudioFormat: TKMAudioFormat): UnicodeString;
-    property LastReplayTick: Cardinal read fLastReplayTick write fLastReplayTick;
+
+    property LastReplayTickLocal: Cardinal read fLastReplayTickLocal write fLastReplayTickLocal;
     property SkipReplayEndCheck: Boolean read fSkipReplayEndCheck write fSkipReplayEndCheck;
+    function GetReplayLastTick: Cardinal;
+
     property IgnoreConsistencyCheckErrors: Boolean read fIgnoreConsistencyCheckErrors;
 
     property LockedMutex: Boolean read fLockedMutex write fLockedMutex;
@@ -2151,7 +2154,7 @@ begin
   if fParams.IsMultiPlayerOrSpec and (aMPLocalDataPathName <> '') then
   begin
     try
-      gameMPLocalData := TKMGameMPLocalData.Create(fLastReplayTick, gNetworking.MyNetPlayer.StartLocation, fGamePlayInterface.Minimap);
+      gameMPLocalData := TKMGameMPLocalData.Create(fLastReplayTickLocal, gNetworking.MyNetPlayer.StartLocation, fGamePlayInterface.Minimap);
       try
         gameMPLocalData.SaveToFileAsync(aMPLocalDataPathName, aSaveWorkerThread);
       finally
@@ -2501,7 +2504,7 @@ begin
       gameMPLocalData := TKMGameMPLocalData.Create;
       try
         gameMPLocalData.LoadFromFile(ChangeFileExt(ExtractRelativePath(ExeDir, aPathName), EXT_SAVE_MP_LOCAL_DOT));
-        fLastReplayTick := gameMPLocalData.LastReplayTick;
+        fLastReplayTickLocal := gameMPLocalData.LastReplayTick;
       finally
         FreeAndNil(gameMPLocalData);
       end;
@@ -2537,7 +2540,7 @@ begin
 
   if fSavePoints.Contains(aTick) then
   begin
-    lastReplayTick := fLastReplayTick;
+    lastReplayTick := fLastReplayTickLocal;
     skipReplayEndCheck := fSkipReplayEndCheck;
 
     loadStream := TKMemoryStreamBinary(fSavePoints[aTick]);
@@ -2545,7 +2548,7 @@ begin
     LoadFromStream(loadStream);
 
     // Restore game (replay) parameters, that are shared among all game savepoints
-    gGame.LastReplayTick := lastReplayTick;
+    gGame.LastReplayTickLocal := lastReplayTick;
     gGame.SkipReplayEndCheck := skipReplayEndCheck;
     gLog.AddTime('Loading replay from save done', True);
   end;
@@ -2757,11 +2760,24 @@ end;
 
 
 function TKMGame.IsReplayEnded: Boolean;
+var
+  lastReplayTick: Cardinal;
 begin
-  if fLastReplayTick > 0 then
-    Result := fParams.Tick >= fLastReplayTick
+  lastReplayTick := GetReplayLastTick;
+
+  if lastReplayTick > 0 then
+    Result := fParams.Tick >= lastReplayTick
   else
     Result := fGameInputProcess.ReplayEnded;
+end;
+
+
+function TKMGame.GetReplayLastTick: Cardinal;
+begin
+  Result := Max4(fLastReplayTickLocal,
+                 fGameInputProcess.GetLastTick,
+                 fParams.Tick,
+                 fSavePoints.LastTick);
 end;
 
 
@@ -2819,7 +2835,7 @@ begin
 
     fLastUpdateState := TimeGet;
 
-    fLastReplayTick := fParams.Tick;
+    fLastReplayTickLocal := fParams.Tick;
 
     if fParams.IsMultiPlayerOrSpec then
       gNetworking.LastProcessedTick := fParams.Tick;
