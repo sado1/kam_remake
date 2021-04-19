@@ -98,7 +98,6 @@ begin
     Shape_TextColor := TKMShape.Create(Panel_TextColor, 2, 22, 17, 17);
     Shape_TextColor.Hint := gResTexts[TX_MAPED_PLAYER_COLOR_TEXT_COLOR_HINT];
     Edit_TextColorCode := TKMEdit.Create(Panel_TextColor, 20, 20, Panel_TextColor.Width - 20, 20, fntMetal, True);
-    Edit_TextColorCode.AnchorsStretch;
     Edit_TextColorCode.BlockInput := True;
     Edit_TextColorCode.AutoFocusable := False; // No need to make too much attention on that field
     Edit_TextColorCode.Hint := gResTexts[TX_MAPED_PLAYER_COLOR_TEXT_COLOR_HINT];
