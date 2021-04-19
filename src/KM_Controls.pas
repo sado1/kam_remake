@@ -1,4 +1,4 @@
-﻿unit KM_Controls;
+unit KM_Controls;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -2294,7 +2294,8 @@ end;
 procedure TKMControl.Paint;
 var
   sColor: TColor4;
-  Tmp: TKMPoint;
+  tmp: TKMPoint;
+  skipText: Boolean;
 begin
   Inc(CtrlPaintCount);
 
@@ -2305,7 +2306,12 @@ begin
     TKMRenderUI.WriteOutline(AbsLeft-2, AbsTop-2, Width+4, Height+4, 2, $FFFFD000);
 
   if SHOW_CONTROLS_ID then
+  begin
+    skipText := SKIP_RENDER_TEXT; //Save value
+    SKIP_RENDER_TEXT := False; // Force Render debug data
     TKMRenderUI.WriteText(AbsLeft+1, AbsTop, fWidth, IntToStr(fID), TKMFont(DEBUG_TEXT_FONT_ID), taLeft);
+    SKIP_RENDER_TEXT := skipText; // Restore value
+  end;
 
   if DebugHighlight then
     TKMRenderUI.WriteOutline(AbsLeft-2, AbsTop-2, Width+4, Height+4, 2, icRed);
@@ -2318,8 +2324,8 @@ begin
 
   if Self is TKMLabel then
   begin //Special case for aligned text
-    Tmp := TKMLabel(Self).TextSize;
-    TKMRenderUI.WriteShape(TKMLabel(Self).TextLeft, AbsTop, Tmp.X, Tmp.Y, $4000FFFF, $80FFFFFF);
+    tmp := TKMLabel(Self).TextSize;
+    TKMRenderUI.WriteShape(TKMLabel(Self).TextLeft, AbsTop, tmp.X, tmp.Y, $4000FFFF, $80FFFFFF);
     TKMRenderUI.WriteOutline(AbsLeft, AbsTop, fWidth, fHeight, 1, $FFFFFFFF);
     TKMRenderUI.WriteShape(AbsLeft-3, AbsTop-3, 6, 6, sColor or $FF000000, $FFFFFFFF);
     Exit;
@@ -2327,8 +2333,8 @@ begin
 
   if Self is TKMLabelScroll then
   begin //Special case for aligned text
-    Tmp := TKMLabelScroll(Self).TextSize;
-    TKMRenderUI.WriteShape(TKMLabelScroll(Self).TextLeft, AbsTop, Tmp.X, Tmp.Y, $4000FFFF, $80FFFFFF);
+    tmp := TKMLabelScroll(Self).TextSize;
+    TKMRenderUI.WriteShape(TKMLabelScroll(Self).TextLeft, AbsTop, tmp.X, tmp.Y, $4000FFFF, $80FFFFFF);
     TKMRenderUI.WriteOutline(AbsLeft, AbsTop, fWidth, fHeight, 1, $FFFFFFFF);
     TKMRenderUI.WriteShape(AbsLeft-3, AbsTop-3, 6, 6, sColor or $FF000000, $FFFFFFFF);
     Exit;

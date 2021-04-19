@@ -208,6 +208,7 @@ type
     chkFindObjByUID: TCheckBox;
     tbWaterLight: TTrackBar;
     lblWaterLight: TLabel;
+    chkSkipRenderText: TCheckBox;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -1562,6 +1563,7 @@ begin
   SHOW_CONTROLS_ID := chkUIControlsID.Checked;
   SHOW_FOCUSED_CONTROL := chkUIFocusedControl.Checked;
   SHOW_CONTROL_OVER := chkUIControlOver.Checked;
+  SKIP_RENDER_TEXT := chkSkipRenderText.Checked;
 
   {$IFDEF WDC} //one day update .lfm for lazarus...
 //  ALLOW_SNOW_HOUSES := chkSnowHouses.Checked;

@@ -142,11 +142,13 @@ var
   SHOW_DEBUG_CONTROLS     :Boolean = False; //Show debug panel / Form1 menu (F11)
   SHOW_CONTROLS_OVERLAY   :Boolean = False; //Draw colored overlays ontop of controls! always Off here
   SHOW_CONTROLS_ID        :Boolean = False; //Draw controls ID
-  SHOW_FOCUSED_CONTROL     :Boolean = False; //Outline focused control
+  SHOW_FOCUSED_CONTROL    :Boolean = False; //Outline focused control
   SHOW_CONTROL_OVER       :Boolean = False; //Outline control with mouse over
   SHOW_TEXT_OUTLINES      :Boolean = False; //Display text areas outlines
+  SKIP_RENDER_TEXT        :Boolean = False; //Skip painting labels
   ENABLE_DESIGN_CONTORLS  :Boolean = False; //Enable special mode to allow to move/edit controls
   MODE_DESIGN_CONTROLS    :Boolean = False; //Special mode to move/edit controls activated by F7, it must block OnClick events! always Off here
+
   OVERLAY_RESOLUTIONS     :Boolean = False; //Render constraining frame
   LOCAL_SERVER_LIST       :Boolean = False; //Instead of loading server list from master server, add localhost:56789 (good for testing)
   SHOW_LOGS_IN_CHAT       :Boolean = False; //Show log messages in MP game chat
