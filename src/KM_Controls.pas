@@ -236,6 +236,8 @@ type
     Tag: Integer; //Some tag which can be used for various needs
     Tag2: Integer; //Some tag which can be used for various needs
 
+    DebugHighlight: Boolean;
+
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aPaintLayer: Integer = 0);
     destructor Destroy; override;
     function HitTest(X, Y: Integer; aIncludeDisabled: Boolean = False; aIncludeNotHitable: Boolean = False): Boolean; virtual;
@@ -2046,6 +2048,7 @@ begin
   HandleMouseWheelByDefault := True;
   fLastClickPos := KMPOINT_ZERO;
   fIsHitTestUseDrawRect := False;
+  DebugHighlight := False;
 
 //  fKeyPressList := TList<TKMKeyPress>.Create;
 
@@ -2302,9 +2305,12 @@ begin
     TKMRenderUI.WriteOutline(AbsLeft-2, AbsTop-2, Width+4, Height+4, 2, $FFFFD000);
 
   if SHOW_CONTROLS_ID then
-    TKMRenderUI.WriteText(AbsLeft+1, AbsTop, fWidth, IntToStr(fID), fntMini, taLeft);
+    TKMRenderUI.WriteText(AbsLeft+1, AbsTop, fWidth, IntToStr(fID), TKMFont(DEBUG_TEXT_FONT_ID), taLeft);
 
-  if not SHOW_CONTROLS_OVERLAY then exit;
+  if DebugHighlight then
+    TKMRenderUI.WriteOutline(AbsLeft-2, AbsTop-2, Width+4, Height+4, 2, icRed);
+
+  if not SHOW_CONTROLS_OVERLAY then Exit;
 
   sColor := $00000000;
 
