@@ -2,7 +2,7 @@ unit KM_UnitsCollection;
 {$I KaM_Remake.inc}
 interface
 uses
-  Classes, Math, Types,
+  Classes, Math, Types, Generics.Collections,
   KM_CommonClasses, KM_Defaults, KM_Points,
   KM_Terrain, KM_Units;
 
@@ -33,7 +33,7 @@ type
     function HitTest(X, Y: Integer; const UT: TKMUnitType = utAny): TKMUnit;
     function GetUnitByUID(aUID: Integer): TKMUnit;
     function GetClosestUnit(const aPoint: TKMPoint; aTypes: TKMUnitTypeSet = [Low(TKMUnitType)..High(TKMUnitType)]): TKMUnit;
-    procedure GetUnitsInRect(const aRect: TKMRect; List: TList);
+    procedure GetUnitsInRect(const aRect: TKMRect; List: TList<TKMUnit>);
     function GetTotalPointers: Integer;
     procedure Clear;
     procedure Save(SaveStream: TKMemoryStream);
@@ -231,7 +231,7 @@ begin
 end;
 
 
-procedure TKMUnitsCollection.GetUnitsInRect(const aRect: TKMRect; List: TList);
+procedure TKMUnitsCollection.GetUnitsInRect(const aRect: TKMRect; List: TList<TKMUnit>);
 var
   I: Integer;
 begin

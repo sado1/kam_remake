@@ -214,7 +214,7 @@ type
     function GetGroupByUID(aUID: Integer): TKMUnitGroup;
     function GetGroupByMember(aUnit: TKMUnitWarrior): TKMUnitGroup;
     function HitTest(X,Y: Integer): TKMUnitGroup;
-    procedure GetGroupsInRect(const aRect: TKMRect; List: TList);
+    procedure GetGroupsInRect(const aRect: TKMRect; List: TList<TKMUnitGroup>);
     function GetClosestGroup(const aPoint: TKMPoint; aTypes: TKMGroupTypeSet = [Low(TKMGroupType)..High(TKMGroupType)]): TKMUnitGroup;
     function GetGroupsInRadius(aPoint: TKMPoint; aSqrRadius: Single; aTypes: TKMGroupTypeSet = [Low(TKMGroupType)..High(TKMGroupType)]): TKMUnitGroupArray;
     function GetGroupsMemberInRadius(aPoint: TKMPoint; aSqrRadius: Single; var aUGA: TKMUnitGroupArray; aTypes: TKMGroupTypeSet = [Low(TKMGroupType)..High(TKMGroupType)]): TKMUnitArray;
@@ -2335,7 +2335,7 @@ begin
 end;
 
 
-procedure TKMUnitGroups.GetGroupsInRect(const aRect: TKMRect; List: TList);
+procedure TKMUnitGroups.GetGroupsInRect(const aRect: TKMRect; List: TList<TKMUnitGroup>);
 var
   I, K: Integer;
 begin

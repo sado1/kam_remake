@@ -130,7 +130,7 @@ type
 
 implementation
 uses
-  TypInfo,
+  TypInfo, Generics.Collections,
   KM_ResTexts, KM_HandsCollection, KM_RenderPool, KM_UnitTaskAttackHouse, KM_HandLogistics,
   KM_UnitActionFight, KM_UnitActionGoInOut, KM_UnitActionWalkTo, KM_UnitActionStay,
   KM_UnitActionStormAttack, KM_Resource, KM_ResUnits, KM_Hand, KM_UnitGroup,
@@ -447,14 +447,14 @@ end;
 function TKMUnitWarrior.FindLinkUnit(const aLoc: TKMPoint): TKMUnitWarrior;
 var
   I: Integer;
-  foundUnits: TList;
+  foundUnits: TList<TKMUnit>;
   U: TKMUnit;
   best, L: Single;
 begin
   Result := nil;
   best := MaxSingle;
 
-  foundUnits := TList.Create;
+  foundUnits := TList<TKMUnit>.Create;
   gHands[Owner].Units.GetUnitsInRect(KMRect(aLoc.X - LINK_RADIUS,
                                             aLoc.Y - LINK_RADIUS,
                                             aLoc.X + LINK_RADIUS,
