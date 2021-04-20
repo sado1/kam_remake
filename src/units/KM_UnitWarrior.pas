@@ -70,6 +70,8 @@ type
     procedure CloseUnit(aRemoveTileUsage: Boolean = True); override;
     destructor Destroy; override;
 
+    function GetPointer: TKMUnitWarrior; reintroduce;
+
     property Group: pointer read fGroup; // Property for GetGroupByMember function
     procedure SetGroup(aGroup: Pointer); // This procedure should not be called by anyone except UnitGroups class(it is out of property)
 
@@ -220,6 +222,12 @@ begin
   gHands.CleanUpGroupPointer( TKMUnitGroup(fGroup) );
 
   inherited;
+end;
+
+
+function TKMUnitWarrior.GetPointer: TKMUnitWarrior;
+begin
+  Result := TKMUnitWarrior(inherited GetPointer);
 end;
 
 
