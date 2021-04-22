@@ -794,9 +794,12 @@ end;
 //This only works for melee offenders(?)
 procedure TKMUnitGroup.Member_PickedFight(aMember: TKMUnitWarrior; aEnemy: TKMUnit);
 begin
-  if (aEnemy is TKMUnitWarrior) then
-    if not fOffenders.Contains(TKMUnitWarrior(aEnemy)) then
-      fOffenders.Add(TKMUnitWarrior(aEnemy).GetPointer);
+  // Add offender only if its a werrior and we did not have it in the list yet
+  // there is no much harm in duplicate offenders,
+  // but in some cases it could mean, that this offender will be attacked more frequently
+  // because of KaMRandom(Length(fOffenders)) code
+  if (aEnemy is TKMUnitWarrior) and not fOffenders.Contains(TKMUnitWarrior(aEnemy)) then
+    fOffenders.Add(TKMUnitWarrior(aEnemy).GetPointer);
 end;
 
 
