@@ -884,18 +884,18 @@ begin
                           if fMembers[I].IsIdle
                           and (fOrderLoc.Dir <> dirNA) and (fMembers[I].Direction <> fOrderLoc.Dir) then
                           begin
-                            Members[I].Direction := fOrderLoc.Dir;
-                            Members[I].SetActionStay(50, uaWalk); //Make sure the animation still frame is updated
+                            fMembers[I].Direction := fOrderLoc.Dir;
+                            fMembers[I].SetActionStay(50, uaWalk); //Make sure the animation still frame is updated
                           end;
                         end
                         else
                           //Guide Idle and pushed units back to their places
                           if not pushbackLimitReached
-                            and (Members[I].IsIdle
-                                 or ((Members[I].Action is TKMUnitActionWalkTo) and TKMUnitActionWalkTo(Members[I].Action).WasPushed)) then
+                            and (fMembers[I].IsIdle
+                                 or ((fMembers[I].Action is TKMUnitActionWalkTo) and TKMUnitActionWalkTo(fMembers[I].Action).WasPushed)) then
                           begin
                             P := GetMemberLocExact(I);
-                            Members[I].OrderWalk(P.Loc, P.Exact);
+                            fMembers[I].OrderWalk(P.Loc, P.Exact);
                             fMembersPushbackCommandsCnt := Min(fMembersPushbackCommandsCnt + 1, High(Word));
                           end;
                       end;
@@ -913,29 +913,29 @@ begin
 
                         if not orderExecuted then
                           //If our leader is out of range (enemy has walked away) we need to walk closer
-                          if (KMLength(fOrderLoc.Loc, OrderTargetUnit.Position) > Members[0].GetFightMaxRange) then
+                          if (KMLength(fOrderLoc.Loc, OrderTargetUnit.Position) > fMembers[0].GetFightMaxRange) then
                             OrderAttackUnit(OrderTargetUnit, False)
                           else
                             //Our leader is in range so each member should get into position
                             for I := 0 to Count - 1 do
-                            if Members[I].IsIdle then
+                            if fMembers[I].IsIdle then
                             begin
                               P := GetMemberLocExact(I);
-                              if KMSamePoint(Members[I].Position, P.Loc)
-                              or (KMLength(Members[I].Position, OrderTargetUnit.Position) <= Members[I].GetFightMaxRange) then
+                              if KMSamePoint(fMembers[I].Position, P.Loc)
+                              or (KMLength(fMembers[I].Position, OrderTargetUnit.Position) <= fMembers[I].GetFightMaxRange) then
                               begin
                                 //We are at the right spot, so face towards enemy
-                                Members[I].Direction := KMGetDirection(Members[I].Position, OrderTargetUnit.Position);
-                                Members[I].FaceDir := Members[I].Direction;
-                                if not Members[I].CheckForEnemy then
+                                fMembers[I].Direction := KMGetDirection(fMembers[I].Position, OrderTargetUnit.Position);
+                                fMembers[I].FaceDir := fMembers[I].Direction;
+                                if not fMembers[I].CheckForEnemy then
                                   //If we are too close to shoot, make sure the animation still frame is still updated
-                                  Members[I].SetActionStay(10, uaWalk);
+                                  fMembers[I].SetActionStay(10, uaWalk);
                               end
                               else
                               begin
                                 //Too far away. Walk to the enemy in our formation
-                                Members[I].OrderWalk(P.Loc, P.Exact);
-                                Members[I].FaceDir := fOrderLoc.Dir;
+                                fMembers[I].OrderWalk(P.Loc, P.Exact);
+                                fMembers[I].FaceDir := fOrderLoc.Dir;
                               end;
                             end;
                       end
@@ -960,10 +960,10 @@ begin
                           end;
 
                           for I := 0 to Count - 1 do
-                            if Members[I].IsIdle then
+                            if fMembers[I].IsIdle then
                             begin
                               P := GetMemberLocExact(I);
-                              Members[I].OrderWalk(P.Loc, P.Exact);
+                              fMembers[I].OrderWalk(P.Loc, P.Exact);
                             end;
                         end;
 
@@ -973,7 +973,7 @@ begin
                         if (OrderTargetUnit = nil) and ((OrderTargetGroup <> nil) and not IsAllyTo(OrderTargetGroup)) then
                         begin
                           //Old enemy has died, change target to his comrades
-                          U := OrderTargetGroup.GetNearestMember(Members[0].Position);
+                          U := OrderTargetGroup.GetNearestMember(fMembers[0].Position);
                           if U <> nil then // U could be nil in some rare cases (probably some rare bug with unit kills from scripts), just ignore that situation for now
                             OrderAttackUnit(U, False)
                           else
@@ -987,8 +987,8 @@ begin
   if orderExecuted then
   begin
     for I := 0 to Count - 1 do
-    if (fOrderLoc.Dir <> dirNA) and Members[I].IsIdle then //Don't change direction whilst f.e. walking
-      Members[I].Direction := fOrderLoc.Dir;
+    if (fOrderLoc.Dir <> dirNA) and fMembers[I].IsIdle then //Don't change direction whilst f.e. walking
+      fMembers[I].Direction := fOrderLoc.Dir;
     OrderNone;
   end;
 end;
@@ -1003,7 +1003,7 @@ begin
   Result := False;
 
   for I := 0 to Count - 1 do
-    if Members[I].InFight(aCountCitizens) then
+    if fMembers[I].InFight(aCountCitizens) then
       Exit(True);
 end;
 
@@ -1017,7 +1017,7 @@ begin
   Result := True;
 
   for I := 0 to Count - 1 do
-    if not Members[I].InFight(aCountCitizens) then
+    if not fMembers[I].InFight(aCountCitizens) then
       Exit(False);
 end;
 
@@ -1033,8 +1033,8 @@ begin
   for I := 0 to Count - 1 do
   begin
     U := nil;
-    if not Members[I].IsDeadOrDying
-      AND Members[I].InFightAgaist(U, False)
+    if not fMembers[I].IsDeadOrDying
+      AND fMembers[I].InFightAgaist(U, False)
       AND (U <> nil)
       AND not U.IsDeadOrDying then
     begin
@@ -1071,8 +1071,8 @@ begin
   Result := False;
 
   for I := 0 to Count - 1 do
-  if (Members[I].Task <> nil)
-  and (Members[I].Task.TaskType = uttAttackHouse) then
+  if (fMembers[I].Task <> nil)
+  and (fMembers[I].Task.TaskType = uttAttackHouse) then
     Exit(True);
 end;
 
@@ -1110,7 +1110,7 @@ begin
     P.Loc := GetPositionInGroup2(aLoc.X, aLoc.Y, Dir, I, fUnitsPerRow,
                                  gTerrain.MapX, gTerrain.MapY,
                                  P.Exact);
-    U := Members[I];
+    U := fMembers[I];
     Result := U.IsIdle and KMSamePoint(U.Position, P.Loc) and (U.Direction = Dir);
     if not Result then Exit;
   end;
@@ -1142,8 +1142,8 @@ begin
   Result := nil;
 
   for I := 0 to Count - 1 do
-  if (Members[I].UID = aUID) and not Members[I].IsDead then
-    Exit(Members[I]);
+  if (fMembers[I].UID = aUID) and not fMembers[I].IsDead then
+    Exit(fMembers[I]);
 end;
 
 
@@ -1206,14 +1206,15 @@ begin
   //Can attack only enemy houses
   if gHands[Owner].Alliances[aHouse.Owner] <> atEnemy then Exit;
 
-  if aClearOffenders and CanTakeOrders then ClearOffenders;
+  if aClearOffenders and CanTakeOrders then
+    ClearOffenders;
 
   SetGroupOrder(goAttackHouse);
   fOrderLoc := KMPointDir(0, 0, dirNA);
   OrderTargetHouse := aHouse;
 
   for I := 0 to Count - 1 do
-    Members[I].OrderAttackHouse(aHouse, aForced);
+    fMembers[I].OrderAttackHouse(aHouse, aForced);
 
   //Script may have additional event processors
   gScriptEvents.ProcGroupOrderAttackHouse(Self, aHouse);
@@ -1244,11 +1245,11 @@ begin
     OrderTargetUnit := aUnit;
 
     //First choose fOrderLoc, which is where the leader will stand to shoot
-    if (KMLength(Members[0].Position, OrderTargetUnit.Position) > Members[0].GetFightMaxRange) then
+    if (KMLength(fMembers[0].Position, OrderTargetUnit.Position) > fMembers[0].GetFightMaxRange) then
     begin
       nodeList := TKMPointList.Create;
       try
-        if gGame.Pathfinding.Route_Make(Members[0].Position, OrderTargetUnit.NextPosition, [tpWalk], Members[0].GetFightMaxRange, nil, nodeList) then
+        if gGame.Pathfinding.Route_Make(fMembers[0].Position, OrderTargetUnit.NextPosition, [tpWalk], fMembers[0].GetFightMaxRange, nil, nodeList) then
         begin
           fOrderLoc.Loc := nodeList[nodeList.Count-1];
           fOrderLoc.Dir := KMGetDirection(nodeList[nodeList.Count-1], OrderTargetUnit.NextPosition);
@@ -1324,7 +1325,8 @@ procedure TKMUnitGroup.OrderFood(aClearOffenders: Boolean; aHungryOnly: Boolean 
 var
   I: Integer;
 begin
-  if aClearOffenders and CanTakeOrders then ClearOffenders;
+  if aClearOffenders and CanTakeOrders then
+    ClearOffenders;
 
   for I := 0 to Count - 1 do
     if not aHungryOnly or (fMembers[I].Condition <= UNIT_MIN_CONDITION) then
@@ -1335,7 +1337,8 @@ end;
 procedure TKMUnitGroup.OrderFormation(aTurnAmount: TKMTurnDirection; aColumnsChange: ShortInt; aClearOffenders: Boolean);
 begin
   if IsDead then Exit;
-  if aClearOffenders and CanTakeOrders then ClearOffenders;
+  if aClearOffenders and CanTakeOrders then
+    ClearOffenders;
 
   //If it is yet unset - use first members direction
   if fOrderLoc.Dir = dirNA then
@@ -1379,7 +1382,8 @@ procedure TKMUnitGroup.OrderLinkTo(aTargetGroup: TKMUnitGroup; aClearOffenders: 
 var
   U: TKMUnit;
 begin
-  if aClearOffenders and CanTakeOrders then ClearOffenders;
+  if aClearOffenders and CanTakeOrders then
+    ClearOffenders;
 
   //Any could have died since the time order was issued due to Net delay
   if IsDead or aTargetGroup.IsDead then Exit;
@@ -1666,8 +1670,8 @@ begin
   if not HasMember(aUnit) then Exit;
   if IsDead then Exit;
   if Count < 2 then Exit;
-  if aClearOffenders
-  and CanTakeOrders then
+
+  if aClearOffenders and CanTakeOrders then
     ClearOffenders;
 
   //Delete from group
@@ -1713,7 +1717,8 @@ var
 begin
   //Make sure to leave someone in the group
   Assert(aCount < Count);
-  if aClearOffenders and CanTakeOrders then ClearOffenders;
+  if aClearOffenders and CanTakeOrders then
+    ClearOffenders;
 
   //Take units from the end, to keep flagholder
   for I := fMembers.Count - 1 downto fMembers.Count - aCount do
@@ -1739,7 +1744,8 @@ var
 begin
   //Don't allow ordering a second storm attack while there is still one active (possible due to network lag)
   if not CanTakeOrders then Exit;
-  if aClearOffenders and CanTakeOrders then ClearOffenders;
+  if aClearOffenders and CanTakeOrders then
+    ClearOffenders;
 
   SetGroupOrder(goStorm);
   fOrderLoc := KMPointDir(0, 0, dirNA);
