@@ -2074,13 +2074,15 @@ end;
 
 function TKMUnitGroup.ObjToString(const aSeparator: String = '|'): String;
 var
-  targetUnitStr, targetHouseStr, targetGroupStr: String;
+  I: Integer;
+  targetUnitStr, targetHouseStr, targetGroupStr, offendersStr: String;
 begin
   if Self = nil then Exit('nil');
 
   targetUnitStr := 'nil';
   targetHouseStr := 'nil';
   targetGroupStr := 'nil';
+  offendersStr := '';
 
   if fOrderTargetUnit <> nil then
     targetUnitStr := fOrderTargetUnit.ObjToStringShort(', ');
@@ -2091,9 +2093,14 @@ begin
   if fOrderTargetHouse <> nil then
     targetHouseStr := fOrderTargetHouse.ObjToStringShort(', ');
 
+  for I := 0 to fOffenders.Count - 1 do
+    offendersStr := offendersStr + aSeparator + '  ' + fOffenders[I].ObjToStringShort(', ');
+
+
   Result := inherited ObjToString(aSeparator) +
             Format('%sUnitsPerRow = %d%sGroupOrder = %s%sOrderLoc = %s%s' +
-                   'OrderTargetUnit = [%s]%sOrderTargetGroup = [%s]%sOrderTargetHouse = [%s]%sPushbackCommandsCnt = [%d]',
+                   'OTargetU = [%s]%sOTargetG = [%s]%sOTargetH = [%s]%sPushbackCmdCnt = [%d]%s' +
+                   'OffendersCnt = %d%sOffenders = [%s]',
                    [aSeparator,
                     fUnitsPerRow, aSeparator,
                     GetEnumName(TypeInfo(TKMGroupOrder), Integer(fOrder)), aSeparator,
@@ -2101,7 +2108,9 @@ begin
                     targetUnitStr, aSeparator,
                     targetGroupStr, aSeparator,
                     targetHouseStr, aSeparator,
-                    fMembersPushbackCommandsCnt]);
+                    fMembersPushbackCommandsCnt, aSeparator,
+                    fOffenders.Count, aSeparator,
+                    offendersStr]);
 end;
 
 
