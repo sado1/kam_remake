@@ -1186,9 +1186,13 @@ begin
     gHands[Owner].UnitGroups.DeleteGroupFromList(Self);
     gHands[aOwner].UnitGroups.AddGroupToList(Self);
   end;
-  Owner := aOwner;
+
+  // Update members owner first so we will move units to new hand units first
   for I := 0 to fMembers.Count - 1 do
     fMembers[I].OwnerUpdate(aOwner, aMoveToNewOwner);
+
+  // Update group owner after members owner
+  Owner := aOwner;
 end;
 
 
