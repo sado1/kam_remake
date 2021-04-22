@@ -795,7 +795,8 @@ end;
 procedure TKMUnitGroup.Member_PickedFight(aMember: TKMUnitWarrior; aEnemy: TKMUnit);
 begin
   if (aEnemy is TKMUnitWarrior) then
-    fOffenders.Add(TKMUnitWarrior(aEnemy).GetPointer);
+    if not fOffenders.Contains(TKMUnitWarrior(aEnemy)) then
+      fOffenders.Add(TKMUnitWarrior(aEnemy).GetPointer);
 end;
 
 
