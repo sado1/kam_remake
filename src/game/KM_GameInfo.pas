@@ -32,6 +32,7 @@ type
     MissionDifficulty: TKMMissionDifficulty;
     MapSizeX, MapSizeY: Integer;
     BlockColorSelection: Boolean;
+    IsSpecial: Boolean;
 
     PlayerCount: Byte;
     Enabled: array [0..MAX_HANDS-1] of Boolean;
@@ -105,6 +106,7 @@ procedure TKMGameInfo.Load(LoadStream: TKMemoryStream);
     LoadStream.Read(MapSizeX);
     LoadStream.Read(MapSizeY);
     LoadStream.Read(BlockColorSelection);
+    LoadStream.Read(IsSpecial);
 
     LoadStream.Read(PlayerCount);
     for I := 0 to PlayerCount - 1 do
@@ -178,6 +180,7 @@ begin
   SaveStream.Write(MapSizeX);
   SaveStream.Write(MapSizeY);
   SaveStream.Write(BlockColorSelection);
+  SaveStream.Write(IsSpecial);
 
   SaveStream.Write(PlayerCount);
   for I := 0 to PlayerCount - 1 do
