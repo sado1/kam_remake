@@ -282,7 +282,7 @@ begin
   fMutedPlayersList := TList<Integer>.Create;
   fFileSenderManager.OnTransferCompleted := TransferOnCompleted;
   fFileSenderManager.OnTransferPacket := TransferOnPacket;
-  gLog.OnLogMessage := PostLogMessageToChat;
+  gLog.AddOnLogEventSub(PostLogMessageToChat);
   fVoteReturnToLobbySucceeded := False;
 
   gNetworking := Self;
