@@ -1760,15 +1760,15 @@ end;
 
 procedure TKMGamePlayInterface.Menu_ReturnToMapEd(Sender: TObject);
 var
-  mapPath, gameName: UnicodeString;
+  missionPath, gameName: UnicodeString;
   isMultiplayer: Boolean;
 begin
   isMultiplayer := gGame.StartedFromMapEdAsMPMap;
-  mapPath := TKMapsCollection.FullPath(gGameParams.Name, '.dat', isMultiplayer);
+  missionPath := gGameParams.MissionFile;
   gameName := gGameParams.Name;
   FreeThenNil(gGame);
   // current TKMGamePlayInterface object is destroyed, be careful
-  gGameApp.NewMapEditor(mapPath, 0, 0, TKMapsCollection.GetMapCRC(gameName, isMultiplayer), 0, isMultiplayer);
+  gGameApp.NewMapEditor(missionPath, 0, 0, TKMapsCollection.GetMapCRC(missionPath), 0, isMultiplayer);
 end;
 
 
