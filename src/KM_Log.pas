@@ -91,6 +91,7 @@ type
     property LogPath: UnicodeString read fLogPath; //Used by dedicated server
 //    property OnLogMessage: TUnicodeStringEvent read fOnLogMessage write fOnLogMessage;
     procedure AddOnLogEventSub(const aOnLogMessage: TUnicodeStringEvent);
+    procedure RemoveOnLogEventSub(const aOnLogMessage: TUnicodeStringEvent);
   end;
 
 var
@@ -239,6 +240,14 @@ procedure TKMLog.AddOnLogEventSub(const aOnLogMessage: TUnicodeStringEvent);
 begin
   {$IFDEF KMR_GAME}
   fOnLogMessageList.Add(aOnLogMessage);
+  {$ENDIF}
+end;
+
+
+procedure TKMLog.RemoveOnLogEventSub(const aOnLogMessage: TUnicodeStringEvent);
+begin
+  {$IFDEF KMR_GAME}
+  fOnLogMessageList.Remove(aOnLogMessage);
   {$ENDIF}
 end;
 

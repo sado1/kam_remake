@@ -40,7 +40,7 @@ type
 
     property MaxLength: Integer read fMaxLength write fMaxLength;
 
-    procedure EnqueueItem(const Value: T); inline;
+    procedure EnqueueItem(const Value: T);
   end;
 
   TKMLimitedList<T> = class(TList<T>)
@@ -195,8 +195,7 @@ begin
 end;
 
 
-{ TLimitedQueue<T> }
-
+{ TKMLimitedQueue<T> }
 constructor TKMLimitedQueue<T>.Create(aMaxLength: Integer);
 begin
   inherited Create;
@@ -214,7 +213,7 @@ begin
 end;
 
 
-{ TLimitedList<T> }
+{ TKMLimitedList<T> }
 constructor TKMLimitedList<T>.Create(aMaxLength: Integer);
 begin
   inherited Create;
