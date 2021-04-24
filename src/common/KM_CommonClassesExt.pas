@@ -32,7 +32,7 @@ type
     function GetWeightedRandom(out aValue: T): Boolean;
   end;
 
-  TLimitedQueue<T> = class(TQueue<T>)
+  TKMLimitedQueue<T> = class(TQueue<T>)
   private
     fMaxLength: Integer;
   public
@@ -43,7 +43,7 @@ type
     procedure EnqueueItem(const Value: T); inline;
   end;
 
-  TLimitedList<T> = class(TList<T>)
+  TKMLimitedList<T> = class(TList<T>)
   private
     fMaxLength: Integer;
   public
@@ -197,7 +197,7 @@ end;
 
 { TLimitedQueue<T> }
 
-constructor TLimitedQueue<T>.Create(aMaxLength: Integer);
+constructor TKMLimitedQueue<T>.Create(aMaxLength: Integer);
 begin
   inherited Create;
 
@@ -205,7 +205,7 @@ begin
 end;
 
 
-procedure TLimitedQueue<T>.EnqueueItem(const Value: T);
+procedure TKMLimitedQueue<T>.EnqueueItem(const Value: T);
 begin
   inherited Enqueue(Value);
 
@@ -215,7 +215,7 @@ end;
 
 
 { TLimitedList<T> }
-constructor TLimitedList<T>.Create(aMaxLength: Integer);
+constructor TKMLimitedList<T>.Create(aMaxLength: Integer);
 begin
   inherited Create;
 
@@ -223,17 +223,17 @@ begin
 end;
 
 
-function TLimitedList<T>.Add(const Value: T): Integer;
+function TKMLimitedList<T>.Add(const Value: T): Integer;
 begin
   inherited Add(Value);
 
   if Count > fMaxLength then
-    Delete(0); // Delete the oldest save
+    Delete(0); // Delete the oldest item
 end;
 
 
 
-procedure TLimitedList<T>.Swap(const ValueFrom, ValueTo: T);
+procedure TKMLimitedList<T>.Swap(const ValueFrom, ValueTo: T);
 var
   fromI, toI: Integer;
 begin
