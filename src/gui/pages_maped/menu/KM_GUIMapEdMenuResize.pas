@@ -173,6 +173,7 @@ var
   left, top, right, bot: Integer;
   DIR4: TDir4;
   rRect: array[TDir4] of TKMRect;
+  isMultiplayer: Boolean;
 begin
   left  := Max(0, NumEdit_Resize_Left.Value);
   top   := Max(0, NumEdit_Resize_Top.Value);
@@ -180,12 +181,13 @@ begin
   bot   := Max(0, NumEdit_Resize_Bottom.Value);
 
   gGame.TerrainPainter.FixTerrainKindInfoAtBorders(False);
+  isMultiplayer := fIsMultiplayer;
 
   saveNameFullPath := TKMapsCollection.FullPath(gGameParams.Name, '.dat', fIsMultiplayer);
   gGame.SaveMapEditor(saveNameFullPath, KMRect(NumEdit_Resize_Left.Value,  NumEdit_Resize_Top.Value,
                                        NumEdit_Resize_Right.Value, NumEdit_Resize_Bottom.Value));
   FreeThenNil(gGame);
-  gGameApp.NewMapEditor(saveNameFullPath);
+  gGameApp.NewMapEditor(saveNameFullPath, isMultiplayer);
 
   // Collect generated map areas
   rRect[dLeft]   := KMRect(1, top + 1, left, gTerrain.MapY - bot);

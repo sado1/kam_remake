@@ -102,8 +102,9 @@ type
                              aCampMap: Byte; aLocation: Byte; aColor: Cardinal; aDifficulty: TKMMissionDifficulty = mdNone;
                              aAIType: TKMAIType = aitNone);
     procedure NewEmptyMap(aSizeX, aSizeY: Integer);
+    procedure NewMapEditor(const aFullFilePath: UnicodeString; aMultiplayerLoadMode: Boolean); overload;
     procedure NewMapEditor(const aFullFilePath: UnicodeString; aSizeX: Integer = 0; aSizeY: Integer = 0;
-                           aMapFullCRC: Cardinal = 0; aMapSimpleCRC: Cardinal = 0; aMultiplayerLoadMode: Boolean = False);
+                           aMapFullCRC: Cardinal = 0; aMapSimpleCRC: Cardinal = 0; aMultiplayerLoadMode: Boolean = False); overload;
     procedure NewReplay(const aFilePath: UnicodeString);
     procedure NewSaveAndReplay(const aSavPath, aRplPath: UnicodeString);
     function TryLoadSavePoint(aTick: Integer): Boolean;
@@ -988,6 +989,12 @@ begin
   if Assigned(fOnGameStart) and (gGame <> nil) then
     fOnGameStart(gGame.Params.Mode);
 
+end;
+
+
+procedure TKMGameApp.NewMapEditor(const aFullFilePath: UnicodeString; aMultiplayerLoadMode: Boolean);
+begin
+  NewMapEditor(aFullFilePath, 0, 0, 0, 0, aMultiplayerLoadMode);
 end;
 
 
