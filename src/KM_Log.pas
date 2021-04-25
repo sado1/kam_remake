@@ -169,7 +169,9 @@ begin
     Include(MessageTypes, lmtDebug);
 
   CS := TCriticalSection.Create;
+  {$IFDEF KMR_GAME}
   fOnLogMessageList := TList<TUnicodeStringEvent>.Create;
+  {$ENDIF}
 
   InitLog;
 end;
@@ -184,7 +186,9 @@ end;
 destructor TKMLog.Destroy;
 begin
   CS.Free;
+  {$IFDEF KMR_GAME}
   fOnLogMessageList.Free;
+  {$ENDIF}
 
   inherited;
 end;
