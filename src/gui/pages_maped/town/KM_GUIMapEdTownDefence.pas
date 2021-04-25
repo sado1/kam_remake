@@ -156,18 +156,18 @@ end;
 
 procedure TKMMapEdTownDefence.Town_DefenceRefresh;
 var
-  OnlyAdvancedAIHand: Boolean;
+  onlyAdvancedAIHand: Boolean;
 begin
-  OnlyAdvancedAIHand := gGame.MapEditor.OnlyAdvancedAIHand(gMySpectator.HandID);
+  onlyAdvancedAIHand := gGame.MapEditor.OnlyAdvancedAIHand(gMySpectator.HandID);
 
   CheckBox_AutoDefence.Checked := gMySpectator.Hand.AI.Setup.AutoDefend;
   CheckBox_DefendAllies.Checked := gMySpectator.Hand.AI.Setup.DefendAllies;
   TrackBar_AutoAttackRange.Position := gMySpectator.Hand.AI.Setup.AutoAttackRange;
-  TrackBar_AutoAttackRange.Enabled := not OnlyAdvancedAIHand;
+  TrackBar_AutoAttackRange.Enabled := not onlyAdvancedAIHand;
   TrackBar_RecruitCount.Position := gMySpectator.Hand.AI.Setup.RecruitCount;
-  TrackBar_RecruitCount.Enabled := not OnlyAdvancedAIHand;
+  TrackBar_RecruitCount.Enabled := not onlyAdvancedAIHand;
   NumEdit_RecruitDelay.Value := Round(gMySpectator.Hand.AI.Setup.RecruitDelay / 600);
-  Button_EditFormations.Enabled := not OnlyAdvancedAIHand;
+  Button_EditFormations.Enabled := not onlyAdvancedAIHand;
 
   CheckBox_MaxSoldiers.Checked := (gMySpectator.Hand.AI.Setup.MaxSoldiers >= 0);
   NumEdit_MaxSoldiers.Enabled := CheckBox_MaxSoldiers.Checked;

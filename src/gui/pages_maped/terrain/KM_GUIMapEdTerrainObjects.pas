@@ -503,15 +503,15 @@ end;
 
 procedure TKMMapEdTerrainObjects.ObjectsPalette_Refresh(Sender: TObject);
 var
-  I, J, K, LeftAdj, TopAdj: Integer;
+  I, J, K, leftAdj, topAdj: Integer;
 begin
-  LeftAdj := (PopUp_ObjectsPalette.Width - fObjPaletteTableSize.X*(OBJ_CELL_W + 1) - 25*Byte(Scroll_ObjectsPalette.Visible)) div 2;
-  TopAdj := Image_ObjectsPalette.Top + 60;
+  leftAdj := (PopUp_ObjectsPalette.Width - fObjPaletteTableSize.X*(OBJ_CELL_W + 1) - 25*Byte(Scroll_ObjectsPalette.Visible)) div 2;
+  topAdj := Image_ObjectsPalette.Top + 60;
 
   K := 0;
 
-  Button_ObjPaletteErase.Left := LeftAdj;
-  Button_ObjPaletteBlock.Left := LeftAdj + OBJ_CELL_W + 1;
+  Button_ObjPaletteErase.Left := leftAdj;
+  Button_ObjPaletteBlock.Left := leftAdj + OBJ_CELL_W + 1;
 
   for I := 0 to fObjPaletteTableSize.Y - 1 do
     for J := 0 to fObjPaletteTableSize.X - 1 do
@@ -519,8 +519,8 @@ begin
       K := (I + Scroll_ObjectsPalette.Position)*fObjPaletteTableSize.X + J;
       if K < fCountCompact then
       begin
-        ObjectsPaletteTable[K].Left := J*(OBJ_CELL_PALETTE_W + 1) + LeftAdj;
-        ObjectsPaletteTable[K].Top := 25 + I*(OBJ_CELL_PALETTE_H + 1)  + TopAdj;
+        ObjectsPaletteTable[K].Left := J*(OBJ_CELL_PALETTE_W + 1) + leftAdj;
+        ObjectsPaletteTable[K].Top := 25 + I*(OBJ_CELL_PALETTE_H + 1)  + topAdj;
         ObjectsPaletteTable[K].TexID := gMapElements[fCompactToMapElem[K]].Anim.Step[1] + 1;
         ObjectsPaletteTable[K].Caption := IntToStr(fCompactToMapElem[K]);
 
@@ -626,19 +626,19 @@ end;
 
 procedure TKMMapEdTerrainObjects.ObjPalette_ClickShift(Sender: TObject; Shift: TShiftState);
 var
-  ObjIndex: Integer;
+  objIndex: Integer;
 begin
   if ssRight in Shift then
     PopUp_ObjectsPalette.Hide
   else if (ssLeft in Shift) and (Sender is TKMButtonFlat) then
   begin
     PopUp_ObjectsPalette.Hide;
-    ObjIndex := TKMButtonFlat(Sender).Tag;
-    ObjectsUpdate(ObjIndex);
+    objIndex := TKMButtonFlat(Sender).Tag;
+    ObjectsUpdate(objIndex);
 
     if (Sender <> Button_ObjPaletteErase)
       and (Sender <> Button_ObjPaletteBlock) then
-      UpdateObjectsScrollPosToIndex(ObjIndex);
+      UpdateObjectsScrollPosToIndex(objIndex);
   end;
 end;
 
@@ -755,17 +755,17 @@ end;
 procedure TKMMapEdTerrainObjects.ObjectsRefresh(Sender: TObject);
 var
   I: Integer;
-  ObjIndex: Integer;
+  objIndex: Integer;
 begin
   for I := 0 to 8 do
   begin
-    ObjIndex := ObjectsScroll.Position * 3 + I;
-    if ObjIndex < fCountCompact then
+    objIndex := ObjectsScroll.Position * 3 + I;
+    if objIndex < fCountCompact then
     begin
-      ObjectsTable[I].TexID := gMapElements[fCompactToMapElem[ObjIndex]].Anim.Step[1] + 1;
-      ObjectsTable[I].Caption := IntToStr(fCompactToMapElem[ObjIndex]);
+      ObjectsTable[I].TexID := gMapElements[fCompactToMapElem[objIndex]].Anim.Step[1] + 1;
+      ObjectsTable[I].Caption := IntToStr(fCompactToMapElem[objIndex]);
 
-      UpdateObjAttributesAndDesc(ObjectsTable[I], fCompactToMapElem[ObjIndex]);
+      UpdateObjAttributesAndDesc(ObjectsTable[I], fCompactToMapElem[objIndex]);
 
       ObjectsTable[I].Enable;
     end
@@ -779,7 +779,7 @@ begin
     ObjectsTable[I].Down := (gGameCursor.Mode = cmObjects)
                              and (gGameCursor.Tag1 <> OBJ_NONE)
                              and (gGameCursor.Tag1 <> OBJ_BLOCK)
-                             and (ObjIndex = fMapElemToCompact[gGameCursor.Tag1]);
+                             and (objIndex = fMapElemToCompact[gGameCursor.Tag1]);
   end;
 
   for I := 0 to 9 do

@@ -409,11 +409,11 @@ end;
 // Changed options are saved immediately (cos they are easy to restore/rollback)
 procedure TKMMenuOptions.Change(Sender: TObject);
 var
-  MusicToggled, ShuffleToggled: Boolean;
+  musicToggled, shuffleToggled: Boolean;
 begin
   // Change these options only if they changed state since last time
-  MusicToggled := (gGameSettings.MusicOff <> CheckBox_Options_MusicOff.Checked);
-  ShuffleToggled := (gGameSettings.ShuffleOn <> CheckBox_Options_ShuffleOn.Checked);
+  musicToggled := (gGameSettings.MusicOff <> CheckBox_Options_MusicOff.Checked);
+  shuffleToggled := (gGameSettings.ShuffleOn <> CheckBox_Options_ShuffleOn.Checked);
 
   gGameSettings.Autosave        := CheckBox_Options_Autosave.Checked;
   gGameSettings.AutosaveAtGameEnd := CheckBox_Options_AutosaveAtGameEnd.Checked;
@@ -439,13 +439,13 @@ begin
   gSoundPlayer.UpdateSoundVolume(gGameSettings.SoundFXVolume);
   gMusic.Volume := gGameSettings.MusicVolume;
   SetupVSync(fMainSettings.VSync);
-  if MusicToggled then
+  if musicToggled then
   begin
     gMusic.ToggleEnabled(not gGameSettings.MusicOff);
     if not gGameSettings.MusicOff then
-      ShuffleToggled := True; // Re-shuffle songs if music has been enabled
+      shuffleToggled := True; // Re-shuffle songs if music has been enabled
   end;
-  if ShuffleToggled then
+  if shuffleToggled then
     gMusic.ToggleShuffle(gGameSettings.ShuffleOn);
 
   if Sender = CheckBox_Options_FullFonts then
@@ -486,7 +486,7 @@ end;
 procedure TKMMenuOptions.ChangeResolution(Sender: TObject);
 var
   I: Integer;
-  ResID, RefID: Integer;
+  resID, refID: Integer;
 begin
   if fResolutions.Count = 0 then Exit;
 
@@ -496,28 +496,28 @@ begin
   // Repopulate RefreshRates list
   if Sender = DropBox_Options_Resolution then
   begin
-    ResID := DropBox_Options_Resolution.ItemIndex;
+    resID := DropBox_Options_Resolution.ItemIndex;
 
     // Reset refresh rates, because they are different for each resolution
     DropBox_Options_RefreshRate.Clear;
-    for I := 0 to fResolutions.Items[ResID].RefRateCount - 1 do
+    for I := 0 to fResolutions.Items[resID].RefRateCount - 1 do
     begin
-      DropBox_Options_RefreshRate.Add(Format('%d Hz', [fResolutions.Items[ResID].RefRate[I]]));
+      DropBox_Options_RefreshRate.Add(Format('%d Hz', [fResolutions.Items[resID].RefRate[I]]));
       // Make sure to select something. SelectedRefRate is prefered, otherwise select first
-      if (I = 0) or (fResolutions.Items[ResID].RefRate[I] = fDesiredRefRate) then
+      if (I = 0) or (fResolutions.Items[resID].RefRate[I] = fDesiredRefRate) then
         DropBox_Options_RefreshRate.ItemIndex := I;
     end;
   end;
 
   // Make button enabled only if new resolution/mode differs from old
-  ResID := DropBox_Options_Resolution.ItemIndex;
-  RefID := DropBox_Options_RefreshRate.ItemIndex;
+  resID := DropBox_Options_Resolution.ItemIndex;
+  refID := DropBox_Options_RefreshRate.ItemIndex;
   Button_Options_ResApply.Enabled :=
       (fMainSettings.FullScreen <> CheckBox_Options_FullScreen.Checked) or
-      (CheckBox_Options_FullScreen.Checked and ((fPrevResolutionId.ResID <> ResID) or
-                                                (fPrevResolutionId.RefID <> RefID)));
+      (CheckBox_Options_FullScreen.Checked and ((fPrevResolutionId.ResID <> resID) or
+                                                (fPrevResolutionId.RefID <> refID)));
   // Remember which one we have selected so we can reselect it if the user changes resolution
-  fDesiredRefRate := fResolutions.Items[ResID].RefRate[RefID];
+  fDesiredRefRate := fResolutions.Items[resID].RefRate[refID];
 end;
 
 
@@ -697,7 +697,7 @@ var
   KF: TKMKeyFunction;
   prevTopIndex: Integer;
   K: TKMKeyFuncArea;
-  KeyName: UnicodeString;
+  keyName: UnicodeString;
 begin
   prevTopIndex := ColumnBox_OptionsKeys.TopIndex;
 
@@ -712,10 +712,10 @@ begin
     for KF := KEY_FUNC_LOW to High(TKMKeyFunction) do
       if (fTempKeys[KF].Area = K) and not fTempKeys[KF].IsChangableByPlayer then
       begin
-        KeyName := fTempKeys.GetKeyNameById(KF);
-        if (KF = kfDebugWindow) and (KeyName <> '') then
-          KeyName := KeyName + ' / Ctrl + ' + KeyName; //Also show Ctrl + F11, for debug window hotkey
-        ColumnBox_OptionsKeys.AddItem(MakeListRow([GetFunctionName(fTempKeys[KF].TextId), KeyName],
+        keyName := fTempKeys.GetKeyNameById(KF);
+        if (KF = kfDebugWindow) and (keyName <> '') then
+          keyName := keyName + ' / Ctrl + ' + keyName; //Also show Ctrl + F11, for debug window hotkey
+        ColumnBox_OptionsKeys.AddItem(MakeListRow([GetFunctionName(fTempKeys[KF].TextId), keyName],
                                                   [$FFFFFFFF, $FFFFFFFF], [$FF0000FF, $FF0000FF], Integer(KF)));
       end;
   end;

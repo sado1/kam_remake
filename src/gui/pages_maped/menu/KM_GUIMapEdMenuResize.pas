@@ -131,7 +131,7 @@ end;
 
 procedure TKMMapEdMenuResize.ResizeRefresh(Sender: TObject);
 var
-  NewMapX, NewMapY: SmallInt;
+  newMapX, newMapY: SmallInt;
 begin
   Button_Resize.Enabled := (NumEdit_Resize_Left.Value   <> 0)
                         or (NumEdit_Resize_Right.Value  <> 0)
@@ -154,14 +154,14 @@ begin
   gGame.MapEditor.ResizeMapRect.Right := gTerrain.MapX - Abs(Min(0, NumEdit_Resize_Right.Value)) - 1;
   gGame.MapEditor.ResizeMapRect.Bottom := gTerrain.MapY - Abs(Min(0, NumEdit_Resize_Bottom.Value)) - 1;
 
-  NewMapX := gTerrain.MapX + NumEdit_Resize_Left.Value + NumEdit_Resize_Right.Value;
-  NewMapY := gTerrain.MapY + NumEdit_Resize_Top.Value + NumEdit_Resize_Bottom.Value;
+  newMapX := gTerrain.MapX + NumEdit_Resize_Left.Value + NumEdit_Resize_Right.Value;
+  newMapY := gTerrain.MapY + NumEdit_Resize_Top.Value + NumEdit_Resize_Bottom.Value;
 
   Label_CurrentMapSize.Caption := Format(gResTexts[TX_MAPED_MAP_RESIZE_CURR_MAP_SIZE] + '|[ %d : %d ]', [gTerrain.MapX, gTerrain.MapY]);
   Label_NewMapSize.Enabled := Button_Resize.Enabled;
   Label_NewMapSize.Caption := Format(gResTexts[TX_MAPED_MAP_RESIZE_NEW_MAP_SIZE] + '|[ %d : %d ]',
-                                    [EnsureRange(NewMapX, MIN_MAP_SIZE, MAX_MAP_SIZE),
-                                     EnsureRange(NewMapY, MIN_MAP_SIZE, MAX_MAP_SIZE)]);
+                                    [EnsureRange(newMapX, MIN_MAP_SIZE, MAX_MAP_SIZE),
+                                     EnsureRange(newMapY, MIN_MAP_SIZE, MAX_MAP_SIZE)]);
 end;
 
 

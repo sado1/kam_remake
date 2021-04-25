@@ -46,7 +46,7 @@ uses
 { TKMMapEdTownHouses }
 constructor TKMMapEdTownHouses.Create(aParent: TKMPanel);
 var
-  I, Top: Integer;
+  I, top: Integer;
 begin
   inherited Create;
 
@@ -83,14 +83,14 @@ begin
         Button_Build[I].Hint := gRes.Houses[GUIHouseOrder[I]].HouseName;
     end;
 
-  Top := Button_Build[GUI_HOUSE_COUNT].Bottom + 3;
+  top := Button_Build[GUI_HOUSE_COUNT].Bottom + 3;
 
-  Image_HouseConstructionWood := TKMImage.Create(Panel_Build, 9, Top, 32, 32, 353);
+  Image_HouseConstructionWood := TKMImage.Create(Panel_Build, 9, top, 32, 32, 353);
   Image_HouseConstructionWood.ImageCenter;
-  Image_HouseConstructionStone := TKMImage.Create(Panel_Build, 9 + 55, Top, 32, 32, 352);
+  Image_HouseConstructionStone := TKMImage.Create(Panel_Build, 9 + 55, top, 32, 32, 352);
   Image_HouseConstructionStone.ImageCenter;
-  Label_HouseConstructionWood  := TKMLabel.Create(Panel_Build,  39, Top + 10, 20, 20, '', fntOutline, taLeft);
-  Label_HouseConstructionStone := TKMLabel.Create(Panel_Build, 39 + 55, Top + 10, 20, 20, '', fntOutline, taLeft);
+  Label_HouseConstructionWood  := TKMLabel.Create(Panel_Build,  39, top + 10, 20, 20, '', fntOutline, taLeft);
+  Label_HouseConstructionStone := TKMLabel.Create(Panel_Build, 39 + 55, top + 10, 20, 20, '', fntOutline, taLeft);
 
   for I := 0 to High(fSubMenuActionsEvents) do
     fSubMenuActionsEvents[I] := Town_BuildChange;
@@ -134,7 +134,8 @@ end;
 
 
 procedure TKMMapEdTownHouses.Town_BuildChange(Sender: TObject);
-var I: Integer;
+var
+  I: Integer;
 begin
   //Reset cursor and see if it needs to be changed
   gGameCursor.Mode := cmNone;
@@ -229,7 +230,8 @@ end;
 
 
 procedure TKMMapEdTownHouses.UpdateStateIdle;
-var P: TKMPoint;
+var
+  P: TKMPoint;
 begin
   P := gGameCursor.Cell;
   if (gGameCursor.Mode = cmField)

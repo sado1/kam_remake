@@ -138,8 +138,8 @@ end;
 procedure TKMMapEdMenuLoad.Menu_LoadUpdateDone(Sender: TObject);
 var
   I: Integer;
-  PrevMap: string;
-  PrevTop: Integer;
+  prevMap: string;
+  prevTop: Integer;
   M: TKMapsCollection;
 begin
   case Radio_Load_MapType.ItemIndex of
@@ -151,10 +151,10 @@ begin
 
   //Remember previous map
   if ListBox_Load.ItemIndex <> -1 then
-    PrevMap := M.Maps[ListBox_Load.ItemIndex].FileName
+    prevMap := M.Maps[ListBox_Load.ItemIndex].FileName
   else
-    PrevMap := '';
-  PrevTop := ListBox_Load.TopIndex;
+    prevMap := '';
+  prevTop := ListBox_Load.TopIndex;
 
   ListBox_Load.Clear;
 
@@ -163,14 +163,14 @@ begin
     for I := 0 to M.Count - 1 do
     begin
       ListBox_Load.Add(M.Maps[I].FileName);
-      if M.Maps[I].FileName = PrevMap then
+      if M.Maps[I].FileName = prevMap then
         ListBox_Load.ItemIndex := I;
     end;
   finally
     M.Unlock;
   end;
 
-  ListBox_Load.TopIndex := PrevTop;
+  ListBox_Load.TopIndex := prevTop;
 end;
 
 

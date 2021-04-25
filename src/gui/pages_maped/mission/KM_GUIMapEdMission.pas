@@ -46,8 +46,8 @@ uses
 { TKMMapEdMission }
 constructor TKMMapEdMission.Create(aParent: TKMPanel; aOnPageChange: TNotifyEvent);
 const
-  TabGlyph: array [TKMMissionTab] of Word    = (41, 656, 386);
-  TabHint : array [TKMMissionTab] of Word = (
+  TAB_GLYPH: array [TKMMissionTab] of Word    = (41, 656, 386);
+  TAB_HINT : array [TKMMissionTab] of Word = (
     TX_MAPED_MISSION_MODE,
     TX_MAPED_PLAYERS_TYPE,
     TX_MAPED_ALLIANCE);
@@ -63,8 +63,8 @@ begin
 
   for MT := Low(TKMMissionTab) to High(TKMMissionTab) do
   begin
-    Button_Mission[MT] := TKMButton.Create(Panel_Mission, 9 + SMALL_PAD_W * Byte(MT), 0, SMALL_TAB_W, SMALL_TAB_H,  TabGlyph[MT], rxGui, bsGame);
-    Button_Mission[MT].Hint := GetHintWHotKey(TabHint[MT], MAPED_SUBMENU_HOTKEYS[Ord(MT)]);
+    Button_Mission[MT] := TKMButton.Create(Panel_Mission, 9 + SMALL_PAD_W * Byte(MT), 0, SMALL_TAB_W, SMALL_TAB_H,  TAB_GLYPH[MT], rxGui, bsGame);
+    Button_Mission[MT].Hint := GetHintWHotKey(TAB_HINT[MT], MAPED_SUBMENU_HOTKEYS[Ord(MT)]);
     Button_Mission[MT].OnClick := PageChange;
   end;
 

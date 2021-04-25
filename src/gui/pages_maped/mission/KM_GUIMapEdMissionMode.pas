@@ -69,7 +69,7 @@ const
   CHK_W = 300;
   RADIO_W = 250;
 var
-  Dif_W, Top: Integer;
+  difW, Top: Integer;
   MD: TKMMissionDifficulty;
 begin
   inherited Create;
@@ -159,19 +159,19 @@ begin
     TKMBevel.Create(Panel_MissionParams, 0, Top, Panel_MissionParams.Width, 65);
 
     Inc(Top, 5);
-    Dif_W := (PopUp_MissionParams.Width - 20) div 3;
+    difW := (PopUp_MissionParams.Width - 20) div 3;
     for MD := MISSION_DIFFICULTY_MIN to mdEasy1 do
       CheckBox_Difficulty[MD] := TKMCheckBox.Create(Panel_MissionParams,
                                        5, Top + (Integer(MD) - Integer(mdEasy3))*20,
-                                       Dif_W, 20, gResTexts[DIFFICULTY_LEVELS_TX[MD]], fntMetal);
+                                       difW, 20, gResTexts[DIFFICULTY_LEVELS_TX[MD]], fntMetal);
     CheckBox_Difficulty[mdNormal] := TKMCheckBox.Create(Panel_MissionParams,
-                                       5 + Dif_W + 5, Top + 20, Dif_W, 20,
+                                       5 + difW + 5, Top + 20, difW, 20,
                                        gResTexts[DIFFICULTY_LEVELS_TX[mdNormal]], fntMetal);
 
     for MD := mdHard1 to MISSION_DIFFICULTY_MAX do
       CheckBox_Difficulty[MD] := TKMCheckBox.Create(Panel_MissionParams,
-                                       5 + 2*Dif_W + 5, Top + (Integer(MD) - Integer(mdHard1))*20,
-                                       Dif_W, 20, gResTexts[DIFFICULTY_LEVELS_TX[MD]], fntMetal);
+                                       5 + 2*difW + 5, Top + (Integer(MD) - Integer(mdHard1))*20,
+                                       difW, 20, gResTexts[DIFFICULTY_LEVELS_TX[MD]], fntMetal);
 
     Inc(Top, 65);
     TKMLabel.Create(Panel_MissionParams, 0, Top, gResTexts[TX_MAPED_MISSION_BIG_DESC], fntOutline, taLeft);
@@ -271,7 +271,8 @@ end;
 
 
 procedure TKMMapEdMissionMode.AIBuilderChange(Sender: TObject);
-var I: Integer;
+var
+  I: Integer;
 begin
   if Sender = Button_AIBuilderSetup then
   begin

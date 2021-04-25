@@ -131,15 +131,15 @@ end;
 
 procedure TKMUserInterfaceCommon.AfterCreateComplete;
 var
-  HintBase: TKMPoint;
+  hintBase: TKMPoint;
 begin
-  HintBase := GetHintPositionBase;
+  hintBase := GetHintPositionBase;
   //Hints should be created last, as they should be above everything in UI, to be show on top of all other Controls
-  Bevel_HintBG := TKMBevel.Create(Panel_Main, HintBase.X + 35, HintBase.Y - 23, 300, 21);
+  Bevel_HintBG := TKMBevel.Create(Panel_Main, hintBase.X + 35, hintBase.Y - 23, 300, 21);
   Bevel_HintBG.BackAlpha := 0.5;
   Bevel_HintBG.EdgeAlpha := 0.5;
   Bevel_HintBG.Hide;
-  Label_Hint := TKMLabel.Create(Panel_Main, HintBase.X + 40, HintBase.Y - 21, 0, 0, '', GetHintFont, taLeft);
+  Label_Hint := TKMLabel.Create(Panel_Main, hintBase.X + 40, hintBase.Y - 21, 0, 0, '', GetHintFont, taLeft);
 
   // Controls without a hint will reset the Hint to ''
   fMyControls.OnHint := DisplayHint;
@@ -154,7 +154,7 @@ end;
 
 procedure TKMUserInterfaceCommon.DisplayHint(Sender: TObject);
 var
-  TxtSize: TKMPoint;
+  txtSize: TKMPoint;
 begin
   if (Label_Hint = nil) or (Bevel_HintBG = nil) then
     Exit;
@@ -178,9 +178,9 @@ begin
     if SHOW_CONTROLS_ID then
       Label_Hint.Caption := Label_Hint.Caption + ' ' + TKMControl(Sender).GetIDsStr;
 
-    TxtSize := gRes.Fonts[Label_Hint.Font].GetTextSize(Label_Hint.Caption);
-    Bevel_HintBG.Width := 10 + TxtSize.X;
-    Bevel_HintBG.Height := 2 + TxtSize.Y;
+    txtSize := gRes.Fonts[Label_Hint.Font].GetTextSize(Label_Hint.Caption);
+    Bevel_HintBG.Width := 10 + txtSize.X;
+    Bevel_HintBG.Height := 2 + txtSize.Y;
     Bevel_HintBG.Top := GetHintPositionBase.Y - Bevel_HintBG.Height - 2;
     Bevel_HintBG.Show;
     Label_Hint.Top := Bevel_HintBG.Top + 2;
@@ -292,9 +292,10 @@ end;
 
 
 procedure TKMUserInterfaceCommon.MouseMove(Shift: TShiftState; X, Y: Integer);
-var MouseMoveHandled: Boolean;
+var
+  mouseMoveHandled: Boolean;
 begin
-  MouseMove(Shift, X, Y, MouseMoveHandled);
+  MouseMove(Shift, X, Y, mouseMoveHandled);
 end;
 
 
@@ -306,7 +307,7 @@ end;
 
 procedure TKMUserInterfaceCommon.Resize(X, Y: Word);
 var
-  HintBase: TKMPoint;
+  hintBase: TKMPoint;
 begin
   Panel_Main.Width := X;
   Panel_Main.Height := Y;
@@ -314,17 +315,18 @@ begin
   if (Bevel_HintBG = nil) or (Label_Hint = nil) then
     Exit;
 
-  HintBase := GetHintPositionBase;
-  Bevel_HintBG.Left := HintBase.X + 35;
-  Bevel_HintBG.Top := HintBase.Y - 23;
-  Label_Hint.Left := HintBase.X + 40;
-  Label_Hint.Top := HintBase.Y - 21;
+  hintBase := GetHintPositionBase;
+  Bevel_HintBG.Left := hintBase.X + 35;
+  Bevel_HintBG.Top := hintBase.Y - 23;
+  Label_Hint.Left := hintBase.X + 40;
+  Label_Hint.Top := hintBase.Y - 21;
 end;
 
 
 procedure TKMUserInterfaceCommon.UpdateState(aTickCount: Cardinal);
 begin
   inherited;
+
   fMyControls.UpdateState(aTickCount);
 end;
 

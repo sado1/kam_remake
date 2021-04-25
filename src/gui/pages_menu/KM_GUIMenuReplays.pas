@@ -263,13 +263,13 @@ end;
 
 procedure TKMMenuReplays.SetSelectedSaveInfo(aID: Integer = -1);
 var
-  Name: UnicodeString;
+  name: UnicodeString;
 begin
   if (aID <> -1) then
-    Name := fSaves[aID].FileName
+    name := fSaves[aID].FileName
   else
-    Name := '';
-  SetSelectedSaveName(Name);
+    name := '';
+  SetSelectedSaveName(name);
 end;
 
 
@@ -285,11 +285,11 @@ end;
 
 procedure TKMMenuReplays.LoadMinimap(aID: Integer = -1);
 var
-  Loaded: Boolean;
+  loaded: Boolean;
 begin
   if not Panel_Replays.Visible then Exit;
 
-  Loaded := False;
+  loaded := False;
   if (aID <> -1) then
   begin
     if fLoadKind in [gsmStart, gsmStartWithWarn] then
@@ -306,7 +306,7 @@ begin
           fMinimapLastListId := aID;
           MinimapView_Replay.SetMinimap(fMinimap);
           MinimapView_Replay.Show;
-          Loaded := true;
+          loaded := true;
         end;
       except
         on E: Exception do
@@ -314,7 +314,7 @@ begin
       end;
     end;
   end;
-  if not Loaded then
+  if not loaded then
     MinimapView_Replay.Hide;
 end;
 
@@ -395,11 +395,11 @@ end;
 
 procedure TKMMenuReplays.Replays_RefreshList(aJumpToSelected: Boolean);
 var
-  I, PrevTop: Integer;
-  Row: TKMListRow;
-  Color: Cardinal;
+  I, prevTop: Integer;
+  row: TKMListRow;
+  color: Cardinal;
 begin
-  PrevTop := ColumnBox_Replays.TopIndex;
+  prevTop := ColumnBox_Replays.TopIndex;
   ColumnBox_Replays.Clear;
 
   fSaves.Lock;
@@ -407,18 +407,18 @@ begin
     for I := 0 to fSaves.Count - 1 do
     begin
       if fSaves[I].IsValidStrictly then
-        Color := clSaveLoadOk
+        color := clSaveLoadOk
       else
       if fSaves[I].IsValid then
-        Color := clSaveLoadTry
+        color := clSaveLoadTry
       else
-        Color := clSaveLoadError;
+        color := clSaveLoadError;
 
-      Row := MakeListRow(['', fSaves[I].FileName, fSaves[I].GameInfo.GetSaveTimestamp, fSaves[I].GameInfo.Title,
+      row := MakeListRow(['', fSaves[I].FileName, fSaves[I].GameInfo.GetSaveTimestamp, fSaves[I].GameInfo.Title,
                           TickToTimeStr(fSaves[I].GameInfo.TickCount), fSaves[I].GameInfo.VersionU],
-                         [Color, Color, Color, Color, Color, Color]);
-      Row.Cells[0].Pic := MakePic(rxGui, 657 + Byte(fSaves[I].GameInfo.MissionMode = mmTactic));
-      ColumnBox_Replays.AddItem(Row);
+                         [color, color, color, color, color, color]);
+      row.Cells[0].Pic := MakePic(rxGui, 657 + Byte(fSaves[I].GameInfo.MissionMode = mmTactic));
+      ColumnBox_Replays.AddItem(row);
     end;
 
     for I := 0 to fSaves.Count - 1 do
@@ -428,7 +428,7 @@ begin
     fSaves.Unlock;
   end;
 
-  ColumnBox_Replays.TopIndex := PrevTop;
+  ColumnBox_Replays.TopIndex := prevTop;
 
   if aJumpToSelected and (ColumnBox_Replays.ItemIndex <> -1)
   and not InRange(ColumnBox_Replays.ItemIndex - ColumnBox_Replays.TopIndex, 0, ColumnBox_Replays.GetVisibleRows-1)
@@ -492,7 +492,7 @@ end;
 procedure TKMMenuReplays.Replays_Play(Sender: TObject);
 var
   ID: Integer;
-  LoadError: UnicodeString;
+  loadError: UnicodeString;
 
   procedure DoPlay;
   begin
@@ -517,12 +517,12 @@ begin
         except
           on E: Exception do
           begin
-            LoadError := Format(gResTexts[TX_UNSUPPORTED_REPLAY_LOAD_ERROR_MSG], [fSaves[ID].GameInfo.Version, fSaves[ID].Path])
+            loadError := Format(gResTexts[TX_UNSUPPORTED_REPLAY_LOAD_ERROR_MSG], [fSaves[ID].GameInfo.Version, fSaves[ID].Path])
               + '||' + E.ClassName + ': ' + E.Message;
-            gLog.AddTime('Replay load Exception: ' + LoadError
+            gLog.AddTime('Replay load Exception: ' + loadError
               {$IFDEF WDC} + sLineBreak + E.StackTrace {$ENDIF}
               );
-            fOnPageChange(gpError, LoadError);
+            fOnPageChange(gpError, loadError);
           end;
         end;
       end;
@@ -567,7 +567,7 @@ end;
 
 procedure TKMMenuReplays.DeleteClick(Sender: TObject);
 var
-  OldSelection, NewSelection: Integer;
+  oldSelection, newSelection: Integer;
 begin
   if ColumnBox_Replays.ItemIndex = -1 then Exit;
 
@@ -580,13 +580,13 @@ begin
   //Delete the save
   if Sender = Button_DeleteConfirm then
   begin
-    OldSelection := ColumnBox_Replays.ItemIndex;
+    oldSelection := ColumnBox_Replays.ItemIndex;
     fSaves.DeleteSave(ColumnBox_Replays.ItemIndex);
 
     if ColumnBox_Replays.RowCount > 1 then
     begin
-      NewSelection := EnsureRange(OldSelection, 0, ColumnBox_Replays.RowCount - 2);
-      SetSelectedSaveInfo(NewSelection);
+      newSelection := EnsureRange(oldSelection, 0, ColumnBox_Replays.RowCount - 2);
+      SetSelectedSaveInfo(newSelection);
     end else
       SetSelectedSaveInfo;
 
