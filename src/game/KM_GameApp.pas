@@ -101,12 +101,15 @@ type
     procedure NewRestartLast(const aGameName, aMissionFileRel, aSave: UnicodeString; aGameMode: TKMGameMode; aCampName: TKMCampaignId;
                              aCampMap: Byte; aLocation: Byte; aColor: Cardinal; aDifficulty: TKMMissionDifficulty = mdNone;
                              aAIType: TKMAIType = aitNone);
+
     procedure NewEmptyMap(aSizeX, aSizeY: Integer);
     procedure NewMapEditor(const aFullFilePath: UnicodeString; aMultiplayerLoadMode: Boolean); overload;
     procedure NewMapEditor(const aFullFilePath: UnicodeString; aSizeX: Integer = 0; aSizeY: Integer = 0;
                            aMapFullCRC: Cardinal = 0; aMapSimpleCRC: Cardinal = 0; aMultiplayerLoadMode: Boolean = False); overload;
+
     procedure NewReplay(const aFilePath: UnicodeString);
     procedure NewSaveAndReplay(const aSavPath, aRplPath: UnicodeString);
+
     function TryLoadSavePoint(aTick: Integer): Boolean;
     procedure LoadPrevSavePoint;
 
