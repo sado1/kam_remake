@@ -1,4 +1,4 @@
-unit KM_Game;
+﻿unit KM_Game;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -113,6 +113,8 @@ type
     procedure GameMPDisconnect(const aData: UnicodeString);
     procedure OtherPlayerDisconnected(aDefeatedPlayerHandId: Integer);
     function GetActiveHandIDs: TKMByteSet;
+
+    procedure RecalcMapCRC;
 
     function GetTickDuration: Single;
     procedure UpdateTickCounters;
@@ -322,7 +324,7 @@ begin
   if gMain <> nil then
     gMain.FormMain.SuppressAltForMenu := True;
 
-  fParams := TKMGameParams.Create(aGameMode, fSetGameTickEvent, fSetGameModeEvent, fSetMissionFileSP, fSetBlockPointer);
+  fParams := TKMGameParams.Create(aGameMode, RecalcMapCRC, fSetGameTickEvent, fSetGameModeEvent, fSetMissionFileSP, fSetBlockPointer);
 
   fSaveWorkerThread := aSaveWorkerThread;
   fBaseSaveWorkerThread := aBaseSaveWorkerThread;
@@ -518,8 +520,12 @@ begin
   gRes.Wares.ResetToDefaults;
 
   fParams.Name := aName;
+
+  fParams.MissionFullFilePath := aMissionFullFilePath;
+
   fParams.MapSimpleCRC := aSimpleCRC;
   fParams.MapFullCRC := aFullCRC;
+
   if aCampaign <> nil then
     fCampaignName := aCampaign.CampaignId
   else
@@ -952,6 +958,26 @@ end;
 procedure TKMGame.OtherPlayerDisconnected(aDefeatedPlayerHandId: Integer);
 begin
   gGame.GameInputProcess.CmdGame(gicGamePlayerDefeat, aDefeatedPlayerHandId);
+end;
+
+
+procedure TKMGame.RecalcMapCRC;
+var
+  mapInfo: TKMapInfo;
+  mapFolder: TKMapFolder;
+  fileDirName: string;
+begin
+  fileDirName := GetFileDirName(ExtractFileDir(fParams.MissionFullFilePath));
+  if DetermineMapFolder(fileDirName, mapFolder) then
+  begin
+    mapInfo := TKMapInfo.Create(GetFileDirName(fParams.MissionFullFilePath), True, mapFolder); //Force recreate map CRC
+    try
+      fParams.MapFullCRC := mapInfo.CRC;
+      fParams.MapSimpleCRC := mapInfo.MapAndDatCRC;
+    finally
+      mapInfo.Free;
+    end;
+  end;
 end;
 
 
@@ -1435,8 +1461,13 @@ var
   mapInfo: TKMapInfo;
   mapFolder: TKMapFolder;
   mapPath: string;
+  oldSimpleCRC, oldFullCRC: Cardinal;
 begin
-  if aPathName = '' then exit;
+  if aPathName = '' then Exit;
+
+  // Store old values, cause they will be updated after save
+  oldSimpleCRC := fParams.MapSimpleCRC;
+  oldFullCRC := fParams.MapFullCRC;
 
   // Prepare and save
 
@@ -1473,37 +1504,44 @@ begin
   begin
     // Update GameSettings for saved maps positions in list on MapEd menu
     mapInfo := TKMapInfo.Create(GetFileDirName(aPathName), True, mapFolder); //Force recreate map CRC
-    case mapInfo.MapFolder of
-      mfSP:       begin
-                    gGameSettings.MenuMapEdSPMapCRC := mapInfo.MapAndDatCRC;
-                    gGameSettings.MenuMapEdMapType := 0;
-                    // Update saved SP game list saved selected map position CRC if we resave this map
-                    if fParams.MapSimpleCRC = gGameSettings.MenuSPScenarioMapCRC then
-                      gGameSettings.MenuSPScenarioMapCRC := mapInfo.MapAndDatCRC;
-                    if fParams.MapSimpleCRC = gGameSettings.MenuSPMissionMapCRC then
-                      gGameSettings.MenuSPMissionMapCRC := mapInfo.MapAndDatCRC;
-                    if fParams.MapSimpleCRC = gGameSettings.MenuSPTacticMapCRC then
-                      gGameSettings.MenuSPTacticMapCRC := mapInfo.MapAndDatCRC;
-                    if fParams.MapSimpleCRC = gGameSettings.MenuSPSpecialMapCRC then
-                      gGameSettings.MenuSPSpecialMapCRC := mapInfo.MapAndDatCRC;
-                  end;
-      mfMP:       begin
-                    gGameSettings.MenuMapEdMPMapCRC := mapInfo.MapAndDatCRC;
-                    gGameSettings.MenuMapEdMPMapName := mapInfo.FileName;
-                    gGameSettings.MenuMapEdMapType := 1;
-                  end;
-      mfDL:       begin
-                    gGameSettings.MenuMapEdDLMapCRC := mapInfo.MapAndDatCRC;
-                    gGameSettings.MenuMapEdMapType := 2;
-                  end;
+    try
+      case mapInfo.MapFolder of
+        mfSP:       begin
+                      gGameSettings.MenuMapEdSPMapCRC := mapInfo.MapAndDatCRC;
+                      gGameSettings.MenuMapEdMapType := 0;
+                      // Update saved SP game list saved selected map position CRC if we resave this map
+                      if oldSimpleCRC = gGameSettings.MenuSPScenarioMapCRC then
+                        gGameSettings.MenuSPScenarioMapCRC := mapInfo.MapAndDatCRC;
+                      if oldSimpleCRC = gGameSettings.MenuSPMissionMapCRC then
+                        gGameSettings.MenuSPMissionMapCRC := mapInfo.MapAndDatCRC;
+                      if oldSimpleCRC = gGameSettings.MenuSPTacticMapCRC then
+                        gGameSettings.MenuSPTacticMapCRC := mapInfo.MapAndDatCRC;
+                      if oldSimpleCRC = gGameSettings.MenuSPSpecialMapCRC then
+                        gGameSettings.MenuSPSpecialMapCRC := mapInfo.MapAndDatCRC;
+                    end;
+        mfMP:       begin
+                      gGameSettings.MenuMapEdMPMapCRC := mapInfo.MapAndDatCRC;
+                      gGameSettings.MenuMapEdMPMapName := mapInfo.FileName;
+                      gGameSettings.MenuMapEdMapType := 1;
+                    end;
+        mfDL:       begin
+                      gGameSettings.MenuMapEdDLMapCRC := mapInfo.MapAndDatCRC;
+                      gGameSettings.MenuMapEdMapType := 2;
+                    end;
+      end;
+      // Update favorite map CRC if we resave favourite map with the same name
+      if fParams.Name = mapInfo.FileName then
+      begin
+        gGameSettings.FavouriteMaps.Replace(oldSimpleCRC, mapInfo.MapAndDatCRC);
+        gServerSettings.ServerMapsRoster.Replace(oldFullCRC, mapInfo.CRC);
+      end;
+
+      // Update CRC's after map save
+      fParams.MapSimpleCRC := mapInfo.MapAndDatCRC;
+      fParams.MapFullCRC := mapInfo.CRC;
+    finally
+      mapInfo.Free;
     end;
-    // Update favorite map CRC if we resave favourite map with the same name
-    if fParams.Name = mapInfo.FileName then
-    begin
-      gGameSettings.FavouriteMaps.Replace(fParams.MapSimpleCRC, mapInfo.MapAndDatCRC);
-      gServerSettings.ServerMapsRoster.Replace(fParams.MapFullCRC, mapInfo.CRC);
-    end;
-    mapInfo.Free;
   end;
 
   fParams.Name := TruncateExt(ExtractFileName(aPathName));
