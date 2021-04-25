@@ -149,7 +149,7 @@ type
                        aSaveWorkerThread: TKMWorkerThread; aBaseSaveWorkerThread: TKMWorkerThread; aAutoSaveWorkerThread: TKMWorkerThread);
     destructor Destroy; override;
 
-    procedure Start(const aMissionFile, aName: UnicodeString; aFullCRC, aSimpleCRC: Cardinal; aCampaign: TKMCampaign;
+    procedure Start(const aMissionFullFilePath, aName: UnicodeString; aFullCRC, aSimpleCRC: Cardinal; aCampaign: TKMCampaign;
                     aCampMap: Byte; aLocation: ShortInt; aColor: Cardinal; aMapDifficulty: TKMMissionDifficulty = mdNone;
                     aAIType: TKMAIType = aitNone; aAutoselectHumanLoc: Boolean = False);
 
@@ -493,7 +493,7 @@ end;
 
 
 // New mission
-procedure TKMGame.Start(const aMissionFile, aName: UnicodeString; aFullCRC, aSimpleCRC: Cardinal; aCampaign: TKMCampaign;
+procedure TKMGame.Start(const aMissionFullFilePath, aName: UnicodeString; aFullCRC, aSimpleCRC: Cardinal; aCampaign: TKMCampaign;
                             aCampMap: Byte; aLocation: ShortInt; aColor: Cardinal;
                             aMapDifficulty: TKMMissionDifficulty = mdNone; aAIType: TKMAIType = aitNone;
                             aAutoselectHumanLoc: Boolean = False);
@@ -530,13 +530,13 @@ begin
   if fParams.IsMultiPlayerOrSpec then
     fSetMissionFileSP('') //In MP map could be in DL or MP folder, so don't store path
   else
-    fSetMissionFileSP(ExtractRelativePath(ExeDir, aMissionFile));
+    fSetMissionFileSP(ExtractRelativePath(ExeDir, aMissionFullFilePath)); // We store relative path
 
   fLoadFromFileRel := '';
   fLastSaveFileRel := '';
   FreeAndNil(gMySpectator); //In case somebody looks at it while parsing DAT, e.g. destroyed houses
 
-  gLog.AddTime('Loading DAT file: ' + aMissionFile);
+  gLog.AddTime('Loading DAT file: ' + aMissionFullFilePath);
 
   //Disable players in MP to skip their assets from loading by MissionParser
   //In SP all players are enabled by default
@@ -575,13 +575,13 @@ begin
     //Mission loader needs to read the data into MapEd (e.g. FOW revealers)
     fMapEditor := TKMMapEditor.Create(False, fTerrainPainter, fMapEditorInterface.HistoryUndoRedo, fMapEditorInterface.HistoryAddCheckpoint);
     fMapEditor.OnEyedropper := fMapEditorInterface.GuiTerrain.GuiTiles.TilesTableSetTileTexId;
-    fMapEditor.DetectAttachedFiles(aMissionFile);
+    fMapEditor.DetectAttachedFiles(aMissionFullFilePath);
   end;
 
   parser := TKMMissionParserStandard.Create(parseMode, playerEnabled);
   try
     // Any fatal errors in parsing will be raised as exceptions and caught up higher
-    parser.LoadMission(aMissionFile);
+    parser.LoadMission(aMissionFullFilePath);
 
     if fParams.IsMapEditor then
     begin
@@ -653,25 +653,25 @@ begin
         campaignDataTypeFile := '';
       end;
 
-      fScripting.LoadFromFile(ChangeFileExt(aMissionFile, '.script'), campaignDataTypeFile, campaignData);
+      fScripting.LoadFromFile(ChangeFileExt(aMissionFullFilePath, '.script'), campaignDataTypeFile, campaignData);
       //fScripting reports compile errors itself now
     end;
 
     // MapTxtInfo should be loaded before MultiplayerRig, since we use map txt params there in UpdateHandState
-    fMapTxtInfo.LoadTXTInfo(ChangeFileExt(aMissionFile, '.txt'));
+    fMapTxtInfo.LoadTXTInfo(ChangeFileExt(aMissionFullFilePath, '.txt'));
 
     case fParams.Mode of
       gmMulti, gmMultiSpectate:
                 begin
                   fGameInputProcess := TKMGameInputProcess_Multi.Create(gipRecording);
                   fTextMission := TKMTextLibraryMulti.Create;
-                  fTextMission.LoadLocale(ChangeFileExt(aMissionFile, '.%s.libx'));
+                  fTextMission.LoadLocale(ChangeFileExt(aMissionFullFilePath, '.%s.libx'));
                 end;
       gmSingle, gmCampaign:
                 begin
                   fGameInputProcess := TKMGameInputProcess_Single.Create(gipRecording);
                   fTextMission := TKMTextLibraryMulti.Create;
-                  fTextMission.LoadLocale(ChangeFileExt(aMissionFile, '.%s.libx'));
+                  fTextMission.LoadLocale(ChangeFileExt(aMissionFullFilePath, '.%s.libx'));
                 end;
       gmMapEd:  ;
     end;
@@ -1067,7 +1067,7 @@ begin
     fSaveWorkerThread.fSynchronousExceptionMode := False;
   end;
 
-  missionFile := fParams.MissionFile;
+  missionFile := fParams.MissionFileRel;
   path := ExtractFilePath(ExeDir + missionFile);
 
   // Try to attach the dat+map
@@ -1573,7 +1573,7 @@ begin
     afOgg: ext := OGG_FILE_EXT;
   end;
 
-  Result := ExeDir + ChangeFileExt(fParams.MissionFile, '.' + UnicodeString(aSound) + ext);
+  Result := ExeDir + ChangeFileExt(fParams.MissionFileRel, '.' + UnicodeString(aSound) + ext);
 
   // Try to load Campaign specific audio file (not mission specific)
   if fParams.IsCampaign and (gGameApp.Campaigns.ActiveCampaign <> nil) and not FileExists(Result) then
@@ -2059,7 +2059,7 @@ begin
 
   //We need to know which mission/savegame to try to restart. This is unused in MP
   if not fParams.IsMultiPlayerOrSpec then
-    aBodyStream.WriteW(fParams.MissionFileSP);
+    aBodyStream.WriteW(fParams.MissionFileRelSP);
 
   fUIDTracker.Save(aBodyStream); //Units-Houses ID tracker
   aBodyStream.Write(GetKaMSeed); //Include the random seed in the save file to ensure consistency in replays

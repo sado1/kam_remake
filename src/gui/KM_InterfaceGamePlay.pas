@@ -1718,8 +1718,8 @@ begin
   if gGameParams.IsNormalGame then // Don't play Victory / Defeat videos for specs
   begin
     case aMsg of
-      grWin:              gVideoPlayer.AddMissionVideo(gGameParams.MissionFile, 'Victory');
-      grDefeat, grCancel: gVideoPlayer.AddMissionVideo(gGameParams.MissionFile, 'Defeat');
+      grWin:              gVideoPlayer.AddMissionVideo(gGameParams.MissionFileRel, 'Victory');
+      grDefeat, grCancel: gVideoPlayer.AddMissionVideo(gGameParams.MissionFileRel, 'Defeat');
     end;
     gVideoPlayer.Play;
   end;
@@ -1772,15 +1772,14 @@ end;
 
 procedure TKMGamePlayInterface.Menu_ReturnToMapEd(Sender: TObject);
 var
-  missionPath, gameName: UnicodeString;
+  missionRelPath: UnicodeString;
   isMultiplayer: Boolean;
 begin
   isMultiplayer := gGame.StartedFromMapEdAsMPMap;
-  missionPath := gGameParams.MissionFile;
-  gameName := gGameParams.Name;
+  missionRelPath := gGameParams.MissionFileRel;
   FreeThenNil(gGame);
   // current TKMGamePlayInterface object is destroyed, be careful
-  gGameApp.NewMapEditor(missionPath, 0, 0, TKMapsCollection.GetMapCRC(missionPath), 0, isMultiplayer);
+  gGameApp.NewMapEditor(ExeDir + missionRelPath, 0, 0, TKMapsCollection.GetMapCRC(ExeDir + missionRelPath), 0, isMultiplayer);
 end;
 
 

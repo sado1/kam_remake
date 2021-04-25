@@ -169,7 +169,7 @@ procedure TKMMapEdMenuResize.Resize_Click(Sender: TObject);
 type
   TDir4 = (dLeft, dTop, dRight, dBottom);
 var
-  SaveName: string;
+  saveNameFullPath: string;
   left, top, right, bot: Integer;
   DIR4: TDir4;
   rRect: array[TDir4] of TKMRect;
@@ -181,11 +181,11 @@ begin
 
   gGame.TerrainPainter.FixTerrainKindInfoAtBorders(False);
 
-  SaveName := TKMapsCollection.FullPath(gGameParams.Name, '.dat', fIsMultiplayer);
-  gGame.SaveMapEditor(SaveName, KMRect(NumEdit_Resize_Left.Value,  NumEdit_Resize_Top.Value,
+  saveNameFullPath := TKMapsCollection.FullPath(gGameParams.Name, '.dat', fIsMultiplayer);
+  gGame.SaveMapEditor(saveNameFullPath, KMRect(NumEdit_Resize_Left.Value,  NumEdit_Resize_Top.Value,
                                        NumEdit_Resize_Right.Value, NumEdit_Resize_Bottom.Value));
   FreeThenNil(gGame);
-  gGameApp.NewMapEditor(SaveName);
+  gGameApp.NewMapEditor(saveNameFullPath);
 
   // Collect generated map areas
   rRect[dLeft]   := KMRect(1, top + 1, left, gTerrain.MapY - bot);
@@ -204,7 +204,7 @@ begin
   end;
 
   // Save changes
-  gGame.SaveMapEditor(SaveName);
+  gGame.SaveMapEditor(saveNameFullPath);
 end;
 
 

@@ -20,7 +20,7 @@ type
     fName: UnicodeString;
     fMapSimpleCRC: Cardinal; //CRC of map (based on Map and Dat) used in MapEd
     fMapFullCRC: Cardinal; //CRC of map for reporting stats to master server. Also used in MapEd
-    fMissionFileSP: UnicodeString; //Relative pathname to mission we are playing, so it gets saved to crashreport. SP only, see GetMissionFile.
+    fMissionFileRelSP: UnicodeString; //Relative pathname to mission we are playing, so it gets saved to crashreport. SP only, see GetMissionFile.
 
     fMissionDifficulty: TKMMissionDifficulty;
 
@@ -30,8 +30,8 @@ type
 
     procedure SetTick(aGameTick: Cardinal);
     procedure SetMode(aGameMode: TKMGameMode);
-    function GetMissionFile: UnicodeString;
-    procedure SetMissionFileSP(const aMissionFileSP: UnicodeString);
+    function GetMissionFileRel: UnicodeString;
+    procedure SetMissionFileSP(const aMissionFileRelSP: UnicodeString);
 
     function GetDynamicFOW: Boolean;
     procedure SetDynamicFOW(const aDynamicFOW: Boolean);
@@ -49,8 +49,8 @@ type
     property Name: UnicodeString read fName write fName;
     property MapSimpleCRC: Cardinal read fMapSimpleCRC write fMapSimpleCRC;
     property MapFullCRC: Cardinal read fMapFullCRC write fMapFullCRC;
-    property MissionFileSP: UnicodeString read fMissionFileSP;
-    property MissionFile: UnicodeString read GetMissionFile;
+    property MissionFileRelSP: UnicodeString read fMissionFileRelSP;
+    property MissionFileRel: UnicodeString read GetMissionFileRel;
     property MissionDifficulty: TKMMissionDifficulty read fMissionDifficulty write fMissionDifficulty;
     property DynamicFOW: Boolean read GetDynamicFOW write SetDynamicFOW;
     property BlockPointerOperations: Boolean read fBlockPointerOperations;
@@ -135,13 +135,9 @@ begin
 end;
 
 
-function TKMGameParams.GetMissionFile: UnicodeString;
+function TKMGameParams.GetMissionFileRel: UnicodeString;
 begin
-  if not IsMultiplayer then
-    Result := MissionFileSP //In SP we store it
-  else
-    //In MP we can't store it since it will be MapsMP or MapsDL on different clients
-    Result := GuessMPPath(fName, '.dat', fMapFullCRC);
+  Result := GuessMissionPathRel(fMissionFileRelSP, fName, fMapFullCRC, IsMultiplayer);
 end;
 
 
@@ -169,9 +165,9 @@ begin
 end;
 
 
-procedure TKMGameParams.SetMissionFileSP(const aMissionFileSP: UnicodeString);
+procedure TKMGameParams.SetMissionFileSP(const aMissionFileRelSP: UnicodeString);
 begin
-  fMissionFileSP := aMissionFileSP;
+  fMissionFileRelSP := aMissionFileRelSP;
 end;
 
 
@@ -261,3 +257,4 @@ end;
 
 
 end.
+

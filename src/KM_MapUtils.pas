@@ -2,14 +2,15 @@ unit KM_MapUtils;
 {$I KaM_Remake.inc}
 interface
 
-  function GuessMPPath(const aName, aExt: string; aCRC: Cardinal): string;
+  function GuessMPPathRel(const aName, aExt: string; aCRC: Cardinal): string;
+  function GuessMissionPathRel(const aMissionFileRelSP, aMissionName: string; aMapFullCRC: Cardinal; aIsMultiplayer: Boolean): string;
 
 implementation
 uses
   SysUtils,
   KM_Defaults, KM_MapTypes;
 
-function GuessMPPath(const aName, aExt: string; aCRC: Cardinal): string;
+function GuessMPPathRel(const aName, aExt: string; aCRC: Cardinal): string;
 var
   S: UnicodeString;
 begin
@@ -17,6 +18,16 @@ begin
   Result := MAP_FOLDER[mfDL] + PathDelim + S + PathDelim + S + aExt;
   if not FileExists(ExeDir + Result) then
     Result := MAP_FOLDER[mfMP] + PathDelim + aName + PathDelim + aName + aExt;
+end;
+
+
+function GuessMissionPathRel(const aMissionFileRelSP, aMissionName: string; aMapFullCRC: Cardinal; aIsMultiplayer: Boolean): string;
+begin
+  if aIsMultiplayer then
+    //In MP we can't store it since it will be MapsMP or MapsDL on different clients
+    Result := GuessMPPathRel(aMissionName, '.dat', aMapFullCRC)
+  else
+    Result := aMissionFileRelSP; //In SP we store it
 end;
 
 
