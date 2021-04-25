@@ -376,7 +376,7 @@ uses
   KM_GameTypes, KM_GameParams, KM_Video, KM_Music,
   KM_HandEntityHelper,
   KM_ResTypes,
-  KM_Utils;
+  KM_Utils, KM_MapUtils;
 
 const
   ALLIES_ROWS = 7;

@@ -38,7 +38,7 @@ type
 implementation
 uses
   KM_ResTexts, KM_Game, KM_GameApp, KM_RenderUI, KM_ResFonts, KM_InterfaceGame,
-  KM_InterfaceMapEditor, KM_Defaults;
+  KM_InterfaceMapEditor, KM_Defaults, KM_MapTypes;
 
 
 { TKMMapEdMenuLoad }

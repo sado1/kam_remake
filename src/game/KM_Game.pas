@@ -1,4 +1,4 @@
-﻿unit KM_Game;
+unit KM_Game;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -68,7 +68,7 @@ type
     fLastReplayTickLocal: Cardinal; // stored / loaded in the .sloc file, if available
     fSkipReplayEndCheck: Boolean;
 
-    //DO not save
+    //Do not save
     fSpeedChangeTick: Single;
     fSpeedChangeTime: Cardinal; //time of last game speed change
     fPausedTicksCnt: Cardinal;
@@ -302,7 +302,8 @@ uses
   KM_Log, KM_ScriptingEvents, KM_Saves, KM_FileIO, KM_CommonUtils, KM_RandomChecks, KM_DevPerfLog, KM_DevPerfLogTypes,
   KM_NetPlayersList,
   KM_HandTypes,
-  KM_ServerSettings;
+  KM_ServerSettings,
+  KM_MapUtils;
 
 const
   LAST_SAVES_MAX_CNT = 5; // Max number of save names to collect for crashreport
