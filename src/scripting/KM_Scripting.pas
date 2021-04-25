@@ -84,6 +84,10 @@ type
 
   TKMScriptingPreProcessor = class
   private
+    // in silent mode we don't parse event handlers and console commands
+    // since we affect global variables gScriptEvents
+    // but still parse LoadCustomTHTroopCost LoadCustomMarketGoldPrice, since they could be used in TKMapInfo.Create
+    fSilentMode: Boolean;
     fDestroyErrorHandler: Boolean;
     fScriptFilesInfo: TKMScriptFilesCollection;
     fErrorHandler: TKMScriptErrorHandler;
@@ -103,7 +107,7 @@ type
     procedure ScriptOnProcessDirective(Sender: TPSPreProcessor; Parser: TPSPascalPreProcessorParser; const Active: Boolean;
                                         const DirectiveName, DirectiveParam: tbtString; var aContinue: Boolean);
   public
-    constructor Create; overload;
+    constructor Create(aSilentMode: Boolean = False); overload;
     constructor Create(aOnScriptError: TUnicodeStringEvent); overload;
     constructor Create(aOnScriptError: TUnicodeStringEvent; aErrorHandler: TKMScriptErrorHandler); overload;
     destructor Destroy; override;
@@ -2090,12 +2094,13 @@ end;
 
 
 {TKMScriptingPreProcessor}
-constructor TKMScriptingPreProcessor.Create;
+constructor TKMScriptingPreProcessor.Create(aSilentMode: Boolean = False);
 var
   onScriptError: TUnicodeStringEvent;
 begin
   onScriptError := nil;
   Create(onScriptError);
+  fSilentMode := aSilentMode; // After overloaded Create call
 end;
 
 
@@ -2109,6 +2114,8 @@ end;
 constructor TKMScriptingPreProcessor.Create(aOnScriptError: TUnicodeStringEvent; aErrorHandler: TKMScriptErrorHandler);
 begin
   inherited Create;
+
+  fSilentMode := False;
 
   fPSPreProcessor := TPSPreProcessor.Create;
   fPSPreProcessor.OnNeedFile := ScriptOnNeedFile;
@@ -2253,6 +2260,9 @@ const
     begin
       aContinue := False; //Custom directive should not be proccesed any further by pascal script preprocessor, as it will cause an error
 
+      // Skip event handlers in silent mode
+      if fSilentMode then Exit;
+
       //Do not do anything for while in MapEd
       //But we have to allow to preprocess file, as preprocessed file used for CRC calc in MapEd aswell
       //gGame could be nil here, but that does not change final CRC, so we can Exit
@@ -2299,6 +2309,9 @@ const
       or (UpperCase(DirectiveName) = UpperCase(CUSTOM_CONSOLE_COMMAND_DIRECTIVE_SHORT)) then
     begin
       aContinue := False; //Custom directive should not be proccesed any further by pascal script preprocessor, as it will cause an error
+
+      // Skip console commands in silent mode
+      if fSilentMode then Exit;
 
       //Do not do anything for while in MapEd
       //But we have to allow to preprocess file, as preprocessed file used for CRC calc in MapEd aswell
