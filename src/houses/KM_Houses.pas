@@ -551,8 +551,9 @@ begin
   fNeedIssueOrderCompletedMsg := False;
   fOrderCompletedMsgIssued := False;
 
-  //ByDefault allow to show all human player houses to allies, or AI's not in Campaign and on SP maps
-  AllowAllyToSelect := gHands[Owner].IsHuman or not gGameParams.IsSingleplayerGame;
+  // By default allow to show all houses to allies for locs, where human could play
+  // Do not show AI-only frienly loc houses (they could have thousands of wares)
+  AllowAllyToSelect :=  gHands[Owner].IsHuman or gHands[Owner].CanBeHuman;
 
   if aBuildState = hbsDone then //House was placed on map already Built e.g. in mission maker
   begin
