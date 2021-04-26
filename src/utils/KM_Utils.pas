@@ -38,7 +38,7 @@ uses
 
   procedure IterateOverArea(const aStartCell: TKMPoint; aSize: Integer; aIsSquare: Boolean; aOnCell: TPointEventSimple; aAroundArea: Boolean = False);
 
-  function DetermineLocaledFilePath(aPath: string; aLocale, aExt: AnsiString): string;
+  function GetLocalizedFilePath(aPath: string; aLocale, aExt: AnsiString): string;
 
 
 implementation
@@ -338,7 +338,7 @@ end;
 
 
 // Try to find path to file with local suffixes, f.e. TSK01.waterfall.eng.wav
-function DetermineLocaledFilePath(aPath: string; aLocale, aExt: AnsiString): string;
+function GetLocalizedFilePath(aPath: string; aLocale, aExt: AnsiString): string;
 begin
   Result := aPath + '.' + String(aLocale) + String(aExt); // Try to file with our locale first
   if FileExists(Result) then

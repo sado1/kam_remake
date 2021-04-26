@@ -799,7 +799,7 @@ begin
   Assert(gGameApp <> nil, 'gGameApp = nil!');
   Assert(gGameSettings <> nil, 'gGameSettings = nil!');
 
-  Result := DetermineLocaledFilePath(fPath + fFileName, gGameSettings.Locale, '.pdf');
+  Result := GetLocalizedFilePath(fPath + fFileName, gGameSettings.Locale, '.pdf');
 end;
 
 

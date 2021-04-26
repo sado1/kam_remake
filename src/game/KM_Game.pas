@@ -1609,14 +1609,14 @@ const
 var
   camp: TKMCampaign;
 begin
-  Result := DetermineLocaledFilePath(ExeDir + ChangeFileExt(fParams.MissionFileRel, '.' + string(aSound)),
+  Result := GetLocalizedFilePath(ExeDir + ChangeFileExt(fParams.MissionFileRel, '.' + string(aSound)),
                                  gGameSettings.Locale, AUDIO_EXT[aAudioFormat]);
 
   // Try to load Campaign specific audio file in the campaign Sounds folder (not mission specific)
   if fParams.IsCampaign and (gGameApp.Campaigns.ActiveCampaign <> nil) and not FileExists(Result) then
   begin
     camp := gGameApp.Campaigns.ActiveCampaign;
-    Result := DetermineLocaledFilePath(camp.Path + CAMPAIGN_SOUNDS_FOLDER_NAME + PathDelim + camp.ShortName + '.' + UnicodeString(aSound),
+    Result := GetLocalizedFilePath(camp.Path + CAMPAIGN_SOUNDS_FOLDER_NAME + PathDelim + camp.ShortName + '.' + UnicodeString(aSound),
                                    gGameSettings.Locale, AUDIO_EXT[aAudioFormat]);
   end;
 end;
