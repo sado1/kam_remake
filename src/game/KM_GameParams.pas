@@ -30,7 +30,9 @@ type
 
     fOnRecalcMapCRC: TEvent;
 
-    //Do not save
+    // Do not saved fields
+    // fMissionFullFilePath is not saved, so its only available when player start game, f.e. in the MapEditor
+    // not available on game load, since we could not have the mission files at all, but only sve files
     fMissionFullFilePath: string;
 
     procedure SetTick(aGameTick: Cardinal);

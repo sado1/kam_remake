@@ -1787,6 +1787,7 @@ begin
     mapFullCRC := gGameParams.MapFullCRC;
   end;
 
+  // gGameParams.MissionFullFilePath is available for MapEd, since we start game in MapEd (not load it)
   missionFullPath := gGameParams.MissionFullFilePath;
   FreeThenNil(gGame);
   // current TKMGamePlayInterface object is destroyed, use only local variables here
