@@ -89,7 +89,7 @@ uses
   Classes, Forms,
   {$IFDEF MSWindows} MMSystem, {$ENDIF}
   {$IFDEF USE_MAD_EXCEPT} KM_Exceptions, {$ENDIF}
-  SysUtils, StrUtils, Math, KromUtils, KM_FileIO,
+  SysUtils, SysConst, StrUtils, Math, KromUtils, KM_FileIO,
   KM_GameApp, KM_Helpers,
   KM_Log, KM_CommonUtils, KM_Defaults, KM_Points, KM_DevPerfLog,
   KM_CommonExceptions,
@@ -100,6 +100,7 @@ const
   // Mutex is used to block duplicate app launch on the same PC
   // Random GUID generated in Delphi by Ctrl+G
   KAM_MUTEX = '07BB7CC6-33F2-44ED-AD04-1E255E0EDF0D';
+
 
 { TKMMain }
 constructor TKMMain.Create;
@@ -139,6 +140,24 @@ begin
 end;
 
 
+// Assertion error handler
+procedure CustomAssertErrorHandler(const Message, Filename: string; LineNumber: Integer; ErrorAddr: Pointer);
+var
+  fileNameOnly: string;
+begin
+  // Show only filename in the error message
+  fileNameOnly := ExtractFileName(Filename);
+
+  if Message <> '' then
+    raise EAssertionFailed.CreateFmt(SAssertError,
+      [Message, fileNameOnly, LineNumber]) at ErrorAddr
+  else
+    raise EAssertionFailed.CreateFmt(SAssertError,
+      [SAssertionFailed, fileNameOnly, LineNumber]) at ErrorAddr;
+end;
+
+
+
 // Return False in case we had difficulties on the start
 function TKMMain.Start: Boolean;
 
@@ -158,6 +177,12 @@ var
   logsPath: UnicodeString;
 begin
   Result := True;
+
+  ExeDir := ExtractFilePath(ParamStr(0));
+
+  // Set custom AssertErrorhandler to avoid dev paths in the error messages, which could be seen by players
+  AssertErrorProc := @CustomAssertErrorHandler;
+
   //Random is only used for cases where order does not matter, e.g. shuffle tracks
   Randomize;
 
@@ -168,8 +193,6 @@ begin
   {$IFDEF MSWindows}
   TimeBeginPeriod(1); //initialize timer precision
   {$ENDIF}
-
-  ExeDir := ExtractFilePath(ParamStr(0));
 
   if not BLOCK_FILE_WRITE then
   begin
