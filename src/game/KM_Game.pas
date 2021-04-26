@@ -305,7 +305,7 @@ uses
   KM_NetPlayersList,
   KM_HandTypes,
   KM_ServerSettings,
-  KM_MapUtils;
+  KM_MapUtils, KM_Utils;
 
 const
   LAST_SAVES_MAX_CNT = 5; // Max number of save names to collect for crashreport
@@ -1603,22 +1603,21 @@ end;
 
 
 function TKMGame.GetScriptSoundFilePath(const aSound: AnsiString; aAudioFormat: TKMAudioFormat): UnicodeString;
+const
+  AUDIO_EXT: array[TKMAudioFormat] of AnsiString = (WAV_FILE_EXT, OGG_FILE_EXT);
+
 var
-  ext: UnicodeString;
   camp: TKMCampaign;
 begin
-  case aAudioFormat of
-    afWav: ext := WAV_FILE_EXT;
-    afOgg: ext := OGG_FILE_EXT;
-  end;
+  Result := DetermineLocaledFilePath(ExeDir + ChangeFileExt(fParams.MissionFileRel, '.' + string(aSound)),
+                                 gGameSettings.Locale, AUDIO_EXT[aAudioFormat]);
 
-  Result := ExeDir + ChangeFileExt(fParams.MissionFileRel, '.' + UnicodeString(aSound) + ext);
-
-  // Try to load Campaign specific audio file (not mission specific)
+  // Try to load Campaign specific audio file in the campaign Sounds folder (not mission specific)
   if fParams.IsCampaign and (gGameApp.Campaigns.ActiveCampaign <> nil) and not FileExists(Result) then
   begin
     camp := gGameApp.Campaigns.ActiveCampaign;
-    Result := ExeDir + camp.Path + CAMPAIGN_SOUNDS_FOLDER_NAME + PathDelim + camp.ShortName + '.' + UnicodeString(aSound) + ext;
+    Result := DetermineLocaledFilePath(camp.Path + CAMPAIGN_SOUNDS_FOLDER_NAME + PathDelim + camp.ShortName + '.' + UnicodeString(aSound),
+                                   gGameSettings.Locale, AUDIO_EXT[aAudioFormat]);
   end;
 end;
 

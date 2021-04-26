@@ -188,7 +188,7 @@ begin
     repeat
       if (SearchRec.Name <> '.') and (SearchRec.Name <> '..')
       and (SearchRec.Attr and faDirectory = faDirectory)
-      and FileExists(aPath + SearchRec.Name + PathDelim+'info.cmp') then
+      and FileExists(aPath + SearchRec.Name + PathDelim + 'info.cmp') then
         AddCampaign(aPath + SearchRec.Name + PathDelim);
     until (FindNext(SearchRec) <> 0);
   finally
@@ -324,8 +324,8 @@ end;
 
 procedure TKMCampaignsCollection.Load;
 begin
-  ScanFolder({ExeDir +} CAMPAIGNS_FOLDER_NAME + PathDelim);
-  LoadProgress({ExeDir +} SAVES_FOLDER_NAME + PathDelim + 'Campaigns.dat');
+  ScanFolder(ExeDir + CAMPAIGNS_FOLDER_NAME + PathDelim);
+  LoadProgress(ExeDir + SAVES_FOLDER_NAME + PathDelim + 'Campaigns.dat');
 end;
 
 
