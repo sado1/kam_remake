@@ -1957,15 +1957,28 @@ end;
 
 //@Rey: When signature changes it is good to update the description too (with new version and sometimes reference to old name)
 //* Version: 10940
-//* Allows allies to view all houses of specified player
+//* Allows allies to view all houses of specified player, or for all players, if aPlayer is -1
 procedure TKMScriptActions.HouseAllowAllyToSelectAll(aPlayer: ShortInt; aAllow: Boolean);
+
+  procedure SetAllowAllyToHand(aHandID: ShortInt);
+  var
+    I: Integer;
+  begin
+    if gHands[aHandID].Enabled then
+      for I := 0 to gHands[aHandID].Houses.Count - 1 do
+        gHands[aHandID].Houses[I].AllowAllyToSelect := aAllow
+  end;
+
 var
   I: Integer;
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
-      for I := 0 to gHands[aPlayer].Houses.Count - 1 do
-        gHands[aPlayer].Houses[I].AllowAllyToSelect := aAllow
+    if aPlayer = PLAYER_NONE then
+      for I := 0 to gHands.Count - 1 do
+        SetAllowAllyToHand(I)
+    else
+    if InRange(aPlayer, 0, gHands.Count - 1) then
+      SetAllowAllyToHand(aPlayer)
     else
       LogParamWarning('Actions.HouseAllowAllyToSelectAll', [aPlayer, Byte(aAllow)]);
   except
