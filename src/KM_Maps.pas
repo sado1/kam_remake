@@ -795,8 +795,6 @@ end;
 
 
 function TKMapInfo.DetermineReadmeFilePath: String;
-var
-  path: String;
 begin
   Assert(gGameApp <> nil, 'gGameApp = nil!');
   Assert(gGameSettings <> nil, 'gGameSettings = nil!');
