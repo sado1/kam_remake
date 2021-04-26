@@ -139,6 +139,7 @@ type
     fIDCache: TKMScriptingIdCache;
     fUtils: TKMScriptUtils;
 
+    function IsScriptCodeNeedToCompile: Boolean;
     procedure AddError(aMsg: TPSPascalCompilerMessage);
     procedure CompileScript;
     procedure LinkRuntime;
@@ -312,12 +313,27 @@ begin
 end;
 
 
+// Use separate function to check if script is worth to compile
+// Compilation will add 6 global vars for States/Actions/Utils/S/A/U
+// So we have to compile or not compile script in both LoadFromFile and Load procedures
+// to have no problems with number of global variables declared
+function TKMScripting.IsScriptCodeNeedToCompile: Boolean;
+begin
+  // No need to colpile script if its empty
+  Result := Trim(fScriptCode) <> '';
+end;
+
+
 procedure TKMScripting.LoadFromFile(const aFileName, aCampaignDataTypeFile: UnicodeString; aCampaignData: TKMemoryStream);
 begin
   RecreateValidationIssues;
 
   if not fPreProcessor.PreProcessFile(aFileName, fScriptCode) then
     Exit; // Continue only if PreProcess was successful;
+
+  // Do not continue compilation, if not needed, same as we do in Load procedure
+  if not IsScriptCodeNeedToCompile then
+    Exit;
 
   //Parse console commands procedures
   if gScriptEvents.HasConsoleCommands then
@@ -1009,8 +1025,7 @@ begin
         //Something is wrong, show an error
         //todo: Sender.MakeError reports the wrong line number so the user has no idea what the error is
         Sender.MakeError(PROCS[I].Names, ecTypeMismatch, '');
-        Result := False;
-        Exit;
+        Exit(False);
       end;
 end;
 
@@ -1732,7 +1747,8 @@ begin
   gScriptEvents.Load(LoadStream);
   fIDCache.Load(LoadStream);
 
-  if fScriptCode <> '' then
+  // Do not compile script code, if not needed, same as we do in LoadFromFile procedure
+  if IsScriptCodeNeedToCompile then
     CompileScript;
 
   LoadStream.CheckMarker('ScriptVars');
@@ -2211,7 +2227,7 @@ begin
   if not FileExists(aFileName) then
   begin
     gLog.AddNoTime(aFileName + ' was not found. It is okay for mission to have no dynamic scripts.');
-    Exit;
+    Exit(False);
   end;
 
   mainScriptCode := ReadTextA(aFileName);
