@@ -1618,7 +1618,7 @@ begin
   if fParams.IsCampaign and (gGameApp.Campaigns.ActiveCampaign <> nil) and not FileExists(Result) then
   begin
     camp := gGameApp.Campaigns.ActiveCampaign;
-    Result := ExeDir + camp.Path + camp.ShortName + '.' + UnicodeString(aSound) + ext;
+    Result := ExeDir + camp.Path + CAMPAIGN_SOUNDS_FOLDER_NAME + PathDelim + camp.ShortName + '.' + UnicodeString(aSound) + ext;
   end;
 end;
 
