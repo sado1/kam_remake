@@ -76,3 +76,28 @@ Version 0.8.3d
 Version 0.8.3e
 - Fixed a bug that was introduced with KaM Remake version r10745
 - Integrated newest version of "difficulty.script" (0.8.5b)
+
+Version 0.8.4 (29.08.2020)
+- Increased MapSize by 32 Tiles between Players and AI (Changes to map and script made accordingly)
+- Removed Version Data from *.libx-Files
+- Various Difficulty settings rebalanced: 1st Attack now comes later, but attacks are more frequent
+- Adjusted Defense Radius of various Defense Positions (Player4 and Player6 especially)
+- Adjusted Starting and Recruits per Houses Amount of all AI Players
+- Added Equipment to Player4s Barracks that were missing before
+- Added Stones to Player4s Towers
+- Added 1 Mining Spot for Player0
+- Increased Forest Density for Human Players
+- Increased amount of Stone in Mountain of Player1
+- Removed obsolete revealers on Players Storehouses
+- Added Message to Player at Gamestart
++ Added console commands
+  - Show availible commands: /cmd
+  - Revealers of Deposits are now gated behind script command: /showmydeposits
+
+Version 0.8.4b (03.09.2020)
+- Minor elevation and texturing changes of newly added Hill north of Player0s location
+- Added Block Walking to Hill-tiles
+- Used new tiles to blend 3-tile-transitions
+
+Version 0.8.4c (01.04.2021)
+- Increased Defense Radius of most enemy groups

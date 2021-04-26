@@ -270,8 +270,8 @@ var
 	h2: Word;
 begin
 	//Define Modifiers [Easy3, Easy2, Easy1, Normal, Hard1, Hard2, Hard3]
-	EquipRateMod := [1.6, 1.4, 1.25, 1, 0.75, 0.5, 0.4]; //Schools are usually the limiting factor
-	RecruitDelayMod := [1.6, 1.4, 1.25, 1, 1, 1, 1];
+	EquipRateMod := [3, 2, 1.5, 1, 0.75, 0.5, 0.3]; //Schools are usually the limiting factor
+	RecruitDelayMod := [1, 1, 1, 1, 1, 1, 1];
 	RecruitLimitMod := [1, 1, 1, 1, 1.33, 1.66, 2];
 	WorkerLimitMod := [1, 1, 1, 1, 1.33, 1.66, 2];
 	
