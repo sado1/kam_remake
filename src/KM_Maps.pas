@@ -253,7 +253,7 @@ uses
   KromShellUtils, KromUtils,
   KM_GameApp, KM_GameSettings, KM_FileIO,
   KM_MissionScript_Info, KM_Scripting,
-  KM_CommonUtils, KM_Log, KM_MapUtils;
+  KM_CommonUtils, KM_Log, KM_MapUtils, KM_Utils;
 
 const
   MAP_TXT_INFO_MARKER = 'MapTxtInfo';
@@ -801,22 +801,7 @@ begin
   Assert(gGameApp <> nil, 'gGameApp = nil!');
   Assert(gGameSettings <> nil, 'gGameSettings = nil!');
 
-  Result := '';
-  path := fPath + fFileName + '.' + String(gGameSettings.Locale) + '.pdf'; // Try to file with our locale first
-  if FileExists(path) then
-    Result := path
-  else
-  begin
-    path := fPath + fFileName + '.' + String(DEFAULT_LOCALE) + '.pdf'; // then with default locale
-    if FileExists(path) then
-      Result := path
-    else
-    begin
-      path := fPath + fFileName + '.pdf'; // and finally without any locale
-      if FileExists(path) then
-        Result := path;
-    end;
-  end;
+  Result := DetermineLocaledFilePath(fPath + fFileName, gGameSettings.Locale, '.pdf');
 end;
 
 
