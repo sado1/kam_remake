@@ -58,7 +58,7 @@ type
 
     Button_RMG_Generate_New_Seed: TKMButton;
     Button_RMG_Generate: TKMButton;
-    Button_RMG_Cancel: TKMButton;
+    Button_RMG_Close: TKMButton;
   public
     constructor Create(aParent: TKMPanel; aMinimap: TKMMinimap = nil; aMP: Boolean = False);
     destructor Destroy; override;
@@ -563,9 +563,9 @@ begin
   Button_RMG_Generate := TKMButton.Create(Panel_RMG, columnX-160-10, columnY, 160, 30, gResTexts[TX_MAPED_RMG_SETTINGS_GENERATE_MAP], bsMenu);
   Button_RMG_Generate.OnClick := RMG_Generate_Map;
   Button_RMG_Generate.Hint := gResTexts[TX_MAPED_RMG_SETTINGS_GENERATE_MAP_HINT];
-  Button_RMG_Cancel := TKMButton.Create(Panel_RMG, columnX, columnY, 150, 30, gResTexts[TX_MAPED_CANCEL], bsMenu);
-  Button_RMG_Cancel.OnClick := RMG_Close;
-  Button_RMG_Cancel.Hint := gResTexts[TX_MAPED_RMG_SETTINGS_CLOSE_RMG_HINT];
+  Button_RMG_Close := TKMButton.Create(Panel_RMG, columnX, columnY, 150, 30, gResTexts[TX_MAPED_CLOSE], bsMenu);
+  Button_RMG_Close.OnClick := RMG_Close;
+  Button_RMG_Close.Hint := gResTexts[TX_MAPED_RMG_SETTINGS_CLOSE_RMG_HINT];
 
 
   {$IFDEF DEBUG_RMG}
