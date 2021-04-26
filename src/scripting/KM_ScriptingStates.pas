@@ -550,7 +550,7 @@ begin
 end;
 
 
-//* Version 12600
+//* Version: 12600
 //* Returns current campaing mission number or -1 if this is not a campaign mission
 //* First mission got ID = 1
 function TKMScriptStates.CampaignMissionID: Integer;
@@ -571,7 +571,7 @@ begin
 end;
 
 
-//* Version 12600
+//* Version: 12600
 //* Returns current campaign missions count or -1 if this is not a campaign mission
 function TKMScriptStates.CampaignMissionsCount: Integer;
 begin
@@ -591,7 +591,7 @@ begin
 end;
 
 
-//* Version 12600
+//* Version: 12600
 //* Returns current campaign unlocked mission number or -1 if this is not a campaign mission
 //* Mission numbers starts from 1
 function TKMScriptStates.CampaignUnlockedMissionID: Integer;
@@ -1638,7 +1638,6 @@ begin
 end;
 
 
-//@Rey: When signature changes it is good to update the description too (with new version and sometimes reference to old name)
 //* Version: 10940
 //* Return if specified house is allowed to be selected and viewed by his allies
 function TKMScriptStates.HouseAllowAllyToSelect(aHouseID: Integer): Boolean;
