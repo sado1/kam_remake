@@ -1188,6 +1188,8 @@ type
     fItemHeight: Byte;
     fItemIndex: Integer;
     fItems: TStringList;
+    fMouseOverRow: SmallInt;
+    fShowHintWhenShort: Boolean;
     fSeparatorPositions: array of Integer;
     fSeparatorHeight: Byte;
     fSeparatorColor: TColor4;
@@ -1201,6 +1203,13 @@ type
     function GetItem(aIndex: Integer): UnicodeString;
     function GetSeparatorPos(aIndex: Integer): Integer;
     function GetItemTop(aIndex: Integer): Integer;
+
+    procedure UpdateMouseOverPosition(X, Y: Integer);
+    function GetPaintWidth: Integer;
+    function GetRenderTextWidth: Integer;
+
+    property PaintWidth: Integer read GetPaintWidth;
+    property RenderTextWidth: Integer read GetRenderTextWidth;
   protected
     procedure SetLeft(aValue: Integer); override;
     procedure SetTop(aValue: Integer); override;
@@ -1209,6 +1218,7 @@ type
     procedure SetVisible(aValue: Boolean); override;
     function GetSelfWidth: Integer; override;
     function DoHandleMouseWheelByDefault: Boolean; override;
+    function GetHint: UnicodeString; override;
     //TKMSearchableList
     function CanSearch: Boolean; override;
     function GetRowCount: Integer; override;
@@ -1242,6 +1252,8 @@ type
     property ItemHeight: Byte read fItemHeight write SetItemHeight; //Accessed by DropBox
     property Items: TStringList read fItems;
     procedure UpdateScrollBar;
+
+    property ShowHintWhenShort: Boolean read fShowHintWhenShort write fShowHintWhenShort;
 
     property SeparatorPos[aIndex: Integer]: Integer read GetSeparatorPos;
     property SeparatorFont: TKMFont read fSeparatorFont write fSeparatorFont;
@@ -1334,6 +1346,8 @@ type
   end;
 
   TKMColumnBox = class(TKMSearchableList)
+  const
+    COL_PAD_X = 4;
   private
     fFont: TKMFont;
     fBackAlpha: Single; //Alpha of background
@@ -1347,6 +1361,7 @@ type
     fShowHeader: Boolean;
     fShowLines: Boolean;
     fMouseOverRow: SmallInt;
+    fShowHintWhenShort: Boolean;
     fMouseOverColumn: SmallInt;
     fMouseOverCell: TKMPoint;
     fScrollBar: TKMScrollBar;
@@ -1422,6 +1437,7 @@ type
     function GetVisibleRowsExact: Single;
     function IsSelected: Boolean;
     property ShowHeader: Boolean read fShowHeader write SetShowHeader;
+    property ShowHintWhenShort: Boolean read fShowHintWhenShort write fShowHintWhenShort;
     property ShowLines: Boolean read fShowLines write fShowLines;
     property SearchColumn: ShortInt read fSearchColumn write SetSearchColumn;
 
@@ -1523,6 +1539,8 @@ type
     function GetItemIndex: smallint; override;
     procedure SetItemIndex(aIndex: smallint); override;
     procedure SetDropWidth(aDropWidth: Integer);
+    function GetShowHintWhenShort: Boolean;
+    procedure SetShowHintWhenShort(const aValue: Boolean);
   protected
     procedure SetEnabled(aValue: Boolean); override;
     procedure SetVisible(aValue: Boolean); override;
@@ -1537,6 +1555,7 @@ type
     function GetTag(aIndex: Integer): Integer;
     function GetSelectedTag: Integer;
     function IsSelected: Boolean;
+    property ShowHintWhenShort: Boolean read GetShowHintWhenShort write SetShowHintWhenShort;
     property DefaultCaption: UnicodeString read fDefaultCaption write fDefaultCaption;
     property Item[aIndex: Integer]: UnicodeString read GetItem;
     property List: TKMListBox read fList;
@@ -1565,6 +1584,8 @@ type
     function GetItemIndex: Smallint; override;
     procedure SetItemIndex(aIndex: Smallint); override;
     procedure SetDropWidth(aDropWidth: Integer);
+    function GetShowHintWhenShort: Boolean;
+    procedure SetShowHintWhenShort(const aValue: Boolean);
   protected
     procedure SetEnabled(aValue: Boolean); override;
     procedure SetVisible(aValue: Boolean); override;
@@ -1580,6 +1601,7 @@ type
     procedure SetColumns(aFont: TKMFont; aColumns: array of string; aColumnOffsets: array of Word; aColumnsToShowWhenListHidden: array of Boolean); overload;
     property DefaultCaption: UnicodeString read fDefaultCaption write fDefaultCaption;
     property DropWidth: Integer read fDropWidth write SetDropWidth;
+    property ShowHintWhenShort: Boolean read GetShowHintWhenShort write SetShowHintWhenShort;
 
     procedure Paint; override;
   end;
@@ -7096,6 +7118,7 @@ begin
   fItems := TStringList.Create;
   fFont := aFont;
   fAutoHideScrollBar := False; //Always show the scrollbar by default, then it can be turned off if required
+  fShowHintWhenShort := False;
   Focusable := True; //For up/down keys
   fSeparatorHeight := 0;
   fSeparatorTexts := TStringList.Create;
@@ -7299,6 +7322,28 @@ begin
 end;
 
 
+function TKMListBox.GetHint: UnicodeString;
+var
+  hintStr: string;
+begin
+  Result := inherited GetHint;
+
+  if not fShowHintWhenShort or (fMouseOverRow = -1) then Exit;
+
+  if Result = '' then
+  begin
+    if //Got crashed sometimes when mouse over empty disabled ComboBox with Header (fMouseOverCell = [0;0])
+      fItems.Count > fMouseOverRow then
+    begin
+      hintStr := fItems[fMouseOverRow];
+      // Show hint, if caption does not fit into the cell
+      if gRes.Fonts[fFont].GetTextSize(hintStr).X > RenderTextWidth then
+        Result := hintStr;
+    end;
+  end;
+end;
+
+
 function TKMListBox.GetItem(aIndex: Integer): UnicodeString;
 begin
   Result := fItems[aIndex];
@@ -7323,6 +7368,34 @@ begin
 end;
 
 
+function TKMListBox.GetPaintWidth: Integer;
+begin
+  Result := Width - fScrollBar.Width * Byte(fScrollBar.Visible);
+end;
+
+
+function TKMListBox.GetRenderTextWidth: Integer;
+begin
+  Result := PaintWidth - 8;
+end;
+
+
+
+procedure TKMListBox.UpdateMouseOverPosition(X,Y: Integer);
+begin
+  fMouseOverRow := -1;
+
+  if InRange(X, AbsLeft, AbsLeft + PaintWidth)
+    and InRange(Y, AbsTop, AbsTop + Height) then
+  begin
+    fMouseOverRow := TopIndex + (Y - AbsTop) div fItemHeight;
+
+    if fMouseOverRow >= fItems.Count then
+      fMouseOverRow := -1;
+  end;
+end;
+
+
 procedure TKMListBox.MouseDown(X,Y: Integer; Shift: TShiftState; Button: TMouseButton);
 begin
   inherited;
@@ -7331,36 +7404,19 @@ end;
 
 
 procedure TKMListBox.MouseMove(X,Y: Integer; Shift: TShiftState);
-
-  function GetItemIndex(aY: Integer): Integer;
-  var
-    I: Integer;
-  begin
-    Result := -1;
-    for I := 0 to Min(fItems.Count, GetVisibleRows) - 1 do
-      if InRange(aY, AbsTop + GetItemTop(I), AbsTop + GetItemTop(I) + fItemHeight) then
-      begin
-        Result := I;
-        Exit;
-      end;
-  end;
-
 var
   newIndex: Integer;
 begin
   inherited;
 
-  if (ssLeft in Shift)
-    and InRange(X, AbsLeft, AbsLeft + Width - (fScrollBar.Width * Byte(fScrollBar.Visible)))
-    and InRange(Y, AbsTop, AbsTop + Height)
-  then
-  begin
-    newIndex := GetItemIndex(Y);
-    if newIndex <> -1 then
-      newIndex := newIndex + TopIndex
-    else
-      Exit;
+  UpdateMouseOverPosition(X, Y);
 
+  if fMouseOverRow = -1 then Exit;
+
+  newIndex := fMouseOverRow;
+
+  if (ssLeft in Shift) then
+  begin
     if newIndex > fItems.Count - 1 then
     begin
       //Double clicking not allowed if we are clicking past the end of the list, but keep last item selected
@@ -7400,18 +7456,13 @@ end;
 
 procedure TKMListBox.Paint;
 var
-  I, paintWidth: Integer;
+  I: Integer;
   shapeColor, outlineColor: TColor4;
 begin
   inherited;
 
-  if fScrollBar.Visible then
-    paintWidth := Width - fScrollBar.Width //Leave space for scrollbar
-  else
-    paintWidth := Width; //List takes up the entire width
-
   // Draw background
-  TKMRenderUI.WriteBevel(AbsLeft, AbsTop, paintWidth, Height, 1, fBackAlpha);
+  TKMRenderUI.WriteBevel(AbsLeft, AbsTop, PaintWidth, Height, 1, fBackAlpha);
 
   // Draw selection outline and rectangle (shape)
   if (fItemIndex <> -1) and InRange(fItemIndex - TopIndex, 0, GetVisibleRows - 1) then
@@ -7424,21 +7475,21 @@ begin
       shapeColor := clListSelShapeUnfocused;
       outlineColor := clListSelOutlineUnfocused;
     end;
-    TKMRenderUI.WriteShape(AbsLeft, AbsTop + GetItemTop(fItemIndex) - fItemHeight*TopIndex, paintWidth, fItemHeight, shapeColor, outlineColor);
+    TKMRenderUI.WriteShape(AbsLeft, AbsTop + GetItemTop(fItemIndex) - fItemHeight*TopIndex, PaintWidth, fItemHeight, shapeColor, outlineColor);
   end;
 
   // Draw text lines
   for I := 0 to Min(fItems.Count, GetVisibleRows) - 1 do
-    TKMRenderUI.WriteText(AbsLeft + 4, AbsTop + GetItemTop(I) + 3, paintWidth - 8, fItems.Strings[TopIndex+I] , fFont, taLeft);
+    TKMRenderUI.WriteText(AbsLeft + 4, AbsTop + GetItemTop(I) + 3, RenderTextWidth, fItems.Strings[TopIndex+I] , fFont, taLeft);
 
   // Draw separators
   for I := 0 to Length(fSeparatorPositions) - 1 do
   begin
     TKMRenderUI.WriteShape(AbsLeft, AbsTop + GetItemTop(fSeparatorPositions[I]) - fSeparatorHeight,
-                           paintWidth - 1, fSeparatorHeight, fSeparatorColor);
+                           PaintWidth - 1, fSeparatorHeight, fSeparatorColor);
     if fSeparatorTexts[I] <> '' then
       TKMRenderUI.WriteText(AbsLeft + 4, AbsTop + GetItemTop(fSeparatorPositions[I]) - fSeparatorHeight,
-                            paintWidth - 8, fSeparatorTexts[I], fSeparatorFont, taCenter)
+                            PaintWidth - 8, fSeparatorTexts[I], fSeparatorFont, taCenter)
   end;
 end;
 
@@ -7785,6 +7836,7 @@ begin
   fItemHeight := 20;
   fItemIndex  := -1;
   fShowHeader := True;
+  fShowHintWhenShort := False;
   SearchColumn := -1; //Disabled by default
   Focusable := True; //For up/down keys
   ColumnIdForScroll := -1;
@@ -8364,6 +8416,8 @@ end;
 
 
 function TKMColumnBox.GetHint: UnicodeString;
+var
+  hintStr: String;
 begin
   Result := inherited GetHint;
   if Result = '' then
@@ -8372,7 +8426,16 @@ begin
       //Got crashed sometimes when mouse over empty disabled ComboBox with Header (fMouseOverCell = [0;0])
       and (Length(Rows) > fMouseOverCell.Y)
       and (Length(Rows[fMouseOverCell.Y].Cells) > fMouseOverCell.X) then
+    begin
       Result := Rows[fMouseOverCell.Y].Cells[fMouseOverCell.X].CellHint;
+      if fShowHintWhenShort and (Result = '') then
+      begin
+        hintStr := Rows[fMouseOverCell.Y].Cells[fMouseOverCell.X].Caption;
+        // Show hint, if caption does not fit into the cell
+        if gRes.Fonts[fFont].GetTextSize(hintStr).X > fHeader.ColumnWidth[fMouseOverCell.X] - COL_PAD_X then
+          Result := hintStr;
+      end;
+    end;
   end;
 end;
 
@@ -8416,9 +8479,9 @@ begin
     end;
     //Determine available width
     if I = fHeader.ColumnCount - 1 then
-      availWidth := PaintWidth - 4 - fHeader.Columns[I].Offset - 4
+      availWidth := PaintWidth - 4 - fHeader.Columns[I].Offset - COL_PAD_X
     else
-      availWidth := fHeader.Columns[I+1].Offset - fHeader.Columns[I].Offset - 4;
+      availWidth := fHeader.Columns[I+1].Offset - fHeader.Columns[I].Offset - COL_PAD_X;
     //Trim the width based on our allowed PaintWidth
     availWidth := Min(availWidth, PaintWidth - fHeader.Columns[I].Offset);
 
@@ -8426,7 +8489,7 @@ begin
 
     //Paint column
     if Rows[aIndex].Cells[I].Pic.ID <> 0 then
-      TKMRenderUI.WritePicture(X + 4 + fHeader.Columns[I].Offset - hiddenColumnsTotalWidth, Y + 1,
+      TKMRenderUI.WritePicture(X + COL_PAD_X + fHeader.Columns[I].Offset - hiddenColumnsTotalWidth, Y + 1,
                              availWidth, fItemHeight, [],
                              Rows[aIndex].Cells[I].Pic.RX,
                              Rows[aIndex].Cells[I].Pic.ID,
@@ -8438,12 +8501,12 @@ begin
       if Rows[aIndex].Cells[I].SubTxt <> '' then
       begin
         textSize := gRes.Fonts[fFont].GetTextSize(Rows[aIndex].Cells[I].Caption);
-        TKMRenderUI.WriteText(X + 4 + fHeader.Columns[I].Offset - hiddenColumnsTotalWidth,
+        TKMRenderUI.WriteText(X + COL_PAD_X + fHeader.Columns[I].Offset - hiddenColumnsTotalWidth,
                             Y + 4,
                             availWidth,
                             Rows[aIndex].Cells[I].Caption,
                             fColumns[I].Font, fColumns[I].TextAlign, Rows[aIndex].Cells[I].Color);
-        TKMRenderUI.WriteText(X + 4 + fHeader.Columns[I].Offset - hiddenColumnsTotalWidth,
+        TKMRenderUI.WriteText(X + COL_PAD_X + fHeader.Columns[I].Offset - hiddenColumnsTotalWidth,
                             Y + fItemHeight div 2 + 1,
                             availWidth,
                             Rows[aIndex].Cells[I].SubTxt,
@@ -8461,7 +8524,7 @@ begin
           
         if not fEnabled then
           color := ReduceBrightness(color, 136);
-        TKMRenderUI.WriteText(X + 4 + fHeader.Columns[I].Offset - hiddenColumnsTotalWidth,
+        TKMRenderUI.WriteText(X + COL_PAD_X + fHeader.Columns[I].Offset - hiddenColumnsTotalWidth,
                             Y + (fItemHeight - textSize.Y) div 2 + 2,
                             availWidth,
                             Rows[aIndex].Cells[I].Caption,
@@ -9074,6 +9137,18 @@ begin
 end;
 
 
+function TKMDropList.GetShowHintWhenShort: Boolean;
+begin
+  Result := fList.ShowHintWhenShort;
+end;
+
+
+procedure TKMDropList.SetShowHintWhenShort(const aValue: Boolean);
+begin
+  fList.ShowHintWhenShort := aValue;
+end;
+
+
 function TKMDropList.IsOpen: Boolean;
 begin
   Result := fList.Visible;
@@ -9169,7 +9244,6 @@ function TKMDropList.GetSelectedTag: Integer;
 begin
   Result := GetTag(fList.fItemIndex);
 end;
-
 
 function TKMDropList.GetItem(aIndex: Integer): UnicodeString;
 begin
@@ -9281,6 +9355,18 @@ begin
   fDropWidth := aDropWidth;
   fList.AbsLeft := AbsLeft + Width - aDropWidth;
   fList.Width := aDropWidth;
+end;
+
+
+function TKMDropColumns.GetShowHintWhenShort: Boolean;
+begin
+  Result := fList.ShowHintWhenShort
+end;
+
+
+procedure TKMDropColumns.SetShowHintWhenShort(const aValue: Boolean);
+begin
+  fList.ShowHintWhenShort := aValue;
 end;
 
 

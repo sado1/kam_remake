@@ -70,6 +70,7 @@ begin
   ListBox_Load.Anchors := [anLeft, anTop, anRight];
   ListBox_Load.ItemHeight := 18;
   ListBox_Load.AutoHideScrollBar := True;
+  ListBox_Load.ShowHintWhenShort := True;
   ListBox_Load.SearchEnabled := True;
   ListBox_Load.OnDoubleClick := Menu_LoadClick;
   Button_LoadLoad     := TKMButton.Create(Panel_Load,9,318,Panel_Load.Width - 9,30,gResTexts[TX_MAPED_LOAD],bsGame);

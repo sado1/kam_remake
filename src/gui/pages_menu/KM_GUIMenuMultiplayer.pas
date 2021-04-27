@@ -233,6 +233,7 @@ begin
     ColumnBox_Servers := TKMColumnBox.Create(Panel_MultiPlayer,45,240,620,465,fntMetal, bsMenu);
     ColumnBox_Servers.Anchors := [anLeft, anTop, anBottom];
     ColumnBox_Servers.Focusable := True;
+    ColumnBox_Servers.ShowHintWhenShort := True;
     ColumnBox_Servers.SetColumns(fntOutline,
                                  ['','', gResTexts[TX_MP_MENU_SERVERLIST_NAME], gResTexts[TX_MP_MENU_SERVERLIST_STATE],
                                          gResTexts[TX_MP_MENU_SERVERLIST_PLAYERS], gResTexts[TX_MP_MENU_SERVERLIST_PING]],

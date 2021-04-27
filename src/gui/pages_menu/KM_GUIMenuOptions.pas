@@ -335,6 +335,7 @@ begin
         ColumnBox_OptionsKeys.SetColumns(fntOutline, [gResTexts[TX_MENU_OPTIONS_FUNCTION], gResTexts[TX_MENU_OPTIONS_KEY]], [0, 350]);
         ColumnBox_OptionsKeys.Anchors := [anLeft,anTop,anBottom];
         ColumnBox_OptionsKeys.ShowLines := True;
+        ColumnBox_OptionsKeys.ShowHintWhenShort := True;
         ColumnBox_OptionsKeys.PassAllKeys := True;
         ColumnBox_OptionsKeys.OnChange := KeysClick;
         ColumnBox_OptionsKeys.OnKeyUp := KeysUpdate;
