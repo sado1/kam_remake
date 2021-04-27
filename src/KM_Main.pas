@@ -230,7 +230,7 @@ begin
 
   // Check INI window params, if not valid - set NeedResetToDefaults flag for future update
   if not fMainSettings.WindowParams.IsValid(GetScreenMonitorsInfo) then
-     fMainSettings.WindowParams.NeedResetToDefaults := True;
+    fMainSettings.WindowParams.NeedResetToDefaults := True;
 
   // Stop app if we did not ReinitRender properly (didn't pass game folder permissions test)
   //todo: refactor. Separate folder permissions check and render initialization
