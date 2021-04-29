@@ -287,7 +287,7 @@ type
 
       Panel_Save: TKMPanel;
         ListBox_Save: TKMListBox;
-        Edit_Save: TKMEdit;
+        FilenameEdit_Save: TKMFilenameEdit;
         Label_SaveExists: TKMLabel;
         CheckBox_SaveExists: TKMCheckBox;
         Button_Save: TKMButton;
@@ -395,7 +395,7 @@ begin
     if InRange(TKMListBox(Sender).ItemIndex, 0, fSaves.Count-1) then
     begin
       fSave_Selected := TKMListBox(Sender).ItemIndex;
-      Edit_Save.SetTextSilently(fSaves[ListBox_Save.ItemIndex].FileName);
+      FilenameEdit_Save.SetTextSilently(fSaves[ListBox_Save.ItemIndex].FileName);
       // We just selected something from the list so it exists
       CheckBox_SaveExists.Enabled := True;
       CheckBox_SaveExists.Checked := False;
@@ -414,15 +414,15 @@ begin
   begin
     ListBox_Save.ItemIndex := -1;
     fSave_Selected := -1;
-    CheckBox_SaveExists.Enabled := FileExists(gGame.SaveName(Edit_Save.Text,
+    CheckBox_SaveExists.Enabled := FileExists(gGame.SaveName(FilenameEdit_Save.Text,
                                                              EXT_SAVE_MAIN,
                                                              (fUIMode in [umMP, umSpectate])
                                                              or (ALLOW_SAVE_IN_REPLAY and (gGameParams.Mode = gmReplayMulti))));
     Label_SaveExists.Visible := CheckBox_SaveExists.Enabled;
     CheckBox_SaveExists.Checked := False;
     // we should protect ourselves from empty names and whitespaces at beggining and at end of name
-    Button_Save.Enabled := (not CheckBox_SaveExists.Enabled) and (Edit_Save.Text <> '') and
-                           not (Edit_Save.Text[1] = ' ') and not (Edit_Save.Text[Length(Edit_Save.Text)] = ' ');
+    Button_Save.Enabled := (not CheckBox_SaveExists.Enabled) and FilenameEdit_Save.IsValid and
+                           not (FilenameEdit_Save.Text[1] = ' ') and not (FilenameEdit_Save.Text[Length(FilenameEdit_Save.Text)] = ' ');
   end;
 end;
 
@@ -430,8 +430,8 @@ end;
 procedure TKMGamePlayInterface.Menu_Save_CheckboxChange(Sender: TObject);
 begin
   // we should protect ourselves from empty names and whitespaces at beggining and at end of name
-  Button_Save.Enabled := CheckBox_SaveExists.Checked and (Edit_Save.Text <> '') and
-                         not (Edit_Save.Text[1] = ' ') and not (Edit_Save.Text[Length(Edit_Save.Text)] = ' ');
+  Button_Save.Enabled := CheckBox_SaveExists.Checked and (FilenameEdit_Save.Text <> '') and
+                         not (FilenameEdit_Save.Text[1] = ' ') and not (FilenameEdit_Save.Text[Length(FilenameEdit_Save.Text)] = ' ');
 end;
 
 
@@ -467,7 +467,7 @@ procedure TKMGamePlayInterface.Menu_Save_Click(Sender: TObject);
 var
   saveName: string;
 begin
-  saveName := Trim(Edit_Save.Text);
+  saveName := Trim(FilenameEdit_Save.Text);
   // Edit.OnChange event happens on key up, so it's still possible for the user to click save button
   // with an invalid file name entered, if the click while still holding down a key.
   // In general it's bad to rely on events like that to ensure validity, doing check here is a good idea
@@ -641,10 +641,10 @@ begin
       Panel_Save.Show;
       Label_MenuTitle.Caption := gResTexts[TX_MENU_SAVE_GAME];
       if fLastSaveName = '' then
-        Edit_Save.Text := gGameParams.Name
+        FilenameEdit_Save.Text := gGameParams.Name
       else
-        Edit_Save.Text := fLastSaveName;
-      Edit_Save.Focus;
+        FilenameEdit_Save.Text := fLastSaveName;
+      FilenameEdit_Save.Focus;
       Menu_Save_EditChange(nil); // Displays "confirm overwrite" message if necessary
     end else
 
@@ -1428,11 +1428,9 @@ begin
   Panel_Save := TKMPanel.Create(Panel_Controls, TB_PAD, 44, TB_WIDTH, 332);
 
     // Edit field created first to pick a focus on panel show
-    Edit_Save := TKMEdit.Create(Panel_Save, 0, 235, TB_WIDTH, 20, fntMetal);
-    Edit_Save.AllowedChars := acFileName;
-    Edit_Save.MaxLen := MAX_SAVENAME_LENGTH;
-    Edit_Save.AutoFocusable := False;
-    Edit_Save.OnChange := Menu_Save_EditChange;
+    FilenameEdit_Save := TKMFilenameEdit.Create(Panel_Save, 0, 235, TB_WIDTH, 20, fntMetal);
+    FilenameEdit_Save.AutoFocusable := False;
+    FilenameEdit_Save.OnChange := Menu_Save_EditChange;
 
     ListBox_Save := TKMListBox.Create(Panel_Save, 0, 4, TB_WIDTH, 220, fntMetal, bsGame);
     ListBox_Save.AutoHideScrollBar := True;

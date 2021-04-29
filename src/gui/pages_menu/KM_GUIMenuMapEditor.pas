@@ -96,13 +96,13 @@ type
       PopUp_Rename: TKMPopUpMenu;
         Image_Rename: TKMImage;
         Label_RenameTitle, Label_RenameName: TKMLabel;
-        Edit_Rename: TKMEdit;
+        FilenameEdit_Rename: TKMFilenameEdit;
         Button_MapRenameConfirm, Button_MapRenameCancel: TKMButton;
 
       PopUp_Move: TKMPopUpMenu;
         Image_Move: TKMImage;
         Button_MapMoveConfirm, Button_MapMoveCancel: TKMButton;
-        Edit_MapMove: TKMEdit;
+        FilenameEdit_MapMove: TKMFilenameEdit;
         Label_MoveExists: TKMLabel;
         CheckBox_MoveExists: TKMCheckBox;
         Label_MapMoveConfirmTitle, Label_MapMoveName: TKMLabel;
@@ -343,10 +343,9 @@ begin
         Label_RenameName := TKMLabel.Create(PopUp_Rename, 25, 100, 60, 20, gResTexts[TX_MENU_REPLAY_RENAME_NAME], fntMetal, taLeft);
         Label_RenameName.Anchors := [anLeft,anBottom];
 
-        Edit_Rename := TKMEdit.Create(PopUp_Rename, 105, 97, 275, 20, fntMetal);
-        Edit_Rename.Anchors := [anLeft,anBottom];
-        Edit_Rename.AllowedChars := acFileName;
-        Edit_Rename.OnChange := Edit_Rename_Change;
+        FilenameEdit_Rename := TKMFilenameEdit.Create(PopUp_Rename, 105, 97, 275, 20, fntMetal);
+        FilenameEdit_Rename.Anchors := [anLeft,anBottom];
+        FilenameEdit_Rename.OnChange := Edit_Rename_Change;
 
         Button_MapRenameConfirm := TKMButton.Create(PopUp_Rename, 20, 155, 170, 30, gResTexts[TX_MENU_REPLAY_RENAME_CONFIRM], bsMenu);
         Button_MapRenameConfirm.Anchors := [anLeft,anBottom];
@@ -375,9 +374,9 @@ begin
         Label_MapMoveName := TKMLabel.Create(PopUp_Move, 25, 75, 60, 20, gResTexts[TX_MENU_MAP_MOVE_NAME_TITLE], fntMetal, taLeft);
         Label_MapMoveName.Anchors := [anLeft,anBottom];
 
-        Edit_MapMove := TKMEdit.Create(PopUp_Move, 105, 72, 275, 20, fntGrey);
-        Edit_MapMove.Anchors := [anLeft, anBottom];
-        Edit_MapMove.OnChange := MoveEditChange;
+        FilenameEdit_MapMove := TKMFilenameEdit.Create(PopUp_Move, 105, 72, 275, 20, fntGrey);
+        FilenameEdit_MapMove.Anchors := [anLeft, anBottom];
+        FilenameEdit_MapMove.OnChange := MoveEditChange;
 
         Label_MoveExists := TKMLabel.Create(PopUp_Move, 25, 100, gResTexts[TX_MAPED_SAVE_EXISTS], fntOutline, taLeft);
         Label_MoveExists.Anchors := [anLeft, anBottom];
@@ -907,9 +906,9 @@ begin
   // Change name of the save
   if Sender = Button_MapRenameConfirm then
   begin
-    Edit_Rename.Text := Trim(Edit_Rename.Text);
-    fMaps.RenameMap(ColumnBox_MapEd.SelectedItemTag, Edit_Rename.Text);
-    SetSelectedMapInfo(fSelectedMapInfo.CRC, Edit_Rename.Text);
+    FilenameEdit_Rename.Text := Trim(FilenameEdit_Rename.Text);
+    fMaps.RenameMap(ColumnBox_MapEd.SelectedItemTag, FilenameEdit_Rename.Text);
+    SetSelectedMapInfo(fSelectedMapInfo.CRC, FilenameEdit_Rename.Text);
     ListUpdate;
   end;
 end;
@@ -918,7 +917,7 @@ end;
 // Check if new name is allowed
 procedure TKMMenuMapEditor.Edit_Rename_Change(Sender: TObject);
 begin
-  Button_MapRenameConfirm.Enabled := (Trim(Edit_Rename.Text) <> '') and not fMaps.Contains(Trim(Edit_Rename.Text));
+  Button_MapRenameConfirm.Enabled := FilenameEdit_Rename.IsValid and not fMaps.Contains(Trim(FilenameEdit_Rename.Text));
 end;
 
 
@@ -926,7 +925,7 @@ procedure TKMMenuMapEditor.RenameConfirm(aVisible: Boolean);
 begin
   if aVisible then
   begin
-    Edit_Rename.Text := fMaps[ColumnBox_MapEd.SelectedItemTag].FileName;
+    FilenameEdit_Rename.Text := fMaps[ColumnBox_MapEd.SelectedItemTag].FileName;
     Button_MapRenameConfirm.Enabled := False;
     PopUp_Rename.Show;
   end else
@@ -983,8 +982,8 @@ procedure TKMMenuMapEditor.MoveEditChange(Sender: TObject);
 var
   saveName: string;
 begin
-  // Do not allow empty file name
-  if Trim(Edit_MapMove.Text) = '' then
+  // Do not allow not valid file name
+  if not FilenameEdit_MapMove.IsValid then
   begin
     CheckBox_MoveExists.Visible := False;
     Label_MoveExists.Visible := False;
@@ -992,9 +991,9 @@ begin
     Exit;
   end;
 
-  saveName := TKMapsCollection.FullPath(Trim(Edit_MapMove.Text), '.dat', mfMP);
+  saveName := TKMapsCollection.FullPath(Trim(FilenameEdit_MapMove.Text), '.dat', mfMP);
 
-  if (Sender = Edit_MapMove) or (Sender = Button_MapMove) then
+  if (Sender = FilenameEdit_MapMove) or (Sender = Button_MapMove) then
   begin
     CheckBox_MoveExists.Visible := FileExists(saveName);
     Label_MoveExists.Visible := CheckBox_MoveExists.Visible;
@@ -1083,7 +1082,7 @@ begin
   if Sender = Button_MapMove then
   begin
     ID := ColumnBox_MapEd.SelectedItemTag;
-    Edit_MapMove.Text := fMaps[ID].FileNameWithoutHash;
+    FilenameEdit_MapMove.Text := fMaps[ID].FileNameWithoutHash;
     MoveConfirm(True);
     MoveEditChange(Button_MapMove);
   end;
@@ -1094,8 +1093,8 @@ begin
   //Move selected map
   if Sender = Button_MapMoveConfirm then
   begin
-    fMaps.MoveMap(ColumnBox_MapEd.SelectedItemTag, Edit_MapMove.Text, mfMP);
-    SetSelectedMapInfo(fSelectedMapInfo.CRC, Edit_MapMove.Text); // Update Name of selected item in list
+    fMaps.MoveMap(ColumnBox_MapEd.SelectedItemTag, FilenameEdit_MapMove.Text, mfMP);
+    SetSelectedMapInfo(fSelectedMapInfo.CRC, FilenameEdit_MapMove.Text); // Update Name of selected item in list
     ColumnBox_MapEd.Focus;
     ListUpdate;
   end;

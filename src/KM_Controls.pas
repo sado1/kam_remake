@@ -735,6 +735,16 @@ type
   end;
 
 
+  TKMFilenameEdit = class(TKMEdit)
+  private
+    function GetIsValid: Boolean;
+  public
+    constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont; aSelectable: Boolean = True);
+
+    property IsValid: Boolean read GetIsValid;
+  end;
+
+
   TKMCheckBoxState = (cbsUnchecked, cbsSemiChecked, cbsChecked);
 
   { Checkbox }
@@ -4479,6 +4489,38 @@ begin
     offX := AbsLeft + 2 + gRes.Fonts[fFont].GetTextSize(rText, True, DrawEolSymbol).X;
     TKMRenderUI.WriteShape(offX, AbsTop+2, 3, Height-4, col, $FF000000);
   end;
+end;
+
+
+{ TKMFilenameEdit }
+constructor TKMFilenameEdit.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont; aSelectable: Boolean = True);
+const
+  MAX_SAVENAME_LENGTH = 50;
+begin
+  inherited Create(aParent, aLeft, aTop, aWidth, aHeight, aFont, aSelectable);
+
+  fAllowedChars := acFileName; //Set to the widest by default
+  MaxLen := MAX_SAVENAME_LENGTH;
+end;
+
+
+function TKMFilenameEdit.GetIsValid: Boolean;
+const
+  // Windows has next reserved names, according to:
+  // https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file
+  WIN_RESERVED_FILENAMES: array[0..21] of string = ('CON', 'PRN', 'AUX', 'NUL', 'COM1', 'COM2', 'COM3', 'COM4', 'COM5', 'COM6',
+                                                    'COM7', 'COM8', 'COM9', 'LPT1', 'LPT2', 'LPT3', 'LPT4', 'LPT5', 'LPT6', 'LPT7',
+                                                    'LPT8', 'LPT9');
+var
+  S, txt: string;
+begin
+  txt := Trim(fText);
+  Result := txt <> '';
+  if not Result then Exit;
+
+  for S in WIN_RESERVED_FILENAMES do
+    if S = txt.ToUpper then
+      Exit(False);
 end;
 
 

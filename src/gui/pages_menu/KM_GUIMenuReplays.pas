@@ -66,7 +66,7 @@ type
       PopUp_Rename: TKMPopUpMenu;
         Image_Rename: TKMImage;
         Label_RenameTitle, Label_RenameName: TKMLabel;
-        Edit_Rename: TKMEdit;
+        FilenameEdit_Rename: TKMFilenameEdit;
         Button_Rename, Button_RenameConfirm, Button_RenameCancel: TKMButton;
   public
     OnNewReplay: TUnicodeStringEvent;
@@ -188,10 +188,9 @@ begin
   Label_RenameName := TKMLabel.Create(PopUp_Rename, 25, 100, 60, 20, gResTexts[TX_MENU_REPLAY_RENAME_NAME], fntMetal, taLeft);
   Label_RenameName.Anchors := [anLeft,anBottom];
 
-  Edit_Rename := TKMEdit.Create(PopUp_Rename, 105, 97, 275, 20, fntMetal);
-  Edit_Rename.Anchors := [anLeft,anBottom];
-  Edit_Rename.AllowedChars := acFileName;
-  Edit_Rename.OnChange := Edit_Rename_Change;
+  FilenameEdit_Rename := TKMFilenameEdit.Create(PopUp_Rename, 105, 97, 275, 20, fntMetal);
+  FilenameEdit_Rename.Anchors := [anLeft,anBottom];
+  FilenameEdit_Rename.OnChange := Edit_Rename_Change;
 
   Button_RenameConfirm := TKMButton.Create(PopUp_Rename, 20, 155, 170, 30, gResTexts[TX_MENU_REPLAY_RENAME_CONFIRM], bsMenu);
   Button_RenameConfirm.Anchors := [anLeft,anBottom];
@@ -602,7 +601,7 @@ begin
 
   if aVisible then
   begin
-    Edit_Rename.Text := fSaves[ColumnBox_Replays.ItemIndex].FileName;
+    FilenameEdit_Rename.Text := fSaves[ColumnBox_Replays.ItemIndex].FileName;
     Button_RenameConfirm.Enabled := False;
     PopUp_Rename.Show;
   end else
@@ -613,7 +612,7 @@ end;
 // Check if new name is allowed
 procedure TKMMenuReplays.Edit_Rename_Change(Sender: TObject);
 begin
-  Button_RenameConfirm.Enabled := (Trim(Edit_Rename.Text) <> '') and not fSaves.Contains(Trim(Edit_Rename.Text));
+  Button_RenameConfirm.Enabled := FilenameEdit_Rename.IsValid and not fSaves.Contains(Trim(FilenameEdit_Rename.Text));
 end;
 
 
@@ -643,9 +642,9 @@ begin
   // Change name of the save
   if Sender = Button_RenameConfirm then
   begin
-    Edit_Rename.Text := Trim(Edit_Rename.Text);
-    fSaves.RenameSave(ColumnBox_Replays.ItemIndex, Edit_Rename.Text);
-    SetSelectedSaveName(Edit_Rename.Text);
+    FilenameEdit_Rename.Text := Trim(FilenameEdit_Rename.Text);
+    fSaves.RenameSave(ColumnBox_Replays.ItemIndex, FilenameEdit_Rename.Text);
+    SetSelectedSaveName(FilenameEdit_Rename.Text);
     ListUpdate;
   end;
 end;
