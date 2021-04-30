@@ -47,8 +47,8 @@ type
     Panel_Menu: TKMPanel;
     Panel_Background: TKMImage;
     Label_Version: TKMLabel;
-    function GetHintPositionBase: TKMPoint; override;
     function GetHintFont: TKMFont; override;
+    function GetHintKind: TKMHintKind; override;
   public
     constructor Create (X,Y: Word; aCampaigns: TKMCampaignsCollection;
                         aOnNewSingleMap: TKMNewSingleMapEvent;
@@ -190,15 +190,15 @@ begin
 end;
 
 
-function TKMMainMenuInterface.GetHintPositionBase: TKMPoint;
-begin
-  Result := KMPoint(Panel_Menu.Left - 5, Min(Panel_Menu.Bottom + 15, Panel_Main.Height));
-end;
-
-
 function TKMMainMenuInterface.GetHintFont: TKMFont;
 begin
   Result := fntGrey;
+end;
+
+
+function TKMMainMenuInterface.GetHintKind: TKMHintKind;
+begin
+  Result := hkControl;
 end;
 
 

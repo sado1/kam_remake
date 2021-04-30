@@ -1,4 +1,4 @@
-unit KM_Controls;
+﻿unit KM_Controls;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -26,6 +26,10 @@ type
   TKMControlState = (csDown, csFocus, csOver);
   TKMControlStateSet = set of TKMControlState;
 
+  TKMHintKind = (hkControl, // Rendered above control
+                 hkStatic,  // 'Classic' hint: rendered in the game / mapEd at the bottom left of the play-area
+                 hkTextNotFit); // Hint to show text, when it could not fit in the control, f.e. in the Lists and ColumnBoxes
+
   TKMControl = class;
   TKMPanel = class;
 
@@ -42,8 +46,6 @@ type
     fMaxPaintLayer: Integer;
     fCurrentPaintLayer: Integer;
 
-    fOnHint: TNotifyEvent; //Comes along with OnMouseOver
-
     fMouseMoveSubsList: TList<TKMMouseMoveEvent>;
     fMouseDownSubsList: TList<TKMMouseUpDownEvent>;
     fMouseUpSubsList: TList<TKMMouseUpDownEvent>;
@@ -53,7 +55,7 @@ type
     procedure SetCtrlFocus(aCtrl: TKMControl);
     procedure SetCtrlOver(aCtrl: TKMControl);
     procedure SetCtrlUp(aCtrl: TKMControl);
-    
+
     function GetNextCtrlID: Integer;
   public
     constructor Create;
@@ -72,8 +74,6 @@ type
     procedure AddMouseMoveCtrlSub(const aMouseMoveEvent: TKMMouseMoveEvent);
     procedure AddMouseDownCtrlSub(const aMouseDownEvent: TKMMouseUpDownEvent);
     procedure AddMouseUpCtrlSub(const aMouseUpEvent: TKMMouseUpDownEvent);
-
-    property OnHint: TNotifyEvent write fOnHint;
 
     function HitControl(X,Y: Integer; aIncludeDisabled: Boolean = False; aIncludeNotHitable: Boolean = False): TKMControl;
 
@@ -223,8 +223,18 @@ type
     procedure FocusChanged(aFocused: Boolean); virtual;
     procedure DoClickHold(Sender: TObject; Button: TMouseButton; var aHandled: Boolean); virtual;
     function DoHandleMouseWheelByDefault: Boolean; virtual;
+
     function GetHint: UnicodeString; virtual;
+    function GetHintKind: TKMHintKind; virtual;
+    function GetHintFont: TKMFont; virtual;
+    function IsHintSelected: Boolean; virtual;
+    function GetHintBackColor: TKMColor3f; virtual;
+    function GetHintTextColor: TColor4; virtual;
+    function GetHintBackRect: TKMRect; virtual;
+    function GetHintTextOffset: TKMPoint; virtual;
     procedure SetHint(const aHint: UnicodeString); virtual;
+    procedure SetHintBackColor(const aValue: TKMColor3f); virtual;
+
     procedure SetPaintLayer(aPaintLayer: Integer);
 
     function CanFocusNext: Boolean; virtual;
@@ -263,6 +273,13 @@ type
     property ID: Integer read fID;
     function GetIDsStr: String;
     property Hint: UnicodeString read GetHint write SetHint; //Text that shows up when cursor is over that control, mainly for Buttons
+    property HintKind: TKMHintKind read GetHintKind;
+    property HintFont: TKMFont read GetHintFont;
+    property HintSelected: Boolean read IsHintSelected;
+    property HintBackColor: TKMColor3f read GetHintBackColor write SetHintBackColor;
+    property HintTextColor: TColor4 read GetHintTextColor;
+    property HintBackRect: TKMRect read GetHintBackRect;
+    property HintTextOffset: TKMPoint read GetHintTextOffset;
 
     property MouseWheelStep: Integer read fMouseWheelStep write fMouseWheelStep;
 
@@ -883,7 +900,7 @@ type
     fHighlightMark: Integer;
     fMarks: TList<Integer>;
     fMarksPattern: Word;
-    fOnMarkClick: TIntegerEvent;   
+    fOnMarkClick: TIntegerEvent;
     fHintResText: Word;
     procedure TrySortMarks;
     procedure SetPosition(aValue: Integer);
@@ -1146,7 +1163,7 @@ type
     procedure SetWidth(aValue: Integer); override;
 
     function GetDrawRect: TKMRect; override;
-    
+
     function GetAbsDrawLeft: Integer; override;
     function GetAbsDrawTop: Integer; override;
     function GetAbsDrawRight: Integer; override;
@@ -1174,10 +1191,18 @@ type
 
   TKMSearchableList = class(TKMControl)
   private
+    fHintBackColor: TKMColor3f;
     fSearch: UnicodeString; //Contains user input characters we should search for
     fLastKeyTime: Cardinal;
   protected
+    fFont: TKMFont; //Should not be changed from inital value, it will mess up the word wrapping
     fOnChange: TNotifyEvent;
+    function GetHintKind: TKMHintKind; override;
+    function GetHintFont: TKMFont; override;
+    function GetHintBackColor: TKMColor3f; override;
+    procedure SetHintBackColor(const aValue: TKMColor3f); override;
+    function IsHintSelected: Boolean; override;
+
     function CanSearch: Boolean; virtual; abstract;
     function GetRowCount: Integer; virtual; abstract;
     function GetItemIndex: Integer; virtual; abstract;
@@ -1191,6 +1216,8 @@ type
     function KeyEventHandled(Key: Word; Shift: TShiftState): Boolean; virtual;
     function CanChangeSelection: Boolean; virtual;
   public
+    constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aPaintLayer: Integer = 0);
+
     procedure SetTopIndex(aIndex: Integer; aStayOnList: Boolean); overload;
     property ItemIndex: Integer read GetItemIndex write SetItemIndex;
     property TopIndex: Integer read GetTopIndex write SetTopIndex;
@@ -1209,7 +1236,6 @@ type
   private
     fAutoHideScrollBar: Boolean;
     fBackAlpha: Single; //Alpha of background (usually 0.5, dropbox 1)
-    fFont: TKMFont; //Should not be changed from inital value, it will mess up the word wrapping
     fItemHeight: Byte;
     fItemIndex: Integer;
     fItems: TStringList;
@@ -1242,7 +1268,11 @@ type
     procedure SetVisible(aValue: Boolean); override;
     function GetSelfWidth: Integer; override;
     function DoHandleMouseWheelByDefault: Boolean; override;
+
     function GetHint: UnicodeString; override;
+    function GetHintBackRect: TKMRect; override;
+    function GetHintTextOffset: TKMPoint; override;
+
     //TKMSearchableList
     function CanSearch: Boolean; override;
     function GetRowCount: Integer; override;
@@ -1375,7 +1405,6 @@ type
     COL_PAD_X = 4;
     TXT_PAD_Y = 2;
   private
-    fFont: TKMFont;
     fBackAlpha: Single; //Alpha of background
     fEdgeAlpha: Single; //Alpha of outline
     fItemHeight: Byte;
@@ -1427,6 +1456,9 @@ type
     procedure DoPaintLine(aIndex: Integer; X,Y: Integer; PaintWidth: Integer; aAllowHighlight: Boolean = True); overload;
     procedure DoPaintLine(aIndex: Integer; X, Y: Integer; PaintWidth: Integer; aColumnsToShow: array of Boolean; aAllowHighlight: Boolean = True); overload;
     function GetHint: UnicodeString; override;
+    function GetHintTextColor: TColor4; override;
+    function GetHintBackRect: TKMRect; override;
+    function GetHintTextOffset: TKMPoint; override;
 
     // TKMSearchableList methods implementation
     function CanSearch: Boolean; override;
@@ -2290,10 +2322,58 @@ begin
 end;
 
 
+function TKMControl.GetHintFont: TKMFont;
+begin
+  Result := fntMonospaced; // Should be actually overridden in the ancestors
+end;
+
+
+function TKMControl.IsHintSelected: Boolean;
+begin
+  Result := False;
+end;
+
+
+function TKMControl.GetHintKind: TKMHintKind;
+begin
+  Result := hkControl;
+end;
+
+
+function TKMControl.GetHintBackColor: TKMColor3f;
+begin
+  Result := COLOR3F_BLACK;
+end;
+
+
+function TKMControl.GetHintBackRect: TKMRect;
+begin
+  Result := KMRECT_ZERO;
+end;
+
+
+function TKMControl.GetHintTextColor: TColor4;
+begin
+  Result := icWhite;
+end;
+
+
+function TKMControl.GetHintTextOffset: TKMPoint;
+begin
+  Result := KMPOINT_ZERO;
+end;
+
+
 procedure TKMControl.SetHint(const aHint: UnicodeString);
 begin
   //fHint := StringReplace(aHint, '|', ' ', [rfReplaceAll]); //Not sure why we were need to replace | here...
   fHint := aHint;
+end;
+
+
+procedure TKMControl.SetHintBackColor(const aValue: TKMColor3f);
+begin
+  // Do nothing
 end;
 
 
@@ -2321,7 +2401,7 @@ begin
       fParent.MouseWheel(Sender, WheelSteps, aHandled)
     else
       aHandled := False;
-  end 
+  end
   else
     aHandled := False;
 end;
@@ -2637,7 +2717,7 @@ end;
 function TKMControl.GetDrawRect: TKMRect;
 begin
   if fParent <> nil then
-  begin       
+  begin
     Result := fParent.GetDrawRect;
     if Result <> KMRECT_INVALID_TILES then
       Result := KMRectIntersect(Result, AbsDrawLeft, AbsDrawTop, AbsDrawRight, AbsDrawBottom);
@@ -2968,7 +3048,7 @@ begin
       //Do we need to find next focusable control ?
       if aFindNext and (ctrlToFocusI = -1)
         //FocusedControlIndex = -1 means there is no focus on this panel. Then we need to focus on first good control
-        and (FocusedControlIndex <> -1) then 
+        and (FocusedControlIndex <> -1) then
       begin
         ctrlToFocusI := I;
         Continue;
@@ -4980,7 +5060,7 @@ end;
 
 
 { TKMReplayBar }
-constructor TKMReplayBar.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont = fntMini); 
+constructor TKMReplayBar.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont = fntMini);
 begin
   Create(aParent, aLeft, aTop, aWidth, aHeight, 0, MaxInt, MaxInt, aFont);
 end;
@@ -5021,7 +5101,7 @@ end;
 procedure TKMReplayBar.AddMark(aMark: Integer);
 begin
   if Self = nil then Exit;
-  
+
   Assert(fMarks <> nil, 'Marks is not initilized');
 
   fMarks.Add(aMark);
@@ -5096,7 +5176,7 @@ begin
   inherited;
 
   if (fHighlightMark <> -1) and Assigned(fOnMarkClick) then
-    fOnMarkClick(fHighlightMark);  
+    fOnMarkClick(fHighlightMark);
 end;
 
 
@@ -5698,7 +5778,7 @@ end;
 procedure TKMTrackBar.UpdateThumbWidth;
 begin
   if fFixedThumbWidth then Exit;
-  
+
   if AutoThumbWidth then
     ThumbWidth := Max(gRes.Fonts[SliderFont].GetTextSize(IntToStr(MaxValue)).X,
                       gRes.Fonts[SliderFont].GetTextSize(ThumbText).X)
@@ -7432,6 +7512,27 @@ begin
 end;
 
 
+function TKMListBox.GetHintBackRect: TKMRect;
+const
+  SELECT_PAD = 1;
+var
+  top: Integer;
+begin
+  if fMouseOverRow = -1 then Exit(KMRECT_ZERO);
+
+  top := GetItemTop(fMouseOverRow) - GetItemTop(TopIndex) - SELECT_PAD;
+  Result := KMRect(-1, top, PaintWidth, top + fItemHeight + SELECT_PAD);
+end;
+
+
+function TKMListBox.GetHintTextOffset: TKMPoint;
+begin
+  if fMouseOverRow = -1 then Exit(KMPOINT_ZERO);
+
+  Result := KMPoint(TXT_PAD_X, TXT_PAD_Y + GetItemTop(fMouseOverRow) - GetItemTop(TopIndex));
+end;
+
+
 function TKMListBox.GetItem(aIndex: Integer): UnicodeString;
 begin
   Result := fItems[aIndex];
@@ -7799,6 +7900,14 @@ end;
 
 
 { TKMSearchableList }
+constructor TKMSearchableList.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight, aPaintLayer: Integer);
+begin
+  inherited;
+
+  fHintBackColor := COLOR3F_BLACK;
+end;
+
+
 procedure TKMSearchableList.KeyPress(Key: Char);
 var
   I, oldIndex: Integer;
@@ -7848,6 +7957,36 @@ end;
 function TKMSearchableList.CanChangeSelection: Boolean;
 begin
   Result := True;
+end;
+
+
+function TKMSearchableList.GetHintBackColor: TKMColor3f;
+begin
+  Result := fHintBackColor;
+end;
+
+
+procedure TKMSearchableList.SetHintBackColor(const aValue: TKMColor3f);
+begin
+  fHintBackColor := aValue;
+end;
+
+
+function TKMSearchableList.GetHintFont: TKMFont;
+begin
+  Result := fFont;
+end;
+
+
+function TKMSearchableList.GetHintKind: TKMHintKind;
+begin
+  Result := hkTextNotFit;
+end;
+
+
+function TKMSearchableList.IsHintSelected: Boolean;
+begin
+  Result := (ItemIndex <> -1) and (GetMouseOverRow = ItemIndex);
 end;
 
 
@@ -8321,7 +8460,7 @@ end;
 function TKMColumnBox.KeyDown(Key: Word; Shift: TShiftState): Boolean;
 begin
   if PassAllKeys then Exit(False);
-  
+
   Result := inherited;
 end;
 
@@ -8545,6 +8684,45 @@ begin
 end;
 
 
+function TKMColumnBox.GetHintTextColor: TColor4;
+begin
+  if fMouseOverCell = KMPOINT_INVALID_TILE then Exit(inherited);
+
+  Result := Rows[fMouseOverCell.Y].Cells[fMouseOverCell.X].Color;
+end;
+
+
+function TKMColumnBox.GetHintBackRect: TKMRect;
+const
+  SELECT_PAD = 1;
+var
+  top: Integer;
+begin
+  if fMouseOverCell = KMPOINT_INVALID_TILE then Exit(KMRECT_ZERO);
+
+  top := fHeader.Height * Byte(fShowHeader) + (fMouseOverCell.Y - TopIndex) * fItemHeight - SELECT_PAD;
+  Result := KMRect(fHeader.Columns[fMouseOverCell.X].Offset, //beware we dont consider hidden columns here, since there are none needed atm
+                   top,
+                   0, // Width is not used
+                   top + fItemHeight + SELECT_PAD);
+end;
+
+
+function TKMColumnBox.GetHintTextOffset: TKMPoint;
+var
+  textSize: TKMPoint;
+begin
+  if fMouseOverCell = KMPOINT_INVALID_TILE then Exit(KMPOINT_ZERO);
+
+  textSize := gRes.Fonts[fFont].GetTextSize(Rows[fMouseOverCell.Y].Cells[fMouseOverCell.X].Caption);
+
+  Result := KMPoint(COL_PAD_X + fHeader.Columns[fMouseOverCell.X].Offset, //beware we dont consider hidden columns here, since there are none needed atm
+                    TXT_PAD_Y + fHeader.Height * Byte(fShowHeader)
+                              + (fMouseOverCell.Y - TopIndex) * fItemHeight
+                              + (fItemHeight - textSize.Y) div 2);
+end;
+
+
 procedure TKMColumnBox.DoPaintLine(aIndex: Integer; X, Y: Integer; PaintWidth: Integer; aAllowHighlight: Boolean = True);
 var
   I: Integer;
@@ -8562,11 +8740,11 @@ procedure TKMColumnBox.DoPaintLine(aIndex: Integer; X, Y: Integer; PaintWidth: I
   function IsHighlightOverCell(aCellIndex: Integer): Boolean;
   begin
     Result := aAllowHighlight
-                and Rows[aIndex].Cells[aCellIndex].HighlightOnMouseOver 
+                and Rows[aIndex].Cells[aCellIndex].HighlightOnMouseOver
                 and (fMouseOverCell.X = aCellIndex) and (fMouseOverCell.Y = aIndex)
                 and (csOver in State);
   end;
-  
+
 var
   I: Integer;
   availWidth, hiddenColumnsTotalWidth: Integer;
@@ -8626,7 +8804,7 @@ begin
           color := Rows[aIndex].Cells[I].HighlightColor
         else
           color := Rows[aIndex].Cells[I].Color;
-          
+
         if not fEnabled then
           color := ReduceBrightness(color, 136);
         TKMRenderUI.WriteText(X + COL_PAD_X + fHeader.Offset[I] - hiddenColumnsTotalWidth,
@@ -10701,7 +10879,6 @@ end;
 procedure TKMMasterControl.MouseMove(X,Y: Integer; Shift: TShiftState);
 var
   I: Integer;
-  hintControl: TKMControl;
 begin
   if Self = nil then Exit;
 
@@ -10729,10 +10906,6 @@ begin
     else
       if gRes.Cursors.Cursor in [kmcEdit, kmcDragUp] then
         gRes.Cursors.Cursor := kmcDefault; //Reset the cursor from these two special cursors
-
-  hintControl := HitControl(X, Y, True, True); //Include disabled and not hitable controls
-  if ((CtrlDown = nil) or (CtrlDown = CtrlOver)) and (hintControl <> nil) and Assigned(fOnHint) then
-    fOnHint(hintControl);
 end;
 
 
