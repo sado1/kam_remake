@@ -1,4 +1,4 @@
-﻿unit KM_Controls;
+unit KM_Controls;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -380,10 +380,19 @@ type
 
   { Beveled area }
   TKMBevel = class(TKMControl)
+  const
+    DEF_BACK_ALPHA = 0.4;
+    DEF_EDGE_ALPHA = 0.75;
   public
     BackAlpha: Single;
     EdgeAlpha: Single;
+    Color: TKMColor3f;
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aPaintLayer: Integer = 0);
+
+    procedure SetDefBackAlpha;
+    procedure SetDefEdgeAlpha;
+    procedure SetDefColor;
+
     procedure Paint; override;
   end;
 
@@ -413,11 +422,13 @@ type
     fTextSize: TKMPoint;
     fStrikethrough: Boolean;
     fTabWidth: Integer;
+
     function TextLeft: Integer;
     procedure SetCaption(const aCaption: UnicodeString);
     procedure SetAutoWrap(aValue: Boolean);
     procedure SetAutoCut(aValue: Boolean);
     procedure ReformatText;
+    procedure SetFont(const Value: TKMFont);
   protected
     function GetIsPainted: Boolean; override;
   public
@@ -434,7 +445,7 @@ type
     property Strikethrough: Boolean read fStrikethrough write fStrikethrough;
     property TabWidth: Integer read fTabWidth write fTabWidth;
     property TextSize: TKMPoint read fTextSize;
-    property Font: TKMFont read fFont write fFont;
+    property Font: TKMFont read fFont write SetFont;
     procedure Paint; override;
   end;
 
@@ -1191,6 +1202,9 @@ type
 
 
   TKMListBox = class(TKMSearchableList)
+  const
+    TXT_PAD_X = 4;
+    TXT_PAD_Y = 3;
   private
     fAutoHideScrollBar: Boolean;
     fBackAlpha: Single; //Alpha of background (usually 0.5, dropbox 1)
@@ -1358,6 +1372,7 @@ type
   TKMColumnBox = class(TKMSearchableList)
   const
     COL_PAD_X = 4;
+    TXT_PAD_Y = 2;
   private
     fFont: TKMFont;
     fBackAlpha: Single; //Alpha of background
@@ -3301,15 +3316,34 @@ end;
 constructor TKMBevel.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aPaintLayer: Integer = 0);
 begin
   inherited Create(aParent, aLeft, aTop, aWidth, aHeight, aPaintLayer);
-  BackAlpha := 0.4; //Default value
-  EdgeAlpha := 0.75; //Default value
+
+  SetDefBackAlpha;
+  SetDefEdgeAlpha;
+end;
+
+
+procedure TKMBevel.SetDefBackAlpha;
+begin
+  BackAlpha := DEF_BACK_ALPHA; //Default value
+end;
+
+
+procedure TKMBevel.SetDefEdgeAlpha;
+begin
+  EdgeAlpha := DEF_EDGE_ALPHA; //Default value
+end;
+
+
+procedure TKMBevel.SetDefColor;
+begin
+  Color := COLOR3F_BLACK; //Default value
 end;
 
 
 procedure TKMBevel.Paint;
 begin
   inherited;
-  TKMRenderUI.WriteBevel(AbsLeft, AbsTop, Width, Height, EdgeAlpha, BackAlpha, PaintingBaseLayer);
+  TKMRenderUI.WriteBevel(AbsLeft, AbsTop, Width, Height, Color, EdgeAlpha, BackAlpha, PaintingBaseLayer);
 end;
 
 
@@ -3400,9 +3434,17 @@ begin
 end;
 
 
+procedure TKMLabel.SetFont(const Value: TKMFont);
+begin
+  fFont := Value;
+  ReformatText;
+end;
+
+
 //Existing EOLs should be preserved, and new ones added where needed
 //Keep original intact incase we need to Reformat text once again
 procedure TKMLabel.ReformatText;
+
   procedure Reformat;
   begin
     if fAutoWrap then
@@ -3412,6 +3454,7 @@ procedure TKMLabel.ReformatText;
 
     fTextSize := gRes.Fonts[fFont].GetTextSize(fText);
   end;
+
 begin
   Reformat;
   // Automatically cut text symbol by symbol until it will fit into given sizes (width and height)
@@ -7518,12 +7561,13 @@ begin
       shapeColor := clListSelShapeUnfocused;
       outlineColor := clListSelOutlineUnfocused;
     end;
-    TKMRenderUI.WriteShape(AbsLeft, AbsTop + GetItemTop(fItemIndex) - fItemHeight*TopIndex, PaintWidth, fItemHeight, shapeColor, outlineColor);
+    TKMRenderUI.WriteShape(AbsLeft, AbsTop + GetItemTop(fItemIndex) - GetItemTop(TopIndex),
+                           PaintWidth, fItemHeight, shapeColor, outlineColor);
   end;
 
   // Draw text lines
   for I := 0 to Min(fItems.Count, GetVisibleRows) - 1 do
-    TKMRenderUI.WriteText(AbsLeft + 4, AbsTop + GetItemTop(I) + 3, RenderTextWidth, fItems.Strings[TopIndex+I] , fFont, taLeft);
+    TKMRenderUI.WriteText(AbsLeft + TXT_PAD_X, AbsTop + GetItemTop(I) + TXT_PAD_Y, RenderTextWidth, fItems.Strings[TopIndex+I] , fFont, taLeft);
 
   // Draw separators
   for I := 0 to Length(fSeparatorPositions) - 1 do
@@ -7531,8 +7575,8 @@ begin
     TKMRenderUI.WriteShape(AbsLeft, AbsTop + GetItemTop(fSeparatorPositions[I]) - fSeparatorHeight,
                            PaintWidth - 1, fSeparatorHeight, fSeparatorColor);
     if fSeparatorTexts[I] <> '' then
-      TKMRenderUI.WriteText(AbsLeft + 4, AbsTop + GetItemTop(fSeparatorPositions[I]) - fSeparatorHeight,
-                            PaintWidth - 8, fSeparatorTexts[I], fSeparatorFont, taCenter)
+      TKMRenderUI.WriteText(AbsLeft + TXT_PAD_X, AbsTop + GetItemTop(fSeparatorPositions[I]) - fSeparatorHeight,
+                            RenderTextWidth, fSeparatorTexts[I], fSeparatorFont, taCenter)
   end;
 end;
 
@@ -8533,27 +8577,27 @@ begin
     //Paint column
     if Rows[aIndex].Cells[I].Pic.ID <> 0 then
       TKMRenderUI.WritePicture(X + COL_PAD_X + fHeader.Columns[I].Offset - hiddenColumnsTotalWidth, Y + 1,
-                             availWidth, fItemHeight, [],
-                             Rows[aIndex].Cells[I].Pic.RX,
-                             Rows[aIndex].Cells[I].Pic.ID,
-                             Rows[aIndex].Cells[I].Enabled,
-                             Rows[aIndex].Cells[I].Color,
-                             0.4*Byte(IsHighlightOverCell(I) or (HighlightOnMouseOver and (csOver in State) and (fMouseOverRow = aIndex))));
+                               availWidth, fItemHeight, [],
+                               Rows[aIndex].Cells[I].Pic.RX,
+                               Rows[aIndex].Cells[I].Pic.ID,
+                               Rows[aIndex].Cells[I].Enabled,
+                               Rows[aIndex].Cells[I].Color,
+                               0.4*Byte(IsHighlightOverCell(I) or (HighlightOnMouseOver and (csOver in State) and (fMouseOverRow = aIndex))));
 
     if Rows[aIndex].Cells[I].Caption <> '' then
       if Rows[aIndex].Cells[I].SubTxt <> '' then
       begin
         textSize := gRes.Fonts[fFont].GetTextSize(Rows[aIndex].Cells[I].Caption);
-        TKMRenderUI.WriteText(X + COL_PAD_X + fHeader.Columns[I].Offset - hiddenColumnsTotalWidth,
-                            Y + 4,
-                            availWidth,
-                            Rows[aIndex].Cells[I].Caption,
-                            fColumns[I].Font, fColumns[I].TextAlign, Rows[aIndex].Cells[I].Color);
-        TKMRenderUI.WriteText(X + COL_PAD_X + fHeader.Columns[I].Offset - hiddenColumnsTotalWidth,
-                            Y + fItemHeight div 2 + 1,
-                            availWidth,
-                            Rows[aIndex].Cells[I].SubTxt,
-                            fColumns[I].HintFont, fColumns[I].TextAlign, $FFB0B0B0);
+        TKMRenderUI.WriteText(X + COL_PAD_X + fHeader.Offset[I] - hiddenColumnsTotalWidth,
+                              Y + 4,
+                              availWidth,
+                              Rows[aIndex].Cells[I].Caption,
+                              fColumns[I].Font, fColumns[I].TextAlign, Rows[aIndex].Cells[I].Color);
+        TKMRenderUI.WriteText(X + COL_PAD_X + fHeader.Offset[I] - hiddenColumnsTotalWidth,
+                              Y + 1 + fItemHeight div 2,
+                              availWidth,
+                              Rows[aIndex].Cells[I].SubTxt,
+                              fColumns[I].HintFont, fColumns[I].TextAlign, $FFB0B0B0);
       end else
       begin
         textSize := gRes.Fonts[fFont].GetTextSize(Rows[aIndex].Cells[I].Caption);
@@ -8567,11 +8611,11 @@ begin
           
         if not fEnabled then
           color := ReduceBrightness(color, 136);
-        TKMRenderUI.WriteText(X + COL_PAD_X + fHeader.Columns[I].Offset - hiddenColumnsTotalWidth,
-                            Y + (fItemHeight - textSize.Y) div 2 + 2,
-                            availWidth,
-                            Rows[aIndex].Cells[I].Caption,
-                            fColumns[I].Font, fColumns[I].TextAlign, color);
+        TKMRenderUI.WriteText(X + COL_PAD_X + fHeader.Offset[I] - hiddenColumnsTotalWidth,
+                              Y + TXT_PAD_Y + (fItemHeight - textSize.Y) div 2,
+                              availWidth,
+                              Rows[aIndex].Cells[I].Caption,
+                              fColumns[I].Font, fColumns[I].TextAlign, color);
       end;
   end;
 end;
