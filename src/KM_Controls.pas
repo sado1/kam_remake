@@ -1186,6 +1186,7 @@ type
     procedure SetTopIndex(aIndex: Integer); overload; virtual; abstract;
     function GetVisibleRows: Integer; virtual; abstract;
     function GetItemString(aIndex: Integer): UnicodeString; virtual; abstract;
+    function GetMouseOverRow: Integer; virtual; abstract;
 
     function KeyEventHandled(Key: Word; Shift: TShiftState): Boolean; virtual;
     function CanChangeSelection: Boolean; virtual;
@@ -1228,7 +1229,6 @@ type
     function GetSeparatorPos(aIndex: Integer): Integer;
     function GetItemTop(aIndex: Integer): Integer;
 
-    procedure UpdateMouseOverPosition(X, Y: Integer);
     function GetPaintWidth: Integer;
     function GetRenderTextWidth: Integer;
 
@@ -1251,6 +1251,7 @@ type
     function GetTopIndex: Integer; override;
     procedure SetTopIndex(aIndex: Integer); override;
     function GetItemString(aIndex: Integer): UnicodeString; override;
+    function GetMouseOverRow: Integer; override;
   public
     ItemTags: array of Integer;
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont; aStyle: TKMButtonStyle;
@@ -1435,6 +1436,7 @@ type
     function GetTopIndex: Integer; override;
     procedure SetTopIndex(aIndex: Integer); override;
     function GetItemString(aIndex: Integer): UnicodeString; override;
+    function GetMouseOverRow: Integer; override;
 
     function CanChangeSelection: Boolean; override;
 
@@ -7454,6 +7456,12 @@ begin
 end;
 
 
+function TKMListBox.GetMouseOverRow: Integer;
+begin
+  Result := fMouseOverRow;
+end;
+
+
 function TKMListBox.GetPaintWidth: Integer;
 begin
   Result := Width - fScrollBar.Width * Byte(fScrollBar.Visible);
@@ -7462,23 +7470,7 @@ end;
 
 function TKMListBox.GetRenderTextWidth: Integer;
 begin
-  Result := PaintWidth - 8;
-end;
-
-
-
-procedure TKMListBox.UpdateMouseOverPosition(X,Y: Integer);
-begin
-  fMouseOverRow := -1;
-
-  if InRange(X, AbsLeft, AbsLeft + PaintWidth)
-    and InRange(Y, AbsTop, AbsTop + Height) then
-  begin
-    fMouseOverRow := TopIndex + (Y - AbsTop) div fItemHeight;
-
-    if fMouseOverRow >= fItems.Count then
-      fMouseOverRow := -1;
-  end;
+  Result := PaintWidth - 2*TXT_PAD_X;
 end;
 
 
@@ -7490,19 +7482,39 @@ end;
 
 
 procedure TKMListBox.MouseMove(X,Y: Integer; Shift: TShiftState);
+
+  // We should use this function, to go from 1st line to the next lines, because we could have separators in the list
+  function GetItemOverIndex(aY: Integer): Integer;
+  var
+    I: Integer;
+  begin
+    Result := -1;
+    for I := 0 to Min(fItems.Count, GetVisibleRows) - 1 do
+      if InRange(aY, AbsTop + GetItemTop(I), AbsTop + GetItemTop(I) + fItemHeight) then
+        Exit(I);
+  end;
+
 var
   newIndex: Integer;
 begin
   inherited;
 
-  UpdateMouseOverPosition(X, Y);
+  fMouseOverRow := -1;
 
-  if fMouseOverRow = -1 then Exit;
+  if   not InRange(X, AbsLeft, AbsLeft + Width - (fScrollBar.Width * Byte(fScrollBar.Visible)))
+    or not InRange(Y, AbsTop, AbsTop + Height) then Exit;
 
-  newIndex := fMouseOverRow;
+  fMouseOverRow := GetItemOverIndex(Y);
+
+  if fMouseOverRow <> -1 then
+    fMouseOverRow := fMouseOverRow + TopIndex
+  else
+    Exit;
 
   if (ssLeft in Shift) then
   begin
+    newIndex := fMouseOverRow;
+
     if newIndex > fItems.Count - 1 then
     begin
       //Double clicking not allowed if we are clicking past the end of the list, but keep last item selected
@@ -7967,6 +7979,12 @@ end;
 function TKMColumnBox.GetItemString(aIndex: Integer): UnicodeString;
 begin
   Result := Rows[aIndex].Cells[SearchColumn].Caption;
+end;
+
+
+function TKMColumnBox.GetMouseOverRow: Integer;
+begin
+  Result := fMouseOverRow;
 end;
 
 
