@@ -52,6 +52,7 @@ type
     procedure House_StoreItemClickShift(Sender: TObject; Shift: TShiftState);
     procedure House_StoreFill;
 
+    procedure House_WoodcutterClick(Sender: TObject; Shift: TShiftState);
     procedure House_WoodcutterChange(Sender: TObject);
     procedure House_ArmorWSDeliveryToggle(Sender: TObject);
 
@@ -522,7 +523,7 @@ procedure TKMGUIGameHouse.Create_HouseWoodcutter;
 begin
   Panel_HouseWoodcutter := TKMPanel.Create(Panel_House,TB_PAD,76,TB_WIDTH,266);
     Button_Woodcutter := TKMButtonFlat.Create(Panel_HouseWoodcutter,0,64,32,32,51,rxGui);
-    Button_Woodcutter.OnClick := House_WoodcutterChange; //Clicking the button cycles it
+    Button_Woodcutter.OnClickShift := House_WoodcutterClick; //Clicking the button cycles it
 
     Radio_Woodcutter := TKMRadioGroup.Create(Panel_HouseWoodcutter,38,64,TB_WIDTH - 38,48,fntGrey);
     Radio_Woodcutter.ItemIndex := 0;
@@ -1057,14 +1058,26 @@ begin
 end;
 
 
+procedure TKMGUIGameHouse.House_WoodcutterClick(Sender: TObject; Shift: TShiftState);
+begin
+  if Sender <> Button_Woodcutter then Exit;
+
+  if ssLeft in Shift then
+    Radio_Woodcutter.ItemIndex := (Radio_Woodcutter.ItemIndex + 1) mod 3 //Cycle
+  else
+  if ssRight in Shift then
+    Radio_Woodcutter.ItemIndex := (Radio_Woodcutter.ItemIndex + 3 - 1) mod 3; //Cycle reverse
+
+  House_WoodcutterChange( Button_Woodcutter );
+end;
+
+
 procedure TKMGUIGameHouse.House_WoodcutterChange(Sender: TObject);
 var
   W: TKMHouseWoodcutters;
   WMode: TKMWoodcutterMode;
 begin
   W := TKMHouseWoodcutters(gMySpectator.Selected);
-  if Sender = Button_Woodcutter then
-    Radio_Woodcutter.ItemIndex := (Radio_Woodcutter.ItemIndex + 1) mod 3; //Cycle
 
   if (Sender = Button_Woodcutter) or (Sender = Radio_Woodcutter) then
   begin
