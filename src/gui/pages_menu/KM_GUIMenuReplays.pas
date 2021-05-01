@@ -89,6 +89,9 @@ const
 
 { TKMGUIMenuReplays }
 constructor TKMMenuReplays.Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText);
+const
+  PAD = 30;
+  BTN_LEFT = 180;
 begin
   inherited Create(gpReplays);
 
@@ -102,16 +105,16 @@ begin
   Panel_Replays := TKMPanel.Create(aParent, 0, 0, aParent.Width, aParent.Height);
   Panel_Replays.AnchorsStretch;
 
-  TKMLabel.Create(Panel_Replays, aParent.Width div 2, 50, gResTexts[TX_MENU_LOAD_LIST], fntOutline, taCenter);
+  TKMLabel.Create(Panel_Replays, aParent.Width div 2, 45, gResTexts[TX_MENU_LOAD_LIST], fntOutline, taCenter);
 
-  TKMBevel.Create(Panel_Replays, 22, 86, 956, 50);
-  Radio_Replays_Type := TKMRadioGroup.Create(Panel_Replays, 30, 94, 250, 40, fntGrey);
+  TKMBevel.Create(Panel_Replays, PAD, 86, aParent.Width - 2*PAD, 46);
+  Radio_Replays_Type := TKMRadioGroup.Create(Panel_Replays, PAD + 8, 91, 250, 40, fntGrey);
   Radio_Replays_Type.ItemIndex := 0;
   Radio_Replays_Type.Add(gResTexts[TX_MENU_MAPED_SPMAPS]);
   Radio_Replays_Type.Add(gResTexts[TX_MENU_MAPED_MPMAPS]);
   Radio_Replays_Type.OnChange := Replay_TypeChange;
 
-  ColumnBox_Replays := TKMColumnBox.Create(Panel_Replays, 22, 145, 956, 400, fntMetal, bsMenu);
+  ColumnBox_Replays := TKMColumnBox.Create(Panel_Replays, PAD, 140, aParent.Width - 2*PAD, 400, fntMetal, bsMenu);
   ColumnBox_Replays.SetColumns(fntOutline,
                                ['', gResTexts[TX_MENU_LOAD_FILE], gResTexts[TX_MENU_LOAD_DATE], gResTexts[TX_MENU_LOAD_MAP_NAME],
                                 gResTexts[TX_MENU_LOAD_TIME], gResTexts[TX_MENU_LOAD_GAME_VERSION]],
@@ -125,22 +128,22 @@ begin
   ColumnBox_Replays.OnColumnClick := Replays_Sort;
   ColumnBox_Replays.OnDoubleClick := Replays_Play;
 
-  MinimapView_Replay := TKMMinimapView.Create(Panel_Replays, 630, 555, 191, 191, True);
+  MinimapView_Replay := TKMMinimapView.Create(Panel_Replays, PAD + 580, 555, 191, 191, True);
   MinimapView_Replay.Anchors := [anLeft, anBottom];
 
-  Button_ReplaysPlay := TKMButton.Create(Panel_Replays, 200, 560, 350, 30, gResTexts[TX_MENU_VIEW_REPLAY], bsMenu);
+  Button_ReplaysPlay := TKMButton.Create(Panel_Replays, BTN_LEFT, 560, 350, 30, gResTexts[TX_MENU_VIEW_REPLAY], bsMenu);
   Button_ReplaysPlay.Anchors := [anLeft,anBottom];
   Button_ReplaysPlay.OnClick := Replays_Play;
 
-  Button_Rename := TKMButton.Create(Panel_Replays, 200, 597, 350, 30, gResTexts[TX_MENU_REPLAY_RENAME], bsMenu);
+  Button_Rename := TKMButton.Create(Panel_Replays, BTN_LEFT, 597, 350, 30, gResTexts[TX_MENU_REPLAY_RENAME], bsMenu);
   Button_Rename.Anchors := [anLeft,anBottom];
   Button_Rename.OnClick := RenameClick;
 
-  Button_Delete := TKMButton.Create(Panel_Replays, 200, 634, 350, 30, gResTexts[TX_MENU_REPLAY_DELETE], bsMenu);
+  Button_Delete := TKMButton.Create(Panel_Replays, BTN_LEFT, 634, 350, 30, gResTexts[TX_MENU_REPLAY_DELETE], bsMenu);
   Button_Delete.Anchors := [anLeft,anBottom];
   Button_Delete.OnClick := DeleteClick;
 
-  Button_ReplaysBack := TKMButton.Create(Panel_Replays, 200, 700, 350, 30, gResTexts[TX_MENU_BACK], bsMenu);
+  Button_ReplaysBack := TKMButton.Create(Panel_Replays, BTN_LEFT, 700, 350, 30, gResTexts[TX_MENU_BACK], bsMenu);
   Button_ReplaysBack.Anchors := [anLeft,anBottom];
   Button_ReplaysBack.OnClick := BackClick;
 
