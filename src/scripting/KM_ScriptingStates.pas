@@ -145,10 +145,6 @@ type
     function MapHeight: Integer;
 
     function MissionAuthor: UnicodeString;
-    function MissionBigDesc: UnicodeString;
-    function MissionBigDescLibx: Integer;
-    function MissionSmallDesc: UnicodeString;
-    function MissionSmallDescLibx: Integer;
 
     function MissionDifficulty: TKMMissionDifficulty;
     function MissionDifficultyLevels: TKMMissionDifficultySet;
@@ -2964,58 +2960,6 @@ function TKMScriptStates.MissionAuthor: UnicodeString;
 begin
   try
     Result := gGame.MapTxtInfo.Author;
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
-end;
-
-
-//* Version: 7000+
-//* Returns mission big description
-function TKMScriptStates.MissionBigDesc: UnicodeString;
-begin
-  try
-    Result := gGame.MapTxtInfo.BigDesc;
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
-end;
-
-
-//* Version: 7000+
-//* Returns mission big description Libx ID
-function TKMScriptStates.MissionBigDescLibx: Integer;
-begin
-  try
-    Result := gGame.MapTxtInfo.BigDescLibx;
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
-end;
-
-
-//* Version: 7000+
-//* Returns mission small description
-function TKMScriptStates.MissionSmallDesc: UnicodeString;
-begin
-  try
-    Result := gGame.MapTxtInfo.SmallDesc;
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
-end;
-
-
-//* Version: 7000+
-//* Returns mission small description Libx ID
-function TKMScriptStates.MissionSmallDescLibx: Integer;
-begin
-  try
-    Result := gGame.MapTxtInfo.SmallDescLibx;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

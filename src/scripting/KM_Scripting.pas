@@ -585,10 +585,6 @@ begin
     RegisterMethodCheck(c, 'function MapWidth: Integer');
 
     RegisterMethodCheck(c, 'function MissionAuthor: UnicodeString');
-    RegisterMethodCheck(c, 'function MissionBigDesc: UnicodeString');
-    RegisterMethodCheck(c, 'function MissionBigDescLibx: Integer');
-    RegisterMethodCheck(c, 'function MissionSmallDesc: UnicodeString');
-    RegisterMethodCheck(c, 'function MissionSmallDescLibx: Integer');
 
     RegisterMethodCheck(c, 'function MissionDifficulty: TKMMissionDifficulty');
     RegisterMethodCheck(c, 'function MissionDifficultyLevels: TKMMissionDifficultySet');
@@ -1261,10 +1257,6 @@ begin
       RegisterMethod(@TKMScriptStates.MapWidth,                                 'MapWidth');
 
       RegisterMethod(@TKMScriptStates.MissionAuthor,                            'MissionAuthor');
-      RegisterMethod(@TKMScriptStates.MissionBigDesc,                           'MissionBigDesc');
-      RegisterMethod(@TKMScriptStates.MissionBigDescLibx,                       'MissionBigDescLibx');
-      RegisterMethod(@TKMScriptStates.MissionSmallDesc,                         'MissionSmallDesc');
-      RegisterMethod(@TKMScriptStates.MissionSmallDescLibx,                     'MissionSmallDescLibx');
 
       RegisterMethod(@TKMScriptStates.MissionDifficulty,                        'MissionDifficulty');
       RegisterMethod(@TKMScriptStates.MissionDifficultyLevels,                  'MissionDifficultyLevels');
