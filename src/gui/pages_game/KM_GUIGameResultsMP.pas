@@ -870,9 +870,9 @@ begin
       Bar_Results[I,J].Tag := StatValue;
       if J in STATS_LOWER_IS_BETTER then
       begin
-        Image_ResultsRosette[I,J].Visible := (StatValue <= Bests[J]) and (Totals[J] > 0);
+        Image_ResultsRosette[I,J].Visible := (ListToShow.Count > 1) and (StatValue <= Bests[J]) and (Totals[J] > 0);
       end else
-        Image_ResultsRosette[I,J].Visible := (StatValue >= Bests[J]) and (Totals[J] > 0);
+        Image_ResultsRosette[I,J].Visible := (ListToShow.Count > 1) and (StatValue >= Bests[J]) and (Totals[J] > 0);
     end;
   end;
 
