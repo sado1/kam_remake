@@ -46,6 +46,7 @@ type
     Panel_Results: TKMPanel;
       Label_Results: TKMLabel;
       Panel_Stats: TKMPanel;
+        Label_MissionTime: TKMLabel;
         Label_Stat: array [1..9] of TKMLabel;
       Panel_StatsCharts: TKMPanel;
         Button_ResultsArmy,
@@ -78,6 +79,10 @@ uses
   KM_ResTypes,
   KM_InterfaceTypes;
 
+const
+  STAT_MISSION_TIME_LBL_TX_CONTINUES: array[Boolean] of Integer =
+                                          (TX_RESULTS_MISSION_COMPLETED_IN,
+                                           TX_RESULTS_MISSION_TIME);
 
 { TKMGUIMenuResultsSP }
 constructor TKMGameResultsSP.Create(aParent: TKMPanel; aOnStopGame: TUnicodeStringWDefEvent; aOnShowDetailedStats: TEvent);
@@ -157,6 +162,8 @@ begin
   showAIResults := gGameParams.IsReplay
                    or (fGameResultMsg in [grWin, grReplayEnd])
                    or ((fGameResultMsg = grGameContinues) and (gMySpectator.Hand.AI.HasWon));
+
+  Label_MissionTime.Caption := gResTexts[STAT_MISSION_TIME_LBL_TX_CONTINUES[fGameResultMsg = grGameContinues]];
 
   //Restart button is hidden if you won or if it is a replay
   Button_Restart.Visible := not (fGameResultMsg in [grReplayEnd, grWin, grGameContinues]);
@@ -354,7 +361,7 @@ const
   STAT_TEXT: array [1..9] of Word = (
     TX_RESULTS_UNITS_LOST,       TX_RESULTS_UNITS_DEFEATED,   TX_RESULTS_HOUSES_LOST,
     TX_RESULTS_HOUSES_DESTROYED, TX_RESULTS_HOUSES_BUILT,     TX_RESULTS_UNITS_TRAINED,
-    TX_RESULTS_WEAPONS_MADE,     TX_RESULTS_SOLDIERS_TRAINED, TX_RESULTS_MISSION_TIME);
+    TX_RESULTS_WEAPONS_MADE,     TX_RESULTS_SOLDIERS_TRAINED, TX_RESULTS_MISSION_COMPLETED_IN);
 var
   I, adv: Integer;
 begin
@@ -391,9 +398,14 @@ begin
       begin
         Inc(adv, 25);
         if I in [3,6,7] then inc(adv, 15);
-        if I = 9 then inc(adv, 45); //Last one goes right at the bottom of the scroll
-        TKMLabel.Create(Panel_Stats, 20, adv, 240, 20, gResTexts[STAT_TEXT[I]], fntMetal, taLeft);
-        Label_Stat[I] := TKMLabel.Create(Panel_Stats,260,adv,80,20,'00',fntMetal,taRight);
+        if I = 9 then
+        begin
+          Inc(adv, 45); //Last one goes right at the bottom of the scroll
+          Label_MissionTime := TKMLabel.Create(Panel_Stats, 20, adv, 240, 20, gResTexts[STAT_TEXT[I]], fntMetal, taLeft);
+        end
+        else
+          TKMLabel.Create(Panel_Stats, 20, adv, 240, 20, gResTexts[STAT_TEXT[I]], fntMetal, taLeft);
+        Label_Stat[I] := TKMLabel.Create(Panel_Stats, 260, adv, 80, 20, '00', fntMetal, taRight);
       end;
 
     Panel_StatsCharts := TKMPanel.Create(Panel_Results, 410, 170, 630, 420);
