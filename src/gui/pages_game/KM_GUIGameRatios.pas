@@ -51,9 +51,13 @@ const
       (htArmorWorkshop,  htWeaponWorkshop,  htNone,          htNone),
       (htMill,           htSwine,           htStables,       htNone));
 
+  HEADER_BASELINE_Y = 80;
+
 
 { TKMGUIGameRatios }
 constructor TKMGUIGameRatios.Create(aParent: TKMPanel; aAllowEditing: Boolean);
+const
+  HEADER_IMAGE_SIZE = 18;
 var
   I: TKMRatioTab;
   K: Integer;
@@ -72,14 +76,21 @@ begin
     Button_Ratios[I].OnClick := RatioTabClick;
   end;
 
-  Image_RatioHead := TKMImage.Create(Panel_Ratios, 0, 76, 32, 32, 327);
-  Label_RatioHead := TKMLabel.Create(Panel_Ratios, 36, 72, 148, 30, NO_TEXT, fntOutline, taLeft);
+  Image_RatioHead := TKMImage.Create(Panel_Ratios, 0,
+                                                   HEADER_BASELINE_Y - HEADER_IMAGE_SIZE div 2,
+                                                   32,
+                                                   HEADER_IMAGE_SIZE,
+                                                   327);
+  Image_RatioHead.ImageAnchors := [];
+
+  Label_RatioHead := TKMLabel.Create(Panel_Ratios, 36, HEADER_BASELINE_Y - 8, 148, 30, NO_TEXT, fntOutline, taLeft);
 
   for K := 0 to 3 do
   begin
-    Image_RatioPic[K]               := TKMImage.Create(Panel_Ratios, 0, 124 + K * 50, 32, 32, 327);
-    TrackBar_RatioValue[K]          := TKMTrackBar.Create(Panel_Ratios, 32, 116 + K * 50, 155, 0, 5);
-    TrackBar_RatioValue[K].CaptionWidth := 160;
+    Image_RatioPic[K]               := TKMImage.Create(Panel_Ratios, 0, 122 + K * 50, 32, 32, 327);
+    Image_RatioPic[K].ImageAnchors  := [anBottom];
+    TrackBar_RatioValue[K]          := TKMTrackBar.Create(Panel_Ratios, 36, 116 + K * 50, 140, 0, 5);
+    TrackBar_RatioValue[K].CaptionWidth := 150;
     TrackBar_RatioValue[K].Font     := fntGrey; //fntMetal doesn't fit the text
     TrackBar_RatioValue[K].Tag      := K;
     TrackBar_RatioValue[K].OnChange := RatiosChange;
