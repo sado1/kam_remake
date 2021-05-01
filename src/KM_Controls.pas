@@ -8838,7 +8838,7 @@ begin
 
   //Grid lines should be below selection focus
   if fShowLines then
-    for I := 0 to Math.Min(fRowCount - 1, maxItem) do
+    for I := 0 to Math.Min(fRowCount, maxItem) do
       TKMRenderUI.WriteShape(AbsLeft+1, Y + I * fItemHeight - 1, paintWidth - 2, 1, $FFBBBBBB);
 
   TKMRenderUI.SetupClipY(AbsTop, AbsTop + Height - 1);
