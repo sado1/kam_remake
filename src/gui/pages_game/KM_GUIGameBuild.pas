@@ -116,6 +116,7 @@ end;
 
 
 procedure TKMGUIGameBuild.Build_ButtonClick(Sender: TObject);
+
   procedure SetCost(aCursor: TKMCursorMode; aTag, aTexId, aWood, aStone: Word; const aCaption: UnicodeString);
   begin
     gGameCursor.Mode := aCursor;
@@ -126,6 +127,7 @@ procedure TKMGUIGameBuild.Build_ButtonClick(Sender: TObject);
     Label_Build.Caption := aCaption;
     Image_Build_Selected.TexID := aTexId;
   end;
+
 var
   I: Integer;
   house: TKMHouseType;
