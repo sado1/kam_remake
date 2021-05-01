@@ -23,10 +23,13 @@ uses
 
   function FixDelim(const aString: UnicodeString): UnicodeString;
 
-  function Max3(const A,B,C: Integer): Integer;
-  function Min3(const A,B,C: Integer): Integer;
+  function Max3(const A,B,C: Integer): Integer; overload;
+  function Min3(const A,B,C: Integer): Integer; overload;
   function Max4(const A,B,C,D: Integer): Integer;
   function Min4(const A,B,C,D: Integer): Integer;
+
+  function Max3(const A,B,C: Single): Single; overload;
+  function Min3(const A,B,C: Single): Single; overload;
 
   function GetStackTrace(aLinesCnt: Integer): UnicodeString;
 
@@ -677,6 +680,17 @@ end;
 function Min4(const A,B,C,D: Integer): Integer;
 begin
   Result := Min(Min(A, B), Min(C, D));
+end;
+
+
+function Max3(const A,B,C: Single): Single;
+begin
+  Result := Max(A, Max(B, C));
+end;
+
+function Min3(const A,B,C: Single): Single;
+begin
+  Result := Min(A, Min(B, C));
 end;
 
 
