@@ -59,7 +59,7 @@ type
 implementation
 uses
   KM_Resource, KM_ResFonts, KM_ResTexts, KM_ResTileset, KM_ResKeys,
-  KM_GameCursor, KM_RenderUI, KM_InterfaceGame,
+  KM_Cursor, KM_RenderUI, KM_InterfaceGame,
   KM_Utils,
   KM_ResTypes;
 
@@ -276,29 +276,29 @@ begin
   if isMagicWater then
   begin
     if TilesMagicWater.Down then
-      gGameCursor.Mode := cmMagicWater
+      gCursor.Mode := cmMagicWater
     else
-      gGameCursor.Mode := cmNone;
+      gCursor.Mode := cmNone;
   end else
 
   if isEyedropper then
   begin
     if TilesEyedropper.Down then
-      gGameCursor.Mode := cmEyedropper
+      gCursor.Mode := cmEyedropper
     else
-      gGameCursor.Mode := cmNone;
+      gCursor.Mode := cmNone;
   end else
 
   if isRotate then
   begin
     if TilesRotate.Down then
-      gGameCursor.Mode := cmRotateTile
+      gCursor.Mode := cmRotateTile
     else
-      gGameCursor.Mode := cmNone;
+      gCursor.Mode := cmNone;
   end else
 
   if isRandom then
-    gGameCursor.MapEdDir := 4 * Byte(TKMCheckBox(Sender).Checked) //Defined=0..3 or Random=4
+    gCursor.MapEdDir := 4 * Byte(TKMCheckBox(Sender).Checked) //Defined=0..3 or Random=4
   else
 
   if isTileNum then
@@ -416,11 +416,11 @@ begin
 //  TilesEyedropper.Down := False;
   if aIndex <> 0 then
   begin
-    gGameCursor.Mode := cmTiles;
-    gGameCursor.Tag1 := aIndex - 1; //MapEdTileRemap is 1 based, tag is 0 based
+    gCursor.Mode := cmTiles;
+    gCursor.Tag1 := aIndex - 1; //MapEdTileRemap is 1 based, tag is 0 based
 
     if TilesRandom.Checked then
-      gGameCursor.MapEdDir := 4;
+      gCursor.MapEdDir := 4;
 
     //Remember last selected Tile
     fLastTile := aIndex;
@@ -453,10 +453,10 @@ var
   I,K,L: Integer;
   TileTexID, row: Integer;
 begin
-  TilesRandom.Checked  := (gGameCursor.MapEdDir = 4);
-  TilesMagicWater.Down := gGameCursor.Mode = cmMagicWater;
-  TilesEyedropper.Down := gGameCursor.Mode = cmEyedropper;
-  TilesRotate.Down     := gGameCursor.Mode = cmRotateTile;
+  TilesRandom.Checked  := (gCursor.MapEdDir = 4);
+  TilesMagicWater.Down := gCursor.Mode = cmMagicWater;
+  TilesEyedropper.Down := gCursor.Mode = cmEyedropper;
+  TilesRotate.Down     := gCursor.Mode = cmRotateTile;
 
   TilesPaletteRandom.Checked  := TilesRandom.Checked;
   TilesPaletteMagicWater.Down := TilesMagicWater.Down;
@@ -478,20 +478,20 @@ begin
       //Show 0..N-1 to be consistent with objects and script commands like States.MapTileObject
       TilesTable[L].Hint := IntToStr(TileTexID - 1);
     //If cursor has a tile then make sure its properly selected in table as well
-    TilesTable[L].Down := (gGameCursor.Mode in [cmTiles, cmEyedropper]) and (gGameCursor.Tag1 = TileTexID - 1);
+    TilesTable[L].Down := (gCursor.Mode in [cmTiles, cmEyedropper]) and (gCursor.Tag1 = TileTexID - 1);
   end;
 
   row := TABLE_ELEMS div MAPED_TILES_Y;
   for I := 0 to MAPED_TILES_Y - 1 do
     for K := 0 to row - 1 do
-      TilesPaletteTbl[I * row + K].Down := (gGameCursor.Mode in [cmTiles, cmEyedropper]) and (gGameCursor.Tag1 = MapEdTileRemap[I * row + K] - 1)
+      TilesPaletteTbl[I * row + K].Down := (gCursor.Mode in [cmTiles, cmEyedropper]) and (gCursor.Tag1 = MapEdTileRemap[I * row + K] - 1)
 end;
 
 
 procedure TKMMapEdTerrainTiles.Show;
 begin
   TilesSet(fLastTile);
-  gGameCursor.MapEdDir := 0;
+  gCursor.MapEdDir := 0;
   Panel_Tiles.Show;
 end;
 

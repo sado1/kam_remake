@@ -40,7 +40,7 @@ type
 
 implementation
 uses
-  KM_ResTexts, KM_GameCursor, KM_RenderUI, KM_InterfaceGame, KM_Pics, KM_Defaults, KM_Utils;
+  KM_ResTexts, KM_Cursor, KM_RenderUI, KM_InterfaceGame, KM_Pics, KM_Defaults, KM_Utils;
 
 
 { TKMMapEdMission }
@@ -96,7 +96,7 @@ end;
 procedure TKMMapEdMission.PageChange(Sender: TObject);
 begin
   //Reset cursor mode
-  gGameCursor.Mode := cmNone;
+  gCursor.Mode := cmNone;
 
   //Hide existing pages
   fGuiMissionMode.Hide;

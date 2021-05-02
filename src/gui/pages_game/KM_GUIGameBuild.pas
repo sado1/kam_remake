@@ -39,7 +39,7 @@ type
 
 implementation
 uses
-  KM_RenderUI, KM_GameCursor, KM_HandsCollection, KM_ResTexts, KM_Resource, KM_ResFonts,
+  KM_RenderUI, KM_Cursor, KM_HandsCollection, KM_ResTexts, KM_Resource, KM_ResFonts,
   KM_Utils,
   KM_ResTypes;
 
@@ -119,8 +119,8 @@ procedure TKMGUIGameBuild.Build_ButtonClick(Sender: TObject);
 
   procedure SetCost(aCursor: TKMCursorMode; aTag, aTexId, aWood, aStone: Word; const aCaption: UnicodeString);
   begin
-    gGameCursor.Mode := aCursor;
-    gGameCursor.Tag1 := aTag;
+    gCursor.Mode := aCursor;
+    gCursor.Tag1 := aTag;
 
     Label_BuildCost_Wood.Caption  := IfThen(aWood <> 0, IntToStr(aWood), '-');
     Label_BuildCost_Stone.Caption := IfThen(aStone <> 0, IntToStr(aStone), '-');
@@ -135,7 +135,7 @@ var
 begin
   if Sender = nil then
   begin
-    gGameCursor.Mode := cmNone;
+    gCursor.Mode := cmNone;
     Exit;
   end;
 

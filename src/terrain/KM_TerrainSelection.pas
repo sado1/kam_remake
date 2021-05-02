@@ -87,7 +87,7 @@ implementation
 uses
   SysUtils,
   KM_Resource, KM_HandsCollection,
-  KM_Game, KM_GameCursor, KM_RenderAux, KM_CommonUtils;
+  KM_Game, KM_Cursor, KM_RenderAux, KM_CommonUtils;
 
 
 { TKMSelection }
@@ -133,10 +133,10 @@ var
   MoveX, MoveY: Integer;
 begin
   //Last row/col of the map is not visible or selectable
-  CursorFloat.X := EnsureRange(gGameCursor.Float.X, 0.1, gTerrain.MapX-1 - 0.1);
-  CursorFloat.Y := EnsureRange(gGameCursor.Float.Y, 0.1, gTerrain.MapY-1 - 0.1);
-  CursorCell.X := EnsureRange(gGameCursor.Cell.X, 1, gTerrain.MapX-1);
-  CursorCell.Y := EnsureRange(gGameCursor.Cell.Y, 1, gTerrain.MapY-1);
+  CursorFloat.X := EnsureRange(gCursor.Float.X, 0.1, gTerrain.MapX-1 - 0.1);
+  CursorFloat.Y := EnsureRange(gCursor.Float.Y, 0.1, gTerrain.MapY-1 - 0.1);
+  CursorCell.X := EnsureRange(gCursor.Cell.X, 1, gTerrain.MapX-1);
+  CursorCell.Y := EnsureRange(gCursor.Cell.Y, 1, gTerrain.MapY-1);
 
   case fSelectionEdit of
     seNone:       ;
@@ -180,10 +180,10 @@ var
   CursorCell: TKMPoint;
 begin
   //Last row/col of the map is not visible or selectable
-  CursorFloat.X := EnsureRange(gGameCursor.Float.X, 0.1, gTerrain.MapX-1 - 0.1);
-  CursorFloat.Y := EnsureRange(gGameCursor.Float.Y, 0.1, gTerrain.MapY-1 - 0.1);
-  CursorCell.X := EnsureRange(gGameCursor.Cell.X, 1, gTerrain.MapX-1);
-  CursorCell.Y := EnsureRange(gGameCursor.Cell.Y, 1, gTerrain.MapY-1);
+  CursorFloat.X := EnsureRange(gCursor.Float.X, 0.1, gTerrain.MapX-1 - 0.1);
+  CursorFloat.Y := EnsureRange(gCursor.Float.Y, 0.1, gTerrain.MapY-1 - 0.1);
+  CursorCell.X := EnsureRange(gCursor.Cell.X, 1, gTerrain.MapX-1);
+  CursorCell.Y := EnsureRange(gCursor.Cell.Y, 1, gTerrain.MapY-1);
 
   if fSelectionMode = smSelecting then
   begin

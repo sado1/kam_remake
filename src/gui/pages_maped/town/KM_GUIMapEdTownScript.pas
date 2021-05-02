@@ -43,7 +43,7 @@ implementation
 uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLType, {$ENDIF}
-  KM_Game, KM_HandsCollection, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_InterfaceGame, KM_GameCursor,
+  KM_Game, KM_HandsCollection, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_InterfaceGame, KM_Cursor,
   KM_Defaults, KM_Pics, KM_Hand, KM_Utils,
   KM_ResTypes;
 
@@ -194,11 +194,11 @@ begin
 
   if Button_AIStart.Down then
   begin
-    gGameCursor.Mode := cmMarkers;
-    gGameCursor.Tag1 := MARKER_AISTART;
+    gCursor.Mode := cmMarkers;
+    gCursor.Tag1 := MARKER_AISTART;
   end
   else
-    gGameCursor.Mode := cmNone;
+    gCursor.Mode := cmNone;
 end;
 
 
@@ -216,7 +216,7 @@ end;
 
 procedure TKMMapEdTownScript.UpdateState;
 begin
-  Button_AIStart.Down := (gGameCursor.Mode = cmMarkers) and (gGameCursor.Tag1 = MARKER_AISTART);
+  Button_AIStart.Down := (gCursor.Mode = cmMarkers) and (gCursor.Tag1 = MARKER_AISTART);
 end;
 
 

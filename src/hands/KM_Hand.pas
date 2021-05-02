@@ -248,7 +248,7 @@ type
 implementation
 uses
   Classes, SysUtils, KromUtils, Math, TypInfo,
-  KM_GameCursor, KM_Game, KM_GameParams, KM_Terrain,
+  KM_Cursor, KM_Game, KM_GameParams, KM_Terrain,
   KM_HandsCollection, KM_Sound, KM_AIFields, KM_MapEditorHistory,
   KM_Resource, KM_ResSound, KM_ResTexts, KM_ResMapElements, KM_ScriptingEvents, KM_ResUnits,
   KM_CommonUtils, KM_GameSettings,
@@ -2094,8 +2094,8 @@ begin
   and (gMySpectator.HandID = ID)
   and not fChooseLocation.Placed then
   begin
-    gGameCursor.Mode := cmHouses;
-    gGameCursor.Tag1 := Byte(htStore);
+    gCursor.Mode := cmHouses;
+    gCursor.Tag1 := Byte(htStore);
   end;
 end;
 
@@ -2139,7 +2139,7 @@ begin
       AddUnit(UT, KMPoint(aEntrance.X,aEntrance.Y+1));
   // Finish action
   fChooseLocation.Placed := True;
-  gGameCursor.Mode := cmNone; // Reset cursor
+  gCursor.Mode := cmNone; // Reset cursor
 end;
 
 

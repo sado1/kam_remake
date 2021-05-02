@@ -51,7 +51,7 @@ type
 
 implementation
 uses
-  KM_HandsCollection, KM_ResTexts, KM_GameCursor,
+  KM_HandsCollection, KM_ResTexts, KM_Cursor,
   KM_InterfaceGame, KM_RenderUI, KM_Game, KM_Utils;
 
 
@@ -106,7 +106,7 @@ end;
 procedure TKMMapEdTown.PageChange(Sender: TObject);
 begin
   //Reset cursor mode
-  gGameCursor.Mode := cmNone;
+  gCursor.Mode := cmNone;
 
   //Hide existing pages
   fGuiHouses.Hide;

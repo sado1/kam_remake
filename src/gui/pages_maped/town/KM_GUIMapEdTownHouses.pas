@@ -38,7 +38,7 @@ type
 
 implementation
 uses
-  KM_ResTexts, KM_GameCursor, KM_Resource, KM_ResHouses, KM_ResFonts,
+  KM_ResTexts, KM_Cursor, KM_Resource, KM_ResHouses, KM_ResFonts,
   KM_RenderUI, KM_Terrain, KM_Points, KM_Utils,
   KM_ResTypes;
 
@@ -138,27 +138,27 @@ var
   I: Integer;
 begin
   //Reset cursor and see if it needs to be changed
-  gGameCursor.Mode := cmNone;
+  gCursor.Mode := cmNone;
 
   if Sender = Button_BuildCancel then
-    gGameCursor.Mode := cmErase
+    gCursor.Mode := cmErase
   else
   if Sender = Button_BuildRoad then
-    gGameCursor.Mode := cmRoad
+    gCursor.Mode := cmRoad
   else
   if Sender = Button_BuildField then
-    gGameCursor.Mode := cmField
+    gCursor.Mode := cmField
   else
   if Sender = Button_BuildWine then
-    gGameCursor.Mode := cmWine
+    gCursor.Mode := cmWine
   else
 
   for I := 1 to GUI_HOUSE_COUNT do
     if GUIHouseOrder[I] <> htNone then
       if Sender = Button_Build[I] then
       begin
-        gGameCursor.Mode := cmHouses;
-        gGameCursor.Tag1 := Byte(GUIHouseOrder[I]);
+        gCursor.Mode := cmHouses;
+        gCursor.Tag1 := Byte(GUIHouseOrder[I]);
       end;
 
   Town_BuildRefresh;
@@ -169,10 +169,10 @@ procedure TKMMapEdTownHouses.Town_BuildRefresh;
 var
   I: Integer;
 begin
-  Button_BuildCancel.Down := (gGameCursor.Mode = cmErase);
-  Button_BuildRoad.Down   := (gGameCursor.Mode = cmRoad);
-  Button_BuildField.Down  := (gGameCursor.Mode = cmField);
-  Button_BuildWine.Down   := (gGameCursor.Mode = cmWine);
+  Button_BuildCancel.Down := (gCursor.Mode = cmErase);
+  Button_BuildRoad.Down   := (gCursor.Mode = cmRoad);
+  Button_BuildField.Down  := (gCursor.Mode = cmField);
+  Button_BuildWine.Down   := (gCursor.Mode = cmWine);
 
   Label_HouseConstructionWood.Caption := '-';
   Label_HouseConstructionStone.Caption := '-';
@@ -180,7 +180,7 @@ begin
   for I := 1 to GUI_HOUSE_COUNT do
     if GUIHouseOrder[I] <> htNone then
     begin
-      Button_Build[I].Down := (gGameCursor.Mode = cmHouses) and (gGameCursor.Tag1 = Byte(GUIHouseOrder[I]));
+      Button_Build[I].Down := (gCursor.Mode = cmHouses) and (gCursor.Tag1 = Byte(GUIHouseOrder[I]));
       if Button_Build[I].Down then
       begin
         Label_HouseConstructionWood.Caption  := IntToStr(gRes.Houses[GUIHouseOrder[I]].WoodCost);
@@ -233,8 +233,8 @@ procedure TKMMapEdTownHouses.UpdateStateIdle;
 var
   P: TKMPoint;
 begin
-  P := gGameCursor.Cell;
-  if (gGameCursor.Mode = cmField)
+  P := gCursor.Cell;
+  if (gCursor.Mode = cmField)
     and gTerrain.TileIsCornField(P) then
   begin
     Button_BuildField.Caption := IntToStr(gTerrain.GetCornStage(P) + 1);
@@ -246,7 +246,7 @@ begin
     Button_BuildField.TexOffsetY := 0;
   end;
 
-  if (gGameCursor.Mode = cmWine)
+  if (gCursor.Mode = cmWine)
     and gTerrain.TileIsWineField(P) then
   begin
     Button_BuildWine.Caption := IntToStr(gTerrain.GetWineStage(P) + 1);

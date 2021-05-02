@@ -164,7 +164,7 @@ uses
   KM_FormLogistics,
   KM_Main, KM_Controls, KM_Log, KM_Sound, KM_GameInputProcess, KM_GameInputProcess_Multi,
   KM_GameSavePoints,
-  KM_InterfaceDefaults, KM_GameCursor, KM_ResTexts,
+  KM_InterfaceDefaults, KM_Cursor, KM_ResTexts,
   KM_Saves, KM_CommonUtils, KM_RandomChecks, KM_DevPerfLog, KM_DevPerfLogTypes;
 
 
@@ -187,7 +187,7 @@ begin
 
   fChat := TKMChat.Create;
 
-  gGameCursor := TKMGameCursor.Create;
+  gCursor := TKMCursor.Create;
 
   if fGameSettings.DebugSaveRandomChecks and SAVE_RANDOM_CHECKS then
     gRandomCheckLogger := TKMRandomCheckLogger.Create;
@@ -277,7 +277,7 @@ begin
   FreeThenNil(gMusic);
   FreeAndNil(fNetworking);
   FreeAndNil(gRandomCheckLogger);
-  FreeAndNil(gGameCursor);
+  FreeAndNil(gCursor);
 
   FreeThenNil(gRender);
 
@@ -461,8 +461,8 @@ begin
   begin
     fOnCursorUpdate(SB_ID_CURSOR_COORD, Format('Cursor: %d:%d', [X, Y]));
     fOnCursorUpdate(SB_ID_TILE,         Format('Tile: %.1f:%.1f [%d:%d]',
-                               [gGameCursor.Float.X, gGameCursor.Float.Y,
-                               gGameCursor.Cell.X, gGameCursor.Cell.Y]));
+                               [gCursor.Float.X, gCursor.Float.Y,
+                               gCursor.Cell.X, gCursor.Cell.Y]));
     if SHOW_CONTROLS_ID then
     begin
       if gGame <> nil then
@@ -1221,7 +1221,7 @@ begin
 
   if not aForPrintScreen and (gGame <> nil) then
     if Assigned(fOnCursorUpdate) then
-      fOnCursorUpdate(SB_ID_OBJECT, 'Obj: ' + IntToStr(gGameCursor.ObjectUID));
+      fOnCursorUpdate(SB_ID_OBJECT, 'Obj: ' + IntToStr(gCursor.ObjectUID));
 end;
 
 

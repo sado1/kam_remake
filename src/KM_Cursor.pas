@@ -1,4 +1,4 @@
-unit KM_GameCursor;
+unit KM_Cursor;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -6,7 +6,7 @@ uses
 
 
 type
-  TKMGameCursor = class
+  TKMCursor = class
   private
     fMode: TKMCursorMode; //Modes used in game (building, unit, road, etc..)
     procedure SetMode(aMode: TKMCursorMode);
@@ -54,14 +54,14 @@ type
 
 
 var
-  gGameCursor: TKMGameCursor;
+  gCursor: TKMCursor;
 
 
 implementation
 
 
 {TKMGameCursor}
-constructor TKMGameCursor.Create;
+constructor TKMCursor.Create;
 begin
   inherited;
 
@@ -69,7 +69,7 @@ begin
 end;
 
 
-procedure TKMGameCursor.Reset;
+procedure TKMCursor.Reset;
 begin
   DragOffset := KMPOINT_ZERO;
   MapEdUseMagicBrush := False;
@@ -84,7 +84,7 @@ begin
 end;
 
 
-procedure TKMGameCursor.SetMode(aMode: TKMCursorMode);
+procedure TKMCursor.SetMode(aMode: TKMCursorMode);
 begin
   fMode := aMode;
 

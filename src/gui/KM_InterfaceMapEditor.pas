@@ -154,7 +154,7 @@ type
 
 implementation
 uses
-  KM_HandsCollection, KM_ResTexts, KM_Game, KM_GameParams, KM_GameCursor,
+  KM_HandsCollection, KM_ResTexts, KM_Game, KM_GameParams, KM_Cursor,
   KM_Resource, KM_TerrainDeposits, KM_ResCursors, KM_ResKeys, KM_GameApp,
   KM_Hand, KM_AIDefensePos, KM_RenderUI, KM_ResFonts, KM_CommonClasses, KM_UnitWarrior,
   KM_Utils,
@@ -375,8 +375,8 @@ end;
 procedure TKMapEdInterface.Main_ButtonClick(Sender: TObject);
 begin
   //Reset cursor mode
-  gGameCursor.Mode := cmNone;
-  gGameCursor.Tag1 := 0;
+  gCursor.Mode := cmNone;
+  gCursor.Tag1 := 0;
 
   //Reset shown item when user clicks on any of the main buttons
   gMySpectator.Selected := nil;
@@ -477,8 +477,8 @@ begin
   fGuiTown.UpdateState;
   fGuiPlayer.UpdateState;
 
-  Button_ChangeOwner.Down := gGameCursor.Mode = cmPaintBucket;
-  Button_UniversalEraser.Down := gGameCursor.Mode = cmUniversalEraser;
+  Button_ChangeOwner.Down := gCursor.Mode = cmPaintBucket;
+  Button_UniversalEraser.Down := gCursor.Mode = cmUniversalEraser;
 end;
 
   
@@ -615,9 +615,9 @@ procedure TKMapEdInterface.SetPaintBucketMode(aSetPaintBucketMode: Boolean);
 begin
   Button_ChangeOwner.Down := aSetPaintBucketMode;
   if aSetPaintBucketMode then
-    gGameCursor.Mode := cmPaintBucket
+    gCursor.Mode := cmPaintBucket
   else
-    gGameCursor.Mode := cmNone;
+    gCursor.Mode := cmNone;
 end;
 
 
@@ -626,12 +626,12 @@ begin
   Button_UniversalEraser.Down := aSetUniversalEraserMode;
   if aSetUniversalEraserMode then
   begin
-    gGameCursor.Mode := cmUniversalEraser;
+    gCursor.Mode := cmUniversalEraser;
     // Clear selected object, as it could be deleted
     gMySpectator.Selected := nil;
     HidePages;
   end else
-    gGameCursor.Mode := cmNone;
+    gCursor.Mode := cmNone;
 end;
 
 
@@ -727,7 +727,7 @@ begin
   if aIsRMB then
   begin
     // When global tools are used, just cancel the tool, even if some page is open
-    if not (gGameCursor.Mode in [cmPaintBucket, cmUniversalEraser]) then
+    if not (gCursor.Mode in [cmPaintBucket, cmUniversalEraser]) then
     begin
       //These pages use RMB
       if fGuiTerrain.IsVisible(ttHeights) then Exit;
@@ -739,7 +739,7 @@ begin
     end;
 
     // We rotate tile on RMB
-    if gGameCursor.Mode = cmTiles then Exit;
+    if gCursor.Mode = cmTiles then Exit;
   end;
 
   fGuiTerrain.Cancel_Clicked(aHandled);
@@ -877,7 +877,7 @@ begin
   inherited KeyDown(Key, Shift, keyHandled);
   if keyHandled then Exit;
 
-  gGameCursor.SState := Shift; // Update Shift state on KeyDown
+  gCursor.SState := Shift; // Update Shift state on KeyDown
 
   keyPassedToModal := False;
   //Pass Key to Modal pages first
@@ -999,7 +999,7 @@ begin
     aHandled := True;
   end;
 
-  gGameCursor.SState := Shift; // Update Shift state on KeyUp
+  gCursor.SState := Shift; // Update Shift state on KeyUp
 end;
 
 
@@ -1015,7 +1015,7 @@ begin
   if fMyControls.CtrlOver <> nil then
     Exit;
 
-  if (Button = mbLeft) and (gGameCursor.Mode = cmNone) then
+  if (Button = mbLeft) and (gCursor.Mode = cmNone) then
   begin
     obj := gMySpectator.HitTestCursor;
     if obj <> nil then
@@ -1023,7 +1023,7 @@ begin
       UpdateSelection;
       fDragObject := obj;
       if obj is TKMHouse then
-        fDragHouseOffset := KMPointSubtract(TKMHouse(obj).Entrance, gGameCursor.Cell); //Save drag point adjustement to house position
+        fDragHouseOffset := KMPointSubtract(TKMHouse(obj).Entrance, gCursor.Cell); //Save drag point adjustement to house position
       fDragObjectReady := True;
       fDragObjMousePosStart := KMPoint(X,Y);
     end;
@@ -1043,9 +1043,9 @@ end;
 
 procedure TKMapEdInterface.Update_Label_Coordinates;
 begin
-  Label_Coordinates.Caption := Format('X: %d, Y: %d, Z: %d', [gGameCursor.Cell.X, gGameCursor.Cell.Y,
-                                                              gTerrain.Land^[EnsureRange(Round(gGameCursor.Float.Y + 1), 1, gTerrain.MapY),
-                                                                            EnsureRange(Round(gGameCursor.Float.X + 1), 1, gTerrain.MapX)].RenderHeight]);
+  Label_Coordinates.Caption := Format('X: %d, Y: %d, Z: %d', [gCursor.Cell.X, gCursor.Cell.Y,
+                                                              gTerrain.Land^[EnsureRange(Round(gCursor.Float.Y + 1), 1, gTerrain.MapY),
+                                                                            EnsureRange(Round(gCursor.Float.X + 1), 1, gTerrain.MapX)].RenderHeight]);
 end;
 
 
@@ -1083,7 +1083,7 @@ begin
     //kmcEdit and kmcDragUp are handled by Controls.MouseMove (it will reset them when required)
     if not fViewport.Scrolling and not (gRes.Cursors.Cursor in [kmcEdit,kmcDragUp]) then
       gRes.Cursors.Cursor := kmcDefault;
-    gGameCursor.SState := []; //Don't do real-time elevate when the mouse is over controls, only terrain
+    gCursor.SState := []; //Don't do real-time elevate when the mouse is over controls, only terrain
     Exit;
   end
   else
@@ -1104,7 +1104,7 @@ var
 begin
   UpdateGameCursor(X, Y, Shift);
 
-  if gGameCursor.Mode = cmPaintBucket then
+  if gCursor.Mode = cmPaintBucket then
   begin
     gRes.Cursors.Cursor := kmcPaintBucket;
     Exit;
@@ -1116,9 +1116,9 @@ begin
     gRes.Cursors.Cursor := kmcDrag;
     MoveObjectToCursorCell(fDragObject);
   end else
-  if gGameCursor.Mode = cmNone then
+  if gCursor.Mode = cmNone then
   begin
-    marker := gGame.MapEditor.HitTest(gGameCursor.Cell.X, gGameCursor.Cell.Y);
+    marker := gGame.MapEditor.HitTest(gCursor.Cell.X, gCursor.Cell.Y);
     if marker.MarkerType <> mmtNone then
       gRes.Cursors.Cursor := kmcInfo
     else
@@ -1189,8 +1189,8 @@ end;
 
 function TKMapEdInterface.DoResetCursorMode: Boolean;
 begin
-  Result := gGameCursor.Mode <> cmNone;
-  gGameCursor.Mode := cmNone;
+  Result := gCursor.Mode <> cmNone;
+  gCursor.Mode := cmNone;
 end;
 
 
@@ -1199,10 +1199,10 @@ procedure TKMapEdInterface.DragHouseModeStart(const aHouseNewPos, aHouseOldPos: 
 
   procedure SetCursorModeHouse(aHouseType: TKMHouseType);
   begin
-    gGameCursor.Mode := cmHouses;
-    gGameCursor.Tag1 := Byte(aHouseType);
+    gCursor.Mode := cmHouses;
+    gCursor.Tag1 := Byte(aHouseType);
     //Update cursor DragOffset to render house markups at proper positions
-    gGameCursor.DragOffset := fDragHouseOffset;
+    gCursor.DragOffset := fDragHouseOffset;
   end;
 
 var
@@ -1225,7 +1225,7 @@ begin
   if (fDragObject is TKMHouse) then
   begin
     H := TKMHouse(fDragObject);
-    H.SetPosition(KMPointAdd(gGameCursor.Cell, fDragHouseOffset));
+    H.SetPosition(KMPointAdd(gCursor.Cell, fDragHouseOffset));
     DoResetCursorMode;
   end;
 end;
@@ -1233,7 +1233,7 @@ end;
 
 function TKMapEdInterface.IsDragHouseModeOn: Boolean;
 begin
-  Result := fDragingObject and (fDragObject is TKMHouse) and (gGameCursor.Mode = cmHouses);
+  Result := fDragingObject and (fDragObject is TKMHouse) and (gCursor.Mode = cmHouses);
 end;
 
 
@@ -1251,7 +1251,7 @@ begin
 
     houseOldPos := H.Position;
 
-    houseNewPos := KMPointAdd(gGameCursor.Cell, fDragHouseOffset);
+    houseNewPos := KMPointAdd(gCursor.Cell, fDragHouseOffset);
 
     if not fDragingObject then
       H.SetPosition(houseNewPos)  //handles Right click, when house is selected
@@ -1266,13 +1266,13 @@ begin
     if aObjectToMove is TKMUnitWarrior then
       aObjectToMove := gHands.GetGroupByMember(TKMUnitWarrior(aObjectToMove))
     else
-      TKMUnit(aObjectToMove).SetUnitPosition(gGameCursor.Cell);
+      TKMUnit(aObjectToMove).SetUnitPosition(gCursor.Cell);
   end;
 
   //Unit group move
   if aObjectToMove is TKMUnitGroup then
     //Just move group to specified location
-    TKMUnitGroup(aObjectToMove).SetGroupPosition(gGameCursor.Cell);
+    TKMUnitGroup(aObjectToMove).SetGroupPosition(gCursor.Cell);
 end;
 
 
@@ -1312,7 +1312,7 @@ begin
   if gRes.Cursors.Cursor = kmcDrag then
     gRes.Cursors.Cursor := kmcDefault;
 
-  if gGameCursor.Mode = cmHouses then
+  if gCursor.Mode = cmHouses then
     DoResetCursorMode;
 end;
 
@@ -1346,11 +1346,11 @@ begin
   fMouseDownOnMap := False;
 
   case Button of
-    mbLeft:   if gGameCursor.Mode = cmNone then
+    mbLeft:   if gCursor.Mode = cmNone then
               begin
                 //If there are some additional layers we first HitTest them
                 //since they are rendered ontop of Houses/Objects
-                marker := gGame.MapEditor.HitTest(gGameCursor.Cell.X, gGameCursor.Cell.Y);
+                marker := gGame.MapEditor.HitTest(gCursor.Cell.X, gCursor.Cell.Y);
 
                 if marker.MarkerType <> mmtNone then
                 begin
@@ -1366,13 +1366,13 @@ begin
               end;
     mbRight:  begin
                 //Right click performs some special functions and shortcuts
-                if gGameCursor.Mode = cmTiles then
-                  gGameCursor.MapEdDir := (gGameCursor.MapEdDir + 1) mod 4; //Rotate tile direction
+                if gCursor.Mode = cmTiles then
+                  gCursor.MapEdDir := (gCursor.MapEdDir + 1) mod 4; //Rotate tile direction
 
                 //Check if we are in rally/cutting marker mode
-                if (gGameCursor.Mode = cmMarkers) and (gGameCursor.Tag1 = MARKER_RALLY_POINT) then
+                if (gCursor.Mode = cmMarkers) and (gCursor.Tag1 = MARKER_RALLY_POINT) then
                 begin
-                  gGameCursor.Mode := cmNone;
+                  gCursor.Mode := cmNone;
                   Exit;
                 end;
 
@@ -1382,9 +1382,9 @@ begin
                   if ssShift in Shift then
                   begin
                     if gMySpectator.Selected is TKMHouseWFlagPoint then
-                      TKMHouseWFlagPoint(gMySpectator.Selected).FlagPoint := gGameCursor.Cell;
+                      TKMHouseWFlagPoint(gMySpectator.Selected).FlagPoint := gCursor.Cell;
                   end else
-                    TKMHouse(gMySpectator.Selected).SetPosition(gGameCursor.Cell); //Can place is checked in SetPosition
+                    TKMHouse(gMySpectator.Selected).SetPosition(gCursor.Cell); //Can place is checked in SetPosition
                   Exit;
                 end;
 
@@ -1392,24 +1392,24 @@ begin
                 begin
                   G := TKMUnitGroup(gMySpectator.Selected);
                   //Use Shift to set group order
-                  if ssShift in gGameCursor.SState then
+                  if ssShift in gCursor.SState then
                   begin
-                    U := gTerrain.UnitsHitTest(gGameCursor.Cell.X, gGameCursor.Cell.Y);
-                    H := gHands.HousesHitTest(gGameCursor.Cell.X, gGameCursor.Cell.Y);
+                    U := gTerrain.UnitsHitTest(gCursor.Cell.X, gCursor.Cell.Y);
+                    H := gHands.HousesHitTest(gCursor.Cell.X, gCursor.Cell.Y);
                     //If there's any enemy unit or house on specified tile - set attack target
                     if ((U <> nil) and (gHands[U.Owner].Alliances[G.Owner] = atEnemy))
                     or ((H <> nil) and (gHands[H.Owner].Alliances[G.Owner] = atEnemy)) then
                       G.MapEdOrder.Order := gioAttackPosition
                     //Else order group walk to specified location
                     else
-                    if G.CanWalkTo(KMPoint(gGameCursor.Cell.X, gGameCursor.Cell.Y), 0) then
+                    if G.CanWalkTo(KMPoint(gCursor.Cell.X, gCursor.Cell.Y), 0) then
                       G.MapEdOrder.Order := gioSendGroup
                     else
                     //Can't take any orders: f.e. can't walk to unwalkable tile (water, mountain) or attack allied houses
                       G.MapEdOrder.Order := gioNoOrder;
                     //Save target coordinates
-                    G.MapEdOrder.Pos.Loc.X := gGameCursor.Cell.X;
-                    G.MapEdOrder.Pos.Loc.Y := gGameCursor.Cell.Y;
+                    G.MapEdOrder.Pos.Loc.X := gCursor.Cell.X;
+                    G.MapEdOrder.Pos.Loc.Y := gCursor.Cell.Y;
                     G.MapEdOrder.Pos.Dir := G.Direction;
                     //Update group GUI
                     fGuiUnit.Show(G);
@@ -1421,11 +1421,11 @@ begin
                 if fGuiMarkerDefence.Visible then
                 begin
                   DP := gHands[fGuiMarkerDefence.Owner].AI.General.DefencePositions[fGuiMarkerDefence.Index];
-                  DP.Position := KMPointDir(gGameCursor.Cell, DP.Position.Dir);
+                  DP.Position := KMPointDir(gCursor.Cell, DP.Position.Dir);
                 end;
 
                 if fGuiMarkerReveal.Visible then
-                  gGame.MapEditor.Revealers[fGuiMarkerReveal.Owner][fGuiMarkerReveal.Index] := gGameCursor.Cell;
+                  gGame.MapEditor.Revealers[fGuiMarkerReveal.Owner][fGuiMarkerReveal.Index] := gCursor.Cell;
               end;
   end;
 
@@ -1434,7 +1434,7 @@ begin
   gGame.MapEditor.MouseUp(Button, True);
 
   //Update the XY coordinates of the Center Screen button
-  if (gGameCursor.Mode = cmMarkers) and (gGameCursor.Tag1 = MARKER_CENTERSCREEN) then
+  if (gCursor.Mode = cmMarkers) and (gCursor.Tag1 = MARKER_CENTERSCREEN) then
     fGuiPlayer.ChangePlayer; //Forces an update
 
   Exclude(Shift, ssRight);
@@ -1455,7 +1455,7 @@ begin
 
   if aHandled then Exit;
   
-  if gGameCursor.Mode in [cmField, cmWine] then
+  if gCursor.Mode in [cmField, cmWine] then
   begin
     if (X < 0) or (Y < 0) then Exit; // This happens when you use the mouse wheel on the window frame
 
