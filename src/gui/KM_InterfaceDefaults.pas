@@ -31,8 +31,6 @@ type
 
   TKMUserInterfaceCommon = class
   private
-//    fDbgHintX: Integer;
-//    fDbgHintY: Integer;
     fHintOver: TKMControl;
     fHintPrevOver: TKMControl;
     fHintPrepareShowTick: Cardinal;
@@ -41,7 +39,8 @@ type
     fHintCtrl: TKMControl;
     fHintStage: TKMHintStage;
 
-//    fHintDebug: TKMShape;
+    fHintDebug: TKMShape;
+    fHintDebugLbl: TKMLabel;
 
 //    fPrevHint: TKMControl;
 //    fPrevHintMessage: UnicodeString;
@@ -66,6 +65,8 @@ type
     function GetHintPositionBase: TKMPoint; virtual;
     function GetHintFont: TKMFont; virtual; abstract;
     function GetHintKind: TKMHintKind; virtual; abstract;
+
+    procedure UpdateCursor(X, Y: Integer; Shift: TShiftState);
 
     procedure ResetHint;
   public
@@ -126,7 +127,8 @@ var
 implementation
 uses
   SysUtils, Math,
-  KM_Resource, KM_ResKeys, KM_RenderUI, KM_Defaults, KM_DevPerfLog, KM_DevPerfLogTypes,
+  KM_Resource, KM_ResKeys, KM_RenderUI, KM_RenderAux, KM_Defaults, KM_DevPerfLog, KM_DevPerfLogTypes,
+  KM_Cursor,
   KM_Music,
   KM_Sound,
   KM_GameSettings,
@@ -163,6 +165,11 @@ begin
   SetHintBackStaticAlpha;
   Bevel_HintBG.Hide;
   Label_Hint := TKMLabel.Create(Panel_Main, hintBase.X + 40, hintBase.Y - 21, 0, 0, '', GetHintFont, taLeft);
+
+  fHintDebug := TKMShape.Create(Panel_Main, 0, 0, 50, 20);
+  fHintDebug.FillColor := $80888888;
+  fHintDebug.LineColor := $B0888888;
+  fHintDebugLbl := TKMLabel.Create(Panel_Main, 0, 0, '', fntMonospaced, taLeft);
 end;
 
 
@@ -315,6 +322,7 @@ procedure TKMUserInterfaceCommon.MouseMove(Shift: TShiftState; X, Y: Integer);
 var
   mouseMoveHandled: Boolean;
 begin
+  UpdateCursor(X, Y, Shift);
   MouseMove(Shift, X, Y, mouseMoveHandled);
 end;
 
@@ -339,20 +347,9 @@ end;
 
 
 procedure TKMUserInterfaceCommon.Resize(X, Y: Word);
-//var
-//  hintBase: TKMPoint;
 begin
   Panel_Main.Width := X;
   Panel_Main.Height := Y;
-//
-//  if (Bevel_HintBG = nil) or (Label_Hint = nil) then
-//    Exit;
-
-//  hintBase := GetHintPositionBase;
-//  Bevel_HintBG.Left := hintBase.X + 35;
-//  Bevel_HintBG.Top := hintBase.Y - 23;
-//  Label_Hint.Left := hintBase.X + 40;
-//  Label_Hint.Top := hintBase.Y - 21;
 end;
 
 
@@ -365,12 +362,18 @@ begin
 end;
 
 
+procedure TKMUserInterfaceCommon.UpdateCursor(X, Y: Integer; Shift: TShiftState);
+begin
+  gCursor.Pixel.X := X;
+  gCursor.Pixel.Y := Y;
+  gCursor.SState := Shift;
+end;
+
+
 procedure TKMUserInterfaceCommon.UpdateHint(aTickCount: Cardinal);
 const
   FADE_IN_TIME = 10;
   FADE_RESET_TIME = 5;
-//var
-//  hintBase: TKMPoint;
 begin
   fHintOver := fMyControls.CtrlOver;
 
@@ -386,9 +389,6 @@ begin
                     or (GetHintKind = hkStatic)) then
                 begin
                   // Display hint
-//                  hintBase := GetHintPositionBase;
-//                  fDbgHintX := hintBase.X;
-//                  fDbgHintY := hintBase.Y;
                   fHintCtrl := fHintOver;
                   fHintVisible := True;
 
@@ -402,8 +402,6 @@ begin
                 if (fHintOver = nil) or (fHintOver <> fHintCtrl) then
                 begin
                   // Hide hint
-//                  fDbgHintX := MaxInt;
-//                  fDbgHintY := MaxInt;
                   fHintCtrl := nil;
                   fHintVisible := False;
 
@@ -428,9 +426,6 @@ begin
                 // Mouse was on another control in 'fade reset' period, we must show hint immediately
                 if (fHintOver <> nil) and (fHintOver.Hint <> '')  then
                 begin
-//                  hintBase := GetHintPositionBase;
-//                  fDbgHintX := hintBase.X;
-//                  fDbgHintY := hintBase.Y;
                   fHintCtrl := fHintOver;
                   fHintVisible := True;
 
@@ -478,10 +473,48 @@ const
   PAD = 8;
   FONT_Y_FIX = 3;
   MARGIN = 2;
+
+  PAD_DBG_X = 5;
+  PAD_DBG_Y = 3;
 var
   hintBase, hintTxtOffset: TKMPoint;
   hintBackRect: TKMRect;
+  left, top: Integer;
 begin
+  if DBG_UI_HINT_POS then
+  begin
+    fHintDebugLbl.Caption := gCursor.Pixel.ToString;
+
+    fHintDebug.Width := fHintDebugLbl.TextSize.X + 2*PAD_DBG_X;
+    fHintDebug.Height := fHintDebugLbl.TextSize.Y + 2*PAD_DBG_Y;
+
+    left := gCursor.Pixel.X - fHintDebug.Width;
+    if left < 0 then
+      left := gCursor.Pixel.X + 25;
+
+    fHintDebug.AbsLeft := left;
+
+    top := gCursor.Pixel.Y - fHintDebug.Height;
+    if top < 0 then
+      top := gCursor.Pixel.Y + 25;
+
+    fHintDebug.AbsTop := top;
+
+    fHintDebugLbl.AbsLeft := fHintDebug.AbsLeft + PAD_DBG_X;
+    fHintDebugLbl.AbsTop := fHintDebug.AbsTop + PAD_DBG_Y;
+
+    // Draw axis
+    gRenderAux.Line(gCursor.Pixel.X, 0, gCursor.Pixel.X, Panel_Main.Height, icDarkOrange, $F0F0, 2);
+    gRenderAux.Line(0, gCursor.Pixel.Y, Panel_Main.Width, gCursor.Pixel.Y, icDarkOrange, $F0F0, 2);
+
+    fHintDebug.Show;
+    fHintDebugLbl.Show;
+    fHintDebug.Paint;
+    fHintDebugLbl.Paint;
+    fHintDebugLbl.Hide;
+    fHintDebug.Hide;
+  end;
+
   if fHintCtrl = nil then Exit;
 
   if (Label_Hint = nil) or (Bevel_HintBG = nil) then
@@ -554,15 +587,6 @@ begin
                       Bevel_HintBG.SetDefEdgeAlpha;
                     end;
   end;
-
-//  if DBG_UI_HINT_POS then
-//  begin
-//    fHintDebug.AbsLeft := fHintX;
-//    fHintDebug.AbsTop := fHintY;
-//    fHintDebug.Show;
-//    fHintDebug.Paint;
-//    fHintDebug.Hide;
-//  end;
 
   Bevel_HintBG.Show;
   Label_Hint.Show;

@@ -64,7 +64,7 @@ type
     procedure ChangeOwner_Click(Sender: TObject);
     procedure UniversalEraser_Click(Sender: TObject);
 
-    procedure UpdateCursor(X, Y: Integer; Shift: TShiftState);
+    procedure UpdateMapEdCursor(X, Y: Integer; Shift: TShiftState);
     procedure Main_ButtonClick(Sender: TObject);
     procedure HidePages;
     procedure Cancel_Clicked(aIsRMB: Boolean; var aHandled: Boolean);
@@ -1034,7 +1034,7 @@ begin
     Cancel_Clicked(True, keyHandled);
 
   //So terrain brushes start on mouse down not mouse move
-  UpdateCursor(X, Y, Shift);
+  UpdateMapEdCursor(X, Y, Shift);
 
   if not keyHandled then
     gGame.MapEditor.MouseDown(Button);
@@ -1092,13 +1092,13 @@ begin
   if (ssLeft in Shift) or (ssRight in Shift) then
     fMouseDownOnMap := True;
 
-  UpdateCursor(X, Y, Shift);
+  UpdateMapEdCursor(X, Y, Shift);
 
   gGame.MapEditor.MouseMove;
 end;
 
 
-procedure TKMapEdInterface.UpdateCursor(X, Y: Integer; Shift: TShiftState);
+procedure TKMapEdInterface.UpdateMapEdCursor(X, Y: Integer; Shift: TShiftState);
 var
   marker: TKMMapEdMarker;
 begin

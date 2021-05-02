@@ -88,6 +88,7 @@ object FormMain: TFormMain
       Caption = 'Misc'
       Collapsed = True
       TabOrder = 0
+      ExplicitTop = 427
       ExpandedHeight = 144
       object chkBevel: TCheckBox
         Left = 168
@@ -130,6 +131,7 @@ object FormMain: TFormMain
       Caption = 'Logs'
       Collapsed = True
       TabOrder = 1
+      ExplicitTop = 403
       ExpandedHeight = 198
       object chkLogCommands: TCheckBox
         Left = 120
@@ -241,6 +243,7 @@ object FormMain: TFormMain
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 2
+      ExplicitTop = 379
       ExpandedHeight = 153
       object Label1: TLabel
         Left = 101
@@ -372,7 +375,7 @@ object FormMain: TFormMain
       Caption = 'User Interface'
       Collapsed = True
       TabOrder = 3
-      ExpandedHeight = 85
+      ExpandedHeight = 114
       object chkUIControlsBounds: TCheckBox
         Left = 8
         Top = 8
@@ -425,6 +428,15 @@ object FormMain: TFormMain
         Height = 17
         Caption = 'Skip render text'
         TabOrder = 5
+        OnClick = ControlsUpdate
+      end
+      object chkCursorCoordinates: TCheckBox
+        Left = 9
+        Top = 71
+        Width = 112
+        Height = 17
+        Caption = 'Cursor coordinates'
+        TabOrder = 6
         OnClick = ControlsUpdate
       end
     end

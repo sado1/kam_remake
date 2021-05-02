@@ -412,6 +412,8 @@ end;
 //Do something related to mouse movement in menu
 procedure TKMMainMenuInterface.MouseMove(Shift: TShiftState; X,Y: Integer; var aHandled: Boolean);
 begin
+  UpdateCursor(X, Y, Shift);
+
   aHandled := True; // assume we always handle mouse move
 
   fMyControls.MouseMove(X, Y, Shift);

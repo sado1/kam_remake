@@ -150,6 +150,7 @@ var
   SKIP_RENDER_TEXT        :Boolean = False; //Skip painting labels
   ENABLE_DESIGN_CONTORLS  :Boolean = False; //Enable special mode to allow to move/edit controls
   MODE_DESIGN_CONTROLS    :Boolean = False; //Special mode to move/edit controls activated by F7, it must block OnClick events! always Off here
+  DBG_UI_HINT_POS         :Boolean = False; //Show coordinates near cursor, with axis
 
   OVERLAY_RESOLUTIONS     :Boolean = False; //Render constraining frame
   LOCAL_SERVER_LIST       :Boolean = False; //Instead of loading server list from master server, add localhost:56789 (good for testing)
