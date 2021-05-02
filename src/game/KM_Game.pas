@@ -1116,7 +1116,8 @@ begin
     end;
   end;
 
-  if fParams.IsReplay or (fGamePlayInterface.UIMode = umReplay) then //In case game mode was altered or loaded with logical error
+  if fParams.IsReplay
+    or ((fGamePlayInterface <> nil) and (fGamePlayInterface.UIMode = umReplay)) then //In case game mode was altered or loaded with logical error
     // For replays attach only replay save files
     AttachLoadedFiles(False)
   else
