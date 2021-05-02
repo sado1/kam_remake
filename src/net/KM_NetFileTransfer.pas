@@ -374,7 +374,11 @@ begin
 
     ReadStream.Read(ReadSize);
     FileStream := TKMemoryStreamBinary.Create;
-    FileStream.CopyFrom(ReadStream, ReadSize);
+    // Don't try to CopyFrom, if file is empty!
+    // because, according to http://docwiki.embarcadero.com/Libraries/Sydney/en/System.Classes.TStream.CopyFrom
+    // > If Count is 0, CopyFrom sets Source position to 0 before reading and then copies the entire contents of Source into the stream
+    if ReadSize > 0 then
+      FileStream.CopyFrom(ReadStream, ReadSize);
 
     // Scripts can have arbitrary names
     if (Ext = EXT_FILE_SCRIPT) and (TransferedFileName <> ReadName) then
