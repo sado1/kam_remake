@@ -203,7 +203,8 @@ begin
       gLog.DeleteOldLogs;
     except
       on E: Exception do
-        raise EGameInitError.Create('Error initializing logging into file: ''' + logsPath + ''':' + sLineBreak + E.Message);
+        raise EGameInitError.Create('Error initializing logging into file: ''' + logsPath + ''':' + sLineBreak + E.Message
+                                    {$IFDEF WDC} + sLineBreak + E.StackTrace {$ENDIF});
     end;
   end;
 
