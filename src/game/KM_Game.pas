@@ -85,7 +85,7 @@ type
     fLastSaveFileRel: UnicodeString;  //Relative pathname to last savegame we are playing, so game could restart from this point
 
     fAutosavesCnt: Integer;
-    fLastSaves: TKMLimitedList<string>;
+    fLastSaves: TKMLimitedUniqueList<string>;
 
     fIsStarted: Boolean;
 
@@ -356,7 +356,7 @@ begin
 
   fMapTxtInfo := TKMMapTxtInfo.Create;
 
-  fLastSaves := TKMLimitedList<string>.Create(LAST_SAVES_MAX_CNT);
+  fLastSaves := TKMLimitedUniqueList<string>.Create(LAST_SAVES_MAX_CNT);
   fAutosavesCnt := 0;
 
   //UserInterface is different between Gameplay and MapEd
@@ -2325,7 +2325,7 @@ begin
       for I := fAutosavesCnt - 1 downto 1 do
       begin
         index := fLastSaves.IndexOfItem(AUTOSAVE_SAVE_NAME + Int2Fix(I, 2), TDirection.FromEnd);
-        if index <> -1 then
+        if index <> -1 then // Somehow autosave name could not be found
           fLastSaves[index] := AUTOSAVE_SAVE_NAME + Int2Fix(I + 1, 2);
       end;
       fLastSaves.Add(AUTOSAVE_SAVE_NAME + '01');
