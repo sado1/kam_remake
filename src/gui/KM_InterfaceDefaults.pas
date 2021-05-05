@@ -170,6 +170,9 @@ begin
   fHintDebug.FillColor := $80888888;
   fHintDebug.LineColor := $B0888888;
   fHintDebugLbl := TKMLabel.Create(Panel_Main, 0, 0, '', fntMonospaced, taLeft);
+
+  fHintDebugLbl.Hide;
+  fHintDebug.Hide;
 end;
 
 
