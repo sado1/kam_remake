@@ -1300,8 +1300,9 @@ begin
     Button_Back.OnClick := SwitchPage;
     Button_Back.Hint := gResTexts[TX_MENU_TAB_HINT_GO_BACK];
 
-    Label_MenuTitle := TKMLabel.Create(Panel_Controls, 54, 4, 138, 0, '', fntMetal, taLeft);
+    Label_MenuTitle := TKMLabel.Create(Panel_Controls, 54, 4, 138, 36, '', fntMetal, taLeft);
     Label_MenuTitle.AutoWrap := True;
+    Label_MenuTitle.TextVAlign := tvaMiddle;
 
   fGuiGameBuild := TKMGUIGameBuild.Create(Panel_Controls);
   fGuiGameRatios := TKMGUIGameRatios.Create(Panel_Controls, fUIMode in [umSP, umMP]);
