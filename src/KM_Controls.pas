@@ -436,6 +436,7 @@ type
     fCaption: UnicodeString; //Original text
     fText: UnicodeString; //Reformatted text
     fTextAlign: TKMTextAlign;
+    fTextVAlign: TKMTextVAlign;
     fTextSize: TKMPoint;
     fStrikethrough: Boolean;
     fTabWidth: Integer;
@@ -453,8 +454,10 @@ type
                        aFont: TKMFont; aTextAlign: TKMTextAlign; aPaintLayer: Integer = 0); overload;
     constructor Create(aParent: TKMPanel; aLeft,aTop: Integer; const aCaption: UnicodeString; aFont: TKMFont;
                        aTextAlign: TKMTextAlign; aPaintLayer: Integer = 0); overload;
+
     function HitTest(X, Y: Integer; aIncludeDisabled: Boolean = False; aIncludeNotHitable: Boolean = False): Boolean; override;
     procedure SetColor(aColor: Cardinal);
+
     property AutoWrap: Boolean read fAutoWrap write SetAutoWrap;  //Whether to automatically wrap text within given text area width
     property AutoCut: Boolean read fAutoCut write SetAutoCut;     //Whether to automatically cut text within given text area size
     property Caption: UnicodeString read fCaption write SetCaption;
@@ -462,6 +465,7 @@ type
     property Strikethrough: Boolean read fStrikethrough write fStrikethrough;
     property TabWidth: Integer read fTabWidth write fTabWidth;
     property TextSize: TKMPoint read fTextSize;
+    property TextVAlign: TKMTextVAlign read fTextVAlign write fTextVAlign;
     property Font: TKMFont read fFont write SetFont;
     procedure Paint; override;
   end;
@@ -3454,6 +3458,7 @@ begin
   fFont := aFont;
   fFontColor := $FFFFFFFF;
   fTextAlign := aTextAlign;
+  fTextVAlign := tvaTop;
   fAutoWrap := False;
   fTabWidth := FONT_TAB_WIDTH;
   SetCaption(aCaption);
@@ -3560,6 +3565,7 @@ end;
 // Send caption to render
 procedure TKMLabel.Paint;
 var
+  t: Integer;
   col: Cardinal;
 begin
   inherited;
@@ -3567,7 +3573,18 @@ begin
   if fEnabled then col := FontColor
               else col := $FF888888;
 
-  TKMRenderUI.WriteText(AbsLeft, AbsTop, Width, fText, fFont, fTextAlign, col, False, False, False, fTabWidth, PaintingBaseLayer);
+  t := 0;
+  if Height > 0 then
+  begin
+    case fTextVAlign of
+      tvaNone,
+      tvaTop:     ;
+      tvaMiddle:  t := (Height - fTextSize.Y) div 2;
+      tvaBottom:  t := Height - fTextSize.Y;
+    end;
+  end;
+
+  TKMRenderUI.WriteText(AbsLeft, AbsTop + t, Width, fText, fFont, fTextAlign, col, False, False, False, fTabWidth, PaintingBaseLayer);
 
   if fStrikethrough then
     TKMRenderUI.WriteShape(TextLeft, AbsTop + fTextSize.Y div 2 - 2, fTextSize.X, 3, col, $FF000000);
