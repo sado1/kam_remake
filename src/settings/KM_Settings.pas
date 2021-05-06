@@ -41,6 +41,7 @@ uses
   SysUtils,
   KM_Defaults,
   KM_FileIO,
+  KM_CommonUtils,
   KM_Log;
 
 
@@ -99,6 +100,7 @@ begin
   ForceDirectories(saveFolder);
   path := saveFolder + GetDefaultSettingsName;
   gLog.AddTime(Format('Start saving ''%s'' to ''%s''', [GetSettingsName, path]));
+  gLog.AddNoTime(GetStackTrace(20), False);
   SaveToFile(path);
   gLog.AddTime(Format('''%s'' was successfully saved to ''%s''', [GetSettingsName, path]));
 end;
