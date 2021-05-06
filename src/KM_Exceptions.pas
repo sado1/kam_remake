@@ -24,8 +24,8 @@ var
 implementation
 uses
   SysUtils,
-  KM_FileIO,
-  KM_Game,
+  KM_FileIO, KM_Cursor,
+  KM_GameApp, KM_Game,
   KM_Log, KM_ResTexts, KM_Defaults, KM_Points,
   KM_CommonExceptions, KM_Settings, KM_GameAppSettings, KM_ServerSettings;
 
@@ -144,7 +144,21 @@ begin
 
   //Do the log after fGame because fGame adds stuff to the log
   if gLog <> nil then
+  begin
+    if gGameApp <> nil then
+      gLog.AddTime(Format('UI at crash time: MainPanel sizes: %s, cursor pos: %s, ' + sLineBreak +
+                          'CtrlDown = %s' + sLineBreak +
+                          'CtrlOver = %s' + sLineBreak +
+                          'CtrlUp = %s' + sLineBreak + 'CtrlFocus = %s',
+                          [gGameApp.ActiveInterface.GetMainPanelSize.ToString,
+                           gCursor.Pixel.ToString,
+                           gGameApp.ActiveInterface.MyControls.CtrlDown.ToString,
+                           gGameApp.ActiveInterface.MyControls.CtrlOver.ToString,
+                           gGameApp.ActiveInterface.MyControls.CtrlUp.ToString,
+                           gGameApp.ActiveInterface.MyControls.CtrlFocus.ToString]));
+
     AttachFile(gLog.LogPath);
+  end;
 
   sharedSettingsPath := TKMSettings.GetDir;
 

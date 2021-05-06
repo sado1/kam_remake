@@ -77,6 +77,8 @@ type
     procedure ExportPages(const aPath: string); virtual; abstract;
     procedure DebugControlsUpdated(aSenderTag: Integer); virtual;
 
+    function GetMainPanelSize: TKMPoint;
+
     procedure KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean); virtual; abstract;
     procedure KeyPress(Key: Char); virtual;
     procedure KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean); virtual;
@@ -468,6 +470,14 @@ end;
 function TKMUserInterfaceCommon.GetHintPositionBase: TKMPoint;
 begin
   Result := KMPOINT_ZERO;
+end;
+
+
+function TKMUserInterfaceCommon.GetMainPanelSize: TKMPoint;
+begin
+  if Self = nil then Exit(KMPOINT_ZERO);
+  
+  Result := KMPoint(Panel_Main.Width, Panel_Main.Height);
 end;
 
 
