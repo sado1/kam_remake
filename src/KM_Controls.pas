@@ -346,6 +346,8 @@ type
 
     procedure Paint; virtual;
     procedure UpdateState(aTickCount: Cardinal); virtual;
+
+    function ToString: string;
   end;
 
   TKMControlClass = class of TKMControl;
@@ -2990,6 +2992,15 @@ procedure TKMControl.SetPosCenter;
 begin
   SetPosCenterW;
   SetPosCenterH;
+end;
+
+
+function TKMControl.ToString: string;
+begin
+  if Self = nil then Exit('nil');
+  
+  Result := Format('ID=%d ParentID=%d Class=%s AbsPos: (%d;%d) Pos: (%d;%d) Sizes: [%d;%d]',
+                   [fID, Parent.ID, ClassName, AbsLeft, AbsTop, Left, Top, fWidth, fHeight]);
 end;
 
 
