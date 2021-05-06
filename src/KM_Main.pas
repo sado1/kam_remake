@@ -173,7 +173,10 @@ function TKMMain.Start: Boolean;
     end;
   end;
 
+const
+  LOG_CREATE_TRY_CNT = 3;
 var
+  tryInd: Integer;
   logsPath: UnicodeString;
 begin
   Result := True;
@@ -196,16 +199,25 @@ begin
 
   if not BLOCK_FILE_WRITE then
   begin
-    try
-      CreateDir(ExeDir + 'Logs' + PathDelim);
-      logsPath := ExeDir + 'Logs' + PathDelim + 'KaM_' + FormatDateTime('yyyy-mm-dd_hh-nn-ss-zzz', Now) + '.log';
-      gLog := TKMLog.Create(logsPath); //First thing - create a log
-      gLog.DeleteOldLogs;
-    except
-      on E: Exception do
-        raise EGameInitError.Create('Error initializing logging into file: ''' + logsPath + ''':' + sLineBreak + E.Message
-                                    {$IFDEF WDC} + sLineBreak + E.StackTrace {$ENDIF});
+    tryInd := 0;
+    logsPath := ExeDir + 'Logs' + PathDelim + 'KaM_' + FormatDateTime('yyyy-mm-dd_hh-nn-ss-zzz', Now) + '.log';
+    // Try to create log several times
+    while (gLog = nil) and (tryInd < LOG_CREATE_TRY_CNT) do
+    begin
+      try
+        Inc(tryInd);
+        CreateDir(ExeDir + 'Logs' + PathDelim);
+        gLog := TKMLog.Create(logsPath); //First thing - create a log
+      except
+        on E: Exception do
+          if tryInd < LOG_CREATE_TRY_CNT then
+            Sleep(200) // Just wait a bit
+          else
+            raise EGameInitError.Create('Error initializing logging into file: ''' + logsPath + ''':' + sLineBreak + E.Message
+                                        {$IFDEF WDC} + sLineBreak + E.StackTrace {$ENDIF});
+      end;
     end;
+    gLog.DeleteOldLogs;
   end;
 
   //Resolutions are created first so that we could check Settings against them
