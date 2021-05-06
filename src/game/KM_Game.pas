@@ -1088,7 +1088,8 @@ begin
       end;
     except
       on E : Exception do
-        gLog.AddTime('Exception while trying to save game for crash report: ' + E.ClassName + ': ' + E.Message);
+        gLog.AddTime('Exception while trying to save game for crash report: ' + E.ClassName + ': ' + E.Message
+                     {$IFDEF WDC}+ sLineBreak + E.StackTrace{$ENDIF});
     end;
   finally
     fSaveWorkerThread.fSynchronousExceptionMode := False;
