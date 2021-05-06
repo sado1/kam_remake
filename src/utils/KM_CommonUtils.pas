@@ -712,7 +712,7 @@ begin
       SList := TStringList.Create;
       SList.Text := E.StackTrace;
 
-      for I := 1 to aLinesCnt do //Do not print last line (its this method line)
+      for I := 1 to Min(SList.Count - 1, aLinesCnt) do //Do not print last line (its this method line)
         Result := Result + SList[I] + sLineBreak;
 
       SList.Free;
