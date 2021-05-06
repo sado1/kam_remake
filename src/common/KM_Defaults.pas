@@ -306,8 +306,7 @@ const
   AUTOSAVE_COUNT_MAX      = 10;
   AUTOSAVE_FREQUENCY_MIN  = 600;
   AUTOSAVE_FREQUENCY_MAX  = 3000;
-  AUTOSAVE_FREQUENCY_DEFAULT      = 600; //How often to do autosave, every N ticks
-  AUTOSAVE_ATTACH_TO_CRASHREPORT_MAX = 5; //Max number of autosaves to be included into crashreport
+  AUTOSAVE_FREQUENCY_DEFAULT = 600; //How often to do autosave, every N ticks
   AUTOSAVE_SAVE_NAME = 'autosave';
   CRASHREPORT_SAVE_NAME = 'crashreport';
 
