@@ -2325,7 +2325,8 @@ begin
       for I := fAutosavesCnt - 1 downto 1 do
       begin
         index := fLastSaves.IndexOfItem(AUTOSAVE_SAVE_NAME + Int2Fix(I, 2), TDirection.FromEnd);
-        if index <> -1 then // Somehow autosave name could not be found
+        // we use limited list, so some autosave names will be deleted if other save names were added earlier
+        if index <> -1 then
           fLastSaves[index] := AUTOSAVE_SAVE_NAME + Int2Fix(I + 1, 2);
       end;
       fLastSaves.Add(AUTOSAVE_SAVE_NAME + '01');
