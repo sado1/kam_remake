@@ -347,7 +347,7 @@ type
     procedure Paint; virtual;
     procedure UpdateState(aTickCount: Cardinal); virtual;
 
-    function ToString: string;
+    function ToStr: string;
   end;
 
   TKMControlClass = class of TKMControl;
@@ -2995,7 +2995,7 @@ begin
 end;
 
 
-function TKMControl.ToString: string;
+function TKMControl.ToStr: string;
 begin
   if Self = nil then Exit('nil');
   

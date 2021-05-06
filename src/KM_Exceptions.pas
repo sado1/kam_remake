@@ -152,10 +152,10 @@ begin
                           'CtrlUp = %s' + sLineBreak + 'CtrlFocus = %s',
                           [gGameApp.ActiveInterface.GetMainPanelSize.ToString,
                            gCursor.Pixel.ToString,
-                           gGameApp.ActiveInterface.MyControls.CtrlDown.ToString,
-                           gGameApp.ActiveInterface.MyControls.CtrlOver.ToString,
-                           gGameApp.ActiveInterface.MyControls.CtrlUp.ToString,
-                           gGameApp.ActiveInterface.MyControls.CtrlFocus.ToString]));
+                           gGameApp.ActiveInterface.MyControls.CtrlDown.ToStr,
+                           gGameApp.ActiveInterface.MyControls.CtrlOver.ToStr,
+                           gGameApp.ActiveInterface.MyControls.CtrlUp.ToStr,
+                           gGameApp.ActiveInterface.MyControls.CtrlFocus.ToStr]));
 
     AttachFile(gLog.LogPath);
   end;
