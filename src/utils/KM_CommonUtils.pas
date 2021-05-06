@@ -694,6 +694,10 @@ begin
 end;
 
 
+type
+  EStackTraceInfo = class(Exception);
+
+
 function GetStackTrace(aLinesCnt: Integer): UnicodeString;
 {$IFDEF WDC}
 var
@@ -705,9 +709,9 @@ begin
 
   {$IFDEF WDC}
   try
-    raise Exception.Create('');
+    raise EStackTraceInfo.Create('');
   except
-    on E: Exception do
+    on E: EStackTraceInfo do
     begin
       SList := TStringList.Create;
       SList.Text := E.StackTrace;
