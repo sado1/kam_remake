@@ -201,13 +201,22 @@ begin
   Button_FixTerrainBrushes.OnClick := BrushFixTerrain_Click;
 
   PopUp_FixTerrainConfirm := TKMPopUpPanel.Create(aParent.MasterParent, 400, 200, gResTexts[TX_MAPED_TERRAIN_BRUSH_FIX_TERRAIN_TITLE], pubgitGray);
-    TKMLabel.Create(PopUp_FixTerrainConfirm, PopUp_FixTerrainConfirm.Width div 2, 10, gResTexts[TX_MAPED_TERRAIN_BRUSH_FIX_TERRAIN_CONFIRM], fntGrey, taCenter);
+    TKMLabel.Create(PopUp_FixTerrainConfirm.ItemsPanel, PopUp_FixTerrainConfirm.ActualWidth div 2, 10, gResTexts[TX_MAPED_TERRAIN_BRUSH_FIX_TERRAIN_CONFIRM], fntGrey, taCenter);
 
-    Button_FixTerrain_Yes := TKMButton.Create(PopUp_FixTerrainConfirm, 10, PopUp_FixTerrainConfirm.Height - 40,
-                                             (PopUp_FixTerrainConfirm.Width div 2) - 20, 30, gResTexts[TX_WORD_YES], bsGame);
+    Button_FixTerrain_Yes := TKMButton.Create(PopUp_FixTerrainConfirm.ItemsPanel,
+                                              10,
+                                              PopUp_FixTerrainConfirm.ActualHeight - 40,
+                                              (PopUp_FixTerrainConfirm.ActualWidth div 2) - 20,
+                                              30,
+                                              gResTexts[TX_WORD_YES], bsGame);
     Button_FixTerrain_Yes.OnClick := FixTerrainBrushes;
-    Button_FixTerrain_No := TKMButton.Create(PopUp_FixTerrainConfirm, (PopUp_FixTerrainConfirm.Width div 2) + 10, PopUp_FixTerrainConfirm.Height - 40,
-                                             (PopUp_FixTerrainConfirm.Width div 2) - 20, 30, gResTexts[TX_WORD_CANCEL], bsGame);
+
+    Button_FixTerrain_No := TKMButton.Create(PopUp_FixTerrainConfirm.ItemsPanel,
+                                             (PopUp_FixTerrainConfirm.ActualWidth div 2) + 10,
+                                             PopUp_FixTerrainConfirm.ActualHeight - 40,
+                                             (PopUp_FixTerrainConfirm.ActualWidth div 2) - 20,
+                                             30,
+                                             gResTexts[TX_WORD_CANCEL], bsGame);
     Button_FixTerrain_No.OnClick := BrushFixTerrain_Click;
 
   fSubMenuActionsEvents[0] := BrushChange;

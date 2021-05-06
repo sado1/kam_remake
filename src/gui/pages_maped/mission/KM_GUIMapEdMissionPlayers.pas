@@ -70,56 +70,56 @@ begin
   PanelH := LINE_H * MAX_HANDS + 140;
 
   Panel_PlayerTypes := TKMPopUpPanel.Create(aParent.MasterParent, PANEL_W, PanelH + 20, gResTexts[TX_MAPED_PLAYERS_TYPE],
-                                            pubgitYellow, False);
-  Panel_PlayerTypes.Height := PanelH;
-
+                                            pubgitYellow, False, False);
   Top := 0;
-  TKMLabel.Create(Panel_PlayerTypes,  13, Top, 20, 20, '#', fntGrey, taLeft);
+  TKMLabel.Create(Panel_PlayerTypes.ItemsPanel,  13, Top, 20, 20, '#', fntGrey, taLeft);
 
-  with TKMLabel.Create(Panel_PlayerTypes, 33, Top, 30, 20, gResTexts[TX_MAPED_PLAYERS_DEFAULT_SHORT], fntGrey, taLeft) do
+  with TKMLabel.Create(Panel_PlayerTypes.ItemsPanel, 33, Top, 30, 20, gResTexts[TX_MAPED_PLAYERS_DEFAULT_SHORT], fntGrey, taLeft) do
     Hint := gResTexts[TX_MAPED_PLAYERS_DEFAULT];
-  with TKMImage.Create(Panel_PlayerTypes,84, Top, 60, 20, 588, rxGui) do
+  with TKMImage.Create(Panel_PlayerTypes.ItemsPanel,84, Top, 60, 20, 588, rxGui) do
     Hint := gResTexts[TX_PLAYER_HUMAN];
-  with TKMImage.Create(Panel_PlayerTypes,127, Top, 20, 20,  62, rxGuiMain) do
+  with TKMImage.Create(Panel_PlayerTypes.ItemsPanel,127, Top, 20, 20,  62, rxGuiMain) do
     Hint := gResTexts[TX_AI_PLAYER_CLASSIC];
-  with TKMImage.Create(Panel_PlayerTypes,169, Top, 20, 20,  74, rxGuiMain) do
+  with TKMImage.Create(Panel_PlayerTypes.ItemsPanel,169, Top, 20, 20,  74, rxGuiMain) do
     Hint := gResTexts[TX_AI_PLAYER_ADVANCED];
 
   Inc(Top, 25);
   for I := 0 to MAX_HANDS - 1 do
   begin
 
-    Label_PlayerId[I] := TKMLabel.Create(Panel_PlayerTypes,  13, Top, 20, 20, IntToStr(I+1), fntOutline, taLeft);
+    Label_PlayerId[I] := TKMLabel.Create(Panel_PlayerTypes.ItemsPanel,  13, Top, 20, 20, IntToStr(I+1), fntOutline, taLeft);
 
     for K := 0 to 3 do
     begin
-      ChkBox_PlayerTypes[I,K] := TKMCheckBox.Create(Panel_PlayerTypes, 43 + K*42, Top - 2, 20, 20, '', fntMetal);
+      ChkBox_PlayerTypes[I,K] := TKMCheckBox.Create(Panel_PlayerTypes.ItemsPanel, 43 + K*42, Top - 2, 20, 20, '', fntMetal);
       ChkBox_PlayerTypes[I,K].Tag     := I;
       ChkBox_PlayerTypes[I,K].OnClick := Mission_PlayerTypesChange;
     end;
     Inc(Top, LINE_H);
   end;
 
-  Label_PlayerTypesAll := TKMLabel.Create(Panel_PlayerTypes,  13, Top, 75, 20, gResTexts[TX_MAPED_PLAYER_TYPE_ALLOW_ALL],
+  Label_PlayerTypesAll := TKMLabel.Create(Panel_PlayerTypes.ItemsPanel,  13, Top, 75, 20, gResTexts[TX_MAPED_PLAYER_TYPE_ALLOW_ALL],
                                           fntOutline, taLeft);
 
   for K := 0 to 2 do
   begin
-    ChkBox_PlayerTypesAll[K] := TKMCheckBox.Create(Panel_PlayerTypes, 43 + (K+1)*42, Top - 2, 20, 20, '', fntMetal, True);
+    ChkBox_PlayerTypesAll[K] := TKMCheckBox.Create(Panel_PlayerTypes.ItemsPanel, 43 + (K+1)*42, Top - 2, 20, 20, '', fntMetal, True);
     ChkBox_PlayerTypesAll[K].Tag     := K + 1;
     ChkBox_PlayerTypesAll[K].Hint    := Format(gResTexts[TX_MAPED_PLAYER_TYPE_ALLOW_ALL_HINT],
                                                [gResTexts[PLAYER_TYPE_TX[K]]]);
     ChkBox_PlayerTypesAll[K].OnClick := Mission_PlayerTypesAllClick;
   end;
-  Inc(Top, 30);
 
-  Button_PlayerDelete := TKMButton.Create(Panel_PlayerTypes, 15, Top, PANEL_W - 30, 26,
+  Button_PlayerDelete := TKMButton.Create(Panel_PlayerTypes.ItemsPanel, 15,
+                                          Panel_PlayerTypes.ItemsPanel.Height - 80, PANEL_W - 30, 26,
                                           Format(gResTexts[TX_MAPED_PLAYER_DELETE], [1]), bsGame);
+  Button_PlayerDelete.Anchors := [anLeft, anRight, anBottom];
   Button_PlayerDelete.OnClick := PlayerDelete_Click;
 
-  Button_Close := TKMButton.Create(Panel_PlayerTypes, 15,
-                                            Panel_PlayerTypes.Height - 40,
-                                            PANEL_W - 30, 30, gResTexts[TX_WORD_CLOSE], bsGame);
+  Button_Close := TKMButton.Create(Panel_PlayerTypes.ItemsPanel, 15,
+                                   Panel_PlayerTypes.ItemsPanel.Height - 40,
+                                   PANEL_W - 30, 30, gResTexts[TX_WORD_CLOSE], bsGame);
+  Button_Close.Anchors := [anLeft, anRight, anBottom];
   Button_Close.OnClick := ClosePlayerTypes_Click;
 
   PopUp_Confirm_PlayerDelete := TKMPopUpMenu.Create(aParent.MasterParent, 450);

@@ -41,6 +41,7 @@ type
     procedure SetLoadMode(aMultiplayer: Boolean);
     procedure Show;
     procedure Hide;
+    procedure Resize;
     function Visible: Boolean; override;
     procedure UpdateState;
   end;
@@ -158,6 +159,12 @@ begin
   fGuiMenuSettings.Hide;
 
   Show;
+end;
+
+
+procedure TKMMapEdMenu.Resize;
+begin
+  fGuiMenuQuickPlay.Resize;
 end;
 
 

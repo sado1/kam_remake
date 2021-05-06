@@ -6,7 +6,7 @@ uses
   {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
   Classes, Math, SysUtils,
   KM_InterfaceDefaults,
-  KM_Controls, KM_Defaults, KM_Pics;
+  KM_Controls, KM_Defaults, KM_Pics, KM_Points;
 
 
 const
@@ -40,7 +40,6 @@ type
         TilesPaletteRandom: TKMCheckBox;
         TilesPaletteMagicWater, TilesPaletteEyedropper, TilesPaletteRotate: TKMButtonFlat;
         NumEdit_SetTilePaletteNumber: TKMNumericEdit;
-        Button_ClosePalette: TKMButton;
   public
     constructor Create(aParent: TKMPanel);
 
@@ -49,7 +48,6 @@ type
     procedure TilesTableSetTileTexId(aTexId: Integer);
     procedure Show;
     procedure Hide;
-    procedure Resize;
     procedure UpdateState;
     function Visible: Boolean; override;
     function IsFocused: Boolean; override;
@@ -60,7 +58,7 @@ implementation
 uses
   KM_Resource, KM_ResFonts, KM_ResTexts, KM_ResTileset, KM_ResKeys,
   KM_Cursor, KM_RenderUI, KM_InterfaceGame,
-  KM_Utils,
+  KM_Utils, KM_CommonUtils,
   KM_ResTypes;
 
 const
@@ -88,6 +86,7 @@ const
   MAX_ROW_SIZE = 30;
 
 
+{ TKMMapEdTerrainTiles }
 constructor TKMMapEdTerrainTiles.Create(aParent: TKMPanel);
 const
   BTN_SIZE_S = 34;
@@ -157,20 +156,21 @@ begin
   TilesPalette_Button.Hint := GetHintWHotKey(TX_MAPED_TERRAIN_TILES_PALETTE, kfMapedTilesPalette);
   TilesPalette_Button.OnClick := TilesPalette_ToggleVisibility;
 
-  palW := Min(aParent.MasterControl.MasterPanel.Width,
-              MAX_ROW_SIZE * PAL_S + 60);
-  palH := Min(aParent.MasterControl.MasterPanel.Height,
-             (Length(PAL_ROWS) - 1)*MAPED_TILES_Y*PAL_S + Length(PAL_ROWS) * PAL_Y_GAP + 40);
+  palW := MAX_ROW_SIZE * PAL_S + 50;
+  palH := (Length(PAL_ROWS) - 1)*MAPED_TILES_Y*PAL_S + Length(PAL_ROWS) * PAL_Y_GAP + 40;
 
-  Panel_TilesPalettePopup := TKMPopUpPanel.Create(aParent.MasterControl.MasterPanel, palW, palH, gResTexts[TX_MAPED_TERRAIN_TILES_PALETTE],
-                                                  pubgitYellow);//, True, False);
+  Panel_TilesPalettePopup := TKMPopUpPanel.Create(aParent.MasterControl.MasterPanel,
+                                                  palW,
+                                                  palH,
+                                                  gResTexts[TX_MAPED_TERRAIN_TILES_PALETTE],
+                                                  pubgitYellow, True);
   Panel_TilesPalettePopup.DragEnabled := True;
-  Panel_TilesPalettePopup.Anchors := [anTop];
-  Panel_TilesPalettePopup.CapOffsetY := 5;
-    Panel_TilesPalette := TKMScrollPanel.Create(Panel_TilesPalettePopup, 10, 5,
-                                                Panel_TilesPalettePopup.Width - 40,
-                                                Panel_TilesPalettePopup.Bottom - 60, [saHorizontal, saVertical], bsGame, ssCommon);
-    Panel_TilesPalette.ScrollV.Left := Panel_TilesPalette.ScrollV.Left + 20;
+  Panel_TilesPalettePopup.CapOffsetY := -5;
+    Panel_TilesPalette := TKMScrollPanel.Create(Panel_TilesPalettePopup.ItemsPanel, 10, 5,
+                                                Panel_TilesPalettePopup.ActualWidth - 40,
+                                                Panel_TilesPalettePopup.ActualHeight - 40,
+                                                [saHorizontal, saVertical], bsGame, ssCommon);
+//    Panel_TilesPalette.ScrollV.Left := Panel_TilesPalette.ScrollV.Left + 20;
     Panel_TilesPalette.Padding.SetRight(10);
     Panel_TilesPalette.Padding.SetBottom(10);
     Panel_TilesPalette.AnchorsStretch;
@@ -224,12 +224,9 @@ begin
       TilesPaletteRandom.OnClick := TilesChange;
       TilesPaletteRandom.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_TILES_RANDOM_HINT, kfMapedSubMenuAction4);
 
-      Button_ClosePalette  := TKMButton.Create(Panel_TilesPalette, 0, (MAPED_TILES_Y + 5)*PAL_S + BTN_SIZE + 5,
-                                               207, 30, gResTexts[TX_MAPED_TERRAIN_CLOSE_PALETTE], bsGame);
-      Button_ClosePalette.Anchors := [anLeft];
-      Button_ClosePalette.OnClick := TilesPalette_ToggleVisibility;
-
-  Resize;
+  // Set actual width afterwards, so we will set proper BaseWidth on creation and other controls will fit in as they should
+  Panel_TilesPalettePopup.ActualWidth  := Min(Panel_Tiles.Parent.MasterControl.MasterPanel.Width, palW);
+  Panel_TilesPalettePopup.ActualHeight := Min(Panel_Tiles.Parent.MasterControl.MasterPanel.Height,palH);
 
 
   fSubMenuActionsEvents[0] := TilesChange;
@@ -369,19 +366,6 @@ begin
     Panel_TilesPalettePopup.ToggleVisibility;
     aHandled := True;
   end;
-end;
-
-
-procedure TKMMapEdTerrainTiles.Resize;
-var
-  {palW, }palH: Integer;
-begin
-//  palW := MAX_ROW_SIZE * PAL_S + 40;
-  palH := (Length(PAL_ROWS) - 1)*MAPED_TILES_Y*PAL_S + Length(PAL_ROWS) * PAL_Y_GAP + 20;
-
-  Panel_TilesPalettePopup.Top    := Max(((Panel_TilesPalettePopup.Parent.Height - palH) div 2) + 20, 20);
-//  Panel_TilesPalettePopup.Width  := Min(palW, Panel_TilesPalettePopup.Parent.Width - 30);
-  Panel_TilesPalettePopup.Height := Min(palH, Panel_TilesPalettePopup.Parent.Height - 70);
 end;
 
 

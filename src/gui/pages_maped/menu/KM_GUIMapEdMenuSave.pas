@@ -3,7 +3,7 @@ unit KM_GUIMapEdMenuSave;
 interface
 uses
    Classes, SysUtils,
-   KM_Controls, KM_Maps, KM_InterfaceGame, KM_CommonTypes;
+   KM_Controls, KM_Maps, KM_InterfaceGame, KM_CommonTypes, KM_ResFonts;
 
 
 type
@@ -23,7 +23,7 @@ type
   public
     Button_SaveSave: TKMButton;
     Button_SaveCancel: TKMButton;
-    constructor Create(aParent: TKMPanel; aOnDone: TNotifyEvent; aOnMapTypChanged: TBooleanEvent;
+    constructor Create(aParent: TKMPanel; aOnDone: TNotifyEvent; aOnMapTypChanged: TBooleanEvent; aLabelFont: TKMFont = fntOutline;
                        aLeftPanelInset: Integer = TB_PAD; aTopPanelInset: Integer = 45; aControlsWidth: Integer = TB_MAP_ED_WIDTH-TB_PAD);
 
     procedure SetLoadMode(aMultiplayer: Boolean);
@@ -34,12 +34,14 @@ type
 
 implementation
 uses
-  KM_Game, KM_GameParams, KM_RenderUI, KM_ResFonts, KM_ResTexts, KM_InterfaceDefaults, KM_InterfaceTypes;
+  KM_Game, KM_GameParams, KM_RenderUI, KM_ResTexts, KM_InterfaceDefaults, KM_InterfaceTypes;
 
 
 { TKMMapEdMenuSave }
 constructor TKMMapEdMenuSave.Create(aParent: TKMPanel; aOnDone: TNotifyEvent; aOnMapTypChanged: TBooleanEvent;
-                                    aLeftPanelInset: Integer = TB_PAD; aTopPanelInset: Integer = 45; aControlsWidth: Integer = TB_MAP_ED_WIDTH - TB_PAD);
+                                    aLabelFont: TKMFont = fntOutline;
+                                    aLeftPanelInset: Integer = TB_PAD; aTopPanelInset: Integer = 45;
+                                    aControlsWidth: Integer = TB_MAP_ED_WIDTH - TB_PAD);
 begin
   inherited Create;
 
@@ -50,7 +52,7 @@ begin
   Panel_Save := TKMPanel.Create(aParent, 0, aTopPanelInset, aControlsWidth + aLeftPanelInset, 230);
   Panel_Save.Anchors := [anLeft, anTop, anBottom];
 
-  TKMLabel.Create(Panel_Save,aLeftPanelInset,0,aControlsWidth,20,gResTexts[TX_MAPED_SAVE_TITLE],fntOutline,taLeft);
+  TKMLabel.Create(Panel_Save,aLeftPanelInset,0,aControlsWidth,20,gResTexts[TX_MAPED_SAVE_TITLE], aLabelFont, taLeft);
 
   TKMBevel.Create(Panel_Save, aLeftPanelInset, 25, aControlsWidth, 37);
   Radio_Save_MapType := TKMRadioGroup.Create(Panel_Save,13,27,aControlsWidth,35,fntGrey);

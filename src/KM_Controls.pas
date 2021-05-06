@@ -120,6 +120,10 @@ type
     fWidth: Integer;
     fHeight: Integer;
 
+    fFitInParent: Boolean; // Do we force to fit into parent width / height. Check TKMPanel.SetHeight / SetWidth for details
+    fBaseWidth: Integer; // initial width / height used to restore control sizes when fFitInParent property is set
+    fBaseHeight: Integer;
+
     fEnabled: Boolean;
     fEnabledVisually: Boolean;
     fVisible: Boolean;
@@ -269,6 +273,9 @@ type
     property Bottom: Integer read GetBottom;
     property Width: Integer read GetWidth write SetWidth;
     property Height: Integer read GetHeight write SetHeight;
+    property BaseWidth: Integer read fBaseWidth write fBaseWidth;
+    property BaseHeight: Integer read fBaseHeight write fBaseHeight;
+
     property Center: TKMPoint read GetCenter;
     property ID: Integer read fID;
     function GetIDsStr: String;
@@ -282,6 +289,8 @@ type
     property HintTextOffset: TKMPoint read GetHintTextOffset;
 
     property MouseWheelStep: Integer read fMouseWheelStep write fMouseWheelStep;
+
+    property FitInParent: Boolean read fFitInParent write fFitInParent;
 
     // "Self" coordinates - this is the coordinates of control itself.
     // For simple controls they are equal to normal coordinates
@@ -1804,9 +1813,11 @@ type
   end;
 
 
-  TKMPopUpBGImageType = (pubgitGray, pubgitYellow, pubgitScrollWCross);
+  TKMPopUpBGImageType = (pubgitGray, pubgitYellow, pubgitScroll);
 
   TKMPopUpPanel = class(TKMPanel)
+  const
+    DEF_FONT: TKMFont = fntOutline;
   private
     fDragging: Boolean;
     fDragStartPos: TKMPoint;
@@ -1814,14 +1825,24 @@ type
     fOnClose: TEvent;
     procedure UpdateSizes;
     procedure Close(Sender: TObject);
+
+    function GetLeftRightMargin: Integer;
+    function GetTopMargin: Integer;
+    function GetBottomMargin: Integer;
+    function GetCrossTop: Integer;
+    function GetCrossRight: Integer;
+
+    function GetActualWidth: Integer;
+    procedure SetActualWidth(aValue: Integer);
+    function GetActualHeight: Integer;
+    procedure SetActualHeight(aValue: Integer);
   protected
     BevelBG: TKMBevel;
     BevelShade: TKMBevel;
     procedure SetWidth(aValue: Integer); override;
     procedure SetHeight(aValue: Integer); override;
-    procedure SetLeft(aValue: Integer); override;
-    procedure SetTop(aValue: Integer); override;
   public
+    ItemsPanel: TKMPanel;
     DragEnabled: Boolean;
     ImageBG, ImageClose: TKMImage;
     Caption: UnicodeString;
@@ -1829,7 +1850,8 @@ type
     FontColor: TColor4;
     CapOffsetY: Integer;
     constructor Create(aParent: TKMPanel; aWidth, aHeight: Integer; const aCaption: UnicodeString = '';
-                       aImageType: TKMPopUpBGImageType = pubgitYellow; aShowBevel: Boolean = True; aShowShadeBevel: Boolean = True);
+                       aImageType: TKMPopUpBGImageType = pubgitYellow; aWithCrossImg: Boolean = False;
+                       aShowBevel: Boolean = True; aShowShadeBevel: Boolean = True);
 
     procedure MouseDown (X,Y: Integer; Shift: TShiftState; Button: TMouseButton); override;
     procedure MouseMove (X,Y: Integer; Shift: TShiftState); override;
@@ -1841,6 +1863,9 @@ type
     procedure ControlMouseUp(Sender: TObject; X,Y: Integer; Shift: TShiftState; Button: TMouseButton);
 
     property OnClose: TEvent read fOnClose write fOnClose;
+
+    property ActualHeight: Integer read GetActualHeight write SetActualHeight;
+    property ActualWidth: Integer read GetActualWidth write SetActualWidth;
 
     procedure PaintPanel(aPaintLayer: Integer); override;
   end;
@@ -2129,6 +2154,10 @@ begin
   fTop          := aTop;
   fWidth        := aWidth;
   fHeight       := aHeight;
+
+  fBaseWidth    := aWidth;
+  fBaseHeight   := aHeight;
+
   Anchors       := [anLeft, anTop];
   State         := [];
   fEnabled      := True;
@@ -3178,19 +3207,44 @@ end;
 
 procedure TKMPanel.SetHeight(aValue: Integer);
 var
-  I: Integer;
+  I, diff: Integer;
 begin
   for I := 0 to ChildCount - 1 do
+  begin
+    diff := aValue - fHeight;
+
     if (anTop in Childs[I].Anchors) and (anBottom in Childs[I].Anchors) then
-      Childs[I].Height := Childs[I].Height + (aValue - fHeight)
+      Childs[I].Height := Childs[I].Height + diff
     else
     if anTop in Childs[I].Anchors then
       //Do nothing
     else
     if anBottom in Childs[I].Anchors then
-      Childs[I].SetTopF(Childs[I].fTop + (aValue - fHeight))
+      Childs[I].SetTopF(Childs[I].fTop + diff)
     else
-      Childs[I].SetTopF(Childs[I].fTop + (aValue - fHeight) / 2);
+    begin
+      // Fit into parent panel
+      if Childs[I].FitInParent then
+      begin
+        // Child base is bigger, than parent is going to be
+        if aValue < Childs[I].BaseHeight then
+        begin
+          Childs[I].Height := aValue;
+          Childs[I].SetTopF(0);
+        end
+        else
+        // Child base is smaller, restore it BaseHeight
+        begin
+          Childs[I].Height := Childs[I].BaseHeight;
+          // Use 'centered' position for now
+          // We could try to save or to set 'baseTop as a float value of total parent height' in the future
+          Childs[I].SetTopF((aValue - Childs[I].Height) / 2);
+        end;
+      end
+      else
+        Childs[I].SetTopF(Childs[I].fTop + diff / 2);
+    end;
+  end;
 
   inherited;
 end;
@@ -3210,7 +3264,28 @@ begin
     if anRight in Childs[I].Anchors then
       Childs[I].SetLeftF(Childs[I].fLeft + (aValue - fWidth))
     else
-      Childs[I].SetLeftF(Childs[I].fLeft + (aValue - fWidth) / 2);
+    begin
+      // Fit into parent panel
+      if Childs[I].FitInParent then
+      begin
+        // Child base is bigger, than parent is going to be
+        if aValue < Childs[I].BaseWidth then
+        begin
+          Childs[I].Width := aValue;
+          Childs[I].SetLeftF(0);
+        end
+        else
+          // Child base is smaller, restore it BaseWidth
+        begin
+          Childs[I].Width := Childs[I].BaseWidth;
+          // Use 'centered' position for now
+          // We could try to save or to set 'baseLeft as a float value of total parent width' in the future
+          Childs[I].SetLeftF((aValue - Childs[I].Width) / 2);
+        end;
+      end
+      else
+        Childs[I].SetLeftF(Childs[I].fLeft + (aValue - fWidth) / 2);
+    end;
 
   inherited;
 end;
@@ -8996,29 +9071,35 @@ end;
 
 
 { TKMPopUpPanel }
+// aWidth / aHeight represents not TKMPopUpPanel sizes, but its internal panel: ItemsPanel
+// PopUpPanel draw bigger image behind it
 constructor TKMPopUpPanel.Create(aParent: TKMPanel; aWidth, aHeight: Integer; const aCaption: UnicodeString = '';
-                                 aImageType: TKMPopUpBGImageType = pubgitYellow; aShowBevel: Boolean = True;
-                                 aShowShadeBevel: Boolean = True);
+                                 aImageType: TKMPopUpBGImageType = pubgitYellow; aWithCrossImg: Boolean = False;
+                                 aShowBevel: Boolean = True; aShowShadeBevel: Boolean = True);
 var
-  imgWPad, imgTop, topMargin, l, t, w, h: Integer;
+  margin, l, t, topMarg, baseW, baseH, w, h: Integer;
 begin
-  topMargin := 0;
-  case aImageType of
-    pubgitGray:         topMargin := 20;
-    pubgitYellow:       topMargin := 25;
-    pubgitScrollWCross: topMargin := 20;
-  end;
-
-  l := Max(0, (aParent.Width div 2) - (aWidth div 2));
-  t := Max(topMargin, (aParent.Height div 2) - (aHeight div 2));
-  w := Min(aParent.Width, aWidth);
-  h := Min(aParent.Height, aHeight);
-
-  inherited Create(aParent, l, t, w, h);
-
   fBGImageType := aImageType;
 
-  Font := fntOutline;
+  margin := GetLeftRightMargin;
+
+  baseW := aWidth + 2*margin;
+  topMarg := GetTopMargin;
+  baseH := aHeight + GetBottomMargin + topMarg;
+  w := Min(aParent.Width, baseW);
+  h := Min(aParent.Height, baseH);
+  l := Max(0, (aParent.Width - w) div 2);
+  t := Max(0, (aParent.Height - h) div 2);
+
+  // Create panel with calculated sizes
+  inherited Create(aParent, l, t, w, h);
+
+  // Fix its base sizes as a desired one
+  BaseWidth := baseW;
+  BaseHeight := baseH;
+
+  FitInParent := True;
+  Font := DEF_FONT;
   FontColor := icWhite;
   Caption := aCaption;
   DragEnabled := False;
@@ -9026,39 +9107,104 @@ begin
   if aShowShadeBevel then
     BevelShade := TKMBevel.Create(Self, -2000,  -2000, 5000, 5000);
 
+  ImageBG := TKMImage.Create(Self, 0, 0, w, h, 15, rxGuiMain);
+
+  ItemsPanel := TKMPanel.Create(Self, margin, topMarg, Width - 2*margin, Height - topMarg - GetBottomMargin);
+
   case fBGImageType of
-    pubgitGray:    ImageBG := TKMImage.Create(Self, -topMargin, -50, aWidth + 40, aHeight + 70,  15, rxGuiMain);
-    pubgitYellow:  ImageBG := TKMImage.Create(Self, -topMargin, -80, aWidth + 50, aHeight + 130, 18, rxGuiMain);
-    pubgitScrollWCross:
-      begin
-        imgTop := -(aHeight div 10) - 10;
-        imgWPad := (aWidth div 30) + 5;
-        ImageBG := TKMImage.Create(Self, -imgWPad, imgTop, aWidth + 2 * imgWPad, aHeight + (aHeight div 7) + 20,  409);
-        ImageClose := TKMImage.Create(Self, -imgWPad + (aWidth + 2*imgWPad) - ((aWidth + 2*imgWPad) div 10) - 16, 24 + imgTop, 31, 30, 52);
-        ImageClose.Anchors := [anTop, anRight];
-        ImageClose.Hint := gResTexts[TX_MSG_CLOSE_HINT];
-        ImageClose.OnClick := Close;
-        ImageClose.HighlightOnMouseOver := True;
-      end;
+    pubgitGray:   ImageBG.TexId := 15;
+    pubgitYellow: ImageBG.TexId := 18;
+    pubgitScroll: begin
+                    ImageBG.Rx := rxGui;
+                    ImageBG.TexId := 409;
+                  end;
+  end;
+
+  if aWithCrossImg then
+  begin
+    ImageClose := TKMImage.Create(Self, Width - GetCrossRight, GetCrossTop, 31, 30, 52);
+    ImageClose.Anchors := [anTop, anRight];
+    ImageClose.Hint := gResTexts[TX_MSG_CLOSE_HINT];
+    ImageClose.OnClick := Close;
+    ImageClose.HighlightOnMouseOver := True;
+  end;
+
+  ItemsPanel.AnchorsStretch;
+  if aShowBevel then
+  begin
+    BevelBG := TKMBevel.Create(ItemsPanel, 0, 0, ItemsPanel.Width, ItemsPanel.Height);
+    BevelBG.AnchorsStretch;
   end;
 
   ImageBG.ImageStretch;
-
-  BevelBG := nil;
-  if aShowBevel then
-    BevelBG := TKMBevel.Create(Self, 0, 0, aWidth, aHeight);
 
   AnchorsCenter;
   Hide;
 
   // Subscribe to get other controls mouse move events
-  aParent.fMasterControl.AddMouseMoveCtrlSub(ControlMouseMove);
+  fMasterControl.AddMouseMoveCtrlSub(ControlMouseMove);
 
   // Subscribe to get other controls mouse down events
-  aParent.fMasterControl.AddMouseDownCtrlSub(ControlMouseDown);
+  fMasterControl.AddMouseDownCtrlSub(ControlMouseDown);
 
     // Subscribe to get other controls mouse up events
   fMasterControl.AddMouseUpCtrlSub(ControlMouseUp);
+end;
+
+
+function TKMPopUpPanel.GetLeftRightMargin: Integer;
+begin
+  Result := 0;
+  case fBGImageType of
+    pubgitGray:   Result := 20;
+    pubgitYellow: Result := 35;
+    pubgitScroll: Result := 20;
+  end;
+end;
+
+
+function TKMPopUpPanel.GetTopMargin: Integer;
+begin
+  Result := 0;
+  case fBGImageType of
+    pubgitGray:   Result := 40;
+    pubgitYellow: Result := 80;
+    pubgitScroll: Result := 50;
+  end;
+end;
+
+
+function TKMPopUpPanel.GetBottomMargin: Integer;
+begin
+  Result := 0;
+  case fBGImageType of
+    pubgitGray:   Result := 20;
+    pubgitYellow: Result := 50;
+    pubgitScroll: Result := 20;
+  end;
+end;
+
+
+function TKMPopUpPanel.GetCrossTop: Integer;
+begin
+  Result := 0;
+  case fBGImageType of
+    pubgitGray:   Result := 24;
+    pubgitYellow: Result := 40;
+    pubgitScroll: Result := 24;
+  end;
+end;
+
+
+function TKMPopUpPanel.GetCrossRight: Integer;
+begin
+  Result := 0;
+  // We probably should calc those sizes as dependant of the Width
+  case fBGImageType of
+    pubgitGray:   Result := 50;
+    pubgitYellow: Result := 130;
+    pubgitScroll: Result := 55;
+  end;
 end;
 
 
@@ -9128,7 +9274,7 @@ procedure TKMPopUpPanel.PaintPanel(aPaintLayer: Integer);
 begin
   inherited;
 
-  TKMRenderUI.WriteText(AbsLeft, AbsTop - (Height div 20) + CapOffsetY, Width, Caption, Font, taCenter, FontColor);
+  TKMRenderUI.WriteText(AbsLeft, AbsTop + GetTopMargin - 25 + CapOffsetY, Width, Caption, Font, taCenter, FontColor);
 end;
 
 
@@ -9137,18 +9283,6 @@ begin
   inherited;
 
   UpdateSizes;
-end;
-
-
-procedure TKMPopUpPanel.SetLeft(aValue: Integer);
-begin
-  inherited SetLeft(EnsureRange(aValue, Max(0, -ImageBG.Left - 5), fMasterControl.fMasterPanel.Width - Width));
-end;
-
-
-procedure TKMPopUpPanel.SetTop(aValue: Integer);
-begin
-  inherited SetTop(EnsureRange(aValue, Max(0, -ImageBG.Top - 10), fMasterControl.fMasterPanel.Height - Height));
 end;
 
 
@@ -9162,23 +9296,39 @@ end;
 
 procedure TKMPopUpPanel.UpdateSizes;
 begin
-  case fBGImageType of
-    pubgitGray:
-    begin
-      ImageBG.Width := Width + 40;
-      ImageBG.Height := Height + 70;
-    end;
-    pubgitYellow:
-    begin
-      ImageBG.Width := Width + 50;
-      ImageBG.Height := Height + 140;
-    end;
-  end;
-  if BevelBG <> nil then
-  begin
-    BevelBG.Width := Width;
-    BevelBG.Height := Height;
-  end;
+  ImageBG.Width := Width;
+  ImageBG.Height := Height;
+end;
+
+
+function TKMPopUpPanel.GetActualWidth: Integer;
+begin
+  Result := ItemsPanel.Width;
+end;
+
+
+procedure TKMPopUpPanel.SetActualWidth(aValue: Integer);
+var
+  baseW: Integer;
+begin
+  baseW := aValue + GetLeftRightMargin*2;
+  SetWidth(Min(Parent.Width, baseW));
+end;
+
+
+function TKMPopUpPanel.GetActualHeight: Integer;
+begin
+  Result := ItemsPanel.Height;
+end;
+
+
+procedure TKMPopUpPanel.SetActualHeight(aValue: Integer);
+var
+  baseH, h: Integer;
+begin
+  baseH := aValue + GetBottomMargin + GetTopMargin;
+  h := Min(Parent.Height, baseH);
+  SetHeight(h);
 end;
 
 
