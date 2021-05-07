@@ -62,6 +62,7 @@ Bugs:
  +  Fixed crash when Music folder has more then 255 tracks in it 
  +  Fix for def positions: Only fill closest positions for idle groups (on mission start)
  +  Fixed IO errors, that happened because windows TDirectory.Delete procedure is called asynchronously and dont wait until delete is done 
+ +  When uinstalling KMR, there are a lot of temp files left (.mi, logs, etc)
  +  MapEd: bug with group formatting when reducing group size with more then 1 row to less then row size units (F.e. you have 5x2 group and reduce its size to 3 units)
  +  MapEd: when placing markers(reveal FOW/center screen/AI start/defence AI)/units/houses/roads/fields/tile brushes/tile objects - after RBM click buttons are still selected, even if you can't use them actually.
  +  MapEd: fix for terrain lighting was not updated when add / remove water onto the map
@@ -96,7 +97,7 @@ Bugs to fix in future:
    Towers attack range is uneven (should be measured from towers middle, not the recruit location in BR corner)
    AIAttacks bug (AI attacks mulfunction after 12min.rar)
    TSK 5: ally sometimes sends his troops to the enemy base causing you to lose (after the enemy attacks?)
-   When uinstalling KMR, there are a lot of temp files left (.mi, logs, etc)
+   
    House animations order don't match with wares being taken/made. Many times wares dissappear before citizen goes to take them.
    Warriors who hit an obstacle (diagonal tree) while storming should walk towards leader's final position
    AI groups retaliating to threat or provoked by auto attack range should return to their defence positions after pursuing unsuccessfully for a certain time/distance
