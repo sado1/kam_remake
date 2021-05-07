@@ -312,7 +312,7 @@ type
     procedure MessageIssue(aKind: TKMMessageKind; const aText: UnicodeString); overload;
     procedure MessageIssue(aKind: TKMMessageKind; const aText: UnicodeString; const aLoc: TKMPoint); overload;
     procedure UpdateUI;
-    procedure UpdateClock(aSpeedActual, aSpeedRecorded: Single; aShowRecorded: Boolean);
+    procedure UpdateClock(aSpeedActual, aDefaultSpeed, aSpeedRecorded: Single);
     procedure ShowPlayMore(DoShow: Boolean; Msg: TKMGameResultMsg);
     procedure ShowMPPlayMore(Msg: TKMGameResultMsg);
     procedure ShowNetworkLag(aShow: Boolean; aPlayers: TKMByteArray; IsHost: Boolean);
@@ -2606,21 +2606,23 @@ begin
 end;
 
 
-procedure TKMGamePlayInterface.UpdateClock(aSpeedActual, aSpeedRecorded: Single; aShowRecorded: Boolean);
+procedure TKMGamePlayInterface.UpdateClock(aSpeedActual, aDefaultSpeed, aSpeedRecorded: Single);
 var
-  doShowClock: Boolean;
+  doShowClock, doShowRecorded: Boolean;
 begin
   if Self = nil then Exit;
 
-  doShowClock := (aSpeedActual <> GAME_SPEED_NORMAL)
-              or (aShowRecorded and (aSpeedRecorded <> GAME_SPEED_NORMAL));
+  doShowRecorded := gGameParams.IsReplay;
+  doShowClock := gGameParams.IsReplay
+              or (aSpeedActual <> aDefaultSpeed)
+              or (doShowRecorded and (aSpeedRecorded <> aDefaultSpeed));
 
   Image_Clock.Visible := doShowClock;
   Label_Clock.Visible := doShowClock or gGameSettings.ShowGameTime or SHOW_GAME_TICK;
   Label_ClockSpeedActual.Visible := doShowClock;
   Label_ClockSpeedActual.Caption := 'x' + FormatFloat('##0.##', aSpeedActual);
 
-  if aShowRecorded then
+  if doShowRecorded then
   begin
     Label_ClockSpeedRecorded.Visible := doShowClock;
     Label_ClockSpeedRecorded.Caption := 'x' + FormatFloat('##0.##', aSpeedRecorded);
@@ -3146,7 +3148,7 @@ begin
   if gGame = nil then Exit;
 
   if CanUpdateClockUI then
-    UpdateClock(gGame.SpeedActual, gGame.SpeedGIP, gGameParams.IsReplay);
+    UpdateClock(gGame.SpeedActual, gGame.GetNormalSpeed, gGame.SpeedGIP);
 end;
 
 
