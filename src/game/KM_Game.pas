@@ -243,6 +243,7 @@ type
 
     function GetNewUID: Integer;
     function GetNormalSpeed: Single;
+    function GetToggledNormalSpeed: Single;
     procedure StepOneFrame;
 
     procedure SetSpeed(aSpeed: Single); overload;
@@ -250,7 +251,7 @@ type
     procedure SetSpeed(aSpeed: Single; aToggle: Boolean; aToggleTo: Single); overload;
 
     procedure SetSpeedActual(aSpeed: Single);
-    procedure SetSpeedGIP(aSpeed: Single; aUpdateActual: Boolean = False);
+    procedure SetSpeedGIP(aSpeed: Single; aUpdateActual: Boolean = False; aUpdateOptionsSpeed: Boolean = False);
 
     class function SavePath(const aName: UnicodeString; aIsMultiplayer: Boolean): UnicodeString;
     class function SaveName(const aFolder, aName, aExt: UnicodeString; aIsMultiplayer: Boolean): UnicodeString; overload;
@@ -1819,14 +1820,32 @@ begin
 end;
 
 
-procedure TKMGame.SetSpeedGIP(aSpeed: Single; aUpdateActual: Boolean = False);
+// Speed to which we are going to toggle to when press F5
+function TKMGame.GetToggledNormalSpeed: Single;
+begin
+  if fParams.IsMultiPlayerOrSpec then
+  begin
+    if IsPeaceTime then
+      Result := fOptions.SpeedPT
+    else
+      Result := fOptions.SpeedAfterPT;
+  end
+  else
+    Result := fSpeedGIP;
+end;
+
+
+procedure TKMGame.SetSpeedGIP(aSpeed: Single; aUpdateActual: Boolean = False; aUpdateOptionsSpeed: Boolean = False);
 var
   speedChanged: Boolean;
 begin
   speedChanged := fSpeedGIP <> aSpeed;
 
-  //Update gameOptions SpeedPT / SpeedAfterPT for MP game
-  if fParams.IsMultiPlayerOrSpec then
+  // Update gameOptions SpeedPT / SpeedAfterPT for MP game
+  // If speed was changed from script, then we want to lobby speed to be affected as well
+  // Bug if speed was changed via F5-F8, then we want to save Lobby speed values,
+  // since we want to set it back via pressing F5 twice
+  if aUpdateOptionsSpeed and fParams.IsMultiPlayerOrSpec then
   begin
     if IsPeacetime then
       fOptions.SpeedPT := aSpeed
