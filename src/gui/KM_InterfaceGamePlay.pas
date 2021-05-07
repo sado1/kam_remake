@@ -2613,7 +2613,8 @@ begin
   if Self = nil then Exit;
 
   doShowRecorded := gGameParams.IsReplay;
-  doShowClock := gGameParams.IsReplay
+  doShowClock := gGameSettings.ShowGameTime
+              or gGameParams.IsReplay
               or (aSpeedActual <> aDefaultSpeed)
               or (doShowRecorded and (aSpeedRecorded <> aDefaultSpeed));
 
