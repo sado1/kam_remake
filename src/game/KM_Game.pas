@@ -304,7 +304,7 @@ uses
   KM_InterfaceDefaults, KM_InterfaceTypes, KM_GameSettings,
   KM_Log, KM_ScriptingEvents, KM_Saves, KM_FileIO, KM_CommonUtils, KM_RandomChecks, KM_DevPerfLog, KM_DevPerfLogTypes,
   KM_NetPlayersList,
-  KM_HandTypes,
+  KM_HandTypes, KM_ResLocales,
   KM_ServerSettings,
   KM_MapUtils, KM_Utils;
 
@@ -1614,7 +1614,7 @@ var
 begin
   // check for MissionPath/MissionName.Sound.Locale.ext
   Result := GetLocalizedFilePath(ExeDir + ChangeFileExt(fParams.MissionFileRel, '.' + string(aSound)),
-                                 gGameSettings.Locale, AUDIO_EXT[aAudioFormat]);
+                                 gResLocales.UserLocale, gResLocales.FallbackLocale, AUDIO_EXT[aAudioFormat]);
 
   // Try to load Campaign specific audio file in the campaign Sounds folder (not mission specific)
   if fParams.IsCampaign and (gGameApp.Campaigns.ActiveCampaign <> nil) and not FileExists(Result) then
@@ -1622,7 +1622,7 @@ begin
     camp := gGameApp.Campaigns.ActiveCampaign;
     // check for Campaigns/Camp_name/Sounds/CMP.Sound.Locale.ext
     Result := GetLocalizedFilePath(camp.Path + CAMPAIGN_SOUNDS_FOLDER_NAME + PathDelim + camp.ShortName + '.' + UnicodeString(aSound),
-                                   gGameSettings.Locale, AUDIO_EXT[aAudioFormat]);
+                                   gResLocales.UserLocale, gResLocales.FallbackLocale, AUDIO_EXT[aAudioFormat]);
   end;
 end;
 

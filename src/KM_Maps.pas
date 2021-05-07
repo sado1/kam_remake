@@ -252,7 +252,7 @@ uses
   SysUtils, StrUtils, TypInfo, Math,
   KromShellUtils, KromUtils,
   KM_GameApp, KM_GameSettings, KM_FileIO,
-  KM_MissionScript_Info, KM_Scripting,
+  KM_MissionScript_Info, KM_Scripting, KM_ResLocales,
   KM_CommonUtils, KM_Log, KM_MapUtils, KM_Utils;
 
 const
@@ -799,7 +799,7 @@ begin
   Assert(gGameApp <> nil, 'gGameApp = nil!');
   Assert(gGameSettings <> nil, 'gGameSettings = nil!');
 
-  Result := GetLocalizedFilePath(fPath + fFileName, gGameSettings.Locale, '.pdf');
+  Result := GetLocalizedFilePath(fPath + fFileName, gResLocales.UserLocale, gResLocales.FallbackLocale, '.pdf');
 end;
 
 
