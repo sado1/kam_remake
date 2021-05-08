@@ -57,7 +57,7 @@ type
 
 implementation
 uses
-  KM_ResTexts, KM_GameCursor, KM_RenderUI, KM_InterfaceGame, KM_Utils;
+  KM_ResTexts, KM_Cursor, KM_RenderUI, KM_InterfaceGame, KM_Utils;
 
 
 { TKMMapEdTerrain }
@@ -141,7 +141,7 @@ end;
 procedure TKMMapEdTerrain.PageChange(Sender: TObject);
 begin
   //Reset cursor mode
-  gGameCursor.Mode := cmNone;
+  gCursor.Mode := cmNone;
 
   //Hide existing pages
   fGuiBrushes.Hide;
@@ -235,7 +235,6 @@ end;
 
 procedure TKMMapEdTerrain.Resize;
 begin
-  fGuiTiles.Resize;
   fGuiObjects.Resize;
 end;
 

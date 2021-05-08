@@ -99,7 +99,7 @@ uses
   {$IFDEF Unix} LCLType, {$ENDIF}
   KM_HandsCollection, KM_ResTexts, KM_Resource, KM_RenderUI, KM_ResUnits,
   KM_ResWares, KM_HouseBarracks, KM_HouseTownHall,
-  KM_ResFonts, KM_GameCursor, KM_Utils,
+  KM_ResFonts, KM_Cursor, KM_Utils,
   KM_ResTypes;
 
 
@@ -296,9 +296,9 @@ procedure TKMMapEdHouse.UpdateState;
 begin
   if Visible then
     case fHouse.HouseType of
-      htBarracks:    Button_Barracks_RallyPoint.Down := (gGameCursor.Mode = cmMarkers) and (gGameCursor.Tag1 = MARKER_RALLY_POINT);
-      htTownHall:    Button_TownHall_RallyPoint.Down := (gGameCursor.Mode = cmMarkers) and (gGameCursor.Tag1 = MARKER_RALLY_POINT);
-      htWoodcutters: Button_Woodcutters_CuttingPoint.Down := (gGameCursor.Mode = cmMarkers) and (gGameCursor.Tag1 = MARKER_RALLY_POINT);
+      htBarracks:    Button_Barracks_RallyPoint.Down := (gCursor.Mode = cmMarkers) and (gCursor.Tag1 = MARKER_RALLY_POINT);
+      htTownHall:    Button_TownHall_RallyPoint.Down := (gCursor.Mode = cmMarkers) and (gCursor.Tag1 = MARKER_RALLY_POINT);
+      htWoodcutters: Button_Woodcutters_CuttingPoint.Down := (gCursor.Mode = cmMarkers) and (gCursor.Tag1 = MARKER_RALLY_POINT);
     end;
 end;
 
@@ -489,13 +489,13 @@ begin
   end;
   tmp := TKMHouseBarracks(fHouse).MapEdRecruitCount;
   Button_Barracks_Recruit.Caption := IfThen(tmp = 0, '-', IntToStr(tmp));
-  Button_Barracks_RallyPoint.Down := (gGameCursor.Mode = cmMarkers) and (gGameCursor.Tag1 = MARKER_RALLY_POINT);
+  Button_Barracks_RallyPoint.Down := (gCursor.Mode = cmMarkers) and (gCursor.Tag1 = MARKER_RALLY_POINT);
 end;
 
 
 procedure TKMMapEdHouse.TownHallRefresh;
 begin
-  Button_TownHall_RallyPoint.Down := (gGameCursor.Mode = cmMarkers) and (gGameCursor.Tag1 = MARKER_RALLY_POINT);
+  Button_TownHall_RallyPoint.Down := (gCursor.Mode = cmMarkers) and (gCursor.Tag1 = MARKER_RALLY_POINT);
   WaresRow_TH_Gold_Input.OrderCount := fHouse.CheckResIn(wtGold);
   WaresRow_TH_Gold_Input.WareRow.WareCount := Min(MAX_WARES_IN_HOUSE, WaresRow_TH_Gold_Input.OrderCount);
 end;
@@ -503,7 +503,7 @@ end;
 
 procedure TKMMapEdHouse.WoodcuttersRefresh;
 begin
-  Button_Woodcutters_CuttingPoint.Down := (gGameCursor.Mode = cmMarkers) and (gGameCursor.Tag1 = MARKER_RALLY_POINT);
+  Button_Woodcutters_CuttingPoint.Down := (gCursor.Mode = cmMarkers) and (gCursor.Tag1 = MARKER_RALLY_POINT);
 end;
 
 
@@ -625,10 +625,10 @@ begin
   btn.Down := not btn.Down;
   if btn.Down then
   begin
-    gGameCursor.Mode := cmMarkers;
-    gGameCursor.Tag1 := MARKER_RALLY_POINT;
+    gCursor.Mode := cmMarkers;
+    gCursor.Tag1 := MARKER_RALLY_POINT;
   end else
-    gGameCursor.Mode := cmNone;
+    gCursor.Mode := cmNone;
 end;
 
 

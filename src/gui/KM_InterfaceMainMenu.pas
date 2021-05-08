@@ -47,8 +47,8 @@ type
     Panel_Menu: TKMPanel;
     Panel_Background: TKMImage;
     Label_Version: TKMLabel;
-    function GetHintPositionBase: TKMPoint; override;
     function GetHintFont: TKMFont; override;
+    function GetHintKind: TKMHintKind; override;
   public
     constructor Create (X,Y: Word; aCampaigns: TKMCampaignsCollection;
                         aOnNewSingleMap: TKMNewSingleMapEvent;
@@ -190,15 +190,15 @@ begin
 end;
 
 
-function TKMMainMenuInterface.GetHintPositionBase: TKMPoint;
-begin
-  Result := KMPoint(Panel_Menu.Left - 5, Min(Panel_Menu.Bottom + 15, Panel_Main.Height));
-end;
-
-
 function TKMMainMenuInterface.GetHintFont: TKMFont;
 begin
   Result := fntGrey;
+end;
+
+
+function TKMMainMenuInterface.GetHintKind: TKMHintKind;
+begin
+  Result := hkControl;
 end;
 
 
@@ -412,6 +412,8 @@ end;
 //Do something related to mouse movement in menu
 procedure TKMMainMenuInterface.MouseMove(Shift: TShiftState; X,Y: Integer; var aHandled: Boolean);
 begin
+  UpdateCursor(X, Y, Shift);
+
   aHandled := True; // assume we always handle mouse move
 
   fMyControls.MouseMove(X, Y, Shift);

@@ -203,6 +203,8 @@ var
                                           of Word;
 implementation
 uses
+  System.Types,
+  System.IOUtils,
   KromUtils,
   {$IFDEF LOAD_GAME_RES_ASYNC}
 
@@ -492,6 +494,7 @@ var
   maskTyp: TMaskType;
   pngWidth, pngHeight: Word;
   pngData: TKMCardinalArray;
+  txtFileName: string;
 begin
   Assert(SameText(ExtractFileExt(aFilename), '.png'));
 
@@ -499,7 +502,7 @@ begin
     Allocate(aIndex);
 
   LoadFromPng(aFolder + aFilename, pngWidth, pngHeight, pngData);
-  Assert((pngWidth <= 2048) and (pngHeight <= 2048), 'Image size should be less than 1024x1024 pixels');
+  Assert((pngWidth <= 2048) and (pngHeight <= 2048), 'Image size should be less than 2048x2048 pixels');
 
   fRXData.Flag[aIndex] := Byte(pngWidth * pngHeight <> 0); //Mark as used (required for saving RXX)
   fRXData.Size[aIndex].X := pngWidth;
@@ -573,9 +576,10 @@ begin
   end;
 
   //Read pivot info
-  if FileExists(aFolder + Copy(aFilename, 1, 6) + '.txt') then
+  txtFileName := aFolder + StringReplace(aFilename, '.png', '.txt', [rfReplaceAll, rfIgnoreCase]);
+  if FileExists(txtFileName) then
   begin
-    AssignFile(ft, aFolder + Copy(aFilename, 1, 6) + '.txt');
+    AssignFile(ft, txtFileName);
     Reset(ft);
     ReadLn(ft, fRXData.Pivot[aIndex].X);
     ReadLn(ft, fRXData.Pivot[aIndex].Y);
@@ -647,37 +651,41 @@ end;
 
 //Parse all valid files in Sprites folder and load them additionaly to or replacing original sprites
 procedure TKMSpritePack.OverloadFromFolder(const aFolder: string; aSoftenShadows: Boolean = True);
+
   procedure ProcessFolder(const aProcFolder: string; aRT: TRXType);
   var
     I, ID: Integer;
     fileList, IDList: TStringList;
     searchRec: TSearchRec;
+    filePath, relName: string;
   begin
-    if not DirectoryExists(aFolder) then Exit;
+    if not DirectoryExists(aProcFolder) then Exit;
+
     fileList := TStringList.Create;
     try
       IDList := TStringList.Create;
       try
-        try
-          //PNGs
-          if FindFirst(aProcFolder + IntToStr(Byte(fRT) + 1) + '_????.png', faAnyFile - faDirectory, searchRec) = 0 then
-          repeat
-            fileList.Add(searchRec.Name);
-          until (FindNext(searchRec) <> 0);
-        finally
-          FindClose(searchRec);
+        //PNGs
+        for filePath in TDirectory.GetFiles(aProcFolder, IntToStr(Byte(fRT) + 1) + '_????.png', TSearchOption.soAllDirectories) do
+        begin
+          relName := ExtractRelativePath(aProcFolder, filePath);
+          // skip image, if subfolder contains 'skip' string
+          if not relName.Contains('skip') then
+            fileList.Add(relName);
         end;
 
         //PNG may be accompanied by some more files
         //#_####.png - Base texture
         //#_####a.png - Flag color mask
         //#_####.txt - Pivot info (optional)
-        for I := 0 to fileList.Count - 1 do
-          if TryStrToInt(Copy(fileList.Strings[I], 3, 4), ID) then
+        for I := fileList.Count - 1 downto 0 do
+        begin
+          if TryStrToInt(Copy(ExtractFileName(fileList.Strings[I]), 3, 4), ID) then
           begin
             AddImage(aProcFolder, fileList.Strings[I], ID);
             IDList.Add(IntToStr(ID));
           end;
+        end;
 
         if aSoftenShadows then
           SoftenShadows(IDList); // Soften shadows for overloaded sprites
@@ -704,6 +712,7 @@ procedure TKMSpritePack.OverloadFromFolder(const aFolder: string; aSoftenShadows
       fileList.Free;
     end;
   end;
+
 begin
   if SKIP_RENDER then Exit;
 

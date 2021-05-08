@@ -110,7 +110,7 @@ uses
   KM_TerrainTypes, KM_Terrain, KM_FileIO,
   KM_AIDefensePos,
   KM_Units, KM_UnitGroup, KM_Houses, KM_HouseCollection,
-  KM_GameParams, KM_GameCursor, KM_ResMapElements, KM_ResHouses, KM_Resource, KM_ResUnits,
+  KM_GameParams, KM_Cursor, KM_ResMapElements, KM_ResHouses, KM_Resource, KM_ResUnits,
   KM_RenderAux, KM_Hand, KM_HandsCollection, KM_CommonUtils, KM_RenderDebug,
   KM_HandEntityHelper,
   KM_UnitGroupTypes,
@@ -387,12 +387,12 @@ begin
   FieldStage := -1;
   makeCheckpoint := False;
   fieldStr := '';
-  P := gGameCursor.Cell;
-  case gGameCursor.Mode of
+  P := gCursor.Cell;
+  case gCursor.Mode of
     cmField:  begin
                 if gTerrain.TileIsCornField(P) then
                 begin
-                  if not KMSamePoint(P, gGameCursor.PrevCell) or not aCheckPrevCell then
+                  if not KMSamePoint(P, gCursor.PrevCell) or not aCheckPrevCell then
                     FieldStage := (gTerrain.GetCornStage(P) + aStageIncrement + CORN_STAGES_COUNT) mod CORN_STAGES_COUNT;
                 end
                 else
@@ -413,7 +413,7 @@ begin
     cmWine:   begin
                 if gTerrain.TileIsWineField(P) then
                 begin
-                  if not KMSamePoint(P, gGameCursor.PrevCell) or not aCheckPrevCell then
+                  if not KMSamePoint(P, gCursor.PrevCell) or not aCheckPrevCell then
                     FieldStage := (gTerrain.GetWineStage(P) + aStageIncrement + WINE_STAGES_COUNT) mod WINE_STAGES_COUNT;
                 end
                 else
@@ -441,7 +441,7 @@ var
   isCorn, isWine: Boolean;
 begin
   Result := False;
-  P := gGameCursor.Cell;
+  P := gCursor.Cell;
   isCorn := gTerrain.TileIsCornField(P);
   isWine := gTerrain.TileIsWineField(P);
 
@@ -478,7 +478,7 @@ var
   removeTxID: Integer;
 begin
   fieldsChanged := False;
-  P := gGameCursor.Cell;
+  P := gCursor.Cell;
   Obj := gMySpectator.HitTestCursor(True);
   removeTxID := -1;
 
@@ -570,7 +570,7 @@ procedure TKMMapEditor.ChangeOwner(aChangeOwnerForAll: Boolean);
 var
   P: TKMPoint;
 begin
-  P := gGameCursor.Cell;
+  P := gCursor.Cell;
   //Fisrt try to change owner of object on tile
   if not ChangeEntityOwner(gMySpectator.HitTestCursorWGroup, gMySpectator.HandID) or aChangeOwnerForAll then
     //then try to change owner tile (road/field/wine)
@@ -631,7 +631,7 @@ end;
 procedure TKMMapEditor.MouseDown(Button: TMouseButton);
 begin
   if (Button = mbLeft) then
-    case gGameCursor.Mode of
+    case gCursor.Mode of
       cmSelection:  fSelection.Start;
       cmField,
       cmWine:       UpdateField(1, False);
@@ -647,7 +647,7 @@ procedure TKMMapEditor.ProceedRoadCursorMode;
 var
   P: TKMPoint;
 begin
-  P := gGameCursor.Cell;
+  P := gCursor.Cell;
   if gMySpectator.Hand.CanAddFieldPlan(P, ftRoad) then
   begin
     //If there's a field remove it first so we don't get road on top of the field tile (undesired in MapEd)
@@ -664,7 +664,7 @@ procedure TKMMapEditor.ProceedEraseCursorMode;
 var
   P: TKMPoint;
 begin
-  P := gGameCursor.Cell;
+  P := gCursor.Cell;
   gHands.RemAnyHouse(P);
   if gTerrain.Land^[P.Y,P.X].TileOverlay = toRoad then
   begin
@@ -700,23 +700,23 @@ var
   P: TKMPoint;
 begin
   // Only allow placing of roads etc. with the left mouse button
-  if not (ssLeft in gGameCursor.SState) then Exit;
+  if not (ssLeft in gCursor.SState) then Exit;
 
-  P := gGameCursor.Cell;
-  case gGameCursor.Mode of
+  P := gCursor.Cell;
+  case gCursor.Mode of
     cmRoad:       ProceedRoadCursorMode;
     cmField,
     cmWine:       UpdateField(1, True);
     cmUnits:      ProceedUnitsCursorMode;
     cmErase:      ProceedEraseCursorMode;
     cmSelection:  fSelection.Resize;
-    cmObjects:    if gGameCursor.Tag1 = OBJ_NONE then
+    cmObjects:    if gCursor.Tag1 = OBJ_NONE then
                   begin
                     if EraseTerrainObject(fLastRemoveTxID) then
-                      fLastErasedObjectLoc := gGameCursor.Cell;
+                      fLastErasedObjectLoc := gCursor.Cell;
                   end;
-    cmPaintBucket:      ChangeOwner(ssShift in gGameCursor.SState);
-    cmUniversalEraser:  EraseObject(ssShift in gGameCursor.SState);
+    cmPaintBucket:      ChangeOwner(ssShift in gCursor.SState);
+    cmUniversalEraser:  EraseObject(ssShift in gCursor.SState);
   end;
 end;
 
@@ -726,24 +726,24 @@ var
   P: TKMPoint;
   Obj: TObject;
 begin
-  P := gGameCursor.Cell;
+  P := gCursor.Cell;
 
-  if gGameCursor.Tag1 = 255 then
+  if gCursor.Tag1 = 255 then
   begin
     Obj := gMySpectator.HitTestCursor(True);
     if Obj is TKMUnit then
       gHands.RemAnyUnit(TKMUnit(Obj).Position);
   end else
-  if gTerrain.CanPlaceUnit(P, TKMUnitType(gGameCursor.Tag1)) then
+  if gTerrain.CanPlaceUnit(P, TKMUnitType(gCursor.Tag1)) then
   begin
     //Check if we can really add a unit
-    if TKMUnitType(gGameCursor.Tag1) in [CITIZEN_MIN..CITIZEN_MAX] then
-      gMySpectator.Hand.AddUnit(TKMUnitType(gGameCursor.Tag1), P, False)
+    if TKMUnitType(gCursor.Tag1) in [CITIZEN_MIN..CITIZEN_MAX] then
+      gMySpectator.Hand.AddUnit(TKMUnitType(gCursor.Tag1), P, False)
     else
-    if TKMUnitType(gGameCursor.Tag1) in [WARRIOR_MIN..WARRIOR_MAX] then
-      gMySpectator.Hand.AddUnitGroup(TKMUnitType(gGameCursor.Tag1), P, dirS, 1, 1)
+    if TKMUnitType(gCursor.Tag1) in [WARRIOR_MIN..WARRIOR_MAX] then
+      gMySpectator.Hand.AddUnitGroup(TKMUnitType(gCursor.Tag1), P, dirS, 1, 1)
     else
-      gHands.PlayerAnimals.AddUnit(TKMUnitType(gGameCursor.Tag1), P);
+      gHands.PlayerAnimals.AddUnit(TKMUnitType(gCursor.Tag1), P);
   end;
 end;
 
@@ -758,16 +758,16 @@ end;
 
 function TKMMapEditor.GetCheckpointObjectsStr(removeTxID: Integer = TX_WORD_OBJECT): string;
 begin
-  Result := GetCheckpointObjectsStr(gGameCursor.Cell, removeTxID);
+  Result := GetCheckpointObjectsStr(gCursor.Cell, removeTxID);
 end;
 
 
 function TKMMapEditor.GetCheckpointObjectsStr(aCell: TKMPoint; removeTxID: Integer = TX_WORD_OBJECT): string;
 begin
-  if gGameCursor.Tag1 = OBJ_NONE then
+  if gCursor.Tag1 = OBJ_NONE then
     Result := Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH], [gResTexts[removeTxID], aCell.ToString])
   else
-    Result := Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH] + ' %s', [gResTexts[removeTxID], IntToStr(gGameCursor.Tag1), aCell.ToString])
+    Result := Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH] + ' %s', [gResTexts[removeTxID], IntToStr(gCursor.Tag1), aCell.ToString])
 end;
 
 
@@ -802,7 +802,7 @@ procedure TKMMapEditor.MouseUp(Button: TMouseButton; aOverMap: Boolean);
 
   function IsObjectDeleting: Boolean;
   begin
-    Result := gGameCursor.Tag1 = OBJ_NONE;
+    Result := gCursor.Tag1 = OBJ_NONE;
   end;
 
   procedure ManageObjects;
@@ -824,7 +824,7 @@ begin
   if not aOverMap then
   begin
     //Still need to make a checkpoint since painting has now stopped
-    case gGameCursor.Mode of
+    case gCursor.Mode of
       cmElevate:  fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_TERRAIN_HEIGHTS_ELEVATE]);
       cmEqualize: fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_TERRAIN_HEIGHTS_UNEQUALIZE]);
       cmElevateAll:   fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_HEIGHTS_ELEVATE_ALL]);
@@ -838,22 +838,22 @@ begin
     Exit;
   end;
 
-  P := gGameCursor.Cell; //Get cursor position tile-wise
+  P := gCursor.Cell; //Get cursor position tile-wise
   case Button of
-    mbLeft:   case gGameCursor.Mode of
+    mbLeft:   case gCursor.Mode of
                 cmRoad:       ProceedRoadCursorMode;
-                cmHouses:     if gMySpectator.Hand.CanAddHousePlan(P, TKMHouseType(gGameCursor.Tag1)) then
+                cmHouses:     if gMySpectator.Hand.CanAddHousePlan(P, TKMHouseType(gCursor.Tag1)) then
                               begin
-                                gMySpectator.Hand.AddHouse(TKMHouseType(gGameCursor.Tag1), P.X, P.Y, True);
+                                gMySpectator.Hand.AddHouse(TKMHouseType(gCursor.Tag1), P.X, P.Y, True);
                                 fHistory.MakeCheckpoint(caHouses,
                                                         Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH],
-                                                               [gRes.Houses[TKMHouseType(gGameCursor.Tag1)].HouseName,
+                                                               [gRes.Houses[TKMHouseType(gCursor.Tag1)].HouseName,
                                                                 P.ToString]));
                                 //Holding shift allows to place that house multiple times
-                                if not (ssShift in gGameCursor.SState) then
+                                if not (ssShift in gCursor.SState) then
                                 begin
-                                  gGameCursor.Tag1 := 0; //Reset tag
-                                  gGameCursor.Mode := cmRoad;
+                                  gCursor.Tag1 := 0; //Reset tag
+                                  gCursor.Mode := cmRoad;
                                 end;
                               end;
                 cmElevate:    fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_TERRAIN_HEIGHTS_ELEVATE]);
@@ -878,15 +878,15 @@ begin
                                 fTerrainPainter.Eyedropper(P);
 
                                 if Assigned(OnEyedropper) then
-                                  OnEyedropper(gGameCursor.Tag1);
+                                  OnEyedropper(gCursor.Tag1);
 
-                                if not (ssShift in gGameCursor.SState) then  //Holding shift allows to choose another tile
-                                  gGameCursor.Mode := cmTiles;
+                                if not (ssShift in gCursor.SState) then  //Holding shift allows to choose another tile
+                                  gCursor.Mode := cmTiles;
                               end;
                 cmRotateTile: fTerrainPainter.RotateTile(P);
                 cmUnits:      ProceedUnitsCursorMode;
-                cmMarkers:    case gGameCursor.Tag1 of
-                                MARKER_REVEAL:        fRevealers[gMySpectator.HandID].Add(P, gGameCursor.MapEdSize);
+                cmMarkers:    case gCursor.Tag1 of
+                                MARKER_REVEAL:        fRevealers[gMySpectator.HandID].Add(P, gCursor.MapEdSize);
                                 MARKER_DEFENCE:       AddDefenceMarker(P);
                                 MARKER_CENTERSCREEN:  begin
                                                         gMySpectator.Hand.CenterScreen := P;
@@ -897,17 +897,17 @@ begin
                                                         TKMHouseWFlagPoint(gMySpectator.Selected).FlagPoint := P;
                               end;
                 cmErase:      ProceedEraseCursorMode;
-                cmPaintBucket:      ChangeOwner(ssShift in gGameCursor.SState);
-                cmUniversalEraser:  EraseObject(ssShift in gGameCursor.SState);
+                cmPaintBucket:      ChangeOwner(ssShift in gCursor.SState);
+                cmUniversalEraser:  EraseObject(ssShift in gCursor.SState);
               end;
-    mbRight:  case gGameCursor.Mode of
+    mbRight:  case gCursor.Mode of
                               //Actual change was made in UpdateStateIdle, we just register it is done here
                 cmElevate:    fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_TERRAIN_HEIGHTS_ELEVATE]);
                 cmEqualize:   fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_TERRAIN_HEIGHTS_UNEQUALIZE]);
                 cmElevateAll: fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_HEIGHTS_ELEVATE_ALL]);
                 cmObjects,
                 cmEyedropper,
-                cmRotateTile: gGameCursor.Mode := cmNone;
+                cmRotateTile: gCursor.Mode := cmNone;
               end;
   end;
 end;
@@ -1003,11 +1003,11 @@ var
   P: TKMPoint;
   G: TKMUnitGroup;
 begin
-  P := gGameCursor.Cell;
+  P := gCursor.Cell;
 
   if aLayer = plCursors then
     //With Buildings tab see if we can remove Fields or Houses
-    if gGameCursor.Mode = cmErase then
+    if gCursor.Mode = cmErase then
       if gTerrain.TileIsCornField(P)
         or gTerrain.TileIsWineField(P)
         or (gTerrain.Land^[P.Y,P.X].TileOverlay = toRoad)

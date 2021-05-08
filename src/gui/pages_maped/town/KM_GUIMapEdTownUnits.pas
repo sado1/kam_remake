@@ -30,7 +30,7 @@ type
 
 implementation
 uses
-  KM_HandsCollection, KM_GameCursor, KM_RenderUI, KM_Resource, KM_ResFonts, KM_ResTexts,
+  KM_HandsCollection, KM_Cursor, KM_RenderUI, KM_Resource, KM_ResFonts, KM_ResTexts,
   KM_InterfaceGame, KM_ResUnits, KM_Utils;
 
 
@@ -94,8 +94,8 @@ end;
 
 procedure TKMMapEdTownUnits.Town_UnitChange(Sender: TObject);
 begin
-  gGameCursor.Mode := cmUnits;
-  gGameCursor.Tag1 := Byte(TKMButtonFlat(Sender).Tag);
+  gCursor.Mode := cmUnits;
+  gCursor.Tag1 := Byte(TKMButtonFlat(Sender).Tag);
 
   Town_UnitRefresh;
 end;
@@ -110,7 +110,7 @@ begin
   if Panel_Units.Childs[I] is TKMButtonFlat then
   begin
     B := TKMButtonFlat(Panel_Units.Childs[I]);
-    B.Down := (gGameCursor.Mode = cmUnits) and (gGameCursor.Tag1 = B.Tag);
+    B.Down := (gCursor.Mode = cmUnits) and (gCursor.Tag1 = B.Tag);
   end;
 end;
 

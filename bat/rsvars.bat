@@ -1,10 +1,17 @@
 @echo off
 if not exist rsvars_local.bat (goto exit2)
 
+if defined RS_INIT (
+  goto exit0
+)
+
+@SET RS_INIT=init
+
 call rsvars_local.bat
 
 @SET BDS=%BDS_LOCAL%
 @SET BDSCOMMONDIR=%BDSCOMMONDIR_LOCAL%
+@SET ISC_DIR=%ISC_DIR_LOCAL%
 @SET LAZARUS_LINUX=%LAZARUS_LINUX_LOCAL%
 @SET FrameworkDir=%FrameworkDir_LOCAL%
 @SET FrameworkVersion=%FrameworkVersion_LOCAL%

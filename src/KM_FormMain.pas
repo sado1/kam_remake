@@ -212,6 +212,7 @@ type
     chkGIP: TCheckBox;
     chkLogShowInGUI: TCheckBox;
     chkLogUpdateForGUI: TCheckBox;
+    chkCursorCoordinates: TCheckBox;
 
 
     procedure FormCreate(Sender: TObject);
@@ -1571,6 +1572,7 @@ begin
   SHOW_FOCUSED_CONTROL := chkUIFocusedControl.Checked;
   SHOW_CONTROL_OVER := chkUIControlOver.Checked;
   SKIP_RENDER_TEXT := chkSkipRenderText.Checked;
+  DBG_UI_HINT_POS := chkCursorCoordinates.Checked;
 
   {$IFDEF WDC} //one day update .lfm for lazarus...
 //  ALLOW_SNOW_HOUSES := chkSnowHouses.Checked;

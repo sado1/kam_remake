@@ -66,7 +66,7 @@ type
       PopUp_Rename: TKMPopUpMenu;
         Image_Rename: TKMImage;
         Label_RenameTitle, Label_RenameName: TKMLabel;
-        Edit_Rename: TKMEdit;
+        FilenameEdit_Rename: TKMFilenameEdit;
         Button_Rename, Button_RenameConfirm, Button_RenameCancel: TKMButton;
   public
     OnNewReplay: TUnicodeStringEvent;
@@ -89,6 +89,9 @@ const
 
 { TKMGUIMenuReplays }
 constructor TKMMenuReplays.Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText);
+const
+  PAD = 30;
+  BTN_LEFT = 180;
 begin
   inherited Create(gpReplays);
 
@@ -102,43 +105,45 @@ begin
   Panel_Replays := TKMPanel.Create(aParent, 0, 0, aParent.Width, aParent.Height);
   Panel_Replays.AnchorsStretch;
 
-  TKMLabel.Create(Panel_Replays, aParent.Width div 2, 50, gResTexts[TX_MENU_LOAD_LIST], fntOutline, taCenter);
+  TKMLabel.Create(Panel_Replays, aParent.Width div 2, 45, gResTexts[TX_MENU_LOAD_LIST], fntOutline, taCenter);
 
-  TKMBevel.Create(Panel_Replays, 22, 86, 956, 50);
-  Radio_Replays_Type := TKMRadioGroup.Create(Panel_Replays, 30, 94, 250, 40, fntGrey);
+  TKMBevel.Create(Panel_Replays, PAD, 86, aParent.Width - 2*PAD, 46);
+  Radio_Replays_Type := TKMRadioGroup.Create(Panel_Replays, PAD + 8, 91, 250, 40, fntGrey);
   Radio_Replays_Type.ItemIndex := 0;
   Radio_Replays_Type.Add(gResTexts[TX_MENU_MAPED_SPMAPS]);
   Radio_Replays_Type.Add(gResTexts[TX_MENU_MAPED_MPMAPS]);
   Radio_Replays_Type.OnChange := Replay_TypeChange;
 
-  ColumnBox_Replays := TKMColumnBox.Create(Panel_Replays, 22, 145, 956, 400, fntMetal, bsMenu);
+  ColumnBox_Replays := TKMColumnBox.Create(Panel_Replays, PAD, 140, aParent.Width - 2*PAD, 400, fntMetal, bsMenu);
   ColumnBox_Replays.SetColumns(fntOutline,
                                ['', gResTexts[TX_MENU_LOAD_FILE], gResTexts[TX_MENU_LOAD_DATE], gResTexts[TX_MENU_LOAD_MAP_NAME],
                                 gResTexts[TX_MENU_LOAD_TIME], gResTexts[TX_MENU_LOAD_GAME_VERSION]],
                                [0, 22, 440, 580, 805, 885]);
   ColumnBox_Replays.Anchors := [anLeft,anTop,anBottom];
+  ColumnBox_Replays.ShowHintWhenShort := True;
+  ColumnBox_Replays.HintBackColor := TKMColor3f.NewB(87, 72, 37);
   ColumnBox_Replays.SearchColumn := 1;
   ColumnBox_Replays.ColumnIdForScroll := 2;
   ColumnBox_Replays.OnChange := Replays_ListClick;
   ColumnBox_Replays.OnColumnClick := Replays_Sort;
   ColumnBox_Replays.OnDoubleClick := Replays_Play;
 
-  MinimapView_Replay := TKMMinimapView.Create(Panel_Replays, 630, 555, 191, 191, True);
+  MinimapView_Replay := TKMMinimapView.Create(Panel_Replays, PAD + 580, 555, 191, 191, True);
   MinimapView_Replay.Anchors := [anLeft, anBottom];
 
-  Button_ReplaysPlay := TKMButton.Create(Panel_Replays, 200, 560, 350, 30, gResTexts[TX_MENU_VIEW_REPLAY], bsMenu);
+  Button_ReplaysPlay := TKMButton.Create(Panel_Replays, BTN_LEFT, 560, 350, 30, gResTexts[TX_MENU_VIEW_REPLAY], bsMenu);
   Button_ReplaysPlay.Anchors := [anLeft,anBottom];
   Button_ReplaysPlay.OnClick := Replays_Play;
 
-  Button_Rename := TKMButton.Create(Panel_Replays, 200, 597, 350, 30, gResTexts[TX_MENU_REPLAY_RENAME], bsMenu);
+  Button_Rename := TKMButton.Create(Panel_Replays, BTN_LEFT, 597, 350, 30, gResTexts[TX_MENU_REPLAY_RENAME], bsMenu);
   Button_Rename.Anchors := [anLeft,anBottom];
   Button_Rename.OnClick := RenameClick;
 
-  Button_Delete := TKMButton.Create(Panel_Replays, 200, 634, 350, 30, gResTexts[TX_MENU_REPLAY_DELETE], bsMenu);
+  Button_Delete := TKMButton.Create(Panel_Replays, BTN_LEFT, 634, 350, 30, gResTexts[TX_MENU_REPLAY_DELETE], bsMenu);
   Button_Delete.Anchors := [anLeft,anBottom];
   Button_Delete.OnClick := DeleteClick;
 
-  Button_ReplaysBack := TKMButton.Create(Panel_Replays, 200, 700, 350, 30, gResTexts[TX_MENU_BACK], bsMenu);
+  Button_ReplaysBack := TKMButton.Create(Panel_Replays, BTN_LEFT, 700, 350, 30, gResTexts[TX_MENU_BACK], bsMenu);
   Button_ReplaysBack.Anchors := [anLeft,anBottom];
   Button_ReplaysBack.OnClick := BackClick;
 
@@ -187,10 +192,9 @@ begin
   Label_RenameName := TKMLabel.Create(PopUp_Rename, 25, 100, 60, 20, gResTexts[TX_MENU_REPLAY_RENAME_NAME], fntMetal, taLeft);
   Label_RenameName.Anchors := [anLeft,anBottom];
 
-  Edit_Rename := TKMEdit.Create(PopUp_Rename, 105, 97, 275, 20, fntMetal);
-  Edit_Rename.Anchors := [anLeft,anBottom];
-  Edit_Rename.AllowedChars := acFileName;
-  Edit_Rename.OnChange := Edit_Rename_Change;
+  FilenameEdit_Rename := TKMFilenameEdit.Create(PopUp_Rename, 105, 97, 275, 20, fntMetal);
+  FilenameEdit_Rename.Anchors := [anLeft,anBottom];
+  FilenameEdit_Rename.OnChange := Edit_Rename_Change;
 
   Button_RenameConfirm := TKMButton.Create(PopUp_Rename, 20, 155, 170, 30, gResTexts[TX_MENU_REPLAY_RENAME_CONFIRM], bsMenu);
   Button_RenameConfirm.Anchors := [anLeft,anBottom];
@@ -601,7 +605,7 @@ begin
 
   if aVisible then
   begin
-    Edit_Rename.Text := fSaves[ColumnBox_Replays.ItemIndex].FileName;
+    FilenameEdit_Rename.Text := fSaves[ColumnBox_Replays.ItemIndex].FileName;
     Button_RenameConfirm.Enabled := False;
     PopUp_Rename.Show;
   end else
@@ -612,7 +616,7 @@ end;
 // Check if new name is allowed
 procedure TKMMenuReplays.Edit_Rename_Change(Sender: TObject);
 begin
-  Button_RenameConfirm.Enabled := (Trim(Edit_Rename.Text) <> '') and not fSaves.Contains(Trim(Edit_Rename.Text));
+  Button_RenameConfirm.Enabled := FilenameEdit_Rename.IsValid and not fSaves.Contains(Trim(FilenameEdit_Rename.Text));
 end;
 
 
@@ -642,9 +646,9 @@ begin
   // Change name of the save
   if Sender = Button_RenameConfirm then
   begin
-    Edit_Rename.Text := Trim(Edit_Rename.Text);
-    fSaves.RenameSave(ColumnBox_Replays.ItemIndex, Edit_Rename.Text);
-    SetSelectedSaveName(Edit_Rename.Text);
+    FilenameEdit_Rename.Text := Trim(FilenameEdit_Rename.Text);
+    fSaves.RenameSave(ColumnBox_Replays.ItemIndex, FilenameEdit_Rename.Text);
+    SetSelectedSaveName(FilenameEdit_Rename.Text);
     ListUpdate;
   end;
 end;

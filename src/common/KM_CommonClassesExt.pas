@@ -51,9 +51,15 @@ type
 
     property MaxLength: Integer read fMaxLength write fMaxLength;
 
-    function Add(const Value: T): Integer;
+    function Add(const Value: T): Integer; reintroduce;
     procedure Swap(const ValueFrom, ValueTo: T);
+  end;
 
+  TKMLimitedUniqueList<T> = class(TKMLimitedList<T>)
+  public
+    constructor Create(aMaxLength: Integer);
+
+    function Add(const Value: T): Integer; reintroduce;
   end;
 
 
@@ -244,6 +250,24 @@ begin
 
   Items[toI] := ValueFrom;
   Items[fromI] := ValueTo;
+end;
+
+
+{ TKMLimitedUniqueList }
+constructor TKMLimitedUniqueList<T>.Create(aMaxLength: Integer);
+begin
+  inherited Create(aMaxLength);
+end;
+
+
+function TKMLimitedUniqueList<T>.Add(const Value: T): Integer;
+begin
+  if Contains(Value) then Exit;
+
+  inherited Add(Value);
+
+  if Count > fMaxLength then
+    Delete(0); // Delete the oldest item
 end;
 
 

@@ -287,7 +287,7 @@ type
 
       Panel_Save: TKMPanel;
         ListBox_Save: TKMListBox;
-        Edit_Save: TKMEdit;
+        FilenameEdit_Save: TKMFilenameEdit;
         Label_SaveExists: TKMLabel;
         CheckBox_SaveExists: TKMCheckBox;
         Button_Save: TKMButton;
@@ -312,7 +312,7 @@ type
     procedure MessageIssue(aKind: TKMMessageKind; const aText: UnicodeString); overload;
     procedure MessageIssue(aKind: TKMMessageKind; const aText: UnicodeString; const aLoc: TKMPoint); overload;
     procedure UpdateUI;
-    procedure UpdateClock(aSpeedActual, aSpeedRecorded: Single; aShowRecorded: Boolean);
+    procedure UpdateClock(aSpeedActual, aDefaultSpeed, aSpeedRecorded: Single);
     procedure ShowPlayMore(DoShow: Boolean; Msg: TKMGameResultMsg);
     procedure ShowMPPlayMore(Msg: TKMGameResultMsg);
     procedure ShowNetworkLag(aShow: Boolean; aPlayers: TKMByteArray; IsHost: Boolean);
@@ -367,7 +367,7 @@ type
 
 implementation
 uses
-  KM_Main, KM_GameInputProcess, KM_GameInputProcess_Multi, KM_AI, KM_RenderUI, KM_GameCursor, KM_Maps,
+  KM_Main, KM_GameInputProcess, KM_GameInputProcess_Multi, KM_AI, KM_RenderUI, KM_Cursor, KM_Maps,
   KM_HandsCollection, KM_Hand, KM_RenderPool, KM_ResTexts, KM_Game, KM_GameApp, KM_HouseBarracks, KM_HouseTownHall,
   KM_ScriptingEvents, KM_AIFields, KM_GameSettings,
   KM_CommonUtils, KM_ResLocales, KM_ResSound, KM_Resource, KM_Log, KM_ResCursors, KM_ResFonts, KM_ResKeys,
@@ -395,7 +395,7 @@ begin
     if InRange(TKMListBox(Sender).ItemIndex, 0, fSaves.Count-1) then
     begin
       fSave_Selected := TKMListBox(Sender).ItemIndex;
-      Edit_Save.SetTextSilently(fSaves[ListBox_Save.ItemIndex].FileName);
+      FilenameEdit_Save.SetTextSilently(fSaves[ListBox_Save.ItemIndex].FileName);
       // We just selected something from the list so it exists
       CheckBox_SaveExists.Enabled := True;
       CheckBox_SaveExists.Checked := False;
@@ -414,15 +414,15 @@ begin
   begin
     ListBox_Save.ItemIndex := -1;
     fSave_Selected := -1;
-    CheckBox_SaveExists.Enabled := FileExists(gGame.SaveName(Edit_Save.Text,
+    CheckBox_SaveExists.Enabled := FileExists(gGame.SaveName(FilenameEdit_Save.Text,
                                                              EXT_SAVE_MAIN,
                                                              (fUIMode in [umMP, umSpectate])
                                                              or (ALLOW_SAVE_IN_REPLAY and (gGameParams.Mode = gmReplayMulti))));
     Label_SaveExists.Visible := CheckBox_SaveExists.Enabled;
     CheckBox_SaveExists.Checked := False;
     // we should protect ourselves from empty names and whitespaces at beggining and at end of name
-    Button_Save.Enabled := (not CheckBox_SaveExists.Enabled) and (Edit_Save.Text <> '') and
-                           not (Edit_Save.Text[1] = ' ') and not (Edit_Save.Text[Length(Edit_Save.Text)] = ' ');
+    Button_Save.Enabled := (not CheckBox_SaveExists.Enabled) and FilenameEdit_Save.IsValid and
+                           not (FilenameEdit_Save.Text[1] = ' ') and not (FilenameEdit_Save.Text[Length(FilenameEdit_Save.Text)] = ' ');
   end;
 end;
 
@@ -430,8 +430,8 @@ end;
 procedure TKMGamePlayInterface.Menu_Save_CheckboxChange(Sender: TObject);
 begin
   // we should protect ourselves from empty names and whitespaces at beggining and at end of name
-  Button_Save.Enabled := CheckBox_SaveExists.Checked and (Edit_Save.Text <> '') and
-                         not (Edit_Save.Text[1] = ' ') and not (Edit_Save.Text[Length(Edit_Save.Text)] = ' ');
+  Button_Save.Enabled := CheckBox_SaveExists.Checked and (FilenameEdit_Save.Text <> '') and
+                         not (FilenameEdit_Save.Text[1] = ' ') and not (FilenameEdit_Save.Text[Length(FilenameEdit_Save.Text)] = ' ');
 end;
 
 
@@ -467,7 +467,7 @@ procedure TKMGamePlayInterface.Menu_Save_Click(Sender: TObject);
 var
   saveName: string;
 begin
-  saveName := Trim(Edit_Save.Text);
+  saveName := Trim(FilenameEdit_Save.Text);
   // Edit.OnChange event happens on key up, so it's still possible for the user to click save button
   // with an invalid file name entered, if the click while still holding down a key.
   // In general it's bad to rely on events like that to ensure validity, doing check here is a good idea
@@ -641,10 +641,10 @@ begin
       Panel_Save.Show;
       Label_MenuTitle.Caption := gResTexts[TX_MENU_SAVE_GAME];
       if fLastSaveName = '' then
-        Edit_Save.Text := gGameParams.Name
+        FilenameEdit_Save.Text := gGameParams.Name
       else
-        Edit_Save.Text := fLastSaveName;
-      Edit_Save.Focus;
+        FilenameEdit_Save.Text := fLastSaveName;
+      FilenameEdit_Save.Focus;
       Menu_Save_EditChange(nil); // Displays "confirm overwrite" message if necessary
     end else
 
@@ -1144,6 +1144,8 @@ begin
     Radio_PlayersColorMode.OnChange := Replay_PlayersColorModeClick;
 
     Dropbox_ReplayFOW := TKMDropList.Create(Panel_ReplayFOW, 0, 30, 185, 20, fntMetal, '', bsGame, False, 0.5);
+    Dropbox_ReplayFOW.ShowHintWhenShort := True;
+    Dropbox_ReplayFOW.HintBackColor := TKMColor3f.NewB(87, 72, 37);
     Dropbox_ReplayFOW.Hint := gResTexts[TX_REPLAY_PLAYER_PERSPECTIVE];
     Dropbox_ReplayFOW.OnChange := ReplayClick;
     Dropbox_ReplayFOW.DropCount := MAX_HANDS; //There could be only AI hands as well, not only Lobby players
@@ -1298,8 +1300,9 @@ begin
     Button_Back.OnClick := SwitchPage;
     Button_Back.Hint := gResTexts[TX_MENU_TAB_HINT_GO_BACK];
 
-    Label_MenuTitle := TKMLabel.Create(Panel_Controls, 54, 4, 138, 0, '', fntMetal, taLeft);
+    Label_MenuTitle := TKMLabel.Create(Panel_Controls, 54, 4, 138, 36, '', fntMetal, taLeft);
     Label_MenuTitle.AutoWrap := True;
+    Label_MenuTitle.TextVAlign := tvaMiddle;
 
   fGuiGameBuild := TKMGUIGameBuild.Create(Panel_Controls);
   fGuiGameRatios := TKMGUIGameRatios.Create(Panel_Controls, fUIMode in [umSP, umMP]);
@@ -1428,14 +1431,14 @@ begin
   Panel_Save := TKMPanel.Create(Panel_Controls, TB_PAD, 44, TB_WIDTH, 332);
 
     // Edit field created first to pick a focus on panel show
-    Edit_Save := TKMEdit.Create(Panel_Save, 0, 235, TB_WIDTH, 20, fntMetal);
-    Edit_Save.AllowedChars := acFileName;
-    Edit_Save.MaxLen := MAX_SAVENAME_LENGTH;
-    Edit_Save.AutoFocusable := False;
-    Edit_Save.OnChange := Menu_Save_EditChange;
+    FilenameEdit_Save := TKMFilenameEdit.Create(Panel_Save, 0, 235, TB_WIDTH, 20, fntMetal);
+    FilenameEdit_Save.AutoFocusable := False;
+    FilenameEdit_Save.OnChange := Menu_Save_EditChange;
 
     ListBox_Save := TKMListBox.Create(Panel_Save, 0, 4, TB_WIDTH, 220, fntMetal, bsGame);
     ListBox_Save.AutoHideScrollBar := True;
+    ListBox_Save.ShowHintWhenShort := True;
+    ListBox_Save.HintBackColor := TKMColor3f.NewB(87, 72, 37);
     ListBox_Save.SearchEnabled := True;
     ListBox_Save.OnChange := Menu_Save_ListChange;
 
@@ -1455,6 +1458,8 @@ begin
 
     ListBox_Load := TKMListBox.Create(Panel_Load, 0, 2, TB_WIDTH, 260, fntMetal, bsGame);
     ListBox_Load.AutoHideScrollBar := True;
+    ListBox_Load.ShowHintWhenShort := True;
+    ListBox_Load.HintBackColor := TKMColor3f.NewB(87, 72, 37);
     ListBox_Load.SearchEnabled := True;
     ListBox_Load.OnChange := Menu_Load_ListClick;
     ListBox_Load.OnDoubleClick := Menu_Load_Click;
@@ -1678,7 +1683,7 @@ begin
   fMessageStack.RemoveStack(aIndex);
 
   Message_UpdateStack;
-  DisplayHint(nil);
+  ResetHint;
 end;
 
 
@@ -2601,21 +2606,24 @@ begin
 end;
 
 
-procedure TKMGamePlayInterface.UpdateClock(aSpeedActual, aSpeedRecorded: Single; aShowRecorded: Boolean);
+procedure TKMGamePlayInterface.UpdateClock(aSpeedActual, aDefaultSpeed, aSpeedRecorded: Single);
 var
-  doShowClock: Boolean;
+  doShowClock, doShowRecorded: Boolean;
 begin
   if Self = nil then Exit;
 
-  doShowClock := (aSpeedActual <> GAME_SPEED_NORMAL)
-              or (aShowRecorded and (aSpeedRecorded <> GAME_SPEED_NORMAL));
+  doShowRecorded := gGameParams.IsReplay;
+  doShowClock := gGameSettings.ShowGameTime
+              or gGameParams.IsReplay
+              or (aSpeedActual <> aDefaultSpeed)
+              or (doShowRecorded and (aSpeedRecorded <> aDefaultSpeed));
 
   Image_Clock.Visible := doShowClock;
   Label_Clock.Visible := doShowClock or gGameSettings.ShowGameTime or SHOW_GAME_TICK;
   Label_ClockSpeedActual.Visible := doShowClock;
   Label_ClockSpeedActual.Caption := 'x' + FormatFloat('##0.##', aSpeedActual);
 
-  if aShowRecorded then
+  if doShowRecorded then
   begin
     Label_ClockSpeedRecorded.Visible := doShowClock;
     Label_ClockSpeedRecorded.Caption := 'x' + FormatFloat('##0.##', aSpeedRecorded);
@@ -3141,7 +3149,7 @@ begin
   if gGame = nil then Exit;
 
   if CanUpdateClockUI then
-    UpdateClock(gGame.SpeedActual, gGame.SpeedGIP, gGameParams.IsReplay);
+    UpdateClock(gGame.SpeedActual, gGame.GetNormalSpeed, gGame.SpeedGIP);
 end;
 
 
@@ -3581,7 +3589,7 @@ begin
     begin
       // Game speed/pause: available in multiplayer mode if the only player left in the game
       if Key = gResKeys[kfSpeedup1].Key then
-        gGame.SetSpeed(GAME_SPEED_NORMAL, True, gGame.SpeedGIP);
+        gGame.SetSpeed(GAME_SPEED_NORMAL, True, gGame.GetToggledNormalSpeed);
       if Key = gResKeys[kfSpeedup2].Key then
         gGame.SetSpeed(gGameSettings.SpeedMedium, True);
       if Key = gResKeys[kfSpeedup3].Key then
@@ -3704,7 +3712,7 @@ begin
     if Key = gResKeys[kfDebugRevealmap].Key then gGame.GameInputProcess.CmdTemp(gicTempRevealMap);
     if Key = gResKeys[kfDebugVictory].Key   then gGame.GameInputProcess.CmdTemp(gicTempVictory);
     if Key = gResKeys[kfDebugDefeat].Key    then gGame.GameInputProcess.CmdTemp(gicTempDefeat);
-    if Key = gResKeys[kfDebugAddscout].Key  then gGame.GameInputProcess.CmdTemp(gicTempAddScout, gGameCursor.Cell);
+    if Key = gResKeys[kfDebugAddscout].Key  then gGame.GameInputProcess.CmdTemp(gicTempAddScout, gCursor.Cell);
   end;
 end;
 
@@ -3717,17 +3725,17 @@ procedure TKMGamePlayInterface.MouseDown(Button: TMouseButton; Shift: TShiftStat
   begin
     //Set cursor into 'Plan' mode by default,
     //even if we click where plan could not be placed we could plan it with mouse move later
-    gGameCursor.Tag1 := Byte(cfmPlan);
+    gCursor.Tag1 := Byte(cfmPlan);
     if gMySpectator.Hand.CanAddFakeFieldPlan(P, aFieldType) then
     begin
       gGame.GameInputProcess.CmdBuild(gicBuildToggleFieldPlan, P, aFieldType);
-      fLastDragPoint := gGameCursor.Cell;
+      fLastDragPoint := gCursor.Cell;
     end else if gMySpectator.Hand.CanRemFakeFieldPlan(P, aFieldType) then
     begin
       gGame.GameInputProcess.CmdBuild(gicBuildToggleFieldPlan, P, aFieldType);
-      fLastDragPoint := gGameCursor.Cell;
+      fLastDragPoint := gCursor.Cell;
       // Set cursor into "Erase" mode, so dragging it will erase next tiles with the same field type
-      gGameCursor.Tag1 := Byte(cfmErase);
+      gCursor.Tag1 := Byte(cfmErase);
     end
   end;
 
@@ -3758,9 +3766,9 @@ begin
   //Handle field planss
   if Button = mbLeft then
   begin
-    P := gGameCursor.Cell; // Get cursor position tile-wise
+    P := gCursor.Cell; // Get cursor position tile-wise
     if gMySpectator.Hand.FogOfWar.CheckTileRevelation(P.X, P.Y) > 0 then
-      case gGameCursor.Mode of
+      case gCursor.Mode of
         cmRoad:   HandleFieldLMBDown(P, ftRoad);
         cmField:  HandleFieldLMBDown(P, ftCorn);
         cmWine:   HandleFieldLMBDown(P, ftWine);
@@ -3791,7 +3799,7 @@ begin
 
     if canWalkTo then
     begin
-      if group.CanWalkTo(gGameCursor.Cell, 0) then
+      if group.CanWalkTo(gCursor.Cell, 0) then
       begin
         SelectingTroopDirection := True; // MouseMove will take care of cursor changing
         // Restrict the cursor to inside the main panel so it does not get jammed when used near
@@ -3808,7 +3816,7 @@ begin
         gRes.Cursors.Cursor := kmcInvisible;
       end
       else
-        gSoundPlayer.Play(sfxCantPlace, gGameCursor.Cell, False, 4);
+        gSoundPlayer.Play(sfxCantPlace, gCursor.Cell, False, 4);
     end;
   end;
 end;
@@ -3822,14 +3830,14 @@ procedure TKMGamePlayInterface.MouseMove(Shift: TShiftState; X,Y: Integer; var a
   procedure HandleFieldLMBDrag(const P: TKMPoint; aFieldType: TKMFieldType);
   begin
     if not KMSamePoint(fLastDragPoint, P) then
-      if (gMySpectator.Hand.CanAddFakeFieldPlan(P, aFieldType)) and (gGameCursor.Tag1 = Byte(cfmPlan)) then
+      if (gMySpectator.Hand.CanAddFakeFieldPlan(P, aFieldType)) and (gCursor.Tag1 = Byte(cfmPlan)) then
       begin
         gGame.GameInputProcess.CmdBuild(gicBuildToggleFieldPlan, P, aFieldType);
-        fLastDragPoint := gGameCursor.Cell;
-      end else if (gMySpectator.Hand.CanRemFakeFieldPlan(P, aFieldType)) and (gGameCursor.Tag1 = Byte(cfmErase)) then
+        fLastDragPoint := gCursor.Cell;
+      end else if (gMySpectator.Hand.CanRemFakeFieldPlan(P, aFieldType)) and (gCursor.Tag1 = Byte(cfmErase)) then
       begin
         gGame.GameInputProcess.CmdBuild(gicBuildToggleFieldPlan, P, aFieldType);
-        fLastDragPoint := gGameCursor.Cell;
+        fLastDragPoint := gCursor.Cell;
       end;
   end;
 
@@ -3868,7 +3876,7 @@ begin
     Exit;
   end
   else
-    DisplayHint(nil); // Clear shown hint
+    ResetHint; // Clear shown hint
 
   if gGame.IsPaused and (fUIMode in [umSP, umMP]) then Exit;
 
@@ -3900,9 +3908,9 @@ begin
 
   if ssLeft in Shift then // Only allow placing of roads etc. with the left mouse button
   begin
-    P := gGameCursor.Cell; // Get cursor position tile-wise
+    P := gCursor.Cell; // Get cursor position tile-wise
     if gMySpectator.Hand.FogOfWar.CheckTileRevelation(P.X, P.Y) > 0 then
-      case gGameCursor.Mode of
+      case gCursor.Mode of
         cmRoad:   HandleFieldLMBDrag(P, ftRoad);
         cmField:  HandleFieldLMBDrag(P, ftCorn);
         cmWine:   HandleFieldLMBDrag(P, ftWine);
@@ -3911,19 +3919,19 @@ begin
                     if gMySpectator.Hand.Constructions.HousePlanList.HasPlan(P) then
                     begin
                       gGame.GameInputProcess.CmdBuild(gicBuildRemoveHousePlan, P);
-                      fLastDragPoint := gGameCursor.Cell;
+                      fLastDragPoint := gCursor.Cell;
                     end
                     else
                       if (gMySpectator.Hand.Constructions.FieldworksList.HasFakeField(P) <> ftNone) then
                       begin
                         gGame.GameInputProcess.CmdBuild(gicBuildRemoveFieldPlan, P); // Remove any plans
-                        fLastDragPoint := gGameCursor.Cell;
+                        fLastDragPoint := gCursor.Cell;
                       end;
                   end;
       end;
   end;
 
-  if gGameCursor.Mode <> cmNone then
+  if gCursor.Mode <> cmNone then
   begin
     // Use the default cursor while placing roads, don't become stuck on c_Info or others
     if not fViewport.Scrolling then
@@ -3965,7 +3973,7 @@ begin
     and gMySpectator.IsSelectedMyObj
     and (fUIMode in [umSP, umMP]) and not HasLostMPGame
     and not gMySpectator.Hand.InCinematic
-    and (gMySpectator.FogOfWar.CheckTileRevelation(gGameCursor.Cell.X, gGameCursor.Cell.Y) > 0) then
+    and (gMySpectator.FogOfWar.CheckTileRevelation(gCursor.Cell.X, gCursor.Cell.Y) > 0) then
   begin
     if (entity <> nil) and (gMySpectator.Hand.Alliances[entity.Owner] = atEnemy) then
       gRes.Cursors.Cursor := kmcAttack
@@ -4014,7 +4022,7 @@ begin
 
   if gGame.IsPaused and (fUIMode in [umSP, umMP]) then Exit;
 
-  P := gGameCursor.Cell; // It's used in many places here
+  P := gCursor.Cell; // It's used in many places here
 
   case Button of
     mbLeft:
@@ -4046,23 +4054,23 @@ begin
 
         if fPlacingBeacon then
         begin
-          Beacon_Place(gGameCursor.Float);
+          Beacon_Place(gCursor.Float);
           Exit;
         end;
 
         //Manage only cmNone while spectating / watchingreplay
-        if (gGameCursor.Mode <> cmNone) and gGameParams.IsReplayOrSpectate then
+        if (gCursor.Mode <> cmNone) and gGameParams.IsReplayOrSpectate then
           Exit;
 
         // Only allow placing of roads etc. with the left mouse button
         if gMySpectator.FogOfWar.CheckTileRevelation(P.X, P.Y) = 0 then
         begin
-          if (gGameCursor.Mode in [cmErase, cmRoad, cmField, cmWine, cmHouses]) and not gGameParams.IsReplayOrSpectate then
+          if (gCursor.Mode in [cmErase, cmRoad, cmField, cmWine, cmHouses]) and not gGameParams.IsReplayOrSpectate then
             // Can't place noise when clicking on unexplored areas
             gSoundPlayer.Play(sfxCantPlace, P, False, 4);
         end
         else
-          case gGameCursor.Mode of
+          case gCursor.Mode of
             cmNone:
               begin
                 // Remember previous selection to play sound if it changes
@@ -4115,14 +4123,14 @@ begin
                 UpdateDebugInfo;
               end;
 
-            cmRoad:  gGameCursor.Tag1 := Ord(cfmNone);
-            cmField: gGameCursor.Tag1 := Ord(cfmNone);
-            cmWine:  gGameCursor.Tag1 := Ord(cfmNone);
+            cmRoad:  gCursor.Tag1 := Ord(cfmNone);
+            cmField: gCursor.Tag1 := Ord(cfmNone);
+            cmWine:  gCursor.Tag1 := Ord(cfmNone);
 
             cmHouses:
-              if gMySpectator.Hand.CanAddHousePlan(P, TKMHouseType(gGameCursor.Tag1)) then
+              if gMySpectator.Hand.CanAddHousePlan(P, TKMHouseType(gCursor.Tag1)) then
               begin
-                gGame.GameInputProcess.CmdBuild(gicBuildHousePlan, P, TKMHouseType(gGameCursor.Tag1));
+                gGame.GameInputProcess.CmdBuild(gicBuildHousePlan, P, TKMHouseType(gCursor.Tag1));
                 // If shift pressed do not reset cursor (keep selected building)
                 if not (ssShift in Shift)
                   and not gMySpectator.Hand.NeedToChooseFirstStorehouseInGame then //Do not show Build menu after place first storehouse feature

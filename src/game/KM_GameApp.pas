@@ -6,7 +6,7 @@ uses
   {$IFDEF FPC} Controls, {$ENDIF}
   Classes, Dialogs, ExtCtrls,
   KM_CommonTypes, KM_Defaults, KM_RenderControl, KM_Video,
-  KM_Campaigns, KM_Game, KM_InterfaceMainMenu, KM_InterfaceTypes, KM_Resource,
+  KM_Campaigns, KM_Game, KM_InterfaceDefaults, KM_InterfaceMainMenu, KM_InterfaceTypes, KM_Resource,
   KM_Music, KM_Maps, KM_MapTypes, KM_CampaignTypes, KM_Networking,
   KM_GameSettings,
   KM_KeysSettings,
@@ -28,7 +28,9 @@ type
     fServerSettings: TKMServerSettings;
     fNetworking: TKMNetworking;
     fTimerUI: TTimer;
+
     fMainMenuInterface: TKMMainMenuInterface;
+
     fLastTimeRender: Cardinal;
 
     fChat: TKMChat;
@@ -67,6 +69,7 @@ type
     procedure SetOnOptionsChange(const aEvent: TEvent);
 
     procedure InitMainMenu(aScreenX, aScreenY: Word);
+    function GetActiveInterface: TKMUserInterfaceCommon;
   public
     constructor Create(aRenderControl: TKMRenderControl; aScreenX, aScreenY: Word; aVSync: Boolean; aOnLoadingStep: TEvent;
                        aOnLoadingText: TUnicodeStringEvent; aOnCursorUpdate: TIntegerStringEvent; NoMusic: Boolean = False);
@@ -118,7 +121,10 @@ type
     property Campaigns: TKMCampaignsCollection read fCampaigns;
     function Game: TKMGame;
     property GameSettings: TKMGameSettings read GetGameSettings;
+
+    property ActiveInterface: TKMUserInterfaceCommon read GetActiveInterface;
     property MainMenuInterface: TKMMainMenuInterface read fMainMenuInterface;
+
     property Networking: TKMNetworking read fNetworking;
     property GlobalTickCount: Cardinal read fGlobalTickCount;
     property Chat: TKMChat read fChat;
@@ -164,7 +170,7 @@ uses
   KM_FormLogistics,
   KM_Main, KM_Controls, KM_Log, KM_Sound, KM_GameInputProcess, KM_GameInputProcess_Multi,
   KM_GameSavePoints,
-  KM_InterfaceDefaults, KM_GameCursor, KM_ResTexts,
+  KM_Cursor, KM_ResTexts,
   KM_Saves, KM_CommonUtils, KM_RandomChecks, KM_DevPerfLog, KM_DevPerfLogTypes;
 
 
@@ -187,7 +193,7 @@ begin
 
   fChat := TKMChat.Create;
 
-  gGameCursor := TKMGameCursor.Create;
+  gCursor := TKMCursor.Create;
 
   if fGameSettings.DebugSaveRandomChecks and SAVE_RANDOM_CHECKS then
     gRandomCheckLogger := TKMRandomCheckLogger.Create;
@@ -277,7 +283,7 @@ begin
   FreeThenNil(gMusic);
   FreeAndNil(fNetworking);
   FreeAndNil(gRandomCheckLogger);
-  FreeAndNil(gGameCursor);
+  FreeAndNil(gCursor);
 
   FreeThenNil(gRender);
 
@@ -461,8 +467,8 @@ begin
   begin
     fOnCursorUpdate(SB_ID_CURSOR_COORD, Format('Cursor: %d:%d', [X, Y]));
     fOnCursorUpdate(SB_ID_TILE,         Format('Tile: %.1f:%.1f [%d:%d]',
-                               [gGameCursor.Float.X, gGameCursor.Float.Y,
-                               gGameCursor.Cell.X, gGameCursor.Cell.Y]));
+                               [gCursor.Float.X, gCursor.Float.Y,
+                               gCursor.Cell.X, gCursor.Cell.Y]));
     if SHOW_CONTROLS_ID then
     begin
       if gGame <> nil then
@@ -1089,6 +1095,15 @@ begin
 end;
 
 
+function TKMGameApp.GetActiveInterface: TKMUserInterfaceCommon;
+begin
+  if gGame = nil then
+    Result := fMainMenuInterface
+  else
+    Result := gGame.ActiveInterface;
+end;
+
+
 function TKMGameApp.GetGameSettings: TKMGameSettings;
 begin
   if Self = nil then Exit(nil);
@@ -1221,7 +1236,7 @@ begin
 
   if not aForPrintScreen and (gGame <> nil) then
     if Assigned(fOnCursorUpdate) then
-      fOnCursorUpdate(SB_ID_OBJECT, 'Obj: ' + IntToStr(gGameCursor.ObjectUID));
+      fOnCursorUpdate(SB_ID_OBJECT, 'Obj: ' + IntToStr(gCursor.ObjectUID));
 end;
 
 

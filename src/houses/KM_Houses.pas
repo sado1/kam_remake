@@ -296,6 +296,8 @@ type
     function IsFlagPointSet: Boolean;
     procedure ValidateFlagPoint;
     function GetValidPoint(aPoint: TKMPoint): TKMPoint;
+
+    function ObjToString(const aSeparator: String = '|'): String; override;
   end;
 
   // SwineStable has unique property - it needs to accumulate some resource before production begins, also special animation
@@ -2745,6 +2747,13 @@ begin
   end;
 
   Result := gTerrain.GetPassablePointWithinSegment(P, aPoint, tpWalk, MaxDistanceToPoint);
+end;
+
+
+function TKMHouseWFlagPoint.ObjToString(const aSeparator: String = '|'): String;
+begin
+  Result := inherited ObjToString(aSeparator) +
+            Format('%sFlagPoint = %s', [aSeparator, fFlagPoint.ToString]);
 end;
 
 

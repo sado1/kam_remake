@@ -85,7 +85,7 @@ type
     fLastSaveFileRel: UnicodeString;  //Relative pathname to last savegame we are playing, so game could restart from this point
 
     fAutosavesCnt: Integer;
-    fLastSaves: TKMLimitedList<string>;
+    fLastSaves: TKMLimitedUniqueList<string>;
 
     fIsStarted: Boolean;
 
@@ -243,6 +243,7 @@ type
 
     function GetNewUID: Integer;
     function GetNormalSpeed: Single;
+    function GetToggledNormalSpeed: Single;
     procedure StepOneFrame;
 
     procedure SetSpeed(aSpeed: Single); overload;
@@ -250,7 +251,7 @@ type
     procedure SetSpeed(aSpeed: Single; aToggle: Boolean; aToggleTo: Single); overload;
 
     procedure SetSpeedActual(aSpeed: Single);
-    procedure SetSpeedGIP(aSpeed: Single; aUpdateActual: Boolean = False);
+    procedure SetSpeedGIP(aSpeed: Single; aUpdateActual: Boolean = False; aUpdateOptionsSpeed: Boolean = False);
 
     class function SavePath(const aName: UnicodeString; aIsMultiplayer: Boolean): UnicodeString;
     class function SaveName(const aFolder, aName, aExt: UnicodeString; aIsMultiplayer: Boolean): UnicodeString; overload;
@@ -303,7 +304,7 @@ uses
   KM_InterfaceDefaults, KM_InterfaceTypes, KM_GameSettings,
   KM_Log, KM_ScriptingEvents, KM_Saves, KM_FileIO, KM_CommonUtils, KM_RandomChecks, KM_DevPerfLog, KM_DevPerfLogTypes,
   KM_NetPlayersList,
-  KM_HandTypes,
+  KM_HandTypes, KM_ResLocales,
   KM_ServerSettings,
   KM_MapUtils, KM_Utils;
 
@@ -356,7 +357,7 @@ begin
 
   fMapTxtInfo := TKMMapTxtInfo.Create;
 
-  fLastSaves := TKMLimitedList<string>.Create(LAST_SAVES_MAX_CNT);
+  fLastSaves := TKMLimitedUniqueList<string>.Create(LAST_SAVES_MAX_CNT);
   fAutosavesCnt := 0;
 
   //UserInterface is different between Gameplay and MapEd
@@ -1088,7 +1089,8 @@ begin
       end;
     except
       on E : Exception do
-        gLog.AddTime('Exception while trying to save game for crash report: ' + E.ClassName + ': ' + E.Message);
+        gLog.AddTime('Exception while trying to save game for crash report: ' + E.ClassName + ': ' + E.Message
+                     {$IFDEF WDC}+ sLineBreak + E.StackTrace{$ENDIF});
     end;
   finally
     fSaveWorkerThread.fSynchronousExceptionMode := False;
@@ -1116,7 +1118,8 @@ begin
     end;
   end;
 
-  if fParams.IsReplay or (fGamePlayInterface.UIMode = umReplay) then //In case game mode was altered or loaded with logical error
+  if fParams.IsReplay
+    or ((fGamePlayInterface <> nil) and (fGamePlayInterface.UIMode = umReplay)) then //In case game mode was altered or loaded with logical error
     // For replays attach only replay save files
     AttachLoadedFiles(False)
   else
@@ -1611,7 +1614,7 @@ var
 begin
   // check for MissionPath/MissionName.Sound.Locale.ext
   Result := GetLocalizedFilePath(ExeDir + ChangeFileExt(fParams.MissionFileRel, '.' + string(aSound)),
-                                 gGameSettings.Locale, AUDIO_EXT[aAudioFormat]);
+                                 gResLocales.UserLocale, gResLocales.FallbackLocale, AUDIO_EXT[aAudioFormat]);
 
   // Try to load Campaign specific audio file in the campaign Sounds folder (not mission specific)
   if fParams.IsCampaign and (gGameApp.Campaigns.ActiveCampaign <> nil) and not FileExists(Result) then
@@ -1619,7 +1622,7 @@ begin
     camp := gGameApp.Campaigns.ActiveCampaign;
     // check for Campaigns/Camp_name/Sounds/CMP.Sound.Locale.ext
     Result := GetLocalizedFilePath(camp.Path + CAMPAIGN_SOUNDS_FOLDER_NAME + PathDelim + camp.ShortName + '.' + UnicodeString(aSound),
-                                   gGameSettings.Locale, AUDIO_EXT[aAudioFormat]);
+                                   gResLocales.UserLocale, gResLocales.FallbackLocale, AUDIO_EXT[aAudioFormat]);
   end;
 end;
 
@@ -1817,14 +1820,32 @@ begin
 end;
 
 
-procedure TKMGame.SetSpeedGIP(aSpeed: Single; aUpdateActual: Boolean = False);
+// Speed to which we are going to toggle to when press F5
+function TKMGame.GetToggledNormalSpeed: Single;
+begin
+  if fParams.IsMultiPlayerOrSpec then
+  begin
+    if IsPeaceTime then
+      Result := fOptions.SpeedPT
+    else
+      Result := fOptions.SpeedAfterPT;
+  end
+  else
+    Result := fSpeedGIP;
+end;
+
+
+procedure TKMGame.SetSpeedGIP(aSpeed: Single; aUpdateActual: Boolean = False; aUpdateOptionsSpeed: Boolean = False);
 var
   speedChanged: Boolean;
 begin
   speedChanged := fSpeedGIP <> aSpeed;
 
-  //Update gameOptions SpeedPT / SpeedAfterPT for MP game
-  if fParams.IsMultiPlayerOrSpec then
+  // Update gameOptions SpeedPT / SpeedAfterPT for MP game
+  // If speed was changed from script, then we want to lobby speed to be affected as well
+  // Bug if speed was changed via F5-F8, then we want to save Lobby speed values,
+  // since we want to set it back via pressing F5 twice
+  if aUpdateOptionsSpeed and fParams.IsMultiPlayerOrSpec then
   begin
     if IsPeacetime then
       fOptions.SpeedPT := aSpeed
@@ -2324,7 +2345,9 @@ begin
       for I := fAutosavesCnt - 1 downto 1 do
       begin
         index := fLastSaves.IndexOfItem(AUTOSAVE_SAVE_NAME + Int2Fix(I, 2), TDirection.FromEnd);
-        fLastSaves[index] := AUTOSAVE_SAVE_NAME + Int2Fix(I + 1, 2);
+        // we use limited list, so some autosave names will be deleted if other save names were added earlier
+        if index <> -1 then
+          fLastSaves[index] := AUTOSAVE_SAVE_NAME + Int2Fix(I + 1, 2);
       end;
       fLastSaves.Add(AUTOSAVE_SAVE_NAME + '01');
     end
