@@ -1,4 +1,10 @@
 
+if defined KAM_FOLDER_INIT (
+  goto exit0
+)
+
+@SET KAM_FOLDER_INIT=init
+
 @echo #                                                          #
 @echo #==========================================================#
 @echo #               Create new build folder                    #
