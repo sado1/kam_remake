@@ -1,3 +1,5 @@
+echo called prepare_for_installer.bat
+
 call rsvars.bat
 call get_kam_folder.bat
 

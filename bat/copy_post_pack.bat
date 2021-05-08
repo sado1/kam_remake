@@ -1,3 +1,4 @@
+echo called copy_post_pack.bat
 
 @REM ============================================================
 @REM Copy music files from original KaM TPR game

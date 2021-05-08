@@ -1,15 +1,17 @@
-@echo off
-call create_beta.bat
+echo called make_beta_and_zip.bat
 
-if errorlevel 2 (goto exit2)
+@echo off
+call timecmd.bat create_beta.bat
+if errorlevel 3 (goto exit3)
 
 REM Archive into 7z
-call 7zip.bat
+call timecmd.bat 7zip.bat
+if errorlevel 3 (goto exit3)
 
 goto exit0
 
-:exit2
-exit /B 2
+:exit3
+exit /B 3
 
 :exit0
 @echo off
