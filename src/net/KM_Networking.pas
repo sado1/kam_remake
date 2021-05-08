@@ -1571,6 +1571,20 @@ end;
 
 
 procedure TKMNetworking.LogPacket(aIsSending: Boolean; aKind: TKMessageKind; aNetworkAddress: TKMNetHandleIndex);
+const
+  LOGGED_PACKET_KINDS: set of TKMessageKind = [mkReadyToPlay,
+                                               mkPlay,
+                                               mkReconnectionAccepted,
+                                               mkResyncFromTick,
+                                               mkClientReconnected,
+                                               mkRefuseReconnect,
+                                               mkAskToReconnect,
+                                               mkStart,
+                                               mkGiveHost,
+                                               mkKicked,
+                                               mkDisconnect,
+                                               mkVote,
+                                               mkReadyToReturnToLobby];
 var
   logMessage: String;
 begin
@@ -1587,12 +1601,15 @@ begin
   logMessage := Format(logMessage, [GetEnumName(TypeInfo(TKMessageKind), Integer(aKind)),
                                     GetNetAddressPrintDescr(aNetworkAddress)]);
 
-  case aKind of
-    mkPing, mkPong,
-    mkPingInfo, mkFPS:  gLog.LogNetPacketPingFps(logMessage);
-    mkCommands       :  gLog.LogNetPacketCommand(logMessage);
-    else                gLog.LogNetPacketOther(logMessage);
-  end;
+  if aKind in LOGGED_PACKET_KINDS then
+    gLog.AddTime(logMessage)
+  else
+    case aKind of
+      mkPing, mkPong,
+      mkPingInfo, mkFPS:  gLog.LogNetPacketPingFps(logMessage);
+      mkCommands       :  gLog.LogNetPacketCommand(logMessage);
+      else                gLog.LogNetPacketOther(logMessage);
+    end;
 end;
 
 
