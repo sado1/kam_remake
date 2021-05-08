@@ -136,6 +136,7 @@ type
     property OwnerNiknameU: UnicodeString read GetOwnerNiknameU;
     function CalcOwnerName: UnicodeString; //Universal owner name
     function OwnerName(aNumberedAIs: Boolean = True; aLocalized: Boolean = True): UnicodeString; //Universal owner name
+    function GetHandOwnerName(aIsHuman, aIsAdvAI: Boolean; aNumberedAIs: Boolean = True; aLocalized: Boolean = True): UnicodeString;
     function GetOwnerName: UnicodeString;
     function GetOwnerNameColored: AnsiString;
     function GetOwnerNameColoredU: UnicodeString;
@@ -1629,6 +1630,12 @@ end;
 
 
 function TKMHand.OwnerName(aNumberedAIs: Boolean = True; aLocalized: Boolean = True): UnicodeString;
+begin
+  Result := GetHandOwnerName(IsHuman, AI.Setup.NewAI, aNumberedAIs, aLocalized);
+end;
+
+
+function TKMHand.GetHandOwnerName(aIsHuman, aIsAdvAI: Boolean; aNumberedAIs: Boolean = True; aLocalized: Boolean = True): UnicodeString;
 
   function GetText(aId: Word; aLocalized: Boolean): UnicodeString; inline;
   begin
@@ -1641,7 +1648,7 @@ function TKMHand.OwnerName(aNumberedAIs: Boolean = True; aLocalized: Boolean = T
 begin
   //If this location is controlled by an MP player - show his nik
   if (fOwnerNikname <> '')
-    and IsHuman then //we could ask AI to play on ex human loc, so fOwnerNikname will be still some human name
+    and aIsHuman then //we could ask AI to play on ex human loc, so fOwnerNikname will be still some human name
     Exit(UnicodeString(fOwnerNikname));
 
   //Try to take player name from mission text if we are in SP
@@ -1649,7 +1656,7 @@ begin
   if (gGameParams.Mode in [gmSingle, gmCampaign, gmMapEd, gmReplaySingle])
     and gGame.TextMission.HasText(HANDS_NAMES_OFFSET + fID) then
   begin
-    if IsHuman then
+    if aIsHuman then
       Result := GetText(TX_PLAYER_YOU, aLocalized) + ' (' + gGame.TextMission[HANDS_NAMES_OFFSET + fID] + ')'
     else
       Result := gGame.TextMission[HANDS_NAMES_OFFSET + fID];
@@ -1658,10 +1665,10 @@ begin
   end;
 
   //Default names
-  if IsHuman then
+  if aIsHuman then
     Result := GetText(TX_PLAYER_YOU, aLocalized)
   else
-    if AI.Setup.NewAI then
+    if aIsAdvAI then
     begin
       if aNumberedAIs then
         Result := Format(GetText(TX_ADVANCED_AI_PLAYER_SHORT_X, aLocalized), [fID + 1])

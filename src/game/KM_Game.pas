@@ -803,6 +803,7 @@ var
   isPT: Boolean;
   playerNikname: AnsiString;
   oldSpeedPT, oldSpeedAfterPT: Single;
+  playersInfo: string;
 begin
   oldSpeedPT := fOptions.SpeedPT;
   oldSpeedAfterPT := fOptions.SpeedAfterPT;
@@ -828,6 +829,7 @@ begin
         and not gNetworking.MapInfo.CanBeHuman[I] then
         gHands[I].AI.Setup.EnableAdvancedAI; //Just enable Advanced AI, do not override MapEd AI params
 
+  playersInfo := '';
   //Assign existing NetPlayers(1..N) to map players(0..N-1)
   for I := 1 to gNetworking.NetPlayers.Count do
     if not gNetworking.NetPlayers[I].IsSpectator then
@@ -853,7 +855,19 @@ begin
 
       //Update player nikname to show in the list for specs, in the stats etc
       gHands[handIndex].OwnerNikname := gNetworking.NetPlayers[I].Nikname;
-    end;
+
+      playersInfo := playersInfo + sLineBreak +
+                     Format('netI: %d P: %s hand: %d',
+                            [I, gHands[handIndex].GetHandOwnerName(gNetworking.NetPlayers[I].IsHuman,
+                                                                   gNetworking.NetPlayers[I].IsAdvancedComputer,
+                                                                   True,
+                                                                   False),
+                             handIndex]);
+    end
+    else
+      playersInfo := playersInfo + sLineBreak + Format('netI: %d P: %s is spectator', [I, gNetworking.NetPlayers[I].NiknameU]);
+
+  gLog.AddTime('NetPlayersInfo: cnt = ' + IntToStr(gNetworking.NetPlayers.Count) + playersInfo);
 
   //Find enabled human hands, where if there is no net player on that loc
   //then disable all goals with this hand for other hands
