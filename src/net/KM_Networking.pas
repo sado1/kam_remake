@@ -73,7 +73,7 @@ type
     procedure StartGame;
     procedure TryPlayGame;
     procedure PlayGame;
-    procedure SetGameState(aState: TKMNetGameState);
+    procedure SetGameState(aState: TKMNetGameState; aOnMPInfoChanged: Boolean = True);
     procedure SendMapOrSave(Recipient: TKMNetHandleIndex = NET_ADDRESS_OTHERS);
     procedure DoReconnection;
     function IsPlayerHandStillInGame(aPlayerIndex: Integer): Boolean;
@@ -2551,10 +2551,12 @@ begin
 end;
 
 
-procedure TKMNetworking.SetGameState(aState: TKMNetGameState);
+procedure TKMNetworking.SetGameState(aState: TKMNetGameState; aOnMPInfoChanged: Boolean = True);
 begin
+  gLog.AddTime(Format('SetGameState from %s to %s', [GetEnumName(TypeInfo(TKMNetGameState), Integer(fNetGameState)),
+                                                     GetEnumName(TypeInfo(TKMNetGameState), Integer(aState))]));
   fNetGameState := aState;
-  if (fNetGameState in [lgsLobby,lgsLoading,lgsGame]) and IsHost and (fMyIndexOnServer <> -1) then
+  if aOnMPInfoChanged and (fNetGameState in [lgsLobby,lgsLoading,lgsGame]) and IsHost and (fMyIndexOnServer <> -1) then
     OnMPGameInfoChanged;
 end;
 
@@ -2797,7 +2799,7 @@ begin
   OnReadyToPlay := nil;
   OnPlayersSetup := nil;
 
-  fNetGameState := lgsLobby;
+  SetGameState(lgsLobby, False);
   fReturnedToLobby := True; //Expect pause.sav to match host
   if IsHost then
   begin
