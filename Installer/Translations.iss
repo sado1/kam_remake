@@ -4,6 +4,8 @@ NoKaM=The installation wizard detected that you do not have Knights and Merchant
 CantUpdate=The installation wizard was unable to find an existing version of the KaM Remake to be updated. Please download and install the complete installer instead. The installation will be aborted.
 OpenAL=Do you want the installation wizard to install OpenAL? (Strongly recommended) It is required for sounds to work in the KaM Remake
 ViewReadme=View the Readme
+DeleteSaves=Do you want to delete all your saved games and the progress of all campaigns as well?
+DeleteMaps=Do you want to delete all Maps and Campaigns as well?
 
 ;Dutch
 dut.CreateStartShortcut=Aanmaken van een start menu snelkoppeling
@@ -60,6 +62,8 @@ rus.NoKaM=Мастер установки не обнаружил установ
 rus.CantUpdate=Мастер установки не смог обнаружить версию КаМ Ремейк для обновления. Пожалуйста скачайте и запустите полную версию установщика. Установка будет отменена.
 rus.OpenAL=Установить OpenAL? (рекоммендуется) Необходимо для работы звука в КаМ Ремейк
 rus.ViewReadme=Показать Readme
+rus.DeleteSaves=Вы хотите также удалить все сохраненные игры и прогресс всех кампаний?
+rus.DeleteMaps=Вы хотите также удалить все карты и кампании?
 
 ;Brazilian Portuguese 
 ptb.CreateStartShortcut=Criar um atalho no menu Iniciar

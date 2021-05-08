@@ -95,6 +95,7 @@ begin
   WizardForm.PageNameLabel.Width := WizardForm.PageNameLabel.Width - Diff - 5;
 end;
 
+
 //Executed before the wizard appears, allows us to check that they have KaM installed
 function InitializeSetup(): Boolean;
 var Warnings:string;
@@ -122,6 +123,7 @@ begin
   end;
 end;
 
+
 //This event is executed right after installing, use this time to install OpenAL
 function NeedRestart(): Boolean;
 var
@@ -137,12 +139,13 @@ begin
     ForceDirectories(ExpandConstant('{userdocs}') + '\My Games\Knights and Merchants Remake\');
     SaveStringToFile(ExpandConstant('{userdocs}') + '\My Games\Knights and Merchants Remake\KaM Remake Settings.xml', settingsText, False);
   end;
-  
+
   //Now install OpenAL, if needed
   if not FileExists(ExpandConstant('{sys}') + '\OpenAL32.dll') then 
-    if MsgBox(ExpandConstant('{cm:OpenAL}'), mbConfirmation, MB_YESNO) = idYes then
+    if MsgBox(ExpandConstant('{cm:OpenAL}'), mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = idYes then
       Exec(ExpandConstant('{app}\oalinst.exe'), '/S', '', SW_SHOW, ewWaitUntilTerminated, ResultCode);
 end;
+
 
 function GetReadmeLang(Param: String): string;
 begin
@@ -151,10 +154,12 @@ begin
     Result := ExpandConstant('{app}\Readme_eng.html'); //Otherwise use English
 end;
 
+
 function GetAppFullName(Param: String): string;
 begin
   Result := '{#MyAppName} {#Revision}';
 end;
+
 
 function PrepareToInstall(var NeedsRestart: Boolean): String;
 begin
@@ -172,8 +177,63 @@ begin
 end;
 
 
+function IsEmptyDir(dirName: String): Boolean;
+var
+  FindRec: TFindRec;
+  FileCount: Integer;
+begin
+  Result := False;
+  if FindFirst(dirName+'\*', FindRec) then begin
+    try
+      repeat
+        if (FindRec.Name <> '.') and (FindRec.Name <> '..') then begin
+          FileCount := 1;
+          break;
+        end;
+      until not FindNext(FindRec);
+    finally
+      FindClose(FindRec);
+      if FileCount = 0 then Result := True;
+    end;
+  end;
+end;
+
+
+procedure CurUninstallStepChanged (CurUninstallStep: TUninstallStep);
+begin
+  case CurUninstallStep of                   
+    usPostUninstall:
+      begin
+        // Ask confirmation to delete all Maps and Campaigns
+        if MsgBox(ExpandConstant('{cm:DeleteMaps}'), mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = idYes then
+        begin
+          DelTree(ExpandConstant('{app}\Campaigns'), True, True, True);
+          DelTree(ExpandConstant('{app}\Maps'), True, True, True);
+          DelTree(ExpandConstant('{app}\MapsMP'), True, True, True);
+          DelTree(ExpandConstant('{app}\MapsDL'), True, True, True);
+        end;
+        
+        // Ask confirmation to delete all Saves
+        if (DirExists(ExpandConstant('{app}\Saves')) or DirExists(ExpandConstant('{app}\SavesMP'))) 
+          and (MsgBox(ExpandConstant('{cm:DeleteSaves}'), mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = idYes) then
+        begin
+          DelTree(ExpandConstant('{app}\Saves'), True, True, True);
+          DelTree(ExpandConstant('{app}\SavesMP'), True, True, True);
+        end;
+        
+        // Delete app folder if its empty
+        if DirExists(ExpandConstant('{app}')) and IsEmptyDir(ExpandConstant('{app}')) then
+          DelTree(ExpandConstant('{app}'), True, True, True);
+      end;
+  end;
+end;  
+
+
 [Files]
-Source: "{#BuildFolder}\*"; DestDir: "{app}"; Excludes: "*.svn,*.svn\*"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#BuildFolder}\Campaigns\*"; DestDir: "{app}\Campaigns"; Flags: ignoreversion recursesubdirs createallsubdirs uninsneveruninstall
+Source: "{#BuildFolder}\Maps\*"; DestDir: "{app}\Maps"; Flags: ignoreversion recursesubdirs createallsubdirs uninsneveruninstall
+Source: "{#BuildFolder}\MapsMP\*"; DestDir: "{app}\MapsMP"; Flags: ignoreversion recursesubdirs createallsubdirs uninsneveruninstall
+Source: "{#BuildFolder}\*"; DestDir: "{app}"; Excludes: "\Campaigns\*,\Maps\*,\MapsMP\*"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "oalinst.exe"; DestDir: "{app}"; Flags: ignoreversion
 ;Source: "PostInstallClean.bat"; DestDir: "{app}"; Flags: ignoreversion
 
