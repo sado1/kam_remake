@@ -1,3 +1,4 @@
+@echo off
 echo called prepare_for_installer.bat
 
 call rsvars.bat

@@ -1,9 +1,11 @@
 @echo off
-if %KAM_FOLDER_INIT%==True (
-  goto exit0
-)
-
 echo called get_kam_folder.bat
+
+if defined KAM_FOLDER_INIT (
+  if %KAM_FOLDER_INIT%==True (
+    goto exit0
+  )
+)
 
 @SET KAM_FOLDER_INIT=True
 
