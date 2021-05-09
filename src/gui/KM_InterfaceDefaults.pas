@@ -33,8 +33,8 @@ type
   private
     fHintOver: TKMControl;
     fHintPrevOver: TKMControl;
-    fHintPrepareShowTick: Cardinal;
-    fHintPrepareResetTick: Cardinal;
+    fHintPrepareShowTick: Integer;
+    fHintPrepareResetTick: Integer;
     fHintVisible: Boolean;
     fHintCtrl: TKMControl;
     fHintStage: TKMHintStage;
@@ -144,6 +144,9 @@ begin
   inherited Create;
 
   fMyControls := TKMMasterControl.Create;
+
+  fHintPrepareShowTick := 0;
+  fHintPrepareResetTick := 0;
 
   //Parent Panel for whole UI
   Panel_Main := TKMPanel.Create(fMyControls, 0, 0, aScreenX, aScreenY);
