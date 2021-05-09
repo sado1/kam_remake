@@ -89,7 +89,7 @@ type
 
     procedure SaveToFile(const aFileName: UnicodeString);
 
-    procedure UpdateState(aTickCount: Cardinal);
+    procedure UpdateState(aGlobalTickCount: Cardinal);
   end;
 
 
@@ -10918,11 +10918,11 @@ begin
 end;
 
 
-procedure TKMMasterControl.UpdateState(aTickCount: Cardinal);
+procedure TKMMasterControl.UpdateState(aGlobalTickCount: Cardinal);
 begin
   if Self = nil then Exit;
 
-  fMasterPanel.UpdateState(aTickCount);
+  fMasterPanel.UpdateState(aGlobalTickCount);
 end;
 
 

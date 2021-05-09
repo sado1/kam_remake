@@ -46,7 +46,7 @@ type
 //    fPrevHintMessage: UnicodeString;
 
     procedure PaintHint;
-    procedure UpdateHint(aTickCount: Cardinal);
+    procedure UpdateHint(aGlobalTickCount: Cardinal);
 
     function GetHintActualKind: TKMHintKind;
     function GetHintActualFont: TKMFont;
@@ -89,7 +89,7 @@ type
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X,Y: Integer); virtual; abstract;
     procedure MouseWheel(Shift: TShiftState; WheelSteps: Integer; X,Y: Integer; var aHandled: Boolean); virtual;
     procedure Resize(X,Y: Word); virtual;
-    procedure UpdateState(aTickCount: Cardinal); virtual;
+    procedure UpdateState(aGlobalTickCount: Cardinal); virtual;
     procedure Paint; virtual;
   end;
 
@@ -358,12 +358,12 @@ begin
 end;
 
 
-procedure TKMUserInterfaceCommon.UpdateState(aTickCount: Cardinal);
+procedure TKMUserInterfaceCommon.UpdateState(aGlobalTickCount: Cardinal);
 begin
   inherited;
 
-  fMyControls.UpdateState(aTickCount);
-  UpdateHint(aTickCount);
+  fMyControls.UpdateState(aGlobalTickCount);
+  UpdateHint(aGlobalTickCount);
 end;
 
 
@@ -375,7 +375,7 @@ begin
 end;
 
 
-procedure TKMUserInterfaceCommon.UpdateHint(aTickCount: Cardinal);
+procedure TKMUserInterfaceCommon.UpdateHint(aGlobalTickCount: Cardinal);
 const
   FADE_IN_TIME = 10;
   FADE_RESET_TIME = 5;
@@ -387,10 +387,10 @@ begin
               begin
                 // If mouse moved to other control then reset fade-in timer
                 if fHintPrevOver <> fHintOver then
-                  fHintPrepareShowTick := aTickCount;
+                  fHintPrepareShowTick := aGlobalTickCount;
                 // Mouse is on the same control for a long time
                 if (fHintOver <> nil) and (fHintOver.Hint <> '')
-                and (((aTickCount - fHintPrepareShowTick) >= FADE_IN_TIME) {or (fHintOver is TKMHint)}
+                and (((aGlobalTickCount - fHintPrepareShowTick) >= FADE_IN_TIME) {or (fHintOver is TKMHint)}
                     or (GetHintKind = hkStatic)) then
                 begin
                   // Display hint
@@ -411,7 +411,7 @@ begin
                   fHintVisible := False;
 
                   // Launch fade-in resetting timer
-                  fHintPrepareResetTick := aTickCount;
+                  fHintPrepareResetTick := aGlobalTickCount;
 
                   // Set stage when hint was hidden recently
                   fHintStage := hsReset;
@@ -420,9 +420,9 @@ begin
     hsReset:  // Hint was hidden recently
               begin
                 // If no control is hovered a long time we must activate fade-in logic
-                if (aTickCount - fHintPrepareResetTick) >= FADE_RESET_TIME then
+                if (aGlobalTickCount - fHintPrepareResetTick) >= FADE_RESET_TIME then
                 begin
-                  fHintPrepareShowTick := aTickCount;
+                  fHintPrepareShowTick := aGlobalTickCount;
 
                   // Set stage when hint was hidden a long time ago
                   fHintStage := hsFadeIn;

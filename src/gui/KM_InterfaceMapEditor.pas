@@ -146,7 +146,7 @@ type
     procedure HistoryAddCheckpoint;
 
     procedure SyncUI(aMoveViewport: Boolean = True); override;
-    procedure UpdateState(aTickCount: Cardinal); override;
+    procedure UpdateState(aGlobalTickCount: Cardinal); override;
     procedure UpdateStateImmidiately;
     procedure UpdateStateIdle(aFrameTime: Cardinal); override;
     procedure Paint; override;
@@ -456,15 +456,15 @@ end;
 
 
 //Should update any items changed by game (resource counts, hp, etc..)
-procedure TKMapEdInterface.UpdateState(aTickCount: Cardinal);
+procedure TKMapEdInterface.UpdateState(aGlobalTickCount: Cardinal);
 begin
   inherited;
   //Update minimap every 500ms
-  if aTickCount mod 5 = 0 then
+  if aGlobalTickCount mod 5 = 0 then
     fMinimap.Update;
 
   //Show players without assets in grey
-  if aTickCount mod 5 = 0 then
+  if aGlobalTickCount mod 5 = 0 then
     UpdatePlayerSelectButtons;
 
   UpdateStateInternal;

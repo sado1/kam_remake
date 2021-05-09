@@ -359,7 +359,7 @@ type
     procedure Resize(X,Y: Word); override;
     procedure SyncUI(aMoveViewport: Boolean = True); override;
     procedure UpdateDebugInfo;
-    procedure UpdateState(aTickCount: Cardinal); override;
+    procedure UpdateState(aGlobalTickCount: Cardinal); override;
     procedure UpdateStateIdle(aFrameTime: Cardinal); override;
     procedure Paint; override;
   end;
@@ -4362,7 +4362,7 @@ end;
 
 { Should update any items changed by game (resource counts, hp, etc..) }
 { If it ever gets a bottleneck then some static Controls may be excluded from update }
-procedure TKMGamePlayInterface.UpdateState(aTickCount: Cardinal);
+procedure TKMGamePlayInterface.UpdateState(aGlobalTickCount: Cardinal);
 var
   I, lastTick: Integer;
   rect: TKMRect;
@@ -4370,12 +4370,12 @@ var
 begin
   inherited;
   // Update minimap every 1000ms
-  if aTickCount mod 10 = 0 then
+  if aGlobalTickCount mod 10 = 0 then
     fMinimap.Update;
 
   UpdateSelectedObject;
 
-  fAlerts.UpdateState(aTickCount);
+  fAlerts.UpdateState(aGlobalTickCount);
 
   // Update peacetime counter
   if gGame.Options.Peacetime <> 0 then
@@ -4420,7 +4420,7 @@ begin
 
   // Update message stack
   // Flash unread message display
-  Label_ChatUnread.Visible := (fUIMode in [umMP, umSpectate]) and (Label_ChatUnread.Caption <> '') and not (aTickCount mod 10 < 5);
+  Label_ChatUnread.Visible := (fUIMode in [umMP, umSpectate]) and (Label_ChatUnread.Caption <> '') and not (aGlobalTickCount mod 10 < 5);
   Image_Chat.Highlight := fGuiGameChat.Visible or (Label_ChatUnread.Visible and (Label_ChatUnread.Caption <> ''));
   Image_MPAllies.Highlight := Panel_Allies.Visible;
   if (fUIMode in [umSP, umMP]) and not Image_MessageLog.Visible and (gMySpectator.Hand.MessageLog.CountLog > 0) then
@@ -4428,7 +4428,7 @@ begin
     Image_MessageLog.Show;
     MessageStack_UpdatePositions;
   end;
-  Image_MessageLog.Highlight := not Panel_MessageLog.Visible and not (aTickCount mod 10 < 5)
+  Image_MessageLog.Highlight := not Panel_MessageLog.Visible and not (aGlobalTickCount mod 10 < 5)
                                 and (fLastSyncedMessage <> gMySpectator.Hand.MessageLog.CountLog);
 
   if Panel_MessageLog.Visible then
@@ -4451,7 +4451,7 @@ begin
   end;
 
   // Display team names
-  if aTickCount mod 3 = 0 then // Update once every 300ms, player won't notice
+  if aGlobalTickCount mod 3 = 0 then // Update once every 300ms, player won't notice
   begin
     fUnitsTeamNames.Clear;
     if SHOW_UIDs then
@@ -4477,14 +4477,14 @@ begin
   UpdateDebugInfo;
   if fSaves <> nil then fSaves.UpdateState;
 
-  if aTickCount mod RESULTS_UPDATE_RATE = 0 then
+  if aGlobalTickCount mod RESULTS_UPDATE_RATE = 0 then
   begin
-    fGuiGameResultsSP.UpdateState(aTickCount);
-    fGuiGameResultsMP.UpdateState(aTickCount);
+    fGuiGameResultsSP.UpdateState(aGlobalTickCount);
+    fGuiGameResultsMP.UpdateState(aGlobalTickCount);
   end;
 
   if fGuiGameSpectator <> nil then
-    fGuiGameSpectator.UpdateState(aTickCount);
+    fGuiGameSpectator.UpdateState(aGlobalTickCount);
 end;
 
 
