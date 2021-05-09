@@ -76,6 +76,7 @@
 *.lpi text eol=crlf
 *.ini text eol=crlf
 *.txt text eol=crlf
+*.iss text eol=crlf
 *.xml text eol=crlf
 *.log text eol=crlf
 *.bat text eol=crlf
