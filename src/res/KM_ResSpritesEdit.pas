@@ -32,13 +32,17 @@ type
     function TrimSprites: Cardinal; //For debug
     procedure ClearTemp; override;
     procedure GetImageToBitmap(aIndex: Integer; aBmp, aMask: TBitmap);
+
+    procedure ExportImageForInterp(const aFile: string; aIndex: Integer);
   end;
 
 
 implementation
 uses
   KM_SoftShadows,
-  KM_ResTypes;
+  KM_ResTypes,
+  KM_PNG,
+  KM_CommonTypes;
 
 
 var
@@ -161,6 +165,95 @@ begin
   end;
 end;
 
+
+procedure TKMSpritePackEdit.ExportImageForInterp(const aFile: string; aIndex: Integer);
+var
+  I, K, dstX, dstY: Integer;
+  M: Byte;
+  TreatMask: Boolean;
+  srcWidth, srcHeight: Word;
+  dstWidth, dstHeight: Word;
+  pngData: TKMCardinalArray;
+const
+  EXPORT_SPRITES_ON_CANVAS = True;
+  EXPORT_SPRITES_NO_ALPHA = False;
+  CANVAS_SIZE = 256;
+  CANVAS_SIZE_HALF = CANVAS_SIZE div 2;
+begin
+  srcWidth := fRXData.Size[aIndex].X;
+  srcHeight := fRXData.Size[aIndex].Y;
+
+  dstWidth := srcWidth;
+  dstHeight := srcHeight;
+
+  if EXPORT_SPRITES_ON_CANVAS then
+  begin
+    if (srcWidth > CANVAS_SIZE) or (srcHeight > CANVAS_SIZE) then
+      Exit;
+
+    dstWidth := CANVAS_SIZE;
+    dstHeight := CANVAS_SIZE;
+  end;
+
+  SetLength(pngData, dstWidth * dstHeight);
+
+  if EXPORT_SPRITES_ON_CANVAS and EXPORT_SPRITES_NO_ALPHA then
+    for I := Low(pngData) to High(pngData) do
+      pngData[I] := $FFAF6B6B;
+
+  //Export RGB values
+  for I := 0 to fRXData.Size[aIndex].Y - 1 do
+  for K := 0 to fRXData.Size[aIndex].X - 1 do
+  begin
+    dstY := I;
+    dstX := K;
+    if EXPORT_SPRITES_ON_CANVAS
+    and (abs(fRXData.Pivot[aIndex].Y) < CANVAS_SIZE_HALF)
+    and (abs(fRXData.Pivot[aIndex].Y) < CANVAS_SIZE_HALF) then
+    begin
+      dstY := I + CANVAS_SIZE_HALF + fRXData.Pivot[aIndex].Y;
+      dstX := K + CANVAS_SIZE_HALF + fRXData.Pivot[aIndex].X;
+    end;
+
+    TreatMask := fRXData.HasMask[aIndex] and (fRXData.Mask[aIndex, I*srcWidth + K] > 0);
+    if (fRT = rxHouses)
+      and ((aIndex < 680)
+        or (aIndex = 1657)
+        or (aIndex = 1659)
+        or (aIndex = 1681)
+        or (aIndex = 1683)
+        or (aIndex > 2050)) then
+      TreatMask := False;
+
+    if TreatMask then
+    begin
+      M := fRXData.Mask[aIndex, I*srcWidth + K];
+
+      //Replace background with corresponding brightness of Red
+      if fRXData.RGBA[aIndex, I*srcWidth + K] = FLAG_COLOR_DARK then
+        //Brightness < 0.5, mix with black
+        pngData[dstY*dstWidth + dstX] := M
+      else
+        //Brightness > 0.5, mix with white
+        pngData[dstY*dstWidth + dstX] := $FF + (255 - M) * $010100;
+    end
+    else
+      pngData[dstY*dstWidth + dstX] := fRXData.RGBA[aIndex, I*srcWidth + K] and $FFFFFF;
+
+    pngData[dstY*dstWidth + dstX] := pngData[dstY*dstWidth + dstX] or (fRXData.RGBA[aIndex, I*srcWidth + K] and $FF000000);
+
+    if EXPORT_SPRITES_NO_ALPHA then
+      pngData[dstY*dstWidth + dstX] := pngData[dstY*dstWidth + dstX] or $FF000000;
+  end;
+
+  //Mark pivot location with a dot
+//  K := pngWidth + fRXData.Pivot[aIndex].x;
+//  I := pngHeight + fRXData.Pivot[aIndex].y;
+//  if InRange(I, 0, pngHeight-1) and InRange(K, 0, pngWidth-1) then
+//    pngData[I*pngWidth + K] := $FFFF00FF;
+
+  SaveToPng(dstWidth, dstHeight, pngData, aFile);
+end;
 
 function TKMSpritePackEdit.GetLoaded: Boolean;
 begin
