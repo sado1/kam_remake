@@ -2430,7 +2430,7 @@ begin
   begin
     gGame.IsPaused := True;
     UpdateReplayButtons(False); //Update buttons
-    UpdateState(gGameParams.Tick);
+    UpdateState(gGameApp.GlobalTickCount);
   end;
 
   UpdateReplayMarks;
