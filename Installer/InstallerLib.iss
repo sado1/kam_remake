@@ -104,7 +104,7 @@ begin
 
   #ifdef CheckKaM
   if not CheckKaM() then
-    Warnings := ExpandConstant('{cm:NoKaM}');
+    Warnings := ExpandConstant('{cm:NoKaM}') + #13#10#13#10 + ExpandConstant('{cm:SteamFirstRun}');
   #endif
   
   if not CanInstall() then
