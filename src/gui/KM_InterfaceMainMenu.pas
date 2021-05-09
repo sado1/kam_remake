@@ -78,7 +78,7 @@ type
     procedure SetOnOptionsChange(aEvent: TEvent);
     procedure RefreshCampaigns;
     procedure Resize(X,Y: Word); override;
-    procedure UpdateState(aTickCount: Cardinal); override;
+    procedure UpdateState(aGlobalTickCount: Cardinal); override;
   end;
 
 
@@ -430,7 +430,7 @@ end;
 
 
 //Should update anything we want to be updated, obviously
-procedure TKMMainMenuInterface.UpdateState(aTickCount: Cardinal);
+procedure TKMMainMenuInterface.UpdateState(aGlobalTickCount: Cardinal);
 begin
   inherited;
   fMenuLobby.UpdateState;
@@ -438,7 +438,7 @@ begin
   fMenuLoad.UpdateState;
   fMenuReplays.UpdateState;
   fMenuSingleMap.UpdateState;
-  fMenuCampaign.UpdateState(aTickCount);
+  fMenuCampaign.UpdateState(aGlobalTickCount);
 end;
 
 
