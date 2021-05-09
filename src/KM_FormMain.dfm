@@ -88,7 +88,6 @@ object FormMain: TFormMain
       Caption = 'Misc'
       Collapsed = True
       TabOrder = 0
-      ExplicitTop = 427
       ExpandedHeight = 144
       object chkBevel: TCheckBox
         Left = 168
@@ -131,7 +130,6 @@ object FormMain: TFormMain
       Caption = 'Logs'
       Collapsed = True
       TabOrder = 1
-      ExplicitTop = 403
       ExpandedHeight = 198
       object chkLogCommands: TCheckBox
         Left = 120
@@ -243,7 +241,6 @@ object FormMain: TFormMain
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 2
-      ExplicitTop = 379
       ExpandedHeight = 153
       object Label1: TLabel
         Left = 101
@@ -1218,21 +1215,21 @@ object FormMain: TFormMain
       Caption = 'Game'
       TabOrder = 10
       object Label8: TLabel
-        Left = 70
+        Left = 60
         Top = 30
         Width = 83
         Height = 13
         Caption = 'Pause before tick'
       end
       object Label9: TLabel
-        Left = 24
+        Left = 14
         Top = 54
         Width = 129
         Height = 13
         Caption = 'Make savepoint before tick'
       end
       object Label12: TLabel
-        Left = 92
+        Left = 82
         Top = 78
         Width = 61
         Height = 13
@@ -1249,18 +1246,18 @@ object FormMain: TFormMain
         OnClick = chkSuperSpeedClick
       end
       object Button_Stop: TButton
-        Left = 135
+        Left = 148
         Top = 5
-        Width = 89
+        Width = 92
         Height = 17
         Caption = 'Stop the game'
         TabOrder = 1
         OnClick = Button_StopClick
       end
       object sePauseBeforeTick: TSpinEdit
-        Left = 159
+        Left = 149
         Top = 28
-        Width = 66
+        Width = 90
         Height = 22
         Ctl3D = True
         MaxValue = 9999999
@@ -1271,9 +1268,9 @@ object FormMain: TFormMain
         OnChange = ControlsUpdate
       end
       object seMakeSaveptBeforeTick: TSpinEdit
-        Left = 159
+        Left = 149
         Top = 52
-        Width = 66
+        Width = 90
         Height = 22
         Ctl3D = True
         MaxValue = 9999999
@@ -1284,12 +1281,12 @@ object FormMain: TFormMain
         OnChange = ControlsUpdate
       end
       object seCustomSeed: TSpinEdit
-        Left = 159
+        Left = 149
         Top = 76
-        Width = 66
+        Width = 90
         Height = 22
         Ctl3D = True
-        MaxValue = 9999999
+        MaxValue = 2147483647
         MinValue = 0
         ParentCtl3D = False
         TabOrder = 4
