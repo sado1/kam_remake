@@ -1033,7 +1033,7 @@ var
   id, id0: Integer;
   R: TRXData;
 begin
-  id := GetUnitAnimSprite(aUnit, aAct, aDir, StepId, 0.0);
+  id := GetUnitAnimSprite(aUnit, aAct, aDir, StepId, StepFrac);
   id0 := GetUnitAnimSprite(aUnit, aAct, aDir, UNIT_STILL_FRAMES[aDir], 0.0);
   if id <= 0 then exit;
   R := fRXData[rxUnits];
