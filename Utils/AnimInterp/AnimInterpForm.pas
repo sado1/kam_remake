@@ -137,6 +137,7 @@ begin
         StrList.Append(IntToStr(newWidth-1));
         StrList.Append(IntToStr(newHeight-1));
 
+        ForceDirectories(ExeDir+'Sprites\3\');
         StrList.SaveToFile(ExeDir+'Sprites\3\'+format('3_93%.2d.txt', [Step]));
         SaveToPng(newWidth, newHeight, pngCrop, ExeDir+'Sprites\3\'+format('3_93%.2d.png', [Step]));
       end;
