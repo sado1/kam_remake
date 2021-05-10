@@ -26,7 +26,7 @@ type
 
   TKMNewSingleMapEvent = procedure (const aMissionFile, aGameName: UnicodeString; aDesiredLoc: ShortInt = -1;
                                     aDesiredColor: Cardinal = $00000000; aDifficulty: TKMMissionDifficulty = mdNone;
-                                    aAIType: TKMAIType = aitNone; aAutoselectHumanLoc: Boolean = False) of object;
+                                    aAIType: TKMAIType = aitNone) of object;
 
   TKMNewCampaignMapEvent = procedure (aCampaign: TKMCampaignId; aMap: Byte; aDifficulty: TKMMissionDifficulty = mdNone) of object;
 

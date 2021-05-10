@@ -49,7 +49,7 @@ type
     function GetCheckpointObjectsStr(aCell: TKMPoint; removeTxID: Integer = TX_WORD_OBJECT): string; overload;
     function GetHistory: TKMMapEditorHistory;
 
-    function MapIsPlayable: Boolean;
+    procedure UpdateSavedInfo;
   public
     LandMapEd: PKMMapEdLand;
 
@@ -63,6 +63,8 @@ type
     PlayerHuman: array [0..MAX_HANDS - 1] of Boolean;
     PlayerClassicAI: array [0..MAX_HANDS - 1] of Boolean;
     PlayerAdvancedAI: array [0..MAX_HANDS - 1] of Boolean;
+
+    SavedPlayableLocs: array [0..MAX_HANDS - 1] of Boolean;
 
     OnEyedropper: TIntegerEvent;
 
@@ -247,20 +249,23 @@ begin
 end;
 
 
-function TKMMapEditor.MapIsPlayable: Boolean;
+procedure TKMMapEditor.UpdateSavedInfo;
 var
   I: Integer;
 begin
-  Result := False;
+  fSavedMapIsPlayable := False;
+
   for I := 0 to MAX_HANDS - 1 do
-    if PlayerHuman[I] and gHands[I].HasAssets then
-      Exit(True);
+  begin
+    SavedPlayableLocs[I] := PlayerHuman[I] and gHands[I].HasAssets;
+    fSavedMapIsPlayable := fSavedMapIsPlayable or SavedPlayableLocs[I];
+  end;
 end;
 
 
 procedure TKMMapEditor.AfterCreated;
 begin
-  fSavedMapIsPlayable := MapIsPlayable;
+  UpdateSavedInfo;
 end;
 
 
@@ -310,7 +315,7 @@ begin
   end;
 
   fIsNewMap := False; //Map was saved, its not a new map anymore
-  fSavedMapIsPlayable := MapIsPlayable;
+  UpdateSavedInfo;
 end;
 
 

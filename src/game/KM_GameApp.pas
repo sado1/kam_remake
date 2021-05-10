@@ -55,8 +55,7 @@ type
     procedure LoadGameFromSave(const aFilePath: String; aGameMode: TKMGameMode; const aGIPPath: String = '');
     procedure LoadGameFromScript(const aMissionFullFilePath, aGameName: String; aFullCRC, aSimpleCRC: Cardinal; aCampaign: TKMCampaign;
                                  aMap: Byte; aGameMode: TKMGameMode; aDesiredLoc: ShortInt; aDesiredColor: Cardinal;
-                                 aDifficulty: TKMMissionDifficulty = mdNone; aAIType: TKMAIType = aitNone;
-                                 aAutoselectHumanLoc: Boolean = False);
+                                 aDifficulty: TKMMissionDifficulty = mdNone; aAIType: TKMAIType = aitNone);
     procedure LoadGameSavePoint(aTick: Cardinal);
     procedure LoadGameFromScratch(aSizeX, aSizeY: Integer; aGameMode: TKMGameMode);
     function SaveName(const aName, aExt: UnicodeString; aIsMultiplayer: Boolean): UnicodeString;
@@ -96,7 +95,7 @@ type
     procedure NewCampaignMap(aCampaignId: TKMCampaignId; aMap: Byte; aDifficulty: TKMMissionDifficulty = mdNone);
     procedure NewSingleMap(const aMissionFullPath, aGameName: UnicodeString; aDesiredLoc: ShortInt = -1;
                            aDesiredColor: Cardinal = $00000000; aDifficulty: TKMMissionDifficulty = mdNone;
-                           aAIType: TKMAIType = aitNone; aAutoselectHumanLoc: Boolean = False);
+                           aAIType: TKMAIType = aitNone);
     procedure NewSingleSave(const aSaveName: UnicodeString);
     procedure NewMultiplayerMap(const aFileName: UnicodeString; aMapFolder: TKMapFolder; aCRC: Cardinal; aSpectating: Boolean;
                                 aDifficulty: TKMMissionDifficulty);
@@ -747,8 +746,7 @@ end;
 //Do not use _const_ aMissionFile, aGameName: UnicodeString, as for some unknown reason sometimes aGameName is not accessed after StopGame(grSilent) (pointing to a wrong value)
 procedure TKMGameApp.LoadGameFromScript(const aMissionFullFilePath, aGameName: String; aFullCRC, aSimpleCRC: Cardinal; aCampaign: TKMCampaign;
                                         aMap: Byte; aGameMode: TKMGameMode; aDesiredLoc: ShortInt; aDesiredColor: Cardinal;
-                                        aDifficulty: TKMMissionDifficulty = mdNone; aAIType: TKMAIType = aitNone;
-                                        aAutoselectHumanLoc: Boolean = False);
+                                        aDifficulty: TKMMissionDifficulty = mdNone; aAIType: TKMAIType = aitNone);
 var
   loadError, missionFullFilePath, gameName: String;
 begin
@@ -766,7 +764,7 @@ begin
 
   CreateGame(aGameMode);
   try
-    gGame.Start(missionFullFilePath, gameName, aFullCRC, aSimpleCRC, aCampaign, aMap, aDesiredLoc, aDesiredColor, aDifficulty, aAIType, aAutoselectHumanLoc);
+    gGame.Start(missionFullFilePath, gameName, aFullCRC, aSimpleCRC, aCampaign, aMap, aDesiredLoc, aDesiredColor, aDifficulty, aAIType);
   except
     on E : Exception do
     begin
@@ -910,10 +908,9 @@ end;
 
 procedure TKMGameApp.NewSingleMap(const aMissionFullPath, aGameName: UnicodeString; aDesiredLoc: ShortInt = -1;
                                   aDesiredColor: Cardinal = $00000000; aDifficulty: TKMMissionDifficulty = mdNone;
-                                  aAIType: TKMAIType = aitNone; aAutoselectHumanLoc: Boolean = False);
+                                  aAIType: TKMAIType = aitNone);
 begin
-  LoadGameFromScript(aMissionFullPath, aGameName, 0, 0, nil, 0, gmSingle, aDesiredLoc, aDesiredColor, aDifficulty, aAIType,
-                     aAutoselectHumanLoc);
+  LoadGameFromScript(aMissionFullPath, aGameName, 0, 0, nil, 0, gmSingle, aDesiredLoc, aDesiredColor, aDifficulty, aAIType);
 
   if Assigned(fOnGameStart) and (gGame <> nil) then
     fOnGameStart(gGame.Params.Mode);

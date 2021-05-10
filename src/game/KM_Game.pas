@@ -153,7 +153,7 @@ type
 
     procedure Start(const aMissionFullFilePath, aName: UnicodeString; aFullCRC, aSimpleCRC: Cardinal; aCampaign: TKMCampaign;
                     aCampMap: Byte; aLocation: ShortInt; aColor: Cardinal; aMapDifficulty: TKMMissionDifficulty = mdNone;
-                    aAIType: TKMAIType = aitNone; aAutoselectHumanLoc: Boolean = False);
+                    aAIType: TKMAIType = aitNone);
 
     procedure AfterStart;
     procedure MapEdStartEmptyMap(aSizeX, aSizeY: Integer);
@@ -499,13 +499,11 @@ end;
 // New mission
 procedure TKMGame.Start(const aMissionFullFilePath, aName: UnicodeString; aFullCRC, aSimpleCRC: Cardinal; aCampaign: TKMCampaign;
                             aCampMap: Byte; aLocation: ShortInt; aColor: Cardinal;
-                            aMapDifficulty: TKMMissionDifficulty = mdNone; aAIType: TKMAIType = aitNone;
-                            aAutoselectHumanLoc: Boolean = False);
+                            aMapDifficulty: TKMMissionDifficulty = mdNone; aAIType: TKMAIType = aitNone);
 const
   GAME_PARSE: array [TKMGameMode] of TKMMissionParsingMode = (
     mpmSingle, mpmSingle, mpmMulti, mpmMulti, mpmEditor, mpmSingle, mpmSingle);
 
-  NO_OVERWRITE_COLOR = $00000000;
 var
   I: Integer;
   parseMode: TKMMissionParsingMode;
@@ -612,28 +610,13 @@ begin
       if aLocation = -1 then
         aLocation := parser.DefaultLocation;
 
-      //Try to autoselect player loc, if needed
-      if aAutoselectHumanLoc
-        and (not InRange(aLocation, 0, gHands.Count - 1)
-             or not gHands[aLocation].Enabled) then
-        begin
-          for I := 0 to gHands.Count - 1 do
-            if gHands[I].Enabled and gHands[I].CanBeHuman then
-            begin
-              aLocation := I;
-              Break;
-            end;
-          aColor := NO_OVERWRITE_COLOR; //Do not overwrite player color
-        end;
-
       Assert(InRange(aLocation, 0, gHands.Count - 1), 'No human player detected');
       gHands[aLocation].HandType := hndHuman;
 
       gMySpectator := TKMSpectator.Create(aLocation);
 
       // If no color specified use default from mission file (don't overwrite it)
-      if aColor <> NO_OVERWRITE_COLOR then
-        gMySpectator.Hand.FlagColor := aColor;
+      gMySpectator.Hand.FlagColor := aColor;
 
       //Set Advanced AI for only advanced locs and if choosen Advanced AI in Single map setup
       for I := 0 to gHands.Count - 1 do

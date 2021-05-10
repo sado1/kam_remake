@@ -14,7 +14,7 @@ type
     fIsMultiplayer: Boolean;
     procedure Cancel_Click(Sender: TObject);
     procedure QuickPlay_Click(Sender: TObject);
-    procedure StartQuickPlay(aMapSaved: Boolean);
+    procedure StartQuickPlay;
     procedure Update_PlayerSelect;
     procedure PlayerSelectFirst;
     procedure UpdatePanel;
@@ -128,7 +128,7 @@ end;
 
 procedure TKMMapEdMenuQuickPlay.QuickPlay_Click(Sender: TObject);
 begin
-  StartQuickPlay(False);
+  StartQuickPlay;
 end;
 
 
@@ -139,8 +139,9 @@ begin
 end;
 
 
-procedure TKMMapEdMenuQuickPlay.StartQuickPlay(aMapSaved: Boolean);
+procedure TKMMapEdMenuQuickPlay.StartQuickPlay;
 var
+  I: Integer;
   gameName, missionFileRel: String;
   color: Cardinal;
   handID: Integer;
@@ -151,6 +152,19 @@ begin
   missionFileRel := gGameParams.MissionFileRel;
   gameName := gGameParams.Name;
   handID := DropList_SelectHand.GetSelectedTag;
+
+  // Currently selected hand could not be saved yet, we have to check if it was a valid one on the last map save
+  // If it not valid, then we have to select any other valid hand (there should be one)
+  if not gGame.MapEditor.SavedPlayableLocs[handID] then
+    for I := 0 to MAX_HANDS - 1 do
+      if gGame.MapEditor.SavedPlayableLocs[I] then
+      begin
+        handID := I;
+        Break;
+      end;
+
+  Assert(gGame.MapEditor.SavedPlayableLocs[handID], 'Can not start map on location ' + IntToStr(handID));
+
   color := gHands[handID].FlagColor;
   isMultiplayer := fIsMultiplayer; //Somehow fIsMultiplayer sometimes change its value... have no time to debug it. Just save to local value for now
 
@@ -161,7 +175,7 @@ begin
   aiType := TKMAIType(Radio_AIOpponents.ItemIndex + 1);
 
   FreeThenNil(gGame);
-  gGameApp.NewSingleMap(ExeDir + missionFileRel, gameName, handID, color, difficulty, aiType, not aMapSaved);
+  gGameApp.NewSingleMap(ExeDir + missionFileRel, gameName, handID, color, difficulty, aiType);
   gGame.StartedFromMapEditor := True;
   gGame.StartedFromMapEdAsMPMap := isMultiplayer;
   TKMGamePlayInterface(gGame.ActiveInterface).UpdateUI;
@@ -258,7 +272,7 @@ end;
 
 procedure TKMMapEdMenuQuickPlay.SaveDone(Sender: TObject);
 begin
-  StartQuickPlay(True);
+  StartQuickPlay;
 end;
 
 
