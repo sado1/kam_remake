@@ -175,6 +175,7 @@ type
     procedure OrderRepeat(aForced: Boolean = True);
     procedure CopyOrderFrom(aGroup: TKMUnitGroup; aUpdateOrderLoc: Boolean; aForced: Boolean = True);
 
+    procedure CloseGroup;
     procedure KillGroup;
 
     function ObjToStringShort(const aSeparator: String = '|'): String; override;
@@ -720,6 +721,22 @@ begin
   if Self = nil then Exit(False);
 
   Result := not IsDead;
+end;
+
+
+procedure TKMUnitGroup.CloseGroup;
+var
+  I: Integer;
+  member: TKMUnit;
+begin
+  for I := fMembers.Count - 1 downto 0 do
+  begin
+    // Member is already 'closed'
+    member := fMembers[I];
+    gHands.CleanUpUnitPointer(member);
+  end;
+
+  fMembers.Clear;
 end;
 
 
@@ -2497,14 +2514,20 @@ end;
 
 
 procedure TKMUnitGroups.RemAllGroups;
+var
+  I: Integer;
 begin
-  Assert(gGameParams.Mode = gmMapEd);
+  if not gGameParams.IsMapEditor then
+    for I := 0 to Count - 1 do
+      Groups[I].CloseGroup;
+
   fGroups.Clear;
 end;
 
 
 procedure TKMUnitGroups.Save(SaveStream: TKMemoryStream);
-var I: Integer;
+var
+  I: Integer;
 begin
   SaveStream.PlaceMarker('UnitGroups');
   SaveStream.Write(Count);

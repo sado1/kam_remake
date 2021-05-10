@@ -49,6 +49,7 @@ type
     procedure RemoveEmptyPlayers;
     procedure RemoveEmptyPlayer(aIndex: TKMHandID);
     procedure RemoveAssetsOutOfBounds(const aInsetRect: TKMRect);
+    procedure RemovePlayerAssets(aIndex: TKMHandID);
 
     function HousesHitTest(X,Y: Integer): TKMHouse;
     function UnitsHitTest(X, Y: Integer): TKMUnit;
@@ -341,6 +342,30 @@ begin
     fHandsList[I].Houses.RemoveHousesOutOfBounds(aInsetRect);
     fHandsList[I].Units.RemoveUnitsOutOfBounds(aInsetRect);
   end;
+end;
+
+
+procedure TKMHandsCollection.RemovePlayerAssets(aIndex: TKMHandID);
+begin
+  if Self = nil then Exit;
+  if fCount = 0 then Exit;
+  if not InRange(aIndex, 0, fCount - 1) then Exit;
+
+  fHandsList[aIndex].Units.RemoveAllUnits;
+
+  fHandsList[aIndex].UnitGroups.RemAllGroups;
+
+  fHandsList[aIndex].Houses.RemoveAllHouses;
+
+  gTerrain.ClearPlayerLand(aIndex);
+
+  fHandsList[aIndex].AI.Goals.Clear;
+
+  fHandsList[aIndex].AI.General.Attacks.Clear;
+
+  fHandsList[aIndex].AI.General.DefencePositions.Clear;
+
+  fHandsList[aIndex].ResetChooseLocation;
 end;
 
 

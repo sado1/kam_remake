@@ -547,22 +547,7 @@ begin
 
   Revealers[aIndex].Clear;
 
-  gHands.Hands[aIndex].Units.RemoveAllUnits;
-
-  gHands.Hands[aIndex].UnitGroups.RemAllGroups;
-
-  gHands.Hands[aIndex].Houses.RemoveAllHouses;
-
-  gTerrain.ClearPlayerLand(aIndex);
-
-  gHands.Hands[aIndex].AI.Goals.Clear;
-
-  gHands.Hands[aIndex].AI.General.Attacks.Clear;
-
-  gHands.Hands[aIndex].AI.General.DefencePositions.Clear;
-
-  gHands.Hands[aIndex].ResetChooseLocation;
-
+  gHands.RemovePlayerAssets(aIndex);
 end;
 
 

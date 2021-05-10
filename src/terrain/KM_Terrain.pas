@@ -2175,6 +2175,8 @@ var
 begin
   for I := 1 to fMapY do
     for K := 1 to fMapX do
+      // On the game start TileOwner is not set for roads, be aware of that
+      // Its set only in AfterMissionInit procedures
       if (Land^[I, K].TileOwner = aPlayer) then
       begin
         P.X := K;
