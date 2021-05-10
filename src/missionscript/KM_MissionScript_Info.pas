@@ -33,27 +33,27 @@ uses
 { TMissionParserInfo }
 procedure TKMMissionParserInfo.LoadMission(const aFileName: string; aMapInfo: TKMapInfo; aParsing: TKMMissionParsing);
 const
-  CommandsBase: array [0..3] of AnsiString = (
+  COMMANDS_BASE: array [0..3] of AnsiString = (
     '!SET_MAX_PLAYER', '!SET_TACTIC', '!SET_CURR_PLAYER', '!SET_USER_PLAYER');
-  CommandsExtra: array [0..11] of AnsiString = (
+  COMMANDS_EXTRA: array [0..11] of AnsiString = (
     '!SET_MAX_PLAYER', '!SET_TACTIC',
     '!SET_CURR_PLAYER', '!SET_HUMAN_PLAYER', '!SET_USER_PLAYER',
     '!SET_AI_PLAYER', '!SET_ADVANCED_AI_PLAYER', '!ADD_GOAL', '!ADD_LOST_GOAL', '!SET_ALLIANCE', '!SET_MAP_COLOR', '!SET_RGB_COLOR');
 var
-  FileText: AnsiString;
+  fileText: AnsiString;
 begin
   fMapInfo := aMapInfo;
 
   inherited LoadMission(aFileName);
 
-  FileText := ReadMissionFile(aFileName);
-  if FileText = '' then
+  fileText := ReadMissionFile(aFileName);
+  if fileText = '' then
     raise Exception.Create('Script is empty');
 
   // For info we need only few commands, it makes sense to skip the rest
   case aParsing of
-    pmBase:   TokenizeScript(FileText, 4, CommandsBase);
-    pmExtra:  TokenizeScript(FileText, 4, CommandsExtra);
+    pmBase:   TokenizeScript(fileText, 4, COMMANDS_BASE);
+    pmExtra:  TokenizeScript(fileText, 4, COMMANDS_EXTRA);
   end;
 
   LoadMapInfo(ChangeFileExt(fMissionFileName, '.map'));
