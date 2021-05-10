@@ -1,4 +1,4 @@
-﻿unit KM_Game;
+unit KM_Game;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -618,8 +618,11 @@ begin
              or not gHands[aLocation].Enabled) then
         begin
           for I := 0 to gHands.Count - 1 do
-            if gHands[I].Enabled then
+            if gHands[I].Enabled and gHands[I].CanBeHuman then
+            begin
               aLocation := I;
+              Break;
+            end;
           aColor := NO_OVERWRITE_COLOR; //Do not overwrite player color
         end;
 
