@@ -24,7 +24,7 @@ type
 
     fWonOrLost: TWonOrLost; //Has this player won/lost? If so, do not check goals
 
-    fHandAITypes: TKMAITypeSet;
+    fCanBeAITypes: TKMAITypeSet;
 
     procedure CheckGoals;
     function GetHasWon: Boolean;
@@ -62,7 +62,7 @@ type
     procedure Load(LoadStream: TKMemoryStream);
     procedure SyncLoad();
     procedure UpdateState(aTick: Cardinal; aCheckGoals: Boolean);
-    procedure AfterMissionInit(aHandAITypes: TKMAITypeSet);
+    procedure AfterMissionInit(aCanBeAITypes: TKMAITypeSet);
     procedure PlaceFirstStorehouse(aLoc: TKMPoint); //RMG
 
     function ObjToString: String;
@@ -442,18 +442,18 @@ begin
   SaveStream.PlaceMarker('HandAI');
   SaveStream.Write(fOwner);
   SaveStream.Write(fWonOrLost, SizeOf(fWonOrLost));
-  SaveStream.Write(fHandAITypes, SizeOf(fHandAITypes));
+  SaveStream.Write(fCanBeAITypes, SizeOf(fCanBeAITypes));
 
   fSetup.Save(SaveStream);
   fGoals.Save(SaveStream);
 
-  if aitClassic in fHandAITypes then
+  if aitClassic in fCanBeAITypes then
   begin
     fGeneral.Save(SaveStream);
     fMayor.Save(SaveStream);
   end;
 
-  if aitAdvanced in fHandAITypes then
+  if aitAdvanced in fCanBeAITypes then
   begin
     fCityManagement.Save(SaveStream);
     fArmyManagement.Save(SaveStream);
@@ -466,18 +466,18 @@ begin
   LoadStream.CheckMarker('HandAI');
   LoadStream.Read(fOwner);
   LoadStream.Read(fWonOrLost, SizeOf(fWonOrLost));
-  LoadStream.Read(fHandAITypes, SizeOf(fHandAITypes));
+  LoadStream.Read(fCanBeAITypes, SizeOf(fCanBeAITypes));
 
   fSetup.Load(LoadStream);
   fGoals.Load(LoadStream);
 
-  if aitClassic in fHandAITypes then
+  if aitClassic in fCanBeAITypes then
   begin
     fGeneral.Load(LoadStream);
     fMayor.Load(LoadStream);
   end;
 
-  if aitAdvanced in fHandAITypes then
+  if aitAdvanced in fCanBeAITypes then
   begin
     fCityManagement.Load(LoadStream);
     fArmyManagement.Load(LoadStream);
@@ -487,10 +487,10 @@ end;
 
 procedure TKMHandAI.SyncLoad();
 begin
-  if aitClassic in fHandAITypes then
+  if aitClassic in fCanBeAITypes then
     fGeneral.SyncLoad();
 
-  if aitAdvanced in fHandAITypes then
+  if aitAdvanced in fCanBeAITypes then
   begin
     fArmyManagement.SyncLoad();
     fCityManagement.SyncLoad();
@@ -498,17 +498,17 @@ begin
 end;
 
 
-procedure TKMHandAI.AfterMissionInit(aHandAITypes: TKMAITypeSet);
+procedure TKMHandAI.AfterMissionInit(aCanBeAITypes: TKMAITypeSet);
 begin
-  fHandAITypes := aHandAITypes;
+  fCanBeAITypes := aCanBeAITypes;
 
   // Do AI initialization only if there could be any AI of a certain type
   // We should do it at the game start, in case player will be swapped to AI player
   // Also we have to do it only at the game start for Advanced AI, because it considers teams and divide mines according to the teams
-  if aitClassic in fHandAITypes then
+  if aitClassic in fCanBeAITypes then
     fMayor.AfterMissionInit();
 
-  if aitAdvanced in fHandAITypes then
+  if aitAdvanced in fCanBeAITypes then
   begin
     gAIFields.Eye.OwnerUpdate(fOwner);
     fCityManagement.AfterMissionInit();

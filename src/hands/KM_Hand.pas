@@ -63,7 +63,7 @@ type
     fOwnerNikname: AnsiString; //Multiplayer owner nikname
     fHandType: TKMHandType;
     fCanBeHuman: Boolean;
-    fHandAITypes: TKMAITypeSet;
+    fCanBeAITypes: TKMAITypeSet;
     fFlagColor: Cardinal;
     fTeamColor: Cardinal;
     fCenterScreen: TKMPoint;
@@ -143,7 +143,7 @@ type
     function HasAssets: Boolean;
     property HandType: TKMHandType read fHandType write SetHandType; //Is it Human or AI
     property CanBeHuman: Boolean read fCanBeHuman write fCanBeHuman;
-    property HandAITypes: TKMAITypeSet read fHandAITypes;
+    property CanBeAITypes: TKMAITypeSet read fCanBeAITypes;
     property FlagColor: Cardinal read fFlagColor write SetFlagColor;
     property TeamColor: Cardinal read fTeamColor write fTeamColor;
     property GameFlagColor: Cardinal read GetGameFlagColor;
@@ -392,7 +392,7 @@ begin
   fOwnerNikname := '';
   fHandType     := hndComputer;
   fCanBeHuman   := False;
-  fHandAITypes  := [];
+  fCanBeAITypes  := [];
   for I := 0 to MAX_HANDS - 1 do
   begin
     fShareFOW[I] := True; //Share FOW between allies by default (it only affects allied players)
@@ -634,7 +634,7 @@ end;
 
 function TKMHand.CanBeAI: Boolean;
 begin
-  Result := (fHandAITypes <> []) and (fHandAITypes <> [aitNone]);
+  Result := (fCanBeAITypes <> []) and (fCanBeAITypes <> [aitNone]);
 end;
 
 
@@ -650,7 +650,7 @@ begin
   FreeAndNil(fRoadsList);
 
   if not gGameParams.IsMapEditor then
-    fAI.AfterMissionInit(fHandAITypes);
+    fAI.AfterMissionInit(fCanBeAITypes);
 end;
 
 
@@ -1442,7 +1442,7 @@ end;
 
 procedure TKMHand.AddAIType(aHandAIType: TKMAIType);
 begin
-  Include(fHandAITypes, aHandAIType);
+  Include(fCanBeAITypes, aHandAIType);
 end;
 
 
@@ -1911,7 +1911,7 @@ begin
   SaveStream.WriteA(fOwnerNikname);
   SaveStream.Write(fHandType, SizeOf(fHandType));
   SaveStream.Write(fCanBeHuman, SizeOf(fCanBeHuman));
-  SaveStream.Write(fHandAITypes, SizeOf(fHandAITypes));
+  SaveStream.Write(fCanBeAITypes, SizeOf(fCanBeAITypes));
   SaveStream.Write(fAlliances, SizeOf(fAlliances));
   SaveStream.Write(fShareFOW, SizeOf(fShareFOW));
   SaveStream.Write(fShareBeacons, SizeOf(fShareBeacons));
@@ -1944,7 +1944,7 @@ begin
   LoadStream.ReadA(fOwnerNikname);
   LoadStream.Read(fHandType, SizeOf(fHandType));
   LoadStream.Read(fCanBeHuman, SizeOf(fCanBeHuman));
-  LoadStream.Read(fHandAITypes, SizeOf(fHandAITypes));
+  LoadStream.Read(fCanBeAITypes, SizeOf(fCanBeAITypes));
   LoadStream.Read(fAlliances, SizeOf(fAlliances));
   LoadStream.Read(fShareFOW, SizeOf(fShareFOW));
   LoadStream.Read(fShareBeacons, SizeOf(fShareBeacons));

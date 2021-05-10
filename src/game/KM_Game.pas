@@ -635,8 +635,8 @@ begin
       //Set Advanced AI for only advanced locs and if choosen Advanced AI in Single map setup
       for I := 0 to gHands.Count - 1 do
         if gHands[I].IsComputer
-          and ((gHands[I].HandAITypes = [aitAdvanced])
-            or ((gHands[I].HandAITypes = [aitClassic, aitAdvanced])
+          and ((gHands[I].CanBeAITypes = [aitAdvanced])
+            or ((gHands[I].CanBeAITypes = [aitClassic, aitAdvanced])
               and (aAIType = aitAdvanced))) then
             gHands[I].AI.Setup.EnableAdvancedAI
     end;

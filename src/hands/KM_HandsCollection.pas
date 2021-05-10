@@ -306,7 +306,7 @@ var
 begin
   Result := False;
   for I := 0 to fCount - 1 do
-    if fHandsList[I].HandAITypes * [aitClassic, aitAdvanced] <> [] then // Some AI is allowed
+    if fHandsList[I].CanBeAITypes * [aitClassic, aitAdvanced] <> [] then // Some AI is allowed
       Exit(True);
 end;
 
@@ -317,7 +317,7 @@ var
 begin
   Result := False;
   for I := 0 to fCount - 1 do
-    if aitAdvanced in fHandsList[I].HandAITypes then
+    if aitAdvanced in fHandsList[I].CanBeAITypes then
       Exit(True);
 end;
 
