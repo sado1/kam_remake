@@ -101,6 +101,7 @@ type
     function GetBigDesc: UnicodeString;
     procedure SetBigDesc(const aBigDesc: UnicodeString);
     function GetTxtInfo: TKMMapTxtInfo;
+    constructor Create; overload;
   public
     MapSizeX, MapSizeY: Integer;
     MissionMode: TKMissionMode;
@@ -118,6 +119,8 @@ type
 
     constructor Create(const aFolder: string; aStrictParsing: Boolean; aMapFolder: TKMapFolder); overload;
     destructor Destroy; override;
+
+    class function CreateDummy: TKMapInfo;
 
     procedure AddGoal(aType: TKMGoalType; aPlayer: TKMHandID; aCondition: TKMGoalCondition; aStatus: TKMGoalStatus; aPlayerIndex: TKMHandID);
     procedure LoadExtra;
@@ -260,6 +263,18 @@ const
 
 
 { TKMapInfo }
+class function TKMapInfo.CreateDummy: TKMapInfo;
+begin
+  Result := Create;
+end;
+
+
+constructor TKMapInfo.Create;
+begin
+  inherited;
+end;
+
+
 constructor TKMapInfo.Create(const aFolder: string; aStrictParsing: Boolean; aMapFolder: TKMapFolder);
 
   function GetLIBXCRC(const aSearchFile: UnicodeString): Cardinal;

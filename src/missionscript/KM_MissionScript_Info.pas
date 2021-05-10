@@ -7,8 +7,9 @@ uses
 
 type
   TKMMissionParsing = (
-    pmBase, //Load base map info for SP maplist (player count, tactic, description)
-    pmExtra //Load extra map info to be displayed when map is selected (goals, alliances, etc)
+    pmBase,   // Load base map info for SP maplist (player count, tactic, description)
+    pmExtra,  // Load extra map info to be displayed when map is selected (goals, alliances, etc)
+    pmPlayers // Load information only about players (count, allowed types)
   );
 
 
@@ -39,6 +40,8 @@ const
     '!SET_MAX_PLAYER', '!SET_TACTIC',
     '!SET_CURR_PLAYER', '!SET_HUMAN_PLAYER', '!SET_USER_PLAYER',
     '!SET_AI_PLAYER', '!SET_ADVANCED_AI_PLAYER', '!ADD_GOAL', '!ADD_LOST_GOAL', '!SET_ALLIANCE', '!SET_MAP_COLOR', '!SET_RGB_COLOR');
+  COMMANDS_PLAYERS: array [0..5] of AnsiString = (
+    '!SET_MAX_PLAYER', '!SET_CURR_PLAYER', '!SET_USER_PLAYER', '!SET_HUMAN_PLAYER', '!SET_AI_PLAYER', '!SET_ADVANCED_AI_PLAYER');
 var
   fileText: AnsiString;
 begin
@@ -52,8 +55,9 @@ begin
 
   // For info we need only few commands, it makes sense to skip the rest
   case aParsing of
-    pmBase:   TokenizeScript(fileText, 4, COMMANDS_BASE);
-    pmExtra:  TokenizeScript(fileText, 4, COMMANDS_EXTRA);
+    pmBase:     TokenizeScript(fileText, 4, COMMANDS_BASE);
+    pmExtra:    TokenizeScript(fileText, 4, COMMANDS_EXTRA);
+    pmPlayers:  TokenizeScript(fileText, 4, COMMANDS_PLAYERS);
   end;
 
   LoadMapInfo(ChangeFileExt(fMissionFileName, '.map'));

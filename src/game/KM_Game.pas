@@ -1,4 +1,4 @@
-unit KM_Game;
+﻿unit KM_Game;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -299,7 +299,8 @@ uses
   KM_Projectiles, KM_AIFields, KM_NetworkTypes,
   KM_Main, KM_GameApp, KM_RenderPool, KM_GameInfo, KM_GameClasses,
   KM_Terrain, KM_HandsCollection, KM_HandSpectator, KM_MapEditorHistory,
-  KM_MissionScript, KM_MissionScript_Standard, KM_GameInputProcess_Multi, KM_GameInputProcess_Single,
+  KM_MissionScript, KM_MissionScript_Info, KM_MissionScript_Standard,
+  KM_GameInputProcess_Multi, KM_GameInputProcess_Single,
   KM_Resource, KM_ResCursors, KM_ResSound,
   KM_InterfaceDefaults, KM_InterfaceTypes, KM_GameSettings,
   KM_Log, KM_ScriptingEvents, KM_Saves, KM_FileIO, KM_CommonUtils, KM_RandomChecks, KM_DevPerfLog, KM_DevPerfLogTypes,
@@ -509,6 +510,8 @@ var
   parseMode: TKMMissionParsingMode;
   playerEnabled: TKMHandEnabledArray;
   parser: TKMMissionParserStandard;
+  parserPlayerInfo: TKMMissionParserInfo;
+  mapInfo: TKMapInfo;
   campaignData: TKMemoryStream;
   campaignDataTypeFile: UnicodeString;
 begin
@@ -563,13 +566,35 @@ begin
                     playerEnabled[I] := True;
               end;
     gmSingle, gmCampaign: //Setup should tell us which player is AI and which not
-              // Set all hands in the SP game as Enabled
-              // In theory we could allow to prohibit some locs for AI
-              // In this case its better to delete all hand content after parser made his work done
-              // But there was no such a case or request yet, so we can simply set all hands as enabled
-              // So parser will load all hands assets
-              for I := 0 to MAX_HANDS - 1 do
-                playerEnabled[I] := True;
+
+              // We have to preload map players info, so we could check what player to enable
+              // F.e. human only should be disabled, if it was not chosen as a starting loc for a player )f.e. when test MP maps as an SP map)
+              // or Classic AI only loc should be disabled for if AdvancedAI type was chosen to play against
+              // We have to disable certain locs before parsing the map,
+              // otherwise it will hard or even impossible to clean it afterwards
+              // (f.e. its impossible to clean wine/corn fields, since terrain under them will be overwritten)
+              begin
+                mapInfo := TKMapInfo.CreateDummy;
+                parserPlayerInfo := TKMMissionParserInfo.Create;
+                try
+                  parserPlayerInfo.LoadMission(aMissionFullFilePath, mapInfo, pmPlayers);
+                finally
+                  parserPlayerInfo.Free;
+                end;
+
+                // -1 means automatically detect the location (used for tutorials and campaigns)
+                if aLocation = -1 then
+                  aLocation := mapInfo.DefaultHuman;
+
+                Assert(InRange(aLocation, 0, mapInfo.LocCount - 1), 'No human player detected');
+
+                for I := 0 to mapInfo.LocCount - 1 do
+                  playerEnabled[I] :=  (I = aLocation)
+                                    or (mapInfo.CanBeAI[I]         and (aAIType = aitClassic))
+                                    or (mapInfo.CanBeAdvancedAI[I] and (aAIType = aitAdvanced));
+                mapInfo.Free;
+              end;
+
     else      FillChar(playerEnabled, SizeOf(playerEnabled), #255);
   end;
 
@@ -606,11 +631,9 @@ begin
       for I := 0 to gHands.Count - 1 do
         gHands[I].HandType := hndComputer;
 
-      // -1 means automatically detect the location (used for tutorials and campaigns)
-      if aLocation = -1 then
-        aLocation := parser.DefaultLocation;
-
-      Assert(InRange(aLocation, 0, gHands.Count - 1), 'No human player detected');
+      // We already determined human location on players-info parsing step
+      // but for some manually edit maps locs could have no assets while being enabled in the .dat
+      Assert(InRange(aLocation, 0, gHands.Count - 1), 'No human player was detected');
       gHands[aLocation].HandType := hndHuman;
 
       gMySpectator := TKMSpectator.Create(aLocation);

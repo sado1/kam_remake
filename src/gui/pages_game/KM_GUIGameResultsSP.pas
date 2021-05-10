@@ -245,6 +245,9 @@ begin
   tempGraphCount := 0; //Reset
   for I := 0 to gHands.Count - 1 do
     with gHands[I] do
+    begin
+      if not Enabled then Continue;
+
       if IsComputer then
         AddToTempGraph(OwnerName(False), FlagColor, Stats.ChartCitizens)
       else
@@ -253,6 +256,7 @@ begin
         //Recruits aren't that important, but if we want to include them they should be a separate graph
         //Chart_Citizens.AddAltLine(Stats.ChartRecruits);
       end;
+    end;
 
   if showAIResults then
     for I := 0 to tempGraphCount - 1 do
@@ -262,10 +266,14 @@ begin
   tempGraphCount := 0; //Reset
   for I := 0 to gHands.Count - 1 do
     with gHands[I] do
+    begin
+      if not Enabled then Continue;
+
       if IsComputer then
         AddToTempGraph(OwnerName(False), FlagColor, Stats.ChartHouses)
       else
         Chart_Houses.AddLine(OwnerName, FlagColor, Stats.ChartHouses);
+    end;
 
   if showAIResults then
     for I := 0 to tempGraphCount - 1 do
@@ -286,11 +294,15 @@ begin
   //Army
   tempGraphCount := 0; //Reset
   for I := 0 to gHands.Count - 1 do
-  with gHands[I] do
-    if IsComputer then
-      AddToTempGraph(OwnerName(False), FlagColor, Stats.ChartArmy[cakInstantaneous, utAny])
-    else
-      Chart_Army.AddLine(OwnerName, FlagColor, Stats.ChartArmy[cakInstantaneous, utAny]);
+    with gHands[I] do
+    begin
+      if not Enabled then Continue;
+
+      if IsComputer then
+        AddToTempGraph(OwnerName(False), FlagColor, Stats.ChartArmy[cakInstantaneous, utAny])
+      else
+        Chart_Army.AddLine(OwnerName, FlagColor, Stats.ChartArmy[cakInstantaneous, utAny]);
+    end;
 
   if showAIResults then
     for I := 0 to tempGraphCount - 1 do
