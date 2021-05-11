@@ -197,55 +197,55 @@ procedure TKMMapEditor.DetectAttachedFiles(const aMissionFile: UnicodeString);
   end;
 
 var
-  SearchRec: TSearchRec;
-  MissionScriptFileName, MissionName, RecExt: UnicodeString;
-  HasScript: Boolean;
-  AttachCnt: Integer;
+  searchRec: TSearchRec;
+  missionScriptFileName, missionName, recExt: UnicodeString;
+  hasScript: Boolean;
+  attachCnt: Integer;
 begin
-  HasScript := False;
-  AttachCnt := 0;
+  hasScript := False;
+  attachCnt := 0;
   SetLength(fAttachedFiles, 8);
   MissionDefSavePath := aMissionFile;
-  MissionName := ChangeFileExt(ExtractFileName(aMissionFile), '');
-  FindFirst(ChangeFileExt(aMissionFile, '.*'), faAnyFile - faDirectory, SearchRec);
+  missionName := ChangeFileExt(ExtractFileName(aMissionFile), '');
+  FindFirst(ChangeFileExt(aMissionFile, '.*'), faAnyFile - faDirectory, searchRec);
   try
     repeat
-      if (SearchRec.Name <> '') and (SearchRec.Name <> '.') and (SearchRec.Name <> '..') then
+      if (searchRec.Name <> '') and (searchRec.Name <> '.') and (searchRec.Name <> '..') then
       begin
         //Can't use ExtractFileExt because we want .eng.libx not .libx
-        RecExt := RightStr(SearchRec.Name, Length(SearchRec.Name) - Length(MissionName));
-        if (LowerCase(RecExt) = '.map')
-          or (LowerCase(RecExt) = '.dat')
-          or (LowerCase(RecExt) = '.mi' ) then
+        recExt := RightStr(searchRec.Name, Length(searchRec.Name) - Length(missionName));
+        if (LowerCase(recExt) = '.map')
+          or (LowerCase(recExt) = '.dat')
+          or (LowerCase(recExt) = '.mi' ) then
           Continue;
 
-        if LowerCase(RecExt) = EXT_FILE_SCRIPT_DOT then
-          HasScript := True;
+        if LowerCase(recExt) = EXT_FILE_SCRIPT_DOT then
+          hasScript := True;
 
-        AddAttachment(AttachCnt, ExtractFilePath(aMissionFile) + SearchRec.Name);
+        AddAttachment(attachCnt, ExtractFilePath(aMissionFile) + searchRec.Name);
       end;
-    until (FindNext(SearchRec) <> 0);
+    until (FindNext(searchRec) <> 0);
   finally
-    FindClose(SearchRec);
+    FindClose(searchRec);
   end;
 
   //Add all scripts if we find main script
-  if HasScript then
+  if hasScript then
   begin
-    MissionScriptFileName := MissionName + EXT_FILE_SCRIPT_DOT;
-    FindFirst(ExtractFilePath(aMissionFile) + '*' + EXT_FILE_SCRIPT_DOT, faAnyFile - faDirectory, SearchRec);
+    missionScriptFileName := missionName + EXT_FILE_SCRIPT_DOT;
+    FindFirst(ExtractFilePath(aMissionFile) + '*' + EXT_FILE_SCRIPT_DOT, faAnyFile - faDirectory, searchRec);
     try
       repeat
-        if (SearchRec.Name <> '.') and (SearchRec.Name <> '..')
-          and (SearchRec.Name <> MissionScriptFileName) then
-          AddAttachment(AttachCnt, ExtractFilePath(aMissionFile) + SearchRec.Name);
-      until (FindNext(SearchRec) <> 0);
+        if (searchRec.Name <> '.') and (searchRec.Name <> '..')
+          and (searchRec.Name <> missionScriptFileName) then
+          AddAttachment(attachCnt, ExtractFilePath(aMissionFile) + searchRec.Name);
+      until (FindNext(searchRec) <> 0);
     finally
-      FindClose(SearchRec);
+      FindClose(searchRec);
     end;
   end;
 
-  SetLength(fAttachedFiles, AttachCnt);
+  SetLength(fAttachedFiles, attachCnt);
 end;
 
 
@@ -280,34 +280,34 @@ end;
 procedure TKMMapEditor.SaveAttachements(const aMissionFile: UnicodeString);
 var
   I: Integer;
-  MissionPath, MissionNewName, MissionOldName, DestPath: UnicodeString;
+  missionPath, missionNewName, missionOldName, destPath: UnicodeString;
 begin
   if not fIsNewMap then
   begin
-    MissionPath := ExtractFilePath(aMissionFile);
-    MissionNewName := GetFileDirName(aMissionFile);
-    MissionOldName := '';
+    missionPath := ExtractFilePath(aMissionFile);
+    missionNewName := GetFileDirName(aMissionFile);
+    missionOldName := '';
 
     //Copy all attachments files into new folder
     for I := 0 to High(fAttachedFiles) do
       if FileExists(fAttachedFiles[I]) then
       begin
-        DestPath := MissionPath + ExtractFileName(fAttachedFiles[I]);
+        destPath := missionPath + ExtractFileName(fAttachedFiles[I]);
 
         //Get MissionOldName from first attachment file
-        if MissionOldName = '' then
-          MissionOldName := GetFileDirName(fAttachedFiles[I]);
+        if missionOldName = '' then
+          missionOldName := GetFileDirName(fAttachedFiles[I]);
 
-        if not SameFileName(DestPath, fAttachedFiles[I]) then
+        if not SameFileName(destPath, fAttachedFiles[I]) then
         begin
-          if FileExists(DestPath) then
-            DeleteFile(DestPath);
-          KMCopyFile(fAttachedFiles[I], DestPath);
+          if FileExists(destPath) then
+            DeleteFile(destPath);
+          KMCopyFile(fAttachedFiles[I], destPath);
         end;
       end;
 
     // Rename all files inside new saved map folder
-    KMRenameFilesInFolder(MissionPath, MissionOldName, MissionNewName);
+    KMRenameFilesInFolder(missionPath, missionOldName, missionNewName);
 
     //Update attached files to be in the new path
     SetLength(fAttachedFiles, 0);
@@ -329,7 +329,7 @@ end;
 
 function TKMMapEditor.HitTest(X, Y: Integer): TKMMapEdMarker;
 var
-  I,K: Integer;
+  I, K: Integer;
 begin
   if   (melDefences in fVisibleLayers)
     or (mlDefencesAll in gGameParams.VisibleLayers) then
@@ -383,13 +383,13 @@ end;
 procedure TKMMapEditor.UpdateField(aStageIncrement: Integer; aCheckPrevCell: Boolean);
 var
   P: TKMPoint;
-  FieldStage: Integer;
+  fieldStage: Integer;
   makeCheckpoint: Boolean;
   fieldStr: string;
 begin
   if aStageIncrement = 0 then Exit;
 
-  FieldStage := -1;
+  fieldStage := -1;
   makeCheckpoint := False;
   fieldStr := '';
   P := gCursor.Cell;
@@ -398,19 +398,19 @@ begin
                 if gTerrain.TileIsCornField(P) then
                 begin
                   if not KMSamePoint(P, gCursor.PrevCell) or not aCheckPrevCell then
-                    FieldStage := (gTerrain.GetCornStage(P) + aStageIncrement + CORN_STAGES_COUNT) mod CORN_STAGES_COUNT;
+                    fieldStage := (gTerrain.GetCornStage(P) + aStageIncrement + CORN_STAGES_COUNT) mod CORN_STAGES_COUNT;
                 end
                 else
                 if gMySpectator.Hand.CanAddFieldPlan(P, ftCorn) then
                 begin
-                  FieldStage := 0;
+                  fieldStage := 0;
                   makeCheckpoint := True;
                   fieldStr := Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH], [gResTexts[TX_WORD_CORN_FIELD], P.ToString]);
                 end;
 
-                if FieldStage >= 0 then
+                if fieldStage >= 0 then
                 begin
-                  gMySpectator.Hand.AddField(P, ftCorn, FieldStage);
+                  gMySpectator.Hand.AddField(P, ftCorn, fieldStage);
                   if makeCheckpoint then
                     fHistory.MakeCheckpoint(caTerrain, fieldStr);
                 end;
@@ -419,19 +419,19 @@ begin
                 if gTerrain.TileIsWineField(P) then
                 begin
                   if not KMSamePoint(P, gCursor.PrevCell) or not aCheckPrevCell then
-                    FieldStage := (gTerrain.GetWineStage(P) + aStageIncrement + WINE_STAGES_COUNT) mod WINE_STAGES_COUNT;
+                    fieldStage := (gTerrain.GetWineStage(P) + aStageIncrement + WINE_STAGES_COUNT) mod WINE_STAGES_COUNT;
                 end
                 else
                 if gMySpectator.Hand.CanAddFieldPlan(P, ftWine) then
                 begin
-                  FieldStage := 0;
+                  fieldStage := 0;
                   makeCheckpoint := True;
                   fieldStr := Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH], [gResTexts[TX_WORD_WINE_FIELD], P.ToString]);
                 end;
 
-                if FieldStage >= 0 then
+                if fieldStage >= 0 then
                 begin
-                  gMySpectator.Hand.AddField(P, ftWine, FieldStage);
+                  gMySpectator.Hand.AddField(P, ftWine, fieldStage);
                   if makeCheckpoint then
                     fHistory.MakeCheckpoint(caTerrain, fieldStr);
                 end;
@@ -477,25 +477,25 @@ end;
 //aEraseAll - if true all objects under the cursor will be deleted
 procedure TKMMapEditor.EraseObject(aEraseAll: Boolean);
 var
-  Obj: TObject;
+  obj: TObject;
   P: TKMPoint;
   fieldsChanged, isCorn, isWine: Boolean;
   removeTxID: Integer;
 begin
   fieldsChanged := False;
   P := gCursor.Cell;
-  Obj := gMySpectator.HitTestCursor(True);
+  obj := gMySpectator.HitTestCursor(True);
   removeTxID := -1;
 
   try
     //Delete unit/house
-    if Obj is TKMUnit then
+    if obj is TKMUnit then
     begin
-      gHands.RemAnyUnit(TKMUnit(Obj).Position);
+      gHands.RemAnyUnit(TKMUnit(obj).Position);
       if not aEraseAll then Exit;
     end
     else
-    if Obj is TKMHouse then
+    if obj is TKMHouse then
     begin
       gHands.RemAnyHouse(P);
       if not aEraseAll then Exit;
@@ -714,15 +714,15 @@ end;
 procedure TKMMapEditor.ProceedUnitsCursorMode;
 var
   P: TKMPoint;
-  Obj: TObject;
+  obj: TObject;
 begin
   P := gCursor.Cell;
 
   if gCursor.Tag1 = 255 then
   begin
-    Obj := gMySpectator.HitTestCursor(True);
-    if Obj is TKMUnit then
-      gHands.RemAnyUnit(TKMUnit(Obj).Position);
+    obj := gMySpectator.HitTestCursor(True);
+    if obj is TKMUnit then
+      gHands.RemAnyUnit(TKMUnit(obj).Position);
   end else
   if gTerrain.CanPlaceUnit(P, TKMUnitType(gCursor.Tag1)) then
   begin
@@ -926,20 +926,20 @@ end;
 procedure TKMMapEditor.PaintRevealFOW(aLayer: TKMPaintLayer);
 var
   I, K: Integer;
-  Loc: TKMPoint;
+  loc: TKMPoint;
 begin
   if not (melRevealFOW in fVisibleLayers) then Exit;
 
   for I := 0 to gHands.Count - 1 do
     for K := 0 to fRevealers[I].Count - 1 do
     begin
-      Loc := fRevealers[I][K];
+      loc := fRevealers[I][K];
       case aLayer of
-        plTerrain:  gRenderAux.CircleOnTerrain(Loc.X-0.5, Loc.Y-0.5,
+        plTerrain:  gRenderAux.CircleOnTerrain(loc.X-0.5, loc.Y-0.5,
                                              fRevealers[I].Tag[K],
                                              gHands[I].FlagColor and $20FFFFFF,
                                              gHands[I].FlagColor);
-        plCursors:  gRenderPool.RenderSpriteOnTile(Loc, 394, gHands[I].FlagColor);
+        plCursors:  gRenderPool.RenderSpriteOnTile(loc, 394, gHands[I].FlagColor);
       end;
     end;
 end;
@@ -948,19 +948,19 @@ end;
 procedure TKMMapEditor.PaintCenterScreen(aLayer: TKMPaintLayer);
 var
   I: Integer;
-  Loc: TKMPoint;
+  loc: TKMPoint;
 begin
   if not (melCenterScreen in fVisibleLayers) then Exit;
 
   for I := 0 to gHands.Count - 1 do
     if gHands[I].HasAssets then
     begin
-      Loc := gHands[I].CenterScreen;
+      loc := gHands[I].CenterScreen;
       case aLayer of
-        plTerrain:  gRenderAux.SquareOnTerrain(Loc.X - 3, Loc.Y - 2.5,
-                                               Loc.X + 2, Loc.Y + 1.5,
+        plTerrain:  gRenderAux.SquareOnTerrain(loc.X - 3, loc.Y - 2.5,
+                                               loc.X + 2, loc.Y + 1.5,
                                                gHands[I].FlagColor);
-        plCursors:  gRenderPool.RenderSpriteOnTile(Loc, 391, gHands[I].FlagColor);
+        plCursors:  gRenderPool.RenderSpriteOnTile(loc, 391, gHands[I].FlagColor);
       end;
     end;
 end;
@@ -969,19 +969,19 @@ end;
 procedure TKMMapEditor.PaintAIStart(aLayer: TKMPaintLayer);
 var
   I: Integer;
-  Loc: TKMPoint;
+  loc: TKMPoint;
 begin
   if not (melAIStart in fVisibleLayers) then Exit;
 
   for I := 0 to gHands.Count - 1 do
     if gHands[I].HasAssets then
     begin
-      Loc := gHands[I].AI.Setup.StartPosition;
+      loc := gHands[I].AI.Setup.StartPosition;
       case aLayer of
-        plTerrain:  gRenderAux.SquareOnTerrain(Loc.X - 3, Loc.Y - 2.5,
-                                               Loc.X + 2, Loc.Y + 1.5,
+        plTerrain:  gRenderAux.SquareOnTerrain(loc.X - 3, loc.Y - 2.5,
+                                               loc.X + 2, loc.Y + 1.5,
                                                gHands[I].FlagColor);
-        plCursors:  gRenderPool.RenderSpriteOnTile(Loc, 390, gHands[I].FlagColor);
+        plCursors:  gRenderPool.RenderSpriteOnTile(loc, 390, gHands[I].FlagColor);
       end;
     end;
 end;

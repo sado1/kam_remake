@@ -290,29 +290,30 @@ end;
 
 //Ally has placed a beacon for ue
 procedure TKMAlerts.AddBeacon(const aLoc: TKMPointF; aOwner: TKMHandID; aColor: Cardinal; aShowUntil: Cardinal);
+
   procedure RemoveExcessBeacons;
   var
-    I, OldestID, qty: Integer;
-    OldestExpiry: Cardinal;
+    I, oldestID, qty: Integer;
+    oldestExpiry: Cardinal;
   begin
     qty := 0;
-    OldestID := -1;
-    OldestExpiry := 0;
+    oldestID := -1;
+    oldestExpiry := 0;
     for I := 0 to fList.Count - 1 do
       if (fList[I].AlertType = atBeacon)
       and (fList[I].Owner = aOwner) then
       begin
         Inc(qty);
-        if (OldestID = -1) or (fList[I].fExpiration < OldestExpiry) then
+        if (oldestID = -1) or (fList[I].fExpiration < oldestExpiry) then
         begin
-          OldestExpiry := fList[I].fExpiration;
-          OldestID := I;
+          oldestExpiry := fList[I].fExpiration;
+          oldestID := I;
         end;
       end;
-    if (qty > MAX_BEACONS) and (OldestID <> -1) then
+    if (qty > MAX_BEACONS) and (oldestID <> -1) then
     begin
-      fList[OldestID].Free; // We probably should use TObjectList, tand skip manual list item freeing
-      fList.Delete(OldestID);
+      fList[oldestID].Free; // We probably should use TObjectList, tand skip manual list item freeing
+      fList.Delete(oldestID);
     end;
   end;
 
@@ -363,16 +364,16 @@ end;
 function TKMAlerts.GetLatestAlert: TKMAlert;
 var
   I: Integer;
-  Best: Cardinal;
+  best: Cardinal;
 begin
   Result := nil;
-  Best := 0; //Makes compiler happy
+  best := 0; //Makes compiler happy
   for I := 0 to fList.Count - 1 do
     if fList[I].GetVisibleMinimap then
-      if (Result = nil) or (fList[I].Expiration >= Best) then
+      if (Result = nil) or (fList[I].Expiration >= best) then
       begin
         Result := fList[I];
-        Best := fList[I].Expiration;
+        best := fList[I].Expiration;
       end;
 end;
 

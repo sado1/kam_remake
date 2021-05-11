@@ -179,20 +179,20 @@ end;
 //Scan campaigns folder
 procedure TKMCampaignsCollection.ScanFolder(const aPath: UnicodeString);
 var
-  SearchRec: TSearchRec;
+  searchRec: TSearchRec;
 begin
   if not DirectoryExists(aPath) then Exit;
 
-  FindFirst(aPath + '*', faDirectory, SearchRec);
+  FindFirst(aPath + '*', faDirectory, searchRec);
   try
     repeat
-      if (SearchRec.Name <> '.') and (SearchRec.Name <> '..')
-      and (SearchRec.Attr and faDirectory = faDirectory)
-      and FileExists(aPath + SearchRec.Name + PathDelim + 'info.cmp') then
-        AddCampaign(aPath + SearchRec.Name + PathDelim);
-    until (FindNext(SearchRec) <> 0);
+      if (searchRec.Name <> '.') and (searchRec.Name <> '..')
+      and (searchRec.Attr and faDirectory = faDirectory)
+      and FileExists(aPath + searchRec.Name + PathDelim + 'info.cmp') then
+        AddCampaign(aPath + searchRec.Name + PathDelim);
+    until (FindNext(searchRec) <> 0);
   finally
-    FindClose(SearchRec);
+    FindClose(searchRec);
   end;
 
   SortCampaigns;
@@ -214,7 +214,8 @@ procedure TKMCampaignsCollection.SortCampaigns;
     else                            Result := False;
   end;
 
-var I, K: Integer;
+var
+  I, K: Integer;
 begin
   for I := 0 to Count - 1 do
     for K := I to Count - 1 do
@@ -244,8 +245,8 @@ var
   I, J, campCount: Integer;
   campName: TKMCampaignId;
   unlocked: Byte;
-  HasScriptData: Boolean;
-  ScriptDataSize: Cardinal;
+  hasScriptData: Boolean;
+  scriptDataSize: Cardinal;
 begin
   if not FileExists(aFileName) then Exit;
 
@@ -258,7 +259,7 @@ begin
     if (I <> CAMP_HEADER_V1)
       and (I <> CAMP_HEADER_V2)
       and (I <> CAMP_HEADER_V3) then Exit;
-    HasScriptData := (I = CAMP_HEADER_V3);
+    hasScriptData := (I = CAMP_HEADER_V3);
 
     M.Read(campCount);
     for I := 0 to campCount - 1 do
@@ -274,11 +275,11 @@ begin
           M.Read(C.fMapsProgressData[J], SizeOf(C.fMapsProgressData[J]));
 
         C.ScriptData.Clear;
-        if HasScriptData then
+        if hasScriptData then
         begin
-          M.Read(ScriptDataSize);
-          C.ScriptData.Write(Pointer(Cardinal(M.Memory) + M.Position)^, ScriptDataSize);
-          M.Seek(ScriptDataSize, soCurrent); //Seek past script data
+          M.Read(scriptDataSize);
+          C.ScriptData.Write(Pointer(Cardinal(M.Memory) + M.Position)^, scriptDataSize);
+          M.Seek(scriptDataSize, soCurrent); //Seek past script data
         end;
       end;
     end;
@@ -290,13 +291,13 @@ end;
 
 procedure TKMCampaignsCollection.SaveProgress;
 var
+  I, J: Integer;
   M: TKMemoryStream;
-  I,J: Integer;
-  FilePath: UnicodeString;
+  filePath: UnicodeString;
 begin
-  FilePath := ExeDir + SAVES_FOLDER_NAME + PathDelim + 'Campaigns.dat';
+  filePath := ExeDir + SAVES_FOLDER_NAME + PathDelim + 'Campaigns.dat';
   //Makes the folder incase it is missing
-  ForceDirectories(ExtractFilePath(FilePath));
+  ForceDirectories(ExtractFilePath(filePath));
 
   M := TKMemoryStreamBinary.Create;
   try
@@ -313,7 +314,7 @@ begin
         M.Write(Campaigns[I].ScriptData.Memory^, Campaigns[I].ScriptData.Size);
       end;
 
-    M.SaveToFile(FilePath);
+    M.SaveToFile(filePath);
   finally
     M.Free;
   end;
@@ -489,7 +490,7 @@ end;
 procedure TKMCampaign.LoadMapsInfo;
 var
   I: Integer;
-  TextMission: TKMTextLibraryMulti;
+  textMission: TKMTextLibraryMulti;
 begin
   for I := 0 to fMapCount - 1 do
   begin
@@ -502,13 +503,13 @@ begin
 
     fMapsInfo[I].MissionName := '';
     //Load mission name from mission Libx library
-    TextMission := TKMTextLibraryMulti.Create;
+    textMission := TKMTextLibraryMulti.Create;
     try
-      TextMission.LoadLocale(GetMissionFile(I, '.%s.libx'));
-      if TextMission.HasText(MISSION_NAME_LIBX_ID) then
-        fMapsInfo[I].MissionName := StringReplace(TextMission[MISSION_NAME_LIBX_ID], '|', ' ', [rfReplaceAll]); //Replace | with space
+      textMission.LoadLocale(GetMissionFile(I, '.%s.libx'));
+      if textMission.HasText(MISSION_NAME_LIBX_ID) then
+        fMapsInfo[I].MissionName := StringReplace(textMission[MISSION_NAME_LIBX_ID], '|', ' ', [rfReplaceAll]); //Replace | with space
     finally
-      FreeAndNil(TextMission);
+      FreeAndNil(textMission);
     end;
   end;
 end;
@@ -517,21 +518,21 @@ end;
 procedure TKMCampaign.LoadSprites;
 var
   SP: TKMSpritePack;
-  FirstSpriteIndex: Word;
+  firstSpriteIndex: Word;
 begin
   if gRes.Sprites <> nil then
   begin
     SP := gRes.Sprites[rxCustom];
-    FirstSpriteIndex := SP.RXData.Count + 1;
-    SP.LoadFromRXXFile(fPath + 'images.rxx', FirstSpriteIndex);
+    firstSpriteIndex := SP.RXData.Count + 1;
+    SP.LoadFromRXXFile(fPath + 'images.rxx', firstSpriteIndex);
 
-    if FirstSpriteIndex <= SP.RXData.Count then
+    if firstSpriteIndex <= SP.RXData.Count then
     begin
       //Images were successfuly loaded
-      SP.MakeGFX(False, FirstSpriteIndex);
+      SP.MakeGFX(False, firstSpriteIndex);
       SP.ClearTemp;
       fBackGroundPic.RX := rxCustom;
-      fBackGroundPic.ID := FirstSpriteIndex;
+      fBackGroundPic.ID := firstSpriteIndex;
     end
     else
     begin
