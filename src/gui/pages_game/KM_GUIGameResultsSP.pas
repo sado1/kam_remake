@@ -120,7 +120,7 @@ var
     begin
       ID := tempGraphCount;
       Inc(tempGraphCount);
-      tempGraphs[ID].G := aGraph; //Overwrite existing graph
+      tempGraphs[ID].G := Copy(aGraph, Low(aGraph), Length(aGraph)); // Copy array contents, not assign it!
       tempGraphs[ID].Color := aColor;
       tempGraphs[ID].OwnerName := aOwnerName;
     end
