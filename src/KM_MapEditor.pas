@@ -85,6 +85,7 @@ type
 
     property IsNewMap: Boolean read fIsNewMap;
     property SavedMapIsPlayable: Boolean read fSavedMapIsPlayable;
+    procedure ValidatePlayerTypes;
 
     function OnlyAdvancedAIHand(aHandId: TKMHandID): Boolean;
 
@@ -249,6 +250,51 @@ begin
 end;
 
 
+procedure TKMMapEditor.ValidatePlayerTypes;
+var
+  I: Integer;
+  hasAssets, hasDefault, noAssetsAtAll: Boolean;
+begin
+  noAssetsAtAll := True;
+  hasDefault := False;
+
+  try
+    for I := 0 to gHands.Count - 1 do
+    begin
+      hasAssets := gHands[I].HasAssets;
+      noAssetsAtAll := noAssetsAtAll and not hasAssets;
+      hasDefault := hasDefault or (hasAssets and (DefaultHuman = I));
+    end;
+    //No default human player chosen
+    if not hasDefault then
+    begin
+      for I := 0 to gHands.Count - 1 do
+      begin
+        if gHands[I].HasAssets and PlayerHuman[I] then
+        begin
+          DefaultHuman := I;
+          hasDefault := True;
+          Exit;
+        end;
+      end;
+      //Still no default is set (no humans)
+      //Find first hand and set it as enabled for humans and as default
+      if not hasDefault then
+        for I := 0 to gHands.Count - 1 do
+          if gHands[I].HasAssets then
+          begin
+            PlayerHuman[I] := True;
+            DefaultHuman := I;
+            hasDefault := True;
+            Exit;
+          end;
+    end;
+  finally
+    Assert(noAssetsAtAll or hasDefault, 'Can not set default human');
+  end;
+end;
+
+
 procedure TKMMapEditor.UpdateSavedInfo;
 var
   I: Integer;
@@ -260,6 +306,8 @@ begin
     SavedPlayableLocs[I] := PlayerHuman[I] and gHands[I].HasAssets;
     fSavedMapIsPlayable := fSavedMapIsPlayable or SavedPlayableLocs[I];
   end;
+
+  ValidatePlayerTypes;
 end;
 
 

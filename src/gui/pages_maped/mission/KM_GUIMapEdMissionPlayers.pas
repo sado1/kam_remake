@@ -153,15 +153,15 @@ procedure TKMMapEdMissionPlayers.UpdatePlayerTypes;
 var
   I, K: Integer;
   enabledCnt, checkedCnt: array [0..2] of Integer;
-  hasAssets, isAllEnabled, hasDefault: Boolean;
+  hasAssets, isAllEnabled: Boolean;
 begin
+  gGame.MapEditor.ValidatePlayerTypes;
+
   for K := Low(enabledCnt) to High(enabledCnt) do
   begin
     enabledCnt[K] := 0;
     checkedCnt[K] := 0;
   end;
-
-  hasDefault := False;
 
   for I := 0 to gHands.Count - 1 do
   begin
@@ -176,43 +176,12 @@ begin
     ChkBox_PlayerTypes[I, 2].Checked := hasAssets and gGame.MapEditor.PlayerClassicAI[I];
     ChkBox_PlayerTypes[I, 3].Checked := hasAssets and gGame.MapEditor.PlayerAdvancedAI[I];
 
-    hasDefault := hasDefault or ChkBox_PlayerTypes[I, 0].Checked;
-
     for K := 0 to 2 do
     begin
       enabledCnt[K] := enabledCnt[K] + Byte(ChkBox_PlayerTypes[I, K + 1].Enabled);
       checkedCnt[K] := checkedCnt[K] + Byte(ChkBox_PlayerTypes[I, K + 1].Checked
                                         and ChkBox_PlayerTypes[I, K + 1].Enabled);
     end;
-  end;
-
-  //No default human player choosen
-  if not hasDefault then
-  begin
-    //Try to find first human to set him as default
-    for I := 0 to gHands.Count - 1 do
-    begin
-      if ChkBox_PlayerTypes[I, 1].Checked then
-      begin
-        ChkBox_PlayerTypes[I, 0].Check;
-        ChkBox_PlayerTypes[I, 1].Disable;
-        gGame.MapEditor.DefaultHuman := I;
-        hasDefault := True;
-        Break;
-      end;
-    end;
-    //Stil no default is set (no humans)
-    //Find first hand and set it as enabled for humans and as default
-    if not hasDefault then
-      for I := 0 to gHands.Count - 1 do
-        if gHands[I].HasAssets then
-        begin
-          ChkBox_PlayerTypes[I, 0].Check; //Default human
-          ChkBox_PlayerTypes[I, 1].Check; //Human
-          ChkBox_PlayerTypes[I, 1].Disable;
-          gGame.MapEditor.DefaultHuman := I;
-          Break;
-        end;
   end;
 
   isAllEnabled := False;
