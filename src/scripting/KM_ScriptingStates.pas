@@ -75,6 +75,7 @@ type
     function HouseDestroyed(aHouseID: Integer): Boolean;
     function HouseHasOccupant(aHouseID: Integer): Boolean;
     function HouseFlagPoint(aHouseID: Integer): TKMPoint;
+    function HouseGetAllUnitsIn(aHouseID: Integer): TIntegerArray;
     function HouseIsComplete(aHouseID: Integer): Boolean;
     function HouseOwner(aHouseID: Integer): Integer;
     function HousePosition(aHouseID: Integer): TKMPoint;
@@ -201,6 +202,7 @@ type
     function UnitHPInvulnerable(aUnitID: Integer): Boolean;
     function UnitHunger(aUnitID: Integer): Integer;
     function UnitIdle(aUnitID: Integer): Boolean;
+    function UnitInHouse(aUnitID: Integer): Integer;
     function UnitLowHunger: Integer;
     function UnitMaxHunger: Integer;
     function UnitOwner(aUnitID: Integer): Integer;
@@ -1793,6 +1795,56 @@ begin
     end
     else
       LogParamWarning('States.HouseFlagPoint', [aHouseId]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 12982
+//* Returns an array with IDs for all the units in the specified house
+//* Result: Array of unit IDs
+function TKMScriptStates.HouseGetAllUnitsIn(aHouseID: Integer): TIntegerArray;
+var
+  I, unitCount: Integer;
+  U: TKMUnit;
+  H: TKMHouse;
+begin
+  try
+    SetLength(Result, 0);
+
+    if aHouseId > 0 then
+    begin
+      unitCount := 0;
+
+      H := fIDCache.GetHouse(aHouseId);
+      if (H <> nil) and not H.IsDestroyed and (H.IsComplete) then
+      begin
+        //Allocate max required space
+        SetLength(Result, gHands[H.Owner].Units.Count);
+
+        for I := 0 to gHands[H.Owner].Units.Count - 1 do
+        begin
+          U := gHands[H.Owner].Units[I];
+          //Skip units in training, they can't be disturbed until they are finished training
+          //We want to get only units in a specified house
+          if U.IsDeadOrDying
+            or (U.Task is TKMTaskSelfTrain)
+            or (U.InHouse <> H) then Continue;
+
+          Result[unitCount] := U.UID;
+          Inc(unitCount);
+        end;
+
+        //Trim to length
+        SetLength(Result, unitCount);
+      end;
+    end
+    else
+    begin
+      LogParamWarning('States.HouseGetAllUnitsIn', [aHouseId]);
+    end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4103,6 +4155,30 @@ begin
     end
     else
       LogParamWarning('States.UnitIdle', [aUnitID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 12982
+//* Returns HouseID where specified Unit is placed or -1 if Unit not found or Unit is not in any house
+//* Result: HouseId, where unit is placed
+function TKMScriptStates.UnitInHouse(aUnitID: Integer): Integer;
+var
+  U: TKMUnit;
+begin
+  try
+    Result := -1;
+    if (aUnitID > 0) then
+    begin
+      U := fIDCache.GetUnit(aUnitID);
+      if U.InHouse <> nil then
+        Result := U.InHouse.UID;
+    end
+    else
+      LogParamWarning('States.UnitInHouse', [aUnitID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

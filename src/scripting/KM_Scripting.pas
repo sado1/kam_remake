@@ -515,6 +515,7 @@ begin
     RegisterMethodCheck(c, 'function HouseDestroyed(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseHasOccupant(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseFlagPoint(aHouseID: Integer): TKMPoint');
+    RegisterMethodCheck(c, 'function HouseGetAllUnitsIn(aHouseID: Integer): TIntegerArray');
     RegisterMethodCheck(c, 'function HouseIsComplete(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseOwner(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HousePosition(aHouseID: Integer): TKMPoint');
@@ -642,6 +643,7 @@ begin
     RegisterMethodCheck(c, 'function UnitHPInvulnerable(aUnitID: Integer): Boolean');
     RegisterMethodCheck(c, 'function UnitHunger(aUnitID: Integer): Integer');
     RegisterMethodCheck(c, 'function UnitIdle(aUnitID: Integer): Boolean');
+    RegisterMethodCheck(c, 'function UnitInHouse(aUnitID: Integer): Integer');
     RegisterMethodCheck(c, 'function UnitLowHunger: Integer');
     RegisterMethodCheck(c, 'function UnitMaxHunger: Integer');
     RegisterMethodCheck(c, 'function UnitOwner(aUnitID: Integer): Integer');
@@ -1187,6 +1189,7 @@ begin
       RegisterMethod(@TKMScriptStates.HouseDestroyed,                           'HouseDestroyed');
       RegisterMethod(@TKMScriptStates.HouseHasOccupant,                         'HouseHasOccupant');
       RegisterMethod(@TKMScriptStates.HouseFlagPoint,                           'HouseFlagPoint');
+      RegisterMethod(@TKMScriptStates.HouseGetAllUnitsIn,                       'HouseGetAllUnitsIn');
       RegisterMethod(@TKMScriptStates.HouseIsComplete,                          'HouseIsComplete');
       RegisterMethod(@TKMScriptStates.HouseOwner,                               'HouseOwner');
       RegisterMethod(@TKMScriptStates.HousePosition,                            'HousePosition');
@@ -1314,6 +1317,7 @@ begin
       RegisterMethod(@TKMScriptStates.UnitHPInvulnerable,                       'UnitHPInvulnerable');
       RegisterMethod(@TKMScriptStates.UnitHunger,                               'UnitHunger');
       RegisterMethod(@TKMScriptStates.UnitIdle,                                 'UnitIdle');
+      RegisterMethod(@TKMScriptStates.UnitInHouse,                              'UnitInHouse');
       RegisterMethod(@TKMScriptStates.UnitLowHunger,                            'UnitLowHunger');
       RegisterMethod(@TKMScriptStates.UnitMaxHunger,                            'UnitMaxHunger');
       RegisterMethod(@TKMScriptStates.UnitOwner,                                'UnitOwner');
