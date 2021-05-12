@@ -2613,7 +2613,7 @@ begin
   if Self = nil then Exit;
 
   doShowRecorded := gGameParams.IsReplay;
-  doShowClock := gGameSettings.ShowGameTime
+  doShowClock := gGameSettings.ShowGameSpeed
               or gGameParams.IsReplay
               or (aSpeedActual <> aDefaultSpeed)
               or (doShowRecorded and (aSpeedRecorded <> aDefaultSpeed));
@@ -3140,7 +3140,7 @@ begin
   if gGame = nil then Exit(False);
   
   //Don't show speed clock in MP (unless there is not human players) since you can't turn it on/off
-  Result := gGame.IsSpeedUpAllowed or gGameSettings.ShowGameTime or SHOW_GAME_TICK;
+  Result := gGame.IsSpeedUpAllowed or gGameSettings.ShowGameSpeed or SHOW_GAME_TICK;
 end;
 
 

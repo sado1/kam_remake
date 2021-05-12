@@ -31,6 +31,7 @@ type
     fReplayShowBeacons: Boolean; //Replay variable - show beacons during replay
     fSpecShowBeacons: Boolean;   //Spectator variable - show beacons while spectating
     fShowGameTime: Boolean;      //Show game time label (always)
+    fShowGameSpeed: Boolean;     //Show game speed label and clock (always)
 
     fSaveCheckpoints: Boolean; //Save game checkpoint for replay
     fSaveCheckpointsFreq: Integer;
@@ -130,6 +131,7 @@ type
     procedure SetScrollSpeed(aValue: Byte);
     procedure SetSpecShowBeacons(aValue: Boolean);
     procedure SetShowGameTime(aValue: Boolean);
+    procedure SetShowGameSpeed(aValue: Boolean);
 
     procedure SetSaveCheckpoints(const aValue: Boolean);
     procedure SetSaveCheckpointsFreq(const aValue: Integer);
@@ -225,6 +227,7 @@ type
     property AutosaveCount: Integer read fAutosaveCount write SetAutosaveCount;
     property SpecShowBeacons: Boolean read fSpecShowBeacons write SetSpecShowBeacons;
     property ShowGameTime: Boolean read fShowGameTime write SetShowGameTime;
+    property ShowGameSpeed: Boolean read fShowGameSpeed write SetShowGameSpeed;
 
     property SaveCheckpoints: Boolean read fSaveCheckpoints write SetSaveCheckpoints;
     property SaveCheckpointsFreq: Integer read fSaveCheckpointsFreq write SetSaveCheckpointsFreq;
@@ -467,6 +470,7 @@ begin
     nGameMisc := nGameCommon.AddOrFindChild('Misc');
       fSpecShowBeacons    := nGameMisc.Attributes['SpecShowBeacons'].AsBoolean(False);
       fShowGameTime       := nGameMisc.Attributes['ShowGameTime'].AsBoolean(False);
+      fShowGameSpeed      := nGameMisc.Attributes['ShowGameSpeed'].AsBoolean(False);
       fDayGamesCount      := nGameMisc.Attributes['DayGamesCount'].AsInteger(0);
       if nGameMisc.HasAttribute('LastDayGamePlayed') then
         fLastDayGamePlayed  := nGameMisc.Attributes['LastDayGamePlayed'].AsDateTime
@@ -647,6 +651,7 @@ begin
     nGameMisc := nGameCommon.AddOrFindChild('Misc');
       nGameMisc.Attributes['SpecShowBeacons']   := fSpecShowBeacons;
       nGameMisc.Attributes['ShowGameTime']      := fShowGameTime;
+      nGameMisc.Attributes['ShowGameSpeed']     := fShowGameSpeed;
       nGameMisc.Attributes['DayGamesCount']     := fDayGamesCount;
       nGameMisc.Attributes['LastDayGamePlayed'] := fLastDayGamePlayed;
 
@@ -945,6 +950,13 @@ end;
 procedure TKMGameSettings.SetShowGameTime(aValue: Boolean);
 begin
   fShowGameTime := aValue;
+  Changed;
+end;
+
+
+procedure TKMGameSettings.SetShowGameSpeed(aValue: Boolean);
+begin
+  fShowGameSpeed := aValue;
   Changed;
 end;
 
