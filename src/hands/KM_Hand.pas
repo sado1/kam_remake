@@ -442,6 +442,8 @@ end;
 
 procedure TKMHand.ResetChooseLocation;
 begin
+  if Self = nil then Exit;
+  
   fChooseLocation.Allowed := False;
   fChooseLocation.Placed := False;
 end;
@@ -641,6 +643,8 @@ end;
 //Lay out all roads at once to save time on Terrain lighting/passability recalculations
 procedure TKMHand.AfterMissionInit(aFlattenRoads: Boolean);
 begin
+  if (Self = nil) or not Enabled then Exit;
+
   Assert(fRoadsList <> nil);
 
   gTerrain.SetRoads(fRoadsList, fID, not aFlattenRoads); //If we are flattening roads that will update WalkConnect anyway
@@ -1448,7 +1452,8 @@ procedure TKMHand.PostLoadMission;
 var
   I: Integer;
 begin
-
+  if (Self = nil) or not Enabled then Exit;
+  
   for I := 0 to fHouses.Count - 1 do
     fHouses[I].PostLoadMission;
 end;
