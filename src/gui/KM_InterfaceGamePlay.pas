@@ -3146,7 +3146,7 @@ end;
 
 procedure TKMGamePlayInterface.UpdateClockUI;
 begin
-  if gGame = nil then Exit;
+  if (Self = nil) or (gGame = nil) then Exit;
 
   if CanUpdateClockUI then
     UpdateClock(gGame.SpeedActual, gGame.GetNormalSpeed, gGame.SpeedGIP);
