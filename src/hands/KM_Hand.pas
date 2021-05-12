@@ -647,8 +647,6 @@ begin
   if aFlattenRoads then
     gTerrain.FlattenTerrain(fRoadsList);
 
-  FreeAndNil(fRoadsList);
-
   if not gGameParams.IsMapEditor then
     fAI.AfterMissionInit(fCanBeAITypes);
 end;
