@@ -10,8 +10,11 @@ uses
 type
   TKMScriptActions = class(TKMScriptEntity)
   private
+    fOnSetLogLinesMaxCnt: TIntegerEvent;
     procedure LogStr(const aText: String);
   public
+    property OnSetLogLinesMaxCnt: TIntegerEvent read fOnSetLogLinesMaxCnt write fOnSetLogLinesMaxCnt;
+
     procedure AIArmyType(aPlayer: Byte; aType: TKMArmyType);
     function AIAttackAdd(aPlayer: Byte; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer;
                          aMelleCount, aAntiHorseCount, aRangedCount, aMountedCount: Word; aRandomGroups: Boolean;
@@ -106,6 +109,7 @@ type
     procedure HouseWeaponsOrderSet(aHouseID, aWareType, aAmount: Integer);
 
     procedure Log(const aText: AnsiString);
+    procedure LogLinesMaxCnt(aMaxLogLinesCnt: Integer);
 
     procedure MapBrush(X, Y: Integer; aSquare: Boolean; aSize: Integer; aTerKind: TKMTerrainKind; aRandomTiles, aOverrideCustomTiles: Boolean);
     procedure MapBrushElevation(X, Y: Integer; aSquare, aRaise: Boolean; aSize, aSlope, aSpeed: Integer);
@@ -2626,6 +2630,20 @@ procedure TKMScriptActions.Log(const aText: AnsiString);
 begin
   try
     fOnScriptError(seLog, UnicodeString(aText));
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 12989
+//* Set max number of error lines saved in the logs
+procedure TKMScriptActions.LogLinesMaxCnt(aMaxLogLinesCnt: Integer);
+begin
+  try
+    if Assigned(fOnSetLogLinesMaxCnt) then
+      fOnSetLogLinesMaxCnt(aMaxLogLinesCnt);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

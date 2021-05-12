@@ -57,6 +57,11 @@ type
     fHasErrorOccured: Boolean; //Has runtime error occurred? (only display first error)
     fScriptLogFile: UnicodeString;
     fOnScriptError: TUnicodeStringEvent;
+
+    fLogLinesCnt: Integer; // number of log messages (lines) logged
+    fLogLinesCntMax: Integer; // Max number of lines to log (could be changed via scripts)
+    fLogTooLongMsgAppended: Boolean; // Flag if we logged 'too many log lines' message
+
     procedure SetScriptLogFile(const aScriptLogFile: UnicodeString);
     function AppendErrorPrefix(const aPrefix: UnicodeString; var aError: TKMScriptErrorMessage): TKMScriptErrorMessage;
   public
@@ -69,6 +74,9 @@ type
     procedure HandleScriptError(aType: TKMScriptErrorType; const aError: TKMScriptErrorMessage);
     procedure HandleScriptErrorString(aType: TKMScriptErrorType; const aErrorString: UnicodeString;
                                       const aDetailedErrorString: UnicodeString = '');
+
+    procedure SetLogLinesCntMax(aValue: Integer);
+
     function HasErrors: Boolean;
     function HasWarnings: Boolean;
     function HasHints: Boolean;
@@ -192,6 +200,7 @@ type
 
 const
   MAX_LOG_SIZE = 1024 * 1024; //1 MB
+  MAX_LOG_LINES_CNT_DEFAULT = 100; //Default max number of log lines, allowed to be made by script
   CAMPAIGN_DATA_TYPE = 'TCampaignData'; //Type of the global variable
   CAMPAIGN_DATA_VAR = 'CampaignData'; //Name of the global variable
   VALID_GLOBAL_VAR_TYPES: set of TPSBaseType = [
@@ -279,6 +288,8 @@ begin
   fStates := TKMScriptStates.Create(fIDCache);
   fActions := TKMScriptActions.Create(fIDCache);
   fUtils := TKMScriptUtils.Create(fIDCache);
+
+  fActions.OnSetLogLinesMaxCnt := fErrorHandler.SetLogLinesCntMax;
 
   gScriptEvents.OnScriptError := fErrorHandler.HandleScriptErrorString;
   fStates.OnScriptError := fErrorHandler.HandleScriptErrorString;
@@ -752,6 +763,7 @@ begin
     RegisterMethodCheck(c, 'procedure HouseWeaponsOrderSet(aHouseID, aWareType, aAmount: Integer)');
 
     RegisterMethodCheck(c, 'procedure Log(const aText: AnsiString)');
+    RegisterMethodCheck(c, 'procedure LogLinesMaxCnt(aMaxLogLinesCnt: Integer)');
 
     RegisterMethodCheck(c, 'procedure MarketSetTrade(aMarketID, aFrom, aTo, aAmount: Integer)');
 
@@ -1426,6 +1438,7 @@ begin
       RegisterMethod(@TKMScriptActions.HouseWeaponsOrderSet,                    'HouseWeaponsOrderSet');
 
       RegisterMethod(@TKMScriptActions.Log,                                     'Log');
+      RegisterMethod(@TKMScriptActions.LogLinesMaxCnt,                          'LogLinesMaxCnt');
 
       RegisterMethod(@TKMScriptActions.MapBrush,                                'MapBrush');
       RegisterMethod(@TKMScriptActions.MapBrushElevation,                       'MapBrushElevation');
@@ -1947,6 +1960,7 @@ begin
   inherited Create;
 
   fOnScriptError := aOnScriptError;
+  fLogLinesCntMax := MAX_LOG_LINES_CNT_DEFAULT;
   Clear;
 end;
 
@@ -2035,6 +2049,12 @@ begin
 end;
 
 
+procedure TKMScriptErrorHandler.SetLogLinesCntMax(aValue: Integer);
+begin
+  fLogLinesCntMax := EnsureRange(aValue, 0, MaxInt);
+end;
+
+
 procedure TKMScriptErrorHandler.SetScriptLogFile(const aScriptLogFile: UnicodeString);
 begin
   fScriptLogFile := aScriptLogFile;
@@ -2065,26 +2085,50 @@ begin
   if logErrorMsg = '' then //No errors occur
     Exit;
 
-  gLog.AddTime('Script: ' + logErrorMsg); //Always log the error to global game log
-
   //Log to map specific log file
   if fScriptLogFile <> '' then
   begin
-    AssignFile(fl, fScriptLogFile);
-    if not FileExists(fScriptLogFile) then
-      Rewrite(fl)
+    if DEBUG_SCRIPTING_EXEC or (fLogLinesCnt < fLogLinesCntMax) then
+    begin
+      gLog.AddTime('Script: ' + logErrorMsg); //log the error to global game log
+      AssignFile(fl, fScriptLogFile);
+      if not FileExists(fScriptLogFile) then
+        Rewrite(fl)
+      else
+        if GetFileSize(fScriptLogFile) > MAX_LOG_SIZE then
+        begin
+          //Reset the log if it gets too long so poorly written scripts don't waste disk space
+          Rewrite(fl);
+          WriteLn(fl, Format('%23s   %s', [FormatDateTime('yyyy/mm/dd hh:nn:ss.zzz', Now),
+                  'Log file exceeded ' + IntToStr(MAX_LOG_SIZE) + ' bytes and was reset']));
+          fLogLinesCnt := 0;
+          fLogTooLongMsgAppended := False;
+        end
+        else
+          Append(fl);
+      WriteLn(fl, Format('%23s   %s', [FormatDateTime('yyyy/mm/dd hh:nn:ss.zzz', Now), logErrorMsg]));
+      Inc(fLogLinesCnt);
+      CloseFile(fl);
+    end
     else
-      if GetFileSize(fScriptLogFile) > MAX_LOG_SIZE then
-      begin
-        //Reset the log if it gets too long so poorly written scripts don't waste disk space
-        Rewrite(fl);
-        WriteLn(fl, Format('%23s   %s', [FormatDateTime('yyyy/mm/dd hh:nn:ss.zzz', Now),
-                'Log file exceeded ' + IntToStr(MAX_LOG_SIZE) + ' bytes and was reset']));
-      end
+    if not fLogTooLongMsgAppended then
+    begin
+      AssignFile(fl, fScriptLogFile);
+      // File should always exists
+      if not FileExists(fScriptLogFile) then
+        Rewrite(fl)
       else
         Append(fl);
-    WriteLn(fl, Format('%23s   %s', [FormatDateTime('yyyy/mm/dd hh:nn:ss.zzz', Now), logErrorMsg]));
-    CloseFile(fl);
+      gLog.AddTime('Script: ' + logErrorMsg); //log the error to global game log
+      WriteLn(fl, Format('%23s   %s', [FormatDateTime('yyyy/mm/dd hh:nn:ss.zzz', Now), logErrorMsg]));
+      logErrorMsg := Format('Script log lines exceeded max value of %d. ' +
+                            'Check ''Debug Scripting'' checkbox in the F11 debug panel (''Scripting'' section) ' +
+                            'or use Actions.LogLinesMaxCnt to set higher value of max log lines', [fLogLinesCntMax]);
+      gLog.AddTime('Script: ' + logErrorMsg); //log the error to global game log
+      WriteLn(fl, Format('%23s   %s', [FormatDateTime('yyyy/mm/dd hh:nn:ss.zzz', Now), logErrorMsg]));
+      CloseFile(fl);
+      fLogTooLongMsgAppended := True;
+    end;
   end;
 
   errorStr := StringReplace(aErrorString, EolW, '|', [rfReplaceAll]);
