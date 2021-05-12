@@ -193,7 +193,7 @@ type
     Label_ChatUnread: TKMLabel;
     Image_Message: array[0..MAX_VISIBLE_MSGS] of TKMImage; // Queue of messages covers 32*48=1536px height
     Image_Clock: TKMImage; // Clock displayed when game speed is increased
-    Label_Clock: TKMLabel;
+    Label_Time: TKMLabel;
     Label_ClockSpeedActual, Label_ClockSpeedRecorded: TKMLabel;
 
     Label_ScriptedOverlay: TKMLabel; // Label that can be set from script
@@ -829,8 +829,8 @@ begin
 
   Image_Clock := TKMImage.Create(Panel_Main,232,8,67,65,556);
   Image_Clock.Hide;
-  Label_Clock := TKMLabel.Create(Panel_Main,265,80,'mm:ss',fntOutline,taCenter);
-  Label_Clock.Hide;
+  Label_Time := TKMLabel.Create(Panel_Main,265,80,'mm:ss',fntOutline,taCenter);
+  Label_Time.Hide;
   Label_ClockSpeedActual := TKMLabel.Create(Panel_Main,265,48,'x1',fntMetal,taCenter);
   Label_ClockSpeedActual.Hide;
   Label_ClockSpeedRecorded := TKMLabel.Create(Panel_Main,265,68,'x1',fntGrey,taCenter);
@@ -2619,7 +2619,7 @@ begin
               or (doShowRecorded and (aSpeedRecorded <> aDefaultSpeed));
 
   Image_Clock.Visible := doShowClock;
-  Label_Clock.Visible := doShowClock or gGameSettings.ShowGameTime or SHOW_GAME_TICK;
+  Label_Time.Visible := doShowClock or gGameSettings.ShowGameTime or SHOW_GAME_TICK;
   Label_ClockSpeedActual.Visible := doShowClock;
   Label_ClockSpeedActual.Caption := 'x' + FormatFloat('##0.##', aSpeedActual);
 
@@ -2631,15 +2631,15 @@ begin
   else
     Label_ClockSpeedRecorded.Hide;
 
-  if not Image_Clock.Visible and Label_Clock.Visible then
-    Label_Clock.Top := 8
+  if not Image_Clock.Visible and Label_Time.Visible then
+    Label_Time.Top := 8
   else
-    Label_Clock.Top := 80;
+    Label_Time.Top := 80;
 
   // With slow GPUs it will keep old values till next frame, that can take some seconds
   // Thats why we refresh Clock.Caption here
   if doShowClock then
-    Label_Clock.Caption := TimeToString(gGame.MissionTime);
+    Label_Time.Caption := TimeToString(gGame.MissionTime);
 end;
 
 
@@ -4405,8 +4405,8 @@ begin
   if Image_Clock.Visible then
     Image_Clock.TexID := ((Image_Clock.TexID - 556) + 1) mod 16 + 556;
 
-  if Label_Clock.Visible then
-    Label_Clock.Caption := TimeToString(gGame.MissionTime);
+  if Label_Time.Visible then
+    Label_Time.Caption := TimeToString(gGame.MissionTime);
 
   // Keep on updating these menu pages as game data keeps on changing
   if fGuiGameBuild.Visible then
