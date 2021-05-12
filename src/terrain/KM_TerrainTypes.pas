@@ -151,7 +151,7 @@ const
   CORN_STAGE5_OBJ_ID = 58;
   CORN_STAGE6_OBJ_ID = 59;
   HEIGHT_DEFAULT = 30;
-  HEIGHT_MAX = 100;
+  HEIGHT_MAX = 150;
 
 implementation
 uses
