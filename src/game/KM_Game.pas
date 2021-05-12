@@ -536,6 +536,9 @@ begin
   fParams.MissionDifficulty := aMapDifficulty;
   fAIType := aAIType;
 
+  if fAIType = aitNone then
+    fAIType := DEF_AITYPE;
+
   if fParams.IsMultiPlayerOrSpec then
     fSetMissionFileSP('') //In MP map could be in DL or MP folder, so don't store path
   else
@@ -590,8 +593,8 @@ begin
 
                 for I := 0 to mapInfo.LocCount - 1 do
                   playerEnabled[I] :=  (I = aLocation)
-                                    or (mapInfo.CanBeAI[I]         and (aAIType = aitClassic))
-                                    or (mapInfo.CanBeAdvancedAI[I] and (aAIType = aitAdvanced));
+                                    or (mapInfo.CanBeAI[I]         and (fAIType = aitClassic))
+                                    or (mapInfo.CanBeAdvancedAI[I] and (fAIType = aitAdvanced));
                 mapInfo.Free;
               end;
 
@@ -643,11 +646,10 @@ begin
 
       //Set Advanced AI for only advanced locs and if choosen Advanced AI in Single map setup
       for I := 0 to gHands.Count - 1 do
-        if gHands[I].IsComputer
-          and ((gHands[I].CanBeAITypes = [aitAdvanced])
-            or ((gHands[I].CanBeAITypes = [aitClassic, aitAdvanced])
-              and (aAIType = aitAdvanced))) then
-            gHands[I].AI.Setup.EnableAdvancedAI
+        if gHands[I].Enabled
+          and gHands[I].IsComputer
+          and (aitAdvanced in gHands[I].CanBeAITypes) then
+          gHands[I].AI.Setup.EnableAdvancedAI;
     end;
 
     if parser.MinorErrors <> '' then
