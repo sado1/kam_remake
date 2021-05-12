@@ -829,11 +829,19 @@ begin
 
   Image_Clock := TKMImage.Create(Panel_Main,232,8,67,65,556);
   Image_Clock.Hide;
+
   Label_Time := TKMLabel.Create(Panel_Main,265,80,'mm:ss',fntOutline,taCenter);
   Label_Time.Hide;
-  Label_ClockSpeedActual := TKMLabel.Create(Panel_Main,265,48,'x1',fntMetal,taCenter);
+
+  Label_ClockSpeedActual := TKMLabel.Create(Panel_Main,265,48,0,16,'x1',fntMetal,taCenter);
   Label_ClockSpeedActual.Hide;
-  Label_ClockSpeedRecorded := TKMLabel.Create(Panel_Main,265,68,'x1',fntGrey,taCenter);
+  if aUIMode = umReplay then
+    Label_ClockSpeedActual.Hint := gResTexts[TX_GAME_UI_REPLAY_SPEED_ACTUAL]
+  else
+    Label_ClockSpeedActual.Hint := gResTexts[TX_GAME_UI_GAME_SPEED_ACTUAL];
+
+  Label_ClockSpeedRecorded := TKMLabel.Create(Panel_Main,265,65,0,16,'x1',fntGrey,taCenter);
+  Label_ClockSpeedRecorded.Hint := gResTexts[TX_GAME_UI_SPEED_RECORDED];
   Label_ClockSpeedRecorded.Hide;
 
   Create_ScriptingOverlay; // Scripting Overlay controls

@@ -1564,3 +1564,6 @@ TX_RESOURCE_EXPORT_DONE_MSG = 1438; //Resource export complete: [ %s ]
 
 TX_RESULTS_MISSION_TIME = 1512; //Mission time:
 
+TX_GAME_UI_GAME_SPEED_ACTUAL = 1513; //Current game speed
+TX_GAME_UI_REPLAY_SPEED_ACTUAL = 1514; //Current replay speed
+TX_GAME_UI_SPEED_RECORDED = 1515; //Recorded game speed
