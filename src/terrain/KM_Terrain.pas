@@ -877,7 +877,7 @@ function TKMTerrain.ScriptTrySetTilesArray(var aTiles: array of TKMTerrainTileBr
     // Update height if needed
     if aTileBrief.UpdateHeight then
     begin
-      if InRange(aTileBrief.Height, 0, 100) then
+      if InRange(aTileBrief.Height, 0, HEIGHT_MAX) then
       begin
         if TrySetTileHeight(aTileBrief.X, aTileBrief.Y, aTileBrief.Height, False) then
           UpdateRect(aHeightRect, aTileBrief.X, aTileBrief.Y)
@@ -2588,7 +2588,7 @@ begin
   begin
     slope := Round(HeightAt(aTree.X+K-0.5, aTree.Y+I-0.5) * CELL_HEIGHT_DIV) - Land^[aTree.Y, aTree.X].Height;
     //Cutting trees which are higher than us from the front looks visually poor, (axe hits ground) so avoid it where possible
-    if (I = 0) and (slope < 0) then slope := slope - 100; //Make it worse but not worse than initial BestSlope
+    if (I = 0) and (slope < 0) then slope := slope - HEIGHT_MAX; //Make it worse but not worse than initial BestSlope
     if Abs(slope) < bestSlope then
     begin
       CuttingPoint := KMPointDir(aTree.X+K, aTree.Y+I, KMGetVertexDir(K, I));
