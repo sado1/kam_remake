@@ -738,6 +738,9 @@ procedure TFormMain.ReloadSettingsClick(Sender: TObject);
 begin
   gGameAppSettings.ReloadSettings;
   gServerSettings.ReloadSettings;
+
+  if gGameApp.Game <> nil then
+    gGameApp.Game.GamePlayInterface.UpdateClockUI;
 end;
 
 
