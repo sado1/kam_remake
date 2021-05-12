@@ -103,11 +103,15 @@ type
     procedure Save(SaveStream: TKMemoryStream); override;
     procedure Paint; override; //Used only for debug so far
     function NeedToPaint(const aRect: TKMRect): Boolean; //Used only for debug so far
+
+    function ObjToStringShort(const aSeparator: String = ' '): String; override;
+    function ObjToString(const aSeparator: String = ' '): String; override;
   end;
 
 
 implementation
 uses
+  TypInfo,
   KM_RenderAux, KM_Game, KM_GameParams, KM_HandsCollection, KM_Terrain, KM_ResUnits, KM_UnitGroup,
   KM_UnitActionGoInOut, KM_UnitActionStay, KM_UnitTaskBuild, KM_PathFinding,
   KM_UnitWarrior, KM_Log, KM_Resource, KM_CommonClassesExt,
@@ -1380,4 +1384,35 @@ begin
 end;
 
 
+function TKMUnitActionWalkTo.ObjToStringShort(const aSeparator: String = ' '): String;
+begin
+  Result := inherited + Format('%sFrom = %s%sTo = %s', [
+                                aSeparator,
+                                fWalkFrom.ToString, aSeparator,
+                                fWalkTo.ToString]);
+end;
+
+
+function TKMUnitActionWalkTo.ObjToString(const aSeparator: String = ' '): String;
+begin
+  Result := inherited + Format('%sNewWalkTo = %s%sDist = %s%sTargetUnit = %d%sTargetHouse = %d%sPass = %s%sDoesWalk = %s%s' +
+                               'WaitOnStep = %s%sDestBlocked = %s%sDoExchange = %s%sInterCnt = %d%sLastSideStepNode = %d%sInterStatus = %s',
+                               [aSeparator,
+                                fNewWalkTo.ToString, aSeparator,
+                                FormatFloat('#0.#', fDistance), aSeparator,
+                                fTargetUnit.UID, aSeparator,
+                                fTargetHouse.UID, aSeparator,
+                                GetEnumName(TypeInfo(TKMTerrainPassability), Integer(fPass)), aSeparator,
+                                BoolToStr(fDoesWalking, True), aSeparator,
+                                BoolToStr(fWaitingOnStep, True), aSeparator,
+                                BoolToStr(fDestBlocked, True), aSeparator,
+                                BoolToStr(fDoExchange, True), aSeparator,
+                                fInteractionCount, aSeparator,
+                                fLastSideStepNodePos, aSeparator,
+                                GetEnumName(TypeInfo(TKMInteractionStatus), Integer(fInteractionStatus))]);
+end;
+
+
+
 end.
+

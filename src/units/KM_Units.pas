@@ -41,6 +41,9 @@ type
     function Execute: TKMActionResult; virtual; abstract;
     procedure Save(SaveStream: TKMemoryStream); virtual;
     procedure Paint; virtual;
+
+    function ObjToStringShort(const aSeparator: String = ' '): String; virtual;
+    function ObjToString(const aSeparator: String = ' '): String; virtual;
   end;
 
   TKMTaskResult = (trTaskContinues, trTaskDone); //There's no difference between Done and Aborted
@@ -2252,7 +2255,7 @@ begin
   actStr := 'nil';
   taskStr := 'nil';
   if fAction <> nil then
-    actStr := fAction.ClassName;
+    actStr := fAction.ObjToStringShort;
   if fTask <> nil then
     taskStr := fTask.ObjToString;
 
@@ -2268,7 +2271,7 @@ end;
 
 function TKMUnit.ObjToString(const aSeparator: String = '|'): String;
 var
-  homeStr, inHouseStr: String;
+  homeStr, inHouseStr, actStr: String;
 begin
   if Self = nil then Exit('nil');
 
@@ -2277,14 +2280,19 @@ begin
 
   if fHome <> nil then
     homeStr := Format('[UID = %d, Type = %s]', [fHome.UID, GetEnumName(TypeInfo(TKMHouseType), Integer(fHome.HouseType))]);
+
   if fInHouse <> nil then
     inHouseStr := Format('[UID = %d, Type = %s]', [fInHouse.UID, GetEnumName(TypeInfo(TKMHouseType), Integer(fInHouse.HouseType))]);
 
+  if fAction <> nil then
+    actStr := fAction.ObjToString(aSeparator + '  ');
+
   Result := inherited ObjToString(aSeparator) +
-            Format('%sPrevPosition = %s%sNextPosition = %s%s' +
+            Format('%sAction=%s%sPrevPosition = %s%sNextPosition = %s%s' +
                    'Thought = %s%sHitPoints = %d%sHitPointCounter = %d%sCondition = %d%s' +
                    'Home = %s%sInHouse = %s%sVisible = %s%sAnimStep = %d',
                    [aSeparator,
+                    actStr, aSeparator,
                     TypeToString(fPrevPosition), aSeparator,
                     TypeToString(fNextPosition), aSeparator,
                     GetEnumName(TypeInfo(TKMUnitThought), Integer(fThought)), aSeparator,
@@ -2665,6 +2673,18 @@ end;
 function TKMUnitAction.CanBeInterrupted(aForced: Boolean = True): Boolean;
 begin
   Result := True;
+end;
+
+
+function TKMUnitAction.ObjToStringShort(const aSeparator: String = ' '): String;
+begin
+  Result := ClassName;
+end;
+
+
+function TKMUnitAction.ObjToString(const aSeparator: String = ' '): String;
+begin
+  Result := ObjToStringShort(aSeparator);
 end;
 
 
