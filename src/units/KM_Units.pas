@@ -131,6 +131,7 @@ type
     procedure UpdateLastTimeTrySetActionWalk;
   private
     function GetTask: TKMUnitTask;
+    function GetInHouse: TKMHouse;
   protected
     function GetInstance: TKMUnit; override;
     function GetPosition: TKMPoint; override;
@@ -214,7 +215,7 @@ type
     property  HitPointsMax: Byte read GetHitPointsMax;
     procedure CancelTask(aFreeTaskObject: Boolean = True);
     property  Visible: Boolean read fVisible write fVisible;
-    property  InHouse: TKMHouse read fInHouse write SetInHouse;
+    property  InHouse: TKMHouse read GetInHouse write SetInHouse;
     property  IsDead: Boolean read fIsDead;
     function  IsDeadOrDying: Boolean;
     function  IsDismissing: Boolean;
@@ -1524,6 +1525,14 @@ end;
 function TKMUnit.GetHitPointsMax: Byte;
 begin
   Result := gRes.Units[fType].HitPoints;
+end;
+
+
+function TKMUnit.GetInHouse: TKMHouse;
+begin
+  if Self = nil then Exit(nil);
+  
+  Result := fInHouse;
 end;
 
 
