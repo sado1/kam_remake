@@ -11,6 +11,9 @@ const
   PATH_CACHE_NO_ROUTES_AVOID_LOCKED_MAX = 24; //Size of avoid routes cache
   PATH_CACHE_INIT_WEIGHT = 5; //New path weight
   PATH_CACHE_NODES_MIN_CNT = 30; //Min number of noder to put route in cache
+  // Minimum distance on the map to start using PathCache. Otherwise we could get some odd paths
+  // F.e. we want to get just to the next tile and use PFCache, because some of its routes goes through our start and dest
+  PATH_CACHE_MIN_DIST_TO_USE: Integer = 3;
   PATH_CACHE_NO_ROUTES_AVOID_LOCKED_TTL = 100; //AvoidLockedCache item Time to live
 
 type
@@ -150,7 +153,9 @@ begin
     end;
 
     //Try to find similar route in cache and reuse it
-    if CACHE_PATHFINDING and TryRouteFromCache(NodeList) then
+    if CACHE_PATHFINDING
+      and (KMLengthDiag(fLocA, fLocB) - fDistance > PATH_CACHE_MIN_DIST_TO_USE) // Don't use PF_Cache for very close destinations
+      and TryRouteFromCache(NodeList) then
       Result := True
     else
     if MakeRoute then
