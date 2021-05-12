@@ -177,12 +177,14 @@ begin
   SaveStream.PlaceMarker('Ownership');
   Len := Length(fOwnership);
   SaveStream.Write(Len);
-  SaveStream.Write(fOwnership[0], SizeOf(fOwnership[0]) * Len);
+  if Len > 0 then
+    SaveStream.Write(fOwnership[0], SizeOf(fOwnership[0]) * Len);
 
   SaveStream.PlaceMarker('ArmyPresence');
   Len := Length(fPresence);
   SaveStream.Write(Len);
-  SaveStream.Write(fPresence[0], SizeOf(fPresence[0]) * Len);
+  if Len > 0 then
+    SaveStream.Write(fPresence[0], SizeOf(fPresence[0]) * Len);
 end;
 
 
@@ -214,12 +216,14 @@ begin
   LoadStream.CheckMarker('Ownership');
   LoadStream.Read(Len);
   SetLength(fOwnership, Len);
-  LoadStream.Read(fOwnership[0], SizeOf(fOwnership[0]) * Len);
+  if Len > 0 then
+    LoadStream.Read(fOwnership[0], SizeOf(fOwnership[0]) * Len);
 
   LoadStream.CheckMarker('ArmyPresence');
   LoadStream.Read(Len);
   SetLength(fPresence, Len);
-  LoadStream.Read(fPresence[0], SizeOf(fPresence[0]) * Len);
+  if Len > 0 then
+    LoadStream.Read(fPresence[0], SizeOf(fPresence[0]) * Len);
 end;
 
 
