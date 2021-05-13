@@ -12,14 +12,18 @@ type
   private
     fMenuSave: TKMMapEdMenuSave;
     fIsMultiplayer: Boolean;
+    procedure SelectedHandChanged(Sender: TObject);
     procedure Cancel_Click(Sender: TObject);
     procedure QuickPlay_Click(Sender: TObject);
     procedure StartQuickPlay;
     procedure Update_PlayerSelect;
     procedure PlayerSelectFirst;
+    procedure UpdateControls;
     procedure UpdatePanel;
+    function HandCanBePlayedAsHuman(aIndex: Integer): Boolean;
     procedure SaveDone(Sender: TObject);
     procedure SaveBtn_EnableStatusChanged(Sender: TObject; aValue: Boolean);
+    procedure UpdateSaveBtnStatus;
   protected
     PopUp_QuickPlay: TKMPopUpPanel;
       DropList_SelectHand: TKMDropList;
@@ -76,6 +80,7 @@ begin
 
     DropList_SelectHand := TKMDropList.Create(PopUp_QuickPlay.ItemsPanel, left, top, CTRLS_WIDTH, 20, fntGame, '', bsGame);
     DropList_SelectHand.Hint := gResTexts[TX_MAPED_MAP_QUICK_PLAY_SEL_PLAYER_TO_START];
+    DropList_SelectHand.OnChange := SelectedHandChanged;
     Inc(top, 30);
 
     TKMBevel.Create(PopUp_QuickPlay.ItemsPanel, left, top - 5, CTRLS_WIDTH, 70);
@@ -84,7 +89,7 @@ begin
     Radio_AIOpponents := TKMRadioGroup.Create(PopUp_QuickPlay.ItemsPanel, left + 5, top, CTRLS_WIDTH - 10, 40, fntMetal);
     Radio_AIOpponents.Add(gResTexts[TX_AI_PLAYER_CLASSIC]);
     Radio_AIOpponents.Add(gResTexts[TX_AI_PLAYER_ADVANCED]);
-    Radio_AIOpponents.ItemIndex := 1;
+    Radio_AIOpponents.ItemIndex := 0; // Classic AI
 
     Inc(top, Radio_AIOpponents.Height);
     Panel_Save := TKMPanel.Create(PopUp_QuickPlay.ItemsPanel, left, top, CTRLS_WIDTH, 230);
@@ -172,7 +177,10 @@ begin
   if DropBox_Difficulty.IsClickable and DropBox_Difficulty.IsSelected then
     difficulty := TKMMissionDifficulty(DropBox_Difficulty.GetSelectedTag);
 
-  aiType := TKMAIType(Radio_AIOpponents.ItemIndex + 1);
+  if not Radio_AIOpponents.IsSelected then
+    aiType := aitNone
+  else
+    aiType := TKMAIType(Radio_AIOpponents.ItemIndex + 1);
 
   FreeThenNil(gGame);
   gGameApp.NewSingleMap(ExeDir + missionFileRel, gameName, handID, color, difficulty, aiType);
@@ -193,22 +201,22 @@ begin
 end;
 
 
-procedure TKMMapEdMenuQuickPlay.UpdatePanel;
+procedure TKMMapEdMenuQuickPlay.UpdateControls;
 var
   I: Integer;
   MD: TKMMissionDIfficulty;
 begin
-  Update_PlayerSelect;
-  if not DropList_SelectHand.List.Selected then
-  begin
-    if gMySpectator.Hand.HasAssets then
-      DropList_SelectHand.SelectByTag(gMySpectator.HandID)
-    else
-      PlayerSelectFirst;
-  end;
   Button_QuickPlay.Enabled :=     not gGame.MapEditor.IsNewMap
                               and gGame.MapEditor.SavedMapIsPlayable
                               and DropList_SelectHand.List.Selected;
+
+  UpdateSaveBtnStatus;
+
+  // Disable AI checkboxes, if AI type is not allowed on a map
+  Radio_AIOpponents.SetItemEnabled(0, gGame.MapEditor.CanHaveClassicAI);
+  Radio_AIOpponents.SetItemEnabled(1, gGame.MapEditor.CanHaveAdvancedAI);
+  // Try to check first checkable, since we uncheck item, if disable it
+  Radio_AIOpponents.CheckFirstCheckable;
 
   //Update Difficulty dropbox
   DropBox_Difficulty.Clear;
@@ -235,16 +243,9 @@ begin
 end;
 
 
-procedure TKMMapEdMenuQuickPlay.Update_PlayerSelect;
-var
-  I: Integer;
+function TKMMapEdMenuQuickPlay.HandCanBePlayedAsHuman(aIndex: Integer): Boolean;
 begin
-  DropList_SelectHand.Clear;
-  for I := 0 to MAX_HANDS - 1 do
-  begin
-    if gGame.MapEditor.PlayerHuman[I] and gHands[I].HasAssets then
-      DropList_SelectHand.Add(Format(gResTexts[TX_PLAYER_X], [I + 1]), I);
-  end;
+  Result := gHands[aIndex].HasAssets and gGame.MapEditor.PlayerHuman[aIndex];
 end;
 
 
@@ -254,25 +255,67 @@ var
 begin
   for I := 0 to MAX_HANDS - 1 do
   begin
-    if gHands[I].HasAssets then
+    if HandCanBePlayedAsHuman(I) then
     begin
       DropList_SelectHand.SelectByTag(I);
-      Break;
+      Exit;
     end;
   end;
 end;
 
 
+procedure TKMMapEdMenuQuickPlay.Update_PlayerSelect;
+var
+  I: Integer;
+begin
+  DropList_SelectHand.Clear;
+  for I := 0 to MAX_HANDS - 1 do
+  begin
+    if HandCanBePlayedAsHuman(I) then
+      DropList_SelectHand.Add(Format(gResTexts[TX_PLAYER_X], [I + 1]), I);
+  end;
+end;
+
+
+procedure TKMMapEdMenuQuickPlay.UpdateSaveBtnStatus;
+begin
+  if not DropList_SelectHand.List.Selected then
+    fMenuSave.Button_SaveSave.Disable
+end;
+
+
+procedure TKMMapEdMenuQuickPlay.UpdatePanel;
+begin
+  Update_PlayerSelect;
+
+  if not DropList_SelectHand.List.Selected then
+  begin
+    if HandCanBePlayedAsHuman(gMySpectator.HandID) then
+      DropList_SelectHand.SelectByTag(gMySpectator.HandID)
+    else
+      PlayerSelectFirst;
+  end;
+
+  UpdateControls;
+end;
+
+
 procedure TKMMapEdMenuQuickPlay.SaveBtn_EnableStatusChanged(Sender: TObject; aValue: Boolean);
 begin
-  if aValue and not DropList_SelectHand.List.Selected then
-    fMenuSave.Button_SaveSave.Disable;
+  if aValue then
+    UpdateSaveBtnStatus;
 end;
 
 
 procedure TKMMapEdMenuQuickPlay.SaveDone(Sender: TObject);
 begin
   StartQuickPlay;
+end;
+
+
+procedure TKMMapEdMenuQuickPlay.SelectedHandChanged(Sender: TObject);
+begin
+  UpdateControls;
 end;
 
 

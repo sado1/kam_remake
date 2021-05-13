@@ -87,6 +87,8 @@ type
     property SavedMapIsPlayable: Boolean read fSavedMapIsPlayable;
     procedure ValidatePlayerTypes;
 
+    function CanHaveClassicAI: Boolean;
+    function CanHaveAdvancedAI: Boolean;
     function OnlyAdvancedAIHand(aHandId: TKMHandID): Boolean;
 
     procedure DetectAttachedFiles(const aMissionFile: UnicodeString);
@@ -364,6 +366,26 @@ begin
 
   fIsNewMap := False; //Map was saved, its not a new map anymore
   UpdateSavedInfo;
+end;
+
+
+function TKMMapEditor.CanHaveClassicAI: Boolean;
+var
+  I: Integer;
+begin
+  Result := False;
+  for I := 0 to gHands.Count - 1 do
+    Result := Result or (gHands[I].HasAssets and PlayerClassicAI[I]);
+end;
+
+
+function TKMMapEditor.CanHaveAdvancedAI: Boolean;
+var
+  I: Integer;
+begin
+  Result := False;
+  for I := 0 to gHands.Count - 1 do
+    Result := Result or (gHands[I].HasAssets and PlayerAdvancedAI[I]);
 end;
 
 
