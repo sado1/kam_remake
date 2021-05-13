@@ -244,7 +244,7 @@ begin
   if not gGameParams.IsMapEditor then
     for I := 0 to fCount - 1 do
       with fHandsList[I] do
-        if IsComputer and NeedToChooseFirstStorehouse() then
+        if Enabled and IsComputer and NeedToChooseFirstStorehouse() then
           handsWithAIStartStorageI := handsWithAIStartStorageI + [I];
 
   //RMG place storehouse before assembling NavMesh and create influences so AI initialize correctly
