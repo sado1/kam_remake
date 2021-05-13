@@ -841,6 +841,7 @@ type
     function GetItemIndexByRow(aRowIndex: Integer): Integer;
     function GetVisibleCount: Integer;
     function GetLineHeight: Single;
+    function GetIsSelected: Boolean;
   protected
     function GetHint: UnicodeString; override;
   public
@@ -854,12 +855,14 @@ type
     procedure Add(const aText, aHint: String; aEnabled: Boolean = True); overload;
     procedure Clear;
     property Count: Integer read fCount;
+    property IsSelected: Boolean read GetIsSelected;
     property VisibleCount: Integer read GetVisibleCount;
     property ItemIndex: Integer read fItemIndex write fItemIndex;
     property OnChange: TNotifyEvent read fOnChange write fOnChange;
     property Item[aIndex: Integer]: TKMRadioGroupItem read GetItem;
-    procedure SetItemEnabled(aIndex: Integer; aEnabled: Boolean);
+    procedure SetItemEnabled(aIndex: Integer; aEnabled: Boolean; aUncheckDisabled: Boolean = True);
     procedure SetItemVisible(aIndex: Integer; aEnabled: Boolean);
+    procedure CheckFirstCheckable;
     property LineHeight: Single read GetLineHeight;
     procedure MouseUp(X,Y: Integer; Shift: TShiftState; Button: TMouseButton); override;
     procedure MouseMove(X,Y: Integer; Shift: TShiftState); override;
@@ -1626,6 +1629,7 @@ type
     procedure Add(const aItem: UnicodeString; aTag: Integer = 0);
     procedure SelectByName(const aText: UnicodeString);
     procedure SelectByTag(aTag: Integer);
+    function HasTag(aTag: Integer): Boolean;
     function GetTag(aIndex: Integer): Integer;
     function GetSelectedTag: Integer;
     function IsSelected: Boolean;
@@ -5009,10 +5013,20 @@ begin
 end;
 
 
-procedure TKMRadioGroup.SetItemEnabled(aIndex: Integer; aEnabled: Boolean);
+function TKMRadioGroup.GetIsSelected: Boolean;
+begin
+  Result := fItemIndex <> -1;
+end;
+
+
+procedure TKMRadioGroup.SetItemEnabled(aIndex: Integer; aEnabled: Boolean; aUncheckDisabled: Boolean = True);
 begin
   Assert(aIndex < fCount, 'Can''t SetItemEnabled for index ' + IntToStr(aIndex));
   fItems[aIndex].Enabled := aEnabled;
+
+  // Reset item index, if this item was selected
+  if aUncheckDisabled and not aEnabled and (fItemIndex = aIndex) then
+    fItemIndex := -1;
 end;
 
 
@@ -5020,6 +5034,21 @@ procedure TKMRadioGroup.SetItemVisible(aIndex: Integer; aEnabled: Boolean);
 begin
   Assert(aIndex < fCount, 'Can''t SetItemVisible for index ' + IntToStr(aIndex));
   fItems[aIndex].Visible := aEnabled;
+end;
+
+
+procedure TKMRadioGroup.CheckFirstCheckable;
+var
+  I: Integer;
+begin
+  if fItemIndex <> -1 then Exit;
+
+  for I := 0 to fCount - 1 do
+    if fItems[I].Enabled and fItems[I].Visible then
+    begin
+      fItemIndex := I;
+      Exit;
+    end;
 end;
 
 
@@ -9686,6 +9715,17 @@ begin
   for I := 0 to fList.Count - 1 do
     if fList.ItemTags[I] = aTag then
       SetItemIndex(I);
+end;
+
+
+function TKMDropList.HasTag(aTag: Integer): Boolean;
+var
+  I: Integer;
+begin
+  Result := False;
+  for I := 0 to fList.Count - 1 do
+    if fList.ItemTags[I] = aTag then
+      Exit(True);
 end;
 
 
