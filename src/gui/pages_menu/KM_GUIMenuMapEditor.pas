@@ -577,11 +577,8 @@ procedure TKMMenuMapEditor.UpdateFilterUI;
 begin
   //Disable Coop map filter for SP maps
   if Radio_MapType.ItemIndex = 0 then
-  begin
-    Radio_CoopSpecial.SetItemEnabled(1, False);
-    if Radio_CoopSpecial.ItemIndex = 1 then
-      Radio_CoopSpecial.ItemIndex := -1;
-  end else
+    Radio_CoopSpecial.SetItemEnabled(1, False)
+  else
     Radio_CoopSpecial.SetItemEnabled(1, True);
 end;
 
