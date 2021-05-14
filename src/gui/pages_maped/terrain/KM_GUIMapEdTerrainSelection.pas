@@ -108,7 +108,7 @@ begin
 
   Button_RMGRND := TKMButton.Create(Panel_Selection, 9, 330, Panel_Selection.Width - 9, 20, gResTexts[TX_MAPED_RMG_BUTTON_TITLE], bsGame);
   Button_RMGRND.Anchors := [anLeft, anTop, anRight];
-  Button_RMGRND.Hint := GetHintWHotKey(gResTexts[TX_MAPED_RMG_BUTTON_HINT], kfMapedSubMenuAction7);
+  Button_RMGRND.Hint := GetHintWHotKey(TX_MAPED_RMG_BUTTON_HINT, kfMapedSubMenuAction7);
   Button_RMGRND.OnClick := GenerateMapClick;
 
   fSubMenuActionsEvents[0] := SelectionClick;
