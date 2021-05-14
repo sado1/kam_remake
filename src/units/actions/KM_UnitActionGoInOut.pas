@@ -397,11 +397,9 @@ begin
     fUnit.IsExchanging := (fHouse.DoorwayUse > 1);
 
   Assert((fHouse = nil) or KMSamePoint(fDoor, fHouse.Entrance)); //Must always go in/out the entrance of the house
-  distance := gRes.Units[fUnit.UnitType].Speed;
 
   //Actual speed is slower if we are moving diagonally, due to the fact we are moving in X and Y
-  if (fStreet.X - fDoor.X <> 0) then
-    distance := distance / 1.41; {sqrt (2) = 1.41421 }
+  distance := gRes.Units[fUnit.UnitType].GetEffectiveWalkSpeed(fStreet.X - fDoor.X <> 0);
 
   fStep := fStep - distance * ShortInt(fDirection);
   fUnit.PositionF := KMLerp(fDoor, fStreet, fStep);

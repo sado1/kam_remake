@@ -2223,7 +2223,7 @@ var
   movementSpeed: Single;
 begin
   if (Action is TKMUnitActionWalkTo) and TKMUnitActionWalkTo(Action).DoesWalking then
-    movementSpeed := gRes.Units[fType].Speed
+    movementSpeed := gRes.Units[fType].GetEffectiveWalkSpeed(DIAG_DIRECTION[fDirection])
   else
   if (Action is TKMUnitActionStormAttack) then
     movementSpeed := TKMUnitActionStormAttack(Action).GetSpeed

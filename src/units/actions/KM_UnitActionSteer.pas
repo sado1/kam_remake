@@ -144,8 +144,9 @@ begin
   end
   else
     firstStep := False;
-      
-  distance := gRes.Units[fUnit.UnitType].Speed;
+
+  // Use umtWalk move type here, since we just want to evaluate if we are close enough
+  distance := gRes.Units[fUnit.UnitType].GetEffectiveWalkSpeed(False);
   if KMSamePointF(fUnit.PositionF, KMPointF(fNextPos), distance/2) then
   begin
     //Set precise position to avoid rounding errors
@@ -181,8 +182,7 @@ begin
   dx := sign(walkX); //-1,0,1
   dy := sign(walkY); //-1,0,1
 
-  if (dx <> 0) and (dy <> 0) then
-    distance := distance / 1.41; {sqrt (2) = 1.41421 }
+  distance := gRes.Units[fUnit.UnitType].GetEffectiveWalkSpeed((dx <> 0) and (dy <> 0));
 
   fUnit.PositionF := KMPointF(fUnit.PositionF.X + dx*Math.min(distance,abs(walkX)),
                               fUnit.PositionF.Y + dy*Math.min(distance,abs(walkY)));

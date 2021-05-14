@@ -217,6 +217,8 @@ const
   KMRECT_ZERO: TKMRect = (Left: 0; Top: 0; Right: 0; Bottom: 0);
   KMRECT_INVALID_TILES: TKMRect = (Left: -1; Top: -1; Right: -1; Bottom: -1);
 
+  DIAG_DIRECTION: array[TKMDirection] of Boolean = (False, False, True, False, True, False, True, False, True);
+
 
 implementation
 uses

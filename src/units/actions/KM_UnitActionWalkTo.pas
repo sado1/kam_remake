@@ -1164,7 +1164,8 @@ begin
   end;
 
   // Execute the route in series of moves
-  distance := gRes.Units[fUnit.UnitType].Speed;
+  // Use umtWalk move type here, since we just want to evaluate if we are close enough
+  distance := gRes.Units[fUnit.UnitType].GetEffectiveWalkSpeed(False);
 
   //Check if unit has arrived on tile
   if KMSamePointF(fUnit.PositionF, KMPointF(NodeList[NodePos]), distance/2) then
@@ -1257,7 +1258,6 @@ begin
     //Both exchanging units have fDoExchange:=true assigned by 1st unit, hence 2nd should not try doing UnitInteraction!
     if fDoExchange then
     begin
-
        //If this is a diagonal exchange we must make sure someone (other than the other unit) is not crossing our path
       if KMStepIsDiag(fUnit.Position,NodeList[NodePos+1])
         and (not gTerrain.VertexUsageCompatible(fUnit.Position,NodeList[NodePos+1])) then
@@ -1307,8 +1307,7 @@ begin
   dx := Sign(walkX); //-1,0,1
   dy := Sign(walkY); //-1,0,1
 
-  if (dx <> 0) and (dy <> 0) then
-    distance := distance / 1.41; {sqrt (2) = 1.41421 }
+  distance := gRes.Units[fUnit.UnitType].GetEffectiveWalkSpeed((dx <> 0) and (dy <> 0));
 
   fUnit.PositionF := KMPointF(fUnit.PositionF.X + dx * Min(distance, Abs(walkX)),
                               fUnit.PositionF.Y + dy * Min(distance, Abs(walkY)));

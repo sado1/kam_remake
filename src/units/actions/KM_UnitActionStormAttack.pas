@@ -35,10 +35,6 @@ uses
   KM_Resource, KM_ResUnits, KM_UnitWarrior;
 
 
-const
-  STORM_SPEEDUP = 1.5;
-
-
 { TUnitActionStormAttack }
 constructor TKMUnitActionStormAttack.Create(aUnit: TKMUnit; aActionType: TKMUnitActionType; aRow: Integer);
 const
@@ -112,9 +108,9 @@ end;
 function TKMUnitActionStormAttack.GetSpeed: Single;
 begin
   if (fTileSteps <= 0) or (fTileSteps >= fStamina-1) then
-    Result := gRes.Units[fUnit.UnitType].Speed
+    Result := gRes.Units[fUnit.UnitType].GetEffectiveWalkSpeed(DIAG_DIRECTION[fUnit.Direction])
   else
-    Result := gRes.Units[fUnit.UnitType].Speed * STORM_SPEEDUP;
+    Result := gRes.Units[fUnit.UnitType].GetEffectiveStormSpeed(DIAG_DIRECTION[fUnit.Direction]);
 end;
 
 
@@ -122,6 +118,7 @@ function TKMUnitActionStormAttack.Execute: TKMActionResult;
 var
   dx, dy: ShortInt;
   walkX, walkY, distance: Single;
+  isWalking, isDiag: Boolean;
 begin
   if KMSamePoint(fNextPos, KMPOINT_ZERO) then
     fNextPos := fUnit.Position; //Set fNextPos to current pos so it initializes on the first run
@@ -136,12 +133,15 @@ begin
 
   //Last step is walking, others are running (unit gets tired and slows at the end)
   //In KaM the first step was also walking, but this makes it less useful/surprising
-  if (fTileSteps >= fStamina - 1) then
+
+  isWalking := (fTileSteps >= fStamina - 1);
+  if isWalking then
   begin
-    distance := gRes.Units[fUnit.UnitType].Speed;
+    // Use umtWalk move type here, since we just want to evaluate if we are close enough
+    distance := gRes.Units[fUnit.UnitType].GetEffectiveWalkSpeed(False);
     fType := uaWalk;
   end else begin
-    distance := gRes.Units[fUnit.UnitType].Speed * STORM_SPEEDUP;
+    distance := gRes.Units[fUnit.UnitType].GetEffectiveStormSpeed(False);
     fType := uaSpec;
   end;
 
@@ -185,8 +185,11 @@ begin
   dx := Sign(walkX); //-1,0,1
   dy := Sign(walkY); //-1,0,1
 
-  if (dx <> 0) and (dy <> 0) then
-    distance := distance / 1.41; {sqrt (2) = 1.41421 }
+  isDiag := (dx <> 0) and (dy <> 0);
+  if isWalking then
+    distance := gRes.Units[fUnit.UnitType].GetEffectiveWalkSpeed(isDiag)
+  else
+    distance := gRes.Units[fUnit.UnitType].GetEffectiveStormSpeed(isDiag);
 
   fUnit.PositionF := KMPointF(fUnit.PositionF.X + dx*Math.min(distance, Abs(walkX)),
                               fUnit.PositionF.Y + dy*Math.min(distance, Abs(walkY)));
