@@ -552,7 +552,7 @@ var
   S: TKMemoryStream;
   I: Integer;
 begin
-  Assert(FileExists(aPath));
+  Assert(FileExists(aPath), 'units.dat not found at: ' + aPath);
 
   S := TKMemoryStreamBinary.Create;
   try
