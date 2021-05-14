@@ -425,9 +425,9 @@ end;
 function TKMUnitSpec.GetEffectiveStormSpeed(aIsDiag: Boolean): Single;
 begin
   if aIsDiag then
-    Result := GetEffectiveSpeed(umtStorm)
+    Result := GetEffectiveSpeed(umtStormDiag)
   else
-    Result := GetEffectiveSpeed(umtStormDiag);
+    Result := GetEffectiveSpeed(umtStorm);
 end;
 
 
