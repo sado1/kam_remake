@@ -76,6 +76,7 @@ end;
 constructor TKMUnitActionGoInOut.Load(LoadStream: TKMemoryStream);
 begin
   inherited;
+
   LoadStream.CheckMarker('UnitActionGoInOut');
   LoadStream.Read(fStep);
   LoadStream.Read(fHouse, 4);
@@ -92,6 +93,7 @@ end;
 procedure TKMUnitActionGoInOut.SyncLoad;
 begin
   inherited;
+
   fHouse := gHands.GetHouseByUID(cardinal(fHouse));
   fPushedUnit := gHands.GetUnitByUID(cardinal(fPushedUnit));
 end;
@@ -297,24 +299,25 @@ end;
 
 
 function TKMUnitActionGoInOut.GetDoorwaySlide(aCheck: TKMCheckAxis): Single;
-var Offset: Integer;
+var
+  offset: Integer;
 begin
   if aCheck = axX then
-    Offset := gRes.Houses[fHouse.HouseType].EntranceOffsetXpx - CELL_SIZE_PX div 2
+    offset := gRes.Houses[fHouse.HouseType].EntranceOffsetXpx - CELL_SIZE_PX div 2
   else
-    Offset := gRes.Houses[fHouse.HouseType].EntranceOffsetYpx;
+    offset := gRes.Houses[fHouse.HouseType].EntranceOffsetYpx;
 
   if (fHouse = nil) or not fHasStarted then
     Result := 0
   else
-    Result := Mix(0, Offset/CELL_SIZE_PX, fStep);
+    Result := Mix(0, offset/CELL_SIZE_PX, fStep);
 end;
 
 
 function TKMUnitActionGoInOut.Execute: TKMActionResult;
 var
-  Distance: Single;
   U: TKMUnit;
+  distance: Single;
 begin
   Result := arActContinues;
 
@@ -394,13 +397,13 @@ begin
     fUnit.IsExchanging := (fHouse.DoorwayUse > 1);
 
   Assert((fHouse = nil) or KMSamePoint(fDoor, fHouse.Entrance)); //Must always go in/out the entrance of the house
-  Distance := gRes.Units[fUnit.UnitType].Speed;
+  distance := gRes.Units[fUnit.UnitType].Speed;
 
   //Actual speed is slower if we are moving diagonally, due to the fact we are moving in X and Y
   if (fStreet.X - fDoor.X <> 0) then
-    Distance := Distance / 1.41; {sqrt (2) = 1.41421 }
+    distance := distance / 1.41; {sqrt (2) = 1.41421 }
 
-  fStep := fStep - Distance * ShortInt(fDirection);
+  fStep := fStep - distance * ShortInt(fDirection);
   fUnit.PositionF := KMLerp(fDoor, fStreet, fStep);
   fUnit.Visible := (fHouse = nil) or (fHouse.IsDestroyed) or (fStep > 0); //Make unit invisible when it's inside of House
 
@@ -459,6 +462,7 @@ end;
 procedure TKMUnitActionGoInOut.Save(SaveStream: TKMemoryStream);
 begin
   inherited;
+
   SaveStream.PlaceMarker('UnitActionGoInOut');
   SaveStream.Write(fStep);
   SaveStream.Write(fHouse.UID); //Store ID, then substitute it with reference on SyncLoad
