@@ -22,6 +22,7 @@ type
     fUnit: TObject;
     fCurr: TKMUnitVisualState;
     fPrev: TKMUnitVisualState;
+    fPrevPrev: TKMUnitVisualState;
   public
     constructor Create(aUnit: TObject);
 
@@ -33,7 +34,7 @@ type
 implementation
 uses
   KromUtils, Math, SysUtils,
-  KM_Units;
+  KM_Units, KM_Resource;
 
 
 { TKMUnitVisualState }
@@ -68,6 +69,8 @@ end;
 
 
 function TKMUnitVisual.GetLerp(aLag: Single): TKMUnitVisualState;
+var
+  animCount: Integer;
 begin
   Result.PosF := KMLerp(fCurr.PosF, fPrev.PosF, aLag);
   Result.SlideX := KromUtils.Lerp(fCurr.SlideX, fPrev.SlideX, aLag);
@@ -82,20 +85,55 @@ begin
   end
   else
   begin
-    //Don't start a new action or change direction until the last one is 100% finished
-    Result.Dir := fPrev.Dir;
-    Result.Action := fPrev.Action;
-    Result.AnimStep := fPrev.AnimStep;
-    Result.AnimFraction := 0.0;
-    //If action/dir/step is consistent we can interpolate the animation
-    if (fCurr.Action = fPrev.Action) and (fCurr.Dir = fPrev.Dir) and (fCurr.AnimStep - fPrev.AnimStep = 1) then
+    //Are we moving?
+    if fCurr.PosF <> fPrev.PosF then
+    begin
+      //Always interpolate the animation if the unit is moving
       Result.AnimFraction := 1.0 - aLag;
+
+      //If we were still and just started moving
+      if fPrevPrev.PosF = fPrev.PosF then
+      begin
+        //Since the unit starts moving without warning we need to backwards interpolate
+        Result.Dir := fCurr.Dir;
+        Result.Action := fCurr.Action;
+
+        //Find the previous anim step
+        if fCurr.AnimStep = 0 then
+        begin
+          animCount := gRes.Units[TKMUnit(fUnit).UnitType].UnitAnim[Result.Action, Result.Dir].Count;
+          Result.AnimStep := animCount - 1;
+        end
+        else
+          Result.AnimStep := fCurr.AnimStep - 1;
+      end
+      else
+      begin
+        //Don't start a new action or change direction until the last one is 100% finished
+        Result.Dir := fPrev.Dir;
+        Result.Action := fPrev.Action;
+        Result.AnimStep := fPrev.AnimStep;
+      end;
+    end
+    else
+    begin
+      //Not moving. Don't start a new action or change direction until the last one is 100% finished
+      Result.Dir := fPrev.Dir;
+      Result.Action := fPrev.Action;
+      Result.AnimStep := fPrev.AnimStep;
+      //If action/dir/step is consistent we can interpolate the animation
+      if (fCurr.Action = fPrev.Action) and (fCurr.Dir = fPrev.Dir) and (fCurr.AnimStep - fPrev.AnimStep = 1) then
+        Result.AnimFraction := 1.0 - aLag
+      else
+        Result.AnimFraction := 0.0;
+    end;
   end;
 end;
 
 
 procedure TKMUnitVisual.UpdateState;
 begin
+  fPrevPrev := fPrev;
   fPrev := fCurr;
   fCurr.SetFromUnit(fUnit);
 end;
