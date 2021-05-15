@@ -83,6 +83,8 @@ type
     OnPreloadGameResources: TEvent;
 
     constructor Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText; aOnKeysUpdated: TEvent);
+    destructor Destroy; override;
+
     procedure Refresh;
     function Visible: Boolean;
     procedure Show;
@@ -306,6 +308,14 @@ begin
 
     // Panel_Options_Keys
     fGuiCommonKeys := TKMGUICommonKeys.Create(aParent, aOnKeysUpdated);
+end;
+
+
+destructor TKMMenuOptions.Destroy;
+begin
+  fGuiCommonKeys.Free;
+
+  inherited;
 end;
 
 

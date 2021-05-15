@@ -29,6 +29,7 @@ type
       Button_OptionsKeys: TKMButton;
   public
     constructor Create(aParent: TKMPanel; aOnChangeSetting, aOnKeysUpdated: TEvent);
+    destructor Destroy; override;
 
     procedure Refresh;
     procedure SetAutosaveEnabled(aEnabled: Boolean);
@@ -109,6 +110,14 @@ begin
 
     // Panel_Options_Keys
     fGuiCommonKeys := TKMGUICommonKeys.Create(aParent.MasterPanel, aOnKeysUpdated);
+end;
+
+
+destructor TKMGameMenuSettings.Destroy;
+begin
+  fGuiCommonKeys.Free;
+
+  inherited;
 end;
 
 
