@@ -163,6 +163,7 @@ var
   pngWidth, pngHeight, newWidth, newHeight: Word;
   pngBase, pngShad, pngTeam, pngCrop, pngCropMask: TKMCardinalArray;
   X, Y, MinX, MinY, MaxX, MaxY: Integer;
+  NoShadMinX, NoShadMinY, NoShadMaxX, NoShadMaxY: Integer;
   StrList: TStringList;
   dirBase, dirShad, dirTeam: string;
 begin
@@ -190,6 +191,10 @@ begin
     MinY := MaxInt;
     MaxX := -1;
     MaxY := -1;
+    NoShadMinX := MaxInt;
+    NoShadMinY := MaxInt;
+    NoShadMaxX := -1;
+    NoShadMaxY := -1;
     for Y := 0 to pngHeight-1 do
     begin
       for X := 0 to pngWidth-1 do
@@ -202,6 +207,14 @@ begin
           MinY := Min(MinY, Y);
           MaxX := Max(MaxX, X);
           MaxY := Max(MaxY, Y);
+        end;
+        //Tighter "no shadow" bounds. Also ignore areas where alpha < 50%
+        if pngBase[Y*pngWidth + X] shr 24 >= $7F then
+        begin
+          NoShadMinX := Min(NoShadMinX, X);
+          NoShadMinY := Min(NoShadMinY, Y);
+          NoShadMaxX := Max(NoShadMaxX, X);
+          NoShadMaxY := Max(NoShadMaxY, Y);
         end;
       end;
     end;
@@ -232,11 +245,10 @@ begin
       StrList.Clear;
       StrList.Append(IntToStr(MinX - pngWidth div 2));
       StrList.Append(IntToStr(MinY - pngHeight div 2));
-      //FIXME: Do SizeNoShadow properly
-      StrList.Append(IntToStr(0));
-      StrList.Append(IntToStr(0));
-      StrList.Append(IntToStr(newWidth-1));
-      StrList.Append(IntToStr(newHeight-1));
+      StrList.Append(IntToStr(NoShadMinX - MinX));
+      StrList.Append(IntToStr(NoShadMinY - MinY));
+      StrList.Append(IntToStr(newWidth-1 - (MaxX - NoShadMaxX)));
+      StrList.Append(IntToStr(newHeight-1 - (MaxY - NoShadMaxY)));
 
       ForceDirectories(ExeDir+'Sprites\3\');
       StrList.SaveToFile(ExeDir+'Sprites\3\'+format('3_%d.txt', [aPicOffset + Step]));
@@ -255,7 +267,7 @@ var
 begin
   picOffset := 9300;
   dir := dirE;
-  //for dir := dirN to dirNW do
+  for dir := dirN to dirNW do
     picOffset := picOffset + DoInterpUnit(utMilitia, uaWalk, dir, picOffset);
 end;
 
