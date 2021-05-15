@@ -168,7 +168,8 @@ begin
   fTempDir := ExeDir + 'SpriteInterp\';
   fDainFolder := 'C:\Dev\kam_sprites\DAIN_APP Alpha 1.0\';
   fDainExe := fDainFolder+'DAINAPP.exe';
-  fDainParams := 'cmd.exe /C "'+fDainExe+'" --cli 1 -o '+fTempDir+' -p 0 -l 1 -in 8 -da 0 -a 1 -se 0 -si 1 -sr 0 -ha 0 --fast_mode 0'; // & pause
+  fDainParams := 'cmd.exe /C "'+fDainExe+'" --cli 1 -o '+fTempDir+' -p 0 -l 1 -in 8 -da 1 -a 1 -se 0 -si 1 -sr 0 -ha 0 --fast_mode 0'; // & pause
+  //fDainParams := 'cmd.exe /C python inference_video.py --exp=3 --scale=4.0 --png --img='+fTempDir+'original_frames --output='+fTempDir+'interpolated_frames & pause';
 
   fOrigSpritesDir := fTempDir + 'original_frames\';
   fInterpSpritesDir := fTempDir + 'interpolated_frames\';
