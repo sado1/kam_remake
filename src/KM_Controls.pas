@@ -194,6 +194,7 @@ type
 
     procedure DebugKeyDown(Key: Word; Shift: TShiftState);
     procedure SetFocusable(const aValue: Boolean);
+    function GetMasterPanel: TKMPanel;
   protected
     procedure SetLeft(aValue: Integer); virtual;
     procedure SetTop(aValue: Integer); virtual;
@@ -262,6 +263,8 @@ type
     function HitTest(X, Y: Integer; aIncludeDisabled: Boolean = False; aIncludeNotHitable: Boolean = False): Boolean; virtual;
 
     property Parent: TKMPanel read fParent;
+    property MasterPanel: TKMPanel read GetMasterPanel;
+
     property AbsLeft: Integer read GetAbsLeft write SetAbsLeft;
     property AbsRight: Integer read GetAbsRight;
     property AbsTop: Integer read GetAbsTop write SetAbsTop;
@@ -2532,6 +2535,12 @@ end;
 function TKMControl.PaintingBaseLayer: Boolean;
 begin
   Result := (fParent = nil) or (fParent.fMasterControl.fCurrentPaintLayer = 0);
+end;
+
+
+function TKMControl.GetMasterPanel: TKMPanel;
+begin
+  Result := Parent.MasterControl.MasterPanel;
 end;
 
 
