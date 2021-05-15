@@ -31,6 +31,7 @@ bugreport.txt
 /Export
 /Saves
 /SavesMP
+/SpriteInterp
 /SpriteResource/gui.rx
 /SpriteResource/guimain.rx
 /SpriteResource/guimainh.rx

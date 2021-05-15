@@ -1582,7 +1582,7 @@ begin
     //How far in the past should we render? (0.0=Current tick, 1.0=Previous tick)
     if gGameSettings.InterpolatedRender then
     begin
-      tickLag := TimeSince(fLastUpdateState) / fSpeedActual / gGameSettings.SpeedPace;
+      tickLag := TimeSince(fLastUpdateState) / gMain.GameTickInterval;
       tickLag := 1.0 - tickLag;
       tickLag := EnsureRange(tickLag, 0.0, 1.0);
     end

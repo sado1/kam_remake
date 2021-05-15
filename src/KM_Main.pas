@@ -86,6 +86,7 @@ type
     procedure StatusBarText(aPanelIndex: Integer; const aText: UnicodeString);
 
     procedure SetGameTickInterval(aInterval: Cardinal);
+    property GameTickInterval: Cardinal read fGameTickInterval;
 
     property Resolutions: TKMResolutions read fResolutions;
     property Settings: TKMainSettings read fMainSettings;

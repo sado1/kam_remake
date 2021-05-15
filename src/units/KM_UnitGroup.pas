@@ -2227,7 +2227,7 @@ begin
     if not doesFit then Continue; //Don't render units that are off the map in the map editor
     unitPos.X := newPos.X + UNIT_OFF_X; //MapEd units don't have sliding
     unitPos.Y := newPos.Y + UNIT_OFF_Y;
-    gRenderPool.AddUnit(FlagBearer.UnitType, 0, uaWalk, fOrderLoc.Dir, UNIT_STILL_FRAMES[fOrderLoc.Dir], unitPos.X, unitPos.Y, aHandColor, True, aDoImmediateRender, aDoHighlight, aHighlightColor);
+    gRenderPool.AddUnit(FlagBearer.UnitType, 0, uaWalk, fOrderLoc.Dir, UNIT_STILL_FRAMES[fOrderLoc.Dir], 0.0, unitPos.X, unitPos.Y, aHandColor, True, aDoImmediateRender, aDoHighlight, aHighlightColor);
   end;
 
   V := FlagBearer.Visual.GetLerp(aTickLag);

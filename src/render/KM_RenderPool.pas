@@ -71,6 +71,8 @@ type
     fMarksList: TKMPointTagList;
     fHouseOutline: TKMPointList;
 
+    function GetUnitAnimSprite(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; aStep: Integer; aStepFrac: Single): Integer;
+
     procedure ApplyTransform;
     procedure SetDefaultRenderParams;
     procedure RenderBackgroundUI(const aRect: TKMRect);
@@ -126,7 +128,7 @@ type
     procedure AddHouseMarketSupply(const Loc: TKMPoint; ResType: TKMWareType; ResCount: Word; AnimStep: Integer);
     procedure AddHouseStableBeasts(aHouse: TKMHouseType; const Loc: TKMPoint; BeastId,BeastAge,AnimStep: Integer; aRX: TRXType = rxHouses);
     procedure AddHouseEater(const Loc: TKMPoint; aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; StepId: Integer; OffX,OffY: Single; FlagColor: TColor4);
-    procedure AddUnit(aUnit: TKMUnitType; aUID: Integer; aAct: TKMUnitActionType; aDir: TKMDirection; StepId: Integer; pX,pY: Single; FlagColor: TColor4; NewInst: Boolean; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
+    procedure AddUnit(aUnit: TKMUnitType; aUID: Integer; aAct: TKMUnitActionType; aDir: TKMDirection; StepId: Integer; StepFrac: Single; pX,pY: Single; FlagColor: TColor4; NewInst: Boolean; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
     procedure AddUnitCarry(aCarry: TKMWareType; aUID: Integer; aDir: TKMDirection; StepId: Integer; pX,pY: Single);
     procedure AddUnitThought(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; Thought: TKMUnitThought; pX,pY: Single);
     procedure AddUnitFlag(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; FlagAnim: Integer; pX,pY: Single; FlagColor: TColor4; DoImmediateRender: Boolean = False);
@@ -213,6 +215,26 @@ begin
 end;
 
 
+function TRenderPool.GetUnitAnimSprite(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection;
+                                       aStep: Integer; aStepFrac: Single): Integer;
+var
+  A: TKMAnimLoop;
+const
+  INTERP_LEVEL = 8;
+begin
+  A := gRes.Units[aUnit].UnitAnim[aAct, aDir];
+  Result := A.Step[aStep mod Byte(A.Count) + 1] + 1;
+
+  if INTERPOLATED_ANIMS and (aUnit = utMilitia) and (aAct = uaWalk) then
+  begin
+    Result := 9301
+      + INTERP_LEVEL*A.Count*(Integer(aDir)-1)
+      + INTERP_LEVEL*(aStep mod Byte(A.Count))
+      + EnsureRange(Floor(INTERP_LEVEL*aStepFrac), 0, 7);
+  end;
+end;
+
+
 procedure TRenderPool.ReInit;
 begin
   if Self = nil then Exit;
@@ -234,7 +256,7 @@ var
   viewportPosRound: TKMPointF;
 begin
   //Need to round the viewport position so we only translate by whole pixels
-  viewportPosRound := RoundToTilePixel(fViewport.Position);
+  viewportPosRound := RoundToTilePixel(fViewport.Position, 1.0);
 
   glLoadIdentity; // Reset The View
 
@@ -1015,16 +1037,14 @@ begin
 end;
 
 
-procedure TRenderPool.AddUnit(aUnit: TKMUnitType; aUID: Integer; aAct: TKMUnitActionType; aDir: TKMDirection; StepId: Integer; pX,pY: Single; FlagColor: TColor4; NewInst: Boolean; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
+procedure TRenderPool.AddUnit(aUnit: TKMUnitType; aUID: Integer; aAct: TKMUnitActionType; aDir: TKMDirection; StepId: Integer; StepFrac: Single; pX,pY: Single; FlagColor: TColor4; NewInst: Boolean; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
 var
   cornerX, cornerY, ground: Single;
   id, id0: Integer;
-  A: TKMAnimLoop;
   R: TRXData;
 begin
-  A := gRes.Units[aUnit].UnitAnim[aAct, aDir];
-  id := A.Step[StepId mod Byte(A.Count) + 1] + 1;
-  id0 := A.Step[UNIT_STILL_FRAMES[aDir] mod Byte(A.Count) + 1] + 1;
+  id := GetUnitAnimSprite(aUnit, aAct, aDir, StepId, StepFrac);
+  id0 := GetUnitAnimSprite(aUnit, aAct, aDir, UNIT_STILL_FRAMES[aDir], 0.0);
   if id <= 0 then exit;
   R := fRXData[rxUnits];
 
@@ -1170,9 +1190,9 @@ begin
   if aUnit = utFish then
     aAct := FISH_COUNT_ACT[5]; // In map editor always render 5 fish
 
-  AddUnit(aUnit, aUID, aAct, aDir, StepId, pX, pY, FlagColor, True, DoImmediateRender, DoHignlight, HighlightColor);
+  AddUnit(aUnit, aUID, aAct, aDir, StepId, 0.0, pX, pY, FlagColor, True, DoImmediateRender, DoHignlight, HighlightColor);
   if gRes.Units[aUnit].SupportsAction(uaWalkArm) then
-    AddUnit(aUnit, aUID, uaWalkArm, aDir, StepId, pX, pY, FlagColor, True, DoImmediateRender, DoHignlight, HighlightColor);
+    AddUnit(aUnit, aUID, uaWalkArm, aDir, StepId, 0.0, pX, pY, FlagColor, True, DoImmediateRender, DoHignlight, HighlightColor);
 end;
 
 
@@ -1220,8 +1240,8 @@ begin
   if not aForced and (gMySpectator.FogOfWar.CheckVerticeRenderRev(X,Y) <= FOG_OF_WAR_MIN) then
     Exit;
 
-  pX := RoundToTilePixel(pX);
-  pY := RoundToTilePixel(pY);
+  pX := RoundToTilePixel(pX, fViewport.Zoom);
+  pY := RoundToTilePixel(pY, fViewport.Zoom);
 
   with gGFXData[aRX, aId] do
   begin
@@ -1270,11 +1290,11 @@ begin
   // Skip rendering if alphas are zero (occurs so non-started houses can still have child sprites)
   if (aWoodProgress = 0) and (aStoneProgress = 0) then Exit;
 
-  pX := RoundToTilePixel(pX);
-  pY := RoundToTilePixel(pY);
+  pX := RoundToTilePixel(pX, fViewport.Zoom);
+  pY := RoundToTilePixel(pY, fViewport.Zoom);
 
-  X2 := RoundToTilePixel(X2);
-  Y2 := RoundToTilePixel(Y2);
+  X2 := RoundToTilePixel(X2, fViewport.Zoom);
+  Y2 := RoundToTilePixel(Y2, fViewport.Zoom);
 
   glClear(GL_STENCIL_BUFFER_BIT);
 

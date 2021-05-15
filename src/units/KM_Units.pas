@@ -468,16 +468,16 @@ begin
   case fAction.fType of
     uaWalk:
       begin
-        gRenderPool.AddUnit(fType, ID, uaWalk, V.Dir, V.AnimStep, XPaintPos, YPaintPos, gHands[Owner].GameFlagColor, True);
+        gRenderPool.AddUnit(fType, ID, uaWalk, V.Dir, V.AnimStep, V.AnimFraction, XPaintPos, YPaintPos, gHands[Owner].GameFlagColor, True);
         if gRes.Units[fType].SupportsAction(uaWalkArm) then
-          gRenderPool.AddUnit(fType, ID, uaWalkArm, V.Dir, V.AnimStep, XPaintPos, YPaintPos, gHands[Owner].GameFlagColor, False);
+          gRenderPool.AddUnit(fType, ID, uaWalkArm, V.Dir, V.AnimStep, V.AnimFraction, XPaintPos, YPaintPos, gHands[Owner].GameFlagColor, False);
       end;
     uaWork..uaEat:
-        gRenderPool.AddUnit(fType, ID, act, V.Dir, V.AnimStep, XPaintPos, YPaintPos, gHands[Owner].GameFlagColor, True);
+        gRenderPool.AddUnit(fType, ID, act, V.Dir, V.AnimStep, V.AnimFraction, XPaintPos, YPaintPos, gHands[Owner].GameFlagColor, True);
     uaWalkArm .. uaWalkBooty2:
       begin
-        gRenderPool.AddUnit(fType, ID, uaWalk, V.Dir, V.AnimStep, XPaintPos, YPaintPos, gHands[Owner].GameFlagColor, True);
-        gRenderPool.AddUnit(fType, ID, act, V.Dir, V.AnimStep, XPaintPos, YPaintPos, gHands[Owner].GameFlagColor, False);
+        gRenderPool.AddUnit(fType, ID, uaWalk, V.Dir, V.AnimStep, V.AnimFraction, XPaintPos, YPaintPos, gHands[Owner].GameFlagColor, True);
+        gRenderPool.AddUnit(fType, ID, act, V.Dir, V.AnimStep, V.AnimFraction, XPaintPos, YPaintPos, gHands[Owner].GameFlagColor, False);
       end;
   end;
 
@@ -808,14 +808,14 @@ begin
 
   ID := UID * Byte(not (act in [uaDie, uaEat]));
 
-  gRenderPool.AddUnit(UnitType, ID, act, V.Dir, V.AnimStep, XPaintPos, YPaintPos, gHands[Owner].GameFlagColor, true);
+  gRenderPool.AddUnit(UnitType, ID, act, V.Dir, V.AnimStep, V.AnimFraction, XPaintPos, YPaintPos, gHands[Owner].GameFlagColor, true);
 
   if fTask is TKMTaskDie then Exit; //Do not show unnecessary arms
 
   if Carry <> wtNone then
     gRenderPool.AddUnitCarry(Carry, ID, V.Dir, V.AnimStep, XPaintPos, YPaintPos)
   else
-    gRenderPool.AddUnit(UnitType, ID, uaWalkArm, V.Dir, V.AnimStep, XPaintPos, YPaintPos, gHands[Owner].GameFlagColor, false);
+    gRenderPool.AddUnit(UnitType, ID, uaWalkArm, V.Dir, V.AnimStep, V.AnimFraction, XPaintPos, YPaintPos, gHands[Owner].GameFlagColor, false);
 
   if fThought <> thNone then
     gRenderPool.AddUnitThought(fType, act, V.Dir, fThought, XPaintPos, YPaintPos);
@@ -956,7 +956,7 @@ begin
 
   ID := UID * Byte(not (V.Action in [uaDie, uaEat]));
 
-  gRenderPool.AddUnit(UnitType, ID, V.Action, V.Dir, V.AnimStep, XPaintPos, YPaintPos, gHands[Owner].GameFlagColor, true);
+  gRenderPool.AddUnit(UnitType, ID, V.Action, V.Dir, V.AnimStep, V.AnimFraction, XPaintPos, YPaintPos, gHands[Owner].GameFlagColor, true);
 
   if fThought <> thNone then
     gRenderPool.AddUnitThought(fType, V.Action, V.Dir, fThought, XPaintPos, YPaintPos);
@@ -1111,7 +1111,7 @@ begin
 
   //Animals share the same WalkTo logic as other units and they exchange places if necessary
   //Animals can be picked only in MapEd
-  gRenderPool.AddUnit(fType, UID * Byte(gGameParams.IsMapEditor), act, V.Dir, V.AnimStep, XPaintPos, YPaintPos, $FFFFFFFF, True);
+  gRenderPool.AddUnit(fType, UID * Byte(gGameParams.IsMapEditor), act, V.Dir, V.AnimStep, V.AnimFraction, XPaintPos, YPaintPos, $FFFFFFFF, True);
 end;
 
 
