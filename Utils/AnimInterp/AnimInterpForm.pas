@@ -161,16 +161,18 @@ var
   A: TKMAnimLoop;
   I, Step: Integer;
   pngWidth, pngHeight, newWidth, newHeight: Word;
-  pngBase, pngShad, pngCrop: TKMCardinalArray;
+  pngBase, pngShad, pngTeam, pngCrop, pngCropMask: TKMCardinalArray;
   X, Y, MinX, MinY, MaxX, MaxY: Integer;
   StrList: TStringList;
-  dirBase, dirShad: string;
+  dirBase, dirShad, dirTeam: string;
 begin
   dirBase := fTempDir + 'base\';
   dirShad := fTempDir + 'shad\';
+  dirTeam := fTempDir + 'team\';
 
   MakeImagesInterpUnit(aUt, aAction, aDir, dirBase, ietBase);
   MakeImagesInterpUnit(aUt, aAction, aDir, dirShad, ietShadows);
+  MakeImagesInterpUnit(aUt, aAction, aDir, dirTeam, ietTeamMask);
 
   StrList := TStringList.Create;
   A := fResUnits[aUT].UnitAnim[aAction,aDir];
@@ -181,6 +183,7 @@ begin
   begin
     LoadFromPng(dirBase + 'interpolated_frames\' + format('%.15d.png', [Step]), pngWidth, pngHeight, pngBase);
     LoadFromPng(dirShad + 'interpolated_frames\' + format('%.15d.png', [Step]), pngWidth, pngHeight, pngShad);
+    LoadFromPng(dirTeam + 'interpolated_frames\' + format('%.15d.png', [Step]), pngWidth, pngHeight, pngTeam);
 
     //Determine Min/Max X/Y
     MinX := MaxInt;
@@ -191,7 +194,9 @@ begin
     begin
       for X := 0 to pngWidth-1 do
       begin
-        if (pngBase[Y*pngWidth + X] shr 24 <> 0) or ((pngShad[Y*pngWidth + X] and $FFFFFF) <> 0) then
+        if (pngBase[Y*pngWidth + X] shr 24 <> 0) or
+        ((pngShad[Y*pngWidth + X] and $FFFFFF) <> 0) or
+        ((pngTeam[Y*pngWidth + X] and $FFFFFF) <> 0) then
         begin
           MinX := Min(MinX, X);
           MinY := Min(MinY, Y);
@@ -206,6 +211,7 @@ begin
       newWidth := MaxX - MinX + 1;
       newHeight := MaxY - MinY + 1;
       SetLength(pngCrop, newWidth*newHeight);
+      SetLength(pngCropMask, newWidth*newHeight);
       I := 0;
       for Y := MinY to MaxY do
       begin
@@ -215,6 +221,9 @@ begin
           pngCrop[I] := pngShad[Y*pngWidth + X] shl 24;
           //Layer base sprite on top
           pngCrop[I] := BlendRGBA(pngCrop[I], pngBase[Y*pngWidth + X]);
+
+          pngCropMask[I] := pngTeam[Y*pngWidth + X];
+
           Inc(I);
         end;
       end;
@@ -232,6 +241,7 @@ begin
       ForceDirectories(ExeDir+'Sprites\3\');
       StrList.SaveToFile(ExeDir+'Sprites\3\'+format('3_%d.txt', [aPicOffset + Step]));
       SaveToPng(newWidth, newHeight, pngCrop, ExeDir+'Sprites\3\'+format('3_%d.png', [aPicOffset + Step]));
+      SaveToPng(newWidth, newHeight, pngCropMask, ExeDir+'Sprites\3\'+format('3_%dm.png', [aPicOffset + Step]));
     end;
   end;
 

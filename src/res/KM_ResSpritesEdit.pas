@@ -205,7 +205,7 @@ begin
       pngData[I] := $FFAF6B6B;
 
   //Shadow export uses a black background
-  if aExportType = ietShadows then
+  if aExportType in [ietShadows, ietTeamMask] then
     for I := Low(pngData) to High(pngData) do
       pngData[I] := $FF000000;
 
@@ -248,7 +248,20 @@ begin
       Continue;
     end;
 
-    if TreatMask then
+    if aExportType = ietTeamMask then
+    begin
+      if fRXData.HasMask[aIndex] then
+        M := fRXData.Mask[aIndex, I*srcWidth + K]
+      else
+        M := 0;
+
+      pngData[dstY*dstWidth + dstX] := M or (M shl 8) or (M shl 16) or $FF000000;
+
+      Continue;
+    end;
+
+
+    if TreatMask and (aExportType = ietNormal) then
     begin
       M := fRXData.Mask[aIndex, I*srcWidth + K];
 
