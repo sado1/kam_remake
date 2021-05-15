@@ -225,7 +225,7 @@ begin
   A := gRes.Units[aUnit].UnitAnim[aAct, aDir];
   Result := A.Step[aStep mod Byte(A.Count) + 1] + 1;
 
-  if INTERPOLATED_ANIMS and (aUnit = utMilitia) then
+  if INTERPOLATED_ANIMS and (aUnit = utMilitia) and (aAct = uaWalk) then
   begin
     Result := 9301
       + INTERP_LEVEL*A.Count*(Integer(aDir)-1)
