@@ -20,12 +20,8 @@
 ## These files are binary and should be left untouched
 #
 
-# Windows forced line-endings for maps .dat files
-*.dat text eol=crlf
-
 # (binary is a macro for -text -diff)
-*/data/defines/*.dat binary
-*/data/sfx/*.dat binary
+*.dat binary
 *.png binary
 *.jpg binary
 *.jpeg binary
