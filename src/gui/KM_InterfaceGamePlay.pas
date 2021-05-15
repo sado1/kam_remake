@@ -955,13 +955,15 @@ end;
 
 
 procedure TKMGamePlayInterface.Resize(X,Y: Word);
+const
+  PANEL_MIN_HEIGHT = 800;
 var
   showSwords: Boolean;
 begin
   inherited;
 
   // Show swords filler if screen height allows
-  showSwords := (Panel_Main.Height >= 758);
+  showSwords := (Panel_Main.Height >= PANEL_MIN_HEIGHT);
   Sidebar_Middle.Visible := showSwords;
 
   Panel_Stats.Top := (Panel_Main.Height - Panel_Stats.Height) div 2;

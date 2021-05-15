@@ -33,7 +33,7 @@ type
       Button_Menu_Quit: TKMButton;
     procedure DoShowSubMenu(aIndex: Byte); override;
   public
-    constructor Create(aParent: TKMPanel; aOnPageChange: TNotifyEvent; aOnMapTypChanged: TBooleanEvent);
+    constructor Create(aParent: TKMPanel; aOnPageChange: TNotifyEvent; aOnMapTypChanged: TBooleanEvent; aOnKeysUpdated: TEvent);
     destructor Destroy; override;
 
     property GuiMenuResize: TKMMapEdMenuResize read fGuiMenuResize;
@@ -54,7 +54,7 @@ uses
 
 
 { TKMapEdInterface }
-constructor TKMMapEdMenu.Create(aParent: TKMPanel; aOnPageChange: TNotifyEvent; aOnMapTypChanged: TBooleanEvent);
+constructor TKMMapEdMenu.Create(aParent: TKMPanel; aOnPageChange: TNotifyEvent; aOnMapTypChanged: TBooleanEvent; aOnKeysUpdated: TEvent);
 begin
   inherited Create;
 
@@ -62,7 +62,7 @@ begin
   fGuiMenuLoad := TKMMapEdMenuLoad.Create(aParent, MenuDone);
   fGuiMenuSave := TKMMapEdMenuSave.Create(aParent, MenuDone, aOnMapTypChanged);
   fGuiMenuQuit := TKMMapEdMenuQuit.Create(aParent, MenuDone);
-  fGuiMenuSettings := TKMMapEdMenuSettings.Create(aParent, MenuDone);
+  fGuiMenuSettings := TKMMapEdMenuSettings.Create(aParent, MenuDone, aOnKeysUpdated);
 
   Panel_Menu := TKMPanel.Create(aParent, 0, 45, aParent.Width, aParent.Height - 45);
   Panel_Menu.Anchors := [anLeft, anTop, anBottom];

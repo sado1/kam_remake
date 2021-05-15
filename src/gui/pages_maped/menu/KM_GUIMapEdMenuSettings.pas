@@ -3,12 +3,16 @@ unit KM_GUIMapEdMenuSettings;
 interface
 uses
    Classes, SysUtils,
-   KM_Controls;
+   KM_Controls, KM_GUICommonKeys,
+   KM_CommonTypes;
 
 type
   TKMMapEdMenuSettings = class
   private
+    fGuiCommonKeys: TKMGUICommonKeys;
     fOnDone: TNotifyEvent;
+
+    procedure KeysClick(Sender: TObject);
     procedure Back_Click(Sender: TObject);
     procedure Menu_Settings_Change(Sender: TObject);
   protected
@@ -19,9 +23,11 @@ type
       TrackBar_Settings_ScrollSpeed: TKMTrackBar;
       CheckBox_Settings_MusicOff: TKMCheckBox;
       CheckBox_Settings_ShuffleOn: TKMCheckBox;
+      Button_OptionsKeys: TKMButton;
       Button_Cancel: TKMButton;
   public
-    constructor Create(aParent: TKMPanel; aOnDone: TNotifyEvent);
+    constructor Create(aParent: TKMPanel; aOnDone: TNotifyEvent; aOnKeysUpdated: TEvent);
+    destructor Destroy; override;
 
     procedure Menu_Settings_Fill;
     procedure Show;
@@ -36,7 +42,7 @@ uses
 
 
 { TKMMapEdMenuQuit }
-constructor TKMMapEdMenuSettings.Create(aParent: TKMPanel; aOnDone: TNotifyEvent);
+constructor TKMMapEdMenuSettings.Create(aParent: TKMPanel; aOnDone: TNotifyEvent; aOnKeysUpdated: TEvent);
 const
   PAD = 9;
   WID = TB_MAP_ED_WIDTH - 9;
@@ -76,10 +82,25 @@ begin
     CheckBox_Settings_ShuffleOn.Hint := gResTexts[TX_MENU_OPTIONS_MUSIC_SHUFFLE_HINT];
     CheckBox_Settings_ShuffleOn.OnClick := Menu_Settings_Change;
 
-    Button_Cancel := TKMButton.Create(Panel_Settings, PAD, 310, WID, 30, gResTexts[TX_MENU_DONT_QUIT_MISSION], bsGame);
+    // Keybindings button
+    Button_OptionsKeys := TKMButton.Create(Panel_Settings, PAD, 315, WID, 30, gResTexts[TX_MENU_OPTIONS_KEYBIND], bsGame);
+    Button_OptionsKeys.Anchors := [anLeft, anTop];
+    Button_OptionsKeys.OnClick := KeysClick;
 
+    Button_Cancel := TKMButton.Create(Panel_Settings, PAD, 365, WID, 30, gResTexts[TX_MENU_DONT_QUIT_MISSION], bsGame);
     Button_Cancel.Hint := gResTexts[TX_MENU_DONT_QUIT_MISSION];
     Button_Cancel.OnClick := Back_Click;
+
+    // Panel_Options_Keys
+    fGuiCommonKeys := TKMGUICommonKeys.Create(aParent.MasterPanel, aOnKeysUpdated);
+end;
+
+
+destructor TKMMapEdMenuSettings.Destroy;
+begin
+  fGuiCommonKeys.Free;
+
+  inherited;
 end;
 
 
@@ -125,6 +146,12 @@ begin
 
   TrackBar_Settings_Music.Enabled := not CheckBox_Settings_MusicOff.Checked;
   CheckBox_Settings_ShuffleOn.Enabled := not CheckBox_Settings_MusicOff.Checked;
+end;
+
+
+procedure TKMMapEdMenuSettings.KeysClick(Sender: TObject);
+begin
+  fGuiCommonKeys.Show;
 end;
 
 

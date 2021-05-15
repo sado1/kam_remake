@@ -264,7 +264,7 @@ begin
   fGuiTown := TKMMapEdTown.Create(Panel_Common, PageChanged);
   fGuiPlayer := TKMMapEdPlayer.Create(Panel_Common, PageChanged);
   fGuiMission := TKMMapEdMission.Create(Panel_Common, PageChanged);
-  fGuiMenu := TKMMapEdMenu.Create(Panel_Common, PageChanged, MapTypeChanged);
+  fGuiMenu := TKMMapEdMenu.Create(Panel_Common, PageChanged, MapTypeChanged, UpdateHotkeys);
 
   //Objects pages
   fGuiUnit := TKMMapEdUnit.Create(Panel_Common);
@@ -1113,7 +1113,6 @@ begin
   fGuiPlayer.UpdateHotkeys;
   fGuiMission.UpdateHotkeys;
   fGuiMenu.UpdateHotkeys;
-//  fGuiHouse.UpdateHotkeys;
 end;
 
 
