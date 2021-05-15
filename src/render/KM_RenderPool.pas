@@ -230,7 +230,7 @@ begin
     Result := 9301
       + INTERP_LEVEL*A.Count*(Integer(aDir)-1)
       + INTERP_LEVEL*(aStep mod Byte(A.Count))
-      + EnsureRange(Floor(INTERP_LEVEL*aStepFrac), 0, 7);
+      + EnsureRange(Floor(INTERP_LEVEL*aStepFrac), 0, INTERP_LEVEL-1);
   end;
 end;
 
