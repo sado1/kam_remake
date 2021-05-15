@@ -8,8 +8,14 @@ uses
   KM_ResPalettes, KM_Defaults, KM_CommonTypes, KM_Points, KM_ResSprites, KM_ResSpritesEdit, KM_Pics, KM_ResUnits;
 
 type
+  TAnimCacheItem = record
+    PicOffset: Integer;
+    A: TKMAnimLoop;
+  end;
+
   TForm1 = class(TForm)
     btnProcessUnits: TButton;
+    Memo1: TMemo;
     procedure btnProcessUnitsClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
@@ -18,12 +24,14 @@ type
     fResUnits: TKMResUnits;
     fSprites: array[TRXType] of TKMSpritePackEdit;
 
+    fAnimCache: array of TAnimCacheItem;
+
     fTempDir: string;
     fDainFolder: string;
 
     function GetDainParams(aDir: string; aAlpha: Boolean): string;
     procedure MakeImagesInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; aBaseDir: string; aExportType: TInterpExportType);
-    function DoInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; aPicOffset: Integer): Integer;
+    function DoInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; var aPicOffset: Integer): Integer;
   public
     { Public declarations }
   end;
@@ -33,7 +41,7 @@ var
 
 implementation
 uses
-  ShellApi, Math, KM_FileIO, KromUtils,
+  ShellApi, Math, RTTI, KM_FileIO, KromUtils,
   KM_ResHouses, KM_Log, KM_PNG;
 
 {$R *.dfm}
@@ -73,7 +81,7 @@ end;
 procedure TForm1.MakeImagesInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; aBaseDir: string; aExportType: TInterpExportType);
 var
   RT: TRXType;
-  RXName, origSpritesDir, interpSpritesDir: string;
+  origSpritesDir, interpSpritesDir: string;
   A: TKMAnimLoop;
   Step, SpriteID: Integer;
   StartupInfo: TStartupInfo;
@@ -81,12 +89,6 @@ var
   NeedAlpha: Boolean;
 begin
   RT := rxUnits;
-  if fSprites[RT] = nil then
-  begin
-    fSprites[RT] := TKMSpritePackEdit.Create(RT, fPalettes);
-    RXName := ExeDir + 'data\Sprites\' + RXInfo[RT].FileName + '_a.rxx';
-    fSprites[RT].LoadFromRXXFile(RXName);
-  end;
 
   origSpritesDir := aBaseDir + 'original_frames\';
   interpSpritesDir := aBaseDir + 'interpolated_frames\';
@@ -159,8 +161,19 @@ begin
 end;
 
 
-function TForm1.DoInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; aPicOffset: Integer): Integer;
+function TForm1.DoInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; var aPicOffset: Integer): Integer;
+
+  function SameAnim(A, B: TKMAnimLoop): Boolean;
+  var
+    I: Integer;
+  begin
+    Result := A.Count = B.Count;
+    for I := 1 to 30 do
+      Result := Result and (A.Step[I] = B.Step[I]);
+  end;
+
 var
+  RT: TRXType;
   A: TKMAnimLoop;
   I, Step: Integer;
   pngWidth, pngHeight, newWidth, newHeight: Word;
@@ -169,7 +182,40 @@ var
   NoShadMinX, NoShadMinY, NoShadMaxX, NoShadMaxY: Integer;
   StrList: TStringList;
   dirBase, dirShad, dirTeam: string;
+  needsMask: Boolean;
 begin
+  RT := rxUnits;
+  if fSprites[RT] = nil then
+  begin
+    fSprites[RT] := TKMSpritePackEdit.Create(RT, fPalettes);
+    fSprites[RT].LoadFromRXXFile(ExeDir + 'data\Sprites\' + RXInfo[RT].FileName + '_a.rxx');
+  end;
+
+  if (aDir = dirNA) or not fResUnits[aUT].SupportsAction(aAction) then
+    Exit(-1);
+
+  A := fResUnits[aUT].UnitAnim[aAction,aDir];
+
+  if A.Count <= 0 then
+    Exit(-1);
+
+  for I := Low(fAnimCache) to High(fAnimCache) do
+  begin
+    if SameAnim(fAnimCache[I].A, A) then
+    begin
+      Result := fAnimCache[I].PicOffset;
+      Exit;
+    end;
+  end;
+
+  Result := aPicOffset;
+  SetLength(fAnimCache, Length(fAnimCache)+1);
+  fAnimCache[Length(fAnimCache)-1].A := A;
+  fAnimCache[Length(fAnimCache)-1].PicOffset := aPicOffset;
+
+  {aPicOffset := aPicOffset + 8*A.Count;
+  Exit;}
+
   dirBase := fTempDir + 'base\';
   dirShad := fTempDir + 'shad\';
   dirTeam := fTempDir + 'team\';
@@ -183,10 +229,13 @@ begin
   MakeImagesInterpUnit(aUt, aAction, aDir, dirTeam, ietTeamMask);
 
   StrList := TStringList.Create;
-  A := fResUnits[aUT].UnitAnim[aAction,aDir];
+
+  needsMask := False;
+  for Step := 1 to A.Count do
+    if fSprites[RT].RXData.HasMask[A.Step[Step]] then
+      needsMask := True;
 
   //Import and reprocess
-  Result := 8*A.Count;
   for Step := 1 to 8*A.Count do
   begin
     LoadFromPng(dirBase + 'interpolated_frames\' + format('%.15d.png', [Step]), pngWidth, pngHeight, pngBase);
@@ -260,22 +309,58 @@ begin
       ForceDirectories(ExeDir+'Sprites\3\');
       StrList.SaveToFile(ExeDir+'Sprites\3\'+format('3_%d.txt', [aPicOffset + Step]));
       SaveToPng(newWidth, newHeight, pngCrop, ExeDir+'Sprites\3\'+format('3_%d.png', [aPicOffset + Step]));
-      SaveToPng(newWidth, newHeight, pngCropMask, ExeDir+'Sprites\3\'+format('3_%dm.png', [aPicOffset + Step]));
+      if needsMask then
+        SaveToPng(newWidth, newHeight, pngCropMask, ExeDir+'Sprites\3\'+format('3_%dm.png', [aPicOffset + Step]));
     end;
   end;
+
+  aPicOffset := aPicOffset + 8*A.Count;
 
   FreeAndNil(StrList);
 end;
 
 procedure TForm1.btnProcessUnitsClick(Sender: TObject);
 var
-  picOffset: Integer;
+  picOffset, animPicOffset: Integer;
   dir: TKMDirection;
+  act: TKMUnitActionType;
+  u: TKMUnitType;
+  animData: string;
 begin
   picOffset := 9300;
-  dir := dirE;
-  for dir := dirN to dirNW do
-    picOffset := picOffset + DoInterpUnit(utMilitia, uaWalk, dir, picOffset);
+  //dir := dirE;
+
+  animData := animData + '['+#13#10;
+  for u := Low(TKMUnitType) to High(TKMUnitType) do
+  begin
+    animData := animData + '  ['+' // '+TRttiEnumerationType.GetName(u)+#13#10;
+    for act := Low(TKMUnitActionType) to High(TKMUnitActionType) do
+    begin
+      animData := animData + '    [';
+      for dir := Low(TKMDirection) to High(TKMDirection) do
+      begin
+        animPicOffset := DoInterpUnit(u, act, dir, picOffset);
+
+        if animPicOffset >= 0 then
+          animData := animData + IntToStr(animPicOffset)
+        else
+          animData := animData + '-1';
+
+        if dir <> High(TKMDirection) then
+          animData := animData + ',';
+      end;
+      animData := animData + ']';
+      if act <> High(TKMUnitActionType) then
+        animData := animData + ',';
+      animData := animData+' // '+UNIT_ACT_STR[act]+#13#10;
+    end;
+    animData := animData + '  ]';
+    if u <> High(TKMUnitType) then
+      animData := animData + ','+#13#10;
+  end;
+  animData := animData + #13#10 + ']';
+
+  Memo1.Text := animData;
 end;
 
 end.
