@@ -16,6 +16,8 @@ type
   TForm1 = class(TForm)
     btnProcessUnits: TButton;
     Memo1: TMemo;
+    memoErrors: TMemo;
+    Label1: TLabel;
     procedure btnProcessUnitsClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
@@ -109,7 +111,9 @@ begin
     if SpriteID > 0 then
     begin
       fSprites[RT].ExportImageForInterp(origSpritesDir + format('%.6d.png', [Step]), SpriteID, aExportType);
-    end;
+    end
+    else
+      raise Exception.Create('SpriteID = 0 for step '+IntToStr(Step));
   end;
   //Write out the first sprite again to create a loop
   SpriteID := A.Step[1]+1; //Sprites in units.dat are 0 indexed
@@ -204,14 +208,6 @@ begin
       Exit;
     end;
   end;
-
-  Result := aPicOffset;
-  SetLength(fAnimCache, Length(fAnimCache)+1);
-  fAnimCache[Length(fAnimCache)-1].A := A;
-  fAnimCache[Length(fAnimCache)-1].PicOffset := aPicOffset;
-
-  {aPicOffset := aPicOffset + 8*A.Count;
-  Exit;}
 
   dirBase := fTempDir + 'base\';
   dirShad := fTempDir + 'shad\';
@@ -314,6 +310,10 @@ begin
     end;
   end;
 
+  Result := aPicOffset;
+  SetLength(fAnimCache, Length(fAnimCache)+1);
+  fAnimCache[Length(fAnimCache)-1].A := A;
+  fAnimCache[Length(fAnimCache)-1].PicOffset := aPicOffset;
   aPicOffset := aPicOffset + 8*A.Count;
 
   FreeAndNil(StrList);
@@ -339,15 +339,20 @@ begin
       animData := animData + '    [';
       for dir := Low(TKMDirection) to High(TKMDirection) do
       begin
-        animPicOffset := DoInterpUnit(u, act, dir, picOffset);
+        try
+          animPicOffset := DoInterpUnit(u, act, dir, picOffset);
 
-        if animPicOffset >= 0 then
-          animData := animData + IntToStr(animPicOffset)
-        else
-          animData := animData + '-1';
+          if animPicOffset >= 0 then
+            animData := animData + IntToStr(animPicOffset)
+          else
+            animData := animData + '-1';
 
-        if dir <> High(TKMDirection) then
-          animData := animData + ',';
+          if dir <> High(TKMDirection) then
+            animData := animData + ',';
+        except
+          on E: Exception do
+            memoErrors.Text := memoErrors.Text + TRttiEnumerationType.GetName(u) + ' - ' + UNIT_ACT_STR[act] + ' - ' + TRttiEnumerationType.GetName(dir) + ' - ' + E.Message + #13#10;
+        end;
       end;
       animData := animData + ']';
       if act <> High(TKMUnitActionType) then
