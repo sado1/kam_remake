@@ -956,7 +956,7 @@ end;
 
 procedure TKMGamePlayInterface.Resize(X,Y: Word);
 const
-  PANEL_MIN_HEIGHT = 800;
+  PANEL_MIN_HEIGHT = 840;
 var
   showSwords: Boolean;
 begin

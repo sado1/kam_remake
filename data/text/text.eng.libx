@@ -1463,3 +1463,6 @@
 1513:Current game speed
 1514:Current replay speed
 1515:Recorded game speed
+1516:Interpolated render
+1517:Interpolated|render
+1518:Interpolated render hint

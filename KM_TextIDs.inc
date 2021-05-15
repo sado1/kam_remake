@@ -1567,3 +1567,7 @@ TX_RESULTS_MISSION_TIME = 1512; //Mission time:
 TX_GAME_UI_GAME_SPEED_ACTUAL = 1513; //Current game speed
 TX_GAME_UI_REPLAY_SPEED_ACTUAL = 1514; //Current replay speed
 TX_GAME_UI_SPEED_RECORDED = 1515; //Recorded game speed
+
+TX_MENU_OPTIONS_LERP_RENDER = 1516; //Interpolated render
+TX_GAME_SETTINGS_LERP_RENDER = 1517; //Interpolated|render
+TX_SETTINGS_LERP_RENDER_HINT = 1518; //Interpolated render hint

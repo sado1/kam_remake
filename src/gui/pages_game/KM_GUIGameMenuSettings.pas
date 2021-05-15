@@ -17,6 +17,7 @@ type
   protected
     Panel_Settings: TKMPanel;
       CheckBox_Autosave: TKMCheckBox;
+      CheckBox_LerpRender: TKMCheckBox;
       CheckBox_AllyEnemy_ColorMode: TKMCheckBox;
       CheckBox_ReplayAutopauseAtPTEnd: TKMCheckBox;
       CheckBox_ReplaySpecShowBeacons: TKMCheckBox;
@@ -64,7 +65,12 @@ begin
     CheckBox_Autosave.OnClick := Menu_Settings_Change;
     Inc(topPos, 25);
 
-    CheckBox_AllyEnemy_ColorMode := TKMCheckBox.Create(Panel_Settings,PAD,topPos,WID,20,gResTexts[TX_GAME_SETTINGS_COLOR_MODE],fntMetal);
+    CheckBox_LerpRender := TKMCheckBox.Create(Panel_Settings, PAD, topPos, WID, 40, gResTexts[TX_GAME_SETTINGS_LERP_RENDER], fntMetal);
+    CheckBox_LerpRender.Hint := gResTexts[TX_SETTINGS_LERP_RENDER_HINT];
+    CheckBox_LerpRender.OnClick := Menu_Settings_Change;
+    Inc(topPos, 40);
+
+    CheckBox_AllyEnemy_ColorMode := TKMCheckBox.Create(Panel_Settings,PAD,topPos,WID,40,gResTexts[TX_GAME_SETTINGS_COLOR_MODE],fntMetal);
     CheckBox_AllyEnemy_ColorMode.Hint := gResTexts[TX_GAME_SETTINGS_COLOR_MODE_HINT];
     CheckBox_AllyEnemy_ColorMode.OnClick := Menu_Settings_Change;
     Inc(topPos, 40);
@@ -102,7 +108,7 @@ begin
     CheckBox_ShuffleOn := TKMCheckBox.Create(Panel_Settings,PAD,topPos,WID,20,gResTexts[TX_MENU_OPTIONS_MUSIC_SHUFFLE_SHORT],fntMetal);
     CheckBox_ShuffleOn.Hint := gResTexts[TX_MENU_OPTIONS_MUSIC_SHUFFLE_HINT];
     CheckBox_ShuffleOn.OnClick := Menu_Settings_Change;
-
+    Inc(topPos, 40);
     // Keybindings button
     Button_OptionsKeys := TKMButton.Create(Panel_Settings, 0, topPos, TB_WIDTH, 30, gResTexts[TX_MENU_OPTIONS_KEYBIND], bsGame);
     Button_OptionsKeys.Anchors := [anLeft];
@@ -147,6 +153,9 @@ begin
     Inc(top, 25);
   end;
 
+  CheckBox_LerpRender.Top := top;
+  Inc(top, 40);
+
   CheckBox_AllyEnemy_ColorMode.Top := top;
   CheckBox_AllyEnemy_ColorMode.DoSetVisible;
   Inc(top, 40);
@@ -178,14 +187,17 @@ begin
   CheckBox_MusicOff.Top := top;
   Inc(top, 25);
   CheckBox_ShuffleOn.Top := top;
+  Inc(top, 25);
+  Button_OptionsKeys.Top := top;
 
-  Panel_Settings.Height := CheckBox_ShuffleOn.Top + CheckBox_ShuffleOn.Height + 2;
+  Panel_Settings.Height := Button_OptionsKeys.Bottom + 2;
 end;
 
 procedure TKMGameMenuSettings.Refresh;
 begin
   TrackBar_Brightness.Position     := gGameSettings.Brightness;
   CheckBox_Autosave.Checked        := gGameSettings.Autosave;
+  CheckBox_LerpRender.Checked      := gGameSettings.InterpolatedRender;
   CheckBox_ReplayAutopauseAtPTEnd.Checked := gGameSettings.ReplayAutopause;
   TrackBar_ScrollSpeed.Position    := gGameSettings.ScrollSpeed;
   TrackBar_SFX.Position            := Round(gGameSettings.SoundFXVolume * TrackBar_SFX.MaxValue);
@@ -216,6 +228,7 @@ begin
 
   gGameSettings.Brightness            := TrackBar_Brightness.Position;
   gGameSettings.Autosave              := CheckBox_Autosave.Checked;
+  gGameSettings.InterpolatedRender    := CheckBox_LerpRender.Checked;
   gGameSettings.ReplayAutopause       := CheckBox_ReplayAutopauseAtPTEnd.Checked;
   gGameSettings.ScrollSpeed           := TrackBar_ScrollSpeed.Position;
   gGameSettings.SoundFXVolume         := TrackBar_SFX.Position / TrackBar_SFX.MaxValue;
