@@ -207,9 +207,9 @@ end;
 
 procedure TKMMapEdTownOffence.UpdateHotkeys;
 begin
-  CheckBox_AutoAttack.Hint := GetHintWHotKey(TX_MAPED_AI_ATTACK_AUTO_HINT, MAPED_SUBMENU_ACTIONS_HOTKEYS[0]);
-  Button_AttacksAdd.Hint   := GetHintWHotKey(TX_MAPED_AI_ATTACK_ADD,       MAPED_SUBMENU_ACTIONS_HOTKEYS[1]);
-  Button_AttacksDel.Hint   := GetHintWHotKey(TX_MAPED_AI_ATTACK_DEL,       MAPED_SUBMENU_ACTIONS_HOTKEYS[2]);
+  CheckBox_AutoAttack.Hint := GetHintWHotkey(TX_MAPED_AI_ATTACK_AUTO_HINT, MAPED_SUBMENU_ACTIONS_HOTKEYS[0]);
+  Button_AttacksAdd.Hint   := GetHintWHotkey(TX_MAPED_AI_ATTACK_ADD,       MAPED_SUBMENU_ACTIONS_HOTKEYS[1]);
+  Button_AttacksDel.Hint   := GetHintWHotkey(TX_MAPED_AI_ATTACK_DEL,       MAPED_SUBMENU_ACTIONS_HOTKEYS[2]);
 end;
 
 

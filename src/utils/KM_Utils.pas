@@ -17,9 +17,9 @@ uses
 
   function KMPathLength(aNodeList: TKMPointList): Single;
 
-  function GetHintWHotKey(const aText: String; aKeyFunc: TKMKeyFunction): String; overload;
-  function GetHintWHotKey(aTextId: Integer; const aHotkeyStr: String): String; overload;
-  function GetHintWHotKey(aTextId: Integer; aKeyFunc: TKMKeyFunction): String; overload;
+  function GetHintWHotkey(const aText: String; aKeyFunc: TKMKeyFunction): String; overload;
+  function GetHintWHotkey(aTextId: Integer; const aHotkeyStr: String): String; overload;
+  function GetHintWHotkey(aTextId: Integer; aKeyFunc: TKMKeyFunction): String; overload;
 
 	function GetShiftState(aButton: TMouseButton): TShiftState;
   function GetMultiplicator(aButton: TMouseButton): Word; overload;
@@ -311,7 +311,7 @@ begin
 end;
 
 
-function GetHintWHotKey(const aText: String; aKeyFunc: TKMKeyFunction): String;
+function GetHintWHotkey(const aText: String; aKeyFunc: TKMKeyFunction): String;
 var
   hotKeyStr: String;
 begin
@@ -322,7 +322,7 @@ begin
 end;
 
 
-function GetHintWHotKey(aTextId: Integer; const aHotkeyStr: String): String;
+function GetHintWHotkey(aTextId: Integer; const aHotkeyStr: String): String;
 var
   hotKeyStr: string;
 begin
@@ -333,9 +333,9 @@ begin
 end;
 
 
-function GetHintWHotKey(aTextId: Integer; aKeyFunc: TKMKeyFunction): String;
+function GetHintWHotkey(aTextId: Integer; aKeyFunc: TKMKeyFunction): String;
 begin
-  Result := GetHintWHotKey(aTextId, gResKeys.GetKeyNameById(aKeyFunc));
+  Result := GetHintWHotkey(aTextId, gResKeys.GetKeyNameById(aKeyFunc));
 end;
 
 

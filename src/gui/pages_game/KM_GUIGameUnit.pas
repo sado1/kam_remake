@@ -379,13 +379,13 @@ var
 begin
   // Hints
   Button_Army_GoTo.Hint     := gResTexts[TX_ARMY_GOTO_HINT];
-  Button_Army_Stop.Hint     := GetHintWHotKey(TX_TROOP_HALT_HINT, kfArmyHalt);
+  Button_Army_Stop.Hint     := GetHintWHotkey(TX_TROOP_HALT_HINT, kfArmyHalt);
   Button_Army_Attack.Hint   := gResTexts[TX_ARMY_ATTACK_HINT];
-  Button_Army_RotCW.Hint    := GetHintWHotKey(TX_ARMY_ROTATE_CW_HINT, kfArmyRotateCw);
-  Button_Army_Storm.Hint    := GetHintWHotKey(TX_ARMY_STORM_HINT, kfArmyStorm);
-  Button_Army_RotCCW.Hint   := GetHintWHotKey(TX_ARMY_ROTATE_CCW_HINT, kfArmyRotateCcw);
-  Button_Army_ForDown.Hint  := GetHintWHotKey(TX_ARMY_LINE_ADD_HINT, kfArmyAddLine);
-  Button_Army_ForUp.Hint    := GetHintWHotKey(TX_ARMY_LINE_REM_HINT, kfArmyDelLine);
+  Button_Army_RotCW.Hint    := GetHintWHotkey(TX_ARMY_ROTATE_CW_HINT, kfArmyRotateCw);
+  Button_Army_Storm.Hint    := GetHintWHotkey(TX_ARMY_STORM_HINT, kfArmyStorm);
+  Button_Army_RotCCW.Hint   := GetHintWHotkey(TX_ARMY_ROTATE_CCW_HINT, kfArmyRotateCcw);
+  Button_Army_ForDown.Hint  := GetHintWHotkey(TX_ARMY_LINE_ADD_HINT, kfArmyAddLine);
+  Button_Army_ForUp.Hint    := GetHintWHotkey(TX_ARMY_LINE_REM_HINT, kfArmyDelLine);
 
   splitKeyStr := gResKeys.GetKeyNameById(kfArmySplit);
 
@@ -393,10 +393,10 @@ begin
   if CountOccurrences('%s', gResTexts[TX_TROOP_SPLIT_HINT]) = 2 then
     Button_Army_Split.Hint    := Format(gResTexts[TX_TROOP_SPLIT_HINT], [splitKeyStr, splitKeyStr])
   else
-    Button_Army_Split.Hint     := GetHintWHotKey(TX_TROOP_SPLIT_HINT, splitKeyStr); //Old hint
+    Button_Army_Split.Hint     := GetHintWHotkey(TX_TROOP_SPLIT_HINT, splitKeyStr); //Old hint
 
-  Button_Army_Join.Hint     := GetHintWHotKey(TX_TROOP_LINK_HINT, kfArmyLink);
-  Button_Army_Feed.Hint     := GetHintWHotKey(TX_ARMY_FEED_HINT, kfArmyFood);
+  Button_Army_Join.Hint     := GetHintWHotkey(TX_TROOP_LINK_HINT, kfArmyLink);
+  Button_Army_Feed.Hint     := GetHintWHotkey(TX_ARMY_FEED_HINT, kfArmyFood);
 end;
 
 

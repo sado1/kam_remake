@@ -183,12 +183,12 @@ end;
 
 procedure TKMMapEdMenu.UpdateHotkeys;
 begin
-  Button_Resize.Hint        := GetHintWHotKey(TX_MAPED_MAP_RESIZE,          MAPED_SUBMENU_HOTKEYS[0]);
-  Button_QuickPlay.Hint     := GetHintWHotKey(TX_MAPED_MAP_QUICK_PLAY_HINT, MAPED_SUBMENU_HOTKEYS[1]);
-  Button_Menu_Load.Hint     := GetHintWHotKey(TX_MAPED_LOAD_TITLE,          MAPED_SUBMENU_HOTKEYS[2]);
-  Button_Menu_Save.Hint     := GetHintWHotKey(TX_MAPED_SAVE_TITLE,          MAPED_SUBMENU_HOTKEYS[3]);
-  Button_Menu_Settings.Hint := GetHintWHotKey(TX_MENU_SETTINGS,             MAPED_SUBMENU_HOTKEYS[4]);
-  Button_Menu_Quit.Hint     := GetHintWHotKey(TX_MENU_QUIT_MAPED,           MAPED_SUBMENU_HOTKEYS[5]);
+  Button_Resize.Hint        := GetHintWHotkey(TX_MAPED_MAP_RESIZE,          MAPED_SUBMENU_HOTKEYS[0]);
+  Button_QuickPlay.Hint     := GetHintWHotkey(TX_MAPED_MAP_QUICK_PLAY_HINT, MAPED_SUBMENU_HOTKEYS[1]);
+  Button_Menu_Load.Hint     := GetHintWHotkey(TX_MAPED_LOAD_TITLE,          MAPED_SUBMENU_HOTKEYS[2]);
+  Button_Menu_Save.Hint     := GetHintWHotkey(TX_MAPED_SAVE_TITLE,          MAPED_SUBMENU_HOTKEYS[3]);
+  Button_Menu_Settings.Hint := GetHintWHotkey(TX_MENU_SETTINGS,             MAPED_SUBMENU_HOTKEYS[4]);
+  Button_Menu_Quit.Hint     := GetHintWHotkey(TX_MENU_QUIT_MAPED,           MAPED_SUBMENU_HOTKEYS[5]);
 end;
 
 

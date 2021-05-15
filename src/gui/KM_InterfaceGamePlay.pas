@@ -4662,8 +4662,8 @@ procedure TKMGamePlayInterface.UpdateHotkeys;
 begin
   inherited;
 
-  Button_Menu_TrackUp.Hint := GetHintWHotKey(TX_MUSIC_NEXT_HINT, kfMusicNextTrack);
-  Button_Menu_TrackDown.Hint := GetHintWHotKey(TX_MUSIC_PREV_HINT, kfMusicPrevTrack);
+  Button_Menu_TrackUp.Hint := GetHintWHotkey(TX_MUSIC_NEXT_HINT, kfMusicNextTrack);
+  Button_Menu_TrackDown.Hint := GetHintWHotkey(TX_MUSIC_PREV_HINT, kfMusicPrevTrack);
 
   fGuiGameBuild.UpdateHotkeys;
   fGuiGameHouse.UpdateHotkeys;

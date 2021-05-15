@@ -249,13 +249,13 @@ end;
 
 procedure TKMMapEdTerrainSelection.UpdateHotkeys;
 begin
-  Button_SelectCopy.Hint        := GetHintWHotKey(TX_MAPED_COPY_COPY_HINT,        kfMapedSubMenuAction1);
-  Button_SelectPaste.Hint       := GetHintWHotKey(TX_MAPED_COPY_PASTE_HINT,       kfMapedSubMenuAction2);
-  Button_SelectPasteApply.Hint  := GetHintWHotKey(TX_MAPED_COPY_PASTE_HINT,       kfMapedSubMenuAction3);
-  Button_SelectPasteCancel.Hint := GetHintWHotKey(TX_MAPED_COPY_PASTE_HINT,       kfMapedSubMenuAction4);
-  Button_SelectFlipH.Hint       := GetHintWHotKey(TX_MAPED_COPY_PASTE_HFLIP_HINT, kfMapedSubMenuAction5);
-  Button_SelectFlipV.Hint       := GetHintWHotKey(TX_MAPED_COPY_PASTE_VFLIP_HINT, kfMapedSubMenuAction6);
-  Button_RMGRND.Hint            := GetHintWHotKey(TX_MAPED_RMG_BUTTON_HINT,       kfMapedSubMenuAction7);
+  Button_SelectCopy.Hint        := GetHintWHotkey(TX_MAPED_COPY_COPY_HINT,        kfMapedSubMenuAction1);
+  Button_SelectPaste.Hint       := GetHintWHotkey(TX_MAPED_COPY_PASTE_HINT,       kfMapedSubMenuAction2);
+  Button_SelectPasteApply.Hint  := GetHintWHotkey(TX_MAPED_COPY_PASTE_HINT,       kfMapedSubMenuAction3);
+  Button_SelectPasteCancel.Hint := GetHintWHotkey(TX_MAPED_COPY_PASTE_HINT,       kfMapedSubMenuAction4);
+  Button_SelectFlipH.Hint       := GetHintWHotkey(TX_MAPED_COPY_PASTE_HFLIP_HINT, kfMapedSubMenuAction5);
+  Button_SelectFlipV.Hint       := GetHintWHotkey(TX_MAPED_COPY_PASTE_VFLIP_HINT, kfMapedSubMenuAction6);
+  Button_RMGRND.Hint            := GetHintWHotkey(TX_MAPED_RMG_BUTTON_HINT,       kfMapedSubMenuAction7);
 end;
 
 

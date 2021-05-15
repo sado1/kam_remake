@@ -253,7 +253,7 @@ var
   TT: TKMTerrainTab;
 begin
   for TT := Low(TKMTerrainTab) to High(TKMTerrainTab) do
-    Button_Terrain[TT].Hint := GetHintWHotKey(TAB_HINT[TT], MAPED_SUBMENU_HOTKEYS[Ord(TT)]);
+    Button_Terrain[TT].Hint := GetHintWHotkey(TAB_HINT[TT], MAPED_SUBMENU_HOTKEYS[Ord(TT)]);
 
   fGuiBrushes.UpdateHotkeys;
   fGuiHeights.UpdateHotkeys;

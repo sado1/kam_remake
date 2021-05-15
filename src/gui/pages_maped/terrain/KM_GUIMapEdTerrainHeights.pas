@@ -74,19 +74,19 @@ begin
   HeightSize          := TKMTrackBar.Create(Panel_Heights, 9, 60, Panel_Heights.Width - 9, 1, 15); //1..15(4bit) for size
   HeightSize.Anchors := [anLeft, anTop, anRight];
   HeightSize.Caption  := gResTexts[TX_MAPED_TERRAIN_HEIGHTS_SIZE];
-  HeightSize.Hint     := GetHintWHotKey(TX_MAPED_TERRAIN_HEIGHTS_SIZE_HINT, gResTexts[TX_KEY_CTRL_MOUSEWHEEL]);
+  HeightSize.Hint     := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_SIZE_HINT, gResTexts[TX_KEY_CTRL_MOUSEWHEEL]);
   HeightSize.OnChange := HeightChange;
 
   HeightSlope           := TKMTrackBar.Create(Panel_Heights, 9, 115, Panel_Heights.Width - 9, 1, 15); //1..15(4bit) for slope shape
   HeightSlope.Anchors := [anLeft, anTop, anRight];
   HeightSlope.Caption   := gResTexts[TX_MAPED_TERRAIN_HEIGHTS_SLOPE];
-  HeightSlope.Hint      := GetHintWHotKey(TX_MAPED_TERRAIN_HEIGHTS_SLOPE_HINT, gResTexts[TX_KEY_ALT_MOUSEWHEEL]);
+  HeightSlope.Hint      := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_SLOPE_HINT, gResTexts[TX_KEY_ALT_MOUSEWHEEL]);
   HeightSlope.OnChange  := HeightChange;
 
   HeightSpeed           := TKMTrackBar.Create(Panel_Heights, 9, 170, Panel_Heights.Width - 9, 1, 15); //1..15(4bit) for speed
   HeightSpeed.Anchors := [anLeft, anTop, anRight];
   HeightSpeed.Caption   := gResTexts[TX_MAPED_TERRAIN_HEIGHTS_SPEED];
-  HeightSpeed.Hint      := GetHintWHotKey(TX_MAPED_TERRAIN_HEIGHTS_SPEED_HINT, gResTexts[TX_KEY_SHIFT_MOUSEWHEEL]);
+  HeightSpeed.Hint      := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_SPEED_HINT, gResTexts[TX_KEY_SHIFT_MOUSEWHEEL]);
   HeightSpeed.OnChange  := HeightChange;
 
   HeightElevate               := TKMButtonFlat.Create(Panel_Heights, 9, 225, Panel_Heights.Width - 9, 20, 0);

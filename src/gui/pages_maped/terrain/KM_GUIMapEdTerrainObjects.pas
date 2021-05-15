@@ -291,7 +291,7 @@ begin
   BrushSize.Anchors := [anLeft, anTop, anRight];
   BrushSize.Position := 1;
   BrushSize.OnChange := ObjectsBrushChange;
-  BrushSize.Hint := GetHintWHotKey(TX_MAPED_TERRAIN_HEIGHTS_SIZE_HINT, gResTexts[TX_KEY_CTRL_MOUSEWHEEL]);
+  BrushSize.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_SIZE_HINT, gResTexts[TX_KEY_CTRL_MOUSEWHEEL]);
 
   BrushCircle := TKMButtonFlat.Create(Panel_Objects, Panel_Objects.Width - (BTN_BRUSH_TYPE_S * 2) - 18, top, BTN_BRUSH_TYPE_S, BTN_BRUSH_TYPE_S, 592);
   BrushCircle.Anchors := [anTop, anRight];
@@ -352,7 +352,7 @@ begin
   ForestDensity.Caption := gResTexts[TX_MAPED_OBJECTS_BRUSH_DENSITY];
   ForestDensity.Position := 10;
   ForestDensity.OnChange := ObjectsBrushChange;
-  ForestDensity.Hint := GetHintWHotKey(TX_MAPED_OBJECTS_BRUSH_DENSITY_HINT, gResTexts[TX_KEY_ALT_MOUSEWHEEL]);
+  ForestDensity.Hint := GetHintWHotkey(TX_MAPED_OBJECTS_BRUSH_DENSITY_HINT, gResTexts[TX_KEY_ALT_MOUSEWHEEL]);
 
   ForestAge := TKMTrackBar.Create(Panel_Objects, 9, NextTop(50), (Panel_Objects.Width) - 18,
                                   Ord(Low(TKMObjBrushForestAge)), Ord(High(TKMObjBrushForestAge)));
@@ -361,7 +361,7 @@ begin
   ForestAge.Position := Ord(faAll); // All ages by default
   ForestAge.OnChange := ObjectsBrushChange;
   ForestAge.ThumbText := gResTexts[TX_MAPED_OBJECTS_BRUSH_TREES_AGE_ALL];
-  ForestAge.Hint := GetHintWHotKey(TX_MAPED_OBJECTS_BRUSH_TREES_AGE_ALL_HINT, gResTexts[TX_KEY_SHIFT_MOUSEWHEEL]);
+  ForestAge.Hint := GetHintWHotkey(TX_MAPED_OBJECTS_BRUSH_TREES_AGE_ALL_HINT, gResTexts[TX_KEY_SHIFT_MOUSEWHEEL]);
 
   ForestAge.FixedThumbWidth := True;
   ForestAge.ThumbWidth := GetForestAgeThumbWidth(ForestAge.Font);
@@ -449,7 +449,7 @@ end;
 
 procedure TKMMapEdTerrainObjects.UpdateHotkeys;
 begin
-  ObjectsPalette_Button.Hint := GetHintWHotKey(TX_MAPED_TERRAIN_OBJECTS_PALETTE, kfMapedObjPalette);
+  ObjectsPalette_Button.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_OBJECTS_PALETTE, kfMapedObjPalette);
 
   ObjectErase.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_OBJECTS_REMOVE, kfMapedSubMenuAction1);
   ObjectBlock.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_OBJECTS_BLOCK,  kfMapedSubMenuAction2);
@@ -662,7 +662,7 @@ begin
 
   Label_ForestAge.Caption := gResTexts[treeAgeHintTX];
 
-  ForestAge.Hint := GetHintWHotKey(treeAgeHintTX, gResTexts[TX_KEY_SHIFT_MOUSEWHEEL]);
+  ForestAge.Hint := GetHintWHotkey(treeAgeHintTX, gResTexts[TX_KEY_SHIFT_MOUSEWHEEL]);
 
   for I := 0 to 9 do
     if Sender = ObjectTypeSet[I] then
