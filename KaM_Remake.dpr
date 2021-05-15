@@ -88,6 +88,8 @@ uses
   KM_GameInputProcess_Multi in 'src\game\KM_GameInputProcess_Multi.pas',
   KM_GameInputProcess_Single in 'src\game\KM_GameInputProcess_Single.pas',
 
+  KM_GUICommonKeys in 'src\gui\pages_common\KM_GUICommonKeys.pas',
+
   KM_GUIGameBuild in 'src\gui\pages_game\KM_GUIGameBuild.pas',
   KM_GUIGameChat in 'src\gui\pages_game\KM_GUIGameChat.pas',
   KM_GUIGameHouse in 'src\gui\pages_game\KM_GUIGameHouse.pas',

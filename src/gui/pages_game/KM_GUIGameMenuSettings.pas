@@ -3,14 +3,17 @@ unit KM_GUIGameMenuSettings;
 interface
 uses
    Classes, SysUtils,
-   KM_Controls, KM_CommonTypes;
+   KM_Controls, KM_CommonTypes, KM_GUICommonKeys;
 
 type
   TKMGameMenuSettings = class
   private
+    fGuiCommonKeys: TKMGUICommonKeys;
     fOnChangeSetting: TEvent;
+
     procedure Menu_Settings_Change(Sender: TObject);
     procedure UpdateControlsPosition;
+    procedure KeysClick(Sender: TObject);
   protected
     Panel_Settings: TKMPanel;
       CheckBox_Autosave: TKMCheckBox;
@@ -23,6 +26,7 @@ type
       TrackBar_ScrollSpeed: TKMTrackBar;
       CheckBox_MusicOff: TKMCheckBox;
       CheckBox_ShuffleOn: TKMCheckBox;
+      Button_OptionsKeys: TKMButton;
   public
     constructor Create(aParent: TKMPanel; aOnChangeSetting: TEvent);
 
@@ -38,7 +42,7 @@ type
 implementation
 uses
   KM_GameSettings, KM_ResTexts, KM_ResFonts, KM_InterfaceGame, KM_Music, KM_Sound, KM_Game, KM_GameParams,
-  KM_GameTypes;
+  KM_GameTypes, KM_RenderUI;
 
 
 { TKMMapEdMenuQuit }
@@ -97,6 +101,14 @@ begin
     CheckBox_ShuffleOn := TKMCheckBox.Create(Panel_Settings,PAD,topPos,WID,20,gResTexts[TX_MENU_OPTIONS_MUSIC_SHUFFLE_SHORT],fntMetal);
     CheckBox_ShuffleOn.Hint := gResTexts[TX_MENU_OPTIONS_MUSIC_SHUFFLE_HINT];
     CheckBox_ShuffleOn.OnClick := Menu_Settings_Change;
+
+    // Keybindings button
+    Button_OptionsKeys := TKMButton.Create(Panel_Settings, 0, topPos, TB_WIDTH, 30, gResTexts[TX_MENU_OPTIONS_KEYBIND], bsGame);
+    Button_OptionsKeys.Anchors := [anLeft];
+    Button_OptionsKeys.OnClick := KeysClick;
+
+    // Panel_Options_Keys
+    fGuiCommonKeys := TKMGUICommonKeys.Create(aParent.MasterPanel);
 end;
 
 
@@ -104,6 +116,12 @@ procedure TKMGameMenuSettings.UpdateView;
 begin
   CheckBox_ReplayAutopauseAtPTEnd.Enabled := (gGameParams.Mode = gmReplayMulti) and gGame.IsPeaceTime;
   CheckBox_AllyEnemy_ColorMode.Checked := gGameSettings.PlayersColorMode = pcmAllyEnemy;
+end;
+
+
+procedure TKMGameMenuSettings.KeysClick(Sender: TObject);
+begin
+  fGuiCommonKeys.Show;
 end;
 
 
