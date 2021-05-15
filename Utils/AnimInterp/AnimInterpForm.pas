@@ -89,6 +89,11 @@ var
   NeedAlpha: Boolean;
 begin
   RT := rxUnits;
+  if fSprites[RT] = nil then
+  begin
+    fSprites[RT] := TKMSpritePackEdit.Create(RT, fPalettes);
+    fSprites[RT].LoadFromRXXFile(ExeDir + 'data\Sprites\' + RXInfo[RT].FileName + '_a.rxx');
+  end;
 
   origSpritesDir := aBaseDir + 'original_frames\';
   interpSpritesDir := aBaseDir + 'interpolated_frames\';
@@ -173,7 +178,6 @@ function TForm1.DoInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir:
   end;
 
 var
-  RT: TRXType;
   A: TKMAnimLoop;
   I, Step: Integer;
   pngWidth, pngHeight, newWidth, newHeight: Word;
@@ -184,13 +188,6 @@ var
   dirBase, dirShad, dirTeam: string;
   needsMask: Boolean;
 begin
-  RT := rxUnits;
-  if fSprites[RT] = nil then
-  begin
-    fSprites[RT] := TKMSpritePackEdit.Create(RT, fPalettes);
-    fSprites[RT].LoadFromRXXFile(ExeDir + 'data\Sprites\' + RXInfo[RT].FileName + '_a.rxx');
-  end;
-
   if (aDir = dirNA) or not fResUnits[aUT].SupportsAction(aAction) then
     Exit(-1);
 
@@ -230,11 +227,6 @@ begin
 
   StrList := TStringList.Create;
 
-  needsMask := False;
-  for Step := 1 to A.Count do
-    if fSprites[RT].RXData.HasMask[A.Step[Step]] then
-      needsMask := True;
-
   //Import and reprocess
   for Step := 1 to 8*A.Count do
   begin
@@ -251,6 +243,7 @@ begin
     NoShadMinY := MaxInt;
     NoShadMaxX := -1;
     NoShadMaxY := -1;
+    needsMask := False;
     for Y := 0 to pngHeight-1 do
     begin
       for X := 0 to pngWidth-1 do
@@ -272,6 +265,8 @@ begin
           NoShadMaxX := Max(NoShadMaxX, X);
           NoShadMaxY := Max(NoShadMaxY, Y);
         end;
+        if (pngTeam[Y*pngWidth + X] and $FF) > 0 then
+          needsMask := True;
       end;
     end;
     //Crop
