@@ -341,18 +341,21 @@ begin
       begin
         try
           animPicOffset := DoInterpUnit(u, act, dir, picOffset);
-
-          if animPicOffset >= 0 then
-            animData := animData + IntToStr(animPicOffset)
-          else
-            animData := animData + '-1';
-
-          if dir <> High(TKMDirection) then
-            animData := animData + ',';
         except
           on E: Exception do
+          begin
             memoErrors.Text := memoErrors.Text + TRttiEnumerationType.GetName(u) + ' - ' + UNIT_ACT_STR[act] + ' - ' + TRttiEnumerationType.GetName(dir) + ' - ' + E.Message + #13#10;
+            animPicOffset := -1;
+          end;
         end;
+
+        if animPicOffset >= 0 then
+          animData := animData + IntToStr(animPicOffset)
+        else
+          animData := animData + '-1';
+
+        if dir <> High(TKMDirection) then
+          animData := animData + ',';
       end;
       animData := animData + ']';
       if act <> High(TKMUnitActionType) then
