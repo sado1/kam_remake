@@ -54,8 +54,6 @@ type
     fGuiMarkerDefence: TKMMapEdMarkerDefence;
     fGuiMarkerReveal: TKMMapEdMarkerReveal;
     fGuiMenu: TKMMapEdMenu;
-    fMinimap: TKMMinimap;
-    fViewport: TKMViewport;
 
     procedure Layers_UpdateVisibility;
     procedure Marker_Done(Sender: TObject);
