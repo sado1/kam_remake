@@ -307,10 +307,10 @@ begin
       StrList.Append(IntToStr(newHeight-1 - (MaxY - NoShadMaxY)));
 
       ForceDirectories(ExeDir+'Sprites\3\');
-      StrList.SaveToFile(ExeDir+'Sprites\3\'+format('3_%d.txt', [aPicOffset + Step]));
-      SaveToPng(newWidth, newHeight, pngCrop, ExeDir+'Sprites\3\'+format('3_%d.png', [aPicOffset + Step]));
+      StrList.SaveToFile(ExeDir+'Sprites\3\'+format('3_%d.txt', [aPicOffset + Step - 1]));
+      SaveToPng(newWidth, newHeight, pngCrop, ExeDir+'Sprites\3\'+format('3_%d.png', [aPicOffset + Step - 1]));
       if needsMask then
-        SaveToPng(newWidth, newHeight, pngCropMask, ExeDir+'Sprites\3\'+format('3_%dm.png', [aPicOffset + Step]));
+        SaveToPng(newWidth, newHeight, pngCropMask, ExeDir+'Sprites\3\'+format('3_%dm.png', [aPicOffset + Step - 1]));
     end;
   end;
 
