@@ -40,6 +40,7 @@ type
   protected
     Panel_Options: TKMPanel;
       Panel_Options_GFX: TKMPanel;
+        CheckBox_Options_ShadowQuality: TKMCheckBox;
         TrackBar_Options_Brightness: TKMTrackBar;
         CheckBox_Options_VSync: TKMCheckBox;
       Panel_Options_Video: TKMPanel;
@@ -51,7 +52,6 @@ type
 
       Panel_Options_Fonts: TKMPanel;
         CheckBox_Options_FullFonts: TKMCheckBox;
-        CheckBox_Options_ShadowQuality: TKMCheckBox;
       Panel_Options_Ctrl: TKMPanel;
         TrackBar_Options_ScrollSpeed: TKMTrackBar;
       Panel_Options_Game: TKMPanel;
@@ -132,9 +132,8 @@ begin
 
     //--- Column 1 --------------------------------------------------------------
 
-
     top := 0;
-    bottomLine := 30+gResLocales.Count*20+10;
+    bottomLine := 30 + gResLocales.Count*20 + 10;
 
     // Resolutions section
     Panel_Options_Res := TKMPanel.Create(Panel_Options, 0, top, 280, 175);
@@ -156,7 +155,7 @@ begin
       Button_Options_ResApply.OnClick := ApplyResolution;
 
     // Graphics section
-    Panel_Options_GFX := TKMPanel.Create(Panel_Options,0,top,280,125);
+    Panel_Options_GFX := TKMPanel.Create(Panel_Options, 0, top, 280, 145);
     NextBlock(top, Panel_Options_GFX);
     Panel_Options_GFX.Anchors := [anLeft];
       TKMLabel.Create(Panel_Options_GFX,6,0,270,20,gResTexts[TX_MENU_OPTIONS_GRAPHICS],fntOutline,taLeft);
@@ -165,7 +164,7 @@ begin
       CheckBox_Options_VSync.OnClick := Change;
       CheckBox_Options_ShadowQuality := TKMCheckBox.Create(Panel_Options_GFX, 10, 50, 260, 20, gResTexts[TX_MENU_OPTIONS_SHADOW_QUALITY], fntMetal);
       CheckBox_Options_ShadowQuality.OnClick := Change;
-      TrackBar_Options_Brightness:=TKMTrackBar.Create(Panel_Options_GFX,10,70,256,OPT_SLIDER_MIN,OPT_SLIDER_MAX);
+      TrackBar_Options_Brightness := TKMTrackBar.Create(Panel_Options_GFX,10,70,256,OPT_SLIDER_MIN,OPT_SLIDER_MAX);
       TrackBar_Options_Brightness.Caption := gResTexts[TX_MENU_OPTIONS_BRIGHTNESS];
       TrackBar_Options_Brightness.OnChange:=Change;
 
@@ -195,7 +194,7 @@ begin
     {$ENDIF}
 
     // Back button
-    Button_OptionsBack := TKMButton.Create(Panel_Options,0,bottomLine,280,30,gResTexts[TX_MENU_BACK],bsMenu);
+    Button_OptionsBack := TKMButton.Create(Panel_Options, 0, bottomLine, 280, 30, gResTexts[TX_MENU_BACK], bsMenu);
     Button_OptionsBack.Anchors := [anLeft];
     Button_OptionsBack.OnClick := BackClick;
 
@@ -203,7 +202,7 @@ begin
 
     top := 0;
     // SFX section
-    Panel_Options_Sound := TKMPanel.Create(Panel_Options,300,top,280,175);
+    Panel_Options_Sound := TKMPanel.Create(Panel_Options, 300, top, 280, 175);
     NextBlock(top, Panel_Options_Sound);
     Panel_Options_Sound.Anchors := [anLeft];
       TKMLabel.Create(Panel_Options_Sound,6,0,270,20,gResTexts[TX_MENU_OPTIONS_SOUND],fntOutline,taLeft);
@@ -221,7 +220,7 @@ begin
       CheckBox_Options_ShuffleOn.OnClick := Change;
 
     // Controls section
-    Panel_Options_Ctrl := TKMPanel.Create(Panel_Options,300,top,280,125);
+    Panel_Options_Ctrl := TKMPanel.Create(Panel_Options, 300, top, 280, 145);
     NextBlock(top, Panel_Options_Ctrl);
     Panel_Options_Ctrl.Anchors := [anLeft];
       TKMLabel.Create(Panel_Options_Ctrl,6,0,270,20,gResTexts[TX_MENU_OPTIONS_CONTROLS],fntOutline,taLeft);
@@ -240,7 +239,7 @@ begin
     str := gResTexts[TX_MENU_OPTIONS_MAKE_SAVEPOINTS];
     gRes.Fonts[fntMetal].GetTextSize(str, lineCnt);
 
-    Panel_Options_Game := TKMPanel.Create(Panel_Options,300,top,280,70 + 20*lineCnt);
+    Panel_Options_Game := TKMPanel.Create(Panel_Options, 300, top, 280, 70 + 20*lineCnt);
     NextBlock(top, Panel_Options_Game, -5);
     Panel_Options_Game.Anchors := [anLeft];
 
