@@ -92,7 +92,7 @@ type
     //These are all different game kinds we can start
     procedure NewCampaignMap(aCampaignId: TKMCampaignId; aMap: Byte; aDifficulty: TKMMissionDifficulty = mdNone);
     procedure NewSingleMap(const aMissionFullPath, aGameName: UnicodeString; aDesiredLoc: ShortInt = -1;
-                           aDesiredColor: Cardinal = $00000000; aDifficulty: TKMMissionDifficulty = mdNone;
+                           aDesiredColor: Cardinal = NO_OVERWRITE_COLOR; aDifficulty: TKMMissionDifficulty = mdNone;
                            aAIType: TKMAIType = aitNone);
     procedure NewSingleSave(const aSaveName: UnicodeString);
     procedure NewMultiplayerMap(const aFileName: UnicodeString; aMapFolder: TKMapFolder; aCRC: Cardinal; aSpectating: Boolean;
@@ -887,7 +887,7 @@ var
   camp: TKMCampaign;
 begin
   camp := fCampaigns.CampaignById(aCampaignId);
-  LoadGameFromScript(camp.GetMissionFile(aMap), camp.GetMissionTitle(aMap), 0, 0, camp, aMap, gmCampaign, -1, 0, aDifficulty);
+  LoadGameFromScript(camp.GetMissionFile(aMap), camp.GetMissionTitle(aMap), 0, 0, camp, aMap, gmCampaign, -1, NO_OVERWRITE_COLOR, aDifficulty);
 
   fCampaigns.SetActive(camp, aMap);
 
@@ -897,7 +897,7 @@ end;
 
 
 procedure TKMGameApp.NewSingleMap(const aMissionFullPath, aGameName: UnicodeString; aDesiredLoc: ShortInt = -1;
-                                  aDesiredColor: Cardinal = $00000000; aDifficulty: TKMMissionDifficulty = mdNone;
+                                  aDesiredColor: Cardinal = NO_OVERWRITE_COLOR; aDifficulty: TKMMissionDifficulty = mdNone;
                                   aAIType: TKMAIType = aitNone);
 begin
   LoadGameFromScript(aMissionFullPath, aGameName, 0, 0, nil, 0, gmSingle, aDesiredLoc, aDesiredColor, aDifficulty, aAIType);
@@ -926,7 +926,8 @@ begin
     gameMode := gmMultiSpectate
   else
     gameMode := gmMulti;
-  LoadGameFromScript(TKMapsCollection.FullPath(aFileName, '.dat', aMapFolder, aCRC), aFileName, aCRC, 0, nil, 0, gameMode, 0, 0, aDifficulty);
+  LoadGameFromScript(TKMapsCollection.FullPath(aFileName, '.dat', aMapFolder, aCRC), aFileName,
+                     aCRC, 0, nil, 0, gameMode, 0, NO_OVERWRITE_COLOR, aDifficulty);
 
   //Starting the game might have failed (e.g. fatal script error)
   if gGame <> nil then
@@ -999,7 +1000,7 @@ procedure TKMGameApp.NewMapEditor(const aFullFilePath: UnicodeString; aSizeX: In
 begin
   if aFullFilePath <> '' then
   begin
-    LoadGameFromScript(aFullFilePath, TruncateExt(ExtractFileName(aFullFilePath)), aMapFullCRC, aMapSimpleCRC, nil, 0, gmMapEd, 0, 0);
+    LoadGameFromScript(aFullFilePath, TruncateExt(ExtractFileName(aFullFilePath)), aMapFullCRC, aMapSimpleCRC, nil, 0, gmMapEd, 0, NO_OVERWRITE_COLOR);
     // gGame could be nil if we failed to load map
     if gGame <> nil then
       gGame.MapEditorInterface.SetLoadMode(aMultiplayerLoadMode);

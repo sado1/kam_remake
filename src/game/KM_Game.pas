@@ -493,7 +493,6 @@ procedure TKMGame.Start(const aMissionFullFilePath, aName: UnicodeString; aFullC
 const
   GAME_PARSE: array [TKMGameMode] of TKMMissionParsingMode = (
     mpmSingle, mpmSingle, mpmMulti, mpmMulti, mpmEditor, mpmSingle, mpmSingle);
-
 var
   I: Integer;
   parseMode: TKMMissionParsingMode;
@@ -631,7 +630,8 @@ begin
       gMySpectator := TKMSpectator.Create(aLocation);
 
       // If no color specified use default from mission file (don't overwrite it)
-      gMySpectator.Hand.FlagColor := aColor;
+      if aColor <> NO_OVERWRITE_COLOR then
+        gMySpectator.Hand.FlagColor := aColor;
 
       //Set Advanced AI for only advanced locs and if choosen Advanced AI in Single map setup
       for I := 0 to gHands.Count - 1 do

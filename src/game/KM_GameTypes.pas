@@ -36,6 +36,10 @@ type
 const
   DEF_AITYPE = aitClassic; // Classic AI is set as a default AI Type, since most of the maps support it and not Advanced AI
 
+  // Location color 'magic value', which means we should not overwrite location color which was set in the map editor
+  // Used on game start
+  NO_OVERWRITE_COLOR = $00000000; // todo: refactor, get rid of 'magic color value'
+
 
 implementation
 
