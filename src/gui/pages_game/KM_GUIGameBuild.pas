@@ -33,6 +33,7 @@ type
     procedure Show;
     procedure Hide;
     function Visible: Boolean;
+    procedure UpdateHotkeys;
     procedure UpdateState;
   end;
 
@@ -70,10 +71,6 @@ begin
     Button_BuildField.OnClick   := Build_ButtonClick;
     Button_BuildWine.OnClick    := Build_ButtonClick;
     Button_BuildCancel.OnClick  := Build_ButtonClick;
-    Button_BuildRoad.Hint   := GetHintWHotKey(TX_BUILD_ROAD_HINT, kfPlanRoad);
-    Button_BuildField.Hint  := GetHintWHotKey(TX_BUILD_FIELD_HINT, kfPlanField);
-    Button_BuildWine.Hint   := GetHintWHotKey(TX_BUILD_WINE_HINT, kfPlanWine);
-    Button_BuildCancel.Hint := GetHintWHotKey(TX_BUILD_CANCEL_HINT, kfErasePlan);
 
     for I := 1 to GUI_HOUSE_COUNT do
     if GUIHouseOrder[I] <> htNone then
@@ -189,6 +186,15 @@ end;
 function TKMGUIGameBuild.Visible: Boolean;
 begin
   Result := Panel_Build.Visible;
+end;
+
+
+procedure TKMGUIGameBuild.UpdateHotkeys;
+begin
+  Button_BuildRoad.Hint   := GetHintWHotKey(TX_BUILD_ROAD_HINT,   kfPlanRoad);
+  Button_BuildField.Hint  := GetHintWHotKey(TX_BUILD_FIELD_HINT,  kfPlanField);
+  Button_BuildWine.Hint   := GetHintWHotKey(TX_BUILD_WINE_HINT,   kfPlanWine);
+  Button_BuildCancel.Hint := GetHintWHotKey(TX_BUILD_CANCEL_HINT, kfErasePlan);
 end;
 
 

@@ -83,6 +83,7 @@ type
     procedure Hide;
     procedure Resize;
     procedure Cancel_Clicked(var aHandled: Boolean);
+    procedure UpdateHotkeys;
     procedure UpdateState;
   end;
 
@@ -194,13 +195,11 @@ begin
       ObjectsTable[I*3+J].OnMouseWheel := ObjectsScroll.MouseWheel;
     end;
   ObjectErase := TKMButtonFlat.Create(Panel_Objects, 9, 4, 32, 32, 340);
-  ObjectErase.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_OBJECTS_REMOVE, kfMapedSubMenuAction1);
   ObjectErase.Tag := OBJ_NONE_TAG; //no object
   ObjectErase.OnClick := ObjectsChange;
 
   ObjectBlock := TKMButtonFlat.Create(Panel_Objects, Panel_Objects.Width - 32, 4, 32, 32, 254,rxTrees);
   ObjectBlock.Anchors := [anTop, anRight];
-  ObjectBlock.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_OBJECTS_BLOCK, kfMapedSubMenuAction2);
   ObjectBlock.Tag := OBJ_BLOCK_TAG; //block object
   ObjectBlock.OnClick := ObjectsChange;
 
@@ -208,7 +207,6 @@ begin
   ObjectsPalette_Button.Anchors := [anLeft, anTop, anRight];
   ObjectsPalette_Button.Caption := gResTexts[TX_MAPED_TERRAIN_OBJECTS_PALETTE];
   ObjectsPalette_Button.CapOffsetY := -11;
-  ObjectsPalette_Button.Hint := GetHintWHotKey(TX_MAPED_TERRAIN_OBJECTS_PALETTE, kfMapedObjPalette);
   ObjectsPalette_Button.OnClick := ObjectsPaletteButton_Click;
 
   PopUp_ObjectsPalette := TKMPopUpMenu.Create(aParent.MasterParent, aParent.MasterParent.Width - 50);
@@ -297,7 +295,6 @@ begin
 
   BrushCircle := TKMButtonFlat.Create(Panel_Objects, Panel_Objects.Width - (BTN_BRUSH_TYPE_S * 2) - 18, top, BTN_BRUSH_TYPE_S, BTN_BRUSH_TYPE_S, 592);
   BrushCircle.Anchors := [anTop, anRight];
-  BrushCircle.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_CIRCLE, kfMapedSubMenuAction3);
   BrushCircle.OnClick := ObjectsBrushChange;
   BrushCircle.TexOffsetX := 1;
   BrushCircle.TexOffsetY := 1;
@@ -305,7 +302,6 @@ begin
 
   BrushSquare := TKMButtonFlat.Create(Panel_Objects, Panel_Objects.Width - BTN_BRUSH_TYPE_S - 9, top, BTN_BRUSH_TYPE_S, BTN_BRUSH_TYPE_S, 593);
   BrushSquare.Anchors := [anTop, anRight];
-  BrushSquare.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_SQUARE, kfMapedSubMenuAction4);
   BrushSquare.OnClick := ObjectsBrushChange;
   BrushSquare.TexOffsetX := 1;
   BrushSquare.TexOffsetY := 1;
@@ -314,7 +310,6 @@ begin
 
   CleanBrush := TKMButtonFlat.Create(Panel_Objects, 9, NextTop(45), 34, 34, 673, rxGui);
   CleanBrush.Anchors := [anTop];
-  CleanBrush.Hint := GetHintWHotkey(TX_MAPED_OBJECTS_BRUSH_CLEAN, kfMapedSubMenuAction5);
   CleanBrush.OnClick := ObjectsBrushChange;
 
   OverrideObjects := TKMCheckBox.Create(Panel_Objects, 9, NextTop(40), Panel_Objects.Width - 9, 40, gResTexts[TX_MAPED_OBJECTS_BRUSH_OVERRIDE_OBJECTS], fntMetal);
@@ -324,11 +319,12 @@ begin
 
   rxIndex := 226;
 
+  // todo: refactor, add ObjectBrush type and use it instead of magic numbers 0-9
   for I := 0 to 9 do
   begin
     case I of
-       0: begin rxIndex := 226; objectsHint := GetHintWHotkey(TX_MAPED_OBJECTS_BRUSH_TREES, kfMapedSubMenuAction6); end;
-       1: begin rxIndex := 34;  objectsHint := GetHintWHotkey(TX_MAPED_OBJECTS_BRUSH_ALL,   kfMapedSubMenuAction7); end;
+       0: begin rxIndex := 226; objectsHint := gResTexts[TX_MAPED_OBJECTS_BRUSH_TREES];     end;
+       1: begin rxIndex := 34;  objectsHint := gResTexts[TX_MAPED_OBJECTS_BRUSH_ALL];       end;
        2: begin rxIndex := 14;  objectsHint := gResTexts[TX_MAPED_OBJECTS_BRUSH_FLOWERS];   end;
        3: begin rxIndex := 4;   objectsHint := gResTexts[TX_MAPED_OBJECTS_BRUSH_MUSHROOMS]; end;
        4: begin rxIndex := 26;  objectsHint := gResTexts[TX_MAPED_OBJECTS_BRUSH_TRUNKS];    end;
@@ -448,6 +444,18 @@ begin
   end;
   for I := index to High(Image_ObjectAttributes) do
     Image_ObjectAttributes[I, aBtnID].Hide;
+end;
+
+
+procedure TKMMapEdTerrainObjects.UpdateHotkeys;
+begin
+  ObjectsPalette_Button.Hint := GetHintWHotKey(TX_MAPED_TERRAIN_OBJECTS_PALETTE, kfMapedObjPalette);
+
+  ObjectErase.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_OBJECTS_REMOVE, kfMapedSubMenuAction1);
+  ObjectBlock.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_OBJECTS_BLOCK,  kfMapedSubMenuAction2);
+  BrushCircle.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_CIRCLE, kfMapedSubMenuAction3);
+  BrushSquare.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_SQUARE, kfMapedSubMenuAction4);
+  CleanBrush.Hint  := GetHintWHotkey(TX_MAPED_OBJECTS_BRUSH_CLEAN,    kfMapedSubMenuAction5);
 end;
 
 

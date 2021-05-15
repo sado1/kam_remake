@@ -2,12 +2,14 @@ unit KM_GUICommonKeys;
 {$I KaM_Remake.inc}
 interface
 uses
-  Classes, KM_ResKeys, KM_Controls;
+  Classes, KM_ResKeys, KM_Controls, KM_CommonTypes;
 
 type
   TKMGUICommonKeys = class
   private
     fTempKeys: TKMResKeys;
+
+    fOnKeysUpdated: TEvent;
 
     procedure KeysClick(Sender: TObject);
     procedure KeysRefreshList;
@@ -23,7 +25,7 @@ type
           Button_OptionsKeysOK: TKMButton;
           Button_OptionsKeysCancel: TKMButton;
   public
-    constructor Create(aParent: TKMPanel);
+    constructor Create(aParent: TKMPanel; aOnKeysUpdated: TEvent);
     destructor Destroy; override;
 
     property Visible: Boolean read GetVisible;
@@ -34,16 +36,18 @@ type
 implementation
 uses
   SysUtils, Math,
-  KM_CommonTypes, KM_ResTypes, KM_Sound, KM_ResSound,
+  KM_ResTypes, KM_Sound, KM_ResSound,
   KM_GameSettings,
   KM_ResTexts, KM_RenderUI, KM_Pics, KM_ResFonts;
 
 
 { TKMGUICommonKeys }
 
-constructor TKMGUICommonKeys.Create(aParent: TKMPanel);
+constructor TKMGUICommonKeys.Create(aParent: TKMPanel; aOnKeysUpdated: TEvent);
 begin
   inherited Create;
+
+  fOnKeysUpdated := aOnKeysUpdated;
 
   fTempKeys := TKMResKeys.Create;
 
@@ -114,6 +118,9 @@ begin
     // Save TempKeys to gResKeys
     for KF := Low(TKMKeyFunction) to High(TKMKeyFunction) do
       gResKeys[KF] := fTempKeys[KF];
+
+    if Assigned(fOnKeysUpdated) then
+      fOnKeysUpdated;
 
     gResKeys.Save;
   end;

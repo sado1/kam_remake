@@ -28,7 +28,7 @@ type
       CheckBox_ShuffleOn: TKMCheckBox;
       Button_OptionsKeys: TKMButton;
   public
-    constructor Create(aParent: TKMPanel; aOnChangeSetting: TEvent);
+    constructor Create(aParent: TKMPanel; aOnChangeSetting, aOnKeysUpdated: TEvent);
 
     procedure Refresh;
     procedure SetAutosaveEnabled(aEnabled: Boolean);
@@ -46,7 +46,7 @@ uses
 
 
 { TKMMapEdMenuQuit }
-constructor TKMGameMenuSettings.Create(aParent: TKMPanel; aOnChangeSetting: TEvent);
+constructor TKMGameMenuSettings.Create(aParent: TKMPanel; aOnChangeSetting, aOnKeysUpdated: TEvent);
 const
   PAD = 3;
   WID = TB_WIDTH - PAD * 2;
@@ -108,7 +108,7 @@ begin
     Button_OptionsKeys.OnClick := KeysClick;
 
     // Panel_Options_Keys
-    fGuiCommonKeys := TKMGUICommonKeys.Create(aParent.MasterPanel);
+    fGuiCommonKeys := TKMGUICommonKeys.Create(aParent.MasterPanel, aOnKeysUpdated);
 end;
 
 

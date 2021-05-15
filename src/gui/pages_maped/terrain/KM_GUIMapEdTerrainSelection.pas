@@ -34,6 +34,7 @@ type
     function Visible: Boolean; override;
     procedure KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean);
     procedure Hide;
+    procedure UpdateHotkeys;
     procedure UpdateState;
   end;
 
@@ -67,22 +68,18 @@ begin
     Anchors := [anLeft, anTop, anRight];
   Button_SelectCopy := TKMButton.Create(Panel_Selection, 9, 30, Panel_Selection.Width - 9, 20, gResTexts[TX_MAPED_COPY], bsGame);
   Button_SelectCopy.Anchors := [anLeft, anTop, anRight];
-  Button_SelectCopy.Hint := GetHintWHotKey(TX_MAPED_COPY_COPY_HINT, kfMapedSubMenuAction1);
   Button_SelectCopy.OnClick := SelectionClick;
 
   Button_SelectPaste := TKMButton.Create(Panel_Selection, 9, 60, Panel_Selection.Width - 9, 20, gResTexts[TX_MAPED_PASTE], bsGame);
   Button_SelectPaste.Anchors := [anLeft, anTop, anRight];
-  Button_SelectPaste.Hint := GetHintWHotKey(TX_MAPED_COPY_PASTE_HINT, kfMapedSubMenuAction2);
   Button_SelectPaste.OnClick := SelectionClick;
 
   Button_SelectPasteApply := TKMButton.Create(Panel_Selection, 9, 90, Panel_Selection.Width - 9, 20, gResTexts[TX_MAPED_PASTE_APPLY], bsGame);
   Button_SelectPasteApply.Anchors := [anLeft, anTop, anRight];
-  Button_SelectPasteApply.Hint := GetHintWHotKey(TX_MAPED_COPY_PASTE_HINT, kfMapedSubMenuAction3);
   Button_SelectPasteApply.OnClick := SelectionClick;
 
   Button_SelectPasteCancel := TKMButton.Create(Panel_Selection, 9, 120, Panel_Selection.Width - 9, 20, gResTexts[TX_MAPED_PASTE_CANCEL], bsGame);
   Button_SelectPasteCancel.Anchors := [anLeft, anTop, anRight];
-  Button_SelectPasteCancel.Hint := GetHintWHotKey(TX_MAPED_COPY_PASTE_HINT, kfMapedSubMenuAction4);
   Button_SelectPasteCancel.OnClick := SelectionClick;
 
   for PT := Low(TKMTerrainSelectionPasteType) to High(TKMTerrainSelectionPasteType) do
@@ -95,12 +92,10 @@ begin
 
   Button_SelectFlipH := TKMButton.Create(Panel_Selection, 9, 210, Panel_Selection.Width - 9, 20, gResTexts[TX_MAPED_COPY_PASTE_HFLIP], bsGame);
   Button_SelectFlipH.Anchors := [anLeft, anTop, anRight];
-  Button_SelectFlipH.Hint := GetHintWHotKey(TX_MAPED_COPY_PASTE_HFLIP_HINT, kfMapedSubMenuAction5);
   Button_SelectFlipH.OnClick := SelectionClick;
 
   Button_SelectFlipV := TKMButton.Create(Panel_Selection, 9, 240, Panel_Selection.Width - 9, 20, gResTexts[TX_MAPED_COPY_PASTE_VFLIP], bsGame);
   Button_SelectFlipV.Anchors := [anLeft, anTop, anRight];
-  Button_SelectFlipV.Hint := GetHintWHotKey(TX_MAPED_COPY_PASTE_VFLIP_HINT, kfMapedSubMenuAction6);
   Button_SelectFlipV.OnClick := SelectionClick;
 
   with TKMLabel.Create(Panel_Selection, 9, 280, Panel_Selection.Width - 9, 80, gResTexts[TX_MAPED_COPY_SELECT_HINT], fntGrey, taLeft) do
@@ -108,7 +103,6 @@ begin
 
   Button_RMGRND := TKMButton.Create(Panel_Selection, 9, 330, Panel_Selection.Width - 9, 20, gResTexts[TX_MAPED_RMG_BUTTON_TITLE], bsGame);
   Button_RMGRND.Anchors := [anLeft, anTop, anRight];
-  Button_RMGRND.Hint := GetHintWHotKey(TX_MAPED_RMG_BUTTON_HINT, kfMapedSubMenuAction7);
   Button_RMGRND.OnClick := GenerateMapClick;
 
   fSubMenuActionsEvents[0] := SelectionClick;
@@ -250,6 +244,18 @@ begin
   if Panel_Selection.Visible then
     gGame.MapEditor.Selection.Cancel;
   Panel_Selection.Hide;
+end;
+
+
+procedure TKMMapEdTerrainSelection.UpdateHotkeys;
+begin
+  Button_SelectCopy.Hint        := GetHintWHotKey(TX_MAPED_COPY_COPY_HINT,        kfMapedSubMenuAction1);
+  Button_SelectPaste.Hint       := GetHintWHotKey(TX_MAPED_COPY_PASTE_HINT,       kfMapedSubMenuAction2);
+  Button_SelectPasteApply.Hint  := GetHintWHotKey(TX_MAPED_COPY_PASTE_HINT,       kfMapedSubMenuAction3);
+  Button_SelectPasteCancel.Hint := GetHintWHotKey(TX_MAPED_COPY_PASTE_HINT,       kfMapedSubMenuAction4);
+  Button_SelectFlipH.Hint       := GetHintWHotKey(TX_MAPED_COPY_PASTE_HFLIP_HINT, kfMapedSubMenuAction5);
+  Button_SelectFlipV.Hint       := GetHintWHotKey(TX_MAPED_COPY_PASTE_VFLIP_HINT, kfMapedSubMenuAction6);
+  Button_RMGRND.Hint            := GetHintWHotKey(TX_MAPED_RMG_BUTTON_HINT,       kfMapedSubMenuAction7);
 end;
 
 

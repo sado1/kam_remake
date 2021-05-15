@@ -63,6 +63,8 @@ type
     procedure ShowUnitInfo(aUnit: TKMUnit; aAskDismiss: Boolean = False);
     procedure ShowGroupInfo(Sender: TKMUnitGroup; aAskDismiss: Boolean = False);
     procedure Army_HideJoinMenu(Sender: TObject);
+
+    procedure UpdateHotkeys;
   end;
   
 
@@ -84,8 +86,6 @@ const
 { TKMGUIGameUnit }
 
 constructor TKMGUIGameUnit.Create(aParent: TKMPanel; aSetViewportEvent: TPointFEvent);
-var
-  splitKeyStr: UnicodeString;
 begin
   fSetViewportEvent := aSetViewportEvent;
   fAnimStep := 0;
@@ -152,27 +152,6 @@ begin
     // Disable not working buttons
     Button_Army_GoTo.Hide;
     Button_Army_Attack.Hide;
-
-    // Hints
-    Button_Army_GoTo.Hint     := gResTexts[TX_ARMY_GOTO_HINT];
-    Button_Army_Stop.Hint     := GetHintWHotKey(TX_TROOP_HALT_HINT, kfArmyHalt);
-    Button_Army_Attack.Hint   := gResTexts[TX_ARMY_ATTACK_HINT];
-    Button_Army_RotCW.Hint    := GetHintWHotKey(TX_ARMY_ROTATE_CW_HINT, kfArmyRotateCw);
-    Button_Army_Storm.Hint    := GetHintWHotKey(TX_ARMY_STORM_HINT, kfArmyStorm);
-    Button_Army_RotCCW.Hint   := GetHintWHotKey(TX_ARMY_ROTATE_CCW_HINT, kfArmyRotateCcw);
-    Button_Army_ForDown.Hint  := GetHintWHotKey(TX_ARMY_LINE_ADD_HINT, kfArmyAddLine);
-    Button_Army_ForUp.Hint    := GetHintWHotKey(TX_ARMY_LINE_REM_HINT, kfArmyDelLine);
-
-    splitKeyStr := gResKeys.GetKeyNameById(kfArmySplit);
-
-    //Check if we have new hint with separate 1 unit action hint (Ctrl + S)
-    if CountOccurrences('%s', gResTexts[TX_TROOP_SPLIT_HINT]) = 2 then
-      Button_Army_Split.Hint    := Format(gResTexts[TX_TROOP_SPLIT_HINT], [splitKeyStr, splitKeyStr])
-    else
-      Button_Army_Split.Hint     := GetHintWHotKey(TX_TROOP_SPLIT_HINT, splitKeyStr); //Old hint
-
-    Button_Army_Join.Hint     := GetHintWHotKey(TX_TROOP_LINK_HINT, kfArmyLink);
-    Button_Army_Feed.Hint     := GetHintWHotKey(TX_ARMY_FEED_HINT, kfArmyFood);
 
     { Army controls...
     Go to     Stop      Attack
@@ -391,6 +370,33 @@ begin
 
   if Assigned(fSetViewportEvent) then
     fSetViewportEvent(U.PositionF);
+end;
+
+
+procedure TKMGUIGameUnit.UpdateHotkeys;
+var
+  splitKeyStr: UnicodeString;
+begin
+  // Hints
+  Button_Army_GoTo.Hint     := gResTexts[TX_ARMY_GOTO_HINT];
+  Button_Army_Stop.Hint     := GetHintWHotKey(TX_TROOP_HALT_HINT, kfArmyHalt);
+  Button_Army_Attack.Hint   := gResTexts[TX_ARMY_ATTACK_HINT];
+  Button_Army_RotCW.Hint    := GetHintWHotKey(TX_ARMY_ROTATE_CW_HINT, kfArmyRotateCw);
+  Button_Army_Storm.Hint    := GetHintWHotKey(TX_ARMY_STORM_HINT, kfArmyStorm);
+  Button_Army_RotCCW.Hint   := GetHintWHotKey(TX_ARMY_ROTATE_CCW_HINT, kfArmyRotateCcw);
+  Button_Army_ForDown.Hint  := GetHintWHotKey(TX_ARMY_LINE_ADD_HINT, kfArmyAddLine);
+  Button_Army_ForUp.Hint    := GetHintWHotKey(TX_ARMY_LINE_REM_HINT, kfArmyDelLine);
+
+  splitKeyStr := gResKeys.GetKeyNameById(kfArmySplit);
+
+  //Check if we have new hint with separate 1 unit action hint (Ctrl + S)
+  if CountOccurrences('%s', gResTexts[TX_TROOP_SPLIT_HINT]) = 2 then
+    Button_Army_Split.Hint    := Format(gResTexts[TX_TROOP_SPLIT_HINT], [splitKeyStr, splitKeyStr])
+  else
+    Button_Army_Split.Hint     := GetHintWHotKey(TX_TROOP_SPLIT_HINT, splitKeyStr); //Old hint
+
+  Button_Army_Join.Hint     := GetHintWHotKey(TX_TROOP_LINK_HINT, kfArmyLink);
+  Button_Army_Feed.Hint     := GetHintWHotKey(TX_ARMY_FEED_HINT, kfArmyFood);
 end;
 
 

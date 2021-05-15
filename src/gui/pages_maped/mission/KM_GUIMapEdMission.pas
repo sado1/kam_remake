@@ -35,6 +35,8 @@ type
     procedure Show(aPage: TKMMissionTab);
     function IsVisible(aPage: TKMMissionTab): Boolean;
     function Visible: Boolean; override;
+
+    procedure UpdateHotkeys;
   end;
 
 
@@ -42,15 +44,10 @@ implementation
 uses
   KM_ResTexts, KM_Cursor, KM_RenderUI, KM_InterfaceGame, KM_Pics, KM_Defaults, KM_Utils;
 
-
 { TKMMapEdMission }
 constructor TKMMapEdMission.Create(aParent: TKMPanel; aOnPageChange: TNotifyEvent);
 const
   TAB_GLYPH: array [TKMMissionTab] of Word    = (41, 656, 386);
-  TAB_HINT : array [TKMMissionTab] of Word = (
-    TX_MAPED_MISSION_MODE,
-    TX_MAPED_PLAYERS_TYPE,
-    TX_MAPED_ALLIANCE);
 var
   MT: TKMMissionTab;
 begin
@@ -64,7 +61,6 @@ begin
   for MT := Low(TKMMissionTab) to High(TKMMissionTab) do
   begin
     Button_Mission[MT] := TKMButton.Create(Panel_Mission, 9 + SMALL_PAD_W * Byte(MT), 0, SMALL_TAB_W, SMALL_TAB_H,  TAB_GLYPH[MT], rxGui, bsGame);
-    Button_Mission[MT].Hint := GetHintWHotKey(TAB_HINT[MT], MAPED_SUBMENU_HOTKEYS[Ord(MT)]);
     Button_Mission[MT].OnClick := PageChange;
   end;
 
@@ -127,6 +123,20 @@ begin
 
   //Signal that active page has changed, that may affect layers visibility
   fOnPageChange(Self);
+end;
+
+
+procedure TKMMapEdMission.UpdateHotkeys;
+const
+  TAB_HINT : array [TKMMissionTab] of Word = (
+    TX_MAPED_MISSION_MODE,
+    TX_MAPED_PLAYERS_TYPE,
+    TX_MAPED_ALLIANCE);
+var
+  MT: TKMMissionTab;
+begin
+  for MT := Low(TKMMissionTab) to High(TKMMissionTab) do
+    Button_Mission[MT].Hint := GetHintWHotKey(TAB_HINT[MT], MAPED_SUBMENU_HOTKEYS[Ord(MT)]);
 end;
 
 

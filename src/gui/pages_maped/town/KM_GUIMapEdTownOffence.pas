@@ -35,6 +35,7 @@ type
     procedure Show;
     procedure Hide;
     function Visible: Boolean; override;
+    procedure UpdateHotkeys;
   end;
 
 
@@ -53,7 +54,6 @@ begin
     Anchors := [anLeft, anTop, anRight];
 
   CheckBox_AutoAttack := TKMCheckBox.Create(Panel_Offence, 9, 24, Panel_Offence.Width - 9, 20, gResTexts[TX_MAPED_AI_ATTACK_AUTO], fntMetal);
-  CheckBox_AutoAttack.Hint := GetHintWHotKey(TX_MAPED_AI_ATTACK_AUTO_HINT, MAPED_SUBMENU_ACTIONS_HOTKEYS[0]);
   CheckBox_AutoAttack.OnClick := AutoAttackClick;
 
   ColumnBox_Attacks := TKMColumnBox.Create(Panel_Offence, 9, 50, Panel_Offence.Width - 9, 210, fntGame, bsGame);
@@ -69,10 +69,8 @@ begin
 
   Button_AttacksAdd := TKMButton.Create(Panel_Offence, 9, 270, 25, 25, '+', bsGame);
   Button_AttacksAdd.OnClick := Attacks_Add;
-  Button_AttacksAdd.Hint := GetHintWHotKey(TX_MAPED_AI_ATTACK_ADD, MAPED_SUBMENU_ACTIONS_HOTKEYS[1]);
   Button_AttacksDel := TKMButton.Create(Panel_Offence, 39, 270, 25, 25, 'X', bsGame);
   Button_AttacksDel.OnClick := Attacks_Del;
-  Button_AttacksDel.Hint := GetHintWHotKey(TX_MAPED_AI_ATTACK_DEL, MAPED_SUBMENU_ACTIONS_HOTKEYS[2]);
 
   fSubMenuActionsEvents[0] := AutoAttackClick;
   fSubMenuActionsEvents[1] := Attacks_Add;
@@ -204,6 +202,14 @@ begin
   ColumnBox_Attacks.Enabled := not CheckBox_AutoAttack.Checked;
   Button_AttacksAdd.Enabled := not CheckBox_AutoAttack.Checked;
   Button_AttacksDel.Enabled := ColumnBox_Attacks.IsSelected;
+end;
+
+
+procedure TKMMapEdTownOffence.UpdateHotkeys;
+begin
+  CheckBox_AutoAttack.Hint := GetHintWHotKey(TX_MAPED_AI_ATTACK_AUTO_HINT, MAPED_SUBMENU_ACTIONS_HOTKEYS[0]);
+  Button_AttacksAdd.Hint   := GetHintWHotKey(TX_MAPED_AI_ATTACK_ADD,       MAPED_SUBMENU_ACTIONS_HOTKEYS[1]);
+  Button_AttacksDel.Hint   := GetHintWHotKey(TX_MAPED_AI_ATTACK_DEL,       MAPED_SUBMENU_ACTIONS_HOTKEYS[2]);
 end;
 
 

@@ -40,6 +40,7 @@ type
     function Visible: Boolean; override;
     procedure ChangePlayer;
     procedure UpdatePlayerColor;
+    procedure UpdateHotkeys;
     procedure UpdateState;
   end;
 
@@ -53,15 +54,8 @@ uses
 { TKMMapEdPlayer }
 constructor TKMMapEdPlayer.Create(aParent: TKMPanel; aOnPageChange: TNotifyEvent);
 const
-  TabGlyph: array [TKMPlayerTab] of Word    = (8,         1159,     38,    327,   141,   393);
-  TabRXX  : array [TKMPlayerTab] of TRXType = (rxGuiMain, rxHouses, rxGui, rxGui, rxGui, rxGui);
-  TabHint : array [TKMPlayerTab] of Word = (
-    TX_MAPED_GOALS,
-    TX_MAPED_PLAYER_COLORS,
-    TX_MAPED_BLOCK_HOUSES,
-    TX_MAPED_BLOCK_TRADE,
-    TX_MAPED_BLOCK_UNITS,
-    TX_MAPED_FOG);
+  TAB_GLYPH: array [TKMPlayerTab] of Word    = (8,         1159,     38,    327,   141,   393);
+  TAB_RXX  : array [TKMPlayerTab] of TRXType = (rxGuiMain, rxHouses, rxGui, rxGui, rxGui, rxGui);
 var
   PT: TKMPlayerTab;
 begin
@@ -74,8 +68,7 @@ begin
 
   for PT := Low(TKMPlayerTab) to High(TKMPlayerTab) do
   begin
-    Button_Player[PT] := TKMButton.Create(Panel_Player, 9 + SMALL_PAD_W * Byte(PT), 0, SMALL_TAB_W, SMALL_TAB_H,  TabGlyph[PT], TabRXX[PT], bsGame);
-    Button_Player[PT].Hint := GetHintWHotKey(TabHint[PT], MAPED_SUBMENU_HOTKEYS[Ord(PT)]);
+    Button_Player[PT] := TKMButton.Create(Panel_Player, 9 + SMALL_PAD_W * Byte(PT), 0, SMALL_TAB_W, SMALL_TAB_H,  TAB_GLYPH[PT], TAB_RXX[PT], bsGame);
     Button_Player[PT].OnClick := PageChange;
   end;
 
@@ -196,6 +189,23 @@ begin
   if fGuiPlayerView.Visible then fGuiPlayerView.Show;
 
   UpdatePlayerColor;
+end;
+
+
+procedure TKMMapEdPlayer.UpdateHotkeys;
+const
+  TAB_HINT : array [TKMPlayerTab] of Word = (
+    TX_MAPED_GOALS,
+    TX_MAPED_PLAYER_COLORS,
+    TX_MAPED_BLOCK_HOUSES,
+    TX_MAPED_BLOCK_TRADE,
+    TX_MAPED_BLOCK_UNITS,
+    TX_MAPED_FOG);
+var
+  PT: TKMPlayerTab;
+begin
+  for PT := Low(TKMPlayerTab) to High(TKMPlayerTab) do
+    Button_Player[PT].Hint := GetHintWHotKey(TAB_HINT[PT], MAPED_SUBMENU_HOTKEYS[Ord(PT)]);
 end;
 
 

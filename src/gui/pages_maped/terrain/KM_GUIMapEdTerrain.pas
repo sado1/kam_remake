@@ -50,6 +50,7 @@ type
     function Visible: Boolean;  override;
     function IsFocused: Boolean;  override;
     procedure Resize;
+    procedure UpdateHotkeys;
     procedure UpdateState;
     procedure Cancel_Clicked(var aHandled: Boolean);
   end;
@@ -63,15 +64,7 @@ uses
 { TKMMapEdTerrain }
 constructor TKMMapEdTerrain.Create(aParent: TKMPanel; aOnPageChange: TNotifyEvent; aHideAllPages: TEvent);
 const
-  BtnGlyph: array [TKMTerrainTab] of Word = (383, 388, 382, 400, 385, 384);
-  BtnHint: array [TKMTerrainTab] of Word = (
-    TX_MAPED_TERRAIN_HINTS_BRUSHES,
-    TX_MAPED_TERRAIN_HINTS_HEIGHTS,
-    TX_MAPED_TERRAIN_HINTS_TILES,
-    TX_MAPED_TERRAIN_HINTS_OVERLAYS,
-    TX_MAPED_TERRAIN_HINTS_OBJECTS,
-    TX_MAPED_COPY_TITLE);
-
+  TAB_GLYPH: array [TKMTerrainTab] of Word = (383, 388, 382, 400, 385, 384);
   TB_PAD_TERRAIN_BTN_L = 9;
 
 var
@@ -86,8 +79,7 @@ begin
     for TT := Low(TKMTerrainTab) to High(TKMTerrainTab) do
     begin
       Button_Terrain[TT] := TKMButton.Create(Panel_Terrain, TB_PAD_TERRAIN_BTN_L + (SMALL_PAD_W + 4) * Byte(TT), 0,
-                                            SMALL_TAB_W + 4, SMALL_TAB_H + 4, BtnGlyph[TT], rxGui, bsGame);
-      Button_Terrain[TT].Hint := GetHintWHotKey(BtnHint[TT], MAPED_SUBMENU_HOTKEYS[Ord(TT)]);
+                                            SMALL_TAB_W + 4, SMALL_TAB_H + 4, TAB_GLYPH[TT], rxGui, bsGame);
       Button_Terrain[TT].OnClick := PageChange;
     end;
 
@@ -245,6 +237,29 @@ begin
 
   fGuiObjects.Cancel_Clicked(aHandled);
   fGuiBrushes.Cancel_Clicked(aHandled);
+end;
+
+
+procedure TKMMapEdTerrain.UpdateHotkeys;
+const
+  TAB_HINT: array [TKMTerrainTab] of Word = (
+    TX_MAPED_TERRAIN_HINTS_BRUSHES,
+    TX_MAPED_TERRAIN_HINTS_HEIGHTS,
+    TX_MAPED_TERRAIN_HINTS_TILES,
+    TX_MAPED_TERRAIN_HINTS_OVERLAYS,
+    TX_MAPED_TERRAIN_HINTS_OBJECTS,
+    TX_MAPED_COPY_TITLE);
+var
+  TT: TKMTerrainTab;
+begin
+  for TT := Low(TKMTerrainTab) to High(TKMTerrainTab) do
+    Button_Terrain[TT].Hint := GetHintWHotKey(TAB_HINT[TT], MAPED_SUBMENU_HOTKEYS[Ord(TT)]);
+
+  fGuiBrushes.UpdateHotkeys;
+  fGuiHeights.UpdateHotkeys;
+  fGuiTiles.UpdateHotkeys;
+  fGuiObjects.UpdateHotkeys;
+  fGuiSelection.UpdateHotkeys;
 end;
 
 

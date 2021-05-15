@@ -82,7 +82,7 @@ type
     OnOptionsChange: TEvent;
     OnPreloadGameResources: TEvent;
 
-    constructor Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText);
+    constructor Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText; aOnKeysUpdated: TEvent);
     procedure Refresh;
     function Visible: Boolean;
     procedure Show;
@@ -98,7 +98,7 @@ uses
 
 
 { TKMGUIMainOptions }
-constructor TKMMenuOptions.Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText);
+constructor TKMMenuOptions.Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText; aOnKeysUpdated: TEvent);
 
 const
   BLOCK_SPAN = 18;
@@ -305,7 +305,7 @@ begin
       CheckBox_Options_FullFonts.OnClick := Change;
 
     // Panel_Options_Keys
-    fGuiCommonKeys := TKMGUICommonKeys.Create(aParent);
+    fGuiCommonKeys := TKMGUICommonKeys.Create(aParent, aOnKeysUpdated);
 end;
 
 

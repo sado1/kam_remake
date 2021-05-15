@@ -44,6 +44,7 @@ type
     procedure KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean);
     procedure ChangePlayer;
     procedure UpdatePlayerColor;
+    procedure UpdateHotkeys;
     procedure UpdateState;
     procedure UpdateStateIdle;
   end;
@@ -54,18 +55,11 @@ uses
   KM_HandsCollection, KM_ResTexts, KM_Cursor,
   KM_InterfaceGame, KM_RenderUI, KM_Game, KM_Utils;
 
-
 { TKMMapEdTown }
 constructor TKMMapEdTown.Create(aParent: TKMPanel; aOnPageChange: TNotifyEvent);
 const
-  TabGlyph: array [TKMTownTab] of Word    = (391,   141,   62,        43,    53);
-  TabRXX  : array [TKMTownTab] of TRXType = (rxGui, rxGui, rxGuiMain, rxGui, rxGui);
-  TabHint : array [TKMTownTab] of Word = (
-    TX_MAPED_VILLAGE,
-    TX_MAPED_UNITS,
-    TX_MAPED_AI_TITLE,
-    TX_MAPED_AI_DEFENSE_OPTIONS,
-    TX_MAPED_AI_ATTACK);
+  TAB_GLYPH: array [TKMTownTab] of Word    = (391,   141,   62,        43,    53);
+  TAB_RXX  : array [TKMTownTab] of TRXType = (rxGui, rxGui, rxGuiMain, rxGui, rxGui);
 var
   TT: TKMTownTab;
 begin
@@ -78,8 +72,7 @@ begin
 
   for TT := Low(TKMTownTab) to High(TKMTownTab) do
   begin
-    Button_Town[TT] := TKMButton.Create(Panel_Town, 9 + SMALL_PAD_W * Byte(TT), 0, SMALL_TAB_W, SMALL_TAB_H, TabGlyph[TT], TabRXX[TT], bsGame);
-    Button_Town[TT].Hint := GetHintWHotKey(TabHint[TT], MAPED_SUBMENU_HOTKEYS[Ord(TT)]);
+    Button_Town[TT] := TKMButton.Create(Panel_Town, 9 + SMALL_PAD_W * Byte(TT), 0, SMALL_TAB_W, SMALL_TAB_H, TAB_GLYPH[TT], TAB_RXX[TT], bsGame);
     Button_Town[TT].OnClick := PageChange;
   end;
 
@@ -220,6 +213,28 @@ begin
   if fGuiOffence.Visible then fGuiOffence.Show;
 
   UpdatePlayerColor;
+end;
+
+
+procedure TKMMapEdTown.UpdateHotkeys;
+const
+  TAB_HINT : array [TKMTownTab] of Word = (
+    TX_MAPED_VILLAGE,
+    TX_MAPED_UNITS,
+    TX_MAPED_AI_TITLE,
+    TX_MAPED_AI_DEFENSE_OPTIONS,
+    TX_MAPED_AI_ATTACK);
+var
+  TT: TKMTownTab;
+begin
+  for TT := Low(TKMTownTab) to High(TKMTownTab) do
+    Button_Town[TT].Hint := GetHintWHotKey(TAB_HINT[TT], MAPED_SUBMENU_HOTKEYS[Ord(TT)]);
+
+  fGuiHouses.UpdateHotkeys;
+  fGuiUnits.UpdateHotkeys;
+  fGuiDefence.UpdateHotkeys;
+  fGuiOffence.UpdateHotkeys;
+  fGuiScript.UpdateHotkeys;
 end;
 
 

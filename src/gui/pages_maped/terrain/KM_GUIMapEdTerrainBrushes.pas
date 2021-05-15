@@ -41,6 +41,7 @@ type
     procedure MouseWheel(Shift: TShiftState; WheelSteps: Integer; X,Y: Integer; var aHandled: Boolean);
     procedure KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean);
     procedure Cancel_Clicked(var aHandled: Boolean);
+    procedure UpdateHotkeys;
     procedure UpdateState;
   end;
 
@@ -132,19 +133,16 @@ begin
   BrushSize.Anchors := [anLeft, anTop, anRight];
   BrushSize.Position := 4;
   BrushSize.OnChange := BrushChange;
-  BrushSize.Hint := GetHintWHotKey(TX_MAPED_TERRAIN_HEIGHTS_SIZE_HINT, gResTexts[TX_KEY_CTRL_MOUSEWHEEL]);
 
   BrushCircle := TKMButtonFlat.Create(Panel_Brushes, Panel_Brushes.Width - (BTN_BRUSH_SIZE * 2) - 18,
                                                      25, BTN_BRUSH_SIZE, BTN_BRUSH_SIZE, 592);
   BrushCircle.Anchors := [anTop, anRight];
-  BrushCircle.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_CIRCLE, kfMapedSubMenuAction1);
   BrushCircle.OnClick := BrushChange;
   BrushCircle.TexOffsetX := 1;
   BrushCircle.TexOffsetY := 1;
 
   BrushSquare := TKMButtonFlat.Create(Panel_Brushes, Panel_Brushes.Width - BTN_BRUSH_SIZE - 9, 25, BTN_BRUSH_SIZE, BTN_BRUSH_SIZE, 593);
   BrushSquare.Anchors := [anTop, anRight];
-  BrushSquare.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_SQUARE, kfMapedSubMenuAction2);
   BrushSquare.OnClick := BrushChange;
   BrushSquare.TexOffsetX := 1;
   BrushSquare.TexOffsetY := 1;
@@ -387,6 +385,14 @@ begin
     fLastMagicBrush := False;
     aHandled := True;
   end;
+end;
+
+
+procedure TKMMapEdTerrainBrushes.UpdateHotkeys;
+begin
+  BrushSize.Hint := GetHintWHotKey(TX_MAPED_TERRAIN_HEIGHTS_SIZE_HINT, gResTexts[TX_KEY_CTRL_MOUSEWHEEL]);
+  BrushCircle.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_CIRCLE, kfMapedSubMenuAction1);
+  BrushSquare.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_SQUARE, kfMapedSubMenuAction2);
 end;
 
 

@@ -468,6 +468,8 @@ begin
     fViewport.ResizeMap(gTerrain.MapX, gTerrain.MapY, gTerrain.TopHill / CELL_SIZE_PX);
     fViewport.ResetZoom;
   end;
+
+  UpdateHotkeys;
 end;
 
 

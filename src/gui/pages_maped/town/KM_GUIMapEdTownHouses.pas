@@ -31,6 +31,7 @@ type
     procedure Show;
     procedure Hide;
     function Visible: Boolean; override;
+    procedure UpdateHotkeys;
     procedure UpdateState;
     procedure UpdateStateIdle;
   end;
@@ -66,21 +67,14 @@ begin
   Button_BuildField.OnClick := Town_BuildChange;
   Button_BuildWine.OnClick  := Town_BuildChange;
   Button_BuildCancel.OnClick:= Town_BuildChange;
-  Button_BuildRoad.Hint     := GetHintWHotkey(TX_BUILD_ROAD_HINT, kfMapedSubMenuAction1);
-  Button_BuildField.Hint    := GetHintWHotkey(TX_BUILD_FIELD_HINT, kfMapedSubMenuAction2);
-  Button_BuildWine.Hint     := GetHintWHotkey(TX_BUILD_WINE_HINT, kfMapedSubMenuAction3);
-  Button_BuildCancel.Hint   := GetHintWHotkey(TX_BUILD_CANCEL_HINT, kfMapedSubMenuAction4);
 
   with TKMLabel.Create(Panel_Build,0,65,Panel_Build.Width,0,gResTexts[TX_MAPED_HOUSES_TITLE],fntOutline,taCenter) do
     Anchors := [anLeft, anTop, anRight];
   for I := 1 to GUI_HOUSE_COUNT do
-    if GUIHouseOrder[I] <> htNone then begin
+    if GUIHouseOrder[I] <> htNone then
+    begin
       Button_Build[I] := TKMButtonFlat.Create(Panel_Build, 9 + ((I-1) mod 5)*37,83+((I-1) div 5)*37,33,33,gRes.Houses[GUIHouseOrder[I]].GUIIcon);
       Button_Build[I].OnClick := Town_BuildChange;
-      if InRange(I-1, 0, High(fSubMenuActionsCtrls) - 4) then
-        Button_Build[I].Hint := GetHintWHotkey(gRes.Houses[GUIHouseOrder[I]].HouseName, MAPED_SUBMENU_ACTIONS_HOTKEYS[I+3])
-      else
-        Button_Build[I].Hint := gRes.Houses[GUIHouseOrder[I]].HouseName;
     end;
 
   top := Button_Build[GUI_HOUSE_COUNT].Bottom + 3;
@@ -220,6 +214,26 @@ end;
 function TKMMapEdTownHouses.Visible: Boolean;
 begin
   Result := Panel_Build.Visible;
+end;
+
+
+procedure TKMMapEdTownHouses.UpdateHotkeys;
+var
+  I: Integer;
+begin
+  Button_BuildRoad.Hint     := GetHintWHotkey(TX_BUILD_ROAD_HINT, kfMapedSubMenuAction1);
+  Button_BuildField.Hint    := GetHintWHotkey(TX_BUILD_FIELD_HINT, kfMapedSubMenuAction2);
+  Button_BuildWine.Hint     := GetHintWHotkey(TX_BUILD_WINE_HINT, kfMapedSubMenuAction3);
+  Button_BuildCancel.Hint   := GetHintWHotkey(TX_BUILD_CANCEL_HINT, kfMapedSubMenuAction4);
+
+  for I := 1 to GUI_HOUSE_COUNT do
+    if GUIHouseOrder[I] <> htNone then
+    begin
+      if InRange(I-1, 0, High(fSubMenuActionsCtrls) - 4) then
+        Button_Build[I].Hint := GetHintWHotkey(gRes.Houses[GUIHouseOrder[I]].HouseName, MAPED_SUBMENU_ACTIONS_HOTKEYS[I+3])
+      else
+        Button_Build[I].Hint := gRes.Houses[GUIHouseOrder[I]].HouseName;
+    end;
 end;
 
 

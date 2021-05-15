@@ -89,6 +89,7 @@ type
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X,Y: Integer); virtual; abstract;
     procedure MouseWheel(Shift: TShiftState; WheelSteps: Integer; X,Y: Integer; var aHandled: Boolean); virtual;
     procedure Resize(X,Y: Word); virtual;
+    procedure UpdateHotkeys; virtual; abstract;
     procedure UpdateState(aGlobalTickCount: Cardinal); virtual;
     procedure Paint; virtual;
   end;

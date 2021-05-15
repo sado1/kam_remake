@@ -140,6 +140,8 @@ type
 
     procedure Save(SaveStream: TKMemoryStream);
     procedure Load(LoadStream: TKMemoryStream);
+
+    procedure UpdateHotkeys;
   end;
 
 
@@ -389,9 +391,7 @@ begin
     Button_School_Left.OnClickShift  := House_SchoolUnitChange;
     Button_School_Train.OnClickShift := House_SchoolUnitChange;
     Button_School_Right.OnClickShift := House_SchoolUnitChange;
-    Button_School_Left.Hint := GetHintWHotKey(TX_HOUSE_SCHOOL_PREV_HINT, kfTrainGotoPrev);
-    Button_School_Train.Hint := GetHintWHotKey(TX_HOUSE_SCHOOL_TRAIN_HINT, kfTrainEquipUnit);
-    Button_School_Right.Hint := GetHintWHotKey(TX_HOUSE_SCHOOL_NEXT_HINT, kfTrainGotoNext);
+
 end;
 
 
@@ -440,9 +440,6 @@ begin
     Button_TH_Left.OnClickShift := House_TH_UnitChange;
     Button_TH_Train.OnClickShift := House_TH_UnitChange;
     Button_TH_Right.OnClickShift := House_TH_UnitChange;
-    Button_TH_Left.Hint := GetHintWHotKey(TX_HOUSE_BARRACKS_PREV_HINT, kfTrainGotoPrev);
-    Button_TH_Train.Hint := GetHintWHotKey(TX_HOUSE_BARRACKS_TRAIN_HINT, kfTrainEquipUnit);
-    Button_TH_Right.Hint := GetHintWHotKey(TX_HOUSE_BARRACKS_NEXT_HINT, kfTrainGotoNext);
     Button_TH_Train.Disable;
 
     Inc(dy, 46);
@@ -511,9 +508,6 @@ begin
     Button_Barracks_Left.OnClickShift := House_BarracksUnitChange;
     Button_Barracks_Train.OnClickShift := House_BarracksUnitChange;
     Button_Barracks_Right.OnClickShift := House_BarracksUnitChange;
-    Button_Barracks_Left.Hint := GetHintWHotKey(TX_HOUSE_BARRACKS_PREV_HINT, kfTrainGotoPrev);
-    Button_Barracks_Train.Hint := GetHintWHotKey(TX_HOUSE_BARRACKS_TRAIN_HINT, kfTrainEquipUnit);
-    Button_Barracks_Right.Hint := GetHintWHotKey(TX_HOUSE_BARRACKS_NEXT_HINT, kfTrainGotoNext);
 
     Button_Barracks_Train.Disable;
 end;
@@ -902,6 +896,37 @@ begin
 end;
 
 
+procedure TKMGUIGameHouse.UpdateHotkeys;
+begin
+  // School
+  Button_School_Left.Hint := GetHintWHotKey(TX_HOUSE_SCHOOL_PREV_HINT, kfTrainGotoPrev);
+  Button_School_Right.Hint := GetHintWHotKey(TX_HOUSE_SCHOOL_NEXT_HINT, kfTrainGotoNext);
+
+  if not gMySpectator.Hand.Locks.GetUnitBlocked(School_Order[fLastSchoolUnit]) then
+    Button_School_Train.Hint := GetHintWHotKey(TX_HOUSE_SCHOOL_TRAIN_HINT, kfTrainEquipUnit)
+  else
+    Button_School_Train.Hint := gResTexts[TX_HOUSE_SCHOOL_TRAIN_DISABLED_HINT];
+
+  // Barracks
+  Button_Barracks_Left.Hint := GetHintWHotKey(TX_HOUSE_BARRACKS_PREV_HINT, kfTrainGotoPrev);
+  Button_Barracks_Right.Hint := GetHintWHotKey(TX_HOUSE_BARRACKS_NEXT_HINT, kfTrainGotoNext);
+
+  if not gMySpectator.Hand.Locks.GetUnitBlocked(Barracks_Order[fLastBarracksUnit]) then
+    Button_Barracks_Train.Hint := GetHintWHotKey(TX_HOUSE_BARRACKS_TRAIN_HINT, kfTrainEquipUnit)
+  else
+    Button_Barracks_Train.Hint := gResTexts[TX_HOUSE_BARRACKS_TRAIN_DISABLED_HINT];
+
+  // Townhall
+  Button_TH_Left.Hint := GetHintWHotKey(TX_HOUSE_BARRACKS_PREV_HINT, kfTrainGotoPrev);
+  Button_TH_Right.Hint := GetHintWHotKey(TX_HOUSE_BARRACKS_NEXT_HINT, kfTrainGotoNext);
+
+  if not gMySpectator.Hand.Locks.GetUnitBlocked(TownHall_Order[fLastTHUnit]) then
+    Button_TH_Train.Hint := GetHintWHotKey(TX_HOUSE_BARRACKS_TRAIN_HINT, kfTrainEquipUnit)
+  else
+    Button_TH_Train.Hint := gResTexts[TX_HOUSE_BARRACKS_TRAIN_DISABLED_HINT];
+end;
+
+
 // Show Armorworskhop page
 procedure TKMGUIGameHouse.ShowArmorWorkshop(aHouse: TKMHouse);
 var
@@ -1262,11 +1287,6 @@ begin
 
   Image_Barracks_Train.Enabled := not gMySpectator.Hand.Locks.GetUnitBlocked(Barracks_Order[fLastBarracksUnit]);
 
-  if not gMySpectator.Hand.Locks.GetUnitBlocked(Barracks_Order[fLastBarracksUnit]) then
-    Button_Barracks_Train.Hint := GetHintWHotKey(TX_HOUSE_BARRACKS_TRAIN_HINT, kfTrainEquipUnit)
-  else
-    Button_Barracks_Train.Hint := gResTexts[TX_HOUSE_BARRACKS_TRAIN_DISABLED_HINT];
-
   if fLastBarracksUnit < High(Barracks_Order) then
     Image_Barracks_Right.TexID := gRes.Units[Barracks_Order[fLastBarracksUnit + 1]].GUIScroll;
 end;
@@ -1412,11 +1432,6 @@ begin
   Image_School_Train.TexID := gRes.Units[School_Order[fLastSchoolUnit]].GUIScroll;
 
   Image_School_Train.Enabled := not gMySpectator.Hand.Locks.GetUnitBlocked(School_Order[fLastSchoolUnit]);
-
-  if not gMySpectator.Hand.Locks.GetUnitBlocked(School_Order[fLastSchoolUnit]) then
-    Button_School_Train.Hint := GetHintWHotKey(TX_HOUSE_SCHOOL_TRAIN_HINT, kfTrainEquipUnit)
-  else
-    Button_School_Train.Hint := gResTexts[TX_HOUSE_SCHOOL_TRAIN_DISABLED_HINT];
 
   if fLastSchoolUnit < High(School_Order) then
     Image_School_Right.TexID := gRes.Units[School_Order[fLastSchoolUnit+1]].GUIScroll;

@@ -36,6 +36,8 @@ type
     procedure Hide;
     procedure MouseWheel(Shift: TShiftState; WheelSteps: Integer; X,Y: Integer; var aHandled: Boolean);
     function Visible: Boolean; override;
+
+    procedure UpdateHotkeys;
   end;
 
 
@@ -63,12 +65,10 @@ begin
 
   HeightCircle := TKMButtonFlat.Create(Panel_Heights, Panel_Heights.Width - 48 - 9, 30, 24, 24, 592);
   HeightCircle.Anchors := [anTop, anRight];
-  HeightCircle.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_CIRCLE, kfMapedSubMenuAction1);
   HeightCircle.OnClick  := HeightChange;
 
   HeightSquare := TKMButtonFlat.Create(Panel_Heights, Panel_Heights.Width - 24, 30, 24, 24, 593);
   HeightSquare.Anchors := [anTop, anRight];
-  HeightSquare.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_SQUARE, kfMapedSubMenuAction2);
   HeightSquare.OnClick  := HeightChange;
 
   HeightSize          := TKMTrackBar.Create(Panel_Heights, 9, 60, Panel_Heights.Width - 9, 1, 15); //1..15(4bit) for size
@@ -95,14 +95,12 @@ begin
   HeightElevate.Down          := True;
   HeightElevate.Caption       := gResTexts[TX_MAPED_TERRAIN_HEIGHTS_ELEVATE];
   HeightElevate.CapOffsetY    := -12;
-  HeightElevate.Hint          := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_ELEVATE_HINT, kfMapedSubMenuAction3);
 
   HeightUnequalize            := TKMButtonFlat.Create(Panel_Heights, 9, 255, Panel_Heights.Width - 9, 20, 0);
   HeightUnequalize.Anchors := [anLeft, anTop, anRight];
   HeightUnequalize.OnClick    := HeightChange;
   HeightUnequalize.Caption    := gResTexts[TX_MAPED_TERRAIN_HEIGHTS_UNEQUALIZE];
   HeightUnequalize.CapOffsetY := -12;
-  HeightUnequalize.Hint       := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_UNEQUALIZE_HINT, kfMapedSubMenuAction4);
 
   HeightElevateAll               := TKMButtonFlat.Create(Panel_Heights, 9, 280, Panel_Heights.Width - 9, 20, 0);
   HeightElevateAll.Anchors := [anLeft, anTop, anRight];
@@ -110,15 +108,12 @@ begin
   HeightElevateAll.Down          := True;
   HeightElevateAll.Caption       := gResTexts[TX_MAPED_HEIGHTS_ELEVATE_ALL];
   HeightElevateAll.CapOffsetY    := -12;
-  HeightElevateAll.Hint          := GetHintWHotkey(TX_MAPED_HEIGHTS_ELEVATE_ALL_HINT, kfMapedSubMenuAction5);
-
 
   HeightConstant            := TKMButtonFlat.Create(Panel_Heights, 9, 305, Panel_Heights.Width - 9, 20, 0);
   HeightConstant.Anchors := [anLeft, anTop, anRight];
   HeightConstant.OnClick    := HeightChange;
   HeightConstant.Caption    := gResTexts[TX_MAPED_HEIGHTS_CONST];
   HeightConstant.CapOffsetY := -12;
-  HeightConstant.Hint       := GetHintWHotkey(TX_MAPED_HEIGHTS_CONST_HINT, kfMapedSubMenuAction6);
 
   HeightConstantNumber           := TKMTrackBar.Create(Panel_Heights, 9, 340, Panel_Heights.Width - 9, 0, HEIGHT_MAX); //1..100 Height level
   HeightConstantNumber.Anchors := [anLeft, anTop, anRight];
@@ -209,6 +204,17 @@ begin
   gCursor.MapEdSize  := HeightSize.Position;
   gCursor.MapEdSlope := HeightSlope.Position;
   gCursor.MapEdSpeed := HeightSpeed.Position;
+end;
+
+
+procedure TKMMapEdTerrainHeights.UpdateHotkeys;
+begin
+  HeightCircle.Hint     := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_CIRCLE,          kfMapedSubMenuAction1);
+  HeightSquare.Hint     := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_SQUARE,          kfMapedSubMenuAction2);
+  HeightElevate.Hint    := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_ELEVATE_HINT,    kfMapedSubMenuAction3);
+  HeightUnequalize.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_UNEQUALIZE_HINT, kfMapedSubMenuAction4);
+  HeightElevateAll.Hint := GetHintWHotkey(TX_MAPED_HEIGHTS_ELEVATE_ALL_HINT,        kfMapedSubMenuAction5);
+  HeightConstant.Hint   := GetHintWHotkey(TX_MAPED_HEIGHTS_CONST_HINT,              kfMapedSubMenuAction6);
 end;
 
 

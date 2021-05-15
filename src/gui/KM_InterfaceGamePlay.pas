@@ -358,6 +358,7 @@ type
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X,Y: Integer); override;
     procedure Resize(X,Y: Word); override;
     procedure SyncUI(aMoveViewport: Boolean = True); override;
+    procedure UpdateHotkeys; override;
     procedure UpdateDebugInfo;
     procedure UpdateState(aGlobalTickCount: Cardinal); override;
     procedure UpdateStateIdle(aFrameTime: Cardinal); override;
@@ -1318,7 +1319,7 @@ begin
   Create_Menu;
     Create_Save;
     Create_Load;
-    fGuiMenuSettings := TKMGameMenuSettings.Create(Panel_Controls, GameSettingsChanged);
+    fGuiMenuSettings := TKMGameMenuSettings.Create(Panel_Controls, GameSettingsChanged, UpdateHotkeys);
     Create_Quit;
 
   fGuiGameUnit := TKMGUIGameUnit.Create(Panel_Controls, SetViewportPos);
@@ -1426,8 +1427,6 @@ begin
 
   Button_Menu_TrackUp := TKMButton.Create(Panel_Track, 160, 15, 20, 30, '>', bsGame);
   Button_Menu_TrackDown := TKMButton.Create(Panel_Track, 0, 15, 20, 30, '<', bsGame);
-  Button_Menu_TrackUp.Hint := GetHintWHotKey(TX_MUSIC_NEXT_HINT, kfMusicNextTrack);
-  Button_Menu_TrackDown.Hint := GetHintWHotKey(TX_MUSIC_PREV_HINT, kfMusicPrevTrack);
   Button_Menu_TrackUp.OnClick := Menu_NextTrack;
   Button_Menu_TrackDown.OnClick := Menu_PreviousTrack;
 end;
@@ -4654,6 +4653,19 @@ begin
   Bevel_DebugInfo.Height := IfThen(textSize.Y <= 1, 0, textSize.Y + BEVEL_PAD);
 
   Bevel_DebugInfo.Visible := SHOW_DEBUG_OVERLAY_BEVEL and (Trim(S) <> '') ;
+end;
+
+
+procedure TKMGamePlayInterface.UpdateHotkeys;
+begin
+  inherited;
+
+  Button_Menu_TrackUp.Hint := GetHintWHotKey(TX_MUSIC_NEXT_HINT, kfMusicNextTrack);
+  Button_Menu_TrackDown.Hint := GetHintWHotKey(TX_MUSIC_PREV_HINT, kfMusicPrevTrack);
+
+  fGuiGameBuild.UpdateHotkeys;
+  fGuiGameHouse.UpdateHotkeys;
+  fGuiGameUnit.UpdateHotkeys;
 end;
 
 

@@ -35,6 +35,7 @@ type
     procedure Hide;
     function Visible: Boolean; override;
     procedure KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean);
+    procedure UpdateHotkeys;
     procedure UpdateState;
   end;
 
@@ -58,14 +59,12 @@ begin
     Anchors := [anLeft, anTop, anRight];
   CheckBox_AutoBuild := TKMCheckBox.Create(Panel_Script, 9, 30, Panel_Script.Width - 9, 20, gResTexts[TX_MAPED_AI_AUTOBUILD], fntMetal);
   CheckBox_AutoBuild.OnClick := Town_ScriptChange;
-  CheckBox_AutoBuild.Hint := GetHintWHotKey(TX_MAPED_AI_AUTOBUILD, MAPED_SUBMENU_ACTIONS_HOTKEYS[0]);
+
   CheckBox_AutoRepair := TKMCheckBox.Create(Panel_Script, 9, 50, Panel_Script.Width - 9, 20, gResTexts[TX_MAPED_AI_AUTOREPAIR], fntMetal);
   CheckBox_AutoRepair.OnClick := Town_ScriptChange;
-  CheckBox_AutoRepair.Hint := GetHintWHotKey(TX_MAPED_AI_AUTOREPAIR, MAPED_SUBMENU_ACTIONS_HOTKEYS[1]);
 
   Button_ClassicAIParams := TKMButton.Create(Panel_Script, 9, 75, Panel_Script.Width - 9, 40, gResTexts[TX_MAPED_AI_CLASSIC_AI_PARAMS], bsGame);
   Button_ClassicAIParams.Anchors := [anLeft, anTop, anRight];
-  Button_ClassicAIParams.Hint := GetHintWHotkey(TX_MAPED_AI_CLASSIC_AI_PARAMS_HINT, MAPED_SUBMENU_ACTIONS_HOTKEYS[2]);
   Button_ClassicAIParams.OnClick := ClassicAIParams_Click;
 
   PopUp_ClassicAIParams := TKMPopUpPanel.Create(aParent.MasterParent, 300, 220, gResTexts[TX_MAPED_AI_CLASSIC_AI_PARAMS_TITLE], pubgitGray);
@@ -94,7 +93,6 @@ begin
 
   CheckBox_UnlimitedEquip := TKMCheckBox.Create(Panel_Script, TB_PAD, 130, Panel_Script.Width - 9, 20, gResTexts[TX_MAPED_AI_FASTEQUIP], fntMetal);
   CheckBox_UnlimitedEquip.OnClick := Town_ScriptChange;
-  CheckBox_UnlimitedEquip.Hint := GetHintWHotKey(TX_MAPED_AI_FASTEQUIP_HINT, MAPED_SUBMENU_ACTIONS_HOTKEYS[3]);
 
   with TKMLabel.Create(Panel_Script, TB_PAD, 155, Panel_Script.Width - TB_PAD, 20, gResTexts[TX_MAPED_AI_DEFENSE_EQUIP_LEATHER], fntMetal, taLeft) do
     Hint := gResTexts[TX_MAPED_AI_DEFENSE_EQUIP_LEATHER_HINT];
@@ -116,7 +114,6 @@ begin
 
   TKMLabel.Create(Panel_Script, TB_PAD, 255, gResTexts[TX_MAPED_AI_START], fntMetal, taLeft);
   Button_AIStart         := TKMButtonFlat.Create(Panel_Script, TB_PAD, 275, 33, 33, 62, rxGuiMain);
-  Button_AIStart.Hint    := GetHintWHotKey(TX_MAPED_AI_START_HINT, MAPED_SUBMENU_ACTIONS_HOTKEYS[4]);
   Button_AIStart.OnClick := Town_ScriptChange;
 
   fSubMenuActionsEvents[0] := Town_ScriptChange;
@@ -211,6 +208,16 @@ begin
     PopUp_ClassicAIParams.Hide;
     aHandled := True;
   end;
+end;
+
+
+procedure TKMMapEdTownScript.UpdateHotkeys;
+begin
+  CheckBox_AutoBuild.Hint       := GetHintWHotKey(TX_MAPED_AI_AUTOBUILD,              MAPED_SUBMENU_ACTIONS_HOTKEYS[0]);
+  CheckBox_AutoRepair.Hint      := GetHintWHotKey(TX_MAPED_AI_AUTOREPAIR,             MAPED_SUBMENU_ACTIONS_HOTKEYS[1]);
+  Button_ClassicAIParams.Hint   := GetHintWHotkey(TX_MAPED_AI_CLASSIC_AI_PARAMS_HINT, MAPED_SUBMENU_ACTIONS_HOTKEYS[2]);
+  CheckBox_UnlimitedEquip.Hint  := GetHintWHotKey(TX_MAPED_AI_FASTEQUIP_HINT,         MAPED_SUBMENU_ACTIONS_HOTKEYS[3]);
+  Button_AIStart.Hint           := GetHintWHotKey(TX_MAPED_AI_START_HINT,             MAPED_SUBMENU_ACTIONS_HOTKEYS[4]);
 end;
 
 

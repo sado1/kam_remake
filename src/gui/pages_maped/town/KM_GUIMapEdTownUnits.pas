@@ -24,6 +24,7 @@ type
     procedure Hide;
     function Visible: Boolean; override;
     procedure UpdatePlayerColor;
+    procedure UpdateHotkeys;
     procedure UpdateState;
   end;
 
@@ -137,6 +138,22 @@ end;
 procedure TKMMapEdTownUnits.UpdateState;
 begin
   Town_UnitRefresh;
+end;
+
+
+procedure TKMMapEdTownUnits.UpdateHotkeys;
+var
+  I: Integer;
+  hintStr: string;
+begin
+  for I := 0 to High(Button_Citizen) do
+  begin
+    hintStr := gRes.Units[School_Order[I]].GUIName;
+    if InRange(I, 0, High(fSubMenuActionsCtrls) - 1) then
+      Button_Citizen[I].Hint := GetHintWHotkey(hintStr, MAPED_SUBMENU_ACTIONS_HOTKEYS[I+1])
+    else
+      Button_Citizen[I].Hint := hintStr;
+  end;
 end;
 
 

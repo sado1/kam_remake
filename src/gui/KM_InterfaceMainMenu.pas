@@ -78,6 +78,7 @@ type
     procedure SetOnOptionsChange(aEvent: TEvent);
     procedure RefreshCampaigns;
     procedure Resize(X,Y: Word); override;
+    procedure UpdateHotkeys; override;
     procedure UpdateState(aGlobalTickCount: Cardinal); override;
   end;
 
@@ -123,7 +124,7 @@ begin
   fMenuLobby         := TKMMenuLobby.Create(Panel_Menu, PageChange);
   fMenuMapEditor     := TKMMenuMapEditor.Create(Panel_Menu, PageChange);
   fMenuReplays       := TKMMenuReplays.Create(Panel_Menu, PageChange);
-  fMenuOptions       := TKMMenuOptions.Create(Panel_Menu, PageChange);
+  fMenuOptions       := TKMMenuOptions.Create(Panel_Menu, PageChange, UpdateHotkeys);
   fMenuCredits       := TKMMenuCredits.Create(Panel_Menu, PageChange);
   fMenuError         := TKMMenuError.Create(Panel_Menu, PageChange);
   fMenuLoading       := TKMMenuLoading.Create(Panel_Menu, PageChange);
@@ -426,6 +427,15 @@ procedure TKMMainMenuInterface.MouseUp(Button: TMouseButton; Shift: TShiftState;
 begin
   fMyControls.MouseUp(X, Y, Shift, Button);
   Exit; //We could have caused gGameApp reinit (i.e. resolution change), so exit at once
+end;
+
+
+
+procedure TKMMainMenuInterface.UpdateHotkeys;
+begin
+  inherited;
+
+  // Do nothing for now
 end;
 
 
