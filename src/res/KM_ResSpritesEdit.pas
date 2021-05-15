@@ -237,7 +237,7 @@ begin
     RGB := C and $FFFFFF;
     A := (C shr 24);
 
-    isShadow := (A > 0) and (A < $FF) and (RGB = 0);
+    isShadow := (A > 0) and (A < $FF);
 
     if aExportType = ietShadows then
     begin

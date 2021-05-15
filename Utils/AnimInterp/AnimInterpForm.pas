@@ -283,6 +283,11 @@ begin
         begin
           //Background is black with alpha from the shadow mask
           pngCrop[I] := pngShad[Y*pngWidth + X] shl 24;
+
+          //Death animations have semi-transparent white that we treat as shadows
+          if (aAction = uaDie) and (pngCrop[I] > 0) then
+            pngCrop[I] := pngCrop[I] or $FFFFFF;
+
           //Layer base sprite on top
           pngCrop[I] := BlendRGBA(pngCrop[I], pngBase[Y*pngWidth + X]);
 
