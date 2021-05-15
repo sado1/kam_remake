@@ -10,6 +10,8 @@ uses
   {$IFDEF WDC}, ZLib {$ENDIF};
 
 type
+  TInterpExportType = (ietNormal, ietBase, ietShadows, ietTeamMask);
+
   //Class with additional editing properties
   TKMSpritePackEdit = class(TKMSpritePack)
   private
@@ -33,7 +35,7 @@ type
     procedure ClearTemp; override;
     procedure GetImageToBitmap(aIndex: Integer; aBmp, aMask: TBitmap);
 
-    procedure ExportImageForInterp(const aFile: string; aIndex: Integer);
+    procedure ExportImageForInterp(const aFile: string; aIndex: Integer; aExportType: TInterpExportType);
   end;
 
 
@@ -166,11 +168,12 @@ begin
 end;
 
 
-procedure TKMSpritePackEdit.ExportImageForInterp(const aFile: string; aIndex: Integer);
+procedure TKMSpritePackEdit.ExportImageForInterp(const aFile: string; aIndex: Integer; aExportType: TInterpExportType);
 var
   I, K, dstX, dstY: Integer;
-  M: Byte;
-  TreatMask: Boolean;
+  M, A: Byte;
+  C, RGB: Cardinal;
+  TreatMask, isShadow: Boolean;
   srcWidth, srcHeight: Word;
   dstWidth, dstHeight: Word;
   pngData: TKMCardinalArray;
@@ -201,6 +204,11 @@ begin
     for I := Low(pngData) to High(pngData) do
       pngData[I] := $FFAF6B6B;
 
+  //Shadow export uses a black background
+  if aExportType = ietShadows then
+    for I := Low(pngData) to High(pngData) do
+      pngData[I] := $FF000000;
+
   //Export RGB values
   for I := 0 to fRXData.Size[aIndex].Y - 1 do
   for K := 0 to fRXData.Size[aIndex].X - 1 do
@@ -225,6 +233,21 @@ begin
         or (aIndex > 2050)) then
       TreatMask := False;
 
+    C := fRXData.RGBA[aIndex, I*srcWidth + K];
+    RGB := C and $FFFFFF;
+    A := (C shr 24);
+
+    isShadow := (A > 0) and (A < $FF) and (RGB = 0);
+
+    if aExportType = ietShadows then
+    begin
+      //Find shadow pixels and make a greyscale mask
+      if isShadow then
+        pngData[dstY*dstWidth + dstX] := A or (A shl 8) or (A shl 16) or $FF000000;
+
+      Continue;
+    end;
+
     if TreatMask then
     begin
       M := fRXData.Mask[aIndex, I*srcWidth + K];
@@ -241,6 +264,9 @@ begin
       pngData[dstY*dstWidth + dstX] := fRXData.RGBA[aIndex, I*srcWidth + K] and $FFFFFF;
 
     pngData[dstY*dstWidth + dstX] := pngData[dstY*dstWidth + dstX] or (fRXData.RGBA[aIndex, I*srcWidth + K] and $FF000000);
+
+    if isShadow and (aExportType = ietBase) then
+      pngData[dstY*dstWidth + dstX] := 0;
 
     if EXPORT_SPRITES_NO_ALPHA then
       pngData[dstY*dstWidth + dstX] := pngData[dstY*dstWidth + dstX] or $FF000000;

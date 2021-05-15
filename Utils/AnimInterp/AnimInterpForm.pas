@@ -20,11 +20,9 @@ type
 
     fTempDir: string;
     fDainFolder: string;
-    fDainExe: string;
-    fDainParams: string;
-    fOrigSpritesDir: string;
-    fInterpSpritesDir: string;
 
+    function GetDainParams(aDir: string; aAlpha: Boolean): string;
+    procedure MakeImagesInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; aBaseDir: string; aExportType: TInterpExportType);
     function DoInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; aPicOffset: Integer): Integer;
   public
     { Public declarations }
@@ -35,24 +33,52 @@ var
 
 implementation
 uses
-  ShellApi, Math,
+  ShellApi, Math, KromUtils,
   KM_ResHouses, KM_Log, KM_PNG;
 
 {$R *.dfm}
 
 
-function TForm1.DoInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; aPicOffset: Integer): Integer;
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  ExeDir := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\');
+
+  Caption := 'Animation Interpolator (' + GAME_REVISION + ')';
+
+  fPalettes := TKMResPalettes.Create;
+  fPalettes.LoadPalettes(ExeDir + 'data\gfx\');
+
+  fResUnits := TKMResUnits.Create;
+
+  fTempDir := ExeDir + 'SpriteInterp\';
+  fDainFolder := 'C:\Dev\kam_sprites\DAIN_APP Alpha 1.0\';
+end;
+
+function TForm1.GetDainParams(aDir: string; aAlpha: Boolean): string;
+var
+  DainFolder, DainExe: string;
+begin
+  DainExe := fDainFolder+'DAINAPP.exe';
+  Result := 'cmd.exe /C "'+DainExe+'" --cli 1 -o '+aDir+' -p 0 -l 1 -in 8 -da 0 -se 0 -si 1 -sr 0 -ha 0 --fast_mode 0';
+  if aAlpha then
+    Result := Result + ' -a 1';
+
+  //Result := 'cmd.exe /C python inference_video.py --exp=3 --scale=4.0 --png --img='+aDir+'original_frames --output='+aDir+'interpolated_frames & pause';
+
+  //Useful for checking error messages
+  //Result := Result + ' & pause';
+end;
+
+
+procedure TForm1.MakeImagesInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; aBaseDir: string; aExportType: TInterpExportType);
 var
   RT: TRXType;
-  RXName: string;
-  I, Step, SpriteID: Integer;
+  RXName, origSpritesDir, interpSpritesDir: string;
   A: TKMAnimLoop;
-  pngWidth, pngHeight, newWidth, newHeight: Word;
-  pngData, pngCrop: TKMCardinalArray;
-  X, Y, MinX, MinY, MaxX, MaxY: Integer;
-  StrList: TStringList;
+  Step, SpriteID: Integer;
   StartupInfo: TStartupInfo;
   ProcessInfo: TProcessInformation;
+  NeedAlpha: Boolean;
 begin
   RT := rxUnits;
   if fSprites[RT] = nil then
@@ -62,7 +88,9 @@ begin
     fSprites[RT].LoadFromRXXFile(RXName);
   end;
 
-  StrList := TStringList.Create;
+  origSpritesDir := aBaseDir + 'original_frames\';
+  interpSpritesDir := aBaseDir + 'interpolated_frames\';
+  ForceDirectories(origSpritesDir);
 
   A := fResUnits[aUT].UnitAnim[aAction,aDir];
   for Step := 1 to A.Count do
@@ -70,26 +98,89 @@ begin
     SpriteID := A.Step[Step]+1; //Sprites in units.dat are 0 indexed
     if SpriteID > 0 then
     begin
-      fSprites[RT].ExportImageForInterp(fOrigSpritesDir + format('%.6d.png', [Step]), SpriteID);
+      fSprites[RT].ExportImageForInterp(origSpritesDir + format('%.6d.png', [Step]), SpriteID, aExportType);
     end;
   end;
   //Write out the first sprite again to create a loop
   SpriteID := A.Step[1]+1; //Sprites in units.dat are 0 indexed
   if SpriteID > 0 then
-    fSprites[RT].ExportImageForInterp(fOrigSpritesDir + format('%.6d.png', [A.Count+1]), SpriteID);
+    fSprites[RT].ExportImageForInterp(origSpritesDir + format('%.6d.png', [A.Count+1]), SpriteID, aExportType);
+
+  NeedAlpha := aExportType in [ietBase, ietNormal];
 
   //Interpolate
   ZeroMemory(@StartupInfo, SizeOf(StartupInfo));
   StartupInfo.cb := SizeOf(StartupInfo);
-  CreateProcess(nil, PChar(fDainParams), nil, nil, false, 0, nil, PChar(fDainFolder), StartupInfo, ProcessInfo);
+  CreateProcess(nil, PChar(GetDainParams(aBaseDir, NeedAlpha)), nil, nil, false, 0, nil, PChar(fDainFolder), StartupInfo, ProcessInfo);
   WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
   //ShellExecute(0, nil, 'cmd.exe', PChar(DainParams), PChar(DainFolder), SW_SHOWNORMAL);
+end;
+
+
+function BlendRGBA(Back, Fore: Cardinal): Cardinal;
+var
+  C, RGB, Alpha: Cardinal;
+  R1, R2, G1, G2, B1, B2, A1, A2: Single;
+  Ro, Go, Bo, Ao: Single;
+begin
+  //Extract and normalise
+  R1 := ((Back shr 0) and $FF) / 255;
+  R2 := ((Fore shr 0) and $FF) / 255;
+  G1 := ((Back shr 8) and $FF) / 255;
+  G2 := ((Fore shr 8) and $FF) / 255;
+  B1 := ((Back shr 16) and $FF) / 255;
+  B2 := ((Fore shr 16) and $FF) / 255;
+  A1 := ((Back shr 24) and $FF) / 255;
+  A2 := ((Fore shr 24) and $FF) / 255;
+
+  //https://en.wikipedia.org/wiki/Alpha_compositing
+  Ao := A1 + A2*(1.0 - A1);
+  if Ao > 0.0 then
+  begin
+    Ro := (R1*A1 + R2*A2*(1.0 - A1)) / Ao;
+    Go := (G1*A1 + G2*A2*(1.0 - A1)) / Ao;
+    Bo := (B1*A1 + B2*A2*(1.0 - A1)) / Ao;
+
+    Ro := EnsureRange(Ro, 0.0, 1.0);
+    Go := EnsureRange(Go, 0.0, 1.0);
+    Bo := EnsureRange(Bo, 0.0, 1.0);
+
+    Result :=
+      ((Trunc(Ro*255) and $FF) shl 0) or
+      ((Trunc(Go*255) and $FF) shl 8) or
+      ((Trunc(Bo*255) and $FF) shl 16) or
+      ((Trunc(Ao*255) and $FF) shl 24);
+  end
+  else
+    Result := 0;
+end;
+
+
+function TForm1.DoInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; aPicOffset: Integer): Integer;
+var
+  A: TKMAnimLoop;
+  I, Step: Integer;
+  pngWidth, pngHeight, newWidth, newHeight: Word;
+  pngBase, pngShad, pngCrop: TKMCardinalArray;
+  X, Y, MinX, MinY, MaxX, MaxY: Integer;
+  StrList: TStringList;
+  dirBase, dirShad: string;
+begin
+  dirBase := fTempDir + 'base\';
+  dirShad := fTempDir + 'shad\';
+
+  MakeImagesInterpUnit(aUt, aAction, aDir, dirBase, ietBase);
+  MakeImagesInterpUnit(aUt, aAction, aDir, dirShad, ietShadows);
+
+  StrList := TStringList.Create;
+  A := fResUnits[aUT].UnitAnim[aAction,aDir];
 
   //Import and reprocess
   Result := 8*A.Count;
   for Step := 1 to 8*A.Count do
   begin
-    LoadFromPng(fInterpSpritesDir + format('%.15d.png', [Step]), pngWidth, pngHeight, pngData);
+    LoadFromPng(dirBase + 'interpolated_frames\' + format('%.15d.png', [Step]), pngWidth, pngHeight, pngBase);
+    LoadFromPng(dirShad + 'interpolated_frames\' + format('%.15d.png', [Step]), pngWidth, pngHeight, pngShad);
 
     //Determine Min/Max X/Y
     MinX := MaxInt;
@@ -100,7 +191,7 @@ begin
     begin
       for X := 0 to pngWidth-1 do
       begin
-        if pngData[Y*pngWidth + X] shr 24 <> 0 then
+        if (pngBase[Y*pngWidth + X] shr 24 <> 0) or ((pngShad[Y*pngWidth + X] and $FFFFFF) <> 0) then
         begin
           MinX := Min(MinX, X);
           MinY := Min(MinY, Y);
@@ -120,7 +211,10 @@ begin
       begin
         for X := MinX to MaxX do
         begin
-          pngCrop[I] := pngData[Y*pngWidth + X];
+          //Background is black with alpha from the shadow mask
+          pngCrop[I] := pngShad[Y*pngWidth + X] shl 24;
+          //Layer base sprite on top
+          pngCrop[I] := BlendRGBA(pngCrop[I], pngBase[Y*pngWidth + X]);
           Inc(I);
         end;
       end;
@@ -150,30 +244,9 @@ var
   dir: TKMDirection;
 begin
   picOffset := 9300;
-  for dir := dirN to dirNW do
+  dir := dirE;
+  //for dir := dirN to dirNW do
     picOffset := picOffset + DoInterpUnit(utMilitia, uaWalk, dir, picOffset);
-end;
-
-procedure TForm1.FormCreate(Sender: TObject);
-begin
-  ExeDir := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\');
-
-  Caption := 'Animation Interpolator (' + GAME_REVISION + ')';
-
-  fPalettes := TKMResPalettes.Create;
-  fPalettes.LoadPalettes(ExeDir + 'data\gfx\');
-
-  fResUnits := TKMResUnits.Create;
-
-  fTempDir := ExeDir + 'SpriteInterp\';
-  fDainFolder := 'C:\Dev\kam_sprites\DAIN_APP Alpha 1.0\';
-  fDainExe := fDainFolder+'DAINAPP.exe';
-  fDainParams := 'cmd.exe /C "'+fDainExe+'" --cli 1 -o '+fTempDir+' -p 0 -l 1 -in 8 -da 1 -a 1 -se 0 -si 1 -sr 0 -ha 0 --fast_mode 0'; // & pause
-  //fDainParams := 'cmd.exe /C python inference_video.py --exp=3 --scale=4.0 --png --img='+fTempDir+'original_frames --output='+fTempDir+'interpolated_frames & pause';
-
-  fOrigSpritesDir := fTempDir + 'original_frames\';
-  fInterpSpritesDir := fTempDir + 'interpolated_frames\';
-  ForceDirectories(fOrigSpritesDir);
 end;
 
 end.
