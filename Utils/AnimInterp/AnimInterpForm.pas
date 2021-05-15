@@ -33,7 +33,7 @@ var
 
 implementation
 uses
-  ShellApi, Math, KromUtils,
+  ShellApi, Math, KM_FileIO, KromUtils,
   KM_ResHouses, KM_Log, KM_PNG;
 
 {$R *.dfm}
@@ -91,6 +91,9 @@ begin
   origSpritesDir := aBaseDir + 'original_frames\';
   interpSpritesDir := aBaseDir + 'interpolated_frames\';
   ForceDirectories(origSpritesDir);
+
+  KMDeleteFolderContent(origSpritesDir);
+  KMDeleteFolderContent(interpSpritesDir);
 
   A := fResUnits[aUT].UnitAnim[aAction,aDir];
   for Step := 1 to A.Count do
@@ -170,6 +173,10 @@ begin
   dirBase := fTempDir + 'base\';
   dirShad := fTempDir + 'shad\';
   dirTeam := fTempDir + 'team\';
+
+  KMDeleteFolder(dirBase);
+  KMDeleteFolder(dirShad);
+  KMDeleteFolder(dirTeam);
 
   MakeImagesInterpUnit(aUt, aAction, aDir, dirBase, ietBase);
   MakeImagesInterpUnit(aUt, aAction, aDir, dirShad, ietShadows);
