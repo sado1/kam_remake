@@ -487,8 +487,6 @@ begin
 
   gTerrain.UpdateAll(fSelectionRect);
 
-  SetTempLands;
-
   fSelectionMode := smSelecting;
 end;
 
