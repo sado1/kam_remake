@@ -305,6 +305,13 @@ begin
   begin
     suffixPath := 'interpolated_frames\' + format('%.15d.png', [Step]);
 
+    //Clear all our buffers so they get rezeroed
+    SetLength(pngBase, 0);
+    SetLength(pngShad, 0);
+    SetLength(pngTeam, 0);
+    SetLength(pngCrop, 0);
+    SetLength(pngCropMask, 0);
+
     LoadFromPng(dirBase + suffixPath, pngWidth, pngHeight, pngBase);
 
     if FileExists(dirShad + suffixPath) then
