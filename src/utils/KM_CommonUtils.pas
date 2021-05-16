@@ -142,6 +142,7 @@ uses
 
   function CountOccurrences(const aSubstring, aText: String): Integer;
   function IntToBool(aValue: Integer): Boolean;
+  function HumanRound(X: Extended): Integer;
 
   //String functions
   function GetNextWordPos(const aStr: String; aPos: Integer): Integer;
@@ -1509,6 +1510,20 @@ end;
 function IntToBool(aValue: Integer): Boolean;
 begin
   Result := aValue <> 0;
+end;
+
+
+// use this to not get "banker's rounding"
+function HumanRound(X: Extended): Integer;
+// Rounds a number "normally": if the fractional
+// part is >= 0.5 the number is rounded up (see RoundUp)
+// Otherwise, if the fractional part is < 0.5, the
+// number is rounded down
+//   RoundN(3.5) = 4     RoundN(-3.5) = -4
+//   RoundN(3.1) = 3     RoundN(-3.1) = -3
+begin
+  // Trunc() does nothing except conv to integer.  needed because return type of Int() is Extended
+  Result := Trunc(Int(X) + Int(Frac(X) * 2));
 end;
 
 
