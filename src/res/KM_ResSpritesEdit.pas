@@ -10,7 +10,7 @@ uses
   {$IFDEF WDC}, ZLib {$ENDIF};
 
 type
-  TInterpExportType = (ietNormal, ietBase, ietShadows, ietTeamMask);
+  TInterpExportType = (ietNormal, ietBase, ietBaseAlpha, ietBaseBlack, ietBaseWhite, ietShadows, ietTeamMask);
 
   //Class with additional editing properties
   TKMSpritePackEdit = class(TKMSpritePack)
@@ -178,7 +178,6 @@ var
   dstWidth, dstHeight: Word;
   pngData: TKMCardinalArray;
 const
-  EXPORT_SPRITES_NO_ALPHA = False;
   CANVAS_Y_OFFSET = 14;
 begin
   Result := False;
@@ -197,12 +196,12 @@ begin
 
   SetLength(pngData, dstWidth * dstHeight);
 
-  if EXPORT_SPRITES_NO_ALPHA then
+  {if EXPORT_SPRITES_NO_ALPHA then
     for I := Low(pngData) to High(pngData) do
-      pngData[I] := $FFAF6B6B;
+      pngData[I] := $FFAF6B6B;}
 
   //Shadow export uses a black background
-  if aExportType in [ietShadows, ietTeamMask] then
+  if aExportType in [ietShadows, ietTeamMask, ietBaseAlpha] then
     for I := Low(pngData) to High(pngData) do
       pngData[I] := $FF000000;
 
@@ -262,6 +261,17 @@ begin
       Continue;
     end;
 
+    if aExportType = ietBaseAlpha then
+    begin
+      if not isShadow then
+      begin
+        pngData[dstY*dstWidth + dstX] := A or (A shl 8) or (A shl 16) or $FF000000;
+        Result := True;
+      end;
+
+      Continue;
+    end;
+
     Result := True;
 
     if TreatMask and (aExportType = ietNormal) then
@@ -279,13 +289,24 @@ begin
     else
       pngData[dstY*dstWidth + dstX] := fRXData.RGBA[aIndex, I*srcWidth + K] and $FFFFFF;
 
-    pngData[dstY*dstWidth + dstX] := pngData[dstY*dstWidth + dstX] or (fRXData.RGBA[aIndex, I*srcWidth + K] and $FF000000);
+    //Apply alpha
+    if (aExportType = ietBaseWhite) or (aExportType = ietBaseBlack) then
+      pngData[dstY*dstWidth + dstX] := pngData[dstY*dstWidth + dstX] or $FF000000
+    else if (aExportType = ietBase) or (aExportType = ietNormal) then
+      pngData[dstY*dstWidth + dstX] := pngData[dstY*dstWidth + dstX] or (fRXData.RGBA[aIndex, I*srcWidth + K] and $FF000000);
 
-    if isShadow and (aExportType = ietBase) then
-      pngData[dstY*dstWidth + dstX] := 0;
+    //Is this a background pixel?
+    if isShadow or ((fRXData.RGBA[aIndex, I*srcWidth + K] shr 24) = 0) then
+    begin
+      if aExportType = ietBase then
+        pngData[dstY*dstWidth + dstX] := 0
+      else if aExportType = ietBaseWhite then
+        pngData[dstY*dstWidth + dstX] := $FFFFFFFF
+      else if aExportType = ietBaseBlack then
+        pngData[dstY*dstWidth + dstX] := $FF000000;
+    end;
 
-    if EXPORT_SPRITES_NO_ALPHA then
-      pngData[dstY*dstWidth + dstX] := pngData[dstY*dstWidth + dstX] or $FF000000;
+    pngData[dstY*dstWidth + dstX] := pngData[dstY*dstWidth + dstX] or $FF000000;
   end;
 
   //Mark pivot location with a dot
