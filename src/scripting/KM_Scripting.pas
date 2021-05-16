@@ -525,9 +525,9 @@ begin
     RegisterMethodCheck(c, 'function HouseDeliveryBlocked(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseDeliveryMode(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseDestroyed(aHouseID: Integer): Boolean');
-    RegisterMethodCheck(c, 'function HouseHasOccupant(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseFlagPoint(aHouseID: Integer): TKMPoint');
     RegisterMethodCheck(c, 'function HouseGetAllUnitsIn(aHouseID: Integer): TIntegerArray');
+    RegisterMethodCheck(c, 'function HouseHasOccupant(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseIsComplete(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseOwner(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HousePosition(aHouseID: Integer): TKMPoint');
@@ -1202,9 +1202,9 @@ begin
       RegisterMethod(@TKMScriptStates.HouseDeliveryBlocked,                     'HouseDeliveryBlocked');
       RegisterMethod(@TKMScriptStates.HouseDeliveryMode,                        'HouseDeliveryMode');
       RegisterMethod(@TKMScriptStates.HouseDestroyed,                           'HouseDestroyed');
-      RegisterMethod(@TKMScriptStates.HouseHasOccupant,                         'HouseHasOccupant');
       RegisterMethod(@TKMScriptStates.HouseFlagPoint,                           'HouseFlagPoint');
       RegisterMethod(@TKMScriptStates.HouseGetAllUnitsIn,                       'HouseGetAllUnitsIn');
+      RegisterMethod(@TKMScriptStates.HouseHasOccupant,                         'HouseHasOccupant');
       RegisterMethod(@TKMScriptStates.HouseIsComplete,                          'HouseIsComplete');
       RegisterMethod(@TKMScriptStates.HouseOwner,                               'HouseOwner');
       RegisterMethod(@TKMScriptStates.HousePosition,                            'HousePosition');

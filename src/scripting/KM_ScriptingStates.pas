@@ -74,9 +74,9 @@ type
     function HouseDeliveryBlocked(aHouseID: Integer): Boolean;
     function HouseDeliveryMode(aHouseID: Integer): Integer;
     function HouseDestroyed(aHouseID: Integer): Boolean;
-    function HouseHasOccupant(aHouseID: Integer): Boolean;
     function HouseFlagPoint(aHouseID: Integer): TKMPoint;
     function HouseGetAllUnitsIn(aHouseID: Integer): TIntegerArray;
+    function HouseHasOccupant(aHouseID: Integer): Boolean;
     function HouseIsComplete(aHouseID: Integer): Boolean;
     function HouseOwner(aHouseID: Integer): Integer;
     function HousePosition(aHouseID: Integer): TKMPoint;
