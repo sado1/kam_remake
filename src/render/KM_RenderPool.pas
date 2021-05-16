@@ -847,6 +847,11 @@ const
 begin
   A := gRes.Units[aUnit].UnitAnim[aAct, aDir];
   InterpOffset := GetInterpSpriteOffset(aUnit, aAct, aDir);
+
+  //While in development disable interpolation if the sprite is missing
+  if (InterpOffset >= 1) and ((InterpOffset >= fRXData[rxUnits].Count) or (fRXData[rxUnits].Size[InterpOffset].X = 0)) then
+    InterpOffset := -1;
+
   if InterpOffset >= 0 then
   begin
     Result := InterpOffset
