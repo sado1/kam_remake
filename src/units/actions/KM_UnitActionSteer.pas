@@ -31,7 +31,7 @@ uses
 
 
 { TUnitActionSteer }
-constructor TKMUnitActionSteer.Create(aUnit: TKMUnit; aActionType:TKMUnitActionType; aLocked:boolean);
+constructor TKMUnitActionSteer.Create(aUnit: TKMUnit; aActionType: TKMUnitActionType; aLocked: Boolean);
 begin
   inherited Create(aUnit, aActionType, aLocked);
 

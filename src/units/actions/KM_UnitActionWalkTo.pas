@@ -850,7 +850,7 @@ var
   I: Byte; //Test 2 options really
   tempPos: TKMPoint;
   opponentNextNextPos: TKMPoint;
-  altOpponent:TKMUnit;
+  altOpponent: TKMUnit;
 begin
   //If there is a unit on one of the tiles either side of target that wants to swap, do so
   Result := false;

@@ -142,9 +142,10 @@ end;
 
 
 { TKMTaskBuildRoad }
-constructor TKMTaskBuildRoad.Create(aWorker:TKMUnitWorker; const aLoc:TKMPoint; aID:integer);
+constructor TKMTaskBuildRoad.Create(aWorker: TKMUnitWorker; const aLoc: TKMPoint; aID: Integer);
 begin
   inherited Create(aWorker);
+
   fType := uttBuildRoad;
   fLoc      := aLoc;
   BuildID   := aID;
@@ -156,6 +157,7 @@ end;
 constructor TKMTaskBuildRoad.Load(LoadStream: TKMemoryStream);
 begin
   inherited;
+
   LoadStream.CheckMarker('TaskBuildRoad');
   LoadStream.Read(fLoc);
   LoadStream.Read(BuildID);
@@ -436,9 +438,10 @@ end;
 
 
 { TTaskBuildField }
-constructor TKMTaskBuildField.Create(aWorker:TKMUnitWorker; const aLoc:TKMPoint; aID: Integer);
+constructor TKMTaskBuildField.Create(aWorker: TKMUnitWorker; const aLoc: TKMPoint; aID: Integer);
 begin
   inherited Create(aWorker);
+
   fType := uttBuildField;
   fLoc      := aLoc;
   BuildID   := aID;
@@ -449,6 +452,7 @@ end;
 constructor TKMTaskBuildField.Load(LoadStream: TKMemoryStream);
 begin
   inherited;
+
   LoadStream.CheckMarker('TaskBuildField');
   LoadStream.Read(fLoc);
   LoadStream.Read(BuildID);

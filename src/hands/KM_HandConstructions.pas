@@ -1281,7 +1281,7 @@ procedure TKMHandConstructions.AssignFieldworks;
 var
   I, availableWorkers, availableJobs, jobID: Integer;
   myBid: Single;
-  bestWorker:TKMUnitWorker;
+  bestWorker: TKMUnitWorker;
 begin
   availableWorkers := GetIdleWorkerCount;
   availableJobs := fFieldworksList.GetAvailableJobsCount;
@@ -1310,7 +1310,7 @@ procedure TKMHandConstructions.AssignHousePlans;
 var
   I, availableWorkers, availableJobs, jobID: Integer;
   myBid: Single;
-  bestWorker:TKMUnitWorker;
+  bestWorker: TKMUnitWorker;
 begin
   availableWorkers := GetIdleWorkerCount;
   availableJobs := fHousePlanList.GetAvailableJobsCount;

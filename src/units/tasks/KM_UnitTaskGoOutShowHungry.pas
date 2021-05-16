@@ -7,7 +7,7 @@ uses
 type
   TKMTaskGoOutShowHungry = class(TKMUnitTask)
   public
-    constructor Create(aUnit:TKMUnit);
+    constructor Create(aUnit: TKMUnit);
     function Execute:TKMTaskResult; override;
   end;
 
@@ -18,9 +18,10 @@ uses
 
 
 { TTaskGoOutShowHungry }
-constructor TKMTaskGoOutShowHungry.Create(aUnit:TKMUnit);
+constructor TKMTaskGoOutShowHungry.Create(aUnit: TKMUnit);
 begin
   inherited Create(aUnit);
+
   fType := uttGoOutShowHungry;
 end;
 
@@ -29,10 +30,7 @@ function TKMTaskGoOutShowHungry.Execute: TKMTaskResult;
 begin
   Result := trTaskContinues;
   if fUnit.Home.IsDestroyed then
-  begin
-    Result := trTaskDone;
-    Exit;
-  end;
+    Exit(trTaskDone);
 
   with fUnit do
   case fPhase of

@@ -1569,7 +1569,7 @@ begin
 end;
 
 
-function TKMUnit.HitTest(X,Y: Integer; const UT:TKMUnitType = utAny): Boolean;
+function TKMUnit.HitTest(X,Y: Integer; const UT: TKMUnitType = utAny): Boolean;
 begin
   Result := (X = fPosition.X) and //Comparing X,Y to CurrentPosition separately, cos they can be negative numbers
             (Y = fPosition.Y) and
