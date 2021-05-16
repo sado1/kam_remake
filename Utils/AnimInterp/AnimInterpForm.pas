@@ -87,7 +87,6 @@ end;
 function TForm1.GetMinCanvasSize(A: TKMAnimLoop; RT: TRXType): Integer;
 var
   Step, SpriteID, MaxSoFar, X, Y, W, H: Integer;
-
 begin
   MaxSoFar := 32;
   for Step := 1 to A.Count do
@@ -105,6 +104,8 @@ begin
       MaxSoFar := Max(MaxSoFar, Y + H);
     end;
   end;
+  //Sprite is centred so we need this much padding on both sides
+  MaxSoFar := 2*MaxSoFar;
   //Keep 1px padding on all sides
   MaxSoFar := MaxSoFar + 2;
   Result := ((MaxSoFar div 32) + 1)*32;
