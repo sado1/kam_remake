@@ -56,6 +56,8 @@ type
     function GetPointer: T; //Returns self and adds one to the pointer counter
     procedure ReleasePointer;  //Decreases the pointer counter
     property PointerCount: Cardinal read fPointerCount;
+
+    function ObjToString(const aSeparator: String = '|'): String; override;
   end;
 
   TKMHighlightEntity = record
@@ -208,6 +210,12 @@ begin
   inherited;
 
   LoadStream.Read(fPointerCount);
+end;
+
+
+function TKMHandEntityPointer<T>.ObjToString(const aSeparator: String = '|'): String;
+begin
+  Result := inherited ObjToString(aSeparator) + Format('%sPointerCnt = %d', [aSeparator, fPointerCount]);
 end;
 
 
