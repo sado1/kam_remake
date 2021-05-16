@@ -813,7 +813,7 @@ begin
   if fTask is TKMTaskDie then Exit; //Do not show unnecessary arms
 
   if Carry <> wtNone then
-    gRenderPool.AddUnitCarry(Carry, ID, V.Dir, V.AnimStep, XPaintPos, YPaintPos)
+    gRenderPool.AddUnitCarry(Carry, ID, V.Dir, V.AnimStep, V.AnimFraction, XPaintPos, YPaintPos)
   else
     gRenderPool.AddUnit(UnitType, ID, uaWalkArm, V.Dir, V.AnimStep, V.AnimFraction, XPaintPos, YPaintPos, gHands[Owner].GameFlagColor, false);
 

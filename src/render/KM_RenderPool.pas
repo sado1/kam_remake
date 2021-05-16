@@ -129,7 +129,7 @@ type
     procedure AddHouseStableBeasts(aHouse: TKMHouseType; const Loc: TKMPoint; BeastId,BeastAge,AnimStep: Integer; aRX: TRXType = rxHouses);
     procedure AddHouseEater(const Loc: TKMPoint; aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; StepId: Integer; OffX,OffY: Single; FlagColor: TColor4);
     procedure AddUnit(aUnit: TKMUnitType; aUID: Integer; aAct: TKMUnitActionType; aDir: TKMDirection; StepId: Integer; StepFrac: Single; pX,pY: Single; FlagColor: TColor4; NewInst: Boolean; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
-    procedure AddUnitCarry(aCarry: TKMWareType; aUID: Integer; aDir: TKMDirection; StepId: Integer; pX,pY: Single);
+    procedure AddUnitCarry(aCarry: TKMWareType; aUID: Integer; aDir: TKMDirection; StepId: Integer; StepFrac: Single; pX,pY: Single);
     procedure AddUnitThought(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; Thought: TKMUnitThought; pX,pY: Single);
     procedure AddUnitFlag(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; FlagAnim: Integer; pX,pY: Single; FlagColor: TColor4; DoImmediateRender: Boolean = False);
     procedure AddUnitWithDefaultArm(aUnit: TKMUnitType; aUID: Integer; aAct: TKMUnitActionType; aDir: TKMDirection; StepId: Integer; pX,pY: Single; FlagColor: TColor4; DoImmediateRender: Boolean = False; DoHignlight: Boolean = False; HighlightColor: TColor4 = 0);
@@ -1073,11 +1073,9 @@ procedure TRenderPool.AddHouseEater(const Loc: TKMPoint; aUnit: TKMUnitType; aAc
 var
   cornerX, cornerY: Single;
   id: Integer;
-  A: TKMAnimLoop;
   R: TRXData;
 begin
-  A := gRes.Units[aUnit].UnitAnim[aAct, aDir];
-  id := A.Step[StepId mod Byte(A.Count) + 1] + 1;
+  id := GetUnitAnimSprite(aUnit, aAct, aDir, StepId, gGameParams.TickFrac);
   if id <= 0 then exit;
   R := fRXData[rxUnits];
 
@@ -1090,7 +1088,7 @@ begin
 end;
 
 
-procedure TRenderPool.AddUnitCarry(aCarry: TKMWareType; aUID: Integer; aDir: TKMDirection; StepId: Integer; pX,pY: Single);
+procedure TRenderPool.AddUnitCarry(aCarry: TKMWareType; aUID: Integer; aDir: TKMDirection; StepId: Integer; StepFrac: Single; pX,pY: Single);
 var
   cornerX, cornerY: Single;
   id: Integer;
@@ -1171,8 +1169,7 @@ begin
   ground := pY + (R.Pivot[id0].Y + R.Size[id0].Y) / CELL_SIZE_PX;
 
   // Flag position
-  A := gRes.Units[aUnit].UnitAnim[uaWalkArm, aDir];
-  idFlag := A.Step[FlagAnim mod Byte(A.Count) + 1] + 1;
+  idFlag := GetUnitAnimSprite(aUnit, uaWalkArm, aDir, FlagAnim, gGameParams.TickFrac);
   if idFlag <= 0 then Exit;
 
   flagX := pX + (R.Pivot[idFlag].X + FlagXOffset[UNIT_TO_GROUP_TYPE[aUnit], aDir]) / CELL_SIZE_PX - 0.5;

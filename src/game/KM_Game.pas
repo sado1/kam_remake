@@ -48,6 +48,7 @@ type
 
     fParams: TKMGameParams;
     fSetGameTickEvent: TCardinalEvent;
+    fSetGameTickFracEvent: TSingleEvent;
     fSetGameModeEvent: TKMGameModeSetEvent;
     fSetMissionFileSP: TUnicodeStringEvent;
     fSetBlockPointer: TBooleanEvent;
@@ -325,7 +326,7 @@ begin
   if gMain <> nil then
     gMain.FormMain.SuppressAltForMenu := True;
 
-  fParams := TKMGameParams.Create(aGameMode, RecalcMapCRC, fSetGameTickEvent, fSetGameModeEvent, fSetMissionFileSP, fSetBlockPointer);
+  fParams := TKMGameParams.Create(aGameMode, RecalcMapCRC, fSetGameTickEvent, fSetGameTickFracEvent, fSetGameModeEvent, fSetMissionFileSP, fSetBlockPointer);
 
   fSaveWorkerThread := aSaveWorkerThread;
   fBaseSaveWorkerThread := aBaseSaveWorkerThread;
@@ -1588,6 +1589,8 @@ begin
     end
     else
       tickLag := 0.0;
+
+    fSetGameTickFracEvent(1.0 - tickLag);
 
     if DoRenderGame then
       gRenderPool.Render(tickLag);
