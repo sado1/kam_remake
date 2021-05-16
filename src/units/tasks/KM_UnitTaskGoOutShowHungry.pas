@@ -36,15 +36,15 @@ begin
   case fPhase of
     0: begin
          Thought := thEat;
-         SetActionStay(20,uaWalk);
+         SetActionStay(20, uaWalk);
        end;
     1: begin
-         SetActionGoIn(uaWalk,gdGoOutside,fUnit.Home);
+         SetActionGoIn(uaWalk,gdGoOutside, fUnit.Home);
          Home.SetState(hstEmpty);
        end;
     2: SetActionLockedStay(4,uaWalk);
     3: SetActionWalkToSpot(fUnit.Home.PointBelowEntrance);
-    4: SetActionGoIn(uaWalk,gdGoInside,fUnit.Home);
+    4: SetActionGoIn(uaWalk, gdGoInside, fUnit.Home);
     5: begin
          SetActionStay(20+KaMRandom(10, 'TKMTaskGoOutShowHungry.Execute'), uaWalk);
          Home.SetState(hstIdle);
