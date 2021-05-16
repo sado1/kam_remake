@@ -288,9 +288,8 @@ begin
     begin
       for X := 0 to pngWidth-1 do
       begin
-        if (pngBase[Y*pngWidth + X] shr 24 <> 0) or
-        ((Length(pngShad) > 0) and ((pngShad[Y*pngWidth + X] and $FFFFFF) <> 0)) or
-        ((Length(pngTeam) > 0) and ((pngTeam[Y*pngWidth + X] and $FFFFFF) <> 0)) then
+        if (pngBase[Y*pngWidth + X] shr 24 > 50) or
+        ((Length(pngShad) > 0) and ((pngShad[Y*pngWidth + X] and $FF) > 10)) then
         begin
           MinX := Min(MinX, X);
           MinY := Min(MinY, Y);
