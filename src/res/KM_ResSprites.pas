@@ -1403,7 +1403,8 @@ begin
                     case TILE_MASK_KIND_USAGE[MK] of
                       mkuPixel: maskCol := ($FFFFFF or (aSprites.fRXData.RGBA[maskId, straightPx] shl 24));
                       mkuAlpha: maskCol := aSprites.fRXData.RGBA[maskId, straightPx];
-                      else      maskCol := 0; // makes compiler happy
+                    else
+                      raise Exception.Create('Unexpected type');
                     end;
 
                     aSprites.fRXData.RGBA[texId, straightPx] := maskCol and aSprites.fRXData.RGBA[terrainId, straightPx{RotatePixel}];

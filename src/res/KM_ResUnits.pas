@@ -408,7 +408,8 @@ begin
     umtWalkDiag:  Result := 1 / fUnitSpecInfo.StepsPerTileDiag;
     umtStorm:     Result := 1 / fUnitSpecInfo.StepsPerTileStorm;
     umtStormDiag: Result := 1 / fUnitSpecInfo.StepsPerTileStormDiag;
-    else          Result := 0.1; // Make compiler happy
+  else
+    raise Exception.Create('Unexpected type');
   end;
 end;
 
