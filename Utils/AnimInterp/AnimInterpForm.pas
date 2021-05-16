@@ -88,7 +88,7 @@ var
   Step, SpriteID: Integer;
   StartupInfo: TStartupInfo;
   ProcessInfo: TProcessInformation;
-  NeedAlpha: Boolean;
+  NeedAlpha, AllBlank: Boolean;
 begin
   RT := rxUnits;
   if fSprites[RT] = nil then
@@ -104,17 +104,21 @@ begin
   KMDeleteFolderContent(origSpritesDir);
   KMDeleteFolderContent(interpSpritesDir);
 
+  AllBlank := True;
   A := fResUnits[aUT].UnitAnim[aAction,aDir];
   for Step := 1 to A.Count do
   begin
     SpriteID := A.Step[Step]+1; //Sprites in units.dat are 0 indexed
     if SpriteID > 0 then
     begin
-      fSprites[RT].ExportImageForInterp(origSpritesDir + format('%.6d.png', [Step]), SpriteID, aExportType);
+      AllBlank := AllBlank and not fSprites[RT].ExportImageForInterp(origSpritesDir + format('%.6d.png', [Step]), SpriteID, aExportType);
     end
     else
       raise Exception.Create('SpriteID = 0 for step '+IntToStr(Step));
   end;
+  if AllBlank then
+    Exit;
+
   //Write out the first sprite again to create a loop
   SpriteID := A.Step[1]+1; //Sprites in units.dat are 0 indexed
   if SpriteID > 0 then
@@ -189,7 +193,7 @@ var
   X, Y, MinX, MinY, MaxX, MaxY: Integer;
   NoShadMinX, NoShadMinY, NoShadMaxX, NoShadMaxY: Integer;
   StrList: TStringList;
-  dirBase, dirShad, dirTeam: string;
+  dirBase, dirShad, dirTeam, suffixPath: string;
   needsMask: Boolean;
 begin
   if aDir = dirNA then
@@ -226,9 +230,15 @@ begin
   //Import and reprocess
   for Step := 1 to 8*A.Count do
   begin
-    LoadFromPng(dirBase + 'interpolated_frames\' + format('%.15d.png', [Step]), pngWidth, pngHeight, pngBase);
-    LoadFromPng(dirShad + 'interpolated_frames\' + format('%.15d.png', [Step]), pngWidth, pngHeight, pngShad);
-    LoadFromPng(dirTeam + 'interpolated_frames\' + format('%.15d.png', [Step]), pngWidth, pngHeight, pngTeam);
+    suffixPath := 'interpolated_frames\' + format('%.15d.png', [Step]);
+
+    LoadFromPng(dirBase + suffixPath, pngWidth, pngHeight, pngBase);
+
+    if FileExists(dirShad + suffixPath) then
+      LoadFromPng(dirShad + suffixPath, pngWidth, pngHeight, pngShad);
+
+    if FileExists(dirTeam + suffixPath) then
+      LoadFromPng(dirTeam + suffixPath, pngWidth, pngHeight, pngTeam);
 
     //Determine Min/Max X/Y
     MinX := MaxInt;
@@ -245,8 +255,8 @@ begin
       for X := 0 to pngWidth-1 do
       begin
         if (pngBase[Y*pngWidth + X] shr 24 <> 0) or
-        ((pngShad[Y*pngWidth + X] and $FFFFFF) <> 0) or
-        ((pngTeam[Y*pngWidth + X] and $FFFFFF) <> 0) then
+        ((Length(pngShad) > 0) and ((pngShad[Y*pngWidth + X] and $FFFFFF) <> 0)) or
+        ((Length(pngTeam) > 0) and ((pngTeam[Y*pngWidth + X] and $FFFFFF) <> 0)) then
         begin
           MinX := Min(MinX, X);
           MinY := Min(MinY, Y);
@@ -261,7 +271,7 @@ begin
           NoShadMaxX := Max(NoShadMaxX, X);
           NoShadMaxY := Max(NoShadMaxY, Y);
         end;
-        if (pngTeam[Y*pngWidth + X] and $FF) > 0 then
+        if (Length(pngTeam) > 0) and ((pngTeam[Y*pngWidth + X] and $FF) > 0) then
           needsMask := True;
       end;
     end;
@@ -278,7 +288,8 @@ begin
         for X := MinX to MaxX do
         begin
           //Background is black with alpha from the shadow mask
-          pngCrop[I] := pngShad[Y*pngWidth + X] shl 24;
+          if Length(pngShad) > 0 then
+            pngCrop[I] := pngShad[Y*pngWidth + X] shl 24;
 
           //Death animations have semi-transparent white that we treat as shadows
           if (aAction = uaDie) and (pngCrop[I] > 0) then
@@ -287,7 +298,8 @@ begin
           //Layer base sprite on top
           pngCrop[I] := BlendRGBA(pngCrop[I], pngBase[Y*pngWidth + X]);
 
-          pngCropMask[I] := pngTeam[Y*pngWidth + X];
+          if Length(pngTeam) > 0 then
+            pngCropMask[I] := pngTeam[Y*pngWidth + X];
 
           Inc(I);
         end;
@@ -305,7 +317,7 @@ begin
       ForceDirectories(ExeDir+'Sprites\3\');
       StrList.SaveToFile(ExeDir+'Sprites\3\'+format('3_%d.txt', [aPicOffset + Step - 1]));
       SaveToPng(newWidth, newHeight, pngCrop, ExeDir+'Sprites\3\'+format('3_%d.png', [aPicOffset + Step - 1]));
-      if needsMask then
+      if needsMask and (Length(pngTeam) > 0) then
         SaveToPng(newWidth, newHeight, pngCropMask, ExeDir+'Sprites\3\'+format('3_%dm.png', [aPicOffset + Step - 1]));
     end;
   end;

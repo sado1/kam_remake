@@ -35,7 +35,7 @@ type
     procedure ClearTemp; override;
     procedure GetImageToBitmap(aIndex: Integer; aBmp, aMask: TBitmap);
 
-    procedure ExportImageForInterp(const aFile: string; aIndex: Integer; aExportType: TInterpExportType);
+    function ExportImageForInterp(const aFile: string; aIndex: Integer; aExportType: TInterpExportType): Boolean;
   end;
 
 
@@ -168,7 +168,7 @@ begin
 end;
 
 
-procedure TKMSpritePackEdit.ExportImageForInterp(const aFile: string; aIndex: Integer; aExportType: TInterpExportType);
+function TKMSpritePackEdit.ExportImageForInterp(const aFile: string; aIndex: Integer; aExportType: TInterpExportType): Boolean;
 var
   I, K, dstX, dstY: Integer;
   M, A: Byte;
@@ -183,6 +183,8 @@ const
   CANVAS_SIZE = 256;
   CANVAS_SIZE_HALF = CANVAS_SIZE div 2;
 begin
+  Result := False;
+
   srcWidth := fRXData.Size[aIndex].X;
   srcHeight := fRXData.Size[aIndex].Y;
 
@@ -243,7 +245,10 @@ begin
     begin
       //Find shadow pixels and make a greyscale mask
       if isShadow then
+      begin
         pngData[dstY*dstWidth + dstX] := A or (A shl 8) or (A shl 16) or $FF000000;
+        Result := True;
+      end;
 
       Continue;
     end;
@@ -255,11 +260,15 @@ begin
       else
         M := 0;
 
+      if M > 0 then
+        Result := True;
+
       pngData[dstY*dstWidth + dstX] := M or (M shl 8) or (M shl 16) or $FF000000;
 
       Continue;
     end;
 
+    Result := True;
 
     if TreatMask and (aExportType = ietNormal) then
     begin
