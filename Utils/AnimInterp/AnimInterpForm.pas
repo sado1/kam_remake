@@ -328,15 +328,14 @@ var
   animData: string;
 begin
   picOffset := 9300;
-  //dir := dirE;
 
-  animData := animData + '['+#13#10;
+  animData := 'array[TKMUnitType, TKMUnitActionType, TKMDirection] of Integer = ('+#13#10;
   for u := Low(TKMUnitType) to High(TKMUnitType) do
   begin
-    animData := animData + '  ['+' // '+TRttiEnumerationType.GetName(u)+#13#10;
+    animData := animData + '  ('+' // '+TRttiEnumerationType.GetName(u)+#13#10;
     for act := Low(TKMUnitActionType) to High(TKMUnitActionType) do
     begin
-      animData := animData + '    [';
+      animData := animData + '    (';
       for dir := Low(TKMDirection) to High(TKMDirection) do
       begin
         try
@@ -357,16 +356,16 @@ begin
         if dir <> High(TKMDirection) then
           animData := animData + ',';
       end;
-      animData := animData + ']';
+      animData := animData + ')';
       if act <> High(TKMUnitActionType) then
         animData := animData + ',';
       animData := animData+' // '+UNIT_ACT_STR[act]+#13#10;
     end;
-    animData := animData + '  ]';
+    animData := animData + '  )';
     if u <> High(TKMUnitType) then
       animData := animData + ','+#13#10;
   end;
-  animData := animData + #13#10 + ']';
+  animData := animData + #13#10 + ');';
 
   Memo1.Text := animData;
 end;
