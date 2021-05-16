@@ -504,6 +504,12 @@ end;
 
 { TKMUnitsDatCollection }
 constructor TKMResUnits.Create;
+const
+  DEF_SCOUT_SIGHT = 9;
+  DEF_HORSEMAN_ATTACK = 40;
+  DEF_PEASANT_ATTACK_HORSE = 60;
+  DEF_PIKEMAN_ATTACK_HORSE = 55;
+  DEF_MOUNTED_SPEED = 39;
 var
   UT: TKMUnitType;
 begin
@@ -512,16 +518,31 @@ begin
   for UT := Low(TKMUnitType) to High(TKMUnitType) do
     fItems[UT] := TKMUnitSpec.Create(UT);
 
-  fCRC := LoadUnitsDat(ExeDir+'data' + PathDelim + 'defines' + PathDelim + 'unit.dat');
-  fItems[utHorseScout].fUnitDat.Sight := 13;
-  fItems[utHorseman].fUnitDat.Attack := 35;
-  fItems[utPeasant].fUnitDat.AttackHorse := 50;
-  fItems[utPikeman].fUnitDat.AttackHorse := 60;
+  fCRC := LoadUnitsDat(ExeDir + 'data' + PathDelim + 'defines' + PathDelim + 'unit.dat');
+
+  // Overwrite units stats only if they are set for default values from original game
+  // We don't want to update them, in case player manually edited unit.dat file
+  if fItems[utHorseScout].fUnitDat.Sight = DEF_SCOUT_SIGHT then
+    fItems[utHorseScout].fUnitDat.Sight := 13;
+
+  if fItems[utHorseman].fUnitDat.Attack = DEF_HORSEMAN_ATTACK then
+    fItems[utHorseman].fUnitDat.Attack := 35;
+
+  if fItems[utPeasant].fUnitDat.AttackHorse = DEF_PEASANT_ATTACK_HORSE then
+    fItems[utPeasant].fUnitDat.AttackHorse := 50;
+
+  if fItems[utPikeman].fUnitDat.AttackHorse = DEF_PIKEMAN_ATTACK_HORSE then
+    fItems[utPikeman].fUnitDat.AttackHorse := 60;
 
   // .Dat mounted speed is 39, but it makes 9 steps per diagonal tile after rounding, while we used to 8 steps
-  fItems[utHorseScout].fUnitDat.Speed := 40;
-  fItems[utCavalry].fUnitDat.Speed    := 40;
-  fItems[utHorseman].fUnitDat.Speed   := 40;
+  if fItems[utHorseScout].fUnitDat.Speed = DEF_MOUNTED_SPEED then
+    fItems[utHorseScout].fUnitDat.Speed := 40;
+
+  if fItems[utCavalry].fUnitDat.Speed = DEF_MOUNTED_SPEED then
+    fItems[utCavalry].fUnitDat.Speed := 40;
+
+  if fItems[utHorseman].fUnitDat.Speed = DEF_MOUNTED_SPEED then
+    fItems[utHorseman].fUnitDat.Speed := 40;
 
   for UT := UNIT_MIN to UNIT_MAX do
   begin
@@ -643,7 +664,7 @@ var
   S: TKMemoryStream;
   I: Integer;
 begin
-  Assert(FileExists(aPath), 'units.dat not found at: ' + aPath);
+  Assert(FileExists(aPath), 'unit.dat not found at: ' + aPath);
 
   S := TKMemoryStreamBinary.Create;
   try
