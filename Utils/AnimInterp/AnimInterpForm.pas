@@ -274,7 +274,7 @@ begin
 
   A := fResUnits[aUT].UnitAnim[aAction,aDir];
 
-  if (A.Count <= 1) or (A.Step[1] = -1) or not aAction in UNIT_SUPPORTED_ANIMS[aUT] then
+  if (A.Count <= 1) or (A.Step[1] = -1) or not (aAction in UNIT_SUPPORTED_ANIMS[aUT]) then
     Exit(-1);
 
   for I := Low(fAnimCache) to High(fAnimCache) do
