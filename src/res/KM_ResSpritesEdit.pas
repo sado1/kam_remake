@@ -35,7 +35,7 @@ type
     procedure ClearTemp; override;
     procedure GetImageToBitmap(aIndex: Integer; aBmp, aMask: TBitmap);
 
-    function ExportImageForInterp(const aFile: string; aIndex: Integer; aExportType: TInterpExportType): Boolean;
+    function ExportImageForInterp(const aFile: string; aIndex: Integer; aExportType: TInterpExportType; aCanvasSize: Integer): Boolean;
   end;
 
 
@@ -168,9 +168,9 @@ begin
 end;
 
 
-function TKMSpritePackEdit.ExportImageForInterp(const aFile: string; aIndex: Integer; aExportType: TInterpExportType): Boolean;
+function TKMSpritePackEdit.ExportImageForInterp(const aFile: string; aIndex: Integer; aExportType: TInterpExportType; aCanvasSize: Integer): Boolean;
 var
-  I, K, dstX, dstY: Integer;
+  I, K, dstX, dstY, CentreX, CentreY: Integer;
   M, A: Byte;
   C, RGB: Cardinal;
   TreatMask, isShadow: Boolean;
@@ -178,31 +178,26 @@ var
   dstWidth, dstHeight: Word;
   pngData: TKMCardinalArray;
 const
-  EXPORT_SPRITES_ON_CANVAS = True;
   EXPORT_SPRITES_NO_ALPHA = False;
-  CANVAS_SIZE = 256;
-  CANVAS_SIZE_HALF = CANVAS_SIZE div 2;
+  CANVAS_Y_OFFSET = 14;
 begin
   Result := False;
+
+  CentreX := aCanvasSize div 2;
+  CentreY := aCanvasSize div 2 + CANVAS_Y_OFFSET;
 
   srcWidth := fRXData.Size[aIndex].X;
   srcHeight := fRXData.Size[aIndex].Y;
 
-  dstWidth := srcWidth;
-  dstHeight := srcHeight;
+  if (srcWidth > aCanvasSize) or (srcHeight > aCanvasSize) then
+    Exit;
 
-  if EXPORT_SPRITES_ON_CANVAS then
-  begin
-    if (srcWidth > CANVAS_SIZE) or (srcHeight > CANVAS_SIZE) then
-      Exit;
-
-    dstWidth := CANVAS_SIZE;
-    dstHeight := CANVAS_SIZE;
-  end;
+  dstWidth := aCanvasSize;
+  dstHeight := aCanvasSize;
 
   SetLength(pngData, dstWidth * dstHeight);
 
-  if EXPORT_SPRITES_ON_CANVAS and EXPORT_SPRITES_NO_ALPHA then
+  if EXPORT_SPRITES_NO_ALPHA then
     for I := Low(pngData) to High(pngData) do
       pngData[I] := $FFAF6B6B;
 
@@ -217,12 +212,11 @@ begin
   begin
     dstY := I;
     dstX := K;
-    if EXPORT_SPRITES_ON_CANVAS
-    and (abs(fRXData.Pivot[aIndex].Y) < CANVAS_SIZE_HALF)
-    and (abs(fRXData.Pivot[aIndex].Y) < CANVAS_SIZE_HALF) then
+    if  (abs(fRXData.Pivot[aIndex].X) < CentreX)
+    and (abs(fRXData.Pivot[aIndex].Y) < CentreY) then
     begin
-      dstY := I + CANVAS_SIZE_HALF + fRXData.Pivot[aIndex].Y;
-      dstX := K + CANVAS_SIZE_HALF + fRXData.Pivot[aIndex].X;
+      dstY := I + CentreY + fRXData.Pivot[aIndex].Y;
+      dstX := K + CentreX + fRXData.Pivot[aIndex].X;
     end;
 
     TreatMask := fRXData.HasMask[aIndex] and (fRXData.Mask[aIndex, I*srcWidth + K] > 0);

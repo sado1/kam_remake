@@ -31,6 +31,7 @@ type
     fTempDir: string;
     fDainFolder: string;
 
+    function GetMinCanvasSize(A: TKMAnimLoop; RT: TRXType): Integer;
     function GetDainParams(aDir: string; aAlpha: Boolean): string;
     procedure MakeImagesInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; aBaseDir: string; aExportType: TInterpExportType);
     function DoInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; var aPicOffset: Integer): Integer;
@@ -45,6 +46,9 @@ implementation
 uses
   ShellApi, Math, RTTI, KM_FileIO, KromUtils,
   KM_ResHouses, KM_Log, KM_PNG;
+
+const
+  CANVAS_Y_OFFSET = 14;
 
 {$R *.dfm}
 
@@ -80,15 +84,42 @@ begin
 end;
 
 
+function TForm1.GetMinCanvasSize(A: TKMAnimLoop; RT: TRXType): Integer;
+var
+  Step, SpriteID, MaxSoFar, X, Y, W, H: Integer;
+
+begin
+  MaxSoFar := 32;
+  for Step := 1 to A.Count do
+  begin
+    SpriteID := A.Step[Step]+1; //Sprites in units.dat are 0 indexed
+    if SpriteID > 0 then
+    begin
+      W := fSprites[RT].RXData.Size[SpriteID].X;
+      H := fSprites[RT].RXData.Size[SpriteID].Y;
+      X := fSprites[RT].RXData.Pivot[SpriteID].x;
+      Y := fSprites[RT].RXData.Pivot[SpriteID].y + CANVAS_Y_OFFSET;
+      MaxSoFar := Max(MaxSoFar, -X);
+      MaxSoFar := Max(MaxSoFar, X + W);
+      MaxSoFar := Max(MaxSoFar, -Y);
+      MaxSoFar := Max(MaxSoFar, Y + H);
+    end;
+  end;
+  //Keep 1px padding on all sides
+  MaxSoFar := MaxSoFar + 2;
+  Result := ((MaxSoFar div 32) + 1)*32;
+end;
+
+
 procedure TForm1.MakeImagesInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; aBaseDir: string; aExportType: TInterpExportType);
 var
   RT: TRXType;
   origSpritesDir, interpSpritesDir: string;
   A: TKMAnimLoop;
-  Step, SpriteID: Integer;
+  Step, SpriteID, CanvasSize: Integer;
   StartupInfo: TStartupInfo;
   ProcessInfo: TProcessInformation;
-  NeedAlpha, AllBlank: Boolean;
+  NeedAlpha, AllBlank, Worked: Boolean;
 begin
   RT := rxUnits;
   if fSprites[RT] = nil then
@@ -106,12 +137,14 @@ begin
 
   AllBlank := True;
   A := fResUnits[aUT].UnitAnim[aAction,aDir];
+  CanvasSize := GetMinCanvasSize(A, RT);
   for Step := 1 to A.Count do
   begin
     SpriteID := A.Step[Step]+1; //Sprites in units.dat are 0 indexed
     if SpriteID > 0 then
     begin
-      AllBlank := AllBlank and not fSprites[RT].ExportImageForInterp(origSpritesDir + format('%.6d.png', [Step]), SpriteID, aExportType);
+      Worked := fSprites[RT].ExportImageForInterp(origSpritesDir + format('%.6d.png', [Step]), SpriteID, aExportType, CanvasSize);
+      AllBlank := AllBlank and not Worked;
     end
     else
       raise Exception.Create('SpriteID = 0 for step '+IntToStr(Step));
@@ -122,7 +155,7 @@ begin
   //Write out the first sprite again to create a loop
   SpriteID := A.Step[1]+1; //Sprites in units.dat are 0 indexed
   if SpriteID > 0 then
-    fSprites[RT].ExportImageForInterp(origSpritesDir + format('%.6d.png', [A.Count+1]), SpriteID, aExportType);
+    fSprites[RT].ExportImageForInterp(origSpritesDir + format('%.6d.png', [A.Count+1]), SpriteID, aExportType, CanvasSize);
 
   NeedAlpha := aExportType in [ietBase, ietNormal];
 
@@ -308,7 +341,7 @@ begin
       //Save offsets .txt file
       StrList.Clear;
       StrList.Append(IntToStr(MinX - pngWidth div 2));
-      StrList.Append(IntToStr(MinY - pngHeight div 2));
+      StrList.Append(IntToStr(MinY - CANVAS_Y_OFFSET - pngHeight div 2));
       StrList.Append(IntToStr(NoShadMinX - MinX));
       StrList.Append(IntToStr(NoShadMinY - MinY));
       StrList.Append(IntToStr(newWidth-1 - (MaxX - NoShadMaxX)));
