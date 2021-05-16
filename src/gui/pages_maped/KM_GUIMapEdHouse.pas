@@ -370,7 +370,7 @@ begin
     Button_House_Worker.ShowImageEnabled := False;
     Image_House_Worker_Closed.Show;
   end else begin
-    Button_House_Worker.ShowImageEnabled := aHouse.HasOwner;
+    Button_House_Worker.ShowImageEnabled := aHouse.HasWorker;
     Image_House_Worker_Closed.Hide;
   end;
 end;

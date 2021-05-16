@@ -441,7 +441,7 @@ procedure TKMSettledUnit.CleanHousePointer(aFreeAndNilTask: Boolean = False);
 begin
   if aFreeAndNilTask then
     FreeAndNil(fTask);
-  fHome.HasOwner := False;
+  fHome.HasWorker := False;
   gHands.CleanUpHousePointer(fHome);
 end;
 
@@ -1286,7 +1286,7 @@ procedure TKMUnit.CloseUnit(aRemoveTileUsage: Boolean = True);
 begin
   if fHome <> nil then
   begin
-    fHome.HasOwner := False;
+    fHome.HasWorker := False;
     gHands.CleanUpHousePointer(fHome);
   end;
 

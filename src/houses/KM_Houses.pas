@@ -98,7 +98,7 @@ type
     fDamage: Word; //Damaged inflicted to house
 
     fTick: Cardinal;
-    fHasOwner: Boolean; //which is some TKMUnit
+    fHasWorker: Boolean; //which is some TKMUnit
     fBuildingRepair: Boolean; //If on and the building is damaged then labourers will come and repair it
 
     //Switch between delivery modes: delivery on/off/or make an offer from resources available
@@ -216,7 +216,7 @@ type
     function ShouldAbandonDeliveryFromTo(aToHouse: TKMHouse; aWareType: TKMWareType; aImmidiateCheck: Boolean): Boolean; virtual;
 
     property IsClosedForWorker: Boolean read fIsClosedForWorker write SetIsClosedForWorker;
-    property HasOwner: Boolean read fHasOwner write fHasOwner; //There's a citizen who runs this house
+    property HasWorker: Boolean read fHasWorker write fHasWorker; //There's a citizen who runs this house
     property DisableUnoccupiedMessage: Boolean read fDisableUnoccupiedMessage write fDisableUnoccupiedMessage;
     function GetHealth: Word;
     function GetBuildWoodDelivered: Byte;
@@ -526,7 +526,7 @@ begin
 
   fPlacedOverRoad   := gTerrain.TileHasRoad(Entrance);
 
-  fHasOwner         := False;
+  fHasWorker        := False;
   //Initially repair is [off]. But for AI it's controlled by a command in DAT script
   fBuildingRepair   := False; //Don't set it yet because we don't always know who are AIs yet (in multiplayer) It is set in first UpdateState
   DoorwayUse        := 0;
@@ -588,7 +588,7 @@ begin
   LoadStream.Read(fBuildReserve);
   LoadStream.Read(fBuildingProgress, SizeOf(fBuildingProgress));
   LoadStream.Read(fDamage, SizeOf(fDamage));
-  LoadStream.Read(fHasOwner);
+  LoadStream.Read(fHasWorker);
   LoadStream.Read(fBuildingRepair);
   LoadStream.Read(Byte(fDeliveryMode));
   LoadStream.Read(Byte(fNewDeliveryMode));
@@ -1985,7 +1985,7 @@ begin
   SaveStream.Write(fBuildReserve);
   SaveStream.Write(fBuildingProgress, SizeOf(fBuildingProgress));
   SaveStream.Write(fDamage, SizeOf(fDamage));
-  SaveStream.Write(fHasOwner);
+  SaveStream.Write(fHasWorker);
   SaveStream.Write(fBuildingRepair);
   SaveStream.Write(Byte(fDeliveryMode));
   SaveStream.Write(Byte(fNewDeliveryMode));
@@ -2127,7 +2127,7 @@ begin
                    'BuildState = %s%sBuildSupplyWood = %d%sBuildSupplyStone = %d%sBuildingProgress = %d%sDoorwayUse = %d%s' +
                    'ResIn = %d,%d,%d,%d%sResDeliveryCnt = %d,%d,%d,%d%sResOut = %d,%d,%d,%d%sResOrder = %d,%d,%d,%d%sResOutPool = %s',
                    [aSeparator,
-                    BoolToStr(fHasOwner, True), aSeparator,
+                    BoolToStr(fHasWorker, True), aSeparator,
                     actStr, aSeparator,
                     BoolToStr(fBuildingRepair, True), aSeparator,
                     BoolToStr(fIsClosedForWorker, True), aSeparator,
@@ -2177,7 +2177,7 @@ begin
 
   //Show unoccupied message if needed and house belongs to human player and can have owner at all
   //and is not closed for worker and not a barracks
-  if not fDisableUnoccupiedMessage and not fHasOwner and not fIsClosedForWorker
+  if not fDisableUnoccupiedMessage and not fHasWorker and not fIsClosedForWorker
   and (gRes.Houses[fType].OwnerType <> utNone) and (fType <> htBarracks) then
   begin
     Dec(fTimeSinceUnoccupiedReminder);
