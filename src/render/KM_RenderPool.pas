@@ -845,6 +845,7 @@ var
 const
   INTERP_LEVEL = 8;
 begin
+  A := gRes.Units[aUnit].UnitAnim[aAct, aDir];
   InterpOffset := GetInterpSpriteOffset(aUnit, aAct, aDir);
   if InterpOffset >= 0 then
   begin
@@ -854,7 +855,6 @@ begin
   end
   else
   begin
-    A := gRes.Units[aUnit].UnitAnim[aAct, aDir];
     Result := A.Step[aStep mod Byte(A.Count) + 1] + 1;
   end;
 end;
