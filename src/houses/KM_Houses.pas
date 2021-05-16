@@ -217,6 +217,7 @@ type
 
     property IsClosedForWorker: Boolean read fIsClosedForWorker write SetIsClosedForWorker;
     property HasWorker: Boolean read fHasWorker write fHasWorker; //There's a citizen who runs this house
+    function CanHasWorker: Boolean;
     property DisableUnoccupiedMessage: Boolean read fDisableUnoccupiedMessage write fDisableUnoccupiedMessage;
     function GetHealth: Word;
     function GetBuildWoodDelivered: Byte;
@@ -1346,6 +1347,14 @@ begin
 end;
 
 
+function TKMHouse.CanHasWorker: Boolean;
+begin
+  if Self = nil then Exit(False);
+  
+  Result := gRes.Houses[fType].CanHasWorker;
+end;
+
+
 function TKMHouse.IsStone: Boolean;
 begin
   Result := fBuildState = hbsStone;
@@ -2175,10 +2184,10 @@ begin
   if (fUpdateDeliveryModeOnTick = fTick) then
     UpdateDeliveryMode;
 
-  //Show unoccupied message if needed and house belongs to human player and can have owner at all
+  //Show unoccupied message if needed and house belongs to human player and can have worker at all
   //and is not closed for worker and not a barracks
   if not fDisableUnoccupiedMessage and not fHasWorker and not fIsClosedForWorker
-  and (gRes.Houses[fType].OwnerType <> utNone) and (fType <> htBarracks) then
+  and gRes.Houses[fType].CanHasWorker and (fType <> htBarracks) then
   begin
     Dec(fTimeSinceUnoccupiedReminder);
     if fTimeSinceUnoccupiedReminder = 0 then

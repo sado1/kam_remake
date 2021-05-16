@@ -90,6 +90,7 @@ type
     property ResProductionX: ShortInt read fHouseDat.ResProductionX;
     property Sight: Smallint read fHouseDat.Sight;
     property OwnerType: TKMUnitType read GetOwnerType;
+    function CanHasWorker: Boolean;
     //Additional properties added by Remake
     property BuildArea: THouseArea read GetArea;
     property GroundVisibleArea: THouseArea read GetGroundVisibleArea;
@@ -653,6 +654,13 @@ begin
     Result := UNIT_ID_TO_TYPE[fHouseDat.OwnerType]
   else
     Result := utNone;
+end;
+
+
+// Returns True if this house could have a worker (or occupant)
+function TKMHouseSpec.CanHasWorker: Boolean;
+begin
+  Result := OwnerType <> utNone;
 end;
 
 

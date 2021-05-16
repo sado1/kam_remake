@@ -639,7 +639,7 @@ begin
     Label_House.Show;
     Image_PlayerFlag.Show;
     Image_House_Logo.Show;
-    Image_House_Worker.Visible := gRes.Houses[aHouse.HouseType].OwnerType <> utNone;
+    Image_House_Worker.Visible := gRes.Houses[aHouse.HouseType].CanHasWorker;
     Button_House_Worker.Hide;
     HealthBar_House.Show;
     Panel_House.Show;
@@ -647,7 +647,7 @@ begin
   end;
 
   Image_House_Worker.Hide;
-  Button_House_Worker.Visible := gRes.Houses[aHouse.HouseType].OwnerType <> utNone;
+  Button_House_Worker.Visible := gRes.Houses[aHouse.HouseType].CanHasWorker;
 
   Button_HouseDeliveryMode.Enabled := aHouse.AllowDeliveryModeChange;
   Button_HouseDeliveryMode.Show;

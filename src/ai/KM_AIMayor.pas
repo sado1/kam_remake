@@ -208,7 +208,7 @@ begin
   //Count overall unit requirement (excluding Barracks and ownerless houses)
   FillChar(UnitReq, SizeOf(UnitReq), #0); //Clear up
   for H := HOUSE_MIN to HOUSE_MAX do
-    if (gRes.Houses[H].OwnerType <> utNone) and (H <> htBarracks) then
+    if gRes.Houses[H].CanHasWorker and (H <> htBarracks) then
       Inc(UnitReq[gRes.Houses[H].OwnerType], P.Stats.GetHouseQty(H));
 
   //Schools

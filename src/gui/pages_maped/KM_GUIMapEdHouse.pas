@@ -470,7 +470,7 @@ begin
   HandleHouseClosedForWorker(fHouse);
   Button_House_Worker.Hint := gResTexts[TX_HOUSES_CLOSED_FOR_WORKER_HINT, [gRes.Units[houseSpec.OwnerType].GUIName]];
   Button_House_Worker.FlagColor := gHands[fHouse.Owner].FlagColor;
-  Button_House_Worker.Visible := gRes.Houses[fHouse.HouseType].OwnerType <> utNone;
+  Button_House_Worker.Visible := gRes.Houses[fHouse.HouseType].CanHasWorker;
   Image_House_Worker.TexID := gRes.Units[houseSpec.OwnerType].GUIIcon;
   Image_House_Worker.FlagColor := gHands[fHouse.Owner].FlagColor;
   Image_House_Worker.Hint := gRes.Units[houseSpec.OwnerType].GUIName;
