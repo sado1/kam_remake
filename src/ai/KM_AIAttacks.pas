@@ -95,7 +95,8 @@ begin
 
   Result := ((fAttacks[aIndex].AttackType = aatRepeating) or not fAttacks[aIndex].HasOccured)
             and (aTick >= fAttacks[aIndex].Delay)
-            and (TotalMenAvailable >= fAttacks[aIndex].TotalMen);
+            and (TotalMenAvailable >= fAttacks[aIndex].TotalMen)
+            and (TotalMenAvailable > 0);
 
   //Must have enough groups of each type
   if not fAttacks[aIndex].TakeAll then
