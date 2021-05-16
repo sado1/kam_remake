@@ -72,6 +72,7 @@ type
     fHouseOutline: TKMPointList;
 
     function GetUnitAnimSprite(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; aStep: Integer; aStepFrac: Single): Integer;
+    function GetUnitAnimSpriteByPercent(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; aPercent: Single): Integer;
 
     procedure ApplyTransform;
     procedure SetDefaultRenderParams;
@@ -865,6 +866,18 @@ begin
 end;
 
 
+function TRenderPool.GetUnitAnimSpriteByPercent(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection;
+                                                aPercent: Single): Integer;
+var
+  count: Integer;
+  fracStep: Single;
+begin
+  count := gRes.Units[aUnit].UnitAnim[aAct, aDir].Count;
+  fracStep := Min(aPercent, 1.0) * (count-1);
+  Result := GetUnitAnimSprite(aUnit, aAct, aDir, Trunc(fracStep), Frac(fracStep));
+end;
+
+
 procedure TRenderPool.ReInit;
 begin
   if Self = nil then Exit;
@@ -1642,12 +1655,9 @@ begin
   end;
 
   case aProj of
-    ptArrow:     with gRes.Units[utBowman].UnitAnim[uaSpec, aDir] do
-                    id := Step[Round(Min(aFlight, 1) * (Count-1)) + 1] + 1;
-    ptBolt:      with gRes.Units[utArbaletman].UnitAnim[uaSpec, aDir] do
-                    id := Step[Round(Min(aFlight, 1) * (Count-1)) + 1] + 1;
-    ptSlingRock: with gRes.Units[utSlingshot].UnitAnim[uaSpec, aDir] do
-                    id := Step[Round(Min(aFlight, 1) * (Count-1)) + 1] + 1;
+    ptArrow:     id := GetUnitAnimSpriteByPercent(utBowman, uaSpec, aDir, aFlight);
+    ptBolt:      id := GetUnitAnimSpriteByPercent(utArbaletman, uaSpec, aDir, aFlight);
+    ptSlingRock: id := GetUnitAnimSpriteByPercent(utSlingshot, uaSpec, aDir, aFlight);
     ptTowerRock: id := ProjectileBounds[aProj, 1] + 1;
     else          id := 1; // Nothing?
   end;
