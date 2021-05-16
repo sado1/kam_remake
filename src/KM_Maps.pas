@@ -1416,8 +1416,8 @@ var
     case fSortMethod of
       smByFavouriteAsc:       Result := A.IsFavourite and not B.IsFavourite;
       smByFavouriteDesc:      Result := not A.IsFavourite and B.IsFavourite;
-      smByNameAsc:            Result := CompareText(A.FileName, B.FileName) < 0;
-      smByNameDesc:           Result := CompareText(A.FileName, B.FileName) > 0;
+      smByNameAsc:            Result := CompareTextLogical(A.FileName, B.FileName) < 0;
+      smByNameDesc:           Result := CompareTextLogical(A.FileName, B.FileName) > 0;
       smBySizeAsc:            Result := MapSizeIndex(A.MapSizeX, A.MapSizeY) < MapSizeIndex(B.MapSizeX, B.MapSizeY);
       smBySizeDesc:           Result := MapSizeIndex(A.MapSizeX, A.MapSizeY) > MapSizeIndex(B.MapSizeX, B.MapSizeY);
       smByPlayersAsc:         Result := A.LocCount < B.LocCount;

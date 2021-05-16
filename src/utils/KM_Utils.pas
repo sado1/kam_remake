@@ -40,6 +40,8 @@ uses
 
   function GetLocalizedFilePath(aPath: string; aLocale, aFallbackLocale, aExt: AnsiString): string;
 
+  function CompareTextLogical(A, B: UnicodeString): Integer;
+
 
 implementation
 uses
@@ -365,6 +367,23 @@ begin
       end;
     end;
   end;
+end;
+
+
+{$IFDEF MSWindows}
+// Logical comparison of the string, as Windows do
+// taken from https://stackoverflow.com/questions/10108789/is-there-a-compare-function-for-file-name-sorting
+function StrCmpLogicalW(psz1, psz2: PWideChar): Integer; stdcall; external 'shlwapi.dll';
+{$ENDIF}
+
+
+function CompareTextLogical(A, B: UnicodeString): Integer;
+begin
+  {$IFDEF MSWindows}
+  Result := StrCmpLogicalW(PWideChar(A), PWideChar(B));
+  {$ELSE}
+  Result := CompareText(A, B);
+  {$ENDIF}
 end;
 
 

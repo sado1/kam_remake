@@ -127,7 +127,7 @@ uses
   KM_GameClasses,
   KM_Resource, KM_ResTexts, KM_FileIO,
   KM_CommonClasses, KM_Defaults, KM_CommonUtils, KM_Log,
-  KM_GameTypes;
+  KM_GameTypes, KM_Utils;
 
 
 { TKMSaveInfo }
@@ -507,8 +507,8 @@ var
     case fSortMethod of
       smByFileNameAsc:     Result := CompareText(A.FileName, B.FileName) < 0;
       smByFileNameDesc:    Result := CompareText(A.FileName, B.FileName) > 0;
-      smByMapNameAsc:      Result := CompareText(A.GameInfo.Title, B.GameInfo.Title) < 0;
-      smByMapNameDesc:     Result := CompareText(A.GameInfo.Title, B.GameInfo.Title) > 0;
+      smByMapNameAsc:      Result := CompareTextLogical(A.GameInfo.Title, B.GameInfo.Title) < 0;
+      smByMapNameDesc:     Result := CompareTextLogical(A.GameInfo.Title, B.GameInfo.Title) > 0;
       smByGameVersionAsc:  Result := GetGameVersionNum(A.GameInfo.Version) < GetGameVersionNum(B.GameInfo.Version);
       smByGameVersionDesc: Result := GetGameVersionNum(A.GameInfo.Version) > GetGameVersionNum(B.GameInfo.Version);
       smByDescriptionAsc:  Result := CompareText(A.GameInfo.GetTitleWithTime, B.GameInfo.GetTitleWithTime) < 0;
