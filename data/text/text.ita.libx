@@ -1058,8 +1058,8 @@
 1107:Fai da spettatore (per il giocatore 10)
 1108:Fai da spettatore (per il giocatore 11)
 1109:Fai da spettatore (per il giocatore 12)
-1110:Dimensioni attuali:
-1111:Nuove dimensioni:
+1110:Dimensioni attuali:|[ %d : %d ]
+1111:Nuove dimensioni:|[ %d : %d ]
 1112:Ridimensiona Mappa
 1113:Proprietario: %s
 1114:Cancella num %d
@@ -1191,7 +1191,7 @@
 1240:Parametri errati per il comando /%s. Tipo di parametri atteso: [%s]
 1241:Troppi parametri ricevuti per il comando /%s: Numero di parametri attesi [ %s ], ricevuti: [ %s ]
 1242:Invocato comando: /%s(%s)
-1243:Errore durante l'invocazione del comando /%s(%s)
+1243:Errore durante l'invocazione del comando /%s(%s)|
 1244:Comando console /%s non trovato
 1245:Abilita/vieta copia-incolla dalla chat
 1246:Imposta segnalibro temporaneo qui

@@ -983,7 +983,7 @@ begin
                 try
                   if checkMapInfo.CRC <> fMapInfo.CRC then
                   begin
-                    PostLocalMessage(Format(gResTexts[TX_LOBBY_CANNOT_START], [gResTexts[TX_NET_ERR_MAP_FILE_CHANGED]]), csSystem);
+                    PostLocalMessage(gResTexts[TX_LOBBY_CANNOT_START, [gResTexts[TX_NET_ERR_MAP_FILE_CHANGED]]], csSystem);
                     Exit;
                   end;
                 finally
@@ -1003,7 +1003,7 @@ begin
   end;
   if not fNetPlayers.ValidateSetup(humanUsableLocs, aiUsableLocs, advancedAIUsableLocs, fixedLocsColors, errorMessage) then
   begin
-    PostLocalMessage(Format(gResTexts[TX_LOBBY_CANNOT_START], [errorMessage]), csSystem);
+    PostLocalMessage(gResTexts[TX_LOBBY_CANNOT_START, [errorMessage]], csSystem);
     Exit;
   end;
 
@@ -1438,7 +1438,7 @@ procedure TKMNetworking.PlayerDisconnected(aSenderIndex: TKMNetHandleIndex; aLas
       QuitMsgId := IfThen(fHostIndex = aPlayerIndex, TX_MULTIPLAYER_HOST_DISCONNECTED_DEFEATED, TX_NET_HAS_QUIT_AND_DEFEATED)
     else
       QuitMsgId := IfThen(fHostIndex = aPlayerIndex, TX_MULTIPLAYER_HOST_DISCONNECTED, TX_NET_HAS_QUIT);
-    PostLocalMessage(Format(gResTexts[QuitMsgId], [fNetPlayers[aPlayerIndex].NiknameColoredU]), csLeave);
+    PostLocalMessage(gResTexts[QuitMsgId, [fNetPlayers[aPlayerIndex].NiknameColoredU]], csLeave);
   end;
 
 var
@@ -1675,7 +1675,7 @@ begin
                 if tmpStringA <> NET_PROTOCOL_REVISON then
                 begin
                   Assert(not IsHost);
-                  OnJoinFail(Format(gResTexts[TX_MP_MENU_WRONG_VERSION], [NET_PROTOCOL_REVISON, tmpStringA]));
+                  OnJoinFail(gResTexts[TX_MP_MENU_WRONG_VERSION, [NET_PROTOCOL_REVISON, tmpStringA]]);
                   fNetClient.Disconnect;
                   Exit;
                 end;
@@ -1796,7 +1796,7 @@ begin
                 M.Read(tmpInteger);
                 //If the result is < 1 is means silently ignore and keep retrying
                 if tmpInteger > 0 then
-                  PostLocalMessage(Format(gResTexts[TX_NET_RECONNECTION_FAILED], [gResTexts[tmpInteger]]), csSystem);
+                  PostLocalMessage(gResTexts[TX_NET_RECONNECTION_FAILED, [gResTexts[tmpInteger]]], csSystem);
                 if Assigned(OnJoinFail) then
                   OnJoinFail('');
               end;
@@ -2283,9 +2283,9 @@ begin
                 M.ReadW(replyStringW);
                 M.Read(tmpInteger2);
                 if tmpInteger2 = -1 then
-                  PostLocalMessage(Format(gResTexts[tmpInteger], [tmpStringW, replyStringW]), chatSound)
+                  PostLocalMessage(gResTexts[tmpInteger, [tmpStringW, replyStringW]], chatSound)
                 else
-                  PostLocalMessage(Format(gResTexts[tmpInteger], [gResTexts[tmpInteger2]]), chatSound)
+                  PostLocalMessage(gResTexts[tmpInteger, [gResTexts[tmpInteger2]]], chatSound)
               end;
 
       mkTextChat:
@@ -2316,7 +2316,7 @@ begin
                         tmpStringA := '[]' + NetPlayers[I].NiknameColored + '[$00B9FF]'
                       else
                         tmpStringA := '';
-                      tmpStringW := ' [$00B9FF](' + Format(gResTexts[TX_CHAT_WHISPER_TO], [UnicodeString(tmpStringA)]) + ')[]: ' + tmpStringW;
+                      tmpStringW := ' [$00B9FF](' + gResTexts[TX_CHAT_WHISPER_TO, [UnicodeString(tmpStringA)]] + ')[]: ' + tmpStringW;
                     end;
 
                   cmAll:
@@ -2727,7 +2727,7 @@ begin
       Inc(K);
     end;
   end;
-  PostLocalMessage(Format(gResTexts[TX_LOBBY_ALERT_GET_READY_SENT], [IntToStr(K)]), csSystem);
+  PostLocalMessage(gResTexts[TX_LOBBY_ALERT_GET_READY_SENT, [IntToStr(K)]], csSystem);
 end;
 
 

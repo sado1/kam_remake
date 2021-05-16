@@ -1056,8 +1056,8 @@
 1107:Sledování hráče 10
 1108:Sledování hráče 11
 1109:Sledování hráče 12
-1110:Velikost mapy:
-1111:Nová velikost mapy:
+1110:Velikost mapy:|[ %d : %d ]
+1111:Nová velikost mapy:|[ %d : %d ]
 1112:Velikost mapy
 1113:Vlastník: %s
 1114:Smazat hráče %d
@@ -1189,7 +1189,7 @@
 1240:Wrong parameters for script command /%s. Expected parameters types are: [%s]
 1241:Too many parameters passed to script command /%s: Expected parameters count [ %s ], actual: [ %s ]
 1242:Volaný příkaz: /%s(%s)
-1243:Error while calling script command /%s(%s)
+1243:Error while calling script command /%s(%s)|
 1244:Script console command /%s not found
 1245:Povolit/zakázat kopírování a vkládání z/do chatu
 1246:Uložit stav přehrávání pro umožnění načtení tohoto místa při přehrávání tohoto záznamu

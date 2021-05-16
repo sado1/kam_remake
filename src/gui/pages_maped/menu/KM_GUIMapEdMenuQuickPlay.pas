@@ -272,7 +272,7 @@ begin
   for I := 0 to MAX_HANDS - 1 do
   begin
     if HandCanBePlayedAsHuman(I) then
-      DropList_SelectHand.Add(Format(gResTexts[TX_PLAYER_X], [I + 1]), I);
+      DropList_SelectHand.Add(gResTexts[TX_PLAYER_X, [I + 1]], I);
   end;
 end;
 

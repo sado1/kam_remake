@@ -1037,8 +1037,8 @@
 1107:Oglądaj gracza 10
 1108:Oglądaj gracza 11
 1109:Oglądaj gracza 12
-1110:Obecny rozmiar mapy:
-1111:Nowy rozmiar:
+1110:Obecny rozmiar mapy:|[ %d : %d ]
+1111:Nowy rozmiar:|[ %d : %d ]
 1112:Zmiana rozmiaru
 1113:Właściciel: %s
 1114:Usuń gracza %d
@@ -1170,7 +1170,7 @@
 1240:Złe parametry dla komendy /%s. Oczekiwane typy parametrów to: [%s]
 1241:Zbyt wiele parametrów przekazanych do komendy /%s: Oczekiwana liczba parametrów [ %s ], a jest: [ %s ]
 1242:Komenda wykonana: /%s(%s)
-1243:Błąd w trakcie wykonania komendy /%s(%s)
+1243:Błąd w trakcie wykonania komendy /%s(%s)|
 1244:Komenda /%s nie została odnaleziona
 1245:Włącz/wyłącz kopiuj-wklej w oknie czatu
 1246:Zapisz obecny stan powtórki, aby móc powrócić do tego momentu w trakcie jej oglądania

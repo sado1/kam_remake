@@ -1057,8 +1057,8 @@
 1107:Spectate player 10
 1108:Spectate player 11
 1109:Spectate player 12
-1110:Current map size:
-1111:New map size:
+1110:Current map size:|[ %d : %d ]
+1111:New map size:|[ %d : %d ]
 1112:Resize Map
 1113:Owner: %s
 1114:Delete Player %d
@@ -1190,7 +1190,7 @@
 1240:Wrong parameters for script command /%s. Expected parameters types are: [ %s ]
 1241:Too many parameters passed to script command /%s: Expected parameters count [ %s ], actual: [ %s ]
 1242:Command called: /%s(%s)
-1243:Error while calling script command /%s(%s)
+1243:Error while calling script command /%s(%s)|
 1244:Script console command /%s not found
 1245:Enable/disable chat history and copy from chat window
 1246:Save replay state to be able to load while watching this replay

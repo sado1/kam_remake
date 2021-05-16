@@ -261,8 +261,8 @@ begin
         except
           on E: Exception do
           begin
-            LoadError := Format(gResTexts[TX_UNSUPPORTED_SAVE_LOAD_ERROR_MSG], [fSaves[ID].GameInfo.Version, fSaves[ID].Path])
-              + '||' + E.ClassName + ': ' + E.Message;
+            LoadError := gResTexts[TX_UNSUPPORTED_SAVE_LOAD_ERROR_MSG, [fSaves[ID].GameInfo.Version, fSaves[ID].Path]]
+                         + '||' + E.ClassName + ': ' + E.Message;
             gLog.AddTime('Game load Exception: ' + LoadError
               {$IFDEF WDC} + sLineBreak + E.StackTrace {$ENDIF}
               );

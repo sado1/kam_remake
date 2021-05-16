@@ -191,7 +191,7 @@ var
   hLabelWidth: Integer;
 begin
   Image_PlayerFlag.FlagColor := gHands[aUnit.Owner].FlagColor;
-  Image_PlayerFlag.Hint      := Format(gResTexts[TX_PLAYER_FLAG_HINT], [gHands[aUnit.Owner].OwnerName]);
+  Image_PlayerFlag.Hint      := gResTexts[TX_PLAYER_FLAG_HINT, [gHands[aUnit.Owner].OwnerName]];
 
   Inc(fAnimStep);
   Image_PlayerFlag.TexID := UNIT_FLAG_TEX_ID + fAnimStep mod UNIT_FLAG_TEX_ID_FRAME;
@@ -391,7 +391,7 @@ begin
 
   //Check if we have new hint with separate 1 unit action hint (Ctrl + S)
   if CountOccurrences('%s', gResTexts[TX_TROOP_SPLIT_HINT]) = 2 then
-    Button_Army_Split.Hint    := Format(gResTexts[TX_TROOP_SPLIT_HINT], [splitKeyStr, splitKeyStr])
+    Button_Army_Split.Hint    := gResTexts[TX_TROOP_SPLIT_HINT, [splitKeyStr, splitKeyStr]]
   else
     Button_Army_Split.Hint     := GetHintWHotkey(TX_TROOP_SPLIT_HINT, splitKeyStr); //Old hint
 

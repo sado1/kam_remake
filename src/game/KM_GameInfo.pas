@@ -144,7 +144,7 @@ begin
   LoadStream.ReadA(ansiStr);
   if ansiStr <> 'KaM_GameInfo' then
   begin
-    fParseError.ErrorString := Format(gResTexts[TX_SAVE_UNSUPPORTED_FORMAT], [Copy(ansiStr, 1, 8)]);
+    fParseError.ErrorString := gResTexts[TX_SAVE_UNSUPPORTED_FORMAT, [Copy(ansiStr, 1, 8)]];
     fParseError.ErrorType := gipetUnsupportedFormat;
     Exit;
   end;
@@ -152,7 +152,7 @@ begin
   LoadStream.ReadA(Version);
   if Version <> GAME_REVISION then
   begin
-    fParseError.ErrorString := Format(gResTexts[TX_SAVE_UNSUPPORTED_VERSION], [Version]);
+    fParseError.ErrorString := gResTexts[TX_SAVE_UNSUPPORTED_VERSION, [Version]];
     fParseError.ErrorType := gipetUnsupportedVersion;
 //    Exit; //need to try load game data anyway, in case we will try to load unsupported version save
   end;

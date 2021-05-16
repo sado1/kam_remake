@@ -155,7 +155,7 @@ begin
                                          IntToStr(G.HandIndex + 1)],
                                         [gResTexts[TYPE_HINT[G.GoalType]],
                                          gResTexts[COND[G.GoalCondition]],
-                                         Format(gResTexts[TX_PLAYER_X], [G.HandIndex + 1])]));
+                                         gResTexts[TX_PLAYER_X, [G.HandIndex + 1]]]));
   end;
 
   Goals_ListClick(nil);
