@@ -8,7 +8,7 @@ type
   TKMTaskGoOutShowHungry = class(TKMUnitTask)
   public
     constructor Create(aUnit: TKMUnit);
-    function Execute:TKMTaskResult; override;
+    function Execute: TKMTaskResult; override;
   end;
 
 
@@ -46,7 +46,7 @@ begin
     3: SetActionWalkToSpot(fUnit.Home.PointBelowEntrance);
     4: SetActionGoIn(uaWalk, gdGoInside, fUnit.Home);
     5: begin
-         SetActionStay(20+KaMRandom(10, 'TKMTaskGoOutShowHungry.Execute'), uaWalk);
+         SetActionStay(20 + KaMRandom(10, 'TKMTaskGoOutShowHungry.Execute'), uaWalk);
          Home.SetState(hstIdle);
        end;
     else begin
