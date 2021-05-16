@@ -21,6 +21,7 @@ type
                          aTarget: TKMAIAttackTarget; aCustomPosition: TKMPoint): Integer;
     function AIAttackRemove(aPlayer: Byte; aAIAttackId: Word): Boolean;
     procedure AIAttackRemoveAll(aPlayer: Byte);
+    procedure AIAutoAttack(aPlayer: Byte; aAutoAttack: Boolean);
     procedure AIAutoAttackRange(aPlayer: Byte; aRange: Word);
     procedure AIAutoBuild(aPlayer: Byte; aAuto: Boolean);
     procedure AIAutoDefence(aPlayer: Byte; aAuto: Boolean);
@@ -1167,6 +1168,22 @@ begin
       gHands[aPlayer].AI.General.Attacks.Clear
     else
       LogParamWarning('Actions.AIAttackRemoveAll', [aPlayer]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13000
+//* Sets AI auto attack
+procedure TKMScriptActions.AIAutoAttack(aPlayer: Byte; aAutoAttack: Boolean);
+begin
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
+      gHands[aPlayer].AI.Setup.AutoAttack := aAutoAttack
+    else
+      LogParamWarning('Actions.AIAutoAttack', [aPlayer, Byte(aAutoAttack)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

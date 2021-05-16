@@ -13,6 +13,7 @@ type
   TKMScriptStates = class(TKMScriptEntity)
   public
     function AIArmyType(aPlayer: Byte): TKMArmyType;
+    function AIAutoAttack(aPlayer: Byte): Boolean;
     function AIAutoAttackRange(aPlayer: Byte): Integer;
     function AIAutoBuild(aPlayer: Byte): Boolean;
     function AIAutoDefence(aPlayer: Byte): Boolean;
@@ -253,6 +254,24 @@ begin
       Result := gHands[aPlayer].AI.Setup.ArmyType
     else
       LogParamWarning('States.AIArmyType', [aPlayer]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+
+//* Version: 13000
+//* Gets AI AutoAttack (True or False)
+function TKMScriptStates.AIAutoAttack(aPlayer: Byte): Boolean;
+begin
+  Result := False;
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
+      Result := gHands[aPlayer].AI.Setup.AutoAttack
+    else
+      LogParamWarning('States.AIAutoAttack', [aPlayer]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

@@ -464,6 +464,7 @@ begin
     // After that they can be used from within the script.
     c := Sender.AddClassN(nil, AnsiString(fStates.ClassName));
     RegisterMethodCheck(c, 'function AIArmyType(aPlayer: Byte): TKMArmyType');
+    RegisterMethodCheck(c, 'function AIAutoAttack(aPlayer: Byte): Boolean');
     RegisterMethodCheck(c, 'function AIAutoAttackRange(aPlayer: Byte): Integer');
     RegisterMethodCheck(c, 'function AIAutoBuild(aPlayer: Byte): Boolean');
     RegisterMethodCheck(c, 'function AIAutoDefence(aPlayer: Byte): Boolean');
@@ -676,6 +677,7 @@ begin
                            'aRandomGroups: Boolean; aTarget: TKMAIAttackTarget; aCustomPosition: TKMPoint): Integer');
     RegisterMethodCheck(c, 'function AIAttackRemove(aPlayer: Byte; aAIAttackId: Word): Boolean');
     RegisterMethodCheck(c, 'procedure AIAttackRemoveAll(aPlayer: Byte)');
+    RegisterMethodCheck(c, 'procedure AIAutoAttack(aPlayer: Byte; aAutoAttack: Boolean)');
     RegisterMethodCheck(c, 'procedure AIAutoAttackRange(aPlayer: Byte; aRange: Word)');
     RegisterMethodCheck(c, 'procedure AIAutoBuild(aPlayer: Byte; aAuto: Boolean)');
     RegisterMethodCheck(c, 'procedure AIAutoDefence(aPlayer: Byte; aAuto: Boolean)');
@@ -1139,6 +1141,7 @@ begin
     with classImp.Add(TKMScriptStates) do
     begin
       RegisterMethod(@TKMScriptStates.AIArmyType,                               'AIArmyType');
+      RegisterMethod(@TKMScriptStates.AIAutoAttack,                             'AIAutoAttack');
       RegisterMethod(@TKMScriptStates.AIAutoAttackRange,                        'AIAutoAttackRange');
       RegisterMethod(@TKMScriptStates.AIAutoBuild,                              'AIAutoBuild');
       RegisterMethod(@TKMScriptStates.AIAutoDefence,                            'AIAutoDefence');
@@ -1351,6 +1354,7 @@ begin
       RegisterMethod(@TKMScriptActions.AIAttackAdd,                             'AIAttackAdd');
       RegisterMethod(@TKMScriptActions.AIAttackRemove,                          'AIAttackRemove');
       RegisterMethod(@TKMScriptActions.AIAttackRemoveAll,                       'AIAttackRemoveAll');
+      RegisterMethod(@TKMScriptActions.AIAutoAttack,                            'AIAutoAttack');
       RegisterMethod(@TKMScriptActions.AIAutoAttackRange,                       'AIAutoAttackRange');
       RegisterMethod(@TKMScriptActions.AIAutoBuild,                             'AIAutoBuild');
       RegisterMethod(@TKMScriptActions.AIAutoDefence,                           'AIAutoDefence');
