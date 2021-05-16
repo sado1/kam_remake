@@ -769,7 +769,12 @@ var
   Scale: Single;
   A, B: ShortInt;
 begin
-  Scale := Max(Max(Abs(X), Abs(Y)), 1);
+  // Scale to at least 0.5, not to at least 1
+  // Corner case:
+  // X = 0.5, or even 0,4999999
+  // Y = 0.5, or even 0,4999999
+  // Then A = 0 and B = 0 => Result = dirNA
+  Scale := Max(Max(Abs(X), Abs(Y)), 0.5);
   A := Round(X / Scale);
   B := Round(Y / Scale);
   Result := DirectionsBitfield[A, B]; // -1, 0, 1
