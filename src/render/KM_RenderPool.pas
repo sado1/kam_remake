@@ -390,7 +390,7 @@ procedure TRenderPool.RenderBackgroundUI(const aRect: TKMRect);
   begin
     gRenderAux.CircleOnTerrain(U.PositionF.X - 0.5 + U.GetSlide(axX),
                                U.PositionF.Y - 0.5 + U.GetSlide(axY),
-                               0.35, aCol, icCyan);
+                               0.4, aCol, icCyan);
   end;
 
   procedure HighlightEntity(aEntityH: TKMHighlightEntity);
