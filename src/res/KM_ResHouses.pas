@@ -547,14 +547,14 @@ const
 
   //For some reason in KaM the piles of building supply are not aligned, each one has a different offset.
   //These values were taking from the barracks offsets and are for use with new houses.
-  BuildSupplyOffsets: THouseBuildSupply = ( ((MoveX:  0; MoveY: 0), (MoveX: -7; MoveY: 0), (MoveX:-26; MoveY: 0),  //Wood 1-3
-                                             (MoveX:-26; MoveY: 0), (MoveX:-26; MoveY:-1), (MoveX:-26; MoveY:-4)), //Wood 4-6
-                                            ((MoveX:  0; MoveY: 0), (MoveX:  0; MoveY: 0), (MoveX: -7; MoveY: 0),  //Stone 1-3
-                                             (MoveX: -7; MoveY:-4), (MoveX:-16; MoveY:-4), (MoveX:-16; MoveY:-4)));//Stone 4-6
+  BUILD_SUPPLY_OFFSETS: THouseBuildSupply = ( ((MoveX:  0; MoveY: 0), (MoveX: -7; MoveY: 0), (MoveX:-26; MoveY: 0),  //Wood 1-3
+                                               (MoveX:-26; MoveY: 0), (MoveX:-26; MoveY:-1), (MoveX:-26; MoveY:-4)), //Wood 4-6
+                                              ((MoveX:  0; MoveY: 0), (MoveX:  0; MoveY: 0), (MoveX: -7; MoveY: 0),  //Stone 1-3
+                                               (MoveX: -7; MoveY:-4), (MoveX:-16; MoveY:-4), (MoveX:-16; MoveY:-4)));//Stone 4-6
 
 
   //'This house is unoccupied' msg index
-  HouseTypeToUnoccupiedMsgIndex: array[TKMHouseType] of ShortInt = (
+  HOUSE_TYPE_2_UNOCCUPIED_MSG_INDEX: array[TKMHouseType] of ShortInt = (
     -1, -1,     //utNone, utAny
     0,1,2,
     -1,         //htBarracks
@@ -703,7 +703,7 @@ var
   houseUnnocupiedMsgIndex: ShortInt;
 begin
   Result := -1;
-  houseUnnocupiedMsgIndex := HouseTypeToUnoccupiedMsgIndex[fHouseType];
+  houseUnnocupiedMsgIndex := HOUSE_TYPE_2_UNOCCUPIED_MSG_INDEX[fHouseType];
   if houseUnnocupiedMsgIndex <> -1 then
     Result := TX_MSG_HOUSE_UNOCCUPIED__22 + houseUnnocupiedMsgIndex;
 end;
@@ -773,10 +773,10 @@ begin
   fItems[htMarketplace].fHouseDat.WoodCost := 5;
   fItems[htMarketplace].fHouseDat.StoneCost := 6;
   for I := 1 to 6 do begin
-    fItems[htMarketplace].fHouseDat.BuildSupply[1,I].MoveX := -55+ BuildSupplyOffsets[1,I].MoveX;
-    fItems[htMarketplace].fHouseDat.BuildSupply[1,I].MoveY := 15 + BuildSupplyOffsets[1,I].MoveY;
-    fItems[htMarketplace].fHouseDat.BuildSupply[2,I].MoveX := 28 + BuildSupplyOffsets[2,I].MoveX;
-    fItems[htMarketplace].fHouseDat.BuildSupply[2,I].MoveY := 20 + BuildSupplyOffsets[2,I].MoveY;
+    fItems[htMarketplace].fHouseDat.BuildSupply[1,I].MoveX := -55+ BUILD_SUPPLY_OFFSETS[1,I].MoveX;
+    fItems[htMarketplace].fHouseDat.BuildSupply[1,I].MoveY := 15 + BUILD_SUPPLY_OFFSETS[1,I].MoveY;
+    fItems[htMarketplace].fHouseDat.BuildSupply[2,I].MoveX := 28 + BUILD_SUPPLY_OFFSETS[2,I].MoveX;
+    fItems[htMarketplace].fHouseDat.BuildSupply[2,I].MoveY := 20 + BUILD_SUPPLY_OFFSETS[2,I].MoveY;
   end;
   fItems[htMarketplace].fHouseDat.Sight := 10;
   fItems[htMarketplace].fHouseDat.SizeArea := 11;
