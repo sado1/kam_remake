@@ -192,12 +192,12 @@ var
   dirBase, dirShad, dirTeam: string;
   needsMask: Boolean;
 begin
-  if (aDir = dirNA) or not fResUnits[aUT].SupportsAction(aAction) then
+  if aDir = dirNA then
     Exit(-1);
 
   A := fResUnits[aUT].UnitAnim[aAction,aDir];
 
-  if A.Count <= 0 then
+  if (A.Count <= 0) or (A.Step[1] = -1) then
     Exit(-1);
 
   for I := Low(fAnimCache) to High(fAnimCache) do
