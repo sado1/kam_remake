@@ -50,6 +50,43 @@ uses
 const
   CANVAS_Y_OFFSET = 14;
 
+  //This is different to TKMUnitSpec.SupportsAction because we include any used
+  //animations like uaWalkArm for soliders (flag) which isn't an action.
+  UNIT_SUPPORTED_ANIMS: array [TKMUnitType] of TKMUnitActionTypeSet = (
+    [], [], //None, Any
+    [uaWalk, uaDie, uaEat, uaWalkArm], //Serf
+    [uaWalk, uaWork, uaDie, uaWork1, uaEat..uaWalkTool2],
+    [uaWalk, uaDie, uaEat],
+    [uaWalk, uaDie, uaEat],
+    [uaWalk, uaWork, uaDie, uaWork1, uaEat..uaWalkBooty2],
+    [uaWalk, uaDie, uaEat],
+    [uaWalk, uaDie, uaEat],
+    [uaWalk, uaDie, uaEat],
+    [uaWalk, uaWork, uaDie, uaWork1..uaEat, uaWalkTool, uaWalkBooty], //Fisher
+    [uaWalk, uaWork, uaDie, uaWork1, uaWork2, uaEat], //Worker
+    [uaWalk, uaWork, uaDie, uaWork1, uaEat..uaWalkTool], //Stonecutter
+    [uaWalk, uaDie, uaEat],
+    [uaWalk, uaDie, uaEat],
+    [uaWalk, uaSpec, uaDie, uaEat], //Recruit
+    [uaWalk, uaWork, uaSpec, uaDie, uaWalkArm], //Militia
+    [uaWalk, uaWork, uaSpec, uaDie, uaWalkArm], //Axeman
+    [uaWalk, uaWork, uaSpec, uaDie, uaWalkArm], //Swordsman
+    [uaWalk, uaWork, uaSpec, uaDie, uaWalkArm], //Bowman
+    [uaWalk, uaWork, uaSpec, uaDie, uaWalkArm], //Crossbowman
+    [uaWalk, uaWork, uaDie, uaWalkArm],
+    [uaWalk, uaWork, uaDie, uaWalkArm],
+    [uaWalk, uaWork, uaDie, uaWalkArm],
+    [uaWalk, uaWork, uaDie, uaWalkArm], //Cavalry
+    [uaWalk, uaWork, uaSpec, uaDie, uaWalkArm], //Barbarian
+    [uaWalk, uaWork, uaDie, uaWalkArm], //Rebel
+    [uaWalk, uaWork, uaSpec, uaDie, uaWalkArm], //Slingshot
+    [uaWalk, uaWork, uaSpec, uaDie, uaWalkArm], //Warrior
+    [uaWalk, uaWork, uaDie, uaWalkArm], //Horseman
+    [uaWalk], //Wolf
+    [uaWalk..uaWork1], //Fish (1..5 fish per unit)
+    [uaWalk], [uaWalk], [uaWalk], [uaWalk], [uaWalk], [uaWalk] //Animals
+  );
+
 {$R *.dfm}
 
 
@@ -237,7 +274,7 @@ begin
 
   A := fResUnits[aUT].UnitAnim[aAction,aDir];
 
-  if (A.Count <= 0) or (A.Step[1] = -1) then
+  if (A.Count <= 1) or (A.Step[1] = -1) or not aAction in UNIT_SUPPORTED_ANIMS[aUT] then
     Exit(-1);
 
   for I := Low(fAnimCache) to High(fAnimCache) do
