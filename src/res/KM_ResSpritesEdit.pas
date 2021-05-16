@@ -287,7 +287,7 @@ begin
         pngData[dstY*dstWidth + dstX] := $FF + (255 - M) * $010100;
     end
     else
-      pngData[dstY*dstWidth + dstX] := fRXData.RGBA[aIndex, I*srcWidth + K] and $FFFFFF;
+      pngData[dstY*dstWidth + dstX] := RGB;
 
     //Apply alpha
     if (aExportType = ietBaseWhite) or (aExportType = ietBaseBlack) then
@@ -296,7 +296,7 @@ begin
       pngData[dstY*dstWidth + dstX] := pngData[dstY*dstWidth + dstX] or (fRXData.RGBA[aIndex, I*srcWidth + K] and $FF000000);
 
     //Is this a background pixel?
-    if isShadow or ((fRXData.RGBA[aIndex, I*srcWidth + K] shr 24) = 0) then
+    if isShadow or (A = 0) then
     begin
       if aExportType = ietBase then
         pngData[dstY*dstWidth + dstX] := 0
@@ -305,8 +305,6 @@ begin
       else if aExportType = ietBaseBlack then
         pngData[dstY*dstWidth + dstX] := $FF000000;
     end;
-
-    pngData[dstY*dstWidth + dstX] := pngData[dstY*dstWidth + dstX] or $FF000000;
   end;
 
   //Mark pivot location with a dot
