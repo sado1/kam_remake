@@ -286,6 +286,15 @@ begin
     end;
   end;
 
+  //Cache this animation
+  SetLength(fAnimCache, Length(fAnimCache)+1);
+  fAnimCache[Length(fAnimCache)-1].A := A;
+  fAnimCache[Length(fAnimCache)-1].PicOffset := aPicOffset;
+
+  //Update return values
+  Result := aPicOffset;
+  aPicOffset := aPicOffset + 8*A.Count;
+
   dirBase := fTempDir + 'base\';
   dirShad := fTempDir + 'shad\';
   dirTeam := fTempDir + 'team\';
@@ -394,18 +403,12 @@ begin
       StrList.Append(IntToStr(newHeight-1 - (MaxY - NoShadMaxY)));
 
       ForceDirectories(ExeDir+'Sprites\3\');
-      StrList.SaveToFile(ExeDir+'Sprites\3\'+format('3_%d.txt', [aPicOffset + Step - 1]));
-      SaveToPng(newWidth, newHeight, pngCrop, ExeDir+'Sprites\3\'+format('3_%d.png', [aPicOffset + Step - 1]));
+      StrList.SaveToFile(ExeDir+'Sprites\3\'+format('3_%d.txt', [Result + Step - 1]));
+      SaveToPng(newWidth, newHeight, pngCrop, ExeDir+'Sprites\3\'+format('3_%d.png', [Result + Step - 1]));
       if needsMask and (Length(pngTeam) > 0) then
-        SaveToPng(newWidth, newHeight, pngCropMask, ExeDir+'Sprites\3\'+format('3_%dm.png', [aPicOffset + Step - 1]));
+        SaveToPng(newWidth, newHeight, pngCropMask, ExeDir+'Sprites\3\'+format('3_%dm.png', [Result + Step - 1]));
     end;
   end;
-
-  Result := aPicOffset;
-  SetLength(fAnimCache, Length(fAnimCache)+1);
-  fAnimCache[Length(fAnimCache)-1].A := A;
-  fAnimCache[Length(fAnimCache)-1].PicOffset := aPicOffset;
-  aPicOffset := aPicOffset + 8*A.Count;
 
   FreeAndNil(StrList);
 end;
