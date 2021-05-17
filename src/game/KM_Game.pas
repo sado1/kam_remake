@@ -3204,7 +3204,7 @@ end;
 //This is our real-time "thread", use it wisely
 procedure TKMGame.UpdateStateIdle(aFrameTime: Cardinal);
 begin
-  if (not fIsPaused) or fParams.IsReplay then
+  if not fIsPaused or not BLOCK_GAME_ON_PAUSE or fParams.IsReplay  then
     fActiveInterface.UpdateStateIdle(aFrameTime);
 
   //Terrain should be updated in real time when user applies brushes

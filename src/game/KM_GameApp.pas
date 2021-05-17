@@ -1288,7 +1288,7 @@ begin
       gMusic.PlayNextTrack; //Feed new music track
 
     //StatusBar
-    if (gGame <> nil) and not gGame.IsPaused and Assigned(fOnCursorUpdate) then
+    if (gGame <> nil) and not (gGame.IsPaused and BLOCK_GAME_ON_PAUSE) and Assigned(fOnCursorUpdate) then
         fOnCursorUpdate(SB_ID_TIME, 'Time: ' + TimeToString(gGame.MissionTime));
   end;
 end;

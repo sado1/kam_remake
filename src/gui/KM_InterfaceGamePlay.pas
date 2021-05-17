@@ -2658,7 +2658,7 @@ begin
   fViewport.ReleaseScrollKeys;
   gGame.IsPaused := aValue;
   UpdateReplayButtons(aValue);
-  Panel_Pause.Visible := aValue;
+  Panel_Pause.Visible := aValue and BLOCK_GAME_ON_PAUSE;
 end;
 
 
@@ -3321,7 +3321,7 @@ var
 begin
   aHandled := True; // assume we handle all keys here
 
-  if gGame.IsPaused and (fUIMode in [umSP, umMP]) then Exit;
+  if gGame.IsPaused and (fUIMode in [umSP, umMP]) and BLOCK_GAME_ON_PAUSE then Exit;
 
   if fMyControls.KeyDown(Key, Shift) then
   begin
@@ -3761,7 +3761,7 @@ begin
 
   fMyControls.MouseDown(X, Y, Shift, Button);
 
-  if (gGame.IsPaused and (fUIMode in [umSP, umMP])) or (fMyControls.CtrlOver <> nil)
+  if (gGame.IsPaused and (fUIMode in [umSP, umMP]) and BLOCK_GAME_ON_PAUSE) or (fMyControls.CtrlOver <> nil)
   or gMySpectator.Hand.InCinematic then
     Exit;
 
@@ -3887,7 +3887,7 @@ begin
   else
     ResetHint; // Clear shown hint
 
-  if gGame.IsPaused and (fUIMode in [umSP, umMP]) then Exit;
+  if gGame.IsPaused and (fUIMode in [umSP, umMP]) and BLOCK_GAME_ON_PAUSE then Exit;
 
   if fSelectingTroopDirection then
   begin
@@ -4029,7 +4029,7 @@ begin
     Exit;
   end;
 
-  if gGame.IsPaused and (fUIMode in [umSP, umMP]) then Exit;
+  if gGame.IsPaused and (fUIMode in [umSP, umMP]) and BLOCK_GAME_ON_PAUSE then Exit;
 
   P := gCursor.Cell; // It's used in many places here
 
@@ -4508,7 +4508,7 @@ function TKMGamePlayInterface.IsDragScrollingAllowed: Boolean;
 begin
   inherited;
 
-  Result := not (gGame.IsPaused and (fUIMode in [umSP, umMP]))
+  Result := not (gGame.IsPaused and (fUIMode in [umSP, umMP]) and BLOCK_GAME_ON_PAUSE)
             and (fMyControls.CtrlOver = nil)
             and not gMySpectator.Hand.InCinematic;
 end;
