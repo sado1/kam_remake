@@ -2869,7 +2869,7 @@ function TKMGame.CheckPauseGameAtTick: Boolean;
   begin
     IsPaused := True;
     //Set replay UI to paused state, sync replay timer and other UI elements
-    fGamePlayInterface.UpdateReplayButtons(False);
+    fGamePlayInterface.UpdateReplayButtons;
     fGamePlayInterface.UpdateState(gGameApp.GlobalTickCount);
   end;
 

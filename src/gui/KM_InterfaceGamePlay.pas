@@ -325,7 +325,7 @@ type
     procedure AlliesTeamChange(Sender: TObject);
     procedure CinematicUpdate;
     procedure LoadHotkeysFromHand;
-    procedure UpdateReplayButtons(aPaused: Boolean);
+    procedure UpdateReplayButtons(aForcedPause: Boolean = False);
     procedure AddReplayMark(aTick: Cardinal);
     procedure UpdateReplayMarks;
 
@@ -1898,11 +1898,15 @@ begin
 end;
 
 
-procedure TKMGamePlayInterface.UpdateReplayButtons(aPaused: Boolean);
+procedure TKMGamePlayInterface.UpdateReplayButtons(aForcedPause: Boolean = False);
+var
+  showAsPaused: Boolean;
 begin
-  Button_ReplayPause.Enabled := aPaused;
-  Button_ReplayStep.Enabled := not aPaused;
-  Button_ReplayResume.Enabled := not aPaused;
+  showAsPaused := aForcedPause or gGame.IsPaused;
+
+  Button_ReplayPause.Enabled := not showAsPaused;
+  Button_ReplayStep.Enabled := showAsPaused;
+  Button_ReplayResume.Enabled := showAsPaused;
 end;
 
 
@@ -2074,27 +2078,27 @@ begin
   if Sender = Button_ReplayPause then
   begin
     gGame.IsPaused := True;
-    UpdateReplayButtons(False);
+    UpdateReplayButtons;
   end;
 
   if Sender = Button_ReplayStep then
   begin
     gGame.StepOneFrame;
     gGame.IsPaused := False;
-    UpdateReplayButtons(False);
+    UpdateReplayButtons(True); // Show replay buttons as game is paused, even if game is not paused atm
     UpdateDebugInfo;
   end;
 
   if Sender = Button_ReplayResume then
   begin
     gGame.IsPaused := False;
-    UpdateReplayButtons(True);
+    UpdateReplayButtons;
   end;
 
   if Sender = Button_ReplayExit then
   begin
     gGame.Hold(True, grReplayEnd);
-    UpdateReplayButtons(True);
+    UpdateReplayButtons;
   end;
 
   if Sender = Button_ReplaySaveAt then
@@ -2438,7 +2442,7 @@ begin
   if isPaused then
   begin
     gGame.IsPaused := True;
-    UpdateReplayButtons(False); //Update buttons
+    UpdateReplayButtons; //Update buttons
     UpdateState(gGameApp.GlobalTickCount);
   end;
 
@@ -2657,7 +2661,7 @@ begin
   ReleaseDirectionSelector; // Don't restrict cursor movement to direction selection while paused
   fViewport.ReleaseScrollKeys;
   gGame.IsPaused := aValue;
-  UpdateReplayButtons(aValue);
+  UpdateReplayButtons;
   Panel_Pause.Visible := aValue and BLOCK_GAME_ON_PAUSE;
 end;
 
