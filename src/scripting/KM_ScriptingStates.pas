@@ -2538,7 +2538,7 @@ end;
 
 
 //* Version: 13050
-//* Returns ID of a citizen, who works in speciafied house or -1 if there is no worker or aHouseID is incorrect
+//* Returns ID of a citizen, who works in specified house or -1 if there is no worker or aHouseID is incorrect
 function TKMScriptStates.HouseWorker(aHouseID: Integer): Integer;
 var
   H: TKMHouse;
