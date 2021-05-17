@@ -275,7 +275,7 @@ var
   X, Y, MinX, MinY, MaxX, MaxY: Integer;
   NoShadMinX, NoShadMinY, NoShadMaxX, NoShadMaxY: Integer;
   StrList: TStringList;
-  dirBase, dirShad, dirTeam, suffixPath: string;
+  dirBase, dirShad, dirTeam, suffixPath, outDirLocal: string;
   needsMask: Boolean;
 begin
   for I := Low(fAnimCache) to High(fAnimCache) do
@@ -312,6 +312,9 @@ begin
   MakeInterpImages(RT, A, dirTeam, ietTeamMask);
 
   StrList := TStringList.Create;
+
+  outDirLocal := fOutDir+IntToStr(Byte(RT)+1)+'\';
+  ForceDirectories(outDirLocal);
 
   //Import and reprocess
   for Step := 1 to 8*A.Count do
@@ -402,11 +405,10 @@ begin
       StrList.Append(IntToStr(newWidth-1 - (MaxX - NoShadMaxX)));
       StrList.Append(IntToStr(newHeight-1 - (MaxY - NoShadMaxY)));
 
-      ForceDirectories(fOutDir);
-      StrList.SaveToFile(fOutDir+format('%d_%d.txt', [Byte(RT)+1, Result + Step - 1]));
-      SaveToPng(newWidth, newHeight, pngCrop, fOutDir+format('%d_%d.png', [Byte(RT)+1, Result + Step - 1]));
+      StrList.SaveToFile(outDirLocal+format('%d_%d.txt', [Byte(RT)+1, Result + Step - 1]));
+      SaveToPng(newWidth, newHeight, pngCrop, outDirLocal+format('%d_%d.png', [Byte(RT)+1, Result + Step - 1]));
       if needsMask and (Length(pngTeam) > 0) then
-        SaveToPng(newWidth, newHeight, pngCropMask, fOutDir+format('%d_%dm.png', [Byte(RT)+1, Result + Step - 1]));
+        SaveToPng(newWidth, newHeight, pngCropMask, outDirLocal+format('%d_%dm.png', [Byte(RT)+1, Result + Step - 1]));
     end;
   end;
 
