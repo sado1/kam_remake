@@ -35,6 +35,7 @@ type
     function GetMinCanvasSize(A: TKMAnimLoop; RT: TRXType): Integer;
     function GetDainParams(aDir: string; aAlpha: Boolean): string;
     procedure MakeInterpImages(RT: TRXType; A: TKMAnimLoop; aBaseDir: string; aExportType: TInterpExportType);
+    function DoInterp(RT: TRXType; A: TKMAnimLoop; aBkgRGB: Cardinal; var aPicOffset: Integer): Integer;
     function DoInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; var aPicOffset: Integer): Integer;
   public
     { Public declarations }
@@ -246,6 +247,29 @@ end;
 
 
 function TForm1.DoInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; var aPicOffset: Integer): Integer;
+var
+  A: TKMAnimLoop;
+  bkgRGB: Cardinal;
+begin
+  if aDir = dirNA then
+    Exit(-1);
+
+  A := fResUnits[aUT].UnitAnim[aAction,aDir];
+
+  if (A.Count <= 1) or (A.Step[1] = -1) or not (aAction in UNIT_SUPPORTED_ANIMS[aUT]) then
+    Exit(-1);
+
+  //Death animations have semi-transparent white that we treat as shadows
+  if aAction = uaDie then
+    bkgRGB := $FFFFFF
+  else
+    bkgRGB := $000000;
+
+  DoInterp(rxUnits, A, bkgRGB, aPicOffset);
+end;
+
+
+function TForm1.DoInterp(RT: TRXType; A: TKMAnimLoop; aBkgRGB: Cardinal; var aPicOffset: Integer): Integer;
 
   function SameAnim(A, B: TKMAnimLoop): Boolean;
   var
@@ -257,7 +281,6 @@ function TForm1.DoInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir:
   end;
 
 var
-  A: TKMAnimLoop;
   I, Step: Integer;
   pngWidth, pngHeight, newWidth, newHeight: Word;
   pngBase, pngShad, pngTeam, pngCrop, pngCropMask: TKMCardinalArray;
@@ -267,14 +290,6 @@ var
   dirBase, dirShad, dirTeam, suffixPath: string;
   needsMask: Boolean;
 begin
-  if aDir = dirNA then
-    Exit(-1);
-
-  A := fResUnits[aUT].UnitAnim[aAction,aDir];
-
-  if (A.Count <= 1) or (A.Step[1] = -1) or not (aAction in UNIT_SUPPORTED_ANIMS[aUT]) then
-    Exit(-1);
-
   for I := Low(fAnimCache) to High(fAnimCache) do
   begin
     if SameAnim(fAnimCache[I].A, A) then
@@ -301,9 +316,9 @@ begin
   KMDeleteFolder(dirShad);
   KMDeleteFolder(dirTeam);
 
-  MakeInterpImages(rxUnits, A, dirBase, ietBase);
-  MakeInterpImages(rxUnits, A, dirShad, ietShadows);
-  MakeInterpImages(rxUnits, A, dirTeam, ietTeamMask);
+  MakeInterpImages(RT, A, dirBase, ietBase);
+  MakeInterpImages(RT, A, dirShad, ietShadows);
+  MakeInterpImages(RT, A, dirTeam, ietTeamMask);
 
   StrList := TStringList.Create;
 
@@ -375,11 +390,7 @@ begin
         begin
           //Background is black with alpha from the shadow mask
           if Length(pngShad) > 0 then
-            pngCrop[I] := pngShad[Y*pngWidth + X] shl 24;
-
-          //Death animations have semi-transparent white that we treat as shadows
-          if (aAction = uaDie) and (pngCrop[I] > 0) then
-            pngCrop[I] := pngCrop[I] or $FFFFFF;
+            pngCrop[I] := (pngShad[Y*pngWidth + X] shl 24) or aBkgRGB;
 
           //Layer base sprite on top
           pngCrop[I] := BlendRGBA(pngCrop[I], pngBase[Y*pngWidth + X]);
