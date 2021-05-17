@@ -61,11 +61,12 @@ type
 
     procedure AddVideoToList(aPath: string; aKind: TKMVideoFileKind = vfkNone);
 {$ENDIF}
+    function GetPlayerEnabled: Boolean;
   public
     constructor Create(aPlayerEnabled: Boolean);
     destructor Destroy; override;
 
-    property PlayerEnabled: Boolean read fPlayerEnabled;
+    property PlayerEnabled: Boolean read GetPlayerEnabled;
 
     procedure AddCampaignVideo(const aCampaignPath, aVideoName: string);
     procedure AddMissionVideo(const aMissionFile, aVideoName: string);
@@ -156,6 +157,14 @@ begin
   end;
 
   inherited;
+end;
+
+
+function TKMVideoPlayer.GetPlayerEnabled: Boolean;
+begin
+  if Self = nil then Exit(False);
+
+  Result := fPlayerEnabled;
 end;
 
 
