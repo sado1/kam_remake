@@ -256,6 +256,9 @@ type
       Image_Pause: TKMImage;
       Label_Pause1: TKMLabel;
       Label_Pause2: TKMLabel;
+    Panel_PauseDebug: TKMPanel;
+      Bevel_PauseDebug: TKMBevel;
+      Label_PauseDebug: TKMLabel;
     Panel_PlayMore: TKMPanel;
       Bevel_PlayMore: TKMBevel;
       Panel_PlayMoreMsg: TKMPanel;
@@ -989,6 +992,8 @@ end;
 
 { Pause overlay page }
 procedure TKMGamePlayInterface.Create_Pause;
+const
+  PAN_DEBUG_W = 70;
 begin
   Panel_Pause := TKMPanel.Create(Panel_Main, 0, 0, Panel_Main.Width, Panel_Main.Height);
   Panel_Pause.AnchorsStretch;
@@ -1003,7 +1008,18 @@ begin
   Label_Pause1.AnchorsCenter;
   Label_Pause2.AnchorsCenter;
   Image_Pause.AnchorsCenter;
-  Panel_Pause.Hide
+  Panel_Pause.Hide;
+
+  Panel_PauseDebug := TKMPanel.Create(Panel_Main, (Panel_Main.Width - PAN_DEBUG_W) div 2, 10, PAN_DEBUG_W, 20);
+    Bevel_PauseDebug := TKMBevel.Create(Panel_PauseDebug, -1, -1, Panel_PauseDebug.Width + 2, Panel_PauseDebug.Height + 2);
+    Bevel_PauseDebug.Hitable := False;
+    Label_PauseDebug := TKMLabel.Create(Panel_PauseDebug, PAN_DEBUG_W div 2, 3,
+                                        gResTexts[TX_POPUP_PAUSE], fntAntiqua, taCenter);
+    Label_PauseDebug.Hitable := False;
+
+  Panel_PauseDebug.Anchors := [anTop];
+  Panel_PauseDebug.Hitable := False;
+  Panel_PauseDebug.Hide;
 end;
 
 
@@ -2663,6 +2679,9 @@ begin
   gGame.IsPaused := aValue;
   UpdateReplayButtons;
   Panel_Pause.Visible := aValue and BLOCK_GAME_ON_PAUSE;
+
+  if not BLOCK_GAME_ON_PAUSE and (fUIMode in [umSP, umMP, umSpectate]) then
+    Panel_PauseDebug.Visible := aValue;
 end;
 
 
