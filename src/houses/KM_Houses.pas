@@ -98,7 +98,9 @@ type
     fDamage: Word; //Damaged inflicted to house
 
     fTick: Cardinal;
-    fHasWorker: Boolean; //which is some TKMUnit
+    fWorker: Pointer; // Worker, who is running this house
+    fIsClosedForWorker: Boolean; // house is closed for worker. If worker is already occupied it, then leave house
+
     fBuildingRepair: Boolean; //If on and the building is damaged then labourers will come and repair it
 
     //Switch between delivery modes: delivery on/off/or make an offer from resources available
@@ -106,8 +108,6 @@ type
     fNewDeliveryMode: TKMDeliveryMode; // Fake, NEW delivery mode, used just for UI. After few tick it will be set as REAL, if there will be no other clicks from player
     // Delivery mode set with small delay (couple of ticks), to avoid occasional clicks on delivery mode button
     fUpdateDeliveryModeOnTick: Cardinal; // Tick, on which we have to update real delivery mode with its NEW value
-
-    fIsClosedForWorker: Boolean; // house is closed for worker. If worker is already occupied it, then leave house
 
     fResourceIn: array [1..4] of Byte; //Resource count in input
     //Count of the resources we have ordered for the input (used for ware distribution)
@@ -141,6 +141,7 @@ type
     function GetResDistribution(aID: Byte): Byte; //Will use GetRatio from mission settings to find distribution amount
     procedure SetIsClosedForWorker(aIsClosed: Boolean);
     procedure UpdateDeliveryMode;
+    function GetHasWorker: Boolean;
   protected
     fBuildState: TKMHouseBuildState; // = (hbsGlyph, hbsNoGlyph, hbsWood, hbsStone, hbsDone);
     FlagAnimStep: Cardinal; //Used for Flags and Burning animation
@@ -215,10 +216,13 @@ type
     function ShouldAbandonDeliveryFrom(aWareType: TKMWareType; aImmidiateCheck: Boolean = False): Boolean; virtual;
     function ShouldAbandonDeliveryFromTo(aToHouse: TKMHouse; aWareType: TKMWareType; aImmidiateCheck: Boolean): Boolean; virtual;
 
-    property IsClosedForWorker: Boolean read fIsClosedForWorker write SetIsClosedForWorker;
-    property HasWorker: Boolean read fHasWorker write fHasWorker; //There's a citizen who runs this house
+    property Worker: Pointer read fWorker;
+    procedure SetWorker(aWorker: Pointer); //Explicitly use SetWorker, to make it clear its not only pointer assignment
+    property HasWorker: Boolean read GetHasWorker; //There's a citizen who runs this house
     function CanHasWorker: Boolean;
+    property IsClosedForWorker: Boolean read fIsClosedForWorker write SetIsClosedForWorker;
     property DisableUnoccupiedMessage: Boolean read fDisableUnoccupiedMessage write fDisableUnoccupiedMessage;
+
     function GetHealth: Word;
     function GetBuildWoodDelivered: Byte;
     function GetBuildStoneDelivered: Byte;
@@ -367,7 +371,7 @@ uses
   TypInfo, SysUtils, Math, KromUtils,
   KM_Game, KM_GameParams, KM_Terrain, KM_RenderPool, KM_RenderAux, KM_Sound,
   KM_Hand, KM_HandsCollection, KM_HandLogistics,
-  KM_UnitWarrior, KM_HouseWoodcutters,
+  KM_Units, KM_UnitWarrior, KM_HouseWoodcutters,
   KM_Resource, KM_ResSound, KM_ResTexts, KM_ResUnits, KM_ResMapElements,
   KM_Log, KM_ScriptingEvents, KM_CommonUtils, KM_MapEditorHistory,
   KM_GameTypes, KM_RenderDebug,
@@ -527,7 +531,7 @@ begin
 
   fPlacedOverRoad   := gTerrain.TileHasRoad(Entrance);
 
-  fHasWorker        := False;
+  fWorker           := nil;
   //Initially repair is [off]. But for AI it's controlled by a command in DAT script
   fBuildingRepair   := False; //Don't set it yet because we don't always know who are AIs yet (in multiplayer) It is set in first UpdateState
   DoorwayUse        := 0;
@@ -589,7 +593,7 @@ begin
   LoadStream.Read(fBuildReserve);
   LoadStream.Read(fBuildingProgress, SizeOf(fBuildingProgress));
   LoadStream.Read(fDamage, SizeOf(fDamage));
-  LoadStream.Read(fHasWorker);
+  LoadStream.Read(fWorker, 4); //subst on syncload
   LoadStream.Read(fBuildingRepair);
   LoadStream.Read(Byte(fDeliveryMode));
   LoadStream.Read(Byte(fNewDeliveryMode));
@@ -628,6 +632,7 @@ end;
 
 procedure TKMHouse.SyncLoad;
 begin
+  fWorker := TKMUnit( gHands.GetUnitByUID( Cardinal(fWorker) ) );
   CurrentAction.SyncLoad;
 end;
 
@@ -635,6 +640,7 @@ end;
 destructor TKMHouse.Destroy;
 begin
   FreeAndNil(CurrentAction);
+  gHands.CleanUpUnitPointer( TKMUnit(fWorker) );
 
   inherited;
 end;
@@ -1137,6 +1143,12 @@ begin
 end;
 
 
+function TKMHouse.GetHasWorker: Boolean;
+begin
+  Result := fWorker <> nil;
+end;
+
+
 function TKMHouse.GetHealth:word;
 begin
   Result := max(fBuildingProgress - fDamage, 0);
@@ -1378,6 +1390,17 @@ end;
 procedure TKMHouse.SetState(aState: TKMHouseState);
 begin
   CurrentAction.State := aState;
+end;
+
+
+procedure TKMHouse.SetWorker(aWorker: Pointer);
+begin
+  if Self = nil then Exit;
+
+  gHands.CleanUpUnitPointer( TKMUnit(fWorker) );
+
+  if aWorker <> nil then
+    fWorker := TKMUnit(aWorker).GetPointer();
 end;
 
 
@@ -1994,7 +2017,7 @@ begin
   SaveStream.Write(fBuildReserve);
   SaveStream.Write(fBuildingProgress, SizeOf(fBuildingProgress));
   SaveStream.Write(fDamage, SizeOf(fDamage));
-  SaveStream.Write(fHasWorker);
+  SaveStream.Write(TKMUnit(fWorker).UID); // Store UID
   SaveStream.Write(fBuildingRepair);
   SaveStream.Write(Byte(fDeliveryMode));
   SaveStream.Write(Byte(fNewDeliveryMode));
@@ -2111,9 +2134,13 @@ end;
 function TKMHouse.ObjToString(const aSeparator: String = '|'): String;
 var
   I: Integer;
-  actStr, resOutPoolStr: String;
+  actStr, resOutPoolStr, workerStr: String;
 begin
   if Self = nil then Exit('nil');
+
+  workerStr := 'nil';
+  if fWorker <> nil then
+    workerStr := TKMUnit(fWorker).ObjToStringShort(' ');
 
   actStr := 'nil';
   if CurrentAction <> nil then
@@ -2131,12 +2158,12 @@ begin
 
 
   Result := inherited ObjToString(aSeparator) +
-            Format('%sHasOwner = %s%sAction = %s%sRepair = %s%sIsClosedForWorker = %s%sDeliveryMode = %s%s' +
+            Format('%sWorker = %s%sAction = %s%sRepair = %s%sIsClosedForWorker = %s%sDeliveryMode = %s%s' +
                    'NewDeliveryMode = %s%sDamage = %d%s' +
                    'BuildState = %s%sBuildSupplyWood = %d%sBuildSupplyStone = %d%sBuildingProgress = %d%sDoorwayUse = %d%s' +
                    'ResIn = %d,%d,%d,%d%sResDeliveryCnt = %d,%d,%d,%d%sResOut = %d,%d,%d,%d%sResOrder = %d,%d,%d,%d%sResOutPool = %s',
                    [aSeparator,
-                    BoolToStr(fHasWorker, True), aSeparator,
+                    workerStr, aSeparator,
                     actStr, aSeparator,
                     BoolToStr(fBuildingRepair, True), aSeparator,
                     BoolToStr(fIsClosedForWorker, True), aSeparator,
@@ -2186,7 +2213,7 @@ begin
 
   //Show unoccupied message if needed and house belongs to human player and can have worker at all
   //and is not closed for worker and not a barracks
-  if not fDisableUnoccupiedMessage and not fHasWorker and not fIsClosedForWorker
+  if not fDisableUnoccupiedMessage and not HasWorker and not fIsClosedForWorker
   and gRes.Houses[fType].CanHasWorker and (fType <> htBarracks) then
   begin
     Dec(fTimeSinceUnoccupiedReminder);

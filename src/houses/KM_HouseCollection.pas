@@ -263,11 +263,7 @@ begin
         bestBid := dist;
         Result := Houses[I];
       end;
-
     end;
-
-  if (Result <> nil) and (Result.HouseType <> htBarracks) then
-    Result.HasWorker := True; //Become owner except Barracks;
 end;
 
 

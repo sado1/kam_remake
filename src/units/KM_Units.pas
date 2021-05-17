@@ -432,6 +432,8 @@ begin
   if H <> nil then
   begin
     fHome  := H.GetPointer;
+    if (fHome.HouseType <> htBarracks) then // Become house worker except Barracks
+      fHome.SetWorker(Self); //Self Pointer is managed via House
     Result := True;
   end;
 end;
@@ -441,7 +443,9 @@ procedure TKMSettledUnit.CleanHousePointer(aFreeAndNilTask: Boolean = False);
 begin
   if aFreeAndNilTask then
     FreeAndNil(fTask);
-  fHome.HasWorker := False;
+
+  fHome.SetWorker(nil);
+
   gHands.CleanUpHousePointer(fHome);
 end;
 
@@ -1167,6 +1171,9 @@ end;
 destructor TKMUnit.Destroy;
 begin
   if not IsDead then gTerrain.UnitRem(NextPosition); //Happens only when removing player from map on GameStart (network)
+
+  fHome.SetWorker(nil);
+
   FreeAndNil(fAction);
   FreeAndNil(fTask);
   FreeAndNil(fVisual);
@@ -1284,11 +1291,8 @@ end;
 // Erase everything related to unit status to exclude it from being accessed by anything but the old pointers
 procedure TKMUnit.CloseUnit(aRemoveTileUsage: Boolean = True);
 begin
-  if fHome <> nil then
-  begin
-    fHome.HasWorker := False;
-    gHands.CleanUpHousePointer(fHome);
-  end;
+  fHome.SetWorker(nil);
+  gHands.CleanUpHousePointer(fHome);
 
   if aRemoveTileUsage
     and (gTerrain.Land^[NextPosition.Y, NextPosition.X].IsUnit = Self) then //remove lock only if it was made by this unit
