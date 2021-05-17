@@ -218,7 +218,7 @@ end;
 
 function GetInterpSpriteOffset(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection): Integer;
 const
-  INTERP_LOOKUP: array[TKMUnitType, TKMUnitActionType, TKMDirection] of Integer = (
+  ACTION_INTERP_LOOKUP: array[TKMUnitType, TKMUnitActionType, TKMDirection] of Integer = (
   ( // utNone
     (-1,-1,-1,-1,-1,-1,-1,-1,-1), // uaWalk
     (-1,-1,-1,-1,-1,-1,-1,-1,-1), // uaWork
@@ -831,7 +831,7 @@ const
 begin
   if INTERPOLATED_ANIMS then
   begin
-    Result := INTERP_LOOKUP[aUnit, aAct, aDir];
+    Result := ACTION_INTERP_LOOKUP[aUnit, aAct, aDir];
   end
   else
     Result := -1;

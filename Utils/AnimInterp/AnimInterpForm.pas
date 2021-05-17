@@ -5,7 +5,8 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
-  KM_ResPalettes, KM_Defaults, KM_CommonTypes, KM_Points, KM_ResSprites, KM_ResSpritesEdit, KM_Pics, KM_ResUnits;
+  KM_ResPalettes, KM_Defaults, KM_CommonTypes, KM_Points, KM_ResSprites, KM_ResSpritesEdit, KM_Pics, KM_ResUnits,
+  KM_ResTypes;
 
 type
   TAnimCacheItem = record
@@ -14,11 +15,14 @@ type
   end;
 
   TForm1 = class(TForm)
-    btnProcessUnits: TButton;
+    btnProcess: TButton;
     Memo1: TMemo;
     memoErrors: TMemo;
     Label1: TLabel;
-    procedure btnProcessUnitsClick(Sender: TObject);
+    chkSerfCarry: TCheckBox;
+    chkUnitActions: TCheckBox;
+    chkUnitThoughts: TCheckBox;
+    procedure btnProcessClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
@@ -35,8 +39,10 @@ type
     function GetMinCanvasSize(A: TKMAnimLoop; RT: TRXType): Integer;
     function GetDainParams(aDir: string; aAlpha: Boolean): string;
     procedure MakeInterpImages(RT: TRXType; A: TKMAnimLoop; aBaseDir: string; aExportType: TInterpExportType);
-    function DoInterp(RT: TRXType; A: TKMAnimLoop; aBkgRGB: Cardinal; var aPicOffset: Integer): Integer;
-    function DoInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; var aPicOffset: Integer): Integer;
+    function DoInterp(RT: TRXType; A: TKMAnimLoop; aBkgRGB: Cardinal; var aPicOffset: Integer; aDryRun: Boolean): Integer;
+    function DoInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; var aPicOffset: Integer; aDryRun: Boolean): Integer;
+    function DoInterpSerfCarry(aWare: TKMWareType; aDir: TKMDirection; var aPicOffset: Integer; aDryRun: Boolean): Integer;
+    function DoInterpUnitThought(aThought: TKMUnitThought; var aPicOffset: Integer; aDryRun: Boolean): Integer;
   public
     { Public declarations }
   end;
@@ -246,30 +252,7 @@ begin
 end;
 
 
-function TForm1.DoInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; var aPicOffset: Integer): Integer;
-var
-  A: TKMAnimLoop;
-  bkgRGB: Cardinal;
-begin
-  if aDir = dirNA then
-    Exit(-1);
-
-  A := fResUnits[aUT].UnitAnim[aAction,aDir];
-
-  if (A.Count <= 1) or (A.Step[1] = -1) or not (aAction in UNIT_SUPPORTED_ANIMS[aUT]) then
-    Exit(-1);
-
-  //Death animations have semi-transparent white that we treat as shadows
-  if aAction = uaDie then
-    bkgRGB := $FFFFFF
-  else
-    bkgRGB := $000000;
-
-  DoInterp(rxUnits, A, bkgRGB, aPicOffset);
-end;
-
-
-function TForm1.DoInterp(RT: TRXType; A: TKMAnimLoop; aBkgRGB: Cardinal; var aPicOffset: Integer): Integer;
+function TForm1.DoInterp(RT: TRXType; A: TKMAnimLoop; aBkgRGB: Cardinal; var aPicOffset: Integer; aDryRun: Boolean): Integer;
 
   function SameAnim(A, B: TKMAnimLoop): Boolean;
   var
@@ -307,6 +290,9 @@ begin
   //Update return values
   Result := aPicOffset;
   aPicOffset := aPicOffset + 8*A.Count;
+
+  if aDryRun then
+    Exit;
 
   dirBase := fWorkDir + 'base\';
   dirShad := fWorkDir + 'shad\';
@@ -422,17 +408,85 @@ begin
   FreeAndNil(StrList);
 end;
 
-procedure TForm1.btnProcessUnitsClick(Sender: TObject);
+
+function TForm1.DoInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; var aPicOffset: Integer; aDryRun: Boolean): Integer;
+var
+  A: TKMAnimLoop;
+  bkgRGB: Cardinal;
+begin
+  if aDir = dirNA then
+    Exit(-1);
+
+  A := fResUnits[aUT].UnitAnim[aAction,aDir];
+
+  if (A.Count <= 1) or (A.Step[1] = -1) or not (aAction in UNIT_SUPPORTED_ANIMS[aUT]) then
+    Exit(-1);
+
+  //Death animations have semi-transparent white that we treat as shadows
+  if aAction = uaDie then
+    bkgRGB := $FFFFFF
+  else
+    bkgRGB := $000000;
+
+  DoInterp(rxUnits, A, bkgRGB, aPicOffset, aDryRun);
+end;
+
+
+function TForm1.DoInterpSerfCarry(aWare: TKMWareType; aDir: TKMDirection; var aPicOffset: Integer; aDryRun: Boolean): Integer;
+var
+  A: TKMAnimLoop;
+  bkgRGB: Cardinal;
+begin
+  if aDir = dirNA then
+    Exit(-1);
+
+  A := fResUnits.SerfCarry[aWare, aDir];
+
+  if (A.Count <= 1) or (A.Step[1] = -1) then
+    Exit(-1);
+
+  DoInterp(rxUnits, A, $000000, aPicOffset, aDryRun);
+end;
+
+
+function TForm1.DoInterpUnitThought(aThought: TKMUnitThought; var aPicOffset: Integer; aDryRun: Boolean): Integer;
+var
+  A: TKMAnimLoop;
+  I: Integer;
+  bkgRGB: Cardinal;
+begin
+  if aThought = thNone then
+    Exit(-1);
+
+  A.Count := 1 + THOUGHT_BOUNDS[aThought, 2] - THOUGHT_BOUNDS[aThought, 1];
+  for I := 1 to 30 do
+  begin
+    if I <= A.Count then
+      A.Step[I] := (I-1) + THOUGHT_BOUNDS[aThought, 1]
+    else
+      A.Step[I] := -1;
+  end;
+
+  if (A.Count <= 1) or (A.Step[1] = -1) then
+    Exit(-1);
+
+  DoInterp(rxUnits, A, $FFFFFF, aPicOffset, aDryRun);
+end;
+
+
+procedure TForm1.btnProcessClick(Sender: TObject);
 var
   picOffset, animPicOffset: Integer;
   dir: TKMDirection;
   act: TKMUnitActionType;
   u: TKMUnitType;
+  ware: TKMWareType;
+  th: TKMUnitThought;
   animData: string;
 begin
   picOffset := 9300;
 
-  animData := 'array[TKMUnitType, TKMUnitActionType, TKMDirection] of Integer = ('+#13#10;
+  animData := 'ACTION_INTERP_LOOKUP: array[TKMUnitType, TKMUnitActionType, TKMDirection] of Integer = ('+#13#10;
   for u := Low(TKMUnitType) to High(TKMUnitType) do
   begin
     animData := animData + '  ('+' // '+TRttiEnumerationType.GetName(u)+#13#10;
@@ -442,7 +496,7 @@ begin
       for dir := Low(TKMDirection) to High(TKMDirection) do
       begin
         try
-          animPicOffset := DoInterpUnit(u, act, dir, picOffset);
+          animPicOffset := DoInterpUnit(u, act, dir, picOffset, not chkUnitActions.Checked);
         except
           on E: Exception do
           begin
@@ -469,6 +523,65 @@ begin
       animData := animData + ','+#13#10;
   end;
   animData := animData + #13#10 + ');';
+
+  animData := animData + #13#10 + #13#10;
+  animData := animData + 'CARRY_INTERP_LOOKUP: array[TKMWareType, TKMDirection] of Integer = ('+#13#10;
+
+  for ware := Low(TKMWareType) to High(TKMWareType) do
+  begin
+    animData := animData + '  (';
+    for dir := Low(TKMDirection) to High(TKMDirection) do
+    begin
+      try
+        animPicOffset := DoInterpSerfCarry(ware, dir, picOffset, not chkSerfCarry.Checked);
+      except
+        on E: Exception do
+        begin
+          memoErrors.Text := memoErrors.Text + TRttiEnumerationType.GetName(ware) + ' - ' + TRttiEnumerationType.GetName(dir) + ' - ' + E.Message + #13#10;
+          animPicOffset := -1;
+        end;
+      end;
+
+      if animPicOffset >= 0 then
+        animData := animData + IntToStr(animPicOffset)
+      else
+        animData := animData + '-1';
+
+      if dir <> High(TKMDirection) then
+        animData := animData + ',';
+    end;
+    animData := animData + ')';
+    if ware <> High(TKMWareType) then
+      animData := animData + ',';
+    animData := animData+' // '+TRttiEnumerationType.GetName(ware)+#13#10;
+  end;
+  animData := animData + #13#10 + ');';
+
+  animData := animData + #13#10 + #13#10;
+  animData := animData + 'THOUGHT_INTERP_LOOKUP: array[TKMUnitThought] of Integer = ('+#13#10;
+
+  for th := Low(TKMUnitThought) to High(TKMUnitThought) do
+  begin
+    animData := animData + '  ';
+    try
+      animPicOffset := DoInterpUnitThought(th, picOffset, not chkUnitThoughts.Checked);
+    except
+      on E: Exception do
+      begin
+        memoErrors.Text := memoErrors.Text + TRttiEnumerationType.GetName(th) + ' - ' + E.Message + #13#10;
+        animPicOffset := -1;
+      end;
+    end;
+
+    if animPicOffset >= 0 then
+      animData := animData + IntToStr(animPicOffset)
+    else
+      animData := animData + '-1';
+
+    if th <> High(TKMUnitThought) then
+      animData := animData + ',';
+  end;
+  animData := animData + ');';
 
   Memo1.Text := animData;
 end;
