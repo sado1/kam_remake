@@ -435,14 +435,13 @@ begin
   else
     bkgRGB := $000000;
 
-  DoInterp(rxUnits, A, bkgRGB, aPicOffset, aDryRun);
+  Result := DoInterp(rxUnits, A, bkgRGB, aPicOffset, aDryRun);
 end;
 
 
 function TForm1.DoInterpSerfCarry(aWare: TKMWareType; aDir: TKMDirection; var aPicOffset: Integer; aDryRun: Boolean): Integer;
 var
   A: TKMAnimLoop;
-  bkgRGB: Cardinal;
 begin
   if aDir = dirNA then
     Exit(-1);
@@ -452,7 +451,7 @@ begin
   if (A.Count <= 1) or (A.Step[1] = -1) then
     Exit(-1);
 
-  DoInterp(rxUnits, A, $000000, aPicOffset, aDryRun);
+  Result := DoInterp(rxUnits, A, $000000, aPicOffset, aDryRun);
 end;
 
 
@@ -460,7 +459,6 @@ function TForm1.DoInterpUnitThought(aThought: TKMUnitThought; var aPicOffset: In
 var
   A: TKMAnimLoop;
   I: Integer;
-  bkgRGB: Cardinal;
 begin
   if aThought = thNone then
     Exit(-1);
@@ -477,21 +475,20 @@ begin
   if (A.Count <= 1) or (A.Step[1] = -1) then
     Exit(-1);
 
-  DoInterp(rxUnits, A, $FFFFFF, aPicOffset, aDryRun);
+  Result := DoInterp(rxUnits, A, $FFFFFF, aPicOffset, aDryRun);
 end;
 
 
 function TForm1.DoInterpTree(aTree: Integer; var aPicOffset: Integer; aDryRun: Boolean): Integer;
 var
   A: TKMAnimLoop;
-  bkgRGB: Cardinal;
 begin
   A := gMapElements[aTree].Anim;
 
   if (A.Count <= 1) or (A.Step[1] = -1) then
     Exit(-1);
 
-  DoInterp(rxTrees, A, $000000, aPicOffset, aDryRun);
+  Result := DoInterp(rxTrees, A, $000000, aPicOffset, aDryRun);
 end;
 
 
@@ -579,14 +576,13 @@ begin
       animData := animData + ',';
     animData := animData+' // '+TRttiEnumerationType.GetName(ware)+#13#10;
   end;
-  animData := animData + #13#10 + ');';
+  animData := animData + ');';
 
   animData := animData + #13#10 + #13#10;
-  animData := animData + 'THOUGHT_INTERP_LOOKUP: array[TKMUnitThought] of Integer = ('+#13#10;
+  animData := animData + 'THOUGHT_INTERP_LOOKUP: array[TKMUnitThought] of Integer = ('+#13#10+'  ';
 
   for th := Low(TKMUnitThought) to High(TKMUnitThought) do
   begin
-    animData := animData + '  ';
     try
       animPicOffset := DoInterpUnitThought(th, picOffset, not chkUnitThoughts.Checked);
     except
@@ -605,22 +601,21 @@ begin
     if th <> High(TKMUnitThought) then
       animData := animData + ',';
   end;
-  animData := animData + ');';
+  animData := animData + #13#10 + ');';
 
   animData := animData + #13#10 + #13#10;
-  animData := animData + 'TREE_INTERP_LOOKUP: array [0..OBJECTS_CNT] of Integer = ('+#13#10;
+  animData := animData + 'TREE_INTERP_LOOKUP: array [0..OBJECTS_CNT] of Integer = ('+#13#10+'  ';
 
   picOffset := TREES_RX_OFFSET;
 
   for I := 0 to OBJECTS_CNT do
   begin
-    animData := animData + '  ';
     try
       animPicOffset := DoInterpTree(I, picOffset, not chkTrees.Checked);
     except
       on E: Exception do
       begin
-        memoErrors.Text := memoErrors.Text + ' Tree ' + IntToStr(I) + ' - ' + E.Message + #13#10;
+        memoErrors.Text := memoErrors.Text + ' Tree ' + IntToStr(I) + ' - ' + E.Message + #13#10+'  ';
         animPicOffset := -1;
       end;
     end;
@@ -634,7 +629,7 @@ begin
       animData := animData + ',';
 
     if (I > 0) and (I mod 16 = 0) then
-      animData := animData + #13#10;
+      animData := animData + #13#10+'  ';
   end;
   animData := animData + ');';
 
