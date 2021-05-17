@@ -28,7 +28,8 @@ type
 
     fAnimCache: array of TAnimCacheItem;
 
-    fTempDir: string;
+    fWorkDir: string;
+    fOutDir: string;
     fDainFolder: string;
 
     function GetMinCanvasSize(A: TKMAnimLoop; RT: TRXType): Integer;
@@ -101,7 +102,8 @@ begin
 
   fResUnits := TKMResUnits.Create;
 
-  fTempDir := ExeDir + 'SpriteInterp\';
+  fWorkDir := ExeDir + 'SpriteInterp\';
+  fOutDir := fWorkDir + 'Output\';
   fDainFolder := 'C:\Dev\kam_sprites\DAIN_APP Alpha 1.0\';
 end;
 
@@ -295,9 +297,9 @@ begin
   Result := aPicOffset;
   aPicOffset := aPicOffset + 8*A.Count;
 
-  dirBase := fTempDir + 'base\';
-  dirShad := fTempDir + 'shad\';
-  dirTeam := fTempDir + 'team\';
+  dirBase := fWorkDir + 'base\';
+  dirShad := fWorkDir + 'shad\';
+  dirTeam := fWorkDir + 'team\';
 
   KMDeleteFolder(dirBase);
   KMDeleteFolder(dirShad);
@@ -402,11 +404,11 @@ begin
       StrList.Append(IntToStr(newWidth-1 - (MaxX - NoShadMaxX)));
       StrList.Append(IntToStr(newHeight-1 - (MaxY - NoShadMaxY)));
 
-      ForceDirectories(ExeDir+'Sprites\3\');
-      StrList.SaveToFile(ExeDir+'Sprites\3\'+format('3_%d.txt', [Result + Step - 1]));
-      SaveToPng(newWidth, newHeight, pngCrop, ExeDir+'Sprites\3\'+format('3_%d.png', [Result + Step - 1]));
+      ForceDirectories(fOutDir);
+      StrList.SaveToFile(fOutDir+format('3_%d.txt', [Result + Step - 1]));
+      SaveToPng(newWidth, newHeight, pngCrop, fOutDir+format('3_%d.png', [Result + Step - 1]));
       if needsMask and (Length(pngTeam) > 0) then
-        SaveToPng(newWidth, newHeight, pngCropMask, ExeDir+'Sprites\3\'+format('3_%dm.png', [Result + Step - 1]));
+        SaveToPng(newWidth, newHeight, pngCropMask, fOutDir+format('3_%dm.png', [Result + Step - 1]));
     end;
   end;
 
