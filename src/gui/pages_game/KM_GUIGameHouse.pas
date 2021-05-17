@@ -596,13 +596,13 @@ begin
   Image_PlayerFlag.FlagColor := gHands[aHouse.Owner].FlagColor;
   Image_PlayerFlag.Hint      := gResTexts[TX_PLAYER_FLAG_HINT, [gHands[aHouse.Owner].OwnerName]];
   Image_House_Logo.TexID     := gRes.Houses[aHouse.HouseType].GUIIcon;
-  Image_House_Worker.TexID   := gRes.Units[gRes.Houses[aHouse.HouseType].OwnerType].GUIIcon;
-  Image_House_Worker.Hint    := gRes.Units[gRes.Houses[aHouse.HouseType].OwnerType].GUIName;
+  Image_House_Worker.TexID   := gRes.Units[gRes.Houses[aHouse.HouseType].WorkerType].GUIIcon;
+  Image_House_Worker.Hint    := gRes.Units[gRes.Houses[aHouse.HouseType].WorkerType].GUIName;
   Image_House_Worker.FlagColor := gHands[aHouse.Owner].FlagColor;
 
-  Button_House_Worker.TexID  := gRes.Units[gRes.Houses[aHouse.HouseType].OwnerType].GUIIcon;
+  Button_House_Worker.TexID  := gRes.Units[gRes.Houses[aHouse.HouseType].WorkerType].GUIIcon;
   HandleHouseClosedForWorker(aHouse);
-  Button_House_Worker.Hint := gResTexts[TX_HOUSES_CLOSED_FOR_WORKER_HINT, [gRes.Units[gRes.Houses[aHouse.HouseType].OwnerType].GUIName]];
+  Button_House_Worker.Hint := gResTexts[TX_HOUSES_CLOSED_FOR_WORKER_HINT, [gRes.Units[gRes.Houses[aHouse.HouseType].WorkerType].GUIName]];
   Button_House_Worker.FlagColor := gHands[aHouse.Owner].FlagColor;
 
   HealthBar_House.Caption   := IntToStr(round(aHouse.GetHealth)) + '/' + IntToStr(gRes.Houses[aHouse.HouseType].MaxHealth);

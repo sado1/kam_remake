@@ -240,7 +240,7 @@ begin
   bestBid := MaxSingle;
 
   for I := 0 to Count - 1 do
-    if (gRes.Houses[Houses[I].HouseType].OwnerType = aUnitType) and // If Unit can work in here
+    if (gRes.Houses[Houses[I].HouseType].WorkerType = aUnitType) and // If Unit can work in here
        not Houses[I].HasWorker and                                  // if there's yet no owner
        not Houses[I].IsDestroyed and                                // if house is not destroyed
        Houses[I].IsComplete and                                     // if house is built

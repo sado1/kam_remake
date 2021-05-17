@@ -39,7 +39,7 @@ type
     ResInput,ResOutput: array [1..4] of ShortInt; //KaM_Remake will use its own tables for this matter
     ResProductionX: ShortInt;
     MaxHealth,Sight: SmallInt;
-    OwnerType: ShortInt;
+    WorkerType: ShortInt;
     Foot1: array [1..12] of ShortInt; //Sound indices
     Foot2: array [1..12] of SmallInt; //vs sprite ID
   end;
@@ -60,7 +60,7 @@ type
     function GetHouseName: UnicodeString;
     function GetResInput: THouseRes;
     function GetResOutput: THouseRes;
-    function GetOwnerType: TKMUnitType;
+    function GetWorkerType: TKMUnitType;
     function GetReleasedBy: TKMHouseType;
     function GetTabletIcon: Word;
     function GetSnowPic: SmallInt;
@@ -89,7 +89,7 @@ type
     property WorkerRest: Smallint read fHouseDat.WorkerRest;
     property ResProductionX: ShortInt read fHouseDat.ResProductionX;
     property Sight: Smallint read fHouseDat.Sight;
-    property OwnerType: TKMUnitType read GetOwnerType;
+    property WorkerType: TKMUnitType read GetWorkerType;
     function CanHasWorker: Boolean;
     //Additional properties added by Remake
     property BuildArea: THouseArea read GetArea;
@@ -647,11 +647,11 @@ begin
 end;
 
 
-function TKMHouseSpec.GetOwnerType: TKMUnitType;
+function TKMHouseSpec.GetWorkerType: TKMUnitType;
 begin
   //fHouseDat.OwnerType is read from DAT file and is ShortInt, it can be out of range (i.e. -1)
-  if InRange(fHouseDat.OwnerType, Low(UNIT_ID_TO_TYPE), High(UNIT_ID_TO_TYPE)) then
-    Result := UNIT_ID_TO_TYPE[fHouseDat.OwnerType]
+  if InRange(fHouseDat.WorkerType, Low(UNIT_ID_TO_TYPE), High(UNIT_ID_TO_TYPE)) then
+    Result := UNIT_ID_TO_TYPE[fHouseDat.WorkerType]
   else
     Result := utNone;
 end;
@@ -660,7 +660,7 @@ end;
 // Returns True if this house could have a worker (or occupant)
 function TKMHouseSpec.CanHasWorker: Boolean;
 begin
-  Result := OwnerType <> utNone;
+  Result := WorkerType <> utNone;
 end;
 
 
@@ -763,7 +763,7 @@ begin
   fItems[htTannery].fHouseDat.Anim[haFlag3].Count := 0; //fix for tannery 2 flags at one place. Flag3 is unnecessary
 
   fItems[htMarketplace].fHouseType := htMarketplace;
-  fItems[htMarketplace].fHouseDat.OwnerType := -1; //No unit works here (yet anyway)
+  fItems[htMarketplace].fHouseDat.WorkerType := -1; //No unit works here (yet anyway)
   fItems[htMarketplace].fHouseDat.StonePic := 150;
   fItems[htMarketplace].fHouseDat.WoodPic := 151;
   fItems[htMarketplace].fHouseDat.WoodPal := 152;

@@ -2365,7 +2365,7 @@ begin
     Result := -1;
     if HouseTypeValid(aHouseType) then
     begin
-      Result := UNIT_TYPE_TO_ID[gRes.Houses[HOUSE_ID_TO_TYPE[aHouseType]].OwnerType];
+      Result := UNIT_TYPE_TO_ID[gRes.Houses[HOUSE_ID_TO_TYPE[aHouseType]].WorkerType];
     end
     else
       LogParamWarning('States.HouseTypeToOccupantType', [aHouseType]);

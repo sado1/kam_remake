@@ -466,14 +466,14 @@ begin
 
   House_RefreshRepair;
 
-  Button_House_Worker.TexID  := gRes.Units[houseSpec.OwnerType].GUIIcon;
+  Button_House_Worker.TexID  := gRes.Units[houseSpec.WorkerType].GUIIcon;
   HandleHouseClosedForWorker(fHouse);
-  Button_House_Worker.Hint := gResTexts[TX_HOUSES_CLOSED_FOR_WORKER_HINT, [gRes.Units[houseSpec.OwnerType].GUIName]];
+  Button_House_Worker.Hint := gResTexts[TX_HOUSES_CLOSED_FOR_WORKER_HINT, [gRes.Units[houseSpec.WorkerType].GUIName]];
   Button_House_Worker.FlagColor := gHands[fHouse.Owner].FlagColor;
   Button_House_Worker.Visible := gRes.Houses[fHouse.HouseType].CanHasWorker;
-  Image_House_Worker.TexID := gRes.Units[houseSpec.OwnerType].GUIIcon;
+  Image_House_Worker.TexID := gRes.Units[houseSpec.WorkerType].GUIIcon;
   Image_House_Worker.FlagColor := gHands[fHouse.Owner].FlagColor;
-  Image_House_Worker.Hint := gRes.Units[houseSpec.OwnerType].GUIName;
+  Image_House_Worker.Hint := gRes.Units[houseSpec.WorkerType].GUIName;
   Image_House_Worker.Hide; // show it on special pages (like Barracks, f.e.)
 end;
 

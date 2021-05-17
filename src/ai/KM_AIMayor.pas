@@ -209,7 +209,7 @@ begin
   FillChar(UnitReq, SizeOf(UnitReq), #0); //Clear up
   for H := HOUSE_MIN to HOUSE_MAX do
     if gRes.Houses[H].CanHasWorker and (H <> htBarracks) then
-      Inc(UnitReq[gRes.Houses[H].OwnerType], P.Stats.GetHouseQty(H));
+      Inc(UnitReq[gRes.Houses[H].WorkerType], P.Stats.GetHouseQty(H));
 
   //Schools
   //Count overall schools count and exclude already training units from UnitReq
