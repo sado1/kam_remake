@@ -1658,7 +1658,7 @@ begin
     ptArrow:     id := GetUnitAnimSpriteByPercent(utBowman, uaSpec, aDir, aFlight);
     ptBolt:      id := GetUnitAnimSpriteByPercent(utArbaletman, uaSpec, aDir, aFlight);
     ptSlingRock: id := GetUnitAnimSpriteByPercent(utSlingshot, uaSpec, aDir, aFlight);
-    ptTowerRock: id := ProjectileBounds[aProj, 1] + 1;
+    ptTowerRock: id := GetUnitAnimSpriteByPercent(utRecruit, uaSpec, aDir, aFlight);
     else          id := 1; // Nothing?
   end;
 
