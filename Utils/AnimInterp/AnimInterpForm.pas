@@ -34,7 +34,7 @@ type
 
     function GetMinCanvasSize(A: TKMAnimLoop; RT: TRXType): Integer;
     function GetDainParams(aDir: string; aAlpha: Boolean): string;
-    procedure MakeImagesInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; aBaseDir: string; aExportType: TInterpExportType);
+    procedure MakeInterpImages(RT: TRXType; A: TKMAnimLoop; aBaseDir: string; aExportType: TInterpExportType);
     function DoInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; var aPicOffset: Integer): Integer;
   public
     { Public declarations }
@@ -151,17 +151,14 @@ begin
 end;
 
 
-procedure TForm1.MakeImagesInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; aBaseDir: string; aExportType: TInterpExportType);
+procedure TForm1.MakeInterpImages(RT: TRXType; A: TKMAnimLoop; aBaseDir: string; aExportType: TInterpExportType);
 var
-  RT: TRXType;
   origSpritesDir, interpSpritesDir: string;
-  A: TKMAnimLoop;
   Step, SpriteID, CanvasSize: Integer;
   StartupInfo: TStartupInfo;
   ProcessInfo: TProcessInformation;
   NeedAlpha, AllBlank, Worked: Boolean;
 begin
-  RT := rxUnits;
   if fSprites[RT] = nil then
   begin
     fSprites[RT] := TKMSpritePackEdit.Create(RT, fPalettes);
@@ -176,7 +173,6 @@ begin
   KMDeleteFolderContent(interpSpritesDir);
 
   AllBlank := True;
-  A := fResUnits[aUT].UnitAnim[aAction,aDir];
   CanvasSize := GetMinCanvasSize(A, RT);
   for Step := 1 to A.Count do
   begin
@@ -305,9 +301,9 @@ begin
   KMDeleteFolder(dirShad);
   KMDeleteFolder(dirTeam);
 
-  MakeImagesInterpUnit(aUt, aAction, aDir, dirBase, ietBase);
-  MakeImagesInterpUnit(aUt, aAction, aDir, dirShad, ietShadows);
-  MakeImagesInterpUnit(aUt, aAction, aDir, dirTeam, ietTeamMask);
+  MakeInterpImages(rxUnits, A, dirBase, ietBase);
+  MakeInterpImages(rxUnits, A, dirShad, ietShadows);
+  MakeInterpImages(rxUnits, A, dirTeam, ietTeamMask);
 
   StrList := TStringList.Create;
 
