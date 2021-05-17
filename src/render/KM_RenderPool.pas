@@ -168,6 +168,7 @@ uses
 
 const
   DELETE_COLOR = $1616FF;
+  INTERP_LEVEL = 8;
 
 
 constructor TRenderPool.Create(aViewport: TKMViewport; aRender: TRender);
@@ -216,7 +217,53 @@ begin
 end;
 
 
-function GetInterpSpriteOffset(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection): Integer;
+function GetCarryInterpSpriteOffset(aWare: TKMWareType; aDir: TKMDirection): Integer;
+const
+  CARRY_INTERP_LOOKUP: array[TKMWareType, TKMDirection] of Integer = (
+  (-1,-1,-1,-1,-1,-1,-1,-1,-1), // wtNone
+  (-1,75820,75884,75948,76012,76076,76140,76204,76268), // wtTrunk
+  (-1,76332,76396,76460,76524,76588,76652,76716,76780), // wtStone
+  (-1,76844,76908,76972,77036,77100,77164,77228,77292), // wtWood
+  (-1,77356,77420,77484,77548,77612,77676,77740,77804), // wtIronOre
+  (-1,77868,77932,77996,78060,78124,78188,78252,78316), // wtGoldOre
+  (-1,78380,78444,78508,78572,78636,78700,78764,78828), // wtCoal
+  (-1,78892,78956,79020,79084,79148,79212,79276,79340), // wtSteel
+  (-1,79404,79468,79532,79596,79660,79724,79788,79852), // wtGold
+  (-1,79916,79980,80044,80108,80172,80236,80300,80364), // wtWine
+  (-1,80428,80492,80556,80620,80684,80748,80812,80876), // wtCorn
+  (-1,80940,81004,81068,81132,81196,81260,81324,81388), // wtBread
+  (-1,81452,81516,81580,81644,81708,81772,81836,81900), // wtFlour
+  (-1,81964,82028,82092,82156,82220,82284,82348,82412), // wtLeather
+  (-1,82476,82540,82604,82668,82732,82796,82860,82924), // wtSausages
+  (-1,82988,83052,83116,83180,83244,83308,83372,83436), // wtPig
+  (-1,83500,83564,83628,83692,83756,83820,83884,83948), // wtSkin
+  (-1,84012,84076,84140,84204,84268,84332,84396,84460), // wtShield
+  (-1,84524,84588,84652,84716,84780,84844,84908,84972), // wtMetalShield
+  (-1,85036,85100,85164,85228,85292,85356,85420,85484), // wtArmor
+  (-1,85548,85612,85676,85740,85804,85868,85932,85996), // wtMetalArmor
+  (-1,86060,86124,86188,86252,86316,86380,86444,86508), // wtAxe
+  (-1,86572,86636,86700,86764,86828,86892,86956,87020), // wtSword
+  (-1,87084,87148,87212,87276,87340,87404,87468,87532), // wtPike
+  (-1,87596,87660,87724,87788,87852,87916,87980,88044), // wtHallebard
+  (-1,88108,88172,88236,88300,88364,88428,88492,88556), // wtBow
+  (-1,88620,88684,88748,88812,88876,88940,89004,89068), // wtArbalet
+  (-1,89132,89196,89260,89324,89388,89452,89516,89580), // wtHorse
+  (-1,89644,89708,89772,89836,89900,89964,90028,90092), // wtFish
+  (-1,-1,-1,-1,-1,-1,-1,-1,-1), // wtAll
+  (-1,-1,-1,-1,-1,-1,-1,-1,-1), // wtWarfare
+  (-1,-1,-1,-1,-1,-1,-1,-1,-1) // wtFood
+);
+begin
+  if INTERPOLATED_ANIMS then
+  begin
+    Result := CARRY_INTERP_LOOKUP[aWare, aDir];
+  end
+  else
+    Result := -1;
+end;
+
+
+function GetUnitInterpSpriteOffset(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection): Integer;
 const
   ACTION_INTERP_LOOKUP: array[TKMUnitType, TKMUnitActionType, TKMDirection] of Integer = (
   ( // utNone
@@ -843,11 +890,9 @@ function TRenderPool.GetUnitAnimSprite(aUnit: TKMUnitType; aAct: TKMUnitActionTy
 var
   A: TKMAnimLoop;
   InterpOffset: Integer;
-const
-  INTERP_LEVEL = 8;
 begin
   A := gRes.Units[aUnit].UnitAnim[aAct, aDir];
-  InterpOffset := GetInterpSpriteOffset(aUnit, aAct, aDir);
+  InterpOffset := GetUnitInterpSpriteOffset(aUnit, aAct, aDir);
 
   //While in development disable interpolation if the sprite is missing
   if (InterpOffset >= 1) and ((InterpOffset >= fRXData[rxUnits].Count) or (fRXData[rxUnits].Size[InterpOffset].X = 0)) then
@@ -1734,9 +1779,26 @@ var
   id: Integer;
   A: TKMAnimLoop;
   R: TRXData;
+  InterpOffset: Integer;
 begin
   A := gRes.Units.SerfCarry[aCarry, aDir];
-  id := A.Step[StepId mod Byte(A.Count) + 1] + 1;
+  InterpOffset := GetCarryInterpSpriteOffset(aCarry, aDir);
+
+  //While in development disable interpolation if the sprite is missing
+  if (InterpOffset >= 1) and ((InterpOffset >= fRXData[rxUnits].Count) or (fRXData[rxUnits].Size[InterpOffset].X = 0)) then
+    InterpOffset := -1;
+
+  if InterpOffset >= 0 then
+  begin
+    id := InterpOffset
+      + INTERP_LEVEL*(StepId mod Byte(A.Count))
+      + EnsureRange(Floor(INTERP_LEVEL*StepFrac), 0, INTERP_LEVEL-1);
+  end
+  else
+  begin
+    id := A.Step[StepId mod Byte(A.Count) + 1] + 1;
+  end;
+
   if id <= 0 then Exit;
   R := fRXData[rxUnits];
 
