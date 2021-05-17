@@ -97,6 +97,7 @@ type
     function HouseWeaponsOrdered(aHouseID, aWareType: Integer): Integer;
     function HouseWoodcutterChopOnly(aHouseID: Integer): Boolean;
     function HouseWoodcutterMode(aHouseID: Integer): Integer;
+    function HouseWorker(aHouseID: Integer): Integer;
 
     function IsFieldAt(aPlayer: ShortInt; X, Y: Word): Boolean;
     function IsWinefieldAt(aPlayer: ShortInt; X, Y: Word): Boolean;
@@ -2529,6 +2530,29 @@ begin
     end
     else
       LogParamWarning('States.HouseWoodcutterMode', [aHouseID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13050
+//* Returns ID of a citizen, who works in speciafied house or -1 if there is no worker or aHouseID is incorrect
+function TKMScriptStates.HouseWorker(aHouseID: Integer): Integer;
+var
+  H: TKMHouse;
+begin
+  try
+    Result := -1;
+    if aHouseID > 0 then
+    begin
+      H := fIDCache.GetHouse(aHouseID);
+      if H.HasWorker then
+        Result := TKMUnit(H.Worker).UID;
+    end
+    else
+      LogParamWarning('States.HouseWorker', [aHouseID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
