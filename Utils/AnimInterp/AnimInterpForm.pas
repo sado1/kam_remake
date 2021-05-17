@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
   KM_ResPalettes, KM_Defaults, KM_CommonTypes, KM_Points, KM_ResSprites, KM_ResSpritesEdit, KM_Pics, KM_ResUnits,
-  KM_ResTypes;
+  KM_ResTypes, KM_ResMapElements;
 
 type
   TAnimCacheItem = record
@@ -22,12 +22,14 @@ type
     chkSerfCarry: TCheckBox;
     chkUnitActions: TCheckBox;
     chkUnitThoughts: TCheckBox;
+    chkTrees: TCheckBox;
     procedure btnProcessClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
     fPalettes: TKMResPalettes;
     fResUnits: TKMResUnits;
+    fResMapElem: TKMResMapElements;
     fSprites: array[TRXType] of TKMSpritePackEdit;
 
     fAnimCache: array of TAnimCacheItem;
@@ -43,6 +45,7 @@ type
     function DoInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; var aPicOffset: Integer; aDryRun: Boolean): Integer;
     function DoInterpSerfCarry(aWare: TKMWareType; aDir: TKMDirection; var aPicOffset: Integer; aDryRun: Boolean): Integer;
     function DoInterpUnitThought(aThought: TKMUnitThought; var aPicOffset: Integer; aDryRun: Boolean): Integer;
+    function DoInterpTree(aTree: Integer; var aPicOffset: Integer; aDryRun: Boolean): Integer;
   public
     { Public declarations }
   end;
@@ -108,6 +111,8 @@ begin
   fPalettes.LoadPalettes(ExeDir + 'data\gfx\');
 
   fResUnits := TKMResUnits.Create;
+  fResMapElem := TKMResMapElements.Create;
+  fResMapElem.LoadFromFile(ExeDir + 'data' + PathDelim + 'defines' + PathDelim + 'mapelem.dat');
 
   fWorkDir := ExeDir + 'SpriteInterp\';
   fOutDir := fWorkDir + 'Output\';
@@ -398,10 +403,10 @@ begin
       StrList.Append(IntToStr(newHeight-1 - (MaxY - NoShadMaxY)));
 
       ForceDirectories(fOutDir);
-      StrList.SaveToFile(fOutDir+format('3_%d.txt', [Result + Step - 1]));
-      SaveToPng(newWidth, newHeight, pngCrop, fOutDir+format('3_%d.png', [Result + Step - 1]));
+      StrList.SaveToFile(fOutDir+format('%d_%d.txt', [Byte(RT)+1, Result + Step - 1]));
+      SaveToPng(newWidth, newHeight, pngCrop, fOutDir+format('%d_%d.png', [Byte(RT)+1, Result + Step - 1]));
       if needsMask and (Length(pngTeam) > 0) then
-        SaveToPng(newWidth, newHeight, pngCropMask, fOutDir+format('3_%dm.png', [Result + Step - 1]));
+        SaveToPng(newWidth, newHeight, pngCropMask, fOutDir+format('%d_%dm.png', [Byte(RT)+1, Result + Step - 1]));
     end;
   end;
 
@@ -474,17 +479,34 @@ begin
 end;
 
 
+function TForm1.DoInterpTree(aTree: Integer; var aPicOffset: Integer; aDryRun: Boolean): Integer;
+var
+  A: TKMAnimLoop;
+  bkgRGB: Cardinal;
+begin
+  A := gMapElements[aTree].Anim;
+
+  if (A.Count <= 1) or (A.Step[1] = -1) then
+    Exit(-1);
+
+  DoInterp(rxTrees, A, $000000, aPicOffset, aDryRun);
+end;
+
+
 procedure TForm1.btnProcessClick(Sender: TObject);
 var
-  picOffset, animPicOffset: Integer;
+  I, picOffset, animPicOffset: Integer;
   dir: TKMDirection;
   act: TKMUnitActionType;
   u: TKMUnitType;
   ware: TKMWareType;
   th: TKMUnitThought;
   animData: string;
+const
+  UNITS_RX_OFFSET = 9300;
+  TREES_RX_OFFSET = 260;
 begin
-  picOffset := 9300;
+  picOffset := UNITS_RX_OFFSET;
 
   animData := 'ACTION_INTERP_LOOKUP: array[TKMUnitType, TKMUnitActionType, TKMDirection] of Integer = ('+#13#10;
   for u := Low(TKMUnitType) to High(TKMUnitType) do
@@ -582,6 +604,39 @@ begin
       animData := animData + ',';
   end;
   animData := animData + ');';
+
+  animData := animData + #13#10 + #13#10;
+  animData := animData + 'TREE_INTERP_LOOKUP: array [0..OBJECTS_CNT] of Integer = ('+#13#10;
+
+  picOffset := TREES_RX_OFFSET;
+
+  for I := 0 to OBJECTS_CNT do
+  begin
+    animData := animData + '  ';
+    try
+      animPicOffset := DoInterpTree(I, picOffset, not chkTrees.Checked);
+    except
+      on E: Exception do
+      begin
+        memoErrors.Text := memoErrors.Text + ' Tree ' + IntToStr(I) + ' - ' + E.Message + #13#10;
+        animPicOffset := -1;
+      end;
+    end;
+
+    if animPicOffset >= 0 then
+      animData := animData + IntToStr(animPicOffset)
+    else
+      animData := animData + '-1';
+
+    if I <> OBJECTS_CNT then
+      animData := animData + ',';
+
+    if (I > 0) and (I mod 16 = 0) then
+      animData := animData + #13#10;
+  end;
+  animData := animData + ');';
+
+
 
   Memo1.Text := animData;
 end;

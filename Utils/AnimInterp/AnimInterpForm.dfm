@@ -72,4 +72,12 @@ object Form1: TForm1
     Caption = 'Unit thoughts'
     TabOrder = 5
   end
+  object chkTrees: TCheckBox
+    Left = 8
+    Top = 77
+    Width = 97
+    Height = 17
+    Caption = 'Trees'
+    TabOrder = 6
+  end
 end
