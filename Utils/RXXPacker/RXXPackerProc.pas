@@ -130,8 +130,8 @@ begin
         else
           SpritePack.SoftenShadows;
 
-        if (RT = rxUnits) and DirectoryExists(ExeDir + 'SpriteInterp\Output\') then
-          SpritePack.OverloadFromFolder(ExeDir + 'SpriteInterp\Output\', False); // Shadows are already softened for interps
+        if DirectoryExists(ExeDir + 'SpriteInterp\Output\'+IntToStr(Byte(RT)+1)+'\') then
+          SpritePack.OverloadFromFolder(ExeDir + 'SpriteInterp\Output\'+IntToStr(Byte(RT)+1)+'\', False); // Shadows are already softened for interps
 
         SpritePack.SaveToRXXFile(ExeDir + 'Data\Sprites\' + RXInfo[RT].FileName + '_a.rxx');
       end;
