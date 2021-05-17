@@ -136,8 +136,8 @@ type
   procedure KMRectIncludePoint(var aRect: TKMRect; const aPoint: TKMPoint); overload;
   procedure KMRectIncludeRect(var aRect: TKMRect; aRect2: TKMRect);
 
-  function KMGetDirection(X,Y: Integer): TKMDirection; overload;
-  function KMGetDirection(X,Y: Single): TKMDirection; overload;
+  function KMGetDirection(aDirF: Single): TKMDirection; overload; inline;
+  function KMGetDirection(X,Y: Single; aDirNAThreshold: Integer = 0): TKMDirection; overload;
   function KMGetDirection(const P: TKMPointF): TKMDirection; overload;
   function KMGetDirection(const FromPos, ToPos: TKMPoint): TKMDirection; overload;
   function KMGetDirection(const FromPos, ToPos: TKMPointF): TKMDirection; overload;
@@ -173,6 +173,7 @@ type
   function KMSegmentsIntersect(const A, B, C, D: TKMPoint): Boolean;
   function KMSegmentsIntersectOrTouch(const A, B, C, D: TKMPoint): Boolean;
 
+  function KMLength(A,B: Single): Single; overload;
   function KMLength(const A, B: TKMPoint): Single; overload;
   function KMLength(const A, B: TKMPointF): Single; overload;
   function KMLengthDiag(X, Y: Integer): Single; overload;
@@ -742,42 +743,28 @@ begin
 end;
 
 
-function KMGetDirection(X,Y: Integer): TKMDirection;
-const
-  DirectionsBitfield: array [-1..1, -1..1] of TKMDirection =
-    ((dirNW, dirW,  dirSW),
-     (dirN,  dirNA, dirS),
-     (dirNE, dirE,  dirSE));
-var
-  Scale: Integer;
-  A, B: ShortInt;
+function KMGetDirection(aDirF: Single): TKMDirection;
 begin
-  Scale := Max(Max(Abs(X), Abs(Y)), 1);
-  A := Round(X / Scale);
-  B := Round(Y / Scale);
-  Result := DirectionsBitfield[A, B]; // -1, 0, 1
+  // Convert angle value to direction
+  // 3600 is a lame way of ensuring we deal with 0..359 angle
+  Result := TKMDirection((Round((aDirF / Pi * 180) + 3600 + 22.5) mod 360) div 45 + 1);
 end;
 
 
-function KMGetDirection(X,Y: Single): TKMDirection;
-const
-  DirectionsBitfield: array [-1..1, -1..1] of TKMDirection =
-    ((dirNW, dirW,  dirSW),
-     (dirN,  dirNA, dirS),
-     (dirNE, dirE,  dirSE));
+function KMGetDirection(X, Y: Single; aDirNAThreshold: Integer = 0): TKMDirection;
 var
-  Scale: Single;
-  A, B: ShortInt;
+  ang, distSqr: Single;
 begin
-  // Scale to at least 0.5, not to at least 1
-  // Corner case:
-  // X = 0.5, or even 0,4999999
-  // Y = 0.5, or even 0,4999999
-  // Then A = 0 and B = 0 => Result = dirNA
-  Scale := Max(Max(Abs(X), Abs(Y)), 0.5);
-  A := Round(X / Scale);
-  B := Round(Y / Scale);
-  Result := DirectionsBitfield[A, B]; // -1, 0, 1
+  distSqr := Sqr(X) + Sqr(Y);
+
+  if distSqr > Sqr(aDirNAThreshold) then
+  begin
+    ang := ArcTan2(Y/distSqr, X/distSqr);
+    // We have North at zero
+    Result := KMGetDirection(ang + Pi/2);
+  end
+  else
+    Result := dirNA;
 end;
 
 
@@ -1032,6 +1019,12 @@ begin
   Result := (S >= 0) and (S <= 1) and (T >= 0) and (T <= 1)
             and not IsNaN(S) and not IsNaN(T)
             and not IsInfinite(S) and not IsInfinite(T);
+end;
+
+
+function KMLength(A,B: Single): Single;
+begin
+  Result := Sqrt(Sqr(A) + Sqr(B));
 end;
 
 

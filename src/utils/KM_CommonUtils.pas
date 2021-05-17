@@ -16,8 +16,6 @@ uses
 
   function IfThenS(aCondition: Boolean; const aIfTrue, aIfFalse: String): String;
 
-  function KMGetCursorDirection(X,Y: integer): TKMDirection;
-
   function GetPositionInGroup2(OriginX, OriginY: Word; aDir: TKMDirection; aIndex, aUnitPerRow: Word; MapX, MapY: Word; out aTargetCanBeReached: Boolean): TKMPoint;
   function GetPositionFromIndex(const aOrigin: TKMPoint; aIndex: Byte): TKMPoint;
 
@@ -198,12 +196,6 @@ begin
     Result := aIfFalse;
 end;
 
-
-//Taken from KromUtils to reduce dependancies (required so the dedicated server compiles on Linux without using Controls)
-function GetLength(A,B: Single): Single;
-begin
-  Result := Sqrt(Sqr(A) + Sqr(B));
-end;
 
 procedure KMSwapInt(var A,B: Byte);
 var
@@ -560,23 +552,6 @@ end;
 function MapSizeText(aMapSize: TKMMapSize): UnicodeString;
 begin
   Result := MAP_SIZES[aMapSize];
-end;
-
-
-function KMGetCursorDirection(X,Y: Integer): TKMDirection;
-var Ang, Dist: Single;
-begin
-  Dist := GetLength(X, Y);
-  if Dist > DIR_CURSOR_NA_RAD then
-  begin
-    //Convert XY to angle value
-    Ang := ArcTan2(Y/Dist, X/Dist) / Pi * 180;
-
-    //Convert angle value to direction
-    Result := TKMDirection((Round(Ang + 270 + 22.5) mod 360) div 45 + 1);
-  end
-  else
-    Result := dirNA;
 end;
 
 

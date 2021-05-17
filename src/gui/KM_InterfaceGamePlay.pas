@@ -3891,22 +3891,22 @@ begin
 
   if SelectingTroopDirection then
   begin
-    deltaX := SelectingDirPosition.X - X;
-    deltaY := SelectingDirPosition.Y - Y;
-    deltaDistanceSqr := Sqr(deltaX)+Sqr(deltaY);
+    deltaX := X - SelectingDirPosition.X;
+    deltaY := Y - SelectingDirPosition.Y;
+    deltaDistanceSqr := Sqr(deltaX) + Sqr(deltaY);
     // Manually force the cursor to remain within a circle (+2 to avoid infinite loop due to rounding)
-    if deltaDistanceSqr > Sqr(DIR_CURSOR_CIRCLE_RAD+2) then
+    if deltaDistanceSqr > Sqr(DIR_CURSOR_CIRCLE_RAD + 2) then
     begin
       deltaX := Round(deltaX / Sqrt(deltaDistanceSqr) * DIR_CURSOR_CIRCLE_RAD);
       deltaY := Round(deltaY / Sqrt(deltaDistanceSqr) * DIR_CURSOR_CIRCLE_RAD);
       newPoint := gMain.ClientToScreen(SelectingDirPosition);
-      newPoint.X := newPoint.X - deltaX;
-      newPoint.Y := newPoint.Y - deltaY;
+      newPoint.X := newPoint.X + deltaX;
+      newPoint.Y := newPoint.Y + deltaY;
       SetCursorPos(newPoint.X, newPoint.Y);
     end;
 
     // Compare cursor position and decide which direction it is
-    SelectedDirection := KMGetCursorDirection(deltaX, deltaY);
+    SelectedDirection := KMGetDirection(deltaX, deltaY, DIR_CURSOR_NA_RAD);
     // Update the cursor based on this direction and negate the offset
     DirectionCursorShow(SelectingDirPosition.X, SelectingDirPosition.Y, SelectedDirection);
     gRes.Cursors.Cursor := kmcInvisible; // Keep it invisible, just in case
