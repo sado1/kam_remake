@@ -56,7 +56,7 @@ var
 implementation
 uses
   ShellApi, Math, RTTI, KM_FileIO, KromUtils,
-  KM_ResHouses, KM_Log, KM_PNG;
+  KM_ResHouses, KM_Log, KM_PNG, KM_ResWares;
 
 const
   CANVAS_Y_OFFSET = 14;
@@ -443,7 +443,7 @@ function TForm1.DoInterpSerfCarry(aWare: TKMWareType; aDir: TKMDirection; var aP
 var
   A: TKMAnimLoop;
 begin
-  if aDir = dirNA then
+  if (aDir = dirNA) or not (aWare in [WARE_MIN..WARE_MAX]) then
     Exit(-1);
 
   A := fResUnits.SerfCarry[aWare, aDir];
