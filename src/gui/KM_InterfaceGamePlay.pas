@@ -54,9 +54,9 @@ type
     fPlayMoreMsg: TKMGameResultMsg; // Remember which message we are showing
     fPlacingBeacon: Boolean;
     fNetWaitDropPlayersDelayStarted: Cardinal;
-    SelectedDirection: TKMDirection;
-    SelectingTroopDirection: Boolean;
-    SelectingDirPosition: TPoint;
+    fSelectedDirection: TKMDirection;
+    fSelectingTroopDirection: Boolean;
+    fSelectingDirPosition: TPoint;
     fSaves: TKMSavesCollection;
     fUnitsTeamNames: TList<TKMUnit>;
     fGroupsTeamNames: TList<TKMUnitGroup>;
@@ -804,9 +804,9 @@ begin
   fLastSaveName := '';
   fLastKbdSelectionTime := 0;
   fPlacingBeacon := False;
-  SelectingTroopDirection := False;
-  SelectingDirPosition.X := 0;
-  SelectingDirPosition.Y := 0;
+  fSelectingTroopDirection := False;
+  fSelectingDirPosition.X := 0;
+  fSelectingDirPosition.Y := 0;
   fShownMessage := -1; // 0 is the first message, -1 is invalid
   for I := Low(fSelection) to High(fSelection) do
     fSelection[I] := -1; // Not set
@@ -1608,7 +1608,7 @@ end;
 
 function TKMGamePlayInterface.IsSelectingTroopDirection(aObject: TObject): Boolean;
 begin
-  Result := SelectingTroopDirection;
+  Result := fSelectingTroopDirection;
 end;
 
 
@@ -2916,12 +2916,12 @@ end;
 
 procedure TKMGamePlayInterface.ReleaseDirectionSelector;
 begin
-  if SelectingTroopDirection then
+  if fSelectingTroopDirection then
   begin
     // Reset the cursor position as it will have moved during direction selection
-    SetCursorPos(gMain.ClientToScreen(SelectingDirPosition).X, gMain.ClientToScreen(SelectingDirPosition).Y);
+    SetCursorPos(gMain.ClientToScreen(fSelectingDirPosition).X, gMain.ClientToScreen(fSelectingDirPosition).Y);
     gMain.ApplyCursorRestriction; // Reset the cursor restrictions from selecting direction
-    SelectingTroopDirection := False;
+    fSelectingTroopDirection := False;
     gRes.Cursors.Cursor := kmcDefault; // Reset direction selection cursor when mouse released
     DirectionCursorHide;
   end;
@@ -3490,7 +3490,7 @@ begin
   // These keys are allowed during replays
   if Key = gResKeys[kfShowTeams].Key then fShowTeamNames := False;
   if Key = gResKeys[kfBeacon].Key then
-    if not SelectingTroopDirection then
+    if not fSelectingTroopDirection then
     begin
       fPlacingBeacon := True;
       MinimapView.ClickableOnce := True;
@@ -3765,10 +3765,10 @@ begin
   or gMySpectator.Hand.InCinematic then
     Exit;
 
-  if SelectingTroopDirection then
+  if fSelectingTroopDirection then
   begin
     gMain.ApplyCursorRestriction; // Reset the cursor restrictions from selecting direction
-    SelectingTroopDirection := false;
+    fSelectingTroopDirection := false;
     DirectionCursorHide;
   end;
 
@@ -3810,7 +3810,7 @@ begin
     begin
       if group.CanWalkTo(gCursor.Cell, 0) then
       begin
-        SelectingTroopDirection := True; // MouseMove will take care of cursor changing
+        fSelectingTroopDirection := True; // MouseMove will take care of cursor changing
         // Restrict the cursor to inside the main panel so it does not get jammed when used near
         // the edge of the window in windowed mode
         {$IFDEF MSWindows}
@@ -3818,10 +3818,10 @@ begin
         ClipCursor(@windowRect);
         {$ENDIF}
         // Now record it as Client XY
-        SelectingDirPosition.X := X;
-        SelectingDirPosition.Y := Y;
-        SelectedDirection := dirNA;
-        DirectionCursorShow(X, Y, SelectedDirection);
+        fSelectingDirPosition.X := X;
+        fSelectingDirPosition.Y := Y;
+        fSelectedDirection := dirNA;
+        DirectionCursorShow(X, Y, fSelectedDirection);
         gRes.Cursors.Cursor := kmcInvisible;
       end
       else
@@ -3877,7 +3877,7 @@ begin
 
   if (fMyControls.CtrlOver <> nil)
   and (fMyControls.CtrlOver <> Image_DirectionCursor)
-  and not SelectingTroopDirection then
+  and not fSelectingTroopDirection then
   begin
     // kmcEdit and kmcDragUp are handled by Controls.MouseMove (it will reset them when required)
     if not fViewport.Scrolling and not (gRes.Cursors.Cursor in [kmcEdit,kmcDragUp]) then
@@ -3889,26 +3889,26 @@ begin
 
   if gGame.IsPaused and (fUIMode in [umSP, umMP]) then Exit;
 
-  if SelectingTroopDirection then
+  if fSelectingTroopDirection then
   begin
-    deltaX := X - SelectingDirPosition.X;
-    deltaY := Y - SelectingDirPosition.Y;
+    deltaX := X - fSelectingDirPosition.X;
+    deltaY := Y - fSelectingDirPosition.Y;
     deltaDistanceSqr := Sqr(deltaX) + Sqr(deltaY);
     // Manually force the cursor to remain within a circle (+2 to avoid infinite loop due to rounding)
     if deltaDistanceSqr > Sqr(DIR_CURSOR_CIRCLE_RAD + 2) then
     begin
       deltaX := Round(deltaX / Sqrt(deltaDistanceSqr) * DIR_CURSOR_CIRCLE_RAD);
       deltaY := Round(deltaY / Sqrt(deltaDistanceSqr) * DIR_CURSOR_CIRCLE_RAD);
-      newPoint := gMain.ClientToScreen(SelectingDirPosition);
+      newPoint := gMain.ClientToScreen(fSelectingDirPosition);
       newPoint.X := newPoint.X + deltaX;
       newPoint.Y := newPoint.Y + deltaY;
       SetCursorPos(newPoint.X, newPoint.Y);
     end;
 
     // Compare cursor position and decide which direction it is
-    SelectedDirection := KMGetDirection(deltaX, deltaY, DIR_CURSOR_NA_RAD);
+    fSelectedDirection := KMGetDirection(deltaX, deltaY, DIR_CURSOR_NA_RAD);
     // Update the cursor based on this direction and negate the offset
-    DirectionCursorShow(SelectingDirPosition.X, SelectingDirPosition.Y, SelectedDirection);
+    DirectionCursorShow(fSelectingDirPosition.X, fSelectingDirPosition.Y, fSelectedDirection);
     gRes.Cursors.Cursor := kmcInvisible; // Keep it invisible, just in case
     Exit;
   end;
@@ -4023,7 +4023,7 @@ begin
     fMyControls.MouseUp(X,Y,Shift,Button) // That will update control States, f.e.
   else
   if   (fMyControls.CtrlOver <> Image_DirectionCursor)
-    and not SelectingTroopDirection then
+    and not fSelectingTroopDirection then
   begin
     fMyControls.MouseUp(X,Y,Shift,Button);
     Exit;
@@ -4244,9 +4244,9 @@ begin
             end
             else
             // Ensure down click was successful (could have been over a mountain, then dragged to a walkable location)
-            if SelectingTroopDirection and group.CanWalkTo(P, 0) then
+            if fSelectingTroopDirection and group.CanWalkTo(P, 0) then
             begin
-              gGame.GameInputProcess.CmdArmy(gicArmyWalk, group, P, SelectedDirection);
+              gGame.GameInputProcess.CmdArmy(gicArmyWalk, group, P, fSelectedDirection);
               gSoundPlayer.PlayWarrior(group.UnitType, spMove);
             end;
           end;
