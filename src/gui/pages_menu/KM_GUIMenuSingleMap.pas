@@ -628,9 +628,17 @@ end;
 procedure TKMMenuSingleMap.Update(aForceUpdate: Boolean = False);
 const
   GOAL_CONDITION_PIC: array [TKMGoalCondition] of Word = (
-    41, 39, 592, 38, 62, 41, 303, 141, 312);
+    41,   // gcUnknown0         - Not used/unknown
+    39,   // gcBuildTutorial    - Must build a tannery (and other buildings from tutorial?) for it to be true. In KaM tutorial messages will be dispalyed if this is a goal
+    592,  // gcTime             - A certain time must pass
+    38,   // gcBuildings        - Storehouse, school, barracks, TownHall
+    62,   // gcTroops           - All troops
+    41,   // gcUnknown5         - Not used/unknown
+    303,  // gcMilitaryAssets   - All Troops, Coal mine, Weapons Workshop, Tannery, Armory workshop, Stables, Iron mine, Iron smithy, Weapons smithy, Armory smithy, Barracks, Town hall and Vehicles Workshop
+    141,  // gcSerfsAndSchools  - Serfs (possibly all citizens?) and schoolhouses
+    312); // gcEconomyBuildings - School, Inn and Storehouse
 var
-  I,J,K: Integer;
+  I, J, K: Integer;
   mapId: Integer;
   M: TKMapInfo;
   G: TKMMapGoalInfo;
