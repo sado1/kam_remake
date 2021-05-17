@@ -528,6 +528,7 @@ begin
     RegisterMethodCheck(c, 'function HouseFlagPoint(aHouseID: Integer): TKMPoint');
     RegisterMethodCheck(c, 'function HouseGetAllUnitsIn(aHouseID: Integer): TIntegerArray');
     RegisterMethodCheck(c, 'function HouseHasOccupant(aHouseID: Integer): Boolean');
+    RegisterMethodCheck(c, 'function HouseHasWorker(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseIsComplete(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseOwner(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HousePosition(aHouseID: Integer): TKMPoint');
@@ -542,6 +543,7 @@ begin
     RegisterMethodCheck(c, 'function HouseTypeMaxHealth(aHouseType: Integer): Word');
     RegisterMethodCheck(c, 'function HouseTypeName(aHouseType: Byte): AnsiString');
     RegisterMethodCheck(c, 'function HouseTypeToOccupantType(aHouseID: Integer): Integer');
+    RegisterMethodCheck(c, 'function HouseTypeToWorkerType(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseUnlocked(aPlayer, aHouseType: Word): Boolean');
     RegisterMethodCheck(c, 'function HouseWoodcutterChopOnly(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseWoodcutterMode(aHouseID: Integer): Integer');
@@ -1206,6 +1208,7 @@ begin
       RegisterMethod(@TKMScriptStates.HouseFlagPoint,                           'HouseFlagPoint');
       RegisterMethod(@TKMScriptStates.HouseGetAllUnitsIn,                       'HouseGetAllUnitsIn');
       RegisterMethod(@TKMScriptStates.HouseHasOccupant,                         'HouseHasOccupant');
+      RegisterMethod(@TKMScriptStates.HouseHasWorker,                           'HouseHasWorker');
       RegisterMethod(@TKMScriptStates.HouseIsComplete,                          'HouseIsComplete');
       RegisterMethod(@TKMScriptStates.HouseOwner,                               'HouseOwner');
       RegisterMethod(@TKMScriptStates.HousePosition,                            'HousePosition');
@@ -1220,6 +1223,7 @@ begin
       RegisterMethod(@TKMScriptStates.HouseTypeMaxHealth,                       'HouseTypeMaxHealth');
       RegisterMethod(@TKMScriptStates.HouseTypeName,                            'HouseTypeName');
       RegisterMethod(@TKMScriptStates.HouseTypeToOccupantType,                  'HouseTypeToOccupantType');
+      RegisterMethod(@TKMScriptStates.HouseTypeToWorkerType,                    'HouseTypeToWorkerType');
       RegisterMethod(@TKMScriptStates.HouseUnlocked,                            'HouseUnlocked');
       RegisterMethod(@TKMScriptStates.HouseWoodcutterChopOnly,                  'HouseWoodcutterChopOnly');
       RegisterMethod(@TKMScriptStates.HouseWoodcutterMode,                      'HouseWoodcutterMode');

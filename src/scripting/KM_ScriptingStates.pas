@@ -77,6 +77,7 @@ type
     function HouseFlagPoint(aHouseID: Integer): TKMPoint;
     function HouseGetAllUnitsIn(aHouseID: Integer): TIntegerArray;
     function HouseHasOccupant(aHouseID: Integer): Boolean;
+    function HouseHasWorker(aHouseID: Integer): Boolean;
     function HouseIsComplete(aHouseID: Integer): Boolean;
     function HouseOwner(aHouseID: Integer): Integer;
     function HousePosition(aHouseID: Integer): TKMPoint;
@@ -91,6 +92,7 @@ type
     function HouseTypeMaxHealth(aHouseType: Integer): Word;
     function HouseTypeName(aHouseType: Byte): AnsiString;
     function HouseTypeToOccupantType(aHouseType: Integer): Integer;
+    function HouseTypeToWorkerType(aHouseType: Integer): Integer;
     function HouseUnlocked(aPlayer, aHouseType: Word): Boolean;
     function HouseWareBlocked(aHouseID, aWareType: Integer): Boolean;
     function HouseWareBlockedTakeOut(aHouseID, aWareType: Integer): Boolean;
@@ -2021,8 +2023,9 @@ end;
 
 
 //* Version: 5057
-//* Returns true if the specified house currently has an occupant
-//* Result: Has occupant
+//* @Deprecated
+//* Returns true if the specified house currently has a worker
+//* Result: Has worker
 function TKMScriptStates.HouseHasOccupant(aHouseID: Integer): Boolean;
 var
   H: TKMHouse;
@@ -2037,6 +2040,30 @@ begin
     end
     else
       LogParamWarning('States.HouseHasOccupant', [aHouseID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13050
+//* Returns true if the specified house currently has a worker
+//* Result: Has worker
+function TKMScriptStates.HouseHasWorker(aHouseID: Integer): Boolean;
+var
+  H: TKMHouse;
+begin
+  try
+    Result := False;
+    if aHouseID > 0 then
+    begin
+      H := fIDCache.GetHouse(aHouseID);
+      if H <> nil then
+        Result := H.HasWorker;
+    end
+    else
+      LogParamWarning('States.HouseHasWorker', [aHouseID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2357,7 +2384,8 @@ end;
 
 
 //* Version: 5345
-//* Returns the type of unit that should occupy the specified type of house, or -1 if no unit should occupy it.
+//* @Deprecated
+//* Returns the type of unit that should work in the specified type of house, or -1 if no unit should work in it.
 //* Result: Unit type
 function TKMScriptStates.HouseTypeToOccupantType(aHouseType: Integer): Integer;
 begin
@@ -2369,6 +2397,26 @@ begin
     end
     else
       LogParamWarning('States.HouseTypeToOccupantType', [aHouseType]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13050
+//* Returns the type of unit that should occupy the specified type of house, or -1 if no unit should occupy it.
+//* Result: Unit type
+function TKMScriptStates.HouseTypeToWorkerType(aHouseType: Integer): Integer;
+begin
+  try
+    Result := -1;
+    if HouseTypeValid(aHouseType) then
+    begin
+      Result := UNIT_TYPE_TO_ID[gRes.Houses[HOUSE_ID_TO_TYPE[aHouseType]].WorkerType];
+    end
+    else
+      LogParamWarning('States.HouseTypeToWorkerType', [aHouseType]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
