@@ -2023,7 +2023,7 @@ end;
 
 
 //* Version: 5057
-//* @Deprecated
+//* @Deprecated: HouseHasWorker
 //* Returns true if the specified house currently has a worker
 //* Result: Has worker
 function TKMScriptStates.HouseHasOccupant(aHouseID: Integer): Boolean;
@@ -2384,7 +2384,7 @@ end;
 
 
 //* Version: 5345
-//* @Deprecated
+//* @Deprecated: HouseTypeToWorkerType
 //* Returns the type of unit that should work in the specified type of house, or -1 if no unit should work in it.
 //* Result: Unit type
 function TKMScriptStates.HouseTypeToOccupantType(aHouseType: Integer): Integer;
