@@ -63,7 +63,7 @@ type
   TKMSpritePack = class
   private
     fPad: Byte; //Force padding between sprites to avoid neighbour edge visibility
-    procedure MakeGFX_BinPacking(aTexType: TTexFormat; aStartingIndex: Word; var BaseRAM, ColorRAM, TexCount: Cardinal;
+    procedure MakeGFX_BinPacking(aTexType: TTexFormat; aStartingIndex: Integer; var BaseRAM, ColorRAM, TexCount: Cardinal;
                                  aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil);
     procedure SaveTextureToPNG(aWidth, aHeight: Word; const aFilename: string; const Data: TKMCardinalArray);
   protected
@@ -91,7 +91,7 @@ type
     procedure RemoveMarketWaresShadows(aResHouses: TKMResHouses);
     procedure RemoveSnowHouseShadows(aResHouses: TKMResHouses);
 
-    function GetSpriteColors(aCount: Word): TRGBArray;
+    function GetSpriteColors(aCount: Integer): TRGBArray;
 
     function IsEmpty: Boolean;
 
@@ -869,7 +869,7 @@ begin
 end;
 
 
-function TKMSpritePack.GetSpriteColors(aCount: Word): TRGBArray;
+function TKMSpritePack.GetSpriteColors(aCount: Integer): TRGBArray;
 var
   I, L, M: Integer;
   pixelCount: Word;
@@ -941,7 +941,7 @@ end;
 procedure SetGFXData(aTx: Cardinal; aSpriteInfo: TBinItem; aAtlasType: TSpriteAtlasType; aSpritesPack: TKMSpritePack; aRT: TRXType);
 var
   K: Integer;
-  ID: Word;
+  ID: Integer;
   txCoords: TKMTexCoords;
 begin
   for K := 0 to High(aSpriteInfo.Sprites) do
@@ -977,7 +977,7 @@ end;
 
 
 //This algorithm is planned to take advantage of more efficient 2D bin packing
-procedure TKMSpritePack.MakeGFX_BinPacking(aTexType: TTexFormat; aStartingIndex: Word; var BaseRAM, ColorRAM, TexCount: Cardinal;
+procedure TKMSpritePack.MakeGFX_BinPacking(aTexType: TTexFormat; aStartingIndex: Integer; var BaseRAM, ColorRAM, TexCount: Cardinal;
                                            aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil);
 
   procedure PrepareAtlases(SpriteInfo: TBinArray; aMode: TSpriteAtlasType; aTexType: TTexFormat);
@@ -985,7 +985,7 @@ procedure TKMSpritePack.MakeGFX_BinPacking(aTexType: TTexFormat; aStartingIndex:
     I, K, L, M: Integer;
     CT, CL, Pixel: Cardinal;
     Tx: Cardinal;
-    ID: Word;
+    ID: Integer;
     TD: TKMCardinalArray;
     texFilter: TFilterType;
   begin
