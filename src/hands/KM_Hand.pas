@@ -253,7 +253,8 @@ uses
   KM_HandsCollection, KM_Sound, KM_AIFields, KM_MapEditorHistory,
   KM_Resource, KM_ResSound, KM_ResTexts, KM_ResMapElements, KM_ScriptingEvents, KM_ResUnits,
   KM_CommonUtils, KM_GameSettings,
-  KM_UnitGroupTypes;
+  KM_UnitGroupTypes,
+  KM_MapTypes;
 
 const
   TIME_TO_SET_FIRST_STOREHOUSE = 10*60*2; //We give 2 minutes to set first storehouse, otherwise player will be defeated

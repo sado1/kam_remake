@@ -516,8 +516,6 @@ type
 
 
 type
-  TKMissionMode = (mmNormal, mmTactic);
-
   TKMAllianceType = (atEnemy, atAlly);
 
 const
@@ -792,56 +790,6 @@ type
         tlFieldWork,// -        X         X       X          -     X      -
         tlRoadWork  // -        X         X       X          -     X      -
         );
-
-
-type
-  // Sketch of the goal and message displaying system used in KaM (from scripting point of view anyway)
-  // This is very similar to that used in KaM and is quite flexable/expandable.
-  // (we can add more parameters/conditions as well as existing KaM ones, possibly using a new script command)
-  // Some things are probably named unclearly, please give me suggestions or change them. Goals are the one part
-  // of scripting that seems to confuse everyone at first, mainly because of the TGoalStatus. In 99% of cases gsTrue and gtDefeat
-  // go together, because the if the defeat conditions is NOT true you lose, not the other way around. I guess it should be called a
-  // "survival" conditions rather than defeat.
-  // I put some examples below to give you an idea of how it works. Remember this is basically a copy of the goal scripting system in KaM,
-  // not something I designed. It can change, this is just easiest to implement from script compatability point of view.
-
-  TKMGoalType = (
-    gltNone = 0,  // Means: It is not required for victory or defeat (e.g. simply display a message)
-    gltVictory,   // Means: "The following condition must be true for you to win"
-    gltSurvive    // Means: "The following condition must be true or else you lose"
-  );
-
-  // Conditions are the same numbers as in KaM script
-  TKMGoalCondition = (
-    gcUnknown0,        // Not used/unknown
-    gcBuildTutorial,   // Must build a tannery (and other buildings from tutorial?) for it to be true. In KaM tutorial messages will be dispalyed if this is a goal
-    gcTime,            // A certain time must pass
-    gcBuildings,       // Storehouse, school, barracks, TownHall
-    gcTroops,          // All troops
-    gcUnknown5,        // Not used/unknown
-    gcMilitaryAssets,  // All Troops, Coal mine, Weapons Workshop, Tannery, Armory workshop, Stables, Iron mine, Iron smithy, Weapons smithy, Armory smithy, Barracks, Town hall and Vehicles Workshop
-    gcSerfsAndSchools, // Serfs (possibly all citizens?) and schoolhouses
-    gcEconomyBuildings // School, Inn and Storehouse
-    //We can come up with our own
-  );
-
-  TKMGoalStatus = (gsTrue = 0, gsFalse = 1); // Weird that it's inverted, but KaM uses it that way
-
-const
-  //We discontinue support of other goals in favor of PascalScript scripts
-  GOALS_SUPPORTED: set of TKMGoalCondition =
-    [gcBuildings, gcTroops, gcMilitaryAssets, gcSerfsAndSchools, gcEconomyBuildings];
-
-  GOAL_CONDITION_STR: array [TKMGoalCondition] of string = (
-    'Unknown 0',
-    'Build Tannery',
-    'Time',
-    'Store School Barracks',
-    'Troops',
-    'Unknown 5',
-    'Military assets',
-    'Serfs&Schools',
-    'School Inn Store');
 
 //Indexes KM_FormMain.StatusBar
 const

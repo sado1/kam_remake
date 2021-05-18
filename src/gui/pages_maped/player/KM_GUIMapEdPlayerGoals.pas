@@ -36,7 +36,7 @@ type
 
 implementation
 uses
-  KM_HandsCollection, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_Hand;
+  KM_HandsCollection, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_Hand, KM_MapTypes;
 
 
 { TKMMapEdPlayerGoals }

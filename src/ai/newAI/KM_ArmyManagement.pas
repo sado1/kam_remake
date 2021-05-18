@@ -67,6 +67,7 @@ uses
   KM_HouseBarracks,
   KM_CommonUtils,
   KM_DevPerfLog, KM_DevPerfLogTypes,
+  KM_MapTypes,
   KM_ResTypes;
 
 

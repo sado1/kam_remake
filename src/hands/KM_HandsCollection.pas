@@ -9,6 +9,7 @@ uses
   KM_HandEntity,
   KM_HandTypes,
   KM_GameTypes,
+  KM_MapTypes,
   KM_ResTypes;
 
 

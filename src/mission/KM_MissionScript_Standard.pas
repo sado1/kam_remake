@@ -54,7 +54,8 @@ uses
   KM_HandTypes,
   KM_CommonExceptions,
   KM_ResTypes,
-  KM_TerrainTypes;
+  KM_TerrainTypes,
+  KM_MapTypes;
 
 
 type

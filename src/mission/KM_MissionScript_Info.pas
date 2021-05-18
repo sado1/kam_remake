@@ -28,7 +28,7 @@ implementation
 uses
   SysUtils, Math,
   KM_Resource,
-  KM_CommonClasses, KM_Defaults, KM_Utils;
+  KM_CommonClasses, KM_Defaults, KM_Utils, KM_MapTypes;
 
 
 { TMissionParserInfo }
