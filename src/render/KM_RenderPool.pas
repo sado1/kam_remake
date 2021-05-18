@@ -73,6 +73,7 @@ type
 
     function GetUnitAnimSprite(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; aStep: Integer; aStepFrac: Single): Integer;
     function GetUnitAnimSpriteByPercent(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; aPercent: Single): Integer;
+    function GetTreeAnimSprite(aTree, aStep: Integer; aStepFrac: Single; aLoop: Boolean): Integer;
 
     procedure ApplyTransform;
     procedure SetDefaultRenderParams;
@@ -231,7 +232,7 @@ begin
 end;
 
 
-function GetTreeAnimSprite(aTree, aStep: Integer; aStepFrac: Single; aLoop: Boolean): Integer;
+function TRenderPool.GetTreeAnimSprite(aTree, aStep: Integer; aStepFrac: Single; aLoop: Boolean): Integer;
 const
   TREE_INTERP_LOOKUP: array [0..OBJECTS_CNT] of Integer = (
   -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
@@ -252,21 +253,28 @@ const
   -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1);
 var
   A: TKMAnimLoop;
+  InterpOffset: Integer;
 begin
   A := gMapElements[aTree].Anim;
-  if INTERPOLATED_ANIMS and (aTree <= High(TREE_INTERP_LOOKUP)) and (TREE_INTERP_LOOKUP[aTree] > 0) then
-  begin
-    Result := TREE_INTERP_LOOKUP[aTree]
-      + INTERP_LEVEL*(aStep mod Byte(A.Count));
 
-    //For the last step of non-looping animations, skip the interp
-    if aLoop or ((aStep mod Byte(A.Count)) < A.Count-1) then
-      Result := Result + EnsureRange(Floor(INTERP_LEVEL*aStepFrac), 0, INTERP_LEVEL-1);
-  end
-  else
+  if INTERPOLATED_ANIMS and (aTree <= High(TREE_INTERP_LOOKUP)) then
   begin
-    Result := A.Step[aStep mod Byte(A.Count) +1]+1;
+    InterpOffset := TREE_INTERP_LOOKUP[aTree];
+    //While in development disable interpolation if the sprite is missing
+    if (InterpOffset > 0) and (InterpOffset < fRXData[rxTrees].Count) and (fRXData[rxTrees].Size[InterpOffset].X <> 0) then
+    begin
+      Result := TREE_INTERP_LOOKUP[aTree]
+        + INTERP_LEVEL*(aStep mod Byte(A.Count));
+
+      //For the last step of non-looping animations, skip the interp
+      if aLoop or ((aStep mod Byte(A.Count)) < A.Count-1) then
+        Result := Result + EnsureRange(Floor(INTERP_LEVEL*aStepFrac), 0, INTERP_LEVEL-1);
+
+      Exit;
+    end;
   end;
+
+  Result := A.Step[aStep mod Byte(A.Count) +1]+1;
 end;
 
 
@@ -1885,6 +1893,10 @@ begin
   ground := ground + THOUGHT_X_OFFSET;
 
   InterpOffset := GetThoughtInterpSpriteOffset(Thought);
+
+  //While in development disable interpolation if the sprite is missing
+  if (InterpOffset >= 1) and ((InterpOffset >= fRXData[rxUnits].Count) or (fRXData[rxUnits].Size[InterpOffset].X = 0)) then
+    InterpOffset := -1;
 
   // Thought bubbles are animated in reverse
   AnimCount := THOUGHT_BOUNDS[Thought, 2] - THOUGHT_BOUNDS[Thought, 1];
