@@ -2,7 +2,7 @@ unit KM_MapTypes;
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_Defaults, KM_CommonTypes;
+  KM_Defaults, KM_CommonTypes, KM_ResTypes;
 
 type
   TKMapFolder = (mfSP, mfMP, mfDL);
@@ -46,6 +46,9 @@ type
 
 const
   {$I KM_TextIDs.inc}
+
+  GOAL_BUILDINGS_HOUSES: array of TKMHouseType = [htStore, htSchool, htBarracks, htTownHall];
+
   //We discontinue support of other goals in favor of PascalScript scripts
   GOALS_SUPPORTED: set of TKMGoalCondition =
     [gcBuildings, gcTroops, gcMilitaryAssets, gcSerfsAndSchools, gcEconomyBuildings];

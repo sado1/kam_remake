@@ -192,7 +192,7 @@ procedure TKMHandAI.CheckGoals;
       //gcTime is disabled as we process messages in Event system now. Return true so players
       //do not have to wait for all messages to show before they are allowed to win (same in TPR)
       gcTime:              Result := True; //Deprecated
-      gcBuildings:         Result := (Stat.GetHouseQty([htStore, htSchool, htBarracks, htTownHall]) > 0);
+      gcBuildings:         Result := (Stat.GetHouseQty(GOAL_BUILDINGS_HOUSES) > 0);
       gcTroops:            Result := (Stat.GetArmyCount > 0);
       gcMilitaryAssets:    Result := (Stat.GetArmyCount > 0) or
                                       (Stat.GetHouseQty([htBarracks, htCoalMine, htWeaponWorkshop, htArmorWorkshop, htStables,
