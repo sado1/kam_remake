@@ -616,6 +616,8 @@ var
 begin
   Assert(aMaxPxWidth > 0);
 
+  if aText = '' then Exit ('');
+
   dx := 0;
   prevX := 0;
   lastWrappable := -1;

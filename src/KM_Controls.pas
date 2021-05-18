@@ -3634,8 +3634,6 @@ procedure TKMLabel.ReformatText;
 
   procedure Reformat;
   begin
-    if fCaption = '' then Exit;
-    
     if fAutoWrap then
       fText := gRes.Fonts[fFont].WordWrap(fCaption, Width, True, False)
     else
