@@ -55,8 +55,10 @@ uses
   function StrToHex(const S: String): String;
   function HexToStr(const H: String): String;
 
-  function WrapColor(const aText: UnicodeString; aColor: Cardinal): UnicodeString;
+  function WrapColor(aValue: Integer; aColor: Cardinal): UnicodeString; overload;
+  function WrapColor(const aText: UnicodeString; aColor: Cardinal): UnicodeString; overload;
   function WrapColorA(const aText: AnsiString; aColor: Cardinal): AnsiString;
+  function WrapWrappedColor(const aText: UnicodeString; aColor: Cardinal): UnicodeString;
   function StripColor(const aText: UnicodeString): UnicodeString;
   function GetContrastTextColor(aBackgroundColor: Cardinal): Cardinal;
   function FindMPColor(aColor: Cardinal): Integer;
@@ -1061,11 +1063,25 @@ begin
 end;
 
 
+function WrapColor(aValue: Integer; aColor: Cardinal): UnicodeString;
+begin
+  Result := WrapColor(IntToStr(aValue), aColor);
+end;
+
+
 //Make a string wrapped into color code
 function WrapColor(const aText: UnicodeString; aColor: Cardinal): UnicodeString;
 begin
   Result := '[$' + IntToHex(aColor and $00FFFFFF, 6) + ']' + aText + '[]';
 end;
+
+
+// Do not close color tag, its useful for wrapping inside other wrapped colored text
+function WrapWrappedColor(const aText: UnicodeString; aColor: Cardinal): UnicodeString;
+begin
+  Result := '[$' + IntToHex(aColor and $00FFFFFF, 6) + ']' + aText;
+end;
+
 
 
 function WrapColorA(const aText: AnsiString; aColor: Cardinal): AnsiString;
