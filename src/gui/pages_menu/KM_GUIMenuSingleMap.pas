@@ -631,8 +631,8 @@ const
     41,   // gcUnknown0         - Not used/unknown
     39,   // gcBuildTutorial    - Must build a tannery (and other buildings from tutorial?) for it to be true. In KaM tutorial messages will be dispalyed if this is a goal
     592,  // gcTime             - A certain time must pass
-    38,   // + gcBuildings        - Storehouse, school, barracks, TownHall
-    62,   // + gcTroops           - All troops
+    38,   // + (allowed) gcBuildings        - Storehouse, school, barracks, TownHall
+    62,   // + (allowed) gcTroops           - All troops
     41,   // gcUnknown5         - Not used/unknown
     303,  // gcMilitaryAssets   - All Troops, Coal mine, Weapons Workshop, Tannery, Armory workshop, Stables, Iron mine, Iron smithy, Weapons smithy, Armory smithy, Barracks, Town hall and Vehicles Workshop
     141,  // gcSerfsAndSchools  - Serfs (possibly all citizens?) and schoolhouses
