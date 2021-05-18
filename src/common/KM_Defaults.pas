@@ -959,6 +959,7 @@ const
   icLightGreen = $FF00F000;
   icDeepGreen = $FF008000;
   icGreenYellow = $FF00FFBB;
+  icTeal = $FF808000;
 
   icPink = $FFFF00FF;
   icDarkPink = $FFAA00AA;
