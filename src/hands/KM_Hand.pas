@@ -108,6 +108,7 @@ type
     function GetDeliveries: TKMHandLogistics;
     procedure SetHandType(const Value: TKMHandType);
     procedure SetEnabled(const Value: Boolean);
+    function GetFlagTextColor: Cardinal;
   public
 
     InCinematic: Boolean;
@@ -145,6 +146,7 @@ type
     property CanBeHuman: Boolean read fCanBeHuman write fCanBeHuman;
     property CanBeAITypes: TKMAITypeSet read fCanBeAITypes;
     property FlagColor: Cardinal read fFlagColor write SetFlagColor;
+    property FlagTextColor: Cardinal read GetFlagTextColor;
     property TeamColor: Cardinal read fTeamColor write fTeamColor;
     property GameFlagColor: Cardinal read GetGameFlagColor;
     property FlagColorIndex: Byte read GetColorIndex;
@@ -1786,6 +1788,12 @@ begin
       for K := 1 to gTerrain.MapX do
         if gTerrain.Land^[I,K].TileOwner = fID then
           Inc(Result);
+end;
+
+
+function TKMHand.GetFlagTextColor: Cardinal;
+begin
+  Result := FlagColorToTextColor(fFlagColor);
 end;
 
 
