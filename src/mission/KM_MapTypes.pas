@@ -50,11 +50,12 @@ const
   GOALS_SUPPORTED: set of TKMGoalCondition =
     [gcBuildings, gcTroops, gcMilitaryAssets, gcSerfsAndSchools, gcEconomyBuildings];
 
+  // Used for error's logging
   GOAL_CONDITION_STR: array [TKMGoalCondition] of string = (
     'Unknown 0',
     'Build Tannery',
     'Time',
-    'Store School Barracks',
+    'Store School Barracks Townhall',
     'Troops',
     'Unknown 5',
     'Military assets',
