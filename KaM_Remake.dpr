@@ -202,10 +202,10 @@ uses
   KM_MessageStack in 'src\KM_MessageStack.pas',
   KM_Minimap in 'src\KM_Minimap.pas',
 
-  KM_MissionScript in 'src\missionscript\KM_MissionScript.pas',
-  KM_MissionScript_Info in 'src\missionscript\KM_MissionScript_Info.pas',
-  KM_MissionScript_Preview in 'src\missionscript\KM_MissionScript_Preview.pas',
-  KM_MissionScript_Standard in 'src\missionscript\KM_MissionScript_Standard.pas',
+  KM_MissionScript in 'src\mission\KM_MissionScript.pas',
+  KM_MissionScript_Info in 'src\mission\KM_MissionScript_Info.pas',
+  KM_MissionScript_Preview in 'src\mission\KM_MissionScript_Preview.pas',
+  KM_MissionScript_Standard in 'src\mission\KM_MissionScript_Standard.pas',
 
   KM_Music in 'src\KM_Music.pas',
 
