@@ -49,7 +49,7 @@ uses
 function RoundToTilePixel(aVal, aZoom: Single): Single; inline;
 var CellSizeZoomed: Single;
 begin
-  CellSizeZoomed := aZoom * CELL_SIZE_PX;
+  CellSizeZoomed := {aZoom * }CELL_SIZE_PX;
   Result := Round(aVal * CellSizeZoomed) / CellSizeZoomed;
 end;
 
