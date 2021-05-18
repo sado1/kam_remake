@@ -1466,3 +1466,9 @@
 1516:Interpolated render
 1517:Interpolated|render
 1518:Interpolated render hint
+1519:For player %0:s to %1:s player's %2:s %3:s must be %4:s
+1520:win
+1521:survive
+1522:destroyed
+1523:saved
+1524:main buildings ( %s )
