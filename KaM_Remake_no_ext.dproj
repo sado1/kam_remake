@@ -306,10 +306,10 @@
         <DCCReference Include="src\KM_MessageLog.pas"/>
         <DCCReference Include="src\KM_MessageStack.pas"/>
         <DCCReference Include="src\KM_Minimap.pas"/>
-        <DCCReference Include="src\missionscript\KM_MissionScript.pas"/>
-        <DCCReference Include="src\missionscript\KM_MissionScript_Info.pas"/>
-        <DCCReference Include="src\missionscript\KM_MissionScript_Preview.pas"/>
-        <DCCReference Include="src\missionscript\KM_MissionScript_Standard.pas"/>
+        <DCCReference Include="src\mission\KM_MissionScript.pas"/>
+        <DCCReference Include="src\mission\KM_MissionScript_Info.pas"/>
+        <DCCReference Include="src\mission\KM_MissionScript_Preview.pas"/>
+        <DCCReference Include="src\mission\KM_MissionScript_Standard.pas"/>
         <DCCReference Include="src\KM_Music.pas"/>
         <DCCReference Include="src\navmesh\KM_Outline.pas"/>
         <DCCReference Include="src\navmesh\KM_NavMesh.pas"/>
