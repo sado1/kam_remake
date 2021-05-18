@@ -31,6 +31,7 @@ type
     fDifficulty: TKMMissionDifficulty;
     fAIType: TKMAIType;
 
+    function GetPlayerLoc(aMap: TKMapInfo): TKMHandID;
     function GetPanelHalf: Integer;
 
     procedure Create_SingleMap(aParent: TKMPanel);
@@ -71,12 +72,16 @@ type
         DropBox_AIPlayerType: TKMDropList;
         Image_Allies: array [0..MAX_HANDS-1] of TKMImage;
         Image_Enemies: array [0..MAX_HANDS-1] of TKMImage;
-        Image_VictGoal: array [0..MAX_UI_GOALS-1] of TKMImage;
-        Label_VictGoal: array [0..MAX_UI_GOALS-1] of TKMLabel;
-        Image_VictGoalSt: array [0..MAX_UI_GOALS-1] of TKMImage;
-        Image_SurvGoal: array [0..MAX_UI_GOALS-1] of TKMImage;
-        Label_SurvGoal: array [0..MAX_UI_GOALS-1] of TKMLabel;
-        Image_SurvGoalSt: array [0..MAX_UI_GOALS-1] of TKMImage;
+        Panel_VictGoal: array [0..MAX_UI_GOALS-1] of TKMPanel;
+          Bevel_VictGoal: array [0..MAX_UI_GOALS-1] of TKMBevel;
+          Image_VictGoal: array [0..MAX_UI_GOALS-1] of TKMImage;
+          Label_VictGoal: array [0..MAX_UI_GOALS-1] of TKMLabel;
+          Image_VictGoalSt: array [0..MAX_UI_GOALS-1] of TKMImage;
+        Panel_SurvGoal: array [0..MAX_UI_GOALS-1] of TKMPanel;
+          Bevel_SurvGoal: array [0..MAX_UI_GOALS-1] of TKMBevel;
+          Image_SurvGoal: array [0..MAX_UI_GOALS-1] of TKMImage;
+          Label_SurvGoal: array [0..MAX_UI_GOALS-1] of TKMLabel;
+          Image_SurvGoalSt: array [0..MAX_UI_GOALS-1] of TKMImage;
       ColumnBox_Maps: TKMColumnBox;
       Button_Back, Button_Start: TKMButton;
       Button_SetupReadme: TKMButton;
@@ -93,7 +98,7 @@ type
 
 implementation
 uses
-  KM_ResTexts, KM_CommonUtils, KM_RenderUI, KM_ResFonts, KM_GameSettings;
+  KM_ResTexts, KM_CommonUtils, KM_RenderUI, KM_ResFonts, KM_GameSettings, KM_MapUtils;
 
 const
   PAD_VERT = 44; //Padding from top/bottom
@@ -136,6 +141,12 @@ begin
 end;
 
 
+function TKMMenuSingleMap.GetPlayerLoc(aMap: TKMapInfo): TKMHandID;
+begin
+  Result := IfThen(fSingleLoc = -1, aMap.DefaultHuman, fSingleLoc);
+end;
+
+
 function TKMMenuSingleMap.GetPanelHalf: Integer;
 begin
   Result := (Panel_Single.Width - PAD_SIDE) div 2 - PAD_SIDE;
@@ -148,6 +159,7 @@ var
   half, descL, buttonW: Word; //Half width for panes
   L: TKMLabel;
   B: TKMBevel;
+  backCol: TKMColor4f;
 begin
   Panel_Single := TKMPanel.Create(aParent, 0, 0, aParent.Width, aParent.Height);
   Panel_Single.AnchorsStretch;
@@ -255,23 +267,34 @@ begin
       B.Anchors := [anLeft, anBottom];
       L := TKMLabel.Create(Panel_Desc, 4, 568, 190, 30, gResTexts[TX_MENU_DEFEAT_CONDITION], fntMetal, taLeft);
       L.Anchors := [anLeft, anBottom];
+      backCol := TKMColor4f.New(50, 40, 25);
       for I := 0 to MAX_UI_GOALS - 1 do
       begin
-        Image_VictGoal[I] := TKMImage.Create(Panel_Desc, 200 + I*35, 530, 30, 30, 41);
-        Image_VictGoal[I].Anchors := [anLeft, anBottom];
-        Image_VictGoal[I].ImageCenter;
-        Label_VictGoal[I] := TKMLabel.Create(Panel_Desc, 215 + I*35, 535, '', fntGrey, taCenter);
-        Label_VictGoal[I].Anchors := [anLeft, anBottom];
-        Image_VictGoalSt[I] := TKMImage.Create(Panel_Desc, 217 + I*35, 545, 20, 20, 371, rxGui);
-        Image_VictGoalSt[I].Anchors := [anLeft, anBottom];
+        Panel_VictGoal[I] := TKMPanel.Create(Panel_Desc, 200 + I*35, 530, 35, 35);
+        Panel_VictGoal[I].Anchors := [anLeft, anBottom];
+          Image_VictGoal[I] := TKMImage.Create(Panel_VictGoal[I], 0, 0, 30, 30, 41);
+          Image_VictGoal[I].ImageCenter;
+          Label_VictGoal[I] := TKMLabel.Create(Panel_VictGoal[I], 15, 5, '', fntGrey, taCenter);
+          Image_VictGoalSt[I] := TKMImage.Create(Panel_VictGoal[I], 17, 15, 20, 20, 371, rxGui);
+          // Bevel used just for a unified hint when hover over any goal part
+          // Thus its added last
+          Bevel_VictGoal[I] := TKMBevel.Create(Panel_VictGoal[I], 0, 0, Panel_VictGoal[I].Width, Panel_VictGoal[I].Height);
+          Bevel_VictGoal[I].BackAlpha := 0;
+          Bevel_VictGoal[I].EdgeAlpha := 0;
+          Bevel_VictGoal[I].HintBackColor := backCol;
 
-        Image_SurvGoal[I] := TKMImage.Create(Panel_Desc, 200 + I*35, 560, 30, 30, 41);
-        Image_SurvGoal[I].Anchors := [anLeft, anBottom];
-        Image_SurvGoal[I].ImageCenter;
-        Label_SurvGoal[I] := TKMLabel.Create(Panel_Desc, 215 + I*35, 565, '', fntGrey, taCenter);
-        Label_SurvGoal[I].Anchors := [anLeft, anBottom];
-        Image_SurvGoalSt[I] := TKMImage.Create(Panel_Desc, 218 + I*35, 575, 20, 20, 44, rxGui);
-        Image_SurvGoalSt[I].Anchors := [anLeft, anBottom];
+        Panel_SurvGoal[I] := TKMPanel.Create(Panel_Desc, 200 + I*35, 560, 35, 35);
+        Panel_SurvGoal[I].Anchors := [anLeft, anBottom];
+          Image_SurvGoal[I] := TKMImage.Create(Panel_SurvGoal[I], 0, 0, 30, 30, 41);
+          Image_SurvGoal[I].ImageCenter;
+          Label_SurvGoal[I] := TKMLabel.Create(Panel_SurvGoal[I], 15, 5, '', fntGrey, taCenter);
+          Image_SurvGoalSt[I] := TKMImage.Create(Panel_SurvGoal[I], 18, 15, 20, 20, 44, rxGui);
+          // Bevel used just for a unified hint when hover over any goal part
+          // Thus its added last
+          Bevel_SurvGoal[I] := TKMBevel.Create(Panel_SurvGoal[I], 0, 0, Panel_SurvGoal[I].Width, Panel_SurvGoal[I].Height);
+          Bevel_SurvGoal[I].BackAlpha := 0;
+          Bevel_SurvGoal[I].EdgeAlpha := 0;
+          Bevel_SurvGoal[I].HintBackColor := backCol;
       end;
 
       //Alliances
@@ -583,12 +606,8 @@ begin
   //Clear all so that later we fill only used
   for I := 0 to MAX_UI_GOALS - 1 do
   begin
-    Image_VictGoal[I].TexID := 0;
-    Label_VictGoal[I].Caption := '';
-    Image_VictGoalSt[I].Hide;
-    Image_SurvGoal[I].TexID := 0;
-    Label_SurvGoal[I].Caption := '';
-    Image_SurvGoalSt[I].Hide;
+    Panel_VictGoal[I].Hide;
+    Panel_SurvGoal[I].Hide;
   end;
   for I := 0 to MAX_HANDS - 1 do
   begin
@@ -674,6 +693,12 @@ begin
       Image_VictGoal[I].FlagColor := fSingleColor;
       Image_VictGoalSt[I].Show;
       Label_VictGoal[I].Caption := IntToStr(G.Play + 1);
+      Bevel_VictGoal[I].Hint := GetGoalDescription(GetPlayerLoc(M), G.Play,
+                                                   gltVictory, G.Cond,
+                                                   FlagColorToTextColor(fSingleColor),
+                                                   FlagColorToTextColor(M.FlagColors[G.Play]),
+                                                   icRoyalYellow, icLightOrange);
+      Panel_VictGoal[I].Show;
     end;
     for I := 0 to Min(MAX_UI_GOALS, M.GoalsSurviveCount[fSingleLoc]) - 1 do
     begin
@@ -682,6 +707,12 @@ begin
       Image_SurvGoal[I].FlagColor := fSingleColor;
       Image_SurvGoalSt[I].Show;
       Label_SurvGoal[I].Caption := IntToStr(G.Play + 1);
+      Bevel_SurvGoal[I].Hint := GetGoalDescription(GetPlayerLoc(M), G.Play,
+                                                   gltSurvive, G.Cond,
+                                                   FlagColorToTextColor(fSingleColor),
+                                                   FlagColorToTextColor(M.FlagColors[G.Play]),
+                                                   icRoyalYellow, icLightOrange);
+      Panel_SurvGoal[I].Show;
     end;
 
     // Populate alliances section
