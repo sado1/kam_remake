@@ -855,7 +855,8 @@ type
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont);
 
     procedure Add(const aText: String; aEnabled: Boolean = True); overload;
-    procedure Add(const aText, aHint: String; aEnabled: Boolean = True); overload;
+    procedure Add(const aText: String; aEnabled, aVisible: Boolean); overload;
+    procedure Add(const aText, aHint: String; aEnabled: Boolean = True; aVisible: Boolean = True); overload;
     procedure Clear;
     property Count: Integer read fCount;
     property IsSelected: Boolean read GetIsSelected;
@@ -4901,7 +4902,13 @@ begin
 end;
 
 
-procedure TKMRadioGroup.Add(const aText, aHint: String; aEnabled: Boolean = True);
+procedure TKMRadioGroup.Add(const aText: String; aEnabled, aVisible: Boolean);
+begin
+  Add(aText, '', aEnabled, aVisible);
+end;
+
+
+procedure TKMRadioGroup.Add(const aText, aHint: String; aEnabled: Boolean = True; aVisible: Boolean = True);
 begin
   if fCount >= Length(fItems) then
     SetLength(fItems, fCount + 8);
@@ -4909,7 +4916,7 @@ begin
   fItems[fCount].Text := aText;
   fItems[fCount].Hint := aHint;
   fItems[fCount].Enabled := aEnabled;
-  fItems[fCount].Visible := True;
+  fItems[fCount].Visible := aVisible;
 
   Inc(fCount);
 end;
