@@ -70,7 +70,7 @@ begin
         ColumnBox_OptionsKeys.Anchors := [anLeft,anTop,anBottom];
         ColumnBox_OptionsKeys.ShowLines := True;
         ColumnBox_OptionsKeys.ShowHintWhenShort := True;
-        ColumnBox_OptionsKeys.HintBackColor := TKMColor3f.NewB(57, 48, 50); // Dark grey
+        ColumnBox_OptionsKeys.HintBackColor := TKMColor4f.New(57, 48, 50); // Dark grey
         ColumnBox_OptionsKeys.PassAllKeys := True;
         ColumnBox_OptionsKeys.OnChange := KeysClick;
         ColumnBox_OptionsKeys.OnKeyUp := KeysUpdate;

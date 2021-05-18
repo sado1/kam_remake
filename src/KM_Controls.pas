@@ -131,7 +131,7 @@ type
     fControlIndex: Integer; //Index number of this control in his Parent's (TKMPanel) collection
     fID: Integer; //Control global ID
     fHint: UnicodeString; //Text that shows up when cursor is over that control, mainly for Buttons
-    fHintBackColor: TKMColor3f; //Hint background color
+    fHintBackColor: TKMColor4f; //Hint background color
     fMouseWheelStep: Integer;
 
     fPaintLayer: Integer;
@@ -234,12 +234,12 @@ type
     function GetHintKind: TKMHintKind; virtual;
     function GetHintFont: TKMFont; virtual;
     function IsHintSelected: Boolean; virtual;
-    function GetHintBackColor: TKMColor3f; virtual;
+    function GetHintBackColor: TKMColor4f; virtual;
     function GetHintTextColor: TColor4; virtual;
     function GetHintBackRect: TKMRect; virtual;
     function GetHintTextOffset: TKMPoint; virtual;
     procedure SetHint(const aHint: UnicodeString); virtual;
-    procedure SetHintBackColor(const aValue: TKMColor3f); virtual;
+    procedure SetHintBackColor(const aValue: TKMColor4f); virtual;
 
     procedure SetPaintLayer(aPaintLayer: Integer);
 
@@ -287,7 +287,7 @@ type
     property HintKind: TKMHintKind read GetHintKind;
     property HintFont: TKMFont read GetHintFont;
     property HintSelected: Boolean read IsHintSelected;
-    property HintBackColor: TKMColor3f read GetHintBackColor write SetHintBackColor;
+    property HintBackColor: TKMColor4f read GetHintBackColor write SetHintBackColor;
     property HintTextColor: TColor4 read GetHintTextColor;
     property HintBackRect: TKMRect read GetHintBackRect;
     property HintTextOffset: TKMPoint read GetHintTextOffset;
@@ -2168,7 +2168,7 @@ begin
   fVisible      := True;
   Tag           := 0;
   fHint         := '';
-  fHintBackColor := COLOR3F_BLACK;
+  fHintBackColor := TKMColor4f.New(0, 0, 0, 0.7); // Black with 0.7 alpha
   fMouseWheelStep := 1;
   fPaintLayer   := aPaintLayer;
   fControlIndex := -1;
@@ -2380,13 +2380,13 @@ begin
 end;
 
 
-procedure TKMControl.SetHintBackColor(const aValue: TKMColor3f);
+procedure TKMControl.SetHintBackColor(const aValue: TKMColor4f);
 begin
   fHintBackColor := aValue;
 end;
 
 
-function TKMControl.GetHintBackColor: TKMColor3f;
+function TKMControl.GetHintBackColor: TKMColor4f;
 begin
   Result := fHintBackColor;
 end;
