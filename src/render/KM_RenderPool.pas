@@ -94,7 +94,7 @@ type
     procedure RenderSprite(aRX: TRXType; aId: Integer; pX,pY: Single; Col: TColor4; DoHighlight: Boolean = False;
                            HighlightColor: TColor4 = 0; aForced: Boolean = False);
     procedure RenderSpriteAlphaTest(aRX: TRXType; aId: Integer; aWoodProgress: Single; pX, pY: Single; aId2: Integer = 0; aStoneProgress: Single = 0; X2: Single = 0; Y2: Single = 0);
-    procedure RenderMapElement1(aIndex: Word; AnimStep: Cardinal; LocX,LocY: Integer; DoImmediateRender: Boolean = False; Deleting: Boolean = False);
+    procedure RenderMapElement1(aIndex: Word; AnimStep: Cardinal; LocX,LocY: Integer; aLoopAnim: Boolean; DoImmediateRender: Boolean = False; Deleting: Boolean = False);
     procedure RenderMapElement4(aIndex: Word; AnimStep: Cardinal; pX,pY: Integer; IsDouble: Boolean; DoImmediateRender: Boolean = False; Deleting: Boolean = False);
     procedure RenderHouseOutline(aHouseSketch: TKMHouseSketch; aCol: Cardinal = icCyan);
 
@@ -214,6 +214,59 @@ begin
   gRenderAux.Free;
 
   inherited;
+end;
+
+
+function GetThoughtInterpSpriteOffset(aTh: TKMUnitThought): Integer;
+const THOUGHT_INTERP_LOOKUP: array[TKMUnitThought] of Integer = (
+  -1,90156,90220,90284,90348,90412,90476,90540,90604
+);
+begin
+  if INTERPOLATED_ANIMS then
+  begin
+    Result := THOUGHT_INTERP_LOOKUP[aTh];
+  end
+  else
+    Result := -1;
+end;
+
+
+function GetTreeAnimSprite(aTree, aStep: Integer; aStepFrac: Single; aLoop: Boolean): Integer;
+const
+  TREE_INTERP_LOOKUP: array [0..OBJECTS_CNT] of Integer = (
+  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+  -1,-1,-1,-1,-1,260,388,516,644,772,868,964,-1,964,-1,-1,
+  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+  -1,-1,-1,-1,-1,-1,-1,1060,1124,1188,1252,1412,1460,1524,1588,1652,
+  1060,1124,1188,1812,1876,1060,1124,1188,2036,2100,1060,1124,2260,2324,2388,2548,
+  2596,2692,2788,2548,2596,2692,2948,3044,1412,3204,3268,3332,3396,-1,-1,-1,
+  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+  -1,-1,-1,-1,3556,3628,3676,3740,3556,3628,3900,3964,3556,3628,3900,4124,
+  4188,3556,3628,3676,4348,4412,3556,3628,3676,4572,4412,4636,-1,-1,-1,-1,
+  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+  -1,-1,-1,-1,-1,-1,-1,4700,4796,4892,4988,5084,5180,5276,-1,-1,
+  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1);
+var
+  A: TKMAnimLoop;
+begin
+  A := gMapElements[aTree].Anim;
+  if INTERPOLATED_ANIMS and (aTree <= High(TREE_INTERP_LOOKUP)) and (TREE_INTERP_LOOKUP[aTree] > 0) then
+  begin
+    Result := TREE_INTERP_LOOKUP[aTree]
+      + INTERP_LEVEL*(aStep mod Byte(A.Count));
+
+    //For the last step of non-looping animations, skip the interp
+    if aLoop or ((aStep mod Byte(A.Count)) < A.Count-1) then
+      Result := Result + EnsureRange(Floor(INTERP_LEVEL*aStepFrac), 0, INTERP_LEVEL-1);
+  end
+  else
+  begin
+    Result := A.Step[aStep mod Byte(A.Count) +1]+1;
+  end;
 end;
 
 
@@ -1202,7 +1255,7 @@ begin
   with gTerrain do
     for I := 0 to FallingTrees.Count - 1 do
     begin
-      RenderMapElement1(FallingTrees.Tag[I], aAnimStep - FallingTrees.Tag2[I], FallingTrees[I].X, FallingTrees[I].Y);
+      RenderMapElement1(FallingTrees.Tag[I], aAnimStep - FallingTrees.Tag2[I], FallingTrees[I].X, FallingTrees[I].Y, False);
       Assert(AnimStep - FallingTrees.Tag2[I] <= 100, 'Falling tree overrun?');
     end;
 
@@ -1282,11 +1335,11 @@ begin
   if gMapElements[aIndex].WineOrCorn then
     RenderMapElement4(aIndex,AnimStep,pX,pY,(aIndex in [54..57]),DoImmediateRender,Deleting) // 54..57 are grapes, all others are doubles
   else
-    RenderMapElement1(aIndex,AnimStep,pX,pY,DoImmediateRender,Deleting);
+    RenderMapElement1(aIndex,AnimStep,pX,pY,True,DoImmediateRender,Deleting);
 end;
 
 
-procedure TRenderPool.RenderMapElement1(aIndex: Word; AnimStep: Cardinal; LocX,LocY: Integer; DoImmediateRender: Boolean = False; Deleting: Boolean = False);
+procedure TRenderPool.RenderMapElement1(aIndex: Word; AnimStep: Cardinal; LocX,LocY: Integer; aLoopAnim: Boolean; DoImmediateRender: Boolean = False; Deleting: Boolean = False);
 var
   R: TRXData;
   pX, pY: Integer;
@@ -1318,7 +1371,7 @@ begin
       if FOW <= 128 then AnimStep := 0; // Stop animation
     end;
     A := gMapElements[aIndex].Anim;
-    Id := A.Step[AnimStep mod Byte(A.Count) +1]+1;
+    Id := GetTreeAnimSprite(aIndex, AnimStep, gGameParams.TickFrac, aLoopAnim);
     Id0 := A.Step[1] + 1;
     if Id <= 0 then exit;
 
@@ -1349,7 +1402,7 @@ var
     A: TKMAnimLoop;
   begin
     A := gMapElements[aIndex].Anim;
-    Id := A.Step[aAnimStep mod Byte(A.Count) + 1] + 1;
+    Id := GetTreeAnimSprite(aIndex, AnimStep, gGameParams.TickFrac, True);
     Id0 := A.Step[1] + 1;
 
     gX := pX + (R.Pivot[Id0].X + R.Size[Id0].X/2) / CELL_SIZE_PX;
@@ -1812,11 +1865,12 @@ procedure TRenderPool.AddUnitThought(aUnit: TKMUnitType; aAct: TKMUnitActionType
                                      aDir: TKMDirection;
                                      Thought: TKMUnitThought; pX,pY: Single);
 var
-  Id: Integer;
+  Id, InterpOffset: Integer;
   cornerX, cornerY, ground: Single;
   R: TRXData;
   A: TKMAnimLoop;
   id0: Integer;
+  AnimCount: Word;
 begin
   if Thought = thNone then Exit;
   R := fRXData[rxUnits];
@@ -1830,9 +1884,21 @@ begin
   // The thought should be slightly lower than the unit so it goes OVER warrior flags
   ground := ground + THOUGHT_X_OFFSET;
 
+  InterpOffset := GetThoughtInterpSpriteOffset(Thought);
+
   // Thought bubbles are animated in reverse
-  Id := THOUGHT_BOUNDS[Thought, 2] + 1 -
-       (gGameParams.Tick mod Word(THOUGHT_BOUNDS[Thought, 2] - THOUGHT_BOUNDS[Thought, 1]));
+  AnimCount := THOUGHT_BOUNDS[Thought, 2] - THOUGHT_BOUNDS[Thought, 1];
+  if InterpOffset > 0 then
+  begin
+    Id := InterpOffset + (AnimCount-1)*INTERP_LEVEL
+      - INTERP_LEVEL*(gGameParams.Tick mod AnimCount)
+      + EnsureRange(Floor(INTERP_LEVEL*(1.0-gGameParams.TickFrac)), 0, INTERP_LEVEL-1);
+  end
+  else
+  begin
+    Id := THOUGHT_BOUNDS[Thought, 2] + 1 -
+         (gGameParams.Tick mod AnimCount);
+  end;
 
   cornerX := pX + R.Pivot[Id].X / CELL_SIZE_PX;
   cornerY := gTerrain.RenderFlatToHeight(pX, pY) + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX - 1.5;
