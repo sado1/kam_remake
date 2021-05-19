@@ -46,8 +46,6 @@ uses
   KM_Supervisor in 'src\ai\newAI\KM_Supervisor.pas',
   KM_AIParameters in 'src\ai\newAI\KM_AIParameters.pas',
 
-  KM_Alerts in 'src\KM_Alerts.pas',
-
   KM_Console in 'src\KM_Console.pas',
   KM_CommonClasses in 'src\common\KM_CommonClasses.pas',
   KM_CommonClassesExt in 'src\common\KM_CommonClassesExt.pas',
@@ -80,6 +78,10 @@ uses
   KM_GameParams in 'src\game\KM_GameParams.pas',
   KM_GameSavePoints in 'src\game\KM_GameSavePoints.pas',
   KM_GameUIDTracker in 'src\game\KM_GameUIDTracker.pas',
+  KM_Alerts in 'src\game\notifications\KM_Alerts.pas',
+  KM_MessageLog in 'src\game\notifications\KM_MessageLog.pas',
+  KM_MessageStack in 'src\game\notifications\KM_MessageStack.pas',
+  
   
   KM_GameInputProcess in 'src\game\KM_GameInputProcess.pas',
   KM_GameInputProcess_Multi in 'src\game\KM_GameInputProcess_Multi.pas',
@@ -190,8 +192,6 @@ uses
   KM_InterfaceTypes in 'src\gui\KM_InterfaceTypes.pas',
   KM_Log in 'src\KM_Log.pas',
   KM_Main in 'src\KM_Main.pas',
-  KM_MessageLog in 'src\KM_MessageLog.pas',
-  KM_MessageStack in 'src\KM_MessageStack.pas',
   
   KM_Campaigns in 'src\mission\KM_Campaigns.pas',
   KM_CampaignTypes in 'src\mission\KM_CampaignTypes.pas',
