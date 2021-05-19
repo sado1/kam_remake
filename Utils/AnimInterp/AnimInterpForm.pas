@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
   KM_ResPalettes, KM_Defaults, KM_CommonTypes, KM_Points, KM_ResSprites, KM_ResSpritesEdit, KM_Pics, KM_ResUnits,
-  KM_ResTypes, KM_ResMapElements;
+  KM_ResTypes, KM_ResMapElements, KM_ResHouses;
 
 type
   TAnimCacheItem = record
@@ -23,12 +23,14 @@ type
     chkUnitActions: TCheckBox;
     chkUnitThoughts: TCheckBox;
     chkTrees: TCheckBox;
+    chkHouseActions: TCheckBox;
     procedure btnProcessClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
     fPalettes: TKMResPalettes;
     fResUnits: TKMResUnits;
+    fResHouses: TKMResHouses;
     fResMapElem: TKMResMapElements;
     fSprites: array[TRXType] of TKMSpritePackEdit;
 
@@ -46,6 +48,7 @@ type
     function DoInterpSerfCarry(aWare: TKMWareType; aDir: TKMDirection; var aPicOffset: Integer; aDryRun: Boolean): Integer;
     function DoInterpUnitThought(aThought: TKMUnitThought; var aPicOffset: Integer; aDryRun: Boolean): Integer;
     function DoInterpTree(aTree: Integer; var aPicOffset: Integer; aDryRun: Boolean): Integer;
+    function DoInterpHouseAction(aHT: TKMHouseType; aHouseAct: TKMHouseActionType; var aPicOffset: Integer; aDryRun: Boolean): Integer;
   public
     { Public declarations }
   end;
@@ -56,7 +59,7 @@ var
 implementation
 uses
   ShellApi, Math, RTTI, KM_FileIO, KromUtils,
-  KM_ResHouses, KM_Log, KM_PNG, KM_ResWares;
+  KM_Log, KM_PNG, KM_ResWares;
 
 const
   CANVAS_Y_OFFSET = 14;
@@ -111,6 +114,7 @@ begin
   fPalettes.LoadPalettes(ExeDir + 'data\gfx\');
 
   fResUnits := TKMResUnits.Create;
+  fResHouses := TKMResHouses.Create;
   fResMapElem := TKMResMapElements.Create;
   fResMapElem.LoadFromFile(ExeDir + 'data' + PathDelim + 'defines' + PathDelim + 'mapelem.dat');
 
@@ -492,6 +496,22 @@ begin
 end;
 
 
+function TForm1.DoInterpHouseAction(aHT: TKMHouseType; aHouseAct: TKMHouseActionType; var aPicOffset: Integer; aDryRun: Boolean): Integer;
+var
+  A: TKMAnimLoop;
+begin
+  if not (aHT in [HOUSE_MIN..HOUSE_MAX]) then
+    Exit(-1);
+
+  A := fResHouses.HouseDat[aHT].Anim[aHouseAct];
+
+  if (A.Count <= 1) or (A.Step[1] = -1) then
+    Exit(-1);
+
+  Result := DoInterp(rxHouses, A, $000000, aPicOffset, aDryRun);
+end;
+
+
 procedure TForm1.btnProcessClick(Sender: TObject);
 var
   I, picOffset, animPicOffset: Integer;
@@ -500,10 +520,13 @@ var
   u: TKMUnitType;
   ware: TKMWareType;
   th: TKMUnitThought;
+  h: TKMHouseType;
+  hAct: TKMHouseActionType;
   animData: string;
 const
   UNITS_RX_OFFSET = 9300;
   TREES_RX_OFFSET = 260;
+  HOUSES_RX_OFFSET = 2100;
 begin
   picOffset := UNITS_RX_OFFSET;
 
@@ -633,6 +656,41 @@ begin
   end;
   animData := animData + ');';
 
+
+  picOffset := HOUSES_RX_OFFSET;
+
+  animData := animData + #13#10 + #13#10;
+  animData := animData + 'HOUSE_INTERP_LOOKUP: array[TKMHouseType, TKMHouseActionType] of Integer = ('+#13#10;
+
+  for h := Low(TKMHouseType) to High(TKMHouseType) do
+  begin
+    animData := animData + '  (';
+    for hAct := Low(TKMHouseActionType) to High(TKMHouseActionType) do
+    begin
+      try
+        animPicOffset := DoInterpHouseAction(h, hAct, picOffset, not chkHouseActions.Checked);
+      except
+        on E: Exception do
+        begin
+          memoErrors.Text := memoErrors.Text + TRttiEnumerationType.GetName(h) + ' - ' + TRttiEnumerationType.GetName(hAct) + ' - ' + E.Message + #13#10;
+          animPicOffset := -1;
+        end;
+      end;
+
+      if animPicOffset >= 0 then
+        animData := animData + IntToStr(animPicOffset)
+      else
+        animData := animData + '-1';
+
+      if hAct <> High(TKMHouseActionType) then
+        animData := animData + ',';
+    end;
+    animData := animData + ')';
+    if h <> High(TKMHouseType) then
+      animData := animData + ',';
+    animData := animData+' // '+TRttiEnumerationType.GetName(h)+#13#10;
+  end;
+  animData := animData + ');';
 
 
   Memo1.Text := animData;

@@ -2,7 +2,7 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = 'KMR Animation Interpolator'
-  ClientHeight = 618
+  ClientHeight = 629
   ClientWidth = 753
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -23,7 +23,7 @@ object Form1: TForm1
   end
   object btnProcess: TButton
     Left = 8
-    Top = 115
+    Top = 123
     Width = 105
     Height = 25
     Caption = 'Process'
@@ -32,7 +32,7 @@ object Form1: TForm1
   end
   object Memo1: TMemo
     Left = 8
-    Top = 147
+    Top = 155
     Width = 737
     Height = 233
     Lines.Strings = (
@@ -41,7 +41,7 @@ object Form1: TForm1
   end
   object memoErrors: TMemo
     Left = 8
-    Top = 411
+    Top = 419
     Width = 737
     Height = 199
     Lines.Strings = (
@@ -79,5 +79,13 @@ object Form1: TForm1
     Height = 17
     Caption = 'Trees'
     TabOrder = 6
+  end
+  object chkHouseActions: TCheckBox
+    Left = 8
+    Top = 100
+    Width = 97
+    Height = 17
+    Caption = 'House actions'
+    TabOrder = 7
   end
 end
