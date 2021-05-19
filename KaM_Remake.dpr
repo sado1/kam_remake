@@ -47,7 +47,6 @@ uses
   KM_AIParameters in 'src\ai\newAI\KM_AIParameters.pas',
 
   KM_Alerts in 'src\KM_Alerts.pas',
-  KM_Audio in 'src\KM_Audio.pas',
   KM_Campaigns in 'src\KM_Campaigns.pas',
   KM_CampaignTypes in 'src\KM_CampaignTypes.pas',
 
@@ -207,8 +206,12 @@ uses
   KM_MapEditor in 'src\maped\KM_MapEditor.pas',
   KM_MapEditorHistory in 'src\maped\KM_MapEditorHistory.pas',
   KM_MapEdTypes in 'src\maped\KM_MapEdTypes.pas',
-
-  KM_Music in 'src\KM_Music.pas',
+  
+  KM_Audio in 'src\media\KM_Audio.pas',
+  KM_Music in 'src\media\KM_Music.pas',
+  KM_Sound in 'src\media\KM_Sound.pas',
+  KM_Video in 'src\media\KM_Video.pas',
+  KM_VLC in 'src\media\KM_VLC.pas',
 
   KM_Outline in 'src\navmesh\KM_Outline.pas',
   KM_NavMesh in 'src\navmesh\KM_NavMesh.pas',
@@ -300,7 +303,6 @@ uses
   KM_ScriptingUtils in 'src\scripting\KM_ScriptingUtils.pas',
 
   KM_ServerQuery in 'src\net\KM_ServerQuery.pas',
-  KM_Sound in 'src\KM_Sound.pas',
   
   KM_Settings in 'src\settings\KM_Settings.pas',  
   KM_GameAppSettings in 'src\settings\KM_GameAppSettings.pas',  
@@ -373,8 +375,6 @@ uses
 
   KM_Viewport in 'src\KM_Viewport.pas',
   KM_WareDistribution in 'src\KM_WareDistribution.pas',
-  KM_Video in 'src\KM_Video.pas',
-  KM_VLC in 'src\utils\KM_VLC.pas',
   KM_WindowParams in 'src\utils\KM_WindowParams.pas';
 
   //KM_PerfLog in 'src\unused\KM_PerfLog.pas', //unused
