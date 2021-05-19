@@ -86,8 +86,6 @@ type
     chkLogShowInChat: TCheckBox;
     chkUIControlsID: TCheckBox;
     Debug_ShowLogistics: TMenuItem;
-    chkShowTerrainIds: TCheckBox;
-    chkShowTerrainKinds: TCheckBox;
     UnitAnim_All: TMenuItem;
     N3: TMenuItem;
     Soldiers: TMenuItem;
@@ -98,22 +96,16 @@ type
     SaveDialog1: TSaveDialog;
     chkLogCommands: TCheckBox;
     ScriptData1: TMenuItem;
-    chkTilesGrid: TCheckBox;
     N6: TMenuItem;
     GameStats: TMenuItem;
     ExportGameStats: TMenuItem;
     ValidateGameStats: TMenuItem;
     chkLogRngChecks: TCheckBox;
-    chkShowGameTick: TCheckBox;
     chkSkipRender: TCheckBox;
     chkSkipSound: TCheckBox;
-    chkUIDs: TCheckBox;
     chkShowSoil: TCheckBox;
     chkShowFlatArea: TCheckBox;
     chkShowEyeRoutes: TCheckBox;
-    chkSelectedObjInfo: TCheckBox;
-    chkShowFPS: TCheckBox;
-    chkHands: TCheckBox;
     {$IFDEF WDC}
     mainGroup: TCategoryPanelGroup;
     cpGameControls: TCategoryPanel;
@@ -209,10 +201,26 @@ type
     Debug_UnlockCmpMissions: TMenuItem;
     N11: TMenuItem;
     mnExportRngChecks: TMenuItem;
-    chkGIP: TCheckBox;
     chkLogShowInGUI: TCheckBox;
     chkLogUpdateForGUI: TCheckBox;
     chkCursorCoordinates: TCheckBox;
+    cpDebugOutput: TCategoryPanel;
+    chkUIDs: TCheckBox;
+    chkSelectedObjInfo: TCheckBox;
+    chkHands: TCheckBox;
+    chkGIP: TCheckBox;
+    chkShowFPS: TCheckBox;
+    chkShowGameTick: TCheckBox;
+    CategoryPanel1: TCategoryPanel;
+    chkShowTerrainIds: TCheckBox;
+    chkShowTerrainKinds: TCheckBox;
+    chkTilesGrid: TCheckBox;
+    gbDebugLayers: TGroupBox;
+    chkDebugLayerBase: TCheckBox;
+    chkDebugLayer1: TCheckBox;
+    chkDebugLayer2: TCheckBox;
+    chkDebugLayer3: TCheckBox;
+    chkDebugLayers: TCheckBox;
 
 
     procedure FormCreate(Sender: TObject);
@@ -1493,6 +1501,18 @@ begin
     SHOW_HANDS_INFO := chkHands.Checked;
 
     {$IFDEF WDC} //one day update .lfm for lazarus...
+    DO_DEBUG_TER_LAYERS := chkDebugLayers.Checked;
+    gbDebugLayers.Enabled := chkDebugLayers.Checked;
+
+    DEBUG_TERRAIN_LAYERS := [];
+    for I := 0 to gbDebugLayers.ControlCount - 1 do
+    begin
+      Assert(gbDebugLayers.Controls[I] is TCheckBox);
+      // Refill in DEBUG_LAYERS set
+      if TCheckBox(gbDebugLayers.Controls[I]).Checked then
+        DEBUG_TERRAIN_LAYERS := DEBUG_TERRAIN_LAYERS + [gbDebugLayers.Controls[I].Tag];
+    end;
+
     SHOW_JAM_METER := chkJamMeter.Checked;
     SHOW_TILE_OBJECT_ID := chkTileObject.Checked;
     SHOW_TILES_OWNER := chkTileOwner.Checked;

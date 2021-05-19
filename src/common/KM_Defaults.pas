@@ -172,6 +172,9 @@ var
   SHOW_GAME_TICK          :Boolean = DEBUG_CFG; //Show game tick next to game time
   SHOW_FPS                :Boolean = False; //Show FPS
   SHOW_TERRAIN_IDS        :Boolean = False; //Show number of every tile terrain on it (also show layers terrain ids)
+  DO_DEBUG_TER_LAYERS     :Boolean = False; //Do we do debug terrain layers? If yes, then only chosen terrain layers will be rendered
+  DEBUG_TERRAIN_LAYERS    :set of Byte = [0,1,2,3]; //Terrain layers to render while debugging with DO_DEBUG_LAYERS
+  SKIP_RENDER_TER_LAYERS  :Boolean = False; //Do not render terrain layers
   SHOW_TERRAIN_KINDS      :Boolean = False; //Show terrain kind ids on every tile corner
   SHOW_TERRAIN_OVERLAYS   :Boolean = False; //Show terrain tile overlays
   SHOW_TERRAIN_HEIGHT     :Boolean = False; //Show terrain tile overlays

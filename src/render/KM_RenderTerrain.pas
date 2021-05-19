@@ -217,6 +217,9 @@ end;
 
 function TRenderTerrain.DoUseVBO: Boolean;
 begin
+  //VBO has proper vertice coords only for Light/Shadow
+  //it cant handle 3D yet and because of FOW leaves terrain revealed, which is an exploit in MP
+  //Thus we allow VBO only in 2D
   Result := VBOSupported and not RENDER_3D;
 end;
 
@@ -633,7 +636,9 @@ begin
         begin
           tX := K + fClipRect.Left;
           tY := I + fClipRect.Top;
-          if TileHasToBeRendered(I*K = 0,tX,tY,aFow) then // Do not render tiles fully covered by FOW
+          if DO_DEBUG_TER_LAYERS and not (0 in DEBUG_TERRAIN_LAYERS) then Continue;
+
+          if TileHasToBeRendered(I*K = 0, tX, tY, aFow) then // Do not render tiles fully covered by FOW
           begin
             with Land^[tY,tX] do
             begin
@@ -707,6 +712,8 @@ begin
           if TileHasToBeRendered(I*K = 0,tX,tY,aFow) then // Do not render tiles fully covered by FOW
             for L := 0 to Land^[tY,tX].LayersCnt - 1 do
             begin
+              if DO_DEBUG_TER_LAYERS and not ((L + 1) in DEBUG_TERRAIN_LAYERS) then Continue;
+
               with Land^[tY,tX] do
               begin
                 TRender.BindTexture(gGFXData[rxTiles, Layer[L].Terrain+1].Tex.ID);
@@ -1236,10 +1243,8 @@ end;
 //aFOW - whose players FOW to apply
 procedure TRenderTerrain.RenderBase(aAnimStep: Integer; aFOW: TKMFogOfWarCommon);
 begin
-  //VBO has proper vertice coords only for Light/Shadow
-  //it cant handle 3D yet and because of FOW leaves terrain revealed, which is an exploit in MP
-  //Thus we allow VBO only in 2D
-  fUseVBO := DoUseVBO;
+  // Don't use VBO when do debug terrain layers (there is no debug code in UpdateVBO). Its okay for debug
+  fUseVBO := DoUseVBO and not DO_DEBUG_TER_LAYERS;
 
   UpdateVBO(aAnimStep, aFOW);
 
