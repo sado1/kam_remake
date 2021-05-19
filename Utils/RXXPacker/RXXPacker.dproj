@@ -18,11 +18,6 @@
         <CfgParent>Base</CfgParent>
         <Base>true</Base>
     </PropertyGroup>
-    <PropertyGroup Condition="('$(Platform)'=='Win64' and '$(Base)'=='true') or '$(Base_Win64)'!=''">
-        <Base_Win64>true</Base_Win64>
-        <CfgParent>Base</CfgParent>
-        <Base>true</Base>
-    </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_1)'!=''">
         <Cfg_1>true</Cfg_1>
         <CfgParent>Base</CfgParent>
@@ -67,10 +62,6 @@
         <UWP_DelphiLogo44>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_44.png</UWP_DelphiLogo44>
         <UWP_DelphiLogo150>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_150.png</UWP_DelphiLogo150>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(Base_Win64)'!=''">
-        <UWP_DelphiLogo44>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_44.png</UWP_DelphiLogo44>
-        <UWP_DelphiLogo150>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_150.png</UWP_DelphiLogo150>
-    </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
         <DCC_DebugInformation>0</DCC_DebugInformation>
@@ -100,24 +91,24 @@
             <Form>RXXForm1</Form>
         </DCCReference>
         <DCCReference Include="RXXPackerProc.pas"/>
-        <DCCReference Include="..\..\src\utils\KM_PNG.pas"/>
-        <DCCReference Include="..\..\src\utils\KM_Pics.pas"/>
+        <DCCReference Include="..\..\src\utils\io\KM_IoPNG.pas"/>
+        <DCCReference Include="..\..\src\utils\misc\KM_Pics.pas"/>
         <DCCReference Include="..\..\src\res\KM_ResSprites.pas"/>
         <DCCReference Include="..\..\src\res\KM_ResSpritesEdit.pas"/>
         <DCCReference Include="..\..\src\res\KM_ResPalettes.pas"/>
-        <DCCReference Include="..\..\src\utils\KM_SoftShadows.pas"/>
+        <DCCReference Include="..\..\src\utils\algorithms\KM_SoftShadows.pas"/>
         <DCCReference Include="..\..\src\common\KM_Defaults.pas"/>
         <DCCReference Include="..\..\src\common\KM_CommonTypes.pas"/>
         <DCCReference Include="..\..\src\common\KM_CommonClasses.pas"/>
         <DCCReference Include="..\..\src\common\KM_Points.pas"/>
         <DCCReference Include="..\..\src\utils\KM_CommonUtils.pas"/>
         <DCCReference Include="..\..\src\utils\KromUtils.pas"/>
-        <DCCReference Include="..\..\src\utils\KM_FileIO.pas"/>
+        <DCCReference Include="..\..\src\utils\io\KM_FileIO.pas"/>
         <DCCReference Include="..\..\src\navmesh\KM_Outline.pas"/>
         <DCCReference Include="..\..\src\navmesh\KM_PolySimplify.pas"/>
         <DCCReference Include="..\..\src\render\KM_Render.pas"/>
         <DCCReference Include="..\..\src\render\KM_RenderControl.pas"/>
-        <DCCReference Include="..\..\src\utils\KM_BinPacking.pas"/>
+        <DCCReference Include="..\..\src\utils\algorithms\KM_BinPacking.pas"/>
         <DCCReference Include="..\..\src\ext\PolyTriangulate.pas"/>
         <DCCReference Include="..\..\src\ext\BGRABitmap\BGRABitmap.pas"/>
         <DCCReference Include="..\..\src\ext\dglOpenGL.pas"/>
@@ -176,7 +167,6 @@
             </Delphi.Personality>
             <Platforms>
                 <Platform value="Win32">True</Platform>
-                <Platform value="Win64">False</Platform>
             </Platforms>
         </BorlandProject>
         <ProjectFileVersion>12</ProjectFileVersion>

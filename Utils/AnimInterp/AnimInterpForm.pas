@@ -34,7 +34,7 @@ var
 implementation
 uses
   ShellApi, Math, KM_FileIO, KromUtils,
-  KM_ResHouses, KM_Log, KM_PNG;
+  KM_ResHouses, KM_Log, KM_IoPNG;
 
 {$R *.dfm}
 

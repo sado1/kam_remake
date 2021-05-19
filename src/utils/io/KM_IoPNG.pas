@@ -1,4 +1,4 @@
-unit KM_PNG;
+unit KM_IoPNG;
 {$I KaM_Remake.inc}
 interface
 uses

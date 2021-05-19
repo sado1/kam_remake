@@ -367,15 +367,14 @@ uses
   KM_SoftShadows in 'src\utils\algorithms\KM_SoftShadows.pas',
   KM_Sort in 'src\utils\algorithms\KM_Sort.pas',
   
+  KM_IoPNG in 'src\utils\io\KM_IoPNG.pas',
   KM_IoXML in 'src\utils\io\KM_IoXML.pas',
   KM_FileIO in 'src\utils\io\KM_FileIO.pas',
   
   KM_MethodParser in 'src\utils\method_parser\KM_MethodParser.pas',
   KM_MethodParserParams in 'src\utils\method_parser\KM_MethodParserParams.pas',
   
-  KM_Pics in 'src\utils\misc\KM_Pics.pas',
-  KM_PNG in 'src\utils\misc\KM_PNG.pas',
-  
+  KM_Pics in 'src\utils\misc\KM_Pics.pas',  
   
   KM_VclHelpers in 'src\utils\helpers\KM_VclHelpers.pas',
   KM_XmlHelper in 'src\utils\helpers\KM_XmlHelper.pas';
