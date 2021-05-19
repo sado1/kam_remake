@@ -82,13 +82,20 @@ uses
   KM_MessageLog in 'src\game\notifications\KM_MessageLog.pas',
   KM_MessageStack in 'src\game\notifications\KM_MessageStack.pas',
   
-  
   KM_GameInputProcess in 'src\game\KM_GameInputProcess.pas',
   KM_GameInputProcess_Multi in 'src\game\KM_GameInputProcess_Multi.pas',
   KM_GameInputProcess_Single in 'src\game\KM_GameInputProcess_Single.pas',
 
-  KM_GUICommonKeys in 'src\gui\pages_common\KM_GUICommonKeys.pas',
+  KM_InterfaceDefaults in 'src\gui\KM_InterfaceDefaults.pas',
+  KM_InterfaceGame in 'src\gui\KM_InterfaceGame.pas',
+  KM_InterfaceGamePlay in 'src\gui\KM_InterfaceGamePlay.pas',
+  KM_InterfaceMainMenu in 'src\gui\KM_InterfaceMainMenu.pas',
+  KM_InterfaceMapEditor in 'src\gui\KM_InterfaceMapEditor.pas',
+  KM_InterfaceTypes in 'src\gui\KM_InterfaceTypes.pas',
+  KM_Viewport in 'src\gui\KM_Viewport.pas',
 
+  KM_GUICommonKeys in 'src\gui\pages_common\KM_GUICommonKeys.pas',
+  
   KM_GUIGameBuild in 'src\gui\pages_game\KM_GUIGameBuild.pas',
   KM_GUIGameChat in 'src\gui\pages_game\KM_GUIGameChat.pas',
   KM_GUIGameHouse in 'src\gui\pages_game\KM_GUIGameHouse.pas',
@@ -184,12 +191,7 @@ uses
   KM_HouseSchool in 'src\houses\KM_HouseSchool.pas',
   KM_HouseTownHall in 'src\houses\KM_HouseTownHall.pas',
   KM_HouseWoodcutters in 'src\houses\KM_HouseWoodcutters.pas',
-  KM_InterfaceDefaults in 'src\gui\KM_InterfaceDefaults.pas',
-  KM_InterfaceGame in 'src\gui\KM_InterfaceGame.pas',
-  KM_InterfaceGamePlay in 'src\gui\KM_InterfaceGamePlay.pas',
-  KM_InterfaceMainMenu in 'src\gui\KM_InterfaceMainMenu.pas',
-  KM_InterfaceMapEditor in 'src\gui\KM_InterfaceMapEditor.pas',
-  KM_InterfaceTypes in 'src\gui\KM_InterfaceTypes.pas',
+  
   KM_Log in 'src\KM_Log.pas',
   KM_Main in 'src\KM_Main.pas',
   
@@ -373,8 +375,9 @@ uses
   
   KM_MethodParser in 'src\utils\method_parser\KM_MethodParser.pas',
   KM_MethodParserParams in 'src\utils\method_parser\KM_MethodParserParams.pas',
-
-  KM_Viewport in 'src\KM_Viewport.pas';
+  
+  KM_Helpers in 'src\utils\helpers\KM_Helpers.pas',
+  KM_XmlHelper in 'src\utils\helpers\KM_XmlHelper.pas';
 
   //KM_PerfLog in 'src\unused\KM_PerfLog.pas', //unused
 
