@@ -57,8 +57,7 @@ uses
   KM_Points in 'src\common\KM_Points.pas',
   KM_WorkerThread in 'src\common\KM_WorkerThread.pas',
 
-  KM_Controls in 'src\KM_Controls.pas',
-  KM_Cursor in 'src\KM_Cursor.pas',
+  KM_Controls in 'src\KM_Controls.pas',  
   
   KM_DevPerfLog in 'src\perflog\KM_DevPerfLog.pas',
   KM_DevPerfLogForm in 'src\perflog\KM_DevPerfLogForm.pas',
@@ -86,6 +85,7 @@ uses
   KM_GameInputProcess_Multi in 'src\game\KM_GameInputProcess_Multi.pas',
   KM_GameInputProcess_Single in 'src\game\KM_GameInputProcess_Single.pas',
 
+  KM_Cursor in 'src\gui\KM_Cursor.pas',
   KM_InterfaceDefaults in 'src\gui\KM_InterfaceDefaults.pas',
   KM_InterfaceGame in 'src\gui\KM_InterfaceGame.pas',
   KM_InterfaceGamePlay in 'src\gui\KM_InterfaceGamePlay.pas',
