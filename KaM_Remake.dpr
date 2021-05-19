@@ -192,9 +192,6 @@ uses
   KM_InterfaceTypes in 'src\gui\KM_InterfaceTypes.pas',
   KM_Log in 'src\KM_Log.pas',
   KM_Main in 'src\KM_Main.pas',
-  KM_MapEditor in 'src\KM_MapEditor.pas',
-  KM_MapEditorHistory in 'src\KM_MapEditorHistory.pas',
-  KM_MapEdTypes in 'src\KM_MapEdTypes.pas',
   KM_MessageLog in 'src\KM_MessageLog.pas',
   KM_MessageStack in 'src\KM_MessageStack.pas',
 
@@ -206,6 +203,10 @@ uses
   KM_MissionScript_Info in 'src\mission\KM_MissionScript_Info.pas',
   KM_MissionScript_Preview in 'src\mission\KM_MissionScript_Preview.pas',
   KM_MissionScript_Standard in 'src\mission\KM_MissionScript_Standard.pas',
+  
+  KM_MapEditor in 'src\maped\KM_MapEditor.pas',
+  KM_MapEditorHistory in 'src\maped\KM_MapEditorHistory.pas',
+  KM_MapEdTypes in 'src\maped\KM_MapEdTypes.pas',
 
   KM_Music in 'src\KM_Music.pas',
 
