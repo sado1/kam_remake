@@ -352,29 +352,29 @@ uses
   KM_UnitTaskSelfTrain in 'src\units\tasks\KM_UnitTaskSelfTrain.pas',
   KM_UnitTaskThrowRock in 'src\units\tasks\KM_UnitTaskThrowRock.pas',
 
-  KM_BinPacking in 'src\utils\KM_BinPacking.pas',
   KM_CommonUtils in 'src\utils\KM_CommonUtils.pas',
-  KM_IoXML in 'src\utils\KM_IoXML.pas',
-  KM_FileIO in 'src\utils\KM_FileIO.pas',
-  KM_FloodFill in 'src\utils\KM_FloodFill.pas',
-  KM_Helpers in 'src\utils\KM_Helpers.pas',
-  KM_Hungarian in 'src\utils\KM_Hungarian.pas',
-  KM_Pics in 'src\utils\KM_Pics.pas',
-  KM_PNG in 'src\utils\KM_PNG.pas',
-  KM_SoftShadows in 'src\utils\KM_SoftShadows.pas',
-  KM_Sort in 'src\utils\KM_Sort.pas',
   KM_Utils in 'src\utils\KM_Utils.pas',
-  KM_XmlHelper in 'src\utils\KM_XmlHelper.pas',
   
   KromOGLUtils in 'src\utils\KromOGLUtils.pas',
   KromUtils in 'src\utils\KromUtils.pas',
   KromShellUtils in 'src\utils\KromShellUtils.pas',
   
-  BinaryHeap in 'src\utils\BinaryHeap.pas',
-  BinaryHeapGen in 'src\utils\BinaryHeapGen.pas',
+  BinaryHeap in 'src\utils\algorithms\BinaryHeap.pas',
+  BinaryHeapGen in 'src\utils\algorithms\BinaryHeapGen.pas',
+  KM_BinPacking in 'src\utils\algorithms\KM_BinPacking.pas',
+  KM_Hungarian in 'src\utils\algorithms\KM_Hungarian.pas',
+  KM_FloodFill in 'src\utils\algorithms\KM_FloodFill.pas',
+  KM_Sort in 'src\utils\algorithms\KM_Sort.pas',
+  
+  KM_IoXML in 'src\utils\io\KM_IoXML.pas',
+  KM_FileIO in 'src\utils\io\KM_FileIO.pas',
   
   KM_MethodParser in 'src\utils\method_parser\KM_MethodParser.pas',
   KM_MethodParserParams in 'src\utils\method_parser\KM_MethodParserParams.pas',
+  
+  KM_Pics in 'src\utils\misc\KM_Pics.pas',
+  KM_PNG in 'src\utils\misc\KM_PNG.pas',
+  KM_SoftShadows in 'src\utils\misc\KM_SoftShadows.pas',
   
   KM_Helpers in 'src\utils\helpers\KM_Helpers.pas',
   KM_XmlHelper in 'src\utils\helpers\KM_XmlHelper.pas';
