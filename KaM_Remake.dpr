@@ -292,8 +292,7 @@ uses
   KM_ResTileset in 'src\res\KM_ResTileset.pas',
   KM_ResUnits in 'src\res\KM_ResUnits.pas',
   KM_ResWares in 'src\res\KM_ResWares.pas',
-
-  KM_Saves in 'src\KM_Saves.pas',
+  KM_Saves in 'src\res\KM_Saves.pas',
 
   KM_Scripting in 'src\scripting\KM_Scripting.pas',
   KM_ScriptingActions in 'src\scripting\KM_ScriptingActions.pas',
