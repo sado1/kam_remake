@@ -47,8 +47,6 @@ uses
   KM_AIParameters in 'src\ai\newAI\KM_AIParameters.pas',
 
   KM_Alerts in 'src\KM_Alerts.pas',
-  KM_Campaigns in 'src\KM_Campaigns.pas',
-  KM_CampaignTypes in 'src\KM_CampaignTypes.pas',
 
   KM_Console in 'src\KM_Console.pas',
   KM_CommonClasses in 'src\common\KM_CommonClasses.pas',
@@ -193,7 +191,9 @@ uses
   KM_Main in 'src\KM_Main.pas',
   KM_MessageLog in 'src\KM_MessageLog.pas',
   KM_MessageStack in 'src\KM_MessageStack.pas',
-
+  
+  KM_Campaigns in 'src\mission\KM_Campaigns.pas',
+  KM_CampaignTypes in 'src\mission\KM_CampaignTypes.pas',
   KM_Maps in 'src\mission\KM_Maps.pas',
   KM_MapTypes in 'src\mission\KM_MapTypes.pas',
   KM_MapUtils in 'src\mission\KM_MapUtils.pas',
