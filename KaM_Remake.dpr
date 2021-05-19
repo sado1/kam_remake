@@ -277,6 +277,7 @@ uses
   KM_RenderQuery in 'src\render\KM_RenderQuery.pas',
   KM_RenderUI in 'src\render\KM_RenderUI.pas',
 
+  KM_Pics in 'src\res\KM_Pics.pas',  
   KM_Resource in 'src\res\KM_Resource.pas',
   KM_ResCursors in 'src\res\KM_ResCursors.pas',
   KM_ResFonts in 'src\res\KM_ResFonts.pas',
@@ -373,8 +374,6 @@ uses
   
   KM_MethodParser in 'src\utils\method_parser\KM_MethodParser.pas',
   KM_MethodParserParams in 'src\utils\method_parser\KM_MethodParserParams.pas',
-  
-  KM_Pics in 'src\utils\misc\KM_Pics.pas',  
   
   KM_VclHelpers in 'src\utils\helpers\KM_VclHelpers.pas',
   KM_XmlHelper in 'src\utils\helpers\KM_XmlHelper.pas';
