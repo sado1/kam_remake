@@ -43,7 +43,7 @@ type
     function GetMinCanvasSize(A: TKMAnimLoop; RT: TRXType): Integer;
     function GetDainParams(aDir: string; aAlpha: Boolean): string;
     procedure MakeInterpImages(RT: TRXType; A: TKMAnimLoop; aBaseDir: string; aExportType: TInterpExportType);
-    function DoInterp(RT: TRXType; A: TKMAnimLoop; aBkgRGB: Cardinal; var aPicOffset: Integer; aDryRun: Boolean): Integer;
+    function DoInterp(RT: TRXType; A: TKMAnimLoop; aSimpleAlpha: Boolean; aBkgRGB: Cardinal; var aPicOffset: Integer; aDryRun: Boolean): Integer;
     function DoInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; var aPicOffset: Integer; aDryRun: Boolean): Integer;
     function DoInterpSerfCarry(aWare: TKMWareType; aDir: TKMDirection; var aPicOffset: Integer; aDryRun: Boolean): Integer;
     function DoInterpUnitThought(aThought: TKMUnitThought; var aPicOffset: Integer; aDryRun: Boolean): Integer;
@@ -261,7 +261,7 @@ begin
 end;
 
 
-function TForm1.DoInterp(RT: TRXType; A: TKMAnimLoop; aBkgRGB: Cardinal; var aPicOffset: Integer; aDryRun: Boolean): Integer;
+function TForm1.DoInterp(RT: TRXType; A: TKMAnimLoop; aSimpleAlpha: Boolean; aBkgRGB: Cardinal; var aPicOffset: Integer; aDryRun: Boolean): Integer;
 
   function SameAnim(A, B: TKMAnimLoop): Boolean;
   var
@@ -311,9 +311,14 @@ begin
   KMDeleteFolder(dirShad);
   KMDeleteFolder(dirTeam);
 
-  MakeInterpImages(RT, A, dirBase, ietBase);
-  MakeInterpImages(RT, A, dirShad, ietShadows);
-  MakeInterpImages(RT, A, dirTeam, ietTeamMask);
+  if aSimpleAlpha then
+    MakeInterpImages(RT, A, dirBase, ietNormal)
+  else
+  begin
+    MakeInterpImages(RT, A, dirBase, ietBase);
+    MakeInterpImages(RT, A, dirShad, ietShadows);
+    MakeInterpImages(RT, A, dirTeam, ietTeamMask);
+  end;
 
   StrList := TStringList.Create;
 
@@ -439,7 +444,7 @@ begin
   else
     bkgRGB := $000000;
 
-  Result := DoInterp(rxUnits, A, bkgRGB, aPicOffset, aDryRun);
+  Result := DoInterp(rxUnits, A, False, bkgRGB, aPicOffset, aDryRun);
 end;
 
 
@@ -455,7 +460,7 @@ begin
   if (A.Count <= 1) or (A.Step[1] = -1) then
     Exit(-1);
 
-  Result := DoInterp(rxUnits, A, $000000, aPicOffset, aDryRun);
+  Result := DoInterp(rxUnits, A, False, $000000, aPicOffset, aDryRun);
 end;
 
 
@@ -479,7 +484,7 @@ begin
   if (A.Count <= 1) or (A.Step[1] = -1) then
     Exit(-1);
 
-  Result := DoInterp(rxUnits, A, $FFFFFF, aPicOffset, aDryRun);
+  Result := DoInterp(rxUnits, A, False, $FFFFFF, aPicOffset, aDryRun);
 end;
 
 
@@ -492,7 +497,7 @@ begin
   if (A.Count <= 1) or (A.Step[1] = -1) then
     Exit(-1);
 
-  Result := DoInterp(rxTrees, A, $000000, aPicOffset, aDryRun);
+  Result := DoInterp(rxTrees, A, False, $000000, aPicOffset, aDryRun);
 end;
 
 
@@ -508,7 +513,7 @@ begin
   if (A.Count <= 1) or (A.Step[1] = -1) then
     Exit(-1);
 
-  Result := DoInterp(rxHouses, A, $000000, aPicOffset, aDryRun);
+  Result := DoInterp(rxHouses, A, (aHouseAct in [haSmoke, haFire1..haFire8]), $000000, aPicOffset, aDryRun);
 end;
 
 
