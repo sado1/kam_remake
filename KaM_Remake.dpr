@@ -376,7 +376,7 @@ uses
   KM_PNG in 'src\utils\misc\KM_PNG.pas',
   KM_SoftShadows in 'src\utils\misc\KM_SoftShadows.pas',
   
-  KM_Helpers in 'src\utils\helpers\KM_Helpers.pas',
+  KM_VclHelpers in 'src\utils\helpers\KM_VclHelpers.pas',
   KM_XmlHelper in 'src\utils\helpers\KM_XmlHelper.pas';
 
   //KM_PerfLog in 'src\unused\KM_PerfLog.pas', //unused

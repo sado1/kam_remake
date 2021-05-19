@@ -88,8 +88,6 @@ object FormMain: TFormMain
       Caption = 'Misc'
       Collapsed = True
       TabOrder = 0
-      ExplicitTop = 1037
-      ExplicitWidth = 239
       ExpandedHeight = 144
       object chkBevel: TCheckBox
         Left = 168
@@ -132,8 +130,6 @@ object FormMain: TFormMain
       Caption = 'Logs'
       Collapsed = True
       TabOrder = 1
-      ExplicitTop = 1013
-      ExplicitWidth = 239
       ExpandedHeight = 198
       object chkLogCommands: TCheckBox
         Left = 120
@@ -245,8 +241,6 @@ object FormMain: TFormMain
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 2
-      ExplicitTop = 989
-      ExplicitWidth = 239
       ExpandedHeight = 153
       object Label1: TLabel
         Left = 101
@@ -378,8 +372,6 @@ object FormMain: TFormMain
       Caption = 'User Interface'
       Collapsed = True
       TabOrder = 3
-      ExplicitTop = 965
-      ExplicitWidth = 239
       ExpandedHeight = 114
       object chkUIControlsBounds: TCheckBox
         Left = 8
@@ -451,8 +443,6 @@ object FormMain: TFormMain
       Caption = 'Perf Logs'
       Collapsed = True
       TabOrder = 4
-      ExplicitTop = 941
-      ExplicitWidth = 239
       ExpandedHeight = 660
     end
     object cpAI: TCategoryPanel
@@ -461,8 +451,6 @@ object FormMain: TFormMain
       Caption = 'AI'
       Collapsed = True
       TabOrder = 5
-      ExplicitTop = 917
-      ExplicitWidth = 239
       object Label5: TLabel
         Left = 202
         Top = 111
@@ -669,8 +657,6 @@ object FormMain: TFormMain
       Caption = 'Scripting'
       Collapsed = True
       TabOrder = 6
-      ExplicitTop = 893
-      ExplicitWidth = 239
       ExpandedHeight = 50
       object chkDebugScripting: TCheckBox
         Left = 8
@@ -693,8 +679,6 @@ object FormMain: TFormMain
       Caption = 'Game additional'
       Collapsed = True
       TabOrder = 7
-      ExplicitTop = 869
-      ExplicitWidth = 239
       ExpandedHeight = 136
       object chkLoadUnsupSaves: TCheckBox
         Left = 12
@@ -745,8 +729,6 @@ object FormMain: TFormMain
       Caption = 'Debug Input'
       Collapsed = True
       TabOrder = 8
-      ExplicitTop = 845
-      ExplicitWidth = 239
       ExpandedHeight = 210
       object gbFindObjByUID: TGroupBox
         Left = 8
@@ -1143,7 +1125,6 @@ object FormMain: TFormMain
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 11
-      ExplicitWidth = 239
       object Label2: TLabel
         Left = 136
         Top = 5
@@ -1313,7 +1294,6 @@ object FormMain: TFormMain
       Height = 121
       Caption = 'Game'
       TabOrder = 12
-      ExplicitWidth = 239
       object Label8: TLabel
         Left = 60
         Top = 30

@@ -366,7 +366,7 @@ uses
   KM_Hand,
   KM_ResKeys, KM_FormLogistics, KM_Game,
   KM_RandomChecks,
-  KM_Log, KM_CommonClasses, KM_Helpers, KM_Video,
+  KM_Log, KM_CommonClasses, KM_VclHelpers, KM_Video,
   KM_GameSettings,
   KM_ServerSettings,
 
