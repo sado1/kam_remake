@@ -266,10 +266,10 @@ var
   fullTerId: Integer;
 begin
   fullTerId := aTexOffset + aTerId + 1;
-  Result := (aTerId < 256)
+  Result := (aTerId < 256) // Animation base terrain IDs are in the 'original' tileset
     and InRange(fullTerId, 5000, MAX_STATIC_TERRAIN_ID) //Animations are from 5000 to 10000
     and (gGFXData[rxTiles, fullTerId].Tex.ID <> 0)
-    and not InRange(fullTerId, 5549, 5600);
+    and not InRange(fullTerId, 5549, 5600); // These are used by masks
 //  if Result then
 //    if InRange(FullTerId, 305, 349) then
 //    begin
@@ -332,6 +332,7 @@ var
   end;
 
   function TryAddAnimTex(var aAnimCnt: Integer; aTX, aTY, aTexOffset: Word): Boolean;
+
     function SetAnimTileVertex(aTerrain: Word; aRotation: Byte): Boolean;
     var
       texAnimC: TUVRect;
@@ -361,6 +362,7 @@ var
         Result := True;
       end;
     end;
+
   var
     L: Integer;
   begin
