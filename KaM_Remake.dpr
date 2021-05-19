@@ -364,6 +364,7 @@ uses
   KM_BinPacking in 'src\utils\algorithms\KM_BinPacking.pas',
   KM_Hungarian in 'src\utils\algorithms\KM_Hungarian.pas',
   KM_FloodFill in 'src\utils\algorithms\KM_FloodFill.pas',
+  KM_SoftShadows in 'src\utils\algorithms\KM_SoftShadows.pas',
   KM_Sort in 'src\utils\algorithms\KM_Sort.pas',
   
   KM_IoXML in 'src\utils\io\KM_IoXML.pas',
@@ -374,7 +375,7 @@ uses
   
   KM_Pics in 'src\utils\misc\KM_Pics.pas',
   KM_PNG in 'src\utils\misc\KM_PNG.pas',
-  KM_SoftShadows in 'src\utils\misc\KM_SoftShadows.pas',
+  
   
   KM_VclHelpers in 'src\utils\helpers\KM_VclHelpers.pas',
   KM_XmlHelper in 'src\utils\helpers\KM_XmlHelper.pas';
