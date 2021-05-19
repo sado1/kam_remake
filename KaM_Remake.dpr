@@ -172,6 +172,7 @@ uses
   KM_HandSpectator in 'src\hands\KM_HandSpectator.pas',
   KM_HandStats in 'src\hands\KM_HandStats.pas',
   KM_HandTypes in 'src\hands\KM_HandTypes.pas',
+  KM_WareDistribution in 'src\hands\KM_WareDistribution.pas',
 
   KM_HouseBarracks in 'src\houses\KM_HouseBarracks.pas',
   KM_HouseInn in 'src\houses\KM_HouseInn.pas',
@@ -309,7 +310,6 @@ uses
   KM_MainSettings in 'src\settings\KM_MainSettings.pas',
   KM_ServerSettings in 'src\settings\KM_ServerSettings.pas',
   KM_Resolutions in 'src\settings\KM_Resolutions.pas',
-  KM_WareDistribution in 'src\settings\KM_WareDistribution.pas',
   KM_WindowParams in 'src\settings\KM_WindowParams.pas',
 
   KM_RandomMapGenerator in 'src\terrain\KM_RandomMapGenerator.pas',
