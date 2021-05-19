@@ -79,7 +79,7 @@ type
     procedure DoTilesLayers(aFOW: TKMFogOfWarCommon);
     procedure DoOverlays(aFOW: TKMFogOfWarCommon);
     procedure DoLighting(aFOW: TKMFogOfWarCommon);
-    procedure DoWater(aAnimStep: Integer; aFOW: TKMFogOfWarCommon);
+    procedure DoAnimations(aAnimStep: Integer; aFOW: TKMFogOfWarCommon);
     procedure DoShadows(aFOW: TKMFogOfWarCommon);
     function VBOSupported: Boolean;
     procedure RenderFence(aFence: TKMFenceKind; Pos: TKMDirection; pX,pY: Integer);
@@ -731,7 +731,7 @@ begin
 end;
 
 
-procedure TRenderTerrain.DoWater(aAnimStep: Integer; aFOW: TKMFogOfWarCommon);
+procedure TRenderTerrain.DoAnimations(aAnimStep: Integer; aFOW: TKMFogOfWarCommon);
 var
   I, K: Integer;
   AL: TAnimLayer;
@@ -765,7 +765,9 @@ begin
 
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-  end else begin
+  end
+  else
+  begin
     //Each new layer inflicts 10% fps drop
     for AL := Low(TAnimLayer) to High(TAnimLayer) do
     begin
@@ -1246,13 +1248,13 @@ begin
   DoTiles(aFOW);
   //It was 'unlit water goes above lit sand'
   //But there is no big difference there, that is why, to make possible transitions with water,
-  //Water was put before DoLighting
-  DoWater(aAnimStep, aFOW);
+  //Animations was put before DoLighting
+  DoAnimations(aAnimStep, aFOW);
   //TileLayers after water, as water with animation is always base layer
   DoTilesLayers(aFOW);
   DoOverlays(aFOW);
   DoLighting(aFOW);
-//  DoWater(aAnimStep, aFOW);
+//  DoAnimations(aAnimStep, aFOW);
   DoShadows(aFOW);
 
   {$IFDEF PERFLOG}
