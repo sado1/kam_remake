@@ -197,11 +197,11 @@ uses
   KM_MapEdTypes in 'src\KM_MapEdTypes.pas',
   KM_MessageLog in 'src\KM_MessageLog.pas',
   KM_MessageStack in 'src\KM_MessageStack.pas',
-  KM_Minimap in 'src\KM_Minimap.pas',
 
   KM_Maps in 'src\mission\KM_Maps.pas',
   KM_MapTypes in 'src\mission\KM_MapTypes.pas',
   KM_MapUtils in 'src\mission\KM_MapUtils.pas',
+  KM_Minimap in 'src\mission\KM_Minimap.pas',
   KM_MissionScript in 'src\mission\KM_MissionScript.pas',
   KM_MissionScript_Info in 'src\mission\KM_MissionScript_Info.pas',
   KM_MissionScript_Preview in 'src\mission\KM_MissionScript_Preview.pas',
