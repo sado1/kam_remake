@@ -309,6 +309,8 @@ uses
   KM_MainSettings in 'src\settings\KM_MainSettings.pas',
   KM_ServerSettings in 'src\settings\KM_ServerSettings.pas',
   KM_Resolutions in 'src\settings\KM_Resolutions.pas',
+  KM_WareDistribution in 'src\settings\KM_WareDistribution.pas',
+  KM_WindowParams in 'src\settings\KM_WindowParams.pas',
 
   KM_RandomMapGenerator in 'src\terrain\KM_RandomMapGenerator.pas',
   KM_RMGUtils in 'src\terrain\KM_RMGUtils.pas',
@@ -372,9 +374,7 @@ uses
   KM_MethodParser in 'src\utils\method_parser\KM_MethodParser.pas',
   KM_MethodParserParams in 'src\utils\method_parser\KM_MethodParserParams.pas',
 
-  KM_Viewport in 'src\KM_Viewport.pas',
-  KM_WareDistribution in 'src\KM_WareDistribution.pas',
-  KM_WindowParams in 'src\utils\KM_WindowParams.pas';
+  KM_Viewport in 'src\KM_Viewport.pas';
 
   //KM_PerfLog in 'src\unused\KM_PerfLog.pas', //unused
 
