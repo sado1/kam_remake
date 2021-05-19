@@ -66,8 +66,6 @@ uses
   
   {$IFDEF USE_MAD_EXCEPT}KM_Exceptions in 'src\KM_Exceptions.pas',{$ENDIF}
   
-  KM_Console in 'src\game\KM_Console.pas',
-  KM_FogOfWar in 'src\game\KM_FogOfWar.pas',
   KM_Game in 'src\game\KM_Game.pas',
   KM_GameApp in 'src\game\KM_GameApp.pas',
   KM_GameClasses in 'src\game\KM_GameClasses.pas',
@@ -76,14 +74,19 @@ uses
   KM_GameOptions in 'src\game\KM_GameOptions.pas',
   KM_GameParams in 'src\game\KM_GameParams.pas',
   KM_GameSavePoints in 'src\game\KM_GameSavePoints.pas',
-  KM_GameUIDTracker in 'src\game\KM_GameUIDTracker.pas',
+  
+  KM_GameInputProcess in 'src\game\gip\KM_GameInputProcess.pas',
+  KM_GameInputProcess_Multi in 'src\game\gip\KM_GameInputProcess_Multi.pas',
+  KM_GameInputProcess_Single in 'src\game\gip\KM_GameInputProcess_Single.pas',
+  
+  KM_Console in 'src\game\misc\KM_Console.pas',
+  KM_FogOfWar in 'src\game\misc\KM_FogOfWar.pas',
+  KM_GameUIDTracker in 'src\game\misc\KM_GameUIDTracker.pas',
+  KM_RandomChecks in 'src\game\misc\KM_RandomChecks.pas',
+  
   KM_Alerts in 'src\game\notifications\KM_Alerts.pas',
   KM_MessageLog in 'src\game\notifications\KM_MessageLog.pas',
-  KM_MessageStack in 'src\game\notifications\KM_MessageStack.pas',
-  
-  KM_GameInputProcess in 'src\game\KM_GameInputProcess.pas',
-  KM_GameInputProcess_Multi in 'src\game\KM_GameInputProcess_Multi.pas',
-  KM_GameInputProcess_Single in 'src\game\KM_GameInputProcess_Single.pas',
+  KM_MessageStack in 'src\game\notifications\KM_MessageStack.pas',  
 
   KM_Cursor in 'src\gui\KM_Cursor.pas',
   KM_InterfaceDefaults in 'src\gui\KM_InterfaceDefaults.pas',
@@ -263,8 +266,6 @@ uses
   KM_PathFindingRoad in 'src\pathfinding\KM_PathFindingRoad.pas',
 
   KM_Projectiles in 'src\KM_Projectiles.pas',
-
-  KM_RandomChecks in 'src\KM_RandomChecks.pas',
 
   KM_Render in 'src\render\KM_Render.pas',
   KM_RenderAux in 'src\render\KM_RenderAux.pas',
