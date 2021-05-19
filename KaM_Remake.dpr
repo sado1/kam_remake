@@ -45,8 +45,7 @@ uses
   KM_CityPredictor in 'src\ai\newAI\KM_CityPredictor.pas',
   KM_Supervisor in 'src\ai\newAI\KM_Supervisor.pas',
   KM_AIParameters in 'src\ai\newAI\KM_AIParameters.pas',
-
-  KM_Console in 'src\KM_Console.pas',
+  
   KM_CommonClasses in 'src\common\KM_CommonClasses.pas',
   KM_CommonClassesExt in 'src\common\KM_CommonClassesExt.pas',
   KM_CommonExceptions in 'src\common\KM_CommonExceptions.pas',
@@ -66,8 +65,9 @@ uses
   KM_DevPerfLogTypes in 'src\perflog\KM_DevPerfLogTypes.pas',
   
   {$IFDEF USE_MAD_EXCEPT}KM_Exceptions in 'src\KM_Exceptions.pas',{$ENDIF}
-  KM_FogOfWar in 'src\KM_FogOfWar.pas',
-
+  
+  KM_Console in 'src\game\KM_Console.pas',
+  KM_FogOfWar in 'src\game\KM_FogOfWar.pas',
   KM_Game in 'src\game\KM_Game.pas',
   KM_GameApp in 'src\game\KM_GameApp.pas',
   KM_GameClasses in 'src\game\KM_GameClasses.pas',
