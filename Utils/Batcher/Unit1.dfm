@@ -307,4 +307,17 @@ object Form1: TForm1
     TabOrder = 20
     OnClick = Button14Click
   end
+  object Button15: TButton
+    Left = 24
+    Top = 307
+    Width = 241
+    Height = 25
+    Margins.Left = 2
+    Margins.Top = 2
+    Margins.Right = 2
+    Margins.Bottom = 2
+    Caption = 'Generate Utils DCC_UnitSearchPath for .dproj'
+    TabOrder = 21
+    OnClick = Button15Click
+  end
 end
