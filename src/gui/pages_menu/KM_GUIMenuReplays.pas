@@ -81,7 +81,8 @@ type
 
 implementation
 uses
-  KM_Log, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_GameSettings;
+  KM_Log, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_GameSettings,
+  KM_MapTypes;
 
 const
   MINIMAP_NOT_LOADED = -100; // smth, but not -1, as -1 is used for ColumnBox.ItemIndex, when no item is selected
@@ -121,7 +122,7 @@ begin
                                [0, 22, 440, 580, 805, 885]);
   ColumnBox_Replays.Anchors := [anLeft,anTop,anBottom];
   ColumnBox_Replays.ShowHintWhenShort := True;
-  ColumnBox_Replays.HintBackColor := TKMColor3f.NewB(87, 72, 37);
+  ColumnBox_Replays.HintBackColor := TKMColor4f.New(87, 72, 37);
   ColumnBox_Replays.SearchColumn := 1;
   ColumnBox_Replays.ColumnIdForScroll := 2;
   ColumnBox_Replays.OnChange := Replays_ListClick;
@@ -521,7 +522,7 @@ begin
         except
           on E: Exception do
           begin
-            loadError := Format(gResTexts[TX_UNSUPPORTED_REPLAY_LOAD_ERROR_MSG], [fSaves[ID].GameInfo.Version, fSaves[ID].Path])
+            loadError := gResTexts[TX_UNSUPPORTED_REPLAY_LOAD_ERROR_MSG, [fSaves[ID].GameInfo.Version, fSaves[ID].Path]]
               + '||' + E.ClassName + ': ' + E.Message;
             gLog.AddTime('Replay load Exception: ' + loadError
               {$IFDEF WDC} + sLineBreak + E.StackTrace {$ENDIF}

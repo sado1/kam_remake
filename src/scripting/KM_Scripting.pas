@@ -464,6 +464,7 @@ begin
     // After that they can be used from within the script.
     c := Sender.AddClassN(nil, AnsiString(fStates.ClassName));
     RegisterMethodCheck(c, 'function AIArmyType(aPlayer: Byte): TKMArmyType');
+    RegisterMethodCheck(c, 'function AIAutoAttack(aPlayer: Byte): Boolean');
     RegisterMethodCheck(c, 'function AIAutoAttackRange(aPlayer: Byte): Integer');
     RegisterMethodCheck(c, 'function AIAutoBuild(aPlayer: Byte): Boolean');
     RegisterMethodCheck(c, 'function AIAutoDefence(aPlayer: Byte): Boolean');
@@ -524,9 +525,10 @@ begin
     RegisterMethodCheck(c, 'function HouseDeliveryBlocked(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseDeliveryMode(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseDestroyed(aHouseID: Integer): Boolean');
-    RegisterMethodCheck(c, 'function HouseHasOccupant(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseFlagPoint(aHouseID: Integer): TKMPoint');
     RegisterMethodCheck(c, 'function HouseGetAllUnitsIn(aHouseID: Integer): TIntegerArray');
+    RegisterMethodCheck(c, 'function HouseHasOccupant(aHouseID: Integer): Boolean');
+    RegisterMethodCheck(c, 'function HouseHasWorker(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseIsComplete(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseOwner(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HousePosition(aHouseID: Integer): TKMPoint');
@@ -541,12 +543,14 @@ begin
     RegisterMethodCheck(c, 'function HouseTypeMaxHealth(aHouseType: Integer): Word');
     RegisterMethodCheck(c, 'function HouseTypeName(aHouseType: Byte): AnsiString');
     RegisterMethodCheck(c, 'function HouseTypeToOccupantType(aHouseID: Integer): Integer');
+    RegisterMethodCheck(c, 'function HouseTypeToWorkerType(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseUnlocked(aPlayer, aHouseType: Word): Boolean');
     RegisterMethodCheck(c, 'function HouseWoodcutterChopOnly(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseWoodcutterMode(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseWareBlocked(aHouseID, aWareType: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseWareBlockedTakeOut(aHouseID, aWareType: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseWeaponsOrdered(aHouseID, aWareType: Integer): Integer');
+    RegisterMethodCheck(c, 'function HouseWorker(aHouseID: Integer): Integer');
 
     RegisterMethodCheck(c, 'function IsFieldAt(aPlayer: ShortInt; X, Y: Word): Boolean');
     RegisterMethodCheck(c, 'function IsRoadAt(aPlayer: ShortInt; X, Y: Word): Boolean');
@@ -676,6 +680,7 @@ begin
                            'aRandomGroups: Boolean; aTarget: TKMAIAttackTarget; aCustomPosition: TKMPoint): Integer');
     RegisterMethodCheck(c, 'function AIAttackRemove(aPlayer: Byte; aAIAttackId: Word): Boolean');
     RegisterMethodCheck(c, 'procedure AIAttackRemoveAll(aPlayer: Byte)');
+    RegisterMethodCheck(c, 'procedure AIAutoAttack(aPlayer: Byte; aAutoAttack: Boolean)');
     RegisterMethodCheck(c, 'procedure AIAutoAttackRange(aPlayer: Byte; aRange: Word)');
     RegisterMethodCheck(c, 'procedure AIAutoBuild(aPlayer: Byte; aAuto: Boolean)');
     RegisterMethodCheck(c, 'procedure AIAutoDefence(aPlayer: Byte; aAuto: Boolean)');
@@ -1139,6 +1144,7 @@ begin
     with classImp.Add(TKMScriptStates) do
     begin
       RegisterMethod(@TKMScriptStates.AIArmyType,                               'AIArmyType');
+      RegisterMethod(@TKMScriptStates.AIAutoAttack,                             'AIAutoAttack');
       RegisterMethod(@TKMScriptStates.AIAutoAttackRange,                        'AIAutoAttackRange');
       RegisterMethod(@TKMScriptStates.AIAutoBuild,                              'AIAutoBuild');
       RegisterMethod(@TKMScriptStates.AIAutoDefence,                            'AIAutoDefence');
@@ -1199,9 +1205,10 @@ begin
       RegisterMethod(@TKMScriptStates.HouseDeliveryBlocked,                     'HouseDeliveryBlocked');
       RegisterMethod(@TKMScriptStates.HouseDeliveryMode,                        'HouseDeliveryMode');
       RegisterMethod(@TKMScriptStates.HouseDestroyed,                           'HouseDestroyed');
-      RegisterMethod(@TKMScriptStates.HouseHasOccupant,                         'HouseHasOccupant');
       RegisterMethod(@TKMScriptStates.HouseFlagPoint,                           'HouseFlagPoint');
       RegisterMethod(@TKMScriptStates.HouseGetAllUnitsIn,                       'HouseGetAllUnitsIn');
+      RegisterMethod(@TKMScriptStates.HouseHasOccupant,                         'HouseHasOccupant');
+      RegisterMethod(@TKMScriptStates.HouseHasWorker,                           'HouseHasWorker');
       RegisterMethod(@TKMScriptStates.HouseIsComplete,                          'HouseIsComplete');
       RegisterMethod(@TKMScriptStates.HouseOwner,                               'HouseOwner');
       RegisterMethod(@TKMScriptStates.HousePosition,                            'HousePosition');
@@ -1216,12 +1223,14 @@ begin
       RegisterMethod(@TKMScriptStates.HouseTypeMaxHealth,                       'HouseTypeMaxHealth');
       RegisterMethod(@TKMScriptStates.HouseTypeName,                            'HouseTypeName');
       RegisterMethod(@TKMScriptStates.HouseTypeToOccupantType,                  'HouseTypeToOccupantType');
+      RegisterMethod(@TKMScriptStates.HouseTypeToWorkerType,                    'HouseTypeToWorkerType');
       RegisterMethod(@TKMScriptStates.HouseUnlocked,                            'HouseUnlocked');
       RegisterMethod(@TKMScriptStates.HouseWoodcutterChopOnly,                  'HouseWoodcutterChopOnly');
       RegisterMethod(@TKMScriptStates.HouseWoodcutterMode,                      'HouseWoodcutterMode');
       RegisterMethod(@TKMScriptStates.HouseWareBlocked,                         'HouseWareBlocked');
       RegisterMethod(@TKMScriptStates.HouseWareBlockedTakeOut,                  'HouseWareBlockedTakeOut');
       RegisterMethod(@TKMScriptStates.HouseWeaponsOrdered,                      'HouseWeaponsOrdered');
+      RegisterMethod(@TKMScriptStates.HouseWorker,                              'HouseWorker');
 
       RegisterMethod(@TKMScriptStates.IsFieldAt,                                'IsFieldAt');
       RegisterMethod(@TKMScriptStates.IsRoadAt,                                 'IsRoadAt');
@@ -1351,6 +1360,7 @@ begin
       RegisterMethod(@TKMScriptActions.AIAttackAdd,                             'AIAttackAdd');
       RegisterMethod(@TKMScriptActions.AIAttackRemove,                          'AIAttackRemove');
       RegisterMethod(@TKMScriptActions.AIAttackRemoveAll,                       'AIAttackRemoveAll');
+      RegisterMethod(@TKMScriptActions.AIAutoAttack,                            'AIAutoAttack');
       RegisterMethod(@TKMScriptActions.AIAutoAttackRange,                       'AIAutoAttackRange');
       RegisterMethod(@TKMScriptActions.AIAutoBuild,                             'AIAutoBuild');
       RegisterMethod(@TKMScriptActions.AIAutoDefence,                           'AIAutoDefence');

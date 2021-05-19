@@ -4,6 +4,9 @@ The KaM Remake mod is an attempt to reinvigorate the original “Knights and Mer
 
 The KaM Remake executable is freeware and is built by enthusiasts. Applications used: Delphi XE2 - Rio 10.3.3, FastMM4, Lazarus, OpenGL, OpenAL, Overbyte ICS, zLib, Ogg Vorbis, PNGImage, MadExcept, libZPlay.
 
+#### KaM Remake Maps and Campaigns repository
+All Maps and Campaigns are in the [kam_remake_maps repo](https://github.com/reyandme/kam_remake_maps "KaM Remake Maps and Campaigns repository") maps and campaigns
+
 #### Projects website
 
 <http://www.kamremake.com/about/>

@@ -367,7 +367,7 @@ var
   best: Cardinal;
 begin
   Result := nil;
-  best := 0; //Makes compiler happy
+  best := 0;
   for I := 0 to fList.Count - 1 do
     if fList[I].GetVisibleMinimap then
       if (Result = nil) or (fList[I].Expiration >= best) then

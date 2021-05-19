@@ -205,7 +205,7 @@ var
   PT: TKMPlayerTab;
 begin
   for PT := Low(TKMPlayerTab) to High(TKMPlayerTab) do
-    Button_Player[PT].Hint := GetHintWHotKey(TAB_HINT[PT], MAPED_SUBMENU_HOTKEYS[Ord(PT)]);
+    Button_Player[PT].Hint := GetHintWHotkey(TAB_HINT[PT], MAPED_SUBMENU_HOTKEYS[Ord(PT)]);
 end;
 
 

@@ -79,7 +79,7 @@ type
     procedure DoTilesLayers(aFOW: TKMFogOfWarCommon);
     procedure DoOverlays(aFOW: TKMFogOfWarCommon);
     procedure DoLighting(aFOW: TKMFogOfWarCommon);
-    procedure DoWater(aAnimStep: Integer; aFOW: TKMFogOfWarCommon);
+    procedure DoAnimations(aAnimStep: Integer; aFOW: TKMFogOfWarCommon);
     procedure DoShadows(aFOW: TKMFogOfWarCommon);
     function VBOSupported: Boolean;
     procedure RenderFence(aFence: TKMFenceKind; Pos: TKMDirection; pX,pY: Integer);
@@ -217,6 +217,9 @@ end;
 
 function TRenderTerrain.DoUseVBO: Boolean;
 begin
+  //VBO has proper vertice coords only for Light/Shadow
+  //it cant handle 3D yet and because of FOW leaves terrain revealed, which is an exploit in MP
+  //Thus we allow VBO only in 2D
   Result := VBOSupported and not RENDER_3D;
 end;
 
@@ -266,10 +269,10 @@ var
   fullTerId: Integer;
 begin
   fullTerId := aTexOffset + aTerId + 1;
-  Result := (aTerId < 256)
+  Result := (aTerId < 256) // Animation base terrain IDs are in the 'original' tileset
     and InRange(fullTerId, 5000, MAX_STATIC_TERRAIN_ID) //Animations are from 5000 to 10000
     and (gGFXData[rxTiles, fullTerId].Tex.ID <> 0)
-    and not InRange(fullTerId, 5549, 5600);
+    and not InRange(fullTerId, 5549, 5600); // These are used by masks
 //  if Result then
 //    if InRange(FullTerId, 305, 349) then
 //    begin
@@ -332,6 +335,7 @@ var
   end;
 
   function TryAddAnimTex(var aAnimCnt: Integer; aTX, aTY, aTexOffset: Word): Boolean;
+
     function SetAnimTileVertex(aTerrain: Word; aRotation: Byte): Boolean;
     var
       texAnimC: TUVRect;
@@ -361,6 +365,7 @@ var
         Result := True;
       end;
     end;
+
   var
     L: Integer;
   begin
@@ -631,7 +636,9 @@ begin
         begin
           tX := K + fClipRect.Left;
           tY := I + fClipRect.Top;
-          if TileHasToBeRendered(I*K = 0,tX,tY,aFow) then // Do not render tiles fully covered by FOW
+          if DO_DEBUG_TER_LAYERS and not (0 in DEBUG_TERRAIN_LAYERS) then Continue;
+
+          if TileHasToBeRendered(I*K = 0, tX, tY, aFow) then // Do not render tiles fully covered by FOW
           begin
             with Land^[tY,tX] do
             begin
@@ -705,6 +712,8 @@ begin
           if TileHasToBeRendered(I*K = 0,tX,tY,aFow) then // Do not render tiles fully covered by FOW
             for L := 0 to Land^[tY,tX].LayersCnt - 1 do
             begin
+              if DO_DEBUG_TER_LAYERS and not ((L + 1) in DEBUG_TERRAIN_LAYERS) then Continue;
+
               with Land^[tY,tX] do
               begin
                 TRender.BindTexture(gGFXData[rxTiles, Layer[L].Terrain+1].Tex.ID);
@@ -731,7 +740,7 @@ begin
 end;
 
 
-procedure TRenderTerrain.DoWater(aAnimStep: Integer; aFOW: TKMFogOfWarCommon);
+procedure TRenderTerrain.DoAnimations(aAnimStep: Integer; aFOW: TKMFogOfWarCommon);
 var
   I, K: Integer;
   AL: TAnimLayer;
@@ -765,7 +774,9 @@ begin
 
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-  end else begin
+  end
+  else
+  begin
     //Each new layer inflicts 10% fps drop
     for AL := Low(TAnimLayer) to High(TAnimLayer) do
     begin
@@ -1232,10 +1243,8 @@ end;
 //aFOW - whose players FOW to apply
 procedure TRenderTerrain.RenderBase(aAnimStep: Integer; aFOW: TKMFogOfWarCommon);
 begin
-  //VBO has proper vertice coords only for Light/Shadow
-  //it cant handle 3D yet and because of FOW leaves terrain revealed, which is an exploit in MP
-  //Thus we allow VBO only in 2D
-  fUseVBO := DoUseVBO;
+  // Don't use VBO when do debug terrain layers (there is no debug code in UpdateVBO). Its okay for debug
+  fUseVBO := DoUseVBO and not DO_DEBUG_TER_LAYERS;
 
   UpdateVBO(aAnimStep, aFOW);
 
@@ -1246,13 +1255,13 @@ begin
   DoTiles(aFOW);
   //It was 'unlit water goes above lit sand'
   //But there is no big difference there, that is why, to make possible transitions with water,
-  //Water was put before DoLighting
-  DoWater(aAnimStep, aFOW);
+  //Animations was put before DoLighting
+  DoAnimations(aAnimStep, aFOW);
   //TileLayers after water, as water with animation is always base layer
   DoTilesLayers(aFOW);
   DoOverlays(aFOW);
   DoLighting(aFOW);
-//  DoWater(aAnimStep, aFOW);
+//  DoAnimations(aAnimStep, aFOW);
   DoShadows(aFOW);
 
   {$IFDEF PERFLOG}

@@ -16,8 +16,6 @@ uses
 
   function IfThenS(aCondition: Boolean; const aIfTrue, aIfFalse: String): String;
 
-  function KMGetCursorDirection(X,Y: integer): TKMDirection;
-
   function GetPositionInGroup2(OriginX, OriginY: Word; aDir: TKMDirection; aIndex, aUnitPerRow: Word; MapX, MapY: Word; out aTargetCanBeReached: Boolean): TKMPoint;
   function GetPositionFromIndex(const aOrigin: TKMPoint; aIndex: Byte): TKMPoint;
 
@@ -57,8 +55,10 @@ uses
   function StrToHex(const S: String): String;
   function HexToStr(const H: String): String;
 
-  function WrapColor(const aText: UnicodeString; aColor: Cardinal): UnicodeString;
+  function WrapColor(aValue: Integer; aColor: Cardinal): UnicodeString; overload;
+  function WrapColor(const aText: UnicodeString; aColor: Cardinal): UnicodeString; overload;
   function WrapColorA(const aText: AnsiString; aColor: Cardinal): AnsiString;
+  function WrapWrappedColor(const aText: UnicodeString; aColor: Cardinal): UnicodeString;
   function StripColor(const aText: UnicodeString): UnicodeString;
   function GetContrastTextColor(aBackgroundColor: Cardinal): Cardinal;
   function FindMPColor(aColor: Cardinal): Integer;
@@ -142,6 +142,7 @@ uses
 
   function CountOccurrences(const aSubstring, aText: String): Integer;
   function IntToBool(aValue: Integer): Boolean;
+  function HumanRound(X: Extended): Integer;
 
   //String functions
   function GetNextWordPos(const aStr: String; aPos: Integer): Integer;
@@ -197,12 +198,6 @@ begin
     Result := aIfFalse;
 end;
 
-
-//Taken from KromUtils to reduce dependancies (required so the dedicated server compiles on Linux without using Controls)
-function GetLength(A,B: Single): Single;
-begin
-  Result := Sqrt(Sqr(A) + Sqr(B));
-end;
 
 procedure KMSwapInt(var A,B: Byte);
 var
@@ -559,23 +554,6 @@ end;
 function MapSizeText(aMapSize: TKMMapSize): UnicodeString;
 begin
   Result := MAP_SIZES[aMapSize];
-end;
-
-
-function KMGetCursorDirection(X,Y: Integer): TKMDirection;
-var Ang, Dist: Single;
-begin
-  Dist := GetLength(X, Y);
-  if Dist > DIR_CURSOR_NA_RAD then
-  begin
-    //Convert XY to angle value
-    Ang := ArcTan2(Y/Dist, X/Dist) / Pi * 180;
-
-    //Convert angle value to direction
-    Result := TKMDirection((Round(Ang + 270 + 22.5) mod 360) div 45 + 1);
-  end
-  else
-    Result := dirNA;
 end;
 
 
@@ -1085,11 +1063,25 @@ begin
 end;
 
 
+function WrapColor(aValue: Integer; aColor: Cardinal): UnicodeString;
+begin
+  Result := WrapColor(IntToStr(aValue), aColor);
+end;
+
+
 //Make a string wrapped into color code
 function WrapColor(const aText: UnicodeString; aColor: Cardinal): UnicodeString;
 begin
   Result := '[$' + IntToHex(aColor and $00FFFFFF, 6) + ']' + aText + '[]';
 end;
+
+
+// Do not close color tag, its useful for wrapping inside other wrapped colored text
+function WrapWrappedColor(const aText: UnicodeString; aColor: Cardinal): UnicodeString;
+begin
+  Result := '[$' + IntToHex(aColor and $00FFFFFF, 6) + ']' + aText;
+end;
+
 
 
 function WrapColorA(const aText: AnsiString; aColor: Cardinal): AnsiString;
@@ -1509,6 +1501,20 @@ end;
 function IntToBool(aValue: Integer): Boolean;
 begin
   Result := aValue <> 0;
+end;
+
+
+// use this to not get "banker's rounding"
+function HumanRound(X: Extended): Integer;
+// Rounds a number "normally": if the fractional
+// part is >= 0.5 the number is rounded up (see RoundUp)
+// Otherwise, if the fractional part is < 0.5, the
+// number is rounded down
+//   RoundN(3.5) = 4     RoundN(-3.5) = -4
+//   RoundN(3.1) = 3     RoundN(-3.1) = -3
+begin
+  // Trunc() does nothing except conv to integer.  needed because return type of Int() is Extended
+  Result := Trunc(Int(X) + Int(Frac(X) * 2));
 end;
 
 

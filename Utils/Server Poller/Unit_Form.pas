@@ -46,7 +46,7 @@ begin
   Application.OnIdle := DoIdle;
   ExeDir := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\');
 
-  fServerSettings := TKMServerSettings.Create;
+  fServerSettings := TKMServerSettings.Create(True);
 
   Label1.Caption := 'Master-server: ' + fServerSettings.MasterServerAddress;
 

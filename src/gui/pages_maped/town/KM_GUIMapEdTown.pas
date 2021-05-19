@@ -228,7 +228,7 @@ var
   TT: TKMTownTab;
 begin
   for TT := Low(TKMTownTab) to High(TKMTownTab) do
-    Button_Town[TT].Hint := GetHintWHotKey(TAB_HINT[TT], MAPED_SUBMENU_HOTKEYS[Ord(TT)]);
+    Button_Town[TT].Hint := GetHintWHotkey(TAB_HINT[TT], MAPED_SUBMENU_HOTKEYS[Ord(TT)]);
 
   fGuiHouses.UpdateHotkeys;
   fGuiUnits.UpdateHotkeys;

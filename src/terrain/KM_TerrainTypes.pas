@@ -9,7 +9,14 @@ uses
 
 type
   TKMTileOverlay = (toNone, toDig1, toDig2, toDig3, toDig4, toRoad);
+
+  // Tile corners
+  //  ____
+  // |0 1|
+  // |3 2|
+  //  ---
   TKMTileCorners = array [0..3] of Boolean;
+
   TKMVertexUsage = (vuNone=0,  //Nobody is on this vertex
                     vuNWSE,    //Vertex is used NW-SE like this: \
                     vuNESW);   //Vertex is used NE-SW like this: /

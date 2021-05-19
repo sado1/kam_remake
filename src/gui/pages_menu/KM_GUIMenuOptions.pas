@@ -40,8 +40,10 @@ type
   protected
     Panel_Options: TKMPanel;
       Panel_Options_GFX: TKMPanel;
-        TrackBar_Options_Brightness: TKMTrackBar;
+        CheckBox_Options_LerpRender: TKMCheckBox;
         CheckBox_Options_VSync: TKMCheckBox;
+        CheckBox_Options_ShadowQuality: TKMCheckBox;
+        TrackBar_Options_Brightness: TKMTrackBar;
       Panel_Options_Video: TKMPanel;
         CheckBox_Options_VideoEnable: TKMCheckBox;
         CheckBox_Options_VideoStartup: TKMCheckBox;
@@ -51,7 +53,6 @@ type
 
       Panel_Options_Fonts: TKMPanel;
         CheckBox_Options_FullFonts: TKMCheckBox;
-        CheckBox_Options_ShadowQuality: TKMCheckBox;
       Panel_Options_Ctrl: TKMPanel;
         TrackBar_Options_ScrollSpeed: TKMTrackBar;
       Panel_Options_Game: TKMPanel;
@@ -112,7 +113,7 @@ const
   end;
 
 var
-  I, top, bottomLine, lineCnt: Integer;
+  I, top, bottomLine, lineCnt, panelTop: Integer;
   str: string;
 begin
   inherited Create(gpOptions);
@@ -121,7 +122,8 @@ begin
   OnEscKeyDown := EscKeyDown;
   // We cant pass pointers to Settings in here cos on GUI creation fMain/gGameApp are not initialized yet
 
-  Panel_Options := TKMPanel.Create(aParent,(aParent.Width - 880) div 2,(aParent.Height - 580) div 2,880, aParent.Height);
+  panelTop := (aParent.Height - 620) div 2;
+  Panel_Options := TKMPanel.Create(aParent,(aParent.Width - 880) div 2, panelTop, 880, aParent.Height - panelTop);
   Panel_Options.AnchorsStretch;
 
   with TKMImage.Create(Panel_Options,705 - Panel_Options.Left,220 - Panel_Options.Top,round(207*1.3),round(295*1.3),6,rxGuiMain) do
@@ -132,9 +134,8 @@ begin
 
     //--- Column 1 --------------------------------------------------------------
 
-
     top := 0;
-    bottomLine := 30+gResLocales.Count*20+10;
+    bottomLine := 30 + gResLocales.Count*20 + 10;
 
     // Resolutions section
     Panel_Options_Res := TKMPanel.Create(Panel_Options, 0, top, 280, 175);
@@ -156,21 +157,24 @@ begin
       Button_Options_ResApply.OnClick := ApplyResolution;
 
     // Graphics section
-    Panel_Options_GFX := TKMPanel.Create(Panel_Options,0,top,280,125);
+    Panel_Options_GFX := TKMPanel.Create(Panel_Options, 0, top, 280, 145);
     NextBlock(top, Panel_Options_GFX);
     Panel_Options_GFX.Anchors := [anLeft];
       TKMLabel.Create(Panel_Options_GFX,6,0,270,20,gResTexts[TX_MENU_OPTIONS_GRAPHICS],fntOutline,taLeft);
-      TKMBevel.Create(Panel_Options_GFX,0,20,280,105);
-      CheckBox_Options_VSync := TKMCheckBox.Create(Panel_Options_GFX, 10, 30, 260, 20, gResTexts[TX_MENU_OPTIONS_VSYNC], fntMetal);
+      TKMBevel.Create(Panel_Options_GFX,0,20,280,125);
+      CheckBox_Options_LerpRender := TKMCheckBox.Create(Panel_Options_GFX, 10, 30, 260, 20, gResTexts[TX_MENU_OPTIONS_LERP_RENDER], fntMetal);
+      CheckBox_Options_LerpRender.Hint := gResTexts[TX_SETTINGS_LERP_RENDER_HINT];
+      CheckBox_Options_LerpRender.OnClick := Change;
+      CheckBox_Options_VSync := TKMCheckBox.Create(Panel_Options_GFX, 10, 50, 260, 20, gResTexts[TX_MENU_OPTIONS_VSYNC], fntMetal);
       CheckBox_Options_VSync.OnClick := Change;
-      CheckBox_Options_ShadowQuality := TKMCheckBox.Create(Panel_Options_GFX, 10, 50, 260, 20, gResTexts[TX_MENU_OPTIONS_SHADOW_QUALITY], fntMetal);
+      CheckBox_Options_ShadowQuality := TKMCheckBox.Create(Panel_Options_GFX, 10, 70, 260, 20, gResTexts[TX_MENU_OPTIONS_SHADOW_QUALITY], fntMetal);
       CheckBox_Options_ShadowQuality.OnClick := Change;
-      TrackBar_Options_Brightness:=TKMTrackBar.Create(Panel_Options_GFX,10,70,256,OPT_SLIDER_MIN,OPT_SLIDER_MAX);
+      TrackBar_Options_Brightness := TKMTrackBar.Create(Panel_Options_GFX, 10, 90, 256, OPT_SLIDER_MIN,OPT_SLIDER_MAX);
       TrackBar_Options_Brightness.Caption := gResTexts[TX_MENU_OPTIONS_BRIGHTNESS];
       TrackBar_Options_Brightness.OnChange:=Change;
 
     // Videos
-    Panel_Options_Video := TKMPanel.Create(Panel_Options,0,top,280,195);
+    Panel_Options_Video := TKMPanel.Create(Panel_Options, 0, top, 280, 195);
     NextBlock(top, Panel_Options_Video);
     Panel_Options_Video.Anchors := [anLeft];
       TKMLabel.Create(Panel_Options_Video,6,0,270,20,gResTexts[TX_MENU_OPTIONS_VIDEOS],fntOutline,taLeft);
@@ -195,7 +199,7 @@ begin
     {$ENDIF}
 
     // Back button
-    Button_OptionsBack := TKMButton.Create(Panel_Options,0,bottomLine,280,30,gResTexts[TX_MENU_BACK],bsMenu);
+    Button_OptionsBack := TKMButton.Create(Panel_Options, 0, bottomLine, 280, 30, gResTexts[TX_MENU_BACK], bsMenu);
     Button_OptionsBack.Anchors := [anLeft];
     Button_OptionsBack.OnClick := BackClick;
 
@@ -203,7 +207,7 @@ begin
 
     top := 0;
     // SFX section
-    Panel_Options_Sound := TKMPanel.Create(Panel_Options,300,top,280,175);
+    Panel_Options_Sound := TKMPanel.Create(Panel_Options, 300, top, 280, 175);
     NextBlock(top, Panel_Options_Sound);
     Panel_Options_Sound.Anchors := [anLeft];
       TKMLabel.Create(Panel_Options_Sound,6,0,270,20,gResTexts[TX_MENU_OPTIONS_SOUND],fntOutline,taLeft);
@@ -221,7 +225,7 @@ begin
       CheckBox_Options_ShuffleOn.OnClick := Change;
 
     // Controls section
-    Panel_Options_Ctrl := TKMPanel.Create(Panel_Options,300,top,280,125);
+    Panel_Options_Ctrl := TKMPanel.Create(Panel_Options, 300, top, 280, 145);
     NextBlock(top, Panel_Options_Ctrl);
     Panel_Options_Ctrl.Anchors := [anLeft];
       TKMLabel.Create(Panel_Options_Ctrl,6,0,270,20,gResTexts[TX_MENU_OPTIONS_CONTROLS],fntOutline,taLeft);
@@ -240,7 +244,7 @@ begin
     str := gResTexts[TX_MENU_OPTIONS_MAKE_SAVEPOINTS];
     gRes.Fonts[fntMetal].GetTextSize(str, lineCnt);
 
-    Panel_Options_Game := TKMPanel.Create(Panel_Options,300,top,280,70 + 20*lineCnt);
+    Panel_Options_Game := TKMPanel.Create(Panel_Options, 300, top, 280, 70 + 20*lineCnt);
     NextBlock(top, Panel_Options_Game, -5);
     Panel_Options_Game.Anchors := [anLeft];
 
@@ -326,27 +330,28 @@ procedure TKMMenuOptions.Refresh;
 begin
   Init;
 
-  CheckBox_Options_Autosave.Checked        := gGameSettings.Autosave;
+  CheckBox_Options_Autosave.Checked          := gGameSettings.Autosave;
   CheckBox_Options_AutosaveAtGameEnd.Checked := gGameSettings.AutosaveAtGameEnd;
-  CheckBox_Options_ReplayAutopause.Checked := gGameSettings.ReplayAutopause;
-  TrackBar_Options_Brightness.Position     := gGameSettings.Brightness;
-  CheckBox_Options_VSync.Checked           := fMainSettings.VSync;
-  CheckBox_Options_FullFonts.Enabled       := not gResLocales.LocaleByCode(gGameSettings.Locale).NeedsFullFonts;
-  CheckBox_Options_FullFonts.Checked       := gGameSettings.LoadFullFonts or not CheckBox_Options_FullFonts.Enabled;
-  CheckBox_Options_ShadowQuality.Checked   := gGameSettings.AlphaShadows;
-  TrackBar_Options_ScrollSpeed.Position    := gGameSettings.ScrollSpeed;
-  TrackBar_Options_SFX.Position            := Round(gGameSettings.SoundFXVolume * TrackBar_Options_SFX.MaxValue);
-  TrackBar_Options_Music.Position          := Round(gGameSettings.MusicVolume * TrackBar_Options_Music.MaxValue);
-  CheckBox_Options_MusicOff.Checked        := gGameSettings.MusicOff;
-  TrackBar_Options_Music.Enabled           := not CheckBox_Options_MusicOff.Checked;
-  CheckBox_Options_ShuffleOn.Checked       := gGameSettings.ShuffleOn;
-  CheckBox_Options_ShuffleOn.Enabled       := not CheckBox_Options_MusicOff.Checked;
-  CheckBox_Options_VideoEnable.Checked     := gGameSettings.VideoOn;
-  CheckBox_Options_VideoStretch.Checked    := gGameSettings.VideoStretch;
-  CheckBox_Options_VideoStretch.Enabled    := gGameSettings.VideoOn;
-  CheckBox_Options_VideoStartup.Checked    := gGameSettings.VideoStartup;
-  CheckBox_Options_VideoStartup.Enabled    := gGameSettings.VideoOn;
-  TrackBar_Options_VideoVolume.Position    := Round(gGameSettings.VideoVolume * TrackBar_Options_VideoVolume.MaxValue);
+  CheckBox_Options_ReplayAutopause.Checked   := gGameSettings.ReplayAutopause;
+  TrackBar_Options_Brightness.Position       := gGameSettings.Brightness;
+  CheckBox_Options_LerpRender.Checked        := gGameSettings.InterpolatedRender;
+  CheckBox_Options_VSync.Checked             := fMainSettings.VSync;
+  CheckBox_Options_FullFonts.Enabled         := not gResLocales.LocaleByCode(gGameSettings.Locale).NeedsFullFonts;
+  CheckBox_Options_FullFonts.Checked         := gGameSettings.LoadFullFonts or not CheckBox_Options_FullFonts.Enabled;
+  CheckBox_Options_ShadowQuality.Checked     := gGameSettings.AlphaShadows;
+  TrackBar_Options_ScrollSpeed.Position      := gGameSettings.ScrollSpeed;
+  TrackBar_Options_SFX.Position              := Round(gGameSettings.SoundFXVolume * TrackBar_Options_SFX.MaxValue);
+  TrackBar_Options_Music.Position            := Round(gGameSettings.MusicVolume * TrackBar_Options_Music.MaxValue);
+  CheckBox_Options_MusicOff.Checked          := gGameSettings.MusicOff;
+  TrackBar_Options_Music.Enabled             := not CheckBox_Options_MusicOff.Checked;
+  CheckBox_Options_ShuffleOn.Checked         := gGameSettings.ShuffleOn;
+  CheckBox_Options_ShuffleOn.Enabled         := not CheckBox_Options_MusicOff.Checked;
+  CheckBox_Options_VideoEnable.Checked       := gGameSettings.VideoOn;
+  CheckBox_Options_VideoStretch.Checked      := gGameSettings.VideoStretch;
+  CheckBox_Options_VideoStretch.Enabled      := gGameSettings.VideoOn;
+  CheckBox_Options_VideoStartup.Checked      := gGameSettings.VideoStartup;
+  CheckBox_Options_VideoStartup.Enabled      := gGameSettings.VideoOn;
+  TrackBar_Options_VideoVolume.Position      := Round(gGameSettings.VideoVolume * TrackBar_Options_VideoVolume.MaxValue);
   //Disable Video volume util we will fix it
   //Video volume is set via windows mixer now, and it affect all other game sounds/music after the end of video playback
   TrackBar_Options_VideoVolume.Enabled     := False; //gGameSettings.VideoOn;
@@ -370,23 +375,24 @@ begin
   musicToggled := (gGameSettings.MusicOff <> CheckBox_Options_MusicOff.Checked);
   shuffleToggled := (gGameSettings.ShuffleOn <> CheckBox_Options_ShuffleOn.Checked);
 
-  gGameSettings.Autosave        := CheckBox_Options_Autosave.Checked;
-  gGameSettings.AutosaveAtGameEnd := CheckBox_Options_AutosaveAtGameEnd.Checked;
-  gGameSettings.ReplayAutopause := CheckBox_Options_ReplayAutopause.Checked;
-  gGameSettings.Brightness      := TrackBar_Options_Brightness.Position;
-  fMainSettings.VSync           := CheckBox_Options_VSync.Checked;
-  gGameSettings.AlphaShadows    := CheckBox_Options_ShadowQuality.Checked;
-  gGameSettings.ScrollSpeed     := TrackBar_Options_ScrollSpeed.Position;
-  gGameSettings.SoundFXVolume   := TrackBar_Options_SFX.Position / TrackBar_Options_SFX.MaxValue;
-  gGameSettings.MusicVolume     := TrackBar_Options_Music.Position / TrackBar_Options_Music.MaxValue;
-  gGameSettings.MusicOff        := CheckBox_Options_MusicOff.Checked;
-  gGameSettings.ShuffleOn       := CheckBox_Options_ShuffleOn.Checked;
-  gGameSettings.VideoOn         := CheckBox_Options_VideoEnable.Checked;
-  gGameSettings.VideoStretch    := CheckBox_Options_VideoStretch.Checked;
-  gGameSettings.VideoStartup    := CheckBox_Options_VideoStartup.Checked;
-  gGameSettings.VideoVolume     := TrackBar_Options_VideoVolume.Position / TrackBar_Options_VideoVolume.MaxValue;
-  gGameSettings.AllowSnowHouses := CheckBox_Options_SnowHouses.Checked;
-  gGameSettings.SaveCheckpoints := CheckBox_MakeSavePoints.Checked;
+  gGameSettings.Autosave           := CheckBox_Options_Autosave.Checked;
+  gGameSettings.AutosaveAtGameEnd  := CheckBox_Options_AutosaveAtGameEnd.Checked;
+  gGameSettings.ReplayAutopause    := CheckBox_Options_ReplayAutopause.Checked;
+  gGameSettings.Brightness         := TrackBar_Options_Brightness.Position;
+  gGameSettings.InterpolatedRender := CheckBox_Options_LerpRender.Checked;
+  fMainSettings.VSync              := CheckBox_Options_VSync.Checked;
+  gGameSettings.AlphaShadows       := CheckBox_Options_ShadowQuality.Checked;
+  gGameSettings.ScrollSpeed        := TrackBar_Options_ScrollSpeed.Position;
+  gGameSettings.SoundFXVolume      := TrackBar_Options_SFX.Position / TrackBar_Options_SFX.MaxValue;
+  gGameSettings.MusicVolume        := TrackBar_Options_Music.Position / TrackBar_Options_Music.MaxValue;
+  gGameSettings.MusicOff           := CheckBox_Options_MusicOff.Checked;
+  gGameSettings.ShuffleOn          := CheckBox_Options_ShuffleOn.Checked;
+  gGameSettings.VideoOn            := CheckBox_Options_VideoEnable.Checked;
+  gGameSettings.VideoStretch       := CheckBox_Options_VideoStretch.Checked;
+  gGameSettings.VideoStartup       := CheckBox_Options_VideoStartup.Checked;
+  gGameSettings.VideoVolume        := TrackBar_Options_VideoVolume.Position / TrackBar_Options_VideoVolume.MaxValue;
+  gGameSettings.AllowSnowHouses    := CheckBox_Options_SnowHouses.Checked;
+  gGameSettings.SaveCheckpoints    := CheckBox_MakeSavePoints.Checked;
 
   TrackBar_Options_Music.Enabled      := not CheckBox_Options_MusicOff.Checked;
   CheckBox_Options_ShuffleOn.Enabled  := not CheckBox_Options_MusicOff.Checked;

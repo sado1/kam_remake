@@ -18,6 +18,7 @@ call rsvars_local.bat
 @SET FrameworkDir=%FrameworkDir_LOCAL%
 @SET FrameworkVersion=%FrameworkVersion_LOCAL%
 @SET FrameworkSDKDir=%FrameworkSDKDir_LOCAL%
+@SET KmrMapsRepoDir=%KmrMapsRepoDir_LOCAL%
 @SET KaMOrigDir=%KaMOrigDir_LOCAL%
 @SET KMRPrevVersionDir=%KMRPrevVersionDir_LOCAL%
 @SET BuildFullDir=%BuildFullDir_LOCAL%

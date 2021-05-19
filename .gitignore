@@ -21,6 +21,11 @@
 *.mp4
 *.log.txt
 bugreport.txt
+/Campaigns
+/Maps
+/MapsDL
+/MapsMP
+/Tutorials
 /.idea
 /bat/rsvars_local.bat
 /bat/build_time.txt
@@ -72,8 +77,6 @@ __recovery
 /Music/24 - Household.mp3
 
 Trees.txt
-
-MapsDL/
 
 kmr_dev.xml
 KaM Remake Settings.xml

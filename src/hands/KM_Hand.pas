@@ -108,6 +108,7 @@ type
     function GetDeliveries: TKMHandLogistics;
     procedure SetHandType(const Value: TKMHandType);
     procedure SetEnabled(const Value: Boolean);
+    function GetFlagTextColor: Cardinal;
   public
 
     InCinematic: Boolean;
@@ -145,6 +146,7 @@ type
     property CanBeHuman: Boolean read fCanBeHuman write fCanBeHuman;
     property CanBeAITypes: TKMAITypeSet read fCanBeAITypes;
     property FlagColor: Cardinal read fFlagColor write SetFlagColor;
+    property FlagTextColor: Cardinal read GetFlagTextColor;
     property TeamColor: Cardinal read fTeamColor write fTeamColor;
     property GameFlagColor: Cardinal read GetGameFlagColor;
     property FlagColorIndex: Byte read GetColorIndex;
@@ -253,7 +255,8 @@ uses
   KM_HandsCollection, KM_Sound, KM_AIFields, KM_MapEditorHistory,
   KM_Resource, KM_ResSound, KM_ResTexts, KM_ResMapElements, KM_ScriptingEvents, KM_ResUnits,
   KM_CommonUtils, KM_GameSettings,
-  KM_UnitGroupTypes;
+  KM_UnitGroupTypes,
+  KM_MapTypes;
 
 const
   TIME_TO_SET_FIRST_STOREHOUSE = 10*60*2; //We give 2 minutes to set first storehouse, otherwise player will be defeated
@@ -283,8 +286,8 @@ begin
   Result := fUnits.AddUnit(fID, aUnitType, aLoc, True);
 
   if gGameParams.IsMapEditor and aMakeCheckpoint then
-    gGame.MapEditor.History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH],
-                                                           [gRes.Units[aUnitType].GUIName, aLoc.ToString]));
+    gGame.MapEditor.History.MakeCheckpoint(caUnits, gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH,
+                                                              [gRes.Units[aUnitType].GUIName, aLoc.ToString]]);
 end;
 
 
@@ -464,8 +467,8 @@ begin
   if gGameParams.IsMapEditor then
   begin
     if aMakeCheckpoint then
-      gGame.MapEditor.History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH],
-                                                            [gRes.Units[aUnitType].GUIName, aLoc.ToString]));
+      gGame.MapEditor.History.MakeCheckpoint(caUnits, gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH,
+                                                                [gRes.Units[aUnitType].GUIName, aLoc.ToString]]);
 
     Exit;
   end;
@@ -596,8 +599,8 @@ begin
     Result.OnGroupDied := GroupDied;
 
   if gGameParams.IsMapEditor and aMakeCheckpoint then
-    gGame.MapEditor.History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH],
-                                                           [gRes.Units[aUnitType].GUIName, Position.ToString]));
+    gGame.MapEditor.History.MakeCheckpoint(caUnits, gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH,
+                                                              [gRes.Units[aUnitType].GUIName, Position.ToString]]);
 
   //Units will be added to statistic inside the function for some units may not fit on map
 end;
@@ -1607,12 +1610,12 @@ begin
     if AI.Setup.NewAI then
     begin
       if numberedAIs then
-        Result := Format(gResTexts[TX_ADVANCED_AI_PLAYER_SHORT_X], [fID + 1])
+        Result := gResTexts[TX_ADVANCED_AI_PLAYER_SHORT_X, [fID + 1]]
       else
         Result := gResTexts[TX_AI_PLAYER_ADVANCED_SHORT];
     end else begin
       if numberedAIs then
-        Result := Format(gResTexts[TX_CLASSIC_AI_PLAYER_SHORT_X], [fID + 1])
+        Result := gResTexts[TX_CLASSIC_AI_PLAYER_SHORT_X, [fID + 1]]
       else
         Result := gResTexts[TX_AI_PLAYER_CLASSIC_SHORT];
     end;
@@ -1785,6 +1788,12 @@ begin
       for K := 1 to gTerrain.MapX do
         if gTerrain.Land^[I,K].TileOwner = fID then
           Inc(Result);
+end;
+
+
+function TKMHand.GetFlagTextColor: Cardinal;
+begin
+  Result := FlagColorToTextColor(fFlagColor);
 end;
 
 

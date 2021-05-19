@@ -343,11 +343,11 @@ begin
 
     Image_Store_NotAccept[I] := TKMImage.Create(Panel_HouseStore, dX + 20, dY, 12, 12, 49);
     Image_Store_NotAccept[I].Hitable := False;
-    Image_Store_NotAccept[I].Hint := Format(gResTexts[TX_HOUSE_DELIVERY_PROHIBITED_HINT], [gRes.Wares[StoreResType[I]].Title]);
+    Image_Store_NotAccept[I].Hint := gResTexts[TX_HOUSE_DELIVERY_PROHIBITED_HINT, [gRes.Wares[StoreResType[I]].Title]];
 
     Image_Store_NotAllowTakeOut[I] := TKMImage.Create(Panel_HouseStore, dX, dY, 12, 12, 676);
     Image_Store_NotAllowTakeOut[I].Hitable := False;
-    Image_Store_NotAllowTakeOut[I].Hint := Format(gResTexts[TX_HOUSE_TAKEOUT_PROHIBITED_HINT], [gRes.Wares[StoreResType[I]].Title]);
+    Image_Store_NotAllowTakeOut[I].Hint := gResTexts[TX_HOUSE_TAKEOUT_PROHIBITED_HINT, [gRes.Wares[StoreResType[I]].Title]];
   end;
 end;
 
@@ -475,10 +475,10 @@ begin
 
       Image_Barracks_NotAccept[I] := TKMImage.Create(Panel_HouseBarracks, dX+16, dY, 12, 12, 49);
       Image_Barracks_NotAccept[I].Hitable := False;
-      Image_Barracks_NotAccept[I].Hint := Format(gResTexts[TX_HOUSE_DELIVERY_PROHIBITED_HINT], [gRes.Wares[BarracksResType[I]].Title]);
+      Image_Barracks_NotAccept[I].Hint := gResTexts[TX_HOUSE_DELIVERY_PROHIBITED_HINT, [gRes.Wares[BarracksResType[I]].Title]];
       Image_Barracks_NotAllowTakeOut[I] := TKMImage.Create(Panel_HouseBarracks, dX, dY, 12, 12, 676);
       Image_Barracks_NotAllowTakeOut[I].Hitable := False;
-      Image_Barracks_NotAllowTakeOut[I].Hint := Format(gResTexts[TX_HOUSE_TAKEOUT_PROHIBITED_HINT], [gRes.Wares[BarracksResType[I]].Title]);
+      Image_Barracks_NotAllowTakeOut[I].Hint := gResTexts[TX_HOUSE_TAKEOUT_PROHIBITED_HINT, [gRes.Wares[BarracksResType[I]].Title]];
     end;
 
     dX := (BARRACKS_RES_COUNT mod 6) * 31;
@@ -594,15 +594,15 @@ begin
   Label_House.Width := TB_WIDTH - Label_House.Left;
 
   Image_PlayerFlag.FlagColor := gHands[aHouse.Owner].FlagColor;
-  Image_PlayerFlag.Hint      := Format(gResTexts[TX_PLAYER_FLAG_HINT], [gHands[aHouse.Owner].OwnerName]);
+  Image_PlayerFlag.Hint      := gResTexts[TX_PLAYER_FLAG_HINT, [gHands[aHouse.Owner].OwnerName]];
   Image_House_Logo.TexID     := gRes.Houses[aHouse.HouseType].GUIIcon;
-  Image_House_Worker.TexID   := gRes.Units[gRes.Houses[aHouse.HouseType].OwnerType].GUIIcon;
-  Image_House_Worker.Hint    := gRes.Units[gRes.Houses[aHouse.HouseType].OwnerType].GUIName;
+  Image_House_Worker.TexID   := gRes.Units[gRes.Houses[aHouse.HouseType].WorkerType].GUIIcon;
+  Image_House_Worker.Hint    := gRes.Units[gRes.Houses[aHouse.HouseType].WorkerType].GUIName;
   Image_House_Worker.FlagColor := gHands[aHouse.Owner].FlagColor;
 
-  Button_House_Worker.TexID  := gRes.Units[gRes.Houses[aHouse.HouseType].OwnerType].GUIIcon;
+  Button_House_Worker.TexID  := gRes.Units[gRes.Houses[aHouse.HouseType].WorkerType].GUIIcon;
   HandleHouseClosedForWorker(aHouse);
-  Button_House_Worker.Hint := Format(gResTexts[TX_HOUSES_CLOSED_FOR_WORKER_HINT], [gRes.Units[gRes.Houses[aHouse.HouseType].OwnerType].GUIName]);
+  Button_House_Worker.Hint := gResTexts[TX_HOUSES_CLOSED_FOR_WORKER_HINT, [gRes.Units[gRes.Houses[aHouse.HouseType].WorkerType].GUIName]];
   Button_House_Worker.FlagColor := gHands[aHouse.Owner].FlagColor;
 
   HealthBar_House.Caption   := IntToStr(round(aHouse.GetHealth)) + '/' + IntToStr(gRes.Houses[aHouse.HouseType].MaxHealth);
@@ -639,7 +639,7 @@ begin
     Label_House.Show;
     Image_PlayerFlag.Show;
     Image_House_Logo.Show;
-    Image_House_Worker.Visible := gRes.Houses[aHouse.HouseType].OwnerType <> utNone;
+    Image_House_Worker.Visible := gRes.Houses[aHouse.HouseType].CanHasWorker;
     Button_House_Worker.Hide;
     HealthBar_House.Show;
     Panel_House.Show;
@@ -647,7 +647,7 @@ begin
   end;
 
   Image_House_Worker.Hide;
-  Button_House_Worker.Visible := gRes.Houses[aHouse.HouseType].OwnerType <> utNone;
+  Button_House_Worker.Visible := gRes.Houses[aHouse.HouseType].CanHasWorker;
 
   Button_HouseDeliveryMode.Enabled := aHouse.AllowDeliveryModeChange;
   Button_HouseDeliveryMode.Show;
@@ -899,29 +899,29 @@ end;
 procedure TKMGUIGameHouse.UpdateHotkeys;
 begin
   // School
-  Button_School_Left.Hint := GetHintWHotKey(TX_HOUSE_SCHOOL_PREV_HINT, kfTrainGotoPrev);
-  Button_School_Right.Hint := GetHintWHotKey(TX_HOUSE_SCHOOL_NEXT_HINT, kfTrainGotoNext);
+  Button_School_Left.Hint := GetHintWHotkey(TX_HOUSE_SCHOOL_PREV_HINT, kfTrainGotoPrev);
+  Button_School_Right.Hint := GetHintWHotkey(TX_HOUSE_SCHOOL_NEXT_HINT, kfTrainGotoNext);
 
   if not gMySpectator.Hand.Locks.GetUnitBlocked(School_Order[fLastSchoolUnit]) then
-    Button_School_Train.Hint := GetHintWHotKey(TX_HOUSE_SCHOOL_TRAIN_HINT, kfTrainEquipUnit)
+    Button_School_Train.Hint := GetHintWHotkey(TX_HOUSE_SCHOOL_TRAIN_HINT, kfTrainEquipUnit)
   else
     Button_School_Train.Hint := gResTexts[TX_HOUSE_SCHOOL_TRAIN_DISABLED_HINT];
 
   // Barracks
-  Button_Barracks_Left.Hint := GetHintWHotKey(TX_HOUSE_BARRACKS_PREV_HINT, kfTrainGotoPrev);
-  Button_Barracks_Right.Hint := GetHintWHotKey(TX_HOUSE_BARRACKS_NEXT_HINT, kfTrainGotoNext);
+  Button_Barracks_Left.Hint := GetHintWHotkey(TX_HOUSE_BARRACKS_PREV_HINT, kfTrainGotoPrev);
+  Button_Barracks_Right.Hint := GetHintWHotkey(TX_HOUSE_BARRACKS_NEXT_HINT, kfTrainGotoNext);
 
   if not gMySpectator.Hand.Locks.GetUnitBlocked(Barracks_Order[fLastBarracksUnit]) then
-    Button_Barracks_Train.Hint := GetHintWHotKey(TX_HOUSE_BARRACKS_TRAIN_HINT, kfTrainEquipUnit)
+    Button_Barracks_Train.Hint := GetHintWHotkey(TX_HOUSE_BARRACKS_TRAIN_HINT, kfTrainEquipUnit)
   else
     Button_Barracks_Train.Hint := gResTexts[TX_HOUSE_BARRACKS_TRAIN_DISABLED_HINT];
 
   // Townhall
-  Button_TH_Left.Hint := GetHintWHotKey(TX_HOUSE_BARRACKS_PREV_HINT, kfTrainGotoPrev);
-  Button_TH_Right.Hint := GetHintWHotKey(TX_HOUSE_BARRACKS_NEXT_HINT, kfTrainGotoNext);
+  Button_TH_Left.Hint := GetHintWHotkey(TX_HOUSE_BARRACKS_PREV_HINT, kfTrainGotoPrev);
+  Button_TH_Right.Hint := GetHintWHotkey(TX_HOUSE_BARRACKS_NEXT_HINT, kfTrainGotoNext);
 
   if not gMySpectator.Hand.Locks.GetUnitBlocked(TownHall_Order[fLastTHUnit]) then
-    Button_TH_Train.Hint := GetHintWHotKey(TX_HOUSE_BARRACKS_TRAIN_HINT, kfTrainEquipUnit)
+    Button_TH_Train.Hint := GetHintWHotkey(TX_HOUSE_BARRACKS_TRAIN_HINT, kfTrainEquipUnit)
   else
     Button_TH_Train.Hint := gResTexts[TX_HOUSE_BARRACKS_TRAIN_DISABLED_HINT];
 end;
@@ -1047,7 +1047,7 @@ begin
     Button_House_Worker.ShowImageEnabled := False;
     Image_House_Worker_Closed.Show;
   end else begin
-    Button_House_Worker.ShowImageEnabled := aHouse.HasOwner;
+    Button_House_Worker.ShowImageEnabled := aHouse.HasWorker;
     Image_House_Worker_Closed.Hide;
   end;
 end;
@@ -1559,11 +1559,11 @@ begin
   begin
     Shape_Market_From.Left := ((Byte(aMarket.ResFrom)-1) mod 6) * 31;
     Shape_Market_From.Top := 12 + ((Byte(aMarket.ResFrom)-1) div 6) * MARKET_RES_HEIGHT;
-    Label_Market_In.Caption := Format(gResTexts[TX_HOUSES_MARKET_FROM], [aMarket.RatioFrom]);
+    Label_Market_In.Caption := gResTexts[TX_HOUSES_MARKET_FROM, [aMarket.RatioFrom]];
     Button_Market_In.TexID := gRes.Wares[aMarket.ResFrom].GUIIcon;
     Button_Market_In.Caption := IntToStr(aMarket.GetResTotal(aMarket.ResFrom));
   end else begin
-    Label_Market_In.Caption := Format(gResTexts[TX_HOUSES_MARKET_FROM],[0]);
+    Label_Market_In.Caption := gResTexts[TX_HOUSES_MARKET_FROM,[0]];
     Button_Market_In.TexID := gRes.Wares[wtNone].GUIIcon;
     Button_Market_In.Caption := '-';
   end;
@@ -1574,11 +1574,11 @@ begin
   begin
     Shape_Market_To.Left := ((Byte(aMarket.ResTo)-1) mod 6) * 31;
     Shape_Market_To.Top := 12 + ((Byte(aMarket.ResTo)-1) div 6) * MARKET_RES_HEIGHT;
-    Label_Market_Out.Caption := Format(gResTexts[TX_HOUSES_MARKET_TO], [aMarket.RatioTo]);
+    Label_Market_Out.Caption := gResTexts[TX_HOUSES_MARKET_TO, [aMarket.RatioTo]];
     Button_Market_Out.Caption := IntToStr(aMarket.GetResTotal(aMarket.ResTo));
     Button_Market_Out.TexID := gRes.Wares[aMarket.ResTo].GUIIcon;
   end else begin
-    Label_Market_Out.Caption := Format(gResTexts[TX_HOUSES_MARKET_TO], [0]);
+    Label_Market_Out.Caption := gResTexts[TX_HOUSES_MARKET_TO, [0]];
     Button_Market_Out.TexID := gRes.Wares[wtNone].GUIIcon;
     Button_Market_Out.Caption := '-';
   end;

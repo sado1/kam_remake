@@ -27,6 +27,8 @@ type
     procedure MapFilterReset(Sender: TObject);
     procedure SizeChangeByRadio(Sender: TObject);
     procedure SizeChangeByEdit(Sender: TObject);
+    procedure NewMapNumEdFocusChanged(Sender: TObject; aValue: Boolean);
+    procedure NewMapEnsureNumEdValues;
     procedure UpdateRadioMapEdSizes;
     procedure UpdateSelectedMapCRC;
     procedure ListUpdate;
@@ -230,8 +232,8 @@ begin
 
       Radio_NewMapSizeX.OnChange := SizeChangeByRadio;
       Radio_NewMapSizeY.OnChange := SizeChangeByRadio;
-      NumEdit_MapSizeX := TKMNumericEdit.Create(Panel_NewMap, 8, Radio_NewMapSizeX.Bottom + NEW_MAP_PAD_Y, MIN_MAP_SIZE, MAX_MAP_SIZE);
-      NumEdit_MapSizeY := TKMNumericEdit.Create(Panel_NewMap, 118, Radio_NewMapSizeY.Bottom + NEW_MAP_PAD_Y, MIN_MAP_SIZE, MAX_MAP_SIZE);
+      NumEdit_MapSizeX := TKMNumericEdit.Create(Panel_NewMap, 8, Radio_NewMapSizeX.Bottom + NEW_MAP_PAD_Y, 0, MAX_MAP_SIZE);
+      NumEdit_MapSizeY := TKMNumericEdit.Create(Panel_NewMap, 118, Radio_NewMapSizeY.Bottom + NEW_MAP_PAD_Y, 0, MAX_MAP_SIZE);
       NumEdit_MapSizeX.Anchors := [anLeft, anBottom];
       NumEdit_MapSizeY.Anchors := [anLeft, anBottom];
       NumEdit_MapSizeX.Value := 64;
@@ -240,6 +242,8 @@ begin
       NumEdit_MapSizeY.AutoFocusable := False;
       NumEdit_MapSizeX.OnChange := SizeChangeByEdit;
       NumEdit_MapSizeY.OnChange := SizeChangeByEdit;
+      NumEdit_MapSizeX.OnFocus := NewMapNumEdFocusChanged;
+      NumEdit_MapSizeY.OnFocus := NewMapNumEdFocusChanged;
 
       Button_Create := TKMButton.Create(Panel_NewMap, 0, 278, 220, 30, gResTexts[TX_MENU_MAP_CREATE_NEW_MAP], bsMenu);
       Button_Create.Anchors := [anLeft, anBottom];
@@ -258,7 +262,7 @@ begin
       ColumnBox_MapEd.OnDoubleClick := LoadClick;
       ColumnBox_MapEd.OnCellClick := ColumnBoxMaps_CellClick;
       ColumnBox_MapEd.ShowHintWhenShort := True;
-      ColumnBox_MapEd.HintBackColor := TKMColor3f.NewB(149, 128, 69); //Dark yellow color
+      ColumnBox_MapEd.HintBackColor := TKMColor4f.New(149, 128, 69); //Dark yellow color
 
       Button_Load := TKMButton.Create(Panel_MapEdLoad, 0, 606, 440, 30, gResTexts[TX_MENU_MAP_LOAD_EXISTING], bsMenu);
       Button_Load.Anchors := [anLeft, anBottom];
@@ -471,6 +475,7 @@ var
   mapEdSizeX, mapEdSizeY: Integer;
   map: TKMapInfo;
 begin
+  NewMapEnsureNumEdValues;
   fMaps.Lock;
   try
   //This is also called by double clicking on a map in the list
@@ -504,6 +509,20 @@ begin
 end;
 
 
+procedure TKMMenuMapEditor.NewMapEnsureNumEdValues;
+begin
+  NumEdit_MapSizeX.Value := EnsureRange(NumEdit_MapSizeX.Value, MIN_MAP_SIZE, MAX_MAP_SIZE);
+  NumEdit_MapSizeY.Value := EnsureRange(NumEdit_MapSizeY.Value, MIN_MAP_SIZE, MAX_MAP_SIZE);
+end;
+
+
+procedure TKMMenuMapEditor.NewMapNumEdFocusChanged(Sender: TObject; aValue: Boolean);
+begin
+  if not aValue then
+    NewMapEnsureNumEdValues;
+end;
+
+
 procedure TKMMenuMapEditor.UpdateRadioMapEdSizes;
 var
   I: Integer;
@@ -525,8 +544,8 @@ procedure TKMMenuMapEditor.SizeChangeByEdit(Sender: TObject);
 begin
   UpdateRadioMapEdSizes;
   
-  gGameSettings.MenuMapEdNewMapX := NumEdit_MapSizeX.Value;
-  gGameSettings.MenuMapEdNewMapY := NumEdit_MapSizeY.Value;
+  gGameSettings.MenuMapEdNewMapX := EnsureRange(NumEdit_MapSizeX.Value, MIN_MAP_SIZE, MAX_MAP_SIZE);
+  gGameSettings.MenuMapEdNewMapY := EnsureRange(NumEdit_MapSizeY.Value, MIN_MAP_SIZE, MAX_MAP_SIZE);
 end;
 
 
@@ -1105,6 +1124,7 @@ begin
   Radio_MapType.ItemIndex := gGameSettings.MenuMapEdMapType;
   NumEdit_MapSizeX.Value := gGameSettings.MenuMapEdNewMapX;
   NumEdit_MapSizeY.Value := gGameSettings.MenuMapEdNewMapY;
+  NewMapEnsureNumEdValues;
   UpdateRadioMapEdSizes;
 
   ListUpdate;

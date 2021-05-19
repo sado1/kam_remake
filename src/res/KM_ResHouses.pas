@@ -39,7 +39,7 @@ type
     ResInput,ResOutput: array [1..4] of ShortInt; //KaM_Remake will use its own tables for this matter
     ResProductionX: ShortInt;
     MaxHealth,Sight: SmallInt;
-    OwnerType: ShortInt;
+    WorkerType: ShortInt;
     Foot1: array [1..12] of ShortInt; //Sound indices
     Foot2: array [1..12] of SmallInt; //vs sprite ID
   end;
@@ -60,7 +60,7 @@ type
     function GetHouseName: UnicodeString;
     function GetResInput: THouseRes;
     function GetResOutput: THouseRes;
-    function GetOwnerType: TKMUnitType;
+    function GetWorkerType: TKMUnitType;
     function GetReleasedBy: TKMHouseType;
     function GetTabletIcon: Word;
     function GetSnowPic: SmallInt;
@@ -89,7 +89,8 @@ type
     property WorkerRest: Smallint read fHouseDat.WorkerRest;
     property ResProductionX: ShortInt read fHouseDat.ResProductionX;
     property Sight: Smallint read fHouseDat.Sight;
-    property OwnerType: TKMUnitType read GetOwnerType;
+    property WorkerType: TKMUnitType read GetWorkerType;
+    function CanHasWorker: Boolean;
     //Additional properties added by Remake
     property BuildArea: THouseArea read GetArea;
     property GroundVisibleArea: THouseArea read GetGroundVisibleArea;
@@ -547,14 +548,14 @@ const
 
   //For some reason in KaM the piles of building supply are not aligned, each one has a different offset.
   //These values were taking from the barracks offsets and are for use with new houses.
-  BuildSupplyOffsets: THouseBuildSupply = ( ((MoveX:  0; MoveY: 0), (MoveX: -7; MoveY: 0), (MoveX:-26; MoveY: 0),  //Wood 1-3
-                                             (MoveX:-26; MoveY: 0), (MoveX:-26; MoveY:-1), (MoveX:-26; MoveY:-4)), //Wood 4-6
-                                            ((MoveX:  0; MoveY: 0), (MoveX:  0; MoveY: 0), (MoveX: -7; MoveY: 0),  //Stone 1-3
-                                             (MoveX: -7; MoveY:-4), (MoveX:-16; MoveY:-4), (MoveX:-16; MoveY:-4)));//Stone 4-6
+  BUILD_SUPPLY_OFFSETS: THouseBuildSupply = ( ((MoveX:  0; MoveY: 0), (MoveX: -7; MoveY: 0), (MoveX:-26; MoveY: 0),  //Wood 1-3
+                                               (MoveX:-26; MoveY: 0), (MoveX:-26; MoveY:-1), (MoveX:-26; MoveY:-4)), //Wood 4-6
+                                              ((MoveX:  0; MoveY: 0), (MoveX:  0; MoveY: 0), (MoveX: -7; MoveY: 0),  //Stone 1-3
+                                               (MoveX: -7; MoveY:-4), (MoveX:-16; MoveY:-4), (MoveX:-16; MoveY:-4)));//Stone 4-6
 
 
   //'This house is unoccupied' msg index
-  HouseTypeToUnoccupiedMsgIndex: array[TKMHouseType] of ShortInt = (
+  HOUSE_TYPE_2_UNOCCUPIED_MSG_INDEX: array[TKMHouseType] of ShortInt = (
     -1, -1,     //utNone, utAny
     0,1,2,
     -1,         //htBarracks
@@ -646,13 +647,20 @@ begin
 end;
 
 
-function TKMHouseSpec.GetOwnerType: TKMUnitType;
+function TKMHouseSpec.GetWorkerType: TKMUnitType;
 begin
   //fHouseDat.OwnerType is read from DAT file and is ShortInt, it can be out of range (i.e. -1)
-  if InRange(fHouseDat.OwnerType, Low(UNIT_ID_TO_TYPE), High(UNIT_ID_TO_TYPE)) then
-    Result := UNIT_ID_TO_TYPE[fHouseDat.OwnerType]
+  if InRange(fHouseDat.WorkerType, Low(UNIT_ID_TO_TYPE), High(UNIT_ID_TO_TYPE)) then
+    Result := UNIT_ID_TO_TYPE[fHouseDat.WorkerType]
   else
     Result := utNone;
+end;
+
+
+// Returns True if this house could have a worker (or occupant)
+function TKMHouseSpec.CanHasWorker: Boolean;
+begin
+  Result := WorkerType <> utNone;
 end;
 
 
@@ -703,7 +711,7 @@ var
   houseUnnocupiedMsgIndex: ShortInt;
 begin
   Result := -1;
-  houseUnnocupiedMsgIndex := HouseTypeToUnoccupiedMsgIndex[fHouseType];
+  houseUnnocupiedMsgIndex := HOUSE_TYPE_2_UNOCCUPIED_MSG_INDEX[fHouseType];
   if houseUnnocupiedMsgIndex <> -1 then
     Result := TX_MSG_HOUSE_UNOCCUPIED__22 + houseUnnocupiedMsgIndex;
 end;
@@ -755,7 +763,7 @@ begin
   fItems[htTannery].fHouseDat.Anim[haFlag3].Count := 0; //fix for tannery 2 flags at one place. Flag3 is unnecessary
 
   fItems[htMarketplace].fHouseType := htMarketplace;
-  fItems[htMarketplace].fHouseDat.OwnerType := -1; //No unit works here (yet anyway)
+  fItems[htMarketplace].fHouseDat.WorkerType := -1; //No unit works here (yet anyway)
   fItems[htMarketplace].fHouseDat.StonePic := 150;
   fItems[htMarketplace].fHouseDat.WoodPic := 151;
   fItems[htMarketplace].fHouseDat.WoodPal := 152;
@@ -773,10 +781,10 @@ begin
   fItems[htMarketplace].fHouseDat.WoodCost := 5;
   fItems[htMarketplace].fHouseDat.StoneCost := 6;
   for I := 1 to 6 do begin
-    fItems[htMarketplace].fHouseDat.BuildSupply[1,I].MoveX := -55+ BuildSupplyOffsets[1,I].MoveX;
-    fItems[htMarketplace].fHouseDat.BuildSupply[1,I].MoveY := 15 + BuildSupplyOffsets[1,I].MoveY;
-    fItems[htMarketplace].fHouseDat.BuildSupply[2,I].MoveX := 28 + BuildSupplyOffsets[2,I].MoveX;
-    fItems[htMarketplace].fHouseDat.BuildSupply[2,I].MoveY := 20 + BuildSupplyOffsets[2,I].MoveY;
+    fItems[htMarketplace].fHouseDat.BuildSupply[1,I].MoveX := -55+ BUILD_SUPPLY_OFFSETS[1,I].MoveX;
+    fItems[htMarketplace].fHouseDat.BuildSupply[1,I].MoveY := 15 + BUILD_SUPPLY_OFFSETS[1,I].MoveY;
+    fItems[htMarketplace].fHouseDat.BuildSupply[2,I].MoveX := 28 + BUILD_SUPPLY_OFFSETS[2,I].MoveX;
+    fItems[htMarketplace].fHouseDat.BuildSupply[2,I].MoveY := 20 + BUILD_SUPPLY_OFFSETS[2,I].MoveY;
   end;
   fItems[htMarketplace].fHouseDat.Sight := 10;
   fItems[htMarketplace].fHouseDat.SizeArea := 11;

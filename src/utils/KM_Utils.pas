@@ -17,9 +17,9 @@ uses
 
   function KMPathLength(aNodeList: TKMPointList): Single;
 
-  function GetHintWHotKey(const aText: String; aKeyFunc: TKMKeyFunction): String; overload;
-  function GetHintWHotKey(aTextId: Integer; const aHotkeyStr: String): String; overload;
-  function GetHintWHotKey(aTextId: Integer; aKeyFunc: TKMKeyFunction): String; overload;
+  function GetHintWHotkey(const aText: String; aKeyFunc: TKMKeyFunction): String; overload;
+  function GetHintWHotkey(aTextId: Integer; const aHotkeyStr: String): String; overload;
+  function GetHintWHotkey(aTextId: Integer; aKeyFunc: TKMKeyFunction): String; overload;
 
 	function GetShiftState(aButton: TMouseButton): TShiftState;
   function GetMultiplicator(aButton: TMouseButton): Word; overload;
@@ -39,6 +39,8 @@ uses
   procedure IterateOverArea(const aStartCell: TKMPoint; aSize: Integer; aIsSquare: Boolean; aOnCell: TPointEventSimple; aAroundArea: Boolean = False);
 
   function GetLocalizedFilePath(aPath: string; aLocale, aFallbackLocale, aExt: AnsiString): string;
+
+  function CompareTextLogical(A, B: UnicodeString): Integer;
 
 
 implementation
@@ -309,7 +311,7 @@ begin
 end;
 
 
-function GetHintWHotKey(const aText: String; aKeyFunc: TKMKeyFunction): String;
+function GetHintWHotkey(const aText: String; aKeyFunc: TKMKeyFunction): String;
 var
   hotKeyStr: String;
 begin
@@ -320,7 +322,7 @@ begin
 end;
 
 
-function GetHintWHotKey(aTextId: Integer; const aHotkeyStr: String): String;
+function GetHintWHotkey(aTextId: Integer; const aHotkeyStr: String): String;
 var
   hotKeyStr: string;
 begin
@@ -331,9 +333,9 @@ begin
 end;
 
 
-function GetHintWHotKey(aTextId: Integer; aKeyFunc: TKMKeyFunction): String;
+function GetHintWHotkey(aTextId: Integer; aKeyFunc: TKMKeyFunction): String;
 begin
-  Result := GetHintWHotKey(aTextId, gResKeys.GetKeyNameById(aKeyFunc));
+  Result := GetHintWHotkey(aTextId, gResKeys.GetKeyNameById(aKeyFunc));
 end;
 
 
@@ -363,6 +365,23 @@ begin
       end;
     end;
   end;
+end;
+
+
+{$IFDEF MSWindows}
+// Logical comparison of the string, as Windows do
+// taken from https://stackoverflow.com/questions/10108789/is-there-a-compare-function-for-file-name-sorting
+function StrCmpLogicalW(psz1, psz2: PWideChar): Integer; stdcall; external 'shlwapi.dll';
+{$ENDIF}
+
+
+function CompareTextLogical(A, B: UnicodeString): Integer;
+begin
+  {$IFDEF MSWindows}
+  Result := StrCmpLogicalW(PWideChar(A), PWideChar(B));
+  {$ELSE}
+  Result := CompareText(A, B);
+  {$ENDIF}
 end;
 
 

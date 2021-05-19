@@ -131,6 +131,7 @@ Improvements:
       New advanced AI was added, written from scratch
  Game: 
  +    Added TownHall
+ +    added interpolated render
  +    Added ability to use snow houses sprites on the snow terrain
  +    Select area to work in for woodcutters
  +    Woodcutter's house new woodcutter mode - Plant only
@@ -141,6 +142,7 @@ Improvements:
  +    Ability to dismiss citizens. They will go to school and leave town forever
  +    Redispatch serf with ware when delivery target was destroyed (house demolished or warrior died)
  +    Woodcutter now prefers trees and places to plant which are closer to Cutting Point
+ +    Woodcutter's house: do reverse cycle of woodcutter mode when right click on the button
  +    Serfs delivery optimisations. Including situation, when serf inside house could overtake task for that house, that is already taken by other serf.
  +    Delivery TakeOut: allow to block takeOut of certain wares. Allow takeout from barracks/storehouses/markets
  +    Serfs if hungry will start eat food in the Inn immidiately after bringing it in
@@ -201,6 +203,7 @@ Improvements:
  +    New ability to mute annoying player in chat (both lobby chat and game chat) - text and also beacons
  +    Show message in chat for AFK players
  +    Added game chat enter history (console-like)
+ +    Added edit hotkeys menu onto the game and maped settings panel
  +  L Save wares distribution ratios between games (also possible to enable/disable in settings.ini)
  +  L House not occupied message mentions which house it is ("This farm is not occupied")
  +  L Do switching of main game menu tabs with F1-F4 even if settings/save/load sub-menus are open
@@ -398,6 +401,7 @@ Improvements:
  +    Added support for ogg audio format with similar functions as for WAV (PlayOGG/PlayOGGAtLocation/PlayOGGAtLocationLooped/PlayOGGFadeMusic/PlayOGGLooped/StopLoopedOGG)
  +    Added ability to declare custom event handlers
  +    Added support to declare custom player console commands
+ +    Set limit on number of lines logged by scripts: default value is 100. Scriptmaker could increase it via Actions.LogLinesMaxCnt or use 'Debug scripting' checkbox on F11 debug menu
  +    Allow to use localized sound files from the scripts, via our standart pattern
  +    New MapTilesArraySet function
  +    Added 30+ utility functions into new scripts unit 'Utils'. Check wiki for details
@@ -421,6 +425,7 @@ Improvements:
  +    Added event GroupOrderBeforeSplit with ability to setup split command parameters for new group: number of units, leader unit type, is it allows mixed unit types
  +    Added actions PlayerGoalsRemoveAll, Peacetime, GameSpeed, GameSpeedChangeAllowed
  +    Added states: GameSpeed, GroupManualFormation, 
+ +    Added states: UnitInHouse and HouseGetAllUnitsIn 
  +    Added events: OnGroupOrderBeforeSplit / OnGameSpeedChanged / OnPeacetime
  +    Added dozen of new States related to terrain tile type (IsSoil/IsSnow etc)
  
@@ -459,7 +464,10 @@ Improvements:
  +    map goals - ignore GoalStatus parameter from static script, since it depends on GoalType (Victory or Defeat)
  +    do not allow to edit SpeedPace in the settings.xml
  +    use 'Modding graphics' folder, as a default folder to swap game png's with a custom one
+ +    allow to use subfolders in the Modding graphics directory
+ +    show hints over list rows and columnBox cells if text does not fit in it, and also possibility to render above controls, with delay
  +    Set default resolution to currently used resolution in OS
+ +    Filenames now will filter names reserved by windows (aux, nul, com1, com2 etc)
  +    Update 3rd party network framework Overbyte to version 8.64
  +    Game settings changes: 
         split them into server settings (in the .ini file) and game settings (in the .xml file)

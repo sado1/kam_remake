@@ -2,6 +2,15 @@ echo called clean_src.bat
 
 call rsvars.bat
 
+@REM clean maps repo
+@SET curr_directory=%cd%
+cd /D %KmrMapsRepoDir%
+
+call clean_src.bat
+
+cd /D %curr_directory% 
+
+
 @echo off
 @REM Delete folders recursively
 @REM Its easier to delete folder recursively from project root folder

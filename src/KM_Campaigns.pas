@@ -602,7 +602,7 @@ begin
   else
     //Have nothing - use default mission name
     //Otherwise just Append (by default MissionName is empty anyway)
-    Result := Format(gResTexts[TX_GAME_MISSION], [aIndex+1]) + fMapsInfo[aIndex].MissionName;
+    Result := gResTexts[TX_GAME_MISSION, [aIndex + 1]] + fMapsInfo[aIndex].MissionName;
 end;
 
 

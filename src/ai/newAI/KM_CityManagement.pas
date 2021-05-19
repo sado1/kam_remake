@@ -336,8 +336,8 @@ begin
     end;
 
     for HT := HOUSE_MIN to HOUSE_MAX do
-      if (gRes.Houses[HT].OwnerType <> utNone) AND (HT <> htBarracks) then
-        Inc(UnitReq[gRes.Houses[HT].OwnerType], Houses[HT]);
+      if gRes.Houses[HT].CanHasWorker AND (HT <> htBarracks) then
+        Inc(UnitReq[gRes.Houses[HT].WorkerType], Houses[HT]);
 
     UnitReq[utRecruit] := 0;
     UnitReq[utSerf] := 0;

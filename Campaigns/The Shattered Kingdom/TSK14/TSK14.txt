@@ -1,3 +1,0 @@
-DifficultyLevels
-mdEasy2,mdEasy1,mdNormal,mdHard1,mdHard2
-

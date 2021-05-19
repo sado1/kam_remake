@@ -864,6 +864,8 @@ end;
 
 procedure TKMMain.SetGameTickInterval(aInterval: Cardinal);
 begin
+  if Self = nil then Exit; // Could be nil in Runner
+  
   fGameTickInterval := aInterval;
 end;
 

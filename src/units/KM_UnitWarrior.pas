@@ -77,7 +77,8 @@ type
     function GetPointer: TKMUnitWarrior; reintroduce;
 
     property Group: pointer read fGroup; // Property for GetGroupByMember function
-    procedure SetGroup(aGroup: Pointer); // This procedure should not be called by anyone except UnitGroups class(it is out of property)
+    // This procedure should not be called by anyone except UnitGroups class(it is out of property)
+    procedure SetGroup(aGroup: Pointer); //Explicitly use SetWorker, to make it clear its not only pointer assignment
 
     function GetWarriorActivityText(aIsAttackingUnit: Boolean): UnicodeString;
     procedure Kill(aFrom: TKMHandID; aShowAnimation, aForceDelay: Boolean); override;

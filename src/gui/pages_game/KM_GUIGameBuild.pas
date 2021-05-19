@@ -191,10 +191,10 @@ end;
 
 procedure TKMGUIGameBuild.UpdateHotkeys;
 begin
-  Button_BuildRoad.Hint   := GetHintWHotKey(TX_BUILD_ROAD_HINT,   kfPlanRoad);
-  Button_BuildField.Hint  := GetHintWHotKey(TX_BUILD_FIELD_HINT,  kfPlanField);
-  Button_BuildWine.Hint   := GetHintWHotKey(TX_BUILD_WINE_HINT,   kfPlanWine);
-  Button_BuildCancel.Hint := GetHintWHotKey(TX_BUILD_CANCEL_HINT, kfErasePlan);
+  Button_BuildRoad.Hint   := GetHintWHotkey(TX_BUILD_ROAD_HINT,   kfPlanRoad);
+  Button_BuildField.Hint  := GetHintWHotkey(TX_BUILD_FIELD_HINT,  kfPlanField);
+  Button_BuildWine.Hint   := GetHintWHotkey(TX_BUILD_WINE_HINT,   kfPlanWine);
+  Button_BuildCancel.Hint := GetHintWHotkey(TX_BUILD_CANCEL_HINT, kfErasePlan);
 end;
 
 

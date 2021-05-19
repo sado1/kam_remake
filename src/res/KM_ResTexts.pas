@@ -45,6 +45,7 @@ type
     fTexts: array of TUnicodeStringArray;
     fForceDefaultLocale: Boolean; //Force to use default Locale (Eng)
     function GetTexts(aIndex: Word): UnicodeString;
+    function GetTextsArgs(aIndex: Word; aArgs: array of const): string;
     function GetDefaultTexts(aIndex: Word): UnicodeString;
     procedure InitLocaleIds;
     function DoParseTextMarkup(const aText: UnicodeString; aTagSym: Char): UnicodeString;
@@ -55,6 +56,7 @@ type
     function ParseTextMarkup(const aText: UnicodeString; aParams: array of const): UnicodeString; overload;
     function HasText(aIndex: Word): Boolean;
     property Texts[aIndex: Word]: UnicodeString read GetTexts; default;
+    property Texts[aIndex: Word; aArgs: array of const]: string read GetTextsArgs; default;
     property DefaultTexts[aIndex: Word]: UnicodeString read GetDefaultTexts;
     property ForceDefaultLocale: Boolean read fForceDefaultLocale write fForceDefaultLocale;
     procedure Save(aStream: TKMemoryStream);
@@ -237,6 +239,12 @@ begin
   end;
   if not found then
     Result := '~~~String ' + IntToStr(aIndex) + ' out of range!~~~';
+end;
+
+
+function TKMTextLibraryMulti.GetTextsArgs(aIndex: Word; aArgs: array of const): string;
+begin
+  Result := Format(GetTexts(aIndex), aArgs);
 end;
 
 

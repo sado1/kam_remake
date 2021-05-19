@@ -9,6 +9,7 @@ uses
   KM_HandEntity,
   KM_HandTypes,
   KM_GameTypes,
+  KM_MapTypes,
   KM_ResTypes;
 
 
@@ -611,7 +612,7 @@ begin
     begin
       H := fHandsList[I].Houses[K];
       if (H is TKMHouseTower) and H.IsComplete
-      and not H.IsDestroyed and H.HasOwner
+      and not H.IsDestroyed and H.HasWorker
       and (H.CurrentAction.State <> hstEmpty) then
         //Don't use H.GetDistance (dist to any tile within house) as that's not how tower range works
         Result := Min(Result, KMLength(H.Position, aLoc));
@@ -1059,8 +1060,8 @@ begin
   begin
     H.RemoveHouse;
 
-    gGame.MapEditor.History.MakeCheckpoint(caHouses, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH],
-                                                           [gRes.Houses[H.HouseType].HouseName, H.Entrance.ToString]));
+    gGame.MapEditor.History.MakeCheckpoint(caHouses, gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH,
+                                                               [gRes.Houses[H.HouseType].HouseName, H.Entrance.ToString]]);
   end;
 end;
 
@@ -1083,8 +1084,8 @@ begin
   Result := fPlayerAnimals.RemUnit(Position, UT) or Result;
 
   if Result then
-    gGame.MapEditor.History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH],
-                                                           [gRes.Units[UT].GUIName, Position.ToString]));
+    gGame.MapEditor.History.MakeCheckpoint(caUnits, gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH,
+                                                              [gRes.Units[UT].GUIName, Position.ToString]]);
 end;
 
 

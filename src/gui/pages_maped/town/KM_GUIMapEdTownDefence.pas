@@ -210,11 +210,11 @@ end;
 
 procedure TKMMapEdTownDefence.UpdateHotkeys;
 begin
-  Button_DefencePosAdd.Hint  := GetHintWHotKey(TX_MAPED_AI_DEFENSE_HINT,             MAPED_SUBMENU_ACTIONS_HOTKEYS[0]);
-  CheckBox_AutoDefence.Hint  := GetHintWHotKey(TX_MAPED_AI_DEFENSE_AUTO_HINT,        MAPED_SUBMENU_ACTIONS_HOTKEYS[1]);
-  CheckBox_DefendAllies.Hint := GetHintWHotKey(TX_MAPED_AI_DEFEND_ALLIES_HINT,       MAPED_SUBMENU_ACTIONS_HOTKEYS[2]);
-  CheckBox_MaxSoldiers.Hint  := GetHintWHotKey(TX_MAPED_AI_MAX_SOLDIERS_ENABLE_HINT, MAPED_SUBMENU_ACTIONS_HOTKEYS[3]);
-  Button_EditFormations.Hint := GetHintWHotKey(TX_MAPED_AI_FORMATIONS,               MAPED_SUBMENU_ACTIONS_HOTKEYS[4]);
+  Button_DefencePosAdd.Hint  := GetHintWHotkey(TX_MAPED_AI_DEFENSE_HINT,             MAPED_SUBMENU_ACTIONS_HOTKEYS[0]);
+  CheckBox_AutoDefence.Hint  := GetHintWHotkey(TX_MAPED_AI_DEFENSE_AUTO_HINT,        MAPED_SUBMENU_ACTIONS_HOTKEYS[1]);
+  CheckBox_DefendAllies.Hint := GetHintWHotkey(TX_MAPED_AI_DEFEND_ALLIES_HINT,       MAPED_SUBMENU_ACTIONS_HOTKEYS[2]);
+  CheckBox_MaxSoldiers.Hint  := GetHintWHotkey(TX_MAPED_AI_MAX_SOLDIERS_ENABLE_HINT, MAPED_SUBMENU_ACTIONS_HOTKEYS[3]);
+  Button_EditFormations.Hint := GetHintWHotkey(TX_MAPED_AI_FORMATIONS,               MAPED_SUBMENU_ACTIONS_HOTKEYS[4]);
 end;
 
 

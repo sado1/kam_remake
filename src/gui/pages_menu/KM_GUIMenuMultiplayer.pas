@@ -234,7 +234,7 @@ begin
     ColumnBox_Servers.Anchors := [anLeft, anTop, anBottom];
     ColumnBox_Servers.Focusable := True;
     ColumnBox_Servers.ShowHintWhenShort := True;
-    ColumnBox_Servers.HintBackColor := TKMColor3f.NewB(87, 72, 37);
+    ColumnBox_Servers.HintBackColor := TKMColor4f.New(87, 72, 37);
     ColumnBox_Servers.SetColumns(fntOutline,
                                  ['','', gResTexts[TX_MP_MENU_SERVERLIST_NAME], gResTexts[TX_MP_MENU_SERVERLIST_STATE],
                                          gResTexts[TX_MP_MENU_SERVERLIST_PLAYERS], gResTexts[TX_MP_MENU_SERVERLIST_PING]],
@@ -857,10 +857,10 @@ begin
     err := gResTexts[TX_GAME_ERROR_BLANK_PLAYERNAME]
   else
   if IsReserved(aName) then
-    err := Format(gResTexts[TX_GAME_ERROR_RESERVER_PLAYERNAME], [aName])
+    err := gResTexts[TX_GAME_ERROR_RESERVER_PLAYERNAME, [aName]]
   else
   if Length(aName) > MAX_NIKNAME_LENGTH then
-    err := Format(gResTexts[TX_GAME_ERROR_LONG_PLAYERNAME], [MAX_NIKNAME_LENGTH])
+    err := gResTexts[TX_GAME_ERROR_LONG_PLAYERNAME, [MAX_NIKNAME_LENGTH]]
   else
   if (Pos('|', aName) <> 0) or (Pos('[$', aName) <> 0) or (Pos('[]', aName) <> 0) or (Pos('<$', aName) <> 0) then
     err := gResTexts[TX_GAME_ERROR_ILLEGAL_PLAYERNAME]
@@ -944,7 +944,7 @@ end;
 procedure TKMMenuMultiplayer.MP_JoinFail(const aData: UnicodeString);
 begin
   gNetworking.Disconnect;
-  MP_Update(Format(gResTexts[TX_GAME_ERROR_CONNECTION_FAILED], [aData]), icYellow, False);
+  MP_Update(gResTexts[TX_GAME_ERROR_CONNECTION_FAILED, [aData]], icYellow, False);
   gSoundPlayer.Play(sfxnError);
 end;
 

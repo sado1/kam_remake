@@ -54,9 +54,9 @@ type
     fPlayMoreMsg: TKMGameResultMsg; // Remember which message we are showing
     fPlacingBeacon: Boolean;
     fNetWaitDropPlayersDelayStarted: Cardinal;
-    SelectedDirection: TKMDirection;
-    SelectingTroopDirection: Boolean;
-    SelectingDirPosition: TPoint;
+    fSelectedDirection: TKMDirection;
+    fSelectingTroopDirection: Boolean;
+    fSelectingDirPosition: TPoint;
     fSaves: TKMSavesCollection;
     fUnitsTeamNames: TList<TKMUnit>;
     fGroupsTeamNames: TList<TKMUnitGroup>;
@@ -256,6 +256,9 @@ type
       Image_Pause: TKMImage;
       Label_Pause1: TKMLabel;
       Label_Pause2: TKMLabel;
+    Panel_PauseDebug: TKMPanel;
+      Bevel_PauseDebug: TKMBevel;
+      Label_PauseDebug: TKMLabel;
     Panel_PlayMore: TKMPanel;
       Bevel_PlayMore: TKMBevel;
       Panel_PlayMoreMsg: TKMPanel;
@@ -325,7 +328,7 @@ type
     procedure AlliesTeamChange(Sender: TObject);
     procedure CinematicUpdate;
     procedure LoadHotkeysFromHand;
-    procedure UpdateReplayButtons(aPaused: Boolean);
+    procedure UpdateReplayButtons(aForcedPause: Boolean = False);
     procedure AddReplayMark(aTick: Cardinal);
     procedure UpdateReplayMarks;
 
@@ -804,9 +807,9 @@ begin
   fLastSaveName := '';
   fLastKbdSelectionTime := 0;
   fPlacingBeacon := False;
-  SelectingTroopDirection := False;
-  SelectingDirPosition.X := 0;
-  SelectingDirPosition.Y := 0;
+  fSelectingTroopDirection := False;
+  fSelectingDirPosition.X := 0;
+  fSelectingDirPosition.Y := 0;
   fShownMessage := -1; // 0 is the first message, -1 is invalid
   for I := Low(fSelection) to High(fSelection) do
     fSelection[I] := -1; // Not set
@@ -956,7 +959,7 @@ end;
 
 procedure TKMGamePlayInterface.Resize(X,Y: Word);
 const
-  PANEL_MIN_HEIGHT = 800;
+  PANEL_MIN_HEIGHT = 840;
 var
   showSwords: Boolean;
 begin
@@ -989,6 +992,8 @@ end;
 
 { Pause overlay page }
 procedure TKMGamePlayInterface.Create_Pause;
+const
+  PAN_DEBUG_W = 70;
 begin
   Panel_Pause := TKMPanel.Create(Panel_Main, 0, 0, Panel_Main.Width, Panel_Main.Height);
   Panel_Pause.AnchorsStretch;
@@ -997,13 +1002,24 @@ begin
   Label_Pause1 := TKMLabel.Create(Panel_Pause, (Panel_Main.Width div 2), (Panel_Main.Height div 2),
     gResTexts[TX_POPUP_PAUSE], fntAntiqua, taCenter);
   Label_Pause2 := TKMLabel.Create(Panel_Pause, (Panel_Main.Width div 2), (Panel_Main.Height div 2) + 20,
-    Format(gResTexts[TX_GAMEPLAY_PAUSE_INFO], ['"P"']), fntGrey, taCenter);
+                                  gResTexts[TX_GAMEPLAY_PAUSE_INFO, ['"P"']], fntGrey, taCenter);
   Bevel_Pause.AnchorsStretch; // Anchor to all sides
   Image_Pause.ImageCenter;
   Label_Pause1.AnchorsCenter;
   Label_Pause2.AnchorsCenter;
   Image_Pause.AnchorsCenter;
-  Panel_Pause.Hide
+  Panel_Pause.Hide;
+
+  Panel_PauseDebug := TKMPanel.Create(Panel_Main, (Panel_Main.Width - PAN_DEBUG_W) div 2, 10, PAN_DEBUG_W, 20);
+    Bevel_PauseDebug := TKMBevel.Create(Panel_PauseDebug, -1, -1, Panel_PauseDebug.Width + 2, Panel_PauseDebug.Height + 2);
+    Bevel_PauseDebug.Hitable := False;
+    Label_PauseDebug := TKMLabel.Create(Panel_PauseDebug, PAN_DEBUG_W div 2, 3,
+                                        gResTexts[TX_POPUP_PAUSE], fntAntiqua, taCenter);
+    Label_PauseDebug.Hitable := False;
+
+  Panel_PauseDebug.Anchors := [anTop];
+  Panel_PauseDebug.Hitable := False;
+  Panel_PauseDebug.Hide;
 end;
 
 
@@ -1156,7 +1172,7 @@ begin
 
     Dropbox_ReplayFOW := TKMDropList.Create(Panel_ReplayFOW, 0, 30, 185, 20, fntMetal, '', bsGame, False, 0.5);
     Dropbox_ReplayFOW.ShowHintWhenShort := True;
-    Dropbox_ReplayFOW.HintBackColor := TKMColor3f.NewB(87, 72, 37);
+    Dropbox_ReplayFOW.HintBackColor := TKMColor4f.New(87, 72, 37);
     Dropbox_ReplayFOW.Hint := gResTexts[TX_REPLAY_PLAYER_PERSPECTIVE];
     Dropbox_ReplayFOW.OnChange := ReplayClick;
     Dropbox_ReplayFOW.DropCount := MAX_HANDS; //There could be only AI hands as well, not only Lobby players
@@ -1447,7 +1463,7 @@ begin
     ListBox_Save := TKMListBox.Create(Panel_Save, 0, 4, TB_WIDTH, 220, fntMetal, bsGame);
     ListBox_Save.AutoHideScrollBar := True;
     ListBox_Save.ShowHintWhenShort := True;
-    ListBox_Save.HintBackColor := TKMColor3f.NewB(87, 72, 37);
+    ListBox_Save.HintBackColor := TKMColor4f.New(87, 72, 37);
     ListBox_Save.SearchEnabled := True;
     ListBox_Save.OnChange := Menu_Save_ListChange;
 
@@ -1468,7 +1484,7 @@ begin
     ListBox_Load := TKMListBox.Create(Panel_Load, 0, 2, TB_WIDTH, 260, fntMetal, bsGame);
     ListBox_Load.AutoHideScrollBar := True;
     ListBox_Load.ShowHintWhenShort := True;
-    ListBox_Load.HintBackColor := TKMColor3f.NewB(87, 72, 37);
+    ListBox_Load.HintBackColor := TKMColor4f.New(87, 72, 37);
     ListBox_Load.SearchEnabled := True;
     ListBox_Load.OnChange := Menu_Load_ListClick;
     ListBox_Load.OnDoubleClick := Menu_Load_Click;
@@ -1608,7 +1624,7 @@ end;
 
 function TKMGamePlayInterface.IsSelectingTroopDirection(aObject: TObject): Boolean;
 begin
-  Result := SelectingTroopDirection;
+  Result := fSelectingTroopDirection;
 end;
 
 
@@ -1898,11 +1914,15 @@ begin
 end;
 
 
-procedure TKMGamePlayInterface.UpdateReplayButtons(aPaused: Boolean);
+procedure TKMGamePlayInterface.UpdateReplayButtons(aForcedPause: Boolean = False);
+var
+  showAsPaused: Boolean;
 begin
-  Button_ReplayPause.Enabled := aPaused;
-  Button_ReplayStep.Enabled := not aPaused;
-  Button_ReplayResume.Enabled := not aPaused;
+  showAsPaused := aForcedPause or gGame.IsPaused;
+
+  Button_ReplayPause.Enabled := not showAsPaused;
+  Button_ReplayStep.Enabled := showAsPaused;
+  Button_ReplayResume.Enabled := showAsPaused;
 end;
 
 
@@ -2074,27 +2094,27 @@ begin
   if Sender = Button_ReplayPause then
   begin
     gGame.IsPaused := True;
-    UpdateReplayButtons(False);
+    UpdateReplayButtons;
   end;
 
   if Sender = Button_ReplayStep then
   begin
     gGame.StepOneFrame;
     gGame.IsPaused := False;
-    UpdateReplayButtons(False);
+    UpdateReplayButtons(True); // Show replay buttons as game is paused, even if game is not paused atm
     UpdateDebugInfo;
   end;
 
   if Sender = Button_ReplayResume then
   begin
     gGame.IsPaused := False;
-    UpdateReplayButtons(True);
+    UpdateReplayButtons;
   end;
 
   if Sender = Button_ReplayExit then
   begin
     gGame.Hold(True, grReplayEnd);
-    UpdateReplayButtons(True);
+    UpdateReplayButtons;
   end;
 
   if Sender = Button_ReplaySaveAt then
@@ -2193,8 +2213,8 @@ begin
     //       even the NEW message has not been issued yet
     if (H <> nil) then
     begin
-      if (gRes.IsMsgHouseUnnocupied(msg.fTextID) and not H.HasOwner
-          and (gRes.Houses[H.HouseType].OwnerType <> utNone) and (H.HouseType <> htBarracks))
+      if (gRes.IsMsgHouseUnnocupied(msg.fTextID) and not H.HasWorker
+          and gRes.Houses[H.HouseType].CanHasWorker and (H.HouseType <> htBarracks))
         or H.ResourceDepleted
         or H.OrderCompletedMsgIssued then
       begin
@@ -2438,7 +2458,7 @@ begin
   if isPaused then
   begin
     gGame.IsPaused := True;
-    UpdateReplayButtons(False); //Update buttons
+    UpdateReplayButtons; //Update buttons
     UpdateState(gGameApp.GlobalTickCount);
   end;
 
@@ -2657,8 +2677,11 @@ begin
   ReleaseDirectionSelector; // Don't restrict cursor movement to direction selection while paused
   fViewport.ReleaseScrollKeys;
   gGame.IsPaused := aValue;
-  UpdateReplayButtons(aValue);
-  Panel_Pause.Visible := aValue;
+  UpdateReplayButtons;
+  Panel_Pause.Visible := aValue and BLOCK_GAME_ON_PAUSE;
+
+  if not BLOCK_GAME_ON_PAUSE and (fUIMode in [umSP, umMP, umSpectate]) then
+    Panel_PauseDebug.Visible := aValue;
 end;
 
 
@@ -2916,12 +2939,12 @@ end;
 
 procedure TKMGamePlayInterface.ReleaseDirectionSelector;
 begin
-  if SelectingTroopDirection then
+  if fSelectingTroopDirection then
   begin
     // Reset the cursor position as it will have moved during direction selection
-    SetCursorPos(gMain.ClientToScreen(SelectingDirPosition).X, gMain.ClientToScreen(SelectingDirPosition).Y);
+    SetCursorPos(gMain.ClientToScreen(fSelectingDirPosition).X, gMain.ClientToScreen(fSelectingDirPosition).Y);
     gMain.ApplyCursorRestriction; // Reset the cursor restrictions from selecting direction
-    SelectingTroopDirection := False;
+    fSelectingTroopDirection := False;
     gRes.Cursors.Cursor := kmcDefault; // Reset direction selection cursor when mouse released
     DirectionCursorHide;
   end;
@@ -3321,7 +3344,7 @@ var
 begin
   aHandled := True; // assume we handle all keys here
 
-  if gGame.IsPaused and (fUIMode in [umSP, umMP]) then Exit;
+  if gGame.IsPaused and (fUIMode in [umSP, umMP]) and BLOCK_GAME_ON_PAUSE then Exit;
 
   if fMyControls.KeyDown(Key, Shift) then
   begin
@@ -3490,7 +3513,7 @@ begin
   // These keys are allowed during replays
   if Key = gResKeys[kfShowTeams].Key then fShowTeamNames := False;
   if Key = gResKeys[kfBeacon].Key then
-    if not SelectingTroopDirection then
+    if not fSelectingTroopDirection then
     begin
       fPlacingBeacon := True;
       MinimapView.ClickableOnce := True;
@@ -3761,14 +3784,14 @@ begin
 
   fMyControls.MouseDown(X, Y, Shift, Button);
 
-  if (gGame.IsPaused and (fUIMode in [umSP, umMP])) or (fMyControls.CtrlOver <> nil)
+  if (gGame.IsPaused and (fUIMode in [umSP, umMP]) and BLOCK_GAME_ON_PAUSE) or (fMyControls.CtrlOver <> nil)
   or gMySpectator.Hand.InCinematic then
     Exit;
 
-  if SelectingTroopDirection then
+  if fSelectingTroopDirection then
   begin
     gMain.ApplyCursorRestriction; // Reset the cursor restrictions from selecting direction
-    SelectingTroopDirection := false;
+    fSelectingTroopDirection := false;
     DirectionCursorHide;
   end;
 
@@ -3810,7 +3833,7 @@ begin
     begin
       if group.CanWalkTo(gCursor.Cell, 0) then
       begin
-        SelectingTroopDirection := True; // MouseMove will take care of cursor changing
+        fSelectingTroopDirection := True; // MouseMove will take care of cursor changing
         // Restrict the cursor to inside the main panel so it does not get jammed when used near
         // the edge of the window in windowed mode
         {$IFDEF MSWindows}
@@ -3818,10 +3841,10 @@ begin
         ClipCursor(@windowRect);
         {$ENDIF}
         // Now record it as Client XY
-        SelectingDirPosition.X := X;
-        SelectingDirPosition.Y := Y;
-        SelectedDirection := dirNA;
-        DirectionCursorShow(X, Y, SelectedDirection);
+        fSelectingDirPosition.X := X;
+        fSelectingDirPosition.Y := Y;
+        fSelectedDirection := dirNA;
+        DirectionCursorShow(X, Y, fSelectedDirection);
         gRes.Cursors.Cursor := kmcInvisible;
       end
       else
@@ -3877,7 +3900,7 @@ begin
 
   if (fMyControls.CtrlOver <> nil)
   and (fMyControls.CtrlOver <> Image_DirectionCursor)
-  and not SelectingTroopDirection then
+  and not fSelectingTroopDirection then
   begin
     // kmcEdit and kmcDragUp are handled by Controls.MouseMove (it will reset them when required)
     if not fViewport.Scrolling and not (gRes.Cursors.Cursor in [kmcEdit,kmcDragUp]) then
@@ -3887,28 +3910,28 @@ begin
   else
     ResetHint; // Clear shown hint
 
-  if gGame.IsPaused and (fUIMode in [umSP, umMP]) then Exit;
+  if gGame.IsPaused and (fUIMode in [umSP, umMP]) and BLOCK_GAME_ON_PAUSE then Exit;
 
-  if SelectingTroopDirection then
+  if fSelectingTroopDirection then
   begin
-    deltaX := SelectingDirPosition.X - X;
-    deltaY := SelectingDirPosition.Y - Y;
-    deltaDistanceSqr := Sqr(deltaX)+Sqr(deltaY);
+    deltaX := X - fSelectingDirPosition.X;
+    deltaY := Y - fSelectingDirPosition.Y;
+    deltaDistanceSqr := Sqr(deltaX) + Sqr(deltaY);
     // Manually force the cursor to remain within a circle (+2 to avoid infinite loop due to rounding)
-    if deltaDistanceSqr > Sqr(DIR_CURSOR_CIRCLE_RAD+2) then
+    if deltaDistanceSqr > Sqr(DIR_CURSOR_CIRCLE_RAD + 2) then
     begin
       deltaX := Round(deltaX / Sqrt(deltaDistanceSqr) * DIR_CURSOR_CIRCLE_RAD);
       deltaY := Round(deltaY / Sqrt(deltaDistanceSqr) * DIR_CURSOR_CIRCLE_RAD);
-      newPoint := gMain.ClientToScreen(SelectingDirPosition);
-      newPoint.X := newPoint.X - deltaX;
-      newPoint.Y := newPoint.Y - deltaY;
+      newPoint := gMain.ClientToScreen(fSelectingDirPosition);
+      newPoint.X := newPoint.X + deltaX;
+      newPoint.Y := newPoint.Y + deltaY;
       SetCursorPos(newPoint.X, newPoint.Y);
     end;
 
     // Compare cursor position and decide which direction it is
-    SelectedDirection := KMGetCursorDirection(deltaX, deltaY);
+    fSelectedDirection := KMGetDirection(deltaX, deltaY, DIR_CURSOR_NA_RAD);
     // Update the cursor based on this direction and negate the offset
-    DirectionCursorShow(SelectingDirPosition.X, SelectingDirPosition.Y, SelectedDirection);
+    DirectionCursorShow(fSelectingDirPosition.X, fSelectingDirPosition.Y, fSelectedDirection);
     gRes.Cursors.Cursor := kmcInvisible; // Keep it invisible, just in case
     Exit;
   end;
@@ -4023,13 +4046,13 @@ begin
     fMyControls.MouseUp(X,Y,Shift,Button) // That will update control States, f.e.
   else
   if   (fMyControls.CtrlOver <> Image_DirectionCursor)
-    and not SelectingTroopDirection then
+    and not fSelectingTroopDirection then
   begin
     fMyControls.MouseUp(X,Y,Shift,Button);
     Exit;
   end;
 
-  if gGame.IsPaused and (fUIMode in [umSP, umMP]) then Exit;
+  if gGame.IsPaused and (fUIMode in [umSP, umMP]) and BLOCK_GAME_ON_PAUSE then Exit;
 
   P := gCursor.Cell; // It's used in many places here
 
@@ -4244,9 +4267,9 @@ begin
             end
             else
             // Ensure down click was successful (could have been over a mountain, then dragged to a walkable location)
-            if SelectingTroopDirection and group.CanWalkTo(P, 0) then
+            if fSelectingTroopDirection and group.CanWalkTo(P, 0) then
             begin
-              gGame.GameInputProcess.CmdArmy(gicArmyWalk, group, P, SelectedDirection);
+              gGame.GameInputProcess.CmdArmy(gicArmyWalk, group, P, fSelectedDirection);
               gSoundPlayer.PlayWarrior(group.UnitType, spMove);
             end;
           end;
@@ -4388,8 +4411,8 @@ begin
 
   // Update peacetime counter
   if gGame.Options.Peacetime <> 0 then
-    Label_PeacetimeRemaining.Caption := Format(gResTexts[TX_MP_PEACETIME_REMAINING],
-                                               [TimeToString(gGame.GetPeacetimeRemaining)])
+    Label_PeacetimeRemaining.Caption := gResTexts[TX_MP_PEACETIME_REMAINING,
+                                                  [TimeToString(gGame.GetPeacetimeRemaining)]]
   else
     Label_PeacetimeRemaining.Caption := '';
 
@@ -4450,12 +4473,12 @@ begin
       Label_NetDropPlayersDelay.Caption := ''
     else
     begin
-      i := NET_DROP_PLAYER_MIN_WAIT - EnsureRange(TimeSince(fNetWaitDropPlayersDelayStarted) div 1000, 0, NET_DROP_PLAYER_MIN_WAIT);
-      if i > 0 then
-        Label_NetDropPlayersDelay.Caption := Format(gResTexts[TX_GAMEPLAY_DROP_PLAYERS_DELAY], [i])
+      I := NET_DROP_PLAYER_MIN_WAIT - EnsureRange(TimeSince(fNetWaitDropPlayersDelayStarted) div 1000, 0, NET_DROP_PLAYER_MIN_WAIT);
+      if I > 0 then
+        Label_NetDropPlayersDelay.Caption := gResTexts[TX_GAMEPLAY_DROP_PLAYERS_DELAY, [I]]
       else
         Label_NetDropPlayersDelay.Caption := gResTexts[TX_GAMEPLAY_DROP_PLAYERS_ALLOWED];
-      Button_NetDropPlayers.Enabled := i = 0;
+      Button_NetDropPlayers.Enabled := I = 0;
     end;
   end;
 
@@ -4508,7 +4531,7 @@ function TKMGamePlayInterface.IsDragScrollingAllowed: Boolean;
 begin
   inherited;
 
-  Result := not (gGame.IsPaused and (fUIMode in [umSP, umMP]))
+  Result := not (gGame.IsPaused and (fUIMode in [umSP, umMP]) and BLOCK_GAME_ON_PAUSE)
             and (fMyControls.CtrlOver = nil)
             and not gMySpectator.Hand.InCinematic;
 end;
@@ -4662,8 +4685,8 @@ procedure TKMGamePlayInterface.UpdateHotkeys;
 begin
   inherited;
 
-  Button_Menu_TrackUp.Hint := GetHintWHotKey(TX_MUSIC_NEXT_HINT, kfMusicNextTrack);
-  Button_Menu_TrackDown.Hint := GetHintWHotKey(TX_MUSIC_PREV_HINT, kfMusicPrevTrack);
+  Button_Menu_TrackUp.Hint := GetHintWHotkey(TX_MUSIC_NEXT_HINT, kfMusicNextTrack);
+  Button_Menu_TrackDown.Hint := GetHintWHotkey(TX_MUSIC_PREV_HINT, kfMusicPrevTrack);
 
   fGuiGameBuild.UpdateHotkeys;
   fGuiGameHouse.UpdateHotkeys;

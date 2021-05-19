@@ -240,8 +240,8 @@ begin
   bestBid := MaxSingle;
 
   for I := 0 to Count - 1 do
-    if (gRes.Houses[Houses[I].HouseType].OwnerType = aUnitType) and // If Unit can work in here
-       not Houses[I].HasOwner and                                   // if there's yet no owner
+    if (gRes.Houses[Houses[I].HouseType].WorkerType = aUnitType) and // If Unit can work in here
+       not Houses[I].HasWorker and                                  // if there's yet no owner
        not Houses[I].IsDestroyed and                                // if house is not destroyed
        Houses[I].IsComplete and                                     // if house is built
        not Houses[I].IsClosedForWorker then                         // if house is not closed for worker
@@ -263,11 +263,7 @@ begin
         bestBid := dist;
         Result := Houses[I];
       end;
-
     end;
-
-  if (Result <> nil) and (Result.HouseType <> htBarracks) then
-    Result.HasOwner := True; //Become owner except Barracks;
 end;
 
 

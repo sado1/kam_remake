@@ -209,8 +209,8 @@ begin
       if not gNetworking.NetPlayers[NetI].Connected
         or gNetworking.NetPlayers[NetI].Dropped then
       begin
-        gNetworking.PostLocalMessage(Format(gResTexts[TX_MULTIPLAYER_CHAT_PLAYER_NOT_CONNECTED_ANYMORE],
-                                                [gNetworking.NetPlayers[NetI].NiknameColored]),
+        gNetworking.PostLocalMessage(gResTexts[TX_MULTIPLAYER_CHAT_PLAYER_NOT_CONNECTED_ANYMORE,
+                                               [gNetworking.NetPlayers[NetI].NiknameColored]],
                                           csSystem);
         Chat_MenuSelect(CHAT_MENU_ALL);
       end else

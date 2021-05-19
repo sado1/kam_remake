@@ -131,6 +131,7 @@ type
     fControlIndex: Integer; //Index number of this control in his Parent's (TKMPanel) collection
     fID: Integer; //Control global ID
     fHint: UnicodeString; //Text that shows up when cursor is over that control, mainly for Buttons
+    fHintBackColor: TKMColor4f; //Hint background color
     fMouseWheelStep: Integer;
 
     fPaintLayer: Integer;
@@ -233,12 +234,12 @@ type
     function GetHintKind: TKMHintKind; virtual;
     function GetHintFont: TKMFont; virtual;
     function IsHintSelected: Boolean; virtual;
-    function GetHintBackColor: TKMColor3f; virtual;
+    function GetHintBackColor: TKMColor4f; virtual;
     function GetHintTextColor: TColor4; virtual;
     function GetHintBackRect: TKMRect; virtual;
     function GetHintTextOffset: TKMPoint; virtual;
     procedure SetHint(const aHint: UnicodeString); virtual;
-    procedure SetHintBackColor(const aValue: TKMColor3f); virtual;
+    procedure SetHintBackColor(const aValue: TKMColor4f); virtual;
 
     procedure SetPaintLayer(aPaintLayer: Integer);
 
@@ -286,7 +287,7 @@ type
     property HintKind: TKMHintKind read GetHintKind;
     property HintFont: TKMFont read GetHintFont;
     property HintSelected: Boolean read IsHintSelected;
-    property HintBackColor: TKMColor3f read GetHintBackColor write SetHintBackColor;
+    property HintBackColor: TKMColor4f read GetHintBackColor write SetHintBackColor;
     property HintTextColor: TColor4 read GetHintTextColor;
     property HintBackRect: TKMRect read GetHintBackRect;
     property HintTextOffset: TKMPoint read GetHintTextOffset;
@@ -855,7 +856,8 @@ type
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont);
 
     procedure Add(const aText: String; aEnabled: Boolean = True); overload;
-    procedure Add(const aText, aHint: String; aEnabled: Boolean = True); overload;
+    procedure Add(const aText: String; aEnabled, aVisible: Boolean); overload;
+    procedure Add(const aText, aHint: String; aEnabled: Boolean = True; aVisible: Boolean = True); overload;
     procedure Clear;
     property Count: Integer read fCount;
     property IsSelected: Boolean read GetIsSelected;
@@ -1212,7 +1214,6 @@ type
 
   TKMSearchableList = class(TKMControl)
   private
-    fHintBackColor: TKMColor3f;
     fSearch: UnicodeString; //Contains user input characters we should search for
     fLastKeyTime: Cardinal;
   protected
@@ -1220,8 +1221,6 @@ type
     fOnChange: TNotifyEvent;
     function GetHintKind: TKMHintKind; override;
     function GetHintFont: TKMFont; override;
-    function GetHintBackColor: TKMColor3f; override;
-    procedure SetHintBackColor(const aValue: TKMColor3f); override;
     function IsHintSelected: Boolean; override;
 
     function CanSearch: Boolean; virtual; abstract;
@@ -1237,8 +1236,6 @@ type
     function KeyEventHandled(Key: Word; Shift: TShiftState): Boolean; virtual;
     function CanChangeSelection: Boolean; virtual;
   public
-    constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aPaintLayer: Integer = 0);
-
     procedure SetTopIndex(aIndex: Integer; aStayOnList: Boolean); overload;
     property ItemIndex: Integer read GetItemIndex write SetItemIndex;
     property TopIndex: Integer read GetTopIndex write SetTopIndex;
@@ -2171,6 +2168,7 @@ begin
   fVisible      := True;
   Tag           := 0;
   fHint         := '';
+  fHintBackColor := TKMColor4f.New(0, 0, 0, 0.7); // Black with 0.7 alpha
   fMouseWheelStep := 1;
   fPaintLayer   := aPaintLayer;
   fControlIndex := -1;
@@ -2382,9 +2380,15 @@ begin
 end;
 
 
-function TKMControl.GetHintBackColor: TKMColor3f;
+procedure TKMControl.SetHintBackColor(const aValue: TKMColor4f);
 begin
-  Result := COLOR3F_BLACK;
+  fHintBackColor := aValue;
+end;
+
+
+function TKMControl.GetHintBackColor: TKMColor4f;
+begin
+  Result := fHintBackColor;
 end;
 
 
@@ -2410,12 +2414,6 @@ procedure TKMControl.SetHint(const aHint: UnicodeString);
 begin
   //fHint := StringReplace(aHint, '|', ' ', [rfReplaceAll]); //Not sure why we were need to replace | here...
   fHint := aHint;
-end;
-
-
-procedure TKMControl.SetHintBackColor(const aValue: TKMColor3f);
-begin
-  // Do nothing
 end;
 
 
@@ -4901,7 +4899,13 @@ begin
 end;
 
 
-procedure TKMRadioGroup.Add(const aText, aHint: String; aEnabled: Boolean = True);
+procedure TKMRadioGroup.Add(const aText: String; aEnabled, aVisible: Boolean);
+begin
+  Add(aText, '', aEnabled, aVisible);
+end;
+
+
+procedure TKMRadioGroup.Add(const aText, aHint: String; aEnabled: Boolean = True; aVisible: Boolean = True);
 begin
   if fCount >= Length(fItems) then
     SetLength(fItems, fCount + 8);
@@ -4909,7 +4913,7 @@ begin
   fItems[fCount].Text := aText;
   fItems[fCount].Hint := aHint;
   fItems[fCount].Enabled := aEnabled;
-  fItems[fCount].Visible := True;
+  fItems[fCount].Visible := aVisible;
 
   Inc(fCount);
 end;
@@ -5301,7 +5305,7 @@ begin
 
   if fHighlightMark <> -1 then
   begin
-    Hint := Format(gResTexts[fHintResText], [TickToTimeStr(fHighlightMark)]);
+    Hint := gResTexts[fHintResText, [TickToTimeStr(fHighlightMark)]];
 //    Caption := IntToStr(fPosition) + ' (' + IntToStr(fHighlightMark) + ')';
   end
   else
@@ -8041,14 +8045,6 @@ end;
 
 
 { TKMSearchableList }
-constructor TKMSearchableList.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight, aPaintLayer: Integer);
-begin
-  inherited;
-
-  fHintBackColor := COLOR3F_BLACK;
-end;
-
-
 procedure TKMSearchableList.KeyPress(Key: Char);
 var
   I, oldIndex: Integer;
@@ -8098,18 +8094,6 @@ end;
 function TKMSearchableList.CanChangeSelection: Boolean;
 begin
   Result := True;
-end;
-
-
-function TKMSearchableList.GetHintBackColor: TKMColor3f;
-begin
-  Result := fHintBackColor;
-end;
-
-
-procedure TKMSearchableList.SetHintBackColor(const aValue: TKMColor3f);
-begin
-  fHintBackColor := aValue;
 end;
 
 

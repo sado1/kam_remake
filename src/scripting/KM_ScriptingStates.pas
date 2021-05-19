@@ -13,6 +13,7 @@ type
   TKMScriptStates = class(TKMScriptEntity)
   public
     function AIArmyType(aPlayer: Byte): TKMArmyType;
+    function AIAutoAttack(aPlayer: Byte): Boolean;
     function AIAutoAttackRange(aPlayer: Byte): Integer;
     function AIAutoBuild(aPlayer: Byte): Boolean;
     function AIAutoDefence(aPlayer: Byte): Boolean;
@@ -73,9 +74,10 @@ type
     function HouseDeliveryBlocked(aHouseID: Integer): Boolean;
     function HouseDeliveryMode(aHouseID: Integer): Integer;
     function HouseDestroyed(aHouseID: Integer): Boolean;
-    function HouseHasOccupant(aHouseID: Integer): Boolean;
     function HouseFlagPoint(aHouseID: Integer): TKMPoint;
     function HouseGetAllUnitsIn(aHouseID: Integer): TIntegerArray;
+    function HouseHasOccupant(aHouseID: Integer): Boolean;
+    function HouseHasWorker(aHouseID: Integer): Boolean;
     function HouseIsComplete(aHouseID: Integer): Boolean;
     function HouseOwner(aHouseID: Integer): Integer;
     function HousePosition(aHouseID: Integer): TKMPoint;
@@ -90,12 +92,14 @@ type
     function HouseTypeMaxHealth(aHouseType: Integer): Word;
     function HouseTypeName(aHouseType: Byte): AnsiString;
     function HouseTypeToOccupantType(aHouseType: Integer): Integer;
+    function HouseTypeToWorkerType(aHouseType: Integer): Integer;
     function HouseUnlocked(aPlayer, aHouseType: Word): Boolean;
     function HouseWareBlocked(aHouseID, aWareType: Integer): Boolean;
     function HouseWareBlockedTakeOut(aHouseID, aWareType: Integer): Boolean;
     function HouseWeaponsOrdered(aHouseID, aWareType: Integer): Integer;
     function HouseWoodcutterChopOnly(aHouseID: Integer): Boolean;
     function HouseWoodcutterMode(aHouseID: Integer): Integer;
+    function HouseWorker(aHouseID: Integer): Integer;
 
     function IsFieldAt(aPlayer: ShortInt; X, Y: Word): Boolean;
     function IsWinefieldAt(aPlayer: ShortInt; X, Y: Word): Boolean;
@@ -253,6 +257,24 @@ begin
       Result := gHands[aPlayer].AI.Setup.ArmyType
     else
       LogParamWarning('States.AIArmyType', [aPlayer]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+
+//* Version: 13000
+//* Gets AI AutoAttack (True or False)
+function TKMScriptStates.AIAutoAttack(aPlayer: Byte): Boolean;
+begin
+  Result := False;
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
+      Result := gHands[aPlayer].AI.Setup.AutoAttack
+    else
+      LogParamWarning('States.AIAutoAttack', [aPlayer]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2001,8 +2023,9 @@ end;
 
 
 //* Version: 5057
-//* Returns true if the specified house currently has an occupant
-//* Result: Has occupant
+//* @Deprecated: HouseHasWorker
+//* Returns true if the specified house currently has a worker
+//* Result: Has worker
 function TKMScriptStates.HouseHasOccupant(aHouseID: Integer): Boolean;
 var
   H: TKMHouse;
@@ -2013,10 +2036,34 @@ begin
     begin
       H := fIDCache.GetHouse(aHouseID);
       if H <> nil then
-        Result := H.HasOwner;
+        Result := H.HasWorker;
     end
     else
       LogParamWarning('States.HouseHasOccupant', [aHouseID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13050
+//* Returns true if the specified house currently has a worker
+//* Result: Has worker
+function TKMScriptStates.HouseHasWorker(aHouseID: Integer): Boolean;
+var
+  H: TKMHouse;
+begin
+  try
+    Result := False;
+    if aHouseID > 0 then
+    begin
+      H := fIDCache.GetHouse(aHouseID);
+      if H <> nil then
+        Result := H.HasWorker;
+    end
+    else
+      LogParamWarning('States.HouseHasWorker', [aHouseID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2337,7 +2384,8 @@ end;
 
 
 //* Version: 5345
-//* Returns the type of unit that should occupy the specified type of house, or -1 if no unit should occupy it.
+//* @Deprecated: HouseTypeToWorkerType
+//* Returns the type of unit that should work in the specified type of house, or -1 if no unit should work in it.
 //* Result: Unit type
 function TKMScriptStates.HouseTypeToOccupantType(aHouseType: Integer): Integer;
 begin
@@ -2345,10 +2393,30 @@ begin
     Result := -1;
     if HouseTypeValid(aHouseType) then
     begin
-      Result := UNIT_TYPE_TO_ID[gRes.Houses[HOUSE_ID_TO_TYPE[aHouseType]].OwnerType];
+      Result := UNIT_TYPE_TO_ID[gRes.Houses[HOUSE_ID_TO_TYPE[aHouseType]].WorkerType];
     end
     else
       LogParamWarning('States.HouseTypeToOccupantType', [aHouseType]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13050
+//* Returns the type of unit that should occupy the specified type of house, or -1 if no unit should occupy it.
+//* Result: Unit type
+function TKMScriptStates.HouseTypeToWorkerType(aHouseType: Integer): Integer;
+begin
+  try
+    Result := -1;
+    if HouseTypeValid(aHouseType) then
+    begin
+      Result := UNIT_TYPE_TO_ID[gRes.Houses[HOUSE_ID_TO_TYPE[aHouseType]].WorkerType];
+    end
+    else
+      LogParamWarning('States.HouseTypeToWorkerType', [aHouseType]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2510,6 +2578,29 @@ begin
     end
     else
       LogParamWarning('States.HouseWoodcutterMode', [aHouseID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13050
+//* Returns ID of a citizen, who works in specified house or -1 if there is no worker or aHouseID is incorrect
+function TKMScriptStates.HouseWorker(aHouseID: Integer): Integer;
+var
+  H: TKMHouse;
+begin
+  try
+    Result := -1;
+    if aHouseID > 0 then
+    begin
+      H := fIDCache.GetHouse(aHouseID);
+      if H.HasWorker then
+        Result := TKMUnit(H.Worker).UID;
+    end
+    else
+      LogParamWarning('States.HouseWorker', [aHouseID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

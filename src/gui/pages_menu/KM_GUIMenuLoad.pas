@@ -64,7 +64,8 @@ type
 
 implementation
 uses
-  KM_Log, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_Pics, KM_GameSettings;
+  KM_Log, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_Pics, KM_GameSettings,
+  KM_MapTypes;
 
 
 { TKMGUIMenuLoad }
@@ -98,7 +99,7 @@ begin
     ColumnBox_Load.OnChange := Load_ListClick;
     ColumnBox_Load.OnDoubleClick := LoadClick;
     ColumnBox_Load.ShowHintWhenShort := True;
-    ColumnBox_Load.HintBackColor := TKMColor3f.NewB(87, 72, 37);
+    ColumnBox_Load.HintBackColor := TKMColor4f.New(87, 72, 37);
 
     Button_Load := TKMButton.Create(Panel_Load, 200, 555, 350, 30, gResTexts[TX_MENU_LOAD_LOAD], bsMenu);
     Button_Load.Anchors := [anLeft,anBottom];
@@ -261,8 +262,8 @@ begin
         except
           on E: Exception do
           begin
-            LoadError := Format(gResTexts[TX_UNSUPPORTED_SAVE_LOAD_ERROR_MSG], [fSaves[ID].GameInfo.Version, fSaves[ID].Path])
-              + '||' + E.ClassName + ': ' + E.Message;
+            LoadError := gResTexts[TX_UNSUPPORTED_SAVE_LOAD_ERROR_MSG, [fSaves[ID].GameInfo.Version, fSaves[ID].Path]]
+                         + '||' + E.ClassName + ': ' + E.Message;
             gLog.AddTime('Game load Exception: ' + LoadError
               {$IFDEF WDC} + sLineBreak + E.StackTrace {$ENDIF}
               );

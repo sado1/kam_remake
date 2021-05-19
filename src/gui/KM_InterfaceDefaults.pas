@@ -562,9 +562,10 @@ begin
 
                       Label_Hint.AbsLeft := Bevel_HintBG.AbsLeft + PAD div 2;//Bevel_HintBG.Width div 2;
                       Label_Hint.AbsTop := Bevel_HintBG.AbsTop + PAD div 2 + (FONT_Y_FIX - 1);
-                      Bevel_HintBG.BackAlpha := 0.7;
+
+                      Bevel_HintBG.BackAlpha := fHintCtrl.HintBackColor.A;
                       Bevel_HintBG.SetDefEdgeAlpha;
-                      Bevel_HintBG.SetDefColor;
+                      Bevel_HintBG.Color := fHintCtrl.HintBackColor.ToColor3f;
                     end;
     hkStatic:       begin
                       hintBase := GetHintPositionBase;
@@ -577,7 +578,7 @@ begin
                       Label_Hint.Top := Bevel_HintBG.Top + 2;
                       SetHintBackStaticAlpha;
                     end;
-    hkTextNotFit:  begin
+    hkTextNotFit:   begin
                       hintTxtOffset := fHintCtrl.HintTextOffset;
                       hintBackRect := fHintCtrl.HintBackRect;
 
@@ -595,7 +596,7 @@ begin
                       Label_Hint.AbsTop := fHintCtrl.AbsTop + hintTxtOffset.Y;
                       Label_Hint.FontColor := fHintCtrl.HintTextColor;
 
-                      Bevel_HintBG.Color := fHintCtrl.HintBackColor;
+                      Bevel_HintBG.Color := fHintCtrl.HintBackColor.ToColor3f;
 
                       Bevel_HintBG.BackAlpha := 1;
                       Bevel_HintBG.SetDefEdgeAlpha;

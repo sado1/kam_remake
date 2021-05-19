@@ -36,7 +36,7 @@ type
 
 implementation
 uses
-  KM_HandsCollection, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_Hand;
+  KM_HandsCollection, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_Hand, KM_MapTypes;
 
 
 { TKMMapEdPlayerGoals }
@@ -155,7 +155,7 @@ begin
                                          IntToStr(G.HandIndex + 1)],
                                         [gResTexts[TYPE_HINT[G.GoalType]],
                                          gResTexts[COND[G.GoalCondition]],
-                                         Format(gResTexts[TX_PLAYER_X], [G.HandIndex + 1])]));
+                                         gResTexts[TX_PLAYER_X, [G.HandIndex + 1]]]));
   end;
 
   Goals_ListClick(nil);

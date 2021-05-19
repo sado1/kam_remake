@@ -299,7 +299,7 @@ begin
     ListBox_History := TKMListBox.Create(PopUp_History.ItemsPanel, 10, 10, PopUp_History.ItemsPanel.Width - 20, PopUp_History.ItemsPanel.Height - 50, fntMetal, bsGame);
     ListBox_History.AutoHideScrollBar := True;
     ListBox_History.ShowHintWhenShort := True;
-    ListBox_History.HintBackColor := TKMColor3f.NewB(87, 72, 37);
+    ListBox_History.HintBackColor := TKMColor4f.New(87, 72, 37);
     ListBox_History.OnChange := History_ListChange;
     ListBox_History.OnDoubleClick := History_JumpTo;
 
@@ -1097,16 +1097,16 @@ procedure TKMapEdInterface.UpdateHotkeys;
 begin
   inherited;
 
-  Button_History.Hint := GetHintWHotKey(TX_MAPED_HISTORY_HINT, kfMapedHistory);
-  Button_ChangeOwner.Hint := GetHintWHotKey(TX_MAPED_PAINT_BUCKET_CH_OWNER, kfMapedPaintBucket);
-  Button_UniversalEraser.Hint := GetHintWHotKey(TX_MAPED_UNIVERSAL_ERASER, kfMapedUnivErasor);
-  Image_Extra.Hint := GetHintWHotKey(TX_KEY_FUNC_MAPEDIT_EXTRA, kfMapedExtra);
+  Button_History.Hint := GetHintWHotkey(TX_MAPED_HISTORY_HINT, kfMapedHistory);
+  Button_ChangeOwner.Hint := GetHintWHotkey(TX_MAPED_PAINT_BUCKET_CH_OWNER, kfMapedPaintBucket);
+  Button_UniversalEraser.Hint := GetHintWHotkey(TX_MAPED_UNIVERSAL_ERASER, kfMapedUnivErasor);
+  Image_Extra.Hint := GetHintWHotkey(TX_KEY_FUNC_MAPEDIT_EXTRA, kfMapedExtra);
 
-  Button_Main[1].Hint := GetHintWHotKey(TX_MAPED_TERRAIN, kfMapedTerrain);
-  Button_Main[2].Hint := GetHintWHotKey(TX_MAPED_VILLAGE, kfMapedVillage);
-  Button_Main[3].Hint := GetHintWHotKey(TX_MAPED_SCRIPTS_VISUAL, kfMapedVisual);
-  Button_Main[4].Hint := GetHintWHotKey(TX_MAPED_SCRIPTS_GLOBAL, kfMapedGlobal);
-  Button_Main[5].Hint := GetHintWHotKey(TX_MAPED_MENU, kfMapedMainMenu);
+  Button_Main[1].Hint := GetHintWHotkey(TX_MAPED_TERRAIN, kfMapedTerrain);
+  Button_Main[2].Hint := GetHintWHotkey(TX_MAPED_VILLAGE, kfMapedVillage);
+  Button_Main[3].Hint := GetHintWHotkey(TX_MAPED_SCRIPTS_VISUAL, kfMapedVisual);
+  Button_Main[4].Hint := GetHintWHotkey(TX_MAPED_SCRIPTS_GLOBAL, kfMapedGlobal);
+  Button_Main[5].Hint := GetHintWHotkey(TX_MAPED_MENU, kfMapedMainMenu);
 
   fGuiTerrain.UpdateHotkeys;
   fGuiTown.UpdateHotkeys;

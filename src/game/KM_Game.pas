@@ -1245,7 +1245,7 @@ begin
       Exit;
 
     gNetworking.PostLocalMessage(
-      Format(gResTexts[TX_MULTIPLAYER_PLAYER_WON], [gHands[aHandIndex].GetOwnerNameColoredU]),
+      gResTexts[TX_MULTIPLAYER_PLAYER_WON, [gHands[aHandIndex].GetOwnerNameColoredU]],
       csSystem);
 
     if Assigned(gNetworking.OnPlayersSetup) then
@@ -1303,8 +1303,8 @@ begin
               end;
     gmMulti:  begin
                 if aShowDefeatMessage then
-                  gNetworking.PostLocalMessage(Format(gResTexts[TX_MULTIPLAYER_PLAYER_DEFEATED],
-                                                      [gHands[aPlayerIndex].GetOwnerNameColoredU]), csSystem);
+                  gNetworking.PostLocalMessage(gResTexts[TX_MULTIPLAYER_PLAYER_DEFEATED,
+                                                         [gHands[aPlayerIndex].GetOwnerNameColoredU]], csSystem);
 
                 if aPlayerIndex = gMySpectator.HandID then
                 begin
@@ -1320,8 +1320,8 @@ begin
     gmMultiSpectate:
               begin
                 if aShowDefeatMessage then
-                  gNetworking.PostLocalMessage(Format(gResTexts[TX_MULTIPLAYER_PLAYER_DEFEATED],
-                                                      [gHands[aPlayerIndex].GetOwnerNameColoredU]), csSystem);
+                  gNetworking.PostLocalMessage(gResTexts[TX_MULTIPLAYER_PLAYER_DEFEATED,
+                                                         [gHands[aPlayerIndex].GetOwnerNameColoredU]], csSystem);
 
                 if Assigned(gNetworking.OnPlayersSetup) then
                   gNetworking.OnPlayersSetup; //Update players panel
@@ -2872,7 +2872,7 @@ function TKMGame.CheckPauseGameAtTick: Boolean;
   begin
     IsPaused := True;
     //Set replay UI to paused state, sync replay timer and other UI elements
-    fGamePlayInterface.UpdateReplayButtons(False);
+    fGamePlayInterface.UpdateReplayButtons;
     fGamePlayInterface.UpdateState(gGameApp.GlobalTickCount);
   end;
 
@@ -3207,7 +3207,7 @@ end;
 //This is our real-time "thread", use it wisely
 procedure TKMGame.UpdateStateIdle(aFrameTime: Cardinal);
 begin
-  if (not fIsPaused) or fParams.IsReplay then
+  if not fIsPaused or not BLOCK_GAME_ON_PAUSE or fParams.IsReplay  then
     fActiveInterface.UpdateStateIdle(aFrameTime);
 
   //Terrain should be updated in real time when user applies brushes

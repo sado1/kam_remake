@@ -118,6 +118,7 @@ type
     R,G,B,A: Single;
     constructor New(aR,aG,aB,aA: Single); overload;
     constructor New(aR,aG,aB: Byte); overload;
+    constructor NewB(aR,aG,aB,aA: Byte); overload;
     constructor New(aCol: Cardinal); overload;
     constructor New(aCol: TKMColor3f); overload;
     constructor New(aCol: TKMColor3f; aAlpha: Single); overload;
@@ -125,6 +126,7 @@ type
     class function Black(): TKMColor4f; static;
     function Alpha50(): TKMColor4f;
     function Alpha(aAlpha: Single): TKMColor4f;
+    function ToColor3f: TKMColor3f;
   end;
 
 const
@@ -206,6 +208,15 @@ begin
 end;
 
 
+constructor TKMColor4f.NewB(aR,aG,aB,aA: Byte);
+begin
+  R := aR / 255;
+  G := aG / 255;
+  B := aB / 255;
+  A := aA / 255;
+end;
+
+
 constructor TKMColor4f.New(aCol: Cardinal);
 begin
   R := (aCol and $FF)           / 255;
@@ -259,6 +270,12 @@ function TKMColor4f.Alpha(aAlpha: Single): TKMColor4f;
 begin
   Result := Self;
   Result.A := aAlpha;
+end;
+
+
+function TKMColor4f.ToColor3f: TKMColor3f;
+begin
+  Result := TKMColor3f.New(R, G, B);
 end;
 
 

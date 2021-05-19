@@ -17,15 +17,23 @@ xcopy ..\data\gfx "%kam_folder%"\data\gfx\ /y /r /s
 xcopy ..\data\Sprites "%kam_folder%"\data\Sprites\ /y /r /s
 xcopy ..\data\text "%kam_folder%"\data\text\ /y /r /s
 xcopy ..\data\locales.txt "%kam_folder%"\data\locales.txt* /y /r /i
-xcopy ..\Campaigns "%kam_folder%"\Campaigns\ /y /r /s
-xcopy ..\Maps "%kam_folder%"\Maps\ /y /r /s /exclude:excluded_test_maps.txt
-xcopy ..\MapsMP "%kam_folder%"\MapsMP\ /y /r /s
-xcopy ..\Tutorials "%kam_folder%"\Tutorials\ /y /r /s
 xcopy ..\Docs\Readme "%kam_folder%"\ /y /r /s
 xcopy ..\Sounds "%kam_folder%"\Sounds\ /y /r /s
 xcopy ..\Music "%kam_folder%"\Music\ /y /r /s
 xcopy ..\lib "%kam_folder%"\lib\ /y /r /s
 xcopy ..\"Modding graphics" "%kam_folder%"\"Modding graphics"\ /y /r /s
+
+call pull_maps.bat
+
+
+REM ============================================================
+REM Copy Maps, Campaigns and Tutorials
+REM ============================================================
+xcopy %KmrMapsRepoDir%\Campaigns "%kam_folder%"\Campaigns\ /y /r /s
+xcopy %KmrMapsRepoDir%\Maps "%kam_folder%"\Maps\ /y /r /s /exclude:excluded_test_maps.txt
+xcopy %KmrMapsRepoDir%\MapsMP "%kam_folder%"\MapsMP\ /y /r /s
+xcopy %KmrMapsRepoDir%\Tutorials "%kam_folder%"\Tutorials\ /y /r /s
+
 
 
 REM ============================================================
@@ -59,7 +67,7 @@ xcopy ..\ogg.dll "%kam_folder%"\ogg.dll* /y /r /i
 xcopy ..\vorbis.dll "%kam_folder%"\vorbis.dll* /y /r /i
 xcopy ..\vorbisfile.dll "%kam_folder%"\vorbisfile.dll* /y /r /i
 xcopy ..\Installer\uninst_clean.bat "%kam_folder%"\uninst_clean.bat* /y /r /i
-xcopy "%KMRPrevVersionDir%"\oalinst.exe "%kam_folder%"\oalinst.exe* /y /r /i
+xcopy ..\Installer\oalinst.exe "%kam_folder%"\oalinst.exe* /y /r /i
 
 mkdir "%kam_folder%"\Utils
 

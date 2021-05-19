@@ -70,7 +70,7 @@ begin
         ColumnBox_OptionsKeys.Anchors := [anLeft,anTop,anBottom];
         ColumnBox_OptionsKeys.ShowLines := True;
         ColumnBox_OptionsKeys.ShowHintWhenShort := True;
-        ColumnBox_OptionsKeys.HintBackColor := TKMColor3f.NewB(57, 48, 50); // Dark grey
+        ColumnBox_OptionsKeys.HintBackColor := TKMColor4f.New(57, 48, 50); // Dark grey
         ColumnBox_OptionsKeys.PassAllKeys := True;
         ColumnBox_OptionsKeys.OnChange := KeysClick;
         ColumnBox_OptionsKeys.OnKeyUp := KeysUpdate;
@@ -147,9 +147,9 @@ procedure TKMGUICommonKeys.KeysRefreshList;
   function GetFunctionName(aTX_ID: Integer): String;
   begin
     case aTX_ID of
-      TX_KEY_FUNC_GAME_SPEED_2: Result := Format(gResTexts[aTX_ID], [FormatFloat('##0.##', gGameSettings.SpeedMedium)]);
-      TX_KEY_FUNC_GAME_SPEED_3: Result := Format(gResTexts[aTX_ID], [FormatFloat('##0.##', gGameSettings.SpeedFast)]);
-      TX_KEY_FUNC_GAME_SPEED_4: Result := Format(gResTexts[aTX_ID], [FormatFloat('##0.##', gGameSettings.SpeedVeryFast)]);
+      TX_KEY_FUNC_GAME_SPEED_2: Result := gResTexts[aTX_ID, [FormatFloat('##0.##', gGameSettings.SpeedMedium)]];
+      TX_KEY_FUNC_GAME_SPEED_3: Result := gResTexts[aTX_ID, [FormatFloat('##0.##', gGameSettings.SpeedFast)]];
+      TX_KEY_FUNC_GAME_SPEED_4: Result := gResTexts[aTX_ID, [FormatFloat('##0.##', gGameSettings.SpeedVeryFast)]];
       else                      Result := gResTexts[aTX_ID];
 
     end;

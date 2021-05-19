@@ -432,6 +432,8 @@ begin
   if H <> nil then
   begin
     fHome  := H.GetPointer;
+    if (fHome.HouseType <> htBarracks) then // Become house worker except Barracks
+      fHome.SetWorker(Self); //Self Pointer is managed via House
     Result := True;
   end;
 end;
@@ -441,7 +443,9 @@ procedure TKMSettledUnit.CleanHousePointer(aFreeAndNilTask: Boolean = False);
 begin
   if aFreeAndNilTask then
     FreeAndNil(fTask);
-  fHome.HasOwner := False;
+
+  fHome.SetWorker(nil);
+
   gHands.CleanUpHousePointer(fHome);
 end;
 
@@ -1167,6 +1171,9 @@ end;
 destructor TKMUnit.Destroy;
 begin
   if not IsDead then gTerrain.UnitRem(NextPosition); //Happens only when removing player from map on GameStart (network)
+
+  fHome.SetWorker(nil);
+
   FreeAndNil(fAction);
   FreeAndNil(fTask);
   FreeAndNil(fVisual);
@@ -1284,11 +1291,8 @@ end;
 // Erase everything related to unit status to exclude it from being accessed by anything but the old pointers
 procedure TKMUnit.CloseUnit(aRemoveTileUsage: Boolean = True);
 begin
-  if fHome <> nil then
-  begin
-    fHome.HasOwner := False;
-    gHands.CleanUpHousePointer(fHome);
-  end;
+  fHome.SetWorker(nil);
+  gHands.CleanUpHousePointer(fHome);
 
   if aRemoveTileUsage
     and (gTerrain.Land^[NextPosition.Y, NextPosition.X].IsUnit = Self) then //remove lock only if it was made by this unit
@@ -1475,8 +1479,8 @@ begin
   gTerrain.UnitAdd(fPosition, Self);
 
   if newPos then
-    gGame.MapEditor.History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_MOVE_SMTH],
-                                                           [gRes.Units[UnitType].GUIName, aPos.ToString]));
+    gGame.MapEditor.History.MakeCheckpoint(caUnits, gResTexts[TX_MAPED_HISTORY_CHPOINT_MOVE_SMTH,
+                                                              [gRes.Units[UnitType].GUIName, aPos.ToString]]);
 end;
 
 
@@ -1569,7 +1573,7 @@ begin
 end;
 
 
-function TKMUnit.HitTest(X,Y: Integer; const UT:TKMUnitType = utAny): Boolean;
+function TKMUnit.HitTest(X,Y: Integer; const UT: TKMUnitType = utAny): Boolean;
 begin
   Result := (X = fPosition.X) and //Comparing X,Y to CurrentPosition separately, cos they can be negative numbers
             (Y = fPosition.Y) and

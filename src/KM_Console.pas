@@ -227,7 +227,7 @@ begin
   if not gScriptEvents.HasConsoleCommand(cmdName)
     and Assigned(fOnError) then
   begin
-    fOnError(Format(gResTexts[TX_SCRIPT_CONSOLE_CMD_NOT_FOUND], [WrapColorA(cmdName, clScriptCmdName)]));
+    fOnError(gResTexts[TX_SCRIPT_CONSOLE_CMD_NOT_FOUND, [WrapColorA(cmdName, clScriptCmdName)]]);
     Exit;
   end;
 
@@ -257,18 +257,18 @@ begin
   AddParam(param);
 
   parsingError := False;
-  parsingErrorStr := Format(gResTexts[TX_SCRIPT_CONSOLE_CMD_PARSING_ERROR] + '|',
-                            [WrapColorA(cmdName, clScriptCmdName),
-                            gScriptEvents.ConsoleCommand[cmdName].Params2String(params)]);
+  parsingErrorStr := gResTexts[TX_SCRIPT_CONSOLE_CMD_PARSING_ERROR,
+                               [WrapColorA(cmdName, clScriptCmdName),
+                                gScriptEvents.ConsoleCommand[cmdName].Params2String(params)]];
 
   if (paramsI > procParamsCnt)
     and Assigned(fOnError) then
   begin
     fOnError(parsingErrorStr +
-             Format(gResTexts[TX_SCRIPT_CONSOLE_CMD_TOO_MANY_PARAMS],
-                    [WrapColorA(cmdName, clScriptCmdName),
-                     WrapColor(IntToStr(procParamsCnt), clScriptCmdParam),
-                     WrapColor(IntToStr(paramsI), clScriptCmdParam)])); //We Inc ParamsI at the end
+             gResTexts[TX_SCRIPT_CONSOLE_CMD_TOO_MANY_PARAMS,
+                       [WrapColorA(cmdName, clScriptCmdName),
+                        WrapColor(IntToStr(procParamsCnt), clScriptCmdParam),
+                        WrapColor(IntToStr(paramsI), clScriptCmdParam)]]); //We Inc ParamsI at the end
     parsingError := True;
   end;
 
@@ -282,9 +282,9 @@ begin
     and Assigned(fOnError) then
   begin
     fOnError(parsingErrorStr +
-             Format(gResTexts[TX_SCRIPT_CONSOLE_CMD_PARAMS_NOT_VALID],
-                    [WrapColorA(cmdName, clScriptCmdName),
-                     gScriptEvents.ConsoleCommand[cmdName].ParamsTypes2String]));
+             gResTexts[TX_SCRIPT_CONSOLE_CMD_PARAMS_NOT_VALID,
+                       [WrapColorA(cmdName, clScriptCmdName),
+                        gScriptEvents.ConsoleCommand[cmdName].ParamsTypes2String]]);
     parsingError := True;
   end;
 
@@ -292,9 +292,9 @@ begin
   begin
     gGame.GameInputProcess.CmdConsoleCommand(gicScriptConsoleCommand, cmdName, params);
     if Assigned(fOnPostLocal) then
-      fOnPostLocal(Format(gResTexts[TX_SCRIPT_CONSOLE_CMD_CALLED],
-                          [WrapColorA(cmdName, clScriptCmdName),
-                          gScriptEvents.ConsoleCommand[cmdName].Params2String(params)]));
+      fOnPostLocal(gResTexts[TX_SCRIPT_CONSOLE_CMD_CALLED,
+                             [WrapColorA(cmdName, clScriptCmdName),
+                              gScriptEvents.ConsoleCommand[cmdName].Params2String(params)]]);
     Result := True;
   end;
 end;

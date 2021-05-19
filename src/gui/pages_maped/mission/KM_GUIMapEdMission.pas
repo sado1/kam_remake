@@ -136,7 +136,7 @@ var
   MT: TKMMissionTab;
 begin
   for MT := Low(TKMMissionTab) to High(TKMMissionTab) do
-    Button_Mission[MT].Hint := GetHintWHotKey(TAB_HINT[MT], MAPED_SUBMENU_HOTKEYS[Ord(MT)]);
+    Button_Mission[MT].Hint := GetHintWHotkey(TAB_HINT[MT], MAPED_SUBMENU_HOTKEYS[Ord(MT)]);
 end;
 
 

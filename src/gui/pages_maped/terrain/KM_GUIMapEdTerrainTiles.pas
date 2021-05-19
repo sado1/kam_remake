@@ -495,7 +495,7 @@ end;
 
 procedure TKMMapEdTerrainTiles.UpdateHotkeys;
 begin
-  TilesPalette_Button.Hint := GetHintWHotKey(TX_MAPED_TERRAIN_TILES_PALETTE, kfMapedTilesPalette);
+  TilesPalette_Button.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_TILES_PALETTE, kfMapedTilesPalette);
 
   TilesMagicWater.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_MAGIC_WATER_HINT,  kfMapedSubMenuAction1);
   TilesEyedropper.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_EYEDROPPER_HINT,   kfMapedSubMenuAction2);

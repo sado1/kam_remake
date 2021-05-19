@@ -717,7 +717,7 @@ begin
       //Note: While debugging, Delphi will still stop execution for the exception,
       //unless Tools > Debugger > Exception > "Stop on Delphi Exceptions" is unchecked.
       //But to normal player the dialog won't show.
-      loadError := Format(gResTexts[TX_MENU_PARSE_ERROR], [filePath]) + '||' + E.ClassName + ': ' + E.Message;
+      loadError := gResTexts[TX_MENU_PARSE_ERROR, [filePath]] + '||' + E.ClassName + ': ' + E.Message;
       StopGame(grError, loadError);
       gLog.AddTime('Game creation Exception: ' + loadError
         {$IFDEF WDC} + sLineBreak + E.StackTrace {$ENDIF}
@@ -762,7 +762,7 @@ begin
       //Note: While debugging, Delphi will still stop execution for the exception,
       //unless Tools > Debugger > Exception > "Stop on Delphi Exceptions" is unchecked.
       //But to normal player the dialog won't show.
-      loadError := Format(gResTexts[TX_MENU_PARSE_ERROR], [missionFullFilePath]) + '||' + E.ClassName + ': ' + E.Message;
+      loadError := gResTexts[TX_MENU_PARSE_ERROR, [missionFullFilePath]] + '||' + E.ClassName + ': ' + E.Message;
       StopGame(grError, loadError);
       gLog.AddTime('Game creation Exception: ' + loadError
         {$IFDEF WDC} + sLineBreak + E.StackTrace {$ENDIF}
@@ -868,7 +868,7 @@ begin
       //Note: While debugging, Delphi will still stop execution for the exception,
       //unless Tools > Debugger > Exception > "Stop on Delphi Exceptions" is unchecked.
       //But to normal player the dialog won't show.
-      loadError := Format(gResTexts[TX_MENU_PARSE_ERROR], ['-']) + '||' + E.ClassName + ': ' + E.Message;
+      loadError := gResTexts[TX_MENU_PARSE_ERROR, ['-']] + '||' + E.ClassName + ': ' + E.Message;
       StopGame(grError, loadError);
       gLog.AddTime('Game creation Exception: ' + loadError
         {$IFDEF WDC} + sLineBreak + E.StackTrace {$ENDIF}
@@ -1288,7 +1288,7 @@ begin
       gMusic.PlayNextTrack; //Feed new music track
 
     //StatusBar
-    if (gGame <> nil) and not gGame.IsPaused and Assigned(fOnCursorUpdate) then
+    if (gGame <> nil) and not (gGame.IsPaused and BLOCK_GAME_ON_PAUSE) and Assigned(fOnCursorUpdate) then
         fOnCursorUpdate(SB_ID_TIME, 'Time: ' + TimeToString(gGame.MissionTime));
   end;
 end;

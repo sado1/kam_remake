@@ -136,7 +136,7 @@ begin
   CheckBox_AutoRepair.Checked := gMySpectator.Hand.AI.Setup.AutoRepair;
   TrackBar_SerfsPer10Houses.Position := Round(10*gMySpectator.Hand.AI.Setup.SerfsPerHouse);
   if gMySpectator.HandID <> -1 then
-    TrackBar_SerfsPer10Houses.Hint := Format(gResTexts[TX_MAPED_AI_SERFS_PER_10_HOUSES_HINT], [gMySpectator.Hand.Stats.GetHouseQty(htAny)]);
+    TrackBar_SerfsPer10Houses.Hint := gResTexts[TX_MAPED_AI_SERFS_PER_10_HOUSES_HINT, [gMySpectator.Hand.Stats.GetHouseQty(htAny)]];
   TrackBar_WorkerCount.Position := gMySpectator.Hand.AI.Setup.WorkerCount;
   CheckBox_UnlimitedEquip.Checked := gMySpectator.Hand.AI.Setup.UnlimitedEquip;
   NumEd_EquipRateLeather.Value := gMySpectator.Hand.AI.Setup.EquipRateLeather;
@@ -213,11 +213,11 @@ end;
 
 procedure TKMMapEdTownScript.UpdateHotkeys;
 begin
-  CheckBox_AutoBuild.Hint       := GetHintWHotKey(TX_MAPED_AI_AUTOBUILD,              MAPED_SUBMENU_ACTIONS_HOTKEYS[0]);
-  CheckBox_AutoRepair.Hint      := GetHintWHotKey(TX_MAPED_AI_AUTOREPAIR,             MAPED_SUBMENU_ACTIONS_HOTKEYS[1]);
+  CheckBox_AutoBuild.Hint       := GetHintWHotkey(TX_MAPED_AI_AUTOBUILD,              MAPED_SUBMENU_ACTIONS_HOTKEYS[0]);
+  CheckBox_AutoRepair.Hint      := GetHintWHotkey(TX_MAPED_AI_AUTOREPAIR,             MAPED_SUBMENU_ACTIONS_HOTKEYS[1]);
   Button_ClassicAIParams.Hint   := GetHintWHotkey(TX_MAPED_AI_CLASSIC_AI_PARAMS_HINT, MAPED_SUBMENU_ACTIONS_HOTKEYS[2]);
-  CheckBox_UnlimitedEquip.Hint  := GetHintWHotKey(TX_MAPED_AI_FASTEQUIP_HINT,         MAPED_SUBMENU_ACTIONS_HOTKEYS[3]);
-  Button_AIStart.Hint           := GetHintWHotKey(TX_MAPED_AI_START_HINT,             MAPED_SUBMENU_ACTIONS_HOTKEYS[4]);
+  CheckBox_UnlimitedEquip.Hint  := GetHintWHotkey(TX_MAPED_AI_FASTEQUIP_HINT,         MAPED_SUBMENU_ACTIONS_HOTKEYS[3]);
+  Button_AIStart.Hint           := GetHintWHotkey(TX_MAPED_AI_START_HINT,             MAPED_SUBMENU_ACTIONS_HOTKEYS[4]);
 end;
 
 

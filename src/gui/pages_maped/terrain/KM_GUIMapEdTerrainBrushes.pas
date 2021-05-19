@@ -131,6 +131,7 @@ begin
     Anchors := [anLeft, anTop, anRight];
   BrushSize   := TKMTrackBar.Create(Panel_Brushes, 9, 27, (Panel_Brushes.Width - (BTN_BRUSH_SIZE * 2) - 18) - 18, 0, MAPED_BRUSH_MAX_SIZE);
   BrushSize.Anchors := [anLeft, anTop, anRight];
+  BrushSize.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_SIZE_HINT, gResTexts[TX_KEY_CTRL_MOUSEWHEEL]);
   BrushSize.Position := 4;
   BrushSize.OnChange := BrushChange;
 
@@ -390,7 +391,6 @@ end;
 
 procedure TKMMapEdTerrainBrushes.UpdateHotkeys;
 begin
-  BrushSize.Hint := GetHintWHotKey(TX_MAPED_TERRAIN_HEIGHTS_SIZE_HINT, gResTexts[TX_KEY_CTRL_MOUSEWHEEL]);
   BrushCircle.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_CIRCLE, kfMapedSubMenuAction1);
   BrushSquare.Hint := GetHintWHotkey(TX_MAPED_TERRAIN_HEIGHTS_SQUARE, kfMapedSubMenuAction2);
 end;

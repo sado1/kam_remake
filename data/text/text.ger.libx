@@ -1057,8 +1057,8 @@
 1107:Spieler 10 zuschauen
 1108:Spieler 11 zuschauen
 1109:Spieler 12 zuschauen
-1110:Derzeitige Kartengröße:
-1111:Neue Kartengröße:
+1110:Derzeitige Kartengröße:|[ %d : %d ]
+1111:Neue Kartengröße:|[ %d : %d ]
 1112:Kartengröße ändern
 1113:Besitzer: %s
 1114:Spieler %d löschen
@@ -1190,7 +1190,7 @@
 1240:Falsche Parameter für Skriptbefehl /%s. Erwartete Parametertypen sind: [%s]
 1241:Zu viele Parameter an Skriptbefehl /%s übergeben: Erwartete Parameteranzahl [%s], tatsächlich: [%s]
 1242:Befehl aufgerufen: /%s(%s)
-1243:Fehler beim Aufrufen des Skriptbefehls /%s/%s)
+1243:Fehler beim Aufrufen des Skriptbefehls /%s(%s)|
 1244:Skriptkonsolenbefehl /%s nicht gefunden
 1245:Kopieren und Einfügen aus dem Chat-Fenster aktivieren/deaktivieren
 1246:Speichern Sie den Wiedergabestatus, um diesen während der Wiedergabe laden zu können
