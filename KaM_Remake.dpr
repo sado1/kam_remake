@@ -273,8 +273,6 @@ uses
   KM_RenderQuery in 'src\render\KM_RenderQuery.pas',
   KM_RenderUI in 'src\render\KM_RenderUI.pas',
 
-  KM_Resolutions in 'src\KM_Resolutions.pas',
-
   KM_Resource in 'src\res\KM_Resource.pas',
   KM_ResCursors in 'src\res\KM_ResCursors.pas',
   KM_ResFonts in 'src\res\KM_ResFonts.pas',
@@ -310,6 +308,7 @@ uses
   KM_GameSettings in 'src\settings\KM_GameSettings.pas',
   KM_MainSettings in 'src\settings\KM_MainSettings.pas',
   KM_ServerSettings in 'src\settings\KM_ServerSettings.pas',
+  KM_Resolutions in 'src\settings\KM_Resolutions.pas',
 
   KM_RandomMapGenerator in 'src\terrain\KM_RandomMapGenerator.pas',
   KM_RMGUtils in 'src\terrain\KM_RMGUtils.pas',
