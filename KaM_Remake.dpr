@@ -67,7 +67,6 @@ uses
   {$IFDEF USE_MAD_EXCEPT}KM_Exceptions in 'src\KM_Exceptions.pas',{$ENDIF}
   
   KM_Game in 'src\game\KM_Game.pas',
-  KM_GameApp in 'src\game\KM_GameApp.pas',
   KM_GameClasses in 'src\game\KM_GameClasses.pas',
   KM_GameTypes in 'src\game\KM_GameTypes.pas',  
   KM_GameInfo in 'src\game\KM_GameInfo.pas',
@@ -194,6 +193,7 @@ uses
   KM_HouseTownHall in 'src\houses\KM_HouseTownHall.pas',
   KM_HouseWoodcutters in 'src\houses\KM_HouseWoodcutters.pas',
   
+  KM_GameApp in 'src\KM_GameApp.pas',
   KM_Log in 'src\KM_Log.pas',
   KM_Main in 'src\KM_Main.pas',
   KM_Minimap in 'src\KM_Minimap.pas',
