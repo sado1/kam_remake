@@ -24,6 +24,7 @@ type
     chkUnitThoughts: TCheckBox;
     chkTrees: TCheckBox;
     chkHouseActions: TCheckBox;
+    chkBeasts: TCheckBox;
     procedure btnProcessClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
@@ -49,6 +50,7 @@ type
     function DoInterpUnitThought(aThought: TKMUnitThought; var aPicOffset: Integer; aDryRun: Boolean): Integer;
     function DoInterpTree(aTree: Integer; var aPicOffset: Integer; aDryRun: Boolean): Integer;
     function DoInterpHouseAction(aHT: TKMHouseType; aHouseAct: TKMHouseActionType; var aPicOffset: Integer; aDryRun: Boolean): Integer;
+    function DoInterpBeast(beastHouse, beast, beastAge: Integer; var aPicOffset: Integer; aDryRun: Boolean): Integer;
   public
     { Public declarations }
   end;
@@ -517,6 +519,24 @@ begin
 end;
 
 
+function TForm1.DoInterpBeast(beastHouse, beast, beastAge: Integer; var aPicOffset: Integer; aDryRun: Boolean): Integer;
+var
+  A: TKMAnimLoop;
+const
+  HOUSE_LOOKUP: array[1..3] of TKMHouseType = (htSwine, htStables, htMarketplace);
+begin
+  if (beastHouse = 3) and ((beast > 3) or (beastAge <> 1)) then
+    Exit(-1);
+
+  A := fResHouses.BeastAnim[HOUSE_LOOKUP[beastHouse], beast, beastAge];
+
+  if (A.Count <= 1) or (A.Step[1] = -1) then
+    Exit(-1);
+
+  Result := DoInterp(rxHouses, A, False, $000000, aPicOffset, aDryRun);
+end;
+
+
 procedure TForm1.btnProcessClick(Sender: TObject);
 var
   I, picOffset, animPicOffset: Integer;
@@ -528,11 +548,13 @@ var
   h: TKMHouseType;
   hAct: TKMHouseActionType;
   animData: string;
+  beastHouse, beast, beastAge: Integer;
 const
   UNITS_RX_OFFSET = 9300;
   TREES_RX_OFFSET = 260;
   HOUSES_RX_OFFSET = 2100;
 begin
+  //UNITS
   picOffset := UNITS_RX_OFFSET;
 
   animData := 'ACTION_INTERP_LOOKUP: array[TKMUnitType, TKMUnitActionType, TKMDirection] of Integer = ('+#13#10;
@@ -634,7 +656,10 @@ begin
   animData := animData + #13#10 + #13#10;
   animData := animData + 'TREE_INTERP_LOOKUP: array [0..OBJECTS_CNT] of Integer = ('+#13#10+'  ';
 
+
+  //TREES
   picOffset := TREES_RX_OFFSET;
+  SetLength(fAnimCache, 0);
 
   for I := 0 to OBJECTS_CNT do
   begin
@@ -662,7 +687,9 @@ begin
   animData := animData + ');';
 
 
+  //HOUSES
   picOffset := HOUSES_RX_OFFSET;
+  SetLength(fAnimCache, 0);
 
   animData := animData + #13#10 + #13#10;
   animData := animData + 'HOUSE_INTERP_LOOKUP: array[TKMHouseType, TKMHouseActionType] of Integer = ('+#13#10;
@@ -694,6 +721,46 @@ begin
     if h <> High(TKMHouseType) then
       animData := animData + ',';
     animData := animData+' // '+TRttiEnumerationType.GetName(h)+#13#10;
+  end;
+  animData := animData + ');';
+
+  animData := {animData +} #13#10 + #13#10;
+  animData := animData + 'BEAST_INTERP_LOOKUP: array[1..3,1..5,1..3] of Integer = ('+#13#10;
+
+  for beastHouse := 1 to 3 do
+  begin
+    animData := animData + '  (';
+    for beast := 1 to 5 do
+    begin
+      animData := animData + '(';
+      for beastAge := 1 to 3 do
+      begin
+        try
+          animPicOffset := DoInterpBeast(beastHouse, beast, beastAge, picOffset, not chkBeasts.Checked);
+        except
+          on E: Exception do
+          begin
+            memoErrors.Text := memoErrors.Text + TRttiEnumerationType.GetName(h) + ' - ' + TRttiEnumerationType.GetName(hAct) + ' - ' + E.Message + #13#10;
+            animPicOffset := -1;
+          end;
+        end;
+
+        if animPicOffset >= 0 then
+          animData := animData + IntToStr(animPicOffset)
+        else
+          animData := animData + '-1';
+
+        if beastAge <> 3 then
+          animData := animData + ',';
+      end;
+      animData := animData + ')';
+      if beast <> 5 then
+        animData := animData + ',';
+    end;
+    animData := animData + ')';
+    if beastHouse <> 3 then
+      animData := animData + ',';
+    animData := animData+#13#10;
   end;
   animData := animData + ');';
 

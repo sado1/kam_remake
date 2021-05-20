@@ -16,14 +16,14 @@ object Form1: TForm1
   TextHeight = 13
   object Label1: TLabel
     Left = 8
-    Top = 395
+    Top = 453
     Width = 33
     Height = 13
     Caption = 'Errors:'
   end
   object btnProcess: TButton
     Left = 8
-    Top = 123
+    Top = 146
     Width = 105
     Height = 25
     Caption = 'Process'
@@ -32,18 +32,18 @@ object Form1: TForm1
   end
   object Memo1: TMemo
     Left = 8
-    Top = 155
+    Top = 177
     Width = 737
-    Height = 233
+    Height = 270
     Lines.Strings = (
       'Memo1')
     TabOrder = 1
   end
   object memoErrors: TMemo
     Left = 8
-    Top = 419
+    Top = 472
     Width = 737
-    Height = 199
+    Height = 146
     Lines.Strings = (
       'memoErrors')
     TabOrder = 2
@@ -87,5 +87,13 @@ object Form1: TForm1
     Height = 17
     Caption = 'House actions'
     TabOrder = 7
+  end
+  object chkBeasts: TCheckBox
+    Left = 8
+    Top = 123
+    Width = 97
+    Height = 17
+    Caption = 'House beasts'
+    TabOrder = 8
   end
 end
