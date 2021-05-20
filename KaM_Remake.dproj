@@ -303,9 +303,6 @@
         <DCCReference Include="src\gui\KM_InterfaceTypes.pas"/>
         <DCCReference Include="src\KM_Log.pas"/>
         <DCCReference Include="src\KM_Main.pas"/>
-        <DCCReference Include="src\KM_Maps.pas"/>
-        <DCCReference Include="src\KM_MapTypes.pas"/>
-        <DCCReference Include="src\KM_MapUtils.pas"/>
         <DCCReference Include="src\KM_MapEditor.pas"/>
         <DCCReference Include="src\KM_MapEditorHistory.pas"/>
         <DCCReference Include="src\KM_MapEdTypes.pas"/>
@@ -370,6 +367,7 @@
         <DCCReference Include="src\res\KM_ResCursors.pas"/>
         <DCCReference Include="src\res\KM_ResFonts.pas"/>
         <DCCReference Include="src\res\KM_ResHouses.pas"/>
+        <DCCReference Include="src\res\KM_ResInterpolation.pas"/>
         <DCCReference Include="src\res\KM_ResKeys.pas"/>
         <DCCReference Include="src\res\KM_ResLocales.pas"/>
         <DCCReference Include="src\res\KM_ResMapElements.pas"/>
