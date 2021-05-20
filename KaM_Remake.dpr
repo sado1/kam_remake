@@ -52,7 +52,6 @@ uses
   KM_CommonTypes in 'src\common\KM_CommonTypes.pas',
   KM_Defaults in 'src\common\KM_Defaults.pas',
   KM_Entity in 'src\common\KM_Entity.pas',
-  KM_MarchingSquares in 'src\common\KM_MarchingSquares.pas',
   KM_Points in 'src\common\KM_Points.pas',
   KM_WorkerThread in 'src\common\KM_WorkerThread.pas',
 
@@ -365,6 +364,7 @@ uses
   KM_BinPacking in 'src\utils\algorithms\KM_BinPacking.pas',
   KM_Hungarian in 'src\utils\algorithms\KM_Hungarian.pas',
   KM_FloodFill in 'src\utils\algorithms\KM_FloodFill.pas',
+  KM_MarchingSquares in 'src\utils\algorithms\KM_MarchingSquares.pas',
   KM_SoftShadows in 'src\utils\algorithms\KM_SoftShadows.pas',
   KM_Sort in 'src\utils\algorithms\KM_Sort.pas',
   
