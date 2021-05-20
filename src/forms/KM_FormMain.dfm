@@ -88,6 +88,7 @@ object FormMain: TFormMain
       Caption = 'Misc'
       Collapsed = True
       TabOrder = 0
+      ExplicitTop = 609
       ExpandedHeight = 144
       object chkBevel: TCheckBox
         Left = 168
@@ -130,6 +131,7 @@ object FormMain: TFormMain
       Caption = 'Logs'
       Collapsed = True
       TabOrder = 1
+      ExplicitTop = 585
       ExpandedHeight = 198
       object chkLogCommands: TCheckBox
         Left = 120
@@ -241,6 +243,7 @@ object FormMain: TFormMain
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 2
+      ExplicitTop = 561
       ExpandedHeight = 153
       object Label1: TLabel
         Left = 101
@@ -372,6 +375,7 @@ object FormMain: TFormMain
       Caption = 'User Interface'
       Collapsed = True
       TabOrder = 3
+      ExplicitTop = 537
       ExpandedHeight = 114
       object chkUIControlsBounds: TCheckBox
         Left = 8
@@ -443,6 +447,7 @@ object FormMain: TFormMain
       Caption = 'Perf Logs'
       Collapsed = True
       TabOrder = 4
+      ExplicitTop = 513
       ExpandedHeight = 660
     end
     object cpAI: TCategoryPanel
@@ -451,6 +456,7 @@ object FormMain: TFormMain
       Caption = 'AI'
       Collapsed = True
       TabOrder = 5
+      ExplicitTop = 489
       object Label5: TLabel
         Left = 202
         Top = 111
@@ -657,6 +663,7 @@ object FormMain: TFormMain
       Caption = 'Scripting'
       Collapsed = True
       TabOrder = 6
+      ExplicitTop = 465
       ExpandedHeight = 50
       object chkDebugScripting: TCheckBox
         Left = 8
@@ -679,6 +686,7 @@ object FormMain: TFormMain
       Caption = 'Game additional'
       Collapsed = True
       TabOrder = 7
+      ExplicitTop = 441
       ExpandedHeight = 136
       object chkLoadUnsupSaves: TCheckBox
         Left = 12
@@ -729,6 +737,7 @@ object FormMain: TFormMain
       Caption = 'Debug Input'
       Collapsed = True
       TabOrder = 8
+      ExplicitTop = 417
       ExpandedHeight = 210
       object gbFindObjByUID: TGroupBox
         Left = 8
@@ -862,6 +871,7 @@ object FormMain: TFormMain
       Caption = 'Debug Output'
       Collapsed = True
       TabOrder = 9
+      ExplicitTop = 393
       ExpandedHeight = 84
       object chkUIDs: TCheckBox
         Left = 120
@@ -933,7 +943,7 @@ object FormMain: TFormMain
       Caption = 'Debug Terrain'
       Collapsed = True
       TabOrder = 10
-      ExpandedHeight = 224
+      ExpandedHeight = 248
       object chkShowTerrainIds: TCheckBox
         Left = 8
         Top = 6
@@ -1044,77 +1054,118 @@ object FormMain: TFormMain
       end
       object chkTilesGrid: TCheckBox
         Left = 128
-        Top = 182
+        Top = 199
         Width = 79
         Height = 17
         Caption = 'Tiles grid'
         TabOrder = 12
         OnClick = ControlsUpdate
       end
-      object gbDebugLayers: TGroupBox
-        Left = 120
-        Top = 29
-        Width = 81
-        Height = 92
-        Caption = 'Layers'
-        Enabled = False
+      object chkDebugTerrainRender: TCheckBox
+        Left = 128
+        Top = 6
+        Width = 121
+        Height = 17
+        Caption = 'Debug Terrain render'
         TabOrder = 13
-        object chkDebugLayerBase: TCheckBox
+        OnClick = ControlsUpdate
+      end
+      object gbRenderTerrain: TGroupBox
+        Left = 120
+        Top = 24
+        Width = 129
+        Height = 169
+        Caption = 'Render Terrain'
+        TabOrder = 14
+        object chkTerrainRenderAnim: TCheckBox
           Left = 8
           Top = 16
-          Width = 65
+          Width = 113
           Height = 17
-          Caption = 'Base'
+          Caption = 'Render Animations'
           Checked = True
           State = cbChecked
           TabOrder = 0
           OnClick = ControlsUpdate
         end
-        object chkDebugLayer1: TCheckBox
-          Tag = 1
+        object chkTerrainRenderLight: TCheckBox
           Left = 8
           Top = 32
-          Width = 65
+          Width = 113
           Height = 17
-          Caption = '#1'
+          Caption = 'Render Lighting'
           Checked = True
           State = cbChecked
           TabOrder = 1
           OnClick = ControlsUpdate
         end
-        object chkDebugLayer2: TCheckBox
-          Tag = 2
+        object chkTerrainRenderShadow: TCheckBox
           Left = 8
           Top = 48
-          Width = 65
+          Width = 113
           Height = 17
-          Caption = '#2'
+          Caption = 'Render Shadow'
           Checked = True
           State = cbChecked
           TabOrder = 2
           OnClick = ControlsUpdate
         end
-        object chkDebugLayer3: TCheckBox
-          Tag = 3
-          Left = 8
-          Top = 64
-          Width = 65
-          Height = 17
-          Caption = '#3'
-          Checked = True
-          State = cbChecked
+        object gbDebugLayers: TGroupBox
+          Left = 9
+          Top = 66
+          Width = 81
+          Height = 92
+          Caption = 'Layers'
+          Enabled = False
           TabOrder = 3
-          OnClick = ControlsUpdate
+          object chkDebugLayerBase: TCheckBox
+            Left = 8
+            Top = 16
+            Width = 65
+            Height = 17
+            Caption = 'Base'
+            Checked = True
+            State = cbChecked
+            TabOrder = 0
+            OnClick = ControlsUpdate
+          end
+          object chkDebugLayer1: TCheckBox
+            Tag = 1
+            Left = 8
+            Top = 32
+            Width = 65
+            Height = 17
+            Caption = '#1'
+            Checked = True
+            State = cbChecked
+            TabOrder = 1
+            OnClick = ControlsUpdate
+          end
+          object chkDebugLayer2: TCheckBox
+            Tag = 2
+            Left = 8
+            Top = 48
+            Width = 65
+            Height = 17
+            Caption = '#2'
+            Checked = True
+            State = cbChecked
+            TabOrder = 2
+            OnClick = ControlsUpdate
+          end
+          object chkDebugLayer3: TCheckBox
+            Tag = 3
+            Left = 8
+            Top = 64
+            Width = 65
+            Height = 17
+            Caption = '#3'
+            Checked = True
+            State = cbChecked
+            TabOrder = 3
+            OnClick = ControlsUpdate
+          end
         end
-      end
-      object chkDebugLayers: TCheckBox
-        Left = 128
-        Top = 6
-        Width = 89
-        Height = 17
-        Caption = 'Debug Layers'
-        TabOrder = 14
-        OnClick = ControlsUpdate
       end
     end
     object cpDebugRender: TCategoryPanel
