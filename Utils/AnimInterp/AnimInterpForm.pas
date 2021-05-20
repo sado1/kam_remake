@@ -724,7 +724,7 @@ begin
   end;
   animData := animData + ');';
 
-  animData := {animData +} #13#10 + #13#10;
+  animData := animData + #13#10 + #13#10;
   animData := animData + 'BEAST_INTERP_LOOKUP: array[1..3,1..5,1..3] of Integer = ('+#13#10;
 
   for beastHouse := 1 to 3 do
