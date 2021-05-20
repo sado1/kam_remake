@@ -215,12 +215,16 @@ type
     chkShowTerrainIds: TCheckBox;
     chkShowTerrainKinds: TCheckBox;
     chkTilesGrid: TCheckBox;
+    chkDebugTerrainRender: TCheckBox;
+    gbRenderTerrain: TGroupBox;
+    chkTerrainRenderAnim: TCheckBox;
+    chkTerrainRenderLight: TCheckBox;
+    chkTerrainRenderShadow: TCheckBox;
     gbDebugLayers: TGroupBox;
     chkDebugLayerBase: TCheckBox;
     chkDebugLayer1: TCheckBox;
     chkDebugLayer2: TCheckBox;
     chkDebugLayer3: TCheckBox;
-    chkDebugLayers: TCheckBox;
 
 
     procedure FormCreate(Sender: TObject);
@@ -1227,6 +1231,13 @@ begin
                                or (aCtrl = chkShowHouses)
                                or (aCtrl = chkShowUnits)
                                or (aCtrl = chkShowOverlays)
+                               or (aCtrl = chkTerrainRenderAnim)
+                               or (aCtrl = chkTerrainRenderLight)
+                               or (aCtrl = chkTerrainRenderShadow)
+                               or (aCtrl = chkDebugLayerBase)
+                               or (aCtrl = chkDebugLayer1)
+                               or (aCtrl = chkDebugLayer2)
+                               or (aCtrl = chkDebugLayer3)
   else
   if aCtrl is TTrackBar then
   begin
@@ -1501,16 +1512,29 @@ begin
     SHOW_HANDS_INFO := chkHands.Checked;
 
     {$IFDEF WDC} //one day update .lfm for lazarus...
-    DO_DEBUG_TER_LAYERS := chkDebugLayers.Checked;
-    gbDebugLayers.Enabled := chkDebugLayers.Checked;
+    DO_DEBUG_TER_RENDER := chkDebugTerrainRender.Checked;
+    gbRenderTerrain.Enabled := DO_DEBUG_TER_RENDER;
 
-    DEBUG_TERRAIN_LAYERS := [];
+    TERRAIN_RENDER_ANIMS := chkTerrainRenderAnim.Checked;
+    TERRAIN_RENDER_LIGHT := chkTerrainRenderLight.Checked;
+    TERRAIN_RENDER_SHADOW := chkTerrainRenderShadow.Checked;
+
+    for I := 0 to gbRenderTerrain.ControlCount - 1 do
+      gbRenderTerrain.Controls[I].Enabled := DO_DEBUG_TER_RENDER;
+
     for I := 0 to gbDebugLayers.ControlCount - 1 do
+      gbDebugLayers.Controls[I].Enabled := gbDebugLayers.Enabled;
+
+    if gbDebugLayers.Enabled then
     begin
-      Assert(gbDebugLayers.Controls[I] is TCheckBox);
-      // Refill in DEBUG_LAYERS set
-      if TCheckBox(gbDebugLayers.Controls[I]).Checked then
-        DEBUG_TERRAIN_LAYERS := DEBUG_TERRAIN_LAYERS + [gbDebugLayers.Controls[I].Tag];
+      DEBUG_TERRAIN_LAYERS := [];
+      for I := 0 to gbDebugLayers.ControlCount - 1 do
+      begin
+        Assert(gbDebugLayers.Controls[I] is TCheckBox);
+        // Refill in DEBUG_LAYERS set
+        if TCheckBox(gbDebugLayers.Controls[I]).Checked then
+          DEBUG_TERRAIN_LAYERS := DEBUG_TERRAIN_LAYERS + [gbDebugLayers.Controls[I].Tag];
+      end;
     end;
 
     SHOW_JAM_METER := chkJamMeter.Checked;

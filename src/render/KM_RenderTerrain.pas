@@ -636,7 +636,7 @@ begin
         begin
           tX := K + fClipRect.Left;
           tY := I + fClipRect.Top;
-          if DO_DEBUG_TER_LAYERS and not (0 in DEBUG_TERRAIN_LAYERS) then Continue;
+          if DO_DEBUG_TER_RENDER and not (0 in DEBUG_TERRAIN_LAYERS) then Continue;
 
           if TileHasToBeRendered(I*K = 0, tX, tY, aFow) then // Do not render tiles fully covered by FOW
           begin
@@ -712,7 +712,7 @@ begin
           if TileHasToBeRendered(I*K = 0,tX,tY,aFow) then // Do not render tiles fully covered by FOW
             for L := 0 to Land^[tY,tX].LayersCnt - 1 do
             begin
-              if DO_DEBUG_TER_LAYERS and not ((L + 1) in DEBUG_TERRAIN_LAYERS) then Continue;
+              if DO_DEBUG_TER_RENDER and not ((L + 1) in DEBUG_TERRAIN_LAYERS) then Continue;
 
               with Land^[tY,tX] do
               begin
@@ -747,9 +747,12 @@ var
   texC: TUVRect;
   texOffset: Word;
 begin
+  if DO_DEBUG_TER_RENDER and not TERRAIN_RENDER_ANIMS then Exit;
+
   {$IFDEF PERFLOG}
   gPerfLogs.SectionEnter(psFrameWater);
   {$ENDIF}
+
   //First we render base layer, then we do animated layers for Water/Swamps/Waterfalls
   //They all run at different speeds so we can't adjoin them in one layer
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -918,9 +921,12 @@ var
   sizeX, sizeY: Word;
   tX, tY: Word;
 begin
+  if DO_DEBUG_TER_RENDER and not TERRAIN_RENDER_LIGHT then Exit;
+
   {$IFDEF PERFLOG}
   gPerfLogs.SectionEnter(psFrameLighting);
   {$ENDIF}
+
   glColor4f(1, 1, 1, 1);
   //Render highlights
   glBlendFunc(GL_DST_COLOR, GL_ONE);
@@ -987,9 +993,12 @@ var
   sizeX, sizeY: Word;
   tX, tY: Word;
 begin
+  if DO_DEBUG_TER_RENDER and not TERRAIN_RENDER_SHADOW then Exit;
+
   {$IFDEF PERFLOG}
   gPerfLogs.SectionEnter(psFrameShadows);
   {$ENDIF}
+
   glColor4f(1, 1, 1, 1);
   glBlendFunc(GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
   TRender.BindTexture(fTextG);
@@ -1244,7 +1253,7 @@ end;
 procedure TRenderTerrain.RenderBase(aAnimStep: Integer; aFOW: TKMFogOfWarCommon);
 begin
   // Don't use VBO when do debug terrain layers (there is no debug code in UpdateVBO). Its okay for debug
-  fUseVBO := DoUseVBO and not DO_DEBUG_TER_LAYERS;
+  fUseVBO := DoUseVBO and not DO_DEBUG_TER_RENDER;
 
   UpdateVBO(aAnimStep, aFOW);
 
