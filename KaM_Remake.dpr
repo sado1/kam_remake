@@ -75,12 +75,12 @@ uses
   KM_GameOptions in 'src\game\KM_GameOptions.pas',
   KM_GameParams in 'src\game\KM_GameParams.pas',
   KM_GameSavePoints in 'src\game\KM_GameSavePoints.pas',
+  KM_FogOfWar in 'src\game\KM_FogOfWar.pas',
   
   KM_GameInputProcess in 'src\game\gip\KM_GameInputProcess.pas',
   KM_GameInputProcess_Multi in 'src\game\gip\KM_GameInputProcess_Multi.pas',
   KM_GameInputProcess_Single in 'src\game\gip\KM_GameInputProcess_Single.pas',
   
-  KM_FogOfWar in 'src\game\misc\KM_FogOfWar.pas',
   KM_GameUIDTracker in 'src\game\misc\KM_GameUIDTracker.pas',
   KM_RandomChecks in 'src\game\misc\KM_RandomChecks.pas',
   
