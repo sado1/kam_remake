@@ -197,13 +197,13 @@ uses
   
   KM_Log in 'src\KM_Log.pas',
   KM_Main in 'src\KM_Main.pas',
+  KM_Minimap in 'src\KM_Minimap.pas',
   
   KM_Campaigns in 'src\mission\KM_Campaigns.pas',
   KM_CampaignTypes in 'src\mission\KM_CampaignTypes.pas',
   KM_Maps in 'src\mission\KM_Maps.pas',
   KM_MapTypes in 'src\mission\KM_MapTypes.pas',
-  KM_MapUtils in 'src\mission\KM_MapUtils.pas',
-  KM_Minimap in 'src\mission\KM_Minimap.pas',
+  KM_MapUtils in 'src\mission\KM_MapUtils.pas',  
   KM_MissionScript in 'src\mission\KM_MissionScript.pas',
   KM_MissionScript_Info in 'src\mission\KM_MissionScript_Info.pas',
   KM_MissionScript_Preview in 'src\mission\KM_MissionScript_Preview.pas',
