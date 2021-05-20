@@ -747,7 +747,7 @@ var
   texC: TUVRect;
   texOffset: Word;
 begin
-  if DO_DEBUG_TER_RENDER and not TERRAIN_RENDER_ANIMS then Exit;
+  if SKIP_TER_RENDER_ANIMS then Exit;
 
   {$IFDEF PERFLOG}
   gPerfLogs.SectionEnter(psFrameWater);
@@ -921,7 +921,7 @@ var
   sizeX, sizeY: Word;
   tX, tY: Word;
 begin
-  if DO_DEBUG_TER_RENDER and not TERRAIN_RENDER_LIGHT then Exit;
+  if SKIP_TER_RENDER_LIGHT then Exit;
 
   {$IFDEF PERFLOG}
   gPerfLogs.SectionEnter(psFrameLighting);
@@ -993,7 +993,7 @@ var
   sizeX, sizeY: Word;
   tX, tY: Word;
 begin
-  if DO_DEBUG_TER_RENDER and not TERRAIN_RENDER_SHADOW then Exit;
+  if SKIP_TER_RENDER_SHADOW then Exit;
 
   {$IFDEF PERFLOG}
   gPerfLogs.SectionEnter(psFrameShadows);
