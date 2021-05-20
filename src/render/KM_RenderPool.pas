@@ -74,6 +74,7 @@ type
     function GetUnitAnimSprite(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; aStep: Integer; aStepFrac: Single): Integer;
     function GetUnitAnimSpriteByPercent(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; aPercent: Single): Integer;
     function GetTreeAnimSprite(aTree, aStep: Integer; aStepFrac: Single; aLoop: Boolean): Integer;
+    function GetHouseAnimSprite(aHT: TKMHouseType; aAct: TKMHouseActionType; aStep: Integer; aStepFrac: Single): Integer;
 
     procedure ApplyTransform;
     procedure SetDefaultRenderParams;
@@ -125,7 +126,7 @@ type
 
     procedure AddHouseTablet(aHouse: TKMHouseType; const Loc: TKMPoint);
     procedure AddHouseBuildSupply(aHouse: TKMHouseType; const Loc: TKMPoint; Wood,Stone: Byte);
-    procedure AddHouseWork(aHouse: TKMHouseType; const Loc: TKMPoint; aActSet: TKMHouseActionSet; AnimStep: Cardinal; FlagColor: TColor4; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
+    procedure AddHouseWork(aHouse: TKMHouseType; const Loc: TKMPoint; aActSet: TKMHouseActionSet; AnimStep, AnimStepPrev: Cardinal; FlagColor: TColor4; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
     procedure AddHouseSupply(aHouse: TKMHouseType; const Loc: TKMPoint; const R1, R2, R3: array of Byte; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
     procedure AddHouseMarketSupply(const Loc: TKMPoint; ResType: TKMWareType; ResCount: Word; AnimStep: Integer);
     procedure AddHouseStableBeasts(aHouse: TKMHouseType; const Loc: TKMPoint; BeastId,BeastAge,AnimStep: Integer; aRX: TRXType = rxHouses);
@@ -215,6 +216,76 @@ begin
   gRenderAux.Free;
 
   inherited;
+end;
+
+
+function GetHouseInterpSpriteOffset(aHT: TKMHouseType; aAct: TKMHouseActionType): Integer;
+const HOUSE_INTERP_LOOKUP: array[TKMHouseType, TKMHouseActionType] of Integer = (
+  (-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // htNone
+  (-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // htAny
+  (-1,2100,2100,2340,2340,2580,-1,2612,2852,-1,-1,2892,2940,2988,3036,3084,3132,3180,3228), // htArmorSmithy
+  (-1,3276,3516,3756,-1,-1,-1,3996,4236,-1,-1,4316,2988,3228,3036,4364,4412,3132,2892), // htArmorWorkshop
+  (-1,4460,4652,-1,-1,2580,-1,4892,5132,-1,-1,2892,5212,4316,4316,5260,5308,5356,5260), // htBakery
+  (-1,-1,-1,-1,-1,-1,-1,-1,5404,5444,5484,5564,4364,4412,5612,3180,5308,5660,2988), // htBarracks
+  (5708,5828,6044,6284,-1,-1,-1,6308,6468,-1,-1,5260,2988,3228,6548,3180,2892,3132,4412), // htButchers
+  (6596,6836,-1,-1,6956,-1,-1,-1,7196,-1,-1,2892,4316,3228,3036,7236,7284,3132,3084), // htCoalMine
+  (-1,-1,-1,-1,-1,-1,-1,7332,7572,-1,-1,3228,2892,4412,4316,5260,7652,5212,7700), // htFarm
+  (-1,-1,-1,-1,-1,-1,-1,7748,5404,-1,-1,2892,3228,2988,3036,4412,3180,4412,5212), // htFisherHut
+  (-1,7988,-1,-1,-1,-1,-1,8116,8356,8396,-1,2892,4316,3228,3036,7236,7284,3084,2892), // htGoldMine
+  (-1,-1,-1,-1,-1,-1,-1,-1,8436,8396,8476,3228,2988,5308,5612,2940,3180,4412,6548), // htInn
+  (-1,8556,-1,-1,-1,-1,-1,8684,8436,-1,-1,2892,4316,2940,3036,7236,3132,3084,3036), // htIronMine
+  (-1,8924,9164,-1,-1,2580,-1,9404,9484,-1,-1,2892,3228,7236,4364,3036,4412,5260,7700), // htIronSmithy
+  (-1,-1,-1,-1,-1,-1,-1,-1,9564,9604,9644,9684,9732,9780,9828,9876,9924,9972,10020), // htMarketplace
+  (-1,10068,10292,10532,-1,2580,-1,10772,2852,-1,-1,3084,5212,4364,4412,3180,4316,2988,3084), // htMetallurgists
+  (-1,11012,-1,-1,-1,-1,11076,11156,8356,-1,-1,7236,3132,2988,3228,2892,5564,3084,5308), // htMill
+  (-1,11396,-1,-1,11540,-1,-1,11780,8356,-1,-1,7236,3132,2940,3084,7700,5564,4412,2892), // htQuary
+  (11924,12164,-1,-1,12244,-1,-1,12484,12724,-1,-1,2892,3228,4316,4412,3036,5260,7236,3084), // htSawmill
+  (12804,13044,13284,13524,13764,-1,-1,-1,8476,-1,-1,3132,5308,5564,5612,5260,5308,7284,3132), // htSchool
+  (-1,14004,14244,14484,-1,-1,-1,14724,8356,-1,-1,2892,3228,4364,2892,2892,3228,3084,7236), // htSiegeWorkshop
+  (14964,15204,15444,15684,15924,-1,-1,16164,16308,-1,-1,3132,4412,5612,5564,3228,2988,7652,7284), // htStables
+  (-1,-1,-1,-1,-1,-1,-1,-1,5444,5404,-1,3132,2892,2988,3228,5212,3180,4412,5260), // htStore
+  (-1,16388,16628,-1,-1,-1,-1,16868,17108,-1,-1,3132,5660,3228,3084,2988,3180,6548,2940), // htSwine
+  (17188,17420,-1,-1,-1,2580,-1,17516,17756,-1,-1,5260,4364,2988,7236,3228,6548,3084,2940), // htTannery
+  (-1,-1,-1,-1,-1,-1,-1,-1,8356,17756,-1,2892,3228,4364,5308,5660,3180,6548,5660), // htTownHall
+  (-1,-1,-1,-1,-1,-1,-1,17796,4236,-1,-1,2892,3228,4316,4364,5564,7284,2940,4412), // htWatchTower
+  (18036,18276,18276,18516,18756,2580,-1,18996,19236,-1,-1,2892,3228,4316,4412,3036,5260,4364,7236), // htWeaponSmithy
+  (19316,19444,19684,19924,20164,-1,-1,20404,20644,-1,-1,7236,2988,3132,6548,3228,3036,7652,4412), // htWeaponWorkshop
+  (20724,20964,-1,-1,21156,-1,-1,21380,7196,-1,-1,5564,5356,2988,4412,3180,5612,5564,2940), // htWineyard
+  (-1,-1,-1,-1,-1,-1,-1,21620,7196,-1,-1,2892,2940,3132,4316,3036,7236,5564,3228) // htWoodcutters
+);
+begin
+  if INTERPOLATED_ANIMS then
+  begin
+    Result := HOUSE_INTERP_LOOKUP[aHT, aAct];
+  end
+  else
+    Result := -1;
+end;
+
+
+function TRenderPool.GetHouseAnimSprite(aHT: TKMHouseType; aAct: TKMHouseActionType;
+                                        aStep: Integer; aStepFrac: Single): Integer;
+var
+  A: TKMAnimLoop;
+  InterpOffset: Integer;
+begin
+  A := gRes.Houses[aHT].Anim[aAct];
+  InterpOffset := GetHouseInterpSpriteOffset(aHT, aAct);
+
+  //While in development disable interpolation if the sprite is missing
+  if (InterpOffset >= 1) and ((InterpOffset >= fRXData[rxHouses].Count) or (fRXData[rxHouses].Size[InterpOffset].X = 0)) then
+    InterpOffset := -1;
+
+  if InterpOffset >= 0 then
+  begin
+    Result := InterpOffset
+      + INTERP_LEVEL*(aStep mod Byte(A.Count))
+      + EnsureRange(Floor(INTERP_LEVEL*aStepFrac), 0, INTERP_LEVEL-1);
+  end
+  else
+  begin
+    Result := A.Step[aStep mod Byte(A.Count) + 1] + 1;
+  end;
 end;
 
 
@@ -1520,7 +1591,7 @@ begin
     AddHouse(H.HouseType, H.Position, 1, 1, 0, DoImmediateRender, DoHighlight, HighlightColor);
     AddHouseSupply(H.HouseType, H.Position, H.ResourceInArray, H.ResourceOutArray, H.ResourceOutPoolArray, DoImmediateRender, DoHighlight, HighlightColor);
     if H.CurrentAction <> nil then
-      gRenderPool.AddHouseWork(H.HouseType, H.Position, H.CurrentAction.SubAction, H.WorkAnimStep, FlagColor, DoImmediateRender, DoHighlight, HighlightColor);
+      gRenderPool.AddHouseWork(H.HouseType, H.Position, H.CurrentAction.SubAction, H.WorkAnimStep, H.WorkAnimStepPrev, FlagColor, DoImmediateRender, DoHighlight, HighlightColor);
   end;
 end;
 
@@ -1592,7 +1663,7 @@ begin
 end;
 
 
-procedure TRenderPool.AddHouseWork(aHouse: TKMHouseType; const Loc: TKMPoint; aActSet: TKMHouseActionSet; AnimStep: Cardinal; FlagColor: TColor4; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
+procedure TRenderPool.AddHouseWork(aHouse: TKMHouseType; const Loc: TKMPoint; aActSet: TKMHouseActionSet; AnimStep, AnimStepPrev: Cardinal; FlagColor: TColor4; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
 var
   Id: Cardinal;
   AT: TKMHouseActionType;
@@ -1611,7 +1682,12 @@ begin
     A := gRes.Houses[aHouse].Anim[AT];
     if A.Count > 0 then
     begin
-      Id := A.Step[AnimStep mod Byte(A.Count) + 1] + 1;
+      //If the anim step is able to be interpolated from the last frame (to avoid incorrect looping)
+      if AnimStep = AnimStepPrev+1 then
+        Id := GetHouseAnimSprite(aHouse, AT, AnimStepPrev, gGameParams.TickFrac)
+      else
+        Id := A.Step[AnimStep mod Byte(A.Count) + 1] + 1;
+
       cornerX := Loc.X + (R.Pivot[Id].X + A.MoveX) / CELL_SIZE_PX - 1;
       cornerY := Loc.Y + (R.Pivot[Id].Y + A.MoveY + R.Size[Id].Y) / CELL_SIZE_PX - 1
                        - gTerrain.Land^[Loc.Y + 1, Loc.X].RenderHeight / CELL_HEIGHT_DIV;
