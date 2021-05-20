@@ -56,6 +56,7 @@ uses
   KM_Points in 'src\common\KM_Points.pas',
   KM_WorkerThread in 'src\common\KM_WorkerThread.pas',
 
+  KM_Console in 'src\KM_Console.pas',
   KM_Controls in 'src\KM_Controls.pas',  
   
   KM_DevPerfLog in 'src\perflog\KM_DevPerfLog.pas',
@@ -79,7 +80,6 @@ uses
   KM_GameInputProcess_Multi in 'src\game\gip\KM_GameInputProcess_Multi.pas',
   KM_GameInputProcess_Single in 'src\game\gip\KM_GameInputProcess_Single.pas',
   
-  KM_Console in 'src\game\misc\KM_Console.pas',
   KM_FogOfWar in 'src\game\misc\KM_FogOfWar.pas',
   KM_GameUIDTracker in 'src\game\misc\KM_GameUIDTracker.pas',
   KM_RandomChecks in 'src\game\misc\KM_RandomChecks.pas',
