@@ -71,8 +71,6 @@ type
     fMarksList: TKMPointTagList;
     fHouseOutline: TKMPointList;
 
-    function GetUnitAnimSprite(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; aStep: Integer; aStepFrac: Single): Integer;
-    function GetUnitAnimSpriteByPercent(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; aPercent: Single): Integer;
     function GetTreeAnimSprite(aTree, aStep: Integer; aStepFrac: Single; aLoop: Boolean): Integer;
     function GetHouseAnimSprite(aHT: TKMHouseType; aAct: TKMHouseActionType; aStep: Integer; aStepFrac: Single): Integer;
 
@@ -271,44 +269,6 @@ begin
   end;
 
   Result := A.Step[aStep mod Byte(A.Count) +1]+1;
-end;
-
-
-function TRenderPool.GetUnitAnimSprite(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection;
-                                       aStep: Integer; aStepFrac: Single): Integer;
-var
-  A: TKMAnimLoop;
-  InterpOffset: Integer;
-begin
-  A := gRes.Units[aUnit].UnitAnim[aAct, aDir];
-  InterpOffset := GetUnitInterpSpriteOffset(aUnit, aAct, aDir);
-
-  //While in development disable interpolation if the sprite is missing
-  if (InterpOffset >= 1) and ((InterpOffset >= fRXData[rxUnits].Count) or (fRXData[rxUnits].Size[InterpOffset].X = 0)) then
-    InterpOffset := -1;
-
-  if InterpOffset >= 0 then
-  begin
-    Result := InterpOffset
-      + INTERP_LEVEL*(aStep mod Byte(A.Count))
-      + EnsureRange(Floor(INTERP_LEVEL*aStepFrac), 0, INTERP_LEVEL-1);
-  end
-  else
-  begin
-    Result := A.Step[aStep mod Byte(A.Count) + 1] + 1;
-  end;
-end;
-
-
-function TRenderPool.GetUnitAnimSpriteByPercent(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection;
-                                                aPercent: Single): Integer;
-var
-  count: Integer;
-  fracStep: Single;
-begin
-  count := gRes.Units[aUnit].UnitAnim[aAct, aDir].Count;
-  fracStep := Min(aPercent, 1.0) * (count-1);
-  Result := GetUnitAnimSprite(aUnit, aAct, aDir, Trunc(fracStep), Frac(fracStep));
 end;
 
 
@@ -1094,10 +1054,10 @@ begin
   end;
 
   case aProj of
-    ptArrow:     id := GetUnitAnimSpriteByPercent(utBowman, uaSpec, aDir, aFlight);
-    ptBolt:      id := GetUnitAnimSpriteByPercent(utArbaletman, uaSpec, aDir, aFlight);
-    ptSlingRock: id := GetUnitAnimSpriteByPercent(utSlingshot, uaSpec, aDir, aFlight);
-    ptTowerRock: id := GetUnitAnimSpriteByPercent(utRecruit, uaSpec, aDir, aFlight);
+    ptArrow:     id := gRes.Interpolation.UnitActionByPercent(utBowman, uaSpec, aDir, aFlight);
+    ptBolt:      id := gRes.Interpolation.UnitActionByPercent(utArbaletman, uaSpec, aDir, aFlight);
+    ptSlingRock: id := gRes.Interpolation.UnitActionByPercent(utSlingshot, uaSpec, aDir, aFlight);
+    ptTowerRock: id := gRes.Interpolation.UnitActionByPercent(utRecruit, uaSpec, aDir, aFlight);
     else          id := 1; // Nothing?
   end;
 
@@ -1122,8 +1082,8 @@ var
   id, id0: Integer;
   R: TRXData;
 begin
-  id := GetUnitAnimSprite(aUnit, aAct, aDir, StepId, StepFrac);
-  id0 := GetUnitAnimSprite(aUnit, aAct, aDir, UNIT_STILL_FRAMES[aDir], 0.0);
+  id := gRes.Interpolation.UnitAction(aUnit, aAct, aDir, StepId, StepFrac);
+  id0 := gRes.Interpolation.UnitAction(aUnit, aAct, aDir, UNIT_STILL_FRAMES[aDir], 0.0);
   if id <= 0 then exit;
   R := fRXData[rxUnits];
 
@@ -1154,7 +1114,7 @@ var
   id: Integer;
   R: TRXData;
 begin
-  id := GetUnitAnimSprite(aUnit, aAct, aDir, StepId, gGameParams.TickFrac);
+  id := gRes.Interpolation.UnitAction(aUnit, aAct, aDir, StepId, gGameParams.TickFrac);
   if id <= 0 then exit;
   R := fRXData[rxUnits];
 
@@ -1176,28 +1136,13 @@ var
   InterpOffset: Integer;
 begin
   A := gRes.Units.SerfCarry[aCarry, aDir];
-  InterpOffset := GetCarryInterpSpriteOffset(aCarry, aDir);
-
-  //While in development disable interpolation if the sprite is missing
-  if (InterpOffset >= 1) and ((InterpOffset >= fRXData[rxUnits].Count) or (fRXData[rxUnits].Size[InterpOffset].X = 0)) then
-    InterpOffset := -1;
-
-  if InterpOffset >= 0 then
-  begin
-    id := InterpOffset
-      + INTERP_LEVEL*(StepId mod Byte(A.Count))
-      + EnsureRange(Floor(INTERP_LEVEL*StepFrac), 0, INTERP_LEVEL-1);
-  end
-  else
-  begin
-    id := A.Step[StepId mod Byte(A.Count) + 1] + 1;
-  end;
+  id := gRes.Interpolation.SerfCarry(aCarry, aDir, StepId, StepFrac);
 
   if id <= 0 then Exit;
   R := fRXData[rxUnits];
 
-  cornerX := pX + (R.Pivot[id].X + a.MoveX) / CELL_SIZE_PX;
-  cornerY := gTerrain.RenderFlatToHeight(pX, pY) + (R.Pivot[id].Y + R.Size[id].Y + a.MoveY) / CELL_SIZE_PX;
+  cornerX := pX + (R.Pivot[id].X + A.MoveX) / CELL_SIZE_PX;
+  cornerY := gTerrain.RenderFlatToHeight(pX, pY) + (R.Pivot[id].Y + R.Size[id].Y + A.MoveY) / CELL_SIZE_PX;
   fRenderList.AddSprite(rxUnits, id, cornerX, cornerY);
 end;
 
@@ -1282,7 +1227,7 @@ begin
   ground := pY + (R.Pivot[id0].Y + R.Size[id0].Y) / CELL_SIZE_PX;
 
   // Flag position
-  idFlag := GetUnitAnimSprite(aUnit, uaWalkArm, aDir, FlagAnim, gGameParams.TickFrac);
+  idFlag := gRes.Interpolation.UnitAction(aUnit, uaWalkArm, aDir, FlagAnim, gGameParams.TickFrac);
   if idFlag <= 0 then Exit;
 
   flagX := pX + (R.Pivot[idFlag].X + FlagXOffset[UNIT_TO_GROUP_TYPE[aUnit], aDir]) / CELL_SIZE_PX - 0.5;

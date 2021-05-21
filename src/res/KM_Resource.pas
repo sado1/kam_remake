@@ -16,7 +16,8 @@ uses
   KM_ResSprites,
   KM_ResTileset,
   KM_ResUnits,
-  KM_ResWares;
+  KM_ResWares,
+  KM_ResInterpolation;
 
 
 type
@@ -36,6 +37,7 @@ type
     fSprites: TKMResSprites;
     fTileset: TKMResTileset;
     fMapElements: TKMResMapElements;
+    fInterpolation: TKMResInterpolation;
 
     fExportWorker: TKMWorkerThread;
 
@@ -70,6 +72,7 @@ type
     property Sprites: TKMResSprites read fSprites;
     property Tileset: TKMResTileset read fTileset;
     property Units: TKMResUnits read fUnits;
+    property Interpolation: TKMResInterpolation read fInterpolation;
 
     procedure UpdateStateIdle;
 
@@ -248,6 +251,12 @@ procedure TKMResource.LoadGameResources(aAlphaShadows: Boolean; aForceReload: Bo
 var
   doForceReload: Boolean;
 begin
+  if fInterpolation = nil then
+  begin
+    fInterpolation := TKMResInterpolation.Create;
+    fInterpolation.LoadFromFile(ExeDir + 'data' + PathDelim + 'defines' + PathDelim + 'interp.dat');
+  end;
+
   gLog.AddTime('LoadGameResources ... AlphaShadows: ' + BoolToStr(aAlphaShadows, True) + '. Forced: ' + BoolToStr(aForceReload, True));
   doForceReload := aForceReload or (aAlphaShadows <> fSprites.AlphaShadows);
   if (fDataState <> rlsAll) or doForceReload then
