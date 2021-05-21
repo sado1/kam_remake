@@ -34,7 +34,7 @@ type
 implementation
 uses
   KromUtils, Math, SysUtils,
-  KM_Units, KM_Resource;
+  KM_Units, KM_ResUnits, KM_Resource;
 
 
 { TKMUnitVisualState }
