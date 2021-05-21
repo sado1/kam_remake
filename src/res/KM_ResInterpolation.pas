@@ -3,7 +3,13 @@ unit KM_ResInterpolation;
 interface
 uses
   Classes, SysUtils,
-  KM_Defaults, KM_Points, KM_ResTypes;
+  KM_Defaults, KM_Points, KM_ResTypes, KM_ResWares;
+
+type
+  TKMInterpolation = array[1..30, 0..7] of Integer;
+  TKMUnitActionInterp = array[UNIT_MIN..UNIT_MAX, UNIT_ACT_MIN..UNIT_ACT_MAX, dirN..dirNW] of TKMInterpolation;
+  TKMSerfCarryInterp = array[WARE_MIN..WARE_MAX, dirN..dirNW] of TKMInterpolation;
+  TKMUnitThoughtInterp = array[TKMUnitThought] of TKMInterpolation;
 
 function GetHouseInterpSpriteOffset(aHT: TKMHouseType; aAct: TKMHouseActionType): Integer;
 function GetTreeInterpSpriteOffset(aTree: Integer): Integer;

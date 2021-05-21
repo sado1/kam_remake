@@ -718,6 +718,8 @@ type
   TKMUnitActionTypeSet = set of TKMUnitActionType;
 
 const
+  UNIT_ACT_MIN = uaWalk;
+  UNIT_ACT_MAX = uaWalkBooty2;
   UNIT_ACT_STR: array [TKMUnitActionType] of string = ('uaWalk', 'uaWork', 'uaSpec', 'uaDie', 'uaWork1',
              'uaWork2', 'uaWorkEnd', 'uaEat', 'uaWalkArm', 'uaWalkTool',
              'uaWalkBooty', 'uaWalkTool2', 'uaWalkBooty2', 'uaUnknown');
