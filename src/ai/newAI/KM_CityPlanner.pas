@@ -168,7 +168,7 @@ type
     procedure MarkAsExhausted(aHT: TKMHouseType; aLoc: TKMPoint);
 
     procedure RemoveHouseType(aHT: TKMHouseType);
-    procedure RemovePlan(aHT: TKMHouseType; aLoc: TKMPoint); overload;
+    procedure RemovePlan(aHT: TKMHouseType; const aLoc: TKMPoint); overload;
     procedure RemovePlan(aHT: TKMHouseType; aIdx: Integer); overload;
 
     function GetHousePlan(aIgnoreTrees, aIgnoreExistingPlans: Boolean; aHT: TKMHouseType; var aLoc: TKMPoint; var aIdx: Integer): Boolean;
@@ -759,12 +759,12 @@ begin
     end;
 end;
 
-procedure TKMCityPlanner.RemovePlan(aHT: TKMHouseType; aLoc: TKMPoint);
+procedure TKMCityPlanner.RemovePlan(aHT: TKMHouseType; const aLoc: TKMPoint);
 var
   I: Integer;
 begin
   for I := 0 to fPlannedHouses[aHT].Count - 1 do
-    if KMSamePoint(fPlannedHouses[aHT].Plans[I].Loc,aLoc) then
+    if KMSamePoint(fPlannedHouses[aHT].Plans[I].Loc, aLoc) then
     begin
       RemovePlan(aHT, I);
       Exit;
