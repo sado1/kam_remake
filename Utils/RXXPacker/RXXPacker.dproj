@@ -92,7 +92,7 @@
         </DCCReference>
         <DCCReference Include="RXXPackerProc.pas"/>
         <DCCReference Include="..\..\src\utils\io\KM_IoPNG.pas"/>
-        <DCCReference Include="..\..\src\utils\misc\KM_Pics.pas"/>
+        <DCCReference Include="..\..\src\res\KM_Pics.pas"/>
         <DCCReference Include="..\..\src\res\KM_ResSprites.pas"/>
         <DCCReference Include="..\..\src\res\KM_ResSpritesEdit.pas"/>
         <DCCReference Include="..\..\src\res\KM_ResPalettes.pas"/>

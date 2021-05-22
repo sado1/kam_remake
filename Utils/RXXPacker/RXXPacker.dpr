@@ -9,7 +9,7 @@ uses
   RXXPackerForm in 'RXXPackerForm.pas' {RXXForm1},
 	RXXPackerProc in 'RXXPackerProc.pas',
   KM_IoPNG in '..\..\src\utils\io\KM_IoPNG.pas',
-  KM_Pics in '..\..\src\utils\misc\KM_Pics.pas',
+  KM_Pics in '..\..\src\res\KM_Pics.pas',
   KM_ResSprites in '..\..\src\res\KM_ResSprites.pas',
   KM_ResSpritesEdit in '..\..\src\res\KM_ResSpritesEdit.pas',
   KM_ResPalettes in '..\..\src\res\KM_ResPalettes.pas',
