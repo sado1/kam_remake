@@ -494,7 +494,7 @@ begin
   SetLength(WorkersPos, fFreeWorkersCnt);
 
   // Sort buildNodes by priority and active state
-  SortCustom(fBuildNodes[0], Low(fBuildNodes), High(fBuildNodes), sizeof(fBuildNodes[0]), CompareBuildNode);
+  SortCustom(fBuildNodes[0], Low(fBuildNodes), High(fBuildNodes), SizeOf(fBuildNodes[0]), CompareBuildNode);
 
   // Find closest build-node to each free worker and allow to expand it in next update + consider priority of node
   K := 0;

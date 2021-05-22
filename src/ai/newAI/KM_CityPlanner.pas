@@ -2323,7 +2323,7 @@ begin
   for K := 0 to FI.Count - 1 do
     EvalForest(K, False);
   if (FI.Count > 1) then
-    SortCustom(FI.Forests[0], 0, FI.Count-1, sizeof(FI.Forests[0]), CompareForests);
+    SortCustom(FI.Forests[0], 0, FI.Count-1, SizeOf(FI.Forests[0]), CompareForests);
 
   {$IFDEF DEBUG_NewAI}
     for K := FI.Count - 1 downto Max(0,FI.Count - 5) do

@@ -1074,7 +1074,7 @@ type
     if (Length(DefEval) > 0) then
     begin
       // Sort by evaluation
-      SortCustom(DefEval[0], Low(DefEval), Cnt-1, sizeof(DefEval[0]), CompareDef);
+      SortCustom(DefEval[0], Low(DefEval), Cnt-1, SizeOf(DefEval[0]), CompareDef);
       // Prepare output array
       for I := 0 to Length(aOwners) - 1 do
         with DistributedPos[ aOwners[I] ] do
@@ -1164,7 +1164,7 @@ procedure TKMSupervisor.DivideResources();
     if (Cnt > 0) then
     begin
       // Sort mines by evaluation
-      SortCustom(Mines[0], Low(Mines), Cnt-1, sizeof(Mines[0]), CompareMines);
+      SortCustom(Mines[0], Low(Mines), Cnt-1, SizeOf(Mines[0]), CompareMines);
       // Distribute mines by evaluation and possible mine cnt per a player
       for K := 0 to Cnt - 1 do // Lower index = less players can own this mine
       begin
