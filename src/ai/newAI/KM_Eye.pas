@@ -1120,24 +1120,27 @@ begin
   // Find required house cnt
   Cnt := 0;
   for HT in SCANNED_HOUSES do
-    Cnt := Cnt + gHands[fOwner].Stats.GetHouseQty(HT);
-  SetLength(Result, 1 + (Cnt-1) * Byte(aMultiplePoints));
+    Inc(Cnt, gHands[fOwner].Stats.GetHouseQty(HT));
+  SetLength(Result, 1 + (Cnt-1) * Ord(aMultiplePoints));
+
   // Exit if we have 0 houses
-  if (Cnt = 0) then
+  if Cnt = 0 then
     Exit;
 
   Cnt := 0;
   for K := 0 to gHands[fOwner].Houses.Count - 1 do
   begin
     H := gHands[fOwner].Houses[K];
-    if (H <> nil) AND not H.IsDestroyed AND H.IsComplete AND (H.HouseType in SCANNED_HOUSES) then
+    if (H <> nil) and not H.IsDestroyed and H.IsComplete and (H.HouseType in SCANNED_HOUSES) then
     begin
       Result[Cnt] := H.PointBelowEntrance;
-      Cnt := Cnt + 1;
-      if (Length(Result) <= Cnt) then // in case of not aMultiplePoints
+      Inc(Cnt);
+
+      if Cnt >= Length(Result) then // in case of not aMultiplePoints
         Exit;
     end;
   end;
+
   SetLength(Result, Cnt); // Just to be sure ...
 end;
 
