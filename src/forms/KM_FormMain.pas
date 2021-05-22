@@ -245,11 +245,9 @@ type
     procedure RenderAreaResize(aWidth, aHeight: Integer);
     procedure RenderAreaRender(aSender: TObject);
 
-    procedure Debug_ExportMenuClick(Sender: TObject);
-    procedure Debug_EnableCheatsClick(Sender: TObject);
     procedure AboutClick(Sender: TObject);
     procedure ExitClick(Sender: TObject);
-    procedure Debug_PrintScreenClick(Sender: TObject);
+
     procedure MenuItem1Click(Sender: TObject);
 
     procedure Export_TreesRXClick(Sender: TObject);
@@ -269,23 +267,27 @@ type
     procedure SoldiersClick(Sender: TObject);
     procedure Civilians1Click(Sender: TObject);
 
+    procedure Debug_PrintScreenClick(Sender: TObject);
+    procedure Debug_ExportMenuClick(Sender: TObject);
+    procedure Debug_EnableCheatsClick(Sender: TObject);
+    procedure Debug_UnlockCmpMissionsClick(Sender: TObject);
+    procedure Debug_ShowLogisticsClick(Sender: TObject);
+    procedure Debug_ShowPanelClick(Sender: TObject);
+    procedure Debug_ExportUIPagesClick(Sender: TObject);
+
     procedure Button_StopClick(Sender: TObject);
     procedure RGPlayerClick(Sender: TObject);
     procedure Open_MissionMenuClick(Sender: TObject);
     procedure chkSuperSpeedClick(Sender: TObject);
-    procedure Debug_ShowPanelClick(Sender: TObject);
-    procedure Debug_ExportUIPagesClick(Sender: TObject);
     procedure HousesDat1Click(Sender: TObject);
     procedure ExportGameStatsClick(Sender: TObject);
     procedure ResourceValues1Click(Sender: TObject);
-    procedure Debug_ShowLogisticsClick(Sender: TObject);
     procedure ReloadSettingsClick(Sender: TObject);
     procedure SaveSettingsClick(Sender: TObject);
     procedure SaveEditableMission1Click(Sender: TObject);
     procedure ValidateGameStatsClick(Sender: TObject);
     procedure LoadSavThenRplClick(Sender: TObject);
     procedure ReloadLibxClick(Sender: TObject);
-    procedure Debug_UnlockCmpMissionsClick(Sender: TObject);
     procedure mnExportRngChecksClick(Sender: TObject);
     procedure btFindObjByUIDClick(Sender: TObject);
     procedure mnExportRPLClick(Sender: TObject);
