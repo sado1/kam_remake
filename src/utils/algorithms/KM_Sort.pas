@@ -5,7 +5,7 @@ interface
 type
   TKMCompFunc = function (const aElem1, aElem2): Integer;
 
-procedure Sort(var aArr; aMinIdx,aMaxIdx,aSize: Integer; aCompFunc: TKMCompFunc);
+procedure SortCustom(var aArr; aMinIdx, aMaxIdx, aSize: Integer; aCompFunc: TKMCompFunc);
 
 
 implementation
@@ -13,9 +13,9 @@ implementation
 { Universal Quick sort procedure }
 // It is possible to sort array of standard data types and also array of records
 // Compare function must be defined
-procedure Sort(var aArr; aMinIdx,aMaxIdx,aSize: Integer; aCompFunc: TKMCompFunc);
+procedure SortCustom(var aArr; aMinIdx, aMaxIdx, aSize: Integer; aCompFunc: TKMCompFunc);
 type
-  TWByteArray = array[Word] of Byte;
+  TWByteArray = array [Word] of Byte;
   PWByteArray = ^TWByteArray;
 
   procedure QuickSort(MinIdx,MaxIdx: Integer; var SwapBuf);
@@ -56,10 +56,11 @@ type
 var
   Buf: array of Byte;
 begin
-  if (aMinIdx >= aMaxIdx) OR (aSize = 0) then
+  if (aMinIdx >= aMaxIdx) or (aSize = 0) then
     Exit;
+
   SetLength(Buf, aSize);
-  QuickSort(aMinIdx*aSize,aMaxIdx*aSize,Buf[0]);
+  QuickSort(aMinIdx * aSize, aMaxIdx * aSize, Buf[0]);
 end;
 
 end.

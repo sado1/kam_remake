@@ -103,8 +103,8 @@ uses
 { Procedural functions }
 function CompareBuildNode(const aElem1, aElem2): Integer;
 var
-  val1 : TBuildNode absolute aElem1;
-  val2 : TBuildNode absolute aElem2;
+  val1: TBuildNode absolute aElem1;
+  val2: TBuildNode absolute aElem2;
 begin
   if val1.Active AND val2.Active then
   begin
@@ -487,14 +487,14 @@ begin
           with gHands[fOwner].Units[L] do
             if (Task <> nil) AND (Task.TaskType = uttBuildHouse) AND (TKMTaskBuildHouse(Task).House = H) then
               Check := True;
-      fFreeWorkersCnt := fFreeWorkersCnt - Byte(not Check);
+      fFreeWorkersCnt := fFreeWorkersCnt - Ord(not Check);
     end;
   end;
-  fFreeWorkersCnt := fFreeWorkersCnt * Byte(fFreeWorkersCnt > 0);
+  fFreeWorkersCnt := fFreeWorkersCnt * Ord(fFreeWorkersCnt > 0);
   SetLength(WorkersPos, fFreeWorkersCnt);
 
   // Sort buildNodes by priority and active state
-  Sort(fBuildNodes[0], Low(fBuildNodes), High(fBuildNodes), sizeof(fBuildNodes[0]), CompareBuildNode);
+  SortCustom(fBuildNodes[0], Low(fBuildNodes), High(fBuildNodes), sizeof(fBuildNodes[0]), CompareBuildNode);
 
   // Find closest build-node to each free worker and allow to expand it in next update + consider priority of node
   K := 0;
@@ -549,7 +549,7 @@ begin
         ReqWorkerCnt := ReqWorkerCnt + fBuildNodes[K].RequiredWorkers;
     end;
   if (gHands[fOwner].Stats.GetHouseQty(htAny) > 15) then
-    fFreeWorkersCnt := Max(fFreeWorkersCnt, Byte(ReqWorkerCnt < 5));
+    fFreeWorkersCnt := Max(fFreeWorkersCnt, Ord(ReqWorkerCnt < 5));
 
   fWorkersPos := WorkersPos;
 end;
@@ -966,7 +966,7 @@ begin
             Priority := aRoadNodePrio;
             RemoveTreesMode := False;
             ShortcutMode := False;
-            MaxReqWorkers := Round(AI_Par[BUILDER_BuildHouse_RoadMaxWork]) + Byte(NODE_PRIO_RoadsUnlockHouse = aRoadNodePrio) * 20;
+            MaxReqWorkers := Round(AI_Par[BUILDER_BuildHouse_RoadMaxWork]) + Ord(NODE_PRIO_RoadsUnlockHouse = aRoadNodePrio) * 20;
             RequiredWorkers := Min(MaxReqWorkers, FieldList.Count);
             CenterPoint := FieldList[ FieldList.Count-1 ]; // Road node must start from exist house
           end;
@@ -977,7 +977,7 @@ begin
             with fBuildNodes[Node2Idx] do
             begin
               Active := True;
-              Priority := Byte(aHouseReservation) * NODE_PRIO_FieldsReservation + Byte(not aHouseReservation) * NODE_PRIO_Fields;
+              Priority := Ord(aHouseReservation) * NODE_PRIO_FieldsReservation + Ord(not aHouseReservation) * NODE_PRIO_Fields;
               RemoveTreesMode := False;
               ShortcutMode := False;
               MaxReqWorkers := Round(AI_Par[BUILDER_BuildHouse_FieldMaxWork]);
@@ -1219,7 +1219,7 @@ var
       if (RequiredHouses[ PRODUCTION_WARE2HOUSE[WT] ] > 0) then
       begin
         Priority := fPredictor.WareBalance[WT].Exhaustion - fPredictor.WareBalance[WT].Fraction * AI_Par[BUILDER_ChHTB_FractionCoef]
-                    - Byte(PRODUCTION_WARE2HOUSE[WT] = htBakery) * 1000;
+                    - Ord(PRODUCTION_WARE2HOUSE[WT] = htBakery) * 1000;
         for K := Low(WareOrder) to High(WareOrder) do
           if (WT = wtNone) then
             break
@@ -1409,7 +1409,7 @@ begin
   RequiredHouses := fPredictor.RequiredHouses;
 
   // Dont build more than 3 quarry at once if there is not quarry and stone shortage is possible
-  RequiredHouses[htQuary] := RequiredHouses[htQuary] * Byte(not (fStoneShortage AND (fPlanner.PlannedHouses[htQuary].Completed < 3) AND (fPlanner.PlannedHouses[htQuary].UnderConstruction > 2)));
+  RequiredHouses[htQuary] := RequiredHouses[htQuary] * Ord(not (fStoneShortage AND (fPlanner.PlannedHouses[htQuary].Completed < 3) AND (fPlanner.PlannedHouses[htQuary].UnderConstruction > 2)));
   if fStoneShortage AND (RequiredHouses[htQuary] > 0) AND (fPlanner.PlannedHouses[htSchool].Completed > 0) then
   begin
     RequiredHouses[htQuary] := 0;
@@ -1418,7 +1418,7 @@ begin
   end;
 
   // Dont try to place wine if we are out of wood
-  RequiredHouses[htWineyard] := RequiredHouses[htWineyard] * Byte(not(fTrunkShortage OR (MaxPlace < 3)));
+  RequiredHouses[htWineyard] := RequiredHouses[htWineyard] * Ord(not(fTrunkShortage OR (MaxPlace < 3)));
 
   // Find place for chop-only woodcutters when we start to be out of wood
   if ((AI_Par[BUILDER_ChHTB_TrunkBalance] - TrunkBalance) / Max(1,AI_Par[BUILDER_ChHTB_TrunkFactor]) - GetChopOnlyCnt() > 0) then
@@ -1679,9 +1679,9 @@ begin
       begin
         if not Placed then
         begin
-          Inc(Reservation, Byte(HouseReservation));
-          Inc(Reservation, Byte(RemoveTreeInPlanProcedure));
-          Inc(Reservation, Byte(not HouseReservation AND not RemoveTreeInPlanProcedure));
+          Inc(Reservation, Ord(HouseReservation));
+          Inc(Reservation, Ord(RemoveTreeInPlanProcedure));
+          Inc(Reservation, Ord(not HouseReservation AND not RemoveTreeInPlanProcedure));
         end
         else if (House <> nil) AND not (House.IsComplete) then
           Inc(Construction,1);
@@ -1702,7 +1702,7 @@ begin
   // Active nodes
   cnt := 0;
   for K := Low(fBuildNodes) to High(fBuildNodes) do
-    Inc(cnt, Byte(fBuildNodes[K].Active));
+    Inc(cnt, Ord(fBuildNodes[K].Active));
   aBalanceText := Format('%s|Active nodes: %d',[aBalanceText,cnt]);
   // Material shortage
   Text := '';
@@ -2154,7 +2154,7 @@ begin
   WareBalance[wtTrunk].Fraction := Max(0, RequiredHouses[htWoodcutters] - gHands[fOwner].Stats.GetHouseQty(htWoodcutters) - 4);
   POMCoal := RequiredHouses[htCoalMine]; // Coal is used by resource (Gold) and by weapon division -> extract just Gold requirements
   RequiredHouses[htCoalMine] := Max(0,gHands[fOwner].Stats.GetHouseTotal(htGoldMine)-gHands[fOwner].Stats.GetHouseTotal(htCoalMine));
-  RequiredHouses[htWoodcutters] := Max(0,RequiredHouses[htWoodcutters] - Round(Byte(WareBalance[wtGold].Exhaustion < 20) * RequiredHouses[htWoodcutters] * 0.5));
+  RequiredHouses[htWoodcutters] := Max(0,RequiredHouses[htWoodcutters] - Round(Ord(WareBalance[wtGold].Exhaustion < 20) * RequiredHouses[htWoodcutters] * 0.5));
   if (aMaxCnt > 0) AND SelectHouse(BUILD_WARE) then
     Output := True;
 

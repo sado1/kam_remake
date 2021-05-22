@@ -2302,7 +2302,7 @@ begin
   begin
     // Check influence
     if (gAIFields.Influences.GetBestAllianceOwner(fOwner, FI.Forests[K].Loc, atEnemy) > 10)
-      OR (gAIFields.Influences.GetBestOwner(FI.Forests[K].Loc.X, FI.Forests[K].Loc.Y) <> fOwner) then
+    or (gAIFields.Influences.GetBestOwner(FI.Forests[K].Loc.X, FI.Forests[K].Loc.Y) <> fOwner) then
     begin
       Dec(FI.Count);
       FI.Forests[K] := FI.Forests[ FI.Count ];
@@ -2323,7 +2323,7 @@ begin
   for K := 0 to FI.Count - 1 do
     EvalForest(K, False);
   if (FI.Count > 1) then
-    Sort(FI.Forests[0], 0, FI.Count-1, sizeof(FI.Forests[0]), CompareForests);
+    SortCustom(FI.Forests[0], 0, FI.Count-1, sizeof(FI.Forests[0]), CompareForests);
 
   {$IFDEF DEBUG_NewAI}
     for K := FI.Count - 1 downto Max(0,FI.Count - 5) do
