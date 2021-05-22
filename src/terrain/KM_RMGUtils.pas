@@ -611,7 +611,7 @@ begin
   begin
     for I := High(fTileCounterArr[fTileArr[aY,aX]]) downto 0 do
       if fTileCounterArr[fTileArr[aY,aX],I] <> 0 then
-        break;
+        Break;
 
     fTileCounterArr[fTileArr[aY,aX],I] := fTileCounterArr[fTileArr[aY,aX],I] - 1;
 

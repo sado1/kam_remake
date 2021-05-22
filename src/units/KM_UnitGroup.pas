@@ -1084,7 +1084,7 @@ begin
           if (aGroupArray[K] = G) then
           begin
             check := False;
-            break;
+            Break;
           end;
         if check then
         begin
@@ -2455,7 +2455,7 @@ begin
               SetLength(Result, Idx + 12);
             Result[Idx] := Groups[I];
             Idx := Idx + 1;
-            break;
+            Break;
           end;
           K := K + 5;
         end;

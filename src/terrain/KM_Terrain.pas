@@ -4821,7 +4821,7 @@ begin
     if InRange(inY, Ycoef[ii], Ycoef[ii + 1]) then
     begin
       Result := Yc + ii - (Ycoef[ii + 1] - inY) / (Ycoef[ii + 1] - Ycoef[ii]);
-      break;
+      Break;
     end;
 
   //gLog.AssertToLog(false,'TTerrain.ConvertCursorToMapCoord - couldn''t convert')

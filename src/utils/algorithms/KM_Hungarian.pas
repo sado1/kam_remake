@@ -274,7 +274,7 @@ begin
   begin
     row := FindStarInColumn(fPath[pathIndex].Col);
     if row = -1 then
-      break;
+      Break;
     inc(pathIndex);
     fPath[pathIndex].Row := row;
     fPath[pathIndex].Col := fPath[pathIndex - 1].Col;
