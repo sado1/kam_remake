@@ -287,9 +287,11 @@ begin
       with fPlannedHouses[HT].Plans[I] do
         if (House <> nil) then
           gHands.CleanUpHousePointer(House);
+
   fRoadPlanner.Free;
   fRoadShortcutPlanner.Free;
   fFieldEval.Free;
+
   inherited;
 end;
 
@@ -355,7 +357,7 @@ begin
   LoadStream.Read(fFields.UpdateIdx);
   SetLength(fFields.Farms,fFields.Count);
   if (fFields.Count > 0) then
-    LoadStream.Read(fFields.Farms[0],SizeOf(fFields.Farms[0]) * fFields.Count);
+    LoadStream.Read(fFields.Farms[0], SizeOf(fFields.Farms[0]) * fFields.Count);
 
   for HT := HOUSE_MIN to HOUSE_MAX do
   begin
@@ -393,7 +395,7 @@ begin
   for HT := HOUSE_MIN to HOUSE_MAX do
     for K := 0 to fPlannedHouses[HT].Count - 1 do
       with fPlannedHouses[HT].Plans[K] do
-        House := gHands.GetHouseByUID( Cardinal(House) );
+        House := gHands.GetHouseByUID(Cardinal(House));
 end;
 
 
@@ -481,7 +483,7 @@ begin
             fPlannedHouses[HT].Plans[K].House := H.GetPointer;
           end;
           CheckExistHouse := True;
-          break;
+          Break;
         end;
       if not CheckExistHouse then // House was added by script / spectator in debug mode
       begin
@@ -517,11 +519,11 @@ begin
           begin
             if ChopOnly AND HouseExist AND House.IsComplete then // Dont consider choponly woodcutters
               CompletedHouses := CompletedHouses - 1;
-            if (House <> nil) AND (House.IsComplete) then
+            if (House <> nil) AND House.IsComplete then
               CheckWoodcutter(fPlannedHouses[HT].Plans[I], CheckChopOnly);
           end;
         end
-        else if (HouseReservation OR RemoveTreeInPlanProcedure) then // House was reserved
+        else if HouseReservation OR RemoveTreeInPlanProcedure then // House was reserved
         begin
           PlannedHouses := PlannedHouses + 1;
         end
@@ -1318,8 +1320,8 @@ begin
     begin
       X := aLoc.X + Tiles[K].X;
       Y := aLoc.Y + Tiles[K].Y;
-      Tree := Tree + Byte(gTerrain.ObjectIsChopableTree(KMPoint(X,Y), [caAge1,caAge2,caAge3,caAgeFull]));
-      Road := Road + Byte(tpWalkRoad in gTerrain.Land^[Y, X].Passability);
+      Tree := Tree + Ord(gTerrain.ObjectIsChopableTree(KMPoint(X,Y), [caAge1, caAge2, caAge3, caAgeFull]));
+      Road := Road + Ord(tpWalkRoad in gTerrain.Land^[Y, X].Passability);
     end;
   Result := Tree * AI_Par[PLANNER_ObstaclesInHousePlan_Tree] + Road * AI_Par[PLANNER_ObstaclesInHousePlan_Road];
 end;
@@ -1414,8 +1416,8 @@ begin
                   //+ Byte(IsRoad(AvoidBuilding,Point)) * GA_PLANNER_SnapCrit_SnapToRoads;
       end;
   Output := Output
-            - Byte(IsReservedField( gAIFields.Influences.AvoidBuilding[aLoc.Y+1,aLoc.X] )) * AI_Par[PLANNER_SnapCrit_ObstacleInEntrance]
-            + Byte(IsRoad( gAIFields.Influences.AvoidBuilding[aLoc.Y+1,aLoc.X], aLoc )) * AI_Par[PLANNER_SnapCrit_RoadInEntrance];
+            - Ord(IsReservedField( gAIFields.Influences.AvoidBuilding[aLoc.Y+1,aLoc.X] )) * AI_Par[PLANNER_SnapCrit_ObstacleInEntrance]
+            + Ord(IsRoad( gAIFields.Influences.AvoidBuilding[aLoc.Y+1,aLoc.X], aLoc )) * AI_Par[PLANNER_SnapCrit_RoadInEntrance];
   Result := Output;
 end;
 
@@ -2293,7 +2295,7 @@ begin
 
   for K := 0 to FIRnd.Count - 1 do
   begin
-    FI.Forests[ FI.Count ] := FIRnd.Forests[K];
+    FI.Forests[FI.Count] := FIRnd.Forests[K];
     Inc(FI.Count);
   end;
   //}
@@ -2315,7 +2317,7 @@ begin
         begin
           Dec(FI.Count);
           FI.Forests[K] := FI.Forests[ FI.Count ];
-          break;
+          Break;
         end;
   end;
 
