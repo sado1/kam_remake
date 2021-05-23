@@ -464,7 +464,8 @@ begin
     //Import and process interpolated steps
     for SubStep := 0 to 6 do
     begin
-      suffixPath := 'interpolated_frames\' + format('%.15d.png', [SubStep+1]);
+      //Filenames are 1-based, and skip the first one since it's the original
+      suffixPath := 'interpolated_frames\' + format('%.15d.png', [SubStep+1+1]);
 
       //Clear all our buffers so they get rezeroed
       SetLength(pngBase, 0);
