@@ -71,8 +71,6 @@ type
     fMarksList: TKMPointTagList;
     fHouseOutline: TKMPointList;
 
-    function GetHouseAnimSprite(aHT: TKMHouseType; aAct: TKMHouseActionType; aStep: Integer; aStepFrac: Single): Integer;
-
     procedure ApplyTransform;
     procedure SetDefaultRenderParams;
     procedure RenderBackgroundUI(const aRect: TKMRect);
@@ -214,32 +212,6 @@ begin
   gRenderAux.Free;
 
   inherited;
-end;
-
-
-function TRenderPool.GetHouseAnimSprite(aHT: TKMHouseType; aAct: TKMHouseActionType;
-                                        aStep: Integer; aStepFrac: Single): Integer;
-var
-  A: TKMAnimLoop;
-  InterpOffset: Integer;
-begin
-  A := gRes.Houses[aHT].Anim[aAct];
-  InterpOffset := GetHouseInterpSpriteOffset(aHT, aAct);
-
-  //While in development disable interpolation if the sprite is missing
-  if (InterpOffset >= 1) and ((InterpOffset >= fRXData[rxHouses].Count) or (fRXData[rxHouses].Size[InterpOffset].X = 0)) then
-    InterpOffset := -1;
-
-  if InterpOffset >= 0 then
-  begin
-    Result := InterpOffset
-      + INTERP_LEVEL*(aStep mod Byte(A.Count))
-      + EnsureRange(Floor(INTERP_LEVEL*aStepFrac), 0, INTERP_LEVEL-1);
-  end
-  else
-  begin
-    Result := A.Step[aStep mod Byte(A.Count) + 1] + 1;
-  end;
 end;
 
 
@@ -868,7 +840,7 @@ begin
     begin
       //If the anim step is able to be interpolated from the last frame (to avoid incorrect looping)
       if AnimStep = AnimStepPrev+1 then
-        Id := GetHouseAnimSprite(aHouse, AT, AnimStepPrev, gGameParams.TickFrac)
+        Id := gRes.Interpolation.House(aHouse, AT, AnimStepPrev, gGameParams.TickFrac)
       else
         Id := A.Step[AnimStep mod Byte(A.Count) + 1] + 1;
 
@@ -994,7 +966,8 @@ begin
 
   A := gRes.Houses.BeastAnim[aHouse,BeastId,BeastAge];
 
-  Id := A.Step[AnimStep mod Byte(A.Count) + 1] + 1;
+  Id := gRes.Interpolation.Beast(aHouse, BeastId, BeastAge, AnimStep, gGameParams.TickFrac);
+
   cornerX := Loc.X + (A.MoveX + R.Pivot[Id].X) / CELL_SIZE_PX - 1;
   cornerY := Loc.Y + (A.MoveY + R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX - 1
                    - gTerrain.Land^[Loc.Y + 1, Loc.X].RenderHeight / CELL_HEIGHT_DIV;

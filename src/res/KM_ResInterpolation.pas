@@ -33,6 +33,8 @@ type
     function SerfCarry(aWare: TKMWareType; aDir: TKMDirection; aStep: Integer; aStepFrac: Single): Integer;
     function UnitThought(aTh: TKMUnitThought; aStep: Integer; aStepFrac: Single): Integer;
     function Tree(aObject: Integer; aStep: Integer; aStepFrac: Single; aLoop: Boolean): Integer;
+    function House(aHT: TKMHouseType; aAct: TKMHouseActionType; aStep: Integer; aStepFrac: Single): Integer;
+    function Beast(aHT: TKMHouseType; BeastId, BeastAge, aStep: Integer; aStepFrac: Single): Integer;
   end;
 
 function GetHouseInterpSpriteOffset(aHT: TKMHouseType; aAct: TKMHouseActionType): Integer;
@@ -215,6 +217,53 @@ begin
   if not INTERPOLATED_ANIMS
   or (Result <= 0) or (Result > gRes.Sprites[rxTrees].RXData.Count)
   or (gRes.Sprites[rxTrees].RXData.Size[Result].X = 0) then
+    Result := A.Step[Step] + 1;
+end;
+
+
+function TKMResInterpolation.House(aHT: TKMHouseType; aAct: TKMHouseActionType;
+  aStep: Integer; aStepFrac: Single): Integer;
+var
+  A: TKMAnimLoop;
+  Step, SubStep: Integer;
+begin
+  A := gRes.Houses[aHT].Anim[aAct];
+
+  Step := aStep mod Byte(A.Count) + 1;
+  SubStep := EnsureRange(Floor(INTERP_LEVEL*aStepFrac), 0, INTERP_LEVEL-1);
+
+  Result := fHouses[aHT, aAct, Step, SubStep];
+
+  //While in development disable interpolation if the sprite is missing
+  if not INTERPOLATED_ANIMS
+  or (Result <= 0) or (Result > gRes.Sprites[rxHouses].RXData.Count)
+  or (gRes.Sprites[rxHouses].RXData.Size[Result].X = 0) then
+    Result := A.Step[Step] + 1;
+end;
+
+
+function TKMResInterpolation.Beast(aHT: TKMHouseType; BeastId, BeastAge,
+  aStep: Integer; aStepFrac: Single): Integer;
+var
+  A: TKMAnimLoop;
+  Step, SubStep: Integer;
+begin
+  A := gRes.Houses.BeastAnim[aHT, BeastId, BeastAge];
+
+  Step := aStep mod Byte(A.Count) + 1;
+  SubStep := EnsureRange(Floor(INTERP_LEVEL*aStepFrac), 0, INTERP_LEVEL-1);
+
+  case aHT of
+    htSwine:       Result := fBeasts[1, BeastId, BeastAge, Step, SubStep];
+    htStables:     Result := fBeasts[2, BeastId, BeastAge, Step, SubStep];
+    htMarketplace: Result := fBeasts[3, BeastId, 1,        Step, SubStep];
+    else           Result := -1;
+  end;
+
+  //While in development disable interpolation if the sprite is missing
+  if not INTERPOLATED_ANIMS
+  or (Result <= 0) or (Result > gRes.Sprites[rxHouses].RXData.Count)
+  or (gRes.Sprites[rxHouses].RXData.Size[Result].X = 0) then
     Result := A.Step[Step] + 1;
 end;
 
