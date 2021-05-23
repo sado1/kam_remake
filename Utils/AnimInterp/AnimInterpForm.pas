@@ -71,8 +71,6 @@ uses
 
 const
   CANVAS_Y_OFFSET = 14;
-  INVALID_STEP = '(-1,-1,-1,-1,-1,-1,-1)';
-  INVALID_INTERP = INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP+','+INVALID_STEP;
 
   //This is different to TKMUnitSpec.SupportsAction because we include any used
   //animations like uaWalkArm for soliders (flag) which isn't an action.
@@ -132,6 +130,7 @@ begin
   fOutDir := fWorkDir + 'Output\';
   fDainFolder := 'C:\Dev\kam_sprites\DAIN_APP Alpha 1.0\';
 end;
+
 
 function TForm1.GetDainParams(aDir: string; aAlpha: Boolean): string;
 var
