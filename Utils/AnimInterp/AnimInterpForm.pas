@@ -842,6 +842,7 @@ begin
 
   animData := animData + #13#10 + #13#10;
   animData := animData + 'TKMBeastInterp = array[1..3,1..5,1..3] of TKMInterpolation;'+#13#10;
+  animData := animData + '//SizeOf(TKMBeastInterp) = '+IntToStr(SizeOf(TKMBeastInterp))+#13#10;
 
   startPos := fOutputStream.Position;
   for beastHouse := 1 to 3 do

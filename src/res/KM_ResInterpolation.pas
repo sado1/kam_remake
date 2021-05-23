@@ -111,7 +111,7 @@ begin
   S.Read(fUnitThoughts, SizeOf(fUnitThoughts));
 
   S.CheckMarker('Trees ');
-  S.Read(fUnitThoughts, SizeOf(fUnitThoughts));
+  S.Read(fTrees, SizeOf(fTrees));
 
   S.CheckMarker('Houses');
   S.Read(fHouses, SizeOf(fHouses));
@@ -160,7 +160,7 @@ var
   AnimCount, Step, SubStep: Integer;
 begin
   AnimCount := THOUGHT_BOUNDS[aTh, 2] - THOUGHT_BOUNDS[aTh, 1];
-  Step := aStep mod Byte(AnimCount);
+  Step := aStep mod Byte(AnimCount) + 1;
   SubStep := EnsureRange(Floor(INTERP_LEVEL*aStepFrac), 0, INTERP_LEVEL-1);
 
   Result := fUnitThoughts[aTh, Step, SubStep];
