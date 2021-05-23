@@ -3,7 +3,7 @@ unit KM_ResInterpolation;
 interface
 uses
   Classes, SysUtils, Math,
-  KM_Defaults, KM_Points, KM_ResTypes, KM_ResWares, KM_ResMapElements;
+  KM_Defaults, KM_Points, KM_ResTypes, KM_ResWares, KM_ResMapElements, KM_ResHouses;
 
 const
   INTERP_LEVEL = 8;
@@ -14,6 +14,8 @@ type
   TKMSerfCarryInterp = array[WARE_MIN..WARE_MAX, dirN..dirNW] of TKMInterpolation;
   TKMUnitThoughtInterp = array[TKMUnitThought] of TKMInterpolation;
   TKMTreeInterp = array[0..OBJECTS_CNT] of TKMInterpolation;
+  TKMHouseInterp = array[HOUSE_MIN..HOUSE_MAX, TKMHouseActionType] of TKMInterpolation;
+  TKMBeastInterp = array[1..3,1..5,1..3] of TKMInterpolation;
 
   TKMResInterpolation = class
   private
@@ -21,6 +23,8 @@ type
     fSerfCarry: TKMSerfCarryInterp;
     fUnitThoughts: TKMUnitThoughtInterp;
     fTrees: TKMTreeInterp;
+    fHouses: TKMHouseInterp;
+    fBeasts: TKMBeastInterp;
   public
     procedure LoadFromFile(const FileName: string);
 
@@ -36,7 +40,7 @@ function GetHouseInterpSpriteOffset(aHT: TKMHouseType; aAct: TKMHouseActionType)
 
 implementation
 uses
-  KM_CommonClasses, KM_Resource, KM_CommonTypes, KM_Pics;
+  KM_CommonClasses, KM_Resource, KM_CommonTypes, KM_Pics, KM_ResUnits;
 
 
 
@@ -106,6 +110,12 @@ begin
 
   S.CheckMarker('Trees ');
   S.Read(fUnitThoughts, SizeOf(fUnitThoughts));
+
+  S.CheckMarker('Houses');
+  S.Read(fHouses, SizeOf(fHouses));
+
+  S.CheckMarker('Beasts');
+  S.Read(fBeasts, SizeOf(fBeasts));
 end;
 
 
