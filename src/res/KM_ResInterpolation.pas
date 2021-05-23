@@ -25,11 +25,11 @@ type
     function UnitAction(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; aStep: Integer; aStepFrac: Single): Integer;
     function UnitActionByPercent(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; aPercent: Single): Integer;
     function SerfCarry(aWare: TKMWareType; aDir: TKMDirection; aStep: Integer; aStepFrac: Single): Integer;
+    function UnitThought(aTh: TKMUnitThought; aStep: Integer; aStepFrac: Single): Integer;
   end;
 
 function GetHouseInterpSpriteOffset(aHT: TKMHouseType; aAct: TKMHouseActionType): Integer;
 function GetTreeInterpSpriteOffset(aTree: Integer): Integer;
-function GetThoughtInterpSpriteOffset(aTh: TKMUnitThought): Integer;
 
 
 implementation
@@ -111,20 +111,6 @@ begin
 end;
 
 
-function GetThoughtInterpSpriteOffset(aTh: TKMUnitThought): Integer;
-const THOUGHT_INTERP_LOOKUP: array[TKMUnitThought] of Integer = (
-  -1,90156,90220,90284,90348,90412,90476,90540,90604
-);
-begin
-  if INTERPOLATED_ANIMS then
-  begin
-    Result := THOUGHT_INTERP_LOOKUP[aTh];
-  end
-  else
-    Result := -1;
-end;
-
-
 { TKMResInterpolation }
 
 procedure TKMResInterpolation.LoadFromFile(const FileName: string);
@@ -152,7 +138,7 @@ function TKMResInterpolation.UnitAction(aUnit: TKMUnitType;
   aStepFrac: Single): Integer;
 var
   A: TKMAnimLoop;
-  Step, SubStep, InterpOffset: Integer;
+  Step, SubStep: Integer;
 begin
   A := gRes.Units[aUnit].UnitAnim[aAct, aDir];
 
@@ -179,11 +165,30 @@ begin
 end;
 
 
+function TKMResInterpolation.UnitThought(aTh: TKMUnitThought; aStep: Integer; aStepFrac: Single): Integer;
+var
+  AnimCount, Step, SubStep: Integer;
+begin
+  AnimCount := THOUGHT_BOUNDS[aTh, 2] - THOUGHT_BOUNDS[aTh, 1];
+  Step := aStep mod Byte(AnimCount);
+  SubStep := EnsureRange(Floor(INTERP_LEVEL*aStepFrac), 0, INTERP_LEVEL-1);
+
+  Result := fUnitThoughts[aTh, Step, SubStep];
+
+  //While in development disable interpolation if the sprite is missing
+  if (Result <= 0) or (Result > gRes.Sprites[rxUnits].RXData.Count) or (gRes.Sprites[rxUnits].RXData.Size[Result].X = 0) then
+  begin
+    // Non-interpolated thought bubbles are animated in reverse
+    Result := THOUGHT_BOUNDS[aTh, 2] + 1 - Step;
+  end;
+end;
+
+
 function TKMResInterpolation.SerfCarry(aWare: TKMWareType; aDir: TKMDirection;
   aStep: Integer; aStepFrac: Single): Integer;
 var
   A: TKMAnimLoop;
-  Step, SubStep, InterpOffset: Integer;
+  Step, SubStep: Integer;
 begin
   A := gRes.Units.SerfCarry[aWare, aDir];
 

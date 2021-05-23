@@ -629,7 +629,7 @@ begin
   for I := 1 to 30 do
   begin
     if I <= A.Count then
-      A.Step[I] := (I-1) + THOUGHT_BOUNDS[aThought, 1]
+      A.Step[I] := THOUGHT_BOUNDS[aThought, 2] - (I-1); // Thought bubbles are animated in reverse
     else
       A.Step[I] := -1;
   end;

@@ -1133,7 +1133,6 @@ var
   id: Integer;
   A: TKMAnimLoop;
   R: TRXData;
-  InterpOffset: Integer;
 begin
   A := gRes.Units.SerfCarry[aCarry, aDir];
   id := gRes.Interpolation.SerfCarry(aCarry, aDir, StepId, StepFrac);
@@ -1151,12 +1150,10 @@ procedure TRenderPool.AddUnitThought(aUnit: TKMUnitType; aAct: TKMUnitActionType
                                      aDir: TKMDirection;
                                      Thought: TKMUnitThought; pX,pY: Single);
 var
-  Id, InterpOffset: Integer;
   cornerX, cornerY, ground: Single;
   R: TRXData;
   A: TKMAnimLoop;
-  id0: Integer;
-  AnimCount: Word;
+  id, id0: Integer;
 begin
   if Thought = thNone then Exit;
   R := fRXData[rxUnits];
@@ -1170,29 +1167,11 @@ begin
   // The thought should be slightly lower than the unit so it goes OVER warrior flags
   ground := ground + THOUGHT_X_OFFSET;
 
-  InterpOffset := GetThoughtInterpSpriteOffset(Thought);
+  id := gRes.Interpolation.UnitThought(Thought, gGameParams.Tick, gGameParams.TickFrac);
 
-  //While in development disable interpolation if the sprite is missing
-  if (InterpOffset >= 1) and ((InterpOffset >= fRXData[rxUnits].Count) or (fRXData[rxUnits].Size[InterpOffset].X = 0)) then
-    InterpOffset := -1;
-
-  // Thought bubbles are animated in reverse
-  AnimCount := THOUGHT_BOUNDS[Thought, 2] - THOUGHT_BOUNDS[Thought, 1];
-  if InterpOffset > 0 then
-  begin
-    Id := InterpOffset + (AnimCount-1)*INTERP_LEVEL
-      - INTERP_LEVEL*(gGameParams.Tick mod AnimCount)
-      + EnsureRange(Floor(INTERP_LEVEL*(1.0-gGameParams.TickFrac)), 0, INTERP_LEVEL-1);
-  end
-  else
-  begin
-    Id := THOUGHT_BOUNDS[Thought, 2] + 1 -
-         (gGameParams.Tick mod AnimCount);
-  end;
-
-  cornerX := pX + R.Pivot[Id].X / CELL_SIZE_PX;
-  cornerY := gTerrain.RenderFlatToHeight(pX, pY) + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX - 1.5;
-  fRenderList.AddSpriteG(rxUnits, Id, 0, cornerX, cornerY, pX, ground);
+  cornerX := pX + R.Pivot[id].X / CELL_SIZE_PX;
+  cornerY := gTerrain.RenderFlatToHeight(pX, pY) + (R.Pivot[id].Y + R.Size[id].Y) / CELL_SIZE_PX - 1.5;
+  fRenderList.AddSpriteG(rxUnits, id, 0, cornerX, cornerY, pX, ground);
 end;
 
 
