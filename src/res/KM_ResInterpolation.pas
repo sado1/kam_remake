@@ -3,7 +3,7 @@ unit KM_ResInterpolation;
 interface
 uses
   Classes, SysUtils, Math,
-  KM_Defaults, KM_Points, KM_ResTypes, KM_ResWares;
+  KM_Defaults, KM_Points, KM_ResTypes, KM_ResWares, KM_ResMapElements;
 
 const
   INTERP_LEVEL = 8;
@@ -13,12 +13,14 @@ type
   TKMUnitActionInterp = array[UNIT_MIN..UNIT_MAX, UNIT_ACT_MIN..UNIT_ACT_MAX, dirN..dirNW] of TKMInterpolation;
   TKMSerfCarryInterp = array[WARE_MIN..WARE_MAX, dirN..dirNW] of TKMInterpolation;
   TKMUnitThoughtInterp = array[TKMUnitThought] of TKMInterpolation;
+  TKMTreeInterp = array[0..OBJECTS_CNT] of TKMInterpolation;
 
   TKMResInterpolation = class
   private
     fUnitActions: TKMUnitActionInterp;
     fSerfCarry: TKMSerfCarryInterp;
     fUnitThoughts: TKMUnitThoughtInterp;
+    fTrees: TKMTreeInterp;
   public
     procedure LoadFromFile(const FileName: string);
 
@@ -26,15 +28,15 @@ type
     function UnitActionByPercent(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; aPercent: Single): Integer;
     function SerfCarry(aWare: TKMWareType; aDir: TKMDirection; aStep: Integer; aStepFrac: Single): Integer;
     function UnitThought(aTh: TKMUnitThought; aStep: Integer; aStepFrac: Single): Integer;
+    function Tree(aObject: Integer; aStep: Integer; aStepFrac: Single; aLoop: Boolean): Integer;
   end;
 
 function GetHouseInterpSpriteOffset(aHT: TKMHouseType; aAct: TKMHouseActionType): Integer;
-function GetTreeInterpSpriteOffset(aTree: Integer): Integer;
 
 
 implementation
 uses
-  KM_CommonClasses, KM_ResMapElements, KM_Resource, KM_CommonTypes, KM_Pics;
+  KM_CommonClasses, KM_Resource, KM_CommonTypes, KM_Pics;
 
 
 
@@ -82,35 +84,6 @@ begin
 end;
 
 
-function GetTreeInterpSpriteOffset(aTree: Integer): Integer;
-const
-  TREE_INTERP_LOOKUP: array [0..OBJECTS_CNT] of Integer = (
-  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-  -1,-1,-1,-1,-1,260,388,516,644,772,868,964,-1,964,-1,-1,
-  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-  -1,-1,-1,-1,-1,-1,-1,1060,1124,1188,1252,1412,1460,1524,1588,1652,
-  1060,1124,1188,1812,1876,1060,1124,1188,2036,2100,1060,1124,2260,2324,2388,2548,
-  2596,2692,2788,2548,2596,2692,2948,3044,1412,3204,3268,3332,3396,-1,-1,-1,
-  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-  -1,-1,-1,-1,3556,3628,3676,3740,3556,3628,3900,3964,3556,3628,3900,4124,
-  4188,3556,3628,3676,4348,4412,3556,3628,3676,4572,4412,4636,-1,-1,-1,-1,
-  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-  -1,-1,-1,-1,-1,-1,-1,4700,4796,4892,4988,5084,5180,5276,-1,-1,
-  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-  -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1);
-begin
-  if INTERPOLATED_ANIMS and (aTree <= High(TREE_INTERP_LOOKUP)) then
-  begin
-    Result := TREE_INTERP_LOOKUP[aTree];
-  end
-  else
-    Result := -1;
-end;
-
-
 { TKMResInterpolation }
 
 procedure TKMResInterpolation.LoadFromFile(const FileName: string);
@@ -130,6 +103,9 @@ begin
 
   S.CheckMarker('UnitThoughts  ');
   S.Read(fUnitThoughts, SizeOf(fUnitThoughts));
+
+  S.CheckMarker('Trees ');
+  S.Read(fUnitThoughts, SizeOf(fUnitThoughts));
 end;
 
 
@@ -148,7 +124,9 @@ begin
   Result := fUnitActions[aUnit, aAct, aDir, Step, SubStep];
 
   //While in development disable interpolation if the sprite is missing
-  if (Result <= 0) or (Result > gRes.Sprites[rxUnits].RXData.Count) or (gRes.Sprites[rxUnits].RXData.Size[Result].X = 0) then
+  if not INTERPOLATED_ANIMS
+  or (Result <= 0) or (Result > gRes.Sprites[rxUnits].RXData.Count)
+  or (gRes.Sprites[rxUnits].RXData.Size[Result].X = 0) then
     Result := A.Step[Step] + 1;
 end;
 
@@ -176,7 +154,9 @@ begin
   Result := fUnitThoughts[aTh, Step, SubStep];
 
   //While in development disable interpolation if the sprite is missing
-  if (Result <= 0) or (Result > gRes.Sprites[rxUnits].RXData.Count) or (gRes.Sprites[rxUnits].RXData.Size[Result].X = 0) then
+  if not INTERPOLATED_ANIMS
+  or (Result <= 0) or (Result > gRes.Sprites[rxUnits].RXData.Count)
+  or (gRes.Sprites[rxUnits].RXData.Size[Result].X = 0) then
   begin
     // Non-interpolated thought bubbles are animated in reverse
     Result := THOUGHT_BOUNDS[aTh, 2] + 1 - Step;
@@ -198,7 +178,33 @@ begin
   Result := fSerfCarry[aWare, aDir, Step, SubStep];
 
   //While in development disable interpolation if the sprite is missing
-  if (Result <= 0) or (Result > gRes.Sprites[rxUnits].RXData.Count) or (gRes.Sprites[rxUnits].RXData.Size[Result].X = 0) then
+  if not INTERPOLATED_ANIMS
+  or (Result <= 0) or (Result > gRes.Sprites[rxUnits].RXData.Count)
+  or (gRes.Sprites[rxUnits].RXData.Size[Result].X = 0) then
+    Result := A.Step[Step] + 1;
+end;
+
+
+function TKMResInterpolation.Tree(aObject, aStep: Integer; aStepFrac: Single; aLoop: Boolean): Integer;
+var
+  A: TKMAnimLoop;
+  Step, SubStep: Integer;
+begin
+  A := gMapElements[aObject].Anim;
+
+  Step := aStep mod Byte(A.Count) + 1;
+
+  if aLoop or (Step < A.Count) then
+    SubStep := EnsureRange(Floor(INTERP_LEVEL*aStepFrac), 0, INTERP_LEVEL-1)
+  else
+    SubStep := 0;
+
+  Result := fTrees[aObject, Step, SubStep];
+
+  //While in development disable interpolation if the sprite is missing
+  if not INTERPOLATED_ANIMS
+  or (Result <= 0) or (Result > gRes.Sprites[rxTrees].RXData.Count)
+  or (gRes.Sprites[rxTrees].RXData.Size[Result].X = 0) then
     Result := A.Step[Step] + 1;
 end;
 

@@ -71,7 +71,6 @@ type
     fMarksList: TKMPointTagList;
     fHouseOutline: TKMPointList;
 
-    function GetTreeAnimSprite(aTree, aStep: Integer; aStepFrac: Single; aLoop: Boolean): Integer;
     function GetHouseAnimSprite(aHT: TKMHouseType; aAct: TKMHouseActionType; aStep: Integer; aStepFrac: Single): Integer;
 
     procedure ApplyTransform;
@@ -241,34 +240,6 @@ begin
   begin
     Result := A.Step[aStep mod Byte(A.Count) + 1] + 1;
   end;
-end;
-
-
-function TRenderPool.GetTreeAnimSprite(aTree, aStep: Integer; aStepFrac: Single; aLoop: Boolean): Integer;
-var
-  A: TKMAnimLoop;
-  InterpOffset: Integer;
-begin
-  A := gMapElements[aTree].Anim;
-
-  if INTERPOLATED_ANIMS then
-  begin
-    InterpOffset := GetTreeInterpSpriteOffset(aTree);
-    //While in development disable interpolation if the sprite is missing
-    if (InterpOffset > 0) and (InterpOffset < fRXData[rxTrees].Count) and (fRXData[rxTrees].Size[InterpOffset].X <> 0) then
-    begin
-      Result := InterpOffset
-        + INTERP_LEVEL*(aStep mod Byte(A.Count));
-
-      //For the last step of non-looping animations, skip the interp
-      if aLoop or ((aStep mod Byte(A.Count)) < A.Count-1) then
-        Result := Result + EnsureRange(Floor(INTERP_LEVEL*aStepFrac), 0, INTERP_LEVEL-1);
-
-      Exit;
-    end;
-  end;
-
-  Result := A.Step[aStep mod Byte(A.Count) +1]+1;
 end;
 
 
@@ -643,7 +614,6 @@ var
   gX, gY: Single;
   Id, Id0: Integer;
   FOW: Byte;
-  A: TKMAnimLoop;
 begin
   if (gMySpectator.FogOfWar.CheckVerticeRenderRev(LocX,LocY) <= FOG_OF_WAR_MIN) then Exit;
 
@@ -666,9 +636,8 @@ begin
       FOW := gMySpectator.FogOfWar.CheckTileRevelation(LocX,LocY);
       if FOW <= 128 then AnimStep := 0; // Stop animation
     end;
-    A := gMapElements[aIndex].Anim;
-    Id := GetTreeAnimSprite(aIndex, AnimStep, gGameParams.TickFrac, aLoopAnim);
-    Id0 := A.Step[1] + 1;
+    Id := gRes.Interpolation.Tree(aIndex, AnimStep, gGameParams.TickFrac, aLoopAnim);
+    Id0 := gMapElements[aIndex].Anim.Step[1] + 1;
     if Id <= 0 then exit;
 
     R := fRXData[rxTrees];
@@ -695,11 +664,9 @@ var
   var
     Id, Id0: Integer;
     CornerX, CornerY, gX, gY: Single;
-    A: TKMAnimLoop;
   begin
-    A := gMapElements[aIndex].Anim;
-    Id := GetTreeAnimSprite(aIndex, AnimStep, gGameParams.TickFrac, True);
-    Id0 := A.Step[1] + 1;
+    Id := gRes.Interpolation.Tree(aIndex, AnimStep, gGameParams.TickFrac, True);
+    Id0 := gMapElements[aIndex].Anim.Step[1] + 1;
 
     gX := pX + (R.Pivot[Id0].X + R.Size[Id0].X/2) / CELL_SIZE_PX;
     gY := pY + (R.Pivot[Id0].Y + R.Size[Id0].Y) / CELL_SIZE_PX;

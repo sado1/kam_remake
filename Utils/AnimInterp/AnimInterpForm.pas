@@ -9,11 +9,6 @@ uses
   KM_ResTypes, KM_ResMapElements, KM_ResHouses, KM_CommonClasses;
 
 type
-  TAnimCacheItem = record
-    PicOffset: Integer;
-    A: TKMAnimLoop;
-  end;
-
   TInterpCacheItem = record
     A, B: Integer;
     interpOffset: Integer;
@@ -42,7 +37,6 @@ type
 
     fOutputStream: TKMemoryStreamBinary;
 
-    fAnimCache: array of TAnimCacheItem;
     fInterpCache: array of TInterpCacheItem;
 
     fWorkDir: string;
@@ -60,8 +54,8 @@ type
     procedure DoInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; var aPicOffset: Integer; aDryRun: Boolean);
     procedure DoInterpSerfCarry(aWare: TKMWareType; aDir: TKMDirection; var aPicOffset: Integer; aDryRun: Boolean);
     procedure DoInterpUnitThought(aThought: TKMUnitThought; var aPicOffset: Integer; aDryRun: Boolean);
-    {function DoInterpTree(aTree: Integer; var aPicOffset: Integer; aDryRun: Boolean): Integer;
-    function DoInterpHouseAction(aHT: TKMHouseType; aHouseAct: TKMHouseActionType; var aPicOffset: Integer; aDryRun: Boolean): Integer;
+    procedure DoInterpTree(aTree: Integer; var aPicOffset: Integer; aDryRun: Boolean);
+    {function DoInterpHouseAction(aHT: TKMHouseType; aHouseAct: TKMHouseActionType; var aPicOffset: Integer; aDryRun: Boolean): Integer;
     function DoInterpBeast(beastHouse, beast, beastAge: Integer; var aPicOffset: Integer; aDryRun: Boolean): Integer;}
   public
     { Public declarations }
@@ -629,7 +623,7 @@ begin
   for I := 1 to 30 do
   begin
     if I <= A.Count then
-      A.Step[I] := THOUGHT_BOUNDS[aThought, 2] - (I-1); // Thought bubbles are animated in reverse
+      A.Step[I] := THOUGHT_BOUNDS[aThought, 2] - (I-1) // Thought bubbles are animated in reverse
     else
       A.Step[I] := -1;
   end;
@@ -638,20 +632,23 @@ begin
 end;
 
 
-{function TForm1.DoInterpTree(aTree: Integer; var aPicOffset: Integer; aDryRun: Boolean): Integer;
+procedure TForm1.DoInterpTree(aTree: Integer; var aPicOffset: Integer; aDryRun: Boolean);
 var
   A: TKMAnimLoop;
 begin
   A := gMapElements[aTree].Anim;
 
   if (A.Count <= 1) or (A.Step[1] = -1) then
-    Exit(-1);
+  begin
+    WriteEmptyAnim;
+    Exit;
+  end;
 
-  Result := DoInterp(rxTrees, A, False, $000000, aPicOffset, aDryRun);
+  DoInterp(rxTrees, A, False, $000000, aPicOffset, aDryRun);
 end;
 
 
-function TForm1.DoInterpHouseAction(aHT: TKMHouseType; aHouseAct: TKMHouseActionType; var aPicOffset: Integer; aDryRun: Boolean): Integer;
+{function TForm1.DoInterpHouseAction(aHT: TKMHouseType; aHouseAct: TKMHouseActionType; var aPicOffset: Integer; aDryRun: Boolean): Integer;
 var
   A: TKMAnimLoop;
 begin
@@ -705,7 +702,6 @@ const
   TREES_RX_OFFSET = 260;
   HOUSES_RX_OFFSET = 2100;
 begin
-  SetLength(fAnimCache, 0);
   SetLength(fInterpCache, 0);
 
   FreeAndNil(fOutputStream);
@@ -784,43 +780,35 @@ begin
   end;
   Assert(SizeOf(TKMUnitThoughtInterp) = fOutputStream.Position - startPos);
 
-  {animData := animData + #13#10 + #13#10;
-  animData := animData + 'TREE_INTERP_LOOKUP: array [0..OBJECTS_CNT] of Integer = ('+#13#10+'  ';
+  fOutputStream.WriteA('Trees ');
+
+  animData := animData + #13#10 + #13#10;
+  animData := animData + 'TKMTreeInterp = array[0..OBJECTS_CNT] of TKMInterpolation;'+#13#10;
+  animData := animData + '//SizeOf(TKMTreeInterp) = '+IntToStr(SizeOf(TKMTreeInterp))+#13#10;
 
 
   //TREES
   picOffset := TREES_RX_OFFSET;
-  SetLength(fAnimCache, 0);
+  SetLength(fInterpCache, 0);
 
+  startPos := fOutputStream.Position;
   for I := 0 to OBJECTS_CNT do
   begin
     try
-      animPicOffset := DoInterpTree(I, picOffset, not chkTrees.Checked);
+      DoInterpTree(I, picOffset, not chkTrees.Checked);
     except
       on E: Exception do
       begin
         memoErrors.Text := memoErrors.Text + ' Tree ' + IntToStr(I) + ' - ' + E.Message + #13#10+'  ';
-        animPicOffset := -1;
       end;
     end;
-
-    if animPicOffset >= 0 then
-      animData := animData + IntToStr(animPicOffset)
-    else
-      animData := animData + '-1';
-
-    if I <> OBJECTS_CNT then
-      animData := animData + ',';
-
-    if (I > 0) and (I mod 16 = 0) then
-      animData := animData + #13#10+'  ';
   end;
-  animData := animData + ');';
+  Assert(SizeOf(TKMTreeInterp) = fOutputStream.Position - startPos);
 
 
   //HOUSES
-  picOffset := HOUSES_RX_OFFSET;
-  SetLength(fAnimCache, 0);
+  {picOffset := HOUSES_RX_OFFSET;
+  SetLength(fInterpCache, 0);
 
   animData := animData + #13#10 + #13#10;
   animData := animData + 'HOUSE_INTERP_LOOKUP: array[TKMHouseType, TKMHouseActionType] of Integer = ('+#13#10;
