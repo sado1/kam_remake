@@ -17,6 +17,7 @@ uses
   KM_FormMain in 'src\forms\KM_FormMain.pas' {FormMain},
   KM_FormLogistics in 'src\forms\KM_FormLogistics.pas' {FormLogistics},
   KM_FormLoading in 'src\forms\KM_FormLoading.pas' {FormLoading},
+  KM_VclMenuHint in 'src\forms\KM_VCLMenuHint.pas',
 
   ScriptValidatorResult in 'src\ext\ScriptValidatorResult.pas',
   iaWin.NameDelphiThreads in 'src\ext\iaWin.NameDelphiThreads.pas',

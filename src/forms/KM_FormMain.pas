@@ -6,7 +6,7 @@ uses
   KM_RenderControl, KM_CommonTypes,
   KM_WindowParams,
   {$IFDEF FPC} LResources, {$ENDIF}
-  {$IFDEF MSWindows} ShellAPI, Windows, Messages, Vcl.Samples.Spin; {$ENDIF}
+  {$IFDEF MSWindows} KM_VclMenuHint, ShellAPI, Windows, Messages, Vcl.Samples.Spin; {$ENDIF}
   {$IFDEF Unix} LCLIntf, LCLType; {$ENDIF}
 
 
@@ -226,8 +226,8 @@ type
     chkDebugLayer2: TCheckBox;
     chkDebugLayer3: TCheckBox;
 
-
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -295,6 +295,9 @@ type
 
     procedure ControlsUpdate(Sender: TObject);
   private
+    {$IFDEF MSWindows}
+    fMenuItemHint: TKMVclMenuItemHint; // Custom hint over menu item
+    {$ENDIF}
     fStartVideoPlayed: Boolean;
     fUpdating: Boolean;
     fMissionDefOpenPath: UnicodeString;
@@ -323,6 +326,7 @@ type
     procedure WMExitSizeMove(var Msg: TMessage) ; message WM_EXITSIZEMOVE;
     procedure WMAppCommand(var Msg: TMessage); message WM_APPCOMMAND;
     procedure WMMouseWheel(var Msg: TMessage); message WM_MOUSEWHEEL;
+    procedure WMMenuSelect(var Msg: TWMMenuSelect); message WM_MENUSELECT;
   protected
     procedure WndProc(var Message : TMessage); override;
     {$ENDIF}
@@ -636,6 +640,7 @@ begin
   {$IFDEF FPC} RenderArea.OnMouseWheel := RenderAreaMouseWheel; {$ENDIF}
 
   {$IFDEF MSWindows}
+    fMenuItemHint := TKMVclMenuItemHint.Create(Self);
     //Means it will receive WM_SIZE WM_PAINT always in pair (if False - WM_PAINT is not called if size becames smaller)
     RenderArea.FullRepaint := True;
     RenderArea.BevelOuter := bvNone;
@@ -654,6 +659,14 @@ begin
 
   chkShowFlatTerrain.Tag := Ord(dcFlatTerrain);
   tbWaterLight.Tag := Ord(dcFlatTerrain);
+end;
+
+
+procedure TFormMain.FormDestroy(Sender: TObject);
+begin
+  {$IFDEF MSWindows}
+  fMenuItemHint.Free;
+  {$ENDIF}
 end;
 
 
@@ -1981,6 +1994,31 @@ begin
 
   if not handled then
     inherited;
+end;
+
+
+procedure TFormMain.WMMenuSelect(var Msg: TWMMenuSelect);
+var
+  menuItem: TMenuItem;
+  hSubMenu: HMENU;
+begin
+  inherited; // from TCustomForm
+
+  menuItem:= nil;
+  if (Msg.MenuFlag <> $FFFF) or (Msg.IDItem <> 0) then
+  begin
+    if Msg.MenuFlag and MF_POPUP = MF_POPUP then
+    begin
+      hSubMenu:= GetSubMenu(Msg.Menu, Msg.IDItem);
+      menuItem:= Self.Menu.FindItem(hSubMenu, fkHandle);
+    end
+    else
+    begin
+      menuItem:= Self.Menu.FindItem(Msg.IDItem, fkCommand);
+    end;
+  end;
+
+  fMenuItemHint.DoActivateHint(menuItem);
 end;
 {$ENDIF}
 
