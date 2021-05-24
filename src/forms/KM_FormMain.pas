@@ -225,6 +225,7 @@ type
     chkDebugLayer1: TCheckBox;
     chkDebugLayer2: TCheckBox;
     chkDebugLayer3: TCheckBox;
+    Debug_SaveGameWholeMapToJPEG: TMenuItem;
     chkViewport: TCheckBox;
 
     procedure FormCreate(Sender: TObject);
@@ -269,6 +270,7 @@ type
     procedure Civilians1Click(Sender: TObject);
 
     procedure Debug_PrintScreenClick(Sender: TObject);
+    procedure Debug_SaveGameWholeMapToJPEGClick(Sender: TObject);
     procedure Debug_ExportMenuClick(Sender: TObject);
     procedure Debug_EnableCheatsClick(Sender: TObject);
     procedure Debug_UnlockCmpMissionsClick(Sender: TObject);
@@ -340,6 +342,7 @@ type
     procedure ControlsRefill;
     procedure ToggleFullscreen(aFullscreen, aWindowDefaultParams: Boolean);
     procedure SetSaveEditableMission(aEnabled: Boolean);
+    procedure SetSaveGameWholeMapImage(aEnabled: Boolean);
     procedure SetExportGameStats(aEnabled: Boolean);
     procedure ShowFolderPermissionError;
     procedure SetEntitySelected(aEntityUID: Integer; aEntity2UID: Integer = 0);
@@ -710,6 +713,12 @@ begin
 end;
 
 
+procedure TFormMain.SetSaveGameWholeMapImage(aEnabled: Boolean);
+begin
+  Debug_SaveGameWholeMapToJPEG.Enabled := aEnabled;
+end;
+
+
 procedure TFormMain.SetExportGameStats(aEnabled: Boolean);
 begin
   ExportGameStats.Enabled := aEnabled;
@@ -914,6 +923,13 @@ procedure TFormMain.Debug_PrintScreenClick(Sender: TObject);
 begin
   if gGameApp <> nil then
     gGameApp.PrintScreen;
+end;
+
+
+procedure TFormMain.Debug_SaveGameWholeMapToJPEGClick(Sender: TObject);
+begin
+  if gGameApp <> nil then
+    gGameApp.SaveGameWholeMapToJPEG;
 end;
 
 

@@ -89,7 +89,6 @@ object FormMain: TFormMain
       Caption = 'Misc'
       Collapsed = True
       TabOrder = 0
-      ExplicitTop = 609
       ExpandedHeight = 144
       object chkBevel: TCheckBox
         Left = 168
@@ -132,7 +131,6 @@ object FormMain: TFormMain
       Caption = 'Logs'
       Collapsed = True
       TabOrder = 1
-      ExplicitTop = 585
       ExpandedHeight = 198
       object chkLogCommands: TCheckBox
         Left = 120
@@ -244,7 +242,6 @@ object FormMain: TFormMain
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 2
-      ExplicitTop = 561
       ExpandedHeight = 153
       object Label1: TLabel
         Left = 101
@@ -376,7 +373,6 @@ object FormMain: TFormMain
       Caption = 'User Interface'
       Collapsed = True
       TabOrder = 3
-      ExplicitTop = 537
       ExpandedHeight = 114
       object chkUIControlsBounds: TCheckBox
         Left = 8
@@ -448,7 +444,6 @@ object FormMain: TFormMain
       Caption = 'Perf Logs'
       Collapsed = True
       TabOrder = 4
-      ExplicitTop = 513
       ExpandedHeight = 660
     end
     object cpAI: TCategoryPanel
@@ -457,7 +452,6 @@ object FormMain: TFormMain
       Caption = 'AI'
       Collapsed = True
       TabOrder = 5
-      ExplicitTop = 489
       object Label5: TLabel
         Left = 202
         Top = 111
@@ -664,7 +658,6 @@ object FormMain: TFormMain
       Caption = 'Scripting'
       Collapsed = True
       TabOrder = 6
-      ExplicitTop = 465
       ExpandedHeight = 50
       object chkDebugScripting: TCheckBox
         Left = 8
@@ -687,7 +680,6 @@ object FormMain: TFormMain
       Caption = 'Game additional'
       Collapsed = True
       TabOrder = 7
-      ExplicitTop = 441
       ExpandedHeight = 136
       object chkLoadUnsupSaves: TCheckBox
         Left = 12
@@ -738,7 +730,6 @@ object FormMain: TFormMain
       Caption = 'Debug Input'
       Collapsed = True
       TabOrder = 8
-      ExplicitTop = 417
       ExpandedHeight = 210
       object gbFindObjByUID: TGroupBox
         Left = 8
@@ -1498,6 +1489,12 @@ object FormMain: TFormMain
         Caption = 'PrintScreen'
         Hint = 'PrintScreen image will be saved to the screenshots folder'
         OnClick = Debug_PrintScreenClick
+      end
+      object Debug_SaveGameWholeMapToJPEG: TMenuItem
+        Caption = 'Save game whole map to JPEG'
+        Enabled = False
+        Hint = 'Whole map image will be saved to the screenshots folder'
+        OnClick = Debug_SaveGameWholeMapToJPEGClick
       end
       object N8: TMenuItem
         Caption = '-'

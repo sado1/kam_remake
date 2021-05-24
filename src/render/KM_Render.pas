@@ -19,33 +19,51 @@ type
   TRender = class
   private class var
     fLastBindedTextureId: Cardinal;
-    fMaxTextureSize: Cardinal;
+    fMaxTextureSize: Cardinal; // Max supported texture size by video adapter
+    fMaxViewportDim: Cardinal; // Max Viewport Dimensions, which could be used for FBO render
   private
+    // Flag, True when FBO is inited. We don't need to init FBO for every run, since its only used in SaveMapToImageFile feature
+    fFBOInited: Boolean;
+    // Off-screen buffer, example from https://stackoverflow.com/questions/12157646/how-to-render-offscreen-on-opengl
+    fFBO: Cardinal;
+    fRenderBuf: Cardinal;
+
     fRenderControl: TKMRenderControl;
     fOpenGL_Vendor, fOpenGL_Renderer, fOpenGL_Version: UnicodeString;
     fScreenX, fScreenY: Word;
     fBlind: Boolean;
     fQuery: TKMRenderQuery;
+
+    procedure InitFBO;
+    procedure SaveBufferToFile(const aFileName: string; aUseFBOBuffer: Boolean);
+    function GetMaxFBOSize: Cardinal;
   public
     constructor Create(aRenderControl: TKMRenderControl; aScreenX, aScreenY: Integer; aVSync: Boolean);
     destructor Destroy; override;
 
     procedure SetRenderMode(aRenderMode: TKMRenderMode); //Switch between 2D and 3D perspectives
 
-    class function GetMaxTexSize: Integer;
+    class function GetMaxTexSize: Cardinal; static;
+    class function GetMaxViewportDim: Cardinal; static;
     class function GenerateTextureCommon(aMinFilter, aMagFilter: TFilterType): GLuint;
     class function GenTexture(DestX, DestY: Word; const Data: Pointer; Mode: TTexFormat; aMinFilter, aMagFilter: TFilterType): GLUint;
     class procedure DeleteTexture(aTex: GLUint);
     class procedure UpdateTexture(aTexture: GLuint; DestX, DestY: Word; Mode: TTexFormat; const Data: Pointer);
     class procedure BindTexture(aTexId: Cardinal);
+
     // This is pointless. OGL does its own RAM/VRAM management. To be deleted in 2021
     //class procedure FakeRender(aID: Cardinal);
-    class property MaxTextureSize: Cardinal read fMaxTextureSize;
 
+    class property MaxTextureSize: Cardinal read GetMaxTexSize;
+    class property MaxViewportDim: Cardinal read GetMaxViewportDim;
+
+    property MaxFBOSize: Cardinal read GetMaxFBOSize;
     property RendererVersion: UnicodeString read fOpenGL_Version;
     function IsOldGLVersion: Boolean;
-    procedure DoPrintScreen(const aFileName: string);
     procedure Resize(aWidth, aHeight: Integer);
+
+    procedure DoPrintScreen(const aFileName: string);
+    procedure SaveFBOToFile(const aFileName: string);
 
     property ScreenX: Word read fScreenX;
     property ScreenY: Word read fScreenY;
@@ -64,14 +82,21 @@ var
 
 implementation
 uses
-  SysUtils, KM_Log;
+  SysUtils, KM_Log, KM_Defaults, KM_IoPNG, KM_CommonTypes, KM_CommonClasses;
 
+const
+  // We want to use off-screen FBO buffer to render full map to the file,
+  // so there is no need in ultra big dimensions (f.e. 10200 x 10200)
+  // also we are restricted with max file we are able to write via TBitmap or TJpegImage or PNG atm
+  // could check https://github.com/graphics32 package to solve this issue with saving ultra large images
+  MAX_FBO_BUFFER_SIZE = 5100; // Half of CELL_SIZE=40px*255
 
 { TRender }
 constructor TRender.Create(aRenderControl: TKMRenderControl; aScreenX, aScreenY: Integer; aVSync: Boolean);
 begin
   inherited Create;
 
+  fFBOInited := False;
   fBlind := aRenderControl = nil;
   fRenderControl := aRenderControl;
 
@@ -81,8 +106,10 @@ begin
 
     fRenderControl.CreateRenderContext;
 
-    glGetIntegerv(GL_MAX_TEXTURE_SIZE, @fMaxTextureSize); //Get max supported texture size by video adapter
+    fMaxTextureSize := GetMaxTexSize;
     gLog.AddTime('GL_MAX_TEXTURE_SIZE = ' + IntToStr(fMaxTextureSize));
+    fMaxViewportDim := GetMaxViewportDim;
+    gLog.AddTime('GL_MAX_VIEWPORT_DIM = ' + IntToStr(fMaxViewportDim));
 
     glClearColor(0, 0, 0, 0); 	   //Background
     glClearStencil(0);
@@ -116,9 +143,30 @@ begin
   begin
     fRenderControl.DestroyRenderContext;
     fQuery.Free;
+
+    if fFBOInited then
+    begin
+      glDeleteFramebuffers(1,@fFBO);
+      glDeleteRenderbuffers(1,@fRenderBuf);
+    end;
   end;
 
   inherited;
+end;
+
+
+procedure TRender.InitFBO;
+begin
+  if fFBOInited then Exit;
+
+  fFBOInited := True;
+
+  glGenFramebuffers(1, @fFBO);
+  glGenRenderbuffers(1, @fRenderBuf);
+  glBindRenderbuffer(GL_RENDERBUFFER, fRenderBuf);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, GetMaxFBOSize, GetMaxFBOSize);
+  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fFBO);
+  glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, fRenderBuf);
 end;
 
 
@@ -207,9 +255,29 @@ begin
 end;
 
 
-class function TRender.GetMaxTexSize: Integer;
+function TRender.GetMaxFBOSize: Cardinal;
 begin
-  glGetIntegerv(GL_MAX_TEXTURE_SIZE, @Result);
+  Result := Min(fMaxViewportDim, MAX_FBO_BUFFER_SIZE);
+end;
+
+
+class function TRender.GetMaxTexSize: Cardinal;
+begin
+  if fMaxTextureSize > 0 then Exit(fMaxTextureSize);
+
+  //Get max supported texture size by video adapter
+  glGetIntegerv(GL_MAX_TEXTURE_SIZE, @fMaxTextureSize);
+  Result := fMaxTextureSize;
+end;
+
+
+class function TRender.GetMaxViewportDim: Cardinal;
+begin
+  if fMaxViewportDim > 0 then Exit(fMaxViewportDim);
+
+  //Get max supported dimensions for viewport (used in off-screen render, FBO)
+  glGetIntegerv(GL_MAX_VIEWPORT_DIMS, @fMaxViewportDim);
+  Result := fMaxViewportDim;
 end;
 
 
@@ -247,20 +315,44 @@ end;
 
 
 procedure TRender.DoPrintScreen(const aFileName: string);
+begin
+  SaveBufferToFile(aFileName, False);
+end;
+
+
+procedure TRender.SaveFBOToFile(const aFileName: string);
+begin
+  SaveBufferToFile(aFileName, True);
+end;
+
+
+procedure TRender.SaveBufferToFile(const aFileName: string; aUseFBOBuffer: Boolean);
 {$IFDEF WDC}
 var
   I, K, W, H: integer;
   jpg: TJpegImage;
   mkbmp: TBitMap;
-  bmp: array of Cardinal;
+  bmp: TKMCardinalArray;
 {$ENDIF}
 begin
 {$IFDEF WDC}
   W := ScreenX;
   H := ScreenY;
 
+  if aUseFBOBuffer then
+  begin
+    // Read from offscreen buffer
+    glReadBuffer(GL_COLOR_ATTACHMENT0);
+    // Bind to FBO framebuffer
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, fFBO);
+  end;
+
   SetLength(bmp, W * H + 1);
   glReadPixels(0, 0, W, H, GL_BGRA, GL_UNSIGNED_BYTE, @bmp[0]);
+
+  if aUseFBOBuffer then
+    // Return to onscreen rendering:
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
   //Mirror verticaly
   for i := 0 to (H div 2) - 1 do
@@ -288,6 +380,15 @@ end;
 procedure TRender.BeginFrame;
 begin
   if fBlind then Exit;
+
+  if SAVE_MAP_TO_FBO_RENDER then
+  begin
+    if not fFBOInited then
+      // Init once
+      InitFBO // glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fFBO) is called while initialization
+    else
+      glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fFBO);
+  end;
 
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT or GL_STENCIL_BUFFER_BIT);
   SetRenderMode(rm2D);

@@ -227,6 +227,8 @@ var
   OVERLAY_AI_VECTOR_FIELD :Boolean = False; //Show Vector field (combat AI)
   OVERLAY_AI_CLUSTERS     :Boolean = False; //Show combat clusters (combat AI)
   OVERLAY_AI_ALLIEDGROUPS :Boolean = False; //Show show allied groups (combat AI)
+  {Render}
+  SAVE_MAP_TO_FBO_RENDER  :Boolean = False; //Do Render is performed into FBO off-screen buffer?
   {Stats}
   SHOW_SPRITE_COUNT       :Boolean = False; //display rendered controls/sprites count
   SHOW_POINTER_COUNT      :Boolean = False; //Show debug total count of unit/house pointers being tracked

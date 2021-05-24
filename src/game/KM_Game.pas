@@ -1,4 +1,4 @@
-unit KM_Game;
+﻿unit KM_Game;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -1602,7 +1602,11 @@ begin
       gRenderPool.Render(tickLag);
 
     aRender.SetRenderMode(rm2D);
-    fActiveInterface.Paint;
+
+    // Do not render UI when do save map to FBO
+    if not SAVE_MAP_TO_FBO_RENDER then
+      fActiveInterface.Paint;
+
     fGameInputProcess.Paint;
 
   finally

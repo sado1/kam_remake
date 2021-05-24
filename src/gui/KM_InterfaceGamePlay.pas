@@ -3349,6 +3349,9 @@ end;
 
 function TKMGamePlayInterface.GetToolbarWidth: Integer;
 begin
+  // Don't render toolbar when SAVE_MAP_TO_FBO is set
+  if SAVE_MAP_TO_FBO_RENDER then Exit(0);
+
   Result := TOOLBAR_WIDTH;
 end;
 
