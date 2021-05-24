@@ -330,6 +330,8 @@ begin
     S.Hitable := False;
   end;
 
+  InitDebugControls;
+
   HidePages;
   AfterCreateComplete;
 end;

@@ -72,8 +72,6 @@ type
     fMessageStack: TKMMessageStack;
     fSelection: array [0..DYNAMIC_HOTKEYS_NUM - 1] of Integer;
 
-    fLogStringList: TKMLimitedList<string>;
-
     procedure Create_Controls;
     procedure Create_Replay;
     procedure Create_ScriptingOverlay;
@@ -178,15 +176,11 @@ type
     procedure UpdateReplayBar;
 
     function CanUpdateClockUI: Boolean;
-    function GetLogString(aLimit: Integer): string;
-    procedure LogMessageHappened(const aLogMessage: UnicodeString);
   protected
     Sidebar_Top: TKMImage;
     Sidebar_Middle: TKMImage;
     Sidebar_Bottom: array of TKMImage;
     MinimapView: TKMMinimapView;
-    Bevel_DebugInfo: TKMBevel;
-    Label_DebugInfo: TKMLabel;
 
     Image_Chat, Image_MPAllies: TKMImage; // Multiplayer buttons
     Image_MessageLog: TKMImage;
@@ -308,6 +302,7 @@ type
       function IsDragScrollingAllowed: Boolean; override;
 
       function GetToolBarWidth: Integer; override;
+      function GetDebugInfo: string; override;
   public
     constructor Create(aRender: TRender; aUIMode: TUIMode); reintroduce;
     destructor Destroy; override;
@@ -362,7 +357,6 @@ type
     procedure Resize(X,Y: Word); override;
     procedure SyncUI(aMoveViewport: Boolean = True); override;
     procedure UpdateHotkeys; override;
-    procedure UpdateDebugInfo;
     procedure UpdateState(aGlobalTickCount: Cardinal); override;
     procedure UpdateStateIdle(aFrameTime: Cardinal); override;
     procedure Paint; override;
@@ -800,9 +794,6 @@ begin
 
   fAlerts := TKMAlerts.Create(fViewport);
 
-  gLog.AddOnLogEventSub(LogMessageHappened);
-  fLogStringList := TKMLimitedList<string>.Create(80); // 50 lines max
-
   // Instruct to use global Terrain
   fLastSaveName := '';
   fLastKbdSelectionTime := 0;
@@ -853,13 +844,7 @@ begin
   Image_DirectionCursor := TKMImage.Create(Panel_Main,0,0,35,36,519);
   Image_DirectionCursor.Hide;
 
-  // Debugging displays
-  Bevel_DebugInfo := TKMBevel.Create(Panel_Main,224+8-10,133-10,Panel_Main.Width - 224 - 8, 0);
-  Bevel_DebugInfo.BackAlpha := 0.5;
-  Bevel_DebugInfo.Hitable := False;
-  Bevel_DebugInfo.Hide;
-  Label_DebugInfo := TKMLabel.Create(Panel_Main, 224+8, 133, '', fntMonospaced, taLeft);
-  Label_DebugInfo.Hide;
+  InitDebugControls;
 
 { I plan to store all possible layouts on different pages which gets displayed one at a time }
 { ========================================================================================== }
@@ -940,9 +925,6 @@ begin
   FreeAndNil(fGroupsTeamNames);
   FreeAndNil(fUnitsTeamNames);
   fAlerts.Free;
-
-  gLog.RemoveOnLogEventSub(LogMessageHappened);
-  fLogStringList.Free;
 
   inherited;
 end;
@@ -2102,7 +2084,7 @@ begin
     gGame.StepOneFrame;
     gGame.IsPaused := False;
     UpdateReplayButtons(True); // Show replay buttons as game is paused, even if game is not paused atm
-    UpdateDebugInfo;
+    ShowDebugInfo;
   end;
 
   if Sender = Button_ReplayResume then
@@ -3147,26 +3129,6 @@ begin
 end;
 
 
-function TKMGamePlayInterface.GetLogString(aLimit: Integer): string;
-var
-  I: Integer;
-begin
-  Result := '';  
-  // attach from the end, the most fresh log lines, till the limit
-  for I := fLogStringList.Count - 1 downto Max(fLogStringList.Count - aLimit - 1, 0) do
-    Result := fLogStringList[I] + '|' + Result;
-end;
-
-
-procedure TKMGamePlayInterface.LogMessageHappened(const aLogMessage: UnicodeString);
-begin
-  if Self = nil then Exit;
-  
-  if SHOW_LOG_IN_GUI or UPDATE_LOG_FOR_GUI then
-    fLogStringList.Add(ReplaceStr(DeleteDoubleSpaces(aLogMessage), EolW, '|'));
-end;
-
-
 function TKMGamePlayInterface.CanUpdateClockUI: Boolean;
 begin
   if gGame = nil then Exit(False);
@@ -4152,7 +4114,7 @@ begin
                       gSoundPlayer.PlayWarrior(group.SelectedUnit.UnitType, spSelect);
                 end;
 
-                UpdateDebugInfo;
+                ShowDebugInfo;
               end;
 
             cmRoad:  gCursor.Tag1 := Ord(cfmNone);
@@ -4506,7 +4468,6 @@ begin
   fGuiMenuSettings.UpdateView;
   GameSettingsChanged;
 
-  UpdateDebugInfo;
   if fSaves <> nil then fSaves.UpdateState;
 
   if aGlobalTickCount mod RESULTS_UPDATE_RATE = 0 then
@@ -4537,48 +4498,41 @@ begin
 end;
 
 
-procedure TKMGamePlayInterface.UpdateDebugInfo;
-const
-  BEVEL_PAD = 20;
+function TKMGamePlayInterface.GetDebugInfo: string;
 var
   mKind: TKMessageKind;
   received, sent, receivedTotal, sentTotal, period: Cardinal;
-  S, sPackets, S2: String;
-  textSize: TKMPoint;
+  sPackets, S2: String;
   objToShowInfo: TObject;
-  linesCnt: Integer;
 begin
-  S := '';
+  Result := inherited;
 
   // Debug info
   if SHOW_GAME_TICK then
-    S := S + 'Tick: ' + IntToStr(gGameParams.Tick) + '|';
+    Result := Result + 'Tick: ' + IntToStr(gGameParams.Tick) + '|';
 
   if SHOW_SPRITE_COUNT then
-    S := IntToStr(gHands.UnitCount) + ' units on map|' +
+    Result := IntToStr(gHands.UnitCount) + ' units on map|' +
          IntToStr(gRenderPool.RenderList.Stat_Sprites) + '/' +
          IntToStr(gRenderPool.RenderList.Stat_Sprites2) + ' sprites/rendered|' +
          IntToStr(CtrlPaintCount) + ' controls rendered|';
 
   if SHOW_POINTER_COUNT then
-    S := S + Format('Pointers: %d units, %d houses|', [gMySpectator.Hand.Units.GetTotalPointers, gMySpectator.Hand.Houses.GetTotalPointers]);
+    Result := Result + Format('Pointers: %d units, %d houses|', [gMySpectator.Hand.Units.GetTotalPointers, gMySpectator.Hand.Houses.GetTotalPointers]);
 
   if SHOW_CMDQUEUE_COUNT then
-    S := S + IntToStr(gGame.GameInputProcess.Count) + ' commands stored|';
+    Result := Result + IntToStr(gGame.GameInputProcess.Count) + ' commands stored|';
 
   if SHOW_NETWORK_DELAY and (fUIMode in [umMP, umSpectate]) then
-    S := S + 'Network delay: ' + IntToStr(TKMGameInputProcess_Multi(gGame.GameInputProcess).GetNetworkDelay) + '|';
+    Result := Result + 'Network delay: ' + IntToStr(TKMGameInputProcess_Multi(gGame.GameInputProcess).GetNetworkDelay) + '|';
 
   if DISPLAY_SOUNDS then
   begin
-    S := S + IntToStr(gSoundPlayer.ActiveCount) + ' sounds playing' + gScriptSounds.ToString + '|';
+    Result := Result + IntToStr(gSoundPlayer.ActiveCount) + ' sounds playing' + gScriptSounds.ToString + '|';
   end;
 
-  if SHOW_FPS then
-    S := S + gMain.FPSString;
-
   if OVERLAY_AI_SUPERVISOR then
-    S := S + gAIFields.Supervisor.LogStatus;
+    Result := Result + gAIFields.Supervisor.LogStatus;
 
   if SHOW_AI_WARE_BALANCE then
   begin
@@ -4586,24 +4540,23 @@ begin
     begin
       if gHands[gMySpectator.Selected.Owner].AI.Setup.NewAI then
       begin
-        S := S + gHands[gMySpectator.Selected.Owner].AI.ArmyManagement.BalanceText + '|';
-        S := S + gHands[gMySpectator.Selected.Owner].AI.CityManagement.BalanceText + '|';
+        Result := Result + gHands[gMySpectator.Selected.Owner].AI.ArmyManagement.BalanceText + '|';
+        Result := Result + gHands[gMySpectator.Selected.Owner].AI.CityManagement.BalanceText + '|';
       end
       else
-        S := S + gHands[gMySpectator.Selected.Owner].AI.Mayor.BalanceText + '|'
+        Result := Result + gHands[gMySpectator.Selected.Owner].AI.Mayor.BalanceText + '|'
     end
     else
     begin
       if gMySpectator.Hand.AI.Setup.NewAI then
       begin
-        S := S + gMySpectator.Hand.AI.ArmyManagement.BalanceText + '|';
-        S := S + gMySpectator.Hand.AI.CityManagement.BalanceText + '|';
+        Result := Result + gMySpectator.Hand.AI.ArmyManagement.BalanceText + '|';
+        Result := Result + gMySpectator.Hand.AI.CityManagement.BalanceText + '|';
       end
       else
-        S := S + gMySpectator.Hand.AI.Mayor.BalanceText + '|'
+        Result := Result + gMySpectator.Hand.AI.Mayor.BalanceText + '|'
     end;
   end;
-
 
   if SHOW_NET_PACKETS_STATS then
   begin
@@ -4626,7 +4579,7 @@ begin
                                                                  received, sent]);
       S2 := S2 + sLineBreak;
     end;
-    S := S + Format('|Average Received: %.1f  Sent: %.1f|', [1000*receivedTotal/period, 1000*sentTotal/period]) + sPackets;
+    Result := Result + Format('|Average Received: %.1f  Sent: %.1f|', [1000*receivedTotal/period, 1000*sentTotal/period]) + sPackets;
     if (TimeGet mod 5000) < 50 then
       gLog.AddTime('Packets Stats:' + sLineBreak + S2);
   end;
@@ -4643,41 +4596,18 @@ begin
     if objToShowInfo <> nil then
     begin
       if objToShowInfo is TKMUnit then
-        S := S + TKMUnit(objToShowInfo).ObjToString
+        Result := Result + TKMUnit(objToShowInfo).ObjToString
       else if (objToShowInfo is TKMUnitGroup)
         and not TKMUnitGroup(objToShowInfo).IsDead
         and (TKMUnitGroup(objToShowInfo).SelectedUnit <> nil) then
-        S := S + TKMUnitGroup(objToShowInfo).SelectedUnit.ObjToString
+        Result := Result + TKMUnitGroup(objToShowInfo).SelectedUnit.ObjToString
       else if objToShowInfo is TKMHouse then
-        S := S + TKMHouse(objToShowInfo).ObjToString;
+        Result := Result + TKMHouse(objToShowInfo).ObjToString;
     end;
   end;
 
   if SHOW_HANDS_INFO then
-    S := S + gHands.ObjToString;
-
-  if SHOW_LOG_IN_GUI then
-  begin
-    linesCnt := (Bevel_DebugInfo.Parent.Height 
-                  - Bevel_DebugInfo.Top 
-                  - BEVEL_PAD 
-                  - gRes.Fonts[Label_DebugInfo.Font].GetTextSize(S).Y) 
-                div gRes.Fonts[Label_DebugInfo.Font].LineHeight;
-    S := S + '|Logs:|' + GetLogString(linesCnt - 1);
-  end;
-
-  Label_DebugInfo.Caption := S;
-  Label_DebugInfo.Visible := (Trim(S) <> '');
-
-  Assert(InRange(DEBUG_TEXT_FONT_ID, Ord(Low(TKMFont)), Ord(High(TKMFont))));
-  Label_DebugInfo.Font := TKMFont(DEBUG_TEXT_FONT_ID);
-
-  textSize := gRes.Fonts[Label_DebugInfo.Font].GetTextSize(S);
-
-  Bevel_DebugInfo.Width := IfThen(textSize.X <= 1, 0, textSize.X + BEVEL_PAD);
-  Bevel_DebugInfo.Height := IfThen(textSize.Y <= 1, 0, textSize.Y + BEVEL_PAD);
-
-  Bevel_DebugInfo.Visible := SHOW_DEBUG_OVERLAY_BEVEL and (Trim(S) <> '') ;
+    Result := Result + gHands.ObjToString;
 end;
 
 

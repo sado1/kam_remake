@@ -1,4 +1,4 @@
-﻿unit KM_Game;
+unit KM_Game;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -3045,7 +3045,7 @@ begin
     begin
       fAdvanceFrame := False;
       fIsPaused := True;
-      fGamePlayInterface.UpdateDebugInfo;
+      fGamePlayInterface.ShowDebugInfo;
     end;
   finally
     {$IFDEF PERFLOG}
