@@ -55,8 +55,8 @@ type
     procedure DoInterpSerfCarry(aWare: TKMWareType; aDir: TKMDirection; var aPicOffset: Integer; aDryRun: Boolean);
     procedure DoInterpUnitThought(aThought: TKMUnitThought; var aPicOffset: Integer; aDryRun: Boolean);
     procedure DoInterpTree(aTree: Integer; var aPicOffset: Integer; aDryRun: Boolean);
-    function DoInterpHouseAction(aHT: TKMHouseType; aHouseAct: TKMHouseActionType; var aPicOffset: Integer; aDryRun: Boolean): Integer;
-    function DoInterpBeast(beastHouse, beast, beastAge: Integer; var aPicOffset: Integer; aDryRun: Boolean): Integer;
+    procedure DoInterpHouseAction(aHT: TKMHouseType; aHouseAct: TKMHouseActionType; var aPicOffset: Integer; aDryRun: Boolean);
+    procedure DoInterpBeast(beastHouse, beast, beastAge: Integer; var aPicOffset: Integer; aDryRun: Boolean);
   public
     { Public declarations }
   end;
@@ -134,7 +134,7 @@ end;
 
 function TForm1.GetDainParams(aDir: string; aAlpha: Boolean): string;
 var
-  DainFolder, DainExe: string;
+  DainExe: string;
 begin
   DainExe := fDainFolder+'DAINAPP.exe';
   Result := 'cmd.exe /C "'+DainExe+'" --cli 1 -o '+aDir+' -p 0 -l 1 -in 8 -da 0 -se 0 -si 1 -sr 0 -ha 0 --fast_mode 0';
@@ -312,7 +312,6 @@ end;
 
 function BlendRGBA(Back, Fore: Cardinal): Cardinal;
 var
-  C, RGB, Alpha: Cardinal;
   R1, R2, G1, G2, B1, B2, A1, A2: Single;
   Ro, Go, Bo, Ao: Single;
 begin
@@ -648,7 +647,7 @@ begin
 end;
 
 
-function TForm1.DoInterpHouseAction(aHT: TKMHouseType; aHouseAct: TKMHouseActionType; var aPicOffset: Integer; aDryRun: Boolean): Integer;
+procedure TForm1.DoInterpHouseAction(aHT: TKMHouseType; aHouseAct: TKMHouseActionType; var aPicOffset: Integer; aDryRun: Boolean);
 var
   A: TKMAnimLoop;
 begin
@@ -664,7 +663,7 @@ begin
 end;
 
 
-function TForm1.DoInterpBeast(beastHouse, beast, beastAge: Integer; var aPicOffset: Integer; aDryRun: Boolean): Integer;
+procedure TForm1.DoInterpBeast(beastHouse, beast, beastAge: Integer; var aPicOffset: Integer; aDryRun: Boolean);
 var
   A: TKMAnimLoop;
 const
@@ -693,7 +692,6 @@ type
   TKMInterpolation = array[1..30, 0..7] of Integer;
 var
   I, picOffset, startPos: Integer;
-  animStr: string;
   dir: TKMDirection;
   act: TKMUnitActionType;
   u: TKMUnitType;
@@ -857,7 +855,7 @@ begin
         except
           on E: Exception do
           begin
-            memoErrors.Text := memoErrors.Text + TRttiEnumerationType.GetName(h) + ' - ' + TRttiEnumerationType.GetName(hAct) + ' - ' + E.Message + #13#10;
+            memoErrors.Text := memoErrors.Text + ' beast ' + IntToStr(beastHouse) + ' - ' + IntToStr(beast) + ' - ' + IntToStr(beastAge) + ' - ' + E.Message + #13#10;
           end;
         end;
       end;
