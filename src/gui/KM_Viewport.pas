@@ -49,6 +49,7 @@ type
     procedure Load(LoadStream: TKMemoryStream);
 
     procedure UpdateStateIdle(aFrameTime: Cardinal; aAllowMouseScrolling: Boolean; aInCinematic: Boolean);
+    function ToStr: string;
   end;
 
 
@@ -378,6 +379,13 @@ begin
   LoadStream.Read(fPosition);
 
   SetPosition(fPosition); //EnsureRanges
+end;
+
+
+function TKMViewport.ToStr: string;
+begin
+  Result := Format('Pos = %s; Zoom = %s ViewClip = (%d; %d) ViewRect = %s', [
+                   fPosition.ToString, FormatFloat('0.###', fZoom), fViewportClip.X, fViewportClip.Y, fViewRect.ToString]);
 end;
 
 
