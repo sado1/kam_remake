@@ -83,11 +83,17 @@ end;
 
 
 procedure TKMViewport.SetZoom(aZoom: Single);
+var
+  sizeY: Single;
 begin
   fZoom := EnsureRange(aZoom, 0.01, 8);
+  sizeY := fMapY + TopPad;
   //Limit the zoom to within the map boundaries
-  if fViewportClip.X/CELL_SIZE_PX/fZoom > fMapX then fZoom := fViewportClip.X/CELL_SIZE_PX/(fMapX-1);
-  if fViewportClip.Y/CELL_SIZE_PX/fZoom > fMapY then fZoom := fViewportClip.Y/CELL_SIZE_PX/ fMapY;
+  if fViewportClip.X/ZoomedCellSizePX > fMapX then
+    fZoom := fViewportClip.X/(CELL_SIZE_PX * (fMapX - 1)); // -1 to not show last column under FOW (out of the map)
+  if fViewportClip.Y/ZoomedCellSizePX > sizeY then
+    fZoom := fViewportClip.Y/(CELL_SIZE_PX * (sizeY - 1)); // -1 to not show last row under FOW (out of the map)
+
   SetPosition(fPosition); //To ensure it sets the limits smoothly
 end;
 
