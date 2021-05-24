@@ -41,6 +41,7 @@ type
     function GetHintKind: TKMHintKind; override;
 
     function GetToolBarWidth: Integer; virtual; abstract;
+    function GetDebugInfo: string; virtual;
 
     procedure InitDebugControls;
   public
