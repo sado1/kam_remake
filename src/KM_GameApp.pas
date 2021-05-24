@@ -1240,7 +1240,7 @@ begin
   if aFilename = '' then
   begin
     DateTimeToString(strDate, 'yyyy-mm-dd hh-nn-ss', Now); //2007-12-23 15-24-33
-    strName := ExeDir + 'screenshots\KaM Remake ' + strDate + '.jpg';
+    strName := ExeDir + 'screenshots\KaM Remake ' + strDate + '.jpeg';
   end
   else
     strName := aFilename;

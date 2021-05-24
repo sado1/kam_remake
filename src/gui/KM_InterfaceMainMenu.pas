@@ -350,7 +350,7 @@ begin
 
       Panel_Menu.Childs[I].Show;
 
-      gGameApp.PrintScreen(path + 'Panel' + int2fix(I, 3) + '.jpg');
+      gGameApp.PrintScreen(path + 'Panel' + int2fix(I, 3) + '.jpeg');
     end;
 end;
 
