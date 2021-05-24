@@ -872,8 +872,7 @@ object FormMain: TFormMain
       Caption = 'Debug Output'
       Collapsed = True
       TabOrder = 9
-      ExplicitTop = 393
-      ExpandedHeight = 84
+      ExpandedHeight = 97
       object chkUIDs: TCheckBox
         Left = 120
         Top = 6
@@ -935,6 +934,15 @@ object FormMain: TFormMain
         Height = 17
         Caption = 'Game tick'
         TabOrder = 6
+        OnClick = ControlsUpdate
+      end
+      object chkViewport: TCheckBox
+        Left = 9
+        Top = 54
+        Width = 81
+        Height = 17
+        Caption = 'Viewport'
+        TabOrder = 7
         OnClick = ControlsUpdate
       end
     end

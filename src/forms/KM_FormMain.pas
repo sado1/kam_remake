@@ -225,6 +225,7 @@ type
     chkDebugLayer1: TCheckBox;
     chkDebugLayer2: TCheckBox;
     chkDebugLayer3: TCheckBox;
+    chkViewport: TCheckBox;
 
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -1525,6 +1526,7 @@ begin
     SHOW_UIDs := chkUIDs.Checked;
     SHOW_SELECTED_OBJ_INFO := chkSelectedObjInfo.Checked;
     SHOW_HANDS_INFO := chkHands.Checked;
+    SHOW_VIEWPORT_INFO := chkViewport.Checked;
 
     {$IFDEF WDC} //one day update .lfm for lazarus...
     DO_DEBUG_TER_RENDER := chkDebugTerrainRender.Checked;
