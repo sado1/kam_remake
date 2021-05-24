@@ -27,7 +27,7 @@ type
     fBlind: Boolean;
     fQuery: TKMRenderQuery;
   public
-    constructor Create(aRenderControl: TKMRenderControl; ScreenX,ScreenY: Integer; aVSync: Boolean);
+    constructor Create(aRenderControl: TKMRenderControl; aScreenX, aScreenY: Integer; aVSync: Boolean);
     destructor Destroy; override;
 
     procedure SetRenderMode(aRenderMode: TKMRenderMode); //Switch between 2D and 3D perspectives
@@ -68,7 +68,7 @@ uses
 
 
 { TRender }
-constructor TRender.Create(aRenderControl: TKMRenderControl; ScreenX,ScreenY: Integer; aVSync: Boolean);
+constructor TRender.Create(aRenderControl: TKMRenderControl; aScreenX, aScreenY: Integer; aVSync: Boolean);
 begin
   inherited Create;
 
@@ -105,7 +105,7 @@ begin
 
     SetupVSync(aVSync);
 
-    Resize(ScreenX, ScreenY);
+    Resize(aScreenX, aScreenY);
   end;
 end;
 
