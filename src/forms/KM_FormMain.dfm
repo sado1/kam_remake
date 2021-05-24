@@ -1488,6 +1488,7 @@ object FormMain: TFormMain
       Caption = 'Debug'
       object Debug_PrintScreen: TMenuItem
         Caption = 'PrintScreen'
+        Hint = 'PrintScreen image will be saved to the screenshots folder'
         OnClick = Debug_PrintScreenClick
       end
       object N8: TMenuItem
