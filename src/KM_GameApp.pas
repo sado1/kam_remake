@@ -1236,6 +1236,9 @@ procedure TKMGameApp.PrintScreen(const aFilename: UnicodeString = '');
 var
   strDate, strName: string;
 begin
+  // Looks like we need two frames to flush the render-ahead queue?
+  // Otherwise game controls are rendered too, f.e.
+  Render(True);
   Render(True);
   if aFilename = '' then
   begin
