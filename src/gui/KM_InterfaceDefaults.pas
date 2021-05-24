@@ -69,6 +69,8 @@ type
     procedure UpdateCursor(X, Y: Integer; Shift: TShiftState);
 
     procedure ResetHint;
+
+    function GetToolbarWidth: Integer; virtual;
   public
     constructor Create(aScreenX, aScreenY: Word);
     destructor Destroy; override;
@@ -78,6 +80,8 @@ type
     procedure DebugControlsUpdated(aSenderTag: Integer); virtual;
 
     function GetMainPanelSize: TKMPoint;
+
+    property ToolbarWidth: Integer read GetToolbarWidth;
 
     procedure KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean); virtual; abstract;
     procedure KeyPress(Key: Char); virtual;
@@ -479,6 +483,12 @@ begin
   if Self = nil then Exit(KMPOINT_ZERO);
   
   Result := KMPoint(Panel_Main.Width, Panel_Main.Height);
+end;
+
+
+function TKMUserInterfaceCommon.GetToolbarWidth: Integer;
+begin
+  Result := 0;
 end;
 
 

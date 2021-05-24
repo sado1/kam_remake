@@ -117,7 +117,7 @@ type
       Button_History_Redo,
       Button_History_JumpTo: TKMButton;
 
-    function GetToolBarWidth: Integer; override;
+    function GetToolbarWidth: Integer; override;
 
     procedure HistoryUpdateUI;
   public
@@ -842,7 +842,7 @@ begin
 end;
 
 
-function TKMapEdInterface.GetToolBarWidth: Integer;
+function TKMapEdInterface.GetToolbarWidth: Integer;
 begin
   Result := MAPED_TOOLBAR_WIDTH;
 end;

@@ -301,7 +301,7 @@ type
 
       function IsDragScrollingAllowed: Boolean; override;
 
-      function GetToolBarWidth: Integer; override;
+      function GetToolbarWidth: Integer; override;
       function GetDebugInfo: string; override;
   public
     constructor Create(aRender: TRender; aUIMode: TUIMode); reintroduce;
@@ -3347,7 +3347,7 @@ begin
 end;
 
 
-function TKMGamePlayInterface.GetToolBarWidth: Integer;
+function TKMGamePlayInterface.GetToolbarWidth: Integer;
 begin
   Result := TOOLBAR_WIDTH;
 end;
