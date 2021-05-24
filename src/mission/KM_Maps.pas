@@ -4,7 +4,7 @@ interface
 uses
   Classes, SyncObjs,
   KM_MapTypes,
-  KM_CommonTypes, KM_CommonClasses, KM_Defaults, KM_Pics, KM_ResTexts;
+  KM_CommonTypes, KM_CommonClasses, KM_Defaults, KM_Pics, KM_ResTexts, KM_Points;
 
 
 type
@@ -102,6 +102,7 @@ type
     procedure SetBigDesc(const aBigDesc: UnicodeString);
     function GetTxtInfo: TKMMapTxtInfo;
     constructor Create; overload;
+    function GetDimentions: TKMPoint;
   public
     MapSizeX, MapSizeY: Integer;
     MissionMode: TKMissionMode;
@@ -143,6 +144,7 @@ type
     function LocationName(aIndex: TKMHandID): string;
     property Size: TKMMapSize read GetSize;
     property SizeText: string read GetSizeText;
+    property Dimensions: TKMPoint read GetDimentions;
     function IsValid: Boolean;
     function HumanPlayerCount: Byte;
     function HumanPlayerCountMP: Byte;
@@ -843,6 +845,12 @@ begin
   for I := Low(CanBeHuman) to High(CanBeHuman) do
     if CanBeHuman[I] and not CanBeAI[I] and not CanBeAdvancedAI[I] then
       Inc(Result);
+end;
+
+
+function TKMapInfo.GetDimentions: TKMPoint;
+begin
+  Result := KMPoint(MapSizeX, MapSizeY);
 end;
 
 

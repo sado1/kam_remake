@@ -742,6 +742,7 @@ begin
 
       color := fMaps[I].GetLobbyColor;
       R := MakeListRow(['', '', fMaps[I].FileName, IntToStr(fMaps[I].LocCount), fMaps[I].SizeText],  //Texts
+                       ['', '', '', '', fMaps[I].Dimensions.ToString],  //Hints
                        [color, color, color, color, color], //Colors
                        I);
       R.Cells[0].Pic := fMaps[I].FavouriteMapPic;
