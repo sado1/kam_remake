@@ -1219,9 +1219,10 @@ begin
   gRender.EndFrame;
   gRender.Query.QueriesSwapBuffers;
 
-  if not aForPrintScreen and (gGame <> nil) then
-    if Assigned(fOnCursorUpdate) then
-      fOnCursorUpdate(SB_ID_OBJECT, 'Obj: ' + IntToStr(gCursor.ObjectUID));
+  if not aForPrintScreen
+    and (gGame <> nil)
+    and Assigned(fOnCursorUpdate) then
+    fOnCursorUpdate(SB_ID_OBJECT, 'Obj: ' + IntToStr(gCursor.ObjectUID));
 end;
 
 
