@@ -100,6 +100,10 @@ begin
   ForceDirectories(saveFolder);
   path := saveFolder + GetDefaultSettingsName;
   gLog.AddTime(Format('Start saving ''%s'' to ''%s''', [GetSettingsName, path]));
+  // Debug output of the current stacktrace.
+  // We want to catch odd bug, when 'Start saving server settings' is called twice one after another
+  // (without '%s was successfully saved string in the log)
+  // todo: remove from released version after bugfix
   gLog.AddNoTime(GetStackTrace(20), False);
   SaveToFile(path);
   gLog.AddTime(Format('''%s'' was successfully saved to ''%s''', [GetSettingsName, path]));
