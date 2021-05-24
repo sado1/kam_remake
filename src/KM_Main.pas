@@ -365,6 +365,7 @@ begin
 
     if fMapCacheUpdater <> nil then
       fMapCacheUpdater.Stop;
+
     FreeThenNil(gGameApp);
     FreeThenNil(fGameAppSettings); // After GameApp is destroyed
     FreeThenNil(gLog);
