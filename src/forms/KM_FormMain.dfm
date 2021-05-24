@@ -19,6 +19,7 @@ object FormMain: TFormMain
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnKeyPress = FormKeyPress
   OnKeyUp = FormKeyUp
