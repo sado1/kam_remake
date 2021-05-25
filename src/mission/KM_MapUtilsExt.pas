@@ -1,4 +1,5 @@
 unit KM_MapUtilsExt;
+{$I KaM_Remake.inc}
 interface
 uses
   KM_Maps;
