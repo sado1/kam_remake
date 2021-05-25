@@ -32,8 +32,6 @@ uses
   procedure LoadMapHeader(aStream: TKMemoryStream; var aMapX: Integer; var aMapY: Integer; var aGameRev: Integer); overload;
   procedure LoadMapHeader(aStream: TKMemoryStream; var aMapX: Integer; var aMapY: Integer; var aGameRev: Integer; var aMapDataSize: Cardinal); overload;
 
-  function GetGameObjectOwnerIndex(aObject: TObject): TKMHandID;
-
   function GetTerrainTileBasic(aTile: TKMTerrainTile): TKMTerrainTileBasic;
 
   procedure IterateOverArea(const aStartCell: TKMPoint; aSize: Integer; aIsSquare: Boolean; aOnCell: TPointEventSimple; aAroundArea: Boolean = False);
@@ -45,7 +43,7 @@ uses
 
 implementation
 uses
-  Math, KM_ResTexts, KM_ResKeys, KM_Houses, KM_Units, KM_UnitGroup;
+  Math, KM_ResTexts, KM_ResKeys;
 
 
 function RoundToTilePixel(aVal: Single): Single; inline;
@@ -258,27 +256,6 @@ begin
 
   for L := 0 to 2 do
     Result.Layer[L] := aTile.Layer[L];
-end;
-
-
-function GetGameObjectOwnerIndex(aObject: TObject): TKMHandID;
-begin
-  Result := -1;
-  if aObject is TKMHouse then
-  begin
-    Result := TKMHouse(aObject).Owner;
-    Exit;
-  end;
-  if aObject is TKMUnit then
-  begin
-    Result := TKMUnit(aObject).Owner;
-    Exit;
-  end;
-  if aObject is TKMUnitGroup then
-  begin
-    Result := TKMUnitGroup(aObject).Owner;
-    Exit;
-  end;
 end;
 
 
