@@ -928,7 +928,7 @@ begin
         Dec(fQueueCnt);
         ExpandPolygon(Idx);
         InEnemyInfluence := True;
-        break;
+        Break;
       end;
       OldIdx := Idx;
       Idx := fQueueArray[Idx].Next;

@@ -4,7 +4,7 @@ interface
 uses
   Classes, SyncObjs,
   KM_MapTypes,
-  KM_CommonTypes, KM_CommonClasses, KM_Defaults, KM_Pics, KM_ResTexts;
+  KM_CommonTypes, KM_CommonClasses, KM_Defaults, KM_Pics, KM_ResTexts, KM_Points;
 
 
 type
@@ -84,6 +84,7 @@ type
     fSize: TKMMapSize;
     fSizeText: String;
     fCustomScriptParams: TKMCustomScriptParamDataArray;
+
     procedure ResetInfo;
     procedure LoadFromStreamObj(aStreamObj: TObject; const aPath: UnicodeString);
     procedure LoadFromFile(const aPath: UnicodeString);
@@ -91,7 +92,6 @@ type
     procedure SaveToFile(const aPath: UnicodeString);
     function GetSize: TKMMapSize;
     function GetSizeText: String;
-    function DetermineReadmeFilePath: String;
     function GetFavouriteMapPic: TKMPic;
     function GetCanBeHumanCount: Byte;
     function GetCanBeOnlyHumanCount: Byte;
@@ -102,6 +102,7 @@ type
     procedure SetBigDesc(const aBigDesc: UnicodeString);
     function GetTxtInfo: TKMMapTxtInfo;
     constructor Create; overload;
+    function GetDimentions: TKMPoint;
   public
     MapSizeX, MapSizeY: Integer;
     MissionMode: TKMissionMode;
@@ -143,13 +144,14 @@ type
     function LocationName(aIndex: TKMHandID): string;
     property Size: TKMMapSize read GetSize;
     property SizeText: string read GetSizeText;
+    property Dimensions: TKMPoint read GetDimentions;
     function IsValid: Boolean;
     function HumanPlayerCount: Byte;
     function HumanPlayerCountMP: Byte;
     function AIOnlyLocCount: Byte;
     function FileNameWithoutHash: UnicodeString;
     function HasReadme: Boolean;
-    function ViewReadme: Boolean;
+    function DetermineReadmeFilePath: String;
     function GetLobbyColor: Cardinal;
     function IsFilenameEndMatchHash: Boolean;
     function IsPlayableForSP: Boolean;
@@ -253,8 +255,8 @@ type
 implementation
 uses
   SysUtils, StrUtils, TypInfo, Math,
-  KromShellUtils, KromUtils,
-  KM_GameApp, KM_GameSettings, KM_FileIO,
+  KromUtils,
+  KM_GameSettings, KM_FileIO,
   KM_MissionScript_Info, KM_Scripting, KM_ResLocales,
   KM_CommonUtils, KM_Log, KM_MapUtils, KM_Utils;
 
@@ -811,7 +813,8 @@ end;
 
 function TKMapInfo.DetermineReadmeFilePath: String;
 begin
-  Assert(gGameApp <> nil, 'gGameApp = nil!');
+  if Self = nil then Exit('');
+  
   Assert(gGameSettings <> nil, 'gGameSettings = nil!');
 
   Result := GetLocalizedFilePath(fPath + fFileName, gResLocales.UserLocale, gResLocales.FallbackLocale, '.pdf');
@@ -843,6 +846,12 @@ begin
   for I := Low(CanBeHuman) to High(CanBeHuman) do
     if CanBeHuman[I] and not CanBeAI[I] and not CanBeAdvancedAI[I] then
       Inc(Result);
+end;
+
+
+function TKMapInfo.GetDimentions: TKMPoint;
+begin
+  Result := KMPoint(MapSizeX, MapSizeY);
 end;
 
 
@@ -923,12 +932,6 @@ end;
 function TKMapInfo.HasReadme: Boolean;
 begin
   Result := DetermineReadmeFilePath <> '';
-end;
-
-
-function TKMapInfo.ViewReadme: Boolean;
-begin
-  Result := OpenPDF(DetermineReadmeFilePath);
 end;
 
 

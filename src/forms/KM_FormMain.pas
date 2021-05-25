@@ -6,7 +6,7 @@ uses
   KM_RenderControl, KM_CommonTypes,
   KM_WindowParams,
   {$IFDEF FPC} LResources, {$ENDIF}
-  {$IFDEF MSWindows} ShellAPI, Windows, Messages, Vcl.Samples.Spin; {$ENDIF}
+  {$IFDEF MSWindows} KM_VclMenuHint, ShellAPI, Windows, Messages, Vcl.Samples.Spin; {$ENDIF}
   {$IFDEF Unix} LCLIntf, LCLType; {$ENDIF}
 
 
@@ -216,15 +216,21 @@ type
     chkShowTerrainIds: TCheckBox;
     chkShowTerrainKinds: TCheckBox;
     chkTilesGrid: TCheckBox;
+    chkDebugTerrainRender: TCheckBox;
+    gbRenderTerrain: TGroupBox;
+    chkTerrainRenderAnim: TCheckBox;
+    chkTerrainRenderLight: TCheckBox;
+    chkTerrainRenderShadow: TCheckBox;
     gbDebugLayers: TGroupBox;
     chkDebugLayerBase: TCheckBox;
     chkDebugLayer1: TCheckBox;
     chkDebugLayer2: TCheckBox;
     chkDebugLayer3: TCheckBox;
-    chkDebugLayers: TCheckBox;
-
+    Debug_SaveGameWholeMapToJPEG: TMenuItem;
+    chkViewport: TCheckBox;
 
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -242,11 +248,9 @@ type
     procedure RenderAreaResize(aWidth, aHeight: Integer);
     procedure RenderAreaRender(aSender: TObject);
 
-    procedure Debug_ExportMenuClick(Sender: TObject);
-    procedure Debug_EnableCheatsClick(Sender: TObject);
     procedure AboutClick(Sender: TObject);
     procedure ExitClick(Sender: TObject);
-    procedure Debug_PrintScreenClick(Sender: TObject);
+
     procedure MenuItem1Click(Sender: TObject);
 
     procedure Export_TreesRXClick(Sender: TObject);
@@ -266,23 +270,28 @@ type
     procedure SoldiersClick(Sender: TObject);
     procedure Civilians1Click(Sender: TObject);
 
+    procedure Debug_PrintScreenClick(Sender: TObject);
+    procedure Debug_SaveGameWholeMapToJPEGClick(Sender: TObject);
+    procedure Debug_ExportMenuClick(Sender: TObject);
+    procedure Debug_EnableCheatsClick(Sender: TObject);
+    procedure Debug_UnlockCmpMissionsClick(Sender: TObject);
+    procedure Debug_ShowLogisticsClick(Sender: TObject);
+    procedure Debug_ShowPanelClick(Sender: TObject);
+    procedure Debug_ExportUIPagesClick(Sender: TObject);
+
     procedure Button_StopClick(Sender: TObject);
     procedure RGPlayerClick(Sender: TObject);
     procedure Open_MissionMenuClick(Sender: TObject);
     procedure chkSuperSpeedClick(Sender: TObject);
-    procedure Debug_ShowPanelClick(Sender: TObject);
-    procedure Debug_ExportUIPagesClick(Sender: TObject);
     procedure HousesDat1Click(Sender: TObject);
     procedure ExportGameStatsClick(Sender: TObject);
     procedure ResourceValues1Click(Sender: TObject);
-    procedure Debug_ShowLogisticsClick(Sender: TObject);
     procedure ReloadSettingsClick(Sender: TObject);
     procedure SaveSettingsClick(Sender: TObject);
     procedure SaveEditableMission1Click(Sender: TObject);
     procedure ValidateGameStatsClick(Sender: TObject);
     procedure LoadSavThenRplClick(Sender: TObject);
     procedure ReloadLibxClick(Sender: TObject);
-    procedure Debug_UnlockCmpMissionsClick(Sender: TObject);
     procedure mnExportRngChecksClick(Sender: TObject);
     procedure btFindObjByUIDClick(Sender: TObject);
     procedure mnExportRPLClick(Sender: TObject);
@@ -290,6 +299,9 @@ type
 
     procedure ControlsUpdate(Sender: TObject);
   private
+    {$IFDEF MSWindows}
+    fMenuItemHint: TKMVclMenuItemHint; // Custom hint over menu item
+    {$ENDIF}
     fStartVideoPlayed: Boolean;
     fUpdating: Boolean;
     fMissionDefOpenPath: UnicodeString;
@@ -318,6 +330,7 @@ type
     procedure WMExitSizeMove(var Msg: TMessage) ; message WM_EXITSIZEMOVE;
     procedure WMAppCommand(var Msg: TMessage); message WM_APPCOMMAND;
     procedure WMMouseWheel(var Msg: TMessage); message WM_MOUSEWHEEL;
+    procedure WMMenuSelect(var Msg: TWMMenuSelect); message WM_MENUSELECT;
   protected
     procedure WndProc(var Message : TMessage); override;
     {$ENDIF}
@@ -330,6 +343,7 @@ type
     procedure ControlsRefill;
     procedure ToggleFullscreen(aFullscreen, aWindowDefaultParams: Boolean);
     procedure SetSaveEditableMission(aEnabled: Boolean);
+    procedure SetSaveGameWholeMapImage(aEnabled: Boolean);
     procedure SetExportGameStats(aEnabled: Boolean);
     procedure ShowFolderPermissionError;
     procedure SetEntitySelected(aEntityUID: Integer; aEntity2UID: Integer = 0);
@@ -367,7 +381,7 @@ uses
   KM_Hand,
   KM_ResKeys, KM_FormLogistics, KM_Game,
   KM_RandomChecks,
-  KM_Log, KM_CommonClasses, KM_Helpers, KM_Video,
+  KM_Log, KM_CommonClasses, KM_VclHelpers, KM_Video,
   KM_GameSettings,
   KM_ServerSettings,
 
@@ -631,6 +645,7 @@ begin
   {$IFDEF FPC} RenderArea.OnMouseWheel := RenderAreaMouseWheel; {$ENDIF}
 
   {$IFDEF MSWindows}
+    fMenuItemHint := TKMVclMenuItemHint.Create(Self);
     //Means it will receive WM_SIZE WM_PAINT always in pair (if False - WM_PAINT is not called if size becames smaller)
     RenderArea.FullRepaint := True;
     RenderArea.BevelOuter := bvNone;
@@ -649,6 +664,14 @@ begin
 
   chkShowFlatTerrain.Tag := Ord(dcFlatTerrain);
   tbWaterLight.Tag := Ord(dcFlatTerrain);
+end;
+
+
+procedure TFormMain.FormDestroy(Sender: TObject);
+begin
+  {$IFDEF MSWindows}
+  fMenuItemHint.Free;
+  {$ENDIF}
 end;
 
 
@@ -688,6 +711,12 @@ end;
 procedure TFormMain.SetSaveEditableMission(aEnabled: Boolean);
 begin
   SaveEditableMission1.Enabled := aEnabled;
+end;
+
+
+procedure TFormMain.SetSaveGameWholeMapImage(aEnabled: Boolean);
+begin
+  Debug_SaveGameWholeMapToJPEG.Enabled := aEnabled;
 end;
 
 
@@ -895,6 +924,13 @@ procedure TFormMain.Debug_PrintScreenClick(Sender: TObject);
 begin
   if gGameApp <> nil then
     gGameApp.PrintScreen;
+end;
+
+
+procedure TFormMain.Debug_SaveGameWholeMapToJPEGClick(Sender: TObject);
+begin
+  if gGameApp <> nil then
+    gGameApp.SaveGameWholeMapToJPEG;
 end;
 
 
@@ -1229,6 +1265,13 @@ begin
                                or (aCtrl = chkShowHouses)
                                or (aCtrl = chkShowUnits)
                                or (aCtrl = chkShowOverlays)
+                               or (aCtrl = chkTerrainRenderAnim)
+                               or (aCtrl = chkTerrainRenderLight)
+                               or (aCtrl = chkTerrainRenderShadow)
+                               or (aCtrl = chkDebugLayerBase)
+                               or (aCtrl = chkDebugLayer1)
+                               or (aCtrl = chkDebugLayer2)
+                               or (aCtrl = chkDebugLayer3)
   else
   if aCtrl is TTrackBar then
   begin
@@ -1502,18 +1545,32 @@ begin
     SHOW_UIDs := chkUIDs.Checked;
     SHOW_SELECTED_OBJ_INFO := chkSelectedObjInfo.Checked;
     SHOW_HANDS_INFO := chkHands.Checked;
+    SHOW_VIEWPORT_INFO := chkViewport.Checked;
 
     {$IFDEF WDC} //one day update .lfm for lazarus...
-    DO_DEBUG_TER_LAYERS := chkDebugLayers.Checked;
-    gbDebugLayers.Enabled := chkDebugLayers.Checked;
+    DO_DEBUG_TER_RENDER := chkDebugTerrainRender.Checked;
+    gbRenderTerrain.Enabled := DO_DEBUG_TER_RENDER;
 
-    DEBUG_TERRAIN_LAYERS := [];
+    SKIP_TER_RENDER_ANIMS  := DO_DEBUG_TER_RENDER and not chkTerrainRenderAnim.Checked;
+    SKIP_TER_RENDER_LIGHT  := DO_DEBUG_TER_RENDER and not chkTerrainRenderLight.Checked;
+    SKIP_TER_RENDER_SHADOW := DO_DEBUG_TER_RENDER and not chkTerrainRenderShadow.Checked;
+
+    for I := 0 to gbRenderTerrain.ControlCount - 1 do
+      gbRenderTerrain.Controls[I].Enabled := DO_DEBUG_TER_RENDER;
+
     for I := 0 to gbDebugLayers.ControlCount - 1 do
+      gbDebugLayers.Controls[I].Enabled := gbDebugLayers.Enabled;
+
+    if gbDebugLayers.Enabled then
     begin
-      Assert(gbDebugLayers.Controls[I] is TCheckBox);
-      // Refill in DEBUG_LAYERS set
-      if TCheckBox(gbDebugLayers.Controls[I]).Checked then
-        DEBUG_TERRAIN_LAYERS := DEBUG_TERRAIN_LAYERS + [gbDebugLayers.Controls[I].Tag];
+      DEBUG_TERRAIN_LAYERS := [];
+      for I := 0 to gbDebugLayers.ControlCount - 1 do
+      begin
+        Assert(gbDebugLayers.Controls[I] is TCheckBox);
+        // Refill in DEBUG_LAYERS set
+        if TCheckBox(gbDebugLayers.Controls[I]).Checked then
+          DEBUG_TERRAIN_LAYERS := DEBUG_TERRAIN_LAYERS + [gbDebugLayers.Controls[I].Tag];
+      end;
     end;
 
     SHOW_JAM_METER := chkJamMeter.Checked;
@@ -1959,6 +2016,31 @@ begin
 
   if not handled then
     inherited;
+end;
+
+
+procedure TFormMain.WMMenuSelect(var Msg: TWMMenuSelect);
+var
+  menuItem: TMenuItem;
+  hSubMenu: HMENU;
+begin
+  inherited; // from TCustomForm
+
+  menuItem:= nil;
+  if (Msg.MenuFlag <> $FFFF) or (Msg.IDItem <> 0) then
+  begin
+    if Msg.MenuFlag and MF_POPUP = MF_POPUP then
+    begin
+      hSubMenu:= GetSubMenu(Msg.Menu, Msg.IDItem);
+      menuItem:= Self.Menu.FindItem(hSubMenu, fkHandle);
+    end
+    else
+    begin
+      menuItem:= Self.Menu.FindItem(Msg.IDItem, fkCommand);
+    end;
+  end;
+
+  fMenuItemHint.DoActivateHint(menuItem);
 end;
 {$ENDIF}
 

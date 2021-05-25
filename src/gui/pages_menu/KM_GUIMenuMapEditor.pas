@@ -127,7 +127,7 @@ uses
   KM_GameSettings, 
   KM_ServerSettings,
   KM_RenderUI, KM_Resource, KM_ResFonts,
-  KM_Pics, KM_CommonUtils,
+  KM_Pics, KM_CommonUtils, KM_MapUtilsExt,
   KM_MapTypes;
 
 const
@@ -699,7 +699,7 @@ var
   ID: Integer;
 begin
   ID := ColumnBox_MapEd.SelectedItemTag;
-  fMaps[ID].ViewReadme;
+  TryOpenMapPDF(fMaps[ID]);
 end;
 
 
@@ -742,6 +742,7 @@ begin
 
       color := fMaps[I].GetLobbyColor;
       R := MakeListRow(['', '', fMaps[I].FileName, IntToStr(fMaps[I].LocCount), fMaps[I].SizeText],  //Texts
+                       ['', '', '', '', fMaps[I].Dimensions.ToString],  //Hints
                        [color, color, color, color, color], //Colors
                        I);
       R.Cells[0].Pic := fMaps[I].FavouriteMapPic;

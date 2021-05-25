@@ -20,10 +20,16 @@ type
     fPanTo, fPanFrom: TKMPointF;
     fPanImmidiately : Boolean;
     fPanDuration, fPanProgress: Cardinal;
-    fToolBarWidth : Integer;
+    fToolbarWidth: Integer;
     function GetPosition: TKMPointF;
     procedure SetPosition(const Value: TKMPointF);
     procedure SetZoom(aZoom: Single);
+    function GetToolbarWidth: Integer;
+    function GetTopPad: Single;
+    function GetZoomedCellSizePx: Single; inline;
+
+    property ToolbarWidth: Integer read GetToolbarWidth;
+    property ZoomedCellSizePX: Single read GetZoomedCellSizePx; // Cell size in pixels in current zoom
   public
     ScrollKeyLeft, ScrollKeyRight, ScrollKeyUp, ScrollKeyDown, ZoomKeyIn, ZoomKeyOut: boolean;
     constructor Create(aToolBarWidth: Integer; aWidth, aHeight: Integer);
@@ -33,6 +39,8 @@ type
     property ViewportClip: TPoint read fViewportClip;
     property ViewRect: TKMRect read fViewRect;
     property Zoom: Single read fZoom write SetZoom;
+
+    property TopPad: Single read GetTopPad;
 
     procedure ResetZoom;
     procedure Resize(NewWidth, NewHeight: Integer);
@@ -49,12 +57,14 @@ type
     procedure Load(LoadStream: TKMemoryStream);
 
     procedure UpdateStateIdle(aFrameTime: Cardinal; aAllowMouseScrolling: Boolean; aInCinematic: Boolean);
+    function ToStr: string;
   end;
 
 
 implementation
 uses
-  Math, KromUtils,
+  Math, SysUtils,
+  KromUtils,
   KM_Resource, KM_ResCursors,
   KM_Main, KM_GameApp, KM_GameSettings, KM_Sound,
   KM_Defaults, KM_CommonUtils;
@@ -65,7 +75,7 @@ constructor TKMViewport.Create(aToolBarWidth: Integer; aWidth, aHeight: Integer)
 begin
   inherited Create;
 
-  fToolBarWidth := aToolBarWidth;
+  fToolbarWidth := aToolBarWidth;
 
   fMapX := 1; //Avoid division by 0
   fMapY := 1; //Avoid division by 0
@@ -82,11 +92,17 @@ end;
 
 
 procedure TKMViewport.SetZoom(aZoom: Single);
+var
+  sizeY: Single;
 begin
   fZoom := EnsureRange(aZoom, 0.01, 8);
+  sizeY := fMapY + TopPad;
   //Limit the zoom to within the map boundaries
-  if fViewportClip.X/CELL_SIZE_PX/fZoom > fMapX then fZoom := fViewportClip.X/CELL_SIZE_PX/(fMapX-1);
-  if fViewportClip.Y/CELL_SIZE_PX/fZoom > fMapY then fZoom := fViewportClip.Y/CELL_SIZE_PX/ fMapY;
+  if fViewportClip.X/ZoomedCellSizePX > fMapX then
+    fZoom := fViewportClip.X/(CELL_SIZE_PX * (fMapX - 1)); // -1 to not show last column under FOW (out of the map)
+  if fViewportClip.Y/ZoomedCellSizePX > sizeY then
+    fZoom := fViewportClip.Y/(CELL_SIZE_PX * (sizeY - 1)); // -1 to not show last row under FOW (out of the map)
+
   SetPosition(fPosition); //To ensure it sets the limits smoothly
 end;
 
@@ -99,13 +115,13 @@ end;
 
 procedure TKMViewport.Resize(NewWidth, NewHeight: Integer);
 begin
-  fViewRect.Left   := fToolBarWidth;
+  fViewRect.Left   := ToolbarWidth;
   fViewRect.Top    := 0;
   fViewRect.Right  := NewWidth;
   fViewRect.Bottom := NewHeight;
 
-  fViewportClip.X := fViewRect.Right-fViewRect.Left;
-  fViewportClip.Y := fViewRect.Bottom-fViewRect.Top;
+  fViewportClip.X := fViewRect.Right - fViewRect.Left;
+  fViewportClip.Y := fViewRect.Bottom - fViewRect.Top;
 
   SetZoom(fZoom); //View size has changed and that affects Zoom restrictions
 end;
@@ -127,20 +143,45 @@ begin
 end;
 
 
+function TKMViewport.GetToolbarWidth: Integer;
+begin
+  // Don't render toolbar when SAVE_MAP_TO_FBO is set
+  if SAVE_MAP_TO_FBO_RENDER then Exit(0);
+
+  Result := fToolbarWidth;
+end;
+
+
+function TKMViewport.GetTopPad: Single;
+begin
+  Result := fTopHill + 0.75;  //Leave place on top for highest hills + 1 unit
+end;
+
+
 procedure TKMViewport.SetPosition(const Value: TKMPointF);
 var
-  padTop, tilesX, tilesY: Single;
+  tilesX, tilesY: Single;
 begin
-  padTop := fTopHill + 0.75; //Leave place on top for highest hills + 1 unit
+  tilesX := fViewportClip.X/2/ZoomedCellSizePX;
+  tilesY := fViewportClip.Y/2/ZoomedCellSizePX;
 
-  tilesX := fViewportClip.X/2/CELL_SIZE_PX/fZoom;
-  tilesY := fViewportClip.Y/2/CELL_SIZE_PX/fZoom;
-
-  fPosition.X := EnsureRange(Value.X, tilesX, fMapX - tilesX - 1);
-  fPosition.Y := EnsureRange(Value.Y, tilesY - padTop, fMapY - tilesY - 1); //Top row should be visible
+  // Set position as a pointF in the map coordinates, but also with possible TopPad at the top
+  fPosition.X := EnsureRange(Value.X,
+                             tilesX,               // Min visible map coordinate is 0
+                             fMapX - 1 - tilesX ); // Max visible map coordinate is fMapX - 1
+  //Top row should be visible
+  fPosition.Y := EnsureRange(Value.Y,
+                             tilesY - TopPad,     // Min visible map coordinate is -TopPad
+                             fMapY - 1 - tilesY); // Max visible map coordinate is fMapY - 1
   gSoundPlayer.UpdateListener(fPosition.X, fPosition.Y);
   if gScriptSounds <> nil then
     gScriptSounds.UpdateListener(fPosition.X, fPosition.Y);
+end;
+
+
+function TKMViewport.GetZoomedCellSizePx: Single;
+begin
+  Result := CELL_SIZE_PX * fZoom;
 end;
 
 
@@ -149,16 +190,16 @@ end;
 function TKMViewport.GetClip: TKMRect;
 begin
   Result.Left   := Math.Max(Round(fPosition.X
-                         - (fViewportClip.X/2 - fViewRect.Left + fToolBarWidth) / CELL_SIZE_PX / fZoom), 1);
+                         - (fViewportClip.X/2 - fViewRect.Left + ToolbarWidth) / ZoomedCellSizePX), 1);
   Result.Right  := Math.Min(Round(fPosition.X
-                         + (fViewportClip.X/2 + fViewRect.Left - fToolBarWidth) / CELL_SIZE_PX / fZoom) + 1, fMapX - 1);
+                         + (fViewportClip.X/2 + fViewRect.Left - ToolbarWidth) / ZoomedCellSizePX) + 1, fMapX - 1);
   //Small render problem could be encountered at the top of clip rect
   //This small problem could be seen with reshade app (with displaydepth filter ON)
   //Enlarge clip viewport by 1 to fix it
   Result.Top    := Math.Max(Round(fPosition.Y
-                         - fViewportClip.Y/2 / CELL_SIZE_PX / fZoom) - 1, 1); // - 1 to update clip rect to the top on scroll
+                         - fViewportClip.Y/2 / ZoomedCellSizePX) - 1, 1); // - 1 to update clip rect to the top on scroll
   Result.Bottom := Math.Min(Round(fPosition.Y
-                         + fViewportClip.Y/2 / CELL_SIZE_PX / fZoom) + 5, fMapY - 1); // + 5 for high trees
+                         + fViewportClip.Y/2 / ZoomedCellSizePX) + 5, fMapY - 1); // + 5 for high trees
 
   if TEST_VIEW_CLIP_INSET then
     Result := KMRectGrow(Result, -5);
@@ -168,21 +209,21 @@ end;
 //Same as above function but with some values changed to suit minimap
 function TKMViewport.GetMinimapClip: TKMRect;
 begin
-  Result.Left   := Math.max(round(fPosition.X-(fViewportClip.X/2-fViewRect.Left+fToolBarWidth)/CELL_SIZE_PX/fZoom)+1, 1);
-  Result.Right  := Math.min(round(fPosition.X+(fViewportClip.X/2+fViewRect.Left-fToolBarWidth)/CELL_SIZE_PX/fZoom)+1, fMapX);
-  Result.Top    := Math.max(round(fPosition.Y-fViewportClip.Y/2/CELL_SIZE_PX/fZoom)+2, 1);
-  Result.Bottom := Math.min(round(fPosition.Y+fViewportClip.Y/2/CELL_SIZE_PX/fZoom), fMapY);
+  Result.Left   := Max(Round(fPosition.X - (fViewportClip.X/2 - fViewRect.Left + ToolbarWidth)/ZoomedCellSizePX) + 1, 1);
+  Result.Right  := Min(Round(fPosition.X + (fViewportClip.X/2 + fViewRect.Left - ToolbarWidth)/ZoomedCellSizePX) + 1, fMapX);
+  Result.Top    := Max(Round(fPosition.Y - fViewportClip.Y/2/ZoomedCellSizePX) + 2, 1);
+  Result.Bottom := Min(Round(fPosition.Y + fViewportClip.Y/2/ZoomedCellSizePX), fMapY);
 end;
 
 
 procedure TKMViewport.ReleaseScrollKeys;
 begin
-  ScrollKeyLeft  := false;
-  ScrollKeyRight := false;
-  ScrollKeyUp    := false;
-  ScrollKeyDown  := false;
-  ZoomKeyIn      := false;
-  ZoomKeyOut     := false;
+  ScrollKeyLeft  := False;
+  ScrollKeyRight := False;
+  ScrollKeyUp    := False;
+  ScrollKeyDown  := False;
+  ZoomKeyIn      := False;
+  ZoomKeyOut     := False;
 end;
 
 
@@ -203,8 +244,8 @@ end;
 
 function TKMViewport.MapToScreen(const aMapLoc: TKMPointF): TKMPoint;
 begin
-  Result.X := Round((aMapLoc.X - fPosition.X) * CELL_SIZE_PX * fZoom + fViewRect.Right / 2 + fToolBarWidth / 2);
-  Result.Y := Round((aMapLoc.Y - fPosition.Y) * CELL_SIZE_PX * fZoom + fViewRect.Bottom / 2);
+  Result.X := Round((aMapLoc.X - fPosition.X) * ZoomedCellSizePX + fViewRect.Right / 2 + ToolbarWidth / 2);
+  Result.Y := Round((aMapLoc.Y - fPosition.Y) * ZoomedCellSizePX + fViewRect.Bottom / 2);
 end;
 
 
@@ -378,6 +419,13 @@ begin
   LoadStream.Read(fPosition);
 
   SetPosition(fPosition); //EnsureRanges
+end;
+
+
+function TKMViewport.ToStr: string;
+begin
+  Result := Format('Pos = %s; Zoom = %s ViewClip = (%d; %d) ViewRect = %s', [
+                   fPosition.ToString, FormatFloat('0.###', fZoom), fViewportClip.X, fViewportClip.Y, fViewRect.ToString]);
 end;
 
 

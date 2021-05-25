@@ -2017,6 +2017,7 @@ type
   function MakeListRow(const aCaption: array of String; aTag: Integer = 0): TKMListRow; overload;
   function MakeListRow(const aCaption, aHint: array of String; aTag: Integer = 0): TKMListRow; overload;
   function MakeListRow(const aCaption: array of string; const aColor: array of TColor4; aTag: Integer = 0): TKMListRow; overload;
+  function MakeListRow(const aCaption, aHint: array of string; const aColor: array of TColor4; aTag: Integer = 0): TKMListRow; overload;
   function MakeListRow(const aCaption: array of string; const aColor: array of TColor4; const aColorHighlight: array of TColor4; aTag: Integer = 0): TKMListRow; overload;
   function MakeListRow(const aCaption: array of string; const aColor: array of TColor4; const aPic: array of TKMPic; aTag: Integer = 0): TKMListRow; overload;
 
@@ -2082,6 +2083,25 @@ begin
   for I := 0 to High(aCaption) do
   begin
     Result.Cells[I].Caption := aCaption[I];
+    Result.Cells[I].Color := aColor[I];
+    Result.Cells[I].Enabled := True;
+  end;
+  Result.Tag := aTag;
+end;
+
+
+function MakeListRow(const aCaption, aHint: array of string; const aColor: array of TColor4; aTag: Integer = 0): TKMListRow;
+var I: Integer;
+begin
+  Assert(Length(aCaption) = Length(aColor));
+  Assert(Length(aCaption) = Length(aHint));
+
+  SetLength(Result.Cells, Length(aCaption));
+
+  for I := 0 to High(aCaption) do
+  begin
+    Result.Cells[I].Caption := aCaption[I];
+    Result.Cells[I].CellHint := aHint[I];
     Result.Cells[I].Color := aColor[I];
     Result.Cells[I].Enabled := True;
   end;

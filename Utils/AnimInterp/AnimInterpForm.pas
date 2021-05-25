@@ -67,7 +67,7 @@ var
 implementation
 uses
   ShellApi, Math, RTTI, KM_FileIO, KromUtils,
-  KM_Log, KM_PNG, KM_ResWares, KM_ResInterpolation;
+  KM_Log, KM_IoPNG, KM_ResWares, KM_ResInterpolation;
 
 const
   CANVAS_Y_OFFSET = 14;

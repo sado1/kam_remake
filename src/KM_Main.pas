@@ -103,7 +103,7 @@ uses
   {$IFDEF MSWindows} MMSystem, {$ENDIF}
   {$IFDEF USE_MAD_EXCEPT} KM_Exceptions, {$ENDIF}
   SysUtils, SysConst, StrUtils, Math, KromUtils, KM_FileIO,
-  KM_GameApp, KM_Helpers,
+  KM_GameApp, KM_VclHelpers,
   KM_Log, KM_CommonUtils, KM_Defaults, KM_Points, KM_DevPerfLog,
   KM_CommonExceptions,
   KromShellUtils, KM_MapTypes;
@@ -365,6 +365,7 @@ begin
 
     if fMapCacheUpdater <> nil then
       fMapCacheUpdater.Stop;
+
     FreeThenNil(gGameApp);
     FreeThenNil(fGameAppSettings); // After GameApp is destroyed
     FreeThenNil(gLog);

@@ -78,7 +78,7 @@ type
 
 implementation
 uses
-  KM_PNG;
+  KM_IoPNG;
 
 const
   FONTS_BG_COLOR = $FFAF6B6B;

@@ -2023,7 +2023,8 @@ end;
 
 
 //* Version: 5057
-//* @Deprecated: HouseHasWorker
+//* Status: Deprecated
+//* Replacement: HouseHasWorker
 //* Returns true if the specified house currently has a worker
 //* Result: Has worker
 function TKMScriptStates.HouseHasOccupant(aHouseID: Integer): Boolean;
@@ -2384,7 +2385,8 @@ end;
 
 
 //* Version: 5345
-//* @Deprecated: HouseTypeToWorkerType
+//* Status: Deprecated
+//* Replacement: HouseTypeToWorkerType
 //* Returns the type of unit that should work in the specified type of house, or -1 if no unit should work in it.
 //* Result: Unit type
 function TKMScriptStates.HouseTypeToOccupantType(aHouseType: Integer): Integer;
@@ -2405,7 +2407,7 @@ end;
 
 
 //* Version: 13050
-//* Returns the type of unit that should occupy the specified type of house, or -1 if no unit should occupy it.
+//* Returns the type of unit that should work in the specified type of house, or -1 if no unit should work in it.
 //* Result: Unit type
 function TKMScriptStates.HouseTypeToWorkerType(aHouseType: Integer): Integer;
 begin
@@ -4198,7 +4200,7 @@ end;
 
 
 //* Version: 5997
-//* Returns the ID of the house which is the home of the specified unit or -1 if the unit does not have a home
+//* Returns the ID of the house which is the home of the specified unit (house where he works) or -1 if the unit does not have a home
 //* Result: House ID
 function TKMScriptStates.UnitHome(aUnitID: Integer): Integer;
 var
@@ -4254,7 +4256,7 @@ end;
 
 
 //* Version: 12982
-//* Returns HouseID where specified Unit is placed or -1 if Unit not found or Unit is not in any house
+//* Returns HouseID where specified Unit is now, at this particular moment, or -1 if Unit not found or Unit is not in any house
 //* Result: HouseId, where unit is placed
 function TKMScriptStates.UnitInHouse(aUnitID: Integer): Integer;
 var

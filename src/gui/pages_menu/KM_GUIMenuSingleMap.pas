@@ -98,7 +98,7 @@ type
 
 implementation
 uses
-  KM_ResTexts, KM_CommonUtils, KM_RenderUI, KM_ResFonts, KM_GameSettings, KM_MapUtils;
+  KM_ResTexts, KM_CommonUtils, KM_RenderUI, KM_ResFonts, KM_GameSettings, KM_MapUtils, KM_MapUtilsExt;
 
 const
   PAD_VERT = 44; //Padding from top/bottom
@@ -552,7 +552,7 @@ end;
 procedure TKMMenuSingleMap.ReadmeClick(Sender: TObject);
 begin
   if ColumnBox_Maps.IsSelected then
-    fMaps[ ColumnBox_Maps.SelectedItemTag ].ViewReadme;
+    TryOpenMapPDF(fMaps[ ColumnBox_Maps.SelectedItemTag ]);
 end;
 
 

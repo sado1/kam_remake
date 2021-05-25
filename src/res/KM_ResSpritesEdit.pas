@@ -44,7 +44,7 @@ implementation
 uses
   KM_SoftShadows,
   KM_ResTypes,
-  KM_PNG,
+  KM_IoPNG,
   KM_CommonTypes,
   KM_RenderTypes,
   KM_CommonClasses;

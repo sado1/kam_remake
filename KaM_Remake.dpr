@@ -14,9 +14,10 @@ uses
   Dialogs,
   {$IFDEF WDC} UITypes, {$ENDIF} // For MessageDlg invoked from this file
   {$IFDEF FPC} Interfaces, {$ENDIF}
-  KM_FormMain in 'src\KM_FormMain.pas' {FormMain},
-  KM_FormLogistics in 'src\KM_FormLogistics.pas' {FormLogistics},
-  KM_FormLoading in 'src\KM_FormLoading.pas' {FormLoading},
+  KM_FormMain in 'src\forms\KM_FormMain.pas' {FormMain},
+  KM_FormLogistics in 'src\forms\KM_FormLogistics.pas' {FormLogistics},
+  KM_FormLoading in 'src\forms\KM_FormLoading.pas' {FormLoading},
+  KM_VclMenuHint in 'src\forms\KM_VCLMenuHint.pas',
 
   ScriptValidatorResult in 'src\ext\ScriptValidatorResult.pas',
   iaWin.NameDelphiThreads in 'src\ext\iaWin.NameDelphiThreads.pas',
@@ -34,7 +35,6 @@ uses
   KM_AIMayorBalance in 'src\ai\KM_AIMayorBalance.pas',
   KM_AISetup in 'src\ai\KM_AISetup.pas',
 
-  //KM_ArmyAttack in 'src\ai\newAI\KM_ArmyAttack.pas',
   KM_ArmyAttackNew in 'src\ai\newAI\KM_ArmyAttackNew.pas',
   KM_ArmyDefence in 'src\ai\newAI\KM_ArmyDefence.pas',
   KM_ArmyManagement in 'src\ai\newAI\KM_ArmyManagement.pas',
@@ -45,25 +45,18 @@ uses
   KM_CityPredictor in 'src\ai\newAI\KM_CityPredictor.pas',
   KM_Supervisor in 'src\ai\newAI\KM_Supervisor.pas',
   KM_AIParameters in 'src\ai\newAI\KM_AIParameters.pas',
-
-  KM_Alerts in 'src\KM_Alerts.pas',
-  KM_Audio in 'src\KM_Audio.pas',
-  KM_Campaigns in 'src\KM_Campaigns.pas',
-  KM_CampaignTypes in 'src\KM_CampaignTypes.pas',
-
-  KM_Console in 'src\KM_Console.pas',
+  
   KM_CommonClasses in 'src\common\KM_CommonClasses.pas',
   KM_CommonClassesExt in 'src\common\KM_CommonClassesExt.pas',
   KM_CommonExceptions in 'src\common\KM_CommonExceptions.pas',
   KM_CommonTypes in 'src\common\KM_CommonTypes.pas',
   KM_Defaults in 'src\common\KM_Defaults.pas',
   KM_Entity in 'src\common\KM_Entity.pas',
-  KM_MarchingSquares in 'src\common\KM_MarchingSquares.pas',
   KM_Points in 'src\common\KM_Points.pas',
   KM_WorkerThread in 'src\common\KM_WorkerThread.pas',
 
-  KM_Controls in 'src\KM_Controls.pas',
-  KM_Cursor in 'src\KM_Cursor.pas',
+  KM_Console in 'src\KM_Console.pas',
+  KM_Controls in 'src\KM_Controls.pas',  
   
   KM_DevPerfLog in 'src\perflog\KM_DevPerfLog.pas',
   KM_DevPerfLogForm in 'src\perflog\KM_DevPerfLogForm.pas',
@@ -72,24 +65,38 @@ uses
   KM_DevPerfLogTypes in 'src\perflog\KM_DevPerfLogTypes.pas',
   
   {$IFDEF USE_MAD_EXCEPT}KM_Exceptions in 'src\KM_Exceptions.pas',{$ENDIF}
-  KM_FogOfWar in 'src\KM_FogOfWar.pas',
-
+  
   KM_Game in 'src\game\KM_Game.pas',
-  KM_GameApp in 'src\game\KM_GameApp.pas',
   KM_GameClasses in 'src\game\KM_GameClasses.pas',
   KM_GameTypes in 'src\game\KM_GameTypes.pas',  
   KM_GameInfo in 'src\game\KM_GameInfo.pas',
   KM_GameOptions in 'src\game\KM_GameOptions.pas',
   KM_GameParams in 'src\game\KM_GameParams.pas',
   KM_GameSavePoints in 'src\game\KM_GameSavePoints.pas',
-  KM_GameUIDTracker in 'src\game\KM_GameUIDTracker.pas',
+  KM_FogOfWar in 'src\game\KM_FogOfWar.pas',
   
-  KM_GameInputProcess in 'src\game\KM_GameInputProcess.pas',
-  KM_GameInputProcess_Multi in 'src\game\KM_GameInputProcess_Multi.pas',
-  KM_GameInputProcess_Single in 'src\game\KM_GameInputProcess_Single.pas',
+  KM_GameInputProcess in 'src\game\gip\KM_GameInputProcess.pas',
+  KM_GameInputProcess_Multi in 'src\game\gip\KM_GameInputProcess_Multi.pas',
+  KM_GameInputProcess_Single in 'src\game\gip\KM_GameInputProcess_Single.pas',
+  
+  KM_GameUIDTracker in 'src\game\misc\KM_GameUIDTracker.pas',
+  KM_RandomChecks in 'src\game\misc\KM_RandomChecks.pas',
+  
+  KM_Alerts in 'src\game\notifications\KM_Alerts.pas',
+  KM_MessageLog in 'src\game\notifications\KM_MessageLog.pas',
+  KM_MessageStack in 'src\game\notifications\KM_MessageStack.pas',  
+
+  KM_Cursor in 'src\gui\KM_Cursor.pas',
+  KM_InterfaceDefaults in 'src\gui\KM_InterfaceDefaults.pas',
+  KM_InterfaceGame in 'src\gui\KM_InterfaceGame.pas',
+  KM_InterfaceGamePlay in 'src\gui\KM_InterfaceGamePlay.pas',
+  KM_InterfaceMainMenu in 'src\gui\KM_InterfaceMainMenu.pas',
+  KM_InterfaceMapEditor in 'src\gui\KM_InterfaceMapEditor.pas',
+  KM_InterfaceTypes in 'src\gui\KM_InterfaceTypes.pas',
+  KM_Viewport in 'src\gui\KM_Viewport.pas',
 
   KM_GUICommonKeys in 'src\gui\pages_common\KM_GUICommonKeys.pas',
-
+  
   KM_GUIGameBuild in 'src\gui\pages_game\KM_GUIGameBuild.pas',
   KM_GUIGameChat in 'src\gui\pages_game\KM_GUIGameChat.pas',
   KM_GUIGameHouse in 'src\gui\pages_game\KM_GUIGameHouse.pas',
@@ -175,6 +182,7 @@ uses
   KM_HandSpectator in 'src\hands\KM_HandSpectator.pas',
   KM_HandStats in 'src\hands\KM_HandStats.pas',
   KM_HandTypes in 'src\hands\KM_HandTypes.pas',
+  KM_WareDistribution in 'src\hands\KM_WareDistribution.pas',
 
   KM_HouseBarracks in 'src\houses\KM_HouseBarracks.pas',
   KM_HouseInn in 'src\houses\KM_HouseInn.pas',
@@ -184,30 +192,32 @@ uses
   KM_HouseSchool in 'src\houses\KM_HouseSchool.pas',
   KM_HouseTownHall in 'src\houses\KM_HouseTownHall.pas',
   KM_HouseWoodcutters in 'src\houses\KM_HouseWoodcutters.pas',
-  KM_InterfaceDefaults in 'src\gui\KM_InterfaceDefaults.pas',
-  KM_InterfaceGame in 'src\gui\KM_InterfaceGame.pas',
-  KM_InterfaceGamePlay in 'src\gui\KM_InterfaceGamePlay.pas',
-  KM_InterfaceMainMenu in 'src\gui\KM_InterfaceMainMenu.pas',
-  KM_InterfaceMapEditor in 'src\gui\KM_InterfaceMapEditor.pas',
-  KM_InterfaceTypes in 'src\gui\KM_InterfaceTypes.pas',
+  
+  KM_GameApp in 'src\KM_GameApp.pas',
   KM_Log in 'src\KM_Log.pas',
   KM_Main in 'src\KM_Main.pas',
-  KM_MapEditor in 'src\KM_MapEditor.pas',
-  KM_MapEditorHistory in 'src\KM_MapEditorHistory.pas',
-  KM_MapEdTypes in 'src\KM_MapEdTypes.pas',
-  KM_MessageLog in 'src\KM_MessageLog.pas',
-  KM_MessageStack in 'src\KM_MessageStack.pas',
   KM_Minimap in 'src\KM_Minimap.pas',
-
+  
+  KM_Campaigns in 'src\mission\KM_Campaigns.pas',
+  KM_CampaignTypes in 'src\mission\KM_CampaignTypes.pas',
   KM_Maps in 'src\mission\KM_Maps.pas',
   KM_MapTypes in 'src\mission\KM_MapTypes.pas',
-  KM_MapUtils in 'src\mission\KM_MapUtils.pas',
+  KM_MapUtils in 'src\mission\KM_MapUtils.pas',  
+  KM_MapUtilsExt in 'src\mission\KM_MapUtilsExt.pas',  
   KM_MissionScript in 'src\mission\KM_MissionScript.pas',
   KM_MissionScript_Info in 'src\mission\KM_MissionScript_Info.pas',
   KM_MissionScript_Preview in 'src\mission\KM_MissionScript_Preview.pas',
   KM_MissionScript_Standard in 'src\mission\KM_MissionScript_Standard.pas',
-
-  KM_Music in 'src\KM_Music.pas',
+  
+  KM_MapEditor in 'src\maped\KM_MapEditor.pas',
+  KM_MapEditorHistory in 'src\maped\KM_MapEditorHistory.pas',
+  KM_MapEdTypes in 'src\maped\KM_MapEdTypes.pas',
+  
+  KM_Audio in 'src\media\KM_Audio.pas',
+  KM_Music in 'src\media\KM_Music.pas',
+  KM_Sound in 'src\media\KM_Sound.pas',
+  KM_Video in 'src\media\KM_Video.pas',
+  KM_VLC in 'src\media\KM_VLC.pas',
 
   KM_Outline in 'src\navmesh\KM_Outline.pas',
   KM_NavMesh in 'src\navmesh\KM_NavMesh.pas',
@@ -257,8 +267,6 @@ uses
 
   KM_Projectiles in 'src\KM_Projectiles.pas',
 
-  KM_RandomChecks in 'src\KM_RandomChecks.pas',
-
   KM_Render in 'src\render\KM_Render.pas',
   KM_RenderAux in 'src\render\KM_RenderAux.pas',
   KM_RenderControl in 'src\render\KM_RenderControl.pas',
@@ -269,8 +277,7 @@ uses
   KM_RenderQuery in 'src\render\KM_RenderQuery.pas',
   KM_RenderUI in 'src\render\KM_RenderUI.pas',
 
-  KM_Resolutions in 'src\KM_Resolutions.pas',
-
+  KM_Pics in 'src\res\KM_Pics.pas',  
   KM_Resource in 'src\res\KM_Resource.pas',
   KM_ResCursors in 'src\res\KM_ResCursors.pas',
   KM_ResFonts in 'src\res\KM_ResFonts.pas',
@@ -287,8 +294,7 @@ uses
   KM_ResTileset in 'src\res\KM_ResTileset.pas',
   KM_ResUnits in 'src\res\KM_ResUnits.pas',
   KM_ResWares in 'src\res\KM_ResWares.pas',
-
-  KM_Saves in 'src\KM_Saves.pas',
+  KM_Saves in 'src\res\KM_Saves.pas',
 
   KM_Scripting in 'src\scripting\KM_Scripting.pas',
   KM_ScriptingActions in 'src\scripting\KM_ScriptingActions.pas',
@@ -300,7 +306,6 @@ uses
   KM_ScriptingUtils in 'src\scripting\KM_ScriptingUtils.pas',
 
   KM_ServerQuery in 'src\net\KM_ServerQuery.pas',
-  KM_Sound in 'src\KM_Sound.pas',
   
   KM_Settings in 'src\settings\KM_Settings.pas',  
   KM_GameAppSettings in 'src\settings\KM_GameAppSettings.pas',  
@@ -308,6 +313,8 @@ uses
   KM_GameSettings in 'src\settings\KM_GameSettings.pas',
   KM_MainSettings in 'src\settings\KM_MainSettings.pas',
   KM_ServerSettings in 'src\settings\KM_ServerSettings.pas',
+  KM_Resolutions in 'src\settings\KM_Resolutions.pas',
+  KM_WindowParams in 'src\settings\KM_WindowParams.pas',
 
   KM_RandomMapGenerator in 'src\terrain\KM_RandomMapGenerator.pas',
   KM_RMGUtils in 'src\terrain\KM_RMGUtils.pas',
@@ -347,35 +354,32 @@ uses
   KM_UnitTaskSelfTrain in 'src\units\tasks\KM_UnitTaskSelfTrain.pas',
   KM_UnitTaskThrowRock in 'src\units\tasks\KM_UnitTaskThrowRock.pas',
 
-  KM_BinPacking in 'src\utils\KM_BinPacking.pas',
+  KM_CommonShellUtils in 'src\utils\KM_CommonShellUtils.pas',
   KM_CommonUtils in 'src\utils\KM_CommonUtils.pas',
-  KM_IoXML in 'src\utils\KM_IoXML.pas',
-  KM_FileIO in 'src\utils\KM_FileIO.pas',
-  KM_FloodFill in 'src\utils\KM_FloodFill.pas',
-  KM_Helpers in 'src\utils\KM_Helpers.pas',
-  KM_Hungarian in 'src\utils\KM_Hungarian.pas',
-  KM_Pics in 'src\utils\KM_Pics.pas',
-  KM_PNG in 'src\utils\KM_PNG.pas',
-  KM_SoftShadows in 'src\utils\KM_SoftShadows.pas',
-  KM_Sort in 'src\utils\KM_Sort.pas',
   KM_Utils in 'src\utils\KM_Utils.pas',
-  KM_XmlHelper in 'src\utils\KM_XmlHelper.pas',
   
   KromOGLUtils in 'src\utils\KromOGLUtils.pas',
   KromUtils in 'src\utils\KromUtils.pas',
   KromShellUtils in 'src\utils\KromShellUtils.pas',
   
-  BinaryHeap in 'src\utils\BinaryHeap.pas',
-  BinaryHeapGen in 'src\utils\BinaryHeapGen.pas',
+  BinaryHeap in 'src\utils\algorithms\BinaryHeap.pas',
+  BinaryHeapGen in 'src\utils\algorithms\BinaryHeapGen.pas',
+  KM_BinPacking in 'src\utils\algorithms\KM_BinPacking.pas',
+  KM_Hungarian in 'src\utils\algorithms\KM_Hungarian.pas',
+  KM_FloodFill in 'src\utils\algorithms\KM_FloodFill.pas',
+  KM_MarchingSquares in 'src\utils\algorithms\KM_MarchingSquares.pas',
+  KM_SoftShadows in 'src\utils\algorithms\KM_SoftShadows.pas',
+  KM_Sort in 'src\utils\algorithms\KM_Sort.pas',
+  
+  KM_IoPNG in 'src\utils\io\KM_IoPNG.pas',
+  KM_IoXML in 'src\utils\io\KM_IoXML.pas',
+  KM_FileIO in 'src\utils\io\KM_FileIO.pas',
   
   KM_MethodParser in 'src\utils\method_parser\KM_MethodParser.pas',
   KM_MethodParserParams in 'src\utils\method_parser\KM_MethodParserParams.pas',
-
-  KM_Viewport in 'src\KM_Viewport.pas',
-  KM_WareDistribution in 'src\KM_WareDistribution.pas',
-  KM_Video in 'src\KM_Video.pas',
-  KM_VLC in 'src\utils\KM_VLC.pas',
-  KM_WindowParams in 'src\utils\KM_WindowParams.pas';
+  
+  KM_VclHelpers in 'src\utils\helpers\KM_VclHelpers.pas',
+  KM_XmlHelper in 'src\utils\helpers\KM_XmlHelper.pas';
 
   //KM_PerfLog in 'src\unused\KM_PerfLog.pas', //unused
 

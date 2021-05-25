@@ -117,7 +117,7 @@ type
       Button_History_Redo,
       Button_History_JumpTo: TKMButton;
 
-    function GetToolBarWidth: Integer; override;
+    function GetToolbarWidth: Integer; override;
 
     procedure HistoryUpdateUI;
   public
@@ -329,6 +329,8 @@ begin
     S.LineWidth := 1;
     S.Hitable := False;
   end;
+
+  InitDebugControls;
 
   HidePages;
   AfterCreateComplete;
@@ -806,42 +808,45 @@ begin
   begin
     HidePages;
     fGuiTerrain.Show(I);
-    gGameApp.PrintScreen(path + 'Terrain' + IntToStr(Byte(I)) + '.jpg');
+    gGameApp.PrintScreen(path + 'Terrain' + IntToStr(Byte(I)) + '.jpeg');
   end;
 
   for K := Low(TKMTownTab) to High(TKMTownTab) do
   begin
     HidePages;
     fGuiTown.Show(K);
-    gGameApp.PrintScreen(path + 'Town' + IntToStr(Byte(K)) + '.jpg');
+    gGameApp.PrintScreen(path + 'Town' + IntToStr(Byte(K)) + '.jpeg');
   end;
 
   for L := Low(TKMPlayerTab) to High(TKMPlayerTab) do
   begin
     HidePages;
     fGuiPlayer.Show(L);
-    gGameApp.PrintScreen(path + 'Player' + IntToStr(Byte(L)) + '.jpg');
+    gGameApp.PrintScreen(path + 'Player' + IntToStr(Byte(L)) + '.jpeg');
   end;
 
   for M := Low(TKMMissionTab) to High(TKMMissionTab) do
   begin
     HidePages;
     fGuiMission.Show(M);
-    gGameApp.PrintScreen(path + 'Mission' + IntToStr(Byte(M)) + '.jpg');
+    gGameApp.PrintScreen(path + 'Mission' + IntToStr(Byte(M)) + '.jpeg');
   end;
 
   HidePages;
   fGuiHouse.Show(nil);
-  gGameApp.PrintScreen(path + 'House.jpg');
+  gGameApp.PrintScreen(path + 'House.jpeg');
 
   HidePages;
   fGuiUnit.Show(TKMUnit(nil));
-  gGameApp.PrintScreen(path + 'Unit.jpg');
+  gGameApp.PrintScreen(path + 'Unit.jpeg');
 end;
 
 
-function TKMapEdInterface.GetToolBarWidth: Integer;
+function TKMapEdInterface.GetToolbarWidth: Integer;
 begin
+  // Don't render toolbar when SAVE_MAP_TO_FBO is set
+  if SAVE_MAP_TO_FBO_RENDER then Exit(0);
+
   Result := MAPED_TOOLBAR_WIDTH;
 end;
 

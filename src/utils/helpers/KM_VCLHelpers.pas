@@ -1,4 +1,4 @@
-unit KM_Helpers;
+unit KM_VclHelpers;
 {$I KaM_Remake.inc}
 interface
 uses

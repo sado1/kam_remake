@@ -989,7 +989,7 @@ function TKMRandomMapGenerator.RandomPlayerLocs(): TKMPointArray;
         if (I = LocIdx[K]) then
         begin
           PointSelected := True;
-          break;
+          Break;
         end;
       if PointSelected then
         Continue;
@@ -1009,7 +1009,7 @@ function TKMRandomMapGenerator.RandomPlayerLocs(): TKMPointArray;
         begin
           Change := True;
           LocIdx[RemIdx] := I;
-          break;
+          Break;
         end;
       end;
     end;
@@ -1317,7 +1317,7 @@ const
         aResLoc := ResPoint;
       end;
       if (BestResCnt >= BREAK_LIMIT) then
-        break;
+        Break;
     end;
     if KMSamePoint(aResLoc, KMPOINT_ZERO) then
     begin
@@ -1346,7 +1346,7 @@ const
     for I := 1 to aReqSize do
     begin
       if (cnt >= aReqSize) then
-            break;
+            Break;
       if Right AND (X+I <= High(aCountArr[Y])) AND (aCountArr[Y,X+I] > 0) then
       begin
         aPointArr[elements] := KMPoint(X+I,Y);
@@ -1356,7 +1356,7 @@ const
       else
         Right := False;
       if (cnt >= aReqSize) then
-        break;
+        Break;
       if Left AND (X-I >= Low(aCountArr[Y])) AND (aCountArr[Y,X-I] > 0) then
       begin
         aPointArr[elements] := KMPoint(X-I,Y);
@@ -1415,7 +1415,7 @@ const
               if (aCountArr[Y2,X2] = 0) then
               begin
                 Check := True;
-                break;
+                Break;
               end;
           if Check then
             aCountArr[Y,X] := 0;
@@ -1508,7 +1508,7 @@ begin
             overflow := overflow + 1;
             // Try find unused shape
             if not FindBestResLoc((RESOURCE <> Byte(btCoal)), BASE_RES_RADIUS[I] * RMGSettings.Locs.ProtectedRadius, TP_S,TP_E,Locs[Loc], CountArr, ResLoc) then
-              break;
+              Break;
             // Check if there is enough points to create mountains with specific size
             SetSizeOfMountain(ResLoc, sizeMountain, newSize, CountArr, PointsArr, PointArr);
             // Merge shapes from Voronoi until we reach desired size
@@ -1817,7 +1817,7 @@ begin
       Probability := fRNG.Random();
       for Obstacle := Low(TObstacleType) to High(TObstacleType) do
         if (Probability < OBST_Probability[Obstacle]) then
-          break;
+          Break;
 
       case Obstacle of
         otSwamp, otWetland: RndPointsInRadius(Obstacle, X,Y);
@@ -2575,13 +2575,13 @@ begin
           begin
             X1 := X0;
             Y1 := Y2;
-            break;
+            Break;
           end
           else if WT[ TilesPartsArr.Terrain[Y2,X2] ] then
           begin
             X1 := X2;
             Y1 := Y2;
-            break;
+            Break;
           end;
         if not WT[ TilesPartsArr.Terrain[Y1,X1] ] then
         begin
@@ -2592,13 +2592,13 @@ begin
             begin
               X1 := X2;
               Y1 := Y0;
-              break;
+              Break;
             end
             else if WT[ TilesPartsArr.Terrain[Y2,X2] ] then
             begin
               X1 := X2;
               Y1 := Y2;
-              break;
+              Break;
             end;
         end;
         step := step + 1;
@@ -2720,7 +2720,7 @@ const
       if (rnd < PT[Biome,K]) then
       begin
         Result := FT[Biome,K];
-        break;
+        Break;
       end;
   end;
 
@@ -3245,7 +3245,7 @@ procedure TKMRandomMapGenerator.GenerateHeight(var aLocs: TKMPointArray; var Til
         v := KMPoint(-v.X,-v.Y)
       end
       else
-        break;
+        Break;
       // Mark point
       aVisitArr[Y,X] := True;
       if (Counter >= 2) then
@@ -3350,7 +3350,7 @@ procedure TKMRandomMapGenerator.GenerateHeight(var aLocs: TKMPointArray; var Til
         if (KMDistanceSqr(aLocs[L],ShapePoints[K]) < Sqr(RMGSettings.Locs.ProtectedRadius * 5) ) then
         begin
           Check := False;
-          break;
+          Break;
         end;
       if Check then
       begin
@@ -3630,7 +3630,7 @@ const
     for K := Low( O.Probability[obj] ) to High( O.Probability[obj] ) do
       if rnd < O.Probability[obj,K] then begin
         Output := O.Objects[obj,K];
-        break;
+        Break;
       end;
     Result := Output;
   end;
@@ -3648,7 +3648,7 @@ const
       if rnd < ObjectMix[ ObjMixType , K ] then
       begin
         Output := GetObject(K);
-        break;
+        Break;
       end;
     Result := Output;
   end;
@@ -4819,14 +4819,14 @@ begin
 			  if dist < minDist then
         begin
           counter := counter - 1;
-				  break;
+				  Break;
         end;
       end;
       counter := counter + 1;
 		  overflow := overflow + 1;
 	  end;
     if counter = cnt then
-      break;
+      Break;
   end;
 end;
 //}
@@ -4934,10 +4934,10 @@ begin
         if Dist[Y,X] >= MaxLimit then
           count := count + 1;
         if count = NewPoint then
-          break;
+          Break;
       end;
       if count = NewPoint then
-        break;
+        Break;
     end;
     Result[LocNum].X := Min(X << 4 + fRNG.RandomI(16), fMapX-1);
     Result[LocNum].Y := Min(Y << 4 + fRNG.RandomI(16), fMapY-1);

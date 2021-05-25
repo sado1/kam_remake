@@ -42,6 +42,7 @@ type
     Button12: TButton;
     Button13: TButton;
     Button14: TButton;
+    Button15: TButton;
     procedure Button3Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -60,9 +61,10 @@ type
     procedure Button12Click(Sender: TObject);
     procedure Button13Click(Sender: TObject);
     procedure Button14Click(Sender: TObject);
+    procedure Button15Click(Sender: TObject);
   private
-    function ValidateKMUnitName(aValue: String): Boolean;
-    function ValidateUtilsUnitName(aValue: String): Boolean;
+    function ValidateKMUnitName(const aValue: String): Boolean;
+    function ValidateUtilsUnitName(const aValue: String): Boolean;
     procedure AddAIPlayersToMPMaps(aAICommandTxt: String);
     procedure AddMissingAIPlayers;
     procedure AddAdvancedAIPlayersToMPMaps;
@@ -206,9 +208,12 @@ begin
   SKIP_RENDER := True;
   SKIP_SOUND := True;
   ExeDir := ExtractFilePath(ParamStr(0)) + '..\..\';
-  gLog := TKMLog.Create(ExtractFilePath(ParamStr(0)) + 'temp.log');
-  gGameApp := TKMGameApp.Create(nil, 1024, 768, False, nil, nil, nil, True);
-  gGameSettings.Autosave := False;
+  gLog := TKMLog.Create(ExtractFilePath(ParamStr(0)) + 'Batcher.log');
+  if aNeedGame then
+  begin
+    gGameApp := TKMGameApp.Create(nil, 1024, 768, False, nil, nil, nil, True);
+    gGameSettings.Autosave := False;
+  end;
 end;
 
 
@@ -736,13 +741,13 @@ begin
 end;
 
 
-function TForm1.ValidateKMUnitName(aValue: String): Boolean;
+function TForm1.ValidateKMUnitName(const aValue: String): Boolean;
 begin
   Result := AnsiEndsText('.pas', aValue) and AnsiStartsText('KM_', aValue);
 end;
 
 
-function TForm1.ValidateUtilsUnitName(aValue: String): Boolean;
+function TForm1.ValidateUtilsUnitName(const aValue: String): Boolean;
 begin
   Result := AnsiEndsText('.pas', aValue); //Utils could have any unit name
 end;
@@ -832,6 +837,27 @@ begin
 
   TearDown;
 end;
+
+procedure TForm1.Button15Click(Sender: TObject);
+var
+  str, filePath: string;
+begin
+  SetUp(False);
+  str := '';
+  for filePath in TDirectory.GetDirectories(ExeDir + PathDelim + 'src', '*', TSearchOption.soAllDirectories) do
+  begin
+    if filePath.EndsWith('__history') then Continue;
+    if filePath.EndsWith('__recovery') then Continue;
+    if filePath.Contains('LNet') then Continue;
+
+    str :=  str + '..\..\' + ExtractRelativePath(ExeDir, filePath) + ';';
+  end;
+
+  gLog.AddNoTime(str, False);
+  Memo1.Lines.Append(str);
+  TearDown;
+end;
+
 
 procedure TForm1.Button6Click(Sender: TObject);
 

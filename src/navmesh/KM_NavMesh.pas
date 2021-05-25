@@ -388,7 +388,7 @@ procedure TKMNavMesh.TieUpTilesWithPolygons();
         begin
           Indices[ Byte(SecondPoint) ] := fPolygons[aIdx].Indices[L];
           SecondPoint := True;
-          break;
+          Break;
         end;
       if SecondPoint then
       begin

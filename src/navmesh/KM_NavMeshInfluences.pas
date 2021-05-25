@@ -102,7 +102,7 @@ begin
       fHighEnemiesIdx := fHighEnemiesIdx - 1;
       fHighStatsIdx := fHighStatsIdx + 1;
       if not CanBeExpanded(aIdx) then
-        break;
+        Break;
     end;
 end;
 

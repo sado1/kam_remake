@@ -7,7 +7,7 @@ uses
   SysUtils, Controls, Classes, Math, KM_Defaults, KM_Controls, KM_Points,
   KM_InterfaceDefaults, KM_CommonTypes, KM_AIDefensePos,
   KM_Cursor, KM_Render, KM_Minimap, KM_Viewport, KM_ResFonts,
-  KM_ResTypes;
+  KM_ResTypes, KM_CommonClassesExt;
 
 
 type
@@ -18,6 +18,11 @@ type
     fDragScrollingViewportPos: TKMPointF;
     fOnUserAction: TKMUserActionEvent;
 
+    fLogStringList: TKMLimitedList<string>;
+
+    function GetLogString(aLimit: Integer): string;
+    procedure LogMessageHappened(const aLogMessage: UnicodeString);
+
     procedure ResetDragScrolling;
     procedure PaintDefences;
   protected
@@ -27,19 +32,23 @@ type
 
     fPaintDefences: Boolean;
 
+    Bevel_DebugInfo: TKMBevel;
+    Label_DebugInfo: TKMLabel;
+
     function IsDragScrollingAllowed: Boolean; virtual;
     function GetHintPositionBase: TKMPoint; override;
     function GetHintFont: TKMFont; override;
     function GetHintKind: TKMHintKind; override;
 
-    function GetToolBarWidth: Integer; virtual; abstract;
+    function GetDebugInfo: string; virtual;
+
+    procedure InitDebugControls;
   public
     constructor Create(aRender: TRender); reintroduce;
     destructor Destroy; override;
 
     property Minimap: TKMMinimap read fMinimap;
     property Viewport: TKMViewport read fViewport;
-    property ToolbarWidth: Integer read GetToolBarWidth;
     property OnUserAction: TKMUserActionEvent read fOnUserAction write fOnUserAction;
 
     function CursorToMapCoord(X, Y: Integer): TKMPointF;
@@ -54,11 +63,14 @@ type
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X,Y: Integer); override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X,Y: Integer); override;
 
+    procedure ShowDebugInfo;
+
     procedure GameSpeedChanged(aFromSpeed, aToSpeed: Single);
     procedure SyncUI(aMoveViewport: Boolean = True); virtual;
     procedure SyncUIView(const aCenter: TKMPointF; aZoom: Single = 1);
     procedure UpdateGameCursor(X, Y: Integer; Shift: TShiftState);
     procedure UpdateStateIdle(aFrameTime: Cardinal); virtual; abstract;
+    procedure UpdateState(aGlobalTickCount: Cardinal); override;
 
     procedure Paint; override;
   end;
@@ -177,8 +189,9 @@ const
 
 implementation
 uses
+  StrUtils, KromUtils,
   KM_Main, KM_Terrain, KM_RenderPool, KM_Resource, KM_ResCursors, KM_ResKeys, KM_HandsCollection, KM_GameParams,
-  KM_RenderUI, KM_CommonUtils, KM_Pics, KM_GameSettings;
+  KM_RenderUI, KM_CommonUtils, KM_Pics, KM_GameSettings, KM_Log;
 
 
 { TKMUserInterfaceGame }
@@ -187,7 +200,10 @@ begin
   inherited Create(aRender.ScreenX, aRender.ScreenY);
 
   fMinimap := TKMMinimap.Create(False, False);
-  fViewport := TKMViewport.Create(GetToolBarWidth, aRender.ScreenX, aRender.ScreenY);
+  fViewport := TKMViewport.Create(GetToolbarWidth, aRender.ScreenX, aRender.ScreenY);
+
+  gLog.AddOnLogEventSub(LogMessageHappened);
+  fLogStringList := TKMLimitedList<string>.Create(80); // 50 lines max
 
   fDragScrolling := False;
   fDragScrollingCursorPos.X := 0;
@@ -202,6 +218,9 @@ end;
 
 destructor TKMUserInterfaceGame.Destroy;
 begin
+  gLog.RemoveOnLogEventSub(LogMessageHappened);
+  fLogStringList.Free;
+
   FreeAndNil(fMinimap);
   FreeAndNil(fViewport);
   FreeAndNil(gRenderPool);
@@ -220,7 +239,7 @@ end;
 
 function TKMUserInterfaceGame.GetHintPositionBase: TKMPoint;
 begin
-  Result := KMPoint(GetToolBarWidth + 35, Panel_Main.Height);
+  Result := KMPoint(GetToolbarWidth + 35, Panel_Main.Height);
 end;
 
 
@@ -233,6 +252,75 @@ end;
 function TKMUserInterfaceGame.GetHintKind: TKMHintKind;
 begin
   Result := hkStatic;
+end;
+
+
+procedure TKMUserInterfaceGame.LogMessageHappened(const aLogMessage: UnicodeString);
+begin
+  if Self = nil then Exit;
+
+  if SHOW_LOG_IN_GUI or UPDATE_LOG_FOR_GUI then
+    fLogStringList.Add(ReplaceStr(DeleteDoubleSpaces(aLogMessage), EolW, '|'));
+end;
+
+
+
+function TKMUserInterfaceGame.GetLogString(aLimit: Integer): string;
+var
+  I: Integer;
+begin
+  Result := '';
+  // attach from the end, the most fresh log lines, till the limit
+  for I := fLogStringList.Count - 1 downto Max(fLogStringList.Count - aLimit - 1, 0) do
+    Result := fLogStringList[I] + '|' + Result;
+end;
+
+
+function TKMUserInterfaceGame.GetDebugInfo: string;
+begin
+  Result :='';
+
+  if SHOW_VIEWPORT_INFO then
+    Result := Result + 'Viewport: ' + fViewport.ToStr + '|';
+
+  if SHOW_FPS then
+    Result := Result + gMain.FPSString + '|';
+end;
+
+
+procedure TKMUserInterfaceGame.ShowDebugInfo;
+const
+  BEVEL_PAD = 20;
+var
+  S: string;
+  linesCnt: Integer;
+  textSize: TKMPoint;
+begin
+  S := GetDebugInfo;
+
+  // Add logs at the end
+  if SHOW_LOG_IN_GUI then
+  begin
+    linesCnt := (Bevel_DebugInfo.Parent.Height
+                  - Bevel_DebugInfo.Top
+                  - BEVEL_PAD
+                  - gRes.Fonts[Label_DebugInfo.Font].GetTextSize(S).Y)
+                div gRes.Fonts[Label_DebugInfo.Font].LineHeight;
+    S := S + '|Logs:|' + GetLogString(linesCnt - 1);
+  end;
+
+  Label_DebugInfo.Caption := S;
+  Label_DebugInfo.Visible := (Trim(S) <> '');
+
+  Assert(InRange(DEBUG_TEXT_FONT_ID, Ord(Low(TKMFont)), Ord(High(TKMFont))));
+  Label_DebugInfo.Font := TKMFont(DEBUG_TEXT_FONT_ID);
+
+  textSize := gRes.Fonts[Label_DebugInfo.Font].GetTextSize(S);
+
+  Bevel_DebugInfo.Width := IfThen(textSize.X <= 1, 0, textSize.X + BEVEL_PAD);
+  Bevel_DebugInfo.Height := IfThen(textSize.Y <= 1, 0, textSize.Y + BEVEL_PAD);
+
+  Bevel_DebugInfo.Visible := SHOW_DEBUG_OVERLAY_BEVEL and (Trim(S) <> '') ;
 end;
 
 
@@ -331,6 +419,18 @@ begin
   fDragScrolling := False;
   gRes.Cursors.Cursor := kmcDefault; //Reset cursor
   gMain.ApplyCursorRestriction;
+end;
+
+
+procedure TKMUserInterfaceGame.InitDebugControls;
+begin
+  // Debugging displays
+  Bevel_DebugInfo := TKMBevel.Create(Panel_Main, ToolbarWidth + 8 - 10, 133 - 10, Panel_Main.Width - ToolbarWidth - 8, 0);
+  Bevel_DebugInfo.BackAlpha := 0.5;
+  Bevel_DebugInfo.Hitable := False;
+  Bevel_DebugInfo.Hide;
+  Label_DebugInfo := TKMLabel.Create(Panel_Main, ToolbarWidth + 8, 133, '', fntMonospaced, taLeft);
+  Label_DebugInfo.Hide;
 end;
 
 
@@ -482,7 +582,7 @@ end;
 
 function TKMUserInterfaceGame.CursorToMapCoord(X, Y: Integer): TKMPointF;
 begin
-  Result.X := fViewport.Position.X + (X-fViewport.ViewRect.Right/2-GetToolBarWidth/2)/CELL_SIZE_PX/fViewport.Zoom;
+  Result.X := fViewport.Position.X + (X-fViewport.ViewRect.Right/2-GetToolbarWidth/2)/CELL_SIZE_PX/fViewport.Zoom;
   Result.Y := fViewport.Position.Y + (Y-fViewport.ViewRect.Bottom/2)/CELL_SIZE_PX/fViewport.Zoom;
   Result.Y := gTerrain.ConvertCursorToMapCoord(Result.X, Result.Y);
 end;
@@ -505,6 +605,14 @@ begin
 
     ObjectUID := gRenderPool.RenderList.GetSelectionUID(Float);
   end;
+end;
+
+
+procedure TKMUserInterfaceGame.UpdateState(aGlobalTickCount: Cardinal);
+begin
+  inherited;
+
+  ShowDebugInfo;
 end;
 
 

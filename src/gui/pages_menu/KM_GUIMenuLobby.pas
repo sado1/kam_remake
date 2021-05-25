@@ -217,7 +217,7 @@ var
 implementation
 uses
   KM_Log, KM_CommonTypes, KM_GameSettings, KM_ResLocales, KM_CommonUtils, KM_Sound, KM_ResSound, KM_RenderUI,
-  KM_Resource, KM_ResFonts, KM_NetPlayersList, KM_Points, KM_MapTypes,
+  KM_Resource, KM_ResFonts, KM_NetPlayersList, KM_Points, KM_MapTypes, KM_MapUtilsExt,
   KM_Networking,
   KM_ServerSettings;
 
@@ -1174,7 +1174,7 @@ end;
 
 procedure TKMMenuLobby.ReadmeClick(Sender: TObject);
 begin
-  if not gNetworking.MapInfo.ViewReadme then
+  if not TryOpenMapPDF(gNetworking.MapInfo) then
     gChat.AddLine(gResTexts[TX_LOBBY_PDF_ERROR]);
 end;
 

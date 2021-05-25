@@ -141,6 +141,8 @@ type
     function PlayReplayTick: Boolean;
 
     function PlayNextTick: Boolean;
+    function GetMapSize: TKMPoint;
+    function GetMapSizeInfo: UnicodeString;
   public
     GameResult: TKMGameResultMsg;
 
@@ -175,7 +177,8 @@ type
 
     procedure RestartReplay; //Restart the replay but keep current viewport position/zoom
 
-    function MapSizeInfo: UnicodeString;
+    property MapSizeInfo: UnicodeString read GetMapSizeInfo;
+    property MapSize: TKMPoint read GetMapSize;
 
     procedure GameMPPlay;
     procedure GameMPReadyToPlay;
@@ -481,7 +484,13 @@ begin
 end;
 
 
-function TKMGame.MapSizeInfo: UnicodeString;
+function TKMGame.GetMapSize: TKMPoint;
+begin
+  Result := KMPoint(gTerrain.MapX, gTerrain.MapY);
+end;
+
+
+function TKMGame.GetMapSizeInfo: UnicodeString;
 begin
   Result := 'Map size: ' + IntToStr(gTerrain.MapX) + ' x ' + IntToStr(gTerrain.MapY);
 end;
@@ -1596,7 +1605,11 @@ begin
       gRenderPool.Render(tickLag);
 
     aRender.SetRenderMode(rm2D);
-    fActiveInterface.Paint;
+
+    // Do not render UI when do save map to FBO
+    if not SAVE_MAP_TO_FBO_RENDER then
+      fActiveInterface.Paint;
+
     fGameInputProcess.Paint;
 
   finally
@@ -3048,7 +3061,7 @@ begin
     begin
       fAdvanceFrame := False;
       fIsPaused := True;
-      fGamePlayInterface.UpdateDebugInfo;
+      fGamePlayInterface.ShowDebugInfo;
     end;
   finally
     {$IFDEF PERFLOG}

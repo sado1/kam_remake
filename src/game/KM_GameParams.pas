@@ -70,6 +70,8 @@ type
 
     property MissionFullFilePath: string read fMissionFullFilePath write fMissionFullFilePath;
 
+    function GuessMissionFullFilePath: string;
+
     function IsCRCCalculated: Boolean;
 
     function IsMapEditor: Boolean;
@@ -183,6 +185,19 @@ begin
   Result := GuessMissionPathRel(fMissionFileRelSP, fName, fMapFullCRC, IsMultiplayer);
 end;
 
+
+function TKMGameParams.GuessMissionFullFilePath: string;
+var
+  missionRel: string;
+begin
+  if fMissionFullFilePath <> '' then Exit(fMissionFullFilePath);
+
+  Result := '';
+
+  missionRel := MissionFileRel;
+  if missionRel <> '' then
+    Result := ExeDir + missionRel;
+end;
 
 procedure TKMGameParams.SetBlockPointer(aBlockPointer: Boolean);
 begin

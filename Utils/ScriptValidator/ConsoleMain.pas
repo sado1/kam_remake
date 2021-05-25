@@ -57,11 +57,12 @@ const
     '||  Credits:                                                                     ||' + sLineBreak +
     '||    Programming > Krom                                                         ||' + sLineBreak +
     '||                > Lewin                                                        ||' + sLineBreak +
+    '||                > Rey                                                          ||' + sLineBreak +
     '||                                                                               ||' + sLineBreak +
     '||    Additional programming > Alex                                              ||' + sLineBreak +
     '||                           > Andreus                                           ||' + sLineBreak +
-    '||                           > Rey                                               ||' + sLineBreak +
     '||                           > Danjb                                             ||' + sLineBreak +
+    '||                           > ZblCoder                                          ||' + sLineBreak +
     '||                           > Thimo                                             ||' + sLineBreak +
     '||                                                                               ||' + sLineBreak +
     '++===============================================================================++' + sLineBreak;
@@ -73,6 +74,8 @@ uses
 { TMain }
 constructor TConsoleMain.Create;
 begin
+  inherited;
+
   fScripting := TKMScriptingCreator.CreateScripting(nil);
 end;
 
@@ -80,6 +83,8 @@ end;
 destructor TConsoleMain.Destroy;
 begin
   FreeAndNil(fScripting);
+
+  inherited;
 end;
 
 

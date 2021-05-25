@@ -83,9 +83,11 @@ type
     procedure ToggleLocale(const aLocale: AnsiString; aReturnToMenuPage: TKMMenuPageType);
     procedure NetworkInit;
     procedure SendMPGameInfo;
+    function CheckDATConsistency: Boolean;
+
     function RenderVersion: UnicodeString;
     procedure PrintScreen(const aFilename: UnicodeString = '');
-    function CheckDATConsistency: Boolean;
+    procedure SaveGameWholeMapToJPEG(const aFilename: UnicodeString = '');
 
     procedure PreloadGameResources;
 
@@ -985,7 +987,6 @@ begin
 
   if Assigned(fOnGameStart) and (gGame <> nil) then
     fOnGameStart(gGame.Params.Mode);
-
 end;
 
 
@@ -1076,6 +1077,7 @@ begin
   begin
     gMain.FormMain.SetExportGameStats(aGameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti]);
     gMain.FormMain.SetSaveEditableMission(aGameMode = gmMapEd);
+    gMain.FormMain.SetSaveGameWholeMapImage(True);
   end;
 
   if Assigned(FormLogistics) then
@@ -1107,6 +1109,7 @@ begin
     gMain.FormMain.SetExportGameStats((aGameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti])
                                        or (gGame.GameResult in [grWin, grDefeat]));
     gMain.FormMain.SetSaveEditableMission(False);
+    gMain.FormMain.SetSaveGameWholeMapImage(False);
   end;
 
   if Assigned(FormLogistics) then
@@ -1220,9 +1223,10 @@ begin
   gRender.EndFrame;
   gRender.Query.QueriesSwapBuffers;
 
-  if not aForPrintScreen and (gGame <> nil) then
-    if Assigned(fOnCursorUpdate) then
-      fOnCursorUpdate(SB_ID_OBJECT, 'Obj: ' + IntToStr(gCursor.ObjectUID));
+  if not aForPrintScreen
+    and (gGame <> nil)
+    and Assigned(fOnCursorUpdate) then
+    fOnCursorUpdate(SB_ID_OBJECT, 'Obj: ' + IntToStr(gCursor.ObjectUID));
 end;
 
 
@@ -1236,17 +1240,75 @@ procedure TKMGameApp.PrintScreen(const aFilename: UnicodeString = '');
 var
   strDate, strName: string;
 begin
+  // Looks like we need two frames to flush the render-ahead queue?
+  // Otherwise game controls are rendered too, f.e.
+  Render(True);
   Render(True);
   if aFilename = '' then
   begin
     DateTimeToString(strDate, 'yyyy-mm-dd hh-nn-ss', Now); //2007-12-23 15-24-33
-    strName := ExeDir + 'screenshots\KaM Remake ' + strDate + '.jpg';
+    strName := ExeDir + 'screenshots\KaM Remake ' + strDate + '.jpeg';
   end
   else
     strName := aFilename;
 
   ForceDirectories(ExtractFilePath(strName));
   gRender.DoPrintScreen(strName);
+end;
+
+
+procedure TKMGameApp.SaveGameWholeMapToJPEG(const aFilename: UnicodeString = '');
+var
+  dateStr, fileName: string;
+  screenX, screenY: Integer;
+  zoom, mapSizeX, mapSizeY, mapSizeMax, saveSizeMax: Single;
+  pos: TKMPointF;
+begin
+  if gGame = nil then Exit;
+
+  SAVE_MAP_TO_FBO_RENDER := True;
+  try
+    // Save viewport params
+    screenX := gRender.ScreenX;
+    screenY := gRender.ScreenY;
+    zoom := gGame.ActiveInterface.Viewport.Zoom;
+    pos := gGame.ActiveInterface.Viewport.Position;
+
+    // calc resize dimensions
+    // We show MapX - 1 tiles
+    mapSizeX := gGame.MapSize.X - 1;
+    // We show MapY - 1 + top padding for elevated tiles on the map top rows
+    mapSizeY := gGame.MapSize.Y - 1 + gGame.ActiveInterface.Viewport.TopPad;
+    mapSizeMax := Max(mapSizeX, mapSizeY);
+
+    saveSizeMax := Min(mapSizeMax * CELL_SIZE_PX, gRender.MaxFBOSize);
+
+    Resize(Round(saveSizeMax * mapSizeX / mapSizeMax), Round(saveSizeMax * mapSizeY / mapSizeMax));
+
+    // Zoom out as max as possible
+    gGame.ActiveInterface.Viewport.Zoom := 0.01;
+
+    // Render once is enough, since we render to an off-screen buffer (FBO)
+    Render(True);
+
+    if aFilename = '' then
+    begin
+      DateTimeToString(dateStr, 'yyyy-mm-dd hh-nn-ss', Now); //2007-12-23 15-24-33
+      fileName := ExeDir + 'screenshots\' + gGame.Params.Name + ' ' + dateStr + '.jpeg';
+    end
+    else
+      fileName := aFilename;
+
+    ForceDirectories(ExtractFilePath(fileName));
+    gRender.SaveFBOToFile(fileName);
+  finally
+    SAVE_MAP_TO_FBO_RENDER := False;
+  end;
+
+  // Restore viewport params
+  Resize(screenX, screenY);
+  gGame.ActiveInterface.Viewport.Zoom := zoom;
+  gGame.ActiveInterface.Viewport.Position := pos;
 end;
 
 

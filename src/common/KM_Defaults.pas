@@ -172,7 +172,10 @@ var
   SHOW_GAME_TICK          :Boolean = DEBUG_CFG; //Show game tick next to game time
   SHOW_FPS                :Boolean = False; //Show FPS
   SHOW_TERRAIN_IDS        :Boolean = False; //Show number of every tile terrain on it (also show layers terrain ids)
-  DO_DEBUG_TER_LAYERS     :Boolean = False; //Do we do debug terrain layers? If yes, then only chosen terrain layers will be rendered
+  SKIP_TER_RENDER_ANIMS   :Boolean = False; //Skip render terrain animations
+  SKIP_TER_RENDER_LIGHT   :Boolean = False; //Skip render terrain lighting
+  SKIP_TER_RENDER_SHADOW  :Boolean = False; //Skip render terrain shadows
+  DO_DEBUG_TER_RENDER     :Boolean = False; //Do we do debug terrain layers? If yes, then only chosen terrain layers will be rendered
   DEBUG_TERRAIN_LAYERS    :set of Byte = [0,1,2,3]; //Terrain layers to render while debugging with DO_DEBUG_LAYERS
   SKIP_RENDER_TER_LAYERS  :Boolean = False; //Do not render terrain layers
   SHOW_TERRAIN_KINDS      :Boolean = False; //Show terrain kind ids on every tile corner
@@ -224,6 +227,8 @@ var
   OVERLAY_AI_VECTOR_FIELD :Boolean = False; //Show Vector field (combat AI)
   OVERLAY_AI_CLUSTERS     :Boolean = False; //Show combat clusters (combat AI)
   OVERLAY_AI_ALLIEDGROUPS :Boolean = False; //Show show allied groups (combat AI)
+  {Render}
+  SAVE_MAP_TO_FBO_RENDER  :Boolean = False; //Do Render is performed into FBO off-screen buffer?
   {Stats}
   SHOW_SPRITE_COUNT       :Boolean = False; //display rendered controls/sprites count
   SHOW_POINTER_COUNT      :Boolean = False; //Show debug total count of unit/house pointers being tracked
@@ -235,6 +240,7 @@ var
   SHOW_NET_PACKETS_LIMIT  :Integer = 1;
   SHOW_SELECTED_OBJ_INFO  :Boolean = False; //Show selected object (Unit/Group + Unit/House) data (UID/order/action etc)
   SHOW_HANDS_INFO         :Boolean = False; //Show hands info
+  SHOW_VIEWPORT_INFO      :Boolean = False; //Show viewport info
   SHOW_GIP                :Boolean = False; //Show GIP commands
   SHOW_GIP_AS_BYTES       :Boolean = False; //Show GIP commands as bytes (or as 'parsed type' if False)
   INI_HITPOINT_RESTORE    :Boolean = False; //Use the hitpoint restore rate from the INI file to compare with KaM

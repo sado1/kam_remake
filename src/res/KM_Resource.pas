@@ -3,7 +3,7 @@
 interface
 uses
   {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
-  Classes, Graphics, SysUtils,
+  Classes, SysUtils,
   KM_CommonTypes, KM_Defaults, KM_Pics, KM_WorkerThread,
 
   KM_ResCursors,

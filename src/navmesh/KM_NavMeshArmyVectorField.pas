@@ -573,7 +573,7 @@ var
     begin
       AssignedGroups[K] := True;
       if (K < Ally.GroupsCount - 1) AND (Ally.Groups[K] <> Ally.Groups[K + 1]) then
-        break;
+        Break;
     end;
     // Add group to array
     with CCT[aCCTIdx].CounterWeight do
@@ -632,7 +632,7 @@ begin
         if (CCT[L].Cluster = @fClusters.Clusters[BestCCTIdx]) then
         begin
           AddGroup(K, L);
-          break;
+          Break;
         end;
     end;
     G := Ally.Groups[K]; // Skip following group if it is the same group
@@ -669,7 +669,7 @@ begin
           if not AssignedGroups[K] AND ((BestGIdx < 0) OR (Distances[K] < Distances[BestGIdx])) then
             BestGIdx := K;
         if (BestGIdx < 0) then
-          break;
+          Break;
         AddGroup(BestGIdx, BestCCTIdx);
       end;
     end;
@@ -705,7 +705,7 @@ begin
           if not AssignedGroups[K] AND ((BestGIdx < 0) OR (Distances[K] < Distances[BestGIdx])) then
             BestGIdx := K;
         if (BestGIdx < 0) then
-          break;
+          Break;
         AddGroup(BestGIdx, BestCCTIdx);
       end;
     end;
@@ -887,7 +887,7 @@ procedure TArmyVectorField.FindPositions();
               BestIdx := NearbyIdx;
           end;
           if (Distance > MAX_WALKING_DISTANCE) OR (BestIdx = 0) OR (fVectorField[PolyIdx].Distance < fVectorField[BestIdx].Distance) then
-            break;
+            Break;
           Distance := Distance + Abs(Integer(fQueueArray[ PolyIdx ].Distance) - Integer(fQueueArray[ BestIdx ].Distance));
           PolyIdx := BestIdx;
         end;

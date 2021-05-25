@@ -57,7 +57,7 @@ type
   TIntegerStringEvent = procedure (aValue: Integer; const aText: UnicodeString) of object;
   TBooleanFunc = function(Obj: TObject): Boolean of object;
   TBooleanWordFunc = function (aValue: Word): Boolean of object;
-  TBooleanStringFunc = function (aValue: String): Boolean of object;
+  TBooleanStringFunc = function (const aValue: String): Boolean of object;
   TBooleanFuncSimple = function: Boolean of object;
   TBoolIntFuncSimple = function (aValue: Integer): Boolean of object;
   TBoolCardFuncSimple = function (aValue: Cardinal): Boolean of object;
