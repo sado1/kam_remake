@@ -31,6 +31,7 @@ type
     procedure LoadFromRXFile(const aFileName: string);
     procedure LoadFromFolder(const aFolder: string);
     procedure SaveToRXXFile(const aFileName: string);
+    procedure SaveToRXAFile(const aFileName: string);
     function TrimSprites: Cardinal; //For debug
     procedure ClearTemp; override;
     procedure GetImageToBitmap(aIndex: Integer; aBmp, aMask: TBitmap);
@@ -44,7 +45,9 @@ uses
   KM_SoftShadows,
   KM_ResTypes,
   KM_PNG,
-  KM_CommonTypes;
+  KM_CommonTypes,
+  KM_RenderTypes,
+  KM_CommonClasses;
 
 
 var
@@ -618,6 +621,72 @@ begin
   Allocate(fRXData.Count);
 
   OverloadFromFolder(aFolder);
+end;
+
+
+procedure TKMSpritePackEdit.SaveToRXAFile(const aFileName: string);
+var
+  I, K, Count: Integer;
+  SAT: TSpriteAtlasType;
+  InputStream: TKMemoryStreamBinary;
+  OutputStream: TFileStream;
+  CompressionStream: TCompressionStream;
+  baseRAM, idealRAM, colorRAM, texCount: Cardinal;
+begin
+  if IsEmpty then Exit;
+
+  MakeGFX_BinPacking(tfRGBA8, 1, baseRAM, colorRAM, texCount, False, nil);
+
+  ForceDirectories(ExtractFilePath(aFileName));
+
+  InputStream := TKMemoryStreamBinary.Create;
+
+  //Sprite info
+  InputStream.Write(fRXData.Count);
+  InputStream.Write(fRXData.Flag[1], fRXData.Count);
+
+  for I := 1 to fRXData.Count do
+    if fRXData.Flag[I] = 1 then
+    begin
+      InputStream.Write(fRXData.Size[I].X);
+      InputStream.Write(fRXData.Size[I].Y);
+      InputStream.Write(fRXData.Pivot[I].X);
+      InputStream.Write(fRXData.Pivot[I].Y);
+      if fRT = rxUnits then
+        InputStream.Write(fRXData.SizeNoShadow[I].left, 16);
+      InputStream.Write(fRXData.HasMask[I]);
+    end;
+
+  //Atlases
+  for SAT := Low(TSpriteAtlasType) to High(TSpriteAtlasType) do
+  begin
+    Count := Length(fGFXPrepData[SAT]);
+    InputStream.Write(Count);
+    for I := Low(fGFXPrepData[SAT]) to High(fGFXPrepData[SAT]) do
+      with fGFXPrepData[SAT, I] do
+      begin
+        InputStream.Write(SpriteInfo.Width);
+        InputStream.Write(SpriteInfo.Height);
+        Count := Length(SpriteInfo.Sprites);
+        InputStream.Write(Count);
+        for K := Low(SpriteInfo.Sprites) to High(SpriteInfo.Sprites) do
+        begin
+          InputStream.Write(SpriteInfo.Sprites[K].SpriteID);
+          InputStream.Write(SpriteInfo.Sprites[K].PosX);
+          InputStream.Write(SpriteInfo.Sprites[K].PosY);
+        end;
+        InputStream.Write(TexType, SizeOf(TTexFormat));
+        InputStream.Write(Data[0], Length(Data)*SizeOf(Data[0]));
+      end;
+  end;
+
+  OutputStream := TFileStream.Create(aFileName, fmCreate);
+  CompressionStream := TCompressionStream.Create(clMax, OutputStream);
+  InputStream.Position := 0;
+  CompressionStream.CopyFrom(InputStream, InputStream.Size);
+  CompressionStream.Free;
+  OutputStream.Free;
+  InputStream.Free;
 end;
 
 
