@@ -3,7 +3,7 @@ unit KM_Networking;
 interface
 uses
   {$IFDEF Unix} LCLIntf, {$ENDIF}
-  Classes, SysUtils, TypInfo, Forms, Generics.Collections,
+  Classes, SysUtils, TypInfo, Generics.Collections,
   KromUtils,
   KM_Console,
   KM_CommonClasses, KM_CommonTypes, KM_NetworkClasses, KM_NetworkTypes, KM_Defaults, KM_Points,
