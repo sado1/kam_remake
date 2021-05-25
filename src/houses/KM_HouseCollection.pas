@@ -384,7 +384,7 @@ begin
       htWoodcutters:   T := TKMHouseWoodcutters.Load(LoadStream);
       htArmorWorkshop: T := TKMHouseArmorWorkshop.Load(LoadStream);
       htTownHall:      T := TKMHouseTownHall.Load(LoadStream);
-      else              T := TKMHouse.Load(LoadStream);
+      else             T := TKMHouse.Load(LoadStream);
     end;
 
     if T <> nil then
