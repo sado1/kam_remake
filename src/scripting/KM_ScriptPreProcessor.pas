@@ -14,10 +14,6 @@ type
   // and handler of our custom preprocessor directives
   TKMScriptPreProcessor = class
   private
-    // in silent mode we don't parse event handlers and console commands
-    // since we affect global variables gScriptEvents
-    // but still parse LoadCustomTHTroopCost LoadCustomMarketGoldPrice, since they could be used in TKMapInfo.Create
-    fSilentMode: Boolean;
     fDestroyErrorHandler: Boolean;
     fScriptFilesInfo: TKMScriptFilesCollection;
     fErrorHandler: TKMScriptErrorHandler;
@@ -36,9 +32,14 @@ type
     function ScriptOnNeedFile(Sender: TPSPreProcessor; const aCallingFileName: AnsiString; var aFileName, aOutput: AnsiString): Boolean;
     procedure ScriptOnProcessDirective(Sender: TPSPreProcessor; Parser: TPSPascalPreProcessorParser; const Active: Boolean;
                                         const DirectiveName, DirectiveParam: tbtString; var aContinue: Boolean);
+  protected
+    property ErrorHandler: TKMScriptErrorHandler read fErrorHandler;
+
+    function AllowGameUpdate: Boolean; virtual;
+    function TryLoadCustomEventDirectives(const aDirectiveName, aDirectiveParam: string; aParser: TPSPascalPreProcessorParser): Boolean; virtual;
+    function TryLoadCustomConsoleCommands(const aDirectiveName, aDirectiveParam: string; aParser: TPSPascalPreProcessorParser): Boolean; virtual;
   public
-    constructor Create(aSilentMode: Boolean = False); overload;
-    constructor Create(aOnScriptError: TUnicodeStringEvent); overload;
+    constructor Create(aOnScriptError: TUnicodeStringEvent = nil); overload;
     constructor Create(aOnScriptError: TUnicodeStringEvent; aErrorHandler: TKMScriptErrorHandler); overload;
     destructor Destroy; override;
 
@@ -59,24 +60,14 @@ uses
   KromUtils,
   KM_GameParams,
   KM_ResWares, KM_ResUnits, KM_ResTypes,
-  KM_ScriptingTypes, KM_ScriptingEvents,
+  KM_ScriptingTypes,
   KM_CampaignTypes,
   KM_CommonUtils,
   KM_Log, KM_FileIO,
   KM_Defaults;
 
 { TKMScriptingPreProcessor }
-constructor TKMScriptPreProcessor.Create(aSilentMode: Boolean = False);
-var
-  onScriptError: TUnicodeStringEvent;
-begin
-  onScriptError := nil;
-  Create(onScriptError);
-  fSilentMode := aSilentMode; // After overloaded Create call
-end;
-
-
-constructor TKMScriptPreProcessor.Create(aOnScriptError: TUnicodeStringEvent);
+constructor TKMScriptPreProcessor.Create(aOnScriptError: TUnicodeStringEvent = nil);
 begin
   Create(aOnScriptError, TKMScriptErrorHandler.Create(aOnScriptError));
   fDestroyErrorHandler := True;
@@ -86,8 +77,6 @@ end;
 constructor TKMScriptPreProcessor.Create(aOnScriptError: TUnicodeStringEvent; aErrorHandler: TKMScriptErrorHandler);
 begin
   inherited Create;
-
-  fSilentMode := False;
 
   fPSPreProcessor := TPSPreProcessor.Create;
   fPSPreProcessor.OnNeedFile := ScriptOnNeedFile;
@@ -154,7 +143,7 @@ begin
   else
     // We could run pre processor from script validator, f.e., so we will have no gGameParams initialized
 
-    // fScriptFilesInfo.fMainFilePath could have absolute or relative path
+    // fScriptFilesInfo.MainFilePath could have absolute or relative path
     // ScriptValidator ExeDir could lead to some different folder
     Result :=  (Pos(ExeDir + CAMPAIGNS_FOLDER_NAME, fScriptFilesInfo.MainFilePath) = 1)
             or (Pos(CAMPAIGNS_FOLDER_NAME, fScriptFilesInfo.MainFilePath) = 1)
@@ -204,113 +193,37 @@ begin
 end;
 
 
+function TKMScriptPreProcessor.AllowGameUpdate: Boolean;
+begin
+  Result := False;
+end;
+
+
+// Returns true if we will handle directive
+function TKMScriptPreProcessor.TryLoadCustomEventDirectives(const aDirectiveName, aDirectiveParam: string; aParser: TPSPascalPreProcessorParser): Boolean;
+const
+  CUSTOM_EVENT_DIRECTIVE = 'EVENT';
+begin
+  Result := UpperCase(aDirectiveName) = UpperCase(CUSTOM_EVENT_DIRECTIVE);
+end;
+
+
+// Returns true if we will handle directive
+function TKMScriptPreProcessor.TryLoadCustomConsoleCommands(const aDirectiveName, aDirectiveParam: string; aParser: TPSPascalPreProcessorParser): Boolean;
+const
+  CUSTOM_CONSOLE_COMMAND_DIRECTIVE = 'COMMAND';
+  CUSTOM_CONSOLE_COMMAND_DIRECTIVE_SHORT = 'CMD';
+begin
+  Result := (UpperCase(aDirectiveName) = UpperCase(CUSTOM_CONSOLE_COMMAND_DIRECTIVE))
+         or (UpperCase(aDirectiveName) = UpperCase(CUSTOM_CONSOLE_COMMAND_DIRECTIVE_SHORT));
+end;
+
+
 procedure TKMScriptPreProcessor.ScriptOnProcessDirective(Sender: TPSPreProcessor; Parser: TPSPascalPreProcessorParser; const Active: Boolean;
                                                             const DirectiveName, DirectiveParam: tbtString; var aContinue: Boolean);
 const
-  CUSTOM_EVENT_DIRECTIVE = 'EVENT';
-  CUSTOM_CONSOLE_COMMAND_DIRECTIVE = 'COMMAND';
-  CUSTOM_CONSOLE_COMMAND_DIRECTIVE_SHORT = 'CMD';
   CUSTOM_TH_TROOP_COST_DIRECTIVE = 'CUSTOM_TH_TROOP_COST';
   CUSTOM_MARKET_GOLD_PRICE_DIRECTIVE = 'CUSTOM_MARKET_GOLD_PRICE_X';
-
-  function AllowGameUpdate: Boolean;
-  begin
-    Result := ((gGameParams <> nil) and not gGameParams.IsMapEditor)
-              or ((gGameParams = nil) {and (gScripting <> nil)});
-  end;
-
-  procedure LoadCustomEventDirectives;
-  var
-    errorStr: UnicodeString;
-    eventType: Integer;
-    directiveParamSL: TStringList;
-  begin
-    //Load custom event handlers
-    if UpperCase(DirectiveName) = UpperCase(CUSTOM_EVENT_DIRECTIVE) then
-    begin
-      aContinue := False; //Custom directive should not be proccesed any further by pascal script preprocessor, as it will cause an error
-
-      // Skip event handlers in silent mode
-      if fSilentMode then Exit;
-
-      //Do not do anything for while in MapEd
-      //But we have to allow to preprocess file, as preprocessed file used for CRC calc in MapEd aswell
-      //gGame could be nil here, but that does not change final CRC, so we can Exit
-      if not AllowGameUpdate then Exit;
-
-      try
-        directiveParamSL := TStringList.Create;
-        try
-          StringSplit(DirectiveParam, ':', directiveParamSL);
-          eventType := GetEnumValue(TypeInfo(TKMScriptEventType), Trim(directiveParamSL[0]));
-
-          if eventType = -1 then
-          begin
-            fErrorHandler.AppendErrorStr(Format('Unknown directive ''%s'' at [%d:%d]' + sLineBreak,
-                                                [Trim(directiveParamSL[0]), Parser.Row, Parser.Col]));
-            if fValidationIssues <> nil then
-              fValidationIssues.AddError(Parser.Row, Parser.Col, Trim(directiveParamSL[0]), 'Unknown directive');
-          end else
-            gScriptEvents.AddEventHandlerName(TKMScriptEventType(eventType), AnsiString(Trim(directiveParamSL[1])));
-        finally
-          directiveParamSL.Free;
-        end;
-      except
-        on E: Exception do
-          begin
-            errorStr := Format('Error loading directive ''%s'' at [%d:%d]', [Parser.Token, Parser.Row, Parser.Col]);
-            fErrorHandler.AppendErrorStr(errorStr, errorStr + ' Exception: ' + E.Message
-              {$IFDEF WDC} + sLineBreak + E.StackTrace {$ENDIF});
-            if fValidationIssues <> nil then
-              fValidationIssues.AddError(Parser.Row, Parser.Col, Parser.Token, 'Error loading directive');
-          end;
-      end;
-    end;
-  end;
-
-  procedure LoadCustomConsoleCommands;
-  var
-    cmdName, procName: AnsiString;
-    errorStr: UnicodeString;
-    SL: TStringList;
-  begin
-    //Load custom event handlers
-    if (UpperCase(DirectiveName) = UpperCase(CUSTOM_CONSOLE_COMMAND_DIRECTIVE))
-      or (UpperCase(DirectiveName) = UpperCase(CUSTOM_CONSOLE_COMMAND_DIRECTIVE_SHORT)) then
-    begin
-      aContinue := False; //Custom directive should not be proccesed any further by pascal script preprocessor, as it will cause an error
-
-      // Skip console commands in silent mode
-      if fSilentMode then Exit;
-
-      //Do not do anything for while in MapEd
-      //But we have to allow to preprocess file, as preprocessed file used for CRC calc in MapEd aswell
-      //gGame could be nil here, but that does not change final CRC, so we can Exit
-      if not AllowGameUpdate then Exit;
-
-      try
-        SL := TStringList.Create;
-        try
-          StringSplit(DirectiveParam, ':', SL);
-          cmdName := AnsiString(Trim(SL[0]));
-          procName := AnsiString(Trim(SL[1]));
-
-          gScriptEvents.AddConsoleCommand(cmdName, procName);
-        finally
-          FreeAndNil(SL);
-        end;
-      except
-        on E: Exception do
-          begin
-            errorStr := Format('Error loading command ''%s'' at [%d:%d]', [Parser.Token, Parser.Row, Parser.Col]);
-            fErrorHandler.AppendErrorStr(errorStr, errorStr + ' Exception: ' + E.Message
-              {$IFDEF WDC} + sLineBreak + E.StackTrace {$ENDIF});
-            if fValidationIssues <> nil then
-              fValidationIssues.AddError(Parser.Row, Parser.Col, Parser.Token, 'Error loading command');
-          end;
-      end;
-    end;
-  end;
 
   procedure LoadCustomTHTroopCost;
   var
@@ -440,7 +353,7 @@ const
           //gGame could be nil here, but that does not change final CRC, so we can Exit
           if not AllowGameUpdate then Exit;
 
-          //Update actual troop cost
+          //Update actual market prices
           gResWares[wtGoldOre].MarketPriceMultiplier := goldOrePriceX;
           gResWares[wtGold].MarketPriceMultiplier := goldPriceX;
 
@@ -472,8 +385,12 @@ begin
       or (DirectiveName = 'UNDEF')) then
     fScriptFilesInfo.HasDefDirectives := True;
 
-  LoadCustomEventDirectives;
-  LoadCustomConsoleCommands;
+  if TryLoadCustomEventDirectives(DirectiveName, DirectiveParam, Parser) then
+    aContinue := False; //Custom directive should not be proccesed any further by pascal script preprocessor, as it will cause an error
+
+  if TryLoadCustomConsoleCommands(DirectiveName, DirectiveParam, Parser) then
+    aContinue := False; //Custom directive should not be proccesed any further by pascal script preprocessor, as it will cause an error
+
   LoadCustomTHTroopCost;
   LoadCustomMarketGoldPrice;
 end;

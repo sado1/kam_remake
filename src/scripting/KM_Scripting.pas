@@ -54,7 +54,7 @@ type
 //    function GetCodeLine(aRowNum: Cardinal): AnsiString;
 //    function FindCodeLine(aRowNumber: Integer; out aFileNamesArr: TKMStringArray; out aRowsArr: TIntegerArray): Integer;
     procedure RecreateValidationIssues;
-    constructor Create(aOnScriptError: TUnicodeStringEvent); // Scripting has to be created via special TKMScriptingCreator
+    constructor Create(aOnScriptError: TUnicodeStringEvent; aForGame: Boolean); // Scripting has to be created via special TKMScriptingCreator
   public
     destructor Destroy; override;
 
@@ -90,6 +90,8 @@ type
   TKMScriptingCreator = class
   public
     class function CreateScripting(aOnScriptError: TUnicodeStringEvent): TKMScripting;
+    class function CreateGameScripting(aOnScriptError: TUnicodeStringEvent): TKMScripting;
+    class function IsScriptingCreated: Boolean;
   end;
 
 
@@ -113,7 +115,7 @@ const
 implementation
 uses
   TypInfo, Math, KromUtils, KM_GameParams, KM_Resource, KM_ResUnits, KM_Log, KM_CommonUtils, KM_ResWares,
-  KM_ScriptingConsoleCommands,
+  KM_ScriptingConsoleCommands, KM_ScriptPreProcessorGame,
   KM_ResTypes, KM_CampaignTypes;
 
 var
@@ -152,13 +154,31 @@ begin
   if gScripting <> nil then // Should never happen in 1 application, as only 1 TKMScripting object is needed usually
     FreeAndNil(gScripting);
 
-  gScripting := TKMScripting.Create(aOnScriptError);
+  gScripting := TKMScripting.Create(aOnScriptError, False);
   Result := gScripting;
 end;
 
 
+//We need to save pointer to scripting object (in gScripting), as it is used by ScriptOnUsesFunc/ScriptOnUseVariableProc/ScriptOnExportCheckFunc
+//These functions are regular methods and need TKMScripting object in global scope
+class function TKMScriptingCreator.CreateGameScripting(aOnScriptError: TUnicodeStringEvent): TKMScripting;
+begin
+  if gScripting <> nil then // Should never happen in 1 application, as only 1 TKMScripting object is needed usually
+    FreeAndNil(gScripting);
+
+  gScripting := TKMScripting.Create(aOnScriptError, True);
+  Result := gScripting;
+end;
+
+
+class function TKMScriptingCreator.IsScriptingCreated: Boolean;
+begin
+  Result := gScripting <> nil;
+end;
+
+
 { TKMScripting }
-constructor TKMScripting.Create(aOnScriptError: TUnicodeStringEvent);
+constructor TKMScripting.Create(aOnScriptError: TUnicodeStringEvent; aForGame: Boolean);
 begin
   inherited Create;
 
@@ -172,7 +192,11 @@ begin
 
   // Global object to get events
   fErrorHandler := TKMScriptErrorHandler.Create(aOnScriptError);
-  fPreProcessor := TKMScriptPreProcessor.Create(aOnScriptError, fErrorHandler); //Use same error handler for PreProcessor and Scripting
+  //Use same error handler for PreProcessor and Scripting
+  if aForGame then
+    fPreProcessor := TKMScriptPreProcessorGame.Create(aOnScriptError, fErrorHandler) // Game scripting
+  else
+    fPreProcessor := TKMScriptPreProcessor.Create(aOnScriptError, fErrorHandler); // validator scripting
 
   gScriptEvents := TKMScriptEvents.Create(fExec, fPreProcessor.PSPreProcessor, fIDCache);
   fStates := TKMScriptStates.Create(fIDCache);

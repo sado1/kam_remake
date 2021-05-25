@@ -400,7 +400,7 @@ begin
   gLog.AddTime('<== Game creation is done ==>');
 
   gScriptSounds := TKMScriptSoundsManager.Create; //Currently only used by scripting
-  fScripting := TKMScriptingCreator.CreateScripting(ShowScriptError);
+  fScripting := TKMScriptingCreator.CreateGameScripting(ShowScriptError);
 
   fIgnoreConsistencyCheckErrors := False;
 

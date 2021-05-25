@@ -349,7 +349,7 @@ begin
     if FileExists(scriptFile) then
     begin
       othersCRC := othersCRC xor Adler32CRC(scriptFile);
-      scriptPreProcessor := TKMScriptPreProcessor.Create(True);
+      scriptPreProcessor := TKMScriptPreProcessor.Create;
       try
         if scriptPreProcessor.PreProcessFile(scriptFile) then
         begin
