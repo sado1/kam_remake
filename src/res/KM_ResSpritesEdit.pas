@@ -626,7 +626,7 @@ end;
 
 procedure TKMSpritePackEdit.SaveToRXAFile(const aFileName: string);
 var
-  I, K, Count: Integer;
+  I, Count: Integer;
   SAT: TSpriteAtlasType;
   InputStream: TMemoryStream;
   OutputStream: TFileStream;
@@ -667,12 +667,7 @@ begin
         InputStream.Write(SpriteInfo.Height, 2);
         Count := Length(SpriteInfo.Sprites);
         InputStream.Write(Count, 4);
-        for K := Low(SpriteInfo.Sprites) to High(SpriteInfo.Sprites) do
-        begin
-          InputStream.Write(SpriteInfo.Sprites[K].SpriteID, 4);
-          InputStream.Write(SpriteInfo.Sprites[K].PosX, 2);
-          InputStream.Write(SpriteInfo.Sprites[K].PosY, 2);
-        end;
+        InputStream.Write(SpriteInfo.Sprites[0], Count*SizeOf(SpriteInfo.Sprites[0]));
         InputStream.Write(TexType, SizeOf(TTexFormat));
         Count := Length(Data);
         InputStream.Write(Count, 4);

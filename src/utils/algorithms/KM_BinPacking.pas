@@ -16,7 +16,7 @@ type
 
   TBinItem = packed record
     Width, Height: Word;
-    Sprites: array of record
+    Sprites: array of packed record
       SpriteID: Integer;
       PosX, PosY: Word;
     end;

@@ -659,7 +659,7 @@ end;
 
 procedure TKMSpritePack.LoadFromRXAFile(const aFileName: string);
 var
-  I, K: Integer;
+  I: Integer;
   SAT: TSpriteAtlasType;
   rxxCount, atlasCount, spriteCount, dataCount: Integer;
   inputStream: TFileStream;
@@ -713,12 +713,7 @@ begin
           decompressionStream.Read(SpriteInfo.Height, 2);
           decompressionStream.Read(spriteCount, 4);
           SetLength(SpriteInfo.Sprites, spriteCount);
-          for K := Low(SpriteInfo.Sprites) to High(SpriteInfo.Sprites) do
-          begin
-            decompressionStream.Read(SpriteInfo.Sprites[K].SpriteID, 4);
-            decompressionStream.Read(SpriteInfo.Sprites[K].PosX, 2);
-            decompressionStream.Read(SpriteInfo.Sprites[K].PosY, 2);
-          end;
+          decompressionStream.Read(SpriteInfo.Sprites[0], spriteCount*SizeOf(SpriteInfo.Sprites[0]));
           decompressionStream.Read(TexType, SizeOf(TTexFormat));
           decompressionStream.Read(dataCount, 4);
           SetLength(Data, dataCount);
