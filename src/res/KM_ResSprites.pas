@@ -71,7 +71,7 @@ type
     fRT: TRXType;
     fRXData: TRXData;
 
-    gGFXPrepData: array[TSpriteAtlasType] of  // for each atlas type
+    fGFXPrepData: array[TSpriteAtlasType] of  // for each atlas type
                     array of                  // Atlases
                       record                  // Atlas data, needed for Texture Atlas Generation
                         SpriteInfo: TBinItem;
@@ -1085,12 +1085,12 @@ procedure TKMSpritePack.MakeGFX_BinPacking(aTexType: TTexFormat; aStartingIndex:
         //Now that we know texture IDs we can fill GFXData structure
         SetGFXData(Tx, SpriteInfo[I], aMode, fRT);
       end else begin
-        Assert(InRange(I, Low(gGFXPrepData[aMode]), High(gGFXPrepData[aMode])),
-               Format('Preloading sprite index out of range: %d, range [%d;%d]', [I, Low(gGFXPrepData[aMode]), High(gGFXPrepData[aMode])]));
+        Assert(InRange(I, Low(fGFXPrepData[aMode]), High(fGFXPrepData[aMode])),
+               Format('Preloading sprite index out of range: %d, range [%d;%d]', [I, Low(fGFXPrepData[aMode]), High(fGFXPrepData[aMode])]));
         // Save prepared data for generating later (in main thread)
-        gGFXPrepData[aMode, I].SpriteInfo := SpriteInfo[I];
-        gGFXPrepData[aMode, I].TexType := aTexType;
-        gGFXPrepData[aMode, I].Data := TD;
+        fGFXPrepData[aMode, I].SpriteInfo := SpriteInfo[I];
+        fGFXPrepData[aMode, I].TexType := aTexType;
+        fGFXPrepData[aMode, I].Data := TD;
       end;
 
       if aMode = saBase then
@@ -1149,7 +1149,7 @@ begin
 
   if StopExec then Exit; //Our thread could be terminated and asked to stop. Exit immidiately then
 
-  SetLength(gGFXPrepData[saBase], Length(spriteInfo));
+  SetLength(fGFXPrepData[saBase], Length(spriteInfo));
   PrepareAtlases(spriteInfo, saBase, aTexType);
 
   if StopExec then Exit;
@@ -1170,7 +1170,7 @@ begin
   SetLength(spriteInfo, 0);
   BinPack(spriteSizes, atlasSize, fPad, spriteInfo);
   if StopExec then Exit;
-  SetLength(gGFXPrepData[saMask], Length(spriteInfo));
+  SetLength(fGFXPrepData[saMask], Length(spriteInfo));
   PrepareAtlases(spriteInfo, saMask, tfAlpha8);
 end;
 
@@ -1204,7 +1204,7 @@ var
   SAT: TSpriteAtlasType;
 begin
   for SAT := Low(TSpriteAtlasType) to High(TSpriteAtlasType) do
-    SetLength(gGFXPrepData[SAT], 0);
+    SetLength(fGFXPrepData[SAT], 0);
 end;
 
 {$IFDEF LOAD_GAME_RES_ASYNC}
@@ -1219,9 +1219,9 @@ var
   texFilter: TFilterType;
 begin
   for SAT := Low(TSpriteAtlasType) to High(TSpriteAtlasType) do
-    for I := Low(gGFXPrepData[SAT]) to High(gGFXPrepData[SAT]) do
+    for I := Low(fGFXPrepData[SAT]) to High(fGFXPrepData[SAT]) do
     begin
-      with gGFXPrepData[SAT,I] do
+      with fGFXPrepData[SAT,I] do
       begin
         texFilter := ftNearest;
         if LINEAR_FILTER_SPRITES and (fRT in [rxTrees, rxHouses, rxUnits]) then
