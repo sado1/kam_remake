@@ -84,6 +84,7 @@ type
     fSize: TKMMapSize;
     fSizeText: String;
     fCustomScriptParams: TKMCustomScriptParamDataArray;
+
     procedure ResetInfo;
     procedure LoadFromStreamObj(aStreamObj: TObject; const aPath: UnicodeString);
     procedure LoadFromFile(const aPath: UnicodeString);
@@ -91,7 +92,6 @@ type
     procedure SaveToFile(const aPath: UnicodeString);
     function GetSize: TKMMapSize;
     function GetSizeText: String;
-    function DetermineReadmeFilePath: String;
     function GetFavouriteMapPic: TKMPic;
     function GetCanBeHumanCount: Byte;
     function GetCanBeOnlyHumanCount: Byte;
@@ -151,7 +151,7 @@ type
     function AIOnlyLocCount: Byte;
     function FileNameWithoutHash: UnicodeString;
     function HasReadme: Boolean;
-    function ViewReadme: Boolean;
+    function DetermineReadmeFilePath: String;
     function GetLobbyColor: Cardinal;
     function IsFilenameEndMatchHash: Boolean;
     function IsPlayableForSP: Boolean;
@@ -813,6 +813,8 @@ end;
 
 function TKMapInfo.DetermineReadmeFilePath: String;
 begin
+  if Self = nil then Exit('');
+  
   Assert(gGameSettings <> nil, 'gGameSettings = nil!');
 
   Result := GetLocalizedFilePath(fPath + fFileName, gResLocales.UserLocale, gResLocales.FallbackLocale, '.pdf');
@@ -930,12 +932,6 @@ end;
 function TKMapInfo.HasReadme: Boolean;
 begin
   Result := DetermineReadmeFilePath <> '';
-end;
-
-
-function TKMapInfo.ViewReadme: Boolean;
-begin
-  Result := OpenPDF(DetermineReadmeFilePath);
 end;
 
 

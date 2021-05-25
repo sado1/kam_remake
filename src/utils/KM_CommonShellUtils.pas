@@ -14,6 +14,8 @@ uses
 
 function OpenPDF(const aURL: string): Boolean;
 begin
+  if aURL = '' then Exit(False);
+
   {$IFDEF WDC}
   Result := ShellExecute(Application.Handle, 'open', PChar(aURL), nil, nil, SW_SHOWNORMAL) > 32;
   {$ENDIF}

@@ -127,7 +127,7 @@ uses
   KM_GameSettings, 
   KM_ServerSettings,
   KM_RenderUI, KM_Resource, KM_ResFonts,
-  KM_Pics, KM_CommonUtils,
+  KM_Pics, KM_CommonUtils, KM_MapUtilsExt,
   KM_MapTypes;
 
 const
@@ -699,7 +699,7 @@ var
   ID: Integer;
 begin
   ID := ColumnBox_MapEd.SelectedItemTag;
-  fMaps[ID].ViewReadme;
+  TryOpenMapPDF(fMaps[ID]);
 end;
 
 
