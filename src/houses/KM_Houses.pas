@@ -1719,7 +1719,7 @@ begin
   case aWare of
     wtWood:  Inc(fBuildSupplyWood);
     wtStone: Inc(fBuildSupplyStone);
-    else      raise ELocError.Create('WIP house is not supposed to recieve ' + gRes.Wares[aWare].Title + ', right?', fPosition);
+    else      raise ELocError.Create('WIP house is not supposed to recieve ' + gResWares[aWare].Title + ', right?', fPosition);
   end;
 end;
 
@@ -2419,7 +2419,7 @@ begin
                   SetWareCnt(aWare, EnsureRange(fWaresCount[aWare] + aCount, 0, High(Word)));
                   gHands[Owner].Deliveries.Queue.AddOffer(Self,aWare,aCount);
                 end;
-    else        raise ELocError.Create('Cant''t add ' + gRes.Wares[aWare].Title, Position);
+    else        raise ELocError.Create('Cant''t add ' + gResWares[aWare].Title, Position);
   end;
 end;
 

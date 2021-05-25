@@ -70,8 +70,8 @@ begin
   for I := Low(TKMRatioTab) to High(TKMRatioTab) do
   begin
     Button_Ratios[I]         := TKMButton.Create(Panel_Ratios, Byte(I) * 40, 20, 32, 32, 0, rxGui, bsGame);
-    Button_Ratios[I].TexID   := gRes.Wares[RES_RATIO_TYPE[I]].GUIIcon;
-    Button_Ratios[I].Hint    := gRes.Wares[RES_RATIO_TYPE[I]].Title;
+    Button_Ratios[I].TexID   := gResWares[RES_RATIO_TYPE[I]].GUIIcon;
+    Button_Ratios[I].Hint    := gResWares[RES_RATIO_TYPE[I]].Title;
     Button_Ratios[I].Tag     := Byte(I);
     Button_Ratios[I].OnClick := RatioTabClick;
   end;
@@ -118,8 +118,8 @@ begin
 
   fActiveTab := aTab;
 
-  Image_RatioHead.TexID := gRes.Wares[RES_RATIO_TYPE[fActiveTab]].GUIIcon;//Show resource icon
-  Label_RatioHead.Caption := gRes.Wares[RES_RATIO_TYPE[fActiveTab]].Title;
+  Image_RatioHead.TexID := gResWares[RES_RATIO_TYPE[fActiveTab]].GUIIcon;//Show resource icon
+  Label_RatioHead.Caption := gResWares[RES_RATIO_TYPE[fActiveTab]].Title;
   Image_RatioHead.Show;
   Label_RatioHead.Show;
 

@@ -29,7 +29,6 @@ type
     fCursors: TKMResCursors;
     fFonts: TKMResFonts;
     fUnits: TKMResUnits;
-    fWares: TKMResWares;
     fSounds: TKMResSounds;
     fSprites: TKMResSprites;
     fTileset: TKMResTileset;
@@ -60,7 +59,6 @@ type
     property Cursors: TKMResCursors read fCursors;
     property MapElements: TKMResMapElements read fMapElements;
     property Fonts: TKMResFonts read fFonts;
-    property Wares: TKMResWares read fWares;
     property Sounds: TKMResSounds read fSounds;
     property Sprites: TKMResSprites read fSprites;
     property Tileset: TKMResTileset read fTileset;
@@ -108,7 +106,7 @@ begin
   FreeAndNil(fMapElements);
   FreeAndNil(gResPalettes);
   FreeAndNil(fFonts);
-  FreeAndNil(fWares);
+  FreeAndNil(gResWares);
   FreeAndNil(fSprites);
   FreeAndNil(fSounds);
   FreeAndNil(gResTexts);
@@ -183,7 +181,7 @@ begin
 
   fSprites.ClearTemp;
 
-  fWares := TKMResWares.Create;
+  gResWares := TKMResWares.Create;
   gResHouses := TKMResHouses.Create;
 
   StepRefresh;

@@ -2275,7 +2275,7 @@ begin
     tmpS := #9;
     if fDemand[I].Loc_House <> nil then tmpS := tmpS + gResHouses[fDemand[I].Loc_House.HouseType].HouseName + #9 + #9;
     if fDemand[I].Loc_Unit  <> nil then tmpS := tmpS + gRes.Units[fDemand[I].Loc_Unit.UnitType].GUIName + #9 + #9;
-    tmpS := tmpS + gRes.Wares[fDemand[I].Ware].Title;
+    tmpS := tmpS + gResWares[fDemand[I].Ware].Title;
     if fDemand[I].Importance <> diNorm then
       tmpS := tmpS + '^';
 
@@ -2289,7 +2289,7 @@ begin
   begin
     tmpS := #9;
     if fOffer[I].Loc_House <> nil then tmpS := tmpS + gResHouses[fOffer[I].Loc_House.HouseType].HouseName + #9 + #9;
-    tmpS := tmpS + gRes.Wares[fOffer[I].Ware].Title + #9;
+    tmpS := tmpS + gResWares[fOffer[I].Ware].Title + #9;
     tmpS := tmpS + IntToStr(fOffer[I].Count);
 
     SL.Append(tmpS);
@@ -2301,7 +2301,7 @@ begin
   if fQueue[I].OfferID <> 0 then
   begin
     tmpS := 'id ' + IntToStr(I) + '.' + #9;
-    tmpS := tmpS + gRes.Wares[fOffer[fQueue[I].OfferID].Ware].Title + #9;
+    tmpS := tmpS + gResWares[fOffer[fQueue[I].OfferID].Ware].Title + #9;
 
     if fOffer[fQueue[I].OfferID].Loc_House = nil then
       tmpS := tmpS + 'Destroyed' + ' >>> '

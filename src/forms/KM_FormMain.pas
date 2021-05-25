@@ -369,7 +369,7 @@ uses
   KM_Defaults,
   KM_Main,
   //Use these units directly to avoid pass-through methods in fMain
-  KM_Resource, KM_ResHouses,
+  KM_Resource, KM_ResHouses, KM_ResWares,
 
   KM_ResTexts,
   KM_GameApp, KM_GameParams,
@@ -2110,7 +2110,7 @@ end;
 
 procedure TFormMain.ResourceValues1Click(Sender: TObject);
 begin
-  gRes.Wares.ExportCostsTable('ResourceValues.txt');
+  gResWares.ExportCostsTable('ResourceValues.txt');
 end;
 
 

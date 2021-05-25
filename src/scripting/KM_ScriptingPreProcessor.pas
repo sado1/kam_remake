@@ -58,7 +58,7 @@ uses
   SysUtils, Classes, TypInfo, Math,
   KromUtils,
   KM_GameParams,
-  KM_Resource, KM_ResUnits, KM_ResTypes,
+  KM_ResWares, KM_ResUnits, KM_ResTypes,
   KM_ScriptingTypes, KM_ScriptingEvents,
   KM_CampaignTypes,
   KM_CommonUtils,
@@ -430,8 +430,8 @@ const
           begin
             fCustomScriptParams[cspMarketGoldPrice].Added := True;
             fCustomScriptParams[cspMarketGoldPrice].Data :=
-              Format('%s: x%s %s: x%s', [gRes.Wares[wtGoldOre].Title, FormatFloat('#0.#', goldOrePriceX),
-                                         gRes.Wares[wtGold].Title,    FormatFloat('#0.#', goldPriceX)]);
+              Format('%s: x%s %s: x%s', [gResWares[wtGoldOre].Title, FormatFloat('#0.#', goldOrePriceX),
+                                         gResWares[wtGold].Title,    FormatFloat('#0.#', goldPriceX)]);
           end else
             Exit;
 
@@ -441,8 +441,8 @@ const
           if not AllowGameUpdate then Exit;
 
           //Update actual troop cost
-          gRes.Wares[wtGoldOre].MarketPriceMultiplier := goldOrePriceX;
-          gRes.Wares[wtGold].MarketPriceMultiplier := goldPriceX;
+          gResWares[wtGoldOre].MarketPriceMultiplier := goldOrePriceX;
+          gResWares[wtGold].MarketPriceMultiplier := goldPriceX;
 
         finally
           directiveParamSL.Free;

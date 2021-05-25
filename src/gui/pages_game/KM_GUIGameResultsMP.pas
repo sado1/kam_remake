@@ -1618,9 +1618,9 @@ const
     aChart^.SetSeparatorPositions(fChartSeparatorsPos[aStatType]);
 
     if aUseGDP then
-      aChart^.Caption   := gRes.Wares[W].Title + ' - ' + gResTexts[TX_RESULTS_WARES_GDP]
+      aChart^.Caption   := gResWares[W].Title + ' - ' + gResTexts[TX_RESULTS_WARES_GDP]
     else
-      aChart^.Caption   := gRes.Wares[W].Title + ' - ' + gResTexts[TX_GRAPH_TITLE_RESOURCES];
+      aChart^.Caption   := gResWares[W].Title + ' - ' + gResTexts[TX_GRAPH_TITLE_RESOURCES];
 
     for I := 0 to fListToShow[aStatType].Count - 1 do
     begin
@@ -1670,9 +1670,9 @@ begin
     if DoShowHandStats(K)
       and not gHands[K].Stats.ChartWaresEmpty(W) then
     begin
-      listRow := MakeListRow(['', gRes.Wares[W].Title],
+      listRow := MakeListRow(['', gResWares[W].Title],
                              [$FFFFFFFF, $FFFFFFFF],
-                             [MakePic(rxGui, gRes.Wares[W].GUIIcon), MakePic(rxGui, 0)],
+                             [MakePic(rxGui, gResWares[W].GUIIcon), MakePic(rxGui, 0)],
                              Byte(W));
       Columnbox_Wares.AddItem(listRow);
       if selectedItemTag = Byte(W) then
@@ -1895,7 +1895,7 @@ begin
                             begin
                               tempResult := 0;
                               for RT := WARE_MIN to WARE_MAX do
-                                tempResult := tempResult + ChartWares[RT][I] * IfThen(aUseGDP, gRes.Wares[RT].MarketPrice, 1);
+                                tempResult := tempResult + ChartWares[RT][I] * IfThen(aUseGDP, gResWares[RT].MarketPrice, 1);
                               Result[I] := Round(tempResult);
                             end;
                           end;
@@ -1907,7 +1907,7 @@ begin
                             begin
                               tempResult := 0;
                               for RT := WARFARE_MIN to WARFARE_MAX do
-                                tempResult := tempResult + ChartWares[RT][I] * IfThen(aUseGDP, gRes.Wares[RT].MarketPrice, 1);
+                                tempResult := tempResult + ChartWares[RT][I] * IfThen(aUseGDP, gResWares[RT].MarketPrice, 1);
                               Result[I] := Round(tempResult);
                             end;
                           end;
@@ -1922,7 +1922,7 @@ begin
                               begin
                                 RT := FOOD_WARES[J];
                                 if aUseGDP then
-                                  tempResult := tempResult + ChartWares[RT][I] * gRes.Wares[RT].MarketPrice
+                                  tempResult := tempResult + ChartWares[RT][I] * gResWares[RT].MarketPrice
                                 else
                                   tempResult := tempResult + ChartWares[RT][I] * FOOD_WARES_RESTORE[J]; //Compute food value according to food types condition restore
                               end;

@@ -303,7 +303,7 @@ uses
   KM_Terrain, KM_HandsCollection, KM_HandSpectator, KM_MapEditorHistory,
   KM_MissionScript, KM_MissionScript_Info, KM_MissionScript_Standard,
   KM_GameInputProcess_Multi, KM_GameInputProcess_Single,
-  KM_Resource, KM_ResCursors, KM_ResSound,
+  KM_Resource, KM_ResCursors, KM_ResSound, KM_ResWares,
   KM_InterfaceDefaults, KM_InterfaceTypes, KM_GameSettings,
   KM_Log, KM_ScriptingEvents, KM_Saves, KM_FileIO, KM_CommonUtils, KM_RandomChecks, KM_DevPerfLog, KM_DevPerfLogTypes,
   KM_NetPlayersList,
@@ -516,7 +516,7 @@ begin
   Assert(fParams.Mode in [gmMulti, gmMultiSpectate, gmMapEd, gmSingle, gmCampaign]);
 
   gRes.Units.ResetToDefaults;
-  gRes.Wares.ResetToDefaults;
+  gResWares.ResetToDefaults;
 
   fParams.Name := aName;
 
@@ -2182,7 +2182,7 @@ begin
   fTextMission.Save(aBodyStream);
 
   gRes.Units.SaveCustomData(aBodyStream);
-  gRes.Wares.SaveCustomData(aBodyStream);
+  gResWares.SaveCustomData(aBodyStream);
 
   //Parameters that are not identical for all players should not be saved as we need saves to be
   //created identically on all player's computers. Eventually these things can go through the GIP
@@ -2525,7 +2525,7 @@ begin
     fTextMission.Load(bodyStream);
 
     gRes.Units.LoadCustomData(bodyStream);
-    gRes.Wares.LoadCustomData(bodyStream);
+    gResWares.LoadCustomData(bodyStream);
 
     if fParams.IsReplayOrSpectate then
     begin

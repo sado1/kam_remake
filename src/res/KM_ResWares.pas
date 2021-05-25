@@ -46,6 +46,9 @@ type
     procedure LoadCustomData(aLoadStream: TKMemoryStream);
   end;
 
+var
+  gResWares: TKMResWares;
+
 
 const
   WARE_MIN = wtTrunk;

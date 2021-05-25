@@ -757,7 +757,7 @@ begin
 
     for I := WARFARE_MIN to WARFARE_MAX do
     if WeaponUsed(I) then
-      S := S + Format('%s: %.2f - %.2f|', [gRes.Wares[I].Title,
+      S := S + Format('%s: %.2f - %.2f|', [gResWares[I].Title,
                                                   Warfare[I].Production,
                                                   Warfare[I].Demand]);
 

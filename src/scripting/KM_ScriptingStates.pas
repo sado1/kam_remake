@@ -3713,7 +3713,7 @@ begin
     if aRes in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)] then
     begin
       Res := WARE_ID_TO_TYPE[aRes];
-      Result := gRes.Wares[Res].MarketPrice;
+      Result := gResWares[Res].MarketPrice;
     end
     else
       LogParamWarning('States.MarketValue', [aRes]);
@@ -4041,7 +4041,7 @@ function TKMScriptStates.WareTypeName(aWareType: Byte): AnsiString;
 begin
   try
     if (aWareType in [Low(WARE_ID_TO_TYPE) .. High(WARE_ID_TO_TYPE)]) then
-      Result := '<%' + AnsiString(IntToStr(gRes.Wares[WARE_ID_TO_TYPE[aWareType]].TextID)) + '>'
+      Result := '<%' + AnsiString(IntToStr(gResWares[WARE_ID_TO_TYPE[aWareType]].TextID)) + '>'
     else
     begin
       Result := '';

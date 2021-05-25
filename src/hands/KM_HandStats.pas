@@ -296,7 +296,7 @@ begin
                     Inc(Wares[R].Produced, aCount);
       WARE_MIN..
       WARE_MAX:   Inc(Wares[aRes].Produced, aCount);
-      else        raise Exception.Create('Cant''t add produced ware ' + gRes.Wares[aRes].Title);
+      else        raise Exception.Create('Cant''t add produced ware ' + gResWares[aRes].Title);
     end;
 end;
 
@@ -945,7 +945,7 @@ begin
     with Wares[WT] do
     begin
       S := '';
-      AddField(gRes.Wares[WT].Title);
+      AddField(gResWares[WT].Title);
       AddField(Initial);
       AddField(Produced);
       AddField(Consumed);

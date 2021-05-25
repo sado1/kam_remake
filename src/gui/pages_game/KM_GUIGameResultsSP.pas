@@ -286,7 +286,7 @@ begin
     for I := 0 to High(G) do
       if G[I] <> 0 then
       begin
-        Chart_Wares.AddLine(gRes.Wares[R].Title, gRes.Wares[R].GUIColor or $FF000000, G);
+        Chart_Wares.AddLine(gResWares[R].Title, gResWares[R].GUIColor or $FF000000, G);
         Break;
       end;
   end;

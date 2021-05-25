@@ -179,9 +179,9 @@ begin
     for I := 1 to STORE_RES_COUNT do
     begin
       Button_Store[I] := TKMButtonFlat.Create(Panel_HouseStore, 2 + ((I-1)mod 5)*36,8+((I-1)div 5)*42,32,36,0);
-      Button_Store[I].TexID := gRes.Wares[StoreResType[I]].GUIIcon;
+      Button_Store[I].TexID := gResWares[StoreResType[I]].GUIIcon;
       Button_Store[I].Tag := I;
-      Button_Store[I].Hint := gRes.Wares[StoreResType[I]].Title;
+      Button_Store[I].Hint := gResWares[StoreResType[I]].Title;
       Button_Store[I].OnClick := StoreSelectWare;
     end;
 
@@ -229,11 +229,11 @@ begin
     begin
       Button_Barracks[I] := TKMButtonFlat.Create(Panel_HouseBarracks, ((I-1)mod 6)*31,26+8+((I-1)div 6)*42,28,38,0);
       Button_Barracks[I].Tag := I;
-      Button_Barracks[I].TexID := gRes.Wares[BarracksResType[I]].GUIIcon;
+      Button_Barracks[I].TexID := gResWares[BarracksResType[I]].GUIIcon;
       Button_Barracks[I].TexOffsetX := 1;
       Button_Barracks[I].TexOffsetY := 1;
       Button_Barracks[I].CapOffsetY := 2;
-      Button_Barracks[I].Hint := gRes.Wares[BarracksResType[I]].Title;
+      Button_Barracks[I].Hint := gResWares[BarracksResType[I]].Title;
       Button_Barracks[I].OnClick := BarracksSelectWare;
     end;
     Button_Barracks_Recruit := TKMButtonFlat.Create(Panel_HouseBarracks, (BARRACKS_RES_COUNT mod 6)*31,26+8+(BARRACKS_RES_COUNT div 6)*42,28,38,0);
@@ -273,9 +273,9 @@ begin
 
     WaresRow_TH_Gold_Input := TKMWareOrderRow.Create(Panel_HouseTownHall, 0, 34, Panel_House.Width, TH_MAX_GOLDMAX_VALUE);
     WaresRow_TH_Gold_Input.WareRow.RX := rxGui;
-    WaresRow_TH_Gold_Input.Hint := gRes.Wares[wtGold].Title;
-    WaresRow_TH_Gold_Input.WareRow.TexID := gRes.Wares[wtGold].GUIIcon;
-    WaresRow_TH_Gold_Input.WareRow.Caption := gRes.Wares[wtGold].Title;
+    WaresRow_TH_Gold_Input.Hint := gResWares[wtGold].Title;
+    WaresRow_TH_Gold_Input.WareRow.TexID := gResWares[wtGold].GUIIcon;
+    WaresRow_TH_Gold_Input.WareRow.Caption := gResWares[wtGold].Title;
     WaresRow_TH_Gold_Input.OnChange := TownHallChange;
 end;
 
@@ -329,11 +329,11 @@ begin
   for I := 0 to 3 do
   begin
     ware := houseSpec.ResInput[I+1];
-    if gRes.Wares[ware].IsValid then
+    if gResWares[ware].IsValid then
     begin
-      ResRow_Ware_Input[I].WareRow.TexID := gRes.Wares[ware].GUIIcon;
-      ResRow_Ware_Input[I].WareRow.Caption := gRes.Wares[ware].Title;
-      ResRow_Ware_Input[I].Hint := gRes.Wares[ware].Title;
+      ResRow_Ware_Input[I].WareRow.TexID := gResWares[ware].GUIIcon;
+      ResRow_Ware_Input[I].WareRow.Caption := gResWares[ware].Title;
+      ResRow_Ware_Input[I].Hint := gResWares[ware].Title;
       ResRow_Ware_Input[I].WareRow.WareCount := fHouse.CheckResIn(ware);
       ResRow_Ware_Input[I].OrderCount := fHouse.CheckResIn(ware);
       ResRow_Ware_Input[I].Show;
@@ -347,11 +347,11 @@ begin
   for I := 0 to 3 do
   begin
     ware := houseSpec.ResOutput[I+1];
-    if gRes.Wares[ware].IsValid then
+    if gResWares[ware].IsValid then
     begin
-      ResRow_Ware_Output[I].WareRow.TexID := gRes.Wares[ware].GUIIcon;
-      ResRow_Ware_Output[I].WareRow.Caption := gRes.Wares[ware].Title;
-      ResRow_Ware_Output[I].Hint := gRes.Wares[ware].Title;
+      ResRow_Ware_Output[I].WareRow.TexID := gResWares[ware].GUIIcon;
+      ResRow_Ware_Output[I].WareRow.Caption := gResWares[ware].Title;
+      ResRow_Ware_Output[I].Hint := gResWares[ware].Title;
       ResRow_Ware_Output[I].WareRow.WareCount := fHouse.CheckResOut(ware);
       ResRow_Ware_Output[I].OrderCount := fHouse.CheckResOut(ware);
       ResRow_Ware_Output[I].Show;

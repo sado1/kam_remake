@@ -115,7 +115,7 @@ uses
   Math, TypInfo,
   KM_GameApp,
   KM_HandEntity,
-  KM_HandLogistics, KM_Resource, KM_HandsCollection,
+  KM_HandLogistics, KM_Resource, KM_ResWares, KM_HandsCollection,
   KM_Defaults, KM_ResHouses, KM_ResUnits, KM_ResTypes, KM_Hand; // Make compiler happy, regarding inline methods
 
 {$IFDEF USE_VIRTUAL_TREEVIEW}
@@ -628,7 +628,7 @@ begin
     0:  CellText := IntToStr(Node.Index);
     1:  CellText := IntToStr(handID);
     2:  CellText := IntToStr(iQ);
-    3:  CellText := gRes.Wares[del.Demand[del.Delivery[iQ].DemandID].Ware].Title;
+    3:  CellText := gResWares[del.Demand[del.Delivery[iQ].DemandID].Ware].Title;
     4:  if del.Offer[del.Delivery[iQ].OfferID].Loc_House = nil then
           CellText := 'nil'
         else
@@ -682,7 +682,7 @@ begin
     0:  CellText := IntToStr(Node.Index);
     1:  CellText := IntToStr(handID);
     2:  CellText := IntToStr(iO);
-    3:  CellText := gRes.Wares[off.Ware].Title;
+    3:  CellText := gResWares[off.Ware].Title;
     4:  if off.Loc_House = nil then
           CellText := 'nil'
         else
@@ -723,7 +723,7 @@ begin
     0:  CellText := IntToStr(Node.Index);
     1:  CellText := IntToStr(handID);
     2:  CellText := IntToStr(iD);
-    3:  CellText := gRes.Wares[dem.Ware].Title;
+    3:  CellText := gResWares[dem.Ware].Title;
     4:  if dem.Loc_House <> nil then
           CellText := 'H: ' + gResHouses[dem.Loc_House.HouseType].HouseName
         else

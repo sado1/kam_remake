@@ -134,8 +134,8 @@ begin
   if (fResFrom <> wtNone) and (fResTo <> wtNone) then
   begin
     //When trading target ware is priced higher
-    costFrom := gRes.Wares[fResFrom].MarketPrice;
-    costTo := gRes.Wares[fResTo].MarketPrice * MARKET_TRADEOFF_FACTOR;
+    costFrom := gResWares[fResFrom].MarketPrice;
+    costTo := gResWares[fResTo].MarketPrice * MARKET_TRADEOFF_FACTOR;
     Result := Round(costTo / Min(costFrom, costTo));
   end else
     Result := 1;
@@ -149,8 +149,8 @@ begin
   if (fResFrom <> wtNone) and (fResTo <> wtNone) then
   begin
     //When trading target ware is priced higher
-    costFrom := gRes.Wares[fResFrom].MarketPrice;
-    costTo := gRes.Wares[fResTo].MarketPrice * MARKET_TRADEOFF_FACTOR;
+    costFrom := gResWares[fResFrom].MarketPrice;
+    costTo := gResWares[fResTo].MarketPrice * MARKET_TRADEOFF_FACTOR;
     Result := Round(costFrom / Min(costFrom, costTo));
   end else
     Result := 1;

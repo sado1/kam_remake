@@ -474,7 +474,7 @@ end;
 { TKMGUIGameSpectatorItemLineResources }
 function TKMGUIGameSpectatorItemLineResources.CreateItem(AHandIndex: Integer; ATag: Integer; aOnItemClick: TIntBoolEvent): TKMGUIGameSpectatorItem;
 begin
-  Result := TKMGUIGameSpectatorItem.Create(Self, ATag, gRes.Wares[TKMWareType(ATag)].GUIIcon, gRes.Wares[TKmWareType(ATag)].Title,
+  Result := TKMGUIGameSpectatorItem.Create(Self, ATag, gResWares[TKMWareType(ATag)].GUIIcon, gResWares[TKmWareType(ATag)].Title,
                                            FHandIndex, DontHighlight, aOnItemClick);
   Result.Visible := False;
 end;
@@ -524,9 +524,9 @@ begin
   if aTag = RECRUIT_TAG then
     Result := gRes.Units[utRecruit].GUIIcon
   else if aTag = TH_GOLD_CHEST_TAG then
-    Result := gRes.Wares[wtGold].GUIIcon
+    Result := gResWares[wtGold].GUIIcon
   else
-    Result := gRes.Wares[TKMWareType(ATag)].GUIIcon;
+    Result := gResWares[TKMWareType(ATag)].GUIIcon;
 end;
 
 
@@ -535,9 +535,9 @@ begin
   if aTag = RECRUIT_TAG then
     Result := gRes.Units[utRecruit].GUIName
   else if aTag = TH_GOLD_CHEST_TAG then
-    Result := gRes.Wares[wtGold].Title
+    Result := gResWares[wtGold].Title
   else
-    Result := gRes.Wares[TKMWareType(ATag)].Title;
+    Result := gResWares[TKMWareType(ATag)].Title;
 end;
 
 
