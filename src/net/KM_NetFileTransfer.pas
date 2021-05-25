@@ -69,7 +69,9 @@ type
 
 implementation
 uses
-  KromUtils, KM_Maps, KM_Saves, KM_Scripting, KM_Log, KM_FileIO;
+  KromUtils, KM_Maps, KM_Saves,
+  KM_ScriptingPreProcessor, KM_ScriptFilesCollection,
+  KM_Log, KM_FileIO;
 
 const
   //todo: Add LIBX and WAV support for maps

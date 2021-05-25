@@ -65,6 +65,9 @@ type
 
   TKMScriptErrorEvent = procedure (aType: TKMScriptErrorType; const aErrorString: UnicodeString; const aDetailedErrorString: UnicodeString = '') of object;
 
+const
+  SCRIPT_LOG_EXT = '.log.txt';
+
 
 implementation
 
