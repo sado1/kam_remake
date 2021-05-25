@@ -66,7 +66,7 @@ type
   private
     fPad: Byte; //Force padding between sprites to avoid neighbour edge visibility
     procedure SaveTextureToPNG(aWidth, aHeight: Word; const aFilename: string; const Data: TKMCardinalArray);
-    procedure SetGFXData(aTx: Cardinal; aSpriteInfo: TBinItem; aAtlasType: TSpriteAtlasType; aRT: TRXType);
+    procedure SetGFXData(aTx: Cardinal; aSpriteInfo: TBinItem; aAtlasType: TSpriteAtlasType);
   protected
     fRT: TRXType;
     fRXData: TRXData;
@@ -92,6 +92,9 @@ type
     procedure OverloadFromFolder(const aFolder: string; aSoftenShadows: Boolean = True);
     procedure MakeGFX(aAlphaShadows: Boolean; aStartingIndex: Integer = 1; aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil);
     procedure DeleteSpriteTexture(aIndex: Integer);
+
+    //Load from atlas format, no MakeGFX bin packing needed
+    procedure LoadFromRXAFile(const aFileName: string);
 
     function GetSoftenShadowType(aID: Integer): TSoftenShadowType;
     procedure SoftenShadows(aIdList: TStringList); overload;
@@ -650,6 +653,92 @@ begin
 end;
 
 
+procedure TKMSpritePack.LoadFromRXAFile(const aFileName: string);
+var
+  I, K: Integer;
+  SAT: TSpriteAtlasType;
+  rxxCount, atlasCount, spriteCount, dataCount: Integer;
+  inputStream: TFileStream;
+  decompressionStream: TDecompressionStream;
+  texFilter: TFilterType;
+  Tx: Cardinal;
+begin
+  case fRT of
+    rxTiles: if SKIP_RENDER and not DO_NOT_SKIP_LOAD_TILESET then Exit;
+    else     if SKIP_RENDER then Exit;
+  end;
+
+  if not FileExists(aFileName) then Exit;
+
+  inputStream := TFileStream.Create(aFileName, fmOpenRead or fmShareDenyNone);
+  decompressionStream := TDecompressionStream.Create(inputStream);
+
+  try
+    decompressionStream.Read(rxxCount, 4);
+    if gLog <> nil then
+      gLog.AddTime(RXInfo[fRT].FileName + ' -', rxxCount);
+
+    if rxxCount = 0 then
+      Exit;
+
+    Allocate(rxxCount - 1);
+
+    decompressionStream.Read(fRXData.Flag[1], rxxCount);
+
+    //Sprite info
+    for I := 1 to rxxCount do
+      if fRXData.Flag[I] = 1 then
+      begin
+        decompressionStream.Read(fRXData.Size[I].X, 4);
+        decompressionStream.Read(fRXData.Size[I].X, 4);
+        decompressionStream.Read(fRXData.Pivot[I].X, 8);
+        //SizeNoShadow is used only for Units
+        if fRT = rxUnits then
+          decompressionStream.Read(fRXData.SizeNoShadow[I].left, 16);
+        decompressionStream.Read(fRXData.HasMask[I], 1);
+      end;
+
+    //Atlases
+    for SAT := Low(TSpriteAtlasType) to High(TSpriteAtlasType) do
+    begin
+      InputStream.Read(atlasCount, 4);
+      SetLength(fGFXPrepData[SAT], atlasCount);
+      for I := Low(fGFXPrepData[SAT]) to High(fGFXPrepData[SAT]) do
+        with fGFXPrepData[SAT, I] do
+        begin
+          InputStream.Read(SpriteInfo.Width, 2);
+          InputStream.Read(SpriteInfo.Height, 2);
+          InputStream.Read(spriteCount, 4);
+          SetLength(SpriteInfo.Sprites, spriteCount);
+          for K := Low(SpriteInfo.Sprites) to High(SpriteInfo.Sprites) do
+          begin
+            InputStream.Read(SpriteInfo.Sprites[K].SpriteID, 4);
+            InputStream.Read(SpriteInfo.Sprites[K].PosX, 2);
+            InputStream.Read(SpriteInfo.Sprites[K].PosY, 2);
+          end;
+          InputStream.Read(TexType, SizeOf(TTexFormat));
+          InputStream.Read(dataCount, 4);
+          SetLength(Data, dataCount);
+          InputStream.Read(Data[0], dataCount*SizeOf(Data[0]));
+
+          //Generate texture once
+          texFilter := ftNearest;
+          if LINEAR_FILTER_SPRITES and (fRT in [rxTrees, rxHouses, rxUnits]) then
+            texFilter := ftLinear;
+
+          Tx := TRender.GenTexture(SpriteInfo.Width, SpriteInfo.Height, @Data[0], TexType, texFilter, texFilter);
+          //Now that we know texture IDs we can fill GFXData structure
+          SetGFXData(Tx, SpriteInfo, SAT);
+        end;
+    end;
+
+  finally
+    decompressionStream.Free;
+    inputStream.Free;
+  end;
+end;
+
+
 //Parse all valid files in Sprites folder and load them additionaly to or replacing original sprites
 procedure TKMSpritePack.OverloadFromFolder(const aFolder: string; aSoftenShadows: Boolean = True);
 
@@ -964,7 +1053,7 @@ end;
 
 
 //Set GFXData from SpriteInfo
-procedure TKMSpritePack.SetGFXData(aTx: Cardinal; aSpriteInfo: TBinItem; aAtlasType: TSpriteAtlasType; aRT: TRXType);
+procedure TKMSpritePack.SetGFXData(aTx: Cardinal; aSpriteInfo: TBinItem; aAtlasType: TSpriteAtlasType);
 var
   K: Integer;
   ID: Integer;
@@ -982,12 +1071,12 @@ begin
 
     if aAtlasType = saBase then
     begin
-      gGFXData[aRT, ID].Tex := txCoords;
-      gGFXData[aRT, ID].PxWidth := fRXData.Size[ID].X;
-      gGFXData[aRT, ID].PxHeight := fRXData.Size[ID].Y;
+      gGFXData[fRT, ID].Tex := txCoords;
+      gGFXData[fRT, ID].PxWidth := fRXData.Size[ID].X;
+      gGFXData[fRT, ID].PxHeight := fRXData.Size[ID].Y;
     end
     else
-      gGFXData[aRT, ID].Alt := txCoords;
+      gGFXData[fRT, ID].Alt := txCoords;
   end;
 
   // This is pointless. OGL does its own RAM/VRAM management. To be deleted in 2021
@@ -1083,7 +1172,7 @@ procedure TKMSpritePack.MakeGFX_BinPacking(aTexType: TTexFormat; aStartingIndex:
 
         Tx := TRender.GenTexture(SpriteInfo[I].Width, SpriteInfo[I].Height, @TD[0], aTexType, texFilter, texFilter);
         //Now that we know texture IDs we can fill GFXData structure
-        SetGFXData(Tx, SpriteInfo[I], aMode, fRT);
+        SetGFXData(Tx, SpriteInfo[I], aMode);
       end else begin
         Assert(InRange(I, Low(fGFXPrepData[aMode]), High(fGFXPrepData[aMode])),
                Format('Preloading sprite index out of range: %d, range [%d;%d]', [I, Low(fGFXPrepData[aMode]), High(fGFXPrepData[aMode])]));
@@ -1229,7 +1318,7 @@ begin
 
         Tx := TRender.GenTexture(SpriteInfo.Width, SpriteInfo.Height, @Data[0], TexType, texFilter, texFilter);
         //Now that we know texture IDs we can fill GFXData structure
-        SetGFXData(Tx, SpriteInfo, SAT, fRT);
+        SetGFXData(Tx, SpriteInfo, SAT);
 
         SaveTextureToPNG(SpriteInfo.Width, SpriteInfo.Height, RXInfo[fRT].FileName + '_' +
                          SPRITE_TYPE_EXPORT_NAME[SAT] + IntToStr(I+1), Data);

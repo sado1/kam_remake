@@ -676,7 +676,9 @@ begin
           InputStream.Write(SpriteInfo.Sprites[K].PosY);
         end;
         InputStream.Write(TexType, SizeOf(TTexFormat));
-        InputStream.Write(Data[0], Length(Data)*SizeOf(Data[0]));
+        Count := Length(Data);
+        InputStream.Write(Count);
+        InputStream.Write(Data[0], Count*SizeOf(Data[0]));
       end;
   end;
 
