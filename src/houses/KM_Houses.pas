@@ -325,22 +325,6 @@ type
   end;
 
 
-  TKMHouseArmorWorkshop = class(TKMHouse)
-  private
-    fAcceptWood: Boolean;
-    fAcceptLeather: Boolean;
-  public
-    property AcceptWood: Boolean read fAcceptWood write fAcceptWood;
-    property AcceptLeather: Boolean read fAcceptLeather write fAcceptLeather;
-    constructor Create(aUID: Integer; aHouseType: TKMHouseType; PosX, PosY: Integer; aOwner: TKMHandID; aBuildState: TKMHouseBuildState);
-    constructor Load(LoadStream: TKMemoryStream); override;
-    procedure Save(SaveStream: TKMemoryStream); override;
-    procedure ToggleResDelivery(aWareType: TKMWareType);
-    function AcceptWareForDelivery(aWareType: TKMWareType): Boolean;
-    function ShouldAbandonDeliveryTo(aWareType: TKMWareType): Boolean; override;
-  end;
-
-
 implementation
 uses
   TypInfo, SysUtils, Math, KromUtils,
@@ -2326,61 +2310,6 @@ begin
     gRenderPool.AddHouseWork(fType, fPosition,
                             CurrentAction.SubAction * [haWork1, haWork2, haWork3, haWork4, haWork5],
                             WorkAnimStep, gHands[Owner].GameFlagColor);
-end;
-
-
-{ TKMHouseArmorWorkshop }
-constructor TKMHouseArmorWorkshop.Create(aUID: Integer; aHouseType: TKMHouseType; PosX, PosY: Integer; aOwner: TKMHandID; aBuildState: TKMHouseBuildState);
-begin
-  inherited;
-
-  fAcceptWood := True;
-  fAcceptLeather := True;
-end;
-
-
-constructor TKMHouseArmorWorkshop.Load(LoadStream: TKMemoryStream);
-begin
-  inherited;
-
-  LoadStream.CheckMarker('HouseArmorWorkshop');
-  LoadStream.Read(fAcceptWood);
-  LoadStream.Read(fAcceptLeather);
-end;
-
-
-procedure TKMHouseArmorWorkshop.Save(SaveStream: TKMemoryStream);
-begin
-  inherited;
-
-  SaveStream.PlaceMarker('HouseArmorWorkshop');
-  SaveStream.Write(fAcceptWood);
-  SaveStream.Write(fAcceptLeather);
-end;
-
-
-procedure TKMHouseArmorWorkshop.ToggleResDelivery(aWareType: TKMWareType);
-begin
-  case aWareType of
-    wtWood: fAcceptWood := not fAcceptWood;
-    wtLeather: fAcceptLeather := not fAcceptLeather;
-  end;
-end;
-
-
-function TKMHouseArmorWorkshop.AcceptWareForDelivery(aWareType: TKMWareType): Boolean;
-begin
-  Result := False;
-  case aWareType of
-    wtWood: Result := fAcceptWood;
-    wtLeather: Result := fAcceptLeather;
-  end;
-end;
-
-
-function TKMHouseArmorWorkshop.ShouldAbandonDeliveryTo(aWareType: TKMWareType): Boolean;
-begin
-  Result := inherited or not AcceptWareForDelivery(aWareType);
 end;
 
 

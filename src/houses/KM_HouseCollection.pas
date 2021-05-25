@@ -52,7 +52,7 @@ implementation
 uses
   SysUtils, Types, Math,
   KM_Game, KM_GameParams, KM_Terrain,
-  KM_HouseInn, KM_HouseMarket, KM_HouseBarracks, KM_HouseSchool, KM_HouseStore,
+  KM_HouseInn, KM_HouseMarket, KM_HouseBarracks, KM_HouseSchool, KM_HouseStore, KM_HouseArmorWorkshop,
   KM_HouseTownHall, KM_HouseWoodcutters,
   KM_Resource,
   KM_GameTypes;

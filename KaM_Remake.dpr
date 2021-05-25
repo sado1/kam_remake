@@ -184,6 +184,7 @@ uses
   KM_HandTypes in 'src\hands\KM_HandTypes.pas',
   KM_WareDistribution in 'src\hands\KM_WareDistribution.pas',
 
+  KM_HouseArmorWorkshop in 'src\houses\KM_HouseArmorWorkshop.pas',
   KM_HouseBarracks in 'src\houses\KM_HouseBarracks.pas',
   KM_HouseInn in 'src\houses\KM_HouseInn.pas',
   KM_HouseCollection in 'src\houses\KM_HouseCollection.pas',
