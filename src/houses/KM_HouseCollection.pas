@@ -12,6 +12,8 @@ type
   TKMHousesCollection = class
   private
     fHouses: TKMList; //Private to hide methods we don't want to expose
+
+    procedure DoAddHouse(aHouse: TKMHouse);
     function AddToCollection(aHouseType: TKMHouseType; aPosX, aPosY: Integer; aOwner: TKMHandID; aHBS: TKMHouseBuildState):TKMHouse;
     function GetHouse(aIndex: Integer): TKMHouse; inline;
     function GetCount: Integer;
@@ -81,6 +83,14 @@ begin
 end;
 
 
+// Center point of adding to the collection
+procedure TKMHousesCollection.DoAddHouse(aHouse: TKMHouse);
+begin
+  fHouses.Add(aHouse);
+  aHouse.OnShowGameMessage := gGame.ShowMessage; // set show message handler. We don't want to KM_House to be dependant unit of KM_Game
+end;
+
+
 function TKMHousesCollection.AddToCollection(aHouseType: TKMHouseType; aPosX, aPosY: Integer; aOwner: TKMHandID; aHBS: TKMHouseBuildState): TKMHouse;
 var
   uid: Cardinal;
@@ -103,7 +113,7 @@ begin
   end;
 
   if Result <> nil then
-    fHouses.Add(Result);
+    DoAddHouse(Result);
 end;
 
 
@@ -137,9 +147,9 @@ end;
 
 procedure TKMHousesCollection.AddHouseToList(aHouse: TKMHouse);
 begin
-  Assert(gGameParams.Mode = gmMapEd); // Allow to add existing House directly only in MapEd
+  Assert(gGameParams.IsMapEditor); // Allow to add existing House directly only in MapEd
   if (aHouse <> nil) then
-    fHouses.Add(aHouse);
+    DoAddHouse(aHouse);
 end;
 
 
@@ -388,7 +398,7 @@ begin
     end;
 
     if H <> nil then
-      fHouses.Add(H);
+      DoAddHouse(H);
   end;
 end;
 

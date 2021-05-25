@@ -5,7 +5,7 @@ uses
   KM_ResHouses, KM_ResWares,
   KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Points,
   KM_HandEntity,
-  KM_ResTypes;
+  KM_GameTypes, KM_ResTypes;
 
 //Houses are ruled by units, hence they don't know about  TKMUnits
 
@@ -131,6 +131,8 @@ type
     fNeedIssueOrderCompletedMsg: Boolean;
     fPlacedOverRoad: Boolean; //Is house entrance placed over road
 
+    fOnShowGameMessage: TKMGameShowMessageEvent;
+
     procedure CheckOnSnow;
 
     function GetResourceInArray: TKMByteArray;
@@ -141,6 +143,8 @@ type
     procedure SetIsClosedForWorker(aIsClosed: Boolean);
     procedure UpdateDeliveryMode;
     function GetHasWorker: Boolean;
+
+    procedure ShowMsg(aKind: TKMMessageKind; aTextID: Integer; const aLoc: TKMPoint; aHandIndex: TKMHandID);
   protected
     fBuildState: TKMHouseBuildState; // = (hbsGlyph, hbsNoGlyph, hbsWood, hbsStone, hbsDone);
     FlagAnimStep: Cardinal; //Used for Flags and Burning animation
@@ -181,6 +185,8 @@ type
     procedure SyncLoad; virtual;
     destructor Destroy; override;
     procedure Save(SaveStream: TKMemoryStream); override;
+
+    property OnShowGameMessage: TKMGameShowMessageEvent read fOnShowGameMessage write fOnShowGameMessage;
 
     procedure RemoveHouse;
     procedure DemolishHouse(aFrom: TKMHandID; IsSilent: Boolean = False); virtual;
@@ -315,13 +321,14 @@ type
 
 implementation
 uses
+  // Do not add KM_Game dependancy! Entities should be isolated as much as possible
   TypInfo, SysUtils, Math, KromUtils,
-  KM_Game, KM_GameParams, KM_Terrain, KM_RenderPool, KM_RenderAux, KM_Sound,
+  KM_GameParams, KM_Terrain, KM_RenderPool, KM_RenderAux, KM_Sound,
   KM_Hand, KM_HandsCollection, KM_HandLogistics,
   KM_Units, KM_UnitWarrior, KM_HouseWoodcutters,
   KM_Resource, KM_ResSound, KM_ResTexts, KM_ResUnits, KM_ResMapElements,
   KM_Log, KM_ScriptingEvents, KM_CommonUtils, KM_MapEdTypes,
-  KM_GameTypes, KM_RenderDebug,
+  KM_RenderDebug,
   KM_HandTypes,
   KM_TerrainTypes,
   KM_CommonExceptions,
@@ -891,7 +898,7 @@ begin
   msgID := GetResourceDepletedMessageId;
   Assert(msgID <> 0, gResHouses[HouseType].HouseName + ' resource can''t be depleted');
 
-  gGame.ShowMessage(mkHouse, msgID, Entrance, Owner);
+  ShowMsg(mkHouse, msgID, Entrance, Owner);
   ResourceDepleted := True;
 end;
 
@@ -928,6 +935,13 @@ end;
 function TKMHouse.ShouldAbandonDeliveryTo(aWareType: TKMWareType): Boolean;
 begin
   Result := DeliveryMode <> dmDelivery;
+end;
+
+
+procedure TKMHouse.ShowMsg(aKind: TKMMessageKind; aTextID: Integer; const aLoc: TKMPoint; aHandIndex: TKMHandID);
+begin
+  if Assigned(fOnShowGameMessage) then
+    fOnShowGameMessage(aKind, aTextID, aLoc, aHandIndex);
 end;
 
 
@@ -1535,7 +1549,7 @@ begin
       begin
         fNeedIssueOrderCompletedMsg := False;
         fOrderCompletedMsgIssued := True;
-        gGame.ShowMessage(mkHouse, TX_MSG_ORDER_COMPLETED, Entrance, Owner);
+        ShowMsg(mkHouse, TX_MSG_ORDER_COMPLETED, Entrance, Owner);
       end;
 end;
 
@@ -2162,7 +2176,7 @@ begin
     begin
       houseUnoccupiedMsgId := gResHouses[fType].UnoccupiedMsgId;
       if houseUnoccupiedMsgId <> -1 then // HouseNotOccupMsgId should never be -1
-        gGame.ShowMessage(mkHouse, houseUnoccupiedMsgId, Entrance, Owner)
+        ShowMsg(mkHouse, houseUnoccupiedMsgId, Entrance, Owner)
       else
         gLog.AddTime('Warning: HouseUnoccupiedMsgId for house type ord=' + IntToStr(Ord(fType)) + ' could not be determined.');
       fTimeSinceUnoccupiedReminder := TIME_BETWEEN_MESSAGES; //Don't show one again until it is time
