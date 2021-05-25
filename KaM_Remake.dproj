@@ -153,6 +153,7 @@
         <DCCReference Include="src\forms\KM_FormLoading.pas">
             <Form>FormLoading</Form>
         </DCCReference>
+        <DCCReference Include="src\forms\KM_VCLMenuHint.pas"/>
         <DCCReference Include="src\ext\ScriptValidatorResult.pas"/>
         <DCCReference Include="src\ext\iaWin.NameDelphiThreads.pas"/>
         <DCCReference Include="src\ai\KM_AI.pas"/>
@@ -311,6 +312,7 @@
         <DCCReference Include="src\mission\KM_Maps.pas"/>
         <DCCReference Include="src\mission\KM_MapTypes.pas"/>
         <DCCReference Include="src\mission\KM_MapUtils.pas"/>
+        <DCCReference Include="src\mission\KM_MapUtilsExt.pas"/>
         <DCCReference Include="src\mission\KM_MissionScript.pas"/>
         <DCCReference Include="src\mission\KM_MissionScript_Info.pas"/>
         <DCCReference Include="src\mission\KM_MissionScript_Preview.pas"/>
@@ -438,6 +440,7 @@
         <DCCReference Include="src\units\tasks\KM_UnitTaskMining.pas"/>
         <DCCReference Include="src\units\tasks\KM_UnitTaskSelfTrain.pas"/>
         <DCCReference Include="src\units\tasks\KM_UnitTaskThrowRock.pas"/>
+        <DCCReference Include="src\utils\KM_CommonShellUtils.pas"/>
         <DCCReference Include="src\utils\KM_CommonUtils.pas"/>
         <DCCReference Include="src\utils\KM_Utils.pas"/>
         <DCCReference Include="src\utils\KromOGLUtils.pas"/>
