@@ -199,14 +199,17 @@ type
 
 implementation
 uses
-  TypInfo, KM_AI, KM_Game, KM_GameParams, KM_FogOfWar, KM_HandsCollection, KM_HandLogistics,
-  KM_HouseBarracks, KM_HouseSchool, KM_ResUnits, KM_CommonUtils, KM_HouseMarket,
-  KM_Resource, KM_Hand, KM_AIDefensePos, KM_CommonClasses,
-  KM_PathFindingRoad, KM_ResMapElements, KM_HandConstructions,
-  KM_HouseWoodcutters, KM_HouseTownHall,
+  TypInfo,
+  KM_AI, KM_AIDefensePos,
+  KM_Game, KM_GameParams, KM_FogOfWar,
+  KM_HandsCollection, KM_HandLogistics, KM_HandConstructions,
+  KM_HouseBarracks, KM_HouseSchool, KM_HouseStore, KM_HouseMarket, KM_HouseWoodcutters, KM_HouseTownHall,
+  KM_UnitWarrior,
   KM_UnitGroupTypes,
-  KM_ResTypes,
-  KM_Terrain, KM_UnitWarrior;
+  KM_Resource, KM_ResTypes, KM_ResUnits, KM_Hand, KM_ResMapElements,
+  KM_PathFindingRoad,
+  KM_Terrain,
+  KM_CommonUtils, KM_CommonClasses;
 
 const
   MIN_SOUND_AT_LOC_RADIUS = 28;

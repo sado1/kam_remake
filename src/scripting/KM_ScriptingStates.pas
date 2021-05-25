@@ -225,11 +225,14 @@ type
 
 implementation
 uses
-  KM_AI, KM_Game, KM_GameApp, KM_GameParams, KM_UnitWarrior,
-  KM_HouseBarracks, KM_HouseSchool, KM_ResUnits, KM_CommonUtils, KM_HouseMarket,
-  KM_Resource, KM_UnitTaskSelfTrain, KM_Hand, KM_AIDefensePos,
-  KM_UnitsCollection, KM_HouseWoodcutters, KM_HouseTownHall,
-  KM_ArmyDefence, KM_Terrain;
+  KM_AI, KM_ArmyDefence, KM_AIDefensePos,
+  KM_Game, KM_GameApp, KM_GameParams,
+  KM_UnitsCollection, KM_UnitWarrior, KM_UnitTaskSelfTrain,
+  KM_HouseBarracks, KM_HouseSchool, KM_HouseMarket, KM_HouseStore, KM_HouseWoodcutters, KM_HouseTownHall,
+  KM_Resource, KM_ResUnits,
+  KM_Hand,
+  KM_Terrain,
+  KM_CommonUtils;
 
 
   //We need to check all input parameters as could be wildly off range due to

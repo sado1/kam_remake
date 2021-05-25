@@ -65,7 +65,7 @@ uses
   Classes, Math,
   KM_Game, KM_Hand, KM_HandsCollection,
   KM_AIFields, KM_Terrain,
-  KM_Houses, KM_HouseSchool,
+  KM_Houses, KM_HouseSchool, KM_HouseStore,
   KM_Units, KM_UnitsCollection, KM_UnitActionWalkTo, KM_UnitTaskGoEat, KM_UnitTaskDelivery,
   KM_Resource, KM_ResWares,
   KM_CommonUtils, KM_DevPerfLog, KM_DevPerfLogTypes;

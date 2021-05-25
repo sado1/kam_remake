@@ -98,9 +98,9 @@ uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLType, {$ENDIF}
   KM_HandsCollection, KM_ResTexts, KM_Resource, KM_RenderUI, KM_ResUnits,
-  KM_ResWares, KM_HouseBarracks, KM_HouseTownHall,
-  KM_ResFonts, KM_Cursor, KM_UtilsExt,
-  KM_ResTypes;
+  KM_HouseBarracks, KM_HouseTownHall, KM_HouseStore,
+  KM_ResWares, KM_ResFonts, KM_ResTypes,
+  KM_Cursor, KM_UtilsExt;
 
 
 { TKMMapEdHouse }

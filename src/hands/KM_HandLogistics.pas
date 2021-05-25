@@ -336,7 +336,7 @@ uses
   Classes, SysUtils, Math, TypInfo,
   KM_Terrain,
   KM_FormLogistics, KM_UnitTaskDelivery,
-  KM_Main, KM_Game, KM_GameParams, KM_Hand, KM_HandsCollection, KM_HouseBarracks,
+  KM_Main, KM_Game, KM_GameParams, KM_Hand, KM_HandsCollection, KM_HouseBarracks, KM_HouseStore,
   KM_Resource, KM_ResUnits,
   KM_Log, KM_Utils, KM_CommonUtils, KM_DevPerfLog, KM_DevPerfLogTypes;
 
