@@ -27,7 +27,7 @@ type
 implementation
 uses
   SysUtils, Math,
-  KM_Resource,
+  KM_ResPalettes,
   KM_CommonClasses, KM_Defaults, KM_Utils, KM_MapTypes;
 
 
@@ -116,7 +116,7 @@ begin
 
     ctSetMapColor:     if fLastHand >= 0 then
                           //For now simply use the minimap color for all color, it is too hard to load all 8 shades from ctSetNewRemap
-                          fMapInfo.FlagColors[fLastHand] := gRes.Palettes.DefaultPalette.Color32(P[0]);
+                          fMapInfo.FlagColors[fLastHand] := gResPalettes.DefaultPalette.Color32(P[0]);
 
     ctSetRGBColor:     if fLastHand >= 0 then
                           fMapInfo.FlagColors[fLastHand] := P[0] or $FF000000;

@@ -1,4 +1,4 @@
-﻿unit KM_Resource;
+unit KM_Resource;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -30,7 +30,6 @@ type
     fFonts: TKMResFonts;
     fHouses: TKMResHouses;
     fUnits: TKMResUnits;
-    fPalettes: TKMResPalettes;
     fWares: TKMResWares;
     fSounds: TKMResSounds;
     fSprites: TKMResSprites;
@@ -63,7 +62,6 @@ type
     property Cursors: TKMResCursors read fCursors;
     property Houses: TKMResHouses read GetHouses;
     property MapElements: TKMResMapElements read fMapElements;
-    property Palettes: TKMResPalettes read fPalettes;
     property Fonts: TKMResFonts read fFonts;
     property Wares: TKMResWares read fWares;
     property Sounds: TKMResSounds read fSounds;
@@ -111,7 +109,7 @@ begin
   FreeAndNil(fHouses);
   FreeAndNil(gResLocales);
   FreeAndNil(fMapElements);
-  FreeAndNil(fPalettes);
+  FreeAndNil(gResPalettes);
   FreeAndNil(fFonts);
   FreeAndNil(fWares);
   FreeAndNil(fSprites);
@@ -168,9 +166,9 @@ end;
 procedure TKMResource.LoadMainResources(const aLocale: AnsiString = ''; aLoadFullFonts: Boolean = True);
 begin
   StepCaption('Reading palettes ...');
-  fPalettes := TKMResPalettes.Create;
+  gResPalettes := TKMResPalettes.Create;
   //We are using only default palette in the game for now, so no need to load all palettes
-  fPalettes.LoadDefaultPalette(ExeDir + 'data' + PathDelim + 'gfx' + PathDelim);
+  gResPalettes.LoadDefaultPalette(ExeDir + 'data' + PathDelim + 'gfx' + PathDelim);
   gLog.AddTime('Reading palettes', True);
 
 

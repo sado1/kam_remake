@@ -48,7 +48,7 @@ implementation
 uses
   Classes, SysUtils, Math,
   KM_Terrain,
-  KM_Resource, KM_ResHouses, KM_ResUnits,
+  KM_Resource, KM_ResHouses, KM_ResUnits, KM_ResPalettes,
   KM_CommonClasses, KM_CommonUtils, KM_Utils,
   KM_ResTypes, KM_TerrainTypes;
 
@@ -158,7 +158,7 @@ begin
                         end;
 
     ctSetMapColor:     if InRange(fLastHand, 0, MAX_HANDS-1) then
-                          fHandPreview[fLastHand].Color := gRes.Palettes.DefaultPalette.Color32(P[0]);
+                          fHandPreview[fLastHand].Color := gResPalettes.DefaultPalette.Color32(P[0]);
 
     ctSetRGBColor:     if InRange(fLastHand, 0, MAX_HANDS-1) then
                           fHandPreview[fLastHand].Color := P[0] or $FF000000;
