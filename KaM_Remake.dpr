@@ -353,6 +353,7 @@ uses
   KM_UnitTaskSelfTrain in 'src\units\tasks\KM_UnitTaskSelfTrain.pas',
   KM_UnitTaskThrowRock in 'src\units\tasks\KM_UnitTaskThrowRock.pas',
 
+  KM_CommonShellUtils in 'src\utils\KM_CommonShellUtils.pas',
   KM_CommonUtils in 'src\utils\KM_CommonUtils.pas',
   KM_Utils in 'src\utils\KM_Utils.pas',
   
