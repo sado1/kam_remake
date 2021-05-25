@@ -74,6 +74,8 @@ uses
 { TMain }
 constructor TConsoleMain.Create;
 begin
+  inherited;
+
   fScripting := TKMScriptingCreator.CreateScripting(nil);
 end;
 
@@ -81,6 +83,8 @@ end;
 destructor TConsoleMain.Destroy;
 begin
   FreeAndNil(fScripting);
+
+  inherited;
 end;
 
 
