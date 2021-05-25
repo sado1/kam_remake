@@ -99,7 +99,7 @@ begin
     htWatchTower:    Result := TKMHouseTower.Create(uid, aHouseType,PosX,PosY, aOwner, aHBS);
     htWoodcutters:   Result := TKMHouseWoodcutters.Create(uid, aHouseType,PosX,PosY, aOwner, aHBS);
     htArmorWorkshop: Result := TKMHouseArmorWorkshop.Create(uid, aHouseType,PosX,PosY, aOwner, aHBS);
-    else              Result := TKMHouse.Create(uid, aHouseType,PosX,PosY, aOwner, aHBS);
+    else             Result := TKMHouse.Create(uid, aHouseType,PosX,PosY, aOwner, aHBS);
   end;
 
   if Result <> nil then
