@@ -628,7 +628,7 @@ procedure TKMSpritePackEdit.SaveToRXAFile(const aFileName: string);
 var
   I, K, Count: Integer;
   SAT: TSpriteAtlasType;
-  InputStream: TKMemoryStreamBinary;
+  InputStream: TMemoryStream;
   OutputStream: TFileStream;
   CompressionStream: TCompressionStream;
   baseRAM, idealRAM, colorRAM, texCount: Cardinal;
@@ -639,45 +639,43 @@ begin
 
   ForceDirectories(ExtractFilePath(aFileName));
 
-  InputStream := TKMemoryStreamBinary.Create;
+  InputStream := TMemoryStream.Create;
 
   //Sprite info
-  InputStream.Write(fRXData.Count);
+  InputStream.Write(fRXData.Count, 4);
   InputStream.Write(fRXData.Flag[1], fRXData.Count);
 
   for I := 1 to fRXData.Count do
     if fRXData.Flag[I] = 1 then
     begin
-      InputStream.Write(fRXData.Size[I].X);
-      InputStream.Write(fRXData.Size[I].Y);
-      InputStream.Write(fRXData.Pivot[I].X);
-      InputStream.Write(fRXData.Pivot[I].Y);
+      InputStream.Write(fRXData.Size[I].X, 4);
+      InputStream.Write(fRXData.Pivot[I].X, 8);
       if fRT = rxUnits then
         InputStream.Write(fRXData.SizeNoShadow[I].left, 16);
-      InputStream.Write(fRXData.HasMask[I]);
+      InputStream.Write(fRXData.HasMask[I], 1);
     end;
 
   //Atlases
   for SAT := Low(TSpriteAtlasType) to High(TSpriteAtlasType) do
   begin
     Count := Length(fGFXPrepData[SAT]);
-    InputStream.Write(Count);
+    InputStream.Write(Count, 4);
     for I := Low(fGFXPrepData[SAT]) to High(fGFXPrepData[SAT]) do
       with fGFXPrepData[SAT, I] do
       begin
-        InputStream.Write(SpriteInfo.Width);
-        InputStream.Write(SpriteInfo.Height);
+        InputStream.Write(SpriteInfo.Width, 2);
+        InputStream.Write(SpriteInfo.Height, 2);
         Count := Length(SpriteInfo.Sprites);
-        InputStream.Write(Count);
+        InputStream.Write(Count, 4);
         for K := Low(SpriteInfo.Sprites) to High(SpriteInfo.Sprites) do
         begin
-          InputStream.Write(SpriteInfo.Sprites[K].SpriteID);
-          InputStream.Write(SpriteInfo.Sprites[K].PosX);
-          InputStream.Write(SpriteInfo.Sprites[K].PosY);
+          InputStream.Write(SpriteInfo.Sprites[K].SpriteID, 4);
+          InputStream.Write(SpriteInfo.Sprites[K].PosX, 2);
+          InputStream.Write(SpriteInfo.Sprites[K].PosY, 2);
         end;
         InputStream.Write(TexType, SizeOf(TTexFormat));
         Count := Length(Data);
-        InputStream.Write(Count);
+        InputStream.Write(Count, 4);
         InputStream.Write(Data[0], Count*SizeOf(Data[0]));
       end;
   end;

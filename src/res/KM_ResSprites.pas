@@ -242,7 +242,7 @@ var
 function GetMaxAtlasSize: Integer;
 begin
   Result := MAX_GAME_ATLAS_SIZE;
-  if TRender.MaxTextureSize > 0 then
+  if gRender <> nil then
     Result := Min(Result, TRender.MaxTextureSize);
 end;
 
@@ -685,15 +685,14 @@ begin
     if rxxCount = 0 then
       Exit;
 
-    Allocate(rxxCount - 1);
+    Allocate(rxxCount);
 
-    decompressionStream.Read(fRXData.Flag[1], rxxCount);
+    decompressionStream.Read(fRXData.Flag[1], fRXData.Count);
 
     //Sprite info
-    for I := 1 to rxxCount do
+    for I := 1 to fRXData.Count do
       if fRXData.Flag[I] = 1 then
       begin
-        decompressionStream.Read(fRXData.Size[I].X, 4);
         decompressionStream.Read(fRXData.Size[I].X, 4);
         decompressionStream.Read(fRXData.Pivot[I].X, 8);
         //SizeNoShadow is used only for Units
@@ -705,25 +704,25 @@ begin
     //Atlases
     for SAT := Low(TSpriteAtlasType) to High(TSpriteAtlasType) do
     begin
-      InputStream.Read(atlasCount, 4);
+      decompressionStream.Read(atlasCount, 4);
       SetLength(fGFXPrepData[SAT], atlasCount);
       for I := Low(fGFXPrepData[SAT]) to High(fGFXPrepData[SAT]) do
         with fGFXPrepData[SAT, I] do
         begin
-          InputStream.Read(SpriteInfo.Width, 2);
-          InputStream.Read(SpriteInfo.Height, 2);
-          InputStream.Read(spriteCount, 4);
+          decompressionStream.Read(SpriteInfo.Width, 2);
+          decompressionStream.Read(SpriteInfo.Height, 2);
+          decompressionStream.Read(spriteCount, 4);
           SetLength(SpriteInfo.Sprites, spriteCount);
           for K := Low(SpriteInfo.Sprites) to High(SpriteInfo.Sprites) do
           begin
-            InputStream.Read(SpriteInfo.Sprites[K].SpriteID, 4);
-            InputStream.Read(SpriteInfo.Sprites[K].PosX, 2);
-            InputStream.Read(SpriteInfo.Sprites[K].PosY, 2);
+            decompressionStream.Read(SpriteInfo.Sprites[K].SpriteID, 4);
+            decompressionStream.Read(SpriteInfo.Sprites[K].PosX, 2);
+            decompressionStream.Read(SpriteInfo.Sprites[K].PosY, 2);
           end;
-          InputStream.Read(TexType, SizeOf(TTexFormat));
-          InputStream.Read(dataCount, 4);
+          decompressionStream.Read(TexType, SizeOf(TTexFormat));
+          decompressionStream.Read(dataCount, 4);
           SetLength(Data, dataCount);
-          InputStream.Read(Data[0], dataCount*SizeOf(Data[0]));
+          decompressionStream.Read(Data[0], dataCount*SizeOf(Data[0]));
 
           //Generate texture once
           texFilter := ftNearest;
@@ -1670,6 +1669,7 @@ procedure TKMResSprites.LoadGameResources(aAlphaShadows: Boolean; aForceReload: 
   procedure LoadAllResources;
   var
     RT: TRXType;
+    rxaFile: string;
   begin
     for RT := Low(TRXType) to High(TRXType) do
       if RXInfo[RT].Usage = ruGame then
@@ -1677,10 +1677,18 @@ procedure TKMResSprites.LoadGameResources(aAlphaShadows: Boolean; aForceReload: 
         if Assigned(fStepCaption) then
           fStepCaption(gResTexts[RXInfo[RT].LoadingTextID]);
 
-
-        gLog.AddTime('Reading ' + RXInfo[RT].FileName + '.rx');
-        LoadSprites(RT, fAlphaShadows);
-        fSprites[RT].MakeGFX(fAlphaShadows);
+        rxaFile := ExeDir + 'data' + PathDelim + 'Sprites' + PathDelim + RXInfo[RT].FileName + '.rxa';
+        if fAlphaShadows and FileExists(rxaFile) then
+        begin
+          gLog.AddTime('Reading ' + RXInfo[RT].FileName + '.rxa');
+          fSprites[RT].LoadFromRXAFile(rxaFile);
+        end
+        else
+        begin
+          gLog.AddTime('Reading ' + RXInfo[RT].FileName + '.rx');
+          LoadSprites(RT, fAlphaShadows);
+          fSprites[RT].MakeGFX(fAlphaShadows);
+        end;
       end;
   end;
 
