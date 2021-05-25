@@ -63,8 +63,8 @@ type
     procedure Button14Click(Sender: TObject);
     procedure Button15Click(Sender: TObject);
   private
-    function ValidateKMUnitName(aValue: String): Boolean;
-    function ValidateUtilsUnitName(aValue: String): Boolean;
+    function ValidateKMUnitName(const aValue: String): Boolean;
+    function ValidateUtilsUnitName(const aValue: String): Boolean;
     procedure AddAIPlayersToMPMaps(aAICommandTxt: String);
     procedure AddMissingAIPlayers;
     procedure AddAdvancedAIPlayersToMPMaps;
@@ -741,13 +741,13 @@ begin
 end;
 
 
-function TForm1.ValidateKMUnitName(aValue: String): Boolean;
+function TForm1.ValidateKMUnitName(const aValue: String): Boolean;
 begin
   Result := AnsiEndsText('.pas', aValue) and AnsiStartsText('KM_', aValue);
 end;
 
 
-function TForm1.ValidateUtilsUnitName(aValue: String): Boolean;
+function TForm1.ValidateUtilsUnitName(const aValue: String): Boolean;
 begin
   Result := AnsiEndsText('.pas', aValue); //Utils could have any unit name
 end;
