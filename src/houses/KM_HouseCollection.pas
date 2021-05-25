@@ -364,7 +364,7 @@ procedure TKMHousesCollection.Load(LoadStream: TKMemoryStream);
 var
   I, newCount: Integer;
   HT: TKMHouseType;
-  T: TKMHouse;
+  H: TKMHouse;
 begin
   LoadStream.CheckMarker('Houses');
 
@@ -374,21 +374,21 @@ begin
     LoadStream.Read(HT, SizeOf(HT));
     case HT of
       htSwine,
-      htStables:       T := TKMHouseSwineStable.Load(LoadStream);
-      htInn:           T := TKMHouseInn.Load(LoadStream);
-      htMarketplace:   T := TKMHouseMarket.Load(LoadStream);
-      htSchool:        T := TKMHouseSchool.Load(LoadStream);
-      htBarracks:      T := TKMHouseBarracks.Load(LoadStream);
-      htStore:         T := TKMHouseStore.Load(LoadStream);
-      htWatchTower:    T := TKMHouseTower.Load(LoadStream);
-      htWoodcutters:   T := TKMHouseWoodcutters.Load(LoadStream);
-      htArmorWorkshop: T := TKMHouseArmorWorkshop.Load(LoadStream);
-      htTownHall:      T := TKMHouseTownHall.Load(LoadStream);
-      else             T := TKMHouse.Load(LoadStream);
+      htStables:       H := TKMHouseSwineStable.Load(LoadStream);
+      htInn:           H := TKMHouseInn.Load(LoadStream);
+      htMarketplace:   H := TKMHouseMarket.Load(LoadStream);
+      htSchool:        H := TKMHouseSchool.Load(LoadStream);
+      htBarracks:      H := TKMHouseBarracks.Load(LoadStream);
+      htStore:         H := TKMHouseStore.Load(LoadStream);
+      htWatchTower:    H := TKMHouseTower.Load(LoadStream);
+      htWoodcutters:   H := TKMHouseWoodcutters.Load(LoadStream);
+      htArmorWorkshop: H := TKMHouseArmorWorkshop.Load(LoadStream);
+      htTownHall:      H := TKMHouseTownHall.Load(LoadStream);
+      else             H := TKMHouse.Load(LoadStream);
     end;
 
-    if T <> nil then
-      fHouses.Add(T);
+    if H <> nil then
+      fHouses.Add(H);
   end;
 end;
 
