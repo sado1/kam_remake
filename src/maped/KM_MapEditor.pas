@@ -116,7 +116,7 @@ uses
   KM_AIDefensePos,
   KM_Units, KM_UnitGroup, KM_Houses, KM_HouseCollection,
   KM_GameParams, KM_Cursor, KM_ResMapElements, KM_ResHouses, KM_Resource, KM_ResUnits,
-  KM_RenderAux, KM_Hand, KM_HandsCollection, KM_CommonUtils, KM_RenderDebug,
+  KM_RenderAux, KM_RenderGameAux, KM_Hand, KM_HandsCollection, KM_CommonUtils, KM_RenderDebug,
   KM_HandEntityHelper,
   KM_UnitGroupTypes,
   KM_HandTypes,
@@ -1085,7 +1085,7 @@ begin
     fSelection.Paint(aLayer, aClipRect);
 
   if (melMapResize in fVisibleLayers) and not KMSameRect(ResizeMapRect, KMRECT_ZERO) then
-    gRenderAux.RenderResizeMap(ResizeMapRect);
+    gRenderGameAux.RenderResizeMap(ResizeMapRect);
 
   if melWaterFlow in fVisibleLayers then
   begin

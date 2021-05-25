@@ -274,6 +274,7 @@ uses
   KM_RenderAux in 'src\render\KM_RenderAux.pas',
   KM_RenderControl in 'src\render\KM_RenderControl.pas',
   KM_RenderDebug in 'src\render\KM_RenderDebug.pas',
+  KM_RenderGameAux in 'src\render\KM_RenderGameAux.pas',
   KM_RenderPool in 'src\render\KM_RenderPool.pas',
   KM_RenderTerrain in 'src\render\KM_RenderTerrain.pas',
   KM_RenderTypes in 'src\render\KM_RenderTypes.pas',

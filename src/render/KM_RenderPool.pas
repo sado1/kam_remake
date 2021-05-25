@@ -156,7 +156,7 @@ var
 
 implementation
 uses
-  KM_RenderAux, KM_HandsCollection, KM_Game, KM_GameSettings, KM_Sound, KM_Resource, KM_ResUnits,
+  KM_RenderAux, KM_RenderGameAux, KM_HandsCollection, KM_Game, KM_GameSettings, KM_Sound, KM_Resource, KM_ResUnits,
   KM_ResMapElements, KM_AIFields, KM_TerrainPainter, KM_Cursor,
   KM_Hand, KM_UnitGroup, KM_CommonUtils,
   KM_GameParams, KM_Utils, KM_ResTileset, KM_DevPerfLog, KM_DevPerfLogTypes,
@@ -187,6 +187,7 @@ begin
   fRenderTerrain  := TRenderTerrain.Create;
   fRenderDebug    := TKMRenderDebug.Create;
   gRenderAux      := TRenderAux.Create;
+  gRenderGameAux  := TRenderGameAux.Create;
 
   fFieldsList     := TKMPointTagList.Create;
   fHousePlansList := TKMPointDirList.Create;
@@ -447,43 +448,43 @@ begin
     gRenderAux.Wires(aRect);
 
   if SHOW_TERRAIN_PASS <> 0 then
-    gRenderAux.Passability(aRect, SHOW_TERRAIN_PASS);
+    gRenderGameAux.Passability(aRect, SHOW_TERRAIN_PASS);
 
   if SHOW_TERRAIN_IDS then
-    gRenderAux.TileTerrainIDs(aRect);
+    gRenderGameAux.TileTerrainIDs(aRect);
 
   if SHOW_TERRAIN_KINDS then
-    gRenderAux.TileTerrainKinds(aRect);
+    gRenderGameAux.TileTerrainKinds(aRect);
 
   if SHOW_TERRAIN_OVERLAYS then
-    gRenderAux.TileTerrainOverlays(aRect);
+    gRenderGameAux.TileTerrainOverlays(aRect);
 
   if SHOW_TERRAIN_HEIGHT then
-    gRenderAux.TileTerrainHeight(aRect);
+    gRenderGameAux.TileTerrainHeight(aRect);
 
   if SHOW_JAM_METER then
-    gRenderAux.TileTerrainJamMeter(aRect);
+    gRenderGameAux.TileTerrainJamMeter(aRect);
 
   if SHOW_TILE_OBJECT_ID then
-    gRenderAux.TileTerrainTileObjectID(aRect);
+    gRenderGameAux.TileTerrainTileObjectID(aRect);
 
   if SHOW_TILES_OWNER then
     RenderTileOwnerLayer(aRect);
 
   if SHOW_TREE_AGE then
-    gRenderAux.TileTerrainTreeAge(aRect);
+    gRenderGameAux.TileTerrainTreeAge(aRect);
 
   if SHOW_FIELD_AGE then
-    gRenderAux.TileTerrainFieldAge(aRect);
+    gRenderGameAux.TileTerrainFieldAge(aRect);
 
   if SHOW_TILE_LOCK then
-    gRenderAux.TileTerrainTileLock(aRect);
+    gRenderGameAux.TileTerrainTileLock(aRect);
 
   if SHOW_TILE_UNIT then
-    gRenderAux.TileTerrainTileUnit(aRect);
+    gRenderGameAux.TileTerrainTileUnit(aRect);
 
   if SHOW_VERTEX_UNIT then
-    gRenderAux.TileTerrainVertexUnit(aRect);
+    gRenderGameAux.TileTerrainVertexUnit(aRect);
 
   if SHOW_TERRAIN_TILES_GRID then
     RenderTilesGrid(aRect);
