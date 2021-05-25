@@ -1706,7 +1706,7 @@ begin
       begin
         pathToMaps := ExeDir + MAP_FOLDER[MF] + PathDelim;
 
-        if not DirectoryExists(pathToMaps) then Exit;
+        if not DirectoryExists(pathToMaps) then Continue;
 
         FindFirst(pathToMaps + '*', faDirectory, searchRec);
         try
