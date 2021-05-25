@@ -115,7 +115,9 @@ type
     procedure ExportMask(const aFile: string; aIndex: Integer);
 
     procedure ClearGameResGenTemp;
+    {$IFDEF LOAD_GAME_RES_ASYNC}
     procedure GenerateTextureAtlasForGameRes;
+    {$ENDIF}
 
     procedure ClearTemp; virtual;//Release non-required data
   end;
@@ -1674,6 +1676,7 @@ procedure TKMResSprites.LoadGameResources(aAlphaShadows: Boolean; aForceReload: 
       begin
         if Assigned(fStepCaption) then
           fStepCaption(gResTexts[RXInfo[RT].LoadingTextID]);
+
 
         gLog.AddTime('Reading ' + RXInfo[RT].FileName + '.rx');
         LoadSprites(RT, fAlphaShadows);
