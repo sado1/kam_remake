@@ -22,6 +22,14 @@ type
   TKMAIType = (aitNone, aitClassic, aitAdvanced);
   TKMAITypeSet = set of TKMAIType;
 
+  //Message kind determines icon and available actions for Message
+  TKMMessageKind = (
+    mkText, //Mission text message
+    mkHouse,
+    mkUnit,
+    mkQuill //Utility message (warnings in script loading)
+  );
+
   TKMGameModeChangeEvent = procedure (aGameMode: TKMGameMode) of object;
 
   TKMNewSingleMapEvent = procedure (const aMissionFile, aGameName: UnicodeString; aDesiredLoc: ShortInt = -1;

@@ -71,14 +71,6 @@ type
     MoveX, MoveY: Integer;
   end;
 
-  //Message kind determines icon and available actions for Message
-  TKMMessageKind = (
-    mkText, //Mission text message
-    mkHouse,
-    mkUnit,
-    mkQuill //Utility message (warnings in script loading)
-  );
-
   TKMAudioFormat = (afWav, afOgg);
 
   TWonOrLost = (wolNone, wolWon, wolLost);
