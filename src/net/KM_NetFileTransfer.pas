@@ -70,7 +70,7 @@ type
 implementation
 uses
   KromUtils, KM_Maps, KM_Saves,
-  KM_ScriptingPreProcessor, KM_ScriptFilesCollection,
+  KM_ScriptPreProcessor, KM_ScriptFilesCollection,
   KM_Log, KM_FileIO;
 
 const
@@ -112,7 +112,7 @@ var
   fileName: UnicodeString;
   sourceStream: TKMemoryStream;
   compressionStream: TCompressionStream;
-  scriptPreProcessor: TKMScriptingPreProcessor;
+  scriptPreProcessor: TKMScriptPreProcessor;
   scriptFiles: TKMScriptFilesCollection;
 begin
   inherited Create;
@@ -132,7 +132,7 @@ begin
               //Add all included script files
               if (VALID_MAP_EXTENSIONS[I] = EXT_FILE_SCRIPT) and FileExists(fileName) then
               begin
-                scriptPreProcessor := TKMScriptingPreProcessor.Create(True);
+                scriptPreProcessor := TKMScriptPreProcessor.Create(True);
                 try
                   if not scriptPreProcessor.PreProcessFile(fileName) then
                     //throw an Exception if PreProcessor was not successful to cancel FileSender creation

@@ -7,7 +7,7 @@ uses
   uPSCompiler, uPSRuntime, uPSUtils, uPSDisassembly, uPSDebugger,
   KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_FileIO,
   KM_ScriptingActions, KM_ScriptingEvents, KM_ScriptingIdCache, KM_ScriptingStates, KM_ScriptingTypes, KM_ScriptingUtils,
-  KM_ScriptFilesCollection, KM_ScriptErrorHandler, KM_ScriptingPreProcessor,
+  KM_ScriptFilesCollection, KM_ScriptErrorHandler, KM_ScriptPreProcessor,
   ScriptValidatorResult;
 
   //Dynamic scripts allow mapmakers to control the mission flow
@@ -35,7 +35,7 @@ type
 
     fValidationIssues: TScriptValidatorResult;
     fErrorHandler: TKMScriptErrorHandler;
-    fPreProcessor: TKMScriptingPreProcessor;
+    fPreProcessor: TKMScriptPreProcessor;
 
     fStates: TKMScriptStates;
     fActions: TKMScriptActions;
@@ -66,7 +66,7 @@ type
 
     //property ScriptCode: AnsiString read fScriptCode;
     property ScriptFilesInfo: TKMScriptFilesCollection read GetScriptFilesInfo;
-    property PreProcessor: TKMScriptingPreProcessor read fPreProcessor;
+    property PreProcessor: TKMScriptPreProcessor read fPreProcessor;
 
     function GetErrorMessage(aErrorMsg: TPSPascalCompilerMessage): TKMScriptErrorMessage; overload;
     function GetErrorMessage(const aErrorType, aShortErrorDescription, aModule: String; aRow, aCol, aPos: Integer): TKMScriptErrorMessage; overload;
@@ -172,7 +172,7 @@ begin
 
   // Global object to get events
   fErrorHandler := TKMScriptErrorHandler.Create(aOnScriptError);
-  fPreProcessor := TKMScriptingPreProcessor.Create(aOnScriptError, fErrorHandler); //Use same error handler for PreProcessor and Scripting
+  fPreProcessor := TKMScriptPreProcessor.Create(aOnScriptError, fErrorHandler); //Use same error handler for PreProcessor and Scripting
 
   gScriptEvents := TKMScriptEvents.Create(fExec, fPreProcessor.PSPreProcessor, fIDCache);
   fStates := TKMScriptStates.Create(fIDCache);

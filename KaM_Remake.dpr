@@ -306,7 +306,7 @@ uses
   KM_ScriptingConsoleCommands in 'src\scripting\KM_ScriptingConsoleCommands.pas',
   KM_ScriptingEvents in 'src\scripting\KM_ScriptingEvents.pas',
   KM_ScriptingIdCache in 'src\scripting\KM_ScriptingIdCache.pas',
-  KM_ScriptingPreProcessor in 'src\scripting\KM_ScriptingPreProcessor.pas',
+  KM_ScriptPreProcessor in 'src\scripting\KM_ScriptPreProcessor.pas',
   KM_ScriptingStates in 'src\scripting\KM_ScriptingStates.pas',
   KM_ScriptingTypes in 'src\scripting\KM_ScriptingTypes.pas',
   KM_ScriptingUtils in 'src\scripting\KM_ScriptingUtils.pas',

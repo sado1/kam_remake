@@ -258,7 +258,7 @@ uses
   KromUtils,
   KM_GameSettings, KM_FileIO,
   KM_MissionScript_Info,
-  KM_ScriptingPreProcessor, KM_ScriptFilesCollection,
+  KM_ScriptPreProcessor, KM_ScriptFilesCollection,
   KM_ResLocales,
   KM_CommonUtils, KM_Log, KM_MapUtils, KM_Utils;
 
@@ -301,7 +301,7 @@ var
   datFile, mapFile, scriptFile, txtFile, libxFiles: string;
   datCRC, mapCRC, othersCRC: Cardinal;
   missionParser: TKMMissionParserInfo;
-  scriptPreProcessor: TKMScriptingPreProcessor;
+  scriptPreProcessor: TKMScriptPreProcessor;
   scriptFiles: TKMScriptFilesCollection;
   CSP: TKMCustomScriptParam;
 begin
@@ -349,7 +349,7 @@ begin
     if FileExists(scriptFile) then
     begin
       othersCRC := othersCRC xor Adler32CRC(scriptFile);
-      scriptPreProcessor := TKMScriptingPreProcessor.Create(True);
+      scriptPreProcessor := TKMScriptPreProcessor.Create(True);
       try
         if scriptPreProcessor.PreProcessFile(scriptFile) then
         begin

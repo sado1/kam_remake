@@ -1,4 +1,4 @@
-unit KM_ScriptingPreProcessor;
+unit KM_ScriptPreProcessor;
 {$I KaM_Remake.inc}
 {$WARN IMPLICIT_STRING_CAST OFF}
 interface
@@ -12,7 +12,7 @@ type
   // Script preprocessor preprocess script files before compilation
   // This class is our interface to PS script PreProcessor
   // and handler of our custom preprocessor directives
-  TKMScriptingPreProcessor = class
+  TKMScriptPreProcessor = class
   private
     // in silent mode we don't parse event handlers and console commands
     // since we affect global variables gScriptEvents
@@ -66,7 +66,7 @@ uses
   KM_Defaults;
 
 { TKMScriptingPreProcessor }
-constructor TKMScriptingPreProcessor.Create(aSilentMode: Boolean = False);
+constructor TKMScriptPreProcessor.Create(aSilentMode: Boolean = False);
 var
   onScriptError: TUnicodeStringEvent;
 begin
@@ -76,14 +76,14 @@ begin
 end;
 
 
-constructor TKMScriptingPreProcessor.Create(aOnScriptError: TUnicodeStringEvent);
+constructor TKMScriptPreProcessor.Create(aOnScriptError: TUnicodeStringEvent);
 begin
   Create(aOnScriptError, TKMScriptErrorHandler.Create(aOnScriptError));
   fDestroyErrorHandler := True;
 end;
 
 
-constructor TKMScriptingPreProcessor.Create(aOnScriptError: TUnicodeStringEvent; aErrorHandler: TKMScriptErrorHandler);
+constructor TKMScriptPreProcessor.Create(aOnScriptError: TUnicodeStringEvent; aErrorHandler: TKMScriptErrorHandler);
 begin
   inherited Create;
 
@@ -100,7 +100,7 @@ begin
 end;
 
 
-destructor TKMScriptingPreProcessor.Destroy;
+destructor TKMScriptPreProcessor.Destroy;
 begin
   FreeAndNil(fScriptFilesInfo);
   //Error Handler could be destroyed already
@@ -112,7 +112,7 @@ begin
 end;
 
 
-procedure TKMScriptingPreProcessor.BeforePreProcess(const aMainFileName: UnicodeString; const aMainFileText: AnsiString);
+procedure TKMScriptPreProcessor.BeforePreProcess(const aMainFileName: UnicodeString; const aMainFileText: AnsiString);
 var
   CSP: TKMCustomScriptParam;
 begin
@@ -128,26 +128,26 @@ begin
 end;
 
 
-function TKMScriptingPreProcessor.GetCustomScriptParamData(aParam: TKMCustomScriptParam): TKMCustomScriptParamData;
+function TKMScriptPreProcessor.GetCustomScriptParamData(aParam: TKMCustomScriptParam): TKMCustomScriptParamData;
 begin
   Result := fCustomScriptParams[aParam];
 end;
 
 
-procedure TKMScriptingPreProcessor.AfterPreProcess;
+procedure TKMScriptPreProcessor.AfterPreProcess;
 begin
   fScriptFilesInfo.StripIncludedCnt;
 end;
 
 
-function TKMScriptingPreProcessor.ScriptMightChangeAfterPreProcessing: Boolean;
+function TKMScriptPreProcessor.ScriptMightChangeAfterPreProcessing: Boolean;
 begin
   Result := (fScriptFilesInfo.IncludedCount <> 0) or fScriptFilesInfo.HasDefDirectives;
 end;
 
 
 // Check if main script file is a campaign mission
-function TKMScriptingPreProcessor.IsCampaignMissionScript: Boolean;
+function TKMScriptPreProcessor.IsCampaignMissionScript: Boolean;
 begin
   if gGameParams <> nil then
     Exit(gGameParams.IsCampaign)
@@ -163,7 +163,7 @@ begin
 end;
 
 
-function TKMScriptingPreProcessor.PreProcessFile(const aFileName: UnicodeString): Boolean;
+function TKMScriptPreProcessor.PreProcessFile(const aFileName: UnicodeString): Boolean;
 var
   scriptCode: AnsiString;
 begin
@@ -171,7 +171,7 @@ begin
 end;
 
 
-function TKMScriptingPreProcessor.PreProcessFile(const aFileName: UnicodeString; var aScriptCode: AnsiString): Boolean;
+function TKMScriptPreProcessor.PreProcessFile(const aFileName: UnicodeString; var aScriptCode: AnsiString): Boolean;
 var
   mainScriptCode: AnsiString;
 begin
@@ -204,7 +204,7 @@ begin
 end;
 
 
-procedure TKMScriptingPreProcessor.ScriptOnProcessDirective(Sender: TPSPreProcessor; Parser: TPSPascalPreProcessorParser; const Active: Boolean;
+procedure TKMScriptPreProcessor.ScriptOnProcessDirective(Sender: TPSPreProcessor; Parser: TPSPascalPreProcessorParser; const Active: Boolean;
                                                             const DirectiveName, DirectiveParam: tbtString; var aContinue: Boolean);
 const
   CUSTOM_EVENT_DIRECTIVE = 'EVENT';
@@ -479,7 +479,7 @@ begin
 end;
 
 
-function TKMScriptingPreProcessor.ScriptOnNeedFile(Sender: TPSPreProcessor; const aCallingFileName: AnsiString; var aFileName, aOutput: AnsiString): Boolean;
+function TKMScriptPreProcessor.ScriptOnNeedFile(Sender: TPSPreProcessor; const aCallingFileName: AnsiString; var aFileName, aOutput: AnsiString): Boolean;
 var
   path, fileName, fileExt, errorStr: string;
   inclFile: AnsiString;
