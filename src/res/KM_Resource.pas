@@ -6,9 +6,7 @@ uses
   Classes, SysUtils,
   KM_CommonTypes, KM_Defaults, KM_Pics, KM_WorkerThread,
 
-  {$IFNDEF CONSOLE}
   KM_ResCursors,
-  {$ENDIF}
   KM_ResFonts,
   KM_ResHouses,
   KM_ResLocales,
@@ -28,9 +26,7 @@ type
   private
     fDataState: TResourceLoadState;
 
-    {$IFNDEF CONSOLE}
     fCursors: TKMResCursors;
-    {$ENDIF}
     fFonts: TKMResFonts;
     fUnits: TKMResUnits;
     fSounds: TKMResSounds;
@@ -60,9 +56,7 @@ type
     procedure LoadLocaleFonts(const aLocale: AnsiString; aLoadFullFonts: Boolean);
 
     property DataState: TResourceLoadState read fDataState;
-    {$IFNDEF CONSOLE}
     property Cursors: TKMResCursors read fCursors;
-    {$ENDIF}
     property MapElements: TKMResMapElements read fMapElements;
     property Fonts: TKMResFonts read fFonts;
     property Sounds: TKMResSounds read fSounds;
