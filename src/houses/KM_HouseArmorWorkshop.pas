@@ -3,7 +3,6 @@ unit KM_HouseArmorWorkshop;
 interface
 uses
   KM_Houses,
-//  KM_ResWares,
   KM_ResTypes,
   KM_Defaults, KM_CommonClasses;
 
