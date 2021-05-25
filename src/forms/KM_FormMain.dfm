@@ -242,7 +242,7 @@ object FormMain: TFormMain
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 2
-      ExpandedHeight = 153
+      ExpandedHeight = 168
       object Label1: TLabel
         Left = 101
         Top = 55
