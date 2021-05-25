@@ -793,11 +793,9 @@ end;
 //Set house to new position
 procedure TKMHouse.SetPosition(const aPos: TKMPoint);
 var
-  wasOnSnow, isRallyPointSet, newPos: Boolean;
+  wasOnSnow, isRallyPointSet: Boolean;
 begin
-  Assert(gGameParams.Mode = gmMapEd);
-
-  newPos := fPosition <> aPos;
+  Assert(gGameParams.IsMapEditor);
 
   //We have to remove the house THEN check to see if we can place it again so we can put it on the old position
   gTerrain.SetHouse(fPosition, fType, hsNone, PLAYER_NONE);
@@ -830,10 +828,6 @@ begin
   CheckOnSnow;
   if not wasOnSnow or not fIsOnSnow then
     fSnowStep := 0;
-
-  if newPos then
-    gGame.MapEditor.History.MakeCheckpoint(caHouses, gResTexts[TX_MAPED_HISTORY_CHPOINT_MOVE_SMTH,
-                                                               [gResHouses[HouseType].HouseName, aPos.ToString]]);
 end;
 
 

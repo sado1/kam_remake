@@ -87,6 +87,8 @@ type
     procedure Update_Label_Coordinates;
     procedure MapTypeChanged(aIsMultiplayer: Boolean);
 
+    procedure SetHousePosition(aHouse: TKMHouse; aPos: TKMPoint);
+
     procedure UnRedo_Click(Sender: TObject);
     procedure History_Click(Sender: TObject);
     procedure History_JumpTo(Sender: TObject);
@@ -157,11 +159,12 @@ type
 implementation
 uses
   KM_HandsCollection, KM_ResTexts, KM_Game, KM_GameParams, KM_Cursor,
-  KM_Resource, KM_TerrainDeposits, KM_ResCursors, KM_ResKeys, KM_GameApp,
+  KM_Resource, KM_ResHouses, KM_TerrainDeposits, KM_ResCursors, KM_ResKeys, KM_GameApp,
   KM_Hand, KM_AIDefensePos, KM_RenderUI, KM_ResFonts, KM_CommonClasses, KM_UnitWarrior,
   KM_Utils,
   KM_UnitGroupTypes,
-  KM_ResTypes, KM_CommonTypes;
+  KM_ResTypes,
+  KM_CommonTypes;
 
 
 { TKMapEdInterface }
@@ -1248,14 +1251,26 @@ begin
 end;
 
 
+procedure TKMapEdInterface.SetHousePosition(aHouse: TKMHouse; aPos: TKMPoint);
+var
+  newPos: Boolean;
+begin
+  newPos := aHouse.Position <> aPos;
+
+  aHouse.SetPosition(aPos);
+
+  if newPos then
+    gGame.MapEditor.History.MakeCheckpoint(caHouses, gResTexts[TX_MAPED_HISTORY_CHPOINT_MOVE_SMTH,
+                                                               [gResHouses[aHouse.HouseType].HouseName, aPos.ToString]]);
+end;
+
+
 //Drag house move mode end (with cursor mode cmHouse)
 procedure TKMapEdInterface.DragHouseModeEnd;
-var H: TKMHouse;
 begin
   if (fDragObject is TKMHouse) then
   begin
-    H := TKMHouse(fDragObject);
-    H.SetPosition(KMPointAdd(gCursor.Cell, fDragHouseOffset));
+    SetHousePosition(TKMHouse(fDragObject), KMPointAdd(gCursor.Cell, fDragHouseOffset));
     DoResetCursorMode;
   end;
 end;
@@ -1284,7 +1299,7 @@ begin
     houseNewPos := KMPointAdd(gCursor.Cell, fDragHouseOffset);
 
     if not fDragingObject then
-      H.SetPosition(houseNewPos)  //handles Right click, when house is selected
+      SetHousePosition(H, houseNewPos) //handles Right click, when house is selected
     else
       if not IsDragHouseModeOn then
         DragHouseModeStart(houseNewPos, houseOldPos);
@@ -1413,8 +1428,10 @@ begin
                   begin
                     if gMySpectator.Selected is TKMHouseWFlagPoint then
                       TKMHouseWFlagPoint(gMySpectator.Selected).FlagPoint := gCursor.Cell;
-                  end else
-                    TKMHouse(gMySpectator.Selected).SetPosition(gCursor.Cell); //Can place is checked in SetPosition
+                  end
+                  else
+                    SetHousePosition(TKMHouse(gMySpectator.Selected), gCursor.Cell); //Can place is checked in SetPosition
+
                   Exit;
                 end;
 
