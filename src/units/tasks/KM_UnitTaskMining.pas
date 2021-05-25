@@ -34,7 +34,8 @@ type
 
 implementation
 uses
-  KM_Houses, KM_HouseWoodcutters, KM_HandsCollection,
+  KM_Houses, KM_HouseWoodcutters, KM_HouseSwineStable,
+  KM_HandsCollection,
   KM_Resource, KM_ResMapElements, KM_ResTexts,
   KM_Hand, KM_ResUnits, KM_ScriptingEvents, KM_Terrain;
 

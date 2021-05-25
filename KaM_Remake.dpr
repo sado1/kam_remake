@@ -192,6 +192,7 @@ uses
   KM_Houses in 'src\houses\KM_Houses.pas',
   KM_HouseSchool in 'src\houses\KM_HouseSchool.pas',
   KM_HouseStore in 'src\houses\KM_HouseStore.pas',
+  KM_HouseSwineStable in 'src\houses\KM_HouseSwineStable.pas',
   KM_HouseTownHall in 'src\houses\KM_HouseTownHall.pas',
   KM_HouseWoodcutters in 'src\houses\KM_HouseWoodcutters.pas',
   
