@@ -71,7 +71,7 @@ type
     procedure ProcFieldBuilt(aPlayer: TKMHandID; aX, aY: Word);
     procedure ProcHouseAfterDestroyed(aHouseType: TKMHouseType; aOwner: TKMHandID; aX, aY: Word);
     procedure ProcHouseBuilt(aHouse: TKMHouse);
-    procedure ProcHousePlanDigged(aHouse: Integer);
+    procedure ProcHousePlanDigged(aHouse: TKMHouse);
     procedure ProcHousePlanPlaced(aPlayer: TKMHandID; aX, aY: Word; aType: TKMHouseType);
     procedure ProcHousePlanRemoved(aPlayer: TKMHandID; aX, aY: Word; aType: TKMHouseType);
     procedure ProcHouseDamaged(aHouse: TKMHouse; aAttacker: TKMUnit);
@@ -743,10 +743,13 @@ end;
 
 //* Version: 7000+
 //* Occurs when house plan is digged.
-procedure TKMScriptEvents.ProcHousePlanDigged(aHouse: Integer);
+procedure TKMScriptEvents.ProcHousePlanDigged(aHouse: TKMHouse);
 begin
   if MethodAssigned(evtHousePlanDigged) then
-    CallEventHandlers(evtHousePlanDigged, [aHouse]);
+  begin
+    fIDCache.CacheHouse(aHouse, aHouse.UID); //Improves cache efficiency since aHouse will probably be accessed soon
+    CallEventHandlers(evtHousePlanDigged, [aHouse.UID]);
+  end;
 end;
 
 
@@ -1100,10 +1103,10 @@ end;
 //* Occurs when resource is produced for specified house.
 procedure TKMScriptEvents.ProcWareProduced(aHouse: TKMHouse; aType: TKMWareType; aCount: Word);
 begin
-  if MethodAssigned(evtWareProduced) then
+  if MethodAssigned(evtWareProduced) and (aType <> wtNone) then
   begin
-    if (aType <> wtNone) then
-      CallEventHandlers(evtWareProduced, [aHouse.UID, WARE_TY_TO_ID[aType], aCount]);
+    fIDCache.CacheHouse(aHouse, aHouse.UID); //Improves cache efficiency since aHouse will probably be accessed soon
+    CallEventHandlers(evtWareProduced, [aHouse.UID, WARE_TY_TO_ID[aType], aCount]);
   end;
 end;
 
@@ -1113,7 +1116,10 @@ end;
 procedure TKMScriptEvents.ProcWarriorWalked(aUnit: TKMUnit; aToX, aToY: Integer);
 begin
   if MethodAssigned(evtWarriorWalked) then
-      CallEventHandlers(evtWarriorWalked, [aUnit.UID, aToX, aToY]);
+  begin
+    fIDCache.CacheUnit(aUnit, aUnit.UID); //Improves cache efficiency since aUnit will probably be accessed soon
+    CallEventHandlers(evtWarriorWalked, [aUnit.UID, aToX, aToY]);
+  end;
 end;
 
 

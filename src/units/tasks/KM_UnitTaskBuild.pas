@@ -740,7 +740,7 @@ begin
           SetActionWalkToSpot(OutOfWay);
           HouseNeedsWorker := False; //House construction no longer needs the worker to continue
           HouseReadyToBuild := True; //If worker gets killed while walking house will be finished without him
-          gScriptEvents.ProcHousePlanDigged(fHouse.UID);
+          gScriptEvents.ProcHousePlanDigged(fHouse);
         end;
     else
         Result := trTaskDone;
