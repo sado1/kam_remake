@@ -239,7 +239,9 @@ var
 
 function GetMaxAtlasSize: Integer;
 begin
-  Result := Min(TRender.MaxTextureSize, MAX_GAME_ATLAS_SIZE);
+  Result := MAX_GAME_ATLAS_SIZE;
+  if TRender.MaxTextureSize > 0 then
+    Result := Min(Result, TRender.MaxTextureSize);
 end;
 
 
