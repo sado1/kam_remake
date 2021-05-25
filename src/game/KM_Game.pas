@@ -2,7 +2,6 @@
 {$I KaM_Remake.inc}
 interface
 uses
-  ExtCtrls,
   {$IFDEF USE_MAD_EXCEPT} MadExcept, {$ENDIF}
   Generics.Collections,
   KM_WorkerThread,
