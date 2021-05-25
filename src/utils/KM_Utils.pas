@@ -2,15 +2,10 @@ unit KM_Utils;
 {$I KaM_Remake.inc}
 interface
 uses
-  {$IFDEF MSWindows}
-  Windows,
-  {$ENDIF}
-  {$IFDEF Unix}
-  unix, baseunix, UnixUtil,
-  {$ENDIF}
   {$IFDEF FPC} FileUtil, {$ENDIF}
   {$IFDEF WDC} IOUtils, {$ENDIF}
-	SysUtils, StrUtils, Classes, Controls,
+	SysUtils, StrUtils, Classes,
+//  Controls,
   KM_TerrainTypes,
   KM_Defaults, KM_CommonTypes, KM_CommonClasses, KM_Points,
   KM_ResTypes;
@@ -20,10 +15,6 @@ uses
   function GetHintWHotkey(const aText: String; aKeyFunc: TKMKeyFunction): String; overload;
   function GetHintWHotkey(aTextId: Integer; const aHotkeyStr: String): String; overload;
   function GetHintWHotkey(aTextId: Integer; aKeyFunc: TKMKeyFunction): String; overload;
-
-	function GetShiftState(aButton: TMouseButton): TShiftState;
-  function GetMultiplicator(aButton: TMouseButton): Word; overload;
-  function GetMultiplicator(aShift: TShiftState): Word; overload;
 
   function RoundToTilePixel(aVal: Single): Single; inline; overload;
   function RoundToTilePixel(aVal: TKMPointF): TKMPointF; inline; overload;
@@ -256,35 +247,6 @@ begin
 
   for L := 0 to 2 do
     Result.Layer[L] := aTile.Layer[L];
-end;
-
-
-function GetShiftState(aButton: TMouseButton): TShiftState;
-begin
-  Result := [];
-  case aButton of
-    mbLeft:   Include(Result, ssLeft);
-    mbRight:  Include(Result, ssRight);
-  end;
-
-  if GetKeyState(VK_SHIFT) < 0 then
-    Include(Result, ssShift);
-end;
-
-
-function GetMultiplicator(aButton: TMouseButton): Word;
-begin
-  Result := GetMultiplicator(GetShiftState(aButton));
-end;
-
-
-function GetMultiplicator(aShift: TShiftState): Word;
-begin
-  Exclude(aShift, ssCtrl); //Ignore Ctrl
-  Result := Byte(aShift = [ssLeft])
-          + Byte(aShift = [ssRight]) * 10
-          + Byte(aShift = [ssShift,ssLeft]) * 100
-          + Byte(aShift = [ssShift,ssRight]) * 1000;
 end;
 
 

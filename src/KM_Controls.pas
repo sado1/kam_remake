@@ -2028,7 +2028,7 @@ uses
   {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
   SysUtils, StrUtils, Math, KromUtils, Clipbrd,
   KM_Resource, KM_ResSprites, KM_ResSound, KM_ResCursors, KM_ResTexts,
-  KM_Sound, KM_CommonUtils, KM_Utils;
+  KM_Sound, KM_CommonUtils, KM_UtilsExt;
 
 
 const

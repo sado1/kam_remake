@@ -359,6 +359,7 @@ uses
   KM_CommonShellUtils in 'src\utils\KM_CommonShellUtils.pas',
   KM_CommonUtils in 'src\utils\KM_CommonUtils.pas',
   KM_Utils in 'src\utils\KM_Utils.pas',
+  KM_UtilsExt in 'src\utils\KM_UtilsExt.pas',
   
   KromOGLUtils in 'src\utils\KromOGLUtils.pas',
   KromUtils in 'src\utils\KromUtils.pas',
