@@ -880,7 +880,7 @@ begin
       with Houses[HT] do
       begin
         S := '';
-        AddField(gRes.Houses[HT].HouseName);
+        AddField(gResHouses[HT].HouseName);
         AddField(Planned);
         AddField(PlanRemoved);
         AddField(Started);

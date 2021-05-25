@@ -758,7 +758,7 @@ var
 begin
   Result := False;
   best := MaxSingle;
-  HD := gRes.Houses;
+  HD := gResHouses;
 
   for I := 0 to fPlansCount - 1 do
   if (fPlans[I].HouseType <> htNone)
@@ -784,7 +784,7 @@ begin
   Result := True;
   for I := 0 to fPlansCount - 1 do
     if (fPlans[I].HouseType = aHT)
-      AND KMSamePoint(  aLoc, KMPointAdd( fPlans[I].Loc, KMPoint(gRes.Houses[aHT].EntranceOffsetX,0) )  ) then
+      AND KMSamePoint(  aLoc, KMPointAdd( fPlans[I].Loc, KMPoint(gResHouses[aHT].EntranceOffsetX,0) )  ) then
 	    Exit;
   Result := False;
 end;
@@ -809,7 +809,7 @@ begin
   if (fPlans[I].HouseType <> htNone)
   and ((aLoc.X - fPlans[I].Loc.X + 3 in [1..4]) and
        (aLoc.Y - fPlans[I].Loc.Y + 4 in [1..4]) and
-       (gRes.Houses[fPlans[I].HouseType].BuildArea[aLoc.Y - fPlans[I].Loc.Y + 4, aLoc.X - fPlans[I].Loc.X + 3] <> 0))
+       (gResHouses[fPlans[I].HouseType].BuildArea[aLoc.Y - fPlans[I].Loc.Y + 4, aLoc.X - fPlans[I].Loc.X + 3] <> 0))
   then
   begin
     aHouseType := fPlans[I].HouseType;
@@ -835,7 +835,7 @@ begin
   if (fPlans[I].HouseType <> htNone)
   and ((aLoc.X - fPlans[I].Loc.X + 3 in [1..4]) and
        (aLoc.Y - fPlans[I].Loc.Y + 4 in [1..4]) and
-       (gRes.Houses[fPlans[I].HouseType].BuildArea[aLoc.Y - fPlans[I].Loc.Y + 4, aLoc.X - fPlans[I].Loc.X + 3] <> 0))
+       (gResHouses[fPlans[I].HouseType].BuildArea[aLoc.Y - fPlans[I].Loc.Y + 4, aLoc.X - fPlans[I].Loc.X + 3] <> 0))
   then
   begin
     if fPlans[I].Worker <> nil then
@@ -855,7 +855,7 @@ begin
   if (fPlans[I].HouseType <> htNone)
   and ((aLoc.X - fPlans[I].Loc.X + 3 in [1..4]) and
        (aLoc.Y - fPlans[I].Loc.Y + 4 in [1..4]) and
-       (gRes.Houses[fPlans[I].HouseType].BuildArea[aLoc.Y - fPlans[I].Loc.Y + 4, aLoc.X - fPlans[I].Loc.X + 3] <> 0))
+       (gResHouses[fPlans[I].HouseType].BuildArea[aLoc.Y - fPlans[I].Loc.Y + 4, aLoc.X - fPlans[I].Loc.X + 3] <> 0))
   then
   begin
     aHousePlan := fPlans[I];
@@ -888,7 +888,7 @@ begin
     and InRange(fPlans[I].Loc.X - 2, rect.Left, rect.Right)
     and InRange(fPlans[I].Loc.Y - 2, rect.Top, rect.Bottom) then
     begin
-      HA := gRes.Houses[fPlans[I].HouseType].BuildArea;
+      HA := gResHouses[fPlans[I].HouseType].BuildArea;
 
       for J := 1 to 4 do for K := 1 to 4 do
       if HA[J,K] <> 0 then
@@ -921,7 +921,7 @@ begin
   if (fPlans[I].HouseType <> htNone)
   and InRange(fPlans[I].Loc.X - 2, rect.Left, rect.Right)
   and InRange(fPlans[I].Loc.Y - 2, rect.Top, rect.Bottom) then
-    aList.Add(KMPoint(fPlans[I].Loc.X + gRes.Houses[fPlans[I].HouseType].EntranceOffsetX, fPlans[I].Loc.Y), Byte(fPlans[I].HouseType));
+    aList.Add(KMPoint(fPlans[I].Loc.X + gResHouses[fPlans[I].HouseType].EntranceOffsetX, fPlans[I].Loc.Y), Byte(fPlans[I].HouseType));
 end;
 
 
@@ -1434,7 +1434,7 @@ begin
   Result := 0;
   for I := 0 to fPlansCount - 1 do
     if (fPlans[I].HouseType <> htNone) then // fPlansCount may not be updated
-      Result := Result + gRes.Houses[ fPlans[I].HouseType ].StoneCost;
+      Result := Result + gResHouses[ fPlans[I].HouseType ].StoneCost;
 end;
 
 
@@ -1445,7 +1445,7 @@ begin
   Result := 0;
   for I := 0 to fPlansCount - 1 do
     if (fPlans[I].HouseType <> htNone) then // fPlansCount may not be updated
-      Result := Result + gRes.Houses[ fPlans[I].HouseType ].WoodCost;
+      Result := Result + gResHouses[ fPlans[I].HouseType ].WoodCost;
 end;
 
 

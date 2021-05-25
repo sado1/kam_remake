@@ -73,7 +73,7 @@ begin
   for I := 1 to GUI_HOUSE_COUNT do
     if GUIHouseOrder[I] <> htNone then
     begin
-      Button_Build[I] := TKMButtonFlat.Create(Panel_Build, 9 + ((I-1) mod 5)*37,83+((I-1) div 5)*37,33,33,gRes.Houses[GUIHouseOrder[I]].GUIIcon);
+      Button_Build[I] := TKMButtonFlat.Create(Panel_Build, 9 + ((I-1) mod 5)*37,83+((I-1) div 5)*37,33,33,gResHouses[GUIHouseOrder[I]].GUIIcon);
       Button_Build[I].OnClick := Town_BuildChange;
     end;
 
@@ -177,8 +177,8 @@ begin
       Button_Build[I].Down := (gCursor.Mode = cmHouses) and (gCursor.Tag1 = Byte(GUIHouseOrder[I]));
       if Button_Build[I].Down then
       begin
-        Label_HouseConstructionWood.Caption  := IntToStr(gRes.Houses[GUIHouseOrder[I]].WoodCost);
-        Label_HouseConstructionStone.Caption := IntToStr(gRes.Houses[GUIHouseOrder[I]].StoneCost);
+        Label_HouseConstructionWood.Caption  := IntToStr(gResHouses[GUIHouseOrder[I]].WoodCost);
+        Label_HouseConstructionStone.Caption := IntToStr(gResHouses[GUIHouseOrder[I]].StoneCost);
       end;
     end;
 
@@ -230,9 +230,9 @@ begin
     if GUIHouseOrder[I] <> htNone then
     begin
       if InRange(I-1, 0, High(fSubMenuActionsCtrls) - 4) then
-        Button_Build[I].Hint := GetHintWHotkey(gRes.Houses[GUIHouseOrder[I]].HouseName, MAPED_SUBMENU_ACTIONS_HOTKEYS[I+3])
+        Button_Build[I].Hint := GetHintWHotkey(gResHouses[GUIHouseOrder[I]].HouseName, MAPED_SUBMENU_ACTIONS_HOTKEYS[I+3])
       else
-        Button_Build[I].Hint := gRes.Houses[GUIHouseOrder[I]].HouseName;
+        Button_Build[I].Hint := gResHouses[GUIHouseOrder[I]].HouseName;
     end;
 end;
 

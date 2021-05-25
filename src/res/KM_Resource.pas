@@ -1,4 +1,4 @@
-unit KM_Resource;
+﻿unit KM_Resource;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -28,7 +28,6 @@ type
 
     fCursors: TKMResCursors;
     fFonts: TKMResFonts;
-    fHouses: TKMResHouses;
     fUnits: TKMResUnits;
     fWares: TKMResWares;
     fSounds: TKMResSounds;
@@ -40,7 +39,6 @@ type
 
     procedure StepRefresh;
     procedure StepCaption(const aCaption: UnicodeString);
-    function GetHouses: TKMResHouses;
 
     function GetOrCreateExportWorker: TKMWorkerThread;
   public
@@ -60,7 +58,6 @@ type
 
     property DataState: TResourceLoadState read fDataState;
     property Cursors: TKMResCursors read fCursors;
-    property Houses: TKMResHouses read GetHouses;
     property MapElements: TKMResMapElements read fMapElements;
     property Fonts: TKMResFonts read fFonts;
     property Wares: TKMResWares read fWares;
@@ -106,7 +103,7 @@ end;
 destructor TKMResource.Destroy;
 begin
   FreeAndNil(fCursors);
-  FreeAndNil(fHouses);
+  FreeAndNil(gResHouses);
   FreeAndNil(gResLocales);
   FreeAndNil(fMapElements);
   FreeAndNil(gResPalettes);
@@ -148,18 +145,10 @@ end;
 //CRC of data files that can cause inconsitencies
 function TKMResource.GetDATCRC: Cardinal;
 begin
-  Result := fHouses.CRC xor
+  Result := gResHouses.CRC xor
             fUnits.CRC xor
             fMapElements.CRC xor
             fTileset.CRC;
-end;
-
-
-function TKMResource.GetHouses: TKMResHouses;
-begin
-  if Self = nil then Exit(nil);
-
-  Result := fHouses;
 end;
 
 
@@ -195,7 +184,7 @@ begin
   fSprites.ClearTemp;
 
   fWares := TKMResWares.Create;
-  fHouses := TKMResHouses.Create;
+  gResHouses := TKMResHouses.Create;
 
   StepRefresh;
   gLog.AddTime('ReadGFX is done');

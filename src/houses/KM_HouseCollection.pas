@@ -122,7 +122,7 @@ end;
 function TKMHousesCollection.AddHouse(aHouseType: TKMHouseType; PosX,PosY: Integer; aOwner: TKMHandID; RelativeEntrance: Boolean):TKMHouse;
 begin
   if RelativeEntrance then
-    Result := AddToCollection(aHouseType, PosX - gRes.Houses[aHouseType].EntranceOffsetX, PosY, aOwner, hbsDone)
+    Result := AddToCollection(aHouseType, PosX - gResHouses[aHouseType].EntranceOffsetX, PosY, aOwner, hbsDone)
   else
     Result := AddToCollection(aHouseType, PosX, PosY, aOwner, hbsDone);
 end;
@@ -240,7 +240,7 @@ begin
   bestBid := MaxSingle;
 
   for I := 0 to Count - 1 do
-    if (gRes.Houses[Houses[I].HouseType].WorkerType = aUnitType) and // If Unit can work in here
+    if (gResHouses[Houses[I].HouseType].WorkerType = aUnitType) and // If Unit can work in here
        not Houses[I].HasWorker and                                  // if there's yet no owner
        not Houses[I].IsDestroyed and                                // if house is not destroyed
        Houses[I].IsComplete and                                     // if house is built

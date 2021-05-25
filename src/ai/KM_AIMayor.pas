@@ -208,8 +208,8 @@ begin
   //Count overall unit requirement (excluding Barracks and ownerless houses)
   FillChar(UnitReq, SizeOf(UnitReq), #0); //Clear up
   for H := HOUSE_MIN to HOUSE_MAX do
-    if gRes.Houses[H].CanHasWorker and (H <> htBarracks) then
-      Inc(UnitReq[gRes.Houses[H].WorkerType], P.Stats.GetHouseQty(H));
+    if gResHouses[H].CanHasWorker and (H <> htBarracks) then
+      Inc(UnitReq[gResHouses[H].WorkerType], P.Stats.GetHouseQty(H));
 
   //Schools
   //Count overall schools count and exclude already training units from UnitReq
@@ -294,34 +294,34 @@ begin
     if not H.IsDestroyed and (ResOrder = 0) then
     case H.HouseType of
       htArmorSmithy:     for K := 1 to 4 do
-                            if gRes.Houses[H.HouseType].ResOutput[K] = wtMetalShield then
+                            if gResHouses[H.HouseType].ResOutput[K] = wtMetalShield then
                               H.ResOrder[K] := Round(WarfareRatios[wtMetalShield] * PORTIONS)
                             else
-                            if gRes.Houses[H.HouseType].ResOutput[K] = wtMetalArmor then
+                            if gResHouses[H.HouseType].ResOutput[K] = wtMetalArmor then
                               H.ResOrder[K] := Round(WarfareRatios[wtMetalArmor] * PORTIONS);
       htArmorWorkshop:   for K := 1 to 4 do
-                            if gRes.Houses[H.HouseType].ResOutput[K] = wtShield then
+                            if gResHouses[H.HouseType].ResOutput[K] = wtShield then
                               H.ResOrder[K] := Round(WarfareRatios[wtShield] * PORTIONS)
                             else
-                            if gRes.Houses[H.HouseType].ResOutput[K] = wtArmor then
+                            if gResHouses[H.HouseType].ResOutput[K] = wtArmor then
                               H.ResOrder[K] := Round(WarfareRatios[wtArmor] * PORTIONS);
       htWeaponSmithy:    for K := 1 to 4 do
-                            if gRes.Houses[H.HouseType].ResOutput[K] = wtSword then
+                            if gResHouses[H.HouseType].ResOutput[K] = wtSword then
                               H.ResOrder[K] := Round(WarfareRatios[wtSword] * PORTIONS)
                             else
-                            if gRes.Houses[H.HouseType].ResOutput[K] = wtHallebard then
+                            if gResHouses[H.HouseType].ResOutput[K] = wtHallebard then
                               H.ResOrder[K] := Round(WarfareRatios[wtHallebard] * PORTIONS)
                             else
-                            if gRes.Houses[H.HouseType].ResOutput[K] = wtArbalet then
+                            if gResHouses[H.HouseType].ResOutput[K] = wtArbalet then
                               H.ResOrder[K] := Round(WarfareRatios[wtArbalet] * PORTIONS);
       htWeaponWorkshop:  for K := 1 to 4 do
-                            if gRes.Houses[H.HouseType].ResOutput[K] = wtAxe then
+                            if gResHouses[H.HouseType].ResOutput[K] = wtAxe then
                               H.ResOrder[K] := Round(WarfareRatios[wtAxe] * PORTIONS)
                             else
-                            if gRes.Houses[H.HouseType].ResOutput[K] = wtPike then
+                            if gResHouses[H.HouseType].ResOutput[K] = wtPike then
                               H.ResOrder[K] := Round(WarfareRatios[wtPike] * PORTIONS)
                             else
-                            if gRes.Houses[H.HouseType].ResOutput[K] = wtBow then
+                            if gResHouses[H.HouseType].ResOutput[K] = wtBow then
                               H.ResOrder[K] := Round(WarfareRatios[wtBow] * PORTIONS);
     end;
   end;

@@ -77,7 +77,7 @@ begin
         begin
           HT := StatPlan[I].HouseType[K];
           Stat_HousePic[HT] := TKMImage.Create(Panel_StatBlock[I], offX, 0, HOUSE_W, 30, 41); //Filled with [?] at start
-          Stat_HousePic[HT].Hint := gRes.Houses[HT].HouseName;
+          Stat_HousePic[HT].Hint := gResHouses[HT].HouseName;
           Stat_HousePic[HT].ImageCenter;
           Stat_HousePic[HT].Tag := Byte(HT);
           Stat_HouseWip[HT] := TKMLabel.Create(Panel_StatBlock[I], offX + HOUSE_W  ,  0,  '', fntGrey, taRight);
@@ -188,8 +188,8 @@ begin
       Stat_HouseWip[HT].Caption := IfThen(wipQty = 0, '', '+' + IntToStr(wipQty));
       if gMySpectator.Hand.Locks.HouseCanBuild(HT) or (qty > 0) then
       begin
-        Stat_HousePic[HT].TexID := gRes.Houses[HT].GUIIcon;
-        Stat_HousePic[HT].Hint := gRes.Houses[HT].HouseName;
+        Stat_HousePic[HT].TexID := gResHouses[HT].GUIIcon;
+        Stat_HousePic[HT].Hint := gResHouses[HT].HouseName;
       end
       else
       begin

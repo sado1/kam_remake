@@ -854,8 +854,8 @@ begin
     H := gHands[fOwner].Houses[K];
     if (H <> nil) AND not H.IsDestroyed AND not H.IsComplete then
     begin
-      RequiredStones := RequiredStones + gRes.Houses[H.HouseType].StoneCost - H.GetBuildStoneDelivered;
-      RequiredWood := RequiredWood + gRes.Houses[H.HouseType].WoodCost - H.GetBuildWoodDelivered;
+      RequiredStones := RequiredStones + gResHouses[H.HouseType].StoneCost - H.GetBuildStoneDelivered;
+      RequiredWood := RequiredWood + gResHouses[H.HouseType].WoodCost - H.GetBuildWoodDelivered;
     end;
   end;
   // Compute road demands
@@ -1148,7 +1148,7 @@ var
         end;
         Exit(False);
       end;
-      aHT := gRes.Houses[aHT].ReleasedBy; // House have to be unlocked by this house
+      aHT := gResHouses[aHT].ReleasedBy; // House have to be unlocked by this house
       SetLength(aHTArr, Length(aHTArr)+1 ); // Just few interaction
       aHTArr[ High(aHTArr) ] := aHT;
     end;
@@ -1696,7 +1696,7 @@ begin
       if (RemoveTrees  > 0) then Text := Format('%s%dx RemoveTrees ' ,[Text, RemoveTrees]);
       if (PlanPlaced   > 0) then Text := Format('%s%dx PlanPlaced '  ,[Text, PlanPlaced]);
       if (Construction > 0) then Text := Format('%s%dx Construction ',[Text, Construction]);
-      aBalanceText := Format( '%s %s (%s),', [aBalanceText, gRes.Houses[HT].HouseName, Text.SubString(0,Length(Text)-1)] );
+      aBalanceText := Format( '%s %s (%s),', [aBalanceText, gResHouses[HT].HouseName, Text.SubString(0,Length(Text)-1)] );
     end;
   end;
   // Active nodes
@@ -1875,7 +1875,7 @@ var
       else
       begin
         aFollowingHouse := aHT;
-        aHT := gRes.Houses[aHT].ReleasedBy; // House have to be unlocked by this house
+        aHT := gResHouses[aHT].ReleasedBy; // House have to be unlocked by this house
       end;
     end;
     // Output = false only in case that house is already under construction OR is blocked by script / settings from the map editor
@@ -2017,7 +2017,7 @@ var
       else
       begin
         aFollowingHouse := aHT;
-        aHT := gRes.Houses[aHT].ReleasedBy; // House have to be unlocked by this house
+        aHT := gResHouses[aHT].ReleasedBy; // House have to be unlocked by this house
       end;
     end;
     // Output = false only in case that house is already under construction OR is blocked by script / settings from the map editor

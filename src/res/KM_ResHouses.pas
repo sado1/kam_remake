@@ -135,6 +135,9 @@ type
     procedure ExportCSV(const aPath: string);
   end;
 
+var
+  gResHouses: TKMResHouses;
+
 
 const
   //Sprites in the marketplace

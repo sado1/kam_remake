@@ -1045,12 +1045,12 @@ begin
   Result := gTerrain.CanPlaceHouse(aLoc, aHouseType);
   if not Result then Exit;
 
-  HA := gRes.Houses[aHouseType].BuildArea;
+  HA := gResHouses[aHouseType].BuildArea;
   for I := 1 to 4 do
   for K := 1 to 4 do
   if HA[I,K] <> 0 then
   begin
-    Tx := aLoc.X - gRes.Houses[aHouseType].EntranceOffsetX + K - 3;
+    Tx := aLoc.X - gResHouses[aHouseType].EntranceOffsetX + K - 3;
     Ty := aLoc.Y + I - 4;
     //AI ignores FOW (this function is used from scripting)
     Result := Result and gTerrain.TileInMapCoords(Tx, Ty, 1)
@@ -1089,8 +1089,8 @@ begin
     Exit;
 
   //Perform additional cheks for AI
-  HA := gRes.Houses[aHouseType].BuildArea;
-  enterOff := gRes.Houses[aHouseType].EntranceOffsetX;
+  HA := gResHouses[aHouseType].BuildArea;
+  enterOff := gResHouses[aHouseType].EntranceOffsetX;
   for I := 1 to 4 do
   for K := 1 to 4 do
   if HA[I,K] <> 0 then
@@ -1254,7 +1254,7 @@ procedure TKMHand.AddHousePlan(aHouseType: TKMHouseType; const aLoc: TKMPoint);
 var
   loc: TKMPoint;
 begin
-  loc.X := aLoc.X - gRes.Houses[aHouseType].EntranceOffsetX;
+  loc.X := aLoc.X - gResHouses[aHouseType].EntranceOffsetX;
   loc.Y := aLoc.Y;
 
   fConstructions.HousePlanList.AddPlan(aHouseType, loc);
@@ -1853,15 +1853,15 @@ begin
   gTerrain.GetHouseMarks(aLoc, aHouseType, aList);
 
   //Override marks if there are House/FieldPlans (only we know about our plans) and or FogOfWar
-  HA := gRes.Houses[aHouseType].BuildArea;
+  HA := gResHouses[aHouseType].BuildArea;
 
   for I := 1 to 4 do
     for K := 1 to 4 do
       if (HA[I,K] <> 0)
-        and gTerrain.TileInMapCoords(aLoc.X + K - 3 - gRes.Houses[aHouseType].EntranceOffsetX, aLoc.Y + I - 4, 1) then
+        and gTerrain.TileInMapCoords(aLoc.X + K - 3 - gResHouses[aHouseType].EntranceOffsetX, aLoc.Y + I - 4, 1) then
       begin
         //This can't be done earlier since values can be off-map
-        P2 := KMPoint(aLoc.X + K - 3 - gRes.Houses[aHouseType].EntranceOffsetX, aLoc.Y + I - 4);
+        P2 := KMPoint(aLoc.X + K - 3 - gResHouses[aHouseType].EntranceOffsetX, aLoc.Y + I - 4);
 
         //Forbid planning on unrevealed areas and fieldplans
         allowBuild := aIgnoreFOW
@@ -2101,7 +2101,7 @@ begin
       with fConstructions.HousePlanList.Plans[I] do
         if (HouseType = htStore) then
         begin
-          entrance := KMPointAdd( Loc, KMPoint(gRes.Houses[HouseType].EntranceOffsetX,0) );
+          entrance := KMPointAdd( Loc, KMPoint(gResHouses[HouseType].EntranceOffsetX,0) );
           RemHousePlan(entrance);
           if CanAddFieldPlan(KMPoint(entrance.X, entrance.Y+1), ftRoad) then
             AddFirstStorehouse(entrance);

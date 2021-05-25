@@ -222,7 +222,7 @@ begin
     Button_Barracks_RallyPoint := TKMButtonFlat.Create(Panel_HouseBarracks, 0, 8, Panel_House.Width, 22, 0);
     Button_Barracks_RallyPoint.CapOffsetY := -11;
     Button_Barracks_RallyPoint.Caption := gResTexts[TX_HOUSES_RALLY_POINT];
-    Button_Barracks_RallyPoint.Hint := gResTexts[TX_MAPED_RALLY_POINT_HINT, [gRes.Houses[htBarracks].HouseName]];
+    Button_Barracks_RallyPoint.Hint := gResTexts[TX_MAPED_RALLY_POINT_HINT, [gResHouses[htBarracks].HouseName]];
     Button_Barracks_RallyPoint.OnClick := SetRallyPointClick;
 
     for I := 1 to BARRACKS_RES_COUNT do
@@ -268,7 +268,7 @@ begin
     Button_TownHall_RallyPoint := TKMButtonFlat.Create(Panel_HouseTownHall, 0, 8, Panel_House.Width, 22, 0);
     Button_TownHall_RallyPoint.CapOffsetY := -11;
     Button_TownHall_RallyPoint.Caption := gResTexts[TX_HOUSES_RALLY_POINT];
-    Button_TownHall_RallyPoint.Hint := gResTexts[TX_MAPED_RALLY_POINT_HINT, [gRes.Houses[htTownhall].HouseName]];
+    Button_TownHall_RallyPoint.Hint := gResTexts[TX_MAPED_RALLY_POINT_HINT, [gResHouses[htTownhall].HouseName]];
     Button_TownHall_RallyPoint.OnClick := SetRallyPointClick;
 
     WaresRow_TH_Gold_Input := TKMWareOrderRow.Create(Panel_HouseTownHall, 0, 34, Panel_House.Width, TH_MAX_GOLDMAX_VALUE);
@@ -323,7 +323,7 @@ var
   ware: TKMWareType; //todo: Change to wareSpec
   houseSpec: TKMHouseSpec;
 begin
-  houseSpec := gRes.Houses[fHouse.HouseType];
+  houseSpec := gResHouses[fHouse.HouseType];
 
   Label_House_Input.Hide;
   for I := 0 to 3 do
@@ -383,7 +383,7 @@ begin
   fHouse := aHouse;
   if fHouse = nil then Exit;
 
-  houseSpec := gRes.Houses[fHouse.HouseType];
+  houseSpec := gResHouses[fHouse.HouseType];
 
   {Common data}
   Label_House.Caption := houseSpec.HouseName;
@@ -458,7 +458,7 @@ procedure TKMMapEdHouse.House_RefreshCommon;
 var
   houseSpec: TKMHouseSpec;
 begin
-  houseSpec := gRes.Houses[fHouse.HouseType];
+  houseSpec := gResHouses[fHouse.HouseType];
 
   House_UpdateDeliveryMode(fHouse.DeliveryMode);
   Button_HouseDeliveryMode.Enabled := fHouse.AllowDeliveryModeChange;
@@ -470,7 +470,7 @@ begin
   HandleHouseClosedForWorker(fHouse);
   Button_House_Worker.Hint := gResTexts[TX_HOUSES_CLOSED_FOR_WORKER_HINT, [gRes.Units[houseSpec.WorkerType].GUIName]];
   Button_House_Worker.FlagColor := gHands[fHouse.Owner].FlagColor;
-  Button_House_Worker.Visible := gRes.Houses[fHouse.HouseType].CanHasWorker;
+  Button_House_Worker.Visible := gResHouses[fHouse.HouseType].CanHasWorker;
   Image_House_Worker.TexID := gRes.Units[houseSpec.WorkerType].GUIIcon;
   Image_House_Worker.FlagColor := gHands[fHouse.Owner].FlagColor;
   Image_House_Worker.Hint := gRes.Units[houseSpec.WorkerType].GUIName;
@@ -514,7 +514,7 @@ begin
   if Sender = Button_HouseHealthDec then fHouse.AddDamage(GetMultiplicator(Shift), nil, True);
   if Sender = Button_HouseHealthInc then fHouse.AddRepair(GetMultiplicator(Shift));
 
-  houseSpec := gRes.Houses[fHouse.HouseType];
+  houseSpec := gResHouses[fHouse.HouseType];
   HealthBar_House.Caption := IntToStr(Round(fHouse.GetHealth)) + '/' + IntToStr(houseSpec.MaxHealth);
   HealthBar_House.Position := fHouse.GetHealth / houseSpec.MaxHealth;
 end;
@@ -554,7 +554,7 @@ var
 begin
   House_RefreshCommon;
 
-  houseSpec := gRes.Houses[fHouse.HouseType];
+  houseSpec := gResHouses[fHouse.HouseType];
   for I := 0 to 3 do
   begin
     ware := houseSpec.ResInput[I+1];

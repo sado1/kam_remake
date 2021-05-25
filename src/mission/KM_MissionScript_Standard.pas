@@ -381,7 +381,7 @@ begin
                               if fLastHouse.AllowDeliveryModeChange then
                                 fLastHouse.SetDeliveryModeInstantly(TKMDeliveryMode(P[0]))
                               else
-                                AddError(Format('ct_SetHouseDeliveryMode: not allowed to change delivery mode for %s ', [gRes.Houses[fLastHouse.HouseType].HouseName]));
+                                AddError(Format('ct_SetHouseDeliveryMode: not allowed to change delivery mode for %s ', [gResHouses[fLastHouse.HouseType].HouseName]));
                             end else
                               AddError(Format('ct_SetHouseDeliveryMode: wrong value for delivery mode: [%d] ', [P[0]]));
                           end

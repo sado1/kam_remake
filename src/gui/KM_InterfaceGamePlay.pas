@@ -2196,7 +2196,7 @@ begin
     if (H <> nil) then
     begin
       if (gRes.IsMsgHouseUnnocupied(msg.fTextID) and not H.HasWorker
-          and gRes.Houses[H.HouseType].CanHasWorker and (H.HouseType <> htBarracks))
+          and gResHouses[H.HouseType].CanHasWorker and (H.HouseType <> htBarracks))
         or H.ResourceDepleted
         or H.OrderCompletedMsgIssued then
       begin

@@ -130,8 +130,8 @@ begin
     if (not gMySpectator.Hand.Locks.HouseBlocked[HT])
     or (gMySpectator.Hand.Stats.GetHouseQty(HT) > 0) then
     begin
-      Image_RatioPic[I].TexID := gRes.Houses[HT].GUIIcon;
-      TrackBar_RatioValue[I].Caption := gRes.Houses[HT].HouseName;
+      Image_RatioPic[I].TexID := gResHouses[HT].GUIIcon;
+      TrackBar_RatioValue[I].Caption := gResHouses[HT].HouseName;
       TrackBar_RatioValue[I].Position := gMySpectator.Hand.Stats.WareDistribution[RES_RATIO_TYPE[fActiveTab], HT];
       TrackBar_RatioValue[I].Enabled := fAllowEditing;
     end else begin

@@ -1347,7 +1347,7 @@ begin
   //evenly between places rather than caring about route length.
   //This means weapon and armour smiths should get same amount of iron, even if one is closer to the smelter.
   if (fDemand[iD].Loc_House <> nil) and fDemand[iD].Loc_House.IsComplete
-    and gRes.Houses[fDemand[iD].Loc_House.HouseType].DoesOrders
+    and gResHouses[fDemand[iD].Loc_House.HouseType].DoesOrders
     and (aOfferCnt <= 3) //Little resources to share around
     and (fDemand[iD].Loc_House.CheckResIn(fDemand[iD].Ware) <= 2) then //Few resources already delivered
   begin
@@ -2273,7 +2273,7 @@ begin
   if fDemand[I].Ware <> wtNone then
   begin
     tmpS := #9;
-    if fDemand[I].Loc_House <> nil then tmpS := tmpS + gRes.Houses[fDemand[I].Loc_House.HouseType].HouseName + #9 + #9;
+    if fDemand[I].Loc_House <> nil then tmpS := tmpS + gResHouses[fDemand[I].Loc_House.HouseType].HouseName + #9 + #9;
     if fDemand[I].Loc_Unit  <> nil then tmpS := tmpS + gRes.Units[fDemand[I].Loc_Unit.UnitType].GUIName + #9 + #9;
     tmpS := tmpS + gRes.Wares[fDemand[I].Ware].Title;
     if fDemand[I].Importance <> diNorm then
@@ -2288,7 +2288,7 @@ begin
   if fOffer[I].Ware <> wtNone then
   begin
     tmpS := #9;
-    if fOffer[I].Loc_House <> nil then tmpS := tmpS + gRes.Houses[fOffer[I].Loc_House.HouseType].HouseName + #9 + #9;
+    if fOffer[I].Loc_House <> nil then tmpS := tmpS + gResHouses[fOffer[I].Loc_House.HouseType].HouseName + #9 + #9;
     tmpS := tmpS + gRes.Wares[fOffer[I].Ware].Title + #9;
     tmpS := tmpS + IntToStr(fOffer[I].Count);
 
@@ -2306,12 +2306,12 @@ begin
     if fOffer[fQueue[I].OfferID].Loc_House = nil then
       tmpS := tmpS + 'Destroyed' + ' >>> '
     else
-      tmpS := tmpS + gRes.Houses[fOffer[fQueue[I].OfferID].Loc_House.HouseType].HouseName + ' >>> ';
+      tmpS := tmpS + gResHouses[fOffer[fQueue[I].OfferID].Loc_House.HouseType].HouseName + ' >>> ';
 
     if fDemand[fQueue[I].DemandID].Loc_House = nil then
       tmpS := tmpS + 'Destroyed'
     else
-      tmpS := tmpS + gRes.Houses[fDemand[fQueue[I].DemandID].Loc_House.HouseType].HouseName;
+      tmpS := tmpS + gResHouses[fDemand[fQueue[I].DemandID].Loc_House.HouseType].HouseName;
 
     SL.Append(tmpS);
   end;

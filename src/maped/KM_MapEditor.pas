@@ -660,7 +660,7 @@ begin
                 gTerrain.SetHouseAreaOwner(house.Position, house.HouseType, aOwner); // Update minimap colors
                 Result := True;
                 fHistory.MakeCheckpoint(caHouses, gResTexts[TX_MAPED_HISTORY_CHPOINT_CHOWNER_SMTH,
-                                                            [gRes.Houses[house.HouseType].HouseName, house.Entrance.ToString]]);
+                                                            [gResHouses[house.HouseType].HouseName, house.Entrance.ToString]]);
               end;
     etUnit:   begin
                 if aEntity.AsUnit.IsAnimal then Exit;
@@ -907,7 +907,7 @@ begin
                                 gMySpectator.Hand.AddHouse(TKMHouseType(gCursor.Tag1), P.X, P.Y, True);
                                 fHistory.MakeCheckpoint(caHouses,
                                                         gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH,
-                                                                  [gRes.Houses[TKMHouseType(gCursor.Tag1)].HouseName,
+                                                                  [gResHouses[TKMHouseType(gCursor.Tag1)].HouseName,
                                                                    P.ToString]]);
                                 //Holding shift allows to place that house multiple times
                                 if not (ssShift in gCursor.SState) then

@@ -369,7 +369,7 @@ uses
   KM_Defaults,
   KM_Main,
   //Use these units directly to avoid pass-through methods in fMain
-  KM_Resource,
+  KM_Resource, KM_ResHouses,
 
   KM_ResTexts,
   KM_GameApp, KM_GameParams,
@@ -1021,7 +1021,7 @@ end;
 
 procedure TFormMain.HousesDat1Click(Sender: TObject);
 begin
-  gRes.Houses.ExportCSV(ExeDir + 'Export' + PathDelim + 'houses.dat.csv')
+  gResHouses.ExportCSV(ExeDir + 'Export' + PathDelim + 'houses.dat.csv')
 end;
 
 

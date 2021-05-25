@@ -683,7 +683,7 @@ var
 begin
   for House := HOUSE_MIN to HOUSE_MAX do
   begin
-    EnterOff := gRes.Houses[House].EntranceOffsetX;
+    EnterOff := gResHouses[House].EntranceOffsetX;
 
     // Init POMArr with value 255;
     for Y := Low(POMArr) to High(POMArr) do
@@ -691,7 +691,7 @@ begin
       POMArr[Y,X] := 255;
 
     // Find house plan and save its shape into POMArr
-    HA := gRes.Houses[House].BuildArea;
+    HA := gResHouses[House].BuildArea;
     Cnt := 0;
     for Y := 1 to 4 do
     for X := 1 to 4 do
@@ -1219,7 +1219,7 @@ procedure TKMEye.Paint(aRect: TKMRect);
             gRenderAux.Quad(Point.X, Point.Y, Color);
           end;
       gRenderAux.Quad(Loc.X, Loc.Y, $FF000000 OR tcRed);
-      gRenderAux.Text(Point.X, Point.Y, gRes.Houses[HT].HouseName, $FF000000);
+      gRenderAux.Text(Point.X, Point.Y, gResHouses[HT].HouseName, $FF000000);
     end;
   end;
   procedure DrawTriangle(aIdx: Integer; aColor: Cardinal);
@@ -1687,7 +1687,7 @@ begin
           HT := HouseType;
           if (HT = htNone) then
             Continue;
-          P1 := KMPointAdd( Loc, KMPoint(gRes.Houses[HT].EntranceOffsetX,0) ); // Plans have moved offset so fix it (because there is never enough exceptions ;)
+          P1 := KMPointAdd( Loc, KMPoint(gResHouses[HT].EntranceOffsetX,0) ); // Plans have moved offset so fix it (because there is never enough exceptions ;)
           // Internal house tiles
           for L := Low(gAIFields.Eye.HousesMapping[HT].Tiles) to High(gAIFields.Eye.HousesMapping[HT].Tiles) do
           begin

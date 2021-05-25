@@ -303,9 +303,9 @@ var
   offset: Integer;
 begin
   if aCheck = axX then
-    offset := gRes.Houses[fHouse.HouseType].EntranceOffsetXpx - CELL_SIZE_PX div 2
+    offset := gResHouses[fHouse.HouseType].EntranceOffsetXpx - CELL_SIZE_PX div 2
   else
-    offset := gRes.Houses[fHouse.HouseType].EntranceOffsetYpx;
+    offset := gResHouses[fHouse.HouseType].EntranceOffsetYpx;
 
   if (fHouse = nil) or not fHasStarted then
     Result := 0

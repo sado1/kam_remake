@@ -604,8 +604,8 @@ end;
 function TKMGUIGameSpectatorItemLineCustomBuildings.CreateItem(AHandIndex: Integer; ATag: Integer; aOnItemClick: TIntBoolEvent): TKMGUIGameSpectatorItem;
 begin
   Result := TKMGUIGameSpectatorItem.Create(Self, ATag,
-                                           gRes.Houses[TKMHouseType(ATag)].GUIIcon,
-                                           gRes.Houses[TKMHouseType(ATag)].HouseName, FHandIndex,
+                                           gResHouses[TKMHouseType(ATag)].GUIIcon,
+                                           gResHouses[TKMHouseType(ATag)].HouseName, FHandIndex,
                                            CheckHighlight, aOnItemClick);
   Result.Visible := False;
   ResetUIDs;

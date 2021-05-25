@@ -149,8 +149,8 @@ begin
     ctSetHouse:        if InRange(P[0], Low(HOUSE_ID_TO_TYPE), High(HOUSE_ID_TO_TYPE))
                           and PointInMap(P[1]+1, P[2]+1) then
                         begin
-                          RevealCircle(P[1]+1, P[2]+1, gRes.Houses[HOUSE_ID_TO_TYPE[P[0]]].Sight);
-                          HA := gRes.Houses[HOUSE_ID_TO_TYPE[P[0]]].BuildArea;
+                          RevealCircle(P[1]+1, P[2]+1, gResHouses[HOUSE_ID_TO_TYPE[P[0]]].Sight);
+                          HA := gResHouses[HOUSE_ID_TO_TYPE[P[0]]].BuildArea;
                           for i:=1 to 4 do for k:=1 to 4 do
                             if HA[i,k]<>0 then
                               if InRange(P[1]+1+k-3, 1, fMapX) and InRange(P[2]+1+i-4, 1, fMapY) then

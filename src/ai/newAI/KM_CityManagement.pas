@@ -336,8 +336,8 @@ begin
     end;
 
     for HT := HOUSE_MIN to HOUSE_MAX do
-      if gRes.Houses[HT].CanHasWorker AND (HT <> htBarracks) then
-        Inc(UnitReq[gRes.Houses[HT].WorkerType], Houses[HT]);
+      if gResHouses[HT].CanHasWorker AND (HT <> htBarracks) then
+        Inc(UnitReq[gResHouses[HT].WorkerType], Houses[HT]);
 
     UnitReq[utRecruit] := 0;
     UnitReq[utSerf] := 0;
@@ -992,7 +992,7 @@ begin
     MaxWT := wtNone;
     for I := 1 to 4 do
     begin
-      WT := gRes.Houses[HT].ResOutput[I];
+      WT := gResHouses[HT].ResOutput[I];
       if (WT <> wtNone) AND (fRequiredWeapons[WT].Fraction < MostRequired) then
       begin
         MostRequired := fRequiredWeapons[WT].Fraction;
@@ -1015,7 +1015,7 @@ begin
           begin
             for K := 1 to 4 do
             begin
-              WT := gRes.Houses[HT].ResOutput[K];
+              WT := gResHouses[HT].ResOutput[K];
               if (WT = wtArmor) then
               begin
                 H.ResOrder[K] := 10;

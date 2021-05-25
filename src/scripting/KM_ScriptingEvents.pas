@@ -755,7 +755,7 @@ end;
 procedure TKMScriptEvents.ProcHousePlanPlaced(aPlayer: TKMHandID; aX, aY: Word; aType: TKMHouseType);
 begin
   if MethodAssigned(evtHousePlanPlaced) then
-    CallEventHandlers(evtHousePlanPlaced, [aPlayer, aX + gRes.Houses[aType].EntranceOffsetX, aY, HOUSE_TYPE_TO_ID[aType] - 1]);
+    CallEventHandlers(evtHousePlanPlaced, [aPlayer, aX + gResHouses[aType].EntranceOffsetX, aY, HOUSE_TYPE_TO_ID[aType] - 1]);
 end;
 
 
@@ -764,7 +764,7 @@ end;
 procedure TKMScriptEvents.ProcHousePlanRemoved(aPlayer: TKMHandID; aX, aY: Word; aType: TKMHouseType);
 begin
   if MethodAssigned(evtHousePlanRemoved) then
-    CallEventHandlers(evtHousePlanRemoved, [aPlayer, aX + gRes.Houses[aType].EntranceOffsetX, aY, HOUSE_TYPE_TO_ID[aType] - 1]);
+    CallEventHandlers(evtHousePlanRemoved, [aPlayer, aX + gResHouses[aType].EntranceOffsetX, aY, HOUSE_TYPE_TO_ID[aType] - 1]);
 end;
 
 

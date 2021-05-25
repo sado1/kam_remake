@@ -2351,7 +2351,7 @@ begin
   try
     Result := 0;
     if HouseTypeValid(aHouseType) then
-      Result := gRes.Houses[HOUSE_ID_TO_TYPE[aHouseType]].MaxHealth
+      Result := gResHouses[HOUSE_ID_TO_TYPE[aHouseType]].MaxHealth
     else
       LogParamWarning('States.HouseTypeMaxHealth', [aHouseType]);
   except
@@ -2371,7 +2371,7 @@ function TKMScriptStates.HouseTypeName(aHouseType: Byte): AnsiString;
 begin
   try
     if HouseTypeValid(aHouseType) then
-      Result := '<%' + AnsiString(IntToStr(gRes.Houses[HOUSE_ID_TO_TYPE[aHouseType]].HouseNameTextID)) + '>'
+      Result := '<%' + AnsiString(IntToStr(gResHouses[HOUSE_ID_TO_TYPE[aHouseType]].HouseNameTextID)) + '>'
     else
     begin
       Result := '';
@@ -2395,7 +2395,7 @@ begin
     Result := -1;
     if HouseTypeValid(aHouseType) then
     begin
-      Result := UNIT_TYPE_TO_ID[gRes.Houses[HOUSE_ID_TO_TYPE[aHouseType]].WorkerType];
+      Result := UNIT_TYPE_TO_ID[gResHouses[HOUSE_ID_TO_TYPE[aHouseType]].WorkerType];
     end
     else
       LogParamWarning('States.HouseTypeToOccupantType', [aHouseType]);
@@ -2415,7 +2415,7 @@ begin
     Result := -1;
     if HouseTypeValid(aHouseType) then
     begin
-      Result := UNIT_TYPE_TO_ID[gRes.Houses[HOUSE_ID_TO_TYPE[aHouseType]].WorkerType];
+      Result := UNIT_TYPE_TO_ID[gResHouses[HOUSE_ID_TO_TYPE[aHouseType]].WorkerType];
     end
     else
       LogParamWarning('States.HouseTypeToWorkerType', [aHouseType]);
@@ -2520,7 +2520,7 @@ begin
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil) then
         for I := 1 to 4 do
-          if gRes.Houses[H.HouseType].ResOutput[I] = Res then
+          if gResHouses[H.HouseType].ResOutput[I] = Res then
           begin
             Result := H.ResOrder[I];
             Exit;

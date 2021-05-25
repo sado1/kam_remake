@@ -499,7 +499,7 @@ constructor TKMCheckpointHouses.Create(const aCaption: string);
     if aHouse is TKMHouseWFlagPoint then
       fHouses[aCount].FlagPoint := TKMHouseWFlagPoint(aHouse).FlagPoint;
 
-    spec := gRes.Houses[aHouse.HouseType];
+    spec := gResHouses[aHouse.HouseType];
 
     case aHouse.HouseType of
       htTownHall:   begin
@@ -575,7 +575,7 @@ begin
     H := gHands[fHouses[I].Owner].AddHouse(fHouses[I].HouseType, fHouses[I].Position.X, fHouses[I].Position.Y, False);
     H.AddDamage(H.MaxHealth - fHouses[I].Health, nil, True);
 
-    spec := gRes.Houses[fHouses[I].HouseType];
+    spec := gResHouses[fHouses[I].HouseType];
     H.SetDeliveryModeInstantly(fHouses[I].DeliveryMode);
     H.BuildingRepair := fHouses[I].Repair;
     H.IsClosedForWorker := fHouses[I].ClosedForWorker;

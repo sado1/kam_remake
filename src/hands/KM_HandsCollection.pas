@@ -1061,7 +1061,7 @@ begin
     H.RemoveHouse;
 
     gGame.MapEditor.History.MakeCheckpoint(caHouses, gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH,
-                                                               [gRes.Houses[H.HouseType].HouseName, H.Entrance.ToString]]);
+                                                               [gResHouses[H.HouseType].HouseName, H.Entrance.ToString]]);
   end;
 end;
 
