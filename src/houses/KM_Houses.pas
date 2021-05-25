@@ -373,7 +373,7 @@ uses
   KM_Hand, KM_HandsCollection, KM_HandLogistics,
   KM_Units, KM_UnitWarrior, KM_HouseWoodcutters,
   KM_Resource, KM_ResSound, KM_ResTexts, KM_ResUnits, KM_ResMapElements,
-  KM_Log, KM_ScriptingEvents, KM_CommonUtils, KM_MapEditorHistory,
+  KM_Log, KM_ScriptingEvents, KM_CommonUtils, KM_MapEdTypes,
   KM_GameTypes, KM_RenderDebug,
   KM_HandTypes,
   KM_TerrainTypes,

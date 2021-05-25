@@ -43,7 +43,7 @@ implementation
 uses
   KM_ResFonts, KM_ResTexts,
   KM_Game, KM_Cursor, KM_RenderUI,
-  KM_TerrainSelection, KM_MapEditorHistory,
+  KM_TerrainSelection, KM_MapEdTypes,
   KM_InterfaceGame,
   KM_ResTypes;
 

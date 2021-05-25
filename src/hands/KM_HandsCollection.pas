@@ -133,7 +133,7 @@ uses
   KromUtils,
 
   KM_Game, KM_GameParams, KM_Terrain, KM_AIFields,
-  KM_UnitsCollection, KM_MapEditorHistory,
+  KM_UnitsCollection, KM_MapEdTypes,
   KM_Resource, KM_ResUnits, KM_ResTexts,
   KM_Log, KM_CommonUtils, KM_DevPerfLog, KM_DevPerfLogTypes, KM_Entity;
 

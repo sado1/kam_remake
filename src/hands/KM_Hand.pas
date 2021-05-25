@@ -252,7 +252,7 @@ implementation
 uses
   Classes, SysUtils, KromUtils, Math, TypInfo,
   KM_Cursor, KM_Game, KM_GameParams, KM_Terrain,
-  KM_HandsCollection, KM_Sound, KM_AIFields, KM_MapEditorHistory,
+  KM_HandsCollection, KM_Sound, KM_AIFields, KM_MapEdTypes,
   KM_Resource, KM_ResSound, KM_ResTexts, KM_ResMapElements, KM_ScriptingEvents, KM_ResUnits, KM_ResPalettes,
   KM_CommonUtils, KM_GameSettings,
   KM_UnitGroupTypes,

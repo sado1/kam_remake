@@ -60,6 +60,23 @@ type
 
   TKMLandTerKind = array of TKMPainterTileArray;
 
+  // MapEd History types
+  TKMCheckpointArea = (
+    caAll,        // Required for initial map state, when we need to Undo everything at once, not "by-area"
+    caTerrain,
+    caUnits,
+    caHouses
+//    caFields
+    //todo -cPractical: Other areas
+    // Dispositions
+    // CenterScreen
+    // FOW Revealers
+    // Hand Flag Color
+    //
+  );
+
+  TKMCheckpointAreaSet = set of TKMCheckpointArea;
+
 implementation
 
 
