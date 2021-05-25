@@ -12,7 +12,7 @@ type
   TKMHousesCollection = class
   private
     fHouses: TKMList; //Private to hide methods we don't want to expose
-    function AddToCollection(aHouseType: TKMHouseType; PosX,PosY: Integer; aOwner: TKMHandID; aHBS: TKMHouseBuildState):TKMHouse;
+    function AddToCollection(aHouseType: TKMHouseType; aPosX, aPosY: Integer; aOwner: TKMHandID; aHBS: TKMHouseBuildState):TKMHouse;
     function GetHouse(aIndex: Integer): TKMHouse; inline;
     function GetCount: Integer;
   public
@@ -20,18 +20,18 @@ type
     destructor Destroy; override;
 
     procedure Clear;
-    function AddHouse(aHouseType: TKMHouseType; PosX,PosY: Integer; aOwner: TKMHandID; RelativeEntrance: Boolean):TKMHouse;
-    function AddHouseWIP(aHouseType: TKMHouseType; PosX,PosY: Integer; aOwner: TKMHandID): TKMHouse;
+    function AddHouse(aHouseType: TKMHouseType; aPosX, aPosY: Integer; aOwner: TKMHandID; aRelativeEntrance: Boolean):TKMHouse;
+    function AddHouseWIP(aHouseType: TKMHouseType; aPosX, aPosY: Integer; aOwner: TKMHandID): TKMHouse;
     procedure AddHouseToList(aHouse: TKMHouse);
     property Count: Integer read GetCount;
     procedure OwnerUpdate(aOwner: TKMHandID);
     property Houses[aIndex: Integer]: TKMHouse read GetHouse; default;
     function HitTest(X, Y: Integer): TKMHouse;
     function GetHouseByUID(aUID: Integer): TKMHouse;
-    procedure GetHousesInRect(const aRect: TKMRect; List: TList<TKMHouse>);
-    function FindEmptyHouse(aUnitType: TKMUnitType; const Loc: TKMPoint): TKMHouse;
-    function FindHouse(aType: TKMHouseType; X,Y: Word; const aIndex: Byte = 1; aOnlyCompleted: Boolean = True): TKMHouse; overload;
-    function FindHouse(const aTypes: THouseTypeSet; X,Y: Word; const aIndex: Byte = 1; aOnlyCompleted: Boolean = True): TKMHouse; overload;
+    procedure GetHousesInRect(const aRect: TKMRect; aList: TList<TKMHouse>);
+    function FindEmptyHouse(aUnitType: TKMUnitType; const aLoc: TKMPoint): TKMHouse;
+    function FindHouse(aType: TKMHouseType; X, Y: Word; const aIndex: Byte = 1; aOnlyCompleted: Boolean = True): TKMHouse; overload;
+    function FindHouse(const aTypes: THouseTypeSet; X, Y: Word; const aIndex: Byte = 1; aOnlyCompleted: Boolean = True): TKMHouse; overload;
     function FindHousesInRadius(aLoc: TKMPoint; aSqrRadius: Single; aTypes: THouseTypeSet; aOnlyCompleted: Boolean = True): TKMHouseArray;
     function GetTotalPointers: Cardinal;
     procedure Save(SaveStream: TKMemoryStream);
@@ -81,7 +81,7 @@ begin
 end;
 
 
-function TKMHousesCollection.AddToCollection(aHouseType: TKMHouseType; PosX,PosY: Integer; aOwner: TKMHandID; aHBS: TKMHouseBuildState): TKMHouse;
+function TKMHousesCollection.AddToCollection(aHouseType: TKMHouseType; aPosX, aPosY: Integer; aOwner: TKMHandID; aHBS: TKMHouseBuildState): TKMHouse;
 var
   uid: Cardinal;
 begin
@@ -89,17 +89,17 @@ begin
 
   case aHouseType of
     htSwine,
-    htStables:       Result := TKMHouseSwineStable.Create(uid, aHouseType,PosX,PosY, aOwner, aHBS);
-    htInn:           Result := TKMHouseInn.Create(uid, aHouseType,PosX,PosY, aOwner, aHBS);
-    htMarketplace:   Result := TKMHouseMarket.Create(uid, aHouseType,PosX,PosY, aOwner, aHBS);
-    htSchool:        Result := TKMHouseSchool.Create(uid, aHouseType,PosX,PosY, aOwner, aHBS);
-    htBarracks:      Result := TKMHouseBarracks.Create(uid, aHouseType,PosX,PosY, aOwner, aHBS);
-    htTownHall:      Result := TKMHouseTownHall.Create(uid, aHouseType,PosX,PosY, aOwner, aHBS);
-    htStore:         Result := TKMHouseStore.Create(uid, aHouseType,PosX,PosY, aOwner, aHBS);
-    htWatchTower:    Result := TKMHouseTower.Create(uid, aHouseType,PosX,PosY, aOwner, aHBS);
-    htWoodcutters:   Result := TKMHouseWoodcutters.Create(uid, aHouseType,PosX,PosY, aOwner, aHBS);
-    htArmorWorkshop: Result := TKMHouseArmorWorkshop.Create(uid, aHouseType,PosX,PosY, aOwner, aHBS);
-    else             Result := TKMHouse.Create(uid, aHouseType,PosX,PosY, aOwner, aHBS);
+    htStables:       Result := TKMHouseSwineStable.Create(uid, aHouseType,aPosX,aPosY, aOwner, aHBS);
+    htInn:           Result := TKMHouseInn.Create(uid, aHouseType,aPosX,aPosY, aOwner, aHBS);
+    htMarketplace:   Result := TKMHouseMarket.Create(uid, aHouseType,aPosX,aPosY, aOwner, aHBS);
+    htSchool:        Result := TKMHouseSchool.Create(uid, aHouseType,aPosX,aPosY, aOwner, aHBS);
+    htBarracks:      Result := TKMHouseBarracks.Create(uid, aHouseType,aPosX,aPosY, aOwner, aHBS);
+    htTownHall:      Result := TKMHouseTownHall.Create(uid, aHouseType,aPosX,aPosY, aOwner, aHBS);
+    htStore:         Result := TKMHouseStore.Create(uid, aHouseType,aPosX,aPosY, aOwner, aHBS);
+    htWatchTower:    Result := TKMHouseTower.Create(uid, aHouseType,aPosX,aPosY, aOwner, aHBS);
+    htWoodcutters:   Result := TKMHouseWoodcutters.Create(uid, aHouseType,aPosX,aPosY, aOwner, aHBS);
+    htArmorWorkshop: Result := TKMHouseArmorWorkshop.Create(uid, aHouseType,aPosX,aPosY, aOwner, aHBS);
+    else             Result := TKMHouse.Create(uid, aHouseType,aPosX,aPosY, aOwner, aHBS);
   end;
 
   if Result <> nil then
@@ -119,19 +119,19 @@ begin
 end;
 
 
-function TKMHousesCollection.AddHouse(aHouseType: TKMHouseType; PosX,PosY: Integer; aOwner: TKMHandID; RelativeEntrance: Boolean):TKMHouse;
+function TKMHousesCollection.AddHouse(aHouseType: TKMHouseType; aPosX, aPosY: Integer; aOwner: TKMHandID; aRelativeEntrance: Boolean):TKMHouse;
 begin
-  if RelativeEntrance then
-    Result := AddToCollection(aHouseType, PosX - gResHouses[aHouseType].EntranceOffsetX, PosY, aOwner, hbsDone)
+  if aRelativeEntrance then
+    Result := AddToCollection(aHouseType, aPosX - gResHouses[aHouseType].EntranceOffsetX, aPosY, aOwner, hbsDone)
   else
-    Result := AddToCollection(aHouseType, PosX, PosY, aOwner, hbsDone);
+    Result := AddToCollection(aHouseType, aPosX, aPosY, aOwner, hbsDone);
 end;
 
 
 {Add a plan for house}
-function TKMHousesCollection.AddHouseWIP(aHouseType: TKMHouseType; PosX, PosY: Integer; aOwner: TKMHandID): TKMHouse;
+function TKMHousesCollection.AddHouseWIP(aHouseType: TKMHouseType; aPosX, aPosY: Integer; aOwner: TKMHandID): TKMHouse;
 begin
-  Result := AddToCollection(aHouseType, PosX, PosY, aOwner, hbsNoGlyph);
+  Result := AddToCollection(aHouseType, aPosX, aPosY, aOwner, hbsNoGlyph);
 end;
 
 
@@ -220,18 +220,18 @@ begin
 end;
 
 
-procedure TKMHousesCollection.GetHousesInRect(const aRect: TKMRect; List: TList<TKMHouse>);
+procedure TKMHousesCollection.GetHousesInRect(const aRect: TKMRect; aList: TList<TKMHouse>);
 var
   I: Integer;
 begin
   for I := 0 to Count - 1 do
     if KMInRect(Houses[I].Entrance, aRect) and not Houses[I].IsDestroyed then
-      List.Add(Houses[I]);
+      aList.Add(Houses[I]);
 end;
 
 
 //Should find closest house to Loc
-function TKMHousesCollection.FindEmptyHouse(aUnitType: TKMUnitType; const Loc: TKMPoint): TKMHouse;
+function TKMHousesCollection.FindEmptyHouse(aUnitType: TKMUnitType; const aLoc: TKMPoint): TKMHouse;
 var
   I: Integer;
   dist, bestBid: Single;
@@ -249,9 +249,9 @@ begin
       //Recruits should not go to a barracks with ware delivery switched off or with not accept flag for recruits
       if (Houses[I].HouseType = htBarracks)
         and ((Houses[I].DeliveryMode <> dmDelivery) or (TKMHouseBarracks(Houses[I]).NotAcceptRecruitFlag)) then Continue;
-      if not gTerrain.Route_CanBeMade(Loc, Houses[I].PointBelowEntrance, tpWalk, 0) then Continue;
+      if not gTerrain.Route_CanBeMade(aLoc, Houses[I].PointBelowEntrance, tpWalk, 0) then Continue;
 
-      dist := KMLengthSqr(Loc, Houses[I].Position);
+      dist := KMLengthSqr(aLoc, Houses[I].Position);
 
       //Always prefer Towers to Barracks by making Barracks Bid much less attractive
       //In case of multiple barracks, prefer the closer one (players should make multiple schools or use WareDelivery to control it)
@@ -267,7 +267,7 @@ begin
 end;
 
 
-function TKMHousesCollection.FindHouse(aType: TKMHouseType; X, Y: word; const aIndex: Byte = 1; aOnlyCompleted: Boolean = True): TKMHouse;
+function TKMHousesCollection.FindHouse(aType: TKMHouseType; X, Y: Word; const aIndex: Byte = 1; aOnlyCompleted: Boolean = True): TKMHouse;
 var
   HT: THouseTypeSet;
 begin
@@ -282,7 +282,7 @@ end;
 //Find closest house to given position
 //or
 //Find house by index (1st, 2nd)
-function TKMHousesCollection.FindHouse(const aTypes: THouseTypeSet; X, Y: word; const aIndex: Byte = 1; aOnlyCompleted: Boolean = True): TKMHouse;
+function TKMHousesCollection.FindHouse(const aTypes: THouseTypeSet; X, Y: Word; const aIndex: Byte = 1; aOnlyCompleted: Boolean = True): TKMHouse;
 var
   I, ID: Integer;
   usePosition: Boolean;
