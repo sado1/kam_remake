@@ -255,7 +255,7 @@ type
 implementation
 uses
   SysUtils, StrUtils, TypInfo, Math,
-  KromShellUtils, KromUtils,
+  KM_CommonShellUtils, KromUtils,
   KM_GameSettings, KM_FileIO,
   KM_MissionScript_Info, KM_Scripting, KM_ResLocales,
   KM_CommonUtils, KM_Log, KM_MapUtils, KM_Utils;

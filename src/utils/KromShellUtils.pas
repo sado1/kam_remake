@@ -12,7 +12,6 @@ uses
   function RunSaveDialog(Sender: TSaveDialog; aFileName, aFilePath, aFilter: string; const aFileExt: string = ''): Boolean;
 	procedure DoClientAreaResize(aForm: TForm);
 	function BrowseURL(const aURL: string) : Boolean;
-  function OpenPDF(const aURL: string): Boolean;
   procedure MailTo(const aAddress, aSubject, aBody:string);
   procedure OpenMySite(const aToolName: string; const aAddress: string = 'http://krom.reveur.de');
   function IsUnderWine: Boolean;
@@ -62,18 +61,6 @@ begin
       aForm.Controls[I].Top := aForm.Controls[I].Top - heightDif;
 
   aForm.ClientHeight := aForm.ClientHeight + heightDif;
-end;
-
-
-function OpenPDF(const aURL: string): Boolean;
-begin
-  {$IFDEF WDC}
-  Result := ShellExecute(Application.Handle, 'open', PChar(aURL), nil, nil, SW_SHOWNORMAL) > 32;
-  {$ENDIF}
-
-  {$IFDEF FPC}
-  Result := OpenDocument(aURL);
-  {$ENDIF}
 end;
 
 
