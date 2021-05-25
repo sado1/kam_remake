@@ -4,7 +4,7 @@ interface
 uses
   {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
   Classes, Graphics, Math, SysUtils, Generics.Collections,
-  KM_CommonTypes, KM_Defaults, KM_Pics, KM_PNG, KM_RenderTypes, KM_ResTexts, KM_ResTileset, KM_ResHouses
+  KM_CommonTypes, KM_Defaults, KM_Pics, KM_PNG, KM_RenderTypes, KM_ResTexts, KM_ResTileset, KM_ResHouses, KM_BinPacking
   {$IFDEF FPC}, zstream {$ENDIF}
   {$IFDEF WDC}, ZLib {$ENDIF};
 
@@ -17,6 +17,8 @@ const
 
 type
   TRXUsage = (ruMenu, ruGame, ruCustom); //Where sprites are used
+
+  TSpriteAtlasType = (saBase, saMask);
 
   TRXInfo = record
     FileName: string; //Used for logging and filenames
@@ -63,13 +65,22 @@ type
   TKMSpritePack = class
   private
     fPad: Byte; //Force padding between sprites to avoid neighbour edge visibility
-    procedure MakeGFX_BinPacking(aTexType: TTexFormat; aStartingIndex: Integer; var BaseRAM, ColorRAM, TexCount: Cardinal;
-                                 aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil);
     procedure SaveTextureToPNG(aWidth, aHeight: Word; const aFilename: string; const Data: TKMCardinalArray);
+    procedure SetGFXData(aTx: Cardinal; aSpriteInfo: TBinItem; aAtlasType: TSpriteAtlasType; aRT: TRXType);
   protected
     fRT: TRXType;
     fRXData: TRXData;
+
+    gGFXPrepData: array[TSpriteAtlasType] of  // for each atlas type
+                    array of                  // Atlases
+                      record                  // Atlas data, needed for Texture Atlas Generation
+                        SpriteInfo: TBinItem;
+                        TexType: TTexFormat;
+                        Data: TKMCardinalArray;
+                      end;
     procedure Allocate(aCount: Integer); virtual; //Allocate space for data that is being loaded
+    procedure MakeGFX_BinPacking(aTexType: TTexFormat; aStartingIndex: Integer; var BaseRAM, ColorRAM, TexCount: Cardinal;
+                                 aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil);
   public
     constructor Create(aRT: TRXType);
 
@@ -100,6 +111,9 @@ type
     procedure ExportImage(const aFile: string; aIndex: Integer);
     procedure ExportMask(const aFile: string; aIndex: Integer);
 
+    procedure ClearGameResGenTemp;
+    procedure GenerateTextureAtlasForGameRes;
+
     procedure ClearTemp; virtual;//Release non-required data
   end;
 
@@ -127,7 +141,6 @@ type
     {$IFDEF LOAD_GAME_RES_ASYNC}
     procedure ManageResLoader;
     procedure StopResourceLoader;
-    procedure GenerateTextureAtlasForGameRes(aRT: TRXType);
     function GetNextLoadRxTypeIndex(aRT: TRXType): Integer;
     {$ENDIF}
   public
@@ -137,7 +150,6 @@ type
     procedure LoadMenuResources;
     procedure LoadGameResources(aAlphaShadows: Boolean; aForceReload: Boolean = False);
     procedure ClearTemp;
-    procedure ClearGameResGenTemp;
 
     class function AllTilesOnOneAtlas: Boolean;
 
@@ -210,11 +222,8 @@ uses
 
   {$ENDIF}
   KM_SoftShadows, KM_Resource, KM_ResUnits, KM_Render,
-  KM_Log, KM_BinPacking, KM_CommonUtils, KM_Points, KM_GameSettings,
+  KM_Log, KM_CommonUtils, KM_Points, KM_GameSettings,
   KM_ResTypes;
-
-type
-  TSpriteAtlasType = (saBase, saMask);
 
 const
   MAX_GAME_ATLAS_SIZE = 2048; //Max atlas size for KaM. No need for bigger atlases
@@ -223,14 +232,6 @@ const
 
 var
   AllTilesInOneTexture: Boolean = False;
-
-  gGFXPrepData: array[TSpriteAtlasType] of  // for each atlas type
-                  array of                  // Atlases for each rxx
-                    record                  // Atlas data, needed for Texture Atlas Generation
-                      SpriteInfo: TBinItem;
-                      TexType: TTexFormat;
-                      Data: TKMCardinalArray;
-                    end;
 
 
 function GetMaxAtlasSize: Integer;
@@ -687,6 +688,31 @@ procedure TKMSpritePack.OverloadFromFolder(const aFolder: string; aSoftenShadows
           end;
         end;
 
+
+        fileList.Clear;
+        //PNGs
+        for filePath in TDirectory.GetFiles(aProcFolder, IntToStr(Byte(fRT) + 1) + '_?????.png', TSearchOption.soAllDirectories) do
+        begin
+          relName := ExtractRelativePath(aProcFolder, filePath);
+          // skip image, if subfolder contains 'skip' string
+          if not relName.Contains('skip') then
+            fileList.Add(relName);
+        end;
+
+        //PNG may be accompanied by some more files
+        //#_####.png - Base texture
+        //#_####a.png - Flag color mask
+        //#_####.txt - Pivot info (optional)
+        for I := fileList.Count - 1 downto 0 do
+        begin
+          if TryStrToInt(Copy(ExtractFileName(fileList.Strings[I]), 3, 5), ID) then
+          begin
+            AddImage(aProcFolder, fileList.Strings[I], ID);
+            //IDList.Add(IntToStr(ID));
+          end;
+        end;
+
+
         if aSoftenShadows then
           SoftenShadows(IDList); // Soften shadows for overloaded sprites
 
@@ -938,7 +964,7 @@ end;
 
 
 //Set GFXData from SpriteInfo
-procedure SetGFXData(aTx: Cardinal; aSpriteInfo: TBinItem; aAtlasType: TSpriteAtlasType; aSpritesPack: TKMSpritePack; aRT: TRXType);
+procedure TKMSpritePack.SetGFXData(aTx: Cardinal; aSpriteInfo: TBinItem; aAtlasType: TSpriteAtlasType; aRT: TRXType);
 var
   K: Integer;
   ID: Integer;
@@ -951,14 +977,14 @@ begin
     txCoords.ID := aTx;
     txCoords.u1 := aSpriteInfo.Sprites[K].PosX / aSpriteInfo.Width;
     txCoords.v1 := aSpriteInfo.Sprites[K].PosY / aSpriteInfo.Height;
-    txCoords.u2 := (aSpriteInfo.Sprites[K].PosX + aSpritesPack.RXData.Size[ID].X) / aSpriteInfo.Width;
-    txCoords.v2 := (aSpriteInfo.Sprites[K].PosY + aSpritesPack.RXData.Size[ID].Y) / aSpriteInfo.Height;
+    txCoords.u2 := (aSpriteInfo.Sprites[K].PosX + fRXData.Size[ID].X) / aSpriteInfo.Width;
+    txCoords.v2 := (aSpriteInfo.Sprites[K].PosY + fRXData.Size[ID].Y) / aSpriteInfo.Height;
 
     if aAtlasType = saBase then
     begin
       gGFXData[aRT, ID].Tex := txCoords;
-      gGFXData[aRT, ID].PxWidth := aSpritesPack.RXData.Size[ID].X;
-      gGFXData[aRT, ID].PxHeight := aSpritesPack.RXData.Size[ID].Y;
+      gGFXData[aRT, ID].PxWidth := fRXData.Size[ID].X;
+      gGFXData[aRT, ID].PxHeight := fRXData.Size[ID].Y;
     end
     else
       gGFXData[aRT, ID].Alt := txCoords;
@@ -1057,7 +1083,7 @@ procedure TKMSpritePack.MakeGFX_BinPacking(aTexType: TTexFormat; aStartingIndex:
 
         Tx := TRender.GenTexture(SpriteInfo[I].Width, SpriteInfo[I].Height, @TD[0], aTexType, texFilter, texFilter);
         //Now that we know texture IDs we can fill GFXData structure
-        SetGFXData(Tx, SpriteInfo[I], aMode, Self, fRT);
+        SetGFXData(Tx, SpriteInfo[I], aMode, fRT);
       end else begin
         Assert(InRange(I, Low(gGFXPrepData[aMode]), High(gGFXPrepData[aMode])),
                Format('Preloading sprite index out of range: %d, range [%d;%d]', [I, Low(gGFXPrepData[aMode]), High(gGFXPrepData[aMode])]));
@@ -1171,6 +1197,46 @@ begin
 
   SaveToPng(pngWidth, pngHeight, pngData, folder + aFilename + '.png');
 end;
+
+
+procedure TKMSpritePack.ClearGameResGenTemp;
+var
+  SAT: TSpriteAtlasType;
+begin
+  for SAT := Low(TSpriteAtlasType) to High(TSpriteAtlasType) do
+    SetLength(gGFXPrepData[SAT], 0);
+end;
+
+{$IFDEF LOAD_GAME_RES_ASYNC}
+// Generate texture atlases from previosly prepared SpriteInfo data (loaded from RXX, Bin Packed, copied to atlas)
+// Preparation was done asynchroniously by TTGameResourceLoader thread
+// Texture generating task can be done only by main thread, as OpenGL does not work with multiple threads
+procedure TKMSpritePack.GenerateTextureAtlasForGameRes;
+var
+  I: Integer;
+  SAT: TSpriteAtlasType;
+  Tx: Cardinal;
+  texFilter: TFilterType;
+begin
+  for SAT := Low(TSpriteAtlasType) to High(TSpriteAtlasType) do
+    for I := Low(gGFXPrepData[SAT]) to High(gGFXPrepData[SAT]) do
+    begin
+      with gGFXPrepData[SAT,I] do
+      begin
+        texFilter := ftNearest;
+        if LINEAR_FILTER_SPRITES and (fRT in [rxTrees, rxHouses, rxUnits]) then
+          texFilter := ftLinear;
+
+        Tx := TRender.GenTexture(SpriteInfo.Width, SpriteInfo.Height, @Data[0], TexType, texFilter, texFilter);
+        //Now that we know texture IDs we can fill GFXData structure
+        SetGFXData(Tx, SpriteInfo, SAT, fRT);
+
+        SaveTextureToPNG(SpriteInfo.Width, SpriteInfo.Height, RXInfo[fRT].FileName + '_' +
+                         SPRITE_TYPE_EXPORT_NAME[SAT] + IntToStr(I+1), Data);
+      end;
+    end;
+end;
+{$ENDIF}
 
 
 { TKMResSprites }
@@ -1561,48 +1627,6 @@ begin
 end;
 
 
-procedure TKMResSprites.ClearGameResGenTemp;
-var
-  SAT: TSpriteAtlasType;
-begin
-  for SAT := Low(TSpriteAtlasType) to High(TSpriteAtlasType) do
-    SetLength(gGFXPrepData[SAT], 0);
-end;
-
-{$IFDEF LOAD_GAME_RES_ASYNC}
-// Generate texture atlases from previosly prepared SpriteInfo data (loaded from RXX, Bin Packed, copied to atlas)
-// Preparation was done asynchroniously by TTGameResourceLoader thread
-// Texture generating task can be done only by main thread, as OpenGL does not work with multiple threads
-procedure TKMResSprites.GenerateTextureAtlasForGameRes(aRT: TRXType);
-var
-  I: Integer;
-  SAT: TSpriteAtlasType;
-  Tx: Cardinal;
-  spritesPack: TKMSpritePack;
-  texFilter: TFilterType;
-begin
-  spritesPack := GetSprites(aRT);
-  for SAT := Low(TSpriteAtlasType) to High(TSpriteAtlasType) do
-    for I := Low(gGFXPrepData[SAT]) to High(gGFXPrepData[SAT]) do
-    begin
-      with gGFXPrepData[SAT,I] do
-      begin
-        texFilter := ftNearest;
-        if LINEAR_FILTER_SPRITES and (aRT in [rxTrees, rxHouses, rxUnits]) then
-          texFilter := ftLinear;
-
-        Tx := TRender.GenTexture(SpriteInfo.Width, SpriteInfo.Height, @Data[0], TexType, texFilter, texFilter);
-        //Now that we know texture IDs we can fill GFXData structure
-        SetGFXData(Tx, SpriteInfo, SAT, spritesPack, aRT);
-
-        spritesPack.SaveTextureToPNG(SpriteInfo.Width, SpriteInfo.Height, RXInfo[aRT].FileName + '_' +
-                                     SPRITE_TYPE_EXPORT_NAME[SAT] + IntToStr(I+1), Data);
-      end;
-    end;
-end;
-{$ENDIF}
-
-
 //Try to load RXX first, then RX, then use Folder
 function TKMResSprites.LoadSprites(aRT: TRXType; aAlphaShadows: Boolean): Boolean;
 begin
@@ -1652,13 +1676,13 @@ begin
     // Generate texture atlas from prepared data for game resources
     // OpenGL work mainly with 1 thread only, so we have to call gl functions only from main thread
     // That is why we need call this method from main thread only
-    GenerateTextureAtlasForGameRes(fGameResLoader.RXType);
+    fSprites[fGameResLoader.RXType].GenerateTextureAtlasForGameRes;
 
     if Assigned(fStepCaption) then
       fStepCaption(gResTexts[RXInfo[fGameResLoader.RXType].LoadingTextID]);
 
     fSprites[fGameResLoader.RXType].ClearTemp;      //Clear fRXData sprites temp data, which is not needed anymore
-    ClearGameResGenTemp;                                   //Clear all the temp data used for atlas texture generating
+    fSprites[fGameResLoader.RXType].ClearGameResGenTemp;                                   //Clear all the temp data used for atlas texture generating
     nextRXTypeI := GetNextLoadRxTypeIndex(fGameResLoader.RXType); // get next RXType to load
     if nextRXTypeI = -1 then
     begin
