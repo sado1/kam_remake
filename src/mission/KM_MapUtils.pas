@@ -16,7 +16,7 @@ uses
 implementation
 uses
   SysUtils,
-  {KM_Resource, }KM_ResTexts, KM_ResHouses, KM_ResTypes, KM_CommonUtils;
+  KM_ResTexts, KM_ResHouses, KM_ResTypes, KM_CommonUtils;
 
 function GuessMPPathRel(const aName, aExt: string; aCRC: Cardinal): string;
 var
