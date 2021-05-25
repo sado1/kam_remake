@@ -928,6 +928,7 @@ begin
     gameMode := gmMultiSpectate
   else
     gameMode := gmMulti;
+
   LoadGameFromScript(TKMapsCollection.FullPath(aFileName, '.dat', aMapFolder, aCRC), aFileName,
                      aCRC, 0, nil, 0, gameMode, 0, NO_OVERWRITE_COLOR, aDifficulty);
 
@@ -1000,22 +1001,20 @@ procedure TKMGameApp.NewMapEditor(const aFullFilePath: UnicodeString; aSizeX: In
                                   aMapFullCRC: Cardinal = 0; aMapSimpleCRC: Cardinal = 0; aMultiplayerLoadMode: Boolean = False);
 begin
   if aFullFilePath <> '' then
+    LoadGameFromScript(aFullFilePath, TruncateExt(ExtractFileName(aFullFilePath)), aMapFullCRC, aMapSimpleCRC, nil, 0, gmMapEd, 0, NO_OVERWRITE_COLOR)
+  else
   begin
-    LoadGameFromScript(aFullFilePath, TruncateExt(ExtractFileName(aFullFilePath)), aMapFullCRC, aMapSimpleCRC, nil, 0, gmMapEd, 0, NO_OVERWRITE_COLOR);
-    // gGame could be nil if we failed to load map
-    if gGame <> nil then
-      gGame.MapEditorInterface.SetLoadMode(aMultiplayerLoadMode);
-  end
-  else begin
     aSizeX := EnsureRange(aSizeX, MIN_MAP_SIZE, MAX_MAP_SIZE);
     aSizeY := EnsureRange(aSizeY, MIN_MAP_SIZE, MAX_MAP_SIZE);
     LoadGameFromScratch(aSizeX, aSizeY, gmMapEd);
-    // gGame could be nil if we failed to load map
-    if gGame <> nil then
-      gGame.MapEditorInterface.SetLoadMode(aMultiplayerLoadMode);
   end;
 
-  if Assigned(fOnGameStart) and (gGame <> nil) then
+  // gGame could be nil if we failed to load map
+  if gGame = nil then Exit;
+
+  gGame.MapEditorInterface.SetLoadMode(aMultiplayerLoadMode);
+
+  if Assigned(fOnGameStart) then
     fOnGameStart(gGame.Params.Mode);
 end;
 
