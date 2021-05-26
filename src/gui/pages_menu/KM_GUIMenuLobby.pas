@@ -2218,7 +2218,7 @@ begin
       //Presect RMG map, if we have it in map list
       if gNetworking.IsHost
         and (Radio_MapType.ItemIndex = MAP_TYPE_INDEX_RMG)
-        and (fMapsMP[I].FileName = MAPS_RMG_NAME)
+        and (fMapsMP[I].Name = MAPS_RMG_NAME)
         and fMapsMP[I].TxtInfo.IsRMG then
         SelectRMGMap;
 
@@ -2226,7 +2226,7 @@ begin
       begin
         lobbyCl := fMapsMP[I].GetLobbyColor;
 
-        row := MakeListRow(['', fMapsMP[I].FileName, IntToStr(fMapsMP[I].HumanPlayerCountMP), fMapsMP[I].SizeText], //Texts
+        row := MakeListRow(['', fMapsMP[I].Name, IntToStr(fMapsMP[I].HumanPlayerCountMP), fMapsMP[I].SizeText], //Texts
                            [lobbyCl, lobbyCl, lobbyCl, lobbyCl], //Colors
                            I);
         row.Cells[0].Pic := fMapsMP[I].FavouriteMapPic;
@@ -2258,7 +2258,7 @@ begin
 
   //After being reassigned to host we may need to reselect the map
   if (DropCol_Maps.ItemIndex = -1) and (gNetworking.SelectGameKind = ngkMap) then
-    SelectByName(gNetworking.MapInfo.FileName);
+    SelectByName(gNetworking.MapInfo.Name);
 end;
 
 
@@ -2471,7 +2471,7 @@ begin
   begin
     fMapsMP.Lock;
     try
-      gNetworking.SelectMap(fMapsMP[I].FileName, fMapsMP[I].Kind);
+      gNetworking.SelectMap(fMapsMP[I].Name, fMapsMP[I].Kind);
     finally
       fMapsMP.Unlock;
     end;
@@ -2661,7 +2661,7 @@ begin
 
                   UpdateDifficultyLevels(M);
                 end;
-                Label_MapName.Caption := WrapColor(M.FileName, M.GetLobbyColor);
+                Label_MapName.Caption := WrapColor(M.Name, M.GetLobbyColor);
                 Memo_MapDesc.Text := M.BigDesc;
             end;
   end;
@@ -2708,7 +2708,7 @@ begin
   Lobby_OnGameOptions;
 
   case gNetworking.SelectGameKind of
-    ngkMap:  Lobby_OnMapName(gNetworking.MapInfo.FileName);
+    ngkMap:  Lobby_OnMapName(gNetworking.MapInfo.Name);
     ngkSave: Lobby_OnMapName(gNetworking.SaveInfo.FileName);
   end;
 end;

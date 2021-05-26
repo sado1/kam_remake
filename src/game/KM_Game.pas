@@ -1548,7 +1548,7 @@ begin
                     end;
         mkMP:       begin
                       gGameSettings.MenuMapEdMPMapCRC := mapInfo.MapAndDatCRC;
-                      gGameSettings.MenuMapEdMPMapName := mapInfo.FileName;
+                      gGameSettings.MenuMapEdMPMapName := mapInfo.Name;
                       gGameSettings.MenuMapEdMapType := 1;
                     end;
         mkDL:       begin
@@ -1557,7 +1557,7 @@ begin
                     end;
       end;
       // Update favorite map CRC if we resave favourite map with the same name
-      if fParams.Name = mapInfo.FileName then
+      if fParams.Name = mapInfo.Name then
       begin
         gGameSettings.FavouriteMaps.Replace(oldSimpleCRC, mapInfo.MapAndDatCRC);
         gServerSettings.ServerMapsRoster.Replace(oldFullCRC, mapInfo.CRC);

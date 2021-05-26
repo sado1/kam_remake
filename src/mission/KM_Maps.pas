@@ -73,7 +73,7 @@ type
   TKMapInfo = class
   private
     fDir: String;
-    fFileName: UnicodeString; //without extension
+    fName: UnicodeString; //without extension
     fCRC: Cardinal;
     fDatCRC: Cardinal; //Used to speed up scanning
     fMapAndDatCRC: Cardinal; //Used to determine map by its .map + .dat files, ignoring other map data (.txt and .script)
@@ -133,7 +133,7 @@ type
     property InfoAmount: TKMMapInfoAmount read fInfoAmount;
     property Dir: string read fDir;
     property Kind: TKMMapKind read fKind;
-    property FileName: UnicodeString read fFileName;
+    property Name: UnicodeString read fName;
     function FullPath(const aExt: string): string;
     function HumanUsableLocs: TKMHandIDArray;
     function AIUsableLocs: TKMHandIDArray;
@@ -319,7 +319,7 @@ begin
   inherited Create;
 
   fDir := aDir;
-  fFileName := aMapName;
+  fName := aMapName;
   fKind := aMapKind;
 
   fTxtInfo := TKMMapTxtInfo.Create;
@@ -330,18 +330,18 @@ begin
     fCustomScriptParams[CSP].Data := '';
   end;
 
-  datFile := fDir + fFileName + '.dat';
-  mapFile := fDir + fFileName + '.map';
-  scriptFile := fDir + fFileName + EXT_FILE_SCRIPT_DOT; //Needed for CRC
-  txtFile := fDir + fFileName + '.txt'; //Needed for CRC
-  libxFiles := fDir + fFileName + '.*.libx'; //Needed for CRC
+  datFile := fDir + fName + '.dat';
+  mapFile := fDir + fName + '.map';
+  scriptFile := fDir + fName + EXT_FILE_SCRIPT_DOT; //Needed for CRC
+  txtFile := fDir + fName + '.txt'; //Needed for CRC
+  libxFiles := fDir + fName + '.*.libx'; //Needed for CRC
 
   fSizeText := ''; //Lazy initialization
 
   if not FileExists(datFile) then Exit;
 
   //Try loading info from cache, since map scanning is rather slow
-  LoadFromFile(fDir + fFileName + '.mi'); //Data will be empty if failed
+  LoadFromFile(fDir + fName + '.mi'); //Data will be empty if failed
 
   //We will scan map once again if anything has changed
   //In SP mode (non-strict) we check DAT CRC and version, that is enough
@@ -409,14 +409,14 @@ begin
     end;
 
     //Load additional text info
-    fTxtInfo.LoadTXTInfo(fDir + fFileName + '.txt');
+    fTxtInfo.LoadTXTInfo(fDir + fName + '.txt');
 
     if gGameSettings = nil // In case we are closing app and settings object is already destroyed
       then Exit;
 
     IsFavourite := gGameSettings.FavouriteMaps.Contains(fMapAndDatCRC);
 
-    SaveToFile(fDir + fFileName + '.mi'); //Save new cache file
+    SaveToFile(fDir + fName + '.mi'); //Save new cache file
   end;
 
   fInfoAmount := iaBase;
@@ -457,7 +457,7 @@ end;
 
 function TKMapInfo.FullPath(const aExt: string): string;
 begin
-  Result := fDir + fFileName + aExt;
+  Result := fDir + fName + aExt;
 end;
 
 
@@ -592,7 +592,7 @@ begin
   //First reset everything because e.g. CanBeHuman is assumed false by default and set true when we encounter SET_USER_PLAYER
   ResetInfo;
 
-  datFile := fDir + fFileName + '.dat';
+  datFile := fDir + fName + '.dat';
 
   missionParser := TKMMissionParserInfo.Create;
   try
@@ -605,7 +605,7 @@ begin
   if IsTacticMission then
     fTxtInfo.BlockPeacetime := True;
 
-  fTxtInfo.LoadTXTInfo(fDir + fFileName + '.txt');
+  fTxtInfo.LoadTXTInfo(fDir + fName + '.txt');
 
   fInfoAmount := iaExtra;
 end;
@@ -734,8 +734,8 @@ end;
 function TKMapInfo.IsValid: Boolean;
 begin
   Result := (LocCount > 0) and
-            FileExists(fDir + fFileName + '.dat') and
-            FileExists(fDir + fFileName + '.map');
+            FileExists(fDir + fName + '.dat') and
+            FileExists(fDir + fName + '.map');
 end;
 
 
@@ -774,9 +774,9 @@ end;
 //Used to check if downloaded map was changed
 function TKMapInfo.IsFilenameEndMatchHash: Boolean;
 begin
-  Result := (Length(fFileName) > 9)
-    and (fFileName[Length(FileName)-8] = '_')
-    and (IntToHex(fCRC, 8) = RightStr(fFileName, 8));
+  Result := (Length(fName) > 9)
+    and (fName[Length(Name)-8] = '_')
+    and (IntToHex(fCRC, 8) = RightStr(fName, 8));
 end;
 
 
@@ -819,9 +819,9 @@ end;
 function TKMapInfo.FileNameWithoutHash: UnicodeString;
 begin
   if (fKind = mkDL) and IsFilenameEndMatchHash then
-    Result := LeftStr(FileName, Length(FileName)-9)
+    Result := LeftStr(Name, Length(Name)-9)
   else
-    Result := FileName;
+    Result := Name;
 end;
 
 
@@ -831,7 +831,7 @@ begin
   
   Assert(gGameSettings <> nil, 'gGameSettings = nil!');
 
-  Result := GetLocalizedFilePath(fDir + fFileName, gResLocales.UserLocale, gResLocales.FallbackLocale, '.pdf');
+  Result := GetLocalizedFilePath(fDir + fName, gResLocales.UserLocale, gResLocales.FallbackLocale, '.pdf');
 end;
 
 
@@ -1286,7 +1286,7 @@ begin
   Result := False;
 
   for I := 0 to fCount - 1 do
-    if LowerCase(fMaps[I].FileName) = LowerCase(aNewName) then
+    if LowerCase(fMaps[I].Name) = LowerCase(aNewName) then
     begin
       Result := True;
       Exit;
@@ -1433,8 +1433,8 @@ var
     case fSortMethod of
       smByFavouriteAsc:       Result := A.IsFavourite and not B.IsFavourite;
       smByFavouriteDesc:      Result := not A.IsFavourite and B.IsFavourite;
-      smByNameAsc:            Result := CompareTextLogical(A.FileName, B.FileName) < 0;
-      smByNameDesc:           Result := CompareTextLogical(A.FileName, B.FileName) > 0;
+      smByNameAsc:            Result := CompareTextLogical(A.Name, B.Name) < 0;
+      smByNameDesc:           Result := CompareTextLogical(A.Name, B.Name) > 0;
       smBySizeAsc:            Result := MapSizeIndex(A.MapSizeX, A.MapSizeY) < MapSizeIndex(B.MapSizeX, B.MapSizeY);
       smBySizeDesc:           Result := MapSizeIndex(A.MapSizeX, A.MapSizeY) > MapSizeIndex(B.MapSizeX, B.MapSizeY);
       smByPlayersAsc:         Result := A.LocCount < B.LocCount;
