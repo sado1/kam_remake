@@ -65,8 +65,8 @@ implementation
 uses
   Math, SysUtils,
   KromUtils,
-  KM_Resource, KM_ResCursors, KM_ResTypes,
-  KM_Main, KM_GameApp, KM_GameSettings, KM_Sound,
+  KM_Resource, KM_ResTypes,
+  KM_Main, KM_System, KM_GameApp, KM_GameSettings, KM_Sound,
   KM_Defaults, KM_CommonUtils;
 
 
@@ -347,8 +347,8 @@ begin
     ReleaseScrollKeys;
     fScrolling := False;
 
-    if (gRes.Cursors.Cursor in [kmcScroll0 .. kmcScroll7]) then
-      gRes.Cursors.Cursor := kmcDefault;
+    if (gSystem.Cursor in [kmcScroll0 .. kmcScroll7]) then
+      gSystem.Cursor := kmcDefault;
 
     fScrollStarted := 0;
     Exit;
@@ -390,10 +390,10 @@ begin
   //Now do actual the scrolling, if needed
   fScrolling := I <> 0;
   if fScrolling then
-    gRes.Cursors.Cursor := DIRECTIONS_BITFIELD[I] //Sample cursor type from bitfield value
+    gSystem.Cursor := DIRECTIONS_BITFIELD[I] //Sample cursor type from bitfield value
   else
-    if (gRes.Cursors.Cursor in [kmcScroll0 .. kmcScroll7]) then
-      gRes.Cursors.Cursor := kmcDefault;
+    if (gSystem.Cursor in [kmcScroll0 .. kmcScroll7]) then
+      gSystem.Cursor := kmcDefault;
 
   SetZoom(fZoom); //EnsureRanges
   SetPosition(fPosition); //EnsureRanges

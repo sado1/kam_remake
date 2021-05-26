@@ -2030,7 +2030,8 @@ uses
   SysUtils, StrUtils, Math,
   Vcl.Clipbrd,
   KromUtils,
-  KM_Resource, KM_ResSprites, KM_ResSound, KM_ResCursors, KM_ResTexts, KM_ResTypes,
+  KM_System, 
+  KM_Resource, KM_ResSprites, KM_ResSound, KM_ResTexts, KM_ResTypes,
   KM_Sound, KM_CommonUtils, KM_UtilsExt;
 
 
@@ -11131,15 +11132,15 @@ begin
     CtrlOver.MouseMove(X, Y, Shift);
 
   //The Game hides cursor when using DirectionSelector, don't spoil it
-  if gRes.Cursors.Cursor <> kmcInvisible then
+  if gSystem.Cursor <> kmcInvisible then
     if CtrlOver is TKMEdit then
-      gRes.Cursors.Cursor := kmcEdit
+      gSystem.Cursor := kmcEdit
     else
     if CtrlOver is TKMDragger then
-      gRes.Cursors.Cursor := kmcDragUp
+      gSystem.Cursor := kmcDragUp
     else
-      if gRes.Cursors.Cursor in [kmcEdit, kmcDragUp] then
-        gRes.Cursors.Cursor := kmcDefault; //Reset the cursor from these two special cursors
+      if gSystem.Cursor in [kmcEdit, kmcDragUp] then
+        gSystem.Cursor := kmcDefault; //Reset the cursor from these two special cursors
 end;
 
 

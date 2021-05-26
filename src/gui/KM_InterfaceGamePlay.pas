@@ -368,10 +368,11 @@ type
 
 implementation
 uses
-  KM_Main, KM_GameInputProcess, KM_GameInputProcess_Multi, KM_AI, KM_RenderUI, KM_Cursor, KM_Maps,
+  KM_Main, KM_System, 
+  KM_GameInputProcess, KM_GameInputProcess_Multi, KM_AI, KM_RenderUI, KM_Cursor, KM_Maps,
   KM_HandsCollection, KM_Hand, KM_RenderPool, KM_ResTexts, KM_Game, KM_GameApp, KM_HouseBarracks, KM_HouseTownHall,
   KM_ScriptingEvents, KM_AIFields, KM_GameSettings,
-  KM_CommonUtils, KM_ResLocales, KM_ResSound, KM_Resource, KM_Log, KM_ResCursors, KM_ResFonts, KM_ResKeys,
+  KM_CommonUtils, KM_ResLocales, KM_ResSound, KM_Resource, KM_Log, KM_ResFonts, KM_ResKeys,
   KM_Sound, KM_NetPlayersList, KM_MessageLog, KM_NetworkTypes,
   KM_InterfaceMapEditor, KM_HouseWoodcutters, KM_MapTypes,
   KM_GameParams, KM_Video, KM_Music,
@@ -1534,7 +1535,7 @@ begin
     fDragScrolling := False;
     fGuiGameUnit.JoiningGroups := False;
     ReleaseDirectionSelector;
-    gRes.Cursors.Cursor := kmcDefault; // Might have been scrolling or joining groups
+    gSystem.Cursor := kmcDefault; // Might have been scrolling or joining groups
     UpdateUI; // Disabled main buttons
 
     MinimapView.Disable;
@@ -2346,8 +2347,8 @@ procedure TKMGamePlayInterface.Beacon_Cancel;
 begin
   fPlacingBeacon := False; // Right click cancels it
   MinimapView.ClickableOnce := False;
-  if gRes.Cursors.Cursor = kmcBeacon then
-    gRes.Cursors.Cursor := kmcDefault;
+  if gSystem.Cursor = kmcBeacon then
+    gSystem.Cursor := kmcDefault;
 end;
 
 
@@ -2930,7 +2931,7 @@ begin
     SetCursorPos(gMain.ClientToScreen(fSelectingDirPosition).X, gMain.ClientToScreen(fSelectingDirPosition).Y);
     gMain.ApplyCursorRestriction; // Reset the cursor restrictions from selecting direction
     fSelectingTroopDirection := False;
-    gRes.Cursors.Cursor := kmcDefault; // Reset direction selection cursor when mouse released
+    gSystem.Cursor := kmcDefault; // Reset direction selection cursor when mouse released
     DirectionCursorHide;
   end;
 end;
@@ -3485,7 +3486,7 @@ begin
     begin
       fPlacingBeacon := True;
       MinimapView.ClickableOnce := True;
-      gRes.Cursors.Cursor := kmcBeacon;
+      gSystem.Cursor := kmcBeacon;
     end;
   if Key = gResKeys[kfCloseMenu].Key then
   begin
@@ -3697,7 +3698,7 @@ begin
       if not fGuiGameBuild.Visible then
         SwitchPage(Button_Main[tbBuild]);
       fGuiGameBuild.ErasePlan;
-      gRes.Cursors.Cursor := kmcDefault; //Reset cursor, as it could be kmcInfo, f.e.
+      gSystem.Cursor := kmcDefault; //Reset cursor, as it could be kmcInfo, f.e.
     end;
   end;
 
@@ -3813,7 +3814,7 @@ begin
         fSelectingDirPosition.Y := Y;
         fSelectedDirection := dirNA;
         DirectionCursorShow(X, Y, fSelectedDirection);
-        gRes.Cursors.Cursor := kmcInvisible;
+        gSystem.Cursor := kmcInvisible;
       end
       else
         gSoundPlayer.Play(sfxCantPlace, gCursor.Cell, False, 4);
@@ -3860,7 +3861,7 @@ begin
     // Beacons are a special case, the cursor should be shown over controls to (you can place it on the minimap)
     if fMyControls.CtrlOver = nil then
       UpdateGameCursor(X,Y,Shift); // Keep the game cursor up to date
-    gRes.Cursors.Cursor := kmcBeacon;
+    gSystem.Cursor := kmcBeacon;
     Exit;
   end;
 
@@ -3871,8 +3872,8 @@ begin
   and not fSelectingTroopDirection then
   begin
     // kmcEdit and kmcDragUp are handled by Controls.MouseMove (it will reset them when required)
-    if not fViewport.Scrolling and not (gRes.Cursors.Cursor in [kmcEdit,kmcDragUp]) then
-      gRes.Cursors.Cursor := kmcDefault;
+    if not fViewport.Scrolling and not (gSystem.Cursor in [kmcEdit,kmcDragUp]) then
+      gSystem.Cursor := kmcDefault;
     Exit;
   end
   else
@@ -3900,7 +3901,7 @@ begin
     fSelectedDirection := KMGetDirection(deltaX, deltaY, DIR_CURSOR_NA_RAD);
     // Update the cursor based on this direction and negate the offset
     DirectionCursorShow(fSelectingDirPosition.X, fSelectingDirPosition.Y, fSelectedDirection);
-    gRes.Cursors.Cursor := kmcInvisible; // Keep it invisible, just in case
+    gSystem.Cursor := kmcInvisible; // Keep it invisible, just in case
     Exit;
   end;
 
@@ -3935,7 +3936,7 @@ begin
   begin
     // Use the default cursor while placing roads, don't become stuck on c_Info or others
     if not fViewport.Scrolling then
-      gRes.Cursors.Cursor := kmcDefault;
+      gSystem.Cursor := kmcDefault;
     Exit;
   end;
 
@@ -3949,9 +3950,9 @@ begin
     and (entity.Owner = gMySpectator.HandID)
     and not group.HasMember(TKMUnitWarrior(entity))
     and (UNIT_TO_GROUP_TYPE[TKMUnitWarrior(entity).UnitType] = group.GroupType) then
-      gRes.Cursors.Cursor := kmcJoinYes
+      gSystem.Cursor := kmcJoinYes
     else
-      gRes.Cursors.Cursor := kmcJoinNo;
+      gSystem.Cursor := kmcJoinNo;
     Exit;
   end;
 
@@ -3964,7 +3965,7 @@ begin
       or (entity.AllowAllyToSelect and (gMySpectator.Hand.Alliances[entity.Owner] = atAlly))
       or (fUIMode in [umReplay, umSpectate])) then
     begin
-      gRes.Cursors.Cursor := kmcInfo;
+      gSystem.Cursor := kmcInfo;
       Exit;
     end;
   end;
@@ -3976,15 +3977,15 @@ begin
     and (gMySpectator.FogOfWar.CheckTileRevelation(gCursor.Cell.X, gCursor.Cell.Y) > 0) then
   begin
     if (entity <> nil) and (gMySpectator.Hand.Alliances[entity.Owner] = atEnemy) then
-      gRes.Cursors.Cursor := kmcAttack
+      gSystem.Cursor := kmcAttack
     else
       if not fViewport.Scrolling then
-        gRes.Cursors.Cursor := kmcDefault;
+        gSystem.Cursor := kmcDefault;
     Exit;
   end;
 
   if not fViewport.Scrolling then
-    gRes.Cursors.Cursor := kmcDefault;
+    gSystem.Cursor := kmcDefault;
 end;
 
 

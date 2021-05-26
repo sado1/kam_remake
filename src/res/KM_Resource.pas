@@ -81,7 +81,9 @@ var
 
 implementation
 uses
-  TypInfo, KromUtils, KM_Log, KM_Points, KM_ResTexts, KM_ResKeys,
+  TypInfo,
+  KM_System,
+  KromUtils, KM_Log, KM_Points, KM_ResTexts, KM_ResKeys,
   KM_ResTypes;
 
 
@@ -166,7 +168,7 @@ begin
   fUnits := TKMResUnits.Create; // Load units prior to Sprites, as we could use it on SoftenShadows override for png in Sprites folder
   fSprites.LoadMenuResources;
   fCursors.MakeCursors(fSprites[rxGui]);
-  fCursors.Cursor := kmcDefault;
+  gSystem.Cursor := kmcDefault;
 
   gResKeys := TKMResKeys.Create;
 

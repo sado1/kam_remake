@@ -196,6 +196,10 @@ type
     kmcAnimatedDirSelector
   );
 
+const
+  // Screen.Cursors[0] is used by System default cursor
+  CURSOR_CNT_OFFSET = 1;
+
 implementation
 
 end.
