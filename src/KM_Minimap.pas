@@ -84,7 +84,8 @@ begin
 end;
 
 
-//Load map in a direct way, should be used only when in Menu
+// Load map in a direct way, should be used only when in Menu
+// aMissionPath - path to .dat file
 procedure TKMMinimap.LoadFromMission(const aMissionPath: string; const aRevealFor: array of TKMHandID);
 var
   I: Integer;
