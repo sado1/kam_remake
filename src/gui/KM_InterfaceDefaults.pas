@@ -4,7 +4,8 @@ interface
 uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLType, {$ENDIF}
-  Controls, Classes,
+  Classes,
+  Vcl.Controls,
   KM_Controls, KM_Points, KM_ResFonts,
   KM_ResTypes, KM_InterfaceTypes;
 

@@ -2,7 +2,7 @@ unit KM_GUIMenuSinglePlayer;
 {$I KaM_Remake.inc}
 interface
 uses
-  Controls, Math, SysUtils,
+  Math, SysUtils,
   KM_Defaults,
   KM_Controls, KM_Pics, KM_InterfaceDefaults, KM_InterfaceTypes, KM_GameTypes;
 

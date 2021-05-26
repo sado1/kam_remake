@@ -2,7 +2,7 @@ unit KM_GUIMapEdMenu;
 {$I KaM_Remake.inc}
 interface
 uses
-   Classes, Controls, SysUtils,
+   Classes, SysUtils,
    KM_Controls, KM_InterfaceGame, KM_InterfaceDefaults,
    KM_GUIMapEdMenuResize,
    KM_GUIMapEdMenuQuickPlay,

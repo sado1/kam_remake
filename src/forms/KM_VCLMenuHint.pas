@@ -3,7 +3,10 @@
 interface
 
 uses
-  Windows, Controls, Menus, ExtCtrls, Classes, Forms;
+  Classes,
+  {$IFDEF MSWindows} Windows, {$ENDIF}
+  {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
+  Vcl.Controls, Vcl.Menus, Vcl.ExtCtrls, Vcl.Forms;
 
 type
   // This type allow to show hints over menu items

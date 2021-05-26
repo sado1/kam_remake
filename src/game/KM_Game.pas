@@ -295,8 +295,10 @@ var
 
 implementation
 uses
-  System.Types, Classes, Controls, Dialogs, SysUtils, KromUtils, Math, TypInfo,
+  System.Types, Classes, SysUtils, Math, TypInfo,
+  Vcl.Dialogs,
   {$IFDEF WDC} UITypes, {$ENDIF}
+  KromUtils,
   KM_PathFindingAStarOld, KM_PathFindingAStarNew, KM_PathFindingJPS,
   KM_Projectiles, KM_AIFields, KM_NetworkTypes,
   KM_Main, KM_GameApp, KM_RenderPool, KM_GameInfo, KM_GameClasses,

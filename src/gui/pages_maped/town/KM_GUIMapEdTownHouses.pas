@@ -2,7 +2,7 @@ unit KM_GUIMapEdTownHouses;
 {$I KaM_Remake.inc}
 interface
 uses
-   Classes, Controls, Math, SysUtils,
+   Classes, Math, SysUtils,
    KM_InterfaceDefaults,
    KM_Controls, KM_Defaults, KM_InterfaceGame;
 

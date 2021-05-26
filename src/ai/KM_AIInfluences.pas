@@ -113,7 +113,7 @@ const
 
 implementation
 uses
-  Classes, Graphics, SysUtils,
+  SysUtils, Classes,
   KM_RenderAux,
   {$IFDEF DEBUG_AIInfluences}
     KM_CommonUtils,

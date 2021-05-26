@@ -99,10 +99,11 @@ var
 
 implementation
 uses
-  Classes, Forms,
+  Classes, SysUtils, SysConst, StrUtils, Math,
+  Vcl.Forms,
   {$IFDEF MSWindows} MMSystem, {$ENDIF}
   {$IFDEF USE_MAD_EXCEPT} KM_Exceptions, {$ENDIF}
-  SysUtils, SysConst, StrUtils, Math, KromUtils, KM_FileIO,
+  KromUtils, KM_FileIO,
   KM_GameApp, KM_VclHelpers,
   KM_Log, KM_CommonUtils, KM_Defaults, KM_Points, KM_DevPerfLog,
   KM_CommonExceptions,

@@ -7,7 +7,8 @@ unit KM_Eye;
 {$I KaM_Remake.inc}
 interface
 uses
-  Classes, Graphics, KromUtils, Math, SysUtils, Contnrs,
+  SysUtils, Classes, Math, Contnrs,
+  KromUtils,
   KM_Defaults, KM_Points, KM_CommonClasses, KM_CommonTypes,
   KM_ResHouses, KM_Houses, KM_Units,
   KM_AIArmyEvaluation, KM_AIInfluences, KM_FloodFill, KM_AIParameters,

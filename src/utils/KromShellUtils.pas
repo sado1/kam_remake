@@ -2,11 +2,12 @@ unit KromShellUtils;
 {$I KaM_Remake.inc}
 interface
 uses
+  Classes,
   {$IFDEF MSWindows}Windows, MMSystem, {$ENDIF}
   {$IFDEF Unix}LCLType, {$ENDIF}
   {$IFDEF FPC}LCLIntf, UTF8Process, LazHelpHTML, {$ENDIF}
   {$IFDEF WDC}ShellApi, {$ENDIF}
-	Forms, Classes, Dialogs, Controls;
+	Vcl.Forms, Vcl.Dialogs, Vcl.Controls;
 
 	function RunOpenDialog(Sender: TOpenDialog; const aName, aPath, aFilter: string): Boolean;
   function RunSaveDialog(Sender: TSaveDialog; aFileName, aFilePath, aFilter: string; const aFileExt: string = ''): Boolean;

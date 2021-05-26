@@ -2,8 +2,9 @@ unit KM_GUIMenuOptions;
 {$I KaM_Remake.inc}
 interface
 uses
-  Classes, Controls, KromOGLUtils, Math, SysUtils,
+  Classes, Math, SysUtils,
   KM_Controls,
+  KromOGLUtils,
   KM_MainSettings,
   KM_Pics, KM_Resolutions, KM_ResKeys, KM_GUICommonKeys,
   KM_InterfaceDefaults, KM_InterfaceTypes, KM_CommonTypes;

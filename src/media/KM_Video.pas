@@ -2,7 +2,9 @@ unit KM_Video;
 {$I KaM_Remake.inc}
 interface
 uses
-  SysUtils, SyncObjs, Types, Messages, Classes, Dialogs, KromOGLUtils, Generics.Collections
+  SysUtils, SyncObjs, Types, Classes,
+  Messages, Generics.Collections,
+  KromOGLUtils
   {$IFDEF WDC} , UITypes {$ENDIF}
   {$IFDEF FPC} , Controls {$ENDIF}
   {$IFDEF VIDEOS} , KM_VLC {$ENDIF}

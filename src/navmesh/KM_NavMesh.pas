@@ -71,8 +71,7 @@ const
 implementation
 uses
   SysUtils, Math,
-  KM_Terrain, KM_RenderAux, KM_AIFields,
-  Dialogs;
+  KM_Terrain, KM_RenderAux, KM_AIFields;
 
 
 { TKMNavMesh }

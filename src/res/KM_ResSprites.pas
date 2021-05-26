@@ -3,7 +3,8 @@ unit KM_ResSprites;
 interface
 uses
   {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
-  Classes, Graphics, Math, SysUtils, Generics.Collections,
+  Classes, Math, SysUtils, Generics.Collections,
+  Vcl.Graphics,
   KM_CommonTypes, KM_Defaults, KM_Pics, KM_IoPNG, KM_RenderTypes, KM_ResTexts, KM_ResTileset, KM_ResHouses, KM_BinPacking
   {$IFDEF FPC}, zstream {$ENDIF}
   {$IFDEF WDC}, ZLib {$ENDIF};

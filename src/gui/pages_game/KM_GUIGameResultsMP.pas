@@ -2,7 +2,7 @@
 {$I KaM_Remake.inc}
 interface
 uses
-  Classes, Controls, Math, StrUtils, SysUtils,
+  Classes, Math, StrUtils, SysUtils,
   KM_CommonTypes, KM_Controls, KM_Defaults, KM_Pics,
   KM_InterfaceDefaults, KM_ResWares, KM_HandStats,
   KM_ResTypes;

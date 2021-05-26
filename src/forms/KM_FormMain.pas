@@ -2,7 +2,8 @@ unit KM_FormMain;
 {$I KaM_Remake.inc}
 interface
 uses
-  Classes, ComCtrls, Controls, Buttons, Dialogs, ExtCtrls, Forms, Graphics, Math, Menus, StdCtrls, SysUtils, StrUtils,
+  SysUtils, StrUtils, Classes, Math,
+  Vcl.ComCtrls, Vcl.Controls, Vcl.Buttons, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.Forms, Vcl.Graphics, Vcl.Menus, Vcl.StdCtrls,
   KM_RenderControl, KM_CommonTypes,
   KM_WindowParams,
   {$IFDEF FPC} LResources, {$ENDIF}

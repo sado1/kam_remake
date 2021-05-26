@@ -2,7 +2,7 @@ unit KM_GUIMapEdMarkerReveal;
 {$I KaM_Remake.inc}
 interface
 uses
-   Classes, Controls, Math, StrUtils, SysUtils,
+   Classes, Math, StrUtils, SysUtils,
    KM_Controls, KM_Defaults, KM_Pics;
 
 
