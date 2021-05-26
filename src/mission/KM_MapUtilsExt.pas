@@ -4,14 +4,14 @@ interface
 uses
   KM_Maps;
 
-  function TryOpenMapPDF(aMap: TKMapInfo): Boolean;
+  function TryOpenMapPDF(aMap: TKMMapInfo): Boolean;
 
 implementation
 uses
   KM_CommonShellUtils;
 
 
-function TryOpenMapPDF(aMap: TKMapInfo): Boolean;
+function TryOpenMapPDF(aMap: TKMMapInfo): Boolean;
 var
   pdfPath: string;
 begin

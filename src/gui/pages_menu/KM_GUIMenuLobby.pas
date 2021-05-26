@@ -101,7 +101,7 @@ type
     procedure UpdateGameOptionsUI;
     procedure UpdateDescNOptionsUI;
     procedure UpdateDifficultyLevels(aSave: TKMSaveInfo); overload;
-    procedure UpdateDifficultyLevels(aMap: TKMapInfo); overload;
+    procedure UpdateDifficultyLevels(aMap: TKMMapInfo); overload;
 
     procedure Lobby_OnDisconnect(const aData: UnicodeString);
     procedure Lobby_OnGameOptions;
@@ -2534,7 +2534,7 @@ begin
 end;
 
 
-procedure TKMMenuLobby.UpdateDifficultyLevels(aMap: TKMapInfo);
+procedure TKMMenuLobby.UpdateDifficultyLevels(aMap: TKMMapInfo);
 var
   I: Integer;
   MD, oldMD, defMD: TKMMissionDifficulty;
@@ -2581,7 +2581,7 @@ end;
 //Update UI to show it
 procedure TKMMenuLobby.Lobby_OnMapName(const aData: UnicodeString);
 var
-  M: TKMapInfo;
+  M: TKMMapInfo;
   S: TKMSaveInfo;
   txt: UnicodeString;
 begin
