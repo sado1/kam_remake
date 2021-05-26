@@ -304,7 +304,7 @@ uses
   KM_Terrain, KM_HandsCollection, KM_HandSpectator, KM_MapEdTypes,
   KM_MissionScript, KM_MissionScript_Info, KM_MissionScript_Standard,
   KM_GameInputProcess_Multi, KM_GameInputProcess_Single,
-  KM_Resource, KM_ResCursors, KM_ResSound, KM_ResWares,
+  KM_Resource, KM_ResCursors, KM_ResSound, KM_ResWares, KM_ResTypes,
   KM_InterfaceDefaults, KM_InterfaceTypes, KM_GameSettings,
   KM_Log, KM_ScriptingEvents, KM_Saves, KM_FileIO, KM_CommonUtils, KM_RandomChecks, KM_DevPerfLog, KM_DevPerfLogTypes,
   KM_NetPlayersList,

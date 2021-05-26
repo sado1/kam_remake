@@ -65,7 +65,7 @@ implementation
 uses
   Math, SysUtils,
   KromUtils,
-  KM_Resource, KM_ResCursors,
+  KM_Resource, KM_ResCursors, KM_ResTypes,
   KM_Main, KM_GameApp, KM_GameSettings, KM_Sound,
   KM_Defaults, KM_CommonUtils;
 
