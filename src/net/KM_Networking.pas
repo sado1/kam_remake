@@ -652,7 +652,7 @@ begin
   SendMapOrSave;
 
   if Assigned(OnMapName) then
-    OnMapName(fMapInfo.FileName);
+    OnMapName(fMapInfo.Name);
 
   //Don't send player setup by default. Cause it will be sent from lobby just afterwards
   if aSendPlayerSetup then
@@ -979,7 +979,7 @@ begin
                 advancedAIUsableLocs := fMapInfo.AdvancedAIUsableLocs;
                 fixedLocsColors := fMapInfo.FixedLocsColors;
                 //Check that map's hash hasn't changed
-                checkMapInfo := TKMapInfo.Create(fMapInfo.FileName, True, fMapInfo.Kind);
+                checkMapInfo := TKMapInfo.Create(fMapInfo.Name, True, fMapInfo.Kind);
                 try
                   if checkMapInfo.CRC <> fMapInfo.CRC then
                   begin
@@ -2048,7 +2048,7 @@ begin
                 begin
                   fSelectGameKind := ngkMap;
                   fMapInfo.LoadExtra; //Lobby requires extra map info such as CanBeHuman
-                  if Assigned(OnMapName) then OnMapName(fMapInfo.FileName);
+                  if Assigned(OnMapName) then OnMapName(fMapInfo.Name);
                   PacketSend(NET_ADDRESS_HOST, mkHasMapOrSave);
                 end
                 else
@@ -2600,7 +2600,7 @@ begin
     begin
       case fSelectGameKind of
         ngkSave: aMap := fSaveInfo.GameInfo.Title;
-        ngkMap:  aMap := fMapInfo.FileName;
+        ngkMap:  aMap := fMapInfo.Name;
         else     aMap := '';
       end;
       aGameTime := -1;
@@ -2771,11 +2771,11 @@ begin
     //Validate request and set up file sender
     aM.ReadW(tmpStringW);
     case fSelectGameKind of
-      ngkMap: if ((tmpStringW = MapInfo.FileName) or (tmpStringW = MapInfo.FileName + '_' + IntToHex(MapInfo.CRC, 8))) then
+      ngkMap: if ((tmpStringW = MapInfo.Name) or (tmpStringW = MapInfo.Name + '_' + IntToHex(MapInfo.CRC, 8))) then
               begin
                 PacketSend(NET_ADDRESS_OTHERS, mkFileSendStarted, aSenderIndex);
                 SetDownloadlInProgress(aSenderIndex, True);
-                if not fFileSenderManager.StartNewSend(kttMap, MapInfo.FileName, MapInfo.Kind, aSenderIndex) then
+                if not fFileSenderManager.StartNewSend(kttMap, MapInfo.Name, MapInfo.Kind, aSenderIndex) then
                   AbortSend;
               end 
               else

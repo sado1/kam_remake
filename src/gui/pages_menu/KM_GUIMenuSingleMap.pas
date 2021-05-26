@@ -373,7 +373,7 @@ begin
               Continue;
       end;
 
-      R := MakeListRow(['', IntToStr(fMaps[I].LocCount), fMaps[I].FileName, MapSizeText(fMaps[I].MapSizeX, fMaps[I].MapSizeY)]);
+      R := MakeListRow(['', IntToStr(fMaps[I].LocCount), fMaps[I].Name, MapSizeText(fMaps[I].MapSizeX, fMaps[I].MapSizeY)]);
       R.Cells[2].SubTxt := fMaps[I].TxtInfo.SmallDesc;
       R.Cells[0].Pic := MakePic(rxGui, 28 + Byte(fMaps[I].MissionMode <> mmTactic) * 14);
       R.Tag := I;
@@ -453,7 +453,7 @@ begin
         3:  gGameSettings.MenuSPSpecialMapCRC := fLastMapCRC;
       end;
 
-      Label_Title.Caption   := fMaps[mapId].FileName;
+      Label_Title.Caption   := fMaps[mapId].Name;
       Memo_Desc.Text        := fMaps[mapId].BigDesc;
       MinimapView.Show;
 
@@ -774,7 +774,7 @@ begin
 
         //Provide mission FileName mask and title here
         if Assigned(OnNewSingleMap) then
-          OnNewSingleMap(map.FullPath('.dat'), map.FileName, fSingleLoc, fSingleColor, fDifficulty, fAIType);
+          OnNewSingleMap(map.FullPath('.dat'), map.Name, fSingleLoc, fSingleColor, fDifficulty, fAIType);
         Exit;
       end;
   finally

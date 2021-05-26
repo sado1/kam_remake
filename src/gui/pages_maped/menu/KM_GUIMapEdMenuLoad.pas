@@ -153,7 +153,7 @@ begin
 
   //Remember previous map
   if ListBox_Load.ItemIndex <> -1 then
-    prevMap := M.Maps[ListBox_Load.ItemIndex].FileName
+    prevMap := M.Maps[ListBox_Load.ItemIndex].Name
   else
     prevMap := '';
   prevTop := ListBox_Load.TopIndex;
@@ -164,8 +164,8 @@ begin
   try
     for I := 0 to M.Count - 1 do
     begin
-      ListBox_Load.Add(M.Maps[I].FileName);
-      if M.Maps[I].FileName = prevMap then
+      ListBox_Load.Add(M.Maps[I].Name);
+      if M.Maps[I].Name = prevMap then
         ListBox_Load.ItemIndex := I;
     end;
   finally

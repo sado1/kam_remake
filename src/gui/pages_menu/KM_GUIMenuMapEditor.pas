@@ -741,7 +741,7 @@ begin
         Continue;
 
       color := fMaps[I].GetLobbyColor;
-      R := MakeListRow(['', '', fMaps[I].FileName, IntToStr(fMaps[I].LocCount), fMaps[I].SizeText],  //Texts
+      R := MakeListRow(['', '', fMaps[I].Name, IntToStr(fMaps[I].LocCount), fMaps[I].SizeText],  //Texts
                        ['', '', '', '', fMaps[I].Dimensions.ToString],  //Hints
                        [color, color, color, color, color], //Colors
                        I);
@@ -754,7 +754,7 @@ begin
       if (fMaps[I].MapAndDatCRC = fSelectedMapInfo.CRC)
         and ((Radio_MapType.ItemIndex = 0)
           or (Radio_MapType.ItemIndex = 2)
-          or (fMaps[I].FileName = fSelectedMapInfo.Name)) then  //Check name only for MP maps
+          or (fMaps[I].Name = fSelectedMapInfo.Name)) then  //Check name only for MP maps
       begin
         ColumnBox_MapEd.ItemIndex := listI;
         UpdateMapInfo(listI);
@@ -943,7 +943,7 @@ procedure TKMMenuMapEditor.RenameConfirm(aVisible: Boolean);
 begin
   if aVisible then
   begin
-    FilenameEdit_Rename.Text := fMaps[ColumnBox_MapEd.SelectedItemTag].FileName;
+    FilenameEdit_Rename.Text := fMaps[ColumnBox_MapEd.SelectedItemTag].Name;
     Button_MapRenameConfirm.Enabled := False;
     PopUp_Rename.Show;
   end else
@@ -972,7 +972,7 @@ begin
   if (aID <> -1) then
   begin
     CRC := fMaps[aID].MapAndDatCRC;
-    name := fMaps[aID].FileName;
+    name := fMaps[aID].Name;
   end else begin
     CRC := 0;
     name := '';
