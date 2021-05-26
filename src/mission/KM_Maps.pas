@@ -17,8 +17,8 @@ type
     smByHumanPlayersMPAsc, smByHumanPlayersMPDesc,
     smByMissionModeAsc, smByMissionModeDesc);
 
-  TKMapInfo = class;
-  TKMapEvent = procedure (aMap: TKMapInfo) of object;
+  TKMMapInfo = class;
+  TKMapEvent = procedure (aMap: TKMMapInfo) of object;
   TKMMapInfoAmount = (iaBase, iaExtra);
 
   TKMMapGoalInfo = packed record
@@ -70,7 +70,7 @@ type
   TKMMapTxtInfoArray = array of TKMMapTxtInfo;
 
 
-  TKMapInfo = class
+  TKMMapInfo = class
   private
     fDir: String;
     fName: UnicodeString; //without extension
@@ -119,7 +119,7 @@ type
     FlagColors: array [0..MAX_HANDS-1] of Cardinal;
     IsFavourite: Boolean;
 
-    class function CreateDummy: TKMapInfo;
+    class function CreateDummy: TKMMapInfo;
 
     constructor Create(const aMapName: string; aStrictParsing: Boolean; aMapKind: TKMMapKind); overload;
     constructor Create(const aDir, aMapName: string; aStrictParsing: Boolean; aMapKind: TKMMapKind = mkUnknown); overload;
@@ -204,7 +204,7 @@ type
   TKMapsCollection = class
   private
     fCount: Integer;
-    fMaps: array of TKMapInfo;
+    fMaps: array of TKMMapInfo;
     fMapFolders: TKMMapKindSet;
     fSortMethod: TKMapsSortMethod;
     fDoSortWithFavourites: Boolean;
@@ -216,19 +216,19 @@ type
     fOnTerminate: TNotifyEvent;
     fOnComplete: TNotifyEvent;
     procedure Clear;
-    procedure MapAdd(aMap: TKMapInfo);
+    procedure MapAdd(aMap: TKMMapInfo);
     procedure MapAddDone(Sender: TObject);
     procedure ScanTerminate(Sender: TObject);
     procedure ScanComplete(Sender: TObject);
     procedure DoSort;
-    function GetMap(aIndex: Integer): TKMapInfo;
+    function GetMap(aIndex: Integer): TKMMapInfo;
   public
     constructor Create(aKindSet: TKMMapKindSet; aSortMethod: TKMapsSortMethod = smByNameDesc; aDoSortWithFavourites: Boolean = False); overload;
     constructor Create(aKind: TKMMapKind; aSortMethod: TKMapsSortMethod = smByNameDesc; aDoSortWithFavourites: Boolean = False); overload;
     destructor Destroy; override;
 
     property Count: Integer read fCount;
-    property Maps[aIndex: Integer]: TKMapInfo read GetMap; default;
+    property Maps[aIndex: Integer]: TKMMapInfo read GetMap; default;
     procedure Lock;
     procedure Unlock;
 
@@ -269,27 +269,27 @@ const
 
 
 { TKMapInfo }
-class function TKMapInfo.CreateDummy: TKMapInfo;
+class function TKMMapInfo.CreateDummy: TKMMapInfo;
 begin
   Result := Create;
 end;
 
 
 // Dummy instance, used to fill fields
-constructor TKMapInfo.Create;
+constructor TKMMapInfo.Create;
 begin
   inherited;
 end;
 
 
-constructor TKMapInfo.Create(const aMapName: string; aStrictParsing: Boolean; aMapKind: TKMMapKind);
+constructor TKMMapInfo.Create(const aMapName: string; aStrictParsing: Boolean; aMapKind: TKMMapKind);
 begin
   Assert(aMapKind <> mkUnknown); // Do not allow to create 'unknown' maps with this constructor
   Create(ExeDir + MAP_FOLDER_NAME[aMapKind] + PathDelim + aMapName + PathDelim, aMapName, aStrictParsing, aMapKind);
 end;
 
 
-constructor TKMapInfo.Create(const aDir, aMapName: string; aStrictParsing: Boolean; aMapKind: TKMMapKind = mkUnknown);
+constructor TKMMapInfo.Create(const aDir, aMapName: string; aStrictParsing: Boolean; aMapKind: TKMMapKind = mkUnknown);
 
   function GetLIBXCRC(const aSearchFile: UnicodeString): Cardinal;
   var
@@ -423,7 +423,7 @@ begin
 end;
 
 
-destructor TKMapInfo.Destroy;
+destructor TKMMapInfo.Destroy;
 begin
   FreeAndNil(fTxtInfo);
 
@@ -431,7 +431,7 @@ begin
 end;
 
 
-procedure TKMapInfo.AddGoal(aType: TKMGoalType; aPlayer: TKMHandID; aCondition: TKMGoalCondition; aStatus: TKMGoalStatus; aPlayerIndex: TKMHandID);
+procedure TKMMapInfo.AddGoal(aType: TKMGoalType; aPlayer: TKMHandID; aCondition: TKMGoalCondition; aStatus: TKMGoalStatus; aPlayerIndex: TKMHandID);
 var
   G: TKMMapGoalInfo;
 begin
@@ -455,13 +455,13 @@ begin
 end;
 
 
-function TKMapInfo.FullPath(const aExt: string): string;
+function TKMMapInfo.FullPath(const aExt: string): string;
 begin
   Result := fDir + fName + aExt;
 end;
 
 
-function TKMapInfo.HumanUsableLocs: TKMHandIDArray;
+function TKMMapInfo.HumanUsableLocs: TKMHandIDArray;
 var
   I: Integer;
 begin
@@ -475,7 +475,7 @@ begin
 end;
 
 
-function TKMapInfo.AIUsableLocs: TKMHandIDArray;
+function TKMMapInfo.AIUsableLocs: TKMHandIDArray;
 var
   I: Integer;
 begin
@@ -489,7 +489,7 @@ begin
 end;
 
 
-function TKMapInfo.AdvancedAIUsableLocs: TKMHandIDArray;
+function TKMMapInfo.AdvancedAIUsableLocs: TKMHandIDArray;
 var
   I: Integer;
 begin
@@ -503,7 +503,7 @@ begin
 end;
 
 
-function TKMapInfo.IsOnlyAILoc(aLoc: Integer): Boolean;
+function TKMMapInfo.IsOnlyAILoc(aLoc: Integer): Boolean;
 begin
   Assert(aLoc < MAX_HANDS);
   Result := not CanBeHuman[aLoc] and (CanBeAI[aLoc] or CanBeAdvancedAI[aLoc]);
@@ -512,7 +512,7 @@ end;
 
 // Color is fixed for loc if map has BlockColorSelection attribute
 // or if its only AI loc, no available for player
-function TKMapInfo.FixedLocsColors: TKMCardinalArray;
+function TKMMapInfo.FixedLocsColors: TKMCardinalArray;
 var
   I: Integer;
 begin
@@ -527,7 +527,7 @@ end;
 
 
 // Colors that are used by only AI locs
-function TKMapInfo.AIOnlyLocsColors: TKMCardinalArray;
+function TKMMapInfo.AIOnlyLocsColors: TKMCardinalArray;
 var
   I, K: Integer;
 begin
@@ -550,13 +550,13 @@ begin
 end;
 
 
-function TKMapInfo.LocationName(aIndex: TKMHandID): string;
+function TKMMapInfo.LocationName(aIndex: TKMHandID): string;
 begin
   Result := gResTexts[TX_LOBBY_LOCATION_X, [aIndex + 1]];
 end;
 
 
-function TKMapInfo.GetSize: TKMMapSize;
+function TKMMapInfo.GetSize: TKMMapSize;
 begin
   if fSize = msNone then
     fSize := MapSizeIndex(MapSizeX, MapSizeY);
@@ -564,7 +564,7 @@ begin
 end;
 
 
-function TKMapInfo.GetSizeText: string;
+function TKMMapInfo.GetSizeText: string;
 begin
   if fSizeText = '' then
     fSizeText := MapSizeText(MapSizeX, MapSizeY);
@@ -572,7 +572,7 @@ begin
 end;
 
 
-function TKMapInfo.GetTxtInfo: TKMMapTxtInfo;
+function TKMMapInfo.GetTxtInfo: TKMMapTxtInfo;
 begin
   if Self = nil then Exit(nil);
 
@@ -581,7 +581,7 @@ end;
 
 
 //Load additional information for map that is not in main SP list
-procedure TKMapInfo.LoadExtra;
+procedure TKMMapInfo.LoadExtra;
 var
   datFile: string;
   missionParser: TKMMissionParserInfo;
@@ -611,7 +611,7 @@ begin
 end;
 
 
-procedure TKMapInfo.ResetInfo;
+procedure TKMMapInfo.ResetInfo;
 var
   I, K: Integer;
 begin
@@ -637,7 +637,7 @@ begin
 end;
 
 
-procedure TKMapInfo.LoadFromStreamObj(aStreamObj: TObject; const aPath: UnicodeString);
+procedure TKMMapInfo.LoadFromStreamObj(aStreamObj: TObject; const aPath: UnicodeString);
 var
   S: TKMemoryStream;
 begin
@@ -666,7 +666,7 @@ begin
 end;
 
 
-procedure TKMapInfo.LoadFromFile(const aPath: UnicodeString);
+procedure TKMMapInfo.LoadFromFile(const aPath: UnicodeString);
 var
   S: TKMemoryStream;
   errorStr: UnicodeString;
@@ -686,7 +686,7 @@ begin
 end;
 
 
-procedure TKMapInfo.SaveToStreamObj(aStreamObj: TObject; const aPath: UnicodeString);
+procedure TKMMapInfo.SaveToStreamObj(aStreamObj: TObject; const aPath: UnicodeString);
 var
   S: TKMemoryStream;
 begin
@@ -698,7 +698,7 @@ begin
 end;
 
 
-procedure TKMapInfo.SaveToFile(const aPath: UnicodeString);
+procedure TKMMapInfo.SaveToFile(const aPath: UnicodeString);
 var
   S: TKMemoryStream;
   errorStr: UnicodeString;
@@ -731,7 +731,7 @@ begin
 end;
 
 
-function TKMapInfo.IsValid: Boolean;
+function TKMMapInfo.IsValid: Boolean;
 begin
   Result := (LocCount > 0) and
             FileExists(fDir + fName + '.dat') and
@@ -739,7 +739,7 @@ begin
 end;
 
 
-function TKMapInfo.HumanPlayerCount: Byte;
+function TKMMapInfo.HumanPlayerCount: Byte;
 var
   I: Integer;
 begin
@@ -750,7 +750,7 @@ begin
 end;
 
 
-function TKMapInfo.HumanPlayerCountMP: Byte;
+function TKMMapInfo.HumanPlayerCountMP: Byte;
 begin
   Result := HumanPlayerCount;
   //Enforce MP limit
@@ -759,7 +759,7 @@ begin
 end;
 
 
-function TKMapInfo.AIOnlyLocCount: Byte;
+function TKMMapInfo.AIOnlyLocCount: Byte;
 var
   I: Integer;
 begin
@@ -772,7 +772,7 @@ end;
 
 //Returns True if map filename ends with this map actual CRC hash.
 //Used to check if downloaded map was changed
-function TKMapInfo.IsFilenameEndMatchHash: Boolean;
+function TKMMapInfo.IsFilenameEndMatchHash: Boolean;
 begin
   Result := (Length(fName) > 9)
     and (fName[Length(Name)-8] = '_')
@@ -780,43 +780,43 @@ begin
 end;
 
 
-function TKMapInfo.IsPlayableForSP: Boolean;
+function TKMMapInfo.IsPlayableForSP: Boolean;
 begin
   Result := IsSinglePlayer or TxtInfo.IsPlayableAsSP;
 end;
 
 
-function TKMapInfo.IsSinglePlayer: Boolean;
+function TKMMapInfo.IsSinglePlayer: Boolean;
 begin
   Result := fKind = mkSP;
 end;
 
 
-function TKMapInfo.IsMultiPlayer: Boolean;
+function TKMMapInfo.IsMultiPlayer: Boolean;
 begin
   Result := fKind = mkMP;
 end;
 
 
-function TKMapInfo.IsDownloaded: Boolean;
+function TKMMapInfo.IsDownloaded: Boolean;
 begin
   Result := fKind = mkDL;
 end;
 
 
-function TKMapInfo.IsNormalMission: Boolean;
+function TKMMapInfo.IsNormalMission: Boolean;
 begin
   Result := MissionMode = mmNormal;
 end;
 
 
-function TKMapInfo.IsTacticMission: Boolean;
+function TKMMapInfo.IsTacticMission: Boolean;
 begin
   Result := MissionMode = mmTactic;
 end;
 
 
-function TKMapInfo.FileNameWithoutHash: UnicodeString;
+function TKMMapInfo.FileNameWithoutHash: UnicodeString;
 begin
   if (fKind = mkDL) and IsFilenameEndMatchHash then
     Result := LeftStr(Name, Length(Name)-9)
@@ -825,7 +825,7 @@ begin
 end;
 
 
-function TKMapInfo.DetermineReadmeFilePath: String;
+function TKMMapInfo.DetermineReadmeFilePath: String;
 begin
   if Self = nil then Exit('');
   
@@ -835,13 +835,13 @@ begin
 end;
 
 
-function TKMapInfo.GetFavouriteMapPic: TKMPic;
+function TKMMapInfo.GetFavouriteMapPic: TKMPic;
 begin
   Result := MakePic(rxGuiMain, IfThen(IsFavourite, 77, 85), True);
 end;
 
 
-function TKMapInfo.GetCanBeHumanCount: Byte;
+function TKMMapInfo.GetCanBeHumanCount: Byte;
 var
   I: Integer;
 begin
@@ -852,7 +852,7 @@ begin
 end;
 
 
-function TKMapInfo.GetCanBeOnlyHumanCount: Byte;
+function TKMMapInfo.GetCanBeOnlyHumanCount: Byte;
 var
   I: Integer;
 begin
@@ -863,13 +863,13 @@ begin
 end;
 
 
-function TKMapInfo.GetDimentions: TKMPoint;
+function TKMMapInfo.GetDimentions: TKMPoint;
 begin
   Result := KMPoint(MapSizeX, MapSizeY);
 end;
 
 
-function TKMapInfo.GetCanBeAICount: Byte;
+function TKMMapInfo.GetCanBeAICount: Byte;
 var
   I: Integer;
 begin
@@ -880,7 +880,7 @@ begin
 end;
 
 
-function TKMapInfo.GetCanBeOnlyAICount: Byte;
+function TKMMapInfo.GetCanBeOnlyAICount: Byte;
 var
   I: Integer;
 begin
@@ -891,7 +891,7 @@ begin
 end;
 
 
-function TKMapInfo.GetCanBeHumanAndAICount: Byte;
+function TKMMapInfo.GetCanBeHumanAndAICount: Byte;
 var
   I: Integer;
 begin
@@ -902,7 +902,7 @@ begin
 end;
 
 
-function TKMapInfo.HasDifferentAITypes: Boolean;
+function TKMMapInfo.HasDifferentAITypes: Boolean;
 var
   I: Integer;
 begin
@@ -913,7 +913,7 @@ begin
 end;
 
 
-function TKMapInfo.GetBigDesc: UnicodeString;
+function TKMMapInfo.GetBigDesc: UnicodeString;
 var
   CSP: TKMCustomScriptParam;
 begin
@@ -937,19 +937,19 @@ begin
 end;
 
 
-procedure TKMapInfo.SetBigDesc(const aBigDesc: UnicodeString);
+procedure TKMMapInfo.SetBigDesc(const aBigDesc: UnicodeString);
 begin
   TxtInfo.BigDesc := aBigDesc;
 end;
 
 
-function TKMapInfo.HasReadme: Boolean;
+function TKMMapInfo.HasReadme: Boolean;
 begin
   Result := DetermineReadmeFilePath <> '';
 end;
 
 
-function TKMapInfo.GetLobbyColor: Cardinal;
+function TKMMapInfo.GetLobbyColor: Cardinal;
 begin
   if fKind = mkDL then
     Result := $FFC9BBBB
@@ -1313,7 +1313,7 @@ begin
 end;
 
 
-function TKMapsCollection.GetMap(aIndex: Integer): TKMapInfo;
+function TKMapsCollection.GetMap(aIndex: Integer): TKMMapInfo;
 begin
   //No point locking/unlocking here since we return a TObject that could be modified/freed
   //by another thread before the caller uses it.
@@ -1424,10 +1424,10 @@ end;
 //For private access, where CS is managed by the caller
 procedure TKMapsCollection.DoSort;
 var
-  tempMaps: array of TKMapInfo;
+  tempMaps: array of TKMMapInfo;
 
   //Return True if items should be exchanged
-  function Compare(A, B: TKMapInfo): Boolean;
+  function Compare(A, B: TKMMapInfo): Boolean;
   begin
     Result := False; //By default everything remains in place
     case fSortMethod of
@@ -1551,7 +1551,7 @@ begin
 end;
 
 
-procedure TKMapsCollection.MapAdd(aMap: TKMapInfo);
+procedure TKMapsCollection.MapAdd(aMap: TKMMapInfo);
 begin
   Lock;
   try
@@ -1773,9 +1773,9 @@ end;
 
 procedure TTMapsScanner.ProcessMap(const aPath: UnicodeString; aKind: TKMMapKind);
 var
-  map: TKMapInfo;
+  map: TKMMapInfo;
 begin
-  map := TKMapInfo.Create(aPath, False, aKind);
+  map := TKMMapInfo.Create(aPath, False, aKind);
 
   if SLOW_MAP_SCAN then
     Sleep(50);
@@ -1800,12 +1800,12 @@ end;
 
 procedure TTMapsCacheUpdater.ProcessMap(const aPath: UnicodeString; aKind: TKMMapKind);
 var
-  map: TKMapInfo;
+  map: TKMMapInfo;
 begin
   //Simply creating the TKMapInfo updates the .mi cache file
   if not fIsStopped then
   begin
-    map := TKMapInfo.Create(aPath, False, aKind);
+    map := TKMMapInfo.Create(aPath, False, aKind);
     map.Free;
   end;
 end;

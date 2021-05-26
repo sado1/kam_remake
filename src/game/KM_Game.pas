@@ -510,7 +510,7 @@ var
   playerEnabled: TKMHandEnabledArray;
   parser: TKMMissionParserStandard;
   parserPlayerInfo: TKMMissionParserInfo;
-  mapInfo: TKMapInfo;
+  mapInfo: TKMMapInfo;
   campaignData: TKMemoryStream;
   campaignDataTypeFile: UnicodeString;
 begin
@@ -576,7 +576,7 @@ begin
               // otherwise it will hard or even impossible to clean it afterwards
               // (f.e. its impossible to clean wine/corn fields, since terrain under them will be overwritten)
               begin
-                mapInfo := TKMapInfo.CreateDummy;
+                mapInfo := TKMMapInfo.CreateDummy;
                 parserPlayerInfo := TKMMissionParserInfo.Create;
                 try
                   parserPlayerInfo.LoadMission(aMissionFullFilePath, mapInfo, pmPlayers);
@@ -989,14 +989,14 @@ end;
 
 procedure TKMGame.RecalcMapCRC;
 var
-  mapInfo: TKMapInfo;
+  mapInfo: TKMMapInfo;
   mapKind: TKMMapKind;
   fileDirName: string;
 begin
   fileDirName := GetFileDirName(ExtractFileDir(fParams.MissionFullFilePath));
   if DetermineMapKind(fileDirName, mapKind) then
   begin
-    mapInfo := TKMapInfo.Create(GetFileDirName(fParams.MissionFullFilePath), True, mapKind); //Force recreate map CRC
+    mapInfo := TKMMapInfo.Create(GetFileDirName(fParams.MissionFullFilePath), True, mapKind); //Force recreate map CRC
     try
       fParams.MapFullCRC := mapInfo.CRC;
       fParams.MapSimpleCRC := mapInfo.MapAndDatCRC;
@@ -1486,7 +1486,7 @@ procedure TKMGame.SaveMapEditor(const aPathName: UnicodeString; const aInsetRect
 var
   I: Integer;
   missionParser: TKMMissionParserStandard;
-  mapInfo: TKMapInfo;
+  mapInfo: TKMMapInfo;
   mapKind: TKMMapKind;
   mapPath: string;
   oldSimpleCRC, oldFullCRC: Cardinal;
@@ -1531,7 +1531,7 @@ begin
   if DetermineMapKind(GetFileDirName(ExtractFileDir(aPathName)), mapKind) then
   begin
     // Update GameSettings for saved maps positions in list on MapEd menu
-    mapInfo := TKMapInfo.Create(GetFileDirName(aPathName), True, mapKind); //Force recreate map CRC
+    mapInfo := TKMMapInfo.Create(GetFileDirName(aPathName), True, mapKind); //Force recreate map CRC
     try
       case mapInfo.Kind of
         mkSP:       begin

@@ -31,7 +31,7 @@ type
     fDifficulty: TKMMissionDifficulty;
     fAIType: TKMAIType;
 
-    function GetPlayerLoc(aMap: TKMapInfo): TKMHandID;
+    function GetPlayerLoc(aMap: TKMMapInfo): TKMHandID;
     function GetPanelHalf: Integer;
 
     procedure Create_SingleMap(aParent: TKMPanel);
@@ -141,7 +141,7 @@ begin
 end;
 
 
-function TKMMenuSingleMap.GetPlayerLoc(aMap: TKMapInfo): TKMHandID;
+function TKMMenuSingleMap.GetPlayerLoc(aMap: TKMMapInfo): TKMHandID;
 begin
   Result := IfThen(fSingleLoc = -1, aMap.DefaultHuman, fSingleLoc);
 end;
@@ -659,7 +659,7 @@ const
 var
   I, J, K: Integer;
   mapId: Integer;
-  M: TKMapInfo;
+  M: TKMMapInfo;
   G: TKMMapGoalInfo;
 begin
   if (fSingleLoc = -1) or not ColumnBox_Maps.IsSelected then Exit;
@@ -752,7 +752,7 @@ end;
 procedure TKMMenuSingleMap.StartClick(Sender: TObject);
 var
   I: Integer;
-  map: TKMapInfo;
+  map: TKMMapInfo;
 begin
   //This is also called by double clicking on a list entry
   if not Button_Start.Enabled then

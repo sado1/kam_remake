@@ -15,12 +15,12 @@ type
 
   TKMMissionParserInfo = class(TKMMissionParserCommon)
   private
-    fMapInfo: TKMapInfo; //We are given this structure and asked to fill it
+    fMapInfo: TKMMapInfo; //We are given this structure and asked to fill it
     procedure LoadMapInfo(const aFileName: string);
   protected
     procedure ProcessCommand(CommandType: TKMCommandType; P: array of Integer; const TextParam: AnsiString = ''); override;
   public
-    procedure LoadMission(const aFileName: string; aMapInfo: TKMapInfo; aParsing: TKMMissionParsing); reintroduce;
+    procedure LoadMission(const aFileName: string; aMapInfo: TKMMapInfo; aParsing: TKMMissionParsing); reintroduce;
   end;
 
 
@@ -32,7 +32,7 @@ uses
 
 
 { TMissionParserInfo }
-procedure TKMMissionParserInfo.LoadMission(const aFileName: string; aMapInfo: TKMapInfo; aParsing: TKMMissionParsing);
+procedure TKMMissionParserInfo.LoadMission(const aFileName: string; aMapInfo: TKMMapInfo; aParsing: TKMMissionParsing);
 const
   COMMANDS_BASE: array [0..3] of AnsiString = (
     '!SET_MAX_PLAYER', '!SET_TACTIC', '!SET_CURR_PLAYER', '!SET_USER_PLAYER');

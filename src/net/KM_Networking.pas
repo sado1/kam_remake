@@ -54,7 +54,7 @@ type
     fMutedPlayersList: TList<Integer>; // List of ServerIndexes of muted players.
     fMyPlayerCurrentFPS: Cardinal;
 
-    fMapInfo: TKMapInfo; // Everything related to selected map
+    fMapInfo: TKMMapInfo; // Everything related to selected map
     fSaveInfo: TKMSaveInfo;
     fSelectGameKind: TKMNetGameKind;
     fNetGameOptions: TKMGameOptions;
@@ -109,7 +109,7 @@ type
     function GetPacketsSent(aKind: TKMessageKind): Cardinal;
 
     procedure WriteInfoToJoinRoom(aM: TKMemoryStream);
-    function GetMapInfo: TKMapInfo;
+    function GetMapInfo: TKMMapInfo;
   public
     OnJoinSucc: TEvent;               // We were allowed to join
     OnJoinFail: TUnicodeStringEvent;  // We were refused to join
@@ -215,7 +215,7 @@ type
     procedure AnnounceGameInfo(aGameTime: TDateTime; aMap: UnicodeString);
 
     //Gameplay
-    property MapInfo: TKMapInfo read GetMapInfo;
+    property MapInfo: TKMMapInfo read GetMapInfo;
     property SaveInfo: TKMSaveInfo read fSaveInfo;
     property NetGameOptions: TKMGameOptions read fNetGameOptions;
     property SelectGameKind: TKMNetGameKind read fSelectGameKind;
@@ -624,7 +624,7 @@ begin
   FreeAndNil(fSaveInfo);
 
   //Strict scanning to force CRC recalculation
-  fMapInfo := TKMapInfo.Create(aName, True, aMapKind);
+  fMapInfo := TKMMapInfo.Create(aName, True, aMapKind);
 
   if not fMapInfo.IsValid then
   begin
@@ -961,7 +961,7 @@ var
   humanUsableLocs, aiUsableLocs, advancedAIUsableLocs: TKMHandIDArray;
   errorMessage: UnicodeString;
   M: TKMemoryStream;
-  checkMapInfo: TKMapInfo;
+  checkMapInfo: TKMMapInfo;
   fixedLocsColors: TKMCardinalArray;
 begin
   Assert(IsHost, 'Only host can start the game');
@@ -979,7 +979,7 @@ begin
                 advancedAIUsableLocs := fMapInfo.AdvancedAIUsableLocs;
                 fixedLocsColors := fMapInfo.FixedLocsColors;
                 //Check that map's hash hasn't changed
-                checkMapInfo := TKMapInfo.Create(fMapInfo.Name, True, fMapInfo.Kind);
+                checkMapInfo := TKMMapInfo.Create(fMapInfo.Name, True, fMapInfo.Kind);
                 try
                   if checkMapInfo.CRC <> fMapInfo.CRC then
                   begin
@@ -2034,12 +2034,12 @@ begin
                 M.Read(tmpCardinal); //CRC
                 //Try to load map from MP or DL folder
                 FreeAndNil(fMapInfo);
-                fMapInfo := TKMapInfo.Create(tmpStringW, True, mkMP);
+                fMapInfo := TKMMapInfo.Create(tmpStringW, True, mkMP);
                 if not fMapInfo.IsValid or (fMapInfo.CRC <> tmpCardinal) then
                 begin
                   //Append CRC to map name
                   tmpStringW := tmpStringW + '_' + IntToHex(Integer(tmpCardinal), 8);
-                  fMapInfo := TKMapInfo.Create(tmpStringW, True, mkDL);
+                  fMapInfo := TKMMapInfo.Create(tmpStringW, True, mkDL);
                   if not fMapInfo.IsValid or (fMapInfo.CRC <> tmpCardinal) then
                     FreeAndNil(fMapInfo);
                 end;
@@ -2731,7 +2731,7 @@ begin
 end;
 
 
-function TKMNetworking.GetMapInfo: TKMapInfo;
+function TKMNetworking.GetMapInfo: TKMMapInfo;
 begin
   if Self = nil then Exit(nil);
 

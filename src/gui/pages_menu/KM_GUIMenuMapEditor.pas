@@ -473,7 +473,7 @@ end;
 procedure TKMMenuMapEditor.LoadClick(Sender: TObject);
 var
   mapEdSizeX, mapEdSizeY: Integer;
-  map: TKMapInfo;
+  map: TKMMapInfo;
 begin
   NewMapEnsureNumEdValues;
   fMaps.Lock;
@@ -1035,7 +1035,7 @@ procedure TKMMenuMapEditor.UpdateMapInfo(aID: Integer = -1);
   end;
 
 var
-  map: TKMapInfo;
+  map: TKMMapInfo;
   labelHeight: Integer;
 begin
   if aID <> -1 then
