@@ -3,11 +3,8 @@ unit KM_Projectiles;
 interface
 uses
   KM_Units, KM_Houses,
-  KM_CommonClasses, KM_Points;
+  KM_CommonClasses, KM_CommonGameTypes, KM_Points;
 
-
-type
-  TKMProjectileType = (ptArrow, ptBolt, ptSlingRock, ptTowerRock); {ptBallistaRock, }
 
 const //Corresponding indices in units.rx //ptArrow, ptBolt are unused
   ProjectileBounds: array [TKMProjectileType, 1..2] of word = ((0,0), (0,0), (0,0), (4186,4190));

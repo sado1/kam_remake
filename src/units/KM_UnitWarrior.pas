@@ -4,7 +4,7 @@ interface
 uses
   Classes, SysUtils, KromUtils, Math,
   KM_CommonClasses, KM_Defaults, KM_Points,
-  KM_Houses, KM_Terrain, KM_Units, KM_Projectiles;
+  KM_Houses, KM_Terrain, KM_Units, KM_CommonGameTypes;
 
 
 type

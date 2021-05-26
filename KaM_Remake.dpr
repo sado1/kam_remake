@@ -49,6 +49,7 @@ uses
   KM_CommonClasses in 'src\common\KM_CommonClasses.pas',
   KM_CommonClassesExt in 'src\common\KM_CommonClassesExt.pas',
   KM_CommonExceptions in 'src\common\KM_CommonExceptions.pas',
+  KM_CommonGameTypes in 'src\common\KM_CommonGameTypes.pas',
   KM_CommonTypes in 'src\common\KM_CommonTypes.pas',
   KM_Defaults in 'src\common\KM_Defaults.pas',
   KM_Entity in 'src\common\KM_Entity.pas',

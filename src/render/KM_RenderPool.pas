@@ -7,7 +7,7 @@ uses
   dglOpenGL, SysUtils, KromOGLUtils, KromUtils, Math,
   KM_Defaults, KM_CommonTypes, KM_CommonClasses, KM_Pics, KM_Points, KM_Render, KM_Viewport,
   KM_RenderTerrain, KM_ResHouses, KM_ResSprites, KM_Units,
-  KM_Houses, KM_Terrain, KM_Projectiles, KM_RenderDebug,
+  KM_Houses, KM_Terrain, KM_CommonGameTypes, KM_RenderDebug,
   KM_ResTypes;
 
 type
@@ -161,6 +161,7 @@ uses
   KM_Hand, KM_UnitGroup, KM_CommonUtils,
   KM_GameParams, KM_Utils, KM_ResTileset, KM_DevPerfLog, KM_DevPerfLogTypes,
   KM_HandTypes,
+  KM_Projectiles,
   KM_TerrainTypes,
   KM_HandEntity;
 
