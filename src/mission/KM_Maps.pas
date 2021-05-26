@@ -292,17 +292,18 @@ end;
 constructor TKMapInfo.Create(const aDir, aMapName: string; aStrictParsing: Boolean; aMapKind: TKMMapKind = mkUnknown);
 
   function GetLIBXCRC(const aSearchFile: UnicodeString): Cardinal;
-  var SearchRec: TSearchRec;
+  var
+    searchRec: TSearchRec;
   begin
     Result := 0;
-    FindFirst(aSearchFile, faAnyFile - faDirectory, SearchRec);
+    FindFirst(aSearchFile, faAnyFile - faDirectory, searchRec);
     try
       repeat
-        if (SearchRec.Name <> '.') and (SearchRec.Name <> '..') then
-          Result := Result xor Adler32CRC(ExtractFilePath(aSearchFile) + SearchRec.Name);
-      until (FindNext(SearchRec) <> 0);
+        if (searchRec.Name <> '.') and (searchRec.Name <> '..') then
+          Result := Result xor Adler32CRC(ExtractFilePath(aSearchFile) + searchRec.Name);
+      until (FindNext(searchRec) <> 0);
     finally
-      FindClose(SearchRec);
+      FindClose(searchRec);
     end;
   end;
 
