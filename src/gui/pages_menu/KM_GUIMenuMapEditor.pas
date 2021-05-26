@@ -151,7 +151,7 @@ begin
   OnEscKeyDown := EscKeyDown;
   OnKeyDown := KeyDown;
 
-  fMaps := TKMapsCollection.Create([mfSP, mfMP, mfDL], smByNameDesc, True);
+  fMaps := TKMapsCollection.Create([mkSP, mkMP, mkDL], smByNameDesc, True);
 
   fMinimap := TKMMinimap.Create(True, True);
 
@@ -608,7 +608,7 @@ begin
 
   Button_Load.Enabled := ColumnBox_MapEd.IsSelected;
   Button_MapDelete.Enabled := ColumnBox_MapEd.IsSelected;
-  Button_MapMove.Visible := ColumnBox_MapEd.IsSelected and (fMaps[ColumnBox_MapEd.SelectedItemTag].MapFolder = mfDL);
+  Button_MapMove.Visible := ColumnBox_MapEd.IsSelected and fMaps[ColumnBox_MapEd.SelectedItemTag].IsDownloaded;
   Button_MapRename.Enabled := ColumnBox_MapEd.IsSelected;
   Button_MapRename.Visible := not Button_MapMove.Visible;
 
@@ -1009,7 +1009,7 @@ begin
     Exit;
   end;
 
-  saveName := TKMapsCollection.FullPath(Trim(FilenameEdit_MapMove.Text), '.dat', mfMP);
+  saveName := TKMapsCollection.FullPath(Trim(FilenameEdit_MapMove.Text), '.dat', mkMP);
 
   if (Sender = FilenameEdit_MapMove) or (Sender = Button_MapMove) then
   begin
@@ -1111,7 +1111,7 @@ begin
   //Move selected map
   if Sender = Button_MapMoveConfirm then
   begin
-    fMaps.MoveMap(ColumnBox_MapEd.SelectedItemTag, FilenameEdit_MapMove.Text, mfMP);
+    fMaps.MoveMap(ColumnBox_MapEd.SelectedItemTag, FilenameEdit_MapMove.Text, mkMP);
     SetSelectedMapInfo(fSelectedMapInfo.CRC, FilenameEdit_MapMove.Text); // Update Name of selected item in list
     ColumnBox_MapEd.Focus;
     ListUpdate;

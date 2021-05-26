@@ -248,7 +248,7 @@ begin
   fLastTimeResetBans := 0;
   fLastTimeAskReady := 0;
 
-  fMapsMP := TKMapsCollection.Create([mfMP, mfDL], smByNameDesc, True);
+  fMapsMP := TKMapsCollection.Create([mkMP, mkDL], smByNameDesc, True);
   fSavesMP := TKMSavesCollection.Create;
 
   fDropBoxPlayers_LastItemIndex := -1;
@@ -2085,7 +2085,7 @@ begin
 
   fMapsMP.Lock;
   try
-    gNetworking.SelectMap(MAPS_RMG_NAME, mfMP);
+    gNetworking.SelectMap(MAPS_RMG_NAME, mkMP);
   finally
     fMapsMP.Unlock;
   end;
@@ -2471,7 +2471,7 @@ begin
   begin
     fMapsMP.Lock;
     try
-      gNetworking.SelectMap(fMapsMP[I].FileName, fMapsMP[I].MapFolder);
+      gNetworking.SelectMap(fMapsMP[I].FileName, fMapsMP[I].Kind);
     finally
       fMapsMP.Unlock;
     end;

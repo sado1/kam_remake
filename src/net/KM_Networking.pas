@@ -18,8 +18,8 @@ uses
   ;
 
 type
-  TMapStartEvent = procedure (const aData: UnicodeString; aMapFolder: TKMapFolder; aCRC: Cardinal; Spectating: Boolean;
-                              aMissionDifficulty: TKMMissionDifficulty) of object;
+  TKMMapStartEvent = procedure (const aData: UnicodeString; aMapKind: TKMMapKind; aCRC: Cardinal; Spectating: Boolean;
+                                aMissionDifficulty: TKMMissionDifficulty) of object;
 
   // Should handle message exchange and routing, interacting with UI
   TKMNetworking = class
@@ -126,7 +126,7 @@ type
     OnGameOptions: TEvent;                // Game options updated
     OnMapName: TUnicodeStringEvent;       // Map name updated
     OnMapMissing: TUnicodeStringBoolEvent;// Map missing
-    OnStartMap: TMapStartEvent;           // Start the game
+    OnStartMap: TKMMapStartEvent;           // Start the game
     OnStartSave: TGameStartEvent;         // Load the game
     OnDoReturnToLobby: TEvent;
     OnAnnounceReturnToLobby: TEvent;      // Sends GIC command to create synchronised save file
@@ -181,7 +181,7 @@ type
     procedure MatchPlayersToSave(aPlayerID: Integer = -1);
     procedure AbortAllTransfers;
     procedure SelectNoMap(const aErrorMessage: UnicodeString);
-    procedure SelectMap(const aName: UnicodeString; aMapFolder: TKMapFolder; aSendPlayerSetup: Boolean = False);
+    procedure SelectMap(const aName: UnicodeString; aMapKind: TKMMapKind; aSendPlayerSetup: Boolean = False);
     procedure SelectSave(const aName: UnicodeString);
     procedure SelectLoc(aIndex: Integer; aPlayerIndex: Integer);
     procedure SelectTeam(aIndex: Integer; aPlayerIndex: Integer);
@@ -617,14 +617,14 @@ end;
 
 //Tell other players which map we will be using
 //Players will reset their starting locations and "Ready" status on their own
-procedure TKMNetworking.SelectMap(const aName: UnicodeString; aMapFolder: TKMapFolder; aSendPlayerSetup: Boolean = False);
+procedure TKMNetworking.SelectMap(const aName: UnicodeString; aMapKind: TKMMapKind; aSendPlayerSetup: Boolean = False);
 begin
   Assert(IsHost, 'Only host can select maps');
   FreeAndNil(fMapInfo);
   FreeAndNil(fSaveInfo);
 
   //Strict scanning to force CRC recalculation
-  fMapInfo := TKMapInfo.Create(aName, True, aMapFolder);
+  fMapInfo := TKMapInfo.Create(aName, True, aMapKind);
 
   if not fMapInfo.IsValid then
   begin
@@ -633,7 +633,7 @@ begin
     Exit;
   end;
 
-  if (aMapFolder = mfDL) and not fMapInfo.IsFilenameEndMatchHash then
+  if (aMapKind = mkDL) and not fMapInfo.IsFilenameEndMatchHash then
   begin
     SelectNoMap(gResTexts[TX_NET_ERR_DL_MAP_FILE_CHANGED]);
     PostLocalMessage(gResTexts[TX_NET_ERR_DL_MAP_FILE_CHANGED_MSG], csSystem);
@@ -979,7 +979,7 @@ begin
                 advancedAIUsableLocs := fMapInfo.AdvancedAIUsableLocs;
                 fixedLocsColors := fMapInfo.FixedLocsColors;
                 //Check that map's hash hasn't changed
-                checkMapInfo := TKMapInfo.Create(fMapInfo.FileName, True, fMapInfo.MapFolder);
+                checkMapInfo := TKMapInfo.Create(fMapInfo.FileName, True, fMapInfo.Kind);
                 try
                   if checkMapInfo.CRC <> fMapInfo.CRC then
                   begin
@@ -2034,12 +2034,12 @@ begin
                 M.Read(tmpCardinal); //CRC
                 //Try to load map from MP or DL folder
                 FreeAndNil(fMapInfo);
-                fMapInfo := TKMapInfo.Create(tmpStringW, True, mfMP);
+                fMapInfo := TKMapInfo.Create(tmpStringW, True, mkMP);
                 if not fMapInfo.IsValid or (fMapInfo.CRC <> tmpCardinal) then
                 begin
                   //Append CRC to map name
                   tmpStringW := tmpStringW + '_' + IntToHex(Integer(tmpCardinal), 8);
-                  fMapInfo := TKMapInfo.Create(tmpStringW, True, mfDL);
+                  fMapInfo := TKMapInfo.Create(tmpStringW, True, mkDL);
                   if not fMapInfo.IsValid or (fMapInfo.CRC <> tmpCardinal) then
                     FreeAndNil(fMapInfo);
                 end;
@@ -2504,7 +2504,7 @@ begin
   fIgnorePings := -1; //Ignore all pings until we have finished loading
 
   case fSelectGameKind of
-    ngkMap:  OnStartMap(fMapInfo.FileNameWithoutHash, fMapInfo.MapFolder, fMapInfo.CRC, MyNetPlayer.IsSpectator,
+    ngkMap:  OnStartMap(fMapInfo.FileNameWithoutHash, fMapInfo.Kind, fMapInfo.CRC, MyNetPlayer.IsSpectator,
                          fNetGameOptions.MissionDifficulty);
     ngkSave: OnStartSave(fSaveInfo.FileName, MyNetPlayer.IsSpectator);
   else
@@ -2775,7 +2775,7 @@ begin
               begin
                 PacketSend(NET_ADDRESS_OTHERS, mkFileSendStarted, aSenderIndex);
                 SetDownloadlInProgress(aSenderIndex, True);
-                if not fFileSenderManager.StartNewSend(kttMap, MapInfo.FileName, MapInfo.MapFolder, aSenderIndex) then
+                if not fFileSenderManager.StartNewSend(kttMap, MapInfo.FileName, MapInfo.Kind, aSenderIndex) then
                   AbortSend;
               end 
               else
@@ -2786,7 +2786,7 @@ begin
               begin
                 PacketSend(NET_ADDRESS_OTHERS, mkFileSendStarted, aSenderIndex);
                 SetDownloadlInProgress(aSenderIndex, True);
-                if not fFileSenderManager.StartNewSend(kttSave, SaveInfo.FileName, mfDL, aSenderIndex) then    
+                if not fFileSenderManager.StartNewSend(kttSave, SaveInfo.FileName, mkDL, aSenderIndex) then
                   AbortSend;
               end
               else

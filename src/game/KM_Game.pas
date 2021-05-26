@@ -990,13 +990,13 @@ end;
 procedure TKMGame.RecalcMapCRC;
 var
   mapInfo: TKMapInfo;
-  mapFolder: TKMapFolder;
+  mapKind: TKMMapKind;
   fileDirName: string;
 begin
   fileDirName := GetFileDirName(ExtractFileDir(fParams.MissionFullFilePath));
-  if DetermineMapFolder(fileDirName, mapFolder) then
+  if DetermineMapKind(fileDirName, mapKind) then
   begin
-    mapInfo := TKMapInfo.Create(GetFileDirName(fParams.MissionFullFilePath), True, mapFolder); //Force recreate map CRC
+    mapInfo := TKMapInfo.Create(GetFileDirName(fParams.MissionFullFilePath), True, mapKind); //Force recreate map CRC
     try
       fParams.MapFullCRC := mapInfo.CRC;
       fParams.MapSimpleCRC := mapInfo.MapAndDatCRC;
@@ -1487,7 +1487,7 @@ var
   I: Integer;
   missionParser: TKMMissionParserStandard;
   mapInfo: TKMapInfo;
-  mapFolder: TKMapFolder;
+  mapKind: TKMMapKind;
   mapPath: string;
   oldSimpleCRC, oldFullCRC: Cardinal;
 begin
@@ -1528,13 +1528,13 @@ begin
   FreeAndNil(missionParser);
 
   // Update GameSettings for saved maps positions in list on MapEd menu
-  if DetermineMapFolder(GetFileDirName(ExtractFileDir(aPathName)), mapFolder) then
+  if DetermineMapKind(GetFileDirName(ExtractFileDir(aPathName)), mapKind) then
   begin
     // Update GameSettings for saved maps positions in list on MapEd menu
-    mapInfo := TKMapInfo.Create(GetFileDirName(aPathName), True, mapFolder); //Force recreate map CRC
+    mapInfo := TKMapInfo.Create(GetFileDirName(aPathName), True, mapKind); //Force recreate map CRC
     try
-      case mapInfo.MapFolder of
-        mfSP:       begin
+      case mapInfo.Kind of
+        mkSP:       begin
                       gGameSettings.MenuMapEdSPMapCRC := mapInfo.MapAndDatCRC;
                       gGameSettings.MenuMapEdMapType := 0;
                       // Update saved SP game list saved selected map position CRC if we resave this map
@@ -1547,12 +1547,12 @@ begin
                       if oldSimpleCRC = gGameSettings.MenuSPSpecialMapCRC then
                         gGameSettings.MenuSPSpecialMapCRC := mapInfo.MapAndDatCRC;
                     end;
-        mfMP:       begin
+        mkMP:       begin
                       gGameSettings.MenuMapEdMPMapCRC := mapInfo.MapAndDatCRC;
                       gGameSettings.MenuMapEdMPMapName := mapInfo.FileName;
                       gGameSettings.MenuMapEdMapType := 1;
                     end;
-        mfDL:       begin
+        mkDL:       begin
                       gGameSettings.MenuMapEdDLMapCRC := mapInfo.MapAndDatCRC;
                       gGameSettings.MenuMapEdMapType := 2;
                     end;
