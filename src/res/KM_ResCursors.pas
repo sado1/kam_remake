@@ -12,11 +12,8 @@ type
   TKMResCursors = class
   private
     fRXData: PRXData; // Store pointer to record instead of duplicating it
-    function GetCursor: TKMCursor;
-    procedure SetCursor(Value: TKMCursor);
   public
     procedure MakeCursors(aSprites: TKMSpritePack);
-    property Cursor: TKMCursor read GetCursor write SetCursor;
     function CursorOffset(aDir: TKMDirection): TKMPoint;
     function CursorTexID(aDir: TKMDirection): Integer;
   end;
@@ -27,9 +24,6 @@ uses
   KM_Defaults;
 
 const
-  // Screen.Cursors[0] is used by System default cursor
-  COUNT_OFFSET = 1;
-
   // Indexes of cursor images in GUI.RX
   CURSOR_SPRITE_INDEX: array [TKMCursor] of Word = (
     1, 452, 457, 460, 450, 453, 449,
@@ -47,22 +41,6 @@ const
 
 
 { TKMResCursors }
-function TKMResCursors.GetCursor: TKMCursor;
-begin
-  if InRange(Screen.Cursor - COUNT_OFFSET, Ord(Low(TKMCursor)), Ord(High(TKMCursor))) then
-    Result := TKMCursor(Screen.Cursor - COUNT_OFFSET)
-  else
-    Result := kmcDefault;
-end;
-
-
-procedure TKMResCursors.SetCursor(Value: TKMCursor);
-begin
-  if SKIP_LOADING_CURSOR then Exit;
-  Screen.Cursor := Ord(Value) + COUNT_OFFSET;
-end;
-
-
 procedure TKMResCursors.MakeCursors(aSprites: TKMSpritePack);
 const
   SF = 17; //Full width/height of a scroll cursor
@@ -138,7 +116,7 @@ begin
     //no longer valid (replaced by other bitmap or freed). Hence issues with transparency.
     {$IFDEF MSWindows}
       iconInfo.hbmMask  := bm2.Handle;
-      Screen.Cursors[Byte(C) + COUNT_OFFSET] := CreateIconIndirect(iconInfo);
+      Screen.Cursors[Byte(C) + CURSOR_CNT_OFFSET] := CreateIconIndirect(iconInfo);
     {$ENDIF}
     {$IFDEF Unix}
       bm2.Mask(clWhite);
@@ -162,10 +140,10 @@ begin
                LR_LOADFROMFILE);
                
     if h <> 0 then
-      Screen.Cursors[Byte(CUSTOM_CURSORS[I]) + COUNT_OFFSET] := h
+      Screen.Cursors[Byte(CUSTOM_CURSORS[I]) + CURSOR_CNT_OFFSET] := h
     else
       // Use default cursor, in case of missing cursor file
-      Screen.Cursors[Byte(CUSTOM_CURSORS[I]) + COUNT_OFFSET] := Screen.Cursors[Byte(kmcDefault) + COUNT_OFFSET];
+      Screen.Cursors[Byte(CUSTOM_CURSORS[I]) + CURSOR_CNT_OFFSET] := Screen.Cursors[Byte(kmcDefault) + CURSOR_CNT_OFFSET];
   end;
 end;
 

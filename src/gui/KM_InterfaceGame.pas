@@ -192,8 +192,13 @@ const
 implementation
 uses
   StrUtils, KromUtils,
-  KM_Main, KM_Terrain, KM_RenderPool, KM_Resource, KM_ResCursors, KM_ResKeys, KM_HandsCollection, KM_GameParams,
-  KM_RenderUI, KM_CommonUtils, KM_Pics, KM_GameSettings, KM_Log;
+  KM_Main, KM_System, 
+  KM_GameParams, KM_GameSettings,
+  KM_HandsCollection, 
+  KM_Terrain, 
+  KM_RenderPool, KM_RenderUI, KM_Pics,  
+  KM_Resource, KM_ResKeys, 
+  KM_CommonUtils, KM_Log;
 
 
 { TKMUserInterfaceGame }
@@ -375,7 +380,7 @@ begin
    fDragScrollingCursorPos.Y := gCursor.Pixel.Y;
    fDragScrollingViewportPos.X := fViewport.Position.X;
    fDragScrollingViewportPos.Y := fViewport.Position.Y;
-   gRes.Cursors.Cursor := kmcDrag;
+   gSystem.Cursor := kmcDrag;
   end
   else
     aHandled := False;
@@ -419,7 +424,7 @@ end;
 procedure TKMUserInterfaceGame.ResetDragScrolling;
 begin
   fDragScrolling := False;
-  gRes.Cursors.Cursor := kmcDefault; //Reset cursor
+  gSystem.Cursor := kmcDefault; //Reset cursor
   gMain.ApplyCursorRestriction;
 end;
 

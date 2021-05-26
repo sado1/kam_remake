@@ -159,9 +159,10 @@ type
 
 implementation
 uses
+  KM_System, 
   KM_HandsCollection, KM_Hand, KM_HandTypes,
   KM_ResTexts, KM_Game, KM_GameParams, KM_Cursor,
-  KM_Resource, KM_ResHouses, KM_TerrainDeposits, KM_ResCursors, KM_ResKeys, KM_GameApp,
+  KM_Resource, KM_ResHouses, KM_TerrainDeposits, KM_ResKeys, KM_GameApp,
   KM_AIDefensePos, KM_RenderUI, KM_ResFonts, KM_CommonClasses, KM_UnitWarrior,
   KM_Utils,
   KM_UnitGroupTypes,
@@ -751,7 +752,7 @@ begin
   aHandled := DoResetCursorMode or aHandled;
   //Reset drag object fields
   ResetDragObject;
-  gRes.Cursors.Cursor := kmcDefault;
+  gSystem.Cursor := kmcDefault;
 
   gGame.MapEditor.Reset;
 end;
@@ -1076,7 +1077,7 @@ begin
       ResetDragObject;
       Exit;
     end else begin
-      gRes.Cursors.Cursor := kmcDrag;
+      gSystem.Cursor := kmcDrag;
       fDragingObject := True;
     end;
   end;
@@ -1086,8 +1087,8 @@ begin
   if fMyControls.CtrlOver <> nil then
   begin
     //kmcEdit and kmcDragUp are handled by Controls.MouseMove (it will reset them when required)
-    if not fViewport.Scrolling and not (gRes.Cursors.Cursor in [kmcEdit,kmcDragUp]) then
-      gRes.Cursors.Cursor := kmcDefault;
+    if not fViewport.Scrolling and not (gSystem.Cursor in [kmcEdit,kmcDragUp]) then
+      gSystem.Cursor := kmcDefault;
     gCursor.SState := []; //Don't do real-time elevate when the mouse is over controls, only terrain
     Exit;
   end
@@ -1134,27 +1135,27 @@ begin
 
   if gCursor.Mode = cmPaintBucket then
   begin
-    gRes.Cursors.Cursor := kmcPaintBucket;
+    gSystem.Cursor := kmcPaintBucket;
     Exit;
   end;
 
   if fDragingObject and (ssLeft in Shift) then
   begin
     //Cursor can be reset to default, when moved to menu panel while dragging, so set it to drag cursor again
-    gRes.Cursors.Cursor := kmcDrag;
+    gSystem.Cursor := kmcDrag;
     MoveObjectToCursorCell(fDragObject);
   end else
   if gCursor.Mode = cmNone then
   begin
     marker := gGame.MapEditor.HitTest(gCursor.Cell.X, gCursor.Cell.Y);
     if marker.MarkerType <> mmtNone then
-      gRes.Cursors.Cursor := kmcInfo
+      gSystem.Cursor := kmcInfo
     else
     if gMySpectator.HitTestCursor <> nil then
-      gRes.Cursors.Cursor := kmcInfo
+      gSystem.Cursor := kmcInfo
     else
     if not fViewport.Scrolling then
-      gRes.Cursors.Cursor := kmcDefault;
+      gSystem.Cursor := kmcDefault;
   end;
 
   Update_Label_Coordinates;
@@ -1356,8 +1357,8 @@ begin
   fDragObjMousePosStart := KMPOINT_ZERO;
   fDragObject := nil;
 
-  if gRes.Cursors.Cursor = kmcDrag then
-    gRes.Cursors.Cursor := kmcDefault;
+  if gSystem.Cursor = kmcDrag then
+    gSystem.Cursor := kmcDefault;
 
   if gCursor.Mode = cmHouses then
     DoResetCursorMode;

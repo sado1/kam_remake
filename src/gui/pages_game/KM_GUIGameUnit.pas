@@ -72,6 +72,7 @@ type
 implementation
 uses
   Math,
+  KM_System, 
   KM_Game, KM_GameInputProcess,
   KM_HandsCollection, KM_Hand, KM_HandSpectator, KM_HandTypes,
   KM_InterfaceGame, KM_RenderUI,
@@ -507,8 +508,8 @@ end;
 procedure TKMGUIGameUnit.Army_HideJoinMenu(Sender: TObject);
 begin
   fJoiningGroups := False;
-  if gRes.Cursors.Cursor in [kmcJoinYes, kmcJoinNo] then // Do not override non-joining cursors
-    gRes.Cursors.Cursor := kmcDefault; // In case this is run with keyboard shortcut, mouse move won't happen
+  if gSystem.Cursor in [kmcJoinYes, kmcJoinNo] then // Do not override non-joining cursors
+    gSystem.Cursor := kmcDefault; // In case this is run with keyboard shortcut, mouse move won't happen
   Panel_Army_JoinGroups.Hide;
   if gMySpectator.Selected is TKMUnitWarrior then
     Panel_Army.Show;

@@ -37,7 +37,8 @@ type
 implementation
 uses
   KM_RenderUI,
-  KM_ResCursors, KM_ResTexts, KM_Resource, KM_ResFonts, KM_ResLocales, KM_ResTypes,
+  KM_System, 
+  KM_ResTexts, KM_Resource, KM_ResFonts, KM_ResLocales, KM_ResTypes,
   KM_GameSettings, KM_CommonUtils;
 
 
@@ -118,9 +119,9 @@ begin
   // No need to redraw all UI, as we do on the Options page, since there is no info rendered on the credits page yet
   if gRes.Fonts.LoadLevel <> fllFull then
   begin
-    gRes.Cursors.Cursor := kmcAnimatedDirSelector;
+    gSystem.Cursor := kmcAnimatedDirSelector;
     gRes.LoadLocaleFonts(gGameSettings.Locale, True);
-    gRes.Cursors.Cursor := kmcDefault;
+    gSystem.Cursor := kmcDefault;
   end;
 
   //Set initial position

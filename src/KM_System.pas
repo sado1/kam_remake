@@ -3,6 +3,7 @@ unit KM_System;
 interface
 uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
+  KM_ResTypes,
   KM_Defaults;
 
 
@@ -14,8 +15,13 @@ type
     fFormMainHandle: HWND;
     fFlashing: Boolean;
     {$ENDIF}{$ENDIF}
+
+    function GetCursor: TKMCursor;
+    procedure SetCursor(Value: TKMCursor);
   public
     constructor Create(aFormMainHandle: HWND);
+
+    property Cursor: TKMCursor read GetCursor write SetCursor;
 
     procedure FlashingStart;
     procedure FlashingStop;
@@ -28,6 +34,7 @@ var
 
 implementation
 uses
+  Math,
   Vcl.Forms;
 
 
@@ -37,6 +44,22 @@ begin
   inherited Create;
 
   fFormMainHandle := aFormMainHandle;
+end;
+
+
+function TKMSystem.GetCursor: TKMCursor;
+begin
+  if InRange(Screen.Cursor - CURSOR_CNT_OFFSET, Ord(Low(TKMCursor)), Ord(High(TKMCursor))) then
+    Result := TKMCursor(Screen.Cursor - CURSOR_CNT_OFFSET)
+  else
+    Result := kmcDefault;
+end;
+
+
+procedure TKMSystem.SetCursor(Value: TKMCursor);
+begin
+  if SKIP_LOADING_CURSOR then Exit;
+  Screen.Cursor := Ord(Value) + CURSOR_CNT_OFFSET;
 end;
 
 
