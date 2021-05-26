@@ -73,9 +73,9 @@ const
 
   CUSTOM_CUR_FILENAME: array[0..CUSTOM_CUR_CNT-1] of UnicodeString = ('cur1.ani');
 var
-  KMC: TKMCursor;
-  I, sx,sy,x,y: Integer;
-  bm,bm2: TBitmap;
+  C: TKMCursor;
+  I, sx, sy, x, y: Integer;
+  bm, bm2: TBitmap;
   iconInfo: TIconInfo;
   Px: PRGBQuad;
   h : THandle;
@@ -88,10 +88,10 @@ begin
   bm  := TBitmap.Create; bm.HandleType  := bmDIB; bm.PixelFormat  := pf32bit;
   bm2 := TBitmap.Create; bm2.HandleType := bmDIB; bm2.PixelFormat := pf32bit;
 
-  for KMC := Low(TKMCursor) to kmcPaintBucket do
+  for C := Low(TKMCursor) to kmcPaintBucket do
   begin
     // Special case for invisible cursor
-    if KMC = kmcInvisible then
+    if C = kmcInvisible then
     begin
       bm.Width  := 1; bm.Height  := 1;
       bm2.Width := 1; bm2.Height := 1;
@@ -101,30 +101,30 @@ begin
     end
     else
     begin
-      sx := fRXData.Size[CURSOR_SPRITE_INDEX[KMC]].X;
-      sy := fRXData.Size[CURSOR_SPRITE_INDEX[KMC]].Y;
+      sx := fRXData.Size[CURSOR_SPRITE_INDEX[C]].X;
+      sy := fRXData.Size[CURSOR_SPRITE_INDEX[C]].Y;
       bm.Width  := sx; bm.Height  := sy;
       bm2.Width := sx; bm2.Height := sy;
 
-      for y:=0 to sy-1 do
+      for y := 0 to sy - 1 do
       begin
         Px := bm.ScanLine[y];
-        for x:=0 to sx-1 do
+        for x := 0 to sx - 1 do
         begin
-          if fRXData.RGBA[CURSOR_SPRITE_INDEX[KMC],y*sx+x] and $FF000000 = 0 then
+          if fRXData.RGBA[CURSOR_SPRITE_INDEX[C],y*sx+x] and $FF000000 = 0 then
             Px.rgbReserved := $00
           else
             Px.rgbReserved := $FF;
           // Here we have BGR, not RGB
-          Px.rgbBlue := (fRXData.RGBA[CURSOR_SPRITE_INDEX[KMC],y*sx+x] and $FF0000) shr 16;
-          Px.rgbGreen := (fRXData.RGBA[CURSOR_SPRITE_INDEX[KMC],y*sx+x] and $FF00) shr 8;
-          Px.rgbRed := fRXData.RGBA[CURSOR_SPRITE_INDEX[KMC],y*sx+x] and $FF;
-          inc(Px);
+          Px.rgbBlue  := (fRXData.RGBA[CURSOR_SPRITE_INDEX[C],y*sx+x] and $FF0000) shr 16;
+          Px.rgbGreen := (fRXData.RGBA[CURSOR_SPRITE_INDEX[C],y*sx+x] and $FF00) shr 8;
+          Px.rgbRed   :=  fRXData.RGBA[CURSOR_SPRITE_INDEX[C],y*sx+x] and $FF;
+          Inc(Px);
         end;
       end;
       //Load hotspot offsets from RX file, adding the manual offsets (normally 0)
-      iconInfo.xHotspot := Math.max(-fRXData.Pivot[CURSOR_SPRITE_INDEX[KMC]].x+CURSOR_OFFSET_X[KMC],0);
-      iconInfo.yHotspot := Math.max(-fRXData.Pivot[CURSOR_SPRITE_INDEX[KMC]].y+CURSOR_OFFSET_Y[KMC],0);
+      iconInfo.xHotspot := Max(-fRXData.Pivot[CURSOR_SPRITE_INDEX[C]].x + CURSOR_OFFSET_X[C], 0);
+      iconInfo.yHotspot := Max(-fRXData.Pivot[CURSOR_SPRITE_INDEX[C]].y + CURSOR_OFFSET_Y[C], 0);
     end;
 
     //Release the Mask, otherwise there is black rect in Lazarus
@@ -138,7 +138,7 @@ begin
     //no longer valid (replaced by other bitmap or freed). Hence issues with transparency.
     {$IFDEF MSWindows}
       iconInfo.hbmMask  := bm2.Handle;
-      Screen.Cursors[Byte(KMC) + COUNT_OFFSET] := CreateIconIndirect(iconInfo);
+      Screen.Cursors[Byte(C) + COUNT_OFFSET] := CreateIconIndirect(iconInfo);
     {$ENDIF}
     {$IFDEF Unix}
       bm2.Mask(clWhite);
