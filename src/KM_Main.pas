@@ -21,9 +21,6 @@ type
 
     fRenderSchedule, fTickSchedule, fUpdateStateSchedule: Cardinal;
     fLastRenderTime, fOldFrameTimes, fFrameCount: Cardinal;
-    {$IFNDEF FPC}
-    fFlashing: Boolean;
-    {$ENDIF}
     fMutex: THandle;
 
     fGameAppSettings: TKMGameAppSettings;
@@ -73,8 +70,6 @@ type
     function ClientRect(aPixelsCntToReduce: Integer = 0): TRect;
     function ClientToScreen(aPoint: TPoint): TPoint;
     function ReinitRender(aReturnToOptions: Boolean): Boolean;
-    procedure FlashingStart;
-    procedure FlashingStop;
 
     property FPSString: String read fFPSString;
 
@@ -105,6 +100,7 @@ uses
   {$IFDEF USE_MAD_EXCEPT} KM_Exceptions, {$ENDIF}
   KromUtils, KM_FileIO,
   KM_GameApp, KM_VclHelpers,
+  KM_System,
   KM_Log, KM_CommonUtils, KM_Defaults, KM_Points, KM_DevPerfLog,
   KM_CommonExceptions,
   KromShellUtils, KM_MapTypes;
@@ -299,6 +295,8 @@ begin
   Application.ProcessMessages;
   fFormLoading.Hide;
 
+  gSystem := TKMSystem.Create(fFormMain.Handle);
+
   fFormMain.AfterFormCreated;
 end;
 
@@ -360,6 +358,7 @@ end;
 procedure TKMMain.Stop(Sender: TObject);
 begin
   try
+    FreeThenNil(gSystem);
     //Reset the resolution
     FreeThenNil(fResolutions);
     FreeThenNil(fMainSettings);
@@ -410,7 +409,7 @@ end;
 procedure TKMMain.DoActivate(Sender: TObject);
 begin
   if Application.Active then
-    FlashingStop;
+    gSystem.FlashingStop;
 end;
 
 
@@ -685,48 +684,6 @@ begin
     CloseHandle(fMutex);
     fMutex := 0;
   {$ENDIF}
-end;
-
-
-procedure TKMMain.FlashingStart;
-{$IFNDEF FPC}{$IFDEF MSWindows}
-var
-  flashInfo: TFlashWInfo;
-{$ENDIF}{$ENDIF}
-begin
-  {$IFNDEF FPC}{$IFDEF MSWindows}
-  if (GetForegroundWindow <> gMain.FormMain.Handle) then
-  begin
-    flashInfo.cbSize := 20;
-    flashInfo.hwnd := Application.Handle;
-    flashInfo.dwflags := FLASHW_ALL;
-    flashInfo.ucount := 5; // Flash 5 times
-    flashInfo.dwtimeout := 0; // Use default cursor blink rate
-    fFlashing := True;
-    FlashWindowEx(flashInfo);
-  end
-  {$ENDIF}{$ENDIF}
-end;
-
-
-procedure TKMMain.FlashingStop;
-{$IFNDEF FPC}{$IFDEF MSWindows}
-var
-  flashInfo: TFlashWInfo;
-{$ENDIF}{$ENDIF}
-begin
-  {$IFNDEF FPC}{$IFDEF MSWindows}
-  if fFlashing then
-  begin
-    flashInfo.cbSize := 20;
-    flashInfo.hwnd := Application.Handle;
-    flashInfo.dwflags := FLASHW_STOP;
-    flashInfo.ucount := 0;
-    flashInfo.dwtimeout := 0;
-    fFlashing := False;
-    FlashWindowEx(flashInfo);
-  end
-  {$ENDIF}{$ENDIF}
 end;
 
 

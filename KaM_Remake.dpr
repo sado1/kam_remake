@@ -201,6 +201,7 @@ uses
   KM_Log in 'src\KM_Log.pas',
   KM_Main in 'src\KM_Main.pas',
   KM_Minimap in 'src\KM_Minimap.pas',
+  KM_System in 'src\KM_System.pas',
   
   KM_Campaigns in 'src\mission\KM_Campaigns.pas',
   KM_CampaignTypes in 'src\mission\KM_CampaignTypes.pas',
