@@ -101,8 +101,9 @@ type
     function GetBigDesc: UnicodeString;
     procedure SetBigDesc(const aBigDesc: UnicodeString);
     function GetTxtInfo: TKMMapTxtInfo;
-    constructor Create; overload;
     function GetDimentions: TKMPoint;
+
+    constructor Create; overload;
   public
     MapSizeX, MapSizeY: Integer;
     MissionMode: TKMissionMode;
@@ -118,10 +119,10 @@ type
     FlagColors: array [0..MAX_HANDS-1] of Cardinal;
     IsFavourite: Boolean;
 
+    class function CreateDummy: TKMapInfo;
+
     constructor Create(const aFolder: string; aStrictParsing: Boolean; aMapKind: TKMMapKind); overload;
     destructor Destroy; override;
-
-    class function CreateDummy: TKMapInfo;
 
     procedure AddGoal(aType: TKMGoalType; aPlayer: TKMHandID; aCondition: TKMGoalCondition; aStatus: TKMGoalStatus; aPlayerIndex: TKMHandID);
     procedure LoadExtra;
@@ -273,6 +274,7 @@ begin
 end;
 
 
+// Dummy instance, used to fill fields
 constructor TKMapInfo.Create;
 begin
   inherited;
