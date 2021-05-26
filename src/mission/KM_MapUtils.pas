@@ -45,7 +45,8 @@ function DetermineMapFolder(const aFolderName: UnicodeString; out aMapFolder: TK
 var
   F: TKMapFolder;
 begin
-  for F := Low(TKMapFolder) to High(TKMapFolder) do
+  // no need to test mfUnknown
+  for F := Succ(Low(TKMapFolder)) to High(TKMapFolder) do
     if aFolderName = MAP_FOLDER[F] then
     begin
       aMapFolder := F;
