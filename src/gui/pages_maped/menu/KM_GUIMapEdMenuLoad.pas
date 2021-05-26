@@ -48,9 +48,9 @@ begin
 
   fOnDone := aOnDone;
 
-  fMaps := TKMapsCollection.Create(mfSP);
-  fMapsMP := TKMapsCollection.Create(mfMP);
-  fMapsDL := TKMapsCollection.Create(mfDL);
+  fMaps := TKMapsCollection.Create(mkSP);
+  fMapsMP := TKMapsCollection.Create(mkMP);
+  fMapsDL := TKMapsCollection.Create(mkDL);
 
   Panel_Load := TKMPanel.Create(aParent,0,45,aParent.Width,aParent.Height - 45);
   Panel_Load.Anchors := [anLeft, anTop, anBottom];
@@ -105,7 +105,7 @@ begin
 
     mapName := ListBox_Load.Item[ListBox_Load.ItemIndex];
     isMulti := Radio_Load_MapType.ItemIndex <> 0;
-    gGameApp.NewMapEditor(TKMapsCollection.FullPath(mapName, '.dat', TKMapFolder(Radio_Load_MapType.ItemIndex + 1)), isMulti);
+    gGameApp.NewMapEditor(TKMapsCollection.FullPath(mapName, '.dat', TKMMapKind(Radio_Load_MapType.ItemIndex + 1)), isMulti);
   end
   else
   if Sender = Button_LoadCancel then

@@ -7,8 +7,8 @@ uses
   function GuessMPPathRel(const aName, aExt: string; aCRC: Cardinal): string;
   function GuessMissionPathRel(const aMissionFileRelSP, aMissionName: string; aMapFullCRC: Cardinal; aIsMultiplayer: Boolean): string;
 
-  function DetermineMapFolder(const aFolderName: UnicodeString; out aMapFolder: TKMapFolder): Boolean;
-  function GetMapFolderType(aIsMultiplayer: Boolean): TKMapFolder;
+  function DetermineMapKind(const aFolderName: UnicodeString; out aMapKind: TKMMapKind): Boolean;
+  function GetMapKind(aIsMultiplayer: Boolean): TKMMapKind;
 
   function GetGoalDescription(aPlayer1, aPlayer2: TKMHandID; aGoalType: TKMGoalType; aGoalCondition: TKMGoalCondition;
                               aColPlayer1, aColPlayer2, aColTxt, aColBld: Cardinal): string;
@@ -23,9 +23,9 @@ var
   S: UnicodeString;
 begin
   S := aName + '_' + IntToHex(aCRC, 8);
-  Result := MAP_FOLDER[mfDL] + PathDelim + S + PathDelim + S + aExt;
+  Result := MAP_FOLDER_NAME[mkDL] + PathDelim + S + PathDelim + S + aExt;
   if not FileExists(ExeDir + Result) then
-    Result := MAP_FOLDER[mfMP] + PathDelim + aName + PathDelim + aName + aExt;
+    Result := MAP_FOLDER_NAME[mkMP] + PathDelim + aName + PathDelim + aName + aExt;
 end;
 
 
@@ -41,28 +41,27 @@ end;
 
 //Try to determine TMapFolder for specified aFolderName
 //Returns true when succeeded
-function DetermineMapFolder(const aFolderName: UnicodeString; out aMapFolder: TKMapFolder): Boolean;
+function DetermineMapKind(const aFolderName: UnicodeString; out aMapKind: TKMMapKind): Boolean;
 var
-  F: TKMapFolder;
+  MK: TKMMapKind;
 begin
-  // no need to test mfUnknown
-  for F := Succ(Low(TKMapFolder)) to High(TKMapFolder) do
-    if aFolderName = MAP_FOLDER[F] then
-    begin
-      aMapFolder := F;
-      Result := True;
-      Exit;
-    end;
   Result := False;
+  // no need to test mkUnknown
+  for MK := Succ(Low(TKMMapKind)) to High(TKMMapKind) do
+    if aFolderName = MAP_FOLDER_NAME[MK] then
+    begin
+      aMapKind := MK;
+      Exit(True);
+    end;
 end;
 
 
-function GetMapFolderType(aIsMultiplayer: Boolean): TKMapFolder;
+function GetMapKind(aIsMultiplayer: Boolean): TKMMapKind;
 begin
   if aIsMultiplayer then
-    Result := mfMP
+    Result := mkMP
   else
-    Result := mfSP;
+    Result := mkSP;
 end;
 
 

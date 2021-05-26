@@ -115,7 +115,7 @@ begin
   fOnPageChange := aOnPageChange;
   OnEscKeyDown := BackClick;
 
-  fMaps := TKMapsCollection.Create([mfSP, mfMP, mfDL]);
+  fMaps := TKMapsCollection.Create([mkSP, mkMP, mkDL]);
   fMinimap := TKMMinimap.Create(True, True);
 
   Create_SingleMap(aParent);
@@ -363,9 +363,9 @@ begin
       if not fMaps[I].IsPlayableForSP then Continue;
 
       case Radio_MapType.ItemIndex of
-        0:  if not ((fMaps[I].MapFolder = mfSP) and fMaps[I].IsNormalMission and not fMaps[I].TxtInfo.IsSpecial) then
+        0:  if not (fMaps[I].IsSinglePlayer and fMaps[I].IsNormalMission and not fMaps[I].TxtInfo.IsSpecial) then
               Continue;
-        1:  if not ((fMaps[I].MapFolder <> mfSP) and fMaps[I].IsNormalMission and not fMaps[I].TxtInfo.IsSpecial) then
+        1:  if not (not fMaps[I].IsSinglePlayer and fMaps[I].IsNormalMission and not fMaps[I].TxtInfo.IsSpecial) then
               Continue;
         2:  if not (fMaps[I].IsTacticMission and not fMaps[I].TxtInfo.IsSpecial) then
               Continue;

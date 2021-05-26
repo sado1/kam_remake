@@ -673,7 +673,7 @@ end;
 procedure TKMMain.MapCacheUpdate;
 begin
   //Thread frees itself automatically
-  fMapCacheUpdater := TTMapsCacheUpdater.Create([mfSP, mfMP, mfDL]);
+  fMapCacheUpdater := TTMapsCacheUpdater.Create([mkSP, mkMP, mkDL]);
 end;
 
 

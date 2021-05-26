@@ -5,8 +5,8 @@ uses
   KM_Defaults, KM_CommonTypes, KM_ResTypes;
 
 type
-  TKMapFolder = (mfUnknown, mfSP, mfMP, mfDL);
-  TKMapFolderSet = set of TKMapFolder;
+  TKMMapKind = (mkUnknown, mkSP, mkMP, mkDL);
+  TKMMapKindSet = set of TKMMapKind;
 
   // Sketch of the goal and message displaying system used in KaM (from scripting point of view anyway)
   // This is very similar to that used in KaM and is quite flexable/expandable.
@@ -91,7 +91,7 @@ const
 
 
   //Map folder name by folder type. Containing single maps, for SP/MP/DL mode
-  MAP_FOLDER: array [TKMapFolder] of string = ('', MAPS_FOLDER_NAME, MAPS_MP_FOLDER_NAME, MAPS_DL_FOLDER_NAME);
+  MAP_FOLDER_NAME: array [TKMMapKind] of string = ('', MAPS_FOLDER_NAME, MAPS_MP_FOLDER_NAME, MAPS_DL_FOLDER_NAME);
 
   CUSTOM_MAP_PARAM_DESCR_TX: array[TKMCustomScriptParam] of Integer = (TX_MAP_CUSTOM_PARAM_TH_TROOP_COST, TX_MAP_CUSTOM_PARAM_MARKET_PRICE);
 
