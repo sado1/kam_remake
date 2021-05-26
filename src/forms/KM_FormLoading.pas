@@ -2,8 +2,9 @@ unit KM_FormLoading;
 {$I KaM_Remake.inc}
 interface
 uses
+  Classes,
   {$IFDEF FPC} LResources, {$ENDIF}
-  Forms, Controls, ComCtrls, ExtCtrls, StdCtrls, Graphics, Classes;
+  Vcl.Forms, Vcl.Controls, Vcl.ComCtrls, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Graphics;
 
 type
   TFormLoading = class(TForm)

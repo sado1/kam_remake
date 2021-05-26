@@ -166,11 +166,13 @@ var
 
 implementation
 uses
-  Classes, Dialogs, SysUtils, TypInfo, Math, KromUtils,
+  SysUtils, Classes, TypInfo, Math,
+  Vcl.Dialogs,
   {$IFDEF WDC} UITypes, {$ENDIF}
   {$IFNDEF NO_OGG_SOUND}
   Codec, VorbisFile,
   {$ENDIF}
+  KromUtils,
   KM_Game, KM_Resource, KM_HandsCollection, KM_RenderAux,
   KM_Log, KM_CommonUtils;
 

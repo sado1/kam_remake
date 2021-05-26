@@ -148,7 +148,9 @@ var
 implementation
 
 uses
-  Windows, Classes, Dialogs;
+  {$IFDEF MSWindows} Windows, {$ENDIF}
+  {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
+  Classes, Vcl.Dialogs;
 
 {$IFDEF VIDEOS}
 

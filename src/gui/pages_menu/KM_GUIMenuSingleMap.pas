@@ -2,7 +2,7 @@ unit KM_GUIMenuSingleMap;
 {$I KaM_Remake.inc}
 interface
 uses
-  Controls, Math, SysUtils,
+  Math, SysUtils,
   KM_Defaults,
   KM_Maps, KM_MapTypes, KM_GameTypes,
   KM_Controls, KM_Pics, KM_InterfaceDefaults, KM_InterfaceTypes, KM_Minimap, KM_CommonTypes;

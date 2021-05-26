@@ -2,7 +2,7 @@ unit KM_GUIMapEdTownOffence;
 {$I KaM_Remake.inc}
 interface
 uses
-   Classes, Controls, Math, SysUtils,
+   Classes, Math, SysUtils,
    KM_Controls,
    KM_InterfaceDefaults,
    KM_Points, KM_AIAttacks, KM_GUIMapEdTownAttackPopUp;

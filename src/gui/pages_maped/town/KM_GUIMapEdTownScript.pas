@@ -2,7 +2,7 @@ unit KM_GUIMapEdTownScript;
 {$I KaM_Remake.inc}
 interface
 uses
-   Classes, Controls, Math, StrUtils, SysUtils,
+   Classes, Math, StrUtils, SysUtils,
    KM_InterfaceDefaults,
    KM_Controls;
 

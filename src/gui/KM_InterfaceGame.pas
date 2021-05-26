@@ -4,7 +4,9 @@ interface
 uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLType, {$ENDIF}
-  SysUtils, Controls, Classes, Math, KM_Defaults, KM_Controls, KM_Points,
+  SysUtils, Classes, Math,
+  Vcl.Controls,
+  KM_Defaults, KM_Controls, KM_Points,
   KM_InterfaceDefaults, KM_CommonTypes, KM_AIDefensePos,
   KM_Cursor, KM_Render, KM_Minimap, KM_Viewport, KM_ResFonts,
   KM_ResTypes, KM_CommonClassesExt;

@@ -2,7 +2,9 @@ unit KM_ResFonts;
 {$I KaM_Remake.inc}
 interface
 uses
-  Classes, Graphics, Math, StrUtils, SysUtils, KM_IoPNG, KM_RenderTypes,
+  Classes, Math, StrUtils, SysUtils,
+  Vcl.Graphics,
+  KM_IoPNG, KM_RenderTypes,
   KM_CommonTypes, KM_Defaults, KM_Points, KM_ResPalettes
   {$IFDEF FPC}, zstream {$ENDIF}
   {$IFDEF WDC}, ZLib {$ENDIF};

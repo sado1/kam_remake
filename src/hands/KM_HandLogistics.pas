@@ -2,7 +2,6 @@ unit KM_HandLogistics;
 {$I KaM_Remake.inc}
 interface
 uses
-  ComCtrls,
   {$IF Defined(FPC) or Defined(VER230)}
   {$ELSE}
     {$DEFINE USE_HASH}

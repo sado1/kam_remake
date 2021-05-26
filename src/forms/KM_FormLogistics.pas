@@ -6,8 +6,8 @@ uses
   {$IFDEF MSWindows} Windows, Messages, {$ENDIF}
   {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
   {$IFDEF USE_VIRTUAL_TREEVIEW}VirtualTrees, {$ENDIF}
-  SysUtils, Variants, Classes, Graphics,
-  Controls, Forms, Dialogs, ComCtrls,
+  SysUtils, Variants, Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls,
   Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.CheckLst, Vcl.Samples.Spin, Vcl.Clipbrd;
 
 type

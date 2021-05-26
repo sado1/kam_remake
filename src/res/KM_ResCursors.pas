@@ -2,10 +2,10 @@ unit KM_ResCursors;
 {$I KaM_Remake.inc}
 interface
 uses
-  Classes, Forms,
+  Math, SysUtils, Classes,
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
-  Graphics, Math, SysUtils,
+  Vcl.Forms, Vcl.Graphics,
   KM_Points, KM_ResSprites;
 
 type

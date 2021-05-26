@@ -2,7 +2,7 @@ unit KM_GUIMapEdMission;
 {$I KaM_Remake.inc}
 interface
 uses
-   Classes, Controls, Math, SysUtils,
+   Classes, Math, SysUtils,
    KM_Controls,
    KM_InterfaceDefaults,
    KM_GUIMapEdMissionMode,

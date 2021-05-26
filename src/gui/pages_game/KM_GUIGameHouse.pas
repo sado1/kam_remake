@@ -2,7 +2,7 @@ unit KM_GUIGameHouse;
 {$I KaM_Remake.inc}
 interface
 uses
-  StrUtils, SysUtils, Math, Classes, Controls,
+  StrUtils, SysUtils, Math, Classes,
   KM_Controls, KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Pics,
   KM_InterfaceGame, KM_Houses, KM_HouseMarket, KM_ResWares;
 

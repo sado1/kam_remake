@@ -2,7 +2,8 @@ unit KM_GUIMapEdUnit;
 {$I KaM_Remake.inc}
 interface
 uses
-   Classes, Controls, KromUtils, Math, StrUtils, SysUtils,
+   Classes, KromUtils, Math, StrUtils, SysUtils,
+   Vcl.Controls,
    KM_Controls, KM_Defaults, KM_Pics, KM_Units, KM_UnitGroup,
    KM_Points, KM_InterfaceGame;
 

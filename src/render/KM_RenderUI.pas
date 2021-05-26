@@ -9,7 +9,8 @@ uses
   {$IFDEF FPC}
   Generics.Collections,
   {$ENDIF}
-  Controls, Math, KromOGLUtils, StrUtils, SysUtils,
+  Math, StrUtils, SysUtils,
+  KromOGLUtils,
   KM_Defaults, KM_CommonTypes, KM_Points, KM_Pics,
   KM_ResFonts, KM_ResSprites;
 

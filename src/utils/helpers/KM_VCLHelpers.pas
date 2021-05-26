@@ -2,7 +2,7 @@ unit KM_VclHelpers;
 {$I KaM_Remake.inc}
 interface
 uses
-  Vcl.StdCtrls, Vcl.Samples.Spin, ExtCtrls;
+  Vcl.StdCtrls, Vcl.Samples.Spin, Vcl.ExtCtrls;
 
 
 type
