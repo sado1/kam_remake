@@ -3,7 +3,7 @@ unit KM_Projectiles;
 interface
 uses
   KM_Units, KM_Houses,
-  KM_CommonClasses, KM_CommonGameTypes, KM_Points;
+  KM_CommonClasses, KM_CommonGameTypes, KM_Points, KM_RenderTypes;
 
 
 const //Corresponding indices in units.rx //ptArrow, ptBolt are unused
@@ -31,10 +31,15 @@ type
       fMaxLength: Single; //Maximum length the archer could have shot
     end;
 
+    fOnAddProjectileToRenderPool: TKMRenderPoolAddProjectileEvent;
+
     function AddItem(const aStart,aAim,aEnd: TKMPointF; aSpeed, aArc, aMaxLength: Single; aProjType: TKMProjectileType; aOwner: TKMUnit):word;
     procedure RemItem(aIndex: Integer);
     function ProjectileVisible(aIndex: Integer): Boolean;
+    procedure AddProjectileToRenderPool(aProj: TKMProjectileType; const aRenderPos, aTilePos: TKMPointF; aDir: TKMDirection; aFlight: Single); inline;
   public
+    constructor Create(aOnAddProjectileToRenderPool: TKMRenderPoolAddProjectileEvent);
+
     function AimTarget(const aStart: TKMPointF; aTarget: TKMUnit; aProjType: TKMProjectileType; aOwner: TKMUnit; aMaxRange,aMinRange: Single):word; overload;
     function AimTarget(const aStart: TKMPointF; aTarget: TKMHouse; aProjType: TKMProjectileType; aOwner: TKMUnit; aMaxRange,aMinRange: Single):word; overload;
 
@@ -54,7 +59,7 @@ var
 implementation
 uses
   Math, KromUtils,
-  KM_Terrain, KM_RenderPool, KM_RenderAux,
+  KM_Terrain, KM_RenderAux,
   KM_Resource, KM_ResSound, KM_ResUnits,
   KM_Hand, KM_HandsCollection, KM_Sound,
   KM_CommonUtils, KM_Defaults;
@@ -72,6 +77,14 @@ const
 
 
 { TKMProjectiles }
+constructor TKMProjectiles.Create(aOnAddProjectileToRenderPool: TKMRenderPoolAddProjectileEvent);
+begin
+  inherited Create;
+
+  fOnAddProjectileToRenderPool := aOnAddProjectileToRenderPool;
+end;
+
+
 procedure TKMProjectiles.RemItem(aIndex: Integer);
 begin
   gHands.CleanUpUnitPointer(fItems[aIndex].fOwner);
@@ -306,6 +319,13 @@ begin
 end;
 
 
+procedure TKMProjectiles.AddProjectileToRenderPool(aProj: TKMProjectileType; const aRenderPos, aTilePos: TKMPointF; aDir: TKMDirection; aFlight: Single);
+begin
+  if Assigned(fOnAddProjectileToRenderPool) then
+    fOnAddProjectileToRenderPool(aProj, aRenderPos, aTilePos, aDir, aFlight);
+end;
+
+
 //Test wherever projectile is visible (used by rocks thrown from Towers)
 function TKMProjectiles.ProjectileVisible(aIndex: Integer): Boolean;
 begin
@@ -345,7 +365,7 @@ begin
             //Looks better moved up, launches from the bow not feet and lands in target's body
             P.Y := P.Y - fItems[I].fArc * mixArc - 0.4;
             dir := KMGetDirection(fItems[I].fScreenStart, fItems[I].fScreenEnd);
-            gRenderPool.AddProjectile(fItems[I].fType, P, pTileBased, dir, mixValueMax);
+            AddProjectileToRenderPool(fItems[I].fType, P, pTileBased, dir, mixValueMax);
           end;
 
         ptTowerRock:
@@ -353,7 +373,7 @@ begin
             mixArc := cos(mixValue*pi/2); // 1 >> 0      Half-parabola
             //Looks better moved up, lands on the target's body not at his feet
             P.Y := P.Y - fItems[I].fArc * mixArc - 0.4;
-            gRenderPool.AddProjectile(fItems[I].fType, P, pTileBased, dirN, mixValue); //Direction will be ignored
+            AddProjectileToRenderPool(fItems[I].fType, P, pTileBased, dirN, mixValue); //Direction will be ignored
           end;
       end;
 

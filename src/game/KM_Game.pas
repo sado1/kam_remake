@@ -410,7 +410,7 @@ begin
     2:    fPathfinding := TPathfindingJPS.Create;
     else  fPathfinding := TPathfindingAStarOld.Create;
   end;
-  gProjectiles := TKMProjectiles.Create;
+  gProjectiles := TKMProjectiles.Create(gRenderPool.AddProjectile);
 
   if gRandomCheckLogger <> nil then
   begin
