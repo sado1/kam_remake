@@ -15,7 +15,6 @@ type
     fPaintVirtualGroups: Boolean; //Paint missing army memmbers
     fSepia: Boolean; //Less saturated display for menu
     fParser: TKMMissionParserPreview;
-    fMyTerrain: TKMTerrain;
     fAlerts: TKMAlerts;
 
     //We need to store map properties locally since Minimaps come from various
@@ -107,9 +106,7 @@ procedure TKMMinimap.LoadFromTerrain;
 var
   I: Integer;
 begin
-  fMyTerrain := gTerrain;
-
-  Resize(fMyTerrain.MapX - 1, fMyTerrain.MapY - 1);
+  Resize(gTerrain.MapX - 1, gTerrain.MapY - 1);
 
   for I := 0 to MAX_HANDS - 1 do
   begin
@@ -235,11 +232,11 @@ begin
       if fow = 0 then
         fBase[I*fMapX + K] := $FF000000
       else begin
-        landPtr := @fMyTerrain.Land^[MY,MX];
+        landPtr := @gTerrain.Land^[MY,MX];
         tileOwner := -1;
         if landPtr.TileOwner <> -1 then
         begin
-          if fMyTerrain.TileHasRoad(MX, MY)
+          if gTerrain.TileHasRoad(MX, MY)
             and (landPtr.IsUnit <> nil)
             and InRange(TKMUnit(landPtr.IsUnit).Owner, 0, MAX_HANDS) then
             tileOwner := TKMUnit(landPtr.IsUnit).Owner
@@ -248,8 +245,8 @@ begin
         end;
 
         if (tileOwner <> -1)
-          and not fMyTerrain.TileIsCornField(KMPoint(MX, MY)) //Do not show corn and wine on minimap
-          and not fMyTerrain.TileIsWineField(KMPoint(MX, MY)) then
+          and not gTerrain.TileIsCornField(KMPoint(MX, MY)) //Do not show corn and wine on minimap
+          and not gTerrain.TileIsWineField(KMPoint(MX, MY)) then
           fBase[I*fMapX + K] := gHands[tileOwner].GameFlagColor
         else
         begin
@@ -262,8 +259,8 @@ begin
           else
           begin
             ID := landPtr.BaseLayer.Terrain;
-            // Do not use fMyTerrain.Land^[].Light for borders of the map, because it is set to -1 for fading effect
-            // So assume fMyTerrain.Land^[].Light as medium value in this case
+            // Do not use gTerrain.Land^[].Light for borders of the map, because it is set to -1 for fading effect
+            // So assume gTerrain.Land^[].Light as medium value in this case
             if (I = 0) or (I = fMapY - 1) or (K = 0) or (K = fMapX - 1) then
               light := 255-fow
             else
