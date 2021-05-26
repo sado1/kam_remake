@@ -72,7 +72,7 @@ type
 
   TKMapInfo = class
   private
-    fPath: String;
+    fDir: String;
     fFileName: UnicodeString; //without extension
     fCRC: Cardinal;
     fDatCRC: Cardinal; //Used to speed up scanning
@@ -129,7 +129,7 @@ type
     property TxtInfo: TKMMapTxtInfo read GetTxtInfo;
     property BigDesc: UnicodeString read GetBigDesc write SetBigDesc;
     property InfoAmount: TKMMapInfoAmount read fInfoAmount;
-    property Path: string read fPath;
+    property Dir: string read fDir;
     property MapFolder: TKMapFolder read fMapFolder;
     property FileName: UnicodeString read fFileName;
     function FullPath(const aExt: string): string;
@@ -308,7 +308,7 @@ begin
   inherited Create;
 
   fTxtInfo := TKMMapTxtInfo.Create;
-  fPath := ExeDir + MAP_FOLDER[aMapFolder] + PathDelim + aFolder + PathDelim;
+  fDir := ExeDir + MAP_FOLDER[aMapFolder] + PathDelim + aFolder + PathDelim;
   fFileName := aFolder;
   fMapFolder := aMapFolder;
 
@@ -318,18 +318,18 @@ begin
     fCustomScriptParams[CSP].Data := '';
   end;
 
-  datFile := fPath + fFileName + '.dat';
-  mapFile := fPath + fFileName + '.map';
-  scriptFile := fPath + fFileName + EXT_FILE_SCRIPT_DOT; //Needed for CRC
-  txtFile := fPath + fFileName + '.txt'; //Needed for CRC
-  libxFiles := fPath + fFileName + '.*.libx'; //Needed for CRC
+  datFile := fDir + fFileName + '.dat';
+  mapFile := fDir + fFileName + '.map';
+  scriptFile := fDir + fFileName + EXT_FILE_SCRIPT_DOT; //Needed for CRC
+  txtFile := fDir + fFileName + '.txt'; //Needed for CRC
+  libxFiles := fDir + fFileName + '.*.libx'; //Needed for CRC
 
   fSizeText := ''; //Lazy initialization
 
   if not FileExists(datFile) then Exit;
 
   //Try loading info from cache, since map scanning is rather slow
-  LoadFromFile(fPath + fFileName + '.mi'); //Data will be empty if failed
+  LoadFromFile(fDir + fFileName + '.mi'); //Data will be empty if failed
 
   //We will scan map once again if anything has changed
   //In SP mode (non-strict) we check DAT CRC and version, that is enough
@@ -397,14 +397,14 @@ begin
     end;
 
     //Load additional text info
-    fTxtInfo.LoadTXTInfo(fPath + fFileName + '.txt');
+    fTxtInfo.LoadTXTInfo(fDir + fFileName + '.txt');
 
     if gGameSettings = nil // In case we are closing app and settings object is already destroyed
       then Exit;
 
     IsFavourite := gGameSettings.FavouriteMaps.Contains(fMapAndDatCRC);
 
-    SaveToFile(fPath + fFileName + '.mi'); //Save new cache file
+    SaveToFile(fDir + fFileName + '.mi'); //Save new cache file
   end;
 
   fInfoAmount := iaBase;
@@ -445,7 +445,7 @@ end;
 
 function TKMapInfo.FullPath(const aExt: string): string;
 begin
-  Result := fPath + fFileName + aExt;
+  Result := fDir + fFileName + aExt;
 end;
 
 
@@ -580,7 +580,7 @@ begin
   //First reset everything because e.g. CanBeHuman is assumed false by default and set true when we encounter SET_USER_PLAYER
   ResetInfo;
 
-  datFile := fPath + fFileName + '.dat';
+  datFile := fDir + fFileName + '.dat';
 
   missionParser := TKMMissionParserInfo.Create;
   try
@@ -593,7 +593,7 @@ begin
   if IsTacticMission then
     fTxtInfo.BlockPeacetime := True;
 
-  fTxtInfo.LoadTXTInfo(fPath + fFileName + '.txt');
+  fTxtInfo.LoadTXTInfo(fDir + fFileName + '.txt');
 
   fInfoAmount := iaExtra;
 end;
@@ -722,8 +722,8 @@ end;
 function TKMapInfo.IsValid: Boolean;
 begin
   Result := (LocCount > 0) and
-            FileExists(fPath + fFileName + '.dat') and
-            FileExists(fPath + fFileName + '.map');
+            FileExists(fDir + fFileName + '.dat') and
+            FileExists(fDir + fFileName + '.map');
 end;
 
 
@@ -819,7 +819,7 @@ begin
   
   Assert(gGameSettings <> nil, 'gGameSettings = nil!');
 
-  Result := GetLocalizedFilePath(fPath + fFileName, gResLocales.UserLocale, gResLocales.FallbackLocale, '.pdf');
+  Result := GetLocalizedFilePath(fDir + fFileName, gResLocales.UserLocale, gResLocales.FallbackLocale, '.pdf');
 end;
 
 
@@ -1364,7 +1364,7 @@ begin
    Lock;
    try
      Assert(InRange(aIndex, 0, fCount - 1));
-     KMDeleteFolder(fMaps[aIndex].Path);
+     KMDeleteFolder(fMaps[aIndex].Dir);
      fMaps[aIndex].Free;
      for I  := aIndex to fCount - 2 do
        fMaps[I] := fMaps[I + 1];
@@ -1393,9 +1393,9 @@ begin
   Lock;
   try
     dest := ExeDir + MAP_FOLDER[aMapFolder] + PathDelim + aName + PathDelim;
-    Assert(fMaps[aIndex].Path <> dest);
+    Assert(fMaps[aIndex].Dir <> dest);
 
-    KMMoveFolder(fMaps[aIndex].Path, dest);
+    KMMoveFolder(fMaps[aIndex].Dir, dest);
 
     //Remove the map from our list
     fMaps[aIndex].Free;
