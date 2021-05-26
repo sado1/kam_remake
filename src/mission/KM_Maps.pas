@@ -121,7 +121,8 @@ type
 
     class function CreateDummy: TKMapInfo;
 
-    constructor Create(const aFolder: string; aStrictParsing: Boolean; aMapKind: TKMMapKind); overload;
+    constructor Create(const aMapName: string; aStrictParsing: Boolean; aMapKind: TKMMapKind); overload;
+    constructor Create(const aDir, aMapName: string; aStrictParsing: Boolean; aMapKind: TKMMapKind = mkUnknown); overload;
     destructor Destroy; override;
 
     procedure AddGoal(aType: TKMGoalType; aPlayer: TKMHandID; aCondition: TKMGoalCondition; aStatus: TKMGoalStatus; aPlayerIndex: TKMHandID);
@@ -281,7 +282,14 @@ begin
 end;
 
 
-constructor TKMapInfo.Create(const aFolder: string; aStrictParsing: Boolean; aMapKind: TKMMapKind);
+constructor TKMapInfo.Create(const aMapName: string; aStrictParsing: Boolean; aMapKind: TKMMapKind);
+begin
+  Assert(aMapKind <> mkUnknown); // Do not allow to create 'unknown' maps with this constructor
+  Create(ExeDir + MAP_FOLDER_NAME[aMapKind] + PathDelim + aMapName + PathDelim, aMapName, aStrictParsing, aMapKind);
+end;
+
+
+constructor TKMapInfo.Create(const aDir, aMapName: string; aStrictParsing: Boolean; aMapKind: TKMMapKind = mkUnknown);
 
   function GetLIBXCRC(const aSearchFile: UnicodeString): Cardinal;
   var SearchRec: TSearchRec;
@@ -309,10 +317,11 @@ var
 begin
   inherited Create;
 
-  fTxtInfo := TKMMapTxtInfo.Create;
-  fDir := ExeDir + MAP_FOLDER_NAME[aMapKind] + PathDelim + aFolder + PathDelim;
-  fFileName := aFolder;
+  fDir := aDir;
+  fFileName := aMapName;
   fKind := aMapKind;
+
+  fTxtInfo := TKMMapTxtInfo.Create;
 
   for CSP := Low(TKMCustomScriptParam) to High(TKMCustomScriptParam) do
   begin
