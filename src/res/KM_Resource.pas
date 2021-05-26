@@ -182,8 +182,9 @@ begin
 
   fUnits := TKMResUnits.Create; // Load units prior to Sprites, as we could use it on SoftenShadows override for png in Sprites folder
   fSprites.LoadMenuResources;
-  fCursors.MakeCursors(fSprites[rxGui]);
+  gSystem.MakeCursors(fSprites[rxGui]);
   gSystem.Cursor := kmcDefault;
+  fCursors.SetRXDataPointer(@fSprites[rxGui].RXData);
 
   gResKeys := TKMResKeys.Create;
 

@@ -197,8 +197,12 @@ type
   );
 
 const
-  // Screen.Cursors[0] is used by System default cursor
-  CURSOR_CNT_OFFSET = 1;
+  // Indexes of cursor images in GUI.RX
+  CURSOR_SPRITE_INDEX: array [TKMCursor] of Word = (
+    1, 452, 457, 460, 450, 453, 449,
+    511,  512, 513, 514, 515, 516, 517, 518, 519,
+    4, 7, 3, 9, 5, 8, 2, 6,
+    456, 451, 999, 661, 0);
 
 implementation
 
