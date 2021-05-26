@@ -35,7 +35,9 @@ type
 
 implementation
 uses
-  KM_ResCursors, KM_ResTexts, KM_RenderUI, KM_Resource, KM_ResFonts, KM_ResLocales, KM_GameSettings, KM_CommonUtils;
+  KM_RenderUI,
+  KM_ResCursors, KM_ResTexts, KM_Resource, KM_ResFonts, KM_ResLocales, KM_ResTypes,
+  KM_GameSettings, KM_CommonUtils;
 
 
 { TKMGUIMainCredits }

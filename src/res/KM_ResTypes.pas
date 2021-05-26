@@ -185,6 +185,17 @@ type
 
   TKMKeyFuncAreaSet = set of TKMKeyFuncArea;
 
+  // Cursors
+  TKMCursor = (
+    kmcDefault, kmcInfo, kmcAttack, kmcJoinYes, kmcJoinNo, kmcEdit, kmcDragUp,
+    kmcDir0, kmcDir1, kmcDir2, kmcDir3, kmcDir4, kmcDir5, kmcDir6, kmcDir7, kmcDirNA,
+    kmcScroll0, kmcScroll1, kmcScroll2, kmcScroll3, kmcScroll4, kmcScroll5, kmcScroll6, kmcScroll7,
+    kmcBeacon, kmcDrag,
+    kmcInvisible, // for some reason kmcInvisible should be at its current position in enum. Otherwise 1px dot will appear while TroopSelection is on
+    kmcPaintBucket,
+    kmcAnimatedDirSelector
+  );
+
 implementation
 
 end.

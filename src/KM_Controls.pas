@@ -2030,7 +2030,7 @@ uses
   SysUtils, StrUtils, Math,
   Vcl.Clipbrd,
   KromUtils,
-  KM_Resource, KM_ResSprites, KM_ResSound, KM_ResCursors, KM_ResTexts,
+  KM_Resource, KM_ResSprites, KM_ResSound, KM_ResCursors, KM_ResTexts, KM_ResTypes,
   KM_Sound, KM_CommonUtils, KM_UtilsExt;
 
 
