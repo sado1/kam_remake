@@ -38,7 +38,6 @@ type
     procedure RemItem(aIndex: Integer);
     function ProjectileVisible(aIndex: Integer): Boolean;
   public
-    constructor Create;
     function AimTarget(const aStart: TKMPointF; aTarget: TKMUnit; aProjType: TKMProjectileType; aOwner: TKMUnit; aMaxRange,aMinRange: Single):word; overload;
     function AimTarget(const aStart: TKMPointF; aTarget: TKMHouse; aProjType: TKMProjectileType; aOwner: TKMUnit; aMaxRange,aMinRange: Single):word; overload;
 
@@ -76,13 +75,6 @@ const
 
 
 { TKMProjectiles }
-constructor TKMProjectiles.Create;
-begin
-  inherited Create;
-  //Nothing here yet
-end;
-
-
 procedure TKMProjectiles.RemItem(aIndex: Integer);
 begin
   gHands.CleanUpUnitPointer(fItems[aIndex].fOwner);
