@@ -139,7 +139,10 @@ begin
   if UID <> UID_NONE then
   begin
     entity := gHands.GetObjectByUID(UID);
-    if entity.IsSelectable then
+    // We should check if entity is not nil even if we have [Self = nil] check in the IsSelectable method
+    // this is because IsSelectable is a virtual method
+    // and it seems its not clear what method to call at the runtime thus we will get an access violation exception
+    if (entity <> nil) and entity.IsSelectable then
       Result := entity
     else
       fLastSpecSelectedObjUID[fHandIndex] := UID_NONE;  // Last selected object is not valid anymore, so reset UID
