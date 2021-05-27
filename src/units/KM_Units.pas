@@ -2040,8 +2040,8 @@ begin
     fVisible := True;
     //If we are walking into/out of the house then don't set our position, ActionGoInOut will sort it out
     if (not (Action is TKMUnitActionGoInOut))
-    or (not TKMUnitActionGoInOut(Action).GetHasStarted)
-    or (TKMUnitActionGoInOut(Action).GetWaitingForPush) then
+    or (not TKMUnitActionGoInOut(Action).HasStarted)
+    or (TKMUnitActionGoInOut(Action).WaitingForPush) then
     begin
       //Position in a spiral nearest to entrance of house, updating IsUnit.
       if not gHands.FindPlaceForUnit(fInHouse.Entrance.X, fInHouse.Entrance.Y, Self, newCurrPosition, gTerrain.GetWalkConnectID(fInHouse.Entrance)) then

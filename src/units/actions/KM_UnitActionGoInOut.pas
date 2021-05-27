@@ -38,8 +38,8 @@ type
     function ActName: TKMUnitActionName; override;
     function CanBeInterrupted(aForced: Boolean = True): Boolean; override;
     function GetExplanation: UnicodeString; override;
-    property GetHasStarted: boolean read fHasStarted;
-    property GetWaitingForPush: boolean read fWaitingForPush;
+    property HasStarted: boolean read fHasStarted;
+    property WaitingForPush: boolean read fWaitingForPush;
     property Direction: TKMGoInDirection read fDirection;
     function GetDoorwaySlide(aCheck: TKMCheckAxis): Single;
     function Execute: TKMActionResult; override;
