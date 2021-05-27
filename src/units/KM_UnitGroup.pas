@@ -91,6 +91,7 @@ type
     function GetPositionF: TKMPointF; override;
     procedure SetPositionF(const aPositionF: TKMPointF); override;
     procedure SetOwner(const aOwner: TKMHandID); override;
+    function IsSelectableImpl: Boolean; override;
   public
     //Each group can have initial order
     //SendGroup - walk to some location
@@ -155,8 +156,6 @@ type
 
     procedure OwnerUpdate(aOwner: TKMHandID; aMoveToNewOwner: Boolean = False);
 
-    function IsSelectable: Boolean; override;
-
     procedure OrderAttackHouse(aHouse: TKMHouse; aClearOffenders: Boolean; aForced: Boolean = True);
     procedure OrderAttackUnit(aUnit: TKMUnit; aClearOffenders: Boolean; aForced: Boolean = True);
     procedure OrderFood(aClearOffenders: Boolean; aHungryOnly: Boolean = False);
@@ -217,7 +216,6 @@ type
     function GetClosestGroup(const aPoint: TKMPoint; aTypes: TKMGroupTypeSet = [Low(TKMGroupType)..High(TKMGroupType)]): TKMUnitGroup;
     function GetGroupsInRadius(aPoint: TKMPoint; aSqrRadius: Single; aTypes: TKMGroupTypeSet = [Low(TKMGroupType)..High(TKMGroupType)]): TKMUnitGroupArray;
     function GetGroupsMemberInRadius(aPoint: TKMPoint; aSqrRadius: Single; var aUGA: TKMUnitGroupArray; aTypes: TKMGroupTypeSet = [Low(TKMGroupType)..High(TKMGroupType)]): TKMUnitArray;
-
 
     procedure Clear;
 
@@ -716,10 +714,8 @@ begin
 end;
 
 
-function TKMUnitGroup.IsSelectable: Boolean;
+function TKMUnitGroup.IsSelectableImpl: Boolean;
 begin
-  if Self = nil then Exit(False);
-
   Result := not IsDead;
 end;
 

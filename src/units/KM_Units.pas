@@ -137,6 +137,7 @@ type
     function GetPosition: TKMPoint; override;
     function GetPositionF: TKMPointF; override;
     procedure SetPositionF(const aPositionF: TKMPointF); override;
+    function IsSelectableImpl: Boolean; override;
   public
     AnimStep: Integer;
     IsExchanging: Boolean; //Current walk is an exchange, used for sliding
@@ -223,7 +224,6 @@ type
     function  IsDismissCancelAvailable: Boolean;
 
     function IsAnimal: Boolean; virtual;
-    function IsSelectable: Boolean; override;
 
     property  Thought: TKMUnitThought read fThought write SetThought;
     function  GetMovementVector: TKMPointF;
@@ -334,13 +334,14 @@ type
   TKMUnitAnimal = class(TKMUnit)
   private
     fFishCount: Byte; //1-5
+  protected
+    function IsSelectableImpl: Boolean; override;
   public
     constructor Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPoint; aOwner: TKMHandID); overload;
     constructor Load(LoadStream: TKMemoryStream); override;
     property FishCount: byte read fFishCount;
     function ReduceFish: Boolean;
     function IsAnimal: Boolean; override;
-    function IsSelectable: Boolean; override;
     procedure Save(SaveStream: TKMemoryStream); override;
     function UpdateState: Boolean; override;
     procedure Paint(aTickLag: Single); override;
@@ -1004,7 +1005,7 @@ begin
 end;
 
 
-function TKMUnitAnimal.IsSelectable: Boolean;
+function TKMUnitAnimal.IsSelectableImpl: Boolean;
 begin
   Result := False;
 end;
@@ -2250,10 +2251,8 @@ begin
 end;
 
 
-function TKMUnit.IsSelectable: Boolean;
+function TKMUnit.IsSelectableImpl: Boolean;
 begin
-  if Self = nil then Exit(False);
-
   Result := not IsDeadOrDying;
 end;
 

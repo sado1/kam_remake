@@ -173,6 +173,8 @@ type
     function GetPositionF: TKMPointF; override;
     procedure SetPositionF(const aPositionF: TKMPointF); override;
 
+    function IsSelectableImpl: Boolean; override;
+
     procedure MakeSound; virtual; //Swine/stables make extra sounds
   public
     CurrentAction: TKMHouseAction; //Current action, withing HouseTask or idle
@@ -235,8 +237,6 @@ type
     function GetBuildStoneDelivered: Byte;
     function GetBuildResourceDelivered: Byte;
     function GetBuildResDeliveredPercent: Single;
-
-    function IsSelectable: Boolean; override;
 
     property ResourceInArray: TKMByteArray read GetResourceInArray;
     property ResourceOutArray: TKMByteArray read GetResourceOutArray;
@@ -902,10 +902,8 @@ begin
 end;
 
 
-function TKMHouse.IsSelectable: Boolean;
+function TKMHouse.IsSelectableImpl: Boolean;
 begin
-  if Self = nil then Exit(False);
-
   Result := not IsDestroyed;
 end;
 

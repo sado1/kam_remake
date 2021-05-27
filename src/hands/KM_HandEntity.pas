@@ -20,6 +20,8 @@ type
     procedure SetOwner(const aOwner: TKMHandID); virtual;
     function GetAllowAllyToSelect: Boolean; virtual;
     procedure SetAllowAllyToSelect(aAllow: Boolean); virtual;
+
+    function IsSelectableImpl: Boolean; virtual;
   public
     constructor Create(aType: TKMHandEntityType; aUID: Integer; aOwner: TKMHandID);
     constructor Load(LoadStream: TKMemoryStream); override;
@@ -33,7 +35,7 @@ type
 
     property AllowAllyToSelect: Boolean read GetAllowAllyToSelect write SetAllowAllyToSelect;
 
-    function IsSelectable: Boolean; virtual;
+    function IsSelectable: Boolean;
 
     function IsUnit: Boolean;
     function IsGroup: Boolean;
@@ -166,9 +168,19 @@ begin
 end;
 
 
-function TKMHandEntity.IsSelectable: Boolean;
+function TKMHandEntity.IsSelectableImpl: Boolean;
 begin
   Result := False;
+end;
+
+
+// We can't check Self = nil in a virtual method, so we use a trick with non-virtual method calling a virtual method
+// example from https://stackoverflow.com/questions/11558077/checking-self-nil-in-virtual-method-with-parameters/11558305#11558305
+function TKMHandEntity.IsSelectable: Boolean;
+begin
+  if Self = nil then Exit(False);
+
+  Result := IsSelectableImpl;
 end;
 
 

@@ -1946,7 +1946,7 @@ begin
   if Self = nil then Exit;
   if gHands = nil then Exit;
 
-  if (aEntity = nil) or not aEntity.IsSelectable then Exit;
+  if not aEntity.IsSelectable then Exit;
 
   fViewport.Position := aEntity.PositionF;
 
