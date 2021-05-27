@@ -42,6 +42,7 @@ type
     property MapX: Word read fMapX;
     property MapY: Word read fMapY;
     property MapTex: TTexture read fMapTex;
+    property Base: TKMCardinalArray read fBase;
     property PaintVirtualGroups: Boolean read fPaintVirtualGroups write fPaintVirtualGroups;
 
     procedure LoadFromMission(const aMissionPath: string; const aRevealFor: array of TKMHandID);
