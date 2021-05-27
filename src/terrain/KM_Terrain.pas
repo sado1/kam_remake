@@ -316,9 +316,11 @@ var
 
 implementation
 uses
-  KM_Log, KM_HandsCollection, KM_TerrainWalkConnect, KM_Resource, KM_Units, KM_DevPerfLog,
+  KM_Log,
+  KM_HandsCollection, KM_Hand, KM_HandTypes,
+  KM_TerrainWalkConnect, KM_Resource, KM_Units, KM_DevPerfLog,
   KM_ResSound, KM_Sound, KM_UnitActionStay, KM_UnitWarrior, KM_TerrainPainter, KM_Houses,
-  KM_ResUnits, KM_ResSprites, KM_Hand, KM_Game, KM_GameParams, KM_GameTypes, KM_ScriptingEvents, KM_Utils, KM_DevPerfLogTypes,
+  KM_ResUnits, KM_ResSprites, KM_Game, KM_GameParams, KM_GameTypes, KM_ScriptingEvents, KM_Utils, KM_DevPerfLogTypes,
   KM_CommonExceptions;
 
 

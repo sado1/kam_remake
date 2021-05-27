@@ -324,12 +324,11 @@ uses
   // Do not add KM_Game dependancy! Entities should be isolated as much as possible
   TypInfo, SysUtils, Math, KromUtils,
   KM_GameParams, KM_Terrain, KM_RenderPool, KM_RenderAux, KM_Sound,
-  KM_Hand, KM_HandsCollection, KM_HandLogistics,
+  KM_Hand, KM_HandsCollection, KM_HandLogistics, KM_HandTypes,
   KM_Units, KM_UnitWarrior, KM_HouseWoodcutters,
   KM_Resource, KM_ResSound, KM_ResTexts, KM_ResUnits, KM_ResMapElements,
   KM_Log, KM_ScriptingEvents, KM_CommonUtils, KM_MapEdTypes,
   KM_RenderDebug,
-  KM_HandTypes,
   KM_TerrainTypes,
   KM_CommonExceptions,
   KM_ResTileset;

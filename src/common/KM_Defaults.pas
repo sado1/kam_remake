@@ -437,9 +437,6 @@ type
   TKMHandEnabledArray = array [0..MAX_HANDS-1] of Boolean;
 
 const
-  HAND_NONE = -1; //No player
-  HAND_ANIMAL = -2; //animals
-
   // Used to reset on new game start
   OWN_MARGIN_DEF   :Byte = 190;
   OWN_THRESHOLD_DEF:Byte = 126;

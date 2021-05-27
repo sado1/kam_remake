@@ -63,7 +63,8 @@ type
 implementation
 uses
   Classes, Math,
-  KM_Game, KM_Hand, KM_HandsCollection,
+  KM_Game,
+  KM_Hand, KM_HandsCollection, KM_HandTypes,
   KM_AIFields, KM_Terrain,
   KM_Houses, KM_HouseSchool, KM_HouseStore,
   KM_Units, KM_UnitsCollection, KM_UnitActionWalkTo, KM_UnitTaskGoEat, KM_UnitTaskDelivery,

@@ -64,8 +64,9 @@ const
 implementation
 uses
   Math,
-  KM_Hand, KM_AIFields, KM_AIInfluences,
-  KM_Terrain, KM_HandsCollection,
+  KM_HandsCollection, KM_Hand, KM_HandTypes,
+  KM_AIFields, KM_AIInfluences,
+  KM_Terrain,
   KM_Resource, KM_ResUnits, KM_NavMesh,
   KM_Houses, KM_CommonUtils, KM_CommonTypes;
 

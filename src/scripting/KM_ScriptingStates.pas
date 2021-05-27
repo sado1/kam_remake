@@ -230,7 +230,7 @@ uses
   KM_UnitsCollection, KM_UnitWarrior, KM_UnitTaskSelfTrain,
   KM_HouseBarracks, KM_HouseSchool, KM_HouseMarket, KM_HouseStore, KM_HouseWoodcutters, KM_HouseTownHall,
   KM_Resource, KM_ResUnits,
-  KM_Hand,
+  KM_Hand, KM_HandTypes,
   KM_Terrain,
   KM_CommonUtils;
 

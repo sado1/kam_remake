@@ -99,7 +99,8 @@ type
 implementation
 uses
   SysUtils, Math,
-  KM_Game, KM_GameParams, KM_HandsCollection, KM_Hand,
+  KM_Game, KM_GameParams,
+  KM_HandsCollection, KM_Hand, KM_HandTypes,
   {$IFDEF DEBUG_Supervisor}
     KM_RenderAux,
   {$ENDIF}

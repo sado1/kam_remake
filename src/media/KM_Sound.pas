@@ -171,7 +171,9 @@ uses
   {$IFNDEF NO_OGG_SOUND}
   Codec, VorbisFile,
   {$ENDIF}
-  KM_Game, KM_Resource, KM_HandsCollection, KM_RenderAux,
+  KM_Game, KM_Resource,
+  KM_HandsCollection, KM_HandTypes,
+  KM_RenderAux,
   KM_Log, KM_CommonUtils;
 
 

@@ -221,7 +221,10 @@ const
 
 implementation
 uses
-  KM_GameParams, KM_HouseCollection, KM_HandsCollection, KM_Hand, KM_Terrain, KM_Resource,
+  KM_GameParams,
+  KM_HouseCollection,
+  KM_HandsCollection, KM_Hand, KM_HandTypes,
+  KM_Terrain, KM_Resource,
   KM_AIFields,
   KM_NavMesh, KM_HouseWoodcutters, KM_ResUnits,
   KM_RenderAux, KM_ResMapElements;

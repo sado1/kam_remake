@@ -468,11 +468,12 @@ type
 implementation
 uses
   Classes, SysUtils, StrUtils, TypInfo, Math,
-  KM_GameApp, KM_Game, KM_GameParams, KM_HandsCollection,
+  KM_GameApp, KM_Game, KM_GameParams, KM_GameSettings,
+  KM_HandsCollection,
   KM_HouseMarket, KM_HouseBarracks, KM_HouseSchool, KM_HouseTownHall, KM_HouseStore, KM_HouseArmorWorkshop,
-  KM_ScriptingEvents, KM_Alerts, KM_CommonUtils, KM_Log, KM_RenderUI,
+  KM_ScriptingEvents, KM_Alerts, KM_CommonUtils, KM_RenderUI,
   KM_ResFonts, KM_Resource,
-  KM_GameSettings;
+  KM_Log;
 
 const 
   NO_LAST_TICK_VALUE = 0;

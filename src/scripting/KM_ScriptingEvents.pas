@@ -128,7 +128,9 @@ uses
   {$IFDEF FPC}
   RegExpr,
   {$ENDIF}
-  TypInfo, KromUtils, KM_Game,
+  TypInfo, KromUtils,
+  KM_Game,
+  KM_HandTypes,
   KM_ResTexts, KM_ResUnits,
   KM_Resource,
   KM_DevPerfLog, KM_DevPerfLogTypes;

@@ -158,9 +158,10 @@ type
 
 implementation
 uses
-  KM_HandsCollection, KM_ResTexts, KM_Game, KM_GameParams, KM_Cursor,
+  KM_HandsCollection, KM_Hand, KM_HandTypes,
+  KM_ResTexts, KM_Game, KM_GameParams, KM_Cursor,
   KM_Resource, KM_ResHouses, KM_TerrainDeposits, KM_ResCursors, KM_ResKeys, KM_GameApp,
-  KM_Hand, KM_AIDefensePos, KM_RenderUI, KM_ResFonts, KM_CommonClasses, KM_UnitWarrior,
+  KM_AIDefensePos, KM_RenderUI, KM_ResFonts, KM_CommonClasses, KM_UnitWarrior,
   KM_Utils,
   KM_UnitGroupTypes,
   KM_ResTypes,

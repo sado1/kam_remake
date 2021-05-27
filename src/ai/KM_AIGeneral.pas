@@ -50,7 +50,9 @@ type
 implementation
 uses
   Classes, Math,
-  KM_Game, KM_GameParams, KM_Hand, KM_HandsCollection, KM_Terrain, KM_AIFields,
+  KM_Game, KM_GameParams,
+  KM_Hand, KM_HandsCollection, KM_HandTypes,
+  KM_Terrain, KM_AIFields,
   KM_Houses, KM_HouseBarracks,
   KM_ResHouses, KM_CommonUtils, KM_DevPerfLog, KM_DevPerfLogTypes,
   KM_UnitGroupTypes,
