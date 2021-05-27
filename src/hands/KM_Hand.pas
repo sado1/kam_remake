@@ -267,8 +267,8 @@ constructor TKMHandCommon.Create(aHandIndex: TKMHandID);
 begin
   inherited Create;
 
-  fID  := aHandIndex;
-  fUnits        := TKMUnitsCollection.Create;
+  fID := aHandIndex;
+  fUnits := TKMUnitsCollection.Create;
 end;
 
 
