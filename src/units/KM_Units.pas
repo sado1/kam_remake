@@ -2038,10 +2038,9 @@ begin
   if fInHouse.IsDestroyed then //Someone has destroyed the house we were in
   begin
     fVisible := True;
-    //If we are walking into/out of the house then don't set our position, ActionGoInOut will sort it out
-    if (not (Action is TKMUnitActionGoInOut))
-    or (not TKMUnitActionGoInOut(Action).HasStarted)
-    or (TKMUnitActionGoInOut(Action).WaitingForPush) then
+      //If we are walking into/out of the house then don't set our position, ActionGoInOut will sort it out
+    if   not (Action is TKMUnitActionGoInOut)
+      or not TKMUnitActionGoInOut(Action).IsStarted then
     begin
       //Position in a spiral nearest to entrance of house, updating IsUnit.
       if not gHands.FindPlaceForUnit(fInHouse.Entrance.X, fInHouse.Entrance.Y, Self, newCurrPosition, gTerrain.GetWalkConnectID(fInHouse.Entrance)) then

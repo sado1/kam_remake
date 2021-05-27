@@ -18,7 +18,7 @@ type
     fDirection: TKMGoInDirection;
     fDoor: TKMPoint;
     fStreet: TKMPoint;
-    fHasStarted: Boolean;
+    fInitiated: Boolean;
     fPushedUnit: TKMUnit;
     fWaitingForPush: Boolean;
     fUsedDoorway: Boolean;
@@ -28,6 +28,7 @@ type
     function TileHasIdleUnit(X,Y: Word): TKMUnit;
     procedure WalkIn;
     procedure WalkOut;
+    function GetIsStarted: Boolean;
   public
     OnWalkedOut: TEvent; //NOTE: Caller must sync these events after loading, used with caution
     OnWalkedIn: TEvent;
@@ -38,8 +39,7 @@ type
     function ActName: TKMUnitActionName; override;
     function CanBeInterrupted(aForced: Boolean = True): Boolean; override;
     function GetExplanation: UnicodeString; override;
-    property HasStarted: boolean read fHasStarted;
-    property WaitingForPush: boolean read fWaitingForPush;
+    property IsStarted: Boolean read GetIsStarted; // Is unit actually started exiting or going inside?
     property Direction: TKMGoInDirection read fDirection;
     function GetDoorwaySlide(aCheck: TKMCheckAxis): Single;
     function Execute: TKMActionResult; override;
@@ -63,7 +63,7 @@ begin
   //and we might be dying in destroyed house (2)
   fHouse          := aHouse.GetPointer;
   fDirection      := aDirection;
-  fHasStarted     := False;
+  fInitiated      := False;
   fWaitingForPush := False;
 
   if fDirection = gdGoInside then
@@ -84,7 +84,7 @@ begin
   LoadStream.Read(fDirection, SizeOf(fDirection));
   LoadStream.Read(fDoor);
   LoadStream.Read(fStreet);
-  LoadStream.Read(fHasStarted);
+  LoadStream.Read(fInitiated);
   LoadStream.Read(fWaitingForPush);
   LoadStream.Read(fUsedDoorway);
 end;
@@ -109,7 +109,7 @@ begin
 
 
   if (fUnit <> nil)
-    and fHasStarted
+    and fInitiated
     and (gTerrain.Land^[fUnit.NextPosition.Y, fUnit.NextPosition.X].IsUnit = fUnit) then
   begin
     case fDirection of
@@ -144,6 +144,13 @@ end;
 function TKMUnitActionGoInOut.GetExplanation: UnicodeString;
 begin
   Result := 'Walking in/out';
+end;
+
+
+// Is unit actually started exiting or going inside?
+function TKMUnitActionGoInOut.GetIsStarted: Boolean;
+begin
+  Result := fInitiated and not fWaitingForPush;
 end;
 
 
@@ -307,7 +314,7 @@ begin
   else
     offset := gResHouses[fHouse.HouseType].EntranceOffsetYpx;
 
-  if (fHouse = nil) or not fHasStarted then
+  if (fHouse = nil) or not fInitiated then
     Result := 0
   else
     Result := Mix(0, offset/CELL_SIZE_PX, fStep);
@@ -321,7 +328,7 @@ var
 begin
   Result := arActContinues;
 
-  if not fHasStarted then
+  if not fInitiated then
   begin
     //Set Door and Street locations
     fDoor := KMPoint(fUnit.Position.X, fUnit.Position.Y - Round(fStep));
@@ -350,7 +357,7 @@ begin
                       if (fPushedUnit <> nil) then
                       begin
                         fWaitingForPush := True;
-                        fHasStarted := True;
+                        fInitiated := True;
                         Exit;
                       end
                       else
@@ -358,7 +365,7 @@ begin
                     end;
     end;
 
-    fHasStarted := True;
+    fInitiated := True;
   end;
 
 
@@ -377,7 +384,7 @@ begin
         or not (U.Action is TKMUnitActionWalkTo) //Unit was interupted (no longer pushed), so start again
         or not TKMUnitActionWalkTo(U.Action).WasPushed then
       begin
-        fHasStarted := False;
+        fInitiated := False;
         fWaitingForPush := False;
         gHands.CleanUpUnitPointer(fPushedUnit);
       end;
@@ -468,7 +475,7 @@ begin
   SaveStream.Write(fDirection, SizeOf(fDirection));
   SaveStream.Write(fDoor);
   SaveStream.Write(fStreet);
-  SaveStream.Write(fHasStarted);
+  SaveStream.Write(fInitiated);
   SaveStream.Write(fWaitingForPush);
   SaveStream.Write(fUsedDoorway);
 end;
