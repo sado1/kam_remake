@@ -42,6 +42,9 @@ type
     procedure StepCaption(const aCaption: UnicodeString);
 
     function GetOrCreateExportWorker: TKMWorkerThread;
+    function GetHouses: TKMResHouses;
+    function GetWares: TKMResWares;
+    function GetPalettes: TKMResPalettes;
   public
     OnLoadingStep: TEvent;
     OnLoadingText: TUnicodeStringEvent;
@@ -58,13 +61,16 @@ type
     procedure LoadLocaleFonts(const aLocale: AnsiString; aLoadFullFonts: Boolean);
 
     property DataState: TResourceLoadState read fDataState;
+    property Palettes: TKMResPalettes read GetPalettes;
     property Cursors: TKMResCursors read fCursors;
     property MapElements: TKMResMapElements read fMapElements;
     property Fonts: TKMResFonts read fFonts;
     property Sounds: TKMResSounds read fSounds;
     property Sprites: TKMResSprites read fSprites;
     property Tileset: TKMResTileset read fTileset;
+    property Houses: TKMResHouses read GetHouses;
     property Units: TKMResUnits read fUnits;
+    property Wares: TKMResWares read GetWares;
     property Interpolation: TKMResInterpolation read fInterpolation;
 
     procedure UpdateStateIdle;
@@ -150,6 +156,12 @@ begin
             fUnits.CRC xor
             fMapElements.CRC xor
             fTileset.CRC;
+end;
+
+
+function TKMResource.GetHouses: TKMResHouses;
+begin
+  Result := gResHouses;
 end;
 
 
@@ -267,6 +279,18 @@ begin
     fExportWorker := TKMWorkerThread.Create('ExportWorker');
 
   Result := fExportWorker;
+end;
+
+
+function TKMResource.GetPalettes: TKMResPalettes;
+begin
+  Result := gResPalettes;
+end;
+
+
+function TKMResource.GetWares: TKMResWares;
+begin
+  Result := gResWares;
 end;
 
 
