@@ -719,8 +719,8 @@ type
   TKMUnitActionName = (uanStay, uanWalkTo, uanGoInOut, uanAbandonWalk, uanFight, uanStormAttack, uanSteer);
 
   TKMUnitActionType = (uaWalk=120, uaWork, uaSpec, uaDie, uaWork1,
-                     uaWork2, uaWorkEnd, uaEat, uaWalkArm, uaWalkTool,
-                     uaWalkBooty, uaWalkTool2, uaWalkBooty2, uaUnknown);
+                       uaWork2, uaWorkEnd, uaEat, uaWalkArm, uaWalkTool,
+                       uaWalkBooty, uaWalkTool2, uaWalkBooty2, uaUnknown);
   TKMUnitActionTypeSet = set of TKMUnitActionType;
 
 const
