@@ -206,6 +206,7 @@ type
     procedure SetDebugSaveRandomChecks(aValue: Boolean);
     procedure SetDebugSaveGameAsText(aValue: Boolean);
     procedure SetSpeedPace(const aValue: Word);
+    function GetFavouriteMaps: TKMMapsCRCList;
   public
     constructor Create;
     destructor Destroy; override;
@@ -313,7 +314,7 @@ type
     property DebugSaveRandomChecks: Boolean read fDebug_SaveRandomChecks write SetDebugSaveRandomChecks;
     property DebugSaveGameAsText: Boolean read fDebug_SaveGameAsText write SetDebugSaveGameAsText;
 
-    property FavouriteMaps: TKMMapsCRCList read fFavouriteMaps;
+    property FavouriteMaps: TKMMapsCRCList read GetFavouriteMaps;
   end;
 
 var
@@ -350,6 +351,14 @@ begin
   FreeAndNil(fFavouriteMaps);
 
   gGameSettings := nil;
+end;
+
+
+function TKMGameSettings.GetFavouriteMaps: TKMMapsCRCList;
+begin
+  if Self = nil then Exit(nil);
+
+  Result := fFavouriteMaps;
 end;
 
 
