@@ -685,7 +685,7 @@ begin
     end
     else
       //House was damaged, but we don't know by whom (e.g. by script command)
-      CallEventHandlers(evtHouseDamaged, [aHouse.UID, PLAYER_NONE]);
+      CallEventHandlers(evtHouseDamaged, [aHouse.UID, HAND_NONE]);
   end;
 end;
 
@@ -971,7 +971,7 @@ begin
       CallEventHandlers(evtUnitWounded, [aUnit.UID, aAttacker.UID]);
     end
     else
-      CallEventHandlers(evtUnitWounded, [aUnit.UID, PLAYER_NONE]);
+      CallEventHandlers(evtUnitWounded, [aUnit.UID, HAND_NONE]);
   end;
 end;
 

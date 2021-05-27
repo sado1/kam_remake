@@ -437,7 +437,7 @@ type
   TKMHandEnabledArray = array [0..MAX_HANDS-1] of Boolean;
 
 const
-  PLAYER_NONE = -1; //No player
+  HAND_NONE = -1; //No player
   PLAYER_ANIMAL = -2; //animals
 
   // Used to reset on new game start

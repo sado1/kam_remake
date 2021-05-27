@@ -1072,11 +1072,11 @@ begin
   case gGameParams.Mode of
     gmSingle,
     gmCampaign,
-    gmMulti:          doAddBeacon := (handId <> PLAYER_NONE) and DoAddPlayerBeacon;
-    gmMultiSpectate:  doAddBeacon := (handId = PLAYER_NONE) // Show spectators beacons while spectating
+    gmMulti:          doAddBeacon := (handId <> HAND_NONE) and DoAddPlayerBeacon;
+    gmMultiSpectate:  doAddBeacon := (handId = HAND_NONE) // Show spectators beacons while spectating
                                     or (gGameSettings.SpecShowBeacons and DoAddPlayerBeacon);
     gmReplaySingle,
-    gmReplayMulti:    doAddBeacon := (handId <> PLAYER_NONE)  // Do not show spectators beacons in replay
+    gmReplayMulti:    doAddBeacon := (handId <> HAND_NONE)  // Do not show spectators beacons in replay
                                     and gGameSettings.ReplayShowBeacons and DoAddPlayerBeacon;
   end;
 

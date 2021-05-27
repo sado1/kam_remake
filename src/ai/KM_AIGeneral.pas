@@ -545,7 +545,7 @@ begin
   for I := Low(DefPosArr) to High(DefPosArr) do
   begin
     BestOwner := gAIFields.Influences.GetBestOwner(DefPosArr[I].Polygon);
-    if (BestOwner = fOwner) OR (BestOwner = PLAYER_NONE) OR (fDefencePositions.Count + Length(DefPosArr) <= MIN_DEF_POS) then
+    if (BestOwner = fOwner) OR (BestOwner = HAND_NONE) OR (fDefencePositions.Count + Length(DefPosArr) <= MIN_DEF_POS) then
     begin
       if (DefPosArr[I].Line = 0) then
         DPT := adtFrontLine

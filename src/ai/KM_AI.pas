@@ -177,12 +177,12 @@ procedure TKMHandAI.CheckGoals;
   var
     Stat: TKMHandStats;
   begin
-    Assert((aGoal.GoalCondition = gcTime) or (aGoal.HandIndex <> PLAYER_NONE), 'Only gcTime can have nil Player');
+    Assert((aGoal.GoalCondition = gcTime) or (aGoal.HandIndex <> HAND_NONE), 'Only gcTime can have nil Player');
 
     if aGoal.Disabled then
       Exit(True);
 
-    if aGoal.HandIndex <> PLAYER_NONE then
+    if aGoal.HandIndex <> HAND_NONE then
       Stat := gHands[aGoal.HandIndex].Stats
     else
       Stat := nil;

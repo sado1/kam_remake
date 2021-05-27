@@ -431,7 +431,7 @@ begin
 
   //Else nothing is found
   Result.MarkerType := mmtNone;
-  Result.Owner := PLAYER_NONE;
+  Result.Owner := HAND_NONE;
   Result.Index := -1;
 end;
 

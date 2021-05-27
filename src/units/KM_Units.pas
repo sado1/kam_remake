@@ -1027,7 +1027,7 @@ begin
   if fFishCount > 1 then
     Dec(fFishCount)
   else
-    Kill(PLAYER_NONE, True, False);
+    Kill(HAND_NONE, True, False);
 end;
 
 
@@ -1075,7 +1075,7 @@ begin
   if (not gTerrain.CheckPassability(fPosition, DesiredPassability))
   or gTerrain.CheckAnimalIsStuck(fPosition, DesiredPassability) then
   begin
-    Kill(PLAYER_NONE, True, False); //Animal is stuck so it dies
+    Kill(HAND_NONE, True, False); //Animal is stuck so it dies
     Exit;
   end;
 
@@ -1304,7 +1304,7 @@ begin
   fPosition := KMPOINT_ZERO;
   fPrevPosition := fPosition;
   fNextPosition := fPosition;
-  Owner        := PLAYER_NONE;
+  Owner        := HAND_NONE;
   //Do not reset the unit type when they die as we still need to know during Load
   //fUnitType     := utNone;
   fDirection    := dirNA;
@@ -1513,7 +1513,7 @@ begin
     if aAttacker <> nil then
       Kill(aAttacker.Owner, True, False)
     else
-      Kill(PLAYER_NONE, True, False)
+      Kill(HAND_NONE, True, False)
 end;
 
 
@@ -1522,7 +1522,7 @@ begin
   fHitPoints := EnsureRange(fHitPoints + aAmount, 0, GetHitPointsMax);
   if (fHitPoints = 0)
   and (not IsDeadOrDying) then
-    Kill(PLAYER_NONE, True, False);
+    Kill(HAND_NONE, True, False);
 end;
 
 
@@ -2047,10 +2047,10 @@ begin
       begin
         //There is no space for this unit so it must be destroyed
         //todo: re-route to KillUnit and let it sort out that unit is invisible and cant be placed
-        if    (Owner <> PLAYER_NONE)
+        if    (Owner <> HAND_NONE)
           and not IsDeadOrDying
           and Assigned(OnUnitDied) then
-          OnUnitDied(Self, PLAYER_NONE);
+          OnUnitDied(Self, HAND_NONE);
 
         //These must be freed before running CloseUnit because task destructors sometimes need access to unit properties
         SetAction(nil);
@@ -2425,7 +2425,7 @@ begin
 
   //Unit killing could be postponed by few ticks, hence fCondition could be <0
   if fCondition <= 0 then
-    Kill(PLAYER_NONE, True, False);
+    Kill(HAND_NONE, True, False);
 
   //We only need to update fog of war regularly if we're using dynamic fog of war, otherwise only update it when the unit moves
   if gGameParams.DynamicFOW and (fTicker mod FOW_PACE = 0) then
@@ -2442,7 +2442,7 @@ begin
     begin
       if not gTerrain.CheckPassability(fNextPosition, tpWalk) then
         {$IFNDEF RUNNER}
-        Self.Kill(PLAYER_NONE, False, True);
+        Self.Kill(HAND_NONE, False, True);
         //Grayter 18.01.2018
         //Despite checking passability of current tile, some units can walk on
         //unwalkable tile especially when there are many soldiers on the map (> 4000)
@@ -2455,7 +2455,7 @@ begin
     end else
     if not gTerrain.CheckPassability(fNextPosition, DesiredPassability) then
       {$IFNDEF RUNNER}
-      Self.Kill(PLAYER_NONE, False, True);
+      Self.Kill(HAND_NONE, False, True);
       //Explanation above
       {$ELSE}
       raise ELocError.Create(Format('%s on unwalkable tile at %s pass: ''%s''', [gRes.Units[UnitType].GUIName, fNextPosition.ToString, PASSABILITY_GUI_TEXT[DesiredPassability]]), fNextPosition);

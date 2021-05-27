@@ -622,7 +622,7 @@ begin
         gHands[I].FogOfWar.RevealEverything;
 
       gMySpectator := TKMSpectator.Create(0);
-      gMySpectator.FOWIndex := PLAYER_NONE;
+      gMySpectator.FOWIndex := HAND_NONE;
     end
     else
     if fParams.IsSingleplayerGame then
@@ -898,7 +898,7 @@ begin
   if gNetworking.MyNetPlayer.IsSpectator then
   begin
     gMySpectator := TKMSpectator.Create(FindHandToSpec);
-    gMySpectator.FOWIndex := PLAYER_NONE; //Show all by default while spectating
+    gMySpectator.FOWIndex := HAND_NONE; //Show all by default while spectating
   end
   else
     gMySpectator := TKMSpectator.Create(gNetworking.MyNetPlayer.HandIndex);
@@ -1404,7 +1404,7 @@ begin
   end;
 
   gMySpectator := TKMSpectator.Create(0);
-  gMySpectator.FOWIndex := PLAYER_NONE;
+  gMySpectator.FOWIndex := HAND_NONE;
 
   gHands.AfterMissionInit;
 
@@ -1778,7 +1778,7 @@ procedure TKMGame.OverlaySet(const aText: UnicodeString; aPlayer: Shortint);
 var
   I: Integer;
 begin
-  if aPlayer = PLAYER_NONE then
+  if aPlayer = HAND_NONE then
     for I := 0 to MAX_HANDS do
       fOverlayText[I] := aText
   else
@@ -1792,7 +1792,7 @@ procedure TKMGame.OverlayAppend(const aText: UnicodeString; aPlayer: Shortint);
 var
   I: Integer;
 begin
-  if aPlayer = PLAYER_NONE then
+  if aPlayer = HAND_NONE then
     for I := 0 to MAX_HANDS do
       fOverlayText[I] := fOverlayText[I] + aText
   else
@@ -2528,7 +2528,7 @@ begin
 
     if fParams.IsReplayOrSpectate then
     begin
-      gMySpectator.FOWIndex := PLAYER_NONE; //Show all by default in replays
+      gMySpectator.FOWIndex := HAND_NONE; //Show all by default in replays
       //HandIndex is the first enabled player
       gMySpectator.HandID := FindHandToSpec;
     end;

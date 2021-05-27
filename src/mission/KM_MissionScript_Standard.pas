@@ -236,7 +236,7 @@ begin
                           if fPlayerEnabled[P[0]] then
                             fLastHand := P[0]
                           else
-                            fLastHand := PLAYER_NONE; //Lets us skip this player
+                            fLastHand := HAND_NONE; //Lets us skip this player
                           fLastHouse := nil;
                           fLastTroop := nil;
                           fLastUnit := nil;
@@ -303,18 +303,18 @@ begin
                           end;
                         end;
 
-    ctCenterScreen:     if (fLastHand <> PLAYER_NONE)
+    ctCenterScreen:     if (fLastHand <> HAND_NONE)
                           and PointInMap(P[0]+1, P[1]+1) then
                           gHands[fLastHand].CenterScreen := KMPoint(P[0]+1, P[1]+1);
 
-    ctChooseLoc:        if (fLastHand <> PLAYER_NONE) then
+    ctChooseLoc:        if (fLastHand <> HAND_NONE) then
                         begin
                           chooseLoc := gHands[fLastHand].ChooseLocation;
                           chooseLoc.Allowed := Boolean(P[0]);
                           gHands[fLastHand].ChooseLocation := chooseLoc;
                         end;
 
-    ctChooseLocAddWare: if (fLastHand <> PLAYER_NONE) then
+    ctChooseLocAddWare: if (fLastHand <> HAND_NONE) then
                         begin
                           qty := EnsureRange(P[1], -1, High(Word)); //Sometimes user can define it to be 999999
                           if qty = -1 then qty := High(Word); //-1 means maximum resources
@@ -323,7 +323,7 @@ begin
                           gHands[fLastHand].ChooseLocation := chooseLoc;
                         end;
 
-    ctChooseLocAddUnit: if (fLastHand <> PLAYER_NONE) then
+    ctChooseLocAddUnit: if (fLastHand <> HAND_NONE) then
                         begin
                           qty := EnsureRange(P[1], -1, High(Byte)); //Sometimes user can define it to be 999999
                           if qty = -1 then qty := High(Byte); //-1 means maximum resources
@@ -332,7 +332,7 @@ begin
                           gHands[fLastHand].ChooseLocation := chooseLoc;
                         end;
 
-    ctClearUp:          if fLastHand <> PLAYER_NONE then
+    ctClearUp:          if fLastHand <> HAND_NONE then
                         begin
                           if fParsingMode = mpmEditor then
                           begin
@@ -355,7 +355,7 @@ begin
                           end;
                         end;
 
-    ctSetHouse:         if fLastHand <> PLAYER_NONE then
+    ctSetHouse:         if fLastHand <> HAND_NONE then
                           if PointInMap(P[1]+1, P[2]+1) and InRange(P[0], Low(HOUSE_ID_TO_TYPE), High(HOUSE_ID_TO_TYPE)) then
                             if gTerrain.CanPlaceHouseFromScript(HOUSE_ID_TO_TYPE[P[0]], KMPoint(P[1]+1, P[2]+1)) then
                               fLastHouse := gHands[fLastHand].AddHouse(
@@ -363,7 +363,7 @@ begin
                             else
                               AddError('ct_SetHouse failed, can not place house at ' + TypeToString(KMPoint(P[1]+1, P[2]+1)));
 
-    ctSetHouseDamage:   if fLastHand <> PLAYER_NONE then //Skip false-positives for skipped players
+    ctSetHouseDamage:   if fLastHand <> HAND_NONE then //Skip false-positives for skipped players
                           if fLastHouse <> nil then
                           begin
                             if not fLastHouse.IsDestroyed then //Could be destroyed already by damage
@@ -373,7 +373,7 @@ begin
                             AddError('ct_SetHouseDamage without prior declaration of House');
 
     ctSetHouseDeliveryMode:
-                        if fLastHand <> PLAYER_NONE then //Skip false-positives for skipped players
+                        if fLastHand <> HAND_NONE then //Skip false-positives for skipped players
                           if fLastHouse <> nil then
                           begin
                             if InRange(P[0], Byte(Low(TKMDeliveryMode)), Byte(High(TKMDeliveryMode))) then //Check allowed range for delivery mode value
@@ -389,14 +389,14 @@ begin
                             AddError('ct_SetHouseDeliveryMode without prior declaration of House');
 
     ctSetHouseRepairMode:
-                        if fLastHand <> PLAYER_NONE then //Skip false-positives for skipped players
+                        if fLastHand <> HAND_NONE then //Skip false-positives for skipped players
                           if fLastHouse <> nil then
                             fLastHouse.BuildingRepair := True
                           else
                             AddError('ct_SetHouseRepairMode without prior declaration of House');
 
     ctSetHouseClosedForWorker:
-                        if fLastHand <> PLAYER_NONE then //Skip false-positives for skipped players
+                        if fLastHand <> HAND_NONE then //Skip false-positives for skipped players
                           if fLastHouse <> nil then
                             fLastHouse.IsClosedForWorker := True
                           else
@@ -408,11 +408,11 @@ begin
                           if UNIT_OLD_ID_TO_TYPE[P[0]] in [ANIMAL_MIN..ANIMAL_MAX] then
                             gHands.PlayerAnimals.AddUnit(UNIT_OLD_ID_TO_TYPE[P[0]], KMPoint(P[1]+1, P[2]+1))
                           else
-                          if (fLastHand <> PLAYER_NONE) and (UNIT_OLD_ID_TO_TYPE[P[0]] in [HUMANS_MIN..HUMANS_MAX]) then
+                          if (fLastHand <> HAND_NONE) and (UNIT_OLD_ID_TO_TYPE[P[0]] in [HUMANS_MIN..HUMANS_MAX]) then
                             fLastUnit := gHands[fLastHand].AddUnit(UNIT_OLD_ID_TO_TYPE[P[0]], KMPoint(P[1]+1, P[2]+1));
                         end;
 
-    ctSetUnitByStock:   if fLastHand <> PLAYER_NONE then
+    ctSetUnitByStock:   if fLastHand <> HAND_NONE then
                           if UNIT_OLD_ID_TO_TYPE[P[0]] in [HUMANS_MIN..HUMANS_MAX] then
                           begin
                             H := gHands[fLastHand].FindHouse(htStore, 1);
@@ -420,7 +420,7 @@ begin
                               gHands[fLastHand].AddUnit(UNIT_OLD_ID_TO_TYPE[P[0]], KMPoint(H.Entrance.X, H.Entrance.Y+1));
                           end;
 
-    ctUnitAddToLast:    if fLastHand <> PLAYER_NONE then
+    ctUnitAddToLast:    if fLastHand <> HAND_NONE then
                           if fLastHouse <> nil then
                           begin
                             if (fLastHouse is TKMHouseBarracks) and (P[0] = UNIT_TYPE_TO_OLD_ID[utRecruit]) then
@@ -434,7 +434,7 @@ begin
                           else
                             AddError('ct_UnitAddToLast without prior declaration of House');
 
-    ctSetUnitFood:      if fLastHand <> PLAYER_NONE then
+    ctSetUnitFood:      if fLastHand <> HAND_NONE then
                         begin
                           if fLastUnit <> nil then
                           begin
@@ -445,22 +445,22 @@ begin
                             AddError('ct_SetUnitFood without prior declaration of Unit');
                         end;
 
-    ctSetRoad:          if (fLastHand <> PLAYER_NONE) and PointInMap(P[0]+1, P[1]+1) then
+    ctSetRoad:          if (fLastHand <> HAND_NONE) and PointInMap(P[0]+1, P[1]+1) then
                           gHands[fLastHand].AddRoadToList(KMPoint(P[0]+1,P[1]+1));
 
-    ctSetField:         if (fLastHand <> PLAYER_NONE) and PointInMap(P[0]+1, P[1]+1) then
+    ctSetField:         if (fLastHand <> HAND_NONE) and PointInMap(P[0]+1, P[1]+1) then
                           gHands[fLastHand].AddField(KMPoint(P[0]+1,P[1]+1),ftCorn,0,True,False);
 
-    ctSetFieldStaged:   if (fLastHand <> PLAYER_NONE) and PointInMap(P[0]+1, P[1]+1) then
+    ctSetFieldStaged:   if (fLastHand <> HAND_NONE) and PointInMap(P[0]+1, P[1]+1) then
                           gHands[fLastHand].AddField(KMPoint(P[0]+1,P[1]+1),ftCorn,P[2],False,False);
 
-    ctSetWinefield:     if (fLastHand <> PLAYER_NONE) and PointInMap(P[0]+1, P[1]+1) then
+    ctSetWinefield:     if (fLastHand <> HAND_NONE) and PointInMap(P[0]+1, P[1]+1) then
                           gHands[fLastHand].AddField(KMPoint(P[0]+1,P[1]+1),ftWine,0,True,False);
 
-    ctSetWinefieldStaged:  if (fLastHand <> PLAYER_NONE) and PointInMap(P[0]+1, P[1]+1) then
+    ctSetWinefieldStaged:  if (fLastHand <> HAND_NONE) and PointInMap(P[0]+1, P[1]+1) then
                               gHands[fLastHand].AddField(KMPoint(P[0]+1,P[1]+1),ftWine,P[2],False,False);
 
-    ctSetStock:         if (fLastHand <> PLAYER_NONE) and PointInMap(P[0]+1, P[1]+1) then
+    ctSetStock:         if (fLastHand <> HAND_NONE) and PointInMap(P[0]+1, P[1]+1) then
                         begin //This command basically means: Put a SH here with road bellow it
                           fLastHouse := gHands[fLastHand].AddHouse(htStore, P[0]+1,P[1]+1, False);
                           gHands[fLastHand].AddRoadToList(KMPoint(P[0]+1,P[1]+2));
@@ -468,7 +468,7 @@ begin
                           gHands[fLastHand].AddRoadToList(KMPoint(P[0]-1,P[1]+2));
                         end;
     // @Deprecated, used AddWareToLast instead
-    ctAddWare:          if fLastHand <> PLAYER_NONE then
+    ctAddWare:          if fLastHand <> HAND_NONE then
                         begin
                           qty := EnsureRange(P[1], -1, High(Word)); //Sometimes user can define it to be 999999
                           if qty = -1 then qty := High(Word); //-1 means maximum resources
@@ -494,7 +494,7 @@ begin
                           end;
                         end;
     // @Deprecated, used AddWareToLast instead
-    ctAddWareToSecond:  if fLastHand <> PLAYER_NONE then
+    ctAddWareToSecond:  if fLastHand <> HAND_NONE then
                         begin
                           qty := EnsureRange(P[1], -1, High(Word)); //Sometimes user can define it to be 999999
                           if qty = -1 then qty := High(Word); //-1 means maximum resources
@@ -508,7 +508,7 @@ begin
                         end;
 
     //Depreciated by ctAddWareToLast, but we keep it for backwards compatibility in loading
-    ctAddWareTo:        if fLastHand <> PLAYER_NONE then
+    ctAddWareTo:        if fLastHand <> HAND_NONE then
                         begin //HouseType, House Order, Ware Type, Count
                           qty := EnsureRange(P[3], -1, High(Word)); //Sometimes user can define it to be 999999
                           if qty = -1 then qty := High(Word); //-1 means maximum resources
@@ -521,7 +521,7 @@ begin
                           end;
                         end;
 
-    ctAddWareToLast:    if fLastHand <> PLAYER_NONE then
+    ctAddWareToLast:    if fLastHand <> HAND_NONE then
                         begin //Ware Type, Count
                           qty := EnsureRange(P[1], -1, High(Word)); //Sometimes user can define it to be 999999
                           if qty = -1 then qty := High(Word); //-1 means maximum resources
@@ -538,7 +538,7 @@ begin
                             AddError('ct_AddWareToLast without prior declaration of House');
                         end;
     // @Deprecated, used AddWareToLast instead
-    ctAddWeapon:        if fLastHand <> PLAYER_NONE then
+    ctAddWeapon:        if fLastHand <> HAND_NONE then
                         begin
                           qty := EnsureRange(P[1], -1, High(Word)); //Sometimes user can define it to be 999999
                           if qty = -1 then qty := High(Word); //-1 means maximum weapons
@@ -550,13 +550,13 @@ begin
                           end;
                         end;
 
-    ctBlockTrade:       if fLastHand <> PLAYER_NONE then
+    ctBlockTrade:       if fLastHand <> HAND_NONE then
                         begin
                           if WARE_ID_TO_TYPE[P[0]] in [WARE_MIN..WARE_MAX] then
                             gHands[fLastHand].Locks.AllowToTrade[WARE_ID_TO_TYPE[P[0]]] := False;
                         end;
 
-    ctBlockUnit:        if fLastHand <> PLAYER_NONE then
+    ctBlockUnit:        if fLastHand <> HAND_NONE then
                         begin
                           UT := UNIT_ID_TO_TYPE[P[0]];
 
@@ -570,23 +570,23 @@ begin
                           end;
                         end;
 
-    ctBlockHouse:       if fLastHand <> PLAYER_NONE then
+    ctBlockHouse:       if fLastHand <> HAND_NONE then
                         begin
                           if InRange(P[0], Low(HOUSE_ID_TO_TYPE), High(HOUSE_ID_TO_TYPE)) then
                             gHands[fLastHand].Locks.HouseBlocked[HOUSE_ID_TO_TYPE[P[0]]] := True;
                         end;
 
-    ctReleaseHouse:     if fLastHand <> PLAYER_NONE then
+    ctReleaseHouse:     if fLastHand <> HAND_NONE then
                         begin
                           if InRange(P[0], Low(HOUSE_ID_TO_TYPE), High(HOUSE_ID_TO_TYPE)) then
                             gHands[fLastHand].Locks.HouseGranted[HOUSE_ID_TO_TYPE[P[0]]] := True;
                         end;
 
-    ctReleaseAllHouses: if fLastHand <> PLAYER_NONE then
+    ctReleaseAllHouses: if fLastHand <> HAND_NONE then
                           for HT := HOUSE_MIN to HOUSE_MAX do
                             gHands[fLastHand].Locks.HouseGranted[HT] := True;
 
-    ctSetGroup:         if (fLastHand <> PLAYER_NONE) and PointInMap(P[1]+1, P[2]+1) then
+    ctSetGroup:         if (fLastHand <> HAND_NONE) and PointInMap(P[1]+1, P[2]+1) then
                           if InRange(P[0], Low(UNIT_ID_TO_TYPE), High(UNIT_ID_TO_TYPE)) and (UNIT_ID_TO_TYPE[P[0]] <> utNone) then
                           try
                             fLastTroop := gHands[fLastHand].AddUnitGroup(
@@ -603,7 +603,7 @@ begin
                               AddError(ELocError(E).Message);
                           end;
 
-    ctSendGroup:        if (fLastHand <> PLAYER_NONE) and PointInMap(P[0]+1, P[1]+1) then
+    ctSendGroup:        if (fLastHand <> HAND_NONE) and PointInMap(P[0]+1, P[1]+1) then
                         begin
                           if fLastTroop <> nil then
                             if fParsingMode = mpmEditor then
@@ -623,7 +623,7 @@ begin
                             AddError('ct_SendGroup without prior declaration of Troop');
                         end;
 
-    ctSetGroupFood:     if fLastHand <> PLAYER_NONE then
+    ctSetGroupFood:     if fLastHand <> HAND_NONE then
                         begin
                           if fLastTroop <> nil then
                           begin
@@ -636,7 +636,7 @@ begin
                             AddError('ct_SetGroupFood without prior declaration of Troop');
                         end;
 
-    ctAICharacter:      if fLastHand <> PLAYER_NONE then
+    ctAICharacter:      if fLastHand <> HAND_NONE then
                         begin
                           if gHands[fLastHand].HandType <> hndComputer then
                             //@Rey we exited here, leading to FatalError.
@@ -665,37 +665,37 @@ begin
                           end;
                         end;
 
-    ctAINoBuild:        if fLastHand <> PLAYER_NONE then
+    ctAINoBuild:        if fLastHand <> HAND_NONE then
                           gHands[fLastHand].AI.Setup.AutoBuild := False;
 
-    ctAIAutoRepair:     if fLastHand <> PLAYER_NONE then
+    ctAIAutoRepair:     if fLastHand <> HAND_NONE then
                           gHands[fLastHand].AI.Setup.AutoRepair := True;
 
-    ctAIAutoAttack:     if fLastHand <> PLAYER_NONE then
+    ctAIAutoAttack:     if fLastHand <> HAND_NONE then
                           gHands[fLastHand].AI.Setup.AutoAttack := True;
 
-    ctAIAutoDefend:     if fLastHand <> PLAYER_NONE then
+    ctAIAutoDefend:     if fLastHand <> HAND_NONE then
                           gHands[fLastHand].AI.Setup.AutoDefend := True;
 
-    ctAIDefendAllies:   if fLastHand <> PLAYER_NONE then
+    ctAIDefendAllies:   if fLastHand <> HAND_NONE then
                           gHands[fLastHand].AI.Setup.DefendAllies := True;
 
-    ctAIUnlimitedEquip: if fLastHand <> PLAYER_NONE then
+    ctAIUnlimitedEquip: if fLastHand <> HAND_NONE then
                           gHands[fLastHand].AI.Setup.UnlimitedEquip := True;
 
-    ctAIArmyType:       if (fLastHand <> PLAYER_NONE) and (P[0] >= Byte(Low(TKMArmyType))) and (P[0] <= Byte(High(TKMArmyType))) then
+    ctAIArmyType:       if (fLastHand <> HAND_NONE) and (P[0] >= Byte(Low(TKMArmyType))) and (P[0] <= Byte(High(TKMArmyType))) then
                           gHands[fLastHand].AI.Setup.ArmyType := TKMArmyType(P[0]);
 
-    ctAIStartPosition:  if (fLastHand <> PLAYER_NONE) and PointInMap(P[0]+1, P[1]+1) then
+    ctAIStartPosition:  if (fLastHand <> HAND_NONE) and PointInMap(P[0]+1, P[1]+1) then
                           gHands[fLastHand].AI.Setup.StartPosition := KMPoint(P[0]+1,P[1]+1);
 
-    ctSetAlliance:      if (fLastHand <> PLAYER_NONE) and fPlayerEnabled[P[0]] and (P[0] <> fLastHand) then
+    ctSetAlliance:      if (fLastHand <> HAND_NONE) and fPlayerEnabled[P[0]] and (P[0] <> fLastHand) then
                           if P[1] = 1 then
                             gHands[fLastHand].Alliances[P[0]] := atAlly
                           else
                             gHands[fLastHand].Alliances[P[0]] := atEnemy;
 
-    ctAttackPosition:   if (fLastHand <> PLAYER_NONE) and PointInMap(P[0]+1, P[1]+1) then
+    ctAttackPosition:   if (fLastHand <> HAND_NONE) and PointInMap(P[0]+1, P[1]+1) then
                           //If target is building: Attack building
                           //If target is unit: Chase/attack unit
                           //If target is nothing: move to position
@@ -718,7 +718,7 @@ begin
                             AddError('ct_AttackPosition without prior declaration of Troop');
 
     ctAddGoal:          //ADD_GOAL, condition, status, message_id, player_id,
-                        if fLastHand <> PLAYER_NONE then
+                        if fLastHand <> HAND_NONE then
                         begin
                           if not InRange(P[0], 0, Byte(High(TKMGoalCondition))) then
                             AddError('Add_Goal with unknown condition index ' + IntToStr(P[0]))
@@ -733,7 +733,7 @@ begin
                                   gHands[fLastHand].AI.Goals.AddGoal(gltVictory, TKMGoalCondition(P[0]), P[3]); //Ignore not used parameters
                         end;
 
-    ctAddLostGoal:      if fLastHand <> PLAYER_NONE then
+    ctAddLostGoal:      if fLastHand <> HAND_NONE then
                         begin
                           if not InRange(P[0], 0, Byte(High(TKMGoalCondition))) then
                             AddError('Add_LostGoal with unknown condition index ' + IntToStr(P[0]))
@@ -749,18 +749,18 @@ begin
                           end;
                         end;
 
-    ctAIDefence:        if (fLastHand <> PLAYER_NONE) and PointInMap(P[0]+1, P[1]+1) then
+    ctAIDefence:        if (fLastHand <> HAND_NONE) and PointInMap(P[0]+1, P[1]+1) then
                           if InRange(P[3], Integer(Low(TKMGroupType)), Integer(High(TKMGroupType))) then //TPR 3 tries to set TKMGroupType 240 due to a missing space
                             gHands[fLastHand].AI.General.DefencePositions.Add(KMPointDir(P[0]+1, P[1]+1, TKMDirection(P[2]+1)),TKMGroupType(P[3]),P[4],TAIDefencePosType(P[5]));
 
-    ctSetMapColor:      if fLastHand <> PLAYER_NONE then
+    ctSetMapColor:      if fLastHand <> HAND_NONE then
                           //For now simply use the minimap color for all color, it is too hard to load all 8 shades from ctSetNewRemap
                           gHands[fLastHand].FlagColor := gResPalettes.DefaultPalette.Color32(P[0]);
 
-    ctSetRGBColor:      if fLastHand <> PLAYER_NONE then
+    ctSetRGBColor:      if fLastHand <> HAND_NONE then
                           gHands[fLastHand].FlagColor := P[0] or $FF000000;
 
-    ctAIAttack:         if fLastHand <> PLAYER_NONE then
+    ctAIAttack:         if fLastHand <> HAND_NONE then
                         begin
                           //Set up the attack command
                           if TextParam = AI_ATTACK_PARAMS[cptType] then
@@ -784,7 +784,7 @@ begin
                             fAIAttack.TakeAll := True;
                         end;
 
-    ctCopyAIAttack:     if fLastHand <> PLAYER_NONE then
+    ctCopyAIAttack:     if fLastHand <> HAND_NONE then
                         begin
                           //Save the attack to the AI assets
                           gHands[fLastHand].AI.General.Attacks.AddAttack(fAIAttack);
@@ -795,10 +795,10 @@ begin
                           //FillChar(fAIAttack, SizeOf(fAIAttack), #0);
                         end;
 
-    ctClearAIAttack:    if fLastHand <> PLAYER_NONE then
+    ctClearAIAttack:    if fLastHand <> HAND_NONE then
                           FillChar(fAIAttack, SizeOf(fAIAttack), #0);
 
-    ctSetRallyPoint:    if (fLastHand <> PLAYER_NONE) and PointInMap(P[0]+1, P[1]+1) then
+    ctSetRallyPoint:    if (fLastHand <> HAND_NONE) and PointInMap(P[0]+1, P[1]+1) then
                         begin
                           if (fLastHouse <> nil) then
                           begin

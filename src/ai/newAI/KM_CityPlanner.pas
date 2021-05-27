@@ -2450,7 +2450,7 @@ function TKMCityPlanner.PlanDefenceTowers(): Boolean;
   begin
     // Filter defence positions, build towers only at the closest
     PL := gAIFields.Influences.GetBestAllianceOwner(fOwner, aCenter, atAlly);
-    if (PL <> fOwner) AND (PL <> PLAYER_NONE) then
+    if (PL <> fOwner) AND (PL <> HAND_NONE) then
       Exit;
     if (gAIFields.Influences.GetBestAllianceOwnership(fOwner, gAIFields.NavMesh.Point2Polygon[aCenter.Y,aCenter.X], atEnemy) > MAX_ENEMY_INFLUENCE) then
       Exit;

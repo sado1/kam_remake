@@ -1834,7 +1834,7 @@ end;
 procedure TKMScriptActions.ShowMsg(aPlayer: Shortint; const aText: AnsiString);
 begin
   try
-    if (aPlayer = gMySpectator.HandID) or (aPlayer = PLAYER_NONE) then
+    if (aPlayer = gMySpectator.HandID) or (aPlayer = HAND_NONE) then
       gGame.ShowMessageLocal(mkText, gGame.TextMission.ParseTextMarkup(UnicodeString(aText)), KMPOINT_ZERO);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
@@ -1852,7 +1852,7 @@ procedure TKMScriptActions.ShowMsgFormatted(aPlayer: Shortint; const aText: Ansi
 begin
   try
     try
-      if (aPlayer = gMySpectator.HandID) or (aPlayer = PLAYER_NONE) then
+      if (aPlayer = gMySpectator.HandID) or (aPlayer = HAND_NONE) then
         gGame.ShowMessageLocal(mkText, gGame.TextMission.ParseTextMarkup(UnicodeString(aText), Params), KMPOINT_ZERO);
     except
       //Format may throw an exception
@@ -1874,7 +1874,7 @@ begin
   try
     if gTerrain.TileInMapCoords(aX, aY) then
     begin
-      if (aPlayer = gMySpectator.HandID) or (aPlayer = PLAYER_NONE) then
+      if (aPlayer = gMySpectator.HandID) or (aPlayer = HAND_NONE) then
         gGame.ShowMessageLocal(mkText, gGame.TextMission.ParseTextMarkup(UnicodeString(aText)), KMPoint(aX,aY));
     end
     else
@@ -1898,7 +1898,7 @@ begin
     try
       if gTerrain.TileInMapCoords(aX, aY) then
       begin
-        if (aPlayer = gMySpectator.HandID) or (aPlayer = PLAYER_NONE) then
+        if (aPlayer = gMySpectator.HandID) or (aPlayer = HAND_NONE) then
           gGame.ShowMessageLocal(mkText, gGame.TextMission.ParseTextMarkup(UnicodeString(aText), Params), KMPoint(aX,aY));
       end
       else
@@ -1995,7 +1995,7 @@ var
   I: Integer;
 begin
   try
-    if aPlayer = PLAYER_NONE then
+    if aPlayer = HAND_NONE then
       for I := 0 to gHands.Count - 1 do
         SetAllowAllyToHand(I)
     else
@@ -2149,7 +2149,7 @@ begin
     begin
       H := fIDCache.GetHouse(aHouseID);
       if H <> nil then
-        H.DemolishHouse(PLAYER_NONE, aSilent);
+        H.DemolishHouse(HAND_NONE, aSilent);
     end
     else
       LogParamWarning('Actions.HouseDestroy', [aHouseID]);
@@ -3740,7 +3740,7 @@ begin
       U := fIDCache.GetUnit(aUnitID);
       if U <> nil then
         //Force delay to let the unit choose when to die, because this could be called in the middle of an event
-        U.Kill(PLAYER_NONE, not aSilent, True);
+        U.Kill(HAND_NONE, not aSilent, True);
     end
     else
       LogParamWarning('Actions.UnitKill', [aUnitID]);
@@ -3893,7 +3893,7 @@ begin
       G := fIDCache.GetGroup(aGroupID);
       if G <> nil then
         for I := G.Count - 1 downto 0 do
-          G.Members[I].Kill(PLAYER_NONE, not aSilent, True);
+          G.Members[I].Kill(HAND_NONE, not aSilent, True);
     end
     else
       LogParamWarning('Actions.GroupKillAll', [aGroupID]);

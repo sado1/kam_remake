@@ -680,7 +680,7 @@ begin
   HidePages; // HidePages first. That will also reset old marker;
 
   gGame.MapEditor.ActiveMarker := aMarker;
-  Assert((aMarker.MarkerType <> mmtNone) and (aMarker.Owner <> PLAYER_NONE) and (aMarker.Index <> -1));
+  Assert((aMarker.MarkerType <> mmtNone) and (aMarker.Owner <> HAND_NONE) and (aMarker.Index <> -1));
 
   Player_SetActive(aMarker.Owner);
 

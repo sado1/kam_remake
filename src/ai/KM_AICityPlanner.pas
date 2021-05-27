@@ -582,7 +582,7 @@ begin
 
   //Don't build on allies and/or enemies territory
   TerOwner := gAIFields.Influences.GetBestOwner(X,Y);
-  Result := ((TerOwner = fOwner) or (TerOwner = PLAYER_NONE));
+  Result := ((TerOwner = fOwner) or (TerOwner = HAND_NONE));
 end;
 
 

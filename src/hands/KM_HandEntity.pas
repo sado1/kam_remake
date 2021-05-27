@@ -128,7 +128,7 @@ end;
 
 function TKMHandEntity.GetOwner: TKMHandID;
 begin
-  if Self = nil then Exit(PLAYER_NONE);
+  if Self = nil then Exit(HAND_NONE);
 
   Result := fOwner;
 end;

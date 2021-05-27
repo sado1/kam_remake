@@ -995,7 +995,7 @@ function TKMScriptSoundsManager.CanPlay(const aScriptSound: TKMScriptSound): Boo
 var
   distanceSqr: Single;
 begin
-  Result := ((aScriptSound.HandIndex = gMySpectator.HandID) or (aScriptSound.HandIndex = PLAYER_NONE))
+  Result := ((aScriptSound.HandIndex = gMySpectator.HandID) or (aScriptSound.HandIndex = HAND_NONE))
              and (not aScriptSound.Attenuate
                   or (gMySpectator.FogOfWar.CheckTileRevelation(aScriptSound.Loc.X, aScriptSound.Loc.Y) > 0));
   if not Result then Exit;

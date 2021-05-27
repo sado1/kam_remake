@@ -492,7 +492,7 @@ var
   PL: TKMHandID;
   Best: Integer;
 begin
-  Result := PLAYER_NONE;
+  Result := HAND_NONE;
   if not AI_GEN_INFLUENCE_MAPS OR (aIdx = High(Word)) then
     Exit;
 
@@ -512,7 +512,7 @@ var
   Idx: Word;
   Best: Integer;
 begin
-  Result := PLAYER_NONE;
+  Result := HAND_NONE;
   Idx := fNavMesh.Point2Polygon[aPoint.Y,aPoint.X];
   if not AI_GEN_INFLUENCE_MAPS OR (Idx = High(Word)) then
     Exit;
@@ -785,7 +785,7 @@ begin
     for K := 0 to fPolyCnt - 1 do
     begin
       PL := GetBestOwner(K);
-      if (PL = PLAYER_NONE) then
+      if (PL = HAND_NONE) then
         Continue
       else
         Col := (gHands[PL].FlagColor AND tcWhite) OR (OwnPoly[PL,K] shl 24);
@@ -805,7 +805,7 @@ begin
   if (OVERLAY_INFLUENCE OR OVERLAY_OWNERSHIP) AND OVERLAY_AI_COMBAT then
   begin
     WatchedPL := gMySpectator.HandID;
-    if (WatchedPL = PLAYER_NONE) then
+    if (WatchedPL = HAND_NONE) then
       Exit;
 
     if not GetAllianceIdx(WatchedPL,TeamIdx) then

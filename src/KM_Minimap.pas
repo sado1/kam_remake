@@ -143,7 +143,7 @@ begin
       if not aRevealAll and not Revealed then
         fBase[N] := $E0000000
       else
-        if TileOwner <> PLAYER_NONE then
+        if TileOwner <> HAND_NONE then
           fBase[N] := HandColors[TileOwner]
         else
         begin

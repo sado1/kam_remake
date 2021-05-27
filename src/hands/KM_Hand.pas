@@ -1113,7 +1113,7 @@ begin
       if (HA[I,K] = 2) then
       begin
         terOwner := gAIFields.Influences.GetBestOwner(Tx,Ty);
-        if ((terOwner <> fID) and (terOwner <> PLAYER_NONE)) then
+        if ((terOwner <> fID) and (terOwner <> HAND_NONE)) then
           Exit;
       end;
     end;
@@ -1541,7 +1541,7 @@ begin
     begin
       Stats.HouseLost(aHouse.HouseType);
 
-      if aFrom <> PLAYER_NONE then
+      if aFrom <> HAND_NONE then
         gHands[aFrom].Stats.HouseDestroyed(aHouse.HouseType);
     end;
   end;
@@ -2013,7 +2013,7 @@ end;
 procedure TKMHand.UnitDied(aUnit: TKMUnit; aFrom: TKMHandID);
 begin
   Stats.UnitLost(aUnit.UnitType);
-  if aFrom <> PLAYER_NONE then
+  if aFrom <> HAND_NONE then
     gHands[aFrom].Stats.UnitKilled(aUnit.UnitType);
 
   //Demands: food for soldiers / stone or wood for workers

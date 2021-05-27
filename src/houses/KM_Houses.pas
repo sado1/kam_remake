@@ -717,7 +717,7 @@ begin
       gHands[Owner].Stats.WareConsumed(W, fResourceOut[I]);
   end;
 
-  gTerrain.SetHouse(fPosition, fType, hsNone, PLAYER_NONE);
+  gTerrain.SetHouse(fPosition, fType, hsNone, HAND_NONE);
 
   //Leave rubble
   if not IsSilent then
@@ -752,7 +752,7 @@ begin
   Assert(gGameParams.IsMapEditor);
 
   //We have to remove the house THEN check to see if we can place it again so we can put it on the old position
-  gTerrain.SetHouse(fPosition, fType, hsNone, PLAYER_NONE);
+  gTerrain.SetHouse(fPosition, fType, hsNone, HAND_NONE);
 
   if gMySpectator.Hand.CanAddHousePlan(aPos, HouseType) then
   begin
@@ -1251,7 +1251,7 @@ begin
     if aAttacker <> nil then
       attackerHand := TKMUnitWarrior(aAttacker).Owner
     else
-      attackerHand := PLAYER_NONE;
+      attackerHand := HAND_NONE;
 
     //Properly release house assets
     //Do not remove house in Editor just yet, mapmaker might increase the hp again

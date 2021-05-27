@@ -439,7 +439,7 @@ begin
         Land^[I,J].TileLock     := tlNone;
         Land^[I,J].JamMeter     := 0;
         Land^[I,J].Passability  := []; //Gets recalculated later
-        Land^[I,J].TileOwner    := PLAYER_NONE;
+        Land^[I,J].TileOwner    := HAND_NONE;
         Land^[I,J].IsUnit       := nil;
         Land^[I,J].IsVertexUnit := vuNone;
         Land^[I,J].FieldAge     := 0;
@@ -502,7 +502,7 @@ const
     cornersTerKinds: TKMTerrainKindCorners;
     tileOwner: TKMHandID;
   begin
-    tileOwner := PLAYER_NONE;
+    tileOwner := HAND_NONE;
     // new appended terrain, generate tile then
     if aNewGenTile then
     begin
@@ -3008,7 +3008,7 @@ begin
 
   if aOverlay = toRoad then
   begin
-    SetRoad(Loc, PLAYER_NONE);
+    SetRoad(Loc, HAND_NONE);
     Exit;
   end;
 
@@ -5270,7 +5270,7 @@ begin
   // Player roads (when tile owner is specified) should not be saved as an overlay, when save .map file
   // since player roads are set for each player in the dat file
   // but they should for a game save or if they are made as an neutral road (so just simple overlay in the map file)
-  if aGameSave or (aTileOwner = PLAYER_NONE) then
+  if aGameSave or (aTileOwner = HAND_NONE) then
     overlay := aTileBasic.TileOverlay;
 
   S.Write(overlay, SizeOf(overlay)); //8

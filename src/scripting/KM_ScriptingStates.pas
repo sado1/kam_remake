@@ -2179,7 +2179,7 @@ var
   H: TKMHouse;
 begin
   try
-    Result := PLAYER_NONE;
+    Result := HAND_NONE;
     if aHouseID > 0 then
     begin
       H := fIDCache.GetHouse(aHouseID);
@@ -3901,7 +3901,7 @@ var
   U: TKMUnit;
 begin
   try
-    Result := PLAYER_NONE;
+    Result := HAND_NONE;
     if aUnitID > 0 then
     begin
       U := fIDCache.GetUnit(aUnitID);
@@ -4508,7 +4508,7 @@ var
   G: TKMUnitGroup;
 begin
   try
-    Result := PLAYER_NONE;
+    Result := HAND_NONE;
     if aGroupID > 0 then
     begin
       G := fIDCache.GetGroup(aGroupID);

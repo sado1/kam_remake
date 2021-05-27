@@ -333,7 +333,7 @@ begin
     // DISMISS UNIT
     fAskDismiss := False;
     if isGroup then
-      TKMUnitGroup(gMySpectator.Selected).SelectedUnit.Kill(PLAYER_NONE, True, False) //Debug option
+      TKMUnitGroup(gMySpectator.Selected).SelectedUnit.Kill(HAND_NONE, True, False) //Debug option
     else
       SendUnitDismissCommand;
   end

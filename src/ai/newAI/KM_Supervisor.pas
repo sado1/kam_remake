@@ -1225,7 +1225,7 @@ begin
   if not OVERLAY_AI_SUPERVISOR then
     Exit;
   SelectedTeam := -1;
-  if (gMySpectator.HandID <> PLAYER_NONE) then
+  if (gMySpectator.HandID <> HAND_NONE) then
     SelectedTeam := fPL2Alli[ gMySpectator.HandID ];
   // Head
   Cnt := 0;

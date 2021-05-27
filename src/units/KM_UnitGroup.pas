@@ -745,7 +745,7 @@ var
   I: Integer;
 begin
   for I := fMembers.Count - 1 downto 0 do
-    fMembers[I].Kill(PLAYER_NONE, True, False);
+    fMembers[I].Kill(HAND_NONE, True, False);
 end;
 
 

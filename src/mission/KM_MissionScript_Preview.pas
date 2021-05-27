@@ -92,7 +92,7 @@ begin
         fMapPreview[I].TileHeight := tileBasic.Height;
 
         //Fill in blanks
-        fMapPreview[I].TileOwner := PLAYER_NONE;
+        fMapPreview[I].TileOwner := HAND_NONE;
         fMapPreview[I].Revealed := False;
       end;
   finally

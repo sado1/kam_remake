@@ -1649,7 +1649,7 @@ begin
     for K := aRect.Left to aRect.Right do
     begin
       P := KMPoint(K, I);
-      if    (gTerrain.Land^[I, K].TileOwner <> PLAYER_NONE) //owner is set for tile
+      if    (gTerrain.Land^[I, K].TileOwner <> HAND_NONE) //owner is set for tile
         and (gTerrain.TileIsCornField(P)                   // show only for corn + wine + roads
           or gTerrain.TileIsWineField(P)
           or (gTerrain.Land^[I, K].TileOverlay = toRoad)) then
