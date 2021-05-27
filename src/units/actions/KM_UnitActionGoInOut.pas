@@ -51,7 +51,8 @@ implementation
 uses
   KM_HandsCollection, KM_Resource, KM_Terrain, KM_UnitActionStay, KM_UnitActionWalkTo,
   KM_HouseBarracks, KM_ResHouses, KM_ResUnits, KM_CommonUtils,
-  KM_ResTypes;
+  KM_ResTypes,
+  KM_HouseUtils;
 
 
 { TUnitActionGoInOut }
@@ -307,17 +308,16 @@ end;
 
 function TKMUnitActionGoInOut.GetDoorwaySlide(aCheck: TKMCheckAxis): Single;
 var
-  offset: Integer;
+  offset: Single;
 begin
-  if aCheck = axX then
-    offset := gResHouses[fHouse.HouseType].EntranceOffsetXpx - CELL_SIZE_PX div 2
-  else
-    offset := gResHouses[fHouse.HouseType].EntranceOffsetYpx;
-
   if (fHouse = nil) or not fInitiated then
     Result := 0
   else
-    Result := Mix(0, offset/CELL_SIZE_PX, fStep);
+  begin
+    offset := GetHouseDoorwayOffset(fHouse.HouseType, aCheck);
+
+    Result := Mix(0, offset, fStep);
+  end;
 end;
 
 

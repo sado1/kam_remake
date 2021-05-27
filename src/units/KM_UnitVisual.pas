@@ -2,7 +2,7 @@ unit KM_UnitVisual;
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_Points, KM_Defaults;
+  KM_ResTypes, KM_Points, KM_Defaults;
 
 type
   TKMUnitVisualState = record
@@ -10,6 +10,8 @@ type
     Dir: TKMDirection;
     SlideX, SlideY: Single;
     Action: TKMUnitActionType;
+    IsActGoInOutStarted: Boolean;
+    InHouseType: TKMHouseType;
     AnimStep: Integer;
     AnimFraction: Single;
 
@@ -34,6 +36,7 @@ type
 implementation
 uses
   KromUtils, Math, SysUtils,
+  KM_HouseUtils, KM_UnitActionGoInOut,
   KM_Units, KM_ResUnits, KM_Resource;
 
 
@@ -50,10 +53,22 @@ begin
   AnimStep := U.AnimStep;
   AnimFraction := 0.0;
 
+  IsActGoInOutStarted := False;
+
   if U.Action <> nil then
-    Action := U.Action.ActionType
+  begin
+    Action := U.Action.ActionType;
+    if (U.Action is TKMUnitActionGoInOut)
+      and TKMUnitActionGoInOut(U.Action).IsStarted then
+      IsActGoInOutStarted := True;
+  end
   else
     Action := uaUnknown;
+
+  if U.InHouse <> nil then
+    InHouseType := U.InHouse.HouseType
+  else
+    InHouseType := htNone;
 end;
 
 
@@ -71,10 +86,27 @@ end;
 function TKMUnitVisual.GetLerp(aLag: Single): TKMUnitVisualState;
 var
   animCount: Integer;
+  prevSlideX, prevSlideY: Single;
 begin
+  prevSlideX := fPrev.SlideX;
+  prevSlideY := fPrev.SlideY;
+
+  // Special case for a unit who just started exiting the house
+  // In that case fPrev slide was not calculated with door slide consideration
+  // and thus fPrev.Slide would be 0 in the most cases (or in all cases)
+  // That will make unit 'jump' from fPrev.PosF to fCurr.PosF + fCurr.Slide, which looks very bad
+  if not fPrev.IsActGoInOutStarted
+    and fCurr.IsActGoInOutStarted
+    and (fPrev.InHouseType <> htNone) then
+  begin
+    // Just add doorway offset to the fPrev.Slide then
+    prevSlideX := prevSlideX + GetHouseDoorwayOffset(fPrev.InHouseType, axX);
+    prevSlideY := prevSlideY + GetHouseDoorwayOffset(fPrev.InHouseType, axY);
+  end;
+
   Result.PosF := KMLerp(fCurr.PosF, fPrev.PosF, aLag);
-  Result.SlideX := KromUtils.Lerp(fCurr.SlideX, fPrev.SlideX, aLag);
-  Result.SlideY := KromUtils.Lerp(fCurr.SlideY, fPrev.SlideY, aLag);
+  Result.SlideX := KromUtils.Lerp(fCurr.SlideX, prevSlideX, aLag);
+  Result.SlideY := KromUtils.Lerp(fCurr.SlideY, prevSlideY, aLag);
   //If there's no lag, use the current state
   if aLag = 0.0 then
   begin
