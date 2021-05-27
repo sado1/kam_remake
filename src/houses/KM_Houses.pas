@@ -179,6 +179,7 @@ type
   public
     CurrentAction: TKMHouseAction; //Current action, withing HouseTask or idle
     WorkAnimStep: Cardinal; //Used for Work and etc.. which is not in sync with Flags
+    WorkAnimStepPrev: Cardinal; //Used for interpolated render, not saved
     DoorwayUse: Byte; //number of units using our door way. Used for sliding.
     OnDestroyed: TKMHouseFromEvent;
 
@@ -2019,6 +2020,7 @@ var
   HA: THouseArea;
 begin
   Inc(FlagAnimStep);
+  WorkAnimStepPrev := WorkAnimStep;
   Inc(WorkAnimStep);
 
   if (FlagAnimStep mod 10 = 0) and gGameParams.IsMapEditor then
@@ -2216,7 +2218,7 @@ begin
                       gRenderPool.AddHouse(fType, fPosition, 1, 1, 0);
                     gRenderPool.AddHouseSupply(fType, fPosition, fResourceIn, fResourceOut, fResourceOutPool);
                     if CurrentAction <> nil then
-                      gRenderPool.AddHouseWork(fType, fPosition, CurrentAction.SubAction, WorkAnimStep, gHands[Owner].GameFlagColor);
+                      gRenderPool.AddHouseWork(fType, fPosition, CurrentAction.SubAction, WorkAnimStep, WorkAnimStepPrev, gHands[Owner].GameFlagColor);
                   end
                   else
                     gRenderPool.AddHouse(fType, fPosition,
@@ -2258,7 +2260,11 @@ procedure TKMHouseAction.SubActionWork(aActionSet: TKMHouseActionType);
 begin
   SubActionRem([haWork1..haWork5]); //Remove all work
   fSubAction := fSubAction + [aActionSet];
-  if fHouse.fType <> htMill then fHouse.WorkAnimStep := 0; //Exception for mill so that the windmill doesn't jump frames
+  if fHouse.fType <> htMill then
+  begin
+    fHouse.WorkAnimStep := 0; //Exception for mill so that the windmill doesn't jump frames
+    fHouse.WorkAnimStepPrev := 0;
+  end;
 end;
 
 

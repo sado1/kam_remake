@@ -204,6 +204,7 @@ type
     chkLogShowInGUI: TCheckBox;
     chkLogUpdateForGUI: TCheckBox;
     chkCursorCoordinates: TCheckBox;
+    chkInterpolatedAnims: TCheckBox;
     cpDebugOutput: TCategoryPanel;
     chkUIDs: TCheckBox;
     chkSelectedObjInfo: TCheckBox;
@@ -1259,6 +1260,7 @@ begin
                                or (aCtrl = chkLogSkipTempCmd)
                                or ((aCtrl = chkSnowHouses) and gGameSettings.AllowSnowHouses)
                                or ((aCtrl = chkInterpolatedRender) and gGameSettings.InterpolatedRender)
+                               or ((aCtrl = chkInterpolatedAnims) and INTERPOLATED_ANIMS)
                                or (aCtrl = chkShowObjects)
                                or (aCtrl = chkShowHouses)
                                or (aCtrl = chkShowUnits)
@@ -1417,7 +1419,8 @@ begin
   try
     {$IFDEF WDC}
     chkSnowHouses.        SetCheckedWithoutClick(gGameSettings.AllowSnowHouses); // Snow houses checkbox could be updated before game
-    chkInterpolatedRender.SetCheckedWithoutClick(gGameSettings.InterpolatedRender); // Snow houses checkbox could be updated before game
+    chkInterpolatedRender.SetCheckedWithoutClick(gGameSettings.InterpolatedRender);
+    chkInterpolatedAnims. SetCheckedWithoutClick(INTERPOLATED_ANIMS);
     chkLoadUnsupSaves.    SetCheckedWithoutClick(ALLOW_LOAD_UNSUP_VERSION_SAVE);
     chkDebugScripting.    SetCheckedWithoutClick(DEBUG_SCRIPTING_EXEC);
     chkPaintSounds.       SetCheckedWithoutClick(DISPLAY_SOUNDS);
@@ -1658,6 +1661,7 @@ begin
 //  ALLOW_SNOW_HOUSES := chkSnowHouses.Checked;
   gGameSettings.AllowSnowHouses := chkSnowHouses.Checked;
   gGameSettings.InterpolatedRender := chkInterpolatedRender.Checked;
+  INTERPOLATED_ANIMS := chkInterpolatedAnims.Checked;
 
   ALLOW_LOAD_UNSUP_VERSION_SAVE := chkLoadUnsupSaves.Checked;
   {$ENDIF}

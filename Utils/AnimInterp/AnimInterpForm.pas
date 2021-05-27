@@ -5,25 +5,58 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
-  KM_ResPalettes, KM_Defaults, KM_CommonTypes, KM_Points, KM_ResSprites, KM_ResSpritesEdit, KM_Pics, KM_ResUnits;
+  KM_ResPalettes, KM_Defaults, KM_CommonTypes, KM_Points, KM_ResSprites, KM_ResSpritesEdit, KM_Pics, KM_ResUnits,
+  KM_ResTypes, KM_ResMapElements, KM_ResHouses, KM_CommonClasses;
 
 type
+  TInterpCacheItem = record
+    A, B: Integer;
+    interpOffset: Integer;
+  end;
+
   TForm1 = class(TForm)
-    btnProcessUnits: TButton;
-    procedure btnProcessUnitsClick(Sender: TObject);
+    btnProcess: TButton;
+    Memo1: TMemo;
+    memoErrors: TMemo;
+    Label1: TLabel;
+    chkSerfCarry: TCheckBox;
+    chkUnitActions: TCheckBox;
+    chkUnitThoughts: TCheckBox;
+    chkTrees: TCheckBox;
+    chkHouseActions: TCheckBox;
+    chkBeasts: TCheckBox;
+    procedure btnProcessClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
     fPalettes: TKMResPalettes;
     fResUnits: TKMResUnits;
+    fResHouses: TKMResHouses;
+    fResMapElem: TKMResMapElements;
     fSprites: array[TRXType] of TKMSpritePackEdit;
 
-    fTempDir: string;
+    fOutputStream: TKMemoryStreamBinary;
+
+    fInterpCache: array of TInterpCacheItem;
+
+    fWorkDir: string;
+    fOutDir: string;
     fDainFolder: string;
 
+    function GetMinCanvasSize(A: TKMAnimLoop; RT: TRXType): Integer;
+    function GetCanvasSize(aID: Integer; RT: TRXType): Integer;
     function GetDainParams(aDir: string; aAlpha: Boolean): string;
-    procedure MakeImagesInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; aBaseDir: string; aExportType: TInterpExportType);
-    function DoInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; aPicOffset: Integer): Integer;
+
+    procedure WriteEmptyAnim;
+    procedure MakeInterpImages(RT: TRXType; A: TKMAnimLoop; aBaseDir: string; aExportType: TInterpExportType);
+    procedure MakeInterpImagesPair(RT: TRXType; aID_1, aID_2: Integer; aBaseDir: string; aExportType: TInterpExportType);
+    procedure DoInterp(RT: TRXType; A: TKMAnimLoop; aSimpleAlpha: Boolean; aBkgRGB: Cardinal; var aPicOffset: Integer; aDryRun: Boolean);
+    procedure DoInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; var aPicOffset: Integer; aDryRun: Boolean);
+    procedure DoInterpSerfCarry(aWare: TKMWareType; aDir: TKMDirection; var aPicOffset: Integer; aDryRun: Boolean);
+    procedure DoInterpUnitThought(aThought: TKMUnitThought; var aPicOffset: Integer; aDryRun: Boolean);
+    procedure DoInterpTree(aTree: Integer; var aPicOffset: Integer; aDryRun: Boolean);
+    procedure DoInterpHouseAction(aHT: TKMHouseType; aHouseAct: TKMHouseActionType; var aPicOffset: Integer; aDryRun: Boolean);
+    procedure DoInterpBeast(beastHouse, beast, beastAge: Integer; var aPicOffset: Integer; aDryRun: Boolean);
   public
     { Public declarations }
   end;
@@ -33,8 +66,48 @@ var
 
 implementation
 uses
-  ShellApi, Math, KM_FileIO, KromUtils,
-  KM_ResHouses, KM_Log, KM_IoPNG;
+  ShellApi, Math, RTTI, KM_FileIO, KromUtils,
+  KM_Log, KM_IoPNG, KM_ResWares, KM_ResInterpolation;
+
+const
+  CANVAS_Y_OFFSET = 14;
+
+  //This is different to TKMUnitSpec.SupportsAction because we include any used
+  //animations like uaWalkArm for soliders (flag) which isn't an action.
+  UNIT_SUPPORTED_ANIMS: array [TKMUnitType] of TKMUnitActionTypeSet = (
+    [], [], //None, Any
+    [uaWalk, uaDie, uaEat, uaWalkArm], //Serf
+    [uaWalk, uaWork, uaDie, uaWork1, uaEat..uaWalkTool2],
+    [uaWalk, uaDie, uaEat],
+    [uaWalk, uaDie, uaEat],
+    [uaWalk, uaWork, uaDie, uaWork1, uaEat..uaWalkBooty2],
+    [uaWalk, uaDie, uaEat],
+    [uaWalk, uaDie, uaEat],
+    [uaWalk, uaDie, uaEat],
+    [uaWalk, uaWork, uaDie, uaWork1..uaEat, uaWalkTool, uaWalkBooty], //Fisher
+    [uaWalk, uaWork, uaDie, uaWork1, uaWork2, uaEat], //Worker
+    [uaWalk, uaWork, uaDie, uaWork1, uaEat..uaWalkTool], //Stonecutter
+    [uaWalk, uaDie, uaEat],
+    [uaWalk, uaDie, uaEat],
+    [uaWalk, uaSpec, uaDie, uaEat], //Recruit
+    [uaWalk, uaWork, uaSpec, uaDie, uaWalkArm], //Militia
+    [uaWalk, uaWork, uaSpec, uaDie, uaWalkArm], //Axeman
+    [uaWalk, uaWork, uaSpec, uaDie, uaWalkArm], //Swordsman
+    [uaWalk, uaWork, uaSpec, uaDie, uaWalkArm], //Bowman
+    [uaWalk, uaWork, uaSpec, uaDie, uaWalkArm], //Crossbowman
+    [uaWalk, uaWork, uaDie, uaWalkArm],
+    [uaWalk, uaWork, uaDie, uaWalkArm],
+    [uaWalk, uaWork, uaDie, uaWalkArm],
+    [uaWalk, uaWork, uaDie, uaWalkArm], //Cavalry
+    [uaWalk, uaWork, uaSpec, uaDie, uaWalkArm], //Barbarian
+    [uaWalk, uaWork, uaDie, uaWalkArm], //Rebel
+    [uaWalk, uaWork, uaSpec, uaDie, uaWalkArm], //Slingshot
+    [uaWalk, uaWork, uaSpec, uaDie, uaWalkArm], //Warrior
+    [uaWalk, uaWork, uaDie, uaWalkArm], //Horseman
+    [uaWalk], //Wolf
+    [uaWalk..uaWork1], //Fish (1..5 fish per unit)
+    [uaWalk], [uaWalk], [uaWalk], [uaWalk], [uaWalk], [uaWalk] //Animals
+  );
 
 {$R *.dfm}
 
@@ -49,14 +122,19 @@ begin
   fPalettes.LoadPalettes(ExeDir + 'data\gfx\');
 
   fResUnits := TKMResUnits.Create;
+  fResHouses := TKMResHouses.Create;
+  fResMapElem := TKMResMapElements.Create;
+  fResMapElem.LoadFromFile(ExeDir + 'data' + PathDelim + 'defines' + PathDelim + 'mapelem.dat');
 
-  fTempDir := ExeDir + 'SpriteInterp\';
+  fWorkDir := ExeDir + 'SpriteInterp\';
+  fOutDir := fWorkDir + 'Output\';
   fDainFolder := 'C:\Dev\kam_sprites\DAIN_APP Alpha 1.0\';
 end;
 
+
 function TForm1.GetDainParams(aDir: string; aAlpha: Boolean): string;
 var
-  DainFolder, DainExe: string;
+  DainExe: string;
 begin
   DainExe := fDainFolder+'DAINAPP.exe';
   Result := 'cmd.exe /C "'+DainExe+'" --cli 1 -o '+aDir+' -p 0 -l 1 -in 8 -da 0 -se 0 -si 1 -sr 0 -ha 0 --fast_mode 0';
@@ -70,22 +148,69 @@ begin
 end;
 
 
-procedure TForm1.MakeImagesInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; aBaseDir: string; aExportType: TInterpExportType);
+function TForm1.GetMinCanvasSize(A: TKMAnimLoop; RT: TRXType): Integer;
 var
-  RT: TRXType;
-  RXName, origSpritesDir, interpSpritesDir: string;
-  A: TKMAnimLoop;
-  Step, SpriteID: Integer;
+  Step, SpriteID, MaxSoFar, X, Y, W, H: Integer;
+begin
+  MaxSoFar := 32;
+  for Step := 1 to A.Count do
+  begin
+    SpriteID := A.Step[Step]+1; //Sprites in units.dat are 0 indexed
+    if SpriteID > 0 then
+    begin
+      W := fSprites[RT].RXData.Size[SpriteID].X;
+      H := fSprites[RT].RXData.Size[SpriteID].Y;
+      X := fSprites[RT].RXData.Pivot[SpriteID].x;
+      Y := fSprites[RT].RXData.Pivot[SpriteID].y + CANVAS_Y_OFFSET;
+      MaxSoFar := Max(MaxSoFar, -X);
+      MaxSoFar := Max(MaxSoFar, X + W);
+      MaxSoFar := Max(MaxSoFar, -Y);
+      MaxSoFar := Max(MaxSoFar, Y + H);
+    end;
+  end;
+  //Sprite is centred so we need this much padding on both sides
+  MaxSoFar := 2*MaxSoFar;
+  //Keep 1px padding on all sides
+  MaxSoFar := MaxSoFar + 2;
+  Result := ((MaxSoFar div 32) + 1)*32;
+end;
+
+
+function TForm1.GetCanvasSize(aID: Integer; RT: TRXType): Integer;
+var
+  MaxSoFar, X, Y, W, H: Integer;
+begin
+  MaxSoFar := 32;
+
+  W := fSprites[RT].RXData.Size[aID].X;
+  H := fSprites[RT].RXData.Size[aID].Y;
+  X := fSprites[RT].RXData.Pivot[aID].x;
+  Y := fSprites[RT].RXData.Pivot[aID].y + CANVAS_Y_OFFSET;
+  MaxSoFar := Max(MaxSoFar, -X);
+  MaxSoFar := Max(MaxSoFar, X + W);
+  MaxSoFar := Max(MaxSoFar, -Y);
+  MaxSoFar := Max(MaxSoFar, Y + H);
+
+  //Sprite is centred so we need this much padding on both sides
+  MaxSoFar := 2*MaxSoFar;
+  //Keep 1px padding on all sides
+  MaxSoFar := MaxSoFar + 2;
+  Result := ((MaxSoFar div 32) + 1)*32;
+end;
+
+
+procedure TForm1.MakeInterpImagesPair(RT: TRXType; aID_1, aID_2: Integer; aBaseDir: string; aExportType: TInterpExportType);
+var
+  origSpritesDir, interpSpritesDir: string;
+  CanvasSize: Integer;
   StartupInfo: TStartupInfo;
   ProcessInfo: TProcessInformation;
-  NeedAlpha: Boolean;
+  NeedAlpha, AllBlank, Worked: Boolean;
 begin
-  RT := rxUnits;
   if fSprites[RT] = nil then
   begin
     fSprites[RT] := TKMSpritePackEdit.Create(RT, fPalettes);
-    RXName := ExeDir + 'data\Sprites\' + RXInfo[RT].FileName + '_a.rxx';
-    fSprites[RT].LoadFromRXXFile(RXName);
+    fSprites[RT].LoadFromRXXFile(ExeDir + 'data\Sprites\' + RXInfo[RT].FileName + '_a.rxx');
   end;
 
   origSpritesDir := aBaseDir + 'original_frames\';
@@ -95,25 +220,90 @@ begin
   KMDeleteFolderContent(origSpritesDir);
   KMDeleteFolderContent(interpSpritesDir);
 
-  A := fResUnits[aUT].UnitAnim[aAction,aDir];
-  for Step := 1 to A.Count do
-  begin
-    SpriteID := A.Step[Step]+1; //Sprites in units.dat are 0 indexed
-    if SpriteID > 0 then
-    begin
-      fSprites[RT].ExportImageForInterp(origSpritesDir + format('%.6d.png', [Step]), SpriteID, aExportType);
-    end;
-  end;
-  //Write out the first sprite again to create a loop
-  SpriteID := A.Step[1]+1; //Sprites in units.dat are 0 indexed
-  if SpriteID > 0 then
-    fSprites[RT].ExportImageForInterp(origSpritesDir + format('%.6d.png', [A.Count+1]), SpriteID, aExportType);
+  AllBlank := True;
+  CanvasSize := Max(GetCanvasSize(aID_1, RT), GetCanvasSize(aID_2, RT));
+
+  Worked := fSprites[RT].ExportImageForInterp(origSpritesDir + '1.png', aID_1, aExportType, CanvasSize);
+  AllBlank := AllBlank and not Worked;
+
+  Worked := fSprites[RT].ExportImageForInterp(origSpritesDir + '2.png', aID_2, aExportType, CanvasSize);
+  AllBlank := AllBlank and not Worked;
+
+  if AllBlank then
+    Exit;
 
   NeedAlpha := aExportType in [ietBase, ietNormal];
 
   //Interpolate
   ZeroMemory(@StartupInfo, SizeOf(StartupInfo));
   StartupInfo.cb := SizeOf(StartupInfo);
+  StartupInfo.dwFlags := STARTF_USESHOWWINDOW;
+  StartupInfo.wShowWindow := SW_MINIMIZE;
+  CreateProcess(nil, PChar(GetDainParams(aBaseDir, NeedAlpha)), nil, nil, false, 0, nil, PChar(fDainFolder), StartupInfo, ProcessInfo);
+  WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
+  //ShellExecute(0, nil, 'cmd.exe', PChar(DainParams), PChar(DainFolder), SW_SHOWNORMAL);
+end;
+
+
+procedure TForm1.WriteEmptyAnim;
+var
+  Step, SubStep: Integer;
+begin
+  for Step := 1 to 30 do
+    for SubStep := 1 to 8 do
+      fOutputStream.Write(Integer(-1));
+end;
+
+
+procedure TForm1.MakeInterpImages(RT: TRXType; A: TKMAnimLoop; aBaseDir: string; aExportType: TInterpExportType);
+var
+  origSpritesDir, interpSpritesDir: string;
+  Step, SpriteID, CanvasSize: Integer;
+  StartupInfo: TStartupInfo;
+  ProcessInfo: TProcessInformation;
+  NeedAlpha, AllBlank, Worked: Boolean;
+begin
+  if fSprites[RT] = nil then
+  begin
+    fSprites[RT] := TKMSpritePackEdit.Create(RT, fPalettes);
+    fSprites[RT].LoadFromRXXFile(ExeDir + 'data\Sprites\' + RXInfo[RT].FileName + '_a.rxx');
+  end;
+
+  origSpritesDir := aBaseDir + 'original_frames\';
+  interpSpritesDir := aBaseDir + 'interpolated_frames\';
+  ForceDirectories(origSpritesDir);
+
+  KMDeleteFolderContent(origSpritesDir);
+  KMDeleteFolderContent(interpSpritesDir);
+
+  AllBlank := True;
+  CanvasSize := GetMinCanvasSize(A, RT);
+  for Step := 1 to A.Count do
+  begin
+    SpriteID := A.Step[Step]+1; //Sprites in units.dat are 0 indexed
+    if SpriteID > 0 then
+    begin
+      Worked := fSprites[RT].ExportImageForInterp(origSpritesDir + format('%.6d.png', [Step]), SpriteID, aExportType, CanvasSize);
+      AllBlank := AllBlank and not Worked;
+    end
+    else
+      raise Exception.Create('SpriteID = 0 for step '+IntToStr(Step));
+  end;
+  if AllBlank then
+    Exit;
+
+  //Write out the first sprite again to create a loop
+  SpriteID := A.Step[1]+1; //Sprites in units.dat are 0 indexed
+  if SpriteID > 0 then
+    fSprites[RT].ExportImageForInterp(origSpritesDir + format('%.6d.png', [A.Count+1]), SpriteID, aExportType, CanvasSize);
+
+  NeedAlpha := aExportType in [ietBase, ietNormal];
+
+  //Interpolate
+  ZeroMemory(@StartupInfo, SizeOf(StartupInfo));
+  StartupInfo.cb := SizeOf(StartupInfo);
+  StartupInfo.dwFlags := STARTF_USESHOWWINDOW;
+  StartupInfo.wShowWindow := SW_MINIMIZE;
   CreateProcess(nil, PChar(GetDainParams(aBaseDir, NeedAlpha)), nil, nil, false, 0, nil, PChar(fDainFolder), StartupInfo, ProcessInfo);
   WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
   //ShellExecute(0, nil, 'cmd.exe', PChar(DainParams), PChar(DainFolder), SW_SHOWNORMAL);
@@ -122,7 +312,6 @@ end;
 
 function BlendRGBA(Back, Fore: Cardinal): Cardinal;
 var
-  C, RGB, Alpha: Cardinal;
   R1, R2, G1, G2, B1, B2, A1, A2: Single;
   Ro, Go, Bo, Ao: Single;
 begin
@@ -159,123 +348,523 @@ begin
 end;
 
 
-function TForm1.DoInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; aPicOffset: Integer): Integer;
+procedure TForm1.DoInterp(RT: TRXType; A: TKMAnimLoop; aSimpleAlpha: Boolean; aBkgRGB: Cardinal; var aPicOffset: Integer; aDryRun: Boolean);
+
+  function SameAnim(A, B: TKMAnimLoop): Boolean;
+  var
+    I: Integer;
+  begin
+    Result := A.Count = B.Count;
+    for I := 1 to 30 do
+      Result := Result and (A.Step[I] = B.Step[I]);
+  end;
+
 var
-  A: TKMAnimLoop;
-  I, Step: Integer;
+  I, Step, NextStep, SubStep, StepSprite, StepNextSprite, InterpOffset: Integer;
   pngWidth, pngHeight, newWidth, newHeight: Word;
   pngBase, pngShad, pngTeam, pngCrop, pngCropMask: TKMCardinalArray;
   X, Y, MinX, MinY, MaxX, MaxY: Integer;
   NoShadMinX, NoShadMinY, NoShadMaxX, NoShadMaxY: Integer;
   StrList: TStringList;
-  dirBase, dirShad, dirTeam: string;
+  dirBase, dirShad, dirTeam, suffixPath, outDirLocal: string;
+  needsMask, Found: Boolean;
 begin
-  dirBase := fTempDir + 'base\';
-  dirShad := fTempDir + 'shad\';
-  dirTeam := fTempDir + 'team\';
+  if (A.Count <= 1) or (A.Step[1] = -1) then
+  begin
+    WriteEmptyAnim;
+    Exit;
+  end;
 
-  KMDeleteFolder(dirBase);
-  KMDeleteFolder(dirShad);
-  KMDeleteFolder(dirTeam);
-
-  MakeImagesInterpUnit(aUt, aAction, aDir, dirBase, ietBase);
-  MakeImagesInterpUnit(aUt, aAction, aDir, dirShad, ietShadows);
-  MakeImagesInterpUnit(aUt, aAction, aDir, dirTeam, ietTeamMask);
+  dirBase := fWorkDir + 'base\';
+  dirShad := fWorkDir + 'shad\';
+  dirTeam := fWorkDir + 'team\';
 
   StrList := TStringList.Create;
-  A := fResUnits[aUT].UnitAnim[aAction,aDir];
+
+  outDirLocal := fOutDir+IntToStr(Byte(RT)+1)+'\';
+  ForceDirectories(outDirLocal);
 
   //Import and reprocess
-  Result := 8*A.Count;
-  for Step := 1 to 8*A.Count do
+  for Step := 1 to 30 do
   begin
-    LoadFromPng(dirBase + 'interpolated_frames\' + format('%.15d.png', [Step]), pngWidth, pngHeight, pngBase);
-    LoadFromPng(dirShad + 'interpolated_frames\' + format('%.15d.png', [Step]), pngWidth, pngHeight, pngShad);
-    LoadFromPng(dirTeam + 'interpolated_frames\' + format('%.15d.png', [Step]), pngWidth, pngHeight, pngTeam);
-
-    //Determine Min/Max X/Y
-    MinX := MaxInt;
-    MinY := MaxInt;
-    MaxX := -1;
-    MaxY := -1;
-    NoShadMinX := MaxInt;
-    NoShadMinY := MaxInt;
-    NoShadMaxX := -1;
-    NoShadMaxY := -1;
-    for Y := 0 to pngHeight-1 do
+    if Step > A.Count then
     begin
-      for X := 0 to pngWidth-1 do
+      for SubStep := 1 to 8 do
+        fOutputStream.Write(Integer(-1));
+      Continue;
+    end;
+
+    StepSprite := A.Step[Step] + 1;
+    StepNextSprite := A.Step[(Step mod A.Count) + 1] + 1;
+
+    //Same image is repeated next frame
+    if StepSprite = StepNextSprite then
+    begin
+      for SubStep := 1 to 8 do
+        fOutputStream.Write(StepSprite);
+      Continue;
+    end;
+
+    fOutputStream.Write(StepSprite);
+
+    //Check the cache
+    Found := False;
+    for I := Low(fInterpCache) to High(fInterpCache) do
+    begin
+      if (fInterpCache[I].A = StepSprite) and (fInterpCache[I].B = StepNextSprite) then
       begin
-        if (pngBase[Y*pngWidth + X] shr 24 <> 0) or
-        ((pngShad[Y*pngWidth + X] and $FFFFFF) <> 0) or
-        ((pngTeam[Y*pngWidth + X] and $FFFFFF) <> 0) then
-        begin
-          MinX := Min(MinX, X);
-          MinY := Min(MinY, Y);
-          MaxX := Max(MaxX, X);
-          MaxY := Max(MaxY, Y);
-        end;
-        //Tighter "no shadow" bounds. Also ignore areas where alpha < 50%
-        if pngBase[Y*pngWidth + X] shr 24 >= $7F then
-        begin
-          NoShadMinX := Min(NoShadMinX, X);
-          NoShadMinY := Min(NoShadMinY, Y);
-          NoShadMaxX := Max(NoShadMaxX, X);
-          NoShadMaxY := Max(NoShadMaxY, Y);
-        end;
+        for SubStep := 0 to 6 do
+          fOutputStream.Write(fInterpCache[I].interpOffset+SubStep);
+
+        Found := True;
+      end
+      //Check for a reversed sequence in the cache (animations often loop backwards)
+      else if (fInterpCache[I].B = StepSprite) and (fInterpCache[I].A = StepNextSprite) then
+      begin
+        for SubStep := 6 downto 0 do
+          fOutputStream.Write(fInterpCache[I].interpOffset+SubStep);
+
+        Found := True;
       end;
     end;
-    //Crop
-    if (MaxX > MinX) and (MaxY > MinY) then
+    if Found then
+      Continue;
+
+    InterpOffset := aPicOffset;
+
+    //Cache it
+    SetLength(fInterpCache, Length(fInterpCache)+1);
+    fInterpCache[Length(fInterpCache)-1].A := StepSprite;
+    fInterpCache[Length(fInterpCache)-1].B := StepNextSprite;
+    fInterpCache[Length(fInterpCache)-1].interpOffset := InterpOffset;
+
+    //Update return values
+    Inc(aPicOffset, 7);
+    for SubStep := 0 to 6 do
+      fOutputStream.Write(InterpOffset+SubStep);
+
+    if aDryRun then
+      Continue;
+
+    //Interpolate!
+    KMDeleteFolder(dirBase);
+    KMDeleteFolder(dirShad);
+    KMDeleteFolder(dirTeam);
+
+    if aSimpleAlpha then
+      MakeInterpImagesPair(RT, StepSprite, StepNextSprite, dirBase, ietNormal)
+    else
     begin
-      newWidth := MaxX - MinX + 1;
-      newHeight := MaxY - MinY + 1;
-      SetLength(pngCrop, newWidth*newHeight);
-      SetLength(pngCropMask, newWidth*newHeight);
-      I := 0;
-      for Y := MinY to MaxY do
+      MakeInterpImagesPair(RT, StepSprite, StepNextSprite, dirBase, ietBase);
+      MakeInterpImagesPair(RT, StepSprite, StepNextSprite, dirShad, ietShadows);
+      MakeInterpImagesPair(RT, StepSprite, StepNextSprite, dirTeam, ietTeamMask);
+    end;
+
+    //Import and process interpolated steps
+    for SubStep := 0 to 6 do
+    begin
+      //Filenames are 1-based, and skip the first one since it's the original
+      suffixPath := 'interpolated_frames\' + format('%.15d.png', [SubStep+1+1]);
+
+      //Clear all our buffers so they get rezeroed
+      SetLength(pngBase, 0);
+      SetLength(pngShad, 0);
+      SetLength(pngTeam, 0);
+      SetLength(pngCrop, 0);
+      SetLength(pngCropMask, 0);
+
+      LoadFromPng(dirBase + suffixPath, pngWidth, pngHeight, pngBase);
+
+      if FileExists(dirShad + suffixPath) then
+        LoadFromPng(dirShad + suffixPath, pngWidth, pngHeight, pngShad);
+
+      if FileExists(dirTeam + suffixPath) then
+        LoadFromPng(dirTeam + suffixPath, pngWidth, pngHeight, pngTeam);
+
+      //Determine Min/Max X/Y
+      MinX := MaxInt;
+      MinY := MaxInt;
+      MaxX := -1;
+      MaxY := -1;
+      NoShadMinX := MaxInt;
+      NoShadMinY := MaxInt;
+      NoShadMaxX := -1;
+      NoShadMaxY := -1;
+      needsMask := False;
+      for Y := 0 to pngHeight-1 do
       begin
-        for X := MinX to MaxX do
+        for X := 0 to pngWidth-1 do
         begin
-          //Background is black with alpha from the shadow mask
-          pngCrop[I] := pngShad[Y*pngWidth + X] shl 24;
-          //Layer base sprite on top
-          pngCrop[I] := BlendRGBA(pngCrop[I], pngBase[Y*pngWidth + X]);
-
-          pngCropMask[I] := pngTeam[Y*pngWidth + X];
-
-          Inc(I);
+          if (pngBase[Y*pngWidth + X] shr 24 > 50) or
+          ((Length(pngShad) > 0) and ((pngShad[Y*pngWidth + X] and $FF) > 10)) then
+          begin
+            MinX := Min(MinX, X);
+            MinY := Min(MinY, Y);
+            MaxX := Max(MaxX, X);
+            MaxY := Max(MaxY, Y);
+          end;
+          //Tighter "no shadow" bounds. Also ignore areas where alpha < 50%
+          if pngBase[Y*pngWidth + X] shr 24 >= $7F then
+          begin
+            NoShadMinX := Min(NoShadMinX, X);
+            NoShadMinY := Min(NoShadMinY, Y);
+            NoShadMaxX := Max(NoShadMaxX, X);
+            NoShadMaxY := Max(NoShadMaxY, Y);
+          end;
+          if (Length(pngTeam) > 0) and ((pngTeam[Y*pngWidth + X] and $FF) > 0) then
+            needsMask := True;
         end;
       end;
+      //Crop
+      if (MaxX > MinX) and (MaxY > MinY) then
+      begin
+        newWidth := MaxX - MinX + 1;
+        newHeight := MaxY - MinY + 1;
+        SetLength(pngCrop, newWidth*newHeight);
+        SetLength(pngCropMask, newWidth*newHeight);
+        I := 0;
+        for Y := MinY to MaxY do
+        begin
+          for X := MinX to MaxX do
+          begin
+            //Background is black with alpha from the shadow mask
+            if Length(pngShad) > 0 then
+              pngCrop[I] := (pngShad[Y*pngWidth + X] shl 24) or aBkgRGB;
 
-      //Save offsets .txt file
-      StrList.Clear;
-      StrList.Append(IntToStr(MinX - pngWidth div 2));
-      StrList.Append(IntToStr(MinY - pngHeight div 2));
-      StrList.Append(IntToStr(NoShadMinX - MinX));
-      StrList.Append(IntToStr(NoShadMinY - MinY));
-      StrList.Append(IntToStr(newWidth-1 - (MaxX - NoShadMaxX)));
-      StrList.Append(IntToStr(newHeight-1 - (MaxY - NoShadMaxY)));
+            //Layer base sprite on top
+            pngCrop[I] := BlendRGBA(pngCrop[I], pngBase[Y*pngWidth + X]);
 
-      ForceDirectories(ExeDir+'Sprites\3\');
-      StrList.SaveToFile(ExeDir+'Sprites\3\'+format('3_%d.txt', [aPicOffset + Step]));
-      SaveToPng(newWidth, newHeight, pngCrop, ExeDir+'Sprites\3\'+format('3_%d.png', [aPicOffset + Step]));
-      SaveToPng(newWidth, newHeight, pngCropMask, ExeDir+'Sprites\3\'+format('3_%dm.png', [aPicOffset + Step]));
+            if Length(pngTeam) > 0 then
+              pngCropMask[I] := pngTeam[Y*pngWidth + X];
+
+            Inc(I);
+          end;
+        end;
+
+        //Save offsets .txt file
+        StrList.Clear;
+        StrList.Append(IntToStr(MinX - pngWidth div 2));
+        StrList.Append(IntToStr(MinY - CANVAS_Y_OFFSET - pngHeight div 2));
+        StrList.Append(IntToStr(NoShadMinX - MinX));
+        StrList.Append(IntToStr(NoShadMinY - MinY));
+        StrList.Append(IntToStr(newWidth-1 - (MaxX - NoShadMaxX)));
+        StrList.Append(IntToStr(newHeight-1 - (MaxY - NoShadMaxY)));
+
+        StrList.SaveToFile(outDirLocal+format('%d_%d.txt', [Byte(RT)+1, InterpOffset+SubStep]));
+        SaveToPng(newWidth, newHeight, pngCrop, outDirLocal+format('%d_%d.png', [Byte(RT)+1, InterpOffset+SubStep]));
+        if needsMask and (Length(pngTeam) > 0) then
+          SaveToPng(newWidth, newHeight, pngCropMask, outDirLocal+format('%d_%dm.png', [Byte(RT)+1, InterpOffset+SubStep]));
+      end;
     end;
   end;
 
   FreeAndNil(StrList);
 end;
 
-procedure TForm1.btnProcessUnitsClick(Sender: TObject);
+
+procedure TForm1.DoInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; var aPicOffset: Integer; aDryRun: Boolean);
 var
-  picOffset: Integer;
-  dir: TKMDirection;
+  A: TKMAnimLoop;
+  bkgRGB: Cardinal;
 begin
-  picOffset := 9300;
-  dir := dirE;
-  for dir := dirN to dirNW do
-    picOffset := picOffset + DoInterpUnit(utMilitia, uaWalk, dir, picOffset);
+  if aDir = dirNA then
+  begin
+    WriteEmptyAnim;
+    Exit;
+  end;
+
+  A := fResUnits[aUT].UnitAnim[aAction,aDir];
+
+  if (A.Count <= 1) or (A.Step[1] = -1) or not (aAction in UNIT_SUPPORTED_ANIMS[aUT]) then
+  begin
+    WriteEmptyAnim;
+    Exit;
+  end;
+
+  //Death animations have semi-transparent white that we treat as shadows
+  if aAction = uaDie then
+    bkgRGB := $FFFFFF
+  else
+    bkgRGB := $000000;
+
+  DoInterp(rxUnits, A, False, bkgRGB, aPicOffset, aDryRun);
+end;
+
+
+procedure TForm1.DoInterpSerfCarry(aWare: TKMWareType; aDir: TKMDirection; var aPicOffset: Integer; aDryRun: Boolean);
+var
+  A: TKMAnimLoop;
+begin
+  if (aDir = dirNA) or not (aWare in [WARE_MIN..WARE_MAX]) then
+  begin
+    WriteEmptyAnim;
+    Exit;
+  end;
+
+  A := fResUnits.SerfCarry[aWare, aDir];
+
+  DoInterp(rxUnits, A, False, $000000, aPicOffset, aDryRun);
+end;
+
+
+procedure TForm1.DoInterpUnitThought(aThought: TKMUnitThought; var aPicOffset: Integer; aDryRun: Boolean);
+var
+  A: TKMAnimLoop;
+  I: Integer;
+begin
+  if aThought = thNone then
+  begin
+    WriteEmptyAnim;
+    Exit;
+  end;
+
+  A.Count := 1 + THOUGHT_BOUNDS[aThought, 2] - THOUGHT_BOUNDS[aThought, 1];
+  for I := 1 to 30 do
+  begin
+    if I <= A.Count then
+      A.Step[I] := THOUGHT_BOUNDS[aThought, 2] - (I-1) // Thought bubbles are animated in reverse
+    else
+      A.Step[I] := -1;
+  end;
+
+  DoInterp(rxUnits, A, False, $FFFFFF, aPicOffset, aDryRun);
+end;
+
+
+procedure TForm1.DoInterpTree(aTree: Integer; var aPicOffset: Integer; aDryRun: Boolean);
+var
+  A: TKMAnimLoop;
+begin
+  A := gMapElements[aTree].Anim;
+
+  if (A.Count <= 1) or (A.Step[1] = -1) then
+  begin
+    WriteEmptyAnim;
+    Exit;
+  end;
+
+  DoInterp(rxTrees, A, False, $000000, aPicOffset, aDryRun);
+end;
+
+
+procedure TForm1.DoInterpHouseAction(aHT: TKMHouseType; aHouseAct: TKMHouseActionType; var aPicOffset: Integer; aDryRun: Boolean);
+var
+  A: TKMAnimLoop;
+begin
+  A := fResHouses.HouseDat[aHT].Anim[aHouseAct];
+
+  if (A.Count <= 1) or (A.Step[1] = -1) then
+  begin
+    WriteEmptyAnim;
+    Exit;
+  end;
+
+  DoInterp(rxHouses, A, (aHouseAct in [haSmoke, haFire1..haFire8]), $000000, aPicOffset, aDryRun);
+end;
+
+
+procedure TForm1.DoInterpBeast(beastHouse, beast, beastAge: Integer; var aPicOffset: Integer; aDryRun: Boolean);
+var
+  A: TKMAnimLoop;
+const
+  HOUSE_LOOKUP: array[1..3] of TKMHouseType = (htSwine, htStables, htMarketplace);
+begin
+  if (beastHouse = 3) and ((beast > 3) or (beastAge <> 1)) then
+  begin
+    WriteEmptyAnim;
+    Exit;
+  end;
+
+  A := fResHouses.BeastAnim[HOUSE_LOOKUP[beastHouse], beast, beastAge];
+
+  if (A.Count <= 1) or (A.Step[1] = -1) then
+  begin
+    WriteEmptyAnim;
+    Exit;
+  end;
+
+  DoInterp(rxHouses, A, False, $000000, aPicOffset, aDryRun);
+end;
+
+
+procedure TForm1.btnProcessClick(Sender: TObject);
+type
+  TKMInterpolation = array[1..30, 0..7] of Integer;
+var
+  I, picOffset, startPos: Integer;
+  dir: TKMDirection;
+  act: TKMUnitActionType;
+  u: TKMUnitType;
+  ware: TKMWareType;
+  th: TKMUnitThought;
+  h: TKMHouseType;
+  hAct: TKMHouseActionType;
+  animData: string;
+  beastHouse, beast, beastAge: Integer;
+const
+  UNITS_RX_OFFSET = 9300;
+  TREES_RX_OFFSET = 260;
+  HOUSES_RX_OFFSET = 2100;
+begin
+  SetLength(fInterpCache, 0);
+
+  FreeAndNil(fOutputStream);
+  fOutputStream := TKMemoryStreamBinary.Create;
+
+  animData := 'type'+#13#10;
+  animData := animData + '  TKMInterpolation = array[1..30, 0..7] of Integer;'+#13#10;
+
+  //UNITS
+  picOffset := UNITS_RX_OFFSET;
+  fOutputStream.WriteA('UnitAction');
+
+  animData := animData + '  TKMUnitActionInterp = array[TKMUnitType, UNIT_ACT_MIN..UNIT_ACT_MAX, dirN..dirNW] of TKMInterpolation;'+#13#10;
+  animData := animData + '//SizeOf(TKMUnitActionInterp) = '+IntToStr(SizeOf(TKMUnitActionInterp))+#13#10;
+
+  startPos := fOutputStream.Position;
+  for u := UNIT_MIN to UNIT_MAX do
+  begin
+    for act := UNIT_ACT_MIN to UNIT_ACT_MAX do
+    begin
+      for dir := dirN to dirNW do
+      begin
+        try
+          DoInterpUnit(u, act, dir, picOffset, not chkUnitActions.Checked);
+        except
+          on E: Exception do
+          begin
+            memoErrors.Text := memoErrors.Text + TRttiEnumerationType.GetName(u) + ' - ' + UNIT_ACT_STR[act] + ' - ' + TRttiEnumerationType.GetName(dir) + ' - ' + E.Message + #13#10;
+          end;
+        end;
+      end;
+    end;
+  end;
+  Assert(SizeOf(TKMUnitActionInterp) = fOutputStream.Position - startPos);
+
+  animData := animData + '//fOutputStream.Position = '+IntToStr(fOutputStream.Position)+#13#10;
+
+  fOutputStream.WriteA('SerfCarry ');
+
+  animData := animData + 'TKMSerfCarryInterp = array[WARE_MIN..WARE_MAX, dirN..dirNW] of TKMInterpolation;'+#13#10;
+  animData := animData + '//SizeOf(TKMSerfCarryInterp) = '+IntToStr(SizeOf(TKMSerfCarryInterp))+#13#10;
+
+  startPos := fOutputStream.Position;
+  for ware := WARE_MIN to WARE_MAX do
+  begin
+    for dir := dirN to dirNW do
+    begin
+      try
+        DoInterpSerfCarry(ware, dir, picOffset, not chkSerfCarry.Checked);
+      except
+        on E: Exception do
+        begin
+          memoErrors.Text := memoErrors.Text + TRttiEnumerationType.GetName(ware) + ' - ' + TRttiEnumerationType.GetName(dir) + ' - ' + E.Message + #13#10;
+        end;
+      end;
+    end;
+  end;
+  Assert(SizeOf(TKMSerfCarryInterp) = fOutputStream.Position - startPos);
+
+  fOutputStream.WriteA('UnitThoughts  ');
+
+  animData := animData + '  TKMUnitThoughtInterp = array[TKMUnitThought] of TKMInterpolation;'+#13#10;
+  animData := animData + '//SizeOf(TKMUnitThoughtInterp) = '+IntToStr(SizeOf(TKMUnitThoughtInterp))+#13#10;
+
+  startPos := fOutputStream.Position;
+  for th := Low(TKMUnitThought) to High(TKMUnitThought) do
+  begin
+    try
+      DoInterpUnitThought(th, picOffset, not chkUnitThoughts.Checked);
+    except
+      on E: Exception do
+      begin
+        memoErrors.Text := memoErrors.Text + TRttiEnumerationType.GetName(th) + ' - ' + E.Message + #13#10;
+      end;
+    end;
+  end;
+  Assert(SizeOf(TKMUnitThoughtInterp) = fOutputStream.Position - startPos);
+
+  fOutputStream.WriteA('Trees ');
+
+  animData := animData + #13#10 + #13#10;
+  animData := animData + 'TKMTreeInterp = array[0..OBJECTS_CNT] of TKMInterpolation;'+#13#10;
+  animData := animData + '//SizeOf(TKMTreeInterp) = '+IntToStr(SizeOf(TKMTreeInterp))+#13#10;
+
+
+  //TREES
+  picOffset := TREES_RX_OFFSET;
+  SetLength(fInterpCache, 0);
+
+  startPos := fOutputStream.Position;
+  for I := 0 to OBJECTS_CNT do
+  begin
+    try
+      DoInterpTree(I, picOffset, not chkTrees.Checked);
+    except
+      on E: Exception do
+      begin
+        memoErrors.Text := memoErrors.Text + ' Tree ' + IntToStr(I) + ' - ' + E.Message + #13#10+'  ';
+      end;
+    end;
+  end;
+  Assert(SizeOf(TKMTreeInterp) = fOutputStream.Position - startPos);
+
+
+  //HOUSES
+  picOffset := HOUSES_RX_OFFSET;
+  SetLength(fInterpCache, 0);
+
+  fOutputStream.WriteA('Houses');
+
+  animData := animData + #13#10 + #13#10;
+  animData := animData + 'TKMHouseInterp = array[HOUSE_MIN..HOUSE_MAX, TKMHouseActionType] of TKMInterpolation;'+#13#10;
+  animData := animData + '//SizeOf(TKMHouseInterp) = '+IntToStr(SizeOf(TKMHouseInterp))+#13#10;
+
+  startPos := fOutputStream.Position;
+  for h := HOUSE_MIN to HOUSE_MAX do
+  begin
+    for hAct := Low(TKMHouseActionType) to High(TKMHouseActionType) do
+    begin
+      try
+        DoInterpHouseAction(h, hAct, picOffset, not chkHouseActions.Checked);
+      except
+        on E: Exception do
+        begin
+          memoErrors.Text := memoErrors.Text + TRttiEnumerationType.GetName(h) + ' - ' + TRttiEnumerationType.GetName(hAct) + ' - ' + E.Message + #13#10;
+        end;
+      end;
+    end;
+  end;
+  Assert(SizeOf(TKMHouseInterp) = fOutputStream.Position - startPos);
+
+  fOutputStream.WriteA('Beasts');
+
+  animData := animData + #13#10 + #13#10;
+  animData := animData + 'TKMBeastInterp = array[1..3,1..5,1..3] of TKMInterpolation;'+#13#10;
+  animData := animData + '//SizeOf(TKMBeastInterp) = '+IntToStr(SizeOf(TKMBeastInterp))+#13#10;
+
+  startPos := fOutputStream.Position;
+  for beastHouse := 1 to 3 do
+  begin
+    for beast := 1 to 5 do
+    begin
+      for beastAge := 1 to 3 do
+      begin
+        try
+          DoInterpBeast(beastHouse, beast, beastAge, picOffset, not chkBeasts.Checked);
+        except
+          on E: Exception do
+          begin
+            memoErrors.Text := memoErrors.Text + ' beast ' + IntToStr(beastHouse) + ' - ' + IntToStr(beast) + ' - ' + IntToStr(beastAge) + ' - ' + E.Message + #13#10;
+          end;
+        end;
+      end;
+    end;
+  end;
+  Assert(SizeOf(TKMBeastInterp) = fOutputStream.Position - startPos);
+
+  fOutputStream.SaveToFile(ExeDir+'data/defines/interp.dat');
+  Memo1.Text := animData;
 end;
 
 end.

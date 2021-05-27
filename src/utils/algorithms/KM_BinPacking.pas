@@ -8,15 +8,16 @@ type
   TBinRect = record X, Y, Width, Height: Word; end;
 
   TIndexItem = record
-    ID, X, Y: Word;
+    ID: Integer;
+    X, Y: Word;
   end;
 
   TIndexSizeArray = array of TIndexItem;
 
   TBinItem = packed record
     Width, Height: Word;
-    Sprites: array of record
-      SpriteID: Word;
+    Sprites: array of packed record
+      SpriteID: Integer;
       PosX, PosY: Word;
     end;
   end;
@@ -26,12 +27,12 @@ type
   TBin = class
     fChild1: TBin; //
     fChild2: TBin;
-    fImageID: Word; //Image that is using this bin (0 if unused)
+    fImageID: Integer; //Image that is using this bin (0 if unused)
     fRect: TBinRect; //Our dimensions
     fPad: Byte;
     fNotFit: Cardinal; //Minimum size that does not fit
   public
-    constructor Create(const aRect: TBinRect; aPad: Byte; aImageID: Word; aNotFit: Cardinal);
+    constructor Create(const aRect: TBinRect; aPad: Byte; aImageID: Integer; aNotFit: Cardinal);
     destructor Destroy; override;
     function Insert(const aItem: TIndexItem): TBin; //Return bin that has accepted the sprite, or nil of Bin is full
     function Width: Word;
@@ -105,7 +106,7 @@ end;
 
 
 { TBin }
-constructor TBin.Create(const aRect: TBinRect; aPad: Byte; aImageID: Word; aNotFit: Cardinal);
+constructor TBin.Create(const aRect: TBinRect; aPad: Byte; aImageID: Integer; aNotFit: Cardinal);
 begin
   inherited Create;
 

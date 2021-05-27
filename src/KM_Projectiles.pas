@@ -6,9 +6,6 @@ uses
   KM_CommonClasses, KM_CommonGameTypes, KM_Points, KM_RenderTypes;
 
 
-const //Corresponding indices in units.rx //ptArrow, ptBolt are unused
-  ProjectileBounds: array [TKMProjectileType, 1..2] of word = ((0,0), (0,0), (0,0), (4186,4190));
-
 type
   //Projectiles in-game: arrows, bolts, rocks, etc..
   //Once launched they are on their own

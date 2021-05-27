@@ -15,6 +15,7 @@ type
     fMode: TKMGameMode;
     fMissionMode: TKMissionMode;
     fTick: Cardinal;
+    fTickFrac: Single;
     fVisibleLayers: TKMMapVisibleLayerSet;
 
     fName: UnicodeString;
@@ -36,6 +37,7 @@ type
     fMissionFullFilePath: string;
 
     procedure SetTick(aGameTick: Cardinal);
+    procedure SetTickFrac(aGameTickFrac: Single);
     procedure SetMode(aGameMode: TKMGameMode);
     function GetMissionFileRel: UnicodeString;
     procedure SetMissionFileSP(const aMissionFileRelSP: UnicodeString);
@@ -46,13 +48,15 @@ type
     function GetMapFullCRC: Cardinal;
     function GetMapSimpleCRC: Cardinal;
   public
-    constructor Create(aGameMode: TKMGameMode; aOnRecalcMapCRC: TEvent; out aSetGameTickEvent: TCardinalEvent; out aSetGameModeEvent: TKMGameModeSetEvent;
+    constructor Create(aGameMode: TKMGameMode; aOnRecalcMapCRC: TEvent; out aSetGameTickEvent: TCardinalEvent;
+                       out aSetGameTickFracEvent: TSingleEvent; out aSetGameModeEvent: TKMGameModeSetEvent;
                        out aSetMissionFileSP: TUnicodeStringEvent; out aSetBlockPointer: TBooleanEvent);
     destructor Destroy; override;
 
     property Mode: TKMGameMode read fMode;
     property MissionMode: TKMissionMode read fMissionMode write fMissionMode;
     property Tick: Cardinal read fTick;
+    property TickFrac: Single read fTickFrac;
     property VisibleLayers: TKMMapVisibleLayerSet read fVisibleLayers write fVisibleLayers;
 
     property Name: UnicodeString read fName write fName;
@@ -103,7 +107,8 @@ uses
 
 
 { TKMGameParams }
-constructor TKMGameParams.Create(aGameMode: TKMGameMode; aOnRecalcMapCRC: TEvent; out aSetGameTickEvent: TCardinalEvent; out aSetGameModeEvent: TKMGameModeSetEvent;
+constructor TKMGameParams.Create(aGameMode: TKMGameMode; aOnRecalcMapCRC: TEvent; out aSetGameTickEvent: TCardinalEvent;
+                                 out aSetGameTickFracEvent: TSingleEvent; out aSetGameModeEvent: TKMGameModeSetEvent;
                                  out aSetMissionFileSP: TUnicodeStringEvent; out aSetBlockPointer: TBooleanEvent);
 begin
   inherited Create;
@@ -118,6 +123,7 @@ begin
   DynamicFOW := False;
 
   aSetGameTickEvent := SetTick;
+  aSetGameTickFracEvent := SetTickFrac;
   aSetGameModeEvent := SetMode;
   aSetMissionFileSP := SetMissionFileSP;
   aSetBlockPointer  := SetBlockPointer;
@@ -214,6 +220,12 @@ end;
 procedure TKMGameParams.SetTick(aGameTick: Cardinal);
 begin
   fTick := aGameTick;
+end;
+
+
+procedure TKMGameParams.SetTickFrac(aGameTickFrac: Single);
+begin
+  fTickFrac := aGameTickFrac;
 end;
 
 

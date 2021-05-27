@@ -242,7 +242,7 @@ object FormMain: TFormMain
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 2
-      ExpandedHeight = 153
+      ExpandedHeight = 168
       object Label1: TLabel
         Left = 101
         Top = 55
@@ -365,6 +365,15 @@ object FormMain: TFormMain
         TickMarks = tmBoth
         TickStyle = tsNone
         OnChange = ControlsUpdate
+      end
+      object chkInterpolatedAnims: TCheckBox
+        Left = 8
+        Top = 125
+        Width = 129
+        Height = 17
+        Caption = 'Interpolated animations'
+        TabOrder = 7
+        OnClick = ControlsUpdate
       end
     end
     object cpUserInreface: TCategoryPanel

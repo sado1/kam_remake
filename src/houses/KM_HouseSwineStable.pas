@@ -103,13 +103,13 @@ begin
   if fBuildState = hbsDone then
     for I := 1 to 5 do
       if BeastAge[I] > 0 then
-        gRenderPool.AddHouseStableBeasts(HouseType, fPosition, I, Min(BeastAge[I],3), WorkAnimStep);
+        gRenderPool.AddHouseStableBeasts(HouseType, fPosition, I, Min(BeastAge[I],3), FlagAnimStep);
 
   //But Animal Breeders should be on top of beasts
   if CurrentAction <> nil then
     gRenderPool.AddHouseWork(HouseType, fPosition,
                             CurrentAction.SubAction * [haWork1, haWork2, haWork3, haWork4, haWork5],
-                            WorkAnimStep, gHands[Owner].GameFlagColor);
+                            WorkAnimStep, WorkAnimStepPrev, gHands[Owner].GameFlagColor);
 end;
 
 

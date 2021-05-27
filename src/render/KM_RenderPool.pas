@@ -17,7 +17,7 @@ type
     Loc: TKMPointF; // Where sprite lower-left corner is located
     Feet: TKMPointF; // Feet of the sprite for FOW calculation (X;Y) and Z ordering (Y only)
     RX: TRXType;
-    ID: Word;
+    ID: Integer;
     UID: Integer;
     NewInst: Boolean;
     TeamColor: Cardinal;
@@ -41,8 +41,8 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    procedure AddSprite(aRX: TRXType; aID: Word; pX,pY: Single; aTeam: Cardinal = $0; aAlphaStep: Single = -1);
-    procedure AddSpriteG(aRX: TRXType; aID: Word; aUID: Integer; pX,pY,gX,gY: Single; aTeam: Cardinal = $0; aAlphaStep: Single = -1);
+    procedure AddSprite(aRX: TRXType; aID: Integer; pX,pY: Single; aTeam: Cardinal = $0; aAlphaStep: Single = -1);
+    procedure AddSpriteG(aRX: TRXType; aID: Integer; aUID: Integer; pX,pY,gX,gY: Single; aTeam: Cardinal = $0; aAlphaStep: Single = -1);
 
     property Stat_Sprites: Integer read fStat_Sprites;
     property Stat_Sprites2: Integer read fStat_Sprites2;
@@ -71,8 +71,6 @@ type
     fMarksList: TKMPointTagList;
     fHouseOutline: TKMPointList;
 
-    function GetUnitAnimSprite(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; aStep: Integer; aStepFrac: Single): Integer;
-
     procedure ApplyTransform;
     procedure SetDefaultRenderParams;
     procedure RenderBackgroundUI(const aRect: TKMRect);
@@ -90,17 +88,17 @@ type
     function PaintBucket_UnitToRender(aUnit: TObject): Boolean;
     function PaintBucket_GroupToRender(aGroup: TObject): Boolean;
 
-    procedure RenderSprite(aRX: TRXType; aId: Word; pX,pY: Single; Col: TColor4; DoHighlight: Boolean = False;
+    procedure RenderSprite(aRX: TRXType; aId: Integer; pX,pY: Single; Col: TColor4; DoHighlight: Boolean = False;
                            HighlightColor: TColor4 = 0; aForced: Boolean = False);
-    procedure RenderSpriteAlphaTest(aRX: TRXType; aId: Word; aWoodProgress: Single; pX, pY: Single; aId2: Word = 0; aStoneProgress: Single = 0; X2: Single = 0; Y2: Single = 0);
-    procedure RenderMapElement1(aIndex: Word; AnimStep: Cardinal; LocX,LocY: Integer; DoImmediateRender: Boolean = False; Deleting: Boolean = False);
+    procedure RenderSpriteAlphaTest(aRX: TRXType; aId: Integer; aWoodProgress: Single; pX, pY: Single; aId2: Integer = 0; aStoneProgress: Single = 0; X2: Single = 0; Y2: Single = 0);
+    procedure RenderMapElement1(aIndex: Word; AnimStep: Cardinal; LocX,LocY: Integer; aLoopAnim: Boolean; DoImmediateRender: Boolean = False; Deleting: Boolean = False);
     procedure RenderMapElement4(aIndex: Word; AnimStep: Cardinal; pX,pY: Integer; IsDouble: Boolean; DoImmediateRender: Boolean = False; Deleting: Boolean = False);
     procedure RenderHouseOutline(aHouseSketch: TKMHouseSketch; aCol: Cardinal = icCyan);
 
     // Terrain rendering sub-class
     procedure CollectPlans(const aRect: TKMRect);
     procedure CollectTerrainObjects(const aRect: TKMRect; aAnimStep: Cardinal);
-    procedure PaintFlagPoint(const aHouseEntrance, aFlagPoint: TKMPoint; aColor: Cardinal; aTexId: Word; aFirstPass: Boolean;
+    procedure PaintFlagPoint(const aHouseEntrance, aFlagPoint: TKMPoint; aColor: Cardinal; aTexId: Integer; aFirstPass: Boolean;
                              aDoImmediateRender: Boolean = False);
     procedure PaintFlagPoints(aFirstPass: Boolean);
 
@@ -116,27 +114,27 @@ type
 
     procedure ReInit;
 
-    procedure AddAlert(const aLoc: TKMPointF; aId: Word; aFlagColor: TColor4);
+    procedure AddAlert(const aLoc: TKMPointF; aId: Integer; aFlagColor: TColor4);
     procedure AddProjectile(aProj: TKMProjectileType; const aRenderPos, aTilePos: TKMPointF; aDir: TKMDirection; aFlight: Single);
     procedure AddHouse(aHouse: TKMHouseType; const aLoc: TKMPoint; aWoodStep, aStoneStep, aSnowStep: Single; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
     procedure AddWholeHouse(H: TKMHouse; FlagColor: Cardinal; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
 
     procedure AddHouseTablet(aHouse: TKMHouseType; const Loc: TKMPoint);
     procedure AddHouseBuildSupply(aHouse: TKMHouseType; const Loc: TKMPoint; Wood,Stone: Byte);
-    procedure AddHouseWork(aHouse: TKMHouseType; const Loc: TKMPoint; aActSet: TKMHouseActionSet; AnimStep: Cardinal; FlagColor: TColor4; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
+    procedure AddHouseWork(aHouse: TKMHouseType; const Loc: TKMPoint; aActSet: TKMHouseActionSet; AnimStep, AnimStepPrev: Cardinal; FlagColor: TColor4; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
     procedure AddHouseSupply(aHouse: TKMHouseType; const Loc: TKMPoint; const R1, R2, R3: array of Byte; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
     procedure AddHouseMarketSupply(const Loc: TKMPoint; ResType: TKMWareType; ResCount: Word; AnimStep: Integer);
     procedure AddHouseStableBeasts(aHouse: TKMHouseType; const Loc: TKMPoint; BeastId,BeastAge,AnimStep: Integer; aRX: TRXType = rxHouses);
     procedure AddHouseEater(const Loc: TKMPoint; aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; StepId: Integer; OffX,OffY: Single; FlagColor: TColor4);
     procedure AddUnit(aUnit: TKMUnitType; aUID: Integer; aAct: TKMUnitActionType; aDir: TKMDirection; StepId: Integer; StepFrac: Single; pX,pY: Single; FlagColor: TColor4; NewInst: Boolean; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
-    procedure AddUnitCarry(aCarry: TKMWareType; aUID: Integer; aDir: TKMDirection; StepId: Integer; pX,pY: Single);
+    procedure AddUnitCarry(aCarry: TKMWareType; aUID: Integer; aDir: TKMDirection; StepId: Integer; StepFrac: Single; pX,pY: Single);
     procedure AddUnitThought(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; Thought: TKMUnitThought; pX,pY: Single);
     procedure AddUnitFlag(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; FlagAnim: Integer; pX,pY: Single; FlagColor: TColor4; DoImmediateRender: Boolean = False);
     procedure AddUnitWithDefaultArm(aUnit: TKMUnitType; aUID: Integer; aAct: TKMUnitActionType; aDir: TKMDirection; StepId: Integer; pX,pY: Single; FlagColor: TColor4; DoImmediateRender: Boolean = False; DoHignlight: Boolean = False; HighlightColor: TColor4 = 0);
 
     procedure RenderMapElement(aIndex: Word; AnimStep,pX,pY: Integer; DoImmediateRender: Boolean = False; Deleting: Boolean = False);
-    procedure RenderSpriteOnTile(const aLoc: TKMPoint; aId: Word; aFlagColor: TColor4 = $FFFFFFFF);
-    procedure RenderSpriteOnTerrain(const aLoc: TKMPointF; aId: Word; aFlagColor: TColor4 = $FFFFFFFF; aForced: Boolean = False);
+    procedure RenderSpriteOnTile(const aLoc: TKMPoint; aId: Integer; aFlagColor: TColor4 = $FFFFFFFF);
+    procedure RenderSpriteOnTerrain(const aLoc: TKMPointF; aId: Integer; aFlagColor: TColor4 = $FFFFFFFF; aForced: Boolean = False);
     procedure RenderTile(aTerrainId: Word; pX,pY,Rot: Integer);
     procedure RenderWireTile(const P: TKMPoint; aCol: TColor4; aInset: Single = 0.0; aLineWidth: Single = -1);
 
@@ -163,11 +161,13 @@ uses
   KM_HandTypes,
   KM_Projectiles,
   KM_TerrainTypes,
-  KM_HandEntity;
+  KM_HandEntity,
+  KM_ResInterpolation;
 
 
 const
   DELETE_COLOR = $1616FF;
+  INTERP_LEVEL = 8;
 
 
 constructor TRenderPool.Create(aViewport: TKMViewport; aRender: TRender);
@@ -214,26 +214,6 @@ begin
   gRenderAux.Free;
 
   inherited;
-end;
-
-
-function TRenderPool.GetUnitAnimSprite(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection;
-                                       aStep: Integer; aStepFrac: Single): Integer;
-var
-  A: TKMAnimLoop;
-const
-  INTERP_LEVEL = 8;
-begin
-  A := gRes.Units[aUnit].UnitAnim[aAct, aDir];
-  Result := A.Step[aStep mod Byte(A.Count) + 1] + 1;
-
-  if INTERPOLATED_ANIMS and (aUnit = utMilitia) and (aAct = uaWalk) then
-  begin
-    Result := 9301
-      + INTERP_LEVEL*A.Count*(Integer(aDir)-1)
-      + INTERP_LEVEL*(aStep mod Byte(A.Count))
-      + EnsureRange(Floor(INTERP_LEVEL*aStepFrac), 0, 7);
-  end;
 end;
 
 
@@ -516,7 +496,7 @@ begin
   with gTerrain do
     for I := 0 to FallingTrees.Count - 1 do
     begin
-      RenderMapElement1(FallingTrees.Tag[I], aAnimStep - FallingTrees.Tag2[I], FallingTrees[I].X, FallingTrees[I].Y);
+      RenderMapElement1(FallingTrees.Tag[I], aAnimStep - FallingTrees.Tag2[I], FallingTrees[I].X, FallingTrees[I].Y, False);
       Assert(AnimStep - FallingTrees.Tag2[I] <= 100, 'Falling tree overrun?');
     end;
 
@@ -536,7 +516,7 @@ begin
 end;
 
 
-procedure TRenderPool.PaintFlagPoint(const aHouseEntrance, aFlagPoint: TKMPoint; aColor: Cardinal; aTexId: Word; aFirstPass: Boolean;
+procedure TRenderPool.PaintFlagPoint(const aHouseEntrance, aFlagPoint: TKMPoint; aColor: Cardinal; aTexId: Integer; aFirstPass: Boolean;
                                      aDoImmediateRender: Boolean = False);
 
   procedure RenderLineToPoint(const aP: TKMPointF);
@@ -596,11 +576,11 @@ begin
   if gMapElements[aIndex].WineOrCorn then
     RenderMapElement4(aIndex,AnimStep,pX,pY,(aIndex in [54..57]),DoImmediateRender,Deleting) // 54..57 are grapes, all others are doubles
   else
-    RenderMapElement1(aIndex,AnimStep,pX,pY,DoImmediateRender,Deleting);
+    RenderMapElement1(aIndex,AnimStep,pX,pY,True,DoImmediateRender,Deleting);
 end;
 
 
-procedure TRenderPool.RenderMapElement1(aIndex: Word; AnimStep: Cardinal; LocX,LocY: Integer; DoImmediateRender: Boolean = False; Deleting: Boolean = False);
+procedure TRenderPool.RenderMapElement1(aIndex: Word; AnimStep: Cardinal; LocX,LocY: Integer; aLoopAnim: Boolean; DoImmediateRender: Boolean = False; Deleting: Boolean = False);
 var
   R: TRXData;
   pX, pY: Integer;
@@ -608,7 +588,6 @@ var
   gX, gY: Single;
   Id, Id0: Integer;
   FOW: Byte;
-  A: TKMAnimLoop;
 begin
   if (gMySpectator.FogOfWar.CheckVerticeRenderRev(LocX,LocY) <= FOG_OF_WAR_MIN) then Exit;
 
@@ -631,9 +610,8 @@ begin
       FOW := gMySpectator.FogOfWar.CheckTileRevelation(LocX,LocY);
       if FOW <= 128 then AnimStep := 0; // Stop animation
     end;
-    A := gMapElements[aIndex].Anim;
-    Id := A.Step[AnimStep mod Byte(A.Count) +1]+1;
-    Id0 := A.Step[1] + 1;
+    Id := gRes.Interpolation.Tree(aIndex, AnimStep, gGameParams.TickFrac, aLoopAnim);
+    Id0 := gMapElements[aIndex].Anim.Step[1] + 1;
     if Id <= 0 then exit;
 
     R := fRXData[rxTrees];
@@ -660,11 +638,9 @@ var
   var
     Id, Id0: Integer;
     CornerX, CornerY, gX, gY: Single;
-    A: TKMAnimLoop;
   begin
-    A := gMapElements[aIndex].Anim;
-    Id := A.Step[aAnimStep mod Byte(A.Count) + 1] + 1;
-    Id0 := A.Step[1] + 1;
+    Id := gRes.Interpolation.Tree(aIndex, AnimStep, gGameParams.TickFrac, True);
+    Id0 := gMapElements[aIndex].Anim.Step[1] + 1;
 
     gX := pX + (R.Pivot[Id0].X + R.Size[Id0].X/2) / CELL_SIZE_PX;
     gY := pY + (R.Pivot[Id0].Y + R.Size[Id0].Y) / CELL_SIZE_PX;
@@ -703,7 +679,7 @@ end;
 
 
 // Render alert
-procedure TRenderPool.AddAlert(const aLoc: TKMPointF; aId: Word; aFlagColor: TColor4);
+procedure TRenderPool.AddAlert(const aLoc: TKMPointF; aId: Integer; aFlagColor: TColor4);
 var
   cornerX, cornerY: Single;
   R: TRXData;
@@ -773,7 +749,7 @@ begin
     AddHouse(H.HouseType, H.Position, 1, 1, 0, DoImmediateRender, DoHighlight, HighlightColor);
     AddHouseSupply(H.HouseType, H.Position, H.ResourceInArray, H.ResourceOutArray, H.ResourceOutPoolArray, DoImmediateRender, DoHighlight, HighlightColor);
     if H.CurrentAction <> nil then
-      gRenderPool.AddHouseWork(H.HouseType, H.Position, H.CurrentAction.SubAction, H.WorkAnimStep, FlagColor, DoImmediateRender, DoHighlight, HighlightColor);
+      gRenderPool.AddHouseWork(H.HouseType, H.Position, H.CurrentAction.SubAction, H.WorkAnimStep, H.WorkAnimStepPrev, FlagColor, DoImmediateRender, DoHighlight, HighlightColor);
   end;
 end;
 
@@ -845,7 +821,7 @@ begin
 end;
 
 
-procedure TRenderPool.AddHouseWork(aHouse: TKMHouseType; const Loc: TKMPoint; aActSet: TKMHouseActionSet; AnimStep: Cardinal; FlagColor: TColor4; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
+procedure TRenderPool.AddHouseWork(aHouse: TKMHouseType; const Loc: TKMPoint; aActSet: TKMHouseActionSet; AnimStep, AnimStepPrev: Cardinal; FlagColor: TColor4; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
 var
   Id: Cardinal;
   AT: TKMHouseActionType;
@@ -864,7 +840,12 @@ begin
     A := gResHouses[aHouse].Anim[AT];
     if A.Count > 0 then
     begin
-      Id := A.Step[AnimStep mod Byte(A.Count) + 1] + 1;
+      //If the anim step is able to be interpolated from the last frame (to avoid incorrect looping)
+      if AnimStep = AnimStepPrev+1 then
+        Id := gRes.Interpolation.House(aHouse, AT, AnimStepPrev, gGameParams.TickFrac)
+      else
+        Id := A.Step[AnimStep mod Byte(A.Count) + 1] + 1;
+
       cornerX := Loc.X + (R.Pivot[Id].X + A.MoveX) / CELL_SIZE_PX - 1;
       cornerY := Loc.Y + (R.Pivot[Id].Y + A.MoveY + R.Size[Id].Y) / CELL_SIZE_PX - 1
                        - gTerrain.Land^[Loc.Y + 1, Loc.X].RenderHeight / CELL_HEIGHT_DIV;
@@ -987,7 +968,8 @@ begin
 
   A := gResHouses.BeastAnim[aHouse,BeastId,BeastAge];
 
-  Id := A.Step[AnimStep mod Byte(A.Count) + 1] + 1;
+  Id := gRes.Interpolation.Beast(aHouse, BeastId, BeastAge, AnimStep, gGameParams.TickFrac);
+
   cornerX := Loc.X + (A.MoveX + R.Pivot[Id].X) / CELL_SIZE_PX - 1;
   cornerY := Loc.Y + (A.MoveY + R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX - 1
                    - gTerrain.Land^[Loc.Y + 1, Loc.X].RenderHeight / CELL_HEIGHT_DIV;
@@ -1014,13 +996,10 @@ begin
   end;
 
   case aProj of
-    ptArrow:     with gRes.Units[utBowman].UnitAnim[uaSpec, aDir] do
-                    id := Step[Round(Min(aFlight, 1) * (Count-1)) + 1] + 1;
-    ptBolt:      with gRes.Units[utArbaletman].UnitAnim[uaSpec, aDir] do
-                    id := Step[Round(Min(aFlight, 1) * (Count-1)) + 1] + 1;
-    ptSlingRock: with gRes.Units[utSlingshot].UnitAnim[uaSpec, aDir] do
-                    id := Step[Round(Min(aFlight, 1) * (Count-1)) + 1] + 1;
-    ptTowerRock: id := ProjectileBounds[aProj, 1] + 1;
+    ptArrow:     id := gRes.Interpolation.UnitActionByPercent(utBowman, uaSpec, aDir, aFlight);
+    ptBolt:      id := gRes.Interpolation.UnitActionByPercent(utArbaletman, uaSpec, aDir, aFlight);
+    ptSlingRock: id := gRes.Interpolation.UnitActionByPercent(utSlingshot, uaSpec, aDir, aFlight);
+    ptTowerRock: id := gRes.Interpolation.UnitActionByPercent(utRecruit, uaSpec, aDir, aFlight);
     else          id := 1; // Nothing?
   end;
 
@@ -1045,8 +1024,8 @@ var
   id, id0: Integer;
   R: TRXData;
 begin
-  id := GetUnitAnimSprite(aUnit, aAct, aDir, StepId, StepFrac);
-  id0 := GetUnitAnimSprite(aUnit, aAct, aDir, UNIT_STILL_FRAMES[aDir], 0.0);
+  id := gRes.Interpolation.UnitAction(aUnit, aAct, aDir, StepId, StepFrac);
+  id0 := gRes.Interpolation.UnitAction(aUnit, aAct, aDir, UNIT_STILL_FRAMES[aDir], 0.0);
   if id <= 0 then exit;
   R := fRXData[rxUnits];
 
@@ -1075,11 +1054,9 @@ procedure TRenderPool.AddHouseEater(const Loc: TKMPoint; aUnit: TKMUnitType; aAc
 var
   cornerX, cornerY: Single;
   id: Integer;
-  A: TKMAnimLoop;
   R: TRXData;
 begin
-  A := gRes.Units[aUnit].UnitAnim[aAct, aDir];
-  id := A.Step[StepId mod Byte(A.Count) + 1] + 1;
+  id := gRes.Interpolation.UnitAction(aUnit, aAct, aDir, StepId, gGameParams.TickFrac);
   if id <= 0 then exit;
   R := fRXData[rxUnits];
 
@@ -1092,7 +1069,7 @@ begin
 end;
 
 
-procedure TRenderPool.AddUnitCarry(aCarry: TKMWareType; aUID: Integer; aDir: TKMDirection; StepId: Integer; pX,pY: Single);
+procedure TRenderPool.AddUnitCarry(aCarry: TKMWareType; aUID: Integer; aDir: TKMDirection; StepId: Integer; StepFrac: Single; pX,pY: Single);
 var
   cornerX, cornerY: Single;
   id: Integer;
@@ -1100,12 +1077,13 @@ var
   R: TRXData;
 begin
   A := gRes.Units.SerfCarry[aCarry, aDir];
-  id := A.Step[StepId mod Byte(A.Count) + 1] + 1;
+  id := gRes.Interpolation.SerfCarry(aCarry, aDir, StepId, StepFrac);
+
   if id <= 0 then Exit;
   R := fRXData[rxUnits];
 
-  cornerX := pX + (R.Pivot[id].X + a.MoveX) / CELL_SIZE_PX;
-  cornerY := gTerrain.RenderFlatToHeight(pX, pY) + (R.Pivot[id].Y + R.Size[id].Y + a.MoveY) / CELL_SIZE_PX;
+  cornerX := pX + (R.Pivot[id].X + A.MoveX) / CELL_SIZE_PX;
+  cornerY := gTerrain.RenderFlatToHeight(pX, pY) + (R.Pivot[id].Y + R.Size[id].Y + A.MoveY) / CELL_SIZE_PX;
   fRenderList.AddSprite(rxUnits, id, cornerX, cornerY);
 end;
 
@@ -1114,11 +1092,10 @@ procedure TRenderPool.AddUnitThought(aUnit: TKMUnitType; aAct: TKMUnitActionType
                                      aDir: TKMDirection;
                                      Thought: TKMUnitThought; pX,pY: Single);
 var
-  Id: Integer;
   cornerX, cornerY, ground: Single;
   R: TRXData;
   A: TKMAnimLoop;
-  id0: Integer;
+  id, id0: Integer;
 begin
   if Thought = thNone then Exit;
   R := fRXData[rxUnits];
@@ -1132,13 +1109,11 @@ begin
   // The thought should be slightly lower than the unit so it goes OVER warrior flags
   ground := ground + THOUGHT_X_OFFSET;
 
-  // Thought bubbles are animated in reverse
-  Id := THOUGHT_BOUNDS[Thought, 2] + 1 -
-       (gGameParams.Tick mod Word(THOUGHT_BOUNDS[Thought, 2] - THOUGHT_BOUNDS[Thought, 1]));
+  id := gRes.Interpolation.UnitThought(Thought, gGameParams.Tick, gGameParams.TickFrac);
 
-  cornerX := pX + R.Pivot[Id].X / CELL_SIZE_PX;
-  cornerY := gTerrain.RenderFlatToHeight(pX, pY) + (R.Pivot[Id].Y + R.Size[Id].Y) / CELL_SIZE_PX - 1.5;
-  fRenderList.AddSpriteG(rxUnits, Id, 0, cornerX, cornerY, pX, ground);
+  cornerX := pX + R.Pivot[id].X / CELL_SIZE_PX;
+  cornerY := gTerrain.RenderFlatToHeight(pX, pY) + (R.Pivot[id].Y + R.Size[id].Y) / CELL_SIZE_PX - 1.5;
+  fRenderList.AddSpriteG(rxUnits, id, 0, cornerX, cornerY, pX, ground);
 end;
 
 
@@ -1173,8 +1148,7 @@ begin
   ground := pY + (R.Pivot[id0].Y + R.Size[id0].Y) / CELL_SIZE_PX;
 
   // Flag position
-  A := gRes.Units[aUnit].UnitAnim[uaWalkArm, aDir];
-  idFlag := A.Step[FlagAnim mod Byte(A.Count) + 1] + 1;
+  idFlag := gRes.Interpolation.UnitAction(aUnit, uaWalkArm, aDir, FlagAnim, gGameParams.TickFrac);
   if idFlag <= 0 then Exit;
 
   flagX := pX + (R.Pivot[idFlag].X + FlagXOffset[UNIT_TO_GROUP_TYPE[aUnit], aDir]) / CELL_SIZE_PX - 0.5;
@@ -1231,7 +1205,7 @@ begin
   glPopMatrix;
 end;}
 
-procedure TRenderPool.RenderSprite(aRX: TRXType; aId: Word; pX,pY: Single; Col: TColor4; DoHighlight: Boolean = False;
+procedure TRenderPool.RenderSprite(aRX: TRXType; aId: Integer; pX,pY: Single; Col: TColor4; DoHighlight: Boolean = False;
                                    HighlightColor: TColor4 = 0; aForced: Boolean = False);
 var
   X, Y: Integer;
@@ -1281,8 +1255,8 @@ end;
 // white there will have sprite rendered
 // If there are two masks then we need to render sprite only there
 // where its mask is white AND where second mask is black
-procedure TRenderPool.RenderSpriteAlphaTest(aRX: TRXType; aId: Word; aWoodProgress: Single; pX, pY: Single;
-                                            aId2: Word = 0; aStoneProgress: Single = 0; X2: Single = 0; Y2: Single = 0);
+procedure TRenderPool.RenderSpriteAlphaTest(aRX: TRXType; aId: Integer; aWoodProgress: Single; pX, pY: Single;
+                                            aId2: Integer = 0; aStoneProgress: Single = 0; X2: Single = 0; Y2: Single = 0);
 var
   X, Y: Integer;
 begin
@@ -1470,7 +1444,7 @@ begin
 end;
 
 
-procedure TRenderPool.RenderSpriteOnTile(const aLoc: TKMPoint; aId: Word; aFlagColor: TColor4 = $FFFFFFFF);
+procedure TRenderPool.RenderSpriteOnTile(const aLoc: TKMPoint; aId: Integer; aFlagColor: TColor4 = $FFFFFFFF);
 var
   pX, pY: Single;
 begin
@@ -1484,7 +1458,7 @@ begin
 end;
 
 
-procedure TRenderPool.RenderSpriteOnTerrain(const aLoc: TKMPointF; aId: Word; aFlagColor: TColor4 = $FFFFFFFF; aForced: Boolean = False);
+procedure TRenderPool.RenderSpriteOnTerrain(const aLoc: TKMPointF; aId: Integer; aFlagColor: TColor4 = $FFFFFFFF; aForced: Boolean = False);
 var
   pX, pY: Single;
 begin
@@ -2057,7 +2031,7 @@ end;
 
 
 // New items must provide their ground level
-procedure TRenderList.AddSpriteG(aRX: TRXType; aId: Word; aUID: Integer; pX,pY,gX,gY: Single; aTeam: Cardinal = $0; aAlphaStep: Single = -1);
+procedure TRenderList.AddSpriteG(aRX: TRXType; aId: Integer; aUID: Integer; pX,pY,gX,gY: Single; aTeam: Cardinal = $0; aAlphaStep: Single = -1);
 const
   MAX_SEL_RECT_HEIGHT = CELL_SIZE_PX * 1.5; //Restrict too long images selection rect
 var
@@ -2094,7 +2068,7 @@ end;
 
 
 // Child items don't need ground level
-procedure TRenderList.AddSprite(aRX: TRXType; aId: Word; pX,pY: Single; aTeam: Cardinal = $0; aAlphaStep: Single = -1);
+procedure TRenderList.AddSprite(aRX: TRXType; aId: Integer; pX,pY: Single; aTeam: Cardinal = $0; aAlphaStep: Single = -1);
 begin
   if fCount >= Length(RenderList) then
     SetLength(RenderList, fCount + 256); // Book some space
