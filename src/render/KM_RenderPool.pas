@@ -2036,6 +2036,7 @@ const
   MAX_SEL_RECT_HEIGHT = CELL_SIZE_PX * 1.5; //Restrict too long images selection rect
 var
   W, H, WS: Integer;
+  snsLeft, snsRight, snsTop, snsBottom: Integer;
 begin
   if fCount >= Length(RenderList) then
     SetLength(RenderList, fCount + 256); // Book some space
@@ -2052,15 +2053,22 @@ begin
     if aUID > 0 then
     with RenderList[fCount].SelectionRect do
     begin
-      WS := (fUnitsRXData.SizeNoShadow[aId].right div 2) + fUnitsRXData.Pivot[aId].x; //Fix for bow and crossbowman
-      //Enlarge rect from image size to the left and right, to be at least CELL_SIZE_PX width and height
-      W := Max(0, CELL_SIZE_PX - (Abs(WS div 2) + fUnitsRXData.SizeNoShadow[aId].right - fUnitsRXData.SizeNoShadow[aId].left)); //width to add to image pos. half to the left, half to the right
-      H := Max(0, CELL_SIZE_PX - (fUnitsRXData.SizeNoShadow[aId].bottom - fUnitsRXData.SizeNoShadow[aId].top)); //height to add to image pos. half to the top, half to the bottom
+      // todo: fix SizeNoShadow calculation for interpolated animations, f.e. last frame of death anim for swordman / knight etc
+      // remove EnsureRange when fixed
+      snsLeft   := EnsureRange(fUnitsRXData.SizeNoShadow[aId].left,   - CELL_SIZE_PX, CELL_SIZE_PX);
+      snsRight  := EnsureRange(fUnitsRXData.SizeNoShadow[aId].right,  - CELL_SIZE_PX, CELL_SIZE_PX);
+      snsTop    := EnsureRange(fUnitsRXData.SizeNoShadow[aId].top,    - CELL_SIZE_PX, CELL_SIZE_PX);
+      snsBottom := EnsureRange(fUnitsRXData.SizeNoShadow[aId].bottom, - CELL_SIZE_PX, CELL_SIZE_PX);
 
-      Left := RenderList[fCount].Loc.X + (-(W div 2) - Max(0,WS) + fUnitsRXData.SizeNoShadow[aId].left) / CELL_SIZE_PX;
-      Bottom := gY - ((H div 2) + fUnitsRXData.Size[aId].Y - 1 - fUnitsRXData.SizeNoShadow[aId].bottom) / CELL_SIZE_PX;
-      Right := Left + (W - Min(0, WS) + gGFXData[aRX, aId].PxWidth - (fUnitsRXData.Size[aId].X - 1 - fUnitsRXData.SizeNoShadow[aId].right)) / CELL_SIZE_PX;
-      Top := Bottom - Min(MAX_SEL_RECT_HEIGHT, H + gGFXData[aRX, aId].PxHeight - fUnitsRXData.SizeNoShadow[aId].top) / CELL_SIZE_PX;
+      WS := (snsRight div 2) + fUnitsRXData.Pivot[aId].x; //Fix for bow and crossbowman
+      //Enlarge rect from image size to the left and right, to be at least CELL_SIZE_PX width and height
+      W := Max(0, CELL_SIZE_PX - (Abs(WS div 2) + snsRight - snsLeft)); //width to add to image pos. half to the left, half to the right
+      H := Max(0, CELL_SIZE_PX - (snsBottom - snsTop)); //height to add to image pos. half to the top, half to the bottom
+
+      Left := RenderList[fCount].Loc.X + (-(W div 2) - Max(0,WS) + snsLeft) / CELL_SIZE_PX;
+      Bottom := gY - ((H div 2) + fUnitsRXData.Size[aId].Y - 1 - snsBottom) / CELL_SIZE_PX;
+      Right := Left + (W - Min(0, WS) + gGFXData[aRX, aId].PxWidth - (fUnitsRXData.Size[aId].X - 1 - snsRight)) / CELL_SIZE_PX;
+      Top := Bottom - Min(MAX_SEL_RECT_HEIGHT, H + gGFXData[aRX, aId].PxHeight - snsTop) / CELL_SIZE_PX;
     end;
 
   Inc(fCount); // New item added
