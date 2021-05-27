@@ -1519,7 +1519,7 @@ end;
 
 function TKMMapsCRCList.Contains(aMapCRC: Cardinal): Boolean;
 begin
-  if not fEnabled then Exit(False);
+  if (Self = nil) or not fEnabled then Exit(False);
 
   Result := fMapsList.IndexOf(IntToStr(aMapCRC)) <> -1;
 end;
