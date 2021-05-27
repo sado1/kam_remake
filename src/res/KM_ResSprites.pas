@@ -1639,7 +1639,9 @@ begin
       // Only GUI needs alpha channel for shadows
       LoadSprites(RT, RT = rxGUI);
       // We also use alpha channel in the generated tiles
+      {$IFNDEF CONSOLE}
       fSprites[RT].MakeGFX(RT in [rxGUI, rxTiles]);
+      {$ENDIF}
 
       if Assigned(fStepProgress) then
         fStepProgress;

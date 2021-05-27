@@ -175,14 +175,15 @@ begin
   gResPalettes.LoadDefaultPalette(ExeDir + 'data' + PathDelim + 'gfx' + PathDelim);
   gLog.AddTime('Reading palettes', True);
 
-
   fSprites := TKMResSprites.Create(StepRefresh, StepCaption);
 
   fCursors := TKMResCursors.Create;
 
   fUnits := TKMResUnits.Create; // Load units prior to Sprites, as we could use it on SoftenShadows override for png in Sprites folder
   fSprites.LoadMenuResources;
+  {$IFNDEF CONSOLE}
   gSystem.MakeCursors(fSprites[rxGui]);
+  {$ENDIF}
   gSystem.Cursor := kmcDefault;
   fCursors.SetRXDataPointer(@fSprites[rxGui].RXData);
 
