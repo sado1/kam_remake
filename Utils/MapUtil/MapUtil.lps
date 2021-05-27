@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="11"/>
+    <BuildModes Active="Default"/>
+    <Units Count="3">
+      <Unit0>
+        <Filename Value="MapUtil.dpr"/>
+        <IsPartOfProject Value="True"/>
+        <CursorPos X="26" Y="16"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="..\..\src\utils\KromOGLUtils.pas"/>
+        <EditorIndex Value="1"/>
+        <CursorPos X="41" Y="9"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="..\..\src\utils\KromUtils.pas"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <CursorPos X="26" Y="8"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit2>
+    </Units>
+    <JumpHistory Count="5" HistoryIndex="4">
+      <Position1>
+        <Filename Value="MapUtil.dpr"/>
+        <Caret Line="7" Column="19"/>
+      </Position1>
+      <Position2>
+        <Filename Value="MapUtil.dpr"/>
+        <Caret Line="75" Column="55" TopLine="54"/>
+      </Position2>
+      <Position3>
+        <Filename Value="MapUtil.dpr"/>
+        <Caret Line="15" Column="16"/>
+      </Position3>
+      <Position4>
+        <Filename Value="MapUtil.dpr"/>
+        <Caret Line="16" Column="26"/>
+      </Position4>
+      <Position5>
+        <Filename Value="..\..\src\utils\KromOGLUtils.pas"/>
+        <Caret Line="9" Column="41"/>
+      </Position5>
+    </JumpHistory>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="0" ActiveMode=""/>
+    </RunParams>
+  </ProjectSession>
+</CONFIG>
