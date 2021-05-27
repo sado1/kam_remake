@@ -1613,7 +1613,7 @@ end;
 procedure TKMUnit.SetCurrPosition(const aLoc: TKMPoint);
 begin
   if {not gGameApp.DynamicFOWEnabled
-  and }(Owner <> PLAYER_ANIMAL)
+  and }(Owner <> HAND_ANIMAL)
   and (fPosition <> aLoc) then  //Update FOW only for new loc
     gHands.RevealForTeam(Owner, aLoc, gRes.Units[fType].Sight, FOG_OF_WAR_MAX);
 

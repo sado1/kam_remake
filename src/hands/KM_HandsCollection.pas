@@ -145,7 +145,7 @@ begin
 
   fTeamsDirty := True;
 
-  fPlayerAnimals := TKMHandAnimals.Create(PLAYER_ANIMAL); //Always create Animals
+  fPlayerAnimals := TKMHandAnimals.Create(HAND_ANIMAL); //Always create Animals
 end;
 
 
@@ -873,7 +873,7 @@ end;
 e.g. Play1 may be allied with Play2, but Play2 may be enemy to Play1}
 function TKMHandsCollection.CheckAlliance(aPlay1,aPlay2: TKMHandID): TKMAllianceType;
 begin
-  if (aPlay1 = PLAYER_ANIMAL) or (aPlay2 = PLAYER_ANIMAL) then
+  if (aPlay1 = HAND_ANIMAL) or (aPlay2 = HAND_ANIMAL) then
     Result := atAlly //In KaM animals are always friendly
   else
     Result := fHandsList[aPlay1].Alliances[aPlay2];

@@ -378,7 +378,7 @@ begin
     begin
       fUnits[L].UnitType := U.UnitType;
       fUnits[L].Position := U.Position;
-      fUnits[L].Owner := PLAYER_ANIMAL;
+      fUnits[L].Owner := HAND_ANIMAL;
 
       fUnits[L].Condition := U.Condition;
 

@@ -3968,7 +3968,7 @@ begin
       U := fIDCache.GetUnit(aUnitID);
 
       //Player can not attack animals
-      if (G <> nil) and (U <> nil) and (U.Owner <> PLAYER_ANIMAL) then
+      if (G <> nil) and (U <> nil) and (U.Owner <> HAND_ANIMAL) then
         G.OrderAttackUnit(U, True);
     end
     else

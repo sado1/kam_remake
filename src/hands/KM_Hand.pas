@@ -627,7 +627,7 @@ end;
 
 function TKMHand.IsAnimal: Boolean;
 begin
-  Result := fID = PLAYER_ANIMAL;
+  Result := fID = HAND_ANIMAL;
 end;
 
 

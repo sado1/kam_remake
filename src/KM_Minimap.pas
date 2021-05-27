@@ -252,7 +252,7 @@ begin
         begin
           U := landPtr.IsUnit;
           if U <> nil then
-            if U.Owner <> PLAYER_ANIMAL then
+            if U.Owner <> HAND_ANIMAL then
               fBase[I*fMapX + K] := gHands[U.Owner].GameFlagColor
             else
               fBase[I*fMapX + K] := gRes.Units[U.UnitType].MinimapColor
