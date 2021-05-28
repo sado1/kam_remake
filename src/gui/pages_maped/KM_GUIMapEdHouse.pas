@@ -223,7 +223,7 @@ begin
     Button_Barracks_RallyPoint := TKMButtonFlat.Create(Panel_HouseBarracks, 0, 8, Panel_House.Width, 22, 0);
     Button_Barracks_RallyPoint.CapOffsetY := -11;
     Button_Barracks_RallyPoint.Caption := gResTexts[TX_HOUSES_RALLY_POINT];
-    Button_Barracks_RallyPoint.Hint := gResTexts[TX_MAPED_RALLY_POINT_HINT, [gResHouses[htBarracks].HouseName]];
+    Button_Barracks_RallyPoint.Hint := Format(gResTexts[TX_MAPED_RALLY_POINT_HINT], [gRes.Houses[htBarracks].HouseName]);;
     Button_Barracks_RallyPoint.OnClick := SetRallyPointClick;
 
     for I := 1 to BARRACKS_RES_COUNT do
@@ -269,7 +269,7 @@ begin
     Button_TownHall_RallyPoint := TKMButtonFlat.Create(Panel_HouseTownHall, 0, 8, Panel_House.Width, 22, 0);
     Button_TownHall_RallyPoint.CapOffsetY := -11;
     Button_TownHall_RallyPoint.Caption := gResTexts[TX_HOUSES_RALLY_POINT];
-    Button_TownHall_RallyPoint.Hint := gResTexts[TX_MAPED_RALLY_POINT_HINT, [gResHouses[htTownhall].HouseName]];
+    Button_TownHall_RallyPoint.Hint := Format(gResTexts[TX_MAPED_RALLY_POINT_HINT], [gRes.Houses[htTownhall].HouseName]);
     Button_TownHall_RallyPoint.OnClick := SetRallyPointClick;
 
     WaresRow_TH_Gold_Input := TKMWareOrderRow.Create(Panel_HouseTownHall, 0, 34, Panel_House.Width, TH_MAX_GOLDMAX_VALUE);
@@ -469,7 +469,7 @@ begin
 
   Button_House_Worker.TexID  := gRes.Units[houseSpec.WorkerType].GUIIcon;
   HandleHouseClosedForWorker(fHouse);
-  Button_House_Worker.Hint := gResTexts[TX_HOUSES_CLOSED_FOR_WORKER_HINT, [gRes.Units[houseSpec.WorkerType].GUIName]];
+  Button_House_Worker.Hint := Format(gResTexts[TX_HOUSES_CLOSED_FOR_WORKER_HINT], [gRes.Units[houseSpec.WorkerType].GUIName]);
   Button_House_Worker.FlagColor := gHands[fHouse.Owner].FlagColor;
   Button_House_Worker.Visible := gResHouses[fHouse.HouseType].CanHasWorker;
   Image_House_Worker.TexID := gRes.Units[houseSpec.WorkerType].GUIIcon;

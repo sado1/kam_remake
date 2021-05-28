@@ -1255,7 +1255,7 @@ begin
       Exit;
 
     gNetworking.PostLocalMessage(
-      gResTexts[TX_MULTIPLAYER_PLAYER_WON, [gHands[aHandIndex].GetOwnerNameColoredU]],
+      Format(gResTexts[TX_MULTIPLAYER_PLAYER_WON], [gHands[aHandIndex].GetOwnerNameColoredU]),
       csSystem);
 
     if Assigned(gNetworking.OnPlayersSetup) then
@@ -1313,8 +1313,8 @@ begin
               end;
     gmMulti:  begin
                 if aShowDefeatMessage then
-                  gNetworking.PostLocalMessage(gResTexts[TX_MULTIPLAYER_PLAYER_DEFEATED,
-                                                         [gHands[aPlayerIndex].GetOwnerNameColoredU]], csSystem);
+                  gNetworking.PostLocalMessage(Format(gResTexts[TX_MULTIPLAYER_PLAYER_DEFEATED],
+                                                      [gHands[aPlayerIndex].GetOwnerNameColoredU]), csSystem);
 
                 if aPlayerIndex = gMySpectator.HandID then
                 begin
@@ -1330,8 +1330,8 @@ begin
     gmMultiSpectate:
               begin
                 if aShowDefeatMessage then
-                  gNetworking.PostLocalMessage(gResTexts[TX_MULTIPLAYER_PLAYER_DEFEATED,
-                                                         [gHands[aPlayerIndex].GetOwnerNameColoredU]], csSystem);
+                  gNetworking.PostLocalMessage(Format(gResTexts[TX_MULTIPLAYER_PLAYER_DEFEATED],
+                                                      [gHands[aPlayerIndex].GetOwnerNameColoredU]), csSystem);
 
                 if Assigned(gNetworking.OnPlayersSetup) then
                   gNetworking.OnPlayersSetup; //Update players panel

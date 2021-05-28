@@ -476,7 +476,7 @@ begin
                 begin
                   fieldStage := 0;
                   makeCheckpoint := True;
-                  fieldStr := gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH, [gResTexts[TX_WORD_CORN_FIELD], P.ToString]];
+                  fieldStr := Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH], [gResTexts[TX_WORD_CORN_FIELD], P.ToString]);
                 end;
 
                 if fieldStage >= 0 then
@@ -497,7 +497,7 @@ begin
                 begin
                   fieldStage := 0;
                   makeCheckpoint := True;
-                  fieldStr := gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH, [gResTexts[TX_WORD_WINE_FIELD], P.ToString]];
+                  fieldStr := Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH], [gResTexts[TX_WORD_WINE_FIELD], P.ToString]);
                 end;
 
                 if fieldStage >= 0 then
@@ -608,8 +608,8 @@ begin
     if fieldsChanged then
     begin
       Assert(removeTxID <> -1);
-      fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH,
-                                                   [gResTexts[removeTxID], P.ToString]]);
+      fHistory.MakeCheckpoint(caTerrain, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH],
+                                                [gResTexts[removeTxID], P.ToString]));
     end;
   end;
 end;
@@ -639,7 +639,7 @@ begin
       and (gTerrain.Land^[P.Y, P.X].TileOwner <> gMySpectator.HandID) then
     begin
       gTerrain.Land^[P.Y, P.X].TileOwner := gMySpectator.HandID;
-      fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_HISTORY_CHPOINT_CHOWNER_SMTH, [P.ToString, '']]);
+      fHistory.MakeCheckpoint(caTerrain, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_CHOWNER_SMTH], [P.ToString, '']));
     end;
 end;
 
@@ -660,24 +660,24 @@ begin
                 house.OwnerUpdate(aOwner, True);
                 gTerrain.SetHouseAreaOwner(house.Position, house.HouseType, aOwner); // Update minimap colors
                 Result := True;
-                fHistory.MakeCheckpoint(caHouses, gResTexts[TX_MAPED_HISTORY_CHPOINT_CHOWNER_SMTH,
-                                                            [gResHouses[house.HouseType].HouseName, house.Entrance.ToString]]);
+                fHistory.MakeCheckpoint(caHouses, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_CHOWNER_SMTH],
+                                                         [gResHouses[house.HouseType].HouseName, house.Entrance.ToString]));
               end;
     etUnit:   begin
                 if aEntity.AsUnit.IsAnimal then Exit;
 
                 aEntity.AsUnit.OwnerUpdate(aOwner, True);
                 Result := True;
-                fHistory.MakeCheckpoint(caUnits, gResTexts[TX_MAPED_HISTORY_CHPOINT_CHOWNER_SMTH,
-                                                           [gRes.Units[aEntity.AsUnit.UnitType].GUIName,
-                                                            aEntity.AsUnit.Position.ToString]]);
+                fHistory.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_CHOWNER_SMTH],
+                                                        [gRes.Units[aEntity.AsUnit.UnitType].GUIName,
+                                                         aEntity.AsUnit.Position.ToString]));
               end;
     etGroup:  begin
                 aEntity.AsGroup.OwnerUpdate(aOwner, True);
                 Result := True;
-                fHistory.MakeCheckpoint(caUnits, gResTexts[TX_MAPED_HISTORY_CHPOINT_CHOWNER_SMTH,
-                                                           [gRes.Units[aEntity.AsGroup.FlagBearer.UnitType].GUIName,
-                                                            aEntity.AsGroup.FlagBearer.Position.ToString]]);
+                fHistory.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_CHOWNER_SMTH],
+                                                        [gRes.Units[aEntity.AsGroup.FlagBearer.UnitType].GUIName,
+                                                         aEntity.AsGroup.FlagBearer.Position.ToString]));
               end;
   end;
 end;
@@ -716,7 +716,7 @@ begin
       gTerrain.RemField(P);
 
     gMySpectator.Hand.AddRoad(P);
-    fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH, [gResTexts[TX_WORD_ROAD], P.ToString]]);
+    fHistory.MakeCheckpoint(caTerrain, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH], [gResTexts[TX_WORD_ROAD], P.ToString]));
   end;
 end;
 
@@ -730,28 +730,28 @@ begin
   if gTerrain.Land^[P.Y,P.X].TileOverlay = toRoad then
   begin
     gTerrain.RemRoad(P);
-    fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH,
-                                                 [gResTexts[TX_WORD_ROAD], P.ToString]]);
+    fHistory.MakeCheckpoint(caTerrain, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH],
+                                              [gResTexts[TX_WORD_ROAD], P.ToString]));
   end else
   if gTerrain.Land^[P.Y,P.X].TileOverlay <> toNone then
   begin
     gTerrain.SetOverlay(P, toNone, True);
-    fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH,
-                                                 [gResTexts[TX_WORD_OVERLAY], P.ToString]]);
+    fHistory.MakeCheckpoint(caTerrain, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH],
+                                              [gResTexts[TX_WORD_OVERLAY], P.ToString]));
   end;
 
   if gTerrain.TileIsCornField(P) then
   begin
     gTerrain.RemField(P);
-    fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH,
-                                                 [gResTexts[TX_WORD_CORN_FIELD], P.ToString]]);
+    fHistory.MakeCheckpoint(caTerrain, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH],
+                                              [gResTexts[TX_WORD_CORN_FIELD], P.ToString]));
   end
   else
   if gTerrain.TileIsWineField(P) then
   begin
     gTerrain.RemField(P);
-    fHistory.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH,
-                                                 [gResTexts[TX_WORD_WINE_FIELD], P.ToString]]);
+    fHistory.MakeCheckpoint(caTerrain, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH],
+                                              [gResTexts[TX_WORD_WINE_FIELD], P.ToString]));
   end;
 end;
 
@@ -826,7 +826,7 @@ end;
 function TKMMapEditor.GetCheckpointObjectsStr(aCell: TKMPoint; removeTxID: Integer = TX_WORD_OBJECT): string;
 begin
   if gCursor.Tag1 = OBJ_NONE then
-    Result := gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH, [gResTexts[removeTxID], aCell.ToString]]
+    Result := Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH], [gResTexts[removeTxID], aCell.ToString])
   else
     Result := Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH] + ' %s', [gResTexts[removeTxID], IntToStr(gCursor.Tag1), aCell.ToString])
 end;
@@ -907,9 +907,9 @@ begin
                               begin
                                 gMySpectator.Hand.AddHouse(TKMHouseType(gCursor.Tag1), P.X, P.Y, True);
                                 fHistory.MakeCheckpoint(caHouses,
-                                                        gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH,
-                                                                  [gResHouses[TKMHouseType(gCursor.Tag1)].HouseName,
-                                                                   P.ToString]]);
+                                                        Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH],
+                                                               [gResHouses[TKMHouseType(gCursor.Tag1)].HouseName,
+                                                                P.ToString]));
                                 //Holding shift allows to place that house multiple times
                                 if not (ssShift in gCursor.SState) then
                                 begin

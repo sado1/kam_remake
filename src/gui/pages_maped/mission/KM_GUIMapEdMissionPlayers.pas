@@ -105,14 +105,14 @@ begin
   begin
     ChkBox_PlayerTypesAll[K] := TKMCheckBox.Create(Panel_PlayerTypes.ItemsPanel, 43 + (K+1)*42, Top - 2, 20, 20, '', fntMetal, True);
     ChkBox_PlayerTypesAll[K].Tag     := K + 1;
-    ChkBox_PlayerTypesAll[K].Hint    := gResTexts[TX_MAPED_PLAYER_TYPE_ALLOW_ALL_HINT,
-                                                  [gResTexts[PLAYER_TYPE_TX[K]]]];
+    ChkBox_PlayerTypesAll[K].Hint    := Format(gResTexts[TX_MAPED_PLAYER_TYPE_ALLOW_ALL_HINT],
+                                               [gResTexts[PLAYER_TYPE_TX[K]]]);
     ChkBox_PlayerTypesAll[K].OnClick := Mission_PlayerTypesAllClick;
   end;
 
   Button_PlayerDelete := TKMButton.Create(Panel_PlayerTypes.ItemsPanel, 15,
                                           Panel_PlayerTypes.ItemsPanel.Height - 80, PANEL_W - 30, 26,
-                                          gResTexts[TX_MAPED_PLAYER_DELETE, [1]], bsGame);
+                                          Format(gResTexts[TX_MAPED_PLAYER_DELETE], [1]), bsGame);
   Button_PlayerDelete.Anchors := [anLeft, anRight, anBottom];
   Button_PlayerDelete.OnClick := PlayerDelete_Click;
 
@@ -130,24 +130,20 @@ begin
 
     TKMBevel.Create(PopUp_Confirm_PlayerDelete, -2000,  -2000, 5000, 5000);
 
-    Image_Confirm_PlayerDelete := TKMImage.Create(PopUp_Confirm_PlayerDelete, 0, 0,
-                                                  PopUp_Confirm_PlayerDelete.Width, PopUp_Confirm_PlayerDelete.Height, 15, rxGuiMain);
+    Image_Confirm_PlayerDelete := TKMImage.Create(PopUp_Confirm_PlayerDelete, 0, 0, PopUp_Confirm_PlayerDelete.Width, PopUp_Confirm_PlayerDelete.Height, 15, rxGuiMain);
     Image_Confirm_PlayerDelete.ImageStretch;
 
-    Label_PlayerDeleteConfirmTitle := TKMLabel.Create(PopUp_Confirm_PlayerDelete, PopUp_Confirm_PlayerDelete.Width div 2, 40,
-                                                      gResTexts[TX_MAPED_PLAYER_DELETE_TITLE, [0]], fntOutline, taCenter);
+    Label_PlayerDeleteConfirmTitle := TKMLabel.Create(PopUp_Confirm_PlayerDelete, PopUp_Confirm_PlayerDelete.Width div 2, 40, Format(gResTexts[TX_MAPED_PLAYER_DELETE_TITLE], [0]), fntOutline, taCenter);
     Label_PlayerDeleteConfirmTitle.Anchors := [anLeft, anBottom];
 
-    Label_PlayerDeleteConfirm := TKMLabel.Create(PopUp_Confirm_PlayerDelete, 20, 85, PopUp_Confirm_PlayerDelete.Width - 40, 0,
-                                                 gResTexts[TX_MAPED_PLAYER_DELETE_CONFIRM], fntMetal, taCenter);
+    Label_PlayerDeleteConfirm := TKMLabel.Create(PopUp_Confirm_PlayerDelete, 20, 85, PopUp_Confirm_PlayerDelete.Width - 40, 0, gResTexts[TX_MAPED_PLAYER_DELETE_CONFIRM], fntMetal, taCenter);
     Label_PlayerDeleteConfirm.Anchors := [anLeft, anBottom];
 
     Button_PlayerDeleteConfirm := TKMButton.Create(PopUp_Confirm_PlayerDelete, 20, 155, 170, 30, gResTexts[TX_MENU_LOAD_DELETE_DELETE], bsMenu);
     Button_PlayerDeleteConfirm.Anchors := [anLeft, anBottom];
     Button_PlayerDeleteConfirm.OnClick := PlayerDelete_Click;
 
-    Button_PlayerDeleteCancel  := TKMButton.Create(PopUp_Confirm_PlayerDelete, PopUp_Confirm_PlayerDelete.Width - 190, 155, 170, 30,
-                                                   gResTexts[TX_WORD_CANCEL], bsMenu);
+    Button_PlayerDeleteCancel  := TKMButton.Create(PopUp_Confirm_PlayerDelete, PopUp_Confirm_PlayerDelete.Width - 190, 155, 170, 30, gResTexts[TX_WORD_CANCEL], bsMenu);
     Button_PlayerDeleteCancel.Anchors := [anLeft, anBottom];
     Button_PlayerDeleteCancel.OnClick := PlayerDelete_Click;
 end;
@@ -211,11 +207,11 @@ begin
         ChkBox_PlayerTypesAll[K].SemiCheck; //SemiCheck in other cases
     end;
     if ChkBox_PlayerTypesAll[K].Checked then
-      ChkBox_PlayerTypesAll[K].Hint := gResTexts[TX_MAPED_PLAYER_TYPE_DISALLOW_ALL_HINT,
-                                                 [gResTexts[PLAYER_TYPE_TX[K]]]]
+      ChkBox_PlayerTypesAll[K].Hint := Format(gResTexts[TX_MAPED_PLAYER_TYPE_DISALLOW_ALL_HINT],
+                                              [gResTexts[PLAYER_TYPE_TX[K]]])
     else
-      ChkBox_PlayerTypesAll[K].Hint := gResTexts[TX_MAPED_PLAYER_TYPE_ALLOW_ALL_HINT,
-                                                 [gResTexts[PLAYER_TYPE_TX[K]]]];
+      ChkBox_PlayerTypesAll[K].Hint := Format(gResTexts[TX_MAPED_PLAYER_TYPE_ALLOW_ALL_HINT],
+                                              [gResTexts[PLAYER_TYPE_TX[K]]]);
   end;
   Label_PlayerTypesAll.Enabled := isAllEnabled;
 end;
@@ -225,7 +221,7 @@ procedure TKMMapEdMissionPlayers.PlayerDeleteConfirm(aVisible: Boolean);
 begin
   if aVisible then
   begin
-    Label_PlayerDeleteConfirmTitle.Caption := gResTexts[TX_MAPED_PLAYER_DELETE_TITLE, [fPlayerIdToDelete + 1]];
+    Label_PlayerDeleteConfirmTitle.Caption := Format(gResTexts[TX_MAPED_PLAYER_DELETE_TITLE], [fPlayerIdToDelete + 1]);
     PopUp_Confirm_PlayerDelete.Show;
   end else
     PopUp_Confirm_PlayerDelete.Hide;
@@ -392,7 +388,7 @@ begin
     aIndex := gMySpectator.HandID;
 
   Button_PlayerDelete.Enabled := gHands[aIndex].HasAssets;
-  Button_PlayerDelete.Caption := gResTexts[TX_MAPED_PLAYER_DELETE, [aIndex + 1]];
+  Button_PlayerDelete.Caption := Format(gResTexts[TX_MAPED_PLAYER_DELETE], [aIndex + 1]);
   fPlayerIdToDelete := aIndex;
 end;
 

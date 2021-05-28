@@ -157,11 +157,11 @@ begin
   newMapX := gTerrain.MapX + NumEdit_Resize_Left.Value + NumEdit_Resize_Right.Value;
   newMapY := gTerrain.MapY + NumEdit_Resize_Top.Value + NumEdit_Resize_Bottom.Value;
 
-  Label_CurrentMapSize.Caption := gResTexts[TX_MAPED_MAP_RESIZE_CURR_MAP_SIZE, [gTerrain.MapX, gTerrain.MapY]];
+  Label_CurrentMapSize.Caption := Format(gResTexts[TX_MAPED_MAP_RESIZE_CURR_MAP_SIZE], [gTerrain.MapX, gTerrain.MapY]);
   Label_NewMapSize.Enabled := Button_Resize.Enabled;
-  Label_NewMapSize.Caption := gResTexts[TX_MAPED_MAP_RESIZE_NEW_MAP_SIZE,
+  Label_NewMapSize.Caption := Format(gResTexts[TX_MAPED_MAP_RESIZE_NEW_MAP_SIZE],
                                     [EnsureRange(newMapX, MIN_MAP_SIZE, MAX_MAP_SIZE),
-                                     EnsureRange(newMapY, MIN_MAP_SIZE, MAX_MAP_SIZE)]];
+                                     EnsureRange(newMapY, MIN_MAP_SIZE, MAX_MAP_SIZE)]);
 end;
 
 

@@ -5329,7 +5329,7 @@ begin
 
   if fHighlightMark <> -1 then
   begin
-    Hint := gResTexts[fHintResText, [TickToTimeStr(fHighlightMark)]];
+    Hint := Format(gResTexts[fHintResText], [TickToTimeStr(fHighlightMark)]);
 //    Caption := IntToStr(fPosition) + ' (' + IntToStr(fHighlightMark) + ')';
   end
   else

@@ -286,8 +286,8 @@ begin
   Result := fUnits.AddUnit(fID, aUnitType, aLoc, True);
 
   if gGameParams.IsMapEditor and aMakeCheckpoint then
-    gGame.MapEditor.History.MakeCheckpoint(caUnits, gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH,
-                                                              [gRes.Units[aUnitType].GUIName, aLoc.ToString]]);
+    gGame.MapEditor.History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH],
+                                                           [gRes.Units[aUnitType].GUIName, aLoc.ToString]));
 end;
 
 
@@ -467,8 +467,8 @@ begin
   if gGameParams.IsMapEditor then
   begin
     if aMakeCheckpoint then
-      gGame.MapEditor.History.MakeCheckpoint(caUnits, gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH,
-                                                                [gRes.Units[aUnitType].GUIName, aLoc.ToString]]);
+      gGame.MapEditor.History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH],
+                                                            [gRes.Units[aUnitType].GUIName, aLoc.ToString]));
 
     Exit;
   end;
@@ -599,8 +599,8 @@ begin
     Result.OnGroupDied := GroupDied;
 
   if gGameParams.IsMapEditor and aMakeCheckpoint then
-    gGame.MapEditor.History.MakeCheckpoint(caUnits, gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH,
-                                                              [gRes.Units[aUnitType].GUIName, Position.ToString]]);
+    gGame.MapEditor.History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH],
+                                                           [gRes.Units[aUnitType].GUIName, Position.ToString]));
 
   //Units will be added to statistic inside the function for some units may not fit on map
 end;
@@ -1610,12 +1610,12 @@ begin
     if AI.Setup.NewAI then
     begin
       if numberedAIs then
-        Result := gResTexts[TX_ADVANCED_AI_PLAYER_SHORT_X, [fID + 1]]
+        Result := Format(gResTexts[TX_ADVANCED_AI_PLAYER_SHORT_X], [fID + 1])
       else
         Result := gResTexts[TX_AI_PLAYER_ADVANCED_SHORT];
     end else begin
       if numberedAIs then
-        Result := gResTexts[TX_CLASSIC_AI_PLAYER_SHORT_X, [fID + 1]]
+        Result := Format(gResTexts[TX_CLASSIC_AI_PLAYER_SHORT_X], [fID + 1])
       else
         Result := gResTexts[TX_AI_PLAYER_CLASSIC_SHORT];
     end;

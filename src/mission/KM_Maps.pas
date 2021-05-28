@@ -552,7 +552,7 @@ end;
 
 function TKMMapInfo.LocationName(aIndex: TKMHandID): string;
 begin
-  Result := gResTexts[TX_LOBBY_LOCATION_X, [aIndex + 1]];
+  Result := Format(gResTexts[TX_LOBBY_LOCATION_X], [aIndex + 1]);
 end;
 
 
