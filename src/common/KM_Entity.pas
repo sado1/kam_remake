@@ -1,4 +1,5 @@
 unit KM_Entity;
+{$I KaM_Remake.inc}
 interface
 uses
   KM_CommonClasses;
