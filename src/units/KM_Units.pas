@@ -1482,8 +1482,8 @@ begin
   gTerrain.UnitAdd(fPosition, Self);
 
   if newPos then
-    gGame.MapEditor.History.MakeCheckpoint(caUnits, gResTexts[TX_MAPED_HISTORY_CHPOINT_MOVE_SMTH,
-                                                              [gRes.Units[UnitType].GUIName, aPos.ToString]]);
+    gGame.MapEditor.History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_MOVE_SMTH],
+                                                           [gRes.Units[UnitType].GUIName, aPos.ToString]));
 end;
 
 

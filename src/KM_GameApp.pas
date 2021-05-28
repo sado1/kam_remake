@@ -720,7 +720,7 @@ begin
       //Note: While debugging, Delphi will still stop execution for the exception,
       //unless Tools > Debugger > Exception > "Stop on Delphi Exceptions" is unchecked.
       //But to normal player the dialog won't show.
-      loadError := gResTexts[TX_MENU_PARSE_ERROR, [filePath]] + '||' + E.ClassName + ': ' + E.Message;
+      loadError := Format(gResTexts[TX_MENU_PARSE_ERROR], [filePath]) + '||' + E.ClassName + ': ' + E.Message;
       StopGame(grError, loadError);
       gLog.AddTime('Game creation Exception: ' + loadError
         {$IFDEF WDC} + sLineBreak + E.StackTrace {$ENDIF}
@@ -765,7 +765,7 @@ begin
       //Note: While debugging, Delphi will still stop execution for the exception,
       //unless Tools > Debugger > Exception > "Stop on Delphi Exceptions" is unchecked.
       //But to normal player the dialog won't show.
-      loadError := gResTexts[TX_MENU_PARSE_ERROR, [missionFullFilePath]] + '||' + E.ClassName + ': ' + E.Message;
+      loadError := Format(gResTexts[TX_MENU_PARSE_ERROR], [missionFullFilePath]) + '||' + E.ClassName + ': ' + E.Message;
       StopGame(grError, loadError);
       gLog.AddTime('Game creation Exception: ' + loadError
         {$IFDEF WDC} + sLineBreak + E.StackTrace {$ENDIF}
@@ -871,7 +871,7 @@ begin
       //Note: While debugging, Delphi will still stop execution for the exception,
       //unless Tools > Debugger > Exception > "Stop on Delphi Exceptions" is unchecked.
       //But to normal player the dialog won't show.
-      loadError := gResTexts[TX_MENU_PARSE_ERROR, ['-']] + '||' + E.ClassName + ': ' + E.Message;
+      loadError := Format(gResTexts[TX_MENU_PARSE_ERROR], ['-']) + '||' + E.ClassName + ': ' + E.Message;
       StopGame(grError, loadError);
       gLog.AddTime('Game creation Exception: ' + loadError
         {$IFDEF WDC} + sLineBreak + E.StackTrace {$ENDIF}

@@ -522,7 +522,7 @@ begin
         except
           on E: Exception do
           begin
-            loadError := gResTexts[TX_UNSUPPORTED_REPLAY_LOAD_ERROR_MSG, [fSaves[ID].GameInfo.Version, fSaves[ID].Path]]
+            loadError := Format(gResTexts[TX_UNSUPPORTED_REPLAY_LOAD_ERROR_MSG], [fSaves[ID].GameInfo.Version, fSaves[ID].Path])
               + '||' + E.ClassName + ': ' + E.Message;
             gLog.AddTime('Replay load Exception: ' + loadError
               {$IFDEF WDC} + sLineBreak + E.StackTrace {$ENDIF}

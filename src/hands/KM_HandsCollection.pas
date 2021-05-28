@@ -1060,8 +1060,8 @@ begin
   begin
     H.RemoveHouse;
 
-    gGame.MapEditor.History.MakeCheckpoint(caHouses, gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH,
-                                                               [gResHouses[H.HouseType].HouseName, H.Entrance.ToString]]);
+    gGame.MapEditor.History.MakeCheckpoint(caHouses, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH],
+                                                            [gRes.Houses[H.HouseType].HouseName, H.Entrance.ToString]));
   end;
 end;
 
@@ -1084,8 +1084,8 @@ begin
   Result := fPlayerAnimals.RemUnit(Position, UT) or Result;
 
   if Result then
-    gGame.MapEditor.History.MakeCheckpoint(caUnits, gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH,
-                                                              [gRes.Units[UT].GUIName, Position.ToString]]);
+    gGame.MapEditor.History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH],
+                                                           [gRes.Units[UT].GUIName, Position.ToString]));
 end;
 
 

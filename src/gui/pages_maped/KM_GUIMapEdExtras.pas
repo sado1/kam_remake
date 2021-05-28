@@ -124,7 +124,7 @@ begin
 
   Dropbox_PlayerFOW.Add('Show all', -1);
   for I := 0 to MAX_HANDS - 1 do
-    Dropbox_PlayerFOW.Add(gResTexts[TX_PLAYER_X, [I]], I);
+    Dropbox_PlayerFOW.Add(Format(gResTexts[TX_PLAYER_X], [I]), I);
 
   Dropbox_PlayerFOW.Hint := gResTexts[TX_REPLAY_PLAYER_PERSPECTIVE];
   Dropbox_PlayerFOW.OnChange := Extra_FOWChange;

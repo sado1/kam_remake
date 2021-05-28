@@ -1263,8 +1263,8 @@ begin
   aHouse.SetPosition(aPos);
 
   if newPos then
-    gGame.MapEditor.History.MakeCheckpoint(caHouses, gResTexts[TX_MAPED_HISTORY_CHPOINT_MOVE_SMTH,
-                                                               [gResHouses[aHouse.HouseType].HouseName, aPos.ToString]]);
+    gGame.MapEditor.History.MakeCheckpoint(caHouses, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_MOVE_SMTH],
+                                                            [gResHouses[aHouse.HouseType].HouseName, aPos.ToString]));
 end;
 
 

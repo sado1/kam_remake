@@ -395,7 +395,7 @@ uses
 
 procedure ExportDone(aResourceName: String);
 begin
-  MessageDlg(gResTexts[TX_RESOURCE_EXPORT_DONE_MSG, [aResourceName]], mtInformation, [mbOk], 0);
+  MessageDlg(Format(gResTexts[TX_RESOURCE_EXPORT_DONE_MSG], [aResourceName]), mtInformation, [mbOk], 0);
 end;
 
 
@@ -943,7 +943,7 @@ end;
 
 procedure TFormMain.Debug_UnlockCmpMissionsClick(Sender: TObject);
 begin
-  case MessageDlg(gResTexts[TX_MENU_DEBUG_UNLOCK_CAMPAIGNS_CONFIRM, [ExeDir + 'Saves']], mtWarning, [mbYes, mbNo], 0) of
+  case MessageDlg(Format(gResTexts[TX_MENU_DEBUG_UNLOCK_CAMPAIGNS_CONFIRM], [ExeDir + 'Saves']), mtWarning, [mbYes, mbNo], 0) of
     mrYes:  begin
               Debug_UnlockCmpMissions.Checked := not Debug_UnlockCmpMissions.Checked;
               UNLOCK_CAMPAIGN_MAPS := Debug_UnlockCmpMissions.Checked;
@@ -1503,7 +1503,7 @@ end;
 
 procedure TFormMain.ShowFolderPermissionError;
 begin
-  MessageDlg(gResTexts[TX_GAME_FOLDER_PERMISSIONS_ERROR, [ExeDir]], mtError, [mbClose], 0);
+  MessageDlg(Format(gResTexts[TX_GAME_FOLDER_PERMISSIONS_ERROR], [ExeDir]), mtError, [mbClose], 0);
 end;
 
 
@@ -1800,7 +1800,7 @@ end;
 
 //function TFormMain.ConfirmExport: Boolean;
 //begin
-//  case MessageDlg(gResTexts[TX_FORM_EXPORT_CONFIRM_MSG, [ExeDir + 'Export']], mtWarning, [mbYes, mbNo], 0) of
+//  case MessageDlg(Format(gResTexts[TX_FORM_EXPORT_CONFIRM_MSG], [ExeDir + 'Export']), mtWarning, [mbYes, mbNo], 0) of
 //    mrYes:  Result := True;
 //    else    Result := False;
 //  end;

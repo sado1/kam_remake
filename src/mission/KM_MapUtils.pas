@@ -104,7 +104,7 @@ begin
 
           housesStr := housesStr + gResHouses[GOAL_BUILDINGS_HOUSES[I]].HouseName;
         end;
-        goalCondStr := gResTexts[TX_GOAL_CONDITION_COND_DESC_BUILDINGS, [WrapWrappedColor(housesStr, aColBld)]];
+        goalCondStr := Format(gResTexts[TX_GOAL_CONDITION_COND_DESC_BUILDINGS], [WrapWrappedColor(housesStr, aColBld)]);
       end;
     else
       goalCondStr := gResTexts[GOAL_COND_DESC_WORD_TX[aGoalCondition]];
@@ -114,11 +114,11 @@ begin
   // 'For player %0:s to %1:s player's %2:s %3:s must be %4:s'
   // We want to get smth like (depends of the locale, ofc)
   // 'For player 1 to win player's 2 troops must be destroyed'
-  Result := gResTexts[TX_GOAL_CONDITION_DESC_PATTERN, [WrapColor(aPlayer1 + 1, aColPlayer1),
-                                                       WrapColor(gResTexts[GOAL_TYPE_DESC_TX[aGoalType, dwkFirst]], aColTxt),
-                                                       WrapColor(aPlayer2 + 1, aColPlayer2),
-                                                       WrapColor(goalCondStr, aColTxt),
-                                                       WrapColor(gResTexts[GOAL_TYPE_DESC_TX[aGoalType, dwkSecond]], aColTxt)]];
+  Result := Format(gResTexts[TX_GOAL_CONDITION_DESC_PATTERN], [WrapColor(aPlayer1 + 1, aColPlayer1),
+                                                               WrapColor(gResTexts[GOAL_TYPE_DESC_TX[aGoalType, dwkFirst]], aColTxt),
+                                                               WrapColor(aPlayer2 + 1, aColPlayer2),
+                                                               WrapColor(goalCondStr, aColTxt),
+                                                               WrapColor(gResTexts[GOAL_TYPE_DESC_TX[aGoalType, dwkSecond]], aColTxt)]);
 end;
 
 

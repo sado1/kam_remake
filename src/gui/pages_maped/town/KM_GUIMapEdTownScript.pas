@@ -136,7 +136,7 @@ begin
   CheckBox_AutoRepair.Checked := gMySpectator.Hand.AI.Setup.AutoRepair;
   TrackBar_SerfsPer10Houses.Position := Round(10*gMySpectator.Hand.AI.Setup.SerfsPerHouse);
   if gMySpectator.HandID <> -1 then
-    TrackBar_SerfsPer10Houses.Hint := gResTexts[TX_MAPED_AI_SERFS_PER_10_HOUSES_HINT, [gMySpectator.Hand.Stats.GetHouseQty(htAny)]];
+    TrackBar_SerfsPer10Houses.Hint := Format(gResTexts[TX_MAPED_AI_SERFS_PER_10_HOUSES_HINT], [gMySpectator.Hand.Stats.GetHouseQty(htAny)]);
   TrackBar_WorkerCount.Position := gMySpectator.Hand.AI.Setup.WorkerCount;
   CheckBox_UnlimitedEquip.Checked := gMySpectator.Hand.AI.Setup.UnlimitedEquip;
   NumEd_EquipRateLeather.Value := gMySpectator.Hand.AI.Setup.EquipRateLeather;

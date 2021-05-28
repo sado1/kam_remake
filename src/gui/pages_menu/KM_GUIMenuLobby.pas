@@ -2804,8 +2804,8 @@ begin
     if not gNetworking.NetPlayers[recipientNetIndex].Connected
       or gNetworking.NetPlayers[recipientNetIndex].Dropped then
     begin
-      gNetworking.PostLocalMessage(gResTexts[TX_MULTIPLAYER_CHAT_PLAYER_NOT_CONNECTED_ANYMORE,
-                                             [gNetworking.NetPlayers[recipientNetIndex].NiknameColored]],
+      gNetworking.PostLocalMessage(Format(gResTexts[TX_MULTIPLAYER_CHAT_PLAYER_NOT_CONNECTED_ANYMORE],
+                                          [gNetworking.NetPlayers[recipientNetIndex].NiknameColored]),
                                     csSystem);
       ChatMenuSelect(CHAT_MENU_ALL);
     end else
@@ -2909,7 +2909,7 @@ begin
         except
           on E: Exception do
           begin
-            loadError := gResTexts[TX_UNSUPPORTED_SAVE_LOAD_ERROR_MSG, [version, path]]
+            loadError := Format(gResTexts[TX_UNSUPPORTED_SAVE_LOAD_ERROR_MSG], [version, path])
                          + '||' + E.ClassName + ': ' + E.Message;
             gLog.AddTime('Replay load Exception: ' + loadError
               {$IFDEF WDC} + sLineBreak + E.StackTrace {$ENDIF}

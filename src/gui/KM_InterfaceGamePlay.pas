@@ -989,7 +989,7 @@ begin
   Label_Pause1 := TKMLabel.Create(Panel_Pause, (Panel_Main.Width div 2), (Panel_Main.Height div 2),
     gResTexts[TX_POPUP_PAUSE], fntAntiqua, taCenter);
   Label_Pause2 := TKMLabel.Create(Panel_Pause, (Panel_Main.Width div 2), (Panel_Main.Height div 2) + 20,
-                                  gResTexts[TX_GAMEPLAY_PAUSE_INFO, ['"P"']], fntGrey, taCenter);
+    Format(gResTexts[TX_GAMEPLAY_PAUSE_INFO], ['"P"']), fntGrey, taCenter);
   Bevel_Pause.AnchorsStretch; // Anchor to all sides
   Image_Pause.ImageCenter;
   Label_Pause1.AnchorsCenter;
@@ -4381,8 +4381,8 @@ begin
 
   // Update peacetime counter
   if gGame.Options.Peacetime <> 0 then
-    Label_PeacetimeRemaining.Caption := gResTexts[TX_MP_PEACETIME_REMAINING,
-                                                  [TimeToString(gGame.GetPeacetimeRemaining)]]
+    Label_PeacetimeRemaining.Caption := Format(gResTexts[TX_MP_PEACETIME_REMAINING],
+                                               [TimeToString(gGame.GetPeacetimeRemaining)])
   else
     Label_PeacetimeRemaining.Caption := '';
 
@@ -4443,12 +4443,12 @@ begin
       Label_NetDropPlayersDelay.Caption := ''
     else
     begin
-      I := NET_DROP_PLAYER_MIN_WAIT - EnsureRange(TimeSince(fNetWaitDropPlayersDelayStarted) div 1000, 0, NET_DROP_PLAYER_MIN_WAIT);
-      if I > 0 then
-        Label_NetDropPlayersDelay.Caption := gResTexts[TX_GAMEPLAY_DROP_PLAYERS_DELAY, [I]]
+      i := NET_DROP_PLAYER_MIN_WAIT - EnsureRange(TimeSince(fNetWaitDropPlayersDelayStarted) div 1000, 0, NET_DROP_PLAYER_MIN_WAIT);
+      if i > 0 then
+        Label_NetDropPlayersDelay.Caption := Format(gResTexts[TX_GAMEPLAY_DROP_PLAYERS_DELAY], [i])
       else
         Label_NetDropPlayersDelay.Caption := gResTexts[TX_GAMEPLAY_DROP_PLAYERS_ALLOWED];
-      Button_NetDropPlayers.Enabled := I = 0;
+      Button_NetDropPlayers.Enabled := i = 0;
     end;
   end;
 
