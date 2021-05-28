@@ -51,8 +51,7 @@ implementation
 uses
   KM_HandsCollection, KM_Resource, KM_Terrain, KM_UnitActionStay, KM_UnitActionWalkTo,
   KM_HouseBarracks, KM_ResHouses, KM_ResUnits, KM_CommonUtils,
-  KM_ResTypes,
-  KM_HouseUtils;
+  KM_ResTypes;
 
 
 { TUnitActionGoInOut }
@@ -314,7 +313,7 @@ begin
     Result := 0
   else
   begin
-    offset := GetHouseDoorwayOffset(fHouse.HouseType, aCheck);
+    offset := gResHouses[fHouse.HouseType].GetDoorwayOffset(aCheck);
 
     Result := Mix(0, offset, fStep);
   end;

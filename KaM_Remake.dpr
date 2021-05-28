@@ -195,7 +195,6 @@ uses
   KM_HouseStore in 'src\houses\KM_HouseStore.pas',
   KM_HouseSwineStable in 'src\houses\KM_HouseSwineStable.pas',
   KM_HouseTownHall in 'src\houses\KM_HouseTownHall.pas',
-  KM_HouseUtils in 'src\houses\KM_HouseUtils.pas',
   KM_HouseWoodcutters in 'src\houses\KM_HouseWoodcutters.pas',
   
   KM_GameApp in 'src\KM_GameApp.pas',

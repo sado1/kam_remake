@@ -35,9 +35,10 @@ type
 
 implementation
 uses
-  KromUtils, Math, SysUtils,
-  KM_HouseUtils, KM_UnitActionGoInOut,
-  KM_Units, KM_ResUnits, KM_Resource;
+  Math, SysUtils,
+  KromUtils,
+  KM_Units, KM_UnitActionGoInOut,
+  KM_Resource, KM_ResUnits, KM_ResHouses;
 
 
 { TKMUnitVisualState }
@@ -100,8 +101,8 @@ begin
     and (fPrev.InHouseType <> htNone) then
   begin
     // Just add doorway offset to the fPrev.Slide then
-    prevSlideX := prevSlideX + GetHouseDoorwayOffset(fPrev.InHouseType, axX);
-    prevSlideY := prevSlideY + GetHouseDoorwayOffset(fPrev.InHouseType, axY);
+    prevSlideX := prevSlideX + gResHouses[fPrev.InHouseType].GetDoorwayOffset(axX);
+    prevSlideY := prevSlideY + gResHouses[fPrev.InHouseType].GetDoorwayOffset(axY);
   end;
 
   Result.PosF := KMLerp(fCurr.PosF, fPrev.PosF, aLag);

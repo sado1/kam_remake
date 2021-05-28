@@ -109,6 +109,7 @@ type
     function MaxHealth: Word;
     function ProducesWares: Boolean;
     procedure Outline(aList: TKMPointList);
+    function GetDoorwayOffset(aCheck: TKMCheckAxis): Single;
   end;
 
 
@@ -723,6 +724,18 @@ end;
 procedure TKMHouseSpec.LoadFromStream(Stream: TMemoryStream);
 begin
   Stream.Read(fHouseDat, SizeOf(TKMHouseDat));
+end;
+
+
+// Get doorway offset in tile fraction
+function TKMHouseSpec.GetDoorwayOffset(aCheck: TKMCheckAxis): Single;
+begin
+  if aCheck = axX then
+    Result := gResHouses[fHouseType].EntranceOffsetXpx - CELL_SIZE_PX div 2
+  else
+    Result := gResHouses[fHouseType].EntranceOffsetYpx;
+
+  Result := Result / CELL_SIZE_PX;
 end;
 
 
