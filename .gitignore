@@ -84,3 +84,8 @@ KaM Remake Settings.xml
 !timer.exe
 
 screenshots/
+
+Sprites/*.png
+Sprites/*.txt
+Modding graphics/*.png
+Modding graphics/*.txt
