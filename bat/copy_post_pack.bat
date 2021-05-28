@@ -29,10 +29,10 @@ call pull_maps.bat
 REM ============================================================
 REM Copy Maps, Campaigns and Tutorials
 REM ============================================================
-xcopy %KmrMapsRepoDir%\Campaigns "%kam_folder%"\Campaigns\ /y /r /s
-xcopy %KmrMapsRepoDir%\Maps "%kam_folder%"\Maps\ /y /r /s /exclude:excluded_test_maps.txt
-xcopy %KmrMapsRepoDir%\MapsMP "%kam_folder%"\MapsMP\ /y /r /s
-xcopy %KmrMapsRepoDir%\Tutorials "%kam_folder%"\Tutorials\ /y /r /s
+xcopy %KMRMapsRepoDir%\Campaigns "%kam_folder%"\Campaigns\ /y /r /s
+xcopy %KMRMapsRepoDir%\Maps "%kam_folder%"\Maps\ /y /r /s /exclude:excluded_test_maps.txt
+xcopy %KMRMapsRepoDir%\MapsMP "%kam_folder%"\MapsMP\ /y /r /s
+xcopy %KMRMapsRepoDir%\Tutorials "%kam_folder%"\Tutorials\ /y /r /s
 
 
 
