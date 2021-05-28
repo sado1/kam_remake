@@ -758,18 +758,20 @@ var
   T: TKMUnitTask;
 begin
   Result := False;
+
   //Save current task
   T := fTask;
+
   //Try to get a new one
   if gHands[Owner].Deliveries.Queue.AskForDelivery(Self, aFrom) then
   begin
     Result := True;
-    FreeAndNil(T); //Destroy old task, we created a new one
+    FreeAndNil(T); // Destroy old task, we created a new one
   end;
 
-  //If we got ourselves a new task then skip to resource-taking part, as we are already in this house
+  // If we got ourselves a new task then skip to resource-taking part, as we are already in this house
   if Result and (aFrom <> nil) then
-    fTask.Phase := 2; //Skip  of the new task
+    fTask.Phase := 2; // Skip  of the new task
 end;
 
 

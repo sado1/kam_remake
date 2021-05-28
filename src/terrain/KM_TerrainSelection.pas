@@ -594,7 +594,7 @@ procedure TKMSelection.Flip(aAxis: TKMFlipAxis);
           Inc(J);
         end;
 
-      //Lets try to get initial Rot from Corners information, if possible
+      // Lets try to get initial Rot from Corners information, if possible
       case J of
         0,4:  Exit;  //nothing to fix here
         1:    begin
