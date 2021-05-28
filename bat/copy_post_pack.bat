@@ -14,7 +14,8 @@ REM ============================================================
 xcopy ..\data\defines "%kam_folder%"\data\defines\ /y /r /s
 xcopy ..\data\cursors "%kam_folder%"\data\cursors\ /y /r /s
 xcopy ..\data\gfx "%kam_folder%"\data\gfx\ /y /r /s
-xcopy ..\data\Sprites "%kam_folder%"\data\Sprites\ /y /r /s
+@REM Copy *.rxx files only from the /data/Sprites folder, since we will copy *.rxa from the KMR private repo
+xcopy ..\data\Sprites\*.rxx "%kam_folder%"\data\Sprites\ /y /r /s 
 xcopy ..\data\text "%kam_folder%"\data\text\ /y /r /s
 xcopy ..\data\locales.txt "%kam_folder%"\data\locales.txt* /y /r /i
 xcopy ..\Docs\Readme "%kam_folder%"\ /y /r /s
@@ -23,8 +24,14 @@ xcopy ..\Music "%kam_folder%"\Music\ /y /r /s
 xcopy ..\lib "%kam_folder%"\lib\ /y /r /s
 xcopy ..\"Modding graphics" "%kam_folder%"\"Modding graphics"\ /y /r /s
 
-call pull_maps.bat
 
+REM ============================================================
+REM Copy *.rxa resource files from KMR private repo
+REM ============================================================
+xcopy %KMRPrivateRepoDir%\data\Sprites\*.rxa "%kam_folder%"\data\Sprites\ /y /r /s
+
+
+call pull_maps.bat
 
 REM ============================================================
 REM Copy Maps, Campaigns and Tutorials

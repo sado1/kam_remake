@@ -2,9 +2,9 @@
 if not exist rsvars_local.bat (goto exit2)
 
 if defined RS_INIT (
-  if %RS_INIT%==True (
-    goto exit0
-  )
+if %RS_INIT%==True (
+goto exit0
+)
 )
 
 @SET RS_INIT=True
@@ -19,6 +19,7 @@ call rsvars_local.bat
 @SET FrameworkVersion=%FrameworkVersion_LOCAL%
 @SET FrameworkSDKDir=%FrameworkSDKDir_LOCAL%
 @SET KMRMapsRepoDir=%KMRMapsRepoDir_LOCAL%
+@SET KMRPrivateRepoDir=%KMRPrivateRepoDir_LOCAL%
 @SET KaMOrigDir=%KaMOrigDir_LOCAL%
 @SET KMRPrevVersionDir=%KMRPrevVersionDir_LOCAL%
 @SET BuildFullDir=%BuildFullDir_LOCAL%
