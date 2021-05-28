@@ -189,6 +189,8 @@ var
   flashInfo: TFlashWInfo;
 {$ENDIF}{$ENDIF}
 begin
+  if Self = nil then Exit;
+
   {$IFNDEF FPC}{$IFDEF MSWindows}
   if (GetForegroundWindow <> fFormMainHandle) then
   begin
@@ -210,6 +212,8 @@ var
   flashInfo: TFlashWInfo;
 {$ENDIF}{$ENDIF}
 begin
+  if Self = nil then Exit;
+
   {$IFNDEF FPC}{$IFDEF MSWindows}
   if fFlashing then
   begin

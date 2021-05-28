@@ -280,6 +280,9 @@ begin
 
   fFormMain.ControlsRefill; //Refill some of the debug controls from game settings
 
+  // Create gSystem before Application.OnActivate (it uses FlashingStop)
+  gSystem := TKMSystem.Create(fFormMain.Handle);
+
   Application.OnIdle := DoIdle;
   Application.OnActivate := DoActivate;
   Application.OnDeactivate := DoDeactivate;
@@ -294,8 +297,6 @@ begin
   //Process messages in queue before hiding Loading, so that they all land on Loading form, not main one
   Application.ProcessMessages;
   fFormLoading.Hide;
-
-  gSystem := TKMSystem.Create(fFormMain.Handle);
 
   fFormMain.AfterFormCreated;
 end;
