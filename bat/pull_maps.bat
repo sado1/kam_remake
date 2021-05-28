@@ -6,7 +6,7 @@ call rsvars.bat
 
 @SET curr_directory=%cd%
 
-cd /D %KmrMapsRepoDir%
+cd /D %KMRMapsRepoDir%
 
 git pull
 

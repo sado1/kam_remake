@@ -4,7 +4,7 @@ call rsvars.bat
 
 @REM clean maps repo
 @SET curr_directory=%cd%
-cd /D %KmrMapsRepoDir%
+cd /D %KMRMapsRepoDir%
 
 call clean_src.bat
 
