@@ -1077,16 +1077,6 @@ begin
     else
       gGFXData[fRT, ID].Alt := txCoords;
   end;
-
-  // This is pointless. OGL does its own RAM/VRAM management. To be deleted in 2021
-  {
-  //Fake Render from Atlas, to force copy of it into video RAM, where it is supposed to be
-  with gGFXData[aRT, aSpriteInfo.Sprites[0].SpriteID] do
-    if aAtlasType = saBase then
-      TRender.FakeRender(Tex.ID)
-    else
-      TRender.FakeRender(Alt.ID);
-  }
 end;
 
 

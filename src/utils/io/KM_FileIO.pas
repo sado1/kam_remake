@@ -257,7 +257,7 @@ end;
 
 function IsFilePath(const aPath: UnicodeString): Boolean;
 begin
-  //For now we assume, that folder path always ends with PathDelim
+  // For now we assume, that folder path always ends with PathDelim
   Result := RightStr(aPath, 1) <> PathDelim;
 end;
 

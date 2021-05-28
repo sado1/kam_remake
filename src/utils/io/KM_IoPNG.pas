@@ -12,8 +12,8 @@ uses
 
 
 implementation
-
-uses SysUtils;
+uses
+  SysUtils;
 
 
 procedure SaveToPng(aWidth, aHeight: Word; const aPixelData: TKMCardinalArray; const aFile: UnicodeString);
