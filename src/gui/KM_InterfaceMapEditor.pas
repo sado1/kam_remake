@@ -1051,7 +1051,7 @@ procedure TKMapEdInterface.Update_Label_Coordinates;
 begin
   Label_Coordinates.Caption := Format('X: %d, Y: %d, Z: %d', [gCursor.Cell.X, gCursor.Cell.Y,
                                                               gTerrain.Land^[EnsureRange(Round(gCursor.Float.Y + 1), 1, gTerrain.MapY),
-                                                                            EnsureRange(Round(gCursor.Float.X + 1), 1, gTerrain.MapX)].RenderHeight]);
+                                                                             EnsureRange(Round(gCursor.Float.X + 1), 1, gTerrain.MapX)].Height]);
 end;
 
 
