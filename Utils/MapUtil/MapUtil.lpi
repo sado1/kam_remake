@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="11"/>
+    <PathDelim Value="\"/>
+    <General>
+      <Flags>
+        <MainUnitHasCreateFormStatements Value="False"/>
+        <MainUnitHasScaledStatement Value="False"/>
+        <UseDefaultCompilerOptions Value="True"/>
+      </Flags>
+      <SessionStorage Value="InProjectDir"/>
+      <MainUnit Value="0"/>
+      <Title Value="MapUtil"/>
+      <UseAppBundle Value="False"/>
+      <ResourceType Value="res"/>
+    </General>
+    <BuildModes Count="1">
+      <Item1 Name="Default" Default="True"/>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+      <UseFileFilters Value="True"/>
+    </PublishOptions>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="0"/>
+    </RunParams>
+    <Units Count="1">
+      <Unit0>
+        <Filename Value="MapUtil.dpr"/>
+        <IsPartOfProject Value="True"/>
+      </Unit0>
+    </Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="MapUtil"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="..\..;..\..\src;..\..\src\ai;..\..\src\ai\newAI;..\..\src\common;..\..\src\ext;..\..\src\ext\BGRABitmap;..\..\src\ext\LazarusOpenGL;..\..\src\ext\OggVorbis;..\..\src\ext\Overbyte ICS 8;..\..\src\ext\Overbyte ICS 8\Source;..\..\src\ext\Overbyte ICS 8\Source\Extras;..\..\src\ext\Overbyte ICS 8\Source\Include;..\..\src\ext\Overbyte ICS 8\Source\zobj125;..\..\src\ext\Overbyte ICS 8\Source\zobj125\win64;..\..\src\ext\pascalscript;..\..\src\ext\pascalscript\Source;..\..\src\forms;..\..\src\game;..\..\src\game\gip;..\..\src\game\misc;..\..\src\game\notifications;..\..\src\gui;..\..\src\gui\pages_common;..\..\src\gui\pages_game;..\..\src\gui\pages_maped;..\..\src\gui\pages_maped\menu;..\..\src\gui\pages_maped\mission;..\..\src\gui\pages_maped\player;..\..\src\gui\pages_maped\terrain;..\..\src\gui\pages_maped\town;..\..\src\gui\pages_menu;..\..\src\hands;..\..\src\houses;..\..\src\maped;..\..\src\media;..\..\src\mission;..\..\src\navmesh;..\..\src\net;..\..\src\net\http;..\..\src\net\other;..\..\src\pathfinding;..\..\src\perflog;..\..\src\render;..\..\src\res;..\..\src\scripting;..\..\src\settings;..\..\src\terrain;..\..\src\units;..\..\src\units\actions;..\..\src\units\tasks;..\..\src\unused;..\..\src\utils;..\..\src\utils\algorithms;..\..\src\utils\helpers;..\..\src\utils\io;..\..\src\utils\method_parser;$(ProjOutDir)"/>
+      <OtherUnitFiles Value="..\..;..\..\src;..\..\src\ai;..\..\src\ai\newAI;..\..\src\common;..\..\src\ext;..\..\src\ext\BGRABitmap;..\..\src\ext\LazarusOpenGL;..\..\src\ext\OggVorbis;..\..\src\ext\Overbyte ICS 8;..\..\src\ext\Overbyte ICS 8\Source;..\..\src\ext\Overbyte ICS 8\Source\Extras;..\..\src\ext\Overbyte ICS 8\Source\Include;..\..\src\ext\Overbyte ICS 8\Source\zobj125;..\..\src\ext\Overbyte ICS 8\Source\zobj125\win64;..\..\src\ext\pascalscript;..\..\src\ext\pascalscript\Source;..\..\src\forms;..\..\src\game;..\..\src\game\gip;..\..\src\game\misc;..\..\src\game\notifications;..\..\src\gui;..\..\src\gui\pages_common;..\..\src\gui\pages_game;..\..\src\gui\pages_maped;..\..\src\gui\pages_maped\menu;..\..\src\gui\pages_maped\mission;..\..\src\gui\pages_maped\player;..\..\src\gui\pages_maped\terrain;..\..\src\gui\pages_maped\town;..\..\src\gui\pages_menu;..\..\src\hands;..\..\src\houses;..\..\src\maped;..\..\src\media;..\..\src\mission;..\..\src\navmesh;..\..\src\net;..\..\src\net\http;..\..\src\net\other;..\..\src\pathfinding;..\..\src\perflog;..\..\src\render;..\..\src\res;..\..\src\scripting;..\..\src\settings;..\..\src\terrain;..\..\src\units;..\..\src\units\actions;..\..\src\units\tasks;..\..\src\unused;..\..\src\utils;..\..\src\utils\algorithms;..\..\src\utils\helpers;..\..\src\utils\io;..\..\src\utils\method_parser"/>
+      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+    </SearchPaths>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>
