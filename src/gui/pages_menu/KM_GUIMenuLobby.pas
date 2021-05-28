@@ -184,7 +184,6 @@ type
           Memo_MapDesc: TKMMemo;
           Button_SetupReadme: TKMButton;
         Panel_SetupOptions: TKMPanel;
-          Label_GameOptions: TKMLabel;
           Panel_Difficulty: TKMPanel;
             Label_Difficulty: TKMLabel;
             DropBox_Difficulty: TKMDropList;
@@ -222,8 +221,8 @@ uses
   KM_ServerSettings;
 
 const
-  PANEL_SETUP_OPTIONS_TOP = 548;
-  PANEL_SETUP_OPTIONS_HEIGHT = 170;
+  PANEL_SETUP_OPTIONS_TOP = 574;
+  PANEL_SETUP_OPTIONS_HEIGHT = 144;
   RESET_BANS_COOLDOWN = 1000;
   ASK_READY_COOLDOWN = 1000;
   SPEED_STEP = 0.1;
@@ -603,33 +602,30 @@ begin
       Button_TabOptions.Hide;
 
       fPanelDescBaseTop := offY;
-      Panel_SetupDesc := TKMPanel.Create(Panel_Setup, 0, offY, 270, 203);
+      Panel_SetupDesc := TKMPanel.Create(Panel_Setup, 0, offY, 270, 218);
       Panel_SetupDesc.Anchors := [anLeft, anTop, anBottom];
-        Memo_MapDesc := TKMMemo.Create(Panel_SetupDesc, 10, 0, 250, 203, fntGame, bsMenu);
-        Memo_MapDesc.Anchors := [anLeft,anTop,anBottom];
+        Memo_MapDesc := TKMMemo.Create(Panel_SetupDesc, 10, 0, 250, 218, fntGame, bsMenu);
+        Memo_MapDesc.Anchors := [anLeft, anTop, anBottom];
         Memo_MapDesc.AutoWrap := True;
         Memo_MapDesc.ItemHeight := 16;
 
-        Button_SetupReadme := TKMButton.Create(Panel_SetupDesc, 10, 185, 250, 25, gResTexts[TX_LOBBY_VIEW_README], bsMenu);
-        Button_SetupReadme.Anchors := [anLeft,anBottom];
+        Button_SetupReadme := TKMButton.Create(Panel_SetupDesc, 10, 193, 250, 25, gResTexts[TX_LOBBY_VIEW_README], bsMenu);
+        Button_SetupReadme.Anchors := [anLeft, anBottom];
         Button_SetupReadme.OnClick := ReadmeClick;
         Button_SetupReadme.Hide;
 
-      Panel_SetupOptions := TKMPanel.Create(Panel_Setup, 0, PANEL_SETUP_OPTIONS_TOP + 15, 270, PANEL_SETUP_OPTIONS_HEIGHT);
+      Panel_SetupOptions := TKMPanel.Create(Panel_Setup, 0, PANEL_SETUP_OPTIONS_TOP, 270, PANEL_SETUP_OPTIONS_HEIGHT);
       Panel_SetupOptions.Anchors := [anLeft,anBottom];
 
-        Label_GameOptions := TKMLabel.Create(Panel_SetupOptions, 10, 4, 250, 20, gResTexts[TX_LOBBY_GAME_OPTIONS], fntOutline, taLeft);
-        Label_GameOptions.Anchors := [anLeft,anTop];
-
-        Panel_Difficulty := TKMPanel.Create(Panel_SetupOptions, 0, 26, 270, 25);
-          Label_Difficulty := TKMLabel.Create(Panel_Difficulty, 10, 2, gResTexts[TX_MISSION_DIFFICULTY_CAMPAIGN], fntMetal, taLeft);
+        Panel_Difficulty := TKMPanel.Create(Panel_SetupOptions, 0, 0, 270, 27);
+          Label_Difficulty := TKMLabel.Create(Panel_Difficulty, 10, 4, gResTexts[TX_MISSION_DIFFICULTY_CAMPAIGN], fntMetal, taLeft);
           Label_Difficulty.Anchors := [anLeft, anBottom];
-          DropBox_Difficulty := TKMDropList.Create(Panel_Difficulty, 130, 0, 130, 20, fntMetal, gResTexts[TX_MISSION_DIFFICULTY], bsMenu);
+          DropBox_Difficulty := TKMDropList.Create(Panel_Difficulty, 130, 2, 130, 20, fntMetal, gResTexts[TX_MISSION_DIFFICULTY], bsMenu);
           DropBox_Difficulty.Anchors := [anLeft, anBottom];
           DropBox_Difficulty.OnChange := GameOptionsChange;
         Panel_Difficulty.Hide;
 
-        Panel_GameOptions := TKMPanel.Create(Panel_SetupOptions, 0, 26, 270, 150);
+        Panel_GameOptions := TKMPanel.Create(Panel_SetupOptions, 0, 0, 270, 150);
           TrackBar_LobbyPeacetime := TKMTrackBar.Create(Panel_GameOptions, 10, 0, 250, 0, 120);
           TrackBar_LobbyPeacetime.Anchors := [anLeft,anBottom];
           TrackBar_LobbyPeacetime.Caption := gResTexts[TX_LOBBY_PEACETIME];
@@ -941,10 +937,12 @@ end;
 
 
 procedure TKMMenuLobby.UpdateDescNOptionsUI;
+const
+  PAD_Y = 7;
 var
   diffHeight: Integer; //Difficulty panel height
 begin
-  diffHeight := Panel_Difficulty.Height*Byte(Panel_Difficulty.IsSetVisible);
+  diffHeight := Panel_Difficulty.Height * Byte(Panel_Difficulty.IsSetVisible);
   if Button_TabDesc.Visible then
   begin
     //Not enough space, so enabled tabbed view
@@ -956,11 +954,11 @@ begin
   begin
     //We have enough space, so stack Options below Desc
     Panel_SetupDesc.Top := fPanelDescBaseTop;
-    Panel_SetupDesc.Height := fMainHeight - 555 - diffHeight;
-    Panel_SetupOptions.Top := Panel_SetupDesc.Bottom;
+    Panel_SetupDesc.Height := Panel_Setup.Height - Panel_SetupDesc.Top - diffHeight - PANEL_SETUP_OPTIONS_HEIGHT - PAD_Y;
+    Panel_SetupOptions.Top := Panel_SetupDesc.Bottom + PAD_Y;
   end;
   Panel_SetupOptions.Height := PANEL_SETUP_OPTIONS_HEIGHT + diffHeight;
-  Panel_GameOptions.Top := 26 + diffHeight;
+  Panel_GameOptions.Top := diffHeight;
 end;
 
 
