@@ -4802,31 +4802,39 @@ end;
 {Cursor position should be converted to tile-coords respecting tile heights}
 function TKMTerrain.ConvertCursorToMapCoord(inX,inY: Single): Single;
 var
-  ii:     Integer;
-  Xc, Yc: Integer;
-  Tmp:    Integer;
-  Ycoef:  array[-2..4] of Single;
+  I, ii:    Integer;
+  Xc, Yc:   Integer;
+  Tmp, len, lenNegative: Integer;
+  Ycoef:  array of Single;
 begin
   Xc := EnsureRange(Round(inX + 0.5), 1, fMapX - 1); //Cell below cursor without height check
   Yc := EnsureRange(Round(inY + 0.5), 1, fMapY - 1);
 
-  for ii:=-2 to 4 do //make an array of tile heights above and below cursor (-2..4)
+  len := 2 * Ceil(HEIGHT_MAX / CELL_HEIGHT_DIV) + 1;
+  SetLength(Ycoef, len);
+
+  // We split length 1/3 to negative and 2/3 to positive part
+  lenNegative := Ceil(len / 3);
+
+  for I := Low(Ycoef) to High(Ycoef) do //make an array of tile heights above and below cursor (-2..4)
   begin
+    ii := I - lenNegative;
     Tmp       := EnsureRange(Yc + ii, 1, fMapY);
-    Ycoef[ii] := (Yc - 1) + ii - (Land^[Tmp, Xc].RenderHeight * (1 - frac(inX))
+    Ycoef[I] := (Yc - 1) + ii - (Land^[Tmp, Xc].RenderHeight * (1 - frac(inX))
                           + Land^[Tmp, Xc + 1].RenderHeight * frac(inX)) / CELL_HEIGHT_DIV;
   end;
 
   Result := Yc; //Assign something incase following code returns nothing
 
-  for ii := -2 to 3 do //check if cursor in a tile and adjust it there
-    if InRange(inY, Ycoef[ii], Ycoef[ii + 1]) then
+  for I := Low(Ycoef) to High(Ycoef) - 1 do//check if cursor in a tile and adjust it there
+  begin
+    ii := I - lenNegative;
+    if InRange(inY, Ycoef[I], Ycoef[I + 1]) then
     begin
-      Result := Yc + ii - (Ycoef[ii + 1] - inY) / (Ycoef[ii + 1] - Ycoef[ii]);
+      Result := Yc + ii - (Ycoef[I + 1] - inY) / (Ycoef[I + 1] - Ycoef[I]);
       Break;
     end;
-
-  //gLog.AssertToLog(false,'TTerrain.ConvertCursorToMapCoord - couldn''t convert')
+  end;
 end;
 
 
