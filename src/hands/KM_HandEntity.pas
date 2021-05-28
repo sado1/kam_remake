@@ -1,4 +1,5 @@
 unit KM_HandEntity;
+{$I KaM_Remake.inc}
 interface
 uses
   KM_Defaults, KM_Points, KM_CommonClasses, KM_HandTypes, KM_Entity, KromOGLUtils;
