@@ -1,5 +1,4 @@
 unit ConsoleMain;
-
 interface
 uses
   KM_Minimap,
@@ -11,12 +10,12 @@ type
     fVerbose: Boolean;
 
     fMinimap: TKMMinimap;
-    procedure GenerateAndSaveMapMinimapImage(aMapDatPath: string);
-    procedure SaveToFile(aFileName: string);
+    procedure GenerateAndSaveMapMinimapImage(const aMapDatPath: string);
+    procedure SaveToFile(const aFileName: string);
   public
     constructor Create;
     destructor Destroy; override;
-    procedure Start(aParameterRecord: TCLIParamRecord);
+    procedure Start(const aParameterRecord: TCLIParamRecord);
     procedure ShowHelp;
   end;
 
@@ -73,18 +72,14 @@ uses
 
 { TMain }
 constructor TConsoleMain.Create;
-var
-  map: TKMMapInfo;
 begin
   inherited;
-
 
   gLog := TKMLog.Create(ExtractFilePath(ParamStr(0)) + 'MapUtil.log');
   fMinimap := TKMMinimap.Create(True, True);
 
   gRes := TKMResource.Create(nil, nil);
   gRes.LoadMainResources;
-
 end;
 
 
@@ -96,7 +91,7 @@ begin
 end;
 
 
-procedure TConsoleMain.GenerateAndSaveMapMinimapImage(aMapDatPath: string);
+procedure TConsoleMain.GenerateAndSaveMapMinimapImage(const aMapDatPath: string);
 var
   mapName, dir: string;
   map: TKMMapInfo;
@@ -117,15 +112,13 @@ begin
 end;
 
 
-procedure TConsoleMain.SaveToFile(aFileName: string);
-var
-  I: Integer;
+procedure TConsoleMain.SaveToFile(const aFileName: string);
 begin
   SaveToPng(fMinimap.MapX, fMinimap.MapY, fMinimap.Base, aFileName);
 end;
 
 
-procedure TConsoleMain.Start(aParameterRecord: TCLIParamRecord);
+procedure TConsoleMain.Start(const aParameterRecord: TCLIParamRecord);
 begin
   fVerbose := aParameterRecord.Verbose;
 
@@ -135,7 +128,7 @@ end;
 
 procedure TConsoleMain.ShowHelp;
 begin
-  writeln(VALIDATOR_HELP_TEXT);
+  Writeln(VALIDATOR_HELP_TEXT);
 end;
 
 

@@ -1,5 +1,4 @@
 unit MapUtilTypes;
-
 interface
 type
   TCLIParamRecord = record
@@ -9,4 +8,5 @@ type
   end;
 
 implementation
+
 end.
