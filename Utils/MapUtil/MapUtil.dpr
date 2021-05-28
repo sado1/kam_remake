@@ -1,11 +1,7 @@
 program MapUtil;
-
 {$IFDEF MSWindows}
   {$APPTYPE CONSOLE}
 {$ENDIF}
-
-{$R *.res}
-
 uses
   {$IFDEF UNIX}
     {$DEFINE UseCThreads}
@@ -16,6 +12,8 @@ uses
   KM_Defaults,
   MapUtilTypes in 'MapUtilTypes.pas',
   ConsoleMain in 'ConsoleMain.pas';
+
+{$R *.res}
 
 var
   fConsoleMain: TConsoleMain;
@@ -34,23 +32,23 @@ begin
 
   for I := 1 to ParamCount do // Skip 0, as this is the EXE-path
   begin
-    fArgs := fArgs + ' ' + paramstr(I) + sLineBreak;
+    fArgs := fArgs + ' ' + ParamStr(I) + sLineBreak;
 
-    if (paramstr(I) = '-h') or (paramstr(I) = '-help') then
+    if (ParamStr(I) = '-h') or (ParamStr(I) = '-help') then
     begin
       fParamRecord.Help := True;
-      continue;
+      Continue;
     end;
 
-    if (paramstr(I) = '-v') or (paramstr(I) = '-verbose') then
+    if (ParamStr(I) = '-v') or (ParamStr(I) = '-verbose') then
     begin
       fParamRecord.Verbose := True;
-      continue;
+      Continue;
     end;
 
     // Only allow one script file
     if fParamRecord.MapDatPath = '' then
-      fParamRecord.MapDatPath := paramstr(I);
+      fParamRecord.MapDatPath := ParamStr(I);
   end;
 end;
 
@@ -65,7 +63,6 @@ begin
       Writeln(E.ClassName, ': ', E.Message);
   end;
 
-  if fConsoleMain <> nil then
-    FreeAndNil(fConsoleMain);
+  FreeAndNil(fConsoleMain);
 end.
 
