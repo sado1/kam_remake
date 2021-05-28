@@ -267,7 +267,9 @@ end;
 
 function TKMColor4f.ToColor3f: TKMColor3f;
 begin
-  Result := TKMColor3f.New(R, G, B);
+  Result.R := R;
+  Result.G := G;
+  Result.B := B;
 end;
 
 

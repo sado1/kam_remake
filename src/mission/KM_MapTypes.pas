@@ -47,7 +47,7 @@ type
 const
   {$I KM_TextIDs.inc}
 
-  GOAL_BUILDINGS_HOUSES: array of TKMHouseType = [htStore, htSchool, htBarracks, htTownHall];
+  GOAL_BUILDINGS_HOUSES: array[0..3] of TKMHouseType = (htStore, htSchool, htBarracks, htTownHall);
 
   //We discontinue support of other goals in favor of PascalScript scripts
   GOALS_SUPPORTED: set of TKMGoalCondition =
