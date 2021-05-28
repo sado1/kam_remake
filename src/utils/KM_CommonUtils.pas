@@ -663,12 +663,12 @@ end;
 
 function Max3(const A,B,C: Single): Single;
 begin
-  Result := Max(A, Max(B, C));
+  Result := Math.Max(A, Math.Max(B, C));
 end;
 
 function Min3(const A,B,C: Single): Single;
 begin
-  Result := Min(A, Min(B, C));
+  Result := Math.Min(A, Math.Min(B, C));
 end;
 
 
