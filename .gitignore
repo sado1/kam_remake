@@ -50,6 +50,7 @@ bugreport.txt
 /data/gfx/video 
 /data/gfx/*.bbm
 /data/gfx/*.lbm
+/data/gfx/*.dat
 /data/sfx
 /Installer/BuildFull*
 /Installer/BuildUpdate*
