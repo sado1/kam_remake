@@ -277,7 +277,7 @@ var
   MapInfo: TKMMapInfo;
   WinCond, DefeatCond: array [TKMGoalCondition] of Word;
   GC: TKMGoalCondition;
-  MapFolderType: TKMapFolder;
+  MapFolderType: TKMMapKind;
 begin
   SetUp(True);
 
@@ -291,9 +291,9 @@ begin
     for I := 0 to PathToMaps.Count - 1 do
     begin
       if Pos('MapsMP', PathToMaps[I]) > 0 then
-        MapFolderType := mfMP
+        MapFolderType := mkMP
       else
-        MapFolderType := mfSP;
+        MapFolderType := mkSP;
 
       MapInfo := TKMMapInfo.Create(TruncateExt(ExtractFileName(PathToMaps[I])), False, MapFolderType);
       MapInfo.LoadExtra;
