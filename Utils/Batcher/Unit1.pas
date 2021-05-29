@@ -274,7 +274,7 @@ procedure TForm1.Button2Click(Sender: TObject);
 var
   I,J,K: Integer;
   PathToMaps: TStringList;
-  MapInfo: TKMapInfo;
+  MapInfo: TKMMapInfo;
   WinCond, DefeatCond: array [TKMGoalCondition] of Word;
   GC: TKMGoalCondition;
   MapFolderType: TKMapFolder;
@@ -295,7 +295,7 @@ begin
       else
         MapFolderType := mfSP;
 
-      MapInfo := TKMapInfo.Create(TruncateExt(ExtractFileName(PathToMaps[I])), False, MapFolderType);
+      MapInfo := TKMMapInfo.Create(TruncateExt(ExtractFileName(PathToMaps[I])), False, MapFolderType);
       MapInfo.LoadExtra;
       for J := 0 to MapInfo.LocCount - 1 do
       begin

@@ -367,7 +367,7 @@ begin
   //Terminate and release the Scanner if we have one working or finished
   TerminateScan;
 
-  //Release TKMapInfo objects
+  //Release TKMMapInfo objects
   Clear;
 
   fCriticalSection.Free;

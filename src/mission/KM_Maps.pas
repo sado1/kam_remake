@@ -268,7 +268,7 @@ const
   MAP_TXT_INFO_MARKER = 'MapTxtInfo';
 
 
-{ TKMapInfo }
+{ TKMMapInfo }
 class function TKMMapInfo.CreateDummy: TKMMapInfo;
 begin
   Result := Create;
@@ -1305,7 +1305,7 @@ begin
   //Terminate and release the Scanner if we have one working or finished
   TerminateScan;
 
-  //Release TKMapInfo objects
+  //Release TKMMapInfo objects
   Clear;
 
   fCriticalSection.Free;
@@ -1802,7 +1802,7 @@ procedure TTMapsCacheUpdater.ProcessMap(const aPath: UnicodeString; aKind: TKMMa
 var
   map: TKMMapInfo;
 begin
-  //Simply creating the TKMapInfo updates the .mi cache file
+  //Simply creating the TKMMapInfo updates the .mi cache file
   if not fIsStopped then
   begin
     map := TKMMapInfo.Create(aPath, False, aKind);
