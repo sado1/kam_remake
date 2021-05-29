@@ -8,4 +8,4 @@ echo called build_all.bat
 call rsvars.bat
 
 @REM build everything
-msbuild KaMProjectGroup.groupproj /p:Configuration=Debug /t:Build /clp:ErrorsOnly /fl /flp:LogFile="build_all.log"
+msbuild ..\KaMProjectGroup.groupproj /p:config=Release /t:Build /clp:ErrorsOnly /fl /flp:LogFile="build_all.log"
