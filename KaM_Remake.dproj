@@ -1,4 +1,4 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{CB64F5E8-91AE-4497-A8C4-89668924F870}</ProjectGuid>
         <MainSource>KaM_Remake.dpr</MainSource>
@@ -181,6 +181,7 @@
         <DCCReference Include="src\common\KM_CommonClasses.pas"/>
         <DCCReference Include="src\common\KM_CommonClassesExt.pas"/>
         <DCCReference Include="src\common\KM_CommonExceptions.pas"/>
+        <DCCReference Include="src\common\KM_CommonGameTypes.pas"/>
         <DCCReference Include="src\common\KM_CommonTypes.pas"/>
         <DCCReference Include="src\common\KM_Defaults.pas"/>
         <DCCReference Include="src\common\KM_Entity.pas"/>
@@ -295,18 +296,22 @@
         <DCCReference Include="src\hands\KM_HandStats.pas"/>
         <DCCReference Include="src\hands\KM_HandTypes.pas"/>
         <DCCReference Include="src\hands\KM_WareDistribution.pas"/>
+        <DCCReference Include="src\houses\KM_HouseArmorWorkshop.pas"/>
         <DCCReference Include="src\houses\KM_HouseBarracks.pas"/>
         <DCCReference Include="src\houses\KM_HouseInn.pas"/>
         <DCCReference Include="src\houses\KM_HouseCollection.pas"/>
         <DCCReference Include="src\houses\KM_HouseMarket.pas"/>
         <DCCReference Include="src\houses\KM_Houses.pas"/>
         <DCCReference Include="src\houses\KM_HouseSchool.pas"/>
+        <DCCReference Include="src\houses\KM_HouseStore.pas"/>
+        <DCCReference Include="src\houses\KM_HouseSwineStable.pas"/>
         <DCCReference Include="src\houses\KM_HouseTownHall.pas"/>
         <DCCReference Include="src\houses\KM_HouseWoodcutters.pas"/>
         <DCCReference Include="src\KM_GameApp.pas"/>
         <DCCReference Include="src\KM_Log.pas"/>
         <DCCReference Include="src\KM_Main.pas"/>
         <DCCReference Include="src\KM_Minimap.pas"/>
+        <DCCReference Include="src\KM_System.pas"/>
         <DCCReference Include="src\mission\KM_Campaigns.pas"/>
         <DCCReference Include="src\mission\KM_CampaignTypes.pas"/>
         <DCCReference Include="src\mission\KM_Maps.pas"/>
@@ -367,6 +372,7 @@
         <DCCReference Include="src\render\KM_RenderAux.pas"/>
         <DCCReference Include="src\render\KM_RenderControl.pas"/>
         <DCCReference Include="src\render\KM_RenderDebug.pas"/>
+        <DCCReference Include="src\render\KM_RenderGameAux.pas"/>
         <DCCReference Include="src\render\KM_RenderPool.pas"/>
         <DCCReference Include="src\render\KM_RenderTerrain.pas"/>
         <DCCReference Include="src\render\KM_RenderTypes.pas"/>
@@ -377,6 +383,7 @@
         <DCCReference Include="src\res\KM_ResCursors.pas"/>
         <DCCReference Include="src\res\KM_ResFonts.pas"/>
         <DCCReference Include="src\res\KM_ResHouses.pas"/>
+        <DCCReference Include="src\res\KM_ResInterpolation.pas"/>
         <DCCReference Include="src\res\KM_ResKeys.pas"/>
         <DCCReference Include="src\res\KM_ResLocales.pas"/>
         <DCCReference Include="src\res\KM_ResMapElements.pas"/>
@@ -389,11 +396,15 @@
         <DCCReference Include="src\res\KM_ResUnits.pas"/>
         <DCCReference Include="src\res\KM_ResWares.pas"/>
         <DCCReference Include="src\res\KM_Saves.pas"/>
+        <DCCReference Include="src\scripting\KM_ScriptFilesCollection.pas"/>
+        <DCCReference Include="src\scripting\KM_ScriptErrorHandler.pas"/>
         <DCCReference Include="src\scripting\KM_Scripting.pas"/>
         <DCCReference Include="src\scripting\KM_ScriptingActions.pas"/>
         <DCCReference Include="src\scripting\KM_ScriptingConsoleCommands.pas"/>
         <DCCReference Include="src\scripting\KM_ScriptingEvents.pas"/>
         <DCCReference Include="src\scripting\KM_ScriptingIdCache.pas"/>
+        <DCCReference Include="src\scripting\KM_ScriptPreProcessor.pas"/>
+        <DCCReference Include="src\scripting\KM_ScriptPreProcessorGame.pas"/>
         <DCCReference Include="src\scripting\KM_ScriptingStates.pas"/>
         <DCCReference Include="src\scripting\KM_ScriptingTypes.pas"/>
         <DCCReference Include="src\scripting\KM_ScriptingUtils.pas"/>
@@ -443,6 +454,7 @@
         <DCCReference Include="src\utils\KM_CommonShellUtils.pas"/>
         <DCCReference Include="src\utils\KM_CommonUtils.pas"/>
         <DCCReference Include="src\utils\KM_Utils.pas"/>
+        <DCCReference Include="src\utils\KM_UtilsExt.pas"/>
         <DCCReference Include="src\utils\KromOGLUtils.pas"/>
         <DCCReference Include="src\utils\KromUtils.pas"/>
         <DCCReference Include="src\utils\KromShellUtils.pas"/>
