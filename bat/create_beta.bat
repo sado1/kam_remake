@@ -3,11 +3,19 @@ echo called create_beta.bat
 
 @REM Prepare Build
 echo ######                       Prepare build                           ######
-call get_kam_folder.bat
+call prepare_build.bat > prepare_build.log 2>&1
+if errorlevel 3 (goto exit3)
+
+echo KMR Beta Revision: r%kam_revision%
+
+@echo off
+call get_kam_folder.bat > get_kam_folder.log 2>&1
 
 if errorlevel 2 (goto exit2)
 
 @SET kam_folder=%build_full_kmr_dir%
+
+echo KMR Beta Folder: %kam_folder%
 
 call create.bat
 if errorlevel 3 (goto exit3)

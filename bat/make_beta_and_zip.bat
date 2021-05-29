@@ -4,6 +4,7 @@ echo called make_beta_and_zip.bat
 @REM Unset vars we use to determine multiple includes
 @SET RS_INIT=False
 @SET KAM_FOLDER_INIT=False
+@SET UPDATE_REV=False
 
 call timecmd.bat create_beta.bat
 if errorlevel 3 (goto exit3)

@@ -3,6 +3,7 @@
 @REM Unset vars we use to determine multiple includes
 @SET RS_INIT=False
 @SET KAM_FOLDER_INIT=False
+@SET UPDATE_REV=False
 
 echo called make_beta_and_installer.bat
 @REM we could use timer util made by https://www.gammadyne.com/cmdline.htm#timer
