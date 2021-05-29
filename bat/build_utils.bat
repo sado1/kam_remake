@@ -22,8 +22,9 @@ msbuild ..\Utils\ScriptValidator\ScriptValidator.dproj /p:config=Debug /t:Build 
 if errorlevel 1 goto exit3
 
 REM Build Translation Manager
-msbuild ..\Utils\TranslationManager\TranslationManager.dproj /p:config=Release /t:Build /clp:ErrorsOnly /fl /flp:LogFile="build_translation_manager.log"
-rem if errorlevel 1 goto exit3
+@REM msbuild ..\Utils\TranslationManager\TranslationManager.dproj /p:config=Release /t:Build /clp:ErrorsOnly /fl /flp:LogFile="build_translation_manager.log"
+msbuild "..\Utils\_TranslationManager (moved to kp-wiki repo)\TranslationManager.dproj" /p:config=Release /t:Build /clp:ErrorsOnly /fl /flp:LogFile="build_translation_manager.log"
+if errorlevel 1 goto exit3
 
 REM Build Scripting Editor
 if %IncludeScriptingEditor%==True (
