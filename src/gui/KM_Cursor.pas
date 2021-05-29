@@ -2,7 +2,7 @@ unit KM_Cursor;
 {$I KaM_Remake.inc}
 interface
 uses
-  Classes, KM_Defaults, KM_Points, KM_ResTileset;
+  Classes, KM_Defaults, KM_Points, KM_ResTilesetTypes;
 
 
 type

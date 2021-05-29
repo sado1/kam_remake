@@ -5,7 +5,7 @@ uses
    Classes, Math, SysUtils,
    KM_Controls,
    KM_InterfaceDefaults,
-   KM_Defaults, KM_Pics, KM_ResTileset;
+   KM_Defaults, KM_Pics, KM_ResTilesetTypes;
 
 
 type

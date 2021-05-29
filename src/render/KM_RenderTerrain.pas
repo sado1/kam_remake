@@ -2,8 +2,13 @@ unit KM_RenderTerrain;
 {$I KaM_Remake.inc}
 interface
 uses
-  dglOpenGL, SysUtils, KromUtils, Math, KM_ResTileset,
-  KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_FogOfWar, KM_Pics, KM_ResSprites, KM_Points, KM_TerrainTypes;
+  dglOpenGL,
+  SysUtils, Math,
+  KromUtils,
+  KM_ResSprites, KM_ResTilesetTypes,
+  KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Points,
+  KM_FogOfWar, KM_Pics,
+  KM_TerrainTypes;
 
 type
   TVBOArrayType = (vatNone, vatTile, vatTileLayer, vatAnimTile, vatFOW);
@@ -108,7 +113,10 @@ type
 implementation
 uses
   KM_Game,
-  KM_GameParams, KM_Render, KM_RenderTypes, KM_Resource, KM_DevPerfLog, KM_DevPerfLogTypes,
+  KM_GameParams,
+  KM_Render, KM_RenderTypes,
+  KM_Resource, KM_ResTypes,
+  KM_DevPerfLog, KM_DevPerfLogTypes,
   KM_Terrain;
 
 type

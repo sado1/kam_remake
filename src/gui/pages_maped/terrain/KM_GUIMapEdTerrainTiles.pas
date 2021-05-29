@@ -60,7 +60,7 @@ type
 
 implementation
 uses
-  KM_Resource, KM_ResFonts, KM_ResTexts, KM_ResTileset, KM_ResKeys,
+  KM_Resource, KM_ResFonts, KM_ResTexts, KM_ResTilesetTypes, KM_ResKeys,
   KM_Cursor, KM_RenderUI, KM_InterfaceGame,
   KM_Utils, KM_CommonUtils,
   KM_ResTypes;

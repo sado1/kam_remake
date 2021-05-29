@@ -6,7 +6,7 @@ uses
   Vcl.Clipbrd,
   KromUtils,
   {$IFDEF MSWindows} Windows, {$ENDIF}
-  KM_CommonClasses, KM_Points, KM_Terrain, KM_TerrainTypes, KM_TerrainPainter, KM_RenderPool, KM_ResTileset,
+  KM_CommonClasses, KM_Points, KM_Terrain, KM_TerrainTypes, KM_TerrainPainter, KM_RenderPool, KM_ResTilesetTypes,
   KM_MapEdTypes, KM_Defaults;
 
 
@@ -88,7 +88,8 @@ var
 implementation
 uses
   SysUtils,
-  KM_Resource, KM_HandsCollection,
+  KM_Resource, KM_ResTileset,
+  KM_HandsCollection,
   KM_Game, KM_Cursor, KM_RenderAux, KM_CommonUtils;
 
 

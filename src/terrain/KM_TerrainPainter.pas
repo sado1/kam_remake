@@ -4,7 +4,7 @@ interface
 uses
   Classes, KromUtils, Math, SysUtils,
   KM_CommonClasses, KM_Defaults, KM_Points,
-  KM_TerrainTypes, KM_ResTileset, KM_CommonTypes, KM_MapEdTypes;
+  KM_TerrainTypes, KM_ResTilesetTypes, KM_CommonTypes, KM_MapEdTypes;
 
 type
   //Terrain helper that is used to paint terrain types in Map Editor

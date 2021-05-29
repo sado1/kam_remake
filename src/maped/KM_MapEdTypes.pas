@@ -2,7 +2,7 @@ unit KM_MapEdTypes;
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_Defaults, KM_ResTileset, KM_TerrainTypes;
+  KM_Defaults, KM_ResTileset, KM_TerrainTypes, KM_ResTilesetTypes;
 
 type
   TKMMapEdMarkerType = (mmtNone, mmtDefence, mmtRevealFOW);

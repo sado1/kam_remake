@@ -1,5 +1,8 @@
 unit KM_ResTypes;
+{$I KaM_Remake.inc}
 interface
+uses
+  KM_ResTilesetTypes;
 
 type
   TKMChopableAge = (caAge1, caAge2, caAge3, caAgeFull, caAgeFall, caAgeStump);
@@ -203,6 +206,25 @@ const
     511,  512, 513, 514, 515, 516, 517, 518, 519,
     4, 7, 3, 9, 5, 8, 2, 6,
     456, 451, 999, 661, 0);
+
+
+
+type
+  TRXUsage = (ruMenu, ruGame, ruCustom); //Where sprites are used
+
+  TSpriteAtlasType = (saBase, saMask);
+
+  TRXInfo = record
+    FileName: string; //Used for logging and filenames
+    TeamColors: Boolean; //sprites should be generated with color masks
+    Usage: TRXUsage; //Menu and Game sprites are loaded separately
+    LoadingTextID: Word;
+  end;
+
+  TKMGenTerrainInfo = record
+    TerKind: TKMTerrainKind;
+    Mask: TKMMaskFullType;
+  end;
 
 implementation
 

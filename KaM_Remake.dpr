@@ -298,6 +298,7 @@ uses
   KM_ResTexts in 'src\res\KM_ResTexts.pas',
   KM_ResTypes in 'src\res\KM_ResTypes.pas',
   KM_ResTileset in 'src\res\KM_ResTileset.pas',
+  KM_ResTilesetTypes in 'src\res\KM_ResTilesetTypes.pas',
   KM_ResUnits in 'src\res\KM_ResUnits.pas',
   KM_ResWares in 'src\res\KM_ResWares.pas',
   KM_Saves in 'src\res\KM_Saves.pas',
@@ -334,6 +335,7 @@ uses
   KM_TerrainPainter in 'src\terrain\KM_TerrainPainter.pas',
   KM_TerrainSelection in 'src\terrain\KM_TerrainSelection.pas',
   KM_TerrainTypes in 'src\terrain\KM_TerrainTypes.pas',
+  KM_TerrainUtils in 'src\terrain\KM_TerrainUtils.pas',
   KM_TerrainWalkConnect in 'src\terrain\KM_TerrainWalkConnect.pas',
 
   KM_UnitActionAbandonWalk in 'src\units\actions\KM_UnitActionAbandonWalk.pas',

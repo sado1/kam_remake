@@ -47,7 +47,7 @@ type
 implementation
 uses
   Classes, SysUtils, Math,
-  KM_Terrain,
+  KM_TerrainUtils,
   KM_HandTypes,
   KM_Resource, KM_ResHouses, KM_ResUnits, KM_ResPalettes,
   KM_CommonClasses, KM_CommonUtils, KM_Utils,
@@ -88,7 +88,7 @@ begin
     SetLength(fMapPreview, fMapX * fMapY);
      for I := 0 to fMapX * fMapY - 1 do
       begin
-        TKMTerrain.ReadTileFromStream(S, tileBasic, gameRev);
+        ReadTileFromStream(S, tileBasic, gameRev);
         fMapPreview[I].TileID := tileBasic.BaseLayer.Terrain;
         fMapPreview[I].TileHeight := tileBasic.Height;
 

@@ -5,7 +5,10 @@ uses
   {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
   Classes, Math, SysUtils, Generics.Collections,
   Vcl.Graphics,
-  KM_CommonTypes, KM_Defaults, KM_Pics, KM_IoPNG, KM_RenderTypes, KM_ResTexts, KM_ResTileset, KM_ResHouses, KM_BinPacking
+  KM_CommonTypes, KM_Defaults,
+  KM_Pics, KM_IoPNG, KM_RenderTypes,
+  KM_ResTexts, KM_ResTileset, KM_ResHouses, KM_ResTypes, KM_ResTilesetTypes,
+  KM_BinPacking
   {$IFDEF FPC}, zstream {$ENDIF}
   {$IFDEF WDC}, ZLib {$ENDIF};
 
@@ -15,23 +18,6 @@ const
   //The blacker/whighter - the more contrast player color will be
   FLAG_COLOR_DARK = $FF101010;   //Dark-grey (Black)
   FLAG_COLOR_LITE = $FFFFFFFF;   //White
-
-type
-  TRXUsage = (ruMenu, ruGame, ruCustom); //Where sprites are used
-
-  TSpriteAtlasType = (saBase, saMask);
-
-  TRXInfo = record
-    FileName: string; //Used for logging and filenames
-    TeamColors: Boolean; //sprites should be generated with color masks
-    Usage: TRXUsage; //Menu and Game sprites are loaded separately
-    LoadingTextID: Word;
-  end;
-
-  TKMGenTerrainInfo = record
-    TerKind: TKMTerrainKind;
-    Mask: TKMMaskFullType;
-  end;
 
 
 var
@@ -228,8 +214,7 @@ uses
 
   {$ENDIF}
   KM_SoftShadows, KM_Resource, KM_ResUnits, KM_Render,
-  KM_Log, KM_CommonUtils, KM_Points, KM_GameSettings,
-  KM_ResTypes;
+  KM_Log, KM_CommonUtils, KM_Points, KM_GameSettings;
 
 const
   MAX_GAME_ATLAS_SIZE = 2048; //Max atlas size for KaM. No need for bigger atlases

@@ -34,7 +34,7 @@ uses
   KM_Game, KM_GameParams,
   KM_Units,
   KM_Terrain, KM_TerrainTypes,
-  KM_Resource, KM_ResTileset,
+  KM_Resource, KM_ResTilesetTypes,
   KM_Defaults, KM_CommonUtils;
 
 

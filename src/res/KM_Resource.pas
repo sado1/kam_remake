@@ -92,8 +92,8 @@ implementation
 uses
   TypInfo,
   KM_System,
-  KromUtils, KM_Log, KM_Points, KM_ResTexts, KM_ResKeys,
-  KM_ResTypes;
+  KromUtils, KM_Log, KM_Points,
+  KM_ResTexts, KM_ResKeys, KM_ResTypes, KM_ResTilesetTypes;
 
 
 { TKMResource }
