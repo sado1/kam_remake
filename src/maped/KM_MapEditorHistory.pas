@@ -330,7 +330,7 @@ end;
 //  begin
 //    P := KMPoint(K+1, I+1);
 //
-////    if gTerrain.Land^[I+1,K+1].TileOwner = PLAYER_NONE then Continue;
+////    if gTerrain.Land^[I+1,K+1].TileOwner = HAND_NONE then Continue;
 //
 //    // Do not remove roads under houses
 //    if (gHands.HousesHitTest(K+1,I+1) = nil) then

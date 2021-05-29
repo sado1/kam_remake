@@ -248,7 +248,7 @@ var
 begin
   if gGameParams.IsMapEditor then Exit; //No need to work in the mapEd
 
-  FillChar(fPL2Alli, SizeOf(fPL2Alli), #255); // TKMHandIndex = SmallInt => Byte(255) = -1 = PLAYER_NONE
+  FillChar(fPL2Alli, SizeOf(fPL2Alli), #255); // TKMHandIndex = SmallInt => Byte(255) = -1 = HAND_NONE
   SetLength(fAlli2PL, gHands.Count, gHands.Count);
   AlliCnt := 0;
   for PL1 := 0 to gHands.Count - 1 do
@@ -1314,7 +1314,7 @@ begin
 
   {$IFDEF DEBUG_Supervisor}
     Owner := gMySpectator.HandID;
-    if (Owner = PLAYER_NONE) then
+    if (Owner = HAND_NONE) then
       Exit;
 
     MaxThreat := -1E10;
