@@ -15,7 +15,7 @@ type
     fOnPageChange: TKMMenuChangeEventText;
 
     fSaves: TKMSavesCollection;
-    fMinimap: TKMMinimap;
+    fMinimap: TKMMinimapGame;
 
     // column id, on which last time minimap was loaded. Avoid multiple loads of same minimap, which could happen on every RefreshList
     fMinimapLastListId: Integer;
@@ -101,7 +101,7 @@ begin
   OnKeyDown := KeyDown;
 
   fSaves := TKMSavesCollection.Create;
-  fMinimap := TKMMinimap.Create(False, True);
+  fMinimap := TKMMinimapGame.Create(True);
 
   Panel_Replays := TKMPanel.Create(aParent, 0, 0, aParent.Width, aParent.Height);
   Panel_Replays.AnchorsStretch;

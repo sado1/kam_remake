@@ -77,7 +77,7 @@ begin
   OnKeyDown := KeyDown;
   OnEscKeyDown := EscKeyDown;
 
-  fMinimap := TKMMinimap.Create(True, True);
+  fMinimap := TKMMinimapMission.Create(True);
   fSaves := TKMSavesCollection.Create;
 
   fLoadKind := gsmNoStart;

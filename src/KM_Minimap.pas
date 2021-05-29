@@ -12,11 +12,11 @@ uses
 
 type
   //Intermediary class between TTerrain/Players and UI
-  TKMMinimap = class
+  TKMMinimap = class abstract
   private
     fPaintVirtualGroups: Boolean; //Paint missing army memmbers
     fSepia: Boolean; //Less saturated display for menu
-    fParser: TKMMissionParserPreview;
+
     fAlerts: TKMAlerts;
 
     //We need to store map properties locally since Minimaps come from various
@@ -31,16 +31,15 @@ type
     fHeightPOT: Word;
     procedure ApplySepia;
     procedure Resize(aX, aY: Word);
-    procedure UpdateMinimapFromGame;
-    procedure UpdateMinimapFromParser(aRevealAll:Boolean);
     procedure UpdateTexture;
+  protected
+    procedure DoUpdate(aRevealAll: Boolean); virtual; abstract;
   public
     HandColors: array [0..MAX_HANDS-1] of Cardinal;
     HandLocs: array [0..MAX_HANDS-1] of TKMPoint;
     HandShow: array [0..MAX_HANDS-1] of Boolean;
     HandTeam: array [0..MAX_HANDS-1] of ShortInt;
-    constructor Create(aFromParser: Boolean; aSepia: Boolean);
-    destructor Destroy; override;
+    constructor Create(aSepia: Boolean);
 
     property Alerts: TKMAlerts read fAlerts write fAlerts;
     property MapX: Word read fMapX;
@@ -51,12 +50,33 @@ type
     property Base: TKMCardinalArray read fBase;
     property PaintVirtualGroups: Boolean read fPaintVirtualGroups write fPaintVirtualGroups;
 
-    procedure LoadFromMission(const aMissionPath: string; const aRevealFor: array of TKMHandID);
-    procedure LoadFromTerrain;
     procedure LoadFromStream(LoadStream: TKMemoryStream);
     procedure SaveToStream(SaveStream: TKMemoryStream);
 
     procedure Update(aRevealAll: Boolean = False);
+  end;
+
+
+  // Minimap loaded from the mission .map / .dat files via parser
+  TKMMinimapMission = class(TKMMinimap)
+  private
+    fParser: TKMMissionParserPreview;
+  protected
+    procedure DoUpdate(aRevealAll: Boolean); override;
+  public
+    constructor Create(aSepia: Boolean);
+    destructor Destroy; override;
+
+    procedure LoadFromMission(const aMissionPath: string; const aRevealFor: array of TKMHandID);
+  end;
+
+
+  // Minimap loaded from the game terrain
+  TKMMinimapGame = class(TKMMinimap)
+  protected
+    procedure DoUpdate(aRevealAll: Boolean); override;
+  public
+    procedure LoadFromTerrain;
   end;
 
 
@@ -71,7 +91,7 @@ uses
 
 
 { TKMMinimap }
-constructor TKMMinimap.Create(aFromParser: Boolean; aSepia: Boolean);
+constructor TKMMinimap.Create(aSepia: Boolean);
 begin
   inherited Create;
 
@@ -79,52 +99,6 @@ begin
   {$IFNDEF NO_OGL}
   fMapTex.Tex := TRender.GenerateTextureCommon(ftNearest, ftNearest);
   {$ENDIF}
-
-  //We don't need terrain on main menu, just a parser
-  //Otherwise access synced Game terrain
-  if aFromParser then
-    fParser := TKMMissionParserPreview.Create;
-end;
-
-
-destructor TKMMinimap.Destroy;
-begin
-  FreeAndNil(fParser);
-  inherited;
-end;
-
-
-// Load map in a direct way, should be used only when in Menu
-// aMissionPath - path to .dat file
-procedure TKMMinimap.LoadFromMission(const aMissionPath: string; const aRevealFor: array of TKMHandID);
-var
-  I: Integer;
-begin
-  fParser.LoadMission(aMissionPath, aRevealFor);
-
-  Resize(fParser.MapX - 1, fParser.MapY - 1);
-
-  for I := 0 to MAX_HANDS - 1 do
-  begin
-    HandColors[I] := fParser.PlayerPreview[I].Color;
-    HandLocs[I] := fParser.PlayerPreview[I].StartingLoc;
-    HandShow[I] := fParser.PlayerPreview[I].CanHuman;
-  end;
-end;
-
-
-procedure TKMMinimap.LoadFromTerrain;
-var
-  I: Integer;
-begin
-  Resize(gTerrain.MapX - 1, gTerrain.MapY - 1);
-
-  for I := 0 to MAX_HANDS - 1 do
-  begin
-    HandColors[I] := $00000000;
-    HandLocs[I] := KMPOINT_ZERO;
-    HandShow[I] := False;
-  end;
 end;
 
 
@@ -139,36 +113,6 @@ begin
   fMapTex.U := fMapX / fWidthPOT;
   fMapTex.V := fMapY / fHeightPOT;
   {$ENDIF}
-end;
-
-
-procedure TKMMinimap.UpdateMinimapFromParser(aRevealAll: Boolean);
-var
-  I, K, N: Integer;
-  light: SmallInt;
-  x0,y2: Word;
-begin
-  for I := 1 to fMapY do
-  for K := 1 to fMapX do
-    with fParser.MapPreview[K,I] do
-    begin
-      N := (I-1) * fMapX + (K-1);
-      if not aRevealAll and not Revealed then
-        fBase[N] := $E0000000
-      else
-        if TileOwner <> HAND_NONE then
-          fBase[N] := HandColors[TileOwner]
-        else
-        begin
-          //Formula for lighting is the same as in TTerrain.RebuildLighting
-          x0 := Max(K-1, 1);
-          y2 := Min(I+1, fMapY);
-          light := Round(EnsureRange((TileHeight - (fParser.MapPreview[K,y2].TileHeight + fParser.MapPreview[x0,I].TileHeight)/2)/22, -1, 1)*64);
-          fBase[N] := Byte(EnsureRange(gRes.Tileset.TileColor[TileID].R+light, 0, 255)) +
-                      Byte(EnsureRange(gRes.Tileset.TileColor[TileID].G+light, 0, 255)) shl 8 +
-                      Byte(EnsureRange(gRes.Tileset.TileColor[TileID].B+light, 0, 255)) shl 16 or $FF000000;
-        end;
-    end;
 end;
 
 
@@ -203,8 +147,178 @@ begin
 end;
 
 
+procedure TKMMinimap.Update(aRevealAll: Boolean = False);
+begin
+  if SKIP_RENDER then Exit;
+
+  // No need to update if we did not initialize map sizes yet
+  // F.e. when Cinematic starts in OnMissionStart script procedure in the replay
+  if fMapX*fMapY = 0 then Exit;
+
+  DoUpdate(aRevealAll);
+
+  if fSepia then ApplySepia;
+
+  UpdateTexture;
+end;
+
+
+procedure TKMMinimap.UpdateTexture;
+var
+  wData: Pointer;
+  I: Word;
+begin
+  GetMem(wData, fWidthPOT * fHeightPOT * 4);
+
+  if fMapY > 0 then //if MapY = 0 then loop will overflow to MaxWord
+  for I := 0 to fMapY - 1 do
+    Move(Pointer(NativeUint(fBase) + I * fMapX * 4)^,
+         Pointer(NativeUint(wData) + I * fWidthPOT * 4)^, fMapX * 4);
+
+  {$IFNDEF NO_OGL}
+  TRender.UpdateTexture(fMapTex.Tex, fWidthPOT, fHeightPOT, tfRGBA8, wData);
+  {$ENDIF}
+  FreeMem(wData);
+end;
+
+
+procedure TKMMinimap.SaveToStream(SaveStream: TKMemoryStream);
+var
+  L: Cardinal;
+  I: Integer;
+begin
+  SaveStream.PlaceMarker('Minimap');
+
+  SaveStream.Write(fMapX);
+  SaveStream.Write(fMapY);
+  L := Length(fBase);
+  SaveStream.Write(L);
+  if L > 0 then
+    SaveStream.Write(fBase[0], L * SizeOf(Cardinal));
+  for I := 0 to MAX_HANDS - 1 do
+  begin
+    SaveStream.Write(HandColors[I]);
+    SaveStream.Write(HandLocs[I]);
+    SaveStream.Write(HandShow[I]);
+  end;
+end;
+
+
+procedure TKMMinimap.LoadFromStream(LoadStream: TKMemoryStream);
+var
+  L: Cardinal;
+  I: Integer;
+begin
+  LoadStream.CheckMarker('Minimap');
+
+  LoadStream.Read(fMapX);
+  LoadStream.Read(fMapY);
+  LoadStream.Read(L);
+  SetLength(fBase, L);
+  if L > 0 then
+    LoadStream.Read(fBase[0], L * SizeOf(Cardinal));
+  for I := 0 to MAX_HANDS - 1 do
+  begin
+    LoadStream.Read(HandColors[I]);
+    LoadStream.Read(HandLocs[I]);
+    LoadStream.Read(HandShow[I]);
+  end;
+
+  //Resize will update UV bounds. Resizing fBase is ok since the size does not changes
+  Resize(fMapX, fMapY);
+
+  if fMapX * fMapY = 0 then Exit;
+
+  if fSepia then ApplySepia;
+  UpdateTexture;
+end;
+
+
+{ TKMMinimapGame }
+constructor TKMMinimapMission.Create(aSepia: Boolean);
+begin
+  inherited Create(aSepia);
+
+  fParser := TKMMissionParserPreview.Create;
+end;
+
+
+destructor TKMMinimapMission.Destroy;
+begin
+  FreeAndNil(fParser);
+
+  inherited;
+end;
+
+
+// Load map in a direct way, should be used only when in Menu
+// aMissionPath - path to .dat file
+procedure TKMMinimapMission.LoadFromMission(const aMissionPath: string; const aRevealFor: array of TKMHandID);
+var
+  I: Integer;
+begin
+  fParser.LoadMission(aMissionPath, aRevealFor);
+
+  Resize(fParser.MapX - 1, fParser.MapY - 1);
+
+  for I := 0 to MAX_HANDS - 1 do
+  begin
+    HandColors[I] := fParser.PlayerPreview[I].Color;
+    HandLocs[I] := fParser.PlayerPreview[I].StartingLoc;
+    HandShow[I] := fParser.PlayerPreview[I].CanHuman;
+  end;
+end;
+
+
+procedure TKMMinimapMission.DoUpdate(aRevealAll: Boolean);
+var
+  I, K, N: Integer;
+  light: SmallInt;
+  x0,y2: Word;
+begin
+  for I := 1 to fMapY do
+  for K := 1 to fMapX do
+    with fParser.MapPreview[K,I] do
+    begin
+      N := (I-1) * fMapX + (K-1);
+      if not aRevealAll and not Revealed then
+        fBase[N] := $E0000000
+      else
+        if TileOwner <> HAND_NONE then
+          fBase[N] := HandColors[TileOwner]
+        else
+        begin
+          //Formula for lighting is the same as in TTerrain.RebuildLighting
+          x0 := Max(K-1, 1);
+          y2 := Min(I+1, fMapY);
+          light := Round(EnsureRange((TileHeight - (fParser.MapPreview[K,y2].TileHeight + fParser.MapPreview[x0,I].TileHeight)/2)/22, -1, 1)*64);
+          fBase[N] := Byte(EnsureRange(gRes.Tileset.TileColor[TileID].R+light, 0, 255)) +
+                      Byte(EnsureRange(gRes.Tileset.TileColor[TileID].G+light, 0, 255)) shl 8 +
+                      Byte(EnsureRange(gRes.Tileset.TileColor[TileID].B+light, 0, 255)) shl 16 or $FF000000;
+        end;
+    end;
+end;
+
+
+
+{ TKMMinimapGame }
+procedure TKMMinimapGame.LoadFromTerrain;
+var
+  I: Integer;
+begin
+  Resize(gTerrain.MapX - 1, gTerrain.MapY - 1);
+
+  for I := 0 to MAX_HANDS - 1 do
+  begin
+    HandColors[I] := $00000000;
+    HandLocs[I] := KMPOINT_ZERO;
+    HandShow[I] := False;
+  end;
+end;
+
+
 //MapEditor stores only commanders instead of all groups members
-procedure TKMMinimap.UpdateMinimapFromGame;
+procedure TKMMinimapGame.DoUpdate(aRevealAll: Boolean);
 var
   I, J, K, MX, MY: Integer;
   fow: Byte;
@@ -316,96 +430,6 @@ begin
   {$IFDEF PERFLOG}
   gPerfLogs.SectionLeave(psMinimap);
   {$ENDIF}
-end;
-
-
-procedure TKMMinimap.Update(aRevealAll: Boolean = False);
-begin
-  if SKIP_RENDER then Exit;
-
-  // No need to update if we did not initialize map sizes yet
-  // F.e. when Cinematic starts in OnMissionStart script procedure in the replay
-  if fMapX*fMapY = 0 then Exit;
-
-  if fParser <> nil then
-    UpdateMinimapFromParser(aRevealAll)
-  else
-    UpdateMinimapFromGame;
-
-  if fSepia then ApplySepia;
-
-  UpdateTexture;
-end;
-
-
-procedure TKMMinimap.UpdateTexture;
-var
-  wData: Pointer;
-  I: Word;
-begin
-  GetMem(wData, fWidthPOT * fHeightPOT * 4);
-
-  if fMapY > 0 then //if MapY = 0 then loop will overflow to MaxWord
-  for I := 0 to fMapY - 1 do
-    Move(Pointer(NativeUint(fBase) + I * fMapX * 4)^,
-         Pointer(NativeUint(wData) + I * fWidthPOT * 4)^, fMapX * 4);
-
-  {$IFNDEF NO_OGL}
-  TRender.UpdateTexture(fMapTex.Tex, fWidthPOT, fHeightPOT, tfRGBA8, wData);
-  {$ENDIF}
-  FreeMem(wData);
-end;
-
-
-procedure TKMMinimap.SaveToStream(SaveStream: TKMemoryStream);
-var
-  L: Cardinal;
-  I: Integer;
-begin
-  SaveStream.PlaceMarker('Minimap');
-
-  SaveStream.Write(fMapX);
-  SaveStream.Write(fMapY);
-  L := Length(fBase);
-  SaveStream.Write(L);
-  if L > 0 then
-    SaveStream.Write(fBase[0], L * SizeOf(Cardinal));
-  for I := 0 to MAX_HANDS - 1 do
-  begin
-    SaveStream.Write(HandColors[I]);
-    SaveStream.Write(HandLocs[I]);
-    SaveStream.Write(HandShow[I]);
-  end;
-end;
-
-
-procedure TKMMinimap.LoadFromStream(LoadStream: TKMemoryStream);
-var
-  L: Cardinal;
-  I: Integer;
-begin
-  LoadStream.CheckMarker('Minimap');
-
-  LoadStream.Read(fMapX);
-  LoadStream.Read(fMapY);
-  LoadStream.Read(L);
-  SetLength(fBase, L);
-  if L > 0 then
-    LoadStream.Read(fBase[0], L * SizeOf(Cardinal));
-  for I := 0 to MAX_HANDS - 1 do
-  begin
-    LoadStream.Read(HandColors[I]);
-    LoadStream.Read(HandLocs[I]);
-    LoadStream.Read(HandShow[I]);
-  end;
-
-  //Resize will update UV bounds. Resizing fBase is ok since the size does not changes
-  Resize(fMapX, fMapY);
-
-  if fMapX * fMapY = 0 then Exit;
-
-  if fSepia then ApplySepia;
-  UpdateTexture;
 end;
 
 

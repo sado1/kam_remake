@@ -15,7 +15,7 @@ type
     fOnPageChange: TKMMenuChangeEventText; //will be in ancestor class
 
     fMaps: TKMapsCollection;
-    fMinimap: TKMMinimap;
+    fMinimap: TKMMinimapMission;
     fMinimapLastListId: Integer;  // column id, on which last time minimap was loaded. Avoid multiple loads of same minimap, which could happen on every RefreshList
     fScanCompleted: Boolean;      // True, after scan was completed
 
@@ -153,7 +153,7 @@ begin
 
   fMaps := TKMapsCollection.Create([mkSP, mkMP, mkDL], smByNameDesc, True);
 
-  fMinimap := TKMMinimap.Create(True, True);
+  fMinimap := TKMMinimapMission.Create(True);
 
   Panel_MapEd := TKMPanel.Create(aParent, 0, 0, aParent.Width, aParent.Height);
   Panel_MapEd.AnchorsStretch;

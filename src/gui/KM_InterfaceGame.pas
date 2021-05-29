@@ -28,7 +28,7 @@ type
     procedure ResetDragScrolling;
     procedure PaintDefences;
   protected
-    fMinimap: TKMMinimap;
+    fMinimap: TKMMinimapGame;
     fViewport: TKMViewport;
     fDragScrolling: Boolean;
 
@@ -49,7 +49,7 @@ type
     constructor Create(aRender: TRender); reintroduce;
     destructor Destroy; override;
 
-    property Minimap: TKMMinimap read fMinimap;
+    property Minimap: TKMMinimapGame read fMinimap;
     property Viewport: TKMViewport read fViewport;
     property OnUserAction: TKMUserActionEvent read fOnUserAction write fOnUserAction;
 
@@ -206,7 +206,7 @@ constructor TKMUserInterfaceGame.Create(aRender: TRender);
 begin
   inherited Create(aRender.ScreenX, aRender.ScreenY);
 
-  fMinimap := TKMMinimap.Create(False, False);
+  fMinimap := TKMMinimapGame.Create(False);
   fViewport := TKMViewport.Create(GetToolbarWidth, aRender.ScreenX, aRender.ScreenY);
 
   gLog.AddOnLogEventSub(LogMessageHappened);

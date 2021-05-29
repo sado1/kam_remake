@@ -76,7 +76,7 @@ begin
   inherited;
 
   gLog := TKMLog.Create(ExtractFilePath(ParamStr(0)) + 'MapUtil.log');
-  fMinimap := TKMMinimap.Create(True, True);
+  fMinimap := TKMMinimapMission.Create(True);
 
   gRes := TKMResource.Create(nil, nil);
   gRes.LoadMainResources;

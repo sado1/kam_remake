@@ -23,7 +23,7 @@ type
 
     fMapsMP: TKMapsCollection;
     fSavesMP: TKMSavesCollection;
-    fMinimap: TKMMinimap;
+    fMinimap: TKMMinimapMission;
 
     fLobbyTab: TKMLobbyTab;
 
@@ -242,7 +242,7 @@ begin
 
   fMapsSortUpdateNeeded := False;
 
-  fMinimap := TKMMinimap.Create(True, True);
+  fMinimap := TKMMinimapMission.Create(True);
 
   fLastTimeResetBans := 0;
   fLastTimeAskReady := 0;

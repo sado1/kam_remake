@@ -18,7 +18,7 @@ type
     fOnPageChange: TKMMenuChangeEventText;
 
     fMaps: TKMapsCollection;
-    fMinimap: TKMMinimap;
+    fMinimap: TKMMinimapMission;
 
     fLastMapCRC: Cardinal; //CRC of selected map
 
@@ -116,7 +116,7 @@ begin
   OnEscKeyDown := BackClick;
 
   fMaps := TKMapsCollection.Create([mkSP, mkMP, mkDL]);
-  fMinimap := TKMMinimap.Create(True, True);
+  fMinimap := TKMMinimapMission.Create(True);
 
   Create_SingleMap(aParent);
 end;
