@@ -31,7 +31,7 @@ call prepare_for_installer.bat > prepare_for_installer.log 2>&1
 echo ######                       InnoSetup compilation                   ######
 call timecmd.bat build_installer.bat
 if errorlevel 3 (goto exit3)
-echo ######                       Compilation completed                   ######
+echo ######                       InnoSetup compilation completed         ######
 
 
 echo Total build time:
