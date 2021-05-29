@@ -2,7 +2,9 @@ unit KM_Minimap;
 {$I KaM_Remake.inc}
 interface
 uses
+  {$IFNDEF NO_OGL}
   KromOGLUtils,
+  {$ENDIF}
   KM_Terrain, KM_Alerts,
   KM_MissionScript_Preview,
   KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Points;
@@ -22,7 +24,9 @@ type
     fMapY: Word;
     fMapX: Word;
     fBase: TKMCardinalArray; //Base terrain layer
+    {$IFNDEF NO_OGL}
     fMapTex: TTexture;
+    {$ENDIF}
     fWidthPOT: Word;
     fHeightPOT: Word;
     procedure ApplySepia;
@@ -41,7 +45,9 @@ type
     property Alerts: TKMAlerts read fAlerts write fAlerts;
     property MapX: Word read fMapX;
     property MapY: Word read fMapY;
+    {$IFNDEF NO_OGL}
     property MapTex: TTexture read fMapTex;
+    {$ENDIF}
     property Base: TKMCardinalArray read fBase;
     property PaintVirtualGroups: Boolean read fPaintVirtualGroups write fPaintVirtualGroups;
 
@@ -70,7 +76,9 @@ begin
   inherited Create;
 
   fSepia := aSepia;
+  {$IFNDEF NO_OGL}
   fMapTex.Tex := TRender.GenerateTextureCommon(ftNearest, ftNearest);
+  {$ENDIF}
 
   //We don't need terrain on main menu, just a parser
   //Otherwise access synced Game terrain
@@ -127,8 +135,10 @@ begin
   SetLength(fBase, fMapX * fMapY);
   fWidthPOT := MakePOT(fMapX);
   fHeightPOT := MakePOT(fMapY);
+  {$IFNDEF NO_OGL}
   fMapTex.U := fMapX / fWidthPOT;
   fMapTex.V := fMapY / fHeightPOT;
+  {$ENDIF}
 end;
 
 
@@ -340,7 +350,9 @@ begin
     Move(Pointer(NativeUint(fBase) + I * fMapX * 4)^,
          Pointer(NativeUint(wData) + I * fWidthPOT * 4)^, fMapX * 4);
 
+  {$IFNDEF NO_OGL}
   TRender.UpdateTexture(fMapTex.Tex, fWidthPOT, fHeightPOT, tfRGBA8, wData);
+  {$ENDIF}
   FreeMem(wData);
 end;
 
