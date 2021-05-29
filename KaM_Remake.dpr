@@ -200,7 +200,6 @@ uses
   KM_GameApp in 'src\KM_GameApp.pas',
   KM_Log in 'src\KM_Log.pas',
   KM_Main in 'src\KM_Main.pas',
-  KM_Minimap in 'src\KM_Minimap.pas',
   KM_System in 'src\KM_System.pas',
   
   KM_Campaigns in 'src\mission\KM_Campaigns.pas',
@@ -223,6 +222,10 @@ uses
   KM_Sound in 'src\media\KM_Sound.pas',
   KM_Video in 'src\media\KM_Video.pas',
   KM_VLC in 'src\media\KM_VLC.pas',
+  
+  KM_Minimap in 'src\minimap\KM_Minimap.pas', 
+  KM_MinimapGame in 'src\minimap\KM_MinimapGame.pas',
+  KM_MinimapMission in 'src\minimap\KM_MinimapMission.pas',
 
   KM_Outline in 'src\navmesh\KM_Outline.pas',
   KM_NavMesh in 'src\navmesh\KM_NavMesh.pas',

@@ -1,7 +1,7 @@
 unit ConsoleMain;
 interface
 uses
-  KM_Minimap,
+  KM_MinimapMission,
   KM_Defaults, MapUtilTypes;
 
 type
@@ -9,7 +9,7 @@ type
   private
     fVerbose: Boolean;
 
-    fMinimap: TKMMinimap;
+    fMinimap: TKMMinimapMission;
     procedure GenerateAndSaveMapMinimapImage(const aMapDatPath: string);
     procedure SaveToFile(const aFileName: string);
   public

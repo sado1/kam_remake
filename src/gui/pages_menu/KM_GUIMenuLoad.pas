@@ -6,7 +6,7 @@ uses
   {$IFDEF Unix} LCLType, {$ENDIF}
   Classes, Math, SysUtils,
   KM_CommonUtils, KM_CommonTypes, KM_Controls, KM_Saves,
-  KM_InterfaceDefaults, KM_InterfaceTypes, KM_Minimap, KM_Defaults;
+  KM_InterfaceDefaults, KM_InterfaceTypes, KM_MinimapMission, KM_Defaults;
 
 
 type
@@ -15,7 +15,7 @@ type
     fOnPageChange: TKMMenuChangeEventText;
 
     fSaves: TKMSavesCollection;
-    fMinimap: TKMMinimap;
+    fMinimap: TKMMinimapMission;
 
     fLastSaveFileName: String; //Name of selected save
 
