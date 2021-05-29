@@ -129,8 +129,6 @@ type
 
     procedure ShowMessage(const aText: string);
     procedure ExportPages(const aPath: string); override;
-    property Minimap: TKMMinimap read fMinimap;
-    property Viewport: TKMViewport read fViewport;
     property GuiTerrain: TKMMapEdTerrain read fGuiTerrain;
     property GuiMission: TKMMapEdMission read fGuiMission;
 
