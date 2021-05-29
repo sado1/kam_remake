@@ -34,9 +34,10 @@ echo ######                       Build utils                             ######
 call build_utils.bat > build_utils.log 2>&1
 if errorlevel 3 (goto exit3)
 
-@REM Build exe
-@REM call build_exe.bat
-@REM if errorlevel 3 (goto exit3)
+REM Build exe
+echo ######                       Build KaM_Remake.exe                    ######
+call build_exe.bat > build_exe_bat.log 2>&1
+if errorlevel 3 (goto exit3)
 
 @REM Patch exe
 @REM call patch_exe.bat
