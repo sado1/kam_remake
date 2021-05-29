@@ -1,4 +1,5 @@
 @echo off
+
 echo called prepare_for_installer.bat
 
 call rsvars.bat
@@ -14,5 +15,3 @@ erase /F /Q /S "..\Installer\%CONST_LOCAL_FILENAME%.iss"
 @echo #define BuildFolder "%kam_folder%" > "..\Installer\%CONST_LOCAL_FILENAME%.iss"
 @echo #define OutputFolder "%BuildFullDir%" >> "..\Installer\%CONST_LOCAL_FILENAME%.iss"
 @REM @echo #define MyAppFullName "KaM Remake Beta r%kam_revision%" >> "..\Installer\%CONST_LOCAL_FILENAME%.iss"
-
-@REM call create.bat
