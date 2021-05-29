@@ -1,3 +1,6 @@
+@echo off
+echo called update_revision_locally.bat
+
 @REM get revision number from git
 @FOR /F "tokens=* USEBACKQ" %%F IN (`git rev-list --count HEAD`) DO (
   @SET kam_revision=%%F
@@ -10,3 +13,5 @@
 
 @REM update revision for Installer
 @echo #define Revision 'r%kam_revision%' > ..\Installer\Revision.iss
+
+echo KMR Revision: r%kam_revision% 

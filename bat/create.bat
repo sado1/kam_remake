@@ -1,3 +1,4 @@
+@echo off
 echo called create.bat
 
 REM ============================================================
@@ -8,7 +9,6 @@ REM Clean before build to avoid any side-effects from old DCUs
 @REM echo ######                       create.bat                              ######
 call get_kam_folder.bat
 
-@echo off
 if errorlevel 2 (goto exit2)
 
 echo "%kam_folder%"

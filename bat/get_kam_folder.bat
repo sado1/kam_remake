@@ -9,11 +9,11 @@ goto exit0
 
 @SET KAM_FOLDER_INIT=True
 
-@echo #                                                          #
-@echo #==========================================================#
-@echo #               Create new build folder                    #
-@echo #==========================================================#
-@echo #                                                          #
+@REM @echo #                                                          #
+@REM @echo #==========================================================#
+@REM @echo #               Create new build folder                    #
+@REM @echo #==========================================================#
+@REM @echo #                                                          #
 
 @echo off
 call rsvars.bat
@@ -55,8 +55,7 @@ FOR /F "tokens=* USEBACKQ" %%F IN (`git rev-list --count HEAD`) DO (
 @REM default kam_folder is build full directory
 @SET kam_folder=%build_full_kmr_dir%
 
-echo #
-echo kam_folder = "%kam_folder%"
+echo KMR Beta folder = "%kam_folder%"
 
 
 goto exit0

@@ -1,7 +1,8 @@
 @echo off
-
 echo called create_beta.bat
-@REM echo ######                       create_beta.bat                         ######
+
+@REM Prepare Build
+echo ######                       Prepare build                           ######
 call get_kam_folder.bat
 
 if errorlevel 2 (goto exit2)

@@ -1,6 +1,6 @@
 @REM pull maps in the kam_remake_maps repo
 @echo off
-echo called fetch_maps.bat
+echo called pull_maps.bat
 
 call rsvars.bat
 
