@@ -1,3 +1,4 @@
+@echo off
 echo called copy_post_pack.bat
 
 @REM ============================================================

@@ -1,10 +1,11 @@
+@echo off
 echo called build_exe.bat
 
-REM ============================================================
-REM Build main exe
-REM ============================================================
+@REM ============================================================
+@REM Build main exe
+@REM ============================================================
 
-REM msbuild needs variables set by rsvars
+@REM msbuild needs variables set by rsvars
 call rsvars.bat
 
 REM build

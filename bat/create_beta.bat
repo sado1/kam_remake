@@ -12,7 +12,7 @@ if errorlevel 2 (goto exit2)
 call create.bat
 if errorlevel 3 (goto exit3)
 
-echo ######                       create beta Done                        ######
+echo ######                       Create Beta Done                        ######
 goto exit0
 
 :exit3
