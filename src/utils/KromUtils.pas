@@ -2,11 +2,10 @@ unit KromUtils;
 {$I ..\..\KaM_Remake.inc}
 interface
 uses
-  Classes,
-  {$IFDEF MSWindows}Windows, MMSystem, {$ENDIF}
-  {$IFDEF Unix}LCLType, {$ENDIF}
-  {$IFDEF FPC}LCLIntf, UTF8Process, LazHelpHTML {$ENDIF}
-  {$IFDEF WDC}ShellApi {$ENDIF}
+  Classes
+  {$IFDEF MSWindows}, Windows, MMSystem {$ENDIF}
+  {$IFDEF Unix}, LCLType {$ENDIF}
+  {$IFDEF FPC}, LCLIntf, UTF8Process, LazHelpHTML {$ENDIF}
   ;
 
 type
