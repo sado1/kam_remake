@@ -71,8 +71,6 @@ type
     MoveX, MoveY: Integer;
   end;
 
-  TKMAudioFormat = (afWav, afOgg);
-
   TWonOrLost = (wolNone, wolWon, wolLost);
 
   //Menu load type - load / no load / load unsupported version

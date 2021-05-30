@@ -374,9 +374,10 @@ uses
   KM_RenderPool, KM_ResTexts, KM_Game, KM_GameApp, KM_HouseBarracks, KM_HouseTownHall,
   KM_ScriptingEvents, KM_AIFields, KM_GameSettings,
   KM_CommonUtils, KM_ResLocales, KM_ResSound, KM_Resource, KM_Log, KM_ResFonts, KM_ResKeys,
-  KM_Sound, KM_NetPlayersList, KM_MessageLog, KM_NetworkTypes,
+  KM_NetPlayersList, KM_MessageLog, KM_NetworkTypes,
   KM_InterfaceMapEditor, KM_HouseWoodcutters, KM_MapTypes,
-  KM_GameParams, KM_Video, KM_Music,
+  KM_GameParams,
+  KM_Video, KM_Music, KM_Sound, KM_ScriptSound,
   KM_HandEntityHelper,
   KM_ResTypes,
   KM_Utils, KM_MapUtils;
@@ -4534,9 +4535,7 @@ begin
     Result := Result + 'Network delay: ' + IntToStr(TKMGameInputProcess_Multi(gGame.GameInputProcess).GetNetworkDelay) + '|';
 
   if DISPLAY_SOUNDS then
-  begin
     Result := Result + IntToStr(gSoundPlayer.ActiveCount) + ' sounds playing' + gScriptSounds.ToString + '|';
-  end;
 
   if OVERLAY_AI_SUPERVISOR then
     Result := Result + gAIFields.Supervisor.LogStatus;

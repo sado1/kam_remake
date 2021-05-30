@@ -218,7 +218,9 @@ uses
   KM_MapEdTypes in 'src\maped\KM_MapEdTypes.pas',
   
   KM_Audio in 'src\media\KM_Audio.pas',
+  KM_MediaTypes in 'src\media\KM_MediaTypes.pas',
   KM_Music in 'src\media\KM_Music.pas',
+  KM_ScriptSound in 'src\media\KM_ScriptSound.pas',
   KM_Sound in 'src\media\KM_Sound.pas',
   KM_Video in 'src\media\KM_Video.pas',
   KM_VLC in 'src\media\KM_VLC.pas',

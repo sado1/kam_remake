@@ -66,7 +66,7 @@ uses
   Math, SysUtils,
   KromUtils,
   KM_Resource, KM_ResTypes,
-  KM_Main, KM_System, KM_GameApp, KM_GameSettings, KM_Sound,
+  KM_Main, KM_System, KM_GameApp, KM_GameSettings, KM_Sound, KM_ScriptSound,
   KM_Defaults, KM_CommonUtils;
 
 

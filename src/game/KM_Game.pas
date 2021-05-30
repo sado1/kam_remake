@@ -11,7 +11,8 @@ uses
   KM_GameSavePoints,
   KM_GameOptions, KM_GameTypes,
   KM_MapEditor, KM_Campaigns, KM_Maps, KM_MapTypes, KM_CampaignTypes, KM_TerrainPainter,
-  KM_Render, KM_Sound, KM_Scripting,
+  KM_Render, KM_Scripting,
+  KM_MediaTypes,
   KM_InterfaceGame, KM_InterfaceGamePlay, KM_InterfaceMapEditor,
   KM_ResTexts, KM_Hand,
   KM_Defaults, KM_Points, KM_CommonTypes, KM_CommonClasses, KM_CommonClassesExt,
@@ -299,6 +300,7 @@ uses
   Vcl.Dialogs,
   {$IFDEF WDC} UITypes, {$ENDIF}
   KromUtils,
+  KM_Sound, KM_ScriptSound,
   KM_PathFindingAStarOld, KM_PathFindingAStarNew, KM_PathFindingJPS,
   KM_Projectiles, KM_AIFields, KM_NetworkTypes,
   KM_Main, KM_System, KM_GameApp, KM_RenderPool, KM_GameInfo, KM_GameClasses,
