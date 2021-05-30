@@ -380,7 +380,8 @@ uses
   KM_Pics,
   KM_RenderPool,
   KM_Hand,
-  KM_ResKeys, KM_FormLogistics, KM_Game,
+  KM_ResKeys, KM_ResExporter,
+  KM_FormLogistics, KM_Game,
   KM_RandomChecks,
   KM_Log, KM_CommonClasses, KM_VclHelpers, KM_Video,
   KM_GameSettings,
@@ -964,17 +965,17 @@ end;
 //Exports
 procedure TFormMain.Export_TreesRXClick(Sender: TObject);
 begin
-  gRes.ExportSpritesToPNG(rxTrees, ExportDone);
+  gResExporter.ExportSpritesToPNG(rxTrees, ExportDone);
 end;
 
 procedure TFormMain.Export_HousesRXClick(Sender: TObject);
 begin
-  gRes.ExportSpritesToPNG(rxHouses, ExportDone);
+  gResExporter.ExportSpritesToPNG(rxHouses, ExportDone);
 end;
 
 procedure TFormMain.Export_UnitsRXClick(Sender: TObject);
 begin
-  gRes.ExportSpritesToPNG(rxUnits, ExportDone);
+  gResExporter.ExportSpritesToPNG(rxUnits, ExportDone);
 end;
 
 procedure TFormMain.Export_ScriptDataClick(Sender: TObject);
@@ -987,22 +988,22 @@ end;
 
 procedure TFormMain.Export_GUIClick(Sender: TObject);
 begin
-  gRes.ExportSpritesToPNG(rxGUI, ExportDone);
+  gResExporter.ExportSpritesToPNG(rxGUI, ExportDone);
 end;
 
 procedure TFormMain.Export_GUIMainRXClick(Sender: TObject);
 begin
-  gRes.ExportSpritesToPNG(rxGUIMain, ExportDone);
+  gResExporter.ExportSpritesToPNG(rxGUIMain, ExportDone);
 end;
 
 procedure TFormMain.Export_CustomClick(Sender: TObject);
 begin
-  gRes.ExportSpritesToPNG(rxCustom, ExportDone);
+  gResExporter.ExportSpritesToPNG(rxCustom, ExportDone);
 end;
 
 procedure TFormMain.Export_TilesetClick(Sender: TObject);
 begin
-  gRes.ExportSpritesToPNG(rxTiles, ExportDone);
+  gResExporter.ExportSpritesToPNG(rxTiles, ExportDone);
 end;
 
 procedure TFormMain.Export_Sounds1Click(Sender: TObject);
@@ -1012,12 +1013,12 @@ end;
 
 procedure TFormMain.Export_TreeAnim1Click(Sender: TObject);
 begin
-  gRes.ExportTreeAnim(ExportDone);
+  gResExporter.ExportTreeAnim(ExportDone);
 end;
 
 procedure TFormMain.Export_HouseAnim1Click(Sender: TObject);
 begin
-  gRes.ExportHouseAnim(ExportDone);
+  gResExporter.ExportHouseAnim(ExportDone);
 end;
 
 
@@ -1108,19 +1109,19 @@ end;
 
 procedure TFormMain.UnitAnim_AllClick(Sender: TObject);
 begin
-  gRes.ExportUnitAnim(UNIT_MIN, UNIT_MAX, True, ExportDone);
+  gResExporter.ExportUnitAnim(UNIT_MIN, UNIT_MAX, True, ExportDone);
 end;
 
 
 procedure TFormMain.Civilians1Click(Sender: TObject);
 begin
-  gRes.ExportUnitAnim(CITIZEN_MIN, CITIZEN_MAX, False, ExportDone);
+  gResExporter.ExportUnitAnim(CITIZEN_MIN, CITIZEN_MAX, False, ExportDone);
 end;
 
 
 procedure TFormMain.SoldiersClick(Sender: TObject);
 begin
-  gRes.ExportUnitAnim(WARRIOR_MIN, WARRIOR_MAX, False, ExportDone);
+  gResExporter.ExportUnitAnim(WARRIOR_MIN, WARRIOR_MAX, False, ExportDone);
 end;
 
 

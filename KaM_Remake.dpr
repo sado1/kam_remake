@@ -291,6 +291,7 @@ uses
   KM_Pics in 'src\res\KM_Pics.pas',  
   KM_Resource in 'src\res\KM_Resource.pas',
   KM_ResCursors in 'src\res\KM_ResCursors.pas',
+  KM_ResExporter in 'src\res\KM_ResExporter.pas',
   KM_ResFonts in 'src\res\KM_ResFonts.pas',
   KM_ResHouses in 'src\res\KM_ResHouses.pas',
   KM_ResInterpolation in 'src\res\KM_ResInterpolation.pas',
