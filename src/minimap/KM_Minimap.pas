@@ -53,8 +53,7 @@ type
 implementation
 uses
   SysUtils, Math,
-  KromUtils,
-  KM_Render, KM_RenderTypes;
+  KromUtils;
 
 
 { TKMMinimap }
