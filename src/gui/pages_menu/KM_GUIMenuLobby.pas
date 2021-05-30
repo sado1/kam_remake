@@ -215,9 +215,13 @@ var
 
 implementation
 uses
-  KM_Log, KM_CommonTypes, KM_GameSettings, KM_ResLocales, KM_CommonUtils, KM_Sound, KM_ResSound, KM_RenderUI,
-  KM_Resource, KM_ResFonts, KM_NetPlayersList, KM_Points, KM_MapTypes, KM_MapUtilsExt,
-  KM_Networking,
+  KM_Log, KM_CommonTypes, KM_Points, KM_CommonUtils,
+  KM_GameSettings,
+  KM_Sound,
+  KM_RenderUI,
+  KM_Resource, KM_ResFonts, KM_ResLocales, KM_ResSound, KM_ResTypes,
+  KM_Networking, KM_NetPlayersList,
+  KM_MapTypes, KM_MapUtilsExt,
   KM_ServerSettings;
 
 const

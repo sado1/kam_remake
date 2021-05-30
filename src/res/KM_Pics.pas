@@ -1,19 +1,11 @@
 unit KM_Pics;
 {$I KaM_Remake.inc}
 interface
+uses
+  KM_ResTypes;
 
 
 type
-  TRXType = (
-    rxTrees,
-    rxHouses,
-    rxUnits,
-    rxGui,
-    rxGuiMain,
-    rxCustom, //Used for loading stuff like campaign maps (there is no main RXX file)
-    rxTiles //Tiles
-    );
-
   TKMPic = record
     RX: TRXType;
     ID: Word;

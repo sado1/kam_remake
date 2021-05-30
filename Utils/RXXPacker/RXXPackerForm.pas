@@ -42,7 +42,8 @@ var
 
 implementation
 uses
-  KM_ResHouses, KM_ResUnits, KM_Points;
+  KM_ResHouses, KM_ResUnits, KM_ResTypes,
+  KM_Points;
 
 {$R *.dfm}
 

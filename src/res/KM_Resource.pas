@@ -6,6 +6,7 @@ uses
   Classes, SysUtils,
   KM_CommonTypes, KM_Defaults, KM_Pics, KM_WorkerThread,
 
+  KM_ResTypes,
   KM_ResCursors,
   KM_ResFonts,
   KM_ResHouses,
@@ -93,7 +94,7 @@ uses
   TypInfo,
   KM_System,
   KromUtils, KM_Log, KM_Points,
-  KM_ResTexts, KM_ResKeys, KM_ResTypes, KM_ResTilesetTypes;
+  KM_ResTexts, KM_ResKeys, KM_ResTilesetTypes;
 
 
 { TKMResource }

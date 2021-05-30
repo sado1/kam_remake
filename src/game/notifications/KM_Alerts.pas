@@ -69,7 +69,10 @@ type
 
 implementation
 uses
-  KM_Hand, KM_RenderPool, KM_HandsCollection, KM_Sound;
+  KM_HandsCollection, KM_Hand,
+  KM_RenderPool,
+  KM_Sound,
+  KM_ResTypes;
 
 
 type

@@ -11,7 +11,7 @@ uses
   {$ENDIF}
   Math, StrUtils, SysUtils,
   KromOGLUtils,
-  KM_Defaults, KM_CommonTypes, KM_Points, KM_Pics,
+  KM_Defaults, KM_CommonTypes, KM_Points, KM_ResTypes,
   KM_ResFonts, KM_ResSprites;
 
 type

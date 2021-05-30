@@ -96,6 +96,7 @@
         <DCCReference Include="..\..\src\res\KM_ResSprites.pas"/>
         <DCCReference Include="..\..\src\res\KM_ResSpritesEdit.pas"/>
         <DCCReference Include="..\..\src\res\KM_ResPalettes.pas"/>
+        <DCCReference Include="..\..\src\res\KM_ResTypes.pas"/>
         <DCCReference Include="..\..\src\utils\algorithms\KM_SoftShadows.pas"/>
         <DCCReference Include="..\..\src\common\KM_Defaults.pas"/>
         <DCCReference Include="..\..\src\common\KM_CommonTypes.pas"/>

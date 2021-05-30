@@ -52,8 +52,13 @@ type
 
 implementation
 uses
-  KM_HandsCollection, KM_ResTexts, KM_Cursor,
-  KM_InterfaceGame, KM_RenderUI, KM_Game, KM_Utils;
+  KM_Game,
+  KM_HandsCollection,
+  KM_InterfaceGame,
+  KM_ResTexts, KM_ResTypes,
+  KM_Cursor,
+  KM_RenderUI,
+  KM_Utils;
 
 { TKMMapEdTown }
 constructor TKMMapEdTown.Create(aParent: TKMPanel; aOnPageChange: TNotifyEvent);

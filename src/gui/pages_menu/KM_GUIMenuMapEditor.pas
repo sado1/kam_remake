@@ -126,8 +126,9 @@ uses
   KM_ResTexts, 
   KM_GameSettings, 
   KM_ServerSettings,
-  KM_RenderUI, KM_Resource, KM_ResFonts,
-  KM_Pics, KM_CommonUtils, KM_MapUtilsExt,
+  KM_RenderUI, KM_Pics,
+  KM_Resource, KM_ResFonts, KM_ResTypes,
+  KM_CommonUtils, KM_MapUtilsExt,
   KM_MapTypes;
 
 const

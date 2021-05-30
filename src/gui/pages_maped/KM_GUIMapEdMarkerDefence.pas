@@ -40,8 +40,11 @@ type
 
 implementation
 uses
-  KM_HandsCollection, KM_ResTexts, KM_Game,
-  KM_RenderUI, KM_ResFonts, KM_AIDefensePos, KM_Hand;
+  KM_Game,
+  KM_AIDefensePos,
+  KM_HandsCollection, KM_Hand,
+  KM_ResTexts, KM_ResFonts, KM_ResTypes,
+  KM_RenderUI;
 
 
 { TKMMapEdMarkerDefence }

@@ -5,7 +5,7 @@ uses
   Classes, Controls, Dialogs,
   ExtCtrls, FileCtrl, Forms, Graphics, Spin, StdCtrls, SysUtils,
   {$IFDEF FPC} LResources, {$ENDIF}
-  KM_Defaults, KM_Log, KM_Pics, KM_IoPNG, KM_ResPalettes, KM_ResSprites, KM_ResSpritesEdit;
+  KM_Defaults, KM_Log, KM_IoPNG, KM_ResPalettes, KM_ResSprites, KM_ResSpritesEdit;
 
 
 type
@@ -63,6 +63,8 @@ var
 
 implementation
 {$R *.dfm}
+uses
+  KM_ResTypes;
 
 
 procedure TRXXForm1.FormCreate(Sender: TObject);

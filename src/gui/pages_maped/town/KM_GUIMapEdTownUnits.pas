@@ -31,8 +31,10 @@ type
 
 implementation
 uses
-  KM_HandsCollection, KM_Cursor, KM_RenderUI, KM_Resource, KM_ResFonts, KM_ResTexts,
-  KM_InterfaceGame, KM_ResUnits, KM_Utils;
+  KM_HandsCollection,
+  KM_InterfaceGame, KM_Cursor, KM_RenderUI,
+  KM_Resource, KM_ResUnits, KM_ResFonts, KM_ResTexts, KM_ResTypes,
+  KM_Utils;
 
 
 { TKMMapEdTownUnits }

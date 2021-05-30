@@ -81,7 +81,10 @@ type
 
 implementation
 uses
-  KM_Log, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_GameSettings,
+  KM_Log,
+  KM_RenderUI,
+  KM_ResTexts, KM_ResFonts, KM_ResTypes,
+  KM_GameSettings,
   KM_MapTypes;
 
 const

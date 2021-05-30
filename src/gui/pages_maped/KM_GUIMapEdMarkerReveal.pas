@@ -34,8 +34,12 @@ type
 
 implementation
 uses
-  KM_CommonClasses, KM_HandsCollection, KM_ResTexts, KM_Game,
-  KM_RenderUI, KM_ResFonts, KM_InterfaceGame;
+  KM_Game,
+  KM_InterfaceGame,
+  KM_HandsCollection,
+  KM_ResTexts, KM_ResFonts, KM_ResTypes,
+  KM_RenderUI,
+  KM_CommonClasses;
 
 
 { TKMMapEdMarkerReveal }

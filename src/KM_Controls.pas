@@ -6,7 +6,8 @@ uses
   Vcl.Controls,
   Generics.Collections,
   KromOGLUtils,
-  KM_RenderUI, KM_Pics, KM_Minimap, KM_Viewport, KM_ResFonts,
+  KM_RenderUI, KM_Pics, KM_Minimap, KM_Viewport,
+  KM_ResFonts, KM_ResTypes,
   KM_CommonClasses, KM_CommonTypes, KM_Points, KM_Defaults;
 
 
@@ -2038,7 +2039,7 @@ uses
   KromUtils,
   KM_System,
   KM_MinimapGame,
-  KM_Resource, KM_ResSprites, KM_ResSound, KM_ResTexts, KM_ResTypes,
+  KM_Resource, KM_ResSprites, KM_ResSound, KM_ResTexts,
   KM_Render, KM_RenderTypes,
   KM_Sound, KM_CommonUtils, KM_UtilsExt;
 

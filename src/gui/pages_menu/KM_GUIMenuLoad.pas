@@ -64,7 +64,10 @@ type
 
 implementation
 uses
-  KM_Log, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_Pics, KM_GameSettings,
+  KM_Log,
+  KM_ResTexts, KM_ResFonts, KM_ResTypes,
+  KM_GameSettings,
+  KM_RenderUI, KM_Pics,
   KM_MapTypes;
 
 

@@ -134,7 +134,8 @@ const
 implementation
 uses
   SysUtils, Math, KromUtils,
-  KM_GameParams, KM_Resource, KM_ResLocales, KM_ResSprites,
+  KM_GameParams,
+  KM_Resource, KM_ResLocales, KM_ResSprites, KM_ResTypes,
   KM_Log, KM_Defaults;
 
 

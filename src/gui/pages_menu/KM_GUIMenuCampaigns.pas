@@ -34,7 +34,10 @@ type
 
 implementation
 uses
-  KM_ResTexts, KM_ResFonts, KM_RenderUI, KM_GameSettings, KM_CampaignTypes;
+  KM_ResTexts, KM_ResFonts, KM_ResTypes,
+  KM_RenderUI,
+  KM_GameSettings,
+  KM_CampaignTypes;
 
 
 { TKMMainMenuInterface }

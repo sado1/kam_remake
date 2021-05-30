@@ -2,7 +2,7 @@ unit KM_SoftShadows;
 {$I KaM_Remake.inc}
 interface
 uses
-  Classes, SysUtils, Math, KM_ResSprites;
+  Classes, SysUtils, Math, KM_ResSprites, KM_ResTypes;
 
 type
   TKMSoftShadowConverter = class

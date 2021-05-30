@@ -13,39 +13,7 @@ uses
   {$IFDEF WDC}, ZLib {$ENDIF};
 
 
-const
-  //Colors to paint beneath player color areas (flags)
-  //The blacker/whighter - the more contrast player color will be
-  FLAG_COLOR_DARK = $FF101010;   //Dark-grey (Black)
-  FLAG_COLOR_LITE = $FFFFFFFF;   //White
-
-
-var
-  RXInfo: array [TRXType] of TRXInfo = (
-    (FileName: 'Trees';      TeamColors: False; Usage: ruGame;   LoadingTextID: TX_MENU_LOADING_TREES;),
-    (FileName: 'Houses';     TeamColors: True;  Usage: ruGame;   LoadingTextID: TX_MENU_LOADING_HOUSES;),
-    (FileName: 'Units';      TeamColors: True;  Usage: ruGame;   LoadingTextID: TX_MENU_LOADING_UNITS;),
-    (FileName: 'GUI';        TeamColors: True;  Usage: ruMenu;   LoadingTextID: 0;),
-    (FileName: 'GUIMain';    TeamColors: False; Usage: ruMenu;   LoadingTextID: 0;),
-    (FileName: 'Custom';     TeamColors: False; Usage: ruCustom; LoadingTextID: 0;),
-    (FileName: 'Tileset';    TeamColors: False; Usage: ruMenu;   LoadingTextID: TX_MENU_LOADING_TILESET;));
-
 type
-  TRXData = record
-    Count: Integer;
-    Flag: array of Byte; //Sprite is valid
-    Size: array of record X,Y: Word; end;
-    Pivot: array of record x,y: Integer; end;
-    SizeNoShadow: array of record left,top,right,bottom: Integer; end; //Image object (without shadow) rect in the image sizes
-    Data: array of array of Byte;
-    RGBA: array of array of Cardinal; //Expanded image
-    Mask: array of array of Byte; //Mask for team colors
-    HasMask: array of Boolean; //Flag if Mask for team colors is used
-  end;
-  PRXData = ^TRXData;
-
-  TSoftenShadowType = (sstNone, sstOnlyShadow, sstBoth);
-
   TTGameResourceLoader = class;
 
   //Base class for Sprite loading

@@ -13,6 +13,7 @@ uses
   KM_ResSprites in '..\..\src\res\KM_ResSprites.pas',
   KM_ResSpritesEdit in '..\..\src\res\KM_ResSpritesEdit.pas',
   KM_ResPalettes in '..\..\src\res\KM_ResPalettes.pas',
+  KM_ResTypes in '..\..\src\res\KM_ResTypes.pas',
   KM_SoftShadows in '..\..\src\utils\algorithms\KM_SoftShadows.pas',
   KM_Defaults in '..\..\src\common\KM_Defaults.pas',
   KM_CommonTypes in '..\..\src\common\KM_CommonTypes.pas',

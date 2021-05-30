@@ -4,7 +4,7 @@ interface
 uses
   {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
   Classes, Dialogs, Graphics, Math, Types, StrUtils, SysUtils,
-  KM_Defaults, KM_Pics, KM_ResHouses, KM_ResPalettes, KM_ResSprites,
+  KM_Defaults, KM_ResTypes, KM_ResHouses, KM_ResPalettes, KM_ResSprites,
   KM_ResTileset
   {$IFDEF FPC}, zstream {$ENDIF}
   {$IFDEF WDC}, ZLib {$ENDIF};
@@ -43,7 +43,6 @@ type
 implementation
 uses
   KM_SoftShadows,
-  KM_ResTypes,
   KM_IoPNG,
   KM_CommonTypes,
   KM_RenderTypes,

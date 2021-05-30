@@ -42,7 +42,8 @@ type
 
 implementation
 uses
-  KM_ResTexts, KM_Cursor, KM_RenderUI, KM_InterfaceGame, KM_Pics, KM_Defaults, KM_Utils;
+  KM_ResTexts, KM_ResTypes,
+  KM_Cursor, KM_RenderUI, KM_InterfaceGame, KM_Defaults, KM_Utils;
 
 { TKMMapEdMission }
 constructor TKMMapEdMission.Create(aParent: TKMPanel; aOnPageChange: TNotifyEvent);

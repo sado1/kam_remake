@@ -3,7 +3,7 @@ unit KM_ResCursors;
 interface
 uses
   Math, SysUtils, Classes,
-  KM_Points, KM_ResSprites, KM_ResTypes;
+  KM_Points, KM_ResTypes;
 
 type
   TKMResCursors = class

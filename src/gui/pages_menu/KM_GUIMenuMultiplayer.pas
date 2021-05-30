@@ -117,8 +117,13 @@ uses
   KM_Main, 
   KM_GameSettings, 
   KM_ServerSettings,
-  KM_Networking, KM_NetworkTypes, KM_ResTexts, KM_ResLocales, KM_GUIMenuLobby, KM_MapTypes,
-  KM_CommonUtils, KM_Sound, KM_ResSound, KM_RenderUI, KM_ResFonts, KM_Console;
+  KM_Networking, KM_NetworkTypes,
+  KM_ResTexts, KM_ResLocales, KM_ResFonts, KM_ResSound, KM_ResTypes,
+  KM_Sound,
+  KM_RenderUI,
+  KM_GUIMenuLobby,
+  KM_MapTypes,
+  KM_CommonUtils, KM_Console;
 
 
 const

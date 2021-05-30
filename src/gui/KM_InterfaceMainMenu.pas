@@ -87,7 +87,13 @@ type
 
 implementation
 uses
-  KM_Main, KM_ResTexts, KM_GameApp, KM_Log, KM_RenderUI, KM_NetworkTypes, KM_CampaignTypes;
+  KM_Main,
+  KM_GameApp,
+  KM_ResTexts, KM_ResTypes,
+  KM_RenderUI,
+  KM_NetworkTypes,
+  KM_CampaignTypes,
+  KM_Log;
 
 
 { TKMMainMenuInterface }

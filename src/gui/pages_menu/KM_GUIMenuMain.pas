@@ -34,7 +34,10 @@ type
 
 implementation
 uses
-  KM_Main, KM_ResTexts, KM_GameApp, KM_RenderUI, KM_ResFonts;
+  KM_Main,
+  KM_GameApp,
+  KM_ResTexts, KM_ResFonts, KM_ResTypes,
+  KM_RenderUI;
 
 
 { TKMGUIMenuMain }

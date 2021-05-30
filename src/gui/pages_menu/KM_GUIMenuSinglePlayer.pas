@@ -33,7 +33,8 @@ type
 
 implementation
 uses
-  KM_ResTexts, KM_RenderUI, KM_ResFonts;
+  KM_ResTexts, KM_ResFonts, KM_ResTypes,
+  KM_RenderUI;
 
 
 { TKMGUIMenuSinglePlayer }

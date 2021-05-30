@@ -33,7 +33,10 @@ type
 
 implementation
 uses
-  KM_HandsCollection, KM_ResTexts, KM_ResUnits, KM_RenderUI, KM_ResFonts, KM_Resource, KM_Defaults;
+  KM_HandsCollection,
+  KM_RenderUI,
+  KM_Resource, KM_ResTexts, KM_ResUnits, KM_ResFonts, KM_ResTypes,
+  KM_Defaults;
 
 
 { TKMMapEdPlayerBlockUnit }

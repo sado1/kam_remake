@@ -261,7 +261,7 @@ uses
   KM_GameSettings, KM_FileIO,
   KM_MissionScript_Info,
   KM_ScriptPreProcessor, KM_ScriptFilesCollection,
-  KM_ResLocales,
+  KM_ResLocales, KM_ResTypes,
   KM_CommonUtils, KM_Log, KM_MapUtils, KM_Utils;
 
 const

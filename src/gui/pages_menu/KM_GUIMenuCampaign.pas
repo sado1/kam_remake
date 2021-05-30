@@ -62,7 +62,11 @@ type
 
 implementation
 uses
-  KM_Audio, KM_GameSettings, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_Music, KM_Sound, KM_ResSound, KM_Defaults, KM_Video;
+  KM_Audio, KM_Music, KM_Sound, KM_Video,
+  KM_GameSettings,
+  KM_ResTexts, KM_ResFonts, KM_ResSound, KM_ResTypes,
+  KM_RenderUI,
+  KM_Defaults;
 
 const
   FLAG_LABEL_OFFSET_X = 10;

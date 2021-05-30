@@ -3,7 +3,7 @@ unit RXXPackerProc;
 {$I ..\..\KaM_Remake.inc}
 interface
 uses
-  SysUtils, KM_Pics, KM_ResPalettes;
+  SysUtils, KM_ResTypes, KM_ResPalettes;
 
 type
   TRXXPacker = class
