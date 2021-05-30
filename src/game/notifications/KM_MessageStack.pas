@@ -53,6 +53,7 @@ uses
 constructor TKMStackMessage.Create(aKind: TKMMessageKind; const aText: UnicodeString; const aLoc: TKMPoint);
 begin
   inherited Create;
+
   fKind := aKind;
   fLoc := aLoc;
   fText := aText;

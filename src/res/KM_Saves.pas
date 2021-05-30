@@ -352,6 +352,7 @@ end;
 constructor TKMSavesCollection.Create(aSortMethod: TKMSavesSortMethod = smByFileNameDesc);
 begin
   inherited Create;
+
   fSortMethod := aSortMethod;
   fScanFInished := True;
 

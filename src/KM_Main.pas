@@ -725,7 +725,7 @@ begin
   //Maximized is a special case, it can only be on one monitor. This is required because when maximized form.left = -9 (on Windows 7 anyway)
   if fFormMain.WindowState = wsMaximized then
   begin
-    for I:=0 to Screen.MonitorCount-1 do
+    for I := 0 to Screen.MonitorCount-1 do
       //Find the monitor with the left closest to the left of the form
       if (I = 0)
       or ((Abs(fFormMain.Left - Screen.Monitors[I].Left) <= Abs(fFormMain.Left - aBounds.Left)) and
