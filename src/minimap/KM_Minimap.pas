@@ -2,7 +2,6 @@ unit KM_Minimap;
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_Alerts,
   KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Points;
 
 
@@ -11,7 +10,6 @@ type
   TKMMinimap = class abstract
   private
     fSepia: Boolean; //Less saturated display for menu
-    fAlerts: TKMAlerts;
 
     // Event handlers for MinimapView
     fOnUpdateTextureSubs: array of TEvent; // Use plain arrays, since Generics are not good on Lazarus
@@ -35,7 +33,6 @@ type
 
     constructor Create(aSepia: Boolean);
 
-    property Alerts: TKMAlerts read fAlerts write fAlerts;
     property MapX: Word read fMapX;
     property MapY: Word read fMapY;
     property Base: TKMCardinalArray read fBase;

@@ -2,18 +2,21 @@ unit KM_MinimapGame;
 {$I KaM_Remake.inc}
 interface
 uses
+  KM_Alerts,
   KM_Minimap;
 
 type
   // Minimap loaded from the game terrain
   TKMMinimapGame = class(TKMMinimap)
   private
+    fAlerts: TKMAlerts;
     fPaintVirtualGroups: Boolean; //Paint missing army memmbers
   protected
     procedure DoUpdate(aRevealAll: Boolean); override;
   public
     procedure LoadFromTerrain;
 
+    property Alerts: TKMAlerts read fAlerts write fAlerts;
     property PaintVirtualGroups: Boolean read fPaintVirtualGroups write fPaintVirtualGroups;
   end;
 

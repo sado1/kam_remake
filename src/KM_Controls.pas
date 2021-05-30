@@ -2036,7 +2036,8 @@ uses
   SysUtils, StrUtils, Math,
   Vcl.Clipbrd,
   KromUtils,
-  KM_System, 
+  KM_System,
+  KM_MinimapGame,
   KM_Resource, KM_ResSprites, KM_ResSound, KM_ResTexts, KM_ResTypes,
   KM_Render, KM_RenderTypes,
   KM_Sound, KM_CommonUtils, KM_UtilsExt;
@@ -10267,6 +10268,7 @@ var
   I, K: Integer;
   R: TKMRect;
   T, T1, T2: TKMPoint;
+  minimapGame: TKMMiniMapGame;
 begin
   inherited;
 
@@ -10279,25 +10281,30 @@ begin
     TKMRenderUI.WriteBevel(AbsLeft, AbsTop, fWidth, fHeight);
 
   //Alerts (under viewport rectangle)
-  if (fMinimap.Alerts <> nil) then
-  for I := 0 to fMinimap.Alerts.Count - 1 do
-  if fMinimap.Alerts[I].VisibleMinimap then
+  if fMinimap is TKMMiniMapGame then
   begin
-    T := MapCoordsToLocal(fMinimap.Alerts[I].Loc.X, fMinimap.Alerts[I].Loc.Y, ALERT_RAD);
-    TKMRenderUI.WritePicture(T.X, T.Y, 0, 0, [],
-                             fMinimap.Alerts[I].TexMinimap.RX, fMinimap.Alerts[I].TexMinimap.ID,
-                             True, fMinimap.Alerts[I].TeamColor, Abs((TimeGet mod 1000) / 500 - 1));
-  end;
+    minimapGame := TKMMiniMapGame(fMinimap);
 
-  //Viewport rectangle
-  if fView <> nil then
-  begin
-    R := fView.GetMinimapClip;
-    if (R.Right - R.Left) * (R.Bottom - R.Top) > 0 then
-      TKMRenderUI.WriteOutline(AbsLeft + fLeftOffset + Round((R.Left - 1)*fPaintWidth / fMinimap.MapX),
-                               AbsTop  + fTopOffset  + Round((R.Top - 1)*fPaintHeight / fMinimap.MapY),
-                               Round((R.Right - R.Left)*fPaintWidth / fMinimap.MapX),
-                               Round((R.Bottom - R.Top + 1)*fPaintHeight / fMinimap.MapY), 1, $FFFFFFFF);
+    if (minimapGame.Alerts <> nil) then
+    for I := 0 to minimapGame.Alerts.Count - 1 do
+    if minimapGame.Alerts[I].VisibleMinimap then
+    begin
+      T := MapCoordsToLocal(minimapGame.Alerts[I].Loc.X, minimapGame.Alerts[I].Loc.Y, ALERT_RAD);
+      TKMRenderUI.WritePicture(T.X, T.Y, 0, 0, [],
+                               minimapGame.Alerts[I].TexMinimap.RX, minimapGame.Alerts[I].TexMinimap.ID,
+                               True, minimapGame.Alerts[I].TeamColor, Abs((TimeGet mod 1000) / 500 - 1));
+    end;
+
+    //Viewport rectangle
+    if fView <> nil then
+    begin
+      R := fView.GetMinimapClip;
+      if (R.Right - R.Left) * (R.Bottom - R.Top) > 0 then
+        TKMRenderUI.WriteOutline(AbsLeft + fLeftOffset + Round((R.Left - 1)*fPaintWidth / fMinimap.MapX),
+                                 AbsTop  + fTopOffset  + Round((R.Top - 1)*fPaintHeight / fMinimap.MapY),
+                                 Round((R.Right - R.Left)*fPaintWidth / fMinimap.MapX),
+                                 Round((R.Bottom - R.Top + 1)*fPaintHeight / fMinimap.MapY), 1, $FFFFFFFF);
+    end;
   end;
 
   if fShowLocs then
