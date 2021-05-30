@@ -398,10 +398,12 @@ end;
 
 procedure TKMSpectator.ResetHighlightDebug;
 begin
+  if Self = nil then Exit;
+  
   fHighlightDebug.Reset;
   fHighlightDebug2.Reset;
   fHighlightDebug3.Reset;
-  HighlightRoute.Reset;
+  fHighlightRoute.Reset;
 end;
 
 
