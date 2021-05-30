@@ -691,13 +691,20 @@ begin
   except
     on E: EStackTraceInfo do
     begin
-      SList := TStringList.Create;
-      SList.Text := E.StackTrace;
+      try
+        try
+          SList := TStringList.Create;
+          SList.Text := E.StackTrace;
 
-      for I := 1 to Min(SList.Count - 1, aLinesCnt) do //Do not print last line (its this method line)
-        Result := Result + SList[I] + sLineBreak;
-
-      SList.Free;
+          for I := 1 to Min(SList.Count - 1, aLinesCnt) do //Do not print last line (its this method line)
+            Result := Result + SList[I] + sLineBreak;
+        except
+          // Noticed a crash on game exit once somewhere here, just ignore the exception in this case
+          on E: Exception do ;
+        end;
+      finally
+        SList.Free;
+      end
     end;
   end;
   {$ENDIF}
