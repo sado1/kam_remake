@@ -28,7 +28,7 @@ uses
    KM_MapEdTypes;
 
 type
-  TKMapEdInterface = class(TKMUserInterfaceGame)
+  TKMMapEdInterface = class(TKMUserInterfaceGame)
   private
     fMouseDownOnMap: Boolean;
 
@@ -168,8 +168,8 @@ uses
   KM_CommonTypes;
 
 
-{ TKMapEdInterface }
-constructor TKMapEdInterface.Create(aRender: TRender);
+{ TKMMapEdInterface }
+constructor TKMMapEdInterface.Create(aRender: TRender);
 const
   TB_PAD_MAP_ED = 0;
   TB_PAD_MBTN_LEFT = 9;
@@ -341,7 +341,7 @@ begin
 end;
 
 
-destructor TKMapEdInterface.Destroy;
+destructor TKMMapEdInterface.Destroy;
 begin
   fGuiHouse.Free;
   fGuiTerrain.Free;
@@ -365,7 +365,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.DebugControlsUpdated(aSenderTag: Integer);
+procedure TKMMapEdInterface.DebugControlsUpdated(aSenderTag: Integer);
 begin
   inherited;
 
@@ -373,7 +373,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.Main_ButtonClick(Sender: TObject);
+procedure TKMMapEdInterface.Main_ButtonClick(Sender: TObject);
 begin
   //Reset cursor mode
   gCursor.Mode := cmNone;
@@ -404,7 +404,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.HidePages;
+procedure TKMMapEdInterface.HidePages;
 var
   I, K: Integer;
 begin
@@ -422,7 +422,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.History_Click(Sender: TObject);
+procedure TKMMapEdInterface.History_Click(Sender: TObject);
 begin
   PopUp_History.Visible := not PopUp_History.Visible;
 
@@ -430,20 +430,20 @@ begin
 end;
 
 
-procedure TKMapEdInterface.History_Close;
+procedure TKMMapEdInterface.History_Close;
 begin
   Button_History.Down := PopUp_History.Visible;
 end;
 
 
-procedure TKMapEdInterface.History_JumpTo(Sender: TObject);
+procedure TKMMapEdInterface.History_JumpTo(Sender: TObject);
 begin
   if ListBox_History.Selected then
     gGame.MapEditor.History.JumpTo(ListBox_History.ItemIndex);
 end;
 
 
-procedure TKMapEdInterface.UpdatePlayerSelectButtons;
+procedure TKMMapEdInterface.UpdatePlayerSelectButtons;
 const
   CAP_COLOR: array [Boolean] of Cardinal = ($80808080, $FFFFFFFF);
 var
@@ -455,7 +455,7 @@ end;
 
 
 //Should update any items changed by game (resource counts, hp, etc..)
-procedure TKMapEdInterface.UpdateState(aGlobalTickCount: Cardinal);
+procedure TKMMapEdInterface.UpdateState(aGlobalTickCount: Cardinal);
 begin
   inherited;
   //Update minimap every 500ms
@@ -470,7 +470,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.UpdateStateInternal;
+procedure TKMMapEdInterface.UpdateStateInternal;
 begin
   fGuiTerrain.UpdateState;
   fGuiHouse.UpdateState;
@@ -483,7 +483,7 @@ begin
 end;
 
   
-procedure TKMapEdInterface.UpdateStateImmidiately;
+procedure TKMMapEdInterface.UpdateStateImmidiately;
 begin
   fMinimap.Update;
   UpdatePlayerSelectButtons;
@@ -491,7 +491,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.UpdateStateIdle(aFrameTime: Cardinal);
+procedure TKMMapEdInterface.UpdateStateIdle(aFrameTime: Cardinal);
 begin
   //Check to see if we need to scroll
   fViewport.UpdateStateIdle(aFrameTime, not fDragScrolling, False);
@@ -501,7 +501,7 @@ end;
 
 
 //Update UI state according to game state
-procedure TKMapEdInterface.SyncUI(aMoveViewport: Boolean = True);
+procedure TKMMapEdInterface.SyncUI(aMoveViewport: Boolean = True);
 var
   I: Integer;
 begin
@@ -525,7 +525,7 @@ end;
 
 
 //Active page has changed, that affects layers visibility
-procedure TKMapEdInterface.PageChanged(Sender: TObject);
+procedure TKMMapEdInterface.PageChanged(Sender: TObject);
 begin
   //Child panels visibility changed, that affects visible layers
   Layers_UpdateVisibility;
@@ -534,7 +534,7 @@ end;
 
 //Set which layers are visible and which are not
 //Layer is always visible if corresponding editing page is active (to see what gets placed)
-procedure TKMapEdInterface.Layers_UpdateVisibility;
+procedure TKMMapEdInterface.Layers_UpdateVisibility;
 var
   flatTerWasEnabled: Boolean;
 begin
@@ -597,7 +597,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.Player_ActiveClick(Sender: TObject);
+procedure TKMMapEdInterface.Player_ActiveClick(Sender: TObject);
 begin
   //Hide player-specific pages
   fGuiHouse.Hide;
@@ -612,7 +612,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.SetPaintBucketMode(aSetPaintBucketMode: Boolean);
+procedure TKMMapEdInterface.SetPaintBucketMode(aSetPaintBucketMode: Boolean);
 begin
   Button_ChangeOwner.Down := aSetPaintBucketMode;
   if aSetPaintBucketMode then
@@ -622,7 +622,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.SetUniversalEraserMode(aSetUniversalEraserMode: Boolean);
+procedure TKMMapEdInterface.SetUniversalEraserMode(aSetUniversalEraserMode: Boolean);
 begin
   Button_UniversalEraser.Down := aSetUniversalEraserMode;
   if aSetUniversalEraserMode then
@@ -636,19 +636,19 @@ begin
 end;
 
 
-procedure TKMapEdInterface.ChangeOwner_Click(Sender: TObject);
+procedure TKMMapEdInterface.ChangeOwner_Click(Sender: TObject);
 begin
   SetPaintBucketMode(not Button_ChangeOwner.Down);
 end;
 
 
-procedure TKMapEdInterface.UniversalEraser_Click(Sender: TObject);
+procedure TKMMapEdInterface.UniversalEraser_Click(Sender: TObject);
 begin
   SetUniversalEraserMode(not Button_UniversalEraser.Down);
 end;
 
 
-procedure TKMapEdInterface.UnRedo_Click(Sender: TObject);
+procedure TKMMapEdInterface.UnRedo_Click(Sender: TObject);
 begin
   if (Sender = Button_Undo)
     or (Sender = Button_History_Undo) then
@@ -661,7 +661,7 @@ end;
 
 
 //Active player can be set either from buttons clicked or by selecting a unit or a house
-procedure TKMapEdInterface.Player_SetActive(aIndex: TKMHandID);
+procedure TKMMapEdInterface.Player_SetActive(aIndex: TKMHandID);
 var
   I: Integer;
 begin
@@ -676,7 +676,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.ShowMarkerInfo(aMarker: TKMMapEdMarker);
+procedure TKMMapEdInterface.ShowMarkerInfo(aMarker: TKMMapEdMarker);
 begin
   HidePages; // HidePages first. That will also reset old marker;
 
@@ -694,7 +694,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.ShowMessage(const aText: string);
+procedure TKMMapEdInterface.ShowMessage(const aText: string);
 begin
   fGuiMessage.Show(aText);
   Image_Message.Show; //Hidden by default, only visible when a message is shown
@@ -702,7 +702,7 @@ end;
 
 
 //When marker page is done we want to return to markers control page
-procedure TKMapEdInterface.Marker_Done(Sender: TObject);
+procedure TKMMapEdInterface.Marker_Done(Sender: TObject);
 begin
   gGame.MapEditor.ActiveMarker.MarkerType := mmtNone;
   if Sender = fGuiMarkerReveal then
@@ -719,7 +719,7 @@ end;
 
 
 //This function will be called if the user right clicks on the screen.
-procedure TKMapEdInterface.Cancel_Clicked(aIsRMB: Boolean; var aHandled: Boolean);
+procedure TKMMapEdInterface.Cancel_Clicked(aIsRMB: Boolean; var aHandled: Boolean);
 begin
   if aHandled then Exit;
   //We should drop the tool but don't close opened tab. This allows eg:
@@ -756,7 +756,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.Player_UpdatePages;
+procedure TKMMapEdInterface.Player_UpdatePages;
 begin
   //Update players info on pages
   //Colors are updated as well
@@ -766,7 +766,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.Message_Click(Sender: TObject);
+procedure TKMMapEdInterface.Message_Click(Sender: TObject);
 begin
   if Sender = Image_Extra then
     if fGuiExtras.Visible then
@@ -789,13 +789,13 @@ end;
 
 
 //Update viewport position when user interacts with minimap
-procedure TKMapEdInterface.Minimap_OnUpdate(Sender: TObject; const X,Y: Integer);
+procedure TKMMapEdInterface.Minimap_OnUpdate(Sender: TObject; const X,Y: Integer);
 begin
   fViewport.Position := KMPointF(X,Y);
 end;
 
 
-procedure TKMapEdInterface.ExportPages(const aPath: string);
+procedure TKMMapEdInterface.ExportPages(const aPath: string);
 var
   path: string;
   I: TKMTerrainTab;
@@ -846,7 +846,7 @@ begin
 end;
 
 
-function TKMapEdInterface.GetToolbarWidth: Integer;
+function TKMMapEdInterface.GetToolbarWidth: Integer;
 begin
   // Don't render toolbar when SAVE_MAP_TO_FBO is set
   if SAVE_MAP_TO_FBO_RENDER then Exit(0);
@@ -855,7 +855,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean);
+procedure TKMMapEdInterface.KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean);
 var
   keyHandled, keyPassedToModal: Boolean;
 begin
@@ -913,7 +913,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.ShowSubMenu(aIndex: Byte);
+procedure TKMMapEdInterface.ShowSubMenu(aIndex: Byte);
 begin
   fGuiTerrain.ShowSubMenu(aIndex);
   fGuiTown.ShowSubMenu(aIndex);
@@ -923,7 +923,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.ExecuteSubMenuAction(aIndex: Byte; var aHandled: Boolean);
+procedure TKMMapEdInterface.ExecuteSubMenuAction(aIndex: Byte; var aHandled: Boolean);
 begin
   fGuiTerrain.ExecuteSubMenuAction(aIndex, aHandled);
   fGuiTown.ExecuteSubMenuAction(aIndex, aHandled);
@@ -932,7 +932,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
+procedure TKMMapEdInterface.KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
 var
   I: Integer;
   keyHandled: Boolean;
@@ -1007,7 +1007,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.MouseDown(Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
+procedure TKMMapEdInterface.MouseDown(Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
 var
   obj: TObject;
   keyHandled: Boolean;
@@ -1045,7 +1045,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.Update_Label_Coordinates;
+procedure TKMMapEdInterface.Update_Label_Coordinates;
 begin
   Label_Coordinates.Caption := Format('X: %d, Y: %d, Z: %d', [gCursor.Cell.X, gCursor.Cell.Y,
                                                               gTerrain.Land^[EnsureRange(Round(gCursor.Float.Y + 1), 1, gTerrain.MapY),
@@ -1053,13 +1053,13 @@ begin
 end;
 
 
-procedure TKMapEdInterface.MapTypeChanged(aIsMultiplayer: Boolean);
+procedure TKMMapEdInterface.MapTypeChanged(aIsMultiplayer: Boolean);
 begin
   SetLoadMode(aIsMultiplayer);
 end;
 
 
-procedure TKMapEdInterface.MouseMove(Shift: TShiftState; X,Y: Integer; var aHandled: Boolean);
+procedure TKMMapEdInterface.MouseMove(Shift: TShiftState; X,Y: Integer; var aHandled: Boolean);
 const
   DRAG_OBJECT_MOUSE_MOVE_DIST = 15; //distance in pixels, when drag object mode starts
 begin
@@ -1102,7 +1102,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.UpdateHotkeys;
+procedure TKMMapEdInterface.UpdateHotkeys;
 begin
   inherited;
 
@@ -1125,7 +1125,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.UpdateMapEdCursor(X, Y: Integer; Shift: TShiftState);
+procedure TKMMapEdInterface.UpdateMapEdCursor(X, Y: Integer; Shift: TShiftState);
 var
   marker: TKMMapEdMarker;
 begin
@@ -1160,13 +1160,13 @@ begin
 end;
 
 
-procedure TKMapEdInterface.History_ListChange(Sender: TObject);
+procedure TKMMapEdInterface.History_ListChange(Sender: TObject);
 begin
   Button_History_JumpTo.Enabled := ListBox_History.Selected;
 end;
 
 
-procedure TKMapEdInterface.History_MouseWheel(Sender: TObject; WheelSteps: Integer; var aHandled: Boolean);
+procedure TKMMapEdInterface.History_MouseWheel(Sender: TObject; WheelSteps: Integer; var aHandled: Boolean);
 begin
   ListBox_History.MouseWheel(Sender, WheelSteps, aHandled);
 
@@ -1174,20 +1174,20 @@ begin
 end;
 
 
-procedure TKMapEdInterface.History_UpdatePos;
+procedure TKMMapEdInterface.History_UpdatePos;
 begin
   PopUp_History.Left := EnsureRange(PopUp_History.Left, 0, Panel_Main.Width - PopUp_History.Width);
   PopUp_History.Top  := EnsureRange(PopUp_History.Top, 0, Panel_Main.Height - PopUp_History.Height);
 end;
 
 
-procedure TKMapEdInterface.HistoryAddCheckpoint;
+procedure TKMMapEdInterface.HistoryAddCheckpoint;
 begin
   HistoryUpdateUI;
 end;
 
 
-procedure TKMapEdInterface.HistoryUndoRedo;
+procedure TKMMapEdInterface.HistoryUndoRedo;
 begin
   if Self = nil then Exit;
 
@@ -1203,7 +1203,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.HistoryUpdateUI;
+procedure TKMMapEdInterface.HistoryUpdateUI;
 begin
   if Self = nil then Exit;
 
@@ -1221,7 +1221,7 @@ begin
 end;
 
 
-function TKMapEdInterface.DoResetCursorMode: Boolean;
+function TKMMapEdInterface.DoResetCursorMode: Boolean;
 begin
   Result := gCursor.Mode <> cmNone;
   gCursor.Mode := cmNone;
@@ -1229,7 +1229,7 @@ end;
 
 
 //Start drag house move mode (with cursor mode cmHouse)
-procedure TKMapEdInterface.DragHouseModeStart(const aHouseNewPos, aHouseOldPos: TKMPoint);
+procedure TKMMapEdInterface.DragHouseModeStart(const aHouseNewPos, aHouseOldPos: TKMPoint);
 
   procedure SetCursorModeHouse(aHouseType: TKMHouseType);
   begin
@@ -1252,7 +1252,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.SetHousePosition(aHouse: TKMHouse; aPos: TKMPoint);
+procedure TKMMapEdInterface.SetHousePosition(aHouse: TKMHouse; aPos: TKMPoint);
 var
   newPos: Boolean;
 begin
@@ -1267,7 +1267,7 @@ end;
 
 
 //Drag house move mode end (with cursor mode cmHouse)
-procedure TKMapEdInterface.DragHouseModeEnd;
+procedure TKMMapEdInterface.DragHouseModeEnd;
 begin
   if (fDragObject is TKMHouse) then
   begin
@@ -1277,13 +1277,13 @@ begin
 end;
 
 
-function TKMapEdInterface.IsDragHouseModeOn: Boolean;
+function TKMMapEdInterface.IsDragHouseModeOn: Boolean;
 begin
   Result := fDragingObject and (fDragObject is TKMHouse) and (gCursor.Mode = cmHouses);
 end;
 
 
-procedure TKMapEdInterface.MoveObjectToCursorCell(aObjectToMove: TObject);
+procedure TKMMapEdInterface.MoveObjectToCursorCell(aObjectToMove: TObject);
 var
   H: TKMHouse;
   houseNewPos, houseOldPos: TKMPoint;
@@ -1322,7 +1322,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.UpdateSelection;
+procedure TKMMapEdInterface.UpdateSelection;
 begin
   gMySpectator.UpdateSelect;
 
@@ -1347,7 +1347,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.ResetDragObject;
+procedure TKMMapEdInterface.ResetDragObject;
 begin
   fDragObjectReady := False;
   fDragingObject := False;
@@ -1363,7 +1363,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TKMMapEdInterface.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
   DP: TAIDefencePosition;
   marker: TKMMapEdMarker;
@@ -1491,7 +1491,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.MouseWheel(Shift: TShiftState; WheelSteps, X,Y: Integer; var aHandled: Boolean);
+procedure TKMMapEdInterface.MouseWheel(Shift: TShiftState; WheelSteps, X,Y: Integer; var aHandled: Boolean);
 begin
   if fMyControls.CtrlOver <> nil then
   begin
@@ -1516,7 +1516,7 @@ begin
 end;
 
 
-procedure TKMapEdInterface.Resize(X,Y: Word);
+procedure TKMMapEdInterface.Resize(X,Y: Word);
 begin
   inherited;
 
@@ -1529,14 +1529,14 @@ begin
 end;
 
 
-procedure TKMapEdInterface.SetLoadMode(aMultiplayer: Boolean);
+procedure TKMMapEdInterface.SetLoadMode(aMultiplayer: Boolean);
 begin
   fGuiMenu.SetLoadMode(aMultiplayer);
 end;
 
 
 //UI should paint only controls
-procedure TKMapEdInterface.Paint;
+procedure TKMMapEdInterface.Paint;
 var
   I: Integer;
   R: TKMRawDeposit;

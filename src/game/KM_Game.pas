@@ -28,7 +28,7 @@ type
     fPathfinding: TPathFinding;
     fActiveInterface: TKMUserInterfaceGame; //Shortcut for both of UI
     fGamePlayInterface: TKMGamePlayInterface;
-    fMapEditorInterface: TKMapEdInterface;
+    fMapEditorInterface: TKMMapEdInterface;
     fMapEditor: TKMMapEditor;
     fTerrainPainter: TKMTerrainPainter;
     fSavePoints: TKMSavePointCollection;
@@ -268,7 +268,7 @@ type
     property Options: TKMGameOptions read fOptions;
     property ActiveInterface: TKMUserInterfaceGame read fActiveInterface;
     property GamePlayInterface: TKMGamePlayInterface read GetGamePlayInterface;
-    property MapEditorInterface: TKMapEdInterface read fMapEditorInterface;
+    property MapEditorInterface: TKMMapEdInterface read fMapEditorInterface;
     property MapEditor: TKMMapEditor read GetMapEditor;
     property TerrainPainter: TKMTerrainPainter read fTerrainPainter;
     property TextMission: TKMTextLibraryMulti read fTextMission;
@@ -375,7 +375,7 @@ begin
   begin
     if fParams.IsMapEditor then
     begin
-      fMapEditorInterface := TKMapEdInterface.Create(aRender);
+      fMapEditorInterface := TKMMapEdInterface.Create(aRender);
       fActiveInterface := fMapEditorInterface;
     end
     else

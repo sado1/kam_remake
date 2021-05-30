@@ -53,7 +53,7 @@ uses
   KM_ResTexts, KM_RenderUI, KM_Utils;
 
 
-{ TKMapEdInterface }
+{ TKMMapEdMenu }
 constructor TKMMapEdMenu.Create(aParent: TKMPanel; aOnPageChange: TNotifyEvent; aOnMapTypChanged: TBooleanEvent; aOnKeysUpdated: TEvent);
 begin
   inherited Create;
