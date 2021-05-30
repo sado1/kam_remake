@@ -583,7 +583,7 @@ begin
 
       Inc(offY, 25);
       Panel_SetupMinimap := TKMPanel.Create(Panel_Setup, 0, offY, 270, 200);
-        MinimapView := TKMMinimapView.Create(Panel_SetupMinimap, 39, 4, 191, 191, True);
+        MinimapView := TKMMinimapView.Create(fMinimap, Panel_SetupMinimap, 39, 4, 191, 191, True);
         MinimapView.ShowLocs := True; //In the minimap we want player locations to be shown
         MinimapView.OnLocClick := MinimapLocClick;
 
@@ -1910,7 +1910,6 @@ begin
   if (gNetworking.SelectGameKind = ngkMap) and gNetworking.MapInfo.IsValid then
   begin
     fMinimap.Update(not gNetworking.MapInfo.TxtInfo.BlockFullMapPreview);
-    MinimapView.SetMinimap(fMinimap);
 
     // We want to show teams even if player did not chose his location
     // It possible if number of players with random loc = number of free locs and they all have same team chosen
@@ -2502,10 +2501,8 @@ begin
   if si.IsValid
   and (gNetworking.MyIndex > 0)
   and si.LoadMinimap(fMinimap, gNetworking.MyNetPlayer.StartLocation) then
-  begin
-    MinimapView.SetMinimap(fMinimap);
-    MinimapView.Show;
-  end else
+    MinimapView.Show
+  else
     MinimapView.Hide;
 end;
 
@@ -2643,7 +2640,6 @@ begin
                 begin
                   fMinimap.LoadFromMission(M.FullPath('.dat'), M.HumanUsableLocs);
                   fMinimap.Update(not M.TxtInfo.BlockFullMapPreview);
-                  MinimapView.SetMinimap(fMinimap);
 
                   if not TrackBar_LobbyPeacetime.Enabled and gNetworking.IsHost then
                   begin

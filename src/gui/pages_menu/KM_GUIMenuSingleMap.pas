@@ -213,7 +213,7 @@ begin
       Memo_Desc.AutoWrap := True;
 
       //Minimap preview
-      MinimapView := TKMMinimapView.Create(Panel_Desc, 4, 332, 191, 191, True);
+      MinimapView := TKMMinimapView.Create(fMinimap, Panel_Desc, 4, 332, 191, 191, True);
       MinimapView.Anchors := [anLeft, anBottom];
       MinimapView.OnLocClick := MinimapLocClick;
 
@@ -683,7 +683,6 @@ begin
     fMinimap.LoadFromMission(M.FullPath('.dat'), [TKMHandID(fSingleLoc)]);
     fMinimap.HandColors[fSingleLoc] := fSingleColor;
     fMinimap.Update;
-    MinimapView.SetMinimap(fMinimap);
 
     // Populate goals section
     for I := 0 to Min(MAX_UI_GOALS, M.GoalsVictoryCount[fSingleLoc]) - 1 do

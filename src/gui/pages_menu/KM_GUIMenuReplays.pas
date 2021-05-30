@@ -129,7 +129,7 @@ begin
   ColumnBox_Replays.OnColumnClick := Replays_Sort;
   ColumnBox_Replays.OnDoubleClick := Replays_Play;
 
-  MinimapView_Replay := TKMMinimapView.Create(Panel_Replays, PAD + 580, 555, 191, 191, True);
+  MinimapView_Replay := TKMMinimapView.Create(fMinimap, Panel_Replays, PAD + 580, 555, 191, 191, True);
   MinimapView_Replay.Anchors := [anLeft, anBottom];
 
   Button_ReplaysPlay := TKMButton.Create(Panel_Replays, BTN_LEFT, 560, 350, 30, gResTexts[TX_MENU_VIEW_REPLAY], bsMenu);
@@ -309,7 +309,6 @@ begin
         if fSaves[aID].LoadMinimap(fMinimap) then
         begin
           fMinimapLastListId := aID;
-          MinimapView_Replay.SetMinimap(fMinimap);
           MinimapView_Replay.Show;
           loaded := true;
         end;

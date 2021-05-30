@@ -190,7 +190,7 @@ begin
   TKMImage.Create(Panel_Main, 0, 1400, MAPED_TOOLBAR_WIDTH, 400, 404, rxGui, 0, [anLeft, anTop, anRight]);
   TKMImage.Create(Panel_Main, 0, 1800, MAPED_TOOLBAR_WIDTH, 400, 404, rxGui, 0, [anLeft, anTop, anRight]); //For 4K displays
 
-  MinimapView := TKMMinimapView.Create(Panel_Main, 10, 10, MAPED_TOOLBAR_WIDTH - 48, 176);
+  MinimapView := TKMMinimapView.Create(fMinimap, Panel_Main, 10, 10, MAPED_TOOLBAR_WIDTH - 48, 176);
   MinimapView.OnChange := Minimap_OnUpdate;
 
   Label_MissionName := TKMLabel.Create(Panel_Main, MAPED_TOOLBAR_WIDTH + 4, 10, 500, 10, NO_TEXT, fntGrey, taLeft);
@@ -506,10 +506,10 @@ var
   I: Integer;
 begin
   inherited;
+
   if aMoveViewport then
     fViewport.Position := KMPointF(gTerrain.MapX / 2, gTerrain.MapY / 2);
 
-  MinimapView.SetMinimap(fMinimap);
   MinimapView.SetViewport(fViewport);
 
   //Set player colors

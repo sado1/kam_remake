@@ -1988,20 +1988,26 @@ type
     fLeftOffset: Integer;
     fTopOffset: Integer;
 
+    fMapTex: TTexture;
+    fWidthPOT: Word;
+    fHeightPOT: Word;
+
     fOnChange, fOnMinimapClick: TPointEvent;
     fShowLocs: Boolean;
     fLocRad: Byte;
     fClickableOnce: Boolean;
+    procedure UpdateTexture;
+    procedure ResizeMinimap;
   protected
     procedure SetAnchors(aValue: TKMAnchorsSet); override;
   public
     OnLocClick: TIntegerEvent;
 
-    constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aWithBevel: Boolean = False);
+    constructor Create(aMinimap: TKMMinimap; aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aWithBevel: Boolean = False);
 
     function LocalToMapCoords(X,Y: Integer): TKMPoint;
     function MapCoordsToLocal(X,Y: Single; const Inset: ShortInt = 0): TKMPoint;
-    procedure SetMinimap(aMinimap: TKMMinimap);
+    procedure UpdateSizes;
     procedure SetViewport(aViewport: TKMViewport);
     property ShowLocs: Boolean read fShowLocs write fShowLocs;
     property ClickableOnce: Boolean read fClickableOnce write fClickableOnce;
@@ -2032,6 +2038,7 @@ uses
   KromUtils,
   KM_System, 
   KM_Resource, KM_ResSprites, KM_ResSound, KM_ResTexts, KM_ResTypes,
+  KM_Render, KM_RenderTypes,
   KM_Sound, KM_CommonUtils, KM_UtilsExt;
 
 
@@ -10094,7 +10101,7 @@ end;
 
 
 { TKMMinimap }
-constructor TKMMinimapView.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aWithBevel: Boolean = False);
+constructor TKMMinimapView.Create(aMinimap: TKMMinimap; aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aWithBevel: Boolean = False);
 begin
   //Create Bevel first
   if aWithBevel then
@@ -10105,13 +10112,20 @@ begin
 
   //Radius of circle around player location
   fLocRad := 8;
+
+  fMinimap := aMinimap;
+  if fMinimap <> nil then
+  begin
+    fMinimap.SubOnUpdateTexture(UpdateTexture);
+    fMinimap.SubOnResize(ResizeMinimap);
+
+    fMapTex.Tex := TRender.GenerateTextureCommon(ftNearest, ftNearest);
+  end;
 end;
 
 
-procedure TKMMinimapView.SetMinimap(aMinimap: TKMMinimap);
+procedure TKMMinimapView.UpdateSizes;
 begin
-  fMinimap := aMinimap;
-
   if fMinimap.MapX > fMinimap.MapY then
   begin
     fPaintWidth := Width;
@@ -10132,6 +10146,38 @@ end;
 procedure TKMMinimapView.SetViewport(aViewport: TKMViewport);
 begin
   fView := aViewport;
+end;
+
+
+procedure TKMMinimapView.ResizeMinimap;
+begin
+  if Self = nil then Exit;
+
+  fWidthPOT := MakePOT(fMinimap.MapX);
+  fHeightPOT := MakePOT(fMinimap.MapY);
+  fMapTex.U := fMinimap.MapX / fWidthPOT;
+  fMapTex.V := fMinimap.MapY / fHeightPOT;
+end;
+
+
+procedure TKMMinimapView.UpdateTexture;
+var
+  wData: Pointer;
+  I: Word;
+begin
+  if Self = nil then Exit;
+  
+  GetMem(wData, fWidthPOT * fHeightPOT * 4);
+
+  if fMinimap.MapY > 0 then //if MapY = 0 then loop will overflow to MaxWord
+  for I := 0 to fMinimap.MapY - 1 do
+    Move(Pointer(NativeUint(fMinimap.Base) + I * fMinimap.MapX * 4)^,
+         Pointer(NativeUint(wData) + I * fWidthPOT * 4)^, fMinimap.MapX * 4);
+
+  TRender.UpdateTexture(fMapTex.Tex, fWidthPOT, fHeightPOT, tfRGBA8, wData);
+  FreeMem(wData);
+
+  UpdateSizes;
 end;
 
 
@@ -10227,8 +10273,8 @@ begin
   if (fMinimap = nil) or (fMinimap.MapX * fMinimap.MapY = 0) then
     Exit;
 
-  if (fMinimap.MapTex.Tex <> 0) then
-    TKMRenderUI.WriteTexture(AbsLeft + fLeftOffset, AbsTop + fTopOffset, fPaintWidth, fPaintHeight, fMinimap.MapTex, $FFFFFFFF)
+  if (fMapTex.Tex <> 0) then
+    TKMRenderUI.WriteTexture(AbsLeft + fLeftOffset, AbsTop + fTopOffset, fPaintWidth, fPaintHeight, fMapTex, $FFFFFFFF)
   else
     TKMRenderUI.WriteBevel(AbsLeft, AbsTop, fWidth, fHeight);
 

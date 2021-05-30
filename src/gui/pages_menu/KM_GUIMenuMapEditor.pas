@@ -284,7 +284,7 @@ begin
     Panel_MapInfo := TKMPanel.Create(Panel_MapEd, 320+448, 50, 199, 688);
     Panel_MapInfo.Anchors := [anLeft, anTop, anBottom];
 
-      MinimapView_MapEd := TKMMinimapView.Create(Panel_MapInfo, 4, 4, 191, 191, True);
+      MinimapView_MapEd := TKMMinimapView.Create(fMinimap, Panel_MapInfo, 4, 4, 191, 191, True);
       MinimapView_MapEd.Anchors := [anLeft, anTop];
 
       Label_MapType := TKMLabel.Create(Panel_MapInfo, 0, 199+10, '', fntMetal, taLeft);
@@ -1046,7 +1046,6 @@ begin
     map := fMaps[aID];
     fMinimap.LoadFromMission(map.FullPath('.dat'), []);
     fMinimap.Update(True);
-    MinimapView_MapEd.SetMinimap(fMinimap);
     MinimapView_MapEd.Show;
     Panel_MapInfo.Show;
     map.LoadExtra;

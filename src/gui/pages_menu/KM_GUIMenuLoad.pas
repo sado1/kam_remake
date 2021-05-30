@@ -113,7 +113,7 @@ begin
     Button_LoadBack.Anchors := [anLeft,anBottom];
     Button_LoadBack.OnClick := BackClick;
 
-    MinimapView_Load := TKMMinimapView.Create(Panel_Load, 630, 555, 191, 191, True);
+    MinimapView_Load := TKMMinimapView.Create(fMinimap, Panel_Load, 630, 555, 191, 191, True);
     MinimapView_Load.Anchors := [anLeft, anBottom];
 
     //Delete PopUp
@@ -198,10 +198,7 @@ begin
   begin
     try
       if fSaves[ColumnBox_Load.ItemIndex].LoadMinimap(fMinimap) then
-      begin
-        MinimapView_Load.SetMinimap(fMinimap);
         MinimapView_Load.Show;
-      end;
     except
       on E: Exception do
         gLog.AddTime('Error loading minimap for save ' + fSaves[ColumnBox_Load.ItemIndex].Path); //Silently catch exception

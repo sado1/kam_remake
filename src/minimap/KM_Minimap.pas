@@ -2,9 +2,6 @@ unit KM_Minimap;
 {$I KaM_Remake.inc}
 interface
 uses
-  {$IFNDEF NO_OGL}
-  KromOGLUtils,
-  {$ENDIF}
   KM_Alerts,
   KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Points;
 
@@ -14,14 +11,12 @@ type
   TKMMinimap = class abstract
   private
     fSepia: Boolean; //Less saturated display for menu
-
     fAlerts: TKMAlerts;
 
-    {$IFNDEF NO_OGL}
-    fMapTex: TTexture;
-    {$ENDIF}
-    fWidthPOT: Word;
-    fHeightPOT: Word;
+    // Event handlers for MinimapView
+    fOnUpdateTextureSubs: array of TEvent; // Use plain arrays, since Generics are not good on Lazarus
+    fOnResizeSubs: array of TEvent;
+
     procedure ApplySepia;
     procedure UpdateTexture;
   protected
@@ -37,15 +32,16 @@ type
     HandLocs: array [0..MAX_HANDS-1] of TKMPoint;
     HandShow: array [0..MAX_HANDS-1] of Boolean;
     HandTeam: array [0..MAX_HANDS-1] of ShortInt;
+
     constructor Create(aSepia: Boolean);
 
     property Alerts: TKMAlerts read fAlerts write fAlerts;
     property MapX: Word read fMapX;
     property MapY: Word read fMapY;
-    {$IFNDEF NO_OGL}
-    property MapTex: TTexture read fMapTex;
-    {$ENDIF}
     property Base: TKMCardinalArray read fBase;
+
+    procedure SubOnUpdateTexture(aOnUpdateTexture: TEvent);
+    procedure SubOnResize(aOnResize: TEvent);
 
     procedure LoadFromStream(LoadStream: TKMemoryStream);
     procedure SaveToStream(SaveStream: TKMemoryStream);
@@ -56,7 +52,7 @@ type
 
 implementation
 uses
-  Math,
+  SysUtils, Math,
   KromUtils,
   KM_Render, KM_RenderTypes;
 
@@ -67,23 +63,36 @@ begin
   inherited Create;
 
   fSepia := aSepia;
-  {$IFNDEF NO_OGL}
-  fMapTex.Tex := TRender.GenerateTextureCommon(ftNearest, ftNearest);
-  {$ENDIF}
+end;
+
+
+procedure TKMMinimap.SubOnUpdateTexture(aOnUpdateTexture: TEvent);
+begin
+  // Happens quite rare, so we don't care much
+  SetLength(fOnUpdateTextureSubs, Length(fOnUpdateTextureSubs) + 1);
+  fOnUpdateTextureSubs[Length(fOnUpdateTextureSubs) - 1] := aOnUpdateTexture;
+end;
+
+
+procedure TKMMinimap.SubOnResize(aOnResize: TEvent);
+begin
+  // Happens quite rare, so we don't care much
+  SetLength(fOnResizeSubs, Length(fOnResizeSubs) + 1);
+  fOnResizeSubs[Length(fOnResizeSubs) - 1] := aOnResize;
 end;
 
 
 procedure TKMMinimap.Resize(aX, aY: Word);
+var
+  I: Integer;
 begin
   fMapX := aX;
   fMapY := aY;
   SetLength(fBase, fMapX * fMapY);
-  fWidthPOT := MakePOT(fMapX);
-  fHeightPOT := MakePOT(fMapY);
-  {$IFNDEF NO_OGL}
-  fMapTex.U := fMapX / fWidthPOT;
-  fMapTex.V := fMapY / fHeightPOT;
-  {$ENDIF}
+
+  for I := 0 to Length(fOnResizeSubs) - 1 do
+    if Assigned(fOnResizeSubs[I]) then
+      fOnResizeSubs[I];
 end;
 
 
@@ -136,27 +145,18 @@ end;
 
 procedure TKMMinimap.UpdateTexture;
 var
-  wData: Pointer;
-  I: Word;
+  I: Integer;
 begin
-  GetMem(wData, fWidthPOT * fHeightPOT * 4);
-
-  if fMapY > 0 then //if MapY = 0 then loop will overflow to MaxWord
-  for I := 0 to fMapY - 1 do
-    Move(Pointer(NativeUint(fBase) + I * fMapX * 4)^,
-         Pointer(NativeUint(wData) + I * fWidthPOT * 4)^, fMapX * 4);
-
-  {$IFNDEF NO_OGL}
-  TRender.UpdateTexture(fMapTex.Tex, fWidthPOT, fHeightPOT, tfRGBA8, wData);
-  {$ENDIF}
-  FreeMem(wData);
+  for I := 0 to Length(fOnUpdateTextureSubs) - 1 do
+    if Assigned(fOnUpdateTextureSubs[I]) then
+      fOnUpdateTextureSubs[I];
 end;
 
 
 procedure TKMMinimap.SaveToStream(SaveStream: TKMemoryStream);
 var
-  L: Cardinal;
   I: Integer;
+  L: Cardinal;
 begin
   SaveStream.PlaceMarker('Minimap');
 
@@ -201,6 +201,7 @@ begin
   if fMapX * fMapY = 0 then Exit;
 
   if fSepia then ApplySepia;
+
   UpdateTexture;
 end;
 

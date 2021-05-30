@@ -822,7 +822,7 @@ begin
   Sidebar_Top       := TKMImage.Create(Panel_Main, 0,    0, 224, 200, 407);
   Sidebar_Middle    := TKMImage.Create(Panel_Main, 0,  200, 224, 168, 554);
 
-  MinimapView := TKMMinimapView.Create(Panel_Main, 10, 10, 176, 176);
+  MinimapView := TKMMinimapView.Create(fMinimap, Panel_Main, 10, 10, 176, 176);
   MinimapView.OnChange := Minimap_Update; // Allow dragging with LMB pressed
   MinimapView.OnClickRight := Minimap_RightClick;
   MinimapView.OnMinimapClick := Minimap_Click; // For placing beacons
@@ -4300,7 +4300,6 @@ begin
 
   fMinimap.Alerts := fAlerts;
 
-  MinimapView.SetMinimap(fMinimap);
   MinimapView.SetViewport(fViewport);
 
   UpdateUI;

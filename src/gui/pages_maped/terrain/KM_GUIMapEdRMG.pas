@@ -27,6 +27,7 @@ type
     function GetVisible: Boolean;
 
     procedure PanelRMG_PositionChanged(Sender: TObject);
+    procedure RefreshMinimap();
   protected
     Panel_RMG: TKMPanel;
     CheckGroup_Grass: TKMRadioGroup;
@@ -68,7 +69,6 @@ type
     property OnCloseGUI: TKMRMGCallback write fOnCloseGUI;
     procedure Show();
     procedure Hide();
-    procedure RefreshMinimap();
   end;
 
 
@@ -497,9 +497,9 @@ begin
 
   if aMP then
   begin
-    MinimapView := TKMMinimapView.Create(panelSettings, columnX, NextLine(columnY,30), 192, 132, True);
-      MinimapView.ShowLocs := True; //In the minimap we want player locations to be shown
-      MinimapView.Show;
+    MinimapView := TKMMinimapView.Create(fMinimap, panelSettings, columnX, NextLine(columnY,30), 192, 132, True);
+    MinimapView.ShowLocs := True; //In the minimap we want player locations to be shown
+    MinimapView.Show;
   end;
 
 // Map size
@@ -747,7 +747,6 @@ end;
 procedure TKMMapEdRMG.Show();
 begin
   Panel_RMG.Show;
-  RefreshMinimap();
   if not fMapSizeIndicator AND not fMPLobby AND (Label_MapSize <> nil) then
   begin
     fMapSizeIndicator := True;
@@ -758,8 +757,14 @@ end;
 
 procedure TKMMapEdRMG.RefreshMinimap();
 begin
+  if MinimapView = nil then Exit;
+
+  MinimapView.Hide;
   if Assigned(fMinimap) then
-    MinimapView.SetMinimap(fMinimap);
+  begin
+    fMinimap.Update(True);
+    MinimapView.Show;
+  end;
 end;
 
 
