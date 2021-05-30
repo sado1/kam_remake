@@ -2030,6 +2030,8 @@ begin
   menuItem:= nil;
   if (Msg.MenuFlag <> $FFFF) or (Msg.IDItem <> 0) then
   begin
+    if Self.Menu = nil then Exit;
+    
     if Msg.MenuFlag and MF_POPUP = MF_POPUP then
     begin
       hSubMenu:= GetSubMenu(Msg.Menu, Msg.IDItem);
