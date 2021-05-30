@@ -2863,10 +2863,10 @@ begin
 
   case bestTreeType of
     ttNone:           if aAlwaysPlaceTree then
-                        Result := ChopableTrees[1 + KaMRandom(Length(ChopableTrees), 'TKMTerrain.ChooseTreeToPlant 4'), aTreeAge]; //If it isn't one of those soil types then choose a random tree
-    ttOnGrass:        Result := ChopableTrees[1 + KaMRandom(7, 'TKMTerrain.ChooseTreeToPlant'), aTreeAge]; //Grass (oaks, etc.)
-    ttOnYellowGrass:  Result := ChopableTrees[7 + KaMRandom(2, 'TKMTerrain.ChooseTreeToPlant 2'), aTreeAge]; //Yellow dirt
-    ttOnDirt:         Result := ChopableTrees[9 + KaMRandom(5, 'TKMTerrain.ChooseTreeToPlant 3'), aTreeAge]; //Brown dirt (pine trees)
+                        Result := CHOPABLE_TREES[1 + KaMRandom(Length(CHOPABLE_TREES), 'TKMTerrain.ChooseTreeToPlant 4'), aTreeAge]; //If it isn't one of those soil types then choose a random tree
+    ttOnGrass:        Result := CHOPABLE_TREES[1 + KaMRandom(7, 'TKMTerrain.ChooseTreeToPlant'), aTreeAge]; //Grass (oaks, etc.)
+    ttOnYellowGrass:  Result := CHOPABLE_TREES[7 + KaMRandom(2, 'TKMTerrain.ChooseTreeToPlant 2'), aTreeAge]; //Yellow dirt
+    ttOnDirt:         Result := CHOPABLE_TREES[9 + KaMRandom(5, 'TKMTerrain.ChooseTreeToPlant 3'), aTreeAge]; //Brown dirt (pine trees)
   end;
 end;
 
@@ -3060,12 +3060,12 @@ var
   I: Integer;
 begin
   Result := False;
-  for I := 1 to Length(ChopableTrees) do
-    if ChopableTrees[I, caAgeFull] = Land^[Loc.Y,Loc.X].Obj then
+  for I := 1 to Length(CHOPABLE_TREES) do
+    if CHOPABLE_TREES[I, caAgeFull] = Land^[Loc.Y,Loc.X].Obj then
     begin
-      Land^[Loc.Y,Loc.X].Obj := ChopableTrees[I, caAgeStump];
+      Land^[Loc.Y,Loc.X].Obj := CHOPABLE_TREES[I, caAgeStump];
       //Remember tick when tree was chopped to calc the anim length
-      FallingTrees.Add(Loc, ChopableTrees[I, caAgeFall], fAnimStep);
+      FallingTrees.Add(Loc, CHOPABLE_TREES[I, caAgeFall], fAnimStep);
       if gMySpectator.FogOfWar.CheckTileRevelation(Loc.X, Loc.Y) >= 255 then
         gSoundPlayer.Play(sfxTreeDown, Loc, True);
 
@@ -5189,13 +5189,13 @@ begin
         if (Land^[I,K].TreeAge = TREE_AGE_1)
         or (Land^[I,K].TreeAge = TREE_AGE_2)
         or (Land^[I,K].TreeAge = TREE_AGE_FULL) then //Speedup
-          for H := Low(ChopableTrees) to High(ChopableTrees) do
+          for H := Low(CHOPABLE_TREES) to High(CHOPABLE_TREES) do
             for J := caAge1 to caAge3 do
-              if Land^[I,K].Obj = ChopableTrees[H,J] then
+              if Land^[I,K].Obj = CHOPABLE_TREES[H,J] then
                 case Land^[I,K].TreeAge of
-                  TREE_AGE_1:    Land^[I,K].Obj := ChopableTrees[H, caAge2];
-                  TREE_AGE_2:    Land^[I,K].Obj := ChopableTrees[H, caAge3];
-                  TREE_AGE_FULL: Land^[I,K].Obj := ChopableTrees[H, caAgeFull];
+                  TREE_AGE_1:    Land^[I,K].Obj := CHOPABLE_TREES[H, caAge2];
+                  TREE_AGE_2:    Land^[I,K].Obj := CHOPABLE_TREES[H, caAge3];
+                  TREE_AGE_FULL: Land^[I,K].Obj := CHOPABLE_TREES[H, caAgeFull];
                 end;
       end;
 

@@ -58,7 +58,7 @@ var
 const
   //Chopable tree, Chopdown animation,
   //Age1, Age2, Age3, Age4, Falling, Stump
-  ChopableTrees: array [1..13, TKMChopableAge] of Word = (
+  CHOPABLE_TREES: array [1..13, TKMChopableAge] of Word = (
   //For grass
   (  88,  89,  90,  90,  91,  37), //These two are very look alike
   (  97,  98,  99, 100, 101,  41), //yet different in small detail and fall direction
@@ -103,7 +103,7 @@ const
 implementation
 
 const
-  ObjKillByRoads : array [Byte] of Byte = (
+  OBJ_KILL_BY_ROADS : array [Byte] of Byte = (
     1, 2, 2, 2, 2, 2, 1, 1, 0, 0, 2, 2, 2, 1, 1, 1,
     1, 2, 2, 2, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
@@ -137,7 +137,7 @@ begin
   for I := Low(gMapElements) to High(gMapElements) do
   begin
     S.Read(gMapElements[I], ELEMENT_SIZE);
-    gMapElements[I].KillByRoad := TKMKillByRoad(ObjKillByRoads[I]);
+    gMapElements[I].KillByRoad := TKMKillByRoad(OBJ_KILL_BY_ROADS[I]);
   end;
   fCount := S.Size div ELEMENT_SIZE; //254 by default
   fCRC := Adler32CRC(S);
@@ -255,9 +255,9 @@ var
 begin
   Result := True;
 
-  for I := 1 to Length(ChopableTrees) do
+  for I := 1 to Length(CHOPABLE_TREES) do
     for K := Low(TKMChopableAge) to High(TKMChopableAge) do
-      if (aObjId = ChopableTrees[I,K]) then Exit;
+      if (aObjId = CHOPABLE_TREES[I,K]) then Exit;
 
   Result := False;
 end;
@@ -269,8 +269,8 @@ var
 begin
   Result := True;
 
-  for I := 1 to Length(ChopableTrees) do
-    if (aObjId = ChopableTrees[I, aStage]) then Exit;
+  for I := 1 to Length(CHOPABLE_TREES) do
+    if (aObjId = CHOPABLE_TREES[I, aStage]) then Exit;
 
   Result := False;
 end;
@@ -283,9 +283,9 @@ var
 begin
   Result := True;
 
-  for I := 1 to Length(ChopableTrees) do
+  for I := 1 to Length(CHOPABLE_TREES) do
     for stage in aStages do
-      if (aObjId = ChopableTrees[I, stage]) then Exit;
+      if (aObjId = CHOPABLE_TREES[I, stage]) then Exit;
 
   Result := False;
 end;
