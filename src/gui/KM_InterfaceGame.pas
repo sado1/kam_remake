@@ -45,6 +45,8 @@ type
     function GetDebugInfo: string; virtual;
 
     procedure InitDebugControls;
+
+    procedure ViewportPositionChanged(const aPos: TKMPointF);
   public
     constructor Create(aRender: TRender); reintroduce;
     destructor Destroy; override;
@@ -197,7 +199,8 @@ uses
   KM_HandsCollection, 
   KM_Terrain, 
   KM_RenderPool, KM_RenderUI, KM_Pics,  
-  KM_Resource, KM_ResKeys, 
+  KM_Resource, KM_ResKeys,
+  KM_Sound, KM_ScriptSound,
   KM_CommonUtils, KM_Log;
 
 
@@ -207,7 +210,7 @@ begin
   inherited Create(aRender.ScreenX, aRender.ScreenY);
 
   fMinimap := TKMMinimapGame.Create(False);
-  fViewport := TKMViewport.Create(GetToolbarWidth, aRender.ScreenX, aRender.ScreenY);
+  fViewport := TKMViewport.Create(GetToolbarWidth, aRender.ScreenX, aRender.ScreenY, ViewportPositionChanged);
 
   gLog.AddOnLogEventSub(LogMessageHappened);
   fLogStringList := TKMLimitedList<string>.Create(80); // 50 lines max
@@ -328,6 +331,14 @@ begin
   Bevel_DebugInfo.Height := IfThen(textSize.Y <= 1, 0, textSize.Y + BEVEL_PAD);
 
   Bevel_DebugInfo.Visible := SHOW_DEBUG_OVERLAY_BEVEL and (Trim(S) <> '') ;
+end;
+
+
+procedure TKMUserInterfaceGame.ViewportPositionChanged(const aPos: TKMPointF);
+begin
+  gSoundPlayer.UpdateListener(aPos.X, aPos.Y);
+  if gScriptSounds <> nil then
+    gScriptSounds.UpdateListener(aPos.X, aPos.Y);
 end;
 
 

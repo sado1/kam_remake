@@ -3,7 +3,7 @@ unit KM_Viewport;
 interface
 uses
   {$IFDEF MSWINDOWS} Windows, {$ENDIF}
-  KM_CommonClasses, KM_Points;
+  KM_CommonClasses, KM_CommonTypes, KM_Points;
 
 
 type
@@ -21,6 +21,9 @@ type
     fPanImmidiately : Boolean;
     fPanDuration, fPanProgress: Cardinal;
     fToolbarWidth: Integer;
+
+    fOnPositionSet: TPointFEvent;
+
     function GetPosition: TKMPointF;
     procedure SetPosition(const Value: TKMPointF);
     procedure SetZoom(aZoom: Single);
@@ -32,7 +35,7 @@ type
     property ZoomedCellSizePX: Single read GetZoomedCellSizePx; // Cell size in pixels in current zoom
   public
     ScrollKeyLeft, ScrollKeyRight, ScrollKeyUp, ScrollKeyDown, ZoomKeyIn, ZoomKeyOut: boolean;
-    constructor Create(aToolBarWidth: Integer; aWidth, aHeight: Integer);
+    constructor Create(aToolBarWidth: Integer; aWidth, aHeight: Integer; aOnPositionSet: TPointFEvent);
 
     property Position: TKMPointF read GetPosition write SetPosition;
     property Scrolling: Boolean read fScrolling;
@@ -66,16 +69,17 @@ uses
   Math, SysUtils,
   KromUtils,
   KM_Resource, KM_ResTypes,
-  KM_Main, KM_System, KM_GameApp, KM_GameSettings, KM_Sound, KM_ScriptSound,
+  KM_Main, KM_System, KM_GameApp, KM_GameSettings,
   KM_Defaults, KM_CommonUtils;
 
 
 { TKMViewport }
-constructor TKMViewport.Create(aToolBarWidth: Integer; aWidth, aHeight: Integer);
+constructor TKMViewport.Create(aToolBarWidth: Integer; aWidth, aHeight: Integer; aOnPositionSet: TPointFEvent);
 begin
   inherited Create;
 
   fToolbarWidth := aToolBarWidth;
+  fOnPositionSet := aOnPositionSet;
 
   fMapX := 1; //Avoid division by 0
   fMapY := 1; //Avoid division by 0
@@ -84,9 +88,10 @@ begin
 
   fZoom := 1;
   ReleaseScrollKeys;
-  gSoundPlayer.UpdateListener(fPosition.X, fPosition.Y);
-  if gScriptSounds <> nil then
-    gScriptSounds.UpdateListener(fPosition.X, fPosition.Y);
+
+  if Assigned(fOnPositionSet) then
+    fOnPositionSet(fPosition);
+
   Resize(aWidth, aHeight);
 end;
 
@@ -173,9 +178,9 @@ begin
   fPosition.Y := EnsureRange(Value.Y,
                              tilesY - TopPad,     // Min visible map coordinate is -TopPad
                              fMapY - 1 - tilesY); // Max visible map coordinate is fMapY - 1
-  gSoundPlayer.UpdateListener(fPosition.X, fPosition.Y);
-  if gScriptSounds <> nil then
-    gScriptSounds.UpdateListener(fPosition.X, fPosition.Y);
+
+  if Assigned(fOnPositionSet) then
+    fOnPositionSet(fPosition);
 end;
 
 
