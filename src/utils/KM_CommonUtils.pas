@@ -2,8 +2,6 @@ unit KM_CommonUtils;
 {$I KaM_Remake.inc}
 interface
 uses
-  {$IFDEF FPC}Forms,{$ENDIF}   //Lazarus do not know UITypes
-  {$IFDEF WDC}UITypes,{$ENDIF} //We use settings in console modules
   Classes, DateUtils, Math, SysUtils, KM_Defaults, KM_Points, KM_CommonTypes
   {$IFDEF MSWindows}
   ,Windows
