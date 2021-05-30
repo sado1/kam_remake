@@ -1496,13 +1496,15 @@ object FormMain: TFormMain
       Caption = 'Debug'
       object Debug_PrintScreen: TMenuItem
         Caption = 'PrintScreen'
-        Hint = 'PrintScreen image will be saved to the screenshots folder'
+        Hint = 'PrintScreen image will be saved to the '#39'screenshots'#39' folder'
         OnClick = Debug_PrintScreenClick
       end
       object Debug_SaveGameWholeMapToJPEG: TMenuItem
         Caption = 'Save game whole map to JPEG'
         Enabled = False
-        Hint = 'Whole map image will be saved to the screenshots folder'
+        Hint = 
+          'Game'#39's whole map will be saved to the '#39'screenshots'#39' folder as a ' +
+          'JPEG image '
         OnClick = Debug_SaveGameWholeMapToJPEGClick
       end
       object N8: TMenuItem
