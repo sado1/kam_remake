@@ -3,7 +3,7 @@ unit KM_ResFonts;
 interface
 uses
   Classes, Math, StrUtils, SysUtils,
-  Vcl.Graphics,
+  Graphics,
   KM_IoPNG, KM_RenderTypes,
   KM_CommonTypes, KM_Defaults, KM_Points, KM_ResPalettes
   {$IFDEF FPC}, zstream {$ENDIF}

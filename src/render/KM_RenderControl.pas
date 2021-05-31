@@ -3,7 +3,7 @@ unit KM_RenderControl;
 interface
 uses
   Classes, Types,
-  Vcl.ExtCtrls, Vcl.Forms,
+  ExtCtrls, Forms,
   KromOGLUtils
   {$IFDEF MSWindows} , Windows, dglOpenGL  {$ENDIF}
   {$IFDEF Unix} , OpenGLContext, dglOpenGL {$ENDIF}

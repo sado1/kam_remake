@@ -40,7 +40,7 @@ var
 implementation
 uses
   SysUtils, Math,
-  Vcl.Forms, Vcl.Graphics;
+  Forms, Graphics;
 
 const
   // Screen.Cursors[0] is used by System default cursor
