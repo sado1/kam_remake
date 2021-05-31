@@ -697,12 +697,15 @@ end;
 procedure TKMSpritePack.OverloadFromFolder(const aFolder: string; aSoftenShadows: Boolean = True);
 
   procedure ProcessFolder(const aProcFolder: string; aRT: TRXType);
+  {$IFDEF WDC}
   var
     I, ID: Integer;
     fileList, IDList: TStringList;
     searchRec: TSearchRec;
     filePath, relName: string;
+  {$ENDIF}
   begin
+    {$IFDEF WDC}
     if not DirectoryExists(aProcFolder) then Exit;
 
     fileList := TStringList.Create;
@@ -780,6 +783,7 @@ procedure TKMSpritePack.OverloadFromFolder(const aFolder: string; aSoftenShadows
     finally
       fileList.Free;
     end;
+    {$ENDIF}
   end;
 
 begin
