@@ -2,7 +2,7 @@ unit KM_Render;
 {$I KaM_Remake.inc}
 interface
 uses
-  {$IFDEF WDC} Windows, Vcl.Graphics, Vcl.Imaging.JPEG, {$ENDIF} //Lazarus doesn't have JPEG library yet -> FPReadJPEG?
+  {$IFDEF WDC} Windows, Graphics, Imaging.JPEG, {$ENDIF} //Lazarus doesn't have JPEG library yet -> FPReadJPEG?
   {$IFDEF Unix} LCLIntf, LCLType, OpenGLContext, {$ENDIF}
   Math, dglOpenGL, KromOGLUtils, KromUtils,
   KM_RenderControl, KM_RenderQuery, KM_RenderTypes;

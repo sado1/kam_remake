@@ -3,7 +3,7 @@ unit KM_UtilsExt;
 interface
 uses
   Classes,
-  Vcl.Controls
+  Controls
   {$IFDEF MSWindows}
   , Windows
   {$ENDIF}

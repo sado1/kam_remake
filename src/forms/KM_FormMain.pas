@@ -3,11 +3,11 @@ unit KM_FormMain;
 interface
 uses
   SysUtils, StrUtils, Classes, Math,
-  Vcl.ComCtrls, Vcl.Controls, Vcl.Buttons, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.Forms, Vcl.Graphics, Vcl.Menus, Vcl.StdCtrls,
+  ComCtrls, Controls, Buttons, Dialogs, ExtCtrls, Forms, Graphics, Menus, StdCtrls,
   KM_RenderControl, KM_CommonTypes,
   KM_WindowParams,
   {$IFDEF FPC} LResources, {$ENDIF}
-  {$IFDEF MSWindows} KM_VclMenuHint, ShellAPI, Windows, Messages, Vcl.Samples.Spin; {$ENDIF}
+  {$IFDEF MSWindows} KM_VclMenuHint, ShellAPI, Windows, Messages, Samples.Spin; {$ENDIF}
   {$IFDEF Unix} LCLIntf, LCLType; {$ENDIF}
 
 
@@ -409,11 +409,11 @@ end;
 // Load dev settings from kmr_dev.xml
 procedure TFormMain.DoLoadDevSettings;
 
-  procedure ManageSubPanel(aPanel: TWinControl; anParent: TKMXmlNode);
+  procedure ManageSubPanel(aPanel: TWinControl; anParent: TXMLNode);
   var
     I: Integer;
     actrl: TControl;
-    nSection: TKMXmlNode;
+    nSection: TXMLNode;
   begin
     for I := 0 to aPanel.ControlCount - 1 do
     begin
@@ -452,11 +452,11 @@ procedure TFormMain.DoLoadDevSettings;
 var
   I: Integer;
   devSettingsPath: UnicodeString;
-  newXML: TKMXmlDocument;
+  newXML: TKMXMLDocument;
   cp: TCategoryPanel;
   cpSurface: TCategoryPanelSurface;
   cpName: string;
-  nRoot, nSection: TKMXmlNode;
+  nRoot, nSection: TXMLNode;
 begin
   fUpdating := True;
   devSettingsPath := GetDevSettingsPath;
@@ -474,7 +474,7 @@ begin
     end;
 
     //Load dev data from XML
-    newXML := TKMXmlDocument.Create;
+    newXML := TKMXMLDocument.Create;
     newXML.LoadFromFile(devSettingsPath);
     nRoot := newXML.Root;
 
@@ -507,11 +507,11 @@ end;
 // Save dev settings to kmr_dev.xml
 procedure TFormMain.DoSaveDevSettings;
 
-  procedure ManageSubPanel(aPanel: TWinControl; anParent: TKMXmlNode);
+  procedure ManageSubPanel(aPanel: TWinControl; anParent: TXMLNode);
   var
     I: Integer;
     actrl: TControl;
-    nSection: TKMXmlNode;
+    nSection: TXMLNode;
   begin
     for I := 0 to aPanel.ControlCount - 1 do
     begin
@@ -548,17 +548,17 @@ procedure TFormMain.DoSaveDevSettings;
 var
   I: Integer;
   devSettingsPath: UnicodeString;
-  newXML: TKMXmlDocument;
+  newXML: TKMXMLDocument;
   cp: TCategoryPanel;
   cpSurface: TCategoryPanelSurface;
-  nRoot, nSection: TKMXmlNode;
+  nRoot, nSection: TXMLNode;
 begin
   devSettingsPath := GetDevSettingsPath;
 
   gLog.AddTime('Saving dev settings to file ''' + devSettingsPath + '''');
 
   //Save dev data to XML
-  newXML := TKMXmlDocument.Create;
+  newXML := TKMXMLDocument.Create;
   newXML.LoadFromFile(devSettingsPath);
   nRoot := newXML.Root;
 
@@ -1109,19 +1109,19 @@ end;
 
 procedure TFormMain.UnitAnim_AllClick(Sender: TObject);
 begin
-  gResExporter.ExportUnitAnim(UNIT_MIN, UNIT_MAX, True, ExportDone);
+  gRes.ExportUnitAnim(UNIT_MIN, UNIT_MAX, True, ExportDone);
 end;
 
 
 procedure TFormMain.Civilians1Click(Sender: TObject);
 begin
-  gResExporter.ExportUnitAnim(CITIZEN_MIN, CITIZEN_MAX, False, ExportDone);
+  gRes.ExportUnitAnim(CITIZEN_MIN, CITIZEN_MAX, False, ExportDone);
 end;
 
 
 procedure TFormMain.SoldiersClick(Sender: TObject);
 begin
-  gResExporter.ExportUnitAnim(WARRIOR_MIN, WARRIOR_MAX, False, ExportDone);
+  gRes.ExportUnitAnim(WARRIOR_MIN, WARRIOR_MAX, False, ExportDone);
 end;
 
 

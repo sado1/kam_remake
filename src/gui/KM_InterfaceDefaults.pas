@@ -5,7 +5,7 @@ uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLType, {$ENDIF}
   Classes,
-  Vcl.Controls,
+  Controls,
   KM_Controls, KM_Points, KM_ResFonts,
   KM_ResTypes, KM_InterfaceTypes;
 

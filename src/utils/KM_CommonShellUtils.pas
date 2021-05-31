@@ -7,7 +7,7 @@ interface
 implementation
 uses
   {$IFDEF MSWindows}Windows, {$ENDIF}
-  Vcl.Forms
+  Forms
   {$IFDEF WDC}, ShellApi {$ENDIF}
   ;
 

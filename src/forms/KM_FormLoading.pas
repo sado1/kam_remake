@@ -4,7 +4,7 @@ interface
 uses
   Classes,
   {$IFDEF FPC} LResources, {$ENDIF}
-  Vcl.Forms, Vcl.Controls, Vcl.ComCtrls, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Graphics;
+  Forms, Controls, ComCtrls, ExtCtrls, StdCtrls, Graphics;
 
 type
   TFormLoading = class(TForm)

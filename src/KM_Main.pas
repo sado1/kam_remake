@@ -95,7 +95,7 @@ var
 implementation
 uses
   Classes, SysUtils, SysConst, StrUtils, Math,
-  Vcl.Forms,
+  Forms,
   {$IFDEF MSWindows} MMSystem, {$ENDIF}
   {$IFDEF USE_MAD_EXCEPT} KM_Exceptions, {$ENDIF}
   KromUtils, KM_FileIO,
@@ -256,7 +256,7 @@ begin
   end;
 
   gVideoPlayer := TKMVideoPlayer.Create(ENABLE_VIDEOS_UNDER_WINE or not IsUnderWine);
-  gResExporter := TKMResExporter.Create;
+  gResExporter := TKMResourceExporter.Create;
 
   fFormMain.Caption := 'KaM Remake - ' + UnicodeString(GAME_VERSION);
   //Will make the form slightly higher, so do it before ReinitRender so it is reset
@@ -385,9 +385,6 @@ begin
 
     if Assigned(gVideoPlayer) then
       gVideoPlayer.Free;
-
-    if Assigned(gResExporter) then
-      gResExporter.Free;
 
     fFormMain.SaveDevSettings;
 

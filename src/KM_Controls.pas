@@ -3,7 +3,7 @@
 interface
 uses
   Classes,
-  Vcl.Controls,
+  Controls,
   Generics.Collections,
   KromOGLUtils,
   KM_RenderUI, KM_Pics, KM_Minimap, KM_Viewport,
@@ -2035,7 +2035,7 @@ uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
   SysUtils, StrUtils, Math,
-  Vcl.Clipbrd,
+  Clipbrd,
   KromUtils,
   KM_System,
   KM_MinimapGame,

@@ -297,7 +297,7 @@ var
 implementation
 uses
   System.Types, Classes, SysUtils, Math, TypInfo,
-  Vcl.Dialogs,
+  Dialogs,
   {$IFDEF WDC} UITypes, {$ENDIF}
   KromUtils,
   KM_Sound, KM_ScriptSound,
