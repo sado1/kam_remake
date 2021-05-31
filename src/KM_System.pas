@@ -162,7 +162,7 @@ begin
     {$IFDEF Unix}
       bm2.Mask(clWhite);
       IconInfo.hbmMask  := bm2.MaskHandle;
-      Screen.Cursors[Byte(KMC) + COUNT_OFFSET] :=  CreateIconIndirect(@IconInfo);
+      Screen.Cursors[Byte(C) + CURSOR_CNT_OFFSET] :=  CreateIconIndirect(@IconInfo);
     {$ENDIF}
   end;
 
