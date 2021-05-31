@@ -1,6 +1,7 @@
 // From https://github.com/qiao/heap.js
 //Ported by Krom for project Castlesand
 unit BinaryHeapGen;
+{$I KaM_Remake.inc}
 interface
 uses Generics.Collections;
 

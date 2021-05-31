@@ -1,6 +1,7 @@
 // From https://github.com/qiao/heap.js
 //Ported by Krom for project Castlesand
 unit BinaryHeap;
+{$I KaM_Remake.inc}
 interface
 
 

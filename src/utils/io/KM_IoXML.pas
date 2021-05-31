@@ -1,4 +1,5 @@
 unit KM_IoXML;
+{$I KaM_Remake.inc}
 interface
 uses
   Classes, SysUtils,

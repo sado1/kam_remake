@@ -1,5 +1,6 @@
 unit KM_Sort;
-{$ifdef fpc}{$mode delphi}{$H+}{$endif}
+{$I KaM_Remake.inc}
+{$IFDEF FPC}{$H+}{$ENDIF}
 interface
 
 type

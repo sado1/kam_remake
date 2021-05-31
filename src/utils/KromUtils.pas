@@ -1,5 +1,5 @@
 unit KromUtils;
-{$I ..\..\KaM_Remake.inc}
+{$I KaM_Remake.inc}
 interface
 uses
   Classes
