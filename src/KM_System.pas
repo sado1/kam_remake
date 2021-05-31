@@ -12,10 +12,12 @@ type
   // System related features are encapsulated in this class
   TKMSystem = class
   private
-    {$IFNDEF FPC}{$IFDEF MSWindows}
+    {$IFNDEF FPC}
+    {$IFDEF MSWindows}
     fFormMainHandle: HWND;
     fFlashing: Boolean;
-    {$ENDIF}{$ENDIF}
+    {$ENDIF}
+    {$ENDIF}
 
     function GetCursor: TKMCursor;
     procedure SetCursor(Value: TKMCursor);
@@ -55,7 +57,11 @@ constructor TKMSystem.Create(aFormMainHandle: HWND);
 begin
   inherited Create;
 
+  {$IFNDEF FPC}
+  {$IFDEF MSWindows}
   fFormMainHandle := aFormMainHandle;
+  {$ENDIF}
+  {$ENDIF}
 end;
 
 
