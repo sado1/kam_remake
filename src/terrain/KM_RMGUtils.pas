@@ -20,7 +20,6 @@ type
   end;
 
   TResElementPointer = ^TResElement;
-
   TResElement = record
     X,Y: SmallInt;
     Probability: Single;
@@ -28,7 +27,6 @@ type
   end;
 
   THeightElementPointer = ^THeightElement;
-
   THeightElement = record
     X,Y: SmallInt;
     Distance: Word;
@@ -45,18 +43,18 @@ type
 
   TBalancedResource1Array = array of TBalancedResource;
 
-// Random number generator for RMG
+  // Random number generator for RMG
   TKMRandomNumberGenerator = class
   private
     fSeed: LongInt;
   public
     property Seed: LongInt read fSeed write fSeed;
-    procedure NextSeed();
+    procedure NextSeed;
     function Random(): Single;
     function RandomI(const Max: Integer): Integer;
   end;
 
-// Fast flood algorithm (Queue + for cycle instead of recursion)
+  // Fast flood algorithm (Queue + for cycle instead of recursion)
   { This class was moved to KM_FloodFill in \src\utils
   TKMQuickFlood = class
   private
@@ -132,7 +130,7 @@ type
     procedure QuickFlood(aX,aY,aSearch,aNewSearch,aFill: SmallInt); reintroduce;
   end;
 
-// Search class with fill by specific number in fObjectArr
+  // Search class with fill by specific number in fObjectArr
   TKMFillObject = class(TKMFillBiome)
   private
     fBiomeArr: TKMWord2Array;
@@ -144,8 +142,8 @@ type
   end;
 
 
-// Search for resources and record its shape
-// This is special class for Mine fix in RMG
+  // Search for resources and record its shape
+  // This is special class for Mine fix in RMG
   TKMMinerFixSearch = class(TKMQuickFlood)
   private
     fSearch: Byte;
@@ -161,8 +159,8 @@ type
     procedure QuickFlood(aX,aY: SmallInt; aSearch: Byte); reintroduce;
   end;
 
-// Search for specific tile and his surrounding tiles (if fReturnTiles then return array of those tiles)
-// Made for GenerateTiles procedure in RMG
+  // Search for specific tile and his surrounding tiles (if fReturnTiles then return array of those tiles)
+  // Made for GenerateTiles procedure in RMG
   TKMTileFloodSearch = class(TKMSearchBiome)
   private
     fReturnTiles: Boolean;
@@ -179,8 +177,8 @@ type
     procedure QuickFlood(aX,aY,aSearch,aNewSearch: SmallInt; var aOutIdx: Integer; var aTileCounterArr: TInteger2Array; var aOutPointArr: TKMPointArray; var aOutLevelArr: TKMByteArray); reintroduce; overload;
   end;
 
-// Calculator of full tiles inside of shape (good for resources)
-TKMInternalTileCounter = class(TKMQuickFlood)
+  // Calculator of full tiles inside of shape (good for resources)
+  TKMInternalTileCounter = class(TKMQuickFlood)
   private
     fCount: Integer;
     fSearchBiome, fVisitedNum: Byte;
@@ -196,8 +194,8 @@ TKMInternalTileCounter = class(TKMQuickFlood)
     procedure QuickFlood(aX,aY,aSearchBiome,aVisitedNum: SmallInt); reintroduce;
   end;
 
-// Remove "sharp" edges of each shape = edges with 1x1 or 2x2 tiles => each tile have at least 2 surrounding tiles in row and 2 tiles in column
-TKMSharpShapeFixer = class(TKMInternalTileCounter)
+  // Remove "sharp" edges of each shape = edges with 1x1 or 2x2 tiles => each tile have at least 2 surrounding tiles in row and 2 tiles in column
+  TKMSharpShapeFixer = class(TKMInternalTileCounter)
   private
   protected
     procedure MarkAsVisited(const aX,aY: SmallInt); override;
@@ -243,8 +241,8 @@ TKMSharpShapeFixer = class(TKMInternalTileCounter)
     procedure AddResource(aOwner, aResource, aMinesCnt: Byte; aQuantity: Integer; var aPoints: TKMPointArray);
   end;
 
-// Fill walkable areas with height (the impact of height is decreasing with increased distance)
-// Made for GenerateHeight procedure in RMG
+  // Fill walkable areas with height (the impact of height is decreasing with increased distance)
+  // Made for GenerateHeight procedure in RMG
   TKMHeightFillWalkableAreas = class
   private
     fQueue: TQueue;
@@ -285,7 +283,7 @@ uses
 
 
 { TKMRandomNumberGenerator }
-procedure TKMRandomNumberGenerator.NextSeed();
+procedure TKMRandomNumberGenerator.NextSeed;
 begin
   // xorshift32 (2^32 numbers and 2^31 combinations after modification)
   fSeed := fSeed XOR (fSeed shl 13);
@@ -558,7 +556,8 @@ end;
 { TKMMinerFixSearch }
 constructor TKMMinerFixSearch.Create(aMinLimit, aMaxLimit: TKMPoint; var aMinPoint, aMaxPoint: TSmallIntArray; var aVisited: TBoolean2Array; var aSearchArr: TKMByte2Array);
 begin
-  inherited Create;
+  inherited Create(False);
+
   fMinLimit := aMinLimit;
   fMaxLimit := aMaxLimit;
   fMinPoint := aMinPoint;
@@ -661,6 +660,7 @@ end;
 constructor TKMInternalTileCounter.Create(aMinLimit, aMaxLimit: TKMPoint; var aBiomeArr, aVisitedArr: TKMByte2Array; const aScanEightTiles: Boolean = False);
 begin
   inherited Create(aScanEightTiles);
+
   fBiomeArr := aBiomeArr;
   fVisitedArr := aVisitedArr;
   fMinLimit := aMinLimit;
@@ -793,12 +793,13 @@ begin
   fShapeFixer := TKMSharpShapeFixer.Create( MinP, MaxP, fFillArr, fCountVisitedArr);
 end;
 
-destructor TKMFloodWithQueue.Destroy();
+destructor TKMFloodWithQueue.Destroy;
 begin
   fFillResource.Free;
   fTileCounter.Free;
   fShapeFixer.Free;
-  fQueue.Free();
+  fQueue.Free;
+
   inherited;
 end;
 
@@ -913,8 +914,10 @@ end;
 
 
 { TKMBalancedResources }
-constructor TKMBalancedResources.Create();
+constructor TKMBalancedResources.Create;
 begin
+  inherited;
+
   fResCnt := 0;
 end;
 
@@ -962,7 +965,8 @@ end;
 
 destructor TKMHeightFillWalkableAreas.Destroy();
 begin
-  fQueue.Free();
+  fQueue.Free;
+
   inherited;
 end;
 

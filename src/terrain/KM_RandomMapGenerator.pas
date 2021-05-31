@@ -1229,7 +1229,7 @@ begin
             RandBiom := Byte(  Biomes[ fRNG.RandomI(length(Biomes)) ]  );
             SearchSimilarBiome.QuickFlood(X,Y, ShapeArr[Y,X], 1, RandBiom);
             if (SearchSimilarBiome.Count > 50) then
-              FillBiome.QuickFlood(X,Y, ShapeArr[Y,X], 0, RandBiom );
+              FillBiome.QuickFlood(X,Y, ShapeArr[Y,X], 0, RandBiom);
           end;
 
     // Fill 2 and 3 layer of biomes (small and very small layer)

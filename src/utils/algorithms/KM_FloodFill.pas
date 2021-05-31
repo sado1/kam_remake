@@ -30,7 +30,7 @@ type
     procedure MarkAsVisited(const aX,aY: SmallInt); virtual; abstract;
     procedure SearchAround(aX,aY: SmallInt); virtual;
   public
-    constructor Create(const aScanEightTiles: Boolean = False); virtual;
+    constructor Create(aScanEightTiles: Boolean); virtual;
     destructor Destroy; override;
     procedure QuickFlood(aX,aY: SmallInt); virtual;
   end;
@@ -40,11 +40,12 @@ implementation
 
 
 { TKMQuickFlood }
-constructor TKMQuickFlood.Create(const aScanEightTiles: Boolean = False);
+constructor TKMQuickFlood.Create(aScanEightTiles: Boolean);
 begin
   inherited Create;
 
   fScanEightTiles := aScanEightTiles;
+
   // Create first TElement and keep it all the time (queue is empty if fStartQueue = fEndQueue)
   New(fStartQueue);
   fStartQueue^.Next := nil;
@@ -172,7 +173,7 @@ end;
 
 procedure TKMQuickFlood.QuickFlood(aX,aY: SmallInt);
 begin
-  MakeNewQueue;
+  MakeNewQueue();
   if CanBeVisited(aX, aY) then
     InsertInQueue(aX, aY);
   while not IsQueueEmpty do
