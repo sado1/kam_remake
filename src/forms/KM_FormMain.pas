@@ -1109,19 +1109,19 @@ end;
 
 procedure TFormMain.UnitAnim_AllClick(Sender: TObject);
 begin
-  gRes.ExportUnitAnim(UNIT_MIN, UNIT_MAX, True, ExportDone);
+  gResExporter.ExportUnitAnim(UNIT_MIN, UNIT_MAX, True, ExportDone);
 end;
 
 
 procedure TFormMain.Civilians1Click(Sender: TObject);
 begin
-  gRes.ExportUnitAnim(CITIZEN_MIN, CITIZEN_MAX, False, ExportDone);
+  gResExporter.ExportUnitAnim(CITIZEN_MIN, CITIZEN_MAX, False, ExportDone);
 end;
 
 
 procedure TFormMain.SoldiersClick(Sender: TObject);
 begin
-  gRes.ExportUnitAnim(WARRIOR_MIN, WARRIOR_MAX, False, ExportDone);
+  gResExporter.ExportUnitAnim(WARRIOR_MIN, WARRIOR_MAX, False, ExportDone);
 end;
 
 
