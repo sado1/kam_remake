@@ -517,7 +517,7 @@ begin
   end;
 
   A := A mod MAX_PRIME_16BIT;
-  Adler32CRC := B + A shl 16; // Reverse order for smaller numbers
+  Result := B + A shl 16; // Reverse order for smaller numbers
 end;
 
 
