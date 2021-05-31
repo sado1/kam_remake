@@ -396,7 +396,7 @@ var
     nMenuReplay,
     nMenuMapEd,
   nMisc,
-  nDebug: TXMLNode;
+  nDebug: TKMXmlNode;
   tempCard: Int64;
 begin
   if Self = nil then Exit;
@@ -588,7 +588,7 @@ var
     nMenuReplay,
     nMenuMapEd,
   nMisc,
-  nDebug: TXMLNode;
+  nDebug: TKMXmlNode;
 begin
   if Self = nil then Exit;
   if BLOCK_FILE_WRITE then Exit;

@@ -6,8 +6,8 @@ uses
 
 
 type
-  TXMLNodeHelper = class helper for TXMLNode
-    function AddOrFindChild(const aChildNodeName: string): TXMLNode;
+  TXMLNodeHelper = class helper for TKMXmlNode
+    function AddOrFindChild(const aChildNodeName: string): TKMXmlNode;
   end;
 
 implementation
@@ -16,7 +16,7 @@ uses
 
 
 { TXMLNodeHelper }
-function TXMLNodeHelper.AddOrFindChild(const aChildNodeName: string): TXMLNode;
+function TXMLNodeHelper.AddOrFindChild(const aChildNodeName: string): TKMXmlNode;
 begin
   if not HasChild(aChildNodeName) then
     Result := AddChild(aChildNodeName)

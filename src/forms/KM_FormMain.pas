@@ -409,11 +409,11 @@ end;
 // Load dev settings from kmr_dev.xml
 procedure TFormMain.DoLoadDevSettings;
 
-  procedure ManageSubPanel(aPanel: TWinControl; anParent: TXMLNode);
+  procedure ManageSubPanel(aPanel: TWinControl; anParent: TKMXmlNode);
   var
     I: Integer;
     actrl: TControl;
-    nSection: TXMLNode;
+    nSection: TKMXmlNode;
   begin
     for I := 0 to aPanel.ControlCount - 1 do
     begin
@@ -452,11 +452,11 @@ procedure TFormMain.DoLoadDevSettings;
 var
   I: Integer;
   devSettingsPath: UnicodeString;
-  newXML: TKMXMLDocument;
+  newXML: TKMXmlDocument;
   cp: TCategoryPanel;
   cpSurface: TCategoryPanelSurface;
   cpName: string;
-  nRoot, nSection: TXMLNode;
+  nRoot, nSection: TKMXmlNode;
 begin
   fUpdating := True;
   devSettingsPath := GetDevSettingsPath;
@@ -474,7 +474,7 @@ begin
     end;
 
     //Load dev data from XML
-    newXML := TKMXMLDocument.Create;
+    newXML := TKMXmlDocument.Create;
     newXML.LoadFromFile(devSettingsPath);
     nRoot := newXML.Root;
 
@@ -507,11 +507,11 @@ end;
 // Save dev settings to kmr_dev.xml
 procedure TFormMain.DoSaveDevSettings;
 
-  procedure ManageSubPanel(aPanel: TWinControl; anParent: TXMLNode);
+  procedure ManageSubPanel(aPanel: TWinControl; anParent: TKMXmlNode);
   var
     I: Integer;
     actrl: TControl;
-    nSection: TXMLNode;
+    nSection: TKMXmlNode;
   begin
     for I := 0 to aPanel.ControlCount - 1 do
     begin
@@ -548,17 +548,17 @@ procedure TFormMain.DoSaveDevSettings;
 var
   I: Integer;
   devSettingsPath: UnicodeString;
-  newXML: TKMXMLDocument;
+  newXML: TKMXmlDocument;
   cp: TCategoryPanel;
   cpSurface: TCategoryPanelSurface;
-  nRoot, nSection: TXMLNode;
+  nRoot, nSection: TKMXmlNode;
 begin
   devSettingsPath := GetDevSettingsPath;
 
   gLog.AddTime('Saving dev settings to file ''' + devSettingsPath + '''');
 
   //Save dev data to XML
-  newXML := TKMXMLDocument.Create;
+  newXML := TKMXmlDocument.Create;
   newXML.LoadFromFile(devSettingsPath);
   nRoot := newXML.Root;
 

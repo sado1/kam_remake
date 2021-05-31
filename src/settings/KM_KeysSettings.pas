@@ -49,7 +49,7 @@ end;
 procedure TKMKeysSettings.LoadFromXML;
 var
   KF: TKMKeyFunction;
-  nHotkeys, nKey: TXMLNode;
+  nHotkeys, nKey: TKMXmlNode;
   keyFuncName: string;
   keySpec: TKMKeySpec;
 begin
@@ -77,7 +77,7 @@ end;
 procedure TKMKeysSettings.SaveToXML;
 var
   KF: TKMKeyFunction;
-  nHotkeys, nKey: TXMLNode;
+  nHotkeys, nKey: TKMXmlNode;
 begin
   if Self = nil then Exit;
   inherited;

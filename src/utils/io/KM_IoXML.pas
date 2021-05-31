@@ -15,22 +15,22 @@ uses
   *)
 
 type
-  TXMLDocument = TXmlVerySimple;
-  TXMLNode = Xml.VerySimple.TXmlNode;
-  TXMLAttribute = Xml.VerySimple.TXmlAttribute;
+  TKMXmlDomDocument = TXmlVerySimple;
+  TKMXmlNode = Xml.VerySimple.TXmlNode;
+  TKMXmlAttribute = Xml.VerySimple.TXmlAttribute;
 
   //TXMLDocument = XMLIntf.IXMLDocument;
   //TXMLNode = XMLIntf.IXMLNode;
 
-  TKMXMLDocument = class
+  TKMXmlDocument = class
   private
-    fDocument: TXMLDocument;
-    fRoot: TXMLNode;
+    fDocument: TKMXmlDomDocument;
+    fRoot: TKMXmlNode;
   public
     constructor Create;
     destructor Destroy; override;
 
-    property Root: TXMLNode read fRoot;
+    property Root: TKMXmlNode read fRoot;
 
     procedure LoadFromFile(const aFilename: string; aReadOnly: Boolean = True);
     procedure SaveToFile(const aFilename: string; aCompressed: Boolean = False);
@@ -41,11 +41,11 @@ implementation
 
 
 { TKMXMLDocument }
-constructor TKMXMLDocument.Create;
+constructor TKMXmlDocument.Create;
 begin
   inherited;
 
-  fDocument := TXMLDocument.Create;
+  fDocument := TKMXmlDomDocument.Create;
 
   //fDocument := XMLDoc.TXMLDocument.Create(nil);
   //fDocument.Active := True;
@@ -57,7 +57,7 @@ begin
 end;
 
 
-destructor TKMXMLDocument.Destroy;
+destructor TKMXmlDocument.Destroy;
 begin
   fDocument.Free;
 
@@ -67,7 +67,7 @@ begin
 end;
 
 
-procedure TKMXMLDocument.LoadFromFile(const aFilename: string; aReadOnly: Boolean = True);
+procedure TKMXmlDocument.LoadFromFile(const aFilename: string; aReadOnly: Boolean = True);
 begin
   // When no file exists we create an empty XML and let caller handle it
   // e.g. by reading default values from it
@@ -82,7 +82,7 @@ begin
 end;
 
 
-procedure TKMXMLDocument.SaveToFile(const aFilename: string; aCompressed: Boolean = False);
+procedure TKMXmlDocument.SaveToFile(const aFilename: string; aCompressed: Boolean = False);
 begin
   ForceDirectories(ExtractFilePath(ExpandFileName(aFilename)));
 

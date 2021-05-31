@@ -91,7 +91,7 @@ end;
 
 procedure TKMainSettings.LoadFromXML;
 var
-  nMainSettings, nGFX, nWindow, nMisc: TXMLNode;
+  nMainSettings, nGFX, nWindow, nMisc: TKMXmlNode;
 begin
   if Self = nil then Exit;
 
@@ -137,7 +137,7 @@ end;
 //Don't rewrite the file for each individual change, do it in one batch for simplicity
 procedure TKMainSettings.SaveToXML;
 var
-  nMainSettings, nGFX, nWindow, nMisc: TXMLNode;
+  nMainSettings, nGFX, nWindow, nMisc: TKMXmlNode;
 begin
   if Self = nil then Exit;
   if BLOCK_FILE_WRITE or SKIP_SETTINGS_SAVE then Exit;

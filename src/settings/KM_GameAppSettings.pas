@@ -11,9 +11,9 @@ type
   // Common implementation for settings stored and loaded from XML
   TKMSettingsXML = class(TKMSettings)
   private
-    fXML: TKMXMLDocument;
+    fXML: TKMXmlDocument;
   protected
-    fRoot: TXMLNode;
+    fRoot: TKMXmlNode;
     procedure LoadFromFile(const aPath: string); override;
     procedure SaveToFile(const aPath: string); override;
   public
@@ -42,7 +42,7 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    property Root: TXMLNode read fRoot;
+    property Root: TKMXmlNode read fRoot;
   end;
 
 
@@ -50,13 +50,13 @@ type
   TKMGameAppSettingsPart = class abstract
   private
     function GetNeedSave: Boolean;
-    function GetRoot: TXMLNode;
+    function GetRoot: TKMXmlNode;
   protected
     procedure Changed;
     property NeedsSave: Boolean read GetNeedSave;
     function GetDefaultSettingsName: string;
 
-    property Root: TXMLNode read GetRoot;
+    property Root: TKMXmlNode read GetRoot;
   public
     constructor Create;
     destructor Destroy; override;
@@ -114,7 +114,7 @@ end;
 { TKMGameAppSettings }
 constructor TKMGameAppSettings.Create;
 begin
-  fXML := TKMXMLDocument.Create;
+  fXML := TKMXmlDocument.Create;
   fSettingParts := TList<TKMGameAppSettingsPart>.Create;
 
   inherited;
@@ -219,7 +219,7 @@ begin
 end;
 
 
-function TKMGameAppSettingsPart.GetRoot: TXMLNode;
+function TKMGameAppSettingsPart.GetRoot: TKMXmlNode;
 begin
   Result := gGameAppSettings.fRoot;
 end;
