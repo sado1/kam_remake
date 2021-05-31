@@ -5,18 +5,17 @@ uses
   Classes, SysUtils, KM_Points;
 
 type
-  TElementPointer = ^TElement;
-
+  PElement = ^TElement;
   TElement = record
     X,Y: SmallInt;
-    Next: TElementPointer;
+    Next: PElement;
   end;
 
 
 // Fast flood algorithm (Queue + for cycle instead of recursion)
   TKMQuickFlood = class
   private
-    fStartQueue, fEndQueue: TElementPointer;
+    fStartQueue, fEndQueue: PElement;
   protected
     fMinLimit, fMaxLimit: TKMPoint;
     fScanEightTiles: Boolean; // True = scan 8 tiles around, False = scan 4 tiles (no performance impact!)
@@ -35,6 +34,7 @@ type
     destructor Destroy(); override;
     procedure QuickFlood(aX,aY: SmallInt); virtual;
   end;
+
 
 implementation
 
@@ -81,7 +81,8 @@ end;
 
 
 function TKMQuickFlood.RemoveFromQueue(var aX, aY: SmallInt): Boolean;
-var pom: TElementPointer;
+var
+  pom: PElement;
 begin
   Result := True;
   if IsQueueEmpty then

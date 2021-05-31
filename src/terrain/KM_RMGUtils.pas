@@ -13,11 +13,10 @@ type
           True : (R,theta,phi : Real);
           end;
   }
-  TElementPointer = ^TElement;
-
+  PElement = ^TElement;
   TElement = record
     X,Y: SmallInt;
-    Next: TElementPointer;
+    Next: PElement;
   end;
 
   TResElementPointer = ^TResElement;
@@ -61,7 +60,7 @@ type
   { This class was moved to KM_FloodFill in \src\utils
   TKMQuickFlood = class
   private
-    fStartQueue, fEndQueue: TElementPointer;
+    fStartQueue, fEndQueue: PElement;
     fMinLimit, fMaxLimit: TKMPoint;
     fScanEightTiles: Boolean; // True = scan 8 tiles around, False = scan 4 tiles (no performance impact!)
   protected
@@ -331,7 +330,7 @@ begin
 end;
 
 function TKMQuickFlood.RemoveFromQueue(var aX, aY: SmallInt): Boolean;
-var pom: TElementPointer;
+var pom: PElement;
 begin
   Result := True;
   if fStartQueue = fEndQueue then
