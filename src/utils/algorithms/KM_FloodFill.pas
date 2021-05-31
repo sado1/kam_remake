@@ -12,7 +12,7 @@ type
   end;
 
 
-// Fast flood algorithm (Queue + for cycle instead of recursion)
+  // Fast flood algorithm (Queue + for cycle instead of recursion)
   TKMQuickFlood = class
   private
     fStartQueue, fEndQueue: PElement;
@@ -20,7 +20,7 @@ type
     fMinLimit, fMaxLimit: TKMPoint;
     fScanEightTiles: Boolean; // True = scan 8 tiles around, False = scan 4 tiles (no performance impact!)
 
-    procedure MakeNewQueue(); virtual;
+    procedure MakeNewQueue; virtual;
     procedure InsertInQueue(const aX,aY: SmallInt); virtual;
     function RemoveFromQueue(var aX,aY: SmallInt): Boolean; virtual;
     function IsQueueEmpty: Boolean; inline;
@@ -31,7 +31,7 @@ type
     procedure SearchAround(aX,aY: SmallInt); virtual;
   public
     constructor Create(const aScanEightTiles: Boolean = False); virtual;
-    destructor Destroy(); override;
+    destructor Destroy; override;
     procedure QuickFlood(aX,aY: SmallInt); virtual;
   end;
 
@@ -42,6 +42,8 @@ implementation
 { TKMQuickFlood }
 constructor TKMQuickFlood.Create(const aScanEightTiles: Boolean = False);
 begin
+  inherited Create;
+
   fScanEightTiles := aScanEightTiles;
   // Create first TElement and keep it all the time (queue is empty if fStartQueue = fEndQueue)
   New(fStartQueue);
@@ -50,18 +52,19 @@ begin
 end;
 
 
-destructor TKMQuickFlood.Destroy();
+destructor TKMQuickFlood.Destroy;
 var
   X,Y: SmallInt;
 begin
   while not IsQueueEmpty do // Dispose everything except 1 last element
     RemoveFromQueue(X,Y);
   Dispose(fStartQueue); // Dispose the last element
+
   inherited;
 end;
 
 
-procedure TKMQuickFlood.MakeNewQueue();
+procedure TKMQuickFlood.MakeNewQueue;
 var
   X,Y: SmallInt;
 begin
@@ -169,7 +172,7 @@ end;
 
 procedure TKMQuickFlood.QuickFlood(aX,aY: SmallInt);
 begin
-  MakeNewQueue();
+  MakeNewQueue;
   if CanBeVisited(aX, aY) then
     InsertInQueue(aX, aY);
   while not IsQueueEmpty do
