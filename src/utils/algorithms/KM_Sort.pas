@@ -1,6 +1,5 @@
 unit KM_Sort;
 {$I KaM_Remake.inc}
-{$IFDEF FPC}{$H+}{$ENDIF}
 interface
 
 type
