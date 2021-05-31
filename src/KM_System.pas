@@ -169,6 +169,7 @@ begin
   bm.Free;
   bm2.Free;
 
+  {$IFDEF WDC}
   for I := Low(CUSTOM_CURSORS) to High(CUSTOM_CURSORS) do
   begin
     path := PChar(ExeDir + 'data' + PathDelim + 'cursors' + PathDelim + CUSTOM_CUR_FILENAME[I]);
@@ -186,6 +187,7 @@ begin
       // Use default cursor, in case of missing cursor file
       Screen.Cursors[Byte(CUSTOM_CURSORS[I]) + CURSOR_CNT_OFFSET] := Screen.Cursors[Byte(kmcDefault) + CURSOR_CNT_OFFSET];
   end;
+  {$ENDIF}
 end;
 
 
