@@ -2705,8 +2705,8 @@ begin
     // Penalization of change in direction in general case
     Node := GetNodeAt(aFromX, aFromY);
     if (Node <> nil) AND (Node.Parent <> nil)
-      AND (PANodeRec(Node.Parent).X <> aToX)
-      AND (PANodeRec(Node.Parent).Y <> aToY)                then Inc(Result, Round(AI_Par[ROADS_TurnPenalization]));
+      AND (Node.Parent.X <> aToX)
+      AND (Node.Parent.Y <> aToY)                           then Inc(Result, Round(AI_Par[ROADS_TurnPenalization]));
     // Corn / wine field
     if (AvoidBuilding = AVOID_BUILDING_NODE_LOCK_FIELD)     then Inc(Result, Round(AI_Par[ROADS_Field]))
     // Coal field
@@ -2754,8 +2754,8 @@ begin
     // Penalization of change in direction in general case
     Node := GetNodeAt(aFromX, aFromY);
     if (Node <> nil) AND (Node.Parent <> nil)
-      AND (PANodeRec(Node.Parent).X <> aToX)
-      AND (PANodeRec(Node.Parent).Y <> aToY)                then Inc(Result, Round(AI_Par[SHORTCUTS_TurnPenalization]));
+      AND (Node.Parent.X <> aToX)
+      AND (Node.Parent.Y <> aToY)                           then Inc(Result, Round(AI_Par[SHORTCUTS_TurnPenalization]));
     // Corn / wine field
     if (AvoidBuilding = AVOID_BUILDING_NODE_LOCK_FIELD)     then Inc(Result, Round(AI_Par[SHORTCUTS_Field]))
     // Coal field
