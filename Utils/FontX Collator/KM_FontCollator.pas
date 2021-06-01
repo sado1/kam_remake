@@ -36,7 +36,7 @@ begin
 
   fFonts := TStringList.Create;
 
-  gResLocales := TKMLocales.Create(ExeDir + '..\..\data\locales.txt', DEFAULT_LOCALE);
+  gResLocales := TKMResLocales.Create(ExeDir + '..\..\data\locales.txt', DEFAULT_LOCALE);
 end;
 
 
