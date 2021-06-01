@@ -150,6 +150,8 @@ begin
           begin
             N.Parent := fMinN;
             N.CostTo := fMinN.CostTo + newCost;
+            //todo: Cost has changed and the location in the queue needs to change too
+            //fHeap.UpdateItem(N);
           end;
         end;
       end;
