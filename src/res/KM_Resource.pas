@@ -207,7 +207,7 @@ begin
   FreeAndNil(gResTexts);
   FreeAndNil(fSounds);
 
-  gResLocales := TKMLocales.Create(ExeDir + 'data' + PathDelim + 'locales.txt', aLocale);
+  gResLocales := TKMResLocales.Create(ExeDir + 'data' + PathDelim + 'locales.txt', aLocale);
 
   gResTexts := TKMTextLibraryMulti.Create;
   gResTexts.LoadLocale(ExeDir + 'data' + PathDelim + 'text' + PathDelim + 'text.%s.libx');

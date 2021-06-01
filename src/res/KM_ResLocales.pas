@@ -7,8 +7,8 @@ uses
 
 
 type
-  //todo: Rename to TKMLocaleSpec
-  TKMLocaleInfo = record
+  TKMLocaleSpec = record
+  public
     Code: AnsiString;                // 3-letter code: 'eng', 'rus'
     Title: string;                   // Full name: 'English', 'Russian'
     FontCodepage: Word;
@@ -18,32 +18,31 @@ type
     TranslatorCredit: UnicodeString; // Who did the translation
   end;
 
-  //todo: Rename to TKMResLocales
-  TKMLocales = class
+  TKMResLocales = class
   private
     fCount: Integer;
-    fLocaleList: array of TKMLocaleInfo;
+    fLocaleList: array of TKMLocaleSpec;
     fUserLocale: AnsiString;
     procedure LoadLocales(const aFile: string);
     procedure SetUserLocale(const aLocale: AnsiString);
-    function ParseLine(const aLine: UnicodeString; out aLocale: TKMLocaleInfo): Boolean;
-    function GetLocaleByIndex(aIndex: Integer): TKMLocaleInfo;
+    function ParseLine(const aLine: UnicodeString; out aLocale: TKMLocaleSpec): Boolean;
+    function GetLocaleByIndex(aIndex: Integer): TKMLocaleSpec;
   public
     FallbackLocale: AnsiString;
     DefaultLocale: AnsiString;
     constructor Create(const aPath: string; const aUserLocale: AnsiString);
     property Count: Integer read fCount;
     property UserLocale: AnsiString read fUserLocale write SetUserLocale;
-    property Locales[aIndex: Integer]: TKMLocaleInfo read GetLocaleByIndex; default;
+    property Locales[aIndex: Integer]: TKMLocaleSpec read GetLocaleByIndex; default;
     function IndexByCode(const aLocaleCode: AnsiString): Integer;
-    function LocaleByCode(const aCode: AnsiString): TKMLocaleInfo;
+    function LocaleByCode(const aCode: AnsiString): TKMLocaleSpec;
     function TranslatorCredits: string;
     function CodePagesList: TKMWordArray;
   end;
 
 
 var
-  gResLocales: TKMLocales;
+  gResLocales: TKMResLocales;
 
 
 implementation
@@ -52,10 +51,10 @@ uses
   {$IFDEF FPC}, KM_FileIO{$ENDIF};
 
 
-{ TKMLocales }
+{ TKMResLocales }
 // aPath - Path to locales info file, usually \data\text\locales.txt
 // aUserLocale - Locale that the user wants to see
-constructor TKMLocales.Create(const aPath: string; const aUserLocale: AnsiString);
+constructor TKMResLocales.Create(const aPath: string; const aUserLocale: AnsiString);
 begin
   inherited Create;
 
@@ -66,7 +65,7 @@ begin
 end;
 
 
-procedure TKMLocales.SetUserLocale(const aLocale: AnsiString);
+procedure TKMResLocales.SetUserLocale(const aLocale: AnsiString);
 begin
   //Make sure user locale is valid
   if IndexByCode(aLocale) <> -1 then
@@ -78,7 +77,7 @@ begin
 end;
 
 
-function TKMLocales.ParseLine(const aLine: UnicodeString; out aLocale: TKMLocaleInfo): Boolean;
+function TKMResLocales.ParseLine(const aLine: UnicodeString; out aLocale: TKMLocaleSpec): Boolean;
 const
   PARAM_COUNT = 7;
 var
@@ -117,11 +116,11 @@ begin
 end;
 
 
-procedure TKMLocales.LoadLocales(const aFile: string);
+procedure TKMResLocales.LoadLocales(const aFile: string);
 var
   SL: TStringList;
   I: Integer;
-  newLocale: TKMLocaleInfo;
+  newLocale: TKMLocaleSpec;
 begin
   Assert(FileExists(aFile), 'Locales file could not be found: ' + aFile);
 
@@ -143,14 +142,14 @@ begin
 end;
 
 
-function TKMLocales.GetLocaleByIndex(aIndex: Integer): TKMLocaleInfo;
+function TKMResLocales.GetLocaleByIndex(aIndex: Integer): TKMLocaleSpec;
 begin
   Assert(InRange(aIndex, 0, fCount - 1));
   Result := fLocaleList[aIndex];
 end;
 
 
-function TKMLocales.LocaleByCode(const aCode: AnsiString): TKMLocaleInfo;
+function TKMResLocales.LocaleByCode(const aCode: AnsiString): TKMLocaleSpec;
 var
   I: Integer;
 begin
@@ -162,7 +161,7 @@ begin
 end;
 
 
-function TKMLocales.IndexByCode(const aLocaleCode: AnsiString): Integer;
+function TKMResLocales.IndexByCode(const aLocaleCode: AnsiString): Integer;
 var
   I: Integer;
 begin
@@ -173,7 +172,7 @@ begin
 end;
 
 
-function TKMLocales.TranslatorCredits: string;
+function TKMResLocales.TranslatorCredits: string;
 var
   I: Integer;
 begin
@@ -184,7 +183,7 @@ begin
 end;
 
 
-function TKMLocales.CodePagesList: TKMWordArray;
+function TKMResLocales.CodePagesList: TKMWordArray;
 var
   I, K: Integer;
   added: Boolean;

@@ -101,7 +101,7 @@ begin
 
   // Collect list of library files
   libxList := TStringList.Create;
-  gResLocales := TKMLocales.Create(BaseDir + 'data\locales.txt', DEFAULT_LOCALE);
+  gResLocales := TKMResLocales.Create(BaseDir + 'data\locales.txt', DEFAULT_LOCALE);
   try
     AppendLibxPaths(BaseDir, libxList);
 
