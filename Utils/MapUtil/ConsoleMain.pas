@@ -65,8 +65,14 @@ const
 
 implementation
 uses
-  {$IFDEF MSWindows} Windows, Vcl.Graphics, Vcl.Imaging.JPEG, {$ENDIF}
-  SysUtils, Classes, IOUtils,
+  {$IFDEF MSWindows} Windows, {$ENDIF}
+  SysUtils, Classes,
+  {$IFDEF WDC}
+  IOUtils,
+  {$ENDIF}
+  {$IFDEF FPC}
+  LazFileUtils,
+  {$ENDIF}
   KM_Maps, KM_Resource, KM_IoPNG,
   KM_CommonUtils, KM_Log;
 
@@ -93,20 +99,31 @@ end;
 
 procedure TConsoleMain.GenerateAndSaveMapMinimapImage(const aMapDatPath: string);
 var
-  mapName, dir: string;
+  mapName, dir, pngName: string;
   map: TKMMapInfo;
 begin
+  {$IFDEF WDC}
   mapName := TPath.GetFileNameWithoutExtension(aMapDatPath);
+  {$ENDIF}
+  {$IFDEF FPC}
+  mapName := ExtractFileNameWithoutExt(aMapDatPath);
+  {$ENDIF}
+
+  gLog.AddTime('generating png for map ' + mapName);
+
   dir := ExtractFileDir(aMapDatPath) + PathDelim;
 
   map := TKMMapInfo.Create(dir, mapName, False);
-  map.TxtInfo.LoadTXTInfo(ChangeFileExt(aMapDatPath, '.txt'));
+//  map.TxtInfo.LoadTXTInfo(ChangeFileExt(aMapDatPath, '.txt'));
+
 
   fMinimap.LoadFromMission(aMapDatPath, map.HumanUsableLocs);
   fMinimap.Update(not map.TxtInfo.BlockFullMapPreview);
 
 //  fMinimap.ConvertToBGR;
-  SaveToFile(ChangeFileExt(aMapDatPath, '.png'));
+  pngName := ChangeFileExt(aMapDatPath, '.png');
+  SaveToFile(pngName);
+  gLog.AddTime('generated file: ' + pngName);
 
   map.Free;
 end;
