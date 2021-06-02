@@ -17,7 +17,9 @@ uses
   KM_FormMain in 'src\forms\KM_FormMain.pas' {FormMain},
   KM_FormLogistics in 'src\forms\KM_FormLogistics.pas' {FormLogistics},
   KM_FormLoading in 'src\forms\KM_FormLoading.pas' {FormLoading},
-  KM_VclMenuHint in 'src\forms\KM_VCLMenuHint.pas',
+  
+  KM_VclMenuHint in 'src\forms\KM_VclMenuHint.pas',
+  KM_VclHelpers in 'src\forms\KM_VclHelpers.pas',
 
   iaWin.NameDelphiThreads in 'src\ext\iaWin.NameDelphiThreads.pas',
 
@@ -395,9 +397,7 @@ uses
   KM_FileIO in 'src\utils\io\KM_FileIO.pas',
   
   KM_MethodParser in 'src\utils\method_parser\KM_MethodParser.pas',
-  KM_MethodParserParams in 'src\utils\method_parser\KM_MethodParserParams.pas',
-  
-  KM_VclHelpers in 'src\utils\helpers\KM_VclHelpers.pas';
+  KM_MethodParserParams in 'src\utils\method_parser\KM_MethodParserParams.pas';
 
   //KM_PerfLog in 'src\unused\KM_PerfLog.pas', //unused
 
