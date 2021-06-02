@@ -156,6 +156,8 @@ type
     function DetermineReadmeFilePath: String;
     function GetLobbyColor: Cardinal;
     function IsFilenameEndMatchHash: Boolean;
+    function IsSinglePlayer: Boolean;
+    function IsMultiPlayer: Boolean;
     function IsPlayableForSP: Boolean;
     function IsSinglePlayerKind: Boolean;
     function IsMultiPlayerKind: Boolean;
@@ -777,6 +779,18 @@ begin
   Result := (Length(fName) > 9)
     and (fName[Length(Name)-8] = '_')
     and (IntToHex(fCRC, 8) = RightStr(fName, 8));
+end;
+
+
+function TKMMapInfo.IsSinglePlayer: Boolean;
+begin
+  Result := HumanPlayerCount = 1;
+end;
+
+
+function TKMMapInfo.IsMultiPlayer: Boolean;
+begin
+  Result := HumanPlayerCount > 1;
 end;
 
 
