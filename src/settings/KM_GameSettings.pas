@@ -323,9 +323,7 @@ var
 
 implementation
 uses
-  SysUtils, INIfiles, Math,
-
-  KM_XmlHelper;
+  SysUtils, INIfiles, Math;
 
 
 { TGameSettings }

@@ -73,8 +73,6 @@ var
 implementation
 uses
   SysUtils, INIfiles, Math,
-
-  KM_XmlHelper,
   KM_Defaults;
 
 

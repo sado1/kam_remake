@@ -397,8 +397,7 @@ uses
   KM_MethodParser in 'src\utils\method_parser\KM_MethodParser.pas',
   KM_MethodParserParams in 'src\utils\method_parser\KM_MethodParserParams.pas',
   
-  KM_VclHelpers in 'src\utils\helpers\KM_VclHelpers.pas',
-  KM_XmlHelper in 'src\utils\helpers\KM_XmlHelper.pas';
+  KM_VclHelpers in 'src\utils\helpers\KM_VclHelpers.pas';
 
   //KM_PerfLog in 'src\unused\KM_PerfLog.pas', //unused
 

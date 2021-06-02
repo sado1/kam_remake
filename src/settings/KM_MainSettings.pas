@@ -50,9 +50,7 @@ type
 
 implementation
 uses
-  SysUtils, INIfiles, Math,
-
-  KM_XmlHelper;
+  SysUtils, INIfiles, Math;
 
 const
   NO_RENDER_MAX_TIME_MIN = 10; //in ms

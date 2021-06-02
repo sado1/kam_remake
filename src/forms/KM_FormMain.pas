@@ -7,7 +7,7 @@ uses
   KM_RenderControl, KM_CommonTypes,
   KM_WindowParams,
   {$IFDEF FPC} LResources, {$ENDIF}
-  {$IFDEF MSWindows} KM_VclMenuHint, ShellAPI, Windows, Messages, Samples.Spin; {$ENDIF}
+  {$IFDEF MSWindows} KM_VclMenuHint, ShellAPI, Windows, Messages, Vcl.Samples.Spin; {$ENDIF}
   {$IFDEF Unix} LCLIntf, LCLType; {$ENDIF}
 
 
@@ -390,7 +390,6 @@ uses
   KM_IoXML,
   KM_GameInputProcess,
   KM_ResTypes,
-  KM_XmlHelper,
   KM_GameAppSettings;
 
 
@@ -409,11 +408,11 @@ end;
 // Load dev settings from kmr_dev.xml
 procedure TFormMain.DoLoadDevSettings;
 
-  procedure ManageSubPanel(aPanel: TWinControl; anParent: TXMLNode);
+  procedure ManageSubPanel(aPanel: TWinControl; anParent: TKMXmlNode);
   var
     I: Integer;
     actrl: TControl;
-    nSection: TXMLNode;
+    nSection: TKMXmlNode;
   begin
     for I := 0 to aPanel.ControlCount - 1 do
     begin
@@ -429,7 +428,7 @@ procedure TFormMain.DoLoadDevSettings;
         or (aCtrl is TEdit) then
         if anParent.HasChild(actrl.Name) then
         begin
-          nSection := anParent.ChildNodes.FindNode(actrl.Name); // Add section only if its needed
+          nSection := anParent.FindNode(actrl.Name); // Add section only if its needed
 
           if (aCtrl is TCheckBox) and nSection.HasAttribute('Checked') then
             TCheckBox(aCtrl).Checked := nSection.Attributes['Checked'].AsBoolean
@@ -456,7 +455,7 @@ var
   cp: TCategoryPanel;
   cpSurface: TCategoryPanelSurface;
   cpName: string;
-  nRoot, nSection: TXMLNode;
+  nRoot, nSection: TKMXmlNode;
 begin
   fUpdating := True;
   devSettingsPath := GetDevSettingsPath;
@@ -485,7 +484,7 @@ begin
 
       if nRoot.HasChild(cpName) then
       begin
-        nSection := nRoot.ChildNodes.FindNode(cpName);
+        nSection := nRoot.FindNode(cpName);
         cp.Collapsed := nSection.Attributes['Collapsed'].AsBoolean(True);
 
         if (cp.ControlCount > 0) and (cp.Controls[0] is TCategoryPanelSurface) then
@@ -507,11 +506,11 @@ end;
 // Save dev settings to kmr_dev.xml
 procedure TFormMain.DoSaveDevSettings;
 
-  procedure ManageSubPanel(aPanel: TWinControl; anParent: TXMLNode);
+  procedure ManageSubPanel(aPanel: TWinControl; anParent: TKMXmlNode);
   var
     I: Integer;
     actrl: TControl;
-    nSection: TXMLNode;
+    nSection: TKMXmlNode;
   begin
     for I := 0 to aPanel.ControlCount - 1 do
     begin
@@ -551,7 +550,7 @@ var
   newXML: TKMXMLDocument;
   cp: TCategoryPanel;
   cpSurface: TCategoryPanelSurface;
-  nRoot, nSection: TXMLNode;
+  nRoot, nSection: TKMXmlNode;
 begin
   devSettingsPath := GetDevSettingsPath;
 

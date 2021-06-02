@@ -24,8 +24,6 @@ uses
   KM_ResTexts,
   KM_ResKeys,
   KM_ResTypes,
-
-  KM_XmlHelper,
   KM_IoXML;
 
 
