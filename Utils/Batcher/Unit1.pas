@@ -843,12 +843,13 @@ var
   str, filePath: string;
 begin
   SetUp(False);
-  str := '';
+  str := '..\..;..\..\src;';
   for filePath in TDirectory.GetDirectories(ExeDir + PathDelim + 'src', '*', TSearchOption.soAllDirectories) do
   begin
     if filePath.EndsWith('__history') then Continue;
     if filePath.EndsWith('__recovery') then Continue;
     if filePath.Contains('LNet') then Continue;
+    if filePath.Contains('backup') then Continue;
 
     str :=  str + '..\..\' + ExtractRelativePath(ExeDir, filePath) + ';';
   end;
