@@ -9,7 +9,7 @@ type
   TConsoleMain = class(TObject)
   private
     fMinimap: TKMMinimapMission;
-    procedure GenerateAndSaveMapMinimapImage(const aMapDatPath: string; aFowType: TFOWType);
+    procedure GenerateAndSaveMapMinimapImage(const aMapDatPath: string; aFowType: TFOWType; const aOutputFile: string);
     procedure SaveToFile(const aFileName: string);
   public
     constructor Create;
@@ -47,6 +47,7 @@ const
     '||    -a / -revealAll          - Reveal all map on the generated png (default option)  ||' + sLineBreak +
     '||    -p / -revealPlayers      - Reveal what will players view on the generated png    ||' + sLineBreak +
     '||    -m / -revealByMapSetting - Reveal according to the map setting `BlockMapPreview` ||' + sLineBreak +
+    '||    -o / -outputFile         - Sets path to the output file                          ||' + sLineBreak +
     '||                                                                                     ||' + sLineBreak +
     '||=====================================================================================||' + sLineBreak;
 
@@ -85,12 +86,14 @@ begin
 end;
 
 
-procedure TConsoleMain.GenerateAndSaveMapMinimapImage(const aMapDatPath: string; aFowType: TFOWType);
+procedure TConsoleMain.GenerateAndSaveMapMinimapImage(const aMapDatPath: string; aFowType: TFOWType; const aOutputFile: string);
 var
-  mapName, dir, pngName: string;
+  mapName, dir, pngFile: string;
   map: TKMMapInfo;
   doRevealAll: Boolean;
 begin
+  gLog.AddTime('generating png for a map ' + aMapDatPath);
+
   {$IFDEF WDC}
   mapName := TPath.GetFileNameWithoutExtension(aMapDatPath);
   {$ENDIF}
@@ -100,9 +103,10 @@ begin
 
   dir := ExtractFileDir(aMapDatPath) + PathDelim;
 
-  gLog.AddTime('generating png for a map ' + aMapDatPath);
-
   map := TKMMapInfo.Create(dir, mapName, False);
+  if not map.IsValid then
+    raise Exception.Create('Map is not valid!');
+
   map.TxtInfo.LoadTXTInfo(ChangeFileExt(aMapDatPath, '.txt'));
 
 
@@ -112,15 +116,20 @@ begin
   case aFowType of
     ftRevealAll:      doRevealAll := True;
     ftRevealPlayers:  doRevealAll := False;
-    ftMapSetting:     doRevealAll := not map.TxtInfo.BlockFullMapPreview;
+    ftMapSetting:     doRevealAll := not (map.IsSinglePlayer or map.TxtInfo.BlockFullMapPreview);
   end;
 
   fMinimap.Update(doRevealAll);
 
 //  fMinimap.ConvertToBGR;
-  pngName := ChangeFileExt(aMapDatPath, '.png');
-  SaveToFile(pngName);
-  gLog.AddTime('generated file: ' + pngName);
+
+  if aOutputFile = '' then
+    pngFile := ChangeFileExt(aMapDatPath, '.png')
+  else
+    pngFile := aOutputFile;
+
+  SaveToFile(pngFile);
+  gLog.AddTime('generated file: ' + pngFile);
 
   map.Free;
 end;
@@ -134,7 +143,7 @@ end;
 
 procedure TConsoleMain.Start(const aParameterRecord: TCLIParamRecord);
 begin
-  GenerateAndSaveMapMinimapImage(aParameterRecord.MapDatPath, aParameterRecord.FOWType);
+  GenerateAndSaveMapMinimapImage(aParameterRecord.MapDatPath, aParameterRecord.FOWType, aParameterRecord.OutputFile);
 end;
 
 

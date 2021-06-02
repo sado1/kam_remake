@@ -10,7 +10,8 @@ uses
   SysUtils,
   KM_Defaults,
   MapUtilTypes in 'MapUtilTypes.pas',
-  ConsoleMain in 'ConsoleMain.pas';
+  ConsoleMain in 'ConsoleMain.pas',
+  KM_Log in '..\..\KM_Log.pas';
 
 {$R *.res}
 
@@ -31,9 +32,12 @@ begin
 
   // Default value is RevealAll
   fParamRecord.FOWType := ftRevealAll;
+  fParamRecord.OutputFile := '';
 
-  for I := 1 to ParamCount do // Skip 0, as this is the EXE-path
+  I := 0; // Skip 0, as this is the EXE-path
+  while I < ParamCount do
   begin
+    Inc(I);
     fArgs := fArgs + ' ' + ParamStr(I) + sLineBreak;
 
     if (ParamStr(I) = '-h') or (ParamStr(I) = '-help') then
@@ -60,12 +64,26 @@ begin
       Continue;
     end;
 
+    if (ParamStr(I) = '-o') or (ParamStr(I) = '-outputFile') then
+    begin
+      if I < ParamCount then
+      begin
+        Inc(I);
+        fParamRecord.OutputFile := ParamStr(I);
+      end;
+
+      Continue;
+    end;
+
     // Only allow one script file
     if fParamRecord.MapDatPath = '' then
       fParamRecord.MapDatPath := ParamStr(I);
   end;
 end;
 
+
+// This utility console tool generates minimap png file for a certain map.
+// Could be compiled under windows or Linux (added x64 config for Lazarus (tested on fpcdeluxe FPC 3.2.2 Lazarus 2.0.12))
 begin
   try
     ProcessParams;
@@ -82,7 +100,11 @@ begin
     fConsoleMain.Start(fParamRecord);
   except
     on E: Exception do
-      Writeln(E.ClassName, ': ', E.Message);
+    begin
+      Writeln(ErrOutput, E.ClassName, ': ', E.Message); // output error to stderr
+      if gLog <> nil then
+        gLog.AddTime('Exception while generating minimap: ' + E.Message);
+    end;
   end;
 
   FreeAndNil(fConsoleMain);

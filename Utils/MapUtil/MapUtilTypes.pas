@@ -7,6 +7,7 @@ type
     MapDatPath: string;
     Help: Boolean;
     FOWType: TFOWType;
+    OutputFile: string;
   end;
 
 implementation
