@@ -152,7 +152,7 @@ var P:Pointer;
 begin
   GetMem(P, aLength+4);
   PInteger(P)^ := aLength;
-  Move(aData^, Pointer(cardinal(P)+4)^, aLength);
+  Move(aData^, Pointer(NativeUInt(P)+4)^, aLength);
   fClient.SendData(P, aLength+4);
   FreeMem(P);
 end;

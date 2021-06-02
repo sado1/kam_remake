@@ -115,7 +115,7 @@ begin
     DC_Handle := CreateDC('Display', nil, nil, nil);
     try
       DIB_Handle := CreateDIBitmap(DC_Handle, aBitmapInfo^, CBM_INIT,
-        Pointer(Cardinal(aBitmapInfo) + aBitmapInfo.biSize + aBitmapInfo.biClrUsed * 4), PBITMAPINFO(aBitmapInfo)^,
+        Pointer(NativeUInt(aBitmapInfo) + aBitmapInfo.biSize + aBitmapInfo.biClrUsed * 4), PBITMAPINFO(aBitmapInfo)^,
         DIB_RGB_COLORS);
     finally
       DeleteDC(DC_Handle);
@@ -144,7 +144,7 @@ begin
   for Y := aBMP.Height - 1 downto 0 do
   begin
     CopyMemory(P, aBMP.ScanLine[Y], aBMP.Width * 3);
-    Inc(Cardinal(P), aBMP.Width * 3);
+    Inc(NativeUInt(P), aBMP.Width * 3);
   end;
 end;
 
@@ -162,12 +162,12 @@ var
   A, B: TRGBTriple;
 begin
   if Assigned(aSL1) then
-    A := PRGBTriple(Cardinal(aSL1) + 3 * aX)^
+    A := PRGBTriple(NativeUInt(aSL1) + 3 * aX)^
   else
     A := SetRGBTriple(0, 0, 0);
 
   if Assigned(aSL2) then
-    B := PRGBTriple(Cardinal(aSL2) + 3 * aX)^
+    B := PRGBTriple(NativeUInt(aSL2) + 3 * aX)^
   else
     B := SetRGBTriple(0, 0, 0);
 
@@ -212,7 +212,7 @@ begin
     for K := 0 to aBMP.Width - 1 do
     begin
       P^ := GetVideoAverage(aBMP, K, scanline1, scanline2);
-      Inc(Cardinal(P), 3);
+      Inc(NativeUInt(P), 3);
     end;
   end;
 end;
@@ -232,7 +232,7 @@ begin
         EnsureRange(P^.rgbtRed + aBrightness, 0, 255),
         EnsureRange(P^.rgbtGreen + aBrightness, 0, 255),
         EnsureRange(P^.rgbtBlue + aBrightness, 0, 255));
-      Inc(Cardinal(P), 3);
+      Inc(NativeUInt(P), 3);
     end;
   end;
 end;

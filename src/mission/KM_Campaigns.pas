@@ -279,7 +279,7 @@ begin
         if hasScriptData then
         begin
           M.Read(scriptDataSize);
-          C.ScriptData.Write(Pointer(Cardinal(M.Memory) + M.Position)^, scriptDataSize);
+          C.ScriptData.Write(Pointer(NativeUInt(M.Memory) + M.Position)^, scriptDataSize);
           M.Seek(scriptDataSize, soCurrent); //Seek past script data
         end;
       end;

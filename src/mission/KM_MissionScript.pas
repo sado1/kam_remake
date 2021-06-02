@@ -216,30 +216,30 @@ begin
     //We can't test 1st char, it can be any. Instead see how often common chracters meet
     num := 0;
     for I := 0 to F.Size - 1 do           //tab, eol, 0..9, space, !
-      if PByte(Cardinal(F.Memory)+I)^ in [9,10,13,ord('0')..ord('9'),$20,$21] then
+      if PByte(NativeUInt(F.Memory)+I)^ in [9,10,13,ord('0')..ord('9'),$20,$21] then
         inc(num);
 
     //Usually 30-50% is numerals/spaces, tested on typical KaM maps, take half of that as margin
     if (num/F.Size < 0.20) then
     for I := 0 to F.Size - 1 do
-      PByte(Cardinal(F.Memory)+I)^ := PByte(Cardinal(F.Memory)+I)^ xor 239;
+      PByte(NativeUInt(F.Memory)+I)^ := PByte(NativeUInt(F.Memory)+I)^ xor 239;
 
     //Save text after decoding but before cleaning
     if WRITE_DECODED_MISSION then
       F.SaveToFile(aFileName + '.txt');
 
     for I := 0 to F.Size - 1 do
-      if PByte(Cardinal(F.Memory)+I)^ in [9, 10, 13] then //tab, eol
-        PByte(Cardinal(F.Memory)+I)^ := $20; //Space
+      if PByte(NativeUInt(F.Memory)+I)^ in [9, 10, 13] then //tab, eol
+        PByte(NativeUInt(F.Memory)+I)^ := $20; //Space
 
     num := 0;
     for I := 0 to F.Size - 1 do
     begin
-      PByte(Cardinal(F.Memory)+num)^ := PByte(Cardinal(F.Memory)+I)^;
+      PByte(NativeUInt(F.Memory)+num)^ := PByte(NativeUInt(F.Memory)+I)^;
       if (num <= 0)
       or (
-          (PWord(Cardinal(F.Memory) + num-1)^ <> $2020) //Skip double spaces and !!
-      and (PWord(Cardinal(F.Memory) + num-1)^ <> $2121)) then
+          (PWord(NativeUInt(F.Memory) + num-1)^ <> $2020) //Skip double spaces and !!
+      and (PWord(NativeUInt(F.Memory) + num-1)^ <> $2121)) then
         Inc(num);
     end;
 

@@ -155,13 +155,13 @@ begin
     // We can't test 1st char, it can be any. Instead see how often common chracters meet
     Num := 0;
     for I := 0 to F.Size - 1 do               //tab, eol, 0..9, space, !
-      if PByte(Cardinal(F.Memory)+I)^ in [9,10,13,ord('0')..ord('9'),$20,$21] then
+      if PByte(NativeUInt(F.Memory)+I)^ in [9,10,13,ord('0')..ord('9'),$20,$21] then
         Inc(Num);
 
     // Usually 30-50% is numerals/spaces, tested on typical KaM maps, take half of that as margin
     if (Num / F.Size < 0.20) then
     for I := 0 to F.Size - 1 do
-      PByte(Cardinal(F.Memory)+I)^ := PByte(Cardinal(F.Memory)+I)^ xor 239;
+      PByte(NativeUInt(F.Memory)+I)^ := PByte(NativeUInt(F.Memory)+I)^ xor 239;
 
     SetString(Result, PAnsiChar(F.Memory), F.Size div SizeOf(AnsiChar));
   finally
@@ -181,7 +181,7 @@ begin
 
     if aDoXor then
       for I := 0 to F.Size - 1 do
-        PByte(Cardinal(F.Memory)+I)^ := PByte(Cardinal(F.Memory)+I)^ xor 239;
+        PByte(NativeUInt(F.Memory)+I)^ := PByte(NativeUInt(F.Memory)+I)^ xor 239;
 
     F.SaveToFile(aFileName);
   finally
@@ -1398,7 +1398,7 @@ begin
     //We can't test 1st char, it can be any. Instead see how often common chracters meet
     Num := 0;
     for K := 0 to F.Size - 1 do               //tab, eol, 0..9, space, !
-    if PByte(Cardinal(F.Memory)+K)^ in [9,10,13,ord('0')..ord('9'),$20,$21] then
+    if PByte(NativeUInt(F.Memory)+K)^ in [9,10,13,ord('0')..ord('9'),$20,$21] then
       Inc(Num);
 
     //Usually 30-50% is numerals/spaces, tested on typical KaM maps, take half of that as margin
@@ -1406,7 +1406,7 @@ begin
     or (not UnXOR and (Num/F.Size > 0.20)) then
     begin
       for K := 0 to F.Size - 1 do
-        PByte(Cardinal(F.Memory)+K)^ := PByte(Cardinal(F.Memory)+K)^ xor 239;
+        PByte(NativeUInt(F.Memory)+K)^ := PByte(NativeUInt(F.Memory)+K)^ xor 239;
       Result := True;
     end;
   end
