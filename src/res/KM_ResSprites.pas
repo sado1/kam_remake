@@ -34,8 +34,10 @@ type
                         Data: TKMCardinalArray;
                       end;
     procedure Allocate(aCount: Integer); virtual; //Allocate space for data that is being loaded
+    {$IFNDEF NO_OGL}
     procedure MakeGFX_BinPacking(aTexType: TTexFormat; aStartingIndex: Integer; var BaseRAM, ColorRAM, TexCount: Cardinal;
                                  aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil);
+    {$ENDIF}
   public
     constructor Create(aRT: TRXType);
 
@@ -45,7 +47,9 @@ type
 
     procedure LoadFromRXXFile(const aFileName: string; aStartingIndex: Integer = 1);
     procedure OverloadFromFolder(const aFolder: string; aSoftenShadows: Boolean = True);
+    {$IFNDEF NO_OGL}
     procedure MakeGFX(aAlphaShadows: Boolean; aStartingIndex: Integer = 1; aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil);
+    {$ENDIF}
     procedure DeleteSpriteTexture(aIndex: Integer);
 
     //Load from atlas format, no MakeGFX bin packing needed
@@ -183,7 +187,10 @@ uses
   {$IFDEF LOAD_GAME_RES_ASYNC}
 
   {$ENDIF}
-  KM_SoftShadows, KM_Resource, KM_ResUnits, KM_Render,
+  KM_SoftShadows, KM_Resource, KM_ResUnits,
+  {$IFNDEF NO_OGL}
+  KM_Render,
+  {$ENDIF}
   KM_Log, KM_CommonUtils, KM_Points, KM_GameSettings;
 
 const
@@ -198,8 +205,10 @@ var
 function GetMaxAtlasSize: Integer;
 begin
   Result := MAX_GAME_ATLAS_SIZE;
+  {$IFNDEF NO_OGL}
   if gRender <> nil then
     Result := Min(Result, TRender.MaxTextureSize);
+  {$ENDIF}
 end;
 
 
@@ -219,6 +228,7 @@ end;
 //This is a crude solution to allow Campaigns to delete sprites they add
 procedure TKMSpritePack.DeleteSpriteTexture(aIndex: Integer);
 begin
+  {$IFNDEF NO_OGL}
   if gGFXData[fRT, aIndex].Tex.ID <> 0 then
     TRender.DeleteTexture(gGFXData[fRT, aIndex].Tex.ID);
   if gGFXData[fRT, aIndex].Alt.ID <> 0 then
@@ -226,6 +236,7 @@ begin
 
   gGFXData[fRT, aIndex].Tex.ID := 0;
   gGFXData[fRT, aIndex].Alt.ID := 0;
+  {$ENDIF}
 end;
 
 
@@ -623,6 +634,7 @@ var
   texFilter: TFilterType;
   Tx: Cardinal;
 begin
+  {$IFNDEF NO_OGL}
   case fRT of
     rxTiles: if SKIP_RENDER and not DO_NOT_SKIP_LOAD_TILESET then Exit;
     else     if SKIP_RENDER then Exit;
@@ -690,6 +702,7 @@ begin
     decompressionStream.Free;
     inputStream.Free;
   end;
+  {$ENDIF}
 end;
 
 
@@ -979,6 +992,7 @@ end;
 //Take RX data and make nice atlas texture out of it
 //Atlases should be POT to improve performance and avoid driver bugs
 //In result we have GFXData structure filled
+{$IFNDEF NO_OGL}
 procedure TKMSpritePack.MakeGFX(aAlphaShadows: Boolean; aStartingIndex: Integer = 1; aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil);
 var
   I: Integer;
@@ -1008,6 +1022,7 @@ begin
     gLog.AddNoTime(IntToStr(colorRAM div 1024) + ' KBytes for team colors');
   end;
 end;
+{$ENDIF}
 
 
 //Set GFXData from SpriteInfo
@@ -1039,6 +1054,7 @@ begin
 end;
 
 
+{$IFNDEF NO_OGL}
 //This algorithm is planned to take advantage of more efficient 2D bin packing
 procedure TKMSpritePack.MakeGFX_BinPacking(aTexType: TTexFormat; aStartingIndex: Integer; var BaseRAM, ColorRAM, TexCount: Cardinal;
                                            aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil);
@@ -1210,6 +1226,7 @@ begin
   SetLength(fGFXPrepData[saMask], Length(spriteInfo));
   PrepareAtlases(spriteInfo, saMask, tfAlpha8);
 end;
+{$ENDIF}
 
 
 procedure TKMSpritePack.SaveTextureToPNG(aWidth, aHeight: Word; const aFilename: string; const Data: TKMCardinalArray);
@@ -1255,6 +1272,7 @@ var
   Tx: Cardinal;
   texFilter: TFilterType;
 begin
+  {$IFNDEF NO_OGL}
   for SAT := Low(TSpriteAtlasType) to High(TSpriteAtlasType) do
     for I := Low(fGFXPrepData[SAT]) to High(fGFXPrepData[SAT]) do
     begin
@@ -1272,6 +1290,7 @@ begin
                          SPRITE_TYPE_EXPORT_NAME[SAT] + IntToStr(I+1), Data);
       end;
     end;
+  {$ENDIF}
 end;
 {$ENDIF}
 
@@ -1588,7 +1607,7 @@ begin
       // Only GUI needs alpha channel for shadows
       LoadSprites(RT, RT = rxGUI);
       // We also use alpha channel in the generated tiles
-      {$IFNDEF CONSOLE}
+      {$IFNDEF NO_OGL}
       fSprites[RT].MakeGFX(RT in [rxGUI, rxTiles]);
       {$ENDIF}
 
@@ -1634,7 +1653,9 @@ procedure TKMResSprites.LoadGameResources(aAlphaShadows: Boolean; aForceReload: 
         begin
           gLog.AddTime('Reading ' + RXInfo[RT].FileName + '.rx');
           LoadSprites(RT, fAlphaShadows);
+          {$IFNDEF NO_OGL}
           fSprites[RT].MakeGFX(fAlphaShadows);
+          {$ENDIF}
         end;
       end;
   end;
@@ -1790,7 +1811,9 @@ begin
     begin
       fResSprites.LoadSprites(RXType, fAlphaShadows);
       if Terminated then Exit;
+      {$IFNDEF NO_OGL}
       fResSprites.fSprites[RXType].MakeGFX(fAlphaShadows, 1, False, IsTerminated);
+      {$ENDIF}
       LoadStepDone := True;
     end;
     Sleep(1); // sleep a a bit

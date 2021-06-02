@@ -530,7 +530,9 @@ begin
     if firstSpriteIndex <= SP.RXData.Count then
     begin
       //Images were successfuly loaded
+      {$IFDEF NO_OGL}
       SP.MakeGFX(False, firstSpriteIndex);
+      {$ENDIF}
       SP.ClearTemp;
       fBackGroundPic.RX := rxCustom;
       fBackGroundPic.ID := firstSpriteIndex;

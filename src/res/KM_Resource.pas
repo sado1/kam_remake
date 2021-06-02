@@ -1,4 +1,4 @@
-﻿unit KM_Resource;
+unit KM_Resource;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -83,7 +83,9 @@ var
 implementation
 uses
   TypInfo,
+  {$IFNDEF NO_OGL}
   KM_System,
+  {$ENDIF}
   KromUtils, KM_Log, KM_Points,
   KM_ResTexts, KM_ResKeys, KM_ResTilesetTypes;
 
@@ -169,10 +171,11 @@ begin
 
   fUnits := TKMResUnits.Create; // Load units prior to Sprites, as we could use it on SoftenShadows override for png in Sprites folder
   fSprites.LoadMenuResources;
-  {$IFNDEF CONSOLE}
+
+  {$IFNDEF NO_OGL}
   gSystem.MakeCursors(fSprites[rxGui]);
-  {$ENDIF}
   gSystem.Cursor := kmcDefault;
+  {$ENDIF}
   fCursors.SetRXDataPointer(@fSprites[rxGui].RXData);
 
   gResKeys := TKMResKeys.Create;

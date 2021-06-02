@@ -174,7 +174,9 @@ function NameToFont(const aName: string): TKMFont;
 
 implementation
 uses
+  {$IFNDEF NO_OGL}
   KM_Render,
+  {$ENDIF}
   KM_CommonUtils, KM_Log;
 
 
@@ -364,10 +366,13 @@ end;
 
 // Generate color texture from prepared data
 procedure TKMFontSpec.GenerateTextures(aTexMode: TTexFormat);
+{$IFNDEF NO_OGL}
 var
   I: Integer;
   textureRAM: Cardinal;
+{$ENDIF}
 begin
+  {$IFNDEF NO_OGL}
   // We can compute RAM usage along the way, it's practically free
   textureRAM := 0;
 
@@ -383,6 +388,7 @@ begin
 
   if LOG_FONTS_RAM_USAGE then
     gLog.AddNoTime('Font RAM usage: ' + IntToStr(textureRAM));
+  {$ENDIF}
 end;
 
 
