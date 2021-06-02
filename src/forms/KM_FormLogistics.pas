@@ -582,15 +582,17 @@ begin
 end;
 
 
+{$Hints off}
 procedure TFormLogistics.VSTFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
 var
   data: PKMLogisticsIDs;
 begin
-  data := Sender.GetNodeData(Node);
-  Finalize(data^);
 //todo: [dcc32 Hint] KM_FormLogistics.pas(590): H2243 Expression needs no Initialize/Finalize
 //todo: [dcc32 Hint] KM_FormLogistics.pas(589): H2077 Value assigned to 'data' never used
+  data := Sender.GetNodeData(Node);
+  Finalize(data^);
 end;
+{$Hints on}
 
 
 procedure TFormLogistics.VSTGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
