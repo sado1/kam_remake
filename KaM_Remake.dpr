@@ -19,7 +19,6 @@ uses
   KM_FormLoading in 'src\forms\KM_FormLoading.pas' {FormLoading},
   KM_VclMenuHint in 'src\forms\KM_VCLMenuHint.pas',
 
-  ScriptValidatorResult in 'src\ext\ScriptValidatorResult.pas',
   iaWin.NameDelphiThreads in 'src\ext\iaWin.NameDelphiThreads.pas',
 
   KM_AI in 'src\ai\KM_AI.pas',
@@ -321,6 +320,7 @@ uses
   KM_ScriptingStates in 'src\scripting\KM_ScriptingStates.pas',
   KM_ScriptingTypes in 'src\scripting\KM_ScriptingTypes.pas',
   KM_ScriptingUtils in 'src\scripting\KM_ScriptingUtils.pas',
+  KM_ScriptValidatorResult in 'src\scripting\KM_ScriptValidatorResult.pas',
 
   KM_ServerQuery in 'src\net\KM_ServerQuery.pas',
   

@@ -8,7 +8,7 @@ uses
   KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_FileIO,
   KM_ScriptingActions, KM_ScriptingEvents, KM_ScriptingIdCache, KM_ScriptingStates, KM_ScriptingTypes, KM_ScriptingUtils,
   KM_ScriptFilesCollection, KM_ScriptErrorHandler, KM_ScriptPreProcessor,
-  ScriptValidatorResult;
+  KM_ScriptValidatorResult;
 
   //Dynamic scripts allow mapmakers to control the mission flow
 
@@ -33,7 +33,7 @@ type
     fDebugByteCode: AnsiString;
     fExec: TPSExec;
 
-    fValidationIssues: TScriptValidatorResult;
+    fValidationIssues: TKMScriptValidatorResult;
     fErrorHandler: TKMScriptErrorHandler;
     fPreProcessor: TKMScriptPreProcessor;
 
@@ -71,7 +71,7 @@ type
     function GetErrorMessage(aErrorMsg: TPSPascalCompilerMessage): TKMScriptErrorMessage; overload;
     function GetErrorMessage(const aErrorType, aShortErrorDescription, aModule: String; aRow, aCol, aPos: Integer): TKMScriptErrorMessage; overload;
 
-    property ValidationIssues: TScriptValidatorResult read fValidationIssues;
+    property ValidationIssues: TKMScriptValidatorResult read fValidationIssues;
     procedure LoadFromFile(const aFileName, aCampaignDataTypeFile: UnicodeString; aCampaignData: TKMemoryStream);
     procedure ExportDataToText;
 
@@ -233,7 +233,7 @@ begin
   if fValidationIssues <> nil then
     FreeAndNil(fValidationIssues);
 
-  fValidationIssues := TScriptValidatorResult.Create;
+  fValidationIssues := TKMScriptValidatorResult.Create;
   fPreProcessor.ValidationIssues := fValidationIssues;
 end;
 

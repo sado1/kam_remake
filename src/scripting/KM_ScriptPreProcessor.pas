@@ -5,7 +5,7 @@ interface
 uses
   uPSPreProcessor, uPSUtils,
   KM_ScriptFilesCollection, KM_ScriptErrorHandler,
-  ScriptValidatorResult,
+  KM_ScriptValidatorResult,
   KM_CommonTypes;
 
 type
@@ -17,7 +17,7 @@ type
     fDestroyErrorHandler: Boolean;
     fScriptFilesInfo: TKMScriptFilesCollection;
     fErrorHandler: TKMScriptErrorHandler;
-    fValidationIssues: TScriptValidatorResult;
+    fValidationIssues: TKMScriptValidatorResult;
 
     fCustomScriptParams: TKMCustomScriptParamDataArray;
     fPSPreProcessor: TPSPreProcessor;
@@ -47,7 +47,7 @@ type
 
     property CustomScriptParams[aParam: TKMCustomScriptParam]: TKMCustomScriptParamData read GetCustomScriptParamData;
     property ScriptFilesInfo: TKMScriptFilesCollection read fScriptFilesInfo;
-    property ValidationIssues: TScriptValidatorResult read fValidationIssues write fValidationIssues;
+    property ValidationIssues: TKMScriptValidatorResult read fValidationIssues write fValidationIssues;
 
     function ScriptMightChangeAfterPreProcessing: Boolean;
     function PreProcessFile(const aFileName: UnicodeString): Boolean; overload;

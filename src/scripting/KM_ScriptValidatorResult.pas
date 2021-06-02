@@ -1,27 +1,28 @@
-unit ScriptValidatorResult;
+unit KM_ScriptValidatorResult;
 interface
 uses
-  SysUtils, KM_IoXML;
+  SysUtils,
+  KM_IoXML;
 
 
 type
-  TScriptValidatorIssue = record
+  TKMScriptValidatorIssue = record
     Line: Integer;
     Column: Integer;
     Module: string;
     Param: string;
     Msg: string;
   end;
-  TScriptValidatorIssueArray = array of TScriptValidatorIssue;
+  TKMScriptValidatorIssueArray = array of TKMScriptValidatorIssue;
 
-  TScriptValidatorResult = class(TObject)
+  TKMScriptValidatorResult = class(TObject)
   strict private
-    fHints: TScriptValidatorIssueArray;
-    fWarnings: TScriptValidatorIssueArray;
-    fErrors: TScriptValidatorIssueArray;
-    procedure Add(aLine, aColumn: Integer; const aParam, aMessage: string; var aDest: TScriptValidatorIssueArray); inline;
-    procedure ArrayToXML(aSrc: TScriptValidatorIssueArray; var aDest: TKMXmlNode);
-    procedure XMLToArray(aSrc: TKMXmlNode; var aDest: TScriptValidatorIssueArray);
+    fHints: TKMScriptValidatorIssueArray;
+    fWarnings: TKMScriptValidatorIssueArray;
+    fErrors: TKMScriptValidatorIssueArray;
+    procedure Add(aLine, aColumn: Integer; const aParam, aMessage: string; var aDest: TKMScriptValidatorIssueArray); inline;
+    procedure ArrayToXML(aSrc: TKMScriptValidatorIssueArray; var aDest: TKMXmlNode);
+    procedure XMLToArray(aSrc: TKMXmlNode; var aDest: TKMScriptValidatorIssueArray);
     function FixText(const aTest: string): string;
   public
     procedure AddHint(aLine, aColumn: Integer; const aParam, aMessage: string);
@@ -29,9 +30,9 @@ type
     procedure AddError(aLine, aColumn: Integer; const aParam, aMessage: string);
     function ToXML: string;
     procedure FromXML(const aXml: string);
-    property Hints: TScriptValidatorIssueArray read fHints write fHints;
-    property Warnings: TScriptValidatorIssueArray read fWarnings write fWarnings;
-    property Errors: TScriptValidatorIssueArray read fErrors write fErrors;
+    property Hints: TKMScriptValidatorIssueArray read fHints write fHints;
+    property Warnings: TKMScriptValidatorIssueArray read fWarnings write fWarnings;
+    property Errors: TKMScriptValidatorIssueArray read fErrors write fErrors;
   end;
 
 implementation
@@ -39,10 +40,10 @@ uses
   Classes;
 
 { TScriptValidatorResult }
-procedure TScriptValidatorResult.Add(aLine, aColumn: Integer; const aParam, aMessage: string; var aDest: TScriptValidatorIssueArray);
+procedure TKMScriptValidatorResult.Add(aLine, aColumn: Integer; const aParam, aMessage: string; var aDest: TKMScriptValidatorIssueArray);
 var
   I: Integer;
-  Issue: TScriptValidatorIssue;
+  Issue: TKMScriptValidatorIssue;
 begin
   I := Length(aDest);
   SetLength(aDest, I + 1);
@@ -54,28 +55,28 @@ begin
 end;
 
 
-procedure TScriptValidatorResult.AddHint(aLine, aColumn: Integer; const aParam, aMessage: string);
+procedure TKMScriptValidatorResult.AddHint(aLine, aColumn: Integer; const aParam, aMessage: string);
 begin
   Add(aLine, aColumn, aParam, aMessage, fHints);
 end;
 
 
-procedure TScriptValidatorResult.AddWarning(aLine, aColumn: Integer; const aParam, aMessage: string);
+procedure TKMScriptValidatorResult.AddWarning(aLine, aColumn: Integer; const aParam, aMessage: string);
 begin
   Add(aLine, aColumn, aParam, aMessage, fWarnings);
 end;
 
 
-procedure TScriptValidatorResult.AddError(aLine, aColumn: Integer; const aParam, aMessage: string);
+procedure TKMScriptValidatorResult.AddError(aLine, aColumn: Integer; const aParam, aMessage: string);
 begin
   Add(aLine, aColumn, aParam, aMessage, fErrors);
 end;
 
 
-procedure TScriptValidatorResult.ArrayToXML(aSrc: TScriptValidatorIssueArray; var aDest: TKMXmlNode);
+procedure TKMScriptValidatorResult.ArrayToXML(aSrc: TKMScriptValidatorIssueArray; var aDest: TKMXmlNode);
 var
   Node:  TKMXmlNode;
-  Issue: TScriptValidatorIssue;
+  Issue: TKMScriptValidatorIssue;
 begin
   for Issue in aSrc do
   begin
@@ -89,11 +90,11 @@ begin
 end;
 
 
-procedure TScriptValidatorResult.XMLToArray(aSrc: TKMXmlNode; var aDest: TScriptValidatorIssueArray);
+procedure TKMScriptValidatorResult.XMLToArray(aSrc: TKMXmlNode; var aDest: TKMScriptValidatorIssueArray);
 var
   I: Integer;
   Node: TKMXmlNode;
-  Issue: TScriptValidatorIssue;
+  Issue: TKMScriptValidatorIssue;
   Len: Integer;
 begin
   for I := 0 to aSrc.ChildsCount - 1 do
@@ -112,13 +113,13 @@ begin
 end;
 
 
-function TScriptValidatorResult.FixText(const aTest: string): string;
+function TKMScriptValidatorResult.FixText(const aTest: string): string;
 begin
   Result := StringReplace(aTest, '&#39;', '"', [rfReplaceAll, rfIgnoreCase]);
 end;
 
 
-function TScriptValidatorResult.ToXML: string;
+function TKMScriptValidatorResult.ToXML: string;
 var
   xmlDoc: TKMXmlDocument;
   nHint, nWarning, nError: TKMXmlNode;
@@ -140,7 +141,7 @@ begin
 end;
 
 
-procedure TScriptValidatorResult.FromXML(const aXml: string);
+procedure TKMScriptValidatorResult.FromXML(const aXml: string);
 var
   xmlDoc: TKMXmlDocument;
 begin
