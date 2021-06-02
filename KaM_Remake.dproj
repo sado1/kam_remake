@@ -1,4 +1,4 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{CB64F5E8-91AE-4497-A8C4-89668924F870}</ProjectGuid>
         <MainSource>KaM_Remake.dpr</MainSource>
@@ -154,7 +154,6 @@
             <Form>FormLoading</Form>
         </DCCReference>
         <DCCReference Include="src\forms\KM_VCLMenuHint.pas"/>
-        <DCCReference Include="src\ext\ScriptValidatorResult.pas"/>
         <DCCReference Include="src\ext\iaWin.NameDelphiThreads.pas"/>
         <DCCReference Include="src\ai\KM_AI.pas"/>
         <DCCReference Include="src\ai\KM_AIArmyEvaluation.pas"/>
@@ -310,7 +309,6 @@
         <DCCReference Include="src\KM_GameApp.pas"/>
         <DCCReference Include="src\KM_Log.pas"/>
         <DCCReference Include="src\KM_Main.pas"/>
-        <DCCReference Include="src\KM_Minimap.pas"/>
         <DCCReference Include="src\KM_System.pas"/>
         <DCCReference Include="src\mission\KM_Campaigns.pas"/>
         <DCCReference Include="src\mission\KM_CampaignTypes.pas"/>
@@ -326,10 +324,15 @@
         <DCCReference Include="src\maped\KM_MapEditorHistory.pas"/>
         <DCCReference Include="src\maped\KM_MapEdTypes.pas"/>
         <DCCReference Include="src\media\KM_Audio.pas"/>
+        <DCCReference Include="src\media\KM_MediaTypes.pas"/>
         <DCCReference Include="src\media\KM_Music.pas"/>
+        <DCCReference Include="src\media\KM_ScriptSound.pas"/>
         <DCCReference Include="src\media\KM_Sound.pas"/>
         <DCCReference Include="src\media\KM_Video.pas"/>
         <DCCReference Include="src\media\KM_VLC.pas"/>
+        <DCCReference Include="src\minimap\KM_Minimap.pas"/>
+        <DCCReference Include="src\minimap\KM_MinimapGame.pas"/>
+        <DCCReference Include="src\minimap\KM_MinimapMission.pas"/>
         <DCCReference Include="src\navmesh\KM_Outline.pas"/>
         <DCCReference Include="src\navmesh\KM_NavMesh.pas"/>
         <DCCReference Include="src\navmesh\KM_NavMeshGenerator.pas"/>
@@ -381,6 +384,7 @@
         <DCCReference Include="src\res\KM_Pics.pas"/>
         <DCCReference Include="src\res\KM_Resource.pas"/>
         <DCCReference Include="src\res\KM_ResCursors.pas"/>
+        <DCCReference Include="src\res\KM_ResExporter.pas"/>
         <DCCReference Include="src\res\KM_ResFonts.pas"/>
         <DCCReference Include="src\res\KM_ResHouses.pas"/>
         <DCCReference Include="src\res\KM_ResInterpolation.pas"/>
@@ -393,6 +397,7 @@
         <DCCReference Include="src\res\KM_ResTexts.pas"/>
         <DCCReference Include="src\res\KM_ResTypes.pas"/>
         <DCCReference Include="src\res\KM_ResTileset.pas"/>
+        <DCCReference Include="src\res\KM_ResTilesetTypes.pas"/>
         <DCCReference Include="src\res\KM_ResUnits.pas"/>
         <DCCReference Include="src\res\KM_ResWares.pas"/>
         <DCCReference Include="src\res\KM_Saves.pas"/>
@@ -408,6 +413,7 @@
         <DCCReference Include="src\scripting\KM_ScriptingStates.pas"/>
         <DCCReference Include="src\scripting\KM_ScriptingTypes.pas"/>
         <DCCReference Include="src\scripting\KM_ScriptingUtils.pas"/>
+        <DCCReference Include="src\scripting\KM_ScriptValidatorResult.pas"/>
         <DCCReference Include="src\net\KM_ServerQuery.pas"/>
         <DCCReference Include="src\settings\KM_Settings.pas"/>
         <DCCReference Include="src\settings\KM_GameAppSettings.pas"/>
@@ -425,6 +431,7 @@
         <DCCReference Include="src\terrain\KM_TerrainPainter.pas"/>
         <DCCReference Include="src\terrain\KM_TerrainSelection.pas"/>
         <DCCReference Include="src\terrain\KM_TerrainTypes.pas"/>
+        <DCCReference Include="src\terrain\KM_TerrainUtils.pas"/>
         <DCCReference Include="src\terrain\KM_TerrainWalkConnect.pas"/>
         <DCCReference Include="src\units\actions\KM_UnitActionAbandonWalk.pas"/>
         <DCCReference Include="src\units\actions\KM_UnitActionFight.pas"/>
@@ -472,7 +479,6 @@
         <DCCReference Include="src\utils\method_parser\KM_MethodParser.pas"/>
         <DCCReference Include="src\utils\method_parser\KM_MethodParserParams.pas"/>
         <DCCReference Include="src\utils\helpers\KM_VclHelpers.pas"/>
-        <DCCReference Include="src\utils\helpers\KM_XmlHelper.pas"/>
         <None Include="Profiling\AQtimeModule1.aqt"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
