@@ -1,7 +1,7 @@
 unit ScriptValidatorResult;
 interface
 uses
-  SysUtils, VerySimpleXML;
+  SysUtils, KM_IoXML;
 
 
 type
@@ -20,8 +20,8 @@ type
     fWarnings: TScriptValidatorIssueArray;
     fErrors: TScriptValidatorIssueArray;
     procedure Add(aLine, aColumn: Integer; const aParam, aMessage: string; var aDest: TScriptValidatorIssueArray); inline;
-    procedure ArrayToXML(aSrc: TScriptValidatorIssueArray; var aDest: TXmlNode);
-    procedure XMLToArray(aSrc: TXmlNode; var aDest: TScriptValidatorIssueArray);
+    procedure ArrayToXML(aSrc: TScriptValidatorIssueArray; var aDest: TKMXmlNode);
+    procedure XMLToArray(aSrc: TKMXmlNode; var aDest: TScriptValidatorIssueArray);
     function FixText(const aTest: string): string;
   public
     procedure AddHint(aLine, aColumn: Integer; const aParam, aMessage: string);
@@ -72,41 +72,41 @@ begin
 end;
 
 
-procedure TScriptValidatorResult.ArrayToXML(aSrc: TScriptValidatorIssueArray; var aDest: TXmlNode);
+procedure TScriptValidatorResult.ArrayToXML(aSrc: TScriptValidatorIssueArray; var aDest: TKMXmlNode);
 var
-  Node:  TXmlNode;
+  Node:  TKMXmlNode;
   Issue: TScriptValidatorIssue;
 begin
   for Issue in aSrc do
   begin
     Node := aDest.AddChild('Issue');
-    Node.SetAttribute('Line', IntToStr(Issue.Line));
-    Node.SetAttribute('Column', IntToStr(Issue.Column));
-    Node.SetAttribute('Module', Issue.Module);
-    Node.SetAttribute('Param', Issue.Param);
-    Node.SetAttribute('Msg', Issue.Msg);
+    Node.Attributes['Line'] := Issue.Line;
+    Node.Attributes['Column'] := Issue.Column;
+    Node.Attributes['Module'] := Issue.Module;
+    Node.Attributes['Param'] := Issue.Param;
+    Node.Attributes['Msg'] := Issue.Msg;
   end;
 end;
 
 
-procedure TScriptValidatorResult.XMLToArray(aSrc: TXmlNode; var aDest: TScriptValidatorIssueArray);
+procedure TScriptValidatorResult.XMLToArray(aSrc: TKMXmlNode; var aDest: TScriptValidatorIssueArray);
 var
   I: Integer;
-  Node: TXmlNode;
+  Node: TKMXmlNode;
   Issue: TScriptValidatorIssue;
   Len: Integer;
 begin
-  for I := 0 to aSrc.ChildNodes.Count - 1 do
+  for I := 0 to aSrc.ChildsCount - 1 do
   begin
-    Node := aSrc.ChildNodes[I];
+    Node := aSrc.Childs[I];
 
     Len := Length(aDest);
     SetLength(aDest, Len + 1);
-    Issue.Line   := StrToInt(Node.Attribute['Line']);
-    Issue.Column := StrToInt(Node.Attribute['Column']);
-    Issue.Module := FixText(Node.Attribute['Module']);
-    Issue.Param  := FixText(Node.Attribute['Param']);
-    Issue.Msg    := FixText(Node.Attribute['Msg']);
+    Issue.Line   := Node.Attributes['Line'].AsInteger;
+    Issue.Column := Node.Attributes['Column'].AsInteger;
+    Issue.Module := FixText(Node.Attributes['Module'].AsString);
+    Issue.Param  := FixText(Node.Attributes['Param'].AsString);
+    Issue.Msg    := FixText(Node.Attributes['Msg'].AsString);
     aDest[Len]   := Issue;
   end;
 end;
@@ -120,39 +120,39 @@ end;
 
 function TScriptValidatorResult.ToXML: string;
 var
-  nHint, nWarning, nError: TXmlNode;
+  xmlDoc: TKMXmlDocument;
+  nHint, nWarning, nError: TKMXmlNode;
 begin
-  with TXmlVerySimple.Create do
-  begin
-    try
-      Root.NodeName := 'ScriptValidatorResult';
-      nHint := Root.AddChild('Hints');
-      nWarning := Root.AddChild('Warnings');
-      nError := Root.AddChild('Errors');
+  xmlDoc := TKMXmlDocument.Create('ScriptValidatorResult');
+  try
+    nHint := xmlDoc.Root.AddChild('Hints');
+    nWarning := xmlDoc.Root.AddChild('Warnings');
+    nError := xmlDoc.Root.AddChild('Errors');
 
-      ArrayToXML(fHints, nHint);
-      ArrayToXML(fWarnings, nWarning);
-      ArrayToXML(fErrors, nError);
+    ArrayToXML(fHints, nHint);
+    ArrayToXML(fWarnings, nWarning);
+    ArrayToXML(fErrors, nError);
 
-      Result := Text;
-    finally
-      Free;
-    end;
+    Result := xmlDoc.Xml;
+  finally
+    xmlDoc.Free;
   end;
 end;
 
 
 procedure TScriptValidatorResult.FromXML(const aXml: string);
+var
+  xmlDoc: TKMXmlDocument;
 begin
-  with TXmlVerySimple.Create do
-    try
-      Text := aXml;
-      XMLToArray(Root.Find('Hints'), fHints);
-      XMLToArray(Root.Find('Warnings'), fWarnings);
-      XMLToArray(Root.Find('Errors'), fErrors);
-    finally
-      Free;
-    end;
+  xmlDoc := TKMXmlDocument.Create();
+  try
+    xmlDoc.Xml := aXml;
+    XMLToArray(xmlDoc.Root.FindNode('Hints'), fHints);
+    XMLToArray(xmlDoc.Root.FindNode('Warnings'), fWarnings);
+    XMLToArray(xmlDoc.Root.FindNode('Errors'), fErrors);
+  finally
+    xmlDoc.Free;
+  end;
 end;
 
 end.
