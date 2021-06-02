@@ -69,7 +69,7 @@ const
 
 implementation
 uses
-  SysUtils, KM_Maps, Classes, ScriptValidatorResult;
+  SysUtils, KM_Maps, Classes, KM_ScriptValidatorResult;
 
 { TMain }
 constructor TConsoleMain.Create;
@@ -90,11 +90,11 @@ end;
 
 procedure TConsoleMain.ValidateSingleScriptApi(aPath: string);
 var
-  Result: TScriptValidatorResult;
+  Result: TKMScriptValidatorResult;
 begin
   if not FileExists(aPath) then
   begin
-    Result := TScriptValidatorResult.Create;
+    Result := TKMScriptValidatorResult.Create;
     Result.AddError(0, 0, '', 'File not found: ' + aPath);
     WriteLn(Result.ToXML);
     FreeAndNil(Result);
