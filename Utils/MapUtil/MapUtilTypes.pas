@@ -1,10 +1,12 @@
 unit MapUtilTypes;
 interface
 type
+  TFOWType = (ftRevealAll, ftRevealPlayers, ftMapSetting);
+
   TCLIParamRecord = record
     MapDatPath: string;
-    Help,
-    Verbose:     Boolean;
+    Help: Boolean;
+    FOWType: TFOWType;
   end;
 
 implementation

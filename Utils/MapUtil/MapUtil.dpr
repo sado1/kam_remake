@@ -1,7 +1,6 @@
 program MapUtil;
-{$IFDEF MSWindows}
-  {$APPTYPE CONSOLE}
-{$ENDIF}
+{$I KaM_Remake.inc}
+{$APPTYPE CONSOLE}
 uses
   {$IFDEF UNIX}
     {$DEFINE UseCThreads}
@@ -30,6 +29,9 @@ begin
     Exit;
   end;
 
+  // Default value is RevealAll
+  fParamRecord.FOWType := ftRevealAll;
+
   for I := 1 to ParamCount do // Skip 0, as this is the EXE-path
   begin
     fArgs := fArgs + ' ' + ParamStr(I) + sLineBreak;
@@ -40,9 +42,21 @@ begin
       Continue;
     end;
 
-    if (ParamStr(I) = '-v') or (ParamStr(I) = '-verbose') then
+    if (ParamStr(I) = '-a') or (ParamStr(I) = '-revealAll') then
     begin
-      fParamRecord.Verbose := True;
+      fParamRecord.FOWType := ftRevealAll;
+      Continue;
+    end;
+
+    if (ParamStr(I) = '-p') or (ParamStr(I) = '-revealPlayers') then
+    begin
+      fParamRecord.FOWType := ftRevealPlayers;
+      Continue;
+    end;
+
+    if (ParamStr(I) = '-m') or (ParamStr(I) = '-revealByMapSetting') then
+    begin
+      fParamRecord.FOWType := ftMapSetting;
       Continue;
     end;
 
@@ -57,6 +71,14 @@ begin
     ProcessParams;
     ExeDir := ExtractFilePath(ParamStr(0));
     fConsoleMain := TConsoleMain.Create;
+
+    // Always exit after showing help.
+    if fParamRecord.Help then
+    begin
+      fConsoleMain.ShowHelp;
+      Exit;
+    end;
+
     fConsoleMain.Start(fParamRecord);
   except
     on E: Exception do

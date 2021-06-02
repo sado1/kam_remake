@@ -47,6 +47,9 @@
           </Linking>
           <Other>
             <CustomOptions Value="-dNO_OGL"/>
+            <OtherDefines Count="1">
+              <Define0 Value="NO_OGL"/>
+            </OtherDefines>
           </Other>
         </CompilerOptions>
       </Item2>
@@ -90,9 +93,6 @@
       <OtherUnitFiles Value="..\..;..\..\src;..\..\src\ai;..\..\src\ai\newAI;..\..\src\common;..\..\src\ext;..\..\src\ext\BGRABitmap;..\..\src\ext\LazarusOpenGL;..\..\src\ext\OggVorbis;..\..\src\ext\LNet;..\..\src\ext\pascalscript;..\..\src\ext\pascalscript\Source;..\..\src\forms;..\..\src\game;..\..\src\game\gip;..\..\src\game\misc;..\..\src\game\notifications;..\..\src\gui;..\..\src\gui\pages_common;..\..\src\gui\pages_game;..\..\src\gui\pages_maped;..\..\src\gui\pages_maped\menu;..\..\src\gui\pages_maped\mission;..\..\src\gui\pages_maped\player;..\..\src\gui\pages_maped\terrain;..\..\src\gui\pages_maped\town;..\..\src\gui\pages_menu;..\..\src\hands;..\..\src\houses;..\..\src\maped;..\..\src\media;..\..\src\minimap;..\..\src\mission;..\..\src\navmesh;..\..\src\net;..\..\src\net\http;..\..\src\net\other;..\..\src\pathfinding;..\..\src\perflog;..\..\src\render;..\..\src\res;..\..\src\scripting;..\..\src\settings;..\..\src\terrain;..\..\src\units;..\..\src\units\actions;..\..\src\units\tasks;..\..\src\unused;..\..\src\utils;..\..\src\utils\algorithms;..\..\src\utils\helpers;..\..\src\utils\io;..\..\src\utils\method_parser"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
-    <Other>
-      <CustomOptions Value="-dNO_OGL"/>
-    </Other> 
   </CompilerOptions>
   <Debugging>
     <Exceptions Count="3">
