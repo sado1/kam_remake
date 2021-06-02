@@ -609,7 +609,7 @@ begin
 
   Button_Load.Enabled := ColumnBox_MapEd.IsSelected;
   Button_MapDelete.Enabled := ColumnBox_MapEd.IsSelected;
-  Button_MapMove.Visible := ColumnBox_MapEd.IsSelected and fMaps[ColumnBox_MapEd.SelectedItemTag].IsDownloaded;
+  Button_MapMove.Visible := ColumnBox_MapEd.IsSelected and fMaps[ColumnBox_MapEd.SelectedItemTag].IsDownloadedKind;
   Button_MapRename.Enabled := ColumnBox_MapEd.IsSelected;
   Button_MapRename.Visible := not Button_MapMove.Visible;
 
@@ -721,9 +721,9 @@ begin
     for I := 0 to fMaps.Count - 1 do
     begin
       skipMap := False;
-      if ((Radio_MapType.ItemIndex = 0) and not fMaps[I].IsSinglePlayer)  //SP map filter
-        or ((Radio_MapType.ItemIndex = 1) and not fMaps[I].IsMultiPlayer) //MP map filter
-        or ((Radio_MapType.ItemIndex = 2) and not fMaps[I].IsDownloaded)  //MP DL map filter
+      if ((Radio_MapType.ItemIndex = 0) and not fMaps[I].IsSinglePlayerKind)  //SP map filter
+        or ((Radio_MapType.ItemIndex = 1) and not fMaps[I].IsMultiPlayerKind) //MP map filter
+        or ((Radio_MapType.ItemIndex = 2) and not fMaps[I].IsDownloadedKind)  //MP DL map filter
         or ((Radio_BuildFight.ItemIndex = 0) and (fMaps[I].MissionMode <> mmNormal)) //Build map filter
         or ((Radio_BuildFight.ItemIndex = 1) and (fMaps[I].MissionMode <> mmTactic)) //Fight map filter
         or ((Radio_CoopSpecial.ItemIndex = 0) and not fMaps[I].TxtInfo.IsSpecial)     //Special map filter

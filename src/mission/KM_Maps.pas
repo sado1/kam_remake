@@ -157,9 +157,9 @@ type
     function GetLobbyColor: Cardinal;
     function IsFilenameEndMatchHash: Boolean;
     function IsPlayableForSP: Boolean;
-    function IsSinglePlayer: Boolean;
-    function IsMultiPlayer: Boolean;
-    function IsDownloaded: Boolean;
+    function IsSinglePlayerKind: Boolean;
+    function IsMultiPlayerKind: Boolean;
+    function IsDownloadedKind: Boolean;
     function IsNormalMission: Boolean;
     function IsTacticMission: Boolean;
     property FavouriteMapPic: TKMPic read GetFavouriteMapPic;
@@ -782,23 +782,23 @@ end;
 
 function TKMMapInfo.IsPlayableForSP: Boolean;
 begin
-  Result := IsSinglePlayer or TxtInfo.IsPlayableAsSP;
+  Result := IsSinglePlayerKind or TxtInfo.IsPlayableAsSP;
 end;
 
 
-function TKMMapInfo.IsSinglePlayer: Boolean;
+function TKMMapInfo.IsSinglePlayerKind: Boolean;
 begin
   Result := fKind = mkSP;
 end;
 
 
-function TKMMapInfo.IsMultiPlayer: Boolean;
+function TKMMapInfo.IsMultiPlayerKind: Boolean;
 begin
   Result := fKind = mkMP;
 end;
 
 
-function TKMMapInfo.IsDownloaded: Boolean;
+function TKMMapInfo.IsDownloadedKind: Boolean;
 begin
   Result := fKind = mkDL;
 end;
