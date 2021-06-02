@@ -19,6 +19,7 @@ var
   fConsoleMain: TConsoleMain;
   fParamRecord: TCLIParamRecord;
   fArgs:        string;
+  path:         string;  
 
 procedure ProcessParams;
 var
@@ -88,6 +89,12 @@ begin
   try
     ProcessParams;
     ExeDir := ExtractFilePath(ParamStr(0));
+
+    path := 'data' + PathDelim + 'defines' + PathDelim + 'unit.dat';
+    if not FileExists(ExeDir + path) 
+      and FileExists(ExeDir + '..\..\' + path) then  
+      ExeDir := ExeDir + '..\..\';  
+
     fConsoleMain := TConsoleMain.Create;
 
     // Always exit after showing help.
