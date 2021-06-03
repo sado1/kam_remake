@@ -83,8 +83,8 @@ begin
 
   Radio_MissionMode := TKMRadioGroup.Create(Panel_Mode, 14, 30, Panel_Mode.Width - 28, 40, fntMetal);
   Radio_MissionMode.Anchors := [anLeft, anTop, anRight];
-  Radio_MissionMode.Add(gResTexts[TX_MAPED_MISSION_NORMAL]);
-  Radio_MissionMode.Add(gResTexts[TX_MAPED_MISSION_TACTIC]);
+  Radio_MissionMode.Add(gResTexts[TX_LOBBY_MAP_BUILD]);
+  Radio_MissionMode.Add(gResTexts[TX_LOBBY_MAP_FIGHT]);
   Radio_MissionMode.OnChange := Mission_ModeChange;
 
   Button_MissionParams := TKMButton.Create(Panel_Mode, 9, 80, Panel_Mode.Width - 9, 45, gResTexts[TX_MAPED_MISSION_PARAMETERS_BTN], bsGame);
