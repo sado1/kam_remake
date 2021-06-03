@@ -1896,7 +1896,7 @@ begin
     begin
       gScriptEvents.ProcGroupHungry(Self);
       if not fDisableHungerMessage then
-        gGame.ShowMessage(mkUnit, TX_MSG_TROOP_HUNGRY, Position, UID, Owner);
+        gGame.ShowMessage(mkGroup, TX_MSG_TROOP_HUNGRY, Position, UID, Owner);
       fTimeSinceHungryReminder := TIME_BETWEEN_MESSAGES; //Don't show one again until it is time
     end;
   end

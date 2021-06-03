@@ -26,7 +26,7 @@ type
   TKMMessageKind = (
     mkText, //Mission text message
     mkHouse,
-    mkUnit,
+    mkGroup,
     mkQuill //Utility message (warnings in script loading)
   );
 

@@ -2204,7 +2204,7 @@ begin
                     UpdateSelectedObject;
                   end
                 end;
-      mkUnit:  begin
+      mkGroup:  begin
                   // Find among groups for a spectator hand
                   G := gHands[gMySpectator.HandID].UnitGroups.GetGroupByUID(msg.EntityUID);
                   if G.IsSelectable then
@@ -2264,7 +2264,7 @@ begin
   begin
     R := MakeListRow(['', gMySpectator.Hand.MessageLog[I].Text], I);
 
-    if gMySpectator.Hand.MessageLog[I].Kind = mkUnit then
+    if gMySpectator.Hand.MessageLog[I].Kind = mkGroup then
     begin
       R.Cells[0].Pic := MakePic(rxGui, 588);
       if gMySpectator.Hand.MessageLog[I].IsRead then

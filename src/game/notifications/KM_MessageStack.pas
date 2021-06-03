@@ -75,7 +75,7 @@ end;
 //Check wherever message has a GoTo option
 function TKMStackMessage.IsGoto: Boolean;
 begin
-  Result := fKind in [mkHouse, mkUnit];
+  Result := fKind in [mkHouse, mkGroup];
 end;
 
 
