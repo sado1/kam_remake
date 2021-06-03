@@ -41,7 +41,7 @@ type
   TKMNewMapEditorEvent = procedure (const aFileName: UnicodeString; aSizeX: Integer = 0; aSizeY: Integer = 0; aMapFullCRC: Cardinal = 0;
                                     aMapSimpleCRC: Cardinal = 0; aMultiplayerLoadMode: Boolean = False) of object;
 
-  TKMGameShowMessageEvent = procedure (aKind: TKMMessageKind; aTextID: Integer; const aLoc: TKMPoint; aHandIndex: TKMHandID) of object;
+  TKMGameShowMessageEvent = procedure (aKind: TKMMessageKind; aTextID: Integer; const aLoc: TKMPoint; aEntityUID: Cardinal; aHandIndex: TKMHandID) of object;
 
 const
   DEF_AITYPE = aitClassic; // Classic AI is set as a default AI Type, since most of the maps support it and not Advanced AI

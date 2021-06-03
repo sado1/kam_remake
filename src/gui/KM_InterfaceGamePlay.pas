@@ -2182,6 +2182,7 @@ var
   msg: TKMLogMessage;
   H: TKMHouse;
   G: TKMUnitGroup;
+  loc: TKMPoint;
 begin
   msg := gMySpectator.Hand.MessageLog[aMessageId];
   msg.IsReadLocal := True;
@@ -2189,35 +2190,34 @@ begin
 
   if aJumpToLoc then
   begin
-    // Jump to location
-    fViewport.Position := KMPointF(msg.Loc);
+    loc := msg.Loc;
 
-    // Try to highlight the house in question
-    H := gHands.HousesHitTest(msg.Loc.X, msg.Loc.Y);
-
-    // Do not highlight a house if it is not the one that has issued the notification
-    // (happens when note is issues and house is destroyed and a new one is build in the same place)
-    // NOTE: It will highlight next house built on the 'ruins' which is unoccupied to be precise
-    //       even the NEW message has not been issued yet
-    if (H <> nil) then
-    begin
-      if (gRes.IsMsgHouseUnnocupied(msg.fTextID) and not H.HasWorker
-          and gResHouses[H.HouseType].CanHasWorker and (H.HouseType <> htBarracks))
-        or H.ResourceDepleted
-        or H.OrderCompletedMsgIssued then
-      begin
-        gMySpectator.Highlight := H;
-        gMySpectator.Selected := H;
-        UpdateSelectedObject;
-      end;
-    end else begin
-      G := gHands.GroupsHitTest(msg.Loc.X, msg.Loc.Y);
-      if (G <> nil) and not G.IsDead then
-      begin
-        SelectUnitGroup(G);
-        UpdateSelectedObject;
-      end;
+    case msg.Kind of
+      mkHouse:  begin
+                  // Find among houses for a spectator hand
+                  H := gHands[gMySpectator.HandID].Houses.GetHouseByUID(msg.EntityUID);
+                  if H.IsSelectable then
+                  begin
+                    loc := H.Position;
+                    gMySpectator.Highlight := H;
+                    gMySpectator.Selected := H;
+                    UpdateSelectedObject;
+                  end
+                end;
+      mkUnit:  begin
+                  // Find among groups for a spectator hand
+                  G := gHands[gMySpectator.HandID].UnitGroups.GetGroupByUID(msg.EntityUID);
+                  if G.IsSelectable then
+                  begin
+                    loc := G.Position;
+                    SelectUnitGroup(G);
+                    UpdateSelectedObject;
+                  end;
+                end;
     end;
+
+    // Jump to location
+    fViewport.Position := KMPointF(loc);
   end;
 
   MessageLog_Update(True);

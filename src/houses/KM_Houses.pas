@@ -144,7 +144,7 @@ type
     procedure UpdateDeliveryMode;
     function GetHasWorker: Boolean;
 
-    procedure ShowMsg(aKind: TKMMessageKind; aTextID: Integer; const aLoc: TKMPoint; aHandIndex: TKMHandID);
+    procedure ShowMsg(aTextID: Integer);
   protected
     fBuildState: TKMHouseBuildState; // = (hbsGlyph, hbsNoGlyph, hbsWood, hbsStone, hbsDone);
     FlagAnimStep: Cardinal; //Used for Flags and Burning animation
@@ -898,7 +898,7 @@ begin
   msgID := GetResourceDepletedMessageId;
   Assert(msgID <> 0, gResHouses[HouseType].HouseName + ' resource can''t be depleted');
 
-  ShowMsg(mkHouse, msgID, Entrance, Owner);
+  ShowMsg(msgID);
   ResourceDepleted := True;
 end;
 
@@ -936,10 +936,10 @@ begin
 end;
 
 
-procedure TKMHouse.ShowMsg(aKind: TKMMessageKind; aTextID: Integer; const aLoc: TKMPoint; aHandIndex: TKMHandID);
+procedure TKMHouse.ShowMsg(aTextID: Integer);
 begin
   if Assigned(fOnShowGameMessage) then
-    fOnShowGameMessage(aKind, aTextID, aLoc, aHandIndex);
+    fOnShowGameMessage(mkHouse, aTextID, Entrance, UID, Owner);
 end;
 
 
@@ -1547,7 +1547,7 @@ begin
       begin
         fNeedIssueOrderCompletedMsg := False;
         fOrderCompletedMsgIssued := True;
-        ShowMsg(mkHouse, TX_MSG_ORDER_COMPLETED, Entrance, Owner);
+        ShowMsg(TX_MSG_ORDER_COMPLETED);
       end;
 end;
 
@@ -2175,7 +2175,7 @@ begin
     begin
       houseUnoccupiedMsgId := gResHouses[fType].UnoccupiedMsgId;
       if houseUnoccupiedMsgId <> -1 then // HouseNotOccupMsgId should never be -1
-        ShowMsg(mkHouse, houseUnoccupiedMsgId, Entrance, Owner)
+        ShowMsg(houseUnoccupiedMsgId)
       else
         gLog.AddTime('Warning: HouseUnoccupiedMsgId for house type ord=' + IntToStr(Ord(fType)) + ' could not be determined.');
       fTimeSinceUnoccupiedReminder := TIME_BETWEEN_MESSAGES; //Don't show one again until it is time

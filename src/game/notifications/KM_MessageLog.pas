@@ -9,18 +9,20 @@ type
   //Individual message
   TKMLogMessage = class
     fKind: TKMMessageKind;
+    fEntityUID: Cardinal;
     fLoc: TKMPoint;
     fTextID: Integer;
     fIsReadGIP: Boolean; //This is synced through GIP
     fIsReadLocal: Boolean; //This is used locally so it responds instantly
   public
-    constructor Create(aKind: TKMMessageKind; aTextID: Integer; const aLoc: TKMPoint);
+    constructor Create(aKind: TKMMessageKind; aTextID: Integer; const aLoc: TKMPoint; aEntityUID: Cardinal);
     constructor Load(LoadStream: TKMemoryStream);
 
     function IsGoto: Boolean;
     function IsRead: Boolean;
     function Text: UnicodeString;
     property Loc: TKMPoint read fLoc;
+    property EntityUID: Cardinal read fEntityUID;
     property Kind: TKMMessageKind read fKind;
 
     property IsReadGIP: Boolean write fIsReadGIP;
@@ -40,7 +42,7 @@ type
     property CountLog: Integer read fCountLog;
     property MessagesLog[aIndex: Integer]: TKMLogMessage read GetMessageLog; default;
 
-    procedure Add(aKind: TKMMessageKind; aTextID: Integer; const aLoc: TKMPoint);
+    procedure Add(aKind: TKMMessageKind; aTextID: Integer; const aLoc: TKMPoint; aEntityUID: Cardinal);
 
     procedure Save(SaveStream: TKMemoryStream);
     procedure Load(LoadStream: TKMemoryStream);
@@ -49,16 +51,19 @@ type
 
 implementation
 uses
-  SysUtils, Math, KM_ResTexts;
+  SysUtils, Math,
+  KM_ResTexts,
+  KM_HandEntity;
 
 
 { TKMLogMessage }
-constructor TKMLogMessage.Create(aKind: TKMMessageKind; aTextID: Integer; const aLoc: TKMPoint);
+constructor TKMLogMessage.Create(aKind: TKMMessageKind; aTextID: Integer; const aLoc: TKMPoint; aEntityUID: Cardinal);
 begin
   inherited Create;
 
   fKind := aKind;
   fLoc := aLoc;
+  fEntityUID := aEntityUID;
   fTextID := aTextID;
 end;
 
@@ -68,6 +73,7 @@ begin
   inherited Create;
 
   LoadStream.CheckMarker('LogMessage');
+  LoadStream.Read(fEntityUID);
   LoadStream.Read(fLoc);
   LoadStream.Read(fTextID);
   LoadStream.Read(fKind, SizeOf(TKMMessageKind));
@@ -97,6 +103,7 @@ end;
 procedure TKMLogMessage.Save(SaveStream: TKMemoryStream);
 begin
   SaveStream.PlaceMarker('LogMessage');
+  SaveStream.Write(fEntityUID);
   SaveStream.Write(fLoc);
   SaveStream.Write(fTextID);
   SaveStream.Write(fKind, SizeOf(TKMMessageKind));
@@ -123,10 +130,10 @@ begin
 end;
 
 
-procedure TKMMessageLog.Add(aKind: TKMMessageKind; aTextID: Integer; const aLoc: TKMPoint);
+procedure TKMMessageLog.Add(aKind: TKMMessageKind; aTextID: Integer; const aLoc: TKMPoint; aEntityUID: Cardinal);
 begin
   SetLength(fListLog, fCountLog + 1);
-  fListLog[fCountLog] := TKMLogMessage.Create(aKind, aTextID, aLoc);
+  fListLog[fCountLog] := TKMLogMessage.Create(aKind, aTextID, aLoc, aEntityUID);
   Inc(fCountLog);
 end;
 
