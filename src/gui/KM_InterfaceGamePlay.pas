@@ -3484,7 +3484,9 @@ begin
   // These keys are allowed during replays
   if Key = gResKeys[kfShowTeams].Key then fShowTeamNames := False;
   if Key = gResKeys[kfBeacon].Key then
-    if not fSelectingTroopDirection then
+    if not fSelectingTroopDirection
+      and not fGuiGameResultsSP.Visible
+      and not fGuiGameResultsMP.Visible then
     begin
       fPlacingBeacon := True;
       MinimapView.ClickableOnce := True;
