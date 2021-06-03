@@ -365,11 +365,11 @@ begin
       if not fMaps[I].IsPlayableForSP then Continue;
 
       case Radio_MapType.ItemIndex of
-        0:  if not (fMaps[I].IsSinglePlayerKind and fMaps[I].IsNormalMission and not fMaps[I].TxtInfo.IsSpecial) then
+        0:  if not (fMaps[I].IsSinglePlayerKind and fMaps[I].IsBuildingMission and not fMaps[I].TxtInfo.IsSpecial) then
               Continue;
-        1:  if not (not fMaps[I].IsSinglePlayerKind and fMaps[I].IsNormalMission and not fMaps[I].TxtInfo.IsSpecial) then
+        1:  if not (not fMaps[I].IsSinglePlayerKind and fMaps[I].IsBuildingMission and not fMaps[I].TxtInfo.IsSpecial) then
               Continue;
-        2:  if not (fMaps[I].IsTacticMission and not fMaps[I].TxtInfo.IsSpecial) then
+        2:  if not (fMaps[I].IsFightingMission and not fMaps[I].TxtInfo.IsSpecial) then
               Continue;
         3:  if not fMaps[I].TxtInfo.IsSpecial then
               Continue;
@@ -377,7 +377,7 @@ begin
 
       R := MakeListRow(['', IntToStr(fMaps[I].LocCount), fMaps[I].Name, MapSizeText(fMaps[I].MapSizeX, fMaps[I].MapSizeY)]);
       R.Cells[2].SubTxt := fMaps[I].TxtInfo.SmallDesc;
-      R.Cells[0].Pic := MakePic(rxGui, 28 + Byte(fMaps[I].MissionMode <> mmTactic) * 14);
+      R.Cells[0].Pic := MakePic(rxGui, 28 + Byte(fMaps[I].MissionMode <> mmFighting) * 14);
       R.Tag := I;
       ColumnBox_Maps.AddItem(R);
 

@@ -1120,7 +1120,7 @@ var
   I: Integer;
 begin
   for I := 0 to fCount - 1 do
-    fHandsList[I].AI.AddDefaultGoals(aMissionMode <> mmTactic);
+    fHandsList[I].AI.AddDefaultGoals(aMissionMode <> mmFighting);
 end;
 
 

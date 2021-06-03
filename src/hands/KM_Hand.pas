@@ -2249,8 +2249,8 @@ function GetStatsUpdatePeriod: Integer;
 begin
   Result := 1000;
   case gGameParams.MissionMode of
-    mmNormal:  Result := CHARTS_SAMPLING_FOR_ECONOMY;
-    mmTactic:  Result := CHARTS_SAMPLING_FOR_TACTICS;
+    mmBuilding:  Result := CHARTS_SAMPLING_FOR_ECONOMY;
+    mmFighting:  Result := CHARTS_SAMPLING_FOR_TACTICS;
   end;
 end;
 

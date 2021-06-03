@@ -162,8 +162,8 @@ type
     function IsSinglePlayerKind: Boolean;
     function IsMultiPlayerKind: Boolean;
     function IsDownloadedKind: Boolean;
-    function IsNormalMission: Boolean;
-    function IsTacticMission: Boolean;
+    function IsBuildingMission: Boolean;
+    function IsFightingMission: Boolean;
     property FavouriteMapPic: TKMPic read GetFavouriteMapPic;
     property CanBeHumanCount: Byte read GetCanBeHumanCount;
     property CanBeOnlyHumanCount: Byte read GetCanBeOnlyHumanCount;
@@ -604,7 +604,7 @@ begin
     missionParser.Free;
   end;
 
-  if IsTacticMission then
+  if IsFightingMission then
     fTxtInfo.BlockPeacetime := True;
 
   fTxtInfo.LoadTXTInfo(fDir + fName + '.txt');
@@ -617,7 +617,7 @@ procedure TKMMapInfo.ResetInfo;
 var
   I, K: Integer;
 begin
-  MissionMode := mmNormal;
+  MissionMode := mmBuilding;
   DefaultHuman := 0;
   fTxtInfo.ResetInfo;
   for I:=0 to MAX_HANDS-1 do
@@ -818,15 +818,15 @@ begin
 end;
 
 
-function TKMMapInfo.IsNormalMission: Boolean;
+function TKMMapInfo.IsBuildingMission: Boolean;
 begin
-  Result := MissionMode = mmNormal;
+  Result := MissionMode = mmBuilding;
 end;
 
 
-function TKMMapInfo.IsTacticMission: Boolean;
+function TKMMapInfo.IsFightingMission: Boolean;
 begin
-  Result := MissionMode = mmTactic;
+  Result := MissionMode = mmFighting;
 end;
 
 

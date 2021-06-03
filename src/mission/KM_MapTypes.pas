@@ -39,7 +39,7 @@ type
 
   TKMGoalStatus = (gsTrue = 0, gsFalse = 1); // Weird that it's inverted, but KaM uses it that way
 
-  TKMissionMode = (mmNormal, mmTactic);
+  TKMissionMode = (mmBuilding, mmFighting);
 
   TKMMissionDifficulty = (mdNone, mdEasy3, mdEasy2, mdEasy1, mdNormal, mdHard1, mdHard2, mdHard3);
   TKMMissionDifficultySet = set of TKMMissionDifficulty;

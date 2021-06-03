@@ -724,8 +724,8 @@ begin
       if ((Radio_MapType.ItemIndex = 0) and not fMaps[I].IsSinglePlayerKind)  //SP map filter
         or ((Radio_MapType.ItemIndex = 1) and not fMaps[I].IsMultiPlayerKind) //MP map filter
         or ((Radio_MapType.ItemIndex = 2) and not fMaps[I].IsDownloadedKind)  //MP DL map filter
-        or ((Radio_BuildFight.ItemIndex = 0) and (fMaps[I].MissionMode <> mmNormal)) //Build map filter
-        or ((Radio_BuildFight.ItemIndex = 1) and (fMaps[I].MissionMode <> mmTactic)) //Fight map filter
+        or ((Radio_BuildFight.ItemIndex = 0) and (fMaps[I].MissionMode <> mmBuilding)) //Build map filter
+        or ((Radio_BuildFight.ItemIndex = 1) and (fMaps[I].MissionMode <> mmFighting)) //Fight map filter
         or ((Radio_CoopSpecial.ItemIndex = 0) and not fMaps[I].TxtInfo.IsSpecial)     //Special map filter
         or ((Radio_CoopSpecial.ItemIndex = 1) and not fMaps[I].TxtInfo.IsCoop)        //Coop map filter
         or (TrackBar_PlayersCnt.Enabled and (fMaps[I].LocCount <> TrackBar_PlayersCnt.Position)) //Players number map filter
@@ -748,7 +748,7 @@ begin
                        I);
       R.Cells[0].Pic := fMaps[I].FavouriteMapPic;
       R.Cells[0].HighlightOnMouseOver := True;
-      R.Cells[1].Pic := MakePic(rxGui, 657 + Byte(fMaps[I].IsTacticMission));
+      R.Cells[1].Pic := MakePic(rxGui, 657 + Byte(fMaps[I].IsFightingMission));
       R.Tag := I;
       ColumnBox_MapEd.AddItem(R);
 

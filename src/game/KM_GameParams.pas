@@ -255,13 +255,13 @@ end;
 
 function TKMGameParams.IsTactic: Boolean;
 begin
-  Result := fMissionMode = mmTactic;
+  Result := fMissionMode = mmFighting;
 end;
 
 
 function TKMGameParams.IsNormalMission: Boolean;
 begin
-  Result := fMissionMode = mmNormal;
+  Result := fMissionMode = mmBuilding;
 end;
 
 

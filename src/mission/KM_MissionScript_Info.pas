@@ -69,7 +69,7 @@ begin
   case CommandType of
     ctSetMaxPlayer:    fMapInfo.LocCount := P[0];
 
-    ctSetTactic:       fMapInfo.MissionMode := mmTactic;
+    ctSetTactic:       fMapInfo.MissionMode := mmFighting;
 
     ctSetCurrPlayer:   fLastHand := P[0];
 

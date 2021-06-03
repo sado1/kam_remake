@@ -228,7 +228,7 @@ begin
 
     ctSetTactic:        begin
                           //Default is mmNormal
-                          gGameParams.MissionMode := mmTactic;
+                          gGameParams.MissionMode := mmFighting;
                         end;
 
     ctSetCurrPlayer:    if InRange(P[0], 0, MAX_HANDS - 1) then
