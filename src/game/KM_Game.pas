@@ -1875,8 +1875,8 @@ begin
 
   // Update gameOptions SpeedPT / SpeedAfterPT for MP game
   // If speed was changed from script, then we want to lobby speed to be affected as well
-  // Bug if speed was changed via F5-F8, then we want to save Lobby speed values,
-  // since we want to set it back via pressing F5 twice
+  // But if speed was changed via F5-F8, then we want to save Lobby speed values,
+  // since we want to set it back via pressing F5-F8 twice
   if aUpdateOptionsSpeed and fParams.IsMultiPlayerOrSpec then
   begin
     if IsPeacetime then
