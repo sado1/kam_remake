@@ -1,4 +1,4 @@
-﻿unit KM_Game;
+unit KM_Game;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -1697,7 +1697,6 @@ begin
   if Self = nil then Exit;
 
   if not fParams.IsMultiPlayerOrSpec
-    or (gHands = nil)
     or (gHands.Count = 0) then Exit;
 
   if (gNetworking = nil) or not gNetworking.IsHost then Exit; //Only host can change game speed in MP
