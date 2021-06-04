@@ -927,8 +927,6 @@ const
     end;
   end;
 
-var
-  I: Integer;
 begin
   UpdateMySpectator;
   UpdateSpeeds;
