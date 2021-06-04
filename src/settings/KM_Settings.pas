@@ -139,7 +139,7 @@ end;
 
 class function TKMSettings.GetDir(aUseLocalFolder: Boolean = False): string;
 begin
-  if aUseLocalFolder then
+  if USE_KMR_DIR_FOR_SETTINGS or aUseLocalFolder then
     Result := ExtractFilePath(ParamStr(0))
   else
     Result := CreateAndGetDocumentsSavePath; // Use %My documents%/My Games/
