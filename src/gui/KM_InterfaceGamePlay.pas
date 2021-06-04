@@ -104,7 +104,6 @@ type
     procedure Menu_PreviousTrack(Sender: TObject);
     procedure Allies_Click(Sender: TObject);
     procedure Allies_Show(Sender: TObject);
-    procedure MessageStack_UpdatePositions;
     procedure Message_Click(Sender: TObject; Shift: TShiftState);
     procedure Message_Close(Sender: TObject);
     procedure Message_Delete(aIndex: Integer);
@@ -2301,21 +2300,6 @@ begin
 end;
 
 
-// Update message stack when first log message arrives
-procedure TKMGamePlayInterface.MessageStack_UpdatePositions;
-var
-  I: Integer;
-  pad: Integer;
-begin
-  pad := Ord(CanShowChat) +
-         Ord(CanShowAllies) +
-         Ord(Image_MessageLog.Visible);
-
-  for I := 0 to MAX_VISIBLE_MSGS do
-    Image_Message[I].Top := Panel_Main.Height - 48 - (I + pad) * 48;
-end;
-
-
 procedure TKMGamePlayInterface.Menu_Update;
 begin
   if gGameSettings.MusicOff then
@@ -2528,6 +2512,7 @@ begin
 
   for I := 0 to MAX_VISIBLE_MSGS do
     Image_Message[I].Top := Panel_Main.Height - 48 - I * 48
+                            - IfThen(Image_MessageLog.Visible, 48)
                             - IfThen(CanShowChat, 48)
                             - IfThen(CanShowAllies, 48);
 end;
@@ -4440,7 +4425,7 @@ begin
   if (fUIMode in [umSP, umMP]) and not Image_MessageLog.Visible and (gMySpectator.Hand.MessageLog.CountLog > 0) then
   begin
     Image_MessageLog.Show;
-    MessageStack_UpdatePositions;
+    UpdateMessageImages;
   end;
   Image_MessageLog.Highlight := not Panel_MessageLog.Visible and not (aGlobalTickCount mod 10 < 5)
                                 and (fLastSyncedMessage <> gMySpectator.Hand.MessageLog.CountLog);
