@@ -813,6 +813,19 @@ procedure TKMGame.MultiplayerRig(aNewGame: Boolean);
 const
   NETPLAYERTYPE_TO_AITYPE: array[TKMNetPlayerType] of TKMAIType = (aitNone, aitNone, aitClassic, aitAdvanced);
 
+  procedure UpdateMySpectator;
+  begin
+    // Update gMySpectator
+    FreeAndNil(gMySpectator); //May have been created earlier
+    if gNetworking.MyNetPlayer.IsSpectator then
+    begin
+      gMySpectator := TKMSpectator.Create(FindHandToSpec);
+      gMySpectator.FOWIndex := HAND_NONE; //Show all by default while spectating
+    end
+    else
+      gMySpectator := TKMSpectator.Create(gNetworking.MyNetPlayer.HandIndex);
+  end;
+
   procedure UpdateSpeeds;
   var
     isPT: Boolean;
@@ -837,82 +850,91 @@ const
       TrySetSpeed(GetNormalSpeed, False);
   end;
 
-var
-  I: Integer;
-  handIndex: TKMHandID;
-  playerNikname: AnsiString;
-  playersInfo: string;
-begin
-  // Update gMySpectator
-  FreeAndNil(gMySpectator); //May have been created earlier
-  if gNetworking.MyNetPlayer.IsSpectator then
+  procedure UpdateAAI;
+  var
+    I: Integer;
   begin
-    gMySpectator := TKMSpectator.Create(FindHandToSpec);
-    gMySpectator.FOWIndex := HAND_NONE; //Show all by default while spectating
-  end
-  else
-    gMySpectator := TKMSpectator.Create(gNetworking.MyNetPlayer.HandIndex);
+    //Check for default advanced AI's
+    if gNetworking.IsMap then
+      for I := 0 to gNetworking.MapInfo.LocCount - 1 do
+        if gNetworking.MapInfo.CanBeAdvancedAI[I]
+          and not gNetworking.MapInfo.CanBeAI[I]
+          and not gNetworking.MapInfo.CanBeHuman[I] then
+          gHands[I].AI.Setup.EnableAdvancedAI; //Just enable Advanced AI, do not override MapEd AI params
+  end;
 
-  UpdateSpeeds;
-
-  //Check for default advanced AI's
-  if gNetworking.IsMap then
-    for I := 0 to gNetworking.MapInfo.LocCount - 1 do
-      if gNetworking.MapInfo.CanBeAdvancedAI[I]
-        and not gNetworking.MapInfo.CanBeAI[I]
-        and not gNetworking.MapInfo.CanBeHuman[I] then
-        gHands[I].AI.Setup.EnableAdvancedAI; //Just enable Advanced AI, do not override MapEd AI params
-
-  playersInfo := '';
-  //Assign existing NetPlayers(1..N) to map players(0..N-1)
-  for I := 1 to gNetworking.NetPlayers.Count do
-    if not gNetworking.NetPlayers[I].IsSpectator then
-    begin
-      handIndex := gNetworking.NetPlayers[I].HandIndex;
-      gHands[handIndex].FlagColor := gNetworking.NetPlayers[I].FlagColor;
-
-      //In saves players can be changed to AIs, which needs to be stored in the replay
-      //Also one player could replace another, we have to update its player name
-      if gNetworking.SelectGameKind = ngkSave then
+  procedure UpdatePlayersInfo;
+  var
+    I: Integer;
+    handIndex: TKMHandID;
+    playersInfo: string;
+    playerNikname: AnsiString;
+  begin
+    playersInfo := '';
+    //Assign existing NetPlayers(1..N) to map players(0..N-1)
+    for I := 1 to gNetworking.NetPlayers.Count do
+      if not gNetworking.NetPlayers[I].IsSpectator then
       begin
-        if gNetworking.NetPlayers[I].IsHuman then
-          playerNikname := gNetworking.NetPlayers[I].Nikname
-        else
-          playerNikname := '';
+        handIndex := gNetworking.NetPlayers[I].HandIndex;
+        gHands[handIndex].FlagColor := gNetworking.NetPlayers[I].FlagColor;
 
-        //Command execution will update player, same way as it will be updated in the replay
-        fGameInputProcess.CmdPlayerChanged(handIndex, playerNikname, gNetworking.NetPlayers[I].GetPlayerType,
-                                           NETPLAYERTYPE_TO_AITYPE[gNetworking.NetPlayers[I].PlayerNetType]);
+        //In saves players can be changed to AIs, which needs to be stored in the replay
+        //Also one player could replace another, we have to update its player name
+        if gNetworking.SelectGameKind = ngkSave then
+        begin
+          if gNetworking.NetPlayers[I].IsHuman then
+            playerNikname := gNetworking.NetPlayers[I].Nikname
+          else
+            playerNikname := '';
+
+          //Command execution will update player, same way as it will be updated in the replay
+          fGameInputProcess.CmdPlayerChanged(handIndex, playerNikname, gNetworking.NetPlayers[I].GetPlayerType,
+                                             NETPLAYERTYPE_TO_AITYPE[gNetworking.NetPlayers[I].PlayerNetType]);
+        end
+        else
+          gHands.UpdateHandState(handIndex, gNetworking.NetPlayers[I].GetPlayerType, NETPLAYERTYPE_TO_AITYPE[gNetworking.NetPlayers[I].PlayerNetType]);
+
+        //Update player nikname to show in the list for specs, in the stats etc
+        gHands[handIndex].OwnerNikname := gNetworking.NetPlayers[I].Nikname;
+
+        playersInfo := playersInfo + sLineBreak +
+                       Format('netI: %d P: %s hand: %d',
+                              [I, gHands[handIndex].GetHandOwnerName(gNetworking.NetPlayers[I].IsHuman,
+                                                                     gNetworking.NetPlayers[I].IsAdvancedComputer,
+                                                                     True,
+                                                                     False),
+                               handIndex]);
       end
       else
-        gHands.UpdateHandState(handIndex, gNetworking.NetPlayers[I].GetPlayerType, NETPLAYERTYPE_TO_AITYPE[gNetworking.NetPlayers[I].PlayerNetType]);
+        playersInfo := playersInfo + sLineBreak + Format('netI: %d P: %s is spectator', [I, gNetworking.NetPlayers[I].NiknameU]);
 
-      //Update player nikname to show in the list for specs, in the stats etc
-      gHands[handIndex].OwnerNikname := gNetworking.NetPlayers[I].Nikname;
+    gLog.AddTime('NetPlayersInfo: cnt = ' + IntToStr(gNetworking.NetPlayers.Count) + playersInfo);
+  end;
 
-      playersInfo := playersInfo + sLineBreak +
-                     Format('netI: %d P: %s hand: %d',
-                            [I, gHands[handIndex].GetHandOwnerName(gNetworking.NetPlayers[I].IsHuman,
-                                                                   gNetworking.NetPlayers[I].IsAdvancedComputer,
-                                                                   True,
-                                                                   False),
-                             handIndex]);
-    end
-    else
-      playersInfo := playersInfo + sLineBreak + Format('netI: %d P: %s is spectator', [I, gNetworking.NetPlayers[I].NiknameU]);
-
-  gLog.AddTime('NetPlayersInfo: cnt = ' + IntToStr(gNetworking.NetPlayers.Count) + playersInfo);
-
-  //Find enabled human hands, where if there is no net player on that loc
-  //then disable all goals with this hand for other hands
-  for I := 0 to gHands.Count - 1 do
+  procedure DisableUnusedHandsGoals;
+  var
+    I: Integer;
   begin
-    if gHands[I].Enabled and gHands[I].IsHuman then
+    //Find enabled human hands, where if there is no net player on that loc
+    //then disable all goals with this hand for other hands
+    for I := 0 to gHands.Count - 1 do
     begin
-      if gNetworking.NetPlayers.PlayerIndexToLocal(I) = -1 then
-        gHands.UpdateGoalsForHand(I, False);
+      if gHands[I].Enabled and gHands[I].IsHuman then
+      begin
+        if gNetworking.NetPlayers.PlayerIndexToLocal(I) = -1 then
+          gHands.UpdateGoalsForHand(I, False);
+      end;
     end;
   end;
+
+var
+  I: Integer;
+begin
+  UpdateMySpectator;
+  UpdateSpeeds;
+  UpdateAAI;
+  UpdatePlayersInfo;
+  DisableUnusedHandsGoals;
 
   //Setup alliances
   //We mirror Lobby team setup on to alliances. Savegame and coop has the setup already
