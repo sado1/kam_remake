@@ -220,7 +220,6 @@ begin
                     // Do not enable MP setup for classic AI on the game start, only in the MapEd
       aitClassic:   fHandsList[aHandID].AI.Setup.EnableAdvancedAI(False);
     end;
-
   end
   else
   //We can start to play for defeated hand, f.e. if player just left the game and we restart from save with other player
@@ -1147,7 +1146,10 @@ var
 begin
   for I := 0 to fCount - 1 do
     if I <> aHandIndex then
+    begin
       fHandsList[I].AI.Goals.UpdateGoalsForHand(aHandIndex, aEnable);
+      fHandsList[I].AI.RecheckGoals;
+    end;
 end;
 
 

@@ -26,7 +26,7 @@ type
 
     fCanBeAITypes: TKMAITypeSet;
 
-    procedure CheckGoals;
+    procedure CheckGoals(aAllowResetGoals: Boolean = False);
     function GetHasWon: Boolean;
     function GetHasLost: Boolean;
     function GetIsNotWinnerNotLoser: Boolean;
@@ -51,6 +51,7 @@ type
     property WonOrLost: TWonOrLost read fWonOrLost;
     property HasWon: Boolean read GetHasWon;
     property HasLost: Boolean read GetHasLost;
+    procedure RecheckGoals;
     property IsNotWinnerNotLoser: Boolean read GetIsNotWinnerNotLoser;
     function GetWonOrLostString: UnicodeString; //Get string represantation of Hand WonOrLost
     procedure OwnerUpdate(aPlayer: TKMHandID);
@@ -171,7 +172,13 @@ begin
 end;
 
 
-procedure TKMHandAI.CheckGoals;
+procedure TKMHandAI.RecheckGoals;
+begin
+  CheckGoals(True);
+end;
+
+
+procedure TKMHandAI.CheckGoals(aAllowResetGoals: Boolean = False);
 
   function GoalConditionSatisfied(const aGoal: TKMGoal): Boolean;
   var
@@ -213,7 +220,7 @@ var
 begin
   //If player has elected to play on past victory or defeat
   //then do not check for any further goals
-  if fWonOrLost <> wolNone then Exit;
+  if not aAllowResetGoals and (fWonOrLost <> wolNone) then Exit;
 
   //Assume they will win/survive, then prove it with goals
   HasVictoryGoal := False;
@@ -255,8 +262,11 @@ begin
   if not SurvivalSatisfied then
     Defeat
   else
-    if HasVictoryGoal and VictorySatisfied then
-      Victory;
+  if HasVictoryGoal and VictorySatisfied then
+    Victory
+  else
+  if aAllowResetGoals then
+    ResetWonOrLost;
 end;
 
 
