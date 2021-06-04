@@ -1128,7 +1128,7 @@ procedure TFormMain.chkSuperSpeedClick(Sender: TObject);
 begin
   if (gGameApp.Game = nil)
     or (gGameApp.Game.Params.IsMultiPlayerOrSpec
-      and not gGameApp.Game.CanChangeMPGameSpeed
+      and not gGameApp.Game.CanMPPlayerChangeSpeed
       and not MULTIPLAYER_SPEEDUP
       and not gGameApp.Game.Params.IsReplay) then
     Exit;

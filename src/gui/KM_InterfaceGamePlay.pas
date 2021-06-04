@@ -3427,18 +3427,21 @@ end;
 // Ignore all keys if game is on 'Pause'
 procedure TKMGamePlayInterface.KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
 
-  function SpeedChangeAllowed(aUIModes: TUIModeSet): Boolean;
+  function SpeedChangeAllowedInMP: Boolean;
   begin
-    Result := (fUIMode in aUIModes)
-              or gGame.CanChangeMPGameSpeed
-              or MULTIPLAYER_SPEEDUP;
+    Result := MULTIPLAYER_SPEEDUP
+              or gGame.CanMPPlayerChangeSpeed;
   end;
 
-  function OnPause: Boolean;
+  function GameOnPause: Boolean;
   begin
-    Result := gGame.IsPaused
-              and (SpeedChangeAllowed([umSP])
-                or ((PAUSE_GAME_BEFORE_TICK <> -1) and (fUIMode <> umReplay)));
+    Result := False;
+    if not gGame.IsPaused then Exit(False);
+
+    case fUIMode of
+      umSP, umReplay:   Result := True;
+      umMP, umSpectate: Result := SpeedChangeAllowedInMP or (PAUSE_GAME_BEFORE_TICK <> -1);
+    end;
   end;
 
 var
@@ -3446,11 +3449,11 @@ var
   specPlayerIndex: ShortInt;
   keyFunc: TKMKeyFunction;
   keyAreas: TKMKeyFuncAreaSet;
-  keyHandled: Boolean;
+  keyHandled, doSetPause: Boolean;
 begin
   aHandled := True; // assume we handle all keys here
 
-  if OnPause then
+  if GameOnPause then
   begin
     if Key = gResKeys[kfPause].Key then
       SetPause(False);
@@ -3590,7 +3593,7 @@ begin
     or (Key = gResKeys[kfSpeedup3].Key)
     or (Key = gResKeys[kfSpeedup4].Key) then
   begin
-    if SpeedChangeAllowed([umSP, umReplay]) then
+    if (fUIMode in [umSP, umReplay]) or SpeedChangeAllowedInMP then
     begin
       // Game speed/pause: available in multiplayer mode if the only player left in the game
       if Key = gResKeys[kfSpeedup1].Key then
@@ -3603,14 +3606,11 @@ begin
         gGame.SetSpeed(gGameSettings.SpeedVeryFast, True);
     end
     else
-    if fUIMode in [umMP, umSpectate] then
+    if (fUIMode in [umMP, umSpectate]) and not SpeedChangeAllowedInMP then
     begin
-      if not gGame.CanChangeMPGameSpeed then
-      begin
-        // Show local message why speedup is not allowed
-        gNetworking.PostLocalMessage(gResTexts[TX_GAME_CHANGE_IS_NOT_ALLOWED_MSG]);
-        gSoundPlayer.Play(sfxCantPlace);
-      end;
+      // Show local message why speedup is not allowed
+      gNetworking.PostLocalMessage(gResTexts[TX_GAME_CHANGE_IS_NOT_ALLOWED_MSG]);
+      gSoundPlayer.Play(sfxCantPlace);
     end;
   end;
 
@@ -3707,9 +3707,19 @@ begin
   end;
 
   // General function keys
-  if (Key = gResKeys[kfPause].Key)
-    and SpeedChangeAllowed([umSP]) then
+  if (Key = gResKeys[kfPause].Key) then
+  begin
+    doSetPause := False;
+    case fUIMode of
+      umSP:       doSetPause := True;
+      umReplay:   ;
+      umMP,
+      umSpectate: doSetPause := SpeedChangeAllowedInMP;
+    end;
+
+    if doSetPause then
       SetPause(True); // Display pause overlay
+  end;
 
   { Temporary cheat codes }
   if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or (fUIMode = umSP)) then

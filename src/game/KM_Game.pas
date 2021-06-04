@@ -1,4 +1,4 @@
-unit KM_Game;
+﻿unit KM_Game;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -121,6 +121,8 @@ type
     function GetTicksBehindCnt: Single;
     procedure SetIsPaused(aValue: Boolean);
 
+    function IsMPGameSpeedChangeAllowed: Boolean;
+
     procedure GameSpeedActualChanged(aFromSpeed, aToSpeed: Single);
     procedure SetSpeedActualValue(aSpeed: Single);
 
@@ -203,8 +205,7 @@ type
     function IsPeaceTime: Boolean;
 
     function IsSpeedUpAllowed: Boolean;
-    function CanChangeMPGameSpeed: Boolean;
-    function IsMPGameSpeedChangeAllowed: Boolean;
+    function CanMPPlayerChangeSpeed: Boolean;
 
     function IsWareDistributionStoredBetweenGames: Boolean;
     procedure DebugControlsUpdated(Sender: TObject; aSenderTag: Integer);
@@ -249,6 +250,7 @@ type
     function GetToggledNormalSpeed: Single;
     procedure StepOneFrame;
 
+    procedure TrySetSpeed(aSpeed: Single; aToggle: Boolean);
     procedure SetSpeed(aSpeed: Single); overload;
     procedure SetSpeed(aSpeed: Single; aToggle: Boolean); overload;
     procedure SetSpeed(aSpeed: Single; aToggle: Boolean; aToggleTo: Single); overload;
@@ -810,29 +812,48 @@ end;
 procedure TKMGame.MultiplayerRig(aNewGame: Boolean);
 const
   NETPLAYERTYPE_TO_AITYPE: array[TKMNetPlayerType] of TKMAIType = (aitNone, aitNone, aitClassic, aitAdvanced);
+
+  procedure UpdateSpeeds;
+  var
+    isPT: Boolean;
+    oldSpeedPT, oldSpeedAfterPT: Single;
+  begin
+    oldSpeedPT := fOptions.SpeedPT;
+    oldSpeedAfterPT := fOptions.SpeedAfterPT;
+    //Copy game options from lobby to this game
+    fOptions.Peacetime := gNetworking.NetGameOptions.Peacetime;
+    fOptions.SpeedPT := gNetworking.NetGameOptions.SpeedPT;
+    fOptions.SpeedAfterPT := gNetworking.NetGameOptions.SpeedAfterPT;
+
+    isPT := IsPeacetime;
+
+    if aNewGame  // Set game speed for new game
+      // when saved game speed was changed in the lobby
+      or (    isPT and not SameValue(oldSpeedPT,      fOptions.SpeedPT,      0.01))
+      or (not isPT and not SameValue(oldSpeedAfterPT, fOptions.SpeedAfterPT, 0.01))
+      // if there are more then one undefeated human player
+      or not IsMPGameSpeedChangeAllowed then
+      // Only host can change game speed
+      TrySetSpeed(GetNormalSpeed, False);
+  end;
+
 var
   I: Integer;
   handIndex: TKMHandID;
-  isPT: Boolean;
   playerNikname: AnsiString;
-  oldSpeedPT, oldSpeedAfterPT: Single;
   playersInfo: string;
 begin
-  oldSpeedPT := fOptions.SpeedPT;
-  oldSpeedAfterPT := fOptions.SpeedAfterPT;
-  //Copy game options from lobby to this game
-  fOptions.Peacetime := gNetworking.NetGameOptions.Peacetime;
-  fOptions.SpeedPT := gNetworking.NetGameOptions.SpeedPT;
-  fOptions.SpeedAfterPT := gNetworking.NetGameOptions.SpeedAfterPT;
+  // Update gMySpectator
+  FreeAndNil(gMySpectator); //May have been created earlier
+  if gNetworking.MyNetPlayer.IsSpectator then
+  begin
+    gMySpectator := TKMSpectator.Create(FindHandToSpec);
+    gMySpectator.FOWIndex := HAND_NONE; //Show all by default while spectating
+  end
+  else
+    gMySpectator := TKMSpectator.Create(gNetworking.MyNetPlayer.HandIndex);
 
-  isPT := IsPeacetime;
-
-  //Set game speed for new game or when game speed was changed in the lobby
-  if aNewGame
-    or (    isPT and not SameValue(oldSpeedPT,      fOptions.SpeedPT,      0.01))
-    or (not isPT and not SameValue(oldSpeedAfterPT, fOptions.SpeedAfterPT, 0.01)) then
-    SetSpeed(GetNormalSpeed, False);
-
+  UpdateSpeeds;
 
   //Check for default advanced AI's
   if gNetworking.IsMap then
@@ -893,20 +914,10 @@ begin
     end;
   end;
 
-
   //Setup alliances
   //We mirror Lobby team setup on to alliances. Savegame and coop has the setup already
   if (gNetworking.SelectGameKind = ngkMap) and not gNetworking.MapInfo.TxtInfo.BlockTeamSelection then
     UpdateMultiplayerTeams;
-
-  FreeAndNil(gMySpectator); //May have been created earlier
-  if gNetworking.MyNetPlayer.IsSpectator then
-  begin
-    gMySpectator := TKMSpectator.Create(FindHandToSpec);
-    gMySpectator.FOWIndex := HAND_NONE; //Show all by default while spectating
-  end
-  else
-    gMySpectator := TKMSpectator.Create(gNetworking.MyNetPlayer.HandIndex);
 
   //We cannot remove a player from a save (as they might be interacting with other players)
 
@@ -1691,13 +1702,11 @@ end;
 
 
 // Can this player change game speed?
-function TKMGame.CanChangeMPGameSpeed: Boolean;
+function TKMGame.CanMPPlayerChangeSpeed: Boolean;
 begin
+  Assert(fParams.IsMultiPlayerOrSpec);
   Result := False;
-  if Self = nil then Exit;
-
-  if not fParams.IsMultiPlayerOrSpec
-    or (gHands.Count = 0) then Exit;
+  if (Self = nil) or (gHands.Count = 0) then Exit;
 
   if (gNetworking = nil) or not gNetworking.IsHost then Exit; //Only host can change game speed in MP
 
@@ -1960,6 +1969,14 @@ begin
     SetSpeedActual(aSpeed)
   else if fSpeedChangeAllowed then
     fGameInputProcess.CmdGame(gicGameSpeed, aSpeed);
+end;
+
+
+// Set speed in SP game or if we are the host (no need to spam with speed gicCommands for other players)
+procedure TKMGame.TrySetSpeed(aSpeed: Single; aToggle: Boolean);
+begin
+  if not fParams.IsMultiPlayerOrSpec or gNetworking.IsHost then
+    SetSpeed(aSpeed, aToggle);
 end;
 
 
@@ -2986,9 +3003,10 @@ begin
       MakeSavePoint;
 
     // Avoid 2 autosaves made at the same tick (at PT end and normal autosave)
-    if CheckIfPieceTimeJustEnded then //Send warning messages about peacetime if required
+    if CheckIfPieceTimeJustEnded then // Send warning messages about peacetime if required
     begin
-      SetSpeed(fOptions.SpeedAfterPT, False); //gicGameSpeed will do speed change in the replay
+      // gicGameSpeed will do speed change in the replay
+      TrySetSpeed(fOptions.SpeedAfterPT, False);
       gNetworking.PostLocalMessage(gResTexts[TX_MP_PEACETIME_OVER], csNone);
       IssueAutosaveCommand(True);
     end
