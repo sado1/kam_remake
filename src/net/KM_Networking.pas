@@ -317,6 +317,8 @@ end;
 
 function TKMNetworking.IsHost: Boolean;
 begin
+  if Self = nil then Exit(False);
+  
   Result := (fNetPlayerKind = lpkHost);
 end;
 
