@@ -414,12 +414,20 @@ begin
   for I := 1 to gNetworking.NetPlayers.Count do
     for K := 1 to fSchedule[tick, I].Count do
     begin
-      //we should store/execute commands from dropped players too to be in sync with other players,
-      //that could receive mkDisconnect in other tick, then we do
-      if {not fNetworking.NetPlayers[I].Dropped}
+      // We should store/execute last commands from dropped players too to be in sync with other players,
+      // that could receive mkDisconnect in other tick, then we do.
+      // --------------------------------------------------------------------------------
+      // But we should store/execute commands of dropped players only for a certain ticks
+      // because dropped players commands will not be cleared in schedule by this player,
+      // since we call schedule[].Clear only for MyNetPlayer
+      // So we have to skip those old commands
+      //   (There was a bug, that gicGameSpeed / gicWareDistribution commands from dropped player
+      //    were stored/executed after he left the game every MAX_SCHEDULE ticks,
+      //    because they were stored in the ring buffer of fSchedule)
+      if (not gNetworking.NetPlayers[I].Dropped or gNetworking.NetPlayers[I].NeedWaitForLastCommands(aTick))
       //Don't allow exploits like moving enemy soldiers (but maybe one day you can control disconnected allies?)
-        (gNetworking.NetPlayers[I].HandIndex = fSchedule[tick, I].Items[K].HandIndex)
-           or (fSchedule[tick, I].Items[K].CommandType in ALLOWED_BY_SPECTATORS) then
+        and ((gNetworking.NetPlayers[I].HandIndex = fSchedule[tick, I].Items[K].HandIndex)
+           or (fSchedule[tick, I].Items[K].CommandType in ALLOWED_BY_SPECTATORS)) then
       begin
         // Store the command first so if Exec fails we still have it in the replay
         StoreCommand(fSchedule[tick, I].Items[K]);
