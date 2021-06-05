@@ -39,7 +39,7 @@ type
   TKMGameInputProcess_Multi = class(TKMGameInputProcess)
   private
     fDelay: Word; //How many ticks ahead the commands are scheduled
-    fLastSentCmdsTick: Cardinal; //Needed for resync (last tick, for which commands were sent
+    fLastSentCmdsTick: Cardinal; //Needed for resync (last tick, for which commands were sent)
 
     fNumberConsecutiveWaits: Word; //Number of consecutive times we have been waiting for network
 
@@ -52,7 +52,8 @@ type
     //Mark commands we've already sent to other players
     fSent: array [0..MAX_SCHEDULE-1] of Boolean; //Ring buffer
 
-    //Did the player issue a command for this tick? If not it must be cleared from last time (we can't clear it earlier as it might be needed for resync)
+    //Did the player issue a command for this tick?
+    //If not it must be cleared from last time (we can't clear it earlier as it might be needed for resync)
     fCommandIssued: array [0..MAX_SCHEDULE-1] of Boolean;
 
     //Store random seeds at each tick then confirm with other players
@@ -175,7 +176,7 @@ end;
 
 destructor TKMGameInputProcess_Multi.Destroy;
 var
-  I: integer;
+  I: Integer;
   K: ShortInt;
 begin
   for I := 0 to MAX_SCHEDULE - 1 do
@@ -205,9 +206,9 @@ begin
     Exit;
   end;
 
-  if (gGameParams.Mode <> gmMultiSpectate)
-  and gMySpectator.Hand.AI.HasLost
-  and not (aCommand.CommandType in ALLOWED_AFTER_DEFEAT) then
+  if not gGameParams.IsSpectatorGame
+    and gMySpectator.Hand.AI.HasLost
+    and not (aCommand.CommandType in ALLOWED_AFTER_DEFEAT) then
   begin
     gSoundPlayer.Play(sfxCantPlace);
     Exit;
@@ -225,7 +226,8 @@ begin
 
   if not fCommandIssued[tick] then
   begin
-    fSchedule[tick, gNetworking.MyIndex].Clear; //Clear old data (it was kept in case it was required for resync)
+    // Clear old data (it was kept in case it was required for resync)
+    fSchedule[tick, gNetworking.MyIndex].Clear;
     fCommandIssued[tick] := True;
   end;
   fSchedule[tick, gNetworking.MyIndex].Add(aCommand);
@@ -269,33 +271,35 @@ end;
 
 procedure TKMGameInputProcess_Multi.SendCommands(aTick: Cardinal; aPlayerIndex: ShortInt = -1);
 var
-  msg: TKMemoryStream;
+  sendStream: TKMemoryStream;
 begin
-  msg := TKMemoryStreamBinary.Create;
+  sendStream := TKMemoryStreamBinary.Create;
   try
-    msg.Write(Byte(kdpCommands));
-    msg.Write(aTick); //Target Tick in 1..n range
-    fSchedule[aTick mod MAX_SCHEDULE, gNetworking.MyIndex].Save(msg); //Write all commands to the stream
+    sendStream.Write(Byte(kdpCommands));
+    // Target Tick in 1..n range
+    sendStream.Write(aTick);
+    // Write all commands to the stream
+    fSchedule[aTick mod MAX_SCHEDULE, gNetworking.MyIndex].Save(sendStream);
 
-    gNetworking.SendCommands(msg, aPlayerIndex); //Send to all players by default
+    gNetworking.SendCommands(sendStream, aPlayerIndex); //Send to all players by default
   finally
-    msg.Free;
+    sendStream.Free;
   end;
 end;
 
 
 procedure TKMGameInputProcess_Multi.SendRandomCheck(aTick: Cardinal);
 var
-  msg: TKMemoryStream;
+  sendStream: TKMemoryStream;
 begin
-  msg := TKMemoryStreamBinary.Create;
+  sendStream := TKMemoryStreamBinary.Create;
   try
-    msg.Write(Byte(kdpRandomCheck));
-    msg.Write(aTick); //Target Tick in 1..n range
-    msg.Write(fRandomCheck[aTick mod MAX_SCHEDULE].OurCheck); //Write our random check to the stream
-    gNetworking.SendCommands(msg); //Send to all opponents
+    sendStream.Write(Byte(kdpRandomCheck));
+    sendStream.Write(aTick); //Target Tick in 1..n range
+    sendStream.Write(fRandomCheck[aTick mod MAX_SCHEDULE].OurCheck); //Write our random check to the stream
+    gNetworking.SendCommands(sendStream); //Send to all opponents
   finally
-    msg.Free;
+    sendStream.Free;
   end;
 end;
 
@@ -331,10 +335,10 @@ begin
     kdpCommands:
         begin
           //Recieving commands too late will happen during reconnections, so just ignore it
-          if (tick > gGameParams.Tick)
-            //DO not check if player is dropped - we could receive scheduled commmands from already dropped player, that we should store/execute to be in sync with other players
+          if (tick > gGameParams.Tick) then
+            // Do not check if player is dropped - we could receive scheduled commmands from already dropped player,
+            // that we should store/execute to be in sync with other players
             {and not gNetworking.NetPlayers[aSenderIndex].Dropped}
-            then
           begin
             fSchedule[tick mod MAX_SCHEDULE, aSenderIndex].Load(aStream);
             fRecievedData[tick mod MAX_SCHEDULE, aSenderIndex] := True;
@@ -417,9 +421,10 @@ begin
         (gNetworking.NetPlayers[I].HandIndex = fSchedule[tick, I].Items[K].HandIndex)
            or (fSchedule[tick, I].Items[K].CommandType in ALLOWED_BY_SPECTATORS) then
       begin
-        StoreCommand(fSchedule[tick, I].Items[K]); //Store the command first so if Exec fails we still have it in the replay
+        // Store the command first so if Exec fails we still have it in the replay
+        StoreCommand(fSchedule[tick, I].Items[K]);
         ExecCommand(fSchedule[tick, I].Items[K]);
-        //Returning to the lobby ends the game
+        // Returning to the lobby ends the game
         if gGame = nil then Exit;
       end;
     end;
@@ -456,7 +461,8 @@ begin
       and (gNetworking.NetGameState = lgsGame) then //Don't send commands unless game is running normally
     begin
       if not fCommandIssued[I mod MAX_SCHEDULE] then
-        fSchedule[I mod MAX_SCHEDULE, gNetworking.MyIndex].Clear; //No one has used it since last time through the ring buffer
+        // No one has used it since last time through the ring buffer
+        fSchedule[I mod MAX_SCHEDULE, gNetworking.MyIndex].Clear;
       fCommandIssued[I mod MAX_SCHEDULE] := False; //Make it as requiring clearing next time around
 
       fLastSentCmdsTick := I;
