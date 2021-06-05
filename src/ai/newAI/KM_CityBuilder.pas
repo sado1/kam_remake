@@ -441,10 +441,9 @@ procedure TKMCityBuilder.UpdateBuildNodes();
 //    8: End task
 var
   Check: Boolean;
-  K,L, Prio, ClosestIdx, ClosestDist, Dist, ReqWorkerCnt: Integer;
+  K,L, ClosestIdx, ClosestDist, Dist, ReqWorkerCnt: Integer;
   H: TKMHouse;
   WorkersPos: TKMPointArray;
-  BuildNode: TBuildNode;
 begin
   // Dont update nodes when first school needs to be build
   if BuildingFirstSchool() then

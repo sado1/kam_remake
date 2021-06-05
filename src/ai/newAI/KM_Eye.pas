@@ -981,9 +981,9 @@ const
   MAX_SPARE_POINTS = 20;
 var
   InForest: Boolean;
-  Ownership, AvoidBulding: Byte;
+  AvoidBulding: Byte;
   RADIUS, MAX_DIST: Word;
-  I,X,Y,X2,Y2, Distance, SparePointsCnt, Cnt: Integer;
+  X,Y,X2,Y2, Cnt: Integer;
   Point, sumPoint: TKMPoint;
   VisitArr: TKMByte2Array;
   FI: TKMForestsInfo;

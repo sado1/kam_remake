@@ -599,9 +599,8 @@ const
     (    1.0,         0.2,      5.0,       1.0)  // gtMounted
   );
 var
-  ClusterIdx: Word;
-  K, L, M, BestCCTIdx, BestGIdx, Overflow, Overflow2: Integer;
-  MaxThreat, Distance, BestDistance, Bid, BestBid, SoldiersCnt: Single;
+  K, L, BestCCTIdx, BestGIdx, Overflow, Overflow2: Integer;
+  Distance, BestDistance, SoldiersCnt: Single;
   P: TKMPoint;
   Pf: TKMPointF;
   PL: TKMHandID;

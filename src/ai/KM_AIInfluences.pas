@@ -384,7 +384,7 @@ const
   end;
 var
   Increment: Word;
-  K, L, M, PolyIdx, Cnt, GTIdx: Integer;
+  K, L, M, PolyIdx: Integer;
   G: TKMUnitGroup;
   GT: TKMGroupType;
   U: TKMUnit;

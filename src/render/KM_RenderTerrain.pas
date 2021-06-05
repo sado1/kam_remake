@@ -392,7 +392,6 @@ var
   sizeX, SizeY: Word;
   tX, tY: Word;
   texTileC: TUVRect;
-  AL: TAnimLayer;
   texOffsetWater, texOffsetFalls, texOffsetSwamp: Word;
   V: TVBOArrayType;
 begin

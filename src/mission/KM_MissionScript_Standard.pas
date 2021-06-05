@@ -193,7 +193,6 @@ var
   qty, HandI: Integer;
   H: TKMHouse;
   HT: TKMHouseType;
-  WT: TKMWareType;
   UT: TKMUnitType;
   iPlayerAI: TKMHandAI;
   chooseLoc: TKMChooseLoc;

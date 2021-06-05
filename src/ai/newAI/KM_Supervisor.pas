@@ -351,11 +351,10 @@ const
   TARGET_HOUSE_IN_INFLUENCE = 150;
 var
   CS: TKMCombatStatus;
-  Idx, K, L, M, CSNum: Integer;
+  K, L, M, CSNum: Integer;
   P: TKMPoint;
   G: TKMUnitGroup;
   pCluster: pTKMCombatCluster;
-  House: TKMHouse;
   Owner, PL: TKMHandID;
 begin
   Result := csNeutral;
@@ -489,8 +488,7 @@ const
 
 var
   IdxA,IdxE, CntA, CntE, Overflow, Overflow2, BestIdxE, BestIdxA: Integer;
-  SqrDistFromRanged, SqrDist, BestSqrDistFromRanged, BestSqrDist, BestThreat, Opportunity, BestOpportunity: Single;
-  G: TKMUnitGroup;
+  BestThreat, Opportunity, BestOpportunity: Single;
   U: TKMUnit;
   UW: TKMUnitWarrior;
   pGCWA: pTKMGroupCounterWeight;
@@ -886,10 +884,9 @@ procedure TKMSupervisor.AttackDecision(aTeam: Byte);
     DISTANCE_COEF_FFA = 2;
   var
     ATargetSoldiers, ETargetSoldiers: Boolean;
-    Distance, BestDist, MinDist, MaxDist: Word;
+    Distance, MinDist, MaxDist: Word;
     K, L, ACnt, ECnt, TeamIdx: Integer;
     Comparison, DistCoef: Single;
-    APL, EPL: TKMHandID;
     TargetPL: TKMHandIDArray;
     AllyPoly,EnemyPoly,RoutePoly,DistArr: TKMWordArray;
   begin

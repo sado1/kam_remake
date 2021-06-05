@@ -402,7 +402,7 @@ var
   procedure FilterEdges();
   var
     ShapeCheck: Boolean;
-    K,L,M,X,Y, StartIdx, EndIdx, StartBorderIdx, Overflow1, Overflow2: Integer;
+    K,L,X,Y, StartIdx, EndIdx, StartBorderIdx, Overflow1, Overflow2: Integer;
     InvDenominator, a,b,c: Single;
     StrP,EndP: TKMPoint;
   begin

@@ -947,7 +947,7 @@ function TKMRandomMapGenerator.RandomPlayerLocs(): TKMPointArray;
     POINTS_PER_A_LOC = 20;
   var
     Change, PointSelected: Boolean;
-    I,K,L, RemIdx, overflow: Integer;
+    I,K, RemIdx, overflow: Integer;
     distNew, distOld: Single;
     Size: TKMPoint;
     LocIdx: TIntegerArray;
