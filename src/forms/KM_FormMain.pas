@@ -1570,7 +1570,7 @@ begin
         Assert(gbDebugLayers.Controls[I] is TCheckBox);
         // Refill in DEBUG_LAYERS set
         if TCheckBox(gbDebugLayers.Controls[I]).Checked then
-          DEBUG_TERRAIN_LAYERS := DEBUG_TERRAIN_LAYERS + [gbDebugLayers.Controls[I].Tag];
+          DEBUG_TERRAIN_LAYERS := DEBUG_TERRAIN_LAYERS + [Byte(gbDebugLayers.Controls[I].Tag)];
       end;
     end;
 

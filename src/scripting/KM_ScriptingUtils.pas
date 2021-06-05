@@ -334,7 +334,7 @@ function TKMScriptUtils.ArrayRemoveIndexI(aIndex: Integer; aArray: TIntegerArray
 begin
   Result := aArray;
   try
-    if (Length(aArray) > 0) and (aIndex in [Low(aArray)..High(aArray)]) then
+    if (Length(aArray) > 0) and InRange(aIndex, Low(aArray), High(aArray)) then
     begin
       DeleteFromArray(aArray, aIndex);
       Result := aArray;
@@ -353,7 +353,7 @@ function TKMScriptUtils.ArrayRemoveIndexS(aIndex: Integer; aArray: TAnsiStringAr
 begin
   Result := aArray;
   try
-    if (Length(aArray) > 0) and (aIndex in [Low(aArray)..High(aArray)]) then
+    if (Length(aArray) > 0) and InRange(aIndex, Low(aArray), High(aArray)) then
     begin
       DeleteFromArray(aArray, aIndex);
       Result := aArray;
