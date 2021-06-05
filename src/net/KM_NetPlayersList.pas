@@ -43,7 +43,7 @@ type
     VotedYes: Boolean;
     procedure AddPing(aPing: Word);
     procedure ResetPingRecord;
-    function NoNeedWaitForLastCommands(aTick: Integer): Boolean;
+    function NeedWaitForLastCommands(aTick: Integer): Boolean;
     function NoNeedToWait(aTick: Integer): Boolean;
     function GetInstantPing: Word;
     function GetMaxPing: Word;
@@ -202,16 +202,16 @@ end;
 
 
 //Check if other players need to wait this player, because of his last commands before disconnection
-function TKMNetPlayerInfo.NoNeedWaitForLastCommands(aTick: Integer): Boolean;
+function TKMNetPlayerInfo.NeedWaitForLastCommands(aTick: Integer): Boolean;
 begin
-  Result := (LastSentCommandsTick = LAST_SENT_COMMANDS_TICK_NONE) or (LastSentCommandsTick < aTick);
+  Result := (LastSentCommandsTick <> LAST_SENT_COMMANDS_TICK_NONE) and (LastSentCommandsTick >= aTick);
 end;
 
 
 //Do other player need to wait us at game tick aTick?
 function TKMNetPlayerInfo.NoNeedToWait(aTick: Integer): Boolean;
 begin
-  Result := not IsHuman or (Dropped and NoNeedWaitForLastCommands(aTick));
+  Result := not IsHuman or (Dropped and not NeedWaitForLastCommands(aTick));
 end;
 
 
