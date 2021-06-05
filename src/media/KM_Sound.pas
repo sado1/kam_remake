@@ -434,7 +434,10 @@ function TKMSoundPlayer.PlaySound(aSoundID: TSoundFX; const aFile: UnicodeString
 var
   dif: array[1..3]of Single;
   freeBuf{,FreeSrc}: Integer;
-  I, ID, oggOpenResult: Integer;
+  I, ID: Integer;
+  {$IFNDEF NO_OGG_SOUND}
+  oggOpenResult: Integer;
+  {$ENDIF}
   W: TKMSoundData;
   distance: Single;
   alState: TALint;
