@@ -78,6 +78,7 @@ type
     function IsCampaign: Boolean;
     function IsMultiPlayerOrSpec: Boolean;
     function IsMultiplayerGame: Boolean;
+    function IsSpectatorGame: Boolean;
     function IsMultiplayer: Boolean;
     function IsReplay: Boolean;
     function IsReplayOrSpectate: Boolean;
@@ -268,6 +269,12 @@ end;
 function TKMGameParams.IsMultiplayerGame: Boolean;
 begin
   Result := fMode = gmMulti;
+end;
+
+
+function TKMGameParams.IsSpectatorGame: Boolean;
+begin
+  Result := fMode = gmMultiSpectate;
 end;
 
 
