@@ -11,7 +11,7 @@ uses
   KM_Music, KM_Maps, KM_MapTypes, KM_CampaignTypes, KM_Networking,
   KM_GameSettings,
   KM_KeysSettings,
-  KM_ServerSettings,
+  KM_ServerSettings, KromShellUtils,
   KM_Render,
   KM_GameTypes, KM_Points, KM_Console,
   KM_WorkerThread;
@@ -88,7 +88,7 @@ type
 
     function RenderVersion: UnicodeString;
     procedure PrintScreen(const aFilename: UnicodeString = '');
-    procedure SaveGameWholeMapToJPEG(const aFilename: UnicodeString = '');
+    procedure SaveGameWholeMapToJPEG(const aFilename: UnicodeString = ''; aSaveToPNG: Boolean = False);
 
     procedure PreloadGameResources;
 
@@ -1257,9 +1257,9 @@ begin
 end;
 
 
-procedure TKMGameApp.SaveGameWholeMapToJPEG(const aFilename: UnicodeString = '');
+procedure TKMGameApp.SaveGameWholeMapToJPEG(const aFilename: UnicodeString = ''; aSaveToPNG: Boolean = False);
 var
-  dateStr, fileName: string;
+  dateStr, fileName, extension: string;
   screenX, screenY: Integer;
   zoom, mapSizeX, mapSizeY, mapSizeMax, saveSizeMax: Single;
   pos: TKMPointF;
@@ -1294,13 +1294,17 @@ begin
     if aFilename = '' then
     begin
       DateTimeToString(dateStr, 'yyyy-mm-dd hh-nn-ss', Now); //2007-12-23 15-24-33
-      fileName := ExeDir + 'screenshots\' + gGame.Params.Name + ' ' + dateStr + '.jpeg';
+      if isUnderWine then
+        extension := '.png'
+      else
+        extension := '.jpeg';
+      fileName := ExeDir + 'screenshots\' + gGame.Params.Name + ' ' + dateStr + extension;
     end
     else
       fileName := aFilename;
 
     ForceDirectories(ExtractFilePath(fileName));
-    gRender.SaveFBOToFile(fileName);
+    gRender.SaveFBOToFile(fileName, isUnderWine);
   finally
     SAVE_MAP_TO_FBO_RENDER := False;
   end;

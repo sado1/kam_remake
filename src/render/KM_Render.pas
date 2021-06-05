@@ -2,9 +2,9 @@ unit KM_Render;
 {$I KaM_Remake.inc}
 interface
 uses
-  {$IFDEF WDC} Windows, Graphics, Imaging.JPEG, {$ENDIF} //Lazarus doesn't have JPEG library yet -> FPReadJPEG?
+  {$IFDEF WDC} Windows, Graphics, Imaging.JPEG, Imaging.PNGImage, {$ENDIF} //Lazarus doesn't have JPEG library yet -> FPReadJPEG?
   {$IFDEF Unix} LCLIntf, LCLType, OpenGLContext, {$ENDIF}
-  Math, dglOpenGL, KromOGLUtils, KromUtils,
+  Math, dglOpenGL, KromOGLUtils, KromUtils, KromShellUtils,
   KM_RenderControl, KM_RenderQuery, KM_RenderTypes;
 
 
@@ -35,7 +35,7 @@ type
     fQuery: TKMRenderQuery;
 
     procedure InitFBO;
-    procedure SaveBufferToFile(const aFileName: string; aUseFBOBuffer: Boolean);
+    procedure SaveBufferToFile(const aFileName: string; aUseFBOBuffer, aSaveToPNG: Boolean);
     function GetMaxFBOSize: Cardinal;
   public
     constructor Create(aRenderControl: TKMRenderControl; aScreenX, aScreenY: Integer; aVSync: Boolean);
@@ -60,7 +60,7 @@ type
     procedure Resize(aWidth, aHeight: Integer);
 
     procedure DoPrintScreen(const aFileName: string);
-    procedure SaveFBOToFile(const aFileName: string);
+    procedure SaveFBOToFile(const aFileName: string; aSaveToPNG: Boolean);
 
     property ScreenX: Word read fScreenX;
     property ScreenY: Word read fScreenY;
@@ -87,6 +87,7 @@ const
   // also we are restricted with max file we are able to write via TBitmap or TJpegImage or PNG atm
   // could check https://github.com/graphics32 package to solve this issue with saving ultra large images
   MAX_FBO_BUFFER_SIZE = 5100; // Half of CELL_SIZE=40px*255
+  MAX_WINE_FBO_BUFFER_SIZE = 2000; // workaround for map screenshot crashes under Wine/Linux
 
 { TRender }
 constructor TRender.Create(aRenderControl: TKMRenderControl; aScreenX, aScreenY: Integer; aVSync: Boolean);
@@ -254,7 +255,10 @@ end;
 
 function TRender.GetMaxFBOSize: Cardinal;
 begin
-  Result := Min(fMaxViewportDim, MAX_FBO_BUFFER_SIZE);
+  if isUnderWine then
+    Result := Min(fMaxViewportDim, MAX_WINE_FBO_BUFFER_SIZE)
+  else
+    Result := Min(fMaxViewportDim, MAX_FBO_BUFFER_SIZE);
 end;
 
 
@@ -313,21 +317,23 @@ end;
 
 procedure TRender.DoPrintScreen(const aFileName: string);
 begin
-  SaveBufferToFile(aFileName, False);
+    SaveBufferToFile(aFileName, False, False)
 end;
 
 
-procedure TRender.SaveFBOToFile(const aFileName: string);
+procedure TRender.SaveFBOToFile(const aFileName: string; aSaveToPNG: Boolean);
 begin
-  SaveBufferToFile(aFileName, True);
+  SaveBufferToFile(aFileName, True, aSaveToPNG);
 end;
 
 
-procedure TRender.SaveBufferToFile(const aFileName: string; aUseFBOBuffer: Boolean);
+procedure TRender.SaveBufferToFile(const aFileName: string; aUseFBOBuffer, aSaveToPNG: Boolean);
 {$IFDEF WDC}
 var
   I, K, W, H: integer;
   jpg: TJpegImage;
+  {$IFDEF WDC} Png: Imaging.PNGImage.TPngImage; {$ENDIF}
+  {$IFDEF FPC} Png: TBGRABitmap; {$ENDIF}
   mkbmp: TBitMap;
   bmp: TKMCardinalArray;
 {$ENDIF}
@@ -359,16 +365,26 @@ begin
   mkbmp := TBitmap.Create;
   mkbmp.Handle := CreateBitmap(W, H, 1, 32, @bmp[0]);
 
-  jpg := TJpegImage.Create;
-  jpg.assign(mkbmp);
-  jpg.ProgressiveEncoding := True;
-  jpg.ProgressiveDisplay  := True;
-  jpg.Performance         := jpBestQuality;
-  jpg.CompressionQuality  := 90;
-  jpg.Compress;
-  jpg.SaveToFile(aFileName);
+  if aSaveToPNG then
+  begin
+    png := TPngImage.CreateBlank(COLOR_RGBALPHA, 16, W, H);
+    png.Assign(mkbmp);
+    png.SaveToFile(aFileName);
+    png.Free;
+  end
+  else
+  begin
+    jpg := TJpegImage.Create;
+    jpg.assign(mkbmp);
+    jpg.ProgressiveEncoding := True;
+    jpg.ProgressiveDisplay  := True;
+    jpg.Performance         := jpBestQuality;
+    jpg.CompressionQuality  := 90;
+    jpg.Compress;
+    jpg.SaveToFile(aFileName);
+    jpg.Free;
+  end;
 
-  jpg.Free;
   mkbmp.Free;
 {$ENDIF}
 end;
