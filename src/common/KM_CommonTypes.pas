@@ -87,6 +87,7 @@ type
     Data: UnicodeString;
   end;
 
+  TKMImageType = (itJpeg, itPng, itBmp);
 
   TKMUserActionType = (uatNone, uatKeyDown, uatKeyUp, uatKeyPress, uatMouseDown, uatMouseUp, uatMouseMove, uatMouseWheel);
   TKMUserActionEvent = procedure (aActionType: TKMUserActionType) of object;
@@ -129,6 +130,9 @@ const
 
   COLOR4F_WHITE: TKMColor4f = (R: 1; G: 1; B: 1; A: 1);
   COLOR4F_BLACK: TKMColor4f = (R: 0; G: 0; B: 0; A: 1);
+
+const
+  IMAGE_TYPE_EXT: array[TKMImageType] of string = ('.jpeg', '.png', '.bmp');
 
 const
   WonOrLostText: array [TWonOrLost] of UnicodeString = ('None', 'Won', 'Lost');

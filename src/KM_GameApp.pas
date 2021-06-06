@@ -87,8 +87,8 @@ type
     function CheckDATConsistency: Boolean;
 
     function RenderVersion: UnicodeString;
-    procedure PrintScreen(const aFilename: UnicodeString = '');
-    procedure SaveGameWholeMapToJPEG(const aFilename: UnicodeString = '');
+    procedure PrintScreen(const aFilename: UnicodeString = ''; aImageType: TKMImageType = itJpeg);
+    procedure SaveGameWholeMapToImage(aImageType: TKMImageType; aMaxImageSize: Integer = 0);
 
     procedure PreloadGameResources;
 
@@ -172,6 +172,7 @@ uses
   KM_Main, KM_Controls, KM_Log, KM_Sound, KM_GameInputProcess, KM_GameInputProcess_Multi,
   KM_GameSavePoints,
   KM_Cursor, KM_ResTexts,
+  KM_FileIO,
   KM_Saves, KM_CommonUtils, KM_RandomChecks, KM_DevPerfLog, KM_DevPerfLogTypes;
 
 
@@ -1236,10 +1237,14 @@ begin
 end;
 
 
-procedure TKMGameApp.PrintScreen(const aFilename: UnicodeString = '');
+procedure TKMGameApp.PrintScreen(const aFilename: UnicodeString = ''; aImageType: TKMImageType = itJpeg);
 var
-  strDate, strName: string;
+  strDate, fileName: string;
+  w, h: Integer;
+  pixelData: TKMCardinalArray;
 begin
+  SAVE_MAP_TO_FBO_RENDER := False;
+
   // Looks like we need two frames to flush the render-ahead queue?
   // Otherwise game controls are rendered too, f.e.
   Render(True);
@@ -1247,22 +1252,24 @@ begin
   if aFilename = '' then
   begin
     DateTimeToString(strDate, 'yyyy-mm-dd hh-nn-ss', Now); //2007-12-23 15-24-33
-    strName := ExeDir + 'screenshots\KaM Remake ' + strDate + '.jpeg';
+    fileName := ExeDir + 'screenshots\KaM Remake ' + strDate + '.jpeg';
   end
   else
-    strName := aFilename;
+    fileName := aFilename;
 
-  ForceDirectories(ExtractFilePath(strName));
-  gRender.DoPrintScreen(strName);
+  gRender.ReadRenderedToScreenPixels(w, h, pixelData);
+
+  SavePixelDataToFile(fileName, aImageType, w, h, pixelData);
 end;
 
 
-procedure TKMGameApp.SaveGameWholeMapToJPEG(const aFilename: UnicodeString = '');
+procedure TKMGameApp.SaveGameWholeMapToImage(aImageType: TKMImageType; aMaxImageSize: Integer = 0);
 var
   dateStr, fileName: string;
-  screenX, screenY: Integer;
+  screenX, screenY, w, h: Integer;
   zoom, mapSizeX, mapSizeY, mapSizeMax, saveSizeMax: Single;
   pos: TKMPointF;
+  pixelData: TKMCardinalArray;
 begin
   if gGame = nil then Exit;
 
@@ -1283,6 +1290,9 @@ begin
 
     saveSizeMax := Min(mapSizeMax * CELL_SIZE_PX, gRender.MaxFBOSize);
 
+    if aMaxImageSize > 0 then
+      saveSizeMax := Min(saveSizeMax, aMaxImageSize);
+
     Resize(Round(saveSizeMax * mapSizeX / mapSizeMax), Round(saveSizeMax * mapSizeY / mapSizeMax));
 
     // Zoom out as max as possible
@@ -1291,16 +1301,12 @@ begin
     // Render once is enough, since we render to an off-screen buffer (FBO)
     Render(True);
 
-    if aFilename = '' then
-    begin
-      DateTimeToString(dateStr, 'yyyy-mm-dd hh-nn-ss', Now); //2007-12-23 15-24-33
-      fileName := ExeDir + 'screenshots\' + gGame.Params.Name + ' ' + dateStr + '.jpeg';
-    end
-    else
-      fileName := aFilename;
+    DateTimeToString(dateStr, 'yyyy-mm-dd hh-nn-ss', Now); //2007-12-23 15-24-33
+    fileName := ExeDir + 'screenshots\' + gGame.Params.Name + ' ' + dateStr + IMAGE_TYPE_EXT[aImageType];
 
-    ForceDirectories(ExtractFilePath(fileName));
-    gRender.SaveFBOToFile(fileName);
+    gRender.ReadRenderedToFBOPixels(w, h, pixelData);
+
+    SavePixelDataToFile(fileName, aImageType, w, h, pixelData);
   finally
     SAVE_MAP_TO_FBO_RENDER := False;
   end;

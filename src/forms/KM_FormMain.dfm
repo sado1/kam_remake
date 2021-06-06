@@ -89,6 +89,8 @@ object FormMain: TFormMain
       Caption = 'Misc'
       Collapsed = True
       TabOrder = 0
+      ExplicitTop = 824
+      ExplicitWidth = 239
       ExpandedHeight = 144
       object chkBevel: TCheckBox
         Left = 168
@@ -131,6 +133,8 @@ object FormMain: TFormMain
       Caption = 'Logs'
       Collapsed = True
       TabOrder = 1
+      ExplicitTop = 800
+      ExplicitWidth = 239
       ExpandedHeight = 198
       object chkLogCommands: TCheckBox
         Left = 120
@@ -242,6 +246,8 @@ object FormMain: TFormMain
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 2
+      ExplicitTop = 776
+      ExplicitWidth = 239
       ExpandedHeight = 168
       object Label1: TLabel
         Left = 101
@@ -382,6 +388,8 @@ object FormMain: TFormMain
       Caption = 'User Interface'
       Collapsed = True
       TabOrder = 3
+      ExplicitTop = 752
+      ExplicitWidth = 239
       ExpandedHeight = 114
       object chkUIControlsBounds: TCheckBox
         Left = 8
@@ -453,6 +461,8 @@ object FormMain: TFormMain
       Caption = 'Perf Logs'
       Collapsed = True
       TabOrder = 4
+      ExplicitTop = 728
+      ExplicitWidth = 239
       ExpandedHeight = 660
     end
     object cpAI: TCategoryPanel
@@ -461,6 +471,8 @@ object FormMain: TFormMain
       Caption = 'AI'
       Collapsed = True
       TabOrder = 5
+      ExplicitTop = 704
+      ExplicitWidth = 239
       object Label5: TLabel
         Left = 202
         Top = 111
@@ -667,6 +679,8 @@ object FormMain: TFormMain
       Caption = 'Scripting'
       Collapsed = True
       TabOrder = 6
+      ExplicitTop = 680
+      ExplicitWidth = 239
       ExpandedHeight = 50
       object chkDebugScripting: TCheckBox
         Left = 8
@@ -683,62 +697,14 @@ object FormMain: TFormMain
         OnClick = ControlsUpdate
       end
     end
-    object cpGameAdv: TCategoryPanel
-      Top = 217
-      Height = 24
-      Caption = 'Game additional'
-      Collapsed = True
-      TabOrder = 7
-      ExpandedHeight = 136
-      object chkLoadUnsupSaves: TCheckBox
-        Left = 12
-        Top = 8
-        Width = 157
-        Height = 17
-        Caption = 'Allow load unsupported saves'
-        TabOrder = 0
-        OnClick = ControlsUpdate
-      end
-      object RGPlayer: TRadioGroup
-        Left = 8
-        Top = 30
-        Width = 225
-        Height = 75
-        BiDiMode = bdLeftToRight
-        Caption = ' Select player '
-        Columns = 6
-        ItemIndex = 0
-        Items.Strings = (
-          '1'
-          '2'
-          '3'
-          '4'
-          '5'
-          '6'
-          '7'
-          '8'
-          '9'
-          '10'
-          '11'
-          '12'
-          '13'
-          '14'
-          '15'
-          '16'
-          '17'
-          '18')
-        ParentBiDiMode = False
-        TabOrder = 1
-        OnClick = RGPlayerClick
-        OnExit = radioGroupExit
-      end
-    end
     object cpDebugInput: TCategoryPanel
-      Top = 193
+      Top = 217
       Height = 24
       Caption = 'Debug Input'
       Collapsed = True
-      TabOrder = 8
+      TabOrder = 7
+      ExplicitTop = 656
+      ExplicitWidth = 239
       ExpandedHeight = 210
       object gbFindObjByUID: TGroupBox
         Left = 8
@@ -866,12 +832,139 @@ object FormMain: TFormMain
         OnClick = ControlsUpdate
       end
     end
+    object cpGameAdv: TCategoryPanel
+      Top = 193
+      Height = 24
+      Caption = 'Game additional'
+      Collapsed = True
+      TabOrder = 8
+      ExpandedHeight = 239
+      object chkLoadUnsupSaves: TCheckBox
+        Left = 12
+        Top = 8
+        Width = 157
+        Height = 17
+        Caption = 'Allow load unsupported saves'
+        TabOrder = 0
+        OnClick = ControlsUpdate
+      end
+      object RGPlayer: TRadioGroup
+        Left = 8
+        Top = 30
+        Width = 225
+        Height = 75
+        BiDiMode = bdLeftToRight
+        Caption = ' Select player '
+        Columns = 6
+        ItemIndex = 0
+        Items.Strings = (
+          '1'
+          '2'
+          '3'
+          '4'
+          '5'
+          '6'
+          '7'
+          '8'
+          '9'
+          '10'
+          '11'
+          '12'
+          '13'
+          '14'
+          '15'
+          '16'
+          '17'
+          '18')
+        ParentBiDiMode = False
+        TabOrder = 1
+        OnClick = RGPlayerClick
+        OnExit = radioGroupExit
+      end
+      object gbSaveGameMapToImage: TGroupBox
+        Left = 8
+        Top = 111
+        Width = 224
+        Height = 101
+        Hint = 
+          'Game'#39's whole map will be saved to the image file in the '#39'screens' +
+          'hots'#39' folder'
+        Caption = 'Save game whole map to image'
+        TabOrder = 2
+        object Label16: TLabel
+          Left = 8
+          Top = 45
+          Width = 75
+          Height = 13
+          Caption = 'Max image size:'
+        end
+        object seMaxImageSize: TSpinEdit
+          Left = 86
+          Top = 42
+          Width = 60
+          Height = 22
+          Hint = 
+            'Game'#39's whole map will be saved to the image file in the '#39'screens' +
+            'hots'#39' folder'
+          Ctl3D = True
+          Enabled = False
+          MaxValue = 10200
+          MinValue = 768
+          ParentCtl3D = False
+          TabOrder = 0
+          Value = 5100
+          OnChange = ControlsUpdate
+        end
+        object rgImageType: TRadioGroup
+          Left = 152
+          Top = 16
+          Width = 66
+          Height = 75
+          BiDiMode = bdLeftToRight
+          Caption = 'Image type'
+          ItemIndex = 0
+          Items.Strings = (
+            'jpeg'
+            'png'
+            'bmp')
+          ParentBiDiMode = False
+          TabOrder = 1
+          OnClick = RGPlayerClick
+          OnExit = radioGroupExit
+        end
+        object btnSaveMapImage: TButton
+          Left = 8
+          Top = 71
+          Width = 138
+          Height = 20
+          Hint = 
+            'Game'#39's whole map will be saved to the image file in the '#39'screens' +
+            'hots'#39' folder'
+          Caption = 'Save whole map image'
+          Enabled = False
+          TabOrder = 2
+          OnClick = Debug_SaveGameWholeMapToImageClick
+        end
+        object btnPrintScreen: TButton
+          Left = 8
+          Top = 16
+          Width = 138
+          Height = 20
+          Hint = 'PrintScreen image will be saved to the '#39'screenshots'#39' folder'
+          Caption = 'Print screen'
+          TabOrder = 3
+          OnClick = Debug_PrintScreenClick
+        end
+      end
+    end
     object cpDebugOutput: TCategoryPanel
       Top = 169
       Height = 24
       Caption = 'Debug Output'
       Collapsed = True
       TabOrder = 9
+      ExplicitTop = 393
+      ExplicitWidth = 239
       ExpandedHeight = 97
       object chkUIDs: TCheckBox
         Left = 120
@@ -952,6 +1045,7 @@ object FormMain: TFormMain
       Caption = 'Debug Terrain'
       Collapsed = True
       TabOrder = 10
+      ExplicitWidth = 239
       ExpandedHeight = 248
       object chkShowTerrainIds: TCheckBox
         Left = 8
@@ -1185,6 +1279,7 @@ object FormMain: TFormMain
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 11
+      ExplicitWidth = 239
       object Label2: TLabel
         Left = 136
         Top = 5
@@ -1354,6 +1449,7 @@ object FormMain: TFormMain
       Height = 121
       Caption = 'Game'
       TabOrder = 12
+      ExplicitWidth = 239
       object Label8: TLabel
         Left = 60
         Top = 30
@@ -1499,13 +1595,13 @@ object FormMain: TFormMain
         Hint = 'PrintScreen image will be saved to the '#39'screenshots'#39' folder'
         OnClick = Debug_PrintScreenClick
       end
-      object Debug_SaveGameWholeMapToJPEG: TMenuItem
-        Caption = 'Save game whole map to JPEG'
+      object Debug_SaveGameWholeMapToImage: TMenuItem
+        Caption = 'Save game whole map to image'
         Enabled = False
         Hint = 
-          'Game'#39's whole map will be saved to the '#39'screenshots'#39' folder as a ' +
-          'JPEG image '
-        OnClick = Debug_SaveGameWholeMapToJPEGClick
+          'Game'#39's whole map will be saved to the image file in the '#39'screens' +
+          'hots'#39' folder'
+        OnClick = Debug_SaveGameWholeMapToImageClick
       end
       object N8: TMenuItem
         Caption = '-'

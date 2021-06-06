@@ -2,10 +2,10 @@ unit KM_Render;
 {$I KaM_Remake.inc}
 interface
 uses
-  {$IFDEF WDC} Windows, Graphics, Imaging.JPEG, {$ENDIF} //Lazarus doesn't have JPEG library yet -> FPReadJPEG?
+  {$IFDEF WDC} Windows, {$ENDIF}
   {$IFDEF Unix} LCLIntf, LCLType, OpenGLContext, {$ENDIF}
   Math, dglOpenGL, KromOGLUtils, KromUtils,
-  KM_RenderControl, KM_RenderQuery, KM_RenderTypes;
+  KM_RenderControl, KM_RenderQuery, KM_RenderTypes, KM_CommonTypes;
 
 
 const
@@ -35,7 +35,7 @@ type
     fQuery: TKMRenderQuery;
 
     procedure InitFBO;
-    procedure SaveBufferToFile(const aFileName: string; aUseFBOBuffer: Boolean);
+    procedure SaveBufferToFile(aUseFBOBuffer: Boolean; var aWidth, aHeight: Integer; var aPixelData: TKMCardinalArray);
     function GetMaxFBOSize: Cardinal;
   public
     constructor Create(aRenderControl: TKMRenderControl; aScreenX, aScreenY: Integer; aVSync: Boolean);
@@ -59,8 +59,8 @@ type
     function IsOldGLVersion: Boolean;
     procedure Resize(aWidth, aHeight: Integer);
 
-    procedure DoPrintScreen(const aFileName: string);
-    procedure SaveFBOToFile(const aFileName: string);
+    procedure ReadRenderedToScreenPixels(var aWidth, aHeight: Integer; var aPixelData: TKMCardinalArray);
+    procedure ReadRenderedToFBOPixels(var aWidth, aHeight: Integer; var aPixelData: TKMCardinalArray);
 
     property ScreenX: Word read fScreenX;
     property ScreenY: Word read fScreenY;
@@ -79,14 +79,14 @@ var
 
 implementation
 uses
-  SysUtils, KM_Log, KM_Defaults, KM_IoPNG, KM_CommonTypes, KM_CommonClasses;
+  SysUtils, KM_Log, KM_Defaults, KM_IoPNG, KM_CommonClasses;
 
 const
   // We want to use off-screen FBO buffer to render full map to the file,
   // so there is no need in ultra big dimensions (f.e. 10200 x 10200)
   // also we are restricted with max file we are able to write via TBitmap or TJpegImage or PNG atm
   // could check https://github.com/graphics32 package to solve this issue with saving ultra large images
-  MAX_FBO_BUFFER_SIZE = 5100; // Half of CELL_SIZE=40px*255
+  MAX_FBO_BUFFER_SIZE = 10200; // Half of CELL_SIZE=40px*255
 
 { TRender }
 constructor TRender.Create(aRenderControl: TKMRenderControl; aScreenX, aScreenY: Integer; aVSync: Boolean);
@@ -130,6 +130,9 @@ begin
     SetupVSync(aVSync);
 
     Resize(aScreenX, aScreenY);
+
+    InitFBO;
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
   end;
 end;
 
@@ -311,30 +314,27 @@ begin
 end;
 
 
-procedure TRender.DoPrintScreen(const aFileName: string);
+procedure TRender.ReadRenderedToScreenPixels(var aWidth, aHeight: Integer; var aPixelData: TKMCardinalArray);
 begin
-  SaveBufferToFile(aFileName, False);
+  SaveBufferToFile(False, aWidth, aHeight, aPixelData);
 end;
 
 
-procedure TRender.SaveFBOToFile(const aFileName: string);
+procedure TRender.ReadRenderedToFBOPixels(var aWidth, aHeight: Integer; var aPixelData: TKMCardinalArray);
 begin
-  SaveBufferToFile(aFileName, True);
+  SaveBufferToFile(True, aWidth, aHeight, aPixelData);
 end;
 
 
-procedure TRender.SaveBufferToFile(const aFileName: string; aUseFBOBuffer: Boolean);
+procedure TRender.SaveBufferToFile(aUseFBOBuffer: Boolean; var aWidth, aHeight: Integer; var aPixelData: TKMCardinalArray);
 {$IFDEF WDC}
 var
-  I, K, W, H: integer;
-  jpg: TJpegImage;
-  mkbmp: TBitMap;
-  bmp: TKMCardinalArray;
+  I, K: Integer;
 {$ENDIF}
 begin
 {$IFDEF WDC}
-  W := ScreenX;
-  H := ScreenY;
+  aWidth := ScreenX;
+  aHeight := ScreenY;
 
   if aUseFBOBuffer then
   begin
@@ -342,34 +342,21 @@ begin
     glReadBuffer(GL_COLOR_ATTACHMENT0);
     // Bind to FBO framebuffer
     glBindFramebuffer(GL_READ_FRAMEBUFFER, fFBO);
-  end;
+  end
+  else
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
-  SetLength(bmp, W * H + 1);
-  glReadPixels(0, 0, W, H, GL_BGRA, GL_UNSIGNED_BYTE, @bmp[0]);
+  SetLength(aPixelData, aWidth * aHeight + 1);
+  glReadPixels(0, 0, aWidth, aHeight, GL_BGRA, GL_UNSIGNED_BYTE, @aPixelData[0]);
 
   if aUseFBOBuffer then
     // Return to onscreen rendering:
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
   //Mirror verticaly
-  for i := 0 to (H div 2) - 1 do
-    for K := 0 to W - 1 do
-      SwapInt(bmp[i * W + K], bmp[((H - 1) - i) * W + K]);
-
-  mkbmp := TBitmap.Create;
-  mkbmp.Handle := CreateBitmap(W, H, 1, 32, @bmp[0]);
-
-  jpg := TJpegImage.Create;
-  jpg.assign(mkbmp);
-  jpg.ProgressiveEncoding := True;
-  jpg.ProgressiveDisplay  := True;
-  jpg.Performance         := jpBestQuality;
-  jpg.CompressionQuality  := 90;
-  jpg.Compress;
-  jpg.SaveToFile(aFileName);
-
-  jpg.Free;
-  mkbmp.Free;
+  for i := 0 to (aHeight div 2) - 1 do
+    for K := 0 to aWidth - 1 do
+      SwapInt(aPixelData[i * aWidth + K], aPixelData[((aHeight - 1) - i) * aWidth + K]);
 {$ENDIF}
 end;
 

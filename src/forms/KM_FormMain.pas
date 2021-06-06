@@ -227,8 +227,14 @@ type
     chkDebugLayer1: TCheckBox;
     chkDebugLayer2: TCheckBox;
     chkDebugLayer3: TCheckBox;
-    Debug_SaveGameWholeMapToJPEG: TMenuItem;
+    Debug_SaveGameWholeMapToImage: TMenuItem;
     chkViewport: TCheckBox;
+    gbSaveGameMapToImage: TGroupBox;
+    seMaxImageSize: TSpinEdit;
+    Label16: TLabel;
+    rgImageType: TRadioGroup;
+    btnSaveMapImage: TButton;
+    btnPrintScreen: TButton;
 
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -272,7 +278,7 @@ type
     procedure Civilians1Click(Sender: TObject);
 
     procedure Debug_PrintScreenClick(Sender: TObject);
-    procedure Debug_SaveGameWholeMapToJPEGClick(Sender: TObject);
+    procedure Debug_SaveGameWholeMapToImageClick(Sender: TObject);
     procedure Debug_ExportMenuClick(Sender: TObject);
     procedure Debug_EnableCheatsClick(Sender: TObject);
     procedure Debug_UnlockCmpMissionsClick(Sender: TObject);
@@ -717,7 +723,9 @@ end;
 
 procedure TFormMain.SetSaveGameWholeMapImage(aEnabled: Boolean);
 begin
-  Debug_SaveGameWholeMapToJPEG.Enabled := aEnabled;
+  Debug_SaveGameWholeMapToImage.Enabled := aEnabled;
+  btnSaveMapImage.Enabled := aEnabled;
+  seMaxImageSize.Enabled := aEnabled;
 end;
 
 
@@ -924,14 +932,14 @@ end;
 procedure TFormMain.Debug_PrintScreenClick(Sender: TObject);
 begin
   if gGameApp <> nil then
-    gGameApp.PrintScreen;
+    gGameApp.PrintScreen('', TKMImageType(rgImageType.ItemIndex));
 end;
 
 
-procedure TFormMain.Debug_SaveGameWholeMapToJPEGClick(Sender: TObject);
+procedure TFormMain.Debug_SaveGameWholeMapToImageClick(Sender: TObject);
 begin
   if gGameApp <> nil then
-    gGameApp.SaveGameWholeMapToJPEG;
+    gGameApp.SaveGameWholeMapToImage(TKMImageType(rgImageType.ItemIndex), seMaxImageSize.Value);
 end;
 
 
@@ -1247,7 +1255,8 @@ procedure TFormMain.ResetControl(aCtrl: TControl);
                  (aCtrl = chkSnowHouses)
               or (aCtrl = chkLoadUnsupSaves)
               or (aCtrl = chkDebugScripting)
-              or (aCtrl = tbWaterLight);
+              or (aCtrl = tbWaterLight)
+              or (aCtrl = seMaxImageSize);
               {$ENDIF}
               {$IFDEF FPC} False; {$ENDIF}
   end;
