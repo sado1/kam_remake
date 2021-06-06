@@ -44,7 +44,7 @@ uses
 
   function IsFilePath(const aPath: UnicodeString): Boolean;
 
-  procedure SavePixelDataToFile(const aFilePath: string; aImageType: TKMImageType; aWidth, aHeight: Integer; aPixelData: TKMCardinalArray);
+  procedure SavePixelDataToFile(const aFilePath: string; aImageType: TKMImageType; aWidth, aHeight: Integer; var aPixelData: TKMCardinalArray);
 
   function IsDirectoryWriteable(const aDir: string): Boolean;
 
@@ -271,7 +271,7 @@ begin
 end;
 
 
-procedure SavePixelDataToFile(const aFilePath: string; aImageType: TKMImageType; aWidth, aHeight: Integer; aPixelData: TKMCardinalArray);
+procedure SavePixelDataToFile(const aFilePath: string; aImageType: TKMImageType; aWidth, aHeight: Integer; var aPixelData: TKMCardinalArray);
 {$IFDEF WDC}
 var
   filePath: string;
