@@ -130,9 +130,6 @@ begin
     SetupVSync(aVSync);
 
     Resize(aScreenX, aScreenY);
-
-    InitFBO;
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
   end;
 end;
 
