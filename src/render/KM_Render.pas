@@ -340,7 +340,8 @@ begin
     glBindFramebuffer(GL_READ_FRAMEBUFFER, fFBO);
   end
   else
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    // Read from onscreen buffer
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 
   SetLength(aPixelData, aWidth * aHeight + 1);
   glReadPixels(0, 0, aWidth, aHeight, GL_BGRA, GL_UNSIGNED_BYTE, @aPixelData[0]);
