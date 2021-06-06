@@ -889,7 +889,7 @@ object FormMain: TFormMain
         Hint = 
           'Game'#39's whole map will be saved to the image file in the '#39'screens' +
           'hots'#39' folder'
-        Caption = 'Save game whole map to image'
+        Caption = 'Game images'
         TabOrder = 2
         object Label16: TLabel
           Left = 8
