@@ -83,10 +83,9 @@ uses
 
 const
   // We want to use off-screen FBO buffer to render full map to the file,
-  // so there is no need in ultra big dimensions (f.e. 10200 x 10200)
-  // also we are restricted with max file we are able to write via TBitmap or TJpegImage or PNG atm
+  // we are restricted with max file we are able to write via TBitmap or TJpegImage or TPNGImage atm
   // could check https://github.com/graphics32 package to solve this issue with saving ultra large images
-  MAX_FBO_BUFFER_SIZE = 10200; // Half of CELL_SIZE=40px*255
+  MAX_FBO_BUFFER_SIZE = CELL_SIZE_PX * (MAX_MAP_SIZE - 1); // (10200 = CELL_SIZE=40px)*255
 
 { TRender }
 constructor TRender.Create(aRenderControl: TKMRenderControl; aScreenX, aScreenY: Integer; aVSync: Boolean);
