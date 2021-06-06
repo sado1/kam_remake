@@ -55,7 +55,10 @@ uses
 
 implementation
 uses
+  {$IFDEF WDC}
   Dialogs,
+  KM_Log,
+  {$ENDIF}
   StrUtils, KM_CommonUtils,
   KM_Defaults;
 
@@ -315,6 +318,8 @@ begin
     except
       on E: Exception do
       begin
+        gLog.AddTime('Error while saving image: ' + E.ClassName + ': ' + E.Message);
+
         ShowMessage('Error saving image. Try to reduce max image size or choose other image format');
 
         if FileExists(filePath) then
