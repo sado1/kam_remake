@@ -1243,8 +1243,6 @@ var
   w, h: Integer;
   pixelData: TKMCardinalArray;
 begin
-  SAVE_MAP_TO_FBO_RENDER := False;
-
   // Looks like we need two frames to flush the render-ahead queue?
   // Otherwise game controls are rendered too, f.e.
   Render(True);
