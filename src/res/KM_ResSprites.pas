@@ -459,14 +459,14 @@ end;
 //Add PNG images to spritepack if user has any addons in Sprites folder
 procedure TKMSpritePack.AddImage(const aFolder, aFilename: string; aIndex: Integer);
 type
-  TMaskType = (mtNone, mtPlain, mtSmart);
+  TKMSpriteMaskType = (smtNone, smtPlain, smtSmart);
 var
   I,K: Integer;
   Tr, Tg, Tb, T: Byte;
   Thue, Tsat, Tbri: Single;
   ft: TextFile;
-  maskFile: array [TMaskType] of string;
-  maskTyp: TMaskType;
+  maskFile: array [TKMSpriteMaskType] of string;
+  maskTyp: TKMSpriteMaskType;
   pngWidth, pngHeight: Word;
   pngData: TKMCardinalArray;
   txtFileName: string;
@@ -490,19 +490,19 @@ begin
   for I := 0 to pngWidth - 1 do
     fRXData.RGBA[aIndex, K * pngWidth + I] := pngData[K * pngWidth + I];
 
-  maskFile[mtPlain] := aFolder + StringReplace(aFilename, '.png', 'm.png', [rfReplaceAll, rfIgnoreCase]);
-  maskFile[mtSmart] := aFolder + StringReplace(aFilename, '.png', 'a.png', [rfReplaceAll, rfIgnoreCase]);
+  maskFile[smtPlain] := aFolder + StringReplace(aFilename, '.png', 'm.png', [rfReplaceAll, rfIgnoreCase]);
+  maskFile[smtSmart] := aFolder + StringReplace(aFilename, '.png', 'a.png', [rfReplaceAll, rfIgnoreCase]);
 
   //Determine mask processing mode
-  if FileExists(maskFile[mtPlain]) then
-    maskTyp := mtPlain
+  if FileExists(maskFile[smtPlain]) then
+    maskTyp := smtPlain
   else
-  if FileExists(maskFile[mtSmart]) then
-    maskTyp := mtSmart
+  if FileExists(maskFile[smtSmart]) then
+    maskTyp := smtSmart
   else
-    maskTyp := mtNone;
+    maskTyp := smtNone;
 
-  fRXData.HasMask[aIndex] := maskTyp in [mtPlain, mtSmart];
+  fRXData.HasMask[aIndex] := maskTyp in [smtPlain, smtSmart];
 
   //Load and process the mask if it exists
   if fRXData.HasMask[aIndex] then
@@ -519,11 +519,11 @@ begin
       for K := 0 to pngHeight - 1 do
       for I := 0 to pngWidth - 1 do
       case maskTyp of
-        mtPlain:  begin
+        smtPlain:  begin
                     //For now process just red (assume pic is greyscale)
                     fRXData.Mask[aIndex, K*pngWidth+I] := pngData[K*pngWidth+I] and $FF;
                   end;
-        mtSmart:  begin
+        smtSmart:  begin
                     if Cardinal(pngData[K*pngWidth+I] and $FFFFFF) <> 0 then
                     begin
                       Tr := fRXData.RGBA[aIndex, K*pngWidth+I] and $FF;
