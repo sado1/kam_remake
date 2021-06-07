@@ -95,7 +95,7 @@ const
       -2,
       15,16,17,18,19,20,21,22,23,24,25,26,
       -4,-3, // Put GrassyWater/Water/FastWater always to the base layer, because of animation
-      28);
+      29);
 
   BASE_TERRAIN: array[TKMTerrainKind] of Word = //tkCustom..tkLava] of Word =
     (0, 0, 8, 17, 32, 26, 27, 28, 29, 34, 35, 215, 48, 40, 44, 315, 47, 46, 45, 132, 159, 164, 245, 20, 155, 147, 151, 192, 209, 7);
