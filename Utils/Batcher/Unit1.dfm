@@ -3,7 +3,7 @@ object Form1: TForm1
   Top = 0
   Caption = 'Form1'
   ClientHeight = 454
-  ClientWidth = 872
+  ClientWidth = 1183
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,7 +12,7 @@ object Form1: TForm1
   Font.Style = []
   OldCreateOrder = False
   DesignSize = (
-    872
+    1183
     454)
   PixelsPerInch = 96
   TextHeight = 13
@@ -58,7 +58,7 @@ object Form1: TForm1
   object Memo1: TMemo
     Left = 360
     Top = 25
-    Width = 465
+    Width = 776
     Height = 296
     Margins.Left = 2
     Margins.Top = 2
@@ -73,6 +73,7 @@ object Form1: TForm1
     ParentFont = False
     ScrollBars = ssVertical
     TabOrder = 3
+    ExplicitWidth = 465
   end
   object Button4: TButton
     Left = 24
@@ -284,7 +285,7 @@ object Form1: TForm1
   object Button13: TButton
     Left = 615
     Top = 336
-    Width = 154
+    Width = 170
     Height = 25
     Margins.Left = 2
     Margins.Top = 2
@@ -319,5 +320,18 @@ object Form1: TForm1
     Caption = 'Generate Utils DCC_UnitSearchPath for .dproj'
     TabOrder = 21
     OnClick = Button15Click
+  end
+  object Button16: TButton
+    Left = 615
+    Top = 394
+    Width = 170
+    Height = 25
+    Margins.Left = 2
+    Margins.Top = 2
+    Margins.Right = 2
+    Margins.Bottom = 2
+    Caption = 'Rebuild anim tiles into plain form'
+    TabOrder = 22
+    OnClick = Button16Click
   end
 end

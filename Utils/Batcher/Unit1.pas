@@ -43,6 +43,7 @@ type
     Button13: TButton;
     Button14: TButton;
     Button15: TButton;
+    Button16: TButton;
     procedure Button3Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -62,6 +63,7 @@ type
     procedure Button13Click(Sender: TObject);
     procedure Button14Click(Sender: TObject);
     procedure Button15Click(Sender: TObject);
+    procedure Button16Click(Sender: TObject);
   private
     function ValidateKMUnitName(const aValue: String): Boolean;
     function ValidateUtilsUnitName(const aValue: String): Boolean;
@@ -82,6 +84,8 @@ var
 
 implementation
 uses
+  KM_FileIO,
+  KM_ResTilesetTypes,
   KM_Campaigns, KM_Game, KM_GameSettings, KM_Hand, KM_MissionScript_Standard, KM_CampaignTypes, KM_MapTypes;
 
 {$R *.dfm}
@@ -856,6 +860,103 @@ begin
 
   gLog.AddNoTime(str, False);
   Memo1.Lines.Append(str);
+  TearDown;
+end;
+
+
+procedure TForm1.Button16Click(Sender: TObject);
+var
+  TILE, ANIM_I: Integer;
+  animID, newAnimID, terId, animI: Integer;
+  dir, newDir, filePath, fileName, newFileName, codeString: string;
+
+//  terAnimI: array [0..MAX_TILE_TO_SHOW-1] of Byte;
+  terAnim: array [0..MAX_TILE_TO_SHOW-1] of TKMTerrainAnims;
+  newTerAnim: array [0..MAX_TILE_TO_SHOW-1] of TKMTerrainAnims;
+begin
+
+  SetUp(False);
+  //
+  dir := ExeDir + 'SpriteResource' + PathDelim + '7' + PathDelim;
+  newDir := dir + 'new' + PathDelim;
+
+  KMDeleteFolder(newDir);
+  ForceDirectories(newDir);
+
+  FillChar(terAnim, SizeOf(terAnim), #0); //Clear up
+  FillChar(newTerAnim, SizeOf(terAnim), #0); //Clear up
+//  FillChar(terAnim, SizeOf(terAnimI), #0); //Clear up
+
+  for filePath in TDirectory.GetFiles(dir, '7_????.png') do
+  begin
+    fileName := ExtractFileName(filePath);
+    if TryStrToInt(Copy(fileName, 3, 4), animID) then
+    begin
+      if animID < 5000 then Continue; // static tiles without animation
+
+      if InRange(animID, 5550, 5600) then Continue; // AutoTransition masks
+
+      terId := (animID - 5000) mod 300;
+
+      if InRange(animID, 5300, 7700) then
+      begin
+        animI := (animID - 5300 - terId) div 300;
+      end
+      else
+      if InRange(animID, 7700, 9200) then
+      begin
+        animI := (animID - 7700 - terId) div 300;
+      end
+      else
+      if InRange(animID, 9200, 10000) then
+      begin
+        animI := (animID - 9200 - terId) div 300;
+      end
+      else
+        raise Exception.Create('unexpected tile with ID = ' + IntToStr(animID));
+
+      terAnim[terId - 1].Count := Max(animI + 1, terAnim[terId - 1].Count); //animID;
+      terAnim[terId - 1].Anims[animI] := animID;
+    end;
+  end;
+
+  newAnimID := 5000;
+  for TILE := Low(terAnim) to High(terAnim) do
+  begin
+    if terAnim[TILE].Count = 0 then Continue;
+
+    newTerAnim[TILE].Count := terAnim[TILE].Count;
+
+    for ANIM_I := 0 to terAnim[TILE].Count - 1 do
+    begin
+      Inc(newAnimID);
+      newTerAnim[TILE].Anims[ANIM_I] := newAnimID;
+
+      KMCopyFile(dir + Format('7_%4d.png', [terAnim[TILE].Anims[ANIM_I]]), newDir + Format('7_%4d.png', [newAnimID]), True);
+    end;
+  end;
+
+  Memo1.Lines.Append('    ('); // 4 spaces
+//  codeString := '(' + Eolw;
+
+  for TILE := Low(newTerAnim) to High(newTerAnim) do
+  begin
+    codeString := Format('      (Count: %d; Anims: (', [newTerAnim[TILE].Count]); // 6 spaces
+    for ANIM_I := 0 to 7 do
+    begin
+      if ANIM_I > 0 then
+        codeString := codeString + ', ';
+      codeString := codeString + Format('%4d', [newTerAnim[TILE].Anims[ANIM_I]]);
+//      (newTerAnim.);
+//      codeString := codeString + '';
+    end;
+    codeString := codeString + ')), // ' + IntToStr(TILE);
+    Memo1.Lines.Append(codeString);
+    if (TILE mod 10 = 9) then
+      Memo1.Lines.Append('');
+  end;
+
+
   TearDown;
 end;
 
