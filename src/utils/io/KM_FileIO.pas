@@ -8,7 +8,6 @@ uses
   {$IFDEF WDC} System.IOUtils, {$ENDIF}
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLType, {$ENDIF}
-  {$IFDEF WDC} Graphics, Imaging.JPEG, Imaging.PNGImage, {$ENDIF} //Lazarus doesn't have JPEG library yet -> FPReadJPEG?
   Classes, SysUtils
   {$IFDEF WDC OR FPC_FULLVERSION >= 30200}, KM_WorkerThread{$ENDIF}
   , KM_CommonTypes;
@@ -44,8 +43,6 @@ uses
 
   function IsFilePath(const aPath: UnicodeString): Boolean;
 
-  procedure SavePixelDataToFile(const aFilePath: string; aImageType: TKMImageType; aWidth, aHeight: Integer; var aPixelData: TKMCardinalArray);
-
   function IsDirectoryWriteable(const aDir: string): Boolean;
 
   function CreateAndGetDocumentsSavePath: string;
@@ -55,10 +52,6 @@ uses
 
 implementation
 uses
-  {$IFDEF WDC}
-  Dialogs,
-  KM_Log,
-  {$ENDIF}
   StrUtils, KM_CommonUtils,
   KM_Defaults;
 
@@ -268,69 +261,6 @@ function IsFilePath(const aPath: UnicodeString): Boolean;
 begin
   // For now we assume, that folder path always ends with PathDelim
   Result := RightStr(aPath, 1) <> PathDelim;
-end;
-
-
-procedure SavePixelDataToFile(const aFilePath: string; aImageType: TKMImageType; aWidth, aHeight: Integer; var aPixelData: TKMCardinalArray);
-{$IFDEF WDC}
-var
-  filePath: string;
-  mkbmp: TBitmap;
-  jpg: TJpegImage;
-  png: TPngImage;
-{$ENDIF}
-begin
-{$IFDEF WDC}
-  ForceDirectories(ExtractFilePath(aFilePath));
-  filePath := ChangeFileExt(aFilePath, IMAGE_TYPE_EXT[aImageType]);
-
-  mkbmp := TBitmap.Create;
-  try
-    try
-      mkbmp.Handle := CreateBitmap(aWidth, aHeight, 1, 32, @aPixelData[0]);
-
-      case aImageType of
-        itJpeg: begin
-                  jpg := TJpegImage.Create;
-                  try
-                    jpg.assign(mkbmp);
-                    jpg.ProgressiveEncoding := True;
-                    jpg.ProgressiveDisplay  := True;
-                    jpg.Performance         := jpBestQuality;
-                    jpg.CompressionQuality  := 90;
-                    jpg.Compress;
-                    jpg.SaveToFile(filePath);
-                  finally
-                    jpg.Free;
-                  end;
-                end;
-        itPng:  begin
-                  png := TPngImage.CreateBlank(COLOR_RGBALPHA, 16, aWidth, aHeight);
-                  try
-                    png.Assign(mkbmp);
-                    png.SaveToFile(filePath);
-                  finally
-                    png.Free;
-                  end;
-                end;
-        itBmp:  mkbmp.SaveToFile(filePath);
-      end;
-    except
-      on E: Exception do
-      begin
-        gLog.AddTime('Error while saving image: ' + E.ClassName + ': ' + E.Message);
-
-        ShowMessage('Error saving image. Try to reduce max image size or choose other image format');
-
-        if FileExists(filePath) then
-          DeleteFile(filePath);
-      end;
-
-    end;
-  finally
-    mkbmp.Free;
-  end;
-{$ENDIF}
 end;
 
 
