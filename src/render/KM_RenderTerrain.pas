@@ -119,9 +119,6 @@ uses
   KM_DevPerfLog, KM_DevPerfLogTypes,
   KM_Terrain;
 
-type
-  TAnimLayer = (alWater, alFalls, alSwamp);
-
 const
   TILE_LAYERS_USE_VBO = False;
   MAX_RENDERABLE_TILES = (MAX_MAP_SIZE + 1) * (MAX_MAP_SIZE + 1);
@@ -272,23 +269,9 @@ begin
 end;
 
 
-function IsWaterAnimTerId(aTexOffset, aTerId: Word): Boolean; inline;
-var
-  fullTerId: Integer;
+function IsWaterAnimTerId(aTerId: Word): Boolean; inline;
 begin
-  fullTerId := aTexOffset + aTerId + 1;
-  Result := (aTerId < 256) // Animation base terrain IDs are in the 'original' tileset
-    and InRange(fullTerId, 5000, MAX_STATIC_TERRAIN_ID) //Animations are from 5000 to 10000
-    and (gGFXData[rxTiles, fullTerId].Tex.ID <> 0)
-    and not InRange(fullTerId, 5549, 5600); // These are used by masks
-//  if Result then
-//    if InRange(FullTerId, 305, 349) then
-//    begin
-//      Result := False;
-//      for I := Low(WATER_ANIM_BELOW_350) to High(WATER_ANIM_BELOW_350) do
-//        Result := Result or (FullTerId = WATER_ANIM_BELOW_350[I])
-//    end else
-//      Result := Result and not InRange(FullTerId, 5549, 5600); //Masks Ids are in that range
+  Result := TERRAIN_ANIM[aTerId].Count > 0;
 end;
 
 
@@ -342,36 +325,34 @@ var
     end;
   end;
 
-  function TryAddAnimTex(var aAnimCnt: Integer; aTX, aTY, aTexOffset: Word): Boolean;
+  function TryAddAnimTex(var aAnimCnt: Integer; aTX, aTY: Word; aAnimStep: Integer): Boolean;
 
     function SetAnimTileVertex(aTerrain: Word; aRotation: Byte): Boolean;
     var
       texAnimC: TUVRect;
       vtxOffset, indOffset: Integer;
     begin
-      Result := False;
-      if IsWaterAnimTerId(aTexOffset, aTerrain) then
-      begin
-        texAnimC := GetTileUV(aTexOffset + aTerrain, aRotation mod 4);
+      if not IsWaterAnimTerId(aTerrain) then Exit(False);
 
-        vtxOffset := aAnimCnt * 4;
-        indOffset := aAnimCnt * 6;
+      texAnimC := GetTileUV(TERRAIN_ANIM[aTerrain].GetAnim(aAnimStep), aRotation mod 4);
 
-        SetTileVertex(fAnimTilesVtx[vtxOffset],   aTX-1, aTY-1, False, texAnimC[1][1], texAnimC[1][2]);
-        SetTileVertex(fAnimTilesVtx[vtxOffset+1], aTX-1, aTY,   True,  texAnimC[2][1], texAnimC[2][2]);
-        SetTileVertex(fAnimTilesVtx[vtxOffset+2], aTX,   aTY,   True,  texAnimC[3][1], texAnimC[3][2]);
-        SetTileVertex(fAnimTilesVtx[vtxOffset+3], aTX,   aTY-1, False, texAnimC[4][1], texAnimC[4][2]);
+      vtxOffset := aAnimCnt * 4;
+      indOffset := aAnimCnt * 6;
 
-        fAnimTilesInd[indOffset+0] := vtxOffset;
-        fAnimTilesInd[indOffset+1] := vtxOffset + 1;
-        fAnimTilesInd[indOffset+2] := vtxOffset + 2;
-        fAnimTilesInd[indOffset+3] := vtxOffset;
-        fAnimTilesInd[indOffset+4] := vtxOffset + 3;
-        fAnimTilesInd[indOffset+5] := vtxOffset + 2;
+      SetTileVertex(fAnimTilesVtx[vtxOffset],   aTX-1, aTY-1, False, texAnimC[1][1], texAnimC[1][2]);
+      SetTileVertex(fAnimTilesVtx[vtxOffset+1], aTX-1, aTY,   True,  texAnimC[2][1], texAnimC[2][2]);
+      SetTileVertex(fAnimTilesVtx[vtxOffset+2], aTX,   aTY,   True,  texAnimC[3][1], texAnimC[3][2]);
+      SetTileVertex(fAnimTilesVtx[vtxOffset+3], aTX,   aTY-1, False, texAnimC[4][1], texAnimC[4][2]);
 
-        Inc(aAnimCnt);
-        Result := True;
-      end;
+      fAnimTilesInd[indOffset+0] := vtxOffset;
+      fAnimTilesInd[indOffset+1] := vtxOffset + 1;
+      fAnimTilesInd[indOffset+2] := vtxOffset + 2;
+      fAnimTilesInd[indOffset+3] := vtxOffset;
+      fAnimTilesInd[indOffset+4] := vtxOffset + 3;
+      fAnimTilesInd[indOffset+5] := vtxOffset + 2;
+
+      Inc(aAnimCnt);
+      Result := True;
     end;
 
   var
@@ -389,10 +370,9 @@ var
 var
   I, J, tilesCnt, fowCnt, animCnt, vtxOffset, indOffset: Integer;
 //  P,L,TilesLayersCnt: Integer;
-  sizeX, SizeY: Word;
+  sizeX, sizeY: Word;
   tX, tY: Word;
   texTileC: TUVRect;
-  texOffsetWater, texOffsetFalls, texOffsetSwamp: Word;
   V: TVBOArrayType;
 begin
   if not fUseVBO then Exit;
@@ -419,11 +399,7 @@ begin
     fog := nil;
 
   sizeX := Max(fClipRect.Right - fClipRect.Left, 0);
-  SizeY := Max(fClipRect.Bottom - fClipRect.Top, 0);
-
-  texOffsetWater := 5000 + 300 * (aAnimStep mod 8 + 1);       // 5300..7400
-  texOffsetFalls := 5000 + 300 * (aAnimStep mod 5 + 1 + 8);   // 7700..8900
-  texOffsetSwamp := 5000 + 300 * ((aAnimStep mod 24) div 8 + 1 + 8 + 5); // 9200..9800
+  sizeY := Max(fClipRect.Bottom - fClipRect.Top, 0);
 
   tilesCnt := 0;
   fowCnt := 0;
@@ -433,7 +409,7 @@ begin
 
   with gTerrain do
     if (MapX > 0) and (MapY > 0) then
-      for I := 0 to SizeY do
+      for I := 0 to sizeY do
         for J := 0 to sizeX do
         begin
           tX := J + fClipRect.Left;
@@ -509,11 +485,10 @@ begin
 
           Inc(fowCnt);
 
-          //Fill tiles animation vertices array
-          if (aFOW.CheckVerticeRenderRev(tX,tY) > FOG_OF_WAR_ACT) then // Render animation only if tile is not covered by FOW
-            if not TryAddAnimTex(animCnt, tX, tY, texOffsetWater) then  //every tile can have only 1 animation
-              if not TryAddAnimTex(animCnt, tX, tY, texOffsetFalls) then
-                TryAddAnimTex(animCnt, tX, tY, texOffsetSwamp);
+          // Render animation only if tile is not covered by FOW
+          if (aFOW.CheckVerticeRenderRev(tX,tY) > FOG_OF_WAR_ACT) then
+            //every tile can have only 1 animation
+            TryAddAnimTex(animCnt, tX, tY, aAnimStep);
         end;
 
   //Update vertex/index counts
@@ -750,9 +725,8 @@ end;
 procedure TRenderTerrain.DoAnimations(aAnimStep: Integer; aFOW: TKMFogOfWarCommon);
 var
   I, K: Integer;
-  AL: TAnimLayer;
   texC: TUVRect;
-  texOffset: Word;
+  terId: Word;
 begin
   if SKIP_TER_RENDER_ANIMS then Exit;
 
@@ -787,31 +761,21 @@ begin
   end
   else
   begin
-    //Each new layer inflicts 10% fps drop
-    for AL := Low(TAnimLayer) to High(TAnimLayer) do
-    begin
-      case AL of
-        alWater: texOffset := 5000 + 300 * (aAnimStep mod 8 + 1);       // 5300..7400
-        alFalls: texOffset := 5000 + 300 * (aAnimStep mod 5 + 1 + 8);   // 7700..8900
-        alSwamp: texOffset := 5000 + 300 * ((aAnimStep mod 24) div 8 + 1 + 8 + 5); // 9200..9800
-        else     texOffset := 0;
-      end;
-
-      with gTerrain do
-        for I := fClipRect.Top to fClipRect.Bottom do
-          for K := fClipRect.Left to fClipRect.Right do
-          if IsWaterAnimTerId(texOffset, Land^[I,K].BaseLayer.Terrain)
+    with gTerrain do
+      for I := fClipRect.Top to fClipRect.Bottom do
+        for K := fClipRect.Left to fClipRect.Right do
+          if IsWaterAnimTerId(Land^[I,K].BaseLayer.Terrain)
             and (aFOW.CheckVerticeRenderRev(K,I) > FOG_OF_WAR_ACT) then //No animation in FOW
           begin
-            TRender.BindTexture(gGFXData[rxTiles, texOffset + Land^[I,K].BaseLayer.Terrain + 1].Tex.ID);
-            texC := GetTileUV(texOffset + Land[I,K].BaseLayer.Terrain, Land^[I,K].BaseLayer.Rotation);
+            terId := TERRAIN_ANIM[Land^[I,K].BaseLayer.Terrain].GetAnim(aAnimStep);
+            TRender.BindTexture(gGFXData[rxTiles, terId + 1].Tex.ID);
+            texC := GetTileUV(terId, Land^[I,K].BaseLayer.Rotation);
 
             glBegin(GL_TRIANGLE_FAN);
               glColor4f(1,1,1,1);
               RenderQuadTexture(texC, K, I);
             glEnd;
           end;
-    end;
   end;
   {$IFDEF PERFLOG}
   gPerfLogs.SectionLeave(psFrameWater);
