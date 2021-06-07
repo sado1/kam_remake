@@ -908,7 +908,7 @@ var
   I, J, tmp: Integer;
   cornerI: array[0..3] of Integer;
 begin
-  Result := TKMTileMaskType.mtNone; // makes compiler happy
+  Result := tmtNone; // makes compiler happy
   // A B
   // D C
   A := aCornerTerKinds[0];
@@ -920,7 +920,7 @@ begin
   // A A
   if (A = B) and (A = C) and (A = D) then
   begin
-    Result := TKMTileMaskType.mtNone;
+    Result := tmtNone;
     aLayerOrder[0].TerKind := A;
     aLayerOrder[0].SetCorners([0,1,2,3]);
     aLayerOrder[0].Rotation := 0;
@@ -938,7 +938,7 @@ begin
       aLayerOrder[1].TerKind := D;
       aLayerOrder[1].Rotation := 3;
       aLayerOrder[1].SetCorners([3]);
-      Result := mt_2Corner;
+      Result := tmt2Corner;
     end else
     begin
       aLayerOrder[0].TerKind := D;
@@ -946,7 +946,7 @@ begin
       aLayerOrder[1].TerKind := B;
       aLayerOrder[1].Rotation := 1;
       aLayerOrder[1].SetCorners([0,1,2]);
-      Result := mt_2Diagonal;
+      Result := tmt2Diagonal;
     end;
     Exit;
   end;
@@ -962,7 +962,7 @@ begin
       aLayerOrder[1].TerKind := C;
       aLayerOrder[1].Rotation := 2;
       aLayerOrder[1].SetCorners([2]);
-      Result := mt_2Corner;
+      Result := tmt2Corner;
     end else
     begin
       aLayerOrder[0].TerKind := C;
@@ -970,7 +970,7 @@ begin
       aLayerOrder[1].TerKind := A;
       aLayerOrder[1].Rotation := 0;
       aLayerOrder[1].SetCorners([0,1,3]);
-      Result := mt_2Diagonal;
+      Result := tmt2Diagonal;
     end;
     Exit;
   end;
@@ -986,7 +986,7 @@ begin
       aLayerOrder[1].TerKind := C;
       aLayerOrder[1].Rotation := 2;
       aLayerOrder[1].SetCorners([1,2,3]);
-      Result := mt_2Diagonal;
+      Result := tmt2Diagonal;
     end else
     begin
       aLayerOrder[0].TerKind := C;
@@ -994,7 +994,7 @@ begin
       aLayerOrder[1].TerKind := A;
       aLayerOrder[1].Rotation := 0;
       aLayerOrder[1].SetCorners([0]);
-      Result := mt_2Corner;
+      Result := tmt2Corner;
     end;
     Exit;
   end;
@@ -1010,7 +1010,7 @@ begin
       aLayerOrder[1].TerKind := B;
       aLayerOrder[1].Rotation := 1;
       aLayerOrder[1].SetCorners([1]);
-      Result := mt_2Corner;
+      Result := tmt2Corner;
     end else
     begin
       aLayerOrder[0].TerKind := B;
@@ -1018,7 +1018,7 @@ begin
       aLayerOrder[1].TerKind := D;
       aLayerOrder[1].Rotation := 3;
       aLayerOrder[1].SetCorners([0,2,3]);
-      Result := mt_2Diagonal;
+      Result := tmt2Diagonal;
     end;
     Exit;
   end;
@@ -1027,7 +1027,7 @@ begin
   // C C
   if (A = B) and (C = D) then
   begin
-    Result := mt_2Straight;
+    Result := tmt2Straight;
     if TER_KIND_ORDER[A] < TER_KIND_ORDER[C] then
     begin
       aLayerOrder[0].TerKind := A;
@@ -1050,7 +1050,7 @@ begin
   // A B
   if (A = D) and (B = C) then
   begin
-    Result := mt_2Straight;
+    Result := tmt2Straight;
     if TER_KIND_ORDER[A] < TER_KIND_ORDER[B] then
     begin
       aLayerOrder[0].TerKind := A;
@@ -1074,7 +1074,7 @@ begin
   // B A
   if (A = C) and (B = D) then
   begin
-    Result := mt_2Opposite;
+    Result := tmt2Opposite;
     if TER_KIND_ORDER[A] < TER_KIND_ORDER[B] then
     begin
       aLayerOrder[0].TerKind := A;
@@ -1128,16 +1128,16 @@ begin
         aLayerOrder[J-1].Rotation := Min(cornerI[I], cornerI[I-1]);
       aLayerOrder[J-1].SubType := mstExtra;
       if Abs(cornerI[I] - cornerI[I-1]) = 2 then
-        Result := mt_3Opposite
+        Result := tmt3Opposite
       else
-        Result := mt_3Straight;
+        Result := tmt3Straight;
       aLayerOrder[J-1].Corners[cornerI[I]] := True;
     end;
   end;
 
   case J of
     3:      Exit;
-    4:      Exit(mt_4Square);
+    4:      Exit(tmt4Square);
     else    raise Exception.Create('Wrong number of corners with different TerKind: ' + IntToStr(J));
   end;
 end;
@@ -1330,7 +1330,7 @@ procedure TKMTerrainPainter.MagicBrush(const X,Y: Integer; aMaskKind: TKMTileMas
         BaseLayer.SetCorners(LayerOrder[0].Corners);
         LayersCnt := TILE_MASKS_LAYERS_CNT[MaskType] - 1;
 
-        if MaskType = TKMTileMaskType.mtNone then Exit;
+        if MaskType = tmtNone then Exit;
 
         for I := 1 to LayersCnt do // start from 1, just for convinience
         begin

@@ -166,14 +166,14 @@ var
 
   gGenTerrainTransitions: array[Succ(tkCustom)..High(TKMTerrainKind)]
                             of array[Succ(mkNone)..High(TKMTileMaskKind)]
-                              of array[Succ(mtNone)..High(TKMTileMaskType)]
+                              of array[Succ(tmtNone)..High(TKMTileMaskType)]
                                 of array[TKMTileMaskSubType] //mask components (subtypes)
 //                                  of array[0..3] //Terrain Rotation
                                     of Word;
 
   gGenTerrainTransitionsLegacy: array[Succ(tkCustom)..High(TKMTerrainKind)]
                                   of array[Succ(mkNone)..High(TKMTileMaskKind)]
-                                    of array[Succ(mtNone)..High(TKMTileMaskType)]
+                                    of array[Succ(tmtNone)..High(TKMTileMaskType)]
                                       of array[TKMTileMaskSubType] //mask components (subtypes)
 //                                        of array[0..3] //Terrain Rotation
                                           of Word;
@@ -1454,7 +1454,7 @@ begin
         if aLegacyGeneration and (MK = mkSoft2) then Continue;
 
         //for all Mask Types
-        for MT := Succ(mtNone) to High(TKMTileMaskType) do
+        for MT := Succ(tmtNone) to High(TKMTileMaskType) do
         begin
           // for all Mask subtypes
           for MST := Low(TKMTileMaskSubType) to High(TKMTileMaskSubType) do //Mask subtypes (actual masks for layers)
