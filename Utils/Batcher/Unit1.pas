@@ -942,7 +942,7 @@ begin
   for TILE := Low(newTerAnim) to High(newTerAnim) do
   begin
     codeString := Format('      (Count: %d; Anims: (', [newTerAnim[TILE].Count]); // 6 spaces
-    for ANIM_I := 0 to 7 do
+    for ANIM_I := Low(newTerAnim[Tile].Anims) to High(newTerAnim[Tile].Anims) do
     begin
       if ANIM_I > 0 then
         codeString := codeString + ', ';
