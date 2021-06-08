@@ -176,8 +176,6 @@ type
     function CanShowAllies: Boolean;
     procedure UpdateMessageImages;
     procedure UpdateReplayBar;
-
-    function CanUpdateClockUI: Boolean;
   protected
     Sidebar_Top: TKMImage;
     Sidebar_Middle: TKMImage;
@@ -2843,8 +2841,7 @@ begin
   if Panel_ReplayFOW.Visible then
     overlayTop := Panel_ReplayFOW.Top + Panel_ReplayFOW.Height - 5;
 
-  if CanUpdateClockUI then
-    overlayTop := Max(overlayTop, Image_Clock.Top + Image_Clock.Height + 25);
+  overlayTop := Max(overlayTop, IfThen(Label_Time.Visible, 20, 0) + IfThen(Image_Clock.Visible, Image_Clock.Bottom, 0) + 5);
 
   Label_ScriptedOverlay.Top := overlayTop + 19;
   Button_ScriptedOverlay.Top := overlayTop + 1;
@@ -3120,21 +3117,12 @@ begin
 end;
 
 
-function TKMGamePlayInterface.CanUpdateClockUI: Boolean;
-begin
-  if gGame = nil then Exit(False);
-  
-  //Don't show speed clock in MP (unless there is not human players) since you can't turn it on/off
-  Result := gGame.IsSpeedUpAllowed or gGameSettings.ShowGameSpeed or SHOW_GAME_TICK;
-end;
-
-
 procedure TKMGamePlayInterface.UpdateClockUI;
 begin
   if (Self = nil) or (gGame = nil) then Exit;
 
-  if CanUpdateClockUI then
-    UpdateClock(gGame.SpeedActual, gGame.GetNormalSpeed, gGame.SpeedGIP);
+  UpdateClock(gGame.SpeedActual, gGame.GetNormalSpeed, gGame.SpeedGIP);
+  UpdateOverlayControls;
 end;
 
 
