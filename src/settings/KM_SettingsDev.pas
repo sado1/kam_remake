@@ -21,7 +21,7 @@ type
     procedure DoSave;
     function GetXmlSectionName(aPanel: TCategoryPanel): string;
   public
-    constructor Create(aExeDir: string; aMainGroup: TCategoryPanelGroup; aDontCollapse: TCategoryPanel);
+    constructor Create(const aExeDir: string; aMainGroup: TCategoryPanelGroup; aDontCollapse: TCategoryPanel);
     procedure Load;
     procedure Save;
   end;
@@ -34,7 +34,7 @@ uses
 
 
 { TKMDevSettings }
-constructor TKMDevSettings.Create(aExeDir: string; aMainGroup: TCategoryPanelGroup; aDontCollapse: TCategoryPanel);
+constructor TKMDevSettings.Create(const aExeDir: string; aMainGroup: TCategoryPanelGroup; aDontCollapse: TCategoryPanel);
 begin
   inherited Create;
 
