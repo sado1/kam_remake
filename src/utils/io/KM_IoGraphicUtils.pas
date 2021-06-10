@@ -4,7 +4,7 @@ interface
 uses
   KM_CommonTypes
   {$IFDEF MSWindows}, Windows {$ENDIF}
-  {$IFDEF WDC}, Graphics, Imaging.JPEG, Imaging.PNGImage {$ENDIF} //Lazarus doesn't have JPEG library yet -> FPReadJPEG?
+  {$IFDEF WDC}, Graphics, JPEG, PNGImage {$ENDIF} //Lazarus doesn't have JPEG library yet -> FPReadJPEG?
   ;
 
   procedure SavePixelDataToFile(const aFilePath: string; aImageType: TKMImageType; aWidth, aHeight: Integer; var aPixelData: TKMCardinalArray);

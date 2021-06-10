@@ -8,7 +8,7 @@ uses
   {$IFDEF USE_VIRTUAL_TREEVIEW}VirtualTrees, {$ENDIF}
   SysUtils, Variants, Classes,
   Graphics, Controls, Forms, Dialogs, ComCtrls,
-  StdCtrls, ExtCtrls, CheckLst, Samples.Spin, Clipbrd;
+  StdCtrls, ExtCtrls, CheckLst, Spin, Clipbrd;
 
 type
   {$IFDEF USE_VIRTUAL_TREEVIEW}

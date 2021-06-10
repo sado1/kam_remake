@@ -3,7 +3,7 @@ unit KM_DevPerfLogForm;
 interface
 uses
   SysUtils, Classes, Graphics, Forms, StdCtrls, Controls, ExtCtrls, Types,
-  KM_DevPerfLog, KM_DevPerfLogTypes, Samples.Spin, KM_VclHelpers;
+  KM_DevPerfLog, KM_DevPerfLogTypes, Spin, KM_VclHelpers;
 
 type
   TFormPerfLogs = class(TForm)

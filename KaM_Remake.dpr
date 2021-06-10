@@ -1,6 +1,5 @@
 program KaM_Remake;
 {$I KaM_Remake.inc}
-
 uses
   //{$IFDEF WDC} FastMM4, {$ENDIF} //Can be used only in Delphi, not Lazarus
   {$IFDEF USE_MAD_EXCEPT}
@@ -17,7 +16,7 @@ uses
   KM_FormMain in 'src\forms\KM_FormMain.pas' {FormMain},
   KM_FormLogistics in 'src\forms\KM_FormLogistics.pas' {FormLogistics},
   KM_FormLoading in 'src\forms\KM_FormLoading.pas' {FormLoading},
-  
+
   KM_VclMenuHint in 'src\forms\KM_VclMenuHint.pas',
   KM_VclHelpers in 'src\forms\KM_VclHelpers.pas',
 
@@ -46,7 +45,7 @@ uses
   KM_CityPredictor in 'src\ai\newAI\KM_CityPredictor.pas',
   KM_Supervisor in 'src\ai\newAI\KM_Supervisor.pas',
   KM_AIParameters in 'src\ai\newAI\KM_AIParameters.pas',
-  
+
   KM_CommonClasses in 'src\common\KM_CommonClasses.pas',
   KM_CommonClassesExt in 'src\common\KM_CommonClassesExt.pas',
   KM_CommonExceptions in 'src\common\KM_CommonExceptions.pas',
@@ -58,19 +57,19 @@ uses
   KM_WorkerThread in 'src\common\KM_WorkerThread.pas',
 
   KM_Console in 'src\KM_Console.pas',
-  KM_Controls in 'src\KM_Controls.pas',  
-  
+  KM_Controls in 'src\KM_Controls.pas',
+
   KM_DevPerfLog in 'src\perflog\KM_DevPerfLog.pas',
   KM_DevPerfLogForm in 'src\perflog\KM_DevPerfLogForm.pas',
   KM_DevPerfLogSingle in 'src\perflog\KM_DevPerfLogSingle.pas',
   KM_DevPerfLogStack in 'src\perflog\KM_DevPerfLogStack.pas',
   KM_DevPerfLogTypes in 'src\perflog\KM_DevPerfLogTypes.pas',
-  
+
   {$IFDEF USE_MAD_EXCEPT}KM_Exceptions in 'src\KM_Exceptions.pas',{$ENDIF}
-  
+
   KM_Game in 'src\game\KM_Game.pas',
   KM_GameClasses in 'src\game\KM_GameClasses.pas',
-  KM_GameTypes in 'src\game\KM_GameTypes.pas',  
+  KM_GameTypes in 'src\game\KM_GameTypes.pas',
   KM_GameInfo in 'src\game\KM_GameInfo.pas',
   KM_GameOptions in 'src\game\KM_GameOptions.pas',
   KM_GameParams in 'src\game\KM_GameParams.pas',
@@ -153,7 +152,7 @@ uses
   KM_GUIMapEdTownHouses in 'src\gui\pages_maped\town\KM_GUIMapEdTownHouses.pas',
   KM_GUIMapEdTownScript in 'src\gui\pages_maped\town\KM_GUIMapEdTownScript.pas',
   KM_GUIMapEdTownDefence in 'src\gui\pages_maped\town\KM_GUIMapEdTownDefence.pas',
-  KM_GUIMapEdTownOffence in 'src\gui\pages_maped\town\KM_GUIMapEdTownOffence.pas', 
+  KM_GUIMapEdTownOffence in 'src\gui\pages_maped\town\KM_GUIMapEdTownOffence.pas',
   KM_GUIMapEdTownAttackPopUp in 'src\gui\pages_maped\town\KM_GUIMapEdTownAttackPopUp.pas',
   KM_GUIMapEdTownFormationsPopUp in 'src\gui\pages_maped\town\KM_GUIMapEdTownFormationsPopUp.pas',
 
@@ -197,7 +196,7 @@ uses
   KM_HouseSwineStable in 'src\houses\KM_HouseSwineStable.pas',
   KM_HouseTownHall in 'src\houses\KM_HouseTownHall.pas',
   KM_HouseWoodcutters in 'src\houses\KM_HouseWoodcutters.pas',
-  
+
   KM_GameApp in 'src\KM_GameApp.pas',
   KM_Log in 'src\KM_Log.pas',
   KM_Main in 'src\KM_Main.pas',
@@ -326,14 +325,15 @@ uses
 
   KM_ServerQuery in 'src\net\KM_ServerQuery.pas',
   
-  KM_Settings in 'src\settings\KM_Settings.pas',  
-  KM_GameAppSettings in 'src\settings\KM_GameAppSettings.pas',  
-  KM_KeysSettings in 'src\settings\KM_KeysSettings.pas',  
+  KM_Settings in 'src\settings\KM_Settings.pas',
+  KM_GameAppSettings in 'src\settings\KM_GameAppSettings.pas',
+  KM_KeysSettings in 'src\settings\KM_KeysSettings.pas',
   KM_GameSettings in 'src\settings\KM_GameSettings.pas',
   KM_MainSettings in 'src\settings\KM_MainSettings.pas',
   KM_ServerSettings in 'src\settings\KM_ServerSettings.pas',
   KM_Resolutions in 'src\settings\KM_Resolutions.pas',
   KM_WindowParams in 'src\settings\KM_WindowParams.pas',
+  KM_SettingsDev in 'src\settings\KM_SettingsDev.pas',
 
   KM_RandomMapGenerator in 'src\terrain\KM_RandomMapGenerator.pas',
   KM_RMGUtils in 'src\terrain\KM_RMGUtils.pas',

@@ -5,7 +5,7 @@ uses
   SysUtils, StrUtils, Classes, Math,
   ComCtrls, Controls, Buttons, Dialogs, ExtCtrls, Forms, Graphics, Menus, StdCtrls,
   KM_RenderControl, KM_CommonTypes,
-  KM_WindowParams,
+  KM_WindowParams, KM_SettingsDev,
   {$IFDEF FPC} LResources, {$ENDIF}
   {$IFDEF MSWindows} KM_VclMenuHint, ShellAPI, Windows, Messages, Vcl.Samples.Spin; {$ENDIF}
   {$IFDEF Unix} LCLIntf, LCLType; {$ENDIF}
@@ -325,10 +325,6 @@ type
     procedure ResetControl(aCtrl: TControl);
     procedure ResetSubPanel(aPanel: TWinControl);
 
-    function GetDevSettingsPath: UnicodeString;
-    procedure DoLoadDevSettings;
-    procedure DoSaveDevSettings;
-
     procedure FindObjByUID(aUID: Integer);
     function AllowFindObjByUID: Boolean;
     {$IFDEF MSWindows}
@@ -338,8 +334,10 @@ type
     procedure WMAppCommand(var Msg: TMessage); message WM_APPCOMMAND;
     procedure WMMouseWheel(var Msg: TMessage); message WM_MOUSEWHEEL;
     procedure WMMenuSelect(var Msg: TWMMenuSelect); message WM_MENUSELECT;
+  private
+    fDevSettings: TKMDevSettings;
   protected
-    procedure WndProc(var Message : TMessage); override;
+    procedure WndProc(var Message: TMessage); override;
     {$ENDIF}
   public
     RenderArea: TKMRenderControl;
@@ -355,9 +353,6 @@ type
     procedure ShowFolderPermissionError;
     procedure SetEntitySelected(aEntityUID: Integer; aEntity2UID: Integer = 0);
     property OnControlsUpdated: TObjectIntegerEvent read fOnControlsUpdated write fOnControlsUpdated;
-
-    procedure LoadDevSettings;
-    procedure SaveDevSettings;
 
     procedure Defocus;
 
@@ -402,232 +397,6 @@ uses
 procedure ExportDone(aResourceName: String);
 begin
   MessageDlg(Format(gResTexts[TX_RESOURCE_EXPORT_DONE_MSG], [aResourceName]), mtInformation, [mbOk], 0);
-end;
-
-
-function TFormMain.GetDevSettingsPath: UnicodeString;
-begin
-  Result := ExeDir + DEV_SETTINGS_XML_FILENAME;
-end;
-
-
-// Load dev settings from kmr_dev.xml
-procedure TFormMain.DoLoadDevSettings;
-
-  procedure ManageSubPanel(aPanel: TWinControl; anParent: TKMXmlNode);
-  var
-    I: Integer;
-    actrl: TControl;
-    nSection: TKMXmlNode;
-  begin
-    for I := 0 to aPanel.ControlCount - 1 do
-    begin
-      actrl := aPanel.Controls[I];
-
-      if aCtrl is TGroupBox then
-        ManageSubPanel(TGroupBox(aCtrl), anParent)
-      else
-      if   (aCtrl is TCheckBox)
-        or (aCtrl is TTrackBar)
-        or (aCtrl is TRadioGroup)
-        or (aCtrl is TSpinEdit)
-        or (aCtrl is TEdit) then
-        if anParent.HasChild(actrl.Name) then
-        begin
-          nSection := anParent.FindNode(actrl.Name); // Add section only if its needed
-
-          if (aCtrl is TCheckBox) and nSection.HasAttribute('Checked') then
-            TCheckBox(aCtrl).Checked := nSection.Attributes['Checked'].AsBoolean
-          else
-          if (aCtrl is TTrackBar) and nSection.HasAttribute('Position') then
-            TTrackBar(aCtrl).Position := nSection.Attributes['Position'].AsInteger
-          else
-          if (aCtrl is TRadioGroup) and nSection.HasAttribute('ItemIndex')  then
-            TRadioGroup(aCtrl).ItemIndex := nSection.Attributes['ItemIndex'].AsInteger
-          else
-          if (aCtrl is TSpinEdit) and nSection.HasAttribute('Value')  then
-            TSpinEdit(aCtrl).Value := nSection.Attributes['Value'].AsInteger
-          else
-          if (aCtrl is TEdit) and nSection.HasAttribute('Text') then
-            TEdit(aCtrl).Text := nSection.Attributes['Text'].AsString;
-        end;
-    end;
-  end;
-
-var
-  I: Integer;
-  devSettingsPath: UnicodeString;
-  newXML: TKMXMLDocument;
-  cp: TCategoryPanel;
-  cpSurface: TCategoryPanelSurface;
-  cpName: string;
-  nRoot, nSection: TKMXmlNode;
-begin
-  fUpdating := True;
-  devSettingsPath := GetDevSettingsPath;
-  try
-    gLog.AddTime('Loading dev settings from file ''' + devSettingsPath + '''');
-
-    // Apply default settings
-    if not FileExists(devSettingsPath) then
-    begin
-      for I := 0 to mainGroup.Panels.Count - 1 do
-        TCategoryPanel(mainGroup.Panels[I]).Collapsed := True;
-
-      cpGameControls.Collapsed := False; //The only not collapsed section
-      Exit;
-    end;
-
-    //Load dev data from XML
-    newXML := TKMXMLDocument.Create;
-    newXML.LoadFromFile(devSettingsPath);
-    nRoot := newXML.Root;
-
-    for I := 0 to mainGroup.Panels.Count - 1 do
-    begin
-      cp := TCategoryPanel(mainGroup.Panels[I]);
-      cpName := cp.XmlSectionName;
-
-      if nRoot.HasChild(cpName) then
-      begin
-        nSection := nRoot.FindNode(cpName);
-        cp.Collapsed := nSection.Attributes['Collapsed'].AsBoolean(True);
-
-        if (cp.ControlCount > 0) and (cp.Controls[0] is TCategoryPanelSurface) then
-        begin
-          cpSurface := TCategoryPanelSurface(cp.Controls[0]);
-          ManageSubPanel(cpSurface, nSection);
-        end;
-      end;
-    end;
-
-    newXML.Free;
-  finally
-    fUpdating := False;
-    ControlsUpdate(nil); // Update controls after load all of them
-  end;
-end;
-
-
-// Save dev settings to kmr_dev.xml
-procedure TFormMain.DoSaveDevSettings;
-
-  procedure ManageSubPanel(aPanel: TWinControl; anParent: TKMXmlNode);
-  var
-    I: Integer;
-    actrl: TControl;
-    nSection: TKMXmlNode;
-  begin
-    for I := 0 to aPanel.ControlCount - 1 do
-    begin
-      actrl := aPanel.Controls[I];
-
-      if aCtrl is TGroupBox then
-        ManageSubPanel(TGroupBox(aCtrl), anParent)
-      else
-      if   (aCtrl is TCheckBox)
-        or (aCtrl is TTrackBar)
-        or (aCtrl is TRadioGroup)
-        or (aCtrl is TSpinEdit)
-        or (aCtrl is TEdit) then
-      begin
-        nSection := anParent.AddOrFindChild(actrl.Name); // Add section only if its needed
-        if aCtrl is TCheckBox then
-          nSection.Attributes['Checked'] := TCheckBox(aCtrl).Checked
-        else
-        if aCtrl is TTrackBar then
-          nSection.Attributes['Position'] := TTrackBar(aCtrl).Position
-        else
-        if aCtrl is TRadioGroup then
-          nSection.Attributes['ItemIndex'] := TRadioGroup(aCtrl).ItemIndex
-        else
-        if aCtrl is TSpinEdit then
-          nSection.Attributes['Value'] := TSpinEdit(aCtrl).Value
-        else
-        if aCtrl is TEdit then
-          nSection.Attributes['Text'] := TEdit(aCtrl).Text;
-      end;
-    end;
-  end;
-
-var
-  I: Integer;
-  devSettingsPath: UnicodeString;
-  newXML: TKMXMLDocument;
-  cp: TCategoryPanel;
-  cpSurface: TCategoryPanelSurface;
-  nRoot, nSection: TKMXmlNode;
-begin
-  devSettingsPath := GetDevSettingsPath;
-
-  gLog.AddTime('Saving dev settings to file ''' + devSettingsPath + '''');
-
-  //Save dev data to XML
-  newXML := TKMXMLDocument.Create;
-  newXML.LoadFromFile(devSettingsPath);
-  nRoot := newXML.Root;
-
-  for I := 0 to mainGroup.Panels.Count - 1 do
-  begin
-    cp := TCategoryPanel(mainGroup.Panels[I]);
-
-    nSection := nRoot.AddOrFindChild(cp.XmlSectionName);
-
-    nSection.Attributes['Collapsed'] := cp.Collapsed;
-
-    if (cp.ControlCount > 0) and (cp.Controls[0] is TCategoryPanelSurface) then
-    begin
-      cpSurface := TCategoryPanelSurface(cp.Controls[0]);
-      ManageSubPanel(cpSurface, nSection);
-    end;
-  end;
-
-  newXML.SaveToFile(devSettingsPath);
-  newXML.Free;
-end;
-
-
-// Load dev settings from kmr_dev.xml
-procedure TFormMain.LoadDevSettings;
-begin
-  {$IFDEF DEBUG}
-  // allow crash while debugging
-  DoLoadDevSettings;
-  {$ELSE}
-  try
-    // Skip crash on released version, only log the error
-    DoLoadDevSettings;
-  except
-    on E: Exception do
-    begin
-      gLog.AddTime('Error while loading dev settings from ''' + GetDevSettingsPath + ''':' + sLineBreak + E.Message
-          {$IFDEF WDC}+ sLineBreak + E.StackTrace{$ENDIF}
-        );
-    end;
-  end;
-  {$ENDIF}
-end;
-
-
-// Save dev settings to kmr_dev.xml
-procedure TFormMain.SaveDevSettings;
-begin
-  {$IFDEF DEBUG}
-  // allow crash while debugging
-  DoSaveDevSettings;
-  {$ELSE}
-  try
-    // Skip crash on released version, only log the error
-    DoSaveDevSettings;
-  except
-    on E: Exception do
-    begin
-      gLog.AddTime('Error while saving dev settings to ''' + GetDevSettingsPath + ''':' + sLineBreak + E.Message
-          {$IFDEF WDC}+ sLineBreak + E.StackTrace{$ENDIF}
-        );
-    end;
-  end;
-  {$ENDIF}
 end;
 
 
@@ -964,8 +733,8 @@ end;
 
 procedure TFormMain.Defocus;
 begin
-  if Assigned(Self.ActiveControl) then
-    Self.DefocusControl(Self.ActiveControl, True);
+  if Assigned(ActiveControl) then
+    DefocusControl(ActiveControl, True);
 end;
 
 
@@ -987,9 +756,9 @@ end;
 
 procedure TFormMain.Export_ScriptDataClick(Sender: TObject);
 begin
-  if    (gGameApp <> nil)
-    and (gGameApp.Game <> nil)
-    and (gGame.Scripting <> nil) then
+  if (gGameApp <> nil)
+  and (gGameApp.Game <> nil)
+  and (gGame.Scripting <> nil) then
     gGame.Scripting.ExportDataToText;
 end;
 
@@ -1080,7 +849,8 @@ var
   I: Integer;
 begin
   if gHands = nil then Exit;
-  //You could possibly cheat in multiplayer by seeing what supplies your enemy has
+
+  // You could possibly cheat in multiplayer by seeing what supplies your enemy has
   if (gGameApp.Game <> nil) and (not gGameApp.Game.Params.IsMultiPlayerOrSpec or MULTIPLAYER_CHEATS) then
   for I := 0 to gHands.Count - 1 do
     gHands[I].Deliveries.Queue.ExportToFile(ExeDir + 'Player_' + IntToStr(I) + '_Deliver_List.txt');
@@ -1090,8 +860,8 @@ end;
 procedure TFormMain.RGPlayerClick(Sender: TObject);
 begin
   if (gGameApp.Game = nil)
-    or gGameApp.Game.Params.IsMapEditor
-    or gGameApp.Game.Params.IsMultiPlayerOrSpec then
+  or gGameApp.Game.Params.IsMapEditor
+  or gGameApp.Game.Params.IsMultiPlayerOrSpec then
     Exit;
 
   if (gHands <> nil) and (RGPlayer.ItemIndex < gHands.Count) then
@@ -1173,6 +943,7 @@ begin
 end;
 
 
+// It is annoying to have Tab cycling through F11 controls. Hence we disable it (@Rey: Correct?)
 procedure TFormMain.ConstrolsDisableTabStops;
 
   {$IFDEF WDC}
@@ -1386,7 +1157,16 @@ end;
 
 procedure TFormMain.AfterFormCreated;
 begin
-  LoadDevSettings;
+  fDevSettings := TKMDevSettings.Create(mainGroup, cpGameControls);
+
+  fUpdating := True;
+  try
+    fDevSettings.Load;
+  finally
+    fUpdating := False;
+    ControlsUpdate(nil); // Update controls after loading all of them
+  end;
+
   ConstrolsDisableTabStops;
 end;
 
@@ -1766,7 +1546,7 @@ begin
   if Assigned(fOnControlsUpdated) and (Sender is TControl) then
     fOnControlsUpdated(Sender, TControl(Sender).Tag);
 
-  SaveDevSettings;
+  fDevSettings.Save;
 end;
 
 
@@ -1989,11 +1769,11 @@ end;
 
 
 //Supress default activation of window menu when Alt pressed, as Alt used in some shortcuts
-procedure TFormMain.WndProc(var Message : TMessage);
+procedure TFormMain.WndProc(var Message: TMessage);
 begin
   if (Message.Msg = WM_SYSCOMMAND)
-    and (Message.WParam = SC_KEYMENU)
-    and SuppressAltForMenu then Exit;
+  and (Message.WParam = SC_KEYMENU)
+  and SuppressAltForMenu then Exit;
 
   inherited;
 end;
@@ -2010,8 +1790,8 @@ end;
 //F.e. on Win10 it was reported, that we got event 3 times on single turn of mouse wheel, if use default form event handler
 procedure TFormMain.WMMouseWheel(var Msg: TMessage);
 var
-  mousePos : TPoint;
-  keyState : TKeyboardState;
+  mousePos: TPoint;
+  keyState: TKeyboardState;
   wheelDelta: Integer;
   handled: Boolean;
 begin
@@ -2100,6 +1880,8 @@ procedure TFormMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 var
   menuHidden: Boolean;
 begin
+  fDevSettings.Save;
+
   if not QUERY_ON_FORM_CLOSE then
   begin
     CanClose := True;
@@ -2134,7 +1916,7 @@ procedure TFormMain.radioGroupExit(Sender: TObject);
 var
   I: Integer;
 begin
-  // Tricky way to disable TabStop on TRadioGroup
+  // To disable TabStop on TRadioGroup we need to disable it on its contents
   for I := 0 to TRadioGroup(Sender).ControlCount - 1 do
     TRadioButton(TRadioGroup(Sender).Controls[I]).TabStop := False;
 end;

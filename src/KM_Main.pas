@@ -386,16 +386,14 @@ begin
     if Assigned(gVideoPlayer) then
       gVideoPlayer.Free;
 
-    fFormMain.SaveDevSettings;
+    // fFormMain.DevSettingsSave; Moved into MainForm itself, since it's purely MainForms business. Rest of the app should know nothing about it
 
     if Sender <> fFormMain then
       fFormMain.Close;
   except
     on E: Exception do
-      begin
         gLog.AddTime('Exception while closing game app: ' + E.Message
                      {$IFDEF WDC} + sLineBreak + E.StackTrace {$ENDIF});
-      end;
   end;
 end;
 
