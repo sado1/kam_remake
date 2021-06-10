@@ -1157,7 +1157,7 @@ end;
 
 procedure TFormMain.AfterFormCreated;
 begin
-  fDevSettings := TKMDevSettings.Create(mainGroup, cpGameControls);
+  fDevSettings := TKMDevSettings.Create(ExeDir, mainGroup, cpGameControls);
 
   fUpdating := True;
   try

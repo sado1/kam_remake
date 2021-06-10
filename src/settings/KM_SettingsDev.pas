@@ -9,17 +9,19 @@ uses
 
 
 type
-  { TKMDevSettings }
+  // Manager of F11 controls settings save/load
   TKMDevSettings = class
   private
+    fSettingsPath: UnicodeString;
+
     fMainGroup: TCategoryPanelGroup;
     fDontCollapse: TCategoryPanel;
 
-    function GetPath: UnicodeString;
     procedure DoLoad;
     procedure DoSave;
+    function GetXmlSectionName(aPanel: TCategoryPanel): string;
   public
-    constructor Create(aMainGroup: TCategoryPanelGroup; aDontCollapse: TCategoryPanel);
+    constructor Create(aExeDir: string; aMainGroup: TCategoryPanelGroup; aDontCollapse: TCategoryPanel);
     procedure Load;
     procedure Save;
   end;
@@ -27,83 +29,82 @@ type
 
 implementation
 uses
-  KM_Defaults, KM_Log, KM_IoXML,
-  KM_VclHelpers;
+  KM_Defaults, KM_Log, KM_IoXML;
 
 
 
-function TKMDevSettings.GetPath: UnicodeString;
-begin
-  Result := ExeDir + DEV_SETTINGS_XML_FILENAME;
-end;
-
-
-// Load dev settings from kmr_dev.xml
-constructor TKMDevSettings.Create(aMainGroup: TCategoryPanelGroup; aDontCollapse: TCategoryPanel);
+{ TKMDevSettings }
+constructor TKMDevSettings.Create(aExeDir: string; aMainGroup: TCategoryPanelGroup; aDontCollapse: TCategoryPanel);
 begin
   inherited Create;
+
+  fSettingsPath := aExeDir + DEV_SETTINGS_XML_FILENAME;
 
   fMainGroup := aMainGroup;
   fDontCollapse := aDontCollapse;
 end;
 
 
+function TKMDevSettings.GetXmlSectionName(aPanel: TCategoryPanel): string;
+begin
+  Result := StringReplace(aPanel.Caption, ' ', '_', [rfReplaceAll]);
+end;
+
+
 procedure TKMDevSettings.DoLoad;
 
-  procedure ManageSubPanel(aPanel: TWinControl; anParent: TKMXmlNode);
+  procedure LoadSubPanel(aPanel: TWinControl; aNode: TKMXmlNode);
   var
     I: Integer;
-    actrl: TControl;
+    ctrl: TControl;
     nSection: TKMXmlNode;
   begin
     for I := 0 to aPanel.ControlCount - 1 do
     begin
-      actrl := aPanel.Controls[I];
+      ctrl := aPanel.Controls[I];
 
-      if aCtrl is TGroupBox then
-        ManageSubPanel(TGroupBox(aCtrl), anParent)
+      if ctrl is TGroupBox then
+        LoadSubPanel(TGroupBox(ctrl), aNode)
       else
-        if (aCtrl is TCheckBox)
-        or (aCtrl is TTrackBar)
-        or (aCtrl is TRadioGroup)
-        or (aCtrl is TSpinEdit)
-        or (aCtrl is TEdit) then
-        if anParent.HasChild(actrl.Name) then
+        if (ctrl is TCheckBox)
+        or (ctrl is TTrackBar)
+        or (ctrl is TRadioGroup)
+        or (ctrl is TSpinEdit)
+        or (ctrl is TEdit) then
+        if aNode.HasChild(ctrl.Name) then
         begin
-          nSection := anParent.FindNode(actrl.Name); // Add section only if its needed
+          nSection := aNode.FindNode(ctrl.Name); // Add section only if its needed
 
-          if (aCtrl is TCheckBox) and nSection.HasAttribute('Checked') then
-            TCheckBox(aCtrl).Checked := nSection.Attributes['Checked'].AsBoolean
+          if (ctrl is TCheckBox) and nSection.HasAttribute('Checked') then
+            TCheckBox(ctrl).Checked := nSection.Attributes['Checked'].AsBoolean
           else
-          if (aCtrl is TTrackBar) and nSection.HasAttribute('Position') then
-            TTrackBar(aCtrl).Position := nSection.Attributes['Position'].AsInteger
+          if (ctrl is TTrackBar) and nSection.HasAttribute('Position') then
+            TTrackBar(ctrl).Position := nSection.Attributes['Position'].AsInteger
           else
-          if (aCtrl is TRadioGroup) and nSection.HasAttribute('ItemIndex') then
-            TRadioGroup(aCtrl).ItemIndex := nSection.Attributes['ItemIndex'].AsInteger
+          if (ctrl is TRadioGroup) and nSection.HasAttribute('ItemIndex') then
+            TRadioGroup(ctrl).ItemIndex := nSection.Attributes['ItemIndex'].AsInteger
           else
-          if (aCtrl is TSpinEdit) and nSection.HasAttribute('Value') then
-            TSpinEdit(aCtrl).Value := nSection.Attributes['Value'].AsInteger
+          if (ctrl is TSpinEdit) and nSection.HasAttribute('Value') then
+            TSpinEdit(ctrl).Value := nSection.Attributes['Value'].AsInteger
           else
-          if (aCtrl is TEdit) and nSection.HasAttribute('Text') then
-            TEdit(aCtrl).Text := nSection.Attributes['Text'].AsString;
+          if (ctrl is TEdit) and nSection.HasAttribute('Text') then
+            TEdit(ctrl).Text := nSection.Attributes['Text'].AsString;
         end;
     end;
   end;
 
 var
   I: Integer;
-  devSettingsPath: UnicodeString;
   newXML: TKMXMLDocument;
   cp: TCategoryPanel;
   cpSurface: TCategoryPanelSurface;
   cpName: string;
   nRoot, nSection: TKMXmlNode;
 begin
-  devSettingsPath := GetPath;
-  gLog.AddTime('Loading dev settings from file ''' + devSettingsPath + '''');
+  gLog.AddTime('Loading dev settings from file ''' + fSettingsPath + '''');
 
   // Apply default settings
-  if not FileExists(devSettingsPath) then
+  if not FileExists(fSettingsPath) then
   begin
     for I := 0 to fMainGroup.Panels.Count - 1 do
       TCategoryPanel(fMainGroup.Panels[I]).Collapsed := True;
@@ -114,13 +115,13 @@ begin
 
   //Load dev data from XML
   newXML := TKMXMLDocument.Create;
-  newXML.LoadFromFile(devSettingsPath);
+  newXML.LoadFromFile(fSettingsPath);
   nRoot := newXML.Root;
 
   for I := 0 to fMainGroup.Panels.Count - 1 do
   begin
     cp := TCategoryPanel(fMainGroup.Panels[I]);
-    cpName := cp.XmlSectionName;
+    cpName := GetXmlSectionName(cp);
 
     if nRoot.HasChild(cpName) then
     begin
@@ -130,7 +131,7 @@ begin
       if (cp.ControlCount > 0) and (cp.Controls[0] is TCategoryPanelSurface) then
       begin
         cpSurface := TCategoryPanelSurface(cp.Controls[0]);
-        ManageSubPanel(cpSurface, nSection);
+        LoadSubPanel(cpSurface, nSection);
       end;
     end;
   end;
@@ -142,77 +143,74 @@ end;
 // Save dev settings to kmr_dev.xml
 procedure TKMDevSettings.DoSave;
 
-  procedure ManageSubPanel(aPanel: TWinControl; anParent: TKMXmlNode);
+  procedure SaveSubPanel(aPanel: TWinControl; aNode: TKMXmlNode);
   var
     I: Integer;
-    actrl: TControl;
+    ctrl: TControl;
     nSection: TKMXmlNode;
   begin
     for I := 0 to aPanel.ControlCount - 1 do
     begin
-      actrl := aPanel.Controls[I];
+      ctrl := aPanel.Controls[I];
 
-      if aCtrl is TGroupBox then
-        ManageSubPanel(TGroupBox(aCtrl), anParent)
+      if ctrl is TGroupBox then
+        SaveSubPanel(TGroupBox(ctrl), aNode)
       else
-      if   (aCtrl is TCheckBox)
-        or (aCtrl is TTrackBar)
-        or (aCtrl is TRadioGroup)
-        or (aCtrl is TSpinEdit)
-        or (aCtrl is TEdit) then
-      begin
-        nSection := anParent.AddOrFindChild(actrl.Name); // Add section only if its needed
-        if aCtrl is TCheckBox then
-          nSection.Attributes['Checked'] := TCheckBox(aCtrl).Checked
-        else
-        if aCtrl is TTrackBar then
-          nSection.Attributes['Position'] := TTrackBar(aCtrl).Position
-        else
-        if aCtrl is TRadioGroup then
-          nSection.Attributes['ItemIndex'] := TRadioGroup(aCtrl).ItemIndex
-        else
-        if aCtrl is TSpinEdit then
-          nSection.Attributes['Value'] := TSpinEdit(aCtrl).Value
-        else
-        if aCtrl is TEdit then
-          nSection.Attributes['Text'] := TEdit(aCtrl).Text;
-      end;
+        if (ctrl is TCheckBox)
+        or (ctrl is TTrackBar)
+        or (ctrl is TRadioGroup)
+        or (ctrl is TSpinEdit)
+        or (ctrl is TEdit) then
+        begin
+          nSection := aNode.AddOrFindChild(ctrl.Name); // Add section only if its needed
+          if ctrl is TCheckBox then
+            nSection.Attributes['Checked'] := TCheckBox(ctrl).Checked
+          else
+          if ctrl is TTrackBar then
+            nSection.Attributes['Position'] := TTrackBar(ctrl).Position
+          else
+          if ctrl is TRadioGroup then
+            nSection.Attributes['ItemIndex'] := TRadioGroup(ctrl).ItemIndex
+          else
+          if ctrl is TSpinEdit then
+            nSection.Attributes['Value'] := TSpinEdit(ctrl).Value
+          else
+          if ctrl is TEdit then
+            nSection.Attributes['Text'] := TEdit(ctrl).Text;
+        end;
     end;
   end;
 
 var
   I: Integer;
-  devSettingsPath: UnicodeString;
   newXML: TKMXMLDocument;
   cp: TCategoryPanel;
   cpSurface: TCategoryPanelSurface;
   nRoot, nSection: TKMXmlNode;
 begin
-  devSettingsPath := GetPath;
-
-  gLog.AddTime('Saving dev settings to file ''' + devSettingsPath + '''');
+  gLog.AddTime('Saving dev settings to file ''' + fSettingsPath + '''');
 
   //Save dev data to XML
   newXML := TKMXMLDocument.Create;
-  newXML.LoadFromFile(devSettingsPath);
+  newXML.LoadFromFile(fSettingsPath);
   nRoot := newXML.Root;
 
   for I := 0 to fMainGroup.Panels.Count - 1 do
   begin
     cp := TCategoryPanel(fMainGroup.Panels[I]);
 
-    nSection := nRoot.AddOrFindChild(cp.XmlSectionName);
+    nSection := nRoot.AddOrFindChild(GetXmlSectionName(cp));
 
     nSection.Attributes['Collapsed'] := cp.Collapsed;
 
     if (cp.ControlCount > 0) and (cp.Controls[0] is TCategoryPanelSurface) then
     begin
       cpSurface := TCategoryPanelSurface(cp.Controls[0]);
-      ManageSubPanel(cpSurface, nSection);
+      SaveSubPanel(cpSurface, nSection);
     end;
   end;
 
-  newXML.SaveToFile(devSettingsPath);
+  newXML.SaveToFile(fSettingsPath);
   newXML.Free;
 end;
 
@@ -229,7 +227,7 @@ begin
     DoLoad;
   except
     on E: Exception do
-      gLog.AddTime('Error while loading dev settings from ''' + GetPath + ''':' + sLineBreak + E.Message
+      gLog.AddTime('Error while loading dev settings from ''' + fSettingsPath + ''':' + sLineBreak + E.Message
           {$IFDEF WDC}+ sLineBreak + E.StackTrace{$ENDIF}
         );
   end;
@@ -249,7 +247,7 @@ begin
     DoSave;
   except
     on E: Exception do
-      gLog.AddTime('Error while saving dev settings to ''' + GetPath + ''':' + sLineBreak + E.Message
+      gLog.AddTime('Error while saving dev settings to ''' + fSettingsPath + ''':' + sLineBreak + E.Message
           {$IFDEF WDC}+ sLineBreak + E.StackTrace{$ENDIF}
         );
   end;

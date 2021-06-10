@@ -2,7 +2,7 @@ unit KM_VclHelpers;
 {$I KaM_Remake.inc}
 interface
 uses
-  StdCtrls, Spin, ExtCtrls;
+  StdCtrls, Spin;
 
 
 type
@@ -19,14 +19,6 @@ type
 
   TSpinEditHelper = class helper for TSpinEdit
     procedure SetValueWithoutChange(const aValue: Integer);
-  end;
-
-
-  TCategoryPanelHelper = class helper for TCategoryPanel
-  private
-    function GetXmlSectionName: string;
-  public
-    property XmlSectionName: string read GetXmlSectionName;
   end;
 
 
@@ -92,13 +84,6 @@ begin
     OnChange := bckEvent;
   end;
 
-end;
-
-
-{ TCategoryPanelHelper }
-function TCategoryPanelHelper.GetXmlSectionName: string;
-begin
-  Result := StringReplace(Caption, ' ', '_', [rfReplaceAll]);
 end;
 
 
