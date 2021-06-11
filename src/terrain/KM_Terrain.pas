@@ -706,9 +706,9 @@ function TKMTerrain.TrySetTile(X, Y: Integer; aType, aRot: Integer; out aPassRec
       Result := False
     else
       if gRes.Units[U.UnitType].DesiredPassability = tpFish then
-        Result := not fTileset.TileIsWater(aType) //Fish need water
+        Result := not fTileset[aType].Water //Fish need water
       else
-        Result := not fTileset.TileIsWalkable(aType); //All other animals need Walkable
+        Result := not fTileset[aType].Walkable; //All other animals need Walkable
   end;
 var
   loc: TKMPoint;
@@ -731,7 +731,7 @@ begin
   if UnitWillGetStuck
     //Will this change block a construction site?
     or ((Land^[Y, X].TileLock in [tlFenced, tlDigged, tlHouse])
-      and (not fTileSet.TileIsRoadable(aType) or not fTileset.TileIsWalkable(aType))) then
+      and (not fTileSet[aType].Roadable or not fTileset[aType].Walkable)) then
     Exit(False);
 
   aDiagonalChanged := False;
@@ -1142,7 +1142,7 @@ var
   cornersTKinds: TKMTerrainKindCorners;
 begin
   Result :=
-    (fTileset.TileIsGoodForIronMine(Land^[Y,X].BaseLayer.Terrain)
+    (fTileset[Land^[Y,X].BaseLayer.Terrain].IronMinable
       and (Land^[Y,X].BaseLayer.Rotation mod 4 = 0)); //only horizontal mountain edges allowed
   if not Result then
   begin
@@ -1150,8 +1150,8 @@ begin
     Result :=
           (cornersTKinds[0] in [tkIron, tkIronMount])
       and (cornersTKinds[1] in [tkIron, tkIronMount])
-      and fTileset.TileIsRoadable(BASE_TERRAIN[cornersTKinds[2]])
-      and fTileset.TileIsRoadable(BASE_TERRAIN[cornersTKinds[3]]);
+      and fTileset[BASE_TERRAIN[cornersTKinds[2]]].Roadable
+      and fTileset[BASE_TERRAIN[cornersTKinds[3]]].Roadable;
   end;
 end;
 
@@ -1172,7 +1172,7 @@ var
   cornersTKinds: TKMTerrainKindCorners;
 begin
   Result :=
-    (fTileset.TileIsGoodForGoldMine(Land^[Y,X].BaseLayer.Terrain)
+    (fTileset[Land^[Y,X].BaseLayer.Terrain].GoldMinable
       and (Land^[Y,X].BaseLayer.Rotation mod 4 = 0)); //only horizontal mountain edges allowed
   if not Result then
   begin
@@ -1180,8 +1180,8 @@ begin
     Result :=
           (cornersTKinds[0] in [tkGold, tkGoldMount])
       and (cornersTKinds[1] in [tkGold, tkGoldMount])
-      and fTileset.TileIsRoadable(BASE_TERRAIN[cornersTKinds[2]])
-      and fTileset.TileIsRoadable(BASE_TERRAIN[cornersTKinds[3]]);
+      and fTileset[BASE_TERRAIN[cornersTKinds[2]]].Roadable
+      and fTileset[BASE_TERRAIN[cornersTKinds[3]]].Roadable;
   end;
 end;
 
@@ -1298,25 +1298,25 @@ end;
 //Check if requested tile is Stone and returns Stone deposit
 function TKMTerrain.TileIsStone(X,Y: Word): Byte;
 begin
-  Result := IfThen(Land[Y, X].HasNoLayers, fTileset.TileIsStone(Land^[Y, X].BaseLayer.Terrain), 0);
+  Result := IfThen(Land[Y, X].HasNoLayers, fTileset[Land^[Y, X].BaseLayer.Terrain].Stone, 0);
 end;
 
 
 function TKMTerrain.TileIsCoal(X,Y: Word): Byte;
 begin
-  Result := IfThen(Land[Y, X].HasNoLayers, fTileset.TileIsCoal(Land^[Y, X].BaseLayer.Terrain), 0);
+  Result := IfThen(Land[Y, X].HasNoLayers, fTileset[Land^[Y, X].BaseLayer.Terrain].Coal, 0);
 end;
 
 
 function TKMTerrain.TileIsIron(X,Y: Word): Byte;
 begin
-  Result := IfThen(Land[Y, X].HasNoLayers, fTileset.TileIsIron(Land^[Y, X].BaseLayer.Terrain), 0);
+  Result := IfThen(Land[Y, X].HasNoLayers, fTileset[Land^[Y, X].BaseLayer.Terrain].Iron, 0);
 end;
 
 
 function TKMTerrain.TileIsGold(X,Y: Word): Byte;
 begin
-  Result := IfThen(Land[Y, X].HasNoLayers, fTileset.TileIsGold(Land^[Y, X].BaseLayer.Terrain), 0);
+  Result := IfThen(Land[Y, X].HasNoLayers, fTileset[Land^[Y, X].BaseLayer.Terrain].Gold, 0);
 end;
 
 
@@ -1457,7 +1457,7 @@ end;
 
 function TKMTerrain.TileHasWater(X, Y: Word): Boolean;
 begin
-  Result := fTileset.TileHasWater(Land^[Y,X].BaseLayer.Terrain);
+  Result := fTileset[Land^[Y,X].BaseLayer.Terrain].HasWater;
 end;
 
 
@@ -1573,7 +1573,7 @@ begin
     Exit;
   //Tile can't be used as a field if there is road or any other overlay
   if not fMapEditor then
-    Result := fTileset.TileIsCornField(Land^[Loc.Y, Loc.X].BaseLayer.Terrain)
+    Result := fTileset[Land^[Loc.Y, Loc.X].BaseLayer.Terrain].Corn
               and (Land^[Loc.Y,Loc.X].TileOverlay = toNone)
   else
     Result := (gGame.MapEditor.LandMapEd^[Loc.Y,Loc.X].CornOrWine = 1) and (Land^[Loc.Y,Loc.X].TileOverlay = toNone);
@@ -1589,7 +1589,7 @@ begin
   //Tile can't be used as a winefield if there is road or any other overlay
   //It also must have right object on it
   if not fMapEditor then
-    Result := fTileset.TileIsWineField(Land^[Loc.Y, Loc.X].BaseLayer.Terrain)
+    Result := fTileset[Land^[Loc.Y, Loc.X].BaseLayer.Terrain].Wine
               and (Land^[Loc.Y,Loc.X].TileOverlay = toNone)
               and ObjectIsWine(Loc)
   else
@@ -4335,7 +4335,7 @@ begin
   Land^[Y,X].Light := ConvertLightToByte(sLight); //  1.33*16 ~=22.
 
   //Use more contrast lighting for Waterbeds
-  if fTileset.TileIsWater(Land^[Y, X].BaseLayer.Terrain) then
+  if fTileset[Land^[Y, X].BaseLayer.Terrain].Water then
     Land^[Y,X].Light := ConvertLightToByte(sLightWater);
 
   //Map borders always fade to black

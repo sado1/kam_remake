@@ -433,7 +433,6 @@ end;
 function TKMResTileset.TileIsIce(aTile: Word): Boolean;
 begin
   Result := fTiles[aTile].Ice;
-//  Result := aTile in [4, 10, 12, 22, 23, 44];
 end;
 
 
@@ -441,20 +440,13 @@ end;
 function TKMResTileset.TileHasWater(aTile: Word): Boolean;
 begin
   Result := fTiles[aTile].HasWater;
-//  Result := aTile in [48,105..107,114..127,142,143,192..194,196,198..200,208..211,230,232..244];
 end;
 
 
 // Check if requested tile is sand suitable for crabs
 function TKMResTileset.TileIsSand(aTile: Word): Boolean;
-const
-  SAND_TILES: array[0..55] of Word =
-                (31,32,33,70,71,99,100,102,103,108,109,112,113,116,117,169,173,181,189,269,273,302,319,320,
-                 493,494,495,496,497,498,499,500,505,506,507,508,509,510,511,512,553,554,555,556,557,558,
-                 559,560,565,566,567,568,569,570,571,572);
 begin
   Result := fTiles[aTile].Sand;
-//  Result := ArrayContains(aTile, SAND_TILES);
 end;
 
 
@@ -462,118 +454,50 @@ end;
 function TKMResTileset.TileIsStone(aTile: Word): Word;
 begin
   Result := fTiles[aTile].Stone;
-//  case aTile of
-//    132,137: Result := 5;
-//    131,136: Result := 4;
-//    130,135: Result := 3;
-//    129,134,266,267,275,276,283,284,291,292: Result := 2;
-//    128,133: Result := 1;
-//    else     Result := 0;
-//  end;
 end;
 
 
 // Check if requested tile is snow
 function TKMResTileset.TileIsSnow(aTile: Word): Boolean;
-const
-  SNOW_TILES: array[0..46] of Word =
-                (45, 46, 47, 49, 52, 64, 65, 166, 171, 203, 204, 205, 212, 213, 220, 256, 257, 261, 262,
-                 286, 290, 294, 298, 304, 305, 312,313,314,315,317,318,433,434,435,436,437,438,439,440,
-                 445,446,447,448,449,450,451,452);
 begin
   Result := fTiles[aTile].Snow;
-//  Result := ArrayContains(aTile, SNOW_TILES);
 end;
 
 
 function TKMResTileset.TileIsCoal(aTile: Word): Word;
 begin
   Result := fTiles[aTile].Coal;
-//  Result := 0;
-//  if aTile > 151 then
-//  begin
-//    if aTile < 156 then
-//      Result := aTile - 151
-//    else
-//      if aTile = 263 then
-//        Result := 5;
-//  end;
 end;
 
 
 function TKMResTileset.TileIsGoodForIronMine(aTile: Word): Boolean;
-const
-  IRON_MINE_TILES: array[0..58] of Word =
-                      (109,166,167,168,169,170,257,338,355,369,370,371,372,387,
-                       388,405,406,407,408,423,424,441,442,443,444,465,466,467,
-                       468,483,484,501,502,503,504,525,526,527,528,483,484,501,
-                       502,503,504,525,526,527,528,543,544,561,562,563,564,585,
-                       586,587,588);
 begin
   Result := fTiles[aTile].IronMinable;
-//  Result := ArrayContains(aTile, IRON_MINE_TILES);
 end;
 
 
 function TKMResTileset.TileIsGoodForGoldMine(aTile: Word): Boolean;
-const
-  GOLD_MINE_TILES: array[0..46] of Word =
-                      (171,172,173,174,175,262,352,357,358,359,360,381,382,393,394,395,
-                       396,417,418,429,430,431,432,453,454,455,456,477,478,489,490,491,
-                       492,505,513,515,516,537,538,549,550,551,552,573,574,575,576);
 begin
   Result := fTiles[aTile].GoldMinable;
-//  Result := ArrayContains(aTile, GOLD_MINE_TILES);
 end;
 
 
 function TKMResTileset.TileIsIron(aTile: Word): Word;
 begin
   Result := fTiles[aTile].Iron;
-//  Result := 0;
-//  if aTile > 147 then
-//  begin
-//    if aTile < 152 then
-//      Result := aTile - 147
-//    else
-//      case aTile of
-//        259: Result := 3;
-//        260: Result := 5;
-//      end;
-//  end;
 end;
 
 
 function TKMResTileset.TileIsGold(aTile: Word): Word;
 begin
   Result := fTiles[aTile].Gold;
-//  Result := 0;
-//  if aTile > 143 then
-//  begin
-//    if aTile < 148 then
-//      Result := aTile - 143
-//    else
-//      if aTile = 307 then
-//        Result := 5;
-//  end;
 end;
 
 
 // Check if requested tile is soil suitable for fields and trees
 function TKMResTileset.TileIsSoil(aTile: Word): Boolean;
-const
-  SOIL_TILES: array[0..176] of Word =
-                (0,1,2,3,5,6, 8,9,11,13,14, 16,17,18,19,20,21, 26,27,28, 34,35,36,37,38,39, 47, 49, 55,56,
-                57,58,64,65,66,67,68,69,72,73,74,75,76,77,78,79,80, 84,85,86,87,88,89, 93,94,95,96,97,98,
-                180,182,183,188,190,191,220,247,274,282,301,303, 312,313,314,315,316,317,318,337,351,354,
-                361,362,363,364,365,366,367,368,373,374,375,376,377,378,379,380,383,384,385,386,389,390,
-                391,392,397,398,399,400,401,402,403,404,409,410,411,412,413,414,415,416,419,420,421,422,
-                425,426,427,428,433,434,435,436,437,438,439,440,445,446,447,448,449,450,451,452,457,458,
-                459,460,461,462,463,464,469,470,471,472,473,474,475,476,577,578,579,580,581,582,583,584,
-                589,590,591,592,593,594,595,596);
 begin
   Result := fTiles[aTile].Soil;
-//  Result := ArrayContains(aTile, SOIL_TILES);
 end;
 
 
@@ -581,12 +505,6 @@ end;
 function TKMResTileset.TileIsWalkable(aTile: Word): Boolean;
 begin
   //Includes 1/2 and 3/4 walkable as walkable
-  //Result := Land^[Loc.Y,Loc.X].BaseLayer.Terrain in [0..6, 8..11,13,14, 16..22, 25..31, 32..39, 44..47, 49,52,55, 56..63,
-  //                                        64..71, 72..79, 80..87, 88..95, 96..103, 104,106..109,111, 112,113,116,117, 123..125,
-  //                                        138..139, 152..155, 166,167, 168..175, 180..183, 188..191,
-  //                                        197, 203..205,207, 212..215, 220..223, 242,243,247];
-  //Values can be 1 or 2, What 2 does is unknown
-//  Result := PatternDAT[aTile+1].Walkable <> 0;
   Result := fTiles[aTile].Walkable;
 end;
 
@@ -595,11 +513,6 @@ end;
 function TKMResTileset.TileIsRoadable(aTile: Word): Boolean;
 begin
   //Do not include 1/2 and 1/4 walkable as roadable
-  //Result := Land^[Loc.Y,Loc.X].BaseLayer.Terrain in [0..3,5,6, 8,9,11,13,14, 16..21, 26..31, 32..39, 45..47, 49, 52, 55, 56..63,
-  //                                        64..71, 72..79, 80..87, 88..95, 96..103, 104,108,111, 112,113,
-  //                                        152..155,180..183,188..191,
-  //                                        203..205, 212,213,215, 220, 247];
-//  Result := PatternDAT[aTile+1].Buildable <> 0;
   Result := fTiles[aTile].Roadable;
 end;
 
@@ -607,14 +520,12 @@ end;
 function TKMResTileset.TileIsCornField(aTile: Word): Boolean;
 begin
   Result := fTiles[aTile].Corn;
-//  Result := aTile in [59..63];
 end;
 
 
 function TKMResTileset.TileIsWineField(aTile: Word): Boolean;
 begin
   Result := fTiles[aTile].Wine;
-//  Result := aTile = 55;
 end;
 
 

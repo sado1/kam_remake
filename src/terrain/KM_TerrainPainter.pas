@@ -1720,9 +1720,9 @@ var
 
   function CanRotate(aTileID: Word): Boolean;
   begin
-    Result := (gRes.Tileset.TileIsWater(aTileID)
+    Result := (gRes.Tileset[aTileID].Water
               and not (aTileID in [114, 115, 119, 194, 200, 210, 211, 235, 236]))
-              or (gRes.Tileset.TileIsIce(aTileID)
+              or (gRes.Tileset[aTileID].Ice
               and not (aTileID in [4, 10, 12, 22, 23]));
   end;
 
