@@ -2034,6 +2034,7 @@ end;
 procedure TRenderList.AddSpriteG(aRX: TRXType; aId: Integer; aUID: Integer; pX,pY,gX,gY: Single; aTeam: Cardinal = $0; aAlphaStep: Single = -1);
 const
   MAX_SEL_RECT_HEIGHT = CELL_SIZE_PX * 1.5; //Restrict too long images selection rect
+  RECT_MAX_SIZE_LIMIT = CELL_SIZE_PX * 3; // CELL_SIZE_PX is not enough!
 var
   W, H, WS: Integer;
   snsLeft, snsRight, snsTop, snsBottom: Integer;
@@ -2055,10 +2056,10 @@ begin
     begin
       // todo: fix SizeNoShadow calculation for interpolated animations, f.e. last frame of death anim for swordman / knight etc
       // remove EnsureRange when fixed
-      snsLeft   := EnsureRange(fUnitsRXData.SizeNoShadow[aId].left,   - CELL_SIZE_PX, CELL_SIZE_PX);
-      snsRight  := EnsureRange(fUnitsRXData.SizeNoShadow[aId].right,  - CELL_SIZE_PX, CELL_SIZE_PX);
-      snsTop    := EnsureRange(fUnitsRXData.SizeNoShadow[aId].top,    - CELL_SIZE_PX, CELL_SIZE_PX);
-      snsBottom := EnsureRange(fUnitsRXData.SizeNoShadow[aId].bottom, - CELL_SIZE_PX, CELL_SIZE_PX);
+      snsLeft   := EnsureRange(fUnitsRXData.SizeNoShadow[aId].left,   - RECT_MAX_SIZE_LIMIT, RECT_MAX_SIZE_LIMIT);
+      snsRight  := EnsureRange(fUnitsRXData.SizeNoShadow[aId].right,  - RECT_MAX_SIZE_LIMIT, RECT_MAX_SIZE_LIMIT);
+      snsTop    := EnsureRange(fUnitsRXData.SizeNoShadow[aId].top,    - RECT_MAX_SIZE_LIMIT, RECT_MAX_SIZE_LIMIT);
+      snsBottom := EnsureRange(fUnitsRXData.SizeNoShadow[aId].bottom, - RECT_MAX_SIZE_LIMIT, RECT_MAX_SIZE_LIMIT);
 
       WS := (snsRight div 2) + fUnitsRXData.Pivot[aId].x; //Fix for bow and crossbowman
       //Enlarge rect from image size to the left and right, to be at least CELL_SIZE_PX width and height
