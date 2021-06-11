@@ -530,7 +530,7 @@ begin
     if firstSpriteIndex <= SP.RXData.Count then
     begin
       //Images were successfuly loaded
-      {$IFDEF NO_OGL}
+      {$IFNDEF NO_OGL}
       SP.MakeGFX(False, firstSpriteIndex);
       {$ENDIF}
       SP.ClearTemp;
