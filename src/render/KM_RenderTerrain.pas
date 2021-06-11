@@ -269,12 +269,6 @@ begin
 end;
 
 
-function IsWaterAnimTerId(aTerId: Word): Boolean; inline;
-begin
-  Result := TERRAIN_ANIM[aTerId].Count > 0;
-end;
-
-
 function TileHasToBeRendered(IsFirst: Boolean; aTX,aTY: Word; aFOW: TKMFogOfWarCommon): Boolean; inline;
 begin
   // We have to render at least 1 tile (otherwise smth wrong with gl contex and all UI and other sprites are not rendered at all
@@ -329,30 +323,38 @@ var
 
     function SetAnimTileVertex(aTerrain: Word; aRotation: Byte): Boolean;
     var
+      I: Integer;
       texAnimC: TUVRect;
       vtxOffset, indOffset: Integer;
+      tile: TKMTileParams;
     begin
-      if not IsWaterAnimTerId(aTerrain) then Exit(False);
+      tile := gRes.Tileset[aTerrain];
+      if not tile.HasAnim then Exit(False);
 
-      texAnimC := GetTileUV(TERRAIN_ANIM[aTerrain].GetAnim(aAnimStep), aRotation mod 4);
+      for I := Low(tile.Animation.Layers) to High(tile.Animation.Layers) do
+      begin
+        if not tile.Animation.Layers[I].HasAnim then Continue;
 
-      vtxOffset := aAnimCnt * 4;
-      indOffset := aAnimCnt * 6;
+        texAnimC := GetTileUV(tile.Animation.Layers[I].GetAnim(aAnimStep), aRotation mod 4);
 
-      SetTileVertex(fAnimTilesVtx[vtxOffset],   aTX-1, aTY-1, False, texAnimC[1][1], texAnimC[1][2]);
-      SetTileVertex(fAnimTilesVtx[vtxOffset+1], aTX-1, aTY,   True,  texAnimC[2][1], texAnimC[2][2]);
-      SetTileVertex(fAnimTilesVtx[vtxOffset+2], aTX,   aTY,   True,  texAnimC[3][1], texAnimC[3][2]);
-      SetTileVertex(fAnimTilesVtx[vtxOffset+3], aTX,   aTY-1, False, texAnimC[4][1], texAnimC[4][2]);
+        vtxOffset := aAnimCnt * 4;
+        indOffset := aAnimCnt * 6;
 
-      fAnimTilesInd[indOffset+0] := vtxOffset;
-      fAnimTilesInd[indOffset+1] := vtxOffset + 1;
-      fAnimTilesInd[indOffset+2] := vtxOffset + 2;
-      fAnimTilesInd[indOffset+3] := vtxOffset;
-      fAnimTilesInd[indOffset+4] := vtxOffset + 3;
-      fAnimTilesInd[indOffset+5] := vtxOffset + 2;
+        SetTileVertex(fAnimTilesVtx[vtxOffset],   aTX-1, aTY-1, False, texAnimC[1][1], texAnimC[1][2]);
+        SetTileVertex(fAnimTilesVtx[vtxOffset+1], aTX-1, aTY,   True,  texAnimC[2][1], texAnimC[2][2]);
+        SetTileVertex(fAnimTilesVtx[vtxOffset+2], aTX,   aTY,   True,  texAnimC[3][1], texAnimC[3][2]);
+        SetTileVertex(fAnimTilesVtx[vtxOffset+3], aTX,   aTY-1, False, texAnimC[4][1], texAnimC[4][2]);
 
-      Inc(aAnimCnt);
-      Result := True;
+        fAnimTilesInd[indOffset+0] := vtxOffset;
+        fAnimTilesInd[indOffset+1] := vtxOffset + 1;
+        fAnimTilesInd[indOffset+2] := vtxOffset + 2;
+        fAnimTilesInd[indOffset+3] := vtxOffset;
+        fAnimTilesInd[indOffset+4] := vtxOffset + 3;
+        fAnimTilesInd[indOffset+5] := vtxOffset + 2;
+
+        Inc(aAnimCnt);
+        Result := True;
+        end;
     end;
 
   var
@@ -724,9 +726,10 @@ end;
 
 procedure TRenderTerrain.DoAnimations(aAnimStep: Integer; aFOW: TKMFogOfWarCommon);
 var
-  I, K: Integer;
+  I, J, K: Integer;
   texC: TUVRect;
-  terId: Word;
+  animID: Word;
+  tile: TKMTileParams;
 begin
   if SKIP_TER_RENDER_ANIMS then Exit;
 
@@ -764,18 +767,26 @@ begin
     with gTerrain do
       for I := fClipRect.Top to fClipRect.Bottom do
         for K := fClipRect.Left to fClipRect.Right do
-          if IsWaterAnimTerId(Land^[I,K].BaseLayer.Terrain)
+        begin
+          tile := gRes.Tileset[Land^[I,K].BaseLayer.Terrain];
+          if tile.HasAnim
             and (aFOW.CheckVerticeRenderRev(K,I) > FOG_OF_WAR_ACT) then //No animation in FOW
           begin
-            terId := TERRAIN_ANIM[Land^[I,K].BaseLayer.Terrain].GetAnim(aAnimStep);
-            TRender.BindTexture(gGFXData[rxTiles, terId + 1].Tex.ID);
-            texC := GetTileUV(terId, Land^[I,K].BaseLayer.Rotation);
+            for J := Low(tile.Animation.Layers) to High(tile.Animation.Layers) do
+            begin
+              if not tile.Animation.Layers[J].HasAnim then Continue;
 
-            glBegin(GL_TRIANGLE_FAN);
-              glColor4f(1,1,1,1);
-              RenderQuadTexture(texC, K, I);
-            glEnd;
+              animID := tile.Animation.Layers[J].GetAnim(aAnimStep);
+              TRender.BindTexture(gGFXData[rxTiles, animID + 1].Tex.ID);
+              texC := GetTileUV(animID, Land^[I,K].BaseLayer.Rotation);
+
+              glBegin(GL_TRIANGLE_FAN);
+                glColor4f(1,1,1,1);
+                RenderQuadTexture(texC, K, I);
+              glEnd;
+            end;
           end;
+        end;
   end;
   {$IFDEF PERFLOG}
   gPerfLogs.SectionLeave(psFrameWater);
@@ -1062,7 +1073,7 @@ begin
   begin
     if fTilesFowVtxCount = 0 then Exit; //Nothing to render
     BindVBOArray(vatFOW);
-    
+
     //Setup vertex and UV layout and offsets
     glEnableClientState(GL_VERTEX_ARRAY);
     glVertexPointer(3, GL_FLOAT, SizeOf(TTileFowVertice), Pointer(0));
@@ -1276,7 +1287,7 @@ begin
     glColor4ub(HighlightColor and $FF, (HighlightColor shr 8) and $FF, (HighlightColor shr 16) and $FF, $FF)
   else
     glColor4f(1, 1, 1, 1);
-  
+
   if aDoBindTexture then
     TRender.BindTexture(gGFXData[rxTiles, aTerrainId + 1].Tex.ID);
 
@@ -1326,7 +1337,6 @@ begin
   for L := 0 to aTileBasic.LayersCnt - 1 do
     DoRenderTile(aTileBasic.Layer[L].Terrain, pX, pY, aTileBasic.Layer[L].Rotation, aTileBasic.Layer[L].GetCorners,
                  doBindTexture, False, DoHighlight, HighlightColor, aTileBasic.BlendingLvl);
-    
 end;
 
 
