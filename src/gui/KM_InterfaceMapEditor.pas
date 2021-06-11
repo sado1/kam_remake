@@ -97,6 +97,8 @@ type
     procedure History_MouseWheel(Sender: TObject; WheelSteps: Integer; var aHandled: Boolean);
     procedure History_Close;
     procedure History_UpdatePos;
+
+    function GetGuiTerrain: TKMMapEdTerrain;
   protected
     MinimapView: TKMMinimapView;
     Label_Coordinates: TKMLabel;
@@ -129,7 +131,7 @@ type
 
     procedure ShowMessage(const aText: string);
     procedure ExportPages(const aPath: string); override;
-    property GuiTerrain: TKMMapEdTerrain read fGuiTerrain;
+    property GuiTerrain: TKMMapEdTerrain read GetGuiTerrain;
     property GuiMission: TKMMapEdMission read fGuiMission;
 
     procedure KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean); override;
@@ -843,6 +845,14 @@ begin
   HidePages;
   fGuiUnit.Show(TKMUnit(nil));
   gGameApp.PrintScreen(path + 'Unit.jpeg');
+end;
+
+
+function TKMMapEdInterface.GetGuiTerrain: TKMMapEdTerrain;
+begin
+  if Self = nil then Exit(nil);
+
+  Result := fGuiTerrain;
 end;
 
 

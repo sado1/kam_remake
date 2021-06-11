@@ -368,6 +368,8 @@ procedure TKMMapEdTerrainTiles.TilesTableSetTileTexId(aTexId: Integer);
 var
   I,K,L,SP: Integer;
 begin
+  if Self = nil then Exit;
+
   NumEdit_SetTileNumber.Value := aTexId;
   NumEdit_SetTilePaletteNumber.Value := aTexId;
 

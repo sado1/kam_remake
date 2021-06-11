@@ -29,6 +29,7 @@ type
     fGuiOverlays: TKMMapEdTerrainOverlays;
 
     procedure PageChange(Sender: TObject);
+    function GetGuiTiles: TKMMapEdTerrainTiles;
   protected
     Panel_Terrain: TKMPanel;
     Button_Terrain: array [TKMTerrainTab] of TKMButton;
@@ -41,7 +42,7 @@ type
     procedure KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
     procedure MouseWheel(Shift: TShiftState; WheelSteps: Integer; X,Y: Integer; var aHandled: Boolean);
 
-    property GuiTiles: TKMMapEdTerrainTiles read fGuiTiles;
+    property GuiTiles: TKMMapEdTerrainTiles read GetGuiTiles;
     property GuiSelection: TKMMapEdTerrainSelection read fGuiSelection;
 
     procedure Show(aTab: TKMTerrainTab);
@@ -181,6 +182,14 @@ begin
   if (aIndex in [Byte(Low(TKMTerrainTab))..Byte(High(TKMTerrainTab))])
     and Button_Terrain[TKMTerrainTab(aIndex)].Enabled then
     Show(TKMTerrainTab(aIndex));
+end;
+
+
+function TKMMapEdTerrain.GetGuiTiles: TKMMapEdTerrainTiles;
+begin
+  if Self = nil then Exit(nil);
+
+  Result := fGuiTiles;
 end;
 
 
