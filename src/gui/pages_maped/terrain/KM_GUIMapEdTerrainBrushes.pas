@@ -19,6 +19,7 @@ type
     procedure BrushRefresh;
     procedure BrushFixTerrain_Click(Sender: TObject);
     procedure FixTerrainBrushes(Sender: TObject);
+    procedure ResetLastBrushes;
   protected
     Panel_Brushes: TKMScrollPanel;
       BrushSize: TKMTrackBar;
@@ -60,16 +61,7 @@ const
   BTN_TKIND_S = 34;
   BTN_TKIND_S_SP_X = 36;
   BTN_TKIND_S_SP_Y = 40;
-
-type
-  TMBrushButtonType = (bbtBrush = -1, bbtMask = -2);
-
-
-{ TKMMapEdTerrainBrushes }
-constructor TKMMapEdTerrainBrushes.Create(aParent: TKMPanel);
-const
   SURF_ROW_LEN = 5;
-  SURFACES_TAB = 18;
 
   SURFACES: array [0..5, 0..SURF_ROW_LEN-1] of TKMTerrainKind = (
     (tkGrass,       tkMoss,         tkPaleGrass,    tkGrassDirt,    tkDirt),
@@ -78,6 +70,16 @@ const
     (tkSnowOnGrass, tkSnowOnDirt,   tkSnow,         tkDeepSnow,     tkIce),
     (tkStone,       tkGoldMount,    tkIronMount,    tkCobbleStone,  tkGravel),
     (tkCoal,        tkGold,         tkIron,         tkLava,         tkAbyss));
+
+type
+  TMBrushButtonType = (bbtBrush = -1, bbtMask = -2);
+
+
+{ TKMMapEdTerrainBrushes }
+constructor TKMMapEdTerrainBrushes.Create(aParent: TKMPanel);
+const
+  SURFACES_TAB = 18;
+
   MASKS_HINTS_TX: array [TKMTileMaskKind] of Integer =
                             (TX_MAPED_TERRAIN_NO_MASK_HINT, TX_MAPED_TERRAIN_MASK_1_HINT,
                              TX_MAPED_TERRAIN_MASK_2_HINT, TX_MAPED_TERRAIN_MASK_3_HINT,
@@ -116,9 +118,7 @@ var
 begin
   inherited Create;
 
-  fLastShape := hsCircle;
-  fLastBrush := Byte(SURFACES[0,0]);
-  fLastMagicBrush := False;
+  ResetLastBrushes;
 
   Panel_Brushes := TKMScrollPanel.Create(aParent, 0, 28, aParent.Width, aParent.Height - 28, [saVertical], bsMenu, ssCommon);
   Panel_Brushes.Padding.SetBottom(10);
@@ -223,6 +223,14 @@ begin
 
   fSubMenuActionsCtrls[0,0] := BrushCircle;
   fSubMenuActionsCtrls[1,0] := BrushSquare;
+end;
+
+
+procedure TKMMapEdTerrainBrushes.ResetLastBrushes;
+begin
+  fLastShape := hsCircle;
+  fLastBrush := Byte(SURFACES[0,0]);
+  fLastMagicBrush := False;
 end;
 
 
@@ -381,9 +389,7 @@ begin
   // Reset last object on RMB click
   if gCursor.Mode = cmBrush then
   begin
-    fLastShape := hsCircle;
-    fLastBrush := -1;
-    fLastMagicBrush := False;
+    ResetLastBrushes;
     aHandled := True;
   end;
 end;
