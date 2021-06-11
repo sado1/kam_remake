@@ -649,12 +649,9 @@ var
   nRoot, nAnimLayer: TJsonObject;
   nTiles, nTerKinds, nAnimLayers, nAnims: TJsonArray;
 begin
-  if not aCompact then
-  begin
-    JsonSerializationConfig.InlinedByDefault := True;
-    JsonSerializationConfig.IndentChar := '  '; // 2 spaces
-    JsonSerializationConfig.LineBreak := #13#10;
-  end;
+  JsonSerializationConfig.InlinedByDefault := True;
+  JsonSerializationConfig.IndentChar := '  '; // 2 spaces
+  JsonSerializationConfig.LineBreak := #13#10; // CRLF
 
   nRoot := TJsonObject.Create;
   nRoot.Inlined := False;
@@ -665,7 +662,7 @@ begin
     begin
       nTile := nTiles.AddObject;
 
-//      nTile.FromSimpleObject(fTiles[I], False, True);
+//      nTile.FromSimpleObject(fTiles[I], False, True); // Do not use serialization for now, RTTI is heavy and slow
 
       nTile.I['ID'] := I;
       nTile.B['Walkable'] := fTiles[I].Walkable;
@@ -679,14 +676,14 @@ begin
       AddTileBAttr('IronMinable', fTiles[I].IronMinable);
       AddTileBAttr('GoldMinable', fTiles[I].GoldMinable);
 
-      AddTileBAttr('Water',      fTiles[I].Water);
-      AddTileBAttr('HasWater',   fTiles[I].HasWater);
-      AddTileBAttr('Ice',        fTiles[I].Ice);
-      AddTileBAttr('Snow',       fTiles[I].Snow);
-      AddTileBAttr('Sand',       fTiles[I].Sand);
-      AddTileBAttr('Soil',       fTiles[I].Soil);
-      AddTileBAttr('Corn',       fTiles[I].Corn);
-      AddTileBAttr('Wine',       fTiles[I].Wine);
+      AddTileBAttr('Water',    fTiles[I].Water);
+      AddTileBAttr('HasWater', fTiles[I].HasWater);
+      AddTileBAttr('Ice',      fTiles[I].Ice);
+      AddTileBAttr('Snow',     fTiles[I].Snow);
+      AddTileBAttr('Sand',     fTiles[I].Sand);
+      AddTileBAttr('Soil',     fTiles[I].Soil);
+      AddTileBAttr('Corn',     fTiles[I].Corn);
+      AddTileBAttr('Wine',     fTiles[I].Wine);
 
       nTerKinds := nTile.A['CornersTerKinds'];
       nTerKinds.Add(GetEnumName(TypeInfo(TKMTerrainKind), Integer(fTiles[I].TerKinds[0])));
@@ -710,6 +707,7 @@ begin
       end;
     end;
 
+    // Save to stream if specified (used for CRC calculations)
     if aSaveStream = nil then
       nRoot.SaveToFile(GetTilesJsonPath, aCompact, TEncoding.UTF8)
     else
@@ -741,7 +739,7 @@ begin
     FreeAndNil(fTiles[I]);
     fTiles[I] := TKMTileParams.Create;
 
-//    nTile.ToSimpleObject(tile, False);
+//    nTile.ToSimpleObject(tile, False); // Do not use serialization for now, RTTI is heavy and slow
 
     fTiles[I].ID := nTile.I['ID'];
     fTiles[I].Walkable := nTile.B['Walkable'];
@@ -755,14 +753,14 @@ begin
     fTiles[I].IronMinable := nTile.B['IronMinable'];
     fTiles[I].GoldMinable := nTile.B['GoldMinable'];
 
-    fTiles[I].Water       := nTile.B['Water'];
-    fTiles[I].HasWater    := nTile.B['HasWater'];
-    fTiles[I].Ice         := nTile.B['Ice'];
-    fTiles[I].Snow        := nTile.B['Snow'];
-    fTiles[I].Sand        := nTile.B['Sand'];
-    fTiles[I].Soil        := nTile.B['Soil'];
-    fTiles[I].Corn        := nTile.B['Corn'];
-    fTiles[I].Wine        := nTile.B['Wine'];
+    fTiles[I].Water    := nTile.B['Water'];
+    fTiles[I].HasWater := nTile.B['HasWater'];
+    fTiles[I].Ice      := nTile.B['Ice'];
+    fTiles[I].Snow     := nTile.B['Snow'];
+    fTiles[I].Sand     := nTile.B['Sand'];
+    fTiles[I].Soil     := nTile.B['Soil'];
+    fTiles[I].Corn     := nTile.B['Corn'];
+    fTiles[I].Wine     := nTile.B['Wine'];
 
     nTerKinds := nTile.A['CornersTerKinds'];
     Assert(nTerKinds.Count = 4);
