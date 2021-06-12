@@ -265,7 +265,7 @@ type
     Size: array of record X,Y: Word; end;
     Pivot: array of record x,y: Integer; end;
     SizeNoShadow: array of record left,top,right,bottom: Integer; end; //Image object (without shadow) rect in the image sizes
-    Data: array of array of Byte;
+    Data: array of array of Byte; //Used for RXX utils (Packer / Editor)
     RGBA: array of array of Cardinal; //Expanded image
     Mask: array of array of Byte; //Mask for team colors
     HasMask: array of Boolean; //Flag if Mask for team colors is used
