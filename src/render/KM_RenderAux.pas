@@ -32,7 +32,8 @@ type
     procedure Line(const A, B: TKMPoint; aCol: TColor4; aPattern: Word = $FFFF); overload;
     procedure Line(const A, B: TKMPointF; aCol: TColor4; aPattern: Word = $FFFF); overload;
     procedure Line(x1, y1, x2, y2: Single; aCol: TColor4; aPattern: Word = $FFFF; aThickness: Integer = -1); overload;
-    procedure Line(const aPoints: TKMPointFArray; aColor: TKMColor4f; aThickness: Integer = -1; aLineMode: TKMLineMode = lmStrip; aPattern: Word = $FFFF); overload;
+    procedure Line(const aPoints: TKMPointFArray; const aColor: TKMColor4f; aThickness: Integer = -1; aLineMode: TKMLineMode = lmStrip; aPattern: Word = $FFFF); overload;
+    procedure Square(const aRect: TKMRect; const aColor: TKMColor4f);
     procedure Triangle(x1, y1, x2, y2, X3, Y3: Single; aCol: TColor4);
     procedure TriangleOnTerrain(x1, y1, x2, y2, X3, Y3: Single; aCol: TColor4);
     
@@ -299,7 +300,7 @@ begin
 end;
 
 
-procedure TRenderAux.Line(const aPoints: TKMPointFArray; aColor: TKMColor4f; aThickness: Integer = -1; aLineMode: TKMLineMode = lmStrip;
+procedure TRenderAux.Line(const aPoints: TKMPointFArray; const aColor: TKMColor4f; aThickness: Integer = -1; aLineMode: TKMLineMode = lmStrip;
                           aPattern: Word = $FFFF);
 var
   I, lineWidth: Integer;
@@ -328,6 +329,20 @@ begin
   // Restore previous value for line width
   if aThickness <> -1 then
     glLineWidth(lineWidth);
+end;
+
+
+procedure TRenderAux.Square(const aRect: TKMRect; const aColor: TKMColor4f);
+begin
+  TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
+  glBegin(GL_QUADS);
+    with gTerrain do
+    glkQuad(aRect.Left,  aRect.Top,
+            aRect.Right, aRect.Top,
+            aRect.Right, aRect.Bottom,
+            aRect.Left,  aRect.Bottom);
+  glEnd;
+
 end;
 
 
