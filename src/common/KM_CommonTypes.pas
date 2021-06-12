@@ -128,6 +128,7 @@ type
     function Alpha50(): TKMColor4f;
     function Alpha(aAlpha: Single): TKMColor4f;
     function ToColor3f: TKMColor3f;
+    function ToCardinal: Cardinal;
   end;
 
   TKMColor3bArray = array of TKMColor3b;
@@ -299,6 +300,12 @@ begin
   Result.R := R;
   Result.G := G;
   Result.B := B;
+end;
+
+
+function TKMColor4f.ToCardinal: Cardinal;
+begin
+  Result := Round(R * 255) + (Round(G * 255) shl 8) + (Round(B * 255) shl 16) + (Round(A * 255) shl 24);
 end;
 
 
