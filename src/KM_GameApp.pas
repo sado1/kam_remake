@@ -68,6 +68,8 @@ type
 
     procedure InitMainMenu(aScreenX, aScreenY: Word);
     function GetActiveInterface: TKMUserInterfaceCommon;
+
+    procedure UpdatePerflog;
   public
     constructor Create(aRenderControl: TKMRenderControl; aScreenX, aScreenY: Word; aVSync: Boolean; aOnLoadingStep: TEvent;
                        aOnLoadingText: TUnicodeStringEvent; aOnCursorUpdate: TIntegerStringEvent; NoMusic: Boolean = False);
@@ -173,7 +175,8 @@ uses
   KM_GameSavePoints,
   KM_Cursor, KM_ResTexts,
   KM_IoGraphicUtils,
-  KM_Saves, KM_CommonUtils, KM_RandomChecks, KM_DevPerfLog, KM_DevPerfLogTypes;
+  KM_Saves, KM_CommonUtils, KM_CommonShellUtils, KM_RandomChecks,
+  KM_DevPerfLog, KM_DevPerfLogTypes;
 
 
 { Creating everything needed for MainMenu, game stuff is created on StartGame }
@@ -1325,6 +1328,22 @@ begin
 end;
 
 
+procedure TKMGameApp.UpdatePerflog;
+{$IFDEF PERFLOG}
+var
+  memUsed, stackUsed: NativeUInt;
+{$ENDIF}
+begin
+  {$IFDEF PERFLOG}
+  memUsed := GetMemUsed;
+  stackUsed := GetCommittedStackSize;
+
+  gPerfLogs.SectionAddValue(psMemUsed, memUsed div (10*1024), fGlobalTickCount, IntToStr(memUsed div (1024*1024)) + 'Mb');
+  gPerfLogs.SectionAddValue(psStackUsed, stackUsed div 128, fGlobalTickCount, IntToStr(stackUsed div 1024) + 'Kb');
+  {$ENDIF}
+end;
+
+
 procedure TKMGameApp.UpdateState;
 begin
   if fIsLoading then Exit; //Don't update while toggling locale
@@ -1360,6 +1379,8 @@ begin
     if (gGame <> nil) and not (gGame.IsPaused and BLOCK_GAME_ON_PAUSE) and Assigned(fOnCursorUpdate) then
         fOnCursorUpdate(SB_ID_TIME, 'Time: ' + TimeToString(gGame.MissionTime));
   end;
+
+  UpdatePerflog;
 end;
 
 

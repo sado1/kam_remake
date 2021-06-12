@@ -35,8 +35,9 @@ type
     property StackGFX: TKMPerfLogStackGFX read GetStackGFX;
 
     procedure SectionEnter(aSection: TPerfSectionDev); overload;//; aTick: Integer = -1; aTag: Integer = 0);
-
     procedure SectionLeave(aSection: TPerfSectionDev);
+
+    procedure SectionAddValue(aSection: TPerfSectionDev; aValue: Int64; aTick: Integer; aTagS: string = '');
 
     procedure Clear;
 
@@ -143,6 +144,12 @@ begin
 
   // This easy check allows us to exit if the Log was not initialized, e.g. in utils
   Result := fStackCPU
+end;
+
+
+procedure TKMPerfLogs.SectionAddValue(aSection: TPerfSectionDev; aValue: Int64; aTick: Integer; aTagS: string = '');
+begin
+  fItems[aSection].SectionAddValue(aValue, aTick, aTagS);
 end;
 
 
@@ -361,7 +368,7 @@ begin
   // (f.e. for game save)
   // that will make 'rare' graphs move at the same positions as other 'every tick' graphs
   for I := LOW_PERF_SECTION to High(TPerfSectionDev) do
-    if IsCPUSection(I) then
+    if IsCPUSection(I) and IsTimerSection(I) then
     begin
       fItems[I].SectionEnter(fTick);
       fItems[I].SectionLeave;
