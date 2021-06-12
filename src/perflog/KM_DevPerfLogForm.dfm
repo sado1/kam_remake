@@ -53,7 +53,7 @@ object FormPerfLogs: TFormPerfLogs
     MaxValue = 1000
     MinValue = 1
     TabOrder = 1
-    Value = 20
+    Value = 30
     OnChange = DoChange
     OnKeyDown = seScaleKeyDown
   end

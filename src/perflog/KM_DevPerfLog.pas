@@ -65,13 +65,15 @@ uses
 { TKMPerfLogs }
 constructor TKMPerfLogs.Create(aSections: TPerfSectionSet; aHighPrecision: Boolean);
 {$IFDEF PERFLOG}
+const
+  DEFAULT_PF_SCALE = 30;
 var
   I: TPerfSectionDev;
 {$ENDIF}
 begin
   inherited Create;
   {$IFDEF PERFLOG}
-  Scale := 20;
+  Scale := DEFAULT_PF_SCALE;
 
   for I := LOW_PERF_SECTION to High(TPerfSectionDev) do
   begin
