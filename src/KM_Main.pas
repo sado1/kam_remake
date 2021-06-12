@@ -386,6 +386,8 @@ begin
     if Assigned(gVideoPlayer) then
       gVideoPlayer.Free;
 
+    FreeAndNil(gResExporter);
+
     // fFormMain.DevSettingsSave; Moved into MainForm itself, since it's purely MainForms business. Rest of the app should know nothing about it
 
     if Sender <> fFormMain then

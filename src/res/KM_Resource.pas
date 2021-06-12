@@ -118,6 +118,7 @@ begin
   FreeAndNil(fTileset);
   FreeAndNil(fUnits);
   FreeAndNil(gResKeys);
+  FreeAndNil(fInterpolation);
 
   inherited;
 end;
@@ -250,6 +251,7 @@ var
 begin
   if fInterpolation = nil then
   begin
+    gLog.AddTime('LoadGameResources ... Interpolations from interp.dat');
     fInterpolation := TKMResInterpolation.Create;
     fInterpolation.LoadFromFile(ExeDir + 'data' + PathDelim + 'defines' + PathDelim + 'interp.dat');
   end;

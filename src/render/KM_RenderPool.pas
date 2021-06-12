@@ -211,6 +211,7 @@ begin
   fRenderList.Free;
   fRenderDebug.Free;
   fRenderTerrain.Free;
+  gRenderGameAux.Free;
   gRenderAux.Free;
 
   inherited;

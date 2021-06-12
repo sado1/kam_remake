@@ -10849,7 +10849,10 @@ begin
   fMouseDownSubsList.Free;
   fMouseMoveSubsList.Free;
 
-  fMasterPanel.Free; //Will destroy all its childs as well
+  // Free and nil to avoid problems on game Exit (MouseMove invokes ScanChilds over object, while he is going to be freed)
+  // So we want to object to be nil'ed first, so we could check it in the ScanChilds
+  // Will destroy all its childs as well
+  FreeAndNil(fMasterPanel);
 
   inherited;
 end;

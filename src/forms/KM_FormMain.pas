@@ -448,6 +448,8 @@ begin
   {$IFDEF MSWindows}
   fMenuItemHint.Free;
   {$ENDIF}
+
+  FreeAndNil(fDevSettings);
 end;
 
 

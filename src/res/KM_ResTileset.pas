@@ -728,67 +728,70 @@ var
 begin
   jsonPath := GetTilesJsonPath;
   nRoot := TJsonObject.ParseFromFile(jsonPath) as TJsonObject;
+  try
+    nTiles := nRoot.A['Tiles'];
+    Assert(nTiles.Count = TILES_CNT);
 
-  nTiles := nRoot.A['Tiles'];
-  Assert(nTiles.Count = TILES_CNT);
-
-  for I := 0 to nTiles.Count - 1 do
-  begin
-    nTile := nTiles.O[I];
-
-    FreeAndNil(fTiles[I]);
-    fTiles[I] := TKMTileParams.Create;
-
-//    nTile.ToSimpleObject(tile, False); // Do not use serialization for now, RTTI is heavy and slow
-
-    fTiles[I].ID := nTile.I['ID'];
-    fTiles[I].Walkable := nTile.B['Walkable'];
-    fTiles[I].Roadable := nTile.B['Roadable'];
-
-    fTiles[I].Stone := nTile.I['Stone'];
-    fTiles[I].Coal  := nTile.I['Coal'];
-    fTiles[I].Iron  := nTile.I['Iron'];
-    fTiles[I].Gold  := nTile.I['Gold'];
-
-    fTiles[I].IronMinable := nTile.B['IronMinable'];
-    fTiles[I].GoldMinable := nTile.B['GoldMinable'];
-
-    fTiles[I].Water    := nTile.B['Water'];
-    fTiles[I].HasWater := nTile.B['HasWater'];
-    fTiles[I].Ice      := nTile.B['Ice'];
-    fTiles[I].Snow     := nTile.B['Snow'];
-    fTiles[I].Sand     := nTile.B['Sand'];
-    fTiles[I].Soil     := nTile.B['Soil'];
-    fTiles[I].Corn     := nTile.B['Corn'];
-    fTiles[I].Wine     := nTile.B['Wine'];
-
-    nTerKinds := nTile.A['CornersTerKinds'];
-    Assert(nTerKinds.Count = 4);
-    for K := 0 to 3 do
-      if TKMEnumUtils.TryGetAs<TKMTerrainKind>(nTerKinds.S[K], terKind) then
-        fTiles[I].TerKinds[K] := terKind
-      else
-        raise Exception.Create('Error loading ' + jsonPath + ': wrong CornersTerKind: ' + nTerKinds.S[K]);
-
-    if not nTile.Contains('AnimLayers') then Continue;
-
-    nAnimLayers := nTile.A['AnimLayers'];
-
-    SetLength(fTiles[I].Animation.Layers, nAnimLayers.Count);
-
-    for J := 0 to nAnimLayers.Count - 1 do
+    for I := 0 to nTiles.Count - 1 do
     begin
-      nAnimLayer := nAnimLayers.O[J];
+      nTile := nTiles.O[I];
 
-      fTiles[I].Animation.Layers[J].Frames := nAnimLayer.I['Frames'];
+      FreeAndNil(fTiles[I]);
+      fTiles[I] := TKMTileParams.Create;
 
-      nAnims := nAnimLayer.A['Anims'];
-      SetLength(fTiles[I].Animation.Layers[J].Anims, nAnims.Count);
-      for K := 0 to nAnims.Count - 1 do
+  //    nTile.ToSimpleObject(tile, False); // Do not use serialization for now, RTTI is heavy and slow
+
+      fTiles[I].ID := nTile.I['ID'];
+      fTiles[I].Walkable := nTile.B['Walkable'];
+      fTiles[I].Roadable := nTile.B['Roadable'];
+
+      fTiles[I].Stone := nTile.I['Stone'];
+      fTiles[I].Coal  := nTile.I['Coal'];
+      fTiles[I].Iron  := nTile.I['Iron'];
+      fTiles[I].Gold  := nTile.I['Gold'];
+
+      fTiles[I].IronMinable := nTile.B['IronMinable'];
+      fTiles[I].GoldMinable := nTile.B['GoldMinable'];
+
+      fTiles[I].Water    := nTile.B['Water'];
+      fTiles[I].HasWater := nTile.B['HasWater'];
+      fTiles[I].Ice      := nTile.B['Ice'];
+      fTiles[I].Snow     := nTile.B['Snow'];
+      fTiles[I].Sand     := nTile.B['Sand'];
+      fTiles[I].Soil     := nTile.B['Soil'];
+      fTiles[I].Corn     := nTile.B['Corn'];
+      fTiles[I].Wine     := nTile.B['Wine'];
+
+      nTerKinds := nTile.A['CornersTerKinds'];
+      Assert(nTerKinds.Count = 4);
+      for K := 0 to 3 do
+        if TKMEnumUtils.TryGetAs<TKMTerrainKind>(nTerKinds.S[K], terKind) then
+          fTiles[I].TerKinds[K] := terKind
+        else
+          raise Exception.Create('Error loading ' + jsonPath + ': wrong CornersTerKind: ' + nTerKinds.S[K]);
+
+      if not nTile.Contains('AnimLayers') then Continue;
+
+      nAnimLayers := nTile.A['AnimLayers'];
+
+      SetLength(fTiles[I].Animation.Layers, nAnimLayers.Count);
+
+      for J := 0 to nAnimLayers.Count - 1 do
       begin
-        fTiles[I].Animation.Layers[J].Anims[K] := nAnims[K];
+        nAnimLayer := nAnimLayers.O[J];
+
+        fTiles[I].Animation.Layers[J].Frames := nAnimLayer.I['Frames'];
+
+        nAnims := nAnimLayer.A['Anims'];
+        SetLength(fTiles[I].Animation.Layers[J].Anims, nAnims.Count);
+        for K := 0 to nAnims.Count - 1 do
+        begin
+          fTiles[I].Animation.Layers[J].Anims[K] := nAnims[K];
+        end;
       end;
     end;
+  finally
+    nRoot.Free;
   end;
 end;
 

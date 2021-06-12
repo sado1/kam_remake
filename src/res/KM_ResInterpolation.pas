@@ -52,25 +52,30 @@ begin
   if not FileExists(FileName) then Exit;
 
   S := TKMemoryStreamBinary.Create;
-  S.LoadFromFile(FileName);
+  try
+    S.LoadFromFile(FileName);
 
-  S.CheckMarker('UnitAction');
-  S.Read(fUnitActions, SizeOf(fUnitActions));
+    S.CheckMarker('UnitAction');
+    S.Read(fUnitActions, SizeOf(fUnitActions));
 
-  S.CheckMarker('SerfCarry ');
-  S.Read(fSerfCarry, SizeOf(fSerfCarry));
+    S.CheckMarker('SerfCarry ');
+    S.Read(fSerfCarry, SizeOf(fSerfCarry));
 
-  S.CheckMarker('UnitThoughts  ');
-  S.Read(fUnitThoughts, SizeOf(fUnitThoughts));
+    S.CheckMarker('UnitThoughts  ');
+    S.Read(fUnitThoughts, SizeOf(fUnitThoughts));
 
-  S.CheckMarker('Trees ');
-  S.Read(fTrees, SizeOf(fTrees));
+    S.CheckMarker('Trees ');
+    S.Read(fTrees, SizeOf(fTrees));
 
-  S.CheckMarker('Houses');
-  S.Read(fHouses, SizeOf(fHouses));
+    S.CheckMarker('Houses');
+    S.Read(fHouses, SizeOf(fHouses));
 
-  S.CheckMarker('Beasts');
-  S.Read(fBeasts, SizeOf(fBeasts));
+    S.CheckMarker('Beasts');
+    S.Read(fBeasts, SizeOf(fBeasts));
+
+  finally
+    S.Free;
+  end;
 end;
 
 
