@@ -235,6 +235,8 @@ type
     rgImageType: TRadioGroup;
     btnSaveMapImage: TButton;
     btnPrintScreen: TButton;
+    N12: TMenuItem;
+    miExportMemoryUsage: TMenuItem;
 
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -303,6 +305,7 @@ type
     procedure btFindObjByUIDClick(Sender: TObject);
     procedure mnExportRPLClick(Sender: TObject);
     procedure radioGroupExit(Sender: TObject);
+    procedure miExportMemoryUsageClick(Sender: TObject);
 
     procedure ControlsUpdate(Sender: TObject);
   private
@@ -367,6 +370,7 @@ implementation
 
 uses
   {$IFDEF WDC} UITypes, {$ENDIF}
+  {$IFDEF FASTMM} FastMM4, {$ENDIF}
   KromUtils,
   KromShellUtils,
   KM_Defaults,
@@ -635,6 +639,14 @@ begin
     gGameApp.NewMapEditor(OpenDialog1.FileName);
     fMissionDefOpenPath := ExtractFileDir(OpenDialog1.FileName);
   end;
+end;
+
+
+procedure TFormMain.miExportMemoryUsageClick(Sender: TObject);
+begin
+  {$IFDEF FASTMM}
+  LogMemoryManagerStateToFile(ExeDir + 'Logs' + PathDelim + 'memusage_' + IntToStr(GetTickCount) + '.log');
+  {$ENDIF}
 end;
 
 

@@ -89,8 +89,6 @@ object FormMain: TFormMain
       Caption = 'Misc'
       Collapsed = True
       TabOrder = 0
-      ExplicitTop = 824
-      ExplicitWidth = 239
       ExpandedHeight = 144
       object chkBevel: TCheckBox
         Left = 168
@@ -133,8 +131,6 @@ object FormMain: TFormMain
       Caption = 'Logs'
       Collapsed = True
       TabOrder = 1
-      ExplicitTop = 800
-      ExplicitWidth = 239
       ExpandedHeight = 198
       object chkLogCommands: TCheckBox
         Left = 120
@@ -246,8 +242,6 @@ object FormMain: TFormMain
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 2
-      ExplicitTop = 776
-      ExplicitWidth = 239
       ExpandedHeight = 168
       object Label1: TLabel
         Left = 101
@@ -388,8 +382,6 @@ object FormMain: TFormMain
       Caption = 'User Interface'
       Collapsed = True
       TabOrder = 3
-      ExplicitTop = 752
-      ExplicitWidth = 239
       ExpandedHeight = 114
       object chkUIControlsBounds: TCheckBox
         Left = 8
@@ -461,8 +453,6 @@ object FormMain: TFormMain
       Caption = 'Perf Logs'
       Collapsed = True
       TabOrder = 4
-      ExplicitTop = 728
-      ExplicitWidth = 239
       ExpandedHeight = 660
     end
     object cpAI: TCategoryPanel
@@ -471,8 +461,6 @@ object FormMain: TFormMain
       Caption = 'AI'
       Collapsed = True
       TabOrder = 5
-      ExplicitTop = 704
-      ExplicitWidth = 239
       object Label5: TLabel
         Left = 202
         Top = 111
@@ -679,8 +667,6 @@ object FormMain: TFormMain
       Caption = 'Scripting'
       Collapsed = True
       TabOrder = 6
-      ExplicitTop = 680
-      ExplicitWidth = 239
       ExpandedHeight = 50
       object chkDebugScripting: TCheckBox
         Left = 8
@@ -703,8 +689,6 @@ object FormMain: TFormMain
       Caption = 'Debug Input'
       Collapsed = True
       TabOrder = 7
-      ExplicitTop = 656
-      ExplicitWidth = 239
       ExpandedHeight = 210
       object gbFindObjByUID: TGroupBox
         Left = 8
@@ -963,8 +947,6 @@ object FormMain: TFormMain
       Caption = 'Debug Output'
       Collapsed = True
       TabOrder = 9
-      ExplicitTop = 393
-      ExplicitWidth = 239
       ExpandedHeight = 97
       object chkUIDs: TCheckBox
         Left = 120
@@ -1045,7 +1027,6 @@ object FormMain: TFormMain
       Caption = 'Debug Terrain'
       Collapsed = True
       TabOrder = 10
-      ExplicitWidth = 239
       ExpandedHeight = 248
       object chkShowTerrainIds: TCheckBox
         Left = 8
@@ -1279,7 +1260,6 @@ object FormMain: TFormMain
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 11
-      ExplicitWidth = 239
       object Label2: TLabel
         Left = 136
         Top = 5
@@ -1449,7 +1429,6 @@ object FormMain: TFormMain
       Height = 121
       Caption = 'Game'
       TabOrder = 12
-      ExplicitWidth = 239
       object Label8: TLabel
         Left = 60
         Top = 30
@@ -1756,6 +1735,13 @@ object FormMain: TFormMain
       object mnExportRPL: TMenuItem
         Caption = 'GIC from .rpl'
         OnClick = mnExportRPLClick
+      end
+      object N12: TMenuItem
+        Caption = '-'
+      end
+      object miExportMemoryUsage: TMenuItem
+        Caption = 'Memory Usage'
+        OnClick = miExportMemoryUsageClick
       end
     end
     object About1: TMenuItem

@@ -39,6 +39,8 @@
     {$DEFINE USE_MAD_EXCEPT}  
     //Delphi compiler video play
     {$DEFINE VIDEOS}
+    
+    {.$DEFINE FASTMM}
   {$ENDIF}
   
   {$DEFINE USE_VIRTUAL_TREEVIEW}
