@@ -424,8 +424,6 @@ end;
 function TKMResTileset.TileIsWater(aTile: Word): Boolean;
 begin
   Result := fTiles[aTile].Water;
-
-//  Result := aTile in [48,114,115,119,192,193,194,196, 200, 208..211, 235,236, 240,244];
 end;
 
 
