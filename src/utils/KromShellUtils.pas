@@ -14,7 +14,6 @@ uses
 	procedure DoClientAreaResize(aForm: TForm);
 	function BrowseURL(const aURL: string) : Boolean;
   procedure MailTo(const aAddress, aSubject, aBody:string);
-  procedure OpenMySite(const aToolName: string; const aAddress: string = 'http://krom.reveur.de');
   function IsUnderWine: Boolean;
 
 
@@ -111,12 +110,6 @@ end;
 procedure MailTo(const aAddress, aSubject, aBody: string);
 begin
   BrowseURL('mailto:' + aAddress + '?subject=' + aSubject + '&body=' + aBody);
-end;
-
-
-procedure OpenMySite(const aToolName: string; const aAddress: string = 'http://krom.reveur.de');
-begin
-  BrowseURL(aAddress + '/index_r.php?t=' + aToolName); // Maybe add tool version later..
 end;
 
 
