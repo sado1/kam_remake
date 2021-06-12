@@ -20,7 +20,7 @@ type
   TKMSpritePack = class
   private
     fPad: Byte; //Force padding between sprites to avoid neighbour edge visibility
-    procedure SaveTextureToPNG(aWidth, aHeight: Word; const aFilename: string; const Data: TKMCardinalArray);
+    procedure SaveTextureToPNG(aWidth, aHeight: Word; const aFilename: string; var Data: TKMCardinalArray);
     procedure SetGFXData(aTx: Cardinal; aSpriteInfo: TBinItem; aAtlasType: TSpriteAtlasType);
   protected
     fRT: TRXType;
@@ -695,6 +695,10 @@ begin
           Tx := TRender.GenTexture(SpriteInfo.Width, SpriteInfo.Height, @Data[0], TexType, texFilter, texFilter);
           //Now that we know texture IDs we can fill GFXData structure
           SetGFXData(Tx, SpriteInfo, SAT);
+
+          if EXPORT_SPRITE_ATLASES_RXA then
+            SaveTextureToPNG(SpriteInfo.Width, SpriteInfo.Height, RXInfo[fRT].FileName + '_rxa_' +
+                             SPRITE_TYPE_EXPORT_NAME[SAT] + IntToStr(I), Data);
         end;
     end;
 
@@ -1153,7 +1157,7 @@ procedure TKMSpritePack.MakeGFX_BinPacking(aTexType: TTexFormat; aStartingIndex:
 
       Inc(TexCount);
 
-      if aFillGFXData then
+      if aFillGFXData and EXPORT_SPRITE_ATLASES then
         SaveTextureToPNG(SpriteInfo[I].Width, SpriteInfo[I].Height, RXInfo[fRT].FileName + '_' +
                          SPRITE_TYPE_EXPORT_NAME[aMode] + IntToStr(aStartingIndex+I), TD);
     end;
@@ -1229,16 +1233,14 @@ end;
 {$ENDIF}
 
 
-procedure TKMSpritePack.SaveTextureToPNG(aWidth, aHeight: Word; const aFilename: string; const Data: TKMCardinalArray);
+procedure TKMSpritePack.SaveTextureToPNG(aWidth, aHeight: Word; const aFilename: string; var Data: TKMCardinalArray);
 var
   I, K: Word;
   folder: string;
   pngWidth, pngHeight: Word;
   pngData: TKMCardinalArray;
 begin
-  if not EXPORT_SPRITE_ATLASES then Exit;
-
-  folder := ExeDir + 'Export'+PathDelim+'GenTextures'+PathDelim;
+  folder := ExeDir + 'Export' + PathDelim + 'GenTextures' + PathDelim;
   ForceDirectories(folder);
 
   pngWidth := aWidth;
@@ -1246,8 +1248,8 @@ begin
   SetLength(pngData, pngWidth * pngHeight);
 
   for I := 0 to aHeight - 1 do
-  for K := 0 to aWidth - 1 do
-    pngData[I * aWidth + K] := (PCardinal(Cardinal(@Data[0]) + (I * aWidth + K) * 4))^;
+    for K := 0 to aWidth - 1 do
+      pngData[I * aWidth + K] := (PCardinal(Cardinal(@Data[0]) + (I * aWidth + K) * 4))^;
 
   SaveToPng(pngWidth, pngHeight, pngData, folder + aFilename + '.png');
 end;
