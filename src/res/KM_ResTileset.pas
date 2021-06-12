@@ -396,11 +396,20 @@ const
   CORNERS = [10,15,18,21..23,25,38,49,51..54,56,58,65,66,68..69,71,72,74,78,80,81,83,84,86..87,89,90,92,93,95,96,98,99,
              101,102,104,105,107..108,110..111,113,114,116,118,119,120,122,123,126..127,138,142,143,165,176..193,196,
              202,203,205,213,220,234..241,243,247];
+var
+  I: Integer;
 begin
-  if aTile in CORNERS then
-    Exit(True);
+  if aTile < 256 then
+    Result := aTile in CORNERS
+  else
+  begin
+    // Do not consider tile as 'with corner' if he has some custom parts (bridge / castle parts etc)
+    for I := 0 to 3 do
+      if fTiles[aTile].TerKinds[I] = tkCustom then
+        Exit(False);
 
-  Result := GetTerKindsCnt(aTile) = 2;
+    Result := GetTerKindsCnt(aTile) = 2;
+  end;
 end;
 
 
@@ -409,14 +418,30 @@ const
   EDGES = [4,12,19,39,50,57,64,67,70,73,76,79,82,85,88,91,94,97,
            100,103,106,109,112,115,117,121,124..125,139,141,166..175,194,198..200,
            204,206..212,216..219,223,224..233,242,244];
+var
+  a,b,c,d: TKMTerrainKind;
 begin
-  if aTile in EDGES then
-    Exit(True);
+  if aTile < 256 then
+    Result := aTile in EDGES
+  else
+  begin
+    //  a | b
+    //  -----
+    //  d | c
 
-  Result :=    ((fTiles[aTile].TerKinds[0] = fTiles[aTile].TerKinds[1])
-            and (fTiles[aTile].TerKinds[2] = fTiles[aTile].TerKinds[3]))
-          or   ((fTiles[aTile].TerKinds[0] = fTiles[aTile].TerKinds[3])
-            and (fTiles[aTile].TerKinds[1] = fTiles[aTile].TerKinds[2]));
+    a := fTiles[aTile].TerKinds[0];
+    b := fTiles[aTile].TerKinds[1];
+    c := fTiles[aTile].TerKinds[2];
+    d := fTiles[aTile].TerKinds[3];
+
+    // Do not consider tile as 'with edge' if he has some custom parts (bridge / castle parts etc)
+    if   (a = tkCustom) or (b = tkCustom)
+      or (c = tkCustom) or (d = tkCustom) then
+      Exit(False);
+
+    Result :=  ((a = b) and (c = d))
+            or ((a = d) and (b = c));
+  end;
 end;
 
 
