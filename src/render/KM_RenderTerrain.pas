@@ -331,6 +331,8 @@ var
       tile := gRes.Tileset[aTerrain];
       if not tile.HasAnim then Exit(False);
 
+      Result := False;
+
       for I := Low(tile.Animation.Layers) to High(tile.Animation.Layers) do
       begin
         if not tile.Animation.Layers[I].HasAnim then Continue;
