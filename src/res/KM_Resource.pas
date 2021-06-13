@@ -260,9 +260,10 @@ begin
   doForceReload := aForceReload or (aAlphaShadows <> fSprites.AlphaShadows);
   if (fDataState <> rlsAll) or doForceReload then
   begin
+    // Load game Reources
+    // TempData is cleared while loading GameResources (after each step)
     fSprites.LoadGameResources(aAlphaShadows, doForceReload);
     fDataState := rlsAll;
-    fSprites.ClearTemp;
   end;
 
   gLog.AddTime('Resource loading state - Game');

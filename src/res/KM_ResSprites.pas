@@ -450,9 +450,15 @@ var
 begin
   for I := 1 to fRXData.Count do
   begin
-    SetLength(fRXData.RGBA[I], 0);
-    SetLength(fRXData.Mask[I], 0);
+    if InRange(I, Low(fRXData.RGBA), High(fRXData.RGBA)) then
+      SetLength(fRXData.RGBA[I], 0);
+    if InRange(I, Low(fRXData.Mask), High(fRXData.Mask)) then
+      SetLength(fRXData.Mask[I], 0);
   end;
+
+  SetLength(fRXData.RGBA, 0);
+  SetLength(fRXData.Mask, 0);
+  SetLength(fRXData.HasMask, 0);
 end;
 
 
@@ -693,15 +699,19 @@ begin
             texFilter := ftLinear;
 
           Tx := TRender.GenTexture(SpriteInfo.Width, SpriteInfo.Height, @Data[0], TexType, texFilter, texFilter);
+
           //Now that we know texture IDs we can fill GFXData structure
           SetGFXData(Tx, SpriteInfo, SAT);
 
           if EXPORT_SPRITE_ATLASES_RXA then
             SaveTextureToPNG(SpriteInfo.Width, SpriteInfo.Height, RXInfo[fRT].FileName + '_rxa_' +
                              SPRITE_TYPE_EXPORT_NAME[SAT] + IntToStr(I), Data);
+
+          // Clear used temp data immediately. Will save us lots of allocated memory in the moment
+          SetLength(Data, 0);
+          SetLength(SpriteInfo.Sprites, 0);
         end;
     end;
-
   finally
     decompressionStream.Free;
     inputStream.Free;
@@ -1341,7 +1351,10 @@ var
   RT: TRXType;
 begin
   for RT := Low(TRXType) to High(TRXType) do
+  begin
     fSprites[RT].ClearTemp;
+    fSprites[RT].ClearGameResGenTemp; //Its probably empty for a menu resources, but anyway
+  end;
 end;
 
 
@@ -1659,6 +1672,9 @@ procedure TKMResSprites.LoadGameResources(aAlphaShadows: Boolean; aForceReload: 
           fSprites[RT].MakeGFX(fAlphaShadows);
           {$ENDIF}
         end;
+        // Clear temp data as fast as possible
+        fSprites[RT].ClearTemp;
+        fSprites[RT].ClearGameResGenTemp;
       end;
   end;
 
