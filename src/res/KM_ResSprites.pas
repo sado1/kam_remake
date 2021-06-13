@@ -450,9 +450,11 @@ var
 begin
   for I := 1 to fRXData.Count do
   begin
-    if InRange(I, Low(fRXData.RGBA), High(fRXData.RGBA)) then
+    // Check if fRXData.RGBA is not cleared already
+    if I < Length(fRXData.RGBA) then
       SetLength(fRXData.RGBA[I], 0);
-    if InRange(I, Low(fRXData.Mask), High(fRXData.Mask)) then
+    // Check if fRXData.Mask is not cleared already
+    if I < Length(fRXData.Mask) then
       SetLength(fRXData.Mask[I], 0);
   end;
 
