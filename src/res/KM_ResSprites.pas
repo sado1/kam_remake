@@ -445,19 +445,7 @@ end;
 
 //Release RAM that is no longer needed
 procedure TKMSpritePack.ClearTemp;
-var
-  I: Integer;
 begin
-  for I := 1 to fRXData.Count do
-  begin
-    // Check if fRXData.RGBA is not cleared already
-    if I < Length(fRXData.RGBA) then
-      SetLength(fRXData.RGBA[I], 0);
-    // Check if fRXData.Mask is not cleared already
-    if I < Length(fRXData.Mask) then
-      SetLength(fRXData.Mask[I], 0);
-  end;
-
   SetLength(fRXData.RGBA, 0);
   SetLength(fRXData.Mask, 0);
   SetLength(fRXData.HasMask, 0);
