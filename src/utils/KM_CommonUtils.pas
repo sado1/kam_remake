@@ -106,6 +106,7 @@ uses
   procedure KMSwapFloat(var A,B: Double); overload;
 
   function ToBoolean(aVal: Byte): Boolean;
+  function BoolStrShort(aVal: Boolean): string;
 
   //Extended == Double, so already declared error
   //https://forum.lazarus.freepascal.org/index.php?topic=29678.0
@@ -255,6 +256,15 @@ begin
     Result := False
   else
     Result := True;
+end;
+
+
+function BoolStrShort(aVal: Boolean): string;
+begin
+  if aVal then
+    Result := '1'
+  else
+    Result := '0';
 end;
 
 

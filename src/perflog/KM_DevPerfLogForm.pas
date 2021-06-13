@@ -39,9 +39,10 @@ type
 implementation
 {$R *.dfm}
 uses
+  TypInfo,
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
-  Math, KM_Defaults;
+  Math, KM_Defaults, KM_CommonUtils;
 
 const
   PS_IS_GFX_KIND: array[Boolean] of TKMPerfLogKind = (plkCPU, plkGFX);
@@ -86,6 +87,8 @@ const
     aCheckBox.Top := TY + DY + LineNum(aPS, aIsGFX) * DY + Byte(aIsGFX or IsGFXSection(aPS))*DY_SPLIT;
     aCheckBox.Tag := Ord(aPS);
     aCheckBox.OnClick := DoChange;
+    aCheckBox.Name := 'cbA' + GetEnumName(TypeInfo(TPerfSectionDev), Integer(aPS)) + IntToStr(aN) + BoolStrShort(aIsGFX);
+    aCheckBox.Caption := '';
   end;
 
 

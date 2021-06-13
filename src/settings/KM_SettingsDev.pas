@@ -4,7 +4,7 @@ interface
 uses
   SysUtils, StrUtils, Classes, Math,
   ComCtrls, Controls, ExtCtrls, StdCtrls,
-  {$IFDEF MSWindows} Vcl.Samples.Spin; {$ENDIF}
+  {$IFDEF MSWindows} Forms, Spin; {$ENDIF}
   {$IFDEF Unix} LCLIntf, LCLType; {$ENDIF}
 
 
@@ -65,6 +65,9 @@ procedure TKMDevSettings.DoLoad;
 
       if ctrl is TGroupBox then
         LoadSubPanel(TGroupBox(ctrl), aNode)
+      else
+      if ctrl is TForm then
+        LoadSubPanel(TForm(ctrl), aNode)
       else
         if (ctrl is TCheckBox)
         or (ctrl is TTrackBar)
@@ -155,6 +158,9 @@ procedure TKMDevSettings.DoSave;
 
       if ctrl is TGroupBox then
         SaveSubPanel(TGroupBox(ctrl), aNode)
+      else
+      if ctrl is TForm then
+        SaveSubPanel(TForm(ctrl), aNode)
       else
         if (ctrl is TCheckBox)
         or (ctrl is TTrackBar)
