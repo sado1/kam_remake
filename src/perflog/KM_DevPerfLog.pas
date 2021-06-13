@@ -25,6 +25,7 @@ type
     Enabled: Boolean;
     Scale: Integer;
     Smoothing: Boolean;
+    ClearOnGameStart: Boolean; // Clear all graphs for every game
     SaveOnExit: Boolean;
 
     constructor Create(aSections: TPerfSectionSet; aHighPrecision: Boolean);
@@ -38,6 +39,8 @@ type
     procedure SectionLeave(aSection: TPerfSectionDev);
 
     procedure SectionAddValue(aSection: TPerfSectionDev; aValue: Int64; aTick: Integer; aTagS: string = '');
+
+    procedure GameCreated;
 
     procedure Clear;
 
@@ -187,6 +190,15 @@ begin
     fStackCPU.SectionRollback(aSection)
   else
     fStackGFX.SectionRollback(aSection);
+end;
+
+
+procedure TKMPerfLogs.GameCreated;
+begin
+  if Self = nil then Exit;
+
+  if ClearOnGameStart then
+    Clear;
 end;
 
 

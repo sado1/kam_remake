@@ -17,6 +17,7 @@ type
     lblPerflogSaveThreshold: TLabel;
     btnPerfLogExport: TButton;
     cbEnabled: TCheckBox;
+    cbClearOnGameStart: TCheckBox;
     procedure UpdateAllChkboxState;
     procedure DoChange(Sender: TObject);
     procedure DoExport(Sender: TObject);
@@ -65,7 +66,7 @@ end;
 
 procedure TFormPerfLogs.Show(aPerfLogs: TKMPerfLogs);
 const
-  TY = 56;
+  TY = 70;
   DY = 16;
   DY_SPLIT = DY + 10;
   DX_SPLIT = 37;
@@ -194,11 +195,12 @@ begin
     btnPerfLogExport.Top := bottom;
   end;
 
-  cbEnabled.Checked := False;
+  cbEnabled.Checked     := False;
   cbStackedCPU.Enabled  := False;
   cbStackedGFX.Enabled  := False;
   seScale.Enabled       := False;
   cbSmoothLines.Enabled := False;
+  cbClearOnGameStart.Enabled := False;
   sePerfLogSaveThreshold.Enabled := False;
   btnPerfLogExport.Enabled := False;
 
@@ -326,6 +328,7 @@ begin
   cbStackedGFX.Enabled  := enabled;
   seScale.Enabled       := enabled;
   cbSmoothLines.Enabled := enabled;
+  cbClearOnGameStart.Enabled := enabled;
   sePerfLogSaveThreshold.Enabled := enabled;
   btnPerfLogExport.Enabled := enabled;
 
@@ -338,6 +341,7 @@ begin
   fPerfLogs.Scale := seScale.Value;
 
   fPerfLogs.Smoothing := cbSmoothLines.Checked;
+  fPerfLogs.ClearOnGameStart := cbClearOnGameStart.Checked;
 
   if (Sender = cbStackedCPU) or (Sender = cbStackedGFX) then
     SyncStackPerfLog(PS_IS_GFX_KIND[Sender = cbStackedGFX])

@@ -402,7 +402,7 @@ begin
   gAIFields := TKMAIFields.Create;
 
   {$IFDEF PERFLOG}
-  gPerfLogs.Clear;
+  gPerfLogs.GameCreated;
   {$ENDIF}
   gLog.AddTime('<== Game creation is done ==>');
 
