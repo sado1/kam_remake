@@ -1,5 +1,10 @@
 echo called build_utils.bat
 
+@REM Unset vars we use to determine multiple includes
+@SET RS_INIT=False
+@SET KAM_FOLDER_INIT=False
+@SET UPDATE_REV=False
+
 call rsvars.bat
 
 @REM Build utils applications, included into the final build

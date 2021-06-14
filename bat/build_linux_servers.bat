@@ -4,6 +4,11 @@ REM ============================================================
 REM Build DedicatedServer for Linux
 REM ============================================================
 
+@REM Unset vars we use to determine multiple includes
+@SET RS_INIT=False
+@SET KAM_FOLDER_INIT=False
+@SET UPDATE_REV=False
+
 REM msbuild needs variables set by rsvars
 call rsvars.bat
 
