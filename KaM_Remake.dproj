@@ -468,6 +468,7 @@
         <DCCReference Include="src\settings\KM_ServerSettings.pas"/>
         <DCCReference Include="src\settings\KM_Resolutions.pas"/>
         <DCCReference Include="src\settings\KM_WindowParams.pas"/>
+        <DCCReference Include="src\settings\KM_SettingsDev.pas"/>
         <DCCReference Include="src\terrain\KM_RandomMapGenerator.pas"/>
         <DCCReference Include="src\terrain\KM_RMGUtils.pas"/>
         <DCCReference Include="src\terrain\KM_Terrain.pas"/>
@@ -518,9 +519,10 @@
         <DCCReference Include="src\utils\algorithms\KM_MarchingSquares.pas"/>
         <DCCReference Include="src\utils\algorithms\KM_SoftShadows.pas"/>
         <DCCReference Include="src\utils\algorithms\KM_Sort.pas"/>
+        <DCCReference Include="src\utils\io\KM_FileIO.pas"/>
+        <DCCReference Include="src\utils\io\KM_IoGraphicUtils.pas"/>
         <DCCReference Include="src\utils\io\KM_IoPNG.pas"/>
         <DCCReference Include="src\utils\io\KM_IoXML.pas"/>
-        <DCCReference Include="src\utils\io\KM_FileIO.pas"/>
         <DCCReference Include="src\utils\method_parser\KM_MethodParser.pas"/>
         <DCCReference Include="src\utils\method_parser\KM_MethodParserParams.pas"/>
         <BuildConfiguration Include="Base">
