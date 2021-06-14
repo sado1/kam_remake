@@ -1851,11 +1851,16 @@ begin
     Exit;
   end;
 
+  // Next part is for take-out mode only
+  if fDeliveryMode <> dmTakeOut then Exit;
+
+  // Try to take ware from 'in' queue, if we are in take-out delivery mode
   for I := 1 to 4 do
   if aWare = gResHouses[fType].ResInput[I] then
   begin
     if aFromScript then
     begin
+      //Script might try to take too many
       aCount := Min(aCount, ResIn[I]);
       if aCount > 0 then
         gHands[Owner].Deliveries.Queue.RemOffer(Self, aWare, aCount);
