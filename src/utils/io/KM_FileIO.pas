@@ -369,6 +369,7 @@ procedure WriteText(const aText: string; aFilename: string; aEncoding: TEncoding
 var
   sl: TStringList;
 begin
+{$IFDEF WDC}
   sl := TStringList.Create;
   try
     sl.Text := aText;
@@ -376,6 +377,7 @@ begin
   finally
     sl.Free;
   end;
+{$ENDIF}
 end;
 
 
