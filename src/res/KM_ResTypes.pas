@@ -263,8 +263,8 @@ type
     Count: Integer;
     Flag: array of Byte; //Sprite is valid
     Size: array of record X,Y: Word; end;
-    Pivot: array of record x,y: Integer; end;
-    SizeNoShadow: array of record left,top,right,bottom: Integer; end; //Image object (without shadow) rect in the image sizes
+    Pivot: array of record X,Y: SmallInt; end;
+    SizeNoShadow: array of record left,top,right,bottom: SmallInt; end; //Image object (without shadow) rect in the image sizes
     Data: array of array of Byte; //Used for RXX utils (Packer / Editor)
     RGBA: array of array of Cardinal; //Expanded image
     Mask: array of array of Byte; //Mask for team colors

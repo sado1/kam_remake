@@ -574,6 +574,7 @@ procedure TKMSpritePackEdit.LoadFromRXFile(const aFileName: string);
 var
   I: Integer;
   S: TMemoryStream;
+  pivot: record X,Y: Integer; end;
 begin
   if not FileExists(aFileName) then
   begin
@@ -594,7 +595,9 @@ begin
     if fRXData.Flag[I] = 1 then
     begin
       S.ReadBuffer(fRXData.Size[I].X, 4);
-      S.ReadBuffer(fRXData.Pivot[I].X, 8);
+      S.ReadBuffer(pivot, 8);
+      fRXData.Pivot[I].X := pivot.X; // We use SmallInt for pivot, while it is Integer in RX
+      fRXData.Pivot[I].Y := pivot.Y;
       //Data part of each sprite is 8BPP paletted in KaM RX
       SetLength(fRXData.Data[I], fRXData.Size[I].X * fRXData.Size[I].Y);
       S.ReadBuffer(fRXData.Data[I,0], fRXData.Size[I].X * fRXData.Size[I].Y);
@@ -624,6 +627,8 @@ end;
 
 
 procedure TKMSpritePackEdit.SaveToRXAFile(const aFileName: string);
+const
+  SNS_MAX_ABS_VAL = CELL_SIZE_PX*5; // Empirical value
 var
   I, Count: Integer;
   SAT: TSpriteAtlasType;
@@ -647,10 +652,18 @@ begin
   for I := 1 to fRXData.Count do
     if fRXData.Flag[I] = 1 then
     begin
-      InputStream.Write(fRXData.Size[I].X, 4);
-      InputStream.Write(fRXData.Pivot[I].X, 8);
+      InputStream.Write(fRXData.Size[I].X, SizeOf(fRXData.Size[I]));
+      InputStream.Write(fRXData.Pivot[I].X, SizeOf(fRXData.Pivot[I]));
       if fRT = rxUnits then
-        InputStream.Write(fRXData.SizeNoShadow[I].left, 16);
+      begin
+        // Protection from incorect values
+        fRXData.SizeNoShadow[I].left    := EnsureRange(fRXData.SizeNoShadow[I].left,   -SNS_MAX_ABS_VAL, SNS_MAX_ABS_VAL);
+        fRXData.SizeNoShadow[I].top     := EnsureRange(fRXData.SizeNoShadow[I].top,    -SNS_MAX_ABS_VAL, SNS_MAX_ABS_VAL);
+        fRXData.SizeNoShadow[I].right   := EnsureRange(fRXData.SizeNoShadow[I].right,  -SNS_MAX_ABS_VAL, SNS_MAX_ABS_VAL);
+        fRXData.SizeNoShadow[I].bottom  := EnsureRange(fRXData.SizeNoShadow[I].bottom, -SNS_MAX_ABS_VAL, SNS_MAX_ABS_VAL);
+
+        InputStream.Write(fRXData.SizeNoShadow[I].left, SizeOf(fRXData.SizeNoShadow[I]));
+      end;
       InputStream.Write(fRXData.HasMask[I], 1);
     end;
 
@@ -705,11 +718,11 @@ begin
   for I := 1 to fRXData.Count do
     if fRXData.Flag[I] = 1 then
     begin
-      InputStream.Write(fRXData.Size[I].X, 4);
-      InputStream.Write(fRXData.Pivot[I].X, 8);
+      InputStream.Write(fRXData.Size[I].X, SizeOf(fRXData.Size[I]));
+      InputStream.Write(fRXData.Pivot[I].X, SizeOf(fRXData.Pivot[I]));
 
       if fRT = rxUnits then
-        InputStream.Write(fRXData.SizeNoShadow[I].left, 16);
+        InputStream.Write(fRXData.SizeNoShadow[I].left, SizeOf(fRXData.SizeNoShadow[I]));
       InputStream.Write(fRXData.RGBA[I, 0], 4 * fRXData.Size[I].X * fRXData.Size[I].Y);
       InputStream.Write(fRXData.HasMask[I], 1);
       if fRXData.HasMask[I] then

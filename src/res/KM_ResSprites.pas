@@ -600,11 +600,11 @@ begin
     for I := aStartingIndex to aStartingIndex + rxxCount - 1 do
       if fRXData.Flag[I] = 1 then
       begin
-        decompressionStream.Read(fRXData.Size[I].X, 4);
-        decompressionStream.Read(fRXData.Pivot[I].X, 8);
+        decompressionStream.Read(fRXData.Size[I].X, SizeOf(fRXData.Size[I]));
+        decompressionStream.Read(fRXData.Pivot[I].X, SizeOf(fRXData.Pivot[I]));
         //SizeNoShadow is used only for Units
         if fRT = rxUnits then
-          decompressionStream.Read(fRXData.SizeNoShadow[I].left, 16);
+          decompressionStream.Read(fRXData.SizeNoShadow[I].left, SizeOf(fRXData.SizeNoShadow[I]));
         //Data part of each sprite is 32BPP RGBA in Remake RXX files
         SetLength(fRXData.RGBA[I], fRXData.Size[I].X * fRXData.Size[I].Y);
         SetLength(fRXData.Mask[I], fRXData.Size[I].X * fRXData.Size[I].Y);
@@ -657,11 +657,11 @@ begin
     for I := 1 to fRXData.Count do
       if fRXData.Flag[I] = 1 then
       begin
-        decompressionStream.Read(fRXData.Size[I].X, 4);
-        decompressionStream.Read(fRXData.Pivot[I].X, 8);
+        decompressionStream.Read(fRXData.Size[I].X, SizeOf(fRXData.Size[I]));
+        decompressionStream.Read(fRXData.Pivot[I].X, SizeOf(fRXData.Pivot[I]));
         //SizeNoShadow is used only for Units
         if fRT = rxUnits then
-          decompressionStream.Read(fRXData.SizeNoShadow[I].left, 16);
+          decompressionStream.Read(fRXData.SizeNoShadow[I].left, SizeOf(fRXData.SizeNoShadow[I]));
         decompressionStream.Read(fRXData.HasMask[I], 1);
       end;
 
