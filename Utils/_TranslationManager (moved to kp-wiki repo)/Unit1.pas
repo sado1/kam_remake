@@ -120,7 +120,7 @@ begin
 
   fWorkDir := GetWorkDir;
 
-  gResLocales := TKMLocales.Create(fWorkDir + 'data\locales.txt', DEFAULT_LOCALE);
+  gResLocales := TKMResLocales.Create(fWorkDir + 'data\locales.txt', DEFAULT_LOCALE);
 
   InitLocalesList;
 
