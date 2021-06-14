@@ -7,4 +7,5 @@ xcopy "%KaMOrigDir%\data\gfx\*" ..\data\gfx /y /r
 mkdir ..\data\defines
 
 REM Copy data files from original KaM TPR game
-xcopy "%KaMOrigDir%\data\defines\*.dat" ..\data\defines /y /r /s
+xcopy "%KaMOrigDir%\data\defines\houses.dat" ..\data\defines\houses.dat* /y /r /i
+xcopy "%KaMOrigDir%\data\defines\unit.dat" ..\data\defines\unit.dat* /y /r /i
