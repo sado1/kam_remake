@@ -2,8 +2,8 @@
 echo called build_exe.bat
 
 @REM Unset vars we use to determine multiple includes
-@SET RS_INIT=False
-@SET KAM_FOLDER_INIT=False
+@REM @SET RS_INIT=False
+@REM @SET KAM_FOLDER_INIT=False
 
 @REM ============================================================
 @REM Build main exe
