@@ -78,7 +78,7 @@ begin
     TKMLabel.Create(Panel_Alliances, 10, 40 + I * TB_CHB_A_H, IntToStr(I + 1), fntGrey, taCenter);
     for K := 0 to MAX_HANDS - 1 do
     begin
-      CheckBox_Alliances[I,K] := TKMCheckBox.Create(Panel_Alliances, TB_CHB_A_L + K * TB_CHB_A_W, TB_CHB_A_T + I * TB_CHB_A_H, 30, 30, '', fntMetal);
+      CheckBox_Alliances[I,K] := TKMCheckBox.Create(Panel_Alliances, TB_CHB_A_L + K * TB_CHB_A_W, TB_CHB_A_T + I * TB_CHB_A_H, 15, 15, '', fntMetal);
       CheckBox_Alliances[I,K].Tag       := I * MAX_HANDS + K;
       CheckBox_Alliances[I,K].OnClick   := Mission_AlliancesChange;
     end;
@@ -129,7 +129,7 @@ begin
     for K := 0 to gHands.Count - 1 do
     begin
       HasAssetsK := gHands[K].HasAssets;
-      CheckBox_Alliances[I,K].Enabled := HasAssetsI and HasAssetsK;
+      CheckBox_Alliances[I,K].Enabled := HasAssetsI and HasAssetsK and (I <> K);
       CheckBox_Alliances[I,K].Checked := HasAssetsI and HasAssetsK and (gHands[I].Alliances[K] = atAlly);
     end;
   end;
