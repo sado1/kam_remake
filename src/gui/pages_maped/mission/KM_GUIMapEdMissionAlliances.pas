@@ -20,7 +20,6 @@ type
       Bevel_Alliances: TKMBevel;
       Image_Alliances: TKMImage;
       CheckBox_Alliances: array [0..MAX_HANDS-1, 0..MAX_HANDS-1] of TKMCheckBox;
-      CheckBox_AlliancesSym: TKMCheckBox;
       Button_CloseAlliances: TKMButton;
   public
     constructor Create(aParent: TKMPanel);
@@ -85,11 +84,8 @@ begin
     end;
   end;
 
-  //It does not have OnClick event for a reason:
-  // - we don't have a rule to make alliances symmetrical yet
-  CheckBox_AlliancesSym := TKMCheckBox.Create(Panel_Alliances, (Panel_Alliances.Width div 2) - 75, Panel_Alliances.Height - 60, 150, 20, gResTexts[TX_MAPED_ALLIANCE_SYMMETRIC], fntMetal);
-  CheckBox_AlliancesSym.Checked := True;
-  CheckBox_AlliancesSym.Disable;
+  // We don't have a rule to make alliances symmetrical yet
+  TKMLabel.Create(Panel_Alliances, 0, Panel_Alliances.Height - 60, Panel_Alliances.Width, 20, gResTexts[TX_MAPED_ALLIANCE_SYMMETRIC_LBL], fntGrey, taCenter);
 
   Button_CloseAlliances := TKMButton.Create(Panel_Alliances, (Panel_Alliances.Width div 2) - (TB_BUTTON_W div 2), Panel_Alliances.Height - 30,
                                             TB_BUTTON_W, TB_BUTTON_H, gResTexts[TX_WORD_CLOSE], bsGame);
@@ -114,12 +110,9 @@ begin
 
   gHands[I].Alliances[K] := ALL[CheckBox_Alliances[I,K].Checked or (I = K)];
 
-  //Copy status to symmetrical item
-  if CheckBox_AlliancesSym.Checked then
-  begin
-    CheckBox_Alliances[K,I].Checked := CheckBox_Alliances[I,K].Checked;
-    gHands[K].Alliances[I] := gHands[I].Alliances[K];
-  end;
+  //Always copy status to symmetrical item, since we don't allow unsymmetrical alliances yet
+  CheckBox_Alliances[K,I].Checked := CheckBox_Alliances[I,K].Checked;
+  gHands[K].Alliances[I] := gHands[I].Alliances[K];
 
   Mission_AlliancesUpdate;
 end;
