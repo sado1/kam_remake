@@ -224,7 +224,8 @@ const
 
 implementation
 uses
-  SysUtils, TypInfo, Math, KM_Defaults, KM_CommonUtils;
+  SysUtils, TypInfo, Math,
+  KM_Defaults, KM_CommonUtils;
 
 
 class function TKMPoint.New(aX, aY: Integer): TKMPoint;
