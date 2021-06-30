@@ -182,6 +182,7 @@ type
   function KMLengthDiag(X,Y: Integer; const B: TKMPoint): Single; overload;
   function KMLengthSqr(const A, B: TKMPoint): Integer; overload;
   function KMLengthSqr(const A, B: TKMPointF): Single; overload;
+  function KMLengthSqr(const A: TKMPoint; const B: TKMPointF): Single; overload;
 
   function KMLerp(const A,B: TKMPoint; MixValue: Single): TKMPointF; overload;
   function KMLerp(const A,B: TKMPointF; MixValue: Single): TKMPointF; overload;
@@ -1086,6 +1087,12 @@ end;
 
 
 function KMLengthSqr(const A, B: TKMPointF): Single;
+begin
+  Result := Sqr(A.X - B.X) + Sqr(A.Y - B.Y);
+end;
+
+
+function KMLengthSqr(const A: TKMPoint; const B: TKMPointF): Single;
 begin
   Result := Sqr(A.X - B.X) + Sqr(A.Y - B.Y);
 end;
