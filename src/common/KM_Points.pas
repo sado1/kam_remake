@@ -97,6 +97,7 @@ type
   function KMNormVector(const P: TKMPoint; R: Integer): TKMPoint;
 
   function KMPointRound(const P: TKMPointF): TKMPoint;
+  function KMPointFRoundTo(const P: TKMPointF; aBase: Single): TKMPointF;
   function KMSamePoint(const P1,P2: TKMPoint): Boolean; overload;
   function KMSamePointF(const P1,P2: TKMPointF): Boolean; overload;
   function KMSamePointF(const P1,P2: TKMPointF; Epsilon: Single): Boolean; overload;
@@ -436,6 +437,13 @@ function KMPointRound(const P: TKMPointF): TKMPoint;
 begin
   Result.X := Round(P.X);
   Result.Y := Round(P.Y);
+end;
+
+
+function KMPointFRoundTo(const P: TKMPointF; aBase: Single): TKMPointF;
+begin
+  Result.X := Round(P.X / aBase) * aBase;
+  Result.Y := Round(P.Y / aBase) * aBase;
 end;
 
 
