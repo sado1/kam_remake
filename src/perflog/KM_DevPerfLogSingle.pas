@@ -202,6 +202,7 @@ begin
   I := TAG_POS;
   K := fCount - 1 - I;
 
+  // Tags
   if InRange(K, Low(fTimes), High(fTimes)) then
   begin
     tagStr := '';
@@ -218,7 +219,6 @@ begin
                                Round(vaChart[I].Y) - (txtSize.Y div 2) - TAG_PAD,
                                Round(vaChart[I].X) + (txtSize.X div 2) + TAG_PAD,
                                Round(vaChart[I].Y) + (txtSize.Y div 2) + TAG_PAD), Color);
-  //    gRenderAux.Line(vaChart[I].X, vaChart[I].Y - 20, vaChart[I].X, vaChart[I].Y + 20, Color.ToCardinal);
       TKMRenderUI.WriteText(Round(vaChart[I].X) - txtSize.X div 2, Round(vaChart[I].Y) - 7, txtSize.X, tagStr, TAG_FONT, taLeft);
     end;
   end;
