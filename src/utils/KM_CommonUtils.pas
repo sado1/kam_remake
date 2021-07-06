@@ -178,6 +178,7 @@ const
 implementation
 uses
   StrUtils, Types,
+  {$IFDEF USE_MAD_EXCEPT} madStackTrace, {$ENDIF}
   {$IFDEF WDC} KM_RandomChecks, {$ENDIF}
   KM_Log;
 
@@ -695,26 +696,42 @@ begin
 
   {$IFDEF WDC}
   try
-    raise EStackTraceInfo.Create('');
-  except
-    on E: EStackTraceInfo do
-    begin
-      try
-        SList := TStringList.Create;
-        try
-          SList.Text := E.StackTrace;
+    SList := TStringList.Create;
+    try
+      SList.Text := madStackTrace.StackTrace();
 
-          for I := 1 to Min(SList.Count - 1, aLinesCnt) do //Do not print last line (its this method line)
-            Result := Result + SList[I] + sLineBreak;
-        finally
-          SList.Free;
-        end
-      except
-        // Noticed a crash on game exit once somewhere here, just ignore the exception in this case
-        on E: Exception do ;
-      end;
-    end;
+      for I := 1 to Min(SList.Count - 1, aLinesCnt) do //Do not print last line (its this method line)
+        Result := Result + SList[I] + sLineBreak;
+    finally
+      SList.Free;
+    end
+  except
+    // Noticed a crash on game exit once somewhere here, just ignore the exception in this case
+    on E: Exception do ;
   end;
+
+  // todo: delete unused code later
+//  try
+//    raise EStackTraceInfo.Create('');
+//  except
+//    on E: EStackTraceInfo do
+//    begin
+//      try
+//        SList := TStringList.Create;
+//        try
+//          SList.Text := E.StackTrace;
+//
+//          for I := 1 to Min(SList.Count - 1, aLinesCnt) do //Do not print last line (its this method line)
+//            Result := Result + SList[I] + sLineBreak;
+//        finally
+//          SList.Free;
+//        end
+//      except
+//        // Noticed a crash on game exit once somewhere here, just ignore the exception in this case
+//        on E: Exception do ;
+//      end;
+//    end;
+//  end;
   {$ENDIF}
 end;
 
