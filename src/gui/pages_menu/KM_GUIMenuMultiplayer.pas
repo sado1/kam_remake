@@ -22,7 +22,7 @@ type
 
     procedure MP_Init;
     procedure MP_SaveSettings;
-    procedure MP_Update(const aStatus: string; aColor: TColor4; aBusy: Boolean);
+    procedure MP_UpdateStatus(const aStatus: string; aColor: TColor4; aBusy: Boolean);
     procedure MP_ServersUpdateList(Sender: TObject);
     procedure MP_AnnouncementsUpdated(const S: UnicodeString);
     procedure MP_CreateServerClick(Sender: TObject);
@@ -424,7 +424,7 @@ begin
   begin
     gNetworking.Disconnect;
     Panel_MPPassword.Hide;
-    MP_Update(gResTexts[TX_MP_MENU_STATUS_READY], icGreen, False);
+    MP_UpdateStatus(gResTexts[TX_MP_MENU_STATUS_READY], icGreen, False);
   end;
 end;
 
@@ -446,9 +446,9 @@ begin
 end;
 
 
-//Update status line
-//When user tries to Join some server disable joining controls for that time
-procedure TKMMenuMultiplayer.MP_Update(const aStatus: string; aColor: TColor4; aBusy: Boolean);
+// Update status line
+// When user tries to Join some server disable joining controls for that time
+procedure TKMMenuMultiplayer.MP_UpdateStatus(const aStatus: string; aColor: TColor4; aBusy: Boolean);
 begin
   fLobbyBusy := aBusy;
 
@@ -879,7 +879,7 @@ begin
 
   if not Result then
   begin
-    MP_Update(err, icYellow, False);
+    MP_UpdateStatus(err, icYellow, False);
     gSoundPlayer.Play(sfxnError);
   end
 end;
@@ -917,7 +917,7 @@ begin
     Exit;
 
   //Disable buttons to prevent multiple clicks while connection process is in progress
-  MP_Update(gResTexts[TX_MP_MENU_STATUS_CONNECTING], icGreen, True);
+  MP_UpdateStatus(gResTexts[TX_MP_MENU_STATUS_CONNECTING], icGreen, True);
 
   //Send request to join
   gNetworking.OnJoinSucc := MP_JoinSuccess;
@@ -950,7 +950,7 @@ end;
 procedure TKMMenuMultiplayer.MP_JoinFail(const aData: UnicodeString);
 begin
   gNetworking.Disconnect;
-  MP_Update(Format(gResTexts[TX_GAME_ERROR_CONNECTION_FAILED], [aData]), icYellow, False);
+  MP_UpdateStatus(Format(gResTexts[TX_GAME_ERROR_CONNECTION_FAILED], [aData]), icYellow, False);
   gSoundPlayer.Play(sfxnError);
 end;
 
@@ -1010,10 +1010,10 @@ begin
 
   if aText = '' then
     //Entering MP anew
-    MP_Update(gResTexts[TX_MP_MENU_STATUS_READY],icGreen,false)
+    MP_UpdateStatus(gResTexts[TX_MP_MENU_STATUS_READY],icGreen,false)
   else
     //We are in event handler of Lobby.BackClick (show status warning)
-    MP_Update(aText, icYellow, False);
+    MP_UpdateStatus(aText, icYellow, False);
 
   UpdateGameTimeLabel;
 
