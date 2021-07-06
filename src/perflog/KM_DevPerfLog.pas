@@ -152,6 +152,8 @@ end;
 
 procedure TKMPerfLogs.SectionAddValue(aSection: TPerfSectionDev; aValue: Int64; aTick: Integer; aTagS: string = '');
 begin
+  if Self = nil then Exit;
+
   fItems[aSection].SectionAddValue(aValue, aTick, aTagS);
 end;
 
