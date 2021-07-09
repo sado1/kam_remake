@@ -18,6 +18,7 @@ type
     Panel_Settings: TKMPanel;
       CheckBox_Autosave: TKMCheckBox;
       CheckBox_LerpRender: TKMCheckBox;
+      CheckBox_LerpAnims: TKMCheckBox;
       CheckBox_AllyEnemy_ColorMode: TKMCheckBox;
       CheckBox_ReplayAutopauseAtPTEnd: TKMCheckBox;
       CheckBox_ReplaySpecShowBeacons: TKMCheckBox;
@@ -68,6 +69,11 @@ begin
     CheckBox_LerpRender := TKMCheckBox.Create(Panel_Settings, PAD, topPos, WID, 40, gResTexts[TX_GAME_SETTINGS_LERP_RENDER], fntMetal);
     CheckBox_LerpRender.Hint := gResTexts[TX_SETTINGS_LERP_RENDER_HINT];
     CheckBox_LerpRender.OnClick := Menu_Settings_Change;
+    Inc(topPos, 40);
+
+    CheckBox_LerpAnims := TKMCheckBox.Create(Panel_Settings, PAD, topPos, WID, 40, gResTexts[TX_GAME_SETTINGS_LERP_ANIMS], fntMetal);
+    CheckBox_LerpAnims.Hint := gResTexts[TX_SETTINGS_LERP_ANIMS_HINT];
+    CheckBox_LerpAnims.OnClick := Menu_Settings_Change;
     Inc(topPos, 40);
 
     CheckBox_AllyEnemy_ColorMode := TKMCheckBox.Create(Panel_Settings,PAD,topPos,WID,40,gResTexts[TX_GAME_SETTINGS_COLOR_MODE],fntMetal);
@@ -155,6 +161,8 @@ begin
 
   CheckBox_LerpRender.Top := top;
   Inc(top, 40);
+  CheckBox_LerpAnims.Top := top;
+  Inc(top, 40);
 
   CheckBox_AllyEnemy_ColorMode.Top := top;
   CheckBox_AllyEnemy_ColorMode.DoSetVisible;
@@ -198,6 +206,7 @@ begin
   TrackBar_Brightness.Position     := gGameSettings.Brightness;
   CheckBox_Autosave.Checked        := gGameSettings.Autosave;
   CheckBox_LerpRender.Checked      := gGameSettings.InterpolatedRender;
+  CheckBox_LerpAnims.Checked       := gGameSettings.InterpolatedAnimations;
   CheckBox_ReplayAutopauseAtPTEnd.Checked := gGameSettings.ReplayAutopause;
   TrackBar_ScrollSpeed.Position    := gGameSettings.ScrollSpeed;
   TrackBar_SFX.Position            := Round(gGameSettings.SoundFXVolume * TrackBar_SFX.MaxValue);
@@ -229,6 +238,7 @@ begin
   gGameSettings.Brightness            := TrackBar_Brightness.Position;
   gGameSettings.Autosave              := CheckBox_Autosave.Checked;
   gGameSettings.InterpolatedRender    := CheckBox_LerpRender.Checked;
+  gGameSettings.InterpolatedAnimations:= CheckBox_LerpAnims.Checked;
   gGameSettings.ReplayAutopause       := CheckBox_ReplayAutopauseAtPTEnd.Checked;
   gGameSettings.ScrollSpeed           := TrackBar_ScrollSpeed.Position;
   gGameSettings.SoundFXVolume         := TrackBar_SFX.Position / TrackBar_SFX.MaxValue;

@@ -42,6 +42,7 @@ type
     Panel_Options: TKMPanel;
       Panel_Options_GFX: TKMPanel;
         CheckBox_Options_LerpRender: TKMCheckBox;
+        CheckBox_Options_LerpAnims: TKMCheckBox;
         CheckBox_Options_VSync: TKMCheckBox;
         CheckBox_Options_ShadowQuality: TKMCheckBox;
         TrackBar_Options_Brightness: TKMTrackBar;
@@ -123,7 +124,7 @@ begin
   OnEscKeyDown := EscKeyDown;
   // We cant pass pointers to Settings in here cos on GUI creation fMain/gGameApp are not initialized yet
 
-  panelTop := (aParent.Height - 620) div 2;
+  panelTop := (aParent.Height - 620) div 2 - 20;
   Panel_Options := TKMPanel.Create(aParent,(aParent.Width - 880) div 2, panelTop, 880, aParent.Height - panelTop);
   Panel_Options.AnchorsStretch;
 
@@ -158,19 +159,27 @@ begin
       Button_Options_ResApply.OnClick := ApplyResolution;
 
     // Graphics section
-    Panel_Options_GFX := TKMPanel.Create(Panel_Options, 0, top, 280, 145);
+    Panel_Options_GFX := TKMPanel.Create(Panel_Options, 0, top, 280, 165);
     NextBlock(top, Panel_Options_GFX);
     Panel_Options_GFX.Anchors := [anLeft];
       TKMLabel.Create(Panel_Options_GFX,6,0,270,20,gResTexts[TX_MENU_OPTIONS_GRAPHICS],fntOutline,taLeft);
-      TKMBevel.Create(Panel_Options_GFX,0,20,280,125);
+      TKMBevel.Create(Panel_Options_GFX,0,20,280,145);
+
       CheckBox_Options_LerpRender := TKMCheckBox.Create(Panel_Options_GFX, 10, 30, 260, 20, gResTexts[TX_MENU_OPTIONS_LERP_RENDER], fntMetal);
       CheckBox_Options_LerpRender.Hint := gResTexts[TX_SETTINGS_LERP_RENDER_HINT];
       CheckBox_Options_LerpRender.OnClick := Change;
-      CheckBox_Options_VSync := TKMCheckBox.Create(Panel_Options_GFX, 10, 50, 260, 20, gResTexts[TX_MENU_OPTIONS_VSYNC], fntMetal);
+
+      CheckBox_Options_LerpAnims := TKMCheckBox.Create(Panel_Options_GFX, 10, 50, 260, 20, gResTexts[TX_MENU_OPTIONS_LERP_ANIMS], fntMetal);
+      CheckBox_Options_LerpAnims.Hint := gResTexts[TX_SETTINGS_LERP_ANIMS_HINT];
+      CheckBox_Options_LerpAnims.OnClick := Change;
+
+      CheckBox_Options_VSync := TKMCheckBox.Create(Panel_Options_GFX, 10, 70, 260, 20, gResTexts[TX_MENU_OPTIONS_VSYNC], fntMetal);
       CheckBox_Options_VSync.OnClick := Change;
-      CheckBox_Options_ShadowQuality := TKMCheckBox.Create(Panel_Options_GFX, 10, 70, 260, 20, gResTexts[TX_MENU_OPTIONS_SHADOW_QUALITY], fntMetal);
+
+      CheckBox_Options_ShadowQuality := TKMCheckBox.Create(Panel_Options_GFX, 10, 90, 260, 20, gResTexts[TX_MENU_OPTIONS_SHADOW_QUALITY], fntMetal);
       CheckBox_Options_ShadowQuality.OnClick := Change;
-      TrackBar_Options_Brightness := TKMTrackBar.Create(Panel_Options_GFX, 10, 90, 256, OPT_SLIDER_MIN,OPT_SLIDER_MAX);
+
+      TrackBar_Options_Brightness := TKMTrackBar.Create(Panel_Options_GFX, 10, 110, 256, OPT_SLIDER_MIN,OPT_SLIDER_MAX);
       TrackBar_Options_Brightness.Caption := gResTexts[TX_MENU_OPTIONS_BRIGHTNESS];
       TrackBar_Options_Brightness.OnChange:=Change;
 
@@ -245,8 +254,9 @@ begin
     str := gResTexts[TX_MENU_OPTIONS_MAKE_SAVEPOINTS];
     gRes.Fonts[fntMetal].GetTextSize(str, lineCnt);
 
+    Inc(top, 20);
     Panel_Options_Game := TKMPanel.Create(Panel_Options, 300, top, 280, 70 + 20*lineCnt);
-    NextBlock(top, Panel_Options_Game, -5);
+    NextBlock(top, Panel_Options_Game, 4);
     Panel_Options_Game.Anchors := [anLeft];
 
       TKMLabel.Create(Panel_Options_Game,6,0,270,20,gResTexts[TX_MENU_OPTIONS_GAMEPLAY],fntOutline,taLeft);
@@ -264,7 +274,7 @@ begin
 
     //Replays section
     Panel_Options_Replays := TKMPanel.Create(Panel_Options,300,top,280,50);
-    NextBlock(top, Panel_Options_Replays, -6);
+    NextBlock(top, Panel_Options_Replays, 4);
     Panel_Options_Replays.Anchors := [anLeft];
       TKMLabel.Create(Panel_Options_Replays,6,0,270,20,gResTexts[TX_WORD_REPLAY] + ':',fntOutline,taLeft);
       TKMBevel.Create(Panel_Options_Replays,0,20,280,30);
@@ -336,6 +346,7 @@ begin
   CheckBox_Options_ReplayAutopause.Checked   := gGameSettings.ReplayAutopause;
   TrackBar_Options_Brightness.Position       := gGameSettings.Brightness;
   CheckBox_Options_LerpRender.Checked        := gGameSettings.InterpolatedRender;
+  CheckBox_Options_LerpAnims.Checked         := gGameSettings.InterpolatedAnimations;
   CheckBox_Options_VSync.Checked             := fMainSettings.VSync;
   CheckBox_Options_FullFonts.Enabled         := not gResLocales.LocaleByCode(gGameSettings.Locale).NeedsFullFonts;
   CheckBox_Options_FullFonts.Checked         := gGameSettings.LoadFullFonts or not CheckBox_Options_FullFonts.Enabled;
@@ -381,6 +392,7 @@ begin
   gGameSettings.ReplayAutopause    := CheckBox_Options_ReplayAutopause.Checked;
   gGameSettings.Brightness         := TrackBar_Options_Brightness.Position;
   gGameSettings.InterpolatedRender := CheckBox_Options_LerpRender.Checked;
+  gGameSettings.InterpolatedAnimations := CheckBox_Options_LerpAnims.Checked;
   fMainSettings.VSync              := CheckBox_Options_VSync.Checked;
   gGameSettings.AlphaShadows       := CheckBox_Options_ShadowQuality.Checked;
   gGameSettings.ScrollSpeed        := TrackBar_Options_ScrollSpeed.Position;
