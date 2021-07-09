@@ -232,7 +232,8 @@ begin
     gHands[Owner].Deliveries.Queue.RemOffer(Self, wtGold, 1);
 
   //Create the Unit
-  fUnitWip := gHands[Owner].TrainUnit(fQueue[0], Entrance);
+  fUnitWip := gHands[Owner].TrainUnit(fQueue[0], Self);
+  TKMUnit(fUnitWip).InHouse := nil; // unit is not trained yet, so we should not set him as 'InHouse'
   TKMUnit(fUnitWip).TrainInHouse(Self); //Let the unit start the training task
 
   WorkAnimStep := 0;

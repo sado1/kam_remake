@@ -338,8 +338,7 @@ begin
   fRecruitsList.Delete(0); //Delete first recruit in the list
 
   //Make new unit
-  soldier := TKMUnitWarrior(gHands[Owner].TrainUnit(aUnitType, Entrance));
-  soldier.InHouse := Self; //Put him in the barracks, so if it is destroyed while he is inside he is placed somewhere
+  soldier := TKMUnitWarrior(gHands[Owner].TrainUnit(aUnitType, Self));
   soldier.Visible := False; //Make him invisible as he is inside the barracks
   soldier.Condition := Round(TROOPS_TRAINED_CONDITION * UNIT_MAX_CONDITION); //All soldiers start with 3/4, so groups get hungry at the same time
   //Soldier.OrderLoc := KMPointBelow(Entrance); //Position in front of the barracks facing north
@@ -380,9 +379,8 @@ begin
     Inc(MapEdRecruitCount)
   else
   begin
-    U := gHands[Owner].TrainUnit(utRecruit, Entrance);
+    U := gHands[Owner].TrainUnit(utRecruit, Self);
     U.Visible := False;
-    U.InHouse := Self;
     U.Home := Self; //When walking out Home is used to remove recruit from barracks
     RecruitsAdd(U);
     gHands[Owner].Stats.UnitCreated(utRecruit, False);

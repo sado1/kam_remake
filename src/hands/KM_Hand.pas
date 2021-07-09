@@ -172,7 +172,7 @@ type
     function AddUnitGroup(aUnitType: TKMUnitType; const Position: TKMPoint; aDir: TKMDirection; aUnitPerRow, aCount: Word;
                           aMakeCheckpoint: Boolean = True): TKMUnitGroup;
 
-    function TrainUnit(aUnitType: TKMUnitType; const Position: TKMPoint): TKMUnit;
+    function TrainUnit(aUnitType: TKMUnitType; aInHouse: TKMHouse): TKMUnit;
 
     function GetNextHouseWSameType(aHouseType: TKMHouseType; aStartFromUID: Cardinal): TKMHouse; overload;
     function GetNextHouseWSameType(aHouseType: TKMHouseType; aStartFromUID: Cardinal;
@@ -509,10 +509,11 @@ end;
 
 //Start training unit in School/Barracks
 //User can cancel the training, so we don't add unit to stats just yet
-function TKMHand.TrainUnit(aUnitType: TKMUnitType; const Position: TKMPoint): TKMUnit;
+function TKMHand.TrainUnit(aUnitType: TKMUnitType; aInHouse: TKMHouse): TKMUnit;
 begin
+  Assert(aInHouse <> nil, 'House to train unit in could not be nil');
   // Add unit and specify that its made inside house (so there is no need to occupy terrain tile)
-  Result := fUnits.AddUnit(fID, aUnitType, Position, False, 0, True);
+  Result := fUnits.AddUnit(fID, aUnitType, aInHouse.Entrance, False, 0, aInHouse);
   Result.OnUnitDied := UnitDied;
   Result.OnUnitTrained := UnitTrained;
 

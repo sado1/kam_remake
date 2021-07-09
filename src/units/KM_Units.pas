@@ -148,7 +148,7 @@ type
     HitPointsInvulnerable: Boolean;
     Dismissable: Boolean; //Is it allowed to dismiss this unit ?
 
-    constructor Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPoint; aOwner: TKMHandID; aInHouse: Boolean);
+    constructor Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPoint; aOwner: TKMHandID; aInHouse: TKMHouse);
     destructor Destroy; override;
 
     constructor Load(LoadStream: TKMemoryStream); override;
@@ -298,7 +298,7 @@ type
   private
     fCarry: TKMWareType;
   public
-    constructor Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPoint; aOwner: TKMHandID; aInHouse: Boolean);
+    constructor Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPoint; aOwner: TKMHandID; aInHouse: TKMHouse);
     constructor Load(LoadStream: TKMemoryStream); override;
     procedure Save(SaveStream: TKMemoryStream); override;
 
@@ -733,7 +733,7 @@ end;
 
 
 { TKMSerf }
-constructor TKMUnitSerf.Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPoint; aOwner: TKMHandID; aInHouse: Boolean);
+constructor TKMUnitSerf.Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPoint; aOwner: TKMHandID; aInHouse: TKMHouse);
 begin
   inherited;
   fCarry := wtNone;
@@ -994,7 +994,7 @@ end;
 { TKMUnitAnimal }
 constructor TKMUnitAnimal.Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPoint; aOwner: TKMHandID);
 begin
-  inherited Create(aID, aUnitType, aLoc, aOwner, False);
+  inherited Create(aID, aUnitType, aLoc, aOwner, nil);
 
   //Always start with 5 fish in the group
   if aUnitType = utFish then
@@ -1124,7 +1124,7 @@ end;
 
 
 { TKMUnit }
-constructor TKMUnit.Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPoint; aOwner: TKMHandID; aInHouse: Boolean);
+constructor TKMUnit.Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPoint; aOwner: TKMHandID; aInHouse: TKMHouse);
 begin
   inherited Create(etUnit, aID, aOwner);
   fTicker       := aID; //Units update states will be spread more evenly that way
@@ -1160,11 +1160,14 @@ begin
 
   SetActionLockedStay(10, uaWalk); //Must be locked for this initial pause so animals don't get pushed
 
-  fVisual := TKMUnitVisual.Create(Self);
-
+  // Use SetInHouse for a safe unit pointers operation
+  SetInHouse(aInHouse);
   // Do not add units which are trained inside house
-  if not aInHouse then
+  if fInHouse = nil then
     gTerrain.UnitAdd(NextPosition, Self);
+
+  // Create UnitVisual after InHouse is set
+  fVisual := TKMUnitVisual.Create(Self);
 
   //The area around the unit should be visible at the start of the mission
   if InRange(Owner, 0, MAX_HANDS - 1) then //Not animals

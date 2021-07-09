@@ -188,8 +188,7 @@ begin
     gHands[Owner].Stats.WareConsumed(wtGold, TH_TROOP_COST[thUnitIndex]);
       
     //Make new unit
-    soldier := TKMUnitWarrior(gHands[Owner].TrainUnit(aUnitType, Entrance));
-    soldier.InHouse := Self; //Put him in the barracks, so if it is destroyed while he is inside he is placed somewhere
+    soldier := TKMUnitWarrior(gHands[Owner].TrainUnit(aUnitType, Self));
     soldier.Visible := False; //Make him invisible as he is inside the barracks
     soldier.Condition := Round(TROOPS_TRAINED_CONDITION * UNIT_MAX_CONDITION); //All soldiers start with 3/4, so groups get hungry at the same time
     soldier.SetActionGoIn(uaWalk, gdGoOutside, Self);

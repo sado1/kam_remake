@@ -4,7 +4,7 @@ interface
 uses
   Classes, Math, Types, Generics.Collections,
   KM_CommonClasses, KM_Defaults, KM_Points,
-  KM_Terrain, KM_Units;
+  KM_Terrain, KM_Units, KM_Houses;
 
 //Memo on directives:
 //Dynamic - declared and used (overriden) occasionally
@@ -21,7 +21,7 @@ type
     constructor Create;
     destructor Destroy; override;
     function AddUnit(aOwner: TKMHandID; aUnitType: TKMUnitType; const aLoc: TKMPoint; aAutoPlace: Boolean = True;
-                     aRequiredWalkConnect: Byte = 0; aAddInHouse: Boolean = False): TKMUnit;
+                     aRequiredWalkConnect: Byte = 0; aInHouse: TKMHouse = nil): TKMUnit;
     procedure AddUnitToList(aUnit: TKMUnit);
     property Count: Integer read GetCount;
     property Units[aIndex: Integer]: TKMUnit read GetUnit; default; //Use instead of Items[.]
@@ -92,7 +92,7 @@ end;
 
 //AutoPlace means we should try to find a spot for this unit instead of just placing it where we were told to
 function TKMUnitsCollection.AddUnit(aOwner: TKMHandID; aUnitType: TKMUnitType; const aLoc: TKMPoint; aAutoPlace: Boolean = True;
-                                    aRequiredWalkConnect: Byte = 0; aAddInHouse: Boolean = False): TKMUnit;
+                                    aRequiredWalkConnect: Byte = 0; aInHouse: TKMHouse = nil): TKMUnit;
 var
   ID: Cardinal;
   placeTo: TKMPoint;
@@ -116,7 +116,7 @@ begin
     Exit;
   end;
 
-  if not aAddInHouse and gTerrain.HasUnit(placeTo) then
+  if (aInHouse = nil) and gTerrain.HasUnit(placeTo) then
   begin
     U := TKMUnit(gTerrain.Land^[placeTo.Y,placeTo.X].IsUnit);
     raise ELocError.Create(Format('No space for %s at %s, tile is already occupied by %s, ID = %d',
@@ -126,13 +126,13 @@ begin
 
   ID := gGame.GetNewUID;
   case aUnitType of
-    utSerf:                        Result := TKMUnitSerf.Create(ID, aUnitType, placeTo, aOwner, aAddInHouse);
-    utWorker:                      Result := TKMUnitWorker.Create(ID, aUnitType, placeTo, aOwner, aAddInHouse);
+    utSerf:                        Result := TKMUnitSerf.Create(ID, aUnitType, placeTo, aOwner, aInHouse);
+    utWorker:                      Result := TKMUnitWorker.Create(ID, aUnitType, placeTo, aOwner, aInHouse);
     utWoodCutter..utFisher,
     {utWorker,}
-    utStoneCutter..utMetallurgist: Result := TKMUnitCitizen.Create(ID, aUnitType, placeTo, aOwner, aAddInHouse);
-    utRecruit:                     Result := TKMUnitRecruit.Create(ID, aUnitType, placeTo, aOwner, aAddInHouse);
-    WARRIOR_MIN..WARRIOR_MAX:      Result := TKMUnitWarrior.Create(ID, aUnitType, placeTo, aOwner, aAddInHouse);
+    utStoneCutter..utMetallurgist: Result := TKMUnitCitizen.Create(ID, aUnitType, placeTo, aOwner, aInHouse);
+    utRecruit:                     Result := TKMUnitRecruit.Create(ID, aUnitType, placeTo, aOwner, aInHouse);
+    WARRIOR_MIN..WARRIOR_MAX:      Result := TKMUnitWarrior.Create(ID, aUnitType, placeTo, aOwner, aInHouse);
     ANIMAL_MIN..ANIMAL_MAX:        Result := TKMUnitAnimal.Create(ID, aUnitType, placeTo, aOwner); //Do not specify aAddInHouse, we want to call TKMUnitAnimal constructor
     else                           raise ELocError.Create('Add ' + gRes.Units[aUnitType].GUIName, placeTo);
   end;
