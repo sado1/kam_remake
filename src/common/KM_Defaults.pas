@@ -106,8 +106,8 @@ var
   SHOW_DISMISS_GROUP_BTN:Boolean = DEBUG_CFG; //The button to kill group
   CHECK_8087CW          :Boolean = False; //Check that 8087CW (FPU flags) are set correctly each frame, in case some lib/API changed them
   SCROLL_ACCEL          :Boolean = False; //Acceleration for viewport scrolling
-  ALLOW_INTERPOLATED_RENDER :Boolean = True; //Interpolate positions/animations in render between game ticks
-  INTERPOLATED_ANIMS    :Boolean = False;
+  ALLOW_INTERPOLATED_RENDER :Boolean = True; //Allow to interpolate positions/animations in render between game ticks
+  ALLOW_INTERPOLATED_ANIMS    :Boolean = True; //Allow to use interpolate animations, which are loaded from .rxa sprites atlases pack
   PATHFINDER_TO_USE     :Byte = 1;        //Use TPathfindingAStarNew
 
   ENABLE_VIDEOS_UNDER_WINE: Boolean = DEBUG_CFG; //Do we enable videos under wine

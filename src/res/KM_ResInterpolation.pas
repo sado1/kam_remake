@@ -40,7 +40,7 @@ type
 
 implementation
 uses
-  KM_CommonClasses, KM_Resource, KM_CommonTypes, KM_Pics, KM_ResUnits;
+  KM_CommonClasses, KM_Resource, KM_CommonTypes, KM_Pics, KM_ResUnits, KM_GameSettings;
 
 
 { TKMResInterpolation }
@@ -94,7 +94,7 @@ begin
   Result := fUnitActions[aUnit, aAct, aDir, Step, SubStep];
 
   //While in development disable interpolation if the sprite is missing
-  if not INTERPOLATED_ANIMS
+  if not gGameSettings.InterpolatedAnimations
   or (Result <= 0) or (Result > gRes.Sprites[rxUnits].RXData.Count)
   or (gRes.Sprites[rxUnits].RXData.Size[Result].X = 0) then
     Result := A.Step[Step] + 1;
@@ -124,7 +124,7 @@ begin
   Result := fUnitThoughts[aTh, Step, SubStep];
 
   //While in development disable interpolation if the sprite is missing
-  if not INTERPOLATED_ANIMS
+  if not gGameSettings.InterpolatedAnimations
   or (Result <= 0) or (Result > gRes.Sprites[rxUnits].RXData.Count)
   or (gRes.Sprites[rxUnits].RXData.Size[Result].X = 0) then
   begin
@@ -148,7 +148,7 @@ begin
   Result := fSerfCarry[aWare, aDir, Step, SubStep];
 
   //While in development disable interpolation if the sprite is missing
-  if not INTERPOLATED_ANIMS
+  if not gGameSettings.InterpolatedAnimations
   or (Result <= 0) or (Result > gRes.Sprites[rxUnits].RXData.Count)
   or (gRes.Sprites[rxUnits].RXData.Size[Result].X = 0) then
     Result := A.Step[Step] + 1;
@@ -172,7 +172,7 @@ begin
   Result := fTrees[aObject, Step, SubStep];
 
   //While in development disable interpolation if the sprite is missing
-  if not INTERPOLATED_ANIMS
+  if not gGameSettings.InterpolatedAnimations
   or (Result <= 0) or (Result > gRes.Sprites[rxTrees].RXData.Count)
   or (gRes.Sprites[rxTrees].RXData.Size[Result].X = 0) then
     Result := A.Step[Step] + 1;
@@ -193,7 +193,7 @@ begin
   Result := fHouses[aHT, aAct, Step, SubStep];
 
   //While in development disable interpolation if the sprite is missing
-  if not INTERPOLATED_ANIMS
+  if not gGameSettings.InterpolatedAnimations
   or (Result <= 0) or (Result > gRes.Sprites[rxHouses].RXData.Count)
   or (gRes.Sprites[rxHouses].RXData.Size[Result].X = 0) then
     Result := A.Step[Step] + 1;
@@ -219,7 +219,7 @@ begin
   end;
 
   //While in development disable interpolation if the sprite is missing
-  if not INTERPOLATED_ANIMS
+  if not gGameSettings.InterpolatedAnimations
   or (Result <= 0) or (Result > gRes.Sprites[rxHouses].RXData.Count)
   or (gRes.Sprites[rxHouses].RXData.Size[Result].X = 0) then
     Result := A.Step[Step] + 1;

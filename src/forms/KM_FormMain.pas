@@ -1055,7 +1055,7 @@ begin
                                or (aCtrl = chkLogSkipTempCmd)
                                or ((aCtrl = chkSnowHouses) and gGameSettings.AllowSnowHouses)
                                or ((aCtrl = chkInterpolatedRender) and gGameSettings.InterpolatedRender)
-                               or ((aCtrl = chkInterpolatedAnims) and INTERPOLATED_ANIMS)
+                               or ((aCtrl = chkInterpolatedAnims) and gGameSettings.InterpolatedAnimations)
                                or (aCtrl = chkShowObjects)
                                or (aCtrl = chkShowHouses)
                                or (aCtrl = chkShowUnits)
@@ -1224,7 +1224,7 @@ begin
     {$IFDEF WDC}
     chkSnowHouses.        SetCheckedWithoutClick(gGameSettings.AllowSnowHouses); // Snow houses checkbox could be updated before game
     chkInterpolatedRender.SetCheckedWithoutClick(gGameSettings.InterpolatedRender);
-    chkInterpolatedAnims. SetCheckedWithoutClick(INTERPOLATED_ANIMS);
+    chkInterpolatedAnims. SetCheckedWithoutClick(gGameSettings.InterpolatedAnimations);
     chkLoadUnsupSaves.    SetCheckedWithoutClick(ALLOW_LOAD_UNSUP_VERSION_SAVE);
     chkDebugScripting.    SetCheckedWithoutClick(DEBUG_SCRIPTING_EXEC);
     chkPaintSounds.       SetCheckedWithoutClick(DISPLAY_SOUNDS);
@@ -1462,14 +1462,12 @@ begin
   DBG_UI_HINT_POS := chkCursorCoordinates.Checked;
 
   {$IFDEF WDC} //one day update .lfm for lazarus...
-//  ALLOW_SNOW_HOUSES := chkSnowHouses.Checked;
   gGameSettings.AllowSnowHouses := chkSnowHouses.Checked;
   gGameSettings.InterpolatedRender := chkInterpolatedRender.Checked;
-  INTERPOLATED_ANIMS := chkInterpolatedAnims.Checked;
+  gGameSettings.InterpolatedAnimations := chkInterpolatedAnims.Checked;
 
   ALLOW_LOAD_UNSUP_VERSION_SAVE := chkLoadUnsupSaves.Checked;
   {$ENDIF}
-
 
   //Graphics
   if allowDebugChange then
