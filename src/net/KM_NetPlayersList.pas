@@ -11,6 +11,7 @@ const
 
 type
   //Multiplayer info that is filled in Lobby before TKMPlayers are created (thats why it has many mirror fields)
+  //@Rey: This class can actually be renamed to TKMLobbySlot
   TKMNetPlayerInfo = class
   private
     fNikname: AnsiString;
@@ -75,6 +76,7 @@ type
 
   //Handles everything related to players list,
   //but knows nothing about networking nor game setup. Only players.
+  //@Rey: This class can actually be renamed to TKMLobbySlots
   TKMNetPlayersList = class
   private
     fCount: Integer;
