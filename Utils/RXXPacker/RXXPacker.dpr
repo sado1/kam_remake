@@ -132,7 +132,8 @@ begin
     if ParamCount = 0 then
       begin
         writeln('No rx packages were set');
-        writeln('Usage example: _lRxxPacker.exe gui guimain houses trees units');
+        writeln('Usage example 1: RxxPacker.exe gui guimain houses trees units tileset');
+        writeln('Usage example 2: RxxPacker.exe all');
         Exit;
       end;
   end else
