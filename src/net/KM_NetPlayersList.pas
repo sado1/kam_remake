@@ -145,7 +145,6 @@ type
     //Import/Export
     procedure SaveToStream(aStream: TKMemoryStream); //Gets all relevant information as text string
     procedure LoadFromStream(aStream: TKMemoryStream); //Sets all relevant information
-    function GetSlotNames: UnicodeString; //Gets just names as a text string seperated by |
     function GetPlayersWithIDs: UnicodeString;
   end;
 
@@ -1712,20 +1711,6 @@ begin
   aStream.Read(fCount);
   for I := 1 to fCount do
     fNetPlayers[I].Load(aStream);
-end;
-
-
-function TKMNetPlayersList.GetSlotNames: UnicodeString;
-var
-  I: Integer;
-begin
-  Result := '';
-  for I := 1 to fCount do
-  begin
-    Result := Result + fNetPlayers[I].SlotName;
-    if I < fCount then
-      Result := Result + '|';
-  end;
 end;
 
 

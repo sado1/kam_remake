@@ -1085,7 +1085,7 @@ begin
     TakeNextOrder;
 
   if (fTicker mod 8 = 0) and not InFight then
-    CheckForEnemy; //Split into seperate procedure so it can be called from other places
+    CheckForEnemy; //Split into separate procedure so it can be called from other places
 
   Result := True; //Required for override compatibility
   if inherited UpdateState then Exit;

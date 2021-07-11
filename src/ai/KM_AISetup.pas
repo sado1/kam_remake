@@ -21,7 +21,7 @@ type
     DefendAllies: Boolean;
     UnlimitedEquip: Boolean;
     ArmyType: TKMArmyType;
-    EquipRateLeather, EquipRateIron: Word; //Number of ticks between soldiers being equipped. Seperated into Leather/Iron to keep KaM compatibility.
+    EquipRateLeather, EquipRateIron: Word; //Number of ticks between soldiers being equipped. Separated into Leather/Iron to keep KaM compatibility.
     MaxSoldiers: Integer; //-1 means not used or default
     RecruitDelay: Cardinal; //Recruits (for barracks) can only be trained after this many ticks
     RecruitCount: Byte;
@@ -69,7 +69,7 @@ begin
   EquipRateLeather := 1000; //Measured in KaM: AI equips 1 leather soldier every ~100 seconds (if no iron one was already equipped)
   MaxSoldiers := -1; //No limit by default
   WorkerCount := 6;
-  RecruitCount := 5; //This means the number in the barracks, watchtowers are counted seperately
+  RecruitCount := 5; //This means the number in the barracks, watchtowers are counted separately
   RecruitDelay := 0; //Can train at start
   SerfsPerHouse := 1;
   StartPosition := KMPoint(1,1);
