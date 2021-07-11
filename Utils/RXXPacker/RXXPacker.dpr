@@ -99,7 +99,7 @@ begin
       writeln(sLineBreak + 'KaM Remake RXX Packer' + sLineBreak);
 
       ExeDir := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\');
-      lRxxPacker := TKMRXXPacker.Create;
+      lRxxPacker := TKMRXXPacker.Create(ExeDir);
       palettes := TKMResPalettes.Create;
       palettes.LoadPalettes(ExeDir + 'data\gfx\');
       try

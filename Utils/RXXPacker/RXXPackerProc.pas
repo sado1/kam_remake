@@ -8,6 +8,8 @@ uses
 type
   TKMRXXPacker = class
   public
+    SpritesBaseDir: string;
+    constructor Create(const aSpritesBaseDir: string);
     procedure Pack(RT: TRXType; fPalettes: TKMResPalettes);
   end;
 
@@ -16,21 +18,27 @@ uses
   KM_ResHouses, KM_ResUnits, KM_ResSprites, KM_Points, KM_ResSpritesEdit, KM_Defaults, KM_Log;
 
 { TRXXPacker }
+constructor TKMRXXPacker.Create(const aSpritesBaseDir: string);
+begin
+  inherited Create;
+
+  SpritesBaseDir := aSpritesBaseDir;
+end;
+
+
 procedure TKMRXXPacker.Pack(RT: TRXType; fPalettes: TKMResPalettes);
 var
   DeathAnimProcessed: array of Integer;
   DeathAnimCount: Integer;
 
-  function DeathAnimAlreadyDone(aID:Integer):Boolean;
-  var I:Integer;
+  function DeathAnimAlreadyDone(aID: Integer):Boolean;
+  var
+    I: Integer;
   begin
     Result := False;
-    for I:=0 to DeathAnimCount-1 do
+    for I := 0 to DeathAnimCount - 1 do
       if DeathAnimProcessed[I] = aID then
-      begin
-        Result := True;
-        Exit;
-      end;
+        Exit(True);
   end;
 
 var
@@ -45,9 +53,9 @@ begin
   //ruCustom sprite packs do not have a main RXX file so don't need packing
   if RXInfo[RT].Usage <> ruCustom then
   begin
-    RXName := ExeDir + 'SpriteResource\' + RXInfo[RT].FileName + '.rx';
+    RXName := SpritesBaseDir + 'SpriteResource\' + RXInfo[RT].FileName + '.rx';
     Assert((RT = rxTiles) or FileExists(RXName),
-           'Cannot find ' + RXName + ' file.'+#10#13+
+           'Cannot find ' + RXName + ' file.' + #13#10 +
            'Please copy the file from your KaM\data\gfx\res\ folder.');
 
     SpritePack := TKMSpritePackEdit.Create(RT, fPalettes);
@@ -56,11 +64,11 @@ begin
       if RT <> rxTiles then
       begin
         SpritePack.LoadFromRXFile(RXName);
-        SpritePack.OverloadFromFolder(ExeDir + 'SpriteResource\', False); // Do not soften shadows, it will be done later on
+        SpritePack.OverloadFromFolder(SpritesBaseDir + 'SpriteResource\', False); // Do not soften shadows, it will be done later on
       end
       else
-      if DirectoryExists(ExeDir + 'SpriteResource\') then
-        SpritePack.LoadFromFolder(ExeDir + 'SpriteResource\');
+      if DirectoryExists(SpritesBaseDir + 'SpriteResource\') then
+        SpritePack.LoadFromFolder(SpritesBaseDir + 'SpriteResource\');
 
       //Tiles must stay the same size as they can't use pivots
       if (RT <> rxTiles) and (gLog <> nil) then
@@ -87,7 +95,7 @@ begin
       //  SpritePack.SoftWater(nil);
 
       //Save
-      SpritePack.SaveToRXXFile(ExeDir + 'Data\Sprites\' + RXInfo[RT].FileName + '.rxx');
+      SpritePack.SaveToRXXFile(ExeDir + 'data\Sprites\' + RXInfo[RT].FileName + '.rxx');
 
       //Generate alpha shadows for the following sprite packs
       if RT in [rxHouses,rxUnits,rxGui,rxTrees] then
@@ -130,12 +138,12 @@ begin
         else
           SpritePack.SoftenShadows;
 
-        SpritePack.SaveToRXXFile(ExeDir + 'Data\Sprites\' + RXInfo[RT].FileName + '_a.rxx');
+        SpritePack.SaveToRXXFile(ExeDir + 'data\Sprites\' + RXInfo[RT].FileName + '_a.rxx');
 
-        if DirectoryExists(ExeDir + 'SpriteInterp\Output\'+IntToStr(Byte(RT)+1)+'\') then
-          SpritePack.OverloadFromFolder(ExeDir + 'SpriteInterp\Output\'+IntToStr(Byte(RT)+1)+'\', False); // Shadows are already softened for interps
+        if DirectoryExists(SpritesBaseDir + 'SpriteInterp\Output\' + IntToStr(Byte(RT)+1) + '\') then
+          SpritePack.OverloadFromFolder(SpritesBaseDir + 'SpriteInterp\Output\' + IntToStr(Byte(RT)+1) + '\', False); // Shadows are already softened for interps
 
-        SpritePack.SaveToRXAFile(ExeDir + 'Data\Sprites\' + RXInfo[RT].FileName + '.rxa');
+        SpritePack.SaveToRXAFile(ExeDir + 'data\Sprites\' + RXInfo[RT].FileName + '.rxa');
       end;
     finally
       SpritePack.Free;
