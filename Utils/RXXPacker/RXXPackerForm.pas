@@ -26,7 +26,7 @@ type
     procedure btnUpdateListClick(Sender: TObject);
   private
     fPalettes: TKMResPalettes;
-    fRxxPacker: TRXXPacker;
+    fRxxPacker: TKMRXXPacker;
     fPacksData: array of TRXXPackData;
     fPacksCnt: Integer;
 
@@ -105,7 +105,7 @@ begin
   //Although we don't need them in this tool, these are required to load sprites
   gLog := TKMLog.Create(ExeDir + 'RXXPacker.log');
 
-  fRXXPacker := TRXXPacker.Create;
+  fRXXPacker := TKMRXXPacker.Create;
   fPalettes := TKMResPalettes.Create;
   fPalettes.LoadPalettes(ExeDir + 'data\gfx\');
 

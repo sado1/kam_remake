@@ -6,7 +6,7 @@ uses
   SysUtils, KM_ResTypes, KM_ResPalettes;
 
 type
-  TRXXPacker = class
+  TKMRXXPacker = class
   public
     procedure Pack(RT: TRXType; fPalettes: TKMResPalettes);
   end;
@@ -16,7 +16,7 @@ uses
   KM_ResHouses, KM_ResUnits, KM_ResSprites, KM_Points, KM_ResSpritesEdit, KM_Defaults, KM_Log;
 
 { TRXXPacker }
-procedure TRXXPacker.Pack(RT: TRXType; fPalettes: TKMResPalettes);
+procedure TKMRXXPacker.Pack(RT: TRXType; fPalettes: TKMResPalettes);
 var
   DeathAnimProcessed: array of Integer;
   DeathAnimCount: Integer;
