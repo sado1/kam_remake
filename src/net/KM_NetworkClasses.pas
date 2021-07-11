@@ -33,7 +33,6 @@ type
     function GetFormattedTime: UnicodeString;
     procedure LoadFromStream(aStream: TKMemoryStream);
     procedure SaveToStream(aStream: TKMemoryStream);
-    function PlayersList: string;
     function HTMLPlayersList: string;
     function ConnectedPlayerCount: Byte;
   end;
@@ -120,16 +119,6 @@ begin
   aStream.WriteW(Description);
   aStream.WriteW(Map);
   aStream.Write(GameTime, SizeOf(GameTime));
-end;
-
-
-function TKMPGameInfo.PlayersList: string;
-var
-  I: Integer;
-begin
-  Result := '';
-  for I := 1 to PlayerCount do
-    Result := Result + UnicodeString(Players[I].Name) + IfThen(I < PlayerCount, ', ');
 end;
 
 
