@@ -62,7 +62,7 @@ var
   tick: Cardinal;
 
 const
-  RXToPack: array[0..5] of TRXType = (
+  RXX_TO_PACK: array[0..5] of TRXType = (
     rxTrees,
     rxHouses,
     rxUnits,
@@ -107,11 +107,11 @@ begin
         begin
           if LowerCase(ParamStr(I)) = 'all' then
           begin
-            for K := Low(RXToPack) to High(RXToPack) do
+            for K := Low(RXX_TO_PACK) to High(RXX_TO_PACK) do
             begin
               tick := GetTickCount;
-              lRxxPacker.Pack(RXToPack[K], palettes);
-              writeln(RXInfo[RXToPack[K]].FileName + '.rxx packed in ' + IntToStr(GetTickCount - tick) + ' ms');
+              lRxxPacker.Pack(RXX_TO_PACK[K], palettes);
+              writeln(RXInfo[RXX_TO_PACK[K]].FileName + '.rxx packed in ' + IntToStr(GetTickCount - tick) + ' ms');
             end;
             Exit;
           end;
