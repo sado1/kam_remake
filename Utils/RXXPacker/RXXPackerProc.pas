@@ -7,11 +7,18 @@ uses
 
 type
   TKMRXXPacker = class
+  private
+    fSpritesBaseDir: string;
+    procedure SetSpritesBaseDir(const aValue: string);
   public
-    SpritesBaseDir: string;
+    property SpritesBaseDir: string read fSpritesBaseDir write SetSpritesBaseDir;
     constructor Create(const aSpritesBaseDir: string);
     procedure Pack(RT: TRXType; fPalettes: TKMResPalettes);
   end;
+
+const
+  SPRITES_RES_DIR = 'SpriteResource';
+  SPRITES_INTERP_DIR = 'SpriteInterp' + PathDelim + 'Output';
 
 implementation
 uses
@@ -53,7 +60,7 @@ begin
   //ruCustom sprite packs do not have a main RXX file so don't need packing
   if RXInfo[RT].Usage <> ruCustom then
   begin
-    RXName := SpritesBaseDir + 'SpriteResource\' + RXInfo[RT].FileName + '.rx';
+    RXName := SpritesBaseDir + SPRITES_RES_DIR + '\' + RXInfo[RT].FileName + '.rx';
     Assert((RT = rxTiles) or FileExists(RXName),
            'Cannot find ' + RXName + ' file.' + #13#10 +
            'Please copy the file from your KaM\data\gfx\res\ folder.');
@@ -64,11 +71,11 @@ begin
       if RT <> rxTiles then
       begin
         SpritePack.LoadFromRXFile(RXName);
-        SpritePack.OverloadFromFolder(SpritesBaseDir + 'SpriteResource\', False); // Do not soften shadows, it will be done later on
+        SpritePack.OverloadFromFolder(SpritesBaseDir + SPRITES_RES_DIR + '\', False); // Do not soften shadows, it will be done later on
       end
       else
-      if DirectoryExists(SpritesBaseDir + 'SpriteResource\') then
-        SpritePack.LoadFromFolder(SpritesBaseDir + 'SpriteResource\');
+      if DirectoryExists(SpritesBaseDir + SPRITES_RES_DIR + '\') then
+        SpritePack.OverloadFromFolder(SpritesBaseDir + SPRITES_RES_DIR + '\');
 
       //Tiles must stay the same size as they can't use pivots
       if (RT <> rxTiles) and (gLog <> nil) then
@@ -140,8 +147,8 @@ begin
 
         SpritePack.SaveToRXXFile(ExeDir + 'data\Sprites\' + RXInfo[RT].FileName + '_a.rxx');
 
-        if DirectoryExists(SpritesBaseDir + 'SpriteInterp\Output\' + IntToStr(Byte(RT)+1) + '\') then
-          SpritePack.OverloadFromFolder(SpritesBaseDir + 'SpriteInterp\Output\' + IntToStr(Byte(RT)+1) + '\', False); // Shadows are already softened for interps
+        if DirectoryExists(SpritesBaseDir + SPRITES_INTERP_DIR + '\' + IntToStr(Byte(RT)+1) + '\') then
+          SpritePack.OverloadFromFolder(SpritesBaseDir + SPRITES_INTERP_DIR + '\' + IntToStr(Byte(RT)+1) + '\', False); // Shadows are already softened for interps
 
         SpritePack.SaveToRXAFile(ExeDir + 'data\Sprites\' + RXInfo[RT].FileName + '.rxa');
       end;
@@ -150,5 +157,16 @@ begin
     end;
   end;
 end;
+
+
+procedure TKMRXXPacker.SetSpritesBaseDir(const aValue: string);
+begin
+  fSpritesBaseDir := aValue;
+
+  // Append PathDelim '/' at the end of path to dir
+  if not aValue.EndsWith(PathDelim) then
+    fSpritesBaseDir := fSpritesBaseDir + PathDelim;
+end;
+
 
 end.

@@ -103,8 +103,31 @@ begin
       palettes := TKMResPalettes.Create;
       palettes.LoadPalettes(ExeDir + 'data\gfx\');
       try
-        for I := 1 to ParamCount do // Skip 0, as this is the EXE-path
+        I := 0;
+        while I < ParamCount do // Skip 0, as this is the EXE-path
         begin
+          Inc(I);
+
+          if ((LowerCase(ParamStr(I)) = 'sbd') or (LowerCase(ParamStr(I)) = 'spritesbasedir')) then
+          begin
+            if (I >= ParamCount) then
+            begin
+              writeln('spritesBaseDir directory not specified');
+              Exit;
+            end;
+
+            Inc(I);
+
+            if not DirectoryExists(ParamStr(I)) then
+            begin
+              writeln('spritesBaseDir directory does not exist: ' + ParamStr(I));
+              Exit;
+            end;
+            lRxxPacker.SpritesBaseDir := ParamStr(I);
+
+            Continue;
+          end;
+
           if LowerCase(ParamStr(I)) = 'all' then
           begin
             for K := Low(RXX_TO_PACK) to High(RXX_TO_PACK) do
@@ -134,6 +157,7 @@ begin
         writeln('No rx packages were set');
         writeln('Usage example 1: RxxPacker.exe gui guimain houses trees units tileset');
         writeln('Usage example 2: RxxPacker.exe all');
+        writeln('Usage example 3: RxxPacker.exe spritesBaseDir "C:\kmr_sprites\" units');
         Exit;
       end;
   end else

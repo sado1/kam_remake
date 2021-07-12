@@ -20,6 +20,8 @@ type
     ListBox1: TListBox;
     Label1: TLabel;
     btnUpdateList: TButton;
+    edSpritesBaseDir: TEdit;
+    Label2: TLabel;
     procedure btnPackRXXClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -105,6 +107,8 @@ begin
   //Although we don't need them in this tool, these are required to load sprites
   gLog := TKMLog.Create(ExeDir + 'RXXPacker.log');
 
+  edSpritesBaseDir.Text := ExeDir;
+
   fRXXPacker := TKMRXXPacker.Create(ExeDir);
   fPalettes := TKMResPalettes.Create;
   fPalettes.LoadPalettes(ExeDir + 'data\gfx\');
@@ -129,12 +133,15 @@ var
   RT: TRXType;
   I: Integer;
   Tick: Cardinal;
+  spritesBaseDir: string;
 begin
   btnPackRXX.Enabled := False;
   Tick := GetTickCount;
 
-  Assert(DirectoryExists(ExeDir + 'SpriteResource\'),
-         'Cannot find ' + ExeDir + 'SpriteResource\ folder.'+#10#13+
+  fRXXPacker.SpritesBaseDir := edSpritesBaseDir.Text;
+
+  Assert(DirectoryExists(fRXXPacker.SpritesBaseDir + SPRITES_RES_DIR + '\'),
+         'Cannot find ' + fRXXPacker.SpritesBaseDir + SPRITES_RES_DIR + '\ folder.' + #10#13 +
          'Please make sure this folder exists.');
 
   for I := 0 to ListBox1.Items.Count - 1 do
@@ -148,7 +155,7 @@ begin
       ListBox1.Refresh;
     end;
 
-  Label1.Caption := IntToStr(GetTickCount - Tick) + ' ms';
+  Label1.Caption := 'Elapsed: ' + IntToStr(GetTickCount - Tick) + ' ms';
   btnPackRXX.Enabled := True;
 end;
 

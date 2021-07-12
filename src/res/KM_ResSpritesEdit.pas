@@ -29,7 +29,6 @@ type
     procedure SoftWater(aTileset: TKMResTileset);
     procedure Delete(aIndex: Integer);
     procedure LoadFromRXFile(const aFileName: string);
-    procedure LoadFromFolder(const aFolder: string);
     procedure SaveToRXXFile(const aFileName: string);
     procedure SaveToRXAFile(const aFileName: string);
     function TrimSprites: Cardinal; //For debug
@@ -678,24 +677,6 @@ begin
   S.Free;
 
   Expand; //Only KaM's rx needs expanding
-end;
-
-
-//Load sprites from folder
-procedure TKMSpritePackEdit.LoadFromFolder(const aFolder: string);
-var ft: TextFile;
-begin
-  if not DirectoryExists(aFolder) then Exit;
-  if not FileExists(aFolder + IntToStr(Byte(fRT) + 1) + '.txt') then Exit;
-
-  AssignFile(ft, aFolder + IntToStr(Byte(fRT) + 1) + '.txt');
-    Reset(ft);
-    ReadLn(ft, fRXData.Count);
-  CloseFile(ft);
-
-  Allocate(fRXData.Count);
-
-  OverloadFromFolder(aFolder);
 end;
 
 
