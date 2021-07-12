@@ -1465,7 +1465,7 @@
 1515:Recorded game speed
 1516:Interpolated render
 1517:Interpolated|render
-1518:Interpolated render hint
+1518:Will interpolate unit movement
 1519:For player %0:s to %1:s player's %2:s %3:s must be %4:s
 1520:win
 1521:survive
@@ -1475,4 +1475,4 @@
 1525:Only symmetrical alliances are allowed
 1526:Interpolated animations
 1527:Interpolated|animations
-1528:Interpolated animations hint
+1528:Will interpolate sprite animations|Interpolated render should be enabled
