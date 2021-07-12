@@ -48,6 +48,9 @@ FOR /F "tokens=* USEBACKQ" %%F IN (`git rev-list --count HEAD`) DO (
   SET kam_revision=%%F
 )
 
+@REM increment revision number by 1, as we are going to make one more commit for KM_Revision.inc
+@SET /A kam_revision=kam_revision+1
+
 @REM Now we can have a constant with the right folder name
 @SET build_full_kmr_dir=%BuildFullDir%\kmr%YYYY%-%MM%-%DD% (%kam_version% r%kam_revision%)
 @REM @SET installer_kmr_build_full_dir=..\Installer\BuildFull
