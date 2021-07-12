@@ -100,7 +100,7 @@ xcopy "..\Utils\Campaign builder\CampaignBuilder.exe" "%kam_folder%"\Utils\Campa
 xcopy "..\Utils\DedicatedServer\KaM_DedicatedServer.exe" "%kam_folder%"\Utils\KaM_Remake_Server_win32.exe* /y /r /i
 xcopy "..\Utils\DedicatedServerGUI\KaM_DedicatedServerGUI.exe" "%kam_folder%"\Utils\KaM_Remake_ServerGUI_win32.exe* /y /r /i
 xcopy "..\Utils\ScriptValidator\ScriptValidator.exe" "%kam_folder%"\Utils\ScriptValidator.exe* /y /r /i
-xcopy "..\Utils\TranslationManager\TranslationManager.exe" "%kam_folder%"\Utils\TranslationManager.exe* /y /r /i
+xcopy "..\Utils\_TranslationManager (moved to kp-wiki repo)\TranslationManager.exe" "%kam_folder%"\Utils\TranslationManager.exe* /y /r /i
 @REM copy linux dedicated servers
 xcopy "..\Utils\DedicatedServer\KaM_Remake_Server_linux_x86" "%kam_folder%"\Utils\KaM_Remake_Server_linux_x86* /y /r /i
 xcopy "..\Utils\DedicatedServer\KaM_Remake_Server_linux_x86_64" "%kam_folder%"\Utils\KaM_Remake_Server_linux_x86_64* /y /r /i
