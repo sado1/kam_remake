@@ -206,6 +206,10 @@ begin
     if gGameApp.Chat.Mode = cmWhisper then
     begin
       netI := gNetworking.NetPlayers.ServerToLocal(gGameApp.Chat.WhisperRecipient);
+
+      // Do not allow to whisper to disconnected player
+      if netI = -1 then Exit;
+      
       if not gNetworking.NetPlayers[netI].Connected
         or gNetworking.NetPlayers[netI].Dropped then
       begin
