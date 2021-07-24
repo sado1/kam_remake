@@ -195,7 +195,7 @@ end;
 
 function TKMGUIGameChat.DoPost: Boolean;
 var
-  NetI: Integer;
+  netI: Integer;
 begin
   Result := False;
   if not gGameApp.Chat.IsPostAllowed then
@@ -205,12 +205,12 @@ begin
   begin
     if gGameApp.Chat.Mode = cmWhisper then
     begin
-      NetI := gNetworking.NetPlayers.ServerToLocal(gGameApp.Chat.WhisperRecipient);
-      if not gNetworking.NetPlayers[NetI].Connected
-        or gNetworking.NetPlayers[NetI].Dropped then
+      netI := gNetworking.NetPlayers.ServerToLocal(gGameApp.Chat.WhisperRecipient);
+      if not gNetworking.NetPlayers[netI].Connected
+        or gNetworking.NetPlayers[netI].Dropped then
       begin
         gNetworking.PostLocalMessage(Format(gResTexts[TX_MULTIPLAYER_CHAT_PLAYER_NOT_CONNECTED_ANYMORE],
-                                                [gNetworking.NetPlayers[NetI].NiknameColored]),
+                                                [gNetworking.NetPlayers[netI].NiknameColored]),
                                           csSystem);
         Chat_MenuSelect(CHAT_MENU_ALL);
       end else
