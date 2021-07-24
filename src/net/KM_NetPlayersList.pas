@@ -704,10 +704,7 @@ begin
   Result := -1;
   for I := 1 to fCount do
     if fNetPlayers[I].fIndexOnServer = aIndexOnServer then
-    begin
-      Result := I;
-      Exit;
-    end;
+      Exit(I);
 end;
 
 
@@ -719,7 +716,7 @@ begin
   Result := -1;
   for I := 1 to fCount do
     if fNetPlayers[I].fNikname = aNikname then
-      Result := I;
+      Exit(I);
 end;
 
 
@@ -731,7 +728,7 @@ begin
   Result := -1;
   for I := 1 to fCount do
     if fNetPlayers[I].StartLocation = aLoc then
-      Result := I;
+      Exit(I);
 end;
 
 
@@ -742,7 +739,7 @@ begin
   Result := -1;
   for I := 1 to Count do
     if (aIndex = fNetPlayers[I].HandIndex) then
-      Result := I;
+      Exit(I);
 end;
 
 
