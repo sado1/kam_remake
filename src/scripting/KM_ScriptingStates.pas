@@ -958,7 +958,7 @@ begin
 end;
 
 
-//* Version: Must be filled in by Rey
+//* Version: 13660
 //* The power factor of a player's army
 //* Result: Army power
 function TKMScriptStates.StatArmyPower(aPlayer: Byte): Single;
