@@ -58,6 +58,7 @@ type
     fGameTweaks_AllowSnowHouses: Boolean;
     fGameTweaks_InterpolatedRender: Boolean;
     fGameTweaks_InterpolatedAnimations: Boolean;
+    fGameTweaks_NewZoomBehaviour: Boolean;
 
     //Campaign
     fCampaignLastDifficulty: TKMMissionDifficulty;
@@ -149,7 +150,8 @@ type
     //GameTweaks
     procedure SetAllowSnowHouses(aValue: Boolean);
     procedure SetInterpolatedRender(aValue: Boolean);
-    procedure SetInterpolatedAnimations(const Value: Boolean);
+    procedure SetInterpolatedAnimations(const aValue: Boolean);
+    procedure SetNewZoomBehaviour(const aValue: Boolean);
 
     //Campaign
     procedure SetCampaignLastDifficulty(aValue: TKMMissionDifficulty);
@@ -257,6 +259,7 @@ type
     property AllowSnowHouses: Boolean read fGameTweaks_AllowSnowHouses write SetAllowSnowHouses;
     property InterpolatedRender: Boolean read fGameTweaks_InterpolatedRender write SetInterpolatedRender;
     property InterpolatedAnimations: Boolean read fGameTweaks_InterpolatedAnimations write SetInterpolatedAnimations;
+    property NewZoomBehaviour: Boolean read fGameTweaks_NewZoomBehaviour write SetNewZoomBehaviour;
 
     //Campaign
     property CampaignLastDifficulty: TKMMissionDifficulty read fCampaignLastDifficulty write SetCampaignLastDifficulty;
@@ -491,6 +494,7 @@ begin
     nGameTweaks := nGameCommon.AddOrFindChild('Tweaks');
       AllowSnowHouses     := nGameTweaks.Attributes['AllowSnowHouses'].AsBoolean(True);     // With restriction by ALLOW_SNOW_HOUSES
       InterpolatedRender  := nGameTweaks.Attributes['InterpolatedRender'].AsBoolean(False); // With restriction by ALLOW_INTERPOLATED_RENDER
+      NewZoomBehaviour    := nGameTweaks.Attributes['NewZoomBehaviour'].AsBoolean(True);
 
   // Campaign
   nCampaign := nGameSettings.AddOrFindChild('Campaign');
@@ -669,6 +673,7 @@ begin
     nGameTweaks := nGameCommon.AddOrFindChild('Tweaks');
       nGameTweaks.Attributes['AllowSnowHouses']     := fGameTweaks_AllowSnowHouses;
       nGameTweaks.Attributes['InterpolatedRender']  := fGameTweaks_InterpolatedRender;
+      nGameTweaks.Attributes['NewZoomBehaviour']    := fGameTweaks_NewZoomBehaviour;
 
   // Campaign
   nCampaign := nGameSettings.AddOrFindChild('Campaign');
@@ -1042,11 +1047,18 @@ begin
   Changed;
 end;
 
-procedure TKMGameSettings.SetInterpolatedAnimations(const Value: Boolean);
+procedure TKMGameSettings.SetInterpolatedAnimations(const aValue: Boolean);
 begin
   if not ALLOW_INTERPOLATED_ANIMS then Exit;
 
-  fGameTweaks_InterpolatedAnimations := Value;
+  fGameTweaks_InterpolatedAnimations := aValue;
+  Changed;
+end;
+
+procedure TKMGameSettings.SetNewZoomBehaviour(const aValue: Boolean);
+begin
+  fGameTweaks_NewZoomBehaviour := aValue;
+  Changed;
 end;
 
 
