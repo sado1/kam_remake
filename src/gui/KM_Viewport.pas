@@ -242,7 +242,7 @@ begin
 end;
 
 
-//Acquires an bit array that tells what lines to render on the minimap
+//Acquires a bit array that holds what camera lines to draw on the minimap
 function TKMViewport.GetMinimapClipLines: TBits;
 begin
   Result := Tbits.Create;
