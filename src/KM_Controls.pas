@@ -2041,7 +2041,8 @@ uses
   KM_MinimapGame,
   KM_Resource, KM_ResSprites, KM_ResSound, KM_ResTexts,
   KM_Render, KM_RenderTypes,
-  KM_Sound, KM_CommonUtils, KM_UtilsExt;
+  KM_Sound, KM_CommonUtils, KM_UtilsExt,
+  KM_GameSettings;
 
 
 const
@@ -10268,8 +10269,10 @@ const
 var
   I, K: Integer;
   R: TKMRect;
+  B: TBits;
   T, T1, T2: TKMPoint;
   minimapGame: TKMMiniMapGame;
+  miniLeft, miniTop, miniRight, miniBottom: SmallInt;
 begin
   inherited;
 
@@ -10301,10 +10304,32 @@ begin
     begin
       R := fView.GetMinimapClip;
       if (R.Right - R.Left) * (R.Bottom - R.Top) > 0 then
-        TKMRenderUI.WriteOutline(AbsLeft + fLeftOffset + Round((R.Left - 1)*fPaintWidth / fMinimap.MapX),
-                                 AbsTop  + fTopOffset  + Round((R.Top - 1)*fPaintHeight / fMinimap.MapY),
-                                 Round((R.Right - R.Left)*fPaintWidth / fMinimap.MapX),
-                                 Round((R.Bottom - R.Top + 1)*fPaintHeight / fMinimap.MapY), 1, $FFFFFFFF);
+      begin
+        if gGameSettings.NewZoomBehaviour then
+        begin
+          miniLeft := AbsLeft + fLeftOffset + Round(R.Left * fPaintWidth / fMinimap.MapX) - 1;
+          miniTop := AbsTop + fTopOffset + Round(R.Top * fPaintHeight / fMinimap.MapY) - 1;
+          miniRight := AbsLeft + fLeftOffset + Round(R.Right * fPaintWidth / fMinimap.MapX) - 1;
+          miniBottom := AbsTop + fTopOffset + Round(R.Bottom * fPaintHeight / fMinimap.MapY) - 1;
+
+          B := fView.GetMinimapClipLines;
+          if B[0] then //Left
+            TKMRenderUI.WriteLine(miniLeft, miniBottom+1, miniLeft, miniTop, $FFFFFFFF);
+          if B[1] then //Right
+            TKMRenderUI.WriteLine(miniRight, miniBottom+1, miniRight, miniTop, $FFFFFFFF);
+          if B[2] then //Top
+            TKMRenderUI.WriteLine(miniLeft-1, miniTop, miniRight, miniTop, $FFFFFFFF);
+          if B[3] then //Bottom
+            TKMRenderUI.WriteLine(miniLeft-1, miniBottom, miniRight, miniBottom, $FFFFFFFF);
+        end
+        else
+        begin
+          TKMRenderUI.WriteOutline(AbsLeft + fLeftOffset + Round((R.Left - 1)*fPaintWidth / fMinimap.MapX),
+                                   AbsTop  + fTopOffset  + Round((R.Top - 1)*fPaintHeight / fMinimap.MapY),
+                                   Round((R.Right - R.Left)*fPaintWidth / fMinimap.MapX),
+                                   Round((R.Bottom - R.Top + 1)*fPaintHeight / fMinimap.MapY), 1, $FFFFFFFF);
+        end;
+      end;
     end;
   end;
 

@@ -3,7 +3,7 @@ unit KM_Viewport;
 interface
 uses
   {$IFDEF MSWINDOWS} Windows, {$ENDIF}
-  KM_CommonClasses, KM_CommonTypes, KM_Points;
+  KM_CommonClasses, KM_CommonTypes, KM_Points, Classes;
 
 
 type
@@ -50,6 +50,7 @@ type
     procedure ResizeMap(aMapX, aMapY: Word; aTopHill: Single);
     function GetClip: TKMRect; //returns visible area dimensions in map space
     function GetMinimapClip: TKMRect;
+    function GetMinimapClipLines: TBits;
     procedure ReleaseScrollKeys;
     procedure GameSpeedChanged(aFromSpeed, aToSpeed: Single);
     function MapToScreen(const aMapLoc: TKMPointF): TKMPoint;
@@ -237,7 +238,20 @@ begin
   Result.Left   := Max(Round(fPosition.X - (fViewportClip.X/2 - fViewRect.Left + ToolbarWidth)/ZoomedCellSizePX) + 1, 1);
   Result.Right  := Min(Round(fPosition.X + (fViewportClip.X/2 + fViewRect.Left - ToolbarWidth)/ZoomedCellSizePX) + 1, fMapX);
   Result.Top    := Max(Round(fPosition.Y - fViewportClip.Y/2/ZoomedCellSizePX) + 2, 1);
-  Result.Bottom := Min(Round(fPosition.Y + fViewportClip.Y/2/ZoomedCellSizePX), fMapY);
+  Result.Bottom := Min(Round(fPosition.Y + fViewportClip.Y/2/ZoomedCellSizePX), fMapY - 1);
+end;
+
+
+//Acquires an bit array that tells what lines to render on the minimap
+function TKMViewport.GetMinimapClipLines: TBits;
+begin
+  Result := Tbits.Create;
+  Result.Size := 4;
+
+  Result.Bits[0] := Round(fPosition.X - (fViewportClip.X/2 - fViewRect.Left + ToolbarWidth)/ZoomedCellSizePX) + 1 >= 1;     //Left
+  Result.Bits[1] := Round(fPosition.X + (fViewportClip.X/2 + fViewRect.Left - ToolbarWidth)/ZoomedCellSizePX) + 1 <= fMapX; //Right
+  Result.Bits[2] := Round(fPosition.Y - fViewportClip.Y/2/ZoomedCellSizePX) + 2 >= 1;     //Top
+  Result.Bits[3] := Round(fPosition.Y + fViewportClip.Y/2/ZoomedCellSizePX) <= fMapY - 1;     //Bottom
 end;
 
 
