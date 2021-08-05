@@ -101,12 +101,15 @@ var
   sizeY: Single;
 begin
   fZoom := EnsureRange(aZoom, 0.01, 8);
+
+  {
   sizeY := fMapY + TopPad;
   //Limit the zoom to within the map boundaries
   if fViewportClip.X/ZoomedCellSizePX > fMapX then
     fZoom := fViewportClip.X/(CELL_SIZE_PX * (fMapX - 1)); // -1 to not show last column under FOW (out of the map)
   if fViewportClip.Y/ZoomedCellSizePX > sizeY then
     fZoom := fViewportClip.Y/(CELL_SIZE_PX * (sizeY - 1)); // -1 to not show last row under FOW (out of the map)
+  }
 
   SetPosition(fPosition); //To ensure it sets the limits smoothly
 end;
@@ -167,6 +170,7 @@ procedure TKMViewport.SetPosition(const Value: TKMPointF);
 var
   tilesX, tilesY: Single;
 begin
+  {
   tilesX := fViewportClip.X/2/ZoomedCellSizePX;
   tilesY := fViewportClip.Y/2/ZoomedCellSizePX;
 
@@ -178,6 +182,16 @@ begin
   fPosition.Y := EnsureRange(Value.Y,
                              tilesY - TopPad,     // Min visible map coordinate is -TopPad
                              fMapY - 1 - tilesY); // Max visible map coordinate is fMapY - 1
+  }
+
+  // Set position as a pointF in the map coordinates, but also with possible TopPad at the top
+  fPosition.X := EnsureRange(Value.X,
+                             0,               // Min visible map coordinate is 0
+                             fMapX - 1); // Max visible map coordinate is fMapX - 1
+  //Top row should be visible
+  fPosition.Y := EnsureRange(Value.Y,
+                             - TopPad,     // Min visible map coordinate is -TopPad
+                             fMapY - 1); // Max visible map coordinate is fMapY - 1
 
   if Assigned(fOnPositionSet) then
     fOnPositionSet(fPosition);
