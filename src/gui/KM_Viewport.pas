@@ -267,7 +267,7 @@ begin
   Result.Left   := Max(Round(fPosition.X - (fViewportClip.X/2 - fViewRect.Left + ToolbarWidth)/ZoomedCellSizePX) + 1, 1);
   Result.Right  := Min(Round(fPosition.X + (fViewportClip.X/2 + fViewRect.Left - ToolbarWidth)/ZoomedCellSizePX) + 1, fMapX);
   Result.Top    := Max(Round(fPosition.Y - fViewportClip.Y/2/ZoomedCellSizePX) + 2, 1);
-  Result.Bottom := Min(Round(fPosition.Y + fViewportClip.Y/2/ZoomedCellSizePX), fMapY - 1);
+  Result.Bottom := Min(Round(fPosition.Y + fViewportClip.Y/2/ZoomedCellSizePX), fMapY);
 end;
 
 
@@ -280,7 +280,7 @@ begin
   Result.Bits[0] := Round(fPosition.X - (fViewportClip.X/2 - fViewRect.Left + ToolbarWidth)/ZoomedCellSizePX) + 1 >= 1;     //Left
   Result.Bits[1] := Round(fPosition.X + (fViewportClip.X/2 + fViewRect.Left - ToolbarWidth)/ZoomedCellSizePX) + 1 <= fMapX; //Right
   Result.Bits[2] := Round(fPosition.Y - fViewportClip.Y/2/ZoomedCellSizePX) + 2 >= 1;     //Top
-  Result.Bits[3] := Round(fPosition.Y + fViewportClip.Y/2/ZoomedCellSizePX) <= fMapY - 1;     //Bottom
+  Result.Bits[3] := Round(fPosition.Y + fViewportClip.Y/2/ZoomedCellSizePX) <= fMapY;     //Bottom
 end;
 
 

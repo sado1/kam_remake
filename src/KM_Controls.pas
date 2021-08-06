@@ -10307,10 +10307,10 @@ begin
       begin
         if gGameSettings.ZoomBehaviour > 0 then
         begin
-          miniLeft := AbsLeft + fLeftOffset + Round(R.Left * fPaintWidth / fMinimap.MapX) - 1;
-          miniTop := AbsTop + fTopOffset + Round(R.Top * fPaintHeight / fMinimap.MapY) - 1;
-          miniRight := AbsLeft + fLeftOffset + Round(R.Right * fPaintWidth / fMinimap.MapX) - 1;
-          miniBottom := AbsTop + fTopOffset + Round(R.Bottom * fPaintHeight / fMinimap.MapY) - 1;
+          miniLeft := AbsLeft + fLeftOffset + Round((R.Left - 1)*fPaintWidth / fMinimap.MapX) + 1;
+          miniTop := AbsTop + fTopOffset  + Round((R.Top - 1)*fPaintHeight / fMinimap.MapY);
+          miniRight := AbsLeft + fLeftOffset + Round((R.Right - 1)*fPaintWidth / fMinimap.MapX);
+          miniBottom := AbsTop + fTopOffset  + Round((R.Bottom - 1)*fPaintHeight / fMinimap.MapY) - 1;
 
           B := fView.GetMinimapClipLines;
           if B[0] then //Left
