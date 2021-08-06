@@ -100,6 +100,8 @@ end;
 procedure TKMViewport.SetZoom(aZoom: Single);
 var
   sizeY, mapZoom: Single;
+const
+  BORDER_MARGIN = 1.1;
 begin
   fZoom := EnsureRange(aZoom, 0.01, 8);
 
@@ -107,21 +109,21 @@ begin
 
   case (gGameSettings.ZoomBehaviour) of
     //Limit the zoom to within the map boundaries
-    0 :
+    zbRestricted :
       begin
         mapZoom := max(fViewportClip.X/(CELL_SIZE_PX * (fMapX - 1)), fViewportClip.Y/(CELL_SIZE_PX * (sizeY - 1))); // -1 to not show last column/row under FOW (out of the map)
         fZoom := max(fZoom, mapZoom);
       end;
     //Prevents the zoom from crossing both map boundaries
-    1 :
+    zbFull :
       begin
         mapZoom := min(fViewportClip.X/(CELL_SIZE_PX * (fMapX - 1)), fViewportClip.Y/(CELL_SIZE_PX * (sizeY - 1)));
         fZoom := max(fZoom, mapZoom);
       end;
     //Limit the zoom to 1.1x the map width or height
-    2 :
+    zbLoose :
       begin
-        mapZoom := min(fViewportClip.X/(CELL_SIZE_PX * (fMapX - 1)), fViewportClip.Y/(CELL_SIZE_PX * (sizeY - 1))) / 1.1;
+        mapZoom := min(fViewportClip.X/(CELL_SIZE_PX * (fMapX - 1)), fViewportClip.Y/(CELL_SIZE_PX * (sizeY - 1))) / BORDER_MARGIN;
         mapZoom := min(mapZoom, 1);
         fZoom := max(fZoom, mapZoom);
       end;
@@ -188,7 +190,7 @@ var
 begin
 
   case (gGameSettings.ZoomBehaviour) of
-    0 :
+    zbRestricted :
       begin
         tilesX := fViewportClip.X/2/ZoomedCellSizePX;
         tilesY := fViewportClip.Y/2/ZoomedCellSizePX;
@@ -202,7 +204,7 @@ begin
                                    tilesY - TopPad,     // Min visible map coordinate is -TopPad
                                    fMapY - 1 - tilesY); // Max visible map coordinate is fMapY - 1
       end;
-    1 :
+    zbFull :
       begin
         tilesX := min(fViewportClip.X/2/ZoomedCellSizePX, (fMapX - 1) / 2);
         tilesY := min(fViewportClip.Y/2/ZoomedCellSizePX, (fMapY - 1 + TopPad) / 2);
@@ -216,7 +218,7 @@ begin
                                    tilesY - TopPad,     // Min visible map coordinate is -TopPad
                                    fMapY - 1 - tilesY); // Max visible map coordinate is fMapY - 1
       end;
-    2 :
+    zbLoose :
       begin
         // Set position as a pointF in the map coordinates, but also with possible TopPad at the top
         fPosition.X := EnsureRange(Value.X,

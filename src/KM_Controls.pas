@@ -10305,7 +10305,7 @@ begin
       R := fView.GetMinimapClip;
       if (R.Right - R.Left) * (R.Bottom - R.Top) > 0 then
       begin
-        if gGameSettings.ZoomBehaviour > 0 then
+        if gGameSettings.ZoomBehaviour <> zbRestricted then
         begin
           miniLeft := AbsLeft + fLeftOffset + Round((R.Left - 1)*fPaintWidth / fMinimap.MapX) + 1;
           miniTop := AbsTop + fTopOffset  + Round((R.Top - 1)*fPaintHeight / fMinimap.MapY);
