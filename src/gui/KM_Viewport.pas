@@ -279,10 +279,10 @@ begin
   Result := Tbits.Create;
   Result.Size := 4;
 
-  Result.Bits[0] := Round(fPosition.X - (fViewportClip.X/2 - fViewRect.Left + ToolbarWidth)/ZoomedCellSizePX) + 1 >= 1;     //Left
+  Result.Bits[0] := Round(fPosition.X - (fViewportClip.X/2 - fViewRect.Left + ToolbarWidth)/ZoomedCellSizePX) + 1 >= 1; //Left
   Result.Bits[1] := Round(fPosition.X + (fViewportClip.X/2 + fViewRect.Left - ToolbarWidth)/ZoomedCellSizePX) + 1 <= fMapX; //Right
-  Result.Bits[2] := Round(fPosition.Y + fTopHill - fViewportClip.Y/2/ZoomedCellSizePX) + 2 >= 1;     //Top
-  Result.Bits[3] := Round(fPosition.Y + fViewportClip.Y/2/ZoomedCellSizePX) <= fMapY;     //Bottom
+  Result.Bits[2] := Round(fPosition.Y + fTopHill - fViewportClip.Y/2/ZoomedCellSizePX) + 2 >= 1; //Top
+  Result.Bits[3] := Round(fPosition.Y + fViewportClip.Y/2/ZoomedCellSizePX) <= fMapY; //Bottom
 end;
 
 
