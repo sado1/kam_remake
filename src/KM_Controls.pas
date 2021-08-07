@@ -10315,10 +10315,10 @@ begin
           B := fView.GetMinimapClipLines;
           if B[Integer(TKMDirection4.drW)] then
             TKMRenderUI.WriteLine(miniLeft, miniBottom+1, miniLeft, miniTop, $FFFFFFFF);
-          if B[Integer(TKMDirection4.drE)] then
-            TKMRenderUI.WriteLine(miniRight, miniBottom+1, miniRight, miniTop, $FFFFFFFF);
           if B[Integer(TKMDirection4.drN)] then
             TKMRenderUI.WriteLine(miniLeft-1, miniTop, miniRight, miniTop, $FFFFFFFF);
+          if B[Integer(TKMDirection4.drE)] then
+            TKMRenderUI.WriteLine(miniRight, miniBottom+1, miniRight, miniTop, $FFFFFFFF);
           if B[Integer(TKMDirection4.drS)] then
             TKMRenderUI.WriteLine(miniLeft-1, miniBottom, miniRight, miniBottom, $FFFFFFFF);
         end

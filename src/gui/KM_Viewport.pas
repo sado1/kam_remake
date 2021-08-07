@@ -280,8 +280,8 @@ begin
   Result.Size := 5;
 
   Result.Bits[Integer(TKMDirection4.drW)] := Round(fPosition.X - (fViewportClip.X/2 - fViewRect.Left + ToolbarWidth)/ZoomedCellSizePX) + 1 >= 1;
-  Result.Bits[Integer(TKMDirection4.drE)] := Round(fPosition.X + (fViewportClip.X/2 + fViewRect.Left - ToolbarWidth)/ZoomedCellSizePX) + 1 <= fMapX;
   Result.Bits[Integer(TKMDirection4.drN)] := Round(fPosition.Y + TopPad - fViewportClip.Y/2/ZoomedCellSizePX) + 1 >= 1;
+  Result.Bits[Integer(TKMDirection4.drE)] := Round(fPosition.X + (fViewportClip.X/2 + fViewRect.Left - ToolbarWidth)/ZoomedCellSizePX) + 1 <= fMapX;
   Result.Bits[Integer(TKMDirection4.drS)] := Round(fPosition.Y + fViewportClip.Y/2/ZoomedCellSizePX) + 1 <= fMapY;
 end;
 
