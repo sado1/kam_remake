@@ -277,12 +277,12 @@ end;
 function TKMViewport.GetMinimapClipLines: TBits;
 begin
   Result := Tbits.Create;
-  Result.Size := 4;
+  Result.Size := 5;
 
-  Result.Bits[0] := Round(fPosition.X - (fViewportClip.X/2 - fViewRect.Left + ToolbarWidth)/ZoomedCellSizePX) + 1 >= 1; //Left
-  Result.Bits[1] := Round(fPosition.X + (fViewportClip.X/2 + fViewRect.Left - ToolbarWidth)/ZoomedCellSizePX) + 1 <= fMapX; //Right
-  Result.Bits[2] := Round(fPosition.Y + TopPad - fViewportClip.Y/2/ZoomedCellSizePX) + 1 >= 1; //Top
-  Result.Bits[3] := Round(fPosition.Y + fViewportClip.Y/2/ZoomedCellSizePX) + 1 <= fMapY; //Bottom
+  Result.Bits[Integer(TKMDirection4.drW)] := Round(fPosition.X - (fViewportClip.X/2 - fViewRect.Left + ToolbarWidth)/ZoomedCellSizePX) + 1 >= 1;
+  Result.Bits[Integer(TKMDirection4.drE)] := Round(fPosition.X + (fViewportClip.X/2 + fViewRect.Left - ToolbarWidth)/ZoomedCellSizePX) + 1 <= fMapX;
+  Result.Bits[Integer(TKMDirection4.drN)] := Round(fPosition.Y + TopPad - fViewportClip.Y/2/ZoomedCellSizePX) + 1 >= 1;
+  Result.Bits[Integer(TKMDirection4.drS)] := Round(fPosition.Y + fViewportClip.Y/2/ZoomedCellSizePX) + 1 <= fMapY;
 end;
 
 

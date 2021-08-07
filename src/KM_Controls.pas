@@ -10313,13 +10313,13 @@ begin
           miniBottom := AbsTop + fTopOffset  + Round((R.Bottom - 1)*fPaintHeight / fMinimap.MapY) - 1;
 
           B := fView.GetMinimapClipLines;
-          if B[0] then //Left
+          if B[Integer(TKMDirection4.drW)] then
             TKMRenderUI.WriteLine(miniLeft, miniBottom+1, miniLeft, miniTop, $FFFFFFFF);
-          if B[1] then //Right
+          if B[Integer(TKMDirection4.drE)] then
             TKMRenderUI.WriteLine(miniRight, miniBottom+1, miniRight, miniTop, $FFFFFFFF);
-          if B[2] then //Top
+          if B[Integer(TKMDirection4.drN)] then
             TKMRenderUI.WriteLine(miniLeft-1, miniTop, miniRight, miniTop, $FFFFFFFF);
-          if B[3] then //Bottom
+          if B[Integer(TKMDirection4.drS)] then
             TKMRenderUI.WriteLine(miniLeft-1, miniBottom, miniRight, miniBottom, $FFFFFFFF);
         end
         else
