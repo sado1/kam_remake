@@ -7,6 +7,8 @@ type
   TKMDirection = (dirNA, dirN, dirNE, dirE, dirSE, dirS, dirSW, dirW, dirNW);
   TKMDirection4 = (drNA, drN, drE, drS, drW);
 
+  TKMDirection4Set = set of TKMDirection4;
+
 type
   //Records must be packed so they are stored identically in MP saves (padding bytes are unknown values)
   TKMPointF = record

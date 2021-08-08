@@ -10269,7 +10269,7 @@ const
 var
   I, K: Integer;
   R: TKMRect;
-  B: TBits;
+  S: TKMDirection4Set;
   T, T1, T2: TKMPoint;
   minimapGame: TKMMiniMapGame;
   miniLeft, miniTop, miniRight, miniBottom: SmallInt;
@@ -10312,14 +10312,14 @@ begin
           miniRight := AbsLeft + fLeftOffset + Round((R.Right - 1)*fPaintWidth / fMinimap.MapX);
           miniBottom := AbsTop + fTopOffset  + Round((R.Bottom - 1)*fPaintHeight / fMinimap.MapY) - 1;
 
-          B := fView.GetMinimapClipLines;
-          if B[Integer(TKMDirection4.drW)] then
+          S := fView.GetMinimapClipLines;
+          if drW in S then
             TKMRenderUI.WriteLine(miniLeft, miniBottom+1, miniLeft, miniTop, $FFFFFFFF);
-          if B[Integer(TKMDirection4.drN)] then
+          if drN in S then
             TKMRenderUI.WriteLine(miniLeft-1, miniTop, miniRight, miniTop, $FFFFFFFF);
-          if B[Integer(TKMDirection4.drE)] then
+          if drE in S then
             TKMRenderUI.WriteLine(miniRight, miniBottom+1, miniRight, miniTop, $FFFFFFFF);
-          if B[Integer(TKMDirection4.drS)] then
+          if drS in S then
             TKMRenderUI.WriteLine(miniLeft-1, miniBottom, miniRight, miniBottom, $FFFFFFFF);
         end
         else
