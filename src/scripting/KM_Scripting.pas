@@ -947,15 +947,21 @@ const
   );
 var
   I: Integer;
+  pcm: TPSPascalCompilerMessage;
 begin
   Result := True;
   for I := Low(PROCS) to High(PROCS) do
-    if (Proc.Name = PROCS[I].Names) then
+    if PROCS[I].Names = Proc.Name then
       if not ExportCheck(Sender, Proc, Slice(PROCS[I].Typ, PROCS[I].ParamCount+1), Slice(PROCS[I].Dir, PROCS[I].ParamCount)) then
       begin
-        //Something is wrong, show an error
-        //todo: Sender.MakeError reports the wrong line number so the user has no idea what the error is
-        Sender.MakeError(PROCS[I].Names, ecTypeMismatch, '');
+        // Error when validating the Proc arguments (count, types and directions):
+        // ExportCheck does the check, but does not tell us details. We could override it of course,
+        // but overall this seems unnecessary, since all the errors are basically "declaration does not match".
+        // Hence we can just emit the error appending proc name to it and re-setting the Row/Col
+        // (since they point to the files)
+        pcm := Sender.MakeError(PROCS[I].Names, ecTypeMismatch, 'Error in declaration of ' + Proc.Name + '. ');
+        pcm.Row := Proc.DeclareRow;
+        pcm.Col := Proc.DeclareCol;
         Exit(False);
       end;
 end;
