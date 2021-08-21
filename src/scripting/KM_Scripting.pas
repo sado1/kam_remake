@@ -10,19 +10,19 @@ uses
   KM_ScriptFilesCollection, KM_ScriptErrorHandler, KM_ScriptPreProcessor,
   KM_ScriptValidatorResult;
 
-  //Dynamic scripts allow mapmakers to control the mission flow
+  // Dynamic scripts allow mapmakers to control the mission flow
 
-  //Three classes exposed to scripting States, Actions and Utils
+  // Three classes exposed to scripting States, Actions and Utils
 
-  //All functions can be split into these three categories:
+  // All functions can be split into these three categories:
   // - Event, when something has happened (e.g. House was built)
   // - State, describing the state of something (e.g. Houses.Count >= 1)
   // - Action, when we need to perform something (e.g. show a message)
 
-  //How to add new a method exposed to the scripting? Three steps:
-  //1. Add method to published section here below
-  //2. Add method declaration to Compiler (TKMScripting.ScriptOnUses)
-  //3. Add method name to Runtime (TKMScripting.LinkRuntime)
+  // How to add new a method exposed to the scripting? Three steps:
+  // 1. Add method to published section here below
+  // 2. Add method declaration to Compiler (TKMScripting.ScriptOnUses)
+  // 3. Add method name to Runtime (TKMScripting.LinkRuntime)
 
 type
   TKMScripting = class
@@ -96,8 +96,8 @@ type
 
 
 const
-  CAMPAIGN_DATA_TYPE = 'TCampaignData'; //Type of the global variable
-  CAMPAIGN_DATA_VAR = 'CampaignData'; //Name of the global variable
+  CAMPAIGN_DATA_TYPE = 'TCampaignData'; // Type of the global variable
+  CAMPAIGN_DATA_VAR = 'CampaignData'; // Name of the global variable
   VALID_GLOBAL_VAR_TYPES: set of TPSBaseType = [
     btU8,  //Byte, Boolean, Enums
     btS8,  //ShortInt
@@ -230,8 +230,7 @@ end;
 
 procedure TKMScripting.RecreateValidationIssues;
 begin
-  if fValidationIssues <> nil then
-    FreeAndNil(fValidationIssues);
+  FreeAndNil(fValidationIssues);
 
   fValidationIssues := TKMScriptValidatorResult.Create;
   fPreProcessor.ValidationIssues := fValidationIssues;
@@ -322,9 +321,9 @@ begin
     Sender.AddTypeS('TIntegerArray', 'array of Integer'); //Needed for PlayerGetAllUnits
     Sender.AddTypeS('TAnsiStringArray', 'array of AnsiString'); //Needed for some array Utils
     Sender.AddTypeS('TByteSet', 'set of Byte'); //Needed for Closest*MultipleTypes
-    Sender.AddTypeS('TKMPoint', 'record X,Y:Integer; end;'); //Could be very useful
+    Sender.AddTypeS('TKMPoint', 'record X,Y: Integer; end;'); //Could be very useful
 
-    Sender.AddTypeS('TKMFieldType', '(ftNone,ftRoad,ftCorn,ftWine)'); //No need to add InitWine for scripts
+    Sender.AddTypeS('TKMFieldType', '(ftNone, ftRoad, ftCorn, ftWine)'); //No need to add InitWine for scripts
     Sender.AddTypeS('TKMHouseType', '(htNone, htAny, '
       + 'htArmorSmithy,     htArmorWorkshop,   htBakery,        htBarracks,      htButchers,'
       + 'htCoalMine,        htFarm,            htFisherHut,     htGoldMine,      htInn,'
@@ -338,13 +337,13 @@ begin
     Sender.AddTypeS('TKMAudioFormat', '(afWav, afOgg)'); //Needed for PlaySound
 
     // Types needed for MapTilesArraySet function
-    Sender.AddTypeS('TKMTerrainTileBrief', 'record X,Y:Byte;Terrain:Word;Rotation:Byte;Height:Byte;Obj:Word;UpdateTerrain,UpdateRotation,UpdateHeight,UpdateObject:Boolean;end');
+    Sender.AddTypeS('TKMTerrainTileBrief', 'record X,Y: Byte; Terrain: Word; Rotation: Byte; Height: Byte; Obj: Word; UpdateTerrain, UpdateRotation, UpdateHeight, UpdateObject: Boolean; end');
 
-    Sender.AddTypeS('TKMAIAttackTarget', '(attClosestUnit,attClosestBuildingFromArmy,attClosestBuildingFromStartPos,attCustomPosition)');
+    Sender.AddTypeS('TKMAIAttackTarget', '(attClosestUnit, attClosestBuildingFromArmy, attClosestBuildingFromStartPos, attCustomPosition)');
 
-    Sender.AddTypeS('TKMArmyType', '(atIronThenLeather,atLeather,atIron,atIronAndLeather)');
+    Sender.AddTypeS('TKMArmyType', '(atIronThenLeather, atLeather, atIron, atIronAndLeather)');
 
-    Sender.AddTypeS('TKMMissionDifficulty', '(mdNone,mdEasy3,mdEasy2,mdEasy1,mdNormal,mdHard1,mdHard2,mdHard3)');
+    Sender.AddTypeS('TKMMissionDifficulty', '(mdNone, mdEasy3, mdEasy2, mdEasy1, mdNormal, mdHard1, mdHard2, mdHard3)');
     Sender.AddTypeS('TKMMissionDifficultySet', 'set of TKMMissionDifficulty');
 
     Sender.AddTypeS('TKMTileOverlay', '(toNone, toDig1, toDig2, toDig3, toDig4, toRoad)');
