@@ -173,7 +173,7 @@ type
 
     procedure AutoSave(aTimestamp: TDateTime);
     procedure AutoSaveAfterPT(aTimestamp: TDateTime);
-    procedure MakeSavePoint();
+    procedure MakeSavePoint;
     procedure SaveMapEditor(const aPathName: UnicodeString); overload;
     procedure SaveMapEditor(const aPathName: UnicodeString; const aInsetRect: TKMRect); overload;
 
@@ -2699,7 +2699,7 @@ end;
 
 
 // Save game/replay savepoint
-procedure TKMGame.MakeSavePoint();
+procedure TKMGame.MakeSavePoint;
 var
   saveStream: TKMemoryStream;
 begin

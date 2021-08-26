@@ -45,7 +45,7 @@ type
   end;
 
   THouseArea = array [1..4, 1..4] of Byte;
-  THouseRes = array [1..4] of TKMWareType;
+  THouseRes = array [1..4] of TKMWareType; //todo: Rename to TKMHouseWares4
 
   //This class wraps KaM House info
   //it hides unused fields and adds new ones
