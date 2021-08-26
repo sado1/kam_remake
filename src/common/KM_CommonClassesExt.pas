@@ -8,8 +8,11 @@ type
   ERuntimeTypeError = class(Exception);
 
   TSet<T> = class
+  const
+    BIT_MASKS: array [0..7] of Byte = (1, 2, 4, 8, 16, 32, 64, 128);
   strict private
     class function TypeInfo: PTypeInfo; inline; static;
+    class function GetCardinality(const PSet: PByteArray; const SizeOfSet(*in bytes*): Integer): Integer; inline; static;
     class function GetSetToString(const PSet: PByteArray; const SizeOfSet(*in bytes*): Integer): String; static;
   public
     class function IsSet: Boolean; static;
@@ -67,12 +70,6 @@ type
   end;
 
 
-  function GetCardinality(const PSet: PByteArray; const SizeOfSet(*in bytes*): Integer): Integer; inline;
-
-
-const
-  Masks: array[0..7] of Byte = (1, 2, 4, 8, 16, 32, 64, 128);
-
 implementation
 uses
   KM_CommonUtils;
@@ -89,19 +86,21 @@ begin
   Result := System.TypeInfo(T);
 end;
 
+
 class function TSet<T>.IsSet: Boolean;
 begin
   Result := TypeInfo.Kind = tkSet;
 end;
 
-function GetCardinality(const PSet: PByteArray; const SizeOfSet(*in bytes*): Integer): Integer; inline;
+
+class function TSet<T>.GetCardinality(const PSet: PByteArray; const SizeOfSet(*in bytes*): Integer): Integer;
 var
   I, J: Integer;
 begin
   Result := 0;
   for I := 0 to SizeOfSet - 1 do
     for J := 0 to 7 do
-      if (PSet^[I] and Masks[J]) > 0 then
+      if (PSet^[I] and BIT_MASKS[J]) > 0 then
         Inc(Result);
 end;
 
@@ -117,7 +116,7 @@ begin
 
   for I := 0 to SizeOfSet - 1 do
     for J := 0 to 7 do
-      if (PSet^[I] and Masks[J]) > 0 then
+      if (PSet^[I] and BIT_MASKS[J]) > 0 then
       begin
         if Result <> '' then
           Result := Result + ', ';
@@ -133,6 +132,7 @@ begin
       end;
   Result := '[' + Result + ']';
 end;
+
 
 class function TSet<T>.Cardinality(const Value: T): Integer;
 var
