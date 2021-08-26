@@ -163,7 +163,7 @@ type
 
     function CheckAnimalIsStuck(const Loc: TKMPoint; aPass: TKMTerrainPassability; aCheckUnits: Boolean = True): Boolean;
     function GetOutOfTheWay(aUnit: Pointer; const PusherLoc: TKMPoint; aPass: TKMTerrainPassability; aPusherWasPushed: Boolean = False): TKMPoint;
-    function FindSideStepPosition(const Loc, Loc2, Loc3: TKMPoint; aPass: TKMTerrainPassability; out SidePoint: TKMPoint; OnlyTakeBest: Boolean = False): Boolean;
+    function FindSideStepPosition(const aLoc, aLoc2, aLoc3: TKMPoint; aPass: TKMTerrainPassability; out aSidePoint: TKMPoint; aOnlyTakeBest: Boolean): Boolean;
     function Route_CanBeMade(const LocA, LocB: TKMPoint; aPass: TKMTerrainPassability; aDistance: Single): Boolean;
     function Route_CanBeMadeToVertex(const LocA, LocB: TKMPoint; aPass: TKMTerrainPassability): Boolean;
     function GetClosestTile(const TargetLoc, OriginLoc: TKMPoint; aPass: TKMTerrainPassability; aAcceptTargetLoc: Boolean): TKMPoint;
@@ -3870,39 +3870,40 @@ begin
 end;
 
 
-function TKMTerrain.FindSideStepPosition(const Loc,Loc2,Loc3: TKMPoint; aPass: TKMTerrainPassability; out SidePoint: TKMPoint; OnlyTakeBest: Boolean = False): Boolean;
+function TKMTerrain.FindSideStepPosition(const aLoc, aLoc2, aLoc3: TKMPoint; aPass: TKMTerrainPassability; out aSidePoint: TKMPoint; aOnlyTakeBest: Boolean): Boolean;
 var
   I, K: Integer;
-  L1, L2: TKMPointList;
+  listAll, listBest: TKMPointList;
 begin
-  //List 1 holds all positions next to both Loc and Loc2
-  L1 := TKMPointList.Create;
-  for I := -1 to 1 do
-  for K := -1 to 1 do
-    if ((I <> 0) or (K <> 0))
-    and TileInMapCoords(Loc.X+K,Loc.Y+I)
-    and not KMSamePoint(KMPoint(Loc.X+K,Loc.Y+I), Loc2)
-    and (aPass in Land^[Loc.Y+I,Loc.X+K].Passability)
-    and CanWalkDiagonaly(Loc, Loc.X+K, Loc.Y+I) //Check for trees that stop us walking on the diagonals!
-    and (Land^[Loc.Y+I,Loc.X+K].TileLock in [tlNone, tlFenced])
-    and (KMLengthDiag(Loc.X+K, Loc.Y+I, Loc2) <= 1) //Right next to Loc2 (not diagonal)
-    and not HasUnit(KMPoint(Loc.X+K,Loc.Y+I)) then //Doesn't have a unit
-      L1.Add(KMPoint(Loc.X+K,Loc.Y+I));
+  listAll := TKMPointList.Create; //List 1 holds all positions next to both aLoc and aLoc2
+  listBest := TKMPointList.Create; // List 2 holds the best positions, ones which are also next to aLoc3 (next position)
+  try
+    for I := -1 to 1 do
+    for K := -1 to 1 do
+      if ((I <> 0) or (K <> 0))
+      and TileInMapCoords(aLoc.X+K, aLoc.Y+I)
+      and not KMSamePoint(KMPoint(aLoc.X+K, aLoc.Y+I), aLoc2)
+      and (aPass in Land^[aLoc.Y+I, aLoc.X+K].Passability)
+      and CanWalkDiagonaly(aLoc, aLoc.X+K, aLoc.Y+I) // Check for trees that stop us walking on the diagonals!
+      and (Land^[aLoc.Y+I,aLoc.X+K].TileLock in [tlNone, tlFenced])
+      and (KMLengthDiag(aLoc.X+K, aLoc.Y+I, aLoc2) <= 1) // Right next to aLoc2 (not diagonal)
+      and not HasUnit(KMPoint(aLoc.X+K, aLoc.Y+I)) then // Doesn't have a unit
+        listAll.Add(KMPoint(aLoc.X+K, aLoc.Y+I));
 
-  //List 2 holds the best positions, ones which are also next to Loc3 (next position)
-  L2 := TKMPointList.Create;
-  if not KMSamePoint(Loc3, KMPOINT_ZERO) then //No Loc3 was given
-  for I := 0 to L1.Count - 1 do
-    if KMLengthDiag(L1[I], Loc3) < 1.5 then //Next to Loc3 (diagonal is ok)
-      L2.Add(L1[I]);
+    // Pick best, if aLoc3 was given
+    if not KMSamePoint(aLoc3, KMPOINT_ZERO) then
+    for I := 0 to listAll.Count - 1 do
+      if KMLengthDiag(listAll[I], aLoc3) < 1.5 then // Next to aLoc3 (diagonal is ok)
+        listBest.Add(listAll[I]);
 
-  Result := True;
-  if not(L2.GetRandom(SidePoint)) then
-  if (OnlyTakeBest) or (not(L1.GetRandom(SidePoint))) then
-    Result := False; //No side step positions available
-
-  L1.Free;
-  L2.Free;
+    Result := True;
+    if not listBest.GetRandom(aSidePoint) then
+      if aOnlyTakeBest or not listAll.GetRandom(aSidePoint) then
+        Result := False; // No side step positions available
+  finally
+    listAll.Free;
+    listBest.Free;
+  end;
 end;
 
 
