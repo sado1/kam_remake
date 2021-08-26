@@ -5007,9 +5007,7 @@ begin
     // Restore unit pointers
     for I := 1 to fMapY do
       for K := 1 to fMapX do
-      begin
         Land^[I,K].IsUnit := fUnitPointersTemp[I,K];
-      end;
   end;
 end;
 
