@@ -76,15 +76,16 @@ begin
 end;
 
 
+//@Rey: Should we change "var" to "out" here and above? It would be more semantically correct in these cases
 procedure LoadMapHeader(aStream: TKMemoryStream; var aMapX: Integer; var aMapY: Integer; var aGameRev: Integer; var aMapDataSize: Cardinal);
 var
   GameRevision: UnicodeString;
   GameRev: Integer;
 begin
-  aStream.Read(aMapX); //Get map header to determine old (r6720 and earlier) or newer format
+  aStream.Read(aMapX); // Get map header to determine old (r6720 and earlier) or newer format
 
   aGameRev := 0;
-  if aMapX = 0 then //Means we have not standart KaM format map, but our own KaM_Remake format
+  if aMapX = 0 then // Means we have not a standart KaM format map, but our own KaM_Remake format
   begin
     aStream.ReadW(GameRevision);
     if TryStrToInt(Copy(GameRevision, 2, Length(GameRevision) - 1), GameRev) then

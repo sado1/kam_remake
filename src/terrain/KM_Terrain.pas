@@ -560,7 +560,7 @@ const
   procedure WriteFileHeader(S: TKMemoryStream);
   begin
     S.Write(Integer(0));     //Indicates this map has not standart KaM format, Can use 0, as we can't have maps with 0 width
-    S.WriteW(UnicodeString(GAME_REVISION)); //Write KaM version, in case we will change format in future
+    S.WriteW(UnicodeString(GAME_REVISION)); //Write KaM Remake revision, in case we will change format in future
     S.Write(mapDataSize);
   end;
 
