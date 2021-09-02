@@ -31,9 +31,9 @@ type
     property Count: Integer read fCount;
     property CRC: Cardinal read fCRC;
 
-    procedure LoadFromFile(const FileName: string);
-    procedure SaveToFile(const FileName: string);
-    procedure ExportToText(const FileName: string);
+    procedure LoadFromFile(const aFileName: string);
+    procedure SaveToFile(const aFileName: string);
+    procedure ExportToText(const aFileName: string);
   end;
 
 
@@ -103,7 +103,8 @@ const
 implementation
 
 const
-  OBJ_KILL_BY_ROADS : array [Byte] of Byte = (
+  // We use Byte instead of TKMKillByRoad to have a shorter table
+  OBJ_KILL_BY_ROAD: array [Byte] of Byte {TKMKillByRoad} = (
     1, 2, 2, 2, 2, 2, 1, 1, 0, 0, 2, 2, 2, 1, 1, 1,
     1, 2, 2, 2, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
@@ -122,22 +123,22 @@ const
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
 { TKMResMapElements }
-//Reading map elements properties and animation data
-procedure TKMResMapElements.LoadFromFile(const FileName: string);
+// Reading map elements properties and animation data
+procedure TKMResMapElements.LoadFromFile(const aFileName: string);
 const
   ELEMENT_SIZE = 99; // Old size of TKMMapElement (before we have added our fields to it)
 var
   S: TMemoryStream;
   I: Integer;
 begin
-  if not FileExists(FileName) then Exit;
+  if not FileExists(aFileName) then Exit;
 
   S := TMemoryStream.Create;
-  S.LoadFromFile(FileName);
+  S.LoadFromFile(aFileName);
   for I := Low(gMapElements) to High(gMapElements) do
   begin
     S.Read(gMapElements[I], ELEMENT_SIZE);
-    gMapElements[I].KillByRoad := TKMKillByRoad(OBJ_KILL_BY_ROADS[I]);
+    gMapElements[I].KillByRoad := TKMKillByRoad(OBJ_KILL_BY_ROAD[I]);
   end;
   fCount := S.Size div ELEMENT_SIZE; //254 by default
   fCRC := Adler32CRC(S);
@@ -154,29 +155,29 @@ begin
   gMapElements[63].Stump := -1;
   gMapElements[63].CanBeRemoved := True;
 
-  //Save ti file if we want to have it there. For now hardcoded is ok
-  //SaveToFile(FileName);
+  // Save to file if we want to have it there. For now hardcoded is ok
+  //SaveToFile(aFileName);
 end;
 
 
-procedure TKMResMapElements.SaveToFile(const FileName: string);
+procedure TKMResMapElements.SaveToFile(const aFileName: string);
 var
   S: TMemoryStream;
 begin
   S := TMemoryStream.Create;
   S.Write(gMapElements[0], fCount * SizeOf(TKMMapElement));
-  S.SaveToFile(FileName);
+  S.SaveToFile(aFileName);
   S.Free;
 end;
 
 
-procedure TKMResMapElements.ExportToText(const FileName: string);
+procedure TKMResMapElements.ExportToText(const aFileName: string);
 var
   I: Integer;
   ft: TextFile;
-  str1, str2, str3, str4, str5, str6, str7: String;
+  str1, str2, str3, str4, str5, str6, str7: string;
 begin
-  AssignFile(ft, ExeDir + 'Trees.txt');
+  AssignFile(ft, ExeDir + aFileName);
   Rewrite(ft);
   str1 := 'not AllBlocked and Block Build: ';
   str2 := 'AllBlocked and Allow Build: ';
