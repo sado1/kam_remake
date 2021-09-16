@@ -2059,7 +2059,7 @@ begin
             Continue;
           // Update tag
           Tag[I] := Max(0, 10000
-                           + gAIFields.Influences.OwnPoint[fOwner, Items[I]]
+                           + gAIFields.Influences.OwnPoint[fOwner,Items[I]] * 4
                            - gAIFields.Influences.GetOtherOwnerships(fOwner,Items[I].X,Items[I].Y)
                            - BuildFF.Distance[ Items[I] ]) * 10;
           IsWalkable := True;
