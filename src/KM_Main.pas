@@ -108,8 +108,10 @@ uses
 
 const
   // Mutex is used to block duplicate app launch on the same PC
-  // Random GUID generated in Delphi by Ctrl+G
-  KAM_MUTEX = '07BB7CC6-33F2-44ED-AD04-1E255E0EDF0D';
+  // Random GUID generated in Delphi by Ctrl+Shift+G
+  // Generated for versions r13651+
+  // We can allow to have beta and r6720 versions to be opened at the same time
+  KAM_MUTEX = 'AAF80942-EC97-4D02-9339-07AB8FEFA187';
 
 
 {$OVERFLOWCHECKS OFF}
