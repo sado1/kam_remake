@@ -174,7 +174,7 @@ begin
                                            Tgt[A.Target],
                                            customPosS],
                                           [gResTexts[TypeHint[A.AttackType]],
-                                           gResTexts[TX_MAPED_AI_ATTACK_DELAY] + ': ' + IntToStr(A.Delay),
+                                           gResTexts[TX_MAPED_AI_ATTACK_DELAY] + ': ' + IntToStr(A.Delay div 10),
                                            gResTexts[TX_MAPED_AI_ATTACK_SOLDIERS] + ': ' + IntToStr(A.TotalMen),
                                            gResTexts[TargetHint[A.Target]],
                                            customPosS]));
