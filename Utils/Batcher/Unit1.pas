@@ -132,7 +132,7 @@ type
   end;
 
 
-{ TMissionParserPatcher }
+{ TKMMissionParserPatcher }
 function TKMMissionParserPatcher.ProcessCommand(CommandType: TKMCommandType; P: array of Integer; TextParam: AnsiString = ''): Boolean;
 begin
   // Do nothing here and make compiler happy
@@ -150,7 +150,7 @@ begin
 
   if not FileExists(aFileName) then Exit;
 
-  //Load and decode .DAT file into FileText
+  // Load and decode .DAT file into FileText
   F := TMemoryStream.Create;
   try
     F.LoadFromFile(aFileName);
@@ -1761,7 +1761,7 @@ begin
 end;
 
 
-{ TMissionParserColorCheck }
+{ TKMMissionParserColorCheck }
 procedure TKMMissionParserColorCheck.SetDefaultColorsForMission(var aTxt: AnsiString; aCommands: TKMMissionColorInfoArray);
 var
   IntArr: TIntegerArray;
@@ -1770,7 +1770,7 @@ var
 begin
   IntArr := GetPlayersWithoutColorArr(aCommands);
 
-  //Sort first
+  // Sort first
   for I := Low(IntArr) to High(IntArr) do
     for J := I + 1 to High(IntArr) do
       if aCommands[IntArr[I]].CurrPlayer.EndPos > aCommands[IntArr[J]].CurrPlayer.EndPos then

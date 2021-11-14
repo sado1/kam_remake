@@ -58,7 +58,7 @@ const
   NO_RENDER_MAX_TIME_UNDEF = -1; //undefined
 
 
-{ TMainSettings }
+{ TKMainSettings }
 constructor TKMainSettings.Create(aScreenWidth, aScreenHeight: Integer);
 begin
   // Prepare all data containers for settings load first

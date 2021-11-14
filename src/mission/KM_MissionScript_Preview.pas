@@ -54,7 +54,7 @@ uses
   KM_ResTypes, KM_TerrainTypes;
 
 
-{ TMissionParserPreview }
+{ TKMMissionParserPreview }
 function TKMMissionParserPreview.GetTileInfo(X,Y: Integer): TKMTilePreview;
 begin
   Result := fMapPreview[(Y-1)*fMapX + X-1];
@@ -67,7 +67,7 @@ begin
 end;
 
 
-//Load terrain data into liteweight structure, take only what we need for preview
+// Load terrain data into liteweight structure, take only what we need for preview
 procedure TKMMissionParserPreview.LoadMapData(const aFileName: string);
 var
   I: Integer;
@@ -92,7 +92,7 @@ begin
         fMapPreview[I].TileID := tileBasic.BaseLayer.Terrain;
         fMapPreview[I].TileHeight := tileBasic.Height;
 
-        //Fill in blanks
+        // Fill in blanks
         fMapPreview[I].TileOwner := HAND_NONE;
         fMapPreview[I].Revealed := False;
       end;

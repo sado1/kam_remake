@@ -156,11 +156,11 @@ type
     // Minor error descriptions accumulate here
     fMinorErrors: string;
 
-    function TextToCommandType(const ACommandText: AnsiString): TKMCommandType;
+    function TextToCommandType(const aCommandText: AnsiString): TKMCommandType;
     function ReadMissionFile(const aFileName: string): AnsiString;
     procedure TokenizeScript(const aText: AnsiString; aMaxCmd: Byte; aCommands: array of AnsiString);
     procedure ProcessCommand(CommandType: TKMCommandType; P: array of Integer; const TextParam: AnsiString = ''); virtual; abstract;
-    procedure AddError(const ErrorMsg: string);
+    procedure AddError(const aErrorMsg: string);
   public
     property MinorErrors: string read fMinorErrors;
     procedure LoadMission(const aFileName: string); virtual;
@@ -172,7 +172,7 @@ uses
   Classes, SysUtils;
 
 
-{ TMissionParserCommon }
+{ TKMMissionParserCommon }
 procedure TKMMissionParserCommon.LoadMission(const aFileName: string);
 begin
   fMissionFileName := aFileName;
@@ -180,18 +180,15 @@ begin
 end;
 
 
-function TKMMissionParserCommon.TextToCommandType(const ACommandText: AnsiString): TKMCommandType;
+function TKMMissionParserCommon.TextToCommandType(const aCommandText: AnsiString): TKMCommandType;
 var
-  CT: TKMCommandType;
+  ct: TKMCommandType;
 begin
   Result := ctUnknown;
 
-  for CT := Low(TKMCommandType) to High(TKMCommandType) do
-    if ACommandText = '!' + COMMANDVALUES[CT] then
-      Exit(CT);
-
-  // Commented out because it slows down mission scanning
-  //gLog.AddToLog(String(ACommandText));
+  for ct := Low(TKMCommandType) to High(TKMCommandType) do
+    if aCommandText = '!' + COMMANDVALUES[ct] then
+      Exit(ct);
 end;
 
 
@@ -204,7 +201,7 @@ begin
   if not FileExists(aFileName) then
     raise Exception.Create(Format('Mission file %s could not be found', [aFileName]));
 
-  //Load and decode .DAT file into FileText
+  // Load and decode .DAT file into FileText
   F := TMemoryStream.Create;
   try
     F.LoadFromFile(aFileName);
@@ -212,8 +209,8 @@ begin
     if F.Size = 0 then
       raise Exception.Create(Format('Mission file %s is empty', [aFileName]));
 
-    //Detect whether mission is encoded so we can support decoded/encoded .DAT files
-    //We can't test 1st char, it can be any. Instead see how often common chracters meet
+    // Detect whether mission is encoded so we can support decoded/encoded .DAT files
+    // We can't test 1st char, it can be any. Instead see how often common chracters meet
     num := 0;
     for I := 0 to F.Size - 1 do           //tab, eol, 0..9, space, !
       if PByte(NativeUInt(F.Memory)+I)^ in [9,10,13,ord('0')..ord('9'),$20,$21] then
@@ -324,9 +321,9 @@ end;
 
 // A nice way of debugging script errors.
 // Shows the error to the user so they know exactly what they did wrong.
-procedure TKMMissionParserCommon.AddError(const ErrorMsg: string);
+procedure TKMMissionParserCommon.AddError(const aErrorMsg: string);
 begin
-  fMinorErrors := fMinorErrors + ErrorMsg + '|';
+  fMinorErrors := fMinorErrors + aErrorMsg + '|';
 end;
 
 

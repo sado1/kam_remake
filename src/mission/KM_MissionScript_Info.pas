@@ -15,7 +15,7 @@ type
 
   TKMMissionParserInfo = class(TKMMissionParserCommon)
   private
-    fMapInfo: TKMMapInfo; //We are given this structure and asked to fill it
+    fMapInfo: TKMMapInfo; // We are given this structure and asked to fill it
     procedure LoadMapInfo(const aFileName: string);
   protected
     procedure ProcessCommand(CommandType: TKMCommandType; P: array of Integer; const TextParam: AnsiString = ''); override;
@@ -31,7 +31,7 @@ uses
   KM_CommonClasses, KM_Defaults, KM_Utils, KM_MapTypes;
 
 
-{ TMissionParserInfo }
+{ TKMMissionParserInfo }
 procedure TKMMissionParserInfo.LoadMission(const aFileName: string; aMapInfo: TKMMapInfo; aParsing: TKMMissionParsing);
 const
   COMMANDS_BASE: array [0..3] of AnsiString = (

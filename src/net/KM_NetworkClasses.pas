@@ -43,9 +43,10 @@ uses
   VerySimpleXML, KM_CommonUtils;
 
 
-{ TMPGameInfo }
+{ TKMPGameInfo }
 procedure TKMPGameInfo.LoadFromStream(aStream: TKMemoryStream);
-var I: Integer;
+var
+  I: Integer;
 begin
   aStream.Read(GameState, SizeOf(GameState));
   aStream.Read(PasswordLocked);

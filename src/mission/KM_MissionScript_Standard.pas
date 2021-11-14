@@ -73,8 +73,8 @@ const
     'TYPE', 'TOTAL_AMOUNT', 'COUNTER', 'RANGE', 'TROUP_AMOUNT', 'TARGET', 'POSITION', 'TAKEALL');
 
 
-{ TMissionParserStandard }
-//Mode affect how certain parameters are loaded a bit differently
+{ TKMMissionParserStandard }
+// Mode affect how certain parameters are loaded a bit differently
 constructor TKMMissionParserStandard.Create(aMode: TKMMissionParsingMode);
 var
   I: Integer;
