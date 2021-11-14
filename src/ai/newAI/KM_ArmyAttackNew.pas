@@ -508,7 +508,7 @@ begin
 
   if PathFound then
   begin
-    if (Distance < 5) then
+    if Distance < 5 then
     begin
       fOnPlace := True;
       Exit;
@@ -518,12 +518,12 @@ begin
       InitPolygon := gAIFields.NavMesh.KMPoint2Polygon[aActualPosition];
       I := Length(PointPath)-2; // Skip next polygon -> fluent movement
       repeat
-        aTargetPosition := PointPath[ Max(0, I) ];
-        ClosestPolygon := gAIFields.NavMesh.KMPoint2Polygon[ aTargetPosition ];
+        aTargetPosition := PointPath[Max(0, I)];
+        ClosestPolygon := gAIFields.NavMesh.KMPoint2Polygon[aTargetPosition];
         I := I - 1;
-      until (I < 0) OR ( (InitPolygon <> ClosestPolygon)
-                         AND (tpWalk in gTerrain.Land^[aTargetPosition.Y, aTargetPosition.X].Passability)
-                         AND (KMDistanceSqr(aActualPosition, aTargetPosition) > sqr(AI_Par[ATTACK_SQUAD_MinWalkingDistance])));
+      until (I < 0) or ( (InitPolygon <> ClosestPolygon)
+                         and (tpWalk in gTerrain.Land^[aTargetPosition.Y, aTargetPosition.X].Passability)
+                         and (KMDistanceSqr(aActualPosition, aTargetPosition) > sqr(AI_Par[ATTACK_SQUAD_MinWalkingDistance])));
 
       {$IFDEF DEBUG_NewAI}
       DEBUGPointPath := PointPath;

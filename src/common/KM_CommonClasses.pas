@@ -1153,7 +1153,7 @@ procedure TKMPointTagList.SortByTag;
   begin
     I := MinIdx;
     K := MaxIdx;
-    X := Tag[ (MinIdx+MaxIdx) div 2 ];
+    X := Tag[(MinIdx+MaxIdx) div 2];
     repeat
       while (Tag[I] < X) do
         I := I + 1;

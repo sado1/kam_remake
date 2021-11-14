@@ -11,7 +11,7 @@ uses
 
 
 type
-  //Mayor is the one who manages the town
+  // Mayor is the one who manages the town
   TKMayor = class
   private
     fOwner: TKMHandID;
@@ -72,7 +72,7 @@ uses
   KM_CommonUtils, KM_DevPerfLog, KM_DevPerfLogTypes;
 
 
-const //Sample list made by AntonP
+const // Sample list made by AntonP
   WarriorHouses: array [0..44] of TKMHouseType = (
   htSchool, htInn, htQuary, htQuary, htQuary,
   htWoodcutters, htWoodcutters, htWoodcutters, htWoodcutters, htWoodcutters,
@@ -358,8 +358,8 @@ begin
   for I := 0 to DefLines.Count - 1 do
     with DefLines.Lines[I] do
     begin
-      Point1 := gAIFields.NavMesh.Nodes[ DefLines.Lines[I].Nodes[0] ];
-      Point2 := gAIFields.NavMesh.Nodes[ DefLines.Lines[I].Nodes[1] ];
+      Point1 := gAIFields.NavMesh.Nodes[DefLines.Lines[I].Nodes[0]];
+      Point2 := gAIFields.NavMesh.Nodes[DefLines.Lines[I].Nodes[1]];
       PL1 := gAIFields.Influences.GetBestAllianceOwner(fOwner, Point1, atAlly);
       PL2 := gAIFields.Influences.GetBestAllianceOwner(fOwner, Point2, atAlly);
       if (PL1 <> fOwner) AND (PL2 <> fOwner) AND (PL1 <> HAND_NONE) AND (PL2 <> HAND_NONE) then

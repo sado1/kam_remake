@@ -343,25 +343,25 @@ function TKMInfluences.GetArmyTraffic(const aAlliance, aIdx: Word): Word;
 const
   MAX_SOLDIERS_IN_POLYGON = 20; // Maximal count of soldiers in 1 triangle of NavMesh - it depends on NavMesh size!!!
 begin
-  Result := Min(MAX_SOLDIERS_IN_POLYGON, fPresence[ aAlliance*5*fPolyCnt + 5*aIdx + AVOID_TRAFFIC_IDX ]);
+  Result := Min(MAX_SOLDIERS_IN_POLYGON, fPresence[aAlliance*5*fPolyCnt + 5*aIdx + AVOID_TRAFFIC_IDX]);
 end;
 
 
 function TKMInfluences.GetPresence(const aAlliance, aIdx: Word; const aGT: TKMGroupType): Word;
 begin
-  Result := fPresence[ aAlliance*5*fPolyCnt + 5*aIdx + Byte(aGT) ];
+  Result := fPresence[aAlliance*5*fPolyCnt + 5*aIdx + Ord(aGT)];
 end;
 
 
 procedure TKMInfluences.SetPresence(const aAlliance, aIdx: Word; const aGT: TKMGroupType; const aPresence: Word);
 begin
-  fPresence[ aAlliance*5*fPolyCnt + 5*aIdx + Byte(aGT) ] := aPresence;
+  fPresence[aAlliance*5*fPolyCnt + 5*aIdx + Ord(aGT)] := aPresence;
 end;
 
 
 procedure TKMInfluences.SetIncPresence(const aAlliance, aIdx: Word; const aGT: TKMGroupType; const aPresence: Word);
 begin
-  Inc(  fPresence[ aAlliance*5*fPolyCnt + 5*aIdx + Byte(aGT) ], aPresence  );
+  Inc(fPresence[aAlliance*5*fPolyCnt + 5*aIdx + Ord(aGT)], aPresence);
 end;
 
 
@@ -369,7 +369,7 @@ procedure TKMInfluences.UpdateMilitaryPresence(aAllianceIdx: Integer);
 const
   EACH_X_MEMBER_COEF = 5;
   PENALIZATION_ARR: array [TKMGroupType,TKMGroupType] of Single = (
-  // gtMelee, gtAntiHorse, gtRanged, gtMounted
+    // gtMelee, gtAntiHorse, gtRanged, gtMounted
     (    1.0,      0.3,       0.0,      0.5), // gtMelee
     (    1.0,      1.0,       0.0,      0.0), // gtAntiHorse
     (    1.0,      1.0,       1.0,      2.0), // gtRanged
@@ -401,16 +401,16 @@ begin
       for K := 0 to gHands[PL].UnitGroups.Count - 1 do
       begin
         G := gHands[PL].UnitGroups.Groups[K];
-        if (G = nil) OR G.IsDead then
+        if (G = nil) or G.IsDead then
           Continue;
         Increment := Min(G.Count, EACH_X_MEMBER_COEF);
         L := 0;
         while (L < G.Count) do
         begin
           U := G.Members[L];
-          if (U <> nil) AND not U.IsDeadOrDying then
+          if (U <> nil) and not U.IsDeadOrDying then
           begin
-            PolyIdx := fNavMesh.KMPoint2Polygon[ U.Position ];
+            PolyIdx := fNavMesh.KMPoint2Polygon[U.Position];
             Inc(fPresence[aAllianceIdx*5*fPolyCnt + 5*PolyIdx + AVOID_TRAFFIC_IDX],Increment);
           end;
           L := L + EACH_X_MEMBER_COEF;
@@ -419,11 +419,11 @@ begin
 
   // Mark enemy groups
   for PL := 0 to gHands.Count - 1 do
-    if gHands[PL].Enabled AND (gHands[ fAlli2PL[aAllianceIdx,0] ].Alliances[PL] = atEnemy) then
+    if gHands[PL].Enabled and (gHands[fAlli2PL[aAllianceIdx,0]].Alliances[PL] = atEnemy) then
       for K := 0 to gHands[PL].UnitGroups.Count - 1 do
       begin
         G := gHands[PL].UnitGroups.Groups[K];
-        if (G = nil) OR G.IsDead then
+        if (G = nil) or G.IsDead then
           Continue;
         Increment := Min(G.Count, EACH_X_MEMBER_COEF);
         GT := G.GroupType;
@@ -431,9 +431,9 @@ begin
         while (L < G.Count) do
         begin
           U := G.Members[L];
-          if (U <> nil) AND not U.IsDeadOrDying then
+          if (U <> nil) and not U.IsDeadOrDying then
           begin
-            PolyIdx := fNavMesh.KMPoint2Polygon[ U.Position ];
+            PolyIdx := fNavMesh.KMPoint2Polygon[U.Position];
             EvaluatePolygon(aAllianceIdx*5*fPolyCnt + 5*PolyIdx, Increment, GT);
             with fNavMesh.Polygons[PolyIdx] do
               for M := 0 to NearbyCount - 1 do

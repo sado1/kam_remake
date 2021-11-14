@@ -1068,11 +1068,11 @@ begin
   begin
     U := nil;
     if not fMembers[I].IsDeadOrDying
-      AND fMembers[I].InFightAgaist(U, False)
-      AND (U <> nil)
-      AND not U.IsDeadOrDying then
+      and fMembers[I].InFightAgaist(U, False)
+      and (U <> nil)
+      and not U.IsDeadOrDying then
     begin
-      G := gHands[ U.Owner ].UnitGroups.GetGroupByMember( TKMUnitWarrior(U) );
+      G := gHands[U.Owner].UnitGroups.GetGroupByMember( TKMUnitWarrior(U) );
       if (G <> nil) then // Group can be nil if soldiers go out of Barracks
       begin
         check := True;

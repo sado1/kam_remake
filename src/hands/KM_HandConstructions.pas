@@ -2,10 +2,9 @@ unit KM_HandConstructions;
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_Units, KM_Houses,
-  KM_ResHouses,
   KM_Defaults, KM_CommonClasses, KM_Points,
-  KM_ResTypes;
+  KM_ResHouses, KM_ResTypes,
+  KM_Units, KM_Houses;
 
 
 type
@@ -1434,7 +1433,7 @@ begin
   Result := 0;
   for I := 0 to fPlansCount - 1 do
     if (fPlans[I].HouseType <> htNone) then // fPlansCount may not be updated
-      Result := Result + gResHouses[ fPlans[I].HouseType ].StoneCost;
+      Result := Result + gResHouses[fPlans[I].HouseType].StoneCost;
 end;
 
 
@@ -1445,7 +1444,7 @@ begin
   Result := 0;
   for I := 0 to fPlansCount - 1 do
     if (fPlans[I].HouseType <> htNone) then // fPlansCount may not be updated
-      Result := Result + gResHouses[ fPlans[I].HouseType ].WoodCost;
+      Result := Result + gResHouses[fPlans[I].HouseType].WoodCost;
 end;
 
 

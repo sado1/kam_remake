@@ -247,26 +247,25 @@ begin
   if not WRITE_WALKTO_LOG then
     Exit;
   ExplanationLog.Add(Format(
-  '%d'+#9+'%d:%d > %d:%d > %d:%d'+#9+Explanation+'',
-  [ gGameParams.Tick,
+    '%d' + #9 + '%d:%d > %d:%d > %d:%d' + #9 + Explanation + '',
+    [gGameParams.Tick,
     fUnit.PrevPosition.X,
     fUnit.PrevPosition.Y,
     fUnit.Position.X,
     fUnit.Position.Y,
     fUnit.NextPosition.X,
-    fUnit.NextPosition.Y
-  ])
-  );
+    fUnit.NextPosition.Y]
+    ));
 end;
 
 
 procedure TKMUnitActionWalkTo.SetInitValues;
 begin
   NodePos              := 0;
-  fDoExchange          := false;
-  fDoesWalking         := false;
-  fWaitingOnStep       := false;
-  fDestBlocked         := false;
+  fDoExchange          := False;
+  fDoesWalking         := False;
+  fWaitingOnStep       := False;
+  fDestBlocked         := False;
   fLastSideStepNodePos := -3; //Start negitive so it is at least 2 less than NodePos at the start
   fVertexOccupied      := KMPOINT_ZERO;
   fInteractionCount    := 0;
@@ -1412,6 +1411,4 @@ begin
 end;
 
 
-
 end.
-

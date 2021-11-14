@@ -554,7 +554,7 @@ end;
 procedure TKMMenuSingleMap.ReadmeClick(Sender: TObject);
 begin
   if ColumnBox_Maps.IsSelected then
-    TryOpenMapPDF(fMaps[ ColumnBox_Maps.SelectedItemTag ]);
+    TryOpenMapPDF(fMaps[ColumnBox_Maps.SelectedItemTag]);
 end;
 
 
