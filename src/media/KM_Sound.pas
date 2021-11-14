@@ -152,7 +152,8 @@ begin
 
   fIsSoundInitialized := InitOpenAL;
   Set8087CW($133F); //Above OpenAL call messes up FPU settings
-  if not fIsSoundInitialized then begin
+  if not fIsSoundInitialized then
+  begin
     gLog.AddNoTime('OpenAL warning. OpenAL could not be initialized.');
     //MessageDlg works better than Application.MessageBox or others, it stays on top and pauses here until the user clicks ok.
     MessageDlg('OpenAL could not be initialized. Please refer to Readme.html for solution', mtWarning, [mbOk], 0);
@@ -160,43 +161,47 @@ begin
     Exit;
   end;
 
-  //Open device
+  // Open device (this is quite slow, 700-800 ms)
+  //todo -cPractical: OpenAL init can be perfomed in a thread
   fALDevice := alcOpenDevice(nil); // this is supposed to select the "preferred device"
   Set8087CW($133F); //Above OpenAL call messes up FPU settings
-  if fALDevice = nil then begin
+  if fALDevice = nil then
+  begin
     gLog.AddNoTime('OpenAL warning. Device could not be opened.');
     //MessageDlg works better than Application.MessageBox or others, it stays on top and pauses here until the user clicks ok.
     MessageDlg('OpenAL device could not be opened. Please refer to Readme.html for solution', mtWarning, [mbOk], 0);
-    fIsSoundInitialized := false;
+    fIsSoundInitialized := False;
     Exit;
   end;
 
-  //Create context(s)
+  // Create context
   context := alcCreateContext(fALDevice, nil);
   Set8087CW($133F); //Above OpenAL call messes up FPU settings
-  if context = nil then begin
+  if context = nil then
+  begin
     gLog.AddNoTime('OpenAL warning. Context could not be created.');
     //MessageDlg works better than Application.MessageBox or others, it stays on top and pauses here until the user clicks ok.
     MessageDlg('OpenAL context could not be created. Please refer to Readme.html for solution', mtWarning, [mbOk], 0);
-    fIsSoundInitialized := false;
+    fIsSoundInitialized := False;
     Exit;
   end;
 
-  //Set active context
+  // Set active context
   I := alcMakeContextCurrent(context);
   Set8087CW($133F); //Above OpenAL call messes up FPU settings
-  if I > 1 then begin //valid returns are AL_NO_ERROR=0 and AL_TRUE=1
+  if not (I in [AL_NO_ERROR, AL_TRUE]) then
+  begin
     gLog.AddNoTime('OpenAL warning. Context could not be made current.');
     //MessageDlg works better than Application.MessageBox or others, it stays on top and pauses here until the user clicks ok.
     MessageDlg('OpenAL context could not be made current. Please refer to Readme.html for solution', mtWarning, [mbOk], 0);
-    fIsSoundInitialized := false;
+    fIsSoundInitialized := False;
     Exit;
   end;
 
   CheckOpenALError;
   if not fIsSoundInitialized then Exit;
 
-  //Set attenuation model
+  // Set attenuation model
   alDistanceModel(AL_LINEAR_DISTANCE_CLAMPED);
   gLog.AddTime('Pre-LoadSFX init', True);
 
@@ -215,7 +220,7 @@ begin
   CheckOpenALError;
   if not fIsSoundInitialized then Exit;
 
-  //Set default Listener orientation
+  // Set default Listener orientation
   fListener.Ori[1] := 0; fListener.Ori[2] := 0; fListener.Ori[3] := -1; //Look-at vector
   fListener.Ori[4] := 0; fListener.Ori[5] := 1; fListener.Ori[6] := 0; //Up vector
   AlListenerfv(AL_ORIENTATION, @fListener.Ori);
