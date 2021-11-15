@@ -16,7 +16,7 @@ uses
 type
   TTGameResourceLoader = class;
 
-  //Base class for Sprite loading
+  // Base class for Sprite loading
   TKMSpritePack = class
   private
     fPad: Byte; //Force padding between sprites to avoid neighbour edge visibility
@@ -26,7 +26,7 @@ type
     fRT: TRXType;
     fRXData: TRXData;
 
-    fGFXPrepData: array[TSpriteAtlasType] of  // for each atlas type
+    fGFXPrepData: array [TSpriteAtlasType] of // for each atlas type
                     array of                  // Atlases
                       record                  // Atlas data, needed for Texture Atlas Generation
                         SpriteInfo: TBinItem;
@@ -56,11 +56,11 @@ type
     procedure LoadFromRXAFile(const aFileName: string);
 
     function GetSoftenShadowType(aID: Integer): TKMSoftenShadowType;
-    procedure SoftenShadows(aIdList: TStringList); overload;
+    procedure SoftenShadows(aIdList: TList<Integer>); overload;
     procedure SoftenShadows(aStart: Integer = 1; aEnd: Integer = -1; aOnlyShadows: Boolean = True); overload;
     procedure SoftenShadows(aID: Integer; aOnlyShadows: Boolean = True); overload;
     procedure DetermineImagesObjectSize(aStart: Integer = 1; aEnd: Integer = -1); overload;
-    procedure DetermineImagesObjectSize(aIdList: TStringList); overload;
+    procedure DetermineImagesObjectSize(aIdList: TList<Integer>); overload;
     procedure RemoveMarketWaresShadows(aResHouses: TKMResHouses);
     procedure RemoveSnowHouseShadows(aResHouses: TKMResHouses);
     procedure RemoveHouseWorkBackgrounds(aResHouses: TKMResHouses);
@@ -86,7 +86,7 @@ type
   TKMResSprites = class
   private
     fAlphaShadows: Boolean; //Remember which state we loaded
-    fSprites: array[TRXType] of TKMSpritePack;
+    fSprites: array [TRXType] of TKMSpritePack;
     fStepProgress: TEvent;
     fStepCaption: TUnicodeStringEvent;
     fGenTexIdStartI: Integer;
@@ -139,8 +139,7 @@ type
     procedure UpdateStateIdle;
   end;
 
-
-  //Game resource loader thread
+  // Game resource loader thread
   TTGameResourceLoader = class(TThread)
   private
     fResSprites: TKMResSprites;
@@ -153,11 +152,10 @@ type
     procedure Execute; override;
   end;
 
-
   TKMTexCoords = record
-                  ID: Cardinal;
-                  u1,v1,u2,v2: Single; //Top-Left, Bottom-Right uv coords
-                end;
+    ID: Cardinal;
+    u1,v1,u2,v2: Single; //Top-Left, Bottom-Right uv coords
+  end;
 
 var
   gGFXData: array [TRXType] of array of record
@@ -178,12 +176,13 @@ var
                                       of array[TKMTileMaskSubType] //mask components (subtypes)
 //                                        of array[0..3] //Terrain Rotation
                                           of Word;
+
 implementation
 uses
   Types,
   {$IFDEF WDC}
   IOUtils,
-  System.RegularExpressions,
+  StrUtils,
   {$ENDIF}
   KromUtils,
   {$IFDEF LOAD_GAME_RES_ASYNC}
@@ -287,9 +286,9 @@ begin
 end;
 
 
-procedure TKMSpritePack.SoftenShadows(aIdList: TStringList);
+procedure TKMSpritePack.SoftenShadows(aIdList: TList<Integer>);
 var
-  I, ID: Integer;
+  I, id: Integer;
   shadowConverter: TKMSoftShadowConverter;
   softenShadowType: TKMSoftenShadowType;
 begin
@@ -299,16 +298,16 @@ begin
   try
     for I := 0 to aIdList.Count - 1 do
     begin
-      ID := StrToInt(aIdList[I]);
-      if (fRXData.Flag[ID] <> 0) then
+      id := aIdList[I];
+      if fRXData.Flag[id] <> 0 then
       begin
-        softenShadowType := GetSoftenShadowType(ID);
+        softenShadowType := GetSoftenShadowType(id);
         case softenShadowType of
           sstNone: ;
-          sstOnlyShadow:  shadowConverter.ConvertShadows(ID, True);
+          sstOnlyShadow:  shadowConverter.ConvertShadows(id, True);
           sstBoth:        begin
-                            shadowConverter.ConvertShadows(ID, False);
-                            shadowConverter.ConvertShadows(ID, True);
+                            shadowConverter.ConvertShadows(id, False);
+                            shadowConverter.ConvertShadows(id, True);
                           end;
         end;
       end;
@@ -354,18 +353,20 @@ begin
 end;
 
 
-procedure TKMSpritePack.DetermineImagesObjectSize(aIdList: TStringList);
+procedure TKMSpritePack.DetermineImagesObjectSize(aIdList: TList<Integer>);
 var
-  I, ID: Integer;
+  I, id: Integer;
   shadowConverter: TKMSoftShadowConverter;
 begin
+  if aIdList.Count = 0 then Exit;
+
   shadowConverter := TKMSoftShadowConverter.Create(Self);
   try
     for I := 0 to aIdList.Count - 1 do
     begin
-      ID := StrToInt(aIdList[I]);
-      if (fRXData.Flag[ID] <> 0) then
-        shadowConverter.DetermineImageObjectSize(ID);
+      id := aIdList[I];
+      if fRXData.Flag[id] <> 0 then
+        shadowConverter.DetermineImageObjectSize(id);
     end;
   finally
     shadowConverter.Free;
@@ -808,92 +809,108 @@ begin
 end;
 
 
-//Parse all valid files in Sprites folder and load them additionaly to or replacing original sprites
+// Parse all valid files in Sprites folder:
+// - append or replace original sprites with new ones
+// - exclude original sprites if necessary as well
 procedure TKMSpritePack.OverloadFromFolder(const aFolder: string; aSoftenShadows: Boolean = True);
-
-  procedure ProcessFolder(const aProcFolder: string; aRT: TRXType);
+const
+  SKIP_MASK = 'skip';
   {$IFDEF WDC}
+  // Append all PNGs including the subfolders
+  // Pattern is X_nnnn.png, where nnnn is dynamic (1..n chars) for modders convenience
+  procedure AppendFolder;
   var
-    I, ID: Integer;
-    fileList, IDList: TStringList;
-    searchRec: TSearchRec;
-    filePath, relName, regex, s: string;
-    Predicate: TDirectory.TFilterPredicate;
-  {$ENDIF}
+    I, id: Integer;
+    fileList: TStringList;
+    idList: TList<Integer>;
+    filePath, s: string;
+    filterPredicate: TDirectory.TFilterPredicate;
   begin
-    {$IFDEF WDC}
-    if not DirectoryExists(aProcFolder) then Exit;
-
     fileList := TStringList.Create;
+    idList := TList<Integer>.Create;
     try
-      IDList := TStringList.Create;
-      try
-        //PNGs
-        regex := '^'+IntToStr(Byte(fRT)+1)+'_[0-9]+\.png$';
-        Predicate :=
-          function(const Path: string; const SearchRec: TSearchRec): Boolean
-          begin
-            Result := TRegEx.IsMatch(SearchRec.Name, regex);
-          end;
-
-        for filePath in TDirectory.GetFiles(aProcFolder, IntToStr(Byte(fRT)+1) + '_*.png', TSearchOption.soAllDirectories, Predicate) do
+      filterPredicate :=
+        function(const aPath: string; const aSearchRec: TSearchRec): Boolean
+        var
+          tmp: Integer;
         begin
-          relName := ExtractRelativePath(aProcFolder, filePath);
-          // skip image, if subfolder contains 'skip' string
-          if not relName.Contains('skip') then
-            fileList.Add(relName);
+          if ExtractRelativePath(aFolder, aPath).Contains(SKIP_MASK) then Exit(False);
+
+          // Search filter we are using makes sure we get only X_*****.png filenames
+          // Hence we need to check only for the ***** being digits
+          Result := TryStrToInt(Copy(aSearchRec.Name, 3, Length(aSearchRec.Name)-6), tmp);
         end;
 
-        //PNG may be accompanied by some more files
-        //#_####.png - Base texture
-        //#_####a.png - Flag color mask
-        //#_####.txt - Pivot info (optional)
-        for I := fileList.Count - 1 downto 0 do
+      for filePath in TDirectory.GetFiles(aFolder, IntToStr(Ord(fRT) + 1) + '_*.png', TSearchOption.soAllDirectories, filterPredicate) do
+        fileList.Add(ExtractRelativePath(aFolder, filePath));
+
+      // Append/replace the sprites
+      // Going in reverse allows us to allocate max required sprites early on (since filesnames usually come sorted by name)
+      for I := fileList.Count - 1 downto 0 do
+      begin
+        s := ExtractFileName(fileList.Strings[I]);
+        if TryStrToInt(Copy(s, 3, Length(s)-6), id) then
         begin
-          s := ExtractFileName(fileList.Strings[I]);
-          if TryStrToInt(Copy(s, 3, Length(s)-6), ID) then
-          begin
-            AddImage(aProcFolder, fileList.Strings[I], ID);
-            IDList.Add(IntToStr(ID));
-          end;
+          AddImage(aFolder, fileList.Strings[I], id);
+          idList.Add(id);
         end;
-
-        if aSoftenShadows then
-          SoftenShadows(IDList); // Soften shadows for overloaded sprites
-
-        // Determine objects size only for units (used for hitbox)
-        //todo: do we need it for houses too ?
-        if aRT = rxUnits then
-          DetermineImagesObjectSize(IDList);
-
-        try
-          //Delete following sprites
-          if FindFirst(aProcFolder + IntToStr(Byte(fRT) + 1) + '_????', faAnyFile - faDirectory, searchRec) = 0 then
-          repeat
-            if TryStrToInt(Copy(searchRec.Name, 3, 4), ID) then
-              fRXData.Flag[ID] := 0;
-          until (FindNext(searchRec) <> 0);
-        finally
-          FindClose(searchRec);
-        end;
-      finally
-        IDList.Free;
       end;
+
+      // Soften shadows for overloaded sprites
+      if aSoftenShadows then
+        SoftenShadows(idList);
+
+      // Determine objects size only for units (used for hitbox)
+      //todo: do we need it for houses too ?
+      if fRT = rxUnits then
+        DetermineImagesObjectSize(idList);
     finally
+      idList.Free;
       fileList.Free;
     end;
-    {$ENDIF}
   end;
 
+  // Delete the extra sprites denoted by the X_**** filenames (without extensions)
+  procedure DeleteExtra;
+  var
+    id: Integer;
+    filePath, s: string;
+    filterPredicate: TDirectory.TFilterPredicate;
+  begin
+    filterPredicate :=
+      function(const aPath: string; const aSearchRec: TSearchRec): Boolean
+      var
+        tmp: Integer;
+      begin
+        if ExtractRelativePath(aFolder, aPath).Contains(SKIP_MASK) then Exit(False);
+
+        // Search filter we are using makes sure we get only X_***** filenames
+        // Hence we need to check only for the ***** being digits
+        Result := TryStrToInt(Copy(aSearchRec.Name, 3, Length(aSearchRec.Name)-2), tmp);
+      end;
+
+    for filePath in TDirectory.GetFiles(aFolder, IntToStr(Ord(fRT) + 1) + '_*', TSearchOption.soAllDirectories, filterPredicate) do
+    begin
+      //todo: Would be much simpler if we had our own folder parser ..
+      // so we could do our thing right in the callback, without need to iterate over the temp string array
+      s := ExtractFileName(filePath);
+      if TryStrToInt(Copy(s, 3, Length(s)-2), id) then
+        fRXData.Flag[id] := 0;
+    end;
+  end;
+  {$ENDIF}
 begin
   if SKIP_RENDER then Exit;
+  if not DirectoryExists(aFolder) then Exit;
 
-  ProcessFolder(aFolder, fRT);
-  ProcessFolder(aFolder + IntToStr(Byte(fRT) + 1) + PathDelim, fRT);
+  {$IFDEF WDC}
+  AppendFolder;
+  DeleteExtra;
+  {$ENDIF}
 end;
 
 
-//Export RX to Bitmaps without need to have GraphicsEditor, also this way we preserve image indexes
+// Export RX to Bitmaps without need to have GraphicsEditor, also this way we preserve image indexes
 procedure TKMSpritePack.ExportAll(const aFolder: string);
 var
   I: Integer;
