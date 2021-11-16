@@ -247,8 +247,11 @@ Improvements:
  +    Minimap for MP games: show in replays menu and lobby, if possible
  +    Highlight players flags in lobby, when they are clickable
  +    MP game description improvement
- +    Menu single map - add View Readme (pdf) button
+ +    Menu single map: add View Readme (pdf) button
+ +    Menu single map: add detailed hints over goals on the SP menu page
+ +    Menu MapEd: add hint with map dimensions when hover over 'Size' column
  +    Credits menu page: load asian fonts if needed
+ +    Add 'Discord' button to the Credits page
  +    Replays list - significally improved replays list loading speed (about 10 times faster on average), by skipping CRC calc
  +    fixed various menu render issues related to 4k resolutions
  +    Lobby reset bans - added cooldown 1s, to prohibit annoying spam with it
@@ -381,6 +384,7 @@ Improvements:
  +    Improved def positions render
  +    Add 'Show defence positions' and 'Flat terrain' into Extras panel, add borders for mining areas for 'show mining radius' option
  +    Replace trackbars with numEdits for AI equip rates, recruits delay, max soldiers
+ +    Mission goals popup window: added detailed mission goal description, removed disabled radiobox options
  +    Cancel unit / house selection on Esc key down
  +    Def positions: set (or update) def position group type and direction according to unit under cursor
  +    New in extras menu:
@@ -418,8 +422,11 @@ Improvements:
  +    Added action HouseTownHallEquip
  +    Added event OnHouseWareChange
  +    Added Actions and States: HouseAllowAllyToSelect, HouseAllowAllyToSelectAll, UnitAllowAllyToSelect, GroupAllowAllyToSelect
- +    Фввув States.HouseWareBlockedTakeOut and Actions.HouseWareBlockTakeOut
+ +    Added States.HouseWareBlockedTakeOut and Actions.HouseWareBlockTakeOut
+ +    Added States.HouseHasWorker and States.HouseTypeToWorkerType. These are duplicates of HouseHasOccupant and HouseTypeToOccupantType, the latter marked as deprecated
  +    Added States.HouseBarracksRecruitsCount
+ +    Added 2 new States: UnitInHouse to get HouseId where unit is placed and HouseGetAllUnitsIn to get array of all units in the specified house
+ +    Added scripting state: States.HouseWorker
  +    Added States: CampaignMissionsCount, CampaignMissionID, CampaignUnlockedMissionID
  +    Added actions HouseAllowAllyToView/HouseAllowAllyToViewAll, state HouseAllowAllyToView
  +    Added event GroupOrderBeforeSplit with ability to setup split command parameters for new group: number of units, leader unit type, is it allows mixed unit types
@@ -428,6 +435,11 @@ Improvements:
  +    Added states: UnitInHouse and HouseGetAllUnitsIn 
  +    Added events: OnGroupOrderBeforeSplit / OnGameSpeedChanged / OnPeacetime
  +    Added dozen of new States related to terrain tile type (IsSoil/IsSnow etc)
+ 
+ Maps:
+ +    Added 'The Cruel King' campaign made by Gogoud
+ -    Removed SP maps: Mission For The Competition and TPR_Mission7.
+ 
  
  Other: 
  +    added original game videos. Disabled on Linux, when runned under Wine for now
@@ -439,6 +451,7 @@ Improvements:
  +    added Scripting Editor tool
  +    Set default resolution to currently used resolution in OS
  +    minimum resolution was increased to 720px 
+ +    Refactoring of how we store tiles data. Use tiles.json with all tiles parameters instead of pattern.dat and hardcoded data
  +    do not render game under statistics pages with charts
  +    perform autosave deletion/renaming in an async worker thread
  +  L Saving and restoring games window position on restart
