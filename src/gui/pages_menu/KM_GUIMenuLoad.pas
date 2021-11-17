@@ -65,7 +65,7 @@ type
 implementation
 uses
   KM_Log,
-  KM_ResTexts, KM_ResFonts, KM_ResTypes,
+  KM_Resource, KM_ResTexts, KM_ResFonts, KM_ResTypes,
   KM_GameSettings,
   KM_RenderUI, KM_Pics,
   KM_MapTypes;
@@ -73,6 +73,12 @@ uses
 
 { TKMGUIMenuLoad }
 constructor TKMMenuLoad.Create(aParent: TKMPanel; aOnPageChange: TKMMenuChangeEventText);
+const
+  DELETE_CONFIRM_FONT: TKMFont = fntMetal;
+  PAD = 20;
+var
+  deleteConfirmWidth, btnWid: Integer;
+  deleteConfirmStr: String;
 begin
   inherited Create(gpLoad);
 
@@ -120,7 +126,9 @@ begin
     MinimapView_Load.Anchors := [anLeft, anBottom];
 
     //Delete PopUp
-    PopUp_Delete := TKMPopUpMenu.Create(Panel_Load, 450);
+    deleteConfirmStr := gResTexts[TX_MENU_LOAD_DELETE_CONFIRM];
+    deleteConfirmWidth := Max(450, gRes.Fonts[DELETE_CONFIRM_FONT].GetTextSize(deleteConfirmStr).X + PAD*2);
+    PopUp_Delete := TKMPopUpMenu.Create(Panel_Load, deleteConfirmWidth);
     PopUp_Delete.Height := 200;
     // Keep the pop-up centered
     PopUp_Delete.AnchorsCenter;
@@ -135,14 +143,16 @@ begin
       Label_DeleteConfirmTitle := TKMLabel.Create(PopUp_Delete, PopUp_Delete.Width div 2, 40, gResTexts[TX_MENU_LOAD_DELETE], fntOutline, taCenter);
       Label_DeleteConfirmTitle.Anchors := [anLeft,anBottom];
 
-      Label_DeleteConfirm := TKMLabel.Create(PopUp_Delete, PopUp_Delete.Width div 2, 85, gResTexts[TX_MENU_LOAD_DELETE_CONFIRM], fntMetal, taCenter);
+      Label_DeleteConfirm := TKMLabel.Create(PopUp_Delete, PopUp_Delete.Width div 2, 85, deleteConfirmStr, DELETE_CONFIRM_FONT, taCenter);
       Label_DeleteConfirm.Anchors := [anLeft,anBottom];
 
-      Button_DeleteYes := TKMButton.Create(PopUp_Delete, 20, 155, 195, 30, gResTexts[TX_MENU_LOAD_DELETE_DELETE], bsMenu);
+      btnWid := (PopUp_Delete.Width - PAD*3) div 2;
+
+      Button_DeleteYes := TKMButton.Create(PopUp_Delete, PAD, 155, btnWid, 30, gResTexts[TX_MENU_LOAD_DELETE_DELETE], bsMenu);
       Button_DeleteYes.Anchors := [anLeft,anBottom];
       Button_DeleteYes.OnClick := Load_Delete_Click;
 
-      Button_DeleteNo  := TKMButton.Create(PopUp_Delete, 235, 155, 195, 30, gResTexts[TX_MENU_LOAD_DELETE_CANCEL], bsMenu);
+      Button_DeleteNo  := TKMButton.Create(PopUp_Delete, (PopUp_Delete.Width + PAD) div 2, 155, btnWid, 30, gResTexts[TX_MENU_LOAD_DELETE_CANCEL], bsMenu);
       Button_DeleteNo.Anchors := [anLeft,anBottom];
       Button_DeleteNo.OnClick := Load_Delete_Click;
 
