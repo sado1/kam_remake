@@ -1463,9 +1463,9 @@
 1513:Current game speed
 1514:Current replay speed
 1515:Recorded game speed
-1516:Interpolated render
-1517:Interpolated|render
-1518:Will interpolate unit movement
+1516:HD movements
+1517:HD movements
+1518:Increase units and projectiles movement resolution
 1519:For player %0:s to %1:s player's %2:s %3:s must be %4:s
 1520:win
 1521:survive
@@ -1473,6 +1473,6 @@
 1523:saved
 1524:main buildings ( %s )
 1525:Only symmetrical alliances are allowed
-1526:Interpolated animations
-1527:Interpolated|animations
-1528:Will interpolate sprite animations|Interpolated render should be enabled
+1526:HD animations
+1527:HD animations
+1528:Increase number of frames used in animations
