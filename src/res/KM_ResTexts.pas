@@ -8,10 +8,8 @@ uses
 
 
 const
+  // Take text IDs from this include file that is managed by the Translation Manager
   // NAME__## means that this const defines first element of some range that is ## long
-  // TX_UNITS_NAMES__29 = 70; //todo: add animal unit names
-
-  // Load text IDs from this include file that is managed by the Translation Manager
   {$I KM_TextIDs.inc}
 
   // Supposed for places where some text must be placed
