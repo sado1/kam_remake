@@ -687,14 +687,17 @@ type
 
 function GetStackTrace(aLinesCnt: Integer): UnicodeString;
 {$IFDEF WDC}
+{$IFDEF USE_MAD_EXCEPT}
 var
   I: Integer;
   SList: TStringList;
+{$ENDIF}
 {$ENDIF}
 begin
   Result := '';
 
   {$IFDEF WDC}
+  {$IFDEF USE_MAD_EXCEPT}
   try
     SList := TStringList.Create;
     try
@@ -732,6 +735,7 @@ begin
 //      end;
 //    end;
 //  end;
+  {$ENDIF}
   {$ENDIF}
 end;
 
