@@ -243,7 +243,7 @@ end;
 // to have no problems with number of global variables declared
 function TKMScripting.IsScriptCodeNeedToCompile: Boolean;
 begin
-  // No need to colpile script if its empty
+  // No need to compile script if its empty
   Result := Trim(fScriptCode) <> '';
 end;
 

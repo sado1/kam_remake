@@ -406,7 +406,7 @@ begin
   Result := False;
 
   // Always should check main script folder first, instead of using aCallingFileName, since it could be invoked from included script
-  // We want to always allow to overwrite included file from main script folder                           \
+  // We want to always allow to overwrite included file from main script folder
   //
   // So f.e. main.script includes A.script in the Campaign's Scripts folder
   // A.script includes B.script, which is also in the Campaign's Scripts folder
