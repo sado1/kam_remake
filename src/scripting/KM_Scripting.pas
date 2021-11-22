@@ -1579,7 +1579,7 @@ begin
       errStr := ValidateVarType(V.FType);
       fErrorHandler.AppendErrorStr(errStr);
       if errStr <> '' then
-        fValidationIssues.AddError(0, 0, '', ValidateVarType(V.FType));
+        fValidationIssues.AddError(0, 0, '', errStr);
       if fErrorHandler.HasErrors then
       begin
         //Don't allow the script to run
