@@ -516,7 +516,7 @@ var
   parserPlayerInfo: TKMMissionParserInfo;
   mapInfo: TKMMapInfo;
   campaignData: TKMemoryStream;
-  campaignDataTypeFile: UnicodeString;
+  campaignDataFilePath: UnicodeString;
 begin
   gLog.AddTime('GameStart');
   Assert(fParams.Mode in [gmMulti, gmMultiSpectate, gmMapEd, gmSingle, gmCampaign]);
@@ -668,15 +668,15 @@ begin
       begin
         campaignData := aCampaign.ScriptData;
         campaignData.Seek(0, soBeginning); //Seek to the beginning before we read it
-        campaignDataTypeFile := aCampaign.GetScriptDataTypeFile;
+        campaignDataFilePath := aCampaign.GetCampaignDataScriptFilePath;
       end
       else
       begin
         campaignData := nil;
-        campaignDataTypeFile := '';
+        campaignDataFilePath := '';
       end;
 
-      fScripting.LoadFromFile(ChangeFileExt(aMissionFullFilePath, '.script'), campaignDataTypeFile, campaignData);
+      fScripting.LoadFromFile(ChangeFileExt(aMissionFullFilePath, '.script'), campaignDataFilePath, campaignData);
       //fScripting reports compile errors itself now
     end;
 

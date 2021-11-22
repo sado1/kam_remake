@@ -28,7 +28,7 @@ type
   TKMScripting = class
   private
     fScriptCode: AnsiString;
-    fCampaignDataTypeCode: AnsiString;
+    fCampaignDataTypeScriptCode: AnsiString;
     fByteCode: AnsiString;
     fDebugByteCode: AnsiString;
     fExec: TPSExec;
@@ -72,7 +72,7 @@ type
     function GetErrorMessage(const aErrorType, aShortErrorDescription, aModule: String; aRow, aCol, aPos: Integer): TKMScriptErrorMessage; overload;
 
     property ValidationIssues: TKMScriptValidatorResult read fValidationIssues;
-    procedure LoadFromFile(const aFileName, aCampaignDataTypeFile: UnicodeString; aCampaignData: TKMemoryStream);
+    procedure LoadFromFile(const aFileName, aCampaignDataFilePath: UnicodeString; aCampaignData: TKMemoryStream);
     procedure ExportDataToText;
 
     procedure Save(SaveStream: TKMemoryStream);
@@ -248,7 +248,7 @@ begin
 end;
 
 
-procedure TKMScripting.LoadFromFile(const aFileName, aCampaignDataTypeFile: UnicodeString; aCampaignData: TKMemoryStream);
+procedure TKMScripting.LoadFromFile(const aFileName, aCampaignDataFilePath: UnicodeString; aCampaignData: TKMemoryStream);
 begin
   RecreateValidationIssues;
 
@@ -271,10 +271,10 @@ begin
       end;
     end;
 
-  if (aCampaignDataTypeFile <> '') and FileExists(aCampaignDataTypeFile) then
-    fCampaignDataTypeCode := ReadTextA(aCampaignDataTypeFile)
+  if (aCampaignDataFilePath <> '') and FileExists(aCampaignDataFilePath) then
+    fCampaignDataTypeScriptCode := ReadTextA(aCampaignDataFilePath)
   else
-    fCampaignDataTypeCode := '';
+    fCampaignDataTypeScriptCode := '';
 
   CompileScript;
 
@@ -305,9 +305,9 @@ var
 begin
   if Name = 'SYSTEM' then
   begin
-    if fCampaignDataTypeCode <> '' then
+    if fCampaignDataTypeScriptCode <> '' then
       try
-        campaignDataType := Sender.AddTypeS(CAMPAIGN_DATA_TYPE, fCampaignDataTypeCode);
+        campaignDataType := Sender.AddTypeS(CAMPAIGN_DATA_TYPE, fCampaignDataTypeScriptCode);
         Sender.AddUsedVariable(CAMPAIGN_DATA_VAR, campaignDataType);
       except
         on E: Exception do
@@ -1685,7 +1685,7 @@ begin
 
   LoadStream.CheckMarker('Script');
   LoadStream.ReadHugeString(fScriptCode);
-  LoadStream.ReadA(fCampaignDataTypeCode);
+  LoadStream.ReadA(fCampaignDataTypeScriptCode);
   gScriptEvents.Load(LoadStream);
   fIDCache.Load(LoadStream);
 
@@ -1728,7 +1728,7 @@ var
 begin
   //Campaign data format might change. If so, do not load it
   LoadStream.ReadA(S);
-  if S <> fCampaignDataTypeCode then
+  if S <> fCampaignDataTypeScriptCode then
     Exit;
 
   for I := 0 to fExec.GetVarCount - 1 do
@@ -1807,7 +1807,7 @@ begin
 
   //Write script code
   SaveStream.WriteHugeString(fScriptCode);
-  SaveStream.WriteA(fCampaignDataTypeCode);
+  SaveStream.WriteA(fCampaignDataTypeScriptCode);
   gScriptEvents.Save(SaveStream);
   fIDCache.Save(SaveStream);
 
@@ -1827,7 +1827,7 @@ var
   I: Integer;
   V: PIFVariant;
 begin
-  SaveStream.WriteA(fCampaignDataTypeCode);
+  SaveStream.WriteA(fCampaignDataTypeScriptCode);
   for I := 0 to fExec.GetVarCount - 1 do
   begin
     V := fExec.GetVarNo(I);

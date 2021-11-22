@@ -91,7 +91,7 @@ type
     function GetMissionTitle(aIndex: Byte): String;
     function GetMissionBriefing(aIndex: Byte): String;
     function GetBreifingAudioFile(aIndex: Byte): String;
-    function GetScriptDataTypeFile: UnicodeString;
+    function GetCampaignDataScriptFilePath: UnicodeString;
 
     procedure UnlockAllMissions;
   end;
@@ -482,7 +482,7 @@ begin
 end;
 
 
-function TKMCampaign.GetScriptDataTypeFile: UnicodeString;
+function TKMCampaign.GetCampaignDataScriptFilePath: UnicodeString;
 begin
   Result := fPath + CAMPAIGN_DATA_FILENAME + EXT_FILE_SCRIPT_DOT;
 end;
