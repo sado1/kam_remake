@@ -278,10 +278,9 @@ begin
 
   CompileScript;
 
-  fErrorHandler.HandleErrors;
+  LoadCampaignData(aCampaignData);
 
-  if aCampaignData <> nil then
-    LoadCampaignData(aCampaignData);
+  fErrorHandler.HandleErrors;
 end;
 
 
@@ -1735,8 +1734,10 @@ var
   V: PIFVariant;
   S: AnsiString;
 begin
-  //Campaign data format might change. If so, do not load it
+  if LoadStream = nil then Exit; // silently Exit in case this is not a campaign script
+
   LoadStream.ReadA(S);
+  //Campaign data format might change. If so, do not load it
   if S <> fCampaignDataTypeScriptCode then
     Exit;
 
