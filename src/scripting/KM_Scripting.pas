@@ -299,12 +299,11 @@ function TKMScripting.ScriptOnUses(Sender: TPSPascalCompiler; const Name: AnsiSt
       Assert(False, Format('Error registering "%s"', [aDecl]));
   end;
 
-var
-  campaignDataType: TPSType;
-  c: TPSCompileTimeClass;
-begin
-  if Name = 'SYSTEM' then
+  procedure AddCampaignData;
+  var
+    campaignDataType: TPSType;
   begin
+    // Add TKMCampaignData type declaration from campaigndata.script and variable CampaignData: TKMCampaignData
     if fCampaignDataTypeScriptCode <> '' then
       try
         campaignDataType := Sender.AddTypeS(CAMPAIGN_DATA_TYPE, fCampaignDataTypeScriptCode);
@@ -316,7 +315,13 @@ begin
           fValidationIssues.AddError(0, 0, '', 'Error in declaration of global campaign data type');
         end;
       end;
+  end;
 
+var
+  c: TPSCompileTimeClass;
+begin
+  if Name = 'SYSTEM' then
+  begin
     // Common
     Sender.AddTypeS('TIntegerArray', 'array of Integer'); //Needed for PlayerGetAllUnits
     Sender.AddTypeS('TAnsiStringArray', 'array of AnsiString'); //Needed for some array Utils
@@ -372,6 +377,10 @@ begin
       + 'utCrab,         utWaterflower,  utWaterleaf,    utDuck)');
 
     Sender.AddTypeS('TReplaceFlags', '(rfReplaceAll, rfIgnoreCase)'); //Needed for string util Utils.StringReplace
+
+    // Add CampaignData type and variable only after addition of all other custom types,
+    // so those types could be used in the TKMCampaignData declaration
+    AddCampaignData;
 
     // Register classes and methods to the script engine.
     // After that they can be used from within the script.
