@@ -58,6 +58,7 @@ type
     procedure Write(const Value: Extended      ); reintroduce; overload; virtual; abstract;
     procedure Write(const Value: Integer       ); reintroduce; overload; virtual; abstract;
     procedure Write(const Value: Cardinal      ); reintroduce; overload; virtual; abstract;
+    procedure Write(const Value: Int64         ); reintroduce; overload; virtual; abstract;
     procedure Write(const Value: Byte          ); reintroduce; overload; virtual; abstract;
     procedure Write(const Value: Boolean       ); reintroduce; overload; virtual; abstract;
     procedure Write(const Value: Word          ); reintroduce; overload; virtual; abstract;
@@ -77,6 +78,7 @@ type
     procedure Read(out Value: Extended      ); reintroduce; overload; virtual; abstract;
     procedure Read(out Value: Integer       ); reintroduce; overload; virtual; abstract;
     procedure Read(out Value: Cardinal      ); reintroduce; overload; virtual; abstract;
+    procedure Read(out Value: Int64         ); reintroduce; overload; virtual; abstract;
     procedure Read(out Value: Byte          ); reintroduce; overload; virtual; abstract;
     procedure Read(out Value: Boolean       ); reintroduce; overload; virtual; abstract;
     procedure Read(out Value: Word          ); reintroduce; overload; virtual; abstract;
@@ -147,6 +149,7 @@ type
     procedure Write(const Value: Extended      ); override;
     procedure Write(const Value: Integer       ); override;
     procedure Write(const Value: Cardinal      ); override;
+    procedure Write(const Value: Int64         ); override;
     procedure Write(const Value: Byte          ); override;
     procedure Write(const Value: Boolean       ); override;
     procedure Write(const Value: Word          ); override;
@@ -166,6 +169,7 @@ type
     procedure Read(out Value: Extended      ); override;
     procedure Read(out Value: Integer       ); override;
     procedure Read(out Value: Cardinal      ); override;
+    procedure Read(out Value: Int64         ); override;
     procedure Read(out Value: Byte          ); override;
     procedure Read(out Value: Boolean       ); override;
     procedure Read(out Value: Word          ); override;
@@ -200,6 +204,7 @@ type
     procedure Write(const Value: Extended      ); override;
     procedure Write(const Value: Integer       ); override;
     procedure Write(const Value: Cardinal      ); override;
+    procedure Write(const Value: Int64         ); override;
     procedure Write(const Value: Byte          ); override;
     procedure Write(const Value: Boolean       ); override;
     procedure Write(const Value: Word          ); override;
@@ -226,6 +231,7 @@ type
     procedure Read(out Value: Extended      ); override;
     procedure Read(out Value: Integer       ); override;
     procedure Read(out Value: Cardinal      ); override;
+    procedure Read(out Value: Int64         ); override;
     procedure Read(out Value: Byte          ); override;
     procedure Read(out Value: Boolean       ); override;
     procedure Read(out Value: Word          ); override;
@@ -1721,6 +1727,7 @@ procedure TKMemoryStreamBinary.Read(out Value: Single);         begin inherited 
 procedure TKMemoryStreamBinary.Read(out Value: Extended);       begin inherited Read(Value, SizeOf(Value)); end;
 procedure TKMemoryStreamBinary.Read(out Value: Integer);        begin inherited Read(Value, SizeOf(Value)); end;
 procedure TKMemoryStreamBinary.Read(out Value: Cardinal);       begin inherited Read(Value, SizeOf(Value)); end;
+procedure TKMemoryStreamBinary.Read(out Value: Int64);          begin inherited Read(Value, SizeOf(Value)); end;
 procedure TKMemoryStreamBinary.Read(out Value: Byte);           begin inherited Read(Value, SizeOf(Value)); end;
 procedure TKMemoryStreamBinary.Read(out Value: Boolean);        begin inherited Read(Value, SizeOf(Value)); end;
 procedure TKMemoryStreamBinary.Read(out Value: Word);           begin inherited Read(Value, SizeOf(Value)); end;
@@ -1741,6 +1748,7 @@ procedure TKMemoryStreamBinary.Write(const Value: Single);         begin inherit
 procedure TKMemoryStreamBinary.Write(const Value: Extended);       begin inherited Write(Value, SizeOf(Value)); end;
 procedure TKMemoryStreamBinary.Write(const Value: Integer);        begin inherited Write(Value, SizeOf(Value)); end;
 procedure TKMemoryStreamBinary.Write(const Value: Cardinal);       begin inherited Write(Value, SizeOf(Value)); end;
+procedure TKMemoryStreamBinary.Write(const Value: Int64);          begin inherited Write(Value, SizeOf(Value)); end;
 procedure TKMemoryStreamBinary.Write(const Value: Byte);           begin inherited Write(Value, SizeOf(Value)); end;
 procedure TKMemoryStreamBinary.Write(const Value: Boolean);        begin inherited Write(Value, SizeOf(Value)); end;
 procedure TKMemoryStreamBinary.Write(const Value: Word);           begin inherited Write(Value, SizeOf(Value)); end;
@@ -1879,6 +1887,11 @@ begin
   WriteText(IntToStr(Value));
 end;
 
+procedure TKMemoryStreamText.Write(const Value: Int64);
+begin
+  WriteText(IntToStr(Value));
+end;
+
 procedure TKMemoryStreamText.Write(const Value: TDateTime);
 var
   str: String;
@@ -1965,6 +1978,11 @@ begin
 end;
 
 procedure TKMemoryStreamText.Read(out Value: Cardinal);
+begin
+  raise Exception.Create('MemoryStreamText.Read is not implemented yet');
+end;
+
+procedure TKMemoryStreamText.Read(out Value: Int64);
 begin
   raise Exception.Create('MemoryStreamText.Read is not implemented yet');
 end;
