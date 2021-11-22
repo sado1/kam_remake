@@ -96,7 +96,7 @@ type
 
 
 const
-  CAMPAIGN_DATA_TYPE = 'TCampaignData'; // Type of the global variable
+  CAMPAIGN_DATA_TYPE = 'TKMCampaignData'; // Type of the global variable
   CAMPAIGN_DATA_VAR = 'CampaignData'; // Name of the global variable
   VALID_GLOBAL_VAR_TYPES: set of TPSBaseType = [
     btU8,  //Byte, Boolean, Enums
