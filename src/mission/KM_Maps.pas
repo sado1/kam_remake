@@ -99,7 +99,6 @@ type
     function GetCanBeOnlyAICount: Byte;
     function GetCanBeHumanAndAICount: Byte;
     function GetBigDesc: UnicodeString;
-    procedure SetBigDesc(const aBigDesc: UnicodeString);
     function GetTxtInfo: TKMMapTxtInfo;
     function GetDimentions: TKMPoint;
 
@@ -129,7 +128,7 @@ type
     procedure LoadExtra;
 
     property TxtInfo: TKMMapTxtInfo read GetTxtInfo;
-    property BigDesc: UnicodeString read GetBigDesc write SetBigDesc;
+    property BigDesc: UnicodeString read GetBigDesc;
     property InfoAmount: TKMMapInfoAmount read fInfoAmount;
     property Dir: string read fDir;
     property Kind: TKMMapKind read fKind;
@@ -948,12 +947,6 @@ begin
 
   if TxtInfo.Version <> '' then
     Result := Result + Format('|[$7070FF]%s:[] %s', [gResTexts[TX_MAPED_MISSION_VERSION], TxtInfo.Version]);
-end;
-
-
-procedure TKMMapInfo.SetBigDesc(const aBigDesc: UnicodeString);
-begin
-  TxtInfo.BigDesc := aBigDesc;
 end;
 
 
