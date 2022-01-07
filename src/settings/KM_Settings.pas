@@ -17,7 +17,6 @@ type
 
     procedure Changed;
     function GetDefaultSettingsName: string; virtual; abstract;
-    function NeedToSave: Boolean; virtual;
 
     procedure LoadFromFile(const aPath: string); virtual; abstract;
     procedure SaveToFile(const aPath: string); virtual; abstract;
@@ -28,6 +27,7 @@ type
     destructor Destroy; override;
 
     property Path: string read GetPath;
+    property NeedToSave: Boolean read fNeedsSave;
 
     procedure ReloadSettings;
     procedure SaveSettings(aForce: Boolean = False);
@@ -107,12 +107,6 @@ begin
   gLog.AddNoTime(GetStackTrace(20), False);
   SaveToFile(path);
   gLog.AddTime(Format('''%s'' was successfully saved to ''%s''', [GetSettingsName, path]));
-end;
-
-
-function TKMSettings.NeedToSave: Boolean;
-begin
-  Result := fNeedsSave;
 end;
 
 
