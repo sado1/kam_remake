@@ -26,7 +26,6 @@ type
 
     fCampaigns: TKMCampaignsCollection;
     fGameSettings: TKMGameSettings;
-    fKeysSettings: TKMKeysSettings;
     fServerSettings: TKMServerSettings;
     fNetworking: TKMNetworking;
 
@@ -203,7 +202,7 @@ begin
 
   gRes := TKMResource.Create(aOnLoadingStep, aOnLoadingText);
   gRes.LoadMainResources(fGameSettings.Locale, fGameSettings.LoadFullFonts);
-  fKeysSettings := TKMKeysSettings.Create;
+  gKeySettings := TKMKeysSettings.Create;
 
   {$IFDEF USE_MAD_EXCEPT}gExceptions.LoadTranslation;{$ENDIF}
 
@@ -214,7 +213,7 @@ begin
     MessageDlg(gResTexts[TX_GAME_ERROR_OLD_OPENGL] + EolW + EolW + gResTexts[TX_GAME_ERROR_OLD_OPENGL_2], mtWarning, [mbOk], 0);
 
   gSoundPlayer  := TKMSoundPlayer.Create(fGameSettings.SoundFXVolume);
-  gMusic     := TKMMusicLib.Create(fGameSettings.MusicVolume);
+  gMusic        := TKMMusicLib.Create(fGameSettings.MusicVolume);
   gSoundPlayer.OnRequestFade   := gMusic.Fade;
   gSoundPlayer.OnRequestUnfade := gMusic.Unfade;
 
@@ -224,8 +223,8 @@ begin
   //If game was reinitialized from options menu then we should return there
   InitMainMenu(aScreenX, aScreenY);
 
-  //Start the Music playback as soon as loading is complete
-  if (not NoMusic) and not fGameSettings.MusicOff then
+  // Start the Music playback as soon as loading is complete
+  if not NoMusic and not fGameSettings.MusicOff then
     gMusic.PlayMenuTrack;
 
   gMusic.ToggleShuffle(fGameSettings.ShuffleOn); //Determine track order
@@ -271,7 +270,7 @@ begin
   FreeAndNil(fChat);
   FreeThenNil(fCampaigns);
   FreeThenNil(fGameSettings);
-  FreeThenNil(fKeysSettings);
+  FreeThenNil(gKeySettings);
   FreeThenNil(fServerSettings);
   FreeThenNil(fMainMenuInterface);
   FreeThenNil(gRes);

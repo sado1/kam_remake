@@ -8,9 +8,6 @@ type
   // Hotkey Settings
   TKMKeysSettings = class(TKMGameAppSettingsPart)
   public
-    constructor Create;
-    destructor Destroy; override;
-
     procedure LoadFromXML; override;
     procedure SaveToXML; override;
   end;
@@ -28,22 +25,6 @@ uses
 
 
 { TKMKeysSettings }
-constructor TKMKeysSettings.Create;
-begin
-  inherited;
-
-  gKeySettings := Self;
-end;
-
-
-destructor TKMKeysSettings.Destroy;
-begin
-  inherited;
-
-  gKeySettings := nil;
-end;
-
-
 procedure TKMKeysSettings.LoadFromXML;
 var
   KF: TKMKeyFunction;
