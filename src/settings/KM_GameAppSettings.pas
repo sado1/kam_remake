@@ -79,8 +79,8 @@ uses
 { TKMSettingsXML }
 constructor TKMSettingsXML.Create;
 begin
-  // Create xml Settings in the shared folder
-  inherited Create(False);
+  // Prefer to store XML settings in the shared folder
+  inherited Create(slShared);
 end;
 
 

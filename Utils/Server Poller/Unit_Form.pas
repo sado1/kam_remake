@@ -38,6 +38,9 @@ var
   Form1: TForm1;
 
 implementation
+uses
+  KM_Settings;
+
 {$R *.dfm}
 
 
@@ -46,7 +49,7 @@ begin
   Application.OnIdle := DoIdle;
   ExeDir := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\');
 
-  fServerSettings := TKMServerSettings.Create(True);
+  fServerSettings := TKMServerSettings.Create(slExeDir);
 
   Label1.Caption := 'Master-server: ' + fServerSettings.MasterServerAddress;
 

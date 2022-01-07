@@ -184,8 +184,8 @@ begin
 
   fEventHandler := TKMServerEventHandler.Create; // Will create gLog as well
 
-  // Create Server Settings in the local folder
-  fSettings := TKMServerSettings.Create(True);
+  // DedicatedServer stores everything alongside in the local folder
+  fSettings := TKMServerSettings.Create(slExeDir);
   fSettings.SaveSettings(True);
   fSettingsLastModified := FileAge(fSettings.Path);
   fLastSettingsFileCheck := TimeGet;

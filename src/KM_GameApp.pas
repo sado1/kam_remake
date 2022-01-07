@@ -173,7 +173,7 @@ uses
   KM_Main, KM_Controls, KM_Log, KM_Sound, KM_GameInputProcess, KM_GameInputProcess_Multi,
   KM_GameSavePoints,
   KM_Cursor, KM_ResTexts,
-  KM_IoGraphicUtils,
+  KM_IoGraphicUtils, KM_Settings,
   KM_Saves, KM_CommonUtils, KM_CommonShellUtils, KM_RandomChecks,
   KM_DevPerfLog, KM_DevPerfLogTypes;
 
@@ -188,8 +188,9 @@ begin
 
   fGameSettings := TKMGameSettings.Create;
 
-  // Create Server Settings in the shared folder
-  fServerSettings := TKMServerSettings.Create(False);
+  // When creating local server from inside the game,
+  // it makes sense to store its settings along with the game's in the shared folder
+  fServerSettings := TKMServerSettings.Create(slShared);
 
   gRender := TRender.Create(aRenderControl, aScreenX, aScreenY, aVSync);
 

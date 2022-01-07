@@ -3,10 +3,15 @@ unit KM_Settings;
 interface
 
 type
+  TKMSettingsLocation = (
+    slExeDir, // In the games folder (handy for debug)
+    slShared  // In the MyDocuments when possible (good for players to retain the settings between game builds)
+  );
+
   // Abstract settings entity
   TKMSettings = class abstract
   private
-    fUseLocalFolder: Boolean;
+    fSettingsLoc: TKMSettingsLocation;
     procedure LoadFromDefaultFile;
     procedure SaveToDefaultFile;
 
@@ -23,7 +28,7 @@ type
 
     function GetSettingsName: string; virtual; abstract;
   public
-    constructor Create(aUseLocalFolder: Boolean);
+    constructor Create(aSettingsLoc: TKMSettingsLocation);
     destructor Destroy; override;
 
     property Path: string read GetPath;
@@ -32,7 +37,7 @@ type
     procedure ReloadSettings;
     procedure SaveSettings(aForce: Boolean = False);
 
-    class function GetDir(aUseLocalFolder: Boolean = False): string;
+    class function GetDir(aSettingsLoc: TKMSettingsLocation = slShared): string;
   end;
 
 
@@ -46,11 +51,11 @@ uses
 
 
 { TKMSettings }
-constructor TKMSettings.Create(aUseLocalFolder: Boolean);
+constructor TKMSettings.Create(aSettingsLoc: TKMSettingsLocation);
 begin
   inherited Create;
 
-  fUseLocalFolder := aUseLocalFolder;
+  fSettingsLoc := aSettingsLoc;
 
   LoadFromDefaultFile;
   // Save settings to default directory immidiately
@@ -77,7 +82,7 @@ end;
 
 function TKMSettings.GetDirectory: string;
 begin
-  Result := GetDir(fUseLocalFolder);
+  Result := GetDir(fSettingsLoc);
 end;
 
 
@@ -131,9 +136,9 @@ begin
 end;
 
 
-class function TKMSettings.GetDir(aUseLocalFolder: Boolean = False): string;
+class function TKMSettings.GetDir(aSettingsLoc: TKMSettingsLocation = slShared): string;
 begin
-  if USE_KMR_DIR_FOR_SETTINGS or aUseLocalFolder then
+  if USE_KMR_DIR_FOR_SETTINGS or (aSettingsLoc = slExeDir) then
     Result := ExtractFilePath(ParamStr(0))
   else
     Result := CreateAndGetDocumentsSavePath; // Use %My documents%/My Games/

@@ -92,7 +92,7 @@ var
 
 implementation
 uses
-  KM_NetworkTypes, KM_Points;
+  KM_NetworkTypes, KM_Points, KM_Settings;
 
 {$IFDEF WDC}
   {$R *.dfm}
@@ -115,8 +115,8 @@ begin
   CreateDir(ExeDir + 'Logs');
   gLog := TKMLog.Create(ExeDir + 'Logs' + PathDelim + 'KaM_Server_' + FormatDateTime('yyyy-mm-d_hh-nn-ss-zzz', Now) + '.log');
 
-  // Create Server Settings in the local folder
-  fSettings := TKMServerSettings.Create(True);
+  // DedicatedServer stores everything alongside in the local folder
+  fSettings := TKMServerSettings.Create(slExeDir);
   fSettings.SaveSettings(True);
 //  fSettingsLastModified := FileAge(fSettings.Path);
 
