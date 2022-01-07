@@ -348,8 +348,6 @@ begin
   // Cleanup everything afterwards
   FreeAndNil(fWareDistribution);
   FreeAndNil(fFavouriteMaps);
-
-  gGameSettings := nil;
 end;
 
 
