@@ -12,8 +12,8 @@ uses
   KM_GameAppSettings;
 
 type
-  //Settings that are irrelevant to the game (game does not cares about them)
-  //Everything gets written through setter to set fNeedsSave flag
+  // Settings that are irrelevant to the game (game does not cares about them)
+  // Everything gets written through setter to set fNeedsSave flag
   TKMainSettings = class(TKMGameAppSettingsPart)
   private
     //Not a setting, used to properly set default Resolution value
