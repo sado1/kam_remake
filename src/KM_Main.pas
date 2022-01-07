@@ -647,8 +647,9 @@ begin
   fFormMain.Show;
 
   ForceResize; //Force everything to resize
+
   // Unlock window params if are no longer in FullScreen mode
-  if (not fMainSettings.FullScreen) then
+  if not fMainSettings.FullScreen then
     fMainSettings.WindowParams.UnlockParams;
 
   ApplyCursorRestriction;
