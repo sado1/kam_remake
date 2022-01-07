@@ -76,7 +76,7 @@ uses
   KM_Defaults;
 
 
-{ TKMSettings }
+{ TKMSettingsXML }
 constructor TKMSettingsXML.Create;
 begin
   // Create xml Settings in the shared folder
