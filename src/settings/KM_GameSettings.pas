@@ -338,8 +338,6 @@ begin
   fFavouriteMaps.OnMapsUpdate := SetMenuFavouriteMapsStr;
 
   inherited;
-
-  gGameSettings := Self;
 end;
 
 

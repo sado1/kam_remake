@@ -25,7 +25,6 @@ type
     fIsLoading: Boolean;
 
     fCampaigns: TKMCampaignsCollection;
-    fGameSettings: TKMGameSettings;
     fServerSettings: TKMServerSettings;
     fNetworking: TKMNetworking;
 
@@ -186,7 +185,7 @@ begin
 
   fOnCursorUpdate := aOnCursorUpdate;
 
-  fGameSettings := TKMGameSettings.Create;
+  gGameSettings := TKMGameSettings.Create;
 
   // When creating local server from inside the game,
   // it makes sense to store its settings along with the game's in the shared folder
@@ -198,11 +197,11 @@ begin
 
   gCursor := TKMCursor.Create;
 
-  if fGameSettings.DebugSaveRandomChecks and SAVE_RANDOM_CHECKS then
+  if gGameSettings.DebugSaveRandomChecks and SAVE_RANDOM_CHECKS then
     gRandomCheckLogger := TKMRandomCheckLogger.Create;
 
   gRes := TKMResource.Create(aOnLoadingStep, aOnLoadingText);
-  gRes.LoadMainResources(fGameSettings.Locale, fGameSettings.LoadFullFonts);
+  gRes.LoadMainResources(gGameSettings.Locale, gGameSettings.LoadFullFonts);
   gKeySettings := TKMKeysSettings.Create;
 
   {$IFDEF USE_MAD_EXCEPT}gExceptions.LoadTranslation;{$ENDIF}
@@ -213,8 +212,8 @@ begin
     //pauses here until the user clicks ok.
     MessageDlg(gResTexts[TX_GAME_ERROR_OLD_OPENGL] + EolW + EolW + gResTexts[TX_GAME_ERROR_OLD_OPENGL_2], mtWarning, [mbOk], 0);
 
-  gSoundPlayer  := TKMSoundPlayer.Create(fGameSettings.SoundFXVolume);
-  gMusic        := TKMMusicLib.Create(fGameSettings.MusicVolume);
+  gSoundPlayer  := TKMSoundPlayer.Create(gGameSettings.SoundFXVolume);
+  gMusic        := TKMMusicLib.Create(gGameSettings.MusicVolume);
   gSoundPlayer.OnRequestFade   := gMusic.Fade;
   gSoundPlayer.OnRequestUnfade := gMusic.Unfade;
 
@@ -225,10 +224,10 @@ begin
   InitMainMenu(aScreenX, aScreenY);
 
   // Start the Music playback as soon as loading is complete
-  if not NoMusic and not fGameSettings.MusicOff then
+  if not NoMusic and not gGameSettings.MusicOff then
     gMusic.PlayMenuTrack;
 
-  gMusic.ToggleShuffle(fGameSettings.ShuffleOn); //Determine track order
+  gMusic.ToggleShuffle(gGameSettings.ShuffleOn); //Determine track order
 
   fSaveWorkerThread := TKMWorkerThread.Create('SaveWorker');
   fAutoSaveWorkerThread := TKMWorkerThread.Create('AutoSaveWorker');
@@ -270,7 +269,7 @@ begin
 
   FreeAndNil(fChat);
   FreeThenNil(fCampaigns);
-  FreeThenNil(fGameSettings);
+  FreeThenNil(gGameSettings);
   FreeThenNil(gKeySettings);
   FreeThenNil(fServerSettings);
   FreeThenNil(fMainMenuInterface);
@@ -322,7 +321,7 @@ begin
   Render; //Force to repaint information screen
 
   fIsLoading := True;
-  fGameSettings.Locale := aLocale; //Wrong Locale will be ignored
+  gGameSettings.Locale := aLocale; //Wrong Locale will be ignored
 
   //Release resources that use Locale info
   FreeAndNil(fNetworking);
@@ -330,16 +329,16 @@ begin
   FreeAndNil(fMainMenuInterface);
 
   //Recreate resources that use Locale info
-  gRes.LoadLocaleResources(fGameSettings.Locale);
+  gRes.LoadLocaleResources(gGameSettings.Locale);
   //Fonts might need reloading too
-  gRes.LoadLocaleFonts(fGameSettings.Locale, fGameSettings.LoadFullFonts);
+  gRes.LoadLocaleFonts(gGameSettings.Locale, gGameSettings.LoadFullFonts);
 
   //Force reload game resources, if they during loading process,
   //as that could cause an error in the loading thread
   //(did not figure it out why. Its easier just to reload game resources in that rare case)
   {$IFDEF LOAD_GAME_RES_ASYNC}
-  if fGameSettings.AsyncGameResLoad and not gRes.Sprites.GameResLoadCompleted then
-    gRes.LoadGameResources(fGameSettings.AlphaShadows, True);
+  if gGameSettings.AsyncGameResLoad and not gRes.Sprites.GameResLoadCompleted then
+    gRes.LoadGameResources(gGameSettings.AlphaShadows, True);
   {$ENDIF}
 
   {$IFDEF USE_MAD_EXCEPT}gExceptions.LoadTranslation;{$ENDIF}
@@ -359,8 +358,8 @@ procedure TKMGameApp.PreloadGameResources;
 begin
   {$IFDEF LOAD_GAME_RES_ASYNC}
   //Load game resources asychronously (by other thread)
-  if fGameSettings.AsyncGameResLoad then
-    gRes.LoadGameResources(fGameSettings.AlphaShadows, True);
+  if gGameSettings.AsyncGameResLoad then
+    gRes.LoadGameResources(gGameSettings.AlphaShadows, True);
   {$ENDIF}
 end;
 
@@ -530,7 +529,7 @@ begin
 
   GameLoadingStep(gResTexts[TX_MENU_LOADING_DEFINITIONS]);
   gRes.OnLoadingText := GameLoadingStep;
-  gRes.LoadGameResources(fGameSettings.AlphaShadows);
+  gRes.LoadGameResources(gGameSettings.AlphaShadows);
 
   GameLoadingStep(gResTexts[TX_MENU_LOADING_INITIALIZING]);
 
@@ -615,9 +614,9 @@ begin
   if (gGame.GameResult in [grWin, grDefeat]) and not gGame.Params.IsReplay then
   begin
     GameFinished;
-    if fGameSettings.AutosaveAtGameEnd then
+    if gGameSettings.AutosaveAtGameEnd then
       // We have to use local time for local save name (Now) and UTC time inside the save (UTCNow, it will be converted back to local on read)
-      gGame.Save(Format('%s %s #%d', [gGame.Params.Name, FormatDateTime('yyyy-mm-dd', Now), fGameSettings.DayGamesCount]), UTCNow);
+      gGame.Save(Format('%s %s #%d', [gGame.Params.Name, FormatDateTime('yyyy-mm-dd', Now), gGameSettings.DayGamesCount]), UTCNow);
   end;
 
   if Assigned(fOnGameEnd) then
@@ -1102,7 +1101,7 @@ function TKMGameApp.GetGameSettings: TKMGameSettings;
 begin
   if Self = nil then Exit(nil);
 
-  Result := fGameSettings;
+  Result := gGameSettings;
 end;
 
 
@@ -1131,11 +1130,11 @@ end;
 //Happens when game was won or lost
 procedure TKMGameApp.GameFinished;
 begin
-  if CompareDate(fGameSettings.LastDayGamePlayed, Today) < 0 then
-    fGameSettings.DayGamesCount := 0;
+  if CompareDate(gGameSettings.LastDayGamePlayed, Today) < 0 then
+    gGameSettings.DayGamesCount := 0;
 
-  fGameSettings.LastDayGamePlayed := Today;
-  fGameSettings.DayGamesCount := fGameSettings.DayGamesCount + 1;
+  gGameSettings.LastDayGamePlayed := Today;
+  gGameSettings.DayGamesCount := gGameSettings.DayGamesCount + 1;
 end;
 
 
@@ -1213,7 +1212,7 @@ begin
     else
       fMainMenuInterface.Paint;
 
-    gRender.RenderBrightness(fGameSettings.Brightness);
+    gRender.RenderBrightness(gGameSettings.Brightness);
   {$IFDEF PERFLOG}
   finally
     gPerfLogs.SectionLeave(psFrameFullG);
@@ -1372,7 +1371,7 @@ begin
   if fGlobalTickCount mod 10 = 0 then
   begin
     // Music
-    if not fGameSettings.MusicOff and gMusic.IsEnded then
+    if not gGameSettings.MusicOff and gMusic.IsEnded then
       gMusic.PlayNextTrack; //Feed new music track
 
     //StatusBar

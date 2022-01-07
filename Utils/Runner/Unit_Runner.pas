@@ -179,7 +179,7 @@ begin
   end;
 
   // Init settings global variables
-  TKMGameAppSettings.Create;
+  gGameAppSettings := TKMGameAppSettings.Create;
   TKMainSettings.Create(tgtWidth, tgtHeight);
 
   gGameApp := TKMGameApp.Create(fRenderTarget, tgtWidth, tgtHeight, False, nil, nil, nil, True);
@@ -196,7 +196,6 @@ begin
   FreeAndNil(gLog);
   if Assigned(OnProgress) then
     OnProgress('Done');
-
 end;
 
 
