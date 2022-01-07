@@ -112,23 +112,19 @@ end;
 { TKMGameAppSettings }
 constructor TKMGameAppSettings.Create;
 begin
-  fXML := TKMXmlDocument.Create;
-  fSettingParts := TList<TKMGameAppSettingsPart>.Create;
-
   inherited;
 
-  gGameAppSettings := Self;
+  fXML := TKMXmlDocument.Create;
+  fSettingParts := TList<TKMGameAppSettingsPart>.Create;
 end;
 
 
 destructor TKMGameAppSettings.Destroy;
 begin
-  inherited;
-
   fSettingParts.Free;
   fXML.Free;
 
-  gGameAppSettings := nil;
+  inherited;
 end;
 
 

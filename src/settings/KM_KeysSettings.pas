@@ -5,7 +5,7 @@ uses
   KM_GameAppSettings;
 
 type
-  // Hotkey Settings
+  // Hotkey settings loader/saver
   TKMKeysSettings = class(TKMGameAppSettingsPart)
   public
     procedure LoadFromXML; override;
