@@ -3,8 +3,8 @@ unit KM_ServerSettings;
 interface
 uses
   Classes,
-  {$IFDEF FPC}Forms,{$ENDIF}   //Lazarus do not know UITypes
-  {$IFDEF WDC}UITypes,{$ENDIF} //We use settings in console modules
+  {$IFDEF FPC}Forms,{$ENDIF}   // Lazarus does not know about UITypes
+  {$IFDEF WDC}UITypes,{$ENDIF} // We use settings in console modules
   KM_Defaults, KM_CommonClasses,
   KM_Settings;
 
@@ -37,7 +37,7 @@ type
 
     fServerMapsRoster: TKMMapsCRCList;
 
-    //Server
+    // Server
     procedure SetMasterServerAddress(const aValue: string);
     procedure SetServerName(const aValue: AnsiString);
     procedure SetServerPort(const aValue: string);
@@ -62,7 +62,7 @@ type
     constructor Create(aSettingsLoc: TKMSettingsLocation);
     destructor Destroy; override;
 
-    //Server
+    // Server
     property ServerPort: string read fServerPort write SetServerPort;
     property ServerUDPAnnounce: Boolean read fServerUDPAnnounce write SetServerUDPAnnounce;
     property ServerUDPScanPort: Word read fServerUDPScanPort write SetServerUDPScanPort;
