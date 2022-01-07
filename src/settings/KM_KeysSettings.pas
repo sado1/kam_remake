@@ -72,6 +72,7 @@ begin
   end;
 end;
 
+
 procedure TKMKeysSettings.SaveToXML;
 var
   KF: TKMKeyFunction;
@@ -86,6 +87,8 @@ begin
   begin
     nKey := nHotkeys.AddOrFindChild(TKMResKeys.GetKeyFunctionStr(KF));
     nKey.Attributes['Key'] := gResKeys[KF].Key;
+
+    // These are just comments
     nKey.Attributes['KeyDesc'] := gResKeys.GetKeyName(gResKeys[KF].Key);
     nKey.Attributes['FuncDesc'] := gResTexts[gResKeys[KF].TextId];
   end;
