@@ -28,7 +28,7 @@ type
   TKMLog = class
   private
     CS: TCriticalSection;
-    fl: textfile;
+    fLogFile: TextFile;
     fLogPath: UnicodeString;
     fFirstTick: cardinal;
     fPreviousTick: cardinal;
@@ -213,11 +213,11 @@ begin
   try
     ForceDirectories(ExtractFilePath(fLogPath));
 
-    AssignFile(fl, fLogPath);
-    Rewrite(fl);
+    AssignFile(fLogFile, fLogPath);
+    Rewrite(fLogFile);
     //           hh:nn:ss.zzz 12345.678s 1234567ms     text-text-text
-    WriteLn(fl, '   Timestamp    Elapsed     Delta     Description');
-    CloseFile(fl);
+    WriteLn(fLogFile, '   Timestamp    Elapsed     Delta     Description');
+    CloseFile(fLogFile);
   except
     on Ex: Exception do
     begin
@@ -288,22 +288,22 @@ begin
     if not FileExists(fLogPath) then
       InitLog;  // Recreate log file, if it was deleted
 
-    Append(fl);
+    Append(fLogFile);
     //Write a line when the day changed since last time (useful for dedicated server logs that could be over months)
     if Abs(Trunc(fPreviousDate) - Trunc(Now)) >= 1 then
     begin
-      WriteLn(fl, '========================');
-      WriteLn(fl, '    Date: ' + FormatDateTime('yyyy/mm/dd', Now));
-      WriteLn(fl, '========================');
+      WriteLn(fLogFile, '========================');
+      WriteLn(fLogFile, '    Date: ' + FormatDateTime('yyyy/mm/dd', Now));
+      WriteLn(fLogFile, '========================');
     end;
-    WriteLn(fl, Format('%12s %9.3fs %7dms     %s', [
+    WriteLn(fLogFile, Format('%12s %9.3fs %7dms     %s', [
                   FormatDateTime('hh:nn:ss.zzz', Now),
                   TimeSince(fFirstTick) / 1000,
                   TimeSince(fPreviousTick),
                   aText]));
 
     if aDoCloseFile then
-      CloseFile(fl);
+      CloseFile(fLogFile);
 
     fPreviousTick := TimeGet;
     fPreviousDate := Now;
@@ -341,13 +341,14 @@ begin
   if MultithreadLogging then
     Lock;
   try
-    Append(fl);
+    Append(fLogFile);
     if aWithPrefix then
-      WriteLn(fl, '                                      ' + aText)
+      WriteLn(fLogFile, '                                      ' + aText)
     else
-      WriteLn(fl, aText);
+      WriteLn(fLogFile, aText);
+
     if aDoCloseFile then
-      CloseFile(fl);
+      CloseFile(fLogFile);
   finally
     if MultithreadLogging then
       UnLock;
