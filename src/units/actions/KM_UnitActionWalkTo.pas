@@ -1244,8 +1244,8 @@ begin
     //Update unit direction according to next Node
     fUnit.Direction := KMGetDirection(NodeList[NodePos], NodeList[NodePos+1]);
 
-    //Check if we can walk to next tile in the route
-    //Don't use CanAbandonInternal because skipping this check can cause crashes
+    // Check if we can walk to next tile in the route
+    // Don't use CanAbandonInternal because skipping this check can cause crashes (e.g. tile become unwalkable)
     if not fDoExchange then
       case CheckForObstacle(oldDir) of
         ocNoObstacle:   ;
