@@ -444,7 +444,7 @@ begin
   ListBox_Save.Clear;
 
   if (Sender = fSaves) then
-    Menu_Save_EditChange(fSaves)
+    Menu_Save_EditChange(fSaves) //@Rey: What is this call for? Won't it get immediately ignored inside the Menu_Save_EditChange
   else
     Menu_Save_EditChange(nil);
 
