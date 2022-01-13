@@ -19,7 +19,7 @@ type
     function GetParCnt_HandLogistics(): Word;
     // Set global parameters
     procedure SetParameters(const aSet: TAIParSet; const aIdv: TGAIndividual; aLogIt: Boolean = False);
-    procedure SetPar_HandLogistics(const aIdv: TGAIndividual; aLogIt: Boolean = False; K: Word = 0);
+    procedure SetPar_HandLogistics(const aIdv: TGAIndividual; aLogIt: Boolean = False; aK: Word = 0);
   public
     constructor Create;
     destructor Destroy; override;
@@ -211,16 +211,16 @@ begin
 end;
 
 
-procedure TGAParameterization.SetPar_HandLogistics(const aIdv: TGAIndividual; aLogIt: Boolean = False; K: Word = 0);
+procedure TGAParameterization.SetPar_HandLogistics(const aIdv: TGAIndividual; aLogIt: Boolean = False; aK: Word = 0);
 //var
 //  I: Integer;
 begin
   //I := 0;
 
-  //GA_TCBB_BasicInit   := Max(1, Round(aIdv.Gene[Incr(K)] * 20));
-  //GA_TCBB_BasicRnd    := Max(1, Round(aIdv.Gene[Incr(K)] * 60)+40);
-  //GA_TCBB_NormRnd     := Max(1, Round(aIdv.Gene[Incr(K)] * 32));
-  //GA_TCBB_Rnd         := Max(1, Round(aIdv.Gene[Incr(K)] * 50));
+  //GA_TCBB_BasicInit   := Max(1, Round(aIdv.Gene[Incr(aK)] * 20));
+  //GA_TCBB_BasicRnd    := Max(1, Round(aIdv.Gene[Incr(aK)] * 60)+40);
+  //GA_TCBB_NormRnd     := Max(1, Round(aIdv.Gene[Incr(aK)] * 32));
+  //GA_TCBB_Rnd         := Max(1, Round(aIdv.Gene[Incr(aK)] * 50));
   //GA_TCBB_BasicPwr    := Max(1, Round(GA_TCBB_BasicRnd / 5)); // GA has discovered that this is best strategy
   //GA_TCBB_NormPwr     := Max(1, Round(GA_TCBB_NormRnd / 5));
   //
