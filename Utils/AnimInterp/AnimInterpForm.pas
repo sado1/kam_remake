@@ -1,7 +1,5 @@
 unit AnimInterpForm;
-
 interface
-
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
@@ -29,7 +27,6 @@ type
     procedure btnProcessClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
-    { Private declarations }
     fPalettes: TKMResPalettes;
     fResUnits: TKMResUnits;
     fResHouses: TKMResHouses;
@@ -64,8 +61,6 @@ type
     procedure DoInterpTree(aTree: Integer; var aPicOffset: Integer; aDryRun: Boolean);
     procedure DoInterpHouseAction(aHT: TKMHouseType; aHouseAct: TKMHouseActionType; var aPicOffset: Integer; aDryRun: Boolean);
     procedure DoInterpBeast(beastHouse, beast, beastAge: Integer; var aPicOffset: Integer; aDryRun: Boolean);
-  public
-    { Public declarations }
   end;
 
 var
@@ -75,6 +70,8 @@ implementation
 uses
   ShellApi, Math, RTTI, KM_FileIO, KromUtils,
   KM_Log, KM_IoPNG, KM_ResWares, KM_ResInterpolation;
+
+{$R *.dfm}
 
 const
   USE_BASE_BEASTS = False;
@@ -125,8 +122,6 @@ const
       Inc(Result);
   end;
 
-{$R *.dfm}
-
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
@@ -152,7 +147,7 @@ function TForm1.GetDainParams(aDir: string; aAlpha: Boolean; aInterpLevel: Integ
 var
   DainExe: string;
 begin
-  DainExe := fDainFolder+'DAINAPP.exe';
+  DainExe := fDainFolder + 'DAINAPP.exe';
   Result := 'cmd.exe /C "'+DainExe+'" --cli 1 -o '+aDir+' -p 0 -l 1 -in '+IntToStr(aInterpLevel)+' -da 0 -se 0 -si 1 -sr 0 -ha 0 --fast_mode 0';
   if aAlpha then
     Result := Result + ' -a 1';
@@ -773,7 +768,6 @@ begin
 end;
 
 
-
 procedure TForm1.DoInterpUnit(aUT: TKMUnitType; aAction: TKMUnitActionType; aDir: TKMDirection; var aPicOffset: Integer; aDryRun: Boolean);
 var
   A, ABase: TKMAnimLoop;
@@ -1133,5 +1127,6 @@ begin
   fOutputStream.SaveToFile(ExeDir+'data/defines/interp.dat');
   Memo1.Text := animData;
 end;
+
 
 end.
