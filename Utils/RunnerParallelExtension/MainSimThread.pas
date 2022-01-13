@@ -309,15 +309,15 @@ procedure TMainSimThread.RunSimulation();
   end;
   procedure LogTime(aStartTime: Int64);
   var
-    Time: Single;
+    t: Single;
   begin
-    Time := Single(TimeGetUsec()-aStartTime)/1000000.0;
-    if (Time/60 < 1) then
-      gLog.Log(Format('Time: %.3f [s]',[Time]))
-    else if (Time/60/60 < 1) then
-      gLog.Log(Format('Time: %.3f [min]',[Time/60]))
+    t := (TimeGetUsec()-aStartTime)/1000000.0;
+    if (t/60 < 1) then
+      gLog.Log(Format('Time: %.3f [s]',[t]))
+    else if (t/60/60 < 1) then
+      gLog.Log(Format('Time: %.3f [min]',[t/60]))
     else
-      gLog.Log(Format('Time: %.3f [h]',[Time/60/60]));
+      gLog.Log(Format('Time: %.3f [h]',[t/60/60]));
   end;
 var
   K: Integer;
