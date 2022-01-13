@@ -1,7 +1,5 @@
 unit MainSimThread;
-
 interface
-
 uses
   Windows,
   Classes, SysUtils, StrUtils, IOUtils, System.Math,
@@ -54,7 +52,7 @@ type
     GA_FINAL_MUTATION_Variance: Single; // Final variance coefficient (last generation)
 
     constructor Create(aPlotGraph: TPlotGraph; aExePath: String);
-    destructor Destroy(); override;
+    destructor Destroy; override;
 
     property SimulationRequest: TKMSimulationRequest read fSimulationRequest write fSimulationRequest;
     property SimulationInitialized: boolean read fSimulationInitialized write fSimulationInitialized;
@@ -116,7 +114,7 @@ begin
 end;
 
 
-destructor TMainSimThread.Destroy();
+destructor TMainSimThread.Destroy;
 begin
   FreeAndNil(fGASetup.Population);
   fParametrization.Free;

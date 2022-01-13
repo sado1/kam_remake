@@ -1,16 +1,14 @@
 unit SimThread;
-
 interface
-
 uses
   Classes, SysUtils, Math, ComInterface;
 
-Type
+type
   TSimThread = class(TThread)
   private
     fSimulationSuccessful: Boolean;
     fThreadNumber: Integer;
-    function SimulateGeneration(): Boolean;
+    function SimulateGeneration: Boolean;
     procedure Log(const aStr: String);
   protected
     procedure Execute; override;
@@ -19,7 +17,7 @@ Type
     GASetup: TGASetup;
 
     constructor Create(aNumber: Integer; aCreateSuspended: boolean); reintroduce;
-    destructor Destroy(); override;
+    destructor Destroy; override;
 
     property SimulationSuccessful: Boolean read fSimulationSuccessful;
   end;
@@ -29,23 +27,27 @@ implementation
 uses
   Log;
 
+
+{ TSimThread }
 constructor TSimThread.Create(aNumber: Integer; aCreateSuspended: boolean);
 begin
   inherited Create(aCreateSuspended);
+
   fThreadNumber := aNumber;
   FreeOnTerminate := False;
   Log('Thread ' + IntToStr(fThreadNumber) + ': Constructor');
 end;
 
 
-destructor TSimThread.Destroy();
+destructor TSimThread.Destroy;
 begin
   Log('Thread ' + IntToStr(fThreadNumber) + ': Destructor');
-  inherited Destroy;
+
+  inherited;
 end;
 
 
-function TSimThread.SimulateGeneration(): Boolean;
+function TSimThread.SimulateGeneration: Boolean;
 var
   CI: TKMComInterface;
 begin
@@ -63,6 +65,7 @@ begin
   Result := True;
 end;
 
+
 procedure TSimThread.Log(const aStr: String);
 const
   INDENTATION = '    ';
@@ -71,17 +74,14 @@ begin
 end;
 
 
-procedure TSimThread.Execute();
+procedure TSimThread.Execute;
 var
-  SimulationIsFinished: Boolean;
+  simulationIsFinished: Boolean;
 begin
-  SimulationIsFinished := False;
-  while (not Terminated) AND not SimulationIsFinished do
-  begin
-    SimulationIsFinished := SimulateGeneration();
-  end;
+  simulationIsFinished := False;
+  while not Terminated and not simulationIsFinished do
+    simulationIsFinished := SimulateGeneration;
 end;
-
 
 
 end.

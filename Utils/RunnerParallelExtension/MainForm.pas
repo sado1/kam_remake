@@ -80,13 +80,11 @@ var
   Paraller_Runner: TParaller_Runner;
 
 implementation
-{$R *.dfm}
 
+{$R *.dfm}
 
 const
   COLORS_COUNT = 8;
-
-
 
 
 procedure TParaller_Runner.FormCreate(Sender: TObject);
