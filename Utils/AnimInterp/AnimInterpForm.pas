@@ -369,8 +369,8 @@ begin
 
   StrList := TStringList.Create;
 
-  outDirLocal := fOutDir+IntToStr(Byte(RT)+1)+'\';
-  outPrefix := outDirLocal+IntToStr(Byte(RT)+1)+'_';
+  outDirLocal := fOutDir+IntToStr(Ord(RT)+1)+'\';
+  outPrefix := outDirLocal+IntToStr(Ord(RT)+1)+'_';
   ForceDirectories(outDirLocal);
 
   //Import and reprocess
@@ -506,8 +506,8 @@ begin
   if (S = 2) or (S = 3) or (S = 4) then
   begin
     //Custom handler for animations that only update every 2/3/4 frames
-    outDirLocal := fOutDir+IntToStr(Byte(RT)+1)+'\';
-    outPrefix := outDirLocal+IntToStr(Byte(RT)+1)+'_';
+    outDirLocal := fOutDir+IntToStr(Ord(RT)+1)+'\';
+    outPrefix := outDirLocal+IntToStr(Ord(RT)+1)+'_';
     ForceDirectories(outDirLocal);
 
     for StepFull := 1 to 30 do

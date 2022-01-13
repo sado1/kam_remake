@@ -147,8 +147,8 @@ begin
 
         SpritePack.SaveToRXXFile(ExeDir + 'data\Sprites\' + RXInfo[RT].FileName + '_a.rxx');
 
-        if DirectoryExists(SpritesBaseDir + SPRITES_INTERP_DIR + '\' + IntToStr(Byte(RT)+1) + '\') then
-          SpritePack.OverloadFromFolder(SpritesBaseDir + SPRITES_INTERP_DIR + '\' + IntToStr(Byte(RT)+1) + '\', False); // Shadows are already softened for interps
+        if DirectoryExists(SpritesBaseDir + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(RT)+1) + '\') then
+          SpritePack.OverloadFromFolder(SpritesBaseDir + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(RT)+1) + '\', False); // Shadows are already softened for interps
 
         SpritePack.SaveToRXAFile(ExeDir + 'data\Sprites\' + RXInfo[RT].FileName + '.rxa');
       end;

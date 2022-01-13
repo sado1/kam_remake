@@ -814,28 +814,28 @@ begin
   begin
     HidePages;
     fGuiTerrain.Show(I);
-    gGameApp.PrintScreen(path + 'Terrain' + IntToStr(Byte(I)) + '.jpeg');
+    gGameApp.PrintScreen(path + 'Terrain' + IntToStr(Ord(I)) + '.jpeg');
   end;
 
   for K := Low(TKMTownTab) to High(TKMTownTab) do
   begin
     HidePages;
     fGuiTown.Show(K);
-    gGameApp.PrintScreen(path + 'Town' + IntToStr(Byte(K)) + '.jpeg');
+    gGameApp.PrintScreen(path + 'Town' + IntToStr(Ord(K)) + '.jpeg');
   end;
 
   for L := Low(TKMPlayerTab) to High(TKMPlayerTab) do
   begin
     HidePages;
     fGuiPlayer.Show(L);
-    gGameApp.PrintScreen(path + 'Player' + IntToStr(Byte(L)) + '.jpeg');
+    gGameApp.PrintScreen(path + 'Player' + IntToStr(Ord(L)) + '.jpeg');
   end;
 
   for M := Low(TKMMissionTab) to High(TKMMissionTab) do
   begin
     HidePages;
     fGuiMission.Show(M);
-    gGameApp.PrintScreen(path + 'Mission' + IntToStr(Byte(M)) + '.jpeg');
+    gGameApp.PrintScreen(path + 'Mission' + IntToStr(Ord(M)) + '.jpeg');
   end;
 
   HidePages;

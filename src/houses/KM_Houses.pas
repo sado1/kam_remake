@@ -851,7 +851,7 @@ begin
 
   fUpdateDeliveryModeOnTick := 0;
   fDeliveryMode := fNewDeliveryMode;
-  gLog.LogDelivery('DeliveryMode updated to ' + IntToStr(Byte(fDeliveryMode)));
+  gLog.LogDelivery('DeliveryMode updated to ' + IntToStr(Ord(fDeliveryMode)));
 end;
 
 
@@ -861,19 +861,19 @@ begin
   fNewDeliveryMode := aValue;
 
   fUpdateDeliveryModeOnTick := fTick + UPDATE_DELIVERY_MODE_DELAY;
-  gLog.LogDelivery('NewDeliveryMode set to ' + IntToStr(Byte(fNewDeliveryMode)));
+  gLog.LogDelivery('NewDeliveryMode set to ' + IntToStr(Ord(fNewDeliveryMode)));
 end;
 
 
 procedure TKMHouse.SetNextDeliveryMode;
 begin
-  SetNewDeliveryMode(TKMDeliveryMode((Byte(fNewDeliveryMode) + 3 - 1) mod 3)); //We use opposite order for legacy support
+  SetNewDeliveryMode(TKMDeliveryMode((Ord(fNewDeliveryMode) + 3 - 1) mod 3)); //We use opposite order for legacy support
 end;
 
 
 procedure TKMHouse.SetPrevDeliveryMode;
 begin
-  SetNewDeliveryMode(TKMDeliveryMode((Byte(fNewDeliveryMode) + 1) mod 3)); //We use opposite order for legacy support
+  SetNewDeliveryMode(TKMDeliveryMode((Ord(fNewDeliveryMode) + 1) mod 3)); //We use opposite order for legacy support
 end;
 
 

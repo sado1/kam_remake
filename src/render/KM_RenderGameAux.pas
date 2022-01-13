@@ -127,7 +127,7 @@ begin
   for I := aRect.Top to aRect.Bottom do
     for J := aRect.Left to aRect.Right do
     begin
-      str := IntToStr(Byte(gTerrain.Land^[I,J].TileOverlay));
+      str := IntToStr(Ord(gTerrain.Land^[I,J].TileOverlay));
       if gGameParams.IsMapEditor and (gGame.MapEditor.LandMapEd^[I,J].CornOrWine > 0) then
         str := str + '-' + IntToStr(gGame.MapEditor.LandMapEd^[I,J].CornOrWineTerrain);
       gRenderAux.Text(J, I, str, icDarkPink);
@@ -146,6 +146,7 @@ begin
       gRenderAux.Text(J, I, TILE_LOCK_STR[gTerrain.Land^[I,J].TileLock], icCyan);
 end;
 
+
 procedure TRenderGameAux.TileTerrainTileObjectID(const aRect: TKMRect);
 var
   I, J: Integer;
@@ -154,6 +155,7 @@ begin
     for J := aRect.Left to aRect.Right do
       gRenderAux.Text(J, I, IntToStr(gTerrain.Land^[I,J].Obj), icCyan);
 end;
+
 
 procedure TRenderGameAux.TileTerrainTileUnit(const aRect: TKMRect);
 var
