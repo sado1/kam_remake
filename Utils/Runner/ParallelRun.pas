@@ -83,14 +83,13 @@ begin
     begin
       Check := True;
       Log('Name was found');
-      break;
+      Break;
     end;
   if not Check then
   begin
     Log('Name was NOT found : ' + RunnerList[3].ClassName + ' vs ' + fSimSetup.RunningClass);
     Exit;
   end;
-
 
   RunnerClass := RunnerList[I]; // ID of running test - planner / builder / predictor etc.
   Runner := RunnerClass.Create(nil, nil); // No render in parallel run
@@ -107,7 +106,6 @@ begin
     end
     else
       Output := Runner.Run(1); // Only 1 run
-
   finally
     Runner.Free;
   end;
@@ -121,6 +119,7 @@ begin
   Log('Log Results');
   fCommunication.LogSimulationResults(fSimSetup, fGASetup);
 end;
+
 
 end.
 

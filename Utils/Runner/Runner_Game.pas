@@ -312,12 +312,10 @@ implementation
 uses
   TypInfo, StrUtils, KM_CampaignTypes,
   KM_HandSpectator, KM_ResHouses, KM_Hand, KM_HandTypes, KM_UnitsCollection, KM_UnitGroup,
-
   KM_GameSettings,
   KM_CommonTypes, KM_MapTypes, KM_FileIO, KM_Game, KM_GameInputProcess, KM_GameTypes, KM_InterfaceGame,
   KM_UnitGroupTypes,
   KM_ResTypes;
-
 
 
 { TKMRunnerGA_Common }
@@ -342,6 +340,7 @@ begin
   f_GA_START_MUTATION_Variance := 0.1;
   f_GA_FINAL_MUTATION_Variance := 0.01;
 end;
+
 
 procedure TKMRunnerGA_Common.SetUp;
 var
@@ -618,8 +617,6 @@ begin
 end;
 
 
-
-
 { TKMRunnerGA_TestParRun }
 procedure TKMRunnerGA_TestParRun.InitGAParameters();
 begin
@@ -651,8 +648,6 @@ begin
   // Stop simulation
   gGameApp.StopGame(grSilent);
 end;
-
-
 
 
 { TKMRunnerGA_HandLogistics }
@@ -742,8 +737,6 @@ begin
   f_SIM_MapNamePrefix := 'GA_S2_%.3d';
   f_GA_GENE_CNT := fParametrization.GetParCnt('TKMRunnerGA_ArmyAttackNew');
 end;
-
-
 
 
 { TKMRunnerFindBugs }
@@ -2253,8 +2246,6 @@ begin
 end;
 
 
-
-
 { TKMStabilityTest }
 procedure TKMStabilityTest.SetUp;
 begin
@@ -2356,6 +2347,7 @@ begin
 
 end;
 
+
 procedure TKMRunnerCachePerformance.SetUp;
 begin
   // inherited;
@@ -2366,6 +2358,7 @@ begin
 //    gLog := TKMLog.Create(Format('%sUtils\Runner\Runner_Log.log',[ExeDir]));
 //  gLog.MessageTypes := [];
 end;
+
 
 procedure TKMRunnerCachePerformance.TearDown;
 begin
@@ -2393,6 +2386,7 @@ end;
 {$IFDEF OverflowChecksEnabled}
   {$Q+}
 {$ENDIF}
+
 
 function TKMRunnerCachePerformance.TKMRDeliveryBidKey.Compare(aOther: TKMRDeliveryBidKey): Integer;
 begin
@@ -2443,6 +2437,7 @@ begin
 
 end;
 
+
 function TKMRunnerCachePerformance.TKMRDeliveryBidKeyEqualityComparer.GetHashCode(const Value: TKMRDeliveryBidKey): Integer;
 begin
 
@@ -2477,12 +2472,14 @@ begin
   inherited Add(aKey, value);
 end;
 
+
 procedure TKMRunnerCachePerformance.TKMRDeliveryCache.Add(const aKey: TKMRDeliveryBidKey; const aBid: TKMRDeliveryBid);
 begin
   if not CACHE_DELIVERY_BIDS then Exit;
 
   inherited Add(aKey, aBid);
 end;
+
 
 function TKMRunnerCachePerformance.TKMRDeliveryCache.TryGetValue(const aKey: TKMRDeliveryBidKey;
                                                                      var aValue: TKMRDeliveryBid): Boolean;
@@ -2496,7 +2493,6 @@ begin
       Exit(True); // We found value
   end;
 end;
-
 
 
 { TKMRunnerCachePerformanceTest.TKMRDeliveryBidKeyComparer }

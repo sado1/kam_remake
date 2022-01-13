@@ -153,8 +153,6 @@ begin
 end;
 
 
-
-
 { TGAPopulation }
 constructor TGAPopulation.Create(aPopulationCount, aGeneCount, aMapsCount: Integer; aInitialise: Boolean);
 var
@@ -256,9 +254,6 @@ begin
 end;
 
 
-
-
-
 { TGAIndividual }
 constructor TGAIndividual.Create(aGeneCount,aMapsCount: Integer);
 begin
@@ -327,6 +322,7 @@ begin
   for K := 0 to Length(fFitness) - 1 do
     Result := Result + fFitness[K];
 end;
+
 
 end.
 
