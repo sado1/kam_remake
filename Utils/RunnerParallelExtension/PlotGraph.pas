@@ -30,9 +30,11 @@ type
     procedure PlotGenes(aGenIdx: Integer);
   end;
 
+
 implementation
 uses
   Log;
+
 
 constructor TPlotGraph.Create(aImgGenes, aImgFitness: TImage; aGeneTrackBar: TTrackBar);
 begin
@@ -59,6 +61,7 @@ begin
   for K := Low(fYFitLab) to High(fYFitLab) do
     FreeAndNil(fYFitLab[K]);
   gLog.Log('TPlotGraph: Destroy');
+
   inherited;
 end;
 
@@ -121,7 +124,6 @@ begin
   end;
   Inc(fActualGeneration);
 end;
-
 
 
 function TPlotGraph.GetFitnessSum(K,L: Integer): Single;
@@ -386,7 +388,6 @@ begin
   end;
   }
 end;
-
 
 
 end.
