@@ -194,8 +194,7 @@ begin
   else if (CompareStr(fClass, 'TKMRunnerGA_Quarry'       ) = 0) then SetParameters(SetQuarry, aIdv, aLogIt)
   else if (CompareStr(fClass, 'TKMRunnerGA_RoadPlanner'  ) = 0) then SetParameters(SetRoadPlanner, aIdv, aLogIt)
   else if (CompareStr(fClass, 'TKMRunnerGA_ArmyAttack'   ) = 0) then SetParameters(SetArmyAttack, aIdv, aLogIt)
-  else if (CompareStr(fClass, 'TKMRunnerGA_ArmyAttackNew') = 0) then SetParameters(SetArmyAttackNew, aIdv, aLogIt)
-  else begin end;
+  else if (CompareStr(fClass, 'TKMRunnerGA_ArmyAttackNew') = 0) then SetParameters(SetArmyAttackNew, aIdv, aLogIt);
 end;
 
 
