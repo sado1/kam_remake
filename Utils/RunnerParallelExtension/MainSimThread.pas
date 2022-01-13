@@ -74,6 +74,7 @@ var
   dir: String;
 begin
   inherited Create;
+
   gLog.Log('TMainSimThread: Create');
   fExePath := aExePath;
   fPlotGraph := aPlotGraph;
@@ -117,11 +118,11 @@ end;
 
 destructor TMainSimThread.Destroy();
 begin
-  if (fGASetup.Population <> nil) then
-    FreeAndNil(fGASetup.Population);
+  FreeAndNil(fGASetup.Population);
   fParametrization.Free;
   fParLog.Free;
   gLog.Log('TKMMainSimThread: Destroy');
+
   inherited;
 end;
 

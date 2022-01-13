@@ -1,5 +1,4 @@
 program ParallelRunner;
-
 uses
   Vcl.Forms,
   MainForm in 'MainForm.pas' {Paraller_Runner},
