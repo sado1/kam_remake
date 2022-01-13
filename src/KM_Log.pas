@@ -220,12 +220,11 @@ begin
     WriteLn(fLogFile, '   Timestamp    Elapsed     Delta     Description');
     CloseFile(fLogFile);
   except
-    on Ex: Exception do
+    on E: Exception do
     begin
-      Ex.Message := Ex.Message + '. Tried to init Log on path ''' + fLogPath + '''';
-      raise Ex;
+      E.Message := E.Message + '. Tried to init Log on path ''' + fLogPath + '''';
+      raise E;
     end;
-
   end;
   AddLineTime('Log is up and running. Game version: ' + UnicodeString(GAME_VERSION));
 end;
