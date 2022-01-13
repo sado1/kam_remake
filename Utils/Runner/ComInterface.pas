@@ -125,12 +125,12 @@ var
     initIdx := aIdx+1;
     while (aIdx < Length(aParams)) AND (aParams[aIdx] <> COMMAND_END) do
       aIdx := aIdx + 1;
-    Try
+    try
       Result := Byte(  StrToInt( copy(aParams, initIdx, aIdx-initIdx) )  );
       if (Result = CMND_GA_NewIdv) then // The only command which does not have parameter
         NewIdv();
     except
-      //On E : EConvertError do
+      //on E : EConvertError do
       //  Writeln ('Invalid number encountered');
     end;
   end;
@@ -151,10 +151,10 @@ var
     initIdx := aIdx+1;
     while (aIdx < Length(aParams)) AND (aParams[aIdx] <> INT_END) do
       aIdx := aIdx + 1;
-    Try
+    try
       Result := StrToInt( copy(aParams, initIdx, aIdx-initIdx) );
     except
-      //On E : EConvertError do
+      //on E : EConvertError do
       //  Writeln ('Invalid number encountered');
     end;
   end;
@@ -166,10 +166,10 @@ var
     initIdx := aIdx+1;
     while (aIdx < Length(aParams)) AND (aParams[aIdx] <> FLOAT_END) do
       aIdx := aIdx + 1;
-    Try
+    try
       Result := StrToFloat( copy(aParams, initIdx, aIdx-initIdx) );
     except
-      //On E : EConvertError do
+      //on E : EConvertError do
       //  Writeln ('Invalid number encountered');
     end;
   end;
@@ -270,27 +270,27 @@ function TKMComInterface.EncryptSetup(var aSimSetup: TSimSetup; var aGASetup: TG
     end;
   end;
 var
-  Str: String;
+  s: String;
 begin
-  Str := CreateCommand(CMND_RunningClass) + CreateString(aSimSetup.RunningClass);
-  Str := Str + CreateCommand(CMND_SimTimeInMin) + CreateInt(aSimSetup.SimTimeInMin);
-  Str := Str + CreateCommand(CMND_PeaceTime) + CreateInt(aSimSetup.PeaceTime);
-  Str := Str + CreateCommand(CMND_SimNumber) + CreateInt(aSimSetup.SimNumber);
-  Str := Str + CreateCommand(CMND_ThreadNumber) + CreateInt(aSimSetup.ThreadNumber);
-  Str := Str + EncryptGA() + CreateCommand(CMND_GA_DONE);
-  Result := Str;
+  s := CreateCommand(CMND_RunningClass) + CreateString(aSimSetup.RunningClass);
+  s := s + CreateCommand(CMND_SimTimeInMin) + CreateInt(aSimSetup.SimTimeInMin);
+  s := s + CreateCommand(CMND_PeaceTime) + CreateInt(aSimSetup.PeaceTime);
+  s := s + CreateCommand(CMND_SimNumber) + CreateInt(aSimSetup.SimNumber);
+  s := s + CreateCommand(CMND_ThreadNumber) + CreateInt(aSimSetup.ThreadNumber);
+  s := s + EncryptGA() + CreateCommand(CMND_GA_DONE);
+  Result := s;
 end;
 
 
 procedure TKMComInterface.LogInConsole(aString: AnsiString);
 var
-  OutputStream: THandleStream;
+  outputStream: THandleStream;
 begin
-  OutputStream := THandleStream.Create(GetStdHandle(STD_OUTPUT_HANDLE));
+  outputStream := THandleStream.Create(GetStdHandle(STD_OUTPUT_HANDLE));
   try
-    OutputStream.Write(Pointer(aString)^, Length(aString) * SizeOf(WideChar));
+    outputStream.Write(Pointer(aString)^, Length(aString) * SizeOf(WideChar));
   finally
-    OutputStream.Free;
+    outputStream.Free;
   end;
 end;
 
@@ -389,7 +389,7 @@ var
   fileWithParams: TextFile;
 begin
   Result := True;
-  dir := Format('%s\..\%s',[ParamStr(0),dir_PARAMETERS_FOR_RUNNER]);
+  dir := Format('%s\..\%s',[ParamStr(0), dir_PARAMETERS_FOR_RUNNER]);
   if not DirectoryExists(dir) then
     CreateDir(dir);
   AssignFile(fileWithParams, aFilePath);
@@ -495,7 +495,6 @@ begin
     Result := not ('' = Params);
   end;
 end;
-
 
 
 end.

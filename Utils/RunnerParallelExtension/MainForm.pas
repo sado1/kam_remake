@@ -269,7 +269,7 @@ begin
         GA_START_MUTATION_Variance           := StrToFloat(eStartVariance.Text );
         GA_FINAL_MUTATION_Variance           := StrToFloat(eEndVariance.Text   );
       except
-        On E : Exception do
+        on E : Exception do
           Log('Exception StringToFloat');
       end;
     end;
