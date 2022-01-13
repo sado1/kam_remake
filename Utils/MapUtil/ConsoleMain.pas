@@ -65,7 +65,8 @@ uses
   KM_Maps, KM_Resource, KM_IoPNG,
   KM_CommonUtils, KM_Log;
 
-{ TMain }
+
+{ TConsoleMain }
 constructor TConsoleMain.Create;
 begin
   inherited;
@@ -81,6 +82,9 @@ end;
 destructor TConsoleMain.Destroy;
 begin
   FreeAndNil(fMinimap);
+  //@Rey: We might need to free what we have created
+  //todo: FreeAndNil(gRes);
+  //todo: FreeAndNil(gLog);
 
   inherited;
 end;
@@ -108,7 +112,6 @@ begin
     raise Exception.Create('Map is not valid!');
 
   map.TxtInfo.LoadTXTInfo(ChangeFileExt(aMapDatPath, '.txt'));
-
 
   fMinimap.LoadFromMission(aMapDatPath, map.HumanUsableLocs);
 

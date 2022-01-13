@@ -1,5 +1,6 @@
 unit MapUtilTypes;
 interface
+
 type
   TFOWType = (ftRevealAll, ftRevealPlayers, ftMapSetting);
 

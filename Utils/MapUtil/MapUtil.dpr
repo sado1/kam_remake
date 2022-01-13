@@ -11,7 +11,7 @@ uses
   KM_Defaults,
   MapUtilTypes in 'MapUtilTypes.pas',
   ConsoleMain in 'ConsoleMain.pas',
-  KM_Log in '..\..\KM_Log.pas';
+  KM_Log in '..\..\src\KM_Log.pas';
 
 {$R *.res}
 
@@ -19,7 +19,7 @@ var
   fConsoleMain: TConsoleMain;
   fParamRecord: TCLIParamRecord;
   fArgs:        string;
-  path:         string;  
+  path:         string;
 
 procedure ProcessParams;
 var
@@ -84,7 +84,7 @@ end;
 
 
 // This utility console tool generates minimap png file for a certain map.
-// Could be compiled under windows or Linux (added x64 config for Lazarus (tested on fpcdeluxe FPC 3.2.2 Lazarus 2.0.12))
+// Could be compiled under Windows or Linux (added x64 config for Lazarus (tested on fpcdeluxe FPC 3.2.2 Lazarus 2.0.12))
 begin
   try
     ProcessParams;
@@ -92,7 +92,7 @@ begin
 
     path := 'data' + PathDelim + 'defines' + PathDelim + 'unit.dat';
     if not FileExists(ExeDir + path) 
-      and FileExists(ExeDir + '..\..\' + path) then  
+    and FileExists(ExeDir + '..\..\' + path) then
       ExeDir := ExeDir + '..\..\';  
 
     fConsoleMain := TConsoleMain.Create;
