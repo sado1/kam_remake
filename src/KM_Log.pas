@@ -3,7 +3,7 @@ unit KM_Log;
 interface
 uses
   SyncObjs, KM_CommonTypes, KM_CommonClasses
-  {$IFDEF KMR_GAME} // No need for server and other tools
+  {$IFDEF KMR_GAME} // Not needed for server and other tools
   , Generics.Collections
   {$ENDIF}
   ;
@@ -12,15 +12,16 @@ uses
 type
   // Log message type
   TKMLogMessageType = (
-    lmtDefault,            //default type
-    lmtDelivery,           //delivery messages
-    lmtCommands,           //all GIC commands
-    lmtRandomChecks,       //Random Checks
-    lmtNetConnection,      //messages about net connection/disconnection/reconnection
-    lmtNetPacketOther,     //log messages about net packets (all packets, except GIP commands/ping/fps)
-    lmtNetPacketCommand,   //log messages about GIP commands net packets
-    lmtNetPacketPingFps,   //log messages about ping/fps net packets
-    lmtDebug);             //debug
+    lmtDefault,            // Default type
+    lmtDelivery,           // Delivery messages
+    lmtCommands,           // All GIC commands
+    lmtRandomChecks,       // Random checks
+    lmtNetConnection,      // Messages about net connection/disconnection/reconnection
+    lmtNetPacketOther,     // Messages about net packets (all packets, except GIP commands/ping/fps)
+    lmtNetPacketCommand,   // Messages about GIP commands net packets
+    lmtNetPacketPingFps,   // Messages about ping/fps net packets
+    lmtDebug               // Debug
+  );
 
   TKMLogMessageTypeSet = set of TKMLogMessageType;
 
@@ -50,7 +51,7 @@ type
     procedure AddLineNoTime(const aText: UnicodeString; aWithPrefix: Boolean = True; aDoCloseFile: Boolean = True); overload;
     procedure AddLineNoTime(const aText: UnicodeString; aLogType: TKMLogMessageType; aWithPrefix: Boolean = True; aDoCloseFile: Boolean = True); overload;
   public
-    MultithreadLogging: Boolean; // Enable thread safe mode (resource protection) while logging with multi threads
+    MultithreadLogging: Boolean; // Enable thread safe mode (resource protection) when logging from multiple threads
     MessageTypes: TKMLogMessageTypeSet;
     constructor Create(const aPath: UnicodeString);
     destructor Destroy; override;
