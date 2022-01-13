@@ -1,5 +1,4 @@
 unit GeneticAlgorithmParameters;
-
 interface
 uses
   Classes, SysUtils, Math,
@@ -22,8 +21,8 @@ type
     procedure SetParameters(const aSet: TAIParSet; const aIdv: TGAIndividual; aLogIt: Boolean = False);
     procedure SetPar_HandLogistics(const aIdv: TGAIndividual; aLogIt: Boolean = False; K: Word = 0);
   public
-    constructor Create();
-    destructor Destroy(); override;
+    constructor Create;
+    destructor Destroy; override;
 
     property SetLogPar: TKMLog write fLogPar;
     property CurrentClass: String read fClass write fClass;
@@ -38,61 +37,58 @@ uses
 
 
 const
-
-SetArmyAttack:
-  TAIParSet = [
-    ARMY_MaxGgroupsInCompany..ARMY_PATHFINDING_AvoidTraffic,
-    ATTACK_COMPANY_AttackRadius..ATTACK_COMPANY_TimePerATile_Slow,
-    ATTACK_SQUAD_ChangeTarget_Delay..ATTACK_SQUAD_TargetReached_Unit
-  ];
-SetArmyAttackNew:
-  TAIParSet = [
-    ARMY_PATHFINDING_AvoidEdges..ARMY_PATHFINDING_AvoidTraffic,
-    ATTACK_NMAP_BackwardFlood_MaxAllyInfluence..ATTACK_NMAP_TArmyBackwardFF_EnemyInfluence,
-    ATTACK_SUPERVISOR_EvalTarget_DistanceGroup..ATTACK_SUPERVISOR_UpdateAttacks_AttackThreshold
-  ];
-SetCityAllIn:
-  TAIParSet = [
-    BUILDER_BuildHouse_FieldMaxWork..ROADS_noBuildArea
-  ];
-SetCityBuilder:
-  TAIParSet = [
-    BUILDER_BuildHouse_FieldMaxWork..BUILDER_Shortage_Wood
-  ];
-SetCityPlanner:
-  TAIParSet = [
-    PLANNER_FindPlaceForHouse_CityCenter..PLANNER_FindPlaceForQuary_SnapCrit,
-    PLANNER_ObstaclesInHousePlan_Road..PLANNER_SnapCrit_RoadInEntrance
-  ];
-SetFarm:
-  TAIParSet = [
-    PLANNER_FARM_FieldCrit_FlatArea..PLANNER_FARM_PlanFields_ExistField
-  ];
-SetForest:
-  TAIParSet = [
-    EYE_GetForests_MaxAB..EYE_GetForests_SPRndOwnLimMin,
-    PLANNER_FOREST_FindForestAround_MaxDist..PLANNER_FOREST_PlaceWoodcutter_DistFromForest
-  ];
-SetManager:
-  TAIParSet = [
-    MANAGEMENT_CheckUnitCount_SerfGoldCoef..MANAGEMENT_GoldShortage,
-    PREDICTOR_SecondSchool_MinRequiredUnits..PREDICTOR_WareNeedPerAWorker_Wood
-  ];
-SetQuarry:
-  TAIParSet = [
-    PLANNER_FindPlaceForQuary_DistCity..PLANNER_FindPlaceForQuary_SnapCrit
-  ];
-SetRoadPlanner:
-  TAIParSet = [
-    SHORTCUTS_BasePrice..SHORTCUTS_noBuildArea,
-    ROADS_noBuildArea..ROADS_noBuildArea
-  ];
-
-
+  SetArmyAttack:
+    TAIParSet = [
+      ARMY_MaxGgroupsInCompany..ARMY_PATHFINDING_AvoidTraffic,
+      ATTACK_COMPANY_AttackRadius..ATTACK_COMPANY_TimePerATile_Slow,
+      ATTACK_SQUAD_ChangeTarget_Delay..ATTACK_SQUAD_TargetReached_Unit
+    ];
+  SetArmyAttackNew:
+    TAIParSet = [
+      ARMY_PATHFINDING_AvoidEdges..ARMY_PATHFINDING_AvoidTraffic,
+      ATTACK_NMAP_BackwardFlood_MaxAllyInfluence..ATTACK_NMAP_TArmyBackwardFF_EnemyInfluence,
+      ATTACK_SUPERVISOR_EvalTarget_DistanceGroup..ATTACK_SUPERVISOR_UpdateAttacks_AttackThreshold
+    ];
+  SetCityAllIn:
+    TAIParSet = [
+      BUILDER_BuildHouse_FieldMaxWork..ROADS_noBuildArea
+    ];
+  SetCityBuilder:
+    TAIParSet = [
+      BUILDER_BuildHouse_FieldMaxWork..BUILDER_Shortage_Wood
+    ];
+  SetCityPlanner:
+    TAIParSet = [
+      PLANNER_FindPlaceForHouse_CityCenter..PLANNER_FindPlaceForQuary_SnapCrit,
+      PLANNER_ObstaclesInHousePlan_Road..PLANNER_SnapCrit_RoadInEntrance
+    ];
+  SetFarm:
+    TAIParSet = [
+      PLANNER_FARM_FieldCrit_FlatArea..PLANNER_FARM_PlanFields_ExistField
+    ];
+  SetForest:
+    TAIParSet = [
+      EYE_GetForests_MaxAB..EYE_GetForests_SPRndOwnLimMin,
+      PLANNER_FOREST_FindForestAround_MaxDist..PLANNER_FOREST_PlaceWoodcutter_DistFromForest
+    ];
+  SetManager:
+    TAIParSet = [
+      MANAGEMENT_CheckUnitCount_SerfGoldCoef..MANAGEMENT_GoldShortage,
+      PREDICTOR_SecondSchool_MinRequiredUnits..PREDICTOR_WareNeedPerAWorker_Wood
+    ];
+  SetQuarry:
+    TAIParSet = [
+      PLANNER_FindPlaceForQuary_DistCity..PLANNER_FindPlaceForQuary_SnapCrit
+    ];
+  SetRoadPlanner:
+    TAIParSet = [
+      SHORTCUTS_BasePrice..SHORTCUTS_noBuildArea,
+      ROADS_noBuildArea..ROADS_noBuildArea
+    ];
 
 
 { TGAParameterization }
-constructor TGAParameterization.Create();
+constructor TGAParameterization.Create;
 begin
   inherited;
 
@@ -101,14 +97,13 @@ begin
 end;
 
 
-destructor TGAParameterization.Destroy();
+destructor TGAParameterization.Destroy;
 begin
   fLogPar := nil;
   fClass := '';
 
   inherited;
 end;
-
 
 
 // Small helping function
@@ -185,6 +180,7 @@ begin
   else if (CompareStr(fClass, 'TKMRunnerGA_ArmyAttackNew') = 0) then Result := GetParCntFromSet(SetArmyAttackNew)
   else Result := 0;
 end;
+
 
 procedure TGAParameterization.SetPar(const aIdv: TGAIndividual; aLogIt: Boolean = False);
 begin
