@@ -232,24 +232,26 @@ var
     Result := Output;
   end;
 
-  function RequiredSerfCount(): Integer;
+  function RequiredSerfCount: Integer;
   var
-    I,Serfs, Cnt: Integer;
+    I, serfCount, idleCount: Integer;
   begin
-    Serfs := gHands[fOwner].Stats.GetUnitQty(utSerf);
-    Result := Max(0, Round(gHands[fOwner].Stats.GetUnitQty(utWorker) - Serfs));
-    Cnt := 0;
+    serfCount := gHands[fOwner].Stats.GetUnitQty(utSerf);
+    Result := Max(0, Round(gHands[fOwner].Stats.GetUnitQty(utWorker) - serfCount));
+
+    idleCount := 0;
     for I := 0 to P.Units.Count - 1 do
       if not P.Units[I].IsDeadOrDying
-         AND (P.Units[I] is TKMUnitSerf)
-         AND (P.Units[I].IsIdle) then
-        Cnt := Cnt + 1;
+         and (P.Units[I] is TKMUnitSerf)
+         and P.Units[I].IsIdle then
+        Inc(idleCount);
+
     // Increase count of serfs carefully (compute fraction of serfs who does not have job)
-    if (Cnt = 0) then
+    if idleCount = 0 then
       Result := Max( 1
-        + Byte(Serfs < AI_Par[MANAGEMENT_CheckUnitCount_SerfLimit1])
-        + Byte(Serfs < AI_Par[MANAGEMENT_CheckUnitCount_SerfLimit2])
-        + Byte(Serfs < AI_Par[MANAGEMENT_CheckUnitCount_SerfLimit3]), Result);
+        + Ord(serfCount < AI_Par[MANAGEMENT_CheckUnitCount_SerfLimit1])
+        + Ord(serfCount < AI_Par[MANAGEMENT_CheckUnitCount_SerfLimit2])
+        + Ord(serfCount < AI_Par[MANAGEMENT_CheckUnitCount_SerfLimit3]), Result);
   end;
 
   procedure TrainByPriority(const aPrior: TKMTrainPriorityArr; var aUnitReq: TKMUnitReqArr; var aSchools: TKMSchoolHouseArray; aSchoolCnt: Integer);
