@@ -80,7 +80,7 @@ const
     wtAxe, wtSword, wtPike, wtHallebard, wtBow,
     wtArbalet, wtHorse, wtFish);
 
-  ORE_MAX_TYPES_CNT = 5; //Maximum number of ore tiles types
+  ORE_DENSITY_MAX_TYPES = 5; // How many different ore densities there are
 
 
   //Aligned to right to use them in GUI costs display as well

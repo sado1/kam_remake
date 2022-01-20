@@ -2456,7 +2456,7 @@ var
   I: Integer;
   L: TKMPointListArray;
 begin
-  SetLength(L, ORE_MAX_TYPES_CNT);
+  SetLength(L, ORE_DENSITY_MAX_TYPES);
   //Create separate list for each density, to be able to pick best one
   for I := 0 to Length(L) - 1 do
     L[I] := TKMPointList.Create;
@@ -2465,7 +2465,7 @@ begin
 
   //Equation elements will be evalueated one by one until True is found
   Result := False;
-  for I := ORE_MAX_TYPES_CNT - 1 downto 0 do
+  for I := ORE_DENSITY_MAX_TYPES - 1 downto 0 do
     if not Result then
       Result := L[I].GetRandom(OrePoint)
     else
@@ -2532,7 +2532,7 @@ begin
   if not (aRes in [wtIronOre, wtGoldOre, wtCoal]) then
     raise ELocError.Create('Wrong resource as Ore', aLoc);
 
-  Assert(Length(aPoints) = ORE_MAX_TYPES_CNT, 'Wrong length of Points array: ' + IntToStr(Length(aPoints)));
+  Assert(Length(aPoints) = ORE_DENSITY_MAX_TYPES, 'Wrong length of Points array: ' + IntToStr(Length(aPoints)));
 
   miningRect := GetMiningRect(aRes);
 
