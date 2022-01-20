@@ -173,11 +173,10 @@ begin
 
   if not Result then Exit;
 
-  //Empty position accepts anything (e.g. happens at mission start)
+  // Empty position accepts anything (e.g. happens at mission start)
+  // As checked in KaM - it did not link big groups to filled Positions
   Result := (CurrentGroup = nil) or
             (aGroup.Count = 1);
-  //@Lewin: Plz check me here, KaM did not linked big groups to filled Positions?
-  //@Krom: That's correct. To be deleted
 
   Result := Result and ((CurrentGroup = nil) or (CurrentGroup.Count < aMaxUnits));
 end;

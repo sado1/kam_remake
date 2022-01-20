@@ -340,8 +340,6 @@ begin
   SetUp(True);
 
   Args := TStringList.Create;
-  //@Krom: StrictDelimiter doesn't exist in D7
-  //Args.StrictDelimiter := True;
   Args.Delimiter := ' ';
 
   GoalLog := TStringList.Create;
@@ -1223,8 +1221,6 @@ begin
   SetUp(True);
 
   Args := TStringList.Create;
-  //@Krom: StrictDelimiter doesn't exist in D7
-  //Args.StrictDelimiter := True;
   Args.Delimiter := ' ';
 
   PathToMaps := TStringList.Create;
