@@ -149,10 +149,10 @@ type
     function CutCorn(const Loc: TKMPoint): Boolean;
     function CutGrapes(const Loc: TKMPoint): Boolean;
 
-    function DecStoneDeposit(const Loc: TKMPoint): Boolean;
-    function DecOreDeposit(const Loc: TKMPoint; rt: TKMWareType): Boolean;
+    function DecStoneDeposit(const aLoc: TKMPoint): Boolean;
+    function DecOreDeposit(const aLoc: TKMPoint; aWare: TKMWareType): Boolean;
 
-    function GetPassablePointWithinSegment(OriginPoint, TargetPoint: TKMPoint; aPass: TKMTerrainPassability; MaxDistance: Integer = -1): TKMPoint;
+    function GetPassablePointWithinSegment(aOriginPoint, aTargetPoint: TKMPoint; aPass: TKMTerrainPassability; aMaxDistance: Integer = -1): TKMPoint;
     function CheckPassability(X, Y: Integer; aPass: TKMTerrainPassability): Boolean; overload;
     function CheckPassability(const Loc: TKMPoint; aPass: TKMTerrainPassability): Boolean; overload;
     function HasUnit(const Loc: TKMPoint): Boolean;
@@ -3054,7 +3054,7 @@ begin
 end;
 
 
-{Remove the tree and place a falling tree instead}
+// Remove the tree and place a falling tree instead
 function TKMTerrain.FallTree(const Loc: TKMPoint): Boolean;
 var
   I: Integer;
@@ -3076,7 +3076,7 @@ begin
 end;
 
 
-{Remove the tree and place stump instead}
+// Remove the tree and place stump instead
 procedure TKMTerrain.ChopTree(const Loc: TKMPoint);
 var
   H: TKMHouse;
@@ -3314,8 +3314,8 @@ begin
 end;
 
 
-{Extract one unit of stone}
-function TKMTerrain.DecStoneDeposit(const Loc: TKMPoint): Boolean;
+// Extract one unit of stone
+function TKMTerrain.DecStoneDeposit(const aLoc: TKMPoint): Boolean;
 type
   TStoneTransitionType = (sttNone, sttGrass, sttCoastSand, sttDirt, sttSnow, sttSnowOnDirt);
 
@@ -3500,70 +3500,70 @@ var
 var
   transition: TStoneTransitionType;
 begin
-  transition := GetStoneTransitionType(Loc.X,Loc.Y + 1); //Check transition type by lower point (Y + 1)
+  transition := GetStoneTransitionType(aLoc.X,aLoc.Y + 1); //Check transition type by lower point (Y + 1)
 
   Result := True;
   //Replace with smaller ore deposit tile (there are 2 sets of tiles, we can choose random)
-   case Land^[Loc.Y,Loc.X].BaseLayer.Terrain of
-    132, 137: Land^[Loc.Y,Loc.X].BaseLayer.Terrain := 131 + KaMRandom(2, 'TKMTerrain.DecStoneDeposit')*5;
-    131, 136: Land^[Loc.Y,Loc.X].BaseLayer.Terrain := 130 + KaMRandom(2, 'TKMTerrain.DecStoneDeposit 2')*5;
-    130, 135: Land^[Loc.Y,Loc.X].BaseLayer.Terrain := 129 + KaMRandom(2, 'TKMTerrain.DecStoneDeposit 3')*5;
+   case Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain of
+    132, 137: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 131 + KaMRandom(2, 'TKMTerrain.DecStoneDeposit')*5;
+    131, 136: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 130 + KaMRandom(2, 'TKMTerrain.DecStoneDeposit 2')*5;
+    130, 135: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 129 + KaMRandom(2, 'TKMTerrain.DecStoneDeposit 3')*5;
     129, 134: case transition of
                 sttNone,
-                sttGrass:       Land^[Loc.Y,Loc.X].BaseLayer.Terrain := 128 + KaMRandom(2, 'TKMTerrain.DecStoneDeposit 4')*5;
-                sttCoastSand:   Land^[Loc.Y,Loc.X].BaseLayer.Terrain := 266 + KaMRandom(2, 'TKMTerrain.DecStoneDeposit 5');
-                sttDirt:        Land^[Loc.Y,Loc.X].BaseLayer.Terrain := 275 + KaMRandom(2, 'TKMTerrain.DecStoneDeposit 6');
-                sttSnow:        Land^[Loc.Y,Loc.X].BaseLayer.Terrain := 283 + KaMRandom(2, 'TKMTerrain.DecStoneDeposit 7');
-                sttSnowOnDirt:  Land^[Loc.Y,Loc.X].BaseLayer.Terrain := 291 + KaMRandom(2, 'TKMTerrain.DecStoneDeposit 8');
+                sttGrass:       Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 128 + KaMRandom(2, 'TKMTerrain.DecStoneDeposit 4')*5;
+                sttCoastSand:   Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 266 + KaMRandom(2, 'TKMTerrain.DecStoneDeposit 5');
+                sttDirt:        Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 275 + KaMRandom(2, 'TKMTerrain.DecStoneDeposit 6');
+                sttSnow:        Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 283 + KaMRandom(2, 'TKMTerrain.DecStoneDeposit 7');
+                sttSnowOnDirt:  Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 291 + KaMRandom(2, 'TKMTerrain.DecStoneDeposit 8');
               end;
     128, 133,
     266, 267,
     275, 276,
     283, 284,
     291, 292: begin
-                Land^[Loc.Y,Loc.X].BaseLayer.Terrain  := TranTiles[transition, 0]; //Remove stone tile (so tile will have no stone)
-                Land^[Loc.Y,Loc.X].BaseLayer.Rotation := KaMRandom(4, 'TKMTerrain.DecStoneDeposit 9');
+                Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain  := TranTiles[transition, 0]; //Remove stone tile (so tile will have no stone)
+                Land^[aLoc.Y,aLoc.X].BaseLayer.Rotation := KaMRandom(4, 'TKMTerrain.DecStoneDeposit 9');
 
                 InitVisited;
                 //Tile type has changed and we need to update these 5 tiles transitions:
-                UpdateTransition(Loc.X,  Loc.Y, 0);
+                UpdateTransition(aLoc.X,  aLoc.Y, 0);
               end;
     else      Exit(False);
   end;
 
-  FlattenTerrain(Loc, True, True); //Ignore canElevate since it can prevent stonehill from being still walkable and cause a crash
+  FlattenTerrain(aLoc, True, True); //Ignore canElevate since it can prevent stonehill from being still walkable and cause a crash
 end;
 
 
-{ Try to extract one unit of ore
-  It may fail cos of two miners mining the same last piece of ore }
-function TKMTerrain.DecOreDeposit(const Loc: TKMPoint; rt: TKMWareType): Boolean;
+// Try to extract one unit of ore
+// It may fail cos of two miners mining the same last piece of ore
+function TKMTerrain.DecOreDeposit(const aLoc: TKMPoint; aWare: TKMWareType): Boolean;
 begin
-  if not (rt in [wtIronOre,wtGoldOre,wtCoal]) then
-    raise ELocError.Create('Wrong ore decrease',Loc);
+  if not (aWare in [wtIronOre,wtGoldOre,wtCoal]) then
+    raise ELocError.Create('Wrong ore decrease', aLoc);
 
   Result := true;
-  case Land^[Loc.Y,Loc.X].BaseLayer.Terrain of
-    144: Land^[Loc.Y,Loc.X].BaseLayer.Terrain := 157 + KaMRandom(3, 'TKMTerrain.DecOreDeposit'); //Gold
-    145: Land^[Loc.Y,Loc.X].BaseLayer.Terrain := 144;
-    146: Land^[Loc.Y,Loc.X].BaseLayer.Terrain := 145;
-    147: Land^[Loc.Y,Loc.X].BaseLayer.Terrain := 146;
-    307: Land^[Loc.Y,Loc.X].BaseLayer.Terrain := 147;
-    148: Land^[Loc.Y,Loc.X].BaseLayer.Terrain := 160 + KaMRandom(4, 'TKMTerrain.DecOreDeposit 2'); //Iron
-    149: Land^[Loc.Y,Loc.X].BaseLayer.Terrain := 148;
-    150: Land^[Loc.Y,Loc.X].BaseLayer.Terrain := 149;
-    259: Land^[Loc.Y,Loc.X].BaseLayer.Terrain := 149;
-    151: Land^[Loc.Y,Loc.X].BaseLayer.Terrain := 150 + KaMRandom(2, 'TKMTerrain.DecOreDeposit 3')*(259 - 150);
-    260: Land^[Loc.Y,Loc.X].BaseLayer.Terrain := 151;
-    152: Land^[Loc.Y,Loc.X].BaseLayer.Terrain := 35  + KaMRandom(2, 'TKMTerrain.DecOreDeposit 4'); //Coal
-    153: Land^[Loc.Y,Loc.X].BaseLayer.Terrain := 152;
-    154: Land^[Loc.Y,Loc.X].BaseLayer.Terrain := 153;
-    155: Land^[Loc.Y,Loc.X].BaseLayer.Terrain := 154;
-    263: Land^[Loc.Y,Loc.X].BaseLayer.Terrain := 155;
+  case Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain of
+    144: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 157 + KaMRandom(3, 'TKMTerrain.DecOreDeposit'); //Gold
+    145: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 144;
+    146: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 145;
+    147: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 146;
+    307: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 147;
+    148: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 160 + KaMRandom(4, 'TKMTerrain.DecOreDeposit 2'); //Iron
+    149: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 148;
+    150: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 149;
+    259: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 149;
+    151: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 150 + KaMRandom(2, 'TKMTerrain.DecOreDeposit 3')*(259 - 150);
+    260: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 151;
+    152: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 35  + KaMRandom(2, 'TKMTerrain.DecOreDeposit 4'); //Coal
+    153: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 152;
+    154: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 153;
+    155: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 154;
+    263: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 155;
     else Result := false;
   end;
-  Land^[Loc.Y,Loc.X].BaseLayer.Rotation := KaMRandom(4, 'TKMTerrain.DecOreDeposit 5');
-  UpdatePassability(Loc);
+  Land^[aLoc.Y,aLoc.X].BaseLayer.Rotation := KaMRandom(4, 'TKMTerrain.DecOreDeposit 5');
+  UpdatePassability(aLoc);
 end;
 
 
@@ -3683,33 +3683,33 @@ end;
 
 //Find closest passable point to TargetPoint within line segment OriginPoint <-> TargetPoint
 //MaxDistance - maximum distance between finded point and origin point. MaxDistance = -1 means there is no distance restriction
-function TKMTerrain.GetPassablePointWithinSegment(OriginPoint, TargetPoint: TKMPoint;
+function TKMTerrain.GetPassablePointWithinSegment(aOriginPoint, aTargetPoint: TKMPoint;
                                                   aPass: TKMTerrainPassability;
-                                                  MaxDistance: Integer = -1): TKMPoint;
+                                                  aMaxDistance: Integer = -1): TKMPoint;
 
-  function IsDistBetweenPointsAllowed(const OriginPoint, TargetPoint: TKMPoint; aMaxDistance: Integer): Boolean; inline;
+  function IsDistBetweenPointsAllowed(const aOriginPoint, aTargetPoint: TKMPoint; aMaxDistance: Integer): Boolean; inline;
   begin
-    Result := (aMaxDistance = -1) or (KMDistanceSqr(OriginPoint, TargetPoint) <= Sqr(aMaxDistance));
+    Result := (aMaxDistance = -1) or (KMDistanceSqr(aOriginPoint, aTargetPoint) <= Sqr(aMaxDistance));
   end;
 
 var
   normVector: TKMPoint;
   normDistance: Integer;
 begin
-  if MaxDistance = -1 then
-    normDistance := Floor(KMLength(OriginPoint, TargetPoint))
+  if aMaxDistance = -1 then
+    normDistance := Floor(KMLength(aOriginPoint, aTargetPoint))
   else
-    normDistance := Min(MaxDistance, Floor(KMLength(OriginPoint, TargetPoint)));
+    normDistance := Min(aMaxDistance, Floor(KMLength(aOriginPoint, aTargetPoint)));
 
   while (normDistance >= 0)
-    and (not IsDistBetweenPointsAllowed(OriginPoint, TargetPoint, MaxDistance)
-         or not CheckPassability(TargetPoint, aPass)) do
+    and (not IsDistBetweenPointsAllowed(aOriginPoint, aTargetPoint, aMaxDistance)
+         or not CheckPassability(aTargetPoint, aPass)) do
   begin
-    normVector := KMNormVector(KMPoint(TargetPoint.X - OriginPoint.X, TargetPoint.Y - OriginPoint.Y), normDistance);
-    TargetPoint := KMPoint(OriginPoint.X + normVector.X, OriginPoint.Y + normVector.Y);
+    normVector := KMNormVector(KMPoint(aTargetPoint.X - aOriginPoint.X, aTargetPoint.Y - aOriginPoint.Y), normDistance);
+    aTargetPoint := KMPoint(aOriginPoint.X + normVector.X, aOriginPoint.Y + normVector.Y);
     Dec(normDistance);
   end;
-  Result := TargetPoint;
+  Result := aTargetPoint;
 end;
 
 
