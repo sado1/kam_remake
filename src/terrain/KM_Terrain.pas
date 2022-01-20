@@ -169,15 +169,15 @@ type
     function GetClosestTile(const TargetLoc, OriginLoc: TKMPoint; aPass: TKMTerrainPassability; aAcceptTargetLoc: Boolean): TKMPoint;
     function GetClosestRoad(const aFromLoc: TKMPoint; aWalkConnectIDSet: TKMByteSet; aPass: TKMTerrainPassability = tpWalkRoad): TKMPoint;
 
-    procedure UnitAdd(const LocTo: TKMPoint; aUnit: Pointer);
-    procedure UnitRem(const LocFrom: TKMPoint);
-    procedure UnitWalk(const LocFrom,LocTo: TKMPoint; aUnit: Pointer);
-    procedure UnitSwap(const LocFrom,LocTo: TKMPoint; UnitFrom: Pointer);
-    procedure UnitVertexAdd(const LocTo: TKMPoint; Usage: TKMVertexUsage); overload;
-    procedure UnitVertexAdd(const LocFrom, LocTo: TKMPoint); overload;
-    procedure UnitVertexRem(const LocFrom: TKMPoint);
-    function VertexUsageCompatible(const LocFrom, LocTo: TKMPoint): Boolean;
-    function GetVertexUsageType(const LocFrom, LocTo: TKMPoint): TKMVertexUsage;
+    procedure UnitAdd(const aLocTo: TKMPoint; aUnit: Pointer);
+    procedure UnitRem(const aLocFrom: TKMPoint);
+    procedure UnitWalk(const aLocFrom, aLocTo: TKMPoint; aUnit: Pointer);
+    procedure UnitSwap(const aLocFrom, aLocTo: TKMPoint; aUnitFrom: Pointer);
+    procedure UnitVertexAdd(const aLocTo: TKMPoint; Usage: TKMVertexUsage); overload;
+    procedure UnitVertexAdd(const aLocFrom, aLocTo: TKMPoint); overload;
+    procedure UnitVertexRem(const aLocFrom: TKMPoint);
+    function VertexUsageCompatible(const aLocFrom, aLocTo: TKMPoint): Boolean;
+    function GetVertexUsageType(const aLocFrom, aLocTo: TKMPoint): TKMVertexUsage;
 
     function CoordsWithinMap(X, Y: Single; aInset: Byte = 0): Boolean; inline;
     function PointFInMapCoords(const aPointF: TKMPointF; aInset: Byte = 0): Boolean; inline;
@@ -4059,101 +4059,101 @@ begin
 end;
 
 
-{Mark tile as occupied}
-procedure TKMTerrain.UnitAdd(const LocTo: TKMPoint; aUnit: Pointer);
+// Mark tile as occupied
+procedure TKMTerrain.UnitAdd(const aLocTo: TKMPoint; aUnit: Pointer);
 begin
   if not DO_UNIT_INTERACTION then Exit;
 
-  Assert(Land^[LocTo.Y,LocTo.X].IsUnit = nil, 'Tile already occupied at '+TypeToString(LocTo));
-  Land^[LocTo.Y,LocTo.X].IsUnit := aUnit
+  Assert(Land^[aLocTo.Y,aLocTo.X].IsUnit = nil, 'Tile already occupied at '+TypeToString(aLocTo));
+  Land^[aLocTo.Y,aLocTo.X].IsUnit := aUnit
 end;
 
 
-{ Mark tile as empty }
+// Mark tile as empty
 // We have no way of knowing whether a unit is inside a house, or several units exit a house at once
 // when exiting the game and destroying all units this will cause asserts.
-procedure TKMTerrain.UnitRem(const LocFrom: TKMPoint);
+procedure TKMTerrain.UnitRem(const aLocFrom: TKMPoint);
 begin
   if not DO_UNIT_INTERACTION then Exit;
 
-  Land^[LocFrom.Y,LocFrom.X].IsUnit := nil;
+  Land^[aLocFrom.Y,aLocFrom.X].IsUnit := nil;
 end;
 
 
-{Mark previous tile as empty and next one as occupied}
+// Mark previous tile as empty and next one as occupied
 //We need to check both tiles since UnitWalk is called only by WalkTo where both tiles aren't houses
-procedure TKMTerrain.UnitWalk(const LocFrom, LocTo: TKMPoint; aUnit: Pointer);
+procedure TKMTerrain.UnitWalk(const aLocFrom, aLocTo: TKMPoint; aUnit: Pointer);
 var
   U: TKMUnit;
 begin
-  if not DO_UNIT_INTERACTION then exit;
-  Assert(Land^[LocFrom.Y, LocFrom.X].IsUnit = aUnit, 'Trying to remove wrong unit at '+TypeToString(LocFrom));
-  Land^[LocFrom.Y, LocFrom.X].IsUnit := nil;
-  Assert(Land^[LocTo.Y, LocTo.X].IsUnit = nil, 'Tile already occupied at '+TypeToString(LocTo));
-  Land^[LocTo.Y, LocTo.X].IsUnit := aUnit;
+  if not DO_UNIT_INTERACTION then Exit;
+  Assert(Land^[aLocFrom.Y, aLocFrom.X].IsUnit = aUnit, 'Trying to remove wrong unit at '+TypeToString(aLocFrom));
+  Land^[aLocFrom.Y, aLocFrom.X].IsUnit := nil;
+  Assert(Land^[aLocTo.Y, aLocTo.X].IsUnit = nil, 'Tile already occupied at '+TypeToString(aLocTo));
+  Land^[aLocTo.Y, aLocTo.X].IsUnit := aUnit;
 
   U := TKMUnit(aUnit);
   if ((U <> nil) and (U is TKMUnitWarrior)) then
-    gScriptEvents.ProcWarriorWalked(U, LocTo.X, LocTo.Y);
+    gScriptEvents.ProcWarriorWalked(U, aLocTo.X, aLocTo.Y);
 end;
 
 
-procedure TKMTerrain.UnitSwap(const LocFrom,LocTo: TKMPoint; UnitFrom: Pointer);
+procedure TKMTerrain.UnitSwap(const aLocFrom,aLocTo: TKMPoint; aUnitFrom: Pointer);
 begin
-  Assert(Land^[LocFrom.Y,LocFrom.X].IsUnit = UnitFrom, 'Trying to swap wrong unit at '+TypeToString(LocFrom));
-  Land[LocFrom.Y,LocFrom.X].IsUnit := Land^[LocTo.Y,LocTo.X].IsUnit;
-  Land^[LocTo.Y,LocTo.X].IsUnit := UnitFrom;
+  Assert(Land^[aLocFrom.Y,aLocFrom.X].IsUnit = aUnitFrom, 'Trying to swap wrong unit at '+TypeToString(aLocFrom));
+  Land[aLocFrom.Y,aLocFrom.X].IsUnit := Land^[aLocTo.Y,aLocTo.X].IsUnit;
+  Land^[aLocTo.Y,aLocTo.X].IsUnit := aUnitFrom;
 end;
 
 
-{Mark vertex as occupied}
-procedure TKMTerrain.UnitVertexAdd(const LocTo: TKMPoint; Usage: TKMVertexUsage);
-begin
-  if not DO_UNIT_INTERACTION then exit;
-  assert(Usage <> vuNone, 'Invalid add vuNone at '+TypeToString(LocTo));
-  assert((Land[LocTo.Y,LocTo.X].IsVertexUnit = vuNone) or (Land^[LocTo.Y,LocTo.X].IsVertexUnit = Usage),'Opposite vertex in use at '+TypeToString(LocTo));
-
-  Land^[LocTo.Y,LocTo.X].IsVertexUnit := Usage;
-end;
-
-
-procedure TKMTerrain.UnitVertexAdd(const LocFrom, LocTo: TKMPoint);
-begin
-  Assert(KMStepIsDiag(LocFrom, LocTo), 'Add non-diagonal vertex?');
-  UnitVertexAdd(KMGetDiagVertex(LocFrom, LocTo), GetVertexUsageType(LocFrom, LocTo));
-end;
-
-
-{Mark vertex as empty}
-procedure TKMTerrain.UnitVertexRem(const LocFrom: TKMPoint);
+// Mark vertex as occupied
+procedure TKMTerrain.UnitVertexAdd(const aLocTo: TKMPoint; Usage: TKMVertexUsage);
 begin
   if not DO_UNIT_INTERACTION then exit;
-  Land^[LocFrom.Y,LocFrom.X].IsVertexUnit := vuNone;
+  Assert(Usage <> vuNone, 'Invalid add vuNone at '+TypeToString(aLocTo));
+  Assert((Land[aLocTo.Y,aLocTo.X].IsVertexUnit = vuNone) or (Land^[aLocTo.Y,aLocTo.X].IsVertexUnit = Usage),'Opposite vertex in use at '+TypeToString(aLocTo));
+
+  Land^[aLocTo.Y,aLocTo.X].IsVertexUnit := Usage;
+end;
+
+
+procedure TKMTerrain.UnitVertexAdd(const aLocFrom, aLocTo: TKMPoint);
+begin
+  Assert(KMStepIsDiag(aLocFrom, aLocTo), 'Add non-diagonal vertex?');
+  UnitVertexAdd(KMGetDiagVertex(aLocFrom, aLocTo), GetVertexUsageType(aLocFrom, aLocTo));
+end;
+
+
+// Mark vertex as empty
+procedure TKMTerrain.UnitVertexRem(const aLocFrom: TKMPoint);
+begin
+  if not DO_UNIT_INTERACTION then exit;
+  Land^[aLocFrom.Y,aLocFrom.X].IsVertexUnit := vuNone;
 end;
 
 
 //This function tells whether the diagonal is "in use". (a bit like IsUnit) So if there is a unit walking on
 //the oppsoite diagonal you cannot use the vertex (same diagonal is allowed for passing and fighting)
 //It stops units walking diagonally through each other or walking through a diagonal that has weapons swinging through it
-function TKMTerrain.VertexUsageCompatible(const LocFrom, LocTo: TKMPoint): Boolean;
+function TKMTerrain.VertexUsageCompatible(const aLocFrom, aLocTo: TKMPoint): Boolean;
 var
   vert: TKMPoint;
   vertUsage: TKMVertexUsage;
 begin
-  Assert(KMStepIsDiag(LocFrom, LocTo));
-  vert := KMGetDiagVertex(LocFrom, LocTo);
-  vertUsage := GetVertexUsageType(LocFrom, LocTo);
+  Assert(KMStepIsDiag(aLocFrom, aLocTo));
+  vert := KMGetDiagVertex(aLocFrom, aLocTo);
+  vertUsage := GetVertexUsageType(aLocFrom, aLocTo);
   Result := (Land^[vert.Y, vert.X].IsVertexUnit in [vuNone, vertUsage]);
 end;
 
 
-function TKMTerrain.GetVertexUsageType(const LocFrom, LocTo: TKMPoint): TKMVertexUsage;
+function TKMTerrain.GetVertexUsageType(const aLocFrom, aLocTo: TKMPoint): TKMVertexUsage;
 var
-  dx, dy: integer;
+  dx, dy: Integer;
 begin
-  dx := LocFrom.X - LocTo.X;
-  dy := LocFrom.Y - LocTo.Y;
-  Assert((abs(dx) = 1) and (abs(dy) = 1));
+  dx := aLocFrom.X - aLocTo.X;
+  dy := aLocFrom.Y - aLocTo.Y;
+  Assert((Abs(dx) = 1) and (Abs(dy) = 1));
   if (dx*dy = 1) then Result := vuNWSE
                  else Result := vuNESW;
 end;
