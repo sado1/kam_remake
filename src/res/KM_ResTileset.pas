@@ -41,6 +41,9 @@ type
     function GetTilesJsonPath: string;
 
     function GetTileParams(aIndex: Word): TKMTileParams;
+  protected
+    // For Batcher
+    property Tiles: TKMTilesParamsArray read fTiles write fTiles;
   public
 //    PatternDAT: array [1..TILES_CNT] of packed record
 //      MinimapColor: Byte;
@@ -57,10 +60,6 @@ type
     property CRC: Cardinal read fCRC;
 
 //    procedure ExportPatternDat(const aFilename: string);
-
-    {$IFDEF BATCHER}
-    property Tiles: TKMTilesParamsArray read fTiles write fTiles;
-    {$ENDIF}
 
     property Tile[aIndex: Word]: TKMTileParams read GetTileParams; default;
     procedure SetTilesColor(var aTilesColor: TKMColor3bArray);

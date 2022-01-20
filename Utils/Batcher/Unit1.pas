@@ -87,7 +87,7 @@ uses
   Generics.Collections,
   JsonDataObjects,
   KM_FileIO,
-  KM_Resource, KM_ResTilesetTypes, KM_GameAppSettings,
+  KM_Resource, KM_ResTileset, KM_ResTilesetTypes, KM_GameAppSettings,
   KM_Campaigns, KM_Game, KM_GameSettings, KM_Hand, KM_MissionScript_Standard, KM_CampaignTypes, KM_MapTypes;
 
 {$R *.dfm}
@@ -115,6 +115,10 @@ const
   );
 
 type
+  // Allows us to access protected fields
+  TKMResTilesetEx = class(TKMResTileset)
+  end;
+
   TKMMissionParserPatcher = class(TKMMissionParserCommon)
   protected
     function ProcessCommand(CommandType: TKMCommandType; P: array of Integer; TextParam: AnsiString = ''): Boolean;
@@ -951,6 +955,8 @@ var
   animID, oldAnimID, newAnimID, newAnimIDlastAdded, terId, animI, layerI: Integer;
   dir, newDir, filePath, fileName, newFileName, codeString: string;
 
+  tilesetEx: TKMResTilesetEx;
+
   terAnim: array [0..MAX_TILE_TO_SHOW-1] of TKMTileAnim;
   newTerAnim: array [0..MAX_TILE_TO_SHOW-1] of TKMTileAnim;
   lastAnimID: array [0..MAX_TILE_TO_SHOW-1] of Word;
@@ -1080,12 +1086,14 @@ begin
 
   for TILE := Low(newTerAnim) to High(newTerAnim) do
   begin
-    SetLength(gRes.Tileset.Tiles[TILE].Animation.Layers, Length(newTerAnim[TILE].Layers));
+    tilesetEx := (gRes.Tileset as TKMResTilesetEx);
+
+    SetLength(tilesetEx.Tiles[TILE].Animation.Layers, Length(newTerAnim[TILE].Layers));
 
     for L := Low(newTerAnim[TILE].Layers) to High(newTerAnim[TILE].Layers) do
     begin
-      gRes.Tileset.Tiles[TILE].Animation.Layers[L].Frames := newTerAnim[TILE].Layers[L].Frames;
-      gRes.Tileset.Tiles[TILE].Animation.Layers[L].Anims := Copy(newTerAnim[TILE].Layers[L].Anims, 0, MaxInt);
+      tilesetEx.Tiles[TILE].Animation.Layers[L].Frames := newTerAnim[TILE].Layers[L].Frames;
+      tilesetEx.Tiles[TILE].Animation.Layers[L].Anims := Copy(newTerAnim[TILE].Layers[L].Anims, 0, MaxInt);
     end;
   end;
 
