@@ -464,8 +464,9 @@ end;
 
 
 { TKMemoryStream }
-constructor TKMemoryStream.Create(aShouldBeCompressed: Boolean);
+constructor TKMemoryStream.Create(aShouldBeCompressed: Boolean = False);
 begin
+  inherited Create;
   fShouldBeCompressed := aShouldBeCompressed;
 end;
 
