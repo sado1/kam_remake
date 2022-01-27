@@ -115,6 +115,7 @@ type
   function KMRectWidth(const aRect: TKMRect): Integer;
   function KMRectHeight(const aRect: TKMRect): Integer;
   function KMRectGrow(const aRect: TKMRect; aInset: Integer): TKMRect; overload;
+  function KMRectGrowNoLimits(const aRect: TKMRect; aInset: Integer): TKMRect;
   function KMRectGrow(const aRect, aInsetRect: TKMRect): TKMRect; overload;
   function KMRectGrow(const aRect: TKMRect; const aDir: TKMDirection; aInset: Integer = 1): TKMRect; overload;
   function KMRectGrowTopLeft(const aRect: TKMRect; aInset: Integer = 1): TKMRect;
@@ -574,6 +575,15 @@ begin
   Result.Right  := Math.Max(aRect.Right  + aInset, 0);
   Result.Top    := Math.Max(aRect.Top    - aInset, 0);
   Result.Bottom := Math.Max(aRect.Bottom + aInset, 0);
+end;
+
+
+function KMRectGrowNoLimits(const aRect: TKMRect; aInset: Integer): TKMRect;
+begin
+  Result.Left   := aRect.Left   - aInset;
+  Result.Right  := aRect.Right  + aInset;
+  Result.Top    := aRect.Top    - aInset;
+  Result.Bottom := aRect.Bottom + aInset;
 end;
 
 
