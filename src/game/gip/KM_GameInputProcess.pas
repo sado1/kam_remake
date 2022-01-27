@@ -1096,7 +1096,8 @@ var
 begin
   handId := aCommand.SmallIntParams[2];
   // Beacon script event must always be run by all players for consistency
-  gScriptEvents.ProcBeacon(handId, 1 + (aCommand.SmallIntParams[0] div 10), 1 + (aCommand.SmallIntParams[1] div 10));
+  gScriptEvents.ProcBeacon(handId, 1 + (aCommand.SmallIntParams[0] div 10),
+                                   1 + (aCommand.SmallIntParams[1] div 10));
 
   doAddBeacon := False;
 
