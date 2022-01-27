@@ -392,7 +392,7 @@ var
   I: Integer;
   R: TKMRect;
 begin
-  R := KMRectGrow(fViewport.GetMinimapClip, 4); //Beacons may stick up over a few tiles
+  R := KMRectGrowNoLimits(fViewport.GetMinimapClip, 4); //Beacons may stick up over a few tiles
 
   for I := 0 to fList.Count - 1 do
   if fList[I].VisibleTerrain
