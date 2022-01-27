@@ -451,10 +451,7 @@ function TKMFogOfWar.CheckTileRev(aRevArray: PKMByte2Array; const X,Y: Word): By
 begin
   if (X <= 0) or (X >= fMapX)
     or (Y <= 0) or (Y >= fMapY) then
-  begin
-    Result := 0;
-    Exit;
-  end;
+    Exit(0);
 
   //Check all four corners and choose max
   Result := CheckVerticeRev(aRevArray,X-1,Y-1);
@@ -477,10 +474,7 @@ var
 begin
   if (aPoint.X <= 0) or (aPoint.X >= fMapX - 1)
     or (aPoint.Y <= 0) or (aPoint.Y >= fMapY - 1) then
-  begin
-    Result := 0;
-    Exit;
-  end;
+    Exit(0);
 
   //Interpolate as follows:
   //A-B
