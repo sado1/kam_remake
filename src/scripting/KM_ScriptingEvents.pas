@@ -67,7 +67,7 @@ type
 
     procedure Clear;
 
-    procedure ProcBeacon(aPlayer: TKMHandID; aX, aY: Word);
+    procedure ProcBeacon(aPlayer: TKMHandID; aX, aY: Integer);
     procedure ProcFieldBuilt(aPlayer: TKMHandID; aX, aY: Word);
     procedure ProcHouseAfterDestroyed(aHouseType: TKMHouseType; aOwner: TKMHandID; aX, aY: Word);
     procedure ProcHouseBuilt(aHouse: TKMHouse);
@@ -605,7 +605,7 @@ end;
 
 //* Version: 6570
 //* Occurs when a player places a beacon on the map.
-procedure TKMScriptEvents.ProcBeacon(aPlayer: TKMHandID; aX, aY: Word);
+procedure TKMScriptEvents.ProcBeacon(aPlayer: TKMHandID; aX, aY: Integer);
 begin
   if MethodAssigned(evtBeacon) then
     CallEventHandlers(evtBeacon, [aPlayer, aX, aY]);
