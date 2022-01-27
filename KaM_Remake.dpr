@@ -411,6 +411,7 @@ uses
 // KaM_Remake_Icon.res can be removed if it works.
 // Hence, thie line below is commented out:
 //  {$R KaM_Remake_Icon.res} // Keeps the Icon
+  {$R KaM_Remake.res} // Standard RES file, keeps the Icon
   {$R KaM_Manifest.res}
 {$ENDIF}
 {$IFDEF MSWindows}
