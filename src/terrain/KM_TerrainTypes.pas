@@ -80,10 +80,15 @@ type
 
   // Notice fields order, because of record 4-bytes alignment
   TKMTerrainTile = record
+  private
+    fHeight: Byte;
+
+    procedure SetHeight(aValue: Byte); inline;
+  public
     BaseLayer: TKMTerrainLayer;
     Layer: array [0..2] of TKMTerrainLayer;
     LayersCnt: Byte;
-    Height: Byte;
+
     Obj: Word;
     IsCustom: Boolean; // Custom tile (rotated tile, atm)
     BlendingLvl: Byte; // Use blending for layers transitions
@@ -114,6 +119,8 @@ type
 
     Passability: TKMTerrainPassabilitySet; //Meant to be set of allowed actions on the tile
     WalkConnect: array [TKMWalkConnect] of Byte; //Whole map is painted into interconnected areas
+
+    property Height: Byte read fHeight write SetHeight;
 
     function HasLayers: Boolean;
     function HasNoLayers: Boolean;
@@ -163,7 +170,7 @@ const
 implementation
 uses
   SysUtils, Math,
-  KM_CommonUtils, KromUtils, KM_GameParams;
+  KM_CommonUtils, KromUtils, KM_GameParams, KM_GameSettings;
 
 
 { TKMTerrainLayer }
@@ -291,6 +298,12 @@ begin
     Result := HEIGHT_DEFAULT
   else
     Result := Height;
+end;
+
+
+procedure TKMTerrainTile.SetHeight(aValue: Byte);
+begin
+  fHeight := EnsureRange(aValue, 0, gGameSettings.MapEdMaxTerrainHeight);
 end;
 
 

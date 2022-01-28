@@ -279,6 +279,7 @@ const
 implementation
 uses
   KM_Game, KM_Cursor, KM_Resource, KM_Log, KM_CommonUtils, KM_Utils,
+  KM_GameSettings,
   KM_ResSprites, KM_MapEditorHistory, KM_ResTexts, KM_Terrain, KM_ResTypes;
 
 

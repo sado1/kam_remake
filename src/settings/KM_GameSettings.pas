@@ -80,6 +80,7 @@ type
 
     //MapEd
     fMapEdHistoryDepth: Integer;
+    fMapEdMaxTerrainHeight: Integer;
 
     //Multiplayer
     fMultiplayerName: AnsiString;
@@ -174,6 +175,7 @@ type
 
     //MapEd
     procedure SetMapEdHistoryDepth(const aValue: Integer);
+    procedure SetMapEdMaxTerrainHeight(const aValue: Integer);
 
     //Multiplayer
     procedure SetMultiplayerName(const aValue: AnsiString);
@@ -281,6 +283,7 @@ type
 
     //MapEd
     property MapEdHistoryDepth: Integer read fMapEdHistoryDepth write SetMapEdHistoryDepth;
+    property MapEdMaxTerrainHeight: Integer read fMapEdMaxTerrainHeight write SetMapEdMaxTerrainHeight;
 
     //Multiplayer
     property MultiplayerName: AnsiString read fMultiplayerName write SetMultiplayerName;
@@ -326,7 +329,8 @@ var
 
 implementation
 uses
-  SysUtils, INIfiles, Math;
+  SysUtils, INIfiles, Math,
+  KM_TerrainTypes;
 
 
 { TGameSettings }
@@ -501,6 +505,7 @@ begin
   // MapEd
   nMapEd := nGameSettings.AddOrFindChild('MapEd');
     MapEdHistoryDepth := nMapEd.Attributes['HistoryDepth'].AsInteger(MAPED_HISTORY_DEPTH_DEF); // With setter
+    MapEdMaxTerrainHeight := nMapEd.Attributes['MaxTerrainHeight'].AsInteger(HEIGHT_MAX); // With setter;
 
   // Multiplayer
   nMultiplayer := nGameSettings.AddOrFindChild('Multiplayer');
@@ -679,6 +684,7 @@ begin
   // MapEd
   nMapEd := nGameSettings.AddOrFindChild('MapEd');
     nMapEd.Attributes['HistoryDepth'] := fMapEdHistoryDepth;
+    nMapEd.Attributes['MaxTerrainHeight'] := fMapEdMaxTerrainHeight;
 
   // Multiplayer
   nMultiplayer := nGameSettings.AddOrFindChild('Multiplayer');
@@ -1141,6 +1147,12 @@ end;
 procedure TKMGameSettings.SetMapEdHistoryDepth(const aValue: Integer);
 begin
   fMapEdHistoryDepth := EnsureRange(aValue, MAPED_HISTORY_DEPTH_MIN, MAPED_HISTORY_DEPTH_MAX);
+end;
+
+
+procedure TKMGameSettings.SetMapEdMaxTerrainHeight(const aValue: Integer);
+begin
+  fMapEdMaxTerrainHeight := EnsureRange(aValue, 0, HEIGHT_MAX);
 end;
 
 

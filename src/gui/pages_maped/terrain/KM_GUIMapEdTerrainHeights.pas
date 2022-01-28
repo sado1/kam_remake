@@ -46,6 +46,7 @@ uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLType, {$ENDIF}
   KM_Main, KM_ResFonts, KM_ResTexts, KM_Cursor, KM_RenderUI,
+  KM_GameSettings,
   KM_InterfaceGame, KM_Utils,
   KM_ResTypes, KM_TerrainTypes;
 
@@ -115,7 +116,7 @@ begin
   HeightConstant.Caption    := gResTexts[TX_MAPED_HEIGHTS_CONST];
   HeightConstant.CapOffsetY := -12;
 
-  HeightConstantNumber           := TKMTrackBar.Create(Panel_Heights, 9, 340, Panel_Heights.Width - 9, 0, HEIGHT_MAX); //1..100 Height level
+  HeightConstantNumber           := TKMTrackBar.Create(Panel_Heights, 9, 340, Panel_Heights.Width - 9, 0, gGameSettings.MapEdMaxTerrainHeight); //1..100 Height level
   HeightConstantNumber.Anchors := [anLeft, anTop, anRight];
   HeightConstantNumber.Caption   := gResTexts[TX_MAPED_HEIGHTS_LEVEL_SET];
   HeightConstantNumber.Hint      := gResTexts[TX_MAPED_HEIGHTS_LEVEL_SET_HINT];

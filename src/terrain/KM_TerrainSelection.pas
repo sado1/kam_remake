@@ -1,4 +1,4 @@
-﻿unit KM_TerrainSelection;
+unit KM_TerrainSelection;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -90,6 +90,7 @@ uses
   SysUtils,
   KM_Resource, KM_ResTileset,
   KM_HandsCollection,
+  KM_GameSettings,
   KM_Game, KM_Cursor, KM_RenderAux, KM_CommonUtils;
 
 
@@ -524,6 +525,15 @@ procedure TKMSelection.Flip(aAxis: TKMFlipAxis);
   end;
 
   procedure SwapTiles(X1, Y1, X2, Y2: Word);
+    procedure SwapHeight(aX1, aY1, aX2, aY2: Word);
+    var
+      tmpHeight: Integer;
+    begin
+      tmpHeight := gTerrain.Land^[aY1,aX1].Height;
+      gTerrain.Land^[aY1,aX1].Height := gTerrain.Land^[aY2,aX2].Height;
+      gTerrain.Land^[aY2,aX2].Height := tmpHeight;
+    end;
+
   var
     L: Integer;
     swapObj, skipObj, cornOrWineWObj: Boolean;
@@ -547,8 +557,8 @@ procedure TKMSelection.Flip(aAxis: TKMFlipAxis);
     if ptHeight in fPasteTypes then
       //Heights are vertex based not tile based, so it gets flipped slightly differently
       case aAxis of
-        faHorizontal: SwapInt(gTerrain.Land^[Y1,X1].Height, gTerrain.Land^[Y2  ,X2+1].Height);
-        faVertical:   SwapInt(gTerrain.Land^[Y1,X1].Height, gTerrain.Land^[Y2+1,X2  ].Height);
+        faHorizontal: SwapHeight(X1, Y1, X2+1, Y2);
+        faVertical:   SwapHeight(X1, Y1, X2,   Y2+1);
       end;
 
     swapObj := False;
