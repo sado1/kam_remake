@@ -117,7 +117,7 @@ type
 
     function HasLayers: Boolean;
     function HasNoLayers: Boolean;
-    function RenderHeight: Byte;
+    function RenderHeight: Byte; inline;
     procedure IncJamMeter(aValue: Integer);
     function RenderLight: Single;
     function GetBasic: TKMTerrainTileBasic;

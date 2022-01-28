@@ -62,6 +62,7 @@ var
 implementation
 uses
   // Do not add KM_Game dependancy, use KM_RenderGameAux instead
+  KM_GameParams,
   KM_Render, KM_Terrain, KM_TerrainTypes, KM_ResTileset, KM_CommonUtils;
 
 
