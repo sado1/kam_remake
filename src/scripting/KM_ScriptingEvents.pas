@@ -30,24 +30,29 @@ type
     Handler: TMethod;
   end;
 
+  TKMCustomEventHandlerArray = array of TKMCustomEventHandler;
+
   TKMScriptEvents = class(TKMScriptEntity)
   private
     fExec: TPSExec;
     fPreProcessor: TPSPreProcessor;
 
-    fEventHandlers: array[TKMScriptEventType] of array of TKMCustomEventHandler;
+    fEventHandlers: array[TKMScriptEventType] of TKMCustomEventHandlerArray;
 
     fConsoleCommands: TDictionary<AnsiString, TKMConsoleCommand>;
 
     procedure AddDefaultEventHandlersNames;
     procedure CallEventHandlers(aEventType: TKMScriptEventType; const aParams: array of Integer; aFloatParam: Single = FLOAT_PARAM_NONE);
+
     function GetConsoleCommand(const aName: AnsiString): TKMConsoleCommand;
+    function GetEventHandlers(aEvent: TKMScriptEventType): TKMCustomEventHandlerArray;
 
     procedure HandleScriptProcCallError(const aMethod: String);
     procedure CallEventProc(const aProc: TKMCustomEventHandler; const aIntParams: array of Integer; aFloatParam: Single);
     function MethodAssigned(aProc: TMethod): Boolean; overload; inline;
     function MethodAssigned(aEventType: TKMScriptEventType): Boolean; overload; inline;
     function MethodAssigned(const aCmdName: AnsiString): Boolean; overload; inline;
+
   public
     ExceptionOutsideScript: Boolean; //Flag that the exception occured in a State or Action call not script
 
@@ -64,6 +69,7 @@ type
     function CallConsoleCommand(aHandID: TKMHandID; const aCmdName: AnsiString; const aParams: TKMScriptCommandParamsArray): Boolean;
 
     property ConsoleCommand[const aName: AnsiString]: TKMConsoleCommand read GetConsoleCommand;
+    property EventHandlers[aEvent: TKMScriptEventType]: TKMCustomEventHandlerArray read GetEventHandlers;
 
     procedure Clear;
 
@@ -303,6 +309,12 @@ end;
 function TKMScriptEvents.GetConsoleCommand(const aName: AnsiString): TKMConsoleCommand;
 begin
   Result := fConsoleCommands[AnsiString(LowerCase(aName))];
+end;
+
+
+function TKMScriptEvents.GetEventHandlers(aEvent: TKMScriptEventType): TKMCustomEventHandlerArray;
+begin
+  Result := fEventHandlers[aEvent];
 end;
 
 
