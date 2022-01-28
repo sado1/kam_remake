@@ -451,7 +451,7 @@ begin
         ReadTileFromStream(S, tileBasic, gameRev);
 
         Land^[I,J].BaseLayer   := tileBasic.BaseLayer;
-        Land^[I,J].Height     := tileBasic.Height;
+        Land^[I,J].SetHeightExact(tileBasic.Height); // Set fHeight directly, without any limitations
         Land^[I,J].Obj         := tileBasic.Obj;
         Land^[I,J].LayersCnt   := tileBasic.LayersCnt;
         Land^[I,J].IsCustom    := tileBasic.IsCustom;

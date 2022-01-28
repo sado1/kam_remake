@@ -90,7 +90,7 @@ uses
   SysUtils,
   KM_Resource, KM_ResTileset,
   KM_HandsCollection,
-  KM_GameSettings,
+  KM_GameParams, KM_GameSettings,
   KM_Game, KM_Cursor, KM_RenderAux, KM_CommonUtils;
 
 

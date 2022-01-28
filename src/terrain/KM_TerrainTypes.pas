@@ -82,7 +82,6 @@ type
   TKMTerrainTile = record
   private
     fHeight: Byte;
-
     procedure SetHeight(aValue: Byte); inline;
   public
     BaseLayer: TKMTerrainLayer;
@@ -125,6 +124,7 @@ type
     function HasLayers: Boolean;
     function HasNoLayers: Boolean;
     function RenderHeight: Byte; inline;
+    procedure SetHeightExact(aValue: Byte);
     procedure IncJamMeter(aValue: Integer);
     function RenderLight: Single;
     function GetBasic: TKMTerrainTileBasic;
@@ -303,7 +303,18 @@ end;
 
 procedure TKMTerrainTile.SetHeight(aValue: Byte);
 begin
-  fHeight := EnsureRange(aValue, 0, gGameSettings.MapEdMaxTerrainHeight);
+  // Limit height value only in the MapEd
+  if gGameParams.IsMapEditor then
+    fHeight := EnsureRange(aValue, 0, gGameSettings.MapEdMaxTerrainHeight)
+  else
+    fHeight := aValue;
+end;
+
+
+// Set height without any limitations
+procedure TKMTerrainTile.SetHeightExact(aValue: Byte);
+begin
+  fHeight := aValue;
 end;
 
 
