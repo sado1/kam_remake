@@ -237,6 +237,7 @@ begin
 
   fScripting.ErrorHandler.Clear;
   gScriptEvents.Clear;
+  gScriptEvents.AddDefaultEventHandlersNames;
 
   CampaignFile := ExtractFilePath(aPath) + '..\campaigndata.' + EXT_FILE_SCRIPT;
   fScripting.LoadFromFile(aPath, CampaignFile, nil);

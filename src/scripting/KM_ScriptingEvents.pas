@@ -41,7 +41,6 @@ type
 
     fConsoleCommands: TDictionary<AnsiString, TKMConsoleCommand>;
 
-    procedure AddDefaultEventHandlersNames;
     procedure CallEventHandlers(aEventType: TKMScriptEventType; const aParams: array of Integer; aFloatParam: Single = FLOAT_PARAM_NONE);
 
     function GetConsoleCommand(const aName: AnsiString): TKMConsoleCommand;
@@ -59,6 +58,7 @@ type
     constructor Create(aExec: TPSExec; aPreProcessor: TPSPreProcessor; aIDCache: TKMScriptingIdCache);
     destructor Destroy; override;
 
+    procedure AddDefaultEventHandlersNames;
     procedure AddEventHandlerName(aEventType: TKMScriptEventType; const aEventHandlerName: AnsiString);
     procedure AddConsoleCommand(const aCmdName, aProcName: AnsiString);
     procedure LinkEventsAndCommands;
