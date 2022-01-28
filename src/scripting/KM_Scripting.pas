@@ -958,7 +958,7 @@ var
 begin
   Result := True;
   for I := Low(PROCS) to High(PROCS) do
-    if PROCS[I].Names = Proc.Name then
+    if UpperCase(PROCS[I].Names) = UpperCase(Proc.Name) then
       if not ExportCheck(Sender, Proc, Slice(PROCS[I].Typ, PROCS[I].ParamCount+1), Slice(PROCS[I].Dir, PROCS[I].ParamCount)) then
       begin
         // Error when validating the Proc arguments (count, types and directions):
