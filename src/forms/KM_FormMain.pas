@@ -885,8 +885,8 @@ end;
 
 procedure TFormMain.SaveSettingsClick(Sender: TObject);
 begin
-  gGameAppSettings.SaveSettings(True);
-  gServerSettings.SaveSettings(True);
+  gGameAppSettings.SaveSettings;
+  gServerSettings.SaveSettings;
 end;
 
 

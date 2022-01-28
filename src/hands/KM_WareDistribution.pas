@@ -24,7 +24,6 @@ type
     procedure SetWareDistribution(aWare: TKMWareType; aHouse: TKMHouseType; aValue: Byte);
     function GetWareDistribution(aWare: TKMWareType; aHouse: TKMHouseType): Byte;
   public
-    Changed: Boolean;
     constructor Create;
     property WareDistribution[aWare: TKMWareType; aHouse: TKMHouseType]: Byte read GetWareDistribution write SetWareDistribution; default;
     procedure LoadFromStr(aString: String);
@@ -66,7 +65,6 @@ begin
               if aHouse = htStables        then fWareDistribution[4,3] := aValue;
     else      raise Exception.Create('Unexpected resource at SetWareDistribution');
   end;
-  Changed := True;
 end;
 
 

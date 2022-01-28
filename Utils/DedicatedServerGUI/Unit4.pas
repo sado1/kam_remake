@@ -117,7 +117,7 @@ begin
 
   // DedicatedServer stores everything alongside in the local folder
   fSettings := TKMServerSettings.Create(slExeDir);
-  fSettings.SaveSettings(True);
+  fSettings.SaveSettings;
 //  fSettingsLastModified := FileAge(fSettings.Path);
 
   //this is shown only at application start (tip. check the strange -. in morse code translator ;)
@@ -317,7 +317,7 @@ begin
 
   fSettings.MaxRooms                := cMaxRooms.Value;
 
-  fSettings.SaveSettings(True);
+  fSettings.SaveSettings;
 
   //We can update only if server is online
   if fServerStatus = ssOnline then

@@ -186,7 +186,7 @@ begin
 
   // DedicatedServer stores everything alongside in the local folder
   fSettings := TKMServerSettings.Create(slExeDir);
-  fSettings.SaveSettings(True);
+  fSettings.SaveSettings;
   fSettingsLastModified := FileAge(fSettings.Path);
   fLastSettingsFileCheck := TimeGet;
 

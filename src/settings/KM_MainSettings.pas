@@ -176,21 +176,18 @@ end;
 procedure TKMainSettings.SetFullScreen(aValue: boolean);
 begin
   fFullScreen := aValue;
-  Changed;
 end;
 
 
 procedure TKMainSettings.SetResolution(const Value: TKMScreenRes);
 begin
   fResolution := Value;
-  Changed;
 end;
 
 
 procedure TKMainSettings.SetVSync(aValue: boolean);
 begin
   fVSync := aValue;
-  Changed;
 end;
 
 

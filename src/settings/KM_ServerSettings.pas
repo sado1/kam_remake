@@ -186,8 +186,6 @@ begin
   finally
     ini.Free;
   end;
-
-  fNeedsSave := False;
 end;
 
 
@@ -231,106 +229,90 @@ begin
   finally
     ini.Free;
   end;
-
-  fNeedsSave := False;
 end;
 
 
 procedure TKMServerSettings.SetServerPacketsAccumulatingDelay(aValue: Integer);
 begin
   fServerPacketsAccumulatingDelay := EnsureRange(aValue, 0, 1000); //This is rough restrictions. Real one are in TKMNetServer
-  Changed;
 end;
 
 
 procedure TKMServerSettings.SetServerPort(const aValue: string);
 begin
   fServerPort := aValue;
-  Changed;
 end;
 
 
 procedure TKMServerSettings.SetServerUDPAnnounce(aValue: Boolean);
 begin
   fServerUDPAnnounce := aValue;
-  Changed;
 end;
 
 
 procedure TKMServerSettings.SetServerUDPScanPort(const aValue: Word);
 begin
   fServerUDPScanPort := aValue;
-  Changed;
 end;
 
 
 procedure TKMServerSettings.SetServerMapsRosterStr(const aValue: UnicodeString);
 begin
   fServerMapsRosterStr := aValue;
-  Changed;
 end;
 
 
 procedure TKMServerSettings.SetMasterServerAddress(const aValue: string);
 begin
   fMasterServerAddress := aValue;
-  Changed;
 end;
 
 
 procedure TKMServerSettings.SetServerName(const aValue: AnsiString);
 begin
   fServerName := aValue;
-  Changed;
 end;
 
 
 procedure TKMServerSettings.SetMaxRooms(eValue: Integer);
 begin
   fMaxRooms := eValue;
-  Changed;
 end;
 
 
 procedure TKMServerSettings.SetHTMLStatusFile(const eValue: UnicodeString);
 begin
   fHTMLStatusFile := eValue;
-  Changed;
 end;
 
 
 procedure TKMServerSettings.SetMasterAnnounceInterval(eValue: Integer);
 begin
   fMasterAnnounceInterval := eValue;
-  Changed;
 end;
 
 
 procedure TKMServerSettings.SetPingInterval(aValue: Integer);
 begin
   fPingInterval := aValue;
-  Changed;
 end;
 
 
 procedure TKMServerSettings.SetAutoKickTimeout(aValue: Integer);
 begin
   fAutoKickTimeout := aValue;
-  Changed;
 end;
 
 
 procedure TKMServerSettings.SetAnnounceServer(aValue: Boolean);
 begin
   fAnnounceServer := aValue;
-  Changed;
 end;
 
 
 procedure TKMServerSettings.SetServerWelcomeMessage(const aValue: UnicodeString);
 begin
   fServerWelcomeMessage := aValue;
-  Changed;
 end;
 
 

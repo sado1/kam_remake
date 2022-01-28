@@ -20,7 +20,6 @@ type
   protected
     fNeedsSave: Boolean;
 
-    procedure Changed;
     function GetDefaultSettingsName: string; virtual; abstract;
 
     procedure LoadFromFile(const aPath: string); virtual; abstract;
@@ -32,10 +31,9 @@ type
     destructor Destroy; override;
 
     property Path: string read GetPath;
-    property NeedToSave: Boolean read fNeedsSave;
 
     procedure ReloadSettings;
-    procedure SaveSettings(aForce: Boolean = False);
+    procedure SaveSettings;
 
     class function GetDir(aSettingsLoc: TKMSettingsLocation = slShared): string;
   end;
@@ -61,8 +59,6 @@ begin
   // Save settings to default directory immidiately
   // If there were any problems with settings then we want to be able to customise them
   SaveToDefaultFile;
-
-  fNeedsSave := False;
 end;
 
 
@@ -121,18 +117,11 @@ begin
 end;
 
 
-procedure TKMSettings.SaveSettings(aForce: Boolean);
+procedure TKMSettings.SaveSettings;
 begin
   if SKIP_SETTINGS_SAVE then Exit;
 
-  if NeedToSave or aForce then
-    SaveToDefaultFile;
-end;
-
-
-procedure TKMSettings.Changed;
-begin
-  fNeedsSave := True;
+  SaveToDefaultFile;
 end;
 
 

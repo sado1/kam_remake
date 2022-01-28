@@ -49,11 +49,8 @@ type
   // Part of GameApp settings, which are stored in the XML
   TKMGameAppSettingsPart = class abstract
   private
-    function GetNeedSave: Boolean;
     function GetRoot: TKMXmlNode;
   protected
-    procedure Changed;
-    property NeedsSave: Boolean read GetNeedSave;
     function GetDefaultSettingsName: string;
 
     property Root: TKMXmlNode read GetRoot;
@@ -63,7 +60,7 @@ type
 
     procedure SaveToXML; virtual; abstract;
     procedure LoadFromXML; virtual; abstract;
-    procedure SaveSettings(aForce: Boolean = False); virtual;
+    procedure SaveSettings; virtual;
   end;
 
 var
@@ -195,21 +192,9 @@ begin
 end;
 
 
-procedure TKMGameAppSettingsPart.Changed;
-begin
-  gGameAppSettings.Changed;
-end;
-
-
 function TKMGameAppSettingsPart.GetDefaultSettingsName: string;
 begin
   Result := SETTINGS_FILE;
-end;
-
-
-function TKMGameAppSettingsPart.GetNeedSave: Boolean;
-begin
-  Result := gGameAppSettings.fNeedsSave;
 end;
 
 
@@ -219,11 +204,11 @@ begin
 end;
 
 
-procedure TKMGameAppSettingsPart.SaveSettings(aForce: Boolean = False);
+procedure TKMGameAppSettingsPart.SaveSettings;
 begin
   if SKIP_SETTINGS_SAVE then Exit;
 
-  gGameAppSettings.SaveSettings(aForce);
+  gGameAppSettings.SaveSettings;
 end;
 
 

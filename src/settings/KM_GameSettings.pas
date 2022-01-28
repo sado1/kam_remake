@@ -212,7 +212,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    procedure SaveSettings(aForce: Boolean = False); override;
+    procedure SaveSettings; override;
 
     procedure LoadFromXML; override;
     procedure SaveToXML; override;
@@ -360,12 +360,11 @@ end;
 
 
 //Save only when needed
-procedure TKMGameSettings.SaveSettings(aForce: Boolean = False);
+procedure TKMGameSettings.SaveSettings;
 begin
   if SKIP_SETTINGS_SAVE then Exit;
 
-  if NeedsSave or fWareDistribution.Changed or aForce then
-    gGameAppSettings.SaveSettings(aForce);
+  gGameAppSettings.SaveSettings;
 end;
 
 
@@ -739,203 +738,174 @@ procedure TKMGameSettings.SetLocale(const aLocale: AnsiString);
 begin
   //We can get some unsupported LocaleCode, but that is fine, it will have Eng fallback anyway
   fLocale := aLocale;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetBrightness(aValue: Byte);
 begin
   fBrightness := EnsureRange(aValue, 0, 20);
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetFlashOnMessage(aValue: Boolean);
 begin
   fFlashOnMessage := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetMenuFavouriteMapsStr(const aValue: UnicodeString);
 begin
   fMenu_FavouriteMapsStr := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetMenuMapSPType(aValue: Byte);
 begin
   fMenu_MapSPType := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetMenuReplaysType(aValue: Byte);
 begin
   fMenu_ReplaysType := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetMenuMapEdMapType(aValue: Byte);
 begin
   fMenu_MapEdMapType := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetMenuMapEdNewMapX(aValue: Word);
 begin
   fMenu_MapEdNewMapX := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetMenuMapEdNewMapY(aValue: Word);
 begin
   fMenu_MapEdNewMapY := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetMenuMapEdSPMapCRC(aValue: Cardinal);
 begin
   fMenu_MapEdSPMapCRC := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetMenuMapEdMPMapCRC(aValue: Cardinal);
 begin
   fMenu_MapEdMPMapCRC := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetMenuMapEdMPMapName(const aValue: UnicodeString);
 begin
   fMenu_MapEdMPMapName := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetMenuMapEdDLMapCRC(aValue: Cardinal);
 begin
   fMenu_MapEdDLMapCRC := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetMenuCampaignName(const aValue: UnicodeString);
 begin
   fMenu_CampaignName := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetMenuReplaySPSaveName(const aValue: UnicodeString);
 begin
   fMenu_ReplaySPSaveName := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetMenuReplayMPSaveName(const aValue: UnicodeString);
 begin
   fMenu_ReplayMPSaveName := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetMenuSPScenarioMapCRC(aValue: Cardinal);
 begin
   fMenu_SPScenarioMapCRC := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetMenuSPMissionMapCRC(aValue: Cardinal);
 begin
   fMenu_SPMissionMapCRC := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetMenuSPTacticMapCRC(aValue: Cardinal);
 begin
   fMenu_SPTacticMapCRC := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetMenuSPSpecialMapCRC(aValue: Cardinal);
 begin
   fMenu_SPSpecialMapCRC := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetMenuSPSaveFileName(const aValue: UnicodeString);
 begin
   fMenu_SPSaveFileName := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetMenuLobbyMapType(aValue: Byte);
 begin
   fMenu_LobbyMapType := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetDebugSaveRandomChecks(aValue: Boolean);
 begin
   fDebug_SaveRandomChecks := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetDebugSaveGameAsText(aValue: Boolean);
 begin
   fDebug_SaveGameAsText := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetAutosave(aValue: Boolean);
 begin
   fAutosave := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetAutosaveAtGameEnd(aValue: Boolean);
 begin
   fAutosaveAtGameEnd := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetAutosaveCount(aValue: Integer);
 begin
   fAutosaveCount := EnsureRange(aValue, AUTOSAVE_COUNT_MIN, AUTOSAVE_COUNT_MAX);
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetAutosaveFrequency(aValue: Integer);
 begin
   fAutosaveFrequency := EnsureRange(aValue, AUTOSAVE_FREQUENCY_MIN, AUTOSAVE_FREQUENCY_MAX);
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetSpecShowBeacons(aValue: Boolean);
 begin
   fSpecShowBeacons := aValue;
-  Changed;
 end;
 
 
@@ -956,77 +926,66 @@ end;
 procedure TKMGameSettings.SetShowGameTime(aValue: Boolean);
 begin
   fShowGameTime := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetShowGameSpeed(aValue: Boolean);
 begin
   fShowGameSpeed := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetSaveCheckpoints(const aValue: Boolean);
 begin
   fSaveCheckpoints := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetSaveCheckpointsFreq(const aValue: Integer);
 begin
   fSaveCheckpointsFreq := EnsureRange(aValue, GAME_SAVE_CHECKPOINT_FREQ_MIN, GAME_SAVE_CHECKPOINT_FREQ_MAX);
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetSaveCheckpointsLimit(const aValue: Integer);
 begin
   fSaveCheckpointsLimit := EnsureRange(aValue, GAME_SAVE_CHECKPOINT_CNT_LIMIT_MIN, GAME_SAVE_CHECKPOINT_CNT_LIMIT_MAX);
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetPlayersColorMode(aValue: TKMPlayerColorMode);
 begin
   fPlayersColorMode := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetPlayerColorSelf(aValue: Cardinal);
 begin
   fPlayerColorSelf := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetPlayerColorAlly(aValue: Cardinal);
 begin
   fPlayerColorAlly := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetPlayerColorEnemy(aValue: Cardinal);
 begin
   fPlayerColorEnemy := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetDayGamesCount(aValue: Integer);
 begin
   fDayGamesCount := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetLastDayGamePlayed(aValue: TDateTime);
 begin
   fLastDayGamePlayed := aValue;
-  Changed;
 end;
 
 
@@ -1035,7 +994,6 @@ begin
   if not ALLOW_SNOW_HOUSES then Exit;
 
   fGameTweaks_AllowSnowHouses := aValue;
-  Changed;
 end;
 
 procedure TKMGameSettings.SetInterpolatedAnimations(const Value: Boolean);
@@ -1051,161 +1009,138 @@ begin
   if not ALLOW_INTERPOLATED_RENDER then Exit;
 
   fGameTweaks_InterpolatedRender := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetCampaignLastDifficulty(aValue: TKMMissionDifficulty);
 begin
   fCampaignLastDifficulty := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetReplayAutopause(aValue: Boolean);
 begin
   fReplayAutopause := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetReplayShowBeacons(aValue: Boolean);
 begin
   fReplayShowBeacons := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetReplaySavepoint(aValue: Boolean);
 begin
   fReplaySavepoint := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetReplaySavepointFrequency(aValue: Integer);
 begin
   fReplaySavepointFrequency := EnsureRange(aValue, REPLAY_SAVEPOINT_FREQUENCY_MIN, REPLAY_SAVEPOINT_FREQUENCY_MAX);
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetScrollSpeed(aValue: Byte);
 begin
   fScrollSpeed := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetAlphaShadows(aValue: Boolean);
 begin
   fAlphaShadows := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetLoadFullFonts(aValue: Boolean);
 begin
   fLoadFullFonts := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetSoundFXVolume(aValue: Single);
 begin
   fSoundFXVolume := EnsureRange(aValue, 0, 1);
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetMultiplayerName(const aValue: AnsiString);
 begin
   fMultiplayerName := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetLastIP(const aValue: string);
 begin
   fLastIP := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetLastPort(const aValue: string);
 begin
   fLastPort := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetLastRoom(const aValue: string);
 begin
   fLastRoom := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetLastPassword(const aValue: string);
 begin
   fLastPassword := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetMusicVolume(aValue: Single);
 begin
   fMusicVolume := EnsureRange(aValue, 0, 1);
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetMusicOff(aValue: Boolean);
 begin
   fMusicOff := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetShuffleOn(aValue: Boolean);
 begin
   fShuffleOn := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetVideoOn(aValue: Boolean);
 begin
   fVideoOn := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetVideoStretch(aValue: Boolean);
 begin
   fVideoStretch := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetVideoStartup(aValue: Boolean);
 begin
   fVideoStartup := aValue;
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetVideoVolume(aValue: Single);
 begin
   fVideoVolume := EnsureRange(aValue, 0, 1);
-  Changed;
 end;
 
 
 procedure TKMGameSettings.SetMapEdHistoryDepth(const aValue: Integer);
 begin
   fMapEdHistoryDepth := EnsureRange(aValue, MAPED_HISTORY_DEPTH_MIN, MAPED_HISTORY_DEPTH_MAX);
-  Changed;
 end;
 
 
