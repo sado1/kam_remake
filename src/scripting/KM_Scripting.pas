@@ -1876,7 +1876,7 @@ end;
 
 function TKMScripting.GetErrorMessage(aErrorMsg: TPSPascalCompilerMessage): TKMScriptErrorMessage;
 begin
-  Result := GetErrorMessage(aErrorMsg.ErrorType, EolW + '[' + aErrorMsg.ErrorType + '] ' + aErrorMsg.ShortMessageToString + EolW,
+  Result := GetErrorMessage(aErrorMsg.ErrorType, EolW + '[' + aErrorMsg.ErrorType + '] ' + aErrorMsg.ShortMessageToString,
                             aErrorMsg.ModuleName, aErrorMsg.Row, aErrorMsg.Col, aErrorMsg.Pos);
 end;
 
@@ -1885,7 +1885,7 @@ function TKMScripting.GetErrorMessage(const aErrorType, aShortErrorDescription, 
 var
   errorMsg: UnicodeString;
 begin
-  errorMsg := Format(aShortErrorDescription + 'in ''%s'' at [%d:%d]' + EolW, [aModule, aRow, aCol]);
+  errorMsg := Format(aShortErrorDescription + ' in ''%s'' at [%d:%d]', [aModule, aRow, aCol]);
 
   // Show game message only for errors. Do not show it for hints or warnings.
   if aErrorType = 'Error' then

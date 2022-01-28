@@ -134,9 +134,9 @@ end;
 
 procedure TKMScriptErrorHandler.HandleErrors;
 begin
-  HandleScriptError(seCompileError, AppendErrorPrefix('Script compile errors:' + EolW, fErrorString));
-  HandleScriptError(seCompileWarning, AppendErrorPrefix('Script compile warnings:' + EolW, fWarningsString));
-  HandleScriptError(seCompileHint, AppendErrorPrefix('Script compile hints:' + EolW, fHintsString));
+  HandleScriptError(seCompileError, AppendErrorPrefix('Script compile errors: ', fErrorString));
+  HandleScriptError(seCompileWarning, AppendErrorPrefix('Script compile warnings: ', fWarningsString));
+  HandleScriptError(seCompileHint, AppendErrorPrefix('Script compile hints: ', fHintsString));
 end;
 
 
