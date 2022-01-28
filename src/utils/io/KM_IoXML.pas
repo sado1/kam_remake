@@ -145,6 +145,11 @@ begin
   if FileExists(aFilename) then
     fDocument.LoadFromFile(aFilename);
 
+  // Set document Version and Encoding again
+  // F.e. after loading empty file Version and Encoding properties are cleared
+  fDocument.Version := '1.0';
+  fDocument.Encoding := 'UTF-8';
+
   fRoot := TKMXmlNode(fDocument.ChildNodes.FindNode(aRoot));
 
   // Create root if it's missing, so that XML could be processed and default parameters created
