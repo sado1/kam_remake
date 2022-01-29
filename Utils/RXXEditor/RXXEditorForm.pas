@@ -175,6 +175,13 @@ begin
   if SameText(ExtractFileName(OpenDialog1.FileName), 'guimain.rx') then
     RT := rxGuiMain
   else
+  if SameText(LowerCase(ExtractFileName(OpenDialog1.FileName)), 'units.rxx')
+    or SameText(LowerCase(ExtractFileName(OpenDialog1.FileName)), 'units_a.rxx') then
+    RT := rxUnits
+  else
+  if SameText(LowerCase(ExtractFileName(OpenDialog1.FileName)), 'tileset.rxx') then
+    RT := rxTiles
+  else
     RT := rxTrees;
 
   FreeAndNil(fSprites);
