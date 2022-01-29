@@ -246,7 +246,7 @@ var
   I, J, campCount: Integer;
   campName: TKMCampaignId;
   unlocked: Byte;
-  hasScriptData: Boolean;
+  hasScriptData, isViewed: Boolean;
   scriptDataSize: Cardinal;
 begin
   if not FileExists(aFileName) then Exit;
@@ -265,22 +265,26 @@ begin
     M.Read(campCount);
     for I := 0 to campCount - 1 do
     begin
-      M.Read(campName, sizeOf(TKMCampaignId));
-      M.Read(unlocked);
-      C := CampaignById(campName);
-      if C <> nil then
+      M.Read(isViewed);
+      if isViewed then
       begin
-        C.Viewed := True;
-        C.UnlockedMap := unlocked;
-        for J := 0 to C.MapCount - 1 do
-          M.Read(C.fMapsProgressData[J], SizeOf(C.fMapsProgressData[J]));
-
-        C.ScriptData.Clear;
-        if hasScriptData then
+        M.Read(campName, sizeOf(TKMCampaignId));
+        M.Read(unlocked);
+        C := CampaignById(campName);
+        if C <> nil then
         begin
-          M.Read(scriptDataSize);
-          C.ScriptData.Write(Pointer(NativeUInt(M.Memory) + M.Position)^, scriptDataSize);
-          M.Seek(scriptDataSize, soCurrent); //Seek past script data
+          C.Viewed := True;
+          C.UnlockedMap := unlocked;
+          for J := 0 to C.MapCount - 1 do
+            M.Read(C.fMapsProgressData[J], SizeOf(C.fMapsProgressData[J]));
+
+          C.ScriptData.Clear;
+          if hasScriptData then
+          begin
+            M.Read(scriptDataSize);
+            C.ScriptData.Write(Pointer(NativeUInt(M.Memory) + M.Position)^, scriptDataSize);
+            M.Seek(scriptDataSize, soCurrent); //Seek past script data
+          end;
         end;
       end;
     end;
@@ -305,6 +309,8 @@ begin
     M.Write(Integer(CAMP_HEADER_V3)); //Identify our format
     M.Write(Count);
     for I := 0 to Count - 1 do
+    begin
+      M.Write(Campaigns[I].Viewed);
       if Campaigns[I].Viewed then
       begin
         M.Write(Campaigns[I].CampaignId, SizeOf(TKMCampaignId));
@@ -314,6 +320,7 @@ begin
         M.Write(Cardinal(Campaigns[I].ScriptData.Size));
         M.Write(Campaigns[I].ScriptData.Memory^, Campaigns[I].ScriptData.Size);
       end;
+    end;
 
     M.SaveToFile(filePath);
   finally
