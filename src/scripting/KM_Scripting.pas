@@ -971,7 +971,7 @@ begin
   begin
     handlers := gScriptEvents.EventHandlers[EVT];
     for I := Low(handlers) to High(handlers) do
-      if UpperCase(handlers[I].ProcName) = UpperCase(Proc.Name) then
+      if FastUppercase(handlers[I].ProcName) = FastUppercase(Proc.Name) then
         if not ExportCheck(Sender, Proc, Slice(PROCS[EVT].Typ, PROCS[EVT].ParamCount+1), Slice(PROCS[EVT].Dir, PROCS[EVT].ParamCount)) then
         begin
           // Error when validating the Proc arguments (count, types and directions):
@@ -980,7 +980,8 @@ begin
           // Hence we can just emit the error appending proc name to it and re-setting the Row/Col
           // (since they point to the files)
 
-          // Do not set Module name here, it could be set as an included script
+          // Do not set Module name here (1st parameter),
+          // it could be set further as an included script on PreProcessor.AdjustMessages
           pcm := Sender.MakeError('', ecCustomError , 'Error in declaration of ''' + handlers[I].ProcName + '''');
           pcm.Row := Proc.DeclareRow;
           pcm.Col := Proc.DeclareCol;
