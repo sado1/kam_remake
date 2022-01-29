@@ -42,6 +42,7 @@ type
     fIDCache: TKMScriptingIdCache;
     fUtils: TKMScriptUtils;
 
+    function MakePSTypeHash(aType: TPSTypeRec): Integer;
     function IsScriptCodeNeedToCompile: Boolean;
     procedure AddError(aMsg: TPSPascalCompilerMessage);
     procedure CompileScript;
@@ -63,6 +64,8 @@ type
     function ScriptOnUses(Sender: TPSPascalCompiler; const Name: AnsiString): Boolean;
     procedure ScriptOnUseVariable(Sender: TPSPascalCompiler; VarType: TPSVariableType; VarNo: Longint; ProcNo, Position: Cardinal; const PropData: tbtString);
     function ScriptOnExportCheck(Sender: TPSPascalCompiler; Proc: TPSInternalProcedure; const ProcDecl: AnsiString): Boolean;
+    procedure ScriptOnAddType(Sender: TPSPascalCompiler; var aType: TPSType);
+    procedure ScriptOnAddGlobalVar(Sender: TPSPascalCompiler; var aGlobalVar: TPSVar);
 
     //property ScriptCode: AnsiString read fScriptCode;
     property ScriptFilesInfo: TKMScriptFilesCollection read GetScriptFilesInfo;
@@ -114,7 +117,8 @@ const
 
 implementation
 uses
-  TypInfo, Math, KromUtils, KM_GameParams, KM_Resource, KM_ResUnits, KM_Log, KM_CommonUtils, KM_ResWares,
+  TypInfo, Math, System.Hash,
+  KromUtils, KM_GameParams, KM_Resource, KM_ResUnits, KM_Log, KM_CommonUtils, KM_ResWares,
   KM_ScriptingConsoleCommands, KM_ScriptPreProcessorGame,
   KM_ResTypes, KM_CampaignTypes;
 
@@ -143,6 +147,20 @@ begin
   Result := False;
   if gScripting <> nil then
     Result := gScripting.ScriptOnExportCheck(Sender, Proc, ProcDecl);
+end;
+
+
+procedure ScriptOnAddTypeProc(Sender: TPSPascalCompiler; var aType: TPSType);
+begin
+  if gScripting <> nil then
+    gScripting.ScriptOnAddType(Sender, aType);
+end;
+
+
+procedure ScriptOnAddGlobalVarProc(Sender: TPSPascalCompiler; var aGlobalVar: TPSVar);
+begin
+  if gScripting <> nil then
+    gScripting.ScriptOnAddGlobalVar(Sender, aGlobalVar);
 end;
 
 
@@ -992,6 +1010,23 @@ begin
 end;
 
 
+procedure TKMScripting.ScriptOnAddType(Sender: TPSPascalCompiler; var aType: TPSType);
+begin
+  if FastUppercase(aType.Name) = FastUppercase(CAMPAIGN_DATA_TYPE) then
+    // Mark TKMCampaignData type to export its name, so its export name will be available in runtime
+    aType.ExportName := True;
+end;
+
+
+procedure TKMScripting.ScriptOnAddGlobalVar(Sender: TPSPascalCompiler; var aGlobalVar: TPSVar);
+begin
+  // There is variable type info here
+  // We do not want to get "Variable 'CAMPAIGNDATA' never used" compilation hint, in case its not used in some campaign missions
+  if FastUppercase(aGlobalVar.aType.Name) = FastUppercase(CAMPAIGN_DATA_TYPE) then
+    aGlobalVar.Use;
+end;
+
+
 procedure TKMScripting.AddError(aMsg: TPSPascalCompilerMessage);
 begin
   fErrorHandler.AppendError(GetErrorMessage(aMsg));
@@ -1011,6 +1046,8 @@ begin
     compiler.OnUses := ScriptOnUsesFunc; // assign the OnUses event
     compiler.OnUseVariable := ScriptOnUseVariableProc;
     compiler.OnExportCheck := ScriptOnExportCheckFunc; // Assign the onExportCheck event
+    compiler.OnAddType := ScriptOnAddTypeProc;
+    compiler.OnAddGlobalVar := ScriptOnAddGlobalVarProc;
 
     compiler.AllowNoEnd := True; //Scripts only use event handlers now, main section is unused
     compiler.BooleanShortCircuit := True; //Like unchecking "Complete booolean evaluation" in Delphi compiler options
@@ -1751,19 +1788,36 @@ var
   I: Integer;
   V: PIFVariant;
   S: AnsiString;
+  size: Cardinal;
+  hash: Integer;
+  errStr: String;
 begin
   if LoadStream = nil then Exit; // silently Exit in case this is not a campaign script
+  if LoadStream.Position = LoadStream.Size then Exit; // LoadStream is empty
 
   LoadStream.ReadA(S);
   //Campaign data format might change. If so, do not load it
   if S <> fCampaignDataTypeScriptCode then
     Exit;
 
+  if LoadStream.Position = LoadStream.Size then Exit; // LoadStream is empty
+
   for I := 0 to fExec.GetVarCount - 1 do
   begin
     V := fExec.GetVarNo(I);
-    if V.FType.ExportName = FastUppercase(CAMPAIGN_DATA_TYPE) then
+    if FastUppercase(V.FType.ExportName) = FastUppercase(CAMPAIGN_DATA_TYPE) then
     begin
+      LoadStream.Read(hash);
+      LoadStream.Read(size);
+      if (hash <> MakePSTypeHash(V.FType)) or (size <> V.FType.RealSize) then
+      begin
+        errStr := Format('var %s: %s declaration differs from previously saved declaration. Update it and rerun the mission',
+                         [CAMPAIGN_DATA_VAR, CAMPAIGN_DATA_TYPE]);
+        fErrorHandler.AppendErrorStr(errStr);
+        fValidationIssues.AddError(0, 0, '', errStr);
+        Exit;
+      end;
+
       LoadVar(LoadStream, @PPSVariantData(V).Data, V.FType);
       Exit;
     end;
@@ -1850,6 +1904,42 @@ begin
 end;
 
 
+function TKMScripting.MakePSTypeHash(aType: TPSTypeRec): Integer;
+
+  function GetHashStr(aPSType: TPSTypeRec): string;
+  const
+    SEP = '|';
+  var
+    I: Integer;
+  begin
+    if aPSType = nil then Exit('nil');
+
+    Result := IntToStr(aPSType.BaseType);
+
+    //Check elements of arrays/records are valid too
+    case aPSType.BaseType of
+      btArray,
+      btStaticArray:
+        Result := Result + SEP + GetHashStr(TPSTypeRec_Array(aPSType).ArrayType);
+      btRecord:
+        begin
+          for I := 0 to TPSTypeRec_Record(aPSType).FieldTypes.Count - 1 do
+            Result := Result + SEP + GetHashStr(TPSTypeRec_Record(aPSType).FieldTypes[I]);
+        end;
+    end;
+  end;
+
+var
+  s: string;
+begin
+  if aType = nil then Exit(0);
+
+  s := GetHashStr(aType);
+
+  Result := THashBobJenkins.GetHashValue(s);
+end;
+
+
 procedure TKMScripting.SaveCampaignData(SaveStream: TKMemoryStream);
 var
   I: Integer;
@@ -1859,8 +1949,10 @@ begin
   for I := 0 to fExec.GetVarCount - 1 do
   begin
     V := fExec.GetVarNo(I);
-    if V.FType.ExportName = FastUppercase(CAMPAIGN_DATA_TYPE) then
+    if FastUppercase(V.FType.ExportName) = FastUppercase(CAMPAIGN_DATA_TYPE) then
     begin
+      SaveStream.Write(MakePSTypeHash(V.FType));
+      SaveStream.Write(V.FType.RealSize);
       SaveVar(SaveStream, @PPSVariantData(V).Data, V.FType);
       Exit;
     end;
