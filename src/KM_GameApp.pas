@@ -579,8 +579,8 @@ begin
     if fCampaigns.ActiveCampaign <> nil then
     begin
       //Always save campaign data, even if the player lost (scripter can choose when to modify it)
-      fCampaigns.ActiveCampaign.ScriptData.Clear;
-      gGame.SaveCampaignScriptData(fCampaigns.ActiveCampaign.ScriptData);
+      fCampaigns.ActiveCampaign.ScriptDataStream.Clear;
+      gGame.SaveCampaignScriptData(fCampaigns.ActiveCampaign.ScriptDataStream);
 
       if aMsg = grWin then
         fCampaigns.UnlockNextMap; //Unlock next map before save campaign progress

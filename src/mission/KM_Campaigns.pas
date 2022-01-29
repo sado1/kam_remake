@@ -35,7 +35,7 @@ type
     fPath: UnicodeString;
     fTextLib: TKMTextLibrarySingle;
     fUnlockedMap: Byte;
-    fScriptData: TKMemoryStream;
+    fScriptDataStream: TKMemoryStream;
 
     //Saved in CMP
     fCampaignId: TKMCampaignId; //Used to identify the campaign
@@ -78,7 +78,7 @@ type
     property CampaignId: TKMCampaignId read fCampaignId write SetCampaignId;
     property ShortName: UnicodeString read fShortName;
     property UnlockedMap: Byte read fUnlockedMap write SetUnlockedMap;
-    property ScriptData: TKMemoryStream read fScriptData;
+    property ScriptDataStream: TKMemoryStream read fScriptDataStream;
     property MapsInfo: TKMCampaignMapDataArray read fMapsInfo;
     property MapsProgressData: TKMCampaignMapProgressDataArray read fMapsProgressData;
     property Viewed: Boolean read fViewed write fViewed;
@@ -242,7 +242,7 @@ end;
 procedure TKMCampaignsCollection.LoadProgress(const aFileName: UnicodeString);
 var
   M: TKMemoryStream;
-  C: TKMCampaign;
+  camp: TKMCampaign;
   I, J, campCount: Integer;
   campName: TKMCampaignId;
   unlocked: Byte;
@@ -270,19 +270,19 @@ begin
       begin
         M.Read(campName, sizeOf(TKMCampaignId));
         M.Read(unlocked);
-        C := CampaignById(campName);
-        if C <> nil then
+        camp := CampaignById(campName);
+        if camp <> nil then
         begin
-          C.Viewed := True;
-          C.UnlockedMap := unlocked;
-          for J := 0 to C.MapCount - 1 do
-            M.Read(C.fMapsProgressData[J], SizeOf(C.fMapsProgressData[J]));
+          camp.Viewed := True;
+          camp.UnlockedMap := unlocked;
+          for J := 0 to camp.MapCount - 1 do
+            M.Read(camp.fMapsProgressData[J], SizeOf(camp.fMapsProgressData[J]));
 
-          C.ScriptData.Clear;
+          camp.ScriptDataStream.Clear;
           if hasScriptData then
           begin
             M.Read(scriptDataSize);
-            C.ScriptData.Write(Pointer(NativeUInt(M.Memory) + M.Position)^, scriptDataSize);
+            camp.ScriptDataStream.Write(Pointer(NativeUInt(M.Memory) + M.Position)^, scriptDataSize);
             M.Seek(scriptDataSize, soCurrent); //Seek past script data
           end;
         end;
@@ -317,8 +317,8 @@ begin
         M.Write(Campaigns[I].UnlockedMap);
         for J := 0 to Campaigns[I].MapCount - 1 do
           M.Write(Campaigns[I].fMapsProgressData[J], SizeOf(Campaigns[I].fMapsProgressData[J]));
-        M.Write(Cardinal(Campaigns[I].ScriptData.Size));
-        M.Write(Campaigns[I].ScriptData.Memory^, Campaigns[I].ScriptData.Size);
+        M.Write(Cardinal(Campaigns[I].ScriptDataStream.Size));
+        M.Write(Campaigns[I].ScriptDataStream.Memory^, Campaigns[I].ScriptDataStream.Size);
       end;
     end;
 
@@ -387,7 +387,7 @@ begin
   //1st map is always unlocked to allow to start campaign
   fViewed := False;
   fUnlockedMap := 0;
-  fScriptData := TKMemoryStreamBinary.Create;
+  fScriptDataStream := TKMemoryStreamBinary.Create;
 end;
 
 
@@ -396,7 +396,7 @@ var
   I: Integer;
 begin
   FreeAndNil(fTextLib);
-  fScriptData.Free;
+  fScriptDataStream.Free;
 
   for I := 0 to Length(fMapsInfo) - 1 do
     if fMapsInfo[I].TxtInfo <> nil then
