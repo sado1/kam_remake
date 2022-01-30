@@ -134,7 +134,7 @@ begin
     ArrayToXML(fWarnings, nWarning);
     ArrayToXML(fErrors, nError);
 
-    Result := xmlDoc.Xml;
+    Result := xmlDoc.Text;
   finally
     xmlDoc.Free;
   end;
@@ -145,9 +145,9 @@ procedure TKMScriptValidatorResult.FromXML(const aXml: string);
 var
   xmlDoc: TKMXmlDocument;
 begin
-  xmlDoc := TKMXmlDocument.Create();
+  xmlDoc := TKMXmlDocument.Create;
   try
-    xmlDoc.Xml := aXml;
+    xmlDoc.Text := aXml;
     XMLToArray(xmlDoc.Root.FindNode('Hints'), fHints);
     XMLToArray(xmlDoc.Root.FindNode('Warnings'), fWarnings);
     XMLToArray(xmlDoc.Root.FindNode('Errors'), fErrors);

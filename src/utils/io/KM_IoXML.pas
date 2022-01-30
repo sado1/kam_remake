@@ -59,6 +59,7 @@ type
     fRoot: TKMXmlNode;
     function GetText: String;
     procedure SetText(const aText: string);
+    procedure ApplyDefaultSettings;
   public
     constructor Create(const aRoot: string = 'Root');
     destructor Destroy; override;
@@ -68,7 +69,7 @@ type
     procedure LoadFromFile(const aFilename: string; aRoot: string  = 'Root'; aReadOnly: Boolean = True);
     procedure SaveToFile(const aFilename: string; aCompressed: Boolean = False);
 
-    property Xml: string read GetText write SetText;
+    property Text: string read GetText write SetText;
   end;
 
 
@@ -109,17 +110,14 @@ begin
 
   fDocument := TKMXmlDomDocument.Create;
 
-  {$IFDEF WDC}
-  fDocument.Version := '1.0';
-  fDocument.Encoding := 'UTF-8';
-  fDocument.Options := [doNodeAutoIndent]; // Do not write BOM
+  ApplyDefaultSettings;
 
+  {$IFDEF WDC}
   if aRoot <> '' then
     fRoot := TKMXmlNode(fDocument.AddChild(aRoot));
   {$ENDIF}
 
   {$IFDEF FPC}
-  fDocument.XMLVersion := '1.0';
   if aRoot <> '' then
   begin
     fRoot := TKMXmlNode(fDocument.CreateElement(aRoot));
@@ -137,40 +135,54 @@ begin
 end;
 
 
+procedure TKMXmlDocument.ApplyDefaultSettings;
+begin
+  {$IFDEF WDC}
+  fDocument.Version := '1.0';
+  fDocument.Encoding := 'UTF-8';
+  fDocument.Options := [doNodeAutoIndent]; // Do not write BOM
+  {$ENDIF}
+  {$IFDEF FPC}
+  fDocument.XMLVersion := '1.0';
+  {$ENDIF}
+end;
+
+
 procedure TKMXmlDocument.LoadFromFile(const aFilename: string; aRoot: string  = 'Root'; aReadOnly: Boolean = True);
 begin
   {$IFDEF WDC}
-  // When no file exists we create an empty XML and let caller handle it
-  // e.g. by reading default values from it
-  if FileExists(aFilename) then
-    fDocument.LoadFromFile(aFilename);
+    // When no file exists we create an empty XML and let caller handle it
+    // e.g. by reading default values from it
+    if FileExists(aFilename) then
+      fDocument.LoadFromFile(aFilename);
+  {$ENDIF}
+  {$IFDEF FPC}
+    // When no file exists we create an empty XML and let caller handle it
+    // e.g. by reading default values from it
+    if FileExists(aFilename) then
+      ReadXMLFile(fDocument, aFilename);
+  {$ENDIF}
 
   // Set document Version and Encoding again
   // F.e. after loading empty file Version and Encoding properties are cleared
-  fDocument.Version := '1.0';
-  fDocument.Encoding := 'UTF-8';
+  ApplyDefaultSettings;
 
-  fRoot := TKMXmlNode(fDocument.ChildNodes.FindNode(aRoot));
+  {$IFDEF WDC}
+    fRoot := TKMXmlNode(fDocument.ChildNodes.FindNode(aRoot));
 
-  // Create root if it's missing, so that XML could be processed and default parameters created
-  if fRoot = nil then
-    fRoot := TKMXmlNode(fDocument.ChildNodes.Add(aRoot));
+    // Create root if it's missing, so that XML could be processed and default parameters created
+    if fRoot = nil then
+      fRoot := TKMXmlNode(fDocument.ChildNodes.Add(aRoot));
   {$ENDIF}
-
   {$IFDEF FPC}
-  // When no file exists we create an empty XML and let caller handle it
-  // e.g. by reading default values from it
-  if FileExists(aFilename) then
-     ReadXMLFile(fDocument, aFilename);
+    fRoot := TKMXmlNode(fDocument.DocumentElement.FindNode(aRoot));
 
-  fRoot := TKMXmlNode(fDocument.DocumentElement.FindNode(aRoot));
-
-  // Create root if it's missing, so that XML could be processed and default parameters created
-  if fRoot = nil then
-  begin
-    fRoot := TKMXmlNode(fDocument.CreateElement(aRoot));
-    fDocument.AppendChild(fRoot);
-  end;
+    // Create root if it's missing, so that XML could be processed and default parameters created
+    if fRoot = nil then
+    begin
+      fRoot := TKMXmlNode(fDocument.CreateElement(aRoot));
+      fDocument.AppendChild(fRoot);
+    end;
   {$ENDIF}
 end;
 
@@ -183,7 +195,7 @@ begin
   fDocument.SaveToFile(aFilename);
   {$ENDIF}
   {$IFDEF FPC}
-  writeXMLFile(fDocument, aFilename);
+  WriteXMLFile(fDocument, aFilename);
   {$ENDIF}
 end;
 
@@ -193,6 +205,9 @@ begin
   {$IFDEF WDC}
   Result := fDocument.Xml;
   {$ENDIF}
+  {$IFDEF FPC}
+  Not implemented
+  {$ENDIF}
 end;
 
 
@@ -200,6 +215,9 @@ procedure TKMXmlDocument.SetText(const aText: string);
 begin
   {$IFDEF WDC}
   fDocument.Xml := aText;
+  {$ENDIF}
+  {$IFDEF FPC}
+  Not implemented
   {$ENDIF}
 end;
 
