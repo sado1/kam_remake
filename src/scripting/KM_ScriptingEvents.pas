@@ -398,7 +398,7 @@ begin
   for I := 0 to CmdCount - 1 do
   begin
     //Create new command instance
-    //Commands destruction will be handled by fConsoleCommands TDictionary in TKMScriptEvents.Destry
+    //Commands destruction will be handled by fConsoleCommands TDictionary in TKMScriptEvents.Destroy
     Command := TKMConsoleCommand.Create;
     Command.Load(LoadStream);
     fConsoleCommands.Add(AnsiString(LowerCase(Command.Name)), Command);
