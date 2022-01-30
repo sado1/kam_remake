@@ -287,10 +287,7 @@ begin
   Result := False;
   for I := Low(fEventHandlers[aEventType]) to High(fEventHandlers[aEventType]) do
     if fEventHandlers[aEventType][I].Handler.Code <> nil then
-    begin
-      Result := True;
-      Exit;
-    end;
+      Exit(True);
 end;
 
 
@@ -299,10 +296,7 @@ begin
   Result := False;
   if fConsoleCommands.ContainsKey(AnsiString(LowerCase(aCmdName)))
     and (fConsoleCommands.Items[AnsiString(LowerCase(aCmdName))].Handler.Code <> nil) then
-  begin
-    Result := True;
-    Exit;
-  end;
+    Exit(True);
 end;
 
 
