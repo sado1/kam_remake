@@ -15,6 +15,7 @@ type
     procedure UpdateControlsPosition;
     procedure KeysClick(Sender: TObject);
   protected
+    PopUpPanel_Settings: TKMPopUpPanel;
     Panel_Settings: TKMPanel;
       CheckBox_Autosave: TKMCheckBox;
       CheckBox_LerpRender: TKMCheckBox;
@@ -51,8 +52,9 @@ uses
 { TKMMapEdMenuQuit }
 constructor TKMGameMenuSettings.Create(aParent: TKMPanel; aOnChangeSetting, aOnKeysUpdated: TEvent);
 const
-  PAD = 3;
-  WID = TB_WIDTH - PAD * 2;
+  PAD = 10;
+  W_PNL = 370;
+  WID = W_PNL - PAD * 2;
 var
   topPos: Integer;
 begin
@@ -60,68 +62,76 @@ begin
 
   fOnChangeSetting := aOnChangeSetting;
 
-  Panel_Settings := TKMPanel.Create(aParent, TB_PAD, 44, TB_WIDTH, 412);
+  PopUpPanel_Settings := TKMPopUpPanel.Create(aParent.MasterParent, W_PNL, 450, gResTexts[TX_MENU_SETTINGS], pubgitYellow, True, True);
+  PopUpPanel_Settings.ImageClose.Left := PopUpPanel_Settings.ItemsPanel.Right - PopUpPanel_Settings.ImageClose.Width;
+  PopUpPanel_Settings.HandleCloseKey := True;
+  PopUpPanel_Settings.CapOffsetY := -5;
+
+  Panel_Settings := TKMPanel.Create(PopUpPanel_Settings.ItemsPanel, 0, 0, W_PNL, 600);
+
     topPos := 15;
-    CheckBox_Autosave := TKMCheckBox.Create(Panel_Settings,PAD,topPos,WID,20,gResTexts[TX_MENU_OPTIONS_AUTOSAVE],fntMetal);
+    CheckBox_Autosave := TKMCheckBox.Create(Panel_Settings, PAD, topPos, WID, 20, gResTexts[TX_MENU_OPTIONS_AUTOSAVE], fntMetal);
     CheckBox_Autosave.OnClick := Menu_Settings_Change;
     Inc(topPos, 25);
 
-    CheckBox_LerpRender := TKMCheckBox.Create(Panel_Settings, PAD, topPos, WID, 40, gResTexts[TX_GAME_SETTINGS_LERP_RENDER], fntMetal);
+    CheckBox_LerpRender := TKMCheckBox.Create(Panel_Settings, PAD, topPos, WID, 20, gResTexts[TX_GAME_SETTINGS_LERP_RENDER], fntMetal);
     CheckBox_LerpRender.Hint := gResTexts[TX_SETTINGS_LERP_RENDER_HINT];
     CheckBox_LerpRender.OnClick := Menu_Settings_Change;
-    Inc(topPos, 40);
+    Inc(topPos, 25);
 
-    CheckBox_LerpAnims := TKMCheckBox.Create(Panel_Settings, PAD, topPos, WID, 40, gResTexts[TX_GAME_SETTINGS_LERP_ANIMS], fntMetal);
+    CheckBox_LerpAnims := TKMCheckBox.Create(Panel_Settings, PAD, topPos, WID, 20, gResTexts[TX_GAME_SETTINGS_LERP_ANIMS], fntMetal);
     CheckBox_LerpAnims.Hint := gResTexts[TX_SETTINGS_LERP_ANIMS_HINT];
     CheckBox_LerpAnims.OnClick := Menu_Settings_Change;
-    Inc(topPos, 40);
+    Inc(topPos, 25);
 
-    CheckBox_AllyEnemy_ColorMode := TKMCheckBox.Create(Panel_Settings,PAD,topPos,WID,40,gResTexts[TX_GAME_SETTINGS_COLOR_MODE],fntMetal);
+    CheckBox_AllyEnemy_ColorMode := TKMCheckBox.Create(Panel_Settings, PAD, topPos, WID, 20, gResTexts[TX_GAME_SETTINGS_COLOR_MODE], fntMetal);
     CheckBox_AllyEnemy_ColorMode.Hint := gResTexts[TX_GAME_SETTINGS_COLOR_MODE_HINT];
     CheckBox_AllyEnemy_ColorMode.OnClick := Menu_Settings_Change;
-    Inc(topPos, 40);
+    Inc(topPos, 25);
 
-    CheckBox_ReplayAutopauseAtPTEnd := TKMCheckBox.Create(Panel_Settings,PAD,topPos,WID,20,gResTexts[TX_GAME_SETTINGS_REPLAY_AUTOPAUSE],fntMetal);
+    CheckBox_ReplayAutopauseAtPTEnd := TKMCheckBox.Create(Panel_Settings, PAD, topPos, WID, 20, gResTexts[TX_GAME_SETTINGS_REPLAY_AUTOPAUSE], fntMetal);
     CheckBox_ReplayAutopauseAtPTEnd.Hint := gResTexts[TX_GAME_SETTINGS_REPLAY_AUTOPAUSE_HINT];
     CheckBox_ReplayAutopauseAtPTEnd.OnClick := Menu_Settings_Change;
-    Inc(topPos, 40);
-    CheckBox_ReplaySpecShowBeacons := TKMCheckBox.Create(Panel_Settings,PAD,topPos,WID,20,gResTexts[TX_GAME_SETTINGS_SHOW_BEACONS],fntMetal);
+    Inc(topPos, 25);
+    CheckBox_ReplaySpecShowBeacons := TKMCheckBox.Create(Panel_Settings, PAD, topPos, WID, 20, gResTexts[TX_GAME_SETTINGS_SHOW_BEACONS], fntMetal);
     CheckBox_ReplaySpecShowBeacons.Hint := gResTexts[TX_GAME_SETTINGS_SHOW_BEACONS_HINT];
     CheckBox_ReplaySpecShowBeacons.OnClick := Menu_Settings_Change;
-    Inc(topPos, 25);
-    TrackBar_Brightness := TKMTrackBar.Create(Panel_Settings,PAD,topPos,WID,0,20);
+    Inc(topPos, 35);
+    TrackBar_Brightness := TKMTrackBar.Create(Panel_Settings, PAD, topPos, WID, 0, 20);
     TrackBar_Brightness.Caption := gResTexts[TX_MENU_OPTIONS_BRIGHTNESS];
     TrackBar_Brightness.OnChange := Menu_Settings_Change;
     Inc(topPos, 55);
-    TrackBar_ScrollSpeed := TKMTrackBar.Create(Panel_Settings,PAD,topPos,WID,0,20);
+    TrackBar_ScrollSpeed := TKMTrackBar.Create(Panel_Settings, PAD, topPos, WID, 0, 20);
     TrackBar_ScrollSpeed.Caption := gResTexts[TX_MENU_OPTIONS_SCROLL_SPEED];
     TrackBar_ScrollSpeed.OnChange := Menu_Settings_Change;
     Inc(topPos, 55);
-    TrackBar_SFX := TKMTrackBar.Create(Panel_Settings,PAD,topPos,WID,0,20);
+    TrackBar_SFX := TKMTrackBar.Create(Panel_Settings, PAD, topPos, WID, 0, 20);
     TrackBar_SFX.Caption := gResTexts[TX_MENU_SFX_VOLUME];
     TrackBar_SFX.Hint := gResTexts[TX_MENU_SFX_VOLUME_HINT];
     TrackBar_SFX.OnChange := Menu_Settings_Change;
     Inc(topPos, 55);
-    TrackBar_Music := TKMTrackBar.Create(Panel_Settings,PAD,topPos,WID,0,20);
+    TrackBar_Music := TKMTrackBar.Create(Panel_Settings, PAD, topPos, WID, 0, 20);
     TrackBar_Music.Caption := gResTexts[TX_MENU_MUSIC_VOLUME];
     TrackBar_Music.Hint := gResTexts[TX_MENU_MUSIC_VOLUME_HINT];
     TrackBar_Music.OnChange := Menu_Settings_Change;
     Inc(topPos, 55);
-    CheckBox_MusicOff := TKMCheckBox.Create(Panel_Settings,PAD,topPos,WID,20,gResTexts[TX_MENU_OPTIONS_MUSIC_DISABLE_SHORT],fntMetal);
+    CheckBox_MusicOff := TKMCheckBox.Create(Panel_Settings, PAD, topPos, WID, 20, gResTexts[TX_MENU_OPTIONS_MUSIC_DISABLE], fntMetal);
     CheckBox_MusicOff.Hint := gResTexts[TX_MENU_OPTIONS_MUSIC_DISABLE_HINT];
     CheckBox_MusicOff.OnClick := Menu_Settings_Change;
     Inc(topPos, 25);
-    CheckBox_ShuffleOn := TKMCheckBox.Create(Panel_Settings,PAD,topPos,WID,20,gResTexts[TX_MENU_OPTIONS_MUSIC_SHUFFLE_SHORT],fntMetal);
+    CheckBox_ShuffleOn := TKMCheckBox.Create(Panel_Settings, PAD, topPos, WID, 20, gResTexts[TX_MENU_OPTIONS_MUSIC_SHUFFLE], fntMetal);
     CheckBox_ShuffleOn.Hint := gResTexts[TX_MENU_OPTIONS_MUSIC_SHUFFLE_HINT];
     CheckBox_ShuffleOn.OnClick := Menu_Settings_Change;
     Inc(topPos, 40);
     // Keybindings button
-    Button_OptionsKeys := TKMButton.Create(Panel_Settings, 0, topPos, TB_WIDTH, 30, gResTexts[TX_MENU_OPTIONS_KEYBIND], bsGame);
-    Button_OptionsKeys.Anchors := [anLeft];
+    Button_OptionsKeys := TKMButton.Create(Panel_Settings, PAD, topPos, WID, 30, gResTexts[TX_MENU_OPTIONS_KEYBIND], bsGame);
     Button_OptionsKeys.OnClick := KeysClick;
 
     // Panel_Options_Keys
-    fGuiCommonKeys := TKMGUICommonKeys.Create(aParent.MasterPanel, aOnKeysUpdated);
+    fGuiCommonKeys := TKMGUICommonKeys.Create(aParent.MasterPanel, aOnKeysUpdated, False);
+    fGuiCommonKeys.OnClose := Show;
+
+    PopUpPanel_Settings.Hide;
 end;
 
 
@@ -160,19 +170,19 @@ begin
   end;
 
   CheckBox_LerpRender.Top := top;
-  Inc(top, 40);
+  Inc(top, 25);
   CheckBox_LerpAnims.Top := top;
-  Inc(top, 40);
+  Inc(top, 25);
 
   CheckBox_AllyEnemy_ColorMode.Top := top;
   CheckBox_AllyEnemy_ColorMode.DoSetVisible;
-  Inc(top, 40);
+  Inc(top, 25);
 
   if gGameParams.Mode = gmReplayMulti then
   begin
     CheckBox_ReplayAutopauseAtPTEnd.Top := top;
     CheckBox_ReplayAutopauseAtPTEnd.DoSetVisible;
-    Inc(top, 40);
+    Inc(top, 25);
   end else
     CheckBox_ReplayAutopauseAtPTEnd.Hide;
 
@@ -183,6 +193,8 @@ begin
     Inc(top, 25);
   end else
     CheckBox_ReplaySpecShowBeacons.Hide;
+
+  Inc(top, 10);
 
   TrackBar_Brightness.Top := top;
   Inc(top, 55);
@@ -195,10 +207,11 @@ begin
   CheckBox_MusicOff.Top := top;
   Inc(top, 25);
   CheckBox_ShuffleOn.Top := top;
-  Inc(top, 25);
+  Inc(top, 40);
   Button_OptionsKeys.Top := top;
 
-  Panel_Settings.Height := Button_OptionsKeys.Bottom + 2;
+  Panel_Settings.Height := Button_OptionsKeys.Bottom + 10;
+  PopUpPanel_Settings.ActualHeight := Panel_Settings.Height;
 end;
 
 procedure TKMGameMenuSettings.Refresh;
@@ -277,7 +290,7 @@ end;
 
 procedure TKMGameMenuSettings.Hide;
 begin
-  Panel_Settings.Hide;
+  PopUpPanel_Settings.Hide;
 end;
 
 
@@ -289,13 +302,15 @@ end;
 
 procedure TKMGameMenuSettings.Show;
 begin
-  Panel_Settings.Show;
+  UpdateControlsPosition;
+  PopUpPanel_Settings.Show;
+  PopUpPanel_Settings.Focus; // To be able to handle KeyUp
 end;
 
 
 function TKMGameMenuSettings.Visible: Boolean;
 begin
-  Result := Panel_Settings.Visible;
+  Result := PopUpPanel_Settings.Visible;
 end;
 
 

@@ -1037,7 +1037,7 @@
 1087:Lista de objetos
 1088:Cerrar
 1089:Eliminar unidades/grupos
-1090:Reproducir|Pausa automática
+1090:Reproducir Pausa automática
 1091:Automaticamente pausa la repetición cuando el tiempo de paz termina
 1092:Mostrar balizas
 1093:Mostrar las balizas de los jugadores
@@ -1134,8 +1134,8 @@
 1184:Anfitrión
 1185:Ir a casa selecionada
 1186:Ir a unidad selecionada
-1187:Aliado / enemigo |Color Alternativo
-1188:Cambia los colores propio/aliados/enemigos en lugar de los colores iniciales del jugador
+1187:Aliado / Enemigo Color Alternativo
+1188:Cambia los colores propio / aliados / enemigos en lugar de los colores iniciales del jugador
 1189:[$404040]El anfitrión está listo para empezar. Por favor presiona '[][$0707FF]%s[][$404040]'[]
 1190:Pide presionar Listo
 1191:Se envió una advertencia para estar listo a % s jugadores

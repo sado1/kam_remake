@@ -1828,6 +1828,7 @@ type
     fDragging: Boolean;
     fDragStartPos: TKMPoint;
     fBGImageType: TKMPopUpBGImageType;
+    fHandleCloseKey: Boolean;
     fOnClose: TEvent;
     procedure UpdateSizes;
     procedure Close(Sender: TObject);
@@ -1842,6 +1843,8 @@ type
     procedure SetActualWidth(aValue: Integer);
     function GetActualHeight: Integer;
     procedure SetActualHeight(aValue: Integer);
+
+    procedure SetHandleCloseKey(aValue: Boolean);
   protected
     BevelBG: TKMBevel;
     BevelShade: TKMBevel;
@@ -1855,6 +1858,7 @@ type
     Font: TKMFont;
     FontColor: TColor4;
     CapOffsetY: Integer;
+
     constructor Create(aParent: TKMPanel; aWidth, aHeight: Integer; const aCaption: UnicodeString = '';
                        aImageType: TKMPopUpBGImageType = pubgitYellow; aWithCrossImg: Boolean = False;
                        aShowBevel: Boolean = True; aShowShadeBevel: Boolean = True);
@@ -1862,6 +1866,8 @@ type
     procedure MouseDown (X,Y: Integer; Shift: TShiftState; Button: TMouseButton); override;
     procedure MouseMove (X,Y: Integer; Shift: TShiftState); override;
     procedure MouseUp   (X,Y: Integer; Shift: TShiftState; Button: TMouseButton); override;
+
+    function KeyUp(Key: Word; Shift: TShiftState): Boolean; override;
 
     procedure ControlMouseMove(Sender: TObject; X,Y: Integer; Shift: TShiftState);
 
@@ -1872,6 +1878,8 @@ type
 
     property ActualHeight: Integer read GetActualHeight write SetActualHeight;
     property ActualWidth: Integer read GetActualWidth write SetActualWidth;
+
+    property HandleCloseKey: Boolean read fHandleCloseKey write SetHandleCloseKey;
 
     procedure PaintPanel(aPaintLayer: Integer); override;
   end;
@@ -2039,7 +2047,7 @@ uses
   KromUtils,
   KM_System,
   KM_MinimapGame,
-  KM_Resource, KM_ResSprites, KM_ResSound, KM_ResTexts,
+  KM_Resource, KM_ResSprites, KM_ResSound, KM_ResTexts, KM_ResKeys,
   KM_Render, KM_RenderTypes,
   KM_Sound, KM_CommonUtils, KM_UtilsExt;
 
@@ -9158,6 +9166,7 @@ begin
   FontColor := icWhite;
   Caption := aCaption;
   DragEnabled := False;
+  fHandleCloseKey := False;
 
   if aShowShadeBevel then
     BevelShade := TKMBevel.Create(Self, -2000,  -2000, 5000, 5000);
@@ -9325,6 +9334,21 @@ begin
 end;
 
 
+function TKMPopUpPanel.KeyUp(Key: Word; Shift: TShiftState): Boolean;
+begin
+  Result := inherited;
+  if Result then Exit; // Key already handled
+
+  if not fHandleCloseKey then Exit;
+
+  if Key = gResKeys[kfCloseMenu].Key then
+  begin
+    Close(nil);
+    Result := True;
+  end;
+end;
+
+
 procedure TKMPopUpPanel.PaintPanel(aPaintLayer: Integer);
 begin
   inherited;
@@ -9384,6 +9408,13 @@ begin
   baseH := aValue + GetBottomMargin + GetTopMargin;
   h := Min(Parent.Height, baseH);
   SetHeight(h);
+end;
+
+
+procedure TKMPopUpPanel.SetHandleCloseKey(aValue: Boolean);
+begin
+  fHandleCloseKey := aValue;
+  Focusable := aValue;
 end;
 
 

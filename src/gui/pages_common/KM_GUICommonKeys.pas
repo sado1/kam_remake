@@ -10,7 +10,9 @@ type
     fTempKeys: TKMResKeys;
 
     fOnKeysUpdated: TEvent;
+    fOnClose: TEvent;
 
+    procedure Hide;
     procedure KeysClick(Sender: TObject);
     procedure KeysRefreshList;
     function KeysUpdate(Sender: TObject; Key: Word; Shift: TShiftState): Boolean;
@@ -25,12 +27,14 @@ type
           Button_OptionsKeysOK: TKMButton;
           Button_OptionsKeysCancel: TKMButton;
   public
-    constructor Create(aParent: TKMPanel; aOnKeysUpdated: TEvent);
+    constructor Create(aParent: TKMPanel; aOnKeysUpdated: TEvent; aDrawBGBevel: Boolean = True);
     destructor Destroy; override;
 
     property Visible: Boolean read GetVisible;
 
     procedure Show;
+
+    property OnClose: TEvent read fOnClose write fOnClose;
   end;
 
 implementation
@@ -43,7 +47,7 @@ uses
 
 { TKMGUICommonKeys }
 
-constructor TKMGUICommonKeys.Create(aParent: TKMPanel; aOnKeysUpdated: TEvent);
+constructor TKMGUICommonKeys.Create(aParent: TKMPanel; aOnKeysUpdated: TEvent; aDrawBGBevel: Boolean = True);
 begin
   inherited Create;
 
@@ -57,7 +61,8 @@ begin
     PopUp_OptionsKeys.Left := (aParent.Width - PopUp_OptionsKeys.Width) div 2;
     PopUp_OptionsKeys.Top := (aParent.Height - PopUp_OptionsKeys.Height) div 2;
 
-      TKMBevel.Create(PopUp_OptionsKeys, -2000, -2000, 5000, 5000);
+      if aDrawBGBevel then
+        TKMBevel.Create(PopUp_OptionsKeys, -2000, -2000, 5000, 5000);
 
       TKMImage.Create(PopUp_OptionsKeys, 0, 0, PopUp_OptionsKeys.Width, PopUp_OptionsKeys.Height, 15, rxGuiMain).ImageStretch;
 
@@ -107,14 +112,21 @@ begin
 end;
 
 
+procedure TKMGUICommonKeys.Hide;
+begin
+  PopUp_OptionsKeys.Hide;
+
+  if Assigned(fOnClose) then
+    fOnClose();
+end;
+
+
 procedure TKMGUICommonKeys.KeysClick(Sender: TObject);
 var
   KF: TKMKeyFunction;
 begin
   if Sender = Button_OptionsKeysOK then
   begin
-    PopUp_OptionsKeys.Hide;
-
     // Save TempKeys to gResKeys
     for KF := Low(TKMKeyFunction) to High(TKMKeyFunction) do
       gResKeys[KF] := fTempKeys[KF];
@@ -123,10 +135,12 @@ begin
       fOnKeysUpdated;
 
     gResKeys.Save;
+
+    Hide;
   end;
 
   if Sender = Button_OptionsKeysCancel then
-    PopUp_OptionsKeys.Hide;
+    Hide;
 
   if (Sender = Button_OptionsKeysClear) then
     KeysUpdate(Button_OptionsKeysClear, 0, []);

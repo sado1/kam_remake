@@ -622,8 +622,7 @@ begin
     fOpenedMenu := tbMenu;
     if (Sender = Button_Main[tbMenu])
     or (Sender = Button_Quit_No)
-    or ((Sender = Button_Back) and ((LastVisiblePage = fGuiMenuSettings)
-                                 or (LastVisiblePage = Panel_Load)
+    or ((Sender = Button_Back) and ((LastVisiblePage = Panel_Load)
                                  or (LastVisiblePage = Panel_Save))) then begin
       Menu_Update; // Make sure updating happens before it is shown
       Label_MenuTitle.Caption := gResTexts[TX_MENU_TAB_OPTIONS];
@@ -661,9 +660,11 @@ begin
     end else
 
     if Sender = Button_Menu_Settings then begin
+      Menu_Update; // Make sure updating happens before it is shown
+      Label_MenuTitle.Caption := gResTexts[TX_MENU_TAB_OPTIONS];
+      Panel_Menu.Show;
       fGuiMenuSettings.Refresh;
       fGuiMenuSettings.Show;
-      Label_MenuTitle.Caption := gResTexts[TX_MENU_SETTINGS];
     end else
 
     if Sender = Button_Menu_Quit then
@@ -865,6 +866,9 @@ begin
 
   Create_Pause;
   Create_Replay; // Replay controls
+  // Settings PopUpWindow above replay controls / chat / allies
+  fGuiMenuSettings := TKMGameMenuSettings.Create(Panel_Controls, GameSettingsChanged, UpdateHotkeys);
+
   Create_PlayMore; // Must be created last, so that all controls behind are blocked
   Create_MPPlayMore;
 
@@ -1322,7 +1326,6 @@ begin
   Create_Menu;
     Create_Save;
     Create_Load;
-    fGuiMenuSettings := TKMGameMenuSettings.Create(Panel_Controls, GameSettingsChanged, UpdateHotkeys);
     Create_Quit;
 
   fGuiGameUnit := TKMGUIGameUnit.Create(Panel_Controls, SetViewportPos);
@@ -3476,6 +3479,9 @@ begin
     else
     if fShownMessage <> -1 then
       Message_Close(nil)
+    else
+    if fGuiMenuSettings.Visible then
+      fGuiMenuSettings.Hide
     else
     if fGuiGameChat.Visible then
       fGuiGameChat.Hide
