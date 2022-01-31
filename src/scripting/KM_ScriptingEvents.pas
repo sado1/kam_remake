@@ -681,7 +681,7 @@ end;
 
 
 //* Version: 5882
-//* Occurs when a house is damaged by the enemy soldier.
+//* Occurs when a house gets damaged (e.g. by the enemy soldier).
 //* Attacker is -1 the house was damaged some other way, such as from Actions.HouseAddDamage.
 procedure TKMScriptEvents.ProcHouseDamaged(aHouse: TKMHouse; aAttacker: TKMUnit);
 begin
@@ -718,8 +718,8 @@ end;
 
 
 //* Version: 13700
-//*
-//* Occurs when a house is repaired.
+//* Occurs when a house gets repaired.
+//* The event gets fired for each repair action (each 5hp)
 procedure TKMScriptEvents.ProcHouseRepaired(aHouse: TKMHouse);
 begin
   if MethodAssigned(evtHouseRepaired) then
