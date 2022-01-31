@@ -26,7 +26,7 @@ type
   end;
 
   TKMCustomEventHandler = record
-    ProcName: AnsiString; //@Rey: Plz check - Handler procedure name in the script file (needs to be unique across included scripts)
+    ProcName: AnsiString; // Handler procedure name in the script file (needs to be unique across included scripts)
     Handler: TMethod;
   end;
 
