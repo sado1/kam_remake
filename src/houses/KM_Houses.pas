@@ -1261,12 +1261,15 @@ end;
 
 //Add repair to the house
 procedure TKMHouse.AddRepair(aAmount: Word = 5);
+var
+  oldDmg: Integer;
 begin
+  oldDmg := fDamage;
   fDamage := EnsureRange(fDamage - aAmount, 0, High(Word));
   UpdateDamage;
 
   if gGameParams.Mode <> gmMapEd then
-    gScriptEvents.ProcHouseRepaired(Self);
+    gScriptEvents.ProcHouseRepaired(Self, oldDmg - fDamage, fDamage);
 end;
 
 

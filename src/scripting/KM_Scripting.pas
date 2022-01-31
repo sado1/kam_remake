@@ -933,7 +933,7 @@ const
   (ParamCount: 4; Typ: (0, btS32, btS32, btS32, btS32); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHousePlanRemoved
   (ParamCount: 2; Typ: (0, btS32, btS32, 0,     0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHouseDamaged
   (ParamCount: 2; Typ: (0, btS32, btS32, 0,     0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHouseDestroyed
-  (ParamCount: 1; Typ: (0, btS32, 0,     0,     0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHouseRepaired
+  (ParamCount: 3; Typ: (0, btS32, btS32, btS32, 0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHouseRepaired
   (ParamCount: 4; Typ: (0, btS32, btS32, btS32, btS32); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHouseWareCountChanged
 
   (ParamCount: 1; Typ: (0, btSingle, 0,  0,     0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGameSpeedChanged
