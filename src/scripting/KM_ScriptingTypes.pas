@@ -13,6 +13,7 @@ type
     evtHousePlanRemoved,
     evtHouseDamaged,
     evtHouseDestroyed,
+    evtHouseRepaired,
     evtHouseWareCountChanged,
     evtGameSpeedChanged,
     evtGroupHungry,

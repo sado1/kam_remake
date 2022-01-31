@@ -82,6 +82,7 @@ type
     procedure ProcHousePlanRemoved(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
     procedure ProcHouseDamaged(aHouse: TKMHouse; aAttacker: TKMUnit);
     procedure ProcHouseDestroyed(aHouse: TKMHouse; aDestroyerIndex: TKMHandID);
+    procedure ProcHouseRepaired(aHouse: TKMHouse);
     procedure ProcHouseWareCountChanged(aHouse: TKMHouse; aWare: TKMWareType; aCnt: Integer; aChangeCnt: Integer);
     procedure ProcGameSpeedChanged(aSpeed: Single);
     procedure ProcGroupHungry(aGroup: TKMUnitGroup);
@@ -212,6 +213,7 @@ begin
   AddEventHandlerName(evtHousePlanRemoved,      'OnHousePlanRemoved');
   AddEventHandlerName(evtHouseDamaged,          'OnHouseDamaged');
   AddEventHandlerName(evtHouseDestroyed,        'OnHouseDestroyed');
+  AddEventHandlerName(evtHouseRepaired,         'OnHouseRepaired');
   AddEventHandlerName(evtHouseWareCountChanged, 'OnHouseWareCountChanged');
   AddEventHandlerName(evtGameSpeedChanged,      'OnGameSpeedChanged');
   AddEventHandlerName(evtGroupHungry,           'OnGroupHungry');
@@ -711,6 +713,19 @@ begin
   begin
     fIDCache.CacheHouse(aHouse, aHouse.UID); //Improves cache efficiency since aHouse will probably be accessed soon
     CallEventHandlers(evtHouseDestroyed, [aHouse.UID, aDestroyerIndex]);
+  end;
+end;
+
+
+//* Version: 13700
+//*
+//* Occurs when a house is repaired.
+procedure TKMScriptEvents.ProcHouseRepaired(aHouse: TKMHouse);
+begin
+  if MethodAssigned(evtHouseRepaired) then
+  begin
+    fIDCache.CacheHouse(aHouse, aHouse.UID); //Improves cache efficiency since aHouse will probably be accessed soon
+    CallEventHandlers(evtHouseRepaired, [aHouse.UID]);
   end;
 end;
 
