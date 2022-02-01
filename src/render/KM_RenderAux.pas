@@ -615,8 +615,9 @@ begin
       glVertex2f(NodeList[I].X-0.5, gTerrain.RenderFlatToHeight(NodeList[I].X-0.5, NodeList[I].Y-0.5));
   glEnd;
 
-  for I := 0 to NodeList.Count - 1 do
-    Text(NodeList[I].X, NodeList[I].Y, IntToStr(I), $FFFFFFFF);
+  if SHOW_UNIT_ROUTES_STEPS then
+    for I := 0 to NodeList.Count - 1 do
+      Text(NodeList[I].X, NodeList[I].Y, IntToStr(I), $FFFFFFFF);
 
   glColor4f(1,1,1,1); //Vector where unit is going to
   I := Pos;

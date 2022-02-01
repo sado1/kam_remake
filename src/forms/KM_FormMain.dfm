@@ -1326,7 +1326,7 @@ object FormMain: TFormMain
         OnChange = ControlsUpdate
       end
       object chkShowDefencePos: TCheckBox
-        Left = 120
+        Left = 128
         Top = 136
         Width = 110
         Height = 17
@@ -1335,7 +1335,7 @@ object FormMain: TFormMain
         OnClick = ControlsUpdate
       end
       object chkShowUnitRadius: TCheckBox
-        Left = 120
+        Left = 128
         Top = 120
         Width = 110
         Height = 17
@@ -1344,7 +1344,7 @@ object FormMain: TFormMain
         OnClick = ControlsUpdate
       end
       object chkShowTowerRadius: TCheckBox
-        Left = 120
+        Left = 128
         Top = 104
         Width = 110
         Height = 17
@@ -1353,7 +1353,7 @@ object FormMain: TFormMain
         OnClick = ControlsUpdate
       end
       object chkShowMiningRadius: TCheckBox
-        Left = 120
+        Left = 128
         Top = 88
         Width = 110
         Height = 17
@@ -1362,7 +1362,7 @@ object FormMain: TFormMain
         OnClick = ControlsUpdate
       end
       object chkShowOverlays: TCheckBox
-        Left = 120
+        Left = 128
         Top = 72
         Width = 97
         Height = 17
@@ -1373,7 +1373,7 @@ object FormMain: TFormMain
         OnClick = ControlsUpdate
       end
       object chkShowUnits: TCheckBox
-        Left = 120
+        Left = 128
         Top = 56
         Width = 79
         Height = 17
@@ -1384,7 +1384,7 @@ object FormMain: TFormMain
         OnClick = ControlsUpdate
       end
       object chkShowHouses: TCheckBox
-        Left = 120
+        Left = 128
         Top = 40
         Width = 97
         Height = 17
@@ -1395,7 +1395,7 @@ object FormMain: TFormMain
         OnClick = ControlsUpdate
       end
       object chkShowObjects: TCheckBox
-        Left = 120
+        Left = 128
         Top = 24
         Width = 105
         Height = 17
@@ -1406,7 +1406,7 @@ object FormMain: TFormMain
         OnClick = ControlsUpdate
       end
       object chkShowFlatTerrain: TCheckBox
-        Left = 120
+        Left = 128
         Top = 152
         Width = 97
         Height = 17
@@ -1421,6 +1421,15 @@ object FormMain: TFormMain
         Height = 17
         Caption = 'Paint Sounds'
         TabOrder = 15
+        OnClick = ControlsUpdate
+      end
+      object chkShowRoutesSteps: TCheckBox
+        Left = 80
+        Top = 24
+        Width = 48
+        Height = 17
+        Caption = 'Steps'
+        TabOrder = 16
         OnClick = ControlsUpdate
       end
     end

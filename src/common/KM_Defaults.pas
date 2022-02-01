@@ -188,6 +188,7 @@ var
   SHOW_TERRAIN_WIRES      :Boolean = False; //Makes terrain height visible
   SHOW_TERRAIN_PASS       :Byte = 0; //Byte(TKMTerrainPassability)
   SHOW_UNIT_ROUTES        :Boolean = False; //Draw unit routes
+  SHOW_UNIT_ROUTES_STEPS  :Boolean = False; //Draw unit routes step numbers
   SHOW_SEL_BUFFER         :Boolean = False; //Display selection buffer
   SHOW_PROJECTILES        :Boolean = False; //Shows projectiles trajectory
   SHOW_POINTER_DOTS       :Boolean = False; //Show pointer count as small dots below unit/houses

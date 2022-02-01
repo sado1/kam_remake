@@ -237,6 +237,7 @@ type
     btnPrintScreen: TButton;
     N12: TMenuItem;
     miExportMemoryUsage: TMenuItem;
+    chkShowRoutesSteps: TCheckBox;
 
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -1253,6 +1254,7 @@ begin
     chkTileUnit.        SetCheckedWithoutClick(SHOW_TILE_UNIT);
     chkVertexUnit.      SetCheckedWithoutClick(SHOW_VERTEX_UNIT);
     chkShowRoutes.      SetCheckedWithoutClick(SHOW_UNIT_ROUTES);
+    chkShowRoutesSteps. SetCheckedWithoutClick(SHOW_UNIT_ROUTES_STEPS);
     chkSelectionBuffer. SetCheckedWithoutClick(SHOW_SEL_BUFFER);
 
     chkShowObjects.     SetCheckedWithoutClick(mlObjects            in gGameParams.VisibleLayers);
@@ -1343,6 +1345,7 @@ begin
     SHOW_TERRAIN_KINDS := chkShowTerrainKinds.Checked;
     SHOW_TERRAIN_TILES_GRID := chkTilesGrid.Checked;
     SHOW_UNIT_ROUTES := chkShowRoutes.Checked;
+    SHOW_UNIT_ROUTES_STEPS := chkShowRoutesSteps.Checked;
     SHOW_SEL_BUFFER := chkSelectionBuffer.Checked;
     SHOW_GAME_TICK := chkShowGameTick.Checked;
     SHOW_FPS := chkShowFPS.Checked;
