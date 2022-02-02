@@ -443,17 +443,17 @@ begin
   G.Stat := aStatus;
 
   case aType of
-    gltVictory:  begin
-                    SetLength(GoalsVictory[aPlayer], GoalsVictoryCount[aPlayer] + 1);
-                    GoalsVictory[aPlayer, GoalsVictoryCount[aPlayer]] := G;
-                    Inc(GoalsVictoryCount[aPlayer]);
-                  end;
-    gltSurvive:  begin
-                    SetLength(GoalsSurvive[aPlayer], GoalsSurviveCount[aPlayer] + 1);
-                    GoalsSurvive[aPlayer, GoalsSurviveCount[aPlayer]] := G;
-                    Inc(GoalsSurviveCount[aPlayer]);
-                  end;
-    else          ;
+    gltVictory: begin
+                  SetLength(GoalsVictory[aPlayer], GoalsVictoryCount[aPlayer] + 1);
+                  GoalsVictory[aPlayer, GoalsVictoryCount[aPlayer]] := G;
+                  Inc(GoalsVictoryCount[aPlayer]);
+                end;
+    gltSurvive: begin
+                  SetLength(GoalsSurvive[aPlayer], GoalsSurviveCount[aPlayer] + 1);
+                  GoalsSurvive[aPlayer, GoalsSurviveCount[aPlayer]] := G;
+                  Inc(GoalsSurviveCount[aPlayer]);
+                end;
+    else        ;
   end;
 end;
 
