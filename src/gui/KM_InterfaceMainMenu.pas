@@ -132,7 +132,7 @@ begin
   fMenuLobby         := TKMMenuLobby.Create(Panel_Menu, PageChange);
   fMenuMapEditor     := TKMMenuMapEditor.Create(Panel_Menu, PageChange);
   fMenuReplays       := TKMMenuReplays.Create(Panel_Menu, PageChange);
-  fMenuOptions       := TKMMenuOptions.Create(Panel_Menu, PageChange, UpdateHotkeys);
+  fMenuOptions       := TKMMenuOptions.Create(Panel_Menu, PageChange, nil, UpdateHotkeys);
   fMenuCredits       := TKMMenuCredits.Create(Panel_Menu, PageChange);
   fMenuError         := TKMMenuError.Create(Panel_Menu, PageChange);
   fMenuLoading       := TKMMenuLoading.Create(Panel_Menu, PageChange);
@@ -144,8 +144,8 @@ begin
   fMenuReplays.OnNewReplay          := aOnNewReplay;
   fMenuLoad.OnNewSingleSave         := aOnNewSingleSave;
 
-  fMenuOptions.OnToggleLocale         := aOnToggleLocale;
-  fMenuOptions.OnPreloadGameResources := aOnPreloadGameResources;
+  fMenuOptions.GUICommonOptions.OnToggleLocale         := aOnToggleLocale;
+  fMenuOptions.GUICommonOptions.OnPreloadGameResources := aOnPreloadGameResources;
 
   fMenuCredits.OnToggleLocale         := aOnToggleLocale;
 
@@ -376,7 +376,7 @@ end;
 
 procedure TKMMainMenuInterface.SetOnOptionsChange(aEvent: TEvent);
 begin
-  fMenuOptions.OnOptionsChange := aEvent;
+  fMenuOptions.GUICommonOptions.OnOptionsChange := aEvent;
 end;
 
 

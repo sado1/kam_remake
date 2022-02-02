@@ -9,7 +9,7 @@ uses
    KM_GUIMapEdMenuLoad,
    KM_GUIMapEdMenuSave,
    KM_GUIMapEdMenuQuit,
-   KM_GUIMapEdMenuSettings,
+   KM_GUICommonGameOptions,
    KM_CommonTypes;
 
 type
@@ -19,7 +19,7 @@ type
     fGuiMenuQuickPlay: TKMMapEdMenuQuickPlay;
     fGuiMenuLoad: TKMMapEdMenuLoad;
     fGuiMenuSave: TKMMapEdMenuSave;
-    fGuiMenuSettings: TKMMapEdMenuSettings;
+    fGuiMenuSettings: TKMGUICommonGameOptions;
     fGuiMenuQuit: TKMMapEdMenuQuit;
     procedure MenuClick(Sender: TObject);
     procedure MenuDone(Sender: TObject);
@@ -38,6 +38,7 @@ type
 
     property GuiMenuResize: TKMMapEdMenuResize read fGuiMenuResize;
     property GuiMenuQuickPlay: TKMMapEdMenuQuickPlay read fGuiMenuQuickPlay write fGuiMenuQuickPlay;
+    property GuiMenuSettings: TKMGUICommonGameOptions read fGuiMenuSettings;
     procedure SetLoadMode(aMultiplayer: Boolean);
     procedure Show;
     procedure Hide;
@@ -62,7 +63,7 @@ begin
   fGuiMenuLoad := TKMMapEdMenuLoad.Create(aParent, MenuDone);
   fGuiMenuSave := TKMMapEdMenuSave.Create(aParent, MenuDone, aOnMapTypChanged);
   fGuiMenuQuit := TKMMapEdMenuQuit.Create(aParent, MenuDone);
-  fGuiMenuSettings := TKMMapEdMenuSettings.Create(aParent, MenuDone, aOnKeysUpdated);
+  fGuiMenuSettings := TKMGUICommonGameOptions.Create(aParent, aOnKeysUpdated);
 
   Panel_Menu := TKMPanel.Create(aParent, 0, 45, aParent.Width, aParent.Height - 45);
   Panel_Menu.Anchors := [anLeft, anTop, anBottom];
@@ -119,7 +120,8 @@ end;
 
 procedure TKMMapEdMenu.MenuClick(Sender: TObject);
 begin
-  if Sender <> Button_QuickPlay  then
+  if (Sender <> Button_QuickPlay)
+    and (Sender <> Button_Menu_Settings) then
     Hide;
 
   if Sender = Button_Resize then
@@ -135,12 +137,10 @@ begin
     fGuiMenuSave.Show
   else
   if Sender = Button_Menu_Load then
-    fGuiMenuLoad.Show;
+    fGuiMenuLoad.Show
+  else
   if Sender = Button_Menu_Settings then
-  begin
-    fGuiMenuSettings.Menu_Settings_Fill;
     fGuiMenuSettings.Show;
-  end;
 end;
 
 

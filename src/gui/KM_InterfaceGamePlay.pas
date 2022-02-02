@@ -12,9 +12,10 @@ uses
   KM_UnitGroup, KM_UnitWarrior, KM_Saves, KM_MessageStack, KM_ResHouses, KM_Alerts, KM_Networking,
   KM_HandEntity,
   KM_GameTypes,
+  KM_GUICommonGameOptions,
   KM_GUIGameResultsSP,
   KM_GUIGameResultsMP,
-  KM_GUIGameBuild, KM_GUIGameChat, KM_GUIGameHouse, KM_GUIGameUnit, KM_GUIGameRatios, KM_GUIGameStats,KM_GUIGameMenuSettings,
+  KM_GUIGameBuild, KM_GUIGameChat, KM_GUIGameHouse, KM_GUIGameUnit, KM_GUIGameRatios, KM_GUIGameStats,
   KM_GUIGameSpectator;
 
 
@@ -43,7 +44,7 @@ type
     fGuiGameUnit: TKMGUIGameUnit;
     fGuiGameRatios: TKMGUIGameRatios;
     fGuiGameStats: TKMGUIGameStats;
-    fGuiMenuSettings: TKMGameMenuSettings;
+    fGuiMenuOptions: TKMGUICommonGameOptions;
     fGuiGameSpectator: TKMGUIGameSpectator;
     fGuiGameResultsSP: TKMGameResultsSP;
     fGuiGameResultsMP: TKMGameResultsMP;
@@ -119,7 +120,7 @@ type
     procedure Minimap_Update(Sender: TObject; const X,Y:integer);
     procedure Minimap_RightClick(Sender: TObject; const X,Y:integer);
     procedure Minimap_Click(Sender: TObject; const X,Y:integer);
-    procedure GameSettingsChanged;
+    procedure GameOptionsChanged;
 
     procedure Menu_Save_RefreshList(Sender: TObject);
     procedure Menu_Save_ListChange(Sender: TObject);
@@ -546,7 +547,7 @@ begin
   fGuiGameHouse.Hide;
   fGuiGameRatios.Hide;
   fGuiGameStats.Hide;
-  fGuiMenuSettings.Hide;
+  fGuiMenuOptions.Hide;
 end;
 
 
@@ -580,13 +581,13 @@ begin
     gMySpectator.Selected := nil;
 
   // Set LastVisiblePage to which ever page was last visible, out of the ones needed
-  if fGuiMenuSettings.Visible then LastVisiblePage := fGuiMenuSettings else
+  if fGuiMenuOptions.Visible then LastVisiblePage := fGuiMenuOptions else
   if Panel_Save.Visible       then LastVisiblePage := Panel_Save     else
   if Panel_Load.Visible       then LastVisiblePage := Panel_Load     else
     LastVisiblePage := nil;
 
   // If they just closed settings then we should save them (if something has changed)
-  if LastVisiblePage = fGuiMenuSettings then
+  if LastVisiblePage = fGuiMenuOptions then
     gGameSettings.SaveSettings;
 
   // Ensure, that saves scanning will be stopped when user leaves save/load page
@@ -663,8 +664,8 @@ begin
       Menu_Update; // Make sure updating happens before it is shown
       Label_MenuTitle.Caption := gResTexts[TX_MENU_TAB_OPTIONS];
       Panel_Menu.Show;
-      fGuiMenuSettings.Refresh;
-      fGuiMenuSettings.Show;
+//      fGuiMenuSettings.Refresh;
+      fGuiMenuOptions.Show;
     end else
 
     if Sender = Button_Menu_Quit then
@@ -768,7 +769,7 @@ begin
 end;
 
 
-procedure TKMGamePlayInterface.GameSettingsChanged;
+procedure TKMGamePlayInterface.GameOptionsChanged;
 begin
   //Update player color mode radio
   Radio_PlayersColorMode.ItemIndex := Byte(gGameSettings.PlayersColorMode) - 1;
@@ -780,7 +781,6 @@ end;
 procedure TKMGamePlayInterface.Replay_PlayersColorModeClick(Sender: TObject);
 begin
   gGameSettings.PlayersColorMode := TKMPlayerColorMode(Radio_PlayersColorMode.ItemIndex + 1);
-  fGuiMenuSettings.UpdateView; //Update settings
   //Update minimap
   fMinimap.Update;
 end;
@@ -867,7 +867,8 @@ begin
   Create_Pause;
   Create_Replay; // Replay controls
   // Settings PopUpWindow above replay controls / chat / allies
-  fGuiMenuSettings := TKMGameMenuSettings.Create(Panel_Controls, GameSettingsChanged, UpdateHotkeys);
+  fGuiMenuOptions := TKMGUICommonGameOptions.Create(Panel_Controls, UpdateHotkeys);
+  fGuiMenuOptions.GUICommonOptions.OnOptionsChange := GameOptionsChanged;
 
   Create_PlayMore; // Must be created last, so that all controls behind are blocked
   Create_MPPlayMore;
@@ -920,7 +921,7 @@ begin
   fGuiGameUnit.Free;
   fGuiGameRatios.Free;
   fGuiGameStats.Free;
-  fGuiMenuSettings.Free;
+  fGuiMenuOptions.Free;
   fGuiGameResultsSP.Free;
   fGuiGameResultsMP.Free;
   if Assigned(fGuiGameSpectator) then
@@ -1531,7 +1532,7 @@ begin
     UpdateSelectedObject;
     // Close panels unless it is an allowed menu
     if not Panel_Menu.Visible and not Panel_Load.Visible and not Panel_Save.Visible
-    and not fGuiMenuSettings.Visible and not Panel_Quit.Visible and not fGuiGameStats.Visible then
+    and not fGuiMenuOptions.Visible and not Panel_Quit.Visible and not fGuiGameStats.Visible then
       SwitchPage(nil);
 
     fDragScrolling := False;
@@ -2560,9 +2561,6 @@ begin
     Button_Quit_No.Top := Button_ReturnToMapEd.Top;
   end;
 
-  // Toggle gameplay options
-  fGuiMenuSettings.SetAutosaveEnabled(fUIMode in [umSP, umMP, umSpectate]);
-
   // Chat and Allies setup should be accessible only in Multiplayer
   Image_Chat.Visible       := CanShowChat;
   Label_ChatUnread.Visible := CanShowChat;
@@ -3449,8 +3447,10 @@ begin
 
   keyHandled := False;
   inherited KeyUp(Key, Shift, keyHandled);
+
+  // Update game options in case we used sounds hotkeys
   if keyHandled then
-    fGuiMenuSettings.Refresh;
+    fGuiMenuOptions.Refresh;
 
   if (fUIMode = umReplay) and (Key = gResKeys[kfPause].Key) then
   begin
@@ -3480,8 +3480,8 @@ begin
     if fShownMessage <> -1 then
       Message_Close(nil)
     else
-    if fGuiMenuSettings.Visible then
-      fGuiMenuSettings.Hide
+    if fGuiMenuOptions.Visible then
+      fGuiMenuOptions.Hide
     else
     if fGuiGameChat.Visible then
       fGuiGameChat.Hide
@@ -3562,7 +3562,7 @@ begin
       else
         gGameSettings.PlayersColorMode := pcmDefault;
     end;
-    GameSettingsChanged;
+    GameOptionsChanged;
     //Update minimap immidiately
 //    fMinimap.Update;
   end;
@@ -4464,8 +4464,7 @@ begin
     end;
   end;
 
-  fGuiMenuSettings.UpdateView;
-  GameSettingsChanged;
+  GameOptionsChanged;
 
   if fSaves <> nil then fSaves.UpdateState;
 

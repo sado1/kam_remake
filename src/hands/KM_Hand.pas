@@ -978,20 +978,18 @@ end;
 function TKMHand.GetGameFlagColor: Cardinal;
 begin
   Result := fFlagColor;
-  if (gGame <> nil) and not gGameParams.IsMapEditor then
-  begin
-    case gGameSettings.PlayersColorMode of
-      pcmAllyEnemy: begin
-                      if ID = gMySpectator.HandID then
-                        Result := gGameSettings.PlayerColorSelf
-                      else if (Alliances[gMySpectator.HandID] = atAlly) then
-                        Result := gGameSettings.PlayerColorAlly
-                      else
-                        Result := gGameSettings.PlayerColorEnemy;
-                    end;
-      pcmTeams:     Result := fTeamColor;
-    end;
+  if gGame = nil then Exit;
 
+  case gGameSettings.PlayersColorMode of
+    pcmAllyEnemy: begin
+                    if ID = gMySpectator.HandID then
+                      Result := gGameSettings.PlayerColorSelf
+                    else if (Alliances[gMySpectator.HandID] = atAlly) then
+                      Result := gGameSettings.PlayerColorAlly
+                    else
+                      Result := gGameSettings.PlayerColorEnemy;
+                  end;
+    pcmTeams:     Result := fTeamColor;
   end;
 end;
 

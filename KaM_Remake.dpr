@@ -98,6 +98,8 @@ uses
   KM_Viewport in 'src\gui\KM_Viewport.pas',
 
   KM_GUICommonKeys in 'src\gui\pages_common\KM_GUICommonKeys.pas',
+  KM_GUICommonGameOptions in 'src\gui\pages_common\KM_GUICommonGameOptions.pas',
+  KM_GUICommonOptions in 'src\gui\pages_common\KM_GUICommonOptions.pas',
   
   KM_GUIGameBuild in 'src\gui\pages_game\KM_GUIGameBuild.pas',
   KM_GUIGameChat in 'src\gui\pages_game\KM_GUIGameChat.pas',
@@ -105,7 +107,6 @@ uses
   KM_GUIGameUnit in 'src\gui\pages_game\KM_GUIGameUnit.pas',
   KM_GUIGameRatios in 'src\gui\pages_game\KM_GUIGameRatios.pas',
   KM_GUIGameStats in 'src\gui\pages_game\KM_GUIGameStats.pas',
-  KM_GUIGameMenuSettings in 'src\gui\pages_game\KM_GUIGameMenuSettings.pas',
   KM_GUIGameResultsMP in 'src\gui\pages_game\KM_GUIGameResultsMP.pas',
   KM_GUIGameResultsSP in 'src\gui\pages_game\KM_GUIGameResultsSP.pas',
   KM_GUIGameSpectator in 'src\gui\pages_game\KM_GUIGameSpectator.pas',
@@ -121,7 +122,6 @@ uses
   KM_GUIMapEdMenuResize in 'src\gui\pages_maped\menu\KM_GUIMapEdMenuResize.pas',
   KM_GUIMapEdMenuQuickPlay in 'src\gui\pages_maped\menu\KM_GUIMapEdMenuQuickPlay.pas',
   KM_GUIMapEdMenuQuit in 'src\gui\pages_maped\menu\KM_GUIMapEdMenuQuit.pas',
-  KM_GUIMapEdMenuSettings in 'src\gui\pages_maped\menu\KM_GUIMapEdMenuSettings.pas',
 
   KM_GUIMapEdMessage in 'src\gui\pages_maped\KM_GUIMapEdMessage.pas',
 

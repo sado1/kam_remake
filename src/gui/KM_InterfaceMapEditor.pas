@@ -125,14 +125,17 @@ type
     function GetToolbarWidth: Integer; override;
 
     procedure HistoryUpdateUI;
+    procedure GameOptionsChanged;
   public
     constructor Create(aRender: TRender);
     destructor Destroy; override;
 
     procedure ShowMessage(const aText: string);
     procedure ExportPages(const aPath: string); override;
+
     property GuiTerrain: TKMMapEdTerrain read GetGuiTerrain;
     property GuiMission: TKMMapEdMission read fGuiMission;
+    property GuiMenu: TKMMapEdMenu read fGuiMenu;
 
     procedure KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean); override;
     procedure KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean); override;
@@ -271,6 +274,7 @@ begin
   fGuiPlayer := TKMMapEdPlayer.Create(Panel_Common, PageChanged);
   fGuiMission := TKMMapEdMission.Create(Panel_Common, PageChanged);
   fGuiMenu := TKMMapEdMenu.Create(Panel_Common, PageChanged, MapTypeChanged, UpdateHotkeys);
+  fGuiMenu.GuiMenuSettings.GUICommonOptions.OnOptionsChange := GameOptionsChanged;
 
   //Objects pages
   fGuiUnit := TKMMapEdUnit.Create(Panel_Common);
@@ -910,6 +914,12 @@ begin
   // If modals are closed or they did not handle key
   if not keyPassedToModal and (Key = gResKeys[kfCloseMenu].Key) then
   begin
+    if fGuiMenu.GuiMenuSettings.Visible then
+    begin
+      fGuiMenu.GuiMenuSettings.Hide;
+      Exit;
+    end;
+
     Cancel_Clicked(False, keyHandled);
     if not keyHandled then
     begin
@@ -949,9 +959,14 @@ var
 begin
   if fMyControls.KeyUp(Key, Shift) then Exit; //Handled by Controls
 
-  inherited;
+  inherited KeyUp(Key, Shift, keyHandled);
 
-  if aHandled then Exit;
+  // Update game options in case we used sounds hotkeys
+  if keyHandled then
+  begin
+    fGuiMenu.GuiMenuSettings.GUICommonOptions.Refresh;
+    Exit;
+  end;
 
   aHandled := True; // assume we handle all keys here
 
@@ -1132,6 +1147,13 @@ begin
   fGuiPlayer.UpdateHotkeys;
   fGuiMission.UpdateHotkeys;
   fGuiMenu.UpdateHotkeys;
+end;
+
+
+procedure TKMMapEdInterface.GameOptionsChanged;
+begin
+  //Update minimap
+  fMinimap.Update;
 end;
 
 

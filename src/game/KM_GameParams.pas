@@ -85,6 +85,7 @@ type
     function IsSingleplayerGame: Boolean;
     function IsSingleplayer: Boolean;
     function IsNormalGame: Boolean;
+    function IsGame: Boolean;
 
     function IsTactic: Boolean;
     function IsNormalMission: Boolean;
@@ -306,6 +307,12 @@ end;
 function TKMGameParams.IsNormalGame: Boolean;
 begin
   Result := fMode in [gmSingle, gmCampaign, gmMulti];
+end;
+
+
+function TKMGameParams.IsGame: Boolean;
+begin
+  Result := fMode in [gmSingle, gmCampaign, gmMulti, gmMultiSpectate];
 end;
 
 
