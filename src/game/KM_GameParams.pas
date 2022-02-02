@@ -82,6 +82,7 @@ type
     function IsMultiplayer: Boolean;
     function IsReplay: Boolean;
     function IsReplayOrSpectate: Boolean;
+    function IsSingle: Boolean;
     function IsSingleplayerGame: Boolean;
     function IsSingleplayer: Boolean;
     function IsNormalGame: Boolean;
@@ -289,6 +290,12 @@ end;
 function TKMGameParams.IsMultiplayer: Boolean;
 begin
   Result := fMode in [gmMulti, gmMultiSpectate, gmReplayMulti];
+end;
+
+
+function TKMGameParams.IsSingle: Boolean;
+begin
+  Result := fMode = gmSingle;
 end;
 
 
