@@ -484,15 +484,15 @@ begin
     Button_MoreStats.CapOffsetY := -20;
     Button_MoreStats.OnClick := MoreStatsClick;
 
-    Button_Back := TKMButton.Create(Panel_Results, 30, 660, 220, 30, gResTexts[TX_MENU_BACK], bsMenu);
+    Button_Back := TKMButton.Create(Panel_Results, 30, 670, 220, 30, gResTexts[TX_MENU_BACK], bsMenu);
     Button_Back.Anchors := [anLeft];
     Button_Back.OnClick := BackClick;
 
-    Button_Restart := TKMButton.Create(Panel_Results, 30, 610, 220, 30, gResTexts[TX_MENU_MISSION_REPEAT], bsMenu);
+    Button_Restart := TKMButton.Create(Panel_Results, 30, 620, 220, 30, gResTexts[TX_MENU_MISSION_REPEAT], bsMenu);
     Button_Restart.Anchors := [anLeft];
     Button_Restart.OnClick := RepeatClick;
 
-    Button_ContinueCampaign := TKMButton.Create(Panel_Results, 510, 610, 220, 30, gResTexts[TX_MENU_MISSION_NEXT], bsMenu);
+    Button_ContinueCampaign := TKMButton.Create(Panel_Results, 30, 570, 220, 30, gResTexts[TX_MENU_MISSION_NEXT], bsMenu);
     Button_ContinueCampaign.Anchors := [anLeft];
     Button_ContinueCampaign.OnClick := ContinueClick;
 end;
