@@ -574,7 +574,7 @@ begin
     gmSingle, gmCampaign: //Setup should tell us which player is AI and which not
 
               // We have to preload map players info, so we could check what player to enable
-              // F.e. human only should be disabled, if it was not chosen as a starting loc for a player )f.e. when test MP maps as an SP map)
+              // F.e. human only should be disabled, if it was not chosen as a starting loc for a player (f.e. when test MP maps as an SP map)
               // or Classic AI only loc should be disabled for if AdvancedAI type was chosen to play against
               // We have to disable certain locs before parsing the map,
               // otherwise it will hard or even impossible to clean it afterwards
