@@ -447,7 +447,7 @@ begin
     begin
       map := fMaps[mapId];
       //Prepare extra data we are about to display
-      map.LoadExtra;
+      map.LoadExtra(True);
 
       fLastMapCRC := map.MapAndDatCRC;
       case Radio_MapType.ItemIndex of

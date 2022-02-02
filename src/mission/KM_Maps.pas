@@ -127,7 +127,7 @@ type
     destructor Destroy; override;
 
     procedure AddGoal(aType: TKMGoalType; aPlayer: TKMHandID; aCondition: TKMGoalCondition; aStatus: TKMGoalStatus; aPlayerIndex: TKMHandID);
-    procedure LoadExtra;
+    procedure LoadExtra(aAddDefailtGoals: Boolean = False);
 
     property TxtInfo: TKMMapTxtInfo read GetTxtInfo;
     property BigDesc: UnicodeString read GetBigDesc;
@@ -584,10 +584,12 @@ end;
 
 
 //Load additional information for map that is not in main SP list
-procedure TKMMapInfo.LoadExtra;
+procedure TKMMapInfo.LoadExtra(aAddDefailtGoals: Boolean = False);
 var
+  I, K: Integer;
   datFile: string;
   missionParser: TKMMissionParserInfo;
+  gc: TKMGoalCondition;
 begin
   //Do not append Extra info twice
   if fInfoAmount = iaExtra then Exit;
@@ -611,6 +613,28 @@ begin
   fTxtInfo.LoadTXTInfo(fDir + fName + '.txt');
 
   fInfoAmount := iaExtra;
+
+  if not aAddDefailtGoals then Exit;
+  
+  // Add Default goals for a certain maps
+  if TxtInfo.IsPlayableAsSP and fTxtInfo.CanAddDefaultGoals then
+  begin
+    if IsBuildingMission then
+      gc := gcBuildings
+    else
+      gc := gcTroops;
+
+    for I := 0 to LocCount - 1 do
+    begin
+      AddGoal(gltSurvive, I, gc, gsTrue, I);
+      for K := 0 to LocCount - 1 do
+      begin
+        if I = K then Continue;
+
+        AddGoal(gltVictory, I, gc, gsFalse, K);
+      end;
+    end;
+  end;
 end;
 
 
