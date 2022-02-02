@@ -57,6 +57,8 @@ type
     function IsSmallDescLibxSet: Boolean;
     function IsBigDescLibxSet: Boolean;
 
+    function CanAddDefaultGoals: Boolean;
+
     procedure ResetInfo;
 
     procedure SaveTXTInfo(const aFilePath: String);
@@ -1177,6 +1179,12 @@ end;
 function TKMMapTxtInfo.IsBigDescLibxSet: Boolean;
 begin
   Result := BigDescLibx <> -1;
+end;
+
+
+function TKMMapTxtInfo.CanAddDefaultGoals: Boolean;
+begin
+  Result := not IsSpecial and not IsCoop;
 end;
 
 
