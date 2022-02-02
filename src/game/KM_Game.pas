@@ -680,8 +680,17 @@ begin
       //fScripting reports compile errors itself now
     end;
 
+
     // MapTxtInfo should be loaded before MultiplayerRig, since we use map txt params there in UpdateHandState
     fMapTxtInfo.LoadTXTInfo(ChangeFileExt(aMissionFullFilePath, '.txt'));
+
+    // Set default goals for SP game on MP map with PlayableAsSP flag
+    if fParams.IsSingle
+      and fMapTxtInfo.IsPlayableAsSP
+      and not fMapTxtInfo.IsSpecial
+      and not fMapTxtInfo.IsCoop then
+      gHands.AddDefaultGoalsToAll(fParams.MissionMode);
+
 
     case fParams.Mode of
       gmMulti, gmMultiSpectate:
