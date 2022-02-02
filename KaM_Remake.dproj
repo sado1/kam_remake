@@ -135,6 +135,7 @@
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <BT_BuildType>Debug</BT_BuildType>
+        <DCC_LocalDebugSymbols>true</DCC_LocalDebugSymbols>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
         <BT_BuildType>Debug</BT_BuildType>
@@ -271,13 +272,14 @@
         <DCCReference Include="src\gui\KM_InterfaceTypes.pas"/>
         <DCCReference Include="src\gui\KM_Viewport.pas"/>
         <DCCReference Include="src\gui\pages_common\KM_GUICommonKeys.pas"/>
+        <DCCReference Include="src\gui\pages_common\KM_GUICommonGameOptions.pas"/>
+        <DCCReference Include="src\gui\pages_common\KM_GUICommonOptions.pas"/>
         <DCCReference Include="src\gui\pages_game\KM_GUIGameBuild.pas"/>
         <DCCReference Include="src\gui\pages_game\KM_GUIGameChat.pas"/>
         <DCCReference Include="src\gui\pages_game\KM_GUIGameHouse.pas"/>
         <DCCReference Include="src\gui\pages_game\KM_GUIGameUnit.pas"/>
         <DCCReference Include="src\gui\pages_game\KM_GUIGameRatios.pas"/>
         <DCCReference Include="src\gui\pages_game\KM_GUIGameStats.pas"/>
-        <DCCReference Include="src\gui\pages_game\KM_GUIGameMenuSettings.pas"/>
         <DCCReference Include="src\gui\pages_game\KM_GUIGameResultsMP.pas"/>
         <DCCReference Include="src\gui\pages_game\KM_GUIGameResultsSP.pas"/>
         <DCCReference Include="src\gui\pages_game\KM_GUIGameSpectator.pas"/>
@@ -291,7 +293,6 @@
         <DCCReference Include="src\gui\pages_maped\menu\KM_GUIMapEdMenuResize.pas"/>
         <DCCReference Include="src\gui\pages_maped\menu\KM_GUIMapEdMenuQuickPlay.pas"/>
         <DCCReference Include="src\gui\pages_maped\menu\KM_GUIMapEdMenuQuit.pas"/>
-        <DCCReference Include="src\gui\pages_maped\menu\KM_GUIMapEdMenuSettings.pas"/>
         <DCCReference Include="src\gui\pages_maped\KM_GUIMapEdMessage.pas"/>
         <DCCReference Include="src\gui\pages_maped\player\KM_GUIMapEdPlayer.pas"/>
         <DCCReference Include="src\gui\pages_maped\player\KM_GUIMapEdPlayerBlockHouse.pas"/>
