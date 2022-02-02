@@ -1469,14 +1469,14 @@ object FormMain: TFormMain
         TabOrder = 0
         OnClick = chkSuperSpeedClick
       end
-      object Button_Stop: TButton
-        Left = 148
+      object btnGameStop: TButton
+        Left = 185
         Top = 5
-        Width = 92
+        Width = 53
         Height = 17
-        Caption = 'Stop the game'
+        Caption = 'Stop'
         TabOrder = 1
-        OnClick = Button_StopClick
+        OnClick = btnGameStopClick
       end
       object sePauseBeforeTick: TSpinEdit
         Left = 149
@@ -1516,6 +1516,15 @@ object FormMain: TFormMain
         TabOrder = 4
         Value = 0
         OnChange = ControlsUpdate
+      end
+      object btnGameSave: TButton
+        Left = 126
+        Top = 5
+        Width = 53
+        Height = 17
+        Caption = 'Save'
+        TabOrder = 5
+        OnClick = btnGameSaveClick
       end
     end
   end

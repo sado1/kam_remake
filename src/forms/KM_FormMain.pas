@@ -43,7 +43,7 @@ type
     Export_HouseAnim1: TMenuItem;
     Export_UnitAnim1: TMenuItem;
     RGPlayer: TRadioGroup;
-    Button_Stop: TButton;
+    btnGameStop: TButton;
     OpenMissionMenu: TMenuItem;
     AnimData1: TMenuItem;
     Other1: TMenuItem;
@@ -238,6 +238,7 @@ type
     N12: TMenuItem;
     miExportMemoryUsage: TMenuItem;
     chkShowRoutesSteps: TCheckBox;
+    btnGameSave: TButton;
 
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -289,7 +290,7 @@ type
     procedure Debug_ShowPanelClick(Sender: TObject);
     procedure Debug_ExportUIPagesClick(Sender: TObject);
 
-    procedure Button_StopClick(Sender: TObject);
+    procedure btnGameStopClick(Sender: TObject);
     procedure RGPlayerClick(Sender: TObject);
     procedure Open_MissionMenuClick(Sender: TObject);
     procedure chkSuperSpeedClick(Sender: TObject);
@@ -309,6 +310,7 @@ type
     procedure miExportMemoryUsageClick(Sender: TObject);
 
     procedure ControlsUpdate(Sender: TObject);
+    procedure btnGameSaveClick(Sender: TObject);
   private
     {$IFDEF MSWindows}
     fMenuItemHint: TKMVclMenuItemHint; // Custom hint over menu item
@@ -946,7 +948,30 @@ begin
 end;
 
 
-procedure TFormMain.Button_StopClick(Sender: TObject);
+procedure TFormMain.btnGameSaveClick(Sender: TObject);
+var
+  path: string;
+  allowSave: Boolean;
+begin
+  if (gGameApp.Game <> nil) and not gGameApp.Game.Params.IsMapEditor then
+  begin
+    path := gGameApp.Game.Params.Name + '_' + FormatDateTime('yyyy-mm-dd_hh-nn-ss-zzz', Now);
+
+    // Store old value
+    allowSave := ALLOW_SAVE_IN_REPLAY;
+    ALLOW_SAVE_IN_REPLAY := True;
+
+    gGameApp.Game.Save(path);
+
+    // Restore old value
+    ALLOW_SAVE_IN_REPLAY := allowSave;
+  end;
+
+  ActiveControl := nil; //Do not allow to focus on anything on debug panel
+end;
+
+
+procedure TFormMain.btnGameStopClick(Sender: TObject);
 begin
   if gGameApp.Game <> nil then
     if gGameApp.Game.Params.IsMapEditor then
