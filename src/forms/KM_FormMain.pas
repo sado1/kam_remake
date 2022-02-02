@@ -977,6 +977,9 @@ begin
     if gGameApp.Game.Params.IsMapEditor then
       gGameApp.StopGame(grMapEdEnd)
     else
+    if gGameApp.Game.Params.IsReplay then
+      gGameApp.StopGame(grReplayEnd)
+    else
       gGameApp.StopGame(grCancel);
 
   ActiveControl := nil; //Do not allow to focus on anything on debug panel
