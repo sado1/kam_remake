@@ -652,6 +652,7 @@ begin
       for I := 0 to gHands.Count - 1 do
         if gHands[I].Enabled
           and gHands[I].IsComputer
+          and (fAIType = aitAdvanced)
           and (aitAdvanced in gHands[I].CanBeAITypes) then
           gHands[I].AI.Setup.EnableAdvancedAI;
     end;
