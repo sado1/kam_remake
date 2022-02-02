@@ -887,6 +887,11 @@ const
       begin
         handIndex := gNetworking.NetPlayers[I].HandIndex;
         gHands[handIndex].FlagColor := gNetworking.NetPlayers[I].FlagColor;
+        // Store Team in the hand info
+        // We will need to save hand team into save file,
+        // to be able to restore team of this hand in the lobby
+        // (and there is no network team info, f.e. after disconnection or new player joined the lobby as a replacement)
+        gHands[handIndex].Team := gNetworking.NetPlayers[I].Team;
 
         //In saves players can be changed to AIs, which needs to be stored in the replay
         //Also one player could replace another, we have to update its player name
@@ -2169,7 +2174,7 @@ begin
           gameInfo.OwnerNikname[I] := gHands[I].OwnerNikname; //MP nikname, not translated OwnerName
           gameInfo.HandTypes[I] := gHands[I].HandType;
           gameInfo.Color[I] := gHands[I].FlagColor;
-          gameInfo.Team[I] := 0;
+          gameInfo.Team[I] := gHands[I].Team;
         end;
       end;
     end;

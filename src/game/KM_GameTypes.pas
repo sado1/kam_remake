@@ -50,6 +50,9 @@ const
   // Used on game start
   NO_OVERWRITE_COLOR = $00000000; // todo: refactor, get rid of 'magic color value'
 
+  // Value we use to set hand / player without team choosen
+  NO_TEAM = 0;
+
 
 implementation
 

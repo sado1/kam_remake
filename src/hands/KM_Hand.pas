@@ -65,6 +65,7 @@ type
     fCanBeHuman: Boolean;
     fCanBeAITypes: TKMAITypeSet;
     fFlagColor: Cardinal;
+    fTeam: Integer;
     fTeamColor: Cardinal;
     fCenterScreen: TKMPoint;
     fChooseLocation: TKMChooseLoc;
@@ -147,6 +148,7 @@ type
     property CanBeAITypes: TKMAITypeSet read fCanBeAITypes;
     property FlagColor: Cardinal read fFlagColor write SetFlagColor;
     property FlagTextColor: Cardinal read GetFlagTextColor;
+    property Team: Integer read fTeam write fTeam;
     property TeamColor: Cardinal read fTeamColor write fTeamColor;
     property GameFlagColor: Cardinal read GetGameFlagColor;
     property FlagColorIndex: Byte read GetColorIndex;
@@ -407,6 +409,7 @@ begin
   fAlliances[fID] := atAlly; //Others are set to enemy by default
   fFlagColor := DefaultTeamColors[fID]; //Init with default color, later replaced by Script
   fTeamColor := fFlagColor;
+  fTeam := NO_TEAM;
 
   fHSketch := TKMHouseSketchEdit.Create;
   fFirstHSketch := TKMHouseSketchEdit.Create;
@@ -1928,6 +1931,7 @@ begin
   SaveStream.Write(fShareBeacons, SizeOf(fShareBeacons));
   SaveStream.Write(fCenterScreen);
   SaveStream.Write(fFlagColor);
+  SaveStream.Write(fTeam);
   SaveStream.Write(SelectionHotkeys, SizeOf(SelectionHotkeys));
   SaveStream.Write(fChooseLocation, SizeOf(TKMChooseLoc));
 end;
@@ -1961,6 +1965,7 @@ begin
   LoadStream.Read(fShareBeacons, SizeOf(fShareBeacons));
   LoadStream.Read(fCenterScreen);
   LoadStream.Read(fFlagColor);
+  LoadStream.Read(fTeam);
   LoadStream.Read(SelectionHotkeys, SizeOf(SelectionHotkeys));
   LoadStream.Read(fChooseLocation, SizeOf(TKMChooseLoc));
 end;
