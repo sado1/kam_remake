@@ -896,14 +896,18 @@ const
         //Also one player could replace another, we have to update its player name
         if gNetworking.SelectGameKind = ngkSave then
         begin
-          if gNetworking.NetPlayers[I].IsHuman then
-            playerNikname := gNetworking.NetPlayers[I].Nikname
-          else
-            playerNikname := '';
+          // No need to send this command by every player
+          if gNetworking.IsHost then
+          begin
+            if gNetworking.NetPlayers[I].IsHuman then
+              playerNikname := gNetworking.NetPlayers[I].Nikname
+            else
+              playerNikname := '';
 
-          //Command execution will update player, same way as it will be updated in the replay
-          fGameInputProcess.CmdPlayerChanged(handIndex, playerNikname, gNetworking.NetPlayers[I].GetPlayerType,
-                                             NETPLAYERTYPE_TO_AITYPE[gNetworking.NetPlayers[I].PlayerNetType]);
+            //Command execution will update player, same way as it will be updated in the replay
+            fGameInputProcess.CmdPlayerChanged(handIndex, playerNikname, gNetworking.NetPlayers[I].GetPlayerType,
+                                              NETPLAYERTYPE_TO_AITYPE[gNetworking.NetPlayers[I].PlayerNetType]);
+          end;
         end
         else
           gHands.UpdateHandState(handIndex, gNetworking.NetPlayers[I].GetPlayerType, NETPLAYERTYPE_TO_AITYPE[gNetworking.NetPlayers[I].PlayerNetType]);
@@ -2784,7 +2788,9 @@ begin
     fGamePlayInterface.UpdateReplayMarks;
   end
   else
-    // Save dummy GIP to know when game was loaded. Good for debug
+  // Save dummy GIP to know when game was loaded. Good for debug
+  // Only by host in MP game
+  if not fParams.IsMultiPlayerOrSpec or gNetworking.IsHost then
     fGameInputProcess.CmdGame(gicGameLoadSave, Integer(fParams.Tick));
 
   gRenderPool.ReInit;
