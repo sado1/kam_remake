@@ -2274,9 +2274,9 @@ var
   mainStream, headerStream, bodyStream, saveStreamTxt: TKMemoryStream;
   gameMPLocalData: TKMGameMPLocalData;
 begin
-  if BLOCK_SAVE then // This must be here because of paraller Runner
-    Exit;
-  gLog.AddTime('Saving game: ' + aPathName);
+  if BLOCK_SAVE then Exit; // This must be here because of paraller Runner
+
+  gLog.AddTime(Format('Saving game at tick %d to ''%s''', [fParams.Tick, aPathName]));
 
   Assert(not fParams.IsMapEditor and (ALLOW_SAVE_IN_REPLAY or not fParams.IsReplay), 'Saving from wrong state');
 
@@ -2883,10 +2883,14 @@ procedure TKMGame.IssueAutosaveCommand(aAfterPT: Boolean);
 var
   gicType: TKMGameInputCommandType;
 begin
+
   if aAfterPT then
     gicType := gicGameAutoSaveAfterPT
   else
     gicType := gicGameAutoSave;
+
+  gLog.AddTime(Format('Issue %s command at tick %d', [GetEnumName(TypeInfo(TKMGameInputCommandType), Integer(gicType)),
+                                                      fParams.Tick]));
 
   if fParams.IsMultiPlayerOrSpec then
   begin
