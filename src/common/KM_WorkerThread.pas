@@ -33,6 +33,20 @@ type
     procedure WaitForAllWorkToComplete;
   end;
 
+
+  // Holder of WorkerThread
+  // It should manage its state and recreate an instance if needed
+  TKMWorkerThreadHolder = class
+  private
+    fWorkerThreadName: string;
+    fWorkerThread: TKMWorkerThread;
+    function GetWorkerThread: TKMWorkerThread;
+  public
+    constructor Create(const aThreadName: String);
+
+    property Worker: TKMWorkerThread read GetWorkerThread write fWorkerThread;
+  end;
+
 implementation
 
 
@@ -205,4 +219,37 @@ begin
   end;
 end;
 
+
+{ TKMWorkerThreadHolder }
+constructor TKMWorkerThreadHolder.Create(const aThreadName: String);
+begin
+  inherited Create;
+
+  fWorkerThreadName := aThreadName;
+end;
+
+
+// Get working thread instance
+// Working thread could be Finished, f.e. in case of an error during its execution
+// Thread is not running in that case after Continue is pressed in madexcept window and has Finished flag
+// We can call old thread destructor via Free-ing it and then recreate new worker thread.
+function TKMWorkerThreadHolder.GetWorkerThread: TKMWorkerThread;
+begin
+  if (fWorkerThread = nil) then
+    // Create new thread
+    fWorkerThread := TKMWorkerThread.Create(fWorkerThreadName)
+  else
+  if fWorkerThread.Finished then
+  begin
+    // Call destructor of an old thread
+    fWorkerThread.Free;
+    // Create new one instead
+    fWorkerThread := TKMWorkerThread.Create(fWorkerThreadName);
+  end;
+
+  Result := fWorkerThread;
+end;
+
+
 end.
+

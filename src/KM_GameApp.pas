@@ -40,9 +40,9 @@ type
     fOnOptionsChange: TEvent;
 
     // Worker threads
-    fSaveWorkerThread: TKMWorkerThread; // Worker thread for normal saves and save at the end of PT
-    fBaseSaveWorkerThread: TKMWorkerThread; // Worker thread for base save only
-    fAutoSaveWorkerThread: TKMWorkerThread; // Worker thread for autosaves only
+    fSaveWorkerThreadHolder: TKMWorkerThreadHolder; // Worker thread for normal saves and save at the end of PT
+    fBaseSaveWorkerThreadHolder: TKMWorkerThreadHolder; // Worker thread for base save only
+    fAutoSaveWorkerThreadHolder: TKMWorkerThreadHolder; // Worker thread for autosaves only
 
     procedure CreateGame(aGameMode: TKMGameMode);
 
@@ -225,9 +225,9 @@ begin
 
   gMusic.ToggleShuffle(gGameSettings.ShuffleOn); //Determine track order
 
-  fSaveWorkerThread := TKMWorkerThread.Create('SaveWorker');
-  fAutoSaveWorkerThread := TKMWorkerThread.Create('AutoSaveWorker');
-  fBaseSaveWorkerThread := TKMWorkerThread.Create('BaseSaveWorker');
+  fSaveWorkerThreadHolder := TKMWorkerThreadHolder.Create('SaveWorker');
+  fAutoSaveWorkerThreadHolder := TKMWorkerThreadHolder.Create('AutoSaveWorker');
+  fBaseSaveWorkerThreadHolder := TKMWorkerThreadHolder.Create('BaseSaveWorker');
 
   fOnGameStart := GameStarted;
   fOnGameEnd := GameEnded;
@@ -259,9 +259,9 @@ begin
   StopGame(grSilent);
 
   //This will ensure all queued work is completed before destruction
-  FreeAndNil(fSaveWorkerThread);
-  FreeAndNil(fAutoSaveWorkerThread);
-  FreeAndNil(fBaseSaveWorkerThread);
+  FreeAndNil(fSaveWorkerThreadHolder);
+  FreeAndNil(fAutoSaveWorkerThreadHolder);
+  FreeAndNil(fBaseSaveWorkerThreadHolder);
 
   FreeAndNil(fChat);
   FreeThenNil(fCampaigns);
@@ -554,7 +554,10 @@ end;
 
 procedure TKMGameApp.CreateGame(aGameMode: TKMGameMode);
 begin
-  gGame := TKMGame.Create(aGameMode, gRender, GameDestroyed, fSaveWorkerThread, fBaseSaveWorkerThread, fAutoSaveWorkerThread);
+  gGame := TKMGame.Create(aGameMode, gRender, GameDestroyed,
+                          fSaveWorkerThreadHolder,
+                          fBaseSaveWorkerThreadHolder,
+                          fAutoSaveWorkerThreadHolder);
 end;
 
 

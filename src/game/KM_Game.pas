@@ -1,4 +1,4 @@
-unit KM_Game;
+﻿unit KM_Game;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -95,9 +95,9 @@ type
     fLastSaveStreamSize: Cardinal;
 
     // Worker threads
-    fSaveWorkerThread: TKMWorkerThread; // Worker thread for normal saves and save at the end of PT
-    fBaseSaveWorkerThread: TKMWorkerThread; // Worker thread for base save only
-    fAutoSaveWorkerThread: TKMWorkerThread; // Worker thread for autosaves only
+    fSaveWorkerThreadHolder: TKMWorkerThreadHolder; // Worker thread for normal saves and save at the end of PT
+    fBaseSaveWorkerThreadHolder: TKMWorkerThreadHolder; // Worker thread for base save only
+    fAutoSaveWorkerThreadHolder: TKMWorkerThreadHolder; // Worker thread for autosaves only
 
     procedure IssueAutosaveCommand(aAfterPT: Boolean);
     function FindHandToSpec: Integer;
@@ -152,7 +152,9 @@ type
     StartedFromMapEdAsMPMap: Boolean; // True if we start game from map editor ('Quick Play') with MP map
 
     constructor Create(aGameMode: TKMGameMode; aRender: TRender; aOnDestroy: TEvent;
-                       aSaveWorkerThread: TKMWorkerThread; aBaseSaveWorkerThread: TKMWorkerThread; aAutoSaveWorkerThread: TKMWorkerThread);
+                       aSaveWorkerThreadHolder,
+                       aBaseSaveWorkerThreadHolder,
+                       aAutoSaveWorkerThreadHolder: TKMWorkerThreadHolder);
     destructor Destroy; override;
 
     procedure Start(const aMissionFullFilePath, aName: UnicodeString; aFullCRC, aSimpleCRC: Cardinal; aCampaign: TKMCampaign;
@@ -324,7 +326,9 @@ const
 //aRender - who will be rendering the Game session
 //aNetworking - access to MP stuff
 constructor TKMGame.Create(aGameMode: TKMGameMode; aRender: TRender; aOnDestroy: TEvent;
-                           aSaveWorkerThread: TKMWorkerThread; aBaseSaveWorkerThread: TKMWorkerThread; aAutoSaveWorkerThread: TKMWorkerThread);
+                           aSaveWorkerThreadHolder,
+                           aBaseSaveWorkerThreadHolder,
+                           aAutoSaveWorkerThreadHolder: TKMWorkerThreadHolder);
 const
   UIMode: array[TKMGameMode] of TUIMode = (umSP, umSP, umMP, umSpectate, umSP, umReplay, umReplay);
 begin
@@ -336,9 +340,9 @@ begin
 
   fParams := TKMGameParams.Create(aGameMode, RecalcMapCRC, fSetGameTickEvent, fSetGameTickFracEvent, fSetGameModeEvent, fSetMissionFileSP, fSetBlockPointer);
 
-  fSaveWorkerThread := aSaveWorkerThread;
-  fBaseSaveWorkerThread := aBaseSaveWorkerThread;
-  fAutoSaveWorkerThread := aAutoSaveWorkerThread;
+  fSaveWorkerThreadHolder := aSaveWorkerThreadHolder;
+  fBaseSaveWorkerThreadHolder := aBaseSaveWorkerThreadHolder;
+  fAutoSaveWorkerThreadHolder := aAutoSaveWorkerThreadHolder;
 
   fOnDestroy := aOnDestroy;
 
@@ -743,9 +747,9 @@ begin
   //Basesave is sort of temp we save to HDD instead of keeping in RAM
   if fParams.Mode in [gmSingle, gmCampaign, gmMulti, gmMultiSpectate] then
     {$IFDEF PARALLEL_RUNNER}
-      SaveGameToFile(SaveName('basesave_thread_'+IntToStr(THREAD_NUMBER), EXT_SAVE_BASE, fParams.IsMultiplayerOrSpec), fBaseSaveWorkerThread, UTCNow);
+      SaveGameToFile(SaveName('basesave_thread_'+IntToStr(THREAD_NUMBER), EXT_SAVE_BASE, fParams.IsMultiplayerOrSpec), fBaseSaveWorkerThread.Worker, UTCNow);
     {$ELSE}
-      SaveGameToFile(SaveName('basesave', EXT_SAVE_BASE, fParams.IsMultiplayerOrSpec), fBaseSaveWorkerThread, UTCNow);
+      SaveGameToFile(SaveName('basesave', EXT_SAVE_BASE, fParams.IsMultiplayerOrSpec), fBaseSaveWorkerThreadHolder.Worker, UTCNow);
     {$ENDIF}
 
   if fParams.IsMapEditor then
@@ -1152,14 +1156,14 @@ begin
   attachedFilesStr := '';
 
   // Attempt to save the game, but if the state is too messed up it might fail
-  fSaveWorkerThread.fSynchronousExceptionMode := True; //Do saving synchronously in main thread
+  fSaveWorkerThreadHolder.Worker.fSynchronousExceptionMode := True; //Do saving synchronously in main thread
   try
     try
       if (fParams.Mode in [gmSingle, gmCampaign, gmMulti, gmMultiSpectate])
         and not (fGamePlayInterface.UIMode = umReplay) then //In case game mode was altered or loaded with logical error
       begin
-        Save(CRASHREPORT_SAVE_NAME, UTCNow, fSaveWorkerThread);
-        fSaveWorkerThread.WaitForAllWorkToComplete; //Wait till save is made
+        Save(CRASHREPORT_SAVE_NAME, UTCNow, fSaveWorkerThreadHolder.Worker);
+        fSaveWorkerThreadHolder.Worker.WaitForAllWorkToComplete; //Wait till save is made
         AttachSaveFiles(SaveName(CRASHREPORT_SAVE_NAME, EXT_SAVE_MAIN, fParams.IsMultiPlayerOrSpec));
       end;
     except
@@ -1168,7 +1172,7 @@ begin
                      {$IFDEF WDC}+ sLineBreak + E.StackTrace{$ENDIF});
     end;
   finally
-    fSaveWorkerThread.fSynchronousExceptionMode := False;
+    fSaveWorkerThreadHolder.Worker.fSynchronousExceptionMode := False;
   end;
 
   missionFile := fParams.MissionFileRel;
@@ -1507,13 +1511,13 @@ var
   localIsMultiPlayerOrSpec: Boolean;
 {$ENDIF}
 begin
-  Save(AUTOSAVE_SAVE_NAME, aTimestamp, fAutoSaveWorkerThread); //Save to temp file
+  Save(AUTOSAVE_SAVE_NAME, aTimestamp, fAutoSaveWorkerThreadHolder.Worker); //Save to temp file
 
   //If possible perform file deletion/renaming in a different thread so we don't delay game
   {$IFDEF WDC}
     //Avoid accessing Self from async thread, copy required states to local variables
     localIsMultiPlayerOrSpec := fParams.IsMultiPlayerOrSpec;
-    fAutoSaveWorkerThread.QueueWork(procedure
+    fAutoSaveWorkerThreadHolder.Worker.QueueWork(procedure
     begin
       DoAutoSaveRename(localIsMultiPlayerOrSpec);
     end, 'AutoSaveRename');
@@ -2343,7 +2347,7 @@ begin
   Save(aSaveName);
 
   //Wait for previous save async tasks to complete before proceeding
-  fSaveWorkerThread.WaitForAllWorkToComplete;
+  fSaveWorkerThreadHolder.Worker.WaitForAllWorkToComplete;
 end;
 
 
@@ -2355,7 +2359,7 @@ end;
 
 procedure TKMGame.Save(const aSaveName: UnicodeString; aTimestamp: TDateTime);
 begin
-  Save(aSaveName, aTimestamp, fSaveWorkerThread); // Use default save worker thread
+  Save(aSaveName, aTimestamp, fSaveWorkerThreadHolder.Worker); // Use default save worker thread
 end;
 
 
@@ -2369,9 +2373,9 @@ begin
   gPerfLogs.SectionEnter(psGameSaveWait);
   {$ENDIF}
   try
-    if (aSaveWorkerThread <> fBaseSaveWorkerThread) then
+    if (aSaveWorkerThread <> fBaseSaveWorkerThreadHolder.Worker) then
       // We have to wait until basesave is made before first game save
-      fBaseSaveWorkerThread.WaitForAllWorkToComplete;
+      fBaseSaveWorkerThreadHolder.Worker.WaitForAllWorkToComplete;
 
     //Wait for previous save async tasks to complete before proceeding
     aSaveWorkerThread.WaitForAllWorkToComplete;
