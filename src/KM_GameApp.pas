@@ -138,10 +138,6 @@ type
     procedure MouseWheel(Shift: TShiftState; WheelSteps: Integer; X,Y: Integer; var aHandled: Boolean);
     procedure FPSMeasurement(aFPS: Cardinal);
 
-    property SaveWorkerThread: TKMWorkerThread read fSaveWorkerThread;
-    property BaseSaveWorkerThread: TKMWorkerThread read fBaseSaveWorkerThread;
-    property AutoSaveWorkerThread: TKMWorkerThread read fAutoSaveWorkerThread;
-
     procedure UnlockAllCampaigns;
 
     procedure DebugControlsUpdated(Sender: TObject; aSenderTag: Integer);
