@@ -565,7 +565,7 @@ begin
   localMainStream := aMainStream;
   localSubStream1 := aSubStream1;
   localSubStream2 := aSubStream2;
-  aMainStream := nil;  //So caller doesn't use it by mistake
+  aMainStream := nil; //So caller doesn't use it by mistake
   aSubStream1 := nil; //So caller doesn't use it by mistake
   aSubStream2 := nil; //So caller doesn't use it by mistake
 
