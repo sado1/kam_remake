@@ -1,6 +1,6 @@
 {
 
-FastMM 5.03
+FastMM 5.04
 
 Description:
   A fast replacement memory manager for Embarcadero Delphi applications that scales well across multiple threads and CPU
@@ -72,8 +72,8 @@ Usage Instructions:
 
   The following conditional defines are supported:
     FastMM_FullDebugMode (or FullDebugMode) - If defined then FastMM_EnterDebugMode will be called on startup so that
-    the memory manager starts up in debug mode.  If FullDebugMode is defined then the
-    FastMM_DebugLibraryStaticDependency define is also implied.
+    the memory manager starts in debug mode.  If FastMM_FullDebugMode is defined and FastMM_DebugLibraryDynamicLoading
+    (or LoadDebugDLLDynamically) is not defined then FastMM_DebugLibraryStaticDependency is implied.
 
     FastMM_FullDebugModeWhenDLLAvailable (or FullDebugModeWhenDLLAvailable) - If defined an attempt will be made to load
     the debug support library during startup.  If successful then FastMM_EnterDebugMode will be called so that the
@@ -157,6 +157,7 @@ uses
 
 {Translate legacy v4 defines to their current names.}
 {$ifdef FullDebugMode} {$define FastMM_FullDebugMode} {$endif}
+{$ifdef LoadDebugDLLDynamically} {$define FastMM_DebugLibraryDynamicLoading} {$endif}
 {$ifdef FullDebugModeWhenDLLAvailable} {$define FastMM_FullDebugModeWhenDLLAvailable} {$endif}
 {$ifdef ClearLogFileOnStartup} {$define FastMM_ClearLogFileOnStartup} {$endif}
 {$ifdef Align16Bytes} {$define FastMM_Align16Bytes} {$endif}
@@ -168,9 +169,12 @@ uses
 {$ifdef ShareMM} {$define FastMM_AttemptToUseSharedMM} {$endif}
 {$ifdef ShareMM} {$define FastMM_NeverUninstall} {$endif}
 
-{If the "FastMM_FullDebugMode" is defined then a static dependency on the debug support library is implied.}
+{If the "FastMM_FullDebugMode" is defined then a static dependency on the debug support library is assumed, unless
+dynamic loading is explicitly specified.}
 {$ifdef FastMM_FullDebugMode}
-{$define FastMM_DebugLibraryStaticDependency}
+  {$ifndef FastMM_DebugLibraryDynamicLoading}
+    {$define FastMM_DebugLibraryStaticDependency}
+  {$endif}
 {$endif}
 
 {Calling the deprecated GetHeapStatus is unavoidable, so suppress the warning.}
@@ -202,7 +206,7 @@ uses
 const
 
   {The current version of FastMM.  The first digit is the major version, followed by a two digit minor version number.}
-  CFastMM_Version = 503;
+  CFastMM_Version = 504;
 
   {The number of arenas for small, medium and large blocks.  Increasing the number of arenas decreases the likelihood
   of thread contention happening (when the number of threads inside a GetMem call is greater than the number of arenas),
@@ -2492,7 +2496,7 @@ pointer will be set to the current end of the file.}
 function OS_OpenOrCreateFile(APFileName: PWideChar; var AFileHandle: THandle): Boolean;
 begin
   {Try to open/create the file in read/write mode.}
-  AFileHandle := Winapi.Windows.CreateFileW(APFileName, GENERIC_READ or GENERIC_WRITE, 0, nil, OPEN_ALWAYS,
+  AFileHandle := Winapi.Windows.CreateFileW(APFileName, GENERIC_READ or GENERIC_WRITE, FILE_SHARE_READ, nil, OPEN_ALWAYS,
     FILE_ATTRIBUTE_NORMAL, 0);
   if AFileHandle = INVALID_HANDLE_VALUE then
     Exit(False);
