@@ -84,7 +84,7 @@ implementation
 uses
   Math, SysUtils,
   KM_GameParams, KM_HandsCollection, KM_RenderAux, KM_RenderPool, KM_Hand,
-  KM_UnitGroupTypes;
+  KM_UnitGroupTypes, KM_InterfaceGame;
 
 
 { TAIDefencePosition }
@@ -453,10 +453,7 @@ var
 begin
   for I := 0 to Count - 1 do
   begin
-    if Positions[I].fDefenceType = adtFrontLine then
-      gRenderAux.Quad(Positions[I].Position.Loc.X, Positions[I].fPosition.Loc.Y, $FFFF0000)
-    else
-      gRenderAux.Quad(Positions[I].Position.Loc.X, Positions[I].fPosition.Loc.Y, $FF00FF00);
+    gRenderAux.Quad(Positions[I].Position.Loc.X, Positions[I].fPosition.Loc.Y, DEFENCE_LINE_TYPE_COL[Positions[I].fDefenceType]);
 
     gRenderPool.RenderSpriteOnTile(Positions[I].Position.Loc, 510 + Byte(Positions[I].Position.Dir), gHands[fOwner].FlagColor);
     gRenderAux.CircleOnTerrain(Positions[I].Position.Loc.X-0.5, Positions[I].Position.Loc.Y-0.5, Positions[I].Radius,
