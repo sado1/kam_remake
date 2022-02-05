@@ -617,7 +617,7 @@ begin
   if not aAddDefailtGoals then Exit;
   
   // Add Default goals for a certain maps
-  if TxtInfo.IsPlayableAsSP and fTxtInfo.CanAddDefaultGoals then
+  if fTxtInfo.IsPlayableAsSP and fTxtInfo.CanAddDefaultGoals then
   begin
     if IsBuildingMission then
       gc := gcBuildings
@@ -628,11 +628,8 @@ begin
     begin
       AddGoal(gltSurvive, I, gc, gsTrue, I);
       for K := 0 to LocCount - 1 do
-      begin
-        if I = K then Continue;
-
+      if I <> K then
         AddGoal(gltVictory, I, gc, gsFalse, K);
-      end;
     end;
   end;
 end;

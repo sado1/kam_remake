@@ -2363,7 +2363,7 @@ begin
 end;
 
 
-//Saves game by provided name
+// Saves game by provided name
 procedure TKMGame.Save(const aSaveName: UnicodeString; aTimestamp: TDateTime; aSaveWorkerThread: TKMWorkerThread);
 var
   I, index: Integer;
@@ -2887,7 +2887,6 @@ procedure TKMGame.IssueAutosaveCommand(aAfterPT: Boolean);
 var
   gicType: TKMGameInputCommandType;
 begin
-
   if aAfterPT then
     gicType := gicGameAutoSaveAfterPT
   else
@@ -2899,15 +2898,11 @@ begin
   if fParams.IsMultiPlayerOrSpec then
   begin
     if gNetworking.IsHost then // Host initiate autosave command
-    begin
       fGameInputProcess.CmdGame(gicType, UTCNow); //Timestamp must be synchronised
-    end;
   end
   else
     if gGameSettings.Autosave then
-    begin
       fGameInputProcess.CmdGame(gicType, UTCNow);
-    end;
 end;
 
 

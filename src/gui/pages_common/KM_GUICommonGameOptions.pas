@@ -2,9 +2,9 @@ unit KM_GUICommonGameOptions;
 {$I KaM_Remake.inc}
 interface
 uses
-   Classes, SysUtils,
-   KM_GUICommonOptions,
-   KM_Controls, KM_CommonTypes, KM_GUICommonKeys;
+  Classes, SysUtils,
+  KM_GUICommonOptions,
+  KM_Controls, KM_CommonTypes, KM_GUICommonKeys;
 
 type
   TKMGUICommonGameOptions = class

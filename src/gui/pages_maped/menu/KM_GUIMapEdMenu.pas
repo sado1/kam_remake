@@ -2,15 +2,15 @@ unit KM_GUIMapEdMenu;
 {$I KaM_Remake.inc}
 interface
 uses
-   Classes, SysUtils,
-   KM_Controls, KM_InterfaceGame, KM_InterfaceDefaults,
-   KM_GUIMapEdMenuResize,
-   KM_GUIMapEdMenuQuickPlay,
-   KM_GUIMapEdMenuLoad,
-   KM_GUIMapEdMenuSave,
-   KM_GUIMapEdMenuQuit,
-   KM_GUICommonGameOptions,
-   KM_CommonTypes;
+  Classes, SysUtils,
+  KM_Controls, KM_InterfaceGame, KM_InterfaceDefaults,
+  KM_GUIMapEdMenuResize,
+  KM_GUIMapEdMenuQuickPlay,
+  KM_GUIMapEdMenuLoad,
+  KM_GUIMapEdMenuSave,
+  KM_GUIMapEdMenuQuit,
+  KM_GUICommonGameOptions,
+  KM_CommonTypes;
 
 type
   TKMMapEdMenu = class(TKMMapEdMenuPage)
@@ -121,7 +121,7 @@ end;
 procedure TKMMapEdMenu.MenuClick(Sender: TObject);
 begin
   if (Sender <> Button_QuickPlay)
-    and (Sender <> Button_Menu_Settings) then
+  and (Sender <> Button_Menu_Settings) then
     Hide;
 
   if Sender = Button_Resize then

@@ -2,30 +2,30 @@ unit KM_InterfaceMapEditor;
 {$I KaM_Remake.inc}
 interface
 uses
-   {$IFDEF MSWindows} Windows, {$ENDIF}
-   {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
-   Classes, Math, StrUtils, SysUtils,
-   Controls,
-   KM_Controls, KM_Defaults, KM_Pics, KM_Points,
-   KM_Houses, KM_Units, KM_UnitGroup, KM_MapEditor,
-   KM_InterfaceDefaults, KM_InterfaceGame, KM_Terrain, KM_Minimap, KM_Viewport, KM_Render,
-   KM_GUIMapEdHouse,
-   KM_GUIMapEdPlayerGoalPopUp,
-   KM_GUIMapEdTerrain,
-   KM_GUIMapEdTown,
-   KM_GUIMapEdPlayer,
-   KM_GUIMapEdMission,
-   KM_GUIMapEdTownAttackPopUp,
-   KM_GUIMapEdExtras,
-   KM_GUIMapEdMessage,
-   KM_GUIMapEdTownFormationsPopUp,
-   KM_GUIMapEdMarkerDefence,
-   KM_GUIMapEdMarkerReveal,
-   KM_GUIMapEdMenu,
-   KM_GUIMapEdMenuQuickPlay,
-   KM_GUIMapEdUnit,
-   KM_GUIMapEdRMG,
-   KM_MapEdTypes;
+  {$IFDEF MSWindows} Windows, {$ENDIF}
+  {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
+  Classes, Math, StrUtils, SysUtils,
+  Controls,
+  KM_Controls, KM_Defaults, KM_Pics, KM_Points,
+  KM_Houses, KM_Units, KM_UnitGroup, KM_MapEditor,
+  KM_InterfaceDefaults, KM_InterfaceGame, KM_Terrain, KM_Minimap, KM_Viewport, KM_Render,
+  KM_GUIMapEdHouse,
+  KM_GUIMapEdPlayerGoalPopUp,
+  KM_GUIMapEdTerrain,
+  KM_GUIMapEdTown,
+  KM_GUIMapEdPlayer,
+  KM_GUIMapEdMission,
+  KM_GUIMapEdTownAttackPopUp,
+  KM_GUIMapEdExtras,
+  KM_GUIMapEdMessage,
+  KM_GUIMapEdTownFormationsPopUp,
+  KM_GUIMapEdMarkerDefence,
+  KM_GUIMapEdMarkerReveal,
+  KM_GUIMapEdMenu,
+  KM_GUIMapEdMenuQuickPlay,
+  KM_GUIMapEdUnit,
+  KM_GUIMapEdRMG,
+  KM_MapEdTypes;
 
 type
   TKMMapEdInterface = class(TKMUserInterfaceGame)
@@ -162,7 +162,7 @@ type
 
 implementation
 uses
-  KM_System, 
+  KM_System,
   KM_HandsCollection, KM_Hand, KM_HandTypes,
   KM_ResTexts, KM_Game, KM_GameParams, KM_Cursor,
   KM_Resource, KM_ResHouses, KM_TerrainDeposits, KM_ResKeys, KM_GameApp,
@@ -1152,7 +1152,6 @@ end;
 
 procedure TKMMapEdInterface.GameOptionsChanged;
 begin
-  //Update minimap
   fMinimap.Update;
 end;
 

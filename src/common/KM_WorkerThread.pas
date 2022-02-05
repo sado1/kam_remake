@@ -47,6 +47,7 @@ type
     property Worker: TKMWorkerThread read GetWorkerThread write fWorkerThread;
   end;
 
+
 implementation
 
 
@@ -85,6 +86,7 @@ begin
   fTaskQueue.Free; // Free task queue after Worker thread is destroyed so we don't wait for it
 end;
 
+
 function TKMWorkerThread.GetBaseThreadName: string;
 begin
   {$IFDEF DEBUG}
@@ -94,12 +96,14 @@ begin
   {$ENDIF}
 end;
 
+
 procedure TKMWorkerThread.NameThread;
 begin
   {$IFDEF DEBUG}
   NameThread(fWorkerThreadName);
   {$ENDIF}
 end;
+
 
 procedure TKMWorkerThread.NameThread(aThreadName: string);
 begin
@@ -108,6 +112,7 @@ begin
     TThread.NameThreadForDebugging(aThreadName);
   {$ENDIF}
 end;
+
 
 procedure TKMWorkerThread.Execute;
 var
@@ -201,6 +206,7 @@ begin
     end;
   end;
 end;
+
 
 procedure TKMWorkerThread.WaitForAllWorkToComplete;
 begin

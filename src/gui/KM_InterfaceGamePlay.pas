@@ -366,7 +366,7 @@ type
 
 implementation
 uses
-  KM_Main, KM_System, 
+  KM_Main, KM_System,
   KM_GameInputProcess, KM_GameInputProcess_Multi, KM_AI, KM_RenderUI, KM_Cursor, KM_Maps,
   KM_HandsCollection, KM_Hand, KM_HandTypes,
   KM_RenderPool, KM_ResTexts, KM_Game, KM_GameApp, KM_HouseBarracks, KM_HouseTownHall,
@@ -390,6 +390,7 @@ const
                                                        kfSpecpanelSelectDropbox, kfReplayPlayNextTick];
 
 
+{ TKMGamePlayInterface }
 procedure TKMGamePlayInterface.Menu_Save_ListChange(Sender: TObject);
 begin
   fSaves.Lock;
@@ -773,7 +774,7 @@ procedure TKMGamePlayInterface.GameOptionsChanged;
 begin
   //Update player color mode radio
   Radio_PlayersColorMode.ItemIndex := Byte(gGameSettings.PlayersColorMode) - 1;
-  //Update minimap
+
   fMinimap.Update;
 end;
 
@@ -781,7 +782,7 @@ end;
 procedure TKMGamePlayInterface.Replay_PlayersColorModeClick(Sender: TObject);
 begin
   gGameSettings.PlayersColorMode := TKMPlayerColorMode(Radio_PlayersColorMode.ItemIndex + 1);
-  //Update minimap
+
   fMinimap.Update;
 end;
 
