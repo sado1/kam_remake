@@ -897,7 +897,7 @@ const
   3,   //Black
   3,   //Black
   255  //White}
-  DefaultTeamColors: array [0..MAX_HANDS-1] of Cardinal = (
+  DEFAULT_TEAM_COLORS: array [0..MAX_HANDS-1] of Cardinal = (
     $FF0707FF, //Red
     $FFE3BB5B, //Cyan
     $FF27A700, //Green
