@@ -3584,10 +3584,14 @@ begin
 
     // Set lower height to non-smooth transitions (hide it)
       if RMGSettings.Height.HideNonSmoothTransition then
+      begin
         sum := + HNST[ TileTempl[Y1,X1] ][ TileTempl[Y2,X1] ]
                + HNST[ TileTempl[Y1,X1] ][ TileTempl[Y1,X2] ]
                + HNST[ TileTempl[Y1,X2] ][ TileTempl[Y2,X2] ]
                + HNST[ TileTempl[Y2,X1] ][ TileTempl[Y2,X2] ];
+        if (sum > 0) then
+          TilesPartsArr.Height[Y_1,X_1] := Max(0, TilesPartsArr.Height[Y_1,X_1] - sum);
+      end;
     end;
   end;
 end;
