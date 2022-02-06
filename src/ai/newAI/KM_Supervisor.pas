@@ -558,6 +558,7 @@ begin
     SetLength(Threat, Length(E));
     for IdxE := 0 to CntE - 1 do
     begin
+      // Estimate threat
       Threat[IdxE].Distance := 1E6;
       Threat[IdxE].DistRanged := 1E6;
       for IdxA := 0 to Length(A) - 1 do // Over all groups
@@ -565,6 +566,7 @@ begin
           Threat[IdxE].DistRanged := Dist[ GetIdx(CntE,IdxA,IdxE) ]
         else if (Dist[ GetIdx(CntE,IdxA,IdxE) ] < Threat[IdxE].Distance) then
           Threat[IdxE].Distance := Dist[ GetIdx(CntE,IdxA,IdxE) ];
+      // Estimate group price (use just 1 warrior type * count)
       UW := E[IdxE].GetAliveMember;
       Threat[IdxE].WeightedCount := E[IdxE].Count * WarriorPrice[UW.UnitType];
       case E[IdxE].GroupType of // + City influence - Group in combat
@@ -573,9 +575,11 @@ begin
         gtRanged:    Threat[IdxE].Risk := Threat[IdxE].WeightedCount * AI_Par[ATTACK_SUPERVISOR_EvalTarget_ThreatGainRanged];
         gtMounted:   Threat[IdxE].Risk := Threat[IdxE].WeightedCount * AI_Par[ATTACK_SUPERVISOR_EvalTarget_ThreatGainMounted];
       end;
-      Threat[IdxE].Risk := + Threat[IdxE].Risk
-                           - Threat[IdxE].DistRanged * AI_Par[ATTACK_SUPERVISOR_EvalTarget_ThreatGainRangDist] * Byte(Threat[IdxE].DistRanged <> 1E6)
-                           - Threat[IdxE].Distance   * AI_Par[ATTACK_SUPERVISOR_EvalTarget_ThreatGainDist]  * Byte(Threat[IdxE].Distance <> 1E6);
+      // Consider distance
+      Threat[IdxE].Risk :=
+        + Threat[IdxE].Risk
+        - Threat[IdxE].DistRanged * AI_Par[ATTACK_SUPERVISOR_EvalTarget_ThreatGainRangDist] * Byte(Threat[IdxE].DistRanged <> 1E6)
+        - Threat[IdxE].Distance   * AI_Par[ATTACK_SUPERVISOR_EvalTarget_ThreatGainDist]     * Byte(Threat[IdxE].Distance   <> 1E6);
     end;
 
     {$IFDEF DEBUG_Supervisor}
@@ -589,7 +593,8 @@ begin
     {$ENDIF}
 
     // Set targets
-    // Archers - higher distance
+
+    // Archers - shoot the nearest enemy
     for IdxA := 0 to CntA - 1 do
       if (A[IdxA].Group.GroupType = gtRanged) then
       begin
@@ -608,11 +613,13 @@ begin
           A[IdxA] := nil;
         end;
       end;
-    // Melee
+
+    // Melee - attack the most dangerous enemy
     Overflow := 0;
     while (Overflow < Length(E)) do
     begin
       Inc(Overflow);
+      // Find the most dangerous enemy (closest and strongest group)
       BestThreat := NO_THREAT;
       for IdxE := Low(Threat) to High(Threat) do
         if (Threat[IdxE].Risk > BestThreat) then
@@ -622,7 +629,7 @@ begin
         end;
       if (BestThreat <= NO_THREAT) then
         break;
-
+      // Find something that can beat it (distance, strength and group type)
       with Threat[BestIdxE] do
       begin
         Overflow2 := 0;
@@ -631,10 +638,10 @@ begin
           Inc(Overflow2);
           BestOpportunity := NO_THREAT;
           for IdxA := 0 to CntA - 1 do
-            if (A[IdxA] <> nil) then
+            if (A[IdxA] <> nil) then // Skip already used group
             begin
               Opportunity := + OpportunityArr[ A[IdxA].Group.GroupType, E[BestIdxE].GroupType ] * AI_Par[ATTACK_SUPERVISOR_EvalTarget_OpportunityGain]
-                             - Dist[ GetIdx(CntE,IdxA,BestIdxE) ]                        * AI_Par[ATTACK_SUPERVISOR_EvalTarget_OpportunityDistGain];
+                             - Dist[ GetIdx(CntE,IdxA,BestIdxE) ]                               * AI_Par[ATTACK_SUPERVISOR_EvalTarget_OpportunityDistGain];
               if (BestOpportunity < Opportunity) then
               begin
                 BestIdxA := IdxA;
@@ -660,6 +667,7 @@ begin
     end;
   end;
 
+  // Attack houses
   for IdxE := 0 to Length(H) - 1 do
   begin
     Overflow := 0;

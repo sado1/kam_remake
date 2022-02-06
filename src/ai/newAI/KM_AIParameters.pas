@@ -217,13 +217,13 @@ AI_Par: array[TAIPar] of Single = (
          4.0000000, // ATTACK_NMAP_TArmyBackwardFF_EnemyInfluence
        697.0000000, // ATTACK_SQUAD_ChangeTarget_Delay
          6.1796260, // ATTACK_SQUAD_ChangeTarget_DistTolerance
-         4.0000000, // ATTACK_SQUAD_MinWalkingDistance
+         6.0000000, // ATTACK_SQUAD_MinWalkingDistance
          8.0000000, // ATTACK_SQUAD_TargetReached_House
          2.0000000, // ATTACK_SQUAD_TargetReached_Position
         14.0000000, // ATTACK_SQUAD_TargetReached_RangedSquad
         12.0000000, // ATTACK_SQUAD_TargetReached_Unit
         20.0000000, // ATTACK_SUPERVISOR_EvalTarget_DistanceGroup
-         0.1000000, // ATTACK_SUPERVISOR_EvalTarget_OpportunityDistGain
+         0.7500000, // ATTACK_SUPERVISOR_EvalTarget_OpportunityDistGain
          1.0000000, // ATTACK_SUPERVISOR_EvalTarget_OpportunityGain
          1.0000000, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainAntiHorse
          1.0000000, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainDist
