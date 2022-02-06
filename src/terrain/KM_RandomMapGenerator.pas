@@ -49,7 +49,7 @@ type
     end;
     Height: record
       Active, HideNonSmoothTransition: Boolean;
-      Step,Slope,Height: Integer;
+      Step,Slope,Height, SmoothOutMountainPeaks: Integer;
     end;
     OnePath: record
       NoGoZones, ReplaceTerrain: Boolean;
@@ -73,7 +73,7 @@ type
     function LinearInterpolation(const aStep,aMaxNum: Integer): TInteger2Array;
     function VoronoiMod(const aStep: Integer; var aPoints: TKMPoint2Array): TInteger2Array;
     function RNDPointsInGrid(const acnt: Single; aSpace: Integer; const aMinimum,aMaximum: TKMPoint): TKMPointArray;
-    function RNDPointInCircle(aMin,aMax,aCenter: TKMPoint; aMaxRadius: Single): TKMPoint;
+    function RNDPointInCircle(aMin,aMax,aCenter: TKMPoint; aMaxRadius,aMinRadius: Single): TKMPoint;
 
     procedure SnowMountains(var A: TKMByte2Array);
     procedure NoGoZones(var Locs: TKMPointArray; var TilesPartsArr: TTileParts);
@@ -318,6 +318,7 @@ begin
       Step := 4;
       Slope := 40;
       Height := 10;
+      SmoothOutMountainPeaks := 5;
       HideNonSmoothTransition := True;
     end;
     with Objects do
@@ -385,6 +386,7 @@ begin
       Step := 4;
       Slope := 40;
       Height := 70;
+      SmoothOutMountainPeaks := 5;
       HideNonSmoothTransition := True;
     end;
     with Objects do
@@ -598,6 +600,12 @@ begin
           end;
       end;
     end;
+  // Clear hands from previous generation
+  for K := 0 to MAX_HANDS - 1 do
+  begin
+    Revealers := gGame.MapEditor.Revealers[K];
+    Revealers.Clear;
+  end;
   // Hand properties
   for K := 0 to Length(Locs) - 1 do
   begin
@@ -1127,18 +1135,24 @@ end;
 
 
 // Generator of random points inside circle
-function TKMRandomMapGenerator.RNDPointInCircle(aMin,aMax,aCenter: TKMPoint; aMaxRadius: Single): TKMPoint;
+function TKMRandomMapGenerator.RNDPointInCircle(aMin,aMax,aCenter: TKMPoint; aMaxRadius,aMinRadius: Single): TKMPoint;
 const
   MAX_ANGLE = 3.14*2; // = 360°
 var
+  K: Integer;
   angle, radius: Single;
 begin
-  // Random point in Polar coordinates
-  angle := fRNG.Random() * MAX_ANGLE;
-  radius := fRNG.Random() * aMaxRadius;
-  // Back to Cartesian coordinates + check edges
-  Result.X := Min(  aMax.X, Max( aMin.X,Round(aCenter.X + radius * cos(angle)) )  );
-  Result.Y := Min(  aMax.Y, Max( aMin.Y,Round(aCenter.Y + radius * sin(angle)) )  );
+  for K := 0 to 25 do
+  begin
+    // Random point in Polar coordinates
+    angle := fRNG.Random() * MAX_ANGLE;
+    radius := fRNG.Random() * aMaxRadius;
+    // Back to Cartesian coordinates + check edges
+    Result.X := Min(  aMax.X, Max( aMin.X,Round(aCenter.X + radius * cos(angle)) )  );
+    Result.Y := Min(  aMax.Y, Max( aMin.Y,Round(aCenter.Y + radius * sin(angle)) )  );
+    if (KMDistanceSqr(aCenter,Result) >= aMinRadius) then
+      Exit;
+  end;
 end;
 
 
@@ -1275,17 +1289,17 @@ end;
 //     Cellular automaton can change shapes so it is important to keep more points to secure that every shape will have its resources in GenerateTiles
 procedure TKMRandomMapGenerator.CreateResources(var aLocs: TKMPointArray; var A: TKMByte2Array);
 const
-  RESOURCES: array[0..4] of TBiomeType = (btIron,btGold,btStone,btCoal,btCoal);
+  RESOURCES: array[0..4] of TBiomeType = (btIron,btGold,btStone,btCoal,btCoal); // 2x coal for iron and gold
   BASE_RES_RADIUS: array[0..4] of Single = (1.5,1.5,0.5,2,2);
   VORONOI_STEP = 3;
   RES_PROB: array[0..4] of Single = (0.000001,0.000001,0.1,0.08,0.08); // Probability penalization (only afect final shape: 0 = circle, 1 = multiple separated mountains)
   //SPEC_RES_RADIUS: array[0..4] of Byte = (5, 5, 5, 5, 5); // Iron, Gold, Stone, Coal, Coal
-  RES_AMOUNT: array[0..4] of Integer = (1, 1, 1, 2, 1);
+  RES_AMOUNT: array[0..4] of Integer = (1, 1, 1, 2, 1); // 2x for first coal (we need 2 coal to turn iron into weapon)
   RES_TILES_AMOUNT: array[0..4] of Single = (0.2, 0.2, 0.066, 0.27,0.30);
   RES_MINES_CNT: array[0..4] of Single = (0.005, 0.01, 1.0, 1.0, 1.0);
 
-  // Find best place for resources (scan area around and find empy space)
-  function FindBestResLoc(const aIgnoreNegativeValues: Boolean; const aRADIUS: Single; aMin,aMax,aCenter: TKMPoint; var aCountArr: TInteger2Array; var aResLoc: TKMPoint): Boolean;
+  // Find best place for resources (scan area around and find empty space)
+  function FindBestResLoc(const aIgnoreNegativeValues: Boolean; const aRADIUS, aMinRADIUS: Single; aMin,aMax,aCenter: TKMPoint; var aCountArr: TInteger2Array; var aResLoc: TKMPoint): Boolean;
   const
     RESRAD = 2;
     BREAK_LIMIT = 20;
@@ -1303,7 +1317,7 @@ const
     for I := 0 to 20 do
     begin
       ResCnt := 0;
-      ResPoint := RNDPointInCircle(aMin,aMax,aCenter, aRADIUS);
+      ResPoint := RNDPointInCircle(aMin,aMax,aCenter, aRADIUS, aMinRADIUS);
       if (aIgnoreNegativeValues AND (aCountArr[ResPoint.Y,ResPoint.X] > 0))
         OR (not aIgnoreNegativeValues AND (aCountArr[ResPoint.Y,ResPoint.X] <> 0)) then
         for Y := Max(Low(aCountArr), ResPoint.Y-RESRAD) to Min(High(aCountArr), ResPoint.Y+RESRAD) do
@@ -1323,7 +1337,7 @@ const
     begin
       aMin := KMPoint(   Max(  1, Round( aMin.X*(1.0-INC_RADIUS) )  ), Max(  1, Round( aMin.Y*(1.0-INC_RADIUS) )  )   );
       aMax := KMPoint(   Min(  High(aCountArr[0]), Round( aMax.X*(1.0+INC_RADIUS) )  ), Min(  High(aCountArr), Round( aMax.Y*(1.0+INC_RADIUS) )  )   );
-      Result := FindBestResLoc(aIgnoreNegativeValues, aRADIUS*(1.0+INC_RADIUS), aMin,aMax,aCenter, aCountArr, aResLoc)
+      Result := FindBestResLoc(aIgnoreNegativeValues, aRADIUS*(1.0+INC_RADIUS), aMinRADIUS, aMin,aMax,aCenter, aCountArr, aResLoc)
     end
     else
       Result := True;
@@ -1507,7 +1521,7 @@ begin
           begin
             overflow := overflow + 1;
             // Try find unused shape
-            if not FindBestResLoc((RESOURCE <> Byte(btCoal)), BASE_RES_RADIUS[I] * RMGSettings.Locs.ProtectedRadius, TP_S,TP_E,Locs[Loc], CountArr, ResLoc) then
+            if not FindBestResLoc((RESOURCE <> Byte(btCoal)), BASE_RES_RADIUS[I] * RMGSettings.Locs.ProtectedRadius, RMGSettings.Locs.ProtectedRadius * Byte(RESOURCE <> Byte(btStone)), TP_S,TP_E,Locs[Loc], CountArr, ResLoc) then
               Break;
             // Check if there is enough points to create mountains with specific size
             SetSizeOfMountain(ResLoc, sizeMountain, newSize, CountArr, PointsArr, PointArr);
@@ -1637,7 +1651,7 @@ var
         BestPoint := StartLoc;
         for I := 0 to MAX_ATTEMPTS do
         begin
-          NewPoint := RNDPointInCircle(MinLimit,MaxLimit,StartLoc, POINT_RADIUS);
+          NewPoint := RNDPointInCircle(MinLimit,MaxLimit,StartLoc, POINT_RADIUS, 0);
           Distance := KMDistanceAbs(NewPoint, Loc);
           if (BestDistance > Distance) then
           begin
@@ -1672,7 +1686,7 @@ var
     while (Cnt < MaxCnt) AND (Overflow < MaxAttempt) do
     begin
       Overflow := Overflow + 1;
-      Point := RNDPointInCircle(MinP,MaxP,KMPoint(aX,aY),Radius);
+      Point := RNDPointInCircle(MinP,MaxP,KMPoint(aX,aY),Radius,0);
       if (fRNG.Random() < P[Point.Y,Point.X]) AND (aVoronoi[Point.Y,Point.X] <> 0) then
       begin
         X := aPointsArr[ Point.Y, Point.X ].X;
@@ -3428,7 +3442,7 @@ const
   DECREASE_HEIGHT_SET: set of Byte = [Byte(btWater),Byte(btWetland),Byte(btSwamp)];
   CHANGE_HEIGHT_SET: set of Byte = [Byte(btBigGrass), Byte(btGrassGround), Byte(btTreeGrass), Byte(btGroundSnow), Byte(btSnow1), Byte(btSnow2), Byte(btGrassSand2), Byte(btSand)];
 var
-  X_0,Y_0,X_1,Y_1,X_2,Y_2,X1,X2,Y1,Y2,sum: Integer;
+  X_0,Y_0,X_1,Y_1,X_2,Y_2,X1,X2,Y1,Y2,sum, peakSmoother: Integer;
   H1,H2,H3: TInteger2Array;
   ShapePoints: TKMPointArray;
   VisitedArr: TKMByte2Array;
@@ -3442,8 +3456,8 @@ begin
 
   HFWA := TKMHeightFillWalkableAreas.Create(A,H3);
   try
-   CreateCliffs(H3, HFWA);
-   // Decrease height of swamp / wetland / water and change height of special biomes
+    CreateCliffs(H3, HFWA);
+    // Decrease height of swamp / wetland / water and change height of special biomes
     // Init VisitedArr
     SetLength(VisitedArr,Length(TilesPartsArr.Terrain), Length(TilesPartsArr.Terrain[0]));
     for Y1 := Low(VisitedArr) to High(VisitedArr) do
@@ -3542,21 +3556,34 @@ begin
                  + Byte(A[Y_2,X_2] >= Byte(btStone));
         // Tile is surrounded by mountains
         if (sum = 8) then
+        begin
           TilesPartsArr.Height[Y_1,X_1] := Max(0, Min(HEIGHT_MAX, TilesPartsArr.Height[Y_1,X_1]
                                                                   - (HEIGHT_MAX div 10)
                                                                   + fRNG.RandomI(HEIGHT_MAX div 2))) ;
+          // Smooth out mountain peaks
+          if (Y_1 > 1) AND (Y_1 < fMapY-1) AND (X_1 > 1) AND (X_1 < fMapX-1) then
+          begin
+            peakSmoother := Max(1,10-RMGSettings.Height.SmoothOutMountainPeaks);
+            TilesPartsArr.Height[Y_1,X_1] := Max(0, Min(
+              TilesPartsArr.Height[Y_1,X_1], // Do not smooth the lowest height as this creates a nicer abyss
+              round(( // Use only mountain on the top and left side because height is available and results are similar to consideration of all 8 tiles
+                + TilesPartsArr.Height[Y_1-1,X_1-1]
+                + TilesPartsArr.Height[Y_1-1,X_1+0]
+                + TilesPartsArr.Height[Y_1-1,X_1+1]
+                + TilesPartsArr.Height[Y_1+0,X_1-1]
+                + TilesPartsArr.Height[Y_1+0,X_1+0] * peakSmoother
+                )/(4 + peakSmoother))
+              ));
+          end;
+        end;
       end;
 
     // Set lower height to non-smooth transitions (hide it)
       if RMGSettings.Height.HideNonSmoothTransition then
-      begin
         sum := + HNST[ TileTempl[Y1,X1] ][ TileTempl[Y2,X1] ]
                + HNST[ TileTempl[Y1,X1] ][ TileTempl[Y1,X2] ]
                + HNST[ TileTempl[Y1,X2] ][ TileTempl[Y2,X2] ]
                + HNST[ TileTempl[Y2,X1] ][ TileTempl[Y2,X2] ];
-        if (sum > 0) then
-          TilesPartsArr.Height[Y_1,X_1] := Max(0, TilesPartsArr.Height[Y_1,X_1] - sum);
-      end;
     end;
   end;
 end;
