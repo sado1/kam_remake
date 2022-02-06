@@ -49,7 +49,8 @@ type
     end;
     Height: record
       Active, HideNonSmoothTransition: Boolean;
-      Step,Slope,Height, SmoothOutMountainPeaks: Integer;
+      Step,Slope,Height: Integer;
+      SmoothOutMountainPeaks: Integer; // Range values from 1 to 9
     end;
     OnePath: record
       NoGoZones, ReplaceTerrain: Boolean;
@@ -254,6 +255,9 @@ uses
   SysUtils, KM_HandsCollection, KM_CommonClasses, KM_Game, KM_ResMapElements, KM_Hand,
   KM_ResTypes, KM_TerrainTypes;
 
+const
+  DEF_SMOOTH_OUT_MOUNT_PEAKS = 5; // Default value for SmoothOutMountainPeaks parameter
+
 
 { TKMRandomMapGenerator }
 constructor TKMRandomMapGenerator.Create;
@@ -318,7 +322,7 @@ begin
       Step := 4;
       Slope := 40;
       Height := 10;
-      SmoothOutMountainPeaks := 5;
+      SmoothOutMountainPeaks := DEF_SMOOTH_OUT_MOUNT_PEAKS;
       HideNonSmoothTransition := True;
     end;
     with Objects do
@@ -386,7 +390,7 @@ begin
       Step := 4;
       Slope := 40;
       Height := 70;
-      SmoothOutMountainPeaks := 5;
+      SmoothOutMountainPeaks := DEF_SMOOTH_OUT_MOUNT_PEAKS;
       HideNonSmoothTransition := True;
     end;
     with Objects do
