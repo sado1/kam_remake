@@ -844,8 +844,8 @@ begin
           if not IsVisited(Nearby[K]) then
           begin
             Dist := fQueueArray[Idx].Distance
-              + KMDistanceWalk(fQueueArray[Idx].DistPoint, NearbyPoints[K]);
-              //+ (MAX_LINE_LENGTH - NearbyLineLength[K]) * NARROW_COEF;
+              + KMDistanceWalk(fQueueArray[Idx].DistPoint, NearbyPoints[K])
+              + (MAX_LINE_LENGTH - NearbyLineLength[K]) * NARROW_COEF;
             MarkAsVisited(
               Nearby[K],
               Dist,
@@ -879,7 +879,7 @@ procedure TArmyVectorField.FindPositions();
           Continue;
 
         Distance := 0;
-        for L := 0 to 5 do
+        for L := 0 to 7 do
         begin
           BestIdx := gAIFields.NavMesh.Polygons[PolyIdx].Nearby[0];
           for M := 1 to gAIFields.NavMesh.Polygons[PolyIdx].NearbyCount - 1 do
@@ -897,7 +897,8 @@ procedure TArmyVectorField.FindPositions();
         // Get target position
         Groups[K].TargetPosition.Loc := gAIFields.NavMesh.Polygons[ PolyIdx ].CenterPoint;
         Groups[K].TargetPosition.Dir := KMGetDirection(InitP, Groups[K].TargetPosition.Loc );
-        Groups[K].CG := gHands[ Groups[K].Group.Owner ].AI.ArmyManagement.AttackNew.AddGroup( Groups[K].Group );
+        //Groups[K].CG := gHands[ Groups[K].Group.Owner ].AI.ArmyManagement.AttackNew.AddGroup( Groups[K].Group );
+        Groups[K].CG := gHands[ Groups[K].Group.Owner ].AI.ArmyManagement.AttackNew.CombatGroup[ Groups[K].Group ];
         Inc(CGCount, Byte(Groups[K].CG <> nil));
         // Check if group is in the place
         InPlace := False;

@@ -114,6 +114,7 @@ type
 
   TKMRunnerGA_ArmyAttackNew = class(TKMRunnerGA_Common)
   protected
+    function CostFunction(): Single; override;
     procedure InitGAParameters(); override;
   end;
 
@@ -733,9 +734,46 @@ begin
   inherited;
   f_SIM_SimulationTimeInMin := 10;
   f_SIM_PeaceTime := 0;
-  f_SIM_NumberOfMaps  := 20;
   f_SIM_MapNamePrefix := 'GA_S2_%.3d';
+  //{
+  f_SIM_NumberOfMaps  := 1;
+  f_GA_POPULATION_CNT := 3;
+  //}
+  {
+  f_SIM_NumberOfMaps  := 2;
+  f_GA_POPULATION_CNT := 2;
+  //}
+  //fSaveGame := true;
   f_GA_GENE_CNT := fParametrization.GetParCnt('TKMRunnerGA_ArmyAttackNew');
+end;
+
+function TKMRunnerGA_ArmyAttackNew.CostFunction(): Single;
+
+const
+  PL = 1;
+  KILL_GAIN = 1.5;
+  LOST_GAIN = 1;
+  WARRIOR_PRICE: array[WARRIOR_MIN..WARRIOR_MAX] of Single = (
+    1, 2, 3, 2+2,   // Militia     AxeFighter  Swordsman       utBowman
+    3+2, 2, 3, 2+1, // Arbaletman  Pikeman     Hallebardman    utHorseScout
+    3+1, 3,         // Cavalry     Barbarian
+    1, 1+2, 3, 1+1  // Peasant     Slingshot   MetalBarbarian  utHorseman
+    );
+var
+  K, UnitKilledCnt, UnitSurvivedCnt, UnitSurvivedEnemyCnt: Integer;
+  IronArmy, WoodArmy, Militia, Output: Single;
+  UT: TKMUnitType;
+begin
+
+  Result := 0;
+  with gHands[PL].Stats do
+  begin
+    for UT := WARRIOR_MIN to WARRIOR_MAX do
+      Result := Result
+        + WARRIOR_PRICE[UT] * GetUnitKilledQty(UT) * KILL_GAIN
+        - WARRIOR_PRICE[UT] * GetUnitLostQty(UT) * LOST_GAIN;
+        //- Byte(GetUnitKilledQty(utAny)) * 500;
+  end;
 end;
 
 
