@@ -1650,7 +1650,7 @@ begin
 //      end;
 
       if KaMRandomWSeed(fRunSeed, FREQ) = 0 then
-        gGameApp.Game.GameInputProcess.CmdArmy(gicArmyFormation, group, TKMTurnDirection(KaMRandomWSeed(fRunSeed, 3)), KaMRandomWSeed(fRunSeed, group.Count));
+        gGameApp.Game.GameInputProcess.CmdArmy(gicArmyFormation, group, KaMRandomWSeed(fRunSeed, 4), KaMRandomWSeed(fRunSeed, group.Count));
       if KaMRandomWSeed(fRunSeed, FREQ) = 0 then
         gGameApp.Game.GameInputProcess.CmdArmy(gicArmyWalk, group, TKMPoint.New(KaMRandomWSeed(fRunSeed, gTerrain.MapX-1), KaMRandomWSeed(fRunSeed, gTerrain.MapY-1)), TKMDirection(KaMRandomWSeed(fRunSeed, 9)));
     end;
