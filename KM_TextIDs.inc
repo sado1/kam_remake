@@ -577,6 +577,7 @@ TX_MAPED_AI_FORMATIONS_COLUMNS = 450; //Columns
 TX_MAPED_AI_FORMATIONS_COUNT = 451; //Count
 TX_MAPED_AI_FORMATIONS_TITLE = 452; //Troop Formations
 TX_MAPED_AI_FORMATIONS = 453; //Edit formations
+TX_MAPED_AI_FORMATIONS_AAI_INFO = 1534; //Notice: Advanced AI use its own formation parameters and would ignore these settings
 TX_MAPED_AI_MAX_SOLDIERS_ENABLE_HINT = 454; //Set a limit on how many soldiers the AI can have
 TX_MAPED_AI_MAX_SOLDIERS_HINT = 455; //How many soldiers AI can have at once
 TX_MAPED_AI_MAX_SOLDIERS = 456; //Set max. soldiers
@@ -1589,4 +1590,3 @@ TX_SETTINGS_LERP_ANIMS_HINT = 1528; //Increase number of frames used in animatio
 TX_MENU_SETTINGS_GAME = 1531; //Game settings
 TX_MENU_SETTINGS_REPLAY = 1532; //Replay settings
 TX_MENU_SETTINGS_MAPED = 1533; //MapEd settings
-

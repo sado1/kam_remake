@@ -45,7 +45,7 @@ const
                                         TX_MAPED_AI_ATTACK_TYPE_RANGED,
                                         TX_MAPED_AI_ATTACK_TYPE_MOUNTED);
   SIZE_X = 570;
-  SIZE_Y = 200;
+  SIZE_Y = 280;
 var
   GT: TKMGroupType;
   img: TKMImage;
@@ -74,9 +74,15 @@ begin
     NumEdit_FormationsColumns[GT] := TKMNumericEdit.Create(Panel_Formations, 130 + Byte(GT) * 110, 95, 1, 255);
   end;
 
-  Button_Formations_Ok := TKMButton.Create(Panel_Formations, SIZE_X-20-320-10, 150, 160, 30, gResTexts[TX_MAPED_OK], bsMenu);
+  with TKMLabel.Create(Panel_Formations, 20, 150, SIZE_X - 20, 60, gResTexts[TX_MAPED_AI_FORMATIONS_AAI_INFO], fntMetal, taLeft) do
+  begin
+    FontColor := icGoldenYellow;
+    AutoWrap := True;
+  end;
+
+  Button_Formations_Ok := TKMButton.Create(Panel_Formations, SIZE_X-20-320-10, SIZE_Y-50, 160, 30, gResTexts[TX_MAPED_OK], bsMenu);
   Button_Formations_Ok.OnClick := Formations_Close;
-  Button_Formations_Cancel := TKMButton.Create(Panel_Formations, SIZE_X-20-160, 150, 160, 30, gResTexts[TX_MAPED_CANCEL], bsMenu);
+  Button_Formations_Cancel := TKMButton.Create(Panel_Formations, SIZE_X-20-160, SIZE_Y-50, 160, 30, gResTexts[TX_MAPED_CANCEL], bsMenu);
   Button_Formations_Cancel.OnClick := Formations_Close;
 end;
 
