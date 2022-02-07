@@ -1498,6 +1498,8 @@ TX_MAPED_RMG_SETTINGS_CLOSE_RMG_HINT = 1355; //Close Random Map Generator
 TX_MAPED_RMG_SETTINGS_HEIGHT_STEP_HINT = 1366; //Step of the height algorithm (1 = small, 10 = big)
 TX_MAPED_RMG_SETTINGS_HEIGHT_SLOPE_HINT = 1367; //Slope of the height evaluation (0 = plateau, 15 = peak)
 TX_MAPED_RMG_SETTINGS_HEIGHT_HEIGHTS_HINT = 1368; //Maximum height of walkable tiles
+TX_MAPED_RMG_SETTINGS_HEIGHT_SMOOTH_PEAKS = 1529; //Smooth peaks
+TX_MAPED_RMG_SETTINGS_HEIGHT_SMOOTH_PEAKS_HINT = 1530; //Make mountains peaks smoother
 TX_MAPED_RMG_SETTINGS_INITIAL_RESOURCES = 1371; //Initial resources
 TX_MAPED_RMG_SETTINGS_INITIAL_RESOURCES_HINT = 1372; //Amount of initial resources in the storehouse
 TX_MAPED_RMG_SETTINGS_LOW = 1373; //Low
