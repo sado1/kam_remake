@@ -861,28 +861,28 @@ const
   //Colors available for selection in multiplayer
   MP_COLOR_COUNT = 22;
   MP_TEAM_COLORS: array [1..MP_COLOR_COUNT] of Cardinal = (
-    $FF0000EB, // Red
-    $FF076CF8, // Orange
-    $FF00B5FF, // Gold
-    $FF07FFFF, // Lauenburg yellow
-    $FF0EC5A2, // Lime green
-    $FF07FF07, // Neon green
-    $FF00A100, // Bright green
-    $FF134B00, // Dark green
-    $FF7A9E00, // Teal
-    $FFFACE64, // Sky blue
-    $FF973400, // Blue
-    $FFCB3972, // Violet (Amethyst)
-    $FF720468, // Purple
-    $FFDE8FFB, // Pink
-    $FFFF07FF, // Magenta
-    $FF4A00A8, // Dark pink
-    $FF00005E, // Maroon
-    $FF103C52, // Brown
-    $FF519EC9, // Tan
-    $FFFFFFFF, // White
-    $FF838383, // Grey
-    $FF1B1B1B  // Black
+    $FF0000EB, // 1 Red
+    $FF076CF8, // 2 Orange
+    $FF00B5FF, // 3 Gold
+    $FF07FFFF, // 4 Lauenburg yellow
+    $FF0EC5A2, // 5 Lime green
+    $FF07FF07, // 6 Neon green
+    $FF00A100, // 7 Bright green
+    $FF134B00, // 8 Dark green
+    $FF7A9E00, // 9 Teal
+    $FFFACE64, // 10 Sky blue
+    $FF973400, // 11 Blue
+    $FFCB3972, // 12 Violet (Amethyst)
+    $FF720468, // 13 Purple
+    $FFDE8FFB, // 14 Pink
+    $FFFF07FF, // 15 Magenta
+    $FF4A00A8, // 16 Dark pink
+    $FF00005E, // 17 Maroon
+    $FF103C52, // 18 Brown
+    $FF519EC9, // 19 Tan
+    $FFFFFFFF, // 20 White
+    $FF838383, // 21 Grey
+    $FF1B1B1B  // 22 Black
   );
 
   //Players colors, as they appear in KaM when the color is not specified in the script, copied from palette values.
