@@ -826,6 +826,7 @@ end;
 
 // According to
 // https://docs.opencv.org/4.5.2/de/d25/imgproc_color_conversions.html#color_convert_rgb_lab
+// Tested on online calculators, 100% accurate
 function RGB2CEILAB(aRGB: TKMColor3f): TKMColor3f;
 
   function Fn(aValue: Single): Single;
@@ -868,6 +869,7 @@ end;
 
 // According to
 // https://docs.opencv.org/4.5.2/de/d25/imgproc_color_conversions.html#color_convert_rgb_luv
+// Has to be tested, use with caution
 function RGB2CEILUV(aRGB: TKMColor3f): TKMColor3f;
 const
   U_N: Single = 0.19793943;
