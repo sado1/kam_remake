@@ -106,6 +106,8 @@ type
     class function RandomWSeed(aSeed: Integer): TKMColor3f; static;
     constructor New(aR,aG,aB: Single);
     constructor NewB(aR,aG,aB: Byte);
+    constructor NewC(aRGB: Cardinal);
+    function ToString: string;
   end;
 
   TKMColor3b = record
@@ -148,7 +150,8 @@ const
 
 implementation
 uses
-  Math, KM_CommonUtils;
+  Math, SysUtils, KM_CommonUtils;
+
 
 { TKMColor3f }
 constructor TKMColor3f.New(aR, aG, aB: Single);
@@ -158,11 +161,20 @@ begin
   B := aB;
 end;
 
+
 constructor TKMColor3f.NewB(aR, aG, aB: Byte);
 begin
   R := aR / 255;
   G := aG / 255;
   B := aB / 255;
+end;
+
+
+constructor TKMColor3f.NewC(aRGB: Cardinal);
+begin
+  B := (aRGB and $FF) / 255;
+  G := (aRGB shr 8 and $FF) / 255;
+  R := (aRGB shr 16 and $FF) / 255;
 end;
 
 
@@ -193,6 +205,12 @@ begin
   Result.R := KaMRandomWSeedS1(aSeed, 1);
   Result.G := KaMRandomWSeedS1(aSeed, 1);
   Result.B := KaMRandomWSeedS1(aSeed, 1);
+end;
+
+
+function TKMColor3f.ToString: string;
+begin
+  Result := Format('[%d:%d:%d]', [Round(255*R), Round(255*G), Round(255*B)]);
 end;
 
 
