@@ -2833,26 +2833,26 @@ function TKMScriptStates.IsHousePlanAt(var aPlayer: Integer; var aHouseType: TKM
 
 var
   I: Integer;
-  HandFilter, HTypeFilter: Boolean;
+  handFilter, houseTypeFilter: Boolean;
 begin
   try
     Result := False;
     //Verify all input parameters
     if gTerrain.TileInMapCoords(X,Y) then
     begin
-      HandFilter := InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled);
-      HTypeFilter := aHouseType in [HOUSE_MIN..HOUSE_MAX];
+      handFilter := InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled);
+      houseTypeFilter := aHouseType in [HOUSE_MIN..HOUSE_MAX];
 
-      if HandFilter and HTypeFilter then
+      if handFilter and houseTypeFilter then
         Result := FindPlan(aPlayer, X, Y, aHouseType)
       else
-      if HandFilter then
+      if handFilter then
       begin
         aHouseType := htNone;
         Result := FindPlan(aPlayer, X, Y, aHouseType);
       end else
       begin
-        if not HTypeFilter then
+        if not houseTypeFilter then
           aHouseType := htNone;
 
         for I := 0 to gHands.Count - 1 do
