@@ -81,8 +81,8 @@ begin
   fToolbarWidth := aToolBarWidth;
   fOnPositionSet := aOnPositionSet;
 
-  fMapX := 1; //Avoid division by 0
-  fMapY := 1; //Avoid division by 0
+  fMapX := 2; //Avoid division by 0
+  fMapY := 2; //Avoid division by 0
 
   CinematicReset;
 
