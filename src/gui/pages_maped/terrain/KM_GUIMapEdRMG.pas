@@ -46,7 +46,7 @@ type
     TBar_NonWalk_Size, TBar_NonWalk_Density, TBar_NonWalk_Variance, TBar_NonWalk_EGold, TBar_NonWalk_EIron, TBar_NonWalk_Swamp, TBar_NonWalk_Wetland, TBar_NonWalk_Water,
     TBar_Biomes1_Step, TBar_Biomes1_Limit, TBar_Biomes2_Step, TBar_Biomes2_Limit,
     TBar_HeightStep, TBar_HeightSlope, TBar_HeightHeight,
-    TBar_Height1, TBar_Height2, TBar_Height3, TBar_Height4, TBar_ObjectDensity, TBar_Forests, TBar_Trees: TKMTrackBar;
+    TBar_ObjectDensity, TBar_Forests, TBar_Trees: TKMTrackBar;
 
     {$IFDEF DEBUG_RMG}
     Check_Decomposition,Check_BasicTiles,Check_CA: TKMCheckBox;
