@@ -664,7 +664,6 @@ begin
       Menu_Update; // Make sure updating happens before it is shown
       Label_MenuTitle.Caption := gResTexts[TX_MENU_TAB_OPTIONS];
       Panel_Menu.Show;
-//      fGuiMenuSettings.Refresh;
       fGuiMenuOptions.Show;
     end else
 
@@ -867,7 +866,7 @@ begin
   Create_Pause;
   Create_Replay; // Replay controls
   // Settings PopUpWindow above replay controls / chat / allies
-  fGuiMenuOptions := TKMGUICommonGameOptions.Create(Panel_Controls, UpdateHotkeys);
+  fGuiMenuOptions := TKMGUICommonGameOptions.Create(Panel_Controls, gResTexts[TX_MENU_SETTINGS_GAME], UpdateHotkeys);
   fGuiMenuOptions.GUICommonOptions.OnOptionsChange := GameOptionsChanged;
 
   Create_PlayMore; // Must be created last, so that all controls behind are blocked
@@ -2528,6 +2527,11 @@ begin
   UpdateMessageImages;
 
   AlliesOnPlayerSetup;
+
+  if gGameParams.IsReplay then
+    fGuiMenuOptions.Caption := gResTexts[TX_MENU_SETTINGS_REPLAY]
+  else
+    fGuiMenuOptions.Caption := gResTexts[TX_MENU_SETTINGS_GAME];
 
   isTactic := gGameParams.IsTactic;
 

@@ -1,4 +1,4 @@
-TX_HOUSES_NAMES__29 = 0; //Sawmill
+﻿TX_HOUSES_NAMES__29 = 0; //Sawmill
 TX_HOUSES_NAMES_IRONSMITHY = 1; //Iron smithy
 TX_HOUSES_NAMES_WEAPONSMITHY = 2; //Weapon smithy
 TX_HOUSES_NAMES_COALMINE = 3; //Coal mine
@@ -1585,3 +1585,8 @@ TX_GOAL_CONDITION_COND_DESC_BUILDINGS = 1524; //main buildings ( %s )
 TX_MENU_OPTIONS_LERP_ANIMS = 1526; //HD animations
 TX_GAME_SETTINGS_LERP_ANIMS = 1527; //HD animations
 TX_SETTINGS_LERP_ANIMS_HINT = 1528; //Increase number of frames used in animations
+
+TX_MENU_SETTINGS_GAME = 1531; //Game settings
+TX_MENU_SETTINGS_REPLAY = 1532; //Replay settings
+TX_MENU_SETTINGS_MAPED = 1533; //MapEd settings
+

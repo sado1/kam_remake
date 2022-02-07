@@ -63,7 +63,7 @@ begin
   fGuiMenuLoad := TKMMapEdMenuLoad.Create(aParent, MenuDone);
   fGuiMenuSave := TKMMapEdMenuSave.Create(aParent, MenuDone, aOnMapTypChanged);
   fGuiMenuQuit := TKMMapEdMenuQuit.Create(aParent, MenuDone);
-  fGuiMenuSettings := TKMGUICommonGameOptions.Create(aParent, aOnKeysUpdated);
+  fGuiMenuSettings := TKMGUICommonGameOptions.Create(aParent, gResTexts[TX_MENU_SETTINGS_MAPED], aOnKeysUpdated);
 
   Panel_Menu := TKMPanel.Create(aParent, 0, 45, aParent.Width, aParent.Height - 45);
   Panel_Menu.Anchors := [anLeft, anTop, anBottom];
