@@ -26,6 +26,7 @@ type
     procedure DecDoorway;
     function FindBestExit(const aLoc: TKMPoint): TKMBestExit;
     function TileHasIdleUnit(X,Y: Word): TKMUnit;
+    function TileHasUnitOnHouseEntrance: Boolean;
     procedure WalkIn;
     procedure WalkOut;
     function GetIsStarted: Boolean;
@@ -267,6 +268,16 @@ begin
 end;
 
 
+function TKMUnitActionGoInOut.TileHasUnitOnHouseEntrance: Boolean;
+begin
+  if fHouse.IsDestroyed then Exit(False);
+
+  // There could be a unit walking in the house already,
+  // f.e. if serf was added at point below entrance by script and he went straight into the same house
+  Result := (gTerrain.Land^[fHouse.Entrance.Y, fHouse.Entrance.X].IsUnit <> nil);
+end;
+
+
 procedure TKMUnitActionGoInOut.WalkIn;
 begin
   fUnit.Direction := dirN;  //one cell up
@@ -341,6 +352,11 @@ begin
                     // Since we did not occupy entrance tile other units inside house could do that already
                     if fHouse.IsDestroyed then
                       Exit(arActCanNotStart)
+                    else
+                    // There could be a unit walking in the house already,
+                    // f.e. if serf was added at point below entrance by script and he went straight into the same house
+                    if TileHasUnitOnHouseEntrance then
+                      Exit
                     else
                       WalkIn;
       gdGoOutside:  begin
