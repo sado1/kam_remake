@@ -1,7 +1,7 @@
 unit GeneticAlgorithmParameters;
 interface
 uses
-  Classes, SysUtils, Math,
+  Classes, SysUtils, Math, StrUtils,
   GeneticAlgorithm,
   KM_Log, KM_AIParameters;
 
@@ -17,6 +17,7 @@ type
     function GetParCntFromSet(const aSet: TAIParSet): Word;
     function GetParCnt_TestParRun(): Word;
     function GetParCnt_HandLogistics(): Word;
+    function GetSetPar(): TAIParSet;
     // Set global parameters
     procedure SetParameters(const aSet: TAIParSet; const aIdv: TGAIndividual; aLogIt: Boolean = False);
     procedure SetPar_HandLogistics(const aIdv: TGAIndividual; aLogIt: Boolean = False; aK: Word = 0);
@@ -39,51 +40,51 @@ uses
 const
   SetArmyAttack:
     TAIParSet = [
-      ARMY_MaxGgroupsInCompany..ARMY_PATHFINDING_AvoidTraffic,
-      ATTACK_COMPANY_AttackRadius..ATTACK_COMPANY_TimePerATile_Slow,
-      ATTACK_SQUAD_ChangeTarget_Delay..ATTACK_SQUAD_TargetReached_Unit
+      //ARMY_MaxGgroupsInCompany..ARMY_PATHFINDING_AvoidTraffic,
+      //ATTACK_COMPANY_AttackRadius..ATTACK_COMPANY_TimePerATile_Slow,
+      ATTACK_SQUAD_START..ATTACK_SQUAD_END
     ];
   SetArmyAttackNew:
     TAIParSet = [
-      ARMY_PATHFINDING_AvoidEdges..ARMY_PATHFINDING_AvoidTraffic,
-      ATTACK_NMAP_BackwardFlood_MaxAllyInfluence..ATTACK_NMAP_TArmyBackwardFF_EnemyInfluence,
-      ATTACK_SUPERVISOR_EvalTarget_DistanceGroup..ATTACK_SUPERVISOR_UpdateAttacks_AttackThreshold
+      ATTACK_ArmyVectorField_START..ATTACK_ArmyVectorField_END,
+      ATTACK_SQUAD_START..ATTACK_SQUAD_END,
+      ATTACK_SUPERVISOR_START..ATTACK_SUPERVISOR_END
     ];
   SetCityAllIn:
     TAIParSet = [
-      BUILDER_BuildHouse_FieldMaxWork..ROADS_noBuildArea
+      BUILDER_START..ROADS_END
     ];
   SetCityBuilder:
     TAIParSet = [
-      BUILDER_BuildHouse_FieldMaxWork..BUILDER_Shortage_Wood
+      BUILDER_START..BUILDER_END
     ];
   SetCityPlanner:
     TAIParSet = [
-      PLANNER_FindPlaceForHouse_CityCenter..PLANNER_FindPlaceForQuary_SnapCrit,
-      PLANNER_ObstaclesInHousePlan_Road..PLANNER_SnapCrit_RoadInEntrance
+      PLANNER_FindPlaceForHouse_START..PLANNER_FindPlaceForHouse_END,
+      PLANNER_Snap_START..PLANNER_Snap_END
     ];
   SetFarm:
     TAIParSet = [
-      PLANNER_FARM_FieldCrit_FlatArea..PLANNER_FARM_PlanFields_ExistField
+      PLANNER_FARM_START..PLANNER_FARM_END
     ];
   SetForest:
     TAIParSet = [
-      EYE_GetForests_MaxAB..EYE_GetForests_SPRndOwnLimMin,
-      PLANNER_FOREST_FindForestAround_MaxDist..PLANNER_FOREST_PlaceWoodcutter_DistFromForest
+      EYE_GetForests_START..EYE_GetForests_END,
+      PLANNER_FOREST_START..PLANNER_FOREST_END
     ];
   SetManager:
     TAIParSet = [
-      MANAGEMENT_CheckUnitCount_SerfGoldCoef..MANAGEMENT_GoldShortage,
-      PREDICTOR_SecondSchool_MinRequiredUnits..PREDICTOR_WareNeedPerAWorker_Wood
+      MANAGEMENT_START..MANAGEMENT_END,
+      PREDICTOR_START..PREDICTOR_END
     ];
   SetQuarry:
     TAIParSet = [
-      PLANNER_FindPlaceForQuary_DistCity..PLANNER_FindPlaceForQuary_SnapCrit
+      PLANNER_FindPlaceForQuary_START..PLANNER_FindPlaceForQuary_END
     ];
   SetRoadPlanner:
     TAIParSet = [
-      SHORTCUTS_BasePrice..SHORTCUTS_noBuildArea,
-      ROADS_noBuildArea..ROADS_noBuildArea
+      SHORTCUTS_START..SHORTCUTS_END,
+      ROADS_START..ROADS_END
     ];
 
 
@@ -146,19 +147,33 @@ end;
 
 procedure TGAParameterization.LogParameters();
 var
+  K: Integer;
   Idx: TAIPar;
+  params: TAIParSet;
   enumName: String;
 begin
   if (fLogPar = nil) then
     Exit;
+  // Log all parameters
   fLogPar.AddTime('  AI_Par: array[TAIPar] of Single = (');
   for Idx := Low(AI_Par) to High(AI_Par) do
   begin
     enumName := GetEnumName(TypeInfo(TAIPar), Integer(Idx));
     fLogPar.AddTime(Format('%13.7f, // %s',[AI_Par[Idx], enumName ]));
+    if ContainsText(enumName, '_END') then
+      fLogPar.AddTime(' ');
     //fLogPar.AddTime(Format('%13.7f%s, // %s',[AI_Par[Idx], StringOfChar(' ', Max(1,50 - Length(enumName))), enumName ]));
   end;
   fLogPar.AddTime('  );');
+  // Log only tested parameters
+  K := 0;
+  params := GetSetPar();
+  for Idx in params do
+  begin
+    enumName := GetEnumName(TypeInfo(TAIPar), Integer(Idx));
+    fLogPar.AddTime(Format('%3d%13.7f, // %s',[K, AI_Par[Idx], enumName ]));
+    Inc(K);
+  end;
 end;
 
 
@@ -195,6 +210,22 @@ begin
   else if (CompareStr(fClass, 'TKMRunnerGA_RoadPlanner'  ) = 0) then SetParameters(SetRoadPlanner, aIdv, aLogIt)
   else if (CompareStr(fClass, 'TKMRunnerGA_ArmyAttack'   ) = 0) then SetParameters(SetArmyAttack, aIdv, aLogIt)
   else if (CompareStr(fClass, 'TKMRunnerGA_ArmyAttackNew') = 0) then SetParameters(SetArmyAttackNew, aIdv, aLogIt);
+end;
+
+
+function TGAParameterization.GetSetPar(): TAIParSet;
+begin
+  if      (CompareStr(fClass, 'TKMRunnerGA_CityAllIn'    ) = 0) then Result := SetCityAllIn
+  else if (CompareStr(fClass, 'TKMRunnerGA_CityBuilder'  ) = 0) then Result := SetCityBuilder
+  else if (CompareStr(fClass, 'TKMRunnerGA_CityPlanner'  ) = 0) then Result := SetCityPlanner
+  else if (CompareStr(fClass, 'TKMRunnerGA_Farm'         ) = 0) then Result := SetFarm
+  else if (CompareStr(fClass, 'TKMRunnerGA_Forest'       ) = 0) then Result := SetForest
+  else if (CompareStr(fClass, 'TKMRunnerGA_HandLogistics') = 0) then Result := []
+  else if (CompareStr(fClass, 'TKMRunnerGA_Manager'      ) = 0) then Result := SetManager
+  else if (CompareStr(fClass, 'TKMRunnerGA_Quarry'       ) = 0) then Result := SetQuarry
+  else if (CompareStr(fClass, 'TKMRunnerGA_RoadPlanner'  ) = 0) then Result := SetRoadPlanner
+  else if (CompareStr(fClass, 'TKMRunnerGA_ArmyAttack'   ) = 0) then Result := SetArmyAttack
+  else if (CompareStr(fClass, 'TKMRunnerGA_ArmyAttackNew') = 0) then Result := SetArmyAttackNew;
 end;
 
 

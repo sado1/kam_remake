@@ -42,12 +42,14 @@ begin
   end;
 end;
 
+{$IFDEF PARALLEL_RUNNER}
 var
   ParRun: TKMParallelRun;
+{$ENDIF}
 begin
   Application.Initialize;
   Application.CreateForm(TForm2, Form2);
-{
+  {$IFDEF PARALLEL_RUNNER}
   if (ParamCount > 0) then
   begin
     //DebugLogString();
@@ -62,6 +64,6 @@ begin
     end;
     Application.Terminate;
   end;
-//}
+  {$ENDIF}
   Application.Run;
 end.
