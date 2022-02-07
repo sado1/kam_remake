@@ -131,11 +131,6 @@ implementation
 uses
   SysUtils,
   KromUtils,
-
-  {$IFDEF PARALLEL_RUNNER}
-    KM_AIParameters, // If you want to remove this, then please make sure that the Runner can be compiled with ParallelRunner Build Configuration
-  {$ENDIF}
-
   KM_Game, KM_GameParams, KM_Terrain, KM_AIFields,
   KM_UnitsCollection, KM_MapEdTypes,
   KM_Resource, KM_ResUnits, KM_ResTexts,
@@ -1161,9 +1156,6 @@ procedure TKMHandsCollection.Save(SaveStream: TKMemoryStream; aMultiplayer: Bool
 var
   I: Integer;
 begin
-  {$IFDEF PARALLEL_RUNNER}
-    SaveGAParameters(SaveStream);
-  {$ENDIF}
   SaveStream.PlaceMarker('Players');
   SaveStream.Write(fCount);
   SaveStream.Write(fCheckGoals);
@@ -1177,9 +1169,6 @@ procedure TKMHandsCollection.Load(LoadStream: TKMemoryStream);
 var
   I: Integer;
 begin
-  {$IFDEF PARALLEL_RUNNER}
-    LoadGAParameters(LoadStream);
-  {$ENDIF}
   LoadStream.CheckMarker('Players');
   LoadStream.Read(fCount);
   LoadStream.Read(fCheckGoals);
