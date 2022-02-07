@@ -25,7 +25,7 @@ type
     procedure IncDoorway;
     procedure DecDoorway;
     function FindBestExit(const aLoc: TKMPoint): TKMBestExit;
-    function TileHasIdleUnit(X,Y: Word): TKMUnit;
+    function TileHasIdleUnitToPush(X,Y: Word): TKMUnit;
     function TileHasUnitOnHouseEntrance: Boolean;
     procedure WalkIn;
     procedure WalkOut;
@@ -51,7 +51,7 @@ type
 implementation
 uses
   KM_HandsCollection, KM_Resource, KM_Terrain, KM_UnitActionStay, KM_UnitActionWalkTo,
-  KM_HouseBarracks, KM_ResHouses, KM_ResUnits, KM_CommonUtils,
+  KM_HouseBarracks, KM_ResHouses, KM_ResUnits, KM_CommonUtils, KM_GameParams,
   KM_ResTypes;
 
 
@@ -216,14 +216,14 @@ begin
       UL := nil;
       UR := nil;
       //U could be nil if tile is unwalkable for some reason
-      UC := TileHasIdleUnit(aLoc.X, aLoc.Y);
+      UC := TileHasIdleUnitToPush(aLoc.X, aLoc.Y);
       if UC <> nil then
         Result := beCenter
       else
       begin
-        UL := TileHasIdleUnit(aLoc.X-1, aLoc.Y);
+        UL := TileHasIdleUnitToPush(aLoc.X-1, aLoc.Y);
         L := UL <> nil;
-        UR := TileHasIdleUnit(aLoc.X+1, aLoc.Y);
+        UR := TileHasIdleUnitToPush(aLoc.X+1, aLoc.Y);
         R := UR <> nil;
         Result := ChooseBestExit(L, R);
       end;
@@ -245,7 +245,7 @@ end;
 
 
 //Check that tile is walkable and there's no unit blocking it or that unit can be pushed away
-function TKMUnitActionGoInOut.TileHasIdleUnit(X,Y: Word): TKMUnit;
+function TKMUnitActionGoInOut.TileHasIdleUnitToPush(X,Y: Word): TKMUnit;
 var
   U: TKMUnit;
 begin
