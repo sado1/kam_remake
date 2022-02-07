@@ -65,7 +65,6 @@ type
     fUnitsTeamNames: TList<TKMUnit>;
     fGroupsTeamNames: TList<TKMUnitGroup>;
     fHousesTeamNames: TList<TKMHouse>;
-    fLastSyncedMessage: Word; // Last message that we synced with MessageLog
     fLastKbdSelectionTime: Cardinal; //Last we select object from keyboard
 
     fLineIdToNetPlayerId: array [0..MAX_LOBBY_SLOTS - 1] of Integer;
@@ -2251,10 +2250,10 @@ var
   R: TKMListRow;
 begin
   // Exit if synced already
-  if not aFullRefresh and (fLastSyncedMessage = gMySpectator.Hand.MessageLog.CountLog) then Exit;
+  if not aFullRefresh and not gMySpectator.Hand.MessageLog.HasNewMessages then Exit;
 
   // Clear the selection if a new item is added so the wrong one is not selected
-  if fLastSyncedMessage <> gMySpectator.Hand.MessageLog.CountLog then
+  if gMySpectator.Hand.MessageLog.HasNewMessages then
     ColumnBox_MessageLog.ItemIndex := -1;
 
   // Clear all rows in case gMySpectator.HandIndex was changed and MessageLog now contains less items
@@ -2299,7 +2298,8 @@ begin
     Inc(K);
   end;
 
-  fLastSyncedMessage := gMySpectator.Hand.MessageLog.CountLog;
+  gGame.GameInputProcess.CmdGame(gicGameMessageListRead, gMySpectator.Hand.MessageLog.CountLog);
+  gMySpectator.Hand.MessageLog.ReadAtCountLocal :=  gMySpectator.Hand.MessageLog.CountLog;
 end;
 
 
@@ -4423,7 +4423,7 @@ begin
     UpdateMessageImages;
   end;
   Image_MessageLog.Highlight := not Panel_MessageLog.Visible and not (aGlobalTickCount mod 10 < 5)
-                                and (fLastSyncedMessage <> gMySpectator.Hand.MessageLog.CountLog);
+                                and gMySpectator.Hand.MessageLog.HasNewMessages;
 
   if Panel_MessageLog.Visible then
     MessageLog_Update(False);

@@ -33,14 +33,22 @@ type
 
   TKMMessageLog = class
   private
+    fReadAtCountGIP: Integer; // Last time player opened log when log count was equal to
+    fReadAtCountLocal: Integer;
     fCountLog: Integer;
     fListLog: array of TKMLogMessage;
     function GetMessageLog(aIndex: Integer): TKMLogMessage;
+    function GetReadAtCount: Integer;
   public
     destructor Destroy; override;
 
     property CountLog: Integer read fCountLog;
+    property ReadAtCountGIP: Integer read fReadAtCountGIP write fReadAtCountGIP;
+    property ReadAtCountLocal: Integer read fReadAtCountLocal write fReadAtCountLocal;
+    property ReadAtCount: Integer read GetReadAtCount;
     property MessagesLog[aIndex: Integer]: TKMLogMessage read GetMessageLog; default;
+
+    function HasNewMessages: Boolean;
 
     procedure Add(aKind: TKMMessageKind; aTextID: Integer; const aLoc: TKMPoint; aEntityUID: Cardinal);
 
@@ -130,6 +138,18 @@ begin
 end;
 
 
+function TKMMessageLog.GetReadAtCount: Integer;
+begin
+  Result := Max(fReadAtCountGIP, fReadAtCountLocal);
+end;
+
+
+function TKMMessageLog.HasNewMessages: Boolean;
+begin
+  Result := ReadAtCount < fCountLog;
+end;
+
+
 procedure TKMMessageLog.Add(aKind: TKMMessageKind; aTextID: Integer; const aLoc: TKMPoint; aEntityUID: Cardinal);
 begin
   SetLength(fListLog, fCountLog + 1);
@@ -144,6 +164,7 @@ var
 begin
   SaveStream.PlaceMarker('MessageLog');
   SaveStream.Write(fCountLog);
+  SaveStream.Write(fReadAtCountGIP);
   for I := 0 to fCountLog - 1 do
     MessagesLog[I].Save(SaveStream);
 end;
@@ -155,6 +176,7 @@ var
 begin
   LoadStream.CheckMarker('MessageLog');
   LoadStream.Read(fCountLog);
+  LoadStream.Read(fReadAtCountGIP);
   SetLength(fListLog, fCountLog);
 
   for I := 0 to fCountLog - 1 do
