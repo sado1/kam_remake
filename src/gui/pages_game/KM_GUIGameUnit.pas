@@ -4,7 +4,7 @@ interface
 uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
-  Classes, SysUtils, KM_Controls, KM_Units, KM_UnitGroup, KM_CommonTypes;//, KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Pics,
+  Classes, Controls, SysUtils, KM_Controls, KM_Units, KM_UnitGroup, KM_CommonTypes;//, KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Pics,
 
 type
   TKMGUIGameUnit = class
@@ -17,7 +17,8 @@ type
     procedure Unit_Dismiss(Sender: TObject);
     procedure Dismiss_Click(Sender: TObject);
     procedure Army_ActivateControls(aGroup: TKMUnitGroup);
-    procedure Army_Issue_Order(Sender: TObject);
+    procedure Unit_ArmyClickHold(Sender: TObject; AButton: TMouseButton; var aHandled: Boolean);
+    procedure Army_Issue_Order(Sender: TObject; Shift: TShiftState);
     procedure ShowDismissBtn;
     procedure Unit_Scroll_Click(Sender: TObject);
     procedure Show_Common(aUnit: TKMUnit);
@@ -77,7 +78,7 @@ uses
   KM_HandsCollection, KM_Hand, KM_HandSpectator, KM_HandTypes,
   KM_InterfaceGame, KM_RenderUI,
   KM_Resource, KM_ResFonts, KM_ResTexts, KM_ResKeys, KM_ResSound, KM_ResUnits, KM_Pics,
-  KM_UnitWarrior, KM_Utils, KM_Defaults, KM_Sound, KM_CommonUtils,
+  KM_UnitWarrior, KM_Utils, KM_UtilsExt, KM_Defaults, KM_Sound, KM_CommonUtils,
   KM_UnitGroupTypes,
   KM_ResTypes;
 
@@ -140,17 +141,20 @@ begin
 
     // All one-click-action (i.e. not attack, move, link up) army controls have a single procedure
     // that decides what to do based on Sender
-    Button_Army_GoTo.OnClick    := Army_Issue_Order;
-    Button_Army_Stop.OnClick    := Army_Issue_Order;
-    Button_Army_Attack.OnClick  := Army_Issue_Order;
-    Button_Army_RotCW.OnClick   := Army_Issue_Order;
-    Button_Army_Storm.OnClick   := Army_Issue_Order;
-    Button_Army_RotCCW.OnClick  := Army_Issue_Order;
-    Button_Army_ForDown.OnClick := Army_Issue_Order;
-    Button_Army_ForUp.OnClick   := Army_Issue_Order;
-    Button_Army_Split.OnClick   := Army_Issue_Order;
-    Button_Army_Join.OnClick    := Army_Issue_Order;
-    Button_Army_Feed.OnClick    := Army_Issue_Order;
+    Button_Army_GoTo.OnClickShift    := Army_Issue_Order;
+    Button_Army_Stop.OnClickShift    := Army_Issue_Order;
+    Button_Army_Attack.OnClickShift  := Army_Issue_Order;
+    Button_Army_RotCW.OnClickShift   := Army_Issue_Order;
+    Button_Army_Storm.OnClickShift   := Army_Issue_Order;
+    Button_Army_RotCCW.OnClickShift  := Army_Issue_Order;
+    Button_Army_ForDown.OnClickShift := Army_Issue_Order;
+    Button_Army_ForUp.OnClickShift   := Army_Issue_Order;
+    Button_Army_Split.OnClickShift   := Army_Issue_Order;
+    Button_Army_Join.OnClickShift    := Army_Issue_Order;
+    Button_Army_Feed.OnClickShift    := Army_Issue_Order;
+
+    Button_Army_ForUp.OnClickHold    := Unit_ArmyClickHold;
+    Button_Army_ForDown.OnClickHold  := Unit_ArmyClickHold;
 
     // Disable not working buttons
     Button_Army_GoTo.Hide;
@@ -418,7 +422,16 @@ begin
 end;
 
 
-procedure TKMGUIGameUnit.Army_Issue_Order(Sender: TObject);
+procedure TKMGUIGameUnit.Unit_ArmyClickHold(Sender: TObject; AButton: TMouseButton; var aHandled: Boolean);
+begin
+  if (Sender = Button_Army_ForUp)
+    or (Sender = Button_Army_ForDown) then
+    // Use ssLeft only, because value will change too fast otherwise
+    Army_Issue_Order(Sender, [ssLeft]);
+end;
+
+
+procedure TKMGUIGameUnit.Army_Issue_Order(Sender: TObject; Shift: TShiftState);
 var
   group: TKMUnitGroup;
 begin
@@ -451,17 +464,17 @@ begin
   end;
   if Sender = Button_Army_ForDown then
   begin
-    gGame.GameInputProcess.CmdArmy(gicArmyFormation, group, tdNone, 1);
+    gGame.GameInputProcess.CmdArmy(gicArmyFormation, group, tdNone, GetMultiplicator(Shift, 5));
     gSoundPlayer.PlayWarrior(group.UnitType, spFormation);
   end;
   if Sender = Button_Army_ForUp   then
   begin
-    gGame.GameInputProcess.CmdArmy(gicArmyFormation, group, tdNone, -1);
+    gGame.GameInputProcess.CmdArmy(gicArmyFormation, group, tdNone, -GetMultiplicator(Shift, 5));
     gSoundPlayer.PlayWarrior(group.UnitType, spFormation);
   end;
   if Sender = Button_Army_Split   then
   begin
-    if GetKeyState(VK_CONTROL) < 0 then
+    if ssCtrl in Shift then
       gGame.GameInputProcess.CmdArmy(gicArmySplitSingle, group)
     else
       gGame.GameInputProcess.CmdArmy(gicArmySplit, group);

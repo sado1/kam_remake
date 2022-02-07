@@ -14,7 +14,7 @@ uses
 
   function GetShiftState(aButton: TMouseButton): TShiftState;
   function GetMultiplicator(aButton: TMouseButton): Word; overload;
-  function GetMultiplicator(aShift: TShiftState): Word; overload;
+  function GetMultiplicator(aShift: TShiftState; const aMultiplier: Integer = 10): Word; overload;
 
 
 implementation
@@ -42,13 +42,13 @@ begin
 end;
 
 
-function GetMultiplicator(aShift: TShiftState): Word;
+function GetMultiplicator(aShift: TShiftState; const aMultiplier: Integer = 10): Word;
 begin
   Exclude(aShift, ssCtrl); //Ignore Ctrl
   Result := Byte(aShift = [ssLeft])
-          + Byte(aShift = [ssRight]) * 10
-          + Byte(aShift = [ssShift,ssLeft]) * 100
-          + Byte(aShift = [ssShift,ssRight]) * 1000;
+          + Byte(aShift = [ssRight]) * aMultiplier
+          + Byte(aShift = [ssShift,ssLeft]) * aMultiplier * aMultiplier
+          + Byte(aShift = [ssShift,ssRight]) * aMultiplier * aMultiplier * aMultiplier;
 end;
 
 
