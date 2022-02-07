@@ -447,6 +447,9 @@ begin
   // Clean memory (data from the previous generation)
   fRes.ClearArray();
 
+  // Clear transitions info
+  gTerrain.RemoveLayers;
+
   // Seed MUST be <> 0!!!
   if (RMGSettings.Seed = 0) then
     RMGSettings.Seed := Round(High(Integer)*Random);
