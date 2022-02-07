@@ -17,7 +17,6 @@ type
     procedure Unit_Dismiss(Sender: TObject);
     procedure Dismiss_Click(Sender: TObject);
     procedure Army_ActivateControls(aGroup: TKMUnitGroup);
-    procedure Unit_ArmyClickHold(Sender: TObject; AButton: TMouseButton; var aHandled: Boolean);
     procedure Army_Issue_Order(Sender: TObject; Shift: TShiftState);
     procedure ShowDismissBtn;
     procedure Unit_Scroll_Click(Sender: TObject);
@@ -152,9 +151,6 @@ begin
     Button_Army_Split.OnClickShift   := Army_Issue_Order;
     Button_Army_Join.OnClickShift    := Army_Issue_Order;
     Button_Army_Feed.OnClickShift    := Army_Issue_Order;
-
-    Button_Army_ForUp.OnClickHold    := Unit_ArmyClickHold;
-    Button_Army_ForDown.OnClickHold  := Unit_ArmyClickHold;
 
     // Disable not working buttons
     Button_Army_GoTo.Hide;
@@ -422,18 +418,10 @@ begin
 end;
 
 
-procedure TKMGUIGameUnit.Unit_ArmyClickHold(Sender: TObject; AButton: TMouseButton; var aHandled: Boolean);
-begin
-  if (Sender = Button_Army_ForUp)
-    or (Sender = Button_Army_ForDown) then
-    // Use ssLeft only, because value will change too fast otherwise
-    Army_Issue_Order(Sender, [ssLeft]);
-end;
-
-
 procedure TKMGUIGameUnit.Army_Issue_Order(Sender: TObject; Shift: TShiftState);
 var
   group: TKMUnitGroup;
+  rotCnt: ShortInt;
 begin
   if (gMySpectator.Selected = nil)
     or not (gMySpectator.Selected is TKMUnitGroup) then Exit;
@@ -441,37 +429,53 @@ begin
   group := TKMUnitGroup(gMySpectator.Selected);
 
   // if Sender = Button_Army_GoTo    then ; // This command makes no sense unless player has no right-mouse-button
+
   if Sender = Button_Army_Stop    then
   begin
     gGame.GameInputProcess.CmdArmy(gicArmyHalt, group);
     gSoundPlayer.PlayWarrior(group.UnitType, spHalt);
   end;
+
   // if Sender = Button_Army_Attack  then ; // This command makes no sense unless player has no right-mouse-button
-  if Sender = Button_Army_RotCW   then
+
+  if (Sender = Button_Army_RotCW) or (Sender = Button_Army_RotCCW) then
   begin
-    gGame.GameInputProcess.CmdArmy(gicArmyFormation, group, tdCW, 0);
-    gSoundPlayer.PlayWarrior(group.UnitType, spRotRight);
+    if ssShift in Shift then
+      rotCnt := 4
+    else
+    if ssRight in Shift then
+      rotCnt := 2
+    else
+      rotCnt := 1;
+
+    rotCnt := rotCnt * (2 * Byte(Sender = Button_Army_RotCW) - 1);
+
+    gGame.GameInputProcess.CmdArmy(gicArmyFormation, group, rotCnt, 0);
+
+    if Sender = Button_Army_RotCW then
+      gSoundPlayer.PlayWarrior(group.UnitType, spRotRight)
+    else
+      gSoundPlayer.PlayWarrior(group.UnitType, spRotLeft);
   end;
+
   if Sender = Button_Army_Storm   then
   begin
     gGame.GameInputProcess.CmdArmy(gicArmyStorm, group);
     gSoundPlayer.PlayWarrior(group.UnitType, spStormAttack);
   end;
-  if Sender = Button_Army_RotCCW  then
-  begin
-    gGame.GameInputProcess.CmdArmy(gicArmyFormation, group, tdCCW, 0);
-    gSoundPlayer.PlayWarrior(group.UnitType, spRotLeft);
-  end;
+
   if Sender = Button_Army_ForDown then
   begin
-    gGame.GameInputProcess.CmdArmy(gicArmyFormation, group, tdNone, GetMultiplicator(Shift, 5));
+    gGame.GameInputProcess.CmdArmy(gicArmyFormation, group, 0, GetMultiplicator(Shift, 5));
     gSoundPlayer.PlayWarrior(group.UnitType, spFormation);
   end;
+
   if Sender = Button_Army_ForUp   then
   begin
-    gGame.GameInputProcess.CmdArmy(gicArmyFormation, group, tdNone, -GetMultiplicator(Shift, 5));
+    gGame.GameInputProcess.CmdArmy(gicArmyFormation, group, 0, -GetMultiplicator(Shift, 5));
     gSoundPlayer.PlayWarrior(group.UnitType, spFormation);
   end;
+
   if Sender = Button_Army_Split   then
   begin
     if ssCtrl in Shift then
@@ -480,6 +484,7 @@ begin
       gGame.GameInputProcess.CmdArmy(gicArmySplit, group);
     gSoundPlayer.PlayWarrior(group.UnitType, spSplit);
   end;
+
   if (Sender = Button_Army_Join)
     and ((gMySpectator.Selected <> nil) and gMySpectator.IsSelectedMyObj) then // Do not allow to command ally's army
   begin
@@ -487,6 +492,7 @@ begin
     Panel_Army_JoinGroups.Show;
     fJoiningGroups := True;
   end;
+
   if Sender = Button_Army_Feed    then
   begin
     gGame.GameInputProcess.CmdArmy(gicArmyFeed, group);
@@ -537,21 +543,21 @@ begin
   if Key = gResKeys[kfArmyHalt].Key then
     if Panel_Army.Visible and Button_Army_Stop.Enabled and not OnSelectingTroopDirection(nil) then
     begin
-      Button_Army_Stop.Click;
+      Army_Issue_Order(Button_Army_Stop, Shift);
       aHandled := True;
     end;
 
   if Key = gResKeys[kfArmyLink].Key then
     if Panel_Army.Visible and Button_Army_Join.Enabled and not OnSelectingTroopDirection(nil) then
     begin
-      Button_Army_Join.Click;
+      Army_Issue_Order(Button_Army_Join, Shift);
       aHandled := True;
     end;
 
   if Key = gResKeys[kfArmySplit].Key then
     if Panel_Army.Visible and Button_Army_Split.Enabled and not OnSelectingTroopDirection(nil) then
     begin
-      Button_Army_Split.Click;
+      Army_Issue_Order(Button_Army_Split, Shift);
       aHandled := True;
     end;
 
@@ -559,42 +565,42 @@ begin
   if Key = gResKeys[kfArmyFood].Key then
     if Panel_Army.Visible and Button_Army_Feed.Enabled and not OnSelectingTroopDirection(nil) then
     begin
-      Button_Army_Feed.Click;
+      Army_Issue_Order(Button_Army_Feed, Shift);
       aHandled := True;
     end;
 
   if Key = gResKeys[kfArmyStorm].Key then
     if Panel_Army.Visible and Button_Army_Storm.Enabled and not OnSelectingTroopDirection(nil) then
     begin
-      Button_Army_Storm.Click;
+      Army_Issue_Order(Button_Army_Storm, Shift);
       aHandled := True;
     end;
 
   if Key = gResKeys[kfArmyAddLine].Key then
     if Panel_Army.Visible and Button_Army_ForDown.Enabled and not OnSelectingTroopDirection(nil) then
     begin
-      Button_Army_ForDown.Click;
+      Army_Issue_Order(Button_Army_ForDown, Shift);
       aHandled := True;
     end;
 
   if Key = gResKeys[kfArmyDelLine].Key then
     if Panel_Army.Visible and Button_Army_ForUp.Enabled and not OnSelectingTroopDirection(nil) then
     begin
-      Button_Army_ForUp.Click;
+      Army_Issue_Order(Button_Army_ForUp, Shift);
       aHandled := True;
     end;
 
   if Key = gResKeys[kfArmyRotateCw].Key then
     if Panel_Army.Visible and Button_Army_RotCW.Enabled and not OnSelectingTroopDirection(nil) then
     begin
-      Button_Army_RotCW.Click;
+      Army_Issue_Order(Button_Army_RotCW, Shift);
       aHandled := True;
     end;
 
   if Key = gResKeys[kfArmyRotateCcw].Key then
     if Panel_Army.Visible and Button_Army_RotCCW.Enabled and not OnSelectingTroopDirection(nil) then
     begin
-      Button_Army_RotCCW.Click;
+      Army_Issue_Order(Button_Army_RotCCW, Shift);
       aHandled := True;
     end;
 end;

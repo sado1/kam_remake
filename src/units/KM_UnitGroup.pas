@@ -159,7 +159,7 @@ type
     procedure OrderAttackHouse(aHouse: TKMHouse; aClearOffenders: Boolean; aForced: Boolean = True);
     procedure OrderAttackUnit(aUnit: TKMUnit; aClearOffenders: Boolean; aForced: Boolean = True);
     procedure OrderFood(aClearOffenders: Boolean; aHungryOnly: Boolean = False);
-    procedure OrderFormation(aTurnAmount: TKMTurnDirection; aColumnsChange: ShortInt; aClearOffenders: Boolean);
+    procedure OrderFormation(aTurnAmount, aColumnsChange: ShortInt; aClearOffenders: Boolean);
     procedure OrderHalt(aClearOffenders: Boolean; aForced: Boolean = True);
     procedure OrderLinkTo(aTargetGroup: TKMUnitGroup; aClearOffenders: Boolean);
     procedure OrderNone;
@@ -1372,7 +1372,7 @@ begin
 end;
 
 
-procedure TKMUnitGroup.OrderFormation(aTurnAmount: TKMTurnDirection; aColumnsChange: ShortInt; aClearOffenders: Boolean);
+procedure TKMUnitGroup.OrderFormation(aTurnAmount, aColumnsChange: ShortInt; aClearOffenders: Boolean);
 begin
   if IsDead then Exit;
   if aClearOffenders and CanTakeOrders then
@@ -1382,10 +1382,8 @@ begin
   if fOrderLoc.Dir = dirNA then
     fOrderLoc.Dir := fMembers[0].Direction;
 
-  case aTurnAmount of
-    tdCW:   fOrderLoc.Dir := KMNextDirection(fOrderLoc.Dir);
-    tdCCW:  fOrderLoc.Dir := KMPrevDirection(fOrderLoc.Dir);
-  end;
+  if aTurnAmount <> 0 then
+    fOrderLoc.Dir := KMAddDirection(fOrderLoc.Dir, aTurnAmount);
 
   SetUnitsPerRow(Max(fUnitsPerRow + aColumnsChange, 0));
 

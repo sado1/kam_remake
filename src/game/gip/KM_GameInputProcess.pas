@@ -402,7 +402,7 @@ type
     procedure CmdArmy(aCommandType: TKMGameInputCommandType; aGroup: TKMUnitGroup; aUnit: TKMUnit); overload;
     procedure CmdArmy(aCommandType: TKMGameInputCommandType; aGroup1, aGroup2: TKMUnitGroup); overload;
     procedure CmdArmy(aCommandType: TKMGameInputCommandType; aGroup: TKMUnitGroup; aHouse: TKMHouse); overload;
-    procedure CmdArmy(aCommandType: TKMGameInputCommandType; aGroup: TKMUnitGroup; aTurnAmount: TKMTurnDirection; aLineAmount:shortint); overload;
+    procedure CmdArmy(aCommandType: TKMGameInputCommandType; aGroup: TKMUnitGroup; aTurnAmount, aLineAmount: ShortInt); overload;
     procedure CmdArmy(aCommandType: TKMGameInputCommandType; aGroup: TKMUnitGroup; const aLoc: TKMPoint; aDirection: TKMDirection); overload;
 
     procedure CmdUnit(aCommandType: TKMGameInputCommandType; aUnit: TKMUnit);
@@ -967,7 +967,7 @@ begin
       gicArmyAttackUnit:   srcGroup.OrderAttackUnit(tgtUnit, True);
       gicArmyAttackHouse:  srcGroup.OrderAttackHouse(tgtHouse, True);
       gicArmyHalt:         srcGroup.OrderHalt(True);
-      gicArmyFormation:    srcGroup.OrderFormation(TKMTurnDirection(IntParams[1]),IntParams[2], True);
+      gicArmyFormation:    srcGroup.OrderFormation(IntParams[1],IntParams[2], True);
       gicArmyWalk:         srcGroup.OrderWalk(KMPoint(SmallIntParams[0], SmallIntParams[1]), True, wtokPlayerOrder, TKMDirection(SmallIntParams[2]));
 
       gicUnitDismiss:        srcUnit.Dismiss;
@@ -1149,10 +1149,10 @@ begin
 end;
 
 
-procedure TKMGameInputProcess.CmdArmy(aCommandType: TKMGameInputCommandType; aGroup: TKMUnitGroup; aTurnAmount: TKMTurnDirection; aLineAmount:shortint);
+procedure TKMGameInputProcess.CmdArmy(aCommandType: TKMGameInputCommandType; aGroup: TKMUnitGroup; aTurnAmount, aLineAmount: ShortInt);
 begin
   Assert(aCommandType = gicArmyFormation);
-  TakeCommand(MakeCommand(aCommandType, aGroup.UID, Byte(aTurnAmount), aLineAmount));
+  TakeCommand(MakeCommand(aCommandType, aGroup.UID, aTurnAmount, aLineAmount));
 end;
 
 
