@@ -2009,9 +2009,11 @@ const
   HT = htQuary;
   MAX_DERIVATION = 75;
   MAX_SCAN_DIST = 3;
+  INIT_TAG = 0;
 var
   Output, IsWalkable: Boolean;
-  I, Y, MinIdx, MaxIdx: Integer;
+  I, Y, X, MinIdx, MaxIdx: Integer;
+  NewTag: Cardinal;
   Gain, BestGain: Single;
   Loc, BestLoc: TKMPoint;
   HouseReq: TKMHouseRequirements;
@@ -2045,26 +2047,25 @@ begin
     with StoneLocs do
       for I := Count - 1 downto 0 do
       begin
+        Tag[I] := 0;
         IsWalkable := False;
-        for Y := Items[I].Y to Min(Items[I].Y + MAX_SCAN_DIST, gTerrain.MapY - 1) do
-        begin
+        for Y := Max(Items[I].Y - 1, 1) to Min(Items[I].Y + MAX_SCAN_DIST, gTerrain.MapY - 1) do
+        for X := Max(Items[I].X - 1, 1) to Min(Items[I].X + 1, gTerrain.MapX - 1) do
           // Set stone loc to closest walkable point (which is bellow actual point)
-          if (BuildFF.VisitIdx = BuildFF.Visited[ Y, Items[I].X ]) then
-            Items[I] := KMPoint(Items[I].X,Y)
-          else if (BuildFF.VisitIdx = BuildFF.Visited[ Y, Max(Items[I].X-1,1) ]) then
-            Items[I] := KMPoint( Max(Items[I].X-1,1), Y)
-          else if (BuildFF.VisitIdx = BuildFF.Visited[ Y, Min(Items[I].X+1,gTerrain.MapX-1) ]) then
-            Items[I] := KMPoint( Min(Items[I].X+1,gTerrain.MapX-1), Y)
-          else
-            Continue;
-          // Update tag
-          Tag[I] := Max(0, 10000
-                           + gAIFields.Influences.OwnPoint[fOwner,Items[I]] * 4
-                           - gAIFields.Influences.GetOtherOwnerships(fOwner,Items[I].X,Items[I].Y)
-                           - BuildFF.Distance[ Items[I] ]) * 10;
-          IsWalkable := True;
-          break;
-        end;
+          if (BuildFF.VisitIdx = BuildFF.Visited[Y,X]) then
+          begin
+            // Update tag
+            NewTag := Max(0, 10000
+              + gAIFields.Influences.OwnPoint[ fOwner, KMPoint(X,Y) ] * 4
+              - gAIFields.Influences.GetOtherOwnerships(fOwner,X,Y)
+              - BuildFF.Distance[ KMPoint(X,Y) ]) * 10;
+            if (NewTag > Tag[I]) then
+            begin
+              Items[I] := KMPoint(X,Y);
+              Tag[I] := NewTag;
+              IsWalkable := True;
+            end;
+          end;
         if not IsWalkable then // Remove stone locs without walkable tiles (under the loc)
           Delete(I);
       end;
