@@ -71,7 +71,8 @@ type
 
     procedure GameSpeedChanged(aFromSpeed, aToSpeed: Single);
     procedure SyncUI(aMoveViewport: Boolean = True); virtual;
-    procedure SyncUIView(const aCenter: TKMPointF; aZoom: Single = 1);
+    procedure SyncUIView(const aCenter: TKMPointF); overload;
+    procedure SyncUIView(const aCenter: TKMPointF; aZoom: Single); overload;
     procedure UpdateGameCursor(X, Y: Integer; Shift: TShiftState);
     procedure UpdateStateIdle(aFrameTime: Cardinal); virtual; abstract;
     procedure UpdateState(aGlobalTickCount: Cardinal); override;
@@ -591,7 +592,14 @@ begin
 end;
 
 
-procedure TKMUserInterfaceGame.SyncUIView(const aCenter: TKMPointF; aZoom: Single = 1);
+procedure TKMUserInterfaceGame.SyncUIView(const aCenter: TKMPointF);
+begin
+  fViewport.Zoom := gGameSettings.DefaultZoom; // Set Zoom first, since it can apply restrictions on Position near map borders
+  fViewport.Position := aCenter;
+end;
+
+
+procedure TKMUserInterfaceGame.SyncUIView(const aCenter: TKMPointF; aZoom: Single);
 begin
   fViewport.Zoom := aZoom; // Set Zoom first, since it can apply restrictions on Position near map borders
   fViewport.Position := aCenter;

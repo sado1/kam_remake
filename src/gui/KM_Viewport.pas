@@ -114,7 +114,7 @@ end;
 
 procedure TKMViewport.ResetZoom;
 begin
-  Zoom := 1;
+  Zoom := gGameSettings.DefaultZoom;
 end;
 
 

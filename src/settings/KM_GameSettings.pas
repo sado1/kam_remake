@@ -42,6 +42,7 @@ type
     fPlayerColorAlly: Cardinal;
     fPlayerColorEnemy: Cardinal;
 
+    fDefaultZoom: Single;
     fScrollSpeed: Byte;
     fLocale: AnsiString;
     fSpeedPace: Word;
@@ -243,6 +244,7 @@ type
     property PlayerColorAlly: Cardinal read fPlayerColorAlly write SetPlayerColorAlly;
     property PlayerColorEnemy: Cardinal read fPlayerColorEnemy write SetPlayerColorEnemy;
 
+    property DefaultZoom: Single read fDefaultZoom;
     property ScrollSpeed: Byte read fScrollSpeed write SetScrollSpeed;
     property Locale: AnsiString read fLocale write SetLocale;
     property SpeedPace: Word read fSpeedPace write SetSpeedPace;
@@ -383,6 +385,7 @@ var
     nGameAutosave,
     nGameSavePoints,
     nGamePlayersColor,
+    nUI,
     nGameSpeed,
     nGameWareDistribution,
     nGameMisc,
@@ -430,6 +433,9 @@ begin
   // GameCommon
   nGameCommon := nGameSettings.AddOrFindChild('GameCommon');
     fLocale := AnsiString(nGameCommon.Attributes['Locale'].AsString(UnicodeString(DEFAULT_LOCALE)));
+    // UI
+    nUI := nGameCommon.AddOrFindChild('UI');
+      fDefaultZoom    := nUI.Attributes['DefaultZoom'].AsFloat(1);
     // Speed
     nGameSpeed := nGameCommon.AddOrFindChild('Speed');
       fSpeedMedium    := nGameSpeed.Attributes['Medium'].AsFloat(3);
@@ -576,6 +582,7 @@ var
     nGameAutosave,
     nGameSavePoints,
     nGamePlayersColor,
+    nUI,
     nGameSpeed,
     nGameWareDistribution,
     nGameMisc,
@@ -624,6 +631,9 @@ begin
   // GameCommon
   nGameCommon := nGameSettings.AddOrFindChild('GameCommon');
     nGameCommon.Attributes['Locale'] := UnicodeString(fLocale);
+    // UI
+    nUI := nGameCommon.AddOrFindChild('UI');
+      nUI.Attributes['DefaultZoom']         := fDefaultZoom;
     // Speed
     nGameSpeed := nGameCommon.AddOrFindChild('Speed');
       nGameSpeed.Attributes['Medium']       := fSpeedMedium;
