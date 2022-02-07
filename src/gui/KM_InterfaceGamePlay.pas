@@ -1726,6 +1726,8 @@ procedure TKMGamePlayInterface.StopPlay(aMsg: TKMGameResultMsg; aPrepareToStopGa
 var
   showStats, reinitStatsLastTime: Boolean;
 begin
+  fGuiMenuOptions.Hide; //Hide options menu, in case it was opened on game stop
+
   if aMsg <> grGameContinues then
     gGame.GameResult := aMsg;
 
