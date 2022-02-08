@@ -1981,6 +1981,8 @@ end;
 
 //* Version: 10940
 //* Allows allies to view all houses of specified player, or for all players, if aPlayer is -1
+//* This function applies only to already build houses.
+//* New houses will be selectable for allies. To avoid it use OnHouseBuilt event
 procedure TKMScriptActions.HouseAllowAllyToSelectAll(aPlayer: ShortInt; aAllow: Boolean);
 
   procedure SetAllowAllyToHand(aHandID: ShortInt);
