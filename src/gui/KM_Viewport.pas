@@ -68,7 +68,7 @@ type
 implementation
 uses
   Math, SysUtils,
-  KromUtils,
+  KromUtils, KM_InterfaceTypes,
   KM_Resource, KM_ResTypes,
   KM_Main, KM_System, KM_GameApp, KM_GameSettings,
   KM_Defaults, KM_CommonUtils;

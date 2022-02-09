@@ -2050,7 +2050,7 @@ uses
   KM_Resource, KM_ResSprites, KM_ResSound, KM_ResTexts, KM_ResKeys,
   KM_Render, KM_RenderTypes,
   KM_Sound, KM_CommonUtils, KM_UtilsExt,
-  KM_GameSettings;
+  KM_GameSettings, KM_InterfaceTypes;
 
 
 const

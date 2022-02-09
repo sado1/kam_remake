@@ -8,7 +8,7 @@ uses
   KM_WareDistribution, KM_MapTypes,
   KM_Defaults, KM_CommonTypes, KM_CommonClasses,
 
-  KM_IoXML,
+  KM_IoXML, KM_InterfaceTypes,
   KM_GameAppSettings;
 
 
@@ -43,6 +43,7 @@ type
     fPlayerColorEnemy: Cardinal;
 
     fDefaultZoom: Single;
+    fZoomBehaviour: TKMZoomBehaviour;
     fScrollSpeed: Byte;
     fLocale: AnsiString;
     fSpeedPace: Word;
@@ -59,7 +60,6 @@ type
     fGameTweaks_AllowSnowHouses: Boolean;
     fGameTweaks_InterpolatedRender: Boolean;
     fGameTweaks_InterpolatedAnimations: Boolean;
-    fGameTweaks_ZoomBehaviour: TKMZoomBehaviour;
 
     //Campaign
     fCampaignLastDifficulty: TKMMissionDifficulty;
@@ -246,6 +246,7 @@ type
     property PlayerColorEnemy: Cardinal read fPlayerColorEnemy write SetPlayerColorEnemy;
 
     property DefaultZoom: Single read fDefaultZoom;
+    property ZoomBehaviour: TKMZoomBehaviour read fZoomBehaviour write fZoomBehaviour;
     property ScrollSpeed: Byte read fScrollSpeed write SetScrollSpeed;
     property Locale: AnsiString read fLocale write SetLocale;
     property SpeedPace: Word read fSpeedPace write SetSpeedPace;
@@ -262,7 +263,6 @@ type
     property AllowSnowHouses: Boolean read fGameTweaks_AllowSnowHouses write SetAllowSnowHouses;
     property InterpolatedRender: Boolean read fGameTweaks_InterpolatedRender write SetInterpolatedRender;
     property InterpolatedAnimations: Boolean read fGameTweaks_InterpolatedAnimations write SetInterpolatedAnimations;
-    property ZoomBehaviour: TKMZoomBehaviour read fGameTweaks_ZoomBehaviour write fGameTweaks_ZoomBehaviour;
 
     //Campaign
     property CampaignLastDifficulty: TKMMissionDifficulty read fCampaignLastDifficulty write SetCampaignLastDifficulty;
@@ -438,6 +438,7 @@ begin
     // UI
     nUI := nGameCommon.AddOrFindChild('UI');
       fDefaultZoom    := nUI.Attributes['DefaultZoom'].AsFloat(1);
+      fZoomBehaviour  := TKMZoomBehaviour(nUI.Attributes['ZoomBehaviour'].AsInteger(Integer(zbFull))); // Default zoom value is zbFull
     // Speed
     nGameSpeed := nGameCommon.AddOrFindChild('Speed');
       fSpeedMedium    := nGameSpeed.Attributes['Medium'].AsFloat(3);
@@ -498,7 +499,6 @@ begin
     nGameTweaks := nGameCommon.AddOrFindChild('Tweaks');
       AllowSnowHouses    := nGameTweaks.Attributes['AllowSnowHouses'].AsBoolean(True);     // With restriction by ALLOW_SNOW_HOUSES
       InterpolatedRender := nGameTweaks.Attributes['InterpolatedRender'].AsBoolean(False); // With restriction by ALLOW_INTERPOLATED_RENDER
-      ZoomBehaviour    := TKMZoomBehaviour(nGameTweaks.Attributes['ZoomBehaviour'].AsInteger(1));
 
   // Campaign
   nCampaign := nGameSettings.AddOrFindChild('Campaign');
@@ -637,6 +637,8 @@ begin
     // UI
     nUI := nGameCommon.AddOrFindChild('UI');
       nUI.Attributes['DefaultZoom']         := fDefaultZoom;
+      nUI.Attributes['ZoomBehaviour']       := Integer(fZoomBehaviour);
+
     // Speed
     nGameSpeed := nGameCommon.AddOrFindChild('Speed');
       nGameSpeed.Attributes['Medium']       := fSpeedMedium;
@@ -682,7 +684,6 @@ begin
     nGameTweaks := nGameCommon.AddOrFindChild('Tweaks');
       nGameTweaks.Attributes['AllowSnowHouses']    := fGameTweaks_AllowSnowHouses;
       nGameTweaks.Attributes['InterpolatedRender'] := fGameTweaks_InterpolatedRender;
-      nGameTweaks.Attributes['ZoomBehaviour']    := Integer(fGameTweaks_ZoomBehaviour);
 
   // Campaign
   nCampaign := nGameSettings.AddOrFindChild('Campaign');
