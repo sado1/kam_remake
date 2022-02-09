@@ -153,14 +153,6 @@ type
 
   TKMScriptBeforeOrderSplitEvent = procedure (aIndex: Integer; var aParam1: TKMUnitType; var aParam2: Integer; var aParam3: Boolean) of object;
 
-  TKMScriptEventFunc = function: Boolean of object;
-  TKMScriptEventFunc1I = function (aIndex: Integer): Boolean of object;
-  TKMScriptEventFunc2I = function (aIndex, aParam: Integer): Boolean of object;
-  TKMScriptEventFunc3I = function (aIndex, aParam1, aParam2: Integer): Boolean of object;
-  TKMScriptEventFunc4I = function (aIndex, aParam1, aParam2, aParam3: Integer): Boolean of object;
-  TKMScriptEventFunc1S = function (aParam: Single): Boolean of object;
-
-
   //We need to check all input parameters as could be wildly off range due to
   //mistakes in scripts. In that case we have two options:
   // - skip silently and log
