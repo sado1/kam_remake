@@ -485,10 +485,10 @@ begin
 
     // Misc
     nGameMisc := nGameCommon.AddOrFindChild('Misc');
-      fSpecShowBeacons    := nGameMisc.Attributes['SpecShowBeacons'].AsBoolean(False);
-      fShowGameTime       := nGameMisc.Attributes['ShowGameTime'].AsBoolean(False);
-      fShowGameSpeed      := nGameMisc.Attributes['ShowGameSpeed'].AsBoolean(False);
-      fDayGamesCount      := nGameMisc.Attributes['DayGamesCount'].AsInteger(0);
+      fSpecShowBeacons := nGameMisc.Attributes['SpecShowBeacons'].AsBoolean(False);
+      fShowGameTime    := nGameMisc.Attributes['ShowGameTime'].AsBoolean(False);
+      fShowGameSpeed   := nGameMisc.Attributes['ShowGameSpeed'].AsBoolean(False);
+      fDayGamesCount   := nGameMisc.Attributes['DayGamesCount'].AsInteger(0);
       if nGameMisc.HasAttribute('LastDayGamePlayed') then
         fLastDayGamePlayed  := nGameMisc.Attributes['LastDayGamePlayed'].AsDateTime
       else
@@ -496,8 +496,8 @@ begin
 
     // Tweaks
     nGameTweaks := nGameCommon.AddOrFindChild('Tweaks');
-      AllowSnowHouses     := nGameTweaks.Attributes['AllowSnowHouses'].AsBoolean(True);     // With restriction by ALLOW_SNOW_HOUSES
-      InterpolatedRender  := nGameTweaks.Attributes['InterpolatedRender'].AsBoolean(False); // With restriction by ALLOW_INTERPOLATED_RENDER
+      AllowSnowHouses    := nGameTweaks.Attributes['AllowSnowHouses'].AsBoolean(True);     // With restriction by ALLOW_SNOW_HOUSES
+      InterpolatedRender := nGameTweaks.Attributes['InterpolatedRender'].AsBoolean(False); // With restriction by ALLOW_INTERPOLATED_RENDER
       ZoomBehaviour    := TKMZoomBehaviour(nGameTweaks.Attributes['ZoomBehaviour'].AsInteger(1));
 
   // Campaign
@@ -647,7 +647,7 @@ begin
 
     // Autosave
     nGameAutosave := nGameCommon.AddOrFindChild('Autosave');
-      nGameAutosave.Attributes['Enabled']          := fAutosave;
+      nGameAutosave.Attributes['Enabled']   := fAutosave;
       nGameAutosave.Attributes['OnGameEnd'] := fAutosaveAtGameEnd;
       nGameAutosave.Attributes['Frequency'] := fAutosaveFrequency;
       nGameAutosave.Attributes['Count']     := fAutosaveCount;
@@ -680,8 +680,8 @@ begin
 
     // Tweaks
     nGameTweaks := nGameCommon.AddOrFindChild('Tweaks');
-      nGameTweaks.Attributes['AllowSnowHouses']     := fGameTweaks_AllowSnowHouses;
-      nGameTweaks.Attributes['InterpolatedRender']  := fGameTweaks_InterpolatedRender;
+      nGameTweaks.Attributes['AllowSnowHouses']    := fGameTweaks_AllowSnowHouses;
+      nGameTweaks.Attributes['InterpolatedRender'] := fGameTweaks_InterpolatedRender;
       nGameTweaks.Attributes['ZoomBehaviour']    := Integer(fGameTweaks_ZoomBehaviour);
 
   // Campaign

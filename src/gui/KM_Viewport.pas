@@ -101,31 +101,31 @@ procedure TKMViewport.SetZoom(aZoom: Single);
 var
   sizeY, mapZoom: Single;
 const
-  BORDER_MARGIN = 1.1;
+  BORDER_MARGIN = 1.1; // How much we can zoom-out for zbLoose ZoomBehaviour
 begin
   fZoom := EnsureRange(aZoom, 0.01, 8);
 
   sizeY := fMapY + TopPad;
 
   case (gGameSettings.ZoomBehaviour) of
-    //Limit the zoom to within the map boundaries
-    zbRestricted :
+    // Limit the zoom to within the map boundaries
+    zbRestricted:
       begin
-        mapZoom := max(fViewportClip.X/(CELL_SIZE_PX * (fMapX - 1)), fViewportClip.Y/(CELL_SIZE_PX * (sizeY - 1))); // -1 to not show last column/row under FOW (out of the map)
-        fZoom := max(fZoom, mapZoom);
+        mapZoom := Max(fViewportClip.X/(CELL_SIZE_PX * (fMapX - 1)), fViewportClip.Y/(CELL_SIZE_PX * (sizeY - 1))); // -1 to not show last column/row under FOW (out of the map)
+        fZoom := Max(fZoom, mapZoom);
       end;
-    //Prevents the zoom from crossing both map boundaries
-    zbFull :
+    // Prevents the zoom from crossing both map boundaries
+    zbFull:
       begin
-        mapZoom := min(fViewportClip.X/(CELL_SIZE_PX * (fMapX - 1)), fViewportClip.Y/(CELL_SIZE_PX * (sizeY - 1)));
-        fZoom := max(fZoom, mapZoom);
+        mapZoom := Min(fViewportClip.X/(CELL_SIZE_PX * (fMapX - 1)), fViewportClip.Y/(CELL_SIZE_PX * (sizeY - 1)));
+        fZoom := Max(fZoom, mapZoom);
       end;
-    //Limit the zoom to 1.1x the map width or height
-    zbLoose :
+    // Limit the zoom to 1.1x the map width or height
+    zbLoose:
       begin
-        mapZoom := min(fViewportClip.X/(CELL_SIZE_PX * (fMapX - 1)), fViewportClip.Y/(CELL_SIZE_PX * (sizeY - 1))) / BORDER_MARGIN;
-        mapZoom := min(mapZoom, 1);
-        fZoom := max(fZoom, mapZoom);
+        mapZoom := Min(fViewportClip.X/(CELL_SIZE_PX * (fMapX - 1)), fViewportClip.Y/(CELL_SIZE_PX * (sizeY - 1))) / BORDER_MARGIN;
+        mapZoom := Min(mapZoom, 1);
+        fZoom := Max(fZoom, mapZoom);
       end;
   end;
 
