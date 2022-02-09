@@ -4836,7 +4836,7 @@ begin
                           + Land^[Tmp, Xc + 1].RenderHeight * frac(inX)) / CELL_HEIGHT_DIV;
   end;
 
-  Result := Yc; //Assign something incase following code returns nothing
+  Result := inY; //Assign something incase following code returns nothing
 
   for I := Low(Ycoef) to High(Ycoef) - 1 do//check if cursor in a tile and adjust it there
   begin

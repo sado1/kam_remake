@@ -1294,8 +1294,9 @@ begin
 
     Resize(Round(saveSizeMax * mapSizeX / mapSizeMax), Round(saveSizeMax * mapSizeY / mapSizeMax));
 
-    // Zoom out as max as possible
-    gGame.ActiveInterface.Viewport.Zoom := 0.01;
+    // Center the map and zoom out to perfectly encapsulate it
+    gGame.ActiveInterface.Viewport.Zoom := gGame.ActiveInterface.Viewport.ViewportClip.X/(CELL_SIZE_PX * (mapSizeX - 1));
+    gGame.ActiveInterface.Viewport.Position := TKMPointF.New((mapSizeX - 1)/2, (mapSizeY - 1 - gGame.ActiveInterface.Viewport.TopPad)/2);
 
     // Render once is enough, since we render to an off-screen buffer (FBO)
     Render(True);

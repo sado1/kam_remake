@@ -99,6 +99,8 @@ type
 
   TKMGameRevision = Word; // Word looks enough for now...
 
+  TKMZoomBehaviour = (zbRestricted, zbFull, zbLoose);
+
   TKMColor3f = record
     R,G,B: Single;
     function ToCardinal: Cardinal;
