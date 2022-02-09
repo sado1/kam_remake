@@ -153,7 +153,6 @@ type
     procedure SetAllowSnowHouses(aValue: Boolean);
     procedure SetInterpolatedRender(aValue: Boolean);
     procedure SetInterpolatedAnimations(const aValue: Boolean);
-    procedure SetZoomBehaviour(const aValue: TKMZoomBehaviour);
 
     //Campaign
     procedure SetCampaignLastDifficulty(aValue: TKMMissionDifficulty);
@@ -263,7 +262,7 @@ type
     property AllowSnowHouses: Boolean read fGameTweaks_AllowSnowHouses write SetAllowSnowHouses;
     property InterpolatedRender: Boolean read fGameTweaks_InterpolatedRender write SetInterpolatedRender;
     property InterpolatedAnimations: Boolean read fGameTweaks_InterpolatedAnimations write SetInterpolatedAnimations;
-    property ZoomBehaviour: TKMZoomBehaviour read fGameTweaks_ZoomBehaviour write SetZoomBehaviour;
+    property ZoomBehaviour: TKMZoomBehaviour read fGameTweaks_ZoomBehaviour write fGameTweaks_ZoomBehaviour;
 
     //Campaign
     property CampaignLastDifficulty: TKMMissionDifficulty read fCampaignLastDifficulty write SetCampaignLastDifficulty;
@@ -1022,13 +1021,6 @@ begin
   if not ALLOW_INTERPOLATED_ANIMS then Exit;
 
   fGameTweaks_InterpolatedAnimations := aValue;
-  Changed;
-end;
-
-procedure TKMGameSettings.SetZoomBehaviour(const aValue: TKMZoomBehaviour);
-begin
-  fGameTweaks_ZoomBehaviour := aValue;
-  Changed;
 end;
 
 
