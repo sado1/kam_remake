@@ -10336,7 +10336,14 @@ begin
       R := fView.GetMinimapClip;
       if (R.Right - R.Left) * (R.Bottom - R.Top) > 0 then
       begin
-        if gGameSettings.ZoomBehaviour <> zbRestricted then
+        if gGameSettings.ZoomBehaviour = zbRestricted then
+        begin
+          TKMRenderUI.WriteOutline(AbsLeft + fLeftOffset + Round((R.Left - 1)*fPaintWidth / fMinimap.MapX),
+                                   AbsTop  + fTopOffset  + Round((R.Top - 1)*fPaintHeight / fMinimap.MapY),
+                                   Round((R.Right - R.Left)*fPaintWidth / fMinimap.MapX),
+                                   Round((R.Bottom - R.Top)*fPaintHeight / fMinimap.MapY), 1, $FFFFFFFF);
+        end
+        else
         begin
           miniLeft := AbsLeft + fLeftOffset + Round((R.Left - 1)*fPaintWidth / fMinimap.MapX) + 1;
           miniTop := AbsTop + fTopOffset  + Round((R.Top - 1)*fPaintHeight / fMinimap.MapY);
@@ -10352,13 +10359,6 @@ begin
             TKMRenderUI.WriteLine(miniRight, miniBottom+1, miniRight, miniTop, $FFFFFFFF);
           if drS in S then
             TKMRenderUI.WriteLine(miniLeft-1, miniBottom, miniRight, miniBottom, $FFFFFFFF);
-        end
-        else
-        begin
-          TKMRenderUI.WriteOutline(AbsLeft + fLeftOffset + Round((R.Left - 1)*fPaintWidth / fMinimap.MapX),
-                                   AbsTop  + fTopOffset  + Round((R.Top - 1)*fPaintHeight / fMinimap.MapY),
-                                   Round((R.Right - R.Left)*fPaintWidth / fMinimap.MapX),
-                                   Round((R.Bottom - R.Top)*fPaintHeight / fMinimap.MapY), 1, $FFFFFFFF);
         end;
       end;
     end;
