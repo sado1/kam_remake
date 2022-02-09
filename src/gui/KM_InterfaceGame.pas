@@ -90,7 +90,7 @@ const
   TERRAIN_PAGE_TITLE_Y = PAGE_TITLE_Y + 2; // Terrain pages title offset
   STATS_LINES_CNT = 13; //Number of stats (F3) lines
 
-  DEFENCE_LINE_TYPE_COL: array [TAIDefencePosType] of Cardinal = ($FF80FF00, $FFFF8000);
+  DEFENCE_LINE_TYPE_COL: array [TKMAIDefencePosType] of Cardinal = ($FF80FF00, $FFFF8000);
 
   // Shortcuts
   // All shortcuts are in English and are the same for all languages to avoid

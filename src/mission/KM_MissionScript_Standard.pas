@@ -750,7 +750,7 @@ begin
 
     ctAIDefence:        if (fLastHand <> HAND_NONE) and PointInMap(P[0]+1, P[1]+1) then
                           if InRange(P[3], Integer(Low(TKMGroupType)), Integer(High(TKMGroupType))) then //TPR 3 tries to set TKMGroupType 240 due to a missing space
-                            gHands[fLastHand].AI.General.DefencePositions.Add(KMPointDir(P[0]+1, P[1]+1, TKMDirection(P[2]+1)),TKMGroupType(P[3]),P[4],TAIDefencePosType(P[5]));
+                            gHands[fLastHand].AI.General.DefencePositions.Add(KMPointDir(P[0]+1, P[1]+1, TKMDirection(P[2]+1)),TKMGroupType(P[3]),P[4],TKMAIDefencePosType(P[5]));
 
     ctSetMapColor:      if fLastHand <> HAND_NONE then
                           //For now simply use the minimap color for all color, it is too hard to load all 8 shades from ctSetNewRemap

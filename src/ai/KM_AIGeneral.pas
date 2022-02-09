@@ -529,7 +529,7 @@ var
   BestOwner: TKMHandID;
   Loc: TKMPoint;
   GT: TKMGroupType;
-  DPT: TAIDefencePosType;
+  DPT: TKMAIDefencePosType;
   //Outline1, Outline2: TKMWeightSegments;
   //Locs: TKMPointDirTagList;
   //LocI: TKMPoint;

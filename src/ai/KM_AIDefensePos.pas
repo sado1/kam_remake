@@ -8,14 +8,14 @@ uses
 
 type
   //For now IDs must match with KaM
-  TAIDefencePosType = (adtFrontLine=0, //Front line troops may not go on attacks, they are for defence
-                       adtBackLine=1); //Back line troops may attack
+  TKMAIDefencePosType = (adtFrontLine, //Front line troops may not go on attacks, they are for defence
+                         adtBackLine); //Back line troops may attack
 
   TKMFormation = record NumUnits, UnitsPerRow: Integer; end;
 
   TAIDefencePosition = class
   private
-    fDefenceType: TAIDefencePosType; //Whether this is a front or back line defence position. See comments on TAIDefencePosType above
+    fDefenceType: TKMAIDefencePosType; //Whether this is a front or back line defence position. See comments on TAIDefencePosType above
     fGroupType: TKMGroupType; //Type of group to defend this position (e.g. melee)
     fPosition: TKMPointDir; //Position and direction the group defending will stand
     fRadius: Integer; //If fighting (or houses being attacked) occurs within this radius from this defence position, this group will get involved
@@ -23,14 +23,14 @@ type
     fCurrentGroup: TKMUnitGroup; //Commander of group currently occupying position
     procedure SetCurrentGroup(aGroup: TKMUnitGroup);
     procedure SetGroupType(const Value: TKMGroupType);
-    procedure SetDefenceType(const Value: TAIDefencePosType);
+    procedure SetDefenceType(const Value: TKMAIDefencePosType);
     procedure SetPosition(const Value: TKMPointDir);
   public
-    constructor Create(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TAIDefencePosType);
+    constructor Create(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType);
     constructor Load(LoadStream: TKMemoryStream);
     destructor Destroy; override;
 
-    property DefenceType: TAIDefencePosType read fDefenceType write SetDefenceType;
+    property DefenceType: TKMAIDefencePosType read fDefenceType write SetDefenceType;
     property GroupType: TKMGroupType read fGroupType write SetGroupType; //Type of group to defend this position (e.g. melee)
     property Position: TKMPointDir read fPosition write SetPosition; //Position and direction the group defending will stand
     property Radius: Integer read fRadius write fRadius; //If fighting (or houses being attacked) occurs within this radius from this defence position, this group will get involved
@@ -56,7 +56,7 @@ type
     constructor Create(aPlayer: TKMHandID);
     destructor Destroy; override;
 
-    procedure Add(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TAIDefencePosType);
+    procedure Add(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType);
     procedure Clear;
     property Count: Integer read GetCount;
     procedure Delete(aIndex: Integer);
@@ -88,7 +88,7 @@ uses
 
 
 { TAIDefencePosition }
-constructor TAIDefencePosition.Create(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TAIDefencePosType);
+constructor TAIDefencePosition.Create(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType);
 begin
   inherited Create;
   fPosition := aPos;
@@ -117,7 +117,7 @@ begin
 end;
 
 
-procedure TAIDefencePosition.SetDefenceType(const Value: TAIDefencePosType);
+procedure TAIDefencePosition.SetDefenceType(const Value: TKMAIDefencePosType);
 begin
   Assert(gGameParams.IsMapEditor);
   fDefenceType := Value;
@@ -239,7 +239,7 @@ begin
 end;
 
 
-procedure TAIDefencePositions.Add(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TAIDefencePosType);
+procedure TAIDefencePositions.Add(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType);
 begin
   fPositions.Add(TAIDefencePosition.Create(aPos, aGroupType, aRadius, aDefenceType));
 end;

@@ -99,7 +99,7 @@ var
 begin
   DP := gHands[fOwner].AI.General.DefencePositions[fIndex];
   DP.Radius := TrackBar_DefenceRad.Position;
-  DP.DefenceType := TAIDefencePosType(DropList_DefenceType.ItemIndex);
+  DP.DefenceType := TKMAIDefencePosType(DropList_DefenceType.ItemIndex);
   DP.GroupType := TKMGroupType(DropList_DefenceGroup.ItemIndex);
 
   if Sender = Button_DefenceCW then
