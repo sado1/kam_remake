@@ -9,7 +9,7 @@ uses
   KM_Defaults, KM_Controls, KM_Points,
   KM_InterfaceDefaults, KM_CommonTypes, KM_AIDefensePos,
   KM_Cursor, KM_Render, KM_MinimapGame, KM_Viewport, KM_ResFonts,
-  KM_ResTypes, KM_CommonClassesExt;
+  KM_ResTypes, KM_CommonClassesExt, KM_AITypes;
 
 
 type

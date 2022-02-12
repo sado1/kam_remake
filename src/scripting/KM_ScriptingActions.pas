@@ -210,6 +210,7 @@ uses
   KM_Resource, KM_ResTypes, KM_ResUnits, KM_Hand, KM_ResMapElements,
   KM_PathFindingRoad,
   KM_Terrain,
+  KM_AITypes,
   KM_CommonUtils, KM_CommonClasses;
 
 const

@@ -3,16 +3,11 @@ unit KM_AIDefensePos;
 interface
 uses
   KM_UnitGroup,
-  KM_CommonClasses, KM_Defaults, KM_Points;
+  KM_CommonClasses, KM_Defaults, KM_Points,
+  KM_AITypes;
 
 
 type
-  //For now IDs must match with KaM
-  TKMAIDefencePosType = (adtFrontLine, //Front line troops may not go on attacks, they are for defence
-                         adtBackLine); //Back line troops may attack
-
-  TKMFormation = record NumUnits, UnitsPerRow: Integer; end;
-
   TAIDefencePosition = class
   private
     fDefenceType: TKMAIDefencePosType; //Whether this is a front or back line defence position. See comments on TAIDefencePosType above

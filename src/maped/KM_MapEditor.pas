@@ -121,7 +121,7 @@ uses
   KM_Hand, KM_HandsCollection, KM_HandEntityHelper, KM_HandTypes,
   KM_CommonUtils, KM_RenderDebug,
   KM_UnitGroupTypes,
-  KM_ResTypes;
+  KM_ResTypes, KM_AITypes;
 
 //defines default defence position radius for static AI 
 const

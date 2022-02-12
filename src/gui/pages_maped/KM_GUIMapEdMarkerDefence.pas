@@ -44,7 +44,8 @@ uses
   KM_AIDefensePos,
   KM_HandsCollection, KM_Hand,
   KM_ResTexts, KM_ResFonts, KM_ResTypes,
-  KM_RenderUI;
+  KM_RenderUI,
+  KM_AITypes;
 
 
 { TKMMapEdMarkerDefence }

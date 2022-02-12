@@ -56,7 +56,8 @@ uses
   KM_Houses, KM_HouseBarracks,
   KM_ResHouses, KM_CommonUtils, KM_DevPerfLog, KM_DevPerfLogTypes,
   KM_UnitGroupTypes,
-  KM_ResTypes;
+  KM_ResTypes,
+  KM_AITypes;
 
 
 const
