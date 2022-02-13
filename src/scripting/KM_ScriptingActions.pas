@@ -1422,6 +1422,7 @@ procedure TKMScriptActions.AIGroupsFormationSetEx(aPlayer: TKMHandID; aGroupType
 begin
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    and (aGroupType in [gtMelee..gtMounted])
     and (aCount > 0) and (aColumns > 0) then
     begin
       gHands[aPlayer].AI.General.DefencePositions.TroopFormations[aGroupType].NumUnits := aCount;

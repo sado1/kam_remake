@@ -12,6 +12,7 @@ uses
 type
   TKMScriptStates = class(TKMScriptEntity)
   private
+    procedure _AIGroupsFormationGet(aPlayer: TKMHandID; aGroupType: TKMGroupType; out aCount, aColumns: Integer; aMethodName: string);
     function _ClosestGroup(aPlayer, X, Y, aGroupType: Integer; aMethodName: String): Integer;
     function _ClosestGroupMultipleTypes(aPlayer, X, Y: Integer; aGroupTypes: TKMGroupTypeSet; aMethodName: string): Integer;
     function _ClosestHouse(aPlayer, X, Y: Integer; aHouseType: TKMHouseType; aMethodName: string): Integer;
@@ -477,46 +478,11 @@ begin
 end;
 
 
-//* Version: 7000+
-//* Gets the formation the AI uses for defence positions for specified player and group type
-//* GroupType: 0 = Melee, 1 = AntiHorse, 2 = Ranged, 3 = Mounted
-//* group count and columns are returned in aCount and aColumns variables
-procedure TKMScriptStates.AIGroupsFormationGet(aPlayer, aType: Byte; out aCount, aColumns: Integer);
-var
-  gt: TKMGroupType;
+procedure TKMScriptStates._AIGroupsFormationGet(aPlayer: TKMHandID; aGroupType: TKMGroupType; out aCount, aColumns: Integer; aMethodName: string);
 begin
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-      and InRange(aType, 0, 3) then
-    begin
-      gt := TKMGroupType(aType);
-      if gHands[aPlayer].AI.Setup.NewAI then
-      begin
-        aCount := gHands[aPlayer].AI.ArmyManagement.Defence.TroopFormations[gt].NumUnits;
-        aColumns := gHands[aPlayer].AI.ArmyManagement.Defence.TroopFormations[gt].UnitsPerRow;
-      end
-      else
-      begin
-        aCount := gHands[aPlayer].AI.General.DefencePositions.TroopFormations[gt].NumUnits;
-        aColumns := gHands[aPlayer].AI.General.DefencePositions.TroopFormations[gt].UnitsPerRow;
-      end
-    end
-    else
-      LogParamWarning('Actions.AIGroupsFormationGet', [aPlayer, aType]);
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
-end;
-
-
-//* Version: 13800
-//* Gets the formation the AI uses for defence positions for specified player and group type
-//* group count and columns are returned in aCount and aColumns variables
-procedure TKMScriptStates.AIGroupsFormationGetEx(aPlayer: TKMHandID; aGroupType: TKMGroupType; out aCount, aColumns: Integer);
-begin
-  try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
+      and (aGroupType in [gtMelee..gtMounted]) then
     begin
       if gHands[aPlayer].AI.Setup.NewAI then
       begin
@@ -530,11 +496,39 @@ begin
       end
     end
     else
-      LogParamWarning('Actions.AIGroupsFormationGetEx', [aPlayer, Byte(aGroupType)]);
+      LogParamWarning(aMethodName, [aPlayer, Byte(aGroupType)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
   end;
+end;
+
+
+//* Version: 7000+
+//* Gets the formation the AI uses for defence positions for specified player and group type
+//* GroupType: 0 = Melee, 1 = AntiHorse, 2 = Ranged, 3 = Mounted
+//* group count and columns are returned in aCount and aColumns variables
+procedure TKMScriptStates.AIGroupsFormationGet(aPlayer, aType: Byte; out aCount, aColumns: Integer);
+var
+  gt: TKMGroupType;
+begin
+  if InRange(aType, 0, 3) then
+  begin
+    gt := TKMGroupType(aType);
+
+    _AIGroupsFormationGet(aPlayer, gt, aCount, aColumns, 'States.AIGroupsFormationGet');
+  end
+  else
+    LogParamWarning('States.AIGroupsFormationGet', [aPlayer, aType]);
+end;
+
+
+//* Version: 13800
+//* Gets the formation the AI uses for defence positions for specified player and group type
+//* group count and columns are returned in aCount and aColumns variables
+procedure TKMScriptStates.AIGroupsFormationGetEx(aPlayer: TKMHandID; aGroupType: TKMGroupType; out aCount, aColumns: Integer);
+begin
+  _AIGroupsFormationGet(aPlayer, aGroupType, aCount, aColumns, 'Actions.AIGroupsFormationGetEx');
 end;
 
 
