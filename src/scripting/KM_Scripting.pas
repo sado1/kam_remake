@@ -343,7 +343,7 @@ begin
     Sender.AddTypeS('TIntegerArray', 'array of Integer'); //Needed for PlayerGetAllUnits
     Sender.AddTypeS('TAnsiStringArray', 'array of AnsiString'); //Needed for some array Utils
     Sender.AddTypeS('TByteSet', 'set of Byte'); //Needed for Closest*MultipleTypes
-    Sender.AddTypeS('TKMPoint', 'record X,Y: Integer; end;'); //Could be very useful
+    Sender.AddTypeS('TKMPoint', 'record X,Y: Integer; end'); //Could be very useful
 
     Sender.AddTypeS('TKMAIDefencePosType', '(adtFrontLine, adtBackLine)');
     Sender.AddTypeS('TKMGroupType', '(gtMelee, gtAntiHorse, gtRanged, gtMounted)');
@@ -352,6 +352,7 @@ begin
 
     Sender.AddTypeS('TKMDefencePositionInfo', 'record ' +
                       'X, Y: Integer; ' +
+                      'Dir: TKMDirection;' +
                       'Radius: Integer; ' +
                       'GroupType: TKMGroupType; ' +
                       'PositionType: TKMAIDefencePosType; ' +
