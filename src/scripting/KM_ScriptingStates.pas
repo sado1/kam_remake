@@ -739,9 +739,10 @@ function TKMScriptStates._ClosestGroupMultipleTypes(aPlayer, X, Y: Integer; aGro
 var
   G: TKMUnitGroup;
 begin
+  Result := -1;
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-    and gTerrain.TileInMapCoords(X, Y) then
+      and gTerrain.TileInMapCoords(X, Y) then
     begin
       G := gHands[aPlayer].UnitGroups.GetClosestGroup(KMPoint(X,Y), aGroupTypes);
       if G <> nil then
@@ -770,7 +771,6 @@ var
   B: Byte;
   GTS: TKMGroupTypeSet;
 begin
-  Result := -1;
   GTS := [];
   for B in [Byte(Low(TKMGroupType))..Byte(High(TKMGroupType))] do
     if B in aGroupTypes then
@@ -832,18 +832,16 @@ end;
 function TKMScriptStates.ClosestHouse(aPlayer, X, Y, aHouseType: Integer): Integer;
 var
   HT: TKMHouseType;
-  hasError: Boolean;
 begin
-  hasError := False;
+  Result := -1;
+  HT := htNone;
   if aHouseType = -1 then
     HT := htAny
   else
   if HouseTypeValid(aHouseType) then
-    HT := HOUSE_ID_TO_TYPE[aHouseType]
-  else
-    hasError := True;
+    HT := HOUSE_ID_TO_TYPE[aHouseType];
 
-  if not hasError then
+  if HT <> htNone then
     Result := _ClosestHouse(aPlayer, X, Y, HT, 'States.ClosestHouse')
   else
     LogParamWarning('States.ClosestHouse', [aPlayer, X, Y, Byte(aHouseType)]);
