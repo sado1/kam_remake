@@ -14,7 +14,7 @@ type
     fOnSetLogLinesMaxCnt: TIntegerEvent;
     procedure LogStr(const aText: String);
 
-    procedure _AIGroupsFormationSetEx(aPlayer: TKMHandID; aGroupType: TKMGroupType; aCount, aColumns: Integer; aMethodName: string);
+    procedure _AIGroupsFormationSetEx(aPlayer: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer; aMethodName: string);
   public
     property OnSetLogLinesMaxCnt: TIntegerEvent read fOnSetLogLinesMaxCnt write fOnSetLogLinesMaxCnt;
 
@@ -30,13 +30,13 @@ type
     procedure AIAutoDefence(aPlayer: Byte; aAuto: Boolean);
     procedure AIAutoRepair(aPlayer: Byte; aAuto: Boolean);
     procedure AIDefencePositionAdd(aPlayer: Byte; X, Y: Integer; aDir, aGroupType: Byte; aRadius: Word; aDefType: Byte);
-    procedure AIDefencePositionAddEx(aPlayer: TKMHandID; const aDefencePosition: TKMDefencePositionInfo);
+    procedure AIDefencePositionAddEx(aPlayer: Integer; const aDefencePosition: TKMDefencePositionInfo);
     procedure AIDefencePositionRemove(aPlayer: Byte; X, Y: Integer);
     procedure AIDefencePositionRemoveAll(aPlayer: Byte);
     procedure AIDefendAllies(aPlayer: Byte; aDefend: Boolean);
     procedure AIEquipRate(aPlayer: Byte; aType: Byte; aRate: Word);
     procedure AIGroupsFormationSet(aPlayer, aType: Byte; aCount, aColumns: Word);
-    procedure AIGroupsFormationSetEx(aPlayer: TKMHandID; aGroupType: TKMGroupType; aCount, aColumns: Integer);
+    procedure AIGroupsFormationSetEx(aPlayer: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer);
     procedure AIRecruitDelay(aPlayer: Byte; aDelay: Cardinal);
     procedure AIRecruitLimit(aPlayer, aLimit: Byte);
     procedure AISerfsPerHouse(aPlayer: Byte; aSerfs: Single);
@@ -1290,7 +1290,7 @@ end;
 
 //* Version: 13800
 //* Adds a defence position for the specified AI player
-procedure TKMScriptActions.AIDefencePositionAddEx(aPlayer: TKMHandID; const aDefencePosition: TKMDefencePositionInfo);
+procedure TKMScriptActions.AIDefencePositionAddEx(aPlayer: Integer; const aDefencePosition: TKMDefencePositionInfo);
 begin
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
@@ -1394,7 +1394,7 @@ begin
 end;
 
 
-procedure TKMScriptActions._AIGroupsFormationSetEx(aPlayer: TKMHandID; aGroupType: TKMGroupType; aCount, aColumns: Integer; aMethodName: string);
+procedure TKMScriptActions._AIGroupsFormationSetEx(aPlayer: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer; aMethodName: string);
 begin
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
@@ -1431,7 +1431,7 @@ end;
 
 //* Version: 13800
 //* Sets the formation the AI uses for defence positions
-procedure TKMScriptActions.AIGroupsFormationSetEx(aPlayer: TKMHandID; aGroupType: TKMGroupType; aCount, aColumns: Integer);
+procedure TKMScriptActions.AIGroupsFormationSetEx(aPlayer: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer);
 begin
   _AIGroupsFormationSetEx(aPlayer, aGroupType, aCount, aColumns, 'Actions.AIGroupsFormationSetEx');
 end;

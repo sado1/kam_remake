@@ -12,7 +12,7 @@ uses
 type
   TKMScriptStates = class(TKMScriptEntity)
   private
-    procedure _AIGroupsFormationGet(aPlayer: TKMHandID; aGroupType: TKMGroupType; out aCount, aColumns: Integer; aMethodName: string);
+    procedure _AIGroupsFormationGet(aPlayer: Integer; aGroupType: TKMGroupType; out aCount, aColumns: Integer; aMethodName: string);
     function _ClosestGroup(aPlayer, X, Y, aGroupType: Integer; aMethodName: String): Integer;
     function _ClosestGroupMultipleTypes(aPlayer, X, Y: Integer; aGroupTypes: TKMGroupTypeSet; aMethodName: string): Integer;
     function _ClosestHouse(aPlayer, X, Y: Integer; aHouseType: TKMHouseType; aMethodName: string): Integer;
@@ -28,10 +28,10 @@ type
     function AIAutoRepair(aPlayer: Byte): Boolean;
     function AIDefendAllies(aPlayer: Byte): Boolean;
     procedure AIDefencePositionGet(aPlayer, aID: Byte; out aX, aY: Integer; out aGroupType: Byte; out aRadius: Word; out aDefType: Byte);
-    procedure AIDefencePositionGetEx(aPlayer: TKMHandID; aID: Integer; out aDefencePosition: TKMDefencePositionInfo);
+    procedure AIDefencePositionGetEx(aPlayer, aID: Integer; out aDefencePosition: TKMDefencePositionInfo);
     function AIEquipRate(aPlayer: Byte; aType: Byte): Integer;
     procedure AIGroupsFormationGet(aPlayer, aType: Byte; out aCount, aColumns: Integer);
-    procedure AIGroupsFormationGetEx(aPlayer: TKMHandID; aGroupType: TKMGroupType; out aCount, aColumns: Integer);
+    procedure AIGroupsFormationGetEx(aPlayer: Integer; aGroupType: TKMGroupType; out aCount, aColumns: Integer);
     function AIRecruitDelay(aPlayer: Byte): Integer;
     function AIRecruitLimit(aPlayer: Byte): Integer;
     function AISerfsPerHouse(aPlayer: Byte): Single;
@@ -426,7 +426,7 @@ end;
 //* Version: 13800
 //* Gets the parameters of AI defence position
 //* Parameters are returned in aDefencePosition record
-procedure TKMScriptStates.AIDefencePositionGetEx(aPlayer: TKMHandID; aID: Integer; out aDefencePosition: TKMDefencePositionInfo);
+procedure TKMScriptStates.AIDefencePositionGetEx(aPlayer, aID: Integer; out aDefencePosition: TKMDefencePositionInfo);
 var
   DP: TAIDefencePosition;
 begin
@@ -478,7 +478,7 @@ begin
 end;
 
 
-procedure TKMScriptStates._AIGroupsFormationGet(aPlayer: TKMHandID; aGroupType: TKMGroupType; out aCount, aColumns: Integer; aMethodName: string);
+procedure TKMScriptStates._AIGroupsFormationGet(aPlayer: Integer; aGroupType: TKMGroupType; out aCount, aColumns: Integer; aMethodName: string);
 begin
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
@@ -526,7 +526,7 @@ end;
 //* Version: 13800
 //* Gets the formation the AI uses for defence positions for specified player and group type
 //* group count and columns are returned in aCount and aColumns variables
-procedure TKMScriptStates.AIGroupsFormationGetEx(aPlayer: TKMHandID; aGroupType: TKMGroupType; out aCount, aColumns: Integer);
+procedure TKMScriptStates.AIGroupsFormationGetEx(aPlayer: Integer; aGroupType: TKMGroupType; out aCount, aColumns: Integer);
 begin
   _AIGroupsFormationGet(aPlayer, aGroupType, aCount, aColumns, 'Actions.AIGroupsFormationGetEx');
 end;
