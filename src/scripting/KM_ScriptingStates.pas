@@ -11,6 +11,10 @@ uses
 
 type
   TKMScriptStates = class(TKMScriptEntity)
+  private
+    function _ClosestGroup(aPlayer, X, Y, aGroupType: Integer; aMethodName: String): Integer;
+    function _ClosestGroupMultipleTypes(aPlayer, X, Y: Integer; aGroupTypes: TKMGroupTypeSet; aMethodName: string): Integer;
+    function _ClosestHouse(aPlayer, X, Y: Integer; aHouseType: TKMHouseType; aMethodName: string): Integer;
   public
     function AIArmyType(aPlayer: Byte): TKMArmyType;
     function AIAutoAttack(aPlayer: Byte): Boolean;
@@ -35,8 +39,11 @@ type
     function CampaignMissionsCount: Integer;
 
     function ClosestGroup(aPlayer, X, Y, aGroupType: Integer): Integer;
+    function ClosestGroupEx(aPlayer, X, Y: Integer; aGroupType: TKMGroupType): Integer;
     function ClosestGroupMultipleTypes(aPlayer, X, Y: Integer; aGroupTypes: TByteSet): Integer;
+    function ClosestGroupMultipleTypesEx(aPlayer, X, Y: Integer; aGroupTypes: TKMGroupTypeSet): Integer;
     function ClosestHouse(aPlayer, X, Y, aHouseType: Integer): Integer;
+    function ClosestHouseEx(aPlayer, X, Y: Integer; aHouseType: TKMHouseType): Integer;
     function ClosestHouseMultipleTypes(aPlayer, X, Y: Integer; aHouseTypes: TByteSet): Integer;
     function ClosestUnit(aPlayer, X, Y, aUnitType: Integer): Integer;
     function ClosestUnitMultipleTypes(aPlayer, X, Y: Integer; aUnitTypes: TByteSet): Integer;
@@ -675,12 +682,7 @@ begin
 end;
 
 
-//* Version: 6216
-//* Returns the group of the specified player and group type that is closest to the specified coordinates,
-//* or -1 if no such group was found.
-//* If the group type is -1 any group type will be accepted
-//* Result: Group ID
-function TKMScriptStates.ClosestGroup(aPlayer, X, Y, aGroupType: Integer): Integer;
+function TKMScriptStates._ClosestGroup(aPlayer, X, Y, aGroupType: Integer; aMethodName: String): Integer;
 var
   GTS: TKMGroupTypeSet;
   G: TKMUnitGroup;
@@ -704,7 +706,52 @@ begin
       end;
     end
     else
-      LogParamWarning('States.ClosestGroup', [aPlayer, X, Y, aGroupType]);
+      LogParamWarning(aMethodName, [aPlayer, X, Y, aGroupType]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 6216
+//* Returns the group of the specified player and group type that is closest to the specified coordinates,
+//* or -1 if no such group was found.
+//* If the group type is -1 any group type will be accepted
+//* Result: Group ID
+function TKMScriptStates.ClosestGroup(aPlayer, X, Y, aGroupType: Integer): Integer;
+begin
+  Result := _ClosestGroup(aPlayer, X, Y, aGroupType, 'States.ClosestGroup');
+end;
+
+
+//* Version: 13800
+//* Returns the group of the specified player and group type that is closest to the specified coordinates,
+//* or -1 if no such group was found.
+//* Result: Group ID
+function TKMScriptStates.ClosestGroupEx(aPlayer, X, Y: Integer; aGroupType: TKMGroupType): Integer;
+begin
+  Result := _ClosestGroup(aPlayer, X, Y, Byte(aGroupType), 'States.ClosestGroupEx');
+end;
+
+
+function TKMScriptStates._ClosestGroupMultipleTypes(aPlayer, X, Y: Integer; aGroupTypes: TKMGroupTypeSet; aMethodName: string): Integer;
+var
+  G: TKMUnitGroup;
+begin
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    and gTerrain.TileInMapCoords(X, Y) then
+    begin
+      G := gHands[aPlayer].UnitGroups.GetClosestGroup(KMPoint(X,Y), aGroupTypes);
+      if G <> nil then
+      begin
+        Result := G.UID;
+        fIDCache.CacheGroup(G, G.UID);
+      end;
+    end
+    else
+      LogParamWarning(aMethodName, [aPlayer, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -722,27 +769,54 @@ function TKMScriptStates.ClosestGroupMultipleTypes(aPlayer, X, Y: Integer; aGrou
 var
   B: Byte;
   GTS: TKMGroupTypeSet;
-  G: TKMUnitGroup;
+begin
+  Result := -1;
+  GTS := [];
+  for B in [Byte(Low(TKMGroupType))..Byte(High(TKMGroupType))] do
+    if B in aGroupTypes then
+      GTS := GTS + [TKMGroupType(B)];
+
+  Result := _ClosestGroupMultipleTypes(aPlayer, X, Y, GTS, 'States.ClosestGroupMultipleTypes');
+end;
+
+
+//* Version: 13800
+//* Returns the group of the specified player and group types that is closest to the specified coordinates,
+//* or -1 if no such group was found.
+//* The group types is a "set of Byte", for example [1,3]
+//* aGroupTypes: Set of group types
+//* Result: Group ID
+function TKMScriptStates.ClosestGroupMultipleTypesEx(aPlayer, X, Y: Integer; aGroupTypes: TKMGroupTypeSet): Integer;
+begin
+  Result := _ClosestGroupMultipleTypes(aPlayer, X, Y, aGroupTypes, 'States.ClosestGroupMultipleTypesEx');
+end;
+
+
+function TKMScriptStates._ClosestHouse(aPlayer, X, Y: Integer; aHouseType: TKMHouseType; aMethodName: string): Integer;
+var
+  HTS: THouseTypeSet;
+  H: TKMHouse;
 begin
   try
     Result := -1;
-    GTS := [];
-    for B in [Byte(Low(TKMGroupType))..Byte(High(TKMGroupType))] do
-      if B in aGroupTypes then
-        GTS := GTS + [TKMGroupType(B)];
-
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-    and gTerrain.TileInMapCoords(X, Y) then
+    and gTerrain.TileInMapCoords(X, Y)
+    and (aHouseType <> htNone) then
     begin
-      G := gHands[aPlayer].UnitGroups.GetClosestGroup(KMPoint(X,Y), GTS);
-      if G <> nil then
+      if aHouseType = htAny then
+        HTS := [Low(TKMHouseType)..High(TKMHouseType)]
+      else
+        HTS := [aHouseType];
+
+      H := gHands[aPlayer].Houses.FindHouse(HTS, X, Y);
+      if H <> nil then
       begin
-        Result := G.UID;
-        fIDCache.CacheGroup(G, G.UID);
+        Result := H.UID;
+        fIDCache.CacheHouse(H, H.UID);
       end;
     end
     else
-      LogParamWarning('States.ClosestGroupMultipleTypes', [aPlayer, X, Y]);
+      LogParamWarning(aMethodName, [aPlayer, X, Y, Byte(aHouseType)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -757,33 +831,33 @@ end;
 //* Result: House ID
 function TKMScriptStates.ClosestHouse(aPlayer, X, Y, aHouseType: Integer): Integer;
 var
-  HTS: THouseTypeSet;
-  H: TKMHouse;
+  HT: TKMHouseType;
+  hasError: Boolean;
 begin
-  try
-    Result := -1;
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-    and gTerrain.TileInMapCoords(X, Y)
-    and ((aHouseType = -1) or HouseTypeValid(aHouseType)) then
-    begin
-      if aHouseType = -1 then
-        HTS := [Low(TKMHouseType)..High(TKMHouseType)]
-      else
-        HTS := [HOUSE_ID_TO_TYPE[aHouseType]];
+  hasError := False;
+  if aHouseType = -1 then
+    HT := htAny
+  else
+  if HouseTypeValid(aHouseType) then
+    HT := HOUSE_ID_TO_TYPE[aHouseType]
+  else
+    hasError := True;
 
-      H := gHands[aPlayer].Houses.FindHouse(HTS, X, Y);
-      if H <> nil then
-      begin
-        Result := H.UID;
-        fIDCache.CacheHouse(H, H.UID);
-      end;
-    end
-    else
-      LogParamWarning('States.ClosestHouse', [aPlayer, X, Y, aHouseType]);
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
+  if not hasError then
+    Result := _ClosestHouse(aPlayer, X, Y, HT, 'States.ClosestHouse')
+  else
+    LogParamWarning('States.ClosestHouse', [aPlayer, X, Y, Byte(aHouseType)]);
+end;
+
+
+//* Version: 13800
+//* Returns the house of the specified player and house type that is closest to the specified coordinates,
+//* or -1 if no such house was found.
+//* If the house type is htAny any house type will be accepted
+//* Result: House ID
+function TKMScriptStates.ClosestHouseEx(aPlayer, X, Y: Integer; aHouseType: TKMHouseType): Integer;
+begin
+  Result := _ClosestHouse(aPlayer, X, Y, aHouseType, 'States.ClosestHouseEx');
 end;
 
 

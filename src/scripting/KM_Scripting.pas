@@ -347,6 +347,7 @@ begin
 
     Sender.AddTypeS('TKMAIDefencePosType', '(adtFrontLine, adtBackLine)');
     Sender.AddTypeS('TKMGroupType', '(gtMelee, gtAntiHorse, gtRanged, gtMounted)');
+    Sender.AddTypeS('TKMGroupTypeSet', 'set of TKMGroupType');
     Sender.AddTypeS('TKMDirection', '(dirNA, dirN, dirNE, dirE, dirSE, dirS, dirSW, dirW, dirNW)');
 
     Sender.AddTypeS('TKMDefencePositionInfo', 'record ' +
@@ -436,7 +437,9 @@ begin
     RegisterMethodCheck(c, 'function CampaignMissionsCount: Integer');
 
     RegisterMethodCheck(c, 'function ClosestGroup(aPlayer, X, Y, aGroupType: Integer): Integer');
+    RegisterMethodCheck(c, 'function ClosestGroupEx(aPlayer, X, Y: Integer; aGroupType: TKMGroupType): Integer');
     RegisterMethodCheck(c, 'function ClosestGroupMultipleTypes(aPlayer, X, Y: Integer; aGroupTypes: TByteSet): Integer');
+    RegisterMethodCheck(c, 'function ClosestGroupMultipleTypesEx(aPlayer, X, Y: Integer; aGroupTypes: TKMGroupTypeSet): Integer');
     RegisterMethodCheck(c, 'function ClosestHouse(aPlayer, X, Y, aHouseType: Integer): Integer');
     RegisterMethodCheck(c, 'function ClosestHouseMultipleTypes(aPlayer, X, Y: Integer; aHouseTypes: TByteSet): Integer');
     RegisterMethodCheck(c, 'function ClosestUnit(aPlayer, X, Y, aUnitType: Integer): Integer');
@@ -1165,7 +1168,9 @@ begin
       RegisterMethod(@TKMScriptStates.CampaignMissionsCount,                    'CampaignMissionsCount');
 
       RegisterMethod(@TKMScriptStates.ClosestGroup,                             'ClosestGroup');
+      RegisterMethod(@TKMScriptStates.ClosestGroupEx,                           'ClosestGroupEx');
       RegisterMethod(@TKMScriptStates.ClosestGroupMultipleTypes,                'ClosestGroupMultipleTypes');
+      RegisterMethod(@TKMScriptStates.ClosestGroupMultipleTypesEx,              'ClosestGroupMultipleTypesEx');
       RegisterMethod(@TKMScriptStates.ClosestHouse,                             'ClosestHouse');
       RegisterMethod(@TKMScriptStates.ClosestHouseMultipleTypes,                'ClosestHouseMultipleTypes');
       RegisterMethod(@TKMScriptStates.ClosestUnit,                              'ClosestUnit');
