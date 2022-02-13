@@ -1756,10 +1756,6 @@ procedure TKMResSprites.LoadGameResources(aAlphaShadows: Boolean; aForceReload: 
           fSprites[RT].OverloadFromFolder(ExeDir + 'Sprites' + PathDelim); // Legacy support
           // 'Sprites' folder name confused some of the players, cause there is already data/Sprites folder
           fSprites[RT].OverloadFromFolder(ExeDir + 'Modding graphics' + PathDelim);
-
-          {$IFNDEF NO_OGL}
-          fSprites[RT].MakeGFX(True);
-          {$ENDIF}
         end
         else
         begin
