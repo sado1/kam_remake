@@ -434,7 +434,6 @@ begin
 
     RegisterMethodCheck(c, 'function CampaignMissionID: Integer');
     RegisterMethodCheck(c, 'function CampaignMissionsCount: Integer');
-    RegisterMethodCheck(c, 'function CampaignUnlockedMissionID: Integer');
 
     RegisterMethodCheck(c, 'function ClosestGroup(aPlayer, X, Y, aGroupType: Integer): Integer');
     RegisterMethodCheck(c, 'function ClosestGroupMultipleTypes(aPlayer, X, Y: Integer; aGroupTypes: TByteSet): Integer');
@@ -1164,7 +1163,6 @@ begin
 
       RegisterMethod(@TKMScriptStates.CampaignMissionID,                        'CampaignMissionID');
       RegisterMethod(@TKMScriptStates.CampaignMissionsCount,                    'CampaignMissionsCount');
-      RegisterMethod(@TKMScriptStates.CampaignUnlockedMissionID,                'CampaignUnlockedMissionID');
 
       RegisterMethod(@TKMScriptStates.ClosestGroup,                             'ClosestGroup');
       RegisterMethod(@TKMScriptStates.ClosestGroupMultipleTypes,                'ClosestGroupMultipleTypes');

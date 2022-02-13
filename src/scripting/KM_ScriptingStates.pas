@@ -33,7 +33,6 @@ type
 
     function CampaignMissionID: Integer;
     function CampaignMissionsCount: Integer;
-    function CampaignUnlockedMissionID: Integer;
 
     function ClosestGroup(aPlayer, X, Y, aGroupType: Integer): Integer;
     function ClosestGroupMultipleTypes(aPlayer, X, Y: Integer; aGroupTypes: TByteSet): Integer;
@@ -669,27 +668,6 @@ begin
     end;
 
     Result := gGameApp.Campaigns.ActiveCampaign.MapCount;
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
-end;
-
-
-//* Version: 12600
-//* Returns current campaign unlocked mission number or -1 if this is not a campaign mission
-//* Mission numbers starts from 1
-function TKMScriptStates.CampaignUnlockedMissionID: Integer;
-begin
-  try
-    Result := -1;
-    if not gGame.Params.IsCampaign or (gGameApp.Campaigns.ActiveCampaign = nil) then
-    begin
-      LogWarning('States.CampaignUnlockedMissionID', 'Current mission is not part of a campaign');
-      Exit;
-    end;
-
-    Result := gGameApp.Campaigns.ActiveCampaign.UnlockedMap + 1; // UnlockedMap starts from 0
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
