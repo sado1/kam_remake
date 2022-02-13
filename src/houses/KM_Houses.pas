@@ -1160,9 +1160,9 @@ begin
 end;
 
 
-{Increase building progress of house. When it reaches some point Stoning replaces Wooding
- and then it's done and house should be finalized}
- {Keep track on stone/wood reserve here as well}
+// Increase building progress of house. When it reaches some point Stoning replaces Wooding
+// and then it's done and house should be finalized
+// Keep track on stone/wood reserve here as well
 procedure TKMHouse.IncBuildingProgress;
 begin
   if IsComplete then Exit;
