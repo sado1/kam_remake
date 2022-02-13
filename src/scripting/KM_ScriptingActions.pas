@@ -13,6 +13,8 @@ type
   private
     fOnSetLogLinesMaxCnt: TIntegerEvent;
     procedure LogStr(const aText: String);
+
+    procedure _AIGroupsFormationSetEx(aPlayer: TKMHandID; aGroupType: TKMGroupType; aCount, aColumns: Integer; aMethodName: string);
   public
     property OnSetLogLinesMaxCnt: TIntegerEvent read fOnSetLogLinesMaxCnt write fOnSetLogLinesMaxCnt;
 
@@ -1392,23 +1394,18 @@ begin
 end;
 
 
-//* Version: 5778
-//* Sets the formation the AI uses for defence positions
-procedure TKMScriptActions.AIGroupsFormationSet(aPlayer, aType: Byte; aCount, aColumns: Word);
-var
-  gt: TKMGroupType;
+procedure TKMScriptActions._AIGroupsFormationSetEx(aPlayer: TKMHandID; aGroupType: TKMGroupType; aCount, aColumns: Integer; aMethodName: string);
 begin
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-    and InRange(aType, 0, 3)
-    and (aCount > 0) and (aColumns > 0) then
+      and (aGroupType in [gtMelee..gtMounted])
+      and (aCount > 0) and (aColumns > 0) then
     begin
-      gt := TKMGroupType(aType);
-      gHands[aPlayer].AI.General.DefencePositions.TroopFormations[gt].NumUnits := aCount;
-      gHands[aPlayer].AI.General.DefencePositions.TroopFormations[gt].UnitsPerRow := aColumns;
+      gHands[aPlayer].AI.General.DefencePositions.TroopFormations[aGroupType].NumUnits := aCount;
+      gHands[aPlayer].AI.General.DefencePositions.TroopFormations[aGroupType].UnitsPerRow := aColumns;
     end
     else
-      LogParamWarning('Actions.AIGroupsFormationSet', [aPlayer, aType, aCount, aColumns]);
+      LogParamWarning(aMethodName, [aPlayer, Byte(aGroupType), aCount, aColumns]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1416,24 +1413,27 @@ begin
 end;
 
 
+//* Version: 5778
+//* Sets the formation the AI uses for defence positions
+procedure TKMScriptActions.AIGroupsFormationSet(aPlayer, aType: Byte; aCount, aColumns: Word);
+var
+  gt: TKMGroupType;
+begin
+  if InRange(aType, 0, 3) then
+  begin
+    gt := TKMGroupType(aType);
+    _AIGroupsFormationSetEx(aPlayer, gt, aCount, aColumns, 'Actions.AIGroupsFormationSet');
+  end
+  else
+    LogParamWarning('Actions.AIGroupsFormationSet', [aPlayer, aType, aCount, aColumns]);
+end;
+
+
 //* Version: 13800
 //* Sets the formation the AI uses for defence positions
 procedure TKMScriptActions.AIGroupsFormationSetEx(aPlayer: TKMHandID; aGroupType: TKMGroupType; aCount, aColumns: Integer);
 begin
-  try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-    and (aGroupType in [gtMelee..gtMounted])
-    and (aCount > 0) and (aColumns > 0) then
-    begin
-      gHands[aPlayer].AI.General.DefencePositions.TroopFormations[aGroupType].NumUnits := aCount;
-      gHands[aPlayer].AI.General.DefencePositions.TroopFormations[aGroupType].UnitsPerRow := aColumns;
-    end
-    else
-      LogParamWarning('Actions.AIGroupsFormationSetEx', [aPlayer, Byte(aGroupType), aCount, aColumns]);
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
+  _AIGroupsFormationSetEx(aPlayer, aGroupType, aCount, aColumns, 'Actions.AIGroupsFormationSetEx');
 end;
 
 
