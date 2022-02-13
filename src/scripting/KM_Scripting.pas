@@ -441,6 +441,7 @@ begin
     RegisterMethodCheck(c, 'function ClosestGroupMultipleTypes(aPlayer, X, Y: Integer; aGroupTypes: TByteSet): Integer');
     RegisterMethodCheck(c, 'function ClosestGroupMultipleTypesEx(aPlayer, X, Y: Integer; aGroupTypes: TKMGroupTypeSet): Integer');
     RegisterMethodCheck(c, 'function ClosestHouse(aPlayer, X, Y, aHouseType: Integer): Integer');
+    RegisterMethodCheck(c, 'function ClosestHouseEx(aPlayer, X, Y: Integer; aHouseType: TKMHouseType): Integer');
     RegisterMethodCheck(c, 'function ClosestHouseMultipleTypes(aPlayer, X, Y: Integer; aHouseTypes: TByteSet): Integer');
     RegisterMethodCheck(c, 'function ClosestUnit(aPlayer, X, Y, aUnitType: Integer): Integer');
     RegisterMethodCheck(c, 'function ClosestUnitMultipleTypes(aPlayer, X, Y: Integer; aUnitTypes: TByteSet): Integer');
@@ -1172,6 +1173,7 @@ begin
       RegisterMethod(@TKMScriptStates.ClosestGroupMultipleTypes,                'ClosestGroupMultipleTypes');
       RegisterMethod(@TKMScriptStates.ClosestGroupMultipleTypesEx,              'ClosestGroupMultipleTypesEx');
       RegisterMethod(@TKMScriptStates.ClosestHouse,                             'ClosestHouse');
+      RegisterMethod(@TKMScriptStates.ClosestHouseEx,                           'ClosestHouseEx');
       RegisterMethod(@TKMScriptStates.ClosestHouseMultipleTypes,                'ClosestHouseMultipleTypes');
       RegisterMethod(@TKMScriptStates.ClosestUnit,                              'ClosestUnit');
       RegisterMethod(@TKMScriptStates.ClosestUnitMultipleTypes,                 'ClosestUnitMultipleTypes');
