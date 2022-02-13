@@ -17,6 +17,7 @@ type
     function _ClosestHouse(aPlayer, X, Y: Integer; aHouseType: TKMHouseType; aMethodName: string): Integer;
     function _ClosestHouseMultipleTypes(aPlayer, X, Y: Integer; aHouseTypes: TKMHouseTypeSet; aMethodName: string): Integer;
     function _ClosestUnit(aPlayer, X, Y: Integer; aUnitType: TKMUnitType; aMethodName: string): Integer;
+    function _ClosestUnitMultipleTypes(aPlayer, X, Y: Integer; aUnitTypes: TKMUnitTypeSet; aMethodName: string): Integer;
   public
     function AIArmyType(aPlayer: Byte): TKMArmyType;
     function AIAutoAttack(aPlayer: Byte): Boolean;
@@ -51,6 +52,7 @@ type
     function ClosestUnit(aPlayer, X, Y, aUnitType: Integer): Integer;
     function ClosestUnitEx(aPlayer, X, Y: Integer; aUnitType: TKMUnitType): Integer;
     function ClosestUnitMultipleTypes(aPlayer, X, Y: Integer; aUnitTypes: TByteSet): Integer;
+    function ClosestUnitMultipleTypesEx(aPlayer, X, Y: Integer; aUnitTypes: TKMUnitTypeSet): Integer;
 
     function ConnectedByRoad(X1, Y1, X2, Y2: Integer): Boolean;
     function ConnectedByWalking(X1, Y1, X2, Y2: Integer): Boolean;
@@ -983,6 +985,32 @@ begin
 end;
 
 
+function TKMScriptStates._ClosestUnitMultipleTypes(aPlayer, X, Y: Integer; aUnitTypes: TKMUnitTypeSet; aMethodName: string): Integer;
+var
+  U: TKMUnit;
+begin
+  Result := -1;
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+      and gTerrain.TileInMapCoords(X, Y) then
+    begin
+      U := gHands[aPlayer].Units.GetClosestUnit(KMPoint(X,Y), aUnitTypes);
+      if U <> nil then
+      begin
+        Result := U.UID;
+        fIDCache.CacheUnit(U, U.UID);
+      end;
+    end
+    else
+      LogParamWarning(aMethodName, [aPlayer, X, Y]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+
 //* Version: 6216
 //* Returns the unit of the specified player and unit types that is closest to the specified coordinates,
 //* or -1 if no such unit was found.
@@ -993,31 +1021,25 @@ function TKMScriptStates.ClosestUnitMultipleTypes(aPlayer, X, Y: Integer; aUnitT
 var
   B: Byte;
   UTS: TKMUnitTypeSet;
-  U: TKMUnit;
 begin
-  try
-    Result := -1;
-    UTS := [];
-    for B in [Low(UNIT_ID_TO_TYPE)..High(UNIT_ID_TO_TYPE)] do
-      if B in aUnitTypes then
-        UTS := UTS + [UNIT_ID_TO_TYPE[B]];
+  UTS := [];
+  for B in [Low(UNIT_ID_TO_TYPE)..High(UNIT_ID_TO_TYPE)] do
+    if B in aUnitTypes then
+      UTS := UTS + [UNIT_ID_TO_TYPE[B]];
 
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-    and gTerrain.TileInMapCoords(X, Y) then
-    begin
-      U := gHands[aPlayer].Units.GetClosestUnit(KMPoint(X,Y), UTS);
-      if U <> nil then
-      begin
-        Result := U.UID;
-        fIDCache.CacheUnit(U, U.UID);
-      end;
-    end
-    else
-      LogParamWarning('States.ClosestUnit', [aPlayer, X, Y]);
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
+  Result := _ClosestUnitMultipleTypes(aPlayer, X, Y, UTS, 'States.ClosestUnitMultipleTypes');
+end;
+
+
+//* Version: 13800
+//* Returns the unit of the specified player and unit types that is closest to the specified coordinates,
+//* or -1 if no such unit was found.
+//* The unit types is a "set of TKMUnitType", for example [utSerf, utMilitia]
+//* aUnitTypes: Set of unit types
+//* Result: Unit ID
+function TKMScriptStates.ClosestUnitMultipleTypesEx(aPlayer, X, Y: Integer; aUnitTypes: TKMUnitTypeSet): Integer;
+begin
+  Result := _ClosestUnitMultipleTypes(aPlayer, X, Y, aUnitTypes, 'States.ClosestUnitMultipleTypesEx');
 end;
 
 

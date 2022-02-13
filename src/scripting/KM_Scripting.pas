@@ -408,6 +408,8 @@ begin
       + 'utWolf,         utFish,         utWatersnake,   utSeastar,'
       + 'utCrab,         utWaterflower,  utWaterleaf,    utDuck)');
 
+    Sender.AddTypeS('TKMUnitTypeSet', 'set of TKMUnitType');
+
     Sender.AddTypeS('TReplaceFlags', '(rfReplaceAll, rfIgnoreCase)'); //Needed for string util Utils.StringReplace
 
     // Add CampaignData type and variable only after addition of all other custom types,
@@ -450,6 +452,7 @@ begin
     RegisterMethodCheck(c, 'function ClosestUnit(aPlayer, X, Y, aUnitType: Integer): Integer');
     RegisterMethodCheck(c, 'function ClosestUnitEx(aPlayer, X, Y: Integer; aUnitType: TKMUnitType): Integer');
     RegisterMethodCheck(c, 'function ClosestUnitMultipleTypes(aPlayer, X, Y: Integer; aUnitTypes: TByteSet): Integer');
+    RegisterMethodCheck(c, 'function ClosestUnitMultipleTypesEx(aPlayer, X, Y: Integer; aUnitTypes: TKMUnitTypeSet): Integer');
 
     RegisterMethodCheck(c, 'function ConnectedByRoad(X1, Y1, X2, Y2: Integer): Boolean');
     RegisterMethodCheck(c, 'function ConnectedByWalking(X1, Y1, X2, Y2: Integer): Boolean');
@@ -1184,6 +1187,7 @@ begin
       RegisterMethod(@TKMScriptStates.ClosestUnit,                              'ClosestUnit');
       RegisterMethod(@TKMScriptStates.ClosestUnitEx,                            'ClosestUnitEx');
       RegisterMethod(@TKMScriptStates.ClosestUnitMultipleTypes,                 'ClosestUnitMultipleTypes');
+      RegisterMethod(@TKMScriptStates.ClosestUnitMultipleTypesEx,               'ClosestUnitMultipleTypesEx');
 
       RegisterMethod(@TKMScriptStates.ConnectedByRoad,                          'ConnectedByRoad');
       RegisterMethod(@TKMScriptStates.ConnectedByWalking,                       'ConnectedByWalking');
