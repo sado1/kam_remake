@@ -448,6 +448,7 @@ begin
     RegisterMethodCheck(c, 'function ClosestHouseMultipleTypes(aPlayer, X, Y: Integer; aHouseTypes: TByteSet): Integer');
     RegisterMethodCheck(c, 'function ClosestHouseMultipleTypesEx(aPlayer, X, Y: Integer; aHouseTypes: TKMHouseTypeSet): Integer');
     RegisterMethodCheck(c, 'function ClosestUnit(aPlayer, X, Y, aUnitType: Integer): Integer');
+    RegisterMethodCheck(c, 'function ClosestUnitEx(aPlayer, X, Y: Integer; aUnitType: TKMUnitType): Integer');
     RegisterMethodCheck(c, 'function ClosestUnitMultipleTypes(aPlayer, X, Y: Integer; aUnitTypes: TByteSet): Integer');
 
     RegisterMethodCheck(c, 'function ConnectedByRoad(X1, Y1, X2, Y2: Integer): Boolean');
@@ -1181,6 +1182,7 @@ begin
       RegisterMethod(@TKMScriptStates.ClosestHouseMultipleTypes,                'ClosestHouseMultipleTypes');
       RegisterMethod(@TKMScriptStates.ClosestHouseMultipleTypesEx,              'ClosestHouseMultipleTypesEx');
       RegisterMethod(@TKMScriptStates.ClosestUnit,                              'ClosestUnit');
+      RegisterMethod(@TKMScriptStates.ClosestUnitEx,                            'ClosestUnitEx');
       RegisterMethod(@TKMScriptStates.ClosestUnitMultipleTypes,                 'ClosestUnitMultipleTypes');
 
       RegisterMethod(@TKMScriptStates.ConnectedByRoad,                          'ConnectedByRoad');
