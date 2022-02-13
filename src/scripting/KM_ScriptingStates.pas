@@ -19,7 +19,8 @@ type
     function AIAutoDefence(aPlayer: Byte): Boolean;
     function AIAutoRepair(aPlayer: Byte): Boolean;
     function AIDefendAllies(aPlayer: Byte): Boolean;
-    procedure AIDefencePositionGet(aPlayer, aID: Integer; out aDefencePosition: TKMDefencePositionInfo);
+    procedure AIDefencePositionGet(aPlayer, aID: Byte; out aX, aY: Integer; out aGroupType: Byte; out aRadius: Word; out aDefType: Byte);
+    procedure AIDefencePositionGetEx(aPlayer: TKMHandID; aID: Integer; out aDefencePosition: TKMDefencePositionInfo);
     function AIEquipRate(aPlayer: Byte; aType: Byte): Integer;
     procedure AIGroupsFormationGet(aPlayer, aType: Byte; out aCount, aColumns: Integer);
     procedure AIGroupsFormationGetEx(aPlayer: TKMHandID; aGroupType: TKMGroupType; out aCount, aColumns: Integer);
@@ -377,12 +378,42 @@ begin
 end;
 
 
-//* Version: 13700
+//* Version: 12000+
 //* Gets the parameters of AI defence position
 //* Parameters are returned in aX, aY, aGroupType, aRadius, aDefType variables
 //* Group types: 0 = Melee; 1	= Anti-horse; 2	= Ranged; 3	= Mounted
 //* Defence type: 0 = Defenders; 1 = Attackers
-procedure TKMScriptStates.AIDefencePositionGet(aPlayer, aID: Integer; out aDefencePosition: TKMDefencePositionInfo);
+procedure TKMScriptStates.AIDefencePositionGet(aPlayer, aID: Byte; out aX, aY: Integer; out aGroupType: Byte; out aRadius: Word; out aDefType: Byte);
+var
+  DP: TAIDefencePosition;
+begin
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    and InRange(aID, 0, gHands[aPlayer].AI.General.DefencePositions.Count - 1) then
+    begin
+      DP := gHands[aPlayer].AI.General.DefencePositions.Positions[aID];
+      if DP <> nil then
+      begin
+        aX := DP.Position.Loc.X;
+        aY := DP.Position.Loc.Y;
+        aGroupType := Byte(DP.GroupType);
+        aRadius := DP.Radius;
+        aDefType := Byte(DP.DefenceType);
+      end;
+    end
+    else
+      LogParamWarning('States.AIDefencePositionGet', [aPlayer, aID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13800
+//* Gets the parameters of AI defence position
+//* Parameters are returned in aDefencePosition record
+procedure TKMScriptStates.AIDefencePositionGetEx(aPlayer: TKMHandID; aID: Integer; out aDefencePosition: TKMDefencePositionInfo);
 var
   DP: TAIDefencePosition;
 begin
@@ -395,13 +426,14 @@ begin
       begin
         aDefencePosition.X := DP.Position.Loc.X;
         aDefencePosition.Y := DP.Position.Loc.Y;
+        aDefencePosition.Dir := DP.Position.Dir;
         aDefencePosition.Radius := DP.Radius;
         aDefencePosition.GroupType := DP.GroupType;
         aDefencePosition.PositionType := DP.DefenceType;
       end;
     end
     else
-      LogParamWarning('States.AIDefencePositionGet', [aPlayer, aID]);
+      LogParamWarning('States.AIDefencePositionGetEx', [aPlayer, aID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

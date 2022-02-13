@@ -420,6 +420,7 @@ begin
     RegisterMethodCheck(c, 'function AIAutoDefence(aPlayer: Byte): Boolean');
     RegisterMethodCheck(c, 'function AIAutoRepair(aPlayer: Byte): Boolean');
     RegisterMethodCheck(c, 'procedure AIDefencePositionGet(aPlayer, aID: Byte; out aX, aY: Integer; out aGroupType: Byte; out aRadius: Word; out aDefType: Byte)');
+    RegisterMethodCheck(c, 'procedure AIDefencePositionGetEx(aPlayer: TKMHandID; aID: Integer; out aDefencePosition: TKMDefencePositionInfo)');
     RegisterMethodCheck(c, 'function AIDefendAllies(aPlayer: Byte): Boolean');
     RegisterMethodCheck(c, 'function AIEquipRate(aPlayer: Byte; aType: Byte): Integer');
     RegisterMethodCheck(c, 'procedure AIGroupsFormationGet(aPlayer, aType: Byte; out aCount, aColumns: Integer)');
@@ -1149,6 +1150,7 @@ begin
       RegisterMethod(@TKMScriptStates.AIAutoDefence,                            'AIAutoDefence');
       RegisterMethod(@TKMScriptStates.AIAutoRepair,                             'AIAutoRepair');
       RegisterMethod(@TKMScriptStates.AIDefencePositionGet,                     'AIDefencePositionGet');
+      RegisterMethod(@TKMScriptStates.AIDefencePositionGetEx,                   'AIDefencePositionGetEx');
       RegisterMethod(@TKMScriptStates.AIDefendAllies,                           'AIDefendAllies');
       RegisterMethod(@TKMScriptStates.AIEquipRate,                              'AIEquipRate');
       RegisterMethod(@TKMScriptStates.AIGroupsFormationGet,                     'AIGroupsFormationGet');
