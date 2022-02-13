@@ -28,11 +28,13 @@ type
     procedure AIAutoDefence(aPlayer: Byte; aAuto: Boolean);
     procedure AIAutoRepair(aPlayer: Byte; aAuto: Boolean);
     procedure AIDefencePositionAdd(aPlayer: Byte; X, Y: Integer; aDir, aGroupType: Byte; aRadius: Word; aDefType: Byte);
+    procedure AIDefencePositionAddEx(aPlayer: TKMHandID; const aDefencePosition: TKMDefencePositionInfo);
     procedure AIDefencePositionRemove(aPlayer: Byte; X, Y: Integer);
     procedure AIDefencePositionRemoveAll(aPlayer: Byte);
     procedure AIDefendAllies(aPlayer: Byte; aDefend: Boolean);
     procedure AIEquipRate(aPlayer: Byte; aType: Byte; aRate: Word);
     procedure AIGroupsFormationSet(aPlayer, aType: Byte; aCount, aColumns: Word);
+    procedure AIGroupsFormationSetEx(aPlayer: TKMHandID; aGroupType: TKMGroupType; aCount, aColumns: Integer);
     procedure AIRecruitDelay(aPlayer: Byte; aDelay: Cardinal);
     procedure AIRecruitLimit(aPlayer, aLimit: Byte);
     procedure AISerfsPerHouse(aPlayer: Byte; aSerfs: Single);
@@ -1284,6 +1286,27 @@ begin
 end;
 
 
+//* Version: 13800
+//* Adds a defence position for the specified AI player
+procedure TKMScriptActions.AIDefencePositionAddEx(aPlayer: TKMHandID; const aDefencePosition: TKMDefencePositionInfo);
+begin
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+      and (aDefencePosition.Dir in [dirN..dirNW])
+      and (gTerrain.TileInMapCoords(aDefencePosition.X, aDefencePosition.Y)) then
+      gHands[aPlayer].AI.General.DefencePositions.Add(KMPointDir(aDefencePosition.X, aDefencePosition.Y, aDefencePosition.Dir),
+                                                      aDefencePosition.GroupType, aDefencePosition.Radius, aDefencePosition.PositionType)
+    else
+      LogParamWarning('Actions.AIDefencePositionAddEx', [aPlayer, aDefencePosition.X, aDefencePosition.Y, Byte(aDefencePosition.Dir),
+                                                         Byte(aDefencePosition.GroupType), Byte(aDefencePosition.Radius),
+                                                         Byte(aDefencePosition.PositionType)]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
 //* Version: 6309
 //* Removes defence position at X, Y
 procedure TKMScriptActions.AIDefencePositionRemove(aPlayer: Byte; X, Y: Integer);
@@ -1386,6 +1409,26 @@ begin
     end
     else
       LogParamWarning('Actions.AIGroupsFormationSet', [aPlayer, aType, aCount, aColumns]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13800
+//* Sets the formation the AI uses for defence positions
+procedure TKMScriptActions.AIGroupsFormationSetEx(aPlayer: TKMHandID; aGroupType: TKMGroupType; aCount, aColumns: Integer);
+begin
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    and (aCount > 0) and (aColumns > 0) then
+    begin
+      gHands[aPlayer].AI.General.DefencePositions.TroopFormations[aGroupType].NumUnits := aCount;
+      gHands[aPlayer].AI.General.DefencePositions.TroopFormations[aGroupType].UnitsPerRow := aColumns;
+    end
+    else
+      LogParamWarning('Actions.AIGroupsFormationSetEx', [aPlayer, Byte(aGroupType), aCount, aColumns]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

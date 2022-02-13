@@ -2,7 +2,7 @@ unit KM_ScriptingTypes;
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_Defaults, KM_AITypes;
+  KM_Defaults, KM_AITypes, KM_Points;
 
 type
   TKMScriptEventType = (
@@ -70,6 +70,7 @@ type
 
   TKMDefencePositionInfo = record
     X, Y: Integer;
+    Dir: TKMDirection;
     Radius: Integer;
     GroupType: TKMGroupType;
     PositionType: TKMAIDefencePosType;

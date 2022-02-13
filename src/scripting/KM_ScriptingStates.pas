@@ -22,6 +22,7 @@ type
     procedure AIDefencePositionGet(aPlayer, aID: Integer; out aDefencePosition: TKMDefencePositionInfo);
     function AIEquipRate(aPlayer: Byte; aType: Byte): Integer;
     procedure AIGroupsFormationGet(aPlayer, aType: Byte; out aCount, aColumns: Integer);
+    procedure AIGroupsFormationGetEx(aPlayer: TKMHandID; aGroupType: TKMGroupType; out aCount, aColumns: Integer);
     function AIRecruitDelay(aPlayer: Byte): Integer;
     function AIRecruitLimit(aPlayer: Byte): Integer;
     function AISerfsPerHouse(aPlayer: Byte): Single;
@@ -458,6 +459,34 @@ begin
     end
     else
       LogParamWarning('Actions.AIGroupsFormationGet', [aPlayer, aType]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13800
+//* Gets the formation the AI uses for defence positions for specified player and group type
+//* group count and columns are returned in aCount and aColumns variables
+procedure TKMScriptStates.AIGroupsFormationGetEx(aPlayer: TKMHandID; aGroupType: TKMGroupType; out aCount, aColumns: Integer);
+begin
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
+    begin
+      if gHands[aPlayer].AI.Setup.NewAI then
+      begin
+        aCount := gHands[aPlayer].AI.ArmyManagement.Defence.TroopFormations[aGroupType].NumUnits;
+        aColumns := gHands[aPlayer].AI.ArmyManagement.Defence.TroopFormations[aGroupType].UnitsPerRow;
+      end
+      else
+      begin
+        aCount := gHands[aPlayer].AI.General.DefencePositions.TroopFormations[aGroupType].NumUnits;
+        aColumns := gHands[aPlayer].AI.General.DefencePositions.TroopFormations[aGroupType].UnitsPerRow;
+      end
+    end
+    else
+      LogParamWarning('Actions.AIGroupsFormationGetEx', [aPlayer, Byte(aGroupType)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

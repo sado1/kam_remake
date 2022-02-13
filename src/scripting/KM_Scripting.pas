@@ -347,6 +347,7 @@ begin
 
     Sender.AddTypeS('TKMAIDefencePosType', '(adtFrontLine, adtBackLine)');
     Sender.AddTypeS('TKMGroupType', '(gtMelee, gtAntiHorse, gtRanged, gtMounted)');
+    Sender.AddTypeS('TKMDirection', '(dirNA, dirN, dirNE, dirE, dirSE, dirS, dirSW, dirW, dirNW)');
 
     Sender.AddTypeS('TKMDefencePositionInfo', 'record ' +
                       'X, Y: Integer; ' +
@@ -422,6 +423,7 @@ begin
     RegisterMethodCheck(c, 'function AIDefendAllies(aPlayer: Byte): Boolean');
     RegisterMethodCheck(c, 'function AIEquipRate(aPlayer: Byte; aType: Byte): Integer');
     RegisterMethodCheck(c, 'procedure AIGroupsFormationGet(aPlayer, aType: Byte; out aCount, aColumns: Integer)');
+    RegisterMethodCheck(c, 'procedure AIGroupsFormationGetEx(aPlayer: TKMHandID; aGroupType: TKMGroupType; out aCount, aColumns: Integer)');
     RegisterMethodCheck(c, 'function AIRecruitDelay(aPlayer: Byte): Integer');
     RegisterMethodCheck(c, 'function AIRecruitLimit(aPlayer: Byte): Integer');
     RegisterMethodCheck(c, 'function AISerfsPerHouse(aPlayer: Byte): Single');
@@ -636,11 +638,13 @@ begin
     RegisterMethodCheck(c, 'procedure AIAutoDefence(aPlayer: Byte; aAuto: Boolean)');
     RegisterMethodCheck(c, 'procedure AIAutoRepair(aPlayer: Byte; aAuto: Boolean)');
     RegisterMethodCheck(c, 'procedure AIDefencePositionAdd(aPlayer: Byte; X, Y: Integer; aDir, aGroupType: Byte; aRadius: Word; aDefType: Byte)');
+    RegisterMethodCheck(c, 'procedure AIDefencePositionAddEx(aPlayer: TKMHandID; const aDefencePosition: TKMDefencePositionInfo)');
     RegisterMethodCheck(c, 'procedure AIDefencePositionRemove(aPlayer: Byte; X, Y: Integer)');
     RegisterMethodCheck(c, 'procedure AIDefencePositionRemoveAll(aPlayer: Byte)');
     RegisterMethodCheck(c, 'procedure AIDefendAllies(aPlayer: Byte; aDefend: Boolean)');
     RegisterMethodCheck(c, 'procedure AIEquipRate(aPlayer: Byte; aType: Byte; aRate: Word)');
     RegisterMethodCheck(c, 'procedure AIGroupsFormationSet(aPlayer, aType: Byte; aCount, aColumns: Word)');
+    RegisterMethodCheck(c, 'procedure AIGroupsFormationSetEx(aPlayer: TKMHandID; aGroupType: TKMGroupType; aCount, aColumns: Integer)');
     RegisterMethodCheck(c, 'procedure AIRecruitDelay(aPlayer, aDelay: Cardinal)');
     RegisterMethodCheck(c, 'procedure AIRecruitLimit(aPlayer, aLimit: Byte)');
     RegisterMethodCheck(c, 'procedure AISerfsPerHouse(aPlayer: Byte; aSerfs: Single)');
@@ -1148,6 +1152,7 @@ begin
       RegisterMethod(@TKMScriptStates.AIDefendAllies,                           'AIDefendAllies');
       RegisterMethod(@TKMScriptStates.AIEquipRate,                              'AIEquipRate');
       RegisterMethod(@TKMScriptStates.AIGroupsFormationGet,                     'AIGroupsFormationGet');
+      RegisterMethod(@TKMScriptStates.AIGroupsFormationGetEx,                   'AIGroupsFormationGetEx');
       RegisterMethod(@TKMScriptStates.AIRecruitDelay,                           'AIRecruitDelay');
       RegisterMethod(@TKMScriptStates.AIRecruitLimit,                           'AIRecruitLimit');
       RegisterMethod(@TKMScriptStates.AISerfsPerHouse,                          'AISerfsPerHouse');
@@ -1362,11 +1367,13 @@ begin
       RegisterMethod(@TKMScriptActions.AIAutoDefence,                           'AIAutoDefence');
       RegisterMethod(@TKMScriptActions.AIAutoRepair,                            'AIAutoRepair');
       RegisterMethod(@TKMScriptActions.AIDefencePositionAdd,                    'AIDefencePositionAdd');
+      RegisterMethod(@TKMScriptActions.AIDefencePositionAddEx,                  'AIDefencePositionAddEx');
       RegisterMethod(@TKMScriptActions.AIDefencePositionRemove,                 'AIDefencePositionRemove');
       RegisterMethod(@TKMScriptActions.AIDefencePositionRemoveAll,              'AIDefencePositionRemoveAll');
       RegisterMethod(@TKMScriptActions.AIDefendAllies,                          'AIDefendAllies');
       RegisterMethod(@TKMScriptActions.AIEquipRate,                             'AIEquipRate');
       RegisterMethod(@TKMScriptActions.AIGroupsFormationSet,                    'AIGroupsFormationSet');
+      RegisterMethod(@TKMScriptActions.AIGroupsFormationSetEx,                  'AIGroupsFormationSetEx');
       RegisterMethod(@TKMScriptActions.AIRecruitDelay,                          'AIRecruitDelay');
       RegisterMethod(@TKMScriptActions.AIRecruitLimit,                          'AIRecruitLimit');
       RegisterMethod(@TKMScriptActions.AISerfsPerHouse,                         'AISerfsPerHouse');
