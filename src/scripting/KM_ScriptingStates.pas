@@ -794,7 +794,7 @@ end;
 
 function TKMScriptStates._ClosestHouse(aPlayer, X, Y: Integer; aHouseType: TKMHouseType; aMethodName: string): Integer;
 var
-  HTS: THouseTypeSet;
+  HTS: TKMHouseTypeSet;
   H: TKMHouse;
 begin
   try
@@ -868,7 +868,7 @@ end;
 function TKMScriptStates.ClosestHouseMultipleTypes(aPlayer, X, Y: Integer; aHouseTypes: TByteSet): Integer;
 var
   B: Byte;
-  HTS: THouseTypeSet;
+  HTS: TKMHouseTypeSet;
   H: TKMHouse;
 begin
   try

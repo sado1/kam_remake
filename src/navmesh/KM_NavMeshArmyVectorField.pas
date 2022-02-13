@@ -439,7 +439,7 @@ end;
 
 function TArmyVectorField.GetInitPolygonsHouses(aAllianceType: TKMAllianceType; var aAlliance: TKMAllianceAsset; aOnlyCompleted: Boolean = True): Boolean;
 const
-  SCAN_HOUSES: THouseTypeSet = [htBarracks, htStore, htSchool, htTownhall]; // htWatchTower
+  SCAN_HOUSES: TKMHouseTypeSet = [htBarracks, htStore, htSchool, htTownhall]; // htWatchTower
 var
   PL: TKMHandID;
   K: Integer;

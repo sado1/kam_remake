@@ -331,7 +331,7 @@ end;
 
 function TArmyForwardFF.GetInitPolygonsHouses(aAllianceType: TKMAllianceType; var aAlliance: TKMAllianceInfo): Boolean;
 const
-  SCAN_HOUSES: THouseTypeSet = [htBarracks, htStore, htSchool, htTownhall]; // htWatchTower
+  SCAN_HOUSES: TKMHouseTypeSet = [htBarracks, htStore, htSchool, htTownhall]; // htWatchTower
 var
   PL: TKMHandID;
   K: Integer;

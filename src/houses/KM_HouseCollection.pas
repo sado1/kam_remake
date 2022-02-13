@@ -33,8 +33,8 @@ type
     procedure GetHousesInRect(const aRect: TKMRect; aList: TList<TKMHouse>);
     function FindEmptyHouse(aUnitType: TKMUnitType; const aLoc: TKMPoint): TKMHouse;
     function FindHouse(aType: TKMHouseType; X, Y: Word; const aIndex: Byte = 1; aOnlyCompleted: Boolean = True): TKMHouse; overload;
-    function FindHouse(const aTypes: THouseTypeSet; X, Y: Word; const aIndex: Byte = 1; aOnlyCompleted: Boolean = True): TKMHouse; overload;
-    function FindHousesInRadius(aLoc: TKMPoint; aSqrRadius: Single; aTypes: THouseTypeSet; aOnlyCompleted: Boolean = True): TKMHouseArray;
+    function FindHouse(const aTypes: TKMHouseTypeSet; X, Y: Word; const aIndex: Byte = 1; aOnlyCompleted: Boolean = True): TKMHouse; overload;
+    function FindHousesInRadius(aLoc: TKMPoint; aSqrRadius: Single; aTypes: TKMHouseTypeSet; aOnlyCompleted: Boolean = True): TKMHouseArray;
     function GetTotalPointers: Cardinal;
     procedure Save(SaveStream: TKMemoryStream);
     procedure Load(LoadStream: TKMemoryStream);
@@ -279,7 +279,7 @@ end;
 
 function TKMHousesCollection.FindHouse(aType: TKMHouseType; X, Y: Word; const aIndex: Byte = 1; aOnlyCompleted: Boolean = True): TKMHouse;
 var
-  HT: THouseTypeSet;
+  HT: TKMHouseTypeSet;
 begin
   if aType = htAny then
     HT := [Low(TKMHouseType)..High(TKMHouseType)]
@@ -292,7 +292,7 @@ end;
 //Find closest house to given position
 //or
 //Find house by index (1st, 2nd)
-function TKMHousesCollection.FindHouse(const aTypes: THouseTypeSet; X, Y: Word; const aIndex: Byte = 1; aOnlyCompleted: Boolean = True): TKMHouse;
+function TKMHousesCollection.FindHouse(const aTypes: TKMHouseTypeSet; X, Y: Word; const aIndex: Byte = 1; aOnlyCompleted: Boolean = True): TKMHouse;
 var
   I, ID: Integer;
   usePosition: Boolean;
@@ -331,7 +331,7 @@ begin
 end;
 
 
-function TKMHousesCollection.FindHousesInRadius(aLoc: TKMPoint; aSqrRadius: Single; aTypes: THouseTypeSet; aOnlyCompleted: Boolean = True): TKMHouseArray;
+function TKMHousesCollection.FindHousesInRadius(aLoc: TKMPoint; aSqrRadius: Single; aTypes: TKMHouseTypeSet; aOnlyCompleted: Boolean = True): TKMHouseArray;
 var
   I, idx: Integer;
 begin

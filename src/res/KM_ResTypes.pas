@@ -31,7 +31,7 @@ type
     htStore,           htSwine,           htTannery,       htTownHall,      htWatchTower,
     htWeaponSmithy,    htWeaponWorkshop,  htWineyard,      htWoodcutters    );
 
-  THouseTypeSet = set of TKMHouseType;
+  TKMHouseTypeSet = set of TKMHouseType;
   TKMHouseTypeArray = array of TKMHouseType;
 
   TKMKeyFunction = (

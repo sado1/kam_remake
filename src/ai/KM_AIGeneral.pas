@@ -661,7 +661,7 @@ end;
 //See if we can attack our enemies
 procedure TKMGeneral.OrderAttack(aGroup: TKMUnitGroup; aTarget: TKMAIAttackTarget; const aCustomPos: TKMPoint);
 const
-  TARGET_HOUSES: THouseTypeSet = [HOUSE_MIN..HOUSE_MAX];
+  TARGET_HOUSES: TKMHouseTypeSet = [HOUSE_MIN..HOUSE_MAX];
 var
   TargetHouse: TKMHouse;
   TargetUnit: TKMUnit;
