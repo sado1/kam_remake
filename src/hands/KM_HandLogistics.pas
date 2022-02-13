@@ -2359,7 +2359,7 @@ begin
 end;
 
 
-//Compare keys to make some order to make save consistent. We do care about the order, it just should be consistent
+//Compare keys to make some order to make save consistent. We don't care about the order, it just should be consistent
 function TKMDeliveryRouteBidKeyComparer.Compare(const Left, Right: TKMDeliveryRouteBidKey): Integer;
 begin
   if Left.Pass = Right.Pass then

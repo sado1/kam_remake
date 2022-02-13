@@ -345,6 +345,16 @@ begin
     Sender.AddTypeS('TByteSet', 'set of Byte'); //Needed for Closest*MultipleTypes
     Sender.AddTypeS('TKMPoint', 'record X,Y: Integer; end;'); //Could be very useful
 
+    Sender.AddTypeS('TKMAIDefencePosType', '(adtFrontLine, adtBackLine)');
+    Sender.AddTypeS('TKMGroupType', '(gtMelee, gtAntiHorse, gtRanged, gtMounted)');
+
+    Sender.AddTypeS('TKMDefencePositionInfo', 'record ' +
+                      'X, Y: Integer; ' +
+                      'Radius: Integer; ' +
+                      'GroupType: TKMGroupType; ' +
+                      'PositionType: TKMAIDefencePosType; ' +
+                    'end');
+
     Sender.AddTypeS('TKMFieldType', '(ftNone, ftRoad, ftCorn, ftWine)'); //No need to add InitWine for scripts
     Sender.AddTypeS('TKMHouseType', '(htNone, htAny, '
       + 'htArmorSmithy,     htArmorWorkshop,   htBakery,        htBarracks,      htButchers,'

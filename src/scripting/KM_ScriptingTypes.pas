@@ -1,6 +1,8 @@
 unit KM_ScriptingTypes;
 {$I KaM_Remake.inc}
 interface
+uses
+  KM_Defaults, KM_AITypes;
 
 type
   TKMScriptEventType = (
@@ -65,6 +67,13 @@ type
   TKMScriptErrorType = (seInvalidParameter, seException, sePreprocessorError, seCompileError, seCompileWarning, seCompileHint, seLog);
 
   TKMScriptErrorEvent = procedure (aType: TKMScriptErrorType; const aErrorString: UnicodeString; const aDetailedErrorString: UnicodeString = '') of object;
+
+  TKMDefencePositionInfo = record
+    X, Y: Integer;
+    Radius: Integer;
+    GroupType: TKMGroupType;
+    PositionType: TKMAIDefencePosType;
+  end;
 
 const
   SCRIPT_LOG_EXT = '.log.txt';

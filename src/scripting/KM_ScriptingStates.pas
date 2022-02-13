@@ -5,7 +5,7 @@ uses
   Classes, Math, SysUtils, StrUtils,
   KM_CommonTypes, KM_Defaults, KM_Points, KM_HandsCollection, KM_Houses, KM_ScriptingIdCache, KM_Units, KM_MapTypes,
   KM_UnitGroup, KM_ResHouses, KM_HouseCollection, KM_ResWares, KM_ScriptingEvents, KM_TerrainTypes, KM_ResTilesetTypes,
-  KM_UnitGroupTypes,
+  KM_UnitGroupTypes, KM_ScriptingTypes,
   KM_ResTypes;
 
 
@@ -19,7 +19,7 @@ type
     function AIAutoDefence(aPlayer: Byte): Boolean;
     function AIAutoRepair(aPlayer: Byte): Boolean;
     function AIDefendAllies(aPlayer: Byte): Boolean;
-    procedure AIDefencePositionGet(aPlayer, aID: Byte; out aX, aY: Integer; out aGroupType: Byte; out aRadius: Word; out aDefType: Byte);
+    procedure AIDefencePositionGet(aPlayer, aID: Integer; out aDefencePosition: TKMDefencePositionInfo);
     function AIEquipRate(aPlayer: Byte; aType: Byte): Integer;
     procedure AIGroupsFormationGet(aPlayer, aType: Byte; out aCount, aColumns: Integer);
     function AIRecruitDelay(aPlayer: Byte): Integer;
@@ -376,12 +376,12 @@ begin
 end;
 
 
-//* Version: 12000+
+//* Version: 13700
 //* Gets the parameters of AI defence position
 //* Parameters are returned in aX, aY, aGroupType, aRadius, aDefType variables
 //* Group types: 0 = Melee; 1	= Anti-horse; 2	= Ranged; 3	= Mounted
 //* Defence type: 0 = Defenders; 1 = Attackers
-procedure TKMScriptStates.AIDefencePositionGet(aPlayer, aID: Byte; out aX, aY: Integer; out aGroupType: Byte; out aRadius: Word; out aDefType: Byte);
+procedure TKMScriptStates.AIDefencePositionGet(aPlayer, aID: Integer; out aDefencePosition: TKMDefencePositionInfo);
 var
   DP: TAIDefencePosition;
 begin
@@ -392,11 +392,11 @@ begin
       DP := gHands[aPlayer].AI.General.DefencePositions.Positions[aID];
       if DP <> nil then
       begin
-        aX := DP.Position.Loc.X;
-        aY := DP.Position.Loc.Y;
-        aGroupType := Byte(DP.GroupType);
-        aRadius := DP.Radius;
-        aDefType := Byte(DP.DefenceType);
+        aDefencePosition.X := DP.Position.Loc.X;
+        aDefencePosition.Y := DP.Position.Loc.Y;
+        aDefencePosition.Radius := DP.Radius;
+        aDefencePosition.GroupType := DP.GroupType;
+        aDefencePosition.PositionType := DP.DefenceType;
       end;
     end
     else
