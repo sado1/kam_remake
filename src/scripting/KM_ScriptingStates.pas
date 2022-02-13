@@ -15,6 +15,7 @@ type
     function _ClosestGroup(aPlayer, X, Y, aGroupType: Integer; aMethodName: String): Integer;
     function _ClosestGroupMultipleTypes(aPlayer, X, Y: Integer; aGroupTypes: TKMGroupTypeSet; aMethodName: string): Integer;
     function _ClosestHouse(aPlayer, X, Y: Integer; aHouseType: TKMHouseType; aMethodName: string): Integer;
+    function _ClosestHouseMultipleTypes(aPlayer, X, Y: Integer; aHouseTypes: TKMHouseTypeSet; aMethodName: string): Integer;
   public
     function AIArmyType(aPlayer: Byte): TKMArmyType;
     function AIAutoAttack(aPlayer: Byte): Boolean;
@@ -45,6 +46,7 @@ type
     function ClosestHouse(aPlayer, X, Y, aHouseType: Integer): Integer;
     function ClosestHouseEx(aPlayer, X, Y: Integer; aHouseType: TKMHouseType): Integer;
     function ClosestHouseMultipleTypes(aPlayer, X, Y: Integer; aHouseTypes: TByteSet): Integer;
+    function ClosestHouseMultipleTypesEx(aPlayer, X, Y: Integer; aHouseTypes: TKMHouseTypeSet): Integer;
     function ClosestUnit(aPlayer, X, Y, aUnitType: Integer): Integer;
     function ClosestUnitMultipleTypes(aPlayer, X, Y: Integer; aUnitTypes: TByteSet): Integer;
 
@@ -859,6 +861,31 @@ begin
 end;
 
 
+function TKMScriptStates._ClosestHouseMultipleTypes(aPlayer, X, Y: Integer; aHouseTypes: TKMHouseTypeSet; aMethodName: string): Integer;
+var
+  H: TKMHouse;
+begin
+  Result := -1;
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+      and gTerrain.TileInMapCoords(X, Y) then
+    begin
+      H := gHands[aPlayer].Houses.FindHouse(aHouseTypes, X, Y);
+      if H <> nil then
+      begin
+        Result := H.UID;
+        fIDCache.CacheHouse(H, H.UID);
+      end;
+    end
+    else
+      LogParamWarning(aMethodName, [aPlayer, X, Y]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
 //* Version: 6216
 //* Returns the house of the specified player and house types that is closest to the specified coordinates,
 //* or -1 if no such house was found.
@@ -869,31 +896,25 @@ function TKMScriptStates.ClosestHouseMultipleTypes(aPlayer, X, Y: Integer; aHous
 var
   B: Byte;
   HTS: TKMHouseTypeSet;
-  H: TKMHouse;
 begin
-  try
-    Result := -1;
-    HTS := [];
-    for B := Low(HOUSE_ID_TO_TYPE) to High(HOUSE_ID_TO_TYPE) do
-      if (B in aHouseTypes) and (HOUSE_ID_TO_TYPE[B] <> htNone) then
-        HTS := HTS + [HOUSE_ID_TO_TYPE[B]];
+  HTS := [];
+  for B := Low(HOUSE_ID_TO_TYPE) to High(HOUSE_ID_TO_TYPE) do
+    if (B in aHouseTypes) and (HOUSE_ID_TO_TYPE[B] <> htNone) then
+      HTS := HTS + [HOUSE_ID_TO_TYPE[B]];
 
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-    and gTerrain.TileInMapCoords(X, Y) then
-    begin
-      H := gHands[aPlayer].Houses.FindHouse(HTS, X, Y);
-      if H <> nil then
-      begin
-        Result := H.UID;
-        fIDCache.CacheHouse(H, H.UID);
-      end;
-    end
-    else
-      LogParamWarning('States.ClosestHouseMultipleTypes', [aPlayer, X, Y]);
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
+  Result := _ClosestHouseMultipleTypes(aPlayer, X, Y, HTS, 'States.ClosestHouseMultipleTypes');
+end;
+
+
+//* Version: 13800
+//* Returns the house of the specified player and house types that is closest to the specified coordinates,
+//* or -1 if no such house was found.
+//* The house types is a "set of TKMHouseType", for example [htQuarry, htSchool, htStore]
+//* aHouseTypes: Set of house types
+//* Result: House ID
+function TKMScriptStates.ClosestHouseMultipleTypesEx(aPlayer, X, Y: Integer; aHouseTypes: TKMHouseTypeSet): Integer;
+begin
+  Result := _ClosestHouseMultipleTypes(aPlayer, X, Y, aHouseTypes, 'States.ClosestHouseMultipleTypesEx');
 end;
 
 

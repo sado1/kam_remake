@@ -367,6 +367,8 @@ begin
       + 'htStore,           htSwine,           htTannery,       htTownHall,      htWatchTower,'
       + 'htWeaponSmithy,    htWeaponWorkshop,  htWineyard,      htWoodcutters    )');
 
+    Sender.AddTypeS('TKMHouseTypeSet', 'set of TKMHouseType');
+
     Sender.AddTypeS('TKMGroupOrder', '(goNone, goWalkTo, goAttackHouse, goAttackUnit, goStorm)');
 
     Sender.AddTypeS('TKMAudioFormat', '(afWav, afOgg)'); //Needed for PlaySound
@@ -444,6 +446,7 @@ begin
     RegisterMethodCheck(c, 'function ClosestHouse(aPlayer, X, Y, aHouseType: Integer): Integer');
     RegisterMethodCheck(c, 'function ClosestHouseEx(aPlayer, X, Y: Integer; aHouseType: TKMHouseType): Integer');
     RegisterMethodCheck(c, 'function ClosestHouseMultipleTypes(aPlayer, X, Y: Integer; aHouseTypes: TByteSet): Integer');
+    RegisterMethodCheck(c, 'function ClosestHouseMultipleTypesEx(aPlayer, X, Y: Integer; aHouseTypes: TKMHouseTypeSet): Integer');
     RegisterMethodCheck(c, 'function ClosestUnit(aPlayer, X, Y, aUnitType: Integer): Integer');
     RegisterMethodCheck(c, 'function ClosestUnitMultipleTypes(aPlayer, X, Y: Integer; aUnitTypes: TByteSet): Integer');
 
@@ -1176,6 +1179,7 @@ begin
       RegisterMethod(@TKMScriptStates.ClosestHouse,                             'ClosestHouse');
       RegisterMethod(@TKMScriptStates.ClosestHouseEx,                           'ClosestHouseEx');
       RegisterMethod(@TKMScriptStates.ClosestHouseMultipleTypes,                'ClosestHouseMultipleTypes');
+      RegisterMethod(@TKMScriptStates.ClosestHouseMultipleTypesEx,              'ClosestHouseMultipleTypesEx');
       RegisterMethod(@TKMScriptStates.ClosestUnit,                              'ClosestUnit');
       RegisterMethod(@TKMScriptStates.ClosestUnitMultipleTypes,                 'ClosestUnitMultipleTypes');
 
