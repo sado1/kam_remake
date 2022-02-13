@@ -570,6 +570,7 @@ begin
 
   TrackBar_Brightness.Position  := gGameSettings.Brightness;
   CheckBox_LerpRender.Checked   := gGameSettings.InterpolatedRender;
+  CheckBox_LerpAnims.Enabled    := CheckBox_LerpRender.Checked;
   CheckBox_LerpAnims.Checked    := gGameSettings.InterpolatedAnimations;
   TrackBar_ScrollSpeed.Position := gGameSettings.ScrollSpeed;
   TrackBar_SFX.Position         := Round(gGameSettings.SoundFXVolume * TrackBar_SFX.MaxValue);
@@ -648,6 +649,8 @@ begin
   gGameSettings.Brightness         := TrackBar_Brightness.Position;
   gGameSettings.InterpolatedRender := CheckBox_LerpRender.Checked;
   gGameSettings.InterpolatedAnimations := CheckBox_LerpAnims.Checked;
+
+  CheckBox_LerpAnims.Enabled       := CheckBox_LerpRender.Checked;
 
   gGameSettings.ScrollSpeed        := TrackBar_ScrollSpeed.Position;
   gGameSettings.SoundFXVolume      := TrackBar_SFX.Position / TrackBar_SFX.MaxValue;
