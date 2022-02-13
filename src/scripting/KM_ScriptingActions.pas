@@ -1270,13 +1270,13 @@ procedure TKMScriptActions.AIDefencePositionAdd(aPlayer: Byte; X, Y: Integer; aD
 begin
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-    and (TKMAIDefencePosType(aDefType) in [adtFrontLine..adtBackLine])
-    and (TKMGroupType(aGroupType) in [gtMelee..gtMounted])
-    and (TKMDirection(aDir+1) in [dirN..dirNW])
-    and (gTerrain.TileInMapCoords(X, Y)) then
+      and (TKMAIDefencePosType(aDefType) in [adtFrontLine..adtBackLine])
+      and (TKMGroupType(aGroupType) in [gtMelee..gtMounted])
+      and (TKMDirection(aDir+1) in [dirN..dirNW])
+      and (gTerrain.TileInMapCoords(X, Y)) then
       gHands[aPlayer].AI.General.DefencePositions.Add(KMPointDir(X, Y, TKMDirection(aDir + 1)), TKMGroupType(aGroupType), aRadius, TKMAIDefencePosType(aDefType))
-  else
-    LogParamWarning('Actions.AIDefencePositionAdd', [aPlayer, X, Y, aDir, aGroupType, aRadius, aDefType]);
+    else
+      LogParamWarning('Actions.AIDefencePositionAdd', [aPlayer, X, Y, aDir, aGroupType, aRadius, aDefType]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
