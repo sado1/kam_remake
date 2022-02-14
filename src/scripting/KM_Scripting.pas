@@ -480,6 +480,8 @@ begin
     RegisterMethodCheck(c, 'function GroupType(aGroupID: Integer): Integer');
     RegisterMethodCheck(c, 'function GroupTypeEx(aGroupID: Integer): TKMGroupType');
 
+    RegisterMethodCheck(c, 'function HandHouseCanBuild(aPlayer: Integer; aHouseType: TKMHouseType): Boolean');
+
     RegisterMethodCheck(c, 'function HouseAt(aX, aY: Word): Integer');
     RegisterMethodCheck(c, 'function HouseAllowAllyToSelect(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseBarracksRallyPointX(aBarracks: Integer): Integer');
@@ -1218,6 +1220,8 @@ begin
       RegisterMethod(@TKMScriptStates.GroupOwner,                               'GroupOwner');
       RegisterMethod(@TKMScriptStates.GroupType,                                'GroupType');
       RegisterMethod(@TKMScriptStates.GroupTypeEx,                              'GroupTypeEx');
+
+      RegisterMethod(@TKMScriptStates.HandHouseCanBuild,                        'HandHouseCanBuild');
 
       RegisterMethod(@TKMScriptStates.HouseAllowAllyToSelect,                   'HouseAllowAllyToSelect');
       RegisterMethod(@TKMScriptStates.HouseAt,                                  'HouseAt');

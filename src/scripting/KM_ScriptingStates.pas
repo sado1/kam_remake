@@ -79,6 +79,8 @@ type
     function GroupType(aGroupID: Integer): Integer;
     function GroupTypeEx(aGroupID: Integer): TKMGroupType;
 
+    function HandHouseCanBuild(aPlayer: Integer; aHouseType: TKMHouseType): Boolean;
+
     function HouseAllowAllyToSelect(aHouseID: Integer): Boolean;
     function HouseAt(aX, aY: Word): Integer;
     function HouseBarracksRallyPointX(aBarracks: Integer): Integer;
@@ -1864,6 +1866,27 @@ begin
     begin
       Result := '';
       LogParamWarning('States.PlayerName', [aPlayer]);
+    end;
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns true if the specified hand (player) can build the specified house type
+//* Result: House can build
+function TKMScriptStates.HandHouseCanBuild(aPlayer: Integer; aHouseType: TKMHouseType): Boolean;
+begin
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    and (aHouseType in HOUSES_VALID) then
+      Result := gHands[aPlayer].Locks.HouseCanBuild(aHouseType)
+    else
+    begin
+      Result := False;
+      LogParamWarning('States.HandHouseCanBuild', [aPlayer, Ord(aHouseType)]);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
