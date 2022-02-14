@@ -65,11 +65,14 @@ begin
 
   locks := gMySpectator.Hand.Locks;
 
+  // Circling through 3 house lock values
   if ssLeft in Shift then
-    locks.HouseLock[H] := TKMHandHouseLock((Ord(locks.HouseLock[H]) + 1) mod 3)
+    // Straight direction
+    locks.HouseLock[H] := TKMHandHouseLock(1 + ((Ord(locks.HouseLock[H]) - 1 + 1) mod 3))
   else
   if ssRight in Shift then
-    locks.HouseLock[H] := TKMHandHouseLock((Ord(locks.HouseLock[H]) + 3 - 1) mod 3);
+    // Reverse direction
+    locks.HouseLock[H] := TKMHandHouseLock(1 + ((Ord(locks.HouseLock[H]) - 1 + 3 - 1) mod 3));
 
   Player_BlockHouseRefresh;
 end;
@@ -88,9 +91,9 @@ begin
     H := GUIHouseOrder[I];
 
     case locks.HouseLock[H] of
-      hlDefault:  Image_BlockHouse[I].TexID := 0;
       hlBlocked:  Image_BlockHouse[I].TexID := 32;
       hlGranted:  Image_BlockHouse[I].TexID := 33;
+      else        Image_BlockHouse[I].TexID := 0;
     end;
   end;
 end;

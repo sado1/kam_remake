@@ -8,7 +8,7 @@ type
 
   TKMHandEntityType = (etNone, etUnit, etGroup, etHouse);
 
-  TKMHandHouseLock = (hlDefault, hlBlocked, hlGranted);
+  TKMHandHouseLock = (hlNone, hlDefault, hlBlocked, hlGranted);
 
 const
   HAND_NONE = -1; //No player
