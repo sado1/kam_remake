@@ -116,7 +116,7 @@ const
   // Houses in SCAN_HOUSES will be destroyed when they are in radius (it should also contain TARGET_HOUSES)
   SCAN_HOUSES: TKMHouseTypeSet = [htWatchTower, htBarracks, htStore, htSchool, htTownhall];
   // All houses for final stage of attack algorithm
-  ALL_HOUSES: TKMHouseTypeSet = [HOUSE_MIN..HOUSE_MAX];
+  ALL_HOUSES: TKMHouseTypeSet = HOUSES_VALID;
 
 {$IFDEF DEBUG_NewAI}
 var

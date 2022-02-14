@@ -10,6 +10,7 @@ uses
 const
   HOUSE_MIN = htArmorSmithy;
   HOUSE_MAX = htWoodcutters;
+  HOUSES_VALID = [HOUSE_MIN..HOUSE_MAX];
   HOUSE_WORKSHOP = [htWeaponSmithy, htArmorSmithy, htWeaponWorkshop, htArmorWorkshop];
 
   HOUSES_CNT = Integer(HOUSE_MAX) - Integer(HOUSE_MIN) + 1;
@@ -855,7 +856,7 @@ end;
 
 function TKMResHouses.IsValid(aType: TKMHouseType): Boolean;
 begin
-  Result := aType in [HOUSE_MIN..HOUSE_MAX];
+  Result := aType in HOUSES_VALID;
 end;
 
 

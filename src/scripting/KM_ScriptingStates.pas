@@ -818,7 +818,7 @@ begin
     and (aHouseType <> htNone) then
     begin
       if aHouseType = htAny then
-        HTS := [HOUSE_MIN..HOUSE_MAX]
+        HTS := HOUSES_VALID
       else
         HTS := [aHouseType];
 
@@ -879,7 +879,7 @@ begin
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
       and gTerrain.TileInMapCoords(X, Y) then
     begin
-      aHouseTypes := aHouseTypes * [HOUSE_MIN..HOUSE_MAX];
+      aHouseTypes := aHouseTypes * HOUSES_VALID;
       H := gHands[aPlayer].Houses.FindHouse(aHouseTypes, X, Y);
       if H <> nil then
       begin
@@ -2602,7 +2602,7 @@ function TKMScriptStates.HouseTypeMaxHealthEx(aHouseType: TKMHouseType): Integer
 begin
     try
     Result := 0;
-    if aHouseType in [HOUSE_MIN..HOUSE_MAX] then
+    if aHouseType in HOUSES_VALID then
       Result := gResHouses[aHouseType].MaxHealth
     else
       LogParamWarning('States.HouseTypeMaxHealthEx', [Ord(aHouseType)]);
@@ -2645,7 +2645,7 @@ end;
 function TKMScriptStates.HouseTypeNameEx(aHouseType: TKMHouseType): AnsiString;
 begin
   try
-    if aHouseType in [HOUSE_MIN..HOUSE_MAX] then
+    if aHouseType in HOUSES_VALID then
       Result := '<%' + AnsiString(IntToStr(gResHouses[aHouseType].HouseNameTextID)) + '>'
     else
     begin
@@ -3092,7 +3092,7 @@ begin
     if gTerrain.TileInMapCoords(X,Y) then
     begin
       handFilter := InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled);
-      houseTypeFilter := aHouseType in [HOUSE_MIN..HOUSE_MAX];
+      houseTypeFilter := aHouseType in HOUSES_VALID;
 
       if handFilter and houseTypeFilter then
         Result := FindPlan(aPlayer, X, Y, aHouseType)
