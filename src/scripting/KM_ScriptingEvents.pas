@@ -20,6 +20,7 @@ type
     fOnScriptError: TKMScriptErrorEvent;
     procedure LogWarning(const aFuncName, aWarnMsg: String);
     procedure LogParamWarning(const aFuncName: String; const aValues: array of Integer);
+    procedure LogParamWarn(const aFuncName: String; const aValues: array of const);
   public
     constructor Create(aIDCache: TKMScriptingIdCache);
     property OnScriptError: TKMScriptErrorEvent write fOnScriptError;
@@ -1158,12 +1159,46 @@ end;
 procedure TKMScriptEntity.LogParamWarning(const aFuncName: string; const aValues: array of Integer);
 var
   I: Integer;
-  Values: string;
+  values: string;
 begin
-  Values := '';
+  values := '';
+
   for I := Low(aValues) to High(aValues) do
-    Values := Values + String(IntToStr(aValues[I])) + IfThen(I <> High(aValues), ', ');
-  fOnScriptError(seInvalidParameter, 'Invalid parameter(s) passed to ' + aFuncName + ': ' + Values);
+    values := values + String(IntToStr(aValues[I])) + IfThen(I <> High(aValues), ', ');
+
+  fOnScriptError(seInvalidParameter, 'Invalid parameter(s) passed to ' + aFuncName + ': ' + values);
+end;
+
+
+procedure TKMScriptEntity.LogParamWarn(const aFuncName: String; const aValues: array of const);
+const
+  SEP = ', ';
+var
+  I: Integer;
+  values: string;
+begin
+  values := '';
+
+  for I := Low(aValues) to High(aValues) do
+    with aValues[I] do
+      case VType of
+          vtInteger:        values := values + IntToStr(VInteger)     + IfThen(I <> High(aValues), SEP);
+          vtBoolean:        values := values + BoolToStr(VBoolean)    + IfThen(I <> High(aValues), SEP);
+          vtChar:           values := values + VChar                  + IfThen(I <> High(aValues), SEP);
+          vtExtended:       values := values + FloatToStr(VExtended^) + IfThen(I <> High(aValues), SEP);
+          vtString:         values := values + VString^               + IfThen(I <> High(aValues), SEP);
+          vtPChar:          values := values + VPChar                 + IfThen(I <> High(aValues), SEP);
+          vtObject:         values := values + VObject.ClassName      + IfThen(I <> High(aValues), SEP);
+          vtClass:          values := values + VClass.ClassName       + IfThen(I <> High(aValues), SEP);
+          vtPWideChar:      values := values + string(VPWideChar)     + IfThen(I <> High(aValues), SEP);
+          vtAnsiString:     values := values + string(VAnsiString)    + IfThen(I <> High(aValues), SEP);
+          vtCurrency:       values := values + CurrToStr(VCurrency^)  + IfThen(I <> High(aValues), SEP);
+          vtVariant:        values := values + string(VVariant^)      + IfThen(I <> High(aValues), SEP);
+          vtInt64:          values := values + IntToStr(VInt64^)      + IfThen(I <> High(aValues), SEP);
+          vtUnicodeString:  values := values + string(VUnicodeString) + IfThen(I <> High(aValues), SEP);
+    end;
+
+  fOnScriptError(seInvalidParameter, 'Invalid parameter(s) passed to ' + aFuncName + ': ' + values);
 end;
 
 
