@@ -402,7 +402,7 @@ begin
   fParLog.AddTime('');
   fParLog.AddTime('GA parameters:');
   for K := 0 to BestWIdv.GenesCount - 1 do
-    fParLog.AddTime(Format('%16.15f',[BestWIdv.Gene[K]]));
+    fParLog.AddTime(Format('%3d. %16.15f',[K, BestWIdv.Gene[K]]));
   fParLog.AddTime('KaM Parameters:');
   fParametrization.SetPar(BestWIdv,True);
 
@@ -412,7 +412,7 @@ begin
     fParLog.AddTime(Format('%.2d. generation; best individual (fitness = %f15.5)',[aGenNumber,BestIdv.FitnessSum]));
     fParLog.AddTime('GA parameters:');
     for K := 0 to BestIdv.GenesCount - 1 do
-      fParLog.AddTime(Format('%16.15f',[BestIdv.Gene[K]]));
+      fParLog.AddTime(Format('%3d. %16.15f',[K, BestWIdv.Gene[K]]));
     fParLog.AddTime('KaM Parameters:');
     fParametrization.SetPar(BestIdv,True);
   end;

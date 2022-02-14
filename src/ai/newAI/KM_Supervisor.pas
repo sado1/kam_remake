@@ -470,20 +470,16 @@ const
   sqr_MAX_DISTANCE_FROM_HOUSE = 10*10;
   MAX_ATTACKERS_PER_HOUSE = 12;
   WarriorPrice: array [utMilitia..utHorseman] of Single = (
-    1.5,2.0,2.5,2.0,2.5, // utMilitia,utAxeFighter,utSwordsman,utBowman,utArbaletman,
-    2.0,2.5,2.0,2.5,     // utPikeman,utHallebardman,utHorseScout,utCavalry
-    2.5,1.5,1.5,2.5,1.5  // utBarbarian,utPeasant,utSlingshot,utMetalBarbarian,utHorseman
-  );
-  ThreatGain: array [TKMGroupType] of Single = (
-  // gtMelee, gtAntiHorse, gtRanged, gtMounted
-         0.5,         1.0,      3.0,       3.0
+    1.0,2.0,3.0,2.0,3.0, // utMilitia,utAxeFighter,utSwordsman,utBowman,utArbaletman,
+    2.0,3.0,2.0,3.0,     // utPikeman,utHallebardman,utHorseScout,utCavalry
+    3.5,1.0,1.0,3.5,1.0  // utBarbarian,utPeasant,utSlingshot,utMetalBarbarian,utHorseman
   );
   OpportunityArr: array [TKMGroupType,TKMGroupType] of Single = (
   // gtMelee, gtAntiHorse, gtRanged, gtMounted
-    (    1.0,         2.0,      3.0,       0.5), // gtMelee
+    (    1.0,         1.5,      3.0,       0.5), // gtMelee
     (    0.5,         1.0,      2.0,       4.0), // gtAntiHorse
-    (    1.0,         2.0,      3.0,       0.5), // gtRanged
-    (    1.0,         0.2,      5.0,       1.0)  // gtMounted
+    (    1.0,         1.5,      2.0,       0.5), // gtRanged
+    (    1.0,         0.5,      5.0,       1.0)  // gtMounted
   );
 
 var
@@ -532,7 +528,7 @@ begin
   if aAttack AND (Length(E) > 0) then
   begin
 
-    // Set orders for ranged groups (the closest enemy, top prio)
+    // Set orders for ranged groups in range (the closest enemy, top prio)
     for IdxA := CntA - 1 downto 0 do
       if (A[IdxA].Group.GroupType = gtRanged) then
       begin
@@ -594,7 +590,7 @@ begin
 
     // Set targets
 
-    // Archers - shoot the nearest enemy
+    // Archers (out of range) - shoot the nearest enemy
     for IdxA := 0 to CntA - 1 do
       if (A[IdxA].Group.GroupType = gtRanged) then
       begin
@@ -653,7 +649,7 @@ begin
             // SetOrders
             UW := A[BestIdxA].Group.GetAliveMember;
             // Decrease risk
-            WeightedCount := WeightedCount - A[BestIdxA].Group.Count * WarriorPrice[UW.UnitType];
+            WeightedCount := WeightedCount - A[BestIdxA].Group.Count * WarriorPrice[UW.UnitType] * AI_Par[ATTACK_SUPERVISOR_EvalTarget_DecreaseRisk];
             // Set order
             A[BestIdxA].CG.TargetGroup := E[BestIdxE];
             // Remove group from selection

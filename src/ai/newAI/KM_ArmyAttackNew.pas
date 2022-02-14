@@ -436,7 +436,7 @@ begin
         OR (KMDistanceSqr(fTargetAim,ActPos) > 12*12)
         OR (fGroup.Order in [goNone, goAttackHouse, goWalkTo]) // Force Group to change its task
         OR (fAttackTimeLimit < aTick) // Make sure that unit is not stuck
-        then
+      then
       begin
         fAttackTimeLimit := aTick + Round(AI_Par[ATTACK_SQUAD_ChangeTarget_Delay]);
         fTargetChanged := False;
@@ -483,8 +483,8 @@ begin
 
   // Check traffic
   walkedDistance := KMDistanceAbs(fTrafficDetection.PreviousPosition, fGroup.Position);
-  fTrafficDetection.StuckCounter := min(15, max(0, Word(fCombatPhase <> cpIdle) * fTrafficDetection.StuckCounter + Word(walkedDistance <= 1) * 2 - 1));
-  fTrafficDetection.StuckInTraffic := fTrafficDetection.StuckCounter > 10;
+  fTrafficDetection.StuckCounter := min(round(AI_Par[ATTACK_SQUAD_TrafficDetection_Limit]), max(0, Word(fCombatPhase <> cpIdle) * fTrafficDetection.StuckCounter + Word(walkedDistance <= 1) * 2 - 1));
+  fTrafficDetection.StuckInTraffic := fTrafficDetection.StuckCounter > AI_Par[ATTACK_SQUAD_TrafficDetection_Threshold];
   fTrafficDetection.PreviousPosition := fGroup.Position;
 end;
 
@@ -538,14 +538,16 @@ begin
     else
     begin
       InitPolygon := gAIFields.NavMesh.KMPoint2Polygon[aActualPosition];
-      I := Length(PointPath)-2; // Skip next polygon -> fluent movement
+      I := Length(PointPath)-1;
       repeat
         aTargetPosition := PointPath[Max(0, I)];
         ClosestPolygon := gAIFields.NavMesh.KMPoint2Polygon[aTargetPosition];
         I := I - 1;
-      until (I < 0) or ( (InitPolygon <> ClosestPolygon)
-                         and (tpWalk in gTerrain.Land^[aTargetPosition.Y, aTargetPosition.X].Passability)
-                         and (KMDistanceSqr(aActualPosition, aTargetPosition) > sqr(AI_Par[ATTACK_SQUAD_MinWalkingDistance])));
+      until (I < 0) or (
+          (InitPolygon <> ClosestPolygon)
+          and (tpWalk in gTerrain.Land^[aTargetPosition.Y, aTargetPosition.X].Passability)
+          and (KMDistanceSqr(aActualPosition, aTargetPosition) > sqr(AI_Par[ATTACK_SQUAD_MinWalkingDistance]))
+        );
 
       {$IFDEF DEBUG_NewAI}
       DEBUGPointPath := PointPath;

@@ -42,6 +42,7 @@ type
     CG: TKMCombatGroup;
   end;
   pTKMGroupCounterWeight = ^TKMGroupCounterWeight;
+  TKMGroupCounterWeightArray = array of TKMGroupCounterWeight;
   pTKMGroupCounterWeightArray = array of pTKMGroupCounterWeight;
   TKMCombatClusterThreat = record
     AttackingCity: Boolean;
@@ -55,7 +56,7 @@ type
       GroupsCount, CGCount, InPositionCnt, NearEnemyCnt: Word;
       Opportunity, InPositionStrength: Single;
       WeightedCount: array[TKMGroupType] of Word;
-      Groups: array of TKMGroupCounterWeight
+      Groups: TKMGroupCounterWeightArray;
     end;
   end;
   TKMCombatClusterThreatArray = array of TKMCombatClusterThreat;
@@ -112,8 +113,10 @@ type
     {$ENDIF}
 
     procedure MakeNewQueue(); override;
-    procedure InitQueue(const aCluster: pTKMCombatCluster); reintroduce;
-    procedure Flood(); override;
+    procedure InitQueue(const aCluster: pTKMCombatCluster); reintroduce; overload;
+    procedure InitQueue(const aGroupsPoly: TKMWordArray; aCnt: Word); reintroduce; overload;
+    procedure FloodEnemy();
+    procedure FloodAlly();
 
     function GetInitPolygonsGroups(aAllianceType: TKMAllianceType; var aAlliance: TKMAllianceAsset): Boolean;
     function GetInitPolygonsHouses(aAllianceType: TKMAllianceType; var aAlliance: TKMAllianceAsset; aOnlyCompleted: Boolean = True): Boolean;
@@ -156,7 +159,7 @@ const
 implementation
 uses
   SysUtils,
-  KM_Hand, KM_HandsCollection,
+  KM_Hand, KM_HandsCollection, KM_Terrain,
   KM_AIFields, KM_NavMesh, KM_AIParameters,
   {$IFDEF DEBUG_ArmyVectorField}
   DateUtils, KM_CommonUtils,
@@ -505,8 +508,6 @@ end;
 
 
 procedure TArmyVectorField.InitClusterEvaluation();
-const
-  INFLUENCE_THRESHOLD = 150;
 var
   OwnerDetected: Boolean;
   K, L, M, Cnt, OwnersCnt: Integer;
@@ -564,7 +565,7 @@ var
   PowerLeft: Single;
   AssignedGroups: TBooleanArray;
 
-  procedure AddGroup(aGroupIdx, aCCTIdx: Word);
+  procedure AddGroup(aGroupIdx, aCCTIdx: Integer);
   var
     K: Integer;
   begin
@@ -575,6 +576,9 @@ var
       if (K < Ally.GroupsCount - 1) AND (Ally.Groups[K] <> Ally.Groups[K + 1]) then
         Break;
     end;
+    // Negative index = no cluster was found => Exit
+    if (aCCTIdx < 0) then
+      Exit;
     // Add group to array
     with CCT[aCCTIdx].CounterWeight do
     begin
@@ -599,9 +603,11 @@ const
     (    1.0,         0.2,      5.0,       1.0)  // gtMounted
   );
 var
+  WalkableID: Byte;
   K, L, BestCCTIdx, BestGIdx, Overflow, Overflow2: Integer;
   Distance, BestDistance, SoldiersCnt: Single;
-  P: TKMPoint;
+  P, HouseEntrance: TKMPoint;
+  CenterPoints: TKMPointArray;
   Pf: TKMPointF;
   PL: TKMHandID;
   Distances: TSingleArray;
@@ -716,42 +722,67 @@ begin
   // Find common enemy
   if (aCS in [csAttackingCity, csAttackingEverything]) then
   begin
-    BestDistance := 1E10;
-    for PL in fOwners do
+    // Get center points of players
+    SetLength(CenterPoints, length(fOwners));
+    for K := Low(fOwners) to High(fOwners) do
     begin
+      PL := fOwners[K];
       // Get center point of 1 player
       SoldiersCnt := 0;
       Pf := KMPOINTF_ZERO;
-      for K := 0 to Ally.GroupsCount - 1 do
-        with Ally.Groups[K] do
+      for L := 0 to Ally.GroupsCount - 1 do
+        with Ally.Groups[L] do
           if (Owner = PL) then
           begin
             SoldiersCnt := SoldiersCnt + Count; // Weighted average
             Pf.X := Pf.X + Position.X * Count;
             Pf.Y := Pf.Y + Position.Y * Count;
           end;
+      CenterPoints[K] := KMPOINT_ZERO;
       if (SoldiersCnt = 0) then
         Continue;
-      P := KMPoint(  Round(Pf.X / SoldiersCnt), Round(Pf.Y / SoldiersCnt)  );
-      // Target = city (clusters with houses) OR every cluster if there are no houses
-      for K := Low(CCT) to High(CCT) do
-        if (CCT[K].Cluster.HousesCount > 0) OR (Enemy.HousesCount = 0) then
-        begin
-          Distance := KMDistanceSqr(CCT[K].CenterPoint, P);
-          if (Distance < BestDistance) then
-          begin
-            BestDistance := Distance;
-            BestCCTIdx := K;
-          end;
-        end;
+      CenterPoints[K] := KMPoint(  Round(Pf.X / SoldiersCnt), Round(Pf.Y / SoldiersCnt)  );
     end;
-    // Exit if no cluster has been found
-    if (BestDistance = 1E10) then
-      Exit;
-    // Assign groups
-    for K := 0 to Ally.GroupsCount - 1 do
-      if not AssignedGroups[K] then
-        AddGroup(K, BestCCTIdx);
+
+    // Check 250 areas (in reality only 2 loops should be required)
+    for K := 0 to 250 do
+    begin
+      // Get WalkConnectID
+      WalkableID := High(Byte);
+      for L := 0 to Ally.GroupsCount - 1 do
+        if not AssignedGroups[L] then
+        begin
+          WalkableID := gTerrain.GetWalkConnectID(Ally.Groups[L].Position);
+          break;
+        end;
+      // Return if all groups are assigned
+      if (WalkableID = High(Byte)) then
+        break;
+      // Compute distance
+      BestDistance := 1E10;
+      for PL in fOwners do
+      begin
+        // Target = city (clusters with houses) OR every cluster if there are no houses
+        for L := Low(CCT) to High(CCT) do
+          if ((CCT[L].Cluster.HousesCount > 0) AND (WalkableID = gTerrain.GetWalkConnectID(KMPointBelow(Enemy.Houses[ CCT[L].Cluster.Houses[0] ].Entrance))))
+            OR ((Enemy.HousesCount = 0)        AND (WalkableID = gTerrain.GetWalkConnectID(             Enemy.Groups[ CCT[L].Cluster.Groups[0] ].Position ))) then
+          begin
+            Distance := KMDistanceSqr(CCT[L].CenterPoint, P);
+            if (Distance < BestDistance) then
+            begin
+              BestDistance := Distance;
+              BestCCTIdx := L;
+            end;
+          end;
+      end;
+      // Exit if no cluster has been found
+      if (BestDistance = 1E10) then
+        BestCCTIdx := -1;
+      // Assign groups
+      for L := 0 to Ally.GroupsCount - 1 do
+        if not AssignedGroups[L] AND (gTerrain.GetWalkConnectID(Ally.Groups[L].Position) = WalkableID) then
+          AddGroup(L, BestCCTIdx);
+    end;
   end
   else
   begin
@@ -808,14 +839,13 @@ procedure TArmyVectorField.InitQueue(const aCluster: pTKMCombatCluster);
   procedure AddPoly(const aIdx: Word);
   const
     INIT_DISTANCE_QUEUE = 0;
-    INIT_DISTANCE_VECTOR_FIELD = 500;
   begin
     if not IsVisited(aIdx) then
     begin
       MarkAsVisited(aIdx, INIT_DISTANCE_QUEUE, gAIFields.NavMesh.Polygons[ aIdx ].CenterPoint);
       InsertInQueue(aIdx);
-      //fVectorField[aIdx].Parent := 0;
-      fVectorField[aIdx].Distance := INIT_DISTANCE_VECTOR_FIELD;
+      //fVectorField[aIdx].Distance := fVectorField[aIdx].Distance + Round(AI_Par[ATTACK_ArmyVectorField_Flood_DistEnemyOffset]) * 8;
+      fVectorField[aIdx].Distance := Round(AI_Par[ATTACK_ArmyVectorField_Flood_DistEnemyOffset]) * 8;
     end;
   end;
 var
@@ -829,13 +859,58 @@ begin
 end;
 
 
-procedure TArmyVectorField.Flood();
+procedure TArmyVectorField.InitQueue(const aGroupsPoly: TKMWordArray; aCnt: Word);
+const
+  INIT_DISTANCE_QUEUE = 0;
+var
+  K, PolyIdx: Integer;
+begin
+  Inc(fVisitedIdx);
+  for K := 0 to aCnt - 1 do
+  begin
+    PolyIdx := aGroupsPoly[K];
+    if not IsVisited(PolyIdx) then
+    begin
+      MarkAsVisited(PolyIdx, INIT_DISTANCE_QUEUE, gAIFields.NavMesh.Polygons[PolyIdx].CenterPoint);
+      InsertInQueue(PolyIdx);
+      fVectorField[PolyIdx].Distance := fVectorField[PolyIdx].Distance + Round(AI_Par[ATTACK_ArmyVectorField_Flood_DistAllyOffset])*2;
+    end;
+  end;
+end;
+
+
+procedure TArmyVectorField.FloodAlly();
+var
+  Idx: Word;
+  Dist: Cardinal;
+  K, step: Integer;
+begin
+  while RemoveFromQueue(Idx) do
+    //if CanBeExpanded(Idx) then
+      with gAIFields.NavMesh.Polygons[Idx] do
+        for K := 0 to NearbyCount - 1 do
+          if not IsVisited(Nearby[K]) then
+          begin
+            Dist := fQueueArray[Idx].Distance + KMDistanceWalk(fQueueArray[Idx].DistPoint, NearbyPoints[K]);
+            MarkAsVisited(
+              Nearby[K],
+              Dist,
+              NearbyPoints[K]
+            );
+            InsertAndSort(Nearby[K]);
+            step := Round(AI_Par[ATTACK_ArmyVectorField_Flood_DistAllyOffset]);
+            fVectorField[ Nearby[K] ].Distance := fVectorField[ Nearby[K] ].Distance + (Dist shl 1) + (step - Min(step,Dist))*2;
+          end;
+end;
+
+
+procedure TArmyVectorField.FloodEnemy();
 const
   NARROW_COEF = 4;
 var
   Idx: Word;
   Dist: Cardinal;
-  K: Integer;
+  K, step: Integer;
 begin
   while RemoveFromQueue(Idx) do
     //if CanBeExpanded(Idx) then
@@ -853,7 +928,17 @@ begin
             );
             InsertAndSort(Nearby[K]);
             //fVectorField[ Nearby[K] ].Parent := Idx;
-            fVectorField[ Nearby[K] ].Distance := Dist + (15 - Min(15,Dist))*32;
+            step := Round(AI_Par[ATTACK_ArmyVectorField_Flood_DistEnemyOffset]);
+            //fVectorField[ Nearby[K] ].Distance := fVectorField[ Nearby[K] ].Distance + Dist + (step - Min(step,Dist))*8;
+            fVectorField[ Nearby[K] ].Distance := Dist + (step - Min(step,Dist))*8;
+            {
+            fVectorField[ Nearby[K] ].Distance :=
+              + Dist
+              + Round((
+                + AI_Par[ATTACK_ArmyVectorField_Flood_DistOffset]
+                - Min(round(AI_Par[ATTACK_ArmyVectorField_Flood_DistOffset]),Dist))
+              * 32);
+            //}
           end;
 end;
 
@@ -902,8 +987,8 @@ procedure TArmyVectorField.FindPositions();
         Inc(CGCount, Byte(Groups[K].CG <> nil));
         // Check if group is in the place
         InPlace := False;
-        if (fVectorField[PolyIdx].Distance < fVectorField[BestIdx].Distance)
-          OR (fQueueArray[PolyIdx].Distance < NEAR_ENEMY_TOLERANCE)
+        if (fVectorField[PolyIdx].Distance < fVectorField[BestIdx].Distance) // Close to target point
+          //OR (fQueueArray[PolyIdx].Distance < NEAR_ENEMY_TOLERANCE) // Close to enemy
           OR (KMDistanceWalk(InitP,Groups[K].TargetPosition.Loc) < IN_PLACE_TOLERANCE) // Distance from combat line
           OR ((Groups[K].CG <> nil) AND (Groups[K].CG.StuckInTraffic)) then
         begin
@@ -921,6 +1006,31 @@ procedure TArmyVectorField.FindPositions();
           Groups[K].Status := InPlace;
         end;
       end;
+  end;
+
+  procedure EstimateCombatLine(const aGroups: TKMGroupCounterWeightArray; aCnt: Word);
+  var
+    K, Idx, BestIdx: Integer;
+    BestDistance: Cardinal;
+    GroupsPoly: TKMWordArray;
+  begin
+    // Find index of group closest to the combat line
+    BestDistance := High(Cardinal);
+    BestIdx := Ally.GroupsPoly[ aGroups[0].Idx ];
+    for K := 0 to aCnt - 1 do
+    begin
+      Idx := Ally.GroupsPoly[ aGroups[K].Idx ];
+      if (fVectorField[Idx].Distance < BestDistance) then
+      begin
+        BestIdx := Idx;
+        BestDistance := fVectorField[Idx].Distance;
+      end;
+    end;
+    SetLength(GroupsPoly, 1);
+    GroupsPoly[0] := BestIdx;
+    // Create beacon from the group closes to the combat line
+    InitQueue(GroupsPoly, 1);
+    FloodAlly();
   end;
 
 var
@@ -942,7 +1052,8 @@ begin
     if (CCT[K].CounterWeight.GroupsCount > 0) then
     begin
       InitQueue(CCT[K].Cluster);
-      Flood();
+      FloodEnemy();
+      EstimateCombatLine(CCT[K].CounterWeight.Groups, CCT[K].CounterWeight.GroupsCount);
       AssignPositions(K);
       {$IFDEF DEBUG_ArmyVectorField}
         CopyVectorFieldForDebug(K);
@@ -1266,7 +1377,6 @@ begin
       end;
     end;
   //}
-
   // Vector field
   if OVERLAY_AI_VECTOR_FIELD then
   begin
@@ -1281,7 +1391,7 @@ begin
           if (VectorFields[SelectedIdx,K].Distance > 0) then
             with gAIFields.NavMesh do
             begin
-              //DrawPolygon(K, Round(fVectorField[K].Distance/Opacity*250), tcWhite);
+              DrawPolygon(K, Round(fVectorField[K].Distance/Opacity*250), tcWhite);
               BestIdx := Polygons[K].Nearby[0];
               for L := 1 to Polygons[K].NearbyCount - 1 do
               begin
@@ -1291,7 +1401,7 @@ begin
               end;
               if (fVectorField[K].Distance < fVectorField[BestIdx].Distance) then
               begin
-                DrawPolygon(K, $22, $44000000 OR tcWhite);
+                //DrawPolygon(K, $22, $44000000 OR tcWhite);
               end
               else
               begin
