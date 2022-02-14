@@ -2,6 +2,7 @@ unit KM_AIDefensePos;
 {$I KaM_Remake.inc}
 interface
 uses
+  Math,
   KM_UnitGroup,
   KM_CommonClasses, KM_Defaults, KM_Points,
   KM_AITypes;
@@ -77,7 +78,7 @@ type
 
 implementation
 uses
-  Math, SysUtils, TypInfo,
+  SysUtils, TypInfo,
   KM_GameParams, KM_HandsCollection, KM_RenderAux, KM_RenderPool, KM_Hand,
   KM_UnitGroupTypes, KM_InterfaceGame;
 
