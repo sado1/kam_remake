@@ -2897,7 +2897,7 @@ begin
     if aHouseType in HOUSES_VALID then
       Result := gResHouses[aHouseType].WorkerType
     else
-      LogIntParamWarn('States.HouseTypeToWorkerType', [Ord(aHouseType)]);
+      LogParamWarn('States.HouseTypeToWorkerType', [GetEnumName(TypeInfo(TKMHouseType), Integer(aHouseType))]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
