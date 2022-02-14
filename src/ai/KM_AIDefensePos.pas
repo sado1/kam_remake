@@ -46,7 +46,7 @@ type
     function GetCount: Integer; inline;
   public
     //Defines how defending troops will be formatted. 0 means leave unchanged.
-    TroopFormations: array [TKMGroupType] of TKMFormation;
+    TroopFormations: array [GROUP_TYPE_MIN..GROUP_TYPE_MAX] of TKMFormation;
 
     constructor Create(aPlayer: TKMHandID);
     destructor Destroy; override;
@@ -77,7 +77,7 @@ type
 
 implementation
 uses
-  Math, SysUtils,
+  Math, SysUtils, TypInfo,
   KM_GameParams, KM_HandsCollection, KM_RenderAux, KM_RenderPool, KM_Hand,
   KM_UnitGroupTypes, KM_InterfaceGame;
 
@@ -86,6 +86,8 @@ uses
 constructor TAIDefencePosition.Create(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType);
 begin
   inherited Create;
+
+  Assert(aGroupType in GROUP_TYPES_VALID, 'Invalid group type: ' + GetEnumName(TypeInfo(TKMGroupType), Integer(aGroupType)));
   fPosition := aPos;
   fGroupType := aGroupType;
   fRadius := aRadius;
@@ -122,6 +124,7 @@ end;
 procedure TAIDefencePosition.SetGroupType(const Value: TKMGroupType);
 begin
   Assert(gGameParams.IsMapEditor);
+  Assert(Value in GROUP_TYPES_VALID, 'Invalid group type: ' + GetEnumName(TypeInfo(TKMGroupType), Integer(Value)));
   fGroupType := Value;
 end;
 
@@ -206,7 +209,7 @@ begin
   fOwner := aPlayer;
   fPositions := TKMList.Create;
 
-  for GT := Low(TKMGroupType) to High(TKMGroupType) do
+  for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
   begin
     TroopFormations[GT].NumUnits := 9; //These are the defaults in KaM
     TroopFormations[GT].UnitsPerRow := 3;
@@ -236,6 +239,7 @@ end;
 
 procedure TAIDefencePositions.Add(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType);
 begin
+  Assert(aGroupType in GROUP_TYPES_VALID, 'Invalid group type: ' + GetEnumName(TypeInfo(TKMGroupType), Integer(aGroupType)));
   fPositions.Add(TAIDefencePosition.Create(aPos, aGroupType, aRadius, aDefenceType));
 end;
 
@@ -264,11 +268,13 @@ end;
 
 
 function TAIDefencePositions.AverageUnitsPerGroup: Integer;
-var GT: TKMGroupType; TypeCount: Integer;
+var
+  GT: TKMGroupType;
+  TypeCount: Integer;
 begin
   Result := 0;
   TypeCount := 0;
-  for GT := Low(TKMGroupType) to High(TKMGroupType) do
+  for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
   begin
     Result := Result + TroopFormations[GT].NumUnits;
     Inc(TypeCount);

@@ -54,7 +54,7 @@ type
       InPlace, AtAdvantage, Ambushed: Boolean;
       GroupsCount, CGCount, InPositionCnt, NearEnemyCnt: Word;
       Opportunity, InPositionStrength: Single;
-      WeightedCount: array[TKMGroupType] of Word;
+      WeightedCount: array[GROUP_TYPE_MIN..GROUP_TYPE_MAX] of Word;
       Groups: array of TKMGroupCounterWeight
     end;
   end;
@@ -591,7 +591,7 @@ const
   PRIO_1_MIN_DISTANCE = 20;
   GAIN_GROUPS_PER_A_HOUSE = 3;
   PENALIZATION_GROUPS_CNT = 100;
-  OpportunityArr: array [TKMGroupType,TKMGroupType] of Single = (
+  OpportunityArr: array [GROUP_TYPE_MIN..GROUP_TYPE_MAX, GROUP_TYPE_MIN..GROUP_TYPE_MAX] of Single = (
   // gtMelee, gtAntiHorse, gtRanged, gtMounted
     (    1.0,         2.0,      3.0,       0.5), // gtMelee
     (    0.5,         1.0,      2.0,       4.0), // gtAntiHorse
@@ -1045,6 +1045,7 @@ procedure TArmyVectorField.CopyVariablesForDebug2();
   end;
 var
   K, Team: Integer;
+  GT: TKMGroupType;
 begin
   Team := GetAllianceIdxFromDebugArray();
   if (Team = -1) then
@@ -1091,10 +1092,8 @@ begin
       CounterWeight.NearEnemyCnt       := CCT[K].CounterWeight.NearEnemyCnt;
       CounterWeight.Opportunity        := CCT[K].CounterWeight.Opportunity;
       CounterWeight.InPositionStrength := CCT[K].CounterWeight.InPositionStrength;
-      CounterWeight.WeightedCount[TKMGroupType(0)] := CCT[K].CounterWeight.WeightedCount[TKMGroupType(0)];
-      CounterWeight.WeightedCount[TKMGroupType(1)] := CCT[K].CounterWeight.WeightedCount[TKMGroupType(1)];
-      CounterWeight.WeightedCount[TKMGroupType(2)] := CCT[K].CounterWeight.WeightedCount[TKMGroupType(2)];
-      CounterWeight.WeightedCount[TKMGroupType(3)] := CCT[K].CounterWeight.WeightedCount[TKMGroupType(3)];
+      for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
+        CounterWeight.WeightedCount[GT] := CCT[K].CounterWeight.WeightedCount[GT];
       SetLength(CounterWeight.Groups, CounterWeight.GroupsCount);
       if (CounterWeight.GroupsCount > 0) then
         Move(CCT[K].CounterWeight.Groups[0], CounterWeight.Groups[0], SizeOf(TKMGroupCounterWeight) * CounterWeight.GroupsCount);

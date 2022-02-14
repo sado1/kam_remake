@@ -474,11 +474,11 @@ const
     2.0,2.5,2.0,2.5,     // utPikeman,utHallebardman,utHorseScout,utCavalry
     2.5,1.5,1.5,2.5,1.5  // utBarbarian,utPeasant,utSlingshot,utMetalBarbarian,utHorseman
   );
-  ThreatGain: array [TKMGroupType] of Single = (
+  ThreatGain: array [GROUP_TYPE_MIN..GROUP_TYPE_MAX] of Single = (
   // gtMelee, gtAntiHorse, gtRanged, gtMounted
          0.5,         1.0,      3.0,       3.0
   );
-  OpportunityArr: array [TKMGroupType,TKMGroupType] of Single = (
+  OpportunityArr: array [GROUP_TYPE_MIN..GROUP_TYPE_MAX, GROUP_TYPE_MIN..GROUP_TYPE_MAX] of Single = (
   // gtMelee, gtAntiHorse, gtRanged, gtMounted
     (    1.0,         2.0,      3.0,       0.5), // gtMelee
     (    0.5,         1.0,      2.0,       4.0), // gtAntiHorse
@@ -574,6 +574,7 @@ begin
         gtAntiHorse: Threat[IdxE].Risk := Threat[IdxE].WeightedCount * AI_Par[ATTACK_SUPERVISOR_EvalTarget_ThreatGainAntiHorse];
         gtRanged:    Threat[IdxE].Risk := Threat[IdxE].WeightedCount * AI_Par[ATTACK_SUPERVISOR_EvalTarget_ThreatGainRanged];
         gtMounted:   Threat[IdxE].Risk := Threat[IdxE].WeightedCount * AI_Par[ATTACK_SUPERVISOR_EvalTarget_ThreatGainMounted];
+        else         Threat[IdxE].Risk := NO_THREAT;
       end;
       // Consider distance
       Threat[IdxE].Risk :=

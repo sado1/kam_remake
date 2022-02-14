@@ -737,7 +737,7 @@ var
   procedure ComputeGroupDemands(aGT: TKMGroupType; aIronRatio: Single);
   const
     // It doesnt depends on future "optimalization" of parameters: against cav should be always good pikes etc. so this array doesnt have to be computed
-    BEST_VERSUS_OPTION: array[TKMGroupType] of TKMGroupType = (gtMelee, gtMelee, gtRanged, gtAntiHorse);
+    BEST_VERSUS_OPTION: array[GROUP_TYPE_MIN..GROUP_TYPE_MAX] of TKMGroupType = (gtMelee, gtMelee, gtRanged, gtAntiHorse);
   var
     Wood, Iron: Boolean;
     I: Integer;
@@ -845,7 +845,7 @@ var
                 Required := Required + Round(DEFAULT_ARMY_REQUIREMENTS[UT] * IronReq);
     end;
   end;
-//AITroopTrainOrder: array [TKMGroupType, 1..3] of TKMUnitType = (
+//AITroopTrainOrder: array [GROUP_TYPE_MIN..GROUP_TYPE_MAX, 1..3] of TKMUnitType = (
 //  (utSwordsman,    utAxeFighter, utMilitia),
 //  (utHallebardman, utPikeman,    utNone),
 //  (utArbaletman,   utBowman,     utNone),
@@ -908,7 +908,7 @@ begin
   // Compute requirements of warriors
   for UT := Low(fWarriorsDemands) to High(fWarriorsDemands) do
     fWarriorsDemands[UT] := 0;
-  for GT := Low(TKMGroupType) to High(TKMGroupType) do
+  for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
     ComputeGroupDemands(GT, IronRatio);
 
   // Get weapons reserves

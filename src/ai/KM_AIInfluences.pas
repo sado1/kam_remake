@@ -122,6 +122,9 @@ uses
   KM_Hand, KM_HandsCollection, KM_HandTypes,
   KM_ResTypes;
 
+const
+  PRESENCE_X = (GROUP_TYPES_CNT + 1); // number of group types (4) and 1 for traffic
+
 
 { TKMInfluenceMaps }
 constructor TKMInfluences.Create(aNavMesh: TKMNavMesh);
@@ -343,32 +346,32 @@ function TKMInfluences.GetArmyTraffic(const aAlliance, aIdx: Word): Word;
 const
   MAX_SOLDIERS_IN_POLYGON = 20; // Maximal count of soldiers in 1 triangle of NavMesh - it depends on NavMesh size!!!
 begin
-  Result := Min(MAX_SOLDIERS_IN_POLYGON, fPresence[aAlliance*5*fPolyCnt + 5*aIdx + AVOID_TRAFFIC_IDX]);
+  Result := Min(MAX_SOLDIERS_IN_POLYGON, fPresence[PRESENCE_X*(aAlliance*fPolyCnt + aIdx) + AVOID_TRAFFIC_IDX]);
 end;
 
 
 function TKMInfluences.GetPresence(const aAlliance, aIdx: Word; const aGT: TKMGroupType): Word;
 begin
-  Result := fPresence[aAlliance*5*fPolyCnt + 5*aIdx + Ord(aGT)];
+  Result := fPresence[PRESENCE_X*(aAlliance*fPolyCnt + aIdx) + Ord(aGT) - GROUP_TYPE_MIN_OFF];
 end;
 
 
 procedure TKMInfluences.SetPresence(const aAlliance, aIdx: Word; const aGT: TKMGroupType; const aPresence: Word);
 begin
-  fPresence[aAlliance*5*fPolyCnt + 5*aIdx + Ord(aGT)] := aPresence;
+  fPresence[PRESENCE_X*(aAlliance*fPolyCnt + aIdx) + Ord(aGT) - GROUP_TYPE_MIN_OFF] := aPresence;
 end;
 
 
 procedure TKMInfluences.SetIncPresence(const aAlliance, aIdx: Word; const aGT: TKMGroupType; const aPresence: Word);
 begin
-  Inc(fPresence[aAlliance*5*fPolyCnt + 5*aIdx + Ord(aGT)], aPresence);
+  Inc(fPresence[PRESENCE_X*(aAlliance*fPolyCnt + aIdx) + Ord(aGT) - GROUP_TYPE_MIN_OFF], aPresence);
 end;
 
 
 procedure TKMInfluences.UpdateMilitaryPresence(aAllianceIdx: Integer);
 const
   EACH_X_MEMBER_COEF = 5;
-  PENALIZATION_ARR: array [TKMGroupType,TKMGroupType] of Single = (
+  PENALIZATION_ARR: array [GROUP_TYPE_MIN..GROUP_TYPE_MAX, GROUP_TYPE_MIN..GROUP_TYPE_MAX] of Single = (
     // gtMelee, gtAntiHorse, gtRanged, gtMounted
     (    1.0,      0.3,       0.0,      0.5), // gtMelee
     (    1.0,      1.0,       0.0,      0.0), // gtAntiHorse
@@ -393,7 +396,7 @@ begin
   if (Length(fPresence) <= 0) then
     Exit;
   // Length of fPresence = alliances * polygons * 5 (= 4 types of groups + traffic)
-  FillChar(fPresence[aAllianceIdx*fPolyCnt*5], SizeOf(fPresence[0]) * fPolyCnt * 5, #0);
+  FillChar(fPresence[aAllianceIdx*fPolyCnt*PRESENCE_X], SizeOf(fPresence[0]) * fPolyCnt * PRESENCE_X, #0);
 
   // Mark avoid traffic
   for PL in fAlli2PL[aAllianceIdx] do
@@ -411,7 +414,7 @@ begin
           if (U <> nil) and not U.IsDeadOrDying then
           begin
             PolyIdx := fNavMesh.KMPoint2Polygon[U.Position];
-            Inc(fPresence[aAllianceIdx*5*fPolyCnt + 5*PolyIdx + AVOID_TRAFFIC_IDX],Increment);
+            Inc(fPresence[PRESENCE_X*(aAllianceIdx*fPolyCnt + PolyIdx) + AVOID_TRAFFIC_IDX],Increment);
           end;
           L := L + EACH_X_MEMBER_COEF;
         end;
@@ -434,10 +437,10 @@ begin
           if (U <> nil) and not U.IsDeadOrDying then
           begin
             PolyIdx := fNavMesh.KMPoint2Polygon[U.Position];
-            EvaluatePolygon(aAllianceIdx*5*fPolyCnt + 5*PolyIdx, Increment, GT);
+            EvaluatePolygon(PRESENCE_X*(aAllianceIdx*fPolyCnt + PolyIdx), Increment, GT);
             with fNavMesh.Polygons[PolyIdx] do
               for M := 0 to NearbyCount - 1 do
-                EvaluatePolygon(aAllianceIdx*5*fPolyCnt + 5*Nearby[M], Increment, GT);
+                EvaluatePolygon(PRESENCE_X*(aAllianceIdx*fPolyCnt + Nearby[M]), Increment, GT);
           end;
           L := L + EACH_X_MEMBER_COEF;
         end;
@@ -752,9 +755,9 @@ end;
 
 procedure TKMInfluences.SetLengthOfPresence();
 begin
-  if (Length(fAlli2PL) * fPolyCnt * 5 <> Length(fPresence)) then
+  if (Length(fAlli2PL) * fPolyCnt * PRESENCE_X <> Length(fPresence)) then
   begin
-    SetLength(fPresence, Length(fAlli2PL) * fPolyCnt * 5);
+    SetLength(fPresence, Length(fAlli2PL) * fPolyCnt * PRESENCE_X);
     FillChar(fPresence[0], SizeOf(fPresence[0]) * Length(fPresence), #0);
   end;
 end;
@@ -814,7 +817,7 @@ begin
     for K := 0 to fPolyCnt - 1 do
     begin
       Cnt := 0;
-      for GT := Low(TKMGroupType) to High(TKMGroupType) do
+      for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
         Cnt := Cnt + Presence[TeamIdx, K, GT];
       if (Cnt > 0) then
       begin

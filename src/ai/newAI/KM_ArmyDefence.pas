@@ -52,7 +52,7 @@ type
     function GetPosition(aIndex: Integer): TKMDefencePosition; inline;
     function GetGroupsCount(): Word;
   public
-    TroopFormations: array [TKMGroupType] of TKMFormation; //Defines how defending troops will be formatted. 0 means leave unchanged.
+    TroopFormations: array [GROUP_TYPE_MIN..GROUP_TYPE_MAX] of TKMFormation; //Defines how defending troops will be formatted. 0 means leave unchanged.
 
     constructor Create(aOwner: TKMHandID);
     destructor Destroy; override;
@@ -202,7 +202,7 @@ begin
   fCityUnderAttack := False;
   fPositions := TKMList.Create;
 
-  for GT := Low(TKMGroupType) to High(TKMGroupType) do
+  for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
   begin
     TroopFormations[GT].NumUnits := MAX_SOLDIERS_IN_GROUP;
     TroopFormations[GT].UnitsPerRow := FORMATION_OF_GROUP;
@@ -570,7 +570,7 @@ begin
       Loc := Positions[I].Position.Loc;
       Idx := gAIFields.NavMesh.KMPoint2Polygon[Loc];
       Threat := 0;
-      for GT := Low(GT) to High(GT) do
+      for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
         Threat := Threat + gAIFields.Influences.Presence[ AllianceIdx, Idx, GT ];
 
       // Draw defensive lines as a triangles

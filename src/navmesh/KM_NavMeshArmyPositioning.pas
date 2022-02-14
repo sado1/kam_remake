@@ -545,7 +545,7 @@ var
   GroupPoint, LinePoint: TKMPoint;
   G: TKMUnitGroup;
   PositionAssigned: TBooleanArray;
-  LineEval: array of array[TKMGroupType] of Word;
+  LineEval: array of array[GROUP_TYPE_MIN..GROUP_TYPE_MAX] of Word;
   PosReq: array of Word;
   Positions: TKMPointDirArray;
 begin

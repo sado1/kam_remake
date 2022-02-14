@@ -860,7 +860,7 @@ procedure TKMayor.SetArmyDemand(aFootmen, aPikemen, aHorsemen, aArchers: Single)
         gtAntiHorse: Result := gHands[fOwner].Locks.GetUnitBlocked(utHallebardman);
         gtRanged:    Result := gHands[fOwner].Locks.GetUnitBlocked(utArbaletman);
         gtMounted:   Result := gHands[fOwner].Locks.GetUnitBlocked(utCavalry);
-        else          Result := True;
+        else         Result := True;
       end
     else
       case aGT of
@@ -869,7 +869,7 @@ procedure TKMayor.SetArmyDemand(aFootmen, aPikemen, aHorsemen, aArchers: Single)
         gtAntiHorse: Result := gHands[fOwner].Locks.GetUnitBlocked(utPikeman);
         gtRanged:    Result := gHands[fOwner].Locks.GetUnitBlocked(utBowman);
         gtMounted:   Result := gHands[fOwner].Locks.GetUnitBlocked(utHorseScout);
-        else          Result := True;
+        else         Result := True;
       end;
   end;
 

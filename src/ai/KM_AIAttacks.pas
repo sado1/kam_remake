@@ -89,7 +89,7 @@ var
 begin
   TotalMenAvailable := 0;
   //Must have enough men available out of the types of groups that will attack
-  for GT := Low(TKMGroupType) to High(TKMGroupType) do
+  for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
     if fAttacks[aIndex].TakeAll or (fAttacks[aIndex].GroupAmounts[GT] > 0) then
       Inc(TotalMenAvailable, aMenAvailable[GT]);
 
@@ -100,7 +100,7 @@ begin
 
   //Must have enough groups of each type
   if not fAttacks[aIndex].TakeAll then
-    for GT := Low(TKMGroupType) to High(TKMGroupType) do
+    for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
       Result := Result and (aGroupsAvailable[GT] >= fAttacks[aIndex].GroupAmounts[GT]);
 
   //todo: Add support for the AI attack feature Range

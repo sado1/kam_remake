@@ -346,7 +346,7 @@ begin
     Sender.AddTypeS('TKMPoint', 'record X,Y: Integer; end'); //Could be very useful
 
     Sender.AddTypeS('TKMAIDefencePosType', '(adtFrontLine, adtBackLine)');
-    Sender.AddTypeS('TKMGroupType', '(gtMelee, gtAntiHorse, gtRanged, gtMounted)');
+    Sender.AddTypeS('TKMGroupType', '(gtNone, gtAny, gtMelee, gtAntiHorse, gtRanged, gtMounted)');
     Sender.AddTypeS('TKMGroupTypeSet', 'set of TKMGroupType');
     Sender.AddTypeS('TKMDirection', '(dirNA, dirN, dirNE, dirE, dirSE, dirS, dirSW, dirW, dirNW)');
 

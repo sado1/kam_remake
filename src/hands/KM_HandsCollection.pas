@@ -56,9 +56,9 @@ type
     function UnitsHitTest(X, Y: Integer): TKMUnit;
     function GroupsHitTest(X, Y: Integer): TKMUnitGroup;
 
-    function GetClosestGroup(const aLoc: TKMPoint; aIndex: TKMHandID; aAlliance: TKMAllianceType; aTypes: TKMGroupTypeSet = [Low(TKMGroupType)..High(TKMGroupType)]): TKMUnitGroup;
-    function GetGroupsInRadius(const aLoc: TKMPoint; aSqrRadius: Single; aIndex: TKMHandID; aAlliance: TKMAllianceType; aTypes: TKMGroupTypeSet = [Low(TKMGroupType)..High(TKMGroupType)]): TKMUnitGroupArray;
-    function GetGroupsMemberInRadius(const aLoc: TKMPoint; aSqrRadius: Single; aIndex: TKMHandID; aAlliance: TKMAllianceType; var aUGA: TKMUnitGroupArray; aTypes: TKMGroupTypeSet = [Low(TKMGroupType)..High(TKMGroupType)]): TKMUnitArray;
+    function GetClosestGroup(const aLoc: TKMPoint; aIndex: TKMHandID; aAlliance: TKMAllianceType; aTypes: TKMGroupTypeSet = GROUP_TYPES_VALID): TKMUnitGroup;
+    function GetGroupsInRadius(const aLoc: TKMPoint; aSqrRadius: Single; aIndex: TKMHandID; aAlliance: TKMAllianceType; aTypes: TKMGroupTypeSet = GROUP_TYPES_VALID): TKMUnitGroupArray;
+    function GetGroupsMemberInRadius(const aLoc: TKMPoint; aSqrRadius: Single; aIndex: TKMHandID; aAlliance: TKMAllianceType; var aUGA: TKMUnitGroupArray; aTypes: TKMGroupTypeSet = GROUP_TYPES_VALID): TKMUnitArray;
     function GetClosestUnit(const aLoc: TKMPoint; aIndex: TKMHandID; aAlliance: TKMAllianceType): TKMUnit;
     function GetClosestHouse(const aLoc: TKMPoint; aIndex: TKMHandID; aAlliance: TKMAllianceType; aTypes: TKMHouseTypeSet = [HOUSE_MIN..HOUSE_MAX]; aOnlyCompleted: Boolean = True): TKMHouse;
     function GetHousesInRadius(const aLoc: TKMPoint; aSqrRadius: Single; aIndex: TKMHandID; aAlliance: TKMAllianceType; aTypes: TKMHouseTypeSet = [HOUSE_MIN..HOUSE_MAX]; aOnlyCompleted: Boolean = True): TKMHouseArray;
@@ -455,7 +455,7 @@ end;
 
 
 //Check opponents for closest Unit with given Alliance setting
-function TKMHandsCollection.GetClosestGroup(const  aLoc: TKMPoint; aIndex: TKMHandID; aAlliance: TKMAllianceType; aTypes: TKMGroupTypeSet = [Low(TKMGroupType)..High(TKMGroupType)]): TKMUnitGroup;
+function TKMHandsCollection.GetClosestGroup(const  aLoc: TKMPoint; aIndex: TKMHandID; aAlliance: TKMAllianceType; aTypes: TKMGroupTypeSet = GROUP_TYPES_VALID): TKMUnitGroup;
 var
   I: Integer;
   G: TKMUnitGroup;
@@ -473,7 +473,7 @@ begin
 end;
 
 
-function TKMHandsCollection.GetGroupsInRadius(const aLoc: TKMPoint; aSqrRadius: Single; aIndex: TKMHandID; aAlliance: TKMAllianceType; aTypes: TKMGroupTypeSet = [Low(TKMGroupType)..High(TKMGroupType)]): TKMUnitGroupArray;
+function TKMHandsCollection.GetGroupsInRadius(const aLoc: TKMPoint; aSqrRadius: Single; aIndex: TKMHandID; aAlliance: TKMAllianceType; aTypes: TKMGroupTypeSet = GROUP_TYPES_VALID): TKMUnitGroupArray;
 var
   I, K, idx: Integer;
   UGA: TKMUnitGroupArray;
@@ -497,7 +497,7 @@ end;
 
 
 // Aproximative function to get closest units in specific radius
-function TKMHandsCollection.GetGroupsMemberInRadius(const aLoc: TKMPoint; aSqrRadius: Single; aIndex: TKMHandID; aAlliance: TKMAllianceType; var aUGA: TKMUnitGroupArray; aTypes: TKMGroupTypeSet = [Low(TKMGroupType)..High(TKMGroupType)]): TKMUnitArray;
+function TKMHandsCollection.GetGroupsMemberInRadius(const aLoc: TKMPoint; aSqrRadius: Single; aIndex: TKMHandID; aAlliance: TKMAllianceType; var aUGA: TKMUnitGroupArray; aTypes: TKMGroupTypeSet = GROUP_TYPES_VALID): TKMUnitArray;
 var
   I, K, idx: Integer;
   UA: TKMUnitArray;

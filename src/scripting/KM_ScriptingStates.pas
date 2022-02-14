@@ -13,7 +13,7 @@ type
   TKMScriptStates = class(TKMScriptEntity)
   private
     procedure _AIGroupsFormationGet(aPlayer: Integer; aGroupType: TKMGroupType; out aCount, aColumns: Integer; aMethodName: string);
-    function _ClosestGroup(aPlayer, X, Y, aGroupType: Integer; aMethodName: String): Integer;
+    function _ClosestGroup(aPlayer, X, Y: Integer; aGroupType: TKMGroupType; aMethodName: String): Integer;
     function _ClosestGroupMultipleTypes(aPlayer, X, Y: Integer; aGroupTypes: TKMGroupTypeSet; aMethodName: string): Integer;
     function _ClosestHouse(aPlayer, X, Y: Integer; aHouseType: TKMHouseType; aMethodName: string): Integer;
     function _ClosestHouseMultipleTypes(aPlayer, X, Y: Integer; aHouseTypes: TKMHouseTypeSet; aMethodName: string): Integer;
@@ -409,9 +409,9 @@ begin
       begin
         aX := DP.Position.Loc.X;
         aY := DP.Position.Loc.Y;
-        aGroupType := Byte(DP.GroupType);
+        aGroupType := Ord(DP.GroupType) - GROUP_TYPE_MIN_OFF;
         aRadius := DP.Radius;
-        aDefType := Byte(DP.DefenceType);
+        aDefType := Ord(DP.DefenceType);
       end;
     end
     else
@@ -482,7 +482,7 @@ procedure TKMScriptStates._AIGroupsFormationGet(aPlayer: Integer; aGroupType: TK
 begin
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-      and (aGroupType in [gtMelee..gtMounted]) then
+      and (aGroupType in GROUP_TYPES_VALID) then
     begin
       if gHands[aPlayer].AI.Setup.NewAI then
       begin
@@ -496,7 +496,7 @@ begin
       end
     end
     else
-      LogParamWarning(aMethodName, [aPlayer, Byte(aGroupType)]);
+      LogParamWarning(aMethodName, [aPlayer, Ord(aGroupType)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -512,14 +512,12 @@ procedure TKMScriptStates.AIGroupsFormationGet(aPlayer, aType: Byte; out aCount,
 var
   gt: TKMGroupType;
 begin
-  if InRange(aType, 0, 3) then
-  begin
-    gt := TKMGroupType(aType);
+  gt := gtNone;
 
-    _AIGroupsFormationGet(aPlayer, gt, aCount, aColumns, 'States.AIGroupsFormationGet');
-  end
-  else
-    LogParamWarning('States.AIGroupsFormationGet', [aPlayer, aType]);
+  if InRange(aType, 0, 3) then
+    gt := TKMGroupType(aType + GROUP_TYPE_MIN_OFF);
+
+  _AIGroupsFormationGet(aPlayer, gt, aCount, aColumns, 'States.AIGroupsFormationGet');
 end;
 
 
@@ -682,7 +680,7 @@ begin
 end;
 
 
-function TKMScriptStates._ClosestGroup(aPlayer, X, Y, aGroupType: Integer; aMethodName: String): Integer;
+function TKMScriptStates._ClosestGroup(aPlayer, X, Y: Integer; aGroupType: TKMGroupType; aMethodName: String): Integer;
 var
   GTS: TKMGroupTypeSet;
   G: TKMUnitGroup;
@@ -690,13 +688,13 @@ begin
   try
     Result := -1;
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-    and gTerrain.TileInMapCoords(X, Y)
-    and ((aGroupType = -1) or (aGroupType in [Byte(Low(TKMGroupType))..Byte(High(TKMGroupType))])) then
+      and gTerrain.TileInMapCoords(X, Y)
+      and ((aGroupType = gtAny) or (aGroupType in GROUP_TYPES_VALID)) then
     begin
-      if aGroupType = -1 then
-        GTS := [Low(TKMGroupType)..High(TKMGroupType)]
+      if aGroupType = gtAny then
+        GTS := GROUP_TYPES_VALID
       else
-        GTS := [TKMGroupType(aGroupType)];
+        GTS := [aGroupType];
 
       G := gHands[aPlayer].UnitGroups.GetClosestGroup(KMPoint(X,Y), GTS);
       if (G <> nil) and not G.IsDead then
@@ -706,7 +704,7 @@ begin
       end;
     end
     else
-      LogParamWarning(aMethodName, [aPlayer, X, Y, aGroupType]);
+      LogParamWarning(aMethodName, [aPlayer, X, Y, Ord(aGroupType)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -720,8 +718,18 @@ end;
 //* If the group type is -1 any group type will be accepted
 //* Result: Group ID
 function TKMScriptStates.ClosestGroup(aPlayer, X, Y, aGroupType: Integer): Integer;
+var
+  gt: TKMGroupType;
 begin
-  Result := _ClosestGroup(aPlayer, X, Y, aGroupType, 'States.ClosestGroup');
+  gt := gtNone;
+
+  if aGroupType = -1 then
+    gt := gtAny
+  else
+  if InRange(aGroupType, 0, 3) then
+    gt := TKMGroupType(aGroupType + GROUP_TYPE_MIN_OFF);
+
+  Result := _ClosestGroup(aPlayer, X, Y, gt, 'States.ClosestGroup');
 end;
 
 
@@ -731,7 +739,7 @@ end;
 //* Result: Group ID
 function TKMScriptStates.ClosestGroupEx(aPlayer, X, Y: Integer; aGroupType: TKMGroupType): Integer;
 begin
-  Result := _ClosestGroup(aPlayer, X, Y, Byte(aGroupType), 'States.ClosestGroupEx');
+  Result := _ClosestGroup(aPlayer, X, Y, aGroupType, 'States.ClosestGroupEx');
 end;
 
 
@@ -744,6 +752,8 @@ begin
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
       and gTerrain.TileInMapCoords(X, Y) then
     begin
+      aGroupTypes := aGroupTypes * GROUP_TYPES_VALID;
+
       G := gHands[aPlayer].UnitGroups.GetClosestGroup(KMPoint(X,Y), aGroupTypes);
       if G <> nil then
       begin
@@ -772,8 +782,8 @@ var
   GTS: TKMGroupTypeSet;
 begin
   GTS := [];
-  for B in [Byte(Low(TKMGroupType))..Byte(High(TKMGroupType))] do
-    if B in aGroupTypes then
+  for B in [Byte(GROUP_TYPE_MIN)..Byte(GROUP_TYPE_MAX)] do
+    if B - GROUP_TYPE_MIN_OFF in aGroupTypes then
       GTS := GTS + [TKMGroupType(B)];
 
   Result := _ClosestGroupMultipleTypes(aPlayer, X, Y, GTS, 'States.ClosestGroupMultipleTypes');
@@ -804,7 +814,7 @@ begin
     and (aHouseType <> htNone) then
     begin
       if aHouseType = htAny then
-        HTS := [Low(TKMHouseType)..High(TKMHouseType)]
+        HTS := [HOUSE_MIN..HOUSE_MAX]
       else
         HTS := [aHouseType];
 
@@ -816,7 +826,7 @@ begin
       end;
     end
     else
-      LogParamWarning(aMethodName, [aPlayer, X, Y, Byte(aHouseType)]);
+      LogParamWarning(aMethodName, [aPlayer, X, Y, Ord(aHouseType)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -833,18 +843,15 @@ function TKMScriptStates.ClosestHouse(aPlayer, X, Y, aHouseType: Integer): Integ
 var
   HT: TKMHouseType;
 begin
-  Result := -1;
   HT := htNone;
+
   if aHouseType = -1 then
     HT := htAny
   else
   if HouseTypeValid(aHouseType) then
     HT := HOUSE_ID_TO_TYPE[aHouseType];
 
-  if HT <> htNone then
-    Result := _ClosestHouse(aPlayer, X, Y, HT, 'States.ClosestHouse')
-  else
-    LogParamWarning('States.ClosestHouse', [aPlayer, X, Y, Byte(aHouseType)]);
+  Result := _ClosestHouse(aPlayer, X, Y, HT, 'States.ClosestHouse')
 end;
 
 
@@ -868,6 +875,7 @@ begin
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
       and gTerrain.TileInMapCoords(X, Y) then
     begin
+      aHouseTypes := aHouseTypes * [HOUSE_MIN..HOUSE_MAX];
       H := gHands[aPlayer].Houses.FindHouse(aHouseTypes, X, Y);
       if H <> nil then
       begin
@@ -958,6 +966,7 @@ var
   UT: TKMUnitType;
 begin
   UT := utNone;
+
   if (aUnitType = -1) then
     UT := utAny
   else
@@ -988,6 +997,7 @@ begin
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
       and gTerrain.TileInMapCoords(X, Y) then
     begin
+      aUnitTypes := aUnitTypes * [UNIT_MIN..UNIT_MAX];
       U := gHands[aPlayer].Units.GetClosestUnit(KMPoint(X,Y), aUnitTypes);
       if U <> nil then
       begin
@@ -4728,8 +4738,8 @@ function TKMScriptStates.GroupType(aGroupID: Integer): Integer;
 var
   G: TKMUnitGroup;
 begin
+  Result := -1;
   try
-    Result := -1;
     if aGroupID > 0 then
     begin
       G := fIDCache.GetGroup(aGroupID);

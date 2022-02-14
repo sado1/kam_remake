@@ -208,7 +208,7 @@ begin
 
   // Take required warriors from CityManagement (-> implemented consideration of required units + save time)
   FillChar(GroupReq, SizeOf(GroupReq), #0); //Clear up
-  for GT := Low(TKMGroupType) to High(TKMGroupType) do
+  for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
     for K := Low(AI_TROOP_TRAIN_ORDER[GT]) to High(AI_TROOP_TRAIN_ORDER[GT]) do
       if (AI_TROOP_TRAIN_ORDER[GT,K] <> utNone) then
         Inc(GroupReq[GT], gHands[fOwner].AI.CityManagement.WarriorsDemands[ AI_TROOP_TRAIN_ORDER[GT,K] ] + 1); // Always recruit something
@@ -235,7 +235,7 @@ begin
       // Chose a random group type that we are going to attempt to train (so we don't always train certain group types first)
       L := 0;
       repeat
-        GT := TKMGroupType(KaMRandom(4, 'TKMArmyManagement.RecruitSoldiers')); //Pick random from overall count
+        GT := TKMGroupType(GROUP_TYPE_MIN_OFF + KaMRandom(4, 'TKMArmyManagement.RecruitSoldiers')); //Pick random from overall count
         Inc(L);
       until (GroupReq[GT] > 0) OR (L > 9); // Limit number of attempts to guarantee it doesn't loop forever
 
@@ -374,7 +374,7 @@ type
     // Select the right number of groups
     StartIdx := 0;
     MenCnt := 0;
-    for GT := Low(TKMGroupType) to High(TKMGroupType) do
+    for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
     begin
       GCnt := aGroupAmounts[GT];
       ActIdx := StartIdx;

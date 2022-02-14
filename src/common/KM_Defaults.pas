@@ -654,14 +654,22 @@ type
 
 //Used for AI defence and linking troops
 type
-  TKMGroupType = (gtMelee, gtAntiHorse, gtRanged, gtMounted);
-  TKMGroupTypeArray = array [TKMGroupType] of Word;
+  TKMGroupType = (gtNone, gtAny, gtMelee, gtAntiHorse, gtRanged, gtMounted);
   TKMGroupTypeSet = set of TKMGroupType;
 
-  TKMArmyType = (atIronThenLeather = 0, atLeather = 1, atIron = 2, atIronAndLeather = 3);
+const
+  GROUP_TYPE_MIN = gtMelee;
+  GROUP_TYPE_MAX = gtMounted;
+  GROUP_TYPE_MIN_OFF = Ord(GROUP_TYPE_MIN);
+  GROUP_TYPES: array [GROUP_TYPE_MIN..GROUP_TYPE_MAX] of Byte = (0, 1, 2, 3);
+  GROUP_TYPES_VALID = [GROUP_TYPE_MIN..GROUP_TYPE_MAX];
+  GROUP_TYPES_CNT = Integer(GROUP_TYPE_MAX) - Integer(GROUP_TYPE_MIN) + 1;
+
+type
+  TKMGroupTypeArray = array [GROUP_TYPE_MIN..GROUP_TYPE_MAX] of Word;
+  TKMArmyType = (atIronThenLeather, atLeather, atIron, atIronAndLeather);
 
 const
-  GROUP_TYPES: array [TKMGroupType] of Byte = (0, 1, 2, 3);
 
   UNIT_TO_GROUP_TYPE: array [WARRIOR_MIN..WARRIOR_MAX] of TKMGroupType = (
     gtMelee,gtMelee,gtMelee, //utMilitia, utAxeFighter, utSwordsman
@@ -678,7 +686,7 @@ const
     );
 
   //AI's prefences for training troops
-  AI_TROOP_TRAIN_ORDER: array [TKMGroupType, 1..3] of TKMUnitType = (
+  AI_TROOP_TRAIN_ORDER: array [GROUP_TYPE_MIN..GROUP_TYPE_MAX, 1..3] of TKMUnitType = (
     (utSwordsman,    utAxeFighter, utMilitia),
     (utHallebardman, utPikeman,    utNone),
     (utArbaletman,   utBowman,     utNone),
@@ -1051,11 +1059,11 @@ const
 //  clGameAlly = icYellow;
 //  clGameEnemy = icCyan;
 
-  GROUP_IMG: array [TKMGroupType] of Word = (
+  GROUP_IMG: array [GROUP_TYPE_MIN..GROUP_TYPE_MAX] of Word = (
     371, 374,
     376, 377);
 
-  GROUP_TXT_COLOR: array [TKMGroupType] of Cardinal = (
+  GROUP_TXT_COLOR: array [GROUP_TYPE_MIN..GROUP_TYPE_MAX] of Cardinal = (
     icWhite,
     icGreen,
     icPink,
