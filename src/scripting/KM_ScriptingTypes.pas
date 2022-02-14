@@ -74,6 +74,7 @@ type
     Radius: Integer;
     GroupType: TKMGroupType;
     PositionType: TKMAIDefencePosType;
+    function ToStr: string;
   end;
 
 const
@@ -81,6 +82,17 @@ const
 
 
 implementation
+uses
+  SysUtils, TypInfo;
+
+function TKMDefencePositionInfo.ToStr: string;
+begin
+  Result := Format('[%d:%d] Dir=%s Radius=%d GroupType=%s PositionType=%s',
+                   [X, Y, GetEnumName(TypeInfo(TKMDirection), Integer(Dir)), Radius,
+                    GetEnumName(TypeInfo(TKMGroupType), Integer(GroupType)),
+                    GetEnumName(TypeInfo(TKMAIDefencePosType), Integer(PositionType))]);
+end;
+
 
 end.
 

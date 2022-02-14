@@ -14,7 +14,7 @@ type
     fOnSetLogLinesMaxCnt: TIntegerEvent;
     procedure LogStr(const aText: String);
 
-    procedure _AIDefencePositionAdd(aPlayer: Integer; const aDefencePosition: TKMDefencePositionInfo; aMethodName: string);
+    function _AIDefencePositionAdd(aPlayer: Integer; const aDefencePosition: TKMDefencePositionInfo): Boolean;
     procedure _AIGroupsFormationSet(aPlayer: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer; aMethodName: string);
   public
     property OnSetLogLinesMaxCnt: TIntegerEvent read fOnSetLogLinesMaxCnt write fOnSetLogLinesMaxCnt;
@@ -1274,20 +1274,20 @@ begin
 end;
 
 
-procedure TKMScriptActions._AIDefencePositionAdd(aPlayer: Integer; const aDefencePosition: TKMDefencePositionInfo; aMethodName: string);
+function TKMScriptActions._AIDefencePositionAdd(aPlayer: Integer; const aDefencePosition: TKMDefencePositionInfo): Boolean;
 begin
+  Result := False;
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
       and (aDefencePosition.PositionType in [adtFrontLine..adtBackLine])
       and (aDefencePosition.Dir in [dirN..dirNW])
       and (aDefencePosition.GroupType in GROUP_TYPES_VALID)
       and (gTerrain.TileInMapCoords(aDefencePosition.X, aDefencePosition.Y)) then
+    begin
       gHands[aPlayer].AI.General.DefencePositions.Add(KMPointDir(aDefencePosition.X, aDefencePosition.Y, aDefencePosition.Dir),
-                                                      aDefencePosition.GroupType, aDefencePosition.Radius, aDefencePosition.PositionType)
-    else
-      LogParamWarning('Actions.AIDefencePositionAddEx', [aPlayer, aDefencePosition.X, aDefencePosition.Y, Ord(aDefencePosition.Dir),
-                                                         Ord(aDefencePosition.GroupType), aDefencePosition.Radius,
-                                                         Ord(aDefencePosition.PositionType)]);
+                                                      aDefencePosition.GroupType, aDefencePosition.Radius, aDefencePosition.PositionType);
+      Result := True;
+    end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1300,7 +1300,10 @@ end;
 procedure TKMScriptActions.AIDefencePositionAdd(aPlayer: Byte; X, Y: Integer; aDir, aGroupType: Byte; aRadius: Word; aDefType: Byte);
 var
   defPos: TKMDefencePositionInfo;
+  added: Boolean;
 begin
+  added := False;
+
   if InRange(aGroupType, 0, 3)
     and InRange(aDir, 0, Ord(High(TKMDirection)) - 1)
     and InRange(aDefType, 0, 1)
@@ -1314,9 +1317,10 @@ begin
     defPos.GroupType := TKMGroupType(aGroupType + GROUP_TYPE_MIN_OFF);
     defPos.PositionType := TKMAIDefencePosType(aDefType);
 
-    _AIDefencePositionAdd(aPlayer, defPos, 'Actions.AIDefencePositionAdd');
-  end
-  else
+    added := _AIDefencePositionAdd(aPlayer, defPos);
+  end;
+
+  if not added then
     LogParamWarning('Actions.AIDefencePositionAdd', [aPlayer, X, Y, aDir, aGroupType, aRadius, aDefType]);
 end;
 
@@ -1325,7 +1329,8 @@ end;
 //* Adds a defence position for the specified AI player
 procedure TKMScriptActions.AIDefencePositionAddEx(aPlayer: Integer; const aDefencePosition: TKMDefencePositionInfo);
 begin
-  _AIDefencePositionAdd(aPlayer, aDefencePosition, 'Actions.AIDefencePositionAddEx');
+  if not _AIDefencePositionAdd(aPlayer, aDefencePosition) then
+    LogParamWarn('Actions.AIDefencePositionAddEx', [aPlayer, 'DefPos: ' + aDefencePosition.ToStr]);
 end;
 
 
