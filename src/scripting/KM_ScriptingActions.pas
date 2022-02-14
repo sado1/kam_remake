@@ -1987,7 +1987,7 @@ begin
     //Verify all input parameters
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
     and HouseTypeValid(aHouseType) then
-      gHands[aPlayer].Locks.HouseGranted[HOUSE_ID_TO_TYPE[aHouseType]] := True
+      gHands[aPlayer].Locks.HouseLock[HOUSE_ID_TO_TYPE[aHouseType]] := hlGranted
     else
       LogParamWarning('Actions.HouseUnlock', [aPlayer, aHouseType]);
   except
@@ -2005,8 +2005,16 @@ begin
   try
     //Verify all input parameters
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-    and HouseTypeValid(aHouseType) then
-      gHands[aPlayer].Locks.HouseBlocked[HOUSE_ID_TO_TYPE[aHouseType]] := not aAllowed
+      and HouseTypeValid(aHouseType) then
+    begin
+      case gHands[aPlayer].Locks.HouseLock[HOUSE_ID_TO_TYPE[aHouseType]] of
+        hlDefault,
+        hlGranted:  if not aAllowed then
+                      gHands[aPlayer].Locks.HouseLock[HOUSE_ID_TO_TYPE[aHouseType]] := hlBlocked;
+        hlBlocked:  if aAllowed then
+                      gHands[aPlayer].Locks.HouseLock[HOUSE_ID_TO_TYPE[aHouseType]] := hlDefault;
+      end;
+    end
     else
       LogParamWarning('Actions.HouseAllow', [aPlayer, aHouseType, Byte(aAllowed)]);
   except

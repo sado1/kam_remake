@@ -573,18 +573,18 @@ begin
     ctBlockHouse:       if fLastHand <> HAND_NONE then
                         begin
                           if InRange(P[0], Low(HOUSE_ID_TO_TYPE), High(HOUSE_ID_TO_TYPE)) then
-                            gHands[fLastHand].Locks.HouseBlocked[HOUSE_ID_TO_TYPE[P[0]]] := True;
+                            gHands[fLastHand].Locks.HouseLock[HOUSE_ID_TO_TYPE[P[0]]] := hlBlocked;
                         end;
 
     ctReleaseHouse:     if fLastHand <> HAND_NONE then
                         begin
                           if InRange(P[0], Low(HOUSE_ID_TO_TYPE), High(HOUSE_ID_TO_TYPE)) then
-                            gHands[fLastHand].Locks.HouseGranted[HOUSE_ID_TO_TYPE[P[0]]] := True;
+                            gHands[fLastHand].Locks.HouseLock[HOUSE_ID_TO_TYPE[P[0]]] := hlGranted;
                         end;
 
     ctReleaseAllHouses: if fLastHand <> HAND_NONE then
                           for HT := HOUSE_MIN to HOUSE_MAX do
-                            gHands[fLastHand].Locks.HouseGranted[HT] := True;
+                            gHands[fLastHand].Locks.HouseLock[HT] := hlGranted;
 
     ctSetGroup:         if (fLastHand <> HAND_NONE) and PointInMap(P[1]+1, P[2]+1) then
                           if InRange(P[0], Low(UNIT_ID_TO_TYPE), High(UNIT_ID_TO_TYPE)) and (UNIT_ID_TO_TYPE[P[0]] <> utNone) then
