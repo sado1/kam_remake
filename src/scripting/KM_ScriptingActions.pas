@@ -15,7 +15,7 @@ type
     procedure LogStr(const aText: String);
 
     function _AIDefencePositionAdd(aPlayer: Integer; const aDefencePosition: TKMDefencePositionInfo): Boolean;
-    procedure _AIGroupsFormationSet(aPlayer: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer; aMethodName: string);
+    function _AIGroupsFormationSet(aPlayer: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer): Boolean;
   public
     property OnSetLogLinesMaxCnt: TIntegerEvent read fOnSetLogLinesMaxCnt write fOnSetLogLinesMaxCnt;
 
@@ -31,13 +31,13 @@ type
     procedure AIAutoDefence(aPlayer: Byte; aAuto: Boolean);
     procedure AIAutoRepair(aPlayer: Byte; aAuto: Boolean);
     procedure AIDefencePositionAdd(aPlayer: Byte; X, Y: Integer; aDir, aGroupType: Byte; aRadius: Word; aDefType: Byte);
-    procedure AIDefencePositionAddEx(aPlayer: Integer; const aDefencePosition: TKMDefencePositionInfo);
+    procedure AIDefencePositionAddEx(aHand: Integer; const aDefencePosition: TKMDefencePositionInfo);
     procedure AIDefencePositionRemove(aPlayer: Byte; X, Y: Integer);
     procedure AIDefencePositionRemoveAll(aPlayer: Byte);
     procedure AIDefendAllies(aPlayer: Byte; aDefend: Boolean);
     procedure AIEquipRate(aPlayer: Byte; aType: Byte; aRate: Word);
     procedure AIGroupsFormationSet(aPlayer, aType: Byte; aCount, aColumns: Word);
-    procedure AIGroupsFormationSetEx(aPlayer: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer);
+    procedure AIGroupsFormationSetEx(aHand: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer);
     procedure AIRecruitDelay(aPlayer: Byte; aDelay: Cardinal);
     procedure AIRecruitLimit(aPlayer, aLimit: Byte);
     procedure AISerfsPerHouse(aPlayer: Byte; aSerfs: Single);
@@ -1325,13 +1325,14 @@ begin
 end;
 
 
-//* Version: 13800
+//* Version: 13900
 //* Adds a defence position for the specified AI player
-procedure TKMScriptActions.AIDefencePositionAddEx(aPlayer: Integer; const aDefencePosition: TKMDefencePositionInfo);
+//* aHand: hand (player) ID
+procedure TKMScriptActions.AIDefencePositionAddEx(aHand: Integer; const aDefencePosition: TKMDefencePositionInfo);
 begin
   try
-    if not _AIDefencePositionAdd(aPlayer, aDefencePosition) then
-      LogParamWarn('Actions.AIDefencePositionAddEx', [aPlayer, 'DefPos: ' + aDefencePosition.ToStr]);
+    if not _AIDefencePositionAdd(aHand, aDefencePosition) then
+      LogParamWarn('Actions.AIDefencePositionAddEx', [aHand, 'DefPos: ' + aDefencePosition.ToStr]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1424,21 +1425,16 @@ begin
 end;
 
 
-procedure TKMScriptActions._AIGroupsFormationSet(aPlayer: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer; aMethodName: string);
+function TKMScriptActions._AIGroupsFormationSet(aPlayer: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer): Boolean;
 begin
-  try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-      and (aGroupType in GROUP_TYPES_VALID)
-      and (aCount > 0) and (aColumns > 0) then
-    begin
-      gHands[aPlayer].AI.General.DefencePositions.TroopFormations[aGroupType].NumUnits := aCount;
-      gHands[aPlayer].AI.General.DefencePositions.TroopFormations[aGroupType].UnitsPerRow := aColumns;
-    end
-    else
-      LogIntParamWarn(aMethodName, [aPlayer, Ord(aGroupType), aCount, aColumns]);
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
+  Result := False;
+  if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    and (aGroupType in GROUP_TYPES_VALID)
+    and (aCount > 0) and (aColumns > 0) then
+  begin
+    gHands[aPlayer].AI.General.DefencePositions.TroopFormations[aGroupType].NumUnits := aCount;
+    gHands[aPlayer].AI.General.DefencePositions.TroopFormations[aGroupType].UnitsPerRow := aColumns;
+    Result := True;
   end;
 end;
 
@@ -1449,20 +1445,32 @@ procedure TKMScriptActions.AIGroupsFormationSet(aPlayer, aType: Byte; aCount, aC
 var
   gt: TKMGroupType;
 begin
-  gt := gtNone;
+  try
+    gt := gtNone;
+    if InRange(aType, 0, 3) then
+      gt := TKMGroupType(aType + GROUP_TYPE_MIN_OFF);
 
-  if InRange(aType, 0, 3) then
-    gt := TKMGroupType(aType + GROUP_TYPE_MIN_OFF);
-
-  _AIGroupsFormationSet(aPlayer, gt, aCount, aColumns, 'Actions.AIGroupsFormationSet');
+    if not _AIGroupsFormationSet(aPlayer, gt, aCount, aColumns) then
+      LogIntParamWarn('Actions.AIGroupsFormationSet', [aPlayer, aType, aCount, aColumns]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
 end;
 
 
-//* Version: 13800
+//* Version: 13900
 //* Sets the formation the AI uses for defence positions
-procedure TKMScriptActions.AIGroupsFormationSetEx(aPlayer: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer);
+//* aHand: hand (player) ID
+procedure TKMScriptActions.AIGroupsFormationSetEx(aHand: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer);
 begin
-  _AIGroupsFormationSet(aPlayer, aGroupType, aCount, aColumns, 'Actions.AIGroupsFormationSetEx');
+  try
+    if not _AIGroupsFormationSet(aHand, aGroupType, aCount, aColumns) then
+      LogParamWarn('Actions.AIGroupsFormationSetEx', [aHand, GetEnumName(TypeInfo(TKMGroupType), Integer(aGroupType)), aCount, aColumns]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
 end;
 
 
