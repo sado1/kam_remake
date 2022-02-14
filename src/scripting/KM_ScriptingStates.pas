@@ -6,7 +6,7 @@ uses
   KM_CommonTypes, KM_Defaults, KM_Points, KM_HandsCollection, KM_Houses, KM_ScriptingIdCache, KM_Units, KM_MapTypes,
   KM_UnitGroup, KM_ResHouses, KM_HouseCollection, KM_ResWares, KM_ScriptingEvents, KM_TerrainTypes, KM_ResTilesetTypes,
   KM_UnitGroupTypes, KM_ScriptingTypes,
-  KM_ResTypes;
+  KM_ResTypes, KM_HandTypes;
 
 
 type
@@ -80,6 +80,7 @@ type
     function GroupTypeEx(aGroupID: Integer): TKMGroupType;
 
     function HandHouseCanBuild(aPlayer: Integer; aHouseType: TKMHouseType): Boolean;
+    function HandHouseLock(aPlayer: Integer; aHouseType: TKMHouseType): TKMHandHouseLock;
 
     function HouseAllowAllyToSelect(aHouseID: Integer): Boolean;
     function HouseAt(aX, aY: Word): Integer;
@@ -252,7 +253,7 @@ uses
   KM_UnitsCollection, KM_UnitWarrior, KM_UnitTaskSelfTrain,
   KM_HouseBarracks, KM_HouseSchool, KM_HouseMarket, KM_HouseStore, KM_HouseWoodcutters, KM_HouseTownHall,
   KM_Resource, KM_ResUnits,
-  KM_Hand, KM_HandTypes,
+  KM_Hand,
   KM_Terrain,
   KM_CommonUtils;
 
@@ -1888,6 +1889,25 @@ begin
       Result := False;
       LogParamWarning('States.HandHouseCanBuild', [aPlayer, Ord(aHouseType)]);
     end;
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns hand (player) house lock as enum value of TKMHandHouseLock = (hlDefault, hlBlocked, hlGranted)
+//* Result: Hand house lock
+function TKMScriptStates.HandHouseLock(aPlayer: Integer; aHouseType: TKMHouseType): TKMHandHouseLock;
+begin
+  Result := hlNone;
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    and (aHouseType in HOUSES_VALID) then
+      Result := gHands[aPlayer].Locks.HouseLock[aHouseType]
+    else
+      LogParamWarning('States.HandHouseLock', [aPlayer, Ord(aHouseType)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

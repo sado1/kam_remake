@@ -351,6 +351,7 @@ begin
     Sender.AddTypeS('TKMDirection', '(dirNA, dirN, dirNE, dirE, dirSE, dirS, dirSW, dirW, dirNW)');
 
     Sender.AddTypeS('TKMDeliveryMode' ,'(dmClosed, dmDelivery, dmTakeOut)');
+    Sender.AddTypeS('TKMHandHouseLock', '(hlNone, hlDefault, hlBlocked, hlGranted)');
 
     Sender.AddTypeS('TKMDefencePositionInfo', 'record ' +
                       'X, Y: Integer; ' +
@@ -481,6 +482,7 @@ begin
     RegisterMethodCheck(c, 'function GroupTypeEx(aGroupID: Integer): TKMGroupType');
 
     RegisterMethodCheck(c, 'function HandHouseCanBuild(aPlayer: Integer; aHouseType: TKMHouseType): Boolean');
+    RegisterMethodCheck(c, 'function HandHouseLock(aPlayer: Integer; aHouseType: TKMHouseType): TKMHandHouseLock');
 
     RegisterMethodCheck(c, 'function HouseAt(aX, aY: Word): Integer');
     RegisterMethodCheck(c, 'function HouseAllowAllyToSelect(aHouseID: Integer): Boolean');
@@ -1222,6 +1224,7 @@ begin
       RegisterMethod(@TKMScriptStates.GroupTypeEx,                              'GroupTypeEx');
 
       RegisterMethod(@TKMScriptStates.HandHouseCanBuild,                        'HandHouseCanBuild');
+      RegisterMethod(@TKMScriptStates.HandHouseLock,                            'HandHouseLock');
 
       RegisterMethod(@TKMScriptStates.HouseAllowAllyToSelect,                   'HouseAllowAllyToSelect');
       RegisterMethod(@TKMScriptStates.HouseAt,                                  'HouseAt');
