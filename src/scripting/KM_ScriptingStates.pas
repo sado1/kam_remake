@@ -105,6 +105,7 @@ type
     function HouseSiteIsDigged(aHouseID: Integer): Boolean;
     function HouseTownHallMaxGold(aHouseID: Integer): Integer;
     function HouseType(aHouseID: Integer): Integer;
+    function HouseTypeEx(aHouseID: Integer): TKMHouseType;
     function HouseTypeMaxHealth(aHouseType: Integer): Word;
     function HouseTypeName(aHouseType: Byte): AnsiString;
     function HouseTypeToOccupantType(aHouseType: Integer): Integer;
@@ -2529,13 +2530,12 @@ end;
 //* Version: 5057
 //* Returns the type of the specified house
 //* Result: House type
-//Get the house type
 function TKMScriptStates.HouseType(aHouseID: Integer): Integer;
 var
   H: TKMHouse;
 begin
+  Result := -1;
   try
-    Result := -1;
     if aHouseID > 0 then
     begin
       H := fIDCache.GetHouse(aHouseID);
@@ -2544,6 +2544,30 @@ begin
     end
     else
       LogParamWarning('States.HouseType', [aHouseID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns the type of the specified house
+//* Result: House type
+function TKMScriptStates.HouseTypeEx(aHouseID: Integer): TKMHouseType;
+var
+  H: TKMHouse;
+begin
+  Result := htNone;
+  try
+    if aHouseID > 0 then
+    begin
+      H := fIDCache.GetHouse(aHouseID);
+      if H <> nil then
+        Result := H.HouseType;
+    end
+    else
+      LogParamWarning('States.HouseTypeEx', [aHouseID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
