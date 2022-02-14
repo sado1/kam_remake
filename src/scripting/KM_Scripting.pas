@@ -516,7 +516,7 @@ begin
     RegisterMethodCheck(c, 'function HouseTypeName(aHouseType: Byte): AnsiString');
     RegisterMethodCheck(c, 'function HouseTypeNameEx(aHouseType: TKMHouseType): AnsiString');
     RegisterMethodCheck(c, 'function HouseTypeToOccupantType(aHouseID: Integer): Integer');
-    RegisterMethodCheck(c, 'function HouseTypeToWorkerType(aHouseID: Integer): Integer');
+    RegisterMethodCheck(c, 'function HouseTypeToWorkerType(aHouseType: TKMHouseType): TKMUnitType');
     RegisterMethodCheck(c, 'function HouseUnlocked(aPlayer, aHouseType: Word): Boolean');
     RegisterMethodCheck(c, 'function HouseWoodcutterChopOnly(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseWoodcutterMode(aHouseID: Integer): Integer');
