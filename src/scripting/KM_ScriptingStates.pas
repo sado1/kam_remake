@@ -2811,7 +2811,7 @@ begin
     if aHouseType in HOUSES_VALID then
       Result := gResHouses[aHouseType].MaxHealth
     else
-      LogIntParamWarn('States.HouseTypeMaxHealthEx', [Ord(aHouseType)]);
+      LogParamWarn('States.HouseTypeMaxHealthEx', [GetEnumName(TypeInfo(TKMHouseType), Integer(aHouseType))]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2856,7 +2856,7 @@ begin
     else
     begin
       Result := '';
-      LogIntParamWarn('States.HouseTypeNameEx', [Ord(aHouseType)]);
+      LogParamWarn('States.HouseTypeNameEx', [GetEnumName(TypeInfo(TKMHouseType), Integer(aHouseType))]);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
