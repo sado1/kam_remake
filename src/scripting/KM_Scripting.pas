@@ -510,6 +510,7 @@ begin
     RegisterMethodCheck(c, 'function HouseTypeMaxHealth(aHouseType: Integer): Word');
     RegisterMethodCheck(c, 'function HouseTypeMaxHealthEx(aHouseType: TKMHouseType): Integer');
     RegisterMethodCheck(c, 'function HouseTypeName(aHouseType: Byte): AnsiString');
+    RegisterMethodCheck(c, 'function HouseTypeNameEx(aHouseType: TKMHouseType): AnsiString');
     RegisterMethodCheck(c, 'function HouseTypeToOccupantType(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseTypeToWorkerType(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseUnlocked(aPlayer, aHouseType: Word): Boolean');
@@ -1248,6 +1249,7 @@ begin
       RegisterMethod(@TKMScriptStates.HouseTypeMaxHealth,                       'HouseTypeMaxHealth');
       RegisterMethod(@TKMScriptStates.HouseTypeMaxHealthEx,                     'HouseTypeMaxHealthEx');
       RegisterMethod(@TKMScriptStates.HouseTypeName,                            'HouseTypeName');
+      RegisterMethod(@TKMScriptStates.HouseTypeNameEx,                          'HouseTypeNameEx');
       RegisterMethod(@TKMScriptStates.HouseTypeToOccupantType,                  'HouseTypeToOccupantType');
       RegisterMethod(@TKMScriptStates.HouseTypeToWorkerType,                    'HouseTypeToWorkerType');
       RegisterMethod(@TKMScriptStates.HouseUnlocked,                            'HouseUnlocked');

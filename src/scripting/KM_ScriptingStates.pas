@@ -109,6 +109,7 @@ type
     function HouseTypeMaxHealth(aHouseType: Integer): Word;
     function HouseTypeMaxHealthEx(aHouseType: TKMHouseType): Integer;
     function HouseTypeName(aHouseType: Byte): AnsiString;
+    function HouseTypeNameEx(aHouseType: TKMHouseType): AnsiString;
     function HouseTypeToOccupantType(aHouseType: Integer): Integer;
     function HouseTypeToWorkerType(aHouseType: Integer): Integer;
     function HouseUnlocked(aPlayer, aHouseType: Word): Boolean;
@@ -2627,6 +2628,29 @@ begin
     begin
       Result := '';
       LogParamWarning('States.HouseTypeName', [aHouseType]);
+    end;
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns the the translated name of the specified house type.
+//* Note: To ensure multiplayer consistency the name is returned as a number encoded within a markup which is
+//* decoded on output, not the actual translated text.
+//* Therefore string operations like LowerCase will not work.
+//* Result: House type name
+function TKMScriptStates.HouseTypeNameEx(aHouseType: TKMHouseType): AnsiString;
+begin
+  try
+    if aHouseType in [HOUSE_MIN..HOUSE_MAX] then
+      Result := '<%' + AnsiString(IntToStr(gResHouses[aHouseType].HouseNameTextID)) + '>'
+    else
+    begin
+      Result := '';
+      LogParamWarning('States.HouseTypeNameEx', [Ord(aHouseType)]);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
