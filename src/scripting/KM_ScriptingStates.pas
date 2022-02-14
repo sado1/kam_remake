@@ -238,6 +238,7 @@ type
     function UnitPositionY(aUnitID: Integer): Integer;
     function UnitsGroup(aUnitID: Integer): Integer;
     function UnitType(aUnitID: Integer): Integer;
+    function UnitTypeEx(aUnitID: Integer): TKMUnitType;
     function UnitTypeName(aUnitType: Byte): AnsiString;
     function UnitUnlocked(aPlayer: Word; aUnitType: Integer): Boolean;
 
@@ -4441,7 +4442,7 @@ end;
 
 
 //* Version: 5057
-//* Returns the type of the specified unit
+//* Returns the type of the specified unit or -1 if unit id is invalid
 //* Result: Unit type
 function TKMScriptStates.UnitType(aUnitID: Integer): Integer;
 var
@@ -4457,6 +4458,30 @@ begin
     end
     else
       LogIntParamWarn('States.UnitType', [aUnitID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns the type of the specified unit or utNone if unit id is invalid
+//* Result: Unit type
+function TKMScriptStates.UnitTypeEx(aUnitID: Integer): TKMUnitType;
+var
+  U: TKMUnit;
+begin
+  try
+    Result := utNone; //-1 if unit id is invalid
+    if aUnitID > 0 then
+    begin
+      U := fIDCache.GetUnit(aUnitID);
+      if U <> nil then
+        Result := U.UnitType;
+    end
+    else
+      LogIntParamWarn('States.UnitTypeEx', [aUnitID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

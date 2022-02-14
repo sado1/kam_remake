@@ -641,6 +641,7 @@ begin
     RegisterMethodCheck(c, 'function UnitPositionY(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function UnitsGroup(aUnitID: Integer): Integer');
     RegisterMethodCheck(c, 'function UnitType(aUnitID: Integer): Integer');
+    RegisterMethodCheck(c, 'function UnitTypeEx(aUnitID: Integer): TKMUnitType');
     RegisterMethodCheck(c, 'function UnitTypeName(aUnitType: Byte): AnsiString');
     RegisterMethodCheck(c, 'function UnitUnlocked(aPlayer: Word; aUnitType: Integer): Boolean');
 
@@ -1385,6 +1386,7 @@ begin
       RegisterMethod(@TKMScriptStates.UnitPositionY,                            'UnitPositionY');
       RegisterMethod(@TKMScriptStates.UnitsGroup,                               'UnitsGroup');
       RegisterMethod(@TKMScriptStates.UnitType,                                 'UnitType');
+      RegisterMethod(@TKMScriptStates.UnitTypeEx,                               'UnitTypeEx');
       RegisterMethod(@TKMScriptStates.UnitTypeName,                             'UnitTypeName');
       RegisterMethod(@TKMScriptStates.UnitUnlocked,                             'UnitUnlocked');
 
