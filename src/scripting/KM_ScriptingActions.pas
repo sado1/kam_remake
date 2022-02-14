@@ -1440,7 +1440,7 @@ end;
 
 
 //* Version: 5778
-//* Sets the formation the AI uses for defence positions
+//* Sets the formation the AI uses for defence positions. Works only for ClassicAI
 procedure TKMScriptActions.AIGroupsFormationSet(aPlayer, aType: Byte; aCount, aColumns: Word);
 var
   gt: TKMGroupType;
