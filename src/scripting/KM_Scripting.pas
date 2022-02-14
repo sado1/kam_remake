@@ -481,8 +481,8 @@ begin
     RegisterMethodCheck(c, 'function GroupType(aGroupID: Integer): Integer');
     RegisterMethodCheck(c, 'function GroupTypeEx(aGroupID: Integer): TKMGroupType');
 
-    RegisterMethodCheck(c, 'function HandHouseCanBuild(aPlayer: Integer; aHouseType: TKMHouseType): Boolean');
-    RegisterMethodCheck(c, 'function HandHouseLock(aPlayer: Integer; aHouseType: TKMHouseType): TKMHandHouseLock');
+    RegisterMethodCheck(c, 'function HandHouseCanBuild(aHand: Integer; aHouseType: TKMHouseType): Boolean');
+    RegisterMethodCheck(c, 'function HandHouseLock(aHand: Integer; aHouseType: TKMHouseType): TKMHandHouseLock');
 
     RegisterMethodCheck(c, 'function HouseAt(aX, aY: Word): Integer');
     RegisterMethodCheck(c, 'function HouseAllowAllyToSelect(aHouseID: Integer): Boolean');

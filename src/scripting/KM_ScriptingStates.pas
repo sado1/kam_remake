@@ -79,8 +79,8 @@ type
     function GroupType(aGroupID: Integer): Integer;
     function GroupTypeEx(aGroupID: Integer): TKMGroupType;
 
-    function HandHouseCanBuild(aPlayer: Integer; aHouseType: TKMHouseType): Boolean;
-    function HandHouseLock(aPlayer: Integer; aHouseType: TKMHouseType): TKMHandHouseLock;
+    function HandHouseCanBuild(aHand: Integer; aHouseType: TKMHouseType): Boolean;
+    function HandHouseLock(aHand: Integer; aHouseType: TKMHouseType): TKMHandHouseLock;
 
     function HouseAllowAllyToSelect(aHouseID: Integer): Boolean;
     function HouseAt(aX, aY: Word): Integer;
@@ -1878,16 +1878,16 @@ end;
 //* Version: 13900
 //* Returns true if the specified hand (player) can build the specified house type
 //* Result: House can build
-function TKMScriptStates.HandHouseCanBuild(aPlayer: Integer; aHouseType: TKMHouseType): Boolean;
+function TKMScriptStates.HandHouseCanBuild(aHand: Integer; aHouseType: TKMHouseType): Boolean;
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
     and (aHouseType in HOUSES_VALID) then
-      Result := gHands[aPlayer].Locks.HouseCanBuild(aHouseType)
+      Result := gHands[aHand].Locks.HouseCanBuild(aHouseType)
     else
     begin
       Result := False;
-      LogParamWarning('States.HandHouseCanBuild', [aPlayer, Ord(aHouseType)]);
+      LogParamWarning('States.HandHouseCanBuild', [aHand, Ord(aHouseType)]);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
@@ -1899,15 +1899,15 @@ end;
 //* Version: 13900
 //* Returns hand (player) house lock as enum value of TKMHandHouseLock = (hlDefault, hlBlocked, hlGranted)
 //* Result: Hand house lock
-function TKMScriptStates.HandHouseLock(aPlayer: Integer; aHouseType: TKMHouseType): TKMHandHouseLock;
+function TKMScriptStates.HandHouseLock(aHand: Integer; aHouseType: TKMHouseType): TKMHandHouseLock;
 begin
   Result := hlNone;
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
     and (aHouseType in HOUSES_VALID) then
-      Result := gHands[aPlayer].Locks.HouseLock[aHouseType]
+      Result := gHands[aHand].Locks.HouseLock[aHouseType]
     else
-      LogParamWarning('States.HandHouseLock', [aPlayer, Ord(aHouseType)]);
+      LogParamWarning('States.HandHouseLock', [aHand, Ord(aHouseType)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
