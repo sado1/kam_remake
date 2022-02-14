@@ -350,6 +350,8 @@ begin
     Sender.AddTypeS('TKMGroupTypeSet', 'set of TKMGroupType');
     Sender.AddTypeS('TKMDirection', '(dirNA, dirN, dirNE, dirE, dirSE, dirS, dirSW, dirW, dirNW)');
 
+    Sender.AddTypeS('TKMDeliveryMode' ,'(dmClosed, dmDelivery, dmTakeOut)');
+
     Sender.AddTypeS('TKMDefencePositionInfo', 'record ' +
                       'X, Y: Integer; ' +
                       'Dir: TKMDirection;' +
@@ -487,7 +489,7 @@ begin
     RegisterMethodCheck(c, 'function HouseCanReachResources(aHouseID: Integer): Boolean)');
     RegisterMethodCheck(c, 'function HouseDamage(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseDeliveryBlocked(aHouseID: Integer): Boolean');
-    RegisterMethodCheck(c, 'function HouseDeliveryMode(aHouseID: Integer): Integer');
+    RegisterMethodCheck(c, 'function HouseDeliveryMode(aHouseID: Integer): TKMDeliveryMode');
     RegisterMethodCheck(c, 'function HouseDestroyed(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseFlagPoint(aHouseID: Integer): TKMPoint');
     RegisterMethodCheck(c, 'function HouseGetAllUnitsIn(aHouseID: Integer): TIntegerArray');

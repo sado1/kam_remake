@@ -88,7 +88,7 @@ type
     function HouseCanReachResources(aHouseID: Integer): Boolean;
     function HouseDamage(aHouseID: Integer): Integer;
     function HouseDeliveryBlocked(aHouseID: Integer): Boolean;
-    function HouseDeliveryMode(aHouseID: Integer): Integer;
+    function HouseDeliveryMode(aHouseID: Integer): TKMDeliveryMode;
     function HouseDestroyed(aHouseID: Integer): Boolean;
     function HouseFlagPoint(aHouseID: Integer): TKMPoint;
     function HouseGetAllUnitsIn(aHouseID: Integer): TIntegerArray;
@@ -2181,24 +2181,21 @@ begin
 end;
 
 
-//* Version: 7000+
-//* Returns delivery mode ID, where
-//* ID = 0 delivery blocked
-//* ID = 1 delivery allowed
-//* ID = 2 take ware out allowed
+//* Version: 13900
+//* Returns house delivery mode,
 //* if no house was found then ID = 1 is returned
-//* Result: Blocked
-function TKMScriptStates.HouseDeliveryMode(aHouseID: Integer): Integer;
+//* Result: Delivery mode
+function TKMScriptStates.HouseDeliveryMode(aHouseID: Integer): TKMDeliveryMode;
 var
   H: TKMHouse;
 begin
   try
-    Result := Integer(dmDelivery);
+    Result := dmDelivery;
     if aHouseID > 0 then
     begin
       H := fIDCache.GetHouse(aHouseID);
       if H <> nil then
-        Result := Integer(H.DeliveryMode);
+        Result := H.DeliveryMode;
     end
     else
       LogParamWarning('States.HouseDeliveryMode', [aHouseID]);
