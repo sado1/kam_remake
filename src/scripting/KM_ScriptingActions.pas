@@ -21,7 +21,7 @@ type
 
     procedure AIArmyType(aPlayer: Byte; aType: TKMArmyType);
     function AIAttackAdd(aPlayer: Byte; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer;
-                         aMelleCount, aAntiHorseCount, aRangedCount, aMountedCount: Word; aRandomGroups: Boolean;
+                         aMeleeCount, aAntiHorseCount, aRangedCount, aMountedCount: Word; aRandomGroups: Boolean;
                          aTarget: TKMAIAttackTarget; aCustomPosition: TKMPoint): Integer;
     function AIAttackRemove(aPlayer: Byte; aAIAttackId: Word): Boolean;
     procedure AIAttackRemoveAll(aPlayer: Byte);
@@ -1125,7 +1125,9 @@ end;
 //** );</pre>
 //** <b>aCustomPosition</b> - TKMPoint for custom position of attack. Used if attCustomPosition was set up as attack target
 //** <b>Result</b>: Attack Id, that could be used to remove this attack later on
-function TKMScriptActions.AIAttackAdd(aPlayer: Byte; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer; aMelleCount, aAntiHorseCount, aRangedCount, aMountedCount: Word; aRandomGroups: Boolean; aTarget: TKMAIAttackTarget; aCustomPosition: TKMPoint): Integer;
+function TKMScriptActions.AIAttackAdd(aPlayer: Byte; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer;
+                                      aMeleeCount, aAntiHorseCount, aRangedCount, aMountedCount: Word; aRandomGroups: Boolean;
+                                      aTarget: TKMAIAttackTarget; aCustomPosition: TKMPoint): Integer;
 var
   AttackType: TKMAIAttackType;
   Delay: Cardinal;
@@ -1141,9 +1143,9 @@ begin
 
       //Attack delay should be counted from the moment attack was added from script
       Delay := aDelay + gGameParams.Tick;
-      Result := gHands[aPlayer].AI.General.Attacks.AddAttack(AttackType, Delay, aTotalMen, aMelleCount, aAntiHorseCount, aRangedCount, aMountedCount, aRandomGroups, aTarget, 0, aCustomPosition);
+      Result := gHands[aPlayer].AI.General.Attacks.AddAttack(AttackType, Delay, aTotalMen, aMeleeCount, aAntiHorseCount, aRangedCount, aMountedCount, aRandomGroups, aTarget, 0, aCustomPosition);
     end else
-      LogParamWarning('Actions.AIAttackAdd', [aPlayer, aDelay, aTotalMen, aMelleCount, aAntiHorseCount, aRangedCount, aMountedCount]);
+      LogParamWarning('Actions.AIAttackAdd', [aPlayer, aDelay, aTotalMen, aMeleeCount, aAntiHorseCount, aRangedCount, aMountedCount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
