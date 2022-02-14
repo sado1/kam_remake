@@ -476,6 +476,7 @@ begin
     RegisterMethodCheck(c, 'function GroupOrder(aGroupID: Integer): TKMGroupOrder');
     RegisterMethodCheck(c, 'function GroupOwner(aGroupID: Integer): Integer');
     RegisterMethodCheck(c, 'function GroupType(aGroupID: Integer): Integer');
+    RegisterMethodCheck(c, 'function GroupTypeEx(aGroupID: Integer): TKMGroupType');
 
     RegisterMethodCheck(c, 'function HouseAt(aX, aY: Word): Integer');
     RegisterMethodCheck(c, 'function HouseAllowAllyToSelect(aHouseID: Integer): Boolean');
@@ -1211,6 +1212,7 @@ begin
       RegisterMethod(@TKMScriptStates.GroupOrder,                               'GroupOrder');
       RegisterMethod(@TKMScriptStates.GroupOwner,                               'GroupOwner');
       RegisterMethod(@TKMScriptStates.GroupType,                                'GroupType');
+      RegisterMethod(@TKMScriptStates.GroupTypeEx,                              'GroupTypeEx');
 
       RegisterMethod(@TKMScriptStates.HouseAllowAllyToSelect,                   'HouseAllowAllyToSelect');
       RegisterMethod(@TKMScriptStates.HouseAt,                                  'HouseAt');

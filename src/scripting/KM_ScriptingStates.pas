@@ -77,6 +77,7 @@ type
     function GroupOrder(aGroupID: Integer): TKMGroupOrder;
     function GroupOwner(aGroupID: Integer): Integer;
     function GroupType(aGroupID: Integer): Integer;
+    function GroupTypeEx(aGroupID: Integer): TKMGroupType;
 
     function HouseAllowAllyToSelect(aHouseID: Integer): Boolean;
     function HouseAt(aX, aY: Word): Integer;
@@ -4748,6 +4749,30 @@ begin
     end
     else
       LogParamWarning('States.GroupType', [aGroupID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13800
+//* Returns the type of the specified group or gtNone if Group ID invalid
+//* Result: Group type
+function TKMScriptStates.GroupTypeEx(aGroupID: Integer): TKMGroupType;
+var
+  G: TKMUnitGroup;
+begin
+  Result := gtNone;
+  try
+    if aGroupID > 0 then
+    begin
+      G := fIDCache.GetGroup(aGroupID);
+      if G <> nil then
+        Result := G.GroupType;
+    end
+    else
+      LogParamWarning('States.GroupTypeEx', [aGroupID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
