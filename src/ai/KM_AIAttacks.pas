@@ -54,10 +54,10 @@ type
     function GetNextAttackId: Word;
 
     function AddAttack(aAttack: TKMAIAttack): Word; overload;
-    function AddAttack(aAttackType: TKMAIAttackType; aDelay: Cardinal; aTotalMen: Integer; aGroupAmounts: TKMGroupTypeArray;
+    function AddAttack(aAttackType: TKMAIAttackType; aDelay: Cardinal; aTotalMen: Integer; const aGroupAmounts: TKMGroupTypeArray;
                        aTakeAll: Boolean; aTarget: TKMAIAttackTarget; aRange: Integer; aCustomPosition: TKMPoint): Word; overload;
     function AddAttack(aAttackType: TKMAIAttackType; aDelay: Cardinal; aTotalMen: Integer;
-                       aMeleeCount, aAntiHorseCount, aRangedCount, aMountedCount: Word;
+                       aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount: Word;
                        aTakeAll: Boolean; aTarget: TKMAIAttackTarget; aRange: Integer; aCustomPosition: TKMPoint): Word; overload;
     function RemoveAttack(aAttackId: Word): Boolean;
     procedure Delete(aIndex: Integer);
@@ -85,18 +85,18 @@ end;
 function TKMAIAttacks.CanOccur(aIndex: Integer; const aMenAvailable: TKMGroupTypeArray; const aGroupsAvailable: TKMGroupTypeArray; aTick: Cardinal): Boolean;
 var
   GT: TKMGroupType;
-  TotalMenAvailable: Word;
+  totalMenAvailable: Word;
 begin
-  TotalMenAvailable := 0;
+  totalMenAvailable := 0;
   //Must have enough men available out of the types of groups that will attack
   for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
     if fAttacks[aIndex].TakeAll or (fAttacks[aIndex].GroupAmounts[GT] > 0) then
-      Inc(TotalMenAvailable, aMenAvailable[GT]);
+      Inc(totalMenAvailable, aMenAvailable[GT]);
 
   Result := ((fAttacks[aIndex].AttackType = aatRepeating) or not fAttacks[aIndex].HasOccured)
             and (aTick >= fAttacks[aIndex].Delay)
-            and (TotalMenAvailable >= fAttacks[aIndex].TotalMen)
-            and (TotalMenAvailable > 0);
+            and (totalMenAvailable >= fAttacks[aIndex].TotalMen)
+            and (totalMenAvailable > 0);
 
   //Must have enough groups of each type
   if not fAttacks[aIndex].TakeAll then
@@ -139,35 +139,35 @@ begin
 end;
 
 
-function TKMAIAttacks.AddAttack(aAttackType: TKMAIAttackType; aDelay: Cardinal; aTotalMen: Integer; aGroupAmounts: TKMGroupTypeArray;
+function TKMAIAttacks.AddAttack(aAttackType: TKMAIAttackType; aDelay: Cardinal; aTotalMen: Integer; const aGroupAmounts: TKMGroupTypeArray;
                                 aTakeAll: Boolean; aTarget: TKMAIAttackTarget; aRange: Integer; aCustomPosition: TKMPoint): Word;
 var
-  Attack: TKMAIAttack;
+  attack: TKMAIAttack;
 begin
-  Attack.AttackType     := aAttackType;
-  Attack.HasOccured     := False;
-  Attack.Delay          := aDelay;
-  Attack.TotalMen       := aTotalMen;
-  Attack.GroupAmounts   := aGroupAmounts;
-  Attack.TakeAll        := aTakeAll;
-  Attack.Target         := aTarget;
-  Attack.Range          := aRange;
-  Attack.CustomPosition := aCustomPosition;
-  Result := AddAttack(Attack);
+  attack.AttackType     := aAttackType;
+  attack.HasOccured     := False;
+  attack.Delay          := aDelay;
+  attack.TotalMen       := aTotalMen;
+  attack.GroupAmounts   := aGroupAmounts;
+  attack.TakeAll        := aTakeAll;
+  attack.Target         := aTarget;
+  attack.Range          := aRange;
+  attack.CustomPosition := aCustomPosition;
+  Result := AddAttack(attack);
 end;
 
 
 function TKMAIAttacks.AddAttack(aAttackType: TKMAIAttackType; aDelay: Cardinal; aTotalMen: Integer;
-                                aMeleeCount, aAntiHorseCount, aRangedCount, aMountedCount: Word;
+                                aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount: Word;
                                 aTakeAll: Boolean; aTarget: TKMAIAttackTarget; aRange: Integer; aCustomPosition: TKMPoint): Word;
 var
-  GroupAmounts: TKMGroupTypeArray;
+  groupAmounts: TKMGroupTypeArray;
 begin
-  GroupAmounts[gtMelee]      := aMeleeCount;
-  GroupAmounts[gtAntiHorse]  := aAntiHorseCount;
-  GroupAmounts[gtRanged]     := aRangedCount;
-  GroupAmounts[gtMounted]    := aMountedCount;
-  Result := AddAttack(aAttackType, aDelay, aTotalMen, GroupAmounts, aTakeAll, aTarget, aRange, aCustomPosition);
+  groupAmounts[gtMelee]     := aMeleeGroupCount;
+  groupAmounts[gtAntiHorse] := aAntiHorseGroupCount;
+  groupAmounts[gtRanged]    := aRangedGroupCount;
+  groupAmounts[gtMounted]   := aMountedGroupCount;
+  Result := AddAttack(aAttackType, aDelay, aTotalMen, groupAmounts, aTakeAll, aTarget, aRange, aCustomPosition);
 end;
 
 
