@@ -355,8 +355,8 @@ begin
 
     Sender.AddTypeS('TKMDefencePositionInfo', 'record ' +
                       'X, Y: Integer; ' +
-                      'Dir: TKMDirection;' +
                       'Radius: Integer; ' +
+                      'Dir: TKMDirection;' +
                       'GroupType: TKMGroupType; ' +
                       'PositionType: TKMAIDefencePosType; ' +
                     'end');

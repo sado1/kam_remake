@@ -1277,20 +1277,16 @@ end;
 function TKMScriptActions._AIDefencePositionAdd(aPlayer: Integer; const aDefencePosition: TKMDefencePositionInfo): Boolean;
 begin
   Result := False;
-  try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-      and (aDefencePosition.PositionType in [dtFrontLine..dtBackLine])
-      and (aDefencePosition.Dir in [dirN..dirNW])
-      and (aDefencePosition.GroupType in GROUP_TYPES_VALID)
-      and (gTerrain.TileInMapCoords(aDefencePosition.X, aDefencePosition.Y)) then
-    begin
-      gHands[aPlayer].AI.General.DefencePositions.Add(KMPointDir(aDefencePosition.X, aDefencePosition.Y, aDefencePosition.Dir),
-                                                      aDefencePosition.GroupType, aDefencePosition.Radius, aDefencePosition.PositionType);
-      Result := True;
-    end;
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
+  if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    and (aDefencePosition.Radius >= 0)
+    and (aDefencePosition.PositionType in [dtFrontLine..dtBackLine])
+    and (aDefencePosition.Dir in [dirN..dirNW])
+    and (aDefencePosition.GroupType in GROUP_TYPES_VALID)
+    and (gTerrain.TileInMapCoords(aDefencePosition.X, aDefencePosition.Y)) then
+  begin
+    gHands[aPlayer].AI.General.DefencePositions.Add(KMPointDir(aDefencePosition.X, aDefencePosition.Y, aDefencePosition.Dir),
+                                                    aDefencePosition.GroupType, aDefencePosition.Radius, aDefencePosition.PositionType);
+    Result := True;
   end;
 end;
 
@@ -1303,25 +1299,29 @@ var
   added: Boolean;
 begin
   added := False;
+  try
+    if InRange(aGroupType, 0, 3)
+      and InRange(aDir, 0, Ord(High(TKMDirection)) - 1)
+      and InRange(aDefType, 0, 1)
+      and (TKMDirection(aDir + 1) in [dirN..dirNW])
+      and (gTerrain.TileInMapCoords(X, Y)) then
+    begin
+      defPos.X := X;
+      defPos.Y := Y;
+      defPos.Dir := TKMDirection(aDir + 1);
+      defPos.Radius := aRadius;
+      defPos.GroupType := TKMGroupType(aGroupType + GROUP_TYPE_MIN_OFF);
+      defPos.PositionType := TKMAIDefencePosType(aDefType);
 
-  if InRange(aGroupType, 0, 3)
-    and InRange(aDir, 0, Ord(High(TKMDirection)) - 1)
-    and InRange(aDefType, 0, 1)
-    and (TKMDirection(aDir + 1) in [dirN..dirNW])
-    and (gTerrain.TileInMapCoords(X, Y)) then
-  begin
-    defPos.X := X;
-    defPos.Y := Y;
-    defPos.Dir := TKMDirection(aDir + 1);
-    defPos.Radius := aRadius;
-    defPos.GroupType := TKMGroupType(aGroupType + GROUP_TYPE_MIN_OFF);
-    defPos.PositionType := TKMAIDefencePosType(aDefType);
+      added := _AIDefencePositionAdd(aPlayer, defPos);
+    end;
 
-    added := _AIDefencePositionAdd(aPlayer, defPos);
+    if not added then
+      LogParamWarning('Actions.AIDefencePositionAdd', [aPlayer, X, Y, aDir, aGroupType, aRadius, aDefType]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
   end;
-
-  if not added then
-    LogParamWarning('Actions.AIDefencePositionAdd', [aPlayer, X, Y, aDir, aGroupType, aRadius, aDefType]);
 end;
 
 
@@ -1329,8 +1329,13 @@ end;
 //* Adds a defence position for the specified AI player
 procedure TKMScriptActions.AIDefencePositionAddEx(aPlayer: Integer; const aDefencePosition: TKMDefencePositionInfo);
 begin
-  if not _AIDefencePositionAdd(aPlayer, aDefencePosition) then
-    LogParamWarn('Actions.AIDefencePositionAddEx', [aPlayer, 'DefPos: ' + aDefencePosition.ToStr]);
+  try
+    if not _AIDefencePositionAdd(aPlayer, aDefencePosition) then
+      LogParamWarn('Actions.AIDefencePositionAddEx', [aPlayer, 'DefPos: ' + aDefencePosition.ToStr]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
 end;
 
 
