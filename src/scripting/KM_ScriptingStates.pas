@@ -12,7 +12,7 @@ uses
 type
   TKMScriptStates = class(TKMScriptEntity)
   private
-    procedure _AIGroupsFormationGet(aPlayer: Integer; aGroupType: TKMGroupType; out aCount, aColumns: Integer; aMethodName: string);
+    procedure _AIGroupsFormationGet(aPlayer: Integer; aGroupType: TKMGroupType; out aCount, aColumns: Integer; out aSucceed: Boolean);
     function _ClosestGroup(aPlayer, X, Y: Integer; aGroupType: TKMGroupType; aMethodName: String): Integer;
     function _ClosestGroupMultipleTypes(aPlayer, X, Y: Integer; aGroupTypes: TKMGroupTypeSet; aMethodName: string): Integer;
     function _ClosestHouse(aPlayer, X, Y: Integer; aHouseType: TKMHouseType; aMethodName: string): Integer;
@@ -248,6 +248,7 @@ type
 
 implementation
 uses
+  TypInfo,
   KM_AI, KM_ArmyDefence, KM_AIDefensePos,
   KM_Game, KM_GameApp, KM_GameParams,
   KM_UnitsCollection, KM_UnitWarrior, KM_UnitTaskSelfTrain,
@@ -485,28 +486,23 @@ begin
 end;
 
 
-procedure TKMScriptStates._AIGroupsFormationGet(aPlayer: Integer; aGroupType: TKMGroupType; out aCount, aColumns: Integer; aMethodName: string);
+procedure TKMScriptStates._AIGroupsFormationGet(aPlayer: Integer; aGroupType: TKMGroupType; out aCount, aColumns: Integer; out aSucceed: Boolean);
 begin
-  try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-      and (aGroupType in GROUP_TYPES_VALID) then
+  aSucceed := False;
+  if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    and (aGroupType in GROUP_TYPES_VALID) then
+  begin
+    if gHands[aPlayer].AI.Setup.NewAI then
     begin
-      if gHands[aPlayer].AI.Setup.NewAI then
-      begin
-        aCount := gHands[aPlayer].AI.ArmyManagement.Defence.TroopFormations[aGroupType].NumUnits;
-        aColumns := gHands[aPlayer].AI.ArmyManagement.Defence.TroopFormations[aGroupType].UnitsPerRow;
-      end
-      else
-      begin
-        aCount := gHands[aPlayer].AI.General.DefencePositions.TroopFormations[aGroupType].NumUnits;
-        aColumns := gHands[aPlayer].AI.General.DefencePositions.TroopFormations[aGroupType].UnitsPerRow;
-      end
+      aCount := gHands[aPlayer].AI.ArmyManagement.Defence.TroopFormations[aGroupType].NumUnits;
+      aColumns := gHands[aPlayer].AI.ArmyManagement.Defence.TroopFormations[aGroupType].UnitsPerRow;
     end
     else
-      LogIntParamWarn(aMethodName, [aPlayer, Ord(aGroupType)]);
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
+    begin
+      aCount := gHands[aPlayer].AI.General.DefencePositions.TroopFormations[aGroupType].NumUnits;
+      aColumns := gHands[aPlayer].AI.General.DefencePositions.TroopFormations[aGroupType].UnitsPerRow;
+    end;
+    aSucceed := True;
   end;
 end;
 
@@ -518,13 +514,21 @@ end;
 procedure TKMScriptStates.AIGroupsFormationGet(aPlayer, aType: Byte; out aCount, aColumns: Integer);
 var
   gt: TKMGroupType;
+  succeed: Boolean;
 begin
-  gt := gtNone;
+  try
+    gt := gtNone;
 
-  if InRange(aType, 0, 3) then
-    gt := TKMGroupType(aType + GROUP_TYPE_MIN_OFF);
+    if InRange(aType, 0, 3) then
+      gt := TKMGroupType(aType + GROUP_TYPE_MIN_OFF);
 
-  _AIGroupsFormationGet(aPlayer, gt, aCount, aColumns, 'States.AIGroupsFormationGet');
+    _AIGroupsFormationGet(aPlayer, gt, aCount, aColumns, succeed);
+    if not succeed then
+      LogIntParamWarn('States.AIGroupsFormationGet', [aPlayer, aType]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
 end;
 
 
@@ -532,8 +536,17 @@ end;
 //* Gets the formation the AI uses for defence positions for specified player and group type
 //* group count and columns are returned in aCount and aColumns variables
 procedure TKMScriptStates.AIGroupsFormationGetEx(aPlayer: Integer; aGroupType: TKMGroupType; out aCount, aColumns: Integer);
+var
+  succeed: Boolean;
 begin
-  _AIGroupsFormationGet(aPlayer, aGroupType, aCount, aColumns, 'Actions.AIGroupsFormationGetEx');
+  try
+    _AIGroupsFormationGet(aPlayer, aGroupType, aCount, aColumns, succeed);
+    if not succeed then
+      LogParamWarn('States.AIGroupsFormationGetEx', [aPlayer, GetEnumName(TypeInfo(TKMGroupType), Integer(aGroupType))]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
 end;
 
 
@@ -692,30 +705,25 @@ var
   GTS: TKMGroupTypeSet;
   G: TKMUnitGroup;
 begin
-  try
-    Result := -1;
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-      and gTerrain.TileInMapCoords(X, Y)
-      and ((aGroupType = gtAny) or (aGroupType in GROUP_TYPES_VALID)) then
-    begin
-      if aGroupType = gtAny then
-        GTS := GROUP_TYPES_VALID
-      else
-        GTS := [aGroupType];
-
-      G := gHands[aPlayer].UnitGroups.GetClosestGroup(KMPoint(X,Y), GTS);
-      if (G <> nil) and not G.IsDead then
-      begin
-        Result := G.UID;
-        fIDCache.CacheGroup(G, G.UID);
-      end;
-    end
+  Result := -1;
+  if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    and gTerrain.TileInMapCoords(X, Y)
+    and ((aGroupType = gtAny) or (aGroupType in GROUP_TYPES_VALID)) then
+  begin
+    if aGroupType = gtAny then
+      GTS := GROUP_TYPES_VALID
     else
-      LogIntParamWarn(aMethodName, [aPlayer, X, Y, Ord(aGroupType)]);
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
+      GTS := [aGroupType];
+
+    G := gHands[aPlayer].UnitGroups.GetClosestGroup(KMPoint(X,Y), GTS);
+    if (G <> nil) and not G.IsDead then
+    begin
+      Result := G.UID;
+      fIDCache.CacheGroup(G, G.UID);
+    end;
+  end
+  else
+    LogIntParamWarn(aMethodName, [aPlayer, X, Y, Ord(aGroupType)]);
 end;
 
 
@@ -728,15 +736,20 @@ function TKMScriptStates.ClosestGroup(aPlayer, X, Y, aGroupType: Integer): Integ
 var
   gt: TKMGroupType;
 begin
-  gt := gtNone;
+  try
+    gt := gtNone;
 
-  if aGroupType = -1 then
-    gt := gtAny
-  else
-  if InRange(aGroupType, 0, 3) then
-    gt := TKMGroupType(aGroupType + GROUP_TYPE_MIN_OFF);
+    if aGroupType = -1 then
+      gt := gtAny
+    else
+    if InRange(aGroupType, 0, 3) then
+      gt := TKMGroupType(aGroupType + GROUP_TYPE_MIN_OFF);
 
-  Result := _ClosestGroup(aPlayer, X, Y, gt, 'States.ClosestGroup');
+    Result := _ClosestGroup(aPlayer, X, Y, gt, 'States.ClosestGroup');
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
 end;
 
 
@@ -746,7 +759,12 @@ end;
 //* Result: Group ID
 function TKMScriptStates.ClosestGroupEx(aPlayer, X, Y: Integer; aGroupType: TKMGroupType): Integer;
 begin
-  Result := _ClosestGroup(aPlayer, X, Y, aGroupType, 'States.ClosestGroupEx');
+  try
+    Result := _ClosestGroup(aPlayer, X, Y, aGroupType, 'States.ClosestGroupEx');
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
 end;
 
 
