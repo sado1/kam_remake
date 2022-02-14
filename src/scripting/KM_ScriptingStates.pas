@@ -411,7 +411,7 @@ begin
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
     and InRange(aID, 0, gHands[aPlayer].AI.General.DefencePositions.Count - 1) then
     begin
-      DP := gHands[aPlayer].AI.General.DefencePositions.Positions[aID];
+      DP := gHands[aPlayer].AI.General.DefencePositions[aID];
       if DP <> nil then
       begin
         aX := DP.Position.Loc.X;
@@ -441,13 +441,13 @@ begin
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
     and InRange(aID, 0, gHands[aPlayer].AI.General.DefencePositions.Count - 1) then
     begin
-      DP := gHands[aPlayer].AI.General.DefencePositions.Positions[aID];
+      DP := gHands[aPlayer].AI.General.DefencePositions[aID];
       if DP <> nil then
       begin
         aDefencePosition.X := DP.Position.Loc.X;
         aDefencePosition.Y := DP.Position.Loc.Y;
-        aDefencePosition.Dir := DP.Position.Dir;
         aDefencePosition.Radius := DP.Radius;
+        aDefencePosition.Dir := DP.Position.Dir;
         aDefencePosition.GroupType := DP.GroupType;
         aDefencePosition.PositionType := DP.DefenceType;
       end;

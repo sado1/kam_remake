@@ -233,6 +233,8 @@ end;
 
 function TAIDefencePositions.GetPosition(aIndex: Integer): TAIDefencePosition;
 begin
+  if not InRange(aIndex, 0, Count - 1) then Exit(nil);
+
   Result := fPositions[aIndex];
 end;
 
