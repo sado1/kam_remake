@@ -11,7 +11,7 @@ uses
 
 //Everything related to houses is here
 type
-  TKMDeliveryMode = (dmClosed = 0, dmDelivery = 1, dmTakeOut = 2);
+  TKMDeliveryMode = (dmClosed, dmDelivery, dmTakeOut);
 
   TKMHouse = class;
   TKMHouseEvent = procedure(aHouse: TKMHouse) of object;
