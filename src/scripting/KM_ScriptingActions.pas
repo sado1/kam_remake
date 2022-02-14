@@ -248,7 +248,7 @@ begin
       gGame.GamePlayInterface.CinematicUpdate;
     end
     else
-      LogParamWarning('Actions.CinematicStart', [aPlayer]);
+      LogIntParamWarn('Actions.CinematicStart', [aPlayer]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -267,7 +267,7 @@ begin
       gGame.GamePlayInterface.CinematicUpdate;
     end
     else
-      LogParamWarning('Actions.CinematicEnd', [aPlayer]);
+      LogIntParamWarn('Actions.CinematicEnd', [aPlayer]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -289,7 +289,7 @@ begin
         gGame.GamePlayInterface.Viewport.PanTo(KMPointF(X, Y), Duration);
     end
     else
-      LogParamWarning('Actions.CinematicPanTo', [aPlayer, X, Y, Duration]);
+      LogIntParamWarn('Actions.CinematicPanTo', [aPlayer, X, Y, Duration]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -306,7 +306,7 @@ begin
     if InRange(aPlayer, 0, gHands.Count - 1) and gHands[aPlayer].Enabled then
       gHands[aPlayer].AI.Defeat
     else
-      LogParamWarning('Actions.PlayerDefeat', [aPlayer]);
+      LogIntParamWarn('Actions.PlayerDefeat', [aPlayer]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -329,7 +329,7 @@ begin
         gHands.UpdateGoalsForHand(aPlayer, False); //Goal disable works as good as delete goal
     end
     else
-      LogParamWarning('Actions.PlayerGoalsRemoveAll', [aPlayer]);
+      LogIntParamWarn('Actions.PlayerGoalsRemoveAll', [aPlayer]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -354,7 +354,7 @@ begin
         gHands[aPlayer2].ShareBeacons[aPlayer1] := aShare;
     end
     else
-      LogParamWarning('Actions.PlayerShareBeacons', [aPlayer1, aPlayer2, Byte(aBothWays), Byte(aShare)]);
+      LogIntParamWarn('Actions.PlayerShareBeacons', [aPlayer1, aPlayer2, Byte(aBothWays), Byte(aShare)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -374,7 +374,7 @@ begin
     and (gHands[aPlayer2].Enabled) then
       gHands[aPlayer1].ShareFOW[aPlayer2] := aShare
     else
-      LogParamWarning('Actions.PlayerShareFog', [aPlayer1, aPlayer2, Byte(aShare)]);
+      LogIntParamWarn('Actions.PlayerShareFog', [aPlayer1, aPlayer2, Byte(aShare)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -397,7 +397,7 @@ begin
       gHands[aPlayer2].ShareFOW[aPlayer1] := aShare
     end
     else
-      LogParamWarning('Actions.PlayerShareFogCompliment', [aPlayer1, aPlayer2, Byte(aShare)]);
+      LogIntParamWarn('Actions.PlayerShareFogCompliment', [aPlayer1, aPlayer2, Byte(aShare)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -420,7 +420,7 @@ begin
     for I := 0 to Length(aVictors) - 1 do
     if not InRange(aVictors[I], 0, gHands.Count - 1) then
     begin
-      LogParamWarning('Actions.PlayerWin', [aVictors[I]]);
+      LogIntParamWarn('Actions.PlayerWin', [aVictors[I]]);
       Exit;
     end;
 
@@ -461,7 +461,7 @@ begin
       gHands[aPlayer].Houses.UpdateResRequest;
     end
     else
-      LogParamWarning('Actions.PlayerWareDistribution', [aPlayer, aWareType, aHouseType, aAmount]);
+      LogIntParamWarn('Actions.PlayerWareDistribution', [aPlayer, aWareType, aHouseType, aAmount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -496,7 +496,7 @@ begin
       end;
     end
     else
-      LogParamWarning('Actions.PlayerAllianceChange', [aPlayer1, aPlayer2, Byte(aCompliment), Byte(aAllied)]);
+      LogIntParamWarn('Actions.PlayerAllianceChange', [aPlayer1, aPlayer2, Byte(aCompliment), Byte(aAllied)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -532,7 +532,7 @@ begin
       end;
     end
     else
-      LogParamWarning('Actions.PlayerAllianceNFogChange', [aPlayer1, aPlayer2, Byte(aCompliment), Byte(aAllied), Byte(aSyncAllyFog)]);
+      LogIntParamWarn('Actions.PlayerAllianceNFogChange', [aPlayer1, aPlayer2, Byte(aCompliment), Byte(aAllied), Byte(aSyncAllyFog)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -554,7 +554,7 @@ begin
       gHands[aPlayer].AI.AddDefaultGoals(aBuildings);
     end
     else
-      LogParamWarning('Actions.PlayerAddDefaultGoals', [aPlayer, Byte(aBuildings)]);
+      LogIntParamWarn('Actions.PlayerAddDefaultGoals', [aPlayer, Byte(aBuildings)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -576,7 +576,7 @@ begin
     if InRange(aVolume, 0, 1) then
       Result := gScriptSounds.AddSound(aPlayer, aFileName, afWav, KMPOINT_ZERO, False, aVolume, 0, False, False)
     else
-      LogParamWarning('Actions.PlayWAV: ' + UnicodeString(aFileName), []);
+      LogIntParamWarn('Actions.PlayWAV: ' + UnicodeString(aFileName), []);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -596,7 +596,7 @@ begin
     if InRange(aVolume, 0, 1) then
       Result := gScriptSounds.AddSound(aPlayer, aFileName, afWav, KMPOINT_ZERO, False, aVolume, 0, True, False)
     else
-      LogParamWarning('Actions.PlayWAVFadeMusic: ' + UnicodeString(aFileName), []);
+      LogIntParamWarn('Actions.PlayWAVFadeMusic: ' + UnicodeString(aFileName), []);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -622,7 +622,7 @@ begin
     if InRange(aVolume, 0, 4) and (aRadius >= MIN_SOUND_AT_LOC_RADIUS) and gTerrain.TileInMapCoords(aX,aY) then
       Result := gScriptSounds.AddSound(aPlayer, aFileName, afWav, KMPoint(aX,aY), True, aVolume, aRadius, False, False)
     else
-      LogParamWarning('Actions.PlayWAVAtLocation: ' + UnicodeString(aFileName), [aX, aY]);
+      LogIntParamWarn('Actions.PlayWAVAtLocation: ' + UnicodeString(aFileName), [aX, aY]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -645,7 +645,7 @@ begin
     if InRange(aVolume, 0, 1) then
       Result := gScriptSounds.AddSound(aPlayer, aFileName, afWav, KMPOINT_ZERO, False, aVolume, 0, False, True)
     else
-      LogParamWarning('Actions.PlayWAVLooped: ' + UnicodeString(aFileName), []);
+      LogIntParamWarn('Actions.PlayWAVLooped: ' + UnicodeString(aFileName), []);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -672,7 +672,7 @@ begin
     if InRange(aVolume, 0, 4) and (aRadius >= MIN_SOUND_AT_LOC_RADIUS) and gTerrain.TileInMapCoords(aX,aY) then
       Result := gScriptSounds.AddSound(aPlayer, aFileName, afWav, KMPoint(aX,aY), True, aVolume, aRadius, False, True)
     else
-      LogParamWarning('Actions.PlayWAVAtLocationLooped: ' + UnicodeString(aFileName), [aX, aY]);
+      LogIntParamWarn('Actions.PlayWAVAtLocationLooped: ' + UnicodeString(aFileName), [aX, aY]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -689,7 +689,7 @@ begin
     if aSoundIndex > 0 then
       gScriptSounds.RemoveLoopSoundByUID(aSoundIndex)
     else
-      LogParamWarning('Actions.StopLoopedWAV', [aSoundIndex]);
+      LogIntParamWarn('Actions.StopLoopedWAV', [aSoundIndex]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -711,7 +711,7 @@ begin
     if InRange(aVolume, 0, 1) then
       Result := gScriptSounds.AddSound(aPlayer, aFileName, afOgg, KMPOINT_ZERO, False, aVolume, 0, False, False)
     else
-      LogParamWarning('Actions.PlayOGG: ' + UnicodeString(aFileName), []);
+      LogIntParamWarn('Actions.PlayOGG: ' + UnicodeString(aFileName), []);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -731,7 +731,7 @@ begin
     if InRange(aVolume, 0, 1) then
       Result := gScriptSounds.AddSound(aPlayer, aFileName, afOgg, KMPOINT_ZERO, False, aVolume, 0, True, False)
     else
-      LogParamWarning('Actions.PlayOGGFadeMusic: ' + UnicodeString(aFileName), []);
+      LogIntParamWarn('Actions.PlayOGGFadeMusic: ' + UnicodeString(aFileName), []);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -757,7 +757,7 @@ begin
     if InRange(aVolume, 0, 4) and (aRadius >= MIN_SOUND_AT_LOC_RADIUS) and gTerrain.TileInMapCoords(aX,aY) then
       Result := gScriptSounds.AddSound(aPlayer, aFileName, afOgg, KMPoint(aX,aY), True, aVolume, aRadius, False, False)
     else
-      LogParamWarning('Actions.PlayOGGAtLocation: ' + UnicodeString(aFileName), [aX, aY]);
+      LogIntParamWarn('Actions.PlayOGGAtLocation: ' + UnicodeString(aFileName), [aX, aY]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -780,7 +780,7 @@ begin
     if InRange(aVolume, 0, 1) then
       Result := gScriptSounds.AddSound(aPlayer, aFileName, afOgg, KMPOINT_ZERO, False, aVolume, 0, False, True)
     else
-      LogParamWarning('Actions.PlayOGGLooped: ' + UnicodeString(aFileName), []);
+      LogIntParamWarn('Actions.PlayOGGLooped: ' + UnicodeString(aFileName), []);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -807,7 +807,7 @@ begin
     if InRange(aVolume, 0, 4) and (aRadius >= MIN_SOUND_AT_LOC_RADIUS) and gTerrain.TileInMapCoords(aX,aY) then
       Result := gScriptSounds.AddSound(aPlayer, aFileName, afOgg, KMPoint(aX,aY), True, aVolume, aRadius, False, True)
     else
-      LogParamWarning('Actions.PlayOGGAtLocationLooped: ' + UnicodeString(aFileName), [aX, aY]);
+      LogIntParamWarn('Actions.PlayOGGAtLocationLooped: ' + UnicodeString(aFileName), [aX, aY]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -824,7 +824,7 @@ begin
     if aSoundIndex > 0 then
       gScriptSounds.RemoveLoopSoundByUID(aSoundIndex)
     else
-      LogParamWarning('Actions.StopLoopedOGG', [aSoundIndex]);
+      LogIntParamWarn('Actions.StopLoopedOGG', [aSoundIndex]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -852,7 +852,7 @@ begin
     if InRange(aVolume, 0, 1) then
       Result := gScriptSounds.AddSound(aPlayer, aFileName, aAudioFormat, KMPOINT_ZERO, False, aVolume, 0, aFadeMusic, aLooped)
     else
-      LogParamWarning('Actions.PlaySound: ' + UnicodeString(aFileName), []);
+      LogIntParamWarn('Actions.PlaySound: ' + UnicodeString(aFileName), []);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -883,7 +883,7 @@ begin
     if InRange(aVolume, 0, 4) and (aRadius >= MIN_SOUND_AT_LOC_RADIUS) and gTerrain.TileInMapCoords(aX,aY) then
       Result := gScriptSounds.AddSound(aPlayer, aFileName, aAudioFormat, KMPoint(aX,aY), True, aVolume, aRadius, aFadeMusic, aLooped)
     else
-      LogParamWarning('Actions.PlaySoundAtLocation: ' + UnicodeString(aFileName), [aX, aY]);
+      LogIntParamWarn('Actions.PlaySoundAtLocation: ' + UnicodeString(aFileName), [aX, aY]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -900,7 +900,7 @@ begin
     if aSoundIndex > 0 then
       gScriptSounds.RemoveSoundByUID(aSoundIndex)
     else
-      LogParamWarning('Actions.StopSound', [aSoundIndex]);
+      LogIntParamWarn('Actions.StopSound', [aSoundIndex]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -923,7 +923,7 @@ begin
         gTerrain.RemRoad(Pos);
     end
     else
-      LogParamWarning('Actions.RemoveRoad', [X, Y]);
+      LogIntParamWarn('Actions.RemoveRoad', [X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -957,7 +957,7 @@ begin
       Result := G.UID;
     end
     else
-      LogParamWarning('Actions.GiveGroup', [aPlayer, aType, X, Y, aDir, aCount, aColumns]);
+      LogIntParamWarn('Actions.GiveGroup', [aPlayer, aType, X, Y, aDir, aCount, aColumns]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -989,7 +989,7 @@ begin
       U.SetActionStay(10, uaWalk);
     end
     else
-      LogParamWarning('Actions.GiveUnit', [aPlayer, aType, X, Y, aDir]);
+      LogIntParamWarn('Actions.GiveUnit', [aPlayer, aType, X, Y, aDir]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1019,7 +1019,7 @@ begin
       end;
     end
     else
-      LogParamWarning('Actions.GiveHouse', [aPlayer, aHouseType, X, Y]);
+      LogIntParamWarn('Actions.GiveHouse', [aPlayer, aHouseType, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1080,7 +1080,7 @@ begin
       end;
     end
     else
-      LogParamWarning('Actions.GiveHouseSite', [aPlayer, aHouseType, X, Y, byte(aAddMaterials)]);
+      LogIntParamWarn('Actions.GiveHouseSite', [aPlayer, aHouseType, X, Y, byte(aAddMaterials)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1099,7 +1099,7 @@ begin
     and (aType in [Low(TKMArmyType)..High(TKMArmyType)]) then
       gHands[aPlayer].AI.Setup.ArmyType := aType
     else
-      LogParamWarning('Actions.AIArmyType', [aPlayer, Byte(aType)]);
+      LogIntParamWarn('Actions.AIArmyType', [aPlayer, Byte(aType)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1148,7 +1148,7 @@ begin
       Result := gHands[aPlayer].AI.General.Attacks.AddAttack(AttackType, Delay, aTotalMen, aMeleeGroupCount, aAntiHorseGroupCount,
                                                              aRangedGroupCount, aMountedGroupCount, aRandomGroups, aTarget, 0, aCustomPosition);
     end else
-      LogParamWarning('Actions.AIAttackAdd', [aPlayer, aDelay, aTotalMen, aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount]);
+      LogIntParamWarn('Actions.AIAttackAdd', [aPlayer, aDelay, aTotalMen, aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1166,7 +1166,7 @@ begin
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
       Result := gHands[aPlayer].AI.General.Attacks.RemoveAttack(aAIAttackId)
     else
-      LogParamWarning('Actions.AIAttackRemove', [aPlayer]);
+      LogIntParamWarn('Actions.AIAttackRemove', [aPlayer]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1182,7 +1182,7 @@ begin
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
       gHands[aPlayer].AI.General.Attacks.Clear
     else
-      LogParamWarning('Actions.AIAttackRemoveAll', [aPlayer]);
+      LogIntParamWarn('Actions.AIAttackRemoveAll', [aPlayer]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1198,7 +1198,7 @@ begin
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
       gHands[aPlayer].AI.Setup.AutoAttack := aAutoAttack
     else
-      LogParamWarning('Actions.AIAutoAttack', [aPlayer, Byte(aAutoAttack)]);
+      LogIntParamWarn('Actions.AIAutoAttack', [aPlayer, Byte(aAutoAttack)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1218,7 +1218,7 @@ begin
       and not gHands[aPlayer].AI.Setup.NewAI then // Do not allow AutoAttackRange if we are using newAI
       gHands[aPlayer].AI.Setup.AutoAttackRange := aRange
     else
-      LogParamWarning('Actions.AIAutoAttackRange', [aPlayer, aRange]);
+      LogIntParamWarn('Actions.AIAutoAttackRange', [aPlayer, aRange]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1234,7 +1234,7 @@ begin
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
       gHands[aPlayer].AI.Setup.AutoBuild := aAuto
     else
-      LogParamWarning('Actions.AIAutoBuild', [aPlayer, Byte(aAuto)]);
+      LogIntParamWarn('Actions.AIAutoBuild', [aPlayer, Byte(aAuto)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1250,7 +1250,7 @@ begin
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
       gHands[aPlayer].AI.Setup.AutoDefend := aAuto
     else
-      LogParamWarning('Actions.AIAutoDefence', [aPlayer, Byte(aAuto)]);
+      LogIntParamWarn('Actions.AIAutoDefence', [aPlayer, Byte(aAuto)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1266,7 +1266,7 @@ begin
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
        gHands[aPlayer].AI.Setup.AutoRepair := aAuto
      else
-       LogParamWarning('Actions.AIAutoRepair', [aPlayer, Byte(aAuto)]);
+       LogIntParamWarn('Actions.AIAutoRepair', [aPlayer, Byte(aAuto)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1317,7 +1317,7 @@ begin
     end;
 
     if not added then
-      LogParamWarning('Actions.AIDefencePositionAdd', [aPlayer, X, Y, aDir, aGroupType, aRadius, aDefType]);
+      LogIntParamWarn('Actions.AIDefencePositionAdd', [aPlayer, X, Y, aDir, aGroupType, aRadius, aDefType]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1359,7 +1359,7 @@ begin
             gHands[aPlayer].AI.General.DefencePositions.Delete(I);
       end
   else
-    LogParamWarning('Actions.AIDefencePositionRemove', [aPlayer, X, Y]);
+    LogIntParamWarn('Actions.AIDefencePositionRemove', [aPlayer, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1379,7 +1379,7 @@ begin
       for I := gHands[aPlayer].AI.General.DefencePositions.Count - 1 downto 0 do
         gHands[aPlayer].AI.General.DefencePositions.Delete(I)
     else
-      LogParamWarning('Actions.AIDefencePositionRemoveAll', [aPlayer]);
+      LogIntParamWarn('Actions.AIDefencePositionRemoveAll', [aPlayer]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1395,7 +1395,7 @@ begin
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
       gHands[aPlayer].AI.Setup.DefendAllies := aDefend
     else
-      LogParamWarning('Actions.AIDefendAllies', [aPlayer, Byte(aDefend)]);
+      LogIntParamWarn('Actions.AIDefendAllies', [aPlayer, Byte(aDefend)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1413,10 +1413,10 @@ begin
       case aType of
         0:    gHands[aPlayer].AI.Setup.EquipRateLeather := aRate;
         1:    gHands[aPlayer].AI.Setup.EquipRateIron := aRate;
-        else  LogParamWarning('Actions.AIEquipRate, unknown type', [aPlayer, aType, aRate]);
+        else  LogIntParamWarn('Actions.AIEquipRate, unknown type', [aPlayer, aType, aRate]);
       end
     else
-      LogParamWarning('Actions.AIEquipRate', [aPlayer, aType, aRate]);
+      LogIntParamWarn('Actions.AIEquipRate', [aPlayer, aType, aRate]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1435,7 +1435,7 @@ begin
       gHands[aPlayer].AI.General.DefencePositions.TroopFormations[aGroupType].UnitsPerRow := aColumns;
     end
     else
-      LogParamWarning(aMethodName, [aPlayer, Ord(aGroupType), aCount, aColumns]);
+      LogIntParamWarn(aMethodName, [aPlayer, Ord(aGroupType), aCount, aColumns]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1474,7 +1474,7 @@ begin
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
       gHands[aPlayer].AI.Setup.RecruitDelay := aDelay
     else
-      LogParamWarning('Actions.AIRecruitDelay', [aPlayer, aDelay]);
+      LogIntParamWarn('Actions.AIRecruitDelay', [aPlayer, aDelay]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1490,7 +1490,7 @@ begin
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
       gHands[aPlayer].AI.Setup.RecruitCount := aLimit
     else
-      LogParamWarning('Actions.AIRecruitLimit', [aPlayer, aLimit]);
+      LogIntParamWarn('Actions.AIRecruitLimit', [aPlayer, aLimit]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1507,7 +1507,7 @@ begin
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
       gHands[aPlayer].AI.Setup.SerfsPerHouse := aSerfs
     else
-      LogParamWarning('Actions.AISerfsPerHouse', [aPlayer]);
+      LogIntParamWarn('Actions.AISerfsPerHouse', [aPlayer]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1524,7 +1524,7 @@ begin
     and (aLimit >= -1) then                       //-1 means unlimited; else MaxSoldiers = aLimit
       gHands[aPlayer].AI.Setup.MaxSoldiers := aLimit
     else
-      LogParamWarning('Actions.AISoldiersLimit', [aPlayer, aLimit]);
+      LogIntParamWarn('Actions.AISoldiersLimit', [aPlayer, aLimit]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1541,7 +1541,7 @@ begin
     and (gTerrain.TileInMapCoords(X, Y)) then
       gHands[aPlayer].AI.Setup.StartPosition := KMPoint(X, Y)
     else
-      LogParamWarning('Actions.AIStartPosition', [aPlayer, X, Y]);
+      LogIntParamWarn('Actions.AIStartPosition', [aPlayer, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1557,7 +1557,7 @@ begin
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
       gHands[aPlayer].AI.Setup.WorkerCount := aLimit
     else
-      LogParamWarning('Actions.AIWorkerLimit', [aPlayer, aLimit]);
+      LogIntParamWarn('Actions.AIWorkerLimit', [aPlayer, aLimit]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1583,7 +1583,7 @@ begin
         Result := U.UID;
     end
     else
-      LogParamWarning('Actions.GiveAnimal', [aType, X, Y]);
+      LogIntParamWarn('Actions.GiveAnimal', [aType, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1609,7 +1609,7 @@ begin
       else
         LogWarning('Actions.GiveField', Format('Cannot give field for player %d at [%d:%d]', [aPlayer,X,Y]));
     end else
-      LogParamWarning('Actions.GiveField', [aPlayer, X, Y]);
+      LogIntParamWarn('Actions.GiveField', [aPlayer, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1639,7 +1639,7 @@ begin
       else
         LogWarning('Actions.GiveFieldAged', Format('Cannot give field for player %d at [%d:%d]', [aPlayer,X,Y]));
     end else
-      LogParamWarning('Actions.GiveFieldAged', [aPlayer, X, Y, aStage, Byte(aRandomAge)]);
+      LogIntParamWarn('Actions.GiveFieldAged', [aPlayer, X, Y, aStage, Byte(aRandomAge)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1666,7 +1666,7 @@ begin
           gTerrain.RemoveObject(KMPoint(X,Y)); //Remove corn/wine like normally built road does
       end
     else
-      LogParamWarning('Actions.GiveRoad', [aPlayer, X, Y]);
+      LogIntParamWarn('Actions.GiveRoad', [aPlayer, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1696,7 +1696,7 @@ begin
       end;
     end
     else
-      LogParamWarning('Actions.GiveWares', [aPlayer, aType, aCount]);
+      LogIntParamWarn('Actions.GiveWares', [aPlayer, aType, aCount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1726,7 +1726,7 @@ begin
       end;
     end
     else
-      LogParamWarning('Actions.GiveWeapons', [aPlayer, aType, aCount]);
+      LogIntParamWarn('Actions.GiveWeapons', [aPlayer, aType, aCount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1752,7 +1752,7 @@ begin
       else
         LogWarning('Actions.GiveWineField', Format('Cannot give winefield for player %d at [%d:%d]', [aPlayer,X,Y]));
     end else
-      LogParamWarning('Actions.GiveWineField', [aPlayer, X, Y]);
+      LogIntParamWarn('Actions.GiveWineField', [aPlayer, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1782,7 +1782,7 @@ begin
       else
         LogWarning('Actions.GiveWineFieldAged', Format('Cannot give winefield for player %d at [%d:%d]', [aPlayer,X,Y]));
     end else
-      LogParamWarning('Actions.GiveWineFieldAged', [aPlayer, X, Y, aStage, Byte(aRandomAge)]);
+      LogIntParamWarn('Actions.GiveWineFieldAged', [aPlayer, X, Y, aStage, Byte(aRandomAge)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1800,7 +1800,7 @@ begin
     and InRange(aRadius, 0, 255) then
       gHands[aPlayer].FogOfWar.RevealCircle(KMPoint(X, Y), aRadius, FOG_OF_WAR_MAX)
     else
-      LogParamWarning('Actions.FogRevealCircle', [aPlayer, X, Y, aRadius]);
+      LogIntParamWarn('Actions.FogRevealCircle', [aPlayer, X, Y, aRadius]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1818,7 +1818,7 @@ begin
     and InRange(aRadius, 0, 255) then
       gHands[aPlayer].FogOfWar.CoverCircle(KMPoint(X, Y), aRadius)
     else
-      LogParamWarning('Actions.FogCoverCircle', [aPlayer, X, Y, aRadius]);
+      LogIntParamWarn('Actions.FogCoverCircle', [aPlayer, X, Y, aRadius]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1840,7 +1840,7 @@ begin
     and gTerrain.TileInMapCoords(X2,Y2) then
       gHands[aPlayer].FogOfWar.RevealRect(KMPoint(X1, Y1), KMPoint(X2, Y2), FOG_OF_WAR_MAX)
     else
-      LogParamWarning('Actions.FogRevealRect', [aPlayer, X1, Y1, X2, Y2]);
+      LogIntParamWarn('Actions.FogRevealRect', [aPlayer, X1, Y1, X2, Y2]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1862,7 +1862,7 @@ begin
     and gTerrain.TileInMapCoords(X2,Y2) then
       gHands[aPlayer].FogOfWar.CoverRect(KMPoint(X1, Y1), KMPoint(X2, Y2))
     else
-      LogParamWarning('Actions.FogCoverRect', [aPlayer, X1, Y1, X2, Y2]);
+      LogIntParamWarn('Actions.FogCoverRect', [aPlayer, X1, Y1, X2, Y2]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1878,7 +1878,7 @@ begin
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
       gHands[aPlayer].FogOfWar.RevealEverything
     else
-      LogParamWarning('Actions.FogRevealAll', [aPlayer]);
+      LogIntParamWarn('Actions.FogRevealAll', [aPlayer]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1894,7 +1894,7 @@ begin
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
       gHands[aPlayer].FogOfWar.CoverEverything
     else
-      LogParamWarning('Actions.FogCoverAll', [aPlayer]);
+      LogIntParamWarn('Actions.FogCoverAll', [aPlayer]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1931,7 +1931,7 @@ begin
         gGame.ShowMessageLocal(mkText, gGame.TextMission.ParseTextMarkup(UnicodeString(aText), Params), KMPOINT_ZERO);
     except
       //Format may throw an exception
-      on E: EConvertError do LogParamWarning('Actions.ShowMsgFormatted: '+E.Message, []);
+      on E: EConvertError do LogIntParamWarn('Actions.ShowMsgFormatted: '+E.Message, []);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
@@ -1953,7 +1953,7 @@ begin
         gGame.ShowMessageLocal(mkText, gGame.TextMission.ParseTextMarkup(UnicodeString(aText)), KMPoint(aX,aY));
     end
     else
-      LogParamWarning('Actions.ShowMsgGoto', [aPlayer, aX, aY]);
+      LogIntParamWarn('Actions.ShowMsgGoto', [aPlayer, aX, aY]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1977,10 +1977,10 @@ begin
           gGame.ShowMessageLocal(mkText, gGame.TextMission.ParseTextMarkup(UnicodeString(aText), Params), KMPoint(aX,aY));
       end
       else
-        LogParamWarning('Actions.ShowMsgGotoFormatted', [aPlayer, aX, aY]);
+        LogIntParamWarn('Actions.ShowMsgGotoFormatted', [aPlayer, aX, aY]);
     except
       //Format may throw an exception
-      on E: EConvertError do LogParamWarning('Actions.ShowMsgGotoFormatted: '+E.Message, []);
+      on E: EConvertError do LogIntParamWarn('Actions.ShowMsgGotoFormatted: '+E.Message, []);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
@@ -2001,7 +2001,7 @@ begin
     and HouseTypeValid(aHouseType) then
       gHands[aPlayer].Locks.HouseLock[HOUSE_ID_TO_TYPE[aHouseType]] := hlGranted
     else
-      LogParamWarning('Actions.HouseUnlock', [aPlayer, aHouseType]);
+      LogIntParamWarn('Actions.HouseUnlock', [aPlayer, aHouseType]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2028,7 +2028,7 @@ begin
       end;
     end
     else
-      LogParamWarning('Actions.HouseAllow', [aPlayer, aHouseType, Byte(aAllowed)]);
+      LogIntParamWarn('Actions.HouseAllow', [aPlayer, aHouseType, Byte(aAllowed)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2053,7 +2053,7 @@ begin
       //Silently ignore if house doesn't exist
     end
     else
-      LogParamWarning('Actions.HouseAllowAllyToSelect', [aHouseID, Byte(aAllow)]);
+      LogIntParamWarn('Actions.HouseAllowAllyToSelect', [aHouseID, Byte(aAllow)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2087,7 +2087,7 @@ begin
     if InRange(aPlayer, 0, gHands.Count - 1) then
       SetAllowAllyToHand(aPlayer)
     else
-      LogParamWarning('Actions.HouseAllowAllyToSelectAll', [aPlayer, Byte(aAllow)]);
+      LogIntParamWarn('Actions.HouseAllowAllyToSelectAll', [aPlayer, Byte(aAllow)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2105,7 +2105,7 @@ begin
     and (aResType in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)]) then
       gHands[aPlayer].Locks.AllowToTrade[WARE_ID_TO_TYPE[aResType]] := aAllowed
     else
-      LogParamWarning('Actions.SetTradeAllowed', [aPlayer, aResType, Byte(aAllowed)]);
+      LogIntParamWarn('Actions.SetTradeAllowed', [aPlayer, aResType, Byte(aAllowed)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2170,7 +2170,7 @@ begin
         end;
     end
     else
-      LogParamWarning('Actions.HouseAddBuildingMaterials', [aHouseID]);
+      LogIntParamWarn('Actions.HouseAddBuildingMaterials', [aHouseID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2199,7 +2199,7 @@ begin
         end;
     end
     else
-      LogParamWarning('Actions.HouseAddBuildingProgress', [aHouseID]);
+      LogIntParamWarn('Actions.HouseAddBuildingProgress', [aHouseID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2221,7 +2221,7 @@ begin
         H.AddDamage(aDamage, nil); //We don't know who did the damage
     end
     else
-      LogParamWarning('Actions.HouseAddDamage', [aHouseID, aDamage]);
+      LogIntParamWarn('Actions.HouseAddDamage', [aHouseID, aDamage]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2243,7 +2243,7 @@ begin
         H.AddRepair(aRepair);
     end
     else
-      LogParamWarning('Actions.HouseAddRepair', [aHouseID, aRepair]);
+      LogIntParamWarn('Actions.HouseAddRepair', [aHouseID, aRepair]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2266,7 +2266,7 @@ begin
         H.DemolishHouse(HAND_NONE, aSilent);
     end
     else
-      LogParamWarning('Actions.HouseDestroy', [aHouseID]);
+      LogIntParamWarn('Actions.HouseDestroy', [aHouseID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2297,11 +2297,11 @@ begin
           end;
         end
         else
-          LogParamWarning('Actions.HouseAddWaresTo wrong ware type', [aHouseID, aType, aCount]);
+          LogIntParamWarn('Actions.HouseAddWaresTo wrong ware type', [aHouseID, aType, aCount]);
       //Silently ignore if house doesn't exist
     end
     else
-      LogParamWarning('Actions.HouseAddWaresTo', [aHouseID, aType, aCount]);
+      LogIntParamWarn('Actions.HouseAddWaresTo', [aHouseID, aType, aCount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2335,11 +2335,11 @@ begin
           end;
         end
         else
-          LogParamWarning('Actions.HouseTakeWaresFrom wrong ware type', [aHouseID, aType, aCount]);
+          LogIntParamWarn('Actions.HouseTakeWaresFrom wrong ware type', [aHouseID, aType, aCount]);
       //Silently ignore if house doesn't exist
     end
     else
-      LogParamWarning('Actions.HouseTakeWaresFrom', [aHouseID, aType, aCount]);
+      LogIntParamWarn('Actions.HouseTakeWaresFrom', [aHouseID, aType, aCount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2365,7 +2365,7 @@ begin
         Result := TKMHouseTownHall(H).Equip(UNIT_ID_TO_TYPE[aUnitType], aCount);
     end
     else
-      LogParamWarning('Actions.HouseTownHallEquip', [aHouseID, aUnitType]);
+      LogIntParamWarn('Actions.HouseTownHallEquip', [aHouseID, aUnitType]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2387,7 +2387,7 @@ begin
         TKMHouseTownHall(H).GoldMaxCnt := aMaxGold;
     end
     else
-      LogParamWarning('Actions.HouseTownHallMaxGold', [aHouseID, aMaxGold]);
+      LogIntParamWarn('Actions.HouseTownHallMaxGold', [aHouseID, aMaxGold]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2408,7 +2408,7 @@ begin
         H.BuildingRepair := aRepairEnabled;
     end
     else
-      LogParamWarning('Actions.HouseRepairEnable', [aHouseID, Byte(aRepairEnabled)]);
+      LogIntParamWarn('Actions.HouseRepairEnable', [aHouseID, Byte(aRepairEnabled)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2436,7 +2436,7 @@ begin
       end;
     end
     else
-      LogParamWarning('Actions.HouseDeliveryBlock', [aHouseID, Byte(aDeliveryBlocked)]);
+      LogIntParamWarn('Actions.HouseDeliveryBlock', [aHouseID, Byte(aDeliveryBlocked)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2463,7 +2463,7 @@ begin
         H.SetDeliveryModeInstantly(TKMDeliveryMode(aDeliveryMode));
     end
     else
-      LogParamWarning('Actions.HouseDeliveryMode', [aHouseID, aDeliveryMode]);
+      LogIntParamWarn('Actions.HouseDeliveryMode', [aHouseID, aDeliveryMode]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2485,7 +2485,7 @@ begin
         H.DisableUnoccupiedMessage := aDisabled;
     end
     else
-      LogParamWarning('Actions.HouseDisableUnoccupiedMessage', [aHouseID, Byte(aDisabled)]);
+      LogIntParamWarn('Actions.HouseDisableUnoccupiedMessage', [aHouseID, Byte(aDisabled)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2512,7 +2512,7 @@ begin
         TKMHouseWoodcutters(H).WoodcutterMode := CHOP_ONLY[aChopOnly];
     end
     else
-      LogParamWarning('Actions.HouseWoodcutterChopOnly', [aHouseID, Byte(aChopOnly)]);
+      LogIntParamWarn('Actions.HouseWoodcutterChopOnly', [aHouseID, Byte(aChopOnly)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2541,7 +2541,7 @@ begin
         TKMHouseWoodcutters(H).WoodcutterMode := TKMWoodcutterMode(aWoodcutterMode);
     end
     else
-      LogParamWarning('Actions.HouseWoodcutterMode', [aHouseID, Byte(aWoodcutterMode)]);
+      LogIntParamWarn('Actions.HouseWoodcutterMode', [aHouseID, Byte(aWoodcutterMode)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2574,7 +2574,7 @@ begin
         TKMHouseBarracks(H).NotAcceptFlag[Res] := aBlocked;
     end
     else
-      LogParamWarning('Actions.HouseWareBlock', [aHouseID, aWareType, Byte(aBlocked)]);
+      LogIntParamWarn('Actions.HouseWareBlock', [aHouseID, aWareType, Byte(aBlocked)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2607,7 +2607,7 @@ begin
         TKMHouseBarracks(H).NotAllowTakeOutFlag[Res] := aBlocked;
     end
     else
-      LogParamWarning('Actions.HouseWareBlockTakeOut', [aHouseID, aWareType, Byte(aBlocked)]);
+      LogIntParamWarn('Actions.HouseWareBlockTakeOut', [aHouseID, aWareType, Byte(aBlocked)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2641,7 +2641,7 @@ begin
           end;
     end
     else
-      LogParamWarning('Actions.HouseWeaponsOrderSet', [aHouseID, aWareType, aAmount]);
+      LogIntParamWarn('Actions.HouseWeaponsOrderSet', [aHouseID, aWareType, aAmount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2667,7 +2667,7 @@ begin
         TKMHouseSchool(H).RemUnitFromQueue(QueueIndex);
     end
     else
-      LogParamWarning('Actions.HouseSchoolQueueRemove', [aHouseID, QueueIndex]);
+      LogIntParamWarn('Actions.HouseSchoolQueueRemove', [aHouseID, QueueIndex]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2695,7 +2695,7 @@ begin
         Result := TKMHouseSchool(H).AddUnitToQueue(UNIT_ID_TO_TYPE[aUnitType], aCount);
     end
     else
-      LogParamWarning('Actions.HouseSchoolQueueAdd', [aHouseID, aUnitType]);
+      LogIntParamWarn('Actions.HouseSchoolQueueAdd', [aHouseID, aUnitType]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2723,7 +2723,7 @@ begin
         Result := TKMHouseBarracks(H).Equip(UNIT_ID_TO_TYPE[aUnitType], aCount);
     end
     else
-      LogParamWarning('Actions.HouseBarracksEquip', [aHouseID, aUnitType]);
+      LogIntParamWarn('Actions.HouseBarracksEquip', [aHouseID, aUnitType]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2748,7 +2748,7 @@ begin
         TKMHouseBarracks(H).CreateRecruitInside(False);
     end
     else
-      LogParamWarning('Actions.HouseBarracksGiveRecruit', [aHouseID]);
+      LogIntParamWarn('Actions.HouseBarracksGiveRecruit', [aHouseID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2810,7 +2810,7 @@ begin
     end
     else
     begin
-      LogParamWarning('Actions.MapBrush', [X, Y, Byte(aSquare), aSize, Byte(aTerKind),
+      LogIntParamWarn('Actions.MapBrush', [X, Y, Byte(aSquare), aSize, Byte(aTerKind),
                                                 Byte(aRandomTiles), Byte(aOverrideCustomTiles)]);
     end;
   except
@@ -2838,7 +2838,7 @@ begin
     end
     else
     begin
-      LogParamWarning('Actions.MapBrushElevation', [X, Y, Byte(aSquare), aSize, aSlope, aSpeed]);
+      LogIntParamWarn('Actions.MapBrushElevation', [X, Y, Byte(aSquare), aSize, aSlope, aSpeed]);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
@@ -2864,7 +2864,7 @@ begin
     end
     else
     begin
-      LogParamWarning('Actions.MapBrushEqualize', [X, Y, Byte(aSquare), aSize, aSlope, aSpeed]);
+      LogIntParamWarn('Actions.MapBrushEqualize', [X, Y, Byte(aSquare), aSize, aSlope, aSpeed]);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
@@ -2890,7 +2890,7 @@ begin
     end
     else
     begin
-      LogParamWarning('Actions.MapBrushFlatten', [X, Y, Byte(aSquare), aSize, aSlope, aSpeed]);
+      LogIntParamWarn('Actions.MapBrushFlatten', [X, Y, Byte(aSquare), aSize, aSlope, aSpeed]);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
@@ -2911,7 +2911,7 @@ begin
     end
     else
     begin
-      LogParamWarning('Actions.MapBrushMagicWater', [X, Y]);
+      LogIntParamWarn('Actions.MapBrushMagicWater', [X, Y]);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
@@ -2942,7 +2942,7 @@ begin
     end
     else
     begin
-      LogParamWarning('Actions.MapBrushWithMask', [X, Y, Byte(aSquare), aSize, Byte(aTerKind), Byte(aRandomTiles),
+      LogIntParamWarn('Actions.MapBrushWithMask', [X, Y, Byte(aSquare), aSize, Byte(aTerKind), Byte(aRandomTiles),
                                                     Byte(aOverrideCustomTiles), Byte(aBrushMask), aBlendingLvl, Byte(aUseMagicBrush)]);
     end;
   except
@@ -2968,7 +2968,7 @@ begin
       Result := gTerrain.ScriptTrySetTile(X, Y, aType, aRotation)
     else
     begin
-      LogParamWarning('Actions.MapTileSet', [X, Y, aType, aRotation]);
+      LogIntParamWarn('Actions.MapTileSet', [X, Y, aType, aRotation]);
       Result := False;
     end;
   except
@@ -3207,7 +3207,7 @@ begin
       Result := gTerrain.ScriptTrySetTileHeight(X, Y, Height)
     else
     begin
-      LogParamWarning('Actions.MapTileHeightSet', [X, Y, Height]);
+      LogIntParamWarn('Actions.MapTileHeightSet', [X, Y, Height]);
       Result := False;
     end;
   except
@@ -3232,7 +3232,7 @@ begin
       Result := gTerrain.ScriptTrySetTileObject(X, Y, Obj)
     else
     begin
-      LogParamWarning('Actions.MapTileObjectSet', [X, Y, Obj]);
+      LogIntParamWarn('Actions.MapTileObjectSet', [X, Y, Obj]);
       Result := False;
     end;
   except
@@ -3255,7 +3255,7 @@ begin
       gTerrain.SetOverlay(KMPoint(X, Y), aOverlay, aOverwrite)
     else
     begin
-      LogParamWarning('Actions.MapTileOverlaySet', [X, Y, Byte(aOverlay), Byte(aOverwrite)]);
+      LogIntParamWarn('Actions.MapTileOverlaySet', [X, Y, Byte(aOverlay), Byte(aOverwrite)]);
       Result := False;
     end;
   except
@@ -3296,7 +3296,7 @@ begin
       end;
     end
     else
-      LogParamWarning('Actions.MarketSetTrade', [aMarketID, aFrom, aTo, aAmount]);
+      LogIntParamWarn('Actions.MarketSetTrade', [aMarketID, aFrom, aTo, aAmount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3314,7 +3314,7 @@ begin
     if InRange(aPlayer, -1, gHands.Count - 1) then //-1 means all players
       gGame.OverlaySet(gGame.TextMission.ParseTextMarkup(UnicodeString(aText)), aPlayer)
     else
-      LogParamWarning('Actions.OverlayTextSet: '+UnicodeString(aText), [aPlayer]);
+      LogIntParamWarn('Actions.OverlayTextSet: '+UnicodeString(aText), [aPlayer]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3336,11 +3336,11 @@ begin
         gGame.OverlaySet(gGame.TextMission.ParseTextMarkup(UnicodeString(aText), Params), aPlayer);
       except
         //Format may throw an exception
-        on E: EConvertError do LogParamWarning('Actions.OverlayTextSetFormatted: EConvertError: '+E.Message, []);
+        on E: EConvertError do LogIntParamWarn('Actions.OverlayTextSetFormatted: EConvertError: '+E.Message, []);
       end;
     end
     else
-      LogParamWarning('Actions.OverlayTextSetFormatted: '+UnicodeString(aText), [aPlayer]);
+      LogIntParamWarn('Actions.OverlayTextSetFormatted: '+UnicodeString(aText), [aPlayer]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3358,7 +3358,7 @@ begin
     if InRange(aPlayer, -1, gHands.Count - 1) then //-1 means all players
       gGame.OverlayAppend(gGame.TextMission.ParseTextMarkup(UnicodeString(aText)), aPlayer)
     else
-      LogParamWarning('Actions.OverlayTextAppend: '+UnicodeString(aText), [aPlayer]);
+      LogIntParamWarn('Actions.OverlayTextAppend: '+UnicodeString(aText), [aPlayer]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3380,11 +3380,11 @@ begin
         gGame.OverlayAppend(gGame.TextMission.ParseTextMarkup(UnicodeString(aText), Params), aPlayer);
       except
         //Format may throw an exception
-        on E: EConvertError do LogParamWarning('Actions.OverlayTextAppendFormatted: EConvertError: '+E.Message, []);
+        on E: EConvertError do LogIntParamWarn('Actions.OverlayTextAppendFormatted: EConvertError: '+E.Message, []);
       end;
     end
     else
-      LogParamWarning('Actions.OverlayTextAppendFormatted: '+UnicodeString(aText), [aPlayer]);
+      LogIntParamWarn('Actions.OverlayTextAppendFormatted: '+UnicodeString(aText), [aPlayer]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3410,7 +3410,7 @@ begin
       end;
     end
     else
-      LogParamWarning('Actions.PlanAddRoad', [aPlayer, X, Y]);
+      LogIntParamWarn('Actions.PlanAddRoad', [aPlayer, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3450,7 +3450,7 @@ begin
       end;
     end
     else
-      LogParamWarning('Actions.PlanAddField', [aPlayer, X, Y]);
+      LogIntParamWarn('Actions.PlanAddField', [aPlayer, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3476,7 +3476,7 @@ begin
       end;
     end
     else
-      LogParamWarning('Actions.PlanAddWinefield', [aPlayer, X, Y]);
+      LogIntParamWarn('Actions.PlanAddWinefield', [aPlayer, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3530,7 +3530,7 @@ begin
       end;
     end
     else
-      LogParamWarning('Actions.PlanConnectRoad', [aPlayer, X1, Y1, X2, Y2]);
+      LogIntParamWarn('Actions.PlanConnectRoad', [aPlayer, X1, Y1, X2, Y2]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3564,7 +3564,7 @@ begin
       end;
     end
     else
-      LogParamWarning('Actions.PlanRemove', [aPlayer, X, Y]);
+      LogIntParamWarn('Actions.PlanRemove', [aPlayer, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3591,7 +3591,7 @@ begin
       end;
     end
     else
-      LogParamWarning('Actions.PlanAddHouse', [aPlayer, aHouseType, X, Y]);
+      LogIntParamWarn('Actions.PlanAddHouse', [aPlayer, aHouseType, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3617,7 +3617,7 @@ begin
       //Silently ignore if unit doesn't exist
     end
     else
-      LogParamWarning('Actions.UnitAllowAllyToView', [aUnitID, Byte(aAllow)]);
+      LogIntParamWarn('Actions.UnitAllowAllyToView', [aUnitID, Byte(aAllow)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3634,7 +3634,7 @@ begin
     and (aType in [Low(UNIT_ID_TO_TYPE) .. High(UNIT_ID_TO_TYPE)]) then
       gHands[aPlayer].Locks.SetUnitBlocked(aBlock, UNIT_ID_TO_TYPE[aType])
     else
-      LogParamWarning('Actions.UnitBlock', [aPlayer, aType, Byte(aBlock)]);
+      LogIntParamWarn('Actions.UnitBlock', [aPlayer, aType, Byte(aBlock)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3656,7 +3656,7 @@ begin
         U.HitPointsChangeFromScript(aHP);
     end
     else
-      LogParamWarning('Actions.UnitHPChange', [aUnitID, aHP]);
+      LogIntParamWarn('Actions.UnitHPChange', [aUnitID, aHP]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3678,7 +3678,7 @@ begin
         U.HitPointsInvulnerable := aInvulnerable;
     end
     else
-      LogParamWarning('Actions.UnitHPSetInvulnerable', [aUnitID, Ord(aInvulnerable)]);
+      LogIntParamWarn('Actions.UnitHPSetInvulnerable', [aUnitID, Ord(aInvulnerable)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3702,7 +3702,7 @@ begin
         U.Condition := aHungerLevel;
     end
     else
-      LogParamWarning('Actions.UnitHungerSet', [aUnitID, aHungerLevel]);
+      LogIntParamWarn('Actions.UnitHungerSet', [aUnitID, aHungerLevel]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3731,7 +3731,7 @@ begin
       end;
     end
     else
-      LogParamWarning('Actions.UnitDirectionSet', [aUnitID, aDirection]);
+      LogIntParamWarn('Actions.UnitDirectionSet', [aUnitID, aDirection]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3753,7 +3753,7 @@ begin
         U.Dismiss;
     end
     else
-      LogParamWarning('Actions.UnitDismiss', [aUnitID]);
+      LogIntParamWarn('Actions.UnitDismiss', [aUnitID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3775,7 +3775,7 @@ begin
         U.Dismissable := aDismissable;
     end
     else
-      LogParamWarning('Actions.UnitDismissableSet', [aUnitID, Byte(aDismissable)]);
+      LogIntParamWarn('Actions.UnitDismissableSet', [aUnitID, Byte(aDismissable)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3797,7 +3797,7 @@ begin
         U.DismissCancel;
     end
     else
-      LogParamWarning('Actions.UnitDismissCancel', [aUnitID]);
+      LogIntParamWarn('Actions.UnitDismissCancel', [aUnitID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3823,7 +3823,7 @@ begin
 
       //Animals cant be ordered to walk, they use Steering instead
       if (U.UnitType in [ANIMAL_MIN..ANIMAL_MAX]) then
-        LogParamWarning('Actions.UnitOrderWalk is not supported for animals', [aUnitID, X, Y])
+        LogIntParamWarn('Actions.UnitOrderWalk is not supported for animals', [aUnitID, X, Y])
       else
         //Can only make idle or units in houses walk so we don't mess up tasks and cause crashes
         if U.IsIdle and U.Visible then
@@ -3833,7 +3833,7 @@ begin
         end;
     end
     else
-      LogParamWarning('Actions.UnitOrderWalk', [aUnitID, X, Y]);
+      LogIntParamWarn('Actions.UnitOrderWalk', [aUnitID, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3857,7 +3857,7 @@ begin
         U.Kill(HAND_NONE, not aSilent, True);
     end
     else
-      LogParamWarning('Actions.UnitKill', [aUnitID]);
+      LogIntParamWarn('Actions.UnitKill', [aUnitID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3915,7 +3915,7 @@ begin
       //Silently ignore if house doesn't exist
     end
     else
-      LogParamWarning('Actions.GroupAllowAllyToSelect', [aGroupID, Byte(aAllow)]);
+      LogIntParamWarn('Actions.GroupAllowAllyToSelect', [aGroupID, Byte(aAllow)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3936,7 +3936,7 @@ begin
         G.BlockOrders := aBlock;
     end
     else
-      LogParamWarning('Actions.GroupBlockOrders', [aGroupID, Byte(aBlock)]);
+      LogIntParamWarn('Actions.GroupBlockOrders', [aGroupID, Byte(aBlock)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3959,7 +3959,7 @@ begin
         G.DisableHungerMessage := aDisable;
     end
     else
-      LogParamWarning('Actions.GroupDisableHungryMessage', [aGroupID, Byte(aDisable)]);
+      LogIntParamWarn('Actions.GroupDisableHungryMessage', [aGroupID, Byte(aDisable)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3986,7 +3986,7 @@ begin
             G.Members[I].Condition := aHungerLevel;
     end
     else
-      LogParamWarning('Actions.GroupHungerSet', [aGroupID, aHungerLevel]);
+      LogIntParamWarn('Actions.GroupHungerSet', [aGroupID, aHungerLevel]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4010,7 +4010,7 @@ begin
           G.Members[I].Kill(HAND_NONE, not aSilent, True);
     end
     else
-      LogParamWarning('Actions.GroupKillAll', [aGroupID]);
+      LogIntParamWarn('Actions.GroupKillAll', [aGroupID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4034,7 +4034,7 @@ begin
         G.OrderWalk(KMPoint(X,Y), True, wtokScript, TKMDirection(aDirection+1));
     end
     else
-      LogParamWarning('Actions.GroupOrderWalk', [aGroupID, X, Y, aDirection]);
+      LogIntParamWarn('Actions.GroupOrderWalk', [aGroupID, X, Y, aDirection]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4060,7 +4060,7 @@ begin
         G.OrderAttackHouse(H, True);
     end
     else
-      LogParamWarning('Actions.GroupOrderAttackHouse', [aGroupID, aHouseID]);
+      LogIntParamWarn('Actions.GroupOrderAttackHouse', [aGroupID, aHouseID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4086,7 +4086,7 @@ begin
         G.OrderAttackUnit(U, True);
     end
     else
-      LogParamWarning('Actions.GroupOrderAttackUnit', [aGroupID, aUnitID]);
+      LogIntParamWarn('Actions.GroupOrderAttackUnit', [aGroupID, aUnitID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4108,7 +4108,7 @@ begin
         G.OrderFood(True);
     end
     else
-      LogParamWarning('Actions.GroupOrderFood', [aGroupID]);
+      LogIntParamWarn('Actions.GroupOrderFood', [aGroupID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4130,7 +4130,7 @@ begin
         G.OrderStorm(True);
     end
     else
-      LogParamWarning('Actions.GroupOrderStorm', [aGroupID]);
+      LogIntParamWarn('Actions.GroupOrderStorm', [aGroupID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4152,7 +4152,7 @@ begin
         G.OrderHalt(True);
     end
     else
-      LogParamWarning('Actions.GroupOrderHalt', [aGroupID]);
+      LogIntParamWarn('Actions.GroupOrderHalt', [aGroupID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4175,7 +4175,7 @@ begin
         G.OrderLinkTo(G2, True);
     end
     else
-      LogParamWarning('Actions.GroupOrderLink', [aGroupID, aDestGroupID]);
+      LogIntParamWarn('Actions.GroupOrderLink', [aGroupID, aDestGroupID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4203,7 +4203,7 @@ begin
       end;
     end
     else
-      LogParamWarning('Actions.GroupOrderSplit', [aGroupID]);
+      LogIntParamWarn('Actions.GroupOrderSplit', [aGroupID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4237,7 +4237,7 @@ begin
       end;
     end
     else
-      LogParamWarning('Actions.GroupOrderSplitSelected', [aGroupID, aUnitID]);
+      LogIntParamWarn('Actions.GroupOrderSplitSelected', [aGroupID, aUnitID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4259,7 +4259,7 @@ begin
         G.UnitsPerRow := aNumColumns;
     end
     else
-      LogParamWarning('Actions.GroupSetFormation', [aGroupID, aNumColumns]);
+      LogIntParamWarn('Actions.GroupSetFormation', [aGroupID, aNumColumns]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

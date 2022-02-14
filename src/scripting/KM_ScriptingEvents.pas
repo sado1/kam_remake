@@ -19,7 +19,7 @@ type
     fIDCache: TKMScriptingIdCache;
     fOnScriptError: TKMScriptErrorEvent;
     procedure LogWarning(const aFuncName, aWarnMsg: String);
-    procedure LogParamWarning(const aFuncName: String; const aValues: array of Integer);
+    procedure LogIntParamWarn(const aFuncName: String; const aValues: array of Integer);
     procedure LogParamWarn(const aFuncName: String; const aValues: array of const);
   public
     constructor Create(aIDCache: TKMScriptingIdCache);
@@ -1156,7 +1156,7 @@ begin
 end;
 
 
-procedure TKMScriptEntity.LogParamWarning(const aFuncName: string; const aValues: array of Integer);
+procedure TKMScriptEntity.LogIntParamWarn(const aFuncName: string; const aValues: array of Integer);
 var
   I: Integer;
   values: string;
