@@ -115,6 +115,7 @@ end;
 
 procedure TKMHandLocks.SetHandHouseLock(aHouseType: TKMHouseType; const aValue: TKMHandHouseLock);
 begin
+  Assert(aValue <> hlNone, 'Can''t set hlNone Hand House Lock');
   fHandHouseLock[aHouseType] := aValue;
 end;
 
