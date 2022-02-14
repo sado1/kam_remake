@@ -1279,7 +1279,7 @@ begin
   Result := False;
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-      and (aDefencePosition.PositionType in [adtFrontLine..adtBackLine])
+      and (aDefencePosition.PositionType in [dtFrontLine..dtBackLine])
       and (aDefencePosition.Dir in [dirN..dirNW])
       and (aDefencePosition.GroupType in GROUP_TYPES_VALID)
       and (gTerrain.TileInMapCoords(aDefencePosition.X, aDefencePosition.Y)) then

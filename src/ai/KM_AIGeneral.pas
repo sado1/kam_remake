@@ -401,7 +401,7 @@ begin
     end;
     //2. Take back line defence positions, lowest priority first
     for I := fDefencePositions.Count-1 downto 0 do
-      if (fDefencePositions[I].DefenceType = adtBackLine)
+      if (fDefencePositions[I].DefenceType = dtBackLine)
       and (fDefencePositions[I].CurrentGroup <> nil)
       and not fDefencePositions[I].CurrentGroup.IsDead
       and fDefencePositions[I].CurrentGroup.IsIdleToAI([wtokFlagPoint, wtokHaltOrder, wtokAIGotoDefencePos]) then
@@ -552,9 +552,9 @@ begin
     if (BestOwner = fOwner) OR (BestOwner = HAND_NONE) OR (fDefencePositions.Count + Length(DefPosArr) <= MIN_DEF_POS) then
     begin
       if (DefPosArr[I].Line = 0) then
-        DPT := adtFrontLine
+        DPT := dtFrontLine
       else
-        DPT := adtBackLine;
+        DPT := dtBackLine;
       Loc := DefPosArr[I].DirPoint.Loc;
       case (Loc.X*2 + Loc.Y*2) mod 3 of
         0:   GT := gtAntiHorse;

@@ -855,7 +855,7 @@ begin
     groupType := G.GroupType;
   end;
 
-  gMySpectator.Hand.AI.General.DefencePositions.Add(KMPointDir(aLoc, dir), groupType, DEFAULT_DEFENCE_POSITION_RADIUS, adtFrontLine);
+  gMySpectator.Hand.AI.General.DefencePositions.Add(KMPointDir(aLoc, dir), groupType, DEFAULT_DEFENCE_POSITION_RADIUS, dtFrontLine);
 end;
 
 

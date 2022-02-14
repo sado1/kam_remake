@@ -4,8 +4,8 @@ interface
 
 type
   //For now IDs must match with KaM
-  TKMAIDefencePosType = (adtFrontLine, //Front line troops may not go on attacks, they are for defence
-                         adtBackLine); //Back line troops may attack
+  TKMAIDefencePosType = (dtFrontLine, //Front line troops may not go on attacks, they are for defence
+                         dtBackLine); //Back line troops may attack
 
   TKMFormation = record
     NumUnits, UnitsPerRow: Integer;

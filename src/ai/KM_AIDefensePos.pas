@@ -262,7 +262,7 @@ var I: Integer;
 begin
   Result := 0;
   for I := 0 to Count - 1 do
-    if Positions[I].fDefenceType = adtBackLine then
+    if Positions[I].fDefenceType = dtBackLine then
       Inc(Result);
 end;
 
