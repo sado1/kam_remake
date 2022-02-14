@@ -508,6 +508,7 @@ begin
     RegisterMethodCheck(c, 'function HouseType(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseTypeEx(aHouseID: Integer): TKMHouseType');
     RegisterMethodCheck(c, 'function HouseTypeMaxHealth(aHouseType: Integer): Word');
+    RegisterMethodCheck(c, 'function HouseTypeMaxHealthEx(aHouseType: TKMHouseType): Integer');
     RegisterMethodCheck(c, 'function HouseTypeName(aHouseType: Byte): AnsiString');
     RegisterMethodCheck(c, 'function HouseTypeToOccupantType(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseTypeToWorkerType(aHouseID: Integer): Integer');
@@ -1245,6 +1246,7 @@ begin
       RegisterMethod(@TKMScriptStates.HouseType,                                'HouseType');
       RegisterMethod(@TKMScriptStates.HouseTypeEx,                              'HouseTypeEx');
       RegisterMethod(@TKMScriptStates.HouseTypeMaxHealth,                       'HouseTypeMaxHealth');
+      RegisterMethod(@TKMScriptStates.HouseTypeMaxHealthEx,                     'HouseTypeMaxHealthEx');
       RegisterMethod(@TKMScriptStates.HouseTypeName,                            'HouseTypeName');
       RegisterMethod(@TKMScriptStates.HouseTypeToOccupantType,                  'HouseTypeToOccupantType');
       RegisterMethod(@TKMScriptStates.HouseTypeToWorkerType,                    'HouseTypeToWorkerType');

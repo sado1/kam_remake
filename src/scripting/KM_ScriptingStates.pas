@@ -107,6 +107,7 @@ type
     function HouseType(aHouseID: Integer): Integer;
     function HouseTypeEx(aHouseID: Integer): TKMHouseType;
     function HouseTypeMaxHealth(aHouseType: Integer): Word;
+    function HouseTypeMaxHealthEx(aHouseType: TKMHouseType): Integer;
     function HouseTypeName(aHouseType: Byte): AnsiString;
     function HouseTypeToOccupantType(aHouseType: Integer): Integer;
     function HouseTypeToWorkerType(aHouseType: Integer): Integer;
@@ -2586,6 +2587,24 @@ begin
       Result := gResHouses[HOUSE_ID_TO_TYPE[aHouseType]].MaxHealth
     else
       LogParamWarning('States.HouseTypeMaxHealth', [aHouseType]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns max health of the specified house type
+//* Result: Max health
+function TKMScriptStates.HouseTypeMaxHealthEx(aHouseType: TKMHouseType): Integer;
+begin
+    try
+    Result := 0;
+    if aHouseType in [HOUSE_MIN..HOUSE_MAX] then
+      Result := gResHouses[aHouseType].MaxHealth
+    else
+      LogParamWarning('States.HouseTypeMaxHealthEx', [Ord(aHouseType)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
