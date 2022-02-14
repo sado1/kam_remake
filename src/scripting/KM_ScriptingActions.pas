@@ -1460,7 +1460,7 @@ end;
 
 
 //* Version: 13900
-//* Sets the formation the AI uses for defence positions
+//* Sets the formation the AI uses for defence positions. Works only for ClassicAI
 //* aHand: hand (player) ID
 procedure TKMScriptActions.AIGroupsFormationSetEx(aHand: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer);
 begin
