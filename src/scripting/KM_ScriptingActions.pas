@@ -13,12 +13,15 @@ type
   private
     fOnSetLogLinesMaxCnt: TIntegerEvent;
     procedure LogStr(const aText: String);
+
+    procedure _AIDefencePositionAdd(aPlayer: Integer; const aDefencePosition: TKMDefencePositionInfo; aMethodName: string);
+    procedure _AIGroupsFormationSet(aPlayer: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer; aMethodName: string);
   public
     property OnSetLogLinesMaxCnt: TIntegerEvent read fOnSetLogLinesMaxCnt write fOnSetLogLinesMaxCnt;
 
     procedure AIArmyType(aPlayer: Byte; aType: TKMArmyType);
     function AIAttackAdd(aPlayer: Byte; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer;
-                         aMelleCount, aAntiHorseCount, aRangedCount, aMountedCount: Word; aRandomGroups: Boolean;
+                         aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount: Word; aRandomGroups: Boolean;
                          aTarget: TKMAIAttackTarget; aCustomPosition: TKMPoint): Integer;
     function AIAttackRemove(aPlayer: Byte; aAIAttackId: Word): Boolean;
     procedure AIAttackRemoveAll(aPlayer: Byte);
@@ -28,11 +31,13 @@ type
     procedure AIAutoDefence(aPlayer: Byte; aAuto: Boolean);
     procedure AIAutoRepair(aPlayer: Byte; aAuto: Boolean);
     procedure AIDefencePositionAdd(aPlayer: Byte; X, Y: Integer; aDir, aGroupType: Byte; aRadius: Word; aDefType: Byte);
+    procedure AIDefencePositionAddEx(aPlayer: Integer; const aDefencePosition: TKMDefencePositionInfo);
     procedure AIDefencePositionRemove(aPlayer: Byte; X, Y: Integer);
     procedure AIDefencePositionRemoveAll(aPlayer: Byte);
     procedure AIDefendAllies(aPlayer: Byte; aDefend: Boolean);
     procedure AIEquipRate(aPlayer: Byte; aType: Byte; aRate: Word);
     procedure AIGroupsFormationSet(aPlayer, aType: Byte; aCount, aColumns: Word);
+    procedure AIGroupsFormationSetEx(aPlayer: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer);
     procedure AIRecruitDelay(aPlayer: Byte; aDelay: Cardinal);
     procedure AIRecruitLimit(aPlayer, aLimit: Byte);
     procedure AISerfsPerHouse(aPlayer: Byte; aSerfs: Single);
@@ -210,6 +215,7 @@ uses
   KM_Resource, KM_ResTypes, KM_ResUnits, KM_Hand, KM_ResMapElements,
   KM_PathFindingRoad,
   KM_Terrain,
+  KM_AITypes,
   KM_CommonUtils, KM_CommonClasses;
 
 const
@@ -1119,7 +1125,9 @@ end;
 //** );</pre>
 //** <b>aCustomPosition</b> - TKMPoint for custom position of attack. Used if attCustomPosition was set up as attack target
 //** <b>Result</b>: Attack Id, that could be used to remove this attack later on
-function TKMScriptActions.AIAttackAdd(aPlayer: Byte; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer; aMelleCount, aAntiHorseCount, aRangedCount, aMountedCount: Word; aRandomGroups: Boolean; aTarget: TKMAIAttackTarget; aCustomPosition: TKMPoint): Integer;
+function TKMScriptActions.AIAttackAdd(aPlayer: Byte; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer;
+                                      aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount: Word; aRandomGroups: Boolean;
+                                      aTarget: TKMAIAttackTarget; aCustomPosition: TKMPoint): Integer;
 var
   AttackType: TKMAIAttackType;
   Delay: Cardinal;
@@ -1135,9 +1143,10 @@ begin
 
       //Attack delay should be counted from the moment attack was added from script
       Delay := aDelay + gGameParams.Tick;
-      Result := gHands[aPlayer].AI.General.Attacks.AddAttack(AttackType, Delay, aTotalMen, aMelleCount, aAntiHorseCount, aRangedCount, aMountedCount, aRandomGroups, aTarget, 0, aCustomPosition);
+      Result := gHands[aPlayer].AI.General.Attacks.AddAttack(AttackType, Delay, aTotalMen, aMeleeGroupCount, aAntiHorseGroupCount,
+                                                             aRangedGroupCount, aMountedGroupCount, aRandomGroups, aTarget, 0, aCustomPosition);
     end else
-      LogParamWarning('Actions.AIAttackAdd', [aPlayer, aDelay, aTotalMen, aMelleCount, aAntiHorseCount, aRangedCount, aMountedCount]);
+      LogParamWarning('Actions.AIAttackAdd', [aPlayer, aDelay, aTotalMen, aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1263,23 +1272,58 @@ begin
 end;
 
 
-//* Version: 5932
-//* Adds a defence position for the specified AI player
-procedure TKMScriptActions.AIDefencePositionAdd(aPlayer: Byte; X, Y: Integer; aDir, aGroupType: Byte; aRadius: Word; aDefType: Byte);
+procedure TKMScriptActions._AIDefencePositionAdd(aPlayer: Integer; const aDefencePosition: TKMDefencePositionInfo; aMethodName: string);
 begin
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-    and (TAIDefencePosType(aDefType) in [adtFrontLine..adtBackLine])
-    and (TKMGroupType(aGroupType) in [gtMelee..gtMounted])
-    and (TKMDirection(aDir+1) in [dirN..dirNW])
-    and (gTerrain.TileInMapCoords(X, Y)) then
-      gHands[aPlayer].AI.General.DefencePositions.Add(KMPointDir(X, Y, TKMDirection(aDir + 1)), TKMGroupType(aGroupType), aRadius, TAIDefencePosType(aDefType))
-  else
-    LogParamWarning('Actions.AIDefencePositionAdd', [aPlayer, X, Y, aDir, aGroupType, aRadius, aDefType]);
+      and (aDefencePosition.PositionType in [adtFrontLine..adtBackLine])
+      and (aDefencePosition.Dir in [dirN..dirNW])
+      and (aDefencePosition.GroupType in GROUP_TYPES_VALID)
+      and (gTerrain.TileInMapCoords(aDefencePosition.X, aDefencePosition.Y)) then
+      gHands[aPlayer].AI.General.DefencePositions.Add(KMPointDir(aDefencePosition.X, aDefencePosition.Y, aDefencePosition.Dir),
+                                                      aDefencePosition.GroupType, aDefencePosition.Radius, aDefencePosition.PositionType)
+    else
+      LogParamWarning('Actions.AIDefencePositionAddEx', [aPlayer, aDefencePosition.X, aDefencePosition.Y, Ord(aDefencePosition.Dir),
+                                                         Ord(aDefencePosition.GroupType), aDefencePosition.Radius,
+                                                         Ord(aDefencePosition.PositionType)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
   end;
+end;
+
+
+//* Version: 5932
+//* Adds a defence position for the specified AI player
+procedure TKMScriptActions.AIDefencePositionAdd(aPlayer: Byte; X, Y: Integer; aDir, aGroupType: Byte; aRadius: Word; aDefType: Byte);
+var
+  defPos: TKMDefencePositionInfo;
+begin
+  if InRange(aGroupType, 0, 3)
+    and InRange(aDir, 0, Ord(High(TKMDirection)) - 1)
+    and InRange(aDefType, 0, 1)
+    and (TKMDirection(aDir + 1) in [dirN..dirNW])
+    and (gTerrain.TileInMapCoords(X, Y)) then
+  begin
+    defPos.X := X;
+    defPos.Y := Y;
+    defPos.Dir := TKMDirection(aDir + 1);
+    defPos.Radius := aRadius;
+    defPos.GroupType := TKMGroupType(aGroupType + GROUP_TYPE_MIN_OFF);
+    defPos.PositionType := TKMAIDefencePosType(aDefType);
+
+    _AIDefencePositionAdd(aPlayer, defPos, 'Actions.AIDefencePositionAdd');
+  end
+  else
+    LogParamWarning('Actions.AIDefencePositionAdd', [aPlayer, X, Y, aDir, aGroupType, aRadius, aDefType]);
+end;
+
+
+//* Version: 13800
+//* Adds a defence position for the specified AI player
+procedure TKMScriptActions.AIDefencePositionAddEx(aPlayer: Integer; const aDefencePosition: TKMDefencePositionInfo);
+begin
+  _AIDefencePositionAdd(aPlayer, aDefencePosition, 'Actions.AIDefencePositionAddEx');
 end;
 
 
@@ -1368,27 +1412,45 @@ begin
 end;
 
 
+procedure TKMScriptActions._AIGroupsFormationSet(aPlayer: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer; aMethodName: string);
+begin
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+      and (aGroupType in GROUP_TYPES_VALID)
+      and (aCount > 0) and (aColumns > 0) then
+    begin
+      gHands[aPlayer].AI.General.DefencePositions.TroopFormations[aGroupType].NumUnits := aCount;
+      gHands[aPlayer].AI.General.DefencePositions.TroopFormations[aGroupType].UnitsPerRow := aColumns;
+    end
+    else
+      LogParamWarning(aMethodName, [aPlayer, Ord(aGroupType), aCount, aColumns]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
 //* Version: 5778
 //* Sets the formation the AI uses for defence positions
 procedure TKMScriptActions.AIGroupsFormationSet(aPlayer, aType: Byte; aCount, aColumns: Word);
 var
   gt: TKMGroupType;
 begin
-  try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-    and InRange(aType, 0, 3)
-    and (aCount > 0) and (aColumns > 0) then
-    begin
-      gt := TKMGroupType(aType);
-      gHands[aPlayer].AI.General.DefencePositions.TroopFormations[gt].NumUnits := aCount;
-      gHands[aPlayer].AI.General.DefencePositions.TroopFormations[gt].UnitsPerRow := aColumns;
-    end
-    else
-      LogParamWarning('Actions.AIGroupsFormationSet', [aPlayer, aType, aCount, aColumns]);
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
+  gt := gtNone;
+
+  if InRange(aType, 0, 3) then
+    gt := TKMGroupType(aType + GROUP_TYPE_MIN_OFF);
+
+  _AIGroupsFormationSet(aPlayer, gt, aCount, aColumns, 'Actions.AIGroupsFormationSet');
+end;
+
+
+//* Version: 13800
+//* Sets the formation the AI uses for defence positions
+procedure TKMScriptActions.AIGroupsFormationSetEx(aPlayer: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer);
+begin
+  _AIGroupsFormationSet(aPlayer, aGroupType, aCount, aColumns, 'Actions.AIGroupsFormationSetEx');
 end;
 
 
@@ -1981,6 +2043,8 @@ end;
 
 //* Version: 10940
 //* Allows allies to view all houses of specified player, or for all players, if aPlayer is -1
+//* This function applies only to already build houses.
+//* New houses will be selectable for allies. To avoid it use OnHouseBuilt event
 procedure TKMScriptActions.HouseAllowAllyToSelectAll(aPlayer: ShortInt; aAllow: Boolean);
 
   procedure SetAllowAllyToHand(aHandID: ShortInt);

@@ -356,7 +356,7 @@ begin
   end
   else
   for I := Low(aType) to High(aType) do
-  if aType[I] in [HOUSE_MIN..HOUSE_MAX] then
+  if aType[I] in HOUSES_VALID then
     Inc(Result, Houses[aType[I]].Initial + Houses[aType[I]].Built - Houses[aType[I]].SelfDestruct - Houses[aType[I]].Lost)
   else
     raise Exception.Create('Quering wrong house type');
@@ -409,7 +409,7 @@ begin
   end
   else
   for I := Low(aType) to High(aType) do
-  if aType[I] in [HOUSE_MIN..HOUSE_MAX] then
+  if aType[I] in HOUSES_VALID then
     Inc(Result, Houses[aType[I]].Started + Houses[aType[I]].Planned - Houses[aType[I]].Ended - Houses[aType[I]].PlanRemoved)
   else
     raise Exception.Create('Quering wrong house type');

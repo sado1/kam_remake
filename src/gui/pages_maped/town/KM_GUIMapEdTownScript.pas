@@ -94,26 +94,34 @@ begin
   CheckBox_UnlimitedEquip := TKMCheckBox.Create(Panel_Script, TB_PAD, 130, Panel_Script.Width - 9, 20, gResTexts[TX_MAPED_AI_FASTEQUIP], fntMetal);
   CheckBox_UnlimitedEquip.OnClick := Town_ScriptChange;
 
-  with TKMLabel.Create(Panel_Script, TB_PAD, 155, Panel_Script.Width - TB_PAD, 20, gResTexts[TX_MAPED_AI_DEFENSE_EQUIP_LEATHER], fntMetal, taLeft) do
+  with TKMLabel.Create(Panel_Script, TB_PAD, 155, Panel_Script.Width - TB_PAD, 40, gResTexts[TX_MAPED_AI_DEFENSE_EQUIP_LEATHER], fntMetal, taLeft) do
+  begin
     Hint := gResTexts[TX_MAPED_AI_DEFENSE_EQUIP_LEATHER_HINT];
+    AutoWrap := True;
+    TextVAlign := tvaMiddle;
+  end;
 
-  NumEd_EquipRateLeather := TKMNumericEdit.Create(Panel_Script, TB_PAD, 155 + 20, 100, 3000);
+  NumEd_EquipRateLeather := TKMNumericEdit.Create(Panel_Script, TB_PAD, 155 + 40, 100, 3000);
   NumEd_EquipRateLeather.Hint := gResTexts[TX_MAPED_AI_DEFENSE_EQUIP_LEATHER_HINT];
   NumEd_EquipRateLeather.MouseWheelStep := 100;
   NumEd_EquipRateLeather.AutoFocusable := False;
   NumEd_EquipRateLeather.OnChange := Town_ScriptChange;
 
-  with TKMLabel.Create(Panel_Script, TB_PAD, 200, Panel_Script.Width - TB_PAD, 20, gResTexts[TX_MAPED_AI_DEFENSE_EQUIP_IRON], fntMetal, taLeft) do
+  with TKMLabel.Create(Panel_Script, TB_PAD, 220, Panel_Script.Width - TB_PAD, 40, gResTexts[TX_MAPED_AI_DEFENSE_EQUIP_IRON], fntMetal, taLeft) do
+  begin
     Hint := gResTexts[TX_MAPED_AI_DEFENSE_EQUIP_IRON_HINT];
+    AutoWrap := True;
+    TextVAlign := tvaMiddle;
+  end;
 
-  NumEd_EquipRateIron := TKMNumericEdit.Create(Panel_Script, TB_PAD, 200 + 20, 100, 3000);
+  NumEd_EquipRateIron := TKMNumericEdit.Create(Panel_Script, TB_PAD, 220 + 40, 100, 3000);
   NumEd_EquipRateIron.Hint := gResTexts[TX_MAPED_AI_DEFENSE_EQUIP_IRON_HINT];
   NumEd_EquipRateIron.MouseWheelStep := 100;
   NumEd_EquipRateIron.AutoFocusable := False;
   NumEd_EquipRateIron.OnChange := Town_ScriptChange;
 
-  TKMLabel.Create(Panel_Script, TB_PAD, 255, gResTexts[TX_MAPED_AI_START], fntMetal, taLeft);
-  Button_AIStart         := TKMButtonFlat.Create(Panel_Script, TB_PAD, 275, 33, 33, 62, rxGuiMain);
+  TKMLabel.Create(Panel_Script, TB_PAD, 295, gResTexts[TX_MAPED_AI_START], fntMetal, taLeft);
+  Button_AIStart         := TKMButtonFlat.Create(Panel_Script, TB_PAD, 315, 33, 33, 62, rxGuiMain);
   Button_AIStart.OnClick := Town_ScriptChange;
 
   fSubMenuActionsEvents[0] := Town_ScriptChange;

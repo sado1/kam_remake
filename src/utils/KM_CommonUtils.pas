@@ -31,6 +31,11 @@ uses
 
   function RGB2BGR(aRGB: Cardinal): Cardinal;
   function BGR2RGB(aRGB: Cardinal): Cardinal;
+
+  function RGB2XYZ(aRGB: TKMColor3f): TKMColor3f;
+  function RGB2CEILAB(aRGB: TKMColor3f): TKMColor3f;
+  function RGB2CEILUV(aRGB: TKMColor3f): TKMColor3f;
+
   function ApplyColorCoef(aColor: Cardinal; aAlpha, aRed, aGreen, aBlue: Single): Cardinal;
   function GetGreyColor(aGreyLevel: Byte): Cardinal;
   procedure ConvertRGB2HSB(aR, aG, aB: Integer; out oH, oS, oB: Single);
@@ -42,7 +47,8 @@ uses
   function MultiplyBrightnessByFactor(aColor: Cardinal; aBrightnessFactor: Single; aMinBrightness: Single = 0; aMaxBrightness: Single = 1): Cardinal;
   function ReduceBrightness(aColor: Cardinal; aBrightness: Byte): Cardinal;
   function IsColorCloseToColors(aColor: Cardinal; const aColors: TKMCardinalArray; aDist: Single): Boolean;
-  function GetColorDistance(aColor1, aColor2: Cardinal): Single;
+  function GetColorDistance(aColor1, aColor2: Cardinal): Single; overload;
+  function GetColorDistance(aColor1, aColor2: TKMColor3f): Single; overload;
   function GetRandomColor: Cardinal;
   function GetPingColor(aPing: Word): Cardinal;
   function GetFPSColor(aFPS: Word): Cardinal;
@@ -790,6 +796,119 @@ begin
 end;
 
 
+// According to
+// http://www.brucelindbloom.com/index.html?Eqn_RGB_to_XYZ.html
+function RGB2XYZ(aRGB: TKMColor3f): TKMColor3f;
+const
+  X_VECTOR: array[0..2] of Single = (0.4124564, 0.3575761, 0.1804375);
+  Y_VECTOR: array[0..2] of Single = (0.2126729, 0.7151522, 0.0721570);
+  Z_VECTOR: array[0..2] of Single = (0.0193339, 0.1191920, 0.9503041);
+
+  function RBG2(aVal: Single): Single;
+  begin
+    if aVal < 0.04045 then
+      Result := aVal / 12.92
+    else
+      Result := Math.Power((aVal + 0.055)/1.055, 2.4);
+  end;
+var
+  R2, G2, B2: Single;
+begin
+  R2 := RBG2(aRGB.R);
+  G2 := RBG2(aRGB.G);
+  B2 := RBG2(aRGB.B);
+
+  Result.R := X_VECTOR[0]*R2 + X_VECTOR[1]*G2 + X_VECTOR[2]*B2;
+  Result.G := Y_VECTOR[0]*R2 + Y_VECTOR[1]*G2 + Y_VECTOR[2]*B2;
+  Result.B := Z_VECTOR[0]*R2 + Z_VECTOR[1]*G2 + Z_VECTOR[2]*B2;
+end;
+
+
+// According to
+// https://docs.opencv.org/4.5.2/de/d25/imgproc_color_conversions.html#color_convert_rgb_lab
+// Tested on online calculators, 100% accurate
+function RGB2CEILAB(aRGB: TKMColor3f): TKMColor3f;
+
+  function Fn(aValue: Single): Single;
+  begin
+    if aValue > 0.008856 then
+      Result := Math.Power(aValue, 0.3333)
+    else
+      Result := 7.787 * aValue + 16 / 116;
+  end;
+
+const
+  X_N: Single = 0.950456;
+  Z_N: Single = 1.088754;
+var
+  X, Y, Z, L, a, b: Single;
+  XYZ: TKMColor3f;
+begin
+  XYZ := RGB2XYZ(aRGB);
+  X := XYZ.R;
+  Y := XYZ.G;
+  Z := XYZ.B;
+
+  X := X / X_N;
+  Z := Z / Z_N;
+
+  if Y > 0.008856 then
+    L := 116 * Math.Power(Y, 0.3333) - 16
+  else
+    L := 903.3 * Y;
+
+  a := 500*(Fn(X) - Fn(Y));
+
+  b := 200*(Fn(Y) - Fn(Z));
+
+  Result.R := L / 100;
+  Result.G := (a + 128) / 256;
+  Result.B := (b + 128) / 256;
+end;
+
+
+// According to
+// https://docs.opencv.org/4.5.2/de/d25/imgproc_color_conversions.html#color_convert_rgb_luv
+// Has to be tested, use with caution
+function RGB2CEILUV(aRGB: TKMColor3f): TKMColor3f;
+const
+  U_N: Single = 0.19793943;
+  V_N: Single = 0.46831096;
+
+var
+  XYZ: TKMColor3f;
+  X, Y, Z: Single;
+  L, u, v, u_, v_, tmp: Single;
+begin
+  XYZ := RGB2XYZ(aRGB);
+  X := XYZ.R;
+  Y := XYZ.G;
+  Z := XYZ.B;
+
+  //0 <= L <= 100
+  if Y > 0.008856 then
+    L := 116*Math.Power(Y, 0.33333) - 16
+  else
+    L := 903.3*Y;
+
+  tmp := (X + 15*Y + 3*Z);
+  u_ := 4*X / tmp;
+  v_ := 9*Y / tmp;
+
+  // -134 <= u <= 220
+  u := 13*L*(u_ - U_N);
+  // -140 <= u <= 122
+  v := 13*L*(v_ - V_N);
+
+  // L
+  Result.R := L / 100;
+  // u
+  Result.G := (u + 134) / 354;
+  // v
+  Result.B := (v + 140) / 262;
+end;
+
+
 //Multiply color by channels
 function ApplyColorCoef(aColor: Cardinal; aAlpha, aRed, aGreen, aBlue: Single): Cardinal;
 var
@@ -1010,6 +1129,12 @@ begin
   A2 := (aColor2 shr 24 and $FF) / 255;
 
   Result := Sqrt(Sqr(R1 - R2) + Sqr(G1 - G2) + Sqr(B1 - B2) + Sqr(A1 - A2));
+end;
+
+
+function GetColorDistance(aColor1, aColor2: TKMColor3f): Single;
+begin
+  Result := Sqrt(Sqr(aColor1.R - aColor2.R) + Sqr(aColor1.G - aColor2.G) + Sqr(aColor1.B - aColor2.B));
 end;
 
 

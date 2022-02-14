@@ -403,17 +403,21 @@ end;
 
 procedure TKMGUICommonOptions.CreateGameplay(var aTopBlock: Integer; var aLeftBlock: Integer);
 var
-  str: String;
-  lineCnt, top: Integer;
+  strSavePT, strAutosavePTEnd: String;
+  linesSavePT, linesAutosavePTEnd, top: Integer;
 begin
   // Gameplay section
-  str := gResTexts[TX_MENU_OPTIONS_MAKE_SAVEPOINTS];
-  gRes.Fonts[fntMetal].GetTextSize(str, lineCnt);
+
+  strSavePT := gResTexts[TX_MENU_OPTIONS_MAKE_SAVEPOINTS];
+  gRes.Fonts[fntMetal].GetTextSize(strSavePT, linesSavePT);
+
+  strAutosavePTEnd := gResTexts[TX_MENU_OPTIONS_AUTOSAVE_AT_GAME_END];
+  gRes.Fonts[fntMetal].GetTextSize(strAutosavePTEnd, linesAutosavePTEnd);
 
   if IsMenu then
-    Inc(aTopBlock, 40 - 20*(lineCnt - 1));
+    Inc(aTopBlock, 40 - 20*(linesSavePT + linesAutosavePTEnd - 2));
 
-  Panel_Game := TKMPanel.Create(Panel_Options, aLeftBlock, aTopBlock, 280, 70 + 20*lineCnt);
+  Panel_Game := TKMPanel.Create(Panel_Options, aLeftBlock, aTopBlock, 280, 50 + 20*(linesSavePT + linesAutosavePTEnd));
 
   Panel_Game.Anchors := [anLeft];
 
@@ -427,12 +431,13 @@ begin
       CheckBox_Autosave := TKMCheckBox.Create(Panel_Game,10,NextTop(top),256,20,gResTexts[TX_MENU_OPTIONS_AUTOSAVE], fntMetal);
       CheckBox_Autosave.OnClick := Change;
 
-      CheckBoxs_AutosaveAtGameEnd := TKMCheckBox.Create(Panel_Game,10,NextTop(top),256,20,gResTexts[TX_MENU_OPTIONS_AUTOSAVE_AT_GAME_END], fntMetal);
+      CheckBoxs_AutosaveAtGameEnd := TKMCheckBox.Create(Panel_Game,10,NextTop(top),256,20,strAutosavePTEnd, fntMetal);
       CheckBoxs_AutosaveAtGameEnd.OnClick := Change;
+      NextTop(top, 20*(linesAutosavePTEnd - 1));
 
-      CheckBox_MakeSavePoints := TKMCheckBox.Create(Panel_Game, 10, NextTop(top),256,20,str, fntMetal);
+      CheckBox_MakeSavePoints := TKMCheckBox.Create(Panel_Game, 10, NextTop(top),256,20,strSavePT, fntMetal);
       CheckBox_MakeSavePoints.OnClick := Change;
-      NextTop(top, 20*(lineCnt - 1));
+      NextTop(top, 20*(linesSavePT - 1));
     end;
 
     // Spectator
@@ -565,6 +570,7 @@ begin
 
   TrackBar_Brightness.Position  := gGameSettings.Brightness;
   CheckBox_LerpRender.Checked   := gGameSettings.InterpolatedRender;
+  CheckBox_LerpAnims.Enabled    := CheckBox_LerpRender.Checked;
   CheckBox_LerpAnims.Checked    := gGameSettings.InterpolatedAnimations;
   TrackBar_ScrollSpeed.Position := gGameSettings.ScrollSpeed;
   TrackBar_SFX.Position         := Round(gGameSettings.SoundFXVolume * TrackBar_SFX.MaxValue);
@@ -643,6 +649,8 @@ begin
   gGameSettings.Brightness         := TrackBar_Brightness.Position;
   gGameSettings.InterpolatedRender := CheckBox_LerpRender.Checked;
   gGameSettings.InterpolatedAnimations := CheckBox_LerpAnims.Checked;
+
+  CheckBox_LerpAnims.Enabled       := CheckBox_LerpRender.Checked;
 
   gGameSettings.ScrollSpeed        := TrackBar_ScrollSpeed.Position;
   gGameSettings.SoundFXVolume      := TrackBar_SFX.Position / TrackBar_SFX.MaxValue;

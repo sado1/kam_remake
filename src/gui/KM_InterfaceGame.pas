@@ -9,7 +9,7 @@ uses
   KM_Defaults, KM_Controls, KM_Points,
   KM_InterfaceDefaults, KM_CommonTypes, KM_AIDefensePos,
   KM_Cursor, KM_Render, KM_MinimapGame, KM_Viewport, KM_ResFonts,
-  KM_ResTypes, KM_CommonClassesExt;
+  KM_ResTypes, KM_CommonClassesExt, KM_AITypes;
 
 
 type
@@ -71,7 +71,8 @@ type
 
     procedure GameSpeedChanged(aFromSpeed, aToSpeed: Single);
     procedure SyncUI(aMoveViewport: Boolean = True); virtual;
-    procedure SyncUIView(const aCenter: TKMPointF; aZoom: Single = 1);
+    procedure SyncUIView(const aCenter: TKMPointF); overload;
+    procedure SyncUIView(const aCenter: TKMPointF; aZoom: Single); overload;
     procedure UpdateGameCursor(X, Y: Integer; Shift: TShiftState);
     procedure UpdateStateIdle(aFrameTime: Cardinal); virtual; abstract;
     procedure UpdateState(aGlobalTickCount: Cardinal); override;
@@ -89,7 +90,7 @@ const
   TERRAIN_PAGE_TITLE_Y = PAGE_TITLE_Y + 2; // Terrain pages title offset
   STATS_LINES_CNT = 13; //Number of stats (F3) lines
 
-  DEFENCE_LINE_TYPE_COL: array [TAIDefencePosType] of Cardinal = ($FF80FF00, $FFFF8000);
+  DEFENCE_LINE_TYPE_COL: array [TKMAIDefencePosType] of Cardinal = ($FF80FF00, $FFFF8000);
 
   // Shortcuts
   // All shortcuts are in English and are the same for all languages to avoid
@@ -591,7 +592,14 @@ begin
 end;
 
 
-procedure TKMUserInterfaceGame.SyncUIView(const aCenter: TKMPointF; aZoom: Single = 1);
+procedure TKMUserInterfaceGame.SyncUIView(const aCenter: TKMPointF);
+begin
+  fViewport.Zoom := gGameSettings.DefaultZoom; // Set Zoom first, since it can apply restrictions on Position near map borders
+  fViewport.Position := aCenter;
+end;
+
+
+procedure TKMUserInterfaceGame.SyncUIView(const aCenter: TKMPointF; aZoom: Single);
 begin
   fViewport.Zoom := aZoom; // Set Zoom first, since it can apply restrictions on Position near map borders
   fViewport.Position := aCenter;

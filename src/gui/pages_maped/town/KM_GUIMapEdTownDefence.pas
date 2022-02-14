@@ -115,7 +115,8 @@ end;
 procedure TKMMapEdTownDefence.Town_DefenceAddClick(Sender: TObject);
 begin
   //Press the button
-  Button_DefencePosAdd.Down := not Button_DefencePosAdd.Down and (Sender = Button_DefencePosAdd);
+  if (Sender = Button_DefencePosAdd) then
+    Button_DefencePosAdd.Down := not Button_DefencePosAdd.Down;
 
   if Button_DefencePosAdd.Down then
   begin

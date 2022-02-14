@@ -577,6 +577,7 @@ TX_MAPED_AI_FORMATIONS_COLUMNS = 450; //Columns
 TX_MAPED_AI_FORMATIONS_COUNT = 451; //Count
 TX_MAPED_AI_FORMATIONS_TITLE = 452; //Troop Formations
 TX_MAPED_AI_FORMATIONS = 453; //Edit formations
+TX_MAPED_AI_FORMATIONS_AAI_INFO = 1534; //Notice: Advanced AI use its own formation parameters and would ignore these settings
 TX_MAPED_AI_MAX_SOLDIERS_ENABLE_HINT = 454; //Set a limit on how many soldiers the AI can have
 TX_MAPED_AI_MAX_SOLDIERS_HINT = 455; //How many soldiers AI can have at once
 TX_MAPED_AI_MAX_SOLDIERS = 456; //Set max. soldiers
@@ -1498,6 +1499,8 @@ TX_MAPED_RMG_SETTINGS_CLOSE_RMG_HINT = 1355; //Close Random Map Generator
 TX_MAPED_RMG_SETTINGS_HEIGHT_STEP_HINT = 1366; //Step of the height algorithm (1 = small, 10 = big)
 TX_MAPED_RMG_SETTINGS_HEIGHT_SLOPE_HINT = 1367; //Slope of the height evaluation (0 = plateau, 15 = peak)
 TX_MAPED_RMG_SETTINGS_HEIGHT_HEIGHTS_HINT = 1368; //Maximum height of walkable tiles
+TX_MAPED_RMG_SETTINGS_HEIGHT_SMOOTH_PEAKS = 1529; //Smooth peaks
+TX_MAPED_RMG_SETTINGS_HEIGHT_SMOOTH_PEAKS_HINT = 1530; //Make mountains peaks smoother
 TX_MAPED_RMG_SETTINGS_INITIAL_RESOURCES = 1371; //Initial resources
 TX_MAPED_RMG_SETTINGS_INITIAL_RESOURCES_HINT = 1372; //Amount of initial resources in the storehouse
 TX_MAPED_RMG_SETTINGS_LOW = 1373; //Low
@@ -1583,3 +1586,7 @@ TX_GOAL_CONDITION_COND_DESC_BUILDINGS = 1524; //main buildings ( %s )
 TX_MENU_OPTIONS_LERP_ANIMS = 1526; //HD animations
 TX_GAME_SETTINGS_LERP_ANIMS = 1527; //HD animations
 TX_SETTINGS_LERP_ANIMS_HINT = 1528; //Increase number of frames used in animations
+
+TX_MENU_SETTINGS_GAME = 1531; //Game settings
+TX_MENU_SETTINGS_REPLAY = 1532; //Replay settings
+TX_MENU_SETTINGS_MAPED = 1533; //MapEd settings

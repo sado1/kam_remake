@@ -104,6 +104,8 @@ var
   cpName: string;
   nRoot, nSection: TKMXmlNode;
 begin
+  if Self = nil then Exit;
+
   gLog.AddTime('Loading dev settings from file ''' + fSettingsPath + '''');
 
   // Apply default settings
@@ -194,6 +196,8 @@ var
   cpSurface: TCategoryPanelSurface;
   nRoot, nSection: TKMXmlNode;
 begin
+  if Self = nil then Exit;
+
   gLog.AddTime('Saving dev settings to file ''' + fSettingsPath + '''');
 
   //Save dev data to XML
@@ -224,6 +228,8 @@ end;
 // Load dev settings from kmr_dev.xml
 procedure TKMDevSettings.Load;
 begin
+  if Self = nil then Exit;
+
   {$IFDEF DEBUG}
   // allow crash while debugging
   DoLoad;
@@ -244,6 +250,8 @@ end;
 // Save dev settings to kmr_dev.xml
 procedure TKMDevSettings.Save;
 begin
+  if Self = nil then Exit;
+
   {$IFDEF DEBUG}
   // allow crash while debugging
   DoSave;

@@ -56,7 +56,8 @@ uses
   KM_Houses, KM_HouseBarracks,
   KM_ResHouses, KM_CommonUtils, KM_DevPerfLog, KM_DevPerfLogTypes,
   KM_UnitGroupTypes,
-  KM_ResTypes;
+  KM_ResTypes,
+  KM_AITypes;
 
 
 const
@@ -244,7 +245,7 @@ begin
     //Chose a random group type that we are going to attempt to train (so we don't always train certain group types first)
     K := 0;
     repeat
-      GT := TKMGroupType(KaMRandom(4, 'TKMGeneral.CheckArmyCount')); //Pick random from overall count
+      GT := TKMGroupType(GROUP_TYPE_MIN_OFF + KaMRandom(4, 'TKMGeneral.CheckArmyCount')); //Pick random from overall count
       Inc(K);
     until (GroupReq[GT] > 0) or (K > 9); //Limit number of attempts to guarantee it doesn't loop forever
 
@@ -289,9 +290,9 @@ var
   I: Integer;
   GroupType: TKMGroupType;
   Group: TKMUnitGroup;
-  NeedsLinkingTo: array [TKMGroupType] of TKMUnitGroup;
+  NeedsLinkingTo: array [GROUP_TYPE_MIN..GROUP_TYPE_MAX] of TKMUnitGroup;
 begin
-  for GroupType := Low(TKMGroupType) to High(TKMGroupType) do
+  for GroupType := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
     NeedsLinkingTo[GroupType] := nil;
 
   //Check: Hunger, (feed) formation, (units per row) position (from defence positions)
@@ -348,10 +349,11 @@ var
   MenAvailable: TKMGroupTypeArray; //Total number of warriors available to attack the enemy
   GroupsAvailable: TKMGroupTypeArray;
   MaxGroupsAvailable: Integer;
-  AttackGroups: array [TKMGroupType] of array of TKMUnitGroup;
+  AttackGroups: array [GROUP_TYPE_MIN..GROUP_TYPE_MAX] of array of TKMUnitGroup;
 
   procedure AddAvailable(aGroup: TKMUnitGroup);
-  var GT: TKMGroupType;
+  var
+    GT: TKMGroupType;
   begin
     GT := UNIT_TO_GROUP_TYPE[aGroup.UnitType];
     if Length(AttackGroups[GT]) <= GroupsAvailable[GT] then
@@ -378,7 +380,7 @@ begin
   repeat
     AttackLaunched := False;
     MaxGroupsAvailable := 0;
-    for G := Low(TKMGroupType) to High(TKMGroupType) do
+    for G := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
     begin
       GroupsAvailable[G] := 0;
       MenAvailable[G] := 0;
@@ -416,7 +418,7 @@ begin
       begin
         //Repeatedly send one of each group type until we have sent the required amount (mixed army)
         for K := 0 to MaxGroupsAvailable - 1 do
-          for G := Low(TKMGroupType) to High(TKMGroupType) do
+          for G := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
             if (UnitsSent < Attacks[I].TotalMen) and (K < GroupsAvailable[G]) then
             begin
               OrderAttack(AttackGroups[G, K], Attacks[I].Target, Attacks[I].CustomPosition);
@@ -426,7 +428,7 @@ begin
       else
       begin
         //First send the number of each group as requested by the attack
-        for G := Low(TKMGroupType) to High(TKMGroupType) do
+        for G := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
           for K := 0 to Attacks[I].GroupAmounts[G] - 1 do
           begin
             OrderAttack(AttackGroups[G, K], Attacks[I].Target, Attacks[I].CustomPosition);
@@ -436,7 +438,7 @@ begin
         //If we still haven't sent enough men, send more groups out of the types allowed until we have
         if UnitsSent < Attacks[I].TotalMen then
           for K := 0 to MaxGroupsAvailable - 1 do
-            for G := Low(TKMGroupType) to High(TKMGroupType) do
+            for G := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
             begin
               //Start index after the ones we've already sent above (ones required by attack)
               J := K + Attacks[I].GroupAmounts[G];
@@ -529,7 +531,7 @@ var
   BestOwner: TKMHandID;
   Loc: TKMPoint;
   GT: TKMGroupType;
-  DPT: TAIDefencePosType;
+  DPT: TKMAIDefencePosType;
   //Outline1, Outline2: TKMWeightSegments;
   //Locs: TKMPointDirTagList;
   //LocI: TKMPoint;
@@ -660,7 +662,7 @@ end;
 //See if we can attack our enemies
 procedure TKMGeneral.OrderAttack(aGroup: TKMUnitGroup; aTarget: TKMAIAttackTarget; const aCustomPos: TKMPoint);
 const
-  TARGET_HOUSES: THouseTypeSet = [HOUSE_MIN..HOUSE_MAX];
+  TARGET_HOUSES: TKMHouseTypeSet = HOUSES_VALID;
 var
   TargetHouse: TKMHouse;
   TargetUnit: TKMUnit;

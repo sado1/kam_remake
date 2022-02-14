@@ -654,14 +654,22 @@ type
 
 //Used for AI defence and linking troops
 type
-  TKMGroupType = (gtMelee, gtAntiHorse, gtRanged, gtMounted);
-  TKMGroupTypeArray = array [TKMGroupType] of Word;
+  TKMGroupType = (gtNone, gtAny, gtMelee, gtAntiHorse, gtRanged, gtMounted);
   TKMGroupTypeSet = set of TKMGroupType;
 
-  TKMArmyType = (atIronThenLeather = 0, atLeather = 1, atIron = 2, atIronAndLeather = 3);
+const
+  GROUP_TYPE_MIN = gtMelee;
+  GROUP_TYPE_MAX = gtMounted;
+  GROUP_TYPE_MIN_OFF = Ord(GROUP_TYPE_MIN);
+  GROUP_TYPES: array [GROUP_TYPE_MIN..GROUP_TYPE_MAX] of Byte = (0, 1, 2, 3);
+  GROUP_TYPES_VALID = [GROUP_TYPE_MIN..GROUP_TYPE_MAX];
+  GROUP_TYPES_CNT = Integer(GROUP_TYPE_MAX) - Integer(GROUP_TYPE_MIN) + 1;
+
+type
+  TKMGroupTypeArray = array [GROUP_TYPE_MIN..GROUP_TYPE_MAX] of Word;
+  TKMArmyType = (atIronThenLeather, atLeather, atIron, atIronAndLeather);
 
 const
-  GROUP_TYPES: array [TKMGroupType] of Byte = (0, 1, 2, 3);
 
   UNIT_TO_GROUP_TYPE: array [WARRIOR_MIN..WARRIOR_MAX] of TKMGroupType = (
     gtMelee,gtMelee,gtMelee, //utMilitia, utAxeFighter, utSwordsman
@@ -678,7 +686,7 @@ const
     );
 
   //AI's prefences for training troops
-  AI_TROOP_TRAIN_ORDER: array [TKMGroupType, 1..3] of TKMUnitType = (
+  AI_TROOP_TRAIN_ORDER: array [GROUP_TYPE_MIN..GROUP_TYPE_MAX, 1..3] of TKMUnitType = (
     (utSwordsman,    utAxeFighter, utMilitia),
     (utHallebardman, utPikeman,    utNone),
     (utArbaletman,   utBowman,     utNone),
@@ -861,28 +869,28 @@ const
   //Colors available for selection in multiplayer
   MP_COLOR_COUNT = 22;
   MP_TEAM_COLORS: array [1..MP_COLOR_COUNT] of Cardinal = (
-    $FF0000EB, // Red
-    $FF076CF8, // Orange
-    $FF00B5FF, // Gold
-    $FF07FFFF, // Lauenburg yellow
-    $FF0EC5A2, // Lime green
-    $FF07FF07, // Neon green
-    $FF00A100, // Bright green
-    $FF134B00, // Dark green
-    $FF7A9E00, // Teal
-    $FFFACE64, // Sky blue
-    $FF973400, // Blue
-    $FFCB3972, // Violet (Amethyst)
-    $FF720468, // Purple
-    $FFDE8FFB, // Pink
-    $FFFF07FF, // Magenta
-    $FF4A00A8, // Dark pink
-    $FF00005E, // Maroon
-    $FF103C52, // Brown
-    $FF519EC9, // Tan
-    $FFFFFFFF, // White
-    $FF838383, // Grey
-    $FF1B1B1B  // Black
+    $FF0000EB, // 1 Red
+    $FF076CF8, // 2 Orange
+    $FF00B5FF, // 3 Gold
+    $FF07FFFF, // 4 Lauenburg yellow
+    $FF0EC5A2, // 5 Lime green
+    $FF07FF07, // 6 Neon green
+    $FF00A100, // 7 Bright green
+    $FF134B00, // 8 Dark green
+    $FF7A9E00, // 9 Teal
+    $FFFACE64, // 10 Sky blue
+    $FF973400, // 11 Blue
+    $FFCB3972, // 12 Violet (Amethyst)
+    $FF720468, // 13 Purple
+    $FFDE8FFB, // 14 Pink
+    $FFFF07FF, // 15 Magenta
+    $FF4A00A8, // 16 Dark pink
+    $FF00005E, // 17 Maroon
+    $FF103C52, // 18 Brown
+    $FF519EC9, // 19 Tan
+    $FFFFFFFF, // 20 White
+    $FF838383, // 21 Grey
+    $FF1B1B1B  // 22 Black
   );
 
   //Players colors, as they appear in KaM when the color is not specified in the script, copied from palette values.
@@ -897,7 +905,7 @@ const
   3,   //Black
   3,   //Black
   255  //White}
-  DefaultTeamColors: array [0..MAX_HANDS-1] of Cardinal = (
+  DEFAULT_TEAM_COLORS: array [0..MAX_HANDS-1] of Cardinal = (
     $FF0707FF, //Red
     $FFE3BB5B, //Cyan
     $FF27A700, //Green
@@ -1051,11 +1059,11 @@ const
 //  clGameAlly = icYellow;
 //  clGameEnemy = icCyan;
 
-  GROUP_IMG: array [TKMGroupType] of Word = (
+  GROUP_IMG: array [GROUP_TYPE_MIN..GROUP_TYPE_MAX] of Word = (
     371, 374,
     376, 377);
 
-  GROUP_TXT_COLOR: array [TKMGroupType] of Cardinal = (
+  GROUP_TXT_COLOR: array [GROUP_TYPE_MIN..GROUP_TYPE_MAX] of Cardinal = (
     icWhite,
     icGreen,
     icPink,

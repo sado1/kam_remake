@@ -48,14 +48,15 @@ uses
   KM_Hand, KM_Game, KM_GameParams, KM_GameTypes, KM_HandsCollection,
   KM_UnitsCollection, KM_UnitWarrior,
   KM_HouseCollection, KM_HouseBarracks, KM_HouseStore,
-  KM_AI, KM_AIDefensePos,
+  KM_AI,
   KM_Resource, KM_ResHouses, KM_ResUnits, KM_ResWares, KM_ResPalettes,
   KM_CommonClasses, KM_CommonTypes, KM_Terrain,
   KM_HandTypes,
   KM_CommonExceptions,
   KM_ResTypes,
   KM_TerrainTypes,
-  KM_MapTypes;
+  KM_MapTypes,
+  KM_AITypes;
 
 
 type
@@ -659,8 +660,8 @@ begin
                           if TextParam = PARAMVALUES[cptAttackFactor]     then iPlayerAI.Setup.Aggressiveness   := P[1];
                           if TextParam = PARAMVALUES[cptTroopParam]   then
                           begin
-                            iPlayerAI.General.DefencePositions.TroopFormations[TKMGroupType(P[1])].NumUnits := P[2];
-                            iPlayerAI.General.DefencePositions.TroopFormations[TKMGroupType(P[1])].UnitsPerRow  := P[3];
+                            iPlayerAI.General.DefencePositions.TroopFormations[TKMGroupType(GROUP_TYPE_MIN_OFF + P[1])].NumUnits := P[2];
+                            iPlayerAI.General.DefencePositions.TroopFormations[TKMGroupType(GROUP_TYPE_MIN_OFF + P[1])].UnitsPerRow  := P[3];
                           end;
                         end;
 
@@ -749,8 +750,8 @@ begin
                         end;
 
     ctAIDefence:        if (fLastHand <> HAND_NONE) and PointInMap(P[0]+1, P[1]+1) then
-                          if InRange(P[3], Integer(Low(TKMGroupType)), Integer(High(TKMGroupType))) then //TPR 3 tries to set TKMGroupType 240 due to a missing space
-                            gHands[fLastHand].AI.General.DefencePositions.Add(KMPointDir(P[0]+1, P[1]+1, TKMDirection(P[2]+1)),TKMGroupType(P[3]),P[4],TAIDefencePosType(P[5]));
+                          if InRange(P[3], Integer(GROUP_TYPE_MIN) - GROUP_TYPE_MIN_OFF, Integer(GROUP_TYPE_MAX) - GROUP_TYPE_MIN_OFF) then //TPR 3 tries to set TKMGroupType 240 due to a missing space
+                            gHands[fLastHand].AI.General.DefencePositions.Add(KMPointDir(P[0]+1, P[1]+1, TKMDirection(P[2]+1)),TKMGroupType(GROUP_TYPE_MIN_OFF + P[3]),P[4],TKMAIDefencePosType(P[5]));
 
     ctSetMapColor:      if fLastHand <> HAND_NONE then
                           //For now simply use the minimap color for all color, it is too hard to load all 8 shades from ctSetNewRemap
@@ -774,7 +775,7 @@ begin
                           if TextParam = AI_ATTACK_PARAMS[cptRange] then
                             fAIAttack.Range := P[1];
                           if TextParam = AI_ATTACK_PARAMS[cptTroopAmount] then
-                            fAIAttack.GroupAmounts[TKMGroupType(P[1])] := P[2];
+                            fAIAttack.GroupAmounts[TKMGroupType(GROUP_TYPE_MIN_OFF + P[1])] := P[2];
                           if TextParam = AI_ATTACK_PARAMS[cptTarget] then
                             fAIAttack.Target := TKMAIAttackTarget(P[1]);
                           if TextParam = AI_ATTACK_PARAMS[cptPosition] then
@@ -992,11 +993,13 @@ begin
     AddCommand(ctAICharacter,cptEquipRateIron,    [gHands[I].AI.Setup.EquipRateIron]);
     AddCommand(ctAICharacter,cptAttackFactor, [gHands[I].AI.Setup.Aggressiveness]);
     AddCommand(ctAICharacter,cptRecruitCount, [gHands[I].AI.Setup.RecruitDelay]);
-    for G:=Low(TKMGroupType) to High(TKMGroupType) do
+    for G := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
       if gHands[I].AI.General.DefencePositions.TroopFormations[G].NumUnits <> 0 then //Must be valid and used
-        AddCommand(ctAICharacter, cptTroopParam, [GROUP_TYPES[G], gHands[I].AI.General.DefencePositions.TroopFormations[G].NumUnits, gHands[I].AI.General.DefencePositions.TroopFormations[G].UnitsPerRow]);
+        AddCommand(ctAICharacter, cptTroopParam, [GROUP_TYPES[G],
+                                                  gHands[I].AI.General.DefencePositions.TroopFormations[G].NumUnits,
+                                                  gHands[I].AI.General.DefencePositions.TroopFormations[G].UnitsPerRow]);
     AddData(''); //NL
-    for K:=0 to gHands[I].AI.General.DefencePositions.Count - 1 do
+    for K := 0 to gHands[I].AI.General.DefencePositions.Count - 1 do
       with gHands[I].AI.General.DefencePositions[K] do
         AddCommand(ctAIDefence, [Position.Loc.X - 1 + aLeftInset,
                                   Position.Loc.Y - 1 + aTopInset,
@@ -1014,7 +1017,7 @@ begin
         if TakeAll then
           AddCommand(ctAIAttack, cptTakeAll, [])
         else
-          for G:=Low(TKMGroupType) to High(TKMGroupType) do
+          for G := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
             AddCommand(ctAIAttack, cptTroopAmount, [GROUP_TYPES[G], GroupAmounts[G]]);
 
         if (Delay > 0) or (AttackType = aatOnce) then //Type once must always have counter because it uses the delay

@@ -331,7 +331,7 @@ end;
 
 function TArmyForwardFF.GetInitPolygonsHouses(aAllianceType: TKMAllianceType; var aAlliance: TKMAllianceInfo): Boolean;
 const
-  SCAN_HOUSES: THouseTypeSet = [htBarracks, htStore, htSchool, htTownhall]; // htWatchTower
+  SCAN_HOUSES: TKMHouseTypeSet = [htBarracks, htStore, htSchool, htTownhall]; // htWatchTower
 var
   PL: TKMHandID;
   K: Integer;
@@ -545,7 +545,7 @@ var
   GroupPoint, LinePoint: TKMPoint;
   G: TKMUnitGroup;
   PositionAssigned: TBooleanArray;
-  LineEval: array of array[TKMGroupType] of Word;
+  LineEval: array of array[GROUP_TYPE_MIN..GROUP_TYPE_MAX] of Word;
   PosReq: array of Word;
   Positions: TKMPointDirArray;
 begin

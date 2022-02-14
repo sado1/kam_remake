@@ -5,12 +5,20 @@ uses
   Classes, Math, SysUtils, StrUtils,
   KM_CommonTypes, KM_Defaults, KM_Points, KM_HandsCollection, KM_Houses, KM_ScriptingIdCache, KM_Units, KM_MapTypes,
   KM_UnitGroup, KM_ResHouses, KM_HouseCollection, KM_ResWares, KM_ScriptingEvents, KM_TerrainTypes, KM_ResTilesetTypes,
-  KM_UnitGroupTypes,
+  KM_UnitGroupTypes, KM_ScriptingTypes,
   KM_ResTypes;
 
 
 type
   TKMScriptStates = class(TKMScriptEntity)
+  private
+    procedure _AIGroupsFormationGet(aPlayer: Integer; aGroupType: TKMGroupType; out aCount, aColumns: Integer; aMethodName: string);
+    function _ClosestGroup(aPlayer, X, Y: Integer; aGroupType: TKMGroupType; aMethodName: String): Integer;
+    function _ClosestGroupMultipleTypes(aPlayer, X, Y: Integer; aGroupTypes: TKMGroupTypeSet; aMethodName: string): Integer;
+    function _ClosestHouse(aPlayer, X, Y: Integer; aHouseType: TKMHouseType; aMethodName: string): Integer;
+    function _ClosestHouseMultipleTypes(aPlayer, X, Y: Integer; aHouseTypes: TKMHouseTypeSet; aMethodName: string): Integer;
+    function _ClosestUnit(aPlayer, X, Y: Integer; aUnitType: TKMUnitType; aMethodName: string): Integer;
+    function _ClosestUnitMultipleTypes(aPlayer, X, Y: Integer; aUnitTypes: TKMUnitTypeSet; aMethodName: string): Integer;
   public
     function AIArmyType(aPlayer: Byte): TKMArmyType;
     function AIAutoAttack(aPlayer: Byte): Boolean;
@@ -20,8 +28,10 @@ type
     function AIAutoRepair(aPlayer: Byte): Boolean;
     function AIDefendAllies(aPlayer: Byte): Boolean;
     procedure AIDefencePositionGet(aPlayer, aID: Byte; out aX, aY: Integer; out aGroupType: Byte; out aRadius: Word; out aDefType: Byte);
+    procedure AIDefencePositionGetEx(aPlayer, aID: Integer; out aDefencePosition: TKMDefencePositionInfo);
     function AIEquipRate(aPlayer: Byte; aType: Byte): Integer;
     procedure AIGroupsFormationGet(aPlayer, aType: Byte; out aCount, aColumns: Integer);
+    procedure AIGroupsFormationGetEx(aPlayer: Integer; aGroupType: TKMGroupType; out aCount, aColumns: Integer);
     function AIRecruitDelay(aPlayer: Byte): Integer;
     function AIRecruitLimit(aPlayer: Byte): Integer;
     function AISerfsPerHouse(aPlayer: Byte): Single;
@@ -31,14 +41,19 @@ type
 
     function CampaignMissionID: Integer;
     function CampaignMissionsCount: Integer;
-    function CampaignUnlockedMissionID: Integer;
 
     function ClosestGroup(aPlayer, X, Y, aGroupType: Integer): Integer;
+    function ClosestGroupEx(aPlayer, X, Y: Integer; aGroupType: TKMGroupType): Integer;
     function ClosestGroupMultipleTypes(aPlayer, X, Y: Integer; aGroupTypes: TByteSet): Integer;
+    function ClosestGroupMultipleTypesEx(aPlayer, X, Y: Integer; aGroupTypes: TKMGroupTypeSet): Integer;
     function ClosestHouse(aPlayer, X, Y, aHouseType: Integer): Integer;
+    function ClosestHouseEx(aPlayer, X, Y: Integer; aHouseType: TKMHouseType): Integer;
     function ClosestHouseMultipleTypes(aPlayer, X, Y: Integer; aHouseTypes: TByteSet): Integer;
+    function ClosestHouseMultipleTypesEx(aPlayer, X, Y: Integer; aHouseTypes: TKMHouseTypeSet): Integer;
     function ClosestUnit(aPlayer, X, Y, aUnitType: Integer): Integer;
+    function ClosestUnitEx(aPlayer, X, Y: Integer; aUnitType: TKMUnitType): Integer;
     function ClosestUnitMultipleTypes(aPlayer, X, Y: Integer; aUnitTypes: TByteSet): Integer;
+    function ClosestUnitMultipleTypesEx(aPlayer, X, Y: Integer; aUnitTypes: TKMUnitTypeSet): Integer;
 
     function ConnectedByRoad(X1, Y1, X2, Y2: Integer): Boolean;
     function ConnectedByWalking(X1, Y1, X2, Y2: Integer): Boolean;
@@ -62,6 +77,7 @@ type
     function GroupOrder(aGroupID: Integer): TKMGroupOrder;
     function GroupOwner(aGroupID: Integer): Integer;
     function GroupType(aGroupID: Integer): Integer;
+    function GroupTypeEx(aGroupID: Integer): TKMGroupType;
 
     function HouseAllowAllyToSelect(aHouseID: Integer): Boolean;
     function HouseAt(aX, aY: Word): Integer;
@@ -72,7 +88,7 @@ type
     function HouseCanReachResources(aHouseID: Integer): Boolean;
     function HouseDamage(aHouseID: Integer): Integer;
     function HouseDeliveryBlocked(aHouseID: Integer): Boolean;
-    function HouseDeliveryMode(aHouseID: Integer): Integer;
+    function HouseDeliveryMode(aHouseID: Integer): TKMDeliveryMode;
     function HouseDestroyed(aHouseID: Integer): Boolean;
     function HouseFlagPoint(aHouseID: Integer): TKMPoint;
     function HouseGetAllUnitsIn(aHouseID: Integer): TIntegerArray;
@@ -89,10 +105,13 @@ type
     function HouseSiteIsDigged(aHouseID: Integer): Boolean;
     function HouseTownHallMaxGold(aHouseID: Integer): Integer;
     function HouseType(aHouseID: Integer): Integer;
+    function HouseTypeEx(aHouseID: Integer): TKMHouseType;
     function HouseTypeMaxHealth(aHouseType: Integer): Word;
+    function HouseTypeMaxHealthEx(aHouseType: TKMHouseType): Integer;
     function HouseTypeName(aHouseType: Byte): AnsiString;
+    function HouseTypeNameEx(aHouseType: TKMHouseType): AnsiString;
     function HouseTypeToOccupantType(aHouseType: Integer): Integer;
-    function HouseTypeToWorkerType(aHouseType: Integer): Integer;
+    function HouseTypeToWorkerType(aHouseType: TKMHouseType): TKMUnitType;
     function HouseUnlocked(aPlayer, aHouseType: Word): Boolean;
     function HouseWareBlocked(aHouseID, aWareType: Integer): Boolean;
     function HouseWareBlockedTakeOut(aHouseID, aWareType: Integer): Boolean;
@@ -394,13 +413,44 @@ begin
       begin
         aX := DP.Position.Loc.X;
         aY := DP.Position.Loc.Y;
-        aGroupType := Byte(DP.GroupType);
+        aGroupType := Ord(DP.GroupType) - GROUP_TYPE_MIN_OFF;
         aRadius := DP.Radius;
-        aDefType := Byte(DP.DefenceType);
+        aDefType := Ord(DP.DefenceType);
       end;
     end
     else
       LogParamWarning('States.AIDefencePositionGet', [aPlayer, aID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13800
+//* Gets the parameters of AI defence position
+//* Parameters are returned in aDefencePosition record
+procedure TKMScriptStates.AIDefencePositionGetEx(aPlayer, aID: Integer; out aDefencePosition: TKMDefencePositionInfo);
+var
+  DP: TAIDefencePosition;
+begin
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    and InRange(aID, 0, gHands[aPlayer].AI.General.DefencePositions.Count - 1) then
+    begin
+      DP := gHands[aPlayer].AI.General.DefencePositions.Positions[aID];
+      if DP <> nil then
+      begin
+        aDefencePosition.X := DP.Position.Loc.X;
+        aDefencePosition.Y := DP.Position.Loc.Y;
+        aDefencePosition.Dir := DP.Position.Dir;
+        aDefencePosition.Radius := DP.Radius;
+        aDefencePosition.GroupType := DP.GroupType;
+        aDefencePosition.PositionType := DP.DefenceType;
+      end;
+    end
+    else
+      LogParamWarning('States.AIDefencePositionGetEx', [aPlayer, aID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -432,6 +482,32 @@ begin
 end;
 
 
+procedure TKMScriptStates._AIGroupsFormationGet(aPlayer: Integer; aGroupType: TKMGroupType; out aCount, aColumns: Integer; aMethodName: string);
+begin
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+      and (aGroupType in GROUP_TYPES_VALID) then
+    begin
+      if gHands[aPlayer].AI.Setup.NewAI then
+      begin
+        aCount := gHands[aPlayer].AI.ArmyManagement.Defence.TroopFormations[aGroupType].NumUnits;
+        aColumns := gHands[aPlayer].AI.ArmyManagement.Defence.TroopFormations[aGroupType].UnitsPerRow;
+      end
+      else
+      begin
+        aCount := gHands[aPlayer].AI.General.DefencePositions.TroopFormations[aGroupType].NumUnits;
+        aColumns := gHands[aPlayer].AI.General.DefencePositions.TroopFormations[aGroupType].UnitsPerRow;
+      end
+    end
+    else
+      LogParamWarning(aMethodName, [aPlayer, Ord(aGroupType)]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
 //* Version: 7000+
 //* Gets the formation the AI uses for defence positions for specified player and group type
 //* GroupType: 0 = Melee, 1 = AntiHorse, 2 = Ranged, 3 = Mounted
@@ -440,28 +516,21 @@ procedure TKMScriptStates.AIGroupsFormationGet(aPlayer, aType: Byte; out aCount,
 var
   gt: TKMGroupType;
 begin
-  try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-      and InRange(aType, 0, 3) then
-    begin
-      gt := TKMGroupType(aType);
-      if gHands[aPlayer].AI.Setup.NewAI then
-      begin
-        aCount := gHands[aPlayer].AI.ArmyManagement.Defence.TroopFormations[gt].NumUnits;
-        aColumns := gHands[aPlayer].AI.ArmyManagement.Defence.TroopFormations[gt].UnitsPerRow;
-      end
-      else
-      begin
-        aCount := gHands[aPlayer].AI.General.DefencePositions.TroopFormations[gt].NumUnits;
-        aColumns := gHands[aPlayer].AI.General.DefencePositions.TroopFormations[gt].UnitsPerRow;
-      end
-    end
-    else
-      LogParamWarning('Actions.AIGroupsFormationGet', [aPlayer, aType]);
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
+  gt := gtNone;
+
+  if InRange(aType, 0, 3) then
+    gt := TKMGroupType(aType + GROUP_TYPE_MIN_OFF);
+
+  _AIGroupsFormationGet(aPlayer, gt, aCount, aColumns, 'States.AIGroupsFormationGet');
+end;
+
+
+//* Version: 13800
+//* Gets the formation the AI uses for defence positions for specified player and group type
+//* group count and columns are returned in aCount and aColumns variables
+procedure TKMScriptStates.AIGroupsFormationGetEx(aPlayer: Integer; aGroupType: TKMGroupType; out aCount, aColumns: Integer);
+begin
+  _AIGroupsFormationGet(aPlayer, aGroupType, aCount, aColumns, 'Actions.AIGroupsFormationGetEx');
 end;
 
 
@@ -615,20 +684,31 @@ begin
 end;
 
 
-//* Version: 12600
-//* Returns current campaign unlocked mission number or -1 if this is not a campaign mission
-//* Mission numbers starts from 1
-function TKMScriptStates.CampaignUnlockedMissionID: Integer;
+function TKMScriptStates._ClosestGroup(aPlayer, X, Y: Integer; aGroupType: TKMGroupType; aMethodName: String): Integer;
+var
+  GTS: TKMGroupTypeSet;
+  G: TKMUnitGroup;
 begin
   try
     Result := -1;
-    if not gGame.Params.IsCampaign or (gGameApp.Campaigns.ActiveCampaign = nil) then
+    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+      and gTerrain.TileInMapCoords(X, Y)
+      and ((aGroupType = gtAny) or (aGroupType in GROUP_TYPES_VALID)) then
     begin
-      LogWarning('States.CampaignUnlockedMissionID', 'Current mission is not part of a campaign');
-      Exit;
-    end;
+      if aGroupType = gtAny then
+        GTS := GROUP_TYPES_VALID
+      else
+        GTS := [aGroupType];
 
-    Result := gGameApp.Campaigns.ActiveCampaign.UnlockedMap + 1; // UnlockedMap starts from 0
+      G := gHands[aPlayer].UnitGroups.GetClosestGroup(KMPoint(X,Y), GTS);
+      if (G <> nil) and not G.IsDead then
+      begin
+        Result := G.UID;
+        fIDCache.CacheGroup(G, G.UID);
+      end;
+    end
+    else
+      LogParamWarning(aMethodName, [aPlayer, X, Y, Ord(aGroupType)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -643,29 +723,50 @@ end;
 //* Result: Group ID
 function TKMScriptStates.ClosestGroup(aPlayer, X, Y, aGroupType: Integer): Integer;
 var
-  GTS: TKMGroupTypeSet;
+  gt: TKMGroupType;
+begin
+  gt := gtNone;
+
+  if aGroupType = -1 then
+    gt := gtAny
+  else
+  if InRange(aGroupType, 0, 3) then
+    gt := TKMGroupType(aGroupType + GROUP_TYPE_MIN_OFF);
+
+  Result := _ClosestGroup(aPlayer, X, Y, gt, 'States.ClosestGroup');
+end;
+
+
+//* Version: 13800
+//* Returns the group of the specified player and group type that is closest to the specified coordinates,
+//* or -1 if no such group was found.
+//* Result: Group ID
+function TKMScriptStates.ClosestGroupEx(aPlayer, X, Y: Integer; aGroupType: TKMGroupType): Integer;
+begin
+  Result := _ClosestGroup(aPlayer, X, Y, aGroupType, 'States.ClosestGroupEx');
+end;
+
+
+function TKMScriptStates._ClosestGroupMultipleTypes(aPlayer, X, Y: Integer; aGroupTypes: TKMGroupTypeSet; aMethodName: string): Integer;
+var
   G: TKMUnitGroup;
 begin
+  Result := -1;
   try
-    Result := -1;
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-    and gTerrain.TileInMapCoords(X, Y)
-    and ((aGroupType = -1) or (aGroupType in [Byte(Low(TKMGroupType))..Byte(High(TKMGroupType))])) then
+      and gTerrain.TileInMapCoords(X, Y) then
     begin
-      if aGroupType = -1 then
-        GTS := [Low(TKMGroupType)..High(TKMGroupType)]
-      else
-        GTS := [TKMGroupType(aGroupType)];
+      aGroupTypes := aGroupTypes * GROUP_TYPES_VALID;
 
-      G := gHands[aPlayer].UnitGroups.GetClosestGroup(KMPoint(X,Y), GTS);
-      if (G <> nil) and not G.IsDead then
+      G := gHands[aPlayer].UnitGroups.GetClosestGroup(KMPoint(X,Y), aGroupTypes);
+      if G <> nil then
       begin
         Result := G.UID;
         fIDCache.CacheGroup(G, G.UID);
       end;
     end
     else
-      LogParamWarning('States.ClosestGroup', [aPlayer, X, Y, aGroupType]);
+      LogParamWarning(aMethodName, [aPlayer, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -683,27 +784,53 @@ function TKMScriptStates.ClosestGroupMultipleTypes(aPlayer, X, Y: Integer; aGrou
 var
   B: Byte;
   GTS: TKMGroupTypeSet;
-  G: TKMUnitGroup;
+begin
+  GTS := [];
+  for B in [Byte(GROUP_TYPE_MIN)..Byte(GROUP_TYPE_MAX)] do
+    if B - GROUP_TYPE_MIN_OFF in aGroupTypes then
+      GTS := GTS + [TKMGroupType(B)];
+
+  Result := _ClosestGroupMultipleTypes(aPlayer, X, Y, GTS, 'States.ClosestGroupMultipleTypes');
+end;
+
+
+//* Version: 13800
+//* Returns the group of the specified player and group types that is closest to the specified coordinates,
+//* or -1 if no such group was found.
+//* The group types is a "set of Byte", for example [1,3]
+//* aGroupTypes: Set of group types
+//* Result: Group ID
+function TKMScriptStates.ClosestGroupMultipleTypesEx(aPlayer, X, Y: Integer; aGroupTypes: TKMGroupTypeSet): Integer;
+begin
+  Result := _ClosestGroupMultipleTypes(aPlayer, X, Y, aGroupTypes, 'States.ClosestGroupMultipleTypesEx');
+end;
+
+
+function TKMScriptStates._ClosestHouse(aPlayer, X, Y: Integer; aHouseType: TKMHouseType; aMethodName: string): Integer;
+var
+  HTS: TKMHouseTypeSet;
+  H: TKMHouse;
 begin
   try
     Result := -1;
-    GTS := [];
-    for B in [Byte(Low(TKMGroupType))..Byte(High(TKMGroupType))] do
-      if B in aGroupTypes then
-        GTS := GTS + [TKMGroupType(B)];
-
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-    and gTerrain.TileInMapCoords(X, Y) then
+    and gTerrain.TileInMapCoords(X, Y)
+    and (aHouseType <> htNone) then
     begin
-      G := gHands[aPlayer].UnitGroups.GetClosestGroup(KMPoint(X,Y), GTS);
-      if G <> nil then
+      if aHouseType = htAny then
+        HTS := HOUSES_VALID
+      else
+        HTS := [aHouseType];
+
+      H := gHands[aPlayer].Houses.FindHouse(HTS, X, Y);
+      if H <> nil then
       begin
-        Result := G.UID;
-        fIDCache.CacheGroup(G, G.UID);
+        Result := H.UID;
+        fIDCache.CacheHouse(H, H.UID);
       end;
     end
     else
-      LogParamWarning('States.ClosestGroupMultipleTypes', [aPlayer, X, Y]);
+      LogParamWarning(aMethodName, [aPlayer, X, Y, Ord(aHouseType)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -718,21 +845,42 @@ end;
 //* Result: House ID
 function TKMScriptStates.ClosestHouse(aPlayer, X, Y, aHouseType: Integer): Integer;
 var
-  HTS: THouseTypeSet;
+  HT: TKMHouseType;
+begin
+  HT := htNone;
+
+  if aHouseType = -1 then
+    HT := htAny
+  else
+  if HouseTypeValid(aHouseType) then
+    HT := HOUSE_ID_TO_TYPE[aHouseType];
+
+  Result := _ClosestHouse(aPlayer, X, Y, HT, 'States.ClosestHouse')
+end;
+
+
+//* Version: 13800
+//* Returns the house of the specified player and house type that is closest to the specified coordinates,
+//* or -1 if no such house was found.
+//* If the house type is htAny any house type will be accepted
+//* Result: House ID
+function TKMScriptStates.ClosestHouseEx(aPlayer, X, Y: Integer; aHouseType: TKMHouseType): Integer;
+begin
+  Result := _ClosestHouse(aPlayer, X, Y, aHouseType, 'States.ClosestHouseEx');
+end;
+
+
+function TKMScriptStates._ClosestHouseMultipleTypes(aPlayer, X, Y: Integer; aHouseTypes: TKMHouseTypeSet; aMethodName: string): Integer;
+var
   H: TKMHouse;
 begin
+  Result := -1;
   try
-    Result := -1;
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-    and gTerrain.TileInMapCoords(X, Y)
-    and ((aHouseType = -1) or HouseTypeValid(aHouseType)) then
+      and gTerrain.TileInMapCoords(X, Y) then
     begin
-      if aHouseType = -1 then
-        HTS := [Low(TKMHouseType)..High(TKMHouseType)]
-      else
-        HTS := [HOUSE_ID_TO_TYPE[aHouseType]];
-
-      H := gHands[aPlayer].Houses.FindHouse(HTS, X, Y);
+      aHouseTypes := aHouseTypes * HOUSES_VALID;
+      H := gHands[aPlayer].Houses.FindHouse(aHouseTypes, X, Y);
       if H <> nil then
       begin
         Result := H.UID;
@@ -740,7 +888,7 @@ begin
       end;
     end
     else
-      LogParamWarning('States.ClosestHouse', [aPlayer, X, Y, aHouseType]);
+      LogParamWarning(aMethodName, [aPlayer, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -757,28 +905,54 @@ end;
 function TKMScriptStates.ClosestHouseMultipleTypes(aPlayer, X, Y: Integer; aHouseTypes: TByteSet): Integer;
 var
   B: Byte;
-  HTS: THouseTypeSet;
-  H: TKMHouse;
+  HTS: TKMHouseTypeSet;
 begin
-  try
-    Result := -1;
-    HTS := [];
-    for B := Low(HOUSE_ID_TO_TYPE) to High(HOUSE_ID_TO_TYPE) do
-      if (B in aHouseTypes) and (HOUSE_ID_TO_TYPE[B] <> htNone) then
-        HTS := HTS + [HOUSE_ID_TO_TYPE[B]];
+  HTS := [];
+  for B := Low(HOUSE_ID_TO_TYPE) to High(HOUSE_ID_TO_TYPE) do
+    if (B in aHouseTypes) and (HOUSE_ID_TO_TYPE[B] <> htNone) then
+      HTS := HTS + [HOUSE_ID_TO_TYPE[B]];
 
+  Result := _ClosestHouseMultipleTypes(aPlayer, X, Y, HTS, 'States.ClosestHouseMultipleTypes');
+end;
+
+
+//* Version: 13800
+//* Returns the house of the specified player and house types that is closest to the specified coordinates,
+//* or -1 if no such house was found.
+//* The house types is a "set of TKMHouseType", for example [htQuarry, htSchool, htStore]
+//* aHouseTypes: Set of house types
+//* Result: House ID
+function TKMScriptStates.ClosestHouseMultipleTypesEx(aPlayer, X, Y: Integer; aHouseTypes: TKMHouseTypeSet): Integer;
+begin
+  Result := _ClosestHouseMultipleTypes(aPlayer, X, Y, aHouseTypes, 'States.ClosestHouseMultipleTypesEx');
+end;
+
+
+function TKMScriptStates._ClosestUnit(aPlayer, X, Y: Integer; aUnitType: TKMUnitType; aMethodName: string): Integer;
+var
+  UTS: TKMUnitTypeSet;
+  U: TKMUnit;
+begin
+  Result := -1;
+  try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-    and gTerrain.TileInMapCoords(X, Y) then
+      and gTerrain.TileInMapCoords(X, Y)
+      and ((aUnitType = utAny) or (aUnitType in [UNIT_MIN..UNIT_MAX]))  then
     begin
-      H := gHands[aPlayer].Houses.FindHouse(HTS, X, Y);
-      if H <> nil then
+      if aUnitType = utAny then
+        UTS := [UNIT_MIN..UNIT_MAX]
+      else
+        UTS := [aUnitType];
+
+      U := gHands[aPlayer].Units.GetClosestUnit(KMPoint(X,Y), UTS);
+      if U <> nil then
       begin
-        Result := H.UID;
-        fIDCache.CacheHouse(H, H.UID);
+        Result := U.UID;
+        fIDCache.CacheUnit(U, U.UID);
       end;
     end
     else
-      LogParamWarning('States.ClosestHouseMultipleTypes', [aPlayer, X, Y]);
+      LogParamWarning(aMethodName, [aPlayer, X, Y, Byte(aUnitType)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -793,21 +967,42 @@ end;
 //* Result: Unit ID
 function TKMScriptStates.ClosestUnit(aPlayer, X, Y, aUnitType: Integer): Integer;
 var
-  UTS: TKMUnitTypeSet;
+  UT: TKMUnitType;
+begin
+  UT := utNone;
+
+  if (aUnitType = -1) then
+    UT := utAny
+  else
+  if (aUnitType in [Low(UNIT_ID_TO_TYPE)..High(UNIT_ID_TO_TYPE)]) then
+    UT := UNIT_ID_TO_TYPE[aUnitType];
+
+  Result := _ClosestUnit(aPlayer, X, Y, UT, 'States.ClosestUnit');
+end;
+
+
+//* Version: 13800
+//* Returns the unit of the specified player and unit type that is closest to the specified coordinates,
+//* or -1 if no such unit was found.
+//* If the unit type is utAny any unit type will be accepted
+//* Result: Unit ID
+function TKMScriptStates.ClosestUnitEx(aPlayer, X, Y: Integer; aUnitType: TKMUnitType): Integer;
+begin
+  Result := _ClosestUnit(aPlayer, X, Y, aUnitType, 'States.ClosestUnitEx');
+end;
+
+
+function TKMScriptStates._ClosestUnitMultipleTypes(aPlayer, X, Y: Integer; aUnitTypes: TKMUnitTypeSet; aMethodName: string): Integer;
+var
   U: TKMUnit;
 begin
+  Result := -1;
   try
-    Result := -1;
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-    and gTerrain.TileInMapCoords(X, Y)
-    and ((aUnitType = -1) or (aUnitType in [Low(UNIT_ID_TO_TYPE)..High(UNIT_ID_TO_TYPE)]))  then
+      and gTerrain.TileInMapCoords(X, Y) then
     begin
-      if aUnitType = -1 then
-        UTS := [Low(TKMUnitType)..High(TKMUnitType)]
-      else
-        UTS := [UNIT_ID_TO_TYPE[aUnitType]];
-
-      U := gHands[aPlayer].Units.GetClosestUnit(KMPoint(X,Y), UTS);
+      aUnitTypes := aUnitTypes * [UNIT_MIN..UNIT_MAX];
+      U := gHands[aPlayer].Units.GetClosestUnit(KMPoint(X,Y), aUnitTypes);
       if U <> nil then
       begin
         Result := U.UID;
@@ -815,12 +1010,13 @@ begin
       end;
     end
     else
-      LogParamWarning('States.ClosestUnit', [aPlayer, X, Y, aUnitType]);
+      LogParamWarning(aMethodName, [aPlayer, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
   end;
 end;
+
 
 
 //* Version: 6216
@@ -833,31 +1029,25 @@ function TKMScriptStates.ClosestUnitMultipleTypes(aPlayer, X, Y: Integer; aUnitT
 var
   B: Byte;
   UTS: TKMUnitTypeSet;
-  U: TKMUnit;
 begin
-  try
-    Result := -1;
-    UTS := [];
-    for B in [Low(UNIT_ID_TO_TYPE)..High(UNIT_ID_TO_TYPE)] do
-      if B in aUnitTypes then
-        UTS := UTS + [UNIT_ID_TO_TYPE[B]];
+  UTS := [];
+  for B in [Low(UNIT_ID_TO_TYPE)..High(UNIT_ID_TO_TYPE)] do
+    if B in aUnitTypes then
+      UTS := UTS + [UNIT_ID_TO_TYPE[B]];
 
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-    and gTerrain.TileInMapCoords(X, Y) then
-    begin
-      U := gHands[aPlayer].Units.GetClosestUnit(KMPoint(X,Y), UTS);
-      if U <> nil then
-      begin
-        Result := U.UID;
-        fIDCache.CacheUnit(U, U.UID);
-      end;
-    end
-    else
-      LogParamWarning('States.ClosestUnit', [aPlayer, X, Y]);
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
+  Result := _ClosestUnitMultipleTypes(aPlayer, X, Y, UTS, 'States.ClosestUnitMultipleTypes');
+end;
+
+
+//* Version: 13800
+//* Returns the unit of the specified player and unit types that is closest to the specified coordinates,
+//* or -1 if no such unit was found.
+//* The unit types is a "set of TKMUnitType", for example [utSerf, utMilitia]
+//* aUnitTypes: Set of unit types
+//* Result: Unit ID
+function TKMScriptStates.ClosestUnitMultipleTypesEx(aPlayer, X, Y: Integer; aUnitTypes: TKMUnitTypeSet): Integer;
+begin
+  Result := _ClosestUnitMultipleTypes(aPlayer, X, Y, aUnitTypes, 'States.ClosestUnitMultipleTypesEx');
 end;
 
 
@@ -1994,24 +2184,21 @@ begin
 end;
 
 
-//* Version: 7000+
-//* Returns delivery mode ID, where
-//* ID = 0 delivery blocked
-//* ID = 1 delivery allowed
-//* ID = 2 take ware out allowed
+//* Version: 13900
+//* Returns house delivery mode,
 //* if no house was found then ID = 1 is returned
-//* Result: Blocked
-function TKMScriptStates.HouseDeliveryMode(aHouseID: Integer): Integer;
+//* Result: Delivery mode
+function TKMScriptStates.HouseDeliveryMode(aHouseID: Integer): TKMDeliveryMode;
 var
   H: TKMHouse;
 begin
   try
-    Result := Integer(dmDelivery);
+    Result := dmDelivery;
     if aHouseID > 0 then
     begin
       H := fIDCache.GetHouse(aHouseID);
       if H <> nil then
-        Result := Integer(H.DeliveryMode);
+        Result := H.DeliveryMode;
     end
     else
       LogParamWarning('States.HouseDeliveryMode', [aHouseID]);
@@ -2345,13 +2532,12 @@ end;
 //* Version: 5057
 //* Returns the type of the specified house
 //* Result: House type
-//Get the house type
 function TKMScriptStates.HouseType(aHouseID: Integer): Integer;
 var
   H: TKMHouse;
 begin
+  Result := -1;
   try
-    Result := -1;
     if aHouseID > 0 then
     begin
       H := fIDCache.GetHouse(aHouseID);
@@ -2360,6 +2546,30 @@ begin
     end
     else
       LogParamWarning('States.HouseType', [aHouseID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns the type of the specified house
+//* Result: House type
+function TKMScriptStates.HouseTypeEx(aHouseID: Integer): TKMHouseType;
+var
+  H: TKMHouse;
+begin
+  Result := htNone;
+  try
+    if aHouseID > 0 then
+    begin
+      H := fIDCache.GetHouse(aHouseID);
+      if H <> nil then
+        Result := H.HouseType;
+    end
+    else
+      LogParamWarning('States.HouseTypeEx', [aHouseID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2378,6 +2588,24 @@ begin
       Result := gResHouses[HOUSE_ID_TO_TYPE[aHouseType]].MaxHealth
     else
       LogParamWarning('States.HouseTypeMaxHealth', [aHouseType]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns max health of the specified house type
+//* Result: Max health
+function TKMScriptStates.HouseTypeMaxHealthEx(aHouseType: TKMHouseType): Integer;
+begin
+    try
+    Result := 0;
+    if aHouseType in HOUSES_VALID then
+      Result := gResHouses[aHouseType].MaxHealth
+    else
+      LogParamWarning('States.HouseTypeMaxHealthEx', [Ord(aHouseType)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2408,6 +2636,29 @@ begin
 end;
 
 
+//* Version: 13900
+//* Returns the the translated name of the specified house type.
+//* Note: To ensure multiplayer consistency the name is returned as a number encoded within a markup which is
+//* decoded on output, not the actual translated text.
+//* Therefore string operations like LowerCase will not work.
+//* Result: House type name
+function TKMScriptStates.HouseTypeNameEx(aHouseType: TKMHouseType): AnsiString;
+begin
+  try
+    if aHouseType in HOUSES_VALID then
+      Result := '<%' + AnsiString(IntToStr(gResHouses[aHouseType].HouseNameTextID)) + '>'
+    else
+    begin
+      Result := '';
+      LogParamWarning('States.HouseTypeNameEx', [Ord(aHouseType)]);
+    end;
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
 //* Version: 5345
 //* Status: Deprecated
 //* Replacement: HouseTypeToWorkerType
@@ -2430,19 +2681,17 @@ begin
 end;
 
 
-//* Version: 13050
-//* Returns the type of unit that should work in the specified type of house, or -1 if no unit should work in it.
+//* Version: 13900
+//* Returns the type of unit that should work in the specified type of house, or utNone if no unit should work in it.
 //* Result: Unit type
-function TKMScriptStates.HouseTypeToWorkerType(aHouseType: Integer): Integer;
+function TKMScriptStates.HouseTypeToWorkerType(aHouseType: TKMHouseType): TKMUnitType;
 begin
+  Result := utNone;
   try
-    Result := -1;
-    if HouseTypeValid(aHouseType) then
-    begin
-      Result := UNIT_TYPE_TO_ID[gResHouses[HOUSE_ID_TO_TYPE[aHouseType]].WorkerType];
-    end
+    if aHouseType in HOUSES_VALID then
+      Result := gResHouses[aHouseType].WorkerType
     else
-      LogParamWarning('States.HouseTypeToWorkerType', [aHouseType]);
+      LogParamWarning('States.HouseTypeToWorkerType', [Ord(aHouseType)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2833,26 +3082,26 @@ function TKMScriptStates.IsHousePlanAt(var aPlayer: Integer; var aHouseType: TKM
 
 var
   I: Integer;
-  HandFilter, HTypeFilter: Boolean;
+  handFilter, houseTypeFilter: Boolean;
 begin
   try
     Result := False;
     //Verify all input parameters
     if gTerrain.TileInMapCoords(X,Y) then
     begin
-      HandFilter := InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled);
-      HTypeFilter := aHouseType in [HOUSE_MIN..HOUSE_MAX];
+      handFilter := InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled);
+      houseTypeFilter := aHouseType in HOUSES_VALID;
 
-      if HandFilter and HTypeFilter then
+      if handFilter and houseTypeFilter then
         Result := FindPlan(aPlayer, X, Y, aHouseType)
       else
-      if HandFilter then
+      if handFilter then
       begin
         aHouseType := htNone;
         Result := FindPlan(aPlayer, X, Y, aHouseType);
       end else
       begin
-        if not HTypeFilter then
+        if not houseTypeFilter then
           aHouseType := htNone;
 
         for I := 0 to gHands.Count - 1 do
@@ -4552,8 +4801,8 @@ function TKMScriptStates.GroupType(aGroupID: Integer): Integer;
 var
   G: TKMUnitGroup;
 begin
+  Result := -1;
   try
-    Result := -1;
     if aGroupID > 0 then
     begin
       G := fIDCache.GetGroup(aGroupID);
@@ -4562,6 +4811,30 @@ begin
     end
     else
       LogParamWarning('States.GroupType', [aGroupID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13800
+//* Returns the type of the specified group or gtNone if Group ID invalid
+//* Result: Group type
+function TKMScriptStates.GroupTypeEx(aGroupID: Integer): TKMGroupType;
+var
+  G: TKMUnitGroup;
+begin
+  Result := gtNone;
+  try
+    if aGroupID > 0 then
+    begin
+      G := fIDCache.GetGroup(aGroupID);
+      if G <> nil then
+        Result := G.GroupType;
+    end
+    else
+      LogParamWarning('States.GroupTypeEx', [aGroupID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

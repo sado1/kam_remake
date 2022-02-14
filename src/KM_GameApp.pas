@@ -1268,6 +1268,7 @@ var
   screenX, screenY, w, h: Integer;
   zoom, mapSizeX, mapSizeY, mapSizeMax, saveSizeMax: Single;
   pos: TKMPointF;
+  zoomBehaviour: TKMZoomBehaviour;
   pixelData: TKMCardinalArray;
 begin
   if gGame = nil then Exit;
@@ -1279,6 +1280,7 @@ begin
     screenY := gRender.ScreenY;
     zoom := gGame.ActiveInterface.Viewport.Zoom;
     pos := gGame.ActiveInterface.Viewport.Position;
+    zoomBehaviour := gGameSettings.ZoomBehaviour;
 
     // calc resize dimensions
     // We show MapX - 1 tiles
@@ -1292,6 +1294,8 @@ begin
     if aMaxImageSize > 0 then
       saveSizeMax := Min(saveSizeMax, aMaxImageSize);
 
+    // zbLoose could lead to bad positioned map image
+    gGameSettings.ZoomBehaviour := zbRestricted;
     Resize(Round(saveSizeMax * mapSizeX / mapSizeMax), Round(saveSizeMax * mapSizeY / mapSizeMax));
 
     // Zoom out as max as possible
@@ -1311,6 +1315,7 @@ begin
   end;
 
   // Restore viewport params
+  gGameSettings.ZoomBehaviour := zoomBehaviour; // before Resize
   Resize(screenX, screenY);
   gGame.ActiveInterface.Viewport.Zoom := zoom;
   gGame.ActiveInterface.Viewport.Position := pos;

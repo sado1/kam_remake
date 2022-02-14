@@ -65,7 +65,6 @@ type
     fUnitsTeamNames: TList<TKMUnit>;
     fGroupsTeamNames: TList<TKMUnitGroup>;
     fHousesTeamNames: TList<TKMHouse>;
-    fLastSyncedMessage: Word; // Last message that we synced with MessageLog
     fLastKbdSelectionTime: Cardinal; //Last we select object from keyboard
 
     fLineIdToNetPlayerId: array [0..MAX_LOBBY_SLOTS - 1] of Integer;
@@ -665,7 +664,6 @@ begin
       Menu_Update; // Make sure updating happens before it is shown
       Label_MenuTitle.Caption := gResTexts[TX_MENU_TAB_OPTIONS];
       Panel_Menu.Show;
-//      fGuiMenuSettings.Refresh;
       fGuiMenuOptions.Show;
     end else
 
@@ -868,7 +866,7 @@ begin
   Create_Pause;
   Create_Replay; // Replay controls
   // Settings PopUpWindow above replay controls / chat / allies
-  fGuiMenuOptions := TKMGUICommonGameOptions.Create(Panel_Controls, UpdateHotkeys);
+  fGuiMenuOptions := TKMGUICommonGameOptions.Create(Panel_Controls, gResTexts[TX_MENU_SETTINGS_GAME], UpdateHotkeys);
   fGuiMenuOptions.GUICommonOptions.OnOptionsChange := GameOptionsChanged;
 
   Create_PlayMore; // Must be created last, so that all controls behind are blocked
@@ -1728,6 +1726,8 @@ procedure TKMGamePlayInterface.StopPlay(aMsg: TKMGameResultMsg; aPrepareToStopGa
 var
   showStats, reinitStatsLastTime: Boolean;
 begin
+  fGuiMenuOptions.Hide; //Hide options menu, in case it was opened on game stop
+
   if aMsg <> grGameContinues then
     gGame.GameResult := aMsg;
 
@@ -2251,10 +2251,10 @@ var
   R: TKMListRow;
 begin
   // Exit if synced already
-  if not aFullRefresh and (fLastSyncedMessage = gMySpectator.Hand.MessageLog.CountLog) then Exit;
+  if not aFullRefresh and not gMySpectator.Hand.MessageLog.HasNewMessages then Exit;
 
   // Clear the selection if a new item is added so the wrong one is not selected
-  if fLastSyncedMessage <> gMySpectator.Hand.MessageLog.CountLog then
+  if gMySpectator.Hand.MessageLog.HasNewMessages then
     ColumnBox_MessageLog.ItemIndex := -1;
 
   // Clear all rows in case gMySpectator.HandIndex was changed and MessageLog now contains less items
@@ -2299,7 +2299,8 @@ begin
     Inc(K);
   end;
 
-  fLastSyncedMessage := gMySpectator.Hand.MessageLog.CountLog;
+  gGame.GameInputProcess.CmdGame(gicGameMessageListRead, gMySpectator.Hand.MessageLog.CountLog);
+  gMySpectator.Hand.MessageLog.ReadAtCountLocal :=  gMySpectator.Hand.MessageLog.CountLog;
 end;
 
 
@@ -2528,6 +2529,11 @@ begin
   UpdateMessageImages;
 
   AlliesOnPlayerSetup;
+
+  if gGameParams.IsReplay then
+    fGuiMenuOptions.Caption := gResTexts[TX_MENU_SETTINGS_REPLAY]
+  else
+    fGuiMenuOptions.Caption := gResTexts[TX_MENU_SETTINGS_GAME];
 
   isTactic := gGameParams.IsTactic;
 
@@ -4423,7 +4429,7 @@ begin
     UpdateMessageImages;
   end;
   Image_MessageLog.Highlight := not Panel_MessageLog.Visible and not (aGlobalTickCount mod 10 < 5)
-                                and (fLastSyncedMessage <> gMySpectator.Hand.MessageLog.CountLog);
+                                and gMySpectator.Hand.MessageLog.HasNewMessages;
 
   if Panel_MessageLog.Visible then
     MessageLog_Update(False);

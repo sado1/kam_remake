@@ -50,6 +50,7 @@ type
     procedure ResizeMap(aMapX, aMapY: Word; aTopHill: Single);
     function GetClip: TKMRect; //returns visible area dimensions in map space
     function GetMinimapClip: TKMRect;
+    function GetMinimapClipLines: TKMDirection4Set;
     procedure ReleaseScrollKeys;
     procedure GameSpeedChanged(aFromSpeed, aToSpeed: Single);
     function MapToScreen(const aMapLoc: TKMPointF): TKMPoint;
@@ -67,7 +68,7 @@ type
 implementation
 uses
   Math, SysUtils,
-  KromUtils,
+  KromUtils, KM_InterfaceTypes,
   KM_Resource, KM_ResTypes,
   KM_Main, KM_System, KM_GameApp, KM_GameSettings,
   KM_Defaults, KM_CommonUtils;
@@ -81,8 +82,8 @@ begin
   fToolbarWidth := aToolBarWidth;
   fOnPositionSet := aOnPositionSet;
 
-  fMapX := 1; //Avoid division by 0
-  fMapY := 1; //Avoid division by 0
+  fMapX := 2; //Avoid division by 0
+  fMapY := 2; //Avoid division by 0
 
   CinematicReset;
 
@@ -98,15 +99,35 @@ end;
 
 procedure TKMViewport.SetZoom(aZoom: Single);
 var
-  sizeY: Single;
+  sizeY, mapZoom: Single;
+const
+  BORDER_MARGIN = 1.1; // How much we can zoom-out for zbLoose ZoomBehaviour
 begin
   fZoom := EnsureRange(aZoom, 0.01, 8);
+
   sizeY := fMapY + TopPad;
-  //Limit the zoom to within the map boundaries
-  if fViewportClip.X/ZoomedCellSizePX > fMapX then
-    fZoom := fViewportClip.X/(CELL_SIZE_PX * (fMapX - 1)); // -1 to not show last column under FOW (out of the map)
-  if fViewportClip.Y/ZoomedCellSizePX > sizeY then
-    fZoom := fViewportClip.Y/(CELL_SIZE_PX * (sizeY - 1)); // -1 to not show last row under FOW (out of the map)
+
+  case (gGameSettings.ZoomBehaviour) of
+    // Limit the zoom to within the map boundaries
+    zbRestricted:
+      begin
+        mapZoom := Max(fViewportClip.X/(CELL_SIZE_PX * (fMapX - 1)), fViewportClip.Y/(CELL_SIZE_PX * (sizeY - 1))); // -1 to not show last column/row under FOW (out of the map)
+        fZoom := Max(fZoom, mapZoom);
+      end;
+    // Prevents the zoom from crossing both map boundaries
+    zbFull:
+      begin
+        mapZoom := Min(fViewportClip.X/(CELL_SIZE_PX * (fMapX - 1)), fViewportClip.Y/(CELL_SIZE_PX * (sizeY - 1)));
+        fZoom := Max(fZoom, mapZoom);
+      end;
+    // Limit the zoom to 1.1x the map width or height
+    zbLoose:
+      begin
+        mapZoom := Min(fViewportClip.X/(CELL_SIZE_PX * (fMapX - 1)), fViewportClip.Y/(CELL_SIZE_PX * (sizeY - 1))) / BORDER_MARGIN;
+        mapZoom := Min(mapZoom, 1);
+        fZoom := Max(fZoom, mapZoom);
+      end;
+  end;
 
   SetPosition(fPosition); //To ensure it sets the limits smoothly
 end;
@@ -114,7 +135,7 @@ end;
 
 procedure TKMViewport.ResetZoom;
 begin
-  Zoom := 1;
+  Zoom := gGameSettings.DefaultZoom;
 end;
 
 
@@ -167,17 +188,48 @@ procedure TKMViewport.SetPosition(const Value: TKMPointF);
 var
   tilesX, tilesY: Single;
 begin
-  tilesX := fViewportClip.X/2/ZoomedCellSizePX;
-  tilesY := fViewportClip.Y/2/ZoomedCellSizePX;
 
-  // Set position as a pointF in the map coordinates, but also with possible TopPad at the top
-  fPosition.X := EnsureRange(Value.X,
-                             tilesX,               // Min visible map coordinate is 0
-                             fMapX - 1 - tilesX ); // Max visible map coordinate is fMapX - 1
-  //Top row should be visible
-  fPosition.Y := EnsureRange(Value.Y,
-                             tilesY - TopPad,     // Min visible map coordinate is -TopPad
-                             fMapY - 1 - tilesY); // Max visible map coordinate is fMapY - 1
+  case (gGameSettings.ZoomBehaviour) of
+    zbRestricted :
+      begin
+        tilesX := fViewportClip.X/2/ZoomedCellSizePX;
+        tilesY := fViewportClip.Y/2/ZoomedCellSizePX;
+
+        // Set position as a pointF in the map coordinates, but also with possible TopPad at the top
+        fPosition.X := EnsureRange(Value.X,
+                                   tilesX,               // Min visible map coordinate is 0
+                                   fMapX - 1 - tilesX ); // Max visible map coordinate is fMapX - 1
+        //Top row should be visible
+        fPosition.Y := EnsureRange(Value.Y,
+                                   tilesY - TopPad,     // Min visible map coordinate is -TopPad
+                                   fMapY - 1 - tilesY); // Max visible map coordinate is fMapY - 1
+      end;
+    zbFull :
+      begin
+        tilesX := min(fViewportClip.X/2/ZoomedCellSizePX, (fMapX - 1) / 2);
+        tilesY := min(fViewportClip.Y/2/ZoomedCellSizePX, (fMapY - 1 + TopPad) / 2);
+
+        // Set position as a pointF in the map coordinates, but also with possible TopPad at the top
+        fPosition.X := EnsureRange(Value.X,
+                                   tilesX,               // Min visible map coordinate is 0
+                                   fMapX - 1 - tilesX ); // Max visible map coordinate is fMapX - 1
+        //Top row should be visible
+        fPosition.Y := EnsureRange(Value.Y,
+                                   tilesY - TopPad,     // Min visible map coordinate is -TopPad
+                                   fMapY - 1 - tilesY); // Max visible map coordinate is fMapY - 1
+      end;
+    zbLoose :
+      begin
+        // Set position as a pointF in the map coordinates, but also with possible TopPad at the top
+        fPosition.X := EnsureRange(Value.X,
+                                   0,               // Min visible map coordinate is 0
+                                   fMapX - 1); // Max visible map coordinate is fMapX - 1
+        //Top row should be visible
+        fPosition.Y := EnsureRange(Value.Y,
+                                   - TopPad,     // Min visible map coordinate is -TopPad
+                                   fMapY - 1); // Max visible map coordinate is fMapY - 1
+      end;
+  end;
 
   if Assigned(fOnPositionSet) then
     fOnPositionSet(fPosition);
@@ -216,8 +268,22 @@ function TKMViewport.GetMinimapClip: TKMRect;
 begin
   Result.Left   := Max(Round(fPosition.X - (fViewportClip.X/2 - fViewRect.Left + ToolbarWidth)/ZoomedCellSizePX) + 1, 1);
   Result.Right  := Min(Round(fPosition.X + (fViewportClip.X/2 + fViewRect.Left - ToolbarWidth)/ZoomedCellSizePX) + 1, fMapX);
-  Result.Top    := Max(Round(fPosition.Y - fViewportClip.Y/2/ZoomedCellSizePX) + 2, 1);
-  Result.Bottom := Min(Round(fPosition.Y + fViewportClip.Y/2/ZoomedCellSizePX), fMapY);
+  Result.Top    := Max(Round(fPosition.Y - fViewportClip.Y/2/ZoomedCellSizePX) + 1, 1);
+  Result.Bottom := Min(Round(fPosition.Y + fViewportClip.Y/2/ZoomedCellSizePX) + 1, fMapY);
+end;
+
+
+//Acquires a bit array that holds what camera lines to draw on the minimap
+function TKMViewport.GetMinimapClipLines: TKMDirection4Set;
+begin
+  if Round(fPosition.X - (fViewportClip.X/2 - fViewRect.Left + ToolbarWidth)/ZoomedCellSizePX) + 1 >= 1 then
+    Include(Result, drW);
+  if Round(fPosition.Y + TopPad - fViewportClip.Y/2/ZoomedCellSizePX) + 1 >= 1 then
+    Include(Result, drN);
+  if Round(fPosition.X + (fViewportClip.X/2 + fViewRect.Left - ToolbarWidth)/ZoomedCellSizePX) + 1 <= fMapX then
+    Include(Result, drE);
+  if Round(fPosition.Y + fViewportClip.Y/2/ZoomedCellSizePX) + 1 <= fMapY then
+    Include(Result, drS);
 end;
 
 

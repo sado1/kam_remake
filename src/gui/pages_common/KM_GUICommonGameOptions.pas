@@ -12,14 +12,17 @@ type
     fGUICommonOptions: TKMGUICommonOptions;
 
     procedure CloseClick;
+    function GetCaption: string;
+    procedure SetCaption(const aValue: string);
   protected
     PopUpPanel_Settings: TKMPopUpPanel;
     Panel_Settings: TKMPanel;
   public
-    constructor Create(aParent: TKMPanel; aOnKeysUpdated: TEvent);
+    constructor Create(aParent: TKMPanel; aCaption: string; aOnKeysUpdated: TEvent);
     destructor Destroy; override;
 
     property GUICommonOptions: TKMGUICommonOptions read fGUICommonOptions;
+    property Caption: string read GetCaption write SetCaption;
 
     procedure Refresh;
     procedure Show;
@@ -36,14 +39,14 @@ uses
 
 
 { TKMMapEdMenuQuit }
-constructor TKMGUICommonGameOptions.Create(aParent: TKMPanel; aOnKeysUpdated: TEvent);
+constructor TKMGUICommonGameOptions.Create(aParent: TKMPanel; aCaption: string; aOnKeysUpdated: TEvent);
 const
   W_PNL = 600;
   H_PNL = 510;
 begin
   inherited Create;
 
-  PopUpPanel_Settings := TKMPopUpPanel.Create(aParent.MasterParent, W_PNL, H_PNL, gResTexts[TX_MENU_SETTINGS], pubgitYellow, False, False);
+  PopUpPanel_Settings := TKMPopUpPanel.Create(aParent.MasterParent, W_PNL, H_PNL, aCaption, pubgitYellow, False, False);
   PopUpPanel_Settings.HandleCloseKey := True;
   PopUpPanel_Settings.CapOffsetY := -5;
 
@@ -60,6 +63,18 @@ begin
   fGUICommonOptions.Free;
 
   inherited;
+end;
+
+
+function TKMGUICommonGameOptions.GetCaption: string;
+begin
+  Result := PopUpPanel_Settings.Caption;
+end;
+
+
+procedure TKMGUICommonGameOptions.SetCaption(const aValue: string);
+begin
+  PopUpPanel_Settings.Caption := aValue;
 end;
 
 

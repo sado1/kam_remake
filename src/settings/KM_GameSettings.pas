@@ -8,7 +8,7 @@ uses
   KM_WareDistribution, KM_MapTypes,
   KM_Defaults, KM_CommonTypes, KM_CommonClasses,
 
-  KM_IoXML,
+  KM_IoXML, KM_InterfaceTypes,
   KM_GameAppSettings;
 
 
@@ -42,6 +42,8 @@ type
     fPlayerColorAlly: Cardinal;
     fPlayerColorEnemy: Cardinal;
 
+    fDefaultZoom: Single;
+    fZoomBehaviour: TKMZoomBehaviour;
     fScrollSpeed: Byte;
     fLocale: AnsiString;
     fSpeedPace: Word;
@@ -150,7 +152,7 @@ type
     //GameTweaks
     procedure SetAllowSnowHouses(aValue: Boolean);
     procedure SetInterpolatedRender(aValue: Boolean);
-    procedure SetInterpolatedAnimations(const Value: Boolean);
+    procedure SetInterpolatedAnimations(const aValue: Boolean);
 
     //Campaign
     procedure SetCampaignLastDifficulty(aValue: TKMMissionDifficulty);
@@ -243,6 +245,8 @@ type
     property PlayerColorAlly: Cardinal read fPlayerColorAlly write SetPlayerColorAlly;
     property PlayerColorEnemy: Cardinal read fPlayerColorEnemy write SetPlayerColorEnemy;
 
+    property DefaultZoom: Single read fDefaultZoom;
+    property ZoomBehaviour: TKMZoomBehaviour read fZoomBehaviour write fZoomBehaviour;
     property ScrollSpeed: Byte read fScrollSpeed write SetScrollSpeed;
     property Locale: AnsiString read fLocale write SetLocale;
     property SpeedPace: Word read fSpeedPace write SetSpeedPace;
@@ -383,6 +387,7 @@ var
     nGameAutosave,
     nGameSavePoints,
     nGamePlayersColor,
+    nUI,
     nGameSpeed,
     nGameWareDistribution,
     nGameMisc,
@@ -430,6 +435,10 @@ begin
   // GameCommon
   nGameCommon := nGameSettings.AddOrFindChild('GameCommon');
     fLocale := AnsiString(nGameCommon.Attributes['Locale'].AsString(UnicodeString(DEFAULT_LOCALE)));
+    // UI
+    nUI := nGameCommon.AddOrFindChild('UI');
+      fDefaultZoom    := nUI.Attributes['DefaultZoom'].AsFloat(1);
+      fZoomBehaviour  := TKMZoomBehaviour(nUI.Attributes['ZoomBehaviour'].AsInteger(Integer(zbFull))); // Default zoom value is zbFull
     // Speed
     nGameSpeed := nGameCommon.AddOrFindChild('Speed');
       fSpeedMedium    := nGameSpeed.Attributes['Medium'].AsFloat(3);
@@ -477,10 +486,10 @@ begin
 
     // Misc
     nGameMisc := nGameCommon.AddOrFindChild('Misc');
-      fSpecShowBeacons    := nGameMisc.Attributes['SpecShowBeacons'].AsBoolean(False);
-      fShowGameTime       := nGameMisc.Attributes['ShowGameTime'].AsBoolean(False);
-      fShowGameSpeed      := nGameMisc.Attributes['ShowGameSpeed'].AsBoolean(False);
-      fDayGamesCount      := nGameMisc.Attributes['DayGamesCount'].AsInteger(0);
+      fSpecShowBeacons := nGameMisc.Attributes['SpecShowBeacons'].AsBoolean(False);
+      fShowGameTime    := nGameMisc.Attributes['ShowGameTime'].AsBoolean(False);
+      fShowGameSpeed   := nGameMisc.Attributes['ShowGameSpeed'].AsBoolean(False);
+      fDayGamesCount   := nGameMisc.Attributes['DayGamesCount'].AsInteger(0);
       if nGameMisc.HasAttribute('LastDayGamePlayed') then
         fLastDayGamePlayed  := nGameMisc.Attributes['LastDayGamePlayed'].AsDateTime
       else
@@ -488,8 +497,8 @@ begin
 
     // Tweaks
     nGameTweaks := nGameCommon.AddOrFindChild('Tweaks');
-      AllowSnowHouses     := nGameTweaks.Attributes['AllowSnowHouses'].AsBoolean(True);     // With restriction by ALLOW_SNOW_HOUSES
-      InterpolatedRender  := nGameTweaks.Attributes['InterpolatedRender'].AsBoolean(False); // With restriction by ALLOW_INTERPOLATED_RENDER
+      AllowSnowHouses    := nGameTweaks.Attributes['AllowSnowHouses'].AsBoolean(True);     // With restriction by ALLOW_SNOW_HOUSES
+      InterpolatedRender := nGameTweaks.Attributes['InterpolatedRender'].AsBoolean(False); // With restriction by ALLOW_INTERPOLATED_RENDER
 
   // Campaign
   nCampaign := nGameSettings.AddOrFindChild('Campaign');
@@ -576,6 +585,7 @@ var
     nGameAutosave,
     nGameSavePoints,
     nGamePlayersColor,
+    nUI,
     nGameSpeed,
     nGameWareDistribution,
     nGameMisc,
@@ -624,6 +634,11 @@ begin
   // GameCommon
   nGameCommon := nGameSettings.AddOrFindChild('GameCommon');
     nGameCommon.Attributes['Locale'] := UnicodeString(fLocale);
+    // UI
+    nUI := nGameCommon.AddOrFindChild('UI');
+      nUI.Attributes['DefaultZoom']         := fDefaultZoom;
+      nUI.Attributes['ZoomBehaviour']       := Integer(fZoomBehaviour);
+
     // Speed
     nGameSpeed := nGameCommon.AddOrFindChild('Speed');
       nGameSpeed.Attributes['Medium']       := fSpeedMedium;
@@ -634,7 +649,7 @@ begin
 
     // Autosave
     nGameAutosave := nGameCommon.AddOrFindChild('Autosave');
-      nGameAutosave.Attributes['Enabled']          := fAutosave;
+      nGameAutosave.Attributes['Enabled']   := fAutosave;
       nGameAutosave.Attributes['OnGameEnd'] := fAutosaveAtGameEnd;
       nGameAutosave.Attributes['Frequency'] := fAutosaveFrequency;
       nGameAutosave.Attributes['Count']     := fAutosaveCount;
@@ -667,8 +682,8 @@ begin
 
     // Tweaks
     nGameTweaks := nGameCommon.AddOrFindChild('Tweaks');
-      nGameTweaks.Attributes['AllowSnowHouses']     := fGameTweaks_AllowSnowHouses;
-      nGameTweaks.Attributes['InterpolatedRender']  := fGameTweaks_InterpolatedRender;
+      nGameTweaks.Attributes['AllowSnowHouses']    := fGameTweaks_AllowSnowHouses;
+      nGameTweaks.Attributes['InterpolatedRender'] := fGameTweaks_InterpolatedRender;
 
   // Campaign
   nCampaign := nGameSettings.AddOrFindChild('Campaign');
@@ -1002,11 +1017,11 @@ begin
   fGameTweaks_AllowSnowHouses := aValue;
 end;
 
-procedure TKMGameSettings.SetInterpolatedAnimations(const Value: Boolean);
+procedure TKMGameSettings.SetInterpolatedAnimations(const aValue: Boolean);
 begin
   if not ALLOW_INTERPOLATED_ANIMS then Exit;
 
-  fGameTweaks_InterpolatedAnimations := Value;
+  fGameTweaks_InterpolatedAnimations := aValue;
 end;
 
 

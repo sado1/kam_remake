@@ -159,7 +159,7 @@ type
     procedure OrderAttackHouse(aHouse: TKMHouse; aClearOffenders: Boolean; aForced: Boolean = True);
     procedure OrderAttackUnit(aUnit: TKMUnit; aClearOffenders: Boolean; aForced: Boolean = True);
     procedure OrderFood(aClearOffenders: Boolean; aHungryOnly: Boolean = False);
-    procedure OrderFormation(aTurnAmount: TKMTurnDirection; aColumnsChange: ShortInt; aClearOffenders: Boolean);
+    procedure OrderFormation(aTurnAmount, aColumnsChange: ShortInt; aClearOffenders: Boolean);
     procedure OrderHalt(aClearOffenders: Boolean; aForced: Boolean = True);
     procedure OrderLinkTo(aTargetGroup: TKMUnitGroup; aClearOffenders: Boolean);
     procedure OrderNone;
@@ -213,9 +213,9 @@ type
     function GetGroupByMember(aUnit: TKMUnitWarrior): TKMUnitGroup;
     function HitTest(X,Y: Integer): TKMUnitGroup;
     procedure GetGroupsInRect(const aRect: TKMRect; List: TList<TKMUnitGroup>);
-    function GetClosestGroup(const aPoint: TKMPoint; aTypes: TKMGroupTypeSet = [Low(TKMGroupType)..High(TKMGroupType)]): TKMUnitGroup;
-    function GetGroupsInRadius(aPoint: TKMPoint; aSqrRadius: Single; aTypes: TKMGroupTypeSet = [Low(TKMGroupType)..High(TKMGroupType)]): TKMUnitGroupArray;
-    function GetGroupsMemberInRadius(aPoint: TKMPoint; aSqrRadius: Single; var aUGA: TKMUnitGroupArray; aTypes: TKMGroupTypeSet = [Low(TKMGroupType)..High(TKMGroupType)]): TKMUnitArray;
+    function GetClosestGroup(const aPoint: TKMPoint; aTypes: TKMGroupTypeSet = GROUP_TYPES_VALID): TKMUnitGroup;
+    function GetGroupsInRadius(aPoint: TKMPoint; aSqrRadius: Single; aTypes: TKMGroupTypeSet = GROUP_TYPES_VALID): TKMUnitGroupArray;
+    function GetGroupsMemberInRadius(aPoint: TKMPoint; aSqrRadius: Single; var aUGA: TKMUnitGroupArray; aTypes: TKMGroupTypeSet = GROUP_TYPES_VALID): TKMUnitArray;
 
     procedure Clear;
 
@@ -1372,7 +1372,7 @@ begin
 end;
 
 
-procedure TKMUnitGroup.OrderFormation(aTurnAmount: TKMTurnDirection; aColumnsChange: ShortInt; aClearOffenders: Boolean);
+procedure TKMUnitGroup.OrderFormation(aTurnAmount, aColumnsChange: ShortInt; aClearOffenders: Boolean);
 begin
   if IsDead then Exit;
   if aClearOffenders and CanTakeOrders then
@@ -1382,10 +1382,8 @@ begin
   if fOrderLoc.Dir = dirNA then
     fOrderLoc.Dir := fMembers[0].Direction;
 
-  case aTurnAmount of
-    tdCW:   fOrderLoc.Dir := KMNextDirection(fOrderLoc.Dir);
-    tdCCW:  fOrderLoc.Dir := KMPrevDirection(fOrderLoc.Dir);
-  end;
+  if aTurnAmount <> 0 then
+    fOrderLoc.Dir := KMAddDirection(fOrderLoc.Dir, aTurnAmount);
 
   SetUnitsPerRow(Max(fUnitsPerRow + aColumnsChange, 0));
 
@@ -2409,7 +2407,7 @@ begin
 end;
 
 
-function TKMUnitGroups.GetClosestGroup(const aPoint: TKMPoint; aTypes: TKMGroupTypeSet = [Low(TKMGroupType)..High(TKMGroupType)]): TKMUnitGroup;
+function TKMUnitGroups.GetClosestGroup(const aPoint: TKMPoint; aTypes: TKMGroupTypeSet = GROUP_TYPES_VALID): TKMUnitGroup;
 var
   I: Integer;
   bestDist, dist: Single;
@@ -2429,7 +2427,7 @@ begin
 end;
 
 
-function TKMUnitGroups.GetGroupsInRadius(aPoint: TKMPoint; aSqrRadius: Single; aTypes: TKMGroupTypeSet = [Low(TKMGroupType)..High(TKMGroupType)]): TKMUnitGroupArray;
+function TKMUnitGroups.GetGroupsInRadius(aPoint: TKMPoint; aSqrRadius: Single; aTypes: TKMGroupTypeSet = GROUP_TYPES_VALID): TKMUnitGroupArray;
 var
   I, K, Idx: Integer;
   UW: TKMUnitWarrior;
@@ -2460,7 +2458,7 @@ begin
 end;
 
 
-function TKMUnitGroups.GetGroupsMemberInRadius(aPoint: TKMPoint; aSqrRadius: Single; var aUGA: TKMUnitGroupArray; aTypes: TKMGroupTypeSet = [Low(TKMGroupType)..High(TKMGroupType)]): TKMUnitArray;
+function TKMUnitGroups.GetGroupsMemberInRadius(aPoint: TKMPoint; aSqrRadius: Single; var aUGA: TKMUnitGroupArray; aTypes: TKMGroupTypeSet = GROUP_TYPES_VALID): TKMUnitArray;
 var
   I, K, Idx: Integer;
   dist, minDist: Single;

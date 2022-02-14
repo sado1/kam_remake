@@ -10,6 +10,7 @@ uses
 const
   HOUSE_MIN = htArmorSmithy;
   HOUSE_MAX = htWoodcutters;
+  HOUSES_VALID = [HOUSE_MIN..HOUSE_MAX];
   HOUSE_WORKSHOP = [htWeaponSmithy, htArmorSmithy, htWeaponWorkshop, htArmorWorkshop];
 
   HOUSES_CNT = Integer(HOUSE_MAX) - Integer(HOUSE_MIN) + 1;
@@ -208,7 +209,7 @@ const
 
 implementation
 uses
-  KromUtils, KM_Outline, KM_Points, KM_PolySimplify, KM_ResTexts, KM_ResUnits;
+  TypInfo, KromUtils, KM_Outline, KM_Points, KM_PolySimplify, KM_ResTexts, KM_ResUnits;
 
 
 type
@@ -855,7 +856,7 @@ end;
 
 function TKMResHouses.IsValid(aType: TKMHouseType): Boolean;
 begin
-  Result := aType in [HOUSE_MIN..HOUSE_MAX];
+  Result := aType in HOUSES_VALID;
 end;
 
 
@@ -907,6 +908,8 @@ var
   S: string;
   SL: TStringList;
   I, K: Integer;
+  anim: TKMHouseActionType;
+
   procedure AddField(const aField: string); overload;
   begin S := S + aField + ';'; end;
   procedure AddField(aField: Integer); overload;
@@ -926,6 +929,7 @@ begin
     AddField(fItems[HT].StoneCost);
     AddField(fItems[HT].ResProductionX);
     SL.Append(S);
+
     for I := 1 to 4 do
     begin
       S := '';
@@ -933,6 +937,22 @@ begin
         AddField(fItems[HT].BuildArea[I, K]);
       SL.Append(S);
     end;
+
+    S := 'Animation;Count;OffsetX;OffsetY';
+    SL.Append(S);
+    for anim := Low(TKMHouseActionType) to High(TKMHouseActionType) do
+    begin
+      if fItems[HT].fHouseDat.Anim[anim].Count > 0 then
+      begin
+        S := '';
+        AddField(GetEnumName(TypeInfo(TKMHouseActionType), Integer(anim)));
+        AddField(fItems[HT].fHouseDat.Anim[anim].Count);
+        AddField(fItems[HT].fHouseDat.Anim[anim].MoveX);
+        AddField(fItems[HT].fHouseDat.Anim[anim].MoveY);
+        SL.Append(S);
+      end;
+    end;
+
     S := '';
     SL.Append(S);
   end;

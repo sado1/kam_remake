@@ -13,7 +13,6 @@ type
   private
     fHouseUnlocked: array [TKMHouseType] of Boolean; //If building requirements performed
     fUnitBlocked: array [TKMUnitType] of Boolean;   //Allowance derived from mission script
-    fMilitiaBlockedInTH: Boolean; // special case for militia block to train in TownHall
     procedure UpdateReqDone(aType: TKMHouseType);
   public
     HouseBlocked: array [TKMHouseType] of Boolean; //Allowance derived from mission script
@@ -79,19 +78,13 @@ end;
 
 function TKMHandLocks.GetUnitBlocked(aUnitType: TKMUnitType; aInTownHall: Boolean = False): Boolean;
 begin
-  if aInTownHall and (aUnitType = utMilitia) then
-    Result := fMilitiaBlockedInTH
-  else
-    Result := fUnitBlocked[aUnitType];
+  Result := fUnitBlocked[aUnitType];
 end;
 
 
 procedure TKMHandLocks.SetUnitBlocked(aIsBlocked: Boolean; aUnitType: TKMUnitType; aInTownHall: Boolean = False);
 begin
-  if aInTownHall and (aUnitType = utMilitia) then
-    fMilitiaBlockedInTH := aIsBlocked
-  else
-    fUnitBlocked[aUnitType] := aIsBlocked;
+  fUnitBlocked[aUnitType] := aIsBlocked;
 end;
 
 

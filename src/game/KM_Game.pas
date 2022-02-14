@@ -300,6 +300,9 @@ var
 
 implementation
 uses
+  {$IFDEF PARALLEL_RUNNER}
+    KM_AIParameters, // If you want to remove this, then please make sure that the Runner can be compiled with ParallelRunner Build Configuration
+  {$ENDIF}
   System.Types, Classes, SysUtils, Math, TypInfo,
   Dialogs,
   {$IFDEF WDC} UITypes, {$ENDIF}
@@ -747,7 +750,7 @@ begin
   //Basesave is sort of temp we save to HDD instead of keeping in RAM
   if fParams.Mode in [gmSingle, gmCampaign, gmMulti, gmMultiSpectate] then
     {$IFDEF PARALLEL_RUNNER}
-      SaveGameToFile(SaveName('basesave_thread_'+IntToStr(THREAD_NUMBER), EXT_SAVE_BASE, fParams.IsMultiplayerOrSpec), fBaseSaveWorkerThread.Worker, UTCNow);
+      SaveGameToFile(SaveName('basesave_thread_'+IntToStr(THREAD_NUMBER), EXT_SAVE_BASE, fParams.IsMultiplayerOrSpec), fBaseSaveWorkerThreadHolder.Worker, UTCNow);
     {$ELSE}
       SaveGameToFile(SaveName('basesave', EXT_SAVE_BASE, fParams.IsMultiplayerOrSpec), fBaseSaveWorkerThreadHolder.Worker, UTCNow);
     {$ENDIF}
@@ -2259,6 +2262,10 @@ begin
   if not isMulti then
     fGamePlayInterface.Save(aBodyStream); //Saves message queue and school/barracks selected units
 
+  {$IFDEF PARALLEL_RUNNER}
+    SaveGAParameters(aBodyStream);
+  {$ENDIF}
+
   // Trim stream size to current position
   aBodyStream.TrimToPosition;
 
@@ -2609,6 +2616,10 @@ begin
     //todo: Send all message commands through GIP (note: that means there will be a delay when you press delete)
     if not saveIsMultiplayer then
       fGamePlayInterface.Load(bodyStream);
+
+    {$IFDEF PARALLEL_RUNNER}
+      LoadGAParameters(bodyStream);
+    {$ENDIF}
 
     if fParams.IsReplay then
       fGameInputProcess := TKMGameInputProcess_Single.Create(gipReplaying) //Replay

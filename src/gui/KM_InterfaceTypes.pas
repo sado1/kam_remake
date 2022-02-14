@@ -24,6 +24,13 @@ type
   TKMMenuChangeEventText = procedure (Dest: TKMMenuPageType; const aText: UnicodeString = '') of object;
   TKMToggleLocaleEvent = procedure (const aLocale: AnsiString; aBackToMenuPage: TKMMenuPageType) of object;
 
+
+  TKMZoomBehaviour = (
+                      zbRestricted, // Limit the zoom to within the map boundaries (classic zoom behaviour)
+                      zbFull,       // Prevents the zoom from crossing both map boundaries
+                      zbLoose       // Limit the zoom to 1.1x the map width or height
+                     );
+
 const
   //Options sliders
   OPT_SLIDER_MIN = 0;

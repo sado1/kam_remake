@@ -64,6 +64,7 @@ var
   RT: TRXType;
   PackData: TRXXPackData;
 begin
+  ExeDir := edSpritesBaseDir.Text;
   ListBox1.Items.Clear;
   fPacksCnt := 0;
   SetLength(fPacksData, fPacksCnt);

@@ -263,6 +263,7 @@ end;
 
 procedure TKMMapEdUnit.Unit_ArmyChange1(Sender: TObject);
 begin
+  // Use empty shift state, because value will change too fast otherwise
   Unit_ArmyChangeShift(Sender, []);
 end;
 

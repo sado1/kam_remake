@@ -18,7 +18,7 @@ type
     Panel_Formations: TKMPanel;
       Image_FormationsFlag: TKMImage;
       NumEdit_FormationsCount,
-      NumEdit_FormationsColumns: array [TKMGroupType] of TKMNumericEdit;
+      NumEdit_FormationsColumns: array [GROUP_TYPE_MIN..GROUP_TYPE_MAX] of TKMNumericEdit;
       Button_Formations_Ok: TKMButton;
       Button_Formations_Cancel: TKMButton;
   public
@@ -40,12 +40,12 @@ uses
 { TKMMapEdFormations }
 constructor TKMMapEdTownFormations.Create(aParent: TKMPanel);
 const
-  T: array [TKMGroupType] of Integer = (TX_MAPED_AI_ATTACK_TYPE_MELEE,
-                                        TX_MAPED_AI_ATTACK_TYPE_ANTIHORSE,
-                                        TX_MAPED_AI_ATTACK_TYPE_RANGED,
-                                        TX_MAPED_AI_ATTACK_TYPE_MOUNTED);
+  T: array [GROUP_TYPE_MIN..GROUP_TYPE_MAX] of Integer = (TX_MAPED_AI_ATTACK_TYPE_MELEE,
+                                                          TX_MAPED_AI_ATTACK_TYPE_ANTIHORSE,
+                                                          TX_MAPED_AI_ATTACK_TYPE_RANGED,
+                                                          TX_MAPED_AI_ATTACK_TYPE_MOUNTED);
   SIZE_X = 570;
-  SIZE_Y = 200;
+  SIZE_Y = 280;
 var
   GT: TKMGroupType;
   img: TKMImage;
@@ -67,16 +67,22 @@ begin
   TKMLabel.Create(Panel_Formations, 20, 70, 80, 0, gResTexts[TX_MAPED_AI_FORMATIONS_COUNT], fntMetal, taLeft);
   TKMLabel.Create(Panel_Formations, 20, 95, 80, 0, gResTexts[TX_MAPED_AI_FORMATIONS_COLUMNS], fntMetal, taLeft);
 
-  for GT := Low(TKMGroupType) to High(TKMGroupType) do
+  for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
   begin
-    TKMLabel.Create(Panel_Formations, 130 + Byte(GT) * 110 + 32, 50, 0, 0, gResTexts[T[GT]], fntMetal, taCenter);
-    NumEdit_FormationsCount[GT] := TKMNumericEdit.Create(Panel_Formations, 130 + Byte(GT) * 110, 70, 1, 255);
-    NumEdit_FormationsColumns[GT] := TKMNumericEdit.Create(Panel_Formations, 130 + Byte(GT) * 110, 95, 1, 255);
+    TKMLabel.Create(Panel_Formations, 130 + (Ord(GT) - GROUP_TYPE_MIN_OFF) * 110 + 32, 50, 0, 0, gResTexts[T[GT]], fntMetal, taCenter);
+    NumEdit_FormationsCount[GT] := TKMNumericEdit.Create(Panel_Formations, 130 + (Ord(GT) - GROUP_TYPE_MIN_OFF) * 110, 70, 1, 255);
+    NumEdit_FormationsColumns[GT] := TKMNumericEdit.Create(Panel_Formations, 130 + (Ord(GT) - GROUP_TYPE_MIN_OFF) * 110, 95, 1, 255);
   end;
 
-  Button_Formations_Ok := TKMButton.Create(Panel_Formations, SIZE_X-20-320-10, 150, 160, 30, gResTexts[TX_MAPED_OK], bsMenu);
+  with TKMLabel.Create(Panel_Formations, 20, 150, SIZE_X - 20, 60, gResTexts[TX_MAPED_AI_FORMATIONS_AAI_INFO], fntMetal, taLeft) do
+  begin
+    FontColor := icGoldenYellow;
+    AutoWrap := True;
+  end;
+
+  Button_Formations_Ok := TKMButton.Create(Panel_Formations, SIZE_X-20-320-10, SIZE_Y-50, 160, 30, gResTexts[TX_MAPED_OK], bsMenu);
   Button_Formations_Ok.OnClick := Formations_Close;
-  Button_Formations_Cancel := TKMButton.Create(Panel_Formations, SIZE_X-20-160, 150, 160, 30, gResTexts[TX_MAPED_CANCEL], bsMenu);
+  Button_Formations_Cancel := TKMButton.Create(Panel_Formations, SIZE_X-20-160, SIZE_Y-50, 160, 30, gResTexts[TX_MAPED_CANCEL], bsMenu);
   Button_Formations_Cancel.OnClick := Formations_Close;
 end;
 
@@ -108,7 +114,7 @@ begin
   //Fill UI
   Image_FormationsFlag.FlagColor := gHands[fOwner].FlagColor;
 
-  for GT := Low(TKMGroupType) to High(TKMGroupType) do
+  for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
   begin
     NumEdit_FormationsCount[GT].Value := gHands[fOwner].AI.General.DefencePositions.TroopFormations[GT].NumUnits;
     NumEdit_FormationsColumns[GT].Value := gHands[fOwner].AI.General.DefencePositions.TroopFormations[GT].UnitsPerRow;
@@ -132,7 +138,7 @@ begin
 
   if Sender = Button_Formations_Ok then
     //Save settings
-    for GT := Low(TKMGroupType) to High(TKMGroupType) do
+    for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
     begin
       gHands[fOwner].AI.General.DefencePositions.TroopFormations[GT].NumUnits := NumEdit_FormationsCount[GT].Value;
       gHands[fOwner].AI.General.DefencePositions.TroopFormations[GT].UnitsPerRow := NumEdit_FormationsColumns[GT].Value;

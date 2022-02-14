@@ -112,11 +112,11 @@ type
 
 const
   // Houses in TARGET_HOUSES will be selected as a primary target (so the company will come to this point but it will not attack it because of this list)
-  TARGET_HOUSES: THouseTypeSet = [htBarracks, htStore, htSchool, htTownhall];
+  TARGET_HOUSES: TKMHouseTypeSet = [htBarracks, htStore, htSchool, htTownhall];
   // Houses in SCAN_HOUSES will be destroyed when they are in radius (it should also contain TARGET_HOUSES)
-  SCAN_HOUSES: THouseTypeSet = [htWatchTower, htBarracks, htStore, htSchool, htTownhall];
+  SCAN_HOUSES: TKMHouseTypeSet = [htWatchTower, htBarracks, htStore, htSchool, htTownhall];
   // All houses for final stage of attack algorithm
-  ALL_HOUSES: THouseTypeSet = [HOUSE_MIN..HOUSE_MAX];
+  ALL_HOUSES: TKMHouseTypeSet = HOUSES_VALID;
 
 {$IFDEF DEBUG_NewAI}
 var

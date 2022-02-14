@@ -94,6 +94,8 @@ type
                        out aDiagObjectChanged: Boolean; aDoUpdateFences: Boolean); overload;
     procedure ClearPlayerLand(aPlayer: TKMHandID);
 
+    procedure RemoveLayers;
+
     procedure IncDigState(const Loc: TKMPoint);
     procedure ResetDigState(const Loc: TKMPoint);
 
@@ -2166,6 +2168,16 @@ begin
 
   //Update affected WalkConnect's
   UpdateWalkConnect([wcWalk,wcRoad,wcWork], R, diagObjectChanged); //Winefields object block diagonals
+end;
+
+
+procedure TKMTerrain.RemoveLayers;
+var
+  I, K: Integer;
+begin
+  for I := 1 to fMapY do
+    for K := 1 to fMapX do
+      Land^[I, K].LayersCnt := 0;
 end;
 
 
@@ -4824,7 +4836,7 @@ begin
                           + Land^[Tmp, Xc + 1].RenderHeight * frac(inX)) / CELL_HEIGHT_DIV;
   end;
 
-  Result := Yc; //Assign something incase following code returns nothing
+  Result := inY; //Assign something incase following code returns nothing
 
   for I := Low(Ycoef) to High(Ycoef) - 1 do//check if cursor in a tile and adjust it there
   begin

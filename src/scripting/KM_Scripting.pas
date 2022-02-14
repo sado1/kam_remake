@@ -343,7 +343,22 @@ begin
     Sender.AddTypeS('TIntegerArray', 'array of Integer'); //Needed for PlayerGetAllUnits
     Sender.AddTypeS('TAnsiStringArray', 'array of AnsiString'); //Needed for some array Utils
     Sender.AddTypeS('TByteSet', 'set of Byte'); //Needed for Closest*MultipleTypes
-    Sender.AddTypeS('TKMPoint', 'record X,Y: Integer; end;'); //Could be very useful
+    Sender.AddTypeS('TKMPoint', 'record X,Y: Integer; end'); //Could be very useful
+
+    Sender.AddTypeS('TKMAIDefencePosType', '(adtFrontLine, adtBackLine)');
+    Sender.AddTypeS('TKMGroupType', '(gtNone, gtAny, gtMelee, gtAntiHorse, gtRanged, gtMounted)');
+    Sender.AddTypeS('TKMGroupTypeSet', 'set of TKMGroupType');
+    Sender.AddTypeS('TKMDirection', '(dirNA, dirN, dirNE, dirE, dirSE, dirS, dirSW, dirW, dirNW)');
+
+    Sender.AddTypeS('TKMDeliveryMode' ,'(dmClosed, dmDelivery, dmTakeOut)');
+
+    Sender.AddTypeS('TKMDefencePositionInfo', 'record ' +
+                      'X, Y: Integer; ' +
+                      'Dir: TKMDirection;' +
+                      'Radius: Integer; ' +
+                      'GroupType: TKMGroupType; ' +
+                      'PositionType: TKMAIDefencePosType; ' +
+                    'end');
 
     Sender.AddTypeS('TKMFieldType', '(ftNone, ftRoad, ftCorn, ftWine)'); //No need to add InitWine for scripts
     Sender.AddTypeS('TKMHouseType', '(htNone, htAny, '
@@ -353,6 +368,8 @@ begin
       + 'htQuary,           htSawmill,         htSchool,        htSiegeWorkshop, htStables,'
       + 'htStore,           htSwine,           htTannery,       htTownHall,      htWatchTower,'
       + 'htWeaponSmithy,    htWeaponWorkshop,  htWineyard,      htWoodcutters    )');
+
+    Sender.AddTypeS('TKMHouseTypeSet', 'set of TKMHouseType');
 
     Sender.AddTypeS('TKMGroupOrder', '(goNone, goWalkTo, goAttackHouse, goAttackUnit, goStorm)');
 
@@ -393,6 +410,8 @@ begin
       + 'utWolf,         utFish,         utWatersnake,   utSeastar,'
       + 'utCrab,         utWaterflower,  utWaterleaf,    utDuck)');
 
+    Sender.AddTypeS('TKMUnitTypeSet', 'set of TKMUnitType');
+
     Sender.AddTypeS('TReplaceFlags', '(rfReplaceAll, rfIgnoreCase)'); //Needed for string util Utils.StringReplace
 
     // Add CampaignData type and variable only after addition of all other custom types,
@@ -409,9 +428,11 @@ begin
     RegisterMethodCheck(c, 'function AIAutoDefence(aPlayer: Byte): Boolean');
     RegisterMethodCheck(c, 'function AIAutoRepair(aPlayer: Byte): Boolean');
     RegisterMethodCheck(c, 'procedure AIDefencePositionGet(aPlayer, aID: Byte; out aX, aY: Integer; out aGroupType: Byte; out aRadius: Word; out aDefType: Byte)');
+    RegisterMethodCheck(c, 'procedure AIDefencePositionGetEx(aPlayer, aID: Integer; out aDefencePosition: TKMDefencePositionInfo)');
     RegisterMethodCheck(c, 'function AIDefendAllies(aPlayer: Byte): Boolean');
     RegisterMethodCheck(c, 'function AIEquipRate(aPlayer: Byte; aType: Byte): Integer');
     RegisterMethodCheck(c, 'procedure AIGroupsFormationGet(aPlayer, aType: Byte; out aCount, aColumns: Integer)');
+    RegisterMethodCheck(c, 'procedure AIGroupsFormationGetEx(aPlayer: Integer; aGroupType: TKMGroupType; out aCount, aColumns: Integer)');
     RegisterMethodCheck(c, 'function AIRecruitDelay(aPlayer: Byte): Integer');
     RegisterMethodCheck(c, 'function AIRecruitLimit(aPlayer: Byte): Integer');
     RegisterMethodCheck(c, 'function AISerfsPerHouse(aPlayer: Byte): Single');
@@ -421,14 +442,19 @@ begin
 
     RegisterMethodCheck(c, 'function CampaignMissionID: Integer');
     RegisterMethodCheck(c, 'function CampaignMissionsCount: Integer');
-    RegisterMethodCheck(c, 'function CampaignUnlockedMissionID: Integer');
 
     RegisterMethodCheck(c, 'function ClosestGroup(aPlayer, X, Y, aGroupType: Integer): Integer');
+    RegisterMethodCheck(c, 'function ClosestGroupEx(aPlayer, X, Y: Integer; aGroupType: TKMGroupType): Integer');
     RegisterMethodCheck(c, 'function ClosestGroupMultipleTypes(aPlayer, X, Y: Integer; aGroupTypes: TByteSet): Integer');
+    RegisterMethodCheck(c, 'function ClosestGroupMultipleTypesEx(aPlayer, X, Y: Integer; aGroupTypes: TKMGroupTypeSet): Integer');
     RegisterMethodCheck(c, 'function ClosestHouse(aPlayer, X, Y, aHouseType: Integer): Integer');
+    RegisterMethodCheck(c, 'function ClosestHouseEx(aPlayer, X, Y: Integer; aHouseType: TKMHouseType): Integer');
     RegisterMethodCheck(c, 'function ClosestHouseMultipleTypes(aPlayer, X, Y: Integer; aHouseTypes: TByteSet): Integer');
+    RegisterMethodCheck(c, 'function ClosestHouseMultipleTypesEx(aPlayer, X, Y: Integer; aHouseTypes: TKMHouseTypeSet): Integer');
     RegisterMethodCheck(c, 'function ClosestUnit(aPlayer, X, Y, aUnitType: Integer): Integer');
+    RegisterMethodCheck(c, 'function ClosestUnitEx(aPlayer, X, Y: Integer; aUnitType: TKMUnitType): Integer');
     RegisterMethodCheck(c, 'function ClosestUnitMultipleTypes(aPlayer, X, Y: Integer; aUnitTypes: TByteSet): Integer');
+    RegisterMethodCheck(c, 'function ClosestUnitMultipleTypesEx(aPlayer, X, Y: Integer; aUnitTypes: TKMUnitTypeSet): Integer');
 
     RegisterMethodCheck(c, 'function ConnectedByRoad(X1, Y1, X2, Y2: Integer): Boolean');
     RegisterMethodCheck(c, 'function ConnectedByWalking(X1, Y1, X2, Y2: Integer): Boolean');
@@ -452,6 +478,7 @@ begin
     RegisterMethodCheck(c, 'function GroupOrder(aGroupID: Integer): TKMGroupOrder');
     RegisterMethodCheck(c, 'function GroupOwner(aGroupID: Integer): Integer');
     RegisterMethodCheck(c, 'function GroupType(aGroupID: Integer): Integer');
+    RegisterMethodCheck(c, 'function GroupTypeEx(aGroupID: Integer): TKMGroupType');
 
     RegisterMethodCheck(c, 'function HouseAt(aX, aY: Word): Integer');
     RegisterMethodCheck(c, 'function HouseAllowAllyToSelect(aHouseID: Integer): Boolean');
@@ -462,7 +489,7 @@ begin
     RegisterMethodCheck(c, 'function HouseCanReachResources(aHouseID: Integer): Boolean)');
     RegisterMethodCheck(c, 'function HouseDamage(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseDeliveryBlocked(aHouseID: Integer): Boolean');
-    RegisterMethodCheck(c, 'function HouseDeliveryMode(aHouseID: Integer): Integer');
+    RegisterMethodCheck(c, 'function HouseDeliveryMode(aHouseID: Integer): TKMDeliveryMode');
     RegisterMethodCheck(c, 'function HouseDestroyed(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseFlagPoint(aHouseID: Integer): TKMPoint');
     RegisterMethodCheck(c, 'function HouseGetAllUnitsIn(aHouseID: Integer): TIntegerArray');
@@ -479,8 +506,11 @@ begin
     RegisterMethodCheck(c, 'function HouseSiteIsDigged(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseTownHallMaxGold(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseType(aHouseID: Integer): Integer');
+    RegisterMethodCheck(c, 'function HouseTypeEx(aHouseID: Integer): TKMHouseType');
     RegisterMethodCheck(c, 'function HouseTypeMaxHealth(aHouseType: Integer): Word');
+    RegisterMethodCheck(c, 'function HouseTypeMaxHealthEx(aHouseType: TKMHouseType): Integer');
     RegisterMethodCheck(c, 'function HouseTypeName(aHouseType: Byte): AnsiString');
+    RegisterMethodCheck(c, 'function HouseTypeNameEx(aHouseType: TKMHouseType): AnsiString');
     RegisterMethodCheck(c, 'function HouseTypeToOccupantType(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseTypeToWorkerType(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseUnlocked(aPlayer, aHouseType: Word): Boolean');
@@ -616,7 +646,7 @@ begin
     c := Sender.AddClassN(nil, AnsiString(fActions.ClassName));
     RegisterMethodCheck(c, 'procedure AIArmyType(aPlayer: Byte; aType: TKMArmyType)');
     RegisterMethodCheck(c, 'function AIAttackAdd(aPlayer: Byte; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer;' +
-                           'aMelleCount, aAntiHorseCount, aRangedCount, aMountedCount: Word; ' +
+                           'aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount: Word; ' +
                            'aRandomGroups: Boolean; aTarget: TKMAIAttackTarget; aCustomPosition: TKMPoint): Integer');
     RegisterMethodCheck(c, 'function AIAttackRemove(aPlayer: Byte; aAIAttackId: Word): Boolean');
     RegisterMethodCheck(c, 'procedure AIAttackRemoveAll(aPlayer: Byte)');
@@ -626,11 +656,13 @@ begin
     RegisterMethodCheck(c, 'procedure AIAutoDefence(aPlayer: Byte; aAuto: Boolean)');
     RegisterMethodCheck(c, 'procedure AIAutoRepair(aPlayer: Byte; aAuto: Boolean)');
     RegisterMethodCheck(c, 'procedure AIDefencePositionAdd(aPlayer: Byte; X, Y: Integer; aDir, aGroupType: Byte; aRadius: Word; aDefType: Byte)');
+    RegisterMethodCheck(c, 'procedure AIDefencePositionAddEx(aPlayer: Integer; const aDefencePosition: TKMDefencePositionInfo)');
     RegisterMethodCheck(c, 'procedure AIDefencePositionRemove(aPlayer: Byte; X, Y: Integer)');
     RegisterMethodCheck(c, 'procedure AIDefencePositionRemoveAll(aPlayer: Byte)');
     RegisterMethodCheck(c, 'procedure AIDefendAllies(aPlayer: Byte; aDefend: Boolean)');
     RegisterMethodCheck(c, 'procedure AIEquipRate(aPlayer: Byte; aType: Byte; aRate: Word)');
     RegisterMethodCheck(c, 'procedure AIGroupsFormationSet(aPlayer, aType: Byte; aCount, aColumns: Word)');
+    RegisterMethodCheck(c, 'procedure AIGroupsFormationSetEx(aPlayer: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer)');
     RegisterMethodCheck(c, 'procedure AIRecruitDelay(aPlayer, aDelay: Cardinal)');
     RegisterMethodCheck(c, 'procedure AIRecruitLimit(aPlayer, aLimit: Byte)');
     RegisterMethodCheck(c, 'procedure AISerfsPerHouse(aPlayer: Byte; aSerfs: Single)');
@@ -1135,9 +1167,11 @@ begin
       RegisterMethod(@TKMScriptStates.AIAutoDefence,                            'AIAutoDefence');
       RegisterMethod(@TKMScriptStates.AIAutoRepair,                             'AIAutoRepair');
       RegisterMethod(@TKMScriptStates.AIDefencePositionGet,                     'AIDefencePositionGet');
+      RegisterMethod(@TKMScriptStates.AIDefencePositionGetEx,                   'AIDefencePositionGetEx');
       RegisterMethod(@TKMScriptStates.AIDefendAllies,                           'AIDefendAllies');
       RegisterMethod(@TKMScriptStates.AIEquipRate,                              'AIEquipRate');
       RegisterMethod(@TKMScriptStates.AIGroupsFormationGet,                     'AIGroupsFormationGet');
+      RegisterMethod(@TKMScriptStates.AIGroupsFormationGetEx,                   'AIGroupsFormationGetEx');
       RegisterMethod(@TKMScriptStates.AIRecruitDelay,                           'AIRecruitDelay');
       RegisterMethod(@TKMScriptStates.AIRecruitLimit,                           'AIRecruitLimit');
       RegisterMethod(@TKMScriptStates.AISerfsPerHouse,                          'AISerfsPerHouse');
@@ -1147,14 +1181,19 @@ begin
 
       RegisterMethod(@TKMScriptStates.CampaignMissionID,                        'CampaignMissionID');
       RegisterMethod(@TKMScriptStates.CampaignMissionsCount,                    'CampaignMissionsCount');
-      RegisterMethod(@TKMScriptStates.CampaignUnlockedMissionID,                'CampaignUnlockedMissionID');
 
       RegisterMethod(@TKMScriptStates.ClosestGroup,                             'ClosestGroup');
+      RegisterMethod(@TKMScriptStates.ClosestGroupEx,                           'ClosestGroupEx');
       RegisterMethod(@TKMScriptStates.ClosestGroupMultipleTypes,                'ClosestGroupMultipleTypes');
+      RegisterMethod(@TKMScriptStates.ClosestGroupMultipleTypesEx,              'ClosestGroupMultipleTypesEx');
       RegisterMethod(@TKMScriptStates.ClosestHouse,                             'ClosestHouse');
+      RegisterMethod(@TKMScriptStates.ClosestHouseEx,                           'ClosestHouseEx');
       RegisterMethod(@TKMScriptStates.ClosestHouseMultipleTypes,                'ClosestHouseMultipleTypes');
+      RegisterMethod(@TKMScriptStates.ClosestHouseMultipleTypesEx,              'ClosestHouseMultipleTypesEx');
       RegisterMethod(@TKMScriptStates.ClosestUnit,                              'ClosestUnit');
+      RegisterMethod(@TKMScriptStates.ClosestUnitEx,                            'ClosestUnitEx');
       RegisterMethod(@TKMScriptStates.ClosestUnitMultipleTypes,                 'ClosestUnitMultipleTypes');
+      RegisterMethod(@TKMScriptStates.ClosestUnitMultipleTypesEx,               'ClosestUnitMultipleTypesEx');
 
       RegisterMethod(@TKMScriptStates.ConnectedByRoad,                          'ConnectedByRoad');
       RegisterMethod(@TKMScriptStates.ConnectedByWalking,                       'ConnectedByWalking');
@@ -1178,6 +1217,7 @@ begin
       RegisterMethod(@TKMScriptStates.GroupOrder,                               'GroupOrder');
       RegisterMethod(@TKMScriptStates.GroupOwner,                               'GroupOwner');
       RegisterMethod(@TKMScriptStates.GroupType,                                'GroupType');
+      RegisterMethod(@TKMScriptStates.GroupTypeEx,                              'GroupTypeEx');
 
       RegisterMethod(@TKMScriptStates.HouseAllowAllyToSelect,                   'HouseAllowAllyToSelect');
       RegisterMethod(@TKMScriptStates.HouseAt,                                  'HouseAt');
@@ -1205,8 +1245,11 @@ begin
       RegisterMethod(@TKMScriptStates.HouseSiteIsDigged,                        'HouseSiteIsDigged');
       RegisterMethod(@TKMScriptStates.HouseTownHallMaxGold,                     'HouseTownHallMaxGold');
       RegisterMethod(@TKMScriptStates.HouseType,                                'HouseType');
+      RegisterMethod(@TKMScriptStates.HouseTypeEx,                              'HouseTypeEx');
       RegisterMethod(@TKMScriptStates.HouseTypeMaxHealth,                       'HouseTypeMaxHealth');
+      RegisterMethod(@TKMScriptStates.HouseTypeMaxHealthEx,                     'HouseTypeMaxHealthEx');
       RegisterMethod(@TKMScriptStates.HouseTypeName,                            'HouseTypeName');
+      RegisterMethod(@TKMScriptStates.HouseTypeNameEx,                          'HouseTypeNameEx');
       RegisterMethod(@TKMScriptStates.HouseTypeToOccupantType,                  'HouseTypeToOccupantType');
       RegisterMethod(@TKMScriptStates.HouseTypeToWorkerType,                    'HouseTypeToWorkerType');
       RegisterMethod(@TKMScriptStates.HouseUnlocked,                            'HouseUnlocked');
@@ -1352,11 +1395,13 @@ begin
       RegisterMethod(@TKMScriptActions.AIAutoDefence,                           'AIAutoDefence');
       RegisterMethod(@TKMScriptActions.AIAutoRepair,                            'AIAutoRepair');
       RegisterMethod(@TKMScriptActions.AIDefencePositionAdd,                    'AIDefencePositionAdd');
+      RegisterMethod(@TKMScriptActions.AIDefencePositionAddEx,                  'AIDefencePositionAddEx');
       RegisterMethod(@TKMScriptActions.AIDefencePositionRemove,                 'AIDefencePositionRemove');
       RegisterMethod(@TKMScriptActions.AIDefencePositionRemoveAll,              'AIDefencePositionRemoveAll');
       RegisterMethod(@TKMScriptActions.AIDefendAllies,                          'AIDefendAllies');
       RegisterMethod(@TKMScriptActions.AIEquipRate,                             'AIEquipRate');
       RegisterMethod(@TKMScriptActions.AIGroupsFormationSet,                    'AIGroupsFormationSet');
+      RegisterMethod(@TKMScriptActions.AIGroupsFormationSetEx,                  'AIGroupsFormationSetEx');
       RegisterMethod(@TKMScriptActions.AIRecruitDelay,                          'AIRecruitDelay');
       RegisterMethod(@TKMScriptActions.AIRecruitLimit,                          'AIRecruitLimit');
       RegisterMethod(@TKMScriptActions.AISerfsPerHouse,                         'AISerfsPerHouse');

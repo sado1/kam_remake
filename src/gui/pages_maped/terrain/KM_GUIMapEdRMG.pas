@@ -45,8 +45,8 @@ type
     TBar_Players, TBar_ProtectedRadius, TBar_Res_Stone, TBar_Res_Gold, TBar_Res_Iron,
     TBar_NonWalk_Size, TBar_NonWalk_Density, TBar_NonWalk_Variance, TBar_NonWalk_EGold, TBar_NonWalk_EIron, TBar_NonWalk_Swamp, TBar_NonWalk_Wetland, TBar_NonWalk_Water,
     TBar_Biomes1_Step, TBar_Biomes1_Limit, TBar_Biomes2_Step, TBar_Biomes2_Limit,
-    TBar_HeightStep, TBar_HeightSlope, TBar_HeightHeight,
-    TBar_Height1, TBar_Height2, TBar_Height3, TBar_Height4, TBar_ObjectDensity, TBar_Forests, TBar_Trees: TKMTrackBar;
+    TBar_HeightStep, TBar_HeightSlope, TBar_HeightSmoothPeaks, TBar_HeightHeight,
+    TBar_ObjectDensity, TBar_Forests, TBar_Trees: TKMTrackBar;
 
     {$IFDEF DEBUG_RMG}
     Check_Decomposition,Check_BasicTiles,Check_CA: TKMCheckBox;
@@ -156,22 +156,22 @@ constructor TKMMapEdRMG.Create(aParent: TKMPanel; aMinimap: TKMMinimap = nil; aM
 const
   OFFSET_1 = 10;
   OFFSET_2 = 20;
-  OFFSET_Column = 10;
-  WIDTH_Column = 200;
+  OFFSET_Column = 9;
+  WIDTH_Column = 195;
   WIDTH_TrackBar = WIDTH_Column - OFFSET_Column;
   Column_1_X = OFFSET_Column;
   Column_2_X = OFFSET_Column + Column_1_X + WIDTH_Column;
   Column_3_X = OFFSET_Column + Column_2_X + WIDTH_Column;
   Column_4_X = OFFSET_Column + Column_3_X + WIDTH_Column;
+  Column_5_X = OFFSET_Column + Column_4_X + WIDTH_Column;
   // Background
-  SIZE_X = WIDTH_Column * 4 + 40;
   SIZE_Y = 560;
   // Boxes
   BOX_X = WIDTH_Column - OFFSET_Column;
   BOX_Y = 20; // LINE_HEIGHT
   PARAGRAPH_HEIGHT = 30;
   // Bevel
-  INDENTATION_Bevel = 5;
+  INDENTATION_Bevel = 4;
   SIZE_Bevel_X = WIDTH_Column;
   SIZE_Bevel_Y = SIZE_Y - 140;
   // Resources
@@ -179,6 +179,7 @@ const
   GOLD_MAX = 1000;
   IRON_MAX = 1000;
 var
+  sizeX: Integer;
   img: TKMImage;
   columnX, columnY: Integer;
   panelSettings: TKMPanel;
@@ -186,13 +187,15 @@ var
 begin
   inherited Create;
 
+  sizeX := WIDTH_Column * (Byte(not aMP) + 4) + 50;
+
   fMPLobby := aMP;
   fMapSizeIndicator := False;
   fMinimap := aMinimap;
   fRMG := TKMRandomMapGenerator.Create;
   fOnNewMap := nil;
 
-  Panel_RMG := TKMPanel.Create(aParent, 0, (aParent.Height - SIZE_Y) div 2, SIZE_X, SIZE_Y);
+  Panel_RMG := TKMPanel.Create(aParent, 0, (aParent.Height - SIZE_Y) div 2, sizeX, SIZE_Y);
   Panel_RMG.AnchorsCenter;
   Panel_RMG.Hide;
   Panel_RMG.PanelHandleMouseWheelByDefault := False; //Allow to zoom in/out while RMG settings window is open
@@ -202,24 +205,31 @@ begin
   if aMP then
   begin
     TKMBevel.Create(Panel_RMG, -2000,  -2000, 5000, 5000);
-    img := TKMImage.Create(Panel_RMG, -20, -50, SIZE_X+40, SIZE_Y+60, 15, rxGuiMain);
+    img := TKMImage.Create(Panel_RMG, -20, -50, sizeX+40, SIZE_Y+60, 15, rxGuiMain);
     img.ImageStretch;
   end
   else
-    TKMBevel.Create(Panel_RMG, 0, -15, SIZE_X, SIZE_Y);
+    TKMBevel.Create(Panel_RMG, 0, -15, sizeX, SIZE_Y);
   // Bevel panels
   TKMBevel.Create(Panel_RMG, Column_1_X-INDENTATION_Bevel, 60, SIZE_Bevel_X, SIZE_Bevel_Y);
   TKMBevel.Create(Panel_RMG, Column_2_X-INDENTATION_Bevel, 60, SIZE_Bevel_X, SIZE_Bevel_Y);
   TKMBevel.Create(Panel_RMG, Column_3_X-INDENTATION_Bevel, 60, SIZE_Bevel_X, SIZE_Bevel_Y);
-  TKMBevel.Create(Panel_RMG, Column_4_X-INDENTATION_Bevel, 60, SIZE_Bevel_X, 220 - 80*Ord(aMP));
-  TKMBevel.Create(Panel_RMG, Column_4_X-INDENTATION_Bevel, 60+220+30 - 80*Ord(aMP), SIZE_Bevel_X, 170 - 30*Ord(aMP));
+  if aMP then
+  begin
+    TKMBevel.Create(Panel_RMG, Column_4_X-INDENTATION_Bevel, 60, SIZE_Bevel_X, 220 - 80);
+    TKMBevel.Create(Panel_RMG, Column_4_X-INDENTATION_Bevel, 60+220+30 - 80, SIZE_Bevel_X, 170 - 30);
+  end
+  else
+  begin
+    TKMBevel.Create(Panel_RMG, Column_4_X-INDENTATION_Bevel, 60, SIZE_Bevel_X, 220 + 40);
+    TKMBevel.Create(Panel_RMG, Column_5_X-INDENTATION_Bevel, 60, SIZE_Bevel_X, 170);
+  end;
 
 // Title
-  TKMLabel.Create(Panel_RMG, SIZE_X div 2, -10, gResTexts[TX_MAPED_RMG_SETTINGS_TITLE], fntOutline, taCenter);
-
+  TKMLabel.Create(Panel_RMG, sizeX div 2, -10, gResTexts[TX_MAPED_RMG_SETTINGS_TITLE], fntOutline, taCenter);
 
 // RMG panel
-  panelSettings := TKMPanel.Create(Panel_RMG, 0,  40, SIZE_X, SIZE_Y - 40);
+  panelSettings := TKMPanel.Create(Panel_RMG, 0,  40, sizeX, SIZE_Y - 40);
 
 // COLUMN 1: Locs + Resources
   columnX := Column_1_X;
@@ -448,6 +458,18 @@ begin
     TBar_HeightSlope.Position := fRMG.RMGSettings.Height.Slope;
     TBar_HeightSlope.Step := 10;
     TBar_HeightSlope.Hint := gResTexts[TX_MAPED_RMG_SETTINGS_HEIGHT_SLOPE_HINT];
+  // SmoothOutMountainPeaks
+  lab := TKMLabel.Create(panelSettings, columnX, NextLine(columnY), BOX_X, BOX_Y, gResTexts[TX_MAPED_RMG_SETTINGS_HEIGHT_SMOOTH_PEAKS], fntMetal, taLeft);
+    lab.Hint := gResTexts[TX_MAPED_RMG_SETTINGS_HEIGHT_SMOOTH_PEAKS_HINT];
+  TBar_HeightSmoothPeaks := TKMTrackBar.Create(panelSettings, columnX, NextLine(columnY), WIDTH_TrackBar, 1, 9);
+    TBar_HeightSmoothPeaks.Position := fRMG.RMGSettings.Height.SmoothOutMountainPeaks;
+    TBar_HeightSmoothPeaks.Hint := gResTexts[TX_MAPED_RMG_SETTINGS_HEIGHT_SMOOTH_PEAKS_HINT];
+  if aMP then
+  begin
+    lab.Hide;
+    TBar_HeightSmoothPeaks.Hide;
+    NextLine(columnY,-40);
+  end;
   // Height
   lab := TKMLabel.Create(panelSettings, columnX, NextLine(columnY), BOX_X, BOX_Y, gResTexts[TX_MAPED_TERRAIN_HEIGHTS], fntMetal, taLeft);
     lab.Hint := gResTexts[TX_MAPED_RMG_SETTINGS_HEIGHT_HEIGHTS_HINT];
@@ -468,8 +490,14 @@ begin
     Check_ReplaceTerrain.Hint := gResTexts[TX_MAPED_RMG_SETTINGS_CHANGE_TEXTURE_HINT];
     if aMP then begin Check_ReplaceTerrain.Hide; NextLine(columnY,-20) end;
 
-// COLUMN 4: Objects
-  Check_Objects := TKMCheckBox.Create(panelSettings, columnX, NextLine(columnY,40), BOX_X, BOX_Y, gResTexts[TX_MAPED_RMG_SETTINGS_OBJECTS], fntMetal);
+// COLUMN 4-5: Objects
+  if not aMP then
+  begin
+    columnX := Column_5_X;
+    columnY := 0;
+  end;
+
+  Check_Objects := TKMCheckBox.Create(panelSettings, columnX, NextLine(columnY,Byte(aMP)*40), BOX_X, BOX_Y, gResTexts[TX_MAPED_RMG_SETTINGS_OBJECTS], fntMetal);
     Check_Objects.Checked := fRMG.RMGSettings.Objects.Active;
     Check_Objects.Hint := gResTexts[TX_MAPED_RMG_SETTINGS_OBJECTS_HINT];
     Check_Objects.Enabled := not aMP;
@@ -556,7 +584,7 @@ begin
 
 
 // Buttons
-  columnX := SIZE_X - 160;// - 215 * Ord(aMP);
+  columnX := sizeX - 160;// - 215 * Ord(aMP);
   columnY := SIZE_Y - 50;
   Button_RMG_Generate_New_Seed := TKMButton.Create(Panel_RMG, columnX-320-60, columnY, 200, 30, gResTexts[TX_MAPED_RMG_SETTINGS_NEW_RANDOM_SEED], bsMenu);
   Button_RMG_Generate_New_Seed.OnClick := RMG_Generate_New_Seed;
@@ -653,6 +681,7 @@ procedure TKMMapEdRMG.RMG_Generate_Map(Sender: TObject);
       begin
         Step := TBar_HeightStep.Position;
         Slope := TBar_HeightSlope.Position;
+        SmoothOutMountainPeaks := TBar_HeightSmoothPeaks.Position;
         Height := TBar_HeightHeight.Position;
         Active := Check_Height.Checked;
         HideNonSmoothTransition := Check_HideNonSmoothTransition.Checked;

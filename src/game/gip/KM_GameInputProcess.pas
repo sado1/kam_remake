@@ -106,6 +106,7 @@ type
     gicGameTeamChange,
     gicGameHotkeySet,        //Hotkeys are synced for MP saves (UI keeps local copy to avoid GIP delays)
     gicGameMessageLogRead,   //Player marks a message in their log as read
+    gicGameMessageListRead,  //Player opens message list
     gicGamePlayerChange,     //Players can be changed to AI when loading a save and player name could be changed
     gicGamePlayerDefeat,     //Player can be defeated after intentional quit from the game
     gicGamePlayerAllianceSet,//Set player alliance to other player
@@ -151,11 +152,11 @@ const
 
   ALLOWED_AFTER_DEFEAT: set of TKMGameInputCommandType =
     [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameLoadSave,
-     gicGameMessageLogRead, gicScriptSoundRemoveRq, gicTempDoNothing];
+     gicGameMessageLogRead, gicGameMessageListRead, gicScriptSoundRemoveRq, gicTempDoNothing];
 
   ALLOWED_IN_CINEMATIC: set of TKMGameInputCommandType =
     [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameMessageLogRead,
-     gicGamePlayerAllianceSet, gicGamePlayerAddDefGoals, gicScriptSoundRemoveRq, gicTempDoNothing];
+     gicGameMessageListRead, gicGamePlayerAllianceSet, gicGamePlayerAddDefGoals, gicScriptSoundRemoveRq, gicTempDoNothing];
 
   ALLOWED_BY_SPECTATORS: set of TKMGameInputCommandType =
     [gicGameAlertBeacon, gicGameSpeed, gicGameAutoSave, gicGameAutoSaveAfterPT, gicGameSaveReturnLobby, gicGameLoadSave,
@@ -265,6 +266,7 @@ const
     gicpt_Int2,     // gicGameTeamChange
     gicpt_Int2,     // gicGameHotkeySet
     gicpt_Int1,     // gicGameMessageLogRead
+    gicpt_Int1,     // gicGameMessageListRead
     gicpt_Ansi1Int3,// gicGamePlayerChange
     gicpt_Int1,     // gicGamePlayerDefeat
     gicpt_Int3,     // gicGamePlayerAllianceSet
@@ -402,7 +404,7 @@ type
     procedure CmdArmy(aCommandType: TKMGameInputCommandType; aGroup: TKMUnitGroup; aUnit: TKMUnit); overload;
     procedure CmdArmy(aCommandType: TKMGameInputCommandType; aGroup1, aGroup2: TKMUnitGroup); overload;
     procedure CmdArmy(aCommandType: TKMGameInputCommandType; aGroup: TKMUnitGroup; aHouse: TKMHouse); overload;
-    procedure CmdArmy(aCommandType: TKMGameInputCommandType; aGroup: TKMUnitGroup; aTurnAmount: TKMTurnDirection; aLineAmount:shortint); overload;
+    procedure CmdArmy(aCommandType: TKMGameInputCommandType; aGroup: TKMUnitGroup; aTurnAmount, aLineAmount: ShortInt); overload;
     procedure CmdArmy(aCommandType: TKMGameInputCommandType; aGroup: TKMUnitGroup; const aLoc: TKMPoint; aDirection: TKMDirection); overload;
 
     procedure CmdUnit(aCommandType: TKMGameInputCommandType; aUnit: TKMUnit);
@@ -967,7 +969,7 @@ begin
       gicArmyAttackUnit:   srcGroup.OrderAttackUnit(tgtUnit, True);
       gicArmyAttackHouse:  srcGroup.OrderAttackHouse(tgtHouse, True);
       gicArmyHalt:         srcGroup.OrderHalt(True);
-      gicArmyFormation:    srcGroup.OrderFormation(TKMTurnDirection(IntParams[1]),IntParams[2], True);
+      gicArmyFormation:    srcGroup.OrderFormation(IntParams[1],IntParams[2], True);
       gicArmyWalk:         srcGroup.OrderWalk(KMPoint(SmallIntParams[0], SmallIntParams[1]), True, wtokPlayerOrder, TKMDirection(SmallIntParams[2]));
 
       gicUnitDismiss:        srcUnit.Dismiss;
@@ -1054,6 +1056,7 @@ begin
       gicGameAlertBeacon:         ExecGameAlertBeaconCmd(aCommand);
       gicGameHotkeySet:           P.SelectionHotkeys[IntParams[0]] := IntParams[1];
       gicGameMessageLogRead:      P.MessageLog[IntParams[0]].IsReadGIP := True;
+      gicGameMessageListRead:     P.MessageLog.ReadAtCountGIP := IntParams[0];
       gicGamePlayerChange:        begin
                                     Assert(not gGameParams.IsMapEditor);
                                     gHands[IntParams[0]].OwnerNikname := AnsiStrParam;
@@ -1149,10 +1152,10 @@ begin
 end;
 
 
-procedure TKMGameInputProcess.CmdArmy(aCommandType: TKMGameInputCommandType; aGroup: TKMUnitGroup; aTurnAmount: TKMTurnDirection; aLineAmount:shortint);
+procedure TKMGameInputProcess.CmdArmy(aCommandType: TKMGameInputCommandType; aGroup: TKMUnitGroup; aTurnAmount, aLineAmount: ShortInt);
 begin
   Assert(aCommandType = gicArmyFormation);
-  TakeCommand(MakeCommand(aCommandType, aGroup.UID, Byte(aTurnAmount), aLineAmount));
+  TakeCommand(MakeCommand(aCommandType, aGroup.UID, aTurnAmount, aLineAmount));
 end;
 
 
@@ -1303,7 +1306,7 @@ end;
 
 procedure TKMGameInputProcess.CmdGame(aCommandType: TKMGameInputCommandType; aValue: Integer);
 begin
-  Assert(aCommandType in [gicGameMessageLogRead, gicGamePlayerDefeat, gicGameLoadSave]);
+  Assert(aCommandType in [gicGameMessageLogRead, gicGameMessageListRead, gicGamePlayerDefeat, gicGameLoadSave]);
   TakeCommand(MakeCommand(aCommandType, aValue));
 end;
 

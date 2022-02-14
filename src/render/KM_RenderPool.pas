@@ -1134,13 +1134,13 @@ procedure TRenderPool.AddUnitFlag(aUnit: TKMUnitType; aAct: TKMUnitActionType; a
                                   FlagAnim: Integer; pX, pY: Single; FlagColor: TColor4; DoImmediateRender: Boolean = False);
 const
   // Offsets for flags rendering in pixels
-  FlagXOffset: array [TKMGroupType, TKMDirection] of shortint = (
+  FlagXOffset: array [GROUP_TYPE_MIN..GROUP_TYPE_MAX, TKMDirection] of shortint = (
     ( 0, 10, -1,  2,  1, -6,-10,  4, 13),  // gtMelee
     ( 0,  6,  5,  7, -3,-10, -4, 10,  9),  // gtAntiHorse
     ( 0,  8,  6,  6, -6, -8, -3,  8,  6),  // gtRanged
     ( 0,  6,  2,  3, -5,-10, -8,  5,  6)); // gtMounted
 
-  FlagYOffset: array [TKMGroupType, TKMDirection] of shortint = (
+  FlagYOffset: array [GROUP_TYPE_MIN..GROUP_TYPE_MAX, TKMDirection] of shortint = (
     ( 0, 28, 30, 30, 26, 25, 24, 25, 27),  // gtMelee
     ( 0, 23, 25, 25, 21, 20, 19, 20, 22),  // gtAntiHorse
     ( 0, 28, 30, 30, 26, 25, 24, 25, 27),  // gtRanged
