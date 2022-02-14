@@ -111,7 +111,7 @@ type
     function HouseTypeName(aHouseType: Byte): AnsiString;
     function HouseTypeNameEx(aHouseType: TKMHouseType): AnsiString;
     function HouseTypeToOccupantType(aHouseType: Integer): Integer;
-    function HouseTypeToWorkerType(aHouseType: Integer): Integer;
+    function HouseTypeToWorkerType(aHouseType: TKMHouseType): TKMUnitType;
     function HouseUnlocked(aPlayer, aHouseType: Word): Boolean;
     function HouseWareBlocked(aHouseID, aWareType: Integer): Boolean;
     function HouseWareBlockedTakeOut(aHouseID, aWareType: Integer): Boolean;
@@ -2681,19 +2681,17 @@ begin
 end;
 
 
-//* Version: 13050
-//* Returns the type of unit that should work in the specified type of house, or -1 if no unit should work in it.
+//* Version: 13900
+//* Returns the type of unit that should work in the specified type of house, or utNone if no unit should work in it.
 //* Result: Unit type
-function TKMScriptStates.HouseTypeToWorkerType(aHouseType: Integer): Integer;
+function TKMScriptStates.HouseTypeToWorkerType(aHouseType: TKMHouseType): TKMUnitType;
 begin
+  Result := utNone;
   try
-    Result := -1;
-    if HouseTypeValid(aHouseType) then
-    begin
-      Result := UNIT_TYPE_TO_ID[gResHouses[HOUSE_ID_TO_TYPE[aHouseType]].WorkerType];
-    end
+    if aHouseType in HOUSES_VALID then
+      Result := gResHouses[aHouseType].WorkerType
     else
-      LogParamWarning('States.HouseTypeToWorkerType', [aHouseType]);
+      LogParamWarning('States.HouseTypeToWorkerType', [Ord(aHouseType)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
