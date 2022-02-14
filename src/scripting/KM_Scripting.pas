@@ -717,6 +717,8 @@ begin
     RegisterMethodCheck(c, 'procedure GroupOrderWalk(aGroupID: Integer; X, Y, aDirection: Word)');
     RegisterMethodCheck(c, 'procedure GroupSetFormation(aGroupID: Integer; aNumColumns: Byte)');
 
+    RegisterMethodCheck(c, 'procedure HandHouseLock(aHand: Integer; aHouseType: TKMHouseType; aLock: TKMHandHouseLock)');
+
     RegisterMethodCheck(c, 'procedure HouseAddBuildingMaterials(aHouseID: Integer)');
     RegisterMethodCheck(c, 'procedure HouseAddBuildingProgress(aHouseID: Integer)');
     RegisterMethodCheck(c, 'procedure HouseAddDamage(aHouseID: Integer; aDamage: Word)');
@@ -1458,6 +1460,8 @@ begin
       RegisterMethod(@TKMScriptActions.GroupOrderStorm,                         'GroupOrderStorm');
       RegisterMethod(@TKMScriptActions.GroupOrderWalk,                          'GroupOrderWalk');
       RegisterMethod(@TKMScriptActions.GroupSetFormation,                       'GroupSetFormation');
+
+      RegisterMethod(@TKMScriptActions.HandHouseLock,                           'HandHouseLock');
 
       RegisterMethod(@TKMScriptActions.HouseAddBuildingMaterials,               'HouseAddBuildingMaterials');
       RegisterMethod(@TKMScriptActions.HouseAddBuildingProgress,                'HouseAddBuildingProgress');

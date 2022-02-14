@@ -4,7 +4,7 @@ interface
 uses
   Classes, Math, SysUtils, StrUtils, KM_AIAttacks, KM_ResTilesetTypes,
   KM_CommonTypes, KM_Defaults, KM_Points, KM_Houses, KM_ScriptingIdCache, KM_Units, KM_TerrainTypes,
-  KM_ScriptSound, KM_MediaTypes,
+  KM_ScriptSound, KM_MediaTypes, KM_ResTypes, KM_HandTypes,
   KM_UnitGroup, KM_ResHouses, KM_HouseCollection, KM_ResWares, KM_ScriptingEvents, KM_ScriptingTypes;
 
 
@@ -87,6 +87,8 @@ type
     procedure GroupOrderStorm(aGroupID: Integer);
     procedure GroupOrderWalk(aGroupID: Integer; X, Y, aDirection: Word);
     procedure GroupSetFormation(aGroupID: Integer; aNumColumns: Byte);
+
+    procedure HandHouseLock(aHand: Integer; aHouseType: TKMHouseType; aLock: TKMHandHouseLock);
 
     procedure HouseAddBuildingMaterials(aHouseID: Integer);
     procedure HouseAddBuildingProgress(aHouseID: Integer);
@@ -208,11 +210,11 @@ uses
   TypInfo,
   KM_AI, KM_AIDefensePos,
   KM_Game, KM_GameParams, KM_GameTypes, KM_FogOfWar,
-  KM_HandsCollection, KM_HandLogistics, KM_HandConstructions, KM_HandTypes,
+  KM_HandsCollection, KM_HandLogistics, KM_HandConstructions,
   KM_HouseBarracks, KM_HouseSchool, KM_HouseStore, KM_HouseMarket, KM_HouseWoodcutters, KM_HouseTownHall,
   KM_UnitWarrior,
   KM_UnitGroupTypes,
-  KM_Resource, KM_ResTypes, KM_ResUnits, KM_Hand, KM_ResMapElements,
+  KM_Resource, KM_ResUnits, KM_Hand, KM_ResMapElements,
   KM_PathFindingRoad,
   KM_Terrain,
   KM_AITypes,
@@ -2094,6 +2096,35 @@ begin
       gHands[aPlayer].Locks.AllowToTrade[WARE_ID_TO_TYPE[aResType]] := aAllowed
     else
       LogParamWarning('Actions.SetTradeAllowed', [aPlayer, aResType, Byte(aAllowed)]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Sets hand (player) house lock aLock for a specified house type aHouseType
+//* if htAny is passed for house type then aLock will be applied to all house types
+procedure TKMScriptActions.HandHouseLock(aHand: Integer; aHouseType: TKMHouseType; aLock: TKMHandHouseLock);
+var
+  HT: TKMHouseType;
+begin
+  try
+    //Verify all input parameters
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+      and ((aHouseType = htAny) or (aHouseType in HOUSES_VALID)) then
+    begin
+      if aHouseType = htAny then
+      begin
+        for HT in HOUSES_VALID do
+          gHands[aHand].Locks.HouseLock[HT] := aLock;
+      end
+      else
+        gHands[aHand].Locks.HouseLock[aHouseType] := aLock;
+    end
+    else
+      LogParamWarn('Actions.HandHouseLock', [aHand, GetEnumName(TypeInfo(TKMHouseType), Integer(aHouseType))]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
