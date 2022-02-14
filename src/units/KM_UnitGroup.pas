@@ -277,6 +277,7 @@ begin
   inherited Create(etGroup, aID, aOwner);
 
   fGroupType := UNIT_TO_GROUP_TYPE[aUnitType];
+  Assert(fGroupType in GROUP_TYPES_VALID, 'Can''t assign group type ' + GetEnumName(TypeInfo(TKMGroupType), Integer(fGroupType)));
   fMembers := TList<TKMUnitWarrior>.Create;
   fOffenders := TList<TKMUnitWarrior>.Create;
 
