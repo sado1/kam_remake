@@ -2148,7 +2148,7 @@ begin
     begin
       for B := Low(UNIT_ID_TO_TYPE) to High(UNIT_ID_TO_TYPE) do
         if B in aTypes then
-          inc(Result, gHands[aPlayer].Stats.GetUnitLostQty(UNIT_ID_TO_TYPE[B]));
+          Inc(Result, gHands[aPlayer].Stats.GetUnitLostQty(UNIT_ID_TO_TYPE[B]));
     end
     else
       LogIntParamWarn('States.StatUnitLostMultipleTypesCount', [aPlayer]);
