@@ -239,6 +239,7 @@ type
     function UnitAllowAllyToSelect(aUnitID: Integer): Boolean;
     function UnitAt(aX, aY: Word): Integer;
     function UnitCarrying(aUnitID: Integer): Integer;
+    function UnitCarryingEx(aUnitID: Integer): TKMWareType;
     function UnitDead(aUnitID: Integer): Boolean;
     function UnitDirection(aUnitID: Integer): Integer;
     function UnitDismissable(aUnitID: Integer): Boolean;
@@ -5278,6 +5279,30 @@ begin
     end
     else
       LogIntParamWarn('States.UnitCarrying', [aUnitID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns the ware a serf is carrying, or wtNone if the unit is not a serf or is not carrying anything
+//* Result: Ware type
+function TKMScriptStates.UnitCarryingEx(aUnitID: Integer): TKMWareType;
+var
+  U: TKMUnit;
+begin
+  try
+    Result := wtNone; //-1 if unit id is invalid
+    if aUnitID > 0 then
+    begin
+      U := fIDCache.GetUnit(aUnitID);
+      if (U <> nil) and (U is TKMUnitSerf) and (TKMUnitSerf(U).Carry in WARES_VALID) then
+        Result := TKMUnitSerf(U).Carry;
+    end
+    else
+      LogIntParamWarn('States.UnitCarryingEx', [aUnitID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

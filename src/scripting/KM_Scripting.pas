@@ -656,6 +656,7 @@ begin
     RegisterMethodCheck(c, 'function UnitAllowAllyToSelect(aUnitID: Integer): Boolean');
     RegisterMethodCheck(c, 'function UnitAt(aX, aY: Word): Integer');
     RegisterMethodCheck(c, 'function UnitCarrying(aUnitID: Integer): Integer');
+    RegisterMethodCheck(c, 'function UnitCarryingEx(aUnitID: Integer): TKMWareType');
     RegisterMethodCheck(c, 'function UnitDead(aUnitID: Integer): Boolean');
     RegisterMethodCheck(c, 'function UnitDirection(aUnitID: Integer): Integer');
     RegisterMethodCheck(c, 'function UnitDismissable(aUnitID: Integer): Boolean');
@@ -1421,6 +1422,7 @@ begin
       RegisterMethod(@TKMScriptStates.UnitAllowAllyToSelect,                    'UnitAllowAllyToSelect');
       RegisterMethod(@TKMScriptStates.UnitAt,                                   'UnitAt');
       RegisterMethod(@TKMScriptStates.UnitCarrying,                             'UnitCarrying');
+      RegisterMethod(@TKMScriptStates.UnitCarryingEx,                           'UnitCarryingEx');
       RegisterMethod(@TKMScriptStates.UnitDead,                                 'UnitDead');
       RegisterMethod(@TKMScriptStates.UnitDirection,                            'UnitDirection');
       RegisterMethod(@TKMScriptStates.UnitDismissable,                          'UnitDismissable');
