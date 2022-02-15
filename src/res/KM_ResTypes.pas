@@ -34,6 +34,7 @@ const
 
   WARES_VALID = [WARE_MIN..WARE_MAX];
   WARFARES_VALID = [WARFARE_MIN..WARFARE_MAX];
+  WARES_FOOD = [wtWine, wtBread, wtSausages, wtFish];
 
   WARE_CNT = Integer(WARE_MAX) - Integer(WARE_MIN) + 1;
   WARFARE_CNT = Integer(WARFARE_MAX) - Integer(WEAPON_MIN) + 1;

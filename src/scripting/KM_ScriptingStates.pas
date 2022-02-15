@@ -2026,8 +2026,7 @@ function TKMScriptStates.StatResourceProducedCount(aPlayer, aResType: Byte): Int
 begin
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-    and (aResType in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)])
-    then
+    and (aResType in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)]) then
       Result := gHands[aPlayer].Stats.GetWaresProduced(WARE_ID_TO_TYPE[aResType])
     else
     begin
@@ -2043,16 +2042,32 @@ end;
 
 //* Version: 13900
 //* Returns the number of the specified resource produced by the specified player
+//* if wtFood is passed, then all produced food will be returned
+//* if wtWarfare is passed, then all produced warfare will be returned, including horses
+//* if wtAll is passed, then all produced wares will be returned
 //* Result: Number of produced resources
 function TKMScriptStates.StatResourceProducedCountEx(aPlayer: Integer; aWareType: TKMWareType): Integer;
+var
+  WT: TKMWareType;
+  WTS: TKMWareTypeSet;
 begin
   Result := 0;
   try
     if InRange(aPlayer, 0, gHands.Count - 1)
       and (gHands[aPlayer].Enabled)
-      and (aWareType in WARES_VALID)
-    then
-      Result := gHands[aPlayer].Stats.GetWaresProduced(aWareType)
+      and (aWareType <> wtNone) then
+    begin
+      case aWareType of
+        wtNone:     WTS := [];
+        wtWarfare:  WTS := WARFARES_VALID;
+        wtFood:     WTS := WARES_FOOD;
+        wtAll:      WTS := WARES_VALID;
+        else        WTS := [aWareType];
+      end;
+
+      for WT in WTS do
+        Result := Result + gHands[aPlayer].Stats.GetWaresProduced(WT);
+    end
     else
       LogParamWarn('States.StatResourceProducedCountEx', [aPlayer, GetEnumName(TypeInfo(TKMWareType), Integer(aWareType))]);
   except
