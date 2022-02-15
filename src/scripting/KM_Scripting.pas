@@ -603,6 +603,7 @@ begin
     RegisterMethodCheck(c, 'function MarketToWare(aMarketID: Integer): Integer');
     RegisterMethodCheck(c, 'function MarketToWareEx(aMarketID: Integer): TKMWareType');
     RegisterMethodCheck(c, 'function MarketValue(aRes: Integer): Single');
+    RegisterMethodCheck(c, 'function MarketValueEx(aWareType: TKMWareType): Single');
 
     RegisterMethodCheck(c, 'function PeaceTime: Cardinal');
 
@@ -1354,6 +1355,7 @@ begin
       RegisterMethod(@TKMScriptStates.MarketToWare,                             'MarketToWare');
       RegisterMethod(@TKMScriptStates.MarketToWareEx,                           'MarketToWareEx');
       RegisterMethod(@TKMScriptStates.MarketValue,                              'MarketValue');
+      RegisterMethod(@TKMScriptStates.MarketValueEx,                            'MarketValueEx');
 
       RegisterMethod(@TKMScriptStates.PeaceTime,                                'PeaceTime');
 

@@ -189,6 +189,7 @@ type
     function MarketToWare(aMarketID: Integer): Integer;
     function MarketToWareEx(aMarketID: Integer): TKMWareType;
     function MarketValue(aRes: Integer): Single;
+    function MarketValueEx(aWareType: TKMWareType): Single;
     function PeaceTime: Cardinal;
 
     function PlayerAllianceCheck(aPlayer1, aPlayer2: Byte): Boolean;
@@ -4329,6 +4330,29 @@ begin
     end
     else
       LogIntParamWarn('States.MarketValue', [aRes]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns the relative market value of the specified resource type,
+//* which is a rough indication of the cost to produce that resource.
+//* These values are constant within one KaM Remake release, but may change in future KaM Remake releases.
+//* The TradeRatio is calculated as: MarketLossFactor * MarketValue(To) / (MarketValue(From).
+//* If the TradeRatio is >= 1, then the number of From resources required to receive 1 To resource is: Round(TradeRatio).
+//* If the trade ratio is < 1 then the number of To resources received for trading 1 From resource is: Round(1 / TradeRatio)
+//* Result: Value
+function TKMScriptStates.MarketValueEx(aWareType: TKMWareType): Single;
+begin
+  try
+    Result := -1; //-1 if ware is invalid
+    if aWareType in WARES_VALID then
+      Result := gResWares[aWareType].MarketPrice
+    else
+      LogParamWarn('States.MarketValueEx', [GetEnumName(TypeInfo(TKMWareType), Integer(aWareType))]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
