@@ -232,6 +232,7 @@ type
     function StatUnitLostMultipleTypesCount(aPlayer: Byte; aTypes: TByteSet): Integer;
     function StatUnitLostMultipleTypesCountEx(aPlayer: Byte; aTypes: TKMUnitTypeSet): Integer;
     function StatUnitMultipleTypesCount(aPlayer: Byte; aTypes: TByteSet): Integer;
+    function StatUnitMultipleTypesCountEx(aPlayer: Integer; aTypes: TKMUnitTypeSet): Integer;
     function StatUnitTypeCount(aPlayer, aUnitType: Byte): Integer;
     function StatUnitTypeCountEx(aPlayer: Integer; aUnitType: TKMUnitType): Integer;
 
@@ -1903,10 +1904,49 @@ begin
     begin
       for B := Low(UNIT_ID_TO_TYPE) to High(UNIT_ID_TO_TYPE) do
         if B in aTypes then
-          inc(Result, gHands[aPlayer].Stats.GetUnitQty(UNIT_ID_TO_TYPE[B]));
+          Inc(Result, gHands[aPlayer].Stats.GetUnitQty(UNIT_ID_TO_TYPE[B]));
     end
     else
       LogIntParamWarn('States.StatUnitMultipleTypesCount', [aPlayer]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns number of specified unit types for specified player.
+//* aTypes: Set of unit types eg. [utSerf, utMilitia]
+//* Result: Total number of  units
+function TKMScriptStates.StatUnitMultipleTypesCountEx(aPlayer: Integer; aTypes: TKMUnitTypeSet): Integer;
+var
+  UT: TKMUnitType;
+  str: string;
+begin
+  try
+    Result := 0;
+    if InRange(aPlayer, 0, gHands.Count - 1)
+      and (gHands[aPlayer].Enabled) then
+    begin
+      aTypes := aTypes * UNITS_HUMAN; // Only humans could be counted (we have stats only for them)
+      for UT in aTypes do
+        Inc(Result, gHands[aPlayer].Stats.GetUnitQty(UT));
+    end
+    else
+    begin
+      // Collect unit types to string
+      str := '[';
+      for UT in aTypes do
+      begin
+        if str <> '' then
+          str := str + ', ';
+        str := str + GetEnumName(TypeInfo(TKMUnitType), Integer(UT));
+      end;
+      str := str + ']';
+
+      LogParamWarn('States.StatUnitMultipleTypesCountEx', [aPlayer, str]);
+    end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

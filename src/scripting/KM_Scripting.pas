@@ -649,6 +649,7 @@ begin
     RegisterMethodCheck(c, 'function StatUnitLostMultipleTypesCount(aPlayer: Byte; aTypes: TByteSet): Integer');
     RegisterMethodCheck(c, 'function StatUnitLostMultipleTypesCountEx(aPlayer: Byte; aTypes: TKMUnitTypeSet): Integer');
     RegisterMethodCheck(c, 'function StatUnitMultipleTypesCount(aPlayer: Byte; aTypes: TByteSet): Integer');
+    RegisterMethodCheck(c, 'function StatUnitMultipleTypesCountEx(aPlayer: Integer; aTypes: TKMUnitTypeSet): Integer');
     RegisterMethodCheck(c, 'function StatUnitTypeCount(aPlayer, aUnitType: Byte): Integer');
     RegisterMethodCheck(c, 'function StatUnitTypeCountEx(aPlayer: Integer; aUnitType: TKMUnitType): Integer');
 
@@ -1412,6 +1413,7 @@ begin
       RegisterMethod(@TKMScriptStates.StatUnitLostMultipleTypesCount,           'StatUnitLostMultipleTypesCount');
       RegisterMethod(@TKMScriptStates.StatUnitLostMultipleTypesCountEx,         'StatUnitLostMultipleTypesCountEx');
       RegisterMethod(@TKMScriptStates.StatUnitMultipleTypesCount,               'StatUnitMultipleTypesCount');
+      RegisterMethod(@TKMScriptStates.StatUnitMultipleTypesCountEx,             'StatUnitMultipleTypesCountEx');
       RegisterMethod(@TKMScriptStates.StatUnitTypeCount,                        'StatUnitTypeCount');
       RegisterMethod(@TKMScriptStates.StatUnitTypeCountEx,                      'StatUnitTypeCountEx');
 
