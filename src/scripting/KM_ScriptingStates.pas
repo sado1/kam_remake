@@ -455,7 +455,7 @@ begin
 end;
 
 
-//* Version: 13800
+//* Version: 13900
 //* Gets the parameters of AI defence position
 //* Parameters are returned in aDefencePosition record
 procedure TKMScriptStates.AIDefencePositionGetEx(aPlayer, aID: Integer; out aDefencePosition: TKMDefencePositionInfo);
@@ -556,7 +556,7 @@ begin
 end;
 
 
-//* Version: 13800
+//* Version: 13900
 //* Gets the formation the AI uses for defence positions for specified player and group type
 //* group count and columns are returned in aCount and aColumns variables
 procedure TKMScriptStates.AIGroupsFormationGetEx(aPlayer: Integer; aGroupType: TKMGroupType; out aCount, aColumns: Integer);
@@ -781,7 +781,7 @@ begin
 end;
 
 
-//* Version: 13800
+//* Version: 13900
 //* Returns the group of the specified player and group type that is closest to the specified coordinates,
 //* or -1 if no such group was found.
 //* Result: Group ID
@@ -863,7 +863,7 @@ begin
 end;
 
 
-//* Version: 13800
+//* Version: 13900
 //* Returns the group of the specified player and group types that is closest to the specified coordinates,
 //* or -1 if no such group was found.
 //* The group types is a "set of Byte", for example [1,3]
@@ -955,7 +955,7 @@ begin
 end;
 
 
-//* Version: 13800
+//* Version: 13900
 //* Returns the house of the specified player and house type that is closest to the specified coordinates,
 //* or -1 if no such house was found.
 //* If the house type is htAny any house type will be accepted
@@ -1037,7 +1037,7 @@ begin
 end;
 
 
-//* Version: 13800
+//* Version: 13900
 //* Returns the house of the specified player and house types that is closest to the specified coordinates,
 //* or -1 if no such house was found.
 //* The house types is a "set of TKMHouseType", for example [htQuary, htSchool, htStore]
@@ -1128,7 +1128,7 @@ begin
 end;
 
 
-//* Version: 13800
+//* Version: 13900
 //* Returns the unit of the specified player and unit type that is closest to the specified coordinates,
 //* or -1 if no such unit was found.
 //* If the unit type is utAny any unit type will be accepted
@@ -1211,7 +1211,7 @@ begin
 end;
 
 
-//* Version: 13800
+//* Version: 13900
 //* Returns the unit of the specified player and unit types that is closest to the specified coordinates,
 //* or -1 if no such unit was found.
 //* The unit types is a "set of TKMUnitType", for example [utSerf, utMilitia]
@@ -1959,6 +1959,7 @@ end;
 
 //* Version: 13900
 //* Returns number of specified unit type for specified player
+//* if passed utAny as unit type, then returns number of all units for the specified player
 //* Result: Number of units
 function TKMScriptStates.StatUnitTypeCountEx(aPlayer: Integer; aUnitType: TKMUnitType): Integer;
 begin
@@ -5682,7 +5683,7 @@ begin
 end;
 
 
-//* Version: 13800
+//* Version: 13900
 //* Returns the type of the specified group or gtNone if Group ID invalid
 //* Result: Group type
 function TKMScriptStates.GroupTypeEx(aGroupID: Integer): TKMGroupType;
