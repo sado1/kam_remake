@@ -219,6 +219,7 @@ type
     function StatHouseTypePlansCountEx(aPlayer: Integer; aHouseType: TKMHouseType): Integer;
     function StatPlayerCount: Integer;
     function StatResourceProducedCount(aPlayer, aResType: Byte): Integer;
+    function StatResourceProducedCountEx(aPlayer: Integer; aWareType: TKMWareType): Integer;
     function StatResourceProducedMultipleTypesCount(aPlayer: Byte; aTypes: TByteSet): Integer;
     function StatUnitCount(aPlayer: Byte): Integer;
     function StatUnitKilledCount(aPlayer, aUnitType: Byte): Integer;
@@ -2032,6 +2033,27 @@ begin
       Result := 0;
       LogIntParamWarn('States.StatResourceProducedCount', [aPlayer, aResType]);
     end;
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns the number of the specified resource produced by the specified player
+//* Result: Number of produced resources
+function TKMScriptStates.StatResourceProducedCountEx(aPlayer: Integer; aWareType: TKMWareType): Integer;
+begin
+  Result := 0;
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1)
+      and (gHands[aPlayer].Enabled)
+      and (aWareType in WARES_VALID)
+    then
+      Result := gHands[aPlayer].Stats.GetWaresProduced(aWareType)
+    else
+      LogParamWarn('States.StatResourceProducedCountEx', [aPlayer, GetEnumName(TypeInfo(TKMWareType), Integer(aWareType))]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

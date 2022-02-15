@@ -634,6 +634,7 @@ begin
     RegisterMethodCheck(c, 'function StatHouseTypePlansCountEx(aPlayer: Integer; aHouseType: TKMHouseType): Integer');
     RegisterMethodCheck(c, 'function StatPlayerCount: Integer');
     RegisterMethodCheck(c, 'function StatResourceProducedCount(aPlayer, aResType: Byte): Integer');
+    RegisterMethodCheck(c, 'function StatResourceProducedCountEx(aPlayer: Integer; aWareType: TKMWareType): Integer');
     RegisterMethodCheck(c, 'function StatResourceProducedMultipleTypesCount(aPlayer: Byte; aTypes: TByteSet): Integer');
     RegisterMethodCheck(c, 'function StatUnitCount(aPlayer: Byte): Integer');
     RegisterMethodCheck(c, 'function StatUnitKilledCount(aPlayer, aUnitType: Byte): Integer');
@@ -1390,6 +1391,7 @@ begin
       RegisterMethod(@TKMScriptStates.StatHouseTypePlansCountEx,                'StatHouseTypePlansCountEx');
       RegisterMethod(@TKMScriptStates.StatPlayerCount,                          'StatPlayerCount');
       RegisterMethod(@TKMScriptStates.StatResourceProducedCount,                'StatResourceProducedCount');
+      RegisterMethod(@TKMScriptStates.StatResourceProducedCountEx,              'StatResourceProducedCountEx');
       RegisterMethod(@TKMScriptStates.StatResourceProducedMultipleTypesCount,   'StatResourceProducedMultipleTypesCount');
       RegisterMethod(@TKMScriptStates.StatUnitCount,                            'StatUnitCount');
       RegisterMethod(@TKMScriptStates.StatUnitKilledCount,                      'StatUnitKilledCount');
