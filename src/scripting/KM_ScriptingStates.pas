@@ -2059,7 +2059,7 @@ begin
     begin
       case aWareType of
         wtNone:     WTS := [];
-        wtWarfare:  WTS := WARFARES_VALID;
+        wtWarfare:  WTS := WARES_WARFARE;
         wtFood:     WTS := WARES_FOOD;
         wtAll:      WTS := WARES_VALID;
         else        WTS := [aWareType];
@@ -3156,7 +3156,7 @@ begin
       H := fIDCache.GetHouse(aHouseID);
       if (H is TKMHouseStore) then
         Result := TKMHouseStore(H).NotAcceptFlag[aWareType];
-      if (H is TKMHouseBarracks) and (aWareType in WARFARES_VALID) then
+      if (H is TKMHouseBarracks) and (aWareType in WARES_WARFARE) then
         Result := TKMHouseBarracks(H).NotAcceptFlag[aWareType];
     end
     else
@@ -3182,7 +3182,7 @@ begin
       H := fIDCache.GetHouse(aHouseID);
       if (H is TKMHouseStore) then
         Result := TKMHouseStore(H).NotAllowTakeOutFlag[aWareType];
-      if (H is TKMHouseBarracks) and (aWareType in WARFARES_VALID) then
+      if (H is TKMHouseBarracks) and (aWareType in WARES_WARFARE) then
         Result := TKMHouseBarracks(H).NotAllowTakeOutFlag[aWareType];
     end
     else

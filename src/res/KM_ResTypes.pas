@@ -33,7 +33,7 @@ const
   WARFARE_MAX = wtHorse;
 
   WARES_VALID = [WARE_MIN..WARE_MAX];
-  WARFARES_VALID = [WARFARE_MIN..WARFARE_MAX];
+  WARES_WARFARE = [WARFARE_MIN..WARFARE_MAX];
   WARES_FOOD = [wtWine, wtBread, wtSausages, wtFish];
 
   WARE_CNT = Integer(WARE_MAX) - Integer(WARE_MIN) + 1;
