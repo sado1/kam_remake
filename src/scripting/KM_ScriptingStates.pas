@@ -263,6 +263,7 @@ type
     function UnitUnlocked(aPlayer: Integer; aUnitType: TKMUnitType): Boolean;
 
     function WareTypeName(aWareType: Byte): AnsiString;
+    function WareTypeNameEx(aWareType: TKMWareType): AnsiString;
     function WarriorInFight(aUnitID: Integer; aCountCitizens: Boolean): Boolean;
   end;
 
@@ -5108,6 +5109,29 @@ begin
     begin
       Result := '';
       LogIntParamWarn('States.WareTypeName', [aWareType]);
+    end;
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns the the translated name of the specified ware type.
+//* Note: To ensure multiplayer consistency the name is returned as a number encoded within a markup
+//* which is decoded on output, not the actual translated text.
+//* Therefore string operations like LowerCase will not work.
+//* Result: Ware type name
+function TKMScriptStates.WareTypeNameEx(aWareType: TKMWareType): AnsiString;
+begin
+  try
+    if (aWareType in WARES_VALID) then
+      Result := '<%' + AnsiString(IntToStr(gResWares[aWareType].TextID)) + '>'
+    else
+    begin
+      Result := '';
+      LogParamWarn('States.WareTypeNameEx', [GetEnumName(TypeInfo(TKMWareType), Integer(aWareType))]);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception

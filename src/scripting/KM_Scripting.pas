@@ -1445,6 +1445,7 @@ begin
       RegisterMethod(@TKMScriptStates.UnitUnlocked,                             'UnitUnlocked');
 
       RegisterMethod(@TKMScriptStates.WareTypeName,                             'WareTypeName');
+      RegisterMethod(@TKMScriptStates.WareTypeNameEx,                           'WareTypeNameEx');
       RegisterMethod(@TKMScriptStates.WarriorInFight,                           'WarriorInFight');
     end;
 
