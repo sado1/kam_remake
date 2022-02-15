@@ -117,6 +117,7 @@ type
     function HouseTypeToWorkerType(aHouseType: TKMHouseType): TKMUnitType;
     function HouseUnlocked(aPlayer, aHouseType: Word): Boolean;
     function HouseWareBlocked(aHouseID, aWareType: Integer): Boolean;
+    function HouseWareBlockedEx(aHouseID: Integer; aWareType: TKMWareType): Boolean;
     function HouseWareBlockedTakeOut(aHouseID, aWareType: Integer): Boolean;
     function HouseWeaponsOrdered(aHouseID, aWareType: Integer): Integer;
     function HouseWoodcutterChopOnly(aHouseID: Integer): Boolean;
@@ -2947,6 +2948,32 @@ begin
     end
     else
       LogIntParamWarn('States.HouseWareBlocked', [aHouseID, aWareType]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns true if the specified ware in the specified storehouse or barracks is blocked
+//* Result: Ware blocked
+function TKMScriptStates.HouseWareBlockedEx(aHouseID: Integer; aWareType: TKMWareType): Boolean;
+var
+  H: TKMHouse;
+begin
+  try
+    Result := False;
+    if (aHouseID > 0) and (aWareType in WARES_VALID) then
+    begin
+      H := fIDCache.GetHouse(aHouseID);
+      if (H is TKMHouseStore) then
+        Result := TKMHouseStore(H).NotAcceptFlag[aWareType];
+      if (H is TKMHouseBarracks) and (aWareType in WARFARES_VALID) then
+        Result := TKMHouseBarracks(H).NotAcceptFlag[aWareType];
+    end
+    else
+      LogParamWarn('States.HouseWareBlockedEx', [aHouseID, GetEnumName(TypeInfo(TKMWareType), Integer(aWareType))]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

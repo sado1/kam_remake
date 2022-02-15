@@ -413,6 +413,16 @@ begin
 
     Sender.AddTypeS('TKMUnitTypeSet', 'set of TKMUnitType');
 
+    Sender.AddTypeS('TKMWareType', '(wtNone,'
+      + 'wtTrunk,   wtStone,   wtWood,        wtIronOre,   wtGoldOre,'
+      + 'wtCoal,    wtSteel,   wtGold,        wtWine,      wtCorn,'
+      + 'wtBread,   wtFlour,   wtLeather,     wtSausages,  wtPig,'
+      + 'wtSkin,    wtShield,  wtMetalShield, wtArmor,     wtMetalArmor,'
+      + 'wtAxe,     wtSword,   wtPike,        wtHallebard, wtBow,'
+      + 'wtArbalet, wtHorse,   wtFish,'
+      // Special ware types
+      + 'wtAll,     wtWarfare, wtFood)');
+
     Sender.AddTypeS('TReplaceFlags', '(rfReplaceAll, rfIgnoreCase)'); //Needed for string util Utils.StringReplace
 
     // Add CampaignData type and variable only after addition of all other custom types,
@@ -521,6 +531,7 @@ begin
     RegisterMethodCheck(c, 'function HouseWoodcutterChopOnly(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseWoodcutterMode(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseWareBlocked(aHouseID, aWareType: Integer): Boolean');
+    RegisterMethodCheck(c, 'function HouseWareBlockedEx(aHouseID: Integer; aWareType: TKMWareType): Boolean');
     RegisterMethodCheck(c, 'function HouseWareBlockedTakeOut(aHouseID, aWareType: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseWeaponsOrdered(aHouseID, aWareType: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseWorker(aHouseID: Integer): Integer');
@@ -1267,6 +1278,7 @@ begin
       RegisterMethod(@TKMScriptStates.HouseWoodcutterChopOnly,                  'HouseWoodcutterChopOnly');
       RegisterMethod(@TKMScriptStates.HouseWoodcutterMode,                      'HouseWoodcutterMode');
       RegisterMethod(@TKMScriptStates.HouseWareBlocked,                         'HouseWareBlocked');
+      RegisterMethod(@TKMScriptStates.HouseWareBlockedEx,                       'HouseWareBlockedEx');
       RegisterMethod(@TKMScriptStates.HouseWareBlockedTakeOut,                  'HouseWareBlockedTakeOut');
       RegisterMethod(@TKMScriptStates.HouseWeaponsOrdered,                      'HouseWeaponsOrdered');
       RegisterMethod(@TKMScriptStates.HouseWorker,                              'HouseWorker');
