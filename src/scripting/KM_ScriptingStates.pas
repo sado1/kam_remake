@@ -212,6 +212,7 @@ type
     function StatCitizenCount(aPlayer: Byte): Integer;
     function StatHouseCount(aPlayer: Byte): Integer;
     function StatHouseMultipleTypesCount(aPlayer: Byte; aTypes: TByteSet): Integer;
+    function StatHouseMultipleTypesCountEx(aPlayer: Integer; aTypes: TKMHouseTypeSet): Integer;
     function StatHouseTypeCount(aPlayer, aHouseType: Byte): Integer;
     function StatHouseTypeCountEx(aPlayer: Integer; aHouseType: TKMHouseType): Integer;
     function StatHouseTypePlansCount(aPlayer, aHouseType: Byte): Integer;
@@ -1477,10 +1478,46 @@ begin
     begin
       for B := Low(HOUSE_ID_TO_TYPE) to High(HOUSE_ID_TO_TYPE) do
         if (B in aTypes) and (HOUSE_ID_TO_TYPE[B] <> htNone) then
-          inc(Result, gHands[aPlayer].Stats.GetHouseQty(HOUSE_ID_TO_TYPE[B]));
+          Inc(Result, gHands[aPlayer].Stats.GetHouseQty(HOUSE_ID_TO_TYPE[B]));
     end
     else
       LogIntParamWarn('States.StatHouseMultipleTypesCount', [aPlayer]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns number of specified house types for specified player.
+//* aTypes: House types eg. [htQuary, htSchool, htStore]
+//* Result: Total number of houses
+function TKMScriptStates.StatHouseMultipleTypesCountEx(aPlayer: Integer; aTypes: TKMHouseTypeSet): Integer;
+var
+  HT: TKMHouseType;
+  str: string;
+begin
+  try
+    Result := 0;
+    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
+    begin
+      aTypes := aTypes * HOUSES_VALID;
+      for HT in aTypes do
+        Inc(Result, gHands[aPlayer].Stats.GetHouseQty(HT));
+    end
+    else
+    begin
+      str := '';
+      for HT in aTypes do
+      begin
+        if str <> '' then
+          str := str + ', ';
+        str := str + GetEnumName(TypeInfo(TKMHouseType), Integer(HT));
+      end;
+
+      LogParamWarn('States.StatHouseMultipleTypesCountEx', [aPlayer, str]);
+    end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
