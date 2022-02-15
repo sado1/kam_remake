@@ -260,7 +260,7 @@ type
     function UnitTypeEx(aUnitID: Integer): TKMUnitType;
     function UnitTypeName(aUnitType: Byte): AnsiString;
     function UnitTypeNameEx(aUnitType: TKMUnitType): AnsiString;
-    function UnitUnlocked(aPlayer: Word; aUnitType: Integer): Boolean;
+    function UnitUnlocked(aPlayer: Integer; aUnitType: TKMUnitType): Boolean;
 
     function WareTypeName(aWareType: Byte): AnsiString;
     function WarriorInFight(aUnitID: Integer; aCountCitizens: Boolean): Boolean;
@@ -5074,17 +5074,17 @@ end;
 //* Version: 11750
 //* Returns true if the specified player can train/equip the specified unit type
 //* Result: Unit unlocked
-function TKMScriptStates.UnitUnlocked(aPlayer: Word; aUnitType: Integer): Boolean;
+function TKMScriptStates.UnitUnlocked(aPlayer: Integer; aUnitType: TKMUnitType): Boolean;
 begin
   try
     if InRange(aPlayer, 0, gHands.Count - 1)
-    and (gHands[aPlayer].Enabled)
-    and (aUnitType in [UNIT_TYPE_TO_ID[HUMANS_MIN]..UNIT_TYPE_TO_ID[HUMANS_MAX]]) then
-      Result := not gHands[aPlayer].Locks.GetUnitBlocked(UNIT_ID_TO_TYPE[aUnitType])
+      and (gHands[aPlayer].Enabled)
+      and (aUnitType in UNITS_HUMAN) then
+      Result := not gHands[aPlayer].Locks.GetUnitBlocked(aUnitType)
     else
     begin
       Result := False;
-      LogIntParamWarn('States.UnitUnlocked', [aPlayer, aUnitType]);
+      LogParamWarn('States.UnitUnlocked', [aPlayer, GetEnumName(TypeInfo(TKMUnitType), Integer(aUnitType))]);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception

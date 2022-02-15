@@ -677,7 +677,7 @@ begin
     RegisterMethodCheck(c, 'function UnitTypeEx(aUnitID: Integer): TKMUnitType');
     RegisterMethodCheck(c, 'function UnitTypeName(aUnitType: Byte): AnsiString');
     RegisterMethodCheck(c, 'function UnitTypeNameEx(aUnitType: TKMUnitType): AnsiString');
-    RegisterMethodCheck(c, 'function UnitUnlocked(aPlayer: Word; aUnitType: Integer): Boolean');
+    RegisterMethodCheck(c, 'function UnitUnlocked(aPlayer: Integer; aUnitType: TKMUnitType): Boolean');
 
     RegisterMethodCheck(c, 'function WareTypeName(aWareType: Byte): AnsiString');
     RegisterMethodCheck(c, 'function WarriorInFight(aUnitID: Integer; aCountCitizens: Boolean): Boolean');
