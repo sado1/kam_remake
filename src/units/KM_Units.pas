@@ -1744,7 +1744,7 @@ begin
   UpdateLastTimeTrySetActionWalk;
 
   newAction := TKMUnitActionWalkTo.Create(Self, aLocB, aActionType, aDistance, False, aTargetUnit, aTargetHouse,
-                                          tpUnused, [], True, aAvoidLockedByMovementCost, aSilent);
+                                          tpNone, [], True, aAvoidLockedByMovementCost, aSilent);
 
   //Update action only if route was built, otherwise just keep using previous action
   if newAction.RouteBuilt then
@@ -1767,7 +1767,7 @@ begin
   if (Action is TKMUnitActionWalkTo) and not TKMUnitActionWalkTo(Action).CanAbandonExternal then
     raise Exception.Create('');
   SetAction(TKMUnitActionWalkTo.Create(Self, aLocB, aActionType, aDistance, False, aTargetUnit, aTargetHouse,
-                                       tpUnused, [], True, aAvoidLockedByMovementCost));
+                                       tpNone, [], True, aAvoidLockedByMovementCost));
   UpdateLastTimeTrySetActionWalk;
 end;
 

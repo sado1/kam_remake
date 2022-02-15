@@ -77,7 +77,7 @@ type
   public
     fVertexOccupied: TKMPoint; //Public because it needs to be used by AbandonWalk
     constructor Create(aUnit: TKMUnit; const aLocB: TKMPoint; aActionType: TKMUnitActionType; aDistance: Single; aSetPushed:
-                       Boolean; aTargetUnit: TKMUnit; aTargetHouse: TKMHouse; aTargetPassability: TKMTerrainPassability = tpUnused;
+                       Boolean; aTargetUnit: TKMUnit; aTargetHouse: TKMHouse; aTargetPassability: TKMTerrainPassability = tpNone;
                        aTargetWalkConnectSet: TKMByteSet = []; aUseExactTarget: Boolean = True;
                        aAvoidLockedByMovementCost: Boolean = True; aSilent: Boolean = False);
     constructor Load(LoadStream: TKMemoryStream); override;
@@ -143,7 +143,7 @@ constructor TKMUnitActionWalkTo.Create( aUnit: TKMUnit;
                                         aSetPushed: Boolean;
                                         aTargetUnit: TKMUnit;
                                         aTargetHouse: TKMHouse;
-                                        aTargetPassability: TKMTerrainPassability = tpUnused;
+                                        aTargetPassability: TKMTerrainPassability = tpNone;
                                         aTargetWalkConnectSet: TKMByteSet = [];
                                         aUseExactTarget: Boolean = True;
                                         aAvoidLockedByMovementCost: Boolean = True;
@@ -173,7 +173,7 @@ begin
   fNewWalkTo    := KMPOINT_ZERO;
   fPass         := fUnit.DesiredPassability;
 
-  if (aTargetPassability <> tpUnused) and (aTargetWalkConnectSet <> []) then
+  if (aTargetPassability <> tpNone) and (aTargetWalkConnectSet <> []) then
   begin
     fWalkTo := gTerrain.GetClosestRoad(fWalkFrom, aTargetWalkConnectSet);
   end else
