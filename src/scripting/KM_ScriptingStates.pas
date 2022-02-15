@@ -118,7 +118,7 @@ type
     function HouseUnlocked(aPlayer, aHouseType: Word): Boolean;
     function HouseWareBlocked(aHouseID, aWareType: Integer): Boolean;
     function HouseWareBlockedEx(aHouseID: Integer; aWareType: TKMWareType): Boolean;
-    function HouseWareBlockedTakeOut(aHouseID, aWareType: Integer): Boolean;
+    function HouseWareBlockedTakeOut(aHouseID: Integer; aWareType: TKMWareType): Boolean;
     function HouseWeaponsOrdered(aHouseID, aWareType: Integer): Integer;
     function HouseWoodcutterChopOnly(aHouseID: Integer): Boolean;
     function HouseWoodcutterMode(aHouseID: Integer): Integer;
@@ -2984,24 +2984,22 @@ end;
 //* Version: 12600
 //* Returns true if the specified ware in the specified storehouse or barracks is blocked for taking out (yellow triangle)
 //* Result: Ware blocked for taking out
-function TKMScriptStates.HouseWareBlockedTakeOut(aHouseID, aWareType: Integer): Boolean;
+function TKMScriptStates.HouseWareBlockedTakeOut(aHouseID: Integer; aWareType: TKMWareType): Boolean;
 var
   H: TKMHouse;
-  Res: TKMWareType;
 begin
   try
     Result := False;
-    if (aHouseID > 0) and (aWareType in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)]) then
+    if (aHouseID > 0) and (aWareType in WARES_VALID) then
     begin
-      Res := WARE_ID_TO_TYPE[aWareType];
       H := fIDCache.GetHouse(aHouseID);
       if (H is TKMHouseStore) then
-        Result := TKMHouseStore(H).NotAllowTakeOutFlag[Res];
-      if (H is TKMHouseBarracks) and (Res in [WARFARE_MIN..WARFARE_MAX]) then
-        Result := TKMHouseBarracks(H).NotAllowTakeOutFlag[Res];
+        Result := TKMHouseStore(H).NotAllowTakeOutFlag[aWareType];
+      if (H is TKMHouseBarracks) and (aWareType in WARFARES_VALID) then
+        Result := TKMHouseBarracks(H).NotAllowTakeOutFlag[aWareType];
     end
     else
-      LogIntParamWarn('States.HouseWareBlockedTakeOut', [aHouseID, aWareType]);
+      LogParamWarn('States.HouseWareBlockedTakeOut', [aHouseID, GetEnumName(TypeInfo(TKMWareType), Integer(aWareType))]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

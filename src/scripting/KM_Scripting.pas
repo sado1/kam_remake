@@ -532,7 +532,7 @@ begin
     RegisterMethodCheck(c, 'function HouseWoodcutterMode(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseWareBlocked(aHouseID, aWareType: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseWareBlockedEx(aHouseID: Integer; aWareType: TKMWareType): Boolean');
-    RegisterMethodCheck(c, 'function HouseWareBlockedTakeOut(aHouseID, aWareType: Integer): Boolean');
+    RegisterMethodCheck(c, 'function HouseWareBlockedTakeOut(aHouseID: Integer; aWareType: TKMWareType): Boolean');
     RegisterMethodCheck(c, 'function HouseWeaponsOrdered(aHouseID, aWareType: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseWorker(aHouseID: Integer): Integer');
 
