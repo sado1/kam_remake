@@ -496,8 +496,10 @@ begin
     RegisterMethodCheck(c, 'function GroupType(aGroupID: Integer): Integer');
     RegisterMethodCheck(c, 'function GroupTypeEx(aGroupID: Integer): TKMGroupType');
 
-    RegisterMethodCheck(c, 'function HandHouseCanBuild(aHand: Integer; aHouseType: TKMHouseType): Boolean');
+    RegisterMethodCheck(c, 'function HandCanBuildHouse(aHand: Integer; aHouseType: TKMHouseType): Boolean');
+    RegisterMethodCheck(c, 'function HandCanTrainUnit(aPlayer: Integer; aUnitType: TKMUnitType): Boolean');
     RegisterMethodCheck(c, 'function HandHouseLock(aHand: Integer; aHouseType: TKMHouseType): TKMHandHouseLock');
+    RegisterMethodCheck(c, 'function HandWareDistribution(aPlayer: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType): Integer');
 
     RegisterMethodCheck(c, 'function HouseAt(aX, aY: Word): Integer');
     RegisterMethodCheck(c, 'function HouseAllowAllyToSelect(aHouseID: Integer): Boolean');
@@ -621,7 +623,6 @@ begin
     RegisterMethodCheck(c, 'function PlayerName(aPlayer: Byte): AnsiString');
     RegisterMethodCheck(c, 'function PlayerVictorious(aPlayer: Byte): Boolean');
     RegisterMethodCheck(c, 'function PlayerWareDistribution(aPlayer, aWareType, aHouseType: Byte): Byte');
-    RegisterMethodCheck(c, 'function PlayerWareDistributionEx(aPlayer: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType): Integer');
 
     RegisterMethodCheck(c, 'function StatAIDefencePositionsCount(aPlayer: Byte): Integer');
     RegisterMethodCheck(c, 'function StatArmyCount(aPlayer: Byte): Integer');
@@ -678,7 +679,6 @@ begin
     RegisterMethodCheck(c, 'function UnitTypeEx(aUnitID: Integer): TKMUnitType');
     RegisterMethodCheck(c, 'function UnitTypeName(aUnitType: Byte): AnsiString');
     RegisterMethodCheck(c, 'function UnitTypeNameEx(aUnitType: TKMUnitType): AnsiString');
-    RegisterMethodCheck(c, 'function UnitUnlocked(aPlayer: Integer; aUnitType: TKMUnitType): Boolean');
 
     RegisterMethodCheck(c, 'function WareTypeName(aWareType: Byte): AnsiString');
     RegisterMethodCheck(c, 'function WarriorInFight(aUnitID: Integer; aCountCitizens: Boolean): Boolean');
@@ -1262,8 +1262,10 @@ begin
       RegisterMethod(@TKMScriptStates.GroupType,                                'GroupType');
       RegisterMethod(@TKMScriptStates.GroupTypeEx,                              'GroupTypeEx');
 
-      RegisterMethod(@TKMScriptStates.HandHouseCanBuild,                        'HandHouseCanBuild');
+      RegisterMethod(@TKMScriptStates.HandCanBuildHouse,                        'HandCanBuildHouse');
+      RegisterMethod(@TKMScriptStates.HandCanTrainUnit,                         'HandCanTrainUnit');
       RegisterMethod(@TKMScriptStates.HandHouseLock,                            'HandHouseLock');
+      RegisterMethod(@TKMScriptStates.HandWareDistribution,                     'HandWareDistribution');
 
       RegisterMethod(@TKMScriptStates.HouseAllowAllyToSelect,                   'HouseAllowAllyToSelect');
       RegisterMethod(@TKMScriptStates.HouseAt,                                  'HouseAt');
@@ -1387,7 +1389,6 @@ begin
       RegisterMethod(@TKMScriptStates.PlayerName,                               'PlayerName');
       RegisterMethod(@TKMScriptStates.PlayerVictorious,                         'PlayerVictorious');
       RegisterMethod(@TKMScriptStates.PlayerWareDistribution,                   'PlayerWareDistribution');
-      RegisterMethod(@TKMScriptStates.PlayerWareDistributionEx,                 'PlayerWareDistributionEx');
 
       RegisterMethod(@TKMScriptStates.StatAIDefencePositionsCount,              'StatAIDefencePositionsCount');
       RegisterMethod(@TKMScriptStates.StatArmyCount,                            'StatArmyCount');
@@ -1445,7 +1446,6 @@ begin
       RegisterMethod(@TKMScriptStates.UnitTypeEx,                               'UnitTypeEx');
       RegisterMethod(@TKMScriptStates.UnitTypeName,                             'UnitTypeName');
       RegisterMethod(@TKMScriptStates.UnitTypeNameEx,                           'UnitTypeNameEx');
-      RegisterMethod(@TKMScriptStates.UnitUnlocked,                             'UnitUnlocked');
 
       RegisterMethod(@TKMScriptStates.WareTypeName,                             'WareTypeName');
       RegisterMethod(@TKMScriptStates.WareTypeNameEx,                           'WareTypeNameEx');

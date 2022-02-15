@@ -80,8 +80,10 @@ type
     function GroupType(aGroupID: Integer): Integer;
     function GroupTypeEx(aGroupID: Integer): TKMGroupType;
 
-    function HandHouseCanBuild(aHand: Integer; aHouseType: TKMHouseType): Boolean;
+    function HandCanBuildHouse(aHand: Integer; aHouseType: TKMHouseType): Boolean;
+    function HandCanTrainUnit(aPlayer: Integer; aUnitType: TKMUnitType): Boolean;
     function HandHouseLock(aHand: Integer; aHouseType: TKMHouseType): TKMHandHouseLock;
+    function HandWareDistribution(aPlayer: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType): Integer;
 
     function HouseAllowAllyToSelect(aHouseID: Integer): Boolean;
     function HouseAt(aX, aY: Word): Integer;
@@ -204,7 +206,6 @@ type
     function PlayerName(aPlayer: Byte): AnsiString;
     function PlayerVictorious(aPlayer: Byte): Boolean;
     function PlayerWareDistribution(aPlayer, aWareType, aHouseType: Byte): Byte;
-    function PlayerWareDistributionEx(aPlayer: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType): Integer;
 
     function StatAIDefencePositionsCount(aPlayer: Byte): Integer;
     function StatArmyCount(aPlayer: Byte): Integer;
@@ -262,7 +263,6 @@ type
     function UnitTypeEx(aUnitID: Integer): TKMUnitType;
     function UnitTypeName(aUnitType: Byte): AnsiString;
     function UnitTypeNameEx(aUnitType: TKMUnitType): AnsiString;
-    function UnitUnlocked(aPlayer: Integer; aUnitType: TKMUnitType): Boolean;
 
     function WareTypeName(aWareType: Byte): AnsiString;
     function WareTypeNameEx(aWareType: TKMWareType): AnsiString;
@@ -1712,29 +1712,6 @@ begin
 end;
 
 
-//* Version: 13900
-//* Returns the ware distribution for the specified resource, house and player
-//* Result: Ware distribution [0..5]
-function TKMScriptStates.PlayerWareDistributionEx(aPlayer: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType): Integer;
-begin
-  try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-      and (aWareType in WARES_VALID)
-      and (aHouseType in HOUSES_VALID) then
-      Result := gHands[aPlayer].Stats.WareDistribution[aWareType, aHouseType]
-    else
-    begin
-      Result := 0;
-      LogParamWarn('States.PlayerWareDistributionEx', [aPlayer, GetEnumName(TypeInfo(TKMWareType), Integer(aWareType)),
-                                                                GetEnumName(TypeInfo(TKMHouseType), Integer(aHouseType))]);
-    end;
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
-end;
-
-
 //* Version: 5165
 //* Returns an array with IDs for all the units of the specified player
 //* Result: Array of unit IDs
@@ -2430,7 +2407,7 @@ end;
 //* Version: 13900
 //* Returns true if the specified hand (player) can build the specified house type
 //* Result: House can build
-function TKMScriptStates.HandHouseCanBuild(aHand: Integer; aHouseType: TKMHouseType): Boolean;
+function TKMScriptStates.HandCanBuildHouse(aHand: Integer; aHouseType: TKMHouseType): Boolean;
 begin
   try
     if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
@@ -2440,6 +2417,28 @@ begin
     begin
       Result := False;
       LogIntParamWarn('States.HandHouseCanBuild', [aHand, Ord(aHouseType)]);
+    end;
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns true if the specified player can train/equip the specified unit type
+//* Result: Unit unlocked
+function TKMScriptStates.HandCanTrainUnit(aPlayer: Integer; aUnitType: TKMUnitType): Boolean;
+begin
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1)
+      and (gHands[aPlayer].Enabled)
+      and (aUnitType in UNITS_HUMAN) then
+      Result := not gHands[aPlayer].Locks.GetUnitBlocked(aUnitType)
+    else
+    begin
+      Result := False;
+      LogParamWarn('States.UnitUnlocked', [aPlayer, GetEnumName(TypeInfo(TKMUnitType), Integer(aUnitType))]);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
@@ -2465,6 +2464,30 @@ begin
     raise;
   end;
 end;
+
+
+//* Version: 13900
+//* Returns the ware distribution for the specified resource, house and player
+//* Result: Ware distribution [0..5]
+function TKMScriptStates.HandWareDistribution(aPlayer: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType): Integer;
+begin
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+      and (aWareType in WARES_VALID)
+      and (aHouseType in HOUSES_VALID) then
+      Result := gHands[aPlayer].Stats.WareDistribution[aWareType, aHouseType]
+    else
+    begin
+      Result := 0;
+      LogParamWarn('States.PlayerWareDistributionEx', [aPlayer, GetEnumName(TypeInfo(TKMWareType), Integer(aWareType)),
+                                                                GetEnumName(TypeInfo(TKMHouseType), Integer(aHouseType))]);
+    end;
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
 
 
 //* Version: 10940
@@ -5090,28 +5113,6 @@ begin
     begin
       Result := '';
       LogParamWarn('States.UnitTypeNameEx', [GetEnumName(TypeInfo(TKMUnitType), Integer(aUnitType))]);
-    end;
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
-end;
-
-
-//* Version: 11750
-//* Returns true if the specified player can train/equip the specified unit type
-//* Result: Unit unlocked
-function TKMScriptStates.UnitUnlocked(aPlayer: Integer; aUnitType: TKMUnitType): Boolean;
-begin
-  try
-    if InRange(aPlayer, 0, gHands.Count - 1)
-      and (gHands[aPlayer].Enabled)
-      and (aUnitType in UNITS_HUMAN) then
-      Result := not gHands[aPlayer].Locks.GetUnitBlocked(aUnitType)
-    else
-    begin
-      Result := False;
-      LogParamWarn('States.UnitUnlocked', [aPlayer, GetEnumName(TypeInfo(TKMUnitType), Integer(aUnitType))]);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
