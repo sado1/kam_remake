@@ -528,13 +528,13 @@ begin
     RegisterMethodCheck(c, 'function HouseTypeToOccupantType(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseTypeToWorkerType(aHouseType: TKMHouseType): TKMUnitType');
     RegisterMethodCheck(c, 'function HouseUnlocked(aPlayer, aHouseType: Word): Boolean');
-    RegisterMethodCheck(c, 'function HouseWoodcutterChopOnly(aHouseID: Integer): Boolean');
-    RegisterMethodCheck(c, 'function HouseWoodcutterMode(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseWareBlocked(aHouseID, aWareType: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseWareBlockedEx(aHouseID: Integer; aWareType: TKMWareType): Boolean');
     RegisterMethodCheck(c, 'function HouseWareBlockedTakeOut(aHouseID: Integer; aWareType: TKMWareType): Boolean');
     RegisterMethodCheck(c, 'function HouseWeaponsOrdered(aHouseID, aWareType: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseWeaponsOrderedEx(aHouseID: Integer; aWareType: TKMWareType): Integer');
+    RegisterMethodCheck(c, 'function HouseWoodcutterChopOnly(aHouseID: Integer): Boolean');
+    RegisterMethodCheck(c, 'function HouseWoodcutterMode(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseWorker(aHouseID: Integer): Integer');
 
     RegisterMethodCheck(c, 'function IsFieldAt(aPlayer: ShortInt; X, Y: Word): Boolean');
