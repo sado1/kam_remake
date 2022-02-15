@@ -732,7 +732,7 @@ begin
     RegisterMethodCheck(c, 'function  HouseBarracksEquipEx(aHouseID: Integer; aUnitType: TKMUnitType; aCount: Integer): Integer');
     RegisterMethodCheck(c, 'procedure HouseBarracksGiveRecruit(aHouseID: Integer)');
     RegisterMethodCheck(c, 'procedure HouseDeliveryBlock(aHouseID: Integer; aDeliveryBlocked: Boolean)');
-    RegisterMethodCheck(c, 'procedure HouseDeliveryMode(aHouseID: Integer; aDeliveryMode: Byte)');
+    RegisterMethodCheck(c, 'procedure HouseDeliveryMode(aHouseID: Integer; aDeliveryMode: TKMDeliveryMode)');
     RegisterMethodCheck(c, 'procedure HouseDestroy(aHouseID: Integer; aSilent: Boolean)');
     RegisterMethodCheck(c, 'procedure HouseDisableUnoccupiedMessage(aHouseID: Integer; aDisabled: Boolean)');
     RegisterMethodCheck(c, 'procedure HouseRepairEnable(aHouseID: Integer; aRepairEnabled: Boolean)');
