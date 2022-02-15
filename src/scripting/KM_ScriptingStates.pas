@@ -242,6 +242,7 @@ type
     function UnitCarryingEx(aUnitID: Integer): TKMWareType;
     function UnitDead(aUnitID: Integer): Boolean;
     function UnitDirection(aUnitID: Integer): Integer;
+    function UnitDirectionEx(aUnitID: Integer): TKMDirection;
     function UnitDismissable(aUnitID: Integer): Boolean;
     function UnitHome(aUnitID: Integer): Integer;
     function UnitHPCurrent(aUnitID: Integer): Integer;
@@ -4948,6 +4949,30 @@ begin
     end
     else
       LogIntParamWarn('States.UnitDirection', [aUnitID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns the direction the specified unit is facing
+//* Result: Direction (dirNA, dirN, dirNE, dirE, dirSE, dirS, dirSW, dirW, dirNW)
+function TKMScriptStates.UnitDirectionEx(aUnitID: Integer): TKMDirection;
+var
+  U: TKMUnit;
+begin
+  try
+    Result := dirNA; //if unit id is invalid
+    if aUnitID > 0 then
+    begin
+      U := fIDCache.GetUnit(aUnitID);
+      if U <> nil then
+        Result := U.Direction;
+    end
+    else
+      LogIntParamWarn('States.UnitDirectionEx', [aUnitID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
