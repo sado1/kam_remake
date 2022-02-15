@@ -58,7 +58,9 @@ type
         Chart_Citizens: TKMChart;
         Chart_Houses: TKMChart;
         Chart_Wares: TKMChart;
-      Button_Back, Button_Restart, Button_ContinueCampaign: TKMButton;
+      Button_Back,
+      Button_Restart,
+      Button_ContinueCampaign: TKMButton;
   public
     constructor Create(aParent: TKMPanel; aOnStopGame: TUnicodeStringWDefEvent; aOnShowDetailedStats: TEvent);
 
@@ -80,6 +82,10 @@ uses
   KM_InterfaceTypes;
 
 const
+  BTN_ROW_1 = 570;
+  BTN_ROW_2 = 620;
+  BTN_ROW_3 = 670;
+
   STAT_MISSION_TIME_LBL_TX_CONTINUES: array[Boolean] of Integer =
                                           (TX_RESULTS_MISSION_COMPLETED_IN,
                                            TX_RESULTS_MISSION_TIME);
@@ -169,8 +175,13 @@ begin
   Button_Restart.Visible := not (fGameResultMsg in [grReplayEnd, grWin, grGameContinues]);
 
   //Even if the campaign is complete Player can now return to it's screen to replay any of the maps
-  Button_ContinueCampaign.Visible := (gGameApp.Campaigns.ActiveCampaign <> nil) and not (fGameResultMsg in [grReplayEnd, grGameContinues]);
-  Button_ContinueCampaign.Enabled := fGameResultMsg = grWin;
+  Button_ContinueCampaign.Visible := (gGameApp.Campaigns.ActiveCampaign <> nil)
+                                     and not (fGameResultMsg in [grReplayEnd, grGameContinues]);
+  // Show 'Continue' or 'ToCamppaigMap'
+  if fGameResultMsg = grWin then
+    Button_ContinueCampaign.Caption := gResTexts[TX_MENU_MISSION_NEXT]
+  else
+    Button_ContinueCampaign.Caption := gResTexts[TX_MENU_MISSION_TO_CAMPAIGN_MAP];
 
   if fGameResultMsg = grGameContinues then
     Button_Back.Caption := gResTexts[TX_RESULTS_BACK_TO_GAME]
@@ -484,17 +495,17 @@ begin
     Button_MoreStats.CapOffsetY := -20;
     Button_MoreStats.OnClick := MoreStatsClick;
 
-    Button_Back := TKMButton.Create(Panel_Results, 30, 670, 220, 30, gResTexts[TX_MENU_BACK], bsMenu);
-    Button_Back.Anchors := [anLeft];
-    Button_Back.OnClick := BackClick;
+    Button_ContinueCampaign := TKMButton.Create(Panel_Results, 30, BTN_ROW_1, 280, 30, gResTexts[TX_MENU_MISSION_NEXT], bsMenu);
+    Button_ContinueCampaign.Anchors := [anLeft];
+    Button_ContinueCampaign.OnClick := ContinueClick;
 
-    Button_Restart := TKMButton.Create(Panel_Results, 30, 620, 220, 30, gResTexts[TX_MENU_MISSION_REPEAT], bsMenu);
+    Button_Restart := TKMButton.Create(Panel_Results, 30, BTN_ROW_2, 280, 30, gResTexts[TX_MENU_MISSION_REPEAT], bsMenu);
     Button_Restart.Anchors := [anLeft];
     Button_Restart.OnClick := RepeatClick;
 
-    Button_ContinueCampaign := TKMButton.Create(Panel_Results, 30, 570, 220, 30, gResTexts[TX_MENU_MISSION_NEXT], bsMenu);
-    Button_ContinueCampaign.Anchors := [anLeft];
-    Button_ContinueCampaign.OnClick := ContinueClick;
+    Button_Back := TKMButton.Create(Panel_Results, 30, BTN_ROW_3, 280, 30, gResTexts[TX_MENU_BACK], bsMenu);
+    Button_Back.Anchors := [anLeft];
+    Button_Back.OnClick := BackClick;
 end;
 
 
