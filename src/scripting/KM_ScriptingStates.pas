@@ -3083,7 +3083,7 @@ begin
     begin
       H := fIDCache.GetHouse(aHouseID);
       if H is TKMHouseWoodcutters then
-        Result := TKMHouseWoodcutters(H).WoodcutterMode = wcmChop;
+        Result := TKMHouseWoodcutters(H).WoodcutterMode = wmChop;
     end
     else
       LogIntParamWarn('States.HouseWoodcutterChopOnly', [aHouseID]);
@@ -3106,7 +3106,7 @@ var
   H: TKMHouse;
 begin
   try
-    Result := Integer(wcmChopAndPlant);
+    Result := Integer(wmChopAndPlant);
     if aHouseID > 0 then
     begin
       H := fIDCache.GetHouse(aHouseID);

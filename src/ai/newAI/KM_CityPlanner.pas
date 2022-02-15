@@ -449,11 +449,11 @@ procedure TKMCityPlanner.UpdateState(aTick: Cardinal);
     begin
       if aCheckChopOnly then
         ScanChopOnly(W);
-      if (W.WoodcutterMode <> wcmChop) then // Center of forest is not in protected area => chop only mode
-        W.WoodcutterMode := wcmChop
+      if (W.WoodcutterMode <> wmChop) then // Center of forest is not in protected area => chop only mode
+        W.WoodcutterMode := wmChop
     end
-    else if (W.WoodcutterMode <> wcmChopAndPlant) then
-      W.WoodcutterMode := wcmChopAndPlant;
+    else if (W.WoodcutterMode <> wmChopAndPlant) then
+      W.WoodcutterMode := wmChopAndPlant;
   end;
 
 const
@@ -492,7 +492,7 @@ begin
       if not CheckExistHouse then // House was added by script / spectator in debug mode
       begin
         if (HT = htWoodcutters) then
-          AddPlan(HT, H.Entrance, TKMHouseWoodcutters(H).FlagPoint, TKMHouseWoodcutters(H).WoodcutterMode = wcmChop)
+          AddPlan(HT, H.Entrance, TKMHouseWoodcutters(H).FlagPoint, TKMHouseWoodcutters(H).WoodcutterMode = wmChop)
         else
           AddPlan(HT, H.Entrance);
       end;

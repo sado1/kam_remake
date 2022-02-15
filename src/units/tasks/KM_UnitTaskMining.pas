@@ -93,9 +93,9 @@ begin
 
   case fUnit.Home.HouseType of
     htWoodcutters: case TKMHouseWoodcutters(fUnit.Home).WoodcutterMode of
-                      wcmChop:         Result := taCut;
-                      wcmPlant:        Result := taPlant;
-                      wcmChopAndPlant: if fUnit.Home.CheckResOut(wtTrunk) >= MAX_WARES_IN_HOUSE then
+                      wmChop:         Result := taCut;
+                      wmPlant:        Result := taPlant;
+                      wmChopAndPlant: if fUnit.Home.CheckResOut(wtTrunk) >= MAX_WARES_IN_HOUSE then
                                           Result := taPlant
                                         else
                                           Result := taAny;

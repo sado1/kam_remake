@@ -2502,7 +2502,7 @@ end;
 //* Sets whether a woodcutter's hut is on chop-only mode
 procedure TKMScriptActions.HouseWoodcutterChopOnly(aHouseID: Integer; aChopOnly: Boolean);
 const
-  CHOP_ONLY: array [Boolean] of TKMWoodcutterMode = (wcmChopAndPlant, wcmChop);
+  CHOP_ONLY: array [Boolean] of TKMWoodcutterMode = (wmChopAndPlant, wmChop);
 var
   H: TKMHouse;
 begin
