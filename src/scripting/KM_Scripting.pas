@@ -619,6 +619,7 @@ begin
     RegisterMethodCheck(c, 'function PlayerName(aPlayer: Byte): AnsiString');
     RegisterMethodCheck(c, 'function PlayerVictorious(aPlayer: Byte): Boolean');
     RegisterMethodCheck(c, 'function PlayerWareDistribution(aPlayer, aWareType, aHouseType: Byte): Byte');
+    RegisterMethodCheck(c, 'function PlayerWareDistributionEx(aPlayer: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType): Integer');
 
     RegisterMethodCheck(c, 'function StatAIDefencePositionsCount(aPlayer: Byte): Integer');
     RegisterMethodCheck(c, 'function StatArmyCount(aPlayer: Byte): Integer');
@@ -1371,6 +1372,7 @@ begin
       RegisterMethod(@TKMScriptStates.PlayerName,                               'PlayerName');
       RegisterMethod(@TKMScriptStates.PlayerVictorious,                         'PlayerVictorious');
       RegisterMethod(@TKMScriptStates.PlayerWareDistribution,                   'PlayerWareDistribution');
+      RegisterMethod(@TKMScriptStates.PlayerWareDistributionEx,                 'PlayerWareDistributionEx');
 
       RegisterMethod(@TKMScriptStates.StatAIDefencePositionsCount,              'StatAIDefencePositionsCount');
       RegisterMethod(@TKMScriptStates.StatArmyCount,                            'StatArmyCount');

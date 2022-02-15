@@ -204,6 +204,7 @@ type
     function PlayerName(aPlayer: Byte): AnsiString;
     function PlayerVictorious(aPlayer: Byte): Boolean;
     function PlayerWareDistribution(aPlayer, aWareType, aHouseType: Byte): Byte;
+    function PlayerWareDistributionEx(aPlayer: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType): Integer;
 
     function StatAIDefencePositionsCount(aPlayer: Byte): Integer;
     function StatArmyCount(aPlayer: Byte): Integer;
@@ -1602,6 +1603,29 @@ begin
     begin
       Result := 0;
       LogIntParamWarn('States.PlayerWareDistribution', [aPlayer, aWareType, aHouseType]);
+    end;
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns the ware distribution for the specified resource, house and player
+//* Result: Ware distribution [0..5]
+function TKMScriptStates.PlayerWareDistributionEx(aPlayer: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType): Integer;
+begin
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+      and (aWareType in WARES_VALID)
+      and (aHouseType in HOUSES_VALID) then
+      Result := gHands[aPlayer].Stats.WareDistribution[aWareType, aHouseType]
+    else
+    begin
+      Result := 0;
+      LogParamWarn('States.PlayerWareDistributionEx', [aPlayer, GetEnumName(TypeInfo(TKMWareType), Integer(aWareType)),
+                                                                GetEnumName(TypeInfo(TKMHouseType), Integer(aHouseType))]);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
