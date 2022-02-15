@@ -120,6 +120,7 @@ type
     function HouseWareBlockedEx(aHouseID: Integer; aWareType: TKMWareType): Boolean;
     function HouseWareBlockedTakeOut(aHouseID: Integer; aWareType: TKMWareType): Boolean;
     function HouseWeaponsOrdered(aHouseID, aWareType: Integer): Integer;
+    function HouseWeaponsOrderedEx(aHouseID: Integer; aWareType: TKMWareType): Integer;
     function HouseWoodcutterChopOnly(aHouseID: Integer): Boolean;
     function HouseWoodcutterMode(aHouseID: Integer): Integer;
     function HouseWorker(aHouseID: Integer): Integer;
@@ -3032,6 +3033,36 @@ begin
     end
     else
       LogIntParamWarn('States.HouseWeaponsOrdered', [aHouseID, aWareType]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns the number of the specified weapon ordered to be produced in the specified house
+//* Result: Number of ordered weapons
+function TKMScriptStates.HouseWeaponsOrderedEx(aHouseID: Integer; aWareType: TKMWareType): Integer;
+var
+  H: TKMHouse;
+  I: Integer;
+begin
+  try
+    Result := 0;
+    if (aHouseID > 0) and (aWareType in WARES_VALID) then
+    begin
+      H := fIDCache.GetHouse(aHouseID);
+      if (H <> nil) then
+        for I := 1 to 4 do
+          if gResHouses[H.HouseType].ResOutput[I] = aWareType then
+          begin
+            Result := H.ResOrder[I];
+            Exit;
+          end;
+    end
+    else
+      LogParamWarn('States.HouseWeaponsOrdered', [aHouseID, GetEnumName(TypeInfo(TKMWareType), Integer(aWareType))]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

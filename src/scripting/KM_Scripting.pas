@@ -534,6 +534,7 @@ begin
     RegisterMethodCheck(c, 'function HouseWareBlockedEx(aHouseID: Integer; aWareType: TKMWareType): Boolean');
     RegisterMethodCheck(c, 'function HouseWareBlockedTakeOut(aHouseID: Integer; aWareType: TKMWareType): Boolean');
     RegisterMethodCheck(c, 'function HouseWeaponsOrdered(aHouseID, aWareType: Integer): Integer');
+    RegisterMethodCheck(c, 'function HouseWeaponsOrderedEx(aHouseID: Integer; aWareType: TKMWareType): Integer');
     RegisterMethodCheck(c, 'function HouseWorker(aHouseID: Integer): Integer');
 
     RegisterMethodCheck(c, 'function IsFieldAt(aPlayer: ShortInt; X, Y: Word): Boolean');
@@ -1281,6 +1282,7 @@ begin
       RegisterMethod(@TKMScriptStates.HouseWareBlockedEx,                       'HouseWareBlockedEx');
       RegisterMethod(@TKMScriptStates.HouseWareBlockedTakeOut,                  'HouseWareBlockedTakeOut');
       RegisterMethod(@TKMScriptStates.HouseWeaponsOrdered,                      'HouseWeaponsOrdered');
+      RegisterMethod(@TKMScriptStates.HouseWeaponsOrderedEx,                    'HouseWeaponsOrderedEx');
       RegisterMethod(@TKMScriptStates.HouseWorker,                              'HouseWorker');
 
       RegisterMethod(@TKMScriptStates.IsFieldAt,                                'IsFieldAt');
