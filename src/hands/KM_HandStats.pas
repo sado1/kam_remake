@@ -453,8 +453,16 @@ end;
 
 
 function TKMHandStats.GetUnitKilledQty(aType: TKMUnitType): Integer;
+var
+  UT: TKMUnitType;
 begin
-  Result := Units[aType].Killed;
+  Result := 0;
+  case aType of
+    utNone: ;
+    utAny:  for UT := HUMANS_MIN to HUMANS_MAX do
+              Inc(Result, Units[UT].Killed);
+    else    Result := Units[aType].Killed;
+  end;
 end;
 
 
