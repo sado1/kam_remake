@@ -233,6 +233,7 @@ type
     function StatUnitLostMultipleTypesCountEx(aPlayer: Byte; aTypes: TKMUnitTypeSet): Integer;
     function StatUnitMultipleTypesCount(aPlayer: Byte; aTypes: TByteSet): Integer;
     function StatUnitTypeCount(aPlayer, aUnitType: Byte): Integer;
+    function StatUnitTypeCountEx(aPlayer: Integer; aUnitType: TKMUnitType): Integer;
 
     function UnitAllowAllyToSelect(aUnitID: Integer): Boolean;
     function UnitAt(aX, aY: Word): Integer;
@@ -839,13 +840,14 @@ begin
     if not succeed then
     begin
       // Collect group types to string
-      str := '';
+      str := '[';
       for B in aGroupTypes do
       begin
         if str <> '' then
           str := str + ', ';
         str := str + IntToStr(B);
       end;
+      str := str + ']';
 
       LogParamWarn('States.ClosestGroupMultipleTypes', [aPlayer, X, Y, str]);
     end;
@@ -874,13 +876,14 @@ begin
     if not succeed then
     begin
       // Collect group types to string
-      str := '';
+      str := '[';
       for GT in aGroupTypes do
       begin
         if str <> '' then
           str := str + ', ';
         str := str + GetEnumName(TypeInfo(TKMGroupType), Integer(GT));
       end;
+      str := str + ']';
 
       LogParamWarn('States.ClosestGroupMultipleTypesEx', [aPlayer, X, Y, str]);
     end;
@@ -1011,13 +1014,14 @@ begin
     if not succeed then
     begin
       // Collect house types to string
-      str := '';
+      str := '[';
       for B in aHouseTypes do
       begin
         if str <> '' then
           str := str + ', ';
         str := str + IntToStr(B);
       end;
+      str := str + ']';
 
       LogParamWarn('States.ClosestHouseMultipleTypes', [aPlayer, X, Y, str]);
     end;
@@ -1045,13 +1049,14 @@ begin
     if not succeed then
     begin
       // Collect house types to string
-      str := '';
+      str := '[';
       for HT in aHouseTypes do
       begin
         if str <> '' then
           str := str + ', ';
         str := str + GetEnumName(TypeInfo(TKMHouseType), Integer(HT));
       end;
+      str := str + ']';
 
       LogParamWarn('States.ClosestHouseMultipleTypesEx', [aPlayer, X, Y, str]);
     end;
@@ -1183,13 +1188,14 @@ begin
     if not succeed then
     begin
       // Collect unit types to string
-      str := '';
+      str := '[';
       for B in aUnitTypes do
       begin
         if str <> '' then
           str := str + ', ';
         str := str + IntToStr(B);
       end;
+      str := str + ']';
 
       LogParamWarn('States.ClosestUnitMultipleTypes', [aPlayer, X, Y, str]);
     end;
@@ -1217,13 +1223,14 @@ begin
     if not succeed then
     begin
       // Collect unit types to string
-      str := '';
+      str := '[';
       for UT in aUnitTypes do
       begin
         if str <> '' then
           str := str + ', ';
         str := str + GetEnumName(TypeInfo(TKMUnitType), Integer(UT));
       end;
+      str := str + ']';
 
       LogParamWarn('States.ClosestUnitMultipleTypesEx', [aPlayer, X, Y, str]);
     end;
@@ -1515,13 +1522,14 @@ begin
     end
     else
     begin
-      str := '';
+      str := '[';
       for HT in aTypes do
       begin
         if str <> '' then
           str := str + ', ';
         str := str + GetEnumName(TypeInfo(TKMHouseType), Integer(HT));
       end;
+      str := str + ']';
 
       LogParamWarn('States.StatHouseMultipleTypesCountEx', [aPlayer, str]);
     end;
@@ -1921,6 +1929,26 @@ begin
       Result := 0;
       LogIntParamWarn('States.StatUnitTypeCount', [aPlayer, aUnitType]);
     end;
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns number of specified unit type for specified player
+//* Result: Number of units
+function TKMScriptStates.StatUnitTypeCountEx(aPlayer: Integer; aUnitType: TKMUnitType): Integer;
+begin
+  Result := 0;
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+      and ((aUnitType = utAny) or (aUnitType in UNITS_HUMAN))
+    then
+      Result := gHands[aPlayer].Stats.GetUnitQty(aUnitType)
+    else
+      LogParamWarn('States.StatUnitTypeCountEx', [aPlayer, GetEnumName(TypeInfo(TKMUnitType), Integer(aUnitType))]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

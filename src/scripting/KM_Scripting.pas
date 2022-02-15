@@ -650,6 +650,7 @@ begin
     RegisterMethodCheck(c, 'function StatUnitLostMultipleTypesCountEx(aPlayer: Byte; aTypes: TKMUnitTypeSet): Integer');
     RegisterMethodCheck(c, 'function StatUnitMultipleTypesCount(aPlayer: Byte; aTypes: TByteSet): Integer');
     RegisterMethodCheck(c, 'function StatUnitTypeCount(aPlayer, aUnitType: Byte): Integer');
+    RegisterMethodCheck(c, 'function StatUnitTypeCountEx(aPlayer: Integer; aUnitType: TKMUnitType): Integer');
 
     RegisterMethodCheck(c, 'function UnitAllowAllyToSelect(aUnitID: Integer): Boolean');
     RegisterMethodCheck(c, 'function UnitAt(aX, aY: Word): Integer');
@@ -1412,6 +1413,7 @@ begin
       RegisterMethod(@TKMScriptStates.StatUnitLostMultipleTypesCountEx,         'StatUnitLostMultipleTypesCountEx');
       RegisterMethod(@TKMScriptStates.StatUnitMultipleTypesCount,               'StatUnitMultipleTypesCount');
       RegisterMethod(@TKMScriptStates.StatUnitTypeCount,                        'StatUnitTypeCount');
+      RegisterMethod(@TKMScriptStates.StatUnitTypeCountEx,                      'StatUnitTypeCountEx');
 
       RegisterMethod(@TKMScriptStates.UnitAllowAllyToSelect,                    'UnitAllowAllyToSelect');
       RegisterMethod(@TKMScriptStates.UnitAt,                                   'UnitAt');
