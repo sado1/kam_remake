@@ -221,6 +221,7 @@ type
     function StatResourceProducedCount(aPlayer, aResType: Byte): Integer;
     function StatResourceProducedCountEx(aPlayer: Integer; aWareType: TKMWareType): Integer;
     function StatResourceProducedMultipleTypesCount(aPlayer: Byte; aTypes: TByteSet): Integer;
+    function StatResourceProducedMultipleTypesCountEx(aPlayer: Integer; aTypes: TKMWareTypeSet): Integer;
     function StatUnitCount(aPlayer: Byte): Integer;
     function StatUnitKilledCount(aPlayer, aUnitType: Byte): Integer;
     function StatUnitKilledMultipleTypesCount(aPlayer: Byte; aTypes: TByteSet): Integer;
@@ -2076,10 +2077,47 @@ begin
     begin
       for B := Low(WARE_ID_TO_TYPE) to High(WARE_ID_TO_TYPE) do
         if B in aTypes then
-          inc(Result, gHands[aPlayer].Stats.GetWaresProduced(WARE_ID_TO_TYPE[B]));
+          Inc(Result, gHands[aPlayer].Stats.GetWaresProduced(WARE_ID_TO_TYPE[B]));
     end
     else
       LogIntParamWarn('States.StatResourceProducedMultipleTypesCount', [aPlayer]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns the number of the specified resource types produced by the specified player.
+//* aTypes: Set of ware types eg. [wtCoal, wtSteel, wtGold]
+//* Result: Number of produced resources
+function TKMScriptStates.StatResourceProducedMultipleTypesCountEx(aPlayer: Integer; aTypes: TKMWareTypeSet): Integer;
+var
+  WT: TKMWareType;
+  str: string;
+begin
+  try
+    Result := 0;
+    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
+    begin
+      aTypes := aTypes * WARES_VALID;
+      for WT in aTypes do
+        Inc(Result, gHands[aPlayer].Stats.GetWaresProduced(WT));
+    end
+    else
+    begin
+      str := '[';
+      for WT in aTypes do
+      begin
+        if str <> '' then
+          str := str + ', ';
+        str := str + GetEnumName(TypeInfo(TKMWareType), Integer(WT));
+      end;
+      str := str + ']';
+
+      LogParamWarn('States.StatResourceProducedMultipleTypesCountEx', [aPlayer, str]);
+    end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

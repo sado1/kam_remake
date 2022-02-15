@@ -21,6 +21,9 @@ type
     // Special ware types
     wtAll,     wtWarfare, wtFood
   );
+
+  TKMWareTypeSet = set of TKMWareType;
+
 const
   WARE_MIN = wtTrunk;
   WARE_MAX = wtFish;

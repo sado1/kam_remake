@@ -426,6 +426,8 @@ begin
       // Special ware types
       + 'wtAll,     wtWarfare, wtFood)');
 
+    Sender.AddTypeS('TKMWareTypeSet', 'set of TKMWareType');
+
     Sender.AddTypeS('TReplaceFlags', '(rfReplaceAll, rfIgnoreCase)'); //Needed for string util Utils.StringReplace
 
     // Add CampaignData type and variable only after addition of all other custom types,
@@ -636,6 +638,7 @@ begin
     RegisterMethodCheck(c, 'function StatResourceProducedCount(aPlayer, aResType: Byte): Integer');
     RegisterMethodCheck(c, 'function StatResourceProducedCountEx(aPlayer: Integer; aWareType: TKMWareType): Integer');
     RegisterMethodCheck(c, 'function StatResourceProducedMultipleTypesCount(aPlayer: Byte; aTypes: TByteSet): Integer');
+    RegisterMethodCheck(c, 'function StatResourceProducedMultipleTypesCountEx(aPlayer: Integer; aTypes: TKMWareTypeSet): Integer');
     RegisterMethodCheck(c, 'function StatUnitCount(aPlayer: Byte): Integer');
     RegisterMethodCheck(c, 'function StatUnitKilledCount(aPlayer, aUnitType: Byte): Integer');
     RegisterMethodCheck(c, 'function StatUnitKilledMultipleTypesCount(aPlayer: Byte; aTypes: TByteSet): Integer');
@@ -1393,6 +1396,7 @@ begin
       RegisterMethod(@TKMScriptStates.StatResourceProducedCount,                'StatResourceProducedCount');
       RegisterMethod(@TKMScriptStates.StatResourceProducedCountEx,              'StatResourceProducedCountEx');
       RegisterMethod(@TKMScriptStates.StatResourceProducedMultipleTypesCount,   'StatResourceProducedMultipleTypesCount');
+      RegisterMethod(@TKMScriptStates.StatResourceProducedMultipleTypesCountEx, 'StatResourceProducedMultipleTypesCountEx');
       RegisterMethod(@TKMScriptStates.StatUnitCount,                            'StatUnitCount');
       RegisterMethod(@TKMScriptStates.StatUnitKilledCount,                      'StatUnitKilledCount');
       RegisterMethod(@TKMScriptStates.StatUnitKilledMultipleTypesCount,         'StatUnitKilledMultipleTypesCount');
