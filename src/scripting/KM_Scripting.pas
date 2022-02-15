@@ -597,6 +597,7 @@ begin
     RegisterMethodCheck(c, 'function MissionVersion: UnicodeString');
 
     RegisterMethodCheck(c, 'function MarketFromWare(aMarketID: Integer): Integer');
+    RegisterMethodCheck(c, 'function MarketFromWareEx(aMarketID: Integer): TKMWareType');
     RegisterMethodCheck(c, 'function MarketLossFactor: Single');
     RegisterMethodCheck(c, 'function MarketOrderAmount(aMarketID: Integer): Integer');
     RegisterMethodCheck(c, 'function MarketToWare(aMarketID: Integer): Integer');
@@ -1346,6 +1347,7 @@ begin
       RegisterMethod(@TKMScriptStates.MissionVersion,                           'MissionVErsion');
 
       RegisterMethod(@TKMScriptStates.MarketFromWare,                           'MarketFromWare');
+      RegisterMethod(@TKMScriptStates.MarketFromWareEx,                         'MarketFromWareEx');
       RegisterMethod(@TKMScriptStates.MarketLossFactor,                         'MarketLossFactor');
       RegisterMethod(@TKMScriptStates.MarketOrderAmount,                        'MarketOrderAmount');
       RegisterMethod(@TKMScriptStates.MarketToWare,                             'MarketToWare');

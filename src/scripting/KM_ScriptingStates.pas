@@ -183,6 +183,7 @@ type
     function MissionVersion: UnicodeString;
 
     function MarketFromWare(aMarketID: Integer): Integer;
+    function MarketFromWareEx(aMarketID: Integer): TKMWareType;
     function MarketLossFactor: Single;
     function MarketOrderAmount(aMarketID: Integer): Integer;
     function MarketToWare(aMarketID: Integer): Integer;
@@ -4167,6 +4168,36 @@ begin
     end
     else
       LogIntParamWarn('States.MarketFromWare', [aMarketID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns type of FromWare in specified market, or wtNone if no ware is selected
+//* Result: Ware type
+function TKMScriptStates.MarketFromWareEx(aMarketID: Integer): TKMWareType;
+var
+  H: TKMHouse;
+begin
+  try
+    Result := wtNone;
+    if aMarketID > 0 then
+    begin
+      H := fIDCache.GetHouse(aMarketID);
+      if (H is TKMHouseMarket)
+        and (not H.IsDestroyed)
+        and (TKMHouseMarket(H).ResFrom <> TKMHouseMarket(H).ResTo)
+        and (TKMHouseMarket(H).ResFrom in WARES_VALID)
+        and (TKMHouseMarket(H).ResTo in WARES_VALID) then
+      begin
+        Result := TKMHouseMarket(H).ResFrom;
+      end;
+    end
+    else
+      LogIntParamWarn('States.MarketFromWareEx', [aMarketID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
