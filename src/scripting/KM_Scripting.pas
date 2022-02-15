@@ -681,6 +681,7 @@ begin
     RegisterMethodCheck(c, 'function UnitTypeNameEx(aUnitType: TKMUnitType): AnsiString');
 
     RegisterMethodCheck(c, 'function WareTypeName(aWareType: Byte): AnsiString');
+    RegisterMethodCheck(c, 'function WareTypeNameEx(aWareType: TKMWareType): AnsiString');
     RegisterMethodCheck(c, 'function WarriorInFight(aUnitID: Integer; aCountCitizens: Boolean): Boolean');
 
     c := Sender.AddClassN(nil, AnsiString(fActions.ClassName));
