@@ -676,6 +676,7 @@ begin
     RegisterMethodCheck(c, 'function UnitType(aUnitID: Integer): Integer');
     RegisterMethodCheck(c, 'function UnitTypeEx(aUnitID: Integer): TKMUnitType');
     RegisterMethodCheck(c, 'function UnitTypeName(aUnitType: Byte): AnsiString');
+    RegisterMethodCheck(c, 'function UnitTypeNameEx(aUnitType: TKMUnitType): AnsiString');
     RegisterMethodCheck(c, 'function UnitUnlocked(aPlayer: Word; aUnitType: Integer): Boolean');
 
     RegisterMethodCheck(c, 'function WareTypeName(aWareType: Byte): AnsiString');
@@ -1440,6 +1441,7 @@ begin
       RegisterMethod(@TKMScriptStates.UnitType,                                 'UnitType');
       RegisterMethod(@TKMScriptStates.UnitTypeEx,                               'UnitTypeEx');
       RegisterMethod(@TKMScriptStates.UnitTypeName,                             'UnitTypeName');
+      RegisterMethod(@TKMScriptStates.UnitTypeNameEx,                           'UnitTypeNameEx');
       RegisterMethod(@TKMScriptStates.UnitUnlocked,                             'UnitUnlocked');
 
       RegisterMethod(@TKMScriptStates.WareTypeName,                             'WareTypeName');

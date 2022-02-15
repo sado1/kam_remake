@@ -259,6 +259,7 @@ type
     function UnitType(aUnitID: Integer): Integer;
     function UnitTypeEx(aUnitID: Integer): TKMUnitType;
     function UnitTypeName(aUnitType: Byte): AnsiString;
+    function UnitTypeNameEx(aUnitType: TKMUnitType): AnsiString;
     function UnitUnlocked(aPlayer: Word; aUnitType: Integer): Boolean;
 
     function WareTypeName(aWareType: Byte): AnsiString;
@@ -5039,6 +5040,29 @@ begin
     begin
       Result := '';
       LogIntParamWarn('States.UnitTypeName', [aUnitType]);
+    end;
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns the the translated name of the specified unit type.
+//* Note: To ensure multiplayer consistency the name is returned as a number encoded within a markup
+//* which is decoded on output, not the actual translated text.
+//* Therefore string operations like LowerCase will not work.
+//* Result: Unit type name
+function TKMScriptStates.UnitTypeNameEx(aUnitType: TKMUnitType): AnsiString;
+begin
+  try
+    if (aUnitType in UNITS_VALID) then
+      Result := '<%' + AnsiString(IntToStr(gRes.Units[aUnitType].GUITextID)) + '>'
+    else
+    begin
+      Result := '';
+      LogParamWarn('States.UnitTypeNameEx', [GetEnumName(TypeInfo(TKMUnitType), Integer(aUnitType))]);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
