@@ -660,6 +660,7 @@ begin
     RegisterMethodCheck(c, 'function UnitCarryingEx(aUnitID: Integer): TKMWareType');
     RegisterMethodCheck(c, 'function UnitDead(aUnitID: Integer): Boolean');
     RegisterMethodCheck(c, 'function UnitDirection(aUnitID: Integer): Integer');
+    RegisterMethodCheck(c, 'function UnitDirectionEx(aUnitID: Integer): TKMDirection');
     RegisterMethodCheck(c, 'function UnitDismissable(aUnitID: Integer): Boolean');
     RegisterMethodCheck(c, 'function UnitHome(aUnitID: Integer): Integer');
     RegisterMethodCheck(c, 'function UnitHPCurrent(aUnitID: Integer): Integer');
