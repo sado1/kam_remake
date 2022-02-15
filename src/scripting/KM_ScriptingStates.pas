@@ -187,6 +187,7 @@ type
     function MarketLossFactor: Single;
     function MarketOrderAmount(aMarketID: Integer): Integer;
     function MarketToWare(aMarketID: Integer): Integer;
+    function MarketToWareEx(aMarketID: Integer): TKMWareType;
     function MarketValue(aRes: Integer): Single;
     function PeaceTime: Cardinal;
 
@@ -4159,8 +4160,8 @@ begin
       if (H is TKMHouseMarket)
       and (not H.IsDestroyed)
       and (TKMHouseMarket(H).ResFrom <> TKMHouseMarket(H).ResTo)
-      and (TKMHouseMarket(H).ResFrom in [WARE_MIN .. WARE_MAX])
-      and (TKMHouseMarket(H).ResTo in [WARE_MIN .. WARE_MAX]) then
+      and (TKMHouseMarket(H).ResFrom in WARES_VALID)
+      and (TKMHouseMarket(H).ResTo in WARES_VALID) then
       begin
         ResFrom := TKMHouseMarket(H).ResFrom;
         Result := WARE_TY_TO_ID[ResFrom];
@@ -4192,9 +4193,7 @@ begin
         and (TKMHouseMarket(H).ResFrom <> TKMHouseMarket(H).ResTo)
         and (TKMHouseMarket(H).ResFrom in WARES_VALID)
         and (TKMHouseMarket(H).ResTo in WARES_VALID) then
-      begin
         Result := TKMHouseMarket(H).ResFrom;
-      end;
     end
     else
       LogIntParamWarn('States.MarketFromWareEx', [aMarketID]);
@@ -4236,8 +4235,8 @@ begin
       if (H is TKMHouseMarket)
       and (not H.IsDestroyed)
       and (TKMHouseMarket(H).ResFrom <> TKMHouseMarket(H).ResTo)
-      and (TKMHouseMarket(H).ResFrom in [WARE_MIN .. WARE_MAX])
-      and (TKMHouseMarket(H).ResTo in [WARE_MIN .. WARE_MAX]) then
+      and (TKMHouseMarket(H).ResFrom in WARES_VALID)
+      and (TKMHouseMarket(H).ResTo in WARES_VALID) then
         Result := TKMHouseMarket(H).ResOrder[0];
     end
     else
@@ -4265,8 +4264,8 @@ begin
       if (H is TKMHouseMarket)
       and (not H.IsDestroyed)
       and (TKMHouseMarket(H).ResFrom <> TKMHouseMarket(H).ResTo)
-      and (TKMHouseMarket(H).ResFrom in [WARE_MIN .. WARE_MAX])
-      and (TKMHouseMarket(H).ResTo in [WARE_MIN .. WARE_MAX]) then
+      and (TKMHouseMarket(H).ResFrom in WARES_VALID)
+      and (TKMHouseMarket(H).ResTo in WARES_VALID) then
       begin
         ResTo := TKMHouseMarket(H).ResTo;
         Result := WARE_TY_TO_ID[ResTo];
@@ -4274,6 +4273,34 @@ begin
     end
     else
       LogIntParamWarn('States.MarketToWare', [aMarketID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns type of ToWare in specified market, or wtNone if no ware is selected
+//* Result: Ware type
+function TKMScriptStates.MarketToWareEx(aMarketID: Integer): TKMWareType;
+var
+  H: TKMHouse;
+begin
+  try
+    Result := wtNone;
+    if aMarketID > 0 then
+    begin
+      H := fIDCache.GetHouse(aMarketID);
+      if (H is TKMHouseMarket)
+        and (not H.IsDestroyed)
+        and (TKMHouseMarket(H).ResFrom <> TKMHouseMarket(H).ResTo)
+        and (TKMHouseMarket(H).ResFrom in WARES_VALID)
+        and (TKMHouseMarket(H).ResTo in WARES_VALID) then
+        Result := TKMHouseMarket(H).ResTo;
+    end
+    else
+      LogIntParamWarn('States.MarketToWareEx', [aMarketID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

@@ -601,6 +601,7 @@ begin
     RegisterMethodCheck(c, 'function MarketLossFactor: Single');
     RegisterMethodCheck(c, 'function MarketOrderAmount(aMarketID: Integer): Integer');
     RegisterMethodCheck(c, 'function MarketToWare(aMarketID: Integer): Integer');
+    RegisterMethodCheck(c, 'function MarketToWareEx(aMarketID: Integer): TKMWareType');
     RegisterMethodCheck(c, 'function MarketValue(aRes: Integer): Single');
 
     RegisterMethodCheck(c, 'function PeaceTime: Cardinal');
@@ -1351,6 +1352,7 @@ begin
       RegisterMethod(@TKMScriptStates.MarketLossFactor,                         'MarketLossFactor');
       RegisterMethod(@TKMScriptStates.MarketOrderAmount,                        'MarketOrderAmount');
       RegisterMethod(@TKMScriptStates.MarketToWare,                             'MarketToWare');
+      RegisterMethod(@TKMScriptStates.MarketToWareEx,                           'MarketToWareEx');
       RegisterMethod(@TKMScriptStates.MarketValue,                              'MarketValue');
 
       RegisterMethod(@TKMScriptStates.PeaceTime,                                'PeaceTime');
