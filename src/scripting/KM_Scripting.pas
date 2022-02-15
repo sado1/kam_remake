@@ -630,7 +630,7 @@ begin
     RegisterMethodCheck(c, 'function StatCitizenCount(aPlayer: Byte): Integer');
     RegisterMethodCheck(c, 'function StatHouseCount(aPlayer: Byte): Integer');
     RegisterMethodCheck(c, 'function StatHouseMultipleTypesCount(aPlayer: Byte; aTypes: TByteSet): Integer');
-    RegisterMethodCheck(c, 'function StatHouseMultipleTypesCountEx(aPlayer: Integer; aTypes: TKMHouseTypeSet)');
+    RegisterMethodCheck(c, 'function StatHouseMultipleTypesCountEx(aPlayer: Integer; aTypes: TKMHouseTypeSet): Integer');
     RegisterMethodCheck(c, 'function StatHouseTypeCount(aPlayer, aHouseType: Byte): Integer');
     RegisterMethodCheck(c, 'function StatHouseTypeCountEx(aPlayer: Integer; aHouseType: TKMHouseType): Integer');
     RegisterMethodCheck(c, 'function StatHouseTypePlansCount(aPlayer, aHouseType: Byte): Integer');
