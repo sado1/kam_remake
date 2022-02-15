@@ -61,7 +61,6 @@ type
     Houses: array [TKMHouseType] of TKMHouseStats;
     Units: array [HUMANS_MIN..HUMANS_MAX] of TKMUnitStats;
     Wares: array [WARE_MIN..WARE_MAX] of TKMWareStats;
-//    MilitiaTrainedInTownHall: Cardinal;
 
     fWareDistribution: TKMWareDistribution;
     function GetChartWares(aWare: TKMWareType): TKMCardinalArray;
@@ -258,11 +257,7 @@ end;
 procedure TKMHandStats.UnitCreated(aType: TKMUnitType; aWasTrained: Boolean{; aFromTownHall: Boolean = False});
 begin
   if aWasTrained then
-//  begin
-    Inc(Units[aType].Trained)//;
-//    if aFromTownHall and (aType = utMilitia) then
-//      Inc(MilitiaTrainedInTownHall);
-//  end else
+    Inc(Units[aType].Trained)
   else
     Inc(Units[aType].Initial);
 end;
@@ -429,9 +424,6 @@ begin
                   Result := Units[aType].Initial + Units[aType].Trained - Units[aType].Lost;
                   if aType = utRecruit then
                     for UT := WARRIOR_EQUIPABLE_BARRACKS_MIN to WARRIOR_EQUIPABLE_BARRACKS_MAX do
-//                      if UT = utMilitia then
-//                        Dec(Result, Units[UT].Trained - MilitiaTrainedInTownHall) //Do not count militia, trained in TownHall, only in Barracks
-//                      else
                       Dec(Result, Units[UT].Trained); //Trained soldiers use a recruit
                 end;
   end;
@@ -817,7 +809,6 @@ begin
   SaveStream.Write(Houses, SizeOf(Houses));
   SaveStream.Write(Units, SizeOf(Units));
   SaveStream.Write(Wares, SizeOf(Wares));
-//  SaveStream.Write(MilitiaTrainedInTownHall);
   fWareDistribution.Save(SaveStream);
 
   SaveStream.Write(fChartCount);
@@ -846,7 +837,6 @@ begin
   LoadStream.Read(Houses, SizeOf(Houses));
   LoadStream.Read(Units, SizeOf(Units));
   LoadStream.Read(Wares, SizeOf(Wares));
-//  LoadStream.Read(MilitiaTrainedInTownHall);
   fWareDistribution.Load(LoadStream);
 
   LoadStream.Read(fChartCount);
@@ -949,8 +939,6 @@ begin
       AddField(Killed);
       aStrings.Append(S);
     end;
-
-//  aStrings.Append('Militia trained in the TownHall: ' + IntToStr(MilitiaTrainedInTownHall));
 end;
 
 
