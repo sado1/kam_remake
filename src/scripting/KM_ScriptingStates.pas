@@ -216,6 +216,7 @@ type
     function StatHouseTypeCount(aPlayer, aHouseType: Byte): Integer;
     function StatHouseTypeCountEx(aPlayer: Integer; aHouseType: TKMHouseType): Integer;
     function StatHouseTypePlansCount(aPlayer, aHouseType: Byte): Integer;
+    function StatHouseTypePlansCountEx(aPlayer: Integer; aHouseType: TKMHouseType): Integer;
     function StatPlayerCount: Integer;
     function StatResourceProducedCount(aPlayer, aResType: Byte): Integer;
     function StatResourceProducedMultipleTypesCount(aPlayer: Byte; aTypes: TByteSet): Integer;
@@ -1581,6 +1582,28 @@ begin
     begin
       Result := 0;
       LogIntParamWarn('States.StatHouseTypePlansCount', [aPlayer, aHouseType]);
+    end;
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Specified house type plans count
+//* Result: Number of plans
+function TKMScriptStates.StatHouseTypePlansCountEx(aPlayer: Integer; aHouseType: TKMHouseType): Integer;
+begin
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1)
+      and (gHands[aPlayer].Enabled)
+      and (aHouseType in HOUSES_VALID) then
+      Result := gHands[aPlayer].Stats.GetHousePlans(aHouseType)
+    else
+    begin
+      Result := 0;
+      LogParamWarn('States.StatHouseTypePlansCountEx', [aPlayer, GetEnumName(TypeInfo(TKMHouseType), Integer(aHouseType))]);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
