@@ -467,8 +467,16 @@ end;
 
 
 function TKMHandStats.GetUnitLostQty(aType: TKMUnitType): Integer;
+var
+  UT: TKMUnitType;
 begin
-  Result := Units[aType].Lost;
+  Result := 0;
+  case aType of
+    utNone: ;
+    utAny:  for UT := HUMANS_MIN to HUMANS_MAX do
+              Inc(Result, Units[UT].Lost);
+    else    Result := Units[aType].Lost;
+  end;
 end;
 
 
