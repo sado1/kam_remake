@@ -230,6 +230,7 @@ type
     function StatUnitLostCount(aPlayer, aUnitType: Byte): Integer;
     function StatUnitLostCountEx(aPlayer: Integer; aUnitType: TKMUnitType): Integer;
     function StatUnitLostMultipleTypesCount(aPlayer: Byte; aTypes: TByteSet): Integer;
+    function StatUnitLostMultipleTypesCountEx(aPlayer: Byte; aTypes: TKMUnitTypeSet): Integer;
     function StatUnitMultipleTypesCount(aPlayer: Byte; aTypes: TByteSet): Integer;
     function StatUnitTypeCount(aPlayer, aUnitType: Byte): Integer;
 
@@ -2101,6 +2102,45 @@ begin
     end
     else
       LogIntParamWarn('States.StatUnitLostMultipleTypesCount', [aPlayer]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns the number of the specified unit types lost by the specified player.
+//* aTypes: Set of unit types eg. [utMilitia, utAxeFighter, utSwordsman]
+//* Result: Number of lost units
+function TKMScriptStates.StatUnitLostMultipleTypesCountEx(aPlayer: Byte; aTypes: TKMUnitTypeSet): Integer;
+var
+  UT: TKMUnitType;
+  str: string;
+begin
+  try
+    Result := 0;
+    if InRange(aPlayer, 0, gHands.Count - 1)
+      and (gHands[aPlayer].Enabled) then
+    begin
+      aTypes := aTypes * UNITS_HUMAN; // Only humans could be lost
+      for UT in aTypes do
+        Inc(Result, gHands[aPlayer].Stats.GetUnitLostQty(UT));
+    end
+    else
+    begin
+      // Collect unit types to string
+      str := '[';
+      for UT in aTypes do
+      begin
+        if str <> '' then
+          str := str + ', ';
+        str := str + GetEnumName(TypeInfo(TKMUnitType), Integer(UT));
+      end;
+      str := str + ']';
+
+      LogParamWarn('States.StatUnitLostMultipleTypesCountEx', [aPlayer, str]);
+    end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
