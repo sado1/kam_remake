@@ -62,7 +62,7 @@ begin
   var
     sprites: TKMResSprites;
   begin
-    sprites := TKMResSprites.Create;
+    sprites := TKMResSprites.Create(nil, nil, True);
     try
       if sprites.LoadSprites(aRT, False) then
       begin
@@ -101,7 +101,7 @@ begin
       resTexts: TKMTextLibraryMulti;
     begin
 
-    sprites := TKMResSprites.Create;
+    sprites := TKMResSprites.Create(nil, nil, True);
     sprites.LoadSprites(rxUnits, False); //BMP can't show alpha shadows anyways
     SpritePack := sprites[rxUnits];
     RXData := SpritePack.RXData;
@@ -240,7 +240,7 @@ begin
     sprites: TKMResSprites;
     resTexts: TKMTextLibraryMulti;
   begin
-    sprites := TKMResSprites.Create;
+    sprites := TKMResSprites.Create(nil, nil, true);
     sprites.LoadSprites(rxHouses, False); //BMP can't show alpha shadows anyways
     SpritePack := sprites[rxHouses];
 
@@ -313,7 +313,7 @@ begin
     SpritePack: TKMSpritePack;
     SList: TStringList;
   begin
-    sprites := TKMResSprites.Create;
+    sprites := TKMResSprites.Create(nil, nil, True);
     sprites.LoadSprites(rxTrees, False);
     SpritePack := sprites[rxTrees];
 

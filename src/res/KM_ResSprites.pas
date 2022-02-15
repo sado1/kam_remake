@@ -19,6 +19,7 @@ type
   // Base class for Sprite loading
   TKMSpritePack = class
   private
+    fTemp: Boolean;
     fPad: Byte; //Force padding between sprites to avoid neighbour edge visibility
     procedure SaveTextureToPNG(aWidth, aHeight: Word; const aFilename: string; var Data: TKMCardinalArray);
     procedure SetGFXData(aTx: Cardinal; aSpriteInfo: TBinItem; aAtlasType: TSpriteAtlasType);
@@ -39,7 +40,7 @@ type
                                  aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil);
     {$ENDIF}
   public
-    constructor Create(aRT: TRXType);
+    constructor Create(aRT: TRXType; aTemp: Boolean = False);
 
     procedure AddImage(const aFolder, aFilename: string; aIndex: Integer);
     property RXData: TRXData read fRXData;
@@ -95,10 +96,27 @@ type
     fGenTerrainToTerKindLegacy: array of TKMGenTerrainInfo;
 
     fGameRXTypes: TStringList; //list of TRXType for game resources
+    fTemp: Boolean;
     {$IFDEF LOAD_GAME_RES_ASYNC}
     fGameResLoader: TTGameResourceLoader; // thread of game resource loader
     fGameResLoadCompleted: Boolean;
     {$ENDIF}
+
+    fGenTerrainTransitions: array[Succ(tkCustom)..High(TKMTerrainKind)]
+                              of array[Succ(mkNone)..High(TKMTileMaskKind)]
+                                of array[Succ(tmtNone)..High(TKMTileMaskType)]
+                                  of array[TKMTileMaskSubType] //mask components (subtypes)
+  //                                  of array[0..3] //Terrain Rotation
+                                      of Word;
+
+    fGenTerrainTransitionsLegacy: array[Succ(tkCustom)..High(TKMTerrainKind)]
+                                    of array[Succ(mkNone)..High(TKMTileMaskKind)]
+                                      of array[Succ(tmtNone)..High(TKMTileMaskType)]
+                                        of array[TKMTileMaskSubType] //mask components (subtypes)
+  //                                        of array[0..3] //Terrain Rotation
+                                            of Word;
+
+    function GetGenTerrainTransitions(aTerKind: TKMTerrainKind; aMaskKind: TKMTileMaskKind; aMaskType: TKMTileMaskType; aMaskSubtype: TKMTileMaskSubType): Word;
 
     function GetRXFileName(aRX: TRXType): string;
     function GetSprites(aRT: TRXType): TKMSpritePack;
@@ -109,7 +127,7 @@ type
     function GetNextLoadRxTypeIndex(aRT: TRXType): Integer;
     {$ENDIF}
   public
-    constructor Create(aStepProgress: TEvent = nil; aStepCaption: TUnicodeStringEvent = nil);
+    constructor Create(aStepProgress: TEvent = nil; aStepCaption: TUnicodeStringEvent = nil; aTemp: Boolean = False);
     destructor Destroy; override;
 
     procedure LoadMenuResources;
@@ -124,6 +142,7 @@ type
     function GetGenTerrainInfoLegacy(aTerrain: Integer): TKMGenTerrainInfo;
 
     property Sprites[aRT: TRXType]: TKMSpritePack read GetSprites; default;
+    property GenTerrainTransitions[aTerKind: TKMTerrainKind; aMaskKind: TKMTileMaskKind; aMaskType: TKMTileMaskType; aMaskSubtype: TKMTileMaskSubType]: Word read GetGenTerrainTransitions;
 
     {$IFDEF LOAD_GAME_RES_ASYNC}
     property GameResLoadCompleted: Boolean read fGameResLoadCompleted;
@@ -163,19 +182,6 @@ var
     PxWidth, PxHeight: Word;
   end;
 
-  gGenTerrainTransitions: array[Succ(tkCustom)..High(TKMTerrainKind)]
-                            of array[Succ(mkNone)..High(TKMTileMaskKind)]
-                              of array[Succ(tmtNone)..High(TKMTileMaskType)]
-                                of array[TKMTileMaskSubType] //mask components (subtypes)
-//                                  of array[0..3] //Terrain Rotation
-                                    of Word;
-
-  gGenTerrainTransitionsLegacy: array[Succ(tkCustom)..High(TKMTerrainKind)]
-                                  of array[Succ(mkNone)..High(TKMTileMaskKind)]
-                                    of array[Succ(tmtNone)..High(TKMTileMaskType)]
-                                      of array[TKMTileMaskSubType] //mask components (subtypes)
-//                                        of array[0..3] //Terrain Rotation
-                                          of Word;
 
 implementation
 uses
@@ -214,11 +220,12 @@ end;
 
 
 { TKMSpritePack }
-constructor TKMSpritePack.Create(aRT: TRXType);
+constructor TKMSpritePack.Create(aRT: TRXType; aTemp: Boolean = False);
 begin
   inherited Create;
 
   fRT := aRT;
+  fTemp := aTemp;
 
   //Terrain tiles need padding to avoid edge bleeding
   if fRT = rxTiles then
@@ -529,7 +536,8 @@ begin
   fRXData.Count := aCount;
 
   aCount := fRXData.Count + 1;
-  SetLength(gGFXData[fRT],        aCount);
+  if not fTemp then
+    SetLength(gGFXData[fRT],      aCount);
   SetLength(fRXData.Flag,         aCount);
   SetLength(fRXData.Size,         aCount);
   SetLength(fRXData.Pivot,        aCount);
@@ -1397,16 +1405,17 @@ end;
 
 
 { TKMResSprites }
-constructor TKMResSprites.Create(aStepProgress: TEvent = nil; aStepCaption: TUnicodeStringEvent = nil);
+constructor TKMResSprites.Create(aStepProgress: TEvent = nil; aStepCaption: TUnicodeStringEvent = nil; aTemp: Boolean = False);
 var
   RT: TRXType;
 begin
   inherited Create;
   fGameRXTypes := TStringList.Create;
+  fTemp := aTemp;
 
   for RT := Low(TRXType) to High(TRXType) do
   begin
-    fSprites[RT] := TKMSpritePack.Create(RT);
+    fSprites[RT] := TKMSpritePack.Create(RT, fTemp);
     if RXInfo[RT].Usage = ruGame then
       fGameRXTypes.Add(IntToStr(Integer(RT)));
   end;
@@ -1517,7 +1526,7 @@ begin
   if aLegacyGeneration then
   begin
     //static arrays could be reset via its variable
-    FillChar(gGenTerrainTransitionsLegacy, SizeOf(gGenTerrainTransitionsLegacy), #0); //Init array, it could be init on previous tileset load
+    FillChar(fGenTerrainTransitionsLegacy, SizeOf(fGenTerrainTransitionsLegacy), #0); //Init array, it could be init on previous tileset load
     texId := 4999;
     fGenTexIdStartILegacy := texId;
     genTilesCntTemp := (Integer(High(TKMTerrainKind)) - 1)*Integer(High(TKMTileMaskKind))
@@ -1529,7 +1538,7 @@ begin
   else
   begin
     //static arrays could be reset via its variable
-    FillChar(gGenTerrainTransitions, SizeOf(gGenTerrainTransitions), #0); //Init array, it could be init on previous tileset load
+    FillChar(fGenTerrainTransitions, SizeOf(fGenTerrainTransitions), #0); //Init array, it could be init on previous tileset load
     texId := Length(aSprites.fRXData.RGBA) + 1;
     fGenTexIdStartI := texId;
     genTilesCnt := Integer(High(TKMTerrainKind))*Integer(High(TKMTileMaskKind))
@@ -1572,16 +1581,16 @@ begin
             if generatedMasks.TryGetValue(maskId, maskFullType) then
             begin
               if aLegacyGeneration then
-                tmp := gGenTerrainTransitionsLegacy[TK, maskFullType.Kind, maskFullType.MType, maskFullType.SubType]
+                tmp := fGenTerrainTransitionsLegacy[TK, maskFullType.Kind, maskFullType.MType, maskFullType.SubType]
               else
-                tmp := gGenTerrainTransitions[TK, maskFullType.Kind, maskFullType.MType, maskFullType.SubType];
+                tmp := fGenTerrainTransitions[TK, maskFullType.Kind, maskFullType.MType, maskFullType.SubType];
 
               if tmp <> 0 then
               begin
                 if aLegacyGeneration then
-                  gGenTerrainTransitionsLegacy[TK, MK, MT, MST] := tmp
+                  fGenTerrainTransitionsLegacy[TK, MK, MT, MST] := tmp
                 else
-                  gGenTerrainTransitions[TK, MK, MT, MST] := tmp;
+                  fGenTerrainTransitions[TK, MK, MT, MST] := tmp;
                 Continue;
               end;
             end else begin
@@ -1597,10 +1606,10 @@ begin
               genTerrainInfo.Mask.Kind := MK;
               genTerrainInfo.Mask.MType := MT;
               genTerrainInfo.Mask.SubType := MST;
-              
+
               if aLegacyGeneration then
               begin
-                gGenTerrainTransitionsLegacy[TK, MK, MT, MST] := texId - 1;
+                fGenTerrainTransitionsLegacy[TK, MK, MT, MST] := texId - 1;
                 fGenTerrainToTerKindLegacy[texId - fGenTexIdStartILegacy] := genTerrainInfo;
               end
               else
@@ -1612,7 +1621,7 @@ begin
                 aSprites.fRXData.Size[texId].Y := aSprites.fRXData.Size[terrainId].Y;
                 aSprites.fRXData.Pivot[texId] := aSprites.fRXData.Pivot[terrainId];
                 aSprites.fRXData.HasMask[texId] := False;
-                gGenTerrainTransitions[TK, MK, MT, MST] := texId - 1; //TexId is 1-based, but textures we use - 0 based
+                fGenTerrainTransitions[TK, MK, MT, MST] := texId - 1; //TexId is 1-based, but textures we use - 0 based
                 fGenTerrainToTerKind[texId - fGenTexIdStartI] := genTerrainInfo;
               
     //          gLog.AddTime(Format('TerKind: %10s Mask: %10s TexId: %d ', [GetEnumName(TypeInfo(TKMTerrainKind), Integer(I)),
@@ -1694,6 +1703,12 @@ end;
 function TKMResSprites.GetSprites(aRT: TRXType): TKMSpritePack;
 begin
   Result := fSprites[aRT];
+end;
+
+
+function TKMResSprites.GetGenTerrainTransitions(aTerKind: TKMTerrainKind; aMaskKind: TKMTileMaskKind; aMaskType: TKMTileMaskType; aMaskSubtype: TKMTileMaskSubType): Word;
+begin
+  Result := fGenTerrainTransitions[aTerKind, aMaskKind, aMaskType, aMaskSubtype];
 end;
 
 
