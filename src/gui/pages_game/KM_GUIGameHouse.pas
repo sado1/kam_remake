@@ -1120,20 +1120,20 @@ begin
 
   case W.WoodcutterMode of
     wmChopAndPlant: begin
-                        Button_Woodcutter.TexID := 310;
-                        Button_Woodcutter.RX := rxGui;
-                        Radio_Woodcutter.ItemIndex := 0;
-                      end;
+                      Button_Woodcutter.TexID := 310;
+                      Button_Woodcutter.RX := rxGui;
+                      Radio_Woodcutter.ItemIndex := 0;
+                    end;
     wmChop:         begin
-                        Button_Woodcutter.TexID := 51;
-                        Button_Woodcutter.RX := rxGui;
-                        Radio_Woodcutter.ItemIndex := 1;
-                      end;
+                      Button_Woodcutter.TexID := 51;
+                      Button_Woodcutter.RX := rxGui;
+                      Radio_Woodcutter.ItemIndex := 1;
+                    end;
     wmPlant:        begin
-                        Button_Woodcutter.TexID := 666;
-                        Button_Woodcutter.RX := rxGui;
-                        Radio_Woodcutter.ItemIndex := 2;
-                      end;
+                      Button_Woodcutter.TexID := 666;
+                      Button_Woodcutter.RX := rxGui;
+                      Radio_Woodcutter.ItemIndex := 2;
+                    end;
   end;
 end;
 
