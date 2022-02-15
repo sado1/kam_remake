@@ -644,6 +644,9 @@ const
   ANIMAL_MIN = utWolf;
   ANIMAL_MAX = utDuck;
 
+  UNITS_VALID = [UNIT_MIN..UNIT_MAX];
+  UNITS_HUMAN = [HUMANS_MIN..HUMANS_MAX];
+
   WARRIORS_IRON = [utSwordsman, utArbaletman, utHallebardman, utCavalry];
 
   CITIZENS_CNT = Integer(CITIZEN_MAX) - Integer(CITIZEN_MIN) + 1;

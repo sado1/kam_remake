@@ -226,6 +226,7 @@ type
     function StatUnitKilledCount(aPlayer, aUnitType: Byte): Integer;
     function StatUnitKilledCountEx(aPlayer: Integer; aUnitType: TKMUnitType): Integer;
     function StatUnitKilledMultipleTypesCount(aPlayer: Byte; aTypes: TByteSet): Integer;
+    function StatUnitKilledMultipleTypesCountEx(aPlayer: Integer; aTypes: TKMUnitTypeSet): Integer;
     function StatUnitLostCount(aPlayer, aUnitType: Byte): Integer;
     function StatUnitLostMultipleTypesCount(aPlayer: Byte; aTypes: TByteSet): Integer;
     function StatUnitMultipleTypesCount(aPlayer: Byte; aTypes: TByteSet): Integer;
@@ -1952,8 +1953,6 @@ end;
 //* if utAny is passed, then return all killed units by the specified player
 //* Result: Number of killed units
 function TKMScriptStates.StatUnitKilledCountEx(aPlayer: Integer; aUnitType: TKMUnitType): Integer;
-var
-  UT: TKMUnitType;
 begin
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
@@ -1987,10 +1986,48 @@ begin
     begin
       for B := Low(UNIT_ID_TO_TYPE) to High(UNIT_ID_TO_TYPE) do
         if B in aTypes then
-          inc(Result, gHands[aPlayer].Stats.GetUnitKilledQty(UNIT_ID_TO_TYPE[B]));
+          Inc(Result, gHands[aPlayer].Stats.GetUnitKilledQty(UNIT_ID_TO_TYPE[B]));
     end
     else
       LogIntParamWarn('States.StatUnitKilledMultipleTypesCount', [aPlayer]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns the number of the specified unit types killed by the specified player.
+//* Result: Set of unit types eg. [utMilitia, utAxeFighter, utSwordsman]
+function TKMScriptStates.StatUnitKilledMultipleTypesCountEx(aPlayer: Integer; aTypes: TKMUnitTypeSet): Integer;
+var
+  UT: TKMUnitType;
+  str: string;
+begin
+  try
+    Result := 0;
+    if InRange(aPlayer, 0, gHands.Count - 1)
+      and (gHands[aPlayer].Enabled) then
+    begin
+      aTypes := aTypes * UNITS_HUMAN; // Only humans could be killed
+      for UT in aTypes do
+        Inc(Result, gHands[aPlayer].Stats.GetUnitKilledQty(UT));
+    end
+    else
+    begin
+      // Collect unit types to string
+      str := '[';
+      for UT in aTypes do
+      begin
+        if str <> '' then
+          str := str + ', ';
+        str := str + GetEnumName(TypeInfo(TKMUnitType), Integer(UT));
+      end;
+      str := str + ']';
+
+      LogParamWarn('States.StatUnitKilledMultipleTypesCount', [aPlayer, str]);
+    end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
