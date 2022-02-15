@@ -130,11 +130,11 @@ type
     function IsWinefieldAt(aPlayer: ShortInt; X, Y: Word): Boolean;
     function IsRoadAt(aPlayer: ShortInt; X, Y: Word): Boolean;
 
-    function IsPlanAt(var aPlayer: Integer; var aFieldType: TKMFieldType; X, Y: Word): Boolean;
-    function IsFieldPlanAt(var aPlayer: Integer; X, Y: Word): Boolean;
-    function IsHousePlanAt(var aPlayer: Integer; var aHouseType: TKMHouseType; X, Y: Word): Boolean;
-    function IsRoadPlanAt(var aPlayer: Integer; X, Y: Word): Boolean;
-    function IsWinefieldPlanAt(var aPlayer: Integer; X, Y: Word): Boolean;
+    function IsPlanAt(var aPlayer: Integer; var aFieldType: TKMFieldType; X, Y: Integer): Boolean;
+    function IsFieldPlanAt(var aPlayer: Integer; X, Y: Integer): Boolean;
+    function IsHousePlanAt(var aPlayer: Integer; var aHouseType: TKMHouseType; X, Y: Integer): Boolean;
+    function IsRoadPlanAt(var aPlayer: Integer; X, Y: Integer): Boolean;
+    function IsWinefieldPlanAt(var aPlayer: Integer; X, Y: Integer): Boolean;
 
     function IsMissionBuildType: Boolean;
     function IsMissionFightType: Boolean;
@@ -3212,7 +3212,7 @@ end;
 //* If aPlayer index is -1 and aFieldType is ftNone it will return if any player has a field plan of the any type (ftCorn, ftRoad, ftWine) at the specified location.
 //* If Plan found then aPlayer will contain its player id and aFieldType its type
 //* Result: Is plan found
-function TKMScriptStates.IsPlanAt(var aPlayer: Integer; var aFieldType: TKMFieldType; X, Y: Word): Boolean;
+function TKMScriptStates.IsPlanAt(var aPlayer: Integer; var aFieldType: TKMFieldType; X, Y: Integer): Boolean;
 
   function FindPlan(aHandId, aX, aY: Word; var aFieldType: TKMFieldType): Boolean;
   var
@@ -3265,7 +3265,7 @@ begin
       end
     end
     else
-      LogIntParamWarn('States.IsPlanAt', [aPlayer, Byte(aFieldType), X, Y]);
+      LogParamWarn('States.IsPlanAt', [aPlayer, GetEnumName(TypeInfo(TKMFieldType), Integer(aFieldType)), X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3278,7 +3278,7 @@ end;
 //* If aPlayer index is -1 it will return true if any player has field plan at the specified location.
 //* If Corn (Field) Plan found then aPlayer will contain its player id
 //* Result: Is field plan found
-function TKMScriptStates.IsFieldPlanAt(var aPlayer: Integer; X, Y: Word): Boolean;
+function TKMScriptStates.IsFieldPlanAt(var aPlayer: Integer; X, Y: Integer): Boolean;
 
   function FindPlan(aHandId, aX, aY: Word): Boolean; inline;
   begin
@@ -3319,11 +3319,11 @@ end;
 //* Version: 7000+
 //* Returns true if the specified player has a house plan of the specified type at the specified location.
 //* If aPlayer index is -1 it will return true if any player has house plan of the specified type at the specified location.
-//* If aHouseType is htNone it will return if the specified player has a house plan of the any type at the specified location.
+//* If aHouseType is htAny it will return if the specified player has a house plan of the any type at the specified location.
 //* If aPlayer index is -1 and aHouseType is htNone it will return if any player has a house plan of the any type at the specified location.
 //* If house plan found then after execution aPlayer will contain its player id and aHouseType its type
 //* Result: Is house plan found
-function TKMScriptStates.IsHousePlanAt(var aPlayer: Integer; var aHouseType: TKMHouseType; X, Y: Word): Boolean;
+function TKMScriptStates.IsHousePlanAt(var aPlayer: Integer; var aHouseType: TKMHouseType; X, Y: Integer): Boolean;
 
   function FindPlan(aHandId, aX, aY: Word; var aHouseType: TKMHouseType): Boolean; inline;
   var
@@ -3332,7 +3332,7 @@ function TKMScriptStates.IsHousePlanAt(var aPlayer: Integer; var aHouseType: TKM
     Result := gHands[aHandId].Constructions.HousePlanList.HasPlan(KMPoint(aX, aY), HT);
     if Result then
     begin
-      if aHouseType = htNone then
+      if aHouseType = htAny then
         aHouseType := HT
       else
         Result := aHouseType = HT;
@@ -3356,12 +3356,12 @@ begin
       else
       if handFilter then
       begin
-        aHouseType := htNone;
+        aHouseType := htAny;
         Result := FindPlan(aPlayer, X, Y, aHouseType);
       end else
       begin
         if not houseTypeFilter then
-          aHouseType := htNone;
+          aHouseType := htAny;
 
         for I := 0 to gHands.Count - 1 do
           if gHands[I].Enabled then
@@ -3376,7 +3376,7 @@ begin
       end;
     end
     else
-      LogIntParamWarn('States.IsHousePlanAt', [X, Y]);
+      LogParamWarn('States.IsHousePlanAt', [aPlayer, GetEnumName(TypeInfo(TKMHouseType), Integer(aHouseType)), X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3389,7 +3389,7 @@ end;
 //* If aPlayer index is -1 it will return true if any player has road plan at the specified location.
 //* If Road plan found then aPlayer will contain its player id
 //* Result: Is road plan found
-function TKMScriptStates.IsRoadPlanAt(var aPlayer: Integer; X, Y: Word): Boolean;
+function TKMScriptStates.IsRoadPlanAt(var aPlayer: Integer; X, Y: Integer): Boolean;
 
   function FindPlan(aHandId, aX, aY: Word): Boolean; inline;
   begin
@@ -3419,7 +3419,7 @@ begin
           end;
     end
     else
-      LogIntParamWarn('States.IsRoadPlanAt', [X, Y]);
+      LogIntParamWarn('States.IsRoadPlanAt', [aPlayer, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3432,7 +3432,7 @@ end;
 //* If aPlayer index is -1 it will return true if any player has winefield plan at the specified location.
 //* If Winefield Plan found then aPlayer will contain its player id
 //* Result: Is winefield plan found
-function TKMScriptStates.IsWinefieldPlanAt(var aPlayer: Integer; X, Y: Word): Boolean;
+function TKMScriptStates.IsWinefieldPlanAt(var aPlayer: Integer; X, Y: Integer): Boolean;
 
   function FindPlan(aHandId, aX, aY: Word): Boolean; inline;
   begin
@@ -3462,7 +3462,7 @@ begin
           end;
     end
     else
-      LogIntParamWarn('States.IsWinefieldPlanAt', [X, Y]);
+      LogIntParamWarn('States.IsWinefieldPlanAt', [aPlayer, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
