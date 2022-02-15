@@ -353,6 +353,8 @@ begin
     Sender.AddTypeS('TKMDeliveryMode' ,'(dmClosed, dmDelivery, dmTakeOut)');
     Sender.AddTypeS('TKMWoodcutterMode', '(wmChopAndPlant, wmChop, wmPlant)');
     Sender.AddTypeS('TKMHandHouseLock', '(hlNone, hlDefault, hlBlocked, hlGranted)');
+    Sender.AddTypeS('TKMTerrainPassability', '(tpNone, tpWalk, tpWalkRoad, tpBuildNoObj, tpBuild, tpMakeRoads, tpCutTree, '
+      + 'tpFish, tpCrab, tpWolf, tpElevate, tpWorker, tpOwn, tpFactor)');
 
     Sender.AddTypeS('TKMDefencePositionInfo', 'record ' +
                       'X, Y: Integer; ' +
@@ -582,6 +584,7 @@ begin
     RegisterMethodCheck(c, 'function MapTileOverlay(X, Y: Integer): TKMTileOverlay');
     RegisterMethodCheck(c, 'function MapTileOwner(X, Y: Integer): Integer');
     RegisterMethodCheck(c, 'function MapTilePassability(X, Y: Integer; aPassability: Byte): Boolean');
+    RegisterMethodCheck(c, 'function MapTilePassabilityEx(X, Y: Integer; aPassability: TKMTerrainPassability): Boolean');
     RegisterMethodCheck(c, 'function MapTileRotation(X, Y: Integer): Integer');
     RegisterMethodCheck(c, 'function MapTileType(X, Y: Integer): Integer');
     RegisterMethodCheck(c, 'function MapWidth: Integer');
@@ -1330,6 +1333,7 @@ begin
       RegisterMethod(@TKMScriptStates.MapTileOverlay,                           'MapTileOverlay');
       RegisterMethod(@TKMScriptStates.MapTileOwner,                             'MapTileOwner');
       RegisterMethod(@TKMScriptStates.MapTilePassability,                       'MapTilePassability');
+      RegisterMethod(@TKMScriptStates.MapTilePassabilityEx,                     'MapTilePassabilityEx');
       RegisterMethod(@TKMScriptStates.MapTileRotation,                          'MapTileRotation');
       RegisterMethod(@TKMScriptStates.MapTileType,                              'MapTileType');
       RegisterMethod(@TKMScriptStates.MapWidth,                                 'MapWidth');

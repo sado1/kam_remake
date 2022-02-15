@@ -171,6 +171,7 @@ type
     function MapTileOverlay(X, Y: Integer): TKMTileOverlay;
     function MapTileOwner(X, Y: Integer): Integer;
     function MapTilePassability(X, Y: Integer; aPassability: Byte): Boolean;
+    function MapTilePassabilityEx(X, Y: Integer; aPassability: TKMTerrainPassability): Boolean;
     function MapWidth: Integer;
     function MapHeight: Integer;
 
@@ -3839,7 +3840,7 @@ end;
 //* Version: 7000+
 //* Returns true if specified tile has requested passability.
 //* aPassability: passability index as listed in KM_Defaults (starts from 0)
-//* Result: true or false
+//* Result: True or False
 function TKMScriptStates.MapTilePassability(X, Y: Integer; aPassability: Byte): Boolean;
 begin
   try
@@ -3850,6 +3851,27 @@ begin
     begin
       Result := False;
       LogIntParamWarn('States.MapTilePassability', [X, Y, aPassability]);
+    end;
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns true if specified tile has requested passability.
+//* aPassability: TKMTerrainPassability
+//* Result: True or False
+function TKMScriptStates.MapTilePassabilityEx(X, Y: Integer; aPassability: TKMTerrainPassability): Boolean;
+begin
+    try
+    if (gTerrain.TileInMapCoords(X, Y)) then
+      Result := aPassability in gTerrain.Land^[Y, X].Passability
+    else
+    begin
+      Result := False;
+      LogParamWarn('States.MapTilePassabilityEx', [X, Y, GetEnumName(TypeInfo(TKMTerrainPassability), Integer(aPassability))]);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
