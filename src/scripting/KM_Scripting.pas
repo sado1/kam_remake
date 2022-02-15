@@ -351,6 +351,7 @@ begin
     Sender.AddTypeS('TKMDirection', '(dirNA, dirN, dirNE, dirE, dirSE, dirS, dirSW, dirW, dirNW)');
 
     Sender.AddTypeS('TKMDeliveryMode' ,'(dmClosed, dmDelivery, dmTakeOut)');
+    Sender.AddTypeS('TKMWoodcutterMode', '(wmChopAndPlant, wmChop, wmPlant)');
     Sender.AddTypeS('TKMHandHouseLock', '(hlNone, hlDefault, hlBlocked, hlGranted)');
 
     Sender.AddTypeS('TKMDefencePositionInfo', 'record ' +
@@ -534,7 +535,7 @@ begin
     RegisterMethodCheck(c, 'function HouseWeaponsOrdered(aHouseID, aWareType: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseWeaponsOrderedEx(aHouseID: Integer; aWareType: TKMWareType): Integer');
     RegisterMethodCheck(c, 'function HouseWoodcutterChopOnly(aHouseID: Integer): Boolean');
-    RegisterMethodCheck(c, 'function HouseWoodcutterMode(aHouseID: Integer): Integer');
+    RegisterMethodCheck(c, 'function HouseWoodcutterMode(aHouseID: Integer): TKMWoodcutterMode');
     RegisterMethodCheck(c, 'function HouseWorker(aHouseID: Integer): Integer');
 
     RegisterMethodCheck(c, 'function IsFieldAt(aPlayer: ShortInt; X, Y: Word): Boolean');

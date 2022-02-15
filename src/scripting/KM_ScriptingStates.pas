@@ -4,7 +4,8 @@ interface
 uses
   Classes, Math, SysUtils, StrUtils,
   KM_CommonTypes, KM_Defaults, KM_Points, KM_HandsCollection, KM_Houses, KM_ScriptingIdCache, KM_Units, KM_MapTypes,
-  KM_UnitGroup, KM_ResHouses, KM_HouseCollection, KM_ResWares, KM_ScriptingEvents, KM_TerrainTypes, KM_ResTilesetTypes,
+  KM_UnitGroup, KM_ResHouses, KM_HouseCollection, KM_HouseWoodcutters,
+  KM_ResWares, KM_ScriptingEvents, KM_TerrainTypes, KM_ResTilesetTypes,
   KM_UnitGroupTypes, KM_ScriptingTypes,
   KM_ResTypes, KM_HandTypes;
 
@@ -122,7 +123,7 @@ type
     function HouseWeaponsOrdered(aHouseID, aWareType: Integer): Integer;
     function HouseWeaponsOrderedEx(aHouseID: Integer; aWareType: TKMWareType): Integer;
     function HouseWoodcutterChopOnly(aHouseID: Integer): Boolean;
-    function HouseWoodcutterMode(aHouseID: Integer): Integer;
+    function HouseWoodcutterMode(aHouseID: Integer): TKMWoodcutterMode;
     function HouseWorker(aHouseID: Integer): Integer;
 
     function IsFieldAt(aPlayer: ShortInt; X, Y: Word): Boolean;
@@ -255,7 +256,7 @@ uses
   KM_AI, KM_ArmyDefence, KM_AIDefensePos,
   KM_Game, KM_GameApp, KM_GameParams,
   KM_UnitsCollection, KM_UnitWarrior, KM_UnitTaskSelfTrain,
-  KM_HouseBarracks, KM_HouseSchool, KM_HouseMarket, KM_HouseStore, KM_HouseWoodcutters, KM_HouseTownHall,
+  KM_HouseBarracks, KM_HouseSchool, KM_HouseMarket, KM_HouseStore, KM_HouseTownHall,
   KM_Resource, KM_ResUnits,
   KM_Hand,
   KM_Terrain,
@@ -3094,24 +3095,20 @@ begin
 end;
 
 
-//* Version: 7000+
+//* Version: 13900
 //* Returns woodcutter mode value for the specified woodcutter's hut
-//* Possible values for woodcutter mode are:
-//* 0 - Chop And Plant
-//* 1 - Chop only
-//* 2 - Plant only
-//* Result: woodcutter mode as Integer value
-function TKMScriptStates.HouseWoodcutterMode(aHouseID: Integer): Integer;
+//* Result: woodcutter mode as TKMWoodcutterMode = (wmChopAndPlant, wmChop, wmPlant)
+function TKMScriptStates.HouseWoodcutterMode(aHouseID: Integer): TKMWoodcutterMode;
 var
   H: TKMHouse;
 begin
   try
-    Result := Integer(wmChopAndPlant);
+    Result := wmChopAndPlant;
     if aHouseID > 0 then
     begin
       H := fIDCache.GetHouse(aHouseID);
       if H is TKMHouseWoodcutters then
-        Result := Integer(TKMHouseWoodcutters(H).WoodcutterMode);
+        Result := TKMHouseWoodcutters(H).WoodcutterMode;
     end
     else
       LogIntParamWarn('States.HouseWoodcutterMode', [aHouseID]);
