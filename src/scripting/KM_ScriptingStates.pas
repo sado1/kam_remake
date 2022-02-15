@@ -1023,7 +1023,7 @@ end;
 //* Version: 13800
 //* Returns the house of the specified player and house types that is closest to the specified coordinates,
 //* or -1 if no such house was found.
-//* The house types is a "set of TKMHouseType", for example [htQuarry, htSchool, htStore]
+//* The house types is a "set of TKMHouseType", for example [htQuary, htSchool, htStore]
 //* aHouseTypes: Set of house types
 //* Result: House ID
 function TKMScriptStates.ClosestHouseMultipleTypesEx(aPlayer, X, Y: Integer; aHouseTypes: TKMHouseTypeSet): Integer;
