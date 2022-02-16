@@ -3393,7 +3393,7 @@ begin
 end;
 
 
-//* Version: 12600
+//* Version: 13900
 //* Returns true if the specified ware in the specified storehouse or barracks is blocked for taking out (yellow triangle)
 //* Result: Ware blocked for taking out
 function TKMScriptStates.HouseWareBlockedTakeOut(aHouseID: Integer; aWareType: TKMWareType): Boolean;
