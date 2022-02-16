@@ -68,7 +68,7 @@ type
 
   TKMScriptErrorEvent = procedure (aType: TKMScriptErrorType; const aErrorString: UnicodeString; const aDetailedErrorString: UnicodeString = '') of object;
 
-  // Set exported to PascalSciript record type as packed.
+  // Set exported to PascalScript record type as packed.
   // PascalScript use packed records alignment by default,
   // thus without it in Delphi we could get garbage in the fields if they are not aligned same way as in PS
   TKMDefencePositionInfo = packed record
