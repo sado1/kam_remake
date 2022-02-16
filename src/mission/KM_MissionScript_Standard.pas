@@ -781,7 +781,7 @@ begin
                           if TextParam = AI_ATTACK_PARAMS[cptPosition] then
                             fAIAttack.CustomPosition := KMPoint(P[1]+1,P[2]+1);
                           if TextParam = AI_ATTACK_PARAMS[cptTakeAll] then
-                            fAIAttack.TakeAll := True;
+                            fAIAttack.RandomGroups := True;
                         end;
 
     ctCopyAIAttack:     if fLastHand <> HAND_NONE then
@@ -1014,7 +1014,7 @@ begin
       begin
         AddCommand(ctAIAttack, cptType, [KaMAttackType[AttackType]]);
         AddCommand(ctAIAttack, cptTotalAmount, [TotalMen]);
-        if TakeAll then
+        if RandomGroups then
           AddCommand(ctAIAttack, cptTakeAll, [])
         else
           for G := GROUP_TYPE_MIN to GROUP_TYPE_MAX do

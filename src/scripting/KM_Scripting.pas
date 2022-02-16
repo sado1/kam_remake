@@ -356,6 +356,8 @@ begin
     Sender.AddTypeS('TKMTerrainPassability', '(tpNone, tpWalk, tpWalkRoad, tpBuildNoObj, tpBuild, tpMakeRoads, tpCutTree, '
       + 'tpFish, tpCrab, tpWolf, tpElevate, tpWorker, tpOwn, tpFactor)');
 
+    Sender.AddTypeS('TKMAIAttackType', '(aatOnce, aatRepeating)');
+
     Sender.AddTypeS('TKMDefencePositionInfo', 'record ' +
                       'X, Y: Integer; ' +
                       'Radius: Integer; ' +

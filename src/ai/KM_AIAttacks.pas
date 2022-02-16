@@ -20,7 +20,7 @@ type
     Delay: Cardinal; //The attack will not occur before this time has passed
     TotalMen: Integer; //Number of idle (i.e. back line) warriors required in the AI army before the attack will launch
     GroupAmounts: TKMGroupTypeArray; //How many squads of each group type will be taken
-    TakeAll: Boolean; //Used instead of GroupAmounts, chooses groups randomly taking at most TotalMen warriors
+    RandomGroups: Boolean; //Used instead of GroupAmounts, chooses groups randomly taking at most TotalMen warriors
     Target: TKMAIAttackTarget;
     Range: Integer; //Will only occur when target is within this tile range (not properly tested yet)
     CustomPosition: TKMPoint; //Used when Target = attCustomPosition
@@ -44,10 +44,10 @@ type
 
     function AddAttack(aAttack: TKMAIAttack): Word; overload;
     function AddAttack(aAttackType: TKMAIAttackType; aDelay: Cardinal; aTotalMen: Integer; const aGroupAmounts: TKMGroupTypeArray;
-                       aTakeAll: Boolean; aTarget: TKMAIAttackTarget; aRange: Integer; aCustomPosition: TKMPoint): Word; overload;
+                       aRandomGroups: Boolean; aTarget: TKMAIAttackTarget; aRange: Integer; aCustomPosition: TKMPoint): Word; overload;
     function AddAttack(aAttackType: TKMAIAttackType; aDelay: Cardinal; aTotalMen: Integer;
                        aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount: Word;
-                       aTakeAll: Boolean; aTarget: TKMAIAttackTarget; aRange: Integer; aCustomPosition: TKMPoint): Word; overload;
+                       aRandomGroups: Boolean; aTarget: TKMAIAttackTarget; aRange: Integer; aCustomPosition: TKMPoint): Word; overload;
     function RemoveAttack(aAttackId: Word): Boolean;
     procedure Delete(aIndex: Integer);
     function CanOccur(aIndex: Integer; const aMenAvailable: TKMGroupTypeArray; const aGroupsAvailable: TKMGroupTypeArray; aTick: Cardinal): Boolean;
@@ -79,7 +79,7 @@ begin
   totalMenAvailable := 0;
   //Must have enough men available out of the types of groups that will attack
   for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
-    if fAttacks[aIndex].TakeAll or (fAttacks[aIndex].GroupAmounts[GT] > 0) then
+    if fAttacks[aIndex].RandomGroups or (fAttacks[aIndex].GroupAmounts[GT] > 0) then
       Inc(totalMenAvailable, aMenAvailable[GT]);
 
   Result := ((fAttacks[aIndex].AttackType = aatRepeating) or not fAttacks[aIndex].HasOccured)
@@ -88,7 +88,7 @@ begin
             and (totalMenAvailable > 0);
 
   //Must have enough groups of each type
-  if not fAttacks[aIndex].TakeAll then
+  if not fAttacks[aIndex].RandomGroups then
     for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
       Result := Result and (aGroupsAvailable[GT] >= fAttacks[aIndex].GroupAmounts[GT]);
 
@@ -129,7 +129,7 @@ end;
 
 
 function TKMAIAttacks.AddAttack(aAttackType: TKMAIAttackType; aDelay: Cardinal; aTotalMen: Integer; const aGroupAmounts: TKMGroupTypeArray;
-                                aTakeAll: Boolean; aTarget: TKMAIAttackTarget; aRange: Integer; aCustomPosition: TKMPoint): Word;
+                                aRandomGroups: Boolean; aTarget: TKMAIAttackTarget; aRange: Integer; aCustomPosition: TKMPoint): Word;
 var
   attack: TKMAIAttack;
 begin
@@ -138,7 +138,7 @@ begin
   attack.Delay          := aDelay;
   attack.TotalMen       := aTotalMen;
   attack.GroupAmounts   := aGroupAmounts;
-  attack.TakeAll        := aTakeAll;
+  attack.RandomGroups   := aRandomGroups;
   attack.Target         := aTarget;
   attack.Range          := aRange;
   attack.CustomPosition := aCustomPosition;
@@ -148,7 +148,7 @@ end;
 
 function TKMAIAttacks.AddAttack(aAttackType: TKMAIAttackType; aDelay: Cardinal; aTotalMen: Integer;
                                 aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount: Word;
-                                aTakeAll: Boolean; aTarget: TKMAIAttackTarget; aRange: Integer; aCustomPosition: TKMPoint): Word;
+                                aRandomGroups: Boolean; aTarget: TKMAIAttackTarget; aRange: Integer; aCustomPosition: TKMPoint): Word;
 var
   groupAmounts: TKMGroupTypeArray;
 begin
@@ -156,7 +156,7 @@ begin
   groupAmounts[gtAntiHorse] := aAntiHorseGroupCount;
   groupAmounts[gtRanged]    := aRangedGroupCount;
   groupAmounts[gtMounted]   := aMountedGroupCount;
-  Result := AddAttack(aAttackType, aDelay, aTotalMen, groupAmounts, aTakeAll, aTarget, aRange, aCustomPosition);
+  Result := AddAttack(aAttackType, aDelay, aTotalMen, groupAmounts, aRandomGroups, aTarget, aRange, aCustomPosition);
 end;
 
 

@@ -414,7 +414,7 @@ begin
       AttackLaunched := True;
       //Order groups to attack
       UnitsSent := 0;
-      if Attacks[I].TakeAll then
+      if Attacks[I].RandomGroups then
       begin
         //Repeatedly send one of each group type until we have sent the required amount (mixed army)
         for K := 0 to MaxGroupsAvailable - 1 do
@@ -471,7 +471,7 @@ begin
   SimpleAttack.Target := attClosestBuildingFromStartPos;
   SimpleAttack.TotalMen := fDefencePositions.AverageUnitsPerGroup *
                            fDefencePositions.GetBacklineCount div 2;
-  SimpleAttack.TakeAll := True;
+  SimpleAttack.RandomGroups := True;
 
   Attacks.Clear;
   Attacks.AddAttack(SimpleAttack);
