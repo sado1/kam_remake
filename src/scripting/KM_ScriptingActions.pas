@@ -15,7 +15,7 @@ type
     fOnSetLogLinesMaxCnt: TIntegerEvent;
     procedure LogStr(const aText: String);
 
-    function _AIDefencePositionAdd(aPlayer: Integer; const aDefencePosition: TKMDefencePositionInfo): Boolean;
+    function _AIDefencePositionAdd(aPlayer: Integer; const aDefencePosition: TKMDefencePositionInfo): Integer;
     function _AIGroupsFormationSet(aPlayer: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer): Boolean;
   public
     property OnSetLogLinesMaxCnt: TIntegerEvent read fOnSetLogLinesMaxCnt write fOnSetLogLinesMaxCnt;
@@ -31,8 +31,8 @@ type
     procedure AIAutoBuild(aPlayer: Byte; aAuto: Boolean);
     procedure AIAutoDefence(aPlayer: Byte; aAuto: Boolean);
     procedure AIAutoRepair(aPlayer: Byte; aAuto: Boolean);
-    procedure AIDefencePositionAdd(aPlayer: Byte; X, Y: Integer; aDir, aGroupType: Byte; aRadius: Word; aDefType: Byte);
-    procedure AIDefencePositionAddEx(aHand: Integer; const aDefencePosition: TKMDefencePositionInfo);
+    function AIDefencePositionAdd(aPlayer: Byte; X, Y: Integer; aDir, aGroupType: Byte; aRadius: Word; aDefType: Byte): Integer;
+    function AIDefencePositionAddEx(aHand: Integer; const aDefencePosition: TKMDefencePositionInfo): Integer;
     procedure AIDefencePositionRemove(aPlayer: Byte; X, Y: Integer);
     procedure AIDefencePositionRemoveAll(aPlayer: Byte);
     procedure AIDefendAllies(aPlayer: Byte; aDefend: Boolean);
@@ -1275,9 +1275,9 @@ begin
 end;
 
 
-function TKMScriptActions._AIDefencePositionAdd(aPlayer: Integer; const aDefencePosition: TKMDefencePositionInfo): Boolean;
+function TKMScriptActions._AIDefencePositionAdd(aPlayer: Integer; const aDefencePosition: TKMDefencePositionInfo): Integer;
 begin
-  Result := False;
+  Result := NO_SUCCESS_INT;
   if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
     and (aDefencePosition.Radius >= 0)
     and (aDefencePosition.PositionType in [dtFrontLine..dtBackLine])
@@ -1285,21 +1285,20 @@ begin
     and (aDefencePosition.GroupType in GROUP_TYPES_VALID)
     and (gTerrain.TileInMapCoords(aDefencePosition.X, aDefencePosition.Y)) then
   begin
-    gHands[aPlayer].AI.General.DefencePositions.Add(KMPointDir(aDefencePosition.X, aDefencePosition.Y, aDefencePosition.Dir),
-                                                    aDefencePosition.GroupType, aDefencePosition.Radius, aDefencePosition.PositionType);
-    Result := True;
+    Result := gHands[aPlayer].AI.General.DefencePositions.Add(KMPointDir(aDefencePosition.X, aDefencePosition.Y, aDefencePosition.Dir),
+                                                              aDefencePosition.GroupType, aDefencePosition.Radius, aDefencePosition.PositionType);
   end;
 end;
 
 
 //* Version: 5932
 //* Adds a defence position for the specified AI player
-procedure TKMScriptActions.AIDefencePositionAdd(aPlayer: Byte; X, Y: Integer; aDir, aGroupType: Byte; aRadius: Word; aDefType: Byte);
+//* Returns added defence position UID or -1 if it could not be added
+function TKMScriptActions.AIDefencePositionAdd(aPlayer: Byte; X, Y: Integer; aDir, aGroupType: Byte; aRadius: Word; aDefType: Byte): Integer;
 var
   defPos: TKMDefencePositionInfo;
-  added: Boolean;
 begin
-  added := False;
+  Result := NO_SUCCESS_INT;
   try
     if InRange(aGroupType, 0, 3)
       and InRange(aDir, 0, Ord(High(TKMDirection)) - 1)
@@ -1314,10 +1313,10 @@ begin
       defPos.GroupType := TKMGroupType(aGroupType + GROUP_TYPE_MIN_OFF);
       defPos.PositionType := TKMAIDefencePosType(aDefType);
 
-      added := _AIDefencePositionAdd(aPlayer, defPos);
+      Result := _AIDefencePositionAdd(aPlayer, defPos);
     end;
 
-    if not added then
+    if Result = NO_SUCCESS_INT then
       LogIntParamWarn('Actions.AIDefencePositionAdd', [aPlayer, X, Y, aDir, aGroupType, aRadius, aDefType]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
@@ -1329,10 +1328,12 @@ end;
 //* Version: 13900
 //* Adds a defence position for the specified AI player
 //* aHand: hand (player) ID
-procedure TKMScriptActions.AIDefencePositionAddEx(aHand: Integer; const aDefencePosition: TKMDefencePositionInfo);
+//* Returns added defence position UID or -1 if it could not be added
+function TKMScriptActions.AIDefencePositionAddEx(aHand: Integer; const aDefencePosition: TKMDefencePositionInfo): Integer;
 begin
   try
-    if not _AIDefencePositionAdd(aHand, aDefencePosition) then
+    Result := _AIDefencePositionAdd(aHand, aDefencePosition);
+    if Result = NO_SUCCESS_INT then
       LogParamWarn('Actions.AIDefencePositionAddEx', [aHand, 'DefPos: ' + aDefencePosition.ToStr]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception

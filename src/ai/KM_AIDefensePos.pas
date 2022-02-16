@@ -52,7 +52,7 @@ type
     constructor Create(aPlayer: TKMHandID);
     destructor Destroy; override;
 
-    procedure Add(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType);
+    function Add(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType): Integer;
     procedure Clear;
     property Count: Integer read GetCount;
     procedure Delete(aIndex: Integer);
@@ -243,10 +243,14 @@ begin
 end;
 
 
-procedure TAIDefencePositions.Add(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType);
+function TAIDefencePositions.Add(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType): Integer;
+var
+  uid: Integer;
 begin
+  uid := gGame.GetNewUID;
   Assert(aGroupType in GROUP_TYPES_VALID, 'Invalid group type: ' + GetEnumName(TypeInfo(TKMGroupType), Integer(aGroupType)));
-  fPositions.Add(TAIDefencePosition.Create(gGame.GetNewUID, aPos, aGroupType, aRadius, aDefenceType));
+  fPositions.Add(TAIDefencePosition.Create(uid, aPos, aGroupType, aRadius, aDefenceType));
+  Result := uid;
 end;
 
 
