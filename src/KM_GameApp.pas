@@ -568,6 +568,7 @@ begin
   if (gGame = nil) or gGame.ReadyToStop then Exit;
 
   gSoundPlayer.AbortAllLongSounds; //SFX with a long duration should be stopped when quitting
+  gSoundPlayer.AbortAllScriptSounds; // Looped sounds should be stopped as well
 
   if aMsg in [grWin, grDefeat, grCancel, grSilent] then
   begin
