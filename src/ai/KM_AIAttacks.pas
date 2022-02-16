@@ -2,13 +2,9 @@ unit KM_AIAttacks;
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_Defaults, KM_CommonClasses, KM_Points;
+  KM_Defaults, KM_CommonClasses, KM_Points, KM_AITypes;
 
-type
-  TKMAIAttackType = (
-    aatOnce,     // Attack will occur once (after the set time has passed and if they have enough troops
-    aatRepeating // Attack will happen multiple times, (after delay time) whenever the AI has enough troops
-  );
+
 
 const
   //KaM uses 0 for repeating attack in TSK (disused and replaced with later by Remake), 1 for once and 2 for repeating in TPR
@@ -16,13 +12,6 @@ const
   KaMAttackType: array [TKMAIAttackType] of Byte = (1, 0);
 
 type
-  //Indexes must match with KaM script values (for now)
-  TKMAIAttackTarget = (attClosestUnit, //Closest enemy unit (untested as to whether this is relative to army or start position)
-                       attClosestBuildingFromArmy, //Closest building from the group(s) lauching the attack
-                       attClosestBuildingFromStartPos, //Closest building from the AI's start position
-                       attCustomPosition); //Custom point defined with CustomPosition
-
-
   //Records must be packed so they are stored identically in MP saves (? padding bytes are unknown values)
   TKMAIAttack = packed record
     Id: Word; //Attack ID, used to remove attack from script

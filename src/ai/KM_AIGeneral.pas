@@ -6,7 +6,8 @@ uses
   KM_AISetup, KM_AIAttacks, KM_AIDefensePos,
   KM_Units, KM_UnitGroup, KM_UnitWarrior,
   KM_CommonClasses, KM_Defaults, KM_Points,
-  KM_NavMeshDefences;
+  KM_NavMeshDefences,
+  KM_AITypes;
 
 
 type
@@ -56,8 +57,7 @@ uses
   KM_Houses, KM_HouseBarracks,
   KM_ResHouses, KM_CommonUtils, KM_DevPerfLog, KM_DevPerfLogTypes,
   KM_UnitGroupTypes,
-  KM_ResTypes,
-  KM_AITypes;
+  KM_ResTypes;
 
 
 const
