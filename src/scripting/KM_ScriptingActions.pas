@@ -1134,21 +1134,21 @@ function TKMScriptActions.AIAttackAdd(aPlayer: Byte; aRepeating: Boolean; aDelay
                                       aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount: Word; aRandomGroups: Boolean;
                                       aTarget: TKMAIAttackTarget; aCustomPosition: TKMPoint): Integer;
 var
-  AttackType: TKMAIAttackType;
-  Delay: Cardinal;
+  attackType: TKMAIAttackType;
+  delay: Cardinal;
 begin
   Result := -1;
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
     begin
       if aRepeating then
-        AttackType := aatRepeating
+        attackType := aatRepeating
       else
-        AttackType := aatOnce;
+        attackType := aatOnce;
 
       //Attack delay should be counted from the moment attack was added from script
-      Delay := aDelay + gGameParams.Tick;
-      Result := gHands[aPlayer].AI.General.Attacks.AddAttack(AttackType, Delay, aTotalMen, aMeleeGroupCount, aAntiHorseGroupCount,
+      delay := aDelay + gGameParams.Tick;
+      Result := gHands[aPlayer].AI.General.Attacks.AddAttack(attackType, delay, aTotalMen, aMeleeGroupCount, aAntiHorseGroupCount,
                                                              aRangedGroupCount, aMountedGroupCount, aRandomGroups, aTarget, 0, aCustomPosition);
     end else
       LogIntParamWarn('Actions.AIAttackAdd', [aPlayer, aDelay, aTotalMen, aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount]);
