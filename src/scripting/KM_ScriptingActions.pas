@@ -33,7 +33,7 @@ type
     procedure AIAutoDefence(aPlayer: Byte; aAuto: Boolean);
     procedure AIAutoRepair(aPlayer: Byte; aAuto: Boolean);
     function AIDefencePositionAdd(aPlayer: Byte; X, Y: Integer; aDir, aGroupType: Byte; aRadius: Word; aDefType: Byte): Integer;
-    function AIDefencePositionAddEx(aHand, aOrder: Integer; const aDefencePosition: TKMDefencePositionInfo): Integer;
+    function AIDefencePositionAddEx(aHand, aOrder: Integer; var aDefencePosition: TKMDefencePositionInfo): Integer;
     procedure AIDefencePositionRemove(aPlayer: Byte; X, Y: Integer);
     procedure AIDefencePositionRemoveAll(aPlayer: Byte);
     procedure AIDefencePositionRemoveByUID(aHand, aUID: Integer);
@@ -1379,10 +1379,11 @@ end;
 //* aOrder: order (or priority) of the defence position.
 //* If aOrder is not in range of [0; Count], then position would be added to the end of the list
 //* Returns added defence position UID or -1 if it could not be added
-function TKMScriptActions.AIDefencePositionAddEx(aHand, aOrder: Integer; const aDefencePosition: TKMDefencePositionInfo): Integer;
+function TKMScriptActions.AIDefencePositionAddEx(aHand, aOrder: Integer; var aDefencePosition: TKMDefencePositionInfo): Integer;
 begin
   try
     Result := _AIDefencePositionAdd(aHand, aOrder, aDefencePosition);
+    aDefencePosition.UID := Result;
     if Result = NO_SUCCESS_INT then
       LogParamWarn('Actions.AIDefencePositionAddEx', [aHand, aOrder, 'DefPos: ' + aDefencePosition.ToStr]);
   except
