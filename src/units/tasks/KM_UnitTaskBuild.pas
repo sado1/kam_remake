@@ -615,7 +615,8 @@ begin
   //Destroy the house if worker was killed (e.g. by archer or hunger)
   //as we don't have mechanics to resume the building process yet
   if HouseNeedsWorker and (fHouse <> nil) and not fHouse.IsDestroyed then
-    fHouse.DemolishHouse(fUnit.Owner);
+    //Use handID of unit killer, since he indirecty caused house demolishing
+    fHouse.DemolishHouse(fUnit.KilledBy);
 
   //Complete the task in the end (Worker could have died while trying to exit building area)
   if HouseReadyToBuild and not HouseNeedsWorker and (fHouse <> nil) and not fHouse.IsDestroyed then

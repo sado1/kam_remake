@@ -17,7 +17,6 @@ type
   TKMUnit = class;
   TKMUnitWorker = class;
   TKMUnitEvent = procedure(aUnit: TKMUnit) of object;
-  TKMUnitFromEvent = procedure(aUnit: TKMUnit; aFrom: TKMHandID) of object;
 
   TKMActionResult = (arActContinues, arActDone, arActAborted, arActCanNotStart);
 
@@ -103,6 +102,7 @@ type
     fPrevPosition: TKMPoint; //Where we were
     fNextPosition: TKMPoint; //Where we will be. Next tile in route or same tile if stay on place
     fDirection: TKMDirection; //Direction
+    fKilledBy: TKMHandID; //Who killed us?
     fLastTimeTrySetActionWalk: Cardinal; //LastTime we tried to set action walk
 
     //No saved fields, used only in players UI
@@ -142,7 +142,7 @@ type
   public
     AnimStep: Integer;
     IsExchanging: Boolean; //Current walk is an exchange, used for sliding
-    OnUnitDied: TKMUnitFromEvent;
+    OnUnitDied: TKMUnitEvent;
     OnUnitTrained: TKMUnitEvent;
 
     HitPointsInvulnerable: Boolean;
@@ -201,6 +201,7 @@ type
     function IsHungry: Boolean;
     procedure AbandonWalk;
     property  DesiredPassability: TKMTerrainPassability read GetDesiredPassability;
+    property KilledBy: TKMHandID read fKilledBy;
 
     property  Home: TKMHouse read fHome write SetHome;
     property  Action: TKMUnitAction read fAction;
@@ -1144,6 +1145,7 @@ begin
   AnimStep      := UNIT_STILL_FRAMES[fDirection]; //Use still frame at begining, so units don't all change frame on first tick
   Dismissable   := True;
   fLastTimeTrySetActionWalk := 0;
+  fKilledBy     := HAND_NONE;
 
   //Units start with a random amount of condition ranging from 0.5 to 0.7 (KaM uses 0.6 for all units)
   //By adding the random amount they won't all go eat at the same time and cause crowding, blockages, food shortages and other problems.
@@ -1269,6 +1271,7 @@ begin
   LoadStream.Read(fNextPosition);
   LoadStream.Read(fDismissASAP);
   LoadStream.Read(Dismissable);
+  LoadStream.Read(fKilledBy, SizeOf(fKilledBy));
   LoadStream.Read(fLastTimeTrySetActionWalk);
 end;
 
@@ -1423,8 +1426,14 @@ begin
   //signal to our owner that we have died (doesn't have to be assigned since f.e. animals don't use it)
   //This must be called before actually killing the unit because gScriptEvets needs to access it
   //and script is not allowed to touch dead/dying/KillASAP units
+
+  // Remember who killed us.
+  // If worker is killed we want to tell the script, that house area, which he was digging was destroyed by same source (enemy or hunger)
+  // Should be saved in game save as well, since could be used later during our death (f.e. on next tick if fKillASAP)
+  fKilledBy := aFrom;
+
   if Assigned(OnUnitDied) then
-    OnUnitDied(Self, aFrom);
+    OnUnitDied(Self);
 
   // Wait till units exchange (1 tick) and then do the killing
   if aForceDelay
@@ -2069,10 +2078,11 @@ begin
       begin
         //There is no space for this unit so it must be destroyed
         //todo: re-route to KillUnit and let it sort out that unit is invisible and cant be placed
+        fKilledBy := HAND_NONE;
         if    (Owner <> HAND_NONE)
           and not IsDeadOrDying
           and Assigned(OnUnitDied) then
-          OnUnitDied(Self, HAND_NONE);
+          OnUnitDied(Self);
 
         //These must be freed before running CloseUnit because task destructors sometimes need access to unit properties
         SetAction(nil);
@@ -2392,6 +2402,7 @@ begin
   SaveStream.Write(fNextPosition);
   SaveStream.Write(fDismissASAP);
   SaveStream.Write(Dismissable);
+  SaveStream.Write(fKilledBy, SizeOf(fKilledBy));
   SaveStream.Write(fLastTimeTrySetActionWalk);
 end;
 
