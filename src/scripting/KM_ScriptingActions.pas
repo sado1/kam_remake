@@ -1168,8 +1168,6 @@ begin
   try
     if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
     begin
-      //Attack delay should be counted from the moment attack was added from script
-      aAttackInfo.Delay := aAttackInfo.Delay + gGameParams.Tick;
       Result := gHands[aHand].AI.General.Attacks.AddAttack( aAttackInfo.AttackType,
                                                             aAttackInfo.Delay,
                                                             aAttackInfo.TotalMen,
