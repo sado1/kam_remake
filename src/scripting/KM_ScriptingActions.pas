@@ -1283,10 +1283,17 @@ end;
 
 
 function TKMScriptActions._AIDefencePositionAdd(aPlayer: Integer; aOrder: Integer; const aDefencePosition: TKMDefencePositionInfo): Integer;
+var
+  cnt: Integer;
 begin
   Result := NO_SUCCESS_INT;
+  cnt := gHands[aPlayer].AI.General.DefencePositions.Count;
+
+  // Add position anyway, at least to the end of the list
+  if not InRange(aOrder, 0, cnt) then
+    aOrder := cnt;
+
   if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-    and InRange(aOrder, 0, gHands[aPlayer].AI.General.DefencePositions.Count)
     and (aDefencePosition.Radius >= 0)
     and (aDefencePosition.PositionType in [dtFrontLine..dtBackLine])
     and (aDefencePosition.Dir in [dirN..dirNW])
@@ -1337,7 +1344,8 @@ end;
 //* Version: 13900
 //* Adds a defence position for the specified AI player
 //* aHand: hand (player) ID
-//* aOrder: order (or priority) of the defence position. It should be in range of [0; Count], where Count is number of all defence positions
+//* aOrder: order (or priority) of the defence position.
+//* If aOrder is not in range of [0; Count], then position would be added to the end of the list
 //* Returns added defence position UID or -1 if it could not be added
 function TKMScriptActions.AIDefencePositionAddEx(aHand, aOrder: Integer; const aDefencePosition: TKMDefencePositionInfo): Integer;
 begin
