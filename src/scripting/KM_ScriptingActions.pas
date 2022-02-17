@@ -15,7 +15,7 @@ type
     fOnSetLogLinesMaxCnt: TIntegerEvent;
     procedure LogStr(const aText: String);
 
-    function _AIDefencePositionAdd(aPlayer: Integer; const aDefencePosition: TKMDefencePositionInfo): Integer;
+    function _AIDefencePositionAdd(aPlayer: Integer; aIndex: Integer; const aDefencePosition: TKMDefencePositionInfo): Integer;
     function _AIGroupsFormationSet(aPlayer: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer): Boolean;
   public
     property OnSetLogLinesMaxCnt: TIntegerEvent read fOnSetLogLinesMaxCnt write fOnSetLogLinesMaxCnt;
@@ -32,7 +32,7 @@ type
     procedure AIAutoDefence(aPlayer: Byte; aAuto: Boolean);
     procedure AIAutoRepair(aPlayer: Byte; aAuto: Boolean);
     function AIDefencePositionAdd(aPlayer: Byte; X, Y: Integer; aDir, aGroupType: Byte; aRadius: Word; aDefType: Byte): Integer;
-    function AIDefencePositionAddEx(aHand: Integer; const aDefencePosition: TKMDefencePositionInfo): Integer;
+    function AIDefencePositionAddEx(aHand: Integer; aIndex: Integer; const aDefencePosition: TKMDefencePositionInfo): Integer;
     procedure AIDefencePositionRemove(aPlayer: Byte; X, Y: Integer);
     procedure AIDefencePositionRemoveAll(aPlayer: Byte);
     procedure AIDefendAllies(aPlayer: Byte; aDefend: Boolean);
@@ -1275,18 +1275,19 @@ begin
 end;
 
 
-function TKMScriptActions._AIDefencePositionAdd(aPlayer: Integer; const aDefencePosition: TKMDefencePositionInfo): Integer;
+function TKMScriptActions._AIDefencePositionAdd(aPlayer: Integer; aIndex: Integer; const aDefencePosition: TKMDefencePositionInfo): Integer;
 begin
   Result := NO_SUCCESS_INT;
   if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    and InRange(aIndex, 0, gHands[aPlayer].AI.General.DefencePositions.Count)
     and (aDefencePosition.Radius >= 0)
     and (aDefencePosition.PositionType in [dtFrontLine..dtBackLine])
     and (aDefencePosition.Dir in [dirN..dirNW])
     and (aDefencePosition.GroupType in GROUP_TYPES_VALID)
     and (gTerrain.TileInMapCoords(aDefencePosition.X, aDefencePosition.Y)) then
   begin
-    Result := gHands[aPlayer].AI.General.DefencePositions.Add(KMPointDir(aDefencePosition.X, aDefencePosition.Y, aDefencePosition.Dir),
-                                                              aDefencePosition.GroupType, aDefencePosition.Radius, aDefencePosition.PositionType);
+    Result := gHands[aPlayer].AI.General.DefencePositions.Insert(aIndex, KMPointDir(aDefencePosition.X, aDefencePosition.Y, aDefencePosition.Dir),
+                                                                 aDefencePosition.GroupType, aDefencePosition.Radius, aDefencePosition.PositionType);
   end;
 end;
 
@@ -1313,7 +1314,8 @@ begin
       defPos.GroupType := TKMGroupType(aGroupType + GROUP_TYPE_MIN_OFF);
       defPos.PositionType := TKMAIDefencePosType(aDefType);
 
-      Result := _AIDefencePositionAdd(aPlayer, defPos);
+      // Add defence position at the end of the list
+      Result := _AIDefencePositionAdd(aPlayer, gHands[aPlayer].AI.General.DefencePositions.Count, defPos);
     end;
 
     if Result = NO_SUCCESS_INT then
@@ -1328,13 +1330,14 @@ end;
 //* Version: 13900
 //* Adds a defence position for the specified AI player
 //* aHand: hand (player) ID
+//* aIndex: index (priority) of the defence position. If index is not in range of [0; Count] then position will be added to the end of the list
 //* Returns added defence position UID or -1 if it could not be added
-function TKMScriptActions.AIDefencePositionAddEx(aHand: Integer; const aDefencePosition: TKMDefencePositionInfo): Integer;
+function TKMScriptActions.AIDefencePositionAddEx(aHand: Integer; aIndex: Integer; const aDefencePosition: TKMDefencePositionInfo): Integer;
 begin
   try
-    Result := _AIDefencePositionAdd(aHand, aDefencePosition);
+    Result := _AIDefencePositionAdd(aHand, aIndex, aDefencePosition);
     if Result = NO_SUCCESS_INT then
-      LogParamWarn('Actions.AIDefencePositionAddEx', [aHand, 'DefPos: ' + aDefencePosition.ToStr]);
+      LogParamWarn('Actions.AIDefencePositionAddEx', [aHand, aIndex, 'DefPos: ' + aDefencePosition.ToStr]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

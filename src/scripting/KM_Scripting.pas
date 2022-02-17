@@ -702,7 +702,7 @@ begin
     RegisterMethodCheck(c, 'procedure AIAutoDefence(aPlayer: Byte; aAuto: Boolean)');
     RegisterMethodCheck(c, 'procedure AIAutoRepair(aPlayer: Byte; aAuto: Boolean)');
     RegisterMethodCheck(c, 'function AIDefencePositionAdd(aPlayer: Byte; X, Y: Integer; aDir, aGroupType: Byte; aRadius: Word; aDefType: Byte): Integer');
-    RegisterMethodCheck(c, 'function AIDefencePositionAddEx(aHand: Integer; const aDefencePosition: TKMDefencePositionInfo): Integer');
+    RegisterMethodCheck(c, 'function AIDefencePositionAddEx(aHand: Integer; aIndex: Integer; const aDefencePosition: TKMDefencePositionInfo): Integer');
     RegisterMethodCheck(c, 'procedure AIDefencePositionRemove(aPlayer: Byte; X, Y: Integer)');
     RegisterMethodCheck(c, 'procedure AIDefencePositionRemoveAll(aPlayer: Byte)');
     RegisterMethodCheck(c, 'procedure AIDefendAllies(aPlayer: Byte; aDefend: Boolean)');

@@ -45,6 +45,7 @@ type
     fPositions: TKMList;
     function GetPosition(aIndex: Integer): TAIDefencePosition; inline;
     function GetCount: Integer; inline;
+    function CreateDefPosition(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType): TAIDefencePosition;
   public
     //Defines how defending troops will be formatted. 0 means leave unchanged.
     TroopFormations: array [GROUP_TYPE_MIN..GROUP_TYPE_MAX] of TKMFormation;
@@ -53,6 +54,7 @@ type
     destructor Destroy; override;
 
     function Add(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType): Integer;
+    function Insert(aIndex: Integer; const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType): Integer;
     procedure Clear;
     property Count: Integer read GetCount;
     procedure Delete(aIndex: Integer);
@@ -243,14 +245,37 @@ begin
 end;
 
 
-function TAIDefencePositions.Add(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType): Integer;
+function TAIDefencePositions.CreateDefPosition(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType): TAIDefencePosition;
 var
   uid: Integer;
 begin
   uid := gGame.GetNewUID;
   Assert(aGroupType in GROUP_TYPES_VALID, 'Invalid group type: ' + GetEnumName(TypeInfo(TKMGroupType), Integer(aGroupType)));
-  fPositions.Add(TAIDefencePosition.Create(uid, aPos, aGroupType, aRadius, aDefenceType));
-  Result := uid;
+
+  Result := TAIDefencePosition.Create(uid, aPos, aGroupType, aRadius, aDefenceType);
+end;
+
+
+function TAIDefencePositions.Add(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType): Integer;
+var
+  defPos: TAIDefencePosition;
+begin
+  defPos := CreateDefPosition(aPos, aGroupType, aRadius, aDefenceType);
+  fPositions.Add(defPos);
+  Result := defPos.UID;
+end;
+
+
+function TAIDefencePositions.Insert(aIndex: Integer; const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType): Integer;
+var
+  defPos: TAIDefencePosition;
+begin
+  Assert(InRange(aIndex, 0, Count), 'Can''t insert defence position at position ' + IntToStr(aIndex));
+  defPos := CreateDefPosition(aPos, aGroupType, aRadius, aDefenceType);
+
+  fPositions.Insert(aIndex, defPos);
+
+  Result := defPos.UID;
 end;
 
 
