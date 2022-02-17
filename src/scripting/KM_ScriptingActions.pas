@@ -1114,7 +1114,7 @@ end;
 //* Add AI attack 
 //** <b>aPlayer</b> - playerID
 //** <b>aRepeating</b> - is attack repeating
-//** <b>aDelay</b> - attack delay
+//** <b>aDelay</b> - attack delay from the game start (in ticks)
 //** <b>aTotalMen</b> - total soldiers to attack
 //** <b>aMelleCount</b>, <b>aAntiHorseCount</b>, <b>aRangedCount</b>, <b>aMountedCount</b> - soldiers groups count
 //** <b>aRandomGroups</b> - use random groups for attack
@@ -1135,7 +1135,6 @@ function TKMScriptActions.AIAttackAdd(aPlayer: Byte; aRepeating: Boolean; aDelay
                                       aTarget: TKMAIAttackTarget; aCustomPosition: TKMPoint): Integer;
 var
   attackType: TKMAIAttackType;
-  delay: Cardinal;
 begin
   Result := -1;
   try
@@ -1147,8 +1146,7 @@ begin
         attackType := aatOnce;
 
       //Attack delay should be counted from the moment attack was added from script
-      delay := aDelay + gGameParams.Tick;
-      Result := gHands[aPlayer].AI.General.Attacks.AddAttack(attackType, delay, aTotalMen, aMeleeGroupCount, aAntiHorseGroupCount,
+      Result := gHands[aPlayer].AI.General.Attacks.AddAttack(attackType, aDelay, aTotalMen, aMeleeGroupCount, aAntiHorseGroupCount,
                                                              aRangedGroupCount, aMountedGroupCount, aRandomGroups, aTarget, 0, aCustomPosition);
     end else
       LogIntParamWarn('Actions.AIAttackAdd', [aPlayer, aDelay, aTotalMen, aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount]);
