@@ -1318,11 +1318,6 @@ var
   cnt: Integer;
 begin
   Result := NO_SUCCESS_INT;
-  cnt := gHands[aPlayer].AI.General.DefencePositions.Count;
-
-  // Add position anyway, at least to the end of the list
-  if not InRange(aOrder, 0, cnt) then
-    aOrder := cnt;
 
   if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
     and (aDefencePosition.Radius >= 0)
@@ -1331,6 +1326,12 @@ begin
     and (aDefencePosition.GroupType in GROUP_TYPES_VALID)
     and (gTerrain.TileInMapCoords(aDefencePosition.X, aDefencePosition.Y)) then
   begin
+    cnt := gHands[aPlayer].AI.General.DefencePositions.Count;
+
+    // Add position anyway, at least to the end of the list
+    if not InRange(aOrder, 0, cnt) then
+      aOrder := cnt;
+
     Result := gHands[aPlayer].AI.General.DefencePositions.Insert(aOrder, KMPointDir(aDefencePosition.X, aDefencePosition.Y, aDefencePosition.Dir),
                                                                  aDefencePosition.GroupType, aDefencePosition.Radius, aDefencePosition.PositionType);
   end;
