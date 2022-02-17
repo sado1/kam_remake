@@ -208,11 +208,13 @@ type
     procedure SetMenuSPSaveFileName(const aValue: UnicodeString);
     procedure SetMenuLobbyMapType(aValue: Byte);
 
+    procedure SetSpeedPace(const aValue: Word);
+    function GetFavouriteMaps: TKMMapsCRCList;
+    function GetAsyncGameResLoad: Boolean;
+
     //Debug
     procedure SetDebugSaveRandomChecks(aValue: Boolean);
     procedure SetDebugSaveGameAsText(aValue: Boolean);
-    procedure SetSpeedPace(const aValue: Word);
-    function GetFavouriteMaps: TKMMapsCRCList;
   public
     constructor Create;
     destructor Destroy; override;
@@ -298,7 +300,7 @@ type
     property LastPassword: string read fLastPassword write SetLastPassword;
 
     //Misc
-    property AsyncGameResLoad: Boolean read fAsyncGameResLoad;
+    property AsyncGameResLoad: Boolean read GetAsyncGameResLoad;
 
     //Menu
     property MenuMapSPType: Byte read fMenu_MapSPType write SetMenuMapSPType;
@@ -356,6 +358,14 @@ begin
   // Cleanup everything afterwards
   FreeAndNil(fWareDistribution);
   FreeAndNil(fFavouriteMaps);
+end;
+
+
+function TKMGameSettings.GetAsyncGameResLoad: Boolean;
+begin
+  if Self = nil then Exit(False);
+
+  Result := fAsyncGameResLoad;
 end;
 
 
