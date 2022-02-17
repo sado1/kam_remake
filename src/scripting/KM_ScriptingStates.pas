@@ -29,7 +29,7 @@ type
     function AIAutoRepair(aPlayer: Byte): Boolean;
     function AIDefendAllies(aPlayer: Byte): Boolean;
     procedure AIDefencePositionGet(aPlayer, aID: Byte; out aX, aY: Integer; out aGroupType: Byte; out aRadius: Word; out aDefType: Byte);
-    procedure AIDefencePositionGetEx(aPlayer, aID: Integer; out aDefencePosition: TKMDefencePositionInfo);
+    function AIDefencePositionGetByIndex(aPlayer, aIndex: Integer): TKMDefencePositionInfo;
     function AIEquipRate(aPlayer: Byte; aType: Byte): Integer;
     procedure AIGroupsFormationGet(aPlayer, aType: Byte; out aCount, aColumns: Integer);
     procedure AIGroupsFormationGetEx(aPlayer: Integer; aGroupType: TKMGroupType; out aCount, aColumns: Integer);
@@ -457,28 +457,34 @@ end;
 
 //* Version: 13900
 //* Gets the parameters of AI defence position
-//* Parameters are returned in aDefencePosition record
-procedure TKMScriptStates.AIDefencePositionGetEx(aPlayer, aID: Integer; out aDefencePosition: TKMDefencePositionInfo);
+//* aIndex: index in the list of all defence positions for the specified player
+//* Returns defence position parameters
+function TKMScriptStates.AIDefencePositionGetByIndex(aPlayer, aIndex: Integer): TKMDefencePositionInfo;
 var
   DP: TAIDefencePosition;
 begin
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-    and InRange(aID, 0, gHands[aPlayer].AI.General.DefencePositions.Count - 1) then
+    and InRange(aIndex, 0, gHands[aPlayer].AI.General.DefencePositions.Count - 1) then
     begin
-      DP := gHands[aPlayer].AI.General.DefencePositions[aID];
+      DP := gHands[aPlayer].AI.General.DefencePositions[aIndex];
       if DP <> nil then
       begin
-        aDefencePosition.X := DP.Position.Loc.X;
-        aDefencePosition.Y := DP.Position.Loc.Y;
-        aDefencePosition.Radius := DP.Radius;
-        aDefencePosition.Dir := DP.Position.Dir;
-        aDefencePosition.GroupType := DP.GroupType;
-        aDefencePosition.PositionType := DP.DefenceType;
+        Result.UID := DP.UID;
+        Result.X := DP.Position.Loc.X;
+        Result.Y := DP.Position.Loc.Y;
+        if DP.CurrentGroup = nil then
+          Result.GroupID := -1
+        else
+          Result.GroupID := DP.CurrentGroup.UID;
+        Result.Radius := DP.Radius;
+        Result.Dir := DP.Position.Dir;
+        Result.GroupType := DP.GroupType;
+        Result.PositionType := DP.DefenceType;
       end;
     end
     else
-      LogIntParamWarn('States.AIDefencePositionGetEx', [aPlayer, aID]);
+      LogIntParamWarn('States.AIDefencePositionGetByIndex', [aPlayer, aIndex]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

@@ -72,8 +72,10 @@ type
   // PascalScript use packed records alignment by default,
   // thus without it in Delphi we could get garbage in the fields if they are not aligned same way as in PS
   TKMDefencePositionInfo = packed record
+    UID: Integer;
     X, Y: Integer;
     Radius: Integer;
+    GroupID: Integer;
     Dir: TKMDirection;
     GroupType: TKMGroupType;
     PositionType: TKMAIDefencePosType;
