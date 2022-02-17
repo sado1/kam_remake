@@ -1136,7 +1136,7 @@ function TKMScriptActions.AIAttackAdd(aPlayer: Byte; aRepeating: Boolean; aDelay
 var
   attackType: TKMAIAttackType;
 begin
-  Result := -1;
+  Result := NO_SUCCESS_INT;
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
     begin
