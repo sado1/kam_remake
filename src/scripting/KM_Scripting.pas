@@ -707,7 +707,7 @@ begin
     RegisterMethodCheck(c, 'function AIDefencePositionAddEx(aHand, aOrder: Integer; const aDefencePosition: TKMDefencePositionInfo): Integer');
     RegisterMethodCheck(c, 'procedure AIDefencePositionRemove(aPlayer: Byte; X, Y: Integer)');
     RegisterMethodCheck(c, 'procedure AIDefencePositionRemoveAll(aPlayer: Byte)');
-    RegisterMethodCheck(c, 'procedure AIDefencePositionRemoveByUID(aPlayer, aUID: Integer)');
+    RegisterMethodCheck(c, 'procedure AIDefencePositionRemoveByUID(aHand, aUID: Integer)');
     RegisterMethodCheck(c, 'procedure AIDefendAllies(aPlayer: Byte; aDefend: Boolean)');
     RegisterMethodCheck(c, 'procedure AIEquipRate(aPlayer: Byte; aType: Byte; aRate: Word)');
     RegisterMethodCheck(c, 'procedure AIGroupsFormationSet(aPlayer, aType: Byte; aCount, aColumns: Word)');
