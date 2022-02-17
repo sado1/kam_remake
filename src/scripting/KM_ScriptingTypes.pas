@@ -82,6 +82,22 @@ type
     function ToStr: string;
   end;
 
+  TKMAIAttackInfo = packed record
+    ID: Integer;
+    AttackType: TKMAIAttackType;
+    HasOccured: Boolean;
+    Delay: Cardinal;
+    TotalMen: Integer;
+    MeleeGroupCount: Integer;
+    AntiHorseGroupCount: Integer;
+    RangedGroupCount: Integer;
+    MountedGroupCount: Integer;
+    RandomGroups: Boolean;
+    Target: TKMAIAttackTarget;
+    CustomPosition: TKMPoint;
+    function ToStr: string;
+  end;
+
 const
   SCRIPT_LOG_EXT = '.log.txt';
 
@@ -99,6 +115,20 @@ begin
                     GetEnumName(TypeInfo(TKMDirection), Integer(Dir)),
                     GetEnumName(TypeInfo(TKMGroupType), Integer(GroupType)),
                     GetEnumName(TypeInfo(TKMAIDefencePosType), Integer(PositionType))]);
+end;
+
+
+{ TKMAIAttackInfo }
+function TKMAIAttackInfo.ToStr: string;
+begin
+  Result := Format('[%d: Type=%s Occured=%s, Delay=%d, TotalMen=%d, GroupsCount: %d, %d, %d, %d, RandomGroups=%s, Target=%s, Pos=%s]',
+                   [ID,
+                    GetEnumName(TypeInfo(TKMAIAttackType), Integer(AttackType)),
+                    BoolToStr(HasOccured), Delay, TotalMen,
+                    MeleeGroupCount, AntiHorseGroupCount, RangedGroupCount, MountedGroupCount,
+                    BoolToStr(RandomGroups),
+                    GetEnumName(TypeInfo(TKMAIAttackTarget), Integer(Target)),
+                    CustomPosition.ToString]);
 end;
 
 

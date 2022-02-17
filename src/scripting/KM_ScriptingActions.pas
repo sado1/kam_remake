@@ -24,6 +24,7 @@ type
     function AIAttackAdd(aPlayer: Byte; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer;
                          aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount: Word; aRandomGroups: Boolean;
                          aTarget: TKMAIAttackTarget; aCustomPosition: TKMPoint): Integer;
+    function AIAttackAddEx(aHand: Integer; var aAttackInfo: TKMAIAttackInfo): Integer;
     function AIAttackRemove(aPlayer: Byte; aAIAttackId: Word): Boolean;
     procedure AIAttackRemoveAll(aPlayer: Byte);
     procedure AIAutoAttack(aPlayer: Byte; aAutoAttack: Boolean);
@@ -1150,6 +1151,38 @@ begin
                                                              aRangedGroupCount, aMountedGroupCount, aRandomGroups, aTarget, 0, aCustomPosition);
     end else
       LogIntParamWarn('Actions.AIAttackAdd', [aPlayer, aDelay, aTotalMen, aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Add AI attack for a specified hand (player)
+//* Attack info is set via TKMAIAttackInfo record.
+//* Result: Attack Id, that could be used to remove this attack later on
+function TKMScriptActions.AIAttackAddEx(aHand: Integer; var aAttackInfo: TKMAIAttackInfo): Integer;
+begin
+  Result := NO_SUCCESS_INT;
+  try
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    begin
+      //Attack delay should be counted from the moment attack was added from script
+      aAttackInfo.Delay := aAttackInfo.Delay + gGameParams.Tick;
+      Result := gHands[aHand].AI.General.Attacks.AddAttack( aAttackInfo.AttackType,
+                                                            aAttackInfo.Delay,
+                                                            aAttackInfo.TotalMen,
+                                                            aAttackInfo.MeleeGroupCount,
+                                                            aAttackInfo.AntiHorseGroupCount,
+                                                            aAttackInfo.RangedGroupCount,
+                                                            aAttackInfo.MountedGroupCount,
+                                                            aAttackInfo.RandomGroups,
+                                                            aAttackInfo.Target, 0,
+                                                            aAttackInfo.CustomPosition);
+      aAttackInfo.ID := Result;
+    end else
+      LogParamWarn('Actions.AIAttackAddEx', [aHand, aAttackInfo.ToStr]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

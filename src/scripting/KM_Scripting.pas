@@ -345,7 +345,6 @@ begin
     Sender.AddTypeS('TByteSet', 'set of Byte'); //Needed for Closest*MultipleTypes
     Sender.AddTypeS('TKMPoint', 'record X,Y: Integer; end'); //Could be very useful
 
-    Sender.AddTypeS('TKMAIDefencePosType', '(dtFrontLine, dtBackLine)');
     Sender.AddTypeS('TKMGroupType', '(gtNone, gtAny, gtMelee, gtAntiHorse, gtRanged, gtMounted)');
     Sender.AddTypeS('TKMGroupTypeSet', 'set of TKMGroupType');
     Sender.AddTypeS('TKMDirection', '(dirNA, dirN, dirNE, dirE, dirSE, dirS, dirSW, dirW, dirNW)');
@@ -356,8 +355,26 @@ begin
     Sender.AddTypeS('TKMTerrainPassability', '(tpNone, tpWalk, tpWalkRoad, tpBuildNoObj, tpBuild, tpMakeRoads, tpCutTree, '
       + 'tpFish, tpCrab, tpWolf, tpElevate, tpWorker, tpOwn, tpFactor)');
 
+    Sender.AddTypeS('TKMAIDefencePosType', '(dtFrontLine, dtBackLine)');
     Sender.AddTypeS('TKMAIAttackType', '(aatOnce, aatRepeating)');
     Sender.AddTypeS('TKMAIRepairMode', '(rmNone, rmRepairNever, rmRepairAlways, rmRepairManual)');
+    Sender.AddTypeS('TKMAIAttackTarget', '(attClosestUnit, attClosestBuildingFromArmy, attClosestBuildingFromStartPos, attCustomPosition)');
+    Sender.AddTypeS('TKMArmyType', '(atIronThenLeather, atLeather, atIron, atIronAndLeather)');
+
+    Sender.AddTypeS('TKMAIAttackInfo', 'record ' +
+                      'ID: Integer;' +
+                      'AttackType: TKMAIAttackType;' +
+                      'HasOccured: Boolean;' +
+                      'Delay: Cardinal;' +
+                      'TotalMen: Integer;' +
+                      'MeleeGroupCount: Integer;' +
+                      'AntiHorseGroupCount: Integer;' +
+                      'RangedGroupCount: Integer;' +
+                      'MountedGroupCount: Integer;' +
+                      'RandomGroups: Boolean;' +
+                      'Target: TKMAIAttackTarget;' +
+                      'CustomPosition: TKMPoint;' +
+                    'end');
 
     Sender.AddTypeS('TKMDefencePositionInfo', 'record ' +
                       'UID: Integer; ' +
@@ -386,10 +403,6 @@ begin
 
     // Types needed for MapTilesArraySet function
     Sender.AddTypeS('TKMTerrainTileBrief', 'record X,Y: Byte; Terrain: Word; Rotation: Byte; Height: Byte; Obj: Word; UpdateTerrain, UpdateRotation, UpdateHeight, UpdateObject: Boolean; end');
-
-    Sender.AddTypeS('TKMAIAttackTarget', '(attClosestUnit, attClosestBuildingFromArmy, attClosestBuildingFromStartPos, attCustomPosition)');
-
-    Sender.AddTypeS('TKMArmyType', '(atIronThenLeather, atLeather, atIron, atIronAndLeather)');
 
     Sender.AddTypeS('TKMMissionDifficulty', '(mdNone, mdEasy3, mdEasy2, mdEasy1, mdNormal, mdHard1, mdHard2, mdHard3)');
     Sender.AddTypeS('TKMMissionDifficultySet', 'set of TKMMissionDifficulty');
@@ -696,6 +709,7 @@ begin
     RegisterMethodCheck(c, 'function AIAttackAdd(aPlayer: Byte; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer;' +
                            'aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount: Word; ' +
                            'aRandomGroups: Boolean; aTarget: TKMAIAttackTarget; aCustomPosition: TKMPoint): Integer');
+    RegisterMethodCheck(c, 'function AIAttackAddEx(aHand: Integer; var aAttackInfo: TKMAIAttackInfo): Integer');
     RegisterMethodCheck(c, 'function AIAttackRemove(aPlayer: Byte; aAIAttackId: Word): Boolean');
     RegisterMethodCheck(c, 'procedure AIAttackRemoveAll(aPlayer: Byte)');
     RegisterMethodCheck(c, 'procedure AIAutoAttack(aPlayer: Byte; aAutoAttack: Boolean)');
@@ -1467,6 +1481,7 @@ begin
     begin
       RegisterMethod(@TKMScriptActions.AIArmyType,                              'AIArmyType');
       RegisterMethod(@TKMScriptActions.AIAttackAdd,                             'AIAttackAdd');
+      RegisterMethod(@TKMScriptActions.AIAttackAddEx,                           'AIAttackAddEx');
       RegisterMethod(@TKMScriptActions.AIAttackRemove,                          'AIAttackRemove');
       RegisterMethod(@TKMScriptActions.AIAttackRemoveAll,                       'AIAttackRemoveAll');
       RegisterMethod(@TKMScriptActions.AIAutoAttack,                            'AIAutoAttack');
