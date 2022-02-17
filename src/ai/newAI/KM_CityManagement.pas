@@ -179,7 +179,7 @@ begin
       CheckUnitCount(aTick);
       CheckMarketplaces();
       CheckStoreWares(aTick);
-      if fSetup.AutoRepair then
+      if fSetup.IsRepairAlways then
         CheckAutoRepair();
       CheckWareDistribution();
       WeaponsBalance();
@@ -313,7 +313,7 @@ begin
   if GoldShortage then
   begin
     UnitReq[utSerf] := 3; // 3x Serf
-    UnitReq[utWorker] := Byte((fPredictor.WorkerCount > 0) AND (fSetup.AutoBuild OR fSetup.AutoRepair));// 1x Worker
+    UnitReq[utWorker] := Byte((fPredictor.WorkerCount > 0) AND (fSetup.AutoBuild OR fSetup.IsRepairAlways));// 1x Worker
     UnitReq[utMiner] := Stats.GetHouseTotal(htCoalMine) + Stats.GetHouseTotal(htGoldMine) + Stats.GetHouseQty(htIronMine); // Miner can go into iron / gold / coal mines (idealy we need 1 gold and 1 coal but it is hard to catch it)
     UnitReq[utMetallurgist] := Stats.GetHouseTotal(htMetallurgists) + Stats.GetHouseQty(htIronSmithy); // Metallurgist (same problem like in case of miner)
     UnitReq[utWoodcutter] := Byte(Stats.GetHouseQty(htWoodcutters) > 0); // 1x Woodcutter
@@ -345,7 +345,7 @@ begin
     UnitReq[utWorker] := 0;
     if (Stats.GetWareBalance(wtGold) > AI_Par[MANAGEMENT_GoldShortage] * AI_Par[MANAGEMENT_CheckUnitCount_WorkerGoldCoef]) OR (GoldProduced > 0) then // Dont train servs / workers / recruits when we will be out of gold
     begin
-      UnitReq[utWorker] :=  fPredictor.WorkerCount * Byte(not gHands[fOwner].AI.ArmyManagement.Defence.CityUnderAttack) * Byte(fSetup.AutoBuild) + Byte(not fSetup.AutoBuild) * Byte(fSetup.AutoRepair) * 5;
+      UnitReq[utWorker] :=  fPredictor.WorkerCount * Byte(not gHands[fOwner].AI.ArmyManagement.Defence.CityUnderAttack) * Byte(fSetup.AutoBuild) + Byte(not fSetup.AutoBuild) * Byte(fSetup.IsRepairAlways) * 5;
       UnitReq[utRecruit] := RecruitsNeeded(Houses[htWatchTower]);
     end;
     if (Stats.GetWareBalance(wtGold) > AI_Par[MANAGEMENT_GoldShortage] * AI_Par[MANAGEMENT_CheckUnitCount_SerfGoldCoef]) OR (GoldProduced > 0) then // Dont train servs / workers / recruits when we will be out of gold
@@ -641,7 +641,7 @@ begin
     begin
       for I := 0 to Houses.Count - 1 do
       begin
-        Houses[I].BuildingRepair := fSetup.AutoRepair;
+        Houses[I].BuildingRepair := fSetup.IsRepairAlways;
         if (Houses[I].HouseType = htWatchTower) AND (Houses[I].DeliveryMode = dmClosed) then
           Houses[I].SetDeliveryModeInstantly(dmDelivery);
       end;

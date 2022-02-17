@@ -22,6 +22,8 @@ type
     NumUnits, UnitsPerRow: Integer;
   end;
 
+  TKMAIRepairMode = (rmNone, rmRepairNever, rmRepairAlways, rmRepairManual);
+
 implementation
 
 end.

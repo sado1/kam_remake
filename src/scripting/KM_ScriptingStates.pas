@@ -7,7 +7,7 @@ uses
   KM_UnitGroup, KM_ResHouses, KM_HouseCollection, KM_HouseWoodcutters,
   KM_ResWares, KM_ScriptingEvents, KM_TerrainTypes, KM_ResTilesetTypes,
   KM_UnitGroupTypes, KM_ScriptingTypes,
-  KM_ResTypes, KM_HandTypes;
+  KM_ResTypes, KM_HandTypes, KM_AITypes;
 
 
 type
@@ -35,6 +35,7 @@ type
     procedure AIGroupsFormationGetEx(aPlayer: Integer; aGroupType: TKMGroupType; out aCount, aColumns: Integer);
     function AIRecruitDelay(aPlayer: Byte): Integer;
     function AIRecruitLimit(aPlayer: Byte): Integer;
+    function AIRepairMode(aPlayer: Integer): TKMAIRepairMode;
     function AISerfsPerHouse(aPlayer: Byte): Single;
     function AISoldiersLimit(aPlayer: Byte): Integer;
     function AIStartPosition(aPlayer: Byte): TKMPoint;
@@ -395,7 +396,7 @@ begin
   Result := False;
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
-      Result := gHands[aPlayer].AI.Setup.AutoRepair
+      Result := gHands[aPlayer].AI.Setup.IsRepairAlways
     else
       LogIntParamWarn('States.AIAutoRepair', [aPlayer]);
   except
@@ -609,6 +610,27 @@ begin
       Result := gHands[aPlayer].AI.Setup.RecruitCount
     else
       LogIntParamWarn('States.AIRecruitLimit', [aPlayer]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Gets whether the AI should automatically repair damaged buildings
+//* Returns rmNone if used with wrong parameters
+//* rmNever if disable repair for all houses
+//* rmAlways if enable repair for all houses
+//* rmManual if repair is set by script manually via Actions.HouseRepairEnable
+function TKMScriptStates.AIRepairMode(aPlayer: Integer): TKMAIRepairMode;
+begin
+  Result := rmNone;
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
+      Result := gHands[aPlayer].AI.Setup.RepairMode
+    else
+      LogIntParamWarn('States.AIRepairMode', [aPlayer]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

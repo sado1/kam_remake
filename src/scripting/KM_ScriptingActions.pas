@@ -41,6 +41,7 @@ type
     procedure AIGroupsFormationSetEx(aHand: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer);
     procedure AIRecruitDelay(aPlayer: Byte; aDelay: Cardinal);
     procedure AIRecruitLimit(aPlayer, aLimit: Byte);
+    procedure AIRepairMode(aPlayer: Integer; aRepairMode: TKMAIRepairMode);
     procedure AISerfsPerHouse(aPlayer: Byte; aSerfs: Single);
     procedure AISoldiersLimit(aPlayer: Byte; aLimit: Integer);
     procedure AIStartPosition(aPlayer: Byte; X, Y: Word);
@@ -1265,9 +1266,14 @@ procedure TKMScriptActions.AIAutoRepair(aPlayer: Byte; aAuto: Boolean);
 begin
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
-       gHands[aPlayer].AI.Setup.AutoRepair := aAuto
-     else
-       LogIntParamWarn('Actions.AIAutoRepair', [aPlayer, Byte(aAuto)]);
+    begin
+      if aAuto then
+        gHands[aPlayer].AI.Setup.RepairMode := rmRepairAlways
+      else
+        gHands[aPlayer].AI.Setup.RepairMode := rmRepairNever;
+    end
+    else
+      LogIntParamWarn('Actions.AIAutoRepair', [aPlayer, Byte(aAuto)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1504,6 +1510,28 @@ begin
       gHands[aPlayer].AI.Setup.RecruitCount := aLimit
     else
       LogIntParamWarn('Actions.AIRecruitLimit', [aPlayer, aLimit]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Sets whether the AI should automatically repair damaged buildings
+//* aRepairMode of TKMAIRepairMode enumeration type: (rmNone, rmNever, rmAlways, rmManual)
+//* rmNone unused
+//* rmNever disable repair for all houses
+//* rmAlways enable repair for all houses
+//* rmManual repair is set by script manually via Actions.HouseRepairEnable
+procedure TKMScriptActions.AIRepairMode(aPlayer: Integer; aRepairMode: TKMAIRepairMode);
+begin
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+      and (aRepairMode <> rmNone) then
+      gHands[aPlayer].AI.Setup.RepairMode := aRepairMode
+    else
+      LogParamWarn('Actions.AIRepairMode', [aPlayer, GetEnumName(TypeInfo(TKMAIRepairMode), Integer(aRepairMode))]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

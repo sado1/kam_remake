@@ -357,6 +357,7 @@ begin
       + 'tpFish, tpCrab, tpWolf, tpElevate, tpWorker, tpOwn, tpFactor)');
 
     Sender.AddTypeS('TKMAIAttackType', '(aatOnce, aatRepeating)');
+    Sender.AddTypeS('TKMAIRepairMode', '(rmNone, rmRepairNever, rmRepairAlways, rmRepairManual)');
 
     Sender.AddTypeS('TKMDefencePositionInfo', 'record ' +
                       'UID: Integer; ' +
@@ -455,6 +456,7 @@ begin
     RegisterMethodCheck(c, 'procedure AIGroupsFormationGetEx(aPlayer: Integer; aGroupType: TKMGroupType; out aCount, aColumns: Integer)');
     RegisterMethodCheck(c, 'function AIRecruitDelay(aPlayer: Byte): Integer');
     RegisterMethodCheck(c, 'function AIRecruitLimit(aPlayer: Byte): Integer');
+    RegisterMethodCheck(c, 'function AIRepairMode(aPlayer: Integer): TKMAIRepairMode');
     RegisterMethodCheck(c, 'function AISerfsPerHouse(aPlayer: Byte): Single');
     RegisterMethodCheck(c, 'function AISoldiersLimit(aPlayer: Byte): Integer');
     RegisterMethodCheck(c, 'function AIStartPosition(aPlayer: Byte): TKMPoint');
@@ -711,6 +713,7 @@ begin
     RegisterMethodCheck(c, 'procedure AIGroupsFormationSetEx(aHand: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer)');
     RegisterMethodCheck(c, 'procedure AIRecruitDelay(aPlayer, aDelay: Cardinal)');
     RegisterMethodCheck(c, 'procedure AIRecruitLimit(aPlayer, aLimit: Byte)');
+    RegisterMethodCheck(c, 'procedure AIRepairMode(aPlayer: Integer; aRepairMode: TKMAIRepairMode)');
     RegisterMethodCheck(c, 'procedure AISerfsPerHouse(aPlayer: Byte; aSerfs: Single)');
     RegisterMethodCheck(c, 'procedure AISoldiersLimit(aPlayer: Byte; aLimit: Integer)');
     RegisterMethodCheck(c, 'procedure AIStartPosition(aPlayer: Byte; X, Y: Word)');
@@ -1223,6 +1226,7 @@ begin
       RegisterMethod(@TKMScriptStates.AIGroupsFormationGetEx,                   'AIGroupsFormationGetEx');
       RegisterMethod(@TKMScriptStates.AIRecruitDelay,                           'AIRecruitDelay');
       RegisterMethod(@TKMScriptStates.AIRecruitLimit,                           'AIRecruitLimit');
+      RegisterMethod(@TKMScriptStates.AIRepairMode,                             'AIRepairMode');
       RegisterMethod(@TKMScriptStates.AISerfsPerHouse,                          'AISerfsPerHouse');
       RegisterMethod(@TKMScriptStates.AISoldiersLimit,                          'AISoldiersLimit');
       RegisterMethod(@TKMScriptStates.AIStartPosition,                          'AIStartPosition');
@@ -1479,6 +1483,7 @@ begin
       RegisterMethod(@TKMScriptActions.AIGroupsFormationSetEx,                  'AIGroupsFormationSetEx');
       RegisterMethod(@TKMScriptActions.AIRecruitDelay,                          'AIRecruitDelay');
       RegisterMethod(@TKMScriptActions.AIRecruitLimit,                          'AIRecruitLimit');
+      RegisterMethod(@TKMScriptActions.AIRepairMode,                            'AIRepairMode');
       RegisterMethod(@TKMScriptActions.AISerfsPerHouse,                         'AISerfsPerHouse');
       RegisterMethod(@TKMScriptActions.AISoldiersLimit,                         'AISoldiersLimit');
       RegisterMethod(@TKMScriptActions.AIStartPosition,                         'AIStartPosition');

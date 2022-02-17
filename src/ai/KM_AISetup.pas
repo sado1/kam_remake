@@ -2,7 +2,7 @@ unit KM_AISetup;
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_CommonClasses, KM_Defaults, KM_Points;
+  KM_CommonClasses, KM_Defaults, KM_Points, KM_AITypes;
 
 
 type
@@ -11,11 +11,13 @@ type
   TKMHandAISetup = class
   private
     fNewAI: Boolean; // Enable advanced AI
+    fRepairMode: TKMAIRepairMode;
     function GetNewAI: Boolean;
+    function GetIsRepairAlways: Boolean;
   public
     Aggressiveness: Integer; //-1 means not used or default
     AutoAttack: Boolean;
-    AutoRepair: Boolean;
+
     AutoBuild: Boolean; // Enable build
     AutoDefend: Boolean;
     DefendAllies: Boolean;
@@ -34,6 +36,8 @@ type
     constructor Create;
 
     property NewAI: Boolean read GetNewAI write fNewAI;
+    property RepairMode: TKMAIRepairMode read fRepairMode write fRepairMode;
+    property IsRepairAlways: Boolean read GetIsRepairAlways;
 
     function GetEquipRate(aUnit: TKMUnitType): Word;
     function WarriorsPerMinute(aArmy: TKMArmyType): Single; overload;
@@ -62,6 +66,7 @@ begin
   AutoAttack := False; //It did not exist in KaM, we add it, Off by default
   AutoBuild := True; //In KaM it is On by default, and most missions turn it off
   AutoDefend := False; //It did not exist in KaM, we add it, Off by default
+  RepairMode := rmRepairNever;
   DefendAllies := False; //It did not exist in KaM, we add it, Off by default (tested by Lewin, AI doesn't defend allies in TPR)
 
   ArmyType := atIronThenLeather; //By default make iron soldiers, and if that fails make leather (same as TPR)
@@ -84,6 +89,12 @@ begin
     Result := EquipRateIron
   else
     Result := EquipRateLeather;
+end;
+
+
+function TKMHandAISetup.GetIsRepairAlways: Boolean;
+begin
+  Result := fRepairMode = rmRepairAlways;
 end;
 
 
@@ -128,7 +139,7 @@ begin
   EquipRateLeather := 500;
   EquipRateIron := 500;
   AutoBuild := True;
-  AutoRepair := True;
+  RepairMode := rmRepairAlways;
   AutoAttack := True;
   AutoDefend := True;
   DefendAllies := True;
@@ -157,7 +168,7 @@ begin
   SaveStream.Write(Aggressiveness);
   SaveStream.Write(AutoAttack);
   SaveStream.Write(AutoBuild);
-  SaveStream.Write(AutoRepair);
+  SaveStream.Write(fRepairMode, SizeOf(fRepairMode));
   SaveStream.Write(AutoDefend);
   SaveStream.Write(DefendAllies);
   SaveStream.Write(UnlimitedEquip);
@@ -182,7 +193,7 @@ begin
   LoadStream.Read(Aggressiveness);
   LoadStream.Read(AutoAttack);
   LoadStream.Read(AutoBuild);
-  LoadStream.Read(AutoRepair);
+  LoadStream.Read(fRepairMode, SizeOf(fRepairMode));
   LoadStream.Read(AutoDefend);
   LoadStream.Read(DefendAllies);
   LoadStream.Read(UnlimitedEquip);
