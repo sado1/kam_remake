@@ -35,6 +35,7 @@ type
     function AIDefencePositionAddEx(aHand, aOrder: Integer; const aDefencePosition: TKMDefencePositionInfo): Integer;
     procedure AIDefencePositionRemove(aPlayer: Byte; X, Y: Integer);
     procedure AIDefencePositionRemoveAll(aPlayer: Byte);
+    procedure AIDefencePositionRemoveByUID(aPlayer, aUID: Integer);
     procedure AIDefendAllies(aPlayer: Byte; aDefend: Boolean);
     procedure AIEquipRate(aPlayer: Byte; aType: Byte; aRate: Word);
     procedure AIGroupsFormationSet(aPlayer, aType: Byte; aCount, aColumns: Word);
@@ -1392,6 +1393,32 @@ begin
         gHands[aPlayer].AI.General.DefencePositions.Delete(I)
     else
       LogIntParamWarn('Actions.AIDefencePositionRemoveAll', [aPlayer]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Removes defence position by its UID
+procedure TKMScriptActions.AIDefencePositionRemoveByUID(aPlayer, aUID: Integer);
+var
+  I: Integer;
+  DP: TAIDefencePosition;
+begin
+  try
+    if InRange(aPlayer, 0, gHands.Count - 1)
+      and (gHands[aPlayer].Enabled) then
+      for I := gHands[aPlayer].AI.General.DefencePositions.Count - 1 downto 0 do
+      begin
+        DP := gHands[aPlayer].AI.General.DefencePositions.Positions[I];
+        if DP <> nil then
+          if DP.UID = aUID then
+            gHands[aPlayer].AI.General.DefencePositions.Delete(I);
+      end
+  else
+    LogIntParamWarn('Actions.AIDefencePositionRemoveByUID', [aPlayer, aUID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

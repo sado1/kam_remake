@@ -707,6 +707,7 @@ begin
     RegisterMethodCheck(c, 'function AIDefencePositionAddEx(aHand, aOrder: Integer; const aDefencePosition: TKMDefencePositionInfo): Integer');
     RegisterMethodCheck(c, 'procedure AIDefencePositionRemove(aPlayer: Byte; X, Y: Integer)');
     RegisterMethodCheck(c, 'procedure AIDefencePositionRemoveAll(aPlayer: Byte)');
+    RegisterMethodCheck(c, 'procedure AIDefencePositionRemoveByUID(aPlayer, aUID: Integer)');
     RegisterMethodCheck(c, 'procedure AIDefendAllies(aPlayer: Byte; aDefend: Boolean)');
     RegisterMethodCheck(c, 'procedure AIEquipRate(aPlayer: Byte; aType: Byte; aRate: Word)');
     RegisterMethodCheck(c, 'procedure AIGroupsFormationSet(aPlayer, aType: Byte; aCount, aColumns: Word)');
@@ -1477,6 +1478,7 @@ begin
       RegisterMethod(@TKMScriptActions.AIDefencePositionAddEx,                  'AIDefencePositionAddEx');
       RegisterMethod(@TKMScriptActions.AIDefencePositionRemove,                 'AIDefencePositionRemove');
       RegisterMethod(@TKMScriptActions.AIDefencePositionRemoveAll,              'AIDefencePositionRemoveAll');
+      RegisterMethod(@TKMScriptActions.AIDefencePositionRemoveByUID,            'AIDefencePositionRemoveByUID');
       RegisterMethod(@TKMScriptActions.AIDefendAllies,                          'AIDefendAllies');
       RegisterMethod(@TKMScriptActions.AIEquipRate,                             'AIEquipRate');
       RegisterMethod(@TKMScriptActions.AIGroupsFormationSet,                    'AIGroupsFormationSet');
