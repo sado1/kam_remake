@@ -362,7 +362,7 @@ begin
     Sender.AddTypeS('TKMArmyType', '(atIronThenLeather, atLeather, atIron, atIronAndLeather)');
 
     Sender.AddTypeS('TKMAIAttackInfo', 'record ' +
-                      'ID: Integer;' +
+                      'UID: Integer;' +
                       'AttackType: TKMAIAttackType;' +
                       'HasOccured: Boolean;' +
                       'Delay: Cardinal;' +
@@ -706,12 +706,12 @@ begin
 
     c := Sender.AddClassN(nil, AnsiString(fActions.ClassName));
     RegisterMethodCheck(c, 'procedure AIArmyType(aPlayer: Byte; aType: TKMArmyType)');
-    RegisterMethodCheck(c, 'function AIAttackAdd(aPlayer: Byte; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer;' +
+    RegisterMethodCheck(c, 'function AIAttackAdd(aHand: Integer; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer;' +
                            'aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount: Word; ' +
                            'aRandomGroups: Boolean; aTarget: TKMAIAttackTarget; aCustomPosition: TKMPoint): Integer');
     RegisterMethodCheck(c, 'function AIAttackAddEx(aHand: Integer; var aAttackInfo: TKMAIAttackInfo): Integer');
-    RegisterMethodCheck(c, 'function AIAttackRemove(aPlayer: Byte; aAIAttackId: Word): Boolean');
-    RegisterMethodCheck(c, 'procedure AIAttackRemoveAll(aPlayer: Byte)');
+    RegisterMethodCheck(c, 'function AIAttackRemove(aHand, aAIAttackUID: Integer): Boolean');
+    RegisterMethodCheck(c, 'procedure AIAttackRemoveAll(aHand: Integer)');
     RegisterMethodCheck(c, 'procedure AIAutoAttack(aPlayer: Byte; aAutoAttack: Boolean)');
     RegisterMethodCheck(c, 'procedure AIAutoAttackRange(aPlayer: Byte; aRange: Word)');
     RegisterMethodCheck(c, 'procedure AIAutoBuild(aPlayer: Byte; aAuto: Boolean)');

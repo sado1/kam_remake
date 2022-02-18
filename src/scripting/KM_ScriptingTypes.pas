@@ -83,7 +83,7 @@ type
   end;
 
   TKMAIAttackInfo = packed record
-    ID: Integer;
+    UID: Integer;
     AttackType: TKMAIAttackType;
     HasOccured: Boolean;
     Delay: Cardinal;
@@ -122,7 +122,7 @@ end;
 function TKMAIAttackInfo.ToStr: string;
 begin
   Result := Format('[%d: Type=%s Occured=%s, Delay=%d, TotalMen=%d, GroupsCount: %d, %d, %d, %d, RandomGroups=%s, Target=%s, Pos=%s]',
-                   [ID,
+                   [UID,
                     GetEnumName(TypeInfo(TKMAIAttackType), Integer(AttackType)),
                     BoolToStr(HasOccured), Delay, TotalMen,
                     MeleeGroupCount, AntiHorseGroupCount, RangedGroupCount, MountedGroupCount,

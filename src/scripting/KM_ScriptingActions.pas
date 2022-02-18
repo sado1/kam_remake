@@ -21,12 +21,12 @@ type
     property OnSetLogLinesMaxCnt: TIntegerEvent read fOnSetLogLinesMaxCnt write fOnSetLogLinesMaxCnt;
 
     procedure AIArmyType(aPlayer: Byte; aType: TKMArmyType);
-    function AIAttackAdd(aPlayer: Byte; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer;
+    function AIAttackAdd(aHand: Integer; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer;
                          aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount: Word; aRandomGroups: Boolean;
                          aTarget: TKMAIAttackTarget; aCustomPosition: TKMPoint): Integer;
     function AIAttackAddEx(aHand: Integer; var aAttackInfo: TKMAIAttackInfo): Integer;
-    function AIAttackRemove(aPlayer: Byte; aAIAttackId: Word): Boolean;
-    procedure AIAttackRemoveAll(aPlayer: Byte);
+    function AIAttackRemove(aHand, aAIAttackUID: Integer): Boolean;
+    procedure AIAttackRemoveAll(aHand: Integer);
     procedure AIAutoAttack(aPlayer: Byte; aAutoAttack: Boolean);
     procedure AIAutoAttackRange(aPlayer: Byte; aRange: Word);
     procedure AIAutoBuild(aPlayer: Byte; aAuto: Boolean);
@@ -1130,8 +1130,8 @@ end;
 //**    //Custom point defined with aCustomPosition
 //** );</pre>
 //** <b>aCustomPosition</b> - TKMPoint for custom position of attack. Used if attCustomPosition was set up as attack target
-//** <b>Result</b>: Attack Id, that could be used to remove this attack later on
-function TKMScriptActions.AIAttackAdd(aPlayer: Byte; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer;
+//** <b>Result</b>: Attack UID, that could be used to remove this attack later on
+function TKMScriptActions.AIAttackAdd(aHand: Integer; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer;
                                       aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount: Word; aRandomGroups: Boolean;
                                       aTarget: TKMAIAttackTarget; aCustomPosition: TKMPoint): Integer;
 var
@@ -1139,7 +1139,7 @@ var
 begin
   Result := NO_SUCCESS_INT;
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
     begin
       if aRepeating then
         attackType := aatRepeating
@@ -1147,10 +1147,10 @@ begin
         attackType := aatOnce;
 
       //Attack delay should be counted from the moment attack was added from script
-      Result := gHands[aPlayer].AI.General.Attacks.AddAttack(attackType, aDelay, aTotalMen, aMeleeGroupCount, aAntiHorseGroupCount,
+      Result := gHands[aHand].AI.General.Attacks.AddAttack(attackType, aDelay, aTotalMen, aMeleeGroupCount, aAntiHorseGroupCount,
                                                              aRangedGroupCount, aMountedGroupCount, aRandomGroups, aTarget, 0, aCustomPosition);
     end else
-      LogIntParamWarn('Actions.AIAttackAdd', [aPlayer, aDelay, aTotalMen, aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount]);
+      LogIntParamWarn('Actions.AIAttackAdd', [aHand, aDelay, aTotalMen, aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1161,7 +1161,7 @@ end;
 //* Version: 13900
 //* Add AI attack for a specified hand (player)
 //* Attack info is set via TKMAIAttackInfo record.
-//* Result: Attack Id, that could be used to remove this attack later on
+//* Result: Attack UID, that could be used to remove this attack later on
 function TKMScriptActions.AIAttackAddEx(aHand: Integer; var aAttackInfo: TKMAIAttackInfo): Integer;
 begin
   Result := NO_SUCCESS_INT;
@@ -1178,7 +1178,7 @@ begin
                                                             aAttackInfo.RandomGroups,
                                                             aAttackInfo.Target, 0,
                                                             aAttackInfo.CustomPosition);
-      aAttackInfo.ID := Result;
+      aAttackInfo.UID := Result;
     end else
       LogParamWarn('Actions.AIAttackAddEx', [aHand, aAttackInfo.ToStr]);
   except
@@ -1189,16 +1189,16 @@ end;
 
 
 //* Version: 7000+
-//* Remove AI attack by attack ID
+//* Remove AI attack by attack UID
 //* Result: true, if attack was succesfully removed, false, if attack was not found
-function TKMScriptActions.AIAttackRemove(aPlayer: Byte; aAIAttackId: Word): Boolean;
+function TKMScriptActions.AIAttackRemove(aHand, aAIAttackUID: Integer): Boolean;
 begin
   Result := False;
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
-      Result := gHands[aPlayer].AI.General.Attacks.RemoveAttack(aAIAttackId)
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+      Result := gHands[aHand].AI.General.Attacks.Remove(aAIAttackUID)
     else
-      LogIntParamWarn('Actions.AIAttackRemove', [aPlayer]);
+      LogIntParamWarn('Actions.AIAttackRemove', [aHand]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1208,13 +1208,13 @@ end;
 
 //* Version: 7000+
 //* Remove all AI attacks
-procedure TKMScriptActions.AIAttackRemoveAll(aPlayer: Byte);
+procedure TKMScriptActions.AIAttackRemoveAll(aHand: Integer);
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
-      gHands[aPlayer].AI.General.Attacks.Clear
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+      gHands[aHand].AI.General.Attacks.Clear
     else
-      LogIntParamWarn('Actions.AIAttackRemoveAll', [aPlayer]);
+      LogIntParamWarn('Actions.AIAttackRemoveAll', [aHand]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
