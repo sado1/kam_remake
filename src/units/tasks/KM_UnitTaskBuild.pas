@@ -811,14 +811,14 @@ begin
 end;
 
 
-{ If we are walking to the house but the house is destroyed/canceled we should abandon immediately
-  If house has not enough resource to be built, consider building task is done and look for a new
-  task that has enough resouces. Once this house has building resources delivered it will be
-  available from build queue again
-  If house is already built by other workers}
+// If we are walking to the house but the house is destroyed/canceled we should abandon immediately
+// If house has not enough resource to be built, consider building task is done and look for a new
+// task that has enough resouces. Once this house has building resources delivered it will be
+// available from build queue again
+// If house is already built by other workers
 function TKMTaskBuildHouse.WalkShouldAbandon: Boolean;
 begin
-  Result := fHouse.IsDestroyed or (not fHouse.CheckResToBuild) or fHouse.IsComplete;
+  Result := fHouse.IsDestroyed or not fHouse.CheckResToBuild or fHouse.IsComplete;
 end;
 
 

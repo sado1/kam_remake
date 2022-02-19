@@ -1184,7 +1184,7 @@ begin
   Inc(fBuildingProgress, 5); //is how many effort was put into building nevermind applied damage
   Dec(fBuildReserve, 5); //This is reserve we build from
 
-  if (fBuildState=hbsWood)
+  if (fBuildState = hbsWood)
     and (fBuildingProgress = gResHouses[fType].WoodCost*50) then
     fBuildState := hbsStone;
 
@@ -1562,7 +1562,7 @@ end;
 
 
 // Check if house has enough resource supply to be built depending on it's state
-function TKMHouse.CheckResToBuild:boolean;
+function TKMHouse.CheckResToBuild: Boolean;
 begin
   case fBuildState of
     hbsWood:   Result := (fBuildSupplyWood > 0) or (fBuildReserve > 0);

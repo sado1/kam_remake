@@ -2441,8 +2441,8 @@ begin
     begin
       H := fIDCache.GetHouse(aHouseID);
       if H <> nil then
-        if (not H.IsComplete)
-        and (H.CheckResToBuild) then
+        if not H.IsComplete
+          and H.CheckResToBuild then
         begin
           H.IncBuildingProgress;
           if H.IsStone
