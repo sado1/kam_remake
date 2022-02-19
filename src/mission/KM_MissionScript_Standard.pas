@@ -573,18 +573,18 @@ begin
     ctBlockHouse:       if fLastHand <> HAND_NONE then
                         begin
                           if InRange(P[0], Low(HOUSE_ID_TO_TYPE), High(HOUSE_ID_TO_TYPE)) then
-                            gHands[fLastHand].Locks.HouseBlocked[HOUSE_ID_TO_TYPE[P[0]]] := True;
+                            gHands[fLastHand].Locks.HouseLock[HOUSE_ID_TO_TYPE[P[0]]] := hlBlocked;
                         end;
 
     ctReleaseHouse:     if fLastHand <> HAND_NONE then
                         begin
                           if InRange(P[0], Low(HOUSE_ID_TO_TYPE), High(HOUSE_ID_TO_TYPE)) then
-                            gHands[fLastHand].Locks.HouseGranted[HOUSE_ID_TO_TYPE[P[0]]] := True;
+                            gHands[fLastHand].Locks.HouseLock[HOUSE_ID_TO_TYPE[P[0]]] := hlGranted;
                         end;
 
     ctReleaseAllHouses: if fLastHand <> HAND_NONE then
                           for HT := HOUSE_MIN to HOUSE_MAX do
-                            gHands[fLastHand].Locks.HouseGranted[HT] := True;
+                            gHands[fLastHand].Locks.HouseLock[HT] := hlGranted;
 
     ctSetGroup:         if (fLastHand <> HAND_NONE) and PointInMap(P[1]+1, P[2]+1) then
                           if InRange(P[0], Low(UNIT_ID_TO_TYPE), High(UNIT_ID_TO_TYPE)) and (UNIT_ID_TO_TYPE[P[0]] <> utNone) then
@@ -669,7 +669,7 @@ begin
                           gHands[fLastHand].AI.Setup.AutoBuild := False;
 
     ctAIAutoRepair:     if fLastHand <> HAND_NONE then
-                          gHands[fLastHand].AI.Setup.AutoRepair := True;
+                          gHands[fLastHand].AI.Setup.RepairMode := rmRepairAlways;
 
     ctAIAutoAttack:     if fLastHand <> HAND_NONE then
                           gHands[fLastHand].AI.Setup.AutoAttack := True;
@@ -781,7 +781,7 @@ begin
                           if TextParam = AI_ATTACK_PARAMS[cptPosition] then
                             fAIAttack.CustomPosition := KMPoint(P[1]+1,P[2]+1);
                           if TextParam = AI_ATTACK_PARAMS[cptTakeAll] then
-                            fAIAttack.TakeAll := True;
+                            fAIAttack.RandomGroups := True;
                         end;
 
     ctCopyAIAttack:     if fLastHand <> HAND_NONE then
@@ -975,7 +975,7 @@ begin
     //is not AI so no data is lost from MapEd (human players will ignore AI script anyway)
     AddCommand(ctAIStartPosition, [gHands[I].AI.Setup.StartPosition.X-1,gHands[I].AI.Setup.StartPosition.Y-1]);
     if not gHands[I].AI.Setup.AutoBuild then AddCommand(ctAINoBuild, []);
-    if gHands[I].AI.Setup.AutoRepair then    AddCommand(ctAIAutoRepair, []);
+    if gHands[I].AI.Setup.IsRepairAlways then AddCommand(ctAIAutoRepair, []);
     if gHands[I].AI.Setup.AutoAttack then    AddCommand(ctAIAutoAttack, []);
     if gHands[I].AI.Setup.AutoDefend then    AddCommand(ctAIAutoDefend, []);
     if gHands[I].AI.Setup.DefendAllies then  AddCommand(ctAIDefendAllies, []);
@@ -1014,7 +1014,7 @@ begin
       begin
         AddCommand(ctAIAttack, cptType, [KaMAttackType[AttackType]]);
         AddCommand(ctAIAttack, cptTotalAmount, [TotalMen]);
-        if TakeAll then
+        if RandomGroups then
           AddCommand(ctAIAttack, cptTakeAll, [])
         else
           for G := GROUP_TYPE_MIN to GROUP_TYPE_MAX do

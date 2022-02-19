@@ -148,6 +148,8 @@ const
 const
   WonOrLostText: array [TWonOrLost] of UnicodeString = ('None', 'Won', 'Lost');
 
+  NO_SUCCESS_INT: Integer = -1;
+
 implementation
 uses
   Math, SysUtils, KM_CommonUtils;

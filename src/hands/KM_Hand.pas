@@ -93,7 +93,7 @@ type
     procedure EntityDestroyed(aEntity: TKMHandEntity);
     procedure GroupDied(aGroup: TKMUnitGroup);
     procedure HouseDestroyed(aHouse: TKMHouse; aFrom: TKMHandID);
-    procedure UnitDied(aUnit: TKMUnit; aFrom: TKMHandID);
+    procedure UnitDied(aUnit: TKMUnit);
 
     procedure UnitTrained(aUnit: TKMUnit);
     procedure WarriorWalkedOut(aWarrior: TKMUnitWarrior);
@@ -2014,11 +2014,11 @@ begin
 end;
 
 
-procedure TKMHand.UnitDied(aUnit: TKMUnit; aFrom: TKMHandID);
+procedure TKMHand.UnitDied(aUnit: TKMUnit);
 begin
   Stats.UnitLost(aUnit.UnitType);
-  if aFrom <> HAND_NONE then
-    gHands[aFrom].Stats.UnitKilled(aUnit.UnitType);
+  if aUnit.KilledBy <> HAND_NONE then
+    gHands[aUnit.KilledBy].Stats.UnitKilled(aUnit.UnitType);
 
   //Demands: food for soldiers / stone or wood for workers
   Deliveries.Queue.RemDemand(aUnit);
@@ -2027,7 +2027,7 @@ begin
     AI.General.WarriorDied(TKMUnitWarrior(aUnit));
 
   //Call script event after updating statistics
-  gScriptEvents.ProcUnitDied(aUnit, aFrom);
+  gScriptEvents.ProcUnitDied(aUnit, aUnit.KilledBy);
 
   EntityDestroyed(aUnit);
 end;

@@ -556,7 +556,7 @@ const
 { Terrain }
 type
   TKMTerrainPassability = (
-    tpUnused,
+    tpNone,
     tpWalk,        // General passability of tile for any walking units
     tpWalkRoad,    // Type of passability for Serfs when transporting wares, only roads have it
     tpBuildNoObj,  // Can we build a house on this tile after removing an object on the tile or house near it?
@@ -644,6 +644,9 @@ const
   HUMANS_MAX = utHorseman;
   ANIMAL_MIN = utWolf;
   ANIMAL_MAX = utDuck;
+
+  UNITS_VALID = [UNIT_MIN..UNIT_MAX];
+  UNITS_HUMAN = [HUMANS_MIN..HUMANS_MAX];
 
   WARRIORS_IRON = [utSwordsman, utArbaletman, utHallebardman, utCavalry];
 

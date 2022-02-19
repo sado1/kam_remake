@@ -1,4 +1,4 @@
-TX_HOUSES_NAMES__29 = 0; //Sawmill
+﻿TX_HOUSES_NAMES__29 = 0; //Sawmill
 TX_HOUSES_NAMES_IRONSMITHY = 1; //Iron smithy
 TX_HOUSES_NAMES_WEAPONSMITHY = 2; //Weapon smithy
 TX_HOUSES_NAMES_COALMINE = 3; //Coal mine
@@ -599,7 +599,8 @@ TX_MAPED_AI_TARGET_HOUSE_START = 791; //Closest house from start position
 TX_MAPED_AI_TARGET_HOUSE_ARMY = 790; //Closest house from army
 TX_MAPED_AI_TARGET_CLOSEST = 463; //Closest unit
 TX_MAPED_AI_ATTACK_TAKE_ALL = 802; //Take all
-TX_MAPED_AI_ATTACK_TAKE_ALL_HINT = 1232; //Take any group type
+TX_MAPED_AI_ATTACK_TAKE_ANY = 1536; //Take any group type
+TX_MAPED_AI_ATTACK_TAKE_ANY_HINT = 1232; //Take any group type
 TX_MAPED_AI_ATTACK_COUNT = 465; //Group count
 TX_MAPED_AI_ATTACK_INFO = 466; //Attack info
 TX_MAPED_AI_ATTACK_DELAY = 788; //Initial delay (seconds)
@@ -1590,3 +1591,5 @@ TX_SETTINGS_LERP_ANIMS_HINT = 1528; //Increase number of frames used in animatio
 TX_MENU_SETTINGS_GAME = 1531; //Game settings
 TX_MENU_SETTINGS_REPLAY = 1532; //Replay settings
 TX_MENU_SETTINGS_MAPED = 1533; //MapEd settings
+
+TX_MENU_MISSION_TO_CAMPAIGN_MAP = 1535; //To Campaign Map

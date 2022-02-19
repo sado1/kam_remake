@@ -1110,30 +1110,30 @@ begin
   if (Sender = Button_Woodcutter) or (Sender = Radio_Woodcutter) then
   begin
     if Radio_Woodcutter.ItemIndex = 0 then
-      wMode := wcmChopAndPlant
+      wMode := wmChopAndPlant
     else if Radio_Woodcutter.ItemIndex = 1 then
-      wMode := wcmChop
+      wMode := wmChop
     else
-      wMode := wcmPlant;
+      wMode := wmPlant;
     gGame.GameInputProcess.CmdHouse(gicHouseWoodcutterMode, W, wMode);
   end;
 
   case W.WoodcutterMode of
-    wcmChopAndPlant: begin
-                        Button_Woodcutter.TexID := 310;
-                        Button_Woodcutter.RX := rxGui;
-                        Radio_Woodcutter.ItemIndex := 0;
-                      end;
-    wcmChop:         begin
-                        Button_Woodcutter.TexID := 51;
-                        Button_Woodcutter.RX := rxGui;
-                        Radio_Woodcutter.ItemIndex := 1;
-                      end;
-    wcmPlant:        begin
-                        Button_Woodcutter.TexID := 666;
-                        Button_Woodcutter.RX := rxGui;
-                        Radio_Woodcutter.ItemIndex := 2;
-                      end;
+    wmChopAndPlant: begin
+                      Button_Woodcutter.TexID := 310;
+                      Button_Woodcutter.RX := rxGui;
+                      Radio_Woodcutter.ItemIndex := 0;
+                    end;
+    wmChop:         begin
+                      Button_Woodcutter.TexID := 51;
+                      Button_Woodcutter.RX := rxGui;
+                      Radio_Woodcutter.ItemIndex := 1;
+                    end;
+    wmPlant:        begin
+                      Button_Woodcutter.TexID := 666;
+                      Button_Woodcutter.RX := rxGui;
+                      Radio_Woodcutter.ItemIndex := 2;
+                    end;
   end;
 end;
 

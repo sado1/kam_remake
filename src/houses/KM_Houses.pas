@@ -917,7 +917,7 @@ begin
     htCoalMine:    Result := TX_MSG_COAL_DEPLETED;
     htIronMine:    Result := TX_MSG_IRON_DEPLETED;
     htGoldMine:    Result := TX_MSG_GOLD_DEPLETED;
-    htWoodcutters: if TKMHouseWoodcutters(Self).WoodcutterMode = wcmPlant then
+    htWoodcutters: if TKMHouseWoodcutters(Self).WoodcutterMode = wmPlant then
                       Result := TX_MSG_WOODCUTTER_PLANT_DEPLETED
                     else
                       Result := TX_MSG_WOODCUTTER_DEPLETED;

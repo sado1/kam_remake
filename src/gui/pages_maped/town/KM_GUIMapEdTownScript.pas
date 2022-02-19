@@ -46,7 +46,7 @@ uses
   {$IFDEF Unix} LCLType, {$ENDIF}
   KM_Game, KM_HandsCollection, KM_ResTexts, KM_RenderUI, KM_ResFonts, KM_InterfaceGame, KM_Cursor,
   KM_Defaults, KM_Pics, KM_Hand, KM_Utils,
-  KM_ResTypes;
+  KM_ResTypes, KM_AITypes;
 
 
 { TKMMapEdTownScript }
@@ -141,7 +141,7 @@ end;
 procedure TKMMapEdTownScript.Town_ScriptRefresh;
 begin
   CheckBox_AutoBuild.Checked := gMySpectator.Hand.AI.Setup.AutoBuild;
-  CheckBox_AutoRepair.Checked := gMySpectator.Hand.AI.Setup.AutoRepair;
+  CheckBox_AutoRepair.Checked := gMySpectator.Hand.AI.Setup.IsRepairAlways;
   TrackBar_SerfsPer10Houses.Position := Round(10*gMySpectator.Hand.AI.Setup.SerfsPerHouse);
   if gMySpectator.HandID <> -1 then
     TrackBar_SerfsPer10Houses.Hint := Format(gResTexts[TX_MAPED_AI_SERFS_PER_10_HOUSES_HINT], [gMySpectator.Hand.Stats.GetHouseQty(htAny)]);
@@ -171,7 +171,10 @@ end;
 procedure TKMMapEdTownScript.Town_ScriptChange(Sender: TObject);
 begin
   gMySpectator.Hand.AI.Setup.AutoBuild := CheckBox_AutoBuild.Checked;
-  gMySpectator.Hand.AI.Setup.AutoRepair := CheckBox_AutoRepair.Checked;
+  if CheckBox_AutoRepair.Checked then
+    gMySpectator.Hand.AI.Setup.RepairMode := rmRepairAlways
+  else
+    gMySpectator.Hand.AI.Setup.RepairMode := rmRepairNever;
   gMySpectator.Hand.AI.Setup.SerfsPerHouse := TrackBar_SerfsPer10Houses.Position / 10;
   gMySpectator.Hand.AI.Setup.WorkerCount := TrackBar_WorkerCount.Position;
   gMySpectator.Hand.AI.Setup.UnlimitedEquip := CheckBox_UnlimitedEquip.Checked;

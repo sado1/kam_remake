@@ -22,7 +22,27 @@ type
     wtAll,     wtWarfare, wtFood
   );
 
+  TKMWareTypeSet = set of TKMWareType;
 
+const
+  WARE_MIN = wtTrunk;
+  WARE_MAX = wtFish;
+  WARFARE_MIN = wtShield;
+  WEAPON_MIN = wtShield;
+  WEAPON_MAX = wtArbalet;
+  WARFARE_MAX = wtHorse;
+
+  WARES_VALID = [WARE_MIN..WARE_MAX];
+  WARES_WARFARE = [WARFARE_MIN..WARFARE_MAX];
+  WARES_FOOD = [wtWine, wtBread, wtSausages, wtFish];
+
+  WARE_CNT = Integer(WARE_MAX) - Integer(WARE_MIN) + 1;
+  WARFARE_CNT = Integer(WARFARE_MAX) - Integer(WEAPON_MIN) + 1;
+
+  WARFARE_IRON = [wtMetalShield, wtMetalArmor, wtSword, wtHallebard, wtArbalet];
+
+
+type
   TKMHouseType = (htNone, htAny,
     htArmorSmithy,     htArmorWorkshop,   htBakery,        htBarracks,      htButchers,
     htCoalMine,        htFarm,            htFisherHut,     htGoldMine,      htInn,

@@ -279,7 +279,7 @@ begin
                           case plantAct of
                             taCut:    if not gTerrain.CanFindTree(aLoc, gRes.Units[aUnit.UnitType].MiningRange) then
                                         ResourceDepleted := True; //No more trees to cut
-                            taPlant:  if HW.WoodcutterMode = wcmPlant then
+                            taPlant:  if HW.WoodcutterMode = wmPlant then
                                         ResourceDepleted := True;   //No place for trees to plant
                           end;
                       end;

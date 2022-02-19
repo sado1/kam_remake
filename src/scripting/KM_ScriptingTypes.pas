@@ -68,12 +68,34 @@ type
 
   TKMScriptErrorEvent = procedure (aType: TKMScriptErrorType; const aErrorString: UnicodeString; const aDetailedErrorString: UnicodeString = '') of object;
 
-  TKMDefencePositionInfo = record
+  // Set exported to PascalScript record type as packed.
+  // PascalScript use packed records alignment by default,
+  // thus without it in Delphi we could get garbage in the fields if they are not aligned same way as in PS
+  TKMDefencePositionInfo = packed record
+    UID: Integer;
     X, Y: Integer;
-    Dir: TKMDirection;
     Radius: Integer;
+    GroupID: Integer;
+    Dir: TKMDirection;
     GroupType: TKMGroupType;
     PositionType: TKMAIDefencePosType;
+    function ToStr: string;
+  end;
+
+  TKMAIAttackInfo = packed record
+    UID: Integer;
+    AttackType: TKMAIAttackType;
+    HasOccured: Boolean;
+    Delay: Cardinal;
+    TotalMen: Integer;
+    MeleeGroupCount: Integer;
+    AntiHorseGroupCount: Integer;
+    RangedGroupCount: Integer;
+    MountedGroupCount: Integer;
+    RandomGroups: Boolean;
+    Target: TKMAIAttackTarget;
+    CustomPosition: TKMPoint;
+    function ToStr: string;
   end;
 
 const
@@ -81,6 +103,34 @@ const
 
 
 implementation
+uses
+  SysUtils, TypInfo;
+
+
+{ TKMDefencePositionInfo }
+function TKMDefencePositionInfo.ToStr: string;
+begin
+  Result := Format('[%d:%d R=%d %s %s %s]',
+                   [X, Y, Radius,
+                    GetEnumName(TypeInfo(TKMDirection), Integer(Dir)),
+                    GetEnumName(TypeInfo(TKMGroupType), Integer(GroupType)),
+                    GetEnumName(TypeInfo(TKMAIDefencePosType), Integer(PositionType))]);
+end;
+
+
+{ TKMAIAttackInfo }
+function TKMAIAttackInfo.ToStr: string;
+begin
+  Result := Format('[%d: Type=%s Occured=%s, Delay=%d, TotalMen=%d, GroupsCount: %d, %d, %d, %d, RandomGroups=%s, Target=%s, Pos=%s]',
+                   [UID,
+                    GetEnumName(TypeInfo(TKMAIAttackType), Integer(AttackType)),
+                    BoolToStr(HasOccured), Delay, TotalMen,
+                    MeleeGroupCount, AntiHorseGroupCount, RangedGroupCount, MountedGroupCount,
+                    BoolToStr(RandomGroups),
+                    GetEnumName(TypeInfo(TKMAIAttackTarget), Integer(Target)),
+                    CustomPosition.ToString]);
+end;
+
 
 end.
 

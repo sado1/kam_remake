@@ -92,15 +92,15 @@ begin
   Result := taAny;
 
   case fUnit.Home.HouseType of
-    htWoodcutters: case TKMHouseWoodcutters(fUnit.Home).WoodcutterMode of
-                      wcmChop:         Result := taCut;
-                      wcmPlant:        Result := taPlant;
-                      wcmChopAndPlant: if fUnit.Home.CheckResOut(wtTrunk) >= MAX_WARES_IN_HOUSE then
-                                          Result := taPlant
-                                        else
-                                          Result := taAny;
+    htWoodcutters:  case TKMHouseWoodcutters(fUnit.Home).WoodcutterMode of
+                      wmChop:         Result := taCut;
+                      wmPlant:        Result := taPlant;
+                      wmChopAndPlant: if fUnit.Home.CheckResOut(wtTrunk) >= MAX_WARES_IN_HOUSE then
+                                        Result := taPlant
+                                      else
+                                        Result := taAny;
                     end;
-    htFarm:        if fUnit.Home.CheckResOut(wtCorn) >= MAX_WARES_IN_HOUSE then
+    htFarm:         if fUnit.Home.CheckResOut(wtCorn) >= MAX_WARES_IN_HOUSE then
                       Result := taPlant
                     else
                       Result := taAny;

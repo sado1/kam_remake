@@ -242,7 +242,7 @@ type
                                   aAllowOffroad: Boolean = False): Boolean; overload;
     function TryCalcSerfBidValue(aCalcKind: TKMDeliveryCalcKind; aSerf: TKMUnitSerf; const aOfferPos: TKMPoint; var aBidBasicCost: TKMDeliveryBid): Boolean;
     function TryCalcRouteCost(aCalcKind: TKMDeliveryCalcKind; aFromPos, aToPos: TKMPoint; aRouteStep: TKMDeliveryRouteStep; var aRoutCost: TKMDeliveryRouteCalcCost;
-                              aSecondPass: TKMTerrainPassability = tpUnused): Boolean;
+                              aSecondPass: TKMTerrainPassability = tpNone): Boolean;
 //    function GetUnitsCntOnPath(aNodeList: TKMPointList): Integer;
 
     function DoChooseBestBid(aCalcEventType: TKMDeliveryBidCalcEventType;aBestImportance: TKMDemandImportance; aSerf: TKMUnitSerf;
@@ -1265,11 +1265,11 @@ end;
 //Try to Calc route cost
 //If destination is not reachable, then return False
 function TKMDeliveries.TryCalcRouteCost(aCalcKind: TKMDeliveryCalcKind; aFromPos, aToPos: TKMPoint; aRouteStep: TKMDeliveryRouteStep;
-                                        var aRoutCost: TKMDeliveryRouteCalcCost; aSecondPass: TKMTerrainPassability = tpUnused): Boolean;
+                                        var aRoutCost: TKMDeliveryRouteCalcCost; aSecondPass: TKMTerrainPassability = tpNone): Boolean;
 
   function RouteCanBeMade(const LocA, LocB: TKMPoint; aPass: TKMTerrainPassability): Boolean; inline;
   begin
-    if aPass = tpUnused then
+    if aPass = tpNone then
       Exit(False);
 
     Result := gTerrain.Route_CanBeMade(LocA, LocB, aPass, 0);
@@ -1363,7 +1363,7 @@ begin
     //For all other cases - use distance approach. Direct length (rough) or pathfinding (exact)
     if fDemand[iD].Loc_House <> nil then
     begin
-      secondPass := tpUnused;
+      secondPass := tpNone;
       if aAllowOffroad then
         secondPass := tpWalk;
       //Calc cost between offer and demand houses
@@ -2702,8 +2702,8 @@ begin
   if not IsValid then
     Exit(NOT_REACHABLE_DEST_VALUE);
 
-  Result := Byte(SerfToOffer.Pass <> tpUnused) * SerfToOffer.Value
-          + Byte(OfferToDemand.Pass <> tpUnused) * OfferToDemand.Value
+  Result := Byte(SerfToOffer.Pass <> tpNone) * SerfToOffer.Value
+          + Byte(OfferToDemand.Pass <> tpNone) * OfferToDemand.Value
           + Addition;
 end;
 
@@ -2716,17 +2716,17 @@ end;
 
 function TKMDeliveryBid.IsValid: Boolean;
 begin
-  Result := ((SerfToOffer.Pass = tpUnused) or (SerfToOffer.Value <> NOT_REACHABLE_DEST_VALUE))
-        and ((OfferToDemand.Pass = tpUnused) or (OfferToDemand.Value <> NOT_REACHABLE_DEST_VALUE));
+  Result := ((SerfToOffer.Pass = tpNone) or (SerfToOffer.Value <> NOT_REACHABLE_DEST_VALUE))
+        and ((OfferToDemand.Pass = tpNone) or (OfferToDemand.Value <> NOT_REACHABLE_DEST_VALUE));
 end;
 
 
 procedure TKMDeliveryBid.ResetValues;
 begin
   SerfToOffer.Value := NOT_REACHABLE_DEST_VALUE;
-  SerfToOffer.Pass := tpUnused;
+  SerfToOffer.Pass := tpNone;
   OfferToDemand.Value := NOT_REACHABLE_DEST_VALUE;
-  OfferToDemand.Pass := tpUnused;
+  OfferToDemand.Pass := tpNone;
   Addition := 0;
 end;
 

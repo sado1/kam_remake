@@ -2,13 +2,14 @@ unit KM_AIDefensePos;
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_UnitGroup,
+  Math,
+  KM_Entity, KM_UnitGroup,
   KM_CommonClasses, KM_Defaults, KM_Points,
   KM_AITypes;
 
 
 type
-  TAIDefencePosition = class
+  TAIDefencePosition = class(TKMEntity)
   private
     fDefenceType: TKMAIDefencePosType; //Whether this is a front or back line defence position. See comments on TAIDefencePosType above
     fGroupType: TKMGroupType; //Type of group to defend this position (e.g. melee)
@@ -21,8 +22,8 @@ type
     procedure SetDefenceType(const Value: TKMAIDefencePosType);
     procedure SetPosition(const Value: TKMPointDir);
   public
-    constructor Create(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType);
-    constructor Load(LoadStream: TKMemoryStream);
+    constructor Create(aUID: Integer; const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType);
+    constructor Load(LoadStream: TKMemoryStream); override;
     destructor Destroy; override;
 
     property DefenceType: TKMAIDefencePosType read fDefenceType write SetDefenceType;
@@ -32,7 +33,7 @@ type
 
     property CurrentGroup: TKMUnitGroup read fCurrentGroup write SetCurrentGroup;
     function CanAccept(aGroup: TKMUnitGroup; aMaxUnits: Integer): Boolean;
-    procedure Save(SaveStream: TKMemoryStream);
+    procedure Save(SaveStream: TKMemoryStream); override;
     procedure SyncLoad;
     procedure UpdateState;
   end;
@@ -44,6 +45,7 @@ type
     fPositions: TKMList;
     function GetPosition(aIndex: Integer): TAIDefencePosition; inline;
     function GetCount: Integer; inline;
+    function CreateDefPosition(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType): TAIDefencePosition;
   public
     //Defines how defending troops will be formatted. 0 means leave unchanged.
     TroopFormations: array [GROUP_TYPE_MIN..GROUP_TYPE_MAX] of TKMFormation;
@@ -51,7 +53,8 @@ type
     constructor Create(aPlayer: TKMHandID);
     destructor Destroy; override;
 
-    procedure Add(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType);
+    function Add(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType): Integer;
+    function Insert(aIndex: Integer; const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType): Integer;
     procedure Clear;
     property Count: Integer read GetCount;
     procedure Delete(aIndex: Integer);
@@ -77,15 +80,15 @@ type
 
 implementation
 uses
-  Math, SysUtils, TypInfo,
-  KM_GameParams, KM_HandsCollection, KM_RenderAux, KM_RenderPool, KM_Hand,
+  SysUtils, TypInfo,
+  KM_Game, KM_GameParams, KM_HandsCollection, KM_RenderAux, KM_RenderPool, KM_Hand,
   KM_UnitGroupTypes, KM_InterfaceGame;
 
 
 { TAIDefencePosition }
-constructor TAIDefencePosition.Create(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType);
+constructor TAIDefencePosition.Create(aUID: Integer; const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType);
 begin
-  inherited Create;
+  inherited Create(aUID);
 
   Assert(aGroupType in GROUP_TYPES_VALID, 'Invalid group type: ' + GetEnumName(TypeInfo(TKMGroupType), Integer(aGroupType)));
   fPosition := aPos;
@@ -138,6 +141,8 @@ end;
 
 procedure TAIDefencePosition.Save(SaveStream: TKMemoryStream);
 begin
+  inherited;
+
   SaveStream.PlaceMarker('ClsDefencePos');
   SaveStream.Write(fPosition);
   SaveStream.Write(fGroupType, SizeOf(fGroupType));
@@ -149,7 +154,8 @@ end;
 
 constructor TAIDefencePosition.Load(LoadStream: TKMemoryStream);
 begin
-  inherited Create;
+  inherited;
+
   LoadStream.CheckMarker('ClsDefencePos');
   LoadStream.Read(fPosition);
   LoadStream.Read(fGroupType, SizeOf(fGroupType));
@@ -233,14 +239,43 @@ end;
 
 function TAIDefencePositions.GetPosition(aIndex: Integer): TAIDefencePosition;
 begin
+  if not InRange(aIndex, 0, Count - 1) then Exit(nil);
+
   Result := fPositions[aIndex];
 end;
 
 
-procedure TAIDefencePositions.Add(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType);
+function TAIDefencePositions.CreateDefPosition(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType): TAIDefencePosition;
+var
+  uid: Integer;
 begin
+  uid := gGame.GetNewUID;
   Assert(aGroupType in GROUP_TYPES_VALID, 'Invalid group type: ' + GetEnumName(TypeInfo(TKMGroupType), Integer(aGroupType)));
-  fPositions.Add(TAIDefencePosition.Create(aPos, aGroupType, aRadius, aDefenceType));
+
+  Result := TAIDefencePosition.Create(uid, aPos, aGroupType, aRadius, aDefenceType);
+end;
+
+
+function TAIDefencePositions.Add(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType): Integer;
+var
+  defPos: TAIDefencePosition;
+begin
+  defPos := CreateDefPosition(aPos, aGroupType, aRadius, aDefenceType);
+  fPositions.Add(defPos);
+  Result := defPos.UID;
+end;
+
+
+function TAIDefencePositions.Insert(aIndex: Integer; const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType): Integer;
+var
+  defPos: TAIDefencePosition;
+begin
+  Assert(InRange(aIndex, 0, Count), 'Can''t insert defence position at position ' + IntToStr(aIndex));
+  defPos := CreateDefPosition(aPos, aGroupType, aRadius, aDefenceType);
+
+  fPositions.Insert(aIndex, defPos);
+
+  Result := defPos.UID;
 end;
 
 
@@ -262,7 +297,7 @@ var I: Integer;
 begin
   Result := 0;
   for I := 0 to Count - 1 do
-    if Positions[I].fDefenceType = adtBackLine then
+    if Positions[I].fDefenceType = dtBackLine then
       Inc(Result);
 end;
 

@@ -4,8 +4,9 @@ interface
 uses
   Classes, Math, SysUtils, StrUtils, KM_AIAttacks, KM_ResTilesetTypes,
   KM_CommonTypes, KM_Defaults, KM_Points, KM_Houses, KM_ScriptingIdCache, KM_Units, KM_TerrainTypes,
-  KM_ScriptSound, KM_MediaTypes,
-  KM_UnitGroup, KM_ResHouses, KM_HouseCollection, KM_ResWares, KM_ScriptingEvents, KM_ScriptingTypes;
+  KM_ScriptSound, KM_MediaTypes, KM_ResTypes, KM_HandTypes,
+  KM_UnitGroup, KM_ResHouses, KM_HouseCollection, KM_ResWares, KM_ScriptingEvents, KM_ScriptingTypes,
+  KM_AITypes;
 
 
 type
@@ -14,60 +15,63 @@ type
     fOnSetLogLinesMaxCnt: TIntegerEvent;
     procedure LogStr(const aText: String);
 
-    procedure _AIDefencePositionAdd(aPlayer: Integer; const aDefencePosition: TKMDefencePositionInfo; aMethodName: string);
-    procedure _AIGroupsFormationSet(aPlayer: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer; aMethodName: string);
+    function _AIDefencePositionAdd(aHand: Integer; aOrder: Integer; const aDefencePosition: TKMDefencePositionInfo): Integer;
+    function _AIGroupsFormationSet(aHand: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer): Boolean;
   public
     property OnSetLogLinesMaxCnt: TIntegerEvent read fOnSetLogLinesMaxCnt write fOnSetLogLinesMaxCnt;
 
-    procedure AIArmyType(aPlayer: Byte; aType: TKMArmyType);
-    function AIAttackAdd(aPlayer: Byte; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer;
-                         aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount: Word; aRandomGroups: Boolean;
+    procedure AIArmyType(aHand: Byte; aType: TKMArmyType);
+    function AIAttackAdd(aHand: Integer; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer;
+                         aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount: Integer; aRandomGroups: Boolean;
                          aTarget: TKMAIAttackTarget; aCustomPosition: TKMPoint): Integer;
-    function AIAttackRemove(aPlayer: Byte; aAIAttackId: Word): Boolean;
-    procedure AIAttackRemoveAll(aPlayer: Byte);
-    procedure AIAutoAttack(aPlayer: Byte; aAutoAttack: Boolean);
-    procedure AIAutoAttackRange(aPlayer: Byte; aRange: Word);
-    procedure AIAutoBuild(aPlayer: Byte; aAuto: Boolean);
-    procedure AIAutoDefence(aPlayer: Byte; aAuto: Boolean);
-    procedure AIAutoRepair(aPlayer: Byte; aAuto: Boolean);
-    procedure AIDefencePositionAdd(aPlayer: Byte; X, Y: Integer; aDir, aGroupType: Byte; aRadius: Word; aDefType: Byte);
-    procedure AIDefencePositionAddEx(aPlayer: Integer; const aDefencePosition: TKMDefencePositionInfo);
-    procedure AIDefencePositionRemove(aPlayer: Byte; X, Y: Integer);
-    procedure AIDefencePositionRemoveAll(aPlayer: Byte);
-    procedure AIDefendAllies(aPlayer: Byte; aDefend: Boolean);
-    procedure AIEquipRate(aPlayer: Byte; aType: Byte; aRate: Word);
-    procedure AIGroupsFormationSet(aPlayer, aType: Byte; aCount, aColumns: Word);
-    procedure AIGroupsFormationSetEx(aPlayer: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer);
-    procedure AIRecruitDelay(aPlayer: Byte; aDelay: Cardinal);
-    procedure AIRecruitLimit(aPlayer, aLimit: Byte);
-    procedure AISerfsPerHouse(aPlayer: Byte; aSerfs: Single);
-    procedure AISoldiersLimit(aPlayer: Byte; aLimit: Integer);
-    procedure AIStartPosition(aPlayer: Byte; X, Y: Word);
-    procedure AIWorkerLimit(aPlayer, aLimit: Byte);
+    function AIAttackAddEx(aHand: Integer; var aAttackInfo: TKMAIAttackInfo): Integer;
+    function AIAttackRemove(aHand, aAIAttackUID: Integer): Boolean;
+    procedure AIAttackRemoveAll(aHand: Integer);
+    procedure AIAutoAttack(aHand: Byte; aAutoAttack: Boolean);
+    procedure AIAutoAttackRange(aHand: Byte; aRange: Integer);
+    procedure AIAutoBuild(aHand: Byte; aAuto: Boolean);
+    procedure AIAutoDefence(aHand: Byte; aAuto: Boolean);
+    procedure AIAutoRepair(aHand: Byte; aAuto: Boolean);
+    function AIDefencePositionAdd(aHand: Byte; X, Y: Integer; aDir, aGroupType: Byte; aRadius: Integer; aDefType: Byte): Integer;
+    function AIDefencePositionAddEx(aHand, aOrder: Integer; var aDefencePosition: TKMDefencePositionInfo): Integer;
+    procedure AIDefencePositionRemove(aHand: Byte; X, Y: Integer);
+    procedure AIDefencePositionRemoveAll(aHand: Byte);
+    procedure AIDefencePositionRemoveByUID(aHand, aUID: Integer);
+    procedure AIDefendAllies(aHand: Byte; aDefend: Boolean);
+    procedure AIEquipRate(aHand: Byte; aType: Byte; aRate: Integer);
+    procedure AIGroupsFormationSet(aHand, aType: Byte; aCount, aColumns: Integer);
+    procedure AIGroupsFormationSetEx(aHand: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer);
+    procedure AIRecruitDelay(aHand: Byte; aDelay: Cardinal);
+    procedure AIRecruitLimit(aHand, aLimit: Byte);
+    procedure AIRepairMode(aHand: Integer; aRepairMode: TKMAIRepairMode);
+    procedure AISerfsPerHouse(aHand: Byte; aSerfs: Single);
+    procedure AISoldiersLimit(aHand: Byte; aLimit: Integer);
+    procedure AIStartPosition(aHand: Byte; X, Y: Integer);
+    procedure AIWorkerLimit(aHand, aLimit: Byte);
 
-    procedure CinematicStart(aPlayer: Byte);
-    procedure CinematicEnd(aPlayer: Byte);
-    procedure CinematicPanTo(aPlayer: Byte; X, Y, Duration: Word);
+    procedure CinematicStart(aHand: Byte);
+    procedure CinematicEnd(aHand: Byte);
+    procedure CinematicPanTo(aHand: Byte; X, Y, Duration: Integer);
 
-    function  GiveAnimal(aType, X,Y: Word): Integer;
-    function  GiveField(aPlayer, X, Y: Word): Boolean;
-    function  GiveFieldAged(aPlayer, X, Y: Word; aStage: Byte; aRandomAge: Boolean): Boolean;
-    function  GiveGroup(aPlayer, aType, X,Y, aDir, aCount, aColumns: Word): Integer;
-    function  GiveHouse(aPlayer, aHouseType, X,Y: Integer): Integer;
-    function  GiveHouseSite(aPlayer, aHouseType, X, Y: Integer; aAddMaterials: Boolean): Integer;
-    function  GiveUnit(aPlayer, aType, X,Y, aDir: Word): Integer;
-    function  GiveRoad(aPlayer, X, Y: Word): Boolean;
-    procedure GiveWares(aPlayer, aType, aCount: Word);
-    procedure GiveWeapons(aPlayer, aType, aCount: Word);
-    function  GiveWinefield(aPlayer, X, Y: Word): Boolean;
-    function  GiveWinefieldAged(aPlayer, X, Y: Word; aStage: Byte; aRandomAge: Boolean): Boolean;
+    function  GiveAnimal(aType, X,Y: Integer): Integer;
+    function  GiveField(aHand, X, Y: Integer): Boolean;
+    function  GiveFieldAged(aHand, X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean;
+    function  GiveGroup(aHand, aType, X,Y, aDir, aCount, aColumns: Integer): Integer;
+    function  GiveHouse(aHand, aHouseType, X,Y: Integer): Integer;
+    function  GiveHouseSite(aHand, aHouseType, X, Y: Integer; aAddMaterials: Boolean): Integer;
+    function  GiveUnit(aHand, aType, X,Y, aDir: Integer): Integer;
+    function  GiveRoad(aHand, X, Y: Integer): Boolean;
+    procedure GiveWares(aHand, aType, aCount: Integer);
+    procedure GiveWeapons(aHand, aType, aCount: Integer);
+    function  GiveWinefield(aHand, X, Y: Integer): Boolean;
+    function  GiveWinefieldAged(aHand, X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean;
 
-    procedure FogCoverAll(aPlayer: Byte);
-    procedure FogCoverCircle(aPlayer, X, Y, aRadius: Word);
-    procedure FogRevealRect(aPlayer, X1, Y1, X2, Y2: Word);
-    procedure FogCoverRect(aPlayer, X1, Y1, X2, Y2: Word);
-    procedure FogRevealAll(aPlayer: Byte);
-    procedure FogRevealCircle(aPlayer, X, Y, aRadius: Word);
+    procedure FogCoverAll(aHand: Byte);
+    procedure FogCoverCircle(aHand, X, Y, aRadius: Integer);
+    procedure FogRevealRect(aHand, X1, Y1, X2, Y2: Integer);
+    procedure FogCoverRect(aHand, X1, Y1, X2, Y2: Integer);
+    procedure FogRevealAll(aHand: Byte);
+    procedure FogRevealCircle(aHand, X, Y, aRadius: Integer);
 
     procedure GameSpeed(aSpeed: Single);
     procedure GameSpeedChangeAllowed(aAllowed: Boolean);
@@ -85,30 +89,33 @@ type
     function  GroupOrderSplit(aGroupID: Integer): Integer;
     function  GroupOrderSplitUnit(aGroupID, aUnitID: Integer): Integer;
     procedure GroupOrderStorm(aGroupID: Integer);
-    procedure GroupOrderWalk(aGroupID: Integer; X, Y, aDirection: Word);
+    procedure GroupOrderWalk(aGroupID: Integer; X, Y, aDirection: Integer);
     procedure GroupSetFormation(aGroupID: Integer; aNumColumns: Byte);
+
+    procedure HandHouseLock(aHand: Integer; aHouseType: TKMHouseType; aLock: TKMHandHouseLock);
 
     procedure HouseAddBuildingMaterials(aHouseID: Integer);
     procedure HouseAddBuildingProgress(aHouseID: Integer);
-    procedure HouseAddDamage(aHouseID: Integer; aDamage: Word);
-    procedure HouseAddRepair(aHouseID: Integer; aRepair: Word);
-    procedure HouseAddWaresTo(aHouseID: Integer; aType, aCount: Word);
-    procedure HouseAllow(aPlayer, aHouseType: Word; aAllowed: Boolean);
+    procedure HouseAddDamage(aHouseID: Integer; aDamage: Integer);
+    procedure HouseAddRepair(aHouseID: Integer; aRepair: Integer);
+    procedure HouseAddWaresTo(aHouseID: Integer; aType, aCount: Integer);
+    procedure HouseAllow(aHand, aHouseType: Integer; aAllowed: Boolean);
     procedure HouseAllowAllyToSelect(aHouseID: Integer; aAllow: Boolean);
-    procedure HouseAllowAllyToSelectAll(aPlayer: ShortInt; aAllow: Boolean);
+    procedure HouseAllowAllyToSelectAll(aHand: ShortInt; aAllow: Boolean);
     function  HouseBarracksEquip(aHouseID: Integer; aUnitType: Integer; aCount: Integer): Integer;
+    function  HouseBarracksEquipEx(aHouseID: Integer; aUnitType: TKMUnitType; aCount: Integer): Integer;
     procedure HouseBarracksGiveRecruit(aHouseID: Integer);
     procedure HouseDestroy(aHouseID: Integer; aSilent: Boolean);
     procedure HouseDeliveryBlock(aHouseID: Integer; aDeliveryBlocked: Boolean);
-    procedure HouseDeliveryMode(aHouseID: Integer; aDeliveryMode: Byte);
+    procedure HouseDeliveryMode(aHouseID: Integer; aDeliveryMode: TKMDeliveryMode);
     procedure HouseDisableUnoccupiedMessage(aHouseID: Integer; aDisabled: Boolean);
     procedure HouseRepairEnable(aHouseID: Integer; aRepairEnabled: Boolean);
     function  HouseSchoolQueueAdd(aHouseID: Integer; aUnitType: Integer; aCount: Integer): Integer;
     procedure HouseSchoolQueueRemove(aHouseID, QueueIndex: Integer);
-    procedure HouseTakeWaresFrom(aHouseID: Integer; aType, aCount: Word);
+    procedure HouseTakeWaresFrom(aHouseID: Integer; aType, aCount: Integer);
     function  HouseTownHallEquip(aHouseID: Integer; aUnitType: Integer; aCount: Integer): Integer;
     procedure HouseTownHallMaxGold(aHouseID: Integer; aMaxGold: Integer);
-    procedure HouseUnlock(aPlayer, aHouseType: Word);
+    procedure HouseUnlock(aHand, aHouseType: Integer);
     procedure HouseWoodcutterChopOnly(aHouseID: Integer; aChopOnly: Boolean);
     procedure HouseWoodcutterMode(aHouseID: Integer; aWoodcutterMode: Byte);
     procedure HouseWareBlock(aHouseID, aWareType: Integer; aBlocked: Boolean);
@@ -136,61 +143,61 @@ type
 
     procedure MarketSetTrade(aMarketID, aFrom, aTo, aAmount: Integer);
 
-    procedure OverlayTextSet(aPlayer: Shortint; const aText: AnsiString);
-    procedure OverlayTextSetFormatted(aPlayer: Shortint; const aText: AnsiString; Params: array of const);
-    procedure OverlayTextAppend(aPlayer: Shortint; const aText: AnsiString);
-    procedure OverlayTextAppendFormatted(aPlayer: Shortint; const aText: AnsiString; Params: array of const);
+    procedure OverlayTextSet(aHand: Shortint; const aText: AnsiString);
+    procedure OverlayTextSetFormatted(aHand: Shortint; const aText: AnsiString; Params: array of const);
+    procedure OverlayTextAppend(aHand: Shortint; const aText: AnsiString);
+    procedure OverlayTextAppendFormatted(aHand: Shortint; const aText: AnsiString; Params: array of const);
 
     procedure Peacetime(aPeacetime: Cardinal);
 
-    function PlanAddField(aPlayer, X, Y: Word): Boolean;
-    function PlanAddHouse(aPlayer, aHouseType, X, Y: Word): Boolean;
-    function PlanAddRoad(aPlayer, X, Y: Word): Boolean;
-    function PlanAddWinefield(aPlayer, X, Y: Word): Boolean;
-    function PlanConnectRoad(aPlayer, X1, Y1, X2, Y2: Integer; aCompleted: Boolean): Boolean;
-    function PlanRemove(aPlayer, X, Y: Word): Boolean;
+    function PlanAddField(aHand, X, Y: Integer): Boolean;
+    function PlanAddHouse(aHand, aHouseType, X, Y: Integer): Boolean;
+    function PlanAddRoad(aHand, X, Y: Integer): Boolean;
+    function PlanAddWinefield(aHand, X, Y: Integer): Boolean;
+    function PlanConnectRoad(aHand, X1, Y1, X2, Y2: Integer; aCompleted: Boolean): Boolean;
+    function PlanRemove(aHand, X, Y: Integer): Boolean;
 
-    procedure PlayerAllianceChange(aPlayer1, aPlayer2: Byte; aCompliment, aAllied: Boolean);
-    procedure PlayerAllianceNFogChange(aPlayer1, aPlayer2: Byte; aCompliment, aAllied, aSyncAllyFog: Boolean);
-    procedure PlayerAddDefaultGoals(aPlayer: Byte; aBuildings: Boolean);
-    procedure PlayerDefeat(aPlayer: Word);
-    procedure PlayerGoalsRemoveAll(aPlayer: Word; aForAllPlayers: Boolean);
-    procedure PlayerShareBeacons(aPlayer1, aPlayer2: Word; aBothWays, aShare: Boolean);
-    procedure PlayerShareFog(aPlayer1, aPlayer2: Word; aShare: Boolean);
-    procedure PlayerShareFogCompliment(aPlayer1, aPlayer2: Word; aShare: Boolean);
-    procedure PlayerWareDistribution(aPlayer, aWareType, aHouseType, aAmount: Byte);
+    procedure PlayerAllianceChange(aHand1, aHand2: Byte; aCompliment, aAllied: Boolean);
+    procedure PlayerAllianceNFogChange(aHand1, aHand2: Byte; aCompliment, aAllied, aSyncAllyFog: Boolean);
+    procedure PlayerAddDefaultGoals(aHand: Byte; aBuildings: Boolean);
+    procedure PlayerDefeat(aHand: Integer);
+    procedure PlayerGoalsRemoveAll(aHand: Integer; aForAllPlayers: Boolean);
+    procedure PlayerShareBeacons(aHand1, aHand2: Integer; aBothWays, aShare: Boolean);
+    procedure PlayerShareFog(aHand1, aHand2: Integer; aShare: Boolean);
+    procedure PlayerShareFogCompliment(aHand1, aHand2: Integer; aShare: Boolean);
+    procedure PlayerWareDistribution(aHand, aWareType, aHouseType, aAmount: Byte);
     procedure PlayerWin(const aVictors: array of Integer; aTeamVictory: Boolean);
 
-    function PlayWAV(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
-    function PlayWAVFadeMusic(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
-    function PlayWAVAtLocation(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Word): Integer;
-    function PlayWAVLooped(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
-    function PlayWAVAtLocationLooped(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Word): Integer;
+    function PlayWAV(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
+    function PlayWAVFadeMusic(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
+    function PlayWAVAtLocation(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer;
+    function PlayWAVLooped(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
+    function PlayWAVAtLocationLooped(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer;
     procedure StopLoopedWAV(aSoundIndex: Integer);
 
-    function PlayOGG(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
-    function PlayOGGFadeMusic(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
-    function PlayOGGAtLocation(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Word): Integer;
-    function PlayOGGLooped(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
-    function PlayOGGAtLocationLooped(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Word): Integer;
+    function PlayOGG(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
+    function PlayOGGFadeMusic(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
+    function PlayOGGAtLocation(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer;
+    function PlayOGGLooped(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
+    function PlayOGGAtLocationLooped(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer;
     procedure StopLoopedOGG(aSoundIndex: Integer);
 
-    function PlaySound(aPlayer: ShortInt; const aFileName: AnsiString; aAudioFormat: TKMAudioFormat; aVolume: Single;
+    function PlaySound(aHand: ShortInt; const aFileName: AnsiString; aAudioFormat: TKMAudioFormat; aVolume: Single;
                        aFadeMusic, aLooped: Boolean): Integer;
-    function PlaySoundAtLocation(aPlayer: ShortInt; const aFileName: AnsiString; aAudioFormat: TKMAudioFormat; aVolume: Single;
-                                 aFadeMusic, aLooped: Boolean; aRadius: Single; aX, aY: Word): Integer;
+    function PlaySoundAtLocation(aHand: ShortInt; const aFileName: AnsiString; aAudioFormat: TKMAudioFormat; aVolume: Single;
+                                 aFadeMusic, aLooped: Boolean; aRadius: Single; aX, aY: Integer): Integer;
     procedure StopSound(aSoundIndex: Integer);
 
-    procedure RemoveRoad(X, Y: Word);
+    procedure RemoveRoad(X, Y: Integer);
 
-    procedure SetTradeAllowed(aPlayer, aResType: Word; aAllowed: Boolean);
-    procedure ShowMsg(aPlayer: Shortint; const aText: AnsiString);
-    procedure ShowMsgFormatted(aPlayer: Shortint; const aText: AnsiString; Params: array of const);
-    procedure ShowMsgGoto(aPlayer: Shortint; aX, aY: Word; const aText: AnsiString);
-    procedure ShowMsgGotoFormatted(aPlayer: Shortint; aX, aY: Word; const aText: AnsiString; Params: array of const);
+    procedure SetTradeAllowed(aHand, aResType: Integer; aAllowed: Boolean);
+    procedure ShowMsg(aHand: Shortint; const aText: AnsiString);
+    procedure ShowMsgFormatted(aHand: Shortint; const aText: AnsiString; Params: array of const);
+    procedure ShowMsgGoto(aHand: Shortint; aX, aY: Integer; const aText: AnsiString);
+    procedure ShowMsgGotoFormatted(aHand: Shortint; aX, aY: Integer; const aText: AnsiString; Params: array of const);
 
     procedure UnitAllowAllyToSelect(aUnitID: Integer; aAllow: Boolean);
-    procedure UnitBlock(aPlayer: Byte; aType: Word; aBlock: Boolean);
+    procedure UnitBlock(aHand: Byte; aType: Integer; aBlock: Boolean);
     function  UnitDirectionSet(aUnitID, aDirection: Integer): Boolean;
     procedure UnitDismiss(aUnitID: Integer);
     procedure UnitDismissableSet(aUnitID: Integer; aDismissable: Boolean);
@@ -199,7 +206,7 @@ type
     procedure UnitHPSetInvulnerable(aUnitID: Integer; aInvulnerable: Boolean);
     procedure UnitHungerSet(aUnitID, aHungerLevel: Integer);
     procedure UnitKill(aUnitID: Integer; aSilent: Boolean);
-    function  UnitOrderWalk(aUnitID: Integer; X, Y: Word): Boolean;
+    function  UnitOrderWalk(aUnitID: Integer; X, Y: Integer): Boolean;
   end;
 
 
@@ -208,14 +215,13 @@ uses
   TypInfo,
   KM_AI, KM_AIDefensePos,
   KM_Game, KM_GameParams, KM_GameTypes, KM_FogOfWar,
-  KM_HandsCollection, KM_HandLogistics, KM_HandConstructions, KM_HandTypes,
+  KM_HandsCollection, KM_HandLogistics, KM_HandConstructions,
   KM_HouseBarracks, KM_HouseSchool, KM_HouseStore, KM_HouseMarket, KM_HouseWoodcutters, KM_HouseTownHall,
   KM_UnitWarrior,
   KM_UnitGroupTypes,
-  KM_Resource, KM_ResTypes, KM_ResUnits, KM_Hand, KM_ResMapElements,
+  KM_Resource, KM_ResUnits, KM_Hand, KM_ResMapElements,
   KM_PathFindingRoad,
   KM_Terrain,
-  KM_AITypes,
   KM_CommonUtils, KM_CommonClasses;
 
 const
@@ -237,16 +243,16 @@ end;
 { TKMScriptActions }
 //* Version: 5938
 //* Puts the player in cinematic mode, blocking user input and allowing the screen to be panned
-procedure TKMScriptActions.CinematicStart(aPlayer: Byte);
+procedure TKMScriptActions.CinematicStart(aHand: Byte);
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
     begin
-      gHands[aPlayer].InCinematic := True;
+      gHands[aHand].InCinematic := True;
       gGame.GamePlayInterface.CinematicUpdate;
     end
     else
-      LogParamWarning('Actions.CinematicStart', [aPlayer]);
+      LogIntParamWarn('Actions.CinematicStart', [aHand]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -256,16 +262,16 @@ end;
 
 //* Version: 5938
 //* Exits cinematic mode
-procedure TKMScriptActions.CinematicEnd(aPlayer: Byte);
+procedure TKMScriptActions.CinematicEnd(aHand: Byte);
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
     begin
-      gHands[aPlayer].InCinematic := False;
+      gHands[aHand].InCinematic := False;
       gGame.GamePlayInterface.CinematicUpdate;
     end
     else
-      LogParamWarning('Actions.CinematicEnd', [aPlayer]);
+      LogIntParamWarn('Actions.CinematicEnd', [aHand]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -276,18 +282,18 @@ end;
 //* Version: 5938
 //* Pans the center of the player's screen to the given location over a set number of ticks.
 //* If Duration = 0 then the screen moves instantly.
-procedure TKMScriptActions.CinematicPanTo(aPlayer: Byte; X, Y, Duration: Word);
+procedure TKMScriptActions.CinematicPanTo(aHand: Byte; X, Y, Duration: Integer);
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
     and gTerrain.TileInMapCoords(X, Y)
-    and gHands[aPlayer].InCinematic then
+    and gHands[aHand].InCinematic then
     begin
-      if aPlayer = gMySpectator.HandID then
+      if aHand = gMySpectator.HandID then
         gGame.GamePlayInterface.Viewport.PanTo(KMPointF(X, Y), Duration);
     end
     else
-      LogParamWarning('Actions.CinematicPanTo', [aPlayer, X, Y, Duration]);
+      LogIntParamWarn('Actions.CinematicPanTo', [aHand, X, Y, Duration]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -297,14 +303,14 @@ end;
 
 //* Version: 5057
 //* Proclaims player defeated
-procedure TKMScriptActions.PlayerDefeat(aPlayer: Word);
+procedure TKMScriptActions.PlayerDefeat(aHand: Integer);
 begin
   try
     //Verify all input parameters
-    if InRange(aPlayer, 0, gHands.Count - 1) and gHands[aPlayer].Enabled then
-      gHands[aPlayer].AI.Defeat
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
+      gHands[aHand].AI.Defeat
     else
-      LogParamWarning('Actions.PlayerDefeat', [aPlayer]);
+      LogIntParamWarn('Actions.PlayerDefeat', [aHand]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -314,20 +320,20 @@ end;
 
 //* Version: 11000
 //* Remove all player goals
-//* aPlayer: PlayerID
+//* aHand: PlayerID
 //* aForAllPlayers: also remove other player goals, related to this player
-procedure TKMScriptActions.PlayerGoalsRemoveAll(aPlayer: Word; aForAllPlayers: Boolean);
+procedure TKMScriptActions.PlayerGoalsRemoveAll(aHand: Integer; aForAllPlayers: Boolean);
 begin
   try
     //Verify all input parameters
-    if InRange(aPlayer, 0, gHands.Count - 1) and gHands[aPlayer].Enabled then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
     begin
-      gHands[aPlayer].AI.Goals.Clear;
+      gHands[aHand].AI.Goals.Clear;
       if aForAllPlayers then
-        gHands.UpdateGoalsForHand(aPlayer, False); //Goal disable works as good as delete goal
+        gHands.UpdateGoalsForHand(aHand, False); //Goal disable works as good as delete goal
     end
     else
-      LogParamWarning('Actions.PlayerGoalsRemoveAll', [aPlayer]);
+      LogIntParamWarn('Actions.PlayerGoalsRemoveAll', [aHand]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -339,20 +345,20 @@ end;
 //* Sets whether player A shares his beacons with player B.
 //* Sharing can still only happen between allied players, but this command lets you disable allies from sharing.
 //* aBothWays: share in both ways
-procedure TKMScriptActions.PlayerShareBeacons(aPlayer1, aPlayer2: Word; aBothWays, aShare: Boolean);
+procedure TKMScriptActions.PlayerShareBeacons(aHand1, aHand2: Integer; aBothWays, aShare: Boolean);
 begin
   try
-    if  InRange(aPlayer1, 0, gHands.Count - 1)
-    and InRange(aPlayer2, 0, gHands.Count - 1)
-    and (gHands[aPlayer1].Enabled)
-    and (gHands[aPlayer2].Enabled) then
+    if  InRange(aHand1, 0, gHands.Count - 1)
+    and InRange(aHand2, 0, gHands.Count - 1)
+    and (gHands[aHand1].Enabled)
+    and (gHands[aHand2].Enabled) then
     begin
-      gHands[aPlayer1].ShareBeacons[aPlayer2] := aShare;
+      gHands[aHand1].ShareBeacons[aHand2] := aShare;
       if aBothWays then
-        gHands[aPlayer2].ShareBeacons[aPlayer1] := aShare;
+        gHands[aHand2].ShareBeacons[aHand1] := aShare;
     end
     else
-      LogParamWarning('Actions.PlayerShareBeacons', [aPlayer1, aPlayer2, Byte(aBothWays), Byte(aShare)]);
+      LogIntParamWarn('Actions.PlayerShareBeacons', [aHand1, aHand2, Byte(aBothWays), Byte(aShare)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -363,16 +369,16 @@ end;
 //* Version: 5345
 //* Sets whether player A shares his vision with player B (one way, for both ways use PlayerShareFogCompliment).
 //* Sharing can still only happen between allied players, but this command lets you disable allies from sharing.
-procedure TKMScriptActions.PlayerShareFog(aPlayer1, aPlayer2: Word; aShare: Boolean);
+procedure TKMScriptActions.PlayerShareFog(aHand1, aHand2: Integer; aShare: Boolean);
 begin
   try
-    if  InRange(aPlayer1, 0, gHands.Count - 1)
-    and InRange(aPlayer2, 0, gHands.Count - 1)
-    and (gHands[aPlayer1].Enabled)
-    and (gHands[aPlayer2].Enabled) then
-      gHands[aPlayer1].ShareFOW[aPlayer2] := aShare
+    if  InRange(aHand1, 0, gHands.Count - 1)
+    and InRange(aHand2, 0, gHands.Count - 1)
+    and (gHands[aHand1].Enabled)
+    and (gHands[aHand2].Enabled) then
+      gHands[aHand1].ShareFOW[aHand2] := aShare
     else
-      LogParamWarning('Actions.PlayerShareFog', [aPlayer1, aPlayer2, Byte(aShare)]);
+      LogIntParamWarn('Actions.PlayerShareFog', [aHand1, aHand2, Byte(aShare)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -383,19 +389,19 @@ end;
 //* Version: 7000+
 //* Sets whether players A and B share their vision (both ways).
 //* Sharing can still only happen between allied players, but this command lets you disable allies from sharing.
-procedure TKMScriptActions.PlayerShareFogCompliment(aPlayer1, aPlayer2: Word; aShare: Boolean);
+procedure TKMScriptActions.PlayerShareFogCompliment(aHand1, aHand2: Integer; aShare: Boolean);
 begin
   try
-    if  InRange(aPlayer1, 0, gHands.Count - 1)
-    and InRange(aPlayer2, 0, gHands.Count - 1)
-    and (gHands[aPlayer1].Enabled)
-    and (gHands[aPlayer2].Enabled) then
+    if  InRange(aHand1, 0, gHands.Count - 1)
+    and InRange(aHand2, 0, gHands.Count - 1)
+    and (gHands[aHand1].Enabled)
+    and (gHands[aHand2].Enabled) then
     begin
-      gHands[aPlayer1].ShareFOW[aPlayer2] := aShare;
-      gHands[aPlayer2].ShareFOW[aPlayer1] := aShare
+      gHands[aHand1].ShareFOW[aHand2] := aShare;
+      gHands[aHand2].ShareFOW[aHand1] := aShare
     end
     else
-      LogParamWarning('Actions.PlayerShareFogCompliment', [aPlayer1, aPlayer2, Byte(aShare)]);
+      LogIntParamWarn('Actions.PlayerShareFogCompliment', [aHand1, aHand2, Byte(aShare)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -418,7 +424,7 @@ begin
     for I := 0 to Length(aVictors) - 1 do
     if not InRange(aVictors[I], 0, gHands.Count - 1) then
     begin
-      LogParamWarning('Actions.PlayerWin', [aVictors[I]]);
+      LogIntParamWarn('Actions.PlayerWin', [aVictors[I]]);
       Exit;
     end;
 
@@ -446,20 +452,20 @@ end;
 //* Version: 5345
 //* Sets ware distribution for the specified resource, house and player.
 //* aAmount: Distribution amount (0..5)
-procedure TKMScriptActions.PlayerWareDistribution(aPlayer, aWareType, aHouseType, aAmount: Byte);
+procedure TKMScriptActions.PlayerWareDistribution(aHand, aWareType, aHouseType, aAmount: Byte);
 begin
   try
     if (aWareType in [Low(WARE_ID_TO_TYPE) .. High(WARE_ID_TO_TYPE)])
     and (WARE_ID_TO_TYPE[aWareType] in [wtSteel, wtCoal, wtWood, wtCorn])
     and HouseTypeValid(aHouseType)
-    and InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    and InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
     and InRange(aAmount, 0, 5) then
     begin
-      gHands[aPlayer].Stats.WareDistribution[WARE_ID_TO_TYPE[aWareType], HOUSE_ID_TO_TYPE[aHouseType]] := aAmount;
-      gHands[aPlayer].Houses.UpdateResRequest;
+      gHands[aHand].Stats.WareDistribution[WARE_ID_TO_TYPE[aWareType], HOUSE_ID_TO_TYPE[aHouseType]] := aAmount;
+      gHands[aHand].Houses.UpdateResRequest;
     end
     else
-      LogParamWarning('Actions.PlayerWareDistribution', [aPlayer, aWareType, aHouseType, aAmount]);
+      LogIntParamWarn('Actions.PlayerWareDistribution', [aHand, aWareType, aHouseType, aAmount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -471,30 +477,30 @@ end;
 //* Change whether player1 is allied to player2.
 //* If Compliment is true, then it is set both ways (so also whether player2 is allied to player1)
 //* aCompliment: Both ways
-procedure TKMScriptActions.PlayerAllianceChange(aPlayer1, aPlayer2: Byte; aCompliment, aAllied: Boolean);
+procedure TKMScriptActions.PlayerAllianceChange(aHand1, aHand2: Byte; aCompliment, aAllied: Boolean);
 const
   ALLIED: array [Boolean] of TKMAllianceType = (atEnemy, atAlly);
 begin
   try
     //Verify all input parameters
-    if InRange(aPlayer1, 0, gHands.Count - 1)
-      and InRange(aPlayer2, 0, gHands.Count - 1)
-      and (aPlayer1 <> aPlayer2)
-      and (gHands[aPlayer1].Enabled)
-      and (gHands[aPlayer2].Enabled) then
+    if InRange(aHand1, 0, gHands.Count - 1)
+      and InRange(aHand2, 0, gHands.Count - 1)
+      and (aHand1 <> aHand2)
+      and (gHands[aHand1].Enabled)
+      and (gHands[aHand2].Enabled) then
     begin
-      gHands[aPlayer1].Alliances[aPlayer2] := ALLIED[aAllied];
+      gHands[aHand1].Alliances[aHand2] := ALLIED[aAllied];
       if aAllied then
-        gHands[aPlayer2].FogOfWar.SyncFOW(gHands[aPlayer1].FogOfWar);
+        gHands[aHand2].FogOfWar.SyncFOW(gHands[aHand1].FogOfWar);
       if aCompliment then
       begin
-        gHands[aPlayer2].Alliances[aPlayer1] := ALLIED[aAllied];
+        gHands[aHand2].Alliances[aHand1] := ALLIED[aAllied];
         if aAllied then
-          gHands[aPlayer1].FogOfWar.SyncFOW(gHands[aPlayer2].FogOfWar);
+          gHands[aHand1].FogOfWar.SyncFOW(gHands[aHand2].FogOfWar);
       end;
     end
     else
-      LogParamWarning('Actions.PlayerAllianceChange', [aPlayer1, aPlayer2, Byte(aCompliment), Byte(aAllied)]);
+      LogIntParamWarn('Actions.PlayerAllianceChange', [aHand1, aHand2, Byte(aCompliment), Byte(aAllied)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -507,30 +513,30 @@ end;
 //* If Compliment is true, then it is set both ways (so also whether player2 is allied to player1)
 //* aCompliment: Both ways
 //* aSyncAllyFog: Synchronize allies fogs of war
-procedure TKMScriptActions.PlayerAllianceNFogChange(aPlayer1, aPlayer2: Byte; aCompliment, aAllied, aSyncAllyFog: Boolean);
+procedure TKMScriptActions.PlayerAllianceNFogChange(aHand1, aHand2: Byte; aCompliment, aAllied, aSyncAllyFog: Boolean);
 const
   ALLIED: array [Boolean] of TKMAllianceType = (atEnemy, atAlly);
 begin
   try
     //Verify all input parameters
-    if InRange(aPlayer1, 0, gHands.Count - 1)
-      and InRange(aPlayer2, 0, gHands.Count - 1)
-      and (aPlayer1 <> aPlayer2)
-      and (gHands[aPlayer1].Enabled)
-      and (gHands[aPlayer2].Enabled) then
+    if InRange(aHand1, 0, gHands.Count - 1)
+      and InRange(aHand2, 0, gHands.Count - 1)
+      and (aHand1 <> aHand2)
+      and (gHands[aHand1].Enabled)
+      and (gHands[aHand2].Enabled) then
     begin
-      gHands[aPlayer1].Alliances[aPlayer2] := ALLIED[aAllied];
+      gHands[aHand1].Alliances[aHand2] := ALLIED[aAllied];
       if aAllied and aSyncAllyFog then
-        gHands[aPlayer2].FogOfWar.SyncFOW(gHands[aPlayer1].FogOfWar);
+        gHands[aHand2].FogOfWar.SyncFOW(gHands[aHand1].FogOfWar);
       if aCompliment then
       begin
-        gHands[aPlayer2].Alliances[aPlayer1] := ALLIED[aAllied];
+        gHands[aHand2].Alliances[aHand1] := ALLIED[aAllied];
         if aAllied and aSyncAllyFog then
-          gHands[aPlayer1].FogOfWar.SyncFOW(gHands[aPlayer2].FogOfWar);
+          gHands[aHand1].FogOfWar.SyncFOW(gHands[aHand2].FogOfWar);
       end;
     end
     else
-      LogParamWarning('Actions.PlayerAllianceNFogChange', [aPlayer1, aPlayer2, Byte(aCompliment), Byte(aAllied), Byte(aSyncAllyFog)]);
+      LogIntParamWarn('Actions.PlayerAllianceNFogChange', [aHand1, aHand2, Byte(aCompliment), Byte(aAllied), Byte(aSyncAllyFog)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -542,17 +548,17 @@ end;
 //* Add default goals/lost goals for the specified player.
 //* If the parameter buildings is true the goals will be important buildings.
 //* Otherwise it will be troops.
-procedure TKMScriptActions.PlayerAddDefaultGoals(aPlayer: Byte; aBuildings: Boolean);
+procedure TKMScriptActions.PlayerAddDefaultGoals(aHand: Byte; aBuildings: Boolean);
 begin
   try
     //Verify all input parameters
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
     begin
 
-      gHands[aPlayer].AI.AddDefaultGoals(aBuildings);
+      gHands[aHand].AI.AddDefaultGoals(aBuildings);
     end
     else
-      LogParamWarning('Actions.PlayerAddDefaultGoals', [aPlayer, Byte(aBuildings)]);
+      LogIntParamWarn('Actions.PlayerAddDefaultGoals', [aHand, Byte(aBuildings)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -567,14 +573,14 @@ end;
 //* WAV file goes in mission folder named: Mission Name.filename.wav
 //* aVolume: Audio level (0.0 to 1.0)
 //* Result: SoundIndex of the sound
-function TKMScriptActions.PlayWAV(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
+function TKMScriptActions.PlayWAV(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
 begin
   Result := -1;
   try
     if InRange(aVolume, 0, 1) then
-      Result := gScriptSounds.AddSound(aPlayer, aFileName, afWav, KMPOINT_ZERO, False, aVolume, 0, False, False)
+      Result := gScriptSounds.AddSound(aHand, aFileName, afWav, KMPOINT_ZERO, False, aVolume, 0, False, False)
     else
-      LogParamWarning('Actions.PlayWAV: ' + UnicodeString(aFileName), []);
+      LogIntParamWarn('Actions.PlayWAV: ' + UnicodeString(aFileName), []);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -587,14 +593,14 @@ end;
 //* You should leave a small gap at the start of your WAV file to give the music time to fade
 //* aVolume: Audio level (0.0 to 1.0)
 //* Result: SoundIndex of the sound
-function TKMScriptActions.PlayWAVFadeMusic(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
+function TKMScriptActions.PlayWAVFadeMusic(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
 begin
   Result := -1;
   try
     if InRange(aVolume, 0, 1) then
-      Result := gScriptSounds.AddSound(aPlayer, aFileName, afWav, KMPOINT_ZERO, False, aVolume, 0, True, False)
+      Result := gScriptSounds.AddSound(aHand, aFileName, afWav, KMPOINT_ZERO, False, aVolume, 0, True, False)
     else
-      LogParamWarning('Actions.PlayWAVFadeMusic: ' + UnicodeString(aFileName), []);
+      LogIntParamWarn('Actions.PlayWAVFadeMusic: ' + UnicodeString(aFileName), []);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -613,14 +619,14 @@ end;
 //* aVolume: Audio level (0.0 to 4.0)
 //* aRadius: Radius (minimum 28)
 //* Result: SoundIndex of the sound
-function TKMScriptActions.PlayWAVAtLocation(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Word): Integer;
+function TKMScriptActions.PlayWAVAtLocation(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer;
 begin
   Result := -1;
   try
     if InRange(aVolume, 0, 4) and (aRadius >= MIN_SOUND_AT_LOC_RADIUS) and gTerrain.TileInMapCoords(aX,aY) then
-      Result := gScriptSounds.AddSound(aPlayer, aFileName, afWav, KMPoint(aX,aY), True, aVolume, aRadius, False, False)
+      Result := gScriptSounds.AddSound(aHand, aFileName, afWav, KMPoint(aX,aY), True, aVolume, aRadius, False, False)
     else
-      LogParamWarning('Actions.PlayWAVAtLocation: ' + UnicodeString(aFileName), [aX, aY]);
+      LogIntParamWarn('Actions.PlayWAVAtLocation: ' + UnicodeString(aFileName), [aX, aY]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -636,14 +642,14 @@ end;
 //* The sound will continue to loop if the game is paused and will restart automatically when the game is loaded.
 //* aVolume: Audio level (0.0 to 1.0)
 //* Result: SoundIndex of the sound
-function TKMScriptActions.PlayWAVLooped(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
+function TKMScriptActions.PlayWAVLooped(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
 begin
   try
     Result := -1;
     if InRange(aVolume, 0, 1) then
-      Result := gScriptSounds.AddSound(aPlayer, aFileName, afWav, KMPOINT_ZERO, False, aVolume, 0, False, True)
+      Result := gScriptSounds.AddSound(aHand, aFileName, afWav, KMPOINT_ZERO, False, aVolume, 0, False, True)
     else
-      LogParamWarning('Actions.PlayWAVLooped: ' + UnicodeString(aFileName), []);
+      LogIntParamWarn('Actions.PlayWAVLooped: ' + UnicodeString(aFileName), []);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -663,14 +669,14 @@ end;
 //* aVolume: Audio level (0.0 to 4.0)
 //* aRadius: aRadius (minimum 28)
 //* Result: SoundIndex of the sound
-function TKMScriptActions.PlayWAVAtLocationLooped(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Word): Integer;
+function TKMScriptActions.PlayWAVAtLocationLooped(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer;
 begin
   try
     Result := -1;
     if InRange(aVolume, 0, 4) and (aRadius >= MIN_SOUND_AT_LOC_RADIUS) and gTerrain.TileInMapCoords(aX,aY) then
-      Result := gScriptSounds.AddSound(aPlayer, aFileName, afWav, KMPoint(aX,aY), True, aVolume, aRadius, False, True)
+      Result := gScriptSounds.AddSound(aHand, aFileName, afWav, KMPoint(aX,aY), True, aVolume, aRadius, False, True)
     else
-      LogParamWarning('Actions.PlayWAVAtLocationLooped: ' + UnicodeString(aFileName), [aX, aY]);
+      LogIntParamWarn('Actions.PlayWAVAtLocationLooped: ' + UnicodeString(aFileName), [aX, aY]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -687,7 +693,7 @@ begin
     if aSoundIndex > 0 then
       gScriptSounds.RemoveLoopSoundByUID(aSoundIndex)
     else
-      LogParamWarning('Actions.StopLoopedWAV', [aSoundIndex]);
+      LogIntParamWarn('Actions.StopLoopedWAV', [aSoundIndex]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -702,14 +708,14 @@ end;
 //* OGG file goes in mission folder named: Mission Name.filename.ogg
 //* aVolume: Audio level (0.0 to 1.0)
 //* Result: SoundIndex of the sound
-function TKMScriptActions.PlayOGG(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
+function TKMScriptActions.PlayOGG(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
 begin
   Result := -1;
   try
     if InRange(aVolume, 0, 1) then
-      Result := gScriptSounds.AddSound(aPlayer, aFileName, afOgg, KMPOINT_ZERO, False, aVolume, 0, False, False)
+      Result := gScriptSounds.AddSound(aHand, aFileName, afOgg, KMPOINT_ZERO, False, aVolume, 0, False, False)
     else
-      LogParamWarning('Actions.PlayOGG: ' + UnicodeString(aFileName), []);
+      LogIntParamWarn('Actions.PlayOGG: ' + UnicodeString(aFileName), []);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -722,14 +728,14 @@ end;
 //* You should leave a small gap at the start of your OGG file to give the music time to fade
 //* aVolume: Audio level (0.0 to 1.0)
 //* Result: SoundIndex of the sound
-function TKMScriptActions.PlayOGGFadeMusic(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
+function TKMScriptActions.PlayOGGFadeMusic(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
 begin
   Result := -1;
   try
     if InRange(aVolume, 0, 1) then
-      Result := gScriptSounds.AddSound(aPlayer, aFileName, afOgg, KMPOINT_ZERO, False, aVolume, 0, True, False)
+      Result := gScriptSounds.AddSound(aHand, aFileName, afOgg, KMPOINT_ZERO, False, aVolume, 0, True, False)
     else
-      LogParamWarning('Actions.PlayOGGFadeMusic: ' + UnicodeString(aFileName), []);
+      LogIntParamWarn('Actions.PlayOGGFadeMusic: ' + UnicodeString(aFileName), []);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -748,14 +754,14 @@ end;
 //* aVolume: Audio level (0.0 to 4.0)
 //* aRadius: Radius (minimum 28)
 //* Result: SoundIndex of the sound
-function TKMScriptActions.PlayOGGAtLocation(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Word): Integer;
+function TKMScriptActions.PlayOGGAtLocation(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer;
 begin
   Result := -1;
   try
     if InRange(aVolume, 0, 4) and (aRadius >= MIN_SOUND_AT_LOC_RADIUS) and gTerrain.TileInMapCoords(aX,aY) then
-      Result := gScriptSounds.AddSound(aPlayer, aFileName, afOgg, KMPoint(aX,aY), True, aVolume, aRadius, False, False)
+      Result := gScriptSounds.AddSound(aHand, aFileName, afOgg, KMPoint(aX,aY), True, aVolume, aRadius, False, False)
     else
-      LogParamWarning('Actions.PlayOGGAtLocation: ' + UnicodeString(aFileName), [aX, aY]);
+      LogIntParamWarn('Actions.PlayOGGAtLocation: ' + UnicodeString(aFileName), [aX, aY]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -771,14 +777,14 @@ end;
 //* The sound will continue to loop if the game is paused and will restart automatically when the game is loaded.
 //* aVolume: Audio level (0.0 to 1.0)
 //* Result: SoundIndex of the sound
-function TKMScriptActions.PlayOGGLooped(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
+function TKMScriptActions.PlayOGGLooped(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
 begin
   try
     Result := -1;
     if InRange(aVolume, 0, 1) then
-      Result := gScriptSounds.AddSound(aPlayer, aFileName, afOgg, KMPOINT_ZERO, False, aVolume, 0, False, True)
+      Result := gScriptSounds.AddSound(aHand, aFileName, afOgg, KMPOINT_ZERO, False, aVolume, 0, False, True)
     else
-      LogParamWarning('Actions.PlayOGGLooped: ' + UnicodeString(aFileName), []);
+      LogIntParamWarn('Actions.PlayOGGLooped: ' + UnicodeString(aFileName), []);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -798,14 +804,14 @@ end;
 //* aVolume: Audio level (0.0 to 4.0)
 //* aRadius: aRadius (minimum 28)
 //* Result: SoundIndex of the sound
-function TKMScriptActions.PlayOGGAtLocationLooped(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Word): Integer;
+function TKMScriptActions.PlayOGGAtLocationLooped(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer;
 begin
   try
     Result := -1;
     if InRange(aVolume, 0, 4) and (aRadius >= MIN_SOUND_AT_LOC_RADIUS) and gTerrain.TileInMapCoords(aX,aY) then
-      Result := gScriptSounds.AddSound(aPlayer, aFileName, afOgg, KMPoint(aX,aY), True, aVolume, aRadius, False, True)
+      Result := gScriptSounds.AddSound(aHand, aFileName, afOgg, KMPoint(aX,aY), True, aVolume, aRadius, False, True)
     else
-      LogParamWarning('Actions.PlayOGGAtLocationLooped: ' + UnicodeString(aFileName), [aX, aY]);
+      LogIntParamWarn('Actions.PlayOGGAtLocationLooped: ' + UnicodeString(aFileName), [aX, aY]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -822,7 +828,7 @@ begin
     if aSoundIndex > 0 then
       gScriptSounds.RemoveLoopSoundByUID(aSoundIndex)
     else
-      LogParamWarning('Actions.StopLoopedOGG', [aSoundIndex]);
+      LogIntParamWarn('Actions.StopLoopedOGG', [aSoundIndex]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -843,14 +849,14 @@ end;
 //* aAudioFormat: afWav or afOgg
 //* aVolume: Audio level (0.0 to 1.0)
 //* Result: SoundIndex of the sound
-function TKMScriptActions.PlaySound(aPlayer: ShortInt; const aFileName: AnsiString; aAudioFormat: TKMAudioFormat; aVolume: Single; aFadeMusic, aLooped: Boolean): Integer;
+function TKMScriptActions.PlaySound(aHand: ShortInt; const aFileName: AnsiString; aAudioFormat: TKMAudioFormat; aVolume: Single; aFadeMusic, aLooped: Boolean): Integer;
 begin
   try
     Result := -1;
     if InRange(aVolume, 0, 1) then
-      Result := gScriptSounds.AddSound(aPlayer, aFileName, aAudioFormat, KMPOINT_ZERO, False, aVolume, 0, aFadeMusic, aLooped)
+      Result := gScriptSounds.AddSound(aHand, aFileName, aAudioFormat, KMPOINT_ZERO, False, aVolume, 0, aFadeMusic, aLooped)
     else
-      LogParamWarning('Actions.PlaySound: ' + UnicodeString(aFileName), []);
+      LogIntParamWarn('Actions.PlaySound: ' + UnicodeString(aFileName), []);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -874,14 +880,14 @@ end;
 //* aVolume: Audio level (0.0 to 4.0)
 //* aRadius: aRadius (minimum 28)
 //* Result: SoundIndex of the sound
-function TKMScriptActions.PlaySoundAtLocation(aPlayer: ShortInt; const aFileName: AnsiString; aAudioFormat: TKMAudioFormat; aVolume: Single; aFadeMusic, aLooped: Boolean; aRadius: Single; aX, aY: Word): Integer;
+function TKMScriptActions.PlaySoundAtLocation(aHand: ShortInt; const aFileName: AnsiString; aAudioFormat: TKMAudioFormat; aVolume: Single; aFadeMusic, aLooped: Boolean; aRadius: Single; aX, aY: Integer): Integer;
 begin
   try
     Result := -1;
     if InRange(aVolume, 0, 4) and (aRadius >= MIN_SOUND_AT_LOC_RADIUS) and gTerrain.TileInMapCoords(aX,aY) then
-      Result := gScriptSounds.AddSound(aPlayer, aFileName, aAudioFormat, KMPoint(aX,aY), True, aVolume, aRadius, aFadeMusic, aLooped)
+      Result := gScriptSounds.AddSound(aHand, aFileName, aAudioFormat, KMPoint(aX,aY), True, aVolume, aRadius, aFadeMusic, aLooped)
     else
-      LogParamWarning('Actions.PlaySoundAtLocation: ' + UnicodeString(aFileName), [aX, aY]);
+      LogIntParamWarn('Actions.PlaySoundAtLocation: ' + UnicodeString(aFileName), [aX, aY]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -898,7 +904,7 @@ begin
     if aSoundIndex > 0 then
       gScriptSounds.RemoveSoundByUID(aSoundIndex)
     else
-      LogParamWarning('Actions.StopSound', [aSoundIndex]);
+      LogIntParamWarn('Actions.StopSound', [aSoundIndex]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -908,7 +914,7 @@ end;
 
 //* Version: 5927
 //* Removes road
-procedure TKMScriptActions.RemoveRoad(X, Y: Word);
+procedure TKMScriptActions.RemoveRoad(X, Y: Integer);
 var
   Pos: TKMPoint;
 begin
@@ -921,7 +927,7 @@ begin
         gTerrain.RemRoad(Pos);
     end
     else
-      LogParamWarning('Actions.RemoveRoad', [X, Y]);
+      LogIntParamWarn('Actions.RemoveRoad', [X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -932,21 +938,21 @@ end;
 //* Version: 5057
 //* Give player group of warriors and return the group ID or -1 if the group was not able to be added
 //* aColumns: Units per row
-function TKMScriptActions.GiveGroup(aPlayer, aType, X,Y, aDir, aCount, aColumns: Word): Integer;
+function TKMScriptActions.GiveGroup(aHand, aType, X,Y, aDir, aCount, aColumns: Integer): Integer;
 var
   G: TKMUnitGroup;
 begin
   try
     Result := UID_NONE;
     //Verify all input parameters
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
     and (aType in [UNIT_TYPE_TO_ID[WARRIOR_MIN]..UNIT_TYPE_TO_ID[WARRIOR_MAX]])
     and gTerrain.TileInMapCoords(X,Y)
     and (TKMDirection(aDir+1) in [dirN..dirNW])
     and (aCount > 0)
     and (aColumns > 0) then
     begin
-      G := gHands[aPlayer].AddUnitGroup(UNIT_ID_TO_TYPE[aType],
+      G := gHands[aHand].AddUnitGroup(UNIT_ID_TO_TYPE[aType],
                                           KMPoint(X,Y),
                                           TKMDirection(aDir+1),
                                           aColumns,
@@ -955,7 +961,7 @@ begin
       Result := G.UID;
     end
     else
-      LogParamWarning('Actions.GiveGroup', [aPlayer, aType, X, Y, aDir, aCount, aColumns]);
+      LogIntParamWarn('Actions.GiveGroup', [aHand, aType, X, Y, aDir, aCount, aColumns]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -965,7 +971,7 @@ end;
 
 //* Version: 5057
 //* Give player a single citizen and returns the unit ID or -1 if the unit was not able to be added
-function TKMScriptActions.GiveUnit(aPlayer, aType, X, Y, aDir: Word): Integer;
+function TKMScriptActions.GiveUnit(aHand, aType, X, Y, aDir: Integer): Integer;
 var
   U: TKMUnit;
 begin
@@ -973,12 +979,12 @@ begin
     Result := UID_NONE;
 
     //Verify all input parameters
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
     and (aType in [UNIT_TYPE_TO_ID[CITIZEN_MIN] .. UNIT_TYPE_TO_ID[CITIZEN_MAX]])
     and gTerrain.TileInMapCoords(X, Y)
     and (TKMDirection(aDir + 1) in [dirN .. dirNW]) then
     begin
-      U := gHands[aPlayer].AddUnit(UNIT_ID_TO_TYPE[aType], KMPoint(X,Y));
+      U := gHands[aHand].AddUnit(UNIT_ID_TO_TYPE[aType], KMPoint(X,Y));
       if U = nil then Exit;
       Result := U.UID;
       U.Direction := TKMDirection(aDir + 1);
@@ -987,7 +993,7 @@ begin
       U.SetActionStay(10, uaWalk);
     end
     else
-      LogParamWarning('Actions.GiveUnit', [aPlayer, aType, X, Y, aDir]);
+      LogIntParamWarn('Actions.GiveUnit', [aHand, aType, X, Y, aDir]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -997,7 +1003,7 @@ end;
 
 //* Version: 5097
 //* Give player a built house and returns the house ID or -1 if the house was not able to be added
-function TKMScriptActions.GiveHouse(aPlayer, aHouseType, X,Y: Integer): Integer;
+function TKMScriptActions.GiveHouse(aHand, aHouseType, X,Y: Integer): Integer;
 var
   H: TKMHouse;
 begin
@@ -1005,19 +1011,19 @@ begin
     Result := UID_NONE;
 
     //Verify all input parameters
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
     and HouseTypeValid(aHouseType)
     and gTerrain.TileInMapCoords(X, Y) then
     begin
       if gTerrain.CanPlaceHouseFromScript(HOUSE_ID_TO_TYPE[aHouseType], KMPoint(X - gResHouses[HOUSE_ID_TO_TYPE[aHouseType]].EntranceOffsetX, Y)) then
       begin
-        H := gHands[aPlayer].AddHouse(HOUSE_ID_TO_TYPE[aHouseType], X, Y, True);
+        H := gHands[aHand].AddHouse(HOUSE_ID_TO_TYPE[aHouseType], X, Y, True);
         if H = nil then Exit;
         Result := H.UID;
       end;
     end
     else
-      LogParamWarning('Actions.GiveHouse', [aPlayer, aHouseType, X, Y]);
+      LogIntParamWarn('Actions.GiveHouse', [aHand, aHouseType, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1028,7 +1034,7 @@ end;
 //* Version: 6288
 //* Give player a digged house area and returns House ID or -1 if house site was not able to be added.
 //* If AddMaterials = True, wood and stone will be added
-function TKMScriptActions.GiveHouseSite(aPlayer, aHouseType, X, Y: Integer; aAddMaterials: Boolean): Integer;
+function TKMScriptActions.GiveHouseSite(aHand, aHouseType, X, Y: Integer; aAddMaterials: Boolean): Integer;
 var
   H: TKMHouse;
   I, K: Integer;
@@ -1037,15 +1043,15 @@ var
 begin
   try
     Result := -1;
-    if InRange(aPlayer, 0, gHands.Count - 1)
-    and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1)
+    and (gHands[aHand].Enabled)
     and HouseTypeValid(aHouseType)
     and gTerrain.TileInMapCoords(X,Y) then
     begin
       NonEntranceX := X - gResHouses[HOUSE_ID_TO_TYPE[aHouseType]].EntranceOffsetX;
       if gTerrain.CanPlaceHouseFromScript(HOUSE_ID_TO_TYPE[aHouseType], KMPoint(NonEntranceX, Y)) then
       begin
-        H := gHands[aPlayer].AddHouseWIP(HOUSE_ID_TO_TYPE[aHouseType], KMPoint(NonEntranceX, Y));
+        H := gHands[aHand].AddHouseWIP(HOUSE_ID_TO_TYPE[aHouseType], KMPoint(NonEntranceX, Y));
         if (H = nil) or (H.IsDestroyed) then
           Exit;
 
@@ -1060,7 +1066,7 @@ begin
             gTerrain.SetTileLock(KMPoint(NonEntranceX + K - 3, Y + I - 4), tlDigged);
           end;
 
-        gTerrain.SetRoad(H.Entrance, aPlayer);
+        gTerrain.SetRoad(H.Entrance, aHand);
         H.BuildingState := hbsWood;
         if aAddMaterials then
         begin
@@ -1071,14 +1077,14 @@ begin
         end
         else
         begin
-          gHands[aPlayer].Deliveries.Queue.AddDemand(H, nil, wtWood, gResHouses[H.HouseType].WoodCost, dtOnce, diHigh4);
-          gHands[aPlayer].Deliveries.Queue.AddDemand(H, nil, wtStone, gResHouses[H.HouseType].StoneCost, dtOnce, diHigh4);
+          gHands[aHand].Deliveries.Queue.AddDemand(H, nil, wtWood, gResHouses[H.HouseType].WoodCost, dtOnce, diHigh4);
+          gHands[aHand].Deliveries.Queue.AddDemand(H, nil, wtStone, gResHouses[H.HouseType].StoneCost, dtOnce, diHigh4);
         end;
-        gHands[aPlayer].Constructions.HouseList.AddHouse(H);
+        gHands[aHand].Constructions.HouseList.AddHouse(H);
       end;
     end
     else
-      LogParamWarning('Actions.GiveHouseSite', [aPlayer, aHouseType, X, Y, byte(aAddMaterials)]);
+      LogIntParamWarn('Actions.GiveHouseSite', [aHand, aHouseType, X, Y, byte(aAddMaterials)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1089,15 +1095,15 @@ end;
 //* Version: 7000+
 //* Sets AI army type
 //* aType = (atIronThenLeather, atLeather, atIron, atIronAndLeather)
-procedure TKMScriptActions.AIArmyType(aPlayer: Byte; aType: TKMArmyType);
+procedure TKMScriptActions.AIArmyType(aHand: Byte; aType: TKMArmyType);
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1)
-    and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1)
+    and (gHands[aHand].Enabled)
     and (aType in [Low(TKMArmyType)..High(TKMArmyType)]) then
-      gHands[aPlayer].AI.Setup.ArmyType := aType
+      gHands[aHand].AI.Setup.ArmyType := aType
     else
-      LogParamWarning('Actions.AIArmyType', [aPlayer, Byte(aType)]);
+      LogIntParamWarn('Actions.AIArmyType', [aHand, Byte(aType)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1107,9 +1113,9 @@ end;
 
 //* Version: 7000+
 //* Add AI attack 
-//** <b>aPlayer</b> - playerID
+//** <b>aHand</b> - handID
 //** <b>aRepeating</b> - is attack repeating
-//** <b>aDelay</b> - attack delay
+//** <b>aDelay</b> - attack delay from the game start (in ticks)
 //** <b>aTotalMen</b> - total soldiers to attack
 //** <b>aMelleCount</b>, <b>aAntiHorseCount</b>, <b>aRangedCount</b>, <b>aMountedCount</b> - soldiers groups count
 //** <b>aRandomGroups</b> - use random groups for attack
@@ -1124,29 +1130,57 @@ end;
 //**    //Custom point defined with aCustomPosition
 //** );</pre>
 //** <b>aCustomPosition</b> - TKMPoint for custom position of attack. Used if attCustomPosition was set up as attack target
-//** <b>Result</b>: Attack Id, that could be used to remove this attack later on
-function TKMScriptActions.AIAttackAdd(aPlayer: Byte; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer;
-                                      aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount: Word; aRandomGroups: Boolean;
+//** <b>Result</b>: Attack UID, that could be used to remove this attack later on
+function TKMScriptActions.AIAttackAdd(aHand: Integer; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer;
+                                      aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount: Integer; aRandomGroups: Boolean;
                                       aTarget: TKMAIAttackTarget; aCustomPosition: TKMPoint): Integer;
 var
-  AttackType: TKMAIAttackType;
-  Delay: Cardinal;
+  attackType: TKMAIAttackType;
 begin
-  Result := -1;
+  Result := NO_SUCCESS_INT;
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
     begin
       if aRepeating then
-        AttackType := aatRepeating
+        attackType := aatRepeating
       else
-        AttackType := aatOnce;
+        attackType := aatOnce;
 
       //Attack delay should be counted from the moment attack was added from script
-      Delay := aDelay + gGameParams.Tick;
-      Result := gHands[aPlayer].AI.General.Attacks.AddAttack(AttackType, Delay, aTotalMen, aMeleeGroupCount, aAntiHorseGroupCount,
+      Result := gHands[aHand].AI.General.Attacks.AddAttack(attackType, aDelay, aTotalMen, aMeleeGroupCount, aAntiHorseGroupCount,
                                                              aRangedGroupCount, aMountedGroupCount, aRandomGroups, aTarget, 0, aCustomPosition);
     end else
-      LogParamWarning('Actions.AIAttackAdd', [aPlayer, aDelay, aTotalMen, aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount]);
+      LogIntParamWarn('Actions.AIAttackAdd', [aHand, aDelay, aTotalMen, aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Add AI attack for a specified hand (player)
+//* Attack info is set via TKMAIAttackInfo record.
+//* Result: Attack UID, that could be used to remove this attack later on
+function TKMScriptActions.AIAttackAddEx(aHand: Integer; var aAttackInfo: TKMAIAttackInfo): Integer;
+begin
+  Result := NO_SUCCESS_INT;
+  try
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    begin
+      Result := gHands[aHand].AI.General.Attacks.AddAttack( aAttackInfo.AttackType,
+                                                            aAttackInfo.Delay,
+                                                            aAttackInfo.TotalMen,
+                                                            aAttackInfo.MeleeGroupCount,
+                                                            aAttackInfo.AntiHorseGroupCount,
+                                                            aAttackInfo.RangedGroupCount,
+                                                            aAttackInfo.MountedGroupCount,
+                                                            aAttackInfo.RandomGroups,
+                                                            aAttackInfo.Target, 0,
+                                                            aAttackInfo.CustomPosition);
+      aAttackInfo.UID := Result;
+    end else
+      LogParamWarn('Actions.AIAttackAddEx', [aHand, aAttackInfo.ToStr]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1155,16 +1189,16 @@ end;
 
 
 //* Version: 7000+
-//* Remove AI attack by attack ID
+//* Remove AI attack by attack UID
 //* Result: true, if attack was succesfully removed, false, if attack was not found
-function TKMScriptActions.AIAttackRemove(aPlayer: Byte; aAIAttackId: Word): Boolean;
+function TKMScriptActions.AIAttackRemove(aHand, aAIAttackUID: Integer): Boolean;
 begin
   Result := False;
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
-      Result := gHands[aPlayer].AI.General.Attacks.RemoveAttack(aAIAttackId)
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+      Result := gHands[aHand].AI.General.Attacks.Remove(aAIAttackUID)
     else
-      LogParamWarning('Actions.AIAttackRemove', [aPlayer]);
+      LogIntParamWarn('Actions.AIAttackRemove', [aHand]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1174,13 +1208,13 @@ end;
 
 //* Version: 7000+
 //* Remove all AI attacks
-procedure TKMScriptActions.AIAttackRemoveAll(aPlayer: Byte);
+procedure TKMScriptActions.AIAttackRemoveAll(aHand: Integer);
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
-      gHands[aPlayer].AI.General.Attacks.Clear
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+      gHands[aHand].AI.General.Attacks.Clear
     else
-      LogParamWarning('Actions.AIAttackRemoveAll', [aPlayer]);
+      LogIntParamWarn('Actions.AIAttackRemoveAll', [aHand]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1190,13 +1224,13 @@ end;
 
 //* Version: 13000
 //* Sets AI auto attack
-procedure TKMScriptActions.AIAutoAttack(aPlayer: Byte; aAutoAttack: Boolean);
+procedure TKMScriptActions.AIAutoAttack(aHand: Byte; aAutoAttack: Boolean);
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
-      gHands[aPlayer].AI.Setup.AutoAttack := aAutoAttack
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+      gHands[aHand].AI.Setup.AutoAttack := aAutoAttack
     else
-      LogParamWarning('Actions.AIAutoAttack', [aPlayer, Byte(aAutoAttack)]);
+      LogIntParamWarn('Actions.AIAutoAttack', [aHand, Byte(aAutoAttack)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1208,15 +1242,15 @@ end;
 //* Sets AI auto attack range.
 //* AI groups will automatically attack if you are closer than this many tiles.
 //* aRange: Range (1 to 20)
-procedure TKMScriptActions.AIAutoAttackRange(aPlayer: Byte; aRange: Word);
+procedure TKMScriptActions.AIAutoAttackRange(aHand: Byte; aRange: Integer);
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
       and InRange(aRange, 1, 20)
-      and not gHands[aPlayer].AI.Setup.NewAI then // Do not allow AutoAttackRange if we are using newAI
-      gHands[aPlayer].AI.Setup.AutoAttackRange := aRange
+      and not gHands[aHand].AI.Setup.NewAI then // Do not allow AutoAttackRange if we are using newAI
+      gHands[aHand].AI.Setup.AutoAttackRange := aRange
     else
-      LogParamWarning('Actions.AIAutoAttackRange', [aPlayer, aRange]);
+      LogIntParamWarn('Actions.AIAutoAttackRange', [aHand, aRange]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1226,13 +1260,13 @@ end;
 
 //* Version: 5924
 //* Sets whether the AI should build and manage his own village
-procedure TKMScriptActions.AIAutoBuild(aPlayer: Byte; aAuto: Boolean);
+procedure TKMScriptActions.AIAutoBuild(aHand: Byte; aAuto: Boolean);
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
-      gHands[aPlayer].AI.Setup.AutoBuild := aAuto
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+      gHands[aHand].AI.Setup.AutoBuild := aAuto
     else
-      LogParamWarning('Actions.AIAutoBuild', [aPlayer, Byte(aAuto)]);
+      LogIntParamWarn('Actions.AIAutoBuild', [aHand, Byte(aAuto)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1242,13 +1276,13 @@ end;
 
 //* Version: 5924
 //* Sets whether the AI should position his soldiers automatically
-procedure TKMScriptActions.AIAutoDefence(aPlayer: Byte; aAuto: Boolean);
+procedure TKMScriptActions.AIAutoDefence(aHand: Byte; aAuto: Boolean);
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
-      gHands[aPlayer].AI.Setup.AutoDefend := aAuto
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+      gHands[aHand].AI.Setup.AutoDefend := aAuto
     else
-      LogParamWarning('Actions.AIAutoDefence', [aPlayer, Byte(aAuto)]);
+      LogIntParamWarn('Actions.AIAutoDefence', [aHand, Byte(aAuto)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1258,13 +1292,18 @@ end;
 
 //* Version: 5932
 //* Sets whether the AI should automatically repair damaged buildings
-procedure TKMScriptActions.AIAutoRepair(aPlayer: Byte; aAuto: Boolean);
+procedure TKMScriptActions.AIAutoRepair(aHand: Byte; aAuto: Boolean);
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
-       gHands[aPlayer].AI.Setup.AutoRepair := aAuto
-     else
-       LogParamWarning('Actions.AIAutoRepair', [aPlayer, Byte(aAuto)]);
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    begin
+      if aAuto then
+        gHands[aHand].AI.Setup.RepairMode := rmRepairAlways
+      else
+        gHands[aHand].AI.Setup.RepairMode := rmRepairNever;
+    end
+    else
+      LogIntParamWarn('Actions.AIAutoRepair', [aHand, Byte(aAuto)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1272,82 +1311,107 @@ begin
 end;
 
 
-procedure TKMScriptActions._AIDefencePositionAdd(aPlayer: Integer; const aDefencePosition: TKMDefencePositionInfo; aMethodName: string);
+function TKMScriptActions._AIDefencePositionAdd(aHand: Integer; aOrder: Integer; const aDefencePosition: TKMDefencePositionInfo): Integer;
+var
+  cnt: Integer;
 begin
-  try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-      and (aDefencePosition.PositionType in [adtFrontLine..adtBackLine])
-      and (aDefencePosition.Dir in [dirN..dirNW])
-      and (aDefencePosition.GroupType in GROUP_TYPES_VALID)
-      and (gTerrain.TileInMapCoords(aDefencePosition.X, aDefencePosition.Y)) then
-      gHands[aPlayer].AI.General.DefencePositions.Add(KMPointDir(aDefencePosition.X, aDefencePosition.Y, aDefencePosition.Dir),
-                                                      aDefencePosition.GroupType, aDefencePosition.Radius, aDefencePosition.PositionType)
-    else
-      LogParamWarning('Actions.AIDefencePositionAddEx', [aPlayer, aDefencePosition.X, aDefencePosition.Y, Ord(aDefencePosition.Dir),
-                                                         Ord(aDefencePosition.GroupType), aDefencePosition.Radius,
-                                                         Ord(aDefencePosition.PositionType)]);
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
+  Result := NO_SUCCESS_INT;
+
+  if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+    and (aDefencePosition.Radius >= 0)
+    and (aDefencePosition.PositionType in [dtFrontLine..dtBackLine])
+    and (aDefencePosition.Dir in [dirN..dirNW])
+    and (aDefencePosition.GroupType in GROUP_TYPES_VALID)
+    and (gTerrain.TileInMapCoords(aDefencePosition.X, aDefencePosition.Y)) then
+  begin
+    cnt := gHands[aHand].AI.General.DefencePositions.Count;
+
+    // Add position anyway, at least to the end of the list
+    if not InRange(aOrder, 0, cnt) then
+      aOrder := cnt;
+
+    Result := gHands[aHand].AI.General.DefencePositions.Insert(aOrder, KMPointDir(aDefencePosition.X, aDefencePosition.Y, aDefencePosition.Dir),
+                                                                 aDefencePosition.GroupType, aDefencePosition.Radius, aDefencePosition.PositionType);
   end;
 end;
 
 
 //* Version: 5932
 //* Adds a defence position for the specified AI player
-procedure TKMScriptActions.AIDefencePositionAdd(aPlayer: Byte; X, Y: Integer; aDir, aGroupType: Byte; aRadius: Word; aDefType: Byte);
+//* Returns added defence position UID or -1 if it could not be added
+function TKMScriptActions.AIDefencePositionAdd(aHand: Byte; X, Y: Integer; aDir, aGroupType: Byte; aRadius: Integer; aDefType: Byte): Integer;
 var
   defPos: TKMDefencePositionInfo;
 begin
-  if InRange(aGroupType, 0, 3)
-    and InRange(aDir, 0, Ord(High(TKMDirection)) - 1)
-    and InRange(aDefType, 0, 1)
-    and (TKMDirection(aDir + 1) in [dirN..dirNW])
-    and (gTerrain.TileInMapCoords(X, Y)) then
-  begin
-    defPos.X := X;
-    defPos.Y := Y;
-    defPos.Dir := TKMDirection(aDir + 1);
-    defPos.Radius := aRadius;
-    defPos.GroupType := TKMGroupType(aGroupType + GROUP_TYPE_MIN_OFF);
-    defPos.PositionType := TKMAIDefencePosType(aDefType);
+  Result := NO_SUCCESS_INT;
+  try
+    if InRange(aGroupType, 0, 3)
+      and InRange(aDir, 0, Ord(High(TKMDirection)) - 1)
+      and InRange(aDefType, 0, 1)
+      and (TKMDirection(aDir + 1) in [dirN..dirNW])
+      and (gTerrain.TileInMapCoords(X, Y)) then
+    begin
+      defPos.X := X;
+      defPos.Y := Y;
+      defPos.Dir := TKMDirection(aDir + 1);
+      defPos.Radius := aRadius;
+      defPos.GroupType := TKMGroupType(aGroupType + GROUP_TYPE_MIN_OFF);
+      defPos.PositionType := TKMAIDefencePosType(aDefType);
 
-    _AIDefencePositionAdd(aPlayer, defPos, 'Actions.AIDefencePositionAdd');
-  end
-  else
-    LogParamWarning('Actions.AIDefencePositionAdd', [aPlayer, X, Y, aDir, aGroupType, aRadius, aDefType]);
+      // Add defence position at the end of the list
+      Result := _AIDefencePositionAdd(aHand, gHands[aHand].AI.General.DefencePositions.Count, defPos);
+    end;
+
+    if Result = NO_SUCCESS_INT then
+      LogIntParamWarn('Actions.AIDefencePositionAdd', [aHand, X, Y, aDir, aGroupType, aRadius, aDefType]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
 end;
 
 
-//* Version: 13800
+//* Version: 13900
 //* Adds a defence position for the specified AI player
-procedure TKMScriptActions.AIDefencePositionAddEx(aPlayer: Integer; const aDefencePosition: TKMDefencePositionInfo);
+//* aHand: hand (player) ID
+//* aOrder: order (or priority) of the defence position.
+//* If aOrder is not in range of [0; Count], then position would be added to the end of the list
+//* Returns added defence position UID or -1 if it could not be added
+function TKMScriptActions.AIDefencePositionAddEx(aHand, aOrder: Integer; var aDefencePosition: TKMDefencePositionInfo): Integer;
 begin
-  _AIDefencePositionAdd(aPlayer, aDefencePosition, 'Actions.AIDefencePositionAddEx');
+  try
+    Result := _AIDefencePositionAdd(aHand, aOrder, aDefencePosition);
+    aDefencePosition.UID := Result;
+    if Result = NO_SUCCESS_INT then
+      LogParamWarn('Actions.AIDefencePositionAddEx', [aHand, aOrder, 'DefPos: ' + aDefencePosition.ToStr]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
 end;
 
 
 //* Version: 6309
 //* Removes defence position at X, Y
-procedure TKMScriptActions.AIDefencePositionRemove(aPlayer: Byte; X, Y: Integer);
+procedure TKMScriptActions.AIDefencePositionRemove(aHand: Byte; X, Y: Integer);
 var
   I: Integer;
   DP: TAIDefencePosition;
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1)
-    and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1)
+    and (gHands[aHand].Enabled)
     and gTerrain.TileInMapCoords(X, Y) then
-      for I := gHands[aPlayer].AI.General.DefencePositions.Count - 1 downto 0 do
+      for I := gHands[aHand].AI.General.DefencePositions.Count - 1 downto 0 do
       begin
-        DP := gHands[aPlayer].AI.General.DefencePositions.Positions[I];
+        DP := gHands[aHand].AI.General.DefencePositions.Positions[I];
         if DP <> nil then
           if (DP.Position.Loc.X = X)
           and (DP.Position.Loc.Y = Y) then
-            gHands[aPlayer].AI.General.DefencePositions.Delete(I);
+            gHands[aHand].AI.General.DefencePositions.Delete(I);
       end
   else
-    LogParamWarning('Actions.AIDefencePositionRemove', [aPlayer, X, Y]);
+    LogIntParamWarn('Actions.AIDefencePositionRemove', [aHand, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1357,17 +1421,42 @@ end;
 
 //* Version: 6323
 //* Removes all defence positions for specified AI player
-procedure TKMScriptActions.AIDefencePositionRemoveAll(aPlayer: Byte);
+procedure TKMScriptActions.AIDefencePositionRemoveAll(aHand: Byte);
 var
   I: Integer;
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1)
-    and (gHands[aPlayer].Enabled) then
-      for I := gHands[aPlayer].AI.General.DefencePositions.Count - 1 downto 0 do
-        gHands[aPlayer].AI.General.DefencePositions.Delete(I)
+    if InRange(aHand, 0, gHands.Count - 1)
+    and (gHands[aHand].Enabled) then
+      for I := gHands[aHand].AI.General.DefencePositions.Count - 1 downto 0 do
+        gHands[aHand].AI.General.DefencePositions.Delete(I)
     else
-      LogParamWarning('Actions.AIDefencePositionRemoveAll', [aPlayer]);
+      LogIntParamWarn('Actions.AIDefencePositionRemoveAll', [aHand]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Removes defence position by its UID
+procedure TKMScriptActions.AIDefencePositionRemoveByUID(aHand, aUID: Integer);
+var
+  I: Integer;
+  DP: TAIDefencePosition;
+begin
+  try
+    if InRange(aHand, 0, gHands.Count - 1)
+      and (gHands[aHand].Enabled) then
+      for I := gHands[aHand].AI.General.DefencePositions.Count - 1 downto 0 do
+      begin
+        DP := gHands[aHand].AI.General.DefencePositions.Positions[I];
+        if (DP <> nil) and (DP.UID = aUID) then
+            gHands[aHand].AI.General.DefencePositions.Delete(I);
+      end
+  else
+    LogIntParamWarn('Actions.AIDefencePositionRemoveByUID', [aHand, aUID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1377,13 +1466,13 @@ end;
 
 //* Version: 6251
 //* Sets whether AI should defend units and houses of allies as if they were its own
-procedure TKMScriptActions.AIDefendAllies(aPlayer: Byte; aDefend: Boolean);
+procedure TKMScriptActions.AIDefendAllies(aHand: Byte; aDefend: Boolean);
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
-      gHands[aPlayer].AI.Setup.DefendAllies := aDefend
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+      gHands[aHand].AI.Setup.DefendAllies := aDefend
     else
-      LogParamWarning('Actions.AIDefendAllies', [aPlayer, Byte(aDefend)]);
+      LogIntParamWarn('Actions.AIDefendAllies', [aHand, Byte(aDefend)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1394,17 +1483,17 @@ end;
 //* Version: 5778
 //* Sets the warriors equip rate for AI.
 //* aType: type: 0 - leather, 1 - iron
-procedure TKMScriptActions.AIEquipRate(aPlayer: Byte; aType: Byte; aRate: Word);
+procedure TKMScriptActions.AIEquipRate(aHand: Byte; aType: Byte; aRate: Integer);
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
       case aType of
-        0:    gHands[aPlayer].AI.Setup.EquipRateLeather := aRate;
-        1:    gHands[aPlayer].AI.Setup.EquipRateIron := aRate;
-        else  LogParamWarning('Actions.AIEquipRate, unknown type', [aPlayer, aType, aRate]);
+        0:    gHands[aHand].AI.Setup.EquipRateLeather := aRate;
+        1:    gHands[aHand].AI.Setup.EquipRateIron := aRate;
+        else  LogIntParamWarn('Actions.AIEquipRate, unknown type', [aHand, aType, aRate]);
       end
     else
-      LogParamWarning('Actions.AIEquipRate', [aPlayer, aType, aRate]);
+      LogIntParamWarn('Actions.AIEquipRate', [aHand, aType, aRate]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1412,57 +1501,64 @@ begin
 end;
 
 
-procedure TKMScriptActions._AIGroupsFormationSet(aPlayer: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer; aMethodName: string);
+function TKMScriptActions._AIGroupsFormationSet(aHand: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer): Boolean;
 begin
-  try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-      and (aGroupType in GROUP_TYPES_VALID)
-      and (aCount > 0) and (aColumns > 0) then
-    begin
-      gHands[aPlayer].AI.General.DefencePositions.TroopFormations[aGroupType].NumUnits := aCount;
-      gHands[aPlayer].AI.General.DefencePositions.TroopFormations[aGroupType].UnitsPerRow := aColumns;
-    end
-    else
-      LogParamWarning(aMethodName, [aPlayer, Ord(aGroupType), aCount, aColumns]);
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
+  Result := False;
+  if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+    and (aGroupType in GROUP_TYPES_VALID)
+    and (aCount > 0) and (aColumns > 0) then
+  begin
+    gHands[aHand].AI.General.DefencePositions.TroopFormations[aGroupType].NumUnits := aCount;
+    gHands[aHand].AI.General.DefencePositions.TroopFormations[aGroupType].UnitsPerRow := aColumns;
+    Result := True;
   end;
 end;
 
 
 //* Version: 5778
-//* Sets the formation the AI uses for defence positions
-procedure TKMScriptActions.AIGroupsFormationSet(aPlayer, aType: Byte; aCount, aColumns: Word);
+//* Sets the formation the AI uses for defence positions. Works only for ClassicAI
+procedure TKMScriptActions.AIGroupsFormationSet(aHand, aType: Byte; aCount, aColumns: Integer);
 var
   gt: TKMGroupType;
 begin
-  gt := gtNone;
+  try
+    gt := gtNone;
+    if InRange(aType, 0, 3) then
+      gt := TKMGroupType(aType + GROUP_TYPE_MIN_OFF);
 
-  if InRange(aType, 0, 3) then
-    gt := TKMGroupType(aType + GROUP_TYPE_MIN_OFF);
-
-  _AIGroupsFormationSet(aPlayer, gt, aCount, aColumns, 'Actions.AIGroupsFormationSet');
+    if not _AIGroupsFormationSet(aHand, gt, aCount, aColumns) then
+      LogIntParamWarn('Actions.AIGroupsFormationSet', [aHand, aType, aCount, aColumns]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
 end;
 
 
-//* Version: 13800
-//* Sets the formation the AI uses for defence positions
-procedure TKMScriptActions.AIGroupsFormationSetEx(aPlayer: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer);
+//* Version: 13900
+//* Sets the formation the AI uses for defence positions. Works only for ClassicAI
+//* aHand: hand (player) ID
+procedure TKMScriptActions.AIGroupsFormationSetEx(aHand: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer);
 begin
-  _AIGroupsFormationSet(aPlayer, aGroupType, aCount, aColumns, 'Actions.AIGroupsFormationSetEx');
+  try
+    if not _AIGroupsFormationSet(aHand, aGroupType, aCount, aColumns) then
+      LogParamWarn('Actions.AIGroupsFormationSetEx', [aHand, GetEnumName(TypeInfo(TKMGroupType), Integer(aGroupType)), aCount, aColumns]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
 end;
 
 
 //* Version: 5924
 //* Sets the number of ticks before the specified AI will start training recruits
-procedure TKMScriptActions.AIRecruitDelay(aPlayer: Byte; aDelay: Cardinal);
+procedure TKMScriptActions.AIRecruitDelay(aHand: Byte; aDelay: Cardinal);
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
-      gHands[aPlayer].AI.Setup.RecruitDelay := aDelay
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+      gHands[aHand].AI.Setup.RecruitDelay := aDelay
     else
-      LogParamWarning('Actions.AIRecruitDelay', [aPlayer, aDelay]);
+      LogIntParamWarn('Actions.AIRecruitDelay', [aHand, aDelay]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1472,13 +1568,35 @@ end;
 
 //* Version: 5345
 //* Sets the number of recruits the AI will keep in each barracks
-procedure TKMScriptActions.AIRecruitLimit(aPlayer, aLimit: Byte);
+procedure TKMScriptActions.AIRecruitLimit(aHand, aLimit: Byte);
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
-      gHands[aPlayer].AI.Setup.RecruitCount := aLimit
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+      gHands[aHand].AI.Setup.RecruitCount := aLimit
     else
-      LogParamWarning('Actions.AIRecruitLimit', [aPlayer, aLimit]);
+      LogIntParamWarn('Actions.AIRecruitLimit', [aHand, aLimit]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Sets whether the AI should automatically repair damaged buildings
+//* aRepairMode of TKMAIRepairMode enumeration type: (rmNone, rmNever, rmAlways, rmManual)
+//* rmNone unused
+//* rmNever disable repair for all houses
+//* rmAlways enable repair for all houses
+//* rmManual repair is set by script manually via Actions.HouseRepairEnable
+procedure TKMScriptActions.AIRepairMode(aHand: Integer; aRepairMode: TKMAIRepairMode);
+begin
+  try
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+      and (aRepairMode <> rmNone) then
+      gHands[aHand].AI.Setup.RepairMode := aRepairMode
+    else
+      LogParamWarn('Actions.AIRepairMode', [aHand, GetEnumName(TypeInfo(TKMAIRepairMode), Integer(aRepairMode))]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1489,13 +1607,13 @@ end;
 //* Version: 5924
 //* Sets the number of serfs the AI will train per house.
 //* Can be a decimal (0.25 for 1 serf per 4 houses)
-procedure TKMScriptActions.AISerfsPerHouse(aPlayer: Byte; aSerfs: Single);
+procedure TKMScriptActions.AISerfsPerHouse(aHand: Byte; aSerfs: Single);
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
-      gHands[aPlayer].AI.Setup.SerfsPerHouse := aSerfs
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+      gHands[aHand].AI.Setup.SerfsPerHouse := aSerfs
     else
-      LogParamWarning('Actions.AISerfsPerHouse', [aPlayer]);
+      LogIntParamWarn('Actions.AISerfsPerHouse', [aHand]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1505,14 +1623,14 @@ end;
 
 //* Version: 5932
 //* Sets the maximum number of soldiers the AI will train, or -1 for unlimited
-procedure TKMScriptActions.AISoldiersLimit(aPlayer: Byte; aLimit: Integer);
+procedure TKMScriptActions.AISoldiersLimit(aHand: Byte; aLimit: Integer);
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
     and (aLimit >= -1) then                       //-1 means unlimited; else MaxSoldiers = aLimit
-      gHands[aPlayer].AI.Setup.MaxSoldiers := aLimit
+      gHands[aHand].AI.Setup.MaxSoldiers := aLimit
     else
-      LogParamWarning('Actions.AISoldiersLimit', [aPlayer, aLimit]);
+      LogIntParamWarn('Actions.AISoldiersLimit', [aHand, aLimit]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1522,14 +1640,14 @@ end;
 
 //* Version: 6251
 //* Sets the AI start position which is used for targeting AI attacks
-procedure TKMScriptActions.AIStartPosition(aPlayer: Byte; X, Y: Word);
+procedure TKMScriptActions.AIStartPosition(aHand: Byte; X, Y: Integer);
 begin
   try
-    if (InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled))
+    if (InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled))
     and (gTerrain.TileInMapCoords(X, Y)) then
-      gHands[aPlayer].AI.Setup.StartPosition := KMPoint(X, Y)
+      gHands[aHand].AI.Setup.StartPosition := KMPoint(X, Y)
     else
-      LogParamWarning('Actions.AIStartPosition', [aPlayer, X, Y]);
+      LogIntParamWarn('Actions.AIStartPosition', [aHand, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1539,13 +1657,13 @@ end;
 
 //* Version: 5924
 //* Sets the maximum number of laborers the AI will train
-procedure TKMScriptActions.AIWorkerLimit(aPlayer, aLimit: Byte);
+procedure TKMScriptActions.AIWorkerLimit(aHand, aLimit: Byte);
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
-      gHands[aPlayer].AI.Setup.WorkerCount := aLimit
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+      gHands[aHand].AI.Setup.WorkerCount := aLimit
     else
-      LogParamWarning('Actions.AIWorkerLimit', [aPlayer, aLimit]);
+      LogIntParamWarn('Actions.AIWorkerLimit', [aHand, aLimit]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1555,7 +1673,7 @@ end;
 
 //* Version: 5057
 //* Adds an animal to the game and returns the unit ID or -1 if the animal was not able to be added
-function TKMScriptActions.GiveAnimal(aType, X, Y: Word): Integer;
+function TKMScriptActions.GiveAnimal(aType, X, Y: Integer): Integer;
 var
   U: TKMUnit;
 begin
@@ -1571,7 +1689,7 @@ begin
         Result := U.UID;
     end
     else
-      LogParamWarning('Actions.GiveAnimal', [aType, X, Y]);
+      LogIntParamWarn('Actions.GiveAnimal', [aType, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1581,23 +1699,23 @@ end;
 
 //* Version: 6311
 //* Adds finished field and returns true if field was successfully added
-function TKMScriptActions.GiveField(aPlayer, X, Y: Word): Boolean;
+function TKMScriptActions.GiveField(aHand, X, Y: Integer): Boolean;
 begin
   try
     Result := False;
-    if InRange(aPlayer, 0, gHands.Count - 1)
-      and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1)
+      and (gHands[aHand].Enabled)
       and gTerrain.TileInMapCoords(X, Y) then
     begin
-      if gHands[aPlayer].CanAddFieldPlan(KMPoint(X, Y), ftCorn) then
+      if gHands[aHand].CanAddFieldPlan(KMPoint(X, Y), ftCorn) then
       begin
         Result := True;
-        gTerrain.SetField(KMPoint(X, Y), aPlayer, ftCorn, 0, False, True);
+        gTerrain.SetField(KMPoint(X, Y), aHand, ftCorn, 0, False, True);
       end
       else
-        LogWarning('Actions.GiveField', Format('Cannot give field for player %d at [%d:%d]', [aPlayer,X,Y]));
+        LogWarning('Actions.GiveField', Format('Cannot give field for player %d at [%d:%d]', [aHand,X,Y]));
     end else
-      LogParamWarning('Actions.GiveField', [aPlayer, X, Y]);
+      LogIntParamWarn('Actions.GiveField', [aHand, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1609,25 +1727,25 @@ end;
 //* Sets field age if tile is corn field, or adds finished field and sets its age if tile is empty, and returns true if this was successfully done
 //* aStage: 0..6, sets the field growth stage. 0 = empty field; 6 = corn has been cut
 //* aRandomAge sets FieldAge to random, according to specified stage. Makes fields more realistic
-function TKMScriptActions.GiveFieldAged(aPlayer, X, Y: Word; aStage: Byte; aRandomAge: Boolean): Boolean;
+function TKMScriptActions.GiveFieldAged(aHand, X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean;
 begin
   try
     Result := False;
-    if InRange(aPlayer, 0, gHands.Count - 1)
-      and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1)
+      and (gHands[aHand].Enabled)
       and (InRange(aStage, 0, CORN_STAGES_COUNT - 1))
       and gTerrain.TileInMapCoords(X, Y) then
     begin
-      if gHands[aPlayer].CanAddFieldPlan(KMPoint(X, Y), ftCorn)
+      if gHands[aHand].CanAddFieldPlan(KMPoint(X, Y), ftCorn)
         or (gTerrain.TileIsCornField(KMPoint(X, Y))) then
       begin
         Result := True;
-        gTerrain.SetField(KMPoint(X, Y), aPlayer, ftCorn, aStage, aRandomAge);
+        gTerrain.SetField(KMPoint(X, Y), aHand, ftCorn, aStage, aRandomAge);
       end
       else
-        LogWarning('Actions.GiveFieldAged', Format('Cannot give field for player %d at [%d:%d]', [aPlayer,X,Y]));
+        LogWarning('Actions.GiveFieldAged', Format('Cannot give field for player %d at [%d:%d]', [aHand,X,Y]));
     end else
-      LogParamWarning('Actions.GiveFieldAged', [aPlayer, X, Y, aStage, Byte(aRandomAge)]);
+      LogIntParamWarn('Actions.GiveFieldAged', [aHand, X, Y, aStage, Byte(aRandomAge)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1637,24 +1755,24 @@ end;
 
 //* Version: 6311
 //* Adds finished road and returns true if road was successfully added
-function TKMScriptActions.GiveRoad(aPlayer, X, Y: Word): Boolean;
+function TKMScriptActions.GiveRoad(aHand, X, Y: Integer): Boolean;
 begin
   try
     Result := False;
-    if InRange(aPlayer, 0, gHands.Count - 1)
-    and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1)
+    and (gHands[aHand].Enabled)
     and gTerrain.TileInMapCoords(X, Y) then
-      if gHands[aPlayer].CanAddFieldPlan(KMPoint(X, Y), ftRoad) then
+      if gHands[aHand].CanAddFieldPlan(KMPoint(X, Y), ftRoad) then
       begin
         Result := True;
-        gTerrain.SetRoad(KMPoint(X, Y), aPlayer);
+        gTerrain.SetRoad(KMPoint(X, Y), aHand);
         //Terrain under roads is flattened (fields are not)
         gTerrain.FlattenTerrain(KMPoint(X, Y));
         if gMapElements[gTerrain.Land^[Y,X].Obj].WineOrCorn then
           gTerrain.RemoveObject(KMPoint(X,Y)); //Remove corn/wine like normally built road does
       end
     else
-      LogParamWarning('Actions.GiveRoad', [aPlayer, X, Y]);
+      LogIntParamWarn('Actions.GiveRoad', [aHand, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1665,26 +1783,26 @@ end;
 //* Version: 5057
 //* Adds amount of wares to players 1st Store
 //Wares are added to first Store
-procedure TKMScriptActions.GiveWares(aPlayer, aType, aCount: Word);
+procedure TKMScriptActions.GiveWares(aHand, aType, aCount: Integer);
 var
   H: TKMHouse;
 begin
   try
     //Verify all input parameters
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
     and InRange(aCount, 0, High(Word))
     and (aType in [Low(WARE_ID_TO_TYPE) .. High(WARE_ID_TO_TYPE)]) then
     begin
-      H := gHands[aPlayer].FindHouse(htStore, 1);
+      H := gHands[aHand].FindHouse(htStore, 1);
       if H <> nil then
       begin
         H.ResAddToIn(WARE_ID_TO_TYPE[aType], aCount);
-        gHands[aPlayer].Stats.WareProduced(WARE_ID_TO_TYPE[aType], aCount);
+        gHands[aHand].Stats.WareProduced(WARE_ID_TO_TYPE[aType], aCount);
         gScriptEvents.ProcWareProduced(H, WARE_ID_TO_TYPE[aType], aCount);
       end;
     end
     else
-      LogParamWarning('Actions.GiveWares', [aPlayer, aType, aCount]);
+      LogIntParamWarn('Actions.GiveWares', [aHand, aType, aCount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1694,27 +1812,27 @@ end;
 //* Version: 5165
 //* Adds amount of weapons to players 1st Barracks
 //Weapons are added to first Barracks
-procedure TKMScriptActions.GiveWeapons(aPlayer, aType, aCount: Word);
+procedure TKMScriptActions.GiveWeapons(aHand, aType, aCount: Integer);
 var
   H: TKMHouse;
 begin
   try
     //Verify all input parameters
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
     and InRange(aCount, 0, High(Word))
     and (aType in [Low(WARE_ID_TO_TYPE) .. High(WARE_ID_TO_TYPE)])
     and (WARE_ID_TO_TYPE[aType] in [WARFARE_MIN .. WARFARE_MAX]) then
     begin
-      H := gHands[aPlayer].FindHouse(htBarracks, 1);
+      H := gHands[aHand].FindHouse(htBarracks, 1);
       if H <> nil then
       begin
         H.ResAddToIn(WARE_ID_TO_TYPE[aType], aCount);
-        gHands[aPlayer].Stats.WareProduced(WARE_ID_TO_TYPE[aType], aCount);
+        gHands[aHand].Stats.WareProduced(WARE_ID_TO_TYPE[aType], aCount);
         gScriptEvents.ProcWareProduced(H, WARE_ID_TO_TYPE[aType], aCount);
       end;
     end
     else
-      LogParamWarning('Actions.GiveWeapons', [aPlayer, aType, aCount]);
+      LogIntParamWarn('Actions.GiveWeapons', [aHand, aType, aCount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1724,23 +1842,23 @@ end;
 
 //* Version 6311
 //* Adds finished winefield and returns true if winefield was successfully added
-function TKMScriptActions.GiveWineField(aPlayer, X, Y: Word): Boolean;
+function TKMScriptActions.GiveWineField(aHand, X, Y: Integer): Boolean;
 begin
   try
     Result := False;
-    if InRange(aPlayer, 0, gHands.Count - 1)
-      and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1)
+      and (gHands[aHand].Enabled)
       and gTerrain.TileInMapCoords(X, Y) then
     begin
-      if gHands[aPlayer].CanAddFieldPlan(KMPoint(X, Y), ftWine) then
+      if gHands[aHand].CanAddFieldPlan(KMPoint(X, Y), ftWine) then
       begin
         Result := True;
-        gTerrain.SetField(KMPoint(X, Y), aPlayer, ftWine, 0, False, True);
+        gTerrain.SetField(KMPoint(X, Y), aHand, ftWine, 0, False, True);
       end
       else
-        LogWarning('Actions.GiveWineField', Format('Cannot give winefield for player %d at [%d:%d]', [aPlayer,X,Y]));
+        LogWarning('Actions.GiveWineField', Format('Cannot give winefield for player %d at [%d:%d]', [aHand,X,Y]));
     end else
-      LogParamWarning('Actions.GiveWineField', [aPlayer, X, Y]);
+      LogIntParamWarn('Actions.GiveWineField', [aHand, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1752,25 +1870,25 @@ end;
 //* Sets winefield age if tile is winefield, or adds finished winefield and sets its age if tile is empty, and returns true if this was successfully done
 //* aStage = 0..3, sets the field growth stage. 0 = new fruits; 3 = grapes are ready to be harvested; according to WINE_STAGES_COUNT
 //* aRandomAge sets FieldAge to random, according to specified stage. Makes fields more realistic
-function TKMScriptActions.GiveWineFieldAged(aPlayer, X, Y: Word; aStage: Byte; aRandomAge: Boolean): Boolean;
+function TKMScriptActions.GiveWineFieldAged(aHand, X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean;
 begin
   try
     Result := False;
-    if InRange(aPlayer, 0, gHands.Count - 1)
-      and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1)
+      and (gHands[aHand].Enabled)
       and (InRange(aStage, 0, WINE_STAGES_COUNT - 1))
       and gTerrain.TileInMapCoords(X, Y) then
     begin
-      if gHands[aPlayer].CanAddFieldPlan(KMPoint(X, Y), ftWine)
+      if gHands[aHand].CanAddFieldPlan(KMPoint(X, Y), ftWine)
         or (gTerrain.TileIsWineField(KMPoint(X, Y))) then
       begin
         Result := True;
-        gTerrain.SetField(KMPoint(X, Y), aPlayer, ftWine, aStage, aRandomAge);
+        gTerrain.SetField(KMPoint(X, Y), aHand, ftWine, aStage, aRandomAge);
       end
       else
-        LogWarning('Actions.GiveWineFieldAged', Format('Cannot give winefield for player %d at [%d:%d]', [aPlayer,X,Y]));
+        LogWarning('Actions.GiveWineFieldAged', Format('Cannot give winefield for player %d at [%d:%d]', [aHand,X,Y]));
     end else
-      LogParamWarning('Actions.GiveWineFieldAged', [aPlayer, X, Y, aStage, Byte(aRandomAge)]);
+      LogIntParamWarn('Actions.GiveWineFieldAged', [aHand, X, Y, aStage, Byte(aRandomAge)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1780,15 +1898,15 @@ end;
 
 //* Version: 5097
 //* Reveals a circle in fog of war for player
-procedure TKMScriptActions.FogRevealCircle(aPlayer, X, Y, aRadius: Word);
+procedure TKMScriptActions.FogRevealCircle(aHand, X, Y, aRadius: Integer);
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
     and gTerrain.TileInMapCoords(X,Y)
     and InRange(aRadius, 0, 255) then
-      gHands[aPlayer].FogOfWar.RevealCircle(KMPoint(X, Y), aRadius, FOG_OF_WAR_MAX)
+      gHands[aHand].FogOfWar.RevealCircle(KMPoint(X, Y), aRadius, FOG_OF_WAR_MAX)
     else
-      LogParamWarning('Actions.FogRevealCircle', [aPlayer, X, Y, aRadius]);
+      LogIntParamWarn('Actions.FogRevealCircle', [aHand, X, Y, aRadius]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1798,15 +1916,15 @@ end;
 
 //* Version: 5097
 //* Reveals a circle in fog of war for player
-procedure TKMScriptActions.FogCoverCircle(aPlayer, X, Y, aRadius: Word);
+procedure TKMScriptActions.FogCoverCircle(aHand, X, Y, aRadius: Integer);
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
     and gTerrain.TileInMapCoords(X,Y)
     and InRange(aRadius, 0, 255) then
-      gHands[aPlayer].FogOfWar.CoverCircle(KMPoint(X, Y), aRadius)
+      gHands[aHand].FogOfWar.CoverCircle(KMPoint(X, Y), aRadius)
     else
-      LogParamWarning('Actions.FogCoverCircle', [aPlayer, X, Y, aRadius]);
+      LogIntParamWarn('Actions.FogCoverCircle', [aHand, X, Y, aRadius]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1820,15 +1938,15 @@ end;
 //* Y1: Top coordinate
 //* X2: Right coordinate
 //* Y2: Bottom coordinate
-procedure TKMScriptActions.FogRevealRect(aPlayer, X1, Y1, X2, Y2: Word);
+procedure TKMScriptActions.FogRevealRect(aHand, X1, Y1, X2, Y2: Integer);
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
     and gTerrain.TileInMapCoords(X1,Y1)
     and gTerrain.TileInMapCoords(X2,Y2) then
-      gHands[aPlayer].FogOfWar.RevealRect(KMPoint(X1, Y1), KMPoint(X2, Y2), FOG_OF_WAR_MAX)
+      gHands[aHand].FogOfWar.RevealRect(KMPoint(X1, Y1), KMPoint(X2, Y2), FOG_OF_WAR_MAX)
     else
-      LogParamWarning('Actions.FogRevealRect', [aPlayer, X1, Y1, X2, Y2]);
+      LogIntParamWarn('Actions.FogRevealRect', [aHand, X1, Y1, X2, Y2]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1842,15 +1960,15 @@ end;
 //* Y1: Top coordinate
 //* X2: Right coordinate
 //* Y2: Bottom coordinate
-procedure TKMScriptActions.FogCoverRect(aPlayer, X1, Y1, X2, Y2: Word);
+procedure TKMScriptActions.FogCoverRect(aHand, X1, Y1, X2, Y2: Integer);
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
     and gTerrain.TileInMapCoords(X1,Y1)
     and gTerrain.TileInMapCoords(X2,Y2) then
-      gHands[aPlayer].FogOfWar.CoverRect(KMPoint(X1, Y1), KMPoint(X2, Y2))
+      gHands[aHand].FogOfWar.CoverRect(KMPoint(X1, Y1), KMPoint(X2, Y2))
     else
-      LogParamWarning('Actions.FogCoverRect', [aPlayer, X1, Y1, X2, Y2]);
+      LogIntParamWarn('Actions.FogCoverRect', [aHand, X1, Y1, X2, Y2]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1860,13 +1978,13 @@ end;
 
 //* Version: 5097
 //* Reveals the entire map in fog of war for player
-procedure TKMScriptActions.FogRevealAll(aPlayer: Byte);
+procedure TKMScriptActions.FogRevealAll(aHand: Byte);
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
-      gHands[aPlayer].FogOfWar.RevealEverything
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+      gHands[aHand].FogOfWar.RevealEverything
     else
-      LogParamWarning('Actions.FogRevealAll', [aPlayer]);
+      LogIntParamWarn('Actions.FogRevealAll', [aHand]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1876,13 +1994,13 @@ end;
 
 //* Version: 5097
 //* Covers (un-reveals) the entire map in fog of war for player
-procedure TKMScriptActions.FogCoverAll(aPlayer: Byte);
+procedure TKMScriptActions.FogCoverAll(aHand: Byte);
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
-      gHands[aPlayer].FogOfWar.CoverEverything
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+      gHands[aHand].FogOfWar.CoverEverything
     else
-      LogParamWarning('Actions.FogCoverAll', [aPlayer]);
+      LogIntParamWarn('Actions.FogCoverAll', [aHand]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1894,10 +2012,10 @@ end;
 //* Displays a message to a player.
 //* If the player index is -1 the message will be shown to all players.
 //Input text is ANSI with libx codes to substitute
-procedure TKMScriptActions.ShowMsg(aPlayer: Shortint; const aText: AnsiString);
+procedure TKMScriptActions.ShowMsg(aHand: Shortint; const aText: AnsiString);
 begin
   try
-    if (aPlayer = gMySpectator.HandID) or (aPlayer = HAND_NONE) then
+    if (aHand = gMySpectator.HandID) or (aHand = HAND_NONE) then
       gGame.ShowMessageLocal(mkText, gGame.TextMission.ParseTextMarkup(UnicodeString(aText)), KMPOINT_ZERO);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
@@ -1911,15 +2029,15 @@ end;
 //* If the player index is -1 the message will be shown to all players.
 //* Params: Array of arguments
 //Input text is ANSI with libx codes to substitute
-procedure TKMScriptActions.ShowMsgFormatted(aPlayer: Shortint; const aText: AnsiString; Params: array of const);
+procedure TKMScriptActions.ShowMsgFormatted(aHand: Shortint; const aText: AnsiString; Params: array of const);
 begin
   try
     try
-      if (aPlayer = gMySpectator.HandID) or (aPlayer = HAND_NONE) then
+      if (aHand = gMySpectator.HandID) or (aHand = HAND_NONE) then
         gGame.ShowMessageLocal(mkText, gGame.TextMission.ParseTextMarkup(UnicodeString(aText), Params), KMPOINT_ZERO);
     except
       //Format may throw an exception
-      on E: EConvertError do LogParamWarning('Actions.ShowMsgFormatted: '+E.Message, []);
+      on E: EConvertError do LogIntParamWarn('Actions.ShowMsgFormatted: '+E.Message, []);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
@@ -1932,16 +2050,16 @@ end;
 //* Displays a message to a player with a goto button that takes the player to the specified location.
 //* If the player index is -1 the message will be shown to all players.
 //Input text is ANSI with libx codes to substitute
-procedure TKMScriptActions.ShowMsgGoto(aPlayer: Shortint; aX, aY: Word; const aText: AnsiString);
+procedure TKMScriptActions.ShowMsgGoto(aHand: Shortint; aX, aY: Integer; const aText: AnsiString);
 begin
   try
     if gTerrain.TileInMapCoords(aX, aY) then
     begin
-      if (aPlayer = gMySpectator.HandID) or (aPlayer = HAND_NONE) then
+      if (aHand = gMySpectator.HandID) or (aHand = HAND_NONE) then
         gGame.ShowMessageLocal(mkText, gGame.TextMission.ParseTextMarkup(UnicodeString(aText)), KMPoint(aX,aY));
     end
     else
-      LogParamWarning('Actions.ShowMsgGoto', [aPlayer, aX, aY]);
+      LogIntParamWarn('Actions.ShowMsgGoto', [aHand, aX, aY]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1955,20 +2073,20 @@ end;
 //* If the player index is -1 the message will be shown to all players.
 //* Params: Array of arguments
 //Input text is ANSI with libx codes to substitute
-procedure TKMScriptActions.ShowMsgGotoFormatted(aPlayer: Shortint; aX, aY: Word; const aText: AnsiString; Params: array of const);
+procedure TKMScriptActions.ShowMsgGotoFormatted(aHand: Shortint; aX, aY: Integer; const aText: AnsiString; Params: array of const);
 begin
   try
     try
       if gTerrain.TileInMapCoords(aX, aY) then
       begin
-        if (aPlayer = gMySpectator.HandID) or (aPlayer = HAND_NONE) then
+        if (aHand = gMySpectator.HandID) or (aHand = HAND_NONE) then
           gGame.ShowMessageLocal(mkText, gGame.TextMission.ParseTextMarkup(UnicodeString(aText), Params), KMPoint(aX,aY));
       end
       else
-        LogParamWarning('Actions.ShowMsgGotoFormatted', [aPlayer, aX, aY]);
+        LogIntParamWarn('Actions.ShowMsgGotoFormatted', [aHand, aX, aY]);
     except
       //Format may throw an exception
-      on E: EConvertError do LogParamWarning('Actions.ShowMsgGotoFormatted: '+E.Message, []);
+      on E: EConvertError do LogIntParamWarn('Actions.ShowMsgGotoFormatted: '+E.Message, []);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
@@ -1981,15 +2099,15 @@ end;
 //* Allows player to build the specified house even if they don't have the house built that normally unlocks it
 //* (e.g. sawmill for farm).
 //* Note: Does not override blocked houses, use HouseAllow for that.
-procedure TKMScriptActions.HouseUnlock(aPlayer, aHouseType: Word);
+procedure TKMScriptActions.HouseUnlock(aHand, aHouseType: Integer);
 begin
   try
     //Verify all input parameters
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
     and HouseTypeValid(aHouseType) then
-      gHands[aPlayer].Locks.HouseGranted[HOUSE_ID_TO_TYPE[aHouseType]] := True
+      gHands[aHand].Locks.HouseLock[HOUSE_ID_TO_TYPE[aHouseType]] := hlGranted
     else
-      LogParamWarning('Actions.HouseUnlock', [aPlayer, aHouseType]);
+      LogIntParamWarn('Actions.HouseUnlock', [aHand, aHouseType]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2000,15 +2118,23 @@ end;
 //* Version: 5057
 //* Sets whether the player is allowed to build the specified house.
 //* Note: The house must still be unlocked normally (e.g. sawmill for farm), use HouseUnlock to override that.
-procedure TKMScriptActions.HouseAllow(aPlayer, aHouseType: Word; aAllowed: Boolean);
+procedure TKMScriptActions.HouseAllow(aHand, aHouseType: Integer; aAllowed: Boolean);
 begin
   try
     //Verify all input parameters
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
-    and HouseTypeValid(aHouseType) then
-      gHands[aPlayer].Locks.HouseBlocked[HOUSE_ID_TO_TYPE[aHouseType]] := not aAllowed
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+      and HouseTypeValid(aHouseType) then
+    begin
+      case gHands[aHand].Locks.HouseLock[HOUSE_ID_TO_TYPE[aHouseType]] of
+        hlDefault,
+        hlGranted:  if not aAllowed then
+                      gHands[aHand].Locks.HouseLock[HOUSE_ID_TO_TYPE[aHouseType]] := hlBlocked;
+        hlBlocked:  if aAllowed then
+                      gHands[aHand].Locks.HouseLock[HOUSE_ID_TO_TYPE[aHouseType]] := hlDefault;
+      end;
+    end
     else
-      LogParamWarning('Actions.HouseAllow', [aPlayer, aHouseType, Byte(aAllowed)]);
+      LogIntParamWarn('Actions.HouseAllow', [aHand, aHouseType, Byte(aAllowed)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2033,7 +2159,7 @@ begin
       //Silently ignore if house doesn't exist
     end
     else
-      LogParamWarning('Actions.HouseAllowAllyToSelect', [aHouseID, Byte(aAllow)]);
+      LogIntParamWarn('Actions.HouseAllowAllyToSelect', [aHouseID, Byte(aAllow)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2042,10 +2168,10 @@ end;
 
 
 //* Version: 10940
-//* Allows allies to view all houses of specified player, or for all players, if aPlayer is -1
+//* Allows allies to view all houses of specified player, or for all players, if aHand is -1
 //* This function applies only to already build houses.
 //* New houses will be selectable for allies. To avoid it use OnHouseBuilt event
-procedure TKMScriptActions.HouseAllowAllyToSelectAll(aPlayer: ShortInt; aAllow: Boolean);
+procedure TKMScriptActions.HouseAllowAllyToSelectAll(aHand: ShortInt; aAllow: Boolean);
 
   procedure SetAllowAllyToHand(aHandID: ShortInt);
   var
@@ -2060,14 +2186,14 @@ var
   I: Integer;
 begin
   try
-    if aPlayer = HAND_NONE then
+    if aHand = HAND_NONE then
       for I := 0 to gHands.Count - 1 do
         SetAllowAllyToHand(I)
     else
-    if InRange(aPlayer, 0, gHands.Count - 1) then
-      SetAllowAllyToHand(aPlayer)
+    if InRange(aHand, 0, gHands.Count - 1) then
+      SetAllowAllyToHand(aHand)
     else
-      LogParamWarning('Actions.HouseAllowAllyToSelectAll', [aPlayer, Byte(aAllow)]);
+      LogIntParamWarn('Actions.HouseAllowAllyToSelectAll', [aHand, Byte(aAllow)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2077,15 +2203,44 @@ end;
 
 //* Version: 5057
 //* Sets whether the player is allowed to trade the specified resource.
-procedure TKMScriptActions.SetTradeAllowed(aPlayer, aResType: Word; aAllowed: Boolean);
+procedure TKMScriptActions.SetTradeAllowed(aHand, aResType: Integer; aAllowed: Boolean);
 begin
   try
     //Verify all input parameters
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
     and (aResType in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)]) then
-      gHands[aPlayer].Locks.AllowToTrade[WARE_ID_TO_TYPE[aResType]] := aAllowed
+      gHands[aHand].Locks.AllowToTrade[WARE_ID_TO_TYPE[aResType]] := aAllowed
     else
-      LogParamWarning('Actions.SetTradeAllowed', [aPlayer, aResType, Byte(aAllowed)]);
+      LogIntParamWarn('Actions.SetTradeAllowed', [aHand, aResType, Byte(aAllowed)]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Sets hand (player) house lock aLock for a specified house type aHouseType
+//* if htAny is passed for house type then aLock will be applied to all house types
+procedure TKMScriptActions.HandHouseLock(aHand: Integer; aHouseType: TKMHouseType; aLock: TKMHandHouseLock);
+var
+  HT: TKMHouseType;
+begin
+  try
+    //Verify all input parameters
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+      and ((aHouseType = htAny) or (aHouseType in HOUSES_VALID)) then
+    begin
+      if aHouseType = htAny then
+      begin
+        for HT in HOUSES_VALID do
+          gHands[aHand].Locks.HouseLock[HT] := aLock;
+      end
+      else
+        gHands[aHand].Locks.HouseLock[aHouseType] := aLock;
+    end
+    else
+      LogParamWarn('Actions.HandHouseLock', [aHand, GetEnumName(TypeInfo(TKMHouseType), Integer(aHouseType))]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2121,7 +2276,7 @@ begin
         end;
     end
     else
-      LogParamWarning('Actions.HouseAddBuildingMaterials', [aHouseID]);
+      LogIntParamWarn('Actions.HouseAddBuildingMaterials', [aHouseID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2150,7 +2305,7 @@ begin
         end;
     end
     else
-      LogParamWarning('Actions.HouseAddBuildingProgress', [aHouseID]);
+      LogIntParamWarn('Actions.HouseAddBuildingProgress', [aHouseID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2160,7 +2315,7 @@ end;
 
 //* Version: 5057
 //* Add damage to the specified house
-procedure TKMScriptActions.HouseAddDamage(aHouseID: Integer; aDamage: Word);
+procedure TKMScriptActions.HouseAddDamage(aHouseID: Integer; aDamage: Integer);
 var
   H: TKMHouse;
 begin
@@ -2172,7 +2327,7 @@ begin
         H.AddDamage(aDamage, nil); //We don't know who did the damage
     end
     else
-      LogParamWarning('Actions.HouseAddDamage', [aHouseID, aDamage]);
+      LogIntParamWarn('Actions.HouseAddDamage', [aHouseID, aDamage]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2182,7 +2337,7 @@ end;
 
 //* Version: 5441
 //* Reduces damage to the specified house
-procedure TKMScriptActions.HouseAddRepair(aHouseID: Integer; aRepair: Word);
+procedure TKMScriptActions.HouseAddRepair(aHouseID: Integer; aRepair: Integer);
 var
   H: TKMHouse;
 begin
@@ -2194,7 +2349,7 @@ begin
         H.AddRepair(aRepair);
     end
     else
-      LogParamWarning('Actions.HouseAddRepair', [aHouseID, aRepair]);
+      LogIntParamWarn('Actions.HouseAddRepair', [aHouseID, aRepair]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2217,7 +2372,7 @@ begin
         H.DemolishHouse(HAND_NONE, aSilent);
     end
     else
-      LogParamWarning('Actions.HouseDestroy', [aHouseID]);
+      LogIntParamWarn('Actions.HouseDestroy', [aHouseID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2227,7 +2382,7 @@ end;
 
 //* Version: 5057
 //* Add wares to the specified house
-procedure TKMScriptActions.HouseAddWaresTo(aHouseID: Integer; aType, aCount: Word);
+procedure TKMScriptActions.HouseAddWaresTo(aHouseID: Integer; aType, aCount: Integer);
 var
   H: TKMHouse;
   Res: TKMWareType;
@@ -2248,11 +2403,11 @@ begin
           end;
         end
         else
-          LogParamWarning('Actions.HouseAddWaresTo wrong ware type', [aHouseID, aType, aCount]);
+          LogIntParamWarn('Actions.HouseAddWaresTo wrong ware type', [aHouseID, aType, aCount]);
       //Silently ignore if house doesn't exist
     end
     else
-      LogParamWarning('Actions.HouseAddWaresTo', [aHouseID, aType, aCount]);
+      LogIntParamWarn('Actions.HouseAddWaresTo', [aHouseID, aType, aCount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2263,7 +2418,7 @@ end;
 //* Version: 6015
 //* Remove wares from the specified house.
 //* If a serf was on the way to pick up the ware, the serf will abandon his task
-procedure TKMScriptActions.HouseTakeWaresFrom(aHouseID: Integer; aType, aCount: Word);
+procedure TKMScriptActions.HouseTakeWaresFrom(aHouseID: Integer; aType, aCount: Integer);
 var
   H: TKMHouse;
   Res: TKMWareType;
@@ -2286,11 +2441,11 @@ begin
           end;
         end
         else
-          LogParamWarning('Actions.HouseTakeWaresFrom wrong ware type', [aHouseID, aType, aCount]);
+          LogIntParamWarn('Actions.HouseTakeWaresFrom wrong ware type', [aHouseID, aType, aCount]);
       //Silently ignore if house doesn't exist
     end
     else
-      LogParamWarning('Actions.HouseTakeWaresFrom', [aHouseID, aType, aCount]);
+      LogIntParamWarn('Actions.HouseTakeWaresFrom', [aHouseID, aType, aCount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2316,7 +2471,7 @@ begin
         Result := TKMHouseTownHall(H).Equip(UNIT_ID_TO_TYPE[aUnitType], aCount);
     end
     else
-      LogParamWarning('Actions.HouseTownHallEquip', [aHouseID, aUnitType]);
+      LogIntParamWarn('Actions.HouseTownHallEquip', [aHouseID, aUnitType]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2338,7 +2493,7 @@ begin
         TKMHouseTownHall(H).GoldMaxCnt := aMaxGold;
     end
     else
-      LogParamWarning('Actions.HouseTownHallMaxGold', [aHouseID, aMaxGold]);
+      LogIntParamWarn('Actions.HouseTownHallMaxGold', [aHouseID, aMaxGold]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2359,7 +2514,7 @@ begin
         H.BuildingRepair := aRepairEnabled;
     end
     else
-      LogParamWarning('Actions.HouseRepairEnable', [aHouseID, Byte(aRepairEnabled)]);
+      LogIntParamWarn('Actions.HouseRepairEnable', [aHouseID, Byte(aRepairEnabled)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2387,7 +2542,7 @@ begin
       end;
     end
     else
-      LogParamWarning('Actions.HouseDeliveryBlock', [aHouseID, Byte(aDeliveryBlocked)]);
+      LogIntParamWarn('Actions.HouseDeliveryBlock', [aHouseID, Byte(aDeliveryBlocked)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2395,26 +2550,22 @@ begin
 end;
 
 
-//* Version: 7000+
+//* Version: 13900
 //* Sets delivery mode for the specified house
-//* Possible values for aDeliveryMode parameter:
-//* 0 - Delivery closed
-//* 1 - Delivery allowed
-//* 2 - Take resource out
-procedure TKMScriptActions.HouseDeliveryMode(aHouseID: Integer; aDeliveryMode: Byte);
+procedure TKMScriptActions.HouseDeliveryMode(aHouseID: Integer; aDeliveryMode: TKMDeliveryMode);
 var H: TKMHouse;
 begin
   try
-    if (aHouseID > 0) and (aDeliveryMode <= Byte(High(TKMDeliveryMode))) then
+    if aHouseID > 0 then
     begin
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil)
         and not H.IsDestroyed //Allow to change delivery mode for not completed houses
         and gResHouses[H.HouseType].AcceptsWares then
-        H.SetDeliveryModeInstantly(TKMDeliveryMode(aDeliveryMode));
+        H.SetDeliveryModeInstantly(aDeliveryMode);
     end
     else
-      LogParamWarning('Actions.HouseDeliveryMode', [aHouseID, aDeliveryMode]);
+      LogParamWarn('Actions.HouseDeliveryMode', [aHouseID, GetEnumName(TypeInfo(TKMDeliveryMode), Integer(aDeliveryMode))]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2436,7 +2587,7 @@ begin
         H.DisableUnoccupiedMessage := aDisabled;
     end
     else
-      LogParamWarning('Actions.HouseDisableUnoccupiedMessage', [aHouseID, Byte(aDisabled)]);
+      LogIntParamWarn('Actions.HouseDisableUnoccupiedMessage', [aHouseID, Byte(aDisabled)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2448,7 +2599,7 @@ end;
 //* Sets whether a woodcutter's hut is on chop-only mode
 procedure TKMScriptActions.HouseWoodcutterChopOnly(aHouseID: Integer; aChopOnly: Boolean);
 const
-  CHOP_ONLY: array [Boolean] of TKMWoodcutterMode = (wcmChopAndPlant, wcmChop);
+  CHOP_ONLY: array [Boolean] of TKMWoodcutterMode = (wmChopAndPlant, wmChop);
 var
   H: TKMHouse;
 begin
@@ -2463,7 +2614,7 @@ begin
         TKMHouseWoodcutters(H).WoodcutterMode := CHOP_ONLY[aChopOnly];
     end
     else
-      LogParamWarning('Actions.HouseWoodcutterChopOnly', [aHouseID, Byte(aChopOnly)]);
+      LogIntParamWarn('Actions.HouseWoodcutterChopOnly', [aHouseID, Byte(aChopOnly)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2492,7 +2643,7 @@ begin
         TKMHouseWoodcutters(H).WoodcutterMode := TKMWoodcutterMode(aWoodcutterMode);
     end
     else
-      LogParamWarning('Actions.HouseWoodcutterMode', [aHouseID, Byte(aWoodcutterMode)]);
+      LogIntParamWarn('Actions.HouseWoodcutterMode', [aHouseID, Byte(aWoodcutterMode)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2525,7 +2676,7 @@ begin
         TKMHouseBarracks(H).NotAcceptFlag[Res] := aBlocked;
     end
     else
-      LogParamWarning('Actions.HouseWareBlock', [aHouseID, aWareType, Byte(aBlocked)]);
+      LogIntParamWarn('Actions.HouseWareBlock', [aHouseID, aWareType, Byte(aBlocked)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2558,7 +2709,7 @@ begin
         TKMHouseBarracks(H).NotAllowTakeOutFlag[Res] := aBlocked;
     end
     else
-      LogParamWarning('Actions.HouseWareBlockTakeOut', [aHouseID, aWareType, Byte(aBlocked)]);
+      LogIntParamWarn('Actions.HouseWareBlockTakeOut', [aHouseID, aWareType, Byte(aBlocked)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2592,7 +2743,7 @@ begin
           end;
     end
     else
-      LogParamWarning('Actions.HouseWeaponsOrderSet', [aHouseID, aWareType, aAmount]);
+      LogIntParamWarn('Actions.HouseWeaponsOrderSet', [aHouseID, aWareType, aAmount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2618,7 +2769,7 @@ begin
         TKMHouseSchool(H).RemUnitFromQueue(QueueIndex);
     end
     else
-      LogParamWarning('Actions.HouseSchoolQueueRemove', [aHouseID, QueueIndex]);
+      LogIntParamWarn('Actions.HouseSchoolQueueRemove', [aHouseID, QueueIndex]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2646,7 +2797,7 @@ begin
         Result := TKMHouseSchool(H).AddUnitToQueue(UNIT_ID_TO_TYPE[aUnitType], aCount);
     end
     else
-      LogParamWarning('Actions.HouseSchoolQueueAdd', [aHouseID, aUnitType]);
+      LogIntParamWarn('Actions.HouseSchoolQueueAdd', [aHouseID, aUnitType]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2674,7 +2825,35 @@ begin
         Result := TKMHouseBarracks(H).Equip(UNIT_ID_TO_TYPE[aUnitType], aCount);
     end
     else
-      LogParamWarning('Actions.HouseBarracksEquip', [aHouseID, aUnitType]);
+      LogIntParamWarn('Actions.HouseBarracksEquip', [aHouseID, aUnitType]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Equips the specified unit from the specified barracks.
+//* Returns the number of units successfully equipped.
+function TKMScriptActions.HouseBarracksEquipEx(aHouseID: Integer; aUnitType: TKMUnitType; aCount: Integer): Integer;
+var
+  H: TKMHouse;
+begin
+  try
+    Result := 0;
+    if (aHouseID > 0)
+    and (aUnitType in [WARRIOR_EQUIPABLE_BARRACKS_MIN..WARRIOR_EQUIPABLE_BARRACKS_MAX]) then
+    begin
+      H := fIDCache.GetHouse(aHouseID);
+      if (H <> nil)
+        and (H is TKMHouseBarracks)
+        and not H.IsDestroyed
+        and H.IsComplete then
+        Result := TKMHouseBarracks(H).Equip(aUnitType, aCount);
+    end
+    else
+      LogParamWarn('Actions.HouseBarracksEquipEx', [aHouseID, GetEnumName(TypeInfo(TKMUnitType), Integer(aUnitType))]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2699,7 +2878,7 @@ begin
         TKMHouseBarracks(H).CreateRecruitInside(False);
     end
     else
-      LogParamWarning('Actions.HouseBarracksGiveRecruit', [aHouseID]);
+      LogIntParamWarn('Actions.HouseBarracksGiveRecruit', [aHouseID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2761,7 +2940,7 @@ begin
     end
     else
     begin
-      LogParamWarning('Actions.MapBrush', [X, Y, Byte(aSquare), aSize, Byte(aTerKind),
+      LogIntParamWarn('Actions.MapBrush', [X, Y, Byte(aSquare), aSize, Byte(aTerKind),
                                                 Byte(aRandomTiles), Byte(aOverrideCustomTiles)]);
     end;
   except
@@ -2789,7 +2968,7 @@ begin
     end
     else
     begin
-      LogParamWarning('Actions.MapBrushElevation', [X, Y, Byte(aSquare), aSize, aSlope, aSpeed]);
+      LogIntParamWarn('Actions.MapBrushElevation', [X, Y, Byte(aSquare), aSize, aSlope, aSpeed]);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
@@ -2815,7 +2994,7 @@ begin
     end
     else
     begin
-      LogParamWarning('Actions.MapBrushEqualize', [X, Y, Byte(aSquare), aSize, aSlope, aSpeed]);
+      LogIntParamWarn('Actions.MapBrushEqualize', [X, Y, Byte(aSquare), aSize, aSlope, aSpeed]);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
@@ -2841,7 +3020,7 @@ begin
     end
     else
     begin
-      LogParamWarning('Actions.MapBrushFlatten', [X, Y, Byte(aSquare), aSize, aSlope, aSpeed]);
+      LogIntParamWarn('Actions.MapBrushFlatten', [X, Y, Byte(aSquare), aSize, aSlope, aSpeed]);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
@@ -2862,7 +3041,7 @@ begin
     end
     else
     begin
-      LogParamWarning('Actions.MapBrushMagicWater', [X, Y]);
+      LogIntParamWarn('Actions.MapBrushMagicWater', [X, Y]);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
@@ -2893,7 +3072,7 @@ begin
     end
     else
     begin
-      LogParamWarning('Actions.MapBrushWithMask', [X, Y, Byte(aSquare), aSize, Byte(aTerKind), Byte(aRandomTiles),
+      LogIntParamWarn('Actions.MapBrushWithMask', [X, Y, Byte(aSquare), aSize, Byte(aTerKind), Byte(aRandomTiles),
                                                     Byte(aOverrideCustomTiles), Byte(aBrushMask), aBlendingLvl, Byte(aUseMagicBrush)]);
     end;
   except
@@ -2919,7 +3098,7 @@ begin
       Result := gTerrain.ScriptTrySetTile(X, Y, aType, aRotation)
     else
     begin
-      LogParamWarning('Actions.MapTileSet', [X, Y, aType, aRotation]);
+      LogIntParamWarn('Actions.MapTileSet', [X, Y, aType, aRotation]);
       Result := False;
     end;
   except
@@ -3158,7 +3337,7 @@ begin
       Result := gTerrain.ScriptTrySetTileHeight(X, Y, Height)
     else
     begin
-      LogParamWarning('Actions.MapTileHeightSet', [X, Y, Height]);
+      LogIntParamWarn('Actions.MapTileHeightSet', [X, Y, Height]);
       Result := False;
     end;
   except
@@ -3183,7 +3362,7 @@ begin
       Result := gTerrain.ScriptTrySetTileObject(X, Y, Obj)
     else
     begin
-      LogParamWarning('Actions.MapTileObjectSet', [X, Y, Obj]);
+      LogIntParamWarn('Actions.MapTileObjectSet', [X, Y, Obj]);
       Result := False;
     end;
   except
@@ -3206,7 +3385,7 @@ begin
       gTerrain.SetOverlay(KMPoint(X, Y), aOverlay, aOverwrite)
     else
     begin
-      LogParamWarning('Actions.MapTileOverlaySet', [X, Y, Byte(aOverlay), Byte(aOverwrite)]);
+      LogIntParamWarn('Actions.MapTileOverlaySet', [X, Y, Byte(aOverlay), Byte(aOverwrite)]);
       Result := False;
     end;
   except
@@ -3247,7 +3426,7 @@ begin
       end;
     end
     else
-      LogParamWarning('Actions.MarketSetTrade', [aMarketID, aFrom, aTo, aAmount]);
+      LogIntParamWarn('Actions.MarketSetTrade', [aMarketID, aFrom, aTo, aAmount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3258,14 +3437,14 @@ end;
 //* Version: 5333
 //* Sets text overlaid on top left of screen.
 //* If the player index is -1 it will be set for all players.
-procedure TKMScriptActions.OverlayTextSet(aPlayer: Shortint; const aText: AnsiString);
+procedure TKMScriptActions.OverlayTextSet(aHand: Shortint; const aText: AnsiString);
 begin
   try
     //Text from script should be only ANSI Latin, but UI is Unicode, so we switch it
-    if InRange(aPlayer, -1, gHands.Count - 1) then //-1 means all players
-      gGame.OverlaySet(gGame.TextMission.ParseTextMarkup(UnicodeString(aText)), aPlayer)
+    if InRange(aHand, -1, gHands.Count - 1) then //-1 means all players
+      gGame.OverlaySet(gGame.TextMission.ParseTextMarkup(UnicodeString(aText)), aHand)
     else
-      LogParamWarning('Actions.OverlayTextSet: '+UnicodeString(aText), [aPlayer]);
+      LogIntParamWarn('Actions.OverlayTextSet: '+UnicodeString(aText), [aHand]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3277,21 +3456,21 @@ end;
 //* Sets text overlaid on top left of screen with formatted arguments (same as Format function).
 //* If the player index is -1 it will be set for all players.
 //* Params: Array of arguments
-procedure TKMScriptActions.OverlayTextSetFormatted(aPlayer: Shortint; const aText: AnsiString; Params: array of const);
+procedure TKMScriptActions.OverlayTextSetFormatted(aHand: Shortint; const aText: AnsiString; Params: array of const);
 begin
   try
-    if InRange(aPlayer, -1, gHands.Count - 1) then //-1 means all players
+    if InRange(aHand, -1, gHands.Count - 1) then //-1 means all players
     begin
       try
         //Text from script should be only ANSI Latin, but UI is Unicode, so we switch it
-        gGame.OverlaySet(gGame.TextMission.ParseTextMarkup(UnicodeString(aText), Params), aPlayer);
+        gGame.OverlaySet(gGame.TextMission.ParseTextMarkup(UnicodeString(aText), Params), aHand);
       except
         //Format may throw an exception
-        on E: EConvertError do LogParamWarning('Actions.OverlayTextSetFormatted: EConvertError: '+E.Message, []);
+        on E: EConvertError do LogIntParamWarn('Actions.OverlayTextSetFormatted: EConvertError: '+E.Message, []);
       end;
     end
     else
-      LogParamWarning('Actions.OverlayTextSetFormatted: '+UnicodeString(aText), [aPlayer]);
+      LogIntParamWarn('Actions.OverlayTextSetFormatted: '+UnicodeString(aText), [aHand]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3302,14 +3481,14 @@ end;
 //* Version: 5333
 //* Appends to text overlaid on top left of screen.
 //* If the player index is -1 it will be appended for all players.
-procedure TKMScriptActions.OverlayTextAppend(aPlayer: Shortint; const aText: AnsiString);
+procedure TKMScriptActions.OverlayTextAppend(aHand: Shortint; const aText: AnsiString);
 begin
   try
     //Text from script should be only ANSI Latin, but UI is Unicode, so we switch it
-    if InRange(aPlayer, -1, gHands.Count - 1) then //-1 means all players
-      gGame.OverlayAppend(gGame.TextMission.ParseTextMarkup(UnicodeString(aText)), aPlayer)
+    if InRange(aHand, -1, gHands.Count - 1) then //-1 means all players
+      gGame.OverlayAppend(gGame.TextMission.ParseTextMarkup(UnicodeString(aText)), aHand)
     else
-      LogParamWarning('Actions.OverlayTextAppend: '+UnicodeString(aText), [aPlayer]);
+      LogIntParamWarn('Actions.OverlayTextAppend: '+UnicodeString(aText), [aHand]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3321,21 +3500,21 @@ end;
 //* Appends to text overlaid on top left of screen with formatted arguments (same as Format function).
 //* If the player index is -1 it will be appended for all players.
 //* Params: Array of arguments
-procedure TKMScriptActions.OverlayTextAppendFormatted(aPlayer: Shortint; const aText: AnsiString; Params: array of const);
+procedure TKMScriptActions.OverlayTextAppendFormatted(aHand: Shortint; const aText: AnsiString; Params: array of const);
 begin
   try
-    if InRange(aPlayer, -1, gHands.Count - 1) then //-1 means all players
+    if InRange(aHand, -1, gHands.Count - 1) then //-1 means all players
     begin
       try
         //Text from script should be only ANSI Latin, but UI is Unicode, so we switch it
-        gGame.OverlayAppend(gGame.TextMission.ParseTextMarkup(UnicodeString(aText), Params), aPlayer);
+        gGame.OverlayAppend(gGame.TextMission.ParseTextMarkup(UnicodeString(aText), Params), aHand);
       except
         //Format may throw an exception
-        on E: EConvertError do LogParamWarning('Actions.OverlayTextAppendFormatted: EConvertError: '+E.Message, []);
+        on E: EConvertError do LogIntParamWarn('Actions.OverlayTextAppendFormatted: EConvertError: '+E.Message, []);
       end;
     end
     else
-      LogParamWarning('Actions.OverlayTextAppendFormatted: '+UnicodeString(aText), [aPlayer]);
+      LogIntParamWarn('Actions.OverlayTextAppendFormatted: '+UnicodeString(aText), [aHand]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3346,22 +3525,22 @@ end;
 //* Version: 5057
 //* Adds a road plan.
 //* Returns true if the plan was successfully added or false if it failed (e.g. tile blocked)
-function TKMScriptActions.PlanAddRoad(aPlayer, X, Y: Word): Boolean;
+function TKMScriptActions.PlanAddRoad(aHand, X, Y: Integer): Boolean;
 begin
   try
     Result := False;
     //Verify all input parameters
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
     and gTerrain.TileInMapCoords(X,Y) then
     begin
-      if gHands[aPlayer].CanAddFieldPlan(KMPoint(X, Y), ftRoad) then
+      if gHands[aHand].CanAddFieldPlan(KMPoint(X, Y), ftRoad) then
       begin
         Result := True;
-        gHands[aPlayer].Constructions.FieldworksList.AddField(KMPoint(X, Y), ftRoad);
+        gHands[aHand].Constructions.FieldworksList.AddField(KMPoint(X, Y), ftRoad);
       end;
     end
     else
-      LogParamWarning('Actions.PlanAddRoad', [aPlayer, X, Y]);
+      LogIntParamWarn('Actions.PlanAddRoad', [aHand, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3386,22 +3565,22 @@ end;
 //* Version: 5057
 //* Adds a corn field plan.
 //* Returns true if the plan was successfully added or false if it failed (e.g. tile blocked)
-function TKMScriptActions.PlanAddField(aPlayer, X, Y: Word): Boolean;
+function TKMScriptActions.PlanAddField(aHand, X, Y: Integer): Boolean;
 begin
   try
     Result := False;
     //Verify all input parameters
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
     and gTerrain.TileInMapCoords(X,Y) then
     begin
-      if gHands[aPlayer].CanAddFieldPlan(KMPoint(X, Y), ftCorn) then
+      if gHands[aHand].CanAddFieldPlan(KMPoint(X, Y), ftCorn) then
       begin
         Result := True;
-        gHands[aPlayer].Constructions.FieldworksList.AddField(KMPoint(X, Y), ftCorn);
+        gHands[aHand].Constructions.FieldworksList.AddField(KMPoint(X, Y), ftCorn);
       end;
     end
     else
-      LogParamWarning('Actions.PlanAddField', [aPlayer, X, Y]);
+      LogIntParamWarn('Actions.PlanAddField', [aHand, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3412,22 +3591,22 @@ end;
 //* Version: 5057
 //* Adds a wine field plan.
 //* Returns true if the plan was successfully added or false if it failed (e.g. tile blocked)
-function TKMScriptActions.PlanAddWinefield(aPlayer, X, Y: Word): Boolean;
+function TKMScriptActions.PlanAddWinefield(aHand, X, Y: Integer): Boolean;
 begin
   try
     Result := False;
     //Verify all input parameters
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
     and gTerrain.TileInMapCoords(X,Y) then
     begin
-      if gHands[aPlayer].CanAddFieldPlan(KMPoint(X, Y), ftWine) then
+      if gHands[aHand].CanAddFieldPlan(KMPoint(X, Y), ftWine) then
       begin
         Result := True;
-        gHands[aPlayer].Constructions.FieldworksList.AddField(KMPoint(X, Y), ftWine);
+        gHands[aHand].Constructions.FieldworksList.AddField(KMPoint(X, Y), ftWine);
       end;
     end
     else
-      LogParamWarning('Actions.PlanAddWinefield', [aPlayer, X, Y]);
+      LogIntParamWarn('Actions.PlanAddWinefield', [aHand, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3443,7 +3622,7 @@ end;
 //* X2: Right coordinate
 //* Y2: Bottom coordinate
 //* aCompleted: Completed road
-function TKMScriptActions.PlanConnectRoad(aPlayer, X1, Y1, X2, Y2: Integer; aCompleted: Boolean): Boolean;
+function TKMScriptActions.PlanConnectRoad(aHand, X1, Y1, X2, Y2: Integer; aCompleted: Boolean): Boolean;
 var
   Points: TKMPointList;
   PlanExists: Boolean;
@@ -3452,24 +3631,24 @@ var
 begin
   try
     Result := False;
-    if InRange(aPlayer, 0, gHands.Count - 1)
-    and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1)
+    and (gHands[aHand].Enabled)
     and gTerrain.TileInMapCoords(X1, Y1)
     and gTerrain.TileInMapCoords(X2, Y2) then
     begin
-      Path := TPathFindingRoad.Create(aPlayer);
+      Path := TPathFindingRoad.Create(aHand);
       Points := TKMPointList.Create;
       try
         PlanExists := Path.Route_ReturnToWalkable(KMPoint(X1, Y1), KMPoint(X2, Y2), 0, Points);
         if not PlanExists then
           Exit;
         for I := 0 to Points.Count - 1 do
-          if gHands[aPlayer].CanAddFieldPlan(Points[I], ftRoad) then
+          if gHands[aHand].CanAddFieldPlan(Points[I], ftRoad) then
             if not aCompleted then
-              gHands[aPlayer].Constructions.FieldworksList.AddField(Points[I], ftRoad)
+              gHands[aHand].Constructions.FieldworksList.AddField(Points[I], ftRoad)
             else
             begin
-              gTerrain.SetRoad(Points[I], aPlayer);
+              gTerrain.SetRoad(Points[I], aHand);
               gTerrain.FlattenTerrain(Points[I]);
               if gMapElements[gTerrain.Land^[Points[I].Y,Points[I].X].Obj].WineOrCorn then
                 gTerrain.RemoveObject(Points[I]); //Remove corn/wine like normally built road does
@@ -3481,7 +3660,7 @@ begin
       end;
     end
     else
-      LogParamWarning('Actions.PlanConnectRoad', [aPlayer, X1, Y1, X2, Y2]);
+      LogIntParamWarn('Actions.PlanConnectRoad', [aHand, X1, Y1, X2, Y2]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3492,30 +3671,30 @@ end;
 //* Version: 5345
 //* Removes house, road or field plans from the specified tile for the specified player
 //* Returns true if the plan was successfully removed or false if it failed (e.g. tile blocked)
-function TKMScriptActions.PlanRemove(aPlayer, X, Y: Word): Boolean;
+function TKMScriptActions.PlanRemove(aHand, X, Y: Integer): Boolean;
 var
   HPlan: TKMHousePlan;
 begin
   try
     Result := False;
     //Verify all input parameters
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
     and gTerrain.TileInMapCoords(X,Y) then
     begin
-      if gHands[aPlayer].Constructions.HousePlanList.TryGetPlan(KMPoint(X, Y), HPlan) then
+      if gHands[aHand].Constructions.HousePlanList.TryGetPlan(KMPoint(X, Y), HPlan) then
       begin
-        gHands[aPlayer].Constructions.HousePlanList.RemPlan(KMPoint(X, Y));
-        gHands[aPlayer].Stats.HousePlanRemoved(HPlan.HouseType);
+        gHands[aHand].Constructions.HousePlanList.RemPlan(KMPoint(X, Y));
+        gHands[aHand].Stats.HousePlanRemoved(HPlan.HouseType);
         Result := True;
       end;
-      if gHands[aPlayer].Constructions.FieldworksList.HasField(KMPoint(X, Y)) <> ftNone then
+      if gHands[aHand].Constructions.FieldworksList.HasField(KMPoint(X, Y)) <> ftNone then
       begin
-        gHands[aPlayer].Constructions.FieldworksList.RemFieldPlan(KMPoint(X, Y));
+        gHands[aHand].Constructions.FieldworksList.RemFieldPlan(KMPoint(X, Y));
         Result := True;
       end;
     end
     else
-      LogParamWarning('Actions.PlanRemove', [aPlayer, X, Y]);
+      LogIntParamWarn('Actions.PlanRemove', [aHand, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3526,23 +3705,23 @@ end;
 //* Version: 5057
 //* Adds a road plan.
 //* Returns true if the plan was successfully added or false if it failed (e.g. tile blocked)
-function TKMScriptActions.PlanAddHouse(aPlayer, aHouseType, X, Y: Word): Boolean;
+function TKMScriptActions.PlanAddHouse(aHand, aHouseType, X, Y: Integer): Boolean;
 begin
   try
     Result := False;
     //Verify all input parameters
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
     and HouseTypeValid(aHouseType)
     and gTerrain.TileInMapCoords(X,Y) then
     begin
-      if gHands[aPlayer].CanAddHousePlan(KMPoint(X, Y), HOUSE_ID_TO_TYPE[aHouseType]) then
+      if gHands[aHand].CanAddHousePlan(KMPoint(X, Y), HOUSE_ID_TO_TYPE[aHouseType]) then
       begin
         Result := True;
-        gHands[aPlayer].AddHousePlan(HOUSE_ID_TO_TYPE[aHouseType], KMPoint(X, Y));
+        gHands[aHand].AddHousePlan(HOUSE_ID_TO_TYPE[aHouseType], KMPoint(X, Y));
       end;
     end
     else
-      LogParamWarning('Actions.PlanAddHouse', [aPlayer, aHouseType, X, Y]);
+      LogIntParamWarn('Actions.PlanAddHouse', [aHand, aHouseType, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3568,7 +3747,7 @@ begin
       //Silently ignore if unit doesn't exist
     end
     else
-      LogParamWarning('Actions.UnitAllowAllyToView', [aUnitID, Byte(aAllow)]);
+      LogIntParamWarn('Actions.UnitAllowAllyToView', [aUnitID, Byte(aAllow)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3578,14 +3757,14 @@ end;
 
 //* Version: 5993
 //* Sets whether the specified player can train/equip the specified unit type
-procedure TKMScriptActions.UnitBlock(aPlayer: Byte; aType: Word; aBlock: Boolean);
+procedure TKMScriptActions.UnitBlock(aHand: Byte; aType: Integer; aBlock: Boolean);
 begin
   try
-    if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
     and (aType in [Low(UNIT_ID_TO_TYPE) .. High(UNIT_ID_TO_TYPE)]) then
-      gHands[aPlayer].Locks.SetUnitBlocked(aBlock, UNIT_ID_TO_TYPE[aType])
+      gHands[aHand].Locks.SetUnitBlocked(aBlock, UNIT_ID_TO_TYPE[aType])
     else
-      LogParamWarning('Actions.UnitBlock', [aPlayer, aType, Byte(aBlock)]);
+      LogIntParamWarn('Actions.UnitBlock', [aHand, aType, Byte(aBlock)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3607,7 +3786,7 @@ begin
         U.HitPointsChangeFromScript(aHP);
     end
     else
-      LogParamWarning('Actions.UnitHPChange', [aUnitID, aHP]);
+      LogIntParamWarn('Actions.UnitHPChange', [aUnitID, aHP]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3629,7 +3808,7 @@ begin
         U.HitPointsInvulnerable := aInvulnerable;
     end
     else
-      LogParamWarning('Actions.UnitHPSetInvulnerable', [aUnitID, Ord(aInvulnerable)]);
+      LogIntParamWarn('Actions.UnitHPSetInvulnerable', [aUnitID, Ord(aInvulnerable)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3653,7 +3832,7 @@ begin
         U.Condition := aHungerLevel;
     end
     else
-      LogParamWarning('Actions.UnitHungerSet', [aUnitID, aHungerLevel]);
+      LogIntParamWarn('Actions.UnitHungerSet', [aUnitID, aHungerLevel]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3682,7 +3861,7 @@ begin
       end;
     end
     else
-      LogParamWarning('Actions.UnitDirectionSet', [aUnitID, aDirection]);
+      LogIntParamWarn('Actions.UnitDirectionSet', [aUnitID, aDirection]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3704,7 +3883,7 @@ begin
         U.Dismiss;
     end
     else
-      LogParamWarning('Actions.UnitDismiss', [aUnitID]);
+      LogIntParamWarn('Actions.UnitDismiss', [aUnitID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3726,7 +3905,7 @@ begin
         U.Dismissable := aDismissable;
     end
     else
-      LogParamWarning('Actions.UnitDismissableSet', [aUnitID, Byte(aDismissable)]);
+      LogIntParamWarn('Actions.UnitDismissableSet', [aUnitID, Byte(aDismissable)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3748,7 +3927,7 @@ begin
         U.DismissCancel;
     end
     else
-      LogParamWarning('Actions.UnitDismissCancel', [aUnitID]);
+      LogIntParamWarn('Actions.UnitDismissCancel', [aUnitID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3760,7 +3939,7 @@ end;
 //* Order the specified unit to walk somewhere.
 //* Note: Only works on idle units so as not to interfere with game logic and cause crashes.
 //* Returns true on success or false on failure.
-function TKMScriptActions.UnitOrderWalk(aUnitID: Integer; X, Y: Word): Boolean;
+function TKMScriptActions.UnitOrderWalk(aUnitID: Integer; X, Y: Integer): Boolean;
 var
   U: TKMUnit;
 begin
@@ -3774,7 +3953,7 @@ begin
 
       //Animals cant be ordered to walk, they use Steering instead
       if (U.UnitType in [ANIMAL_MIN..ANIMAL_MAX]) then
-        LogParamWarning('Actions.UnitOrderWalk is not supported for animals', [aUnitID, X, Y])
+        LogIntParamWarn('Actions.UnitOrderWalk is not supported for animals', [aUnitID, X, Y])
       else
         //Can only make idle or units in houses walk so we don't mess up tasks and cause crashes
         if U.IsIdle and U.Visible then
@@ -3784,7 +3963,7 @@ begin
         end;
     end
     else
-      LogParamWarning('Actions.UnitOrderWalk', [aUnitID, X, Y]);
+      LogIntParamWarn('Actions.UnitOrderWalk', [aUnitID, X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3808,7 +3987,7 @@ begin
         U.Kill(HAND_NONE, not aSilent, True);
     end
     else
-      LogParamWarning('Actions.UnitKill', [aUnitID]);
+      LogIntParamWarn('Actions.UnitKill', [aUnitID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3866,7 +4045,7 @@ begin
       //Silently ignore if house doesn't exist
     end
     else
-      LogParamWarning('Actions.GroupAllowAllyToSelect', [aGroupID, Byte(aAllow)]);
+      LogIntParamWarn('Actions.GroupAllowAllyToSelect', [aGroupID, Byte(aAllow)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3887,7 +4066,7 @@ begin
         G.BlockOrders := aBlock;
     end
     else
-      LogParamWarning('Actions.GroupBlockOrders', [aGroupID, Byte(aBlock)]);
+      LogIntParamWarn('Actions.GroupBlockOrders', [aGroupID, Byte(aBlock)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3910,7 +4089,7 @@ begin
         G.DisableHungerMessage := aDisable;
     end
     else
-      LogParamWarning('Actions.GroupDisableHungryMessage', [aGroupID, Byte(aDisable)]);
+      LogIntParamWarn('Actions.GroupDisableHungryMessage', [aGroupID, Byte(aDisable)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3937,7 +4116,7 @@ begin
             G.Members[I].Condition := aHungerLevel;
     end
     else
-      LogParamWarning('Actions.GroupHungerSet', [aGroupID, aHungerLevel]);
+      LogIntParamWarn('Actions.GroupHungerSet', [aGroupID, aHungerLevel]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3961,7 +4140,7 @@ begin
           G.Members[I].Kill(HAND_NONE, not aSilent, True);
     end
     else
-      LogParamWarning('Actions.GroupKillAll', [aGroupID]);
+      LogIntParamWarn('Actions.GroupKillAll', [aGroupID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -3971,7 +4150,7 @@ end;
 
 //* Version: 5057
 //* Order the specified group to walk somewhere
-procedure TKMScriptActions.GroupOrderWalk(aGroupID: Integer; X, Y, aDirection: Word);
+procedure TKMScriptActions.GroupOrderWalk(aGroupID: Integer; X, Y, aDirection: Integer);
 var
   G: TKMUnitGroup;
 begin
@@ -3985,7 +4164,7 @@ begin
         G.OrderWalk(KMPoint(X,Y), True, wtokScript, TKMDirection(aDirection+1));
     end
     else
-      LogParamWarning('Actions.GroupOrderWalk', [aGroupID, X, Y, aDirection]);
+      LogIntParamWarn('Actions.GroupOrderWalk', [aGroupID, X, Y, aDirection]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4011,7 +4190,7 @@ begin
         G.OrderAttackHouse(H, True);
     end
     else
-      LogParamWarning('Actions.GroupOrderAttackHouse', [aGroupID, aHouseID]);
+      LogIntParamWarn('Actions.GroupOrderAttackHouse', [aGroupID, aHouseID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4037,7 +4216,7 @@ begin
         G.OrderAttackUnit(U, True);
     end
     else
-      LogParamWarning('Actions.GroupOrderAttackUnit', [aGroupID, aUnitID]);
+      LogIntParamWarn('Actions.GroupOrderAttackUnit', [aGroupID, aUnitID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4059,7 +4238,7 @@ begin
         G.OrderFood(True);
     end
     else
-      LogParamWarning('Actions.GroupOrderFood', [aGroupID]);
+      LogIntParamWarn('Actions.GroupOrderFood', [aGroupID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4081,7 +4260,7 @@ begin
         G.OrderStorm(True);
     end
     else
-      LogParamWarning('Actions.GroupOrderStorm', [aGroupID]);
+      LogIntParamWarn('Actions.GroupOrderStorm', [aGroupID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4103,7 +4282,7 @@ begin
         G.OrderHalt(True);
     end
     else
-      LogParamWarning('Actions.GroupOrderHalt', [aGroupID]);
+      LogIntParamWarn('Actions.GroupOrderHalt', [aGroupID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4126,7 +4305,7 @@ begin
         G.OrderLinkTo(G2, True);
     end
     else
-      LogParamWarning('Actions.GroupOrderLink', [aGroupID, aDestGroupID]);
+      LogIntParamWarn('Actions.GroupOrderLink', [aGroupID, aDestGroupID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4154,7 +4333,7 @@ begin
       end;
     end
     else
-      LogParamWarning('Actions.GroupOrderSplit', [aGroupID]);
+      LogIntParamWarn('Actions.GroupOrderSplit', [aGroupID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4188,7 +4367,7 @@ begin
       end;
     end
     else
-      LogParamWarning('Actions.GroupOrderSplitSelected', [aGroupID, aUnitID]);
+      LogIntParamWarn('Actions.GroupOrderSplitSelected', [aGroupID, aUnitID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4210,7 +4389,7 @@ begin
         G.UnitsPerRow := aNumColumns;
     end
     else
-      LogParamWarning('Actions.GroupSetFormation', [aGroupID, aNumColumns]);
+      LogIntParamWarn('Actions.GroupSetFormation', [aGroupID, aNumColumns]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

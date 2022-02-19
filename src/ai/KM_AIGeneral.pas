@@ -6,7 +6,8 @@ uses
   KM_AISetup, KM_AIAttacks, KM_AIDefensePos,
   KM_Units, KM_UnitGroup, KM_UnitWarrior,
   KM_CommonClasses, KM_Defaults, KM_Points,
-  KM_NavMeshDefences;
+  KM_NavMeshDefences,
+  KM_AITypes;
 
 
 type
@@ -56,8 +57,7 @@ uses
   KM_Houses, KM_HouseBarracks,
   KM_ResHouses, KM_CommonUtils, KM_DevPerfLog, KM_DevPerfLogTypes,
   KM_UnitGroupTypes,
-  KM_ResTypes,
-  KM_AITypes;
+  KM_ResTypes;
 
 
 const
@@ -401,7 +401,7 @@ begin
     end;
     //2. Take back line defence positions, lowest priority first
     for I := fDefencePositions.Count-1 downto 0 do
-      if (fDefencePositions[I].DefenceType = adtBackLine)
+      if (fDefencePositions[I].DefenceType = dtBackLine)
       and (fDefencePositions[I].CurrentGroup <> nil)
       and not fDefencePositions[I].CurrentGroup.IsDead
       and fDefencePositions[I].CurrentGroup.IsIdleToAI([wtokFlagPoint, wtokHaltOrder, wtokAIGotoDefencePos]) then
@@ -414,7 +414,7 @@ begin
       AttackLaunched := True;
       //Order groups to attack
       UnitsSent := 0;
-      if Attacks[I].TakeAll then
+      if Attacks[I].RandomGroups then
       begin
         //Repeatedly send one of each group type until we have sent the required amount (mixed army)
         for K := 0 to MaxGroupsAvailable - 1 do
@@ -471,7 +471,7 @@ begin
   SimpleAttack.Target := attClosestBuildingFromStartPos;
   SimpleAttack.TotalMen := fDefencePositions.AverageUnitsPerGroup *
                            fDefencePositions.GetBacklineCount div 2;
-  SimpleAttack.TakeAll := True;
+  SimpleAttack.RandomGroups := True;
 
   Attacks.Clear;
   Attacks.AddAttack(SimpleAttack);
@@ -552,9 +552,9 @@ begin
     if (BestOwner = fOwner) OR (BestOwner = HAND_NONE) OR (fDefencePositions.Count + Length(DefPosArr) <= MIN_DEF_POS) then
     begin
       if (DefPosArr[I].Line = 0) then
-        DPT := adtFrontLine
+        DPT := dtFrontLine
       else
-        DPT := adtBackLine;
+        DPT := dtBackLine;
       Loc := DefPosArr[I].DirPoint.Loc;
       case (Loc.X*2 + Loc.Y*2) mod 3 of
         0:   GT := gtAntiHorse;

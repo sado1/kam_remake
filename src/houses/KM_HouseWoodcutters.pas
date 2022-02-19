@@ -7,7 +7,7 @@ uses
   KM_ResTypes;
   
 type
-  TKMWoodcutterMode = (wcmChopAndPlant, wcmChop, wcmPlant);
+  TKMWoodcutterMode = (wmChopAndPlant, wmChop, wmPlant);
 
   TKMHouseWoodcutters = class(TKMHouseWFlagPoint)
   private
@@ -38,7 +38,7 @@ constructor TKMHouseWoodcutters.Create(aUID: Integer; aHouseType: TKMHouseType; 
 begin
   inherited;
 
-  WoodcutterMode := wcmChopAndPlant;
+  WoodcutterMode := wmChopAndPlant;
 end;
 
 
@@ -89,7 +89,7 @@ begin
   //If we're allowed to plant only again or chop only
   //we should reshow the depleted message if we are changed to cut and run out of trees
   if (fWoodcutterMode <> aWoodcutterMode)
-    and (aWoodcutterMode in [wcmChop, wcmPlant]) then
+    and (aWoodcutterMode in [wmChop, wmPlant]) then
     ResourceDepleted := False;
 
   fWoodcutterMode := aWoodcutterMode;

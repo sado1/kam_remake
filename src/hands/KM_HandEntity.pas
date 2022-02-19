@@ -14,7 +14,6 @@ type
     function GetOwner: TKMHandID;
     function GetType: TKMHandEntityType;
   protected
-
     function GetPosition: TKMPoint; virtual; abstract;
     function GetPositionF: TKMPointF; virtual; abstract;
     procedure SetPositionF(const aPositionF: TKMPointF); virtual; abstract;

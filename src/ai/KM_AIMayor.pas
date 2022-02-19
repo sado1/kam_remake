@@ -68,7 +68,7 @@ uses
   KM_AIFields, KM_Terrain,
   KM_Houses, KM_HouseSchool, KM_HouseStore,
   KM_Units, KM_UnitsCollection, KM_UnitActionWalkTo, KM_UnitTaskGoEat, KM_UnitTaskDelivery,
-  KM_Resource, KM_ResWares,
+  KM_Resource, KM_ResWares, KM_AITypes,
   KM_CommonUtils, KM_DevPerfLog, KM_DevPerfLogTypes;
 
 
@@ -962,12 +962,16 @@ end;
 
 
 procedure TKMayor.CheckAutoRepair;
-var I: Integer;
+var
+  I: Integer;
 begin
   with gHands[fOwner] do
-    if IsComputer then
+  begin
+    // Change repair mode for all houses only for rmRepairNever and rmRepairAlways
+    if IsComputer and (fSetup.RepairMode in [rmRepairNever, rmRepairAlways]) then
       for I := 0 to Houses.Count - 1 do
-        Houses[I].BuildingRepair := fSetup.AutoRepair;
+        Houses[I].BuildingRepair := fSetup.IsRepairAlways;
+  end;
 end;
 
 

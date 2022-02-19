@@ -28,7 +28,7 @@ type
       NumEdit_AttackDelay: TKMNumericEdit;
       NumEdit_AttackMen: TKMNumericEdit;
       NumEdit_AttackAmount: array [GROUP_TYPE_MIN..GROUP_TYPE_MAX] of TKMNumericEdit;
-      CheckBox_AttackTakeAll: TKMCheckBox;
+      CheckBox_AttackRandomGroups: TKMCheckBox;
       Radio_AttackTarget: TKMRadioGroup;
       TrackBar_AttackRange: TKMTrackBar;
       NumEdit_AttackLocX: TKMNumericEdit;
@@ -49,7 +49,7 @@ implementation
 uses
   KM_HandsCollection, KM_Hand,
   KM_RenderUI,
-  KM_ResTexts, KM_ResFonts, KM_ResTypes;
+  KM_ResTexts, KM_ResFonts, KM_ResTypes, KM_AITypes;
 
 
 const
@@ -106,9 +106,9 @@ begin
       NumEdit_AttackAmount[GT].OnChange := Attack_Change;
     end;
 
-    CheckBox_AttackTakeAll := TKMCheckBox.Create(Panel_Attack, 340, 265, 210, 20, gResTexts[TX_MAPED_AI_ATTACK_TAKE_ALL], fntMetal);
-    CheckBox_AttackTakeAll.Hint := gResTexts[TX_MAPED_AI_ATTACK_TAKE_ALL_HINT];
-    CheckBox_AttackTakeAll.OnClick := Attack_Change;
+    CheckBox_AttackRandomGroups := TKMCheckBox.Create(Panel_Attack, 340, 265, 210, 20, gResTexts[TX_MAPED_AI_ATTACK_TAKE_ANY], fntMetal);
+    CheckBox_AttackRandomGroups.Hint := gResTexts[TX_MAPED_AI_ATTACK_TAKE_ANY_HINT];
+    CheckBox_AttackRandomGroups.OnClick := Attack_Change;
 
     //Second row
 
@@ -147,7 +147,7 @@ begin
   //because certain combinations can't coexist
 
   for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
-    NumEdit_AttackAmount[GT].Enabled := not CheckBox_AttackTakeAll.Checked;
+    NumEdit_AttackAmount[GT].Enabled := not CheckBox_AttackRandomGroups.Checked;
 
   NumEdit_AttackLocX.Enabled := (TKMAIAttackTarget(Radio_AttackTarget.ItemIndex) = attCustomPosition);
   NumEdit_AttackLocY.Enabled := (TKMAIAttackTarget(Radio_AttackTarget.ItemIndex) = attCustomPosition);
@@ -176,7 +176,7 @@ begin
   NumEdit_AttackMen.Value := aAttack.TotalMen;
   for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
     NumEdit_AttackAmount[GT].Value := aAttack.GroupAmounts[GT];
-  CheckBox_AttackTakeAll.Checked := aAttack.TakeAll;
+  CheckBox_AttackRandomGroups.Checked := aAttack.RandomGroups;
   Radio_AttackTarget.ItemIndex := Byte(aAttack.Target);
   TrackBar_AttackRange.Position := aAttack.Range;
   NumEdit_AttackLocX.Value := aAttack.CustomPosition.X;
@@ -198,7 +198,7 @@ begin
   AA.TotalMen := NumEdit_AttackMen.Value;
   for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
     AA.GroupAmounts[GT] := NumEdit_AttackAmount[GT].Value;
-  AA.TakeAll := CheckBox_AttackTakeAll.Checked;
+  AA.RandomGroups := CheckBox_AttackRandomGroups.Checked;
   AA.Target := TKMAIAttackTarget(Radio_AttackTarget.ItemIndex);
   AA.Range := TrackBar_AttackRange.Position;
   AA.CustomPosition := KMPoint(NumEdit_AttackLocX.Value, NumEdit_AttackLocY.Value);
