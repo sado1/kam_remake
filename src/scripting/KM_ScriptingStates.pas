@@ -81,9 +81,9 @@ type
     function GroupType(aGroupID: Integer): Integer;
     function GroupTypeEx(aGroupID: Integer): TKMGroupType;
 
-    function HandCanBuildHouse(aHand: Integer; aHouseType: TKMHouseType): Boolean;
-    function HandCanTrainUnit(aHand: Integer; aUnitType: TKMUnitType): Boolean;
+    function HandHouseCanBuild(aHand: Integer; aHouseType: TKMHouseType): Boolean;
     function HandHouseLock(aHand: Integer; aHouseType: TKMHouseType): TKMHandHouseLock;
+    function HandUnitCanTrain(aHand: Integer; aUnitType: TKMUnitType): Boolean;
     function HandWareDistribution(aHand: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType): Integer;
 
     function HouseAllowAllyToSelect(aHouseID: Integer): Boolean;
@@ -2436,7 +2436,7 @@ end;
 //* Version: 13900
 //* Returns true if the specified hand (player) can build the specified house type
 //* Result: House can build
-function TKMScriptStates.HandCanBuildHouse(aHand: Integer; aHouseType: TKMHouseType): Boolean;
+function TKMScriptStates.HandHouseCanBuild(aHand: Integer; aHouseType: TKMHouseType): Boolean;
 begin
   try
     if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
@@ -2446,28 +2446,6 @@ begin
     begin
       Result := False;
       LogIntParamWarn('States.HandHouseCanBuild', [aHand, Ord(aHouseType)]);
-    end;
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
-end;
-
-
-//* Version: 13900
-//* Returns true if the specified player can train/equip the specified unit type
-//* Result: Unit unlocked
-function TKMScriptStates.HandCanTrainUnit(aHand: Integer; aUnitType: TKMUnitType): Boolean;
-begin
-  try
-    if InRange(aHand, 0, gHands.Count - 1)
-      and (gHands[aHand].Enabled)
-      and (aUnitType in UNITS_HUMAN) then
-      Result := not gHands[aHand].Locks.GetUnitBlocked(aUnitType)
-    else
-    begin
-      Result := False;
-      LogParamWarn('States.UnitUnlocked', [aHand, GetEnumName(TypeInfo(TKMUnitType), Integer(aUnitType))]);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
@@ -2488,6 +2466,28 @@ begin
       Result := gHands[aHand].Locks.HouseLock[aHouseType]
     else
       LogIntParamWarn('States.HandHouseLock', [aHand, Ord(aHouseType)]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 13900
+//* Returns true if the specified player can train/equip the specified unit type
+//* Result: Unit unlocked
+function TKMScriptStates.HandUnitCanTrain(aHand: Integer; aUnitType: TKMUnitType): Boolean;
+begin
+  try
+    if InRange(aHand, 0, gHands.Count - 1)
+      and (gHands[aHand].Enabled)
+      and (aUnitType in UNITS_HUMAN) then
+      Result := not gHands[aHand].Locks.GetUnitBlocked(aUnitType)
+    else
+    begin
+      Result := False;
+      LogParamWarn('States.UnitUnlocked', [aHand, GetEnumName(TypeInfo(TKMUnitType), Integer(aUnitType))]);
+    end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
