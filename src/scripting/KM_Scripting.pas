@@ -461,7 +461,7 @@ begin
     RegisterMethodCheck(c, 'function AIAutoBuild(aPlayer: Byte): Boolean');
     RegisterMethodCheck(c, 'function AIAutoDefence(aPlayer: Byte): Boolean');
     RegisterMethodCheck(c, 'function AIAutoRepair(aPlayer: Byte): Boolean');
-    RegisterMethodCheck(c, 'procedure AIDefencePositionGet(aPlayer, aID: Byte; out aX, aY: Integer; out aGroupType: Byte; out aRadius: Word; out aDefType: Byte)');
+    RegisterMethodCheck(c, 'procedure AIDefencePositionGet(aPlayer, aID: Byte; out aX, aY: Integer; out aGroupType: Byte; out aRadius: Integer; out aDefType: Byte)');
     RegisterMethodCheck(c, 'function AIDefencePositionGetByIndex(aPlayer, aIndex: Integer): TKMDefencePositionInfo');
     RegisterMethodCheck(c, 'function AIDefendAllies(aPlayer: Byte): Boolean');
     RegisterMethodCheck(c, 'function AIEquipRate(aPlayer: Byte; aType: Byte): Integer');
@@ -494,7 +494,7 @@ begin
     RegisterMethodCheck(c, 'function ConnectedByRoad(X1, Y1, X2, Y2: Integer): Boolean');
     RegisterMethodCheck(c, 'function ConnectedByWalking(X1, Y1, X2, Y2: Integer): Boolean');
 
-    RegisterMethodCheck(c, 'function FogRevealed(aPlayer: Byte; aX, aY: Word): Boolean');
+    RegisterMethodCheck(c, 'function FogRevealed(aPlayer: Byte; aX, aY: Integer): Boolean');
 
     RegisterMethodCheck(c, 'function GameSpeed: Single');
     RegisterMethodCheck(c, 'function GameSpeedChangeAllowed: Boolean');
@@ -502,7 +502,7 @@ begin
 
     RegisterMethodCheck(c, 'function GroupAllowAllyToSelect(aGroupID: Integer): Boolean');
     RegisterMethodCheck(c, 'function GroupAssignedToDefencePosition(aGroupID, X, Y: Integer): Boolean');
-    RegisterMethodCheck(c, 'function GroupAt(aX, aY: Word): Integer');
+    RegisterMethodCheck(c, 'function GroupAt(aX, aY: Integer): Integer');
     RegisterMethodCheck(c, 'function GroupColumnCount(aGroupID: Integer): Integer');
     RegisterMethodCheck(c, 'function GroupDead(aGroupID: Integer): Boolean');
     RegisterMethodCheck(c, 'function GroupIdle(aGroupID: Integer): Boolean');
@@ -520,12 +520,12 @@ begin
     RegisterMethodCheck(c, 'function HandHouseLock(aHand: Integer; aHouseType: TKMHouseType): TKMHandHouseLock');
     RegisterMethodCheck(c, 'function HandWareDistribution(aPlayer: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType): Integer');
 
-    RegisterMethodCheck(c, 'function HouseAt(aX, aY: Word): Integer');
+    RegisterMethodCheck(c, 'function HouseAt(aX, aY: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseAllowAllyToSelect(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseBarracksRallyPointX(aBarracks: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseBarracksRallyPointY(aBarracks: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseBarracksRecruitsCount(aBarracks: Integer): Integer');
-    RegisterMethodCheck(c, 'function HouseBuildingProgress(aHouseID: Integer): Word');
+    RegisterMethodCheck(c, 'function HouseBuildingProgress(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseCanReachResources(aHouseID: Integer): Boolean)');
     RegisterMethodCheck(c, 'function HouseDamage(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseDeliveryBlocked(aHouseID: Integer): Boolean');
@@ -547,13 +547,13 @@ begin
     RegisterMethodCheck(c, 'function HouseTownHallMaxGold(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseType(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseTypeEx(aHouseID: Integer): TKMHouseType');
-    RegisterMethodCheck(c, 'function HouseTypeMaxHealth(aHouseType: Integer): Word');
+    RegisterMethodCheck(c, 'function HouseTypeMaxHealth(aHouseType: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseTypeMaxHealthEx(aHouseType: TKMHouseType): Integer');
     RegisterMethodCheck(c, 'function HouseTypeName(aHouseType: Byte): AnsiString');
     RegisterMethodCheck(c, 'function HouseTypeNameEx(aHouseType: TKMHouseType): AnsiString');
     RegisterMethodCheck(c, 'function HouseTypeToOccupantType(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseTypeToWorkerType(aHouseType: TKMHouseType): TKMUnitType');
-    RegisterMethodCheck(c, 'function HouseUnlocked(aPlayer, aHouseType: Word): Boolean');
+    RegisterMethodCheck(c, 'function HouseUnlocked(aPlayer, aHouseType: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseWareBlocked(aHouseID, aWareType: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseWareBlockedEx(aHouseID: Integer; aWareType: TKMWareType): Boolean');
     RegisterMethodCheck(c, 'function HouseWareBlockedTakeOut(aHouseID: Integer; aWareType: TKMWareType): Boolean');
@@ -563,15 +563,15 @@ begin
     RegisterMethodCheck(c, 'function HouseWoodcutterMode(aHouseID: Integer): TKMWoodcutterMode');
     RegisterMethodCheck(c, 'function HouseWorker(aHouseID: Integer): Integer');
 
-    RegisterMethodCheck(c, 'function IsFieldAt(aPlayer: ShortInt; X, Y: Word): Boolean');
-    RegisterMethodCheck(c, 'function IsRoadAt(aPlayer: ShortInt; X, Y: Word): Boolean');
-    RegisterMethodCheck(c, 'function IsWinefieldAt(aPlayer: ShortInt; X, Y: Word): Boolean');
+    RegisterMethodCheck(c, 'function IsFieldAt(aPlayer: ShortInt; X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function IsRoadAt(aPlayer: ShortInt; X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function IsWinefieldAt(aPlayer: ShortInt; X, Y: Integer): Boolean');
 
-    RegisterMethodCheck(c, 'function IsPlanAt(var aPlayer: Integer; var aFieldType: TKMFieldType; X, Y: Word): Boolean');
-    RegisterMethodCheck(c, 'function IsFieldPlanAt(var aPlayer: Integer; X, Y: Word): Boolean');
-    RegisterMethodCheck(c, 'function IsHousePlanAt(var aPlayer: Integer; var aHouseType: TKMHouseType; X, Y: Word): Boolean');
-    RegisterMethodCheck(c, 'function IsRoadPlanAt(var aPlayer: Integer; X, Y: Word): Boolean');
-    RegisterMethodCheck(c, 'function IsWinefieldPlanAt(var aPlayer: Integer; X, Y: Word): Boolean');
+    RegisterMethodCheck(c, 'function IsPlanAt(var aPlayer: Integer; var aFieldType: TKMFieldType; X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function IsFieldPlanAt(var aPlayer: Integer; X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function IsHousePlanAt(var aPlayer: Integer; var aHouseType: TKMHouseType; X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function IsRoadPlanAt(var aPlayer: Integer; X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function IsWinefieldPlanAt(var aPlayer: Integer; X, Y: Integer): Boolean');
 
     RegisterMethodCheck(c, 'function IsMissionBuildType: Boolean');
     RegisterMethodCheck(c, 'function IsMissionFightType: Boolean');
@@ -593,15 +593,15 @@ begin
     RegisterMethodCheck(c, 'function MapTileHasOnlyTerrainKinds(X, Y: Integer; TerKinds: array of TKMTerrainKind): Boolean');
     RegisterMethodCheck(c, 'function MapTileHasTerrainKind(X, Y: Integer; TerKind: TKMTerrainKind): Boolean');
     RegisterMethodCheck(c, 'function MapTileHeight(X, Y: Integer): Integer');
-    RegisterMethodCheck(c, 'function MapTileIsCoal(X, Y: Integer): Word');
-    RegisterMethodCheck(c, 'function MapTileIsGold(X, Y: Integer): Word');
+    RegisterMethodCheck(c, 'function MapTileIsCoal(X, Y: Integer): Integer');
+    RegisterMethodCheck(c, 'function MapTileIsGold(X, Y: Integer): Integer');
     RegisterMethodCheck(c, 'function MapTileIsIce(X, Y: Integer): Boolean');
     RegisterMethodCheck(c, 'function MapTileIsInMapCoords(X, Y: Integer): Boolean');
-    RegisterMethodCheck(c, 'function MapTileIsIron(X, Y: Integer): Word');
+    RegisterMethodCheck(c, 'function MapTileIsIron(X, Y: Integer): Integer');
     RegisterMethodCheck(c, 'function MapTileIsSand(X, Y: Integer): Boolean');
     RegisterMethodCheck(c, 'function MapTileIsSnow(X, Y: Integer): Boolean');
     RegisterMethodCheck(c, 'function MapTileIsSoil(X, Y: Integer): Boolean');
-    RegisterMethodCheck(c, 'function MapTileIsStone(X, Y: Integer): Word');
+    RegisterMethodCheck(c, 'function MapTileIsStone(X, Y: Integer): Integer');
     RegisterMethodCheck(c, 'function MapTileIsWater(X, Y: Integer; FullTilesOnly: Boolean): Boolean');
     RegisterMethodCheck(c, 'function MapTileObject(X, Y: Integer): Integer');
     RegisterMethodCheck(c, 'function MapTileOverlay(X, Y: Integer): TKMTileOverlay');
@@ -674,7 +674,7 @@ begin
     RegisterMethodCheck(c, 'function StatUnitTypeCountEx(aPlayer: Integer; aUnitType: TKMUnitType): Integer');
 
     RegisterMethodCheck(c, 'function UnitAllowAllyToSelect(aUnitID: Integer): Boolean');
-    RegisterMethodCheck(c, 'function UnitAt(aX, aY: Word): Integer');
+    RegisterMethodCheck(c, 'function UnitAt(aX, aY: Integer): Integer');
     RegisterMethodCheck(c, 'function UnitCarrying(aUnitID: Integer): Integer');
     RegisterMethodCheck(c, 'function UnitCarryingEx(aUnitID: Integer): TKMWareType');
     RegisterMethodCheck(c, 'function UnitDead(aUnitID: Integer): Boolean');

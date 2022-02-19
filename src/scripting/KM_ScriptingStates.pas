@@ -28,7 +28,7 @@ type
     function AIAutoDefence(aPlayer: Byte): Boolean;
     function AIAutoRepair(aPlayer: Byte): Boolean;
     function AIDefendAllies(aPlayer: Byte): Boolean;
-    procedure AIDefencePositionGet(aPlayer, aID: Byte; out aX, aY: Integer; out aGroupType: Byte; out aRadius: Word; out aDefType: Byte);
+    procedure AIDefencePositionGet(aPlayer, aID: Byte; out aX, aY: Integer; out aGroupType: Byte; out aRadius: Integer; out aDefType: Byte);
     function AIDefencePositionGetByIndex(aPlayer, aIndex: Integer): TKMDefencePositionInfo;
     function AIEquipRate(aPlayer: Byte; aType: Byte): Integer;
     procedure AIGroupsFormationGet(aPlayer, aType: Byte; out aCount, aColumns: Integer);
@@ -60,7 +60,7 @@ type
     function ConnectedByRoad(X1, Y1, X2, Y2: Integer): Boolean;
     function ConnectedByWalking(X1, Y1, X2, Y2: Integer): Boolean;
 
-    function FogRevealed(aPlayer: Byte; aX, aY: Word): Boolean;
+    function FogRevealed(aPlayer: Byte; aX, aY: Integer): Boolean;
 
     function GameSpeed: Single;
     function GameSpeedChangeAllowed: Boolean;
@@ -68,7 +68,7 @@ type
 
     function GroupAllowAllyToSelect(aGroupID: Integer): Boolean;
     function GroupAssignedToDefencePosition(aGroupID, X, Y: Integer): Boolean;
-    function GroupAt(aX, aY: Word): Integer;
+    function GroupAt(aX, aY: Integer): Integer;
     function GroupColumnCount(aGroupID: Integer): Integer;
     function GroupDead(aGroupID: Integer): Boolean;
     function GroupIdle(aGroupID: Integer): Boolean;
@@ -87,11 +87,11 @@ type
     function HandWareDistribution(aPlayer: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType): Integer;
 
     function HouseAllowAllyToSelect(aHouseID: Integer): Boolean;
-    function HouseAt(aX, aY: Word): Integer;
+    function HouseAt(aX, aY: Integer): Integer;
     function HouseBarracksRallyPointX(aBarracks: Integer): Integer;
     function HouseBarracksRallyPointY(aBarracks: Integer): Integer;
     function HouseBarracksRecruitsCount(aBarracks: Integer): Integer;
-    function HouseBuildingProgress(aHouseID: Integer): Word;
+    function HouseBuildingProgress(aHouseID: Integer): Integer;
     function HouseCanReachResources(aHouseID: Integer): Boolean;
     function HouseDamage(aHouseID: Integer): Integer;
     function HouseDeliveryBlocked(aHouseID: Integer): Boolean;
@@ -113,13 +113,13 @@ type
     function HouseTownHallMaxGold(aHouseID: Integer): Integer;
     function HouseType(aHouseID: Integer): Integer;
     function HouseTypeEx(aHouseID: Integer): TKMHouseType;
-    function HouseTypeMaxHealth(aHouseType: Integer): Word;
+    function HouseTypeMaxHealth(aHouseType: Integer): Integer;
     function HouseTypeMaxHealthEx(aHouseType: TKMHouseType): Integer;
     function HouseTypeName(aHouseType: Byte): AnsiString;
     function HouseTypeNameEx(aHouseType: TKMHouseType): AnsiString;
     function HouseTypeToOccupantType(aHouseType: Integer): Integer;
     function HouseTypeToWorkerType(aHouseType: TKMHouseType): TKMUnitType;
-    function HouseUnlocked(aPlayer, aHouseType: Word): Boolean;
+    function HouseUnlocked(aPlayer, aHouseType: Integer): Boolean;
     function HouseWareBlocked(aHouseID, aWareType: Integer): Boolean;
     function HouseWareBlockedEx(aHouseID: Integer; aWareType: TKMWareType): Boolean;
     function HouseWareBlockedTakeOut(aHouseID: Integer; aWareType: TKMWareType): Boolean;
@@ -129,9 +129,9 @@ type
     function HouseWoodcutterMode(aHouseID: Integer): TKMWoodcutterMode;
     function HouseWorker(aHouseID: Integer): Integer;
 
-    function IsFieldAt(aPlayer: ShortInt; X, Y: Word): Boolean;
-    function IsWinefieldAt(aPlayer: ShortInt; X, Y: Word): Boolean;
-    function IsRoadAt(aPlayer: ShortInt; X, Y: Word): Boolean;
+    function IsFieldAt(aPlayer: ShortInt; X, Y: Integer): Boolean;
+    function IsWinefieldAt(aPlayer: ShortInt; X, Y: Integer): Boolean;
+    function IsRoadAt(aPlayer: ShortInt; X, Y: Integer): Boolean;
 
     function IsPlanAt(var aPlayer: Integer; var aFieldType: TKMFieldType; X, Y: Integer): Boolean;
     function IsFieldPlanAt(var aPlayer: Integer; X, Y: Integer): Boolean;
@@ -156,15 +156,15 @@ type
     function MapTileHasOnlyTerrainKind(X, Y: Integer; TerKind: TKMTerrainKind): Boolean;
     function MapTileHasOnlyTerrainKinds(X, Y: Integer; TerKinds: array of TKMTerrainKind): Boolean;
     function MapTileHasTerrainKind(X, Y: Integer; TerKind: TKMTerrainKind): Boolean;
-    function MapTileIsCoal(X, Y: Integer): Word;
-    function MapTileIsGold(X, Y: Integer): Word;
+    function MapTileIsCoal(X, Y: Integer): Integer;
+    function MapTileIsGold(X, Y: Integer): Integer;
     function MapTileIsIce(X, Y: Integer): Boolean;
     function MapTileIsInMapCoords(X, Y: Integer): Boolean;
-    function MapTileIsIron(X, Y: Integer): Word;
+    function MapTileIsIron(X, Y: Integer): Integer;
     function MapTileIsSand(X, Y: Integer): Boolean;
     function MapTileIsSnow(X, Y: Integer): Boolean;
     function MapTileIsSoil(X, Y: Integer): Boolean;
-    function MapTileIsStone(X, Y: Integer): Word;
+    function MapTileIsStone(X, Y: Integer): Integer;
     function MapTileIsWater(X, Y: Integer; FullTilesOnly: Boolean): Boolean;
 
     function MapTileType(X, Y: Integer): Integer;
@@ -239,7 +239,7 @@ type
     function StatUnitTypeCountEx(aPlayer: Integer; aUnitType: TKMUnitType): Integer;
 
     function UnitAllowAllyToSelect(aUnitID: Integer): Boolean;
-    function UnitAt(aX, aY: Word): Integer;
+    function UnitAt(aX, aY: Integer): Integer;
     function UnitCarrying(aUnitID: Integer): Integer;
     function UnitCarryingEx(aUnitID: Integer): TKMWareType;
     function UnitDead(aUnitID: Integer): Boolean;
@@ -429,7 +429,7 @@ end;
 //* Parameters are returned in aX, aY, aGroupType, aRadius, aDefType variables
 //* Group types: 0 = Melee; 1	= Anti-horse; 2	= Ranged; 3	= Mounted
 //* Defence type: 0 = Defenders; 1 = Attackers
-procedure TKMScriptStates.AIDefencePositionGet(aPlayer, aID: Byte; out aX, aY: Integer; out aGroupType: Byte; out aRadius: Word; out aDefType: Byte);
+procedure TKMScriptStates.AIDefencePositionGet(aPlayer, aID: Byte; out aX, aY: Integer; out aGroupType: Byte; out aRadius: Integer; out aDefType: Byte);
 var
   DP: TAIDefencePosition;
 begin
@@ -2545,7 +2545,7 @@ end;
 //* Version: 5057
 //* Returns the ID of the house at the specified location or -1 if no house exists there
 //* Result: House ID
-function TKMScriptStates.HouseAt(aX, aY: Word): Integer;
+function TKMScriptStates.HouseAt(aX, aY: Integer): Integer;
 var
   H: TKMHouse;
 begin
@@ -2738,7 +2738,7 @@ end;
 //* Version: 6285
 //* Returns building progress of the specified house
 //* Result: Building progress
-function TKMScriptStates.HouseBuildingProgress(aHouseID: Integer): Word;
+function TKMScriptStates.HouseBuildingProgress(aHouseID: Integer): Integer;
 var
   H: TKMHouse;
 begin
@@ -3227,7 +3227,7 @@ end;
 //* Version: 6284
 //* Returns max health of the specified house type
 //* Result: Max health
-function TKMScriptStates.HouseTypeMaxHealth(aHouseType: Integer): Word;
+function TKMScriptStates.HouseTypeMaxHealth(aHouseType: Integer): Integer;
 begin
   try
     Result := 0;
@@ -3349,7 +3349,7 @@ end;
 //* Version: 6220
 //* Returns true if the specified player can build the specified house type (unlocked and allowed).
 //* Result: House unlocked
-function TKMScriptStates.HouseUnlocked(aPlayer, aHouseType: Word): Boolean;
+function TKMScriptStates.HouseUnlocked(aPlayer, aHouseType: Integer): Boolean;
 begin
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
@@ -3584,7 +3584,7 @@ end;
 //* Returns true if the specified player has a corn field at the specified location.
 //* If player index is -1 it will return true if any player has a corn field at the specified tile
 //* Result: Is field
-function TKMScriptStates.IsFieldAt(aPlayer: ShortInt; X, Y: Word): Boolean;
+function TKMScriptStates.IsFieldAt(aPlayer: ShortInt; X, Y: Integer): Boolean;
 begin
   try
     Result := False;
@@ -3605,7 +3605,7 @@ end;
 //* Returns true if the specified player has a road at the specified location.
 //* If player index is -1 it will return true if any player has a road at the specified tile
 //* Result: Is road
-function TKMScriptStates.IsRoadAt(aPlayer: ShortInt; X, Y: Word): Boolean;
+function TKMScriptStates.IsRoadAt(aPlayer: ShortInt; X, Y: Integer): Boolean;
 begin
   try
     Result := False;
@@ -3626,7 +3626,7 @@ end;
 //* Returns true if the specified player has a winefield at the specified location.
 //* If player index is -1 it will return true if any player has a winefield at the specified tile
 //* Result: Is winefield
-function TKMScriptStates.IsWinefieldAt(aPlayer: ShortInt; X, Y: Word): Boolean;
+function TKMScriptStates.IsWinefieldAt(aPlayer: ShortInt; X, Y: Integer): Boolean;
 begin
   try
     Result := False;
@@ -3652,7 +3652,7 @@ end;
 //* Result: Is plan found
 function TKMScriptStates.IsPlanAt(var aPlayer: Integer; var aFieldType: TKMFieldType; X, Y: Integer): Boolean;
 
-  function FindPlan(aHandId, aX, aY: Word; var aFieldType: TKMFieldType): Boolean;
+  function FindPlan(aHandId, aX, aY: Integer; var aFieldType: TKMFieldType): Boolean;
   var
     FT: TKMFieldType;
   begin
@@ -3718,7 +3718,7 @@ end;
 //* Result: Is field plan found
 function TKMScriptStates.IsFieldPlanAt(var aPlayer: Integer; X, Y: Integer): Boolean;
 
-  function FindPlan(aHandId, aX, aY: Word): Boolean; inline;
+  function FindPlan(aHandId, aX, aY: Integer): Boolean; inline;
   begin
     Result := gHands[aHandId].Constructions.FieldworksList.HasField(KMPoint(aX, aY)) = ftCorn;
   end;
@@ -3763,7 +3763,7 @@ end;
 //* Result: Is house plan found
 function TKMScriptStates.IsHousePlanAt(var aPlayer: Integer; var aHouseType: TKMHouseType; X, Y: Integer): Boolean;
 
-  function FindPlan(aHandId, aX, aY: Word; var aHouseType: TKMHouseType): Boolean; inline;
+  function FindPlan(aHandId, aX, aY: Integer; var aHouseType: TKMHouseType): Boolean; inline;
   var
     HT: TKMHouseType;
   begin
@@ -3829,7 +3829,7 @@ end;
 //* Result: Is road plan found
 function TKMScriptStates.IsRoadPlanAt(var aPlayer: Integer; X, Y: Integer): Boolean;
 
-  function FindPlan(aHandId, aX, aY: Word): Boolean; inline;
+  function FindPlan(aHandId, aX, aY: Integer): Boolean; inline;
   begin
     Result := gHands[aHandId].Constructions.FieldworksList.HasField(KMPoint(aX, aY)) = ftRoad;
   end;
@@ -3872,7 +3872,7 @@ end;
 //* Result: Is winefield plan found
 function TKMScriptStates.IsWinefieldPlanAt(var aPlayer: Integer; X, Y: Integer): Boolean;
 
-  function FindPlan(aHandId, aX, aY: Word): Boolean; inline;
+  function FindPlan(aHandId, aX, aY: Integer): Boolean; inline;
   begin
     Result := gHands[aHandId].Constructions.FieldworksList.HasField(KMPoint(aX, aY)) = ftWine;
   end;
@@ -4381,7 +4381,7 @@ end;
 //* Version: 11000
 //* Check coal deposit size at the specified XY coordinates.
 //* Result: Coal deposit size at X, Y
-function TKMScriptStates.MapTileIsCoal(X, Y: Integer): Word;
+function TKMScriptStates.MapTileIsCoal(X, Y: Integer): Integer;
 begin
   try
     if gTerrain.TileInMapCoords(X, Y) then
@@ -4401,7 +4401,7 @@ end;
 //* Version: 11000
 //* Check gold deposit size at the specified XY coordinates.
 //* Result: Gold deposit size at X, Y
-function TKMScriptStates.MapTileIsGold(X, Y: Integer): Word;
+function TKMScriptStates.MapTileIsGold(X, Y: Integer): Integer;
 begin
   try
     if gTerrain.TileInMapCoords(X, Y) then
@@ -4456,7 +4456,7 @@ end;
 //* Version: 11000
 //* Check iron deposit size at the specified XY coordinates.
 //* Result: Iron deposit size at X, Y
-function TKMScriptStates.MapTileIsIron(X, Y: Integer): Word;
+function TKMScriptStates.MapTileIsIron(X, Y: Integer): Integer;
 begin
   try
     if gTerrain.TileInMapCoords(X, Y) then
@@ -4536,7 +4536,7 @@ end;
 //* Version: 11000
 //* Check stone deposit size at the specified XY coordinates.
 //* Result: Stone deposit size at X, Y
-function TKMScriptStates.MapTileIsStone(X, Y: Integer): Word;
+function TKMScriptStates.MapTileIsStone(X, Y: Integer): Integer;
 begin
   try
     if gTerrain.TileInMapCoords(X, Y) then
@@ -4797,7 +4797,7 @@ end;
 //* Version: 5097
 //* Check if a tile is revealed in fog of war for a player
 //* Result: Revealed
-function TKMScriptStates.FogRevealed(aPlayer: Byte; aX, aY: Word): Boolean;
+function TKMScriptStates.FogRevealed(aPlayer: Byte; aX, aY: Integer): Boolean;
 begin
   try
     Result := False;
@@ -4840,7 +4840,7 @@ end;
 //* Version: 5057
 //* Returns the ID of the unit on the specified tile or -1 if no unit exists there
 //* Result: Unit ID
-function TKMScriptStates.UnitAt(aX, aY: Word): Integer;
+function TKMScriptStates.UnitAt(aX, aY: Integer): Integer;
 var
   U: TKMUnit;
 begin
@@ -5538,7 +5538,7 @@ end;
 //* Version: 5057
 //* Returns the ID of the group of the unit on the specified tile or -1 if no group exists there
 //* Result: Group ID
-function TKMScriptStates.GroupAt(aX, aY: Word): Integer;
+function TKMScriptStates.GroupAt(aX, aY: Integer): Integer;
 var
   G: TKMUnitGroup;
 begin
