@@ -182,10 +182,10 @@ end;
 
 destructor TKMScriptEvents.Destroy;
 var
-  Command: TKMConsoleCommand;
+  command: TKMConsoleCommand;
 begin
-  for Command in fConsoleCommands.Values do
-    Command.Free;
+  for command in fConsoleCommands.Values do
+    command.Free;
 
   fConsoleCommands.Clear;
 
@@ -247,7 +247,7 @@ procedure TKMScriptEvents.LinkEventsAndCommands;
 var
   I: Integer;
   ET: TKMScriptEventType;
-  CmdName: AnsiString;
+  cmdName: AnsiString;
 begin
   //Link events
   for ET := Low(TKMScriptEventType) to High(TKMScriptEventType) do
@@ -262,8 +262,8 @@ begin
     end;
 
   //Link Console commands
-  for CmdName in fConsoleCommands.Keys do
-    fConsoleCommands.Items[CmdName].Handler := fExec.GetProcAsMethodN(fConsoleCommands.Items[CmdName].ProcName);
+  for cmdName in fConsoleCommands.Keys do
+    fConsoleCommands.Items[cmdName].Handler := fExec.GetProcAsMethodN(fConsoleCommands.Items[cmdName].ProcName);
 end;
 
 
@@ -309,7 +309,7 @@ end;
 
 procedure TKMScriptEvents.AddEventHandlerName(aEventType: TKMScriptEventType; const aEventHandlerName: AnsiString);
 var
-  I, Len: Integer;
+  I, len: Integer;
 begin
   Assert(Trim(aEventHandlerName) <> '', 'Can''t add empty event handler for event type: ' +
          GetEnumName(TypeInfo(TKMScriptEventType), Integer(aEventType)));
@@ -322,10 +322,10 @@ begin
       Exit;
     end;
 
-  Len := Length(fEventHandlers[aEventType]);
+  len := Length(fEventHandlers[aEventType]);
   //todo: rewrite it not to enlarge array by 1 element
-  SetLength(fEventHandlers[aEventType], Len + 1);
-  fEventHandlers[aEventType][Len].ProcName := aEventHandlerName;
+  SetLength(fEventHandlers[aEventType], len + 1);
+  fEventHandlers[aEventType][len].ProcName := aEventHandlerName;
 end;
 
 
@@ -350,7 +350,7 @@ procedure TKMScriptEvents.Save(SaveStream: TKMemoryStream);
 var
   I: Integer;
   ET: TKMScriptEventType;
-  CmdPair: TPair<AnsiString, TKMConsoleCommand>;
+  cmdPair: TPair<AnsiString, TKMConsoleCommand>;
 begin
   SaveStream.PlaceMarker('CustomScriptEvents');
   //Save custom events
@@ -363,40 +363,40 @@ begin
 
   //Save console commands
   SaveStream.Write(Integer(fConsoleCommands.Count));
-  for CmdPair in fConsoleCommands do
-    CmdPair.Value.Save(SaveStream);
+  for cmdPair in fConsoleCommands do
+    cmdPair.Value.Save(SaveStream);
 end;
 
 
 procedure TKMScriptEvents.Load(LoadStream: TKMemoryStream);
 var
-  Cnt: Byte;
-  HandlerName: AnsiString;
-  I, CmdCount: Integer;
+  I, cmdCount: Integer;
+  cnt: Byte;
+  handlerName: AnsiString;
   ET: TKMScriptEventType;
-  Command: TKMConsoleCommand;
+  command: TKMConsoleCommand;
 begin
   LoadStream.CheckMarker('CustomScriptEvents');
   //Load custom events
   for ET := Low(TKMScriptEventType) to High(TKMScriptEventType) do
   begin
-    LoadStream.Read(Cnt); //We saved only custom event handler names (no need to save/load default one), then load them all
-    for I := 0 to Cnt - 1 do
+    LoadStream.Read(cnt); //We saved only custom event handler names (no need to save/load default one), then load them all
+    for I := 0 to cnt - 1 do
     begin
-      LoadStream.ReadA(HandlerName);
-      AddEventHandlerName(ET, HandlerName);
+      LoadStream.ReadA(handlerName);
+      AddEventHandlerName(ET, handlerName);
     end;
   end;
 
   //Load console commands
-  LoadStream.Read(CmdCount);
-  for I := 0 to CmdCount - 1 do
+  LoadStream.Read(cmdCount);
+  for I := 0 to cmdCount - 1 do
   begin
     //Create new command instance
     //Commands destruction will be handled by fConsoleCommands TDictionary in TKMScriptEvents.Destroy
-    Command := TKMConsoleCommand.Create;
-    Command.Load(LoadStream);
-    fConsoleCommands.Add(AnsiString(LowerCase(Command.Name)), Command);
+    command := TKMConsoleCommand.Create;
+    command.Load(LoadStream);
+    fConsoleCommands.Add(AnsiString(LowerCase(command.Name)), command);
   end;
 end;
 
@@ -441,9 +441,9 @@ const
 
 var
   I: Integer;
-  CmdFound: Boolean;
+  cmdFound: Boolean;
   SL: TStringList;
-  CmdPair: TPair<AnsiString, TKMConsoleCommand>;
+  cmdPair: TPair<AnsiString, TKMConsoleCommand>;
 
   {$IFDEF WDC}
   RegEx: TRegEx;
@@ -456,12 +456,12 @@ begin
   SL := TStringList.Create;
   try
     SL.Text := aScriptCode;
-    for CmdPair in fConsoleCommands do
+    for cmdPair in fConsoleCommands do
     begin
-      CmdFound := False;
+      cmdFound := False;
       //Check procedure name with regular expression
       {$IFDEF WDC}
-      RegEx := TRegEx.Create(Format('^\s*procedure\s+%s\s*\(.+\).*$', [CmdPair.Value.ProcName]), [roIgnoreCase]);
+      RegEx := TRegEx.Create(Format('^\s*procedure\s+%s\s*\(.+\).*$', [cmdPair.Value.ProcName]), [roIgnoreCase]);
       {$ENDIF}
       {$IFDEF FPC}
       RegEx := TRegExpr.Create(Format('^\s*procedure\s+%s\s*\(.+\).*$', [CmdPair.Value.ProcName]));
@@ -476,15 +476,15 @@ begin
         if RegEx.Exec(SL[I]) then
         {$ENDIF}
         begin
-          CmdPair.Value.ParseParameters(SL[I], I + 1);
-          CmdFound := True;
+          cmdPair.Value.ParseParameters(SL[I], I + 1);
+          cmdFound := True;
           Break;
         end;
       end;
-      if not CmdFound then
+      if not cmdFound then
         raise EConsoleCommandParseError.Create(Format(GetErrorStr,
-                                                     [CmdPair.Value.ProcName, CmdPair.Value.Name]),
-                                               0, 0, CmdPair.Value.ProcName);
+                                                     [cmdPair.Value.ProcName, cmdPair.Value.Name]),
+                                               0, 0, cmdPair.Value.ProcName);
     end;
   finally
     FreeAndNil(SL);
@@ -501,13 +501,13 @@ end;
 //This procedure allows us to keep the exception handling code in one place
 procedure TKMScriptEvents.HandleScriptProcCallError(const aMethod: String);//aEx: Exception);
 var
-  ExceptionProc: TPSProcRec;
-  InternalProc: TPSInternalProcRec;
-  MainErrorStr, ErrorStr, DetailedErrorStr: UnicodeString;
-  Pos, Row, Col: Cardinal;
-  FileName: tbtstring;
-  ErrorMessage: TKMScriptErrorMessage;
-  Res: TPSLineInfoResults;
+  exceptionProc: TPSProcRec;
+  internalProc: TPSInternalProcRec;
+  mainErrorStr, errorStr, detailedErrorStr: UnicodeString;
+  pos, row, col: Cardinal;
+  fileName: tbtstring;
+  errorMessage: TKMScriptErrorMessage;
+  res: TPSLineInfoResults;
   e: Exception;
 begin
   e := Exception(AcquireExceptionObject);
@@ -523,35 +523,35 @@ begin
   else
   begin
     ReleaseExceptionObject;
-    DetailedErrorStr := '';
-    MainErrorStr := 'Exception in script: ''' + e.Message + '''';
-    ExceptionProc := fExec.GetProcNo(fExec.ExceptionProcNo);
-    if ExceptionProc is TPSInternalProcRec then
+    detailedErrorStr := '';
+    mainErrorStr := 'Exception in script: ''' + e.Message + '''';
+    exceptionProc := fExec.GetProcNo(fExec.ExceptionProcNo);
+    if exceptionProc is TPSInternalProcRec then
     begin
-      InternalProc := TPSInternalProcRec(ExceptionProc);
-      MainErrorStr := MainErrorStr + EolW + 'in method ''' + UnicodeString(InternalProc.ExportName) + '''' + EolW;
+      internalProc := TPSInternalProcRec(exceptionProc);
+      mainErrorStr := mainErrorStr + EolW + 'in method ''' + UnicodeString(internalProc.ExportName) + '''' + EolW;
       // With the help of uPSDebugger get information about error position in script code
-      if (fExec is TPSDebugExec) and TPSDebugExec(fExec).TranslatePositionEx(fExec.LastExProc, fExec.LastExPos, Pos, Row, Col, FileName) then
+      if (fExec is TPSDebugExec) and TPSDebugExec(fExec).TranslatePositionEx(fExec.LastExProc, fExec.LastExPos, pos, row, col, fileName) then
       begin
         //Get line according to preprocessor (includes and defines could affect error row/col)
-        if fPreProcessor.CurrentLineInfo.GetLineInfo('', Pos, Res) then
+        if fPreProcessor.CurrentLineInfo.GetLineInfo('', pos, res) then
         begin
-          Pos := Res.Pos;
-          Row := Res.Row;
-          Col := Res.Col;
-          FileName := Res.Name;
+          pos := res.Pos;
+          row := res.Row;
+          col := res.Col;
+          fileName := res.Name;
         end;
-        ErrorMessage := gGame.Scripting.GetErrorMessage('Error', '', ExtractFileName(FileName), Row, Col, Pos);
-        ErrorStr := MainErrorStr + ErrorMessage.GameMessage;
-        DetailedErrorStr := MainErrorStr + ErrorMessage.LogMessage;
+        errorMessage := gGame.Scripting.GetErrorMessage('Error', '', ExtractFileName(fileName), row, col, pos);
+        errorStr := mainErrorStr + errorMessage.GameMessage;
+        detailedErrorStr := mainErrorStr + errorMessage.LogMessage;
       end
       else
       begin
-        ErrorStr := MainErrorStr;
-        DetailedErrorStr := MainErrorStr;
+        errorStr := mainErrorStr;
+        detailedErrorStr := mainErrorStr;
       end;
     end;
-    fOnScriptError(seException, ErrorStr, DetailedErrorStr);
+    fOnScriptError(seException, errorStr, detailedErrorStr);
   end;
 end;
 

@@ -288,8 +288,8 @@ procedure TKMScriptActions.CinematicPanTo(aHand: Byte; X, Y, Duration: Integer);
 begin
   try
     if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
-    and gTerrain.TileInMapCoords(X, Y)
-    and gHands[aHand].InCinematic then
+      and gTerrain.TileInMapCoords(X, Y)
+      and gHands[aHand].InCinematic then
     begin
       if aHand = gMySpectator.HandID then
         gGame.GamePlayInterface.Viewport.PanTo(KMPointF(X, Y), Duration);
@@ -351,9 +351,9 @@ procedure TKMScriptActions.PlayerShareBeacons(aHand1, aHand2: Integer; aBothWays
 begin
   try
     if  InRange(aHand1, 0, gHands.Count - 1)
-    and InRange(aHand2, 0, gHands.Count - 1)
-    and (gHands[aHand1].Enabled)
-    and (gHands[aHand2].Enabled) then
+      and InRange(aHand2, 0, gHands.Count - 1)
+      and (gHands[aHand1].Enabled)
+      and (gHands[aHand2].Enabled) then
     begin
       gHands[aHand1].ShareBeacons[aHand2] := aShare;
       if aBothWays then
@@ -375,9 +375,9 @@ procedure TKMScriptActions.PlayerShareFog(aHand1, aHand2: Integer; aShare: Boole
 begin
   try
     if  InRange(aHand1, 0, gHands.Count - 1)
-    and InRange(aHand2, 0, gHands.Count - 1)
-    and (gHands[aHand1].Enabled)
-    and (gHands[aHand2].Enabled) then
+      and InRange(aHand2, 0, gHands.Count - 1)
+      and (gHands[aHand1].Enabled)
+      and (gHands[aHand2].Enabled) then
       gHands[aHand1].ShareFOW[aHand2] := aShare
     else
       LogIntParamWarn('Actions.PlayerShareFog', [aHand1, aHand2, Byte(aShare)]);
@@ -395,9 +395,9 @@ procedure TKMScriptActions.PlayerShareFogCompliment(aHand1, aHand2: Integer; aSh
 begin
   try
     if  InRange(aHand1, 0, gHands.Count - 1)
-    and InRange(aHand2, 0, gHands.Count - 1)
-    and (gHands[aHand1].Enabled)
-    and (gHands[aHand2].Enabled) then
+      and InRange(aHand2, 0, gHands.Count - 1)
+      and (gHands[aHand1].Enabled)
+      and (gHands[aHand2].Enabled) then
     begin
       gHands[aHand1].ShareFOW[aHand2] := aShare;
       gHands[aHand2].ShareFOW[aHand1] := aShare
@@ -424,11 +424,11 @@ begin
   try
     //Verify all input parameters
     for I := 0 to Length(aVictors) - 1 do
-    if not InRange(aVictors[I], 0, gHands.Count - 1) then
-    begin
-      LogIntParamWarn('Actions.PlayerWin', [aVictors[I]]);
-      Exit;
-    end;
+      if not InRange(aVictors[I], 0, gHands.Count - 1) then
+      begin
+        LogIntParamWarn('Actions.PlayerWin', [aVictors[I]]);
+        Exit;
+      end;
 
     for I := 0 to Length(aVictors) - 1 do
       if gHands[aVictors[I]].Enabled then
@@ -458,10 +458,10 @@ procedure TKMScriptActions.PlayerWareDistribution(aHand, aWareType, aHouseType, 
 begin
   try
     if (aWareType in [Low(WARE_ID_TO_TYPE) .. High(WARE_ID_TO_TYPE)])
-    and (WARE_ID_TO_TYPE[aWareType] in [wtSteel, wtCoal, wtWood, wtCorn])
-    and HouseTypeValid(aHouseType)
-    and InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
-    and InRange(aAmount, 0, 5) then
+      and (WARE_ID_TO_TYPE[aWareType] in [wtSteel, wtCoal, wtWood, wtCorn])
+      and HouseTypeValid(aHouseType)
+      and InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+      and InRange(aAmount, 0, 5) then
     begin
       gHands[aHand].Stats.WareDistribution[WARE_ID_TO_TYPE[aWareType], HOUSE_ID_TO_TYPE[aHouseType]] := aAmount;
       gHands[aHand].Houses.UpdateResRequest;
@@ -1071,7 +1071,7 @@ var
   H: TKMHouse;
   I, K: Integer;
   HA: THouseArea;
-  NonEntranceX: Integer;
+  nonEntranceX: Integer;
 begin
   try
     Result := -1;
@@ -1080,10 +1080,10 @@ begin
     and HouseTypeValid(aHouseType)
     and gTerrain.TileInMapCoords(X,Y) then
     begin
-      NonEntranceX := X - gResHouses[HOUSE_ID_TO_TYPE[aHouseType]].EntranceOffsetX;
-      if gTerrain.CanPlaceHouseFromScript(HOUSE_ID_TO_TYPE[aHouseType], KMPoint(NonEntranceX, Y)) then
+      nonEntranceX := X - gResHouses[HOUSE_ID_TO_TYPE[aHouseType]].EntranceOffsetX;
+      if gTerrain.CanPlaceHouseFromScript(HOUSE_ID_TO_TYPE[aHouseType], KMPoint(nonEntranceX, Y)) then
       begin
-        H := gHands[aHand].AddHouseWIP(HOUSE_ID_TO_TYPE[aHouseType], KMPoint(NonEntranceX, Y));
+        H := gHands[aHand].AddHouseWIP(HOUSE_ID_TO_TYPE[aHouseType], KMPoint(nonEntranceX, Y));
         if (H = nil) or (H.IsDestroyed) then
           Exit;
 
@@ -1093,9 +1093,9 @@ begin
         for K := 1 to 4 do
           if HA[I, K] <> 0 then
           begin
-            gTerrain.RemoveObject(KMPoint(NonEntranceX + K - 3, Y + I - 4));
-            gTerrain.FlattenTerrain(KMPoint(NonEntranceX + K - 3, Y + I - 4));
-            gTerrain.SetTileLock(KMPoint(NonEntranceX + K - 3, Y + I - 4), tlDigged);
+            gTerrain.RemoveObject(KMPoint(nonEntranceX + K - 3, Y + I - 4));
+            gTerrain.FlattenTerrain(KMPoint(nonEntranceX + K - 3, Y + I - 4));
+            gTerrain.SetTileLock(KMPoint(nonEntranceX + K - 3, Y + I - 4), tlDigged);
           end;
 
         gTerrain.SetRoad(H.Entrance, aHand);
@@ -1122,7 +1122,6 @@ begin
     raise;
   end;
 end;
-
 
 
 //* Version: 14000
@@ -1194,8 +1193,8 @@ procedure TKMScriptActions.AIArmyType(aHand: Byte; aType: TKMArmyType);
 begin
   try
     if InRange(aHand, 0, gHands.Count - 1)
-    and (gHands[aHand].Enabled)
-    and (aType in [Low(TKMArmyType)..High(TKMArmyType)]) then
+      and (gHands[aHand].Enabled)
+      and (aType in [Low(TKMArmyType)..High(TKMArmyType)]) then
       gHands[aHand].AI.Setup.ArmyType := aType
     else
       LogIntParamWarn('Actions.AIArmyType', [aHand, Byte(aType)]);
@@ -2347,7 +2346,7 @@ end;
 //* Add building materials to the specified WIP house area
 procedure TKMScriptActions.HouseAddBuildingMaterials(aHouseID: Integer);
 var
-  I, StoneNeeded, WoodNeeded: Integer;
+  I, stoneNeeded, woodNeeded: Integer;
   plannedToRemove: Word;
   H: TKMHouse;
 begin
@@ -2358,15 +2357,15 @@ begin
       if H <> nil then
         if not H.IsComplete then
         begin
-          StoneNeeded := gHands[H.Owner].Deliveries.Queue.TryRemoveDemand(H, wtStone,
+          stoneNeeded := gHands[H.Owner].Deliveries.Queue.TryRemoveDemand(H, wtStone,
                             gResHouses[H.HouseType].StoneCost - H.GetBuildStoneDelivered, plannedToRemove);
-          Inc(StoneNeeded, plannedToRemove);
-          WoodNeeded := gHands[H.Owner].Deliveries.Queue.TryRemoveDemand(H, wtWood,
+          Inc(stoneNeeded, plannedToRemove);
+          woodNeeded := gHands[H.Owner].Deliveries.Queue.TryRemoveDemand(H, wtWood,
                             gResHouses[H.HouseType].WoodCost - H.GetBuildWoodDelivered, plannedToRemove);
-          Inc(WoodNeeded, plannedToRemove);
-          for I := 0 to WoodNeeded - 1 do
+          Inc(woodNeeded, plannedToRemove);
+          for I := 0 to woodNeeded - 1 do
             H.ResAddToBuild(wtWood);
-          for I := 0 to StoneNeeded - 1 do
+          for I := 0 to stoneNeeded - 1 do
             H.ResAddToBuild(wtStone);
         end;
     end
@@ -2480,21 +2479,21 @@ end;
 procedure TKMScriptActions.HouseAddWaresTo(aHouseID: Integer; aType, aCount: Integer);
 var
   H: TKMHouse;
-  Res: TKMWareType;
+  res: TKMWareType;
 begin
   try
     if (aHouseID > 0) and (aType in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)]) then
     begin
-      Res := WARE_ID_TO_TYPE[aType];
+      res := WARE_ID_TO_TYPE[aType];
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil) and not H.IsDestroyed and H.IsComplete then
-        if H.ResCanAddToIn(Res) or H.ResCanAddToOut(Res) then
+        if H.ResCanAddToIn(res) or H.ResCanAddToOut(res) then
         begin
           if aCount > 0 then
           begin
-            H.ResAddToEitherFromScript(Res, aCount);
-            gHands[H.Owner].Stats.WareProduced(Res, aCount);
-            gScriptEvents.ProcWareProduced(H, Res, aCount);
+            H.ResAddToEitherFromScript(res, aCount);
+            gHands[H.Owner].Stats.WareProduced(res, aCount);
+            gScriptEvents.ProcWareProduced(H, res, aCount);
           end;
         end
         else
@@ -2516,23 +2515,23 @@ end;
 procedure TKMScriptActions.HouseTakeWaresFrom(aHouseID: Integer; aType, aCount: Integer);
 var
   H: TKMHouse;
-  Res: TKMWareType;
+  res: TKMWareType;
 begin
   try
     if (aHouseID > 0) and (aType in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)]) then
     begin
-      Res := WARE_ID_TO_TYPE[aType];
+      res := WARE_ID_TO_TYPE[aType];
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil) and not H.IsDestroyed and H.IsComplete then
         //Store/barracks mix input/output (add to input, take from output) so we must process them together
-        if H.ResCanAddToIn(Res) or H.ResCanAddToOut(Res) then
+        if H.ResCanAddToIn(res) or H.ResCanAddToOut(res) then
         begin
           if aCount > 0 then
           begin
             //Range checking is done within ResTakeFromIn and ResTakeFromOut when aFromScript=True
             //Only one will succeed, we don't care which one it is
-            H.ResTakeFromIn(Res, aCount, True);
-            H.ResTakeFromOut(Res, aCount, True);
+            H.ResTakeFromIn(res, aCount, True);
+            H.ResTakeFromOut(res, aCount, True);
           end;
         end
         else
@@ -2599,7 +2598,8 @@ end;
 //* Version: 5057
 //* Enables house repair for the specified house
 procedure TKMScriptActions.HouseRepairEnable(aHouseID: Integer; aRepairEnabled: Boolean);
-var H: TKMHouse;
+var
+  H: TKMHouse;
 begin
   try
     if aHouseID > 0 then
@@ -2620,7 +2620,8 @@ end;
 //* Version: 5057
 //* Sets delivery blocking for the specified house
 procedure TKMScriptActions.HouseDeliveryBlock(aHouseID: Integer; aDeliveryBlocked: Boolean);
-var H: TKMHouse;
+var
+  H: TKMHouse;
 begin
   try
     if aHouseID > 0 then
@@ -2648,7 +2649,8 @@ end;
 //* Version: 13900
 //* Sets delivery mode for the specified house
 procedure TKMScriptActions.HouseDeliveryMode(aHouseID: Integer; aDeliveryMode: TKMDeliveryMode);
-var H: TKMHouse;
+var
+  H: TKMHouse;
 begin
   try
     if aHouseID > 0 then
@@ -2751,24 +2753,24 @@ end;
 procedure TKMScriptActions.HouseWareBlock(aHouseID, aWareType: Integer; aBlocked: Boolean);
 var
   H: TKMHouse;
-  Res: TKMWareType;
+  res: TKMWareType;
 begin
   try
     if (aHouseID > 0)
     and (aWareType in [Low(WARE_ID_TO_TYPE) .. High(WARE_ID_TO_TYPE)]) then
     begin
-      Res := WARE_ID_TO_TYPE[aWareType];
+      res := WARE_ID_TO_TYPE[aWareType];
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil)
         and (H is TKMHouseStore)
         and not H.IsDestroyed then
-        TKMHouseStore(H).NotAcceptFlag[Res] := aBlocked;
+        TKMHouseStore(H).NotAcceptFlag[res] := aBlocked;
 
       if (H <> nil)
         and (H is TKMHouseBarracks)
         and not H.IsDestroyed
-        and (Res in [WARFARE_MIN..WARFARE_MAX]) then
-        TKMHouseBarracks(H).NotAcceptFlag[Res] := aBlocked;
+        and (res in [WARFARE_MIN..WARFARE_MAX]) then
+        TKMHouseBarracks(H).NotAcceptFlag[res] := aBlocked;
     end
     else
       LogIntParamWarn('Actions.HouseWareBlock', [aHouseID, aWareType, Byte(aBlocked)]);
@@ -2784,24 +2786,24 @@ end;
 procedure TKMScriptActions.HouseWareBlockTakeOut(aHouseID, aWareType: Integer; aBlocked: Boolean);
 var
   H: TKMHouse;
-  Res: TKMWareType;
+  res: TKMWareType;
 begin
   try
     if (aHouseID > 0)
     and (aWareType in [Low(WARE_ID_TO_TYPE) .. High(WARE_ID_TO_TYPE)]) then
     begin
-      Res := WARE_ID_TO_TYPE[aWareType];
+      res := WARE_ID_TO_TYPE[aWareType];
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil)
         and (H is TKMHouseStore)
         and not H.IsDestroyed then
-        TKMHouseStore(H).NotAllowTakeOutFlag[Res] := aBlocked;
+        TKMHouseStore(H).NotAllowTakeOutFlag[res] := aBlocked;
 
       if (H <> nil)
         and (H is TKMHouseBarracks)
         and not H.IsDestroyed
-        and (Res in [WARFARE_MIN..WARFARE_MAX]) then
-        TKMHouseBarracks(H).NotAllowTakeOutFlag[Res] := aBlocked;
+        and (res in [WARFARE_MIN..WARFARE_MAX]) then
+        TKMHouseBarracks(H).NotAllowTakeOutFlag[res] := aBlocked;
     end
     else
       LogIntParamWarn('Actions.HouseWareBlockTakeOut', [aHouseID, aWareType, Byte(aBlocked)]);
@@ -2817,21 +2819,21 @@ end;
 //* Sets the amount of the specified weapon ordered to be produced in the specified house
 procedure TKMScriptActions.HouseWeaponsOrderSet(aHouseID, aWareType, aAmount: Integer);
 var
-  H: TKMHouse;
-  Res: TKMWareType;
   I: Integer;
+  H: TKMHouse;
+  res: TKMWareType;
 begin
   try
     if (aHouseID > 0) and InRange(aAmount, 0, MAX_WARES_ORDER)
     and (aWareType in [Low(WARE_ID_TO_TYPE) .. High(WARE_ID_TO_TYPE)]) then
     begin
-      Res := WARE_ID_TO_TYPE[aWareType];
+      res := WARE_ID_TO_TYPE[aWareType];
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil)
         and not H.IsDestroyed
         and H.IsComplete then
         for I := 1 to 4 do
-          if gResHouses[H.HouseType].ResOutput[I] = Res then
+          if gResHouses[H.HouseType].ResOutput[I] = res then
           begin
             H.ResOrder[I] := aAmount;
             Exit;
@@ -3230,40 +3232,43 @@ end;
 //* aShowDetailedErrors: show detailed errors after. Can slow down the execution, because of logging. If aRevertOnFail is set to True, then only first error will be shown
 //* Returns true, if there was no errors on any tile. False if there was at least 1 error.
 function TKMScriptActions.MapTilesArraySet(aTiles: array of TKMTerrainTileBrief; aRevertOnFail, aShowDetailedErrors: Boolean): Boolean;
+
   function GetTileErrorsStr(aErrorsIn: TKMTileChangeTypeSet): string;
-  var TileChangeType: TKMTileChangeType;
+  var
+    tileChangeType: TKMTileChangeType;
   begin
     Result := '';
-    for TileChangeType := Low(TKMTileChangeType) to High(TKMTileChangeType) do
-      if TileChangeType in aErrorsIn then
+    for tileChangeType := Low(TKMTileChangeType) to High(TKMTileChangeType) do
+      if tileChangeType in aErrorsIn then
       begin
         if Result <> '' then
           Result := Result + ', ';
-        Result := Result + GetEnumName(TypeInfo(TKMTileChangeType), Integer(TileChangeType));
+        Result := Result + GetEnumName(TypeInfo(TKMTileChangeType), Integer(tileChangeType));
       end;
   end;
 
-var I: Integer;
-    Errors: TKMTerrainTileChangeErrorArray;
+var
+  I: Integer;
+  errors: TKMTerrainTileChangeErrorArray;
 begin
   try
     Result := True;
-    SetLength(Errors, 16);
-    if not gTerrain.ScriptTrySetTilesArray(aTiles, aRevertOnFail, Errors) then
+    SetLength(errors, 16);
+    if not gTerrain.ScriptTrySetTilesArray(aTiles, aRevertOnFail, errors) then
     begin
       Result := False;
 
       // Log errors
-      if Length(Errors) > 0 then
+      if Length(errors) > 0 then
       begin
         if not aShowDetailedErrors then
-          Log(AnsiString(Format('Actions.MapTilesArraySet: there were %d errors while setting tiles' , [Length(Errors)])))
+          Log(AnsiString(Format('Actions.MapTilesArraySet: there were %d errors while setting tiles' , [Length(errors)])))
         else
           Log('Actions.MapTilesArraySet list of tiles errors:');
       end;
       if aShowDetailedErrors then
-        for I := Low(Errors) to High(Errors) do
-          Log(AnsiString(Format('Tile: %d,%d errors while applying [%s]', [Errors[I].X, Errors[I].Y, GetTileErrorsStr(Errors[I].ErrorsIn)])));
+        for I := Low(errors) to High(errors) do
+          Log(AnsiString(Format('Tile: %d,%d errors while applying [%s]', [errors[I].X, errors[I].Y, GetTileErrorsStr(errors[I].ErrorsIn)])));
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
@@ -3286,130 +3291,133 @@ end;
 //* Skipping obj for tile [7,2]: '7,2,20,2,87,-1'
 //* Skipping height for tile [7,2]: '7,2,20,2,-1,5' etc.
 function TKMScriptActions.MapTilesArraySetS(aTilesS: TAnsiStringArray; aRevertOnFail, aShowDetailedErrors: Boolean): Boolean;
+
   function GetTileErrorsStr(aErrorsIn: TKMTileChangeTypeSet): string;
-  var TileChangeType: TKMTileChangeType;
+  var
+    tileChangeType: TKMTileChangeType;
   begin
     Result := '';
-    for TileChangeType := Low(TKMTileChangeType) to High(TKMTileChangeType) do
-      if TileChangeType in aErrorsIn then
+    for tileChangeType := Low(TKMTileChangeType) to High(TKMTileChangeType) do
+      if tileChangeType in aErrorsIn then
       begin
         if Result <> '' then
           Result := Result + ', ';
-        Result := Result + GetEnumName(TypeInfo(TKMTileChangeType), Integer(TileChangeType));
+        Result := Result + GetEnumName(TypeInfo(TKMTileChangeType), Integer(tileChangeType));
       end;
   end;
 
-var I: Integer;
-    Errors: TKMTerrainTileChangeErrorArray;
-    aTiles: array of TKMTerrainTileBrief;
-    aArrElem: TAnsiStringArray;
-    aParsedValue: Integer;
-    aParserError: Boolean;
+var
+  I: Integer;
+  errors: TKMTerrainTileChangeErrorArray;
+  tiles: array of TKMTerrainTileBrief;
+  arrElem: TAnsiStringArray;
+  parsedValue: Integer;
+  parserError: Boolean;
 begin
 {$WARN SUSPICIOUS_TYPECAST OFF}
   try
     Result := True;
-    SetLength(Errors, 16);
+    SetLength(errors, 16);
 
     //***********PARSING ARRAY OF STRING TO ARRAY OF TKMTerrainTileBrief**********
-    SetLength(aTiles, Length(aTilesS));
+    SetLength(tiles, Length(aTilesS));
     for I := Low(aTilesS) to High(aTilesS) do
     begin
-      aArrElem := StrSplitA(ReplaceStr(String(aTilesS[I]), ' ', ''), ',');
-      aParserError := false;
+      arrElem := StrSplitA(ReplaceStr(String(aTilesS[I]), ' ', ''), ',');
+      parserError := false;
 
       //checking params count, if count is invalid we cannot proceed
-      if (Length(aArrElem) <> 6) then
+      if (Length(arrElem) <> 6) then
         LogStr(Format('Actions.MapTilesArraySetS: Invalid number of parameters in string [%s]', [aTilesS[I]]))
       else
       begin
         //checking X, if X <= 0 we cannot proceed
-        if ((TryStrToInt(string(PChar(aArrElem[0])), aParsedValue)) and (aParsedValue > 0)) then
-          aTiles[I].X := aParsedValue
+        if ((TryStrToInt(string(PChar(arrElem[0])), parsedValue)) and (parsedValue > 0)) then
+          tiles[I].X := parsedValue
         else
         begin
-          LogStr(Format('Actions.MapTilesArraySetS: Parameter X = [%s] in line [%s] is not a valid integer.', [aArrElem[0], aTilesS[I]]));
-          aParserError := true;
+          LogStr(Format('Actions.MapTilesArraySetS: Parameter X = [%s] in line [%s] is not a valid integer.', [arrElem[0], aTilesS[I]]));
+          parserError := true;
         end;
         //checking Y, if Y <= 0 we cannot proceed
-        if ((TryStrToInt(string(PChar(aArrElem[1])), aParsedValue)) and (aParsedValue > 0)) then
-          aTiles[I].Y := aParsedValue
+        if ((TryStrToInt(string(PChar(arrElem[1])), parsedValue)) and (parsedValue > 0)) then
+          tiles[I].Y := parsedValue
         else
         begin
-          LogStr(Format('Actions.MapTilesArraySetS: Parameter Y = [%s] in line [%s] is not a valid integer.', [aArrElem[1], aTilesS[I]]));
-          aParserError := true;
+          LogStr(Format('Actions.MapTilesArraySetS: Parameter Y = [%s] in line [%s] is not a valid integer.', [arrElem[1], aTilesS[I]]));
+          parserError := true;
         end;
 
         //if X and Y are correctly defined we can proceed with terrain changes
-        if (not aParserError) then
+        if (not parserError) then
         begin
-          if (TryStrToInt(string(PChar(aArrElem[2])), aParsedValue)) then
+          if (TryStrToInt(string(PChar(arrElem[2])), parsedValue)) then
           begin
-            if (aParsedValue >= 0) then
+            if (parsedValue >= 0) then
             begin
               //if value is not skipped we proceed with terrain
-              aTiles[I].Terrain := aParsedValue;
-              aTiles[I].UpdateTerrain := True;
+              tiles[I].Terrain := parsedValue;
+              tiles[I].UpdateTerrain := True;
             end;
           end
           else
-            LogStr(Format('Actions.MapTilesArraySetS: Parameter Terrain = [%s] in line [%s] is not a valid integer.', [aArrElem[2], aTilesS[I]]));
+            LogStr(Format('Actions.MapTilesArraySetS: Parameter Terrain = [%s] in line [%s] is not a valid integer.', [arrElem[2], aTilesS[I]]));
 
-          if (TryStrToInt(string(PChar(aArrElem[3])), aParsedValue)) then
+          if (TryStrToInt(string(PChar(arrElem[3])), parsedValue)) then
           begin
-            if (aParsedValue >= 0) then
+            if (parsedValue >= 0) then
             begin
               //if value is not skipped we proceed with rotation
-              aTiles[I].Rotation := aParsedValue;
-              aTiles[I].UpdateRotation := True;
+              tiles[I].Rotation := parsedValue;
+              tiles[I].UpdateRotation := True;
             end;
           end
           else
-            LogStr(Format('Actions.MapTilesArraySetS: Parameter Rotation = [%s] in line [%s] is not a valid integer.', [aArrElem[3], aTilesS[I]]));
+            LogStr(Format('Actions.MapTilesArraySetS: Parameter Rotation = [%s] in line [%s] is not a valid integer.', [arrElem[3], aTilesS[I]]));
 
-          if (TryStrToInt(string(PChar(aArrElem[4])), aParsedValue)) then
+          if (TryStrToInt(string(PChar(arrElem[4])), parsedValue)) then
           begin
-            if (aParsedValue >= 0) then
+            if (parsedValue >= 0) then
             begin
               //if value is not skipped we proceed with height
-              aTiles[I].Height := aParsedValue;
-              aTiles[I].UpdateHeight := True;
+              tiles[I].Height := parsedValue;
+              tiles[I].UpdateHeight := True;
             end;
           end
           else
-            LogStr(Format('Actions.MapTilesArraySetS: Parameter Height = [%s] in line [%s] is not a valid integer.', [aArrElem[4], aTilesS[I]]));
+            LogStr(Format('Actions.MapTilesArraySetS: Parameter Height = [%s] in line [%s] is not a valid integer.', [arrElem[4], aTilesS[I]]));
 
-          if (TryStrToInt(string(PChar(aArrElem[5])), aParsedValue)) then
+          if (TryStrToInt(string(PChar(arrElem[5])), parsedValue)) then
           begin
-            if (aParsedValue >= 0) then
+            if (parsedValue >= 0) then
             begin
               //if value is not skipped we proceed with obj
-              aTiles[I].Obj := aParsedValue;
-              aTiles[I].UpdateObject := True;
+              tiles[I].Obj := parsedValue;
+              tiles[I].UpdateObject := True;
             end;
           end
           else
-            LogStr(Format('Actions.MapTilesArraySetS: Parameter Obj = [%s] in line [%s] is not a valid integer.', [aArrElem[5], aTilesS[I]]));
+            LogStr(Format('Actions.MapTilesArraySetS: Parameter Obj = [%s] in line [%s] is not a valid integer.', [arrElem[5], aTilesS[I]]));
         end;
       end;
     end;
     //***********END OF PARSING**********
 
-    if not gTerrain.ScriptTrySetTilesArray(aTiles, aRevertOnFail, Errors) then
+    if not gTerrain.ScriptTrySetTilesArray(tiles, aRevertOnFail, errors) then
     begin
       Result := False;
 
       // Log errors
-      if Length(Errors) > 0 then
+      if Length(errors) > 0 then
       begin
         if not aShowDetailedErrors then
-          Log(AnsiString(Format('Actions.MapTilesArraySetS: there were %d errors while setting tiles' , [Length(Errors)])))
+          Log(AnsiString(Format('Actions.MapTilesArraySetS: there were %d errors while setting tiles' , [Length(errors)])))
         else
           Log('Actions.MapTilesArraySetS list of tiles errors:');
       end;
       if aShowDetailedErrors then
-        for I := Low(Errors) to High(Errors) do
-          Log(AnsiString(Format('Tile: %d,%d errors while applying [%s]', [Errors[I].X, Errors[I].Y, GetTileErrorsStr(Errors[I].ErrorsIn)])));
+        for I := Low(errors) to High(errors) do
+          Log(AnsiString(Format('Tile: %d,%d errors while applying [%s]', [errors[I].X, errors[I].Y, GetTileErrorsStr(errors[I].ErrorsIn)])));
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
@@ -3495,7 +3503,7 @@ end;
 procedure TKMScriptActions.MarketSetTrade(aMarketID, aFrom, aTo, aAmount: Integer);
 var
   H: TKMHouse;
-  ResFrom, ResTo: TKMWareType;
+  resFrom, resTo: TKMWareType;
 begin
   try
     if (aMarketID > 0)
@@ -3503,19 +3511,19 @@ begin
     and (aTo in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)]) then
     begin
       H := fIDCache.GetHouse(aMarketID);
-      ResFrom := WARE_ID_TO_TYPE[aFrom];
-      ResTo := WARE_ID_TO_TYPE[aTo];
+      resFrom := WARE_ID_TO_TYPE[aFrom];
+      resTo := WARE_ID_TO_TYPE[aTo];
       if (H is TKMHouseMarket)
         and not H.IsDestroyed
         and H.IsComplete
-        and TKMHouseMarket(H).AllowedToTrade(ResFrom)
-        and TKMHouseMarket(H).AllowedToTrade(ResTo) then
+        and TKMHouseMarket(H).AllowedToTrade(resFrom)
+        and TKMHouseMarket(H).AllowedToTrade(resTo) then
       begin
-        if (TKMHouseMarket(H).ResFrom <> ResFrom) or (TKMHouseMarket(H).ResTo <> ResTo) then
+        if (TKMHouseMarket(H).ResFrom <> resFrom) or (TKMHouseMarket(H).ResTo <> resTo) then
         begin
           TKMHouseMarket(H).ResOrder[0] := 0; //First we must cancel the current trade
-          TKMHouseMarket(H).ResFrom := ResFrom;
-          TKMHouseMarket(H).ResTo := ResTo;
+          TKMHouseMarket(H).ResFrom := resFrom;
+          TKMHouseMarket(H).ResTo := resTo;
         end;
         TKMHouseMarket(H).ResOrder[0] := aAmount; //Set the new trade
       end;
@@ -3719,10 +3727,10 @@ end;
 //* aCompleted: Completed road
 function TKMScriptActions.PlanConnectRoad(aHand, X1, Y1, X2, Y2: Integer; aCompleted: Boolean): Boolean;
 var
-  Points: TKMPointList;
-  PlanExists: Boolean;
   I: Integer;
-  Path: TPathFindingRoad;
+  points: TKMPointList;
+  planExists: Boolean;
+  path: TPathFindingRoad;
 begin
   try
     Result := False;
@@ -3731,27 +3739,27 @@ begin
     and gTerrain.TileInMapCoords(X1, Y1)
     and gTerrain.TileInMapCoords(X2, Y2) then
     begin
-      Path := TPathFindingRoad.Create(aHand);
-      Points := TKMPointList.Create;
+      path := TPathFindingRoad.Create(aHand);
+      points := TKMPointList.Create;
       try
-        PlanExists := Path.Route_ReturnToWalkable(KMPoint(X1, Y1), KMPoint(X2, Y2), 0, Points);
-        if not PlanExists then
+        planExists := path.Route_ReturnToWalkable(KMPoint(X1, Y1), KMPoint(X2, Y2), 0, points);
+        if not planExists then
           Exit;
-        for I := 0 to Points.Count - 1 do
-          if gHands[aHand].CanAddFieldPlan(Points[I], ftRoad) then
+        for I := 0 to points.Count - 1 do
+          if gHands[aHand].CanAddFieldPlan(points[I], ftRoad) then
             if not aCompleted then
-              gHands[aHand].Constructions.FieldworksList.AddField(Points[I], ftRoad)
+              gHands[aHand].Constructions.FieldworksList.AddField(points[I], ftRoad)
             else
             begin
-              gTerrain.SetRoad(Points[I], aHand);
-              gTerrain.FlattenTerrain(Points[I]);
-              if gMapElements[gTerrain.Land^[Points[I].Y,Points[I].X].Obj].WineOrCorn then
-                gTerrain.RemoveObject(Points[I]); //Remove corn/wine like normally built road does
+              gTerrain.SetRoad(points[I], aHand);
+              gTerrain.FlattenTerrain(points[I]);
+              if gMapElements[gTerrain.Land^[points[I].Y,points[I].X].Obj].WineOrCorn then
+                gTerrain.RemoveObject(points[I]); //Remove corn/wine like normally built road does
             end;
         Result := True;
       finally
-        Points.Free;
-        Path.Free;
+        points.Free;
+        path.Free;
       end;
     end
     else
@@ -3768,7 +3776,7 @@ end;
 //* Returns true if the plan was successfully removed or false if it failed (e.g. tile blocked)
 function TKMScriptActions.PlanRemove(aHand, X, Y: Integer): Boolean;
 var
-  HPlan: TKMHousePlan;
+  housePlan: TKMHousePlan;
 begin
   try
     Result := False;
@@ -3776,10 +3784,10 @@ begin
     if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
     and gTerrain.TileInMapCoords(X,Y) then
     begin
-      if gHands[aHand].Constructions.HousePlanList.TryGetPlan(KMPoint(X, Y), HPlan) then
+      if gHands[aHand].Constructions.HousePlanList.TryGetPlan(KMPoint(X, Y), housePlan) then
       begin
         gHands[aHand].Constructions.HousePlanList.RemPlan(KMPoint(X, Y));
-        gHands[aHand].Stats.HousePlanRemoved(HPlan.HouseType);
+        gHands[aHand].Stats.HousePlanRemoved(housePlan.HouseType);
         Result := True;
       end;
       if gHands[aHand].Constructions.FieldworksList.HasField(KMPoint(X, Y)) <> ftNone then
@@ -4094,15 +4102,15 @@ end;
 //* Changes game speed
 procedure TKMScriptActions.GameSpeed(aSpeed: Single);
 var
-  Speed: Single;
+  speed: Single;
 begin
   try
     if gGameParams.IsMultiplayer then
-      Speed := EnsureRange(aSpeed, GAME_SPEED_NORMAL, GAME_MP_SPEED_MAX)
+      speed := EnsureRange(aSpeed, GAME_SPEED_NORMAL, GAME_MP_SPEED_MAX)
     else
-      Speed := EnsureRange(aSpeed, GAME_SPEED_NORMAL, GAME_SP_SPEED_MAX);
+      speed := EnsureRange(aSpeed, GAME_SPEED_NORMAL, GAME_SP_SPEED_MAX);
 
-    gGame.SetSpeedGIP(Speed, True, True);
+    gGame.SetSpeedGIP(speed, True, True);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4197,8 +4205,8 @@ end;
 //* aHungerLevel: Hunger level (ticks until death)
 procedure TKMScriptActions.GroupHungerSet(aGroupID, aHungerLevel: Integer);
 var
-  G: TKMUnitGroup;
   I: Integer;
+  G: TKMUnitGroup;
 begin
   try
     aHungerLevel := Round(aHungerLevel / CONDITION_PACE);
@@ -4251,8 +4259,8 @@ var
 begin
   try
     if (aGroupID > 0)
-    and gTerrain.TileInMapCoords(X, Y)
-    and (TKMDirection(aDirection + 1) in [dirN..dirNW]) then
+      and gTerrain.TileInMapCoords(X, Y)
+      and (TKMDirection(aDirection + 1) in [dirN..dirNW]) then
     begin
       G := fIDCache.GetGroup(aGroupID);
       if (G <> nil) and G.CanWalkTo(KMPoint(X,Y), 0) then
