@@ -244,7 +244,10 @@ type
     property ResourceOutPoolArray: TKMByteArray read GetResourceOutPoolArray;
 
     property BuildingState: TKMHouseBuildState read fBuildState write fBuildState;
+    property BuildSupplyWood: Byte read fBuildSupplyWood;
+    property BuildSupplyStone: Byte read fBuildSupplyStone;
     procedure IncBuildingProgress;
+
     function MaxHealth: Word;
     procedure AddDamage(aAmount: Word; aAttacker: TObject; aIsEditor: Boolean = False);
     procedure AddRepair(aAmount: Word = 5);
@@ -269,7 +272,7 @@ type
     procedure ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False); virtual; //override for School and etc..
     procedure ResAddToOut(aWare: TKMWareType; const aCount: Integer = 1);
     procedure ResAddToEitherFromScript(aWare: TKMWareType; aCount: Integer);
-    procedure ResAddToBuild(aWare: TKMWareType);
+    procedure ResAddToBuild(aWare: TKMWareType; aCount: Integer = 1);
     procedure ResTakeFromIn(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); virtual;
     procedure ResTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); virtual;
     function ResCanAddToIn(aWare: TKMWareType): Boolean; virtual;
@@ -1673,12 +1676,12 @@ end;
 
 
 // Add resources to building process
-procedure TKMHouse.ResAddToBuild(aWare: TKMWareType);
+procedure TKMHouse.ResAddToBuild(aWare: TKMWareType; aCount: Integer = 1);
 begin
   case aWare of
-    wtWood:  Inc(fBuildSupplyWood);
-    wtStone: Inc(fBuildSupplyStone);
-    else      raise ELocError.Create('WIP house is not supposed to recieve ' + gResWares[aWare].Title + ', right?', fPosition);
+    wtWood:  fBuildSupplyWood := EnsureRange(fBuildSupplyWood + aCount, 0, gResHouses[fType].WoodCost);
+    wtStone: fBuildSupplyStone := EnsureRange(fBuildSupplyStone + aCount, 0, gResHouses[fType].StoneCost);
+    else     raise ELocError.Create('WIP house is not supposed to recieve ' + gResWares[aWare].Title + ', right?', fPosition);
   end;
 end;
 

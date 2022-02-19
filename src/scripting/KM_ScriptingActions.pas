@@ -1102,10 +1102,8 @@ begin
         H.BuildingState := hbsWood;
         if aAddMaterials then
         begin
-          for I := 0 to gResHouses[H.HouseType].WoodCost - 1 do
-            H.ResAddToBuild(wtWood);
-          for K := 0 to gResHouses[H.HouseType].StoneCost - 1 do
-            H.ResAddToBuild(wtStone);
+          H.ResAddToBuild(wtWood, gResHouses[H.HouseType].WoodCost);
+          H.ResAddToBuild(wtStone, gResHouses[H.HouseType].StoneCost);
         end
         else
         begin
@@ -1164,14 +1162,12 @@ begin
 
         // Add wood
         aWoodAmount := EnsureRange(aWoodAmount, 0, gResHouses[aHouseType].WoodCost);
-        for I := 0 to aWoodAmount - 1 do
-          H.ResAddToBuild(wtWood);
+        H.ResAddToBuild(wtWood, aWoodAmount);
         gHands[aHand].Deliveries.Queue.AddDemand(H, nil, wtWood, gResHouses[aHouseType].WoodCost - aWoodAmount, dtOnce, diHigh4);
 
         // Add stones
         aStoneAmount := EnsureRange(aStoneAmount, 0, gResHouses[aHouseType].StoneCost);
-        for I := 0 to aStoneAmount - 1 do
-          H.ResAddToBuild(wtStone);
+        H.ResAddToBuild(wtStone, aStoneAmount);
         gHands[aHand].Deliveries.Queue.AddDemand(H, nil, wtStone, gResHouses[aHouseType].StoneCost - aStoneAmount, dtOnce, diHigh4);
 
         gHands[aHand].Constructions.HouseList.AddHouse(H);
@@ -2343,10 +2339,10 @@ end;
 
 
 //* Version: 6510
-//* Add building materials to the specified WIP house area
+//* Add all building materials to the specified WIP house area
 procedure TKMScriptActions.HouseAddBuildingMaterials(aHouseID: Integer);
 var
-  I, stoneNeeded, woodNeeded: Integer;
+  resNeeded: Integer;
   plannedToRemove: Word;
   H: TKMHouse;
 begin
@@ -2357,16 +2353,15 @@ begin
       if H <> nil then
         if not H.IsComplete then
         begin
-          stoneNeeded := gHands[H.Owner].Deliveries.Queue.TryRemoveDemand(H, wtStone,
-                            gResHouses[H.HouseType].StoneCost - H.GetBuildStoneDelivered, plannedToRemove);
-          Inc(stoneNeeded, plannedToRemove);
-          woodNeeded := gHands[H.Owner].Deliveries.Queue.TryRemoveDemand(H, wtWood,
-                            gResHouses[H.HouseType].WoodCost - H.GetBuildWoodDelivered, plannedToRemove);
-          Inc(woodNeeded, plannedToRemove);
-          for I := 0 to woodNeeded - 1 do
-            H.ResAddToBuild(wtWood);
-          for I := 0 to stoneNeeded - 1 do
-            H.ResAddToBuild(wtStone);
+          resNeeded := gHands[H.Owner].Deliveries.Queue.TryRemoveDemand(H, wtWood,
+                         gResHouses[H.HouseType].WoodCost - H.GetBuildWoodDelivered, plannedToRemove);
+          Inc(resNeeded, plannedToRemove);
+          H.ResAddToBuild(wtWood, resNeeded);
+
+          resNeeded := gHands[H.Owner].Deliveries.Queue.TryRemoveDemand(H, wtStone,
+                         gResHouses[H.HouseType].StoneCost - H.GetBuildStoneDelivered, plannedToRemove);
+          Inc(resNeeded, plannedToRemove);
+          H.ResAddToBuild(wtStone, resNeeded);
         end;
     end
     else
