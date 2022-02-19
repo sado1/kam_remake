@@ -60,6 +60,7 @@ type
     function  GiveHouse(aHand, aHouseType, X,Y: Integer): Integer;
     function  GiveHouseEx(aHand: Integer; aHouseType: TKMHouseType; X,Y: Integer): Integer;
     function  GiveHouseSite(aHand, aHouseType, X, Y: Integer; aAddMaterials: Boolean): Integer;
+    function  GiveHouseSiteEx(aHand: Integer; aHouseType: TKMHouseType; X, Y, aWoodAmount, aStoneAmount: Integer): Integer;
     function  GiveUnit(aHand, aType, X,Y, aDir: Integer): Integer;
     function  GiveRoad(aHand, X, Y: Integer): Boolean;
     procedure GiveWares(aHand, aType, aCount: Integer);
@@ -1116,6 +1117,69 @@ begin
     end
     else
       LogIntParamWarn('Actions.GiveHouseSite', [aHand, aHouseType, X, Y, byte(aAddMaterials)]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+
+//* Version: 14000
+//* Give player a digged house area and returns House ID or -1 if house site was not able to be added.
+//* aStoneAmount, aWoodAmount - number of resources to be added to the site
+function TKMScriptActions.GiveHouseSiteEx(aHand: Integer; aHouseType: TKMHouseType; X, Y, aWoodAmount, aStoneAmount: Integer): Integer;
+var
+  H: TKMHouse;
+  I, K: Integer;
+  HA: THouseArea;
+  nonEntranceX: Integer;
+begin
+  try
+    Result := -1;
+    if InRange(aHand, 0, gHands.Count - 1)
+      and (gHands[aHand].Enabled)
+      and (aHouseType in HOUSES_VALID)
+      and gTerrain.TileInMapCoords(X,Y) then
+    begin
+      nonEntranceX := X - gResHouses[aHouseType].EntranceOffsetX;
+      if gTerrain.CanPlaceHouseFromScript(aHouseType, KMPoint(nonEntranceX, Y)) then
+      begin
+        H := gHands[aHand].AddHouseWIP(aHouseType, KMPoint(nonEntranceX, Y));
+        if (H = nil) or (H.IsDestroyed) then
+          Exit;
+
+        Result := H.UID;
+        HA := gResHouses[aHouseType].BuildArea;
+        for I := 1 to 4 do
+        for K := 1 to 4 do
+          if HA[I, K] <> 0 then
+          begin
+            gTerrain.RemoveObject(KMPoint(nonEntranceX + K - 3, Y + I - 4));
+            gTerrain.FlattenTerrain(KMPoint(nonEntranceX + K - 3, Y + I - 4));
+            gTerrain.SetTileLock(KMPoint(nonEntranceX + K - 3, Y + I - 4), tlDigged);
+          end;
+
+        gTerrain.SetRoad(H.Entrance, aHand);
+        H.BuildingState := hbsWood;
+
+        // Add wood
+        aWoodAmount := EnsureRange(aWoodAmount, 0, gResHouses[aHouseType].WoodCost);
+        for I := 0 to aWoodAmount - 1 do
+          H.ResAddToBuild(wtWood);
+        gHands[aHand].Deliveries.Queue.AddDemand(H, nil, wtWood, gResHouses[aHouseType].WoodCost - aWoodAmount, dtOnce, diHigh4);
+
+        // Add stones
+        aStoneAmount := EnsureRange(aStoneAmount, 0, gResHouses[aHouseType].StoneCost);
+        for I := 0 to aStoneAmount - 1 do
+          H.ResAddToBuild(wtStone);
+        gHands[aHand].Deliveries.Queue.AddDemand(H, nil, wtStone, gResHouses[aHouseType].StoneCost - aStoneAmount, dtOnce, diHigh4);
+
+        gHands[aHand].Constructions.HouseList.AddHouse(H);
+      end;
+    end
+    else
+      LogParamWarn('Actions.GiveHouseSiteEx', [aHand, GetEnumName(TypeInfo(TKMHouseType), Integer(aHouseType)), X, Y, aWoodAmount, aStoneAmount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
