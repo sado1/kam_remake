@@ -455,46 +455,46 @@ begin
     // Register classes and methods to the script engine.
     // After that they can be used from within the script.
     c := Sender.AddClassN(nil, AnsiString(fStates.ClassName));
-    RegisterMethodCheck(c, 'function AIArmyType(aPlayer: Byte): TKMArmyType');
-    RegisterMethodCheck(c, 'function AIAutoAttack(aPlayer: Byte): Boolean');
-    RegisterMethodCheck(c, 'function AIAutoAttackRange(aPlayer: Byte): Integer');
-    RegisterMethodCheck(c, 'function AIAutoBuild(aPlayer: Byte): Boolean');
-    RegisterMethodCheck(c, 'function AIAutoDefence(aPlayer: Byte): Boolean');
-    RegisterMethodCheck(c, 'function AIAutoRepair(aPlayer: Byte): Boolean');
-    RegisterMethodCheck(c, 'procedure AIDefencePositionGet(aPlayer, aID: Byte; out aX, aY: Integer; out aGroupType: Byte; out aRadius: Integer; out aDefType: Byte)');
-    RegisterMethodCheck(c, 'function AIDefencePositionGetByIndex(aPlayer, aIndex: Integer): TKMDefencePositionInfo');
-    RegisterMethodCheck(c, 'function AIDefendAllies(aPlayer: Byte): Boolean');
-    RegisterMethodCheck(c, 'function AIEquipRate(aPlayer: Byte; aType: Byte): Integer');
-    RegisterMethodCheck(c, 'procedure AIGroupsFormationGet(aPlayer, aType: Byte; out aCount, aColumns: Integer)');
-    RegisterMethodCheck(c, 'procedure AIGroupsFormationGetEx(aPlayer: Integer; aGroupType: TKMGroupType; out aCount, aColumns: Integer)');
-    RegisterMethodCheck(c, 'function AIRecruitDelay(aPlayer: Byte): Integer');
-    RegisterMethodCheck(c, 'function AIRecruitLimit(aPlayer: Byte): Integer');
-    RegisterMethodCheck(c, 'function AIRepairMode(aPlayer: Integer): TKMAIRepairMode');
-    RegisterMethodCheck(c, 'function AISerfsPerHouse(aPlayer: Byte): Single');
-    RegisterMethodCheck(c, 'function AISoldiersLimit(aPlayer: Byte): Integer');
-    RegisterMethodCheck(c, 'function AIStartPosition(aPlayer: Byte): TKMPoint');
-    RegisterMethodCheck(c, 'function AIWorkerLimit(aPlayer: Byte): Integer');
+    RegisterMethodCheck(c, 'function AIArmyType(aHand: Byte): TKMArmyType');
+    RegisterMethodCheck(c, 'function AIAutoAttack(aHand: Byte): Boolean');
+    RegisterMethodCheck(c, 'function AIAutoAttackRange(aHand: Byte): Integer');
+    RegisterMethodCheck(c, 'function AIAutoBuild(aHand: Byte): Boolean');
+    RegisterMethodCheck(c, 'function AIAutoDefence(aHand: Byte): Boolean');
+    RegisterMethodCheck(c, 'function AIAutoRepair(aHand: Byte): Boolean');
+    RegisterMethodCheck(c, 'procedure AIDefencePositionGet(aHand, aID: Byte; out aX, aY: Integer; out aGroupType: Byte; out aRadius: Integer; out aDefType: Byte)');
+    RegisterMethodCheck(c, 'function AIDefencePositionGetByIndex(aHand, aIndex: Integer): TKMDefencePositionInfo');
+    RegisterMethodCheck(c, 'function AIDefendAllies(aHand: Byte): Boolean');
+    RegisterMethodCheck(c, 'function AIEquipRate(aHand: Byte; aType: Byte): Integer');
+    RegisterMethodCheck(c, 'procedure AIGroupsFormationGet(aHand, aType: Byte; out aCount, aColumns: Integer)');
+    RegisterMethodCheck(c, 'procedure AIGroupsFormationGetEx(aHand: Integer; aGroupType: TKMGroupType; out aCount, aColumns: Integer)');
+    RegisterMethodCheck(c, 'function AIRecruitDelay(aHand: Byte): Integer');
+    RegisterMethodCheck(c, 'function AIRecruitLimit(aHand: Byte): Integer');
+    RegisterMethodCheck(c, 'function AIRepairMode(aHand: Integer): TKMAIRepairMode');
+    RegisterMethodCheck(c, 'function AISerfsPerHouse(aHand: Byte): Single');
+    RegisterMethodCheck(c, 'function AISoldiersLimit(aHand: Byte): Integer');
+    RegisterMethodCheck(c, 'function AIStartPosition(aHand: Byte): TKMPoint');
+    RegisterMethodCheck(c, 'function AIWorkerLimit(aHand: Byte): Integer');
 
     RegisterMethodCheck(c, 'function CampaignMissionID: Integer');
     RegisterMethodCheck(c, 'function CampaignMissionsCount: Integer');
 
-    RegisterMethodCheck(c, 'function ClosestGroup(aPlayer, X, Y, aGroupType: Integer): Integer');
-    RegisterMethodCheck(c, 'function ClosestGroupEx(aPlayer, X, Y: Integer; aGroupType: TKMGroupType): Integer');
-    RegisterMethodCheck(c, 'function ClosestGroupMultipleTypes(aPlayer, X, Y: Integer; aGroupTypes: TByteSet): Integer');
-    RegisterMethodCheck(c, 'function ClosestGroupMultipleTypesEx(aPlayer, X, Y: Integer; aGroupTypes: TKMGroupTypeSet): Integer');
-    RegisterMethodCheck(c, 'function ClosestHouse(aPlayer, X, Y, aHouseType: Integer): Integer');
-    RegisterMethodCheck(c, 'function ClosestHouseEx(aPlayer, X, Y: Integer; aHouseType: TKMHouseType): Integer');
-    RegisterMethodCheck(c, 'function ClosestHouseMultipleTypes(aPlayer, X, Y: Integer; aHouseTypes: TByteSet): Integer');
-    RegisterMethodCheck(c, 'function ClosestHouseMultipleTypesEx(aPlayer, X, Y: Integer; aHouseTypes: TKMHouseTypeSet): Integer');
-    RegisterMethodCheck(c, 'function ClosestUnit(aPlayer, X, Y, aUnitType: Integer): Integer');
-    RegisterMethodCheck(c, 'function ClosestUnitEx(aPlayer, X, Y: Integer; aUnitType: TKMUnitType): Integer');
-    RegisterMethodCheck(c, 'function ClosestUnitMultipleTypes(aPlayer, X, Y: Integer; aUnitTypes: TByteSet): Integer');
-    RegisterMethodCheck(c, 'function ClosestUnitMultipleTypesEx(aPlayer, X, Y: Integer; aUnitTypes: TKMUnitTypeSet): Integer');
+    RegisterMethodCheck(c, 'function ClosestGroup(aHand, X, Y, aGroupType: Integer): Integer');
+    RegisterMethodCheck(c, 'function ClosestGroupEx(aHand, X, Y: Integer; aGroupType: TKMGroupType): Integer');
+    RegisterMethodCheck(c, 'function ClosestGroupMultipleTypes(aHand, X, Y: Integer; aGroupTypes: TByteSet): Integer');
+    RegisterMethodCheck(c, 'function ClosestGroupMultipleTypesEx(aHand, X, Y: Integer; aGroupTypes: TKMGroupTypeSet): Integer');
+    RegisterMethodCheck(c, 'function ClosestHouse(aHand, X, Y, aHouseType: Integer): Integer');
+    RegisterMethodCheck(c, 'function ClosestHouseEx(aHand, X, Y: Integer; aHouseType: TKMHouseType): Integer');
+    RegisterMethodCheck(c, 'function ClosestHouseMultipleTypes(aHand, X, Y: Integer; aHouseTypes: TByteSet): Integer');
+    RegisterMethodCheck(c, 'function ClosestHouseMultipleTypesEx(aHand, X, Y: Integer; aHouseTypes: TKMHouseTypeSet): Integer');
+    RegisterMethodCheck(c, 'function ClosestUnit(aHand, X, Y, aUnitType: Integer): Integer');
+    RegisterMethodCheck(c, 'function ClosestUnitEx(aHand, X, Y: Integer; aUnitType: TKMUnitType): Integer');
+    RegisterMethodCheck(c, 'function ClosestUnitMultipleTypes(aHand, X, Y: Integer; aUnitTypes: TByteSet): Integer');
+    RegisterMethodCheck(c, 'function ClosestUnitMultipleTypesEx(aHand, X, Y: Integer; aUnitTypes: TKMUnitTypeSet): Integer');
 
     RegisterMethodCheck(c, 'function ConnectedByRoad(X1, Y1, X2, Y2: Integer): Boolean');
     RegisterMethodCheck(c, 'function ConnectedByWalking(X1, Y1, X2, Y2: Integer): Boolean');
 
-    RegisterMethodCheck(c, 'function FogRevealed(aPlayer: Byte; aX, aY: Integer): Boolean');
+    RegisterMethodCheck(c, 'function FogRevealed(aHand: Byte; aX, aY: Integer): Boolean');
 
     RegisterMethodCheck(c, 'function GameSpeed: Single');
     RegisterMethodCheck(c, 'function GameSpeedChangeAllowed: Boolean');
@@ -516,9 +516,9 @@ begin
     RegisterMethodCheck(c, 'function GroupTypeEx(aGroupID: Integer): TKMGroupType');
 
     RegisterMethodCheck(c, 'function HandCanBuildHouse(aHand: Integer; aHouseType: TKMHouseType): Boolean');
-    RegisterMethodCheck(c, 'function HandCanTrainUnit(aPlayer: Integer; aUnitType: TKMUnitType): Boolean');
+    RegisterMethodCheck(c, 'function HandCanTrainUnit(aHand: Integer; aUnitType: TKMUnitType): Boolean');
     RegisterMethodCheck(c, 'function HandHouseLock(aHand: Integer; aHouseType: TKMHouseType): TKMHandHouseLock');
-    RegisterMethodCheck(c, 'function HandWareDistribution(aPlayer: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType): Integer');
+    RegisterMethodCheck(c, 'function HandWareDistribution(aHand: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType): Integer');
 
     RegisterMethodCheck(c, 'function HouseAt(aX, aY: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseAllowAllyToSelect(aHouseID: Integer): Boolean');
@@ -553,7 +553,7 @@ begin
     RegisterMethodCheck(c, 'function HouseTypeNameEx(aHouseType: TKMHouseType): AnsiString');
     RegisterMethodCheck(c, 'function HouseTypeToOccupantType(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseTypeToWorkerType(aHouseType: TKMHouseType): TKMUnitType');
-    RegisterMethodCheck(c, 'function HouseUnlocked(aPlayer, aHouseType: Integer): Boolean');
+    RegisterMethodCheck(c, 'function HouseUnlocked(aHand, aHouseType: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseWareBlocked(aHouseID, aWareType: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseWareBlockedEx(aHouseID: Integer; aWareType: TKMWareType): Boolean');
     RegisterMethodCheck(c, 'function HouseWareBlockedTakeOut(aHouseID: Integer; aWareType: TKMWareType): Boolean');
@@ -563,15 +563,15 @@ begin
     RegisterMethodCheck(c, 'function HouseWoodcutterMode(aHouseID: Integer): TKMWoodcutterMode');
     RegisterMethodCheck(c, 'function HouseWorker(aHouseID: Integer): Integer');
 
-    RegisterMethodCheck(c, 'function IsFieldAt(aPlayer: ShortInt; X, Y: Integer): Boolean');
-    RegisterMethodCheck(c, 'function IsRoadAt(aPlayer: ShortInt; X, Y: Integer): Boolean');
-    RegisterMethodCheck(c, 'function IsWinefieldAt(aPlayer: ShortInt; X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function IsFieldAt(aHand: ShortInt; X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function IsRoadAt(aHand: ShortInt; X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function IsWinefieldAt(aHand: ShortInt; X, Y: Integer): Boolean');
 
-    RegisterMethodCheck(c, 'function IsPlanAt(var aPlayer: Integer; var aFieldType: TKMFieldType; X, Y: Integer): Boolean');
-    RegisterMethodCheck(c, 'function IsFieldPlanAt(var aPlayer: Integer; X, Y: Integer): Boolean');
-    RegisterMethodCheck(c, 'function IsHousePlanAt(var aPlayer: Integer; var aHouseType: TKMHouseType; X, Y: Integer): Boolean');
-    RegisterMethodCheck(c, 'function IsRoadPlanAt(var aPlayer: Integer; X, Y: Integer): Boolean');
-    RegisterMethodCheck(c, 'function IsWinefieldPlanAt(var aPlayer: Integer; X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function IsPlanAt(var aHand: Integer; var aFieldType: TKMFieldType; X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function IsFieldPlanAt(var aHand: Integer; X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function IsHousePlanAt(var aHand: Integer; var aHouseType: TKMHouseType; X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function IsRoadPlanAt(var aHand: Integer; X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function IsWinefieldPlanAt(var aHand: Integer; X, Y: Integer): Boolean');
 
     RegisterMethodCheck(c, 'function IsMissionBuildType: Boolean');
     RegisterMethodCheck(c, 'function IsMissionFightType: Boolean');
@@ -630,48 +630,48 @@ begin
 
     RegisterMethodCheck(c, 'function PeaceTime: Cardinal');
 
-    RegisterMethodCheck(c, 'function PlayerAllianceCheck(aPlayer1, aPlayer2: Byte): Boolean');
-    RegisterMethodCheck(c, 'function PlayerColorFlag(aPlayer: Byte): AnsiString');
-    RegisterMethodCheck(c, 'function PlayerColorText(aPlayer: Byte): AnsiString');
-    RegisterMethodCheck(c, 'function PlayerDefeated(aPlayer: Byte): Boolean');
-    RegisterMethodCheck(c, 'function PlayerEnabled(aPlayer: Byte): Boolean');
-    RegisterMethodCheck(c, 'function PlayerGetAllGroups(aPlayer: Byte): TIntegerArray');
-    RegisterMethodCheck(c, 'function PlayerGetAllHouses(aPlayer: Byte): TIntegerArray');
-    RegisterMethodCheck(c, 'function PlayerGetAllUnits(aPlayer: Byte): TIntegerArray');
-    RegisterMethodCheck(c, 'function PlayerIsAI(aPlayer: Byte): Boolean');
-    RegisterMethodCheck(c, 'function PlayerName(aPlayer: Byte): AnsiString');
-    RegisterMethodCheck(c, 'function PlayerVictorious(aPlayer: Byte): Boolean');
-    RegisterMethodCheck(c, 'function PlayerWareDistribution(aPlayer, aWareType, aHouseType: Byte): Byte');
+    RegisterMethodCheck(c, 'function PlayerAllianceCheck(aHand1, aHand2: Byte): Boolean');
+    RegisterMethodCheck(c, 'function PlayerColorFlag(aHand: Byte): AnsiString');
+    RegisterMethodCheck(c, 'function PlayerColorText(aHand: Byte): AnsiString');
+    RegisterMethodCheck(c, 'function PlayerDefeated(aHand: Byte): Boolean');
+    RegisterMethodCheck(c, 'function PlayerEnabled(aHand: Byte): Boolean');
+    RegisterMethodCheck(c, 'function PlayerGetAllGroups(aHand: Byte): TIntegerArray');
+    RegisterMethodCheck(c, 'function PlayerGetAllHouses(aHand: Byte): TIntegerArray');
+    RegisterMethodCheck(c, 'function PlayerGetAllUnits(aHand: Byte): TIntegerArray');
+    RegisterMethodCheck(c, 'function PlayerIsAI(aHand: Byte): Boolean');
+    RegisterMethodCheck(c, 'function PlayerName(aHand: Byte): AnsiString');
+    RegisterMethodCheck(c, 'function PlayerVictorious(aHand: Byte): Boolean');
+    RegisterMethodCheck(c, 'function PlayerWareDistribution(aHand, aWareType, aHouseType: Byte): Byte');
 
-    RegisterMethodCheck(c, 'function StatAIDefencePositionsCount(aPlayer: Byte): Integer');
-    RegisterMethodCheck(c, 'function StatArmyCount(aPlayer: Byte): Integer');
-    RegisterMethodCheck(c, 'function StatArmyPower(aPlayer: Byte): Single');
-    RegisterMethodCheck(c, 'function StatCitizenCount(aPlayer: Byte): Integer');
-    RegisterMethodCheck(c, 'function StatHouseCount(aPlayer: Byte): Integer');
-    RegisterMethodCheck(c, 'function StatHouseMultipleTypesCount(aPlayer: Byte; aTypes: TByteSet): Integer');
-    RegisterMethodCheck(c, 'function StatHouseMultipleTypesCountEx(aPlayer: Integer; aTypes: TKMHouseTypeSet): Integer');
-    RegisterMethodCheck(c, 'function StatHouseTypeCount(aPlayer, aHouseType: Byte): Integer');
-    RegisterMethodCheck(c, 'function StatHouseTypeCountEx(aPlayer: Integer; aHouseType: TKMHouseType): Integer');
-    RegisterMethodCheck(c, 'function StatHouseTypePlansCount(aPlayer, aHouseType: Byte): Integer');
-    RegisterMethodCheck(c, 'function StatHouseTypePlansCountEx(aPlayer: Integer; aHouseType: TKMHouseType): Integer');
+    RegisterMethodCheck(c, 'function StatAIDefencePositionsCount(aHand: Byte): Integer');
+    RegisterMethodCheck(c, 'function StatArmyCount(aHand: Byte): Integer');
+    RegisterMethodCheck(c, 'function StatArmyPower(aHand: Byte): Single');
+    RegisterMethodCheck(c, 'function StatCitizenCount(aHand: Byte): Integer');
+    RegisterMethodCheck(c, 'function StatHouseCount(aHand: Byte): Integer');
+    RegisterMethodCheck(c, 'function StatHouseMultipleTypesCount(aHand: Byte; aTypes: TByteSet): Integer');
+    RegisterMethodCheck(c, 'function StatHouseMultipleTypesCountEx(aHand: Integer; aTypes: TKMHouseTypeSet): Integer');
+    RegisterMethodCheck(c, 'function StatHouseTypeCount(aHand, aHouseType: Byte): Integer');
+    RegisterMethodCheck(c, 'function StatHouseTypeCountEx(aHand: Integer; aHouseType: TKMHouseType): Integer');
+    RegisterMethodCheck(c, 'function StatHouseTypePlansCount(aHand, aHouseType: Byte): Integer');
+    RegisterMethodCheck(c, 'function StatHouseTypePlansCountEx(aHand: Integer; aHouseType: TKMHouseType): Integer');
     RegisterMethodCheck(c, 'function StatPlayerCount: Integer');
-    RegisterMethodCheck(c, 'function StatResourceProducedCount(aPlayer, aResType: Byte): Integer');
-    RegisterMethodCheck(c, 'function StatResourceProducedCountEx(aPlayer: Integer; aWareType: TKMWareType): Integer');
-    RegisterMethodCheck(c, 'function StatResourceProducedMultipleTypesCount(aPlayer: Byte; aTypes: TByteSet): Integer');
-    RegisterMethodCheck(c, 'function StatResourceProducedMultipleTypesCountEx(aPlayer: Integer; aTypes: TKMWareTypeSet): Integer');
-    RegisterMethodCheck(c, 'function StatUnitCount(aPlayer: Byte): Integer');
-    RegisterMethodCheck(c, 'function StatUnitKilledCount(aPlayer, aUnitType: Byte): Integer');
-    RegisterMethodCheck(c, 'function StatUnitKilledCountEx(aPlayer: Integer; aUnitType: TKMUnitType): Integer');
-    RegisterMethodCheck(c, 'function StatUnitKilledMultipleTypesCount(aPlayer: Byte; aTypes: TByteSet): Integer');
-    RegisterMethodCheck(c, 'function StatUnitKilledMultipleTypesCountEx(aPlayer: Integer; aTypes: TKMUnitTypeSet): Integer');
-    RegisterMethodCheck(c, 'function StatUnitLostCount(aPlayer, aUnitType: Byte): Integer');
-    RegisterMethodCheck(c, 'function StatUnitLostCountEx(aPlayer: Integer; aUnitType: TKMUnitType): Integer');
-    RegisterMethodCheck(c, 'function StatUnitLostMultipleTypesCount(aPlayer: Byte; aTypes: TByteSet): Integer');
-    RegisterMethodCheck(c, 'function StatUnitLostMultipleTypesCountEx(aPlayer: Byte; aTypes: TKMUnitTypeSet): Integer');
-    RegisterMethodCheck(c, 'function StatUnitMultipleTypesCount(aPlayer: Byte; aTypes: TByteSet): Integer');
-    RegisterMethodCheck(c, 'function StatUnitMultipleTypesCountEx(aPlayer: Integer; aTypes: TKMUnitTypeSet): Integer');
-    RegisterMethodCheck(c, 'function StatUnitTypeCount(aPlayer, aUnitType: Byte): Integer');
-    RegisterMethodCheck(c, 'function StatUnitTypeCountEx(aPlayer: Integer; aUnitType: TKMUnitType): Integer');
+    RegisterMethodCheck(c, 'function StatResourceProducedCount(aHand, aResType: Byte): Integer');
+    RegisterMethodCheck(c, 'function StatResourceProducedCountEx(aHand: Integer; aWareType: TKMWareType): Integer');
+    RegisterMethodCheck(c, 'function StatResourceProducedMultipleTypesCount(aHand: Byte; aTypes: TByteSet): Integer');
+    RegisterMethodCheck(c, 'function StatResourceProducedMultipleTypesCountEx(aHand: Integer; aTypes: TKMWareTypeSet): Integer');
+    RegisterMethodCheck(c, 'function StatUnitCount(aHand: Byte): Integer');
+    RegisterMethodCheck(c, 'function StatUnitKilledCount(aHand, aUnitType: Byte): Integer');
+    RegisterMethodCheck(c, 'function StatUnitKilledCountEx(aHand: Integer; aUnitType: TKMUnitType): Integer');
+    RegisterMethodCheck(c, 'function StatUnitKilledMultipleTypesCount(aHand: Byte; aTypes: TByteSet): Integer');
+    RegisterMethodCheck(c, 'function StatUnitKilledMultipleTypesCountEx(aHand: Integer; aTypes: TKMUnitTypeSet): Integer');
+    RegisterMethodCheck(c, 'function StatUnitLostCount(aHand, aUnitType: Byte): Integer');
+    RegisterMethodCheck(c, 'function StatUnitLostCountEx(aHand: Integer; aUnitType: TKMUnitType): Integer');
+    RegisterMethodCheck(c, 'function StatUnitLostMultipleTypesCount(aHand: Byte; aTypes: TByteSet): Integer');
+    RegisterMethodCheck(c, 'function StatUnitLostMultipleTypesCountEx(aHand: Byte; aTypes: TKMUnitTypeSet): Integer');
+    RegisterMethodCheck(c, 'function StatUnitMultipleTypesCount(aHand: Byte; aTypes: TByteSet): Integer');
+    RegisterMethodCheck(c, 'function StatUnitMultipleTypesCountEx(aHand: Integer; aTypes: TKMUnitTypeSet): Integer');
+    RegisterMethodCheck(c, 'function StatUnitTypeCount(aHand, aUnitType: Byte): Integer');
+    RegisterMethodCheck(c, 'function StatUnitTypeCountEx(aHand: Integer; aUnitType: TKMUnitType): Integer');
 
     RegisterMethodCheck(c, 'function UnitAllowAllyToSelect(aUnitID: Integer): Boolean');
     RegisterMethodCheck(c, 'function UnitAt(aX, aY: Integer): Integer');
