@@ -97,6 +97,7 @@ type
     procedure HandHouseLock(aHand: Integer; aHouseType: TKMHouseType; aLock: TKMHandHouseLock);
 
     procedure HouseAddBuildingMaterials(aHouseID: Integer);
+    procedure HouseAddBuildingMaterialsEx(aHouseID, aWoodAmount, aStoneAmount: Integer);
     procedure HouseAddBuildingProgress(aHouseID: Integer);
     procedure HouseAddDamage(aHouseID: Integer; aDamage: Integer);
     procedure HouseAddRepair(aHouseID: Integer; aRepair: Integer);
@@ -2366,6 +2367,62 @@ begin
     end
     else
       LogIntParamWarn('Actions.HouseAddBuildingMaterials', [aHouseID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14000
+//* Add or remove building materials to the specified WIP house area
+//* if aWoodAmount or aStoneAmount > 0 then add build wares to the site
+//* if aWoodAmount or aStoneAmount < 0 then remove build wares from the site
+procedure TKMScriptActions.HouseAddBuildingMaterialsEx(aHouseID, aWoodAmount, aStoneAmount: Integer);
+var
+  resNeeded: Integer;
+  plannedToRemove: Word;
+  H: TKMHouse;
+begin
+  try
+    if aHouseID > 0 then
+    begin
+      H := fIDCache.GetHouse(aHouseID);
+      if H <> nil then
+        if not H.IsComplete then
+        begin
+          aWoodAmount := EnsureRange(aWoodAmount, -H.BuildSupplyWood, gResHouses[H.HouseType].WoodCost - H.GetBuildWoodDelivered);
+
+          if aWoodAmount > 0 then
+          begin
+            resNeeded := gHands[H.Owner].Deliveries.Queue.TryRemoveDemand(H, wtWood, aWoodAmount, plannedToRemove);
+            Inc(resNeeded, plannedToRemove);
+            H.ResAddToBuild(wtWood, resNeeded);
+          end
+          else
+          begin
+            H.ResAddToBuild(wtWood, aWoodAmount);
+            gHands[H.Owner].Deliveries.Queue.AddDemand(H, nil, wtWood, -aWoodAmount, dtOnce, diHigh4);
+          end;
+
+          aStoneAmount := EnsureRange(aStoneAmount, -H.BuildSupplyStone, gResHouses[H.HouseType].StoneCost - H.GetBuildStoneDelivered);
+
+          if aStoneAmount > 0 then
+          begin
+            resNeeded := gHands[H.Owner].Deliveries.Queue.TryRemoveDemand(H, wtStone, aStoneAmount, plannedToRemove);
+            Inc(resNeeded, plannedToRemove);
+            H.ResAddToBuild(wtStone, resNeeded);
+          end
+          else
+          begin
+            H.ResAddToBuild(wtStone, aStoneAmount);
+            gHands[H.Owner].Deliveries.Queue.AddDemand(H, nil, wtStone, -aStoneAmount, dtOnce, diHigh4);
+          end;
+
+        end;
+    end
+    else
+      LogIntParamWarn('Actions.HouseAddBuildingMaterialsEx', [aHouseID, aWoodAmount, aStoneAmount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

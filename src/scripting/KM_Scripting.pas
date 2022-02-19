@@ -783,6 +783,7 @@ begin
     RegisterMethodCheck(c, 'procedure HandHouseLock(aHand: Integer; aHouseType: TKMHouseType; aLock: TKMHandHouseLock)');
 
     RegisterMethodCheck(c, 'procedure HouseAddBuildingMaterials(aHouseID: Integer)');
+    RegisterMethodCheck(c, 'procedure HouseAddBuildingMaterialsEx(aHouseID, aWoodAmount, aStoneAmount: Integer)');
     RegisterMethodCheck(c, 'procedure HouseAddBuildingProgress(aHouseID: Integer)');
     RegisterMethodCheck(c, 'procedure HouseAddDamage(aHouseID: Integer; aDamage: Integer)');
     RegisterMethodCheck(c, 'procedure HouseAddRepair(aHouseID: Integer; aRepair: Integer)');
@@ -1557,6 +1558,7 @@ begin
       RegisterMethod(@TKMScriptActions.HandHouseLock,                           'HandHouseLock');
 
       RegisterMethod(@TKMScriptActions.HouseAddBuildingMaterials,               'HouseAddBuildingMaterials');
+      RegisterMethod(@TKMScriptActions.HouseAddBuildingMaterialsEx,             'HouseAddBuildingMaterialsEx');
       RegisterMethod(@TKMScriptActions.HouseAddBuildingProgress,                'HouseAddBuildingProgress');
       RegisterMethod(@TKMScriptActions.HouseAddDamage,                          'HouseAddDamage');
       RegisterMethod(@TKMScriptActions.HouseAddRepair,                          'HouseAddRepair');
