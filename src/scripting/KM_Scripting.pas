@@ -112,7 +112,8 @@ const
     btString, //Means AnsiString in PascalScript.
     btUnicodeString, //string and UnicodeString
     btStaticArray, btArray, //Static and Dynamic Arrays
-    btRecord, btSet];
+    btRecord, btSet,
+    btProcPtr]; // type TProc = procedure
 
 
 implementation
