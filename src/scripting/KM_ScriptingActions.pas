@@ -99,6 +99,7 @@ type
     procedure HouseAddBuildingMaterials(aHouseID: Integer);
     procedure HouseAddBuildingMaterialsEx(aHouseID, aWoodAmount, aStoneAmount: Integer);
     procedure HouseAddBuildingProgress(aHouseID: Integer);
+    procedure HouseAddBuildingProgressEx(aHouseID, aBuildSteps: Integer);
     procedure HouseAddDamage(aHouseID: Integer; aDamage: Integer);
     procedure HouseAddRepair(aHouseID: Integer; aRepair: Integer);
     procedure HouseAddWaresTo(aHouseID: Integer; aType, aCount: Integer);
@@ -2452,6 +2453,39 @@ begin
     end
     else
       LogIntParamWarn('Actions.HouseAddBuildingProgress', [aHouseID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14000
+//* Add 5 * aBuildSteps points of building progress to the specified WIP house area
+procedure TKMScriptActions.HouseAddBuildingProgressEx(aHouseID, aBuildSteps: Integer);
+var
+  I: Integer;
+  H: TKMHouse;
+begin
+  try
+    if (aHouseID > 0) and (aBuildSteps > 0) then
+    begin
+      H := fIDCache.GetHouse(aHouseID);
+      if H <> nil then
+      begin
+        for I := 0 to aBuildSteps - 1 do
+        begin
+          if H.IsComplete or not H.CheckResToBuild then Break;
+
+          H.IncBuildingProgress;
+        end;
+
+        if H.IsStone and (gTerrain.Land^[H.Position.Y, H.Position.X].TileLock <> tlHouse) then
+          gTerrain.SetHouse(H.Position, H.HouseType, hsBuilt, H.Owner);
+      end;
+    end
+    else
+      LogIntParamWarn('Actions.HouseAddBuildingProgressEx', [aHouseID, aBuildSteps]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
