@@ -78,6 +78,23 @@ type
   //}
 
 // Search for specific number (biome) with counter
+  TKMFillTestMap = class(TKMQuickFlood)
+  private
+    fCount: Integer;
+    fSearch, fNewSearch: SmallInt;
+    fSearchArr: TKMByte2Array;
+  protected
+    function CanBeVisited(const aX,aY: SmallInt): Boolean; override;
+    function IsVisited(const aX,aY: SmallInt): Boolean; override;
+    procedure MarkAsVisited(const aX,aY: SmallInt); override;
+  public
+    property Count: Integer read fCount;
+    property SearchArr: TKMByte2Array read fSearchArr write fSearchArr;
+    constructor Create(aMinLimit, aMaxLimit: TKMPoint; var aSearchArr: TKMByte2Array; const aScanEightTiles: Boolean = False); reintroduce;//virtual; reintroduce;
+    procedure QuickFlood(aX,aY,aSearch,aNewSearch: SmallInt); reintroduce;//virtual; reintroduce;
+  end;
+
+// Search for specific number (biome) with counter
   TKMSearchBiome = class(TKMQuickFlood)
   private
     fCount: Integer;
@@ -423,6 +440,40 @@ begin
   end;
 end;
 //}
+
+
+{ TKMSearchBiome }
+constructor TKMFillTestMap.Create(aMinLimit, aMaxLimit: TKMPoint; var aSearchArr: TKMByte2Array; const aScanEightTiles: Boolean = False);
+begin
+  inherited Create(aScanEightTiles);
+  fSearchArr := aSearchArr;
+  fMinLimit := aMinLimit;
+  fMaxLimit := aMaxLimit;
+end;
+
+function TKMFillTestMap.CanBeVisited(const aX,aY: SmallInt): Boolean;
+begin
+  Result := fSearchArr[aY,aX] = fSearch;
+end;
+
+function TKMFillTestMap.IsVisited(const aX,aY: SmallInt): Boolean;
+begin
+  Result := fSearchArr[aY,aX] = fNewSearch;
+end;
+
+procedure TKMFillTestMap.MarkAsVisited(const aX,aY: SmallInt);
+begin
+  fSearchArr[aY,aX] := fNewSearch;
+  fCount := fCount + 1;
+end;
+
+procedure TKMFillTestMap.QuickFlood(aX,aY,aSearch,aNewSearch: SmallInt);
+begin
+  fCount := 0;
+  fSearch := aSearch;
+  fNewSearch := aNewSearch;
+  inherited QuickFlood(aX,aY);
+end;
 
 
 { TKMSearchBiome }

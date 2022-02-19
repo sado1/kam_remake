@@ -483,7 +483,7 @@ begin
 
   // Check traffic
   walkedDistance := KMDistanceAbs(fTrafficDetection.PreviousPosition, fGroup.Position);
-  fTrafficDetection.StuckCounter := min(round(AI_Par[ATTACK_SQUAD_TrafficDetection_Limit]), max(0, Word(fCombatPhase <> cpIdle) * fTrafficDetection.StuckCounter + Word(walkedDistance <= 1) * 2 - 1));
+  fTrafficDetection.StuckCounter := min(round(AI_Par[ATTACK_SQUAD_TrafficDetection_Limit]), max(0, Word(fCombatPhase = cpWalk) * fTrafficDetection.StuckCounter + Word(walkedDistance <= 1) * 2 - 1));
   fTrafficDetection.StuckInTraffic := fTrafficDetection.StuckCounter > AI_Par[ATTACK_SQUAD_TrafficDetection_Threshold];
   fTrafficDetection.PreviousPosition := fGroup.Position;
 end;

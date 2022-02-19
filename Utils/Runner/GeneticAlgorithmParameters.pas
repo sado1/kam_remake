@@ -176,7 +176,7 @@ begin
   begin
     enumName := GetEnumName(TypeInfo(TAIPar), Integer(Idx));
     if not ContainsText(enumName, '_END') AND not ContainsText(enumName, '_START') then
-      fLogPar.AddTime(Format('%3d. %1.3f: %6.3f, // %s',[K, aIdv.Gene[K], AI_Par[Idx], enumName ], TFormatSettings.Invariant));
+      fLogPar.AddTime(Format('%3d. %1.3f: %7.3f, // %s',[K, aIdv.Gene[K], AI_Par[Idx], enumName ], TFormatSettings.Invariant));
     Inc(K);
   end;
 

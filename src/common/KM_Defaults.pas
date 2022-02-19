@@ -227,7 +227,8 @@ var
   OVERLAY_AI_FLATAREA     :Boolean = False; //Show FlatArea vision of new AI
   OVERLAY_AI_ROUTES       :Boolean = False; //Show Routes to resources vision of new AI
   OVERLAY_AI_SUPERVISOR   :Boolean = False; //Show Supervisor vision of new AI
-  OVERLAY_AI_VECTOR_FIELD :Boolean = False; //Show Vector field (combat AI)
+  OVERLAY_AI_VEC_FLD_ENEM :Boolean = False; //Show Vector field of enemy (combat AI)
+  OVERLAY_AI_VEC_FLD_ALLY :Boolean = False; //Show Vector field of ally (combat AI)
   OVERLAY_AI_CLUSTERS     :Boolean = False; //Show combat clusters (combat AI)
   OVERLAY_AI_ALLIEDGROUPS :Boolean = False; //Show show allied groups (combat AI)
   {Render}

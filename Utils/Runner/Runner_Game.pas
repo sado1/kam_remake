@@ -751,7 +751,8 @@ function TKMRunnerGA_ArmyAttackNew.CostFunction(): Single;
 
 const
   TEST_PL = 1;
-  KILL_GAIN = 1.5;
+  AI_PL = 2;
+  KILL_GAIN = 3;
   LOST_GAIN = 1;
   SURVIVE_GAIN = 1;
   SURVIVE_ENEMY_GAIN = 3;
@@ -762,30 +763,34 @@ const
     1, 1+2, 3, 1+1  // Peasant     Slingshot   MetalBarbarian  utHorseman
     );
 var
-  PL, K, UnitKilledCnt, UnitSurvivedCnt, UnitSurvivedEnemyCnt: Integer;
+  PL, K, survivedAlly, survivedEnemy: Integer;
   IronArmy, WoodArmy, Militia, Output: Single;
   UT: TKMUnitType;
 begin
 
-  Result := 0;
+  Result := 100000;
   with gHands[TEST_PL].Stats do
-  begin
     for UT := WARRIOR_MIN to WARRIOR_MAX do
       Result := Result
         + WARRIOR_PRICE[UT] * GetUnitKilledQty(UT) * KILL_GAIN
         - WARRIOR_PRICE[UT] * GetUnitLostQty(UT) * LOST_GAIN
         + WARRIOR_PRICE[UT] * GetUnitQty(UT) * SURVIVE_GAIN;
         //- Byte(GetUnitKilledQty(utAny)) * 500;
-  end;
 
-  for PL := 0 to gHands.Count - 1 do
-    if (PL <> TEST_PL) then
-      with gHands[PL].Stats do
-      begin
-        for UT := WARRIOR_MIN to WARRIOR_MAX do
-          Result := Result - GetUnitQty(UT) * SURVIVE_ENEMY_GAIN;
-      end;
+  with gHands[AI_PL].Stats do
+    for UT := WARRIOR_MIN to WARRIOR_MAX do
+      Result := Result - GetUnitQty(UT) * SURVIVE_ENEMY_GAIN;
 
+  survivedAlly := 0;
+  for UT := WARRIOR_MIN to WARRIOR_MAX do
+    survivedAlly := survivedAlly + gHands[TEST_PL].Stats.GetUnitQty(UT);
+
+  survivedEnemy := 0;
+  for UT := WARRIOR_MIN to WARRIOR_MAX do
+    survivedEnemy := survivedEnemy + gHands[AI_PL].Stats.GetUnitQty(UT);
+
+  if (survivedEnemy > 0) AND (survivedAlly > 0) then
+    Result := Result - (survivedEnemy + survivedAlly) * SURVIVE_ENEMY_GAIN;
 end;
 
 

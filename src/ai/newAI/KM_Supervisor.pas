@@ -53,7 +53,7 @@ type
     fPL2Alli: TKMHandByteArr;
     fAlli2PL: TKMHandID2Array;
     fCombatStatus: TKMCombatStatusPLArray;
-    fArmyVector: TArmyVectorField;
+    fArmyVector: TKMArmyVectorField;
     {$IFDEF DEBUG_Supervisor}
       fCombatStatusDebug: TCombatStatusDebug;
       fArmyAttackDebug: TArmyAttackDebug;
@@ -150,7 +150,7 @@ constructor TKMSupervisor.Create();
     PL: Integer;
 {$ENDIF}
 begin
-  fArmyVector := TArmyVectorField.Create(True);
+  fArmyVector := TKMArmyVectorField.Create(True);
   FillChar(fCombatStatus,SizeOf(fCombatStatus),#0);
   {$IFDEF DEBUG_Supervisor}
     SetLength(fArmyAttackDebug.Threat,0);

@@ -15,8 +15,8 @@ type
     Terrain: TKMWord2Array;
     Rotation, Height, Obj: TKMByte2Array;
   end;
-  TKMLayoutType = (mtRandomPlace, mtDefense, mtOffense);
-  TKMArmyType = (atMelee, atAntiHorse, atRanged, atMounted, atAll, atNoRanged, atMoreRanged);
+  TKMLayoutType = (mtRandomPlace, mtRandomGroups, mtDefense, mtOffense);
+  TKMArmyType = (atMelee, atAntiHorse, atRanged, atMounted, atAll, atNoMounted, atNoRanged, atMoreRanged);
 
 
   TKMTestMapSettings = record
@@ -123,7 +123,7 @@ begin
     NewAIGroupRatio := 0.4;
     Layout := mtRandomPlace;
     SpaceBetweenGroups := 5;
-    GroupsCnt := 15 + fRNG.RandomI(20);
+    GroupsCnt := 20 + fRNG.RandomI(20);
     VarianceCnt := 6 + fRNG.RandomI(2);
     ArmyType := atAll;
   end;
@@ -142,11 +142,17 @@ var
   begin
     Settings.Army.Layout := aLayout;
     Settings.Army.ArmyType := aArmy;
-    Settings.Army.NewAIGroupRatio := 0.4 + (1 - aRatio) * 0.3 - Byte(aLayout = mtOffense) * 0.15;
+    Settings.Army.NewAIGroupRatio := 0.4 + (1 - aRatio) * 0.3 - Byte(aLayout = mtOffense) * 0.15 + Byte(aScriptedAttack) * 0.05;
     Settings.AISettings.ScriptedAttack := aScriptedAttack;
     Settings.AISettings.AttackRange := 0;
     if not aScriptedAttack then
       Settings.AISettings.AttackRange := fRNG.RandomI(10) + Byte(aLayout = mtOffense) * 10;
+  end;
+  function ifThenArmy(aChoise: boolean; aArmy1, aArmy2: TKMArmyType): TKMArmyType;
+  begin
+    Result := aArmy2;
+    if (aChoise) then
+      Result := aArmy1;
   end;
   procedure RandomPlaceNoRanged(aOrder: Single);
   begin
@@ -154,23 +160,31 @@ var
   end;
   procedure RandomPlaceAll(aOrder: Single);
   begin
-    ChangeSettings(mtRandomPlace, atAll, aOrder,  boolean(K mod 2));
+    ChangeSettings(mtRandomPlace, ifThenArmy(K mod 2 > 0, atNoMounted, atAll), aOrder,  boolean(K mod 2));
   end;
   procedure DefenceNoRanged(aOrder: Single);
   begin
-    ChangeSettings(mtDefense, atMoreRanged, aOrder, true);
+    ChangeSettings(mtDefense, atNoRanged, aOrder, true);
   end;
   procedure DefenceAll(aOrder: Single);
   begin
-    ChangeSettings(mtDefense, atAll, aOrder, true);
+    ChangeSettings(mtDefense, ifThenArmy(K mod 2 > 0, atNoMounted, atMoreRanged), aOrder, true);
+  end;
+  procedure RandomGroupsNoRanged(aOrder: Single);
+  begin
+    ChangeSettings(mtRandomGroups, atNoRanged, aOrder, boolean(K mod 3));
+  end;
+  procedure RandomGroupsAll(aOrder: Single);
+  begin
+    ChangeSettings(mtRandomGroups, ifThenArmy(K mod 2 > 0, atNoMounted, atMoreRanged), aOrder, boolean(K mod 3));
   end;
   procedure OffenceNoRanged(aOrder: Single);
   begin
-    ChangeSettings(mtOffense, atMoreRanged, aOrder, false);
+    ChangeSettings(mtOffense, atNoRanged, aOrder, false);
   end;
   procedure OffenceAll(aOrder: Single);
   begin
-    ChangeSettings(mtOffense, atAll, aOrder, false);
+    ChangeSettings(mtOffense, ifThenArmy(K mod 2 > 0, atNoMounted, atMoreRanged), aOrder, false);
   end;
 const
   G0 = 0;
@@ -180,17 +194,21 @@ const
   G4 = 40;
   G5 = 50;
   G6 = 60;
+  G7 = 70;
+  G8 = 80;
 begin
-  for K := 1 to G6 do
+  for K := 1 to G8 do
   begin
     RandomizeSettings();
     Settings.Map.Number := K;
-    if      (K > G0) AND (K <= G1) then OffenceNoRanged     (1.0 - (G1 - K)/(G1 - G0))
-    else if (K > G1) AND (K <= G2) then OffenceAll          (1.0 - (G2 - K)/(G2 - G1))
-    else if (K > G2) AND (K <= G3) then DefenceNoRanged     (1.0 - (G3 - K)/(G3 - G2))
-    else if (K > G3) AND (K <= G4) then DefenceAll          (1.0 - (G4 - K)/(G4 - G3))
-    else if (K > G4) AND (K <= G5) then RandomPlaceNoRanged (1.0 - (G5 - K)/(G5 - G4))
-    else if (K > G5) AND (K <= G6) then RandomPlaceAll      (1.0 - (G6 - K)/(G6 - G5))
+    if      (K > G0) AND (K <= G1) then OffenceNoRanged      (1.0 - (G1 - K)/(G1 - G0))
+    else if (K > G1) AND (K <= G2) then OffenceAll           (1.0 - (G2 - K)/(G2 - G1))
+    else if (K > G2) AND (K <= G3) then DefenceNoRanged      (1.0 - (G3 - K)/(G3 - G2))
+    else if (K > G3) AND (K <= G4) then DefenceAll           (1.0 - (G4 - K)/(G4 - G3))
+    else if (K > G4) AND (K <= G5) then RandomGroupsNoRanged (1.0 - (G5 - K)/(G5 - G4))
+    else if (K > G5) AND (K <= G6) then RandomGroupsAll      (1.0 - (G6 - K)/(G6 - G5))
+    else if (K > G6) AND (K <= G7) then RandomPlaceNoRanged  (1.0 - (G7 - K)/(G7 - G6))
+    else if (K > G7) AND (K <= G8) then RandomPlaceAll       (1.0 - (G8 - K)/(G8 - G7))
     else begin end;
 
     CreateMap(Format('GA_S2_%.*d',[3, K]));
@@ -239,13 +257,13 @@ const
 
   procedure CreateLayout(var aLayout: TKMArmyLayout);
   var
-    K, PL1Len, cnt1, cnt2, sqrtCnt: Integer;
+    K, L, PL1Len, cnt1, cnt2, sqrtCnt, rndCnt, rndIdx: Integer;
     points: TKMPointArray;
   begin
     case Settings.Army.Layout of
       mtRandomPlace:
       begin
-    points := RNDPointsInGrid(Settings.Army.GroupsCnt, Settings.Army.SpaceBetweenGroups, KMPoint(5,5), KMPoint(fMapX-5,fMapY-5));
+        points := RNDPointsInGrid(Settings.Army.GroupsCnt, Settings.Army.SpaceBetweenGroups, KMPoint(5,5), KMPoint(fMapX-5,fMapY-5));
         setLength(aLayout[1], length(Points));
         setLength(aLayout[2], length(Points));
         cnt1 := 0;
@@ -265,6 +283,31 @@ const
         end;
         setLength(aLayout[1], cnt1);
         setLength(aLayout[2], cnt2);
+      end;
+      mtRandomGroups:
+      begin
+        points := RNDPointsInGrid(Round(Settings.Army.GroupsCnt/4), Settings.Army.SpaceBetweenGroups*3, KMPoint(5,5), KMPoint(fMapX-5,fMapY-5));
+        rndCnt := Round(Length(points) * Settings.Army.NewAIGroupRatio);
+        for K := Low(points) to High(points) do
+        begin
+          rndIdx := K + fRNG.RandomI(length(points) - K);
+          rndCnt := rndCnt - 1;
+          if (rndCnt > 0) then
+          begin
+            cnt1 := Length(aLayout[1]);
+            SetLength(aLayout[1], Length(aLayout[1]) + 2 + fRNG.RandomI(3));
+            for L := cnt1 to High(aLayout[1]) do
+              aLayout[1,L] := RNDPointInCircle(KMPoint(5,5),KMPoint(fMapX-5,fMapY-5),points[rndIdx], 5);
+            points[rndIdx] := points[K];
+          end
+          else
+          begin
+            cnt1 := Length(aLayout[2]);
+            SetLength(aLayout[2], Length(aLayout[2]) + 2 + fRNG.RandomI(3));
+            for L := cnt1 to High(aLayout[2]) do
+              aLayout[2,L] := RNDPointInCircle(KMPoint(5,5),KMPoint(fMapX-5,fMapY-5),points[K], 5);
+          end;
+        end;
       end;
       mtOffense, mtDefense:
       begin
@@ -315,6 +358,14 @@ begin
           atAntiHorse: UT := ARMY_ANTIHORSE[ fRNG.RandomI(length(ARMY_ANTIHORSE)) ];
           atMounted:   UT := ARMY_MOUNTED  [ fRNG.RandomI(length(ARMY_MOUNTED  )) ];
           atRanged:    UT := ARMY_RANGED   [ fRNG.RandomI(length(ARMY_RANGED   )) ];
+          atNoMounted:
+          begin
+            case fRNG.RandomI(3) of
+              0: UT := ARMY_MELEE    [ fRNG.RandomI(length(ARMY_MELEE    )) ];
+              1: UT := ARMY_ANTIHORSE[ fRNG.RandomI(length(ARMY_ANTIHORSE)) ];
+              2: UT := ARMY_RANGED   [ fRNG.RandomI(length(ARMY_RANGED  )) ];
+            end;
+          end;
           atNoRanged:
           begin
             case fRNG.RandomI(3) of
@@ -344,7 +395,8 @@ begin
       end;
       // New group
       //G := gHands[PL].AddUnitGroup(UT, armyLayout[PL,K], dir, column, count);
-      gHands[PL].AddUnitGroup(UT, armyLayout[PL,K], dir, column, count);
+      if (gTerrain.Land^[armyLayout[PL,K].Y,armyLayout[PL,K].X].IsUnit = nil) then
+        gHands[PL].AddUnitGroup(UT, armyLayout[PL,K], dir, column, count);
     end;
 
 end;
@@ -439,7 +491,7 @@ begin
   SetLength(TilesPartsArr.Obj,      Length(A), Length(A[0]));
   for Y := Low(A) to High(A) do
   begin
-    FillChar(A[Y,0], Length(A[Y])*SizeOf(A[Y,0]), Settings.Obstacle.WalkableTile);
+    FillChar(A[Y,0], Length(A[Y])*SizeOf(A[Y,0]), #0);
     FillChar(TilesPartsArr.Obj[Y,0], Length(TilesPartsArr.Obj[Y])*SizeOf(TilesPartsArr.Obj[Y,0]), #255);
   end;
 
@@ -558,6 +610,7 @@ var
   PointsArr: TKMPoint2Array;
   Voronoi: TInteger2Array;
 
+
   procedure RndPointsInRadius(aX,aY: Integer);
   var
     X,Y, Cnt, MaxCnt, Overflow, MaxAttempt: Integer;
@@ -585,6 +638,7 @@ var
       end;
     end;
   end;
+
 
   procedure RndWalk(aX,aY: Integer);
   var
@@ -650,6 +704,29 @@ var
   end;
 
 
+  procedure FillGaps();
+  var
+    X,Y: Integer;
+    searchBiome: TKMFillTestMap;
+  begin
+    searchBiome := TKMFillTestMap.Create(KMPoint(0,0), KMPoint(fMapX,fMapY), A);
+    try
+      for Y := 0 to fMapY do
+      for X := 0 to fMapX do
+        if (A[Y,X] = 0) then
+        begin
+          searchBiome.QuickFlood(X,Y,0,1);
+          if (searchBiome.Count < 50) then
+            searchBiome.QuickFlood(X,Y,1,Settings.Obstacle.NonWalkableTile)
+          else
+            searchBiome.QuickFlood(X,Y,1,Settings.Obstacle.WalkableTile);
+        end;
+    finally
+      searchBiome.Free();
+    end;
+  end;
+
+
   var
     X,Y,I: Integer;
     Factor: Single;
@@ -690,6 +767,7 @@ begin
     FillObstacle.Free;
   end;
 
+  FillGaps();
 end;
 
 
