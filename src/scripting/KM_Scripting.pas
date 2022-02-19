@@ -707,59 +707,59 @@ begin
     c := Sender.AddClassN(nil, AnsiString(fActions.ClassName));
     RegisterMethodCheck(c, 'procedure AIArmyType(aPlayer: Byte; aType: TKMArmyType)');
     RegisterMethodCheck(c, 'function AIAttackAdd(aHand: Integer; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer;' +
-                           'aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount: Word; ' +
+                           'aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount: Integer; ' +
                            'aRandomGroups: Boolean; aTarget: TKMAIAttackTarget; aCustomPosition: TKMPoint): Integer');
     RegisterMethodCheck(c, 'function AIAttackAddEx(aHand: Integer; var aAttackInfo: TKMAIAttackInfo): Integer');
     RegisterMethodCheck(c, 'function AIAttackRemove(aHand, aAIAttackUID: Integer): Boolean');
     RegisterMethodCheck(c, 'procedure AIAttackRemoveAll(aHand: Integer)');
     RegisterMethodCheck(c, 'procedure AIAutoAttack(aPlayer: Byte; aAutoAttack: Boolean)');
-    RegisterMethodCheck(c, 'procedure AIAutoAttackRange(aPlayer: Byte; aRange: Word)');
+    RegisterMethodCheck(c, 'procedure AIAutoAttackRange(aPlayer: Byte; aRange: Integer)');
     RegisterMethodCheck(c, 'procedure AIAutoBuild(aPlayer: Byte; aAuto: Boolean)');
     RegisterMethodCheck(c, 'procedure AIAutoDefence(aPlayer: Byte; aAuto: Boolean)');
     RegisterMethodCheck(c, 'procedure AIAutoRepair(aPlayer: Byte; aAuto: Boolean)');
-    RegisterMethodCheck(c, 'function AIDefencePositionAdd(aPlayer: Byte; X, Y: Integer; aDir, aGroupType: Byte; aRadius: Word; aDefType: Byte): Integer');
+    RegisterMethodCheck(c, 'function AIDefencePositionAdd(aPlayer: Byte; X, Y: Integer; aDir, aGroupType: Byte; aRadius: Integer; aDefType: Byte): Integer');
     RegisterMethodCheck(c, 'function AIDefencePositionAddEx(aHand, aOrder: Integer; var aDefencePosition: TKMDefencePositionInfo): Integer');
     RegisterMethodCheck(c, 'procedure AIDefencePositionRemove(aPlayer: Byte; X, Y: Integer)');
     RegisterMethodCheck(c, 'procedure AIDefencePositionRemoveAll(aPlayer: Byte)');
     RegisterMethodCheck(c, 'procedure AIDefencePositionRemoveByUID(aHand, aUID: Integer)');
     RegisterMethodCheck(c, 'procedure AIDefendAllies(aPlayer: Byte; aDefend: Boolean)');
-    RegisterMethodCheck(c, 'procedure AIEquipRate(aPlayer: Byte; aType: Byte; aRate: Word)');
-    RegisterMethodCheck(c, 'procedure AIGroupsFormationSet(aPlayer, aType: Byte; aCount, aColumns: Word)');
+    RegisterMethodCheck(c, 'procedure AIEquipRate(aPlayer: Byte; aType: Byte; aRate: Integer)');
+    RegisterMethodCheck(c, 'procedure AIGroupsFormationSet(aPlayer, aType: Byte; aCount, aColumns: Integer)');
     RegisterMethodCheck(c, 'procedure AIGroupsFormationSetEx(aHand: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer)');
     RegisterMethodCheck(c, 'procedure AIRecruitDelay(aPlayer, aDelay: Cardinal)');
     RegisterMethodCheck(c, 'procedure AIRecruitLimit(aPlayer, aLimit: Byte)');
     RegisterMethodCheck(c, 'procedure AIRepairMode(aPlayer: Integer; aRepairMode: TKMAIRepairMode)');
     RegisterMethodCheck(c, 'procedure AISerfsPerHouse(aPlayer: Byte; aSerfs: Single)');
     RegisterMethodCheck(c, 'procedure AISoldiersLimit(aPlayer: Byte; aLimit: Integer)');
-    RegisterMethodCheck(c, 'procedure AIStartPosition(aPlayer: Byte; X, Y: Word)');
+    RegisterMethodCheck(c, 'procedure AIStartPosition(aPlayer: Byte; X, Y: Integer)');
     RegisterMethodCheck(c, 'procedure AIWorkerLimit(aPlayer, aLimit: Byte)');
 
     RegisterMethodCheck(c, 'procedure CinematicEnd(aPlayer: Byte)');
-    RegisterMethodCheck(c, 'procedure CinematicPanTo(aPlayer: Byte; X, Y, Duration: Word)');
+    RegisterMethodCheck(c, 'procedure CinematicPanTo(aPlayer: Byte; X, Y, Duration: Integer)');
     RegisterMethodCheck(c, 'procedure CinematicStart(aPlayer: Byte)');
 
     RegisterMethodCheck(c, 'procedure FogCoverAll(aPlayer: Byte)');
-    RegisterMethodCheck(c, 'procedure FogCoverCircle(aPlayer, X, Y, aRadius: Word)');
-    RegisterMethodCheck(c, 'procedure FogCoverRect(aPlayer, X1, Y1, X2, Y2: Word)');
+    RegisterMethodCheck(c, 'procedure FogCoverCircle(aPlayer, X, Y, aRadius: Integer)');
+    RegisterMethodCheck(c, 'procedure FogCoverRect(aPlayer, X1, Y1, X2, Y2: Integer)');
     RegisterMethodCheck(c, 'procedure FogRevealAll(aPlayer: Byte)');
-    RegisterMethodCheck(c, 'procedure FogRevealCircle(aPlayer, X, Y, aRadius: Word)');
-    RegisterMethodCheck(c, 'procedure FogRevealRect(aPlayer, X1, Y1, X2, Y2: Word)');
+    RegisterMethodCheck(c, 'procedure FogRevealCircle(aPlayer, X, Y, aRadius: Integer)');
+    RegisterMethodCheck(c, 'procedure FogRevealRect(aPlayer, X1, Y1, X2, Y2: Integer)');
 
     RegisterMethodCheck(c, 'procedure GameSpeed(aSpeed: Single)');
     RegisterMethodCheck(c, 'procedure GameSpeedChangeAllowed(aAllowed: Boolean)');
 
-    RegisterMethodCheck(c, 'function  GiveAnimal(aType, X,Y: Word): Integer');
-    RegisterMethodCheck(c, 'function  GiveField(aPlayer, X, Y: Word): Boolean');
-    RegisterMethodCheck(c, 'function  GiveFieldAged(aPlayer, X, Y: Word; aStage: Byte; aRandomAge: Boolean): Boolean');
-    RegisterMethodCheck(c, 'function  GiveGroup(aPlayer, aType, X, Y, aDir, aCount, aColumns: Word): Integer');
+    RegisterMethodCheck(c, 'function  GiveAnimal(aType, X,Y: Integer): Integer');
+    RegisterMethodCheck(c, 'function  GiveField(aPlayer, X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function  GiveFieldAged(aPlayer, X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean');
+    RegisterMethodCheck(c, 'function  GiveGroup(aPlayer, aType, X, Y, aDir, aCount, aColumns: Integer): Integer');
     RegisterMethodCheck(c, 'function  GiveHouse(aPlayer, aHouseType, X,Y: Integer): Integer');
     RegisterMethodCheck(c, 'function  GiveHouseSite(aPlayer, aHouseType, X, Y: Integer; aAddMaterials: Boolean): Integer');
-    RegisterMethodCheck(c, 'function  GiveRoad(aPlayer, X, Y: Word): Boolean');
-    RegisterMethodCheck(c, 'function  GiveUnit(aPlayer, aType, X,Y, aDir: Word): Integer');
-    RegisterMethodCheck(c, 'procedure GiveWares(aPlayer, aType, aCount: Word)');
-    RegisterMethodCheck(c, 'procedure GiveWeapons(aPlayer, aType, aCount: Word)');
-    RegisterMethodCheck(c, 'function  GiveWineField(aPlayer, X, Y: Word): Boolean');
-    RegisterMethodCheck(c, 'function  GiveWineFieldAged(aPlayer, X, Y: Word; aStage: Byte; aRandomAge: Boolean): Boolean');
+    RegisterMethodCheck(c, 'function  GiveRoad(aPlayer, X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function  GiveUnit(aPlayer, aType, X,Y, aDir: Integer): Integer');
+    RegisterMethodCheck(c, 'procedure GiveWares(aPlayer, aType, aCount: Integer)');
+    RegisterMethodCheck(c, 'procedure GiveWeapons(aPlayer, aType, aCount: Integer)');
+    RegisterMethodCheck(c, 'function  GiveWineField(aPlayer, X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function  GiveWineFieldAged(aPlayer, X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean');
 
     RegisterMethodCheck(c, 'procedure GroupAllowAllyToSelect(aGroupID: Integer; aAllow: Boolean)');
     RegisterMethodCheck(c, 'procedure GroupBlockOrders(aGroupID: Integer; aBlock: Boolean)');
@@ -774,17 +774,17 @@ begin
     RegisterMethodCheck(c, 'function  GroupOrderSplit(aGroupID: Integer): Integer');
     RegisterMethodCheck(c, 'function  GroupOrderSplitUnit(aGroupID, aUnitID: Integer): Integer');
     RegisterMethodCheck(c, 'procedure GroupOrderStorm(aGroupID: Integer)');
-    RegisterMethodCheck(c, 'procedure GroupOrderWalk(aGroupID: Integer; X, Y, aDirection: Word)');
+    RegisterMethodCheck(c, 'procedure GroupOrderWalk(aGroupID: Integer; X, Y, aDirection: Integer)');
     RegisterMethodCheck(c, 'procedure GroupSetFormation(aGroupID: Integer; aNumColumns: Byte)');
 
     RegisterMethodCheck(c, 'procedure HandHouseLock(aHand: Integer; aHouseType: TKMHouseType; aLock: TKMHandHouseLock)');
 
     RegisterMethodCheck(c, 'procedure HouseAddBuildingMaterials(aHouseID: Integer)');
     RegisterMethodCheck(c, 'procedure HouseAddBuildingProgress(aHouseID: Integer)');
-    RegisterMethodCheck(c, 'procedure HouseAddDamage(aHouseID: Integer; aDamage: Word)');
-    RegisterMethodCheck(c, 'procedure HouseAddRepair(aHouseID: Integer; aRepair: Word)');
-    RegisterMethodCheck(c, 'procedure HouseAddWaresTo(aHouseID: Integer; aType, aCount: Word)');
-    RegisterMethodCheck(c, 'procedure HouseAllow(aPlayer, aHouseType: Word; aAllowed: Boolean)');
+    RegisterMethodCheck(c, 'procedure HouseAddDamage(aHouseID: Integer; aDamage: Integer)');
+    RegisterMethodCheck(c, 'procedure HouseAddRepair(aHouseID: Integer; aRepair: Integer)');
+    RegisterMethodCheck(c, 'procedure HouseAddWaresTo(aHouseID: Integer; aType, aCount: Integer)');
+    RegisterMethodCheck(c, 'procedure HouseAllow(aPlayer, aHouseType: Integer; aAllowed: Boolean)');
     RegisterMethodCheck(c, 'procedure HouseAllowAllyToSelect(aHouseID: Integer; aAllow: Boolean)');
     RegisterMethodCheck(c, 'procedure HouseAllowAllyToSelectAll(aPlayer: Byte; aAllow: Boolean)');
     RegisterMethodCheck(c, 'function  HouseBarracksEquip(aHouseID: Integer; aUnitType: Integer; aCount: Integer): Integer');
@@ -797,10 +797,10 @@ begin
     RegisterMethodCheck(c, 'procedure HouseRepairEnable(aHouseID: Integer; aRepairEnabled: Boolean)');
     RegisterMethodCheck(c, 'function  HouseSchoolQueueAdd(aHouseID: Integer; aUnitType: Integer; aCount: Integer): Integer');
     RegisterMethodCheck(c, 'procedure HouseSchoolQueueRemove(aHouseID, QueueIndex: Integer)');
-    RegisterMethodCheck(c, 'procedure HouseTakeWaresFrom(aHouseID: Integer; aType, aCount: Word)');
+    RegisterMethodCheck(c, 'procedure HouseTakeWaresFrom(aHouseID: Integer; aType, aCount: Integer)');
     RegisterMethodCheck(c, 'function  HouseTownHallEquip(aHouseID: Integer; aUnitType: Integer; aCount: Integer): Integer');
     RegisterMethodCheck(c, 'procedure HouseTownHallMaxGold(aHouseID: Integer; aMaxGold: Integer)');
-    RegisterMethodCheck(c, 'procedure HouseUnlock(aPlayer, aHouseType: Word)');
+    RegisterMethodCheck(c, 'procedure HouseUnlock(aPlayer, aHouseType: Integer)');
     RegisterMethodCheck(c, 'procedure HouseWoodcutterChopOnly(aHouseID: Integer; aChopOnly: Boolean)');
     RegisterMethodCheck(c, 'procedure HouseWoodcutterMode(aHouseID: Integer; aWoodcutterMode: Byte)');
     RegisterMethodCheck(c, 'procedure HouseWareBlock(aHouseID, aWareType: Integer; aBlocked: Boolean)');
@@ -835,54 +835,54 @@ begin
 
     RegisterMethodCheck(c, 'procedure Peacetime(aPeacetime: Cardinal)');
 
-    RegisterMethodCheck(c, 'function  PlanAddField(aPlayer, X, Y: Word): Boolean');
-    RegisterMethodCheck(c, 'function  PlanAddHouse(aPlayer, aHouseType, X, Y: Word): Boolean');
-    RegisterMethodCheck(c, 'function  PlanAddRoad(aPlayer, X, Y: Word): Boolean');
-    RegisterMethodCheck(c, 'function  PlanAddWinefield(aPlayer, X, Y: Word): Boolean');
+    RegisterMethodCheck(c, 'function  PlanAddField(aPlayer, X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function  PlanAddHouse(aPlayer, aHouseType, X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function  PlanAddRoad(aPlayer, X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function  PlanAddWinefield(aPlayer, X, Y: Integer): Boolean');
     RegisterMethodCheck(c, 'function  PlanConnectRoad(aPlayer, X1, Y1, X2, Y2: Integer; aCompleted: Boolean): Boolean');
-    RegisterMethodCheck(c, 'function  PlanRemove(aPlayer, X, Y: Word): Boolean');
+    RegisterMethodCheck(c, 'function  PlanRemove(aPlayer, X, Y: Integer): Boolean');
 
     RegisterMethodCheck(c, 'procedure PlayerAddDefaultGoals(aPlayer: Byte; aBuildings: Boolean)');
     RegisterMethodCheck(c, 'procedure PlayerAllianceChange(aPlayer1, aPlayer2: Byte; aCompliment, aAllied: Boolean)');
     RegisterMethodCheck(c, 'procedure PlayerAllianceNFogChange(aPlayer1, aPlayer2: Byte; aCompliment, aAllied, aSyncAllyFog: Boolean)');
-    RegisterMethodCheck(c, 'procedure PlayerDefeat(aPlayer: Word)');
-    RegisterMethodCheck(c, 'procedure PlayerGoalsRemoveAll(aPlayer: Word; aForAllPlayers: Boolean)');
-    RegisterMethodCheck(c, 'procedure PlayerShareBeacons(aPlayer1, aPlayer2: Word; aCompliment, aShare: Boolean)');
-    RegisterMethodCheck(c, 'procedure PlayerShareFog(aPlayer1, aPlayer2: Word; aShare: Boolean)');
-    RegisterMethodCheck(c, 'procedure PlayerShareFogCompliment(aPlayer1, aPlayer2: Word; aShare: Boolean)');
+    RegisterMethodCheck(c, 'procedure PlayerDefeat(aPlayer: Integer)');
+    RegisterMethodCheck(c, 'procedure PlayerGoalsRemoveAll(aPlayer: Integer; aForAllPlayers: Boolean)');
+    RegisterMethodCheck(c, 'procedure PlayerShareBeacons(aPlayer1, aPlayer2: Integer; aCompliment, aShare: Boolean)');
+    RegisterMethodCheck(c, 'procedure PlayerShareFog(aPlayer1, aPlayer2: Integer; aShare: Boolean)');
+    RegisterMethodCheck(c, 'procedure PlayerShareFogCompliment(aPlayer1, aPlayer2: Integer; aShare: Boolean)');
     RegisterMethodCheck(c, 'procedure PlayerWareDistribution(aPlayer, aWareType, aHouseType, aAmount: Byte)');
     RegisterMethodCheck(c, 'procedure PlayerWin(const aVictors: array of Integer; aTeamVictory: Boolean)');
 
     RegisterMethodCheck(c, 'function PlayWAV(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer');
-    RegisterMethodCheck(c, 'function PlayWAVAtLocation(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Word): Integer');
-    RegisterMethodCheck(c, 'function PlayWAVAtLocationLooped(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Word): Integer');
+    RegisterMethodCheck(c, 'function PlayWAVAtLocation(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer');
+    RegisterMethodCheck(c, 'function PlayWAVAtLocationLooped(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer');
     RegisterMethodCheck(c, 'function PlayWAVFadeMusic(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer');
     RegisterMethodCheck(c, 'function PlayWAVLooped(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer');
     RegisterMethodCheck(c, 'procedure StopLoopedWAV(aLoopIndex: Integer)');
 
     RegisterMethodCheck(c, 'function PlayOGG(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer');
-    RegisterMethodCheck(c, 'function PlayOGGAtLocation(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Word): Integer');
-    RegisterMethodCheck(c, 'function PlayOGGAtLocationLooped(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Word): Integer');
+    RegisterMethodCheck(c, 'function PlayOGGAtLocation(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer');
+    RegisterMethodCheck(c, 'function PlayOGGAtLocationLooped(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer');
     RegisterMethodCheck(c, 'function PlayOGGFadeMusic(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer');
     RegisterMethodCheck(c, 'function PlayOGGLooped(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer');
     RegisterMethodCheck(c, 'procedure StopLoopedOGG(aLoopIndex: Integer)');
     RegisterMethodCheck(c, 'function PlaySound(aPlayer: ShortInt; const aFileName: AnsiString; aAudioFormat: TKMAudioFormat; ' +
                             'aVolume: Single; aFadeMusic, aLooped: Boolean): Integer');
     RegisterMethodCheck(c, 'function PlaySoundAtLocation(aPlayer: ShortInt; const aFileName: AnsiString; aAudioFormat: TKMAudioFormat; ' +
-                            'aVolume: Single; aFadeMusic, aLooped: Boolean; aRadius: Single; aX, aY: Word): Integer');
+                            'aVolume: Single; aFadeMusic, aLooped: Boolean; aRadius: Single; aX, aY: Integer): Integer');
     RegisterMethodCheck(c, 'procedure StopSound(aSoundIndex: Integer)');
 
-    RegisterMethodCheck(c, 'procedure RemoveRoad(X, Y: Word)');
+    RegisterMethodCheck(c, 'procedure RemoveRoad(X, Y: Integer)');
 
-    RegisterMethodCheck(c, 'procedure SetTradeAllowed(aPlayer, aResType: Word; aAllowed: Boolean)');
+    RegisterMethodCheck(c, 'procedure SetTradeAllowed(aPlayer, aResType: Integer; aAllowed: Boolean)');
 
     RegisterMethodCheck(c, 'procedure ShowMsg(aPlayer: ShortInt; const aText: AnsiString)');
     RegisterMethodCheck(c, 'procedure ShowMsgFormatted(aPlayer: Shortint; const aText: AnsiString; Params: array of const)');
-    RegisterMethodCheck(c, 'procedure ShowMsgGoto(aPlayer: Shortint; aX, aY: Word; const aText: AnsiString)');
-    RegisterMethodCheck(c, 'procedure ShowMsgGotoFormatted(aPlayer: Shortint; aX, aY: Word; const aText: AnsiString; Params: array of const)');
+    RegisterMethodCheck(c, 'procedure ShowMsgGoto(aPlayer: Shortint; aX, aY: Integer; const aText: AnsiString)');
+    RegisterMethodCheck(c, 'procedure ShowMsgGotoFormatted(aPlayer: Shortint; aX, aY: Integer; const aText: AnsiString; Params: array of const)');
 
     RegisterMethodCheck(c, 'procedure UnitAllowAllyToSelect(aUnitID: Integer; aAllow: Boolean)');
-    RegisterMethodCheck(c, 'procedure UnitBlock(aPlayer: Byte; aType: Word; aBlock: Boolean)');
+    RegisterMethodCheck(c, 'procedure UnitBlock(aPlayer: Byte; aType: Integer; aBlock: Boolean)');
     RegisterMethodCheck(c, 'function  UnitDirectionSet(aUnitID, aDirection: Integer): Boolean');
     RegisterMethodCheck(c, 'procedure UnitDismiss(aUnitID: Integer)');
     RegisterMethodCheck(c, 'procedure UnitDismissableSet(aUnitID: Integer; aDismissable: Boolean)');
@@ -891,7 +891,7 @@ begin
     RegisterMethodCheck(c, 'procedure UnitHPSetInvulnerable(aUnitID: Integer; aInvulnerable: Boolean)');
     RegisterMethodCheck(c, 'procedure UnitHungerSet(aUnitID, aHungerLevel: Integer)');
     RegisterMethodCheck(c, 'procedure UnitKill(aUnitID: Integer; aSilent: Boolean)');
-    RegisterMethodCheck(c, 'function  UnitOrderWalk(aUnitID: Integer; X, Y: Word): Boolean');
+    RegisterMethodCheck(c, 'function  UnitOrderWalk(aUnitID: Integer; X, Y: Integer): Boolean');
 
     c := Sender.AddClassN(nil, AnsiString(fUtils.ClassName));
     RegisterMethodCheck(c, 'function AbsI(aValue: Integer): Integer');

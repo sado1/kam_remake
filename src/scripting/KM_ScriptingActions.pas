@@ -22,56 +22,56 @@ type
 
     procedure AIArmyType(aPlayer: Byte; aType: TKMArmyType);
     function AIAttackAdd(aHand: Integer; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer;
-                         aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount: Word; aRandomGroups: Boolean;
+                         aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount: Integer; aRandomGroups: Boolean;
                          aTarget: TKMAIAttackTarget; aCustomPosition: TKMPoint): Integer;
     function AIAttackAddEx(aHand: Integer; var aAttackInfo: TKMAIAttackInfo): Integer;
     function AIAttackRemove(aHand, aAIAttackUID: Integer): Boolean;
     procedure AIAttackRemoveAll(aHand: Integer);
     procedure AIAutoAttack(aPlayer: Byte; aAutoAttack: Boolean);
-    procedure AIAutoAttackRange(aPlayer: Byte; aRange: Word);
+    procedure AIAutoAttackRange(aPlayer: Byte; aRange: Integer);
     procedure AIAutoBuild(aPlayer: Byte; aAuto: Boolean);
     procedure AIAutoDefence(aPlayer: Byte; aAuto: Boolean);
     procedure AIAutoRepair(aPlayer: Byte; aAuto: Boolean);
-    function AIDefencePositionAdd(aPlayer: Byte; X, Y: Integer; aDir, aGroupType: Byte; aRadius: Word; aDefType: Byte): Integer;
+    function AIDefencePositionAdd(aPlayer: Byte; X, Y: Integer; aDir, aGroupType: Byte; aRadius: Integer; aDefType: Byte): Integer;
     function AIDefencePositionAddEx(aHand, aOrder: Integer; var aDefencePosition: TKMDefencePositionInfo): Integer;
     procedure AIDefencePositionRemove(aPlayer: Byte; X, Y: Integer);
     procedure AIDefencePositionRemoveAll(aPlayer: Byte);
     procedure AIDefencePositionRemoveByUID(aHand, aUID: Integer);
     procedure AIDefendAllies(aPlayer: Byte; aDefend: Boolean);
-    procedure AIEquipRate(aPlayer: Byte; aType: Byte; aRate: Word);
-    procedure AIGroupsFormationSet(aPlayer, aType: Byte; aCount, aColumns: Word);
+    procedure AIEquipRate(aPlayer: Byte; aType: Byte; aRate: Integer);
+    procedure AIGroupsFormationSet(aPlayer, aType: Byte; aCount, aColumns: Integer);
     procedure AIGroupsFormationSetEx(aHand: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer);
     procedure AIRecruitDelay(aPlayer: Byte; aDelay: Cardinal);
     procedure AIRecruitLimit(aPlayer, aLimit: Byte);
     procedure AIRepairMode(aPlayer: Integer; aRepairMode: TKMAIRepairMode);
     procedure AISerfsPerHouse(aPlayer: Byte; aSerfs: Single);
     procedure AISoldiersLimit(aPlayer: Byte; aLimit: Integer);
-    procedure AIStartPosition(aPlayer: Byte; X, Y: Word);
+    procedure AIStartPosition(aPlayer: Byte; X, Y: Integer);
     procedure AIWorkerLimit(aPlayer, aLimit: Byte);
 
     procedure CinematicStart(aPlayer: Byte);
     procedure CinematicEnd(aPlayer: Byte);
-    procedure CinematicPanTo(aPlayer: Byte; X, Y, Duration: Word);
+    procedure CinematicPanTo(aPlayer: Byte; X, Y, Duration: Integer);
 
-    function  GiveAnimal(aType, X,Y: Word): Integer;
-    function  GiveField(aPlayer, X, Y: Word): Boolean;
-    function  GiveFieldAged(aPlayer, X, Y: Word; aStage: Byte; aRandomAge: Boolean): Boolean;
-    function  GiveGroup(aPlayer, aType, X,Y, aDir, aCount, aColumns: Word): Integer;
+    function  GiveAnimal(aType, X,Y: Integer): Integer;
+    function  GiveField(aPlayer, X, Y: Integer): Boolean;
+    function  GiveFieldAged(aPlayer, X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean;
+    function  GiveGroup(aPlayer, aType, X,Y, aDir, aCount, aColumns: Integer): Integer;
     function  GiveHouse(aPlayer, aHouseType, X,Y: Integer): Integer;
     function  GiveHouseSite(aPlayer, aHouseType, X, Y: Integer; aAddMaterials: Boolean): Integer;
-    function  GiveUnit(aPlayer, aType, X,Y, aDir: Word): Integer;
-    function  GiveRoad(aPlayer, X, Y: Word): Boolean;
-    procedure GiveWares(aPlayer, aType, aCount: Word);
-    procedure GiveWeapons(aPlayer, aType, aCount: Word);
-    function  GiveWinefield(aPlayer, X, Y: Word): Boolean;
-    function  GiveWinefieldAged(aPlayer, X, Y: Word; aStage: Byte; aRandomAge: Boolean): Boolean;
+    function  GiveUnit(aPlayer, aType, X,Y, aDir: Integer): Integer;
+    function  GiveRoad(aPlayer, X, Y: Integer): Boolean;
+    procedure GiveWares(aPlayer, aType, aCount: Integer);
+    procedure GiveWeapons(aPlayer, aType, aCount: Integer);
+    function  GiveWinefield(aPlayer, X, Y: Integer): Boolean;
+    function  GiveWinefieldAged(aPlayer, X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean;
 
     procedure FogCoverAll(aPlayer: Byte);
-    procedure FogCoverCircle(aPlayer, X, Y, aRadius: Word);
-    procedure FogRevealRect(aPlayer, X1, Y1, X2, Y2: Word);
-    procedure FogCoverRect(aPlayer, X1, Y1, X2, Y2: Word);
+    procedure FogCoverCircle(aPlayer, X, Y, aRadius: Integer);
+    procedure FogRevealRect(aPlayer, X1, Y1, X2, Y2: Integer);
+    procedure FogCoverRect(aPlayer, X1, Y1, X2, Y2: Integer);
     procedure FogRevealAll(aPlayer: Byte);
-    procedure FogRevealCircle(aPlayer, X, Y, aRadius: Word);
+    procedure FogRevealCircle(aPlayer, X, Y, aRadius: Integer);
 
     procedure GameSpeed(aSpeed: Single);
     procedure GameSpeedChangeAllowed(aAllowed: Boolean);
@@ -89,17 +89,17 @@ type
     function  GroupOrderSplit(aGroupID: Integer): Integer;
     function  GroupOrderSplitUnit(aGroupID, aUnitID: Integer): Integer;
     procedure GroupOrderStorm(aGroupID: Integer);
-    procedure GroupOrderWalk(aGroupID: Integer; X, Y, aDirection: Word);
+    procedure GroupOrderWalk(aGroupID: Integer; X, Y, aDirection: Integer);
     procedure GroupSetFormation(aGroupID: Integer; aNumColumns: Byte);
 
     procedure HandHouseLock(aHand: Integer; aHouseType: TKMHouseType; aLock: TKMHandHouseLock);
 
     procedure HouseAddBuildingMaterials(aHouseID: Integer);
     procedure HouseAddBuildingProgress(aHouseID: Integer);
-    procedure HouseAddDamage(aHouseID: Integer; aDamage: Word);
-    procedure HouseAddRepair(aHouseID: Integer; aRepair: Word);
-    procedure HouseAddWaresTo(aHouseID: Integer; aType, aCount: Word);
-    procedure HouseAllow(aPlayer, aHouseType: Word; aAllowed: Boolean);
+    procedure HouseAddDamage(aHouseID: Integer; aDamage: Integer);
+    procedure HouseAddRepair(aHouseID: Integer; aRepair: Integer);
+    procedure HouseAddWaresTo(aHouseID: Integer; aType, aCount: Integer);
+    procedure HouseAllow(aPlayer, aHouseType: Integer; aAllowed: Boolean);
     procedure HouseAllowAllyToSelect(aHouseID: Integer; aAllow: Boolean);
     procedure HouseAllowAllyToSelectAll(aPlayer: ShortInt; aAllow: Boolean);
     function  HouseBarracksEquip(aHouseID: Integer; aUnitType: Integer; aCount: Integer): Integer;
@@ -112,10 +112,10 @@ type
     procedure HouseRepairEnable(aHouseID: Integer; aRepairEnabled: Boolean);
     function  HouseSchoolQueueAdd(aHouseID: Integer; aUnitType: Integer; aCount: Integer): Integer;
     procedure HouseSchoolQueueRemove(aHouseID, QueueIndex: Integer);
-    procedure HouseTakeWaresFrom(aHouseID: Integer; aType, aCount: Word);
+    procedure HouseTakeWaresFrom(aHouseID: Integer; aType, aCount: Integer);
     function  HouseTownHallEquip(aHouseID: Integer; aUnitType: Integer; aCount: Integer): Integer;
     procedure HouseTownHallMaxGold(aHouseID: Integer; aMaxGold: Integer);
-    procedure HouseUnlock(aPlayer, aHouseType: Word);
+    procedure HouseUnlock(aPlayer, aHouseType: Integer);
     procedure HouseWoodcutterChopOnly(aHouseID: Integer; aChopOnly: Boolean);
     procedure HouseWoodcutterMode(aHouseID: Integer; aWoodcutterMode: Byte);
     procedure HouseWareBlock(aHouseID, aWareType: Integer; aBlocked: Boolean);
@@ -150,54 +150,54 @@ type
 
     procedure Peacetime(aPeacetime: Cardinal);
 
-    function PlanAddField(aPlayer, X, Y: Word): Boolean;
-    function PlanAddHouse(aPlayer, aHouseType, X, Y: Word): Boolean;
-    function PlanAddRoad(aPlayer, X, Y: Word): Boolean;
-    function PlanAddWinefield(aPlayer, X, Y: Word): Boolean;
+    function PlanAddField(aPlayer, X, Y: Integer): Boolean;
+    function PlanAddHouse(aPlayer, aHouseType, X, Y: Integer): Boolean;
+    function PlanAddRoad(aPlayer, X, Y: Integer): Boolean;
+    function PlanAddWinefield(aPlayer, X, Y: Integer): Boolean;
     function PlanConnectRoad(aPlayer, X1, Y1, X2, Y2: Integer; aCompleted: Boolean): Boolean;
-    function PlanRemove(aPlayer, X, Y: Word): Boolean;
+    function PlanRemove(aPlayer, X, Y: Integer): Boolean;
 
     procedure PlayerAllianceChange(aPlayer1, aPlayer2: Byte; aCompliment, aAllied: Boolean);
     procedure PlayerAllianceNFogChange(aPlayer1, aPlayer2: Byte; aCompliment, aAllied, aSyncAllyFog: Boolean);
     procedure PlayerAddDefaultGoals(aPlayer: Byte; aBuildings: Boolean);
-    procedure PlayerDefeat(aPlayer: Word);
-    procedure PlayerGoalsRemoveAll(aPlayer: Word; aForAllPlayers: Boolean);
-    procedure PlayerShareBeacons(aPlayer1, aPlayer2: Word; aBothWays, aShare: Boolean);
-    procedure PlayerShareFog(aPlayer1, aPlayer2: Word; aShare: Boolean);
-    procedure PlayerShareFogCompliment(aPlayer1, aPlayer2: Word; aShare: Boolean);
+    procedure PlayerDefeat(aPlayer: Integer);
+    procedure PlayerGoalsRemoveAll(aPlayer: Integer; aForAllPlayers: Boolean);
+    procedure PlayerShareBeacons(aPlayer1, aPlayer2: Integer; aBothWays, aShare: Boolean);
+    procedure PlayerShareFog(aPlayer1, aPlayer2: Integer; aShare: Boolean);
+    procedure PlayerShareFogCompliment(aPlayer1, aPlayer2: Integer; aShare: Boolean);
     procedure PlayerWareDistribution(aPlayer, aWareType, aHouseType, aAmount: Byte);
     procedure PlayerWin(const aVictors: array of Integer; aTeamVictory: Boolean);
 
     function PlayWAV(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
     function PlayWAVFadeMusic(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
-    function PlayWAVAtLocation(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Word): Integer;
+    function PlayWAVAtLocation(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer;
     function PlayWAVLooped(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
-    function PlayWAVAtLocationLooped(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Word): Integer;
+    function PlayWAVAtLocationLooped(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer;
     procedure StopLoopedWAV(aSoundIndex: Integer);
 
     function PlayOGG(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
     function PlayOGGFadeMusic(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
-    function PlayOGGAtLocation(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Word): Integer;
+    function PlayOGGAtLocation(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer;
     function PlayOGGLooped(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
-    function PlayOGGAtLocationLooped(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Word): Integer;
+    function PlayOGGAtLocationLooped(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer;
     procedure StopLoopedOGG(aSoundIndex: Integer);
 
     function PlaySound(aPlayer: ShortInt; const aFileName: AnsiString; aAudioFormat: TKMAudioFormat; aVolume: Single;
                        aFadeMusic, aLooped: Boolean): Integer;
     function PlaySoundAtLocation(aPlayer: ShortInt; const aFileName: AnsiString; aAudioFormat: TKMAudioFormat; aVolume: Single;
-                                 aFadeMusic, aLooped: Boolean; aRadius: Single; aX, aY: Word): Integer;
+                                 aFadeMusic, aLooped: Boolean; aRadius: Single; aX, aY: Integer): Integer;
     procedure StopSound(aSoundIndex: Integer);
 
-    procedure RemoveRoad(X, Y: Word);
+    procedure RemoveRoad(X, Y: Integer);
 
-    procedure SetTradeAllowed(aPlayer, aResType: Word; aAllowed: Boolean);
+    procedure SetTradeAllowed(aPlayer, aResType: Integer; aAllowed: Boolean);
     procedure ShowMsg(aPlayer: Shortint; const aText: AnsiString);
     procedure ShowMsgFormatted(aPlayer: Shortint; const aText: AnsiString; Params: array of const);
-    procedure ShowMsgGoto(aPlayer: Shortint; aX, aY: Word; const aText: AnsiString);
-    procedure ShowMsgGotoFormatted(aPlayer: Shortint; aX, aY: Word; const aText: AnsiString; Params: array of const);
+    procedure ShowMsgGoto(aPlayer: Shortint; aX, aY: Integer; const aText: AnsiString);
+    procedure ShowMsgGotoFormatted(aPlayer: Shortint; aX, aY: Integer; const aText: AnsiString; Params: array of const);
 
     procedure UnitAllowAllyToSelect(aUnitID: Integer; aAllow: Boolean);
-    procedure UnitBlock(aPlayer: Byte; aType: Word; aBlock: Boolean);
+    procedure UnitBlock(aPlayer: Byte; aType: Integer; aBlock: Boolean);
     function  UnitDirectionSet(aUnitID, aDirection: Integer): Boolean;
     procedure UnitDismiss(aUnitID: Integer);
     procedure UnitDismissableSet(aUnitID: Integer; aDismissable: Boolean);
@@ -206,7 +206,7 @@ type
     procedure UnitHPSetInvulnerable(aUnitID: Integer; aInvulnerable: Boolean);
     procedure UnitHungerSet(aUnitID, aHungerLevel: Integer);
     procedure UnitKill(aUnitID: Integer; aSilent: Boolean);
-    function  UnitOrderWalk(aUnitID: Integer; X, Y: Word): Boolean;
+    function  UnitOrderWalk(aUnitID: Integer; X, Y: Integer): Boolean;
   end;
 
 
@@ -282,7 +282,7 @@ end;
 //* Version: 5938
 //* Pans the center of the player's screen to the given location over a set number of ticks.
 //* If Duration = 0 then the screen moves instantly.
-procedure TKMScriptActions.CinematicPanTo(aPlayer: Byte; X, Y, Duration: Word);
+procedure TKMScriptActions.CinematicPanTo(aPlayer: Byte; X, Y, Duration: Integer);
 begin
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
@@ -303,7 +303,7 @@ end;
 
 //* Version: 5057
 //* Proclaims player defeated
-procedure TKMScriptActions.PlayerDefeat(aPlayer: Word);
+procedure TKMScriptActions.PlayerDefeat(aPlayer: Integer);
 begin
   try
     //Verify all input parameters
@@ -322,7 +322,7 @@ end;
 //* Remove all player goals
 //* aPlayer: PlayerID
 //* aForAllPlayers: also remove other player goals, related to this player
-procedure TKMScriptActions.PlayerGoalsRemoveAll(aPlayer: Word; aForAllPlayers: Boolean);
+procedure TKMScriptActions.PlayerGoalsRemoveAll(aPlayer: Integer; aForAllPlayers: Boolean);
 begin
   try
     //Verify all input parameters
@@ -345,7 +345,7 @@ end;
 //* Sets whether player A shares his beacons with player B.
 //* Sharing can still only happen between allied players, but this command lets you disable allies from sharing.
 //* aBothWays: share in both ways
-procedure TKMScriptActions.PlayerShareBeacons(aPlayer1, aPlayer2: Word; aBothWays, aShare: Boolean);
+procedure TKMScriptActions.PlayerShareBeacons(aPlayer1, aPlayer2: Integer; aBothWays, aShare: Boolean);
 begin
   try
     if  InRange(aPlayer1, 0, gHands.Count - 1)
@@ -369,7 +369,7 @@ end;
 //* Version: 5345
 //* Sets whether player A shares his vision with player B (one way, for both ways use PlayerShareFogCompliment).
 //* Sharing can still only happen between allied players, but this command lets you disable allies from sharing.
-procedure TKMScriptActions.PlayerShareFog(aPlayer1, aPlayer2: Word; aShare: Boolean);
+procedure TKMScriptActions.PlayerShareFog(aPlayer1, aPlayer2: Integer; aShare: Boolean);
 begin
   try
     if  InRange(aPlayer1, 0, gHands.Count - 1)
@@ -389,7 +389,7 @@ end;
 //* Version: 7000+
 //* Sets whether players A and B share their vision (both ways).
 //* Sharing can still only happen between allied players, but this command lets you disable allies from sharing.
-procedure TKMScriptActions.PlayerShareFogCompliment(aPlayer1, aPlayer2: Word; aShare: Boolean);
+procedure TKMScriptActions.PlayerShareFogCompliment(aPlayer1, aPlayer2: Integer; aShare: Boolean);
 begin
   try
     if  InRange(aPlayer1, 0, gHands.Count - 1)
@@ -619,7 +619,7 @@ end;
 //* aVolume: Audio level (0.0 to 4.0)
 //* aRadius: Radius (minimum 28)
 //* Result: SoundIndex of the sound
-function TKMScriptActions.PlayWAVAtLocation(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Word): Integer;
+function TKMScriptActions.PlayWAVAtLocation(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer;
 begin
   Result := -1;
   try
@@ -669,7 +669,7 @@ end;
 //* aVolume: Audio level (0.0 to 4.0)
 //* aRadius: aRadius (minimum 28)
 //* Result: SoundIndex of the sound
-function TKMScriptActions.PlayWAVAtLocationLooped(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Word): Integer;
+function TKMScriptActions.PlayWAVAtLocationLooped(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer;
 begin
   try
     Result := -1;
@@ -754,7 +754,7 @@ end;
 //* aVolume: Audio level (0.0 to 4.0)
 //* aRadius: Radius (minimum 28)
 //* Result: SoundIndex of the sound
-function TKMScriptActions.PlayOGGAtLocation(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Word): Integer;
+function TKMScriptActions.PlayOGGAtLocation(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer;
 begin
   Result := -1;
   try
@@ -804,7 +804,7 @@ end;
 //* aVolume: Audio level (0.0 to 4.0)
 //* aRadius: aRadius (minimum 28)
 //* Result: SoundIndex of the sound
-function TKMScriptActions.PlayOGGAtLocationLooped(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Word): Integer;
+function TKMScriptActions.PlayOGGAtLocationLooped(aPlayer: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer;
 begin
   try
     Result := -1;
@@ -880,7 +880,7 @@ end;
 //* aVolume: Audio level (0.0 to 4.0)
 //* aRadius: aRadius (minimum 28)
 //* Result: SoundIndex of the sound
-function TKMScriptActions.PlaySoundAtLocation(aPlayer: ShortInt; const aFileName: AnsiString; aAudioFormat: TKMAudioFormat; aVolume: Single; aFadeMusic, aLooped: Boolean; aRadius: Single; aX, aY: Word): Integer;
+function TKMScriptActions.PlaySoundAtLocation(aPlayer: ShortInt; const aFileName: AnsiString; aAudioFormat: TKMAudioFormat; aVolume: Single; aFadeMusic, aLooped: Boolean; aRadius: Single; aX, aY: Integer): Integer;
 begin
   try
     Result := -1;
@@ -914,7 +914,7 @@ end;
 
 //* Version: 5927
 //* Removes road
-procedure TKMScriptActions.RemoveRoad(X, Y: Word);
+procedure TKMScriptActions.RemoveRoad(X, Y: Integer);
 var
   Pos: TKMPoint;
 begin
@@ -938,7 +938,7 @@ end;
 //* Version: 5057
 //* Give player group of warriors and return the group ID or -1 if the group was not able to be added
 //* aColumns: Units per row
-function TKMScriptActions.GiveGroup(aPlayer, aType, X,Y, aDir, aCount, aColumns: Word): Integer;
+function TKMScriptActions.GiveGroup(aPlayer, aType, X,Y, aDir, aCount, aColumns: Integer): Integer;
 var
   G: TKMUnitGroup;
 begin
@@ -971,7 +971,7 @@ end;
 
 //* Version: 5057
 //* Give player a single citizen and returns the unit ID or -1 if the unit was not able to be added
-function TKMScriptActions.GiveUnit(aPlayer, aType, X, Y, aDir: Word): Integer;
+function TKMScriptActions.GiveUnit(aPlayer, aType, X, Y, aDir: Integer): Integer;
 var
   U: TKMUnit;
 begin
@@ -1132,7 +1132,7 @@ end;
 //** <b>aCustomPosition</b> - TKMPoint for custom position of attack. Used if attCustomPosition was set up as attack target
 //** <b>Result</b>: Attack UID, that could be used to remove this attack later on
 function TKMScriptActions.AIAttackAdd(aHand: Integer; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer;
-                                      aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount: Word; aRandomGroups: Boolean;
+                                      aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount: Integer; aRandomGroups: Boolean;
                                       aTarget: TKMAIAttackTarget; aCustomPosition: TKMPoint): Integer;
 var
   attackType: TKMAIAttackType;
@@ -1242,7 +1242,7 @@ end;
 //* Sets AI auto attack range.
 //* AI groups will automatically attack if you are closer than this many tiles.
 //* aRange: Range (1 to 20)
-procedure TKMScriptActions.AIAutoAttackRange(aPlayer: Byte; aRange: Word);
+procedure TKMScriptActions.AIAutoAttackRange(aPlayer: Byte; aRange: Integer);
 begin
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
@@ -1339,7 +1339,7 @@ end;
 //* Version: 5932
 //* Adds a defence position for the specified AI player
 //* Returns added defence position UID or -1 if it could not be added
-function TKMScriptActions.AIDefencePositionAdd(aPlayer: Byte; X, Y: Integer; aDir, aGroupType: Byte; aRadius: Word; aDefType: Byte): Integer;
+function TKMScriptActions.AIDefencePositionAdd(aPlayer: Byte; X, Y: Integer; aDir, aGroupType: Byte; aRadius: Integer; aDefType: Byte): Integer;
 var
   defPos: TKMDefencePositionInfo;
 begin
@@ -1483,7 +1483,7 @@ end;
 //* Version: 5778
 //* Sets the warriors equip rate for AI.
 //* aType: type: 0 - leather, 1 - iron
-procedure TKMScriptActions.AIEquipRate(aPlayer: Byte; aType: Byte; aRate: Word);
+procedure TKMScriptActions.AIEquipRate(aPlayer: Byte; aType: Byte; aRate: Integer);
 begin
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled) then
@@ -1517,7 +1517,7 @@ end;
 
 //* Version: 5778
 //* Sets the formation the AI uses for defence positions. Works only for ClassicAI
-procedure TKMScriptActions.AIGroupsFormationSet(aPlayer, aType: Byte; aCount, aColumns: Word);
+procedure TKMScriptActions.AIGroupsFormationSet(aPlayer, aType: Byte; aCount, aColumns: Integer);
 var
   gt: TKMGroupType;
 begin
@@ -1640,7 +1640,7 @@ end;
 
 //* Version: 6251
 //* Sets the AI start position which is used for targeting AI attacks
-procedure TKMScriptActions.AIStartPosition(aPlayer: Byte; X, Y: Word);
+procedure TKMScriptActions.AIStartPosition(aPlayer: Byte; X, Y: Integer);
 begin
   try
     if (InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled))
@@ -1673,7 +1673,7 @@ end;
 
 //* Version: 5057
 //* Adds an animal to the game and returns the unit ID or -1 if the animal was not able to be added
-function TKMScriptActions.GiveAnimal(aType, X, Y: Word): Integer;
+function TKMScriptActions.GiveAnimal(aType, X, Y: Integer): Integer;
 var
   U: TKMUnit;
 begin
@@ -1699,7 +1699,7 @@ end;
 
 //* Version: 6311
 //* Adds finished field and returns true if field was successfully added
-function TKMScriptActions.GiveField(aPlayer, X, Y: Word): Boolean;
+function TKMScriptActions.GiveField(aPlayer, X, Y: Integer): Boolean;
 begin
   try
     Result := False;
@@ -1727,7 +1727,7 @@ end;
 //* Sets field age if tile is corn field, or adds finished field and sets its age if tile is empty, and returns true if this was successfully done
 //* aStage: 0..6, sets the field growth stage. 0 = empty field; 6 = corn has been cut
 //* aRandomAge sets FieldAge to random, according to specified stage. Makes fields more realistic
-function TKMScriptActions.GiveFieldAged(aPlayer, X, Y: Word; aStage: Byte; aRandomAge: Boolean): Boolean;
+function TKMScriptActions.GiveFieldAged(aPlayer, X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean;
 begin
   try
     Result := False;
@@ -1755,7 +1755,7 @@ end;
 
 //* Version: 6311
 //* Adds finished road and returns true if road was successfully added
-function TKMScriptActions.GiveRoad(aPlayer, X, Y: Word): Boolean;
+function TKMScriptActions.GiveRoad(aPlayer, X, Y: Integer): Boolean;
 begin
   try
     Result := False;
@@ -1783,7 +1783,7 @@ end;
 //* Version: 5057
 //* Adds amount of wares to players 1st Store
 //Wares are added to first Store
-procedure TKMScriptActions.GiveWares(aPlayer, aType, aCount: Word);
+procedure TKMScriptActions.GiveWares(aPlayer, aType, aCount: Integer);
 var
   H: TKMHouse;
 begin
@@ -1812,7 +1812,7 @@ end;
 //* Version: 5165
 //* Adds amount of weapons to players 1st Barracks
 //Weapons are added to first Barracks
-procedure TKMScriptActions.GiveWeapons(aPlayer, aType, aCount: Word);
+procedure TKMScriptActions.GiveWeapons(aPlayer, aType, aCount: Integer);
 var
   H: TKMHouse;
 begin
@@ -1842,7 +1842,7 @@ end;
 
 //* Version 6311
 //* Adds finished winefield and returns true if winefield was successfully added
-function TKMScriptActions.GiveWineField(aPlayer, X, Y: Word): Boolean;
+function TKMScriptActions.GiveWineField(aPlayer, X, Y: Integer): Boolean;
 begin
   try
     Result := False;
@@ -1870,7 +1870,7 @@ end;
 //* Sets winefield age if tile is winefield, or adds finished winefield and sets its age if tile is empty, and returns true if this was successfully done
 //* aStage = 0..3, sets the field growth stage. 0 = new fruits; 3 = grapes are ready to be harvested; according to WINE_STAGES_COUNT
 //* aRandomAge sets FieldAge to random, according to specified stage. Makes fields more realistic
-function TKMScriptActions.GiveWineFieldAged(aPlayer, X, Y: Word; aStage: Byte; aRandomAge: Boolean): Boolean;
+function TKMScriptActions.GiveWineFieldAged(aPlayer, X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean;
 begin
   try
     Result := False;
@@ -1898,7 +1898,7 @@ end;
 
 //* Version: 5097
 //* Reveals a circle in fog of war for player
-procedure TKMScriptActions.FogRevealCircle(aPlayer, X, Y, aRadius: Word);
+procedure TKMScriptActions.FogRevealCircle(aPlayer, X, Y, aRadius: Integer);
 begin
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
@@ -1916,7 +1916,7 @@ end;
 
 //* Version: 5097
 //* Reveals a circle in fog of war for player
-procedure TKMScriptActions.FogCoverCircle(aPlayer, X, Y, aRadius: Word);
+procedure TKMScriptActions.FogCoverCircle(aPlayer, X, Y, aRadius: Integer);
 begin
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
@@ -1938,7 +1938,7 @@ end;
 //* Y1: Top coordinate
 //* X2: Right coordinate
 //* Y2: Bottom coordinate
-procedure TKMScriptActions.FogRevealRect(aPlayer, X1, Y1, X2, Y2: Word);
+procedure TKMScriptActions.FogRevealRect(aPlayer, X1, Y1, X2, Y2: Integer);
 begin
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
@@ -1960,7 +1960,7 @@ end;
 //* Y1: Top coordinate
 //* X2: Right coordinate
 //* Y2: Bottom coordinate
-procedure TKMScriptActions.FogCoverRect(aPlayer, X1, Y1, X2, Y2: Word);
+procedure TKMScriptActions.FogCoverRect(aPlayer, X1, Y1, X2, Y2: Integer);
 begin
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
@@ -2050,7 +2050,7 @@ end;
 //* Displays a message to a player with a goto button that takes the player to the specified location.
 //* If the player index is -1 the message will be shown to all players.
 //Input text is ANSI with libx codes to substitute
-procedure TKMScriptActions.ShowMsgGoto(aPlayer: Shortint; aX, aY: Word; const aText: AnsiString);
+procedure TKMScriptActions.ShowMsgGoto(aPlayer: Shortint; aX, aY: Integer; const aText: AnsiString);
 begin
   try
     if gTerrain.TileInMapCoords(aX, aY) then
@@ -2073,7 +2073,7 @@ end;
 //* If the player index is -1 the message will be shown to all players.
 //* Params: Array of arguments
 //Input text is ANSI with libx codes to substitute
-procedure TKMScriptActions.ShowMsgGotoFormatted(aPlayer: Shortint; aX, aY: Word; const aText: AnsiString; Params: array of const);
+procedure TKMScriptActions.ShowMsgGotoFormatted(aPlayer: Shortint; aX, aY: Integer; const aText: AnsiString; Params: array of const);
 begin
   try
     try
@@ -2099,7 +2099,7 @@ end;
 //* Allows player to build the specified house even if they don't have the house built that normally unlocks it
 //* (e.g. sawmill for farm).
 //* Note: Does not override blocked houses, use HouseAllow for that.
-procedure TKMScriptActions.HouseUnlock(aPlayer, aHouseType: Word);
+procedure TKMScriptActions.HouseUnlock(aPlayer, aHouseType: Integer);
 begin
   try
     //Verify all input parameters
@@ -2118,7 +2118,7 @@ end;
 //* Version: 5057
 //* Sets whether the player is allowed to build the specified house.
 //* Note: The house must still be unlocked normally (e.g. sawmill for farm), use HouseUnlock to override that.
-procedure TKMScriptActions.HouseAllow(aPlayer, aHouseType: Word; aAllowed: Boolean);
+procedure TKMScriptActions.HouseAllow(aPlayer, aHouseType: Integer; aAllowed: Boolean);
 begin
   try
     //Verify all input parameters
@@ -2203,7 +2203,7 @@ end;
 
 //* Version: 5057
 //* Sets whether the player is allowed to trade the specified resource.
-procedure TKMScriptActions.SetTradeAllowed(aPlayer, aResType: Word; aAllowed: Boolean);
+procedure TKMScriptActions.SetTradeAllowed(aPlayer, aResType: Integer; aAllowed: Boolean);
 begin
   try
     //Verify all input parameters
@@ -2315,7 +2315,7 @@ end;
 
 //* Version: 5057
 //* Add damage to the specified house
-procedure TKMScriptActions.HouseAddDamage(aHouseID: Integer; aDamage: Word);
+procedure TKMScriptActions.HouseAddDamage(aHouseID: Integer; aDamage: Integer);
 var
   H: TKMHouse;
 begin
@@ -2337,7 +2337,7 @@ end;
 
 //* Version: 5441
 //* Reduces damage to the specified house
-procedure TKMScriptActions.HouseAddRepair(aHouseID: Integer; aRepair: Word);
+procedure TKMScriptActions.HouseAddRepair(aHouseID: Integer; aRepair: Integer);
 var
   H: TKMHouse;
 begin
@@ -2382,7 +2382,7 @@ end;
 
 //* Version: 5057
 //* Add wares to the specified house
-procedure TKMScriptActions.HouseAddWaresTo(aHouseID: Integer; aType, aCount: Word);
+procedure TKMScriptActions.HouseAddWaresTo(aHouseID: Integer; aType, aCount: Integer);
 var
   H: TKMHouse;
   Res: TKMWareType;
@@ -2418,7 +2418,7 @@ end;
 //* Version: 6015
 //* Remove wares from the specified house.
 //* If a serf was on the way to pick up the ware, the serf will abandon his task
-procedure TKMScriptActions.HouseTakeWaresFrom(aHouseID: Integer; aType, aCount: Word);
+procedure TKMScriptActions.HouseTakeWaresFrom(aHouseID: Integer; aType, aCount: Integer);
 var
   H: TKMHouse;
   Res: TKMWareType;
@@ -3525,7 +3525,7 @@ end;
 //* Version: 5057
 //* Adds a road plan.
 //* Returns true if the plan was successfully added or false if it failed (e.g. tile blocked)
-function TKMScriptActions.PlanAddRoad(aPlayer, X, Y: Word): Boolean;
+function TKMScriptActions.PlanAddRoad(aPlayer, X, Y: Integer): Boolean;
 begin
   try
     Result := False;
@@ -3565,7 +3565,7 @@ end;
 //* Version: 5057
 //* Adds a corn field plan.
 //* Returns true if the plan was successfully added or false if it failed (e.g. tile blocked)
-function TKMScriptActions.PlanAddField(aPlayer, X, Y: Word): Boolean;
+function TKMScriptActions.PlanAddField(aPlayer, X, Y: Integer): Boolean;
 begin
   try
     Result := False;
@@ -3591,7 +3591,7 @@ end;
 //* Version: 5057
 //* Adds a wine field plan.
 //* Returns true if the plan was successfully added or false if it failed (e.g. tile blocked)
-function TKMScriptActions.PlanAddWinefield(aPlayer, X, Y: Word): Boolean;
+function TKMScriptActions.PlanAddWinefield(aPlayer, X, Y: Integer): Boolean;
 begin
   try
     Result := False;
@@ -3671,7 +3671,7 @@ end;
 //* Version: 5345
 //* Removes house, road or field plans from the specified tile for the specified player
 //* Returns true if the plan was successfully removed or false if it failed (e.g. tile blocked)
-function TKMScriptActions.PlanRemove(aPlayer, X, Y: Word): Boolean;
+function TKMScriptActions.PlanRemove(aPlayer, X, Y: Integer): Boolean;
 var
   HPlan: TKMHousePlan;
 begin
@@ -3705,7 +3705,7 @@ end;
 //* Version: 5057
 //* Adds a road plan.
 //* Returns true if the plan was successfully added or false if it failed (e.g. tile blocked)
-function TKMScriptActions.PlanAddHouse(aPlayer, aHouseType, X, Y: Word): Boolean;
+function TKMScriptActions.PlanAddHouse(aPlayer, aHouseType, X, Y: Integer): Boolean;
 begin
   try
     Result := False;
@@ -3757,7 +3757,7 @@ end;
 
 //* Version: 5993
 //* Sets whether the specified player can train/equip the specified unit type
-procedure TKMScriptActions.UnitBlock(aPlayer: Byte; aType: Word; aBlock: Boolean);
+procedure TKMScriptActions.UnitBlock(aPlayer: Byte; aType: Integer; aBlock: Boolean);
 begin
   try
     if InRange(aPlayer, 0, gHands.Count - 1) and (gHands[aPlayer].Enabled)
@@ -3939,7 +3939,7 @@ end;
 //* Order the specified unit to walk somewhere.
 //* Note: Only works on idle units so as not to interfere with game logic and cause crashes.
 //* Returns true on success or false on failure.
-function TKMScriptActions.UnitOrderWalk(aUnitID: Integer; X, Y: Word): Boolean;
+function TKMScriptActions.UnitOrderWalk(aUnitID: Integer; X, Y: Integer): Boolean;
 var
   U: TKMUnit;
 begin
@@ -4150,7 +4150,7 @@ end;
 
 //* Version: 5057
 //* Order the specified group to walk somewhere
-procedure TKMScriptActions.GroupOrderWalk(aGroupID: Integer; X, Y, aDirection: Word);
+procedure TKMScriptActions.GroupOrderWalk(aGroupID: Integer; X, Y, aDirection: Integer);
 var
   G: TKMUnitGroup;
 begin
