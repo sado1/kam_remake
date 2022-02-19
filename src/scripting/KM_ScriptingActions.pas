@@ -58,6 +58,7 @@ type
     function  GiveFieldAged(aHand, X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean;
     function  GiveGroup(aHand, aType, X,Y, aDir, aCount, aColumns: Integer): Integer;
     function  GiveHouse(aHand, aHouseType, X,Y: Integer): Integer;
+    function  GiveHouseEx(aHand: Integer; aHouseType: TKMHouseType; X,Y: Integer): Integer;
     function  GiveHouseSite(aHand, aHouseType, X, Y: Integer; aAddMaterials: Boolean): Integer;
     function  GiveUnit(aHand, aType, X,Y, aDir: Integer): Integer;
     function  GiveRoad(aHand, X, Y: Integer): Boolean;
@@ -1024,6 +1025,36 @@ begin
     end
     else
       LogIntParamWarn('Actions.GiveHouse', [aHand, aHouseType, X, Y]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14000
+//* Give player a built house and returns the house ID or -1 if the house was not able to be added
+function TKMScriptActions.GiveHouseEx(aHand: Integer; aHouseType: TKMHouseType; X,Y: Integer): Integer;
+var
+  H: TKMHouse;
+begin
+  try
+    Result := UID_NONE;
+
+    //Verify all input parameters
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+      and (aHouseType in HOUSES_VALID)
+      and gTerrain.TileInMapCoords(X, Y) then
+    begin
+      if gTerrain.CanPlaceHouseFromScript(aHouseType, KMPoint(X - gResHouses[aHouseType].EntranceOffsetX, Y)) then
+      begin
+        H := gHands[aHand].AddHouse(aHouseType, X, Y, True);
+        if H = nil then Exit;
+        Result := H.UID;
+      end;
+    end
+    else
+      LogParamWarn('Actions.GiveHouseEx', [aHand, GetEnumName(TypeInfo(TKMHouseType), Integer(aHouseType)), X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

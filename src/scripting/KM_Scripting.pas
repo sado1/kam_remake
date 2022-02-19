@@ -753,6 +753,7 @@ begin
     RegisterMethodCheck(c, 'function  GiveFieldAged(aHand, X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean');
     RegisterMethodCheck(c, 'function  GiveGroup(aHand, aType, X, Y, aDir, aCount, aColumns: Integer): Integer');
     RegisterMethodCheck(c, 'function  GiveHouse(aHand, aHouseType, X,Y: Integer): Integer');
+    RegisterMethodCheck(c, 'function  GiveHouseEx(aHand: Integer; aHouseType: TKMHouseType; X,Y: Integer): Integer');
     RegisterMethodCheck(c, 'function  GiveHouseSite(aHand, aHouseType, X, Y: Integer; aAddMaterials: Boolean): Integer');
     RegisterMethodCheck(c, 'function  GiveRoad(aHand, X, Y: Integer): Boolean');
     RegisterMethodCheck(c, 'function  GiveUnit(aHand, aType, X,Y, aDir: Integer): Integer');
@@ -1526,6 +1527,7 @@ begin
       RegisterMethod(@TKMScriptActions.GiveGroup,                               'GiveGroup');
       RegisterMethod(@TKMScriptActions.GiveUnit,                                'GiveUnit');
       RegisterMethod(@TKMScriptActions.GiveHouse,                               'GiveHouse');
+      RegisterMethod(@TKMScriptActions.GiveHouseEx,                             'GiveHouseEx');
       RegisterMethod(@TKMScriptActions.GiveHouseSite,                           'GiveHouseSite');
       RegisterMethod(@TKMScriptActions.GiveRoad,                                'GiveRoad');
       RegisterMethod(@TKMScriptActions.GiveWares,                               'GiveWares');
