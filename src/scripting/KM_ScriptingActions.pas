@@ -166,6 +166,7 @@ type
 
     function PlanAddField(aHand, X, Y: Integer): Boolean;
     function PlanAddHouse(aHand, aHouseType, X, Y: Integer): Boolean;
+    function PlanAddHouseEx(aHand: Integer; aHouseType: TKMHouseType; X, Y: Integer): Boolean;
     function PlanAddRoad(aHand, X, Y: Integer): Boolean;
     function PlanAddWinefield(aHand, X, Y: Integer): Boolean;
     function PlanConnectRoad(aHand, X1, Y1, X2, Y2: Integer; aCompleted: Boolean): Boolean;
@@ -4208,12 +4209,12 @@ end;
 //* Returns true if the plan was successfully added or false if it failed (e.g. tile blocked)
 function TKMScriptActions.PlanAddHouse(aHand, aHouseType, X, Y: Integer): Boolean;
 begin
+  Result := False;
   try
-    Result := False;
     //Verify all input parameters
     if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
-    and HouseTypeValid(aHouseType)
-    and gTerrain.TileInMapCoords(X,Y) then
+      and HouseTypeValid(aHouseType)
+      and gTerrain.TileInMapCoords(X,Y) then
     begin
       if gHands[aHand].CanAddHousePlan(KMPoint(X, Y), HOUSE_ID_TO_TYPE[aHouseType]) then
       begin
@@ -4223,6 +4224,33 @@ begin
     end
     else
       LogIntParamWarn('Actions.PlanAddHouse', [aHand, aHouseType, X, Y]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14000
+//* Adds a road plan.
+//* Returns true if the plan was successfully added or false if it failed (e.g. tile blocked)
+function TKMScriptActions.PlanAddHouseEx(aHand: Integer; aHouseType: TKMHouseType; X, Y: Integer): Boolean;
+begin
+  Result := False;
+  try
+    //Verify all input parameters
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+      and (aHouseType in HOUSES_VALID)
+      and gTerrain.TileInMapCoords(X,Y) then
+    begin
+      if gHands[aHand].CanAddHousePlan(KMPoint(X, Y), aHouseType) then
+      begin
+        Result := True;
+        gHands[aHand].AddHousePlan(aHouseType, KMPoint(X, Y));
+      end;
+    end
+    else
+      LogParamWarn('Actions.PlanAddHouseEx', [aHand, GetEnumName(TypeInfo(TKMHouseType), Integer(aHouseType)), X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

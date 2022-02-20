@@ -852,6 +852,7 @@ begin
 
     RegisterMethodCheck(c, 'function  PlanAddField(aHand, X, Y: Integer): Boolean');
     RegisterMethodCheck(c, 'function  PlanAddHouse(aHand, aHouseType, X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function  PlanAddHouseEx(aHand: Integer; aHouseType: TKMHouseType; X, Y: Integer): Boolean');
     RegisterMethodCheck(c, 'function  PlanAddRoad(aHand, X, Y: Integer): Boolean');
     RegisterMethodCheck(c, 'function  PlanAddWinefield(aHand, X, Y: Integer): Boolean');
     RegisterMethodCheck(c, 'function  PlanConnectRoad(aHand, X1, Y1, X2, Y2: Integer; aCompleted: Boolean): Boolean');
@@ -1636,6 +1637,7 @@ begin
 
       RegisterMethod(@TKMScriptActions.PlanAddField,                            'PlanAddField');
       RegisterMethod(@TKMScriptActions.PlanAddHouse,                            'PlanAddHouse');
+      RegisterMethod(@TKMScriptActions.PlanAddHouseEx,                          'PlanAddHouseEx');
       RegisterMethod(@TKMScriptActions.PlanAddRoad,                             'PlanAddRoad');
       RegisterMethod(@TKMScriptActions.PlanAddWinefield,                        'PlanAddWinefield');
       RegisterMethod(@TKMScriptActions.PlanConnectRoad,                         'PlanConnectRoad');
