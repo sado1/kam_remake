@@ -105,6 +105,7 @@ type
     procedure HouseAddDamage(aHouseID: Integer; aDamage: Integer);
     procedure HouseAddRepair(aHouseID: Integer; aRepair: Integer);
     procedure HouseAddWaresTo(aHouseID: Integer; aType, aCount: Integer);
+    procedure HouseAddWaresToEx(aHouseID: Integer; aType: TKMWareType; aCount: Integer);
     procedure HouseAllow(aHand, aHouseType: Integer; aAllowed: Boolean);
     procedure HouseAllowAllyToSelect(aHouseID: Integer; aAllow: Boolean);
     procedure HouseAllowAllyToSelectAll(aHand: ShortInt; aAllow: Boolean);
@@ -2651,6 +2652,39 @@ begin
     end
     else
       LogIntParamWarn('Actions.HouseAddWaresTo', [aHouseID, aType, aCount]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14000
+//* Add wares to the specified house
+procedure TKMScriptActions.HouseAddWaresToEx(aHouseID: Integer; aType: TKMWareType; aCount: Integer);
+var
+  H: TKMHouse;
+begin
+  try
+    if (aHouseID > 0) and (aType in WARES_VALID) then
+    begin
+      H := fIDCache.GetHouse(aHouseID);
+      if (H <> nil) and not H.IsDestroyed and H.IsComplete then
+        if H.ResCanAddToIn(aType) or H.ResCanAddToOut(aType) then
+        begin
+          if aCount > 0 then
+          begin
+            H.ResAddToEitherFromScript(aType, aCount);
+            gHands[H.Owner].Stats.WareProduced(aType, aCount);
+            gScriptEvents.ProcWareProduced(H, aType, aCount);
+          end;
+        end
+        else
+          LogParamWarn('Actions.HouseAddWaresToEx wrong ware type', [aHouseID, GetEnumName(TypeInfo(TKMWareType), Integer(aType)), aCount]);
+      //Silently ignore if house doesn't exist
+    end
+    else
+      LogParamWarn('Actions.HouseAddWaresTo', [aHouseID, GetEnumName(TypeInfo(TKMWareType), Integer(aType)), aCount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

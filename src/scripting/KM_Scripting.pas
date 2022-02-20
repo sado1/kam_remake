@@ -791,6 +791,7 @@ begin
     RegisterMethodCheck(c, 'procedure HouseAddDamage(aHouseID: Integer; aDamage: Integer)');
     RegisterMethodCheck(c, 'procedure HouseAddRepair(aHouseID: Integer; aRepair: Integer)');
     RegisterMethodCheck(c, 'procedure HouseAddWaresTo(aHouseID: Integer; aType, aCount: Integer)');
+    RegisterMethodCheck(c, 'procedure HouseAddWaresToEx(aHouseID: Integer; aType: TKMWareType; aCount: Integer)');
     RegisterMethodCheck(c, 'procedure HouseAllow(aHand, aHouseType: Integer; aAllowed: Boolean)');
     RegisterMethodCheck(c, 'procedure HouseAllowAllyToSelect(aHouseID: Integer; aAllow: Boolean)');
     RegisterMethodCheck(c, 'procedure HouseAllowAllyToSelectAll(aHand: Byte; aAllow: Boolean)');
@@ -1569,6 +1570,7 @@ begin
       RegisterMethod(@TKMScriptActions.HouseAddDamage,                          'HouseAddDamage');
       RegisterMethod(@TKMScriptActions.HouseAddRepair,                          'HouseAddRepair');
       RegisterMethod(@TKMScriptActions.HouseAddWaresTo,                         'HouseAddWaresTo');
+      RegisterMethod(@TKMScriptActions.HouseAddWaresToEx,                       'HouseAddWaresToEx');
       RegisterMethod(@TKMScriptActions.HouseAllow,                              'HouseAllow');
       RegisterMethod(@TKMScriptActions.HouseAllowAllyToSelect,                  'HouseAllowAllyToSelect');
       RegisterMethod(@TKMScriptActions.HouseAllowAllyToSelectAll,               'HouseAllowAllyToSelectAll');
