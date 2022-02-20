@@ -133,6 +133,7 @@ type
     procedure HouseWareBlockEx(aHouseID: Integer; aWareType: TKMWareType; aBlocked: Boolean);
     procedure HouseWareBlockTakeOut(aHouseID: Integer; aWareType: TKMWareType; aBlocked: Boolean);
     procedure HouseWeaponsOrderSet(aHouseID, aWareType, aAmount: Integer);
+    procedure HouseWeaponsOrderSetEx(aHouseID: Integer; aWareType: TKMWareType; aAmount: Integer);
 
     procedure Log(const aText: AnsiString);
     procedure LogLinesMaxCnt(aMaxLogLinesCnt: Integer);
@@ -3113,6 +3114,37 @@ begin
     end
     else
       LogIntParamWarn('Actions.HouseWeaponsOrderSet', [aHouseID, aWareType, aAmount]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14000
+//* Sets the amount of the specified weapon ordered to be produced in the specified house
+procedure TKMScriptActions.HouseWeaponsOrderSetEx(aHouseID: Integer; aWareType: TKMWareType; aAmount: Integer);
+var
+  I: Integer;
+  H: TKMHouse;
+begin
+  try
+    if (aHouseID > 0) and InRange(aAmount, 0, MAX_WARES_ORDER)
+    and (aWareType in WARES_VALID) then
+    begin
+      H := fIDCache.GetHouse(aHouseID);
+      if (H <> nil)
+        and not H.IsDestroyed
+        and H.IsComplete then
+        for I := 1 to 4 do
+          if gResHouses[H.HouseType].ResOutput[I] = aWareType then
+          begin
+            H.ResOrder[I] := aAmount;
+            Exit;
+          end;
+    end
+    else
+      LogParamWarn('Actions.HouseWeaponsOrderSetEx', [aHouseID, GetEnumName(TypeInfo(TKMWareType), Integer(aWareType)), aAmount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
