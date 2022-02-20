@@ -643,7 +643,6 @@ begin
     RegisterMethodCheck(c, 'function PlayerName(aHand: Byte): AnsiString');
     RegisterMethodCheck(c, 'function PlayerVictorious(aHand: Byte): Boolean');
     RegisterMethodCheck(c, 'function PlayerWareDistribution(aHand, aWareType, aHouseType: Byte): Byte');
-    RegisterMethodCheck(c, 'function PlayerWareDistributionEx(aHand: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType; aAmount: Integer)');
 
     RegisterMethodCheck(c, 'function StatAIDefencePositionsCount(aHand: Byte): Integer');
     RegisterMethodCheck(c, 'function StatArmyCount(aHand: Byte): Integer');
@@ -870,6 +869,7 @@ begin
     RegisterMethodCheck(c, 'procedure PlayerShareFog(aHand1, aHand2: Integer; aShare: Boolean)');
     RegisterMethodCheck(c, 'procedure PlayerShareFogCompliment(aHand1, aHand2: Integer; aShare: Boolean)');
     RegisterMethodCheck(c, 'procedure PlayerWareDistribution(aHand, aWareType, aHouseType, aAmount: Byte)');
+    RegisterMethodCheck(c, 'procedure PlayerWareDistributionEx(aHand: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType; aAmount: Integer)');
     RegisterMethodCheck(c, 'procedure PlayerWin(const aVictors: array of Integer; aTeamVictory: Boolean)');
 
     RegisterMethodCheck(c, 'function PlayWAV(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer');
