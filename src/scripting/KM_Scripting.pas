@@ -785,6 +785,7 @@ begin
     RegisterMethodCheck(c, 'procedure HandHouseLock(aHand: Integer; aHouseType: TKMHouseType; aLock: TKMHandHouseLock)');
     RegisterMethodCheck(c, 'procedure HandTradeAllowed(aHand: Integer; aWareType: TKMWareType; aAllowed: Boolean)');
     RegisterMethodCheck(c, 'procedure HandUnitCanTrain(aHand: Integer; aUnitType: TKMUnitType; aCanTrain: Boolean)');
+    RegisterMethodCheck(c, 'procedure HandWareDistribution(aHand: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType; aAmount: Integer)');
 
     RegisterMethodCheck(c, 'procedure HouseAddBuildingMaterials(aHouseID: Integer)');
     RegisterMethodCheck(c, 'procedure HouseAddBuildingMaterialsEx(aHouseID, aWoodAmount, aStoneAmount: Integer)');
@@ -869,7 +870,6 @@ begin
     RegisterMethodCheck(c, 'procedure PlayerShareFog(aHand1, aHand2: Integer; aShare: Boolean)');
     RegisterMethodCheck(c, 'procedure PlayerShareFogCompliment(aHand1, aHand2: Integer; aShare: Boolean)');
     RegisterMethodCheck(c, 'procedure PlayerWareDistribution(aHand, aWareType, aHouseType, aAmount: Byte)');
-    RegisterMethodCheck(c, 'procedure PlayerWareDistributionEx(aHand: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType; aAmount: Integer)');
     RegisterMethodCheck(c, 'procedure PlayerWin(const aVictors: array of Integer; aTeamVictory: Boolean)');
 
     RegisterMethodCheck(c, 'function PlayWAV(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer');
@@ -1576,6 +1576,7 @@ begin
       RegisterMethod(@TKMScriptActions.HandHouseLock,                           'HandHouseLock');
       RegisterMethod(@TKMScriptActions.HandTradeAllowed,                        'HandTradeAllowed');
       RegisterMethod(@TKMScriptActions.HandUnitCanTrain,                        'HandUnitCanTrain');
+      RegisterMethod(@TKMScriptActions.HandWareDistribution,                    'HandWareDistribution');
 
       RegisterMethod(@TKMScriptActions.HouseAddBuildingMaterials,               'HouseAddBuildingMaterials');
       RegisterMethod(@TKMScriptActions.HouseAddBuildingMaterialsEx,             'HouseAddBuildingMaterialsEx');
@@ -1658,7 +1659,6 @@ begin
       RegisterMethod(@TKMScriptActions.PlayerShareFog,                          'PlayerShareFog');
       RegisterMethod(@TKMScriptActions.PlayerShareFogCompliment,                'PlayerShareFogCompliment');
       RegisterMethod(@TKMScriptActions.PlayerWareDistribution,                  'PlayerWareDistribution');
-      RegisterMethod(@TKMScriptActions.PlayerWareDistributionEx,                'PlayerWareDistributionEx');
       RegisterMethod(@TKMScriptActions.PlayerWin,                               'PlayerWin');
 
       RegisterMethod(@TKMScriptActions.PlayWAV,                                 'PlayWAV');

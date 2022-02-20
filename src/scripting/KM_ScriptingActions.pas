@@ -99,6 +99,7 @@ type
     procedure HandHouseLock(aHand: Integer; aHouseType: TKMHouseType; aLock: TKMHandHouseLock);
     procedure HandTradeAllowed(aHand: Integer; aWareType: TKMWareType; aAllowed: Boolean);
     procedure HandUnitCanTrain(aHand: Integer; aUnitType: TKMUnitType; aCanTrain: Boolean);
+    procedure HandWareDistribution(aHand: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType; aAmount: Integer);
 
     procedure HouseAddBuildingMaterials(aHouseID: Integer);
     procedure HouseAddBuildingMaterialsEx(aHouseID, aWoodAmount, aStoneAmount: Integer);
@@ -183,7 +184,6 @@ type
     procedure PlayerShareFog(aHand1, aHand2: Integer; aShare: Boolean);
     procedure PlayerShareFogCompliment(aHand1, aHand2: Integer; aShare: Boolean);
     procedure PlayerWareDistribution(aHand, aWareType, aHouseType, aAmount: Byte);
-    procedure PlayerWareDistributionEx(aHand: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType; aAmount: Integer);
     procedure PlayerWin(const aVictors: array of Integer; aTeamVictory: Boolean);
 
     function PlayWAV(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
@@ -485,32 +485,6 @@ begin
     end
     else
       LogIntParamWarn('Actions.PlayerWareDistribution', [aHand, aWareType, aHouseType, aAmount]);
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
-end;
-
-
-//* Version: 14000
-//* Sets ware distribution for the specified resource, house and hand (player).
-//* aAmount: Distribution amount (0..5)
-procedure TKMScriptActions.PlayerWareDistributionEx(aHand: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType; aAmount: Integer);
-begin
-  try
-    if (aWareType in WARES_VALID)
-      and (aWareType in [wtSteel, wtCoal, wtWood, wtCorn])
-      and (aHouseType in HOUSES_VALID)
-      and InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
-      and InRange(aAmount, 0, 5) then
-    begin
-      gHands[aHand].Stats.WareDistribution[aWareType, aHouseType] := aAmount;
-      gHands[aHand].Houses.UpdateResRequest;
-    end
-    else
-      LogParamWarn('Actions.PlayerWareDistributionEx', [aHand,
-                                                        GetEnumName(TypeInfo(TKMWareType), Integer(aWareType)),
-                                                        GetEnumName(TypeInfo(TKMHouseType), Integer(aHouseType)), aAmount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2494,6 +2468,32 @@ begin
     end
     else
       LogParamWarn('Actions.HandUnitCanTrain', [aHand, GetEnumName(TypeInfo(TKMUnitType), Integer(aUnitType)), BoolToStr(aCanTrain, True)]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14000
+//* Sets ware distribution for the specified resource, house and hand (player).
+//* aAmount: Distribution amount (0..5)
+procedure TKMScriptActions.HandWareDistribution(aHand: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType; aAmount: Integer);
+begin
+  try
+    if (aWareType in WARES_VALID)
+      and (aWareType in [wtSteel, wtCoal, wtWood, wtCorn])
+      and (aHouseType in HOUSES_VALID)
+      and InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+      and InRange(aAmount, 0, 5) then
+    begin
+      gHands[aHand].Stats.WareDistribution[aWareType, aHouseType] := aAmount;
+      gHands[aHand].Houses.UpdateResRequest;
+    end
+    else
+      LogParamWarn('Actions.PlayerWareDistributionEx', [aHand,
+                                                        GetEnumName(TypeInfo(TKMWareType), Integer(aWareType)),
+                                                        GetEnumName(TypeInfo(TKMHouseType), Integer(aHouseType)), aAmount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
