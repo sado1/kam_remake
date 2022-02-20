@@ -130,6 +130,7 @@ type
     procedure HouseWoodcutterChopOnly(aHouseID: Integer; aChopOnly: Boolean);
     procedure HouseWoodcutterMode(aHouseID: Integer; aWoodcutterMode: TKMWoodcutterMode);
     procedure HouseWareBlock(aHouseID, aWareType: Integer; aBlocked: Boolean);
+    procedure HouseWareBlockEx(aHouseID: Integer; aWareType: TKMWareType; aBlocked: Boolean);
     procedure HouseWareBlockTakeOut(aHouseID, aWareType: Integer; aBlocked: Boolean);
     procedure HouseWeaponsOrderSet(aHouseID, aWareType, aAmount: Integer);
 
@@ -3017,6 +3018,37 @@ begin
     end
     else
       LogIntParamWarn('Actions.HouseWareBlock', [aHouseID, aWareType, Byte(aBlocked)]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14000
+//* Blocks a specific ware in a storehouse or barracks
+procedure TKMScriptActions.HouseWareBlockEx(aHouseID: Integer; aWareType: TKMWareType; aBlocked: Boolean);
+var
+  H: TKMHouse;
+begin
+  try
+    if (aHouseID > 0)
+      and (aWareType in WARES_VALID) then
+    begin
+      H := fIDCache.GetHouse(aHouseID);
+      if (H <> nil)
+        and (H is TKMHouseStore)
+        and not H.IsDestroyed then
+        TKMHouseStore(H).NotAcceptFlag[aWareType] := aBlocked;
+
+      if (H <> nil)
+        and (H is TKMHouseBarracks)
+        and not H.IsDestroyed
+        and (aWareType in WARES_WARFARE) then
+        TKMHouseBarracks(H).NotAcceptFlag[aWareType] := aBlocked;
+    end
+    else
+      LogParamWarn('Actions.HouseWareBlockEx', [aHouseID, GetEnumName(TypeInfo(TKMWareType), Integer(aWareType)), BoolToStr(aBlocked, True)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
