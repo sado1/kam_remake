@@ -122,6 +122,7 @@ type
     function  HouseSchoolQueueAddEx(aHouseID: Integer; aUnitType: TKMUnitType; aCount: Integer): Integer;
     procedure HouseSchoolQueueRemove(aHouseID, QueueIndex: Integer);
     procedure HouseTakeWaresFrom(aHouseID: Integer; aType, aCount: Integer);
+    procedure HouseTakeWaresFromEx(aHouseID: Integer; aType: TKMWareType; aCount: Integer);
     function  HouseTownHallEquip(aHouseID: Integer; aUnitType: Integer; aCount: Integer): Integer;
     procedure HouseTownHallMaxGold(aHouseID: Integer; aMaxGold: Integer);
     procedure HouseUnlock(aHand, aHouseType: Integer);
@@ -2725,6 +2726,42 @@ begin
     end
     else
       LogIntParamWarn('Actions.HouseTakeWaresFrom', [aHouseID, aType, aCount]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14000
+//* Remove wares from the specified house.
+//* If a serf was on the way to pick up the ware, the serf will abandon his task
+procedure TKMScriptActions.HouseTakeWaresFromEx(aHouseID: Integer; aType: TKMWareType; aCount: Integer);
+var
+  H: TKMHouse;
+begin
+  try
+    if (aHouseID > 0) and (aType in WARES_VALID) then
+    begin
+      H := fIDCache.GetHouse(aHouseID);
+      if (H <> nil) and not H.IsDestroyed and H.IsComplete then
+        //Store/barracks mix input/output (add to input, take from output) so we must process them together
+        if H.ResCanAddToIn(aType) or H.ResCanAddToOut(aType) then
+        begin
+          if aCount > 0 then
+          begin
+            //Range checking is done within ResTakeFromIn and ResTakeFromOut when aFromScript=True
+            //Only one will succeed, we don't care which one it is
+            H.ResTakeFromIn(aType, aCount, True);
+            H.ResTakeFromOut(aType, aCount, True);
+          end;
+        end
+        else
+          LogParamWarn('Actions.HouseTakeWaresFromEx wrong ware type', [aHouseID, GetEnumName(TypeInfo(TKMWareType), Integer(aType)), aCount]);
+      //Silently ignore if house doesn't exist
+    end
+    else
+      LogParamWarn('Actions.HouseTakeWaresFromEx', [aHouseID, GetEnumName(TypeInfo(TKMWareType), Integer(aType)), aCount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

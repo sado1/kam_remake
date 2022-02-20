@@ -808,6 +808,7 @@ begin
     RegisterMethodCheck(c, 'function  HouseSchoolQueueAddEx(aHouseID: Integer; aUnitType: TKMUnitType; aCount: Integer): Integer');
     RegisterMethodCheck(c, 'procedure HouseSchoolQueueRemove(aHouseID, QueueIndex: Integer)');
     RegisterMethodCheck(c, 'procedure HouseTakeWaresFrom(aHouseID: Integer; aType, aCount: Integer)');
+    RegisterMethodCheck(c, 'procedure HouseTakeWaresFromEx(aHouseID: Integer; aType: TKMWareType; aCount: Integer)');
     RegisterMethodCheck(c, 'function  HouseTownHallEquip(aHouseID: Integer; aUnitType: Integer; aCount: Integer): Integer');
     RegisterMethodCheck(c, 'procedure HouseTownHallMaxGold(aHouseID: Integer; aMaxGold: Integer)');
     RegisterMethodCheck(c, 'procedure HouseUnlock(aHand, aHouseType: Integer)');
@@ -1589,6 +1590,7 @@ begin
       RegisterMethod(@TKMScriptActions.HouseSchoolQueueAddEx,                   'HouseSchoolQueueAddEx');
       RegisterMethod(@TKMScriptActions.HouseSchoolQueueRemove,                  'HouseSchoolQueueRemove');
       RegisterMethod(@TKMScriptActions.HouseTakeWaresFrom,                      'HouseTakeWaresFrom');
+      RegisterMethod(@TKMScriptActions.HouseTakeWaresFromEx,                    'HouseTakeWaresFromEx');
       RegisterMethod(@TKMScriptActions.HouseTownHallEquip,                      'HouseTownHallEquip');
       RegisterMethod(@TKMScriptActions.HouseTownHallMaxGold,                    'HouseTownHallMaxGold');
       RegisterMethod(@TKMScriptActions.HouseUnlock,                             'HouseUnlock');
