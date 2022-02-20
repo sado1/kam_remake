@@ -2491,9 +2491,9 @@ begin
       gHands[aHand].Houses.UpdateResRequest;
     end
     else
-      LogParamWarn('Actions.PlayerWareDistributionEx', [aHand,
-                                                        GetEnumName(TypeInfo(TKMWareType), Integer(aWareType)),
-                                                        GetEnumName(TypeInfo(TKMHouseType), Integer(aHouseType)), aAmount]);
+      LogParamWarn('Actions.HandWareDistribution', [aHand,
+                                                    GetEnumName(TypeInfo(TKMWareType), Integer(aWareType)),
+                                                    GetEnumName(TypeInfo(TKMHouseType), Integer(aHouseType)), aAmount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
