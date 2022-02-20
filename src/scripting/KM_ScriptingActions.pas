@@ -94,6 +94,7 @@ type
     function  GroupOrderSplitUnit(aGroupID, aUnitID: Integer): Integer;
     procedure GroupOrderStorm(aGroupID: Integer);
     procedure GroupOrderWalk(aGroupID: Integer; X, Y, aDirection: Integer);
+    procedure GroupOrderWalkEx(aGroupID: Integer; X, Y: Integer; aDirection: TKMDirection);
     procedure GroupSetFormation(aGroupID: Integer; aNumColumns: Byte);
 
     procedure HandHouseLock(aHand: Integer; aHouseType: TKMHouseType; aLock: TKMHandHouseLock);
@@ -4840,6 +4841,30 @@ begin
     end
     else
       LogIntParamWarn('Actions.GroupOrderWalk', [aGroupID, X, Y, aDirection]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14000
+//* Order the specified group to walk somewhere
+procedure TKMScriptActions.GroupOrderWalkEx(aGroupID: Integer; X, Y: Integer; aDirection: TKMDirection);
+var
+  G: TKMUnitGroup;
+begin
+  try
+    if (aGroupID > 0)
+      and gTerrain.TileInMapCoords(X, Y)
+      and (aDirection in [dirN..dirNW]) then
+    begin
+      G := fIDCache.GetGroup(aGroupID);
+      if (G <> nil) and G.CanWalkTo(KMPoint(X,Y), 0) then
+        G.OrderWalk(KMPoint(X,Y), True, wtokScript, aDirection);
+    end
+    else
+      LogParamWarn('Actions.GroupOrderWalkEx', [aGroupID, X, Y, GetEnumName(TypeInfo(TKMDirection), Integer(aDirection))]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

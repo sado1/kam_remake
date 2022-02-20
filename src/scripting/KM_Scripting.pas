@@ -781,6 +781,7 @@ begin
     RegisterMethodCheck(c, 'function  GroupOrderSplitUnit(aGroupID, aUnitID: Integer): Integer');
     RegisterMethodCheck(c, 'procedure GroupOrderStorm(aGroupID: Integer)');
     RegisterMethodCheck(c, 'procedure GroupOrderWalk(aGroupID: Integer; X, Y, aDirection: Integer)');
+    RegisterMethodCheck(c, 'procedure GroupOrderWalkEx(aGroupID: Integer; X, Y: Integer; aDirection: TKMDirection)');
     RegisterMethodCheck(c, 'procedure GroupSetFormation(aGroupID: Integer; aNumColumns: Byte)');
 
     RegisterMethodCheck(c, 'procedure HandHouseLock(aHand: Integer; aHouseType: TKMHouseType; aLock: TKMHandHouseLock)');
@@ -1579,6 +1580,7 @@ begin
       RegisterMethod(@TKMScriptActions.GroupOrderSplitUnit,                     'GroupOrderSplitUnit');
       RegisterMethod(@TKMScriptActions.GroupOrderStorm,                         'GroupOrderStorm');
       RegisterMethod(@TKMScriptActions.GroupOrderWalk,                          'GroupOrderWalk');
+      RegisterMethod(@TKMScriptActions.GroupOrderWalkEx,                        'GroupOrderWalkEx');
       RegisterMethod(@TKMScriptActions.GroupSetFormation,                       'GroupSetFormation');
 
       RegisterMethod(@TKMScriptActions.HandHouseLock,                           'HandHouseLock');
