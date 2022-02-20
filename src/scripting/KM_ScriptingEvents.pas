@@ -860,7 +860,7 @@ end;
 //* aGroup: group ID, which got split order
 //* aNewType: new group leader unit type
 //* aNewCnt: new group members count
-//* aMixed: is new group can have the only unit type or a could have any unit type from original group
+//* aMixed: is new group can have the only unit type or it can have any unit type from original group
 procedure TKMScriptEvents.ProcGroupBeforeOrderSplit(aGroup: TKMUnitGroup; var aNewType: TKMUnitType; var aNewCnt: Integer; var aMixed: Boolean);
 var
   I: Integer;
