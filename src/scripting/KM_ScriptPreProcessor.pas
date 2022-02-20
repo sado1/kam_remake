@@ -163,6 +163,7 @@ end;
 function TKMScriptPreProcessor.PreProcessFile(const aFileName: UnicodeString; var aScriptCode: AnsiString): Boolean;
 var
   mainScriptCode: AnsiString;
+  errorStr: string;
 begin
   Result := False;
   fErrorHandler.ScriptLogFile := ChangeFileExt(aFileName, SCRIPT_LOG_EXT);
@@ -185,9 +186,10 @@ begin
   except
     on E: Exception do
     begin
-      fErrorHandler.HandleScriptErrorString(sePreprocessorError, 'Script preprocessing errors:' + EolW + E.Message);
+      errorStr := 'Script preprocessing errors:' + EolW + E.Message;
+      fErrorHandler.HandleScriptErrorString(sePreprocessorError, errorStr);
       if fValidationIssues <> nil then
-        fValidationIssues.AddError(0, 0, '', 'Script preprocessing errors:' + EolW + E.Message);
+        fValidationIssues.AddError(0, 0, '', errorStr);
     end;
   end;
 end;
