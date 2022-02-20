@@ -4,7 +4,7 @@ interface
 uses
   Classes, Math, SysUtils, StrUtils, KM_AIAttacks, KM_ResTilesetTypes,
   KM_CommonTypes, KM_Defaults, KM_Points, KM_Houses, KM_ScriptingIdCache, KM_Units, KM_TerrainTypes,
-  KM_ScriptSound, KM_MediaTypes, KM_ResTypes, KM_HandTypes,
+  KM_ScriptSound, KM_MediaTypes, KM_ResTypes, KM_HandTypes, KM_HouseWoodcutters,
   KM_UnitGroup, KM_ResHouses, KM_HouseCollection, KM_ResWares, KM_ScriptingEvents, KM_ScriptingTypes,
   KM_AITypes;
 
@@ -128,7 +128,7 @@ type
     procedure HouseTownHallMaxGold(aHouseID: Integer; aMaxGold: Integer);
     procedure HouseUnlock(aHand, aHouseType: Integer);
     procedure HouseWoodcutterChopOnly(aHouseID: Integer; aChopOnly: Boolean);
-    procedure HouseWoodcutterMode(aHouseID: Integer; aWoodcutterMode: Byte);
+    procedure HouseWoodcutterMode(aHouseID: Integer; aWoodcutterMode: TKMWoodcutterMode);
     procedure HouseWareBlock(aHouseID, aWareType: Integer; aBlocked: Boolean);
     procedure HouseWareBlockTakeOut(aHouseID, aWareType: Integer; aBlocked: Boolean);
     procedure HouseWeaponsOrderSet(aHouseID, aWareType, aAmount: Integer);
@@ -227,7 +227,7 @@ uses
   KM_AI, KM_AIDefensePos,
   KM_Game, KM_GameParams, KM_GameTypes, KM_FogOfWar,
   KM_HandsCollection, KM_HandLogistics, KM_HandConstructions,
-  KM_HouseBarracks, KM_HouseSchool, KM_HouseStore, KM_HouseMarket, KM_HouseWoodcutters, KM_HouseTownHall,
+  KM_HouseBarracks, KM_HouseSchool, KM_HouseStore, KM_HouseMarket, KM_HouseTownHall,
   KM_UnitWarrior,
   KM_UnitGroupTypes,
   KM_Resource, KM_ResUnits, KM_Hand, KM_ResMapElements,
@@ -2966,25 +2966,21 @@ begin
 end;
 
 
-//* Version: 7000+
-//* Sets woodcutter's hut woodcutter mode
-//* Possible values for aWoodcutterMode parameter are:
-//* 0 - Chop And Plant
-//* 1 - Chop only
-//* 2 - Plant only
-procedure TKMScriptActions.HouseWoodcutterMode(aHouseID: Integer; aWoodcutterMode: Byte);
+//* Version: 14000
+//* Sets woodcutter's hut woodcutter mode as TKMWoodcutterMode = (wmChopAndPlant, wmChop, wmPlant)
+procedure TKMScriptActions.HouseWoodcutterMode(aHouseID: Integer; aWoodcutterMode: TKMWoodcutterMode);
 var
   H: TKMHouse;
 begin
   try
-    if (aHouseID > 0) and (aWoodcutterMode <= Byte(High(TKMWoodcutterMode))) then
+    if (aHouseID > 0) then
     begin
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil)
         and (H is TKMHouseWoodcutters)
         and not H.IsDestroyed
         and H.IsComplete then
-        TKMHouseWoodcutters(H).WoodcutterMode := TKMWoodcutterMode(aWoodcutterMode);
+        TKMHouseWoodcutters(H).WoodcutterMode := aWoodcutterMode;
     end
     else
       LogIntParamWarn('Actions.HouseWoodcutterMode', [aHouseID, Byte(aWoodcutterMode)]);

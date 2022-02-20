@@ -814,7 +814,7 @@ begin
     RegisterMethodCheck(c, 'procedure HouseTownHallMaxGold(aHouseID: Integer; aMaxGold: Integer)');
     RegisterMethodCheck(c, 'procedure HouseUnlock(aHand, aHouseType: Integer)');
     RegisterMethodCheck(c, 'procedure HouseWoodcutterChopOnly(aHouseID: Integer; aChopOnly: Boolean)');
-    RegisterMethodCheck(c, 'procedure HouseWoodcutterMode(aHouseID: Integer; aWoodcutterMode: Byte)');
+    RegisterMethodCheck(c, 'procedure HouseWoodcutterMode(aHouseID: Integer; aWoodcutterMode: TKMWoodcutterMode)');
     RegisterMethodCheck(c, 'procedure HouseWareBlock(aHouseID, aWareType: Integer; aBlocked: Boolean)');
     RegisterMethodCheck(c, 'procedure HouseWareBlockTakeOut(aHouseID, aWareType: Integer; aBlocked: Boolean)');
     RegisterMethodCheck(c, 'procedure HouseWeaponsOrderSet(aHouseID, aWareType, aAmount: Integer)');
