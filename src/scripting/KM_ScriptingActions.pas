@@ -54,9 +54,11 @@ type
     procedure CinematicPanTo(aHand: Byte; X, Y, Duration: Integer);
 
     function  GiveAnimal(aType, X,Y: Integer): Integer;
+    function  GiveAnimalEx(aType: TKMUnitType; X,Y: Integer): Integer;
     function  GiveField(aHand, X, Y: Integer): Boolean;
     function  GiveFieldAged(aHand, X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean;
     function  GiveGroup(aHand, aType, X,Y, aDir, aCount, aColumns: Integer): Integer;
+    function  GiveGroupEx(aHand: Integer; aType: TKMUnitType; X,Y: Integer; aDir: TKMDirection; aCount, aColumns: Integer): Integer;
     function  GiveHouse(aHand, aHouseType, X,Y: Integer): Integer;
     function  GiveHouseEx(aHand: Integer; aHouseType: TKMHouseType; X,Y: Integer): Integer;
     function  GiveHouseSite(aHand, aHouseType, X, Y: Integer; aAddMaterials: Boolean): Integer;
@@ -992,6 +994,37 @@ begin
 end;
 
 
+//* Version: 14000
+//* Give player group of warriors and return the group ID or -1 if the group was not able to be added
+//* aColumns: Units per row
+function TKMScriptActions.GiveGroupEx(aHand: Integer; aType: TKMUnitType; X,Y: Integer; aDir: TKMDirection; aCount, aColumns: Integer): Integer;
+var
+  G: TKMUnitGroup;
+begin
+  try
+    Result := UID_NONE;
+    //Verify all input parameters
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+    and (aType in UNITS_WARRIORS)
+    and gTerrain.TileInMapCoords(X,Y)
+    and (aDir in [dirN..dirNW])
+    and (aCount > 0)
+    and (aColumns > 0) then
+    begin
+      G := gHands[aHand].AddUnitGroup(aType, KMPoint(X,Y), aDir, aColumns, aCount);
+      if G = nil then Exit;
+      Result := G.UID;
+    end
+    else
+      LogParamWarn('Actions.GiveGroupEx', [aHand, GetEnumName(TypeInfo(TKMUnitType), Integer(aType)), X, Y,
+                                           GetEnumName(TypeInfo(TKMDirection), Integer(aDir)), aCount, aColumns]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
 //* Version: 5057
 //* Give player a single citizen and returns the unit ID or -1 if the unit was not able to be added
 function TKMScriptActions.GiveUnit(aHand, aType, X, Y, aDir: Integer): Integer;
@@ -1798,6 +1831,32 @@ begin
     end
     else
       LogIntParamWarn('Actions.GiveAnimal', [aType, X, Y]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14000
+//* Adds an animal to the game and returns the unit ID or -1 if the animal was not able to be added
+function TKMScriptActions.GiveAnimalEx(aType: TKMUnitType; X,Y: Integer): Integer;
+var
+  U: TKMUnit;
+begin
+  try
+    Result := UID_NONE;
+
+    //Verify all input parameters
+    if (aType in UNITS_ANIMALS)
+    and gTerrain.TileInMapCoords(X, Y) then
+    begin
+      U := gHands.PlayerAnimals.AddUnit(aType, KMPoint(X,Y));
+      if U <> nil then
+        Result := U.UID;
+    end
+    else
+      LogParamWarn('Actions.GiveAnimalEx', [GetEnumName(TypeInfo(TKMUnitType), Integer(aType)), X, Y]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

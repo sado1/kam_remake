@@ -751,9 +751,11 @@ begin
     RegisterMethodCheck(c, 'procedure GameSpeedChangeAllowed(aAllowed: Boolean)');
 
     RegisterMethodCheck(c, 'function  GiveAnimal(aType, X,Y: Integer): Integer');
+    RegisterMethodCheck(c, 'function  GiveAnimalEx(aType: TKMUnitType; X,Y: Integer): Integer');
     RegisterMethodCheck(c, 'function  GiveField(aHand, X, Y: Integer): Boolean');
     RegisterMethodCheck(c, 'function  GiveFieldAged(aHand, X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean');
     RegisterMethodCheck(c, 'function  GiveGroup(aHand, aType, X, Y, aDir, aCount, aColumns: Integer): Integer');
+    RegisterMethodCheck(c, 'function  GiveGroupEx(aHand: Integer; aType: TKMUnitType; X,Y: Integer; aDir: TKMDirection; aCount, aColumns: Integer): Integer');
     RegisterMethodCheck(c, 'function  GiveHouse(aHand, aHouseType, X,Y: Integer): Integer');
     RegisterMethodCheck(c, 'function  GiveHouseEx(aHand: Integer; aHouseType: TKMHouseType; X,Y: Integer): Integer');
     RegisterMethodCheck(c, 'function  GiveHouseSite(aHand, aHouseType, X, Y: Integer; aAddMaterials: Boolean): Integer');
@@ -1550,9 +1552,11 @@ begin
       RegisterMethod(@TKMScriptActions.GameSpeedChangeAllowed,                  'GameSpeedChangeAllowed');
 
       RegisterMethod(@TKMScriptActions.GiveAnimal,                              'GiveAnimal');
+      RegisterMethod(@TKMScriptActions.GiveAnimalEx,                            'GiveAnimalEx');
       RegisterMethod(@TKMScriptActions.GiveField,                               'GiveField');
       RegisterMethod(@TKMScriptActions.GiveFieldAged,                           'GiveFieldAged');
       RegisterMethod(@TKMScriptActions.GiveGroup,                               'GiveGroup');
+      RegisterMethod(@TKMScriptActions.GiveGroupEx,                             'GiveGroupEx');
       RegisterMethod(@TKMScriptActions.GiveUnit,                                'GiveUnit');
       RegisterMethod(@TKMScriptActions.GiveHouse,                               'GiveHouse');
       RegisterMethod(@TKMScriptActions.GiveHouseEx,                             'GiveHouseEx');
