@@ -91,6 +91,7 @@ type
     function HouseBarracksRallyPointX(aBarracks: Integer): Integer;
     function HouseBarracksRallyPointY(aBarracks: Integer): Integer;
     function HouseBarracksRecruitsCount(aBarracks: Integer): Integer;
+    function HouseBarracksRecruitBlock(aHouseID: Integer): Boolean;
     function HouseBuildingProgress(aHouseID: Integer): Integer;
     function HouseCanReachResources(aHouseID: Integer): Boolean;
     function HouseDamage(aHouseID: Integer): Integer;
@@ -2648,7 +2649,32 @@ begin
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
   end;
+end;
 
+
+//* Version: 14000
+//* Returns if recruits are blocked in the specified Barracks
+function TKMScriptStates.HouseBarracksRecruitBlock(aHouseID: Integer): Boolean;
+var
+  H: TKMHouse;
+begin
+  Result := False;
+  try
+    if aHouseID > 0 then
+    begin
+      H := fIDCache.GetHouse(aHouseID);
+      if (H <> nil)
+        and (H is TKMHouseBarracks)
+        and not H.IsDestroyed
+        and H.IsComplete then
+        Result := TKMHouseBarracks(H).NotAcceptRecruitFlag;
+    end
+    else
+      LogParamWarn('States.HouseBarracksRecruitBlock', [aHouseID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
 end;
 
 

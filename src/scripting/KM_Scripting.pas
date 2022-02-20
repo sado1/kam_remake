@@ -526,6 +526,7 @@ begin
     RegisterMethodCheck(c, 'function HouseBarracksRallyPointX(aBarracks: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseBarracksRallyPointY(aBarracks: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseBarracksRecruitsCount(aBarracks: Integer): Integer');
+    RegisterMethodCheck(c, 'function HouseBarracksRecruitBlock(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseBuildingProgress(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseCanReachResources(aHouseID: Integer): Boolean)');
     RegisterMethodCheck(c, 'function HouseDamage(aHouseID: Integer): Integer');
@@ -1318,6 +1319,7 @@ begin
       RegisterMethod(@TKMScriptStates.HouseBarracksRallyPointX,                 'HouseBarracksRallyPointX');
       RegisterMethod(@TKMScriptStates.HouseBarracksRallyPointY,                 'HouseBarracksRallyPointY');
       RegisterMethod(@TKMScriptStates.HouseBarracksRecruitsCount,               'HouseBarracksRecruitsCount');
+      RegisterMethod(@TKMScriptStates.HouseBarracksRecruitBlock,                'HouseBarracksRecruitBlock');
       RegisterMethod(@TKMScriptStates.HouseBuildingProgress,                    'HouseBuildingProgress');
       RegisterMethod(@TKMScriptStates.HouseCanReachResources,                   'HouseCanReachResources');
       RegisterMethod(@TKMScriptStates.HouseDamage,                              'HouseDamage');
