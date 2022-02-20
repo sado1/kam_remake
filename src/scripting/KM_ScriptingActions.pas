@@ -4825,54 +4825,6 @@ end;
 
 
 //* Version: 5057
-//* Order the specified group to walk somewhere
-procedure TKMScriptActions.GroupOrderWalk(aGroupID: Integer; X, Y, aDirection: Integer);
-var
-  G: TKMUnitGroup;
-begin
-  try
-    if (aGroupID > 0)
-      and gTerrain.TileInMapCoords(X, Y)
-      and (TKMDirection(aDirection + 1) in [dirN..dirNW]) then
-    begin
-      G := fIDCache.GetGroup(aGroupID);
-      if (G <> nil) and G.CanWalkTo(KMPoint(X,Y), 0) then
-        G.OrderWalk(KMPoint(X,Y), True, wtokScript, TKMDirection(aDirection+1));
-    end
-    else
-      LogIntParamWarn('Actions.GroupOrderWalk', [aGroupID, X, Y, aDirection]);
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
-end;
-
-
-//* Version: 14000
-//* Order the specified group to walk somewhere
-procedure TKMScriptActions.GroupOrderWalkEx(aGroupID: Integer; X, Y: Integer; aDirection: TKMDirection);
-var
-  G: TKMUnitGroup;
-begin
-  try
-    if (aGroupID > 0)
-      and gTerrain.TileInMapCoords(X, Y)
-      and (aDirection in [dirN..dirNW]) then
-    begin
-      G := fIDCache.GetGroup(aGroupID);
-      if (G <> nil) and G.CanWalkTo(KMPoint(X,Y), 0) then
-        G.OrderWalk(KMPoint(X,Y), True, wtokScript, aDirection);
-    end
-    else
-      LogParamWarn('Actions.GroupOrderWalkEx', [aGroupID, X, Y, GetEnumName(TypeInfo(TKMDirection), Integer(aDirection))]);
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
-end;
-
-
-//* Version: 5057
 //* Order the specified group to attack the specified house
 procedure TKMScriptActions.GroupOrderAttackHouse(aGroupID, aHouseID: Integer);
 var
@@ -4939,28 +4891,6 @@ begin
     end
     else
       LogIntParamWarn('Actions.GroupOrderFood', [aGroupID]);
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
-end;
-
-
-//* Version: 5057
-//* Order the specified group to storm attack
-procedure TKMScriptActions.GroupOrderStorm(aGroupID: Integer);
-var
-  G: TKMUnitGroup;
-begin
-  try
-    if (aGroupID > 0) then
-    begin
-      G := fIDCache.GetGroup(aGroupID);
-      if (G <> nil) and (G.GroupType = gtMelee) then
-        G.OrderStorm(True);
-    end
-    else
-      LogIntParamWarn('Actions.GroupOrderStorm', [aGroupID]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -5068,6 +4998,76 @@ begin
     end
     else
       LogIntParamWarn('Actions.GroupOrderSplitSelected', [aGroupID, aUnitID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 5057
+//* Order the specified group to storm attack
+procedure TKMScriptActions.GroupOrderStorm(aGroupID: Integer);
+var
+  G: TKMUnitGroup;
+begin
+  try
+    if (aGroupID > 0) then
+    begin
+      G := fIDCache.GetGroup(aGroupID);
+      if (G <> nil) and (G.GroupType = gtMelee) then
+        G.OrderStorm(True);
+    end
+    else
+      LogIntParamWarn('Actions.GroupOrderStorm', [aGroupID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 5057
+//* Order the specified group to walk somewhere
+procedure TKMScriptActions.GroupOrderWalk(aGroupID: Integer; X, Y, aDirection: Integer);
+var
+  G: TKMUnitGroup;
+begin
+  try
+    if (aGroupID > 0)
+      and gTerrain.TileInMapCoords(X, Y)
+      and (TKMDirection(aDirection + 1) in [dirN..dirNW]) then
+    begin
+      G := fIDCache.GetGroup(aGroupID);
+      if (G <> nil) and G.CanWalkTo(KMPoint(X,Y), 0) then
+        G.OrderWalk(KMPoint(X,Y), True, wtokScript, TKMDirection(aDirection+1));
+    end
+    else
+      LogIntParamWarn('Actions.GroupOrderWalk', [aGroupID, X, Y, aDirection]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14000
+//* Order the specified group to walk somewhere
+procedure TKMScriptActions.GroupOrderWalkEx(aGroupID: Integer; X, Y: Integer; aDirection: TKMDirection);
+var
+  G: TKMUnitGroup;
+begin
+  try
+    if (aGroupID > 0)
+      and gTerrain.TileInMapCoords(X, Y)
+      and (aDirection in [dirN..dirNW]) then
+    begin
+      G := fIDCache.GetGroup(aGroupID);
+      if (G <> nil) and G.CanWalkTo(KMPoint(X,Y), 0) then
+        G.OrderWalk(KMPoint(X,Y), True, wtokScript, aDirection);
+    end
+    else
+      LogParamWarn('Actions.GroupOrderWalkEx', [aGroupID, X, Y, GetEnumName(TypeInfo(TKMDirection), Integer(aDirection))]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
