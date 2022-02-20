@@ -4368,7 +4368,7 @@ end;
 
 //* Version: 7000+
 //* Heals/Wounds specified unit for aHP HP
-procedure TKMScriptActions.UnitHPChange(aUnitID: Integer; aHP: Integer);
+procedure TKMScriptActions.UnitHPChange(aUnitID, aHP: Integer);
 var
   U: TKMUnit;
 begin
