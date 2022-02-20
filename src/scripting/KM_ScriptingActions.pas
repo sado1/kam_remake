@@ -131,7 +131,7 @@ type
     procedure HouseWoodcutterMode(aHouseID: Integer; aWoodcutterMode: TKMWoodcutterMode);
     procedure HouseWareBlock(aHouseID, aWareType: Integer; aBlocked: Boolean);
     procedure HouseWareBlockEx(aHouseID: Integer; aWareType: TKMWareType; aBlocked: Boolean);
-    procedure HouseWareBlockTakeOut(aHouseID, aWareType: Integer; aBlocked: Boolean);
+    procedure HouseWareBlockTakeOut(aHouseID: Integer; aWareType: TKMWareType; aBlocked: Boolean);
     procedure HouseWeaponsOrderSet(aHouseID, aWareType, aAmount: Integer);
 
     procedure Log(const aText: AnsiString);
@@ -3056,38 +3056,35 @@ begin
 end;
 
 
-//* Version: 12600
+//* Version: 14000
 //* Blocks taking out of a specific ware from a storehouse or barracks
-procedure TKMScriptActions.HouseWareBlockTakeOut(aHouseID, aWareType: Integer; aBlocked: Boolean);
+procedure TKMScriptActions.HouseWareBlockTakeOut(aHouseID: Integer; aWareType: TKMWareType; aBlocked: Boolean);
 var
   H: TKMHouse;
-  res: TKMWareType;
 begin
   try
     if (aHouseID > 0)
-    and (aWareType in [Low(WARE_ID_TO_TYPE) .. High(WARE_ID_TO_TYPE)]) then
+    and (aWareType in WARES_VALID) then
     begin
-      res := WARE_ID_TO_TYPE[aWareType];
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil)
         and (H is TKMHouseStore)
         and not H.IsDestroyed then
-        TKMHouseStore(H).NotAllowTakeOutFlag[res] := aBlocked;
+        TKMHouseStore(H).NotAllowTakeOutFlag[aWareType] := aBlocked;
 
       if (H <> nil)
         and (H is TKMHouseBarracks)
         and not H.IsDestroyed
-        and (res in [WARFARE_MIN..WARFARE_MAX]) then
-        TKMHouseBarracks(H).NotAllowTakeOutFlag[res] := aBlocked;
+        and (aWareType in WARES_WARFARE) then
+        TKMHouseBarracks(H).NotAllowTakeOutFlag[aWareType] := aBlocked;
     end
     else
-      LogIntParamWarn('Actions.HouseWareBlockTakeOut', [aHouseID, aWareType, Byte(aBlocked)]);
+      LogParamWarn('Actions.HouseWareBlockTakeOut', [aHouseID, GetEnumName(TypeInfo(TKMWareType), Integer(aWareType)), BoolToStr(aBlocked, True)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
   end;
 end;
-
 
 
 //* Version: 5165

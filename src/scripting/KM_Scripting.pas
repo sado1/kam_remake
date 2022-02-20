@@ -817,7 +817,7 @@ begin
     RegisterMethodCheck(c, 'procedure HouseWoodcutterMode(aHouseID: Integer; aWoodcutterMode: TKMWoodcutterMode)');
     RegisterMethodCheck(c, 'procedure HouseWareBlock(aHouseID, aWareType: Integer; aBlocked: Boolean)');
     RegisterMethodCheck(c, 'procedure HouseWareBlockEx(aHouseID: Integer; aWareType: TKMWareType; aBlocked: Boolean)');
-    RegisterMethodCheck(c, 'procedure HouseWareBlockTakeOut(aHouseID, aWareType: Integer; aBlocked: Boolean)');
+    RegisterMethodCheck(c, 'procedure HouseWareBlockTakeOut(aHouseID: Integer; aWareType: TKMWareType; aBlocked: Boolean)');
     RegisterMethodCheck(c, 'procedure HouseWeaponsOrderSet(aHouseID, aWareType, aAmount: Integer)');
 
     RegisterMethodCheck(c, 'procedure Log(const aText: AnsiString)');
