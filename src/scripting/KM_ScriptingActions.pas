@@ -2444,13 +2444,25 @@ end;
 
 //* Version: 14000
 //* Sets whether the player is allowed to trade the specified resource.
+//* if aHand = -1, then apply it to all hands
 procedure TKMScriptActions.HandTradeAllowed(aHand: Integer; aWareType: TKMWareType; aAllowed: Boolean);
+var
+  I: Integer;
 begin
   try
     //Verify all input parameters
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+    if ((aHand = -1) or (InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)))
       and (aWareType in WARES_VALID) then
-      gHands[aHand].Locks.AllowToTrade[aWareType] := aAllowed
+    begin
+      if aHand = HAND_NONE then
+      begin
+        for I := 0 to gHands.Count - 1 do
+          if gHands[I].Enabled then
+            gHands[I].Locks.AllowToTrade[aWareType] := aAllowed;
+      end
+      else
+        gHands[aHand].Locks.AllowToTrade[aWareType] := aAllowed;
+    end
     else
       LogParamWarn('Actions.HandTradeAllowed', [aHand, GetEnumName(TypeInfo(TKMWareType), Integer(aWareType)), BoolToStr(aAllowed, True)]);
   except
