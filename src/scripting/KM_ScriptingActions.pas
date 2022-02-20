@@ -116,6 +116,7 @@ type
     function  HouseBarracksEquipEx(aHouseID: Integer; aUnitType: TKMUnitType; aCount: Integer): Integer;
     procedure HouseBarracksGiveRecruit(aHouseID: Integer);
     procedure HouseBarracksGiveRecruits(aHouseID, aCount: Integer);
+    procedure HouseBarracksRecruitBlock(aHouseID: Integer; aBlocked: Boolean);
     procedure HouseDestroy(aHouseID: Integer; aSilent: Boolean);
     procedure HouseDeliveryBlock(aHouseID: Integer; aDeliveryBlocked: Boolean);
     procedure HouseDeliveryMode(aHouseID: Integer; aDeliveryMode: TKMDeliveryMode);
@@ -3431,6 +3432,31 @@ begin
     end
     else
       LogIntParamWarn('Actions.HouseBarracksGiveRecruits', [aHouseID, aCount]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14000
+//* Blocks or allows recruit to get into specified Barracks
+procedure TKMScriptActions.HouseBarracksRecruitBlock(aHouseID: Integer; aBlocked: Boolean);
+var
+  H: TKMHouse;
+begin
+  try
+    if aHouseID > 0 then
+    begin
+      H := fIDCache.GetHouse(aHouseID);
+      if (H <> nil)
+        and (H is TKMHouseBarracks)
+        and not H.IsDestroyed
+        and H.IsComplete then
+        TKMHouseBarracks(H).NotAcceptRecruitFlag := aBlocked;
+    end
+    else
+      LogParamWarn('Actions.HouseBarracksRecruitBlock', [aHouseID, BoolToStr(aBlocked, True)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
