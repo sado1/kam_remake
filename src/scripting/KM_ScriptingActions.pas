@@ -97,6 +97,8 @@ type
     procedure GroupSetFormation(aGroupID: Integer; aNumColumns: Byte);
 
     procedure HandHouseLock(aHand: Integer; aHouseType: TKMHouseType; aLock: TKMHandHouseLock);
+    procedure HandTradeAllowed(aHand: Integer; aWareType: TKMWareType; aAllowed: Boolean);
+    procedure HandUnitCanTrain(aHand: Integer; aUnitType: TKMUnitType; aCanTrain: Boolean);
 
     procedure HouseAddBuildingMaterials(aHouseID: Integer);
     procedure HouseAddBuildingMaterialsEx(aHouseID, aWoodAmount, aStoneAmount: Integer);
@@ -2399,7 +2401,7 @@ begin
   try
     //Verify all input parameters
     if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
-    and (aResType in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)]) then
+      and (aResType in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)]) then
       gHands[aHand].Locks.AllowToTrade[WARE_ID_TO_TYPE[aResType]] := aAllowed
     else
       LogIntParamWarn('Actions.SetTradeAllowed', [aHand, aResType, Byte(aAllowed)]);
@@ -2432,6 +2434,41 @@ begin
     end
     else
       LogParamWarn('Actions.HandHouseLock', [aHand, GetEnumName(TypeInfo(TKMHouseType), Integer(aHouseType))]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14000
+//* Sets whether the player is allowed to trade the specified resource.
+procedure TKMScriptActions.HandTradeAllowed(aHand: Integer; aWareType: TKMWareType; aAllowed: Boolean);
+begin
+  try
+    //Verify all input parameters
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+      and (aWareType in WARES_VALID) then
+      gHands[aHand].Locks.AllowToTrade[aWareType] := aAllowed
+    else
+      LogParamWarn('Actions.HandTradeAllowed', [aHand, GetEnumName(TypeInfo(TKMWareType), Integer(aWareType)), BoolToStr(aAllowed, True)]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14000
+//* Sets whether the specified player can train/equip the specified unit type
+procedure TKMScriptActions.HandUnitCanTrain(aHand: Integer; aUnitType: TKMUnitType; aCanTrain: Boolean);
+begin
+  try
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+      and (aUnitType in UNITS_VALID) then
+      gHands[aHand].Locks.SetUnitBlocked(not aCanTrain, aUnitType)
+    else
+      LogParamWarn('Actions.HandUnitCanTrain', [aHand, GetEnumName(TypeInfo(TKMUnitType), Integer(aUnitType)), BoolToStr(aCanTrain, True)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

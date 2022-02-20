@@ -784,6 +784,8 @@ begin
     RegisterMethodCheck(c, 'procedure GroupSetFormation(aGroupID: Integer; aNumColumns: Byte)');
 
     RegisterMethodCheck(c, 'procedure HandHouseLock(aHand: Integer; aHouseType: TKMHouseType; aLock: TKMHandHouseLock)');
+    RegisterMethodCheck(c, 'procedure HandTradeAllowed(aHand: Integer; aWareType: TKMWareType; aAllowed: Boolean)');
+    RegisterMethodCheck(c, 'procedure HandUnitCanTrain(aHand: Integer; aUnitType: TKMUnitType; aCanTrain: Boolean)');
 
     RegisterMethodCheck(c, 'procedure HouseAddBuildingMaterials(aHouseID: Integer)');
     RegisterMethodCheck(c, 'procedure HouseAddBuildingMaterialsEx(aHouseID, aWoodAmount, aStoneAmount: Integer)');
@@ -1571,6 +1573,8 @@ begin
       RegisterMethod(@TKMScriptActions.GroupSetFormation,                       'GroupSetFormation');
 
       RegisterMethod(@TKMScriptActions.HandHouseLock,                           'HandHouseLock');
+      RegisterMethod(@TKMScriptActions.HandTradeAllowed,                        'HandTradeAllowed');
+      RegisterMethod(@TKMScriptActions.HandUnitCanTrain,                        'HandUnitCanTrain');
 
       RegisterMethod(@TKMScriptActions.HouseAddBuildingMaterials,               'HouseAddBuildingMaterials');
       RegisterMethod(@TKMScriptActions.HouseAddBuildingMaterialsEx,             'HouseAddBuildingMaterialsEx');
