@@ -64,6 +64,7 @@ type
     function  GiveUnit(aHand, aType, X,Y, aDir: Integer): Integer;
     function  GiveRoad(aHand, X, Y: Integer): Boolean;
     procedure GiveWares(aHand, aType, aCount: Integer);
+    procedure GiveWaresEx(aHand: Integer; aType: TKMWareType; aCount: Integer);
     procedure GiveWeapons(aHand, aType, aCount: Integer);
     function  GiveWinefield(aHand, X, Y: Integer): Boolean;
     function  GiveWinefieldAged(aHand, X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean;
@@ -1874,7 +1875,7 @@ end;
 
 //* Version: 5057
 //* Adds amount of wares to players 1st Store
-//Wares are added to first Store
+//* Wares are added to first Store
 procedure TKMScriptActions.GiveWares(aHand, aType, aCount: Integer);
 var
   H: TKMHouse;
@@ -1882,8 +1883,8 @@ begin
   try
     //Verify all input parameters
     if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
-    and InRange(aCount, 0, High(Word))
-    and (aType in [Low(WARE_ID_TO_TYPE) .. High(WARE_ID_TO_TYPE)]) then
+      and InRange(aCount, 0, High(Word))
+      and (aType in [Low(WARE_ID_TO_TYPE) .. High(WARE_ID_TO_TYPE)]) then
     begin
       H := gHands[aHand].FindHouse(htStore, 1);
       if H <> nil then
@@ -1900,6 +1901,37 @@ begin
     raise;
   end;
 end;
+
+
+//* Version: 14000
+//* Adds amount of wares to players 1st Store
+//* Wares are added to first Store
+procedure TKMScriptActions.GiveWaresEx(aHand: Integer; aType: TKMWareType; aCount: Integer);
+var
+  H: TKMHouse;
+begin
+  try
+    //Verify all input parameters
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+      and InRange(aCount, 0, High(Word))
+      and (aType in WARES_VALID) then
+    begin
+      H := gHands[aHand].FindHouse(htStore, 1);
+      if H <> nil then
+      begin
+        H.ResAddToIn(aType, aCount);
+        gHands[aHand].Stats.WareProduced(aType, aCount);
+        gScriptEvents.ProcWareProduced(H, aType, aCount);
+      end;
+    end
+    else
+      LogParamWarn('Actions.GiveWaresEx', [aHand, GetEnumName(TypeInfo(TKMWareType), Integer(aType)), aCount]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
 
 //* Version: 5165
 //* Adds amount of weapons to players 1st Barracks

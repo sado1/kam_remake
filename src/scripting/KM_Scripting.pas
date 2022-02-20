@@ -760,6 +760,7 @@ begin
     RegisterMethodCheck(c, 'function  GiveRoad(aHand, X, Y: Integer): Boolean');
     RegisterMethodCheck(c, 'function  GiveUnit(aHand, aType, X,Y, aDir: Integer): Integer');
     RegisterMethodCheck(c, 'procedure GiveWares(aHand, aType, aCount: Integer)');
+    RegisterMethodCheck(c, 'procedure GiveWaresEx(aHand: Integer; aType: TKMWareType; aCount: Integer)');
     RegisterMethodCheck(c, 'procedure GiveWeapons(aHand, aType, aCount: Integer)');
     RegisterMethodCheck(c, 'function  GiveWineField(aHand, X, Y: Integer): Boolean');
     RegisterMethodCheck(c, 'function  GiveWineFieldAged(aHand, X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean');
@@ -1536,6 +1537,7 @@ begin
       RegisterMethod(@TKMScriptActions.GiveHouseSiteEx,                         'GiveHouseSiteEx');
       RegisterMethod(@TKMScriptActions.GiveRoad,                                'GiveRoad');
       RegisterMethod(@TKMScriptActions.GiveWares,                               'GiveWares');
+      RegisterMethod(@TKMScriptActions.GiveWaresEx,                             'GiveWaresEx');
       RegisterMethod(@TKMScriptActions.GiveWeapons,                             'GiveWeapons');
       RegisterMethod(@TKMScriptActions.GiveWineField,                           'GiveWineField');
       RegisterMethod(@TKMScriptActions.GiveWineFieldAged,                       'GiveWineFieldAged');
