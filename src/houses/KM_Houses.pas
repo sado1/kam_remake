@@ -269,7 +269,7 @@ type
     function PickOrder: Byte;
     function CheckResToBuild: Boolean;
     function GetMaxInRes: Word;
-    procedure ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False); virtual; //override for School and etc..
+    procedure ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromStaticScript: Boolean = False); virtual; //override for School and etc..
     procedure ResAddToOut(aWare: TKMWareType; const aCount: Integer = 1);
     procedure ResAddToEitherFromScript(aWare: TKMWareType; aCount: Integer);
     procedure ResAddToBuild(aWare: TKMWareType; aCount: Integer = 1);
@@ -1596,7 +1596,7 @@ end;
 
 //Maybe it's better to rule out In/Out? No, it is required to separate what can be taken out of the house and what not.
 //But.. if we add "Evacuate" button to all house the separation becomes artificial..
-procedure TKMHouse.ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False);
+procedure TKMHouse.ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromStaticScript: Boolean = False);
 var
   I, ordersRemoved: Integer;
 begin
@@ -1605,12 +1605,12 @@ begin
   for I := 1 to 4 do
     if aWare = gResHouses[fType].ResInput[I] then
     begin
-      //Don't allow the script to overfill houses
-      if aFromScript then
+      //Don't allow the static script to overfill houses
+      if aFromStaticScript then
         aCount := EnsureRange(aCount, 0, GetMaxInRes - fResourceIn[I]);
       //ResDeliveryCnt stay same, because corresponding demand will be closed
       ResIn[I] := ResIn[I] + aCount;
-      if aFromScript then
+      if aFromStaticScript then
       begin
         ResDeliveryCnt[I] := ResDeliveryCnt[I] + aCount;
         ordersRemoved := gHands[Owner].Deliveries.Queue.TryRemoveDemand(Self, aWare, aCount);
