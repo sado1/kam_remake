@@ -66,6 +66,7 @@ type
     procedure GiveWares(aHand, aType, aCount: Integer);
     procedure GiveWaresEx(aHand: Integer; aType: TKMWareType; aCount: Integer);
     procedure GiveWeapons(aHand, aType, aCount: Integer);
+    procedure GiveWeaponsEx(aHand: Integer; aType: TKMWareType; aCount: Integer);
     function  GiveWinefield(aHand, X, Y: Integer): Boolean;
     function  GiveWinefieldAged(aHand, X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean;
 
@@ -1935,7 +1936,7 @@ end;
 
 //* Version: 5165
 //* Adds amount of weapons to players 1st Barracks
-//Weapons are added to first Barracks
+//* Weapons are added to first Barracks
 procedure TKMScriptActions.GiveWeapons(aHand, aType, aCount: Integer);
 var
   H: TKMHouse;
@@ -1943,9 +1944,9 @@ begin
   try
     //Verify all input parameters
     if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
-    and InRange(aCount, 0, High(Word))
-    and (aType in [Low(WARE_ID_TO_TYPE) .. High(WARE_ID_TO_TYPE)])
-    and (WARE_ID_TO_TYPE[aType] in [WARFARE_MIN .. WARFARE_MAX]) then
+      and InRange(aCount, 0, High(Word))
+      and (aType in [Low(WARE_ID_TO_TYPE) .. High(WARE_ID_TO_TYPE)])
+      and (WARE_ID_TO_TYPE[aType] in [WARFARE_MIN .. WARFARE_MAX]) then
     begin
       H := gHands[aHand].FindHouse(htBarracks, 1);
       if H <> nil then
@@ -1957,6 +1958,36 @@ begin
     end
     else
       LogIntParamWarn('Actions.GiveWeapons', [aHand, aType, aCount]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14000
+//* Adds amount of weapons to players 1st Barracks
+//* Weapons are added to first Barracks
+procedure TKMScriptActions.GiveWeaponsEx(aHand: Integer; aType: TKMWareType; aCount: Integer);
+var
+  H: TKMHouse;
+begin
+  try
+    //Verify all input parameters
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+      and InRange(aCount, 0, High(Word))
+      and (aType in WARES_WARFARE) then
+    begin
+      H := gHands[aHand].FindHouse(htBarracks, 1);
+      if H <> nil then
+      begin
+        H.ResAddToIn(aType, aCount);
+        gHands[aHand].Stats.WareProduced(aType, aCount);
+        gScriptEvents.ProcWareProduced(H, aType, aCount);
+      end;
+    end
+    else
+      LogParamWarn('Actions.GiveWeapons', [aHand, GetEnumName(TypeInfo(TKMWareType), Integer(aType)), aCount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
