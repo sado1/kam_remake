@@ -217,6 +217,7 @@ type
     procedure UnitAllowAllyToSelect(aUnitID: Integer; aAllow: Boolean);
     procedure UnitBlock(aHand: Byte; aType: Integer; aBlock: Boolean);
     function  UnitDirectionSet(aUnitID, aDirection: Integer): Boolean;
+    function  UnitDirectionSetEx(aUnitID: Integer; aDirection: TKMDirection): Boolean;
     procedure UnitDismiss(aUnitID: Integer);
     procedure UnitDismissableSet(aUnitID: Integer; aDismissable: Boolean);
     procedure UnitDismissCancel(aUnitID: Integer);
@@ -4455,6 +4456,35 @@ begin
     end
     else
       LogIntParamWarn('Actions.UnitDirectionSet', [aUnitID, aDirection]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14000
+//* Makes the specified unit face a certain direction.
+//* Note: Only works on idle units so as not to interfere with game logic and cause crashes.
+//* Returns true on success or false on failure.
+function TKMScriptActions.UnitDirectionSetEx(aUnitID: Integer; aDirection: TKMDirection): Boolean;
+var
+  U: TKMUnit;
+begin
+  Result := False;
+  try
+    if (aUnitID > 0) and (aDirection in [dirN..dirNW]) then
+    begin
+      U := fIDCache.GetUnit(aUnitID);
+      //Can only make idle units outside houses change direction so we don't mess up tasks and cause crashes
+      if (U <> nil) and U.IsIdle and U.Visible then
+      begin
+        Result := True;
+        U.Direction := aDirection;
+      end;
+    end
+    else
+      LogParamWarn('Actions.UnitDirectionSetEx', [aUnitID, GetEnumName(TypeInfo(TKMDirection), Integer(aDirection))]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
