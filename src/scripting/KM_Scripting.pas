@@ -825,6 +825,7 @@ begin
     RegisterMethodCheck(c, 'procedure LogLinesMaxCnt(aMaxLogLinesCnt: Integer)');
 
     RegisterMethodCheck(c, 'procedure MarketSetTrade(aMarketID, aFrom, aTo, aAmount: Integer)');
+    RegisterMethodCheck(c, 'procedure MarketSetTradeEx(aMarketID: Integer; aFrom, aTo: TKMWareType; aAmount: Integer)');
 
     RegisterMethodCheck(c, 'function MapTileHeightSet(X, Y, Height: Integer): Boolean');
     RegisterMethodCheck(c, 'function MapTileObjectSet(X, Y, Obj: Integer): Boolean');
@@ -1624,6 +1625,7 @@ begin
       RegisterMethod(@TKMScriptActions.MapTileOverlaySet,                       'MapTileOverlaySet');
 
       RegisterMethod(@TKMScriptActions.MarketSetTrade,                          'MarketSetTrade');
+      RegisterMethod(@TKMScriptActions.MarketSetTradeEx,                        'MarketSetTradeEx');
 
       RegisterMethod(@TKMScriptActions.OverlayTextAppend,                       'OverlayTextAppend');
       RegisterMethod(@TKMScriptActions.OverlayTextAppendFormatted,              'OverlayTextAppendFormatted');

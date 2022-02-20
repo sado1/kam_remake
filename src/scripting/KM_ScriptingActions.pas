@@ -155,6 +155,7 @@ type
     function MapTileOverlaySet(X, Y: Integer; aOverlay: TKMTileOverlay; aOverwrite: Boolean): Boolean;
 
     procedure MarketSetTrade(aMarketID, aFrom, aTo, aAmount: Integer);
+    procedure MarketSetTradeEx(aMarketID: Integer; aFrom, aTo: TKMWareType; aAmount: Integer);
 
     procedure OverlayTextSet(aHand: Shortint; const aText: AnsiString);
     procedure OverlayTextSetFormatted(aHand: Shortint; const aText: AnsiString; Params: array of const);
@@ -3889,6 +3890,44 @@ begin
     end
     else
       LogIntParamWarn('Actions.MarketSetTrade', [aMarketID, aFrom, aTo, aAmount]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14000
+//* Sets the trade in the specified market
+procedure TKMScriptActions.MarketSetTradeEx(aMarketID: Integer; aFrom, aTo: TKMWareType; aAmount: Integer);
+var
+  H: TKMHouse;
+begin
+  try
+    if (aMarketID > 0)
+      and (aFrom in WARES_VALID)
+      and (aTo in WARES_VALID) then
+    begin
+      H := fIDCache.GetHouse(aMarketID);
+      if (H is TKMHouseMarket)
+        and not H.IsDestroyed
+        and H.IsComplete
+        and TKMHouseMarket(H).AllowedToTrade(aFrom)
+        and TKMHouseMarket(H).AllowedToTrade(aTo) then
+      begin
+        if (TKMHouseMarket(H).ResFrom <> aFrom) or (TKMHouseMarket(H).ResTo <> aTo) then
+        begin
+          TKMHouseMarket(H).ResOrder[0] := 0; //First we must cancel the current trade
+          TKMHouseMarket(H).ResFrom := aFrom;
+          TKMHouseMarket(H).ResTo := aTo;
+        end;
+        TKMHouseMarket(H).ResOrder[0] := aAmount; //Set the new trade
+      end;
+    end
+    else
+      LogParamWarn('Actions.MarketSetTradeEx', [aMarketID,
+                                                GetEnumName(TypeInfo(TKMWareType), Integer(aFrom)),
+                                                GetEnumName(TypeInfo(TKMWareType), Integer(aTo)), aAmount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
