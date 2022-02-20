@@ -471,6 +471,8 @@ end;
 //* Version: 5345
 //* Sets ware distribution for the specified resource, house and player.
 //* aAmount: Distribution amount (0..5)
+//* Note: distribution should be set after 1st tick of the game,
+//* thus it will not make effect to use it in OnMissionStart event handler
 procedure TKMScriptActions.PlayerWareDistribution(aHand, aWareType, aHouseType, aAmount: Byte);
 begin
   try
@@ -2478,6 +2480,8 @@ end;
 //* Version: 14000
 //* Sets ware distribution for the specified resource, house and hand (player).
 //* aAmount: Distribution amount (0..5)
+//* Note: distribution should be set after 1st tick of the game,
+//* thus it will not make effect to use it in OnMissionStart event handler
 procedure TKMScriptActions.HandWareDistribution(aHand: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType; aAmount: Integer);
 begin
   try
