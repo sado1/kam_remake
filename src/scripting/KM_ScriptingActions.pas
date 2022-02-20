@@ -3279,7 +3279,8 @@ begin
   try
     Result := 0;
     if (aHouseID > 0)
-    and (aUnitType in [UNIT_TYPE_TO_ID[CITIZEN_MIN]..UNIT_TYPE_TO_ID[CITIZEN_MAX]]) then
+      and (aCount > 0)
+      and (aUnitType in [UNIT_TYPE_TO_ID[CITIZEN_MIN]..UNIT_TYPE_TO_ID[CITIZEN_MAX]]) then
     begin
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil)
@@ -3306,7 +3307,7 @@ var
 begin
   try
     Result := 0;
-    if (aHouseID > 0) and (aUnitType in UNITS_CITIZEN) then
+    if (aHouseID > 0) and (aCount > 0) and (aUnitType in UNITS_CITIZEN) then
     begin
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil)
