@@ -810,6 +810,7 @@ begin
     RegisterMethodCheck(c, 'procedure HouseTakeWaresFrom(aHouseID: Integer; aType, aCount: Integer)');
     RegisterMethodCheck(c, 'procedure HouseTakeWaresFromEx(aHouseID: Integer; aType: TKMWareType; aCount: Integer)');
     RegisterMethodCheck(c, 'function  HouseTownHallEquip(aHouseID: Integer; aUnitType: Integer; aCount: Integer): Integer');
+    RegisterMethodCheck(c, 'function  HouseTownHallEquipEx(aHouseID: Integer; aUnitType: TKMUnitType; aCount: Integer): Integer');
     RegisterMethodCheck(c, 'procedure HouseTownHallMaxGold(aHouseID: Integer; aMaxGold: Integer)');
     RegisterMethodCheck(c, 'procedure HouseUnlock(aHand, aHouseType: Integer)');
     RegisterMethodCheck(c, 'procedure HouseWoodcutterChopOnly(aHouseID: Integer; aChopOnly: Boolean)');
@@ -1592,6 +1593,7 @@ begin
       RegisterMethod(@TKMScriptActions.HouseTakeWaresFrom,                      'HouseTakeWaresFrom');
       RegisterMethod(@TKMScriptActions.HouseTakeWaresFromEx,                    'HouseTakeWaresFromEx');
       RegisterMethod(@TKMScriptActions.HouseTownHallEquip,                      'HouseTownHallEquip');
+      RegisterMethod(@TKMScriptActions.HouseTownHallEquipEx,                    'HouseTownHallEquipEx');
       RegisterMethod(@TKMScriptActions.HouseTownHallMaxGold,                    'HouseTownHallMaxGold');
       RegisterMethod(@TKMScriptActions.HouseUnlock,                             'HouseUnlock');
       RegisterMethod(@TKMScriptActions.HouseWoodcutterChopOnly,                 'HouseWoodcutterChopOnly');

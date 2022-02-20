@@ -124,6 +124,7 @@ type
     procedure HouseTakeWaresFrom(aHouseID: Integer; aType, aCount: Integer);
     procedure HouseTakeWaresFromEx(aHouseID: Integer; aType: TKMWareType; aCount: Integer);
     function  HouseTownHallEquip(aHouseID: Integer; aUnitType: Integer; aCount: Integer): Integer;
+    function  HouseTownHallEquipEx(aHouseID: Integer; aUnitType: TKMUnitType; aCount: Integer): Integer;
     procedure HouseTownHallMaxGold(aHouseID: Integer; aMaxGold: Integer);
     procedure HouseUnlock(aHand, aHouseType: Integer);
     procedure HouseWoodcutterChopOnly(aHouseID: Integer; aChopOnly: Boolean);
@@ -2779,8 +2780,7 @@ begin
   try
     Result := 0;
     if (aHouseID > 0)
-      and ((aUnitType = UNIT_TYPE_TO_ID[utMilitia])
-        or (aUnitType in [UNIT_TYPE_TO_ID[WARRIOR_EQUIPABLE_TH_MIN]..UNIT_TYPE_TO_ID[WARRIOR_EQUIPABLE_TH_MAX]])) then
+      and (aUnitType in [UNIT_TYPE_TO_ID[WARRIOR_EQUIPABLE_TH_MIN]..UNIT_TYPE_TO_ID[WARRIOR_EQUIPABLE_TH_MAX]]) then
     begin
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil) and (H is TKMHouseTownHall) and not H.IsDestroyed and H.IsComplete then
@@ -2788,6 +2788,31 @@ begin
     end
     else
       LogIntParamWarn('Actions.HouseTownHallEquip', [aHouseID, aUnitType]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14000
+//* Equips the specified unit from the specified TownHall.
+//* Returns the number of units successfully equipped.
+function TKMScriptActions.HouseTownHallEquipEx(aHouseID: Integer; aUnitType: TKMUnitType; aCount: Integer): Integer;
+var
+  H: TKMHouse;
+begin
+  try
+    Result := 0;
+    if (aHouseID > 0)
+      and (aUnitType in [WARRIOR_EQUIPABLE_TH_MIN..WARRIOR_EQUIPABLE_TH_MAX]) then
+    begin
+      H := fIDCache.GetHouse(aHouseID);
+      if (H <> nil) and (H is TKMHouseTownHall) and not H.IsDestroyed and H.IsComplete then
+        Result := TKMHouseTownHall(H).Equip(aUnitType, aCount);
+    end
+    else
+      LogParamWarn('Actions.HouseTownHallEquipEx', [aHouseID, GetEnumName(TypeInfo(TKMUnitType), Integer(aUnitType))]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
