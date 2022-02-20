@@ -206,7 +206,7 @@ var
 begin
   for EVT := Low(TKMScriptEventType) to High(TKMScriptEventType) do
     // evtTick - > OnTick
-    AddEventHandlerName(EVT, StringReplace(GetEnumName(TypeInfo(TKMScriptEventType), Integer(EVT)), 'evt', 'On', []));
+    AddEventHandlerName(EVT, AnsiString(StringReplace(GetEnumName(TypeInfo(TKMScriptEventType), Integer(EVT)), 'evt', 'On', [])));
 end;
 
 
