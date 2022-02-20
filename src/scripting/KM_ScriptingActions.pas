@@ -2444,7 +2444,7 @@ end;
 
 //* Version: 14000
 //* Sets whether the player is allowed to trade the specified resource.
-//* if aHand = -1, then apply it to all hands
+//* if aHand = -1, then apply it to all hands (players)
 procedure TKMScriptActions.HandTradeAllowed(aHand: Integer; aWareType: TKMWareType; aAllowed: Boolean);
 var
   I: Integer;
@@ -2474,12 +2474,24 @@ end;
 
 //* Version: 14000
 //* Sets whether the specified player can train/equip the specified unit type
+//* if aHand = -1, then apply it to all hands (players)
 procedure TKMScriptActions.HandUnitCanTrain(aHand: Integer; aUnitType: TKMUnitType; aCanTrain: Boolean);
+var
+  I: Integer;
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+    if ((aHand = -1) or (InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)))
       and (aUnitType in UNITS_VALID) then
-      gHands[aHand].Locks.SetUnitBlocked(not aCanTrain, aUnitType)
+    begin
+      if aHand = HAND_NONE then
+      begin
+        for I := 0 to gHands.Count - 1 do
+          if gHands[I].Enabled then
+            gHands[I].Locks.SetUnitBlocked(not aCanTrain, aUnitType);
+      end
+      else
+        gHands[aHand].Locks.SetUnitBlocked(not aCanTrain, aUnitType);
+    end
     else
       LogParamWarn('Actions.HandUnitCanTrain', [aHand, GetEnumName(TypeInfo(TKMUnitType), Integer(aUnitType)), BoolToStr(aCanTrain, True)]);
   except
