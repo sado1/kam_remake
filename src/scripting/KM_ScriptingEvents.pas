@@ -804,8 +804,8 @@ end;
 //* aHouseType as TKMHouseType
 procedure TKMScriptEvents.ProcHousePlanPlacedEx(aPlayer: TKMHandID; aX, aY: Integer; aHouseType: TKMHouseType);
 begin
-  if MethodAssigned(evtHousePlanPlaced) then
-    CallEventHandlers(evtHousePlanPlaced, [aPlayer, aX, aY, Ord(aHouseType)]);
+  if MethodAssigned(evtHousePlanPlacedEx) then
+    CallEventHandlers(evtHousePlanPlacedEx, [aPlayer, aX, aY, Ord(aHouseType)]);
 end;
 
 
