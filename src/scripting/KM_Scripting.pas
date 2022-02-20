@@ -762,6 +762,7 @@ begin
     RegisterMethodCheck(c, 'function  GiveHouseSiteEx(aHand: Integer; aHouseType: TKMHouseType; X, Y, aWoodAmount, aStoneAmount: Integer): Integer');
     RegisterMethodCheck(c, 'function  GiveRoad(aHand, X, Y: Integer): Boolean');
     RegisterMethodCheck(c, 'function  GiveUnit(aHand, aType, X,Y, aDir: Integer): Integer');
+    RegisterMethodCheck(c, 'function  GiveUnitEx(aHand: Integer; aType: TKMUnitType; X,Y: Integer; aDir: TKMDirection): Integer');
     RegisterMethodCheck(c, 'procedure GiveWares(aHand, aType, aCount: Integer)');
     RegisterMethodCheck(c, 'procedure GiveWaresEx(aHand: Integer; aType: TKMWareType; aCount: Integer)');
     RegisterMethodCheck(c, 'procedure GiveWeapons(aHand, aType, aCount: Integer)');
@@ -1558,6 +1559,7 @@ begin
       RegisterMethod(@TKMScriptActions.GiveGroup,                               'GiveGroup');
       RegisterMethod(@TKMScriptActions.GiveGroupEx,                             'GiveGroupEx');
       RegisterMethod(@TKMScriptActions.GiveUnit,                                'GiveUnit');
+      RegisterMethod(@TKMScriptActions.GiveUnitEx,                              'GiveUnitEx');
       RegisterMethod(@TKMScriptActions.GiveHouse,                               'GiveHouse');
       RegisterMethod(@TKMScriptActions.GiveHouseEx,                             'GiveHouseEx');
       RegisterMethod(@TKMScriptActions.GiveHouseSite,                           'GiveHouseSite');

@@ -64,6 +64,7 @@ type
     function  GiveHouseSite(aHand, aHouseType, X, Y: Integer; aAddMaterials: Boolean): Integer;
     function  GiveHouseSiteEx(aHand: Integer; aHouseType: TKMHouseType; X, Y, aWoodAmount, aStoneAmount: Integer): Integer;
     function  GiveUnit(aHand, aType, X,Y, aDir: Integer): Integer;
+    function  GiveUnitEx(aHand: Integer; aType: TKMUnitType; X,Y: Integer; aDir: TKMDirection): Integer;
     function  GiveRoad(aHand, X, Y: Integer): Boolean;
     procedure GiveWares(aHand, aType, aCount: Integer);
     procedure GiveWaresEx(aHand: Integer; aType: TKMWareType; aCount: Integer);
@@ -1047,6 +1048,36 @@ begin
     end
     else
       LogIntParamWarn('Actions.GiveUnit', [aHand, aType, X, Y, aDir]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14000
+//* Give player a single citizen and returns the unit ID or -1 if the unit was not able to be added
+function TKMScriptActions.GiveUnitEx(aHand: Integer; aType: TKMUnitType; X,Y: Integer; aDir: TKMDirection): Integer;
+var
+  U: TKMUnit;
+begin
+  try
+    Result := UID_NONE;
+
+    //Verify all input parameters
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+    and (aType in UNITS_CITIZEN)
+    and gTerrain.TileInMapCoords(X, Y)
+    and (aDir in [dirN .. dirNW]) then
+    begin
+      U := gHands[aHand].AddUnit(aType, KMPoint(X,Y));
+      if U = nil then Exit;
+      Result := U.UID;
+      U.Direction := aDir;
+    end
+    else
+      LogParamWarn('Actions.GiveUnitEx', [aHand, GetEnumName(TypeInfo(TKMUnitType), Integer(aType)),
+                                          X, Y, GetEnumName(TypeInfo(TKMDirection), Integer(aDir))]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
