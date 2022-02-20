@@ -645,6 +645,7 @@ const
   ANIMAL_MAX = utDuck;
 
   UNITS_VALID = [UNIT_MIN..UNIT_MAX];
+  UNITS_CITIZEN = [CITIZEN_MIN..CITIZEN_MAX];
   UNITS_HUMAN = [HUMANS_MIN..HUMANS_MAX];
 
   WARRIORS_IRON = [utSwordsman, utArbaletman, utHallebardman, utCavalry];
