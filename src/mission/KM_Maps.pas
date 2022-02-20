@@ -122,8 +122,8 @@ type
 
     class function CreateDummy: TKMMapInfo;
 
-    constructor Create(const aMapName: string; aStrictParsing: Boolean; aMapKind: TKMMapKind); overload;
-    constructor Create(const aDir, aMapName: string; aStrictParsing: Boolean; aMapKind: TKMMapKind = mkUnknown); overload;
+    constructor Create(const aMapName: string; aStrictParsing: Boolean; aMapKind: TKMMapKind; aSilent: Boolean = False); overload;
+    constructor Create(const aDir, aMapName: string; aStrictParsing: Boolean; aMapKind: TKMMapKind = mkUnknown; aSilent: Boolean = False); overload;
     destructor Destroy; override;
 
     procedure AddGoal(aType: TKMGoalType; aPlayer: TKMHandID; aCondition: TKMGoalCondition; aStatus: TKMGoalStatus; aPlayerIndex: TKMHandID);
@@ -285,14 +285,14 @@ begin
 end;
 
 
-constructor TKMMapInfo.Create(const aMapName: string; aStrictParsing: Boolean; aMapKind: TKMMapKind);
+constructor TKMMapInfo.Create(const aMapName: string; aStrictParsing: Boolean; aMapKind: TKMMapKind; aSilent: Boolean = False);
 begin
   Assert(aMapKind <> mkUnknown); // Do not allow to create 'unknown' maps with this constructor
-  Create(ExeDir + MAP_FOLDER_NAME[aMapKind] + PathDelim + aMapName + PathDelim, aMapName, aStrictParsing, aMapKind);
+  Create(ExeDir + MAP_FOLDER_NAME[aMapKind] + PathDelim + aMapName + PathDelim, aMapName, aStrictParsing, aMapKind, aSilent);
 end;
 
 
-constructor TKMMapInfo.Create(const aDir, aMapName: string; aStrictParsing: Boolean; aMapKind: TKMMapKind = mkUnknown);
+constructor TKMMapInfo.Create(const aDir, aMapName: string; aStrictParsing: Boolean; aMapKind: TKMMapKind = mkUnknown; aSilent: Boolean = False);
 
   function GetLIBXCRC(const aSearchFile: UnicodeString): Cardinal;
   var
@@ -364,7 +364,7 @@ begin
     if FileExists(scriptFile) then
     begin
       othersCRC := othersCRC xor Adler32CRC(scriptFile);
-      scriptPreProcessor := TKMScriptPreProcessor.Create;
+      scriptPreProcessor := TKMScriptPreProcessor.Create(nil, aSilent);
       try
         if scriptPreProcessor.PreProcessFile(scriptFile) then
         begin

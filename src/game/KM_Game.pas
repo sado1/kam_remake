@@ -1586,7 +1586,9 @@ begin
   if DetermineMapKind(GetFileDirName(ExtractFileDir(aPathName)), mapKind) then
   begin
     // Update GameSettings for saved maps positions in list on MapEd menu
-    mapInfo := TKMMapInfo.Create(GetFileDirName(aPathName), True, mapKind); //Force recreate map CRC
+    // Force recreate map CRC
+    // Run silently... (no need to spam to the log if there are preprocessing errors)
+    mapInfo := TKMMapInfo.Create(GetFileDirName(aPathName), True, mapKind, True);
     try
       case mapInfo.Kind of
         mkSP:       begin
