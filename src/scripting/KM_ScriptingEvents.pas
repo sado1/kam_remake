@@ -56,11 +56,17 @@ type
     procedure ProcHouseAfterDestroyed(aHouseType: Integer; aOwner: TKMHandID; aX, aY: Integer);
     procedure ProcHouseAfterDestroyedEx(aHouseType: TKMHouseType; aOwner: TKMHandID; aX, aY: Integer);
 
-    procedure ProcHousePlanPlaced(aPlayer: TKMHandID; aX, aY, aType: Integer);
-    procedure ProcHousePlanPlacedEx(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
+    procedure ProcHousePlanPlaced(aPlayer: TKMHandID; aX, aY, aHouseType: Integer);
+    procedure ProcHousePlanPlacedEx(aPlayer: TKMHandID; aX, aY: Integer; aHouseType: TKMHouseType);
 
-    procedure ProcHousePlanRemoved(aPlayer: TKMHandID; aX, aY, aType: Integer);
-    procedure ProcHousePlanRemovedEx(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
+    procedure ProcHousePlanRemoved(aPlayer: TKMHandID; aX, aY, aHouseType: Integer);
+    procedure ProcHousePlanRemovedEx(aPlayer: TKMHandID; aX, aY: Integer; aHouseType: TKMHouseType);
+
+    procedure ProcMarketTrade(aMarket: TKMHouse; aFrom, aTo: Integer);
+    procedure ProcMarketTradeEx(aMarket: TKMHouse; aFrom, aTo: TKMWareType);
+
+    procedure ProcUnitAfterDied(aUnitType: Integer; aOwner: TKMHandID; aX, aY: Integer);
+    procedure ProcUnitAfterDiedEx(aUnitType: TKMUnitType; aOwner: TKMHandID; aX, aY: Integer);
   public
     ExceptionOutsideScript: Boolean; //Flag that the exception occured in a State or Action call not script
 
@@ -101,7 +107,7 @@ type
     procedure ProcGroupOrderMove(aGroup: TKMUnitGroup; aX, aY: Integer);
     procedure ProcGroupOrderLink(aGroup1, aGroup2: TKMUnitGroup);
     procedure ProcGroupOrderSplit(aGroup, aNewGroup: TKMUnitGroup);
-    procedure ProcMarketTrade(aMarket: TKMHouse; aFrom, aTo: TKMWareType);
+    procedure EventMarketTrade(aMarket: TKMHouse; aFrom, aTo: TKMWareType);
     procedure ProcMissionStart;
     procedure ProcPeacetimeEnd;
     procedure ProcPlanRoadDigged(aPlayer: TKMHandID; aX, aY: Integer);
@@ -116,7 +122,7 @@ type
     procedure ProcPlayerVictory(aPlayer: TKMHandID);
     procedure ProcRoadBuilt(aPlayer: TKMHandID; aX, aY: Integer);
     procedure ProcTick;
-    procedure ProcUnitAfterDied(aUnitType: TKMUnitType; aOwner: TKMHandID; aX, aY: Integer);
+    procedure EventUnitAfterDied(aUnitType: TKMUnitType; aOwner: TKMHandID; aX, aY: Integer);
     procedure ProcUnitAttacked(aUnit, aAttacker: TKMUnit);
     procedure ProcUnitDied(aUnit: TKMUnit; aKillerOwner: TKMHandID);
     procedure ProcUnitTrained(aUnit: TKMUnit);
@@ -594,13 +600,34 @@ end;
 
 //* Version: 6216
 //* Occurs when a trade happens in a market (at the moment when resources are exchanged by serfs).
-procedure TKMScriptEvents.ProcMarketTrade(aMarket: TKMHouse; aFrom, aTo: TKMWareType);
+//* aFrom, aTo as Integer from Lookup table
+procedure TKMScriptEvents.ProcMarketTrade(aMarket: TKMHouse; aFrom, aTo: Integer);
 begin
   if MethodAssigned(evtMarketTrade) then
   begin
     fIDCache.CacheHouse(aMarket, aMarket.UID); //Improves cache efficiency since aMarket will probably be accessed soon
-    CallEventHandlers(evtMarketTrade, [aMarket.UID, WARE_TY_TO_ID[aFrom], WARE_TY_TO_ID[aTo]]);
+    CallEventHandlers(evtMarketTrade, [aMarket.UID, aFrom, aTo]);
   end;
+end;
+
+
+//* Version: 14000
+//* Occurs when a trade happens in a market (at the moment when resources are exchanged by serfs).
+//* aFrom, aTo as TKMWareType
+procedure TKMScriptEvents.ProcMarketTradeEx(aMarket: TKMHouse; aFrom, aTo: TKMWareType);
+begin
+  if MethodAssigned(evtMarketTradeEx) then
+  begin
+    fIDCache.CacheHouse(aMarket, aMarket.UID); //Improves cache efficiency since aMarket will probably be accessed soon
+    CallEventHandlers(evtMarketTradeEx, [aMarket.UID, Ord(aFrom), Ord(aTo)]);
+  end;
+end;
+
+
+procedure TKMScriptEvents.EventMarketTrade(aMarket: TKMHouse; aFrom, aTo: TKMWareType);
+begin
+  ProcMarketTrade(aMarket, WARE_TY_TO_ID[aFrom], WARE_TY_TO_ID[aTo]);
+  ProcMarketTradeEx(aMarket, aFrom, aTo);
 end;
 
 
@@ -723,6 +750,7 @@ end;
 //* Occurs after a house is destroyed and has been completely removed from the game,
 //* meaning the area it previously occupied can be used.
 //* If you need more information about the house use the OnHouseDestroyed event.
+//* aHouseType as Integer from Lookup table
 procedure TKMScriptEvents.ProcHouseAfterDestroyed(aHouseType: Integer; aOwner: TKMHandID; aX, aY: Integer);
 begin
   if MethodAssigned(evtHouseAfterDestroyed) then
@@ -734,6 +762,7 @@ end;
 //* Occurs after a house is destroyed and has been completely removed from the game,
 //* meaning the area it previously occupied can be used.
 //* If you need more information about the house use the OnHouseDestroyed event.
+//* aHouseType as TKMHouseType
 procedure TKMScriptEvents.ProcHouseAfterDestroyedEx(aHouseType: TKMHouseType; aOwner: TKMHandID; aX, aY: Integer);
 begin
   if MethodAssigned(evtHouseAfterDestroyedEx) then
@@ -762,19 +791,21 @@ end;
 
 //* Version: 5871
 //* Occurs when player has placed a house plan.
-procedure TKMScriptEvents.ProcHousePlanPlaced(aPlayer: TKMHandID; aX, aY, aType: Integer);
+//* aHouseType as Integer from Lookup table
+procedure TKMScriptEvents.ProcHousePlanPlaced(aPlayer: TKMHandID; aX, aY, aHouseType: Integer);
 begin
   if MethodAssigned(evtHousePlanPlaced) then
-    CallEventHandlers(evtHousePlanPlaced, [aPlayer, aX, aY, aType]);
+    CallEventHandlers(evtHousePlanPlaced, [aPlayer, aX, aY, aHouseType]);
 end;
 
 
 //* Version: 14000
 //* Occurs when player has placed a house plan.
-procedure TKMScriptEvents.ProcHousePlanPlacedEx(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
+//* aHouseType as TKMHouseType
+procedure TKMScriptEvents.ProcHousePlanPlacedEx(aPlayer: TKMHandID; aX, aY: Integer; aHouseType: TKMHouseType);
 begin
   if MethodAssigned(evtHousePlanPlaced) then
-    CallEventHandlers(evtHousePlanPlaced, [aPlayer, aX, aY, Ord(aType)]);
+    CallEventHandlers(evtHousePlanPlaced, [aPlayer, aX, aY, Ord(aHouseType)]);
 end;
 
 
@@ -787,19 +818,21 @@ end;
 
 //* Version: 6298
 //* Occurs when player has removed a house plan.
-procedure TKMScriptEvents.ProcHousePlanRemoved(aPlayer: TKMHandID; aX, aY, aType: Integer);
+//* aHouseType as Integer from Lookup table
+procedure TKMScriptEvents.ProcHousePlanRemoved(aPlayer: TKMHandID; aX, aY, aHouseType: Integer);
 begin
   if MethodAssigned(evtHousePlanRemoved) then
-    CallEventHandlers(evtHousePlanRemoved, [aPlayer, aX, aY, aType]);
+    CallEventHandlers(evtHousePlanRemoved, [aPlayer, aX, aY, aHouseType]);
 end;
 
 
 //* Version: 14000
 //* Occurs when player has removed a house plan.
-procedure TKMScriptEvents.ProcHousePlanRemovedEx(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
+//* aHouseType as TKMHouseType
+procedure TKMScriptEvents.ProcHousePlanRemovedEx(aPlayer: TKMHandID; aX, aY: Integer; aHouseType: TKMHouseType);
 begin
   if MethodAssigned(evtHousePlanRemovedEx) then
-    CallEventHandlers(evtHousePlanRemovedEx, [aPlayer, aX, aY, Ord(aType)]);
+    CallEventHandlers(evtHousePlanRemovedEx, [aPlayer, aX, aY, Ord(aHouseType)]);
 end;
 
 
@@ -955,10 +988,30 @@ end;
 //* Occurs after a unit has died and has been completely removed from the game, meaning the tile it previously occupied can be used.
 //* If you need more information about the unit use the OnUnitDied event.
 //* Note: Because units have a death animation there is a delay of several ticks between OnUnitDied and OnUnitAfterDied.
-procedure TKMScriptEvents.ProcUnitAfterDied(aUnitType: TKMUnitType; aOwner: TKMHandID; aX, aY: Integer);
+//* aUnitType as Integer from Lookup table
+procedure TKMScriptEvents.ProcUnitAfterDied(aUnitType: Integer; aOwner: TKMHandID; aX, aY: Integer);
 begin
   if MethodAssigned(evtUnitAfterDied) then
-    CallEventHandlers(evtUnitAfterDied, [UNIT_TYPE_TO_ID[aUnitType], aOwner, aX, aY]);
+    CallEventHandlers(evtUnitAfterDied, [aUnitType, aOwner, aX, aY]);
+end;
+
+
+//* Version: 14000
+//* Occurs after a unit has died and has been completely removed from the game, meaning the tile it previously occupied can be used.
+//* If you need more information about the unit use the OnUnitDied event.
+//* Note: Because units have a death animation there is a delay of several ticks between OnUnitDied and OnUnitAfterDied.
+//* aUnitType as TKMHouseType
+procedure TKMScriptEvents.ProcUnitAfterDiedEx(aUnitType: TKMUnitType; aOwner: TKMHandID; aX, aY: Integer);
+begin
+  if MethodAssigned(evtUnitAfterDiedEx) then
+    CallEventHandlers(evtUnitAfterDiedEx, [Ord(aUnitType), aOwner, aX, aY]);
+end;
+
+
+procedure TKMScriptEvents.EventUnitAfterDied(aUnitType: TKMUnitType; aOwner: TKMHandID; aX, aY: Integer);
+begin
+  ProcUnitAfterDied(UNIT_TYPE_TO_ID[aUnitType], aOwner, aX, aY);
+  ProcUnitAfterDiedEx(aUnitType, aOwner, aX, aY);
 end;
 
 
