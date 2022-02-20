@@ -112,6 +112,7 @@ type
     function  HouseBarracksEquip(aHouseID: Integer; aUnitType: Integer; aCount: Integer): Integer;
     function  HouseBarracksEquipEx(aHouseID: Integer; aUnitType: TKMUnitType; aCount: Integer): Integer;
     procedure HouseBarracksGiveRecruit(aHouseID: Integer);
+    procedure HouseBarracksGiveRecruits(aHouseID, aCount: Integer);
     procedure HouseDestroy(aHouseID: Integer; aSilent: Boolean);
     procedure HouseDeliveryBlock(aHouseID: Integer; aDeliveryBlocked: Boolean);
     procedure HouseDeliveryMode(aHouseID: Integer; aDeliveryMode: TKMDeliveryMode);
@@ -3159,6 +3160,34 @@ begin
     end
     else
       LogIntParamWarn('Actions.HouseBarracksGiveRecruit', [aHouseID]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14000
+//* Adds aCount recruits inside the specified barracks
+procedure TKMScriptActions.HouseBarracksGiveRecruits(aHouseID, aCount: Integer);
+var
+  I: Integer;
+  H: TKMHouse;
+begin
+  try
+    aCount := EnsureRange(aCount, 0, High(Word));
+    if aHouseID > 0 then
+    begin
+      H := fIDCache.GetHouse(aHouseID);
+      if (H <> nil)
+        and (H is TKMHouseBarracks)
+        and not H.IsDestroyed
+        and H.IsComplete then
+        for I := 0 to aCount - 1 do
+          TKMHouseBarracks(H).CreateRecruitInside(False);
+    end
+    else
+      LogIntParamWarn('Actions.HouseBarracksGiveRecruits', [aHouseID, aCount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
