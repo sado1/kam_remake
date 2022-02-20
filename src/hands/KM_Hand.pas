@@ -1305,7 +1305,7 @@ begin
 
   fConstructions.HousePlanList.RemPlan(Position);
   fStats.HousePlanRemoved(hPlan.HouseType);
-  gScriptEvents.ProcHousePlanRemoved(fID, hPlan.Loc.X, hPlan.Loc.Y, hPlan.HouseType);
+  gScriptEvents.EventHousePlanRemoved(fID, hPlan.Loc.X, hPlan.Loc.Y, hPlan.HouseType);
   if (ID = gMySpectator.HandID) and not gGameParams.IsReplayOrSpectate then
     gSoundPlayer.Play(sfxClick);
 end;

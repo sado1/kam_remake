@@ -15,6 +15,7 @@ type
     evtHousePlanPlaced,
     evtHousePlanPlacedEx,
     evtHousePlanRemoved,
+    evtHousePlanRemovedEx,
     evtHouseDamaged,
     evtHouseDestroyed,
     evtHouseRepaired,

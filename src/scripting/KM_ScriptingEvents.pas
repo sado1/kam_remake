@@ -58,6 +58,9 @@ type
 
     procedure ProcHousePlanPlaced(aPlayer: TKMHandID; aX, aY, aType: Integer);
     procedure ProcHousePlanPlacedEx(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
+
+    procedure ProcHousePlanRemoved(aPlayer: TKMHandID; aX, aY, aType: Integer);
+    procedure ProcHousePlanRemovedEx(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
   public
     ExceptionOutsideScript: Boolean; //Flag that the exception occured in a State or Action call not script
 
@@ -85,7 +88,7 @@ type
     procedure ProcHouseBuilt(aHouse: TKMHouse);
     procedure ProcHousePlanDigged(aHouse: TKMHouse);
     procedure EventHousePlanPlaced(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
-    procedure ProcHousePlanRemoved(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
+    procedure EventHousePlanRemoved(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
     procedure ProcHouseDamaged(aHouse: TKMHouse; aAttacker: TKMUnit);
     procedure ProcHouseDestroyed(aHouse: TKMHouse; aDestroyerIndex: TKMHandID);
     procedure ProcHouseRepaired(aHouse: TKMHouse; aRepairAmount, aDamage: Integer);
@@ -784,10 +787,26 @@ end;
 
 //* Version: 6298
 //* Occurs when player has removed a house plan.
-procedure TKMScriptEvents.ProcHousePlanRemoved(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
+procedure TKMScriptEvents.ProcHousePlanRemoved(aPlayer: TKMHandID; aX, aY, aType: Integer);
 begin
   if MethodAssigned(evtHousePlanRemoved) then
-    CallEventHandlers(evtHousePlanRemoved, [aPlayer, aX + gResHouses[aType].EntranceOffsetX, aY, HOUSE_TYPE_TO_ID[aType] - 1]);
+    CallEventHandlers(evtHousePlanRemoved, [aPlayer, aX, aY, aType]);
+end;
+
+
+//* Version: 14000
+//* Occurs when player has removed a house plan.
+procedure TKMScriptEvents.ProcHousePlanRemovedEx(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
+begin
+  if MethodAssigned(evtHousePlanRemovedEx) then
+    CallEventHandlers(evtHousePlanRemovedEx, [aPlayer, aX, aY, Ord(aType)]);
+end;
+
+
+procedure TKMScriptEvents.EventHousePlanRemoved(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
+begin
+  ProcHousePlanRemoved(aPlayer, aX + gResHouses[aType].EntranceOffsetX, aY, HOUSE_TYPE_TO_ID[aType] - 1);
+  ProcHousePlanRemovedEx(aPlayer, aX + gResHouses[aType].EntranceOffsetX, aY, aType);
 end;
 
 
