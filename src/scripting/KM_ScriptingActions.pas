@@ -1010,9 +1010,6 @@ begin
       if U = nil then Exit;
       Result := U.UID;
       U.Direction := TKMDirection(aDir + 1);
-      //Make sure the unit is not locked so the script can use commands like UnitOrderWalk.
-      //By default newly created units are given SetActionLockedStay
-      U.SetActionStay(10, uaWalk);
     end
     else
       LogIntParamWarn('Actions.GiveUnit', [aHand, aType, X, Y, aDir]);

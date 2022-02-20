@@ -1160,7 +1160,11 @@ begin
   fHitPointCounter := 1;
   HitPointsInvulnerable := False;
 
-  SetActionLockedStay(10, uaWalk); //Must be locked for this initial pause so animals don't get pushed
+  //Must be locked for this initial pause so animals don't get pushed
+  if IsAnimal then
+    SetActionLockedStay(10, uaWalk)
+  else
+    SetActionStay(10, uaWalk);
 
   // Use SetInHouse for a safe unit pointers operation
   SetInHouse(aInHouse);
