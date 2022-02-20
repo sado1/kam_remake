@@ -1261,7 +1261,7 @@ begin
 
   fConstructions.HousePlanList.AddPlan(aHouseType, loc);
   fStats.HousePlanned(aHouseType);
-  gScriptEvents.ProcHousePlanPlaced(fID, loc.X, loc.Y, aHouseType);
+  gScriptEvents.EventHousePlanPlaced(fID, loc.X, loc.Y, aHouseType);
 
   if (ID = gMySpectator.HandID) and not gGameParams.IsReplayOrSpectate then
     gSoundPlayer.Play(sfxPlacemarker);

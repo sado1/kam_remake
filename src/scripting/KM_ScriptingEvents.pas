@@ -53,6 +53,11 @@ type
     function MethodAssigned(aEventType: TKMScriptEventType): Boolean; overload; inline;
     function MethodAssigned(const aCmdName: AnsiString): Boolean; overload; inline;
 
+    procedure ProcHouseAfterDestroyed(aHouseType: Integer; aOwner: TKMHandID; aX, aY: Integer);
+    procedure ProcHouseAfterDestroyedEx(aHouseType: TKMHouseType; aOwner: TKMHandID; aX, aY: Integer);
+
+    procedure ProcHousePlanPlaced(aPlayer: TKMHandID; aX, aY, aType: Integer);
+    procedure ProcHousePlanPlacedEx(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
   public
     ExceptionOutsideScript: Boolean; //Flag that the exception occured in a State or Action call not script
 
@@ -76,10 +81,10 @@ type
 
     procedure ProcBeacon(aPlayer: TKMHandID; aX, aY: Integer);
     procedure ProcFieldBuilt(aPlayer: TKMHandID; aX, aY: Integer);
-    procedure ProcHouseAfterDestroyed(aHouseType: TKMHouseType; aOwner: TKMHandID; aX, aY: Integer);
+    procedure EventHouseAfterDestroyed(aHouseType: TKMHouseType; aOwner: TKMHandID; aX, aY: Integer);
     procedure ProcHouseBuilt(aHouse: TKMHouse);
     procedure ProcHousePlanDigged(aHouse: TKMHouse);
-    procedure ProcHousePlanPlaced(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
+    procedure EventHousePlanPlaced(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
     procedure ProcHousePlanRemoved(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
     procedure ProcHouseDamaged(aHouse: TKMHouse; aAttacker: TKMUnit);
     procedure ProcHouseDestroyed(aHouse: TKMHouse; aDestroyerIndex: TKMHandID);
@@ -196,50 +201,12 @@ end;
 
 
 procedure TKMScriptEvents.AddDefaultEventHandlersNames;
+var
+  EVT: TKMScriptEventType;
 begin
-  AddEventHandlerName(evtBeacon,                'OnBeacon');
-  AddEventHandlerName(evtFieldBuilt,            'OnFieldBuilt');
-  AddEventHandlerName(evtHouseAfterDestroyed,   'OnHouseAfterDestroyed');
-  AddEventHandlerName(evtHouseBuilt,            'OnHouseBuilt');
-  AddEventHandlerName(evtHousePlanDigged,       'OnHousePlanDigged');
-  AddEventHandlerName(evtHousePlanPlaced,       'OnHousePlanPlaced');
-  AddEventHandlerName(evtHousePlanRemoved,      'OnHousePlanRemoved');
-  AddEventHandlerName(evtHouseDamaged,          'OnHouseDamaged');
-  AddEventHandlerName(evtHouseDestroyed,        'OnHouseDestroyed');
-  AddEventHandlerName(evtHouseRepaired,         'OnHouseRepaired');
-  AddEventHandlerName(evtHouseWareCountChanged, 'OnHouseWareCountChanged');
-  AddEventHandlerName(evtGameSpeedChanged,      'OnGameSpeedChanged');
-  AddEventHandlerName(evtGroupHungry,           'OnGroupHungry');
-  AddEventHandlerName(evtGroupOrderAttackHouse, 'OnGroupOrderAttackHouse');
-  AddEventHandlerName(evtGroupOrderAttackUnit,  'OnGroupOrderAttackUnit');
-  AddEventHandlerName(evtGroupBeforeOrderSplit, 'OnGroupBeforeOrderSplit');
-  AddEventHandlerName(evtGroupOrderMove,        'OnGroupOrderMove');
-  AddEventHandlerName(evtGroupOrderLink,        'OnGroupOrderLink');
-  AddEventHandlerName(evtGroupOrderSplit,       'OnGroupOrderSplit');
-  AddEventHandlerName(evtMarketTrade,           'OnMarketTrade');
-  AddEventHandlerName(evtMissionStart,          'OnMissionStart');
-  AddEventHandlerName(evtPeacetimeEnd,          'OnPeacetimeEnd');
-  AddEventHandlerName(evtPlanRoadDigged,        'OnPlanRoadDigged');
-  AddEventHandlerName(evtPlanRoadPlaced,        'OnPlanRoadPlaced');
-  AddEventHandlerName(evtPlanRoadRemoved,       'OnPlanRoadRemoved');
-  AddEventHandlerName(evtPlanFieldPlaced,       'OnPlanFieldPlaced');
-  AddEventHandlerName(evtPlanFieldRemoved,      'OnPlanFieldRemoved');
-  AddEventHandlerName(evtPlanWinefieldDigged,   'OnPlanWinefieldDigged');
-  AddEventHandlerName(evtPlanWinefieldPlaced,   'OnPlanWinefieldPlaced');
-  AddEventHandlerName(evtPlanWinefieldRemoved,  'OnPlanWinefieldRemoved');
-  AddEventHandlerName(evtPlayerDefeated,        'OnPlayerDefeated');
-  AddEventHandlerName(evtPlayerVictory,         'OnPlayerVictory');
-  AddEventHandlerName(evtRoadBuilt,             'OnRoadBuilt');
-  AddEventHandlerName(evtTick,                  'OnTick');
-  AddEventHandlerName(evtUnitAfterDied,         'OnUnitAfterDied');
-  AddEventHandlerName(evtUnitDied,              'OnUnitDied');
-  AddEventHandlerName(evtUnitTrained,           'OnUnitTrained');
-  AddEventHandlerName(evtUnitWounded,           'OnUnitWounded');
-  AddEventHandlerName(evtUnitAttacked,          'OnUnitAttacked');
-  AddEventHandlerName(evtWareProduced,          'OnWareProduced');
-  AddEventHandlerName(evtWarriorEquipped,       'OnWarriorEquipped');
-  AddEventHandlerName(evtWarriorWalked,         'OnWarriorWalked');
-  AddEventHandlerName(evtWinefieldBuilt,        'OnWinefieldBuilt');
+  for EVT := Low(TKMScriptEventType) to High(TKMScriptEventType) do
+    // evtTick - > OnTick
+    AddEventHandlerName(EVT, StringReplace(GetEnumName(TypeInfo(TKMScriptEventType), Integer(EVT)), 'evt', 'On', []));
 end;
 
 
@@ -753,10 +720,28 @@ end;
 //* Occurs after a house is destroyed and has been completely removed from the game,
 //* meaning the area it previously occupied can be used.
 //* If you need more information about the house use the OnHouseDestroyed event.
-procedure TKMScriptEvents.ProcHouseAfterDestroyed(aHouseType: TKMHouseType; aOwner: TKMHandID; aX, aY: Integer);
+procedure TKMScriptEvents.ProcHouseAfterDestroyed(aHouseType: Integer; aOwner: TKMHandID; aX, aY: Integer);
 begin
   if MethodAssigned(evtHouseAfterDestroyed) then
-    CallEventHandlers(evtHouseAfterDestroyed, [HOUSE_TYPE_TO_ID[aHouseType] - 1, aOwner, aX, aY]);
+    CallEventHandlers(evtHouseAfterDestroyed, [aHouseType, aOwner, aX, aY]);
+end;
+
+
+//* Version: 14000
+//* Occurs after a house is destroyed and has been completely removed from the game,
+//* meaning the area it previously occupied can be used.
+//* If you need more information about the house use the OnHouseDestroyed event.
+procedure TKMScriptEvents.ProcHouseAfterDestroyedEx(aHouseType: TKMHouseType; aOwner: TKMHandID; aX, aY: Integer);
+begin
+  if MethodAssigned(evtHouseAfterDestroyedEx) then
+    CallEventHandlers(evtHouseAfterDestroyedEx, [Ord(aHouseType), aOwner, aX, aY]);
+end;
+
+
+procedure TKMScriptEvents.EventHouseAfterDestroyed(aHouseType: TKMHouseType; aOwner: TKMHandID; aX, aY: Integer);
+begin
+  ProcHouseAfterDestroyed(HOUSE_TYPE_TO_ID[aHouseType] - 1, aOwner, aX, aY);
+  ProcHouseAfterDestroyedEx(aHouseType, aOwner, aX, aY);
 end;
 
 
@@ -774,10 +759,26 @@ end;
 
 //* Version: 5871
 //* Occurs when player has placed a house plan.
-procedure TKMScriptEvents.ProcHousePlanPlaced(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
+procedure TKMScriptEvents.ProcHousePlanPlaced(aPlayer: TKMHandID; aX, aY, aType: Integer);
 begin
   if MethodAssigned(evtHousePlanPlaced) then
-    CallEventHandlers(evtHousePlanPlaced, [aPlayer, aX + gResHouses[aType].EntranceOffsetX, aY, HOUSE_TYPE_TO_ID[aType] - 1]);
+    CallEventHandlers(evtHousePlanPlaced, [aPlayer, aX, aY, aType]);
+end;
+
+
+//* Version: 14000
+//* Occurs when player has placed a house plan.
+procedure TKMScriptEvents.ProcHousePlanPlacedEx(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
+begin
+  if MethodAssigned(evtHousePlanPlaced) then
+    CallEventHandlers(evtHousePlanPlaced, [aPlayer, aX, aY, Ord(aType)]);
+end;
+
+
+procedure TKMScriptEvents.EventHousePlanPlaced(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
+begin
+  ProcHousePlanPlaced(aPlayer, aX + gResHouses[aType].EntranceOffsetX, aY, HOUSE_TYPE_TO_ID[aType] - 1);
+  ProcHousePlanPlacedEx(aPlayer, aX + gResHouses[aType].EntranceOffsetX, aY, aType);
 end;
 
 

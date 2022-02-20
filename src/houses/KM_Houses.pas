@@ -742,7 +742,7 @@ begin
   //Leave disposing of units inside the house to themselves
 
   //Notify the script that the house is now completely gone
-  gScriptEvents.ProcHouseAfterDestroyed(HouseType, Owner, Entrance.X, Entrance.Y);
+  gScriptEvents.EventHouseAfterDestroyed(HouseType, Owner, Entrance.X, Entrance.Y);
 end;
 
 
