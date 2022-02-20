@@ -127,7 +127,7 @@ type
     procedure ProcUnitDied(aUnit: TKMUnit; aKillerOwner: TKMHandID);
     procedure ProcUnitTrained(aUnit: TKMUnit);
     procedure ProcUnitWounded(aUnit, aAttacker: TKMUnit);
-    procedure ProcWareProduced(aHouse: TKMHouse; aType: TKMWareType; aCount: Integer);
+    procedure ProcWareProduced(aHouse: TKMHouse; aWareType: TKMWareType; aCount: Integer);
     procedure ProcWarriorEquipped(aUnit: TKMUnit; aGroup: TKMUnitGroup);
     procedure ProcWarriorWalked(aUnit: TKMUnit; aToX, aToY: Integer);
     procedure ProcWinefieldBuilt(aPlayer: TKMHandID; aX, aY: Integer);
@@ -1191,14 +1191,14 @@ begin
 end;
 
 
-//* Version: 7000+
+//* Version: 14000
 //* Occurs when resource is produced for specified house.
-procedure TKMScriptEvents.ProcWareProduced(aHouse: TKMHouse; aType: TKMWareType; aCount: Integer);
+procedure TKMScriptEvents.ProcWareProduced(aHouse: TKMHouse; aWareType: TKMWareType; aCount: Integer);
 begin
-  if MethodAssigned(evtWareProduced) and (aType <> wtNone) then
+  if MethodAssigned(evtWareProduced) and (aWareType <> wtNone) then
   begin
     fIDCache.CacheHouse(aHouse, aHouse.UID); //Improves cache efficiency since aHouse will probably be accessed soon
-    CallEventHandlers(evtWareProduced, [aHouse.UID, WARE_TY_TO_ID[aType], aCount]);
+    CallEventHandlers(evtWareProduced, [aHouse.UID, Ord(aWareType), aCount]);
   end;
 end;
 
