@@ -469,7 +469,7 @@ const
   sqr_INTEREST_DISTANCE_House = 20*20;
   sqr_MAX_DISTANCE_FROM_HOUSE = 10*10;
   MAX_ATTACKERS_PER_HOUSE = 12;
-  WarriorPrice: array [utMilitia..utHorseman] of Single = (
+  WarriorPrice: array [utMilitia..utVagabond] of Single = (
     1.5,2.0,2.5,2.0,2.5, // utMilitia,utAxeFighter,utSwordsman,utBowman,utArbaletman,
     2.0,2.5,2.0,2.5,     // utPikeman,utHallebardman,utHorseScout,utCavalry
     2.5,1.5,1.5,2.5,1.5  // utBarbarian,utPeasant,utSlingshot,utMetalBarbarian,utHorseman

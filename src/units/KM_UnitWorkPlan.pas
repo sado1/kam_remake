@@ -375,7 +375,7 @@ begin
                           SubActAdd(haWork5,1);
                         end;
                       end;
-    utLamberjack:    if aHome = htSawmill then
+    utCarpenter:    if aHome = htSawmill then
                       begin
                         ResourcePlan(wtTrunk,1,wtNone,0,wtWood);
                         SubActAdd(haWork1,1);
@@ -488,7 +488,7 @@ begin
                         end;
                         fIssued := True;
                       end;
-    utFisher:        if aHome = htFisherHut then
+    utFisherman:        if aHome = htFisherHut then
                       begin
                         fIssued := gTerrain.FindFishWater(aLoc, gRes.Units[aUnit.UnitType].MiningRange, KMPOINT_ZERO, False, tmp);
                         if fIssued then
@@ -499,7 +499,7 @@ begin
                           //We must check again this time ignoring working units since they don't indicate the resource is depleted
                           ResourceDepleted := not gTerrain.FindFishWater(aLoc, gRes.Units[aUnit.UnitType].MiningRange, KMPOINT_ZERO, True, tmp);
                       end;
-    utStoneCutter:   if aHome = htQuary then
+    utStonemason:   if aHome = htQuary then
                       begin
                         fIssued := gTerrain.FindStone(aLoc, gRes.Units[aUnit.UnitType].MiningRange, KMPOINT_ZERO, False, tmp);
                         if fIssued then
@@ -513,7 +513,7 @@ begin
                           //We must check again this time ignoring working units since they don't indicate the resource is depleted
                           ResourceDepleted := not gTerrain.FindStone(aLoc, gRes.Units[aUnit.UnitType].MiningRange, KMPOINT_ZERO, True, tmp);
                       end;
-    utSmith:         if (aHome = htArmorSmithy) and (aProduct = wtMetalShield) then
+    utBlacksmith:         if (aHome = htArmorSmithy) and (aProduct = wtMetalShield) then
                       begin
                         ResourcePlan(wtSteel,1,wtCoal,1,wtMetalShield);
                         for I := 0 to 3 do

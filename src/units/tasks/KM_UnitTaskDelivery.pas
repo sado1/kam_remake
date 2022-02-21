@@ -457,7 +457,7 @@ begin
     5:  SetActionWalkToSpot(fToHouse.PointBelowEntrance, uaWalk, 1.42);
     6:  begin
           // Then check if there is a worker hitting house just from the entrance
-          Worker := gHands[fUnit.Owner].UnitsHitTest(fToHouse.PointBelowEntrance, utWorker);
+          Worker := gHands[fUnit.Owner].UnitsHitTest(fToHouse.PointBelowEntrance, utLaborer);
           if (Worker <> nil) and (Worker.Task <> nil)
             and (Worker.Task is TKMTaskBuildHouse)
             and (Worker.Task.Phase >= 1) then
@@ -495,7 +495,7 @@ begin
             Exit;
           end;
           //Worker
-          if (fToUnit.UnitType = utWorker) and (fToUnit.Task <> nil) then
+          if (fToUnit.UnitType = utLaborer) and (fToUnit.Task <> nil) then
           begin
             //todo: Replace phase numbers with enums to avoid hardcoded magic numbers
             // Check if worker is still digging

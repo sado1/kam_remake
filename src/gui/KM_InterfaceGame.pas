@@ -122,21 +122,21 @@ const
      wtArbalet,  wtHorse,   wtFish);
 
   School_Order: array [0..13] of TKMUnitType = (
-    utSerf, utWorker, utStoneCutter, utWoodcutter, utLamberjack,
-    utFisher, utFarmer, utBaker, utAnimalBreeder, utButcher,
-    utMiner, utMetallurgist, utSmith, utRecruit);
+    utSerf, utLaborer, utStonemason, utWoodcutter, utCarpenter,
+    utFisherman, utFarmer, utBaker, utAnimalBreeder, utButcher,
+    utMiner, utMetallurgist, utBlacksmith, utRecruit);
 
   Barracks_Order: array [0..8] of TKMUnitType = (
-    utMilitia, utAxeFighter, utSwordsman, utBowman, utArbaletman,
-    utPikeman, utHallebardman, utHorseScout, utCavalry);
+    utMilitia, utAxeFighter, utSwordFighter, utBowman, utCrossbowman,
+    utLanceCarrier, utPikeman, utScout, utKnight);
 
   TownHall_Order: array [0..4] of TKMUnitType = (
-    utPeasant, utSlingshot, utHorseman, utBarbarian, utMetalBarbarian);
+    utRebel, utRogue, utVagabond, utBarbarian, utWarrior);
 
   Soldiers_Order: array[0..13] of TKMUnitType = (
-    utMilitia, utAxeFighter, utSwordsman, utBowman, utArbaletman,
-    utPikeman, utHallebardman, utHorseScout, utCavalry,
-    utPeasant, utSlingshot, utHorseman, utBarbarian, utMetalBarbarian);
+    utMilitia, utAxeFighter, utSwordFighter, utBowman, utCrossbowman,
+    utLanceCarrier, utPikeman, utScout, utKnight,
+    utRebel, utRogue, utVagabond, utBarbarian, utWarrior);
 
   // Stats get stacked by UI logic (so that on taller screens they all were
   // in nice pairs, and would stack up only on short screens)
@@ -144,25 +144,25 @@ const
     HouseType: array [0..3] of TKMHouseType;
     UnitType: array [0..1] of TKMUnitType;
   end = (
-    (HouseType: (htQuary, htNone, htNone, htNone);                      UnitType: (utStoneCutter, utNone)),
+    (HouseType: (htQuary, htNone, htNone, htNone);                      UnitType: (utStonemason, utNone)),
     (HouseType: (htWoodcutters, htNone, htNone, htNone);                UnitType: (utWoodcutter, utNone)),
-    (HouseType: (htFisherHut, htNone, htNone, htNone);                  UnitType: (utFisher, utNone)),
+    (HouseType: (htFisherHut, htNone, htNone, htNone);                  UnitType: (utFisherman, utNone)),
     (HouseType: (htFarm, htWineyard, htNone, htNone);                   UnitType: (utFarmer, utNone)),
     (HouseType: (htMill, htBakery, htNone, htNone);                     UnitType: (utBaker, utNone)),
     (HouseType: (htSwine, htStables, htNone, htNone);                   UnitType: (utAnimalBreeder, utNone)),
     (HouseType: (htButchers, htTannery, htNone, htNone);                UnitType: (utButcher, utNone)),
     (HouseType: (htMetallurgists, htIronSmithy, htNone, htNone);        UnitType: (utMetallurgist, utNone)),
-    (HouseType: (htArmorSmithy, htWeaponSmithy, htNone, htNone);        UnitType: (utSmith, utNone)),
+    (HouseType: (htArmorSmithy, htWeaponSmithy, htNone, htNone);        UnitType: (utBlacksmith, utNone)),
     (HouseType: (htCoalMine, htIronMine, htGoldMine, htNone);           UnitType: (utMiner, utNone)),
-    (HouseType: (htSawmill, htWeaponWorkshop, htArmorWorkshop, htNone); UnitType: (utLamberjack, utNone)),
+    (HouseType: (htSawmill, htWeaponWorkshop, htArmorWorkshop, htNone); UnitType: (utCarpenter, utNone)),
     (HouseType: (htBarracks, htTownHall, htWatchTower, htNone);         UnitType: (utRecruit, utNone)),
-    (HouseType: (htStore, htSchool, htInn, htMarketplace);              UnitType: (utSerf, utWorker))
+    (HouseType: (htStore, htSchool, htInn, htMarketplace);              UnitType: (utSerf, utLaborer))
     );
 
   MapEd_Order: array [0..13] of TKMUnitType = (
-    utMilitia, utAxeFighter, utSwordsman, utBowman, utArbaletman,
-    utPikeman, utHallebardman, utHorseScout, utCavalry, utBarbarian,
-    utPeasant, utSlingshot, utMetalBarbarian, utHorseman);
+    utMilitia, utAxeFighter, utSwordFighter, utBowman, utCrossbowman,
+    utLanceCarrier, utPikeman, utScout, utKnight, utBarbarian,
+    utRebel, utRogue, utWarrior, utVagabond);
 
   MapEd_Icon: array [0..13] of Word = (
     61, 62, 63, 64, 65,

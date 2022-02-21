@@ -169,9 +169,9 @@ begin
     gSoundPlayer.PlayWarrior(fUnit.UnitType, spBattleCry, fUnit.PositionF);
 
   case fUnit.UnitType of
-    utArbaletman: gSoundPlayer.Play(sfxCrossbowDraw, fUnit.PositionF); // Aiming
+    utCrossbowman: gSoundPlayer.Play(sfxCrossbowDraw, fUnit.PositionF); // Aiming
     utBowman:     gSoundPlayer.Play(sfxBowDraw,      fUnit.PositionF); // Aiming
-    utSlingshot:  gSoundPlayer.Play(sfxSlingerShoot, fUnit.PositionF);
+    utRogue:  gSoundPlayer.Play(sfxSlingerShoot, fUnit.PositionF);
     else           begin
                      if IsHit then
                        gSoundPlayer.Play(MeleeSoundsHit[Random(Length(MeleeSoundsHit))], fUnit.PositionF)

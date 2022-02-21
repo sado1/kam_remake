@@ -124,10 +124,10 @@ const
   //TSK did not had place for new warriors that were inserted in the middle(!)
   UNIT_OLD_ID_TO_TYPE: array[0..31] of TKMUnitType = (
     utSerf,utWoodcutter,utMiner,utAnimalBreeder,utFarmer,
-    utLamberjack,utBaker,utButcher,utFisher,utWorker,
-    utStoneCutter,utSmith,utMetallurgist,utRecruit, //Units
-    utMilitia,utAxeFighter,utSwordsman,utBowman,utArbaletman,
-    utPikeman,utHallebardman,utHorseScout,utCavalry,utBarbarian, //Troops
+    utCarpenter,utBaker,utButcher,utFisherman,utLaborer,
+    utStonemason,utBlacksmith,utMetallurgist,utRecruit, //Units
+    utMilitia,utAxeFighter,utSwordFighter,utBowman,utCrossbowman,
+    utLanceCarrier,utPikeman,utScout,utKnight,utBarbarian, //Troops
     utWolf,utFish,utWatersnake,utSeastar,utCrab,
     utWaterflower,utWaterleaf,utDuck); //Animals
 
@@ -142,11 +142,11 @@ const
   //This is a map of the valid values for !SET_GROUP, and the corresponing unit that will be created (matches KaM behavior)
   UNIT_ID_TO_TYPE: array[0..40] of TKMUnitType = (
     utSerf,utWoodcutter,utMiner,utAnimalBreeder,utFarmer,
-    utLamberjack,utBaker,utButcher,utFisher,utWorker,
-    utStoneCutter,utSmith,utMetallurgist,utRecruit, //Units
-    utMilitia,utAxeFighter,utSwordsman,utBowman,utArbaletman,
-    utPikeman,utHallebardman,utHorseScout,utCavalry,utBarbarian, //TSK Troops
-    utPeasant,utSlingshot,utMetalBarbarian,utHorseman,
+    utCarpenter,utBaker,utButcher,utFisherman,utLaborer,
+    utStonemason,utBlacksmith,utMetallurgist,utRecruit, //Units
+    utMilitia,utAxeFighter,utSwordFighter,utBowman,utCrossbowman,
+    utLanceCarrier,utPikeman,utScout,utKnight,utBarbarian, //TSK Troops
+    utRebel,utRogue,utWarrior,utVagabond,
     {utCatapult,utBallista}utNone,utNone, //Placeholder for Seige weapons
     utWolf, utFish, utWatersnake, utSeastar, utCrab,
     utWaterflower, utWaterleaf, utDuck,
@@ -162,7 +162,7 @@ const
 
 
   //Number means ResourceType as it is stored in Barracks, hence it's not rtSomething
-  TROOP_COST: array [utMilitia..utCavalry, 1..4] of TKMWareType = (
+  TROOP_COST: array [utMilitia..utKnight, 1..4] of TKMWareType = (
     (wtAxe,          wtNone,        wtNone,  wtNone ), //Militia
     (wtShield,       wtArmor,       wtAxe,   wtNone ), //Axefighter
     (wtMetalShield,  wtMetalArmor,  wtSword, wtNone ), //Swordfighter
@@ -239,7 +239,7 @@ function TKMUnitSpec.GetDefenceVsProjectiles(aIsBolt: Boolean): Single;
 begin
   Result := Defence;
   //Shielded units get a small bonus
-  if fUnitType in [utAxeFighter, utSwordsman, utHorseScout, utCavalry] then
+  if fUnitType in [utAxeFighter, utSwordFighter, utScout, utKnight] then
   begin
     if aIsBolt then
       Result := Result + 0.25
@@ -313,7 +313,7 @@ end;
 // Where unit would like to be
 function TKMUnitSpec.GetDesiredPassability: TKMTerrainPassability;
 begin
-  if fUnitType in [CITIZEN_MIN..CITIZEN_MAX] - [utWorker] then
+  if fUnitType in [CITIZEN_MIN..CITIZEN_MAX] - [utLaborer] then
     Result := tpWalkRoad //Citizens except Worker
   else
     Result := GetAllowedPassability; //Workers, warriors, animals
@@ -387,8 +387,8 @@ begin
   case fUnitType of
     utWoodcutter:  Result := 10;
     utFarmer:      Result := 10;
-    utStonecutter: Result := 16;
-    utFisher:      Result := 14;
+    utStonemason: Result := 16;
+    utFisherman:      Result := 14;
   else
     raise Exception.Create(GUIName + ' has no mining range');
   end;
@@ -481,25 +481,25 @@ end;
 
 class function TKMUnitSpec.IsMelee(aUnitType: TKMUnitType): Boolean;
 begin
-  Result := aUnitType in [utMilitia, utAxeFighter, utSwordsman, utBarbarian, utMetalBarbarian];
+  Result := aUnitType in [utMilitia, utAxeFighter, utSwordFighter, utBarbarian, utWarrior];
 end;
 
 
 class function TKMUnitSpec.IsMounted(aUnitType: TKMUnitType): Boolean;
 begin
-  Result := aUnitType in [utHorseScout, utCavalry, utHorseman];
+  Result := aUnitType in [utScout, utKnight, utVagabond];
 end;
 
 
 class function TKMUnitSpec.IsAntihorse(aUnitType: TKMUnitType): Boolean;
 begin
-  Result := aUnitType in [utPikeman, utHallebardman, utPeasant];
+  Result := aUnitType in [utLanceCarrier, utPikeman, utRebel];
 end;
 
 
 class function TKMUnitSpec.IsRanged(aUnitType: TKMUnitType): Boolean;
 begin
-  Result := aUnitType in [utBowman, utArbaletman, utSlingshot];
+  Result := aUnitType in [utBowman, utCrossbowman, utRogue];
 end;
 
 
@@ -523,27 +523,27 @@ begin
 
   // Overwrite units stats only if they are set for default values from original game
   // We don't want to update them, in case player manually edited unit.dat file
-  if fItems[utHorseScout].fUnitDat.Sight = DEF_SCOUT_SIGHT then
-    fItems[utHorseScout].fUnitDat.Sight := 13;
+  if fItems[utScout].fUnitDat.Sight = DEF_SCOUT_SIGHT then
+    fItems[utScout].fUnitDat.Sight := 13;
 
-  if fItems[utHorseman].fUnitDat.Attack = DEF_HORSEMAN_ATTACK then
-    fItems[utHorseman].fUnitDat.Attack := 35;
+  if fItems[utVagabond].fUnitDat.Attack = DEF_HORSEMAN_ATTACK then
+    fItems[utVagabond].fUnitDat.Attack := 35;
 
-  if fItems[utPeasant].fUnitDat.AttackHorse = DEF_PEASANT_ATTACK_HORSE then
-    fItems[utPeasant].fUnitDat.AttackHorse := 50;
+  if fItems[utRebel].fUnitDat.AttackHorse = DEF_PEASANT_ATTACK_HORSE then
+    fItems[utRebel].fUnitDat.AttackHorse := 50;
 
-  if fItems[utPikeman].fUnitDat.AttackHorse = DEF_PIKEMAN_ATTACK_HORSE then
-    fItems[utPikeman].fUnitDat.AttackHorse := 60;
+  if fItems[utLanceCarrier].fUnitDat.AttackHorse = DEF_PIKEMAN_ATTACK_HORSE then
+    fItems[utLanceCarrier].fUnitDat.AttackHorse := 60;
 
   // .Dat mounted speed is 39, but it makes 9 steps per diagonal tile after rounding, while we used to 8 steps
-  if fItems[utHorseScout].fUnitDat.Speed = DEF_MOUNTED_SPEED then
-    fItems[utHorseScout].fUnitDat.Speed := 40;
+  if fItems[utScout].fUnitDat.Speed = DEF_MOUNTED_SPEED then
+    fItems[utScout].fUnitDat.Speed := 40;
 
-  if fItems[utCavalry].fUnitDat.Speed = DEF_MOUNTED_SPEED then
-    fItems[utCavalry].fUnitDat.Speed := 40;
+  if fItems[utKnight].fUnitDat.Speed = DEF_MOUNTED_SPEED then
+    fItems[utKnight].fUnitDat.Speed := 40;
 
-  if fItems[utHorseman].fUnitDat.Speed = DEF_MOUNTED_SPEED then
-    fItems[utHorseman].fUnitDat.Speed := 40;
+  if fItems[utVagabond].fUnitDat.Speed = DEF_MOUNTED_SPEED then
+    fItems[utVagabond].fUnitDat.Speed := 40;
 
   for UT := UNIT_MIN to UNIT_MAX do
   begin

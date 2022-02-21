@@ -1010,8 +1010,8 @@ begin
 
   case aProj of
     ptArrow:     id := gRes.Interpolation.UnitActionByPercent(utBowman, uaSpec, aDir, aFlight);
-    ptBolt:      id := gRes.Interpolation.UnitActionByPercent(utArbaletman, uaSpec, aDir, aFlight);
-    ptSlingRock: id := gRes.Interpolation.UnitActionByPercent(utSlingshot, uaSpec, aDir, aFlight);
+    ptBolt:      id := gRes.Interpolation.UnitActionByPercent(utCrossbowman, uaSpec, aDir, aFlight);
+    ptSlingRock: id := gRes.Interpolation.UnitActionByPercent(utRogue, uaSpec, aDir, aFlight);
     ptTowerRock: id := gRes.Interpolation.UnitActionByPercent(utRecruit, uaSpec, aDir, aFlight);
     else          id := 1; // Nothing?
   end;

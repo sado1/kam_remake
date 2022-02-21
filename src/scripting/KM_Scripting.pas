@@ -421,17 +421,17 @@ begin
     Sender.AddTypeS('TKMTileMaskKind', '(mkNone, mkSoft1, mkSoft2, mkSoft3, mkStraight, mkGradient)');
 
     Sender.AddTypeS('TKMUnitType', '(utNone, utAny,'
-      + 'utSerf,          utWoodcutter,    utMiner,         utAnimalBreeder,'
-      + 'utFarmer,        utLamberjack,    utBaker,         utButcher,'
-      + 'utFisher,        utWorker,        utStoneCutter,   utSmith,'
-      + 'utMetallurgist,  utRecruit,'
-      + 'utMilitia,      utAxeFighter,   utSwordsman,     utBowman,'
-      + 'utArbaletman,   utPikeman,      utHallebardman,  utHorseScout,'
-      + 'utCavalry,      utBarbarian,'
-      + 'utPeasant,      utSlingshot,    utMetalBarbarian,utHorseman,'
+      + 'utSerf,         utWoodcutter,   utMiner,         utAnimalBreeder,'
+      + 'utFarmer,       utCarpenter,    utBaker,         utButcher,'
+      + 'utFisherman,    utLaborer,      utStonemason,    utBlacksmith,'
+      + 'utMetallurgist, utRecruit,'
+      + 'utMilitia,      utAxeFighter,   utSwordFighter,  utBowman,'
+      + 'utCrossbowman,  utLanceCarrier, utPikeman,       utScout,'
+      + 'utKnight,       utBarbarian,'
+      + 'utRebel,        utRogue,        utWarrior,       utVagabond,'
       //utCatapult,   utBallista,
-      + 'utWolf,         utFish,         utWatersnake,   utSeastar,'
-      + 'utCrab,         utWaterflower,  utWaterleaf,    utDuck)');
+      + 'utWolf,         utFish,         utWatersnake,    utSeastar,'
+      + 'utCrab,         utWaterflower,  utWaterleaf,     utDuck)');
 
     Sender.AddTypeS('TKMUnitTypeSet', 'set of TKMUnitType');
 

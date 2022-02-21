@@ -252,10 +252,10 @@ begin
         // If we are low on Gold don't hire more ppl (next school will fail this too, so we can exit)
         if not HasEnoughGoldForAux then Exit;
 
-        serfCount := Round(fSetup.SerfsPerHouse * (P.Stats.GetHouseQty(htAny) + P.Stats.GetUnitQty(utWorker)/2));
+        serfCount := Round(fSetup.SerfsPerHouse * (P.Stats.GetHouseQty(htAny) + P.Stats.GetUnitQty(utLaborer)/2));
 
         if not TryToTrain(HS, utSerf, serfCount) then
-          if not TryToTrain(HS, utWorker, fSetup.WorkerCount) then
+          if not TryToTrain(HS, utLaborer, fSetup.WorkerCount) then
             if not gGame.CheckTime(fSetup.RecruitDelay) then //Recruits can only be trained after this time
               Break
             else
@@ -856,19 +856,19 @@ procedure TKMayor.SetArmyDemand(aFootmen, aPikemen, aHorsemen, aArchers: Single)
   begin
     if aIron then
       case aGT of
-        gtMelee:     Result := gHands[fOwner].Locks.GetUnitBlocked(utSwordsman);
-        gtAntiHorse: Result := gHands[fOwner].Locks.GetUnitBlocked(utHallebardman);
-        gtRanged:    Result := gHands[fOwner].Locks.GetUnitBlocked(utArbaletman);
-        gtMounted:   Result := gHands[fOwner].Locks.GetUnitBlocked(utCavalry);
+        gtMelee:     Result := gHands[fOwner].Locks.GetUnitBlocked(utSwordFighter);
+        gtAntiHorse: Result := gHands[fOwner].Locks.GetUnitBlocked(utPikeman);
+        gtRanged:    Result := gHands[fOwner].Locks.GetUnitBlocked(utCrossbowman);
+        gtMounted:   Result := gHands[fOwner].Locks.GetUnitBlocked(utKnight);
         else         Result := True;
       end
     else
       case aGT of
         gtMelee:     Result := gHands[fOwner].Locks.GetUnitBlocked(utMilitia) and
                                 gHands[fOwner].Locks.GetUnitBlocked(utAxeFighter);
-        gtAntiHorse: Result := gHands[fOwner].Locks.GetUnitBlocked(utPikeman);
+        gtAntiHorse: Result := gHands[fOwner].Locks.GetUnitBlocked(utLanceCarrier);
         gtRanged:    Result := gHands[fOwner].Locks.GetUnitBlocked(utBowman);
-        gtMounted:   Result := gHands[fOwner].Locks.GetUnitBlocked(utHorseScout);
+        gtMounted:   Result := gHands[fOwner].Locks.GetUnitBlocked(utScout);
         else         Result := True;
       end;
   end;
@@ -911,28 +911,28 @@ begin
   //Store ratios localy in Mayor to place weapon orders
   //Leather
   WarfareRatios[wtArmor] :=      Footmen  * GetUnitRatio(utAxeFighter)
-                                 + Horsemen * GetUnitRatio(utHorseScout)
-                                 + Pikemen  * GetUnitRatio(utPikeman)
+                                 + Horsemen * GetUnitRatio(utScout)
+                                 + Pikemen  * GetUnitRatio(utLanceCarrier)
                                  + Archers  * GetUnitRatio(utBowman);
   WarfareRatios[wtShield] :=     Footmen  * GetUnitRatio(utAxeFighter)
-                                 + Horsemen * GetUnitRatio(utHorseScout);
+                                 + Horsemen * GetUnitRatio(utScout);
   WarfareRatios[wtAxe] :=        Footmen  * Max(GetUnitRatio(utAxeFighter), GetUnitRatio(utMilitia))
-                                 + Horsemen * GetUnitRatio(utHorseScout);
-  WarfareRatios[wtPike] :=       Pikemen  * GetUnitRatio(utPikeman);
+                                 + Horsemen * GetUnitRatio(utScout);
+  WarfareRatios[wtPike] :=       Pikemen  * GetUnitRatio(utLanceCarrier);
   WarfareRatios[wtBow] :=        Archers  * GetUnitRatio(utBowman);
   //Iron
-  WarfareRatios[wtMetalArmor] := Footmen  * GetUnitRatio(utSwordsman)
-                                 + Horsemen * GetUnitRatio(utCavalry)
-                                 + Pikemen  * GetUnitRatio(utHallebardman)
-                                 + Archers  * GetUnitRatio(utArbaletman);
-  WarfareRatios[wtMetalShield] :=Footmen  * GetUnitRatio(utSwordsman)
-                                 + Horsemen * GetUnitRatio(utCavalry);
-  WarfareRatios[wtSword] :=      Footmen  * GetUnitRatio(utSwordsman)
-                                 + Horsemen * GetUnitRatio(utCavalry);
-  WarfareRatios[wtHallebard] :=  Pikemen  * GetUnitRatio(utHallebardman);
-  WarfareRatios[wtArbalet] :=    Archers  * GetUnitRatio(utArbaletman);
+  WarfareRatios[wtMetalArmor] := Footmen  * GetUnitRatio(utSwordFighter)
+                                 + Horsemen * GetUnitRatio(utKnight)
+                                 + Pikemen  * GetUnitRatio(utPikeman)
+                                 + Archers  * GetUnitRatio(utCrossbowman);
+  WarfareRatios[wtMetalShield] :=Footmen  * GetUnitRatio(utSwordFighter)
+                                 + Horsemen * GetUnitRatio(utKnight);
+  WarfareRatios[wtSword] :=      Footmen  * GetUnitRatio(utSwordFighter)
+                                 + Horsemen * GetUnitRatio(utKnight);
+  WarfareRatios[wtHallebard] :=  Pikemen  * GetUnitRatio(utPikeman);
+  WarfareRatios[wtArbalet] :=    Archers  * GetUnitRatio(utCrossbowman);
 
-  WarfareRatios[wtHorse] := Horsemen * (GetUnitRatio(utCavalry) + GetUnitRatio(utHorseScout));
+  WarfareRatios[wtHorse] := Horsemen * (GetUnitRatio(utKnight) + GetUnitRatio(utScout));
 
   //How many warriors we would need to equip per-minute
   IronPerMin := fSetup.WarriorsPerMinute(atIron);
@@ -953,8 +953,8 @@ begin
       WarfarePerMinute[WT] := WarfareRatios[WT] * LeatherPerMin;
 
   //Horses require separate calculation
-  WarfarePerMinute[wtHorse] := Horsemen * (  GetUnitRatio(utCavalry) * IronPerMin
-                                            + GetUnitRatio(utHorseScout) * LeatherPerMin);
+  WarfarePerMinute[wtHorse] := Horsemen * (  GetUnitRatio(utKnight) * IronPerMin
+                                            + GetUnitRatio(utScout) * LeatherPerMin);
 
   //Update warfare needs accordingly
   fBalance.SetArmyDemand(WarfarePerMinute);

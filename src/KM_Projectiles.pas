@@ -289,8 +289,8 @@ begin
                             begin
                               Damage := 0;
                               if fType = ptArrow then Damage := gRes.Units[utBowman].Attack;
-                              if fType = ptBolt then Damage := gRes.Units[utArbaletman].Attack;
-                              if fType = ptSlingRock then Damage := gRes.Units[utSlingshot].Attack;
+                              if fType = ptBolt then Damage := gRes.Units[utCrossbowman].Attack;
+                              if fType = ptSlingRock then Damage := gRes.Units[utRogue].Attack;
                               Damage := Round(Damage / Math.max(gRes.Units[U.UnitType].GetDefenceVsProjectiles(fType = ptBolt), 1)); //Max is not needed, but animals have 0 defence
                               if (FRIENDLY_FIRE or (gHands.CheckAlliance(fOwner.Owner, U.Owner)= atEnemy))
                               and (Damage >= KaMRandom(101, 'TKMProjectiles.UpdateState')) then

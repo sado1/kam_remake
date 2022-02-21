@@ -1928,13 +1928,13 @@ begin
     Result := tpWalk;
 
   //Preparing house area
-  if (fType = utWorker) and (fTask is TKMTaskBuildHouseArea)
+  if (fType = utLaborer) and (fTask is TKMTaskBuildHouseArea)
   and TKMTaskBuildHouseArea(fTask).Digging
   then
     Result := tpWorker; //Special mode that allows us to walk on building sites
 
   //Miners at work need to go off roads
-  if (fType in [utWoodcutter, utFarmer, utFisher, utStoneCutter])
+  if (fType in [utWoodcutter, utFarmer, utFisherman, utStonemason])
   and (fTask is TKMTaskMining)
   then
     Result := tpWalk;

@@ -529,7 +529,7 @@ end;
 
 procedure TKMHand.UnitTrained(aUnit: TKMUnit);
 begin
-  if aUnit.UnitType = utWorker then
+  if aUnit.UnitType = utLaborer then
     fConstructions.AddWorker(TKMUnitWorker(aUnit));
   if aUnit.UnitType = utSerf then
     fDeliveries.AddSerf(TKMUnitSerf(aUnit));

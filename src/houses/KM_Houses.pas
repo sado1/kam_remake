@@ -924,7 +924,7 @@ begin
                       Result := TX_MSG_WOODCUTTER_PLANT_DEPLETED
                     else
                       Result := TX_MSG_WOODCUTTER_DEPLETED;
-    htFisherHut:   if not gTerrain.CanFindFishingWater(PointBelowEntrance, gRes.Units[utFisher].MiningRange) then
+    htFisherHut:   if not gTerrain.CanFindFishingWater(PointBelowEntrance, gRes.Units[utFisherman].MiningRange) then
                       Result := TX_MSG_FISHERMAN_TOO_FAR
                     else
                       Result := TX_MSG_FISHERMAN_CANNOT_CATCH;

@@ -128,9 +128,9 @@ begin
 
               if gMySpectator.FogOfWar.CheckTileRevelation(Round(PositionF.X), Round(PositionF.Y)) >= 255 then
               case UnitType of
-                utArbaletman: gSoundPlayer.Play(sfxCrossbowDraw, PositionF); //Aiming
+                utCrossbowman: gSoundPlayer.Play(sfxCrossbowDraw, PositionF); //Aiming
                 utBowman:     gSoundPlayer.Play(sfxBowDraw,      PositionF); //Aiming
-                utSlingshot:  ;
+                utRogue:  ;
                 else           raise Exception.Create('Unknown shooter');
               end;
             end
@@ -151,7 +151,7 @@ begin
           end;
       2:  begin
             //Special case - slingshot, he has AimSoundDelay
-            if UnitType = utSlingshot then
+            if UnitType = utRogue then
               SetActionLockedStay(AimSoundDelay, uaWork, False) //Start shooting before sound
             else
             begin
