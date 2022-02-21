@@ -79,7 +79,7 @@ type
     procedure SetRoad(const Loc: TKMPoint; aOwner: TKMHandID);
     procedure SetInitWine(const Loc: TKMPoint; aOwner: TKMHandID);
     function GetFieldType(const Loc: TKMPoint): TKMFieldType;
-    procedure SetFieldNoUpdate(const Loc: TKMPoint; aOwner: TKMHandID; aFieldType: TKMFieldType; aStage: Byte = 0);
+//    procedure SetFieldNoUpdate(const Loc: TKMPoint; aOwner: TKMHandID; aFieldType: TKMFieldType; aStage: Byte = 0);
     procedure SetField(const Loc: TKMPoint; aOwner: TKMHandID; aFieldType: TKMFieldType; aStage: Byte = 0;
                        aRandomAge: Boolean = False; aKeepOldObject: Boolean = False; aRemoveOverlay: Boolean = True;
                        aDoUpdate: Boolean = True);
@@ -3207,10 +3207,10 @@ begin
 end;
 
 
-procedure TKMTerrain.SetFieldNoUpdate(const Loc: TKMPoint; aOwner: TKMHandID; aFieldType: TKMFieldType; aStage: Byte = 0);
-begin
-  SetField(Loc, aOwner, aFieldType, aStage, False, False, True, False);
-end;
+//procedure TKMTerrain.SetFieldNoUpdate(const Loc: TKMPoint; aOwner: TKMHandID; aFieldType: TKMFieldType; aStage: Byte = 0);
+//begin
+//  SetField(Loc, aOwner, aFieldType, aStage, False, False, True, False);
+//end;
 
 
 procedure TKMTerrain.SetField(const Loc: TKMPoint; aOwner: TKMHandID; aFieldType: TKMFieldType; aStage: Byte = 0;
