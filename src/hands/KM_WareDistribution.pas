@@ -52,13 +52,13 @@ end;
 procedure TKMWareDistribution.SetWareDistribution(aWare: TKMWareType; aHouse: TKMHouseType; aValue: Byte);
 begin
   case aWare of
-    wtSteel:  if aHouse = htWeaponSmithy   then fWareDistribution[1,1] := aValue else
+    wtIron:  if aHouse = htWeaponSmithy   then fWareDistribution[1,1] := aValue else
               if aHouse = htArmorSmithy    then fWareDistribution[1,2] := aValue;
     wtCoal:   if aHouse = htIronSmithy     then fWareDistribution[2,1] := aValue else
               if aHouse = htMetallurgists  then fWareDistribution[2,2] := aValue else
               if aHouse = htWeaponSmithy   then fWareDistribution[2,3] := aValue else
               if aHouse = htArmorSmithy    then fWareDistribution[2,4] := aValue;
-    wtWood:   if aHouse = htArmorWorkshop  then fWareDistribution[3,1] := aValue else
+    wtTimber:   if aHouse = htArmorWorkshop  then fWareDistribution[3,1] := aValue else
               if aHouse = htWeaponWorkshop then fWareDistribution[3,2] := aValue;
     wtCorn:   if aHouse = htMill           then fWareDistribution[4,1] := aValue else
               if aHouse = htSwine          then fWareDistribution[4,2] := aValue else
@@ -72,13 +72,13 @@ function TKMWareDistribution.GetWareDistribution(aWare: TKMWareType; aHouse: TKM
 begin
   Result := 5; //Default should be 5, for house/resource combinations that don't have a setting (on a side note this should be the only place the resourse limit is defined)
   case aWare of
-    wtSteel:  if aHouse = htWeaponSmithy   then Result := fWareDistribution[1,1] else
+    wtIron:  if aHouse = htWeaponSmithy   then Result := fWareDistribution[1,1] else
               if aHouse = htArmorSmithy    then Result := fWareDistribution[1,2];
     wtCoal:   if aHouse = htIronSmithy     then Result := fWareDistribution[2,1] else
               if aHouse = htMetallurgists  then Result := fWareDistribution[2,2] else
               if aHouse = htWeaponSmithy   then Result := fWareDistribution[2,3] else
               if aHouse = htArmorSmithy    then Result := fWareDistribution[2,4];
-    wtWood:   if aHouse = htArmorWorkshop  then Result := fWareDistribution[3,1] else
+    wtTimber:   if aHouse = htArmorWorkshop  then Result := fWareDistribution[3,1] else
               if aHouse = htWeaponWorkshop then Result := fWareDistribution[3,2];
     wtCorn:   if aHouse = htMill           then Result := fWareDistribution[4,1] else
               if aHouse = htSwine          then Result := fWareDistribution[4,2] else

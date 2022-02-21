@@ -380,7 +380,7 @@ begin
 
         gTerrain.ResetDigState(fLoc); //Remove any dig over that might have been there (e.g. destroyed house)
 
-        gHands[Owner].Deliveries.Queue.AddDemand(nil,fUnit,wtWood, 1, dtOnce, diHigh4);
+        gHands[Owner].Deliveries.Queue.AddDemand(nil,fUnit,wtTimber, 1, dtOnce, diHigh4);
         fDemandSet := true;
 
         SetActionLockedStay(12*4,uaWork1,false);
@@ -623,7 +623,7 @@ begin
   begin
     fHouse.BuildingState := hbsWood;
     gHands[fUnit.Owner].Constructions.HouseList.AddHouse(fHouse); //Add the house to JobList, so then all workers could take it
-    gHands[fUnit.Owner].Deliveries.Queue.AddDemand(fHouse, nil, wtWood, gResHouses[fHouse.HouseType].WoodCost, dtOnce, diHigh4);
+    gHands[fUnit.Owner].Deliveries.Queue.AddDemand(fHouse, nil, wtTimber, gResHouses[fHouse.HouseType].WoodCost, dtOnce, diHigh4);
     gHands[fUnit.Owner].Deliveries.Queue.AddDemand(fHouse, nil, wtStone, gResHouses[fHouse.HouseType].StoneCost, dtOnce, diHigh4);
   end;
 
@@ -811,14 +811,14 @@ begin
 end;
 
 
-{ If we are walking to the house but the house is destroyed/canceled we should abandon immediately
-  If house has not enough resource to be built, consider building task is done and look for a new
-  task that has enough resouces. Once this house has building resources delivered it will be
-  available from build queue again
-  If house is already built by other workers}
+// If we are walking to the house but the house is destroyed/canceled we should abandon immediately
+// If house has not enough resource to be built, consider building task is done and look for a new
+// task that has enough resouces. Once this house has building resources delivered it will be
+// available from build queue again
+// If house is already built by other workers
 function TKMTaskBuildHouse.WalkShouldAbandon: Boolean;
 begin
-  Result := fHouse.IsDestroyed or (not fHouse.CheckResToBuild) or fHouse.IsComplete;
+  Result := fHouse.IsDestroyed or not fHouse.CheckResToBuild or fHouse.IsComplete;
 end;
 
 

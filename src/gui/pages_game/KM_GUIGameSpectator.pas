@@ -835,7 +835,7 @@ begin
   Result := -1;
   case AIndex of
     0: Result := Integer(utRecruit);
-    1: Result := Integer(utWorker);
+    1: Result := Integer(utBuilder);
     2: Result := Integer(utSerf);
   end;
   Assert(Result <> -1);

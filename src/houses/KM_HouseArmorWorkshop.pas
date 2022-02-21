@@ -57,7 +57,7 @@ end;
 procedure TKMHouseArmorWorkshop.ToggleResDelivery(aWareType: TKMWareType);
 begin
   case aWareType of
-    wtWood: fAcceptWood := not fAcceptWood;
+    wtTimber: fAcceptWood := not fAcceptWood;
     wtLeather: fAcceptLeather := not fAcceptLeather;
   end;
 end;
@@ -67,7 +67,7 @@ function TKMHouseArmorWorkshop.AcceptWareForDelivery(aWareType: TKMWareType): Bo
 begin
   Result := False;
   case aWareType of
-    wtWood: Result := fAcceptWood;
+    wtTimber: Result := fAcceptWood;
     wtLeather: Result := fAcceptLeather;
   end;
 end;

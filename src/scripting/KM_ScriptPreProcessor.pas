@@ -14,6 +14,7 @@ type
   // and handler of our custom preprocessor directives
   TKMScriptPreProcessor = class
   private
+    fSilent: Boolean;
     fDestroyErrorHandler: Boolean;
     fScriptFilesInfo: TKMScriptFilesCollection;
     fErrorHandler: TKMScriptErrorHandler;
@@ -39,8 +40,8 @@ type
     function TryLoadCustomEventDirectives(const aDirectiveName, aDirectiveParam: string; aParser: TPSPascalPreProcessorParser): Boolean; virtual;
     function TryLoadCustomConsoleCommands(const aDirectiveName, aDirectiveParam: string; aParser: TPSPascalPreProcessorParser): Boolean; virtual;
   public
-    constructor Create(aOnScriptError: TUnicodeStringEvent = nil); overload;
-    constructor Create(aOnScriptError: TUnicodeStringEvent; aErrorHandler: TKMScriptErrorHandler); overload;
+    constructor Create(aOnScriptError: TUnicodeStringEvent = nil; aSilent: Boolean = False); overload;
+    constructor Create(aOnScriptError: TUnicodeStringEvent; aErrorHandler: TKMScriptErrorHandler; aSilent: Boolean = False); overload;
     destructor Destroy; override;
 
     property PSPreProcessor: TPSPreProcessor read fPSPreProcessor;
@@ -67,17 +68,18 @@ uses
   KM_Defaults;
 
 { TKMScriptingPreProcessor }
-constructor TKMScriptPreProcessor.Create(aOnScriptError: TUnicodeStringEvent = nil);
+constructor TKMScriptPreProcessor.Create(aOnScriptError: TUnicodeStringEvent = nil; aSilent: Boolean = False);
 begin
-  Create(aOnScriptError, TKMScriptErrorHandler.Create(aOnScriptError));
+  Create(aOnScriptError, TKMScriptErrorHandler.Create(aOnScriptError), aSilent);
   fDestroyErrorHandler := True;
 end;
 
 
-constructor TKMScriptPreProcessor.Create(aOnScriptError: TUnicodeStringEvent; aErrorHandler: TKMScriptErrorHandler);
+constructor TKMScriptPreProcessor.Create(aOnScriptError: TUnicodeStringEvent; aErrorHandler: TKMScriptErrorHandler; aSilent: Boolean = False);
 begin
   inherited Create;
 
+  fSilent := aSilent;
   fPSPreProcessor := TPSPreProcessor.Create;
   fPSPreProcessor.OnNeedFile := ScriptOnNeedFile;
   fPSPreProcessor.OnProcessDirective := ScriptOnProcessDirective;
@@ -163,6 +165,7 @@ end;
 function TKMScriptPreProcessor.PreProcessFile(const aFileName: UnicodeString; var aScriptCode: AnsiString): Boolean;
 var
   mainScriptCode: AnsiString;
+  errorStr: string;
 begin
   Result := False;
   fErrorHandler.ScriptLogFile := ChangeFileExt(aFileName, SCRIPT_LOG_EXT);
@@ -185,9 +188,12 @@ begin
   except
     on E: Exception do
     begin
-      fErrorHandler.HandleScriptErrorString(sePreprocessorError, 'Script preprocessing errors:' + EolW + E.Message);
+      if fSilent then Exit; // Silently exit
+      
+      errorStr := 'Script preprocessing errors:' + EolW + E.Message;
+      fErrorHandler.HandleScriptErrorString(sePreprocessorError, errorStr);
       if fValidationIssues <> nil then
-        fValidationIssues.AddError(0, 0, '', 'Script preprocessing errors:' + EolW + E.Message);
+        fValidationIssues.AddError(0, 0, '', errorStr);
     end;
   end;
 end;

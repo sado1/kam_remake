@@ -77,7 +77,7 @@ uses
   KM_Game, KM_GameTypes,
   KM_RenderUI, KM_HandsCollection,
   KM_ResTexts, KM_ResFonts, KM_ResTypes,
-  KM_UnitGroup, KM_Units, KM_MapTypes, KM_GameParams, KM_AIAttacks;
+  KM_UnitGroup, KM_Units, KM_MapTypes, KM_GameParams, KM_AIAttacks, KM_AITypes;
 
 
 { TKMTestMapGenerator }
@@ -245,15 +245,17 @@ procedure TKMTestMapGenerator.CreateArmies();
 type
   TKMArmyLayout = array[1..2] of TKMPointArray;
 const
+
   ARMY: array[0..12] of TKMUnitType = (
-    utMilitia, utAxeFighter,   utSwordsman,  utBowman,  utArbaletman,
-    utPikeman, utHallebardman, utHorseScout, utCavalry, utBarbarian,
-    utPeasant, utSlingshot,    utHorseman //, utMetalBarbarian  // Skip second barbarian because of identical stats
+    utMilitia,      utAxeFighter,   utSwordFighter,  utBowman,
+    utCrossbowman,  utLanceCarrier, utPikeman,       utScout,
+    utKnight,       utBarbarian,
+    utRebel,        utRogue,        utVagabond // utWarrior, // Skip second barbarian because of identical stats
   );
-  ARMY_MELEE:     array[0..3] of TKMUnitType = (utMilitia, utAxeFighter, utSwordsman, utBarbarian);
-  ARMY_ANTIHORSE: array[0..2] of TKMUnitType = (utPeasant, utPikeman, utHallebardman);
-  ARMY_RANGED:    array[0..2] of TKMUnitType = (utSlingshot, utBowman, utArbaletman);
-  ARMY_MOUNTED:   array[0..2] of TKMUnitType = (utHorseman, utHorseScout, utCavalry);
+  ARMY_MELEE:     array[0..3] of TKMUnitType = (utMilitia, utAxeFighter, utSwordFighter, utBarbarian);
+  ARMY_ANTIHORSE: array[0..2] of TKMUnitType = (utRebel, utPikeman, utLanceCarrier);
+  ARMY_RANGED:    array[0..2] of TKMUnitType = (utRogue, utBowman, utCrossbowman);
+  ARMY_MOUNTED:   array[0..2] of TKMUnitType = (utVagabond, utScout, utKnight);
 
   procedure CreateLayout(var aLayout: TKMArmyLayout);
   var

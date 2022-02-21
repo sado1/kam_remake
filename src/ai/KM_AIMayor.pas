@@ -74,12 +74,12 @@ uses
 
 const // Sample list made by AntonP
   WarriorHouses: array [0..44] of TKMHouseType = (
-  htSchool, htInn, htQuary, htQuary, htQuary,
+  htSchool, htInn, htQuarry, htQuarry, htQuarry,
   htWoodcutters, htWoodcutters, htWoodcutters, htWoodcutters, htWoodcutters,
   htSawmill, htSawmill, htWoodcutters, htGoldMine, htCoalMine,
   htGoldMine, htCoalMine, htMetallurgists, htCoalMine, htCoalMine,
   htIronMine, htIronMine, htCoalMine, htIronMine, htWeaponSmithy,
-  htWeaponSmithy, htWineyard, htWineyard, htWineyard, htStore,
+  htWeaponSmithy, htVineyard, htVineyard, htVineyard, htStore,
   htBarracks, htFarm, htFarm, htFarm, htMill,
   htMill, htBakery, htBakery, htSchool, htIronSmithy,
   htIronSmithy, htFarm, htSwine, htWeaponSmithy, htArmorSmithy
@@ -175,15 +175,15 @@ var
       begin
         //Keep enough recruits to equip using all weapons once PT ends
         //Iron soldiers
-        Result := Min(P.Stats.GetWareBalance(wtMetalArmor),
-                      P.Stats.GetWareBalance(wtArbalet) + P.Stats.GetWareBalance(wtHallebard)
-                      + Min(P.Stats.GetWareBalance(wtSword), P.Stats.GetWareBalance(wtMetalShield)));
+        Result := Min(P.Stats.GetWareBalance(wtIronArmor),
+                      P.Stats.GetWareBalance(wtCrossbow) + P.Stats.GetWareBalance(wtPike)
+                      + Min(P.Stats.GetWareBalance(wtSword), P.Stats.GetWareBalance(wtIronShield)));
         //Leather soldiers we can make
-        Inc(Result, Min(P.Stats.GetWareBalance(wtArmor),
-                        P.Stats.GetWareBalance(wtBow) + P.Stats.GetWareBalance(wtPike)
-                        + Min(P.Stats.GetWareBalance(wtAxe), P.Stats.GetWareBalance(wtShield))));
+        Inc(Result, Min(P.Stats.GetWareBalance(wtLeatherArmor),
+                        P.Stats.GetWareBalance(wtBow) + P.Stats.GetWareBalance(wtLance)
+                        + Min(P.Stats.GetWareBalance(wtAxe), P.Stats.GetWareBalance(wtWoodenShield))));
         //Militia with leftover axes
-        AxesLeft := P.Stats.GetWareBalance(wtAxe) - Min(P.Stats.GetWareBalance(wtArmor), P.Stats.GetWareBalance(wtShield));
+        AxesLeft := P.Stats.GetWareBalance(wtAxe) - Min(P.Stats.GetWareBalance(wtLeatherArmor), P.Stats.GetWareBalance(wtWoodenShield));
         if AxesLeft > 0 then
           Inc(Result, AxesLeft);
       end
@@ -252,10 +252,10 @@ begin
         // If we are low on Gold don't hire more ppl (next school will fail this too, so we can exit)
         if not HasEnoughGoldForAux then Exit;
 
-        serfCount := Round(fSetup.SerfsPerHouse * (P.Stats.GetHouseQty(htAny) + P.Stats.GetUnitQty(utWorker)/2));
+        serfCount := Round(fSetup.SerfsPerHouse * (P.Stats.GetHouseQty(htAny) + P.Stats.GetUnitQty(utBuilder)/2));
 
         if not TryToTrain(HS, utSerf, serfCount) then
-          if not TryToTrain(HS, utWorker, fSetup.WorkerCount) then
+          if not TryToTrain(HS, utBuilder, fSetup.WorkerCount) then
             if not gGame.CheckTime(fSetup.RecruitDelay) then //Recruits can only be trained after this time
               Break
             else
@@ -295,32 +295,32 @@ begin
     if not H.IsDestroyed and (ResOrder = 0) then
     case H.HouseType of
       htArmorSmithy:     for K := 1 to 4 do
-                            if gResHouses[H.HouseType].ResOutput[K] = wtMetalShield then
-                              H.ResOrder[K] := Round(WarfareRatios[wtMetalShield] * PORTIONS)
+                            if gResHouses[H.HouseType].ResOutput[K] = wtIronShield then
+                              H.ResOrder[K] := Round(WarfareRatios[wtIronShield] * PORTIONS)
                             else
-                            if gResHouses[H.HouseType].ResOutput[K] = wtMetalArmor then
-                              H.ResOrder[K] := Round(WarfareRatios[wtMetalArmor] * PORTIONS);
+                            if gResHouses[H.HouseType].ResOutput[K] = wtIronArmor then
+                              H.ResOrder[K] := Round(WarfareRatios[wtIronArmor] * PORTIONS);
       htArmorWorkshop:   for K := 1 to 4 do
-                            if gResHouses[H.HouseType].ResOutput[K] = wtShield then
-                              H.ResOrder[K] := Round(WarfareRatios[wtShield] * PORTIONS)
+                            if gResHouses[H.HouseType].ResOutput[K] = wtWoodenShield then
+                              H.ResOrder[K] := Round(WarfareRatios[wtWoodenShield] * PORTIONS)
                             else
-                            if gResHouses[H.HouseType].ResOutput[K] = wtArmor then
-                              H.ResOrder[K] := Round(WarfareRatios[wtArmor] * PORTIONS);
+                            if gResHouses[H.HouseType].ResOutput[K] = wtLeatherArmor then
+                              H.ResOrder[K] := Round(WarfareRatios[wtLeatherArmor] * PORTIONS);
       htWeaponSmithy:    for K := 1 to 4 do
                             if gResHouses[H.HouseType].ResOutput[K] = wtSword then
                               H.ResOrder[K] := Round(WarfareRatios[wtSword] * PORTIONS)
                             else
-                            if gResHouses[H.HouseType].ResOutput[K] = wtHallebard then
-                              H.ResOrder[K] := Round(WarfareRatios[wtHallebard] * PORTIONS)
+                            if gResHouses[H.HouseType].ResOutput[K] = wtPike then
+                              H.ResOrder[K] := Round(WarfareRatios[wtPike] * PORTIONS)
                             else
-                            if gResHouses[H.HouseType].ResOutput[K] = wtArbalet then
-                              H.ResOrder[K] := Round(WarfareRatios[wtArbalet] * PORTIONS);
+                            if gResHouses[H.HouseType].ResOutput[K] = wtCrossbow then
+                              H.ResOrder[K] := Round(WarfareRatios[wtCrossbow] * PORTIONS);
       htWeaponWorkshop:  for K := 1 to 4 do
                             if gResHouses[H.HouseType].ResOutput[K] = wtAxe then
                               H.ResOrder[K] := Round(WarfareRatios[wtAxe] * PORTIONS)
                             else
-                            if gResHouses[H.HouseType].ResOutput[K] = wtPike then
-                              H.ResOrder[K] := Round(WarfareRatios[wtPike] * PORTIONS)
+                            if gResHouses[H.HouseType].ResOutput[K] = wtLance then
+                              H.ResOrder[K] := Round(WarfareRatios[wtLance] * PORTIONS)
                             else
                             if gResHouses[H.HouseType].ResOutput[K] = wtBow then
                               H.ResOrder[K] := Round(WarfareRatios[wtBow] * PORTIONS);
@@ -578,7 +578,7 @@ begin
   end;
 
   //Build fields for Wineyard
-  if aHouse = htWineyard then
+  if aHouse = htVineyard then
   begin
     NodeTagList := TKMPointTagList.Create;
     try
@@ -646,7 +646,7 @@ begin
       S := TKMHouseStore(Houses[I]);
 
       //We like to always keep a supply of these
-      S.NotAcceptFlag[wtWood] := S.CheckResIn(wtWood) > 50;
+      S.NotAcceptFlag[wtTimber] := S.CheckResIn(wtTimber) > 50;
       S.NotAcceptFlag[wtStone] := S.CheckResIn(wtStone) > 50;
       S.NotAcceptFlag[wtGold] := S.CheckResIn(wtGold) > 50;
 
@@ -658,7 +658,7 @@ begin
       S.NotAcceptFlag[wtIronOre] := gHands[fOwner].Stats.GetHouseQty(htIronSmithy) > 0;
       S.NotAcceptFlag[wtCoal] := gHands[fOwner].Stats.GetHouseQty(htMetallurgists) +
                                   gHands[fOwner].Stats.GetHouseQty(htIronSmithy) > 0;
-      S.NotAcceptFlag[wtSteel] := gHands[fOwner].Stats.GetHouseQty(htWeaponSmithy) +
+      S.NotAcceptFlag[wtIron] := gHands[fOwner].Stats.GetHouseQty(htWeaponSmithy) +
                                    gHands[fOwner].Stats.GetHouseQty(htArmorSmithy) > 0;
       S.NotAcceptFlag[wtCorn] := gHands[fOwner].Stats.GetHouseQty(htMill) +
                                   gHands[fOwner].Stats.GetHouseQty(htSwine) +
@@ -856,19 +856,19 @@ procedure TKMayor.SetArmyDemand(aFootmen, aPikemen, aHorsemen, aArchers: Single)
   begin
     if aIron then
       case aGT of
-        gtMelee:     Result := gHands[fOwner].Locks.GetUnitBlocked(utSwordsman);
-        gtAntiHorse: Result := gHands[fOwner].Locks.GetUnitBlocked(utHallebardman);
-        gtRanged:    Result := gHands[fOwner].Locks.GetUnitBlocked(utArbaletman);
-        gtMounted:   Result := gHands[fOwner].Locks.GetUnitBlocked(utCavalry);
+        gtMelee:     Result := gHands[fOwner].Locks.GetUnitBlocked(utSwordFighter);
+        gtAntiHorse: Result := gHands[fOwner].Locks.GetUnitBlocked(utPikeman);
+        gtRanged:    Result := gHands[fOwner].Locks.GetUnitBlocked(utCrossbowman);
+        gtMounted:   Result := gHands[fOwner].Locks.GetUnitBlocked(utKnight);
         else         Result := True;
       end
     else
       case aGT of
         gtMelee:     Result := gHands[fOwner].Locks.GetUnitBlocked(utMilitia) and
                                 gHands[fOwner].Locks.GetUnitBlocked(utAxeFighter);
-        gtAntiHorse: Result := gHands[fOwner].Locks.GetUnitBlocked(utPikeman);
+        gtAntiHorse: Result := gHands[fOwner].Locks.GetUnitBlocked(utLanceCarrier);
         gtRanged:    Result := gHands[fOwner].Locks.GetUnitBlocked(utBowman);
-        gtMounted:   Result := gHands[fOwner].Locks.GetUnitBlocked(utHorseScout);
+        gtMounted:   Result := gHands[fOwner].Locks.GetUnitBlocked(utScout);
         else         Result := True;
       end;
   end;
@@ -910,29 +910,29 @@ begin
 
   //Store ratios localy in Mayor to place weapon orders
   //Leather
-  WarfareRatios[wtArmor] :=      Footmen  * GetUnitRatio(utAxeFighter)
-                                 + Horsemen * GetUnitRatio(utHorseScout)
-                                 + Pikemen  * GetUnitRatio(utPikeman)
+  WarfareRatios[wtLeatherArmor] :=      Footmen  * GetUnitRatio(utAxeFighter)
+                                 + Horsemen * GetUnitRatio(utScout)
+                                 + Pikemen  * GetUnitRatio(utLanceCarrier)
                                  + Archers  * GetUnitRatio(utBowman);
-  WarfareRatios[wtShield] :=     Footmen  * GetUnitRatio(utAxeFighter)
-                                 + Horsemen * GetUnitRatio(utHorseScout);
+  WarfareRatios[wtWoodenShield] :=     Footmen  * GetUnitRatio(utAxeFighter)
+                                 + Horsemen * GetUnitRatio(utScout);
   WarfareRatios[wtAxe] :=        Footmen  * Max(GetUnitRatio(utAxeFighter), GetUnitRatio(utMilitia))
-                                 + Horsemen * GetUnitRatio(utHorseScout);
-  WarfareRatios[wtPike] :=       Pikemen  * GetUnitRatio(utPikeman);
+                                 + Horsemen * GetUnitRatio(utScout);
+  WarfareRatios[wtLance] :=       Pikemen  * GetUnitRatio(utLanceCarrier);
   WarfareRatios[wtBow] :=        Archers  * GetUnitRatio(utBowman);
   //Iron
-  WarfareRatios[wtMetalArmor] := Footmen  * GetUnitRatio(utSwordsman)
-                                 + Horsemen * GetUnitRatio(utCavalry)
-                                 + Pikemen  * GetUnitRatio(utHallebardman)
-                                 + Archers  * GetUnitRatio(utArbaletman);
-  WarfareRatios[wtMetalShield] :=Footmen  * GetUnitRatio(utSwordsman)
-                                 + Horsemen * GetUnitRatio(utCavalry);
-  WarfareRatios[wtSword] :=      Footmen  * GetUnitRatio(utSwordsman)
-                                 + Horsemen * GetUnitRatio(utCavalry);
-  WarfareRatios[wtHallebard] :=  Pikemen  * GetUnitRatio(utHallebardman);
-  WarfareRatios[wtArbalet] :=    Archers  * GetUnitRatio(utArbaletman);
+  WarfareRatios[wtIronArmor] := Footmen  * GetUnitRatio(utSwordFighter)
+                                 + Horsemen * GetUnitRatio(utKnight)
+                                 + Pikemen  * GetUnitRatio(utPikeman)
+                                 + Archers  * GetUnitRatio(utCrossbowman);
+  WarfareRatios[wtIronShield] :=Footmen  * GetUnitRatio(utSwordFighter)
+                                 + Horsemen * GetUnitRatio(utKnight);
+  WarfareRatios[wtSword] :=      Footmen  * GetUnitRatio(utSwordFighter)
+                                 + Horsemen * GetUnitRatio(utKnight);
+  WarfareRatios[wtPike] :=  Pikemen  * GetUnitRatio(utPikeman);
+  WarfareRatios[wtCrossbow] :=    Archers  * GetUnitRatio(utCrossbowman);
 
-  WarfareRatios[wtHorse] := Horsemen * (GetUnitRatio(utCavalry) + GetUnitRatio(utHorseScout));
+  WarfareRatios[wtHorse] := Horsemen * (GetUnitRatio(utKnight) + GetUnitRatio(utScout));
 
   //How many warriors we would need to equip per-minute
   IronPerMin := fSetup.WarriorsPerMinute(atIron);
@@ -953,8 +953,8 @@ begin
       WarfarePerMinute[WT] := WarfareRatios[WT] * LeatherPerMin;
 
   //Horses require separate calculation
-  WarfarePerMinute[wtHorse] := Horsemen * (  GetUnitRatio(utCavalry) * IronPerMin
-                                            + GetUnitRatio(utHorseScout) * LeatherPerMin);
+  WarfarePerMinute[wtHorse] := Horsemen * (  GetUnitRatio(utKnight) * IronPerMin
+                                            + GetUnitRatio(utScout) * LeatherPerMin);
 
   //Update warfare needs accordingly
   fBalance.SetArmyDemand(WarfarePerMinute);

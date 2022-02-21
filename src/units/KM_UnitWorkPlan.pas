@@ -363,7 +363,7 @@ begin
                           end;
                       end else
 
-                      if aHome = htWineyard then
+                      if aHome = htVineyard then
                       begin
                         fIssued := gTerrain.FindWineField(aLoc, gRes.Units[aUnit.UnitType].MiningRange, KMPOINT_ZERO, tmp);
                         if fIssued then
@@ -375,18 +375,18 @@ begin
                           SubActAdd(haWork5,1);
                         end;
                       end;
-    utLamberjack:    if aHome = htSawmill then
+    utCarpenter:    if aHome = htSawmill then
                       begin
-                        ResourcePlan(wtTrunk,1,wtNone,0,wtWood);
+                        ResourcePlan(wtTrunk,1,wtNone,0,wtTimber);
                         SubActAdd(haWork1,1);
                         SubActAdd(haWork2,25);
                         SubActAdd(haWork5,1);
                         fIssued := True;
                       end else
 
-                      if (aHome = htArmorWorkshop) and (aProduct = wtArmor) then
+                      if (aHome = htArmorWorkshop) and (aProduct = wtLeatherArmor) then
                       begin
-                        ResourcePlan(wtLeather,1,wtNone,0,wtArmor);
+                        ResourcePlan(wtLeather,1,wtNone,0,wtLeatherArmor);
                         for I := 0 to 3 do
                         begin
                           SubActAdd(haWork2,1);
@@ -397,9 +397,9 @@ begin
                         fIssued := True;
                       end else
 
-                      if (aHome = htArmorWorkshop) and (aProduct = wtShield) then
+                      if (aHome = htArmorWorkshop) and (aProduct = wtWoodenShield) then
                       begin
-                        ResourcePlan(wtWood,1,wtNone,0,wtShield);
+                        ResourcePlan(wtTimber,1,wtNone,0,wtWoodenShield);
                         for I := 0 to 3 do
                         begin
                           SubActAdd(haWork2,1);
@@ -412,7 +412,7 @@ begin
 
                       if (aHome = htWeaponWorkshop) and (aProduct = wtAxe) then
                       begin
-                        ResourcePlan(wtWood,2,wtNone,0,wtAxe);
+                        ResourcePlan(wtTimber,2,wtNone,0,wtAxe);
                         SubActAdd(haWork1,1);
                         for I := 0 to 2 do
                         begin
@@ -424,9 +424,9 @@ begin
                         fIssued := True;
                       end else
 
-                      if (aHome = htWeaponWorkshop) and (aProduct = wtPike) then
+                      if (aHome = htWeaponWorkshop) and (aProduct = wtLance) then
                       begin
-                        ResourcePlan(wtWood,2,wtNone,0,wtPike);
+                        ResourcePlan(wtTimber,2,wtNone,0,wtLance);
                         SubActAdd(haWork1,1);
                         for I := 0 to 2 do
                         begin
@@ -440,7 +440,7 @@ begin
 
                       if (aHome = htWeaponWorkshop) and (aProduct = wtBow) then
                       begin
-                        ResourcePlan(wtWood,2,wtNone,0,wtBow);
+                        ResourcePlan(wtTimber,2,wtNone,0,wtBow);
                         SubActAdd(haWork1,1);
                         for I := 0 to 2 do
                         begin
@@ -478,7 +478,7 @@ begin
 
                       if aHome = htButchers then
                       begin
-                        ResourcePlan(wtPig,1,wtNone,0,wtSausages);
+                        ResourcePlan(wtPig,1,wtNone,0,wtSausage);
                         SubActAdd(haWork1,1);
                         for I := 0 to 5 do
                         begin
@@ -488,7 +488,7 @@ begin
                         end;
                         fIssued := True;
                       end;
-    utFisher:        if aHome = htFisherHut then
+    utFisher:        if aHome = htFishermans then
                       begin
                         fIssued := gTerrain.FindFishWater(aLoc, gRes.Units[aUnit.UnitType].MiningRange, KMPOINT_ZERO, False, tmp);
                         if fIssued then
@@ -499,7 +499,7 @@ begin
                           //We must check again this time ignoring working units since they don't indicate the resource is depleted
                           ResourceDepleted := not gTerrain.FindFishWater(aLoc, gRes.Units[aUnit.UnitType].MiningRange, KMPOINT_ZERO, True, tmp);
                       end;
-    utStoneCutter:   if aHome = htQuary then
+    utStonemason:   if aHome = htQuarry then
                       begin
                         fIssued := gTerrain.FindStone(aLoc, gRes.Units[aUnit.UnitType].MiningRange, KMPOINT_ZERO, False, tmp);
                         if fIssued then
@@ -513,9 +513,9 @@ begin
                           //We must check again this time ignoring working units since they don't indicate the resource is depleted
                           ResourceDepleted := not gTerrain.FindStone(aLoc, gRes.Units[aUnit.UnitType].MiningRange, KMPOINT_ZERO, True, tmp);
                       end;
-    utSmith:         if (aHome = htArmorSmithy) and (aProduct = wtMetalShield) then
+    utSmith:         if (aHome = htArmorSmithy) and (aProduct = wtIronShield) then
                       begin
-                        ResourcePlan(wtSteel,1,wtCoal,1,wtMetalShield);
+                        ResourcePlan(wtIron,1,wtCoal,1,wtIronShield);
                         for I := 0 to 3 do
                         begin
                           SubActAdd(haWork2,1);
@@ -527,9 +527,9 @@ begin
                         fIssued := True;
                       end else
 
-                      if (aHome = htArmorSmithy) and (aProduct = wtMetalArmor) then
+                      if (aHome = htArmorSmithy) and (aProduct = wtIronArmor) then
                       begin
-                        ResourcePlan(wtSteel,1,wtCoal,1,wtMetalArmor);
+                        ResourcePlan(wtIron,1,wtCoal,1,wtIronArmor);
                         for I := 0 to 3 do
                         begin
                           SubActAdd(haWork2,1);
@@ -543,7 +543,7 @@ begin
 
                       if (aHome = htWeaponSmithy) and (aProduct = wtSword) then
                       begin
-                        ResourcePlan(wtSteel,1,wtCoal,1,wtSword);
+                        ResourcePlan(wtIron,1,wtCoal,1,wtSword);
                         SubActAdd(haWork1,1);
                         for I := 0 to 2 do
                         begin
@@ -555,9 +555,9 @@ begin
                         fIssued := True;
                       end else
 
-                      if (aHome = htWeaponSmithy) and (aProduct = wtHallebard) then
+                      if (aHome = htWeaponSmithy) and (aProduct = wtPike) then
                       begin
-                        ResourcePlan(wtSteel,1,wtCoal,1,wtHallebard);
+                        ResourcePlan(wtIron,1,wtCoal,1,wtPike);
                         SubActAdd(haWork1,1);
                         for I := 0 to 2 do
                         begin
@@ -569,9 +569,9 @@ begin
                         fIssued := True;
                       end else
 
-                      if (aHome = htWeaponSmithy) and (aProduct = wtArbalet) then
+                      if (aHome = htWeaponSmithy) and (aProduct = wtCrossbow) then
                       begin
-                        ResourcePlan(wtSteel,1,wtCoal,1,wtArbalet);
+                        ResourcePlan(wtIron,1,wtCoal,1,wtCrossbow);
                         SubActAdd(haWork1,1);
                         for I := 0 to 2 do
                         begin
@@ -584,7 +584,7 @@ begin
                       end;
     utMetallurgist:  if aHome = htIronSmithy then
                       begin
-                        ResourcePlan(wtIronOre,1,wtCoal,1,wtSteel);
+                        ResourcePlan(wtIronOre,1,wtCoal,1,wtIron);
                         for I := 0 to 3 do
                         begin
                           SubActAdd(haWork2,1);

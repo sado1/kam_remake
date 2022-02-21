@@ -244,7 +244,10 @@ type
     property ResourceOutPoolArray: TKMByteArray read GetResourceOutPoolArray;
 
     property BuildingState: TKMHouseBuildState read fBuildState write fBuildState;
+    property BuildSupplyWood: Byte read fBuildSupplyWood;
+    property BuildSupplyStone: Byte read fBuildSupplyStone;
     procedure IncBuildingProgress;
+
     function MaxHealth: Word;
     procedure AddDamage(aAmount: Word; aAttacker: TObject; aIsEditor: Boolean = False);
     procedure AddRepair(aAmount: Word = 5);
@@ -266,10 +269,10 @@ type
     function PickOrder: Byte;
     function CheckResToBuild: Boolean;
     function GetMaxInRes: Word;
-    procedure ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False); virtual; //override for School and etc..
+    procedure ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromStaticScript: Boolean = False); virtual; //override for School and etc..
     procedure ResAddToOut(aWare: TKMWareType; const aCount: Integer = 1);
     procedure ResAddToEitherFromScript(aWare: TKMWareType; aCount: Integer);
-    procedure ResAddToBuild(aWare: TKMWareType);
+    procedure ResAddToBuild(aWare: TKMWareType; aCount: Integer = 1);
     procedure ResTakeFromIn(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); virtual;
     procedure ResTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); virtual;
     function ResCanAddToIn(aWare: TKMWareType): Boolean; virtual;
@@ -739,7 +742,7 @@ begin
   //Leave disposing of units inside the house to themselves
 
   //Notify the script that the house is now completely gone
-  gScriptEvents.ProcHouseAfterDestroyed(HouseType, Owner, Entrance.X, Entrance.Y);
+  gScriptEvents.EventHouseAfterDestroyed(HouseType, Owner, Entrance.X, Entrance.Y);
 end;
 
 
@@ -913,7 +916,7 @@ function TKMHouse.GetResourceDepletedMessageId: Word;
 begin
   Result := 0;
   case HouseType of
-    htQuary:       Result := TX_MSG_STONE_DEPLETED;
+    htQuarry:       Result := TX_MSG_STONE_DEPLETED;
     htCoalMine:    Result := TX_MSG_COAL_DEPLETED;
     htIronMine:    Result := TX_MSG_IRON_DEPLETED;
     htGoldMine:    Result := TX_MSG_GOLD_DEPLETED;
@@ -921,7 +924,7 @@ begin
                       Result := TX_MSG_WOODCUTTER_PLANT_DEPLETED
                     else
                       Result := TX_MSG_WOODCUTTER_DEPLETED;
-    htFisherHut:   if not gTerrain.CanFindFishingWater(PointBelowEntrance, gRes.Units[utFisher].MiningRange) then
+    htFishermans:   if not gTerrain.CanFindFishingWater(PointBelowEntrance, gRes.Units[utFisher].MiningRange) then
                       Result := TX_MSG_FISHERMAN_TOO_FAR
                     else
                       Result := TX_MSG_FISHERMAN_CANNOT_CATCH;
@@ -1181,7 +1184,7 @@ begin
   Inc(fBuildingProgress, 5); //is how many effort was put into building nevermind applied damage
   Dec(fBuildReserve, 5); //This is reserve we build from
 
-  if (fBuildState=hbsWood)
+  if (fBuildState = hbsWood)
     and (fBuildingProgress = gResHouses[fType].WoodCost*50) then
     fBuildState := hbsStone;
 
@@ -1559,7 +1562,7 @@ end;
 
 
 // Check if house has enough resource supply to be built depending on it's state
-function TKMHouse.CheckResToBuild:boolean;
+function TKMHouse.CheckResToBuild: Boolean;
 begin
   case fBuildState of
     hbsWood:   Result := (fBuildSupplyWood > 0) or (fBuildReserve > 0);
@@ -1571,7 +1574,7 @@ end;
 
 function TKMHouse.GetMaxInRes: Word;
 begin
-  if fType in [htStore, htBarracks, htMarketplace] then
+  if fType in [htStore, htBarracks, htMarket] then
     Result := High(Word)
   else
     Result := MAX_WARES_IN_HOUSE; //All other houses can only stock 5 for now
@@ -1593,7 +1596,7 @@ end;
 
 //Maybe it's better to rule out In/Out? No, it is required to separate what can be taken out of the house and what not.
 //But.. if we add "Evacuate" button to all house the separation becomes artificial..
-procedure TKMHouse.ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromScript: Boolean = False);
+procedure TKMHouse.ResAddToIn(aWare: TKMWareType; aCount: Integer = 1; aFromStaticScript: Boolean = False);
 var
   I, ordersRemoved: Integer;
 begin
@@ -1602,12 +1605,12 @@ begin
   for I := 1 to 4 do
     if aWare = gResHouses[fType].ResInput[I] then
     begin
-      //Don't allow the script to overfill houses
-      if aFromScript then
+      //Don't allow the static script to overfill houses
+      if aFromStaticScript then
         aCount := EnsureRange(aCount, 0, GetMaxInRes - fResourceIn[I]);
       //ResDeliveryCnt stay same, because corresponding demand will be closed
       ResIn[I] := ResIn[I] + aCount;
-      if aFromScript then
+      if aFromStaticScript then
       begin
         ResDeliveryCnt[I] := ResDeliveryCnt[I] + aCount;
         ordersRemoved := gHands[Owner].Deliveries.Queue.TryRemoveDemand(Self, aWare, aCount);
@@ -1673,12 +1676,12 @@ end;
 
 
 // Add resources to building process
-procedure TKMHouse.ResAddToBuild(aWare: TKMWareType);
+procedure TKMHouse.ResAddToBuild(aWare: TKMWareType; aCount: Integer = 1);
 begin
   case aWare of
-    wtWood:  Inc(fBuildSupplyWood);
-    wtStone: Inc(fBuildSupplyStone);
-    else      raise ELocError.Create('WIP house is not supposed to recieve ' + gResWares[aWare].Title + ', right?', fPosition);
+    wtTimber:  fBuildSupplyWood := EnsureRange(fBuildSupplyWood + aCount, 0, gResHouses[fType].WoodCost);
+    wtStone: fBuildSupplyStone := EnsureRange(fBuildSupplyStone + aCount, 0, gResHouses[fType].StoneCost);
+    else     raise ELocError.Create('WIP house is not supposed to recieve ' + gResWares[aWare].Title + ', right?', fPosition);
   end;
 end;
 
@@ -1930,11 +1933,11 @@ begin
     htIronMine:      if (work = haWork2)and(step = 7) then gSoundPlayer.Play(sfxmine, fPosition);
     htGoldMine:      if (work = haWork2)and(step = 5) then gSoundPlayer.Play(sfxmine, fPosition);
     htSawmill:       if (work = haWork2)and(step = 1) then gSoundPlayer.Play(sfxsaw, fPosition);
-    htWineyard:      if (work = haWork2)and(step in [1,7,13,19]) then gSoundPlayer.Play(sfxwineStep, fPosition)
+    htVineyard:      if (work = haWork2)and(step in [1,7,13,19]) then gSoundPlayer.Play(sfxwineStep, fPosition)
                       else if (work = haWork5)and(step = 14) then gSoundPlayer.Play(sfxwineDrain, fPosition,true,1.5)
                       else if (work = haWork1)and(step = 10) then gSoundPlayer.Play(sfxwineDrain, fPosition,true,1.5);
     htBakery:        if (work = haWork3)and(step in [6,25]) then gSoundPlayer.Play(sfxBakerSlap, fPosition);
-    htQuary:         if (work = haWork2)and(step in [4,13]) then gSoundPlayer.Play(sfxQuarryClink, fPosition)
+    htQuarry:         if (work = haWork2)and(step in [4,13]) then gSoundPlayer.Play(sfxQuarryClink, fPosition)
                       else if (work = haWork5)and(step in [4,13,22]) then gSoundPlayer.Play(sfxQuarryClink, fPosition);
     htWeaponSmithy:  if (work = haWork1)and(step in [17,22]) then gSoundPlayer.Play(sfxBlacksmithFire, fPosition)
                       else if (work = haWork2)and(step in [10,25]) then gSoundPlayer.Play(sfxBlacksmithBang, fPosition)

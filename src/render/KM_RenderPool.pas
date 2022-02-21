@@ -954,7 +954,7 @@ var
 begin
   if ResType = wtHorse then // Horses are a beast, BeastId is the count, age is 1
     for I := 1 to Min(ResCount, MARKET_WARES[ResType].Count) do // Render each beast
-      AddHouseStableBeasts(htMarketplace, Loc, I, 1, AnimStep, rxHouses)
+      AddHouseStableBeasts(htMarket, Loc, I, 1, AnimStep, rxHouses)
   else
   begin
     if MARKET_WARES[ResType].Count = 0 then Exit;
@@ -1010,8 +1010,8 @@ begin
 
   case aProj of
     ptArrow:     id := gRes.Interpolation.UnitActionByPercent(utBowman, uaSpec, aDir, aFlight);
-    ptBolt:      id := gRes.Interpolation.UnitActionByPercent(utArbaletman, uaSpec, aDir, aFlight);
-    ptSlingRock: id := gRes.Interpolation.UnitActionByPercent(utSlingshot, uaSpec, aDir, aFlight);
+    ptBolt:      id := gRes.Interpolation.UnitActionByPercent(utCrossbowman, uaSpec, aDir, aFlight);
+    ptSlingRock: id := gRes.Interpolation.UnitActionByPercent(utRogue, uaSpec, aDir, aFlight);
     ptTowerRock: id := gRes.Interpolation.UnitActionByPercent(utRecruit, uaSpec, aDir, aFlight);
     else          id := 1; // Nothing?
   end;

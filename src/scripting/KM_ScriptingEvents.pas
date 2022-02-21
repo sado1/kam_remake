@@ -53,6 +53,20 @@ type
     function MethodAssigned(aEventType: TKMScriptEventType): Boolean; overload; inline;
     function MethodAssigned(const aCmdName: AnsiString): Boolean; overload; inline;
 
+    procedure ProcHouseAfterDestroyed(aHouseType: Integer; aOwner: TKMHandID; aX, aY: Integer);
+    procedure ProcHouseAfterDestroyedEx(aHouseType: TKMHouseType; aOwner: TKMHandID; aX, aY: Integer);
+
+    procedure ProcHousePlanPlaced(aPlayer: TKMHandID; aX, aY, aHouseType: Integer);
+    procedure ProcHousePlanPlacedEx(aPlayer: TKMHandID; aX, aY: Integer; aHouseType: TKMHouseType);
+
+    procedure ProcHousePlanRemoved(aPlayer: TKMHandID; aX, aY, aHouseType: Integer);
+    procedure ProcHousePlanRemovedEx(aPlayer: TKMHandID; aX, aY: Integer; aHouseType: TKMHouseType);
+
+    procedure ProcMarketTrade(aMarket: TKMHouse; aFrom, aTo: Integer);
+    procedure ProcMarketTradeEx(aMarket: TKMHouse; aFrom, aTo: TKMWareType);
+
+    procedure ProcUnitAfterDied(aUnitType: Integer; aOwner: TKMHandID; aX, aY: Integer);
+    procedure ProcUnitAfterDiedEx(aUnitType: TKMUnitType; aOwner: TKMHandID; aX, aY: Integer);
   public
     ExceptionOutsideScript: Boolean; //Flag that the exception occured in a State or Action call not script
 
@@ -76,15 +90,15 @@ type
 
     procedure ProcBeacon(aPlayer: TKMHandID; aX, aY: Integer);
     procedure ProcFieldBuilt(aPlayer: TKMHandID; aX, aY: Integer);
-    procedure ProcHouseAfterDestroyed(aHouseType: TKMHouseType; aOwner: TKMHandID; aX, aY: Integer);
+    procedure EventHouseAfterDestroyed(aHouseType: TKMHouseType; aOwner: TKMHandID; aX, aY: Integer);
     procedure ProcHouseBuilt(aHouse: TKMHouse);
     procedure ProcHousePlanDigged(aHouse: TKMHouse);
-    procedure ProcHousePlanPlaced(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
-    procedure ProcHousePlanRemoved(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
+    procedure EventHousePlanPlaced(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
+    procedure EventHousePlanRemoved(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
     procedure ProcHouseDamaged(aHouse: TKMHouse; aAttacker: TKMUnit);
     procedure ProcHouseDestroyed(aHouse: TKMHouse; aDestroyerIndex: TKMHandID);
     procedure ProcHouseRepaired(aHouse: TKMHouse; aRepairAmount, aDamage: Integer);
-    procedure ProcHouseWareCountChanged(aHouse: TKMHouse; aWare: TKMWareType; aCnt: Integer; aChangeCnt: Integer);
+    procedure ProcHouseWareCountChanged(aHouse: TKMHouse; aWare: TKMWareType; aCnt, aChangeCnt: Integer);
     procedure ProcGameSpeedChanged(aSpeed: Single);
     procedure ProcGroupHungry(aGroup: TKMUnitGroup);
     procedure ProcGroupOrderAttackHouse(aGroup: TKMUnitGroup; aHouse: TKMHouse);
@@ -93,7 +107,7 @@ type
     procedure ProcGroupOrderMove(aGroup: TKMUnitGroup; aX, aY: Integer);
     procedure ProcGroupOrderLink(aGroup1, aGroup2: TKMUnitGroup);
     procedure ProcGroupOrderSplit(aGroup, aNewGroup: TKMUnitGroup);
-    procedure ProcMarketTrade(aMarket: TKMHouse; aFrom, aTo: TKMWareType);
+    procedure EventMarketTrade(aMarket: TKMHouse; aFrom, aTo: TKMWareType);
     procedure ProcMissionStart;
     procedure ProcPeacetimeEnd;
     procedure ProcPlanRoadDigged(aPlayer: TKMHandID; aX, aY: Integer);
@@ -108,12 +122,12 @@ type
     procedure ProcPlayerVictory(aPlayer: TKMHandID);
     procedure ProcRoadBuilt(aPlayer: TKMHandID; aX, aY: Integer);
     procedure ProcTick;
-    procedure ProcUnitAfterDied(aUnitType: TKMUnitType; aOwner: TKMHandID; aX, aY: Integer);
+    procedure EventUnitAfterDied(aUnitType: TKMUnitType; aOwner: TKMHandID; aX, aY: Integer);
     procedure ProcUnitAttacked(aUnit, aAttacker: TKMUnit);
     procedure ProcUnitDied(aUnit: TKMUnit; aKillerOwner: TKMHandID);
     procedure ProcUnitTrained(aUnit: TKMUnit);
     procedure ProcUnitWounded(aUnit, aAttacker: TKMUnit);
-    procedure ProcWareProduced(aHouse: TKMHouse; aType: TKMWareType; aCount: Integer);
+    procedure ProcWareProduced(aHouse: TKMHouse; aWareType: TKMWareType; aCount: Integer);
     procedure ProcWarriorEquipped(aUnit: TKMUnit; aGroup: TKMUnitGroup);
     procedure ProcWarriorWalked(aUnit: TKMUnit; aToX, aToY: Integer);
     procedure ProcWinefieldBuilt(aPlayer: TKMHandID; aX, aY: Integer);
@@ -182,10 +196,10 @@ end;
 
 destructor TKMScriptEvents.Destroy;
 var
-  Command: TKMConsoleCommand;
+  command: TKMConsoleCommand;
 begin
-  for Command in fConsoleCommands.Values do
-    Command.Free;
+  for command in fConsoleCommands.Values do
+    command.Free;
 
   fConsoleCommands.Clear;
 
@@ -196,50 +210,12 @@ end;
 
 
 procedure TKMScriptEvents.AddDefaultEventHandlersNames;
+var
+  EVT: TKMScriptEventType;
 begin
-  AddEventHandlerName(evtBeacon,                'OnBeacon');
-  AddEventHandlerName(evtFieldBuilt,            'OnFieldBuilt');
-  AddEventHandlerName(evtHouseAfterDestroyed,   'OnHouseAfterDestroyed');
-  AddEventHandlerName(evtHouseBuilt,            'OnHouseBuilt');
-  AddEventHandlerName(evtHousePlanDigged,       'OnHousePlanDigged');
-  AddEventHandlerName(evtHousePlanPlaced,       'OnHousePlanPlaced');
-  AddEventHandlerName(evtHousePlanRemoved,      'OnHousePlanRemoved');
-  AddEventHandlerName(evtHouseDamaged,          'OnHouseDamaged');
-  AddEventHandlerName(evtHouseDestroyed,        'OnHouseDestroyed');
-  AddEventHandlerName(evtHouseRepaired,         'OnHouseRepaired');
-  AddEventHandlerName(evtHouseWareCountChanged, 'OnHouseWareCountChanged');
-  AddEventHandlerName(evtGameSpeedChanged,      'OnGameSpeedChanged');
-  AddEventHandlerName(evtGroupHungry,           'OnGroupHungry');
-  AddEventHandlerName(evtGroupOrderAttackHouse, 'OnGroupOrderAttackHouse');
-  AddEventHandlerName(evtGroupOrderAttackUnit,  'OnGroupOrderAttackUnit');
-  AddEventHandlerName(evtGroupBeforeOrderSplit, 'OnGroupBeforeOrderSplit');
-  AddEventHandlerName(evtGroupOrderMove,        'OnGroupOrderMove');
-  AddEventHandlerName(evtGroupOrderLink,        'OnGroupOrderLink');
-  AddEventHandlerName(evtGroupOrderSplit,       'OnGroupOrderSplit');
-  AddEventHandlerName(evtMarketTrade,           'OnMarketTrade');
-  AddEventHandlerName(evtMissionStart,          'OnMissionStart');
-  AddEventHandlerName(evtPeacetimeEnd,          'OnPeacetimeEnd');
-  AddEventHandlerName(evtPlanRoadDigged,        'OnPlanRoadDigged');
-  AddEventHandlerName(evtPlanRoadPlaced,        'OnPlanRoadPlaced');
-  AddEventHandlerName(evtPlanRoadRemoved,       'OnPlanRoadRemoved');
-  AddEventHandlerName(evtPlanFieldPlaced,       'OnPlanFieldPlaced');
-  AddEventHandlerName(evtPlanFieldRemoved,      'OnPlanFieldRemoved');
-  AddEventHandlerName(evtPlanWinefieldDigged,   'OnPlanWinefieldDigged');
-  AddEventHandlerName(evtPlanWinefieldPlaced,   'OnPlanWinefieldPlaced');
-  AddEventHandlerName(evtPlanWinefieldRemoved,  'OnPlanWinefieldRemoved');
-  AddEventHandlerName(evtPlayerDefeated,        'OnPlayerDefeated');
-  AddEventHandlerName(evtPlayerVictory,         'OnPlayerVictory');
-  AddEventHandlerName(evtRoadBuilt,             'OnRoadBuilt');
-  AddEventHandlerName(evtTick,                  'OnTick');
-  AddEventHandlerName(evtUnitAfterDied,         'OnUnitAfterDied');
-  AddEventHandlerName(evtUnitDied,              'OnUnitDied');
-  AddEventHandlerName(evtUnitTrained,           'OnUnitTrained');
-  AddEventHandlerName(evtUnitWounded,           'OnUnitWounded');
-  AddEventHandlerName(evtUnitAttacked,          'OnUnitAttacked');
-  AddEventHandlerName(evtWareProduced,          'OnWareProduced');
-  AddEventHandlerName(evtWarriorEquipped,       'OnWarriorEquipped');
-  AddEventHandlerName(evtWarriorWalked,         'OnWarriorWalked');
-  AddEventHandlerName(evtWinefieldBuilt,        'OnWinefieldBuilt');
+  for EVT := Low(TKMScriptEventType) to High(TKMScriptEventType) do
+    // evtTick - > OnTick
+    AddEventHandlerName(EVT, AnsiString(StringReplace(GetEnumName(TypeInfo(TKMScriptEventType), Integer(EVT)), 'evt', 'On', [])));
 end;
 
 
@@ -247,7 +223,7 @@ procedure TKMScriptEvents.LinkEventsAndCommands;
 var
   I: Integer;
   ET: TKMScriptEventType;
-  CmdName: AnsiString;
+  cmdName: AnsiString;
 begin
   //Link events
   for ET := Low(TKMScriptEventType) to High(TKMScriptEventType) do
@@ -262,8 +238,8 @@ begin
     end;
 
   //Link Console commands
-  for CmdName in fConsoleCommands.Keys do
-    fConsoleCommands.Items[CmdName].Handler := fExec.GetProcAsMethodN(fConsoleCommands.Items[CmdName].ProcName);
+  for cmdName in fConsoleCommands.Keys do
+    fConsoleCommands.Items[cmdName].Handler := fExec.GetProcAsMethodN(fConsoleCommands.Items[cmdName].ProcName);
 end;
 
 
@@ -309,7 +285,7 @@ end;
 
 procedure TKMScriptEvents.AddEventHandlerName(aEventType: TKMScriptEventType; const aEventHandlerName: AnsiString);
 var
-  I, Len: Integer;
+  I, len: Integer;
 begin
   Assert(Trim(aEventHandlerName) <> '', 'Can''t add empty event handler for event type: ' +
          GetEnumName(TypeInfo(TKMScriptEventType), Integer(aEventType)));
@@ -322,10 +298,10 @@ begin
       Exit;
     end;
 
-  Len := Length(fEventHandlers[aEventType]);
+  len := Length(fEventHandlers[aEventType]);
   //todo: rewrite it not to enlarge array by 1 element
-  SetLength(fEventHandlers[aEventType], Len + 1);
-  fEventHandlers[aEventType][Len].ProcName := aEventHandlerName;
+  SetLength(fEventHandlers[aEventType], len + 1);
+  fEventHandlers[aEventType][len].ProcName := aEventHandlerName;
 end;
 
 
@@ -350,7 +326,7 @@ procedure TKMScriptEvents.Save(SaveStream: TKMemoryStream);
 var
   I: Integer;
   ET: TKMScriptEventType;
-  CmdPair: TPair<AnsiString, TKMConsoleCommand>;
+  cmdPair: TPair<AnsiString, TKMConsoleCommand>;
 begin
   SaveStream.PlaceMarker('CustomScriptEvents');
   //Save custom events
@@ -363,40 +339,40 @@ begin
 
   //Save console commands
   SaveStream.Write(Integer(fConsoleCommands.Count));
-  for CmdPair in fConsoleCommands do
-    CmdPair.Value.Save(SaveStream);
+  for cmdPair in fConsoleCommands do
+    cmdPair.Value.Save(SaveStream);
 end;
 
 
 procedure TKMScriptEvents.Load(LoadStream: TKMemoryStream);
 var
-  Cnt: Byte;
-  HandlerName: AnsiString;
-  I, CmdCount: Integer;
+  I, cmdCount: Integer;
+  cnt: Byte;
+  handlerName: AnsiString;
   ET: TKMScriptEventType;
-  Command: TKMConsoleCommand;
+  command: TKMConsoleCommand;
 begin
   LoadStream.CheckMarker('CustomScriptEvents');
   //Load custom events
   for ET := Low(TKMScriptEventType) to High(TKMScriptEventType) do
   begin
-    LoadStream.Read(Cnt); //We saved only custom event handler names (no need to save/load default one), then load them all
-    for I := 0 to Cnt - 1 do
+    LoadStream.Read(cnt); //We saved only custom event handler names (no need to save/load default one), then load them all
+    for I := 0 to cnt - 1 do
     begin
-      LoadStream.ReadA(HandlerName);
-      AddEventHandlerName(ET, HandlerName);
+      LoadStream.ReadA(handlerName);
+      AddEventHandlerName(ET, handlerName);
     end;
   end;
 
   //Load console commands
-  LoadStream.Read(CmdCount);
-  for I := 0 to CmdCount - 1 do
+  LoadStream.Read(cmdCount);
+  for I := 0 to cmdCount - 1 do
   begin
     //Create new command instance
     //Commands destruction will be handled by fConsoleCommands TDictionary in TKMScriptEvents.Destroy
-    Command := TKMConsoleCommand.Create;
-    Command.Load(LoadStream);
-    fConsoleCommands.Add(AnsiString(LowerCase(Command.Name)), Command);
+    command := TKMConsoleCommand.Create;
+    command.Load(LoadStream);
+    fConsoleCommands.Add(AnsiString(LowerCase(command.Name)), command);
   end;
 end;
 
@@ -441,9 +417,9 @@ const
 
 var
   I: Integer;
-  CmdFound: Boolean;
+  cmdFound: Boolean;
   SL: TStringList;
-  CmdPair: TPair<AnsiString, TKMConsoleCommand>;
+  cmdPair: TPair<AnsiString, TKMConsoleCommand>;
 
   {$IFDEF WDC}
   RegEx: TRegEx;
@@ -456,12 +432,12 @@ begin
   SL := TStringList.Create;
   try
     SL.Text := aScriptCode;
-    for CmdPair in fConsoleCommands do
+    for cmdPair in fConsoleCommands do
     begin
-      CmdFound := False;
+      cmdFound := False;
       //Check procedure name with regular expression
       {$IFDEF WDC}
-      RegEx := TRegEx.Create(Format('^\s*procedure\s+%s\s*\(.+\).*$', [CmdPair.Value.ProcName]), [roIgnoreCase]);
+      RegEx := TRegEx.Create(Format('^\s*procedure\s+%s\s*\(.+\).*$', [cmdPair.Value.ProcName]), [roIgnoreCase]);
       {$ENDIF}
       {$IFDEF FPC}
       RegEx := TRegExpr.Create(Format('^\s*procedure\s+%s\s*\(.+\).*$', [CmdPair.Value.ProcName]));
@@ -476,15 +452,15 @@ begin
         if RegEx.Exec(SL[I]) then
         {$ENDIF}
         begin
-          CmdPair.Value.ParseParameters(SL[I], I + 1);
-          CmdFound := True;
+          cmdPair.Value.ParseParameters(SL[I], I + 1);
+          cmdFound := True;
           Break;
         end;
       end;
-      if not CmdFound then
+      if not cmdFound then
         raise EConsoleCommandParseError.Create(Format(GetErrorStr,
-                                                     [CmdPair.Value.ProcName, CmdPair.Value.Name]),
-                                               0, 0, CmdPair.Value.ProcName);
+                                                     [cmdPair.Value.ProcName, cmdPair.Value.Name]),
+                                               0, 0, cmdPair.Value.ProcName);
     end;
   finally
     FreeAndNil(SL);
@@ -501,13 +477,13 @@ end;
 //This procedure allows us to keep the exception handling code in one place
 procedure TKMScriptEvents.HandleScriptProcCallError(const aMethod: String);//aEx: Exception);
 var
-  ExceptionProc: TPSProcRec;
-  InternalProc: TPSInternalProcRec;
-  MainErrorStr, ErrorStr, DetailedErrorStr: UnicodeString;
-  Pos, Row, Col: Cardinal;
-  FileName: tbtstring;
-  ErrorMessage: TKMScriptErrorMessage;
-  Res: TPSLineInfoResults;
+  exceptionProc: TPSProcRec;
+  internalProc: TPSInternalProcRec;
+  mainErrorStr, errorStr, detailedErrorStr: UnicodeString;
+  pos, row, col: Cardinal;
+  fileName: tbtstring;
+  errorMessage: TKMScriptErrorMessage;
+  res: TPSLineInfoResults;
   e: Exception;
 begin
   e := Exception(AcquireExceptionObject);
@@ -523,35 +499,35 @@ begin
   else
   begin
     ReleaseExceptionObject;
-    DetailedErrorStr := '';
-    MainErrorStr := 'Exception in script: ''' + e.Message + '''';
-    ExceptionProc := fExec.GetProcNo(fExec.ExceptionProcNo);
-    if ExceptionProc is TPSInternalProcRec then
+    detailedErrorStr := '';
+    mainErrorStr := 'Exception in script: ''' + e.Message + '''';
+    exceptionProc := fExec.GetProcNo(fExec.ExceptionProcNo);
+    if exceptionProc is TPSInternalProcRec then
     begin
-      InternalProc := TPSInternalProcRec(ExceptionProc);
-      MainErrorStr := MainErrorStr + EolW + 'in method ''' + UnicodeString(InternalProc.ExportName) + '''' + EolW;
+      internalProc := TPSInternalProcRec(exceptionProc);
+      mainErrorStr := mainErrorStr + EolW + 'in method ''' + UnicodeString(internalProc.ExportName) + '''' + EolW;
       // With the help of uPSDebugger get information about error position in script code
-      if (fExec is TPSDebugExec) and TPSDebugExec(fExec).TranslatePositionEx(fExec.LastExProc, fExec.LastExPos, Pos, Row, Col, FileName) then
+      if (fExec is TPSDebugExec) and TPSDebugExec(fExec).TranslatePositionEx(fExec.LastExProc, fExec.LastExPos, pos, row, col, fileName) then
       begin
         //Get line according to preprocessor (includes and defines could affect error row/col)
-        if fPreProcessor.CurrentLineInfo.GetLineInfo('', Pos, Res) then
+        if fPreProcessor.CurrentLineInfo.GetLineInfo('', pos, res) then
         begin
-          Pos := Res.Pos;
-          Row := Res.Row;
-          Col := Res.Col;
-          FileName := Res.Name;
+          pos := res.Pos;
+          row := res.Row;
+          col := res.Col;
+          fileName := res.Name;
         end;
-        ErrorMessage := gGame.Scripting.GetErrorMessage('Error', '', ExtractFileName(FileName), Row, Col, Pos);
-        ErrorStr := MainErrorStr + ErrorMessage.GameMessage;
-        DetailedErrorStr := MainErrorStr + ErrorMessage.LogMessage;
+        errorMessage := gGame.Scripting.GetErrorMessage('Error', '', ExtractFileName(fileName), row, col, pos);
+        errorStr := mainErrorStr + errorMessage.GameMessage;
+        detailedErrorStr := mainErrorStr + errorMessage.LogMessage;
       end
       else
       begin
-        ErrorStr := MainErrorStr;
-        DetailedErrorStr := MainErrorStr;
+        errorStr := mainErrorStr;
+        detailedErrorStr := mainErrorStr;
       end;
     end;
-    fOnScriptError(seException, ErrorStr, DetailedErrorStr);
+    fOnScriptError(seException, errorStr, detailedErrorStr);
   end;
 end;
 
@@ -624,13 +600,34 @@ end;
 
 //* Version: 6216
 //* Occurs when a trade happens in a market (at the moment when resources are exchanged by serfs).
-procedure TKMScriptEvents.ProcMarketTrade(aMarket: TKMHouse; aFrom, aTo: TKMWareType);
+//* aFrom, aTo as Integer from Lookup table
+procedure TKMScriptEvents.ProcMarketTrade(aMarket: TKMHouse; aFrom, aTo: Integer);
 begin
   if MethodAssigned(evtMarketTrade) then
   begin
     fIDCache.CacheHouse(aMarket, aMarket.UID); //Improves cache efficiency since aMarket will probably be accessed soon
-    CallEventHandlers(evtMarketTrade, [aMarket.UID, WARE_TY_TO_ID[aFrom], WARE_TY_TO_ID[aTo]]);
+    CallEventHandlers(evtMarketTrade, [aMarket.UID, aFrom, aTo]);
   end;
+end;
+
+
+//* Version: 14000
+//* Occurs when a trade happens in a market (at the moment when resources are exchanged by serfs).
+//* aFrom, aTo as TKMWareType
+procedure TKMScriptEvents.ProcMarketTradeEx(aMarket: TKMHouse; aFrom, aTo: TKMWareType);
+begin
+  if MethodAssigned(evtMarketTradeEx) then
+  begin
+    fIDCache.CacheHouse(aMarket, aMarket.UID); //Improves cache efficiency since aMarket will probably be accessed soon
+    CallEventHandlers(evtMarketTradeEx, [aMarket.UID, Ord(aFrom), Ord(aTo)]);
+  end;
+end;
+
+
+procedure TKMScriptEvents.EventMarketTrade(aMarket: TKMHouse; aFrom, aTo: TKMWareType);
+begin
+  ProcMarketTrade(aMarket, WARE_TY_TO_ID[aFrom], WARE_TY_TO_ID[aTo]);
+  ProcMarketTradeEx(aMarket, aFrom, aTo);
 end;
 
 
@@ -730,12 +727,12 @@ end;
 //* Occurs when ware count is changed in house
 //* aCnt: current ware count in house (after change)
 //* aChangeCnt: ware change count. if aChangeCnt > 0 count increased, if aChangeCnt < 0 count decreased
-procedure TKMScriptEvents.ProcHouseWareCountChanged(aHouse: TKMHouse; aWare: TKMWareType; aCnt: Integer; aChangeCnt: Integer);
+procedure TKMScriptEvents.ProcHouseWareCountChanged(aHouse: TKMHouse; aWare: TKMWareType; aCnt, aChangeCnt: Integer);
 begin
   if MethodAssigned(evtHouseWareCountChanged) then
   begin
     fIDCache.CacheHouse(aHouse, aHouse.UID); //Improves cache efficiency since aHouse will probably be accessed soon
-    CallEventHandlers(evtHouseWareCountChanged, [aHouse.UID, WARE_TY_TO_ID[aWare], aCnt, aChangeCnt]);
+    CallEventHandlers(evtHouseWareCountChanged, [aHouse.UID, Ord(aWare), aCnt, aChangeCnt]);
   end;
 end;
 
@@ -753,10 +750,30 @@ end;
 //* Occurs after a house is destroyed and has been completely removed from the game,
 //* meaning the area it previously occupied can be used.
 //* If you need more information about the house use the OnHouseDestroyed event.
-procedure TKMScriptEvents.ProcHouseAfterDestroyed(aHouseType: TKMHouseType; aOwner: TKMHandID; aX, aY: Integer);
+//* aHouseType as Integer from Lookup table
+procedure TKMScriptEvents.ProcHouseAfterDestroyed(aHouseType: Integer; aOwner: TKMHandID; aX, aY: Integer);
 begin
   if MethodAssigned(evtHouseAfterDestroyed) then
-    CallEventHandlers(evtHouseAfterDestroyed, [HOUSE_TYPE_TO_ID[aHouseType] - 1, aOwner, aX, aY]);
+    CallEventHandlers(evtHouseAfterDestroyed, [aHouseType, aOwner, aX, aY]);
+end;
+
+
+//* Version: 14000
+//* Occurs after a house is destroyed and has been completely removed from the game,
+//* meaning the area it previously occupied can be used.
+//* If you need more information about the house use the OnHouseDestroyed event.
+//* aHouseType as TKMHouseType
+procedure TKMScriptEvents.ProcHouseAfterDestroyedEx(aHouseType: TKMHouseType; aOwner: TKMHandID; aX, aY: Integer);
+begin
+  if MethodAssigned(evtHouseAfterDestroyedEx) then
+    CallEventHandlers(evtHouseAfterDestroyedEx, [Ord(aHouseType), aOwner, aX, aY]);
+end;
+
+
+procedure TKMScriptEvents.EventHouseAfterDestroyed(aHouseType: TKMHouseType; aOwner: TKMHandID; aX, aY: Integer);
+begin
+  ProcHouseAfterDestroyed(HOUSE_TYPE_TO_ID[aHouseType] - 1, aOwner, aX, aY);
+  ProcHouseAfterDestroyedEx(aHouseType, aOwner, aX, aY);
 end;
 
 
@@ -774,19 +791,55 @@ end;
 
 //* Version: 5871
 //* Occurs when player has placed a house plan.
-procedure TKMScriptEvents.ProcHousePlanPlaced(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
+//* aHouseType as Integer from Lookup table
+procedure TKMScriptEvents.ProcHousePlanPlaced(aPlayer: TKMHandID; aX, aY, aHouseType: Integer);
 begin
   if MethodAssigned(evtHousePlanPlaced) then
-    CallEventHandlers(evtHousePlanPlaced, [aPlayer, aX + gResHouses[aType].EntranceOffsetX, aY, HOUSE_TYPE_TO_ID[aType] - 1]);
+    CallEventHandlers(evtHousePlanPlaced, [aPlayer, aX, aY, aHouseType]);
+end;
+
+
+//* Version: 14000
+//* Occurs when player has placed a house plan.
+//* aHouseType as TKMHouseType
+procedure TKMScriptEvents.ProcHousePlanPlacedEx(aPlayer: TKMHandID; aX, aY: Integer; aHouseType: TKMHouseType);
+begin
+  if MethodAssigned(evtHousePlanPlacedEx) then
+    CallEventHandlers(evtHousePlanPlacedEx, [aPlayer, aX, aY, Ord(aHouseType)]);
+end;
+
+
+procedure TKMScriptEvents.EventHousePlanPlaced(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
+begin
+  ProcHousePlanPlaced(aPlayer, aX + gResHouses[aType].EntranceOffsetX, aY, HOUSE_TYPE_TO_ID[aType] - 1);
+  ProcHousePlanPlacedEx(aPlayer, aX + gResHouses[aType].EntranceOffsetX, aY, aType);
 end;
 
 
 //* Version: 6298
 //* Occurs when player has removed a house plan.
-procedure TKMScriptEvents.ProcHousePlanRemoved(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
+//* aHouseType as Integer from Lookup table
+procedure TKMScriptEvents.ProcHousePlanRemoved(aPlayer: TKMHandID; aX, aY, aHouseType: Integer);
 begin
   if MethodAssigned(evtHousePlanRemoved) then
-    CallEventHandlers(evtHousePlanRemoved, [aPlayer, aX + gResHouses[aType].EntranceOffsetX, aY, HOUSE_TYPE_TO_ID[aType] - 1]);
+    CallEventHandlers(evtHousePlanRemoved, [aPlayer, aX, aY, aHouseType]);
+end;
+
+
+//* Version: 14000
+//* Occurs when player has removed a house plan.
+//* aHouseType as TKMHouseType
+procedure TKMScriptEvents.ProcHousePlanRemovedEx(aPlayer: TKMHandID; aX, aY: Integer; aHouseType: TKMHouseType);
+begin
+  if MethodAssigned(evtHousePlanRemovedEx) then
+    CallEventHandlers(evtHousePlanRemovedEx, [aPlayer, aX, aY, Ord(aHouseType)]);
+end;
+
+
+procedure TKMScriptEvents.EventHousePlanRemoved(aPlayer: TKMHandID; aX, aY: Integer; aType: TKMHouseType);
+begin
+  ProcHousePlanRemoved(aPlayer, aX + gResHouses[aType].EntranceOffsetX, aY, HOUSE_TYPE_TO_ID[aType] - 1);
+  ProcHousePlanRemovedEx(aPlayer, aX + gResHouses[aType].EntranceOffsetX, aY, aType);
 end;
 
 
@@ -840,7 +893,7 @@ end;
 //* aGroup: group ID, which got split order
 //* aNewType: new group leader unit type
 //* aNewCnt: new group members count
-//* aMixed: is new group can have the only unit type or a could have any unit type from original group
+//* aMixed: is new group can have the only unit type or it can have any unit type from original group
 procedure TKMScriptEvents.ProcGroupBeforeOrderSplit(aGroup: TKMUnitGroup; var aNewType: TKMUnitType; var aNewCnt: Integer; var aMixed: Boolean);
 var
   I: Integer;
@@ -935,10 +988,30 @@ end;
 //* Occurs after a unit has died and has been completely removed from the game, meaning the tile it previously occupied can be used.
 //* If you need more information about the unit use the OnUnitDied event.
 //* Note: Because units have a death animation there is a delay of several ticks between OnUnitDied and OnUnitAfterDied.
-procedure TKMScriptEvents.ProcUnitAfterDied(aUnitType: TKMUnitType; aOwner: TKMHandID; aX, aY: Integer);
+//* aUnitType as Integer from Lookup table
+procedure TKMScriptEvents.ProcUnitAfterDied(aUnitType: Integer; aOwner: TKMHandID; aX, aY: Integer);
 begin
   if MethodAssigned(evtUnitAfterDied) then
-    CallEventHandlers(evtUnitAfterDied, [UNIT_TYPE_TO_ID[aUnitType], aOwner, aX, aY]);
+    CallEventHandlers(evtUnitAfterDied, [aUnitType, aOwner, aX, aY]);
+end;
+
+
+//* Version: 14000
+//* Occurs after a unit has died and has been completely removed from the game, meaning the tile it previously occupied can be used.
+//* If you need more information about the unit use the OnUnitDied event.
+//* Note: Because units have a death animation there is a delay of several ticks between OnUnitDied and OnUnitAfterDied.
+//* aUnitType as TKMHouseType
+procedure TKMScriptEvents.ProcUnitAfterDiedEx(aUnitType: TKMUnitType; aOwner: TKMHandID; aX, aY: Integer);
+begin
+  if MethodAssigned(evtUnitAfterDiedEx) then
+    CallEventHandlers(evtUnitAfterDiedEx, [Ord(aUnitType), aOwner, aX, aY]);
+end;
+
+
+procedure TKMScriptEvents.EventUnitAfterDied(aUnitType: TKMUnitType; aOwner: TKMHandID; aX, aY: Integer);
+begin
+  ProcUnitAfterDied(UNIT_TYPE_TO_ID[aUnitType], aOwner, aX, aY);
+  ProcUnitAfterDiedEx(aUnitType, aOwner, aX, aY);
 end;
 
 
@@ -1118,14 +1191,14 @@ begin
 end;
 
 
-//* Version: 7000+
+//* Version: 14000
 //* Occurs when resource is produced for specified house.
-procedure TKMScriptEvents.ProcWareProduced(aHouse: TKMHouse; aType: TKMWareType; aCount: Integer);
+procedure TKMScriptEvents.ProcWareProduced(aHouse: TKMHouse; aWareType: TKMWareType; aCount: Integer);
 begin
-  if MethodAssigned(evtWareProduced) and (aType <> wtNone) then
+  if MethodAssigned(evtWareProduced) and (aWareType <> wtNone) then
   begin
     fIDCache.CacheHouse(aHouse, aHouse.UID); //Improves cache efficiency since aHouse will probably be accessed soon
-    CallEventHandlers(evtWareProduced, [aHouse.UID, WARE_TY_TO_ID[aType], aCount]);
+    CallEventHandlers(evtWareProduced, [aHouse.UID, Ord(aWareType), aCount]);
   end;
 end;
 

@@ -79,7 +79,7 @@ type
     procedure SetRoad(const Loc: TKMPoint; aOwner: TKMHandID);
     procedure SetInitWine(const Loc: TKMPoint; aOwner: TKMHandID);
     function GetFieldType(const Loc: TKMPoint): TKMFieldType;
-    procedure SetFieldNoUpdate(const Loc: TKMPoint; aOwner: TKMHandID; aFieldType: TKMFieldType; aStage: Byte = 0);
+//    procedure SetFieldNoUpdate(const Loc: TKMPoint; aOwner: TKMHandID; aFieldType: TKMFieldType; aStage: Byte = 0);
     procedure SetField(const Loc: TKMPoint; aOwner: TKMHandID; aFieldType: TKMFieldType; aStage: Byte = 0;
                        aRandomAge: Boolean = False; aKeepOldObject: Boolean = False; aRemoveOverlay: Boolean = True;
                        aDoUpdate: Boolean = True);
@@ -3207,10 +3207,10 @@ begin
 end;
 
 
-procedure TKMTerrain.SetFieldNoUpdate(const Loc: TKMPoint; aOwner: TKMHandID; aFieldType: TKMFieldType; aStage: Byte = 0);
-begin
-  SetField(Loc, aOwner, aFieldType, aStage, False, False, True, False);
-end;
+//procedure TKMTerrain.SetFieldNoUpdate(const Loc: TKMPoint; aOwner: TKMHandID; aFieldType: TKMFieldType; aStage: Byte = 0);
+//begin
+//  SetField(Loc, aOwner, aFieldType, aStage, False, False, True, False);
+//end;
 
 
 procedure TKMTerrain.SetField(const Loc: TKMPoint; aOwner: TKMHandID; aFieldType: TKMFieldType; aStage: Byte = 0;
@@ -3259,32 +3259,26 @@ begin
 
     case aStage of
       0:  SetLand(0, 62, GetObj); //empty field
-
       1:  begin //Sow corn
             fieldAge := 1 + Ord(aRandomAge) * KaMRandom((CORN_AGE_1 - 1) div 2, 'TKMTerrain.SetField');
             SetLand(fieldAge, 61, GetObj);
           end;
-
       2:  begin //Young seedings
             fieldAge := CORN_AGE_1 + Ord(aRandomAge) * KaMRandom((CORN_AGE_2 - CORN_AGE_1) div 2, 'TKMTerrain.SetField 2');
             SetLand(fieldAge, 59, OBJ_NONE);
           end;
-
       3:  begin //Seedings
             fieldAge := CORN_AGE_2 + Ord(aRandomAge) * KaMRandom((CORN_AGE_3 - CORN_AGE_2) div 2, 'TKMTerrain.SetField 3');
             SetLand(fieldAge, 60, OBJ_NONE);
           end;
-
       4:  begin //Smaller greenish Corn
             fieldAge := CORN_AGE_3 + Ord(aRandomAge) * KaMRandom((CORN_AGE_FULL - CORN_AGE_3) div 2, 'TKMTerrain.SetField 4');
             SetLand(fieldAge, 60, 58);
           end;
-
       5:  begin //Full-grown Corn
             fieldAge := CORN_AGE_FULL - 1; //-1 because it is increased in update state, otherwise it wouldn't be noticed
             SetLand(fieldAge, 60, 59);
           end;
-
       6:  SetLand(0, 63, OBJ_NONE); //Corn has been cut
     end;
   end;
@@ -3300,17 +3294,14 @@ begin
             fieldAge := 1 + Ord(aRandomAge) * KaMRandom((WINE_AGE_1 - 1) div 2, 'TKMTerrain.SetField 5');
             SetLand(fieldAge, WINE_TERRAIN_ID, 54);
           end;
-
       1:  begin //Fruits start to grow
             fieldAge := WINE_AGE_1 + Ord(aRandomAge) * KaMRandom((WINE_AGE_1 - WINE_AGE_1) div 2, 'TKMTerrain.SetField 6');
             SetLand(fieldAge, WINE_TERRAIN_ID, 55);
           end;
-
       2:  begin //Fruits continue to grow
             fieldAge := WINE_AGE_2 + Ord(aRandomAge) * KaMRandom((WINE_AGE_FULL - WINE_AGE_2) div 2, 'TKMTerrain.SetField 7');
             SetLand(fieldAge, WINE_TERRAIN_ID, 56);
           end;
-
       3:  begin //Ready to be harvested
             fieldAge := WINE_AGE_FULL - 1; //-1 because it is increased in update state, otherwise it wouldn't be noticed
             SetLand(fieldAge, WINE_TERRAIN_ID, 57);

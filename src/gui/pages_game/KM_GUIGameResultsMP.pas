@@ -1589,12 +1589,12 @@ const
 
   WARES: array [0..WARES_CNT-1] of TKMWareType = (
     wtAll,     wtWarfare, wtFood,
-    wtTrunk,   wtStone,   wtWood,        wtIronOre,   wtGoldOre,
-    wtCoal,    wtSteel,   wtGold,        wtWine,      wtCorn,
-    wtBread,   wtFlour,   wtLeather,     wtSausages,  wtPig,
-    wtSkin,    wtShield,  wtMetalShield, wtArmor,     wtMetalArmor,
-    wtAxe,     wtSword,   wtPike,        wtHallebard, wtBow,
-    wtArbalet, wtHorse,   wtFish);
+    wtTrunk,   wtStone,   wtTimber,        wtIronOre,   wtGoldOre,
+    wtCoal,    wtIron,   wtGold,        wtWine,      wtCorn,
+    wtBread,   wtFlour,   wtLeather,     wtSausage,  wtPig,
+    wtSkin,    wtWoodenShield,  wtIronShield, wtLeatherArmor,     wtIronArmor,
+    wtAxe,     wtSword,   wtLance,        wtPike, wtBow,
+    wtCrossbow, wtHorse,   wtFish);
 
   procedure RefreshChart(aStatType: TKMStatType; W: TKMWareType; aChart: PKMChart; aUseGDP: Boolean);
   var
@@ -1868,7 +1868,7 @@ end;
 
 function TKMGameResultsMP.GetChartWares(aPlayer: TKMHandID; aWare: TKMWareType; aUseGDP: Boolean): TKMCardinalArray;
 const
-  FOOD_WARES: array[0..3] of TKMWareType = (wtBread, wtSausages, wtWine, wtFish);
+  FOOD_WARES: array[0..3] of TKMWareType = (wtBread, wtSausage, wtWine, wtFish);
   FOOD_WARES_RESTORE: array[0..3] of Single = (BREAD_RESTORE,SAUSAGE_RESTORE,WINE_RESTORE,FISH_RESTORE);
 var
   RT: TKMWareType;

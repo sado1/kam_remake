@@ -529,7 +529,7 @@ end;
 
 procedure TKMHand.UnitTrained(aUnit: TKMUnit);
 begin
-  if aUnit.UnitType = utWorker then
+  if aUnit.UnitType = utBuilder then
     fConstructions.AddWorker(TKMUnitWorker(aUnit));
   if aUnit.UnitType = utSerf then
     fDeliveries.AddSerf(TKMUnitSerf(aUnit));
@@ -1261,7 +1261,7 @@ begin
 
   fConstructions.HousePlanList.AddPlan(aHouseType, loc);
   fStats.HousePlanned(aHouseType);
-  gScriptEvents.ProcHousePlanPlaced(fID, loc.X, loc.Y, aHouseType);
+  gScriptEvents.EventHousePlanPlaced(fID, loc.X, loc.Y, aHouseType);
 
   if (ID = gMySpectator.HandID) and not gGameParams.IsReplayOrSpectate then
     gSoundPlayer.Play(sfxPlacemarker);
@@ -1305,7 +1305,7 @@ begin
 
   fConstructions.HousePlanList.RemPlan(Position);
   fStats.HousePlanRemoved(hPlan.HouseType);
-  gScriptEvents.ProcHousePlanRemoved(fID, hPlan.Loc.X, hPlan.Loc.Y, hPlan.HouseType);
+  gScriptEvents.EventHousePlanRemoved(fID, hPlan.Loc.X, hPlan.Loc.Y, hPlan.HouseType);
   if (ID = gMySpectator.HandID) and not gGameParams.IsReplayOrSpectate then
     gSoundPlayer.Play(sfxClick);
 end;

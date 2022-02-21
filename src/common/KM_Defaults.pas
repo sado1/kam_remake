@@ -612,20 +612,20 @@ const
 {Units}
 type
   TKMUnitType = (utNone, utAny,
-    utSerf,          utWoodcutter,    utMiner,         utAnimalBreeder,
-    utFarmer,        utLamberjack,    utBaker,         utButcher,
-    utFisher,        utWorker,        utStoneCutter,   utSmith,
-    utMetallurgist,  utRecruit,
+    utSerf,         utWoodcutter,   utMiner,         utAnimalBreeder,
+    utFarmer,       utCarpenter,    utBaker,         utButcher,
+    utFisher,       utBuilder,      utStonemason,    utSmith,
+    utMetallurgist, utRecruit,
 
-    utMilitia,      utAxeFighter,   utSwordsman,     utBowman,
-    utArbaletman,   utPikeman,      utHallebardman,  utHorseScout,
-    utCavalry,      utBarbarian,
+    utMilitia,      utAxeFighter,   utSwordFighter,  utBowman,
+    utCrossbowman,  utLanceCarrier, utPikeman,       utScout,
+    utKnight,       utBarbarian,
 
-    utPeasant,      utSlingshot,    utMetalBarbarian,utHorseman,
+    utRebel,        utRogue,        utWarrior,       utVagabond,
     //utCatapult,   utBallista,
 
-    utWolf,         utFish,         utWatersnake,   utSeastar,
-    utCrab,         utWaterflower,  utWaterleaf,    utDuck);
+    utWolf,         utFish,         utWatersnake,    utSeastar,
+    utCrab,         utWaterflower,  utWaterleaf,     utDuck);
 
   TKMUnitTypeSet = set of TKMUnitType;
 
@@ -635,20 +635,23 @@ const
   CITIZEN_MIN = utSerf;
   CITIZEN_MAX = utRecruit;
   WARRIOR_MIN = utMilitia;
-  WARRIOR_MAX = utHorseman;
+  WARRIOR_MAX = utVagabond;
   WARRIOR_EQUIPABLE_BARRACKS_MIN = utMilitia; //Available from barracks
-  WARRIOR_EQUIPABLE_BARRACKS_MAX = utCavalry;
+  WARRIOR_EQUIPABLE_BARRACKS_MAX = utKnight;
   WARRIOR_EQUIPABLE_TH_MIN = utBarbarian; //Available from Townhall
-  WARRIOR_EQUIPABLE_TH_MAX = utHorseman;
+  WARRIOR_EQUIPABLE_TH_MAX = utVagabond;
   HUMANS_MIN = utSerf;
-  HUMANS_MAX = utHorseman;
+  HUMANS_MAX = utVagabond;
   ANIMAL_MIN = utWolf;
   ANIMAL_MAX = utDuck;
 
   UNITS_VALID = [UNIT_MIN..UNIT_MAX];
+  UNITS_ANIMALS = [ANIMAL_MIN..ANIMAL_MAX];
+  UNITS_CITIZEN = [CITIZEN_MIN..CITIZEN_MAX];
+  UNITS_WARRIORS = [WARRIOR_MIN..WARRIOR_MAX];
   UNITS_HUMAN = [HUMANS_MIN..HUMANS_MAX];
 
-  WARRIORS_IRON = [utSwordsman, utArbaletman, utHallebardman, utCavalry];
+  WARRIORS_IRON = [utSwordFighter, utCrossbowman, utPikeman, utKnight];
 
   CITIZENS_CNT = Integer(CITIZEN_MAX) - Integer(CITIZEN_MIN) + 1;
   WARRIORS_CNT = Integer(WARRIOR_MAX) - Integer(WARRIOR_MIN) + 1;
@@ -691,10 +694,10 @@ const
 
   //AI's prefences for training troops
   AI_TROOP_TRAIN_ORDER: array [GROUP_TYPE_MIN..GROUP_TYPE_MAX, 1..3] of TKMUnitType = (
-    (utSwordsman,    utAxeFighter, utMilitia),
-    (utHallebardman, utPikeman,    utNone),
-    (utArbaletman,   utBowman,     utNone),
-    (utCavalry,      utHorseScout, utNone));
+    (utSwordFighter,    utAxeFighter, utMilitia),
+    (utPikeman, utLanceCarrier,    utNone),
+    (utCrossbowman,   utBowman,     utNone),
+    (utKnight,      utScout, utNone));
 
 type
   TKMGoInDirection = (gdGoOutside=-1, gdGoInside=1); //Switch to set if unit goes into house or out of it

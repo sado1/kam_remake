@@ -261,8 +261,8 @@ begin
   begin
     fPlanner.UpdateState(aTick); // Planner must be updated as first to secure that completed houses are actualized
     UpdateBuildNodes();
-    if (fPredictor.RequiredHouses[htQuary] <= 0) AND (aTick mod CHECK_STONE_RESERVES = fOwner) then // First update stone reserves
-      Planner.CheckStoneReserves(False, fPredictor.RequiredHouses[htQuary])
+    if (fPredictor.RequiredHouses[htQuarry] <= 0) AND (aTick mod CHECK_STONE_RESERVES = fOwner) then // First update stone reserves
+      Planner.CheckStoneReserves(False, fPredictor.RequiredHouses[htQuarry])
     else if (aTick mod CHECK_FIELDS = fOwner) then
       for K := Low(fBuildNodes) to High(fBuildNodes) do
         with fBuildNodes[K] do
@@ -455,7 +455,7 @@ begin
 
   // Get positions of workes with nil task (no task)
   fFreeWorkersCnt := 0;
-  SetLength(WorkersPos, gHands[fOwner].Stats.GetUnitQty(utWorker));
+  SetLength(WorkersPos, gHands[fOwner].Stats.GetUnitQty(utBuilder));
   for K := 0 to gHands[fOwner].Units.Count - 1 do
     if not gHands[fOwner].Units[K].IsDeadOrDying
        AND (gHands[fOwner].Units[K] is TKMUnitWorker) then
@@ -830,7 +830,7 @@ begin
   if   (fPredictor.WareBalance[wtStone].Exhaustion > 60) then // Some stone mines are too far so AI must slow down with expansion
     //AND (fPredictor.WareBalance[wtWood].Exhaustion > 60)
     //AND (fPredictor.WareBalance[wtGold].Exhaustion > 60) then
-    aMaxPlans := Max(aMaxPlans, Ceil(gHands[fOwner].Stats.GetUnitQty(utWorker) / Max(0.01,AI_Par[BUILDER_ChHTB_AllWorkerCoef])) - fPlanner.ConstructedHouses);
+    aMaxPlans := Max(aMaxPlans, Ceil(gHands[fOwner].Stats.GetUnitQty(utBuilder) / Max(0.01,AI_Par[BUILDER_ChHTB_AllWorkerCoef])) - fPlanner.ConstructedHouses);
 
   // Quarries have minimal delay + stones use only workers (towers after peace time) -> exhaustion for wtStone is OK
   fStoneShortage := (fPredictor.WareBalance[wtStone].Exhaustion < AI_Par[BUILDER_Shortage_Stone]);
@@ -840,7 +840,7 @@ begin
 
   // Woodcutters have huge delay (8 min) + trunk is used only to produce wood -> decide shortage based on actual consumption and reserves
   Trunk := gHands[fOwner].Stats.GetWareBalance(wtTrunk);
-  Wood := gHands[fOwner].Stats.GetWareBalance(wtWood);
+  Wood := gHands[fOwner].Stats.GetWareBalance(wtTimber);
   WoodReserves := Trunk * 2 + Wood;
   aTrunkBalance := WoodReserves / (2 * Max(0.1, fPredictor.WareBalance[wtTrunk].ActualConsumption));
   fTrunkShortage := (aTrunkBalance < AI_Par[BUILDER_Shortage_Trunk]);
@@ -862,7 +862,7 @@ begin
     if fBuildNodes[K].Active AND (fBuildNodes[K].FieldType = ftRoad) then
       RequiredStones := RequiredStones + fBuildNodes[K].FieldList.Count - 1;
   // Determine stone crisis (based on material)
-  fStoneCrisis := (fPlanner.PlannedHouses[htQuary].Completed < 3) AND (gHands[fOwner].Stats.GetWareBalance(wtStone) < RequiredStones + AI_Par[BUILDER_Shortage_StoneReserve]);
+  fStoneCrisis := (fPlanner.PlannedHouses[htQuarry].Completed < 3) AND (gHands[fOwner].Stats.GetWareBalance(wtStone) < RequiredStones + AI_Par[BUILDER_Shortage_StoneReserve]);
   fStoneShortage := fStoneShortage OR fStoneCrisis; // Make sure that we have also shortage
   // Determine wood shortage (based on material)
   fTrunkShortage := fTrunkShortage OR (WoodReserves < RequiredWood);
@@ -873,7 +873,7 @@ begin
 
   // Secure wood production: only process trunk -> wood => minimal delay
   fWoodShortage :=
-    (fPredictor.WareBalance[wtWood].Exhaustion < AI_Par[BUILDER_Shortage_Wood])
+    (fPredictor.WareBalance[wtTimber].Exhaustion < AI_Par[BUILDER_Shortage_Wood])
     OR
     (
       (
@@ -1090,14 +1090,14 @@ const
   //htWeaponSmithy,   htStables,       htFisherHut
 
 
-  BASIC_HOUSES: TSetOfHouseType = [htSchool, htBarracks, htInn, htMarketplace, htStore];
+  BASIC_HOUSES: TSetOfHouseType = [htSchool, htBarracks, htInn, htMarket, htStore];
   //BUILD_WARE: TSetOfWare = [wtGoldOre, wtCoal, wtGold, wtStone, wtTrunk, wtWood];
   //FOOD_WARE: TSetOfWare = [wtCorn, wtFlour, wtBread, wtPig, wtSausages, wtWine, wtFish, wtWood];
   //WEAPON_WARE: TSetOfWare = [wtSkin, wtLeather, wtHorse, wtIronOre, wtCoal, wtSteel, wtAxe, wtBow, wtPike, wtArmor, wtShield, wtSword, wtArbalet, wtHallebard, wtMetalShield, wtMetalArmor];
   // All considerable ware (from weapons / armors just 1 piece of ware type because it is produced in same house)
-  ALL_WARE: TSetOfWare = [wtCorn, wtPig, wtSausages, wtWine, wtFish, wtStone, wtTrunk, wtWood, wtSkin, wtLeather, wtHorse, wtIronOre, wtCoal, wtSteel, wtAxe, wtArmor, wtSword, wtMetalArmor, wtFlour, wtBread];
+  ALL_WARE: TSetOfWare = [wtCorn, wtPig, wtSausage, wtWine, wtFish, wtStone, wtTrunk, wtTimber, wtSkin, wtLeather, wtHorse, wtIronOre, wtCoal, wtIron, wtAxe, wtLeatherArmor, wtSword, wtIronArmor, wtFlour, wtBread];
   //BUILD_ORDER_WARE: array[0..8] of TKMWareType = (wtStone, wtGold, wtGoldOre, wtCoal, wtTrunk, wtWood, wtCorn, wtPig, wtSausages);
-  BUILD_ORDER_WARE: array[0..5] of TKMWareType = (wtStone, wtGoldOre, wtCoal, wtGold, wtTrunk, wtWood);
+  BUILD_ORDER_WARE: array[0..5] of TKMWareType = (wtStone, wtGoldOre, wtCoal, wtGold, wtTrunk, wtTimber);
 var
   MaxPlans, MaxPlace: Integer;
   RequiredHouses: TRequiredHousesArray;
@@ -1105,7 +1105,7 @@ var
 
   function TryUnlockByRnd(var aHT: TKMHouseType): Boolean;
   const
-    FORBIDDEN_HOUSES = [htIronMine, htGoldMine, htCoalMine, htWineyard, htStables, htFisherHut, htTownHall, htSiegeWorkshop, htIronSmithy, htArmorSmithy, htWeaponSmithy];
+    FORBIDDEN_HOUSES = [htIronMine, htGoldMine, htCoalMine, htVineyard, htStables, htFishermans, htTownHall, htSiegeWorkshop, htIronSmithy, htArmorSmithy, htWeaponSmithy];
   var
     HT: TKMHouseType;
   begin
@@ -1133,7 +1133,7 @@ var
       if gHands[fOwner].Locks.HouseBlocked[aHT] then // House is blocked -> unlock is impossible
       begin
         // Try to guess old unlock order
-        if (aHT = htQuary) AND not gHands[fOwner].Locks.HouseBlocked[htSchool] then
+        if (aHT = htQuarry) AND not gHands[fOwner].Locks.HouseBlocked[htSchool] then
         begin
           if (fPlanner.PlannedHouses[htSchool].Completed > 0) then
             SetLength(aHTArr, 2)
@@ -1162,7 +1162,7 @@ var
     HTArr: TKMHouseTypeArray;
   begin
     Result := csCannotPlaceHouse;
-    if fStoneCrisis AND not (aHT in [htQuary, htSchool, htInn]) then
+    if fStoneCrisis AND not (aHT in [htQuarry, htSchool, htInn]) then
       Exit;
     // Check if AI can build house (if is house blocked [by script] ignore it)
     if GetHousesToUnlock(aHT, HTArr) AND ((aUnlockProcedureAllowed) OR (Length(HTArr) = 1)) then
@@ -1240,7 +1240,7 @@ var
       if (RequiredHouses[HT] <= 0) then // wtLeather and wtPig require the same building so avoid to place 2 houses at once
         Continue;
       // Farms and wineyards should be placed ASAP because fields may change evaluation of terrain and change tpBuild status of surrouding tiles!
-      case AddToConstruction(HT, HT in [htFarm, htWineyard], False) of
+      case AddToConstruction(HT, HT in [htFarm, htVineyard], False) of
         csNoNodeAvailable: break;
         csHouseReservation, csRemoveTreeProcedure: Output := True;
         csHousePlaced:
@@ -1304,12 +1304,12 @@ var
   const
     // Reservation sets must be able to unlock specific houses!!!
     RESERVATION_FullSet: array[0..28] of TKMHouseType = (
-      htSchool, htInn, htQuary, htMarketplace, htWoodcutters, htSawmill, // Inn because of old unlock order
+      htSchool, htInn, htQuarry, htMarket, htWoodcutters, htSawmill, // Inn because of old unlock order
       htGoldMine, htCoalMine, htMetallurgists, htBarracks,
-      htFarm, htMill, htBakery, htSwine, htButchers, htStables, htFisherHut,
+      htFarm, htMill, htBakery, htSwine, htButchers, htStables, htFishermans,
       htIronMine, htIronSmithy, htArmorSmithy, htWeaponSmithy,
       htTannery, htArmorWorkshop, htWeaponWorkshop,
-      htSiegeWorkshop, htTownHall, htWineyard, htStore, htWatchTower
+      htSiegeWorkshop, htTownHall, htVineyard, htStore, htWatchTower
     );
     // If RESERVATION_FullSet was changed, then the following indexes must be changed too!
     STONE_SHORTAGE_IDX = 2;
@@ -1408,16 +1408,16 @@ begin
   RequiredHouses := fPredictor.RequiredHouses;
 
   // Dont build more than 3 quarry at once if there is not quarry and stone shortage is possible
-  RequiredHouses[htQuary] := RequiredHouses[htQuary] * Ord(not (fStoneShortage AND (fPlanner.PlannedHouses[htQuary].Completed < 3) AND (fPlanner.PlannedHouses[htQuary].UnderConstruction > 2)));
-  if fStoneShortage AND (RequiredHouses[htQuary] > 0) AND (fPlanner.PlannedHouses[htSchool].Completed > 0) then
+  RequiredHouses[htQuarry] := RequiredHouses[htQuarry] * Ord(not (fStoneShortage AND (fPlanner.PlannedHouses[htQuarry].Completed < 3) AND (fPlanner.PlannedHouses[htQuarry].UnderConstruction > 2)));
+  if fStoneShortage AND (RequiredHouses[htQuarry] > 0) AND (fPlanner.PlannedHouses[htSchool].Completed > 0) then
   begin
-    RequiredHouses[htQuary] := 0;
-    if (AddToConstruction(htQuary, True, True) = csHousePlaced) then
+    RequiredHouses[htQuarry] := 0;
+    if (AddToConstruction(htQuarry, True, True) = csHousePlaced) then
       MaxPlans := MaxPlans - 1;
   end;
 
   // Dont try to place wine if we are out of wood
-  RequiredHouses[htWineyard] := RequiredHouses[htWineyard] * Ord(not(fTrunkShortage OR (MaxPlace < 3)));
+  RequiredHouses[htVineyard] := RequiredHouses[htVineyard] * Ord(not(fTrunkShortage OR (MaxPlace < 3)));
 
   // Find place for chop-only woodcutters when we start to be out of wood
   if ((AI_Par[BUILDER_ChHTB_TrunkBalance] - TrunkBalance) / Max(1,AI_Par[BUILDER_ChHTB_TrunkFactor]) - GetChopOnlyCnt() > 0) then
@@ -1587,7 +1587,7 @@ begin
     //OR (fPredictor.WareBalance[wtWood].Exhaustion < 60)
     OR (fPredictor.WareBalance[wtGold].Exhaustion < 60)
     OR (gHands[fOwner].Stats.GetHouseQty(htSchool) = 0)
-    OR (gHands[fOwner].Stats.GetUnitQty(utWorker) = 0) then
+    OR (gHands[fOwner].Stats.GetUnitQty(utBuilder) = 0) then
     Exit;
 
   // Check if there is free build node

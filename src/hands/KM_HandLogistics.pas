@@ -1059,7 +1059,7 @@ begin
         Importance := diHigh1;
 
       //Food to Inn
-      if (Ware in [wtBread, wtSausages, wtWine, wtFish])
+      if (Ware in [wtBread, wtSausage, wtWine, wtFish])
         and (Loc_House <> nil) and (Loc_House.HouseType = htInn) then
         Importance := diHigh3;
 
@@ -1079,7 +1079,7 @@ begin
   Result := (fDemand[iD].Ware = fOffer[iO].Ware) or
             (fDemand[iD].Ware = wtAll) or
             ((fDemand[iD].Ware = wtWarfare) and (fOffer[iO].Ware in [WARFARE_MIN..WARFARE_MAX])) or
-            ((fDemand[iD].Ware = wtFood) and (fOffer[iO].Ware in [wtBread, wtSausages, wtWine, wtFish]));
+            ((fDemand[iD].Ware = wtFood) and (fOffer[iO].Ware in [wtBread, wtSausage, wtWine, wtFish]));
 
   //If Demand and Offer aren't reserved already
   Result := Result and (((fDemand[iD].DemandType = dtAlways) or (fDemand[iD].BeingPerformed = 0))
@@ -1589,7 +1589,7 @@ procedure TKMDeliveries.DeliveryFindBestDemand(aSerf: TKMUnitSerf; aDeliveryId: 
   begin
     Result := (fDemand[iD].Ware = aResource) or
               ((fDemand[iD].Ware = wtWarfare) and (aResource in [WARFARE_MIN..WARFARE_MAX])) or
-              ((fDemand[iD].Ware = wtFood) and (aResource in [wtBread, wtSausages, wtWine, wtFish]));
+              ((fDemand[iD].Ware = wtFood) and (aResource in [wtBread, wtSausage, wtWine, wtFish]));
 
     //Check if unit is alive
     Result := Result and ((fDemand[iD].Loc_Unit = nil)

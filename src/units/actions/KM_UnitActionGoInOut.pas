@@ -252,17 +252,18 @@ begin
   Result := nil;
 
   if gTerrain.TileInMapCoords(X,Y)
-  and (gTerrain.CheckPassability(KMPoint(X,Y), fUnit.DesiredPassability))
-  and (gTerrain.CanWalkDiagonaly(fUnit.Position, X, Y))
-  and (gTerrain.Land^[Y,X].IsUnit <> nil) then //If there's some unit we need to do a better check on him
+    and (gTerrain.CheckPassability(KMPoint(X,Y), fUnit.DesiredPassability))
+    and (gTerrain.CanWalkDiagonaly(fUnit.Position, X, Y))
+    and (gTerrain.Land^[Y,X].IsUnit <> nil) then //If there's some unit we need to do a better check on him
   begin
     U := gTerrain.UnitsHitTest(X,Y); //Let's see who is standing there
 
     //Check that the unit is idling and not an enemy, so that we can push it away
     if (U <> nil)
-    and (U.Action is TKMUnitActionStay)
-    and not TKMUnitActionStay(U.Action).Locked
-    and (gHands.CheckAlliance(U.Owner, fUnit.Owner) = atAlly) then
+      and not U.IsAnimal // Can't push animals
+      and (U.Action is TKMUnitActionStay)
+      and not TKMUnitActionStay(U.Action).Locked
+      and (gHands.CheckAlliance(U.Owner, fUnit.Owner) = atAlly) then
       Result := U;
   end;
 end;

@@ -119,11 +119,11 @@ begin
     htGoldMine:      Result := NextToOre(aHouse, wtGoldOre, aLoc);
     htIronMine:      Result := NextToOre(aHouse, wtIronOre, aLoc);
 
-    htQuary:         Result := NextToStone(aHouse, aLoc);
+    htQuarry:         Result := NextToStone(aHouse, aLoc);
     htWoodcutters:   Result := NextToTrees(aHouse, [htStore, htWoodcutters, htSawmill], aLoc);
     htFarm:          Result := NextToGrass(aHouse, [htAny], aLoc);
-    htWineyard:      Result := NextToGrass(aHouse, [htAny], aLoc);
-    htFisherHut:     {Result := NextToWater(aHouse, aLoc)};
+    htVineyard:      Result := NextToGrass(aHouse, [htAny], aLoc);
+    htFishermans:     {Result := NextToWater(aHouse, aLoc)};
 
     //htMarketplace:;
     //htSiegeWorkshop:;
@@ -132,7 +132,7 @@ begin
   end;
 
   //If we failed to find something, try to place the house anywhere (better than ignoring it)
-  if not Result and not (aHouse in [htCoalMine, htGoldMine, htIronMine, htQuary, htFarm, htWineyard, htFisherHut]) then
+  if not Result and not (aHouse in [htCoalMine, htGoldMine, htIronMine, htQuarry, htFarm, htVineyard, htFishermans]) then
     Result := NextToHouse(aHouse, [htAny], [], aLoc);
 end;
 
@@ -197,7 +197,7 @@ function TKMCityPlanner.NextToGrass(aHouse: TKMHouseType; aSeed: array of TKMHou
       if gHands[fOwner].CanAddFieldPlan(KMPoint(K,I), ftCorn)
       //Skip fields within actual house areas
       and ((aHouse <> htFarm)     or not InRange(I, aY-2, aY) or not InRange(K, aX-1, aX+2))
-      and ((aHouse <> htWineyard) or not InRange(I, aY-1, aY) or not InRange(K, aX-2, aX)) then
+      and ((aHouse <> htVineyard) or not InRange(I, aY-1, aY) or not InRange(K, aX-2, aX)) then
       begin
         Inc(FieldCount);
         //Request slightly more than we need to have a good choice
@@ -216,7 +216,7 @@ var
   S: TKMPoint;
 begin
   Result := False;
-  Assert(aHouse in [htFarm, htWineyard]);
+  Assert(aHouse in [htFarm, htVineyard]);
 
   SeedLocs := GetSeeds(aSeed);
 
@@ -326,7 +326,7 @@ begin
 
   //Make sure stonemason actually can reach some stone (avoid build-destroy loop)
   if Result then
-    if not gTerrain.FindStone(aLoc, gRes.Units[utStoneCutter].MiningRange, KMPOINT_ZERO, True, tmp) then
+    if not gTerrain.FindStone(aLoc, gRes.Units[utStonemason].MiningRange, KMPOINT_ZERO, True, tmp) then
       Result := False;
 end;
 

@@ -176,16 +176,16 @@ const
     (WarriorVoice: utMilitia;      SelectID:3; DeathID:1), //utSerf
     (WarriorVoice: utAxeFighter;   SelectID:0; DeathID:0), //utWoodcutter
     (WarriorVoice: utBowman;       SelectID:2; DeathID:1), //utMiner
-    (WarriorVoice: utSwordsman;    SelectID:0; DeathID:2), //utAnimalBreeder
+    (WarriorVoice: utSwordFighter;    SelectID:0; DeathID:2), //utAnimalBreeder
     (WarriorVoice: utMilitia;      SelectID:1; DeathID:2), //utFarmer
-    (WarriorVoice: utArbaletman;   SelectID:1; DeathID:0), //utLamberjack
-    (WarriorVoice: utPikeman;      SelectID:1; DeathID:0), //utBaker
-    (WarriorVoice: utHorseScout;   SelectID:0; DeathID:2), //utButcher
-    (WarriorVoice: utHorseman;     SelectID:2; DeathID:0), //utFisher
-    (WarriorVoice: utCavalry;      SelectID:1; DeathID:1), //utWorker
-    (WarriorVoice: utHallebardman; SelectID:1; DeathID:1), //utStoneCutter
-    (WarriorVoice: utCavalry;      SelectID:3; DeathID:4), //utSmith
-    (WarriorVoice: utHallebardman; SelectID:3; DeathID:2), //utMetallurgist
+    (WarriorVoice: utCrossbowman;   SelectID:1; DeathID:0), //utLamberjack
+    (WarriorVoice: utLanceCarrier;      SelectID:1; DeathID:0), //utBaker
+    (WarriorVoice: utScout;   SelectID:0; DeathID:2), //utButcher
+    (WarriorVoice: utVagabond;     SelectID:2; DeathID:0), //utFisher
+    (WarriorVoice: utKnight;      SelectID:1; DeathID:1), //utWorker
+    (WarriorVoice: utPikeman; SelectID:1; DeathID:1), //utStoneCutter
+    (WarriorVoice: utKnight;      SelectID:3; DeathID:4), //utSmith
+    (WarriorVoice: utPikeman; SelectID:3; DeathID:2), //utMetallurgist
     (WarriorVoice: utBowman;       SelectID:3; DeathID:0)  //utRecruit
     );
 

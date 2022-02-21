@@ -9,6 +9,10 @@ uses
 type
   TKMMapEdTownHouses = class(TKMMapEdSubMenuPage)
   private
+    procedure UpdateField(Sender: TObject; aIncrement: Integer);
+
+    procedure Town_FieldShiftClick(Sender: TObject; Shift: TShiftState);
+    procedure Town_FieldMWheel(Sender: TObject; WheelSteps: Integer; var aHandled: Boolean);
     procedure Town_BuildChange(Sender: TObject);
     procedure Town_BuildRefresh;
   protected
@@ -41,7 +45,7 @@ implementation
 uses
   KM_ResTexts, KM_Cursor, KM_Resource, KM_ResHouses, KM_ResFonts,
   KM_RenderUI, KM_Terrain, KM_Points, KM_Utils,
-  KM_ResTypes;
+  KM_ResTypes, KM_ResMapElements;
 
 
 { TKMMapEdTownHouses }
@@ -63,9 +67,21 @@ begin
   Button_BuildField.CapColor := clMapEdBtnField;
   Button_BuildWine.CapColor := clMapEdBtnWine;
 
+  Button_BuildField.Caption := IntToStr(gCursor.MapEdFieldAge + 1);
+  Button_BuildWine.Caption  := IntToStr(gCursor.MapEdWineFieldAge + 1);
+
+  Button_BuildField.CapOffsetY := -10;
+  Button_BuildField.TexOffsetY := 6;
+
+  Button_BuildWine.CapOffsetY := -10;
+  Button_BuildWine.TexOffsetY := 6;
+
+  Button_BuildField.OnClickShift := Town_FieldShiftClick;
+  Button_BuildWine.OnClickShift  := Town_FieldShiftClick;
+  Button_BuildField.OnMouseWheel := Town_FieldMWheel;
+  Button_BuildWine.OnMouseWheel := Town_FieldMWheel;
+
   Button_BuildRoad.OnClick  := Town_BuildChange;
-  Button_BuildField.OnClick := Town_BuildChange;
-  Button_BuildWine.OnClick  := Town_BuildChange;
   Button_BuildCancel.OnClick:= Town_BuildChange;
 
   with TKMLabel.Create(Panel_Build,0,65,Panel_Build.Width,0,gResTexts[TX_MAPED_HOUSES_TITLE],fntOutline,taCenter) do
@@ -127,6 +143,46 @@ begin
 end;
 
 
+procedure TKMMapEdTownHouses.UpdateField(Sender: TObject; aIncrement: Integer);
+begin
+  if Sender = Button_BuildField then
+  begin
+    if gCursor.Mode = cmField then
+      gCursor.MapEdFieldAge := (gCursor.MapEdFieldAge + aIncrement + CORN_STAGES_COUNT) mod CORN_STAGES_COUNT;
+    gCursor.Mode := cmField;
+    Button_BuildField.Caption := IntToStr(gCursor.MapEdFieldAge + 1);
+  end
+  else
+  if Sender = Button_BuildWine then
+  begin
+    if gCursor.Mode = cmWine then
+      gCursor.MapEdWineFieldAge :=  (gCursor.MapEdWineFieldAge + aIncrement + WINE_STAGES_COUNT) mod WINE_STAGES_COUNT;
+    gCursor.Mode := cmWine;
+    Button_BuildWine.Caption := IntToStr(gCursor.MapEdWineFieldAge + 1);
+  end;
+end;
+
+
+procedure TKMMapEdTownHouses.Town_FieldShiftClick(Sender: TObject; Shift: TShiftState);
+var
+  stageInc: Integer;
+begin
+  if ssRight in Shift then
+    stageInc := -1
+  else
+    stageInc := 1;
+
+  UpdateField(Sender, stageInc);
+end;
+
+
+procedure TKMMapEdTownHouses.Town_FieldMWheel(Sender: TObject; WheelSteps: Integer; var aHandled: Boolean);
+begin
+  UpdateField(Sender, WheelSteps);
+  aHandled := True;
+end;
+
+
 procedure TKMMapEdTownHouses.Town_BuildChange(Sender: TObject);
 var
   I: Integer;
@@ -141,10 +197,10 @@ begin
     gCursor.Mode := cmRoad
   else
   if Sender = Button_BuildField then
-    gCursor.Mode := cmField
+    Town_FieldShiftClick(Sender, [])
   else
   if Sender = Button_BuildWine then
-    gCursor.Mode := cmWine
+    Town_FieldShiftClick(Sender, [])
   else
 
   for I := 1 to GUI_HOUSE_COUNT do
@@ -244,33 +300,8 @@ end;
 
 
 procedure TKMMapEdTownHouses.UpdateStateIdle;
-var
-  P: TKMPoint;
 begin
-  P := gCursor.Cell;
-  if (gCursor.Mode = cmField)
-    and gTerrain.TileIsCornField(P) then
-  begin
-    Button_BuildField.Caption := IntToStr(gTerrain.GetCornStage(P) + 1);
-    Button_BuildField.CapOffsetY := -10;
-    Button_BuildField.TexOffsetY := 6;
-  end else begin
-    Button_BuildField.Caption := '';
-    Button_BuildField.CapOffsetY := 0;
-    Button_BuildField.TexOffsetY := 0;
-  end;
-
-  if (gCursor.Mode = cmWine)
-    and gTerrain.TileIsWineField(P) then
-  begin
-    Button_BuildWine.Caption := IntToStr(gTerrain.GetWineStage(P) + 1);
-    Button_BuildWine.CapOffsetY := -10;
-    Button_BuildWine.TexOffsetY := 6;
-  end else begin
-    Button_BuildWine.Caption := '';
-    Button_BuildWine.CapOffsetY := 0;
-    Button_BuildWine.TexOffsetY := 0;
-  end;
+  // Not used atm...
 end;
 
 

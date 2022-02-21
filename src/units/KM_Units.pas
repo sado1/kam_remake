@@ -676,7 +676,7 @@ begin
   // Don't bother creating a task if there's no room for resulting ware
   // Saves us time on Fishers/Stonecutters/Woodcutters when they calculate routes to nearby deposits
   // Other houses where workers walk out can choose between cut/plant
-  if (fHome.HouseType in [htFisherHut, htQuary, htWineyard])
+  if (fHome.HouseType in [htFishermans, htQuarry, htVineyard])
   and (fHome.CheckResOut(gResHouses[fHome.HouseType].ResOutput[res]) >= MAX_WARES_IN_HOUSE) then
     Exit;
 
@@ -1160,7 +1160,11 @@ begin
   fHitPointCounter := 1;
   HitPointsInvulnerable := False;
 
-  SetActionLockedStay(10, uaWalk); //Must be locked for this initial pause so animals don't get pushed
+  //Must be locked for this initial pause so animals don't get pushed
+  if IsAnimal then
+    SetActionLockedStay(10, uaWalk)
+  else
+    SetActionStay(10, uaWalk);
 
   // Use SetInHouse for a safe unit pointers operation
   SetInHouse(aInHouse);
@@ -1924,13 +1928,13 @@ begin
     Result := tpWalk;
 
   //Preparing house area
-  if (fType = utWorker) and (fTask is TKMTaskBuildHouseArea)
+  if (fType = utBuilder) and (fTask is TKMTaskBuildHouseArea)
   and TKMTaskBuildHouseArea(fTask).Digging
   then
     Result := tpWorker; //Special mode that allows us to walk on building sites
 
   //Miners at work need to go off roads
-  if (fType in [utWoodcutter, utFarmer, utFisher, utStoneCutter])
+  if (fType in [utWoodcutter, utFarmer, utFisher, utStonemason])
   and (fTask is TKMTaskMining)
   then
     Result := tpWalk;

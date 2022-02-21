@@ -695,7 +695,7 @@ begin
                           //Create new array and fill it (otherwise we assign pointers and corrupt data)
                           SetLength(Result, fChartCount);
                           for I := 0 to fChartCount - 1 do
-                            Result[I] := fChartWares[wtBread][I] + fChartWares[wtSausages][I] + fChartWares[wtWine][I] + fChartWares[wtFish][I];
+                            Result[I] := fChartWares[wtBread][I] + fChartWares[wtSausage][I] + fChartWares[wtWine][I] + fChartWares[wtFish][I];
                         end;
     else                begin
                           //Return empty array
@@ -756,7 +756,7 @@ begin
     wtFood:            Result := (fChartCount = 0) or
                                   (ChartWares[wtWine][fChartCount-1] +
                                    ChartWares[wtBread][fChartCount-1] +
-                                   ChartWares[wtSausages][fChartCount-1] +
+                                   ChartWares[wtSausage][fChartCount-1] +
                                    ChartWares[wtFish][fChartCount-1] = 0);
     else                Result := True;
   end;

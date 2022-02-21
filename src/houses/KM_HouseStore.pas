@@ -183,7 +183,7 @@ begin
 
     if cheatPattern then
       case aWare of
-        wtArbalet: begin
+        wtCrossbow: begin
                       ResAddToIn(wtAll, 10);
                       gHands[Owner].Stats.WareProduced(wtAll, 10);
                       Exit;

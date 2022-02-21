@@ -127,10 +127,10 @@ begin
   ID := gGame.GetNewUID;
   case aUnitType of
     utSerf:                        Result := TKMUnitSerf.Create(ID, aUnitType, placeTo, aOwner, aInHouse);
-    utWorker:                      Result := TKMUnitWorker.Create(ID, aUnitType, placeTo, aOwner, aInHouse);
+    utBuilder:                      Result := TKMUnitWorker.Create(ID, aUnitType, placeTo, aOwner, aInHouse);
     utWoodCutter..utFisher,
     {utWorker,}
-    utStoneCutter..utMetallurgist: Result := TKMUnitCitizen.Create(ID, aUnitType, placeTo, aOwner, aInHouse);
+    utStonemason..utMetallurgist: Result := TKMUnitCitizen.Create(ID, aUnitType, placeTo, aOwner, aInHouse);
     utRecruit:                     Result := TKMUnitRecruit.Create(ID, aUnitType, placeTo, aOwner, aInHouse);
     WARRIOR_MIN..WARRIOR_MAX:      Result := TKMUnitWarrior.Create(ID, aUnitType, placeTo, aOwner, aInHouse);
     ANIMAL_MIN..ANIMAL_MAX:        Result := TKMUnitAnimal.Create(ID, aUnitType, placeTo, aOwner); //Do not specify aAddInHouse, we want to call TKMUnitAnimal constructor
@@ -299,10 +299,10 @@ begin
     LoadStream.Read(unitType, SizeOf(unitType));
     case unitType of
       utSerf:                   U := TKMUnitSerf.Load(LoadStream);
-      utWorker:                 U := TKMUnitWorker.Load(LoadStream);
+      utBuilder:                 U := TKMUnitWorker.Load(LoadStream);
       utWoodCutter..utFisher,
       {utWorker,}
-      utStoneCutter..utMetallurgist:
+      utStonemason..utMetallurgist:
                                 U := TKMUnitCitizen.Load(LoadStream);
       utRecruit:                U := TKMUnitRecruit.Load(LoadStream);
       WARRIOR_MIN..WARRIOR_MAX: U := TKMUnitWarrior.Load(LoadStream);

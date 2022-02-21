@@ -112,7 +112,8 @@ const
     btString, //Means AnsiString in PascalScript.
     btUnicodeString, //string and UnicodeString
     btStaticArray, btArray, //Static and Dynamic Arrays
-    btRecord, btSet];
+    btRecord, btSet,
+    btProcPtr]; // type TProc = procedure
 
 
 implementation
@@ -389,11 +390,11 @@ begin
     Sender.AddTypeS('TKMFieldType', '(ftNone, ftRoad, ftCorn, ftWine)'); //No need to add InitWine for scripts
     Sender.AddTypeS('TKMHouseType', '(htNone, htAny, '
       + 'htArmorSmithy,     htArmorWorkshop,   htBakery,        htBarracks,      htButchers,'
-      + 'htCoalMine,        htFarm,            htFisherHut,     htGoldMine,      htInn,'
-      + 'htIronMine,        htIronSmithy,      htMarketplace,   htMetallurgists, htMill,'
-      + 'htQuary,           htSawmill,         htSchool,        htSiegeWorkshop, htStables,'
+      + 'htCoalMine,        htFarm,            htFishermans,    htGoldMine,      htInn,'
+      + 'htIronMine,        htIronSmithy,      htMarket,        htMetallurgists, htMill,'
+      + 'htQuarry,          htSawmill,         htSchool,        htSiegeWorkshop, htStables,'
       + 'htStore,           htSwine,           htTannery,       htTownHall,      htWatchTower,'
-      + 'htWeaponSmithy,    htWeaponWorkshop,  htWineyard,      htWoodcutters    )');
+      + 'htWeaponSmithy,    htWeaponWorkshop,  htVineyard,      htWoodcutters    )');
 
     Sender.AddTypeS('TKMHouseTypeSet', 'set of TKMHouseType');
 
@@ -420,27 +421,27 @@ begin
     Sender.AddTypeS('TKMTileMaskKind', '(mkNone, mkSoft1, mkSoft2, mkSoft3, mkStraight, mkGradient)');
 
     Sender.AddTypeS('TKMUnitType', '(utNone, utAny,'
-      + 'utSerf,          utWoodcutter,    utMiner,         utAnimalBreeder,'
-      + 'utFarmer,        utLamberjack,    utBaker,         utButcher,'
-      + 'utFisher,        utWorker,        utStoneCutter,   utSmith,'
-      + 'utMetallurgist,  utRecruit,'
-      + 'utMilitia,      utAxeFighter,   utSwordsman,     utBowman,'
-      + 'utArbaletman,   utPikeman,      utHallebardman,  utHorseScout,'
-      + 'utCavalry,      utBarbarian,'
-      + 'utPeasant,      utSlingshot,    utMetalBarbarian,utHorseman,'
+      + 'utSerf,         utWoodcutter,   utMiner,         utAnimalBreeder,'
+      + 'utFarmer,       utCarpenter,    utBaker,         utButcher,'
+      + 'utFisher,       utBuilder,      utStonemason,    utSmith,'
+      + 'utMetallurgist, utRecruit,'
+      + 'utMilitia,      utAxeFighter,   utSwordFighter,  utBowman,'
+      + 'utCrossbowman,  utLanceCarrier, utPikeman,       utScout,'
+      + 'utKnight,       utBarbarian,'
+      + 'utRebel,        utRogue,        utWarrior,       utVagabond,'
       //utCatapult,   utBallista,
-      + 'utWolf,         utFish,         utWatersnake,   utSeastar,'
-      + 'utCrab,         utWaterflower,  utWaterleaf,    utDuck)');
+      + 'utWolf,         utFish,         utWatersnake,    utSeastar,'
+      + 'utCrab,         utWaterflower,  utWaterleaf,     utDuck)');
 
     Sender.AddTypeS('TKMUnitTypeSet', 'set of TKMUnitType');
 
     Sender.AddTypeS('TKMWareType', '(wtNone,'
-      + 'wtTrunk,   wtStone,   wtWood,        wtIronOre,   wtGoldOre,'
-      + 'wtCoal,    wtSteel,   wtGold,        wtWine,      wtCorn,'
-      + 'wtBread,   wtFlour,   wtLeather,     wtSausages,  wtPig,'
-      + 'wtSkin,    wtShield,  wtMetalShield, wtArmor,     wtMetalArmor,'
-      + 'wtAxe,     wtSword,   wtPike,        wtHallebard, wtBow,'
-      + 'wtArbalet, wtHorse,   wtFish,'
+      + 'wtTrunk,    wtStone,         wtTimber,     wtIronOre,      wtGoldOre,'
+      + 'wtCoal,     wtIron,          wtGold,       wtWine,         wtCorn,'
+      + 'wtBread,    wtFlour,         wtLeather,    wtSausage,      wtPig,'
+      + 'wtSkin,     wtWoodenShield,  wtIronShield, wtLeatherArmor, wtIronArmor,'
+      + 'wtAxe,      wtSword,         wtLance,      wtPike,         wtBow,'
+      + 'wtCrossbow, wtHorse,         wtFish,'
       // Special ware types
       + 'wtAll,     wtWarfare, wtFood)');
 
@@ -515,8 +516,8 @@ begin
     RegisterMethodCheck(c, 'function GroupType(aGroupID: Integer): Integer');
     RegisterMethodCheck(c, 'function GroupTypeEx(aGroupID: Integer): TKMGroupType');
 
-    RegisterMethodCheck(c, 'function HandCanBuildHouse(aHand: Integer; aHouseType: TKMHouseType): Boolean');
-    RegisterMethodCheck(c, 'function HandCanTrainUnit(aHand: Integer; aUnitType: TKMUnitType): Boolean');
+    RegisterMethodCheck(c, 'function HandHouseCanBuild(aHand: Integer; aHouseType: TKMHouseType): Boolean');
+    RegisterMethodCheck(c, 'function HandUnitCanTrain(aHand: Integer; aUnitType: TKMUnitType): Boolean');
     RegisterMethodCheck(c, 'function HandHouseLock(aHand: Integer; aHouseType: TKMHouseType): TKMHandHouseLock');
     RegisterMethodCheck(c, 'function HandWareDistribution(aHand: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType): Integer');
 
@@ -525,6 +526,7 @@ begin
     RegisterMethodCheck(c, 'function HouseBarracksRallyPointX(aBarracks: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseBarracksRallyPointY(aBarracks: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseBarracksRecruitsCount(aBarracks: Integer): Integer');
+    RegisterMethodCheck(c, 'function HouseBarracksRecruitBlock(aHouseID: Integer): Boolean');
     RegisterMethodCheck(c, 'function HouseBuildingProgress(aHouseID: Integer): Integer');
     RegisterMethodCheck(c, 'function HouseCanReachResources(aHouseID: Integer): Boolean)');
     RegisterMethodCheck(c, 'function HouseDamage(aHouseID: Integer): Integer');
@@ -749,15 +751,22 @@ begin
     RegisterMethodCheck(c, 'procedure GameSpeedChangeAllowed(aAllowed: Boolean)');
 
     RegisterMethodCheck(c, 'function  GiveAnimal(aType, X,Y: Integer): Integer');
+    RegisterMethodCheck(c, 'function  GiveAnimalEx(aType: TKMUnitType; X,Y: Integer): Integer');
     RegisterMethodCheck(c, 'function  GiveField(aHand, X, Y: Integer): Boolean');
     RegisterMethodCheck(c, 'function  GiveFieldAged(aHand, X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean');
     RegisterMethodCheck(c, 'function  GiveGroup(aHand, aType, X, Y, aDir, aCount, aColumns: Integer): Integer');
+    RegisterMethodCheck(c, 'function  GiveGroupEx(aHand: Integer; aType: TKMUnitType; X,Y: Integer; aDir: TKMDirection; aCount, aColumns: Integer): Integer');
     RegisterMethodCheck(c, 'function  GiveHouse(aHand, aHouseType, X,Y: Integer): Integer');
+    RegisterMethodCheck(c, 'function  GiveHouseEx(aHand: Integer; aHouseType: TKMHouseType; X,Y: Integer): Integer');
     RegisterMethodCheck(c, 'function  GiveHouseSite(aHand, aHouseType, X, Y: Integer; aAddMaterials: Boolean): Integer');
+    RegisterMethodCheck(c, 'function  GiveHouseSiteEx(aHand: Integer; aHouseType: TKMHouseType; X, Y, aWoodAmount, aStoneAmount: Integer): Integer');
     RegisterMethodCheck(c, 'function  GiveRoad(aHand, X, Y: Integer): Boolean');
     RegisterMethodCheck(c, 'function  GiveUnit(aHand, aType, X,Y, aDir: Integer): Integer');
+    RegisterMethodCheck(c, 'function  GiveUnitEx(aHand: Integer; aType: TKMUnitType; X,Y: Integer; aDir: TKMDirection): Integer');
     RegisterMethodCheck(c, 'procedure GiveWares(aHand, aType, aCount: Integer)');
+    RegisterMethodCheck(c, 'procedure GiveWaresEx(aHand: Integer; aType: TKMWareType; aCount: Integer)');
     RegisterMethodCheck(c, 'procedure GiveWeapons(aHand, aType, aCount: Integer)');
+    RegisterMethodCheck(c, 'procedure GiveWeaponsEx(aHand: Integer; aType: TKMWareType; aCount: Integer)');
     RegisterMethodCheck(c, 'function  GiveWineField(aHand, X, Y: Integer): Boolean');
     RegisterMethodCheck(c, 'function  GiveWineFieldAged(aHand, X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean');
 
@@ -775,42 +784,57 @@ begin
     RegisterMethodCheck(c, 'function  GroupOrderSplitUnit(aGroupID, aUnitID: Integer): Integer');
     RegisterMethodCheck(c, 'procedure GroupOrderStorm(aGroupID: Integer)');
     RegisterMethodCheck(c, 'procedure GroupOrderWalk(aGroupID: Integer; X, Y, aDirection: Integer)');
+    RegisterMethodCheck(c, 'procedure GroupOrderWalkEx(aGroupID: Integer; X, Y: Integer; aDirection: TKMDirection)');
     RegisterMethodCheck(c, 'procedure GroupSetFormation(aGroupID: Integer; aNumColumns: Byte)');
 
     RegisterMethodCheck(c, 'procedure HandHouseLock(aHand: Integer; aHouseType: TKMHouseType; aLock: TKMHandHouseLock)');
+    RegisterMethodCheck(c, 'procedure HandTradeAllowed(aHand: Integer; aWareType: TKMWareType; aAllowed: Boolean)');
+    RegisterMethodCheck(c, 'procedure HandUnitCanTrain(aHand: Integer; aUnitType: TKMUnitType; aCanTrain: Boolean)');
+    RegisterMethodCheck(c, 'procedure HandWareDistribution(aHand: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType; aAmount: Integer)');
 
     RegisterMethodCheck(c, 'procedure HouseAddBuildingMaterials(aHouseID: Integer)');
+    RegisterMethodCheck(c, 'procedure HouseAddBuildingMaterialsEx(aHouseID, aWoodAmount, aStoneAmount: Integer)');
     RegisterMethodCheck(c, 'procedure HouseAddBuildingProgress(aHouseID: Integer)');
+    RegisterMethodCheck(c, 'procedure HouseAddBuildingProgressEx(aHouseID, aBuildSteps: Integer)');
     RegisterMethodCheck(c, 'procedure HouseAddDamage(aHouseID: Integer; aDamage: Integer)');
     RegisterMethodCheck(c, 'procedure HouseAddRepair(aHouseID: Integer; aRepair: Integer)');
     RegisterMethodCheck(c, 'procedure HouseAddWaresTo(aHouseID: Integer; aType, aCount: Integer)');
+    RegisterMethodCheck(c, 'procedure HouseAddWaresToEx(aHouseID: Integer; aType: TKMWareType; aCount: Integer)');
     RegisterMethodCheck(c, 'procedure HouseAllow(aHand, aHouseType: Integer; aAllowed: Boolean)');
     RegisterMethodCheck(c, 'procedure HouseAllowAllyToSelect(aHouseID: Integer; aAllow: Boolean)');
     RegisterMethodCheck(c, 'procedure HouseAllowAllyToSelectAll(aHand: Byte; aAllow: Boolean)');
     RegisterMethodCheck(c, 'function  HouseBarracksEquip(aHouseID: Integer; aUnitType: Integer; aCount: Integer): Integer');
     RegisterMethodCheck(c, 'function  HouseBarracksEquipEx(aHouseID: Integer; aUnitType: TKMUnitType; aCount: Integer): Integer');
     RegisterMethodCheck(c, 'procedure HouseBarracksGiveRecruit(aHouseID: Integer)');
+    RegisterMethodCheck(c, 'procedure HouseBarracksGiveRecruits(aHouseID, aCount: Integer)');
+    RegisterMethodCheck(c, 'procedure HouseBarracksRecruitBlock(aHouseID: Integer; aBlocked: Boolean)');
     RegisterMethodCheck(c, 'procedure HouseDeliveryBlock(aHouseID: Integer; aDeliveryBlocked: Boolean)');
     RegisterMethodCheck(c, 'procedure HouseDeliveryMode(aHouseID: Integer; aDeliveryMode: TKMDeliveryMode)');
     RegisterMethodCheck(c, 'procedure HouseDestroy(aHouseID: Integer; aSilent: Boolean)');
     RegisterMethodCheck(c, 'procedure HouseDisableUnoccupiedMessage(aHouseID: Integer; aDisabled: Boolean)');
     RegisterMethodCheck(c, 'procedure HouseRepairEnable(aHouseID: Integer; aRepairEnabled: Boolean)');
     RegisterMethodCheck(c, 'function  HouseSchoolQueueAdd(aHouseID: Integer; aUnitType: Integer; aCount: Integer): Integer');
+    RegisterMethodCheck(c, 'function  HouseSchoolQueueAddEx(aHouseID: Integer; aUnitType: TKMUnitType; aCount: Integer): Integer');
     RegisterMethodCheck(c, 'procedure HouseSchoolQueueRemove(aHouseID, QueueIndex: Integer)');
     RegisterMethodCheck(c, 'procedure HouseTakeWaresFrom(aHouseID: Integer; aType, aCount: Integer)');
+    RegisterMethodCheck(c, 'procedure HouseTakeWaresFromEx(aHouseID: Integer; aType: TKMWareType; aCount: Integer)');
     RegisterMethodCheck(c, 'function  HouseTownHallEquip(aHouseID: Integer; aUnitType: Integer; aCount: Integer): Integer');
+    RegisterMethodCheck(c, 'function  HouseTownHallEquipEx(aHouseID: Integer; aUnitType: TKMUnitType; aCount: Integer): Integer');
     RegisterMethodCheck(c, 'procedure HouseTownHallMaxGold(aHouseID: Integer; aMaxGold: Integer)');
     RegisterMethodCheck(c, 'procedure HouseUnlock(aHand, aHouseType: Integer)');
     RegisterMethodCheck(c, 'procedure HouseWoodcutterChopOnly(aHouseID: Integer; aChopOnly: Boolean)');
-    RegisterMethodCheck(c, 'procedure HouseWoodcutterMode(aHouseID: Integer; aWoodcutterMode: Byte)');
+    RegisterMethodCheck(c, 'procedure HouseWoodcutterMode(aHouseID: Integer; aWoodcutterMode: TKMWoodcutterMode)');
     RegisterMethodCheck(c, 'procedure HouseWareBlock(aHouseID, aWareType: Integer; aBlocked: Boolean)');
-    RegisterMethodCheck(c, 'procedure HouseWareBlockTakeOut(aHouseID, aWareType: Integer; aBlocked: Boolean)');
+    RegisterMethodCheck(c, 'procedure HouseWareBlockEx(aHouseID: Integer; aWareType: TKMWareType; aBlocked: Boolean)');
+    RegisterMethodCheck(c, 'procedure HouseWareBlockTakeOut(aHouseID: Integer; aWareType: TKMWareType; aBlocked: Boolean)');
     RegisterMethodCheck(c, 'procedure HouseWeaponsOrderSet(aHouseID, aWareType, aAmount: Integer)');
+    RegisterMethodCheck(c, 'procedure HouseWeaponsOrderSetEx(aHouseID: Integer; aWareType: TKMWareType; aAmount: Integer)');
 
     RegisterMethodCheck(c, 'procedure Log(const aText: AnsiString)');
     RegisterMethodCheck(c, 'procedure LogLinesMaxCnt(aMaxLogLinesCnt: Integer)');
 
     RegisterMethodCheck(c, 'procedure MarketSetTrade(aMarketID, aFrom, aTo, aAmount: Integer)');
+    RegisterMethodCheck(c, 'procedure MarketSetTradeEx(aMarketID: Integer; aFrom, aTo: TKMWareType; aAmount: Integer)');
 
     RegisterMethodCheck(c, 'function MapTileHeightSet(X, Y, Height: Integer): Boolean');
     RegisterMethodCheck(c, 'function MapTileObjectSet(X, Y, Obj: Integer): Boolean');
@@ -837,6 +861,7 @@ begin
 
     RegisterMethodCheck(c, 'function  PlanAddField(aHand, X, Y: Integer): Boolean');
     RegisterMethodCheck(c, 'function  PlanAddHouse(aHand, aHouseType, X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function  PlanAddHouseEx(aHand: Integer; aHouseType: TKMHouseType; X, Y: Integer): Boolean');
     RegisterMethodCheck(c, 'function  PlanAddRoad(aHand, X, Y: Integer): Boolean');
     RegisterMethodCheck(c, 'function  PlanAddWinefield(aHand, X, Y: Integer): Boolean');
     RegisterMethodCheck(c, 'function  PlanConnectRoad(aHand, X1, Y1, X2, Y2: Integer; aCompleted: Boolean): Boolean');
@@ -884,6 +909,7 @@ begin
     RegisterMethodCheck(c, 'procedure UnitAllowAllyToSelect(aUnitID: Integer; aAllow: Boolean)');
     RegisterMethodCheck(c, 'procedure UnitBlock(aHand: Byte; aType: Integer; aBlock: Boolean)');
     RegisterMethodCheck(c, 'function  UnitDirectionSet(aUnitID, aDirection: Integer): Boolean');
+    RegisterMethodCheck(c, 'function  UnitDirectionSetEx(aUnitID: Integer; aDirection: TKMDirection): Boolean');
     RegisterMethodCheck(c, 'procedure UnitDismiss(aUnitID: Integer)');
     RegisterMethodCheck(c, 'procedure UnitDismissableSet(aUnitID: Integer; aDismissable: Boolean)');
     RegisterMethodCheck(c, 'procedure UnitDismissCancel(aUnitID: Integer)');
@@ -1023,60 +1049,65 @@ const
     Dir: array [0..3] of TPSParameterMode;
   end =
   (
-  (ParamCount: 3; Typ: (0, btS32, btS32, btS32, 0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnBeacon
-  (ParamCount: 3; Typ: (0, btS32, btS32, btS32, 0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnFieldBuilt
-  (ParamCount: 4; Typ: (0, btS32, btS32, btS32, btS32); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHouseAfterDestroyed
-  (ParamCount: 1; Typ: (0, btS32, 0,     0,     0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHouseBuilt
-  (ParamCount: 1; Typ: (0, btS32, 0,     0,     0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHousePlanDigged
-  (ParamCount: 4; Typ: (0, btS32, btS32, btS32, btS32); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHousePlanPlaced
-  (ParamCount: 4; Typ: (0, btS32, btS32, btS32, btS32); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHousePlanRemoved
-  (ParamCount: 2; Typ: (0, btS32, btS32, 0,     0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHouseDamaged
-  (ParamCount: 2; Typ: (0, btS32, btS32, 0,     0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHouseDestroyed
-  (ParamCount: 3; Typ: (0, btS32, btS32, btS32, 0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHouseRepaired
-  (ParamCount: 4; Typ: (0, btS32, btS32, btS32, btS32); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHouseWareCountChanged
+  (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnBeacon
+  (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnFieldBuilt
+  (ParamCount: 4; Typ: (0, btS32,   btS32,  btS32, btS32  ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHouseAfterDestroyed
+  (ParamCount: 4; Typ: (0, btEnum,  btS32,  btS32, btS32  ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHouseAfterDestroyedEx
+  (ParamCount: 1; Typ: (0, btS32,   0,      0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHouseBuilt
+  (ParamCount: 1; Typ: (0, btS32,   0,      0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHousePlanDigged
+  (ParamCount: 4; Typ: (0, btS32,   btS32,  btS32, btS32  ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHousePlanPlaced
+  (ParamCount: 4; Typ: (0, btS32,   btS32,  btS32, btEnum ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHousePlanPlacedEx
+  (ParamCount: 4; Typ: (0, btS32,   btS32,  btS32, btS32  ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHousePlanRemoved
+  (ParamCount: 4; Typ: (0, btS32,   btS32,  btS32, btEnum ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHousePlanRemovedEx
+  (ParamCount: 2; Typ: (0, btS32,   btS32,  0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHouseDamaged
+  (ParamCount: 2; Typ: (0, btS32,   btS32,  0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHouseDestroyed
+  (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHouseRepaired
+  (ParamCount: 4; Typ: (0, btS32,   btEnum, btS32, btS32  ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHouseWareCountChanged
 
-  (ParamCount: 1; Typ: (0, btSingle, 0,  0,     0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGameSpeedChanged
+  (ParamCount: 1; Typ: (0, btSingle,0,      0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGameSpeedChanged
 
-  (ParamCount: 1; Typ: (0, btS32, 0,     0,     0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGroupHungry
-  (ParamCount: 2; Typ: (0, btS32, btS32, 0,     0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGroupOrderAttackHouse
-  (ParamCount: 2; Typ: (0, btS32, btS32, 0,     0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGroupOrderAttackUnit
-  (ParamCount: 4; Typ: (0, btS32, btS32, btS32,btEnum); Dir: (pmIn, pmInOut, pmInOut, pmInOut)), // OnGroupBeforeOrderSplit
-  (ParamCount: 3; Typ: (0, btS32, btS32, btS32, 0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGroupOrderMove
-  (ParamCount: 2; Typ: (0, btS32, btS32, 0,     0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGroupOrderLink
-  (ParamCount: 2; Typ: (0, btS32, btS32, 0,     0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGroupOrderSplit
+  (ParamCount: 1; Typ: (0, btS32,   0,      0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGroupHungry
+  (ParamCount: 2; Typ: (0, btS32,   btS32,  0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGroupOrderAttackHouse
+  (ParamCount: 2; Typ: (0, btS32,   btS32,  0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGroupOrderAttackUnit
+  (ParamCount: 4; Typ: (0, btS32,   btS32,  btS32, btEnum ); Dir: (pmIn, pmInOut, pmInOut, pmInOut)), // OnGroupBeforeOrderSplit
+  (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGroupOrderMove
+  (ParamCount: 2; Typ: (0, btS32,   btS32,  0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGroupOrderLink
+  (ParamCount: 2; Typ: (0, btS32,   btS32,  0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGroupOrderSplit
 
-  (ParamCount: 3; Typ: (0, btS32, btS32, btS32, 0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnMarketTrade
+  (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnMarketTrade
+  (ParamCount: 3; Typ: (0, btS32,   btEnum, btEnum,0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnMarketTradeEx
 
-  (ParamCount: 0; Typ: (0, 0,     0,     0,     0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnMissionStart
+  (ParamCount: 0; Typ: (0, 0,       0,      0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnMissionStart
 
-  (ParamCount: 0; Typ: (0, 0,     0,     0,     0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPeacetimeEnd
+  (ParamCount: 0; Typ: (0, 0,       0,      0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPeacetimeEnd
 
-  (ParamCount: 3; Typ: (0, btS32, btS32, btS32, 0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlanRoadDigged
-  (ParamCount: 3; Typ: (0, btS32, btS32, btS32, 0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlanRoadPlaced
-  (ParamCount: 3; Typ: (0, btS32, btS32, btS32, 0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlanRoadRemoved
-  (ParamCount: 3; Typ: (0, btS32, btS32, btS32, 0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlanFieldPlaced
-  (ParamCount: 3; Typ: (0, btS32, btS32, btS32, 0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlanFieldRemoved
-  (ParamCount: 3; Typ: (0, btS32, btS32, btS32, 0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlanWinefieldDigged
-  (ParamCount: 3; Typ: (0, btS32, btS32, btS32, 0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlanWinefieldPlaced
-  (ParamCount: 3; Typ: (0, btS32, btS32, btS32, 0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlanWinefieldRemoved
+  (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlanRoadDigged
+  (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlanRoadPlaced
+  (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlanRoadRemoved
+  (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlanFieldPlaced
+  (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlanFieldRemoved
+  (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlanWinefieldDigged
+  (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlanWinefieldPlaced
+  (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlanWinefieldRemoved
 
-  (ParamCount: 1; Typ: (0, btS32, 0,     0,     0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlayerDefeated
-  (ParamCount: 1; Typ: (0, btS32, 0,     0,     0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlayerVictory
+  (ParamCount: 1; Typ: (0, btS32,   0,      0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlayerDefeated
+  (ParamCount: 1; Typ: (0, btS32,   0,      0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlayerVictory
 
-  (ParamCount: 3; Typ: (0, btS32, btS32, btS32, 0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnRoadBuilt
+  (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnRoadBuilt
 
-  (ParamCount: 0; Typ: (0, 0,     0,     0,     0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnTick
+  (ParamCount: 0; Typ: (0, 0,       0,      0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnTick
 
-  (ParamCount: 4; Typ: (0, btS32, btS32, btS32, btS32); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnUnitAfterDied
-  (ParamCount: 2; Typ: (0, btS32, btS32, 0,     0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnUnitDied
-  (ParamCount: 1; Typ: (0, btS32, 0,     0,     0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnUnitTrained
-  (ParamCount: 2; Typ: (0, btS32, btS32, 0,     0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnUnitWounded
-  (ParamCount: 2; Typ: (0, btS32, btS32, 0,     0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnUnitAttacked
-  (ParamCount: 3; Typ: (0, btS32, btS32, btS32, 0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnWareProduced
+  (ParamCount: 4; Typ: (0, btS32,   btS32,  btS32, btS32  ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnUnitAfterDied
+  (ParamCount: 4; Typ: (0, btEnum,  btS32,  btS32, btS32  ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnUnitAfterDiedEx
+  (ParamCount: 2; Typ: (0, btS32,   btS32,  0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnUnitDied
+  (ParamCount: 1; Typ: (0, btS32,   0,      0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnUnitTrained
+  (ParamCount: 2; Typ: (0, btS32,   btS32,  0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnUnitWounded
+  (ParamCount: 2; Typ: (0, btS32,   btS32,  0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnUnitAttacked
+  (ParamCount: 3; Typ: (0, btS32,   btEnum, btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnWareProduced
 
-  (ParamCount: 2; Typ: (0, btS32, btS32, 0,     0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnWarriorEquipped
-  (ParamCount: 3; Typ: (0, btS32, btS32, btS32, 0    ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnWarriorWalked
-  (ParamCount: 3; Typ: (0, btS32, btS32, btS32, 0    ); Dir: (pmIn, pmIn, pmIn, pmIn))  // OnWinefieldBuilt
+  (ParamCount: 2; Typ: (0, btS32,   btS32,  0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnWarriorEquipped
+  (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnWarriorWalked
+  (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn))  // OnWinefieldBuilt
   );
 var
   I: Integer;
@@ -1287,9 +1318,9 @@ begin
       RegisterMethod(@TKMScriptStates.GroupType,                                'GroupType');
       RegisterMethod(@TKMScriptStates.GroupTypeEx,                              'GroupTypeEx');
 
-      RegisterMethod(@TKMScriptStates.HandCanBuildHouse,                        'HandCanBuildHouse');
-      RegisterMethod(@TKMScriptStates.HandCanTrainUnit,                         'HandCanTrainUnit');
+      RegisterMethod(@TKMScriptStates.HandHouseCanBuild,                        'HandHouseCanBuild');
       RegisterMethod(@TKMScriptStates.HandHouseLock,                            'HandHouseLock');
+      RegisterMethod(@TKMScriptStates.HandUnitCanTrain,                         'HandUnitCanTrain');
       RegisterMethod(@TKMScriptStates.HandWareDistribution,                     'HandWareDistribution');
 
       RegisterMethod(@TKMScriptStates.HouseAllowAllyToSelect,                   'HouseAllowAllyToSelect');
@@ -1297,6 +1328,7 @@ begin
       RegisterMethod(@TKMScriptStates.HouseBarracksRallyPointX,                 'HouseBarracksRallyPointX');
       RegisterMethod(@TKMScriptStates.HouseBarracksRallyPointY,                 'HouseBarracksRallyPointY');
       RegisterMethod(@TKMScriptStates.HouseBarracksRecruitsCount,               'HouseBarracksRecruitsCount');
+      RegisterMethod(@TKMScriptStates.HouseBarracksRecruitBlock,                'HouseBarracksRecruitBlock');
       RegisterMethod(@TKMScriptStates.HouseBuildingProgress,                    'HouseBuildingProgress');
       RegisterMethod(@TKMScriptStates.HouseCanReachResources,                   'HouseCanReachResources');
       RegisterMethod(@TKMScriptStates.HouseDamage,                              'HouseDamage');
@@ -1521,15 +1553,22 @@ begin
       RegisterMethod(@TKMScriptActions.GameSpeedChangeAllowed,                  'GameSpeedChangeAllowed');
 
       RegisterMethod(@TKMScriptActions.GiveAnimal,                              'GiveAnimal');
+      RegisterMethod(@TKMScriptActions.GiveAnimalEx,                            'GiveAnimalEx');
       RegisterMethod(@TKMScriptActions.GiveField,                               'GiveField');
       RegisterMethod(@TKMScriptActions.GiveFieldAged,                           'GiveFieldAged');
       RegisterMethod(@TKMScriptActions.GiveGroup,                               'GiveGroup');
+      RegisterMethod(@TKMScriptActions.GiveGroupEx,                             'GiveGroupEx');
       RegisterMethod(@TKMScriptActions.GiveUnit,                                'GiveUnit');
+      RegisterMethod(@TKMScriptActions.GiveUnitEx,                              'GiveUnitEx');
       RegisterMethod(@TKMScriptActions.GiveHouse,                               'GiveHouse');
+      RegisterMethod(@TKMScriptActions.GiveHouseEx,                             'GiveHouseEx');
       RegisterMethod(@TKMScriptActions.GiveHouseSite,                           'GiveHouseSite');
+      RegisterMethod(@TKMScriptActions.GiveHouseSiteEx,                         'GiveHouseSiteEx');
       RegisterMethod(@TKMScriptActions.GiveRoad,                                'GiveRoad');
       RegisterMethod(@TKMScriptActions.GiveWares,                               'GiveWares');
+      RegisterMethod(@TKMScriptActions.GiveWaresEx,                             'GiveWaresEx');
       RegisterMethod(@TKMScriptActions.GiveWeapons,                             'GiveWeapons');
+      RegisterMethod(@TKMScriptActions.GiveWeaponsEx,                           'GiveWeaponsEx');
       RegisterMethod(@TKMScriptActions.GiveWineField,                           'GiveWineField');
       RegisterMethod(@TKMScriptActions.GiveWineFieldAged,                       'GiveWineFieldAged');
 
@@ -1547,37 +1586,51 @@ begin
       RegisterMethod(@TKMScriptActions.GroupOrderSplitUnit,                     'GroupOrderSplitUnit');
       RegisterMethod(@TKMScriptActions.GroupOrderStorm,                         'GroupOrderStorm');
       RegisterMethod(@TKMScriptActions.GroupOrderWalk,                          'GroupOrderWalk');
+      RegisterMethod(@TKMScriptActions.GroupOrderWalkEx,                        'GroupOrderWalkEx');
       RegisterMethod(@TKMScriptActions.GroupSetFormation,                       'GroupSetFormation');
 
       RegisterMethod(@TKMScriptActions.HandHouseLock,                           'HandHouseLock');
+      RegisterMethod(@TKMScriptActions.HandTradeAllowed,                        'HandTradeAllowed');
+      RegisterMethod(@TKMScriptActions.HandUnitCanTrain,                        'HandUnitCanTrain');
+      RegisterMethod(@TKMScriptActions.HandWareDistribution,                    'HandWareDistribution');
 
       RegisterMethod(@TKMScriptActions.HouseAddBuildingMaterials,               'HouseAddBuildingMaterials');
+      RegisterMethod(@TKMScriptActions.HouseAddBuildingMaterialsEx,             'HouseAddBuildingMaterialsEx');
       RegisterMethod(@TKMScriptActions.HouseAddBuildingProgress,                'HouseAddBuildingProgress');
+      RegisterMethod(@TKMScriptActions.HouseAddBuildingProgressEx,              'HouseAddBuildingProgressEx');
       RegisterMethod(@TKMScriptActions.HouseAddDamage,                          'HouseAddDamage');
       RegisterMethod(@TKMScriptActions.HouseAddRepair,                          'HouseAddRepair');
       RegisterMethod(@TKMScriptActions.HouseAddWaresTo,                         'HouseAddWaresTo');
+      RegisterMethod(@TKMScriptActions.HouseAddWaresToEx,                       'HouseAddWaresToEx');
       RegisterMethod(@TKMScriptActions.HouseAllow,                              'HouseAllow');
       RegisterMethod(@TKMScriptActions.HouseAllowAllyToSelect,                  'HouseAllowAllyToSelect');
       RegisterMethod(@TKMScriptActions.HouseAllowAllyToSelectAll,               'HouseAllowAllyToSelectAll');
       RegisterMethod(@TKMScriptActions.HouseBarracksEquip,                      'HouseBarracksEquip');
       RegisterMethod(@TKMScriptActions.HouseBarracksEquipEx,                    'HouseBarracksEquipEx');
       RegisterMethod(@TKMScriptActions.HouseBarracksGiveRecruit,                'HouseBarracksGiveRecruit');
+      RegisterMethod(@TKMScriptActions.HouseBarracksGiveRecruits,               'HouseBarracksGiveRecruits');
+      RegisterMethod(@TKMScriptActions.HouseBarracksRecruitBlock,               'HouseBarracksRecruitBlock');
       RegisterMethod(@TKMScriptActions.HouseDeliveryBlock,                      'HouseDeliveryBlock');
       RegisterMethod(@TKMScriptActions.HouseDeliveryMode,                       'HouseDeliveryMode');
       RegisterMethod(@TKMScriptActions.HouseDisableUnoccupiedMessage,           'HouseDisableUnoccupiedMessage');
       RegisterMethod(@TKMScriptActions.HouseDestroy,                            'HouseDestroy');
       RegisterMethod(@TKMScriptActions.HouseRepairEnable,                       'HouseRepairEnable');
       RegisterMethod(@TKMScriptActions.HouseSchoolQueueAdd,                     'HouseSchoolQueueAdd');
+      RegisterMethod(@TKMScriptActions.HouseSchoolQueueAddEx,                   'HouseSchoolQueueAddEx');
       RegisterMethod(@TKMScriptActions.HouseSchoolQueueRemove,                  'HouseSchoolQueueRemove');
       RegisterMethod(@TKMScriptActions.HouseTakeWaresFrom,                      'HouseTakeWaresFrom');
+      RegisterMethod(@TKMScriptActions.HouseTakeWaresFromEx,                    'HouseTakeWaresFromEx');
       RegisterMethod(@TKMScriptActions.HouseTownHallEquip,                      'HouseTownHallEquip');
+      RegisterMethod(@TKMScriptActions.HouseTownHallEquipEx,                    'HouseTownHallEquipEx');
       RegisterMethod(@TKMScriptActions.HouseTownHallMaxGold,                    'HouseTownHallMaxGold');
       RegisterMethod(@TKMScriptActions.HouseUnlock,                             'HouseUnlock');
       RegisterMethod(@TKMScriptActions.HouseWoodcutterChopOnly,                 'HouseWoodcutterChopOnly');
       RegisterMethod(@TKMScriptActions.HouseWoodcutterMode,                     'HouseWoodcutterMode');
       RegisterMethod(@TKMScriptActions.HouseWareBlock,                          'HouseWareBlock');
+      RegisterMethod(@TKMScriptActions.HouseWareBlockEx,                        'HouseWareBlockEx');
       RegisterMethod(@TKMScriptActions.HouseWareBlockTakeOut,                   'HouseWareBlockTakeOut');
       RegisterMethod(@TKMScriptActions.HouseWeaponsOrderSet,                    'HouseWeaponsOrderSet');
+      RegisterMethod(@TKMScriptActions.HouseWeaponsOrderSetEx,                  'HouseWeaponsOrderSetEx');
 
       RegisterMethod(@TKMScriptActions.Log,                                     'Log');
       RegisterMethod(@TKMScriptActions.LogLinesMaxCnt,                          'LogLinesMaxCnt');
@@ -1597,6 +1650,7 @@ begin
       RegisterMethod(@TKMScriptActions.MapTileOverlaySet,                       'MapTileOverlaySet');
 
       RegisterMethod(@TKMScriptActions.MarketSetTrade,                          'MarketSetTrade');
+      RegisterMethod(@TKMScriptActions.MarketSetTradeEx,                        'MarketSetTradeEx');
 
       RegisterMethod(@TKMScriptActions.OverlayTextAppend,                       'OverlayTextAppend');
       RegisterMethod(@TKMScriptActions.OverlayTextAppendFormatted,              'OverlayTextAppendFormatted');
@@ -1607,6 +1661,7 @@ begin
 
       RegisterMethod(@TKMScriptActions.PlanAddField,                            'PlanAddField');
       RegisterMethod(@TKMScriptActions.PlanAddHouse,                            'PlanAddHouse');
+      RegisterMethod(@TKMScriptActions.PlanAddHouseEx,                          'PlanAddHouseEx');
       RegisterMethod(@TKMScriptActions.PlanAddRoad,                             'PlanAddRoad');
       RegisterMethod(@TKMScriptActions.PlanAddWinefield,                        'PlanAddWinefield');
       RegisterMethod(@TKMScriptActions.PlanConnectRoad,                         'PlanConnectRoad');
@@ -1653,6 +1708,7 @@ begin
       RegisterMethod(@TKMScriptActions.UnitAllowAllyToSelect,                   'UnitAllowAllyToSelect');
       RegisterMethod(@TKMScriptActions.UnitBlock,                               'UnitBlock');
       RegisterMethod(@TKMScriptActions.UnitDirectionSet,                        'UnitDirectionSet');
+      RegisterMethod(@TKMScriptActions.UnitDirectionSetEx,                      'UnitDirectionSetEx');
       RegisterMethod(@TKMScriptActions.UnitDismiss,                             'UnitDismiss');
       RegisterMethod(@TKMScriptActions.UnitDismissableSet,                      'UnitDismissableSet');
       RegisterMethod(@TKMScriptActions.UnitDismissCancel,                       'UnitDismissCancel');

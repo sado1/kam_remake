@@ -197,10 +197,10 @@ const
     {htFarm}           [ htFarm,           htSwine,          htMill,           htStables                        ],
     {htFisherHut}      [ htStore                                                                                ],
     {htGoldMine}       [ htMetallurgists,  htStore                                                              ],
-    {htInn}            [ htButchers,       htBakery,         htStore,          htWineyard                       ],
+    {htInn}            [ htButchers,       htBakery,         htStore,          htVineyard                       ],
     {htIronMine}       [ htStore                                                                                ],
     {htIronSmithy}     [ htCoalMine,       htIronMine,       htWeaponSmithy,   htIronSmithy                     ],
-    {htMarketplace}    [ htStore,          htMetallurgists,  htMarketplace,    htBarracks                       ],
+    {htMarketplace}    [ htStore,          htMetallurgists,  htMarket,    htBarracks                       ],
     // Metallurgist must be only close to coal / gold because serfs are not able to support this extremely critical resources
     {htMetallurgists}  [ htCoalMine,       htGoldMine                                                           ],// htSchool, htStore
     {htMill}           [ htBakery,         htInn,            htMill                                             ],
@@ -216,7 +216,7 @@ const
     {htWatchTower}     [ htStore                                                                                ],
     {htWeaponSmithy}   [ htIronSmithy,     htCoalMine,       htBarracks,       htIronMine                       ],
     {htWeaponWorkshop} [ htSawmill,        htWeaponWorkshop, htBarracks                                         ],
-    {htWineyard}       [ htInn,            htQuary,          htCoalMine                                         ],
+    {htWineyard}       [ htInn,            htQuarry,          htCoalMine                                         ],
     {htWoodcutters}    [ htStore                                                                                ]
   );
 
@@ -634,7 +634,7 @@ const
         htGoldMine: Exhausted := IsExhaustedMine(Loc, True);
         htIronMine: Exhausted := IsExhaustedMine(Loc, False);
         htCoalMine: Exhausted := IsExhaustedCoalMine(Loc);
-        htQuary:    Exhausted := IsExhaustedQuary(Loc);
+        htQuarry:    Exhausted := IsExhaustedQuary(Loc);
         else
           begin
           end;
@@ -675,7 +675,7 @@ begin
       begin
         if RemoveTreeInPlanProcedure OR gAIFields.Eye.CanAddHousePlan(Loc, aHT, True, True) then
         begin
-          if (aHT in [htGoldMine, htIronMine, htCoalMine, htQuary]) AND CheckMine(I) then // Filter mines / chop-only woodcutters
+          if (aHT in [htGoldMine, htIronMine, htCoalMine, htQuarry]) AND CheckMine(I) then // Filter mines / chop-only woodcutters
             Continue;
           Bid := //+ DistFromStore(Loc)
                  + ObstaclesInHousePlan(aHT, Loc)
@@ -809,7 +809,7 @@ begin
         if FindPlaceForMines(aHT, aLoc) then
           gHands[fOwner].AI.CityManagement.Builder.LockHouseLoc(htCoalMine, aLoc);
       end;
-      htQuary:
+      htQuarry:
       begin
         CheckStoneReserves(True,0);
       end;
@@ -997,15 +997,15 @@ end;
 
 function TKMCityPlanner.GetFieldToHouse(aHT: TKMHouseType; aIdx: Integer; var aField: TKMPointList; var aFieldType: TKMFieldType): Boolean;
 begin
-  Result := (aHT in [htFarm, htWineyard]);
+  Result := (aHT in [htFarm, htVineyard]);
   if not Result then
     Exit;
 
   aFieldType := ftCorn;
-  if (aHT = htWineyard) then
+  if (aHT = htVineyard) then
     aFieldType := ftWine;
   aField.Clear;
-  PlanFields( IfThen(aHT = htWineyard,FIELDS_PER_WINE,FIELDS_PER_FARM), fPlannedHouses[aHT].Plans[aIdx].Loc, aFieldType, aField );
+  PlanFields( IfThen(aHT = htVineyard,FIELDS_PER_WINE,FIELDS_PER_FARM), fPlannedHouses[aHT].Plans[aIdx].Loc, aFieldType, aField );
 end;
 
 
@@ -1348,7 +1348,7 @@ var
 begin
   Fields := 0;
   with gAIFields.Eye.HousesMapping[aHT] do
-    for Dist := 1 to (Byte(aHT = htWineyard) * 2) + (Byte(aHT = htFarm) * 5) do
+    for Dist := 1 to (Byte(aHT = htVineyard) * 2) + (Byte(aHT = htFarm) * 5) do
       for Dir := Low(Surroundings[Dist]) to High(Surroundings[Dist]) do
         for I := Low(Surroundings[Dist,Dir]) + Dist to High(Surroundings[Dist,Dir]) - Dist + 1 do
         begin
@@ -1360,7 +1360,7 @@ begin
               Fields := Fields + 1;
         end;
   Result := - (
-              + Max(0, MIN_WINE_FIELDS - Fields) * Byte(aHT = htWineyard) * DECREASE_CRIT
+              + Max(0, MIN_WINE_FIELDS - Fields) * Byte(aHT = htVineyard) * DECREASE_CRIT
               + Max(0, MIN_CORN_FIELDS - Fields) * Byte(aHT = htFarm) * DECREASE_CRIT
             )
             - gAIFields.Eye.Routes[aLoc.Y, aLoc.X] * AI_Par[PLANNER_FARM_FieldCrit_PolyRoute]
@@ -1599,7 +1599,7 @@ var
     Gain, Obstacles, Snap, SeedDist, HouseDist, CenterDist, Routes, FlatArea, FreeEntrance, AllyInf, EnemyInfl, Field: Double;
   begin
     // Evaluate loc
-    if (aHT = htFarm) OR (aHT = htWineyard) then
+    if (aHT = htFarm) OR (aHT = htVineyard) then
     begin
       Obstacles :=    - ObstaclesInHousePlan(aHT, aLoc);
       Snap :=         + SnapCrit(aHT, aLoc)                    * AI_Par[PLANNER_FindPlaceForHouse_SnapCrit];
@@ -1914,7 +1914,7 @@ end;
 
 procedure TKMCityPlanner.CheckStoneReserves(aForceToPlaceQuarry: Boolean; aReqQuarryCnt: Integer);
 const
-  HT = htQuary;
+  HT = htQuarry;
   MIN_CNT = 60; // possible to mine X layers of stone tile = X * 3 stones
 var
   CanBeReplaced: Boolean;
@@ -1939,7 +1939,7 @@ begin
         for I := Low(CanMineCnt) to High(CanMineCnt) do
           with fPlannedHouses[HT].Plans[I] do
             for K := 0 to StoneLocs.Count - 1 do
-              if (KMDistanceAbs(Loc,StoneLocs.Items[K]) <= gRes.Units[utStoneCutter].MiningRange) then
+              if (KMDistanceAbs(Loc,StoneLocs.Items[K]) <= gRes.Units[utStonemason].MiningRange) then
               begin
                 Inc(CanMineCnt[I],StoneLocs.Tag[K]);
                 Inc(StoneLocs.Tag2[K]);
@@ -1958,7 +1958,7 @@ begin
           CanBeReplaced := True;
           with fPlannedHouses[HT].Plans[LowestIdx] do
             for I := StoneLocs.Count - 1 downto 0 do
-              if (StoneLocs.Tag2[I] < 3) AND (KMDistanceAbs(Loc,StoneLocs.Items[I]) <= gRes.Units[utStoneCutter].MiningRange) then
+              if (StoneLocs.Tag2[I] < 3) AND (KMDistanceAbs(Loc,StoneLocs.Items[I]) <= gRes.Units[utStonemason].MiningRange) then
               begin
                 CanBeReplaced := False;
                 break;
@@ -2005,7 +2005,7 @@ end;
 // Quarry planner (constants in this function are critical and will not be set by CA)
 function TKMCityPlanner.FindPlaceForQuary(var StoneLocs: TKMPointTagList): Boolean;
 const
-  HT = htQuary;
+  HT = htQuarry;
   MAX_DERIVATION = 75;
   MAX_SCAN_DIST = 3;
   INIT_TAG = 0;
@@ -2108,7 +2108,7 @@ begin
     if Output then
     begin
       AddPlan(HT, BestLoc);
-      gHands[fOwner].AI.CityManagement.Builder.LockHouseLoc(htQuary, BestLoc);
+      gHands[fOwner].AI.CityManagement.Builder.LockHouseLoc(htQuarry, BestLoc);
     end;
   end;
   Result := Output;
@@ -2605,11 +2605,11 @@ begin
   for HT := HOUSE_MIN to HOUSE_MAX do
   begin
     case HT of
-      htStore,htSchool,htInn,htMarketplace: Color := tcBlack;
-      htQuary,htWoodcutters,htSawmill: Color := tcBlue;
+      htStore,htSchool,htInn,htMarket: Color := tcBlack;
+      htQuarry,htWoodcutters,htSawmill: Color := tcBlue;
       htGoldMine,htCoalMine,htIronMine,htMetallurgists: Color := tcYellow;
       htIronSmithy,htArmorSmithy,htWeaponSmithy,htTannery,htArmorWorkshop,htWeaponWorkshop,htBarracks: Color := tcRed;
-      htBakery,htButchers,htMill,htSwine,htStables,htFarm,htWineyard: Color := tcGreen;
+      htBakery,htButchers,htMill,htSwine,htStables,htFarm,htVineyard: Color := tcGreen;
       else Color := tcWhite;
     end;
     Color := $80000000 OR Color;
@@ -2640,7 +2640,7 @@ begin
   if (gMySpectator.Selected is TKMHouse) then
   begin
     H := TKMHouse(gMySpectator.Selected);
-    if (H.HouseType in [htFarm, htWineyard]) then
+    if (H.HouseType in [htFarm, htVineyard]) then
       for K := 0 to fFields.Count - 1 do
         if KMSamePoint(H.Entrance,fFields.Farms[K].Center) then
           with fFields.Farms[K] do

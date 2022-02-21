@@ -410,8 +410,8 @@ function TKMUnitWarrior.GetFightMaxRange(aTileBased: Boolean = False): Single;
 begin
   case fType of
     utBowman,
-    utArbaletman,
-    utSlingshot:   Result := RangeMax / (Byte(REDUCE_SHOOTING_RANGE) + 1);
+    utCrossbowman,
+    utRogue:   Result := RangeMax / (Byte(REDUCE_SHOOTING_RANGE) + 1);
     //During storm attack we look for enemies 1.42 tiles away so we engage enemies easier and don't accidentially walk past them diagonally
     else            if aTileBased and not (Action is TKMUnitActionStormAttack) then
                       Result := 1 //Enemy must maximum be 1 tile away
@@ -426,8 +426,8 @@ function TKMUnitWarrior.GetFightMinRange: Single;
 begin
   case fType of
     utBowman,
-    utArbaletman,
-    utSlingshot:   Result := RangeMin;
+    utCrossbowman,
+    utRogue:   Result := RangeMin;
     else            Result := 0.5;
   end;
 end;
@@ -761,8 +761,8 @@ begin
   if IsRanged then
     case UnitType of
       utBowman,
-      utArbaletman: Result := FIRING_DELAY;
-      utSlingShot:  Result := SLINGSHOT_FIRING_DELAY;
+      utCrossbowman: Result := FIRING_DELAY;
+      utRogue:  Result := SLINGSHOT_FIRING_DELAY;
       else raise Exception.Create('Unknown shooter');
     end;
 end;
@@ -781,8 +781,8 @@ begin
   if IsRanged then
     case UnitType of
       utBowman:     Result := BOWMEN_AIMING_DELAY_MIN + KaMRandom(BOWMEN_AIMING_DELAY_ADD, 'TKMUnitWarrior.GetAimingDelay');
-      utArbaletman: Result := CROSSBOWMEN_AIMING_DELAY_MIN + KaMRandom(CROSSBOWMEN_AIMING_DELAY_ADD, 'TKMUnitWarrior.GetAimingDelay 2');
-      utSlingShot:  Result := SLINGSHOT_AIMING_DELAY_MIN + KaMRandom(SLINGSHOT_AIMING_DELAY_ADD, 'TKMUnitWarrior.GetAimingDelay 3');
+      utCrossbowman: Result := CROSSBOWMEN_AIMING_DELAY_MIN + KaMRandom(CROSSBOWMEN_AIMING_DELAY_ADD, 'TKMUnitWarrior.GetAimingDelay 2');
+      utRogue:  Result := SLINGSHOT_AIMING_DELAY_MIN + KaMRandom(SLINGSHOT_AIMING_DELAY_ADD, 'TKMUnitWarrior.GetAimingDelay 3');
       else raise Exception.Create('Unknown shooter');
     end;
 end;
@@ -793,7 +793,7 @@ const
   SLINGSHOT_AIMING_SOUND_DELAY = 2;
 begin
   Result := 0;
-  if UnitType = utSlingShot then
+  if UnitType = utRogue then
     Result := SLINGSHOT_AIMING_SOUND_DELAY;
 end;
 
@@ -824,8 +824,8 @@ begin
   if IsRanged then
     case UnitType of
       utBowman:     Result := RANGE_BOWMAN_MIN;
-      utArbaletman: Result := RANGE_ARBALETMAN_MIN;
-      utSlingShot:  Result := RANGE_SLINGSHOT_MIN;
+      utCrossbowman: Result := RANGE_ARBALETMAN_MIN;
+      utRogue:  Result := RANGE_SLINGSHOT_MIN;
       else raise Exception.Create('Unknown shooter');
     end;
 end;
@@ -841,8 +841,8 @@ begin
   if IsRanged then
     case UnitType of
       utBowman:     Result := RANGE_BOWMAN_MAX;
-      utArbaletman: Result := RANGE_ARBALETMAN_MAX;
-      utSlingShot:  Result := RANGE_SLINGSHOT_MAX;
+      utCrossbowman: Result := RANGE_ARBALETMAN_MAX;
+      utRogue:  Result := RANGE_SLINGSHOT_MAX;
       else raise Exception.Create('Unknown shooter');
     end;
 end;
@@ -853,8 +853,8 @@ begin
   Assert(IsRanged, 'Can''t get projectile type for not ranged warriors');
   case UnitType of
     utBowman:     Result := ptArrow;
-    utArbaletman: Result := ptBolt;
-    utSlingShot:  Result := ptSlingRock;
+    utCrossbowman: Result := ptBolt;
+    utRogue:  Result := ptSlingRock;
     else raise Exception.Create('Unknown shooter');
   end;
 end;

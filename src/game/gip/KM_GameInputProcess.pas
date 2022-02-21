@@ -1024,7 +1024,7 @@ begin
 
       gicTempAddScout:            if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or not gGameParams.IsMultiPlayerOrSpec) then
                                     //Place a warrior
-                                    P.AddUnit(utHorseScout, KMPoint(IntParams[0], IntParams[1]), True, 0, True);
+                                    P.AddUnit(utScout, KMPoint(IntParams[0], IntParams[1]), True, 0, True);
       gicTempRevealMap:           if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or not gGameParams.IsMultiPlayerOrSpec) then
                                     P.FogOfWar.RevealEverything;
       gicTempVictory:             if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or not gGameParams.IsMultiPlayerOrSpec) then

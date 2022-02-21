@@ -1038,6 +1038,10 @@ begin
     Exit;
   end;
 
+  // Can't interact with animals
+  if opponent.IsAnimal then
+    Exit;
+
   //If we are in DestBlocked mode then only use our counter so we are always zero priority until our path clears
   if ((opponent.Action is TKMUnitActionWalkTo) and not fDestBlocked) then
     highestInteractionCount := max(fInteractionCount,TKMUnitActionWalkTo(opponent.Action).fInteractionCount)
