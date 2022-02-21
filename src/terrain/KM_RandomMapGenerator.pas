@@ -576,7 +576,7 @@ begin
             Resources[wtSausages] := 15;
             Resources[wtFish] := 30;
             Units[utSerf] := 4;
-            Units[utLaborer] := 3;
+            Units[utBuilder] := 3;
             InitResStr := 'Low';
           end;
         1:
@@ -589,7 +589,7 @@ begin
             Resources[wtSausages] := 30;
             Resources[wtFish] := 40;
             Units[utSerf] := 5;
-            Units[utLaborer] := 4;
+            Units[utBuilder] := 4;
             InitResStr := 'Medium';
           end;
         2:
@@ -602,7 +602,7 @@ begin
             Resources[wtSausages] := 45;
             Resources[wtFish] := 50;
             Units[utSerf] := 7;
-            Units[utLaborer] := 5;
+            Units[utBuilder] := 5;
             InitResStr := 'High';
           end;
       end;

@@ -427,11 +427,11 @@ begin
                         quarryPts.AddList(housePts);
                       end;
         htFishermans:  begin
-                        if not IsAreaInClip(H.PointBelowEntrance, gRes.Units[utFisherman].MiningRange) then
+                        if not IsAreaInClip(H.PointBelowEntrance, gRes.Units[utFisher].MiningRange) then
                           Continue;
 
                         gTerrain.FindFishWaterLocs(H.PointBelowEntrance,
-                                                   gRes.Units[utFisherman].MiningRange,
+                                                   gRes.Units[utFisher].MiningRange,
                                                    KMPOINT_ZERO, True, houseDirPts);
                         houseDirPts.ToPointList(housePts, True);
                         fisherHutPts.AddList(housePts);

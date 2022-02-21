@@ -124,8 +124,8 @@ const
   //TSK did not had place for new warriors that were inserted in the middle(!)
   UNIT_OLD_ID_TO_TYPE: array[0..31] of TKMUnitType = (
     utSerf,utWoodcutter,utMiner,utAnimalBreeder,utFarmer,
-    utCarpenter,utBaker,utButcher,utFisherman,utLaborer,
-    utStonemason,utBlacksmith,utMetallurgist,utRecruit, //Units
+    utCarpenter,utBaker,utButcher,utFisher,utBuilder,
+    utStonemason,utSmith,utMetallurgist,utRecruit, //Units
     utMilitia,utAxeFighter,utSwordFighter,utBowman,utCrossbowman,
     utLanceCarrier,utPikeman,utScout,utKnight,utBarbarian, //Troops
     utWolf,utFish,utWatersnake,utSeastar,utCrab,
@@ -142,8 +142,8 @@ const
   //This is a map of the valid values for !SET_GROUP, and the corresponing unit that will be created (matches KaM behavior)
   UNIT_ID_TO_TYPE: array[0..40] of TKMUnitType = (
     utSerf,utWoodcutter,utMiner,utAnimalBreeder,utFarmer,
-    utCarpenter,utBaker,utButcher,utFisherman,utLaborer,
-    utStonemason,utBlacksmith,utMetallurgist,utRecruit, //Units
+    utCarpenter,utBaker,utButcher,utFisher,utBuilder,
+    utStonemason,utSmith,utMetallurgist,utRecruit, //Units
     utMilitia,utAxeFighter,utSwordFighter,utBowman,utCrossbowman,
     utLanceCarrier,utPikeman,utScout,utKnight,utBarbarian, //TSK Troops
     utRebel,utRogue,utWarrior,utVagabond,
@@ -313,7 +313,7 @@ end;
 // Where unit would like to be
 function TKMUnitSpec.GetDesiredPassability: TKMTerrainPassability;
 begin
-  if fUnitType in [CITIZEN_MIN..CITIZEN_MAX] - [utLaborer] then
+  if fUnitType in [CITIZEN_MIN..CITIZEN_MAX] - [utBuilder] then
     Result := tpWalkRoad //Citizens except Worker
   else
     Result := GetAllowedPassability; //Workers, warriors, animals
@@ -388,7 +388,7 @@ begin
     utWoodcutter:  Result := 10;
     utFarmer:      Result := 10;
     utStonemason: Result := 16;
-    utFisherman:      Result := 14;
+    utFisher:      Result := 14;
   else
     raise Exception.Create(GUIName + ' has no mining range');
   end;

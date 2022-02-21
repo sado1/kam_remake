@@ -613,7 +613,7 @@ type
   TKMUnitType = (utNone, utAny,
     utSerf,         utWoodcutter,   utMiner,         utAnimalBreeder,
     utFarmer,       utCarpenter,    utBaker,         utButcher,
-    utFisherman,    utLaborer,      utStonemason,    utBlacksmith,
+    utFisher,       utBuilder,      utStonemason,    utSmith,
     utMetallurgist, utRecruit,
 
     utMilitia,      utAxeFighter,   utSwordFighter,  utBowman,

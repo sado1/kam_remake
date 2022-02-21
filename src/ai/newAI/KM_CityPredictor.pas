@@ -358,11 +358,11 @@ end;
 procedure TKMCityPredictor.UpdateBuildMaterialConsumption(aInitialization: Boolean = False);
 begin
   // Worker count is decreased after peace time -> compute with maximal count
-  fWareBalance[wtStone].ActualConsumption := Min(fCityStats.Citizens[utLaborer] + Round(AI_Par[PREDICTOR_WareNeedPerAWorker_StoneOffset]), fWorkerCount) * AI_Par[PREDICTOR_WareNeedPerAWorker_Stone];
+  fWareBalance[wtStone].ActualConsumption := Min(fCityStats.Citizens[utBuilder] + Round(AI_Par[PREDICTOR_WareNeedPerAWorker_StoneOffset]), fWorkerCount) * AI_Par[PREDICTOR_WareNeedPerAWorker_Stone];
   fWareBalance[wtStone].FinalConsumption := fWareBalance[wtStone].ActualConsumption;
   // Raw wood expectations
   UpdateWareConsumption(wtWood, aInitialization);
-  fWareBalance[wtWood].ActualConsumption := Max(fWareBalance[wtWood].ActualConsumption, fCityStats.Citizens[utLaborer] * AI_Par[PREDICTOR_WareNeedPerAWorker_Wood]);
+  fWareBalance[wtWood].ActualConsumption := Max(fWareBalance[wtWood].ActualConsumption, fCityStats.Citizens[utBuilder] * AI_Par[PREDICTOR_WareNeedPerAWorker_Wood]);
   fWareBalance[wtWood].FinalConsumption := Max(fWareBalance[wtWood].FinalConsumption, fWorkerCount * AI_Par[PREDICTOR_WareNeedPerAWorker_Wood]);
 end;
 
@@ -688,8 +688,8 @@ begin
     FillChar(RequiredHouses, SizeOf(RequiredHouses), #0);
     // Allow to reserve quarries
     UpdateWareProduction(wtStone);
-    fWareBalance[wtStone].ActualConsumption := Min(fCityStats.Citizens[utLaborer]+8, fWorkerCount) * AI_Par[PREDICTOR_WareNeedPerAWorker_Stone];
-    fWareBalance[wtStone].FinalConsumption := Max(fCityStats.Citizens[utLaborer], fWorkerCount) * AI_Par[PREDICTOR_WareNeedPerAWorker_Stone];
+    fWareBalance[wtStone].ActualConsumption := Min(fCityStats.Citizens[utBuilder]+8, fWorkerCount) * AI_Par[PREDICTOR_WareNeedPerAWorker_Stone];
+    fWareBalance[wtStone].FinalConsumption := Max(fCityStats.Citizens[utBuilder], fWorkerCount) * AI_Par[PREDICTOR_WareNeedPerAWorker_Stone];
     UpdateWareDerivation(wtStone);
     RequiredHouses[htSchool] := Max(0, 1 - Planner.PlannedHouses[htSchool].Count);
     Exit;

@@ -488,7 +488,7 @@ begin
                         end;
                         fIssued := True;
                       end;
-    utFisherman:        if aHome = htFishermans then
+    utFisher:        if aHome = htFishermans then
                       begin
                         fIssued := gTerrain.FindFishWater(aLoc, gRes.Units[aUnit.UnitType].MiningRange, KMPOINT_ZERO, False, tmp);
                         if fIssued then
@@ -513,7 +513,7 @@ begin
                           //We must check again this time ignoring working units since they don't indicate the resource is depleted
                           ResourceDepleted := not gTerrain.FindStone(aLoc, gRes.Units[aUnit.UnitType].MiningRange, KMPOINT_ZERO, True, tmp);
                       end;
-    utBlacksmith:         if (aHome = htArmorSmithy) and (aProduct = wtMetalShield) then
+    utSmith:         if (aHome = htArmorSmithy) and (aProduct = wtMetalShield) then
                       begin
                         ResourcePlan(wtSteel,1,wtCoal,1,wtMetalShield);
                         for I := 0 to 3 do

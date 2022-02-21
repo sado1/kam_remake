@@ -455,7 +455,7 @@ begin
 
   // Get positions of workes with nil task (no task)
   fFreeWorkersCnt := 0;
-  SetLength(WorkersPos, gHands[fOwner].Stats.GetUnitQty(utLaborer));
+  SetLength(WorkersPos, gHands[fOwner].Stats.GetUnitQty(utBuilder));
   for K := 0 to gHands[fOwner].Units.Count - 1 do
     if not gHands[fOwner].Units[K].IsDeadOrDying
        AND (gHands[fOwner].Units[K] is TKMUnitWorker) then
@@ -830,7 +830,7 @@ begin
   if   (fPredictor.WareBalance[wtStone].Exhaustion > 60) then // Some stone mines are too far so AI must slow down with expansion
     //AND (fPredictor.WareBalance[wtWood].Exhaustion > 60)
     //AND (fPredictor.WareBalance[wtGold].Exhaustion > 60) then
-    aMaxPlans := Max(aMaxPlans, Ceil(gHands[fOwner].Stats.GetUnitQty(utLaborer) / Max(0.01,AI_Par[BUILDER_ChHTB_AllWorkerCoef])) - fPlanner.ConstructedHouses);
+    aMaxPlans := Max(aMaxPlans, Ceil(gHands[fOwner].Stats.GetUnitQty(utBuilder) / Max(0.01,AI_Par[BUILDER_ChHTB_AllWorkerCoef])) - fPlanner.ConstructedHouses);
 
   // Quarries have minimal delay + stones use only workers (towers after peace time) -> exhaustion for wtStone is OK
   fStoneShortage := (fPredictor.WareBalance[wtStone].Exhaustion < AI_Par[BUILDER_Shortage_Stone]);
@@ -1587,7 +1587,7 @@ begin
     //OR (fPredictor.WareBalance[wtWood].Exhaustion < 60)
     OR (fPredictor.WareBalance[wtGold].Exhaustion < 60)
     OR (gHands[fOwner].Stats.GetHouseQty(htSchool) = 0)
-    OR (gHands[fOwner].Stats.GetUnitQty(utLaborer) = 0) then
+    OR (gHands[fOwner].Stats.GetUnitQty(utBuilder) = 0) then
     Exit;
 
   // Check if there is free build node

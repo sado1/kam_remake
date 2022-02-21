@@ -73,7 +73,7 @@ begin
 
   //Various UnitTypes and ActionTypes produce all the sounds
   case fUnit.UnitType of
-    utLaborer:      case ActionType of
+    utBuilder:      case ActionType of
                       uaWork:  if Step = 3 then gSoundPlayer.Play(sfxHousebuild,fUnit.PositionF);
                       uaWork1: if Step = 0 then gSoundPlayer.Play(sfxDig,fUnit.PositionF);
                       uaWork2: if Step = 8 then gSoundPlayer.Play(sfxPave,fUnit.PositionF);

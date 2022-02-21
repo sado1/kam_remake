@@ -236,7 +236,7 @@ var
     I, serfCount, idleCount: Integer;
   begin
     serfCount := gHands[fOwner].Stats.GetUnitQty(utSerf);
-    Result := Max(0, Round(gHands[fOwner].Stats.GetUnitQty(utLaborer) - serfCount));
+    Result := Max(0, Round(gHands[fOwner].Stats.GetUnitQty(utBuilder) - serfCount));
 
     idleCount := 0;
     for I := 0 to P.Units.Count - 1 do
@@ -284,11 +284,11 @@ var
 const
   TRAINING_PRIORITY: TKMTrainPriorityArr = (
     utMiner, utMetallurgist, utStonemason, utWoodcutter, utCarpenter,
-    utFarmer, utAnimalBreeder, utBaker, utButcher, utFisherman, utBlacksmith, utSerf, utLaborer, utRecruit
+    utFarmer, utAnimalBreeder, utBaker, utButcher, utFisher, utSmith, utSerf, utBuilder, utRecruit
   );
   TRAINING_PRIORITY_Serf: TKMTrainPriorityArr = (
     utMiner, utMetallurgist, utStonemason, utWoodcutter, utCarpenter, utSerf,
-    utFarmer, utAnimalBreeder, utBaker, utButcher, utFisherman, utBlacksmith, utLaborer, utRecruit
+    utFarmer, utAnimalBreeder, utBaker, utButcher, utFisher, utSmith, utBuilder, utRecruit
   );
 var
   GoldShortage: Boolean;
@@ -313,7 +313,7 @@ begin
   if GoldShortage then
   begin
     UnitReq[utSerf] := 3; // 3x Serf
-    UnitReq[utLaborer] := Byte((fPredictor.WorkerCount > 0) AND (fSetup.AutoBuild OR fSetup.IsRepairAlways));// 1x Worker
+    UnitReq[utBuilder] := Byte((fPredictor.WorkerCount > 0) AND (fSetup.AutoBuild OR fSetup.IsRepairAlways));// 1x Worker
     UnitReq[utMiner] := Stats.GetHouseTotal(htCoalMine) + Stats.GetHouseTotal(htGoldMine) + Stats.GetHouseQty(htIronMine); // Miner can go into iron / gold / coal mines (idealy we need 1 gold and 1 coal but it is hard to catch it)
     UnitReq[utMetallurgist] := Stats.GetHouseTotal(htMetallurgists) + Stats.GetHouseQty(htIronSmithy); // Metallurgist (same problem like in case of miner)
     UnitReq[utWoodcutter] := Byte(Stats.GetHouseQty(htWoodcutters) > 0); // 1x Woodcutter
@@ -342,10 +342,10 @@ begin
 
     UnitReq[utRecruit] := 0;
     UnitReq[utSerf] := 0;
-    UnitReq[utLaborer] := 0;
+    UnitReq[utBuilder] := 0;
     if (Stats.GetWareBalance(wtGold) > AI_Par[MANAGEMENT_GoldShortage] * AI_Par[MANAGEMENT_CheckUnitCount_WorkerGoldCoef]) OR (GoldProduced > 0) then // Dont train servs / workers / recruits when we will be out of gold
     begin
-      UnitReq[utLaborer] :=  fPredictor.WorkerCount * Byte(not gHands[fOwner].AI.ArmyManagement.Defence.CityUnderAttack) * Byte(fSetup.AutoBuild) + Byte(not fSetup.AutoBuild) * Byte(fSetup.IsRepairAlways) * 5;
+      UnitReq[utBuilder] :=  fPredictor.WorkerCount * Byte(not gHands[fOwner].AI.ArmyManagement.Defence.CityUnderAttack) * Byte(fSetup.AutoBuild) + Byte(not fSetup.AutoBuild) * Byte(fSetup.IsRepairAlways) * 5;
       UnitReq[utRecruit] := RecruitsNeeded(Houses[htWatchTower]);
     end;
     if (Stats.GetWareBalance(wtGold) > AI_Par[MANAGEMENT_GoldShortage] * AI_Par[MANAGEMENT_CheckUnitCount_SerfGoldCoef]) OR (GoldProduced > 0) then // Dont train servs / workers / recruits when we will be out of gold
@@ -565,7 +565,7 @@ begin
         // Materials
         S.NotAcceptFlag[wtTrunk] := (aTick > TRUNK_STORE_DELAY); // Trunk should not be blocked because of forest cleaning
         S.NotAcceptFlag[wtWood] := (S.CheckResIn(wtWood) > 20) OR (aTick > WOOD_STORE_DELAY);// AND (Predictor.WareBalance[wtWood].Exhaustion > 40);
-        S.NotAcceptFlag[wtStone] := (aTick > STONE_STORE_DELAY) OR (S.CheckResIn(wtStone)*2 > Stats.GetUnitQty(utLaborer));
+        S.NotAcceptFlag[wtStone] := (aTick > STONE_STORE_DELAY) OR (S.CheckResIn(wtStone)*2 > Stats.GetUnitQty(utBuilder));
         S.NotAcceptFlag[wtGold] := S.CheckResIn(wtGold) > 400; // Everyone needs as much gold as possible
 
         // Food - don't store food when we have enough (it will cause trafic before storehouse)

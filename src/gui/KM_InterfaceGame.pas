@@ -122,9 +122,9 @@ const
      wtArbalet,  wtHorse,   wtFish);
 
   School_Order: array [0..13] of TKMUnitType = (
-    utSerf, utLaborer, utStonemason, utWoodcutter, utCarpenter,
-    utFisherman, utFarmer, utBaker, utAnimalBreeder, utButcher,
-    utMiner, utMetallurgist, utBlacksmith, utRecruit);
+    utSerf, utBuilder, utStonemason, utWoodcutter, utCarpenter,
+    utFisher, utFarmer, utBaker, utAnimalBreeder, utButcher,
+    utMiner, utMetallurgist, utSmith, utRecruit);
 
   Barracks_Order: array [0..8] of TKMUnitType = (
     utMilitia, utAxeFighter, utSwordFighter, utBowman, utCrossbowman,
@@ -146,17 +146,17 @@ const
   end = (
     (HouseType: (htQuarry, htNone, htNone, htNone);                      UnitType: (utStonemason, utNone)),
     (HouseType: (htWoodcutters, htNone, htNone, htNone);                UnitType: (utWoodcutter, utNone)),
-    (HouseType: (htFishermans, htNone, htNone, htNone);                  UnitType: (utFisherman, utNone)),
+    (HouseType: (htFishermans, htNone, htNone, htNone);                  UnitType: (utFisher, utNone)),
     (HouseType: (htFarm, htVineyard, htNone, htNone);                   UnitType: (utFarmer, utNone)),
     (HouseType: (htMill, htBakery, htNone, htNone);                     UnitType: (utBaker, utNone)),
     (HouseType: (htSwine, htStables, htNone, htNone);                   UnitType: (utAnimalBreeder, utNone)),
     (HouseType: (htButchers, htTannery, htNone, htNone);                UnitType: (utButcher, utNone)),
     (HouseType: (htMetallurgists, htIronSmithy, htNone, htNone);        UnitType: (utMetallurgist, utNone)),
-    (HouseType: (htArmorSmithy, htWeaponSmithy, htNone, htNone);        UnitType: (utBlacksmith, utNone)),
+    (HouseType: (htArmorSmithy, htWeaponSmithy, htNone, htNone);        UnitType: (utSmith, utNone)),
     (HouseType: (htCoalMine, htIronMine, htGoldMine, htNone);           UnitType: (utMiner, utNone)),
     (HouseType: (htSawmill, htWeaponWorkshop, htArmorWorkshop, htNone); UnitType: (utCarpenter, utNone)),
     (HouseType: (htBarracks, htTownHall, htWatchTower, htNone);         UnitType: (utRecruit, utNone)),
-    (HouseType: (htStore, htSchool, htInn, htMarket);              UnitType: (utSerf, utLaborer))
+    (HouseType: (htStore, htSchool, htInn, htMarket);              UnitType: (utSerf, utBuilder))
     );
 
   MapEd_Order: array [0..13] of TKMUnitType = (

@@ -127,8 +127,8 @@ begin
   ID := gGame.GetNewUID;
   case aUnitType of
     utSerf:                        Result := TKMUnitSerf.Create(ID, aUnitType, placeTo, aOwner, aInHouse);
-    utLaborer:                      Result := TKMUnitWorker.Create(ID, aUnitType, placeTo, aOwner, aInHouse);
-    utWoodCutter..utFisherman,
+    utBuilder:                      Result := TKMUnitWorker.Create(ID, aUnitType, placeTo, aOwner, aInHouse);
+    utWoodCutter..utFisher,
     {utWorker,}
     utStonemason..utMetallurgist: Result := TKMUnitCitizen.Create(ID, aUnitType, placeTo, aOwner, aInHouse);
     utRecruit:                     Result := TKMUnitRecruit.Create(ID, aUnitType, placeTo, aOwner, aInHouse);
@@ -299,8 +299,8 @@ begin
     LoadStream.Read(unitType, SizeOf(unitType));
     case unitType of
       utSerf:                   U := TKMUnitSerf.Load(LoadStream);
-      utLaborer:                 U := TKMUnitWorker.Load(LoadStream);
-      utWoodCutter..utFisherman,
+      utBuilder:                 U := TKMUnitWorker.Load(LoadStream);
+      utWoodCutter..utFisher,
       {utWorker,}
       utStonemason..utMetallurgist:
                                 U := TKMUnitCitizen.Load(LoadStream);
