@@ -98,12 +98,12 @@ const
 
   GUI_HOUSE_COUNT = 28;   // Number of KaM houses to show in GUI
   GUIHouseOrder: array [1..GUI_HOUSE_COUNT] of TKMHouseType = (
-    htSchool, htInn, htQuary, htWoodcutters, htSawmill,
+    htSchool, htInn, htQuarry, htWoodcutters, htSawmill,
     htFarm, htMill, htBakery, htSwine, htButchers,
-    htWineyard, htGoldMine, htCoalMine, htMetallurgists, htWeaponWorkshop,
+    htVineyard, htGoldMine, htCoalMine, htMetallurgists, htWeaponWorkshop,
     htTannery, htArmorWorkshop, htStables, htIronMine, htIronSmithy,
     htWeaponSmithy, htArmorSmithy, htBarracks, htStore, htWatchTower,
-    htFisherHut, htMarketplace, htTownHall);
+    htFishermans, htMarket, htTownHall);
 
   // Template for how resources are shown in Barracks
   BARRACKS_RES_COUNT = 11;
@@ -144,10 +144,10 @@ const
     HouseType: array [0..3] of TKMHouseType;
     UnitType: array [0..1] of TKMUnitType;
   end = (
-    (HouseType: (htQuary, htNone, htNone, htNone);                      UnitType: (utStonemason, utNone)),
+    (HouseType: (htQuarry, htNone, htNone, htNone);                      UnitType: (utStonemason, utNone)),
     (HouseType: (htWoodcutters, htNone, htNone, htNone);                UnitType: (utWoodcutter, utNone)),
-    (HouseType: (htFisherHut, htNone, htNone, htNone);                  UnitType: (utFisherman, utNone)),
-    (HouseType: (htFarm, htWineyard, htNone, htNone);                   UnitType: (utFarmer, utNone)),
+    (HouseType: (htFishermans, htNone, htNone, htNone);                  UnitType: (utFisherman, utNone)),
+    (HouseType: (htFarm, htVineyard, htNone, htNone);                   UnitType: (utFarmer, utNone)),
     (HouseType: (htMill, htBakery, htNone, htNone);                     UnitType: (utBaker, utNone)),
     (HouseType: (htSwine, htStables, htNone, htNone);                   UnitType: (utAnimalBreeder, utNone)),
     (HouseType: (htButchers, htTannery, htNone, htNone);                UnitType: (utButcher, utNone)),
@@ -156,7 +156,7 @@ const
     (HouseType: (htCoalMine, htIronMine, htGoldMine, htNone);           UnitType: (utMiner, utNone)),
     (HouseType: (htSawmill, htWeaponWorkshop, htArmorWorkshop, htNone); UnitType: (utCarpenter, utNone)),
     (HouseType: (htBarracks, htTownHall, htWatchTower, htNone);         UnitType: (utRecruit, utNone)),
-    (HouseType: (htStore, htSchool, htInn, htMarketplace);              UnitType: (utSerf, utLaborer))
+    (HouseType: (htStore, htSchool, htInn, htMarket);              UnitType: (utSerf, utLaborer))
     );
 
   MapEd_Order: array [0..13] of TKMUnitType = (

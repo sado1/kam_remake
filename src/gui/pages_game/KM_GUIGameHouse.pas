@@ -672,7 +672,7 @@ begin
   Panel_House.Show;
 
   case aHouse.HouseType of
-    htMarketplace:
+    htMarket:
         begin
           House_MarketFill(TKMHouseMarket(aHouse));
           Panel_HouseMarket.Show;

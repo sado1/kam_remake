@@ -916,7 +916,7 @@ function TKMHouse.GetResourceDepletedMessageId: Word;
 begin
   Result := 0;
   case HouseType of
-    htQuary:       Result := TX_MSG_STONE_DEPLETED;
+    htQuarry:       Result := TX_MSG_STONE_DEPLETED;
     htCoalMine:    Result := TX_MSG_COAL_DEPLETED;
     htIronMine:    Result := TX_MSG_IRON_DEPLETED;
     htGoldMine:    Result := TX_MSG_GOLD_DEPLETED;
@@ -924,7 +924,7 @@ begin
                       Result := TX_MSG_WOODCUTTER_PLANT_DEPLETED
                     else
                       Result := TX_MSG_WOODCUTTER_DEPLETED;
-    htFisherHut:   if not gTerrain.CanFindFishingWater(PointBelowEntrance, gRes.Units[utFisherman].MiningRange) then
+    htFishermans:   if not gTerrain.CanFindFishingWater(PointBelowEntrance, gRes.Units[utFisherman].MiningRange) then
                       Result := TX_MSG_FISHERMAN_TOO_FAR
                     else
                       Result := TX_MSG_FISHERMAN_CANNOT_CATCH;
@@ -1574,7 +1574,7 @@ end;
 
 function TKMHouse.GetMaxInRes: Word;
 begin
-  if fType in [htStore, htBarracks, htMarketplace] then
+  if fType in [htStore, htBarracks, htMarket] then
     Result := High(Word)
   else
     Result := MAX_WARES_IN_HOUSE; //All other houses can only stock 5 for now
@@ -1933,11 +1933,11 @@ begin
     htIronMine:      if (work = haWork2)and(step = 7) then gSoundPlayer.Play(sfxmine, fPosition);
     htGoldMine:      if (work = haWork2)and(step = 5) then gSoundPlayer.Play(sfxmine, fPosition);
     htSawmill:       if (work = haWork2)and(step = 1) then gSoundPlayer.Play(sfxsaw, fPosition);
-    htWineyard:      if (work = haWork2)and(step in [1,7,13,19]) then gSoundPlayer.Play(sfxwineStep, fPosition)
+    htVineyard:      if (work = haWork2)and(step in [1,7,13,19]) then gSoundPlayer.Play(sfxwineStep, fPosition)
                       else if (work = haWork5)and(step = 14) then gSoundPlayer.Play(sfxwineDrain, fPosition,true,1.5)
                       else if (work = haWork1)and(step = 10) then gSoundPlayer.Play(sfxwineDrain, fPosition,true,1.5);
     htBakery:        if (work = haWork3)and(step in [6,25]) then gSoundPlayer.Play(sfxBakerSlap, fPosition);
-    htQuary:         if (work = haWork2)and(step in [4,13]) then gSoundPlayer.Play(sfxQuarryClink, fPosition)
+    htQuarry:         if (work = haWork2)and(step in [4,13]) then gSoundPlayer.Play(sfxQuarryClink, fPosition)
                       else if (work = haWork5)and(step in [4,13,22]) then gSoundPlayer.Play(sfxQuarryClink, fPosition);
     htWeaponSmithy:  if (work = haWork1)and(step in [17,22]) then gSoundPlayer.Play(sfxBlacksmithFire, fPosition)
                       else if (work = haWork2)and(step in [10,25]) then gSoundPlayer.Play(sfxBlacksmithBang, fPosition)

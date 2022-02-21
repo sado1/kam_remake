@@ -317,7 +317,7 @@ begin
     UnitReq[utMiner] := Stats.GetHouseTotal(htCoalMine) + Stats.GetHouseTotal(htGoldMine) + Stats.GetHouseQty(htIronMine); // Miner can go into iron / gold / coal mines (idealy we need 1 gold and 1 coal but it is hard to catch it)
     UnitReq[utMetallurgist] := Stats.GetHouseTotal(htMetallurgists) + Stats.GetHouseQty(htIronSmithy); // Metallurgist (same problem like in case of miner)
     UnitReq[utWoodcutter] := Byte(Stats.GetHouseQty(htWoodcutters) > 0); // 1x Woodcutter
-    UnitReq[utStonemason] := Byte(Stats.GetHouseQty(htQuary) > 0); // 1x StoneCutter
+    UnitReq[utStonemason] := Byte(Stats.GetHouseQty(htQuarry) > 0); // 1x StoneCutter
     UnitReq[utCarpenter] := Byte(Stats.GetHouseQty(htSawmill) > 0); // 1x Lamberjack
   end
   //Count overall unit requirement (excluding Barracks and ownerless houses)
@@ -427,7 +427,7 @@ var
       if (Houses[K] <> nil)
         AND not Houses[K].IsDestroyed
         AND Houses[K].IsComplete
-        AND (Houses[K].HouseType = htMarketplace) then
+        AND (Houses[K].HouseType = htMarket) then
       begin
         HM := TKMHouseMarket(Houses[K]);
         if (HM.ResOrder[0] > 0)
@@ -449,7 +449,7 @@ var
     for K := 0 to Houses.Count - 1 do
       if (Houses[K] <> nil)
         AND not Houses[K].IsDestroyed
-        AND (Houses[K].HouseType = htMarketplace)
+        AND (Houses[K].HouseType = htMarket)
         AND Houses[K].IsComplete then
       begin
         HM := TKMHouseMarket(Houses[K]);
@@ -489,7 +489,7 @@ var
   MIN_GOLD_AMOUNT, MarketCnt, I, WareCnt: Word;
 begin
 
-  MarketCnt := gHands[fOwner].Stats.GetHouseQty(htMarketplace);
+  MarketCnt := gHands[fOwner].Stats.GetHouseQty(htMarket);
   if MarketCnt = 0 then
     Exit
   else
@@ -505,7 +505,7 @@ begin
        AddWare(wtGold);
     // Stone
     if (GetWareBalance(wtStone)-GetHouseQty(htWatchTower)*5 < LACK_OF_STONE)
-      AND (Builder.Planner.PlannedHouses[htQuary].Completed = 0) then
+      AND (Builder.Planner.PlannedHouses[htQuarry].Completed = 0) then
       AddWare(wtStone);
     // Gold ore
     MIN_GOLD_AMOUNT := Round(AI_Par[MANAGEMENT_GoldShortage] * 3);

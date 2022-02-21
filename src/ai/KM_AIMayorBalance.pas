@@ -247,16 +247,16 @@ begin
 
   repeat
     //Do not build extra houses if we are low on building materials
-    if (gHands[fOwner].Stats.GetHouseQty(htQuary) = 0)
+    if (gHands[fOwner].Stats.GetHouseQty(htQuarry) = 0)
     and(gHands[fOwner].Stats.GetWareBalance(wtStone)
         - gHands[fOwner].Constructions.FieldworksList.FieldCount(ftRoad) < 40)
-    and (AdviceContains(htQuary) or (gHands[fOwner].Stats.GetHouseWip(htQuary) > 1)) then
+    and (AdviceContains(htQuarry) or (gHands[fOwner].Stats.GetHouseWip(htQuarry) > 1)) then
       Break;
 
     case PickMin([0, List[0], List[1], List[2]]) of
       0:  Break;
       1:  begin
-            Append(htQuary);
+            Append(htQuarry);
             List[0] := List[0] + PRODUCTION_RATE[wtStone];
           end;
       2:  begin
@@ -318,7 +318,7 @@ begin
           1:  Append(htMill);
           2:  Append(htBakery);
         end;
-    2:  Append(htWineyard);
+    2:  Append(htVineyard);
   end;
 end;
 
@@ -795,12 +795,12 @@ begin
   with fMaterials do
   begin
     //In some maps there is no stone so quarry is blocked
-    if gHands[fOwner].Locks.HouseBlocked[htQuary] then
+    if gHands[fOwner].Locks.HouseBlocked[htQuarry] then
       StoneProduction := 99999
     else
     begin
       StoneReserve := gHands[fOwner].Stats.GetWareBalance(wtStone) / Max(0.001,StoneNeed);
-      StoneProduction := HouseCount(htQuary) * PRODUCTION_RATE[wtStone] + Max(StoneReserve - 30, 0);
+      StoneProduction := HouseCount(htQuarry) * PRODUCTION_RATE[wtStone] + Max(StoneReserve - 30, 0);
     end;
 
     WoodcutReserve := gHands[fOwner].Stats.GetWareBalance(wtTrunk) * 2 / Max(0.001,WoodNeed);
@@ -883,8 +883,8 @@ begin
     SausagesProduction := Min(Sausages.FarmTheory, Sausages.SwineTheory, Sausages.ButchersTheory);
 
     //Wine, Fish
-    WineProduction := HouseCount(htWineyard) * PRODUCTION_RATE[wtWine];
-    FishProduction := HouseCount(htFisherHut) * PRODUCTION_RATE[wtFish];
+    WineProduction := HouseCount(htVineyard) * PRODUCTION_RATE[wtWine];
+    FishProduction := HouseCount(htFishermans) * PRODUCTION_RATE[wtFish];
 
     //Count in "food units per minute"
     Production := BreadProduction * BREAD_RESTORE +

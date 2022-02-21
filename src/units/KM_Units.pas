@@ -676,7 +676,7 @@ begin
   // Don't bother creating a task if there's no room for resulting ware
   // Saves us time on Fishers/Stonecutters/Woodcutters when they calculate routes to nearby deposits
   // Other houses where workers walk out can choose between cut/plant
-  if (fHome.HouseType in [htFisherHut, htQuary, htWineyard])
+  if (fHome.HouseType in [htFishermans, htQuarry, htVineyard])
   and (fHome.CheckResOut(gResHouses[fHome.HouseType].ResOutput[res]) >= MAX_WARES_IN_HOUSE) then
     Exit;
 

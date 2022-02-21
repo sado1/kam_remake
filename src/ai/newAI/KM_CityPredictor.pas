@@ -98,12 +98,12 @@ const
   }
   // Array of wares which are produced by specific houses
   PRODUCTION_WARE2HOUSE: array[WARE_MIN..WARE_MAX] of TKMHouseType = (
-    htWoodcutters,    htQuary,         htSawmill,        htIronMine,      htGoldMine,
-    htCoalMine,       htIronSmithy,    htMetallurgists,  htWineyard,      htFarm,
+    htWoodcutters,    htQuarry,         htSawmill,        htIronMine,      htGoldMine,
+    htCoalMine,       htIronSmithy,    htMetallurgists,  htVineyard,      htFarm,
     htBakery,         htMill,          htTannery,        htButchers,      htSwine,
     htSwine,          htArmorWorkshop, htArmorSmithy,    htArmorWorkshop, htArmorSmithy,
     htWeaponWorkshop, htWeaponSmithy,  htWeaponWorkshop, htWeaponSmithy,  htWeaponWorkshop,
-    htWeaponSmithy,   htStables,       htFisherHut
+    htWeaponSmithy,   htStables,       htFishermans
   );
   // Possible transformation of wares: resource -> product
   CONSUMPTION_WARE: array[WARE_MIN..WARE_MAX] of array[0..3] of TKMWareType = (         // wtShield are ignored
@@ -457,7 +457,7 @@ begin
                              Ceil(  Byte( (aTick > INN_TIME_LIMIT) OR aInitialization ) * fCityStats.CitizensCnt / 80  ) - fCityStats.Houses[htInn]
                            );
   // Marketplace - 1. after FIRST_MARKETPLACE; 2. after SECOND_MARKETPLACE
-  RequiredHouses[htMarketplace] := Byte( aInitialization OR (aTick > FIRST_MARKETPLACE) ) + Byte( aInitialization OR (aTick > SECOND_MARKETPLACE) ) - fCityStats.Houses[htMarketplace];
+  RequiredHouses[htMarket] := Byte( aInitialization OR (aTick > FIRST_MARKETPLACE) ) + Byte( aInitialization OR (aTick > SECOND_MARKETPLACE) ) - fCityStats.Houses[htMarket];
 end;
 
 
@@ -712,7 +712,7 @@ begin
   // Change house requirements due to nonlinear delay, toons of exceptions and unlock order
   // Dont build wineyard too early
   if (gGameParams.Tick < WINEYARD_DELAY) then
-    RequiredHouses[htWineyard] := 0;
+    RequiredHouses[htVineyard] := 0;
   // Consideration of corn delay - only remove all required houses, builder will find the right one if they are not removed
   if UpdateFarmHistory() AND not gHands[fOwner].Locks.HouseBlocked[htFarm] then
   begin

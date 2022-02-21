@@ -453,7 +453,7 @@ var
   A: TKMAnimLoop;
   Step, beastHouse, beast, beastAge: Integer;
 const
-  HOUSE_BEAST_LOOKUP: array[1..3] of TKMHouseType = (htSwine, htStables, htMarketplace);
+  HOUSE_BEAST_LOOKUP: array[1..3] of TKMHouseType = (htSwine, htStables, htMarket);
 begin
   //Actions
   for HT := HOUSE_MIN to HOUSE_MAX do

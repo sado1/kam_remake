@@ -74,12 +74,12 @@ uses
 
 const // Sample list made by AntonP
   WarriorHouses: array [0..44] of TKMHouseType = (
-  htSchool, htInn, htQuary, htQuary, htQuary,
+  htSchool, htInn, htQuarry, htQuarry, htQuarry,
   htWoodcutters, htWoodcutters, htWoodcutters, htWoodcutters, htWoodcutters,
   htSawmill, htSawmill, htWoodcutters, htGoldMine, htCoalMine,
   htGoldMine, htCoalMine, htMetallurgists, htCoalMine, htCoalMine,
   htIronMine, htIronMine, htCoalMine, htIronMine, htWeaponSmithy,
-  htWeaponSmithy, htWineyard, htWineyard, htWineyard, htStore,
+  htWeaponSmithy, htVineyard, htVineyard, htVineyard, htStore,
   htBarracks, htFarm, htFarm, htFarm, htMill,
   htMill, htBakery, htBakery, htSchool, htIronSmithy,
   htIronSmithy, htFarm, htSwine, htWeaponSmithy, htArmorSmithy
@@ -578,7 +578,7 @@ begin
   end;
 
   //Build fields for Wineyard
-  if aHouse = htWineyard then
+  if aHouse = htVineyard then
   begin
     NodeTagList := TKMPointTagList.Create;
     try

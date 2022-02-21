@@ -417,7 +417,7 @@ begin
                                                         housePts);
                         woodcutterPts.AddList(housePts);
                       end;
-        htQuary:      begin
+        htQuarry:      begin
                         if not IsAreaInClip(H.PointBelowEntrance, gRes.Units[utStonemason].MiningRange) then
                           Continue;
 
@@ -426,7 +426,7 @@ begin
                                                KMPOINT_ZERO, True, housePts);
                         quarryPts.AddList(housePts);
                       end;
-        htFisherHut:  begin
+        htFishermans:  begin
                         if not IsAreaInClip(H.PointBelowEntrance, gRes.Units[utFisherman].MiningRange) then
                           Continue;
 
@@ -445,7 +445,7 @@ begin
                                                    housePts);
                         farmPts.AddList(housePts);
                       end;
-        htWineyard:   begin
+        htVineyard:   begin
                         if not IsAreaInClip(H.PointBelowEntrance, gRes.Units[utFarmer].MiningRange) then
                           Continue;
 

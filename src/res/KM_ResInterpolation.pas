@@ -214,7 +214,7 @@ begin
   case aHT of
     htSwine:       Result := fBeasts[1, BeastId, BeastAge, Step, SubStep];
     htStables:     Result := fBeasts[2, BeastId, BeastAge, Step, SubStep];
-    htMarketplace: Result := fBeasts[3, BeastId, 1,        Step, SubStep];
+    htMarket: Result := fBeasts[3, BeastId, 1,        Step, SubStep];
     else           Result := -1;
   end;
 

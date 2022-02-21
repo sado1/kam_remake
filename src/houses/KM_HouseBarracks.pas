@@ -283,8 +283,8 @@ begin
   Result := inherited
               or (aToHouse = nil)
               //Do not allow delivery from Barracks to other houses except Market/Store/other Barracks
-              or not (aToHouse.HouseType in [htMarketplace, htStore, htBarracks])
-              or ((aToHouse.HouseType <> htMarketplace) //allow delivery to Market with any mode
+              or not (aToHouse.HouseType in [htMarket, htStore, htBarracks])
+              or ((aToHouse.HouseType <> htMarket) //allow delivery to Market with any mode
                 //For other houses allow only when dmTakeOut and no flag NotAllowTakeOutFlag
                 and ((GetDeliveryModeForCheck(aImmidiateCheck) <> dmTakeOut)
                       or NotAllowTakeOutFlag[aWareType])); //Use NewDelivery here, since

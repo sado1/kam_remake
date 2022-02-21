@@ -390,11 +390,11 @@ begin
     Sender.AddTypeS('TKMFieldType', '(ftNone, ftRoad, ftCorn, ftWine)'); //No need to add InitWine for scripts
     Sender.AddTypeS('TKMHouseType', '(htNone, htAny, '
       + 'htArmorSmithy,     htArmorWorkshop,   htBakery,        htBarracks,      htButchers,'
-      + 'htCoalMine,        htFarm,            htFisherHut,     htGoldMine,      htInn,'
-      + 'htIronMine,        htIronSmithy,      htMarketplace,   htMetallurgists, htMill,'
-      + 'htQuary,           htSawmill,         htSchool,        htSiegeWorkshop, htStables,'
+      + 'htCoalMine,        htFarm,            htFishermans,    htGoldMine,      htInn,'
+      + 'htIronMine,        htIronSmithy,      htMarket,        htMetallurgists, htMill,'
+      + 'htQuarry,          htSawmill,         htSchool,        htSiegeWorkshop, htStables,'
       + 'htStore,           htSwine,           htTannery,       htTownHall,      htWatchTower,'
-      + 'htWeaponSmithy,    htWeaponWorkshop,  htWineyard,      htWoodcutters    )');
+      + 'htWeaponSmithy,    htWeaponWorkshop,  htVineyard,      htWoodcutters    )');
 
     Sender.AddTypeS('TKMHouseTypeSet', 'set of TKMHouseType');
 

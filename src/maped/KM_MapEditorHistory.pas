@@ -500,7 +500,7 @@ constructor TKMCheckpointHouses.Create(const aCaption: string);
                       for WT := WARFARE_MIN to WARFARE_MAX do
                         fHouses[aCount].WaresIn[Ord(WT) - Ord(WARFARE_MIN) + 1] := TKMHouseBarracks(aHouse).CheckResIn(WT);
                     end;
-      htMarketplace:;
+      htMarket:;
       else          begin
                       for I := 1 to 4 do
                         if spec.ResInput[I] <> wtNone then
@@ -583,7 +583,7 @@ begin
                       for WT := WARFARE_MIN to WARFARE_MAX do
                         TKMHouseBarracks(H).ResAddToIn(WT, fHouses[I].WaresIn[Ord(WT) - Ord(WARFARE_MIN) + 1]);
                     end;
-      htMarketplace:;
+      htMarket:;
       else          begin
                       for K := 1 to 4 do
                         if spec.ResInput[K] <> wtNone then

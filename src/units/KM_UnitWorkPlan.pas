@@ -363,7 +363,7 @@ begin
                           end;
                       end else
 
-                      if aHome = htWineyard then
+                      if aHome = htVineyard then
                       begin
                         fIssued := gTerrain.FindWineField(aLoc, gRes.Units[aUnit.UnitType].MiningRange, KMPOINT_ZERO, tmp);
                         if fIssued then
@@ -488,7 +488,7 @@ begin
                         end;
                         fIssued := True;
                       end;
-    utFisherman:        if aHome = htFisherHut then
+    utFisherman:        if aHome = htFishermans then
                       begin
                         fIssued := gTerrain.FindFishWater(aLoc, gRes.Units[aUnit.UnitType].MiningRange, KMPOINT_ZERO, False, tmp);
                         if fIssued then
@@ -499,7 +499,7 @@ begin
                           //We must check again this time ignoring working units since they don't indicate the resource is depleted
                           ResourceDepleted := not gTerrain.FindFishWater(aLoc, gRes.Units[aUnit.UnitType].MiningRange, KMPOINT_ZERO, True, tmp);
                       end;
-    utStonemason:   if aHome = htQuary then
+    utStonemason:   if aHome = htQuarry then
                       begin
                         fIssued := gTerrain.FindStone(aLoc, gRes.Units[aUnit.UnitType].MiningRange, KMPOINT_ZERO, False, tmp);
                         if fIssued then

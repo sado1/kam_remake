@@ -43,13 +43,13 @@ const
 
 
 type
-  TKMHouseType = (htNone, htAny,
-    htArmorSmithy,     htArmorWorkshop,   htBakery,        htBarracks,      htButchers,
-    htCoalMine,        htFarm,            htFisherHut,     htGoldMine,      htInn,
-    htIronMine,        htIronSmithy,      htMarketplace,   htMetallurgists, htMill,
-    htQuary,           htSawmill,         htSchool,        htSiegeWorkshop, htStables,
-    htStore,           htSwine,           htTannery,       htTownHall,      htWatchTower,
-    htWeaponSmithy,    htWeaponWorkshop,  htWineyard,      htWoodcutters    );
+  TKMHouseType = (htNone, htAny, //1
+    htArmorSmithy,     htArmorWorkshop,   htBakery,        htBarracks,      htButchers,   //6
+    htCoalMine,        htFarm,            htFishermans,    htGoldMine,      htInn,        //11
+    htIronMine,        htIronSmithy,      htMarket,        htMetallurgists, htMill,       //16
+    htQuarry,          htSawmill,         htSchool,        htSiegeWorkshop, htStables,    //21
+    htStore,           htSwine,           htTannery,       htTownHall,      htWatchTower, //26
+    htWeaponSmithy,    htWeaponWorkshop,  htVineyard,      htWoodcutters    ); //30
 
   TKMHouseTypeSet = set of TKMHouseType;
   TKMHouseTypeArray = array of TKMHouseType;

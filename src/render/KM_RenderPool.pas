@@ -954,7 +954,7 @@ var
 begin
   if ResType = wtHorse then // Horses are a beast, BeastId is the count, age is 1
     for I := 1 to Min(ResCount, MARKET_WARES[ResType].Count) do // Render each beast
-      AddHouseStableBeasts(htMarketplace, Loc, I, 1, AnimStep, rxHouses)
+      AddHouseStableBeasts(htMarket, Loc, I, 1, AnimStep, rxHouses)
   else
   begin
     if MARKET_WARES[ResType].Count = 0 then Exit;
