@@ -34,7 +34,7 @@ type
     procedure ProceedRoadCursorMode;
     procedure ProceedUnitsCursorMode;
     procedure ProceedEraseCursorMode;
-    procedure UpdateField(aStageIncrement: Integer; aCheckPrevCell: Boolean);
+    procedure UpdateField;
     function EraseTerrainObject(var aRemoveTxID: Integer): Boolean;
     procedure EraseObject(aEraseAll: Boolean);
     function ChangeEntityOwner(aEntity: TKMHandEntity; aOwner: TKMHandID): Boolean;
@@ -450,62 +450,30 @@ end;
 
 
 //aStageIncrement - stage increment, can be negative
-//aCheckPrevCell - do we check prev cell under the cursor to differ from current cell under the cursor
-procedure TKMMapEditor.UpdateField(aStageIncrement: Integer; aCheckPrevCell: Boolean);
+procedure TKMMapEditor.UpdateField;
 var
   P: TKMPoint;
-  fieldStage: Integer;
   makeCheckpoint: Boolean;
-  fieldStr: string;
 begin
-  if aStageIncrement = 0 then Exit;
-
-  fieldStage := -1;
-  makeCheckpoint := False;
-  fieldStr := '';
   P := gCursor.Cell;
   case gCursor.Mode of
     cmField:  begin
-                if gTerrain.TileIsCornField(P) then
-                begin
-                  if not KMSamePoint(P, gCursor.PrevCell) or not aCheckPrevCell then
-                    fieldStage := (gTerrain.GetCornStage(P) + aStageIncrement + CORN_STAGES_COUNT) mod CORN_STAGES_COUNT;
-                end
-                else
-                if gMySpectator.Hand.CanAddFieldPlan(P, ftCorn) then
-                begin
-                  fieldStage := 0;
-                  makeCheckpoint := True;
-                  fieldStr := Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH], [gResTexts[TX_WORD_CORN_FIELD], P.ToString]);
-                end;
+                if not gTerrain.TileIsCornField(P) and not gMySpectator.Hand.CanAddFieldPlan(P, ftCorn) then Exit;
 
-                if fieldStage >= 0 then
-                begin
-                  gMySpectator.Hand.AddField(P, ftCorn, fieldStage);
-                  if makeCheckpoint then
-                    fHistory.MakeCheckpoint(caTerrain, fieldStr);
-                end;
+                makeCheckpoint := not gTerrain.TileIsCornField(P);
+                gMySpectator.Hand.AddField(P, ftCorn, gCursor.MapEdFieldAge);
+                if makeCheckpoint then
+                  fHistory.MakeCheckpoint(caTerrain, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH],
+                                                            [gResTexts[TX_WORD_CORN_FIELD], P.ToString]));
               end;
     cmWine:   begin
-                if gTerrain.TileIsWineField(P) then
-                begin
-                  if not KMSamePoint(P, gCursor.PrevCell) or not aCheckPrevCell then
-                    fieldStage := (gTerrain.GetWineStage(P) + aStageIncrement + WINE_STAGES_COUNT) mod WINE_STAGES_COUNT;
-                end
-                else
-                if gMySpectator.Hand.CanAddFieldPlan(P, ftWine) then
-                begin
-                  fieldStage := 0;
-                  makeCheckpoint := True;
-                  fieldStr := Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH], [gResTexts[TX_WORD_WINE_FIELD], P.ToString]);
-                end;
+                if not gTerrain.TileIsWineField(P) and not gMySpectator.Hand.CanAddFieldPlan(P, ftWine) then Exit;
 
-                if fieldStage >= 0 then
-                begin
-                  gMySpectator.Hand.AddField(P, ftWine, fieldStage);
-                  if makeCheckpoint then
-                    fHistory.MakeCheckpoint(caTerrain, fieldStr);
-                end;
+                makeCheckpoint := not gTerrain.TileIsWineField(P);
+                gMySpectator.Hand.AddField(P, ftWine, gCursor.MapEdWineFieldAge);
+                if makeCheckpoint then
+                  fHistory.MakeCheckpoint(caTerrain, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH],
+                                                            [gResTexts[TX_WORD_WINE_FIELD], P.ToString]));
               end;
   end;
 end;
@@ -685,7 +653,7 @@ end;
 
 procedure TKMMapEditor.MouseWheel(Shift: TShiftState; WheelSteps: Integer; X,Y: Integer);
 begin
-  UpdateField(WheelSteps, False);
+  // not used atm
 end;
 
 
@@ -695,7 +663,7 @@ begin
     case gCursor.Mode of
       cmSelection:  fSelection.Start;
       cmField,
-      cmWine:       UpdateField(1, False);
+      cmWine:       UpdateField;
       cmObjects:    begin
                       fLastErasedObjectLoc := KMPOINT_INVALID_TILE;
                       fLastRemoveTxID := -1;
@@ -767,7 +735,7 @@ begin
   case gCursor.Mode of
     cmRoad:       ProceedRoadCursorMode;
     cmField,
-    cmWine:       UpdateField(1, True);
+    cmWine:       UpdateField;
     cmUnits:      ProceedUnitsCursorMode;
     cmErase:      ProceedEraseCursorMode;
     cmSelection:  fSelection.Resize;

@@ -24,6 +24,8 @@ type
     ObjectUID: Integer;   //Object found below cursor
 
     // MapEd brushes page
+    MapEdFieldAge: Integer;
+    MapEdWineFieldAge: Integer;
     MapEdShape: TKMMapEdShape;
     MapEdSize: Byte;
     MapEdBrushMask: TKMTileMaskKind;
