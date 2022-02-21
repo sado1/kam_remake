@@ -666,7 +666,7 @@ var
   M: TKMMapInfo;
   G: TKMMapGoalInfo;
 begin
-  if (fSingleLoc = -1) or not ColumnBox_Maps.IsSelected then Exit;
+  if not ColumnBox_Maps.IsSelected then Exit;
   mapId := ColumnBox_Maps.SelectedItem.Tag;
   if (fUpdatedLastListId = mapId) and not aForceUpdate then Exit; // Do not update same item several times
 
@@ -677,6 +677,13 @@ begin
   fMaps.Lock;
   try
     M := fMaps[mapId];
+
+    if fSingleLoc = -1 then
+    begin
+      // Hide minimap view if this map has no player location to play
+      MinimapView.Hide;
+      Exit;
+    end;
 
     //Set default colour for this location
     DropBox_Color.List.Rows[0].Cells[0].Color := fMaps[mapId].FlagColors[fSingleLoc];
