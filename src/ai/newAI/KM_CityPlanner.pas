@@ -946,7 +946,7 @@ function TKMCityPlanner.GetRoadToHouse(aHT: TKMHouseType; aIdx: Integer; var aFi
   end;
 
 const
-  MAX_ROAD_DISTANCE = 50;
+  MAX_ROAD_DISTANCE = 90;
 var
   Output: Boolean;
   NewLoc, ExistLoc: TKMPoint;

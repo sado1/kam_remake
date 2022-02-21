@@ -230,7 +230,7 @@ end;
 
 function TKMArmyEvaluation.CheckFoodProblems(const aAlly: TKMHandIDArray): Boolean;
 const
-  FOOD_THRESHOLD = 0.55;
+  FOOD_THRESHOLD = 0.6;
 var
   Full, Middle, Low: Cardinal;
   PL: TKMHandID;

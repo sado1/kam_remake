@@ -615,7 +615,7 @@ const
   );
 var
   WalkableID: Byte;
-  K, L, BestCCTIdx, BestGIdx, Overflow, Overflow2: Integer;
+  K, L, M, BestCCTIdx, BestGIdx, Overflow, Overflow2: Integer;
   Distance, BestDistance, SoldiersCnt: Single;
   P, HouseEntrance: TKMPoint;
   CenterPoints: TKMPointArray;
@@ -771,18 +771,18 @@ begin
         break;
       // Compute distance
       BestDistance := 1E10;
-      for PL in fOwners do
+      for L := Low(fOwners) to High(fOwners) do
       begin
         // Target = city (clusters with houses) OR every cluster if there are no houses
-        for L := Low(CCT) to High(CCT) do
-          if ((CCT[L].Cluster.HousesCount > 0) AND (WalkableID = gTerrain.GetWalkConnectID(KMPointBelow(Enemy.Houses[ CCT[L].Cluster.Houses[0] ].Entrance))))
-            OR ((Enemy.HousesCount = 0)        AND (WalkableID = gTerrain.GetWalkConnectID(             Enemy.Groups[ CCT[L].Cluster.Groups[0] ].Position ))) then
+        for M := Low(CCT) to High(CCT) do
+          if ((CCT[M].Cluster.HousesCount > 0) AND (WalkableID = gTerrain.GetWalkConnectID(KMPointBelow(Enemy.Houses[ CCT[M].Cluster.Houses[0] ].Entrance))))
+            OR ((Enemy.HousesCount = 0)        AND (WalkableID = gTerrain.GetWalkConnectID(             Enemy.Groups[ CCT[M].Cluster.Groups[0] ].Position ))) then
           begin
-            Distance := KMDistanceSqr(CCT[L].CenterPoint, P);
+            Distance := KMDistanceSqr(CCT[M].CenterPoint, CenterPoints[L]);
             if (Distance < BestDistance) then
             begin
               BestDistance := Distance;
-              BestCCTIdx := L;
+              BestCCTIdx := M;
             end;
           end;
       end;
