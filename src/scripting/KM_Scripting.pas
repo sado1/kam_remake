@@ -436,12 +436,12 @@ begin
     Sender.AddTypeS('TKMUnitTypeSet', 'set of TKMUnitType');
 
     Sender.AddTypeS('TKMWareType', '(wtNone,'
-      + 'wtTrunk,   wtStone,   wtWood,        wtIronOre,   wtGoldOre,'
-      + 'wtCoal,    wtSteel,   wtGold,        wtWine,      wtCorn,'
-      + 'wtBread,   wtFlour,   wtLeather,     wtSausages,  wtPig,'
-      + 'wtSkin,    wtShield,  wtMetalShield, wtArmor,     wtMetalArmor,'
-      + 'wtAxe,     wtSword,   wtPike,        wtHallebard, wtBow,'
-      + 'wtArbalet, wtHorse,   wtFish,'
+      + 'wtTrunk,    wtStone,         wtTimber,     wtIronOre,      wtGoldOre,'
+      + 'wtCoal,     wtIron,          wtGold,       wtWine,         wtCorn,'
+      + 'wtBread,    wtFlour,         wtLeather,    wtSausage,      wtPig,'
+      + 'wtSkin,     wtWoodenShield,  wtIronShield, wtLeatherArmor, wtIronArmor,'
+      + 'wtAxe,      wtSword,         wtLance,      wtPike,         wtBow,'
+      + 'wtCrossbow, wtHorse,         wtFish,'
       // Special ware types
       + 'wtAll,     wtWarfare, wtFood)');
 
