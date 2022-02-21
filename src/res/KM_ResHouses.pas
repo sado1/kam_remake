@@ -202,9 +202,12 @@ const
   //TKMHouseType corresponds to this index in KaM scripts and libs
   //KaM scripts are 0 based, so we must use HouseTypeToIndex[H]-1 in script usage. Other cases are 1 based.
   HOUSE_TYPE_TO_ID: array [TKMHouseType] of Byte = (0, 0,
-    11, 21, 8, 22, 25, 4, 9, 7, 6, 28,
-    5, 2, 30, 16, 23, 15, 1, 14, 24, 13, 12,
-    17, 26, 19, 18, 3, 20, 29, 10);
+    11, 21, 8,  22, 25,
+    4,  9,  7,  6,  28,
+    5,  2,  30, 16, 23,
+    15, 1,  14, 24, 13,
+    12, 17, 26, 19, 18,
+    3,  20, 29, 10);
 
 
 implementation
