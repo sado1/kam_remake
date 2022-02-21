@@ -107,9 +107,9 @@ const
   );
   // Possible transformation of wares: resource -> product
   CONSUMPTION_WARE: array[WARE_MIN..WARE_MAX] of array[0..3] of TKMWareType = (         // wtShield are ignored
-    (wtWood, wtNone, wtNone, wtNone), (wtNone, wtNone, wtNone, wtNone), (wtAxe, wtNone, wtNone, wtNone), (wtSteel, wtNone, wtNone, wtNone), (wtGold, wtNone, wtNone, wtNone),
-    (wtSteel, wtGold, wtMetalArmor, wtSword), (wtMetalArmor, wtSword, wtNone, wtNone), (wtNone, wtNone, wtNone, wtNone), (wtNone, wtNone, wtNone, wtNone), (wtFlour, wtPig, wtHorse, wtNone),
-    (wtNone, wtNone, wtNone, wtNone), (wtBread, wtNone, wtNone, wtNone), (wtArmor, wtNone, wtNone, wtNone), (wtNone, wtNone, wtNone, wtNone), (wtSausages, wtNone, wtNone, wtNone),
+    (wtTimber, wtNone, wtNone, wtNone), (wtNone, wtNone, wtNone, wtNone), (wtAxe, wtNone, wtNone, wtNone), (wtIron, wtNone, wtNone, wtNone), (wtGold, wtNone, wtNone, wtNone),
+    (wtIron, wtGold, wtIronArmor, wtSword), (wtIronArmor, wtSword, wtNone, wtNone), (wtNone, wtNone, wtNone, wtNone), (wtNone, wtNone, wtNone, wtNone), (wtFlour, wtPig, wtHorse, wtNone),
+    (wtNone, wtNone, wtNone, wtNone), (wtBread, wtNone, wtNone, wtNone), (wtLeatherArmor, wtNone, wtNone, wtNone), (wtNone, wtNone, wtNone, wtNone), (wtSausage, wtNone, wtNone, wtNone),
     (wtLeather, wtNone, wtNone, wtNone), (wtNone, wtNone, wtNone, wtNone), (wtNone, wtNone, wtNone, wtNone), (wtNone, wtNone, wtNone, wtNone), (wtNone, wtNone, wtNone, wtNone),
     (wtNone, wtNone, wtNone, wtNone), (wtNone, wtNone, wtNone, wtNone), (wtNone, wtNone, wtNone, wtNone), (wtNone, wtNone, wtNone, wtNone), (wtNone, wtNone, wtNone, wtNone),
     (wtNone, wtNone, wtNone, wtNone), (wtNone, wtNone, wtNone, wtNone), (wtNone, wtNone, wtNone, wtNone)
@@ -126,12 +126,12 @@ const
     (0.5, 1, 1, 1)
   );
   CONSUMPTION_ORDER: array[0..27] of TKMWareType = ( // Basicaly TKMWareType but sorted by order: resource -> product
-    wtStone,   wtTrunk,    wtWood,
+    wtStone,   wtTrunk,    wtTimber,
     wtCorn,    wtFlour,    wtBread,     wtWine,        wtFish,
-    wtPig,     wtSausages, wtSkin,      wtLeather,     wtHorse,
-    wtGoldOre, wtIronOre,  wtCoal,      wtGold,        wtSteel,
-    wtAxe,     wtBow,      wtPike,      wtArmor,       wtShield,
-    wtSword,   wtArbalet,  wtHallebard, wtMetalShield, wtMetalArmor
+    wtPig,     wtSausage, wtSkin,      wtLeather,     wtHorse,
+    wtGoldOre, wtIronOre,  wtCoal,      wtGold,        wtIron,
+    wtAxe,     wtBow,      wtLance,      wtLeatherArmor,       wtWoodenShield,
+    wtSword,   wtCrossbow,  wtPike, wtIronShield, wtIronArmor
   );
   CO_WEAPONS_MIN = 18;
   CO_WEAPONS_MAX = 27;
@@ -328,16 +328,16 @@ begin
   Consumption := (fCityStats.CitizensCnt * CITIZEN_FOOD_COEF) + (fCityStats.WarriorsCnt * SOLDIER_FOOD_COEF);
   // Calculate consumption of leather armor / minute and pigs which are produced with this cycle
   // 2x armor = 2x leather = 1x skin = 1x pig = 3x sausages ... sausages = 3 / 2 * armor = 1.5 * armor
-  fWareBalance[wtSausages].ActualConsumption := Min(Consumption, fWareBalance[wtArmor].FinalConsumption * 1.5);
+  fWareBalance[wtSausage].ActualConsumption := Min(Consumption, fWareBalance[wtLeatherArmor].FinalConsumption * 1.5);
   // Split rest of consumtion into other houses
-  Consumption := Max(0, Consumption - fWareBalance[wtSausages].ActualConsumption);
+  Consumption := Max(0, Consumption - fWareBalance[wtSausage].ActualConsumption);
   fWareBalance[wtBread].ActualConsumption := Consumption * 0.7;
   fWareBalance[wtWine].ActualConsumption := Consumption * 0.3;
   fWareBalance[wtFish].ActualConsumption := 0;
   // Expected food consumption of the final city size (it helps with build order to secure food and weapons production ASAP)
   if aInitialization then
   begin
-    fWareBalance[wtSausages].FinalConsumption := fWareBalance[wtSausages].ActualConsumption;
+    fWareBalance[wtSausage].FinalConsumption := fWareBalance[wtSausage].ActualConsumption;
     fWareBalance[wtBread].FinalConsumption := fWareBalance[wtBread].ActualConsumption;
     fWareBalance[wtWine].FinalConsumption := fWareBalance[wtWine].ActualConsumption;
     fWareBalance[wtFish].FinalConsumption := fWareBalance[wtFish].ActualConsumption;
@@ -361,9 +361,9 @@ begin
   fWareBalance[wtStone].ActualConsumption := Min(fCityStats.Citizens[utBuilder] + Round(AI_Par[PREDICTOR_WareNeedPerAWorker_StoneOffset]), fWorkerCount) * AI_Par[PREDICTOR_WareNeedPerAWorker_Stone];
   fWareBalance[wtStone].FinalConsumption := fWareBalance[wtStone].ActualConsumption;
   // Raw wood expectations
-  UpdateWareConsumption(wtWood, aInitialization);
-  fWareBalance[wtWood].ActualConsumption := Max(fWareBalance[wtWood].ActualConsumption, fCityStats.Citizens[utBuilder] * AI_Par[PREDICTOR_WareNeedPerAWorker_Wood]);
-  fWareBalance[wtWood].FinalConsumption := Max(fWareBalance[wtWood].FinalConsumption, fWorkerCount * AI_Par[PREDICTOR_WareNeedPerAWorker_Wood]);
+  UpdateWareConsumption(wtTimber, aInitialization);
+  fWareBalance[wtTimber].ActualConsumption := Max(fWareBalance[wtTimber].ActualConsumption, fCityStats.Citizens[utBuilder] * AI_Par[PREDICTOR_WareNeedPerAWorker_Wood]);
+  fWareBalance[wtTimber].FinalConsumption := Max(fWareBalance[wtTimber].FinalConsumption, fWorkerCount * AI_Par[PREDICTOR_WareNeedPerAWorker_Wood]);
 end;
 
 
@@ -413,12 +413,12 @@ begin
     // Exeptions
     case CONSUMPTION_ORDER[I] of
       // Food was updated at once
-      wtWine, wtBread, wtSausages, wtFish: begin end;
+      wtWine, wtBread, wtSausage, wtFish: begin end;
       // Update Gold
       wtGold: begin end;
       // Update materials
       wtStone: begin end;
-      wtWood: begin end;
+      wtTimber: begin end;
       // Other cases
       else
         UpdateWareConsumption(CONSUMPTION_ORDER[I], aInitialization);
@@ -500,8 +500,8 @@ end;
 
 procedure TKMCityPredictor.UpdateFinalProduction(aIncPeaceFactor: Single = 0; aIncrementMines: Boolean = False);
 const
-  IRON_WARFARE: set of TKMWareType = [wtMetalShield, wtMetalArmor, wtSword, wtHallebard, wtArbalet];
-  WOOD_WARFARE: set of TKMWareType = [wtAxe, wtPike, wtBow];
+  IRON_WARFARE: set of TKMWareType = [wtIronShield, wtIronArmor, wtSword, wtPike, wtCrossbow];
+  WOOD_WARFARE: set of TKMWareType = [wtAxe, wtLance, wtBow];
   INV_AFTER_PEACE_SCALING = 1 / (30*10*60); // Peace factor will be completely removed after {30} mins since end of peace
   MIN_IRON_PRODUCTION = 2;
   MAX_IRON_PRODUCTION = 6;
@@ -546,8 +546,8 @@ begin
   for WT in WOOD_WARFARE do
     fWareBalance[WT].FinalConsumption := MaxWoodWeapProd;
   // Exceptions
-  fWareBalance[wtArmor].FinalConsumption := MaxWoodWeapProd;
-  fWareBalance[wtShield].FinalConsumption := MaxWoodWeapProd / 5; // This only affect wood requirements, shields will be ordered by count of axes
+  fWareBalance[wtLeatherArmor].FinalConsumption := MaxWoodWeapProd;
+  fWareBalance[wtWoodenShield].FinalConsumption := MaxWoodWeapProd / 5; // This only affect wood requirements, shields will be ordered by count of axes
 
   // Soldiers / min (only expected not final value)
   fMaxSoldiersInMin := MaxWoodWeapProd + MaxIronWeapProd;
@@ -849,9 +849,9 @@ begin
   aBalanceText := Format('%sWare balance|Required houses'#9'Production'#9#9'Actual consumption'#9#9'Final consumption'#9#9'Fraction'#9'Exhaustion|',[aBalanceText]);
   for K := CO_WARE_MIN to CO_WARE_MAX do
     AddWare(CONSUMPTION_ORDER[K], WARE_TO_STRING[ CONSUMPTION_ORDER[K] ]);
-  AddWare(wtArmor, 'Armor'#9#9);
+  AddWare(wtLeatherArmor, 'Armor'#9#9);
   AddWare(wtAxe, 'Weapon'#9#9);
-  AddWare(wtMetalArmor, 'Iron Armor'#9);
+  AddWare(wtIronArmor, 'Iron Armor'#9);
   AddWare(wtSword, 'Iron Weapon'#9);
   aBalanceText := Format('%sPeace factor = %1.2f (update = %1.2f); Max workers: %d; Max gold = %d; Dec coal = %d; Iron = %d; Field coef = %d; Build coef = %d; |', [aBalanceText, fPeaceFactor, fUpdatedPeaceFactor, fWorkerCount, fMaxGoldMineCnt, fDecCoalMineCnt, fIronMineCnt, fFieldCnt, fBuildCnt]);
 end;

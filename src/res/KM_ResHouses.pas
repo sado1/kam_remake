@@ -237,8 +237,8 @@ const
     NeedsPlayerOrder: True;
     BuildIcon:        311;
     TabletSpriteId:   261;
-    Input:            (wtCoal,       wtSteel,      wtNone,       wtNone);
-    Output:           (wtMetalArmor, wtMetalShield,wtNone,       wtNone);
+    Input:            (wtCoal,       wtIron,      wtNone,       wtNone);
+    Output:           (wtIronArmor, wtIronShield,wtNone,       wtNone);
     UnlockedByHouse:  htIronSmithy;
     SnowSpriteId:     2074;
     GroundArea:       ((0,0,0,0), (1,2,2,1), (3,1,0,2), (3,1,2,3));
@@ -248,8 +248,8 @@ const
     NeedsPlayerOrder: True;
     BuildIcon:        321;
     TabletSpriteId:   271;
-    Input:            (wtLeather,    wtWood,       wtNone,       wtNone);
-    Output:           (wtShield,     wtArmor,      wtNone,       wtNone);
+    Input:            (wtLeather,    wtTimber,       wtNone,       wtNone);
+    Output:           (wtWoodenShield,     wtLeatherArmor,      wtNone,       wtNone);
     UnlockedByHouse:  htTannery;
     SnowSpriteId:     2067;
     GroundArea:       ((0,0,0,0), (0,3,1,0), (0,0,0,1), (0,1,2,3));
@@ -282,7 +282,7 @@ const
     BuildIcon:        325;
     TabletSpriteId:   275;
     Input:            (wtPig,        wtNone,       wtNone,       wtNone);
-    Output:           (wtSausages,   wtNone,       wtNone,       wtNone);
+    Output:           (wtSausage,   wtNone,       wtNone,       wtNone);
     UnlockedByHouse:  htSwine;
     SnowSpriteId:     2066;
     GroundArea:       ((0,0,0,0), (0,2,2,3), (0,0,0,1), (0,2,2,1));
@@ -336,7 +336,7 @@ const
     NeedsPlayerOrder: False;
     BuildIcon:        328;
     TabletSpriteId:   278;
-    Input:            (wtBread,      wtSausages,   wtWine,       wtFish);
+    Input:            (wtBread,      wtSausage,   wtWine,       wtFish);
     Output:           (wtNone,       wtNone,       wtNone,       wtNone);
     UnlockedByHouse:  htStore;
     SnowSpriteId:     2063;
@@ -359,7 +359,7 @@ const
     BuildIcon:        302;
     TabletSpriteId:   252;
     Input:            (wtIronOre,    wtCoal,       wtNone,       wtNone);
-    Output:           (wtSteel,      wtNone,       wtNone,       wtNone);
+    Output:           (wtIron,      wtNone,       wtNone,       wtNone);
     UnlockedByHouse:  htIronMine;
     SnowSpriteId:     2051;
     GroundArea:       ((0,0,0,0), (0,0,0,0), (3,0,0,2), (3,2,1,3));
@@ -414,7 +414,7 @@ const
     BuildIcon:        301;
     TabletSpriteId:   251;
     Input:            (wtTrunk,      wtNone,       wtNone,       wtNone);
-    Output:           (wtWood,       wtNone,       wtNone,       wtNone);
+    Output:           (wtTimber,       wtNone,       wtNone,       wtNone);
     UnlockedByHouse:  htWoodcutters;
     SnowSpriteId:     2050;
     GroundArea:       ((0,0,0,0), (0,0,0,0), (3,1,0,2), (4,1,1,3));
@@ -435,7 +435,7 @@ const
     NeedsPlayerOrder: True;
     BuildIcon:        324;
     TabletSpriteId:   274;
-    Input:            (wtWood,       wtSteel,      wtNone,       wtNone);
+    Input:            (wtTimber,       wtIron,      wtNone,       wtNone);
     Output:           (wtNone,       wtNone,       wtNone,       wtNone);
     UnlockedByHouse:  htIronSmithy;
     SnowSpriteId:     2078;
@@ -512,8 +512,8 @@ const
     NeedsPlayerOrder: True;
     BuildIcon:        303;
     TabletSpriteId:   253;
-    Input:            (wtCoal,       wtSteel,      wtNone,       wtNone);
-    Output:           (wtSword,      wtHallebard,  wtArbalet,    wtNone);
+    Input:            (wtCoal,       wtIron,      wtNone,       wtNone);
+    Output:           (wtSword,      wtPike,  wtCrossbow,    wtNone);
     UnlockedByHouse:  htIronSmithy;
     SnowSpriteId:     2069;
     GroundArea:       ((0,0,0,0), (0,0,0,0), (3,0,0,3), (4,1,2,3));
@@ -523,8 +523,8 @@ const
     NeedsPlayerOrder: True;
     BuildIcon:        320;
     TabletSpriteId:   270;
-    Input:            (wtWood,       wtNone,       wtNone,       wtNone);
-    Output:           (wtAxe,        wtPike,       wtBow,        wtNone);
+    Input:            (wtTimber,       wtNone,       wtNone,       wtNone);
+    Output:           (wtAxe,        wtLance,       wtBow,        wtNone);
     UnlockedByHouse:  htSawmill;
     SnowSpriteId:     2061;
     GroundArea:       ((0,0,0,0), (0,0,0,0), (3,0,0,3), (3,1,2,3));

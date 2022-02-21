@@ -164,14 +164,14 @@ const
   //Number means ResourceType as it is stored in Barracks, hence it's not rtSomething
   TROOP_COST: array [utMilitia..utKnight, 1..4] of TKMWareType = (
     (wtAxe,          wtNone,        wtNone,  wtNone ), //Militia
-    (wtShield,       wtArmor,       wtAxe,   wtNone ), //Axefighter
-    (wtMetalShield,  wtMetalArmor,  wtSword, wtNone ), //Swordfighter
-    (wtArmor,        wtBow,         wtNone,  wtNone ), //Bowman
-    (wtMetalArmor,   wtArbalet,     wtNone,  wtNone ), //Crossbowman
-    (wtArmor,        wtPike,        wtNone,  wtNone ), //Lance Carrier
-    (wtMetalArmor,   wtHallebard,   wtNone,  wtNone ), //Pikeman
-    (wtShield,       wtArmor,       wtAxe,   wtHorse), //Scout
-    (wtMetalShield,  wtMetalArmor,  wtSword, wtHorse)  //Knight
+    (wtWoodenShield,       wtLeatherArmor,       wtAxe,   wtNone ), //Axefighter
+    (wtIronShield,  wtIronArmor,  wtSword, wtNone ), //Swordfighter
+    (wtLeatherArmor,        wtBow,         wtNone,  wtNone ), //Bowman
+    (wtIronArmor,   wtCrossbow,     wtNone,  wtNone ), //Crossbowman
+    (wtLeatherArmor,        wtLance,        wtNone,  wtNone ), //Lance Carrier
+    (wtIronArmor,   wtPike,   wtNone,  wtNone ), //Pikeman
+    (wtWoodenShield,       wtLeatherArmor,       wtAxe,   wtHorse), //Scout
+    (wtIronShield,  wtIronArmor,  wtSword, wtHorse)  //Knight
   );
 
 

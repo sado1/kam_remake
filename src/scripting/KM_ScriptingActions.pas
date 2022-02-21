@@ -482,7 +482,7 @@ procedure TKMScriptActions.PlayerWareDistribution(aHand, aWareType, aHouseType, 
 begin
   try
     if (aWareType in [Low(WARE_ID_TO_TYPE) .. High(WARE_ID_TO_TYPE)])
-      and (WARE_ID_TO_TYPE[aWareType] in [wtSteel, wtCoal, wtWood, wtCorn])
+      and (WARE_ID_TO_TYPE[aWareType] in [wtIron, wtCoal, wtTimber, wtCorn])
       and HouseTypeValid(aHouseType)
       and InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
       and InRange(aAmount, 0, 5) then
@@ -1184,12 +1184,12 @@ begin
         H.BuildingState := hbsWood;
         if aAddMaterials then
         begin
-          H.ResAddToBuild(wtWood, gResHouses[H.HouseType].WoodCost);
+          H.ResAddToBuild(wtTimber, gResHouses[H.HouseType].WoodCost);
           H.ResAddToBuild(wtStone, gResHouses[H.HouseType].StoneCost);
         end
         else
         begin
-          gHands[aHand].Deliveries.Queue.AddDemand(H, nil, wtWood, gResHouses[H.HouseType].WoodCost, dtOnce, diHigh4);
+          gHands[aHand].Deliveries.Queue.AddDemand(H, nil, wtTimber, gResHouses[H.HouseType].WoodCost, dtOnce, diHigh4);
           gHands[aHand].Deliveries.Queue.AddDemand(H, nil, wtStone, gResHouses[H.HouseType].StoneCost, dtOnce, diHigh4);
         end;
         gHands[aHand].Constructions.HouseList.AddHouse(H);
@@ -1244,8 +1244,8 @@ begin
 
         // Add wood
         aWoodAmount := EnsureRange(aWoodAmount, 0, gResHouses[aHouseType].WoodCost);
-        H.ResAddToBuild(wtWood, aWoodAmount);
-        gHands[aHand].Deliveries.Queue.AddDemand(H, nil, wtWood, gResHouses[aHouseType].WoodCost - aWoodAmount, dtOnce, diHigh4);
+        H.ResAddToBuild(wtTimber, aWoodAmount);
+        gHands[aHand].Deliveries.Queue.AddDemand(H, nil, wtTimber, gResHouses[aHouseType].WoodCost - aWoodAmount, dtOnce, diHigh4);
 
         // Add stones
         aStoneAmount := EnsureRange(aStoneAmount, 0, gResHouses[aHouseType].StoneCost);
@@ -2575,7 +2575,7 @@ procedure TKMScriptActions.HandWareDistribution(aHand: Integer; aWareType: TKMWa
 begin
   try
     if (aWareType in WARES_VALID)
-      and (aWareType in [wtSteel, wtCoal, wtWood, wtCorn])
+      and (aWareType in [wtIron, wtCoal, wtTimber, wtCorn])
       and (aHouseType in HOUSES_VALID)
       and InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
       and InRange(aAmount, 0, 5) then
@@ -2609,10 +2609,10 @@ begin
       if H <> nil then
         if not H.IsComplete then
         begin
-          resNeeded := gHands[H.Owner].Deliveries.Queue.TryRemoveDemand(H, wtWood,
+          resNeeded := gHands[H.Owner].Deliveries.Queue.TryRemoveDemand(H, wtTimber,
                          gResHouses[H.HouseType].WoodCost - H.GetBuildWoodDelivered, plannedToRemove);
           Inc(resNeeded, plannedToRemove);
-          H.ResAddToBuild(wtWood, resNeeded);
+          H.ResAddToBuild(wtTimber, resNeeded);
 
           resNeeded := gHands[H.Owner].Deliveries.Queue.TryRemoveDemand(H, wtStone,
                          gResHouses[H.HouseType].StoneCost - H.GetBuildStoneDelivered, plannedToRemove);
@@ -2650,14 +2650,14 @@ begin
 
           if aWoodAmount > 0 then
           begin
-            resNeeded := gHands[H.Owner].Deliveries.Queue.TryRemoveDemand(H, wtWood, aWoodAmount, plannedToRemove);
+            resNeeded := gHands[H.Owner].Deliveries.Queue.TryRemoveDemand(H, wtTimber, aWoodAmount, plannedToRemove);
             Inc(resNeeded, plannedToRemove);
-            H.ResAddToBuild(wtWood, resNeeded);
+            H.ResAddToBuild(wtTimber, resNeeded);
           end
           else
           begin
-            H.ResAddToBuild(wtWood, aWoodAmount);
-            gHands[H.Owner].Deliveries.Queue.AddDemand(H, nil, wtWood, -aWoodAmount, dtOnce, diHigh4);
+            H.ResAddToBuild(wtTimber, aWoodAmount);
+            gHands[H.Owner].Deliveries.Queue.AddDemand(H, nil, wtTimber, -aWoodAmount, dtOnce, diHigh4);
           end;
 
           aStoneAmount := EnsureRange(aStoneAmount, -H.BuildSupplyStone, gResHouses[H.HouseType].StoneCost - H.GetBuildStoneDelivered);

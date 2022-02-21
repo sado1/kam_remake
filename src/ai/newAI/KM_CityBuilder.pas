@@ -840,7 +840,7 @@ begin
 
   // Woodcutters have huge delay (8 min) + trunk is used only to produce wood -> decide shortage based on actual consumption and reserves
   Trunk := gHands[fOwner].Stats.GetWareBalance(wtTrunk);
-  Wood := gHands[fOwner].Stats.GetWareBalance(wtWood);
+  Wood := gHands[fOwner].Stats.GetWareBalance(wtTimber);
   WoodReserves := Trunk * 2 + Wood;
   aTrunkBalance := WoodReserves / (2 * Max(0.1, fPredictor.WareBalance[wtTrunk].ActualConsumption));
   fTrunkShortage := (aTrunkBalance < AI_Par[BUILDER_Shortage_Trunk]);
@@ -873,7 +873,7 @@ begin
 
   // Secure wood production: only process trunk -> wood => minimal delay
   fWoodShortage :=
-    (fPredictor.WareBalance[wtWood].Exhaustion < AI_Par[BUILDER_Shortage_Wood])
+    (fPredictor.WareBalance[wtTimber].Exhaustion < AI_Par[BUILDER_Shortage_Wood])
     OR
     (
       (
@@ -1095,9 +1095,9 @@ const
   //FOOD_WARE: TSetOfWare = [wtCorn, wtFlour, wtBread, wtPig, wtSausages, wtWine, wtFish, wtWood];
   //WEAPON_WARE: TSetOfWare = [wtSkin, wtLeather, wtHorse, wtIronOre, wtCoal, wtSteel, wtAxe, wtBow, wtPike, wtArmor, wtShield, wtSword, wtArbalet, wtHallebard, wtMetalShield, wtMetalArmor];
   // All considerable ware (from weapons / armors just 1 piece of ware type because it is produced in same house)
-  ALL_WARE: TSetOfWare = [wtCorn, wtPig, wtSausages, wtWine, wtFish, wtStone, wtTrunk, wtWood, wtSkin, wtLeather, wtHorse, wtIronOre, wtCoal, wtSteel, wtAxe, wtArmor, wtSword, wtMetalArmor, wtFlour, wtBread];
+  ALL_WARE: TSetOfWare = [wtCorn, wtPig, wtSausage, wtWine, wtFish, wtStone, wtTrunk, wtTimber, wtSkin, wtLeather, wtHorse, wtIronOre, wtCoal, wtIron, wtAxe, wtLeatherArmor, wtSword, wtIronArmor, wtFlour, wtBread];
   //BUILD_ORDER_WARE: array[0..8] of TKMWareType = (wtStone, wtGold, wtGoldOre, wtCoal, wtTrunk, wtWood, wtCorn, wtPig, wtSausages);
-  BUILD_ORDER_WARE: array[0..5] of TKMWareType = (wtStone, wtGoldOre, wtCoal, wtGold, wtTrunk, wtWood);
+  BUILD_ORDER_WARE: array[0..5] of TKMWareType = (wtStone, wtGoldOre, wtCoal, wtGold, wtTrunk, wtTimber);
 var
   MaxPlans, MaxPlace: Integer;
   RequiredHouses: TRequiredHousesArray;

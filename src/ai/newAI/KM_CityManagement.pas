@@ -219,11 +219,11 @@ var
       if fSetup.UnlimitedEquip then
       begin
         // Iron soldiers
-        Inc(  Output, Min( Stats.GetWareBalance(wtMetalArmor), Stats.GetWareBalance(wtArbalet) + Stats.GetWareBalance(wtHallebard) + Min( Stats.GetWareBalance(wtSword), Stats.GetWareBalance(wtMetalShield)) )  );
+        Inc(  Output, Min( Stats.GetWareBalance(wtIronArmor), Stats.GetWareBalance(wtCrossbow) + Stats.GetWareBalance(wtPike) + Min( Stats.GetWareBalance(wtSword), Stats.GetWareBalance(wtIronShield)) )  );
         // Leather soldiers we can make
-        Inc(  Output, Min( Stats.GetWareBalance(wtArmor), Stats.GetWareBalance(wtBow) + Stats.GetWareBalance(wtPike) + Min(Stats.GetWareBalance(wtAxe), Stats.GetWareBalance(wtShield)) )  );
+        Inc(  Output, Min( Stats.GetWareBalance(wtLeatherArmor), Stats.GetWareBalance(wtBow) + Stats.GetWareBalance(wtLance) + Min(Stats.GetWareBalance(wtAxe), Stats.GetWareBalance(wtWoodenShield)) )  );
         // Militia with leftover axes
-        Inc(  Output, Max( 0, Stats.GetWareBalance(wtAxe) - Min(Stats.GetWareBalance(wtArmor), Stats.GetWareBalance(wtShield)) )  );
+        Inc(  Output, Max( 0, Stats.GetWareBalance(wtAxe) - Min(Stats.GetWareBalance(wtLeatherArmor), Stats.GetWareBalance(wtWoodenShield)) )  );
       end
       else
         Output := Output + 10;
@@ -473,11 +473,11 @@ var
   end;
 const
   SOLD_ORDER: array[0..20] of TKMWareType = (
-    wtSausages,     wtWine,     wtBread,      //wtFish,
+    wtSausage,     wtWine,     wtBread,      //wtFish,
     wtSkin,         wtLeather,  wtPig,
-    wtTrunk,        wtWood,
-    wtShield,       wtAxe,      wtPike,       wtBow,      wtArmor,
-    wtMetalShield,  wtSword,    wtHallebard,  wtArbalet,  wtMetalArmor,
+    wtTrunk,        wtTimber,
+    wtWoodenShield,       wtAxe,      wtLance,       wtBow,      wtLeatherArmor,
+    wtIronShield,  wtSword,    wtPike,  wtCrossbow,  wtIronArmor,
     wtHorse,        wtCorn,     wtFlour
     //wtSteel,        wtGold,     wtIronOre,    wtCoal,     wtGoldOre,
     //wtStone
@@ -564,13 +564,13 @@ begin
 
         // Materials
         S.NotAcceptFlag[wtTrunk] := (aTick > TRUNK_STORE_DELAY); // Trunk should not be blocked because of forest cleaning
-        S.NotAcceptFlag[wtWood] := (S.CheckResIn(wtWood) > 20) OR (aTick > WOOD_STORE_DELAY);// AND (Predictor.WareBalance[wtWood].Exhaustion > 40);
+        S.NotAcceptFlag[wtTimber] := (S.CheckResIn(wtTimber) > 20) OR (aTick > WOOD_STORE_DELAY);// AND (Predictor.WareBalance[wtWood].Exhaustion > 40);
         S.NotAcceptFlag[wtStone] := (aTick > STONE_STORE_DELAY) OR (S.CheckResIn(wtStone)*2 > Stats.GetUnitQty(utBuilder));
         S.NotAcceptFlag[wtGold] := S.CheckResIn(wtGold) > 400; // Everyone needs as much gold as possible
 
         // Food - don't store food when we have enough (it will cause trafic before storehouse)
         S.NotAcceptFlag[wtWine] := Stats.GetWareBalance(wtWine) > 100;
-        S.NotAcceptFlag[wtSausages] := Stats.GetWareBalance(wtSausages) > 100;
+        S.NotAcceptFlag[wtSausage] := Stats.GetWareBalance(wtSausage) > 100;
         S.NotAcceptFlag[wtBread] := Stats.GetWareBalance(wtBread) > 100;
         S.NotAcceptFlag[wtFish] := Stats.GetWareBalance(wtFish) > 100;
 
@@ -578,7 +578,7 @@ begin
         S.NotAcceptFlag[wtGoldOre] := True;
         S.NotAcceptFlag[wtCoal] := True;
         S.NotAcceptFlag[wtIronOre] := Stats.GetHouseQty(htIronSmithy) > 0;
-        S.NotAcceptFlag[wtSteel] := Stats.GetHouseQty(htWeaponSmithy) +
+        S.NotAcceptFlag[wtIron] := Stats.GetHouseQty(htWeaponSmithy) +
                                      Stats.GetHouseQty(htArmorSmithy) > 0;
         S.NotAcceptFlag[wtCorn] := (aTick > CORN_STORE_DELAY);
         S.NotAcceptFlag[wtLeather] := True;
@@ -676,13 +676,13 @@ begin
     // Wood
     if Builder.WoodShortage OR Builder.TrunkShortage then
     begin
-      WareDistribution[wtWood, htArmorWorkshop] := 0;
-      WareDistribution[wtWood, htWeaponWorkshop] := 2;
+      WareDistribution[wtTimber, htArmorWorkshop] := 0;
+      WareDistribution[wtTimber, htWeaponWorkshop] := 2;
     end
     else
     begin
-      WareDistribution[wtWood, htArmorWorkshop] := 2;
-      WareDistribution[wtWood, htWeaponWorkshop] := 5;
+      WareDistribution[wtTimber, htArmorWorkshop] := 2;
+      WareDistribution[wtTimber, htWeaponWorkshop] := 5;
     end;
     // Coal
     if Builder.GoldShortage then
@@ -812,10 +812,10 @@ var
     I, WoodReq, IronReq: Integer;
     UT: TKMUnitType;
   begin
-    WoodReq := Max(+ fRequiredWeapons[wtArmor].Required - fRequiredWeapons[wtArmor].Available,
+    WoodReq := Max(+ fRequiredWeapons[wtLeatherArmor].Required - fRequiredWeapons[wtLeatherArmor].Available,
                    + fRequiredWeapons[wtAxe].Required - fRequiredWeapons[wtAxe].Available
                    + fRequiredWeapons[wtBow].Required - fRequiredWeapons[wtBow].Available
-                   + fRequiredWeapons[wtPike].Required - fRequiredWeapons[wtPike].Available
+                   + fRequiredWeapons[wtLance].Required - fRequiredWeapons[wtLance].Available
                   );
     if (WoodReq < 5) then
     begin
@@ -828,10 +828,10 @@ var
                 Required := Required + Round(DEFAULT_ARMY_REQUIREMENTS[UT] * WoodReq);
     end;
 
-    IronReq := Max(+ fRequiredWeapons[wtMetalArmor].Required - fRequiredWeapons[wtMetalArmor].Available,
+    IronReq := Max(+ fRequiredWeapons[wtIronArmor].Required - fRequiredWeapons[wtIronArmor].Available,
                    + fRequiredWeapons[wtSword].Required - fRequiredWeapons[wtSword].Available
-                   + fRequiredWeapons[wtArbalet].Required - fRequiredWeapons[wtArbalet].Available
-                   + fRequiredWeapons[wtHallebard].Required - fRequiredWeapons[wtHallebard].Available
+                   + fRequiredWeapons[wtCrossbow].Required - fRequiredWeapons[wtCrossbow].Available
+                   + fRequiredWeapons[wtPike].Required - fRequiredWeapons[wtPike].Available
                   );
     if (IronReq < 5) then
     begin
@@ -880,8 +880,8 @@ var
 //  utCavalry,      utBarbarian,
 
 const
-  IRON_WEAPONS: set of TKMWareType = [wtSword, wtHallebard, wtArbalet];
-  IRON_ARMORS: set of TKMWareType = [wtMetalArmor, wtMetalShield];
+  IRON_WEAPONS: set of TKMWareType = [wtSword, wtPike, wtCrossbow];
+  IRON_ARMORS: set of TKMWareType = [wtIronArmor, wtIronShield];
 var
   I, SmithyCnt, WorkshopCnt, ArmorCnt: Integer;
   IronRatio, WeaponFraction, ArmorFraction, IronShare: Single;
@@ -939,10 +939,10 @@ begin
   // Dont produce bows and spears when we dont produce leather
   if (gGame.Options.Peacetime < 45) AND (
     (gHands[fOwner].Stats.GetWareBalance(wtLeather) = 0) AND
-    (gHands[fOwner].Stats.GetWareBalance(wtArmor) = 0) ) then
+    (gHands[fOwner].Stats.GetWareBalance(wtLeatherArmor) = 0) ) then
   begin
     fRequiredWeapons[wtBow].Fraction := 1;
-    fRequiredWeapons[wtPike].Fraction := 1;
+    fRequiredWeapons[wtLance].Fraction := 1;
     fRequiredWeapons[wtAxe].Fraction := 0;
   end;
 
@@ -951,7 +951,7 @@ begin
   for WT in IRON_WEAPONS do
     WeaponFraction := WeaponFraction + fRequiredWeapons[WT].Fraction;
   WeaponFraction := WeaponFraction / 3.0;
-  if (fRequiredWeapons[wtMetalArmor].Fraction > fRequiredWeapons[wtMetalShield].Fraction) then
+  if (fRequiredWeapons[wtIronArmor].Fraction > fRequiredWeapons[wtIronShield].Fraction) then
   begin
     ArmorFraction := 0;
     for WT in IRON_ARMORS do
@@ -959,12 +959,12 @@ begin
     ArmorFraction := ArmorFraction / 2.0;
   end
   else
-    ArmorFraction := fRequiredWeapons[wtMetalArmor].Fraction; // Consider only metal armor in case that we have enough metal shields
+    ArmorFraction := fRequiredWeapons[wtIronArmor].Fraction; // Consider only metal armor in case that we have enough metal shields
   // We always want the higher requirements equal to 5 + something between 1 <-> 5 for second production
   IronShare := 5 * (WeaponFraction + ArmorFraction) / Max(WeaponFraction, ArmorFraction);
   // Ware distribution = fraction / sum of fractions * 5
-  gHands[fOwner].Stats.WareDistribution[wtSteel, htWeaponSmithy] := Max(  1, Min(5, Round( ArmorFraction / (WeaponFraction + ArmorFraction) * IronShare) )  );
-  gHands[fOwner].Stats.WareDistribution[wtSteel, htArmorSmithy] := Max(  1, Min(5, Round( WeaponFraction / (WeaponFraction + ArmorFraction) * IronShare) )  );
+  gHands[fOwner].Stats.WareDistribution[wtIron, htWeaponSmithy] := Max(  1, Min(5, Round( ArmorFraction / (WeaponFraction + ArmorFraction) * IronShare) )  );
+  gHands[fOwner].Stats.WareDistribution[wtIron, htArmorSmithy] := Max(  1, Min(5, Round( WeaponFraction / (WeaponFraction + ArmorFraction) * IronShare) )  );
   gHands[fOwner].Houses.UpdateResRequest;
 end;
 
@@ -1017,7 +1017,7 @@ begin
             for K := 1 to 4 do
             begin
               WT := gResHouses[HT].ResOutput[K];
-              if (WT = wtArmor) then
+              if (WT = wtLeatherArmor) then
               begin
                 H.ResOrder[K] := 10;
                 Break;

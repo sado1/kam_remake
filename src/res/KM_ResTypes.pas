@@ -11,15 +11,15 @@ type
 
   TKMWareType = (
     wtNone,
-    wtTrunk,   wtStone,   wtWood,        wtIronOre,   wtGoldOre,
-    wtCoal,    wtSteel,   wtGold,        wtWine,      wtCorn,
-    wtBread,   wtFlour,   wtLeather,     wtSausages,  wtPig,
-    wtSkin,    wtShield,  wtMetalShield, wtArmor,     wtMetalArmor,
-    wtAxe,     wtSword,   wtPike,        wtHallebard, wtBow,
-    wtArbalet, wtHorse,   wtFish,
+    wtTrunk,    wtStone,         wtTimber,     wtIronOre,      wtGoldOre,
+    wtCoal,     wtIron,          wtGold,       wtWine,         wtCorn,
+    wtBread,    wtFlour,         wtLeather,    wtSausage,      wtPig,
+    wtSkin,     wtWoodenShield,  wtIronShield, wtLeatherArmor, wtIronArmor,
+    wtAxe,      wtSword,         wtLance,      wtPike,         wtBow,
+    wtCrossbow, wtHorse,         wtFish,
 
     // Special ware types
-    wtAll,     wtWarfare, wtFood
+    wtAll, wtWarfare, wtFood
   );
 
   TKMWareTypeSet = set of TKMWareType;
@@ -27,19 +27,19 @@ type
 const
   WARE_MIN = wtTrunk;
   WARE_MAX = wtFish;
-  WARFARE_MIN = wtShield;
-  WEAPON_MIN = wtShield;
-  WEAPON_MAX = wtArbalet;
+  WARFARE_MIN = wtWoodenShield;
+  WEAPON_MIN = wtWoodenShield;
+  WEAPON_MAX = wtCrossbow;
   WARFARE_MAX = wtHorse;
 
   WARES_VALID = [WARE_MIN..WARE_MAX];
   WARES_WARFARE = [WARFARE_MIN..WARFARE_MAX];
-  WARES_FOOD = [wtWine, wtBread, wtSausages, wtFish];
+  WARES_FOOD = [wtWine, wtBread, wtSausage, wtFish];
 
   WARE_CNT = Integer(WARE_MAX) - Integer(WARE_MIN) + 1;
   WARFARE_CNT = Integer(WARFARE_MAX) - Integer(WEAPON_MIN) + 1;
 
-  WARFARE_IRON = [wtMetalShield, wtMetalArmor, wtSword, wtHallebard, wtArbalet];
+  WARFARE_IRON = [wtIronShield, wtIronArmor, wtSword, wtPike, wtCrossbow];
 
 
 type

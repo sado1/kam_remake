@@ -144,13 +144,13 @@ begin
       end else
         SetActionLockedStay(0, uaWalk);
    5: if (Condition < UNIT_MAX_CONDITION * UNIT_STUFFED_CONDITION_LVL)
-        and (fInn.CheckResIn(wtSausages) > 0) then
+        and (fInn.CheckResIn(wtSausage) > 0) then
       begin
-        fInn.ResTakeFromIn(wtSausages);
-        gHands[fUnit.Owner].Stats.WareConsumed(wtSausages);
+        fInn.ResTakeFromIn(wtSausage);
+        gHands[fUnit.Owner].Stats.WareConsumed(wtSausage);
         SetActionLockedStay(29*4, uaEat);
         Feed(UNIT_MAX_CONDITION * SAUSAGE_RESTORE);
-        fInn.UpdateEater(fPlace, wtSausages);
+        fInn.UpdateEater(fPlace, wtSausage);
         Inc(fFeedCnt);
       end else
         SetActionLockedStay(0, uaWalk);

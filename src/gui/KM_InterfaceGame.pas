@@ -108,18 +108,18 @@ const
   // Template for how resources are shown in Barracks
   BARRACKS_RES_COUNT = 11;
   BarracksResType: array [1..BARRACKS_RES_COUNT] of TKMWareType =
-    (wtShield, wtMetalShield, wtArmor, wtMetalArmor, wtAxe, wtSword,
-     wtPike, wtHallebard, wtBow, wtArbalet, wtHorse);
+    (wtWoodenShield, wtIronShield, wtLeatherArmor, wtIronArmor, wtAxe, wtSword,
+     wtLance, wtPike, wtBow, wtCrossbow, wtHorse);
 
   // Layout of resources in Store
   STORE_RES_COUNT = 28;
   StoreResType: array [1..STORE_RES_COUNT] of TKMWareType =
-    (wtTrunk,    wtStone,   wtWood,        wtIronOre,   wtGoldOre,
-     wtCoal,     wtSteel,   wtGold,        wtWine,      wtCorn,
-     wtBread,    wtFlour,   wtLeather,     wtSausages,  wtPig,
-     wtSkin,     wtShield,  wtMetalShield, wtArmor,     wtMetalArmor,
-     wtAxe,      wtSword,   wtPike,        wtHallebard, wtBow,
-     wtArbalet,  wtHorse,   wtFish);
+    (wtTrunk,    wtStone,   wtTimber,        wtIronOre,   wtGoldOre,
+     wtCoal,     wtIron,   wtGold,        wtWine,      wtCorn,
+     wtBread,    wtFlour,   wtLeather,     wtSausage,  wtPig,
+     wtSkin,     wtWoodenShield,  wtIronShield, wtLeatherArmor,     wtIronArmor,
+     wtAxe,      wtSword,   wtLance,        wtPike, wtBow,
+     wtCrossbow,  wtHorse,   wtFish);
 
   School_Order: array [0..13] of TKMUnitType = (
     utSerf, utBuilder, utStonemason, utWoodcutter, utCarpenter,

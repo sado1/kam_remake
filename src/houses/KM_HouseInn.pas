@@ -95,7 +95,7 @@ procedure TKMHouseInn.UpdateEater(aIndex: ShortInt; aFoodKind: TKMWareType);
 begin
   if aIndex = -1 then Exit;
 
-  Assert(aFoodKind in [wtWine, wtBread, wtSausages, wtFish], 'Wrong kind of food in Inn');
+  Assert(aFoodKind in [wtWine, wtBread, wtSausage, wtFish], 'Wrong kind of food in Inn');
 
   fEater[aIndex].FoodKind := aFoodKind; //Order is Wine-Bread-Sausages-Fish
   fEater[aIndex].EatStep  := FlagAnimStep; //Eat animation step will be difference between FlagAnim and EatStep
@@ -111,13 +111,13 @@ end;
 
 function TKMHouseInn.HasFood: Boolean;
 begin
-  Result := CheckResIn(wtSausages) + CheckResIn(wtBread) + CheckResIn(wtWine) + CheckResIn(wtFish) > 0;
+  Result := CheckResIn(wtSausage) + CheckResIn(wtBread) + CheckResIn(wtWine) + CheckResIn(wtFish) > 0;
 end;
 
 
 function TKMHouseInn.GetFoodCnt: Integer;
 begin
-  Result := CheckResIn(wtSausages) + CheckResIn(wtBread) + CheckResIn(wtWine) + CheckResIn(wtFish);
+  Result := CheckResIn(wtSausage) + CheckResIn(wtBread) + CheckResIn(wtWine) + CheckResIn(wtFish);
 end;
 
 
@@ -146,7 +146,7 @@ procedure TKMHouseInn.Paint;
     case fEater[aIndex].FoodKind of
       wtWine:      Result  := TKMDirection(1 * 2 - 1 + (aIndex div 3));
       wtBread:     Result  := TKMDirection(2 * 2 - 1 + (aIndex div 3));
-      wtSausages:  Result  := TKMDirection(3 * 2 - 1 + (aIndex div 3));
+      wtSausage:  Result  := TKMDirection(3 * 2 - 1 + (aIndex div 3));
       wtFish:      Result  := TKMDirection(4 * 2 - 1 + (aIndex div 3));
       else          Result  := dirNA;
     end;
