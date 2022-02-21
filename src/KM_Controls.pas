@@ -4718,7 +4718,7 @@ begin
   end;
 
   //We want these keys to be ignored by TKMEdit
-  if Key in [VK_F1..VK_F12, VK_ESCAPE, VK_RETURN, VK_TAB] then Result := False;
+  if Key in [VK_F1..VK_F12, VK_ESCAPE, VK_RETURN, VK_TAB, VK_MBUTTON] then Result := False;
 
   //Ctrl can be used as an escape character, e.g. CTRL+B places beacon while chat is open
   if ssCtrl in Shift then Result := (Key in [VK_LEFT, VK_RIGHT, Ord('A'), Ord('C'), Ord('X'), Ord('V')]);
@@ -5516,7 +5516,7 @@ begin
   end;
 
   //We want these keys to be ignored by TKMNumericEdit
-  if Key in [VK_F1..VK_F12, VK_ESCAPE, VK_RETURN, VK_TAB] then Result := False;
+  if Key in [VK_F1..VK_F12, VK_ESCAPE, VK_RETURN, VK_TAB, VK_MBUTTON] then Result := False;
 
   //Ctrl can be used as an escape character, e.g. CTRL+B places beacon while chat is open
   if ssCtrl in Shift then
@@ -7191,7 +7191,7 @@ begin
   end;
 
   //We want these keys to be ignored by chat, so game shortcuts still work
-  if Key in [VK_F1..VK_F12, VK_ESCAPE] then Result := False;
+  if Key in [VK_F1..VK_F12, VK_ESCAPE, VK_MBUTTON] then Result := False;
 
   //Ctrl can be used as an escape character, e.g. CTRL+B places beacon while chat is open
   if ssCtrl in Shift then Result := (Key in [VK_LEFT, VK_RIGHT, Ord('A'), Ord('C'), Ord('X')]);
@@ -8124,7 +8124,7 @@ end;
 function TKMSearchableList.KeyEventHandled(Key: Word; Shift: TShiftState): Boolean;
 begin
   //We want these keys to be ignored
-  if Key in [VK_F1..VK_F12, VK_ESCAPE, VK_RETURN, VK_DELETE, VK_TAB] then
+  if Key in [VK_F1..VK_F12, VK_ESCAPE, VK_RETURN, VK_DELETE, VK_TAB, VK_MBUTTON] then
     Result := False
   else
     Result := CanSearch or (Key in [VK_UP, VK_DOWN, VK_HOME, VK_END, VK_PRIOR, VK_NEXT]);
