@@ -1457,11 +1457,11 @@
 1526:Wygładzone animacje
 1527:Wygładzone|animacje
 1528:Będzie wygładzać animacje |wygładzone renderowanie powinno być włączone
-1529:Poziom oddziału
-1530:0 - słabi żołnierze, 1 - żołnierze uzbrojeni w skórę, 2 - żołnierze uzbrojeni w żelazo
-1531:Dodaj oddział
-1532:Dodaj oddział po postawieniu pozycji obronnej. Oddział zależy od formacji wojsk AI
-1533:Jednostki
-1534:Liczba żołnierzy w oddziale. Ustawione na '0', to użyte zostaną formacje wojsk AI
-1535:Kolumny
-1536:Liczba kolumn w oddziale. Jeśli ilość jednostek jest równa 0, będą użyte formacje wojsk AI
+1537:Poziom oddziału
+1538:0 - słabi żołnierze, 1 - żołnierze uzbrojeni w skórę, 2 - żołnierze uzbrojeni w żelazo
+1539:Dodaj oddział
+1540:Dodaj oddział po postawieniu pozycji obronnej. Oddział zależy od formacji wojsk AI
+1541:Jednostki
+1542:Liczba żołnierzy w oddziale. Ustawione na '0', to użyte zostaną formacje wojsk AI
+1543:Kolumny
+1544:Liczba kolumn w oddziale. Jeśli ilość jednostek jest równa 0, będą użyte formacje wojsk AI

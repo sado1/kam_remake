@@ -1476,11 +1476,11 @@
 1526:Interpolated animations
 1527:Interpolated|animations
 1528:Will interpolate sprite animations|Interpolated render should be enabled
-1529:Group level
-1530:0 - low HP units, 1 - Leather armored units, 2 - Iron units
-1531:Add group
-1532:Add group after placing defence position. Group  depends on AI formations
-1533:Units
-1534:Number of units in group. At 0 it takes the AI formations
-1535:Columns
-1536:Number of columns in group. If number of units is 0 it takes the AI formations rows count.
+1537:Group level
+1538:0 - low HP units, 1 - Leather armored units, 2 - Iron units
+1539:Add group
+1540:Add group after placing defence position. Group  depends on AI formations
+1541:Units
+1542:Number of units in group. At 0 it takes the AI formations
+1543:Columns
+1544:Number of columns in group. If number of units is 0 it takes the AI formations rows count.
