@@ -44,7 +44,7 @@ type
 
     fDefaultZoom: Single;
     fZoomBehaviour: TKMZoomBehaviour;
-    fScrollSpeed: Byte;
+    fScrollSpeed: Single;
     fLocale: AnsiString;
     fSpeedPace: Word;
     fSpeedMedium: Single;
@@ -132,7 +132,6 @@ type
     procedure SetAutosaveFrequency(aValue: Integer);
     procedure SetAutosaveCount(aValue: Integer);
     procedure SetLocale(const aLocale: AnsiString);
-    procedure SetScrollSpeed(aValue: Byte);
     procedure SetSpecShowBeacons(aValue: Boolean);
     procedure SetShowGameTime(aValue: Boolean);
     procedure SetShowGameSpeed(aValue: Boolean);
@@ -249,7 +248,7 @@ type
 
     property DefaultZoom: Single read fDefaultZoom;
     property ZoomBehaviour: TKMZoomBehaviour read fZoomBehaviour write fZoomBehaviour;
-    property ScrollSpeed: Byte read fScrollSpeed write SetScrollSpeed;
+    property ScrollSpeed: Single read fScrollSpeed write fScrollSpeed;
     property Locale: AnsiString read fLocale write SetLocale;
     property SpeedPace: Word read fSpeedPace write SetSpeedPace;
     property SpeedMedium: Single read fSpeedMedium;
@@ -455,7 +454,7 @@ begin
       fSpeedFast      := nGameSpeed.Attributes['Fast'].AsFloat(6);
       fSpeedVeryFast  := nGameSpeed.Attributes['VeryFast'].AsFloat(10);
       SpeedPace       := nGameSpeed.Attributes['Pace'].AsInteger(SPEED_PACE_DEFAULT); // Set SpeedPace via setter
-      fScrollSpeed    := nGameSpeed.Attributes['ScrollSpeed'].AsInteger(10);
+      fScrollSpeed    := nGameSpeed.Attributes['ScrollSpeed'].AsFloat(5);
 
     // Autosave
     nGameAutosave := nGameCommon.AddOrFindChild('Autosave');
@@ -1070,12 +1069,6 @@ end;
 procedure TKMGameSettings.SetReplaySavepointFrequency(aValue: Integer);
 begin
   fReplaySavepointFrequency := EnsureRange(aValue, REPLAY_SAVEPOINT_FREQUENCY_MIN, REPLAY_SAVEPOINT_FREQUENCY_MAX);
-end;
-
-
-procedure TKMGameSettings.SetScrollSpeed(aValue: Byte);
-begin
-  fScrollSpeed := aValue;
 end;
 
 

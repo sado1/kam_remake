@@ -131,6 +131,7 @@ uses
   KM_GameAppSettings;
 
 const
+  SCROLL_SPEED_MULTIPLIER = 2.5;
   BLOCK_SPAN = 18;
 
 
@@ -572,7 +573,7 @@ begin
   CheckBox_LerpRender.Checked   := gGameSettings.InterpolatedRender;
   CheckBox_LerpAnims.Enabled    := CheckBox_LerpRender.Checked;
   CheckBox_LerpAnims.Checked    := gGameSettings.InterpolatedAnimations;
-  TrackBar_ScrollSpeed.Position := gGameSettings.ScrollSpeed;
+  TrackBar_ScrollSpeed.Position := Round(gGameSettings.ScrollSpeed / SCROLL_SPEED_MULTIPLIER);
   TrackBar_SFX.Position         := Round(gGameSettings.SoundFXVolume * TrackBar_SFX.MaxValue);
   TrackBar_Music.Position       := Round(gGameSettings.MusicVolume * TrackBar_Music.MaxValue);
   CheckBox_MusicOff.Checked     := gGameSettings.MusicOff;
@@ -652,7 +653,7 @@ begin
 
   CheckBox_LerpAnims.Enabled       := CheckBox_LerpRender.Checked;
 
-  gGameSettings.ScrollSpeed        := TrackBar_ScrollSpeed.Position;
+  gGameSettings.ScrollSpeed        := TrackBar_ScrollSpeed.Position * SCROLL_SPEED_MULTIPLIER;
   gGameSettings.SoundFXVolume      := TrackBar_SFX.Position / TrackBar_SFX.MaxValue;
   gGameSettings.MusicVolume        := TrackBar_Music.Position / TrackBar_Music.MaxValue;
   gGameSettings.MusicOff           := CheckBox_MusicOff.Checked;
