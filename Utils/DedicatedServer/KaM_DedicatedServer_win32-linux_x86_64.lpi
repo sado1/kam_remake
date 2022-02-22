@@ -24,9 +24,9 @@
             <Filename Value="KaM_Remake_Server_linux_x86_64"/>
           </Target>
           <SearchPaths>
-            <IncludeFiles Value="..\..\;..\..\src;..\..\src\ai;..\..\src\ai\newAI;..\..\src\common;..\..\src\ext;..\..\src\ext\BGRABitmap;..\..\src\ext\LazarusOpenGL;..\..\src\ext\OggVorbis;..\..\src\ext\LNet;..\..\src\ext\pascalscript;..\..\src\ext\pascalscript\Source;..\..\src\forms;..\..\src\game;..\..\src\game\gip;..\..\src\game\misc;..\..\src\game\notifications;..\..\src\gui;..\..\src\gui\pages_common;..\..\src\gui\pages_game;..\..\src\gui\pages_maped;..\..\src\gui\pages_maped\menu;..\..\src\gui\pages_maped\mission;..\..\src\gui\pages_maped\player;..\..\src\gui\pages_maped\terrain;..\..\src\gui\pages_maped\town;..\..\src\gui\pages_menu;..\..\src\hands;..\..\src\houses;..\..\src\maped;..\..\src\media;..\..\src\mission;..\..\src\navmesh;..\..\src\net;..\..\src\net\http;..\..\src\net\other;..\..\src\pathfinding;..\..\src\perflog;..\..\src\render;..\..\src\res;..\..\src\scripting;..\..\src\settings;..\..\src\terrain;..\..\src\units;..\..\src\units\actions;..\..\src\units\tasks;..\..\src\unused;..\..\src\utils;..\..\src\utils\algorithms;..\..\src\utils\helpers;..\..\src\utils\io;..\..\src\utils\method_parser;$(ProjOutDir)"/>
+            <IncludeFiles Value="..\..;..\..\src;..\..\src\ai;..\..\src\ai\newAI;..\..\src\common;..\..\src\ext;..\..\src\ext\BGRABitmap;..\..\src\ext\LazarusOpenGL;..\..\src\ext\OggVorbis;..\..\src\ext\LNet;..\..\src\ext\pascalscript;..\..\src\ext\pascalscript\Source;..\..\src\forms;..\..\src\game;..\..\src\game\gip;..\..\src\game\misc;..\..\src\game\notifications;..\..\src\gui;..\..\src\gui\pages_common;..\..\src\gui\pages_game;..\..\src\gui\pages_maped;..\..\src\gui\pages_maped\menu;..\..\src\gui\pages_maped\mission;..\..\src\gui\pages_maped\player;..\..\src\gui\pages_maped\terrain;..\..\src\gui\pages_maped\town;..\..\src\gui\pages_menu;..\..\src\hands;..\..\src\houses;..\..\src\maped;..\..\src\media;..\..\src\mission;..\..\src\navmesh;..\..\src\net;..\..\src\net\http;..\..\src\net\other;..\..\src\pathfinding;..\..\src\perflog;..\..\src\render;..\..\src\res;..\..\src\scripting;..\..\src\settings;..\..\src\terrain;..\..\src\units;..\..\src\units\actions;..\..\src\units\tasks;..\..\src\unused;..\..\src\utils;..\..\src\utils\algorithms;..\..\src\utils\helpers;..\..\src\utils\io;..\..\src\utils\method_parser;$(ProjOutDir)"/>
             <Libraries Value="C:\fpcupdeluxe_3.0.0_1.8.0\cross\lib\x86_64-linux\"/>
-            <OtherUnitFiles Value="..\..\;..\..\src;..\..\src\ai;..\..\src\ai\newAI;..\..\src\common;..\..\src\ext;..\..\src\ext\BGRABitmap;..\..\src\ext\LazarusOpenGL;..\..\src\ext\OggVorbis;..\..\src\ext\LNet;..\..\src\ext\pascalscript;..\..\src\ext\pascalscript\Source;..\..\src\forms;..\..\src\game;..\..\src\game\gip;..\..\src\game\misc;..\..\src\game\notifications;..\..\src\gui;..\..\src\gui\pages_common;..\..\src\gui\pages_game;..\..\src\gui\pages_maped;..\..\src\gui\pages_maped\menu;..\..\src\gui\pages_maped\mission;..\..\src\gui\pages_maped\player;..\..\src\gui\pages_maped\terrain;..\..\src\gui\pages_maped\town;..\..\src\gui\pages_menu;..\..\src\hands;..\..\src\houses;..\..\src\maped;..\..\src\media;..\..\src\mission;..\..\src\navmesh;..\..\src\net;..\..\src\net\http;..\..\src\net\other;..\..\src\pathfinding;..\..\src\perflog;..\..\src\render;..\..\src\res;..\..\src\scripting;..\..\src\settings;..\..\src\terrain;..\..\src\units;..\..\src\units\actions;..\..\src\units\tasks;..\..\src\unused;..\..\src\utils;..\..\src\utils\algorithms;..\..\src\utils\helpers;..\..\src\utils\io;..\..\src\utils\method_parser;"/>
+            <OtherUnitFiles Value="..\..;..\..\src;..\..\src\ai;..\..\src\ai\newAI;..\..\src\common;..\..\src\ext;..\..\src\ext\BGRABitmap;..\..\src\ext\LazarusOpenGL;..\..\src\ext\OggVorbis;..\..\src\ext\LNet;..\..\src\ext\pascalscript;..\..\src\ext\pascalscript\Source;..\..\src\forms;..\..\src\game;..\..\src\game\gip;..\..\src\game\misc;..\..\src\game\notifications;..\..\src\gui;..\..\src\gui\pages_common;..\..\src\gui\pages_game;..\..\src\gui\pages_maped;..\..\src\gui\pages_maped\menu;..\..\src\gui\pages_maped\mission;..\..\src\gui\pages_maped\player;..\..\src\gui\pages_maped\terrain;..\..\src\gui\pages_maped\town;..\..\src\gui\pages_menu;..\..\src\hands;..\..\src\houses;..\..\src\maped;..\..\src\media;..\..\src\mission;..\..\src\navmesh;..\..\src\net;..\..\src\net\http;..\..\src\net\other;..\..\src\pathfinding;..\..\src\perflog;..\..\src\render;..\..\src\res;..\..\src\scripting;..\..\src\settings;..\..\src\terrain;..\..\src\units;..\..\src\units\actions;..\..\src\units\tasks;..\..\src\unused;..\..\src\utils;..\..\src\utils\algorithms;..\..\src\utils\helpers;..\..\src\utils\io;..\..\src\utils\method_parser"/>
           </SearchPaths>
           <Parsing>
             <SyntaxOptions>
@@ -75,9 +75,9 @@
             <Filename Value="KaM_Remake_Server_linux_x86_64"/>
           </Target>
           <SearchPaths>
-            <IncludeFiles Value="..\..\;..\..\src;..\..\src\ai;..\..\src\ai\newAI;..\..\src\common;..\..\src\ext;..\..\src\ext\BGRABitmap;..\..\src\ext\LazarusOpenGL;..\..\src\ext\OggVorbis;..\..\src\ext\LNet;..\..\src\ext\pascalscript;..\..\src\ext\pascalscript\Source;..\..\src\forms;..\..\src\game;..\..\src\game\gip;..\..\src\game\misc;..\..\src\game\notifications;..\..\src\gui;..\..\src\gui\pages_common;..\..\src\gui\pages_game;..\..\src\gui\pages_maped;..\..\src\gui\pages_maped\menu;..\..\src\gui\pages_maped\mission;..\..\src\gui\pages_maped\player;..\..\src\gui\pages_maped\terrain;..\..\src\gui\pages_maped\town;..\..\src\gui\pages_menu;..\..\src\hands;..\..\src\houses;..\..\src\maped;..\..\src\media;..\..\src\mission;..\..\src\navmesh;..\..\src\net;..\..\src\net\http;..\..\src\net\other;..\..\src\pathfinding;..\..\src\perflog;..\..\src\render;..\..\src\res;..\..\src\scripting;..\..\src\settings;..\..\src\terrain;..\..\src\units;..\..\src\units\actions;..\..\src\units\tasks;..\..\src\unused;..\..\src\utils;..\..\src\utils\algorithms;..\..\src\utils\helpers;..\..\src\utils\io;..\..\src\utils\method_parser;$(ProjOutDir)"/>
+            <IncludeFiles Value="..\..;..\..\src;..\..\src\ai;..\..\src\ai\newAI;..\..\src\common;..\..\src\ext;..\..\src\ext\BGRABitmap;..\..\src\ext\LazarusOpenGL;..\..\src\ext\OggVorbis;..\..\src\ext\LNet;..\..\src\ext\pascalscript;..\..\src\ext\pascalscript\Source;..\..\src\forms;..\..\src\game;..\..\src\game\gip;..\..\src\game\misc;..\..\src\game\notifications;..\..\src\gui;..\..\src\gui\pages_common;..\..\src\gui\pages_game;..\..\src\gui\pages_maped;..\..\src\gui\pages_maped\menu;..\..\src\gui\pages_maped\mission;..\..\src\gui\pages_maped\player;..\..\src\gui\pages_maped\terrain;..\..\src\gui\pages_maped\town;..\..\src\gui\pages_menu;..\..\src\hands;..\..\src\houses;..\..\src\maped;..\..\src\media;..\..\src\mission;..\..\src\navmesh;..\..\src\net;..\..\src\net\http;..\..\src\net\other;..\..\src\pathfinding;..\..\src\perflog;..\..\src\render;..\..\src\res;..\..\src\scripting;..\..\src\settings;..\..\src\terrain;..\..\src\units;..\..\src\units\actions;..\..\src\units\tasks;..\..\src\unused;..\..\src\utils;..\..\src\utils\algorithms;..\..\src\utils\helpers;..\..\src\utils\io;..\..\src\utils\method_parser;$(ProjOutDir)"/>
             <Libraries Value="C:\fpcupdeluxe_3.0.0_1.8.0\cross\lib\x86_64-linux\"/>
-            <OtherUnitFiles Value="..\..\;..\..\src;..\..\src\ai;..\..\src\ai\newAI;..\..\src\common;..\..\src\ext;..\..\src\ext\BGRABitmap;..\..\src\ext\LazarusOpenGL;..\..\src\ext\OggVorbis;..\..\src\ext\LNet;..\..\src\ext\pascalscript;..\..\src\ext\pascalscript\Source;..\..\src\forms;..\..\src\game;..\..\src\game\gip;..\..\src\game\misc;..\..\src\game\notifications;..\..\src\gui;..\..\src\gui\pages_common;..\..\src\gui\pages_game;..\..\src\gui\pages_maped;..\..\src\gui\pages_maped\menu;..\..\src\gui\pages_maped\mission;..\..\src\gui\pages_maped\player;..\..\src\gui\pages_maped\terrain;..\..\src\gui\pages_maped\town;..\..\src\gui\pages_menu;..\..\src\hands;..\..\src\houses;..\..\src\maped;..\..\src\media;..\..\src\mission;..\..\src\navmesh;..\..\src\net;..\..\src\net\http;..\..\src\net\other;..\..\src\pathfinding;..\..\src\perflog;..\..\src\render;..\..\src\res;..\..\src\scripting;..\..\src\settings;..\..\src\terrain;..\..\src\units;..\..\src\units\actions;..\..\src\units\tasks;..\..\src\unused;..\..\src\utils;..\..\src\utils\algorithms;..\..\src\utils\helpers;..\..\src\utils\io;..\..\src\utils\method_parser;"/>
+            <OtherUnitFiles Value="..\..;..\..\src;..\..\src\ai;..\..\src\ai\newAI;..\..\src\common;..\..\src\ext;..\..\src\ext\BGRABitmap;..\..\src\ext\LazarusOpenGL;..\..\src\ext\OggVorbis;..\..\src\ext\LNet;..\..\src\ext\pascalscript;..\..\src\ext\pascalscript\Source;..\..\src\forms;..\..\src\game;..\..\src\game\gip;..\..\src\game\misc;..\..\src\game\notifications;..\..\src\gui;..\..\src\gui\pages_common;..\..\src\gui\pages_game;..\..\src\gui\pages_maped;..\..\src\gui\pages_maped\menu;..\..\src\gui\pages_maped\mission;..\..\src\gui\pages_maped\player;..\..\src\gui\pages_maped\terrain;..\..\src\gui\pages_maped\town;..\..\src\gui\pages_menu;..\..\src\hands;..\..\src\houses;..\..\src\maped;..\..\src\media;..\..\src\mission;..\..\src\navmesh;..\..\src\net;..\..\src\net\http;..\..\src\net\other;..\..\src\pathfinding;..\..\src\perflog;..\..\src\render;..\..\src\res;..\..\src\scripting;..\..\src\settings;..\..\src\terrain;..\..\src\units;..\..\src\units\actions;..\..\src\units\tasks;..\..\src\unused;..\..\src\utils;..\..\src\utils\algorithms;..\..\src\utils\helpers;..\..\src\utils\io;..\..\src\utils\method_parser"/>
           </SearchPaths>
           <Parsing>
             <SyntaxOptions>
@@ -104,7 +104,7 @@
           </Linking>
           <Other>
             <CompilerMessages>
-              <IgnoredMessages idx5025="True" idx5027="True" idx5057="True" idx5058="True" idx5023="True" idx5091="True" idx5092="True" idx4104="True" idx4105="True" idx3187="True" idx5024="True" idx5028="True" idx4081="True" idx4080="True" idx4079="True" idx4056="True" idx4055="True" idx4035="True"/>
+              <IgnoredMessages idx5092="True" idx5091="True" idx5058="True" idx5057="True" idx5028="True" idx5027="True" idx5025="True" idx5024="True" idx5023="True" idx4105="True" idx4104="True" idx4081="True" idx4080="True" idx4079="True" idx4056="True" idx4055="True" idx4035="True" idx3187="True"/>
             </CompilerMessages>
             <CustomOptions Value="-dLINUX_DEDI_SERVER"/>
           </Other>
@@ -129,12 +129,11 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="16">
+    <Units Count="20">
       <Unit0>
         <Filename Value="KaM_DedicatedServer.dpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
-        <CursorPos X="30" Y="15"/>
+        <CursorPos X="53" Y="20"/>
         <UsageCount Value="30"/>
         <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
@@ -191,8 +190,9 @@
       </Unit7>
       <Unit8>
         <Filename Value="..\..\src\common\KM_Points.pas"/>
+        <IsPartOfProject Value="True"/>
         <CursorPos X="100" Y="2"/>
-        <UsageCount Value="14"/>
+        <UsageCount Value="20"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit8>
       <Unit9>
@@ -211,7 +211,7 @@
       <Unit11>
         <Filename Value="KM_ServerEventHandler.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="3"/>
         <TopLine Value="3"/>
         <CursorPos X="15" Y="13"/>
         <UsageCount Value="20"/>
@@ -249,15 +249,65 @@
       <Unit15>
         <Filename Value="..\..\src\KM_Log.pas"/>
         <IsPartOfProject Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="215"/>
+        <CursorPos X="36" Y="230"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Delphi"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="..\..\src\settings\KM_Settings.pas"/>
+        <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
         <UsageCount Value="20"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="..\..\src\settings\KM_ServerSettings.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="..\..\src\net\KM_NetworkTypes.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="..\..\src\res\KM_ResTypes.pas"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="270"/>
+        <CursorPos X="4" Y="284"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
         <DefaultSyntaxHighlighter Value="Delphi"/>
-      </Unit15>
+      </Unit19>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="0"/>
+    <JumpHistory Count="3" HistoryIndex="2">
+      <Position1>
+        <Filename Value="KaM_DedicatedServer.dpr"/>
+        <Caret Line="20" Column="53"/>
+      </Position1>
+      <Position2>
+        <Filename Value="..\..\src\KM_Log.pas"/>
+        <Caret Line="218" Column="22" TopLine="200"/>
+      </Position2>
+      <Position3>
+        <Filename Value="..\..\src\KM_Log.pas"/>
+        <Caret Line="230" Column="36" TopLine="215"/>
+      </Position3>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
@@ -266,9 +316,9 @@
       <Filename Value="KaM_Remake_Server_linux_x86_64"/>
     </Target>
     <SearchPaths>
-      <IncludeFiles Value="..\..\;..\..\src;..\..\src\ai;..\..\src\ai\newAI;..\..\src\common;..\..\src\ext;..\..\src\ext\BGRABitmap;..\..\src\ext\LazarusOpenGL;..\..\src\ext\OggVorbis;..\..\src\ext\LNet;..\..\src\ext\pascalscript;..\..\src\ext\pascalscript\Source;..\..\src\forms;..\..\src\game;..\..\src\game\gip;..\..\src\game\misc;..\..\src\game\notifications;..\..\src\gui;..\..\src\gui\pages_common;..\..\src\gui\pages_game;..\..\src\gui\pages_maped;..\..\src\gui\pages_maped\menu;..\..\src\gui\pages_maped\mission;..\..\src\gui\pages_maped\player;..\..\src\gui\pages_maped\terrain;..\..\src\gui\pages_maped\town;..\..\src\gui\pages_menu;..\..\src\hands;..\..\src\houses;..\..\src\maped;..\..\src\media;..\..\src\mission;..\..\src\navmesh;..\..\src\net;..\..\src\net\http;..\..\src\net\other;..\..\src\pathfinding;..\..\src\perflog;..\..\src\render;..\..\src\res;..\..\src\scripting;..\..\src\settings;..\..\src\terrain;..\..\src\units;..\..\src\units\actions;..\..\src\units\tasks;..\..\src\unused;..\..\src\utils;..\..\src\utils\algorithms;..\..\src\utils\helpers;..\..\src\utils\io;..\..\src\utils\method_parser;$(ProjOutDir)"/>
+      <IncludeFiles Value="..\..;..\..\src;..\..\src\ai;..\..\src\ai\newAI;..\..\src\common;..\..\src\ext;..\..\src\ext\BGRABitmap;..\..\src\ext\LazarusOpenGL;..\..\src\ext\OggVorbis;..\..\src\ext\LNet;..\..\src\ext\pascalscript;..\..\src\ext\pascalscript\Source;..\..\src\forms;..\..\src\game;..\..\src\game\gip;..\..\src\game\misc;..\..\src\game\notifications;..\..\src\gui;..\..\src\gui\pages_common;..\..\src\gui\pages_game;..\..\src\gui\pages_maped;..\..\src\gui\pages_maped\menu;..\..\src\gui\pages_maped\mission;..\..\src\gui\pages_maped\player;..\..\src\gui\pages_maped\terrain;..\..\src\gui\pages_maped\town;..\..\src\gui\pages_menu;..\..\src\hands;..\..\src\houses;..\..\src\maped;..\..\src\media;..\..\src\mission;..\..\src\navmesh;..\..\src\net;..\..\src\net\http;..\..\src\net\other;..\..\src\pathfinding;..\..\src\perflog;..\..\src\render;..\..\src\res;..\..\src\scripting;..\..\src\settings;..\..\src\terrain;..\..\src\units;..\..\src\units\actions;..\..\src\units\tasks;..\..\src\unused;..\..\src\utils;..\..\src\utils\algorithms;..\..\src\utils\helpers;..\..\src\utils\io;..\..\src\utils\method_parser;$(ProjOutDir)"/>
       <Libraries Value="C:\fpcupdeluxe_3.0.0_1.8.0\cross\lib\x86_64-linux\"/>
-      <OtherUnitFiles Value="..\..\;..\..\src;..\..\src\ai;..\..\src\ai\newAI;..\..\src\common;..\..\src\ext;..\..\src\ext\BGRABitmap;..\..\src\ext\LazarusOpenGL;..\..\src\ext\OggVorbis;..\..\src\ext\LNet;..\..\src\ext\pascalscript;..\..\src\ext\pascalscript\Source;..\..\src\forms;..\..\src\game;..\..\src\game\gip;..\..\src\game\misc;..\..\src\game\notifications;..\..\src\gui;..\..\src\gui\pages_common;..\..\src\gui\pages_game;..\..\src\gui\pages_maped;..\..\src\gui\pages_maped\menu;..\..\src\gui\pages_maped\mission;..\..\src\gui\pages_maped\player;..\..\src\gui\pages_maped\terrain;..\..\src\gui\pages_maped\town;..\..\src\gui\pages_menu;..\..\src\hands;..\..\src\houses;..\..\src\maped;..\..\src\media;..\..\src\mission;..\..\src\navmesh;..\..\src\net;..\..\src\net\http;..\..\src\net\other;..\..\src\pathfinding;..\..\src\perflog;..\..\src\render;..\..\src\res;..\..\src\scripting;..\..\src\settings;..\..\src\terrain;..\..\src\units;..\..\src\units\actions;..\..\src\units\tasks;..\..\src\unused;..\..\src\utils;..\..\src\utils\algorithms;..\..\src\utils\helpers;..\..\src\utils\io;..\..\src\utils\method_parser;"/>
+      <OtherUnitFiles Value="..\..;..\..\src;..\..\src\ai;..\..\src\ai\newAI;..\..\src\common;..\..\src\ext;..\..\src\ext\BGRABitmap;..\..\src\ext\LazarusOpenGL;..\..\src\ext\OggVorbis;..\..\src\ext\LNet;..\..\src\ext\pascalscript;..\..\src\ext\pascalscript\Source;..\..\src\forms;..\..\src\game;..\..\src\game\gip;..\..\src\game\misc;..\..\src\game\notifications;..\..\src\gui;..\..\src\gui\pages_common;..\..\src\gui\pages_game;..\..\src\gui\pages_maped;..\..\src\gui\pages_maped\menu;..\..\src\gui\pages_maped\mission;..\..\src\gui\pages_maped\player;..\..\src\gui\pages_maped\terrain;..\..\src\gui\pages_maped\town;..\..\src\gui\pages_menu;..\..\src\hands;..\..\src\houses;..\..\src\maped;..\..\src\media;..\..\src\mission;..\..\src\navmesh;..\..\src\net;..\..\src\net\http;..\..\src\net\other;..\..\src\pathfinding;..\..\src\perflog;..\..\src\render;..\..\src\res;..\..\src\scripting;..\..\src\settings;..\..\src\terrain;..\..\src\units;..\..\src\units\actions;..\..\src\units\tasks;..\..\src\unused;..\..\src\utils;..\..\src\utils\algorithms;..\..\src\utils\helpers;..\..\src\utils\io;..\..\src\utils\method_parser"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
