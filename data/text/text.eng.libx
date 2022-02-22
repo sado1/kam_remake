@@ -1484,3 +1484,5 @@
 1542:Number of units in group. At 0 it takes the AI formations
 1543:Columns
 1544:Number of columns in group. If number of units is 0 it takes the AI formations rows count.
+1545:Set Smooth Coal
+1546:Coal deposits will be automatically set from the tiles with lowest coal count at the edges to the highest in the center

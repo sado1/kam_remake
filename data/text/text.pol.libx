@@ -1465,3 +1465,5 @@
 1542:Liczba żołnierzy w oddziale. Ustawione na '0', to użyte zostaną formacje wojsk AI
 1543:Kolumny
 1544:Liczba kolumn w oddziale. Jeśli ilość jednostek jest równa 0, będą użyte formacje wojsk AI
+1545:Wygładź Węgiel
+1546:Złoża węgla zostaną automatycznie ustawione od najmniejszej ilości węgla na brzegach, po największe w środku

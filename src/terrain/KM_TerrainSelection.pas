@@ -10,6 +10,8 @@ uses
   KM_MapEdTypes, KM_Defaults;
 
 
+  function InRangeI(A,B, C : Integer) : Integer;
+
 type
   TKMSelectionEdit = (seNone, seNewRect, seResizeX1, seResizeY1, seResizeX2, seResizeY2, seMove);
   TKMSelectionMode = (smSelecting, smPasting);
@@ -45,6 +47,9 @@ type
     fLandTemp: TKMLand;
     fLandMapEdTemp: TKMMapEdLand;
     fLandTerKindTemp: TKMLandTerKind;
+    LastTiles : array[0..255,0..255] of integer;
+
+    function CheckTilesAround(const aX,aY, aTile : Integer) : Boolean;
 
     procedure TileToBuffer(const aTile: TKMTerrainTile; const aMapEdTile: TKMMapEdTerrainTile;
                            const aPaintedTile: TKMPainterTile; var aBuffer: TKMBufferData);
@@ -75,6 +80,8 @@ type
     procedure Flip(aAxis: TKMFlipAxis);
     procedure IncludePasteType(aPasteType: TKMTerrainSelectionPasteType);
     procedure ExcludePasteType(aPasteType: TKMTerrainSelectionPasteType);
+
+    procedure SetNiceCoal; //Do the actual paste from buffer to terrain
 
     function TileWithinPastePreview(aX, aY: Word): Boolean;
     procedure Paint(aLayer: TKMPaintLayer; const aClipRect: TKMRect);
@@ -316,6 +323,36 @@ begin
   Result := Clipboard.HasFormat(CF_MAPDATA);
 end;
 
+function InRangeI(A,B,C : Integer) : integer;
+begin
+	If A < B then
+		Result := B
+	else
+		Result := A;
+
+	If A > C then
+		Result := C
+	else
+		Result := A;
+end;
+
+function TKMSelection.CheckTilesAround(const aX,aY,aTile : Integer) : Boolean;
+var A,B,C,D : integer;
+begin
+  Result := false;
+
+  A := fSelectionRect.Left;
+  B := fSelectionRect.Right;
+  C := fSelectionRect.Top;
+  D := fSelectionRect.Bottom;
+
+  if (LastTiles[InRangeI(aX-1, A,B),aY] = aTile) and
+  (LastTiles[InRangeI(aX+1, A,B),aY] = aTile) and
+  (LastTiles[aX,InRangeI(aY-1, C,D)] = aTile) and
+  (LastTiles[aX,InRangeI(aY+1, C,D)] = aTile) then
+    Result := true;
+
+end;
 
 procedure TKMSelection.DuplicateLandToTemp;
 var
@@ -809,6 +846,57 @@ begin
   if fSelectionMode = smPasting then
     SyncTempLand;
 end;
+
+
+procedure TKMSelection.SetNiceCoal;
+var  I, aX, aY, aTileTypeTo,aTileTypeFrom: Integer;
+begin
+
+  for I := 0 to 4 do
+  begin
+    case I of
+       0 :begin
+            aTileTypeTo := 152;
+         end;
+       4 : begin
+           aTileTypeTo := 263;
+           aTileTypeFrom := 155;
+         end;
+       else begin
+          aTileTypeTo := aTileTypeTo + 1;
+          aTileTypeFrom := aTileTypeTo - 1;
+        end;
+    end;
+    if I <> 0 then
+      for aX := fSelectionRect.Left+1 to fSelectionRect.Right do
+       for aY := fSelectionRect.Top+1 to fSelectionRect.Bottom do
+        LastTiles[aX,aY] := gTerrain.Land^[aY, aX].BaseLayer.Terrain;
+
+    for aX := fSelectionRect.Left+1 to fSelectionRect.Right do
+     for aY := fSelectionRect.Top+1 to fSelectionRect.Bottom do
+     begin
+      if I = 0 then
+      begin
+        if (gTerrain.Land^[aY, aX].BaseLayer.Terrain = 152) or
+        (gTerrain.Land^[aY, aX].BaseLayer.Terrain = 153) or
+        (gTerrain.Land^[aY, aX].BaseLayer.Terrain = 154) or
+        (gTerrain.Land^[aY, aX].BaseLayer.Terrain = 155) or
+        (gTerrain.Land^[aY, aX].BaseLayer.Terrain = 263) then
+        begin
+          gTerrain.Land^[aY, aX].BaseLayer.Terrain  := aTileTypeTo;
+          gTerrain.Land^[aY, aX].BaseLayer.Rotation  := KamRandom(4,'');
+        end;
+      end else
+      begin
+        if CheckTilesAround(aX,aY, aTileTypeFrom) then
+          gTerrain.Land^[aY, aX].BaseLayer.Terrain  := aTileTypeTo;
+      end;
+
+     end;
+
+  end;
+end;
+
 
 
 procedure TKMSelection.CopyBufferToTempLand(aUpdateMainLand: Boolean = False; aUpdateAll: Boolean = True);

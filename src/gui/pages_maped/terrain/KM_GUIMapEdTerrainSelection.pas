@@ -25,6 +25,8 @@ type
       Button_RMGRND: TKMButton;
       Map_PasteType: array [TKMTerrainSelectionPasteType] of  TKMButtonFlat;
 
+      Button_SelectSetCoal: TKMButton;
+
   public
     constructor Create(aParent: TKMPanel);
     destructor Destroy; override;
@@ -104,6 +106,12 @@ begin
   Button_RMGRND := TKMButton.Create(Panel_Selection, 9, 330, Panel_Selection.Width - 9, 20, gResTexts[TX_MAPED_RMG_BUTTON_TITLE], bsGame);
   Button_RMGRND.Anchors := [anLeft, anTop, anRight];
   Button_RMGRND.OnClick := GenerateMapClick;
+
+  Button_SelectSetCoal := TKMButton.Create(Panel_Selection, 9, 360, Panel_Selection.Width - 9, 20, gResTexts[TX_MAPED_SELECTION_SMOOTH_COAL], bsGame);
+  Button_SelectSetCoal.Anchors := [anLeft, anTop, anRight];
+  Button_SelectSetCoal.OnClick := SelectionClick;
+  Button_SelectSetCoal.Hint := gResTexts[TX_MAPED_SELECTION_SMOOTH_COAL_HINT];
+
 
   fSubMenuActionsEvents[0] := SelectionClick;
   fSubMenuActionsEvents[1] := SelectionClick;
@@ -212,7 +220,9 @@ begin
     //Flip selected
     gGame.MapEditor.Selection.Flip(faVertical);
     gGame.MapEditor.History.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_COPY_PASTE_VFLIP]);
-  end;
+  end else
+  if Sender = Button_SelectSetCoal then
+    gGame.MapEditor.Selection.SetNiceCoal;
 end;
 
 
