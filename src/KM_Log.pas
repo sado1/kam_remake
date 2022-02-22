@@ -226,9 +226,9 @@ begin
   Lock;
   try
     if aValue then
-      Inc(fMultithreadLogging)
+      Inc(fMultithreadLogCounter)
     else
-      Dec(fMultithreadLogging);
+      Dec(fMultithreadLogCounter);
   finally
     Unlock;
   end;
