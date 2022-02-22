@@ -34,6 +34,10 @@ type
     fFirstTick: cardinal;
     fPreviousTick: cardinal;
     fPreviousDate: TDateTime;
+    // Enable thread safe mode (resource protection) when logging from multiple threads
+    // Numeric value is used, instead of Boolean (or better LongBool), because we can set MutithreadLoggind from different threads / tasks / methods
+    // Integer is used to be able to use AtomicIncrement method, which required 32bit values
+    fMultithreadLogCounter: Integer;
 
     {$IFDEF KMR_GAME}
     fOnLogMessageList: TList<TUnicodeStringEvent>;
@@ -50,8 +54,11 @@ type
     procedure AddLineTime(const aText: UnicodeString; aFlushImmidiately: Boolean = True); overload;
     procedure AddLineNoTime(const aText: UnicodeString; aWithPrefix: Boolean = True; aDoCloseFile: Boolean = True); overload;
     procedure AddLineNoTime(const aText: UnicodeString; aLogType: TKMLogMessageType; aWithPrefix: Boolean = True; aDoCloseFile: Boolean = True); overload;
+
+    function GetMultithreadLogging: Boolean;
+    procedure SetMultithreadLogging(const aValue: Boolean);
   public
-    MultithreadLogging: Boolean; // Enable thread safe mode (resource protection) when logging from multiple threads
+
     MessageTypes: TKMLogMessageTypeSet;
     constructor Create(const aPath: UnicodeString);
     destructor Destroy; override;
@@ -82,6 +89,8 @@ type
     function CanLogNetPacketPingFps: Boolean;
 
     procedure SetDefaultMessageTypes;
+
+    property MultithreadLogging: Boolean read GetMultithreadLogging write SetMultithreadLogging;
 
     // Add line if TestValue=false
     procedure AddAssert(const aMessageText: UnicodeString);
@@ -160,7 +169,7 @@ end;
 constructor TKMLog.Create(const aPath: UnicodeString);
 begin
   inherited Create;
-  MultithreadLogging := False;
+  fMultithreadLogCounter := 0;
   fLogPath := aPath;
   fFirstTick := TimeGet;
   fPreviousTick := TimeGet;
@@ -192,6 +201,38 @@ begin
   {$ENDIF}
 
   inherited;
+end;
+
+
+function TKMLog.GetMultithreadLogging: Boolean;
+begin
+  if Self = nil then Exit(False);
+
+  Result := fMultithreadLogCounter > 0;
+end;
+
+
+procedure TKMLog.SetMultithreadLogging(const aValue: Boolean);
+begin
+  if Self = nil then Exit;
+
+  {$IFDEF WDC}
+  // Doing it faster way in Delphi
+  if aValue then
+    AtomicIncrement(fMultithreadLogCounter)
+  else
+    AtomicDecrement(fMultithreadLogCounter);
+  {$ELSE}
+  Lock;
+  try
+    if aValue then
+      Inc(fMultithreadLogging)
+    else
+      Dec(fMultithreadLogging);
+  finally
+    Unlock;
+  end;
+  {$ENDIF}
 end;
 
 
@@ -273,6 +314,8 @@ end;
 //Lines are timestamped, each line invokes file open/close for writing,
 //meaning that no lines will be lost if Remake crashes
 procedure TKMLog.AddLineTime(const aText: UnicodeString; aLogType: TKMLogMessageType; aDoCloseFile: Boolean = True);
+var
+  lockedHere: Boolean;
 begin
   if Self = nil then Exit;
 
@@ -281,9 +324,13 @@ begin
   if not (aLogType in MessageTypes) then // write into log only for allowed types
     Exit;
 
+  lockedHere := False;
   // Lock/Unlock only when in multithread logging mode. Its quite rare, so we do not need all the time
   if MultithreadLogging then
+  begin
     Lock;
+    lockedHere := True;
+  end;
   try
     if not FileExists(fLogPath) then
       InitLog;  // Recreate log file, if it was deleted
@@ -308,7 +355,8 @@ begin
     fPreviousTick := TimeGet;
     fPreviousDate := Now;
   finally
-    if MultithreadLogging then
+    // We could be locked by other thread, thus unlock here only if this thread made a lock
+    if lockedHere and MultithreadLogging then
       UnLock;
   end;
 
@@ -326,6 +374,8 @@ end;
 //Add line but without timestamp
 procedure TKMLog.AddLineNoTime(const aText: UnicodeString; aLogType: TKMLogMessageType; aWithPrefix: Boolean = True;
                                aDoCloseFile: Boolean = True);
+var
+  lockedHere: Boolean;
 begin
   if Self = nil then Exit;
 
@@ -334,13 +384,17 @@ begin
   if not (aLogType in MessageTypes) then // write into log only for allowed types
     Exit;
 
-  if not FileExists(fLogPath) then
-    InitLog;  // Recreate log file, if it was deleted
-
+  lockedHere := False;
   // Lock/Unlock only when in multithread logging mode. Its quite rare, so we do not need all the time
   if MultithreadLogging then
+  begin
     Lock;
+    lockedHere := True;
+  end;
   try
+    if not FileExists(fLogPath) then
+      InitLog;  // Recreate log file, if it was deleted
+
     Append(fLogFile);
     if aWithPrefix then
       WriteLn(fLogFile, '                                      ' + aText)
@@ -350,7 +404,8 @@ begin
     if aDoCloseFile then
       CloseFile(fLogFile);
   finally
-    if MultithreadLogging then
+    // We could be locked by other thread, thus unlock here only if this thread made a lock
+    if lockedHere and MultithreadLogging then
       UnLock;
   end;
 
