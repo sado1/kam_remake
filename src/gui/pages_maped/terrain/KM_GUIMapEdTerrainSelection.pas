@@ -222,7 +222,10 @@ begin
     gGame.MapEditor.History.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_COPY_PASTE_VFLIP]);
   end else
   if Sender = Button_SelectSetCoal then
+  begin
     gGame.MapEditor.Selection.SetNiceCoal;
+    gGame.MapEditor.History.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_SELECTION_SMOOTH_COAL]);
+  end;
 end;
 
 
