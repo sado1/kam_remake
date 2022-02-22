@@ -580,6 +580,18 @@ TX_MAPED_AI_FORMATIONS = 453; //Edit formations
 TX_MAPED_AI_FORMATIONS_AAI_INFO = 1534; //Notice: Advanced AI use its own formation parameters and would ignore these settings
 TX_MAPED_AI_MAX_SOLDIERS_ENABLE_HINT = 454; //Set a limit on how many soldiers the AI can have
 TX_MAPED_AI_MAX_SOLDIERS_HINT = 455; //How many soldiers AI can have at once
+
+TX_MAPED_AI_GROUP_LVL = 1529; //a group level after adding defence position
+TX_MAPED_AI_GROUP_LVL_HINT = 1530; //a group level after adding defence position
+TX_MAPED_AI_ADD_GROUP = 1531; //add group after adding defence position
+TX_MAPED_AI_ADD_GROUP_HINT = 1532; //add group after adding defence position
+
+TX_MAPED_UNITS_FORMATION_COUNT = 1533;
+TX_MAPED_UNITS_FORMATION_COUNT_HINT = 1534;
+TX_MAPED_UNITS_FORMATION_ROWS = 1535;
+TX_MAPED_UNITS_FORMATION_ROWS_HINT = 1536;
+
+
 TX_MAPED_AI_MAX_SOLDIERS = 456; //Set max. soldiers
 TX_MAPED_AI_RECRUITS_HINT = 457; //Classic AI: How many recruits AI should have in barracks|Advanced AI: Parameter not used
 TX_MAPED_AI_RECRUITS = 458; //Recruits per Barracks

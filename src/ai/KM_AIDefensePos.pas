@@ -63,6 +63,9 @@ type
     function AverageUnitsPerGroup: Integer;
 
     function FindPlaceForGroup(aGroup: TKMUnitGroup; aTakeClosest: Boolean): Boolean;
+
+    function FindPositionAtLoc(aPos: TKMPoint ): TAIDefencePosition;
+
     procedure RestockPositionWith(aDefenceGroup, aGroup: TKMUnitGroup);
     function FindPositionOf(aGroup: TKMUnitGroup): TAIDefencePosition;
     procedure GetArmyDemand(out aFootmen: Integer; out aPikemen: Integer; out aHorsemen: Integer; out aArchers: Integer);
@@ -236,6 +239,20 @@ begin
   Result := fPositions.Count;
 end;
 
+//Find DefencePosition at location
+function TAIDefencePositions.FindPositionAtLoc(aPos: TKMPoint): TAIDefencePosition;
+var
+  I: Integer;
+begin
+  Result := nil;
+
+  for I := 0 to Count - 1 do
+  if Positions[I].Position.Loc = aPos then
+  begin
+    Result := Positions[I];
+    Break;
+  end;
+end;
 
 function TAIDefencePositions.GetPosition(aIndex: Integer): TAIDefencePosition;
 begin

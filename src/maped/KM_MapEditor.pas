@@ -44,6 +44,8 @@ type
     procedure PaintCenterScreen(aLayer: TKMPaintLayer);
     procedure PaintAIStart(aLayer: TKMPaintLayer);
 
+    Procedure ChangeDefenceTypes(aMode: integer);  //change units and def pos direction
+
     procedure AddDefenceMarker(const aLoc: TKMPoint);
 
     function GetCheckpointObjectsStr(removeTxID: Integer = TX_WORD_OBJECT): string; overload;
@@ -644,6 +646,37 @@ begin
 end;
 
 
+procedure TKMMapEditor.ChangeDefenceTypes(aMode : Integer);
+begin
+  //change direction forward
+  if aMode = 0 then
+    if byte(gCursor.MapEdDefencePositionDirection) = 8 then
+      gCursor.MapEdDefencePositionDirection := TKMDirection(1)
+    else
+      gCursor.MapEdDefencePositionDirection := TKMDirection(byte(gCursor.MapEdDefencePositionDirection) + 1);
+  //change direction backward
+  if aMode = 1 then
+    if byte(gCursor.MapEdDefencePositionDirection) = 1 then
+      gCursor.MapEdDefencePositionDirection := TKMDirection(8)
+    else
+      gCursor.MapEdDefencePositionDirection := TKMDirection(byte(gCursor.MapEdDefencePositionDirection) - 1);
+
+  // change group type of defence position
+  if aMode = 2 then
+    if byte(gCursor.MapEdDefencePositionGType) >= 5 then
+      gCursor.MapEdDefencePositionGType := TKMGroupType(2)
+    else
+      gCursor.MapEdDefencePositionGType := TKMGroupType(byte(gCursor.MapEdDefencePositionGType) + 1);
+  //change defence type - defensive/attacking
+  if aMode = 3 then
+    if byte(gCursor.MapEdDefencePositionLType) = 0 then
+      gCursor.MapEdDefencePositionLType := TKMAIDefencePosType(1)
+    else
+      gCursor.MapEdDefencePositionLType := TKMAIDefencePosType(0);
+
+
+end;
+
 //Change owner for specified object
 //returns True if owner was changed successfully
 function TKMMapEditor.ChangeEntityOwner(aEntity: TKMHandEntity; aOwner: TKMHandID): Boolean;
@@ -786,9 +819,14 @@ procedure TKMMapEditor.ProceedUnitsCursorMode;
 var
   P: TKMPoint;
   obj: TObject;
+
+  aFormation : TKMFormation;
+  GT : TKMGroupType;
+  aDefence : TAIDefencePosition;
+  aDir : TKMDirection;
 begin
   P := gCursor.Cell;
-
+  GT := TKMGroupType(0);
   if gCursor.Tag1 = 255 then
   begin
     obj := gMySpectator.HitTestCursor(True);
@@ -797,14 +835,48 @@ begin
   end else
   if gTerrain.CanPlaceUnit(P, TKMUnitType(gCursor.Tag1)) then
   begin
+
+    aFormation.NumUnits := 1;
+    aFormation.UnitsPerRow := 1;
+
     //Check if we can really add a unit
     if TKMUnitType(gCursor.Tag1) in [CITIZEN_MIN..CITIZEN_MAX] then
       gMySpectator.Hand.AddUnit(TKMUnitType(gCursor.Tag1), P, False)
     else
     if TKMUnitType(gCursor.Tag1) in [WARRIOR_MIN..WARRIOR_MAX] then
-      gMySpectator.Hand.AddUnitGroup(TKMUnitType(gCursor.Tag1), P, dirS, 1, 1)
-    else
+    begin
+        aDir := gCursor.MapEdDefencePositionDirection;
+       case gCursor.Tag1 of
+        16, 17, 18, 25, 28 : GT := TKMGroupType(2);
+        26, 21, 22 : GT := TKMGroupType(3);
+        27, 19, 20 : GT := TKMGroupType(4);
+        29, 23, 24 : GT := TKMGroupType(5);
+       end;
+       aDefence := gMySpectator.Hand.AI.General.DefencePositions.FindPositionAtLoc(P);
+
+       if aDefence <> nil then
+       begin
+        aDir := aDefence.Position.Dir;
+        aFormation := gMySpectator.Hand.AI.General.DefencePositions.TroopFormations[GT];
+       end
+       else
+       begin
+        if gCursor.MapEdGroupFormation.NumUnits > 0 then
+          aFormation := gCursor.MapEdGroupFormation
+        else
+          aFormation := gMySpectator.Hand.AI.General.DefencePositions.TroopFormations[GT];
+       end;
+
+       gMySpectator.Hand.AddUnitGroup(TKMUnitType(gCursor.Tag1), P, aDir, aFormation.UnitsPerRow, aFormation.NumUnits)
+
+      //gMySpectator.Hand.AddUnitGroup(TKMUnitType(gCursor.Tag1), P, dirS, 1, 1) old placing groups
+
+
+    end else
       gHands.PlayerAnimals.AddUnit(TKMUnitType(gCursor.Tag1), P);
+
+
+
   end;
 end;
 
@@ -841,13 +913,21 @@ end;
 
 
 procedure TKMMapEditor.AddDefenceMarker(const aLoc: TKMPoint);
+const
+  aUnitType :array of Integer = [16, 26, 27, 29, 17, 21, 19, 23, 18, 22, 20, 24];
+
 var
   groupType: TKMGroupType;
   dir: TKMDirection;
   G: TKMUnitGroup;
+
+  aFormation : TKMFormation;
+  aUnitID : Integer;
+
 begin
-  dir := dirN;
-  groupType := gtMelee;
+  dir := gCursor.MapEdDefencePositionDirection;
+  groupType := gCursor.MapEdDefencePositionGType;
+
   G := gHands.GroupsHitTest(aLoc.X, aLoc.Y);
   if G <> nil then
   begin
@@ -855,7 +935,19 @@ begin
     groupType := G.GroupType;
   end;
 
-  gMySpectator.Hand.AI.General.DefencePositions.Add(KMPointDir(aLoc, dir), groupType, DEFAULT_DEFENCE_POSITION_RADIUS, dtFrontLine);
+  if gMySpectator.Hand.AI.General.DefencePositions.FindPositionAtLoc(aLoc) <> nil then
+    Exit;
+
+  if gCursor.MapEdDefencePositionSetGroups then
+  begin
+    aFormation := gMySpectator.Hand.AI.General.DefencePositions.TroopFormations[groupType];
+    aUnitID := aUnitType[gCursor.MapEdDefencePositionGLVLType + ( byte(groupType) - 2 )  ];
+    if G = nil then
+      gMySpectator.Hand.AddUnitGroup(TKMUnitType(aUnitID), aLoc, dir, aFormation.UnitsPerRow, aFormation.NumUnits);
+  end;
+
+  gMySpectator.Hand.AI.General.DefencePositions.Add(KMPointDir(aLoc, dir), groupType, DEFAULT_DEFENCE_POSITION_RADIUS, gCursor.MapEdDefencePositionLType);
+
 end;
 
 
@@ -969,6 +1061,23 @@ begin
                 cmObjects,
                 cmEyedropper,
                 cmRotateTile: gCursor.Mode := cmNone;
+
+                cmMarkers:    case gCursor.Tag1 of
+                                MARKER_DEFENCE:       begin
+                                                        if ssShift in gCursor.SState then
+                                                          ChangeDefenceTypes(1)//change dir backward
+                                                        else
+                                                        if ssCtrl in gCursor.SState then
+                                                          ChangeDefenceTypes(2)//change gtype
+                                                        else
+                                                        if ssAlt in gCursor.SState then
+                                                          ChangeDefenceTypes(3)//change att/def
+                                                        else
+                                                          ChangeDefenceTypes(0);//change dir
+                                                      end;
+                              end;
+
+                cmUnits:      ChangeDefenceTypes(0);//change dir
               end;
   end;
 end;

@@ -747,6 +747,11 @@ begin
 
     // We rotate tile on RMB
     if gCursor.Mode = cmTiles then Exit;
+
+    // We change defense pos and unit direction on RMB
+    if (gCursor.Mode = cmMarkers) and (gCursor.Tag1 = MARKER_DEFENCE) then Exit;
+    if (gCursor.Mode = cmUnits) then Exit;
+
   end;
 
   fGuiTerrain.Cancel_Clicked(aHandled);

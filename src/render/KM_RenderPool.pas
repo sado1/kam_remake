@@ -1515,7 +1515,17 @@ begin
                              gMySpectator.Hand.FlagColor AND $10FFFFFF,
                              gMySpectator.Hand.FlagColor);
                           end;
-    MARKER_DEFENCE:       RenderSpriteOnTile(P, 519, gMySpectator.Hand.FlagColor);
+    MARKER_DEFENCE:       begin
+                            RenderSpriteOnTile(P, byte(gCursor.MapEdDefencePositionDirection) + 510, gMySpectator.Hand.FlagColor);
+                            case byte(gCursor.MapEdDefencePositionGType) of
+                              2 : RenderSpriteOnTile(P, 371, gMySpectator.Hand.FlagColor);
+                              3 : RenderSpriteOnTile(P, 374, gMySpectator.Hand.FlagColor);
+                              4 : RenderSpriteOnTile(P, 376, gMySpectator.Hand.FlagColor);
+                              5 : RenderSpriteOnTile(P, 377, gMySpectator.Hand.FlagColor);
+                            end;
+                            if byte(gCursor.MapEdDefencePositionLType) = 1 then
+                              RenderWireTile(P, icBlue, 0.1);
+                          end;
     MARKER_CENTERSCREEN:  RenderSpriteOnTile(P, 391, gMySpectator.Hand.FlagColor);
     MARKER_AISTART:       RenderSpriteOnTile(P, 390, gMySpectator.Hand.FlagColor);
     MARKER_RALLY_POINT:   if gMySpectator.Selected is TKMHouseWFlagPoint then
@@ -1797,6 +1807,7 @@ procedure TRenderPool.RenderForegroundUI_Units;
 var
   obj: TObject;
   P: TKMPoint;
+  aDir : TKMDirection;
 begin
   if gCursor.Tag1 = 255 then
   begin
@@ -1804,9 +1815,18 @@ begin
     TryRenderUnitOrGroup(obj, nil, nil, True, True, DELETE_COLOR, 0, DELETE_COLOR);
   end
   else begin
+
+    if TKMUnitType(gCursor.Tag1) in [CITIZEN_MIN..CITIZEN_MAX] then
+      aDir := dirS
+    else
+      aDir := gCursor.MapEdDefencePositionDirection;
+
+    if not (aDir in [DirN..DirNW])  then
+      aDir := DirN;
+
     P := gCursor.Cell;
     if gTerrain.CanPlaceUnit(P, TKMUnitType(gCursor.Tag1)) then
-      AddUnitWithDefaultArm(TKMUnitType(gCursor.Tag1), 0, uaWalk, dirS, UNIT_STILL_FRAMES[dirS], P.X+UNIT_OFF_X, P.Y+UNIT_OFF_Y, gMySpectator.Hand.FlagColor, True)
+      AddUnitWithDefaultArm(TKMUnitType(gCursor.Tag1), 0, uaWalk, aDir, UNIT_STILL_FRAMES[dirS], P.X+UNIT_OFF_X, P.Y+UNIT_OFF_Y, gMySpectator.Hand.FlagColor, True)
     else
       RenderSpriteOnTile(P, TC_BLOCK); // Red X
   end;

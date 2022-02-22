@@ -25,6 +25,11 @@ type
       CheckBox_MaxSoldiers: TKMCheckBox;
       NumEdit_MaxSoldiers: TKMNumericEdit;
       Button_EditFormations: TKMButton;
+
+      TrackBar_DefencePositionUType: TKMTrackBar;
+      CheckBox_DefencePositionGiveGroup: TKMCheckBox;
+
+
   public
     FormationsPopUp: TKMMapEdTownFormations;
 
@@ -98,6 +103,18 @@ begin
   Button_EditFormations.Anchors := [anLeft, anTop, anRight];
   Button_EditFormations.OnClick := Town_DefenceFormations;
 
+   with TKMLabel.Create(Panel_Defence, TB_PAD, 385, Panel_Defence.Width - TB_PAD, 20, gResTexts[TX_MAPED_AI_GROUP_LVL], fntMetal, taLeft) do
+    Hint := gResTexts[TX_MAPED_AI_RECRUIT_DELAY_HINT];
+
+  TrackBar_DefencePositionUType := TKMTrackBar.Create(Panel_Defence, TB_PAD, 410, Panel_Defence.Width - TB_PAD, 1, 3);
+  TrackBar_DefencePositionUType.Anchors := [anLeft, anTop, anRight];
+  TrackBar_DefencePositionUType.Hint := gResTexts[TX_MAPED_AI_GROUP_LVL_HINT];
+  TrackBar_DefencePositionUType.OnChange := Town_DefenceChange;
+
+
+  CheckBox_DefencePositionGiveGroup := TKMCheckBox.Create(Panel_Defence, TB_PAD, 355, Panel_Defence.Width - TB_PAD, 20, gResTexts[TX_MAPED_AI_ADD_GROUP], fntMetal);
+  CheckBox_DefencePositionGiveGroup.OnClick := Town_DefenceChange;
+  CheckBox_DefencePositionGiveGroup.Hint := gResTexts[TX_MAPED_AI_ADD_GROUP_HINT];
   fSubMenuActionsEvents[0] := Town_DefenceAddClick;
   fSubMenuActionsEvents[1] := Town_DefenceChange;
   fSubMenuActionsEvents[2] := Town_DefenceChange;
@@ -135,6 +152,15 @@ begin
   gMySpectator.Hand.AI.Setup.AutoAttackRange := TrackBar_AutoAttackRange.Position;
   gMySpectator.Hand.AI.Setup.RecruitCount := TrackBar_RecruitCount.Position;
   gMySpectator.Hand.AI.Setup.RecruitDelay := NumEdit_RecruitDelay.Value * 600;
+
+  case TrackBar_DefencePositionUType.Position of
+    1: gCursor.MapEdDefencePositionGLVLType := 0;
+    2: gCursor.MapEdDefencePositionGLVLType := 4;
+    3: gCursor.MapEdDefencePositionGLVLType := 8;
+  end;
+
+  gCursor.MapEdDefencePositionSetGroups := CheckBox_DefencePositionGiveGroup.Checked;  //add groups with defence pos
+
 
   if not CheckBox_MaxSoldiers.Checked then
     gMySpectator.Hand.AI.Setup.MaxSoldiers := -1
