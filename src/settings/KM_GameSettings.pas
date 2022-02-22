@@ -93,7 +93,7 @@ type
     fFlashOnMessage: Boolean;
 
     //Misc
-    fAsyncGameResLoad: Boolean;
+    fAsyncGameResLoader: Boolean;
 
     //Menu
     fMenu_FavouriteMapsStr: UnicodeString;
@@ -210,7 +210,7 @@ type
 
     procedure SetSpeedPace(const aValue: Word);
     function GetFavouriteMaps: TKMMapsCRCList;
-    function GetAsyncGameResLoad: Boolean;
+    function GetAsyncGameResLoader: Boolean;
 
     //Debug
     procedure SetDebugSaveRandomChecks(aValue: Boolean);
@@ -300,7 +300,7 @@ type
     property LastPassword: string read fLastPassword write SetLastPassword;
 
     //Misc
-    property AsyncGameResLoad: Boolean read GetAsyncGameResLoad;
+    property AsyncGameResLoader: Boolean read GetAsyncGameResLoader;
 
     //Menu
     property MenuMapSPType: Byte read fMenu_MapSPType write SetMenuMapSPType;
@@ -361,11 +361,11 @@ begin
 end;
 
 
-function TKMGameSettings.GetAsyncGameResLoad: Boolean;
+function TKMGameSettings.GetAsyncGameResLoader: Boolean;
 begin
   if Self = nil then Exit(False);
 
-  Result := fAsyncGameResLoad;
+  Result := fAsyncGameResLoader;
 end;
 
 
@@ -537,7 +537,7 @@ begin
 
   // Misc
   nMisc := nGameSettings.AddOrFindChild('Misc');
-    fAsyncGameResLoad := nMisc.Attributes['AsyncGameResLoad'].AsBoolean(False);
+    fAsyncGameResLoader := nMisc.Attributes['AsyncGameResLoader'].AsBoolean(True);
 
   // Menu
   nMenu := nGameSettings.AddOrFindChild('Menu');
@@ -722,7 +722,7 @@ begin
 
   // Misc
   nMisc := nGameSettings.AddOrFindChild('Misc');
-    nMisc.Attributes['AsyncGameResLoad'] := fAsyncGameResLoad;
+    nMisc.Attributes['AsyncGameResLoader'] := fAsyncGameResLoader;
 
   // Menu
   nMenu := nGameSettings.AddOrFindChild('Menu');

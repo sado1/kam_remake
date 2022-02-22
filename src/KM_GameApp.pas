@@ -333,7 +333,7 @@ begin
   //as that could cause an error in the loading thread
   //(did not figure it out why. Its easier just to reload game resources in that rare case)
   {$IFDEF LOAD_GAME_RES_ASYNC}
-  if gGameSettings.AsyncGameResLoad and not gRes.Sprites.GameResLoadCompleted then
+  if gGameSettings.AsyncGameResLoader and not gRes.Sprites.GameResLoadCompleted then
     gRes.LoadGameResources(gGameSettings.AlphaShadows, True);
   {$ENDIF}
 
@@ -354,7 +354,7 @@ procedure TKMGameApp.PreloadGameResources;
 begin
   {$IFDEF LOAD_GAME_RES_ASYNC}
   //Load game resources asychronously (by other thread)
-  if gGameSettings.AsyncGameResLoad then
+  if gGameSettings.AsyncGameResLoader then
     gRes.LoadGameResources(gGameSettings.AlphaShadows, True);
   {$ENDIF}
 end;

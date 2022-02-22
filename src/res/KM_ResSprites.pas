@@ -54,7 +54,9 @@ type
     procedure DeleteSpriteTexture(aIndex: Integer);
 
     //Load from atlas format, no MakeGFX bin packing needed
+    procedure LoadFromRXAAndGenTextures(const aFileName: string);
     procedure LoadFromRXAFile(const aFileName: string);
+    procedure GenerateTexturesFromLoadedRXA;
 
     function GetSoftenShadowType(aID: Integer): TKMSoftenShadowType;
     procedure SoftenShadows(aIdList: TList<Integer>); overload;
@@ -99,7 +101,7 @@ type
     fTemp: Boolean;
     {$IFDEF LOAD_GAME_RES_ASYNC}
     fGameResLoader: TTGameResourceLoader; // thread of game resource loader
-    fGameResLoadCompleted: Boolean;
+    fGameResLoadCompleted: Boolean; // Flag to show Game Resource Loading is completed
     {$ENDIF}
 
     fGenTerrainTransitions: array[Succ(tkCustom)..High(TKMTerrainKind)]
@@ -122,8 +124,8 @@ type
     function GetSprites(aRT: TRXType): TKMSpritePack;
 
     {$IFDEF LOAD_GAME_RES_ASYNC}
-    procedure ManageResLoader;
-    procedure StopResourceLoader;
+    procedure ManageAsyncResLoader(const aCallerName: String);
+    procedure StopAsyncResourceLoader;
     function GetNextLoadRxTypeIndex(aRT: TRXType): Integer;
     {$ENDIF}
   public
@@ -164,10 +166,14 @@ type
     fResSprites: TKMResSprites;
     fAlphaShadows: Boolean;
     function IsTerminated: Boolean;
+    procedure Log(aString: string);
   public
     RXType: TRXType;
-    LoadStepDone: Boolean;    // flag to show, when another rxx load is completed
+    LoadStepDone: LongBool;  // flag to show, when another RXX / RXA load is completed
+    LastLoadedRXA: LongBool; // flag to show, what type of RX we were loading: RXA or RXX
     constructor Create(aResSprites: TKMResSprites; aAlphaShadows: Boolean; aRxType: TRXType);
+    destructor Destroy; override;
+
     procedure Execute; override;
   end;
 
@@ -198,6 +204,7 @@ uses
   {$IFNDEF NO_OGL}
   KM_Render,
   {$ENDIF}
+  TypInfo,
   KM_Log, KM_CommonUtils, KM_Points, KM_GameSettings;
 
 const
@@ -734,8 +741,6 @@ var
   rxxCount, atlasCount, spriteCount, dataCount: Integer;
   inputStream: TFileStream;
   decompressionStream: TDecompressionStream;
-  texFilter: TFilterType;
-  Tx: Cardinal;
 begin
   {$IFNDEF NO_OGL}
   case fRT of
@@ -789,24 +794,6 @@ begin
           decompressionStream.Read(dataCount, 4);
           SetLength(Data, dataCount);
           decompressionStream.Read(Data[0], dataCount*SizeOf(Data[0]));
-
-          //Generate texture once
-          texFilter := ftNearest;
-          if LINEAR_FILTER_SPRITES and (fRT in [rxTrees, rxHouses, rxUnits]) then
-            texFilter := ftLinear;
-
-          Tx := TRender.GenTexture(SpriteInfo.Width, SpriteInfo.Height, @Data[0], TexType, texFilter, texFilter);
-
-          //Now that we know texture IDs we can fill GFXData structure
-          SetGFXData(Tx, SpriteInfo, SAT);
-
-          if EXPORT_SPRITE_ATLASES_RXA then
-            SaveTextureToPNG(SpriteInfo.Width, SpriteInfo.Height, RXInfo[fRT].FileName + '_rxa_' +
-                             SPRITE_TYPE_EXPORT_NAME[SAT] + IntToStr(I), Data);
-
-          // Clear used temp data immediately. Will save us lots of allocated memory in the moment
-          SetLength(Data, 0);
-          SetLength(SpriteInfo.Sprites, 0);
         end;
     end;
   finally
@@ -814,6 +801,44 @@ begin
     inputStream.Free;
   end;
   {$ENDIF}
+end;
+
+
+// Generate texture atlases from previosly prepared SpriteInfo data (loaded from RXA, copied to atlas)
+// Preparation was done asynchroniously by TTGameResourceLoader thread
+// Texture generating task can be done only by main thread, as OpenGL does not work with multiple threads
+procedure TKMSpritePack.GenerateTexturesFromLoadedRXA;
+var
+  I: Integer;
+  SAT: TSpriteAtlasType;
+  texFilter: TFilterType;
+  Tx: Cardinal;
+begin
+  for SAT := Low(TSpriteAtlasType) to High(TSpriteAtlasType) do
+    for I := Low(fGFXPrepData[SAT]) to High(fGFXPrepData[SAT]) do
+      with fGFXPrepData[SAT, I] do
+      begin
+        //Generate texture once
+        texFilter := ftNearest;
+        if LINEAR_FILTER_SPRITES and (fRT in [rxTrees, rxHouses, rxUnits]) then
+          texFilter := ftLinear;
+
+        Tx := TRender.GenTexture(SpriteInfo.Width, SpriteInfo.Height, @Data[0], TexType, texFilter, texFilter);
+
+        //Now that we know texture IDs we can fill GFXData structure
+        SetGFXData(Tx, SpriteInfo, SAT);
+
+        if EXPORT_SPRITE_ATLASES then
+          SaveTextureToPNG(SpriteInfo.Width, SpriteInfo.Height, RXInfo[fRT].FileName + '_rxa_' +
+                           SPRITE_TYPE_EXPORT_NAME[SAT] + IntToStr(I), Data);
+      end;
+end;
+
+
+procedure TKMSpritePack.LoadFromRXAAndGenTextures(const aFileName: string);
+begin
+  LoadFromRXAFile(aFileName);
+  GenerateTexturesFromLoadedRXA;
 end;
 
 
@@ -1382,6 +1407,7 @@ var
   texFilter: TFilterType;
 begin
   {$IFNDEF NO_OGL}
+  gLog.AddTime('TKMSpritePack.GenerateTextureAtlasForGameRes');
   for SAT := Low(TSpriteAtlasType) to High(TSpriteAtlasType) do
     for I := Low(fGFXPrepData[SAT]) to High(fGFXPrepData[SAT]) do
     begin
@@ -1395,8 +1421,9 @@ begin
         //Now that we know texture IDs we can fill GFXData structure
         SetGFXData(Tx, SpriteInfo, SAT);
 
-        SaveTextureToPNG(SpriteInfo.Width, SpriteInfo.Height, RXInfo[fRT].FileName + '_' +
-                         SPRITE_TYPE_EXPORT_NAME[SAT] + IntToStr(I+1), Data);
+        if EXPORT_SPRITE_ATLASES then
+          SaveTextureToPNG(SpriteInfo.Width, SpriteInfo.Height, RXInfo[fRT].FileName + '_' +
+                           SPRITE_TYPE_EXPORT_NAME[SAT] + IntToStr(I+1), Data);
       end;
     end;
   {$ENDIF}
@@ -1433,7 +1460,7 @@ begin
   {$IFDEF LOAD_GAME_RES_ASYNC}
   // Stop resource loader before Freeing SpritePack, as loader use fRXData and could get an exception there on game exit
   if fGameResLoader <> nil then
-    StopResourceLoader;
+    StopAsyncResourceLoader;
   {$ENDIF}
 
   for RT := Low(TRXType) to High(TRXType) do
@@ -1737,14 +1764,11 @@ end;
 
 
 {$IFDEF LOAD_GAME_RES_ASYNC}
-procedure TKMResSprites.StopResourceLoader;
+procedure TKMResSprites.StopAsyncResourceLoader;
 begin
-//  fGameResLoader.DoTerminate := True;
   fGameResLoader.Terminate;
   fGameResLoader.WaitFor;
   FreeThenNil(fGameResLoader);
-  if gLog <> nil then //could be nil in some Utils, f.e.
-    gLog.MultithreadLogging := False;
 end;
 {$ENDIF}
 
@@ -1766,7 +1790,7 @@ procedure TKMResSprites.LoadGameResources(aAlphaShadows: Boolean; aForceReload: 
         if fAlphaShadows and FileExists(rxaFile) then
         begin
           gLog.AddTime('Reading ' + RXInfo[RT].FileName + '.rxa');
-          fSprites[RT].LoadFromRXAFile(rxaFile);
+          fSprites[RT].LoadFromRXAAndGenTextures(rxaFile);
 
           fSprites[RT].OverloadFromFolder(ExeDir + 'Sprites' + PathDelim); // Legacy support
           // 'Sprites' folder name confused some of the players, cause there is already data/Sprites folder
@@ -1784,22 +1808,26 @@ procedure TKMResSprites.LoadGameResources(aAlphaShadows: Boolean; aForceReload: 
         fSprites[RT].ClearTemp;
         fSprites[RT].ClearGameResGenTemp;
       end;
+
+    fGameResLoadCompleted := True;
   end;
 
 begin
+  gLog.AddTime('TKMResSprites.LoadGameResources');
+  fGameResLoadCompleted := False;
   //Remember which version we load, so if it changes inbetween games we reload it
   fAlphaShadows := aAlphaShadows;
   {$IFDEF LOAD_GAME_RES_ASYNC}
-  if gGameSettings.AsyncGameResLoad then
+  if gGameSettings.AsyncGameResLoader then
   begin
     if fGameResLoader <> nil then
     begin
       if aForceReload then
-        StopResourceLoader
+        StopAsyncResourceLoader
       else begin
         while not fGameResLoadCompleted do
         begin
-          ManageResLoader; //check if we have some work to do in this thread
+          ManageAsyncResLoader('LoadGameResources'); //check if we have some work to do in this thread
           Sleep(5); // wait till load will be completed by fGameResLoader thread
         end;
         Exit;
@@ -1809,8 +1837,6 @@ begin
     if aForceReload then
     begin
       fGameResLoadCompleted := False;
-      if gLog <> nil then //could be nil in some Utils, f.e.
-        gLog.MultithreadLogging := True;
       fGameResLoader := TTGameResourceLoader.Create(Self, fAlphaShadows, TRXType(StrToInt(fGameRXTypes[0])));
     end;
   end
@@ -1861,34 +1887,42 @@ end;
 
 
 {$IFDEF LOAD_GAME_RES_ASYNC}
-procedure TKMResSprites.ManageResLoader;
+procedure TKMResSprites.ManageAsyncResLoader(const aCallerName: String);
 var
   nextRXTypeI: Integer;
 begin
-  if (gGameSettings <> nil) and gGameSettings.AsyncGameResLoad
+  if gGameSettings.AsyncGameResLoader
     and (fGameResLoader <> nil)
     and fGameResLoader.LoadStepDone then
   begin
-    // Generate texture atlas from prepared data for game resources
-    // OpenGL work mainly with 1 thread only, so we have to call gl functions only from main thread
-    // That is why we need call this method from main thread only
-    fSprites[fGameResLoader.RXType].GenerateTextureAtlasForGameRes;
-
     if Assigned(fStepCaption) then
       fStepCaption(gResTexts[RXInfo[fGameResLoader.RXType].LoadingTextID]);
 
+    gLog.AddTime('[AsyncGameResLoader MainTh] [' + aCallerName + '] GenTextures for RT = ' + GetEnumName(TypeInfo(TRXType), Integer(fGameResLoader.RXType)));
+
+    // Generate texture atlas from prepared data for game resources
+    // OpenGL work mainly with 1 thread only, so we have to call gl functions only from main thread
+    // That is why we need call this method from main thread only
+    if fGameResLoader.LastLoadedRXA then
+      fSprites[fGameResLoader.RXType].GenerateTexturesFromLoadedRXA
+    else
+      fSprites[fGameResLoader.RXType].GenerateTextureAtlasForGameRes;
+
     fSprites[fGameResLoader.RXType].ClearTemp;      //Clear fRXData sprites temp data, which is not needed anymore
-    fSprites[fGameResLoader.RXType].ClearGameResGenTemp;                                   //Clear all the temp data used for atlas texture generating
+    fSprites[fGameResLoader.RXType].ClearGameResGenTemp; //Clear all the temp data used for atlas texture generating
     nextRXTypeI := GetNextLoadRxTypeIndex(fGameResLoader.RXType); // get next RXType to load
     if nextRXTypeI = -1 then
     begin
       //Load is completed, we can stop loading thread
-      StopResourceLoader;
+      StopAsyncResourceLoader;
       fGameResLoadCompleted := True; // mark loading game res as completed
     end else begin
       fGameResLoader.RXType := TRXType(StrToInt(fGameRXTypes[nextRXTypeI]));
-      fGameResLoader.LoadStepDone := False;
+
+      // Make this atomic, since LoadStepDone is accessed in different threads
+      AtomicExchange(Integer(fGameResLoader.LoadStepDone), Integer(False));
     end;
+    gLog.AddTime('[AsyncGameResLoader MainTh] [' + aCallerName + '] DONE');
   end;
 end;
 {$ENDIF}
@@ -1897,7 +1931,7 @@ end;
 procedure TKMResSprites.UpdateStateIdle;
 begin
   {$IFDEF LOAD_GAME_RES_ASYNC}
-  ManageResLoader;
+  ManageAsyncResLoader('UpdateStateIdle');
   {$ENDIF}
 end;
 
@@ -1925,22 +1959,73 @@ begin
   fAlphaShadows := aAlphaShadows;
   RXType := aRxType;
   FreeOnTerminate := False; //object can be automatically removed after its termination
+  gLog.MultithreadLogging := True;
+
+  Log('Started');
+end;
+
+
+destructor TTGameResourceLoader.Destroy;
+begin
+  Log('Stopped');
+
+  gLog.MultithreadLogging := False;
+
+  inherited;
+end;
+
+
+procedure TTGameResourceLoader.Log(aString: string);
+begin
+  gLog.AddTime('[AsyncGameResLoader Thread] ' + aString);
 end;
 
 
 procedure TTGameResourceLoader.Execute;
+var
+  rxaFile: string;
 begin
   inherited;
+
   while not Terminated do
   begin
     if not LoadStepDone then
     begin
-      fResSprites.LoadSprites(RXType, fAlphaShadows);
-      if Terminated then Exit;
-      {$IFNDEF NO_OGL}
-      fResSprites.fSprites[RXType].MakeGFX(fAlphaShadows, 1, False, IsTerminated);
-      {$ENDIF}
-      LoadStepDone := True;
+      Log('Load RT = ' + GetEnumName(TypeInfo(TRXType), Integer(RXType)));
+
+      if SLOW_ASYNC_RES_LOADER then
+        Sleep(5000);
+
+      rxaFile := ExeDir + 'data' + PathDelim + 'Sprites' + PathDelim + RXInfo[RXType].FileName + '.rxa';
+      if fAlphaShadows and FileExists(rxaFile) then
+      begin
+        Log('Start Load RXA ''' + RXInfo[RXType].FileName + '.rxa''');
+        fResSprites.fSprites[RXType].LoadFromRXAFile(rxaFile);
+        if Terminated then Exit;
+
+        fResSprites.fSprites[RXType].OverloadFromFolder(ExeDir + 'Sprites' + PathDelim); // Legacy support
+        // 'Sprites' folder name confused some of the players, cause there is already data/Sprites folder
+        fResSprites.fSprites[RXType].OverloadFromFolder(ExeDir + 'Modding graphics' + PathDelim);
+
+        AtomicExchange(Integer(LastLoadedRXA), Integer(True));
+        Log('DONE Load RXA ''' + RXInfo[RXType].FileName + '.rxa''');
+      end
+      else
+      begin
+        Log('Start Load RXX ''' + RXInfo[RXType].FileName + '.rxx''');
+        fResSprites.LoadSprites(RXType, fAlphaShadows);
+        if Terminated then Exit;
+
+        {$IFNDEF NO_OGL}
+        fResSprites.fSprites[RXType].MakeGFX(fAlphaShadows, 1, False, IsTerminated);
+        {$ENDIF}
+
+        AtomicExchange(Integer(LastLoadedRXA), Integer(False));
+        Log('DONE Load RXX ''' + RXInfo[RXType].FileName + '.rxa''');
+      end;
+
+      // Make this atomic, since LoadStepDone is accessed in different threads
+      AtomicExchange(Integer(LoadStepDone), Integer(True));
     end;
     Sleep(1); // sleep a a bit
   end;
