@@ -946,7 +946,7 @@ function TKMCityPlanner.GetRoadToHouse(aHT: TKMHouseType; aIdx: Integer; var aFi
   end;
 
 const
-  MAX_ROAD_DISTANCE = 50;
+  MAX_ROAD_DISTANCE = 90;
 var
   Output: Boolean;
   NewLoc, ExistLoc: TKMPoint;
@@ -1915,7 +1915,6 @@ end;
 procedure TKMCityPlanner.CheckStoneReserves(aForceToPlaceQuarry: Boolean; aReqQuarryCnt: Integer);
 const
   HT = htQuarry;
-  MAX_DIST = 15;
   MIN_CNT = 60; // possible to mine X layers of stone tile = X * 3 stones
 var
   CanBeReplaced: Boolean;
@@ -1940,7 +1939,7 @@ begin
         for I := Low(CanMineCnt) to High(CanMineCnt) do
           with fPlannedHouses[HT].Plans[I] do
             for K := 0 to StoneLocs.Count - 1 do
-              if (KMDistanceAbs(Loc,StoneLocs.Items[K]) < MAX_DIST) then
+              if (KMDistanceAbs(Loc,StoneLocs.Items[K]) <= gRes.Units[utStonemason].MiningRange) then
               begin
                 Inc(CanMineCnt[I],StoneLocs.Tag[K]);
                 Inc(StoneLocs.Tag2[K]);
@@ -1959,7 +1958,7 @@ begin
           CanBeReplaced := True;
           with fPlannedHouses[HT].Plans[LowestIdx] do
             for I := StoneLocs.Count - 1 downto 0 do
-              if (StoneLocs.Tag2[I] < 3) AND (KMDistanceAbs(Loc,StoneLocs.Items[I]) < MAX_DIST) then
+              if (StoneLocs.Tag2[I] < 3) AND (KMDistanceAbs(Loc,StoneLocs.Items[I]) <= gRes.Units[utStonemason].MiningRange) then
               begin
                 CanBeReplaced := False;
                 break;

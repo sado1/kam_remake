@@ -125,7 +125,8 @@ type
     chkDebugScripting: TCheckBox;
     chkLogSkipTempCmd: TCheckBox;
     chkShowDefencesAnimate: TCheckBox;
-    chkShowArmyVectorField: TCheckBox;
+    chkShowArmyVectorFieldEnemy: TCheckBox;
+    chkShowArmyVectorFieldAlly: TCheckBox;
     chkShowClusters: TCheckBox;
     chkShowAlliedGroups: TCheckBox;
     chkHeight: TCheckBox;
@@ -1467,7 +1468,8 @@ begin
     OVERLAY_AI_COMBAT := chkCombat.Checked;
     OVERLAY_AI_PATHFINDING := chkPathfinding.Checked;
     OVERLAY_AI_SUPERVISOR := chkSupervisor.Checked;
-    OVERLAY_AI_VECTOR_FIELD := chkShowArmyVectorField.Checked;
+    OVERLAY_AI_VEC_FLD_ENEM := chkShowArmyVectorFieldEnemy.Checked;
+    OVERLAY_AI_VEC_FLD_ALLY := chkShowArmyVectorFieldAlly.Checked;
     OVERLAY_AI_CLUSTERS := chkShowClusters.Checked;
     OVERLAY_AI_ALLIEDGROUPS := chkShowAlliedGroups.Checked;
     OVERLAY_AI_EYE := chkAIEye.Checked;

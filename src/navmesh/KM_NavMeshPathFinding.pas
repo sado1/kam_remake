@@ -73,7 +73,7 @@ type
 
 implementation
 uses
-   KM_AIFields, KM_NavMesh, KM_NavMeshGenerator
+   KM_AIFields, KM_NavMesh, KM_NavMeshGenerator, KM_AIParameters
    {$IFDEF DEBUG_NavMeshPathFinding}
    ,KM_RenderAux, KM_CommonUtils
    {$ENDIF}
@@ -115,13 +115,14 @@ function TNavMeshPathFinding.MovementCost(aIdx, aFrom, aTo: Word; var aSPoint, a
 
   function AvoidTraffic(): Cardinal;
   begin
-    Result := + gAIFields.Influences.GetArmyTraffic(fAllianceIdx, aTo)
-              + (MAX_LINE_LENGTH - gAIFields.NavMesh.Polygons[aFrom].NearbyLineLength[aIdx]) * 2;
+    Result := Round(
+      + gAIFields.Influences.GetArmyTraffic(fAllianceIdx, aTo)                       * AI_Par[NAVMESH_PATHFINDING_AvoidTraffic]
+      + (MAX_LINE_LENGTH - gAIFields.NavMesh.Polygons[aFrom].NearbyLineLength[aIdx]) * AI_Par[NAVMESH_PATHFINDING_LineLength]);
   end;
 
   function AvoidSpecEnemy(): Cardinal;
   begin
-    Result := AvoidTraffic() + gAIFields.Influences.Presence[fAllianceIdx, aTo, fGroupType];
+    Result := Round(gAIFields.Influences.Presence[fAllianceIdx, aTo, fGroupType] * AI_Par[NAVMESH_PATHFINDING_AvoidSpecEnemy]); // + AvoidTraffic();
   end;
 
 begin

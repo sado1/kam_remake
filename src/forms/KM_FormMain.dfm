@@ -89,6 +89,7 @@ object FormMain: TFormMain
       Caption = 'Misc'
       Collapsed = True
       TabOrder = 0
+      ExplicitTop = 561
       ExpandedHeight = 144
       object chkBevel: TCheckBox
         Left = 168
@@ -131,6 +132,7 @@ object FormMain: TFormMain
       Caption = 'Logs'
       Collapsed = True
       TabOrder = 1
+      ExplicitTop = 537
       ExpandedHeight = 198
       object chkLogCommands: TCheckBox
         Left = 120
@@ -242,6 +244,7 @@ object FormMain: TFormMain
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 2
+      ExplicitTop = 513
       ExpandedHeight = 168
       object Label1: TLabel
         Left = 101
@@ -382,6 +385,7 @@ object FormMain: TFormMain
       Caption = 'User Interface'
       Collapsed = True
       TabOrder = 3
+      ExplicitTop = 489
       ExpandedHeight = 114
       object chkUIControlsBounds: TCheckBox
         Left = 8
@@ -453,6 +457,7 @@ object FormMain: TFormMain
       Caption = 'Perf Logs'
       Collapsed = True
       TabOrder = 4
+      ExplicitTop = 465
       ExpandedHeight = 660
     end
     object cpAI: TCategoryPanel
@@ -624,12 +629,12 @@ object FormMain: TFormMain
         TabOrder = 14
         OnClick = ControlsUpdate
       end
-      object chkShowArmyVectorField: TCheckBox
+      object chkShowArmyVectorFieldEnemy: TCheckBox
         Left = 8
         Top = 121
-        Width = 72
+        Width = 110
         Height = 17
-        Caption = 'Vector Field'
+        Caption = 'Vector Field Enemy'
         TabOrder = 15
         OnClick = ControlsUpdate
       end
@@ -658,6 +663,15 @@ object FormMain: TFormMain
         Height = 17
         Caption = 'Pathfinding'
         TabOrder = 18
+        OnClick = ControlsUpdate
+      end
+      object chkShowArmyVectorFieldAlly: TCheckBox
+        Left = 120
+        Top = 121
+        Width = 101
+        Height = 17
+        Caption = 'Vector Field Ally'
+        TabOrder = 19
         OnClick = ControlsUpdate
       end
     end

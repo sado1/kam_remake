@@ -12,7 +12,7 @@ type
     fLogPar: TKMLog;
     fClass: String;
     function Incr(var Idx: Word): Word;
-    procedure LogParameters();
+    procedure LogParameters(const aIdv: TGAIndividual);
     // Get count of parameters
     function GetParCntFromSet(const aSet: TAIParSet): Word;
     function GetParCnt_TestParRun(): Word;
@@ -48,7 +48,8 @@ const
     TAIParSet = [
       ATTACK_ArmyVectorField_START..ATTACK_ArmyVectorField_END,
       ATTACK_SQUAD_START..ATTACK_SQUAD_END,
-      ATTACK_SUPERVISOR_START..ATTACK_SUPERVISOR_END
+      ATTACK_SUPERVISOR_START..ATTACK_SUPERVISOR_END,
+      NAVMESH_PATHFINDING_START..NAVMESH_PATHFINDING_END
     ];
   SetCityAllIn:
     TAIParSet = [
@@ -140,17 +141,17 @@ begin
     Inc(K);
   end;
   if aLogIt then
-    LogParameters();
+    LogParameters(aIdv);
 {$ENDIF}
 end;
 
 
-procedure TGAParameterization.LogParameters();
+procedure TGAParameterization.LogParameters(const aIdv: TGAIndividual);
 var
   K: Integer;
   Idx: TAIPar;
   params: TAIParSet;
-  enumName: String;
+  enumName, comma: String;
 begin
   if (fLogPar = nil) then
     Exit;
@@ -158,8 +159,11 @@ begin
   fLogPar.AddTime('  AI_Par: array[TAIPar] of Single = (');
   for Idx := Low(AI_Par) to High(AI_Par) do
   begin
+    comma := ',';
+    if Idx = High(AI_Par) then
+      comma := ' ';
     enumName := GetEnumName(TypeInfo(TAIPar), Integer(Idx));
-    fLogPar.AddTime(Format('%13.7f, // %s',[AI_Par[Idx], enumName ]));
+    fLogPar.AddTime(Format('%13.7f%s // %s',[AI_Par[Idx], comma, enumName ], TFormatSettings.Invariant));
     if ContainsText(enumName, '_END') then
       fLogPar.AddTime(' ');
     //fLogPar.AddTime(Format('%13.7f%s, // %s',[AI_Par[Idx], StringOfChar(' ', Max(1,50 - Length(enumName))), enumName ]));
@@ -171,9 +175,11 @@ begin
   for Idx in params do
   begin
     enumName := GetEnumName(TypeInfo(TAIPar), Integer(Idx));
-    fLogPar.AddTime(Format('%3d%13.7f, // %s',[K, AI_Par[Idx], enumName ]));
+    if not ContainsText(enumName, '_END') AND not ContainsText(enumName, '_START') then
+      fLogPar.AddTime(Format('%3d. %1.3f: %7.3f, // %s',[K, aIdv.Gene[K], AI_Par[Idx], enumName ], TFormatSettings.Invariant));
     Inc(K);
   end;
+
 end;
 
 
