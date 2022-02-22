@@ -807,6 +807,7 @@ end;
 // Generate texture atlases from previosly prepared SpriteInfo data (loaded from RXA, copied to atlas)
 // Preparation was done asynchroniously by TTGameResourceLoader thread
 // Texture generating task can be done only by main thread, as OpenGL does not work with multiple threads
+// Note: this could be from the loader thread by using `Synchronise` procedure
 procedure TKMSpritePack.GenerateTexturesFromLoadedRXA;
 var
   I: Integer;
@@ -1395,10 +1396,12 @@ begin
     SetLength(fGFXPrepData[SAT], 0);
 end;
 
+
 {$IFDEF LOAD_GAME_RES_ASYNC}
 // Generate texture atlases from previosly prepared SpriteInfo data (loaded from RXX, Bin Packed, copied to atlas)
 // Preparation was done asynchroniously by TTGameResourceLoader thread
 // Texture generating task can be done only by main thread, as OpenGL does not work with multiple threads
+// Note: this could be from the loader thread by using `Synchronise` procedure
 procedure TKMSpritePack.GenerateTextureAtlasForGameRes;
 var
   I: Integer;
@@ -1903,6 +1906,8 @@ begin
     // Generate texture atlas from prepared data for game resources
     // OpenGL work mainly with 1 thread only, so we have to call gl functions only from main thread
     // That is why we need call this method from main thread only
+
+    // Note: this could be from the loader thread by using `Synchronise` procedure
     if fGameResLoader.LastLoadedRXA then
       fSprites[fGameResLoader.RXType].GenerateTexturesFromLoadedRXA
     else
