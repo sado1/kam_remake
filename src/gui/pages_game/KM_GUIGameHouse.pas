@@ -1152,7 +1152,7 @@ begin
     Include(aShift, ssLeft);
 
   //Prev unit
-  if Key = gResKeys[kfTrainGotoPrev].Key then
+  if Key = gResKeys[kfTrainGotoPrev] then
   begin
     if Panel_House_School.Visible and Button_School_Left.Enabled then
     begin
@@ -1174,7 +1174,7 @@ begin
   end;
 
   //Next unit
-  if Key = gResKeys[kfTrainGotoNext].Key then
+  if Key = gResKeys[kfTrainGotoNext] then
   begin
     if Panel_House_School.Visible and Button_School_Right.Enabled then
     begin
@@ -1196,7 +1196,7 @@ begin
   end;
 
   //Hotkey for train / equip button
-  if Key = gResKeys[kfTrainEquipUnit].Key then
+  if Key = gResKeys[kfTrainEquipUnit] then
   begin
     if Panel_House_School.Visible and Button_School_Train.Enabled then
     begin

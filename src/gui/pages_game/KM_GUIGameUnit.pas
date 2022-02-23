@@ -540,21 +540,21 @@ begin
   if aHandled then Exit;
 
   // Standard army shortcuts from KaM
-  if Key = gResKeys[kfArmyHalt].Key then
+  if Key = gResKeys[kfArmyHalt] then
     if Panel_Army.Visible and Button_Army_Stop.Enabled and not OnSelectingTroopDirection(nil) then
     begin
       Army_Issue_Order(Button_Army_Stop, Shift);
       aHandled := True;
     end;
 
-  if Key = gResKeys[kfArmyLink].Key then
+  if Key = gResKeys[kfArmyLink] then
     if Panel_Army.Visible and Button_Army_Join.Enabled and not OnSelectingTroopDirection(nil) then
     begin
       Army_Issue_Order(Button_Army_Join, Shift);
       aHandled := True;
     end;
 
-  if Key = gResKeys[kfArmySplit].Key then
+  if Key = gResKeys[kfArmySplit] then
     if Panel_Army.Visible and Button_Army_Split.Enabled and not OnSelectingTroopDirection(nil) then
     begin
       Army_Issue_Order(Button_Army_Split, Shift);
@@ -562,42 +562,42 @@ begin
     end;
 
   // Additional hotkeys for all group orders
-  if Key = gResKeys[kfArmyFood].Key then
+  if Key = gResKeys[kfArmyFood] then
     if Panel_Army.Visible and Button_Army_Feed.Enabled and not OnSelectingTroopDirection(nil) then
     begin
       Army_Issue_Order(Button_Army_Feed, Shift);
       aHandled := True;
     end;
 
-  if Key = gResKeys[kfArmyStorm].Key then
+  if Key = gResKeys[kfArmyStorm] then
     if Panel_Army.Visible and Button_Army_Storm.Enabled and not OnSelectingTroopDirection(nil) then
     begin
       Army_Issue_Order(Button_Army_Storm, Shift);
       aHandled := True;
     end;
 
-  if Key = gResKeys[kfArmyAddLine].Key then
+  if Key = gResKeys[kfArmyAddLine] then
     if Panel_Army.Visible and Button_Army_ForDown.Enabled and not OnSelectingTroopDirection(nil) then
     begin
       Army_Issue_Order(Button_Army_ForDown, Shift);
       aHandled := True;
     end;
 
-  if Key = gResKeys[kfArmyDelLine].Key then
+  if Key = gResKeys[kfArmyDelLine] then
     if Panel_Army.Visible and Button_Army_ForUp.Enabled and not OnSelectingTroopDirection(nil) then
     begin
       Army_Issue_Order(Button_Army_ForUp, Shift);
       aHandled := True;
     end;
 
-  if Key = gResKeys[kfArmyRotateCw].Key then
+  if Key = gResKeys[kfArmyRotateCw] then
     if Panel_Army.Visible and Button_Army_RotCW.Enabled and not OnSelectingTroopDirection(nil) then
     begin
       Army_Issue_Order(Button_Army_RotCW, Shift);
       aHandled := True;
     end;
 
-  if Key = gResKeys[kfArmyRotateCcw].Key then
+  if Key = gResKeys[kfArmyRotateCcw] then
     if Panel_Army.Visible and Button_Army_RotCCW.Enabled and not OnSelectingTroopDirection(nil) then
     begin
       Army_Issue_Order(Button_Army_RotCCW, Shift);

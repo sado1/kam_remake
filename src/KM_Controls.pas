@@ -9342,7 +9342,7 @@ begin
 
   if not fHandleCloseKey then Exit;
 
-  if Key = gResKeys[kfCloseMenu].Key then
+  if Key = gResKeys[kfCloseMenu] then
   begin
     Close(nil);
     Result := True;

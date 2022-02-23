@@ -40,7 +40,7 @@ type
 implementation
 uses
   SysUtils, Math,
-  KM_ResTypes, KM_Sound, KM_ResSound,
+  KM_ResTypes, KM_Sound, KM_ResSound, KM_ResKeyFuncs,
   KM_GameSettings,
   KM_ResTexts, KM_RenderUI, KM_Pics, KM_ResFonts;
 
@@ -188,12 +188,12 @@ begin
 
     // Do not show the debug keys
     for KF := KEY_FUNC_LOW to High(TKMKeyFunction) do
-      if (fTempKeys[KF].Area = K) and not fTempKeys[KF].IsChangableByPlayer then
+      if (gResKeyFuncs[KF].Area = K) and not gResKeyFuncs[KF].IsChangableByPlayer then
       begin
         keyName := fTempKeys.GetKeyNameById(KF);
         if (KF = kfDebugWindow) and (keyName <> '') then
           keyName := keyName + ' / Ctrl + ' + keyName; //Also show Ctrl + F11, for debug window hotkey
-        ColumnBox_OptionsKeys.AddItem(MakeListRow([GetFunctionName(fTempKeys[KF].TextId), keyName],
+        ColumnBox_OptionsKeys.AddItem(MakeListRow([GetFunctionName(gResKeyFuncs[KF].TextId), keyName],
                                                   [$FFFFFFFF, $FFFFFFFF], [$FF0000FF, $FF0000FF], Integer(KF)));
       end;
   end;
@@ -211,11 +211,11 @@ begin
 
   ColumnBox_OptionsKeys.HighlightError := False;
 
-  if not InRange(ColumnBox_OptionsKeys.Rows[ColumnBox_OptionsKeys.ItemIndex].Tag, 1, fTempKeys.Count) then Exit;
+  if not InRange(ColumnBox_OptionsKeys.Rows[ColumnBox_OptionsKeys.ItemIndex].Tag, 1, gResKeyFuncs.Count) then Exit;
 
   KF := TKMKeyFunction(ColumnBox_OptionsKeys.Rows[ColumnBox_OptionsKeys.ItemIndex].Tag);
 
-  if not fTempKeys.AllowKeySet(fTempKeys[KF].Area, Key) then
+  if not fTempKeys.AllowKeySet(Key) then
   begin
     ColumnBox_OptionsKeys.HighlightError := True;
     gSoundPlayer.Play(sfxnError);

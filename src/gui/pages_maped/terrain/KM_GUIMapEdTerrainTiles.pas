@@ -356,7 +356,7 @@ begin
     aHandled := True;
   end
   else
-  if Key = gResKeys[kfMapedTilesPalette].Key then
+  if Key = gResKeys[kfMapedTilesPalette] then
   begin
     Panel_TilesPalettePopup.ToggleVisibility;
     aHandled := True;

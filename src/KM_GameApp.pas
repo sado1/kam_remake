@@ -167,7 +167,7 @@ uses
   KM_FormLogistics,
   KM_Main, KM_Controls, KM_Log, KM_Sound, KM_GameInputProcess, KM_GameInputProcess_Multi,
   KM_GameSavePoints,
-  KM_Cursor, KM_ResTexts,
+  KM_Cursor, KM_ResTexts, KM_ResKeys,
   KM_IoGraphicUtils, KM_Settings,
   KM_Saves, KM_CommonUtils, KM_CommonShellUtils, KM_RandomChecks,
   KM_DevPerfLog, KM_DevPerfLogTypes;
@@ -181,7 +181,10 @@ begin
 
   fOnCursorUpdate := aOnCursorUpdate;
 
+  gResKeys := TKMResKeys.Create;
+
   gGameSettings := TKMGameSettings.Create;
+  gKeySettings := TKMKeysSettings.Create;
 
   // When creating local server from inside the game,
   // it makes sense to store its settings along with the game's in the shared folder
@@ -198,7 +201,6 @@ begin
 
   gRes := TKMResource.Create(aOnLoadingStep, aOnLoadingText);
   gRes.LoadMainResources(gGameSettings.Locale, gGameSettings.LoadFullFonts);
-  gKeySettings := TKMKeysSettings.Create;
 
   {$IFDEF USE_MAD_EXCEPT}gExceptions.LoadTranslation;{$ENDIF}
 
@@ -277,6 +279,8 @@ begin
   FreeAndNil(gCursor);
 
   FreeThenNil(gRender);
+
+  FreeThenNil(gResKeys);
 
   inherited;
 end;

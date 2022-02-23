@@ -54,6 +54,7 @@ type
   TKMHouseTypeSet = set of TKMHouseType;
   TKMHouseTypeArray = array of TKMHouseType;
 
+
   TKMKeyFunction = (
     kfNone,
 
@@ -208,6 +209,10 @@ type
 
   TKMKeyFuncAreaSet = set of TKMKeyFuncArea;
 
+const
+  KEY_FUNC_LOW = Succ(kfNone); // 1st key function
+
+type
   // Cursors
   TKMCursor = (
     kmcDefault, kmcInfo, kmcAttack, kmcJoinYes, kmcJoinNo, kmcEdit, kmcDragUp,
@@ -293,7 +298,19 @@ var
     (FileName: 'Custom';     TeamColors: False; Usage: ruCustom; LoadingTextID: 0;),
     (FileName: 'Tileset';    TeamColors: False; Usage: ruMenu;   LoadingTextID: TX_MENU_LOADING_TILESET;));
 
+  function GetKeyFunctionStr(aKeyFun: TKMKeyFunction): string;
+
 
 implementation
+uses
+  TypInfo;
+
+
+function GetKeyFunctionStr(aKeyFun: TKMKeyFunction): string;
+begin
+//  Result := TRttiEnumerationType.GetName(aKeyFun);
+  Result := GetEnumName(TypeInfo(TKMKeyFunction), Integer(aKeyFun));
+end;
+
 
 end.

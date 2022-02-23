@@ -298,6 +298,7 @@ uses
   KM_ResHouses in 'src\res\KM_ResHouses.pas',
   KM_ResInterpolation in 'src\res\KM_ResInterpolation.pas',
   KM_ResKeys in 'src\res\KM_ResKeys.pas',
+  KM_ResKeyFuncs in 'src\res\KM_ResKeyFuncs.pas',
   KM_ResLocales in 'src\res\KM_ResLocales.pas',
   KM_ResMapElements in 'src\res\KM_ResMapElements.pas',
   KM_ResPalettes in 'src\res\KM_ResPalettes.pas',

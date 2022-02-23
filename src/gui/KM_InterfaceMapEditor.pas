@@ -908,11 +908,11 @@ begin
     keyPassedToModal := True;
 
   //For now enter can open up Extra panel
-  if not keyPassedToModal and (Key = gResKeys[kfMapedExtra].Key) then
+  if not keyPassedToModal and (Key = gResKeys[kfMapedExtra]) then
     Message_Click(Image_Extra);
 
   // If modals are closed or they did not handle key
-  if not keyPassedToModal and (Key = gResKeys[kfCloseMenu].Key) then
+  if not keyPassedToModal and (Key = gResKeys[kfCloseMenu]) then
   begin
     if fGuiMenu.GuiMenuSettings.Visible then
     begin
@@ -976,40 +976,40 @@ begin
   if keyHandled then Exit;
 
   //F1-F5 menu shortcuts
-  if Key = gResKeys[kfMapedTerrain].Key   then
+  if Key = gResKeys[kfMapedTerrain]   then
     Button_Main[1].Click;
-  if Key = gResKeys[kfMapedVillage].Key   then
+  if Key = gResKeys[kfMapedVillage]   then
     Button_Main[2].Click;
-  if Key = gResKeys[kfMapedVisual].Key    then
+  if Key = gResKeys[kfMapedVisual]    then
     Button_Main[3].Click;
-  if Key = gResKeys[kfMapedGlobal].Key    then
+  if Key = gResKeys[kfMapedGlobal]    then
     Button_Main[4].Click;
-  if Key = gResKeys[kfMapedMainMenu].Key then
+  if Key = gResKeys[kfMapedMainMenu] then
     Button_Main[5].Click;
 
   //1-6 submenu shortcuts
   for I := Low(MAPED_SUBMENU_HOTKEYS) to High(MAPED_SUBMENU_HOTKEYS) do
-    if Key = gResKeys[MAPED_SUBMENU_HOTKEYS[I]].Key then
+    if Key = gResKeys[MAPED_SUBMENU_HOTKEYS[I]] then
       ShowSubMenu(I);
 
   //q-w-e-r-t-y-u submenu actions shortcuts
   for I := Low(MAPED_SUBMENU_ACTIONS_HOTKEYS) to High(MAPED_SUBMENU_ACTIONS_HOTKEYS) do
-    if Key = gResKeys[MAPED_SUBMENU_ACTIONS_HOTKEYS[I]].Key then
+    if Key = gResKeys[MAPED_SUBMENU_ACTIONS_HOTKEYS[I]] then
     begin
       keyHandled := False;
       ExecuteSubMenuAction(I, keyHandled);
     end;
 
   //Universal erasor
-  if Key = gResKeys[kfMapedUnivErasor].Key then
+  if Key = gResKeys[kfMapedUnivErasor] then
     UniversalEraser_Click(Button_UniversalEraser);
 
   //Universal erasor
-  if Key = gResKeys[kfMapedPaintBucket].Key then
+  if Key = gResKeys[kfMapedPaintBucket] then
     ChangeOwner_Click(Button_ChangeOwner);
 
   //History
-  if Key = gResKeys[kfMapedHistory].Key then
+  if Key = gResKeys[kfMapedHistory] then
     History_Click(Button_History);
 
 

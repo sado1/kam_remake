@@ -20,6 +20,7 @@ implementation
 uses
   KM_ResTexts,
   KM_ResKeys,
+  KM_ResKeyFuncs,
   KM_ResTypes,
   KM_IoXML;
 
@@ -30,7 +31,6 @@ var
   KF: TKMKeyFunction;
   nHotkeys, nKey: TKMXmlNode;
   keyFuncName: string;
-  keySpec: TKMKeySpec;
 begin
   if Self = nil then Exit;
   inherited;
@@ -39,16 +39,12 @@ begin
 
   for KF := KEY_FUNC_LOW to High(TKMKeyFunction) do
   begin
-    keyFuncName := TKMResKeys.GetKeyFunctionStr(KF);
+    keyFuncName := GetKeyFunctionStr(KF);
     if nHotkeys.HasChild(keyFuncName) then
     begin
       nKey := nHotkeys.AddOrFindChild(keyFuncName);
       if nKey.HasAttribute('Key') then
-      begin
-        keySpec := gResKeys[KF];
-        keySpec.Key := nKey.Attributes['Key'].AsInteger;
-        gResKeys[KF] := keySpec;
-      end;
+        gResKeys[KF] := nKey.Attributes['Key'].AsInteger;
     end;
   end;
 end;
@@ -66,12 +62,12 @@ begin
 
   for KF := KEY_FUNC_LOW to High(TKMKeyFunction) do
   begin
-    nKey := nHotkeys.AddOrFindChild(TKMResKeys.GetKeyFunctionStr(KF));
-    nKey.Attributes['Key'] := gResKeys[KF].Key;
+    nKey := nHotkeys.AddOrFindChild(GetKeyFunctionStr(KF));
+    nKey.Attributes['Key'] := gResKeys[KF];
 
     // These are just comments
-    nKey.Attributes['KeyDesc'] := gResKeys.GetKeyName(gResKeys[KF].Key);
-    nKey.Attributes['FuncDesc'] := gResTexts[gResKeys[KF].TextId];
+    nKey.Attributes['KeyDesc'] := gResKeys.GetKeyName(gResKeys[KF]);
+    nKey.Attributes['FuncDesc'] := gResTexts[gResKeyFuncs[KF].TextId];
   end;
 end;
 

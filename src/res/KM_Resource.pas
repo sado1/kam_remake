@@ -87,7 +87,7 @@ uses
   KM_System,
   {$ENDIF}
   KromUtils, KM_Log, KM_Points,
-  KM_ResTexts, KM_ResKeys, KM_ResTilesetTypes;
+  KM_ResTexts, KM_ResKeyFuncs, KM_ResTilesetTypes;
 
 
 { TKMResource }
@@ -117,7 +117,7 @@ begin
   FreeAndNil(gResTexts);
   FreeAndNil(fTileset);
   FreeAndNil(fUnits);
-  FreeAndNil(gResKeys);
+  FreeAndNil(gResKeyFuncs);
   FreeAndNil(fInterpolation);
 
   inherited;
@@ -181,7 +181,7 @@ begin
   {$ENDIF}
   fCursors.SetRXDataPointer(@fSprites[rxGui].RXData);
 
-  gResKeys := TKMResKeys.Create;
+  gResKeyFuncs := TKMResKeyFuncs.Create;
 
   LoadLocaleAndFonts(aLocale, aLoadFullFonts);
 

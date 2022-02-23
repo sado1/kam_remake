@@ -364,21 +364,21 @@ begin
 
   aHandled := True;
   //Scrolling
-  if Key = gResKeys[kfScrollLeft].Key       then
+  if Key = gResKeys[kfScrollLeft]       then
     fViewport.ScrollKeyLeft  := True
-  else if Key = gResKeys[kfScrollRight].Key then
+  else if Key = gResKeys[kfScrollRight] then
     fViewport.ScrollKeyRight := True
-  else if Key = gResKeys[kfScrollUp].Key    then
+  else if Key = gResKeys[kfScrollUp]    then
     fViewport.ScrollKeyUp    := True
-  else if Key =  gResKeys[kfScrollDown].Key then
+  else if Key =  gResKeys[kfScrollDown] then
     fViewport.ScrollKeyDown  := True
-  else if Key = gResKeys[kfZoomIn].Key      then
+  else if Key = gResKeys[kfZoomIn]      then
     fViewport.ZoomKeyIn      := True
-  else if Key = gResKeys[kfZoomOut].Key     then
+  else if Key = gResKeys[kfZoomOut]     then
     fViewport.ZoomKeyOut     := True
-  else if Key = gResKeys[kfZoomReset].Key   then
+  else if Key = gResKeys[kfZoomReset]   then
     fViewport.ResetZoom
-  else if (Key = gResKeys[kfMapDragScroll].Key)
+  else if (Key = gResKeys[kfMapDragScroll])
       and IsDragScrollingAllowed then
   begin
     fDragScrolling := True;
@@ -410,21 +410,21 @@ begin
 
   aHandled := True;
   //Scrolling
-  if Key = gResKeys[kfScrollLeft].Key       then
+  if Key = gResKeys[kfScrollLeft]       then
     fViewport.ScrollKeyLeft := False
-  else if Key = gResKeys[kfScrollRight].Key then
+  else if Key = gResKeys[kfScrollRight] then
     fViewport.ScrollKeyRight := False
-  else if Key = gResKeys[kfScrollUp].Key    then
+  else if Key = gResKeys[kfScrollUp]    then
     fViewport.ScrollKeyUp := False
-  else if Key =  gResKeys[kfScrollDown].Key then
+  else if Key =  gResKeys[kfScrollDown] then
     fViewport.ScrollKeyDown  := False
-  else if Key = gResKeys[kfZoomIn].Key      then
+  else if Key = gResKeys[kfZoomIn]      then
     fViewport.ZoomKeyIn := False
-  else if Key = gResKeys[kfZoomOut].Key     then
+  else if Key = gResKeys[kfZoomOut]     then
     fViewport.ZoomKeyOut := False
-  else if Key = gResKeys[kfZoomReset].Key   then
+  else if Key = gResKeys[kfZoomReset]   then
     fViewport.ResetZoom
-  else if Key = gResKeys[kfMapDragScroll].Key then
+  else if Key = gResKeys[kfMapDragScroll] then
   begin
     if fDragScrolling then
       ResetDragScrolling;
@@ -488,7 +488,7 @@ begin
   aHandled := False;
   if fDragScrolling then
   begin
-    if GetKeyState(gResKeys[kfMapDragScroll].Key) < 0 then
+    if GetKeyState(gResKeys[kfMapDragScroll]) < 0 then
     begin
       UpdateGameCursor(X, Y, Shift);
       VP.X := fDragScrollingViewportPos.X + (fDragScrollingCursorPos.X - X) / (CELL_SIZE_PX * fViewport.Zoom);

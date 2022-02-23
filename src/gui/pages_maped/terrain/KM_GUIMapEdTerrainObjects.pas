@@ -862,7 +862,7 @@ procedure TKMMapEdTerrainObjects.KeyDown(Key: Word; Shift: TShiftState; var aHan
 begin
   if aHandled then Exit;
 
-  aHandled := Key = gResKeys[kfMapedObjPalette].Key;
+  aHandled := Key = gResKeys[kfMapedObjPalette];
   if (Key = VK_ESCAPE) and PopUp_ObjectsPalette.Visible then
   begin
     PopUp_ObjectsPalette.Hide;
@@ -873,7 +873,7 @@ end;
 
 procedure TKMMapEdTerrainObjects.KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
 begin
-  aHandled := Key = gResKeys[kfMapedObjPalette].Key;
+  aHandled := Key = gResKeys[kfMapedObjPalette];
   if aHandled then
   begin
     //Reset selected and hide all pages

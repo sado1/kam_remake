@@ -2,56 +2,45 @@ unit KM_ResKeys;
 {$I KaM_Remake.inc}
 interface
 uses
-  Classes, SysUtils, StrUtils, Math, Generics.Collections,
-  KM_ResTexts,
-  KM_ResTypes,
-  KM_KeysSettings;
+  KM_ResTypes;
 
-const
-  KEY_FUNC_LOW = Succ(kfNone); // 1st key function
 
 type
-  TKMKeySpec = record
-  private
-    fKey: Integer;    // Key assigned to this function
-    procedure SetKey(const aKey: Integer);
-  public
-    TextId: Word;     // Text description of the function
-    Area: TKMKeyFuncArea; // Area of effect for the function (common, game, maped)
-    IsChangableByPlayer: Boolean; // Hide debug key and its function from UI
-    property Key: Integer read fKey write SetKey;
-  end;
-
   TKMResKeys = class
   private
-    fFuncs: array [TKMKeyFunction] of TKMKeySpec;
-    function GetFunc(aKeyFunc: TKMKeyFunction): TKMKeySpec;
-    procedure SetFunc(aKeyFunc: TKMKeyFunction; const aFuncInfo: TKMKeySpec);
+    fKeys: array[TKMKeyFunction] of Integer;
+    procedure DoSetKey(aFunc: TKMKeyFunction; const aKey: Integer);
+    function GetKey(aFunc: TKMKeyFunction): Integer;
   public
     constructor Create;
+
     function GetKeyName(aKey: Word): string;
     function GetKeyNameById(aKeyFunc: TKMKeyFunction): string;
     function GetKeyFunctionForKey(aKey: Word; aAreaSet: TKMKeyFuncAreaSet): TKMKeyFunction;
-    function GetKeyFunctionName(aKeyFunc: TKMKeyFunction): string;
-    function AllowKeySet(aArea: TKMKeyFuncArea; aKey: Word): Boolean;
+
+    property Key[aFunc: TKMKeyFunction]: Integer read GetKey write DoSetKey; default;
+
+    function AllowKeySet(aKey: Word): Boolean;
+
     procedure SetKey(aKeyFunc: TKMKeyFunction; aKey: Word);
-    function Count: Integer;
-    property Funcs[aKeyFunc: TKMKeyFunction]: TKMKeySpec read GetFunc write SetFunc; default;
-    procedure Load;
-    procedure Save;
     procedure ResetKeymap;
 
-//    class function GetKeyFunction(aKeyFunStr: string): TKMKeyFunction;
-    class function GetKeyFunctionStr(aKeyFun: TKMKeyFunction): string;
+    procedure Load;
+    procedure Save;
   end;
 
 var
   // All Keys accessible from everywhere
   gResKeys: TKMResKeys;
 
+
 implementation
 uses
-  TypInfo{, RTTI};
+  Math,
+  KM_KeysSettings,
+  KM_ResKeyFuncs,
+  KM_ResTexts;
+
 
 const
   // Default keys
@@ -104,109 +93,27 @@ const
     72                                      // Map Editor history (H)
   );
 
-  // Function text values
-  KEY_FUNC_TX: array [TKMKeyFunction] of Word = (
-    //Common Keys
-    0,
-    TX_KEY_FUNC_SCROLL_LEFT, TX_KEY_FUNC_SCROLL_RIGHT, TX_KEY_FUNC_SCROLL_UP, TX_KEY_FUNC_SCROLL_DOWN,    // Scroll Left, Right, Up, Down
-    TX_KEY_FUNC_MAP_DRAG_SCROLL,                                                                          // Map drag scroll
-    TX_KEY_FUNC_ZOOM_IN, TX_KEY_FUNC_ZOOM_OUT, TX_KEY_FUNC_ZOOM_RESET,                                    // Zoom In/Out/Reset
-    TX_KEY_FUNC_CLOSE_MENU,                                                                               // Close opened menu
-    TX_KEY_FUNC_MUSIC_PREV_TRACK, TX_KEY_FUNC_MUSIC_NEXT_TRACK,                                           // Music track prev / next
-    TX_KEY_FUNC_MUSIC_DISABLE, TX_KEY_FUNC_MUSIC_SHUFFLE,                                                 // Music disable / shuffle
-    TX_KEY_FUNC_MUSIC_VOLUME_UP, TX_KEY_FUNC_MUSIC_VOLUME_DOWN, TX_KEY_FUNC_MUSIC_MUTE,                   // Music volume up / down / mute
-    TX_KEY_FUNC_SOUND_VOLUME_UP, TX_KEY_FUNC_SOUND_VOLUME_DOWN, TX_KEY_FUNC_SOUND_MUTE,                   // Sound volume up / down / mute
-    TX_KEY_FUNC_MUTE_ALL,                                                                                 // Mute music and sound
-
-    TX_KEY_FUNC_DBG_WINDOW,                                                                               // Debug window
-
-    // These keys are not changable by Player in Options menu
-    TX_KEY_FUNC_DBG_MAP, TX_KEY_FUNC_DBG_VICTORY, TX_KEY_FUNC_DBG_DEFEAT, TX_KEY_FUNC_DBG_SCOUT,          // Debug (Show Map, Victory, Defeat, Add Scout)
-
-    // Game Keys
-    TX_KEY_FUNC_MENU_BUILD, TX_KEY_FUNC_MENU_RATIO, TX_KEY_FUNC_MENU_STATS, TX_KEY_FUNC_MENU_MAIN,        // Game menus
-    TX_KEY_FUNC_GAME_SPEED_1,TX_KEY_FUNC_GAME_SPEED_2,TX_KEY_FUNC_GAME_SPEED_3,TX_KEY_FUNC_GAME_SPEED_4,  // Speed ups
-    TX_KEY_FUNC_BEACON, TX_KEY_FUNC_PAUSE, TX_KEY_FUNC_SHOW_TEAMS,                                        // Beacon/Pause/Show team in MP
-    TX_KEY_FUNC_CENTER_ALERT, TX_KEY_FUNC_DELETE_MSG, TX_KEY_FUNC_SHOW_GAME_CHAT,                         // Center to alert/Delete message/Show chat
-    TX_KEY_FUNC_SEL_NXT_BLD_UNIT_SAME_TYPE,                                                               // Select next building/unit/group with same type
-    TX_KEY_FUNC_PLAYER_COLOR_MODE,                                                                        // Player color mode
-    TX_KEY_FUNC_PLAN_ROAD, TX_KEY_FUNC_PLAN_FIELD, TX_KEY_FUNC_PLAN_WINE, TX_KEY_FUNC_ERASE_PLAN,         // Plan road/corn/wine/erase plan(building)
-    TX_KEY_FUNC_SELECT_1, TX_KEY_FUNC_SELECT_2, TX_KEY_FUNC_SELECT_3, TX_KEY_FUNC_SELECT_4, TX_KEY_FUNC_SELECT_5,   // Dynamic selection groups 1-5
-    TX_KEY_FUNC_SELECT_6, TX_KEY_FUNC_SELECT_7, TX_KEY_FUNC_SELECT_8, TX_KEY_FUNC_SELECT_9, TX_KEY_FUNC_SELECT_10,  // Dynamic selection groups 6-10
-    TX_KEY_FUNC_SELECT_11,TX_KEY_FUNC_SELECT_12,TX_KEY_FUNC_SELECT_13,TX_KEY_FUNC_SELECT_14,TX_KEY_FUNC_SELECT_15,  // Dynamic selection groups 11-15
-    TX_KEY_FUNC_SELECT_16,TX_KEY_FUNC_SELECT_17,TX_KEY_FUNC_SELECT_18,TX_KEY_FUNC_SELECT_19,TX_KEY_FUNC_SELECT_20,  // Dynamic selection groups 16-20
-    //Unit keys
-    TX_KEY_FUNC_HALT, TX_KEY_FUNC_SPLIT, TX_KEY_FUNC_LINKUP, TX_KEY_FUNC_FOOD, TX_KEY_FUNC_STORM,         // Army commands
-    TX_KEY_FUNC_FORM_INCREASE, TX_KEY_FUNC_FORM_DECREASE, TX_KEY_FUNC_TURN_CW, TX_KEY_FUNC_TURN_CCW,      // Army commands
-    //House keys
-    TX_KEY_FUNC_TRAIN_PREV, TX_KEY_FUNC_TRAIN_EQUIP, TX_KEY_FUNC_TRAIN_NEXT,                              // School/Barracks/TH commands
-
-    // Spectate MP game/Replay view Keys
-    TX_KEY_FUNC_SPECPANEL_DROPBOX_OPEN_CLOSE,
-    TX_KEY_FUNC_REPLAY_PLAY_NEXT_TICK,
-    TX_KEY_FUNC_SPECTATE_PLAYER_1, TX_KEY_FUNC_SPECTATE_PLAYER_2, TX_KEY_FUNC_SPECTATE_PLAYER_3, TX_KEY_FUNC_SPECTATE_PLAYER_4,    // Spectator/Replay player switch
-    TX_KEY_FUNC_SPECTATE_PLAYER_5, TX_KEY_FUNC_SPECTATE_PLAYER_6, TX_KEY_FUNC_SPECTATE_PLAYER_7, TX_KEY_FUNC_SPECTATE_PLAYER_8,    // Spectator/Replay player switch
-    TX_KEY_FUNC_SPECTATE_PLAYER_9, TX_KEY_FUNC_SPECTATE_PLAYER_10, TX_KEY_FUNC_SPECTATE_PLAYER_11, TX_KEY_FUNC_SPECTATE_PLAYER_12, // Spectator/Replay player switch
-
-    // Map Editor Keys
-    TX_KEY_FUNC_MAPEDIT_EXTRA,                                                                            // Map Editor Extra's menu
-    TX_KEY_FUNC_MAPEDIT_TERAIN_EDIT, TX_KEY_FUNC_MAPEDIT_VILLAGE_PLAN,                                    // Map Editor menus
-    TX_KEY_FUNC_MAPEDIT_VISUAL_SCRIPT, TX_KEY_FUNC_MAPEDIT_GLOBAL_SCRIPT, TX_KEY_FUNC_MAPEDIT_MENU_MAIN,  // Map Editor menus
-    TX_KEY_FUNC_MAPEDIT_SUBMENU_1, TX_KEY_FUNC_MAPEDIT_SUBMENU_2, TX_KEY_FUNC_MAPEDIT_SUBMENU_3,          // Map Editor sub-menus
-    TX_KEY_FUNC_MAPEDIT_SUBMENU_4, TX_KEY_FUNC_MAPEDIT_SUBMENU_5, TX_KEY_FUNC_MAPEDIT_SUBMENU_6,          // Map Editor sub-menus
-    TX_KEY_FUNC_MAPEDIT_SUBMENU_ACTION_1, TX_KEY_FUNC_MAPEDIT_SUBMENU_ACTION_2,   // Map Editor sub-menu actions
-    TX_KEY_FUNC_MAPEDIT_SUBMENU_ACTION_3, TX_KEY_FUNC_MAPEDIT_SUBMENU_ACTION_4,   // Map Editor sub-menu actions
-    TX_KEY_FUNC_MAPEDIT_SUBMENU_ACTION_5, TX_KEY_FUNC_MAPEDIT_SUBMENU_ACTION_6,   // Map Editor sub-menu actions
-    TX_KEY_FUNC_MAPEDIT_SUBMENU_ACTION_7,                                         // Map Editor sub-menu actions
-    TX_KEY_FUNC_MAPEDIT_OBJ_PALETTE,                                              // Map Editor show objects palette
-    TX_KEY_FUNC_MAPEDIT_TILES_PALETTE,                                            // Map Editor show tiles palette
-    TX_KEY_FUNC_MAPEDIT_UNIV_ERASOR,                                              // Map Editor universal erasor
-    TX_KEY_FUNC_MAPEDIT_PAINT_BUCKET,                                             // Map Editor paint bucket
-    TX_KEY_FUNC_MAPEDIT_HISTORY                                                   // Map Editor history
-  );
 
 { TKMResKeys }
 constructor TKMResKeys.Create;
-var
-  KF: TKMKeyFunction;
 begin
   inherited;
 
   ResetKeymap;
-
-  for KF := KEY_FUNC_LOW to High(TKMKeyFunction) do
-  begin
-    fFuncs[KF].TextId := KEY_FUNC_TX[KF];
-
-    case KF of
-      kfScrollLeft..kfDebugAddscout:    fFuncs[KF].Area := faCommon;
-      kfMenuBuild..kfSelect20:          fFuncs[KF].Area := faGame;
-      kfArmyHalt..kfArmyRotateCcw:      fFuncs[KF].Area := faUnit;
-      kfTrainGotoPrev..kfTrainGotoNext: fFuncs[KF].Area := faHouse;
-      kfSpecpanelSelectDropbox..kfSpectatePlayer12: fFuncs[KF].Area := faSpecReplay;
-      else    fFuncs[KF].Area := faMapEdit;
-    end;
-
-    fFuncs[KF].IsChangableByPlayer := (KF in [kfDebugRevealmap..kfDebugAddscout]);
-  end;
 end;
 
 
-function TKMResKeys.Count: Integer;
+function TKMResKeys.GetKey(aFunc: TKMKeyFunction): Integer;
 begin
-  Result := Integer(High(TKMKeyFunction));
+  Result := fKeys[aFunc];
 end;
 
 
-function TKMResKeys.GetFunc(aKeyFunc: TKMKeyFunction): TKMKeySpec;
+procedure TKMResKeys.DoSetKey(aFunc: TKMKeyFunction; const aKey: Integer);
 begin
-  Result := fFuncs[aKeyFunc];
-end;
+  if (aKey = -1) or not InRange(aKey, 0, 255) then Exit;
 
-
-procedure TKMResKeys.SetFunc(aKeyFunc: TKMKeyFunction; const aFuncInfo :TKMKeySpec);
-begin
-  fFuncs[aKeyFunc] := aFuncInfo;
+  fKeys[aFunc] := aKey;
 end;
 
 
@@ -215,47 +122,11 @@ var
   KF: TKMKeyFunction;
 begin
   for KF := KEY_FUNC_LOW to High(TKMKeyFunction) do
-    fFuncs[KF].Key := DEF_KEYS[KF];
+    fKeys[KF] := DEF_KEYS[KF];
 end;
 
 
-function TKMResKeys.GetKeyFunctionName(aKeyFunc: TKMKeyFunction): string;
-begin
-  Result := gResTexts[KEY_FUNC_TX[aKeyFunc]];
-end;
-
-
-function TKMResKeys.GetKeyNameById(aKeyFunc: TKMKeyFunction): string;
-begin
-  Result := GetKeyName(fFuncs[aKeyFunc].Key);
-end;
-
-
-procedure TKMResKeys.Load;
-begin
-  gKeySettings.LoadFromXML;
-end;
-
-
-procedure TKMResKeys.Save;
-begin
-  gKeySettings.SaveToXML;
-end;
-
-
-function TKMResKeys.GetKeyFunctionForKey(aKey: Word; aAreaSet: TKMKeyFuncAreaSet): TKMKeyFunction;
-var
-  KF: TKMKeyFunction;
-begin
-  Result := kfNone;
-
-  for KF := KEY_FUNC_LOW to High(TKMKeyFunction) do
-    if (fFuncs[KF].Key = aKey) and (fFuncs[KF].Area in aAreaSet) then
-      Exit(KF);
-end;
-
-
-function TKMResKeys.AllowKeySet(aArea: TKMKeyFuncArea; aKey: Word): Boolean;
+function TKMResKeys.AllowKeySet(aKey: Word): Boolean;
 begin
   // False if Key equals to Shift or Ctrl, which are used in game for specific bindings
   Result := not (aKey in [16, 17]);
@@ -269,22 +140,41 @@ begin
   // Reset previous key binding if Key areas overlap
   if aKey <> 0 then
     for KF := KEY_FUNC_LOW to High(TKMKeyFunction) do
-      if fFuncs[KF].Key = aKey then
-        case fFuncs[KF].Area of
-          faCommon:     fFuncs[KF].Key := 0;
-          faGame:       if (fFuncs[aKeyFunc].Area in [faGame, faUnit, faHouse, faCommon]) then
-                          fFuncs[KF].Key := 0;
-          faUnit:       if (fFuncs[aKeyFunc].Area in [faUnit, faGame, faCommon]) then
-                          fFuncs[KF].Key := 0;
-          faHouse:      if (fFuncs[aKeyFunc].Area in [faHouse, faGame, faCommon]) then
-                          fFuncs[KF].Key := 0;
-          faSpecReplay: if (fFuncs[aKeyFunc].Area in [faSpecReplay, faCommon]) then
-                          fFuncs[KF].Key := 0;
-          faMapEdit:    if (fFuncs[aKeyFunc].Area in [faMapEdit, faCommon]) then
-                          fFuncs[KF].Key := 0;
+      if fKeys[KF] = aKey then
+        case gResKeyFuncs[KF].Area of
+          faCommon:     fKeys[KF] := 0;
+          faGame:       if (gResKeyFuncs[aKeyFunc].Area in [faGame, faUnit, faHouse, faCommon]) then
+                          fKeys[KF] := 0;
+          faUnit:       if (gResKeyFuncs[aKeyFunc].Area in [faUnit, faGame, faCommon]) then
+                          fKeys[KF] := 0;
+          faHouse:      if (gResKeyFuncs[aKeyFunc].Area in [faHouse, faGame, faCommon]) then
+                          fKeys[KF] := 0;
+          faSpecReplay: if (gResKeyFuncs[aKeyFunc].Area in [faSpecReplay, faCommon]) then
+                          fKeys[KF] := 0;
+          faMapEdit:    if (gResKeyFuncs[aKeyFunc].Area in [faMapEdit, faCommon]) then
+                          fKeys[KF] := 0;
         end;
 
-  fFuncs[aKeyFunc].Key := aKey;
+  fKeys[aKeyFunc] := aKey;
+end;
+
+
+function TKMResKeys.GetKeyFunctionForKey(aKey: Word; aAreaSet: TKMKeyFuncAreaSet): TKMKeyFunction;
+var
+  KF: TKMKeyFunction;
+begin
+  Result := kfNone;
+
+  for KF := KEY_FUNC_LOW to High(TKMKeyFunction) do
+    if (fKeys[KF] = aKey) and (gResKeyFuncs[KF].Area in aAreaSet) then
+      Exit(KF);
+end;
+
+
+
+function TKMResKeys.GetKeyNameById(aKeyFunc: TKMKeyFunction): string;
+begin
+  Result := GetKeyName(fKeys[aKeyFunc]);
 end;
 
 
@@ -416,26 +306,17 @@ begin
 end;
 
 
-//class function TKMResKeys.GetKeyFunction(aKeyFunStr: string): TKMKeyFunction;
-//begin
-//  Result := TRttiEnumerationType.GetValue<TKMKeyFunction>(aKeyFunStr);
-//end;
-
-
-class function TKMResKeys.GetKeyFunctionStr(aKeyFun: TKMKeyFunction): string;
+procedure TKMResKeys.Load;
 begin
-//  Result := TRttiEnumerationType.GetName(aKeyFun);
-  Result := GetEnumName(TypeInfo(TKMKeyFunction), Integer(aKeyFun));
+  gKeySettings.LoadFromXML;
 end;
 
 
-{ TKMKeySpec }
-procedure TKMKeySpec.SetKey(const aKey: Integer);
+procedure TKMResKeys.Save;
 begin
-  if (aKey = -1) or not InRange(aKey, 0, 255) then Exit;
-
-  fKey := aKey;
+  gKeySettings.SaveToXML;
 end;
 
 
 end.
+

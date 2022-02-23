@@ -6,7 +6,7 @@ uses
   KM_Controls,
   KromOGLUtils,
   KM_MainSettings,
-  KM_Pics, KM_Resolutions, KM_ResKeys, KM_GUICommonKeys,
+  KM_Pics, KM_Resolutions, KM_ResKeyFuncs, KM_GUICommonKeys,
   KM_InterfaceDefaults, KM_InterfaceTypes, KM_CommonTypes;
 
 

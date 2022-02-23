@@ -516,7 +516,7 @@ end;
 
 procedure TFormMain.FormKeyDownProc(aKey: Word; aShift: TShiftState);
 begin
-  if aKey = gResKeys[kfDebugWindow].Key then
+  if aKey = gResKeys[kfDebugWindow] then
   begin
     SHOW_DEBUG_CONTROLS := not SHOW_DEBUG_CONTROLS;
     ControlsSetVisibile(SHOW_DEBUG_CONTROLS, not (ssCtrl in aShift)); //Hide groupbox when Ctrl is pressed
