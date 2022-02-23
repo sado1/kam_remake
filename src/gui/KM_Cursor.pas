@@ -2,7 +2,7 @@ unit KM_Cursor;
 {$I KaM_Remake.inc}
 interface
 uses
-  Classes, KM_Defaults, KM_Points, KM_ResTilesetTypes;
+  Classes, KM_Defaults, KM_Points, KM_ResTilesetTypes, KM_AITypes;
 
 
 type
@@ -50,6 +50,15 @@ type
     // MapEd other pages
     MapEdDir: Byte;
 
+
+    // MapEd TownDefence
+    MapEdDefencePositionDirection: TKMDirection; //direction of Units and Defence Pos
+    MapEdDefencePositionGType: TKMGroupType; //group type of defence position
+    MapEdDefencePositionGLVLType: Integer; // group lvl which is added with def pos - 0 : low hp units, 1 : leather armored units, 2:Iron armored units
+    MapEdDefencePositionLType: TKMAIDefencePosType; // defence pos type - defender/attacker
+    MapEdDefencePositionSetGroups : Boolean; //add group with added defence pos
+    MapEdGroupFormation : TKMFormation;//formations of added group
+
     constructor Create;
     property Mode: TKMCursorMode read fMode write SetMode;
   end;
@@ -73,6 +82,12 @@ end;
 
 procedure TKMCursor.Reset;
 begin
+  MapEdDefencePositionDirection := dirN;
+  MapEdDefencePositionGType := gtMelee;
+  MapEdDefencePositionLType := dtFrontLine;
+  MapEdGroupFormation.NumUnits := 0;
+  MapEdGroupFormation.UnitsPerRow := 1;
+
   DragOffset := KMPOINT_ZERO;
   MapEdUseMagicBrush := False;
   SState := [];

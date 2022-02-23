@@ -10,6 +10,7 @@ type
   TKMMapEdTownUnits = class(TKMMapEdSubMenuPage)
   private
     procedure Town_UnitChange(Sender: TObject);
+    procedure Town_NumericChange(Sender: TObject);
     procedure Town_UnitRefresh;
   protected
     Panel_Units: TKMPanel;
@@ -17,6 +18,9 @@ type
       Button_Citizen: array [0..13] of TKMButtonFlat;
       Button_Warriors: array [0..13] of TKMButtonFlat;
       Button_Animals: array [0..7] of TKMButtonFlat;
+
+      Numeric_WarrNumber:array [0..1] of TKMNumericEdit;  //number of units in group + number of rows
+
   public
     constructor Create(aParent: TKMPanel);
 
@@ -86,6 +90,28 @@ begin
     Button_Animals[I].OnClick := Town_UnitChange;
   end;
 
+
+
+  with TKMLabel.Create(Panel_Units, 20, 345, Panel_Units.Width, 0, gResTexts[TX_MAPED_UNITS_FORMATION_COUNT], fntOutline, taLeft) do
+    Anchors := [anLeft, anTop, anRight];
+
+
+  Numeric_WarrNumber[0] := TKMNumericEdit.Create(Panel_Units, 20, 365, 0, 200);
+  Numeric_WarrNumber[0].Anchors := [anLeft, anTop, anRight];
+  Numeric_WarrNumber[0].Hint := gResTexts[TX_MAPED_UNITS_FORMATION_COUNT_HINT];
+  Numeric_WarrNumber[0].OnChange := Town_NumericChange;
+  Numeric_WarrNumber[0].Value := 0;
+
+  with TKMLabel.Create(Panel_Units, 100, 345, Panel_Units.Width - 100, 0, gResTexts[TX_MAPED_UNITS_FORMATION_COUNT], fntOutline, taLeft) do
+    Anchors := [anLeft, anTop, anRight];
+
+  Numeric_WarrNumber[1] := TKMNumericEdit.Create(Panel_Units, 100, 365, 0, 25);
+  Numeric_WarrNumber[1].Anchors := [anLeft, anTop, anRight];
+  Numeric_WarrNumber[1].Hint := gResTexts[TX_MAPED_UNITS_FORMATION_ROWS_HINT];
+  Numeric_WarrNumber[1].OnChange := Town_NumericChange;
+  Numeric_WarrNumber[1].Value := 1;
+
+
   for I := 0 to High(fSubMenuActionsEvents) do
     fSubMenuActionsEvents[I] := Town_UnitChange;
 
@@ -97,12 +123,19 @@ end;
 
 procedure TKMMapEdTownUnits.Town_UnitChange(Sender: TObject);
 begin
+
   gCursor.Mode := cmUnits;
   gCursor.Tag1 := Byte(TKMButtonFlat(Sender).Tag);
 
   Town_UnitRefresh;
 end;
 
+procedure TKMMapEdTownUnits.Town_NumericChange(Sender: TObject);
+begin
+  //refresh formations
+  gCursor.MapEdGroupFormation.NumUnits := Numeric_WarrNumber[0].Value;
+  gCursor.MapEdGroupFormation.UnitsPerRow := Numeric_WarrNumber[1].Value;
+end;
 
 procedure TKMMapEdTownUnits.Town_UnitRefresh;
 var

@@ -470,7 +470,7 @@
 482:Equip rate iron
 483:Autodefence
 484:AI creates and manages defense positions automatically. Ignores all manually set defense positions
-485:Place defence position for AI
+485:Place defence position for AI. To change defence position parameters use :  RMB - direction, CTRL + RMB - group type, ALT + RMB - defensive/attacking 
 486:AI defence positions
 487:Laborers
 488:Serfs per 10 houses
@@ -1037,7 +1037,7 @@
 1087:Objects palette
 1088:Close palette
 1089:Remove units/groups
-1090:Replay autopause
+1090:Replay|autopause
 1091:Automatically pause replay when peacetime ends
 1092:Show beacons
 1093:Show players beacons
@@ -1134,8 +1134,8 @@
 1184:Host
 1185:Go to selected house
 1186:Go to selected unit
-1187:Ally / Enemy color mode
-1188:Self / ally / enemy colors for players instead of initial player colors
+1187:Ally / enemy |color mode
+1188:Self/ally/enemy colors for players instead of initial player colors
 1189:[$404040]Host is ready to start. Please press '[][$0707FF]%s[][$404040]'[]
 1190:Ask to press Ready
 1191:Alert to get ready was sent to %s players
@@ -1463,9 +1463,9 @@
 1513:Current game speed
 1514:Current replay speed
 1515:Recorded game speed
-1516:HD movements
-1517:HD movements
-1518:Increase units and projectiles movement resolution
+1516:Interpolated render
+1517:Interpolated|render
+1518:Will interpolate unit movement
 1519:For player %0:s to %1:s player's %2:s %3:s must be %4:s
 1520:win
 1521:survive
@@ -1473,14 +1473,16 @@
 1523:saved
 1524:main buildings ( %s )
 1525:Only symmetrical alliances are allowed
-1526:HD animations
-1527:HD animations
-1528:Increase number of frames used in animations
-1529:Smooth peaks
-1530:Make mountains peaks smoother
-1531:Game Settings
-1532:Replay Settings
-1533:Map Editor Settings
-1534:Notice: Advanced AI use its own formation parameters and will ignore these settings
-1535:To Campaign Map
-1536:Take any group type
+1526:Interpolated animations
+1527:Interpolated|animations
+1528:Will interpolate sprite animations|Interpolated render should be enabled
+1537:Group level
+1538:0 - low HP units, 1 - Leather armored units, 2 - Iron units
+1539:Add group
+1540:Add group after placing defence position. Group  depends on AI formations
+1541:Units
+1542:Number of units in group. At 0 it takes the AI formations
+1543:Columns
+1544:Number of columns in group. If number of units is 0 it takes the AI formations rows count.
+1545:Set Smooth Coal
+1546:Coal deposits in the selection will be automatically set from the tiles with lowest coal count at the edges to the highest in the center

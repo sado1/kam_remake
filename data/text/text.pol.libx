@@ -470,7 +470,7 @@
 482:Uzbrój żelaznych
 483:Autom. obrona
 484:SI tworzy i zarządza pozycjami obrony automatycznie
-485:Umieść pozycje obrony dla SI
+485:Umieść pozycje obrony dla SI. Do zmiany parametrów pozycji użyj :  RMB - kierunek, CTRL + RMB - typ oddziału, ALT + RMB - obronna/atakująca 
 486:Pozycje obrony SI
 487:Robotnicy
 488:Pomocnicy/10 budynków
@@ -1017,7 +1017,7 @@
 1087:Paleta obiektów
 1088:Zamknij paletę
 1089:Usuń jednostki/grupy
-1090:Powtórz autopauza
+1090:Powtórz|autopauza
 1091:Automatycznie wstrzymuj odtwarzanie po zakończeniu czasu pokoju
 1092:Pokaż sygnały
 1093:Pokaż sygnały graczy
@@ -1114,7 +1114,7 @@
 1184:Host
 1185:Idź do zaznaczonego budynku
 1186:Idź do zaznaczonej jednostki
-1187:Tryb koloru sojusznika / wroga
+1187:Tryb koloru|sojusznika/wroga
 1188:Kolory własny / sojusznika / wroga dla graczy zamiast kolorów początkowych
 1189:[$404040]Host jest gotowy do startu. proszę nacisnąć '[][$0707FF]%s[][$404040]'[]
 1190:Wezwij do wciśnięcia Gotowy
@@ -1439,3 +1439,31 @@
 1509:Pnie drzew
 1510:Każde-
 1511:Wszystkie drzewa bez pni
+
+1512:Czas misji:
+1513:Aktualna prędkość gry
+1514:Aktualna prędkość powtórki
+1515:Nagrana prędkość gry
+1516:Wygładzone renderowanie
+1517:Wygładzone|renderowanie
+1518:Będzie wygładzać róch jednostek
+1519:Dla gracza %0:s do %1:s player's %2:s %3:s musi być %4:s
+1520:wygranej
+1521:przetrwania
+1522:zniszczone
+1523:oszczędzone
+1524:główne budynki ( %s )
+1525:Tylko symetryczne sojusze są dozwolone
+1526:Wygładzone animacje
+1527:Wygładzone|animacje
+1528:Będzie wygładzać animacje |wygładzone renderowanie powinno być włączone
+1537:Poziom oddziału
+1538:0 - słabi żołnierze, 1 - żołnierze uzbrojeni w skórę, 2 - żołnierze uzbrojeni w żelazo
+1539:Dodaj oddział
+1540:Dodaj oddział po postawieniu pozycji obronnej. Oddział zależy od formacji wojsk AI
+1541:Jednostki
+1542:Liczba żołnierzy w oddziale. Ustawione na '0', to użyte zostaną formacje wojsk AI
+1543:Kolumny
+1544:Liczba kolumn w oddziale. Jeśli ilość jednostek jest równa 0, będą użyte formacje wojsk AI
+1545:Wygładź Węgiel
+1546:Złoża węgla w zaznaczeniu zostaną automatycznie ustawione od najmniejszej ilości węgla na brzegach, po największe w środku
