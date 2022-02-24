@@ -2,7 +2,7 @@ unit KM_Cursor;
 {$I KaM_Remake.inc}
 interface
 uses
-  Classes, KM_Defaults, KM_Points, KM_ResTilesetTypes, KM_AITypes;
+  Classes, KM_Defaults, KM_Points, KM_ResTilesetTypes, KM_AITypes, KM_MapEdTypes;
 
 
 type
@@ -52,11 +52,11 @@ type
 
 
     // MapEd TownDefence
-    MapEdDefencePositionDirection: TKMDirection; //direction of Units and Defence Pos
-    MapEdDefencePositionGType: TKMGroupType; //group type of defence position
-    MapEdDefencePositionGLVLType: Integer; // group lvl which is added with def pos - 0 : low hp units, 1 : leather armored units, 2:Iron armored units
-    MapEdDefencePositionLType: TKMAIDefencePosType; // defence pos type - defender/attacker
-    MapEdDefencePositionSetGroups : Boolean; //add group with added defence pos
+    MapEdDefPosDir: TKMDirection; //direction of Units and Defence Pos
+    MapEdDefPosGroupType: TKMGroupType; //group type of defence position
+    MapEdDefPosGroupLevel: TKMGroupLevel; // group lvl which is added with def pos - 0: low hp units, 1: leather units, 2: iron units
+    MapEdDefPosType: TKMAIDefencePosType; // defence pos type - defender/attacker
+    MapEdDefPosSetGroup : Boolean; //add group with added defence pos
     MapEdGroupFormation : TKMFormation;//formations of added group
 
     constructor Create;
@@ -76,18 +76,18 @@ constructor TKMCursor.Create;
 begin
   inherited;
 
+  MapEdDefPosDir := dirS;
+  MapEdDefPosGroupType := gtMelee;
+  MapEdDefPosType := dtFrontLine;
+  MapEdGroupFormation.NumUnits := 1;
+  MapEdGroupFormation.UnitsPerRow := 1;
+
   Reset;
 end;
 
 
 procedure TKMCursor.Reset;
 begin
-  MapEdDefencePositionDirection := dirN;
-  MapEdDefencePositionGType := gtMelee;
-  MapEdDefencePositionLType := dtFrontLine;
-  MapEdGroupFormation.NumUnits := 0;
-  MapEdGroupFormation.UnitsPerRow := 1;
-
   DragOffset := KMPOINT_ZERO;
   MapEdUseMagicBrush := False;
   SState := [];

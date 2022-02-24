@@ -162,7 +162,8 @@ uses
   KM_Projectiles,
   KM_TerrainTypes,
   KM_HandEntity,
-  KM_ResInterpolation;
+  KM_ResInterpolation,
+  KM_AITypes;
 
 
 const
@@ -1516,14 +1517,14 @@ begin
                              gMySpectator.Hand.FlagColor);
                           end;
     MARKER_DEFENCE:       begin
-                            RenderSpriteOnTile(P, byte(gCursor.MapEdDefencePositionDirection) + 510, gMySpectator.Hand.FlagColor);
-                            case byte(gCursor.MapEdDefencePositionGType) of
-                              2 : RenderSpriteOnTile(P, 371, gMySpectator.Hand.FlagColor);
-                              3 : RenderSpriteOnTile(P, 374, gMySpectator.Hand.FlagColor);
-                              4 : RenderSpriteOnTile(P, 376, gMySpectator.Hand.FlagColor);
-                              5 : RenderSpriteOnTile(P, 377, gMySpectator.Hand.FlagColor);
+                            RenderSpriteOnTile(P, Ord(gCursor.MapEdDefPosDir) + 510, gMySpectator.Hand.FlagColor);
+                            case gCursor.MapEdDefPosGroupType of
+                              gtMelee:      RenderSpriteOnTile(P, 371, gMySpectator.Hand.FlagColor);
+                              gtAntiHorse:  RenderSpriteOnTile(P, 374, gMySpectator.Hand.FlagColor);
+                              gtRanged:     RenderSpriteOnTile(P, 376, gMySpectator.Hand.FlagColor);
+                              gtMounted:    RenderSpriteOnTile(P, 377, gMySpectator.Hand.FlagColor);
                             end;
-                            if byte(gCursor.MapEdDefencePositionLType) = 1 then
+                            if gCursor.MapEdDefPosType = dtBackLine then
                               RenderWireTile(P, icBlue, 0.1);
                           end;
     MARKER_CENTERSCREEN:  RenderSpriteOnTile(P, 391, gMySpectator.Hand.FlagColor);
@@ -1807,26 +1808,26 @@ procedure TRenderPool.RenderForegroundUI_Units;
 var
   obj: TObject;
   P: TKMPoint;
-  aDir : TKMDirection;
+  dir : TKMDirection;
 begin
   if gCursor.Tag1 = 255 then
   begin
     obj := gMySpectator.HitTestCursorWGroup(True);
     TryRenderUnitOrGroup(obj, nil, nil, True, True, DELETE_COLOR, 0, DELETE_COLOR);
   end
-  else begin
-
-    if TKMUnitType(gCursor.Tag1) in [CITIZEN_MIN..CITIZEN_MAX] then
-      aDir := dirS
+  else
+  begin
+    if TKMUnitType(gCursor.Tag1) in UNITS_CITIZEN then
+      dir := dirS
     else
-      aDir := gCursor.MapEdDefencePositionDirection;
+      dir := gCursor.MapEdDefPosDir;
 
-    if not (aDir in [DirN..DirNW])  then
-      aDir := DirN;
+    if not (dir in [dirN..dirNW])  then
+      dir := dirN;
 
     P := gCursor.Cell;
     if gTerrain.CanPlaceUnit(P, TKMUnitType(gCursor.Tag1)) then
-      AddUnitWithDefaultArm(TKMUnitType(gCursor.Tag1), 0, uaWalk, aDir, UNIT_STILL_FRAMES[dirS], P.X+UNIT_OFF_X, P.Y+UNIT_OFF_Y, gMySpectator.Hand.FlagColor, True)
+      AddUnitWithDefaultArm(TKMUnitType(gCursor.Tag1), 0, uaWalk, dir, UNIT_STILL_FRAMES[dirS], P.X+UNIT_OFF_X, P.Y+UNIT_OFF_Y, gMySpectator.Hand.FlagColor, True)
     else
       RenderSpriteOnTile(P, TC_BLOCK); // Red X
   end;

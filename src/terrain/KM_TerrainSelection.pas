@@ -10,8 +10,6 @@ uses
   KM_MapEdTypes, KM_Defaults;
 
 
-  function InRangeI(A,B, C : Integer) : Integer;
-
 type
   TKMSelectionEdit = (seNone, seNewRect, seResizeX1, seResizeY1, seResizeX2, seResizeY2, seMove);
   TKMSelectionMode = (smSelecting, smPasting);
@@ -47,9 +45,9 @@ type
     fLandTemp: TKMLand;
     fLandMapEdTemp: TKMMapEdLand;
     fLandTerKindTemp: TKMLandTerKind;
-    LastTiles : array[0..255,0..255] of integer;
+    fLastTiles : array[0..255,0..255] of Integer;
 
-    function CheckTilesAround(const aX,aY, aTile : Integer) : Boolean;
+    function CheckTilesAround(const aX, aY, aTile: Integer): Boolean;
 
     procedure TileToBuffer(const aTile: TKMTerrainTile; const aMapEdTile: TKMMapEdTerrainTile;
                            const aPaintedTile: TKMPainterTile; var aBuffer: TKMBufferData);
@@ -323,36 +321,25 @@ begin
   Result := Clipboard.HasFormat(CF_MAPDATA);
 end;
 
-function InRangeI(A,B,C : Integer) : integer;
-begin
-	If A < B then
-		Result := B
-	else
-		Result := A;
 
-	If A > C then
-		Result := C
-	else
-		Result := A;
-end;
-
-function TKMSelection.CheckTilesAround(const aX,aY,aTile : Integer) : Boolean;
-var A,B,C,D : integer;
+function TKMSelection.CheckTilesAround(const aX, aY, aTile: Integer): Boolean;
+var
+  A,B,C,D: Integer;
 begin
-  Result := false;
+  Result := False;
 
   A := fSelectionRect.Left;
   B := fSelectionRect.Right;
   C := fSelectionRect.Top;
   D := fSelectionRect.Bottom;
 
-  if (LastTiles[InRangeI(aX-1, A,B),aY] = aTile) and
-  (LastTiles[InRangeI(aX+1, A,B),aY] = aTile) and
-  (LastTiles[aX,InRangeI(aY-1, C,D)] = aTile) and
-  (LastTiles[aX,InRangeI(aY+1, C,D)] = aTile) then
-    Result := true;
-
+  if    (fLastTiles[EnsureRange(aX-1, A, B), aY]                      = aTile)
+    and (fLastTiles[EnsureRange(aX+1, A, B), aY]                      = aTile)
+    and (fLastTiles[aX,                      EnsureRange(aY-1, C, D)] = aTile)
+    and (fLastTiles[aX,                      EnsureRange(aY+1, C, D)] = aTile) then
+    Result := True;
 end;
+
 
 procedure TKMSelection.DuplicateLandToTemp;
 var
@@ -849,51 +836,53 @@ end;
 
 
 procedure TKMSelection.SetNiceCoal;
-var  I, aX, aY, aTileTypeTo,aTileTypeFrom: Integer;
+var
+  I, X, Y, tileTypeTo, tileTypeFrom: Integer;
 begin
+  tileTypeTo := 152;
+  tileTypeFrom := 152;
 
   for I := 0 to 4 do
   begin
     case I of
-       0 :begin
-            aTileTypeTo := 152;
-         end;
-       4 : begin
-           aTileTypeTo := 263;
-           aTileTypeFrom := 155;
-         end;
-       else begin
-          aTileTypeTo := aTileTypeTo + 1;
-          aTileTypeFrom := aTileTypeTo - 1;
-        end;
+       0: tileTypeTo := 152;
+       4: begin
+           tileTypeTo := 263;
+           tileTypeFrom := 155;
+          end;
+       else
+          begin
+            tileTypeTo := tileTypeTo + 1;
+            tileTypeFrom := tileTypeTo - 1;
+          end;
     end;
+
     if I <> 0 then
-      for aX := fSelectionRect.Left+1 to fSelectionRect.Right do
-       for aY := fSelectionRect.Top+1 to fSelectionRect.Bottom do
-        LastTiles[aX,aY] := gTerrain.Land^[aY, aX].BaseLayer.Terrain;
+      for X := fSelectionRect.Left+1 to fSelectionRect.Right do
+        for Y := fSelectionRect.Top+1 to fSelectionRect.Bottom do
+          fLastTiles[X,Y] := gTerrain.Land^[Y, X].BaseLayer.Terrain;
 
-    for aX := fSelectionRect.Left+1 to fSelectionRect.Right do
-     for aY := fSelectionRect.Top+1 to fSelectionRect.Bottom do
-     begin
-      if I = 0 then
+    for X := fSelectionRect.Left+1 to fSelectionRect.Right do
+      for Y := fSelectionRect.Top+1 to fSelectionRect.Bottom do
       begin
-        if (gTerrain.Land^[aY, aX].BaseLayer.Terrain = 152) or
-        (gTerrain.Land^[aY, aX].BaseLayer.Terrain = 153) or
-        (gTerrain.Land^[aY, aX].BaseLayer.Terrain = 154) or
-        (gTerrain.Land^[aY, aX].BaseLayer.Terrain = 155) or
-        (gTerrain.Land^[aY, aX].BaseLayer.Terrain = 263) then
+        if I = 0 then
         begin
-          gTerrain.Land^[aY, aX].BaseLayer.Terrain  := aTileTypeTo;
-          gTerrain.Land^[aY, aX].BaseLayer.Rotation  := KamRandom(4,'');
+          if   (gTerrain.Land^[Y, X].BaseLayer.Terrain = 152)
+            or (gTerrain.Land^[Y, X].BaseLayer.Terrain = 153)
+            or (gTerrain.Land^[Y, X].BaseLayer.Terrain = 154)
+            or (gTerrain.Land^[Y, X].BaseLayer.Terrain = 155)
+            or (gTerrain.Land^[Y, X].BaseLayer.Terrain = 263) then
+          begin
+            gTerrain.Land^[Y, X].BaseLayer.Terrain := tileTypeTo;
+            gTerrain.Land^[Y, X].BaseLayer.Rotation := KamRandom(4, 'TKMSelection.SetNiceCoal');
+          end;
+        end
+        else
+        begin
+          if CheckTilesAround(X, Y, tileTypeFrom) then
+            gTerrain.Land^[Y, X].BaseLayer.Terrain  := tileTypeTo;
         end;
-      end else
-      begin
-        if CheckTilesAround(aX,aY, aTileTypeFrom) then
-          gTerrain.Land^[aY, aX].BaseLayer.Terrain  := aTileTypeTo;
       end;
-
-     end;
-
   end;
 end;
 

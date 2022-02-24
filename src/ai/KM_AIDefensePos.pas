@@ -239,6 +239,7 @@ begin
   Result := fPositions.Count;
 end;
 
+
 //Find DefencePosition at location
 function TAIDefencePositions.FindPositionAtLoc(aPos: TKMPoint): TAIDefencePosition;
 var
@@ -247,12 +248,10 @@ begin
   Result := nil;
 
   for I := 0 to Count - 1 do
-  if Positions[I].Position.Loc = aPos then
-  begin
-    Result := Positions[I];
-    Break;
-  end;
+    if Positions[I].Position.Loc = aPos then
+      Exit(Positions[I]);
 end;
+
 
 function TAIDefencePositions.GetPosition(aIndex: Integer): TAIDefencePosition;
 begin

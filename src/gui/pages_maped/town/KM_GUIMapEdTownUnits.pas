@@ -18,8 +18,7 @@ type
       Button_Citizen: array [0..13] of TKMButtonFlat;
       Button_Warriors: array [0..13] of TKMButtonFlat;
       Button_Animals: array [0..7] of TKMButtonFlat;
-
-      Numeric_WarrNumber:array [0..1] of TKMNumericEdit;  //number of units in group + number of rows
+      NumEd_WarrCount, NumEd_WarrColumns: TKMNumericEdit;  //number of units in group + number of rows
 
   public
     constructor Create(aParent: TKMPanel);
@@ -38,7 +37,8 @@ uses
   KM_HandsCollection,
   KM_InterfaceGame, KM_Cursor, KM_RenderUI,
   KM_Resource, KM_ResUnits, KM_ResFonts, KM_ResTexts, KM_ResTypes,
-  KM_Utils;
+  KM_Utils,
+  KM_MapEdTypes;
 
 
 { TKMMapEdTownUnits }
@@ -80,7 +80,33 @@ begin
     Button_Warriors[I].OnClick := Town_UnitChange;
   end;
 
-  lineY := 262;
+  lineY := 258;
+
+  with TKMLabel.Create(Panel_Units, 9, lineY, Panel_Units.Width, 20, gResTexts[TX_MAPED_UNITS_FORMATION_NUMBER], fntMetal, taLeft) do
+  begin
+    Anchors := [anLeft, anTop, anRight];
+    Hint := gResTexts[TX_MAPED_UNITS_FORMATION_NUMBER_HINT];
+  end;
+
+  NumEd_WarrCount := TKMNumericEdit.Create(Panel_Units, 9, lineY + 20, 0, MAPED_GROUP_MAX_CNT);
+  NumEd_WarrCount.Anchors := [anLeft, anTop, anRight];
+  NumEd_WarrCount.Hint := gResTexts[TX_MAPED_UNITS_FORMATION_NUMBER_HINT];
+  NumEd_WarrCount.OnChange := Town_NumericChange;
+  NumEd_WarrCount.Value := 1;
+
+  with TKMLabel.Create(Panel_Units, 105, lineY, Panel_Units.Width - 100, 20, gResTexts[TX_MAPED_UNITS_FORMATION_COLUMNS], fntMetal, taLeft) do
+  begin
+    Anchors := [anLeft, anTop, anRight];
+    Hint := gResTexts[TX_MAPED_UNITS_FORMATION_COLUMNS_HINT];
+  end;
+
+  NumEd_WarrColumns := TKMNumericEdit.Create(Panel_Units, 105, lineY + 20, 0, 25);
+  NumEd_WarrColumns.Anchors := [anLeft, anTop, anRight];
+  NumEd_WarrColumns.Hint := gResTexts[TX_MAPED_UNITS_FORMATION_COLUMNS_HINT];
+  NumEd_WarrColumns.OnChange := Town_NumericChange;
+  NumEd_WarrColumns.Value := 1;
+
+  lineY := 310;
 
   for I := 0 to High(Button_Animals) do
   begin
@@ -89,27 +115,6 @@ begin
     Button_Animals[I].Tag := Byte(Animal_Order[I]); //Returns animal ID
     Button_Animals[I].OnClick := Town_UnitChange;
   end;
-
-
-
-  with TKMLabel.Create(Panel_Units, 20, 345, Panel_Units.Width, 0, gResTexts[TX_MAPED_UNITS_FORMATION_COUNT], fntOutline, taLeft) do
-    Anchors := [anLeft, anTop, anRight];
-
-
-  Numeric_WarrNumber[0] := TKMNumericEdit.Create(Panel_Units, 20, 365, 0, 200);
-  Numeric_WarrNumber[0].Anchors := [anLeft, anTop, anRight];
-  Numeric_WarrNumber[0].Hint := gResTexts[TX_MAPED_UNITS_FORMATION_COUNT_HINT];
-  Numeric_WarrNumber[0].OnChange := Town_NumericChange;
-  Numeric_WarrNumber[0].Value := 0;
-
-  with TKMLabel.Create(Panel_Units, 100, 345, Panel_Units.Width - 100, 0, gResTexts[TX_MAPED_UNITS_FORMATION_COUNT], fntOutline, taLeft) do
-    Anchors := [anLeft, anTop, anRight];
-
-  Numeric_WarrNumber[1] := TKMNumericEdit.Create(Panel_Units, 100, 365, 0, 25);
-  Numeric_WarrNumber[1].Anchors := [anLeft, anTop, anRight];
-  Numeric_WarrNumber[1].Hint := gResTexts[TX_MAPED_UNITS_FORMATION_ROWS_HINT];
-  Numeric_WarrNumber[1].OnChange := Town_NumericChange;
-  Numeric_WarrNumber[1].Value := 1;
 
 
   for I := 0 to High(fSubMenuActionsEvents) do
@@ -130,12 +135,15 @@ begin
   Town_UnitRefresh;
 end;
 
+
 procedure TKMMapEdTownUnits.Town_NumericChange(Sender: TObject);
 begin
   //refresh formations
-  gCursor.MapEdGroupFormation.NumUnits := Numeric_WarrNumber[0].Value;
-  gCursor.MapEdGroupFormation.UnitsPerRow := Numeric_WarrNumber[1].Value;
+  gCursor.MapEdGroupFormation.NumUnits    := NumEd_WarrCount.Value;
+  NumEd_WarrColumns.Enabled := NumEd_WarrCount.Value > 0;
+  gCursor.MapEdGroupFormation.UnitsPerRow := NumEd_WarrColumns.Value;
 end;
+
 
 procedure TKMMapEdTownUnits.Town_UnitRefresh;
 var

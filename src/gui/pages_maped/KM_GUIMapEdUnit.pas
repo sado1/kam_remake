@@ -62,7 +62,8 @@ uses
   KM_RenderUI,
   KM_Resource, KM_ResFonts, KM_ResTexts, KM_ResUnits, KM_ResTypes,
   KM_UtilsExt, KM_Terrain,
-  KM_UnitGroupTypes;
+  KM_UnitGroupTypes,
+  KM_MapEdTypes;
 
 
 { TKMMapEdUnit }
@@ -366,7 +367,7 @@ begin
   else //Increase
     newCount := fGroup.MapEdCount + GetMultiplicator(Shift);
 
-  fGroup.MapEdCount := EnsureRange(newCount, 1, 200); //Limit max members
+  fGroup.MapEdCount := EnsureRange(newCount, 1, MAPED_GROUP_MAX_CNT); //Limit max members
 
   if ssCtrl in Shift then
     SetUnitsPerRaw(Ceil(Sqrt(1.5*fGroup.MapEdCount)));

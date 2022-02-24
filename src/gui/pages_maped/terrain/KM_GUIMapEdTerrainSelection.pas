@@ -22,11 +22,9 @@ type
       Button_SelectPasteApply: TKMButton;
       Button_SelectPasteCancel: TKMButton;
       Button_SelectFlipH, Button_SelectFlipV: TKMButton;
-      Button_RMGRND: TKMButton;
       Map_PasteType: array [TKMTerrainSelectionPasteType] of  TKMButtonFlat;
-
+      Button_RMGRND: TKMButton;
       Button_SelectSetCoal: TKMButton;
-
   public
     constructor Create(aParent: TKMPanel);
     destructor Destroy; override;
@@ -220,7 +218,8 @@ begin
     //Flip selected
     gGame.MapEditor.Selection.Flip(faVertical);
     gGame.MapEditor.History.MakeCheckpoint(caTerrain, gResTexts[TX_MAPED_COPY_PASTE_VFLIP]);
-  end else
+  end
+  else
   if Sender = Button_SelectSetCoal then
   begin
     gGame.MapEditor.Selection.SetNiceCoal;

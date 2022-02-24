@@ -77,6 +77,13 @@ type
 
   TKMCheckpointAreaSet = set of TKMCheckpointArea;
 
+  TKMChangeDefenceTypeMode = (cdmDir, cdmDirBack, cdmGroupType, cdmDefPosType);
+
+  TKMGroupLevel = (glLow, glLeather, glIron);
+
+const
+  MAPED_GROUP_MAX_CNT = 200; // Max number of units in group
+
 implementation
 
 

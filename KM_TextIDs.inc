@@ -1,4 +1,4 @@
-TX_HOUSES_NAMES__29 = 0; //Sawmill
+﻿TX_HOUSES_NAMES__29 = 0; //Sawmill
 TX_HOUSES_NAMES_IRONSMITHY = 1; //Iron smithy
 TX_HOUSES_NAMES_WEAPONSMITHY = 2; //Weapon smithy
 TX_HOUSES_NAMES_COALMINE = 3; //Coal mine
@@ -581,18 +581,18 @@ TX_MAPED_AI_FORMATIONS_AAI_INFO = 1534; //Notice: Advanced AI use its own format
 TX_MAPED_AI_MAX_SOLDIERS_ENABLE_HINT = 454; //Set a limit on how many soldiers the AI can have
 TX_MAPED_AI_MAX_SOLDIERS_HINT = 455; //How many soldiers AI can have at once
 
-TX_MAPED_AI_GROUP_LVL = 1537; //a group level after adding defence position
-TX_MAPED_AI_GROUP_LVL_HINT = 1538; //a group level after adding defence position
-TX_MAPED_AI_ADD_GROUP = 1539; //add group after adding defence position
-TX_MAPED_AI_ADD_GROUP_HINT = 1540; //add group after adding defence position
+TX_MAPED_AI_GROUP_LVL = 1537; //Group level
+TX_MAPED_AI_GROUP_LVL_HINT = 1538; //0 - low HP units, 1 - Leather armored units, 2 - Iron units
+TX_MAPED_AI_ADD_GROUP = 1539; //Add group
+TX_MAPED_AI_ADD_GROUP_HINT = 1540; //Add group after placing defence position. Group  depends on AI formations
 
-TX_MAPED_UNITS_FORMATION_COUNT = 1541;
-TX_MAPED_UNITS_FORMATION_COUNT_HINT = 1542;
-TX_MAPED_UNITS_FORMATION_ROWS = 1543;
-TX_MAPED_UNITS_FORMATION_ROWS_HINT = 1544;
+TX_MAPED_UNITS_FORMATION_NUMBER = 1541; //Number
+TX_MAPED_UNITS_FORMATION_NUMBER_HINT = 1542; //Number of units in group. At 0 it takes the AI formations
+TX_MAPED_UNITS_FORMATION_COLUMNS = 1543; //Columns
+TX_MAPED_UNITS_FORMATION_COLUMNS_HINT = 1544; //Number of columns in group. If number of units is 0 it takes the AI formations columns count
 
-TX_MAPED_SELECTION_SMOOTH_COAL = 1545;
-TX_MAPED_SELECTION_SMOOTH_COAL_HINT = 1546;
+TX_MAPED_SELECTION_SMOOTH_COAL = 1545; //Make coal smooth
+TX_MAPED_SELECTION_SMOOTH_COAL_HINT = 1546; //Coal deposits in the selection will be automatically set from the tiles with lowest coal count at the edges to the highest in the center
 
 
 TX_MAPED_AI_MAX_SOLDIERS = 456; //Set max. soldiers

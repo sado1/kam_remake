@@ -6,8 +6,12 @@ interface
 type
   TKMDirection = (dirNA, dirN, dirNE, dirE, dirSE, dirS, dirSW, dirW, dirNW);
   TKMDirection4 = (drNA, drN, drE, drS, drW);
-
   TKMDirection4Set = set of TKMDirection4;
+
+const
+  DIR_MIN = dirN;
+  DIR_MAX = dirNW;
+  DIRS_VALID = [DIR_MIN..DIR_MAX];
 
 type
   //Records must be packed so they are stored identically in MP saves (padding bytes are unknown values)
