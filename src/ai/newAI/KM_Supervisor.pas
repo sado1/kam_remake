@@ -926,8 +926,11 @@ procedure TKMSupervisor.AttackDecision(aTeam: Byte);
             for L := Low(EnemyPoly) to High(EnemyPoly) do
               if (EnemyPoly[L] > 0) AND gAIFields.NavMesh.Pathfinding.ShortestPolygonRoute(AllyPoly[K], EnemyPoly[L], Distance, RoutePoly) then
               begin
-                DistArr[TeamIdx] := Min(DistArr[TeamIdx], Distance);
-                TargetPL[TeamIdx] := L;
+                if (DistArr[TeamIdx] > Distance) then
+                begin
+                  DistArr[TeamIdx] := Distance;
+                  TargetPL[TeamIdx] := L;
+                end;
               end;
         if (DistArr[TeamIdx] = High(Word)) then
           Continue;
@@ -968,7 +971,7 @@ var
   BestCmpTeam, WorstCmpTeam: Byte;
   IdxPL: Integer;
   DefRatio, BestCmp, AvrgCmp, WorstCmp: Single;
-  PL, BestTarget: TKMHandID;
+  PL, PL2, BestTarget: TKMHandID;
   AR: TKMAttackRequest;
 begin
   if not NewAIInTeam(aTeam, True, False) OR not IsTeamAlive(aTeam) OR (Length(fAlli2PL) < 2) then // I sometimes use my loc as a spectator (alliance with everyone) so make sure that search for enemy will use AI loc
@@ -1016,6 +1019,15 @@ begin
           else
             fCombatStatus[PL,BestTarget] := csAttackingCity;
         end;
+    end;
+    // Stop attack is food problem was solved
+    if (BestCmp < MIN_ADVANTAGE) AND not FoodProblems AND not gGameParams.IsTactic then
+    begin
+      for PL in fAlli2PL[aTeam] do
+        if gHands[PL].AI.Setup.AutoAttack then
+          for PL2 := 0 to MAX_HANDS - 1 do
+            if (fCombatStatus[PL,PL2] = csAttackingCity) OR (fCombatStatus[PL,PL2] = csAttackingEverything) then
+              fCombatStatus[PL,PL2] := csNeutral;
     end;
   end;
 end;

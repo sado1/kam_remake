@@ -55,7 +55,7 @@ implementation
 uses
   Math,
   KM_Hand, KM_HandsCollection, KM_HandStats,
-  KM_Resource, KM_ResUnits;
+  KM_Resource, KM_ResUnits, KM_ResTypes;
 
 
 { TKMArmyEvaluation }
@@ -232,18 +232,24 @@ function TKMArmyEvaluation.CheckFoodProblems(const aAlly: TKMHandIDArray): Boole
 const
   FOOD_THRESHOLD = 0.6;
 var
-  Full, Middle, Low: Cardinal;
+  Full, Middle, Low, Food: Integer;
   PL: TKMHandID;
 begin
   Result := False;
   Full := 0;
   Middle := 0;
   Low := 0;
+  Food := 0;
   for PL in aAlly do
   begin
     Inc(Full  ,fEvals[PL].FoodState.Full);
     Inc(Middle,fEvals[PL].FoodState.Middle);
     Inc(Low   ,fEvals[PL].FoodState.Low);
+    Inc(Food  ,gHands[PL].Stats.GetWareBalance(wtBread));
+    Inc(Food  ,gHands[PL].Stats.GetWareBalance(wtWine));
+    Inc(Food  ,gHands[PL].Stats.GetWareBalance(wtSausage));
+    Inc(Food  ,gHands[PL].Stats.GetWareBalance(wtFish));
+    Low := max(0, Low - Food);
   end;
   if ((Full + Middle + Low) > 0) then
     Result := ((Full + Middle) / Max(1, (Full + Middle + Low))) < FOOD_THRESHOLD;
