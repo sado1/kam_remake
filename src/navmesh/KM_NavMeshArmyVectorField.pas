@@ -54,7 +54,7 @@ type
     Owners: TKMHandIDArray;
     CounterWeight: record
       InPlace, AtAdvantage, Ambushed: Boolean;
-      GroupsCount, CGCount, InPositionCnt, NearEnemyCnt: Word;
+      GroupsCount, CGCount, InPositionCnt, InClusterCnt, NearEnemyCnt: Word;
       Opportunity, InPositionStrength: Single;
       WeightedCount: array[GROUP_TYPE_MIN..GROUP_TYPE_MAX] of Word;
       Groups: TKMGroupCounterWeightArray;
@@ -1030,19 +1030,23 @@ procedure TKMArmyVectorField.FindPositions();
 
   procedure AssignPositions(aIdx: Integer);
   const
-    ENEMY_NEARBY_DISTANCE = 4;
+    ENEMY_NEARBY_COMBAT_DISTANCE = 4;
+    ENEMY_NEARBY_CG_DISTANCE = 12;
     VF_ENEMY_UTH = 10;
     VF_RALLY_UTH = 15;
     USE_FF_TO_FIND_POSITION = true;
   var
-    K, InitIdx, TargetIdx: Integer;
+    MinDist: Word;
+    K, InitIdx, TargetIdx, SoldiersCnt: Integer;
     InitP: TKMPoint;
   begin
+    MinDist := High(Word);
     with CCT[aIdx].CounterWeight do
       for K := 0 to GroupsCount - 1 do
       begin
         InitIdx := Ally.GroupsPoly[ Groups[K].Idx ];
         InitP := gAIFields.NavMesh.Polygons[InitIdx].CenterPoint;
+        SoldiersCnt := Groups[K].Group.Count;
 
         // Decide which vector field should be used for navigation
         if USE_FF_TO_FIND_POSITION then
@@ -1057,21 +1061,24 @@ procedure TKMArmyVectorField.FindPositions();
         // Get target position
         Groups[K].TargetPosition.Loc := gAIFields.NavMesh.Polygons[ TargetIdx ].CenterPoint;
         Groups[K].TargetPosition.Dir := KMGetDirection(InitP, Groups[K].TargetPosition.Loc );
-        //Groups[K].CG := gHands[ Groups[K].Group.Owner ].AI.ArmyManagement.AttackNew.AddGroup( Groups[K].Group );
         Groups[K].CG := gHands[ Groups[K].Group.Owner ].AI.ArmyManagement.AttackNew.CombatGroup[ Groups[K].Group ];
-        Inc(CGCount, Byte(Groups[K].CG <> nil));
+        if (Groups[K].CG = nil) then
+          MinDist := min(MinDist, fVectorField[InitIdx].Enemy)
+        else
+          Inc(CGCount);
+        Inc(InClusterCnt, SoldiersCnt);
         // Check if group is in the place
         InPlace := False;
         if (fVectorField[TargetIdx].Enemy < AI_Par[ATTACK_ArmyVectorField_FindPositions_DistCloseToEnemy]) // Close to enemy
           OR (Integer(fVectorField[InitIdx].Enemy) - Integer(fVectorField[TargetIdx].Enemy) < AI_Par[ATTACK_ArmyVectorField_FindPositions_DistMaxWalk]) // Distance from target point
           OR ((Groups[K].CG <> nil) AND (Groups[K].CG.StuckInTraffic)) then
         begin
-          Inc(InPositionCnt);
+          Inc(InPositionCnt, SoldiersCnt);
           InPlace := True;
         end;
-        if not Groups[K].Group.CanTakeOrders OR (fVectorField[InitIdx].Enemy < ENEMY_NEARBY_DISTANCE) then // Group in combat
+        if not Groups[K].Group.CanTakeOrders OR (fVectorField[InitIdx].Enemy < ENEMY_NEARBY_COMBAT_DISTANCE) then // Group in combat
         begin
-          Inc(NearEnemyCnt);
+          Inc(NearEnemyCnt, SoldiersCnt);
           InPlace := True;
         end;
         if InPlace then
@@ -1080,6 +1087,13 @@ procedure TKMArmyVectorField.FindPositions();
           Groups[K].Status := InPlace;
         end;
       end;
+    // Create combat group if enemy is nearby
+    if (MinDist < ENEMY_NEARBY_CG_DISTANCE) then
+      with CCT[aIdx].CounterWeight do
+        for K := 0 to GroupsCount - 1 do
+          if (Groups[K].CG = nil) then
+            Groups[K].CG := gHands[ Groups[K].Group.Owner ].AI.ArmyManagement.AttackNew.AddGroup( Groups[K].Group );
+
   end;
 
 
@@ -1155,9 +1169,9 @@ begin
   for K := Low(CCT) to High(CCT) do
     with CCT[K].CounterWeight do
     begin
-      InPlace     := InPositionCnt      > CGCount             * AI_Par[ATTACK_ArmyVectorField_EvalClusters_InPlace];
+      InPlace     := InPositionCnt      > InClusterCnt        * AI_Par[ATTACK_ArmyVectorField_EvalClusters_InPlace];
       AtAdvantage := InPositionStrength > CCT[K].ThreatNearby * AI_Par[ATTACK_ArmyVectorField_EvalClusters_AtAdvantage];
-      Ambushed    := NearEnemyCnt       > CGCount             * AI_Par[ATTACK_ArmyVectorField_EvalClusters_Ambushed];
+      Ambushed    := NearEnemyCnt       > InClusterCnt        * AI_Par[ATTACK_ArmyVectorField_EvalClusters_Ambushed];
     end;
 
   {$IFDEF DEBUG_ArmyVectorField}
@@ -1292,6 +1306,7 @@ begin
       CounterWeight.GroupsCount        := CCT[K].CounterWeight.GroupsCount;
       CounterWeight.CGCount            := CCT[K].CounterWeight.CGCount;
       CounterWeight.InPositionCnt      := CCT[K].CounterWeight.InPositionCnt;
+      CounterWeight.InClusterCnt       := CCT[K].CounterWeight.InClusterCnt;
       CounterWeight.NearEnemyCnt       := CCT[K].CounterWeight.NearEnemyCnt;
       CounterWeight.Opportunity        := CCT[K].CounterWeight.Opportunity;
       CounterWeight.InPositionStrength := CCT[K].CounterWeight.InPositionStrength;

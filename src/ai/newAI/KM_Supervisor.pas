@@ -1020,7 +1020,7 @@ begin
             fCombatStatus[PL,BestTarget] := csAttackingCity;
         end;
     end;
-    // Stop attack is food problem was solved
+    // Stop attack if food problem was solved
     if (BestCmp < MIN_ADVANTAGE) AND not FoodProblems AND not gGameParams.IsTactic then
     begin
       for PL in fAlli2PL[aTeam] do
