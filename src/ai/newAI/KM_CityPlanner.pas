@@ -2114,9 +2114,9 @@ begin
   Result := Output;
   {$IFDEF DEBUG_NewAI}
     Time := TimeGet() - Time;
-    fTimeSumSearchHouse[htQuary] := fTimeSumSearchHouse[htQuary] + Time;
-    if (fTimePeakSearchHouse[htQuary] < Time) then
-      fTimePeakSearchHouse[htQuary] := Time;
+    fTimeSumSearchHouse[htQuarry] := fTimeSumSearchHouse[htQuarry] + Time;
+    if (fTimePeakSearchHouse[htQuarry] < Time) then
+      fTimePeakSearchHouse[htQuarry] := Time;
   {$ENDIF}
 end;
 

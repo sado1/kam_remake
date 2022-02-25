@@ -464,36 +464,40 @@ end;
 // Get players stats and store them into local variable (to be able to edit them later)
 procedure TKMCityPredictor.UpdateCityStats();
 var
+  constructedHouses: Integer;
   UT: TKMUnitType;
   HT: TKMHouseType;
-  PH: TPlannedHousesArray;
 begin
-  fCityUnderConstruction := False;
-  PH := gHands[fOwner].AI.CityManagement.Builder.Planner.PlannedHouses;
   with fCityStats do
   begin
     CitizensCnt := 0;
     for UT := Low(Citizens) to High(Citizens) do
     begin
       Citizens[UT] := gHands[fOwner].Stats.GetUnitQty(UT);
-      CitizensCnt := CitizensCnt + Citizens[UT];
+      Inc(CitizensCnt, Citizens[UT]);
     end;
-    CitizensCnt := CitizensCnt - Citizens[utRecruit]; // Count recruits as soldiers
+    Dec(CitizensCnt, Citizens[utRecruit]); // Count recruits as soldiers
     WarriorsCnt := Citizens[utRecruit];
     for UT := Low(Warriors) to High(Warriors) do
     begin
       Warriors[UT] := gHands[fOwner].Stats.GetUnitQty(UT);
-      WarriorsCnt := WarriorsCnt + Warriors[UT];
+      Inc(WarriorsCnt, Warriors[UT]);
     end;
-    HousesCnt := 0;
-    for HT := Low(Houses) to High(Houses) do
+  end;
+
+  constructedHouses := 0;
+  fCityStats.HousesCnt := 0;
+  with gHands[fOwner].AI.CityManagement.Builder do
+  begin
+    for HT := Low(fCityStats.Houses) to High(fCityStats.Houses) do
     begin
       //Houses[HT] := gHands[fOwner].Stats.GetHouseTotal(HT); // Does not consider planned houses
       // Consider only placed, constructed or planned houses (not destroyed houses because plans will remain in CityPlanner)
-      Houses[HT] := PH[HT].Completed + PH[HT].UnderConstruction + PH[HT].Planned;
-      HousesCnt := HousesCnt + Houses[HT];
-      fCityUnderConstruction := fCityUnderConstruction OR (PH[HT].UnderConstruction + PH[HT].Planned > 0);
+      fCityStats.Houses[HT] := Planner.PlannedHouses[HT].Completed + Planner.PlannedHouses[HT].UnderConstruction + Planner.PlannedHouses[HT].Planned;
+      Inc(fCityStats.HousesCnt, fCityStats.Houses[HT]);
+      Inc(constructedHouses, Planner.PlannedHouses[HT].UnderConstruction + Planner.PlannedHouses[HT].Planned);
     end;
+    fCityUnderConstruction := (constructedHouses > 0) AND (FreeWorkerCnt < 10);
   end;
 end;
 
@@ -711,7 +715,7 @@ begin
 
   // Change house requirements due to nonlinear delay, toons of exceptions and unlock order
   // Dont build wineyard too early
-  if (gGameParams.Tick < WINEYARD_DELAY) then
+  if (fUpdatedPeaceFactor < 1) then
     RequiredHouses[htVineyard] := 0;
   // Consideration of corn delay - only remove all required houses, builder will find the right one if they are not removed
   if UpdateFarmHistory() AND not gHands[fOwner].Locks.HouseBlocked[htFarm] then

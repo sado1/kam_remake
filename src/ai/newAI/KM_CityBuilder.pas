@@ -70,6 +70,7 @@ type
     procedure SyncLoad();
 
     property Planner: TKMCityPlanner read fPlanner;
+    property FreeWorkerCnt: Integer read fFreeWorkersCnt;
     property WorkersPos: TKMPointArray read fWorkersPos;
     property StoneShortage: Boolean read fStoneShortage;
     property StoneCrisis: Boolean read fStoneCrisis;
@@ -1702,7 +1703,7 @@ begin
   cnt := 0;
   for K := Low(fBuildNodes) to High(fBuildNodes) do
     Inc(cnt, Ord(fBuildNodes[K].Active));
-  aBalanceText := Format('%s|Active nodes: %d',[aBalanceText,cnt]);
+  aBalanceText := Format('%s|Active nodes: %d, Free workers: %d',[aBalanceText,cnt,fFreeWorkersCnt]);
   // Material shortage
   Text := '';
   if fStoneShortage then Text := Text + ' Stone,';
