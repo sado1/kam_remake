@@ -11,7 +11,7 @@ type
     HitPoints, Attack, AttackHorse, Defence, DefenceProjectiles: Single;
   end;
   TKMFoodState = record
-    Full, Middle, Low: Cardinal;
+    Full, Middle, Low: Integer;
   end;
   TKMArmyEval = record
     FoodState: TKMFoodState;
@@ -230,7 +230,7 @@ end;
 
 function TKMArmyEvaluation.CheckFoodProblems(const aAlly: TKMHandIDArray): Boolean;
 const
-  FOOD_THRESHOLD = 0.6;
+  FOOD_THRESHOLD = 0.75;
 var
   Full, Middle, Low, Food: Integer;
   PL: TKMHandID;
@@ -278,31 +278,18 @@ procedure TKMArmyEvaluation.EvaluatePower(aPlayer: TKMHandID; aConsiderHitChance
     FULL_LIMIT = Round(UNIT_MAX_CONDITION * 0.75);
     LOW_LIMIT = Round(UNIT_MAX_CONDITION * 0.3);
   var
-    K,L: Integer;
-    LowCnt, FullCnt, ArmyCnt: Cardinal;
-    U: TKMUnit;
-    G: TKMUnitGroup;
+    K, Condition, LowCnt, FullCnt: Integer;
   begin
     LowCnt := 0;
     FullCnt := 0;
-    ArmyCnt := 0;
-    for K := 0 to gHands[aPlayer].UnitGroups.Count - 1 do
+    for K := 0 to gHands[aPlayer].Units.Count - 1 do
     begin
-      G := gHands[aPlayer].UnitGroups[K];
-      if not ((G = nil) OR (G.IsDead)) then
-        for L := 0 to G.Count - 1 do
-        begin
-          U := G.Members[L];
-          if not ((U = nil) OR (U.IsDeadOrDying)) then
-          begin
-            Inc(LowCnt,Byte(U.Condition < LOW_LIMIT));
-            Inc(FullCnt,Byte(U.Condition > FULL_LIMIT));
-            Inc(ArmyCnt);
-          end;
-        end;
+      Condition := gHands[aPlayer].Units[K].Condition;
+      Inc(LowCnt, Byte(Condition < LOW_LIMIT));
+      Inc(FullCnt,Byte(Condition > FULL_LIMIT));
     end;
     fEvals[aPlayer].FoodState.Low := LowCnt;
-    fEvals[aPlayer].FoodState.Middle := ArmyCnt - LowCnt - FullCnt;
+    fEvals[aPlayer].FoodState.Middle := gHands[aPlayer].Units.Count - LowCnt - FullCnt;
     fEvals[aPlayer].FoodState.Full := FullCnt;
   end;
 var
