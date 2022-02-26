@@ -61,6 +61,7 @@ type
     procedure AfterMissionInit();
 
     procedure UpdateState(aTick: Cardinal);
+    procedure DrawPolygon(const aIdx: Integer; const aOpacity: Byte; aFillColor: Cardinal; const aTextOffset: Single = 0; const aText: String = '');
     procedure Paint(const aRect: TKMRect);
   end;
 
@@ -469,6 +470,21 @@ end;
 
 
 //Render debug symbols
+procedure TKMNavMesh.DrawPolygon(const aIdx: Integer; const aOpacity: Byte; aFillColor: Cardinal; const aTextOffset: Single = 0; const aText: String = '');
+var
+  P0,P1,P2: TKMPoint;
+begin
+  if (aOpacity = 0) OR (aIdx >= PolygonsCnt) then
+    Exit;
+  P0 := Nodes[ Polygons[aIdx].Indices[0] ];
+  P1 := Nodes[ Polygons[aIdx].Indices[1] ];
+  P2 := Nodes[ Polygons[aIdx].Indices[2] ];
+  gRenderAux.TriangleOnTerrain(P0.X,P0.Y, P1.X,P1.Y, P2.X,P2.Y, aFillColor OR (aOpacity shl 24));
+  if (Length(aText) > 0) then
+    gRenderAux.Text(Polygons[aIdx].CenterPoint.X, Polygons[aIdx].CenterPoint.Y + aTextOffset, aText, $FFFFFFFF);
+end;
+
+
 procedure TKMNavMesh.Paint(const aRect: TKMRect);
 
   function GetCommonPoints(aIdx1, aIdx2: Word; var aPoint1, aPoint2: TKMPoint): Boolean;
@@ -506,6 +522,9 @@ begin
     fDefences.Paint();
   //}
 
+  if AI_GEN_NAVMESH AND (OVERLAY_HIGHLIGHT_POLY > 0) AND (OVERLAY_HIGHLIGHT_POLY < PolygonsCnt) then
+    DrawPolygon(OVERLAY_HIGHLIGHT_POLY, $CC, tcRed, 1, IntToStr(OVERLAY_HIGHLIGHT_POLY));
+
   //AfterMissionInit();
   if not AI_GEN_NAVMESH OR not OVERLAY_NAVMESH then
     Exit;
@@ -519,29 +538,12 @@ begin
   for K := 1 to fPolyCount - 1 do
     with fPolygons[K] do
     begin
-      gRenderAux.TriangleOnTerrain(
-        fNodes[ Indices[0] ].X,
-        fNodes[ Indices[0] ].Y,
-        fNodes[ Indices[1] ].X,
-        fNodes[ Indices[1] ].Y,
-        fNodes[ Indices[2] ].X,
-        fNodes[ Indices[2] ].Y, $50000000 OR tcBlack);
+      DrawPolygon(K, $50, tcBlack, 1, IntToStr(K));
       for L := 0 to NearbyCount - 1 do
         if GetCommonPoints(K, Nearby[L], p1, p2) then
           gRenderAux.LineOnTerrain(p1, p2, $99000000 OR ((MAX_LINE_LENGTH-NearbyLineLength[L])*16 shl 24) OR $770000 OR (NearbyLineLength[L]*20 shl 16) OR ((250-NearbyLineLength[L]*40) shl 0))
         else
-        begin
-          gRenderAux.TriangleOnTerrain(
-            fNodes[ Indices[0] ].X,
-            fNodes[ Indices[0] ].Y,
-            fNodes[ Indices[1] ].X,
-            fNodes[ Indices[1] ].Y,
-            fNodes[ Indices[2] ].X,
-            fNodes[ Indices[2] ].Y, $90000000 OR tcWhite);
-        end;
-      p1.X := Round( (fNodes[ Indices[0] ].X + fNodes[ Indices[1] ].X + fNodes[ Indices[2] ].X) / 3 );
-      p1.Y := Round( (fNodes[ Indices[0] ].Y + fNodes[ Indices[1] ].Y + fNodes[ Indices[2] ].Y) / 3 );
-      gRenderAux.Text(p1.X, p1.Y + 1, IntToStr(K), $FFFFFFFF);
+          DrawPolygon(K, $90, tcWhite, 1, IntToStr(K));
     end;
   //}
   { Center points and transitions of polygons

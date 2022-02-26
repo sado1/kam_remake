@@ -674,6 +674,19 @@ object FormMain: TFormMain
         TabOrder = 19
         OnClick = ControlsUpdate
       end
+      object seHighlightNavMesh: TSpinEdit
+        Left = 69
+        Top = 5
+        Width = 45
+        Height = 22
+        Ctl3D = True
+        MaxValue = 9999999
+        MinValue = 0
+        ParentCtl3D = False
+        TabOrder = 20
+        Value = 0
+        OnChange = ControlsUpdate
+      end
     end
     object cpScripting: TCategoryPanel
       Top = 241
