@@ -26,6 +26,7 @@ type
   private
     fOwner: TKMHandID;
     fSetup: TKMHandAISetup;
+    fFoodProblems: Boolean;
     fLastEquippedTimeIron, fLastEquippedTimeLeather: Cardinal;
     fAttackRequest: TKMAttackRequest;
 
@@ -67,7 +68,7 @@ uses
   KM_HouseBarracks,
   KM_CommonUtils,
   KM_DevPerfLog, KM_DevPerfLogTypes,
-  KM_AITypes,
+  KM_AITypes, KM_AIFields,
   KM_MapTypes,
   KM_ResTypes;
 
@@ -79,6 +80,10 @@ begin
 
   fOwner := aPlayer;
   fSetup := aSetup;
+  fFoodProblems := False;
+  fLastEquippedTimeIron := 0;
+  fLastEquippedTimeLeather := 0;
+  fAttackRequest.Active := False;
 
   fAttackNew := TKMArmyAttackNew.Create(aPlayer);
   fDefence := TKMArmyDefence.Create(aPlayer);
@@ -98,6 +103,7 @@ procedure TKMArmyManagement.Save(SaveStream: TKMemoryStream);
 begin
   SaveStream.PlaceMarker('ArmyManagement');
   SaveStream.Write(fOwner);
+  SaveStream.Write(fFoodProblems);
   SaveStream.Write(fLastEquippedTimeIron);
   SaveStream.Write(fLastEquippedTimeLeather);
 
@@ -125,6 +131,7 @@ var
 begin
   LoadStream.CheckMarker('ArmyManagement');
   LoadStream.Read(fOwner);
+  LoadStream.Read(fFoodProblems);
   LoadStream.Read(fLastEquippedTimeIron);
   LoadStream.Read(fLastEquippedTimeLeather);
 
@@ -172,7 +179,7 @@ end;
 procedure TKMArmyManagement.WarriorEquipped(aGroup: TKMUnitGroup);
 begin
   //if (gAIFields.Supervisor.CombatStatus[fOwner,fOwner] = csDefending) AND (fDefence.GroupsCount = 0) AND (fAttackNew.Count > 0) then
-  if (fDefence.GroupsCount = 0) AND (fAttackNew.Count > 0) then
+  if (fDefence.GroupsCount = 0) AND (fAttackNew.Count > 0) AND not fFoodProblems then
     fAttackNew.LinkGroup(aGroup);
   if (aGroup.Count > 0) then
     fDefence.FindPlaceForGroup(aGroup);
@@ -274,6 +281,9 @@ var
   K: Integer;
   Group: TKMUnitGroup;
 begin
+  // Update food level
+  fFoodProblems := gAIFields.Eye.ArmyEvaluation.CheckFoodProblems([fOwner]);
+
   // Feed army and find unused groups
   for K := 0 to gHands[fOwner].UnitGroups.Count - 1 do
   begin
@@ -282,7 +292,7 @@ begin
     if (Group <> nil) AND not Group.IsDead AND not Group.InFight then
     begin
       // Check hunger and order food
-      if (Group.Condition < UNIT_MIN_CONDITION) then
+      if (Group.Condition < UNIT_MIN_CONDITION) AND not fFoodProblems then
         // Cheat for autobuild AI: Only feed hungry group members (food consumption lower and more predictable)
         Group.OrderFood(True, fSetup.AutoBuild);
 
