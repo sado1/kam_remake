@@ -165,7 +165,7 @@ const
 implementation
 uses
   SysUtils, KM_Hand, KM_HandsCollection,
-  {$IFDEF DEBUG_BattleLines}
+  {$IF Defined(DEBUG_NavMeshDefences) or Defined(DEBUG_BattleLines)}
   DateUtils,
   {$ENDIF}
   KM_AIFields, KM_AIInfluences, KM_NavMesh, KM_RenderAux;
@@ -946,17 +946,32 @@ end;
 // Check if start polygon is on the defence line
 function TFilterFF.CheckStartPolygons(var aStartPolygons: TKMWordArray): boolean;
 var
-  K,L: Integer;
+  K,L,M, cnt, borderCnt: Integer;
 begin
-  for K := Length(aStartPolygons)-1 downto 0 do
+  cnt := Length(aStartPolygons);
+  for K := cnt-1 downto 0 do
+  begin
+    borderCnt := 0;
     for L := 0 to fAllDefLines.Count-1 do
+      // Remove border start polygons
       if (aStartPolygons[K] = fAllDefLines.Lines[L].Polygon) then
       begin
-        aStartPolygons[K] := aStartPolygons[ Length(aStartPolygons)-1 ];
-        SetLength(aStartPolygons, Length(aStartPolygons)-1);
+        Dec(cnt);
+        aStartPolygons[K] := aStartPolygons[cnt];
         Break;
-      end;
-  Result := Length(aStartPolygons) > 0;
+      end
+      // Remove surrounded start polygons
+      else
+        for M := 0 to gAIFields.NavMesh.Polygons[ aStartPolygons[K] ].NearbyCount - 1 do
+          Inc(borderCnt, Byte(fAllDefLines.Lines[L].Polygon = gAIFields.NavMesh.Polygons[ aStartPolygons[K] ].Nearby[M]));
+    if (borderCnt = gAIFields.NavMesh.Polygons[ aStartPolygons[K] ].NearbyCount) then
+    begin
+      Dec(cnt);
+      aStartPolygons[K] := aStartPolygons[cnt];
+    end
+  end;
+  SetLength(aStartPolygons, cnt);
+  Result := cnt > 0;
 end;
 
 
