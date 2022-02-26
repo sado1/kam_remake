@@ -179,24 +179,6 @@ uses
   KM_ResTypes;
 
 
-procedure DrawPolygon(aIdx: Integer; aOpacity: Byte; aFillColor: Cardinal; aOffset: Single = 0; aText: String = '');
-var
-  P0,P1,P2: TKMPoint;
-begin
-  if (aOpacity = 0) OR (aIdx >= gAIFields.NavMesh.PolygonsCnt) then
-    Exit;
-  with gAIFields.NavMesh do
-  begin
-    P0 := Nodes[ Polygons[aIdx].Indices[0] ];
-    P1 := Nodes[ Polygons[aIdx].Indices[1] ];
-    P2 := Nodes[ Polygons[aIdx].Indices[2] ];
-    gRenderAux.TriangleOnTerrain(P0.X,P0.Y, P1.X,P1.Y, P2.X,P2.Y, aFillColor OR (aOpacity shl 24));
-    if (Length(aText) > 0) then
-      gRenderAux.Text(Polygons[aIdx].CenterPoint.X, Polygons[aIdx].CenterPoint.Y + aOffset, aText, $FFFFFFFF);
-  end;
-end;
-
-
 { TKMFindClusters }
 function TKMFindClusters.CanBeExpanded(const aIdx: Word): Boolean;
 begin
@@ -1514,7 +1496,7 @@ begin
       for K := 0 to fPolygonsCnt - 1 do
         if (VectorFields[SelectedIdx,K].Enemy > 0) then
         begin
-          DrawPolygon(K, Round(getVecItem(K)/Opacity*250), tcWhite);
+          gAIFields.NavMesh.DrawPolygon(K, Round(getVecItem(K)/Opacity*250), tcWhite);
           BestIdx := gAIFields.NavMesh.Polygons[K].Nearby[0];
           for L := 1 to gAIFields.NavMesh.Polygons[K].NearbyCount - 1 do
           begin
@@ -1524,7 +1506,7 @@ begin
           end;
           if (getVecItem(K) < getVecItem(BestIdx)) then
           begin
-            //DrawPolygon(K, $22, $44000000 OR tcWhite);
+            //gAIFields.NavMesh.DrawPolygon(K, $22, $44000000 OR tcWhite);
           end
           else
           begin
@@ -1548,7 +1530,7 @@ begin
         begin
           L := Clusters.Clusters[ ClustersMapp[K] ].ReferenceID;
           Color := $00FFFFFF AND GenerateColorWSeed(L);
-          DrawPolygon(K, $22, $44000000 OR Color);
+          gAIFields.NavMesh.DrawPolygon(K, $22, $44000000 OR Color);
         end;
 
   // Target of cluster

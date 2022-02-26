@@ -427,14 +427,7 @@ begin
   // Draw polygon
   for K := 0 to gAIFields.NavMesh.PolygonsCnt - 1 do
     if (fUsedNodes[K].RouteID = fRouteID) then
-      with gAIFields.NavMesh do
-        gRenderAux.TriangleOnTerrain(
-          Nodes[ Polygons[K].Indices[0] ].X,
-          Nodes[ Polygons[K].Indices[0] ].Y,
-          Nodes[ Polygons[K].Indices[1] ].X,
-          Nodes[ Polygons[K].Indices[1] ].Y,
-          Nodes[ Polygons[K].Indices[2] ].X,
-          Nodes[ Polygons[K].Indices[2] ].Y, $90000000 OR tcWhite);
+      gAIFields.NavMesh.DrawPolygon(K, $90, tcRed);
 
   // Draw parent child relation
   for K := 0 to gAIFields.NavMesh.PolygonsCnt - 1 do

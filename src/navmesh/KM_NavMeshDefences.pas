@@ -77,7 +77,6 @@ type
     function CanBeExpanded(const aIdx: Word): Boolean; override;
     procedure MarkAsVisited(const aIdx: Word; const aDistance: Cardinal; const aPoint: TKMPoint); override;
     function ForwardFF(): Boolean;
-    procedure DrawPolygon(aIdx: Integer; aOffset: Single; aOpacity: Byte; aFillColor: Cardinal; aText: String = '');
   public
     constructor Create(aSorted: Boolean = False); reintroduce;
     destructor Destroy(); override;
@@ -114,7 +113,6 @@ type
     procedure BackwardFlood(aOwners: TKMHandIDArray);
     procedure EvaluateDefence(const aIdx: Word);
     function FindDefencePos(aBaseCnt: Word): Boolean;
-    procedure DrawPolygon(aIdx: Integer; aOffset: Single; aOpacity: Byte; aFillColor: Cardinal; aText: String = '');
   public
     constructor Create(aSorted: Boolean = False); reintroduce;
     destructor Destroy(); override;
@@ -235,11 +233,11 @@ begin
     Inc(fDebugCounter);
     if OVERLAY_DEFENCES_A AND (fDebugCounter = Round(DateUtils.MilliSecondsBetween(Now, 0) * 0.01) mod fDebugDefPolyCnt) then
     begin
-      DrawPolygon(aIdx, -1, Min(250,75), tcBlue, IntToStr(aIdx));
+      gAIFields.NavMesh.DrawPolygon(aIdx, Min(250,75), tcBlue, -1, IntToStr(aIdx));
       Idx := fStartQueue;
       for K := 0 to fQueueCnt - 1 do
       begin
-        DrawPolygon(Idx, -1, Min(250,K + 75), tcBlue, IntToStr(K));
+        gAIFields.NavMesh.DrawPolygon(Idx, Min(250,K + 75), tcBlue, -1, IntToStr(K));
         Idx := fQueueArray[Idx].Next;
       end;
     end;
@@ -340,24 +338,6 @@ begin
 end;
 
 
-procedure TForwardFF.DrawPolygon(aIdx: Integer; aOffset: Single; aOpacity: Byte; aFillColor: Cardinal; aText: String = '');
-var
-  P0,P1,P2: TKMPoint;
-begin
-  if (aOpacity = 0) then
-    Exit;
-  with gAIFields.NavMesh do
-  begin
-    P0 := Nodes[ Polygons[aIdx].Indices[0] ];
-    P1 := Nodes[ Polygons[aIdx].Indices[1] ];
-    P2 := Nodes[ Polygons[aIdx].Indices[2] ];
-    gRenderAux.TriangleOnTerrain(P0.X,P0.Y, P1.X,P1.Y, P2.X,P2.Y, aFillColor OR (aOpacity shl 24));
-    if (Length(aText) > 0) then
-      gRenderAux.Text(Polygons[aIdx].CenterPoint.X, Polygons[aIdx].CenterPoint.Y + aOffset, aText, $FFFFFFFF);
-  end;
-end;
-
-
 procedure TForwardFF.Paint();
 var
   K: Integer;
@@ -394,10 +374,11 @@ begin
     for K := Low(fDefInfo) to High(fDefInfo) do
       with fDefInfo[K] do
       begin
-        if (fDefInfo[K].Influence      > 0) then DrawPolygon(K, 0, fDefInfo[K].Influence     , tcGreen );
-        if (fDefInfo[K].AllyInfluence  > 0) then DrawPolygon(K, 0, fDefInfo[K].AllyInfluence , tcBlue  );
-        if (fDefInfo[K].EnemyInfluence > 0) then DrawPolygon(K, 0, fDefInfo[K].EnemyInfluence, tcRed   );
+        if (fDefInfo[K].Influence      > 0) then gAIFields.NavMesh.DrawPolygon(K, fDefInfo[K].Influence     , tcGreen );
+        if (fDefInfo[K].AllyInfluence  > 0) then gAIFields.NavMesh.DrawPolygon(K, fDefInfo[K].AllyInfluence , tcBlue  );
+        if (fDefInfo[K].EnemyInfluence > 0) then gAIFields.NavMesh.DrawPolygon(K, fDefInfo[K].EnemyInfluence, tcRed   );
       end;
+
   //}
   fBackwardFF.Paint(Owners, fPolygonCnt, DefPosReq, TeamDefPos);
 
@@ -576,11 +557,11 @@ begin
     Inc(fDebugCounter);
     if OVERLAY_DEFENCES_A AND (fDebugCounter = Round(DateUtils.MilliSecondsBetween(Now, 0) * 0.01) mod fDebugDefPolyCnt) then
     begin
-      DrawPolygon(aIdx, 1, Min(250,75), tcRed, IntToStr(aIdx));
+      gAIFields.NavMesh.DrawPolygon(aIdx, Min(250,75), tcRed, 1, IntToStr(aIdx));
       Idx := fStartQueue;
       for K := 0 to fQueueCnt-1 do
       begin
-        DrawPolygon(Idx, 1, Min(250,K + 75), tcRed, IntToStr(K));
+        gAIFields.NavMesh.DrawPolygon(Idx, Min(250,K + 75), tcRed, 1, IntToStr(K));
         Idx := fQueueArray[Idx].Next;
       end;
     end;
@@ -877,24 +858,6 @@ begin
       Owners := GetOwners(I,PLsDefAreas);
       DefPosArr := fDefPosArr;
     end;
-  end;
-end;
-
-
-procedure TBackwardFF.DrawPolygon(aIdx: Integer; aOffset: Single; aOpacity: Byte; aFillColor: Cardinal; aText: String = '');
-var
-  P0,P1,P2: TKMPoint;
-begin
-  if (aOpacity = 0) then
-    Exit;
-  with gAIFields.NavMesh do
-  begin
-    P0 := Nodes[ Polygons[aIdx].Indices[0] ];
-    P1 := Nodes[ Polygons[aIdx].Indices[1] ];
-    P2 := Nodes[ Polygons[aIdx].Indices[2] ];
-    gRenderAux.TriangleOnTerrain(P0.X,P0.Y, P1.X,P1.Y, P2.X,P2.Y, aFillColor OR (aOpacity shl 24));
-    if (Length(aText) > 0) then
-      gRenderAux.Text(Polygons[aIdx].CenterPoint.X, Polygons[aIdx].CenterPoint.Y + aOffset, aText, $FFFFFFFF);
   end;
 end;
 

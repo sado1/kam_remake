@@ -1223,17 +1223,6 @@ procedure TKMEye.Paint(aRect: TKMRect);
       gRenderAux.Text(Point.X, Point.Y, gResHouses[HT].HouseName, $FF000000);
     end;
   end;
-  procedure DrawTriangle(aIdx: Integer; aColor: Cardinal);
-  begin
-    with gAIFields.NavMesh do
-      gRenderAux.TriangleOnTerrain(
-        Nodes[ Polygons[aIdx].Indices[0] ].X,
-        Nodes[ Polygons[aIdx].Indices[0] ].Y,
-        Nodes[ Polygons[aIdx].Indices[1] ].X,
-        Nodes[ Polygons[aIdx].Indices[1] ].Y,
-        Nodes[ Polygons[aIdx].Indices[2] ].X,
-        Nodes[ Polygons[aIdx].Indices[2] ].Y, aColor);
-  end;
 var
   PL: TKMHandID;
   I,X,Y: Integer;
