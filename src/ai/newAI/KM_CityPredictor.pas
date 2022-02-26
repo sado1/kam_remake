@@ -67,6 +67,7 @@ type
     procedure Save(SaveStream: TKMemoryStream);
     procedure Load(LoadStream: TKMemoryStream);
 
+    property UpdatedPeaceFactor: Single read fUpdatedPeaceFactor;
     property CityStats: TCityStats read fCityStats;
     property WareBalance: TWareBalanceArray read fWareBalance;
     property WorkerCount: Word read fWorkerCount;
@@ -497,7 +498,7 @@ begin
       Inc(fCityStats.HousesCnt, fCityStats.Houses[HT]);
       Inc(constructedHouses, Planner.PlannedHouses[HT].UnderConstruction + Planner.PlannedHouses[HT].Planned);
     end;
-    fCityUnderConstruction := (constructedHouses > 0) AND (FreeWorkerCnt < 10);
+    fCityUnderConstruction := (constructedHouses > 0) AND ((FreeWorkerCnt < 10) OR (constructedHouses > 3));
   end;
 end;
 

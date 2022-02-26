@@ -198,7 +198,21 @@ procedure TKMCityManagement.CheckUnitCount(aTick: Cardinal);
 type
   TKMTrainPriorityArr = array[0..13] of TKMUnitType;
   TKMSchoolHouseArray = array of TKMHouseSchool;
+  TKMHouseAvailArr = array[HOUSE_MIN..HOUSE_MAX] of Integer;
   TKMUnitReqArr = array[CITIZEN_MIN..CITIZEN_MAX] of Integer;
+const
+  TRAINING_PRIORITY: TKMTrainPriorityArr = (
+    utMiner, utMetallurgist, utStonemason, utWoodcutter, utCarpenter,
+    utFarmer, utAnimalBreeder, utBaker, utButcher, utFisher, utSmith, utSerf, utBuilder, utRecruit
+  );
+  TRAINING_PRIORITY_Serf: TKMTrainPriorityArr = (
+    utMiner, utMetallurgist, utStonemason, utWoodcutter, utCarpenter, utSerf,
+    utFarmer, utAnimalBreeder, utBaker, utButcher, utFisher, utSmith, utBuilder, utRecruit
+  );
+  DISMISS_UNITS: set of TKMUnitType = [
+    utMiner, utMetallurgist, utStonemason, utWoodcutter, utCarpenter, //utSerf,
+    utFarmer, utAnimalBreeder, utBaker, utButcher, utFisher, utSmith, utBuilder // utRecruit
+  ];
 var
   P: TKMHand;
   Stats: TKMHandStats;
@@ -281,15 +295,37 @@ var
     end;
   end;
 
-const
-  TRAINING_PRIORITY: TKMTrainPriorityArr = (
-    utMiner, utMetallurgist, utStonemason, utWoodcutter, utCarpenter,
-    utFarmer, utAnimalBreeder, utBaker, utButcher, utFisher, utSmith, utSerf, utBuilder, utRecruit
-  );
-  TRAINING_PRIORITY_Serf: TKMTrainPriorityArr = (
-    utMiner, utMetallurgist, utStonemason, utWoodcutter, utCarpenter, utSerf,
-    utFarmer, utAnimalBreeder, utBaker, utButcher, utFisher, utSmith, utBuilder, utRecruit
-  );
+  procedure Dismiss(var aUnitReq: TKMUnitReqArr);
+  var
+    K: Integer;
+    UT: TKMUnitType;
+    HT: TKMHouseType;
+  begin
+    // Adjust worker count
+    aUnitReq[utBuilder] := aUnitReq[utBuilder] * Byte(fPredictor.UpdatedPeaceFactor > 0.99);
+    // Convert planned houses to units
+
+    for HT := HOUSE_MIN to HOUSE_MAX do
+      if gResHouses[HT].CanHasWorker AND (HT <> htBarracks) then
+        Inc(aUnitReq[gResHouses[HT].WorkerType], fBuilder.Planner.PlannedHouses[HT].Count);
+    // Dismiss units
+    for UT in DISMISS_UNITS do
+    begin
+      K := 0;
+      while (aUnitReq[UT] < -1) AND (K < gHands[fOwner].Units.Count) do // -1 for reserve
+      begin
+        if (gHands[fOwner].Units[K].UnitType = UT)
+            AND (gHands[fOwner].Units[K].Home = nil)
+            AND gHands[fOwner].Units[K].Dismissable then
+        begin
+          Inc(aUnitReq[UT]);
+          gHands[fOwner].Units[K].Dismiss;
+        end;
+        Inc(K);
+      end;
+    end;
+  end;
+
 var
   GoldShortage: Boolean;
   K,L,cnt: Integer;
@@ -298,13 +334,15 @@ var
   HT: TKMHouseType;
   UT: TKMUnitType;
   Schools: TKMSchoolHouseArray;
-  Houses: array[HOUSE_MIN..HOUSE_MAX] of Integer;
-  UnitReq: TKMUnitReqArr;
+  Houses: TKMHouseAvailArr;
+  UnitReq, UnitTrain: TKMUnitReqArr;
 begin
   P := gHands[fOwner];
   Stats := P.Stats;
-  FillChar(UnitReq, SizeOf(UnitReq), #0); //Clear up
-  FillChar(Houses, SizeOf(Houses), #0); //Clear up
+  //Clear up
+  FillChar(UnitReq, SizeOf(UnitReq), #0);
+  FillChar(UnitTrain, SizeOf(UnitTrain), #0);
+  FillChar(Houses, SizeOf(Houses), #0);
 
   //Citizens
   // Make sure we have enough gold left for self-sufficient city
@@ -336,9 +374,10 @@ begin
       end;
     end;
 
+    // Convert houses to required units
     for HT := HOUSE_MIN to HOUSE_MAX do
       if gResHouses[HT].CanHasWorker AND (HT <> htBarracks) then
-        Inc(UnitReq[gResHouses[HT].WorkerType], Houses[HT]);
+        Inc(UnitTrain[gResHouses[HT].WorkerType], Houses[HT]);
 
     UnitReq[utRecruit] := 0;
     UnitReq[utSerf] := 0;
@@ -352,12 +391,13 @@ begin
       UnitReq[utSerf] := Stats.GetUnitQty(utSerf) + RequiredSerfCount();
   end;
 
-  // Get required houses
+  // Consider existing units
   fUnitReqCnt := 0;
   for UT := Low(UnitReq) to High(UnitReq) do
   begin
-    UnitReq[UT] := Max(0, UnitReq[UT] - Stats.GetUnitQty(UT));
-    fUnitReqCnt := Min(fUnitReqCnt + UnitReq[UT], High(Word));
+    UnitReq[UT] := UnitReq[UT] - Stats.GetUnitQty(UT);
+    UnitTrain[UT] := UnitTrain[UT] + UnitReq[UT];
+    fUnitReqCnt := Min(fUnitReqCnt + Max(0,UnitReq[UT]), High(Word));
   end;
 
   // Find completed schools, decrease UnitReq by already trained citizens
@@ -376,7 +416,7 @@ begin
         if (Schools[cnt].Queue[L] <> utNone) then
         begin
           if L = 0 then // Queue is already active
-            Dec(UnitReq[ Schools[Cnt].Queue[L] ],1)
+            Dec(UnitTrain[ Schools[Cnt].Queue[L] ],1)
           else // Remove from Queue (it doesn't have to be actual ... when is city under attack we have to save gold)
             Schools[Cnt].RemUnitFromQueue(L);
         end;
@@ -388,10 +428,13 @@ begin
   if (cnt > 0) then
   begin
     if (gHands[fOwner].Stats.GetUnitQty(utSerf) < gHands[fOwner].Stats.GetHouseQty(htAny)) then // Keep minimal amount of serfs
-      TrainByPriority(TRAINING_PRIORITY_Serf, UnitReq, Schools, cnt)
+      TrainByPriority(TRAINING_PRIORITY_Serf, UnitTrain, Schools, cnt)
     else
-      TrainByPriority(TRAINING_PRIORITY, UnitReq, Schools, cnt);
+      TrainByPriority(TRAINING_PRIORITY, UnitTrain, Schools, cnt);
   end;
+
+  // Dismiss unused units
+  Dismiss(UnitReq);
 end;
 
 
@@ -472,13 +515,13 @@ var
     end;
   end;
 const
-  SOLD_ORDER: array[0..20] of TKMWareType = (
-    wtSausage,     wtWine,     wtBread,      //wtFish,
+  SOLD_ORDER: array[0..19] of TKMWareType = (
+    wtSausage,      wtWine,     wtBread, wtFish,
+    wtWoodenShield, wtAxe,      wtLance, wtBow,      wtLeatherArmor,
+    wtIronShield,   wtSword,    wtPike,  wtCrossbow, wtIronArmor,
+    wtHorse,        wtFlour,
     wtSkin,         wtLeather,  wtPig,
-    wtTrunk,        wtTimber,
-    wtWoodenShield,       wtAxe,      wtLance,       wtBow,      wtLeatherArmor,
-    wtIronShield,  wtSword,    wtPike,  wtCrossbow,  wtIronArmor,
-    wtHorse,        wtCorn,     wtFlour
+    wtTrunk        //wtTimber,  wtCorn,
     //wtSteel,        wtGold,     wtIronOre,    wtCoal,     wtGoldOre,
     //wtStone
   );
@@ -487,6 +530,7 @@ const
   SELL_LIMIT = 30;
 var
   MIN_GOLD_AMOUNT, MarketCnt, I, WareCnt: Word;
+  WT: TKMWareType;
 begin
 
   MarketCnt := gHands[fOwner].Stats.GetHouseQty(htMarket);
@@ -525,13 +569,13 @@ begin
 
   AvailableCnt := 0;
   SetLength(AvailableWares, RequiedCnt);
-  for I := 0 to Length(SOLD_ORDER) - 1 do
+  for WT in SOLD_ORDER do
     if (AvailableCnt < RequiedCnt) then
     begin
-      WareCnt := gHands[fOwner].Stats.GetWareBalance( SOLD_ORDER[I] );
-      if (  (SOLD_ORDER[I] in [WARFARE_MIN..WARFARE_MAX]) AND (WareCnt > WARFARE_SELL_LIMIT)  )
-         OR (  (WareCnt > SELL_LIMIT) AND (fPredictor.WareBalance[ SOLD_ORDER[I] ].Exhaustion > 90)  ) then
-        AddWare(SOLD_ORDER[I], False);
+      WareCnt := gHands[fOwner].Stats.GetWareBalance(WT);
+      if (  (WT in [WARFARE_MIN..WARFARE_MAX]) AND (WareCnt > WARFARE_SELL_LIMIT)  )
+         OR (  (WareCnt > SELL_LIMIT) AND (fPredictor.WareBalance[WT].Exhaustion > 90)  ) then
+        AddWare(WT, False);
     end;
 
   for I := 0 to RequiedCnt - 1 do
