@@ -104,7 +104,8 @@ end;
 
 
 procedure TKMTerrainFinderCommon.SaveTile(const X, Y: Word; aWalkDistance: Byte);
-var I: Integer;
+var
+  I: Integer;
 begin
   if fMaxCount = 1 then
   begin
@@ -225,7 +226,7 @@ const
     //Test whether this tile is valid and exit immediately if not
     //Multiply the radius because of diagonal approximation (straight=5, diagonal=7)
     if (aWalkDistance > aRadius * STRAIGHT_COST)
-    or not (aPass in gTerrain.Land^[Y,X].Passability) then
+      or not (aPass in gTerrain.Land^[Y,X].Passability) then
       Exit;
 
     visitX := aStart.X - X + aRadius;
@@ -251,8 +252,11 @@ const
         Visit(X-1,Y+1, aWalkDistance + DIAG_COST);
     end;
 
-    if Y-1 >=     1 then Visit(X, Y-1, aWalkDistance + STRAIGHT_COST);
-    if Y+1 <= fMapY then Visit(X, Y+1, aWalkDistance + STRAIGHT_COST);
+    if Y-1 >=     1 then
+      Visit(X, Y-1, aWalkDistance + STRAIGHT_COST);
+
+    if Y+1 <= fMapY then
+      Visit(X, Y+1, aWalkDistance + STRAIGHT_COST);
 
     if X+1 <= fMapX then
     begin
@@ -284,8 +288,8 @@ begin
   end
   else
   begin
-    for I := Max(aStart.Y-aRadius, 1) to Min(aStart.Y+aRadius, fMapY-1) do
-      for K := Max(aStart.X-aRadius, 1) to Min(aStart.X+aRadius, fMapX-1) do
+    for I := Max(aStart.Y - aRadius, 1) to Min(aStart.Y + aRadius, fMapY - 1) do
+      for K := Max(aStart.X - aRadius, 1) to Min(aStart.X + aRadius, fMapX - 1) do
         if (aPass in gTerrain.Land^[I,K].Passability) and (KMLengthDiag(aStart, KMPoint(K,I)) <= aRadius) then
           aList.Add(KMPoint(K,I));
   end;

@@ -2596,19 +2596,21 @@ begin
   bestSlope := MaxInt;
   Result := False; //It is already tested that we can walk to the tree, but double-check
 
-  for I:=-1 to 0 do for K:=-1 to 0 do
-  if Route_CanBeMade(aLoc, KMPoint(aTree.X+K, aTree.Y+I), tpWalk, 0) then
-  begin
-    slope := Round(HeightAt(aTree.X+K-0.5, aTree.Y+I-0.5) * CELL_HEIGHT_DIV) - Land^[aTree.Y, aTree.X].Height;
-    //Cutting trees which are higher than us from the front looks visually poor, (axe hits ground) so avoid it where possible
-    if (I = 0) and (slope < 0) then slope := slope - HEIGHT_MAX; //Make it worse but not worse than initial BestSlope
-    if Abs(slope) < bestSlope then
-    begin
-      aCuttingPoint := KMPointDir(aTree.X+K, aTree.Y+I, KMGetVertexDir(K, I));
-      Result := True;
-      bestSlope := Abs(slope);
-    end;
-  end;
+  for I := -1 to 0 do
+    for K := -1 to 0 do
+      if Route_CanBeMade(aLoc, KMPoint(aTree.X+K, aTree.Y+I), tpWalk, 0) then
+      begin
+        slope := Round(HeightAt(aTree.X+K-0.5, aTree.Y+I-0.5) * CELL_HEIGHT_DIV) - Land^[aTree.Y, aTree.X].Height;
+        //Cutting trees which are higher than us from the front looks visually poor, (axe hits ground) so avoid it where possible
+        if (I = 0) and (slope < 0) then
+          slope := slope - HEIGHT_MAX; //Make it worse but not worse than initial BestSlope
+        if Abs(slope) < bestSlope then
+        begin
+          aCuttingPoint := KMPointDir(aTree.X+K, aTree.Y+I, KMGetVertexDir(K, I));
+          bestSlope := Abs(slope);
+          Result := True;
+        end;
+      end;
 end;
 
 
@@ -2629,16 +2631,16 @@ begin
     T := validTiles[I];
 
     if (KMLengthDiag(aLoc, T) <= aRadius)
-    // Only full age
-    and ( (aOnlyAgeFull and ObjectIsChopableTree(T, caAgeFull))
-    // Any age tree will do
-          or (not aOnlyAgeFull and (
-            ObjectIsChopableTree(T, caAge1) or ObjectIsChopableTree(T, caAge2) or
-            ObjectIsChopableTree(T, caAge3) or ObjectIsChopableTree(T, caAgeFull) )
+      // Only full age
+      and ( (aOnlyAgeFull and ObjectIsChopableTree(T, caAgeFull))
+      // Any age tree will do
+            or (not aOnlyAgeFull and (
+              ObjectIsChopableTree(T, caAge1) or ObjectIsChopableTree(T, caAge2) or
+              ObjectIsChopableTree(T, caAge3) or ObjectIsChopableTree(T, caAgeFull) )
+            )
           )
-        )
-    and Route_CanBeMadeToVertex(aLoc, T, tpWalk)
-    and ChooseCuttingDirection(aLoc, T, cuttingPoint) then
+      and Route_CanBeMadeToVertex(aLoc, T, tpWalk)
+      and ChooseCuttingDirection(aLoc, T, cuttingPoint) then
     begin
       Result := True;
       Break;
@@ -2675,30 +2677,32 @@ begin
     T := validTiles[I];
 
     if (KMLengthDiag(aLoc, T) <= aRadius)
-    and not KMSamePoint(aAvoidLoc, T) then
+      and not KMSamePoint(aAvoidLoc, T) then
     begin
 
       //Grownup tree
       if (aPlantAct in [taCut, taAny])
-      and ObjectIsChopableTree(T, caAgeFull)
-      and (Land^[T.Y,T.X].TreeAge >= TREE_AGE_FULL)
-      //Woodcutter could be standing on any tile surrounding this tree
-      and TileIsGoodToCutTree(T)
-      and ((T.X = 1) or TileIsGoodToCutTree(KMPoint(T.X - 1, T.Y))) //if K=1, K-1 will be off map
-      and ((T.Y = 1) or TileIsGoodToCutTree(KMPoint(T.X, T.Y - 1)))
-      and ((T.X = 1) or (T.Y = 1) or TileIsGoodToCutTree(KMPoint(T.X - 1, T.Y - 1)))
-      and Route_CanBeMadeToVertex(aLoc, T, tpWalk) then
-        if ChooseCuttingDirection(aLoc, T, cuttingPoint) then
-          aTrees.Add(cuttingPoint); //Tree
+        and ObjectIsChopableTree(T, caAgeFull)
+        and (Land^[T.Y,T.X].TreeAge >= TREE_AGE_FULL)
+        //Woodcutter could be standing on any tile surrounding this tree
+        and TileIsGoodToCutTree(T)
+        and ((T.X = 1) or TileIsGoodToCutTree(KMPoint(T.X - 1, T.Y))) //if K=1, K-1 will be off map
+        and ((T.Y = 1) or TileIsGoodToCutTree(KMPoint(T.X, T.Y - 1)))
+        and ((T.X = 1) or (T.Y = 1) or TileIsGoodToCutTree(KMPoint(T.X - 1, T.Y - 1)))
+        and Route_CanBeMadeToVertex(aLoc, T, tpWalk)
+        and ChooseCuttingDirection(aLoc, T, cuttingPoint) then
+        aTrees.Add(cuttingPoint); //Tree
 
       if (aPlantAct in [taPlant, taAny])
-      and TileGoodToPlantTree(T.X, T.Y)
-      and Route_CanBeMade(aLoc, T, tpWalk, 0)
-      and not TileIsLocked(T) then //Taken by another woodcutter
+        and TileGoodToPlantTree(T.X, T.Y)
+        and Route_CanBeMade(aLoc, T, tpWalk, 0)
+        and not TileIsLocked(T) then //Taken by another woodcutter
+      begin
         if ObjectIsChopableTree(T, caAgeStump) then
           aBestToPlant.Add(T) //Prefer to dig out and plant on stumps to avoid cluttering whole area with em
         else
           aSecondBestToPlant.Add(T); //Empty space and other objects that can be dug out (e.g. mushrooms) if no other options available
+      end;
     end;
   end;
   validTiles.Free;
@@ -2749,15 +2753,15 @@ begin
       P := validTiles[I];
       //Check that this tile is valid
       if (aIgnoreWorkingUnits or not TileIsLocked(P)) //Taken by another fisherman
-      and Route_CanBeMade(aLoc, P, tpWalk, 0)
-      and not KMSamePoint(aAvoidLoc, P) then
+        and Route_CanBeMade(aLoc, P, tpWalk, 0)
+        and not KMSamePoint(aAvoidLoc, P) then
         //Now find a tile around this one that is water
         for J := -1 to 1 do
           for K := -1 to 1 do
             if ((K <> 0) or (J <> 0))
-            and TileInMapCoords(P.X+J, P.Y+K)
-            and TileIsWater(P.X+J, P.Y+K)
-            and WaterHasFish(KMPoint(P.X+J, P.Y+K)) then //Limit to only tiles which are water and have fish
+              and TileInMapCoords(P.X+J, P.Y+K)
+              and TileIsWater(P.X+J, P.Y+K)
+              and WaterHasFish(KMPoint(P.X+J, P.Y+K)) then //Limit to only tiles which are water and have fish
               aChosenTiles.Add(KMPointDir(P, KMGetDirection(J, K)));
     end;
   finally
@@ -2790,13 +2794,10 @@ var
 begin
   Result := False;
   for I := max(aLoc.Y - aRadius, 1) to Min(aLoc.Y + aRadius, fMapY-1) do
-  for K := max(aLoc.X - aRadius, 1) to Min(aLoc.X + aRadius, fMapX-1) do
-    if (KMLengthDiag(aLoc, KMPoint(K,I)) <= aRadius)
-    and TileIsWater(K,I) then
-    begin
-      Result := True;
-      Exit;
-    end;
+    for K := max(aLoc.X - aRadius, 1) to Min(aLoc.X + aRadius, fMapX-1) do
+      if (KMLengthDiag(aLoc, KMPoint(K,I)) <= aRadius)
+        and TileIsWater(K,I) then
+        Exit(True);
 end;
 
 
