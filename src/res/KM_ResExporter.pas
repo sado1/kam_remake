@@ -83,19 +83,19 @@ begin
   // Asynchroniously export data
   GetOrCreateExportWorker.QueueWork(procedure
     var
-      FullFolder,Folder: string;
+      fullFolderPath, folderPath: string;
       U: TKMUnitType;
       A: TKMUnitActionType;
-      Anim: TKMAnimLoop;
+      anim: TKMAnimLoop;
       D: TKMDirection;
       R: TKMWareType;
       T: TKMUnitThought;
-      i,ci:integer;
-      Used:array of Boolean;
-      RXData: TRXData;
-      SpritePack: TKMSpritePack;
-      SList: TStringList;
-      FolderCreated: Boolean;
+      i, ci:integer;
+      used:array of Boolean;
+      rxData: TRXData;
+      spritePack: TKMSpritePack;
+      sList: TStringList;
+      folderCreated: Boolean;
       sprites: TKMResSprites;
       units: TKMResUnits;
       resTexts: TKMTextLibraryMulti;
@@ -103,23 +103,23 @@ begin
 
     sprites := TKMResSprites.Create(nil, nil, True);
     sprites.LoadSprites(rxUnits, False); //BMP can't show alpha shadows anyways
-    SpritePack := sprites[rxUnits];
-    RXData := SpritePack.RXData;
+    spritePack := sprites[rxUnits];
+    rxData := spritePack.RXData;
 
     units := TKMResUnits.Create;
     resTexts := TKMTextLibraryMulti.Create;
     resTexts.LoadLocale(ExeDir + 'data' + PathDelim + 'text' + PathDelim + 'text.%s.libx');
     resTexts.ForceDefaultLocale := True;
 
-    Folder := ExeDir + 'Export' + PathDelim + 'UnitAnim' + PathDelim;
-    ForceDirectories(Folder);
+    folderPath := ExeDir + 'Export' + PathDelim + 'UnitAnim' + PathDelim;
+    ForceDirectories(folderPath);
 
-    SList := TStringList.Create;
+    sList := TStringList.Create;
     try
       for U := aUnitFrom to aUnitTo do
         for A := Low(TKMUnitActionType) to High(TKMUnitActionType) do
         begin
-          FolderCreated := False;
+          folderCreated := False;
           for D := dirN to dirNW do
             if units[U].UnitAnim[A,D].Step[1] <> -1 then
               for i := 1 to units[U].UnitAnim[A, D].Count do
@@ -127,14 +127,14 @@ begin
                 ci := units[U].UnitAnim[A,D].Step[i] + 1;
                 if ci <> 0 then
                 begin
-                  if not FolderCreated then
+                  if not folderCreated then
                   begin
                     //Use default locale for Unit GUIName, as translation could be not good for file system
-                    FullFolder := Folder + resTexts.DefaultTexts[units[U].GUITextID] + PathDelim + UNIT_ACT_STR[A] + PathDelim;
-                    ForceDirectories(FullFolder);
-                    FolderCreated := True;
+                    fullFolderPath := folderPath + resTexts.DefaultTexts[units[U].GUITextID] + PathDelim + UNIT_ACT_STR[A] + PathDelim;
+                    ForceDirectories(fullFolderPath);
+                    folderCreated := True;
                   end;
-                  SpritePack.ExportFullImageData(FullFolder, ci, SList);
+                  spritePack.ExportFullImageData(fullFolderPath, ci, sList);
                   // Stop export if async thread is terminated by application
                   if TThread.CheckTerminated then
                     Exit;
@@ -142,7 +142,7 @@ begin
               end;
         end;
 
-      SetLength(Used, Length(RXData.Size));
+      SetLength(used, Length(rxData.Size));
 
       //Exclude actions
       for U := Low(TKMUnitType) to High(TKMUnitType) do
@@ -152,34 +152,34 @@ begin
             for i := 1 to units[U].UnitAnim[A,D].Count do
             begin
               ci := units[U].UnitAnim[A,D].Step[i]+1;
-              Used[ci] := ci <> 0;
+              used[ci] := ci <> 0;
             end;
 
       if utSerf in [aUnitFrom..aUnitTo] then
         //serfs carrying stuff
         for R := WARE_MIN to WARE_MAX do
         begin
-          FolderCreated := False;
+          folderCreated := False;
           for D := dirN to dirNW do
           begin
-            Anim := units.SerfCarry[R, D];
-            for i := 1 to Anim.Count do
+            anim := units.SerfCarry[R, D];
+            for i := 1 to anim.Count do
             begin
-              ci := Anim.Step[i]+1;
+              ci := anim.Step[i]+1;
               if ci <> 0 then
               begin
-                Used[ci] := True;
+                used[ci] := True;
                 if utSerf in [aUnitFrom..aUnitTo] then
                 begin
-                  if not FolderCreated then
+                  if not folderCreated then
                   begin
                     //Use default locale for Unit GUIName, as translation could be not good for file system (like russian '����������/�������' with slash in it)
-                    FullFolder := Folder + resTexts.DefaultTexts[units[utSerf].GUITextID] + PathDelim + 'Delivery' + PathDelim
+                    fullFolderPath := folderPath + resTexts.DefaultTexts[units[utSerf].GUITextID] + PathDelim + 'Delivery' + PathDelim
                                     + GetEnumName(TypeInfo(TKMWareType), Integer(R)) + PathDelim;
-                    ForceDirectories(FullFolder);
-                    FolderCreated := True;
+                    ForceDirectories(fullFolderPath);
+                    folderCreated := True;
                   end;
-                  SpritePack.ExportFullImageData(FullFolder, ci, SList);
+                  spritePack.ExportFullImageData(fullFolderPath, ci, sList);
                   // Stop export if async thread is terminated by application
                   if TThread.CheckTerminated then
                     Exit;
@@ -189,24 +189,24 @@ begin
           end;
         end;
 
-      FullFolder := Folder + 'Thoughts' + PathDelim;
-      ForceDirectories(FullFolder);
+      fullFolderPath := folderPath + 'Thoughts' + PathDelim;
+      ForceDirectories(fullFolderPath);
       for T := thEat to High(TKMUnitThought) do
         for I := THOUGHT_BOUNDS[T,1] to  THOUGHT_BOUNDS[T,2] do
         begin
-          SpritePack.ExportFullImageData(FullFolder, I+1, SList);
-          Used[I+1] := True;
+          spritePack.ExportFullImageData(fullFolderPath, I+1, sList);
+          used[I+1] := True;
         end;
 
       if not aExportUnused then Exit;
 
-      FullFolder := Folder + '_Unused' + PathDelim;
-      ForceDirectories(FullFolder);
+      fullFolderPath := folderPath + '_Unused' + PathDelim;
+      ForceDirectories(fullFolderPath);
 
-      for ci := 1 to length(Used)-1 do
-        if not Used[ci] then
+      for ci := 1 to length(used)-1 do
+        if not used[ci] then
         begin
-          SpritePack.ExportFullImageData(FullFolder, ci, SList);
+          spritePack.ExportFullImageData(fullFolderPath, ci, sList);
           // Stop export if async thread is terminated by application
           if TThread.CheckTerminated then
             Exit;
@@ -216,7 +216,7 @@ begin
       sprites.Free;
       units.Free;
       resTexts.Free;
-      SList.Free;
+      sList.Free;
     end;
   end, aOnDone, 'Export units anim');
 end;
@@ -229,12 +229,12 @@ begin
   // Asynchroniously export data
   GetOrCreateExportWorker.QueueWork(procedure
   var
-    FullFolder,Folder: string;
+    fullFolderPath, folderPath: string;
     houses: TKMResHouses;
-    ID: TKMHouseType;
-    Ac: TKMHouseActionType;
-    Q, Beast, I, K, ci: Integer;
-    SpritePack: TKMSpritePack;
+    id: TKMHouseType;
+    acType: TKMHouseActionType;
+    Q, beast, I, K, ci: Integer;
+    spritePack: TKMSpritePack;
     SList: TStringList;
 
     sprites: TKMResSprites;
@@ -242,10 +242,10 @@ begin
   begin
     sprites := TKMResSprites.Create(nil, nil, true);
     sprites.LoadSprites(rxHouses, False); //BMP can't show alpha shadows anyways
-    SpritePack := sprites[rxHouses];
+    spritePack := sprites[rxHouses];
 
-    Folder := ExeDir + 'Export' + PathDelim + 'HouseAnim' + PathDelim;
-    ForceDirectories(Folder);
+    folderPath := ExeDir + 'Export' + PathDelim + 'HouseAnim' + PathDelim;
+    ForceDirectories(folderPath);
 
     SList := TStringList.Create;
     houses := TKMResHouses.Create;
@@ -254,15 +254,15 @@ begin
     resTexts.LoadLocale(ExeDir + 'data' + PathDelim + 'text' + PathDelim + 'text.%s.libx');
     resTexts.ForceDefaultLocale := True;
     try
-      for ID := HOUSE_MIN to HOUSE_MAX do
-        for Ac := haWork1 to haFlag3 do
-          for K := 1 to houses[ID].Anim[Ac].Count do
+      for id := HOUSE_MIN to HOUSE_MAX do
+        for acType := haWork1 to haFlag3 do
+          for K := 1 to houses[id].Anim[acType].Count do
           begin                                      //HouseNameTextID    resTexts.DefaultTexts
-            FullFolder := Folder + resTexts.DefaultTexts[houses[ID].HouseNameTextID] + PathDelim + HOUSE_ACTION_STR[Ac] + PathDelim;
-            ForceDirectories(FullFolder);
-            ci := houses[ID].Anim[Ac].Step[K] + 1;
+            fullFolderPath := folderPath + resTexts.DefaultTexts[houses[id].HouseNameTextID] + PathDelim + HOUSE_ACTION_STR[acType] + PathDelim;
+            ForceDirectories(fullFolderPath);
+            ci := houses[id].Anim[acType].Step[K] + 1;
             if ci <> 0 then
-              SpritePack.ExportFullImageData(FullFolder, ci, SList);
+              spritePack.ExportFullImageData(fullFolderPath, ci, SList);
             // Stop export if async thread is terminated by application
             if TThread.CheckTerminated then
               Exit;
@@ -271,19 +271,19 @@ begin
       for Q := 1 to 2 do
       begin
         if Q = 1 then
-          ID := htSwine
+          id := htSwine
         else
-          ID := htStables;
-        ForceDirectories(Folder + '_' + resTexts.DefaultTexts[houses[ID].HouseNameTextID] + PathDelim);
-        for Beast := 1 to 5 do
+          id := htStables;
+        ForceDirectories(folderPath + '_' + resTexts.DefaultTexts[houses[id].HouseNameTextID] + PathDelim);
+        for beast := 1 to 5 do
           for I := 1 to 3 do
-            for K := 1 to houses.BeastAnim[ID,Beast,I].Count do
+            for K := 1 to houses.BeastAnim[id,beast,I].Count do
             begin
-              FullFolder := Folder + resTexts.DefaultTexts[houses[ID].HouseNameTextID] + PathDelim + 'Beast' + PathDelim + int2fix(Beast,2) + PathDelim;
-              ForceDirectories(FullFolder);
-              ci := houses.BeastAnim[ID,Beast,I].Step[K]+1;
+              fullFolderPath := folderPath + resTexts.DefaultTexts[houses[id].HouseNameTextID] + PathDelim + 'Beast' + PathDelim + int2fix(beast,2) + PathDelim;
+              ForceDirectories(fullFolderPath);
+              ci := houses.BeastAnim[id,beast,I].Step[K]+1;
               if ci <> 0 then
-                SpritePack.ExportFullImageData(FullFolder, ci, SList);
+                spritePack.ExportFullImageData(fullFolderPath, ci, SList);
               // Stop export if async thread is terminated by application
               if TThread.CheckTerminated then
                 Exit;
@@ -305,22 +305,22 @@ begin
   // Asynchroniously export data
   GetOrCreateExportWorker.QueueWork(procedure
   var
-    FullFolder, Folder: string;
+    fullFolderPath, folderPath: string;
     I, K: Integer;
 
     sprites: TKMResSprites;
-    SpriteID: Integer;
-    SpritePack: TKMSpritePack;
-    SList: TStringList;
+    spriteID: Integer;
+    spritePack: TKMSpritePack;
+    sList: TStringList;
   begin
     sprites := TKMResSprites.Create(nil, nil, True);
     sprites.LoadSprites(rxTrees, False);
-    SpritePack := sprites[rxTrees];
+    spritePack := sprites[rxTrees];
 
-    Folder := ExeDir + 'Export' + PathDelim + 'TreeAnim' + PathDelim;
-    ForceDirectories(Folder);
+    folderPath := ExeDir + 'Export' + PathDelim + 'TreeAnim' + PathDelim;
+    ForceDirectories(folderPath);
 
-    SList := TStringList.Create;
+    sList := TStringList.Create;
 
     try
       for I := 0 to gRes.MapElements.Count - 1 do
@@ -328,16 +328,16 @@ begin
       begin
         for K := 1 to gMapElements[I].Anim.Count do
         begin
-          SpriteID := gMapElements[I].Anim.Step[K] + 1;
-          if SpriteID <> 0 then
+          spriteID := gMapElements[I].Anim.Step[K] + 1;
+          if spriteID <> 0 then
           begin
             if gMapElements[I].Anim.Count > 1 then
             begin
-              FullFolder := Folder + IntToStr(I) + PathDelim;
-              ForceDirectories(FullFolder);
+              fullFolderPath := folderPath + IntToStr(I) + PathDelim;
+              ForceDirectories(fullFolderPath);
             end else
-              FullFolder := Folder;
-            SpritePack.ExportFullImageData(FullFolder, SpriteID, SList);
+              fullFolderPath := folderPath;
+            spritePack.ExportFullImageData(fullFolderPath, spriteID, sList);
             // Stop export if async thread is terminated by application
             if TThread.CheckTerminated then
               Exit;
@@ -347,7 +347,7 @@ begin
     finally
       sprites.ClearTemp;
       sprites.Free;
-      SList.Free;
+      sList.Free;
     end;
   end, aOnDone, 'Export tree anim');
 end;
