@@ -91,6 +91,7 @@ begin
   NumEd_WarrCount := TKMNumericEdit.Create(Panel_Units, 9, lineY + 20, 0, MAPED_GROUP_MAX_CNT);
   NumEd_WarrCount.Anchors := [anLeft, anTop, anRight];
   NumEd_WarrCount.Hint := gResTexts[TX_MAPED_UNITS_FORMATION_NUMBER_HINT];
+  NumEd_WarrCount.AutoFocusable := False;
   NumEd_WarrCount.OnChange := Town_NumericChange;
   NumEd_WarrCount.Value := 1;
 
@@ -103,6 +104,7 @@ begin
   NumEd_WarrColumns := TKMNumericEdit.Create(Panel_Units, 105, lineY + 20, 0, 25);
   NumEd_WarrColumns.Anchors := [anLeft, anTop, anRight];
   NumEd_WarrColumns.Hint := gResTexts[TX_MAPED_UNITS_FORMATION_COLUMNS_HINT];
+  NumEd_WarrColumns.AutoFocusable := False;
   NumEd_WarrColumns.OnChange := Town_NumericChange;
   NumEd_WarrColumns.Value := 1;
 
