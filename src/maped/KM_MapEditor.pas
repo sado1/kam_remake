@@ -618,7 +618,7 @@ procedure TKMMapEditor.ChangeDefenceTypes(aMode: TKMChangeDefenceTypeMode; aDirI
 begin
   case aMode of
     //change direction forward
-    cdmDir:         gCursor.MapEdDefPosDir := KMAddDirection(gCursor.MapEdDefPosDir, aDirInc);
+    cdmDir:         gCursor.MapEdDirection := KMAddDirection(gCursor.MapEdDirection, aDirInc);
     // change group type of defence position
     cdmGroupType:   if gCursor.MapEdDefPosGroupType = gtMounted then
                       gCursor.MapEdDefPosGroupType := gtMelee
@@ -800,7 +800,7 @@ begin
     else
     if TKMUnitType(gCursor.Tag1) in UNITS_WARRIORS then
     begin
-      dir := gCursor.MapEdDefPosDir;
+      dir := gCursor.MapEdDirection;
       GT := UNIT_TO_GROUP_TYPE[TKMUnitType(gCursor.Tag1)];
       DP := gMySpectator.Hand.AI.General.DefencePositions.FindPositionAtLoc(P);
 
@@ -870,7 +870,7 @@ var
   G: TKMUnitGroup;
   formation : TKMFormation;
 begin
-  dir := gCursor.MapEdDefPosDir;
+  dir := gCursor.MapEdDirection;
   groupType := gCursor.MapEdDefPosGroupType;
 
   G := gHands.GroupsHitTest(aLoc.X, aLoc.Y);

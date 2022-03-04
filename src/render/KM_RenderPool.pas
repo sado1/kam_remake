@@ -1517,7 +1517,7 @@ begin
                              gMySpectator.Hand.FlagColor);
                           end;
     MARKER_DEFENCE:       begin
-                            RenderSpriteOnTile(P, Ord(gCursor.MapEdDefPosDir) + 510, gMySpectator.Hand.FlagColor);
+                            RenderSpriteOnTile(P, Ord(gCursor.MapEdDirection) + 510, gMySpectator.Hand.FlagColor);
                             case gCursor.MapEdDefPosGroupType of
                               gtMelee:      RenderSpriteOnTile(P, 371, gMySpectator.Hand.FlagColor);
                               gtAntiHorse:  RenderSpriteOnTile(P, 374, gMySpectator.Hand.FlagColor);
@@ -1820,7 +1820,7 @@ begin
     if TKMUnitType(gCursor.Tag1) in UNITS_CITIZEN then
       dir := dirS
     else
-      dir := gCursor.MapEdDefPosDir;
+      dir := gCursor.MapEdDirection;
 
     if not (dir in [dirN..dirNW])  then
       dir := dirN;

@@ -48,11 +48,11 @@ type
     MapEdConstHeight: Byte;
 
     // MapEd other pages
+    // todo: refactor to use only 1 flag here
     MapEdDir: Byte;
-
+    MapEdDirection: TKMDirection; //direction of Units and Defence Pos
 
     // MapEd TownDefence
-    MapEdDefPosDir: TKMDirection; //direction of Units and Defence Pos
     MapEdDefPosGroupType: TKMGroupType; //group type of defence position
     MapEdDefPosGroupLevel: TKMGroupLevel; // group lvl which is added with def pos - 0: low hp units, 1: leather units, 2: iron units
     MapEdDefPosType: TKMAIDefencePosType; // defence pos type - defender/attacker
@@ -76,7 +76,7 @@ constructor TKMCursor.Create;
 begin
   inherited;
 
-  MapEdDefPosDir := dirS;
+  MapEdDirection := dirS;
   MapEdDefPosGroupType := gtMelee;
   MapEdDefPosType := dtFrontLine;
   MapEdGroupFormation.NumUnits := 1;
