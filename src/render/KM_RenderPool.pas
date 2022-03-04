@@ -6,7 +6,7 @@ uses
   Classes,
   dglOpenGL, SysUtils, KromOGLUtils, KromUtils, Math,
   KM_Defaults, KM_CommonTypes, KM_CommonClasses, KM_Pics, KM_Points, KM_Render, KM_Viewport,
-  KM_RenderTerrain, KM_ResHouses, KM_ResSprites, KM_Units,
+  KM_RenderTerrain, KM_ResHouses, KM_ResSprites, KM_Units, KM_HandEntity,
   KM_Houses, KM_Terrain, KM_CommonGameTypes, KM_RenderDebug,
   KM_ResTypes;
 
@@ -83,7 +83,7 @@ type
     procedure RenderForegroundUI_Units;
     procedure RenderForegroundUI_PaintBucket(aHighlightAll: Boolean);
     procedure RenderForegroundUI_UniversalEraser(aHighlightAll: Boolean);
-    function TryRenderUnitOrGroup(aObject: TObject; aUnitFilterFunc, aGroupFilterFunc: TBooleanFunc; aUseGroupFlagColor, aDoHighlight: Boolean; aHandColor, aFlagColor: Cardinal; aHighlightColor: Cardinal = 0): Boolean;
+    function TryRenderUnitOrGroup(aEntity: TKMHandEntity; aUnitFilterFunc, aGroupFilterFunc: TBooleanFunc; aUseGroupFlagColor, aDoHighlight: Boolean; aHandColor, aFlagColor: Cardinal; aHighlightColor: Cardinal = 0): Boolean;
     procedure RenderUnit(U: TKMUnit; const P: TKMPoint; FlagColor: Cardinal; DoHighlight: Boolean; HighlightColor: Cardinal);
     function PaintBucket_UnitToRender(aUnit: TObject): Boolean;
     function PaintBucket_GroupToRender(aGroup: TObject): Boolean;
@@ -161,7 +161,6 @@ uses
   KM_HandTypes,
   KM_Projectiles,
   KM_TerrainTypes,
-  KM_HandEntity,
   KM_ResInterpolation,
   KM_AITypes;
 
@@ -1761,7 +1760,7 @@ end;
 
 //Try to render Unit or Unit group.
 //Return True, if succeeded
-function TRenderPool.TryRenderUnitOrGroup(aObject: TObject; aUnitFilterFunc, aGroupFilterFunc: TBooleanFunc;
+function TRenderPool.TryRenderUnitOrGroup(aEntity: TKMHandEntity; aUnitFilterFunc, aGroupFilterFunc: TBooleanFunc;
                                           aUseGroupFlagColor, aDoHighlight: Boolean;
                                           aHandColor, aFlagColor: Cardinal; aHighlightColor: Cardinal = 0): Boolean;
 var
@@ -1770,19 +1769,19 @@ var
   groupFlagColor: Cardinal;
 begin
   Result := False;
-  if (aObject is TKMUnit) then
+  if aEntity.IsUnit then
   begin
-    U := TKMUnit(aObject);
-    if not Assigned(aUnitFilterFunc) or aUnitFilterFunc(aObject) then
+    U := TKMUnit(aEntity);
+    if not Assigned(aUnitFilterFunc) or aUnitFilterFunc(aEntity) then
     begin
       RenderUnit(U, U.Position, aHandColor, aDoHighlight, aHighlightColor);
       Result := True;
     end;
   end else 
-  if (aObject is TKMUnitGroup) then
+  if aEntity.IsGroup then
   begin
-    G := TKMUnitGroup(aObject);
-    if not Assigned(aGroupFilterFunc) or aGroupFilterFunc(aObject) then
+    G := TKMUnitGroup(aEntity);
+    if not Assigned(aGroupFilterFunc) or aGroupFilterFunc(aEntity) then
     begin
       U := G.FlagBearer;
       if aUseGroupFlagColor then
@@ -1806,14 +1805,14 @@ end;
 
 procedure TRenderPool.RenderForegroundUI_Units;
 var
-  obj: TObject;
+  entity: TKMHandEntity;
   P: TKMPoint;
   dir : TKMDirection;
 begin
   if gCursor.Tag1 = 255 then
   begin
-    obj := gMySpectator.HitTestCursorWGroup(True);
-    TryRenderUnitOrGroup(obj, nil, nil, True, True, DELETE_COLOR, 0, DELETE_COLOR);
+    entity := gMySpectator.HitTestCursorWGroup(True);
+    TryRenderUnitOrGroup(entity, nil, nil, True, True, DELETE_COLOR, 0, DELETE_COLOR);
   end
   else
   begin
@@ -1836,18 +1835,18 @@ end;
 
 procedure TRenderPool.RenderForegroundUI_UniversalEraser(aHighlightAll: Boolean);
 var
-  obj: TObject;
+  entity: TKMHandEntity;
   P: TKMPoint;
   isRendered: Boolean;
 begin
   P := gCursor.Cell;
-  obj := gMySpectator.HitTestCursorWGroup(True);
+  entity := gMySpectator.HitTestCursorWGroup(True);
 
-  isRendered := TryRenderUnitOrGroup(obj, nil, nil, True, True, DELETE_COLOR, 0, DELETE_COLOR);
+  isRendered := TryRenderUnitOrGroup(entity, nil, nil, True, True, DELETE_COLOR, 0, DELETE_COLOR);
 
-  if (obj is TKMHouse) then
+  if (entity is TKMHouse) then
   begin
-    AddWholeHouse(TKMHouse(obj), gHands[TKMHouse(obj).Owner].FlagColor, True, True, DELETE_COLOR);
+    AddWholeHouse(TKMHouse(entity), gHands[entity.Owner].FlagColor, True, True, DELETE_COLOR);
     isRendered := True;
   end;
 
@@ -1881,22 +1880,22 @@ end;
 
 procedure TRenderPool.RenderForegroundUI_PaintBucket(aHighlightAll: Boolean);
 var
-  obj: TObject;
+  entity: TKMHandEntity;
   highlightColor: Cardinal;
   P: TKMPoint;
   isRendered: Boolean;
 begin
   P := gCursor.Cell;
   highlightColor := MultiplyBrightnessByFactor(gMySpectator.Hand.FlagColor, 2, 0.3, 0.9);
-  obj := gMySpectator.HitTestCursorWGroup;
+  entity := gMySpectator.HitTestCursorWGroup;
 
-  isRendered := TryRenderUnitOrGroup(obj, PaintBucket_UnitToRender, PaintBucket_GroupToRender,
+  isRendered := TryRenderUnitOrGroup(entity, PaintBucket_UnitToRender, PaintBucket_GroupToRender,
                                      False, True,
                                      gMySpectator.Hand.FlagColor, gMySpectator.Hand.FlagColor, highlightColor);
 
-  if (obj is TKMHouse) and (TKMHouse(obj).Owner <> gMySpectator.HandID) then
+  if entity.IsHouse and (entity.Owner <> gMySpectator.HandID) then
   begin
-    AddWholeHouse(TKMHouse(obj), gMySpectator.Hand.FlagColor, True, True, highlightColor);
+    AddWholeHouse(TKMHouse(entity), gMySpectator.Hand.FlagColor, True, True, highlightColor);
     isRendered := True;
   end;
 
