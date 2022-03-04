@@ -77,7 +77,7 @@ type
 
   TKMCheckpointAreaSet = set of TKMCheckpointArea;
 
-  TKMChangeDefenceTypeMode = (cdmDir, cdmDirBack, cdmGroupType, cdmDefPosType);
+  TKMChangeDefenceTypeMode = (cdmDir, cdmGroupType, cdmDefPosType);
 
   TKMGroupLevel = (glLow, glLeather, glIron);
 

@@ -44,7 +44,7 @@ type
     procedure PaintCenterScreen(aLayer: TKMPaintLayer);
     procedure PaintAIStart(aLayer: TKMPaintLayer);
 
-    procedure ChangeDefenceTypes(aMode: TKMChangeDefenceTypeMode);  //change units and def pos direction
+    procedure ChangeDefenceTypes(aMode: TKMChangeDefenceTypeMode; aDirInc: Integer = 1);  //change units and def pos direction
 
     procedure AddDefenceMarker(const aLoc: TKMPoint);
 
@@ -614,13 +614,11 @@ begin
 end;
 
 
-procedure TKMMapEditor.ChangeDefenceTypes(aMode: TKMChangeDefenceTypeMode);
+procedure TKMMapEditor.ChangeDefenceTypes(aMode: TKMChangeDefenceTypeMode; aDirInc: Integer = 1);
 begin
   case aMode of
     //change direction forward
-    cdmDir:         gCursor.MapEdDefPosDir := KMNextDirection(gCursor.MapEdDefPosDir);
-    //change direction backward
-    cdmDirBack:     gCursor.MapEdDefPosDir := KMPrevDirection(gCursor.MapEdDefPosDir);
+    cdmDir:         gCursor.MapEdDefPosDir := KMAddDirection(gCursor.MapEdDefPosDir, aDirInc);
     // change group type of defence position
     cdmGroupType:   if gCursor.MapEdDefPosGroupType = gtMounted then
                       gCursor.MapEdDefPosGroupType := gtMelee
@@ -1014,10 +1012,10 @@ begin
 
                 cmMarkers:    case gCursor.Tag1 of
                                 MARKER_DEFENCE:       begin
-                                                        if ssShift in gCursor.SState then
-                                                          ChangeDefenceTypes(cdmDirBack)//change dir backward
-                                                        else
                                                         if ssCtrl in gCursor.SState then
+                                                          ChangeDefenceTypes(cdmDir, -1)//change dir backward
+                                                        else
+                                                        if ssShift in gCursor.SState then
                                                           ChangeDefenceTypes(cdmGroupType)//change gtype
                                                         else
                                                         if ssAlt in gCursor.SState then
@@ -1027,7 +1025,13 @@ begin
                                                       end;
                               end;
 
-                cmUnits:      ChangeDefenceTypes(cdmDir);//change dir
+                cmUnits:      if ssCtrl in gCursor.SState then
+                                ChangeDefenceTypes(cdmDir, -1)
+                              else
+                              if ssShift in gCursor.SState then
+                                ChangeDefenceTypes(cdmDir, 4)
+                              else
+                                ChangeDefenceTypes(cdmDir);
               end;
   end;
 end;
