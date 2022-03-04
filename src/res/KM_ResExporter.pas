@@ -90,8 +90,8 @@ begin
       D: TKMDirection;
       R: TKMWareType;
       T: TKMUnitThought;
-      i, ci:integer;
-      used:array of Boolean;
+      I, K:integer;
+      used: array of Boolean;
       rxData: TRXData;
       spritePack: TKMSpritePack;
       sList: TStringList;
@@ -122,10 +122,10 @@ begin
           folderCreated := False;
           for D := dirN to dirNW do
             if units[U].UnitAnim[A,D].Step[1] <> -1 then
-              for i := 1 to units[U].UnitAnim[A, D].Count do
+              for I := 1 to units[U].UnitAnim[A, D].Count do
               begin
-                ci := units[U].UnitAnim[A,D].Step[i] + 1;
-                if ci <> 0 then
+                K := units[U].UnitAnim[A,D].Step[I] + 1;
+                if K <> 0 then
                 begin
                   if not folderCreated then
                   begin
@@ -134,7 +134,7 @@ begin
                     ForceDirectories(fullFolderPath);
                     folderCreated := True;
                   end;
-                  spritePack.ExportFullImageData(fullFolderPath, ci, sList);
+                  spritePack.ExportFullImageData(fullFolderPath, K, sList);
                   // Stop export if async thread is terminated by application
                   if TThread.CheckTerminated then
                     Exit;
@@ -149,11 +149,11 @@ begin
         for A := Low(TKMUnitActionType) to High(TKMUnitActionType) do
           for D := dirN to dirNW do
             if units[U].UnitAnim[A,D].Step[1] <> -1 then
-            for i := 1 to units[U].UnitAnim[A,D].Count do
-            begin
-              ci := units[U].UnitAnim[A,D].Step[i]+1;
-              used[ci] := ci <> 0;
-            end;
+              for I := 1 to units[U].UnitAnim[A,D].Count do
+              begin
+                K := units[U].UnitAnim[A,D].Step[I]+1;
+                used[K] := K <> 0;
+              end;
 
       if utSerf in [aUnitFrom..aUnitTo] then
         //serfs carrying stuff
@@ -163,12 +163,12 @@ begin
           for D := dirN to dirNW do
           begin
             anim := units.SerfCarry[R, D];
-            for i := 1 to anim.Count do
+            for I := 1 to anim.Count do
             begin
-              ci := anim.Step[i]+1;
-              if ci <> 0 then
+              K := anim.Step[I]+1;
+              if K <> 0 then
               begin
-                used[ci] := True;
+                used[K] := True;
                 if utSerf in [aUnitFrom..aUnitTo] then
                 begin
                   if not folderCreated then
@@ -179,7 +179,7 @@ begin
                     ForceDirectories(fullFolderPath);
                     folderCreated := True;
                   end;
-                  spritePack.ExportFullImageData(fullFolderPath, ci, sList);
+                  spritePack.ExportFullImageData(fullFolderPath, K, sList);
                   // Stop export if async thread is terminated by application
                   if TThread.CheckTerminated then
                     Exit;
@@ -203,10 +203,10 @@ begin
       fullFolderPath := folderPath + '_Unused' + PathDelim;
       ForceDirectories(fullFolderPath);
 
-      for ci := 1 to length(used)-1 do
-        if not used[ci] then
+      for K := 1 to Length(used)-1 do
+        if not used[K] then
         begin
-          spritePack.ExportFullImageData(fullFolderPath, ci, sList);
+          spritePack.ExportFullImageData(fullFolderPath, K, sList);
           // Stop export if async thread is terminated by application
           if TThread.CheckTerminated then
             Exit;
