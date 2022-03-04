@@ -750,7 +750,7 @@ begin
 
     // We change defense pos and unit direction on RMB
     if (gCursor.Mode = cmMarkers) and (gCursor.Tag1 = MARKER_DEFENCE) then Exit;
-    if (gCursor.Mode = cmUnits) then Exit;
+    if (gCursor.Mode = cmUnits) and (TKMUnitType(gCursor.Tag1) in UNITS_WARRIORS) then Exit;
 
   end;
 
