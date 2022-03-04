@@ -2189,14 +2189,15 @@ begin
 end;
 
 
-procedure TKMUnitGroup.PaintHighlighted(aTickLag: Single; aHandColor, aFlagColor: Cardinal; aDoImmediateRender: Boolean = False; aDoHighlight: Boolean = False; aHighlightColor: Cardinal = 0);
+procedure TKMUnitGroup.PaintHighlighted(aTickLag: Single; aHandColor, aFlagColor: Cardinal; aDoImmediateRender: Boolean = False;
+                                        aDoHighlight: Boolean = False; aHighlightColor: Cardinal = 0);
 
-  function GetFlagPositionF(const V: TKMUnitVisualState): TKMPointF;
+  function GetFlagPositionF(const aV: TKMUnitVisualState): TKMPointF;
   begin
-    Result.X := V.PosF.X + UNIT_OFF_X + V.SlideX;
-    Result.Y := V.PosF.Y + UNIT_OFF_Y + V.SlideY;
+    Result.X := aV.PosF.X + UNIT_OFF_X + aV.SlideX;
+    Result.Y := aV.PosF.Y + UNIT_OFF_Y + aV.SlideY;
     //Flag needs to be rendered above or below unit depending on direction (see AddUnitFlag)
-    if IsFlagRenderBeforeUnit(V.Dir) then
+    if IsFlagRenderBeforeUnit(aV.Dir) then
       Result.Y := Result.Y - FLAG_X_OFFSET
     else
       Result.Y := Result.Y + FLAG_X_OFFSET;
@@ -2204,7 +2205,7 @@ procedure TKMUnitGroup.PaintHighlighted(aTickLag: Single; aHandColor, aFlagColor
 
 var
   V: TKMUnitVisualState;
-  UnitPos, FlagPos: TKMPointF;
+  unitPos, flagPos: TKMPointF;
   I: Integer;
   flagStep: Cardinal;
   newPos: TKMPoint;
@@ -2216,7 +2217,7 @@ begin
   if FlagBearer.IsDeadOrDying then Exit;
 
   //In MapEd units fTicker always the same, use Terrain instead
-  flagStep := IfThen(gGameParams.Mode = gmMapEd, gTerrain.AnimStep, fTicker);
+  flagStep := IfThen(gGameParams.IsMapEditor, gTerrain.AnimStep, fTicker);
 
   //Paint virtual members in MapEd mode
   for I := 1 to fMapEdCount - 1 do
@@ -2230,9 +2231,9 @@ begin
 
   V := FlagBearer.Visual.GetLerp(aTickLag);
   // We need to render Flag after MapEd virtual members
-  FlagPos := GetFlagPositionF(V);
+  flagPos := GetFlagPositionF(V);
   gRenderPool.AddUnitFlag(FlagBearer.UnitType, V.Action,
-    V.Dir, FlagStep, FlagPos.X, FlagPos.Y, aFlagColor, aDoImmediateRender);
+    V.Dir, FlagStep, flagPos.X, flagPos.Y, aFlagColor, aDoImmediateRender);
 
   if SHOW_GROUP_MEMBERS_POS and not gGameParams.IsMapEditor then
     for I := 0 to Count - 1 do
