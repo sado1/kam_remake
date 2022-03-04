@@ -169,7 +169,7 @@ type
 
     procedure AfterMissionInit(aFlattenRoads: Boolean);
 
-    function AddUnit(aUnitType: TKMUnitType; const aLoc: TKMPoint; AutoPlace: Boolean = True; aRequiredWalkConnect: Byte = 0;
+    function AddUnit(aUnitType: TKMUnitType; const aLoc: TKMPoint; aAutoPlace: Boolean = True; aRequiredWalkConnect: Byte = 0;
                      aCheat: Boolean = False; aMakeCheckpoint: Boolean = True): TKMUnit; reintroduce;
     function AddUnitGroup(aUnitType: TKMUnitType; const Position: TKMPoint; aDir: TKMDirection; aUnitPerRow, aCount: Word;
                           aMakeCheckpoint: Boolean = True): TKMUnitGroup;
@@ -457,12 +457,12 @@ end;
 
 //Place unit of aUnitType to aLoc via script
 //AutoPlace - add unit to nearest available spot if aLoc is already taken (or unwalkable)
-function TKMHand.AddUnit(aUnitType: TKMUnitType; const aLoc: TKMPoint; AutoPlace: Boolean = True;
+function TKMHand.AddUnit(aUnitType: TKMUnitType; const aLoc: TKMPoint; aAutoPlace: Boolean = True;
                          aRequiredWalkConnect: Byte = 0; aCheat: Boolean = False; aMakeCheckpoint: Boolean = True): TKMUnit;
 var
   G: TKMUnitGroup;
 begin
-  Result := fUnits.AddUnit(fID, aUnitType, aLoc, AutoPlace, aRequiredWalkConnect);
+  Result := fUnits.AddUnit(fID, aUnitType, aLoc, aAutoPlace, aRequiredWalkConnect);
 
   //Unit failed to add, that happens
   if Result = nil then Exit;
