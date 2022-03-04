@@ -83,8 +83,10 @@ type
     procedure RenderForegroundUI_Units;
     procedure RenderForegroundUI_PaintBucket(aHighlightAll: Boolean);
     procedure RenderForegroundUI_UniversalEraser(aHighlightAll: Boolean);
+    procedure DoRenderGroup(aUnitType: TKMUnitType; aLoc: TKMPointDir; aMembersCnt, aUnitsPerRow: Integer;  aHandColor: Cardinal);
     function TryRenderUnitOrGroup(aEntity: TKMHandEntity; aUnitFilterFunc, aGroupFilterFunc: TBooleanFunc; aUseGroupFlagColor, aDoHighlight: Boolean; aHandColor, aFlagColor: Cardinal; aHighlightColor: Cardinal = 0): Boolean;
-    procedure RenderUnit(U: TKMUnit; const P: TKMPoint; FlagColor: Cardinal; DoHighlight: Boolean; HighlightColor: Cardinal);
+    procedure RenderUnit(U: TKMUnit; const P: TKMPoint; aFlagColor: Cardinal; aDoHighlight: Boolean; aHighlightColor: Cardinal); overload;
+    procedure RenderUnit(aUnitType: TKMUnitType; const P: TKMPointDir; aAnimStep: Integer; aFlagColor: Cardinal; aDoHighlight: Boolean = False; aHighlightColor: Cardinal = 0); overload;
     function PaintBucket_UnitToRender(aUnit: TObject): Boolean;
     function PaintBucket_GroupToRender(aGroup: TObject): Boolean;
 
@@ -1031,7 +1033,9 @@ begin
 end;
 
 
-procedure TRenderPool.AddUnit(aUnit: TKMUnitType; aUID: Integer; aAct: TKMUnitActionType; aDir: TKMDirection; StepId: Integer; StepFrac: Single; pX,pY: Single; FlagColor: TColor4; NewInst: Boolean; DoImmediateRender: Boolean = False; DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
+procedure TRenderPool.AddUnit(aUnit: TKMUnitType; aUID: Integer; aAct: TKMUnitActionType; aDir: TKMDirection; StepId: Integer; StepFrac: Single;
+                              pX,pY: Single; FlagColor: TColor4; NewInst: Boolean; DoImmediateRender: Boolean = False;
+                              DoHighlight: Boolean = False; HighlightColor: TColor4 = 0);
 var
   cornerX, cornerY, ground: Single;
   id, id0: Integer;
@@ -1740,10 +1744,10 @@ begin
     cmEyeDropper: RenderWireTile(P, icCyan); // Cyan quad
     cmRotateTile: RenderWireTile(P, icCyan); // Cyan quad
     cmElevate,
-    cmEqualize:      RenderForegroundUI_ElevateEqualize;
-    cmConstHeight:   RenderForegroundUI_ElevateEqualize;
-    cmUnits:      RenderForegroundUI_Units;
-    cmMarkers:    RenderForegroundUI_Markers;
+    cmEqualize:         RenderForegroundUI_ElevateEqualize;
+    cmConstHeight:      RenderForegroundUI_ElevateEqualize;
+    cmUnits:            RenderForegroundUI_Units;
+    cmMarkers:          RenderForegroundUI_Markers;
     cmPaintBucket:      RenderForegroundUI_PaintBucket(ssShift in gCursor.SState);
     cmUniversalEraser:  RenderForegroundUI_UniversalEraser(ssShift in gCursor.SState);
   end;
@@ -1752,9 +1756,48 @@ begin
 end;
 
 
-procedure TRenderPool.RenderUnit(U: TKMUnit; const P: TKMPoint; FlagColor: Cardinal; DoHighlight: Boolean; HighlightColor: Cardinal);
+procedure TRenderPool.RenderUnit(U: TKMUnit; const P: TKMPoint; aFlagColor: Cardinal; aDoHighlight: Boolean; aHighlightColor: Cardinal);
 begin
-  AddUnitWithDefaultArm(U.UnitType, 0, uaWalk, U.Direction, U.AnimStep, P.X+UNIT_OFF_X, P.Y+UNIT_OFF_Y, FlagColor, True, DoHighlight, HighlightColor);
+  RenderUnit(U.UnitType, KMPointDir(P, U.Direction), U.AnimStep, aFlagColor, aDoHighlight, aHighlightColor);
+end;
+
+
+procedure TRenderPool.RenderUnit(aUnitType: TKMUnitType; const P: TKMPointDir; aAnimStep: Integer; aFlagColor: Cardinal; aDoHighlight: Boolean = False; aHighlightColor: Cardinal = 0);
+begin
+  AddUnitWithDefaultArm(aUnitType, 0, uaWalk, P.Dir, aAnimStep, P.Loc.X + UNIT_OFF_X, P.Loc.Y + UNIT_OFF_Y,
+                        aFlagColor, True, aDoHighlight, aHighlightColor);
+end;
+
+
+procedure TRenderPool.DoRenderGroup(aUnitType: TKMUnitType; aLoc: TKMPointDir; aMembersCnt, aUnitsPerRow: Integer; aHandColor: Cardinal);
+
+  procedure PaintGroup;
+  var
+    I: Integer;
+    unitPos: TKMPointF;
+    newPos: TKMPoint;
+    doesFit: Boolean;
+  begin
+    //Paint virtual members in MapEd mode
+    for I := 1 to aMembersCnt - 1 do
+    begin
+      newPos := GetPositionInGroup2(aLoc.Loc.X, aLoc.Loc.Y, aLoc.Dir, I, aUnitsPerRow, gTerrain.MapX, gTerrain.MapY, doesFit);
+      if not doesFit then Continue; //Don't render units that are off the map in the map editor
+      unitPos.X := newPos.X + UNIT_OFF_X; //MapEd units don't have sliding
+      unitPos.Y := newPos.Y + UNIT_OFF_Y;
+      gRenderPool.AddUnit(aUnitType, 0, uaWalk, aLoc.Dir, UNIT_STILL_FRAMES[aLoc.Dir], 0.0, unitPos.X, unitPos.Y, aHandColor, True, True);
+    end;
+  end;
+
+begin
+  if TKMUnitGroup.IsFlagRenderBeforeUnit(aLoc.Dir) then
+  begin
+    PaintGroup;
+    RenderUnit(aUnitType, aLoc, UNIT_STILL_FRAMES[aLoc.Dir], aHandColor);
+  end else begin
+    RenderUnit(aUnitType, aLoc, UNIT_STILL_FRAMES[aLoc.Dir], aHandColor);
+    PaintGroup;
+  end;
 end;
 
 
@@ -1808,6 +1851,7 @@ var
   entity: TKMHandEntity;
   P: TKMPoint;
   dir : TKMDirection;
+  UT: TKMUnitType;
 begin
   if gCursor.Tag1 = 255 then
   begin
@@ -1816,17 +1860,23 @@ begin
   end
   else
   begin
-    if TKMUnitType(gCursor.Tag1) in UNITS_CITIZEN then
-      dir := dirS
+    UT := TKMUnitType(gCursor.Tag1);
+    if UT in UNITS_WARRIORS then
+      dir := gCursor.MapEdDirection
     else
-      dir := gCursor.MapEdDirection;
+      dir := dirS;
 
     if not (dir in [dirN..dirNW])  then
       dir := dirN;
 
     P := gCursor.Cell;
-    if gTerrain.CanPlaceUnit(P, TKMUnitType(gCursor.Tag1)) then
-      AddUnitWithDefaultArm(TKMUnitType(gCursor.Tag1), 0, uaWalk, dir, UNIT_STILL_FRAMES[dirS], P.X+UNIT_OFF_X, P.Y+UNIT_OFF_Y, gMySpectator.Hand.FlagColor, True)
+    if gTerrain.CanPlaceUnit(P, UT) then
+    begin
+      if UT in UNITS_WARRIORS then
+        DoRenderGroup(UT, KMPointDir(P, dir), gCursor.MapEdGroupFormation.NumUnits, gCursor.MapEdGroupFormation.UnitsPerRow, gMySpectator.Hand.FlagColor)
+      else
+        AddUnitWithDefaultArm(UT, 0, uaWalk, dir, UNIT_STILL_FRAMES[dirS], P.X+UNIT_OFF_X, P.Y+UNIT_OFF_Y, gMySpectator.Hand.FlagColor, True);
+    end
     else
       RenderSpriteOnTile(P, TC_BLOCK); // Red X
   end;

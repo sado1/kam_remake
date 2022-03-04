@@ -170,6 +170,7 @@ end;
 procedure TKMMapEdTownUnits.Show;
 begin
   Town_UnitRefresh;
+  Town_NumericChange(nil);
   Panel_Units.Show;
 end;
 
