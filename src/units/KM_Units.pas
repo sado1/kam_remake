@@ -148,7 +148,7 @@ type
     HitPointsInvulnerable: Boolean;
     Dismissable: Boolean; //Is it allowed to dismiss this unit ?
 
-    constructor Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPoint; aOwner: TKMHandID; aInHouse: TKMHouse);
+    constructor Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPointDir; aOwner: TKMHandID; aInHouse: TKMHouse);
     destructor Destroy; override;
 
     constructor Load(LoadStream: TKMemoryStream); override;
@@ -299,7 +299,7 @@ type
   private
     fCarry: TKMWareType;
   public
-    constructor Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPoint; aOwner: TKMHandID; aInHouse: TKMHouse);
+    constructor Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPointDir; aOwner: TKMHandID; aInHouse: TKMHouse);
     constructor Load(LoadStream: TKMemoryStream); override;
     procedure Save(SaveStream: TKMemoryStream); override;
 
@@ -339,7 +339,7 @@ type
   protected
     function IsSelectableImpl: Boolean; override;
   public
-    constructor Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPoint; aOwner: TKMHandID); overload;
+    constructor Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPointDir; aOwner: TKMHandID); overload;
     constructor Load(LoadStream: TKMemoryStream); override;
     property FishCount: byte read fFishCount;
     function ReduceFish: Boolean;
@@ -734,7 +734,7 @@ end;
 
 
 { TKMSerf }
-constructor TKMUnitSerf.Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPoint; aOwner: TKMHandID; aInHouse: TKMHouse);
+constructor TKMUnitSerf.Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPointDir; aOwner: TKMHandID; aInHouse: TKMHouse);
 begin
   inherited;
   fCarry := wtNone;
@@ -993,7 +993,7 @@ end;
 
 
 { TKMUnitAnimal }
-constructor TKMUnitAnimal.Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPoint; aOwner: TKMHandID);
+constructor TKMUnitAnimal.Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPointDir; aOwner: TKMHandID);
 begin
   inherited Create(aID, aUnitType, aLoc, aOwner, nil);
 
@@ -1125,7 +1125,7 @@ end;
 
 
 { TKMUnit }
-constructor TKMUnit.Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPoint; aOwner: TKMHandID; aInHouse: TKMHouse);
+constructor TKMUnit.Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPointDir; aOwner: TKMHandID; aInHouse: TKMHouse);
 begin
   inherited Create(etUnit, aID, aOwner);
   fTicker       := aID; //Units update states will be spread more evenly that way
@@ -1134,12 +1134,12 @@ begin
   fThought      := thNone;
   fHome         := nil;
   fInHouse      := nil;
-  fPositionF    := KMPointF(aLoc);
-  fPositionRound     := aLoc;
-  fPrevPosition := aLoc; //Init values
-  fNextPosition := aLoc; //Init values
+  fPositionF    := KMPointF(aLoc.Loc);
+  fPositionRound := aLoc.Loc;
+  fPrevPosition := aLoc.Loc; //Init values
+  fNextPosition := aLoc.Loc; //Init values
   fType         := aUnitType;
-  fDirection    := dirS;
+  fDirection    := aLoc.Dir;
   fVisible      := True;
   IsExchanging  := False;
   AnimStep      := UNIT_STILL_FRAMES[fDirection]; //Use still frame at begining, so units don't all change frame on first tick

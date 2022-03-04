@@ -20,7 +20,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    function AddUnit(aOwner: TKMHandID; aUnitType: TKMUnitType; const aLoc: TKMPoint; aAutoPlace: Boolean = True;
+    function AddUnit(aOwner: TKMHandID; aUnitType: TKMUnitType; const aLoc: TKMPointDir; aAutoPlace: Boolean = True;
                      aRequiredWalkConnect: Byte = 0; aInHouse: TKMHouse = nil): TKMUnit;
     procedure AddUnitToList(aUnit: TKMUnit);
     property Count: Integer read GetCount;
@@ -91,22 +91,23 @@ end;
 
 
 //AutoPlace means we should try to find a spot for this unit instead of just placing it where we were told to
-function TKMUnitsCollection.AddUnit(aOwner: TKMHandID; aUnitType: TKMUnitType; const aLoc: TKMPoint; aAutoPlace: Boolean = True;
-                                    aRequiredWalkConnect: Byte = 0; aInHouse: TKMHouse = nil): TKMUnit;
+function TKMUnitsCollection.AddUnit(aOwner: TKMHandID; aUnitType: TKMUnitType; const aLoc: TKMPointDir;
+                                    aAutoPlace: Boolean = True; aRequiredWalkConnect: Byte = 0; aInHouse: TKMHouse = nil): TKMUnit;
 var
   ID: Cardinal;
   placeTo: TKMPoint;
+  pointDir: TKMPointDir;
   U: TKMUnit;
 begin
   if aAutoPlace then
   begin
     placeTo := KMPOINT_ZERO; // Will have 0:0 if no place found
     if aRequiredWalkConnect = 0 then
-      aRequiredWalkConnect := gTerrain.GetWalkConnectID(aLoc);
-    gHands.FindPlaceForUnit(aLoc.X, aLoc.Y, aUnitType, placeTo, aRequiredWalkConnect);
+      aRequiredWalkConnect := gTerrain.GetWalkConnectID(aLoc.Loc);
+    gHands.FindPlaceForUnit(aLoc.Loc.X, aLoc.Loc.Y, aUnitType, placeTo, aRequiredWalkConnect);
   end
   else
-    placeTo := aLoc;
+    placeTo := aLoc.Loc;
 
   //Check if Pos is within map coords first, as other checks rely on this
   if not gTerrain.TileInMapCoords(placeTo.X, placeTo.Y) then
@@ -124,17 +125,18 @@ begin
                            placeTo);
   end;
 
+  pointDir := KMPointDir(placeTo, aLoc.Dir);
   ID := gGame.GetNewUID;
   case aUnitType of
-    utSerf:                        Result := TKMUnitSerf.Create(ID, aUnitType, placeTo, aOwner, aInHouse);
-    utBuilder:                      Result := TKMUnitWorker.Create(ID, aUnitType, placeTo, aOwner, aInHouse);
+    utSerf:                       Result := TKMUnitSerf.Create(ID, aUnitType, pointDir, aOwner, aInHouse);
+    utBuilder:                    Result := TKMUnitWorker.Create(ID, aUnitType, pointDir, aOwner, aInHouse);
     utWoodCutter..utFisher,
     {utWorker,}
-    utStonemason..utMetallurgist: Result := TKMUnitCitizen.Create(ID, aUnitType, placeTo, aOwner, aInHouse);
-    utRecruit:                     Result := TKMUnitRecruit.Create(ID, aUnitType, placeTo, aOwner, aInHouse);
-    WARRIOR_MIN..WARRIOR_MAX:      Result := TKMUnitWarrior.Create(ID, aUnitType, placeTo, aOwner, aInHouse);
-    ANIMAL_MIN..ANIMAL_MAX:        Result := TKMUnitAnimal.Create(ID, aUnitType, placeTo, aOwner); //Do not specify aAddInHouse, we want to call TKMUnitAnimal constructor
-    else                           raise ELocError.Create('Add ' + gRes.Units[aUnitType].GUIName, placeTo);
+    utStonemason..utMetallurgist: Result := TKMUnitCitizen.Create(ID, aUnitType, pointDir, aOwner, aInHouse);
+    utRecruit:                    Result := TKMUnitRecruit.Create(ID, aUnitType, pointDir, aOwner, aInHouse);
+    WARRIOR_MIN..WARRIOR_MAX:     Result := TKMUnitWarrior.Create(ID, aUnitType, pointDir, aOwner, aInHouse);
+    ANIMAL_MIN..ANIMAL_MAX:       Result := TKMUnitAnimal.Create(ID, aUnitType, pointDir, aOwner); //Do not specify aAddInHouse, we want to call TKMUnitAnimal constructor
+    else                          raise ELocError.Create('Add ' + gRes.Units[aUnitType].GUIName, pointDir.Loc);
   end;
 
   if Result <> nil then

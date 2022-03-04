@@ -169,8 +169,10 @@ type
 
     procedure AfterMissionInit(aFlattenRoads: Boolean);
 
-    function AddUnit(aUnitType: TKMUnitType; const aLoc: TKMPoint; aAutoPlace: Boolean = True; aRequiredWalkConnect: Byte = 0;
-                     aCheat: Boolean = False; aMakeCheckpoint: Boolean = True): TKMUnit; reintroduce;
+    function AddUnit(aUnitType: TKMUnitType; const aLoc: TKMPoint; aAutoPlace: Boolean = True;
+                     aRequiredWalkConnect: Byte = 0; aCheat: Boolean = False; aMakeCheckpoint: Boolean = True): TKMUnit; reintroduce; overload;
+    function AddUnit(aUnitType: TKMUnitType; const aLoc: TKMPointDir; aAutoPlace: Boolean = True;
+                     aRequiredWalkConnect: Byte = 0; aCheat: Boolean = False; aMakeCheckpoint: Boolean = True): TKMUnit; reintroduce; overload;
     function AddUnitGroup(aUnitType: TKMUnitType; const Position: TKMPoint; aDir: TKMDirection; aUnitPerRow, aCount: Word;
                           aMakeCheckpoint: Boolean = True): TKMUnitGroup;
 
@@ -285,7 +287,7 @@ end;
 function TKMHandCommon.AddUnit(aUnitType: TKMUnitType; const aLoc: TKMPoint; aMakeCheckpoint: Boolean = True): TKMUnit;
 begin
   //Animals are autoplaced by default
-  Result := fUnits.AddUnit(fID, aUnitType, aLoc, True);
+  Result := fUnits.AddUnit(fID, aUnitType, KMPointDir(aLoc, dirS), True);
 
   if gGameParams.IsMapEditor and aMakeCheckpoint then
     gGame.MapEditor.History.MakeCheckpoint(caUnits, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_ADD_SMTH],
@@ -455,9 +457,16 @@ begin
 end;
 
 
+function TKMHand.AddUnit(aUnitType: TKMUnitType; const aLoc: TKMPoint; aAutoPlace: Boolean = True;
+                         aRequiredWalkConnect: Byte = 0; aCheat: Boolean = False; aMakeCheckpoint: Boolean = True): TKMUnit;
+begin
+  Result := AddUnit(aUnitType,  KMPointDir(aLoc, dirS), aAutoPlace, aRequiredWalkConnect, aCheat, aMakeCheckpoint);
+end;
+
+
 //Place unit of aUnitType to aLoc via script
 //AutoPlace - add unit to nearest available spot if aLoc is already taken (or unwalkable)
-function TKMHand.AddUnit(aUnitType: TKMUnitType; const aLoc: TKMPoint; aAutoPlace: Boolean = True;
+function TKMHand.AddUnit(aUnitType: TKMUnitType; const aLoc: TKMPointDir; aAutoPlace: Boolean = True;
                          aRequiredWalkConnect: Byte = 0; aCheat: Boolean = False; aMakeCheckpoint: Boolean = True): TKMUnit;
 var
   G: TKMUnitGroup;
@@ -516,7 +525,7 @@ function TKMHand.TrainUnit(aUnitType: TKMUnitType; aInHouse: TKMHouse): TKMUnit;
 begin
   Assert(aInHouse <> nil, 'House to train unit in could not be nil');
   // Add unit and specify that its made inside house (so there is no need to occupy terrain tile)
-  Result := fUnits.AddUnit(fID, aUnitType, aInHouse.Entrance, False, 0, aInHouse);
+  Result := fUnits.AddUnit(fID, aUnitType, KMPointDir(aInHouse.Entrance, dirS), False, 0, aInHouse);
   Result.OnUnitDied := UnitDied;
   Result.OnUnitTrained := UnitTrained;
 

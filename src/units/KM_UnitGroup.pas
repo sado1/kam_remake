@@ -290,10 +290,9 @@ begin
   if gGameParams.IsMapEditor then
   begin
     //In MapEd we create only flagholder, other members are virtual
-    warrior := TKMUnitWarrior(gHands[aOwner].AddUnit(aUnitType, KMPoint(PosX, PosY), False, 0, False, False));
+    warrior := TKMUnitWarrior(gHands[aOwner].AddUnit(aUnitType, KMPointDir(PosX, PosY, aDir), False, 0, False, False));
     if warrior <> nil then
     begin
-      warrior.Direction := aDir;
       warrior.AnimStep  := UNIT_STILL_FRAMES[aDir];
       AddMember(warrior);
       warrior.Condition := GetDefaultCondition;
@@ -309,10 +308,9 @@ begin
       unitLoc := GetPositionInGroup2(PosX, PosY, aDir, I, aUnitPerRow, gTerrain.MapX, gTerrain.MapY, doesFit);
       if not doesFit then Continue;
 
-      warrior := TKMUnitWarrior(gHands[aOwner].AddUnit(aUnitType, unitLoc, True, desiredArea));
+      warrior := TKMUnitWarrior(gHands[aOwner].AddUnit(aUnitType, KMPointDir(unitLoc, aDir), True, desiredArea));
       if warrior = nil then Continue;
 
-      warrior.Direction := aDir;
       warrior.AnimStep  := UNIT_STILL_FRAMES[aDir];
       AddMember(warrior, -1, False);
       warrior.Condition := newCondition;
