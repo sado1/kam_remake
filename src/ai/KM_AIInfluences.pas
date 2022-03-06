@@ -791,7 +791,7 @@ begin
       if (PL = HAND_NONE) then
         Continue
       else
-        fNavMesh.DrawPolygon(K, OwnPoly[PL,K], tcWhite);
+        fNavMesh.DrawPolygon(K, OwnPoly[PL,K], gHands[PL].FlagColor AND tcWhite);
     end;
   end;
 

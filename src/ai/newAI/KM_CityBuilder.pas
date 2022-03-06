@@ -834,7 +834,7 @@ begin
     aMaxPlans := Max(aMaxPlans, Ceil(gHands[fOwner].Stats.GetUnitQty(utBuilder) / Max(0.01,AI_Par[BUILDER_ChHTB_AllWorkerCoef])) - fPlanner.ConstructedHouses);
 
   // Quarries have minimal delay + stones use only workers (towers after peace time) -> exhaustion for wtStone is OK
-  fStoneShortage := (fPredictor.WareBalance[wtStone].Exhaustion < AI_Par[BUILDER_Shortage_Stone]);
+  fStoneShortage := (fPredictor.WareBalance[wtStone].Exhaustion < AI_Par[BUILDER_Shortage_Stone]) AND not Planner.StonesDepleted;
 
   // Make sure that gold will be produced ASAP -> minimal delay, exhaustion is OK
   fGoldShortage := (fPredictor.WareBalance[wtGold].Exhaustion < AI_Par[BUILDER_Shortage_Gold]);

@@ -123,6 +123,7 @@ type
     fOwner: TKMHandID;
     fConstructedHouses: Word;
     fDefenceTowersPlanned: Boolean;
+    fStonesDepleted: Boolean;
     fPlannedHouses: TPlannedHousesArray;
     fForestsInfo: TKMForestsInfo;
     fFields: TFieldMemory;
@@ -165,6 +166,7 @@ type
     property ConstructedHouses: Word read fConstructedHouses;
     property PlannedHouses: TPlannedHousesArray read fPlannedHouses write fPlannedHouses;
     property DefenceTowersPlanned: Boolean read fDefenceTowersPlanned;
+    property StonesDepleted: Boolean read fStonesDepleted;
 
     procedure MarkAsExhausted(aHT: TKMHouseType; aLoc: TKMPoint);
 
@@ -270,6 +272,7 @@ begin
   fConstructedHouses := 0;
   fOwner := aPlayer;
   fDefenceTowersPlanned := False;
+  fStonesDepleted := False;
   fForestsInfo.Count := 0;
   SetLength(fForestsInfo.Forests,0);
   fFields.Count := 0;
@@ -309,6 +312,7 @@ begin
   SaveStream.Write(fOwner);
   SaveStream.Write(fConstructedHouses);
   SaveStream.Write(fDefenceTowersPlanned);
+  //SaveStream.Write(fStonesDepleted);
   SaveStream.Write(fForestsInfo.Count);
   if (fForestsInfo.Count > 0) then
     SaveStream.Write(fForestsInfo.Forests[0], SizeOf(TKMForestInfo) * fForestsInfo.Count);
@@ -353,6 +357,7 @@ begin
   LoadStream.Read(fOwner);
   LoadStream.Read(fConstructedHouses);
   LoadStream.Read(fDefenceTowersPlanned);
+  //LoadStream.Read(fStonesDepleted);
   LoadStream.Read(fForestsInfo.Count);
   SetLength(fForestsInfo.Forests,fForestsInfo.Count);
   if (fForestsInfo.Count > 0) then
@@ -495,6 +500,11 @@ begin
           AddPlan(HT, H.Entrance, TKMHouseWoodcutters(H).FlagPoint, TKMHouseWoodcutters(H).WoodcutterMode = wmChop)
         else
           AddPlan(HT, H.Entrance);
+        with fPlannedHouses[HT].Plans[fPlannedHouses[HT].Count-1] do
+        begin
+          House := H.GetPointer;
+          Placed := true;
+        end;
       end;
     end;
   end;
@@ -1916,6 +1926,7 @@ procedure TKMCityPlanner.CheckStoneReserves(aForceToPlaceQuarry: Boolean; aReqQu
 const
   HT = htQuarry;
   MIN_CNT = 60; // possible to mine X layers of stone tile = X * 3 stones
+  MIN_CNT_USED = 40;
 var
   CanBeReplaced: Boolean;
   I,K, LowestIdx: Integer;
@@ -1963,9 +1974,12 @@ begin
                 CanBeReplaced := False;
                 break;
               end
-              else if (not aForceToPlaceQuarry AND (StoneLocs.Tag2[I] > 1)) OR (StoneLocs.Tag2[I] > 3) then // Allow lower tolerance in case of aForceToPlaceQuarry
+              else if (not aForceToPlaceQuarry AND (StoneLocs.Tag2[I] > 1)) // Allow lower tolerance in case of aForceToPlaceQuarry
+                OR ((StoneLocs.Tag2[I] > 0) AND (StoneLocs.Tag[I] < MIN_CNT_USED))
+                OR (StoneLocs.Tag2[I] > 3) then
                 StoneLocs.Delete(I);
-          if CanBeReplaced then
+          fStonesDepleted := StoneLocs.Count = 0;
+          if CanBeReplaced AND not fStonesDepleted then
           begin
             // Copy stone locs
             CopySL := TKMPointTagList.Create();

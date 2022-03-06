@@ -506,7 +506,7 @@ begin
       for K := 0 to I-1 do
         if InfluenceArr[K] AND
           not (   (Mines.Items[K].Y <> Mines.Items[I].Y)
-                OR (  Abs(Mines.Items[K].X - Mines.Items[I].X) > (3 + Byte(aMineType = htIronMine)) )   ) then
+                OR (  Abs(Mines.Items[K].X - Mines.Items[I].X) >= (3 + Byte(aMineType = htIronMine)) )   ) then
         begin
           InfluenceArr[I] := False;
           break;
