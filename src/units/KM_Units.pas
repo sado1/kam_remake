@@ -2016,7 +2016,7 @@ begin
 end;
 
 
-//Check if a route can be made to any tile around this house
+// Check if a route can be made to any tile around this house
 function TKMUnit.CanWalkTo(const aFrom: TKMPoint; aHouse: TKMHouse; aPass: TKMTerrainPassability; aDistance: Single): Boolean;
 var
   I: Integer;
@@ -2027,7 +2027,8 @@ begin
   try
     aHouse.GetListOfCellsWithin(cells);
     for I := 0 to cells.Count - 1 do
-      Result := Result or gTerrain.Route_CanBeMade(aFrom, cells[I], aPass, aDistance);
+    if gTerrain.Route_CanBeMade(aFrom, cells[I], aPass, aDistance) then
+      Exit(True);
   finally
     cells.Free;
   end;
@@ -2073,19 +2074,19 @@ begin
   if fInHouse.IsDestroyed then //Someone has destroyed the house we were in
   begin
     fVisible := True;
-      //If we are walking into/out of the house then don't set our position, ActionGoInOut will sort it out
-    if   not (Action is TKMUnitActionGoInOut)
-      or not TKMUnitActionGoInOut(Action).IsStarted then
+    // If we are walking into/out of the house then don't set our position, ActionGoInOut will sort it out
+    if not (Action is TKMUnitActionGoInOut)
+    or not TKMUnitActionGoInOut(Action).IsStarted then
     begin
-      //Position in a spiral nearest to entrance of house, updating IsUnit.
+      // Position in a spiral nearest to entrance of house, updating IsUnit.
       if not gHands.FindPlaceForUnit(fInHouse.Entrance.X, fInHouse.Entrance.Y, Self, newCurrPosition, gTerrain.GetWalkConnectID(fInHouse.Entrance)) then
       begin
-        //There is no space for this unit so it must be destroyed
+        // There is no space for this unit so it must be destroyed
         //todo: re-route to KillUnit and let it sort out that unit is invisible and cant be placed
         fKilledBy := HAND_NONE;
-        if    (Owner <> HAND_NONE)
-          and not IsDeadOrDying
-          and Assigned(OnUnitDied) then
+        if (Owner <> HAND_NONE)
+        and not IsDeadOrDying
+        and Assigned(OnUnitDied) then
           OnUnitDied(Self);
 
         //These must be freed before running CloseUnit because task destructors sometimes need access to unit properties
@@ -2139,10 +2140,12 @@ begin
     fVisual.UpdateState;
 end;
 
+
 procedure TKMUnit.VertexAdd(const aFrom, aTo: TKMPoint);
 begin
   gTerrain.UnitVertexAdd(aFrom, aTo);
 end;
+
 
 procedure TKMUnit.VertexRem(const aLoc: TKMPoint);
 begin
