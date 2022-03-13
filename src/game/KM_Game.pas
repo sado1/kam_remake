@@ -3030,68 +3030,71 @@ begin
   gPerfLogs.TickBegin(fParams.Tick + 1);
   {$ENDIF}
   try
-    // As soon as next command arrives we are no longer in a waiting state
-    if fWaitingForNetwork then
-      WaitingPlayersDisplay(False);
+    try
+      // As soon as next command arrives we are no longer in a waiting state
+      if fWaitingForNetwork then
+        WaitingPlayersDisplay(False);
 
-    // Make savepoints and saves BEFORE tick increment
-    // Thus all of the previous gip commands, which were made from last tick increment,
-    // will be added to the save.
-    ManageSaves;
+      // Make savepoints and saves BEFORE tick increment
+      // Thus all of the previous gip commands, which were made from last tick increment,
+      // will be added to the save.
+      ManageSaves;
 
-    IncTick;
+      IncTick;
 
-    fGameInputProcess.TakePlannedCommands;
+      fGameInputProcess.TakePlannedCommands;
 
-    fLastUpdateState := TimeGet;
+      fLastUpdateState := TimeGet;
 
-    fLastReplayTickLocal := fParams.Tick;
+      fLastReplayTickLocal := fParams.Tick;
 
-    if fParams.IsMultiPlayerOrSpec then
-      gNetworking.LastProcessedTick := fParams.Tick;
+      if fParams.IsMultiPlayerOrSpec then
+        gNetworking.LastProcessedTick := fParams.Tick;
 
-    //Tell the master server about our game on the specific tick (host only)
-    if fParams.IsMultiPlayerOrSpec and gNetworking.IsHost
-      and ((fParams.IsNormalMission and (fParams.Tick = ANNOUNCE_BUILD_MAP))
-      or (fParams.IsTactic and (fParams.Tick = ANNOUNCE_BATTLE_MAP))) then
-    gNetworking.ServerQuery.SendMapInfo(fParams.Name, fParams.MapFullCRC, gNetworking.NetPlayers.GetConnectedCount);
+      //Tell the master server about our game on the specific tick (host only)
+      if fParams.IsMultiPlayerOrSpec and gNetworking.IsHost
+        and ((fParams.IsNormalMission and (fParams.Tick = ANNOUNCE_BUILD_MAP))
+        or (fParams.IsTactic and (fParams.Tick = ANNOUNCE_BATTLE_MAP))) then
+      gNetworking.ServerQuery.SendMapInfo(fParams.Name, fParams.MapFullCRC, gNetworking.NetPlayers.GetConnectedCount);
 
-    fScripting.UpdateState;
-    gTerrain.UpdateState;
+      fScripting.UpdateState;
+      gTerrain.UpdateState;
 
-    if gHands.CanHaveAI() then
-      gAIFields.UpdateState(fParams.Tick);
+      if gHands.CanHaveAI() then
+        gAIFields.UpdateState(fParams.Tick);
 
-    gHands.UpdateState(fParams.Tick); //Quite slow
+      gHands.UpdateState(fParams.Tick); //Quite slow
 
-    if gGame = nil then Exit; //Quit the update if game was stopped for some reason
+      if gGame = nil then Exit; //Quit the update if game was stopped for some reason
 
-    gMySpectator.UpdateState(fParams.Tick);
-    fPathfinding.UpdateState;
-    gProjectiles.UpdateState; //If game has stopped it's NIL
+      gMySpectator.UpdateState(fParams.Tick);
+      fPathfinding.UpdateState;
+      gProjectiles.UpdateState; //If game has stopped it's NIL
 
-    fGameInputProcess.RunningTimer(fParams.Tick); //GIP_Multi issues all commands for this tick
+      fGameInputProcess.RunningTimer(fParams.Tick); //GIP_Multi issues all commands for this tick
 
-    //Returning to the lobby (through MP GIP) ends the game
-    if gGame = nil then Exit;
+      //Returning to the lobby (through MP GIP) ends the game
+      if gGame = nil then Exit;
 
-    //In aggressive mode store a command every tick so we can find exactly when a replay mismatch occurs
-    if AGGRESSIVE_REPLAYS then
-      fGameInputProcess.CmdTemp(gicTempDoNothing); //do call cmd before SaveGameCheckpoint
+      //In aggressive mode store a command every tick so we can find exactly when a replay mismatch occurs
+      if AGGRESSIVE_REPLAYS then
+        fGameInputProcess.CmdTemp(gicTempDoNothing); //do call cmd before SaveGameCheckpoint
 
-    fSavePoints.LastTick := Max(fSavePoints.LastTick, fParams.Tick);
+      fSavePoints.LastTick := Max(fSavePoints.LastTick, fParams.Tick);
 
-    // Update our ware distributions from settings at the start of the game
-    if (fParams.Tick = 1)
-    and IsWareDistributionStoredBetweenGames then
-      fGameInputProcess.CmdWareDistribution(gicWareDistributions, AnsiString(gGameSettings.WareDistribution.PackToStr));
+      // Update our ware distributions from settings at the start of the game
+      if (fParams.Tick = 1)
+      and IsWareDistributionStoredBetweenGames then
+        fGameInputProcess.CmdWareDistribution(gicWareDistributions, AnsiString(gGameSettings.WareDistribution.PackToStr));
 
-    Result := True;
+      Result := True;
 
-    CheckPauseGameAtTick;
-
-    if DoSaveRandomChecks then
-      gRandomCheckLogger.UpdateState(fParams.Tick);
+      CheckPauseGameAtTick;
+    finally
+      // Save rng logger even if game crashed during tick execution, f.e. because of desync
+      if DoSaveRandomChecks then
+        gRandomCheckLogger.UpdateState(fParams.Tick);
+     end;
   finally
     {$IFDEF PERFLOG}
     gPerfLogs.TickEnd;
