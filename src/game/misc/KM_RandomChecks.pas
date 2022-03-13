@@ -477,9 +477,10 @@ end;
 
 
 procedure TKMRandomCheckLogger.SaveAsText(const aPath: String);
+const
+  MAX_SL_COUNT = 2*1024*1024; // Avoid huge files and OOM errors
 var
-//  LogPair: TPair<Cardinal, TList<TKMRngLogRecord>>;
-  I, cnt: Integer;
+  I, cnt, K: Integer;
   keyTick: Cardinal;
   SL: TStringList;
   S, valS: String;
@@ -491,6 +492,7 @@ begin
   if Self = nil then Exit;
   
   cnt := 0;
+  K := 0;
   SL := TStringList.Create;
   try
     callersIdList := TList<Byte>.Create(fCallers.Keys);
@@ -523,12 +525,22 @@ begin
           S := Format('%3d. %-50sSeed: %12d Val: %s', [I, fCallers[logRecList[I].CallerId], logRecList[I].Seed, valS]);
           SL.Add(S);
         end;
+        if SL.Count > MAX_SL_COUNT then
+        begin
+          SL.SaveToFile(aPath + IntToStr(K));
+          SL.Clear;
+          Inc(K);
+        end;
+
       end;
     finally
       logTicksList.Free;
     end;
     SL.Add('Total randomchecks count = ' + IntToStr(cnt));
-    SL.SaveToFile(aPath);
+    if K = 0 then
+      SL.SaveToFile(aPath)
+    else
+      SL.SaveToFile(aPath + IntToStr(K));
   finally
     SL.Free;
   end;
