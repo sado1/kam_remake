@@ -455,7 +455,6 @@ begin
 
   saveStream.TrimToPosition;
 
-  gLog.AddTime(Format('fTickStreamQueue.Count = %d saveStream.Size = %d', [fTickStreamQueue.Count, saveStream.Size]));
 //  SaveStream.CopyFrom(fSaveStream, 0);
 
 //  for LogPair in fRngLog do
