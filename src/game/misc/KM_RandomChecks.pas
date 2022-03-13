@@ -478,7 +478,7 @@ end;
 
 procedure TKMRandomCheckLogger.SaveAsText(const aPath: String);
 const
-  MAX_SL_COUNT = 2*1024*1024; // Avoid huge files and OOM errors
+  MAX_SL_COUNT = 1024*1024; // Avoid huge files and OOM errors
 var
   I, cnt, K: Integer;
   keyTick: Cardinal;
