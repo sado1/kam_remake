@@ -12,6 +12,10 @@ uses
   {$IFDEF UNIX} cthreads, {$ENDIF} //Required for thread support on Unix/Linux
   Forms,
   Dialogs,
+  {$IFDEF WDC} 
+    WinApi.Windows, // To allow to set {$SetPEFlags IMAGE_FILE_LARGE_ADDRESS_AWARE} for 3Gb or 4Gb RAM usage for Win32 Delphi app
+  {$ENDIF}
+
   {$IFDEF WDC} UITypes, {$ENDIF} // For MessageDlg invoked from this file
   {$IFDEF FPC} Interfaces, {$ENDIF}
   KM_FormMain in 'src\forms\KM_FormMain.pas' {FormMain},
@@ -404,6 +408,13 @@ uses
   KM_MethodParserParams in 'src\utils\method_parser\KM_MethodParserParams.pas';
 
   //KM_PerfLog in 'src\unused\KM_PerfLog.pas', //unused
+
+
+{$IFDEF WDC}
+  // Enable usage of 3Gb or 4Gb of RAM for Win32 Delphi application
+  // https://docwiki.embarcadero.com/RADStudio/Alexandria/en/Increasing_the_Memory_Address_Space
+  {$SetPEFlags IMAGE_FILE_LARGE_ADDRESS_AWARE}
+{$ENDIF}
 
 {$IFDEF WDC}
 // We have our icon in KaM_Remake_Icon.ico and specify that in project settings.
