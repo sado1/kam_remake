@@ -2135,8 +2135,7 @@ begin
   else
     sizeToAllocate := Round(fLastSaveStreamSize * 1.25); // Assume save didn't grow more then 1.25 times
 
-  //@Rey: MakePOT here seems really superfluous or even harmfull, since we just eat a lot more memory for no good reason
-  aBodyStream.SetSize({MakePOT(}sizeToAllocate{)});
+  aBodyStream.SetSize(sizeToAllocate);
 
   if aHeaderStream = nil then
     aHeaderStream := aBodyStream; //Write into the body stream, since we don't use compression
