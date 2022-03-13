@@ -79,8 +79,7 @@ var
 implementation
 uses
   Math,
-  KM_Log, Classes, SysUtils,
-  KromUtils;
+  KM_Log, Classes, SysUtils;
 
 var
   MAX_TICKS_CNT: Integer = 10*60*10; // 10 minutes
@@ -243,7 +242,7 @@ begin
   fGameTick := aGameTick;
 
   // Delete oldest stream object from queue
-  if fTickStreamQueue.Count > MAX_TICKS_CNT then
+  if fTickStreamQueue.Count >= MAX_TICKS_CNT then
   begin
     fTickStreamQueue.Dequeue; // Will also automatically free an object, because of OwnObjects property
     fTickStreamQueue.TrimExcess;
@@ -428,7 +427,7 @@ begin
   saveStream := TKMemoryStreamBinary.Create;
 
   // Allocate memory for save stream, could save up to 25% of save time
-  saveStream.SetSize(MakePOT(fTickStreamQueue.Count * 2 * 1024));
+  saveStream.SetSize(fTickStreamQueue.Count * 2 * 1024); // on 1 hour game *1024 is usually enough
 
   saveStream.PlaceMarker('CallersTable');
   saveStream.Write(Integer(fCallers.Count));
@@ -455,6 +454,8 @@ begin
   enumerator.Free;
 
   saveStream.TrimToPosition;
+
+  gLog.AddTime(Format('fTickStreamQueue.Count = %d saveStream.Size = %d', [fTickStreamQueue.Count, saveStream.Size]));
 //  SaveStream.CopyFrom(fSaveStream, 0);
 
 //  for LogPair in fRngLog do
