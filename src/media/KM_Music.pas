@@ -420,7 +420,7 @@ end;
 
 procedure TKMMusicLib.Stop;
 begin
-  if not fIsInitialized then Exit;
+  if (Self = nil) or not fIsInitialized then Exit;
   {$IFDEF USELIBZPLAY} ZPlayer.StopPlayback; {$ENDIF}
   {$IFDEF USEBASS} BASS_ChannelStop(fBassStream); {$ENDIF}
   fIndex := -1;
