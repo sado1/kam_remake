@@ -99,7 +99,7 @@ uses
   {$IFDEF USE_MAD_EXCEPT} KM_Exceptions, {$ENDIF}
   KromUtils, KM_FileIO,
   KM_GameApp, KM_VclHelpers,
-  KM_System, KM_ResExporter,
+  KM_System, KM_ResExporter, KM_Music,
   KM_Log, KM_CommonUtils, KM_Defaults, KM_Points, KM_DevPerfLog,
   KM_CommonExceptions,
   KromShellUtils, KM_MapTypes;
@@ -271,14 +271,7 @@ begin
   //todo: refactor. Separate folder permissions check and render initialization
   // Locale and texts could be loaded separetely to show proper translated error message
   if not ReinitRender(False) then
-  begin
-    SKIP_RENDER := True; // Skip render, since gGameApp will show panels on FullScreen mode
-    fFormLoading.Hide; //Will close the form on Full Screen mode
-    fFormMain.Hide;
-    fFormMain.ShowFolderPermissionError; // Show localized error message
-    Stop(nil); // Stop the app
     Exit(False);
-  end;
 
   fFormMain.ControlsRefill; //Refill some of the debug controls from game settings
 
@@ -592,6 +585,17 @@ end;
 
 
 function TKMMain.ReinitRender(aReturnToOptions: Boolean): Boolean;
+
+  procedure ShowPermissionsError;
+  begin
+    SKIP_RENDER := True; // Skip render, since gGameApp will show panels on FullScreen mode
+    fFormLoading.Hide; //Will close the form on Full Screen mode
+    fFormMain.Hide;
+    gMusic.Stop;
+    fFormMain.ShowFolderPermissionError; // Show localized error message
+    Stop(nil); // Stop the app
+  end;
+
 begin
   Result := True;
   if fMainSettings.FullScreen then
@@ -622,9 +626,18 @@ begin
   // Check is done after gGameApp creating because we want to load texts first to shw traslated error message
   //todo: refactor. Separate folder permissions check and render initialization
   // Locale and texts could be loaded separetely to show proper translated error message
-  if (gLog = nil)
-    or (not aReturnToOptions and not DoHaveGenericPermission) then
-    Exit(False); // Will show 'You have not enough permissions' message to the player
+  try
+    if (gLog = nil)
+      or (not aReturnToOptions and not DoHaveGenericPermission) then
+    begin
+      ShowPermissionsError;
+      Exit(False); // Stop the app
+    end;
+  except
+    // but it seems like Exit alone doesn't work - try-except block does
+    ShowPermissionsError;
+    Exit(False); // Stop the app
+  end;
 
   gGameApp.OnGameSpeedActualChange := GameSpeedChange;
   gGameApp.AfterConstruction(aReturnToOptions);
