@@ -213,9 +213,9 @@ begin
   fErrorHandler := TKMScriptErrorHandler.Create(aOnScriptError);
   //Use same error handler for PreProcessor and Scripting
   if aForGame then
-    fPreProcessor := TKMScriptPreProcessorGame.Create(aOnScriptError, fErrorHandler) // Game scripting
+    fPreProcessor := TKMScriptPreProcessorGame.Create(aOnScriptError, fErrorHandler, False) // Game scripting
   else
-    fPreProcessor := TKMScriptPreProcessor.Create(aOnScriptError, fErrorHandler); // validator scripting
+    fPreProcessor := TKMScriptPreProcessor.Create(aOnScriptError, fErrorHandler, False); // validator scripting
 
   gScriptEvents := TKMScriptEvents.Create(fExec, fPreProcessor.PSPreProcessor, fIDCache);
   fStates := TKMScriptStates.Create(fIDCache);
