@@ -465,6 +465,11 @@ type
     procedure ReformatText;
     procedure SetFont(const Value: TKMFont);
   protected
+    procedure SetLeft(aValue: Integer); override;
+    procedure SetTop(aValue: Integer); override;
+    procedure SetHeight(aValue: Integer); override;
+    procedure SetWidth(aValue: Integer); override;
+
     function GetIsPainted: Boolean; override;
   public
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; const aCaption: UnicodeString;
@@ -3692,6 +3697,44 @@ begin
       fCaption := Copy(fCaption, 1, Length(fCaption) - 1);
       Reformat;
     end;
+end;
+
+
+procedure TKMLabel.SetLeft(aValue: Integer);
+begin
+  inherited;
+
+  if fAutoWrap or fAutoCut then
+    ReformatText;
+end;
+
+
+procedure TKMLabel.SetTop(aValue: Integer);
+begin
+  inherited;
+
+  // Only for AutoCut. AutoWrap does not depend on Top position
+  if fAutoCut then
+    ReformatText;
+end;
+
+
+procedure TKMLabel.SetHeight(aValue: Integer);
+begin
+  inherited;
+
+  // Only for AutoCut. AutoWrap does not depend on Height
+  if fAutoCut then
+    ReformatText;
+end;
+
+
+procedure TKMLabel.SetWidth(aValue: Integer);
+begin
+  inherited;
+
+  if fAutoWrap or fAutoCut then
+    ReformatText;
 end;
 
 
