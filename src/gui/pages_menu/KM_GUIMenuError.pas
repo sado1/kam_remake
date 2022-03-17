@@ -39,7 +39,7 @@ begin
     TKMLabel.Create(Panel_Error, aParent.Width div 2, aParent.Height div 2 - 20, gResTexts[TX_MENU_ERROR], fntAntiqua, taCenter).AnchorsCenter;
     Label_Error := TKMLabel.Create(Panel_Error, 8, aParent.Height div 2+10, aParent.Width-16, 200, '...', fntGrey, taCenter);
     Label_Error.AnchorsCenter;
-    Label_Error.AutoWrap := True;
+    Label_Error.WordWrap := True;
     Button_ErrorBack := TKMButton.Create(Panel_Error,100,630,224,30,gResTexts[TX_MENU_BACK],bsMenu);
     Button_ErrorBack.AnchorsCenter;
     Button_ErrorBack.OnClick := BackClick;

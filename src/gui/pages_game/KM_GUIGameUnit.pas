@@ -110,13 +110,13 @@ begin
     Button_Unit_Dismiss.OnClick := Dismiss_Click;
 
     Label_UnitTask        := TKMLabel.Create(Panel_Unit,65,80,116,60,'',fntGrey,taLeft);
-    Label_UnitTask.AutoWrap := True;
+    Label_UnitTask.WordWrap := True;
     Label_UnitDescription := TKMLabel.Create(Panel_Unit,0,152,TB_WIDTH,200,'',fntGrey,taLeft); // Taken from LIB resource
-    Label_UnitDescription.AutoWrap := True;
+    Label_UnitDescription.WordWrap := True;
 
     Panel_Unit_Dismiss := TKMPanel.Create(Panel_Unit, 0, 132, TB_WIDTH, 182);
     Label_Unit_Dismiss             := TKMLabel.Create(Panel_Unit_Dismiss,0,2,TB_WIDTH,20,gResTexts[TX_UNIT_TASK_DISMISS_CONFIRMATION],fntGrey,taCenter);
-    Label_Unit_Dismiss.AutoWrap    := True;
+    Label_Unit_Dismiss.WordWrap    := True;
     Button_Unit_DismissYes         := TKMButton.Create(Panel_Unit_Dismiss,0,100,TB_WIDTH,30,gResTexts[TX_UNIT_TASK_DISMISS_BTN],bsGame);
     Button_Unit_DismissNo          := TKMButton.Create(Panel_Unit_Dismiss,0,135,TB_WIDTH,30,gResTexts[TX_WORD_CANCEL],bsGame);
     Button_Unit_DismissYes.OnClick := Unit_Dismiss;

@@ -212,7 +212,7 @@ begin
       Label_Title := TKMLabel.Create(Panel_Desc, half div 2, 0, '', fntOutline, taCenter);
       Memo_Desc  := TKMMemo.Create(Panel_Desc, 0, 20, half, 300, fntMetal, bsMenu);
       Memo_Desc.Anchors := [anTop, anBottom];
-      Memo_Desc.AutoWrap := True;
+      Memo_Desc.WordWrap := True;
 
       //Minimap preview
       MinimapView := TKMMinimapView.Create(fMinimap, Panel_Desc, 4, 332, 191, 191, True);

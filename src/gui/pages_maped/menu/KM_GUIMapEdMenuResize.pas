@@ -108,7 +108,7 @@ begin
     Panel_Resize_Confirm := TKMPanel.Create(Panel_Resize, 9, 0, Panel_Resize.Width - 9, Panel_Resize.Height);
       Label_Resize_Confirm := TKMLabel.Create(Panel_Resize_Confirm, 0, 0, Panel_Resize_Confirm.Width, 20, gResTexts[TX_MAPED_MAP_RESIZE_CONFIRM_TITLE], fntOutline, taCenter);
       Label_Resize_Confirm.Anchors := [anLeft, anTop, anRight];
-      Label_Resize_Confirm.AutoWrap := True;
+      Label_Resize_Confirm.WordWrap := True;
 
       Button_Resize_Confirm_Yes := TKMButton.Create(Panel_Resize_Confirm, 0, Max(150, Label_Resize_Confirm.TextSize.Y + 10),
                                                     Panel_Resize_Confirm.Width, 30, gResTexts[TX_WORD_YES], bsGame);

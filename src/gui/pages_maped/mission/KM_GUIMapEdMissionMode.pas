@@ -197,7 +197,7 @@ begin
     Inc(Top, 55);
     Memo_BigDesc := TKMMemo.Create(Panel_MissionParams, 0, Top, Panel_MissionParams.Width, 225, fntArial, bsGame);
     Memo_BigDesc.AnchorsStretch;
-    Memo_BigDesc.AutoWrap := True;
+    Memo_BigDesc.WordWrap := True;
     Memo_BigDesc.ScrollDown := True;
 
     Edit_Author.OnChange                 := UpdateMapTxtInfo;
@@ -238,7 +238,7 @@ begin
 
   Button_AIBuilderWarn := TKMLabel.Create(Panel_Mode, 9, 160, Panel_Mode.Width - 9, 0, gResTexts[TX_MAPED_AI_DEFAULTS_CONFIRM], fntGrey, taLeft);
   Button_AIBuilderWarn.Anchors := [anLeft, anTop, anRight];
-  Button_AIBuilderWarn.AutoWrap := True;
+  Button_AIBuilderWarn.WordWrap := True;
   Button_AIBuilderWarn.Hide;
   Button_AIBuilderOK := TKMButton.Create(Panel_Mode, 9, 250, 88, 20, gResTexts[TX_MAPED_OK], bsGame);
   Button_AIBuilderOK.OnClick := AIBuilderChange;

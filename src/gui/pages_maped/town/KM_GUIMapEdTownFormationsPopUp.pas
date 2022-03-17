@@ -77,7 +77,7 @@ begin
   with TKMLabel.Create(Panel_Formations, 20, 150, SIZE_X - 20, 60, gResTexts[TX_MAPED_AI_FORMATIONS_AAI_INFO], fntMetal, taLeft) do
   begin
     FontColor := icGoldenYellow;
-    AutoWrap := True;
+    WordWrap := True;
   end;
 
   Button_Formations_Ok := TKMButton.Create(Panel_Formations, SIZE_X-20-320-10, SIZE_Y-50, 160, 30, gResTexts[TX_MAPED_OK], bsMenu);

@@ -88,7 +88,7 @@ begin
   NumEdit_GoalPlayer.OnChange := Goal_Change;
 
   Label_GoalDescription := TKMLabel.Create(Panel_Goal, 20, 180, SIZE_X - 40, 20, '', fntMetal, taLeft);
-  Label_GoalDescription.AutoWrap := True;
+  Label_GoalDescription.WordWrap := True;
 
   Button_GoalOk := TKMButton.Create(Panel_Goal, SIZE_X-20-320-10, SIZE_Y - 50, 160, 30, gResTexts[TX_MAPED_OK], bsMenu);
   Button_GoalOk.OnClick := Goal_Close;

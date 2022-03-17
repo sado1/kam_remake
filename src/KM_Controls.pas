@@ -446,7 +446,7 @@ type
   {Text Label}
   TKMLabel = class(TKMControl)
   private
-    fAutoWrap: Boolean;
+    fWordWrap: Boolean;
     fFont: TKMFont;
     fFontColor: TColor4; //Usually white (self-colored)
     fCaption: UnicodeString; //Original text
@@ -459,7 +459,7 @@ type
 
     function TextLeft: Integer;
     procedure SetCaption(const aCaption: UnicodeString);
-    procedure SetAutoWrap(aValue: Boolean);
+    procedure SetWordWrap(aValue: Boolean);
     procedure ReformatText;
     procedure SetFont(const Value: TKMFont);
   protected
@@ -475,7 +475,7 @@ type
     function HitTest(X, Y: Integer; aIncludeDisabled: Boolean = False; aIncludeNotHitable: Boolean = False): Boolean; override;
     procedure SetColor(aColor: Cardinal);
 
-    property AutoWrap: Boolean read fAutoWrap write SetAutoWrap;  //Whether to automatically wrap text within given text area width
+    property WordWrap: Boolean read fWordWrap write SetWordWrap;  //Whether to automatically wrap text within given text area width
     property Caption: UnicodeString read fCaption write SetCaption;
     property FontColor: TColor4 read fFontColor write fFontColor;
     property Strikethrough: Boolean read fStrikethrough write fStrikethrough;
@@ -1716,7 +1716,7 @@ type
     fFont: TKMFont; //Should not be changed from inital value, it will mess up the word wrapping
     fItemHeight: Byte;
     fItems: TStringList;
-    fAutoWrap: Boolean;
+    fWordWrap: Boolean;
     fIndentAfterNL: Boolean;
     fText: UnicodeString;
     fScrollDown: Boolean;
@@ -1728,7 +1728,7 @@ type
     fSelectionEnd: Integer;
     fSelectionInitialPos: Integer;
 
-    procedure SetAutoWrap(const Value: Boolean);
+    procedure SetWordWrap(const Value: Boolean);
     function GetText: UnicodeString;
     procedure SetText(const aText: UnicodeString);
     function GetTopIndex: smallint;
@@ -1772,7 +1772,7 @@ type
     procedure Add(const aItem: UnicodeString);
     procedure Clear;
     procedure ScrollToBottom;
-    property AutoWrap: Boolean read fAutoWrap write SetAutoWrap; //Whether to automatically wrap text within given text area width
+    property WordWrap: Boolean read fWordWrap write SetWordWrap; //Whether to automatically wrap text within given text area width
     property IndentAfterNL: Boolean read fIndentAfterNL write fIndentAfterNL;
     property Text: UnicodeString read GetText write SetText;
     property ItemHeight: Byte read fItemHeight write fItemHeight;
@@ -3597,7 +3597,7 @@ begin
   fFontColor := $FFFFFFFF;
   fTextAlign := aTextAlign;
   fTextVAlign := tvaTop;
-  fAutoWrap := False;
+  fWordWrap := False;
   fTabWidth := FONT_TAB_WIDTH;
   SetCaption(aCaption);
 end;
@@ -3629,9 +3629,9 @@ begin
 end;
 
 
-procedure TKMLabel.SetAutoWrap(aValue: Boolean);
+procedure TKMLabel.SetWordWrap(aValue: Boolean);
 begin
-  fAutoWrap := aValue;
+  fWordWrap := aValue;
   ReformatText;
 end;
 
@@ -3663,7 +3663,7 @@ end;
 // Keep original intact incase we need to Reformat text once again
 procedure TKMLabel.ReformatText;
 begin
-  if fAutoWrap then
+  if fWordWrap then
     fText := gRes.Fonts[fFont].WordWrap(fCaption, Width, True, False)
   else
     fText := fCaption;
@@ -3676,7 +3676,7 @@ procedure TKMLabel.SetWidth(aValue: Integer);
 begin
   inherited;
 
-  if fAutoWrap then
+  if fWordWrap then
     ReformatText;
 end;
 
@@ -6844,9 +6844,9 @@ begin
 end;
 
 
-procedure TKMMemo.SetAutoWrap(const Value: boolean);
+procedure TKMMemo.SetWordWrap(const Value: boolean);
 begin
-  fAutoWrap := Value;
+  fWordWrap := Value;
   ReformatText;
 end;
 
@@ -6878,7 +6878,7 @@ procedure TKMMemo.ReformatText;
 var
   newText: UnicodeString;
 begin
-  if fAutoWrap then
+  if fWordWrap then
     newText := gRes.Fonts[fFont].WordWrap(fText, fWidth - fScrollBar.Width - 8, True, IndentAfterNL)
   else
     newText := fText;

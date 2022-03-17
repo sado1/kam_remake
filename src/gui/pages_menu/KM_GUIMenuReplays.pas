@@ -168,7 +168,7 @@ begin
 
   Label_DeleteConfirm := TKMLabel.Create(PopUp_Delete, 25, 75, 350, 75, gResTexts[TX_MENU_REPLAY_DELETE_CONFIRM], fntMetal, taCenter);
   Label_DeleteConfirm.Anchors := [anLeft,anBottom];
-  Label_DeleteConfirm.AutoWrap := True;
+  Label_DeleteConfirm.WordWrap := True;
 
   Button_DeleteConfirm := TKMButton.Create(PopUp_Delete, 20, 155, 170, 30, gResTexts[TX_MENU_LOAD_DELETE_DELETE], bsMenu);
   Button_DeleteConfirm.Anchors := [anLeft,anBottom];

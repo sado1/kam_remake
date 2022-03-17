@@ -292,7 +292,7 @@ begin
       Label_MapType.Anchors := [anLeft, anTop];
       Memo_MapDesc := TKMMemo.Create(Panel_MapInfo, 0, 199+10, 199, Panel_MapInfo.Height - 199 - 10, fntGame, bsMenu);
       Memo_MapDesc.Anchors := [anLeft, anTop, anBottom];
-      Memo_MapDesc.AutoWrap := True;
+      Memo_MapDesc.WordWrap := True;
       Memo_MapDesc.ItemHeight := 16;
 
       Button_ViewReadme := TKMButton.Create(Panel_MapInfo, 0, 225, 199, 25, gResTexts[TX_LOBBY_VIEW_README], bsMenu);

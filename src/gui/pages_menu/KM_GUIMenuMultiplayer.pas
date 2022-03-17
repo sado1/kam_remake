@@ -220,7 +220,7 @@ begin
       Edit_MP_PlayerName.AllowedChars := acANSI7;
       TKMLabel.Create(Panel_MPPlayerName, 8, 60, 304, 20, gResTexts[TX_MP_MENU_STATUS], fntOutline, taLeft);
       Label_MP_Status := TKMLabel.Create(Panel_MPPlayerName, 8, 80, 304, 36, '', fntGrey, taLeft);
-      Label_MP_Status.AutoWrap := True;
+      Label_MP_Status.WordWrap := True;
 
     Button_MP_CreateServer := TKMButton.Create(Panel_MultiPlayer, 675, 170, 320, 30, gResTexts[TX_MP_MENU_CREATE_SERVER], bsMenu);
     Button_MP_CreateServer.OnClick := MP_CreateServerClick;
@@ -232,7 +232,7 @@ begin
     //Master server announcement
     Memo_MP_Announcement := TKMMemo.Create(Panel_MultiPlayer, 45, 45, 620, 189, fntGrey, bsMenu);
     Memo_MP_Announcement.Anchors := [anLeft, anTop];
-    Memo_MP_Announcement.AutoWrap := True;
+    Memo_MP_Announcement.WordWrap := True;
     Memo_MP_Announcement.ItemHeight := 16;
 
     //List of available servers
@@ -266,7 +266,7 @@ begin
       Label_MP_ServerDetails_Header := TKMLabel.Create(Panel_MPServerDetails, 8, 6, S_DETAILS_W_INT, 20, gResTexts[TX_MP_MENU_HEADER_SERVER_DETAILS], fntOutline, taCenter);
       Label_MP_GameInfo_Header := TKMLabel.Create(Panel_MPServerDetails, 8, 30, S_DETAILS_W_INT, 20, gResTexts[TX_MP_MENU_GAME_INFORMATION], fntOutline, taLeft);
       Label_MP_Desc := TKMLabel.Create(Panel_MPServerDetails, 8, 50, S_DETAILS_W_INT, 40, '', fntMetal, taLeft);
-      Label_MP_Desc.AutoWrap := True;
+      Label_MP_Desc.WordWrap := True;
       Label_MP_PT_Times := TKMLabel.Create(Panel_MPServerDetails, 8, 90, S_DETAILS_W_INT, 20, '', fntMetal, taLeft);
       Label_MP_PT_Times.FontColor := clMPSrvDetailsGameInfoFont;
       Label_MP_GameTime := TKMLabel.Create(Panel_MPServerDetails, 8, 90, S_DETAILS_W_INT, 20, '', fntMetal, taRight);

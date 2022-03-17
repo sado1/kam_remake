@@ -209,7 +209,7 @@ begin
     Label_HouseConstructionStone := TKMLabel.Create(Panel_House,120,210,gResWares[wtStone].Title,fntGrey,taCenter);
 
     Label_House_Demolish := TKMLabel.Create(Panel_House,0,130,TB_WIDTH,0,gResTexts[TX_HOUSE_DEMOLISH],fntGrey,taCenter);
-    Label_House_Demolish.AutoWrap := True;
+    Label_House_Demolish.WordWrap := True;
     Button_House_DemolishYes := TKMButton.Create(Panel_House,0,185,TB_WIDTH,30,gResTexts[TX_HOUSE_DEMOLISH_YES],bsGame);
     Button_House_DemolishNo  := TKMButton.Create(Panel_House,0,220,TB_WIDTH,30,gResTexts[TX_HOUSE_DEMOLISH_NO],bsGame);
     Button_House_DemolishYes.Hint := gResTexts[TX_HOUSE_DEMOLISH_YES_HINT];
@@ -239,7 +239,7 @@ begin
         CostsRow_Costs[I].RX := rxGui;
 
         Label_DepletedMsg := TKMLabel.Create(Panel_House_Common,0,0,TB_WIDTH,0,'',fntGrey,taLeft);
-        Label_DepletedMsg.AutoWrap := True;
+        Label_DepletedMsg.WordWrap := True;
         Label_DepletedMsg.Hide;
       end;
 

@@ -88,7 +88,7 @@ begin
   Button_ConditionDefault.OnClickShift  := UnitConditionsChange;
 
   Label_UnitDescription := TKMLabel.Create(Panel_Unit,0,152,Panel_Unit.Width,200,'',fntGrey,taLeft); //Taken from LIB resource
-  Label_UnitDescription.AutoWrap := True;
+  Label_UnitDescription.WordWrap := True;
 
   Panel_Army := TKMPanel.Create(Panel_Unit, 0, 160, Panel_Unit.Width, 400);
   Button_Army_RotCCW  := TKMButton.Create(Panel_Army,       0,  0, 56, 40, 23, rxGui, bsGame);

@@ -97,7 +97,7 @@ begin
   with TKMLabel.Create(Panel_Script, TB_PAD, 155, Panel_Script.Width - TB_PAD, 40, gResTexts[TX_MAPED_AI_DEFENSE_EQUIP_LEATHER], fntMetal, taLeft) do
   begin
     Hint := gResTexts[TX_MAPED_AI_DEFENSE_EQUIP_LEATHER_HINT];
-    AutoWrap := True;
+    WordWrap := True;
     TextVAlign := tvaMiddle;
   end;
 
@@ -110,7 +110,7 @@ begin
   with TKMLabel.Create(Panel_Script, TB_PAD, 220, Panel_Script.Width - TB_PAD, 40, gResTexts[TX_MAPED_AI_DEFENSE_EQUIP_IRON], fntMetal, taLeft) do
   begin
     Hint := gResTexts[TX_MAPED_AI_DEFENSE_EQUIP_IRON_HINT];
-    AutoWrap := True;
+    WordWrap := True;
     TextVAlign := tvaMiddle;
   end;
 

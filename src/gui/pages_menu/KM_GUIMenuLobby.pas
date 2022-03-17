@@ -538,7 +538,7 @@ begin
     //Chat area
     Memo_Posts := TKMMemo.Create(Panel_Lobby, 30, 406, CW, 282, fntArial, bsMenu);
     Memo_Posts.Anchors := [anLeft, anTop, anBottom];
-    Memo_Posts.AutoWrap := True;
+    Memo_Posts.WordWrap := True;
     Memo_Posts.IndentAfterNL := True; //Don't let players fake system messages
     Memo_Posts.ScrollDown := True;
 
@@ -610,7 +610,7 @@ begin
       Panel_SetupDesc.Anchors := [anLeft, anTop, anBottom];
         Memo_MapDesc := TKMMemo.Create(Panel_SetupDesc, 10, 0, 250, 218, fntGame, bsMenu);
         Memo_MapDesc.Anchors := [anLeft, anTop, anBottom];
-        Memo_MapDesc.AutoWrap := True;
+        Memo_MapDesc.WordWrap := True;
         Memo_MapDesc.ItemHeight := 16;
 
         Button_SetupReadme := TKMButton.Create(Panel_SetupDesc, 10, 193, 250, 25, gResTexts[TX_LOBBY_VIEW_README], bsMenu);

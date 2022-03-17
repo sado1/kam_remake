@@ -88,13 +88,11 @@ begin
     Radio_AttackType.Add(gResTexts[TX_MAPED_AI_ATTACK_TYPE_REP]);
     Radio_AttackType.OnChange := Attack_Change;
 
-    with TKMLabel.Create(Panel_Attack, 180, 40, 150, 40, gResTexts[TX_MAPED_AI_ATTACK_DELAY], fntMetal, taLeft) do
-      AutoWrap := True;
+    TKMLabel.Create(Panel_Attack, 180, 40, 150, 40, gResTexts[TX_MAPED_AI_ATTACK_DELAY], fntMetal, taLeft).WordWrap := True;
     NumEdit_AttackDelay := TKMNumericEdit.Create(Panel_Attack, 180, 80, 0, High(SmallInt));
     NumEdit_AttackDelay.OnChange := Attack_Change;
 
-    with TKMLabel.Create(Panel_Attack, 340, 40, 200, 40, gResTexts[TX_MAPED_AI_ATTACK_SOLDIERS], fntMetal, taLeft) do
-      AutoWrap := True;
+    TKMLabel.Create(Panel_Attack, 340, 40, 200, 40, gResTexts[TX_MAPED_AI_ATTACK_SOLDIERS], fntMetal, taLeft).WordWrap := True;
     NumEdit_AttackMen := TKMNumericEdit.Create(Panel_Attack, 340, 80, 0, 1000);
     NumEdit_AttackMen.OnChange := Attack_Change;
 

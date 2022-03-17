@@ -72,12 +72,12 @@ begin
 
     Memo_CampDesc := TKMMemo.Create(Panel_CampSelect, 669, 390, 275, 140, fntGame, bsMenu);
     Memo_CampDesc.AnchorsCenter;
-    Memo_CampDesc.AutoWrap := True;
+    Memo_CampDesc.WordWrap := True;
     Memo_CampDesc.ItemHeight := 16;
 
     L := TKMLabel.Create(Panel_CampSelect, 80, 540, 864, 40, gResTexts[TX_MENU_CAMP_HINT], fntGrey, taCenter);
     L.AnchorsCenter;
-    L.AutoWrap := True;
+    L.WordWrap := True;
 
     Button_Camp_Start := TKMButton.Create(Panel_CampSelect, 362, 580, 300, 30, gResTexts[TX_MENU_CAMP_START], bsMenu);
     Button_Camp_Start.AnchorsCenter;

@@ -1099,8 +1099,8 @@ begin
   Label_ChatUnread := TKMLabel.Create(Panel_Main,TOOLBAR_WIDTH,Panel_Main.Height-30,30,36,'',fntOutline,taCenter);
   Label_ChatUnread.FontColor := $FF0000FF; // Red
   Label_ChatUnread.Anchors := [anLeft, anBottom];
-  Label_ChatUnread.Hitable := false; // Clicks should only go to the image, not the flashing label
-  Label_ChatUnread.AutoWrap := true;
+  Label_ChatUnread.Hitable := False; // Clicks should only go to the image, not the flashing label
+  Label_ChatUnread.WordWrap := True;
 
   Image_MPAllies := TKMImage.Create(Panel_Main,TOOLBAR_WIDTH,Panel_Main.Height-48*2,30,48,496);
   Image_MPAllies.Anchors := [anLeft, anBottom];
@@ -1231,7 +1231,7 @@ begin
     TKMImage.Create(Panel_Message, 0, 0, 600, 500, 409);
 
     Label_MessageText := TKMLabel.Create(Panel_Message, 47, 58, 432, 112, '', fntAntiqua, taLeft);
-    Label_MessageText.AutoWrap := True;
+    Label_MessageText.WordWrap := True;
 
     Button_MessageGoTo := TKMButton.Create(Panel_Message, 490, 74, 100, 24, gResTexts[TX_MSG_GOTO], bsGame);
     Button_MessageGoTo.Font := fntAntiqua;
@@ -1317,7 +1317,7 @@ begin
     Button_Back.Hint := gResTexts[TX_MENU_TAB_HINT_GO_BACK];
 
     Label_MenuTitle := TKMLabel.Create(Panel_Controls, 54, 4, 138, 36, '', fntMetal, taLeft);
-    Label_MenuTitle.AutoWrap := True;
+    Label_MenuTitle.WordWrap := True;
     Label_MenuTitle.TextVAlign := tvaMiddle;
 
   fGuiGameBuild := TKMGUIGameBuild.Create(Panel_Controls);
@@ -1478,7 +1478,7 @@ begin
     ListBox_Load.OnDoubleClick := Menu_Load_Click;
 
     Label_LoadDescription := TKMLabel.Create(Panel_Load,0,265,TB_WIDTH,0,'',fntGrey,taLeft);
-    Label_LoadDescription.AutoWrap := True;
+    Label_LoadDescription.WordWrap := True;
 
     Button_Load := TKMButton.Create(Panel_Load,0,300,TB_WIDTH,30,gResTexts[TX_GAMEPLAY_LOAD], bsGame);
     Button_Load.OnClick := Menu_Load_Click;
@@ -1490,7 +1490,7 @@ procedure TKMGamePlayInterface.Create_Quit;
 begin
   Panel_Quit := TKMPanel.Create(Panel_Controls, TB_PAD, 44, TB_WIDTH, 332);
     Label_QuitQuestion := TKMLabel.Create(Panel_Quit, 0, 30, TB_WIDTH, 70, gResTexts[TX_MENU_QUIT_QUESTION], fntOutline, taCenter);
-    Label_QuitQuestion.AutoWrap := True;
+    Label_QuitQuestion.WordWrap := True;
     Button_Quit_Yes := TKMButton.Create(Panel_Quit, 0, 100, TB_WIDTH, 30, gResTexts[TX_MENU_QUIT_MISSION], bsGame);
     Button_Quit_Yes.Hint := gResTexts[TX_MENU_QUIT_MISSION];
     Button_Quit_Yes.OnClick := Menu_QuitMission;
@@ -2311,10 +2311,10 @@ begin
   else
     Label_Menu_Track.Caption := gMusic.GetTrackTitle;
 
-  Label_Menu_Track.AutoWrap := Length(Label_Menu_Track.Caption) > MAX_TRACKNAME_LENGTH;
-  Label_Menu_Track.Top := IfThen(Label_Menu_Track.AutoWrap, 19, 22);
-  Button_Menu_TrackUp.Height := IfThen(Label_Menu_Track.AutoWrap, 38, 30);
-  Button_Menu_TrackDown.Height := IfThen(Label_Menu_Track.AutoWrap, 38, 30);
+  Label_Menu_Track.WordWrap := Length(Label_Menu_Track.Caption) > MAX_TRACKNAME_LENGTH;
+  Label_Menu_Track.Top := IfThen(Label_Menu_Track.WordWrap, 19, 22);
+  Button_Menu_TrackUp.Height := IfThen(Label_Menu_Track.WordWrap, 38, 30);
+  Button_Menu_TrackDown.Height := IfThen(Label_Menu_Track.WordWrap, 38, 30);
 
   Label_GameTime.Caption := TimeToString(gGame.MissionTime);
   Label_MapName.Caption := Copy(gGameParams.Name, 0, EnsureRange(Length(gGameParams.Name), 1, MAX_MAPNAME_LENGTH));
