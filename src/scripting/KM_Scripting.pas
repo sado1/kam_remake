@@ -243,6 +243,7 @@ begin
   FreeAndNil(fValidationIssues);
   FreeAndNil(fPreProcessor);
   gScripting := nil;
+
   inherited;
 end;
 

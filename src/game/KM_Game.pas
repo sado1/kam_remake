@@ -19,7 +19,6 @@ uses
   KM_GameUIDTracker;
 
 type
-
   //Class that manages single game session
   TKMGame = class
   private //Irrelevant to savegame

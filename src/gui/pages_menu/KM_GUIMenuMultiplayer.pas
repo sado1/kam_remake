@@ -267,7 +267,6 @@ begin
       Label_MP_GameInfo_Header := TKMLabel.Create(Panel_MPServerDetails, 8, 30, S_DETAILS_W_INT, 20, gResTexts[TX_MP_MENU_GAME_INFORMATION], fntOutline, taLeft);
       Label_MP_Desc := TKMLabel.Create(Panel_MPServerDetails, 8, 50, S_DETAILS_W_INT, 40, '', fntMetal, taLeft);
       Label_MP_Desc.AutoWrap := True;
-      Label_MP_Desc.AutoCut := True;  //Automatically cut text, if it's too long
       Label_MP_PT_Times := TKMLabel.Create(Panel_MPServerDetails, 8, 90, S_DETAILS_W_INT, 20, '', fntMetal, taLeft);
       Label_MP_PT_Times.FontColor := clMPSrvDetailsGameInfoFont;
       Label_MP_GameTime := TKMLabel.Create(Panel_MPServerDetails, 8, 90, S_DETAILS_W_INT, 20, '', fntMetal, taRight);
