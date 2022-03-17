@@ -467,6 +467,8 @@ type
 
     function GetIsPainted: Boolean; override;
   public
+    MaxLines: Integer;
+
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; const aCaption: UnicodeString;
                        aFont: TKMFont; aTextAlign: TKMTextAlign; aPaintLayer: Integer = 0); overload;
     constructor Create(aParent: TKMPanel; aLeft,aTop: Integer; const aCaption: UnicodeString; aFont: TKMFont;
@@ -3662,11 +3664,29 @@ end;
 // Existing EOLs should be preserved, and new ones added where needed
 // Keep original intact incase we need to Reformat text once again
 procedure TKMLabel.ReformatText;
+var
+  I: Integer;
+  stake: Integer;
 begin
   if fWordWrap then
     fText := gRes.Fonts[fFont].WordWrap(fCaption, Width, True, False)
   else
     fText := fCaption;
+
+  // We may need to display only N lines
+  if MaxLines > 0 then
+  begin
+    stake := 0;
+    for I := 1 to MaxLines do
+    begin
+      stake := PosEx(#124, fText, stake+1);
+      if stake = 0 then
+        Break;
+    end;
+
+    if stake > 0 then
+      fText := LeftStr(fText, stake - 1);
+  end;
 
   fTextSize := gRes.Fonts[fFont].GetTextSize(fText);
 end;
