@@ -3,7 +3,7 @@
 interface
 uses
   Classes, Math, StrUtils, SysUtils,
-  KM_CommonTypes, KM_Controls, KM_Defaults, KM_Pics,
+  KM_CommonTypes, KM_Controls, KM_ControlsChart, KM_Defaults, KM_Pics,
   KM_InterfaceDefaults, KM_ResWares, KM_HandStats,
   KM_ResTypes;
 
@@ -51,7 +51,7 @@ type
     property ChartType: TKMChartWarrior read fType;
   end;
 
-  PKMChartArmyMP = ^TKMChartArmyMP;
+  PKMChartArmyMP = ^TKMChartArmyMP; //todo: Disuse
 
   TKMStatsValues = array[0..MAX_HANDS-1] of array [0..9] of Cardinal;
 
@@ -1057,7 +1057,7 @@ var
   selectedWType, wType: TKMChartWarriorType;
   selectedCKind, cKind: TKMChartArmyKind;
   ST: TKMStatType;
-  chart: PKMChart;
+  chart: TKMChart;
   selectedItemTag: Integer;
 begin
   //Hide everything if there is no data
@@ -1108,11 +1108,11 @@ begin
 
   selectedWType := TKMChartWarriorType(Columnbox_Army.Rows[Columnbox_Army.ItemIndex].Tag);
 
-  chart := @Charts_Army[fStatType,selectedCKind,selectedWType].Chart;
-  chart^.Visible := True;
+  chart := Charts_Army[fStatType,selectedCKind,selectedWType].Chart;
+  chart.Visible := True;
   //Restore previously visible lines
-  for K := 0 to chart^.LineCount - 1 do
-    chart^.SetLineVisible(K, fLegendLinesVisible[fStatType, chart^.Lines[K].Tag]);
+  for K := 0 to chart.LineCount - 1 do
+    chart.SetLineVisible(K, fLegendLinesVisible[fStatType, chart.Lines[K].Tag]);
 end;
 
 
@@ -1502,31 +1502,32 @@ end;
 
 procedure TKMGameResultsMP.ReinitChartEconomy;
 
-  function GetEconomyChart(aStatType: TKMStatType; aEcoStatKind: TKMEconomyStatKind): PKMChart;
+  function GetEconomyChart(aStatType: TKMStatType; aEcoStatKind: TKMEconomyStatKind): TKMChart;
   begin
     case aStatType of
       stByPlayers: if aEcoStatKind = estCitizens then
-                      Result := @Chart_Players_Citizens
+                      Result := Chart_Players_Citizens
                     else
-                      Result := @Chart_Players_Houses;
+                      Result := Chart_Players_Houses;
       stByTeams:   if aEcoStatKind = estCitizens then
-                      Result := @Chart_Teams_Citizens
+                      Result := Chart_Teams_Citizens
                     else
-                      Result := @Chart_Teams_Houses;
-      else          raise Exception.Create('Unknown Economy Chart type');
+                      Result := Chart_Teams_Houses;
+    else
+      raise Exception.Create('Unknown Economy Chart type');
     end;
   end;
 
   procedure InitChart(aStatType: TKMStatType; aEcoStatKind: TKMEconomyStatKind);
   var
-    chart: PKMChart;
+    chart: TKMChart;
   begin
     chart := GetEconomyChart(aStatType, aEcoStatKind);
-    chart^.Clear;
-    chart^.MaxLength := 0;
-    chart^.MaxTime   := gGameParams.Tick div 10;
-    chart^.Peacetime := 60*gGame.Options.Peacetime;
-    chart^.SetSeparatorPositions(fChartSeparatorsPos[aStatType]);
+    chart.Clear;
+    chart.MaxLength := 0;
+    chart.MaxTime   := gGameParams.Tick div 10;
+    chart.Peacetime := 60*gGame.Options.Peacetime;
+    chart.SetSeparatorPositions(fChartSeparatorsPos[aStatType]);
   end;
 
   procedure FillChart(aStatType: TKMStatType; aEcoStatKind: TKMEconomyStatKind);
@@ -1534,7 +1535,7 @@ procedure TKMGameResultsMP.ReinitChartEconomy;
     I, J, handId: Integer;
     playersList, listToShow: TStringList;
     chartData: TKMCardinalArray;
-    chart: PKMChart;
+    chart: TKMChart;
   begin
     listToShow := fListToShow[aStatType];
     chart := GetEconomyChart(aStatType, aEcoStatKind);
@@ -1558,8 +1559,8 @@ procedure TKMGameResultsMP.ReinitChartEconomy;
           end;
 
       handId := StrToInt(playersList[0]);
-      chart^.MaxLength := Max(chart^.MaxLength, gHands[handId].Stats.ChartCount);
-      chart^.AddLine(fNamesToShow[aStatType, I], fColorsToShow[aStatType, I],
+      chart.MaxLength := Max(chart.MaxLength, gHands[handId].Stats.ChartCount);
+      chart.AddLine(fNamesToShow[aStatType, I], fColorsToShow[aStatType, I],
                      GetChartLegendDetailedTitles(aStatType, I),
                      GetChartLegendDetailedColors(aStatType, I),
                      chartData, I);
@@ -1594,22 +1595,22 @@ const
     wtAxe,     wtSword,   wtLance,        wtPike, wtBow,
     wtCrossbow, wtHorse,   wtFish);
 
-  procedure RefreshChart(aStatType: TKMStatType; W: TKMWareType; aChart: PKMChart; aUseGDP: Boolean);
+  procedure RefreshChart(aStatType: TKMStatType; W: TKMWareType; aChart: TKMChart; aUseGDP: Boolean);
   var
     I, K, handId: Integer;
     playersList: TStringList;
     chartData, chartWaresData: TKMCardinalArray;
   begin
-    aChart^.Clear;
-    aChart^.MaxLength := 0;
-    aChart^.MaxTime   := gGameParams.Tick div 10;
-    aChart^.Peacetime := 60*gGame.Options.Peacetime;
-    aChart^.SetSeparatorPositions(fChartSeparatorsPos[aStatType]);
+    aChart.Clear;
+    aChart.MaxLength := 0;
+    aChart.MaxTime   := gGameParams.Tick div 10;
+    aChart.Peacetime := 60*gGame.Options.Peacetime;
+    aChart.SetSeparatorPositions(fChartSeparatorsPos[aStatType]);
 
     if aUseGDP then
-      aChart^.Caption   := gResWares[W].Title + ' - ' + gResTexts[TX_RESULTS_WARES_GDP]
+      aChart.Caption   := gResWares[W].Title + ' - ' + gResTexts[TX_RESULTS_WARES_GDP]
     else
-      aChart^.Caption   := gResWares[W].Title + ' - ' + gResTexts[TX_GRAPH_TITLE_RESOURCES];
+      aChart.Caption   := gResWares[W].Title + ' - ' + gResTexts[TX_GRAPH_TITLE_RESOURCES];
 
     for I := 0 to fListToShow[aStatType].Count - 1 do
     begin
@@ -1624,8 +1625,8 @@ const
       end;
 
       handId := StrToInt(playersList[0]);
-      aChart^.MaxLength := Max(aChart^.MaxLength, gHands[handId].Stats.ChartCount);
-      aChart^.AddLine(fNamesToShow[aStatType, I], fColorsToShow[aStatType, I],
+      aChart.MaxLength := Max(aChart.MaxLength, gHands[handId].Stats.ChartCount);
+      aChart.AddLine(fNamesToShow[aStatType, I], fColorsToShow[aStatType, I],
                       GetChartLegendDetailedTitles(aStatType, I),
                       GetChartLegendDetailedColors(aStatType, I),
                       chartData, I);
@@ -1721,7 +1722,7 @@ var
   wType: TKMChartWarriorType;
   cKind: TKMChartArmyKind;
   ST: TKMStatType;
-  chart: PKMChart;
+  chart: TKMChart;
   chartArmy: PKMChartArmyMP;
 begin
   fNoArmyChartData := True;
@@ -1754,13 +1755,13 @@ begin
       for wType := Low(TKMChartWarriorType) to High(TKMChartWarriorType) do
       begin
         chartArmy := @Charts_Army[ST,cKind,wType];
-        chart := @chartArmy^.Chart;
-        chart^.Clear;
-        chart^.MaxLength := 0;
-        chart^.MaxTime := gGameParams.Tick div 10;
-        chart^.Peacetime := 60*gGame.Options.Peacetime;
-        chart^.SetSeparatorPositions(fChartSeparatorsPos[ST]);
-        chart^.Caption := chartArmy^.ChartType.GUIName + ' - ' + gResTexts[CHART_ARMY_CAPTION_INDEX[cKind]];
+        chart := chartArmy^.Chart;
+        chart.Clear;
+        chart.MaxLength := 0;
+        chart.MaxTime := gGameParams.Tick div 10;
+        chart.Peacetime := 60*gGame.Options.Peacetime;
+        chart.SetSeparatorPositions(fChartSeparatorsPos[ST]);
+        chart.Caption := chartArmy^.ChartType.GUIName + ' - ' + gResTexts[CHART_ARMY_CAPTION_INDEX[cKind]];
 
         for I := 0 to fListToShow[ST].Count - 1 do
         begin
@@ -1775,14 +1776,14 @@ begin
           end;
 
           handId := StrToInt(playersList[0]);
-          chart^.MaxLength := Max(chart^.MaxLength, gHands[handId].Stats.ChartCount);
-          chart^.AddLine(fNamesToShow[ST, I], fColorsToShow[ST, I],
+          chart.MaxLength := Max(chart.MaxLength, gHands[handId].Stats.ChartCount);
+          chart.AddLine(fNamesToShow[ST, I], fColorsToShow[ST, I],
                          GetChartLegendDetailedTitles(ST, I),
                          GetChartLegendDetailedColors(ST, I),
                          chartData, I);
         end;
 
-        chart^.TrimToFirstVariation; // Trim Army charts, as usually they are same before PeaceTime
+        chart.TrimToFirstVariation; // Trim Army charts, as usually they are same before PeaceTime
       end;
 
   ArmyUpdate(nil);

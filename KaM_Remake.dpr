@@ -64,6 +64,7 @@ uses
 
   KM_Console in 'src\KM_Console.pas',
   KM_Controls in 'src\KM_Controls.pas',
+  KM_ControlsChart in 'src\KM_ControlsChart.pas',
   KM_ControlsMinimapView in 'src\KM_ControlsMinimapView.pas',
 
   KM_DevPerfLog in 'src\perflog\KM_DevPerfLog.pas',
