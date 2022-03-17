@@ -40,8 +40,8 @@ type
     function TryLoadCustomEventDirectives(const aDirectiveName, aDirectiveParam: string; aParser: TPSPascalPreProcessorParser): Boolean; virtual;
     function TryLoadCustomConsoleCommands(const aDirectiveName, aDirectiveParam: string; aParser: TPSPascalPreProcessorParser): Boolean; virtual;
   public
-    constructor Create(aOnScriptError: TUnicodeStringEvent = nil; aSilent: Boolean = False); overload;
-    constructor Create(aOnScriptError: TUnicodeStringEvent; aErrorHandler: TKMScriptErrorHandler; aSilent: Boolean = False); overload;
+    constructor Create(aSilent: Boolean); overload;
+    constructor Create(aOnScriptError: TUnicodeStringEvent; aErrorHandler: TKMScriptErrorHandler; aSilent: Boolean); overload;
     destructor Destroy; override;
 
     property PSPreProcessor: TPSPreProcessor read fPSPreProcessor;
@@ -68,14 +68,14 @@ uses
   KM_Defaults;
 
 { TKMScriptingPreProcessor }
-constructor TKMScriptPreProcessor.Create(aOnScriptError: TUnicodeStringEvent = nil; aSilent: Boolean = False);
+constructor TKMScriptPreProcessor.Create(aSilent: Boolean);
 begin
-  Create(aOnScriptError, TKMScriptErrorHandler.Create(aOnScriptError), aSilent);
+  Create(TUnicodeStringEvent(nil), TKMScriptErrorHandler.Create(nil), aSilent);
   fDestroyErrorHandler := True;
 end;
 
 
-constructor TKMScriptPreProcessor.Create(aOnScriptError: TUnicodeStringEvent; aErrorHandler: TKMScriptErrorHandler; aSilent: Boolean = False);
+constructor TKMScriptPreProcessor.Create(aOnScriptError: TUnicodeStringEvent; aErrorHandler: TKMScriptErrorHandler; aSilent: Boolean);
 begin
   inherited Create;
 

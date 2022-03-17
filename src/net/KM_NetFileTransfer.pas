@@ -132,7 +132,7 @@ begin
               //Add all included script files
               if (VALID_MAP_EXTENSIONS[I] = EXT_FILE_SCRIPT) and FileExists(fileName) then
               begin
-                scriptPreProcessor := TKMScriptPreProcessor.Create;
+                scriptPreProcessor := TKMScriptPreProcessor.Create(False);
                 try
                   if not scriptPreProcessor.PreProcessFile(fileName) then
                     //throw an Exception if PreProcessor was not successful to cancel FileSender creation
