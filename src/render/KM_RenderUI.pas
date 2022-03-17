@@ -860,8 +860,10 @@ begin
                 taRight:  dx := aLeft + aWidth - lineWidth[lineCount];
               end;
             end;
-      else  DrawLetter;
+    else
+      DrawLetter;
     end;
+
     //When we reach the end, if we painted something then we need to end it
     if (I = Length(aText)) and (prevAtlas <> -1) then
       glEnd;
