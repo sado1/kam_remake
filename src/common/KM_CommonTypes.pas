@@ -75,6 +75,8 @@ type
     MoveX, MoveY: Integer;
   end;
 
+  TKMCursorDir = (cdNone = 0, cdForward = 1, cdBack = -1);
+
   TWonOrLost = (wolNone, wolWon, wolLost);
 
   //Menu load type - load / no load / load unsupported version

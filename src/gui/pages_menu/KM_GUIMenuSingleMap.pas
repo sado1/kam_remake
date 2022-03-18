@@ -5,7 +5,7 @@ uses
   Math, SysUtils,
   KM_Defaults,
   KM_Maps, KM_MapTypes, KM_GameTypes,
-  KM_Controls, KM_ControlsMinimapView, KM_Pics, KM_InterfaceDefaults, KM_InterfaceTypes, KM_MinimapMission, KM_CommonTypes;
+  KM_Controls, KM_ControlsMemo, KM_ControlsMinimapView, KM_Pics, KM_InterfaceDefaults, KM_InterfaceTypes, KM_MinimapMission, KM_CommonTypes;
 
 
 const

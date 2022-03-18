@@ -4,7 +4,7 @@ interface
 uses
    Classes,
    KM_MapTypes,
-   KM_Controls, KM_Defaults;
+   KM_Controls, KM_ControlsMemo, KM_Defaults;
 
 type
   TKMMapEdMissionMode = class
