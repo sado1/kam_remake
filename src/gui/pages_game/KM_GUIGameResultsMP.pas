@@ -51,8 +51,6 @@ type
     property ChartType: TKMChartWarrior read fType;
   end;
 
-  PKMChartArmyMP = ^TKMChartArmyMP; //todo: Disuse
-
   TKMStatsValues = array[0..MAX_HANDS-1] of array [0..9] of Cardinal;
 
   TKMGameResultsMP = class
@@ -1711,10 +1709,12 @@ procedure TKMGameResultsMP.ReinitChartArmy;
 type
   TKMChartArmyCaptionIndex = array[TKMChartArmyKind] of Integer;
 const
-  CHART_ARMY_CAPTION_INDEX: TKMChartArmyCaptionIndex = (TX_RESULTS_ARMY_INSTANTANEOUS,
-                                                        TX_RESULTS_ARMY_TOTAL_EQUIPPED,
-                                                        TX_RESULTS_ARMY_DEFEATED,
-                                                        TX_RESULTS_ARMY_LOST);
+  CHART_ARMY_CAPTION_INDEX: TKMChartArmyCaptionIndex = (
+    TX_RESULTS_ARMY_INSTANTANEOUS,
+    TX_RESULTS_ARMY_TOTAL_EQUIPPED,
+    TX_RESULTS_ARMY_DEFEATED,
+    TX_RESULTS_ARMY_LOST
+  );
 var
   I, J, handId: Integer;
   playersList: TStringList;
@@ -1723,7 +1723,7 @@ var
   cKind: TKMChartArmyKind;
   ST: TKMStatType;
   chart: TKMChart;
-  chartArmy: PKMChartArmyMP;
+  chartArmy: TKMChartArmyMP;
 begin
   fNoArmyChartData := True;
 
@@ -1754,14 +1754,14 @@ begin
     for cKind := Low(TKMChartArmyKind) to High(TKMChartArmyKind) do
       for wType := Low(TKMChartWarriorType) to High(TKMChartWarriorType) do
       begin
-        chartArmy := @Charts_Army[ST,cKind,wType];
-        chart := chartArmy^.Chart;
+        chartArmy := Charts_Army[ST, cKind, wType];
+        chart := chartArmy.Chart;
         chart.Clear;
         chart.MaxLength := 0;
         chart.MaxTime := gGameParams.Tick div 10;
-        chart.Peacetime := 60*gGame.Options.Peacetime;
+        chart.Peacetime := 60 * gGame.Options.Peacetime;
         chart.SetSeparatorPositions(fChartSeparatorsPos[ST]);
-        chart.Caption := chartArmy^.ChartType.GUIName + ' - ' + gResTexts[CHART_ARMY_CAPTION_INDEX[cKind]];
+        chart.Caption := chartArmy.ChartType.GUIName + ' - ' + gResTexts[CHART_ARMY_CAPTION_INDEX[cKind]];
 
         for I := 0 to fListToShow[ST].Count - 1 do
         begin
@@ -1771,7 +1771,7 @@ begin
           for J := 0 to playersList.Count - 1 do
           begin
             handId := StrToInt(playersList[J]);
-            ChartArmyData := chartArmy^.GetChartData(handId);
+            ChartArmyData := chartArmy.GetChartData(handId);
             KMSummAndEnlargeArr(@chartData, @ChartArmyData);
           end;
 
