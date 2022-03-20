@@ -24,6 +24,11 @@ const
   MENU_DESIGN_Y         = 768;          //Thats the size menu was designed for. All elements are placed in this size
   MIN_RESOLUTION_WIDTH  = 1024;         //Lowest supported resolution X
   MIN_RESOLUTION_HEIGHT = 720;          //Lowest supported resolution Y
+
+  // It would be nice to have the declaration as:
+  // GAME_REVISION_NUM = {$I KM_Revision.inc}
+  // This would also allow to disuse the initialization section down below
+  // However for some odd reason this kills Reys IDE ..
   {$I KM_Revision.inc};
   {$I KM_NetProtocolRevision.inc};
   {$IFDEF USESECUREAUTH}
