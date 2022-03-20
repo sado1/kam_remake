@@ -2587,6 +2587,8 @@ begin
   Label_PlayersColorMode.Top := IfThen(Panel_ReplayCtrl.Visible, 0, 5);
   Radio_PlayersColorMode.Top := IfThen(Panel_ReplayCtrl.Visible, 20, 25);
 
+  gGame.OverlayUpdate;
+
   if fUIMode in [umSpectate, umReplay] then
   begin
     //In singleplayer replays, start with fog enabled so replays can be watched without spoilers

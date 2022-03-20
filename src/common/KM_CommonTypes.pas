@@ -32,6 +32,7 @@ type
   TRGBArray = array of TRGB;
   TKMStaticByteArray = array [0..MaxInt - 1] of Byte;
   PKMStaticByteArray = ^TKMStaticByteArray;
+  TKMVarRecArray = array of TVarRec;
 
   TEvent = procedure of object;
   TPointEvent = procedure (Sender: TObject; const X,Y: Integer) of object;

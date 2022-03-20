@@ -2,13 +2,14 @@ unit KM_Hand;
 {$I KaM_Remake.inc}
 interface
 uses
+  Generics.Collections,
   KM_AI,
   KM_Units, KM_UnitsCollection, KM_UnitGroup, KM_UnitWarrior,
   KM_Houses, KM_HouseCollection, KM_HouseInn,
   KM_HandLogistics, KM_HandLocks, KM_HandStats, KM_GameTypes,
   KM_FogOfWar, KM_HandConstructions, KM_MessageLog, KM_ResHouses,
   KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_ResWares, KM_Points,
-  KM_HandEntity, KM_HandTypes,
+  KM_HandEntity, KM_HandTypes, KM_CommonClassesExt,
   KM_ResTypes;
 
 
@@ -72,6 +73,11 @@ type
     fAlliances: array [0 .. MAX_HANDS - 1] of TKMAllianceType;
     fShareFOW: array [0 .. MAX_HANDS - 1] of Boolean;
     fShareBeacons: array [0 .. MAX_HANDS - 1] of Boolean;
+
+    // Overlays
+    fOverlayText: UnicodeString; //Needed for replays. Not saved since it's translated
+    fOverlayMarkUp: AnsiString;
+    fOverlayParams: TKMVarValueList;
 
     //House sketch fields, used to GetNextHouseWSameType
     fHSketch: TKMHouseSketchEdit;
@@ -157,6 +163,10 @@ type
     property ShareBeacons[aIndex: Integer]: Boolean read GetShareBeacons write SetShareBeacons;
     property CenterScreen: TKMPoint read fCenterScreen write fCenterScreen;
     property ChooseLocation: TKMChooseLoc read fChooseLocation write fChooseLocation;
+
+    property OverlayText: UnicodeString read fOverlayText write fOverlayText;
+    property OverlayMarkUp: AnsiString read fOverlayMarkUp write fOverlayMarkUp;
+    property OverlayParams: TKMVarValueList read fOverlayParams;
 
     procedure AddAIType(aHandAIType: TKMAIType);
 
@@ -413,6 +423,8 @@ begin
   fTeamColor := fFlagColor;
   fTeam := NO_TEAM;
 
+  fOverlayParams := TKMVarValueList.Create;
+
   fHSketch := TKMHouseSketchEdit.Create;
   fFirstHSketch := TKMHouseSketchEdit.Create;
   fFoundHSketch := TKMHouseSketchEdit.Create;
@@ -428,6 +440,9 @@ begin
   FreeAndNil(fHSketch);
   FreeAndNil(fFirstHSketch);
   FreeAndNil(fFoundHSketch);
+
+  FreeAndNil(fOverlayParams);
+
   //Groups freed before units since we need to release pointers they have to units
   FreeThenNil(fUnitGroups);
   FreeThenNil(fMessageLog);
@@ -1943,6 +1958,10 @@ begin
   SaveStream.Write(fTeam);
   SaveStream.Write(SelectionHotkeys, SizeOf(SelectionHotkeys));
   SaveStream.Write(fChooseLocation, SizeOf(TKMChooseLoc));
+
+  // Overlay
+  SaveStream.WriteA(fOverlayMarkUp);
+  fOverlayParams.Save(SaveStream);
 end;
 
 
@@ -1977,6 +1996,11 @@ begin
   LoadStream.Read(fTeam);
   LoadStream.Read(SelectionHotkeys, SizeOf(SelectionHotkeys));
   LoadStream.Read(fChooseLocation, SizeOf(TKMChooseLoc));
+
+  // Overlay
+  LoadStream.ReadA(fOverlayMarkUp);
+  fOverlayParams.Clear;
+  fOverlayParams.Load(LoadStream);
 end;
 
 

@@ -2,7 +2,8 @@ unit KM_CommonClassesExt;
 {$I KaM_Remake.inc}
 interface
 uses
-  SysUtils, TypInfo, Generics.Collections;
+  SysUtils, TypInfo, Generics.Collections,
+  KM_CommonClasses, KM_CommonTypes;
 
 type
   ERuntimeTypeError = class(Exception);
@@ -67,6 +68,37 @@ type
 
   TKMEnumUtils = class
     class function TryGetAs<T>(aEnumStr: String; out aEnumValue: T): Boolean;
+  end;
+
+  TKMVarValue = class
+  private
+  type
+    TKMVarValueType = (rcNone, rcAnsiString, rcUnicodeString, rcInteger, rcExtended, rcBoolean);
+  var
+    fType: TKMVarValueType;
+    fStrA: AnsiString;
+    fStrW: UnicodeString;
+    fInt: Int64;
+    fExtn: Extended;
+    fBool: Boolean;
+  public
+    constructor Create; overload;
+    constructor Create(aVarRec: TVarRec); overload;
+
+    procedure SetByVarRec(aValue: TVarRec);
+    function ToVarRec: TVarRec;
+
+    procedure Save(aStream: TKMemoryStream);
+    procedure Load(aStream: TKMemoryStream);
+  end;
+
+  TKMVarValueList = class(TObjectList<TKMVarValue>)
+  public
+    function ToVarRecArray: TKMVarRecArray;
+    procedure AddVarRec(aVarRec: TVarRec);
+
+    procedure Save(aSaveStream: TKMemoryStream);
+    procedure Load(aLoadStream: TKMemoryStream);
   end;
 
 
@@ -293,6 +325,159 @@ begin
 
   if Count > fMaxLength then
     Delete(0); // Delete the oldest item
+end;
+
+
+{ TKMVarValue }
+constructor TKMVarValue.Create;
+begin
+  inherited Create;
+end;
+
+
+constructor TKMVarValue.Create(aVarRec: TVarRec);
+begin
+  inherited Create;
+
+  SetByVarRec(aVarRec);
+end;
+
+
+function TKMVarValue.ToVarRec: TVarRec;
+begin
+  case fType of
+    rcAnsiString: begin
+                    Result.VType := vtAnsiString;
+                    Result.VAnsiString := Pointer(fStrA);
+                  end;
+    rcUnicodeString: begin
+                       Result.VType := vtUnicodeString;
+                       Result.VUnicodeString := Pointer(fStrW);
+                     end;
+    rcInteger:  begin
+                  Result.VType := vtInt64;
+                  Result.VInt64 := @fInt;
+                end;
+    rcExtended: begin
+                  Result.VType := vtExtended;
+                  Result.VExtended := @fExtn;
+                end;
+    rcBoolean:  begin
+                  Result.VType := vtBoolean;
+                  Result.VBoolean := fBool;
+                end;
+  end;
+end;
+
+
+procedure TKMVarValue.SetByVarRec(aValue: TVarRec);
+begin
+  with aValue do
+  begin
+    case VType of
+      vtInteger:        fInt   := VInteger;
+      vtBoolean:        fBool  := VBoolean;
+      vtChar:           fStrA  := VChar;
+      vtExtended:       fExtn  := VExtended^;
+      vtInt64:          fInt   := VInt64^;
+      vtPChar:          fStrA  := VPChar^;
+      vtPWideChar:      fStrW  := string(VPWideChar^);
+      vtString:         fStrA  := VString^;
+      vtAnsiString:     fStrA  := AnsiString(VAnsiString);
+      vtUnicodeString:  fStrW  := string(VUnicodeString);
+    end;
+
+
+    fType := rcNone;
+    case VType of
+      vtInteger,
+      vtInt64:          fType := rcInteger;
+      vtBoolean:        fType := rcBoolean;
+      vtExtended:       fType := rcExtended;
+      vtChar,
+      vtPChar,
+      vtString,
+      vtAnsiString:     fType := rcAnsiString;
+      vtPWideChar,
+      vtUnicodeString:  fType := rcUnicodeString;
+    end;
+  end;
+end;
+
+
+procedure TKMVarValue.Load(aStream: TKMemoryStream);
+begin
+  aStream.Read(fType, SizeOf(fType));
+
+  case fType of
+    rcAnsiString:     aStream.ReadA(fStrA);
+    rcUnicodeString:  aStream.ReadW(fStrW);
+    rcInteger:        aStream.Read(fInt);
+    rcExtended:       aStream.Read(fExtn);
+    rcBoolean:        aStream.Read(fBool);
+  end;
+end;
+
+
+procedure TKMVarValue.Save(aStream: TKMemoryStream);
+begin
+  aStream.Write(fType, SizeOf(fType));
+
+  case fType of
+    rcAnsiString:     aStream.WriteA(fStrA);
+    rcUnicodeString:  aStream.WriteW(fStrW);
+    rcInteger:        aStream.Write(fInt);
+    rcExtended:       aStream.Write(fExtn);
+    rcBoolean:        aStream.Write(fBool);
+  end;
+end;
+
+
+{ TKMVarValueList }
+procedure TKMVarValueList.AddVarRec(aVarRec: TVarRec);
+var
+  varValue: TKMVarValue;
+begin
+  varValue := TKMVarValue.Create(aVarRec);
+  Add(varValue);
+end;
+
+
+function TKMVarValueList.ToVarRecArray: TKMVarRecArray;
+var
+  I: Integer;
+begin
+  SetLength(Result, Count);
+
+  for I := 0 to Count - 1 do
+    Result[I] := Items[I].ToVarRec;
+end;
+
+
+procedure TKMVarValueList.Load(aLoadStream: TKMemoryStream);
+var
+  I, cnt: Integer;
+  varRec: TKMVarValue;
+begin
+  aLoadStream.CheckMarker('VarValueList');
+  aLoadStream.Read(cnt);
+  for I := 0 to cnt - 1 do
+  begin
+    varRec := TKMVarValue.Create;
+    varRec.Load(aLoadStream);
+    Add(varRec);
+  end;
+end;
+
+
+procedure TKMVarValueList.Save(aSaveStream: TKMemoryStream);
+var
+  I: Integer;
+begin
+  aSaveStream.PlaceMarker('VarValueList');
+  aSaveStream.Write(Count);
+  for I := 0 to Count - 1 do
+    Items[I].Save(aSaveStream);
 end;
 
 

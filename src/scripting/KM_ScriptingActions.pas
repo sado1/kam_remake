@@ -166,9 +166,9 @@ type
     procedure MarketSetTradeEx(aMarketID: Integer; aFrom, aTo: TKMWareType; aAmount: Integer);
 
     procedure OverlayTextSet(aHand: Shortint; const aText: AnsiString);
-    procedure OverlayTextSetFormatted(aHand: Shortint; const aText: AnsiString; Params: array of const);
+    procedure OverlayTextSetFormatted(aHand: Shortint; const aText: AnsiString; aParams: array of const);
     procedure OverlayTextAppend(aHand: Shortint; const aText: AnsiString);
-    procedure OverlayTextAppendFormatted(aHand: Shortint; const aText: AnsiString; Params: array of const);
+    procedure OverlayTextAppendFormatted(aHand: Shortint; const aText: AnsiString; aParams: array of const);
 
     procedure Peacetime(aPeacetime: Cardinal);
 
@@ -4152,7 +4152,7 @@ begin
   try
     //Text from script should be only ANSI Latin, but UI is Unicode, so we switch it
     if InRange(aHand, -1, gHands.Count - 1) then //-1 means all players
-      gGame.OverlaySet(gGame.TextMission.ParseTextMarkup(UnicodeString(aText)), aHand)
+      gGame.OverlaySet(aHand, aText, [])
     else
       LogIntParamWarn('Actions.OverlayTextSet: '+UnicodeString(aText), [aHand]);
   except
@@ -4166,21 +4166,21 @@ end;
 //* Sets text overlaid on top left of screen with formatted arguments (same as Format function).
 //* If the player index is -1 it will be set for all players.
 //* Params: Array of arguments
-procedure TKMScriptActions.OverlayTextSetFormatted(aHand: Shortint; const aText: AnsiString; Params: array of const);
+procedure TKMScriptActions.OverlayTextSetFormatted(aHand: Shortint; const aText: AnsiString; aParams: array of const);
 begin
   try
     if InRange(aHand, -1, gHands.Count - 1) then //-1 means all players
     begin
       try
-        //Text from script should be only ANSI Latin, but UI is Unicode, so we switch it
-        gGame.OverlaySet(gGame.TextMission.ParseTextMarkup(UnicodeString(aText), Params), aHand);
+        gGame.OverlaySet(aHand, aText, aParams);
       except
         //Format may throw an exception
-        on E: EConvertError do LogIntParamWarn('Actions.OverlayTextSetFormatted: EConvertError: '+E.Message, []);
+        on E: EConvertError do
+          LogIntParamWarn('Actions.OverlayTextSetFormatted: EConvertError: ' + E.Message, []);
       end;
     end
     else
-      LogIntParamWarn('Actions.OverlayTextSetFormatted: '+UnicodeString(aText), [aHand]);
+      LogIntParamWarn('Actions.OverlayTextSetFormatted: ' + UnicodeString(aText), [aHand]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4194,11 +4194,10 @@ end;
 procedure TKMScriptActions.OverlayTextAppend(aHand: Shortint; const aText: AnsiString);
 begin
   try
-    //Text from script should be only ANSI Latin, but UI is Unicode, so we switch it
     if InRange(aHand, -1, gHands.Count - 1) then //-1 means all players
-      gGame.OverlayAppend(gGame.TextMission.ParseTextMarkup(UnicodeString(aText)), aHand)
+      gGame.OverlayAppend(aHand, aText, [])
     else
-      LogIntParamWarn('Actions.OverlayTextAppend: '+UnicodeString(aText), [aHand]);
+      LogIntParamWarn('Actions.OverlayTextAppend: ' + UnicodeString(aText), [aHand]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4210,21 +4209,21 @@ end;
 //* Appends to text overlaid on top left of screen with formatted arguments (same as Format function).
 //* If the player index is -1 it will be appended for all players.
 //* Params: Array of arguments
-procedure TKMScriptActions.OverlayTextAppendFormatted(aHand: Shortint; const aText: AnsiString; Params: array of const);
+procedure TKMScriptActions.OverlayTextAppendFormatted(aHand: Shortint; const aText: AnsiString; aParams: array of const);
 begin
   try
     if InRange(aHand, -1, gHands.Count - 1) then //-1 means all players
     begin
       try
-        //Text from script should be only ANSI Latin, but UI is Unicode, so we switch it
-        gGame.OverlayAppend(gGame.TextMission.ParseTextMarkup(UnicodeString(aText), Params), aHand);
+        gGame.OverlayAppend(aHand, aText, aParams);
       except
         //Format may throw an exception
-        on E: EConvertError do LogIntParamWarn('Actions.OverlayTextAppendFormatted: EConvertError: '+E.Message, []);
+        on E: EConvertError do
+          LogIntParamWarn('Actions.OverlayTextAppendFormatted: EConvertError: ' + E.Message, []);
       end;
     end
     else
-      LogIntParamWarn('Actions.OverlayTextAppendFormatted: '+UnicodeString(aText), [aHand]);
+      LogIntParamWarn('Actions.OverlayTextAppendFormatted: ' + UnicodeString(aText), [aHand]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

@@ -42,7 +42,6 @@ type
     fWaitingForNetwork: Boolean; //Indicates that we are waiting for other players commands in MP
     fAdvanceFrame: Boolean; //Replay variable to advance 1 frame, afterwards set to false
     fLockedMutex: Boolean;
-    fOverlayText: array[0..MAX_HANDS] of UnicodeString; //Needed for replays. Not saved since it's translated
     fIgnoreConsistencyCheckErrors: Boolean; // User can ignore all consistency check errors while watching SP replay
 
     fParams: TKMGameParams;
@@ -215,8 +214,8 @@ type
     procedure ShowMessage(aKind: TKMMessageKind; aTextID: Integer; const aLoc: TKMPoint; aEntityUID: Cardinal; aHandIndex: TKMHandID);
     procedure ShowMessageLocal(aKind: TKMMessageKind; const aText: UnicodeString; const aLoc: TKMPoint);
     procedure OverlayUpdate;
-    procedure OverlaySet(const aText: UnicodeString; aPlayer: Shortint);
-    procedure OverlayAppend(const aText: UnicodeString; aPlayer: Shortint);
+    procedure OverlaySet(aHand: TKMHandID; const aMarkUp: AnsiString; aParams: array of const);
+    procedure OverlayAppend(aHand: TKMHandID; const aMarkUp: AnsiString; aParams: array of const);
 
     property CampaignName: TKMCampaignId read fCampaignName;
     property CampaignMap: Byte read fCampaignMap;
@@ -1827,34 +1826,62 @@ end;
 
 procedure TKMGame.OverlayUpdate;
 begin
-  fGamePlayInterface.SetScriptedOverlay(fOverlayText[gMySpectator.HandID]);
+  fGamePlayInterface.SetScriptedOverlay(gMySpectator.Hand.OverlayText);
   fGamePlayInterface.UpdateOverlayControls;
 end;
 
 
-procedure TKMGame.OverlaySet(const aText: UnicodeString; aPlayer: Shortint);
+procedure TKMGame.OverlaySet(aHand: TKMHandID; const aMarkUp: AnsiString; aParams: array of const);
+
+  procedure DoOverlaySet(aHnd: TKMHandID);
+  var
+    I: Integer;
+  begin
+    gHands[aHnd].OverlayMarkUp := aMarkUp;
+    gHands[aHnd].OverlayParams.Clear;
+    for I := 0 to High(aParams) do
+      gHands[aHnd].OverlayParams.AddVarRec(aParams[I]);
+
+    // Update text to show
+    gHands[aHnd].OverlayText := TextMission.ParseTextMarkup(UnicodeString(aMarkUp), aParams);
+  end;
+
 var
   I: Integer;
 begin
-  if aPlayer = HAND_NONE then
-    for I := 0 to MAX_HANDS do
-      fOverlayText[I] := aText
+  if aHand = HAND_NONE then
+    for I := 0 to gHands.Count - 1 do
+      DoOverlaySet(I)
   else
-    fOverlayText[aPlayer] := aText;
+    DoOverlaySet(aHand);
 
   OverlayUpdate;
 end;
 
 
-procedure TKMGame.OverlayAppend(const aText: UnicodeString; aPlayer: Shortint);
+procedure TKMGame.OverlayAppend(aHand: TKMHandID; const aMarkUp: AnsiString; aParams: array of const);
+
+  procedure DoOverlayAppend(aHnd: TKMHandID);
+  var
+    I: Integer;
+  begin
+    gHands[aHnd].OverlayMarkUp := gHands[aHnd].OverlayMarkUp + aMarkUp;
+    for I := 0 to High(aParams) do
+      gHands[aHnd].OverlayParams.AddVarRec(aParams[I]);
+
+    // Update text to show
+    gHands[aHnd].OverlayText := TextMission.ParseTextMarkup(UnicodeString(gHands[aHnd].OverlayMarkUp),
+                                                            gHands[aHnd].OverlayParams.ToVarRecArray);
+  end;
+
 var
   I: Integer;
 begin
-  if aPlayer = HAND_NONE then
-    for I := 0 to MAX_HANDS do
-      fOverlayText[I] := fOverlayText[I] + aText
+  if aHand = HAND_NONE then
+    for I := 0 to gHands.Count - 1 do
+      DoOverlayAppend(I)
   else
-    fOverlayText[aPlayer] := fOverlayText[aPlayer] + aText;
+    DoOverlayAppend(aHand);
 
   OverlayUpdate;
 end;
@@ -2759,10 +2786,16 @@ end;
 
 
 procedure TKMGame.AfterLoad;
+var
+  I: Integer;
 begin
   gLog.AddTime('After game loading');
   //Should check all Unit-House ID references and replace them with actual pointers
   gHands.SyncLoad;
+
+  for I := 0 to gHands.Count - 1 do
+    gHands[I].OverlayText := TextMission.ParseTextMarkup(UnicodeString(gHands[I].OverlayMarkUp), gHands[I].OverlayParams.ToVarRecArray);
+
   gTerrain.SyncLoad;
   gProjectiles.SyncLoad;
   fScripting.SyncLoad;
