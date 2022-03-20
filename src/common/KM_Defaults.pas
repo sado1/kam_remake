@@ -24,12 +24,8 @@ const
   MENU_DESIGN_Y         = 768;          //Thats the size menu was designed for. All elements are placed in this size
   MIN_RESOLUTION_WIDTH  = 1024;         //Lowest supported resolution X
   MIN_RESOLUTION_HEIGHT = 720;          //Lowest supported resolution Y
-
-  GAME_REVISION_NUM = {$I KM_Revision.inc};
-  GAME_REVISION = 'r' + GAME_REVISION_NUM;
-
-  NET_PROTOCOL_REVISION_NUM = {$I KM_NetProtocolRevision.inc}; //@Rey: Not clear why this is in INC if it's not used by anything else
-
+  {$I KM_Revision.inc};
+  {$I KM_NetProtocolRevision.inc};
   {$IFDEF USESECUREAUTH}
     {$IFDEF DEBUG}
     GAME_VERSION_POSTFIX  = ' [ DEBUG ]';
@@ -43,11 +39,13 @@ const
     GAME_VERSION_POSTFIX  = ' [ UNSECURE ]';
     {$ENDIF}
   {$ENDIF}
-  GAME_VERSION = GAME_REVISION + GAME_VERSION_POSTFIX;
-
-  // Clients of this net protocol version may connect to the dedicated server
-  NET_PROTOCOL_REVISON = 'r' + NET_PROTOCOL_REVISION_NUM;
-
+  GAME_VERSION_PREFIX   = ''; //Game version string displayed in menu corner
+var
+  //Game revision is set in initialisation block
+  GAME_REVISION: AnsiString; //Should be updated for every release (each time save format is changed)
+  GAME_VERSION: AnsiString;
+  NET_PROTOCOL_REVISON: AnsiString; //Clients of this version may connect to the dedicated server
+const
   GAME_TITLE            = 'Knights and Merchants Remake';
   SETTINGS_FILE         = 'KaM Remake Settings.xml';
   SERVER_SETTINGS_FILE  = 'KaM Remake Server Settings.ini';
@@ -1098,5 +1096,12 @@ const
 
 implementation
 
+initialization
+begin
+  GAME_REVISION := AnsiString('r' + IntToStr(GAME_REVISION_NUM));
+  GAME_VERSION := GAME_VERSION_PREFIX + GAME_REVISION + GAME_VERSION_POSTFIX;
+  //Clients of this net protocol version may connect to the dedicated server
+  NET_PROTOCOL_REVISON := AnsiString('r' + IntToStr(NET_PROTOCOL_REVISION_NUM));
+end;
 
 end.

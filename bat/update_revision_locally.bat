@@ -9,7 +9,7 @@ echo called update_revision_locally.bat
 @SET /A kam_revision=kam_revision+1
 
 @REM update revision number in KM_Revision.inc file 
-@echo '%kam_revision%' > ..\KM_Revision.inc
+@echo GAME_REVISION_NUM=%kam_revision% > ..\KM_Revision.inc
 
 @REM update revision for Installer
 @echo #define Revision 'r%kam_revision%' > ..\Installer\Revision.iss

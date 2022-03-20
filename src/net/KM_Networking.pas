@@ -845,7 +845,7 @@ end;
 procedure TKMNetworking.WriteInfoToJoinRoom(aM: TKMemoryStream);
 begin
   aM.Write(fRoomToJoin);
-  aM.Write(TKMGameRevision(StrToInt(GAME_REVISION_NUM)));
+  aM.Write(TKMGameRevision(GAME_REVISION_NUM));
 end;
 
 

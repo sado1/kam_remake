@@ -541,7 +541,7 @@ begin
 
       //Check room game revision
       if (R.GameRevision <> EMPTY_ROOM_DEFAULT_GAME_REVISION)
-      and (R.GameRevision <> StrToInt(GAME_REVISION_NUM)) then //Room game revision differs from ours, skip it
+        and (R.GameRevision <> GAME_REVISION_NUM) then //Room game revision differs from ours, skip it
         Continue;
 
       S := gNetworking.ServerQuery.Servers[R.ServerIndex];
@@ -556,9 +556,9 @@ begin
 
       //if server was selected, we need to select it again, because TKMColumnListBox was cleared
       if fServerSelected
-      and (R.RoomID = fSelectedRoomInfo.RoomID)
-      and (S.IP = fSelectedServerInfo.IP)
-      and (S.Port = fSelectedServerInfo.Port) then
+        and (R.RoomID = fSelectedRoomInfo.RoomID)
+        and (S.IP = fSelectedServerInfo.IP)
+        and (S.Port = fSelectedServerInfo.Port) then
       begin
         ColumnBox_Servers.ItemIndex := I;
         MP_ServersClick(nil); //Shows info about this selected server
