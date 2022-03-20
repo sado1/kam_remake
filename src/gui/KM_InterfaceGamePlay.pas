@@ -10,8 +10,8 @@ uses
   KM_Controls, KM_ControlsMinimapView, KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Pics, KM_Points, KM_CommonClassesExt,
   KM_InterfaceTypes, KM_InterfaceGame, KM_Terrain, KM_Houses, KM_Units, KM_Minimap, KM_Viewport, KM_Render,
   KM_UnitGroup, KM_UnitWarrior, KM_Saves, KM_MessageStack, KM_ResHouses, KM_Alerts, KM_Networking,
-  KM_HandEntity,
-  KM_GameTypes,
+  KM_HandEntity, KM_HandTypes,
+  KM_GameTypes, KM_ResFonts,
   KM_GUICommonGameOptions,
   KM_GUIGameResultsSP,
   KM_GUIGameResultsMP,
@@ -314,7 +314,9 @@ type
     procedure ShowPlayMore(DoShow: Boolean; Msg: TKMGameResultMsg);
     procedure ShowMPPlayMore(Msg: TKMGameResultMsg);
     procedure ShowNetworkLag(aShow: Boolean; aPlayers: TKMByteArray; IsHost: Boolean);
-    procedure SetScriptedOverlay(const aText: UnicodeString);
+
+    procedure SetScriptedOverlay(const aText: UnicodeString; const aSettings: TKMOverlayTextSettings);
+
     procedure UpdateOverlayControls;
     procedure ReleaseDirectionSelector;
     procedure ChatMessage(const aData: UnicodeString);
@@ -367,10 +369,10 @@ implementation
 uses
   KM_Main, KM_System,
   KM_GameInputProcess, KM_GameInputProcess_Multi, KM_AI, KM_RenderUI, KM_Cursor, KM_Maps,
-  KM_HandsCollection, KM_Hand, KM_HandTypes,
+  KM_HandsCollection, KM_Hand,
   KM_RenderPool, KM_ResTexts, KM_Game, KM_GameApp, KM_HouseBarracks, KM_HouseTownHall,
   KM_ScriptingEvents, KM_AIFields, KM_GameSettings,
-  KM_CommonUtils, KM_ResLocales, KM_ResSound, KM_Resource, KM_Log, KM_ResFonts, KM_ResKeys,
+  KM_CommonUtils, KM_ResLocales, KM_ResSound, KM_Resource, KM_Log, KM_ResKeys,
   KM_NetPlayersList, KM_MessageLog, KM_NetworkTypes,
   KM_InterfaceMapEditor, KM_HouseWoodcutters, KM_MapTypes,
   KM_GameParams,
@@ -1204,8 +1206,11 @@ begin
 
 
 procedure TKMGamePlayInterface.Create_ScriptingOverlay;
+const
+  LEFT = 260;
 begin
-  Label_ScriptedOverlay := TKMLabel.Create(Panel_Main, 260, 110, '', fntMetal, taLeft);
+  Label_ScriptedOverlay := TKMLabel.Create(Panel_Main, LEFT, 110, Panel_Main.Width - LEFT - 5, 0, '', fntMetal, taLeft);
+  Label_ScriptedOverlay.Anchors := [anTop, anLeft, anRight];
 
   Button_ScriptedOverlay := TKMButton.Create(Panel_Main, 260, 92, 15, 15, '', bsGame);
   Button_ScriptedOverlay.Hint := gResTexts[TX_GAMEPLAY_OVERLAY_HIDE];
@@ -2815,9 +2820,12 @@ begin
 end;
 
 
-procedure TKMGamePlayInterface.SetScriptedOverlay(const aText: UnicodeString);
+procedure TKMGamePlayInterface.SetScriptedOverlay(const aText: UnicodeString; const aSettings: TKMOverlayTextSettings);
 begin
-  Label_ScriptedOverlay.Caption := aText;
+  Label_ScriptedOverlay.Caption   := aText;
+  Label_ScriptedOverlay.WordWrap  := aSettings.WordWrap;
+  Label_ScriptedOverlay.Font      := aSettings.Font;
+
   UpdateOverlayControls;
 end;
 

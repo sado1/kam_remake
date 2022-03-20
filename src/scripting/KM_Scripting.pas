@@ -450,6 +450,8 @@ begin
 
     Sender.AddTypeS('TReplaceFlags', '(rfReplaceAll, rfIgnoreCase)'); //Needed for string util Utils.StringReplace
 
+    Sender.AddTypeS('TKMFont', '(fntAntiqua, fntGame, fntGrey, fntMetal, fntMini, fntOutline, fntArial, fntMonospaced)');
+
     // Add CampaignData type and variable only after addition of all other custom types,
     // so those types could be used in the TKMCampaignData declaration
     AddCampaignData;
@@ -857,6 +859,8 @@ begin
     RegisterMethodCheck(c, 'procedure OverlayTextAppendFormatted(aHand: Shortint; const aText: AnsiString; Params: array of const)');
     RegisterMethodCheck(c, 'procedure OverlayTextSet(aHand: Shortint; const aText: AnsiString)');
     RegisterMethodCheck(c, 'procedure OverlayTextSetFormatted(aHand: Shortint; const aText: AnsiString; Params: array of const)');
+    RegisterMethodCheck(c, 'procedure OverlayTextSetFont(aHand: Shortint; aFont: TKMFont)');
+    RegisterMethodCheck(c, 'procedure OverlayTextSetWordWrap(aHand: Shortint; aWordWrap: Boolean)');
 
     RegisterMethodCheck(c, 'procedure Peacetime(aPeacetime: Cardinal)');
 
@@ -1657,6 +1661,8 @@ begin
       RegisterMethod(@TKMScriptActions.OverlayTextAppendFormatted,              'OverlayTextAppendFormatted');
       RegisterMethod(@TKMScriptActions.OverlayTextSet,                          'OverlayTextSet');
       RegisterMethod(@TKMScriptActions.OverlayTextSetFormatted,                 'OverlayTextSetFormatted');
+      RegisterMethod(@TKMScriptActions.OverlayTextSetFont,                      'OverlayTextSetFont');
+      RegisterMethod(@TKMScriptActions.OverlayTextSetWordWrap,                  'OverlayTextSetWordWrap');
 
       RegisterMethod(@TKMScriptActions.Peacetime,                               'Peacetime');
 

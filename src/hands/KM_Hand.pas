@@ -10,7 +10,7 @@ uses
   KM_FogOfWar, KM_HandConstructions, KM_MessageLog, KM_ResHouses,
   KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_ResWares, KM_Points,
   KM_HandEntity, KM_HandTypes, KM_CommonClassesExt,
-  KM_ResTypes;
+  KM_ResTypes, KM_ResFonts;
 
 
 type
@@ -78,6 +78,7 @@ type
     fOverlayText: UnicodeString; //Needed for replays. Not saved since it's translated
     fOverlayMarkUp: AnsiString;
     fOverlayParams: TKMVarValueList;
+    fOverlayTextSettings: TKMOverlayTextSettings;
 
     //House sketch fields, used to GetNextHouseWSameType
     fHSketch: TKMHouseSketchEdit;
@@ -165,8 +166,11 @@ type
     property ChooseLocation: TKMChooseLoc read fChooseLocation write fChooseLocation;
 
     property OverlayText: UnicodeString read fOverlayText write fOverlayText;
+    property OverlayTextSettings: TKMOverlayTextSettings read fOverlayTextSettings;
     property OverlayMarkUp: AnsiString read fOverlayMarkUp write fOverlayMarkUp;
     property OverlayParams: TKMVarValueList read fOverlayParams;
+    procedure SetOverlayTextWordWrap(aWordWrap: Boolean);
+    procedure SetOverlayTextFont(aFont: TKMFont);
 
     procedure AddAIType(aHandAIType: TKMAIType);
 
@@ -424,6 +428,8 @@ begin
   fTeam := NO_TEAM;
 
   fOverlayParams := TKMVarValueList.Create;
+  fOverlayTextSettings.WordWrap := False;
+  fOverlayTextSettings.Font := fntMetal;
 
   fHSketch := TKMHouseSketchEdit.Create;
   fFirstHSketch := TKMHouseSketchEdit.Create;
@@ -944,6 +950,18 @@ end;
 procedure TKMHand.SetHandType(const Value: TKMHandType);
 begin
   fHandType := Value;
+end;
+
+
+procedure TKMHand.SetOverlayTextFont(aFont: TKMFont);
+begin
+  fOverlayTextSettings.Font := aFont;
+end;
+
+
+procedure TKMHand.SetOverlayTextWordWrap(aWordWrap: Boolean);
+begin
+  fOverlayTextSettings.WordWrap := aWordWrap;
 end;
 
 
@@ -1961,6 +1979,7 @@ begin
 
   // Overlay
   SaveStream.WriteA(fOverlayMarkUp);
+  SaveStream.Write(fOverlayTextSettings, SizeOf(fOverlayTextSettings));
   fOverlayParams.Save(SaveStream);
 end;
 
@@ -1999,6 +2018,7 @@ begin
 
   // Overlay
   LoadStream.ReadA(fOverlayMarkUp);
+  LoadStream.Read(fOverlayTextSettings, SizeOf(fOverlayTextSettings));
   fOverlayParams.Clear;
   fOverlayParams.Load(LoadStream);
 end;

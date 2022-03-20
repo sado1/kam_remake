@@ -14,7 +14,8 @@ uses
   KM_Render, KM_Scripting,
   KM_MediaTypes,
   KM_InterfaceGame, KM_InterfaceGamePlay, KM_InterfaceMapEditor,
-  KM_ResTexts, KM_Hand,
+  KM_ResTypes, KM_ResFonts, KM_ResTexts,
+  KM_Hand,
   KM_Defaults, KM_Points, KM_CommonTypes, KM_CommonClasses, KM_CommonClassesExt,
   KM_GameUIDTracker;
 
@@ -213,9 +214,12 @@ type
     property MapTxtInfo: TKMMapTxtInfo read fMapTxtInfo;
     procedure ShowMessage(aKind: TKMMessageKind; aTextID: Integer; const aLoc: TKMPoint; aEntityUID: Cardinal; aHandIndex: TKMHandID);
     procedure ShowMessageLocal(aKind: TKMMessageKind; const aText: UnicodeString; const aLoc: TKMPoint);
+
     procedure OverlayUpdate;
     procedure OverlaySet(aHand: TKMHandID; const aMarkUp: AnsiString; aParams: array of const);
     procedure OverlayAppend(aHand: TKMHandID; const aMarkUp: AnsiString; aParams: array of const);
+    procedure OverlaySetWordWrap(aHand: TKMHandID; aWordWrap: Boolean);
+    procedure OverlaySetFont(aHand: TKMHandID; aFont: TKMFont);
 
     property CampaignName: TKMCampaignId read fCampaignName;
     property CampaignMap: Byte read fCampaignMap;
@@ -312,7 +316,7 @@ uses
   KM_Terrain, KM_TerrainTypes, KM_HandsCollection, KM_HandSpectator, KM_MapEdTypes,
   KM_MissionScript, KM_MissionScript_Info, KM_MissionScript_Standard,
   KM_GameInputProcess_Multi, KM_GameInputProcess_Single,
-  KM_Resource, KM_ResSound, KM_ResWares, KM_ResTypes,
+  KM_Resource, KM_ResSound, KM_ResWares,
   KM_InterfaceDefaults, KM_InterfaceTypes, KM_GameSettings,
   KM_Log, KM_ScriptingEvents, KM_Saves, KM_FileIO, KM_CommonUtils, KM_RandomChecks, KM_DevPerfLog, KM_DevPerfLogTypes,
   KM_NetPlayersList,
@@ -1826,7 +1830,7 @@ end;
 
 procedure TKMGame.OverlayUpdate;
 begin
-  fGamePlayInterface.SetScriptedOverlay(gMySpectator.Hand.OverlayText);
+  fGamePlayInterface.SetScriptedOverlay(gMySpectator.Hand.OverlayText, gMySpectator.Hand.OverlayTextSettings);
   fGamePlayInterface.UpdateOverlayControls;
 end;
 
@@ -1884,6 +1888,34 @@ begin
     DoOverlayAppend(aHand);
 
   OverlayUpdate;
+end;
+
+
+procedure TKMGame.OverlaySetWordWrap(aHand: TKMHandID; aWordWrap: Boolean);
+var
+  I: Integer;
+begin
+  if aHand = HAND_NONE then
+    for I := 0 to gHands.Count - 1 do
+      gHands[I].SetOverlayTextWordWrap(aWordWrap)
+  else
+    gHands[aHand].SetOverlayTextWordWrap(aWordWrap);
+
+
+end;
+
+
+procedure TKMGame.OverlaySetFont(aHand: TKMHandID; aFont: TKMFont);
+var
+  I: Integer;
+begin
+  if aHand = HAND_NONE then
+    for I := 0 to gHands.Count - 1 do
+      gHands[I].SetOverlayTextFont(aFont)
+  else
+    gHands[aHand].SetOverlayTextFont(aFont);
+
+
 end;
 
 

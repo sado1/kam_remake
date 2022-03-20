@@ -4,7 +4,7 @@ interface
 uses
   Classes, Math, SysUtils, StrUtils, KM_AIAttacks, KM_ResTilesetTypes,
   KM_CommonTypes, KM_Defaults, KM_Points, KM_Houses, KM_ScriptingIdCache, KM_Units, KM_TerrainTypes,
-  KM_ScriptSound, KM_MediaTypes, KM_ResTypes, KM_HandTypes, KM_HouseWoodcutters,
+  KM_ScriptSound, KM_MediaTypes, KM_ResTypes, KM_ResFonts, KM_HandTypes, KM_HouseWoodcutters,
   KM_UnitGroup, KM_ResHouses, KM_HouseCollection, KM_ResWares, KM_ScriptingEvents, KM_ScriptingTypes,
   KM_AITypes;
 
@@ -167,6 +167,8 @@ type
 
     procedure OverlayTextSet(aHand: Shortint; const aText: AnsiString);
     procedure OverlayTextSetFormatted(aHand: Shortint; const aText: AnsiString; aParams: array of const);
+    procedure OverlayTextSetFont(aHand: TKMHandID; aFont: TKMFont);
+    procedure OverlayTextSetWordWrap(aHand: TKMHandID; aWordWrap: Boolean);
     procedure OverlayTextAppend(aHand: Shortint; const aText: AnsiString);
     procedure OverlayTextAppendFormatted(aHand: Shortint; const aText: AnsiString; aParams: array of const);
 
@@ -4181,6 +4183,45 @@ begin
     end
     else
       LogIntParamWarn('Actions.OverlayTextSetFormatted: ' + UnicodeString(aText), [aHand]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14000
+//* Sets text overlay font
+//* Possible values are: fntAntiqua, fntGame, fntGrey, fntMetal, fntMini, fntOutline, fntArial, fntMonospaced
+//* If the player index is -1 it will be set for all players.
+procedure TKMScriptActions.OverlayTextSetFont(aHand: TKMHandID; aFont: TKMFont);
+begin
+  try
+    if InRange(aHand, -1, gHands.Count - 1) then //-1 means all players
+    begin
+      gGame.OverlaySetFont(aHand, aFont);
+    end
+    else
+      LogParamWarn('Actions.OverlayTextSetFont', [aHand, GetEnumName(TypeInfo(TKMFont), Integer(aFont))]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14000
+//* Sets or unsets text overlay word wrap
+//* If the player index is -1 it will be set for all players.
+procedure TKMScriptActions.OverlayTextSetWordWrap(aHand: TKMHandID; aWordWrap: Boolean);
+begin
+  try
+    if InRange(aHand, -1, gHands.Count - 1) then //-1 means all players
+    begin
+      gGame.OverlaySetWordWrap(aHand, aWordWrap);
+    end
+    else
+      LogParamWarn('Actions.OverlayTextSetWordWrap', [aHand, aWordWrap]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
