@@ -82,7 +82,6 @@ type
     fExtn: Extended;
     fBool: Boolean;
   public
-    constructor Create; overload;
     constructor Create(aVarRec: TVarRec); overload;
 
     procedure SetByVarRec(aValue: TVarRec);
@@ -329,12 +328,6 @@ end;
 
 
 { TKMVarValue }
-constructor TKMVarValue.Create;
-begin
-  inherited Create;
-end;
-
-
 constructor TKMVarValue.Create(aVarRec: TVarRec);
 begin
   inherited Create;
@@ -346,26 +339,28 @@ end;
 function TKMVarValue.ToVarRec: TVarRec;
 begin
   case fType of
-    rcAnsiString: begin
-                    Result.VType := vtAnsiString;
-                    Result.VAnsiString := Pointer(fStrA);
-                  end;
-    rcUnicodeString: begin
-                       Result.VType := vtUnicodeString;
-                       Result.VUnicodeString := Pointer(fStrW);
-                     end;
-    rcInteger:  begin
-                  Result.VType := vtInt64;
-                  Result.VInt64 := @fInt;
-                end;
-    rcExtended: begin
-                  Result.VType := vtExtended;
-                  Result.VExtended := @fExtn;
-                end;
-    rcBoolean:  begin
-                  Result.VType := vtBoolean;
-                  Result.VBoolean := fBool;
-                end;
+    rcAnsiString:   begin
+                      Result.VType := vtAnsiString;
+                      Result.VAnsiString := Pointer(fStrA);
+                    end;
+    rcUnicodeString:begin
+                      Result.VType := vtUnicodeString;
+                      Result.VUnicodeString := Pointer(fStrW);
+                    end;
+    rcInteger:      begin
+                      Result.VType := vtInt64;
+                      Result.VInt64 := @fInt;
+                    end;
+    rcExtended:     begin
+                      Result.VType := vtExtended;
+                      Result.VExtended := @fExtn;
+                    end;
+    rcBoolean:      begin
+                      Result.VType := vtBoolean;
+                      Result.VBoolean := fBool;
+                    end;
+  else
+    raise Exception.Create('Unexpected type');
   end;
 end;
 
@@ -385,8 +380,9 @@ begin
       vtString:         fStrA  := VString^;
       vtAnsiString:     fStrA  := AnsiString(VAnsiString);
       vtUnicodeString:  fStrW  := string(VUnicodeString);
+    else
+      raise Exception.Create('Unexpected type');
     end;
-
 
     fType := rcNone;
     case VType of
@@ -400,6 +396,8 @@ begin
       vtAnsiString:     fType := rcAnsiString;
       vtPWideChar,
       vtUnicodeString:  fType := rcUnicodeString;
+    else
+      raise Exception.Create('Unexpected type');
     end;
   end;
 end;
@@ -415,6 +413,8 @@ begin
     rcInteger:        aStream.Read(fInt);
     rcExtended:       aStream.Read(fExtn);
     rcBoolean:        aStream.Read(fBool);
+  else
+    raise Exception.Create('Unexpected type');
   end;
 end;
 
@@ -429,6 +429,8 @@ begin
     rcInteger:        aStream.Write(fInt);
     rcExtended:       aStream.Write(fExtn);
     rcBoolean:        aStream.Write(fBool);
+  else
+    raise Exception.Create('Unexpected type');
   end;
 end;
 
