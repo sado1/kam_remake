@@ -286,7 +286,7 @@ type
     {$IFDEF USE_MAD_EXCEPT}
     procedure AttachCrashReport(const ExceptIntf: IMEException; const aZipFile: UnicodeString);
     {$ENDIF}
-    procedure ReplayInconsistancy(aCommand: TKMStoredGIPCommand; aMyRand: Cardinal);
+    procedure ReplayInconsistency(aCommand: TKMStoredGIPCommand; aMyRand: Cardinal);
     procedure SaveCampaignScriptData(SaveStream: TKMemoryStream);
 
     procedure Render(aRender: TRender);
@@ -1079,10 +1079,10 @@ begin
     begin
       netPlayer := gNetworking.NetPlayers[I];
       if not netPlayer.IsHuman
-        or netPlayer.IsSpectator
-        or not netPlayer.Connected
-        or (netPlayer.HandIndex = -1)
-        or not gHands[netPlayer.HandIndex].Enabled then
+      or netPlayer.IsSpectator
+      or not netPlayer.Connected
+      or (netPlayer.HandIndex = -1)
+      or not gHands[netPlayer.HandIndex].Enabled then
         Continue;
 
       Include(Result, netPlayer.HandIndex);
@@ -1237,7 +1237,7 @@ end;
 
 
 //Occasional replay inconsistencies are a known bug, we don't need reports of it
-procedure TKMGame.ReplayInconsistancy(aCommand: TKMStoredGIPCommand; aMyRand: Cardinal);
+procedure TKMGame.ReplayInconsistency(aCommand: TKMStoredGIPCommand; aMyRand: Cardinal);
 const
   TRY_KAM_RANDOM_CNT = 10;
 var
@@ -1384,7 +1384,6 @@ begin
 
                 if Assigned(gNetworking.OnPlayersSetup) then
                   gNetworking.OnPlayersSetup; //Update players panel
-
               end;
     gmMultiSpectate:
               begin

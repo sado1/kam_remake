@@ -57,19 +57,21 @@ begin
       while not fGic2StoredConverter.ParseNextStoredPackedCommand(fQueue[fCursor].Command, gicCommand) do
         Inc(fCursor);
 
-      ExecCommand(gicCommand); //Should always be called to maintain randoms flow
-      //CRC check after the command
+      ExecCommand(gicCommand); // Should always be called to maintain randoms flow
+      // CRC check after the command
       if (fQueue[fCursor].Rand <> myRand)
-        and not gGame.IgnoreConsistencyCheckErrors then
+      and not gGame.IgnoreConsistencyCheckErrors then
       begin
-        if Assigned(fOnReplayDesync) then // Call before ReplayInconsistancy, fOnReplayDesync could be free after it!
+        if Assigned(fOnReplayDesync) then // Call before ReplayInconsistency, fOnReplayDesync could be free after it!
           fOnReplayDesync(fCursor);
+
         if CRASH_ON_REPLAY then
         begin
-          Inc(fCursor); //Must be done before exiting in case user decides to continue the replay
-          gGame.ReplayInconsistancy(fQueue[fCursor-1], myRand);
-          Exit; //ReplayInconsistancy sometimes calls GIP.Free, so exit immidiately
+          Inc(fCursor); // Must be done before exiting in case user decides to continue the replay
+          gGame.ReplayInconsistency(fQueue[fCursor-1], myRand);
+          Exit; // ReplayInconsistency sometimes calls GIP.Free, so exit immidiately
         end;
+
         Exit;
       end;
       Inc(fCursor);
