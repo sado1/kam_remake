@@ -1835,57 +1835,36 @@ begin
 end;
 
 
+// Clear + Append
 procedure TKMGame.OverlaySet(aHand: TKMHandID; const aMarkUp: AnsiString; aParams: array of const);
-
-  procedure DoOverlaySet(aHnd: TKMHandID);
-  var
-    I: Integer;
-  begin
-    gHands[aHnd].OverlayMarkUp := aMarkUp;
-    gHands[aHnd].OverlayParams.Clear;
-    for I := 0 to High(aParams) do
-      gHands[aHnd].OverlayParams.AddVarRec(aParams[I]);
-
-    // Update text to show
-    gHands[aHnd].OverlayText := TextMission.ParseTextMarkup(UnicodeString(aMarkUp), aParams);
-  end;
-
 var
   I: Integer;
 begin
-  if aHand = HAND_NONE then
-    for I := 0 to gHands.Count - 1 do
-      DoOverlaySet(I)
-  else
-    DoOverlaySet(aHand);
+  for I := 0 to gHands.Count - 1 do
+  if (I = aHand) or (aHand = HAND_NONE) then
+  begin
+    gHands[I].OverlayMarkUp := '';
+    gHands[I].OverlayParams.Clear;
+  end;
 
-  OverlayUpdate;
+  OverlayAppend(aHand, aMarkUp, aParams);
 end;
 
 
 procedure TKMGame.OverlayAppend(aHand: TKMHandID; const aMarkUp: AnsiString; aParams: array of const);
-
-  procedure DoOverlayAppend(aHnd: TKMHandID);
-  var
-    I: Integer;
-  begin
-    gHands[aHnd].OverlayMarkUp := gHands[aHnd].OverlayMarkUp + aMarkUp;
-    for I := 0 to High(aParams) do
-      gHands[aHnd].OverlayParams.AddVarRec(aParams[I]);
-
-    // Update text to show
-    gHands[aHnd].OverlayText := TextMission.ParseTextMarkup(UnicodeString(gHands[aHnd].OverlayMarkUp),
-                                                            gHands[aHnd].OverlayParams.ToVarRecArray);
-  end;
-
 var
   I: Integer;
 begin
-  if aHand = HAND_NONE then
-    for I := 0 to gHands.Count - 1 do
-      DoOverlayAppend(I)
-  else
-    DoOverlayAppend(aHand);
+  for I := 0 to gHands.Count - 1 do
+  if (I = aHand) or (aHand = HAND_NONE) then
+  begin
+    gHands[I].OverlayMarkUp := gHands[I].OverlayMarkUp + aMarkUp;
+    gHands[I].OverlayParams.AddVarRecs(aParams);
+
+    // Update text to show
+    gHands[I].OverlayText := TextMission.ParseTextMarkup(UnicodeString(gHands[I].OverlayMarkUp),
+                                                            gHands[I].OverlayParams.ToVarRecArray);
+  end;
 
   OverlayUpdate;
 end;
@@ -1900,8 +1879,6 @@ begin
       gHands[I].SetOverlayTextWordWrap(aWordWrap)
   else
     gHands[aHand].SetOverlayTextWordWrap(aWordWrap);
-
-
 end;
 
 
@@ -1914,8 +1891,6 @@ begin
       gHands[I].SetOverlayTextFont(aFont)
   else
     gHands[aHand].SetOverlayTextFont(aFont);
-
-
 end;
 
 

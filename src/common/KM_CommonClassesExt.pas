@@ -95,7 +95,7 @@ type
   TKMVarValueList = class(TObjectList<TKMVarValue>)
   public
     function ToVarRecArray: TKMVarRecArray;
-    procedure AddVarRec(aVarRec: TVarRec);
+    procedure AddVarRecs(aParams: array of const);
 
     procedure Save(aSaveStream: TKMemoryStream);
     procedure Load(aLoadStream: TKMemoryStream);
@@ -434,12 +434,16 @@ end;
 
 
 { TKMVarValueList }
-procedure TKMVarValueList.AddVarRec(aVarRec: TVarRec);
+procedure TKMVarValueList.AddVarRecs(aParams: array of const);
 var
+  I: Integer;
   varValue: TKMVarValue;
 begin
-  varValue := TKMVarValue.Create(aVarRec);
-  Add(varValue);
+  for I := 0 to High(aParams) do
+  begin
+    varValue := TKMVarValue.Create(aParams[I]);
+    Add(varValue);
+  end;
 end;
 
 
