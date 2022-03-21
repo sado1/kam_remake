@@ -1584,13 +1584,13 @@ begin
     LeftSideFree := True;
     RightSideFree := True;
     for Dir := Low(Surroundings[DIST]) to High(Surroundings[DIST]) do
-      for K := Low(Surroundings[DIST,Dir]) to High(Surroundings[DIST,Dir]) do
-      //for K := Low(Surroundings[DIST,Dir]) + Byte(Dir = dirS) to High(Surroundings[DIST,Dir]) - Byte(Dir = dirS) do
+      //for K := Low(Surroundings[DIST,Dir]) to High(Surroundings[DIST,Dir]) do
+      for K := Low(Surroundings[DIST,Dir]) + Byte(Dir = dirS) to High(Surroundings[DIST,Dir]) - Byte(Dir = dirS) do
       begin
         Point := KMPointAdd(aLoc, Surroundings[DIST,Dir,K]);
         if fHouseReq.IgnoreAvoidBuilding AND (State[Point.Y, Point.X] in [bsReserved, bsHousePlan]) then
           Exit;
-        if (Dir = dirS) AND (State[Point.Y, Point.X] in [bsNoBuild, bsHousePlan, bsFieldPlan]) then
+        if (Dir = dirS) AND (State[Point.Y, Point.X] in [bsNoBuild, bsHousePlan]) AND ((K < 2) OR (K > 3) OR (State[Point.Y, Point.X] <> bsFieldPlan)) then
           Exit;
         if (Dir = dirE) then
           RightSideFree := RightSideFree AND not (State[Point.Y, Point.X] in [bsNoBuild, bsHousePlan]);

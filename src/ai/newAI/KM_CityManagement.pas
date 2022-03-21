@@ -302,9 +302,8 @@ var
     HT: TKMHouseType;
   begin
     // Adjust worker count
-    aUnitReq[utBuilder] := aUnitReq[utBuilder] * Byte(fPredictor.UpdatedPeaceFactor > 0.99);
+    aUnitReq[utBuilder] := aUnitReq[utBuilder] * Byte(fPredictor.CityCompleted);
     // Convert planned houses to units
-
     for HT := HOUSE_MIN to HOUSE_MAX do
       if gResHouses[HT].CanHasWorker AND (HT <> htBarracks) then
         Inc(aUnitReq[gResHouses[HT].WorkerType], fBuilder.Planner.PlannedHouses[HT].Count);
@@ -609,7 +608,7 @@ begin
         // Materials
         S.NotAcceptFlag[wtTrunk] := (aTick > TRUNK_STORE_DELAY); // Trunk should not be blocked because of forest cleaning
         S.NotAcceptFlag[wtTimber] := (S.CheckResIn(wtTimber) > 20) OR (aTick > WOOD_STORE_DELAY);// AND (Predictor.WareBalance[wtWood].Exhaustion > 40);
-        S.NotAcceptFlag[wtStone] := (aTick > STONE_STORE_DELAY) OR (S.CheckResIn(wtStone)*2 > Stats.GetUnitQty(utBuilder));
+        S.NotAcceptFlag[wtStone] := (aTick > STONE_STORE_DELAY) OR (S.CheckResIn(wtStone) * AI_Par[MANAGEMENT_CheckStoreWares_Stone] > Stats.GetUnitQty(utBuilder));
         S.NotAcceptFlag[wtGold] := S.CheckResIn(wtGold) > 400; // Everyone needs as much gold as possible
 
         // Food - don't store food when we have enough (it will cause trafic before storehouse)
@@ -776,70 +775,88 @@ end;
 procedure TKMCityManagement.WeaponsBalance();
 var
   EnemyEval, AllyEval: TKMArmyEval;
+  AllyCounterWeightRatio: array[GROUP_TYPE_MIN..GROUP_TYPE_MAX] of Single;
 
   procedure ComputeGroupDemands(aGT: TKMGroupType; aIronRatio: Single);
   const
     // It doesnt depends on future "optimalization" of parameters: against cav should be always good pikes etc. so this array doesnt have to be computed
-    BEST_VERSUS_OPTION: array[GROUP_TYPE_MIN..GROUP_TYPE_MAX] of TKMGroupType = (gtMelee, gtMelee, gtRanged, gtAntiHorse);
+    BEST_VERSUS_OPTION: array[GROUP_TYPE_MIN..GROUP_TYPE_MAX, GROUP_TYPE_MIN..GROUP_TYPE_MAX] of Single = (
+        // Melee, AntiHorse, Ranged, Mounted
+        (0.6, 0.0, 0.4, 0.0), // Melee
+        (0.4, 0.0, 0.6, 0.0), // AntiHorse
+        (0.0, 0.0, 0.7, 0.3), // Ranged
+        (0.0, 0.8, 0.2, 0.0)  // Mounted
+      );
   var
-    Wood, Iron: Boolean;
     I: Integer;
-    EnemyStrength, UnitStrength, UnitsRequired: Single;
+    EnemyStrength, UnitStrength, UnitsRequired, Wood, Iron: Single;
     UT: TKMUnitType;
-    antiGT: TKMGroupType;
+    GT: TKMGroupType;
     UnitEval: TKMGroupEval;
   begin
     // Get best type of oponent and compute iron ratio
-    antiGT := BEST_VERSUS_OPTION[aGT];
-    Wood := False;
-    Iron := False;
-    for I := 1 to 3 do
-    begin
-      UT := AI_TROOP_TRAIN_ORDER[antiGT,I];
-      if (UT <> utNone) AND not gHands[fOwner].Locks.GetUnitBlocked(UT) then
-        if (I = 1) then
-          Iron := True
-        else
-          Wood := True;
-    end;
-    if Wood AND not Iron then
+    Wood := 0;
+    Iron := 0;
+    for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
+      if (BEST_VERSUS_OPTION[aGT,GT] > 0) then
+        for I := 1 to 3 do
+        begin
+          UT := AI_TROOP_TRAIN_ORDER[GT,I];
+          if (UT <> utNone) AND not gHands[fOwner].Locks.GetUnitBlocked(UT) then
+            if (I = 1) then
+              Iron := Iron + 1
+            else
+              Wood := Wood + 1;
+        end;
+    if (Wood = 0) AND (Iron = 0) then
+      Exit
+    else if (Wood > 0) AND (Iron = 0) then
       aIronRatio := 0
-    else if not Wood AND Iron then
-      aIronRatio := 1
-    else if not Wood AND not Iron then
-      Exit;
+    else if (Wood = 0) AND (Iron > 0) then
+      aIronRatio := 1;
 
     // Compute strength of specific enemy group
-    with EnemyEval.Groups[aGT] do
-      EnemyStrength := (Attack + AttackHorse * Byte(antiGT = gtMounted))
-                        * IfThen( (antiGT = gtRanged), DefenceProjectiles, Defence )
-                        * HitPoints;
+    EnemyStrength := 0;
+    for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
+      with EnemyEval.Groups[aGT] do
+        EnemyStrength := EnemyStrength + BEST_VERSUS_OPTION[aGT,GT]
+          * (Attack + AttackHorse * Byte(GT = gtMounted))
+          * IfThen( (GT = gtRanged), DefenceProjectiles, Defence )
+          * HitPoints;
 
     // Decrease strength by owner's existing units
-    with AllyEval.Groups[antiGT] do
-      EnemyStrength := Max(0, EnemyStrength - (Attack + AttackHorse * Byte(aGT = gtMounted))
-                                               * IfThen( (aGT = gtRanged), DefenceProjectiles, Defence )
-                                               * HitPoints);
+    for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
+      with AllyEval.Groups[GT] do
+      begin
+        EnemyStrength := EnemyStrength - BEST_VERSUS_OPTION[aGT,GT]
+          * (Attack + AttackHorse * Byte(aGT = gtMounted))
+          * IfThen( (aGT = gtRanged), DefenceProjectiles, Defence )
+          * HitPoints;
+        AllyCounterWeightRatio[GT] := AllyCounterWeightRatio[GT] + BEST_VERSUS_OPTION[aGT,GT] * Byte(EnemyEval.Groups[aGT].Count > 0);
+      end;
+    EnemyStrength := Max(0, EnemyStrength);
 
     // Compute unit requirements
-    for I := 1 to 3 do
-    begin
-      UT := AI_TROOP_TRAIN_ORDER[antiGT,I];
-      // Skip unit type in case that it is blocked
-      if (UT = utNone) OR gHands[fOwner].Locks.GetUnitBlocked(UT) then
-        Continue;
-      // Calculate required count of specific unit type
-      UnitEval := gAIFields.Eye.ArmyEvaluation.UnitEvaluation(UT, True);
-      with UnitEval do
-        UnitStrength := Max(0, Attack + AttackHorse * Byte(aGT = gtMounted)
-                               * IfThen( (aGT = gtRanged), DefenceProjectiles, Defence )
-                               * HitPoints);
+    for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
+      if (BEST_VERSUS_OPTION[aGT,GT] > 0) then
+        for I := 1 to 3 do
+        begin
+          UT := AI_TROOP_TRAIN_ORDER[GT,I];
+          // Skip unit type in case that it is blocked
+          if (UT = utNone) OR gHands[fOwner].Locks.GetUnitBlocked(UT) then
+            Continue;
+          // Calculate required count of specific unit type
+          UnitEval := gAIFields.Eye.ArmyEvaluation.UnitEvaluation(UT, True);
+          with UnitEval do
+            UnitStrength := (Attack + AttackHorse * Byte(aGT = gtMounted))
+              * IfThen( (aGT = gtRanged), DefenceProjectiles, Defence )
+              * HitPoints;
 
-      UnitsRequired := Power(EnemyStrength / UnitStrength, 1/3) * IfThen( (I = 1), aIronRatio, 1-aIronRatio );
-      fWarriorsDemands[UT] := fWarriorsDemands[UT] + Max(0, Round(UnitsRequired)   );
-      if (I = 2) then // In case that utAxeFighter is not blocked skip militia
-        Break;
-    end;
+          UnitsRequired := BEST_VERSUS_OPTION[aGT,GT] * Power(EnemyStrength / Max(0.0001, UnitStrength), 1/3) * IfThen( (I = 1), aIronRatio, 1-aIronRatio );
+          fWarriorsDemands[UT] := fWarriorsDemands[UT] + Max(0, Round(UnitsRequired));
+          if (I = 2) then // In case that utAxeFighter is not blocked skip militia
+            Break;
+        end;
   end;
 
   procedure CheckMinArmyReq();
@@ -847,15 +864,23 @@ var
     DEFAULT_COEFICIENT = 15;
     DEFAULT_ARMY_REQUIREMENTS: array[WARRIOR_EQUIPABLE_BARRACKS_MIN..WARRIOR_EQUIPABLE_BARRACKS_MAX] of Single = (
       1, 1, 1, 3,//utMilitia,      utAxeFighter,   utSwordsman,     utBowman,
-      3, 1, 1, 0.5,//utArbaletman,   utPikeman,      utHallebardman,  utHorseScout,
+      2, 1, 1, 0.5,//utArbaletman,   utPikeman,      utHallebardman,  utHorseScout,
       0.5//utCavalry
     );
     WOOD_ARMY: set of TKMUnitType = [utAxeFighter, utBowman, utLanceCarrier]; //utHorseScout,
     IRON_ARMY: set of TKMUnitType = [utSwordFighter, utCrossbowman, utPikeman]; //utCavalry
   var
     I, WoodReq, IronReq: Integer;
+    RatioSum: Single;
     UT: TKMUnitType;
+    GT: TKMGroupType;
   begin
+    // Get ratio of equiped soldiers
+    RatioSum := 0;
+    for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
+      RatioSum := RatioSum + AllyCounterWeightRatio[GT];
+
+    // Wood
     WoodReq := Max(+ fRequiredWeapons[wtLeatherArmor].Required - fRequiredWeapons[wtLeatherArmor].Available,
                    + fRequiredWeapons[wtAxe].Required - fRequiredWeapons[wtAxe].Available
                    + fRequiredWeapons[wtBow].Required - fRequiredWeapons[wtBow].Available
@@ -865,13 +890,17 @@ var
     begin
       WoodReq := Round((DEFAULT_COEFICIENT - WoodReq) / 5.0); // 5 is equal to sum of all requirements in leather category
       for UT in WOOD_ARMY do
-        if not gHands[fOwner].Locks.GetUnitBlocked(UT) then
+      begin
+        GT := UNIT_TO_GROUP_TYPE[UT];
+        if not gHands[fOwner].Locks.GetUnitBlocked(UT) AND ((RatioSum = 0) OR (AllyCounterWeightRatio[GT] > 0)) then
           for I := Low(TROOP_COST[UT]) to High(TROOP_COST[UT]) do
             if (TROOP_COST[UT,I] <> wtNone) then
               with fRequiredWeapons[ TROOP_COST[UT,I] ] do
-                Required := Required + Round(DEFAULT_ARMY_REQUIREMENTS[UT] * WoodReq);
+                Required := Required + Round(DEFAULT_ARMY_REQUIREMENTS[UT] * WoodReq * max(1, AllyCounterWeightRatio[GT] / max(1,RatioSum)) );
+      end;
     end;
 
+    // Iron
     IronReq := Max(+ fRequiredWeapons[wtIronArmor].Required - fRequiredWeapons[wtIronArmor].Available,
                    + fRequiredWeapons[wtSword].Required - fRequiredWeapons[wtSword].Available
                    + fRequiredWeapons[wtCrossbow].Required - fRequiredWeapons[wtCrossbow].Available
@@ -949,8 +978,8 @@ begin
   EnemyEval := gAIFields.Eye.ArmyEvaluation.AllianceEvaluation(fOwner, atEnemy);
 
   // Compute requirements of warriors
-  for UT := Low(fWarriorsDemands) to High(fWarriorsDemands) do
-    fWarriorsDemands[UT] := 0;
+  FillChar(AllyCounterWeightRatio, sizeOf(AllyCounterWeightRatio),#0);
+  FillChar(fWarriorsDemands, sizeOf(fWarriorsDemands),#0);
   for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
     ComputeGroupDemands(GT, IronRatio);
 
@@ -978,7 +1007,7 @@ begin
   // Calculate fraction of demands
   for WT := Low(fRequiredWeapons) to High(fRequiredWeapons) do
     with fRequiredWeapons[WT] do
-      Fraction := Available / Max(1,Required);
+      Fraction := Max(1,Available) / Max(1,Required);
 
   // Dont produce bows and spears when we dont produce leather
   if (gGame.Options.Peacetime < 45) AND (
