@@ -94,7 +94,7 @@ type
 
 implementation
 uses
-  Classes, KM_Game, KM_Hand, KM_HandsCollection, KM_Terrain, KM_Resource,
+  Classes, KM_Game, KM_Hand, KM_HandsCollection, KM_Terrain, KM_Resource, KM_ResWares,
   KM_AIFields, KM_Units, KM_UnitsCollection, KM_UnitTaskBuild,
   {$IFDEF DEBUG_NewAI}
     KM_CommonUtils,
@@ -863,7 +863,10 @@ begin
     if fBuildNodes[K].Active AND (fBuildNodes[K].FieldType = ftRoad) then
       RequiredStones := RequiredStones + fBuildNodes[K].FieldList.Count - 1;
   // Determine stone crisis (based on material)
-  fStoneCrisis := (fPlanner.PlannedHouses[htQuarry].Completed < 3) AND (gHands[fOwner].Stats.GetWareBalance(wtStone) < RequiredStones + AI_Par[BUILDER_Shortage_StoneReserve]);
+  with fPlanner.PlannedHouses[htQuarry] do
+    fStoneCrisis := ((UnderConstruction + Planned) > 0)
+      AND (Completed * PRODUCTION_RATE[wtStone] < gHands[fOwner].Stats.GetUnitQty(utBuilder) * AI_Par[PREDICTOR_WareNeedPerAWorker_Stone])
+      AND (gHands[fOwner].Stats.GetWareBalance(wtStone) < RequiredStones + AI_Par[BUILDER_Shortage_StoneReserve]);
   fStoneShortage := fStoneShortage OR fStoneCrisis; // Make sure that we have also shortage
   // Determine wood shortage (based on material)
   fTrunkShortage := fTrunkShortage OR (WoodReserves < RequiredWood);
@@ -970,7 +973,7 @@ begin
             RequiredWorkers := Min(MaxReqWorkers, FieldList.Count);
             CenterPoint := FieldList[ FieldList.Count-1 ]; // Road node must start from exist house
           end;
-          // Add field to node (if is required [htFarm, htWineyard])
+          // Add field to node (if is required [htFarm, htVineyard])
           if not FieldsComplete AND fPlanner.GetFieldToHouse(aHT, HouseIdx, fBuildNodes[Node2Idx].FieldList, fBuildNodes[Node2Idx].FieldType) then
           begin
             LockNode(fBuildNodes[Node2Idx]);
@@ -1084,7 +1087,7 @@ type
 const
 
   //htWoodcutters,    htQuary,         htSawmill,        htIronMine,      htGoldMine,
-  //htCoalMine,       htIronSmithy,    htMetallurgists,  htWineyard,      htFarm,
+  //htCoalMine,       htIronSmithy,    htMetallurgists,  htVineyard,      htFarm,
   //htBakery,         htMill,          htTannery,        htButchers,      htSwine,
   //htSwine,          htArmorWorkshop, htArmorSmithy,    htArmorWorkshop, htArmorSmithy,
   //htWeaponWorkshop, htWeaponSmithy,  htWeaponWorkshop, htWeaponSmithy,  htWeaponWorkshop,
@@ -1504,7 +1507,7 @@ const
     {htWatchTower}     [ htNone                                          ],
     {htWeaponSmithy}   [ htIronSmithy,    htCoalMine,     htBarracks     ],
     {htWeaponWorkshop} [ htSawmill,       htBarracks                     ],
-    {htWineyard}       [ htInn                                           ],
+    {htVineyard}       [ htInn                                           ],
     {htWoodcutters}    [ htNone                                          ]
   );
 
