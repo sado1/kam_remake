@@ -76,7 +76,7 @@ type
 
     // Overlays
     fOverlayText: UnicodeString; //Needed for replays. Not saved since it's translated
-    fOverlayMarkUp: AnsiString;
+    fOverlayMarkup: AnsiString;
     fOverlayParams: TKMVarValueList;
     fOverlayTextSettings: TKMOverlayTextSettings;
 
@@ -167,7 +167,7 @@ type
 
     property OverlayText: UnicodeString read fOverlayText write fOverlayText;
     property OverlayTextSettings: TKMOverlayTextSettings read fOverlayTextSettings;
-    property OverlayMarkUp: AnsiString read fOverlayMarkUp write fOverlayMarkUp;
+    property OverlayMarkup: AnsiString read fOverlayMarkup write fOverlayMarkup;
     property OverlayParams: TKMVarValueList read fOverlayParams;
     procedure SetOverlayTextWordWrap(aWordWrap: Boolean);
     procedure SetOverlayTextFont(aFont: TKMFont);
@@ -1978,7 +1978,7 @@ begin
   SaveStream.Write(fChooseLocation, SizeOf(TKMChooseLoc));
 
   // Overlay
-  SaveStream.WriteA(fOverlayMarkUp);
+  SaveStream.WriteA(fOverlayMarkup);
   SaveStream.Write(fOverlayTextSettings, SizeOf(fOverlayTextSettings));
   fOverlayParams.Save(SaveStream);
 end;
@@ -2017,7 +2017,7 @@ begin
   LoadStream.Read(fChooseLocation, SizeOf(TKMChooseLoc));
 
   // Overlay
-  LoadStream.ReadA(fOverlayMarkUp);
+  LoadStream.ReadA(fOverlayMarkup);
   LoadStream.Read(fOverlayTextSettings, SizeOf(fOverlayTextSettings));
   fOverlayParams.Clear;
   fOverlayParams.Load(LoadStream);

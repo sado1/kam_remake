@@ -216,8 +216,8 @@ type
     procedure ShowMessageLocal(aKind: TKMMessageKind; const aText: UnicodeString; const aLoc: TKMPoint);
 
     procedure OverlayUpdate;
-    procedure OverlaySet(aHand: TKMHandID; const aMarkUp: AnsiString; aParams: array of const);
-    procedure OverlayAppend(aHand: TKMHandID; const aMarkUp: AnsiString; aParams: array of const);
+    procedure OverlaySet(aHand: TKMHandID; const aMarkup: AnsiString; aParams: array of const);
+    procedure OverlayAppend(aHand: TKMHandID; const aMarkup: AnsiString; aParams: array of const);
     procedure OverlaySetWordWrap(aHand: TKMHandID; aWordWrap: Boolean);
     procedure OverlaySetFont(aHand: TKMHandID; aFont: TKMFont);
 
@@ -1836,33 +1836,33 @@ end;
 
 
 // Clear + Append
-procedure TKMGame.OverlaySet(aHand: TKMHandID; const aMarkUp: AnsiString; aParams: array of const);
+procedure TKMGame.OverlaySet(aHand: TKMHandID; const aMarkup: AnsiString; aParams: array of const);
 var
   I: Integer;
 begin
   for I := 0 to gHands.Count - 1 do
   if (I = aHand) or (aHand = HAND_NONE) then
   begin
-    gHands[I].OverlayMarkUp := '';
+    gHands[I].OverlayMarkup := '';
     gHands[I].OverlayParams.Clear;
   end;
 
-  OverlayAppend(aHand, aMarkUp, aParams);
+  OverlayAppend(aHand, aMarkup, aParams);
 end;
 
 
-procedure TKMGame.OverlayAppend(aHand: TKMHandID; const aMarkUp: AnsiString; aParams: array of const);
+procedure TKMGame.OverlayAppend(aHand: TKMHandID; const aMarkup: AnsiString; aParams: array of const);
 var
   I: Integer;
 begin
   for I := 0 to gHands.Count - 1 do
   if (I = aHand) or (aHand = HAND_NONE) then
   begin
-    gHands[I].OverlayMarkUp := gHands[I].OverlayMarkUp + aMarkUp;
+    gHands[I].OverlayMarkup := gHands[I].OverlayMarkup + aMarkup;
     gHands[I].OverlayParams.AddVarRecs(aParams);
 
     // Update text to show
-    gHands[I].OverlayText := TextMission.ParseTextMarkup(UnicodeString(gHands[I].OverlayMarkUp),
+    gHands[I].OverlayText := TextMission.ParseTextMarkup(UnicodeString(gHands[I].OverlayMarkup),
                                                             gHands[I].OverlayParams.ToVarRecArray);
   end;
 
@@ -2801,7 +2801,7 @@ begin
   gHands.SyncLoad;
 
   for I := 0 to gHands.Count - 1 do
-    gHands[I].OverlayText := TextMission.ParseTextMarkup(UnicodeString(gHands[I].OverlayMarkUp), gHands[I].OverlayParams.ToVarRecArray);
+    gHands[I].OverlayText := TextMission.ParseTextMarkup(UnicodeString(gHands[I].OverlayMarkup), gHands[I].OverlayParams.ToVarRecArray);
 
   gTerrain.SyncLoad;
   gProjectiles.SyncLoad;

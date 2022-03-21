@@ -4373,7 +4373,7 @@ end;
 
 function TKMSelectableEdit.DoShowMarkup: Boolean;
 begin
-  Result := False; //MarkUp is not showing by default
+  Result := False; // Markup is not showing by default
 end;
 
 
