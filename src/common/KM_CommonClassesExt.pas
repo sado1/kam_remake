@@ -22,7 +22,9 @@ type
   end;
 
   // List with unique elements
-  // Very slow implmentation because of 'Contains' - loop through all list when adding 1 element
+  // Potentially very slow implementation because of 'Contains'
+  // (which loops through whole list when adding 1 element)
+  // However, we use it for Grou.UnitTypes which is at most like 4 values xD
   TKMListUnique<T> = class(TList<T>)
   public
     function Add(const Value: T): Integer; reintroduce;
