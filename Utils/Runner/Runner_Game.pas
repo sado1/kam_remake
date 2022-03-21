@@ -478,13 +478,13 @@ const
   MILITIA_SOLDIER = 3;
   COMPLETE_HOUSE = 5;
   {
-    utMilitia,      utAxeFighter,   utSwordsman,     utBowman,
+    utMilitia,      utAxeFighter,   utSwordFighter,  utBowman,
     utArbaletman,   utPikeman,      utHallebardman,  utHorseScout,
     utCavalry,      utBarbarian,
     utPeasant,      utSlingshot,    utMetalBarbarian,utHorseman,
   }
   WARRIOR_PRICE: array[WARRIOR_MIN..WARRIOR_MAX] of Integer = (
-    1, 3, 6, 3+4, // Militia     AxeFighter  Swordsman       utBowman
+    1, 3, 6, 3+4, // Militia     AxeFighter  utSwordFighter  utBowman
     5+4, 3, 5, 4, // Arbaletman  Pikeman     Hallebardman    utHorseScout
     7, 6,       // Cavalry     Barbarian
     2, 2+4, 6, 3  // Peasant     Slingshot   MetalBarbarian  utHorseman
@@ -500,17 +500,17 @@ begin
     Output := + GetHouseQty(htAny) * HOUSE_WEIGHT
               + GetWeaponsProduced * WEAPONS_WEIGHT
               - GetCitizensLost * CITIZENS_LOST;
-    IronArmy := Min( GetWaresProduced(wtMetalArmor),
-                       GetWaresProduced(wtHallebard)
-                     + GetWaresProduced(wtArbalet)
-                     + Min(GetWaresProduced(wtSword), GetWaresProduced(wtMetalShield))
+    IronArmy := Min( GetWaresProduced(wtIronArmor),
+                       GetWaresProduced(wtPike)
+                     + GetWaresProduced(wtCrossbow)
+                     + Min(GetWaresProduced(wtSword), GetWaresProduced(wtIronShield))
                    );
-    WoodArmy := Min( GetWaresProduced(wtArmor),
+    WoodArmy := Min( GetWaresProduced(wtLeatherArmor),
                        GetWaresProduced(wtBow)
                      + GetWaresProduced(wtPike)
-                     + Min(GetWaresProduced(wtShield), GetWaresProduced(wtAxe))
+                     + Min(GetWaresProduced(wtWoodenShield), GetWaresProduced(wtAxe))
                    );
-    Militia := Min( Max(0,WoodArmy - GetWaresProduced(wtArmor)), GetWaresProduced(wtAxe));
+    Militia := Min( Max(0,WoodArmy - GetWaresProduced(wtLeatherArmor)), GetWaresProduced(wtAxe));
     Output := Output
               + IronArmy * IRON_SOLDIER
               + WoodArmy * WOOD_SOLDIER
@@ -831,17 +831,17 @@ procedure TKMRunnerFindBugs.Execute(aRun: Integer);
       Output := + GetHouseQty(htAny) * HOUSE_WEIGHT
                 + GetWeaponsProduced * WEAPONS_WEIGHT
                 - GetCitizensLost * CITIZENS_LOST;
-      IronArmy := Min( GetWaresProduced(wtMetalArmor),
-                         GetWaresProduced(wtHallebard)
-                       + GetWaresProduced(wtArbalet)
-                       + Min(GetWaresProduced(wtSword), GetWaresProduced(wtMetalShield))
+      IronArmy := Min( GetWaresProduced(wtIronArmor),
+                         GetWaresProduced(wtPike)
+                       + GetWaresProduced(wtCrossbow)
+                       + Min(GetWaresProduced(wtSword), GetWaresProduced(wtIronShield))
                      );
-      WoodArmy := Min( GetWaresProduced(wtArmor),
+      WoodArmy := Min( GetWaresProduced(wtLeatherArmor),
                          GetWaresProduced(wtBow)
                        + GetWaresProduced(wtPike)
-                       + Min(GetWaresProduced(wtShield), GetWaresProduced(wtAxe))
+                       + Min(GetWaresProduced(wtWoodenShield), GetWaresProduced(wtAxe))
                      );
-      Militia := Min( Max(0,WoodArmy - GetWaresProduced(wtArmor)), GetWaresProduced(wtAxe));
+      Militia := Min( Max(0,WoodArmy - GetWaresProduced(wtLeatherArmor)), GetWaresProduced(wtAxe));
       Output := Output
                 + IronArmy * IRON_SOLDIER
                 + WoodArmy * WOOD_SOLDIER
@@ -2061,8 +2061,8 @@ begin
   //fPlayers[0].AddUnitGroup(ut_Hallebardman, KMPoint(63, 64), dir_E, 8, 24);
   //fPlayers[1].AddUnitGroup(ut_Cavalry, KMPoint(65, 64), dir_W, 8, 24);
 
-  gHands[0].AddUnitGroup(utSwordsman, KMPoint(63, 64), TKMDirection(dirE), 8, 24);
-  gHands[1].AddUnitGroup(utSwordsman, KMPoint(65, 64), TKMDirection(dirW), 8, 24);
+  gHands[0].AddUnitGroup(utSwordFighter, KMPoint(63, 64), TKMDirection(dirE), 8, 24);
+  gHands[1].AddUnitGroup(utSwordFighter, KMPoint(65, 64), TKMDirection(dirW), 8, 24);
 
   gHands[1].UnitGroups[0].OrderAttackUnit(gHands[0].Units[0], True);
 
