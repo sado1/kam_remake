@@ -367,7 +367,7 @@ begin
   for Owner in fAlli2PL[aTeam] do
     for PL := 0 to gHands.Count - 1 do
         if (gHands[Owner].Alliances[PL] <> atEnemy)
-          OR (fCombatStatus[Owner,PL] = csDefending)
+          OR (fCombatStatus[Owner,PL] in [csDefending, csCounterattack])
           OR (not HasAssets(PL))
           OR ((gHands[Owner].AI.ArmyManagement.AttackNew.Count = 0) AND not gHands[Owner].AI.ArmyManagement.AttackRequest.Active) then
           fCombatStatus[Owner,PL] := csNeutral;
@@ -437,14 +437,14 @@ begin
     for PL := 0 to gHands.Count - 1 do
       if (gHands[Owner].Alliances[PL] = atEnemy) then
       begin
-        // Check if units are closer to enemy city and if so, then change status to attacker
+        // Check if units are closer to enemy city and if so, then change status to counterattack
         if (fCombatStatus[Owner,PL] in [csNeutral, csDefending]) AND HasAssets(PL,False) then
           for K := 0 to gHands[Owner].UnitGroups.Count - 1 do
           begin
             G := gHands[Owner].UnitGroups.Groups[K];
             if (G <> nil) AND not G.IsDead AND (gAIFields.Influences.OwnPoint[ PL, G.Position ] > ARMY_IN_HOSTILE_CITY) then
             begin
-              fCombatStatus[Owner,PL] := csAttackingCity;
+              fCombatStatus[Owner,PL] := csCounterattack;
               break;
             end;
           end;
@@ -723,6 +723,20 @@ procedure TKMSupervisor.UpdateAttacks(aTeam: Byte; aTick: Cardinal);
       for K := 0 to GroupsCount - 1 do
         EG[K] := fArmyVector.Enemy.Groups[ Groups[K] ];
       SetLength(H, HousesCount);
+      Cnt := 0;
+      // Barracks first
+      for K := 0 to HousesCount - 1 do
+        if (fArmyVector.Enemy.Houses[ Houses[K] ].HouseType = htBarracks) then
+        begin
+          H[Cnt] := fArmyVector.Enemy.Houses[ Houses[K] ];
+          Inc(Cnt);
+        end;
+      for K := 0 to HousesCount - 1 do
+        if (fArmyVector.Enemy.Houses[ Houses[K] ].HouseType <> htBarracks) then
+        begin
+          H[Cnt] := fArmyVector.Enemy.Houses[ Houses[K] ];
+          Inc(Cnt);
+        end;
       for K := 0 to HousesCount - 1 do
         H[K] := fArmyVector.Enemy.Houses[ Houses[K] ];
       AttackCluster(aAttack, aIdx, pGCWA, EG, H);
@@ -997,7 +1011,7 @@ begin
     // Consider food
     FoodProblems := gAIFields.Eye.ArmyEvaluation.CheckFoodProblems(fAlli2PL[aTeam]);
     // Make decision
-    if (BestCmp > MIN_ADVANTAGE) OR FoodProblems OR gGameParams.IsTactic then
+    if (BestCmp > MIN_ADVANTAGE) OR (FoodProblems AND (fCombatStatus[fAlli2PL[aTeam,0],fAlli2PL[aTeam,0]] = csNeutral)) OR gGameParams.IsTactic then
     begin
       with AR do
       begin
@@ -1285,6 +1299,7 @@ begin
             case fCombatStatus[PL,PL2] of
               csNeutral:              Continue;
               csDefending:            CombatStatusText := 'def';
+              csCounterattack:        CombatStatusText := 'count att';
               csAttackingCity:        CombatStatusText := 'att city';
               csAttackingEverything:  CombatStatusText := 'att all';
             end;

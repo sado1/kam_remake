@@ -12,7 +12,7 @@ uses
   KM_NavMeshFloodFill, KM_ArmyAttackNew;
 
 type
-  TKMCombatStatus = (csNeutral = 0, csDefending, csAttackingCity, csAttackingEverything);
+  TKMCombatStatus = (csNeutral = 0, csDefending, csCounterattack, csAttackingCity, csAttackingEverything);
   TKMCombatStatusArray = array[0..MAX_HANDS] of TKMCombatStatus;
   TKMArmyVectorFFType = (ffEnemy, ffRally, ffSearch);
 
@@ -502,7 +502,7 @@ end;
 
 procedure TKMArmyVectorField.InitClusterEvaluation();
 var
-  OwnerDetected: Boolean;
+  OwnerDetected, GroupCheck: Boolean;
   K, L, M, Cnt, OwnersCnt: Integer;
   G: TKMUnitGroup;
 begin
@@ -529,6 +529,26 @@ begin
       CCT[Cnt].Cluster := @fClusters.Clusters[K];
       SetLength(CCT[Cnt].Owners, Enemy.OwnersCount);
       OwnersCnt := 0;
+      // Filter duplicates (group with 100 soldiers has multiple fields in the array)
+      L := 1;
+      while (L < fClusters.Clusters[K].GroupsCount) do
+      begin
+        GroupCheck := true;
+        for M := 0 to L - 1 do
+          if (Enemy.Groups[ fClusters.Clusters[K].Groups[L] ] = Enemy.Groups[ fClusters.Clusters[K].Groups[M] ]) then
+          begin
+            GroupCheck := false;
+            break;
+          end;
+        if not GroupCheck then
+        begin
+          Dec(fClusters.Clusters[K].GroupsCount);
+          fClusters.Clusters[K].Groups[L] := fClusters.Clusters[K].Groups[ fClusters.Clusters[K].GroupsCount ];
+        end
+        else
+          Inc(L);
+      end;
+      // Evaluate groups
       for L := 0 to fClusters.Clusters[K].GroupsCount - 1 do
       begin
         G := Enemy.Groups[ fClusters.Clusters[K].Groups[L] ];
@@ -684,7 +704,7 @@ begin
     BestGIdx := -1;
     BestCCTIdx := -1;
     for K := 0 to Length(CCT) - 1 do
-      if (CCT[K].CounterWeight.Opportunity > 0) AND ((BestCCTIdx < 0) OR (CCT[BestCCTIdx].ThreatNearby - CCT[BestCCTIdx].CounterWeight.Opportunity * AI_Par[ATTACK_ArmyVectorField_DivideForces_DefendCityAdv] < CCT[K].ThreatNearby - CCT[K].CounterWeight.Opportunity * AI_Par[ATTACK_ArmyVectorField_DivideForces_DefendCityAdv])) then
+      if (CCT[K].CounterWeight.Opportunity > 0) AND ((BestCCTIdx < 0) OR (CCT[BestCCTIdx].ThreatNearby - CCT[BestCCTIdx].CounterWeight.Opportunity * AI_Par[ATTACK_ArmyVectorField_DivideForces_SupportAllyAdv] < CCT[K].ThreatNearby - CCT[K].CounterWeight.Opportunity * AI_Par[ATTACK_ArmyVectorField_DivideForces_SupportAllyAdv])) then
         BestCCTIdx := K;
     // Find closest groups
     if (BestCCTIdx >= 0) then
@@ -695,7 +715,7 @@ begin
         Distances[K] := KMDistanceSqr(CCT[BestCCTIdx].CenterPoint,Ally.Groups[K].Position);
 
       Overflow2 := 0;
-      while (Overflow2 < 1000) AND (CCT[BestCCTIdx].ThreatNearby > CCT[BestCCTIdx].CounterWeight.Opportunity * AI_Par[ATTACK_ArmyVectorField_DivideForces_DefendCityAdv]) do
+      while (Overflow2 < 1000) AND (CCT[BestCCTIdx].ThreatNearby > CCT[BestCCTIdx].CounterWeight.Opportunity * AI_Par[ATTACK_ArmyVectorField_DivideForces_SupportAllyAdv]) do
       begin
         Inc(Overflow2);
         BestGIdx := -1;
@@ -713,7 +733,7 @@ begin
     Exit;
 
   // Find common enemy
-  if (aCS in [csAttackingCity, csAttackingEverything]) then
+  if (aCS in [csCounterattack, csAttackingCity, csAttackingEverything]) then
   begin
     // Get center points of players
     SetLength(CenterPoints, length(fOwners));
@@ -1051,7 +1071,8 @@ procedure TKMArmyVectorField.FindPositions();
         Inc(InClusterCnt, SoldiersCnt);
         // Check if group is in the place
         InPlace := False;
-        if (fVectorField[TargetIdx].Enemy < AI_Par[ATTACK_ArmyVectorField_FindPositions_DistCloseToEnemy]) // Close to enemy
+        if (fVectorField[InitIdx].Enemy < AI_Par[ATTACK_ArmyVectorField_FindPositions_DistCloseToEnemy]) // Close to enemy
+          OR (fVectorField[TargetIdx].Enemy < AI_Par[ATTACK_ArmyVectorField_FindPositions_DistCloseToEnemy]) // Close to enemy
           OR (Integer(fVectorField[InitIdx].Enemy) - Integer(fVectorField[TargetIdx].Enemy) < AI_Par[ATTACK_ArmyVectorField_FindPositions_DistMaxWalk]) // Distance from target point
           OR ((Groups[K].CG <> nil) AND (Groups[K].CG.StuckInTraffic)) then
         begin
