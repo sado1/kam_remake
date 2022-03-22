@@ -4093,7 +4093,11 @@ begin
 
                 // Don't allow selecting during a cinematic
                 if not gMySpectator.Hand.InCinematic then
+                begin
                   gMySpectator.UpdateSelect;
+                  if gMain <> nil then
+                    gMain.FormMain.SetEntitySelected(gMySpectator.Selected.UID, gMySpectator.Selected.AsGroup.SelectedUnit.UID);
+                end;
 
                 // In a replay we want in-game statistics (and other things) to be shown for the owner of the last select object
                 if fUIMode in [umReplay, umSpectate] then
@@ -4364,9 +4368,6 @@ begin
 
   if updateNewSelected then
     gMySpectator.UpdateNewSelected;
-
-  if gMain <> nil then
-    gMain.FormMain.SetEntitySelected(gMySpectator.Selected.UID, gMySpectator.Selected.AsGroup.SelectedUnit.UID);
 end;
 
 
