@@ -84,7 +84,7 @@ type
     // Avoid building
     procedure AddAvoidBuilding(aX,aY: Word; aRad: Single);
     procedure RemAvoidBuilding(aArea: TKMRect);
-    procedure MarkForest(aPoint: TKMPoint; aRad, aDecreaseCoef: Single);
+    procedure MarkForest(aPoint: TKMPoint; aRad, aDecreaseCoef: Single; aOnlyUnmarkedArea: Boolean = false);
     // Army presence
     function GetAllianceIdx(const aPL: TKMHandID; var aIdx: Integer): Boolean;
     function GetArmyTraffic(const aAlliance, aIdx: Word): Word;
@@ -257,7 +257,7 @@ begin
 end;
 
 
-procedure TKMInfluences.MarkForest(aPoint: TKMPoint; aRad, aDecreaseCoef: Single);
+procedure TKMInfluences.MarkForest(aPoint: TKMPoint; aRad, aDecreaseCoef: Single; aOnlyUnmarkedArea: Boolean = false);
 var
   X,Y, Rad: Integer;
   SqrDist, SqrMaxDist: Single;
@@ -272,11 +272,20 @@ begin
     begin
       SqrDist := Sqr(aPoint.X-X) + Sqr(aPoint.Y-Y);
       if (SqrDist <= SqrMaxDist) then
-        AvoidBuilding[Y,X] := Min( 254, // Forest does not reach full 255
+      begin
+        if not aOnlyUnmarkedArea then
+          AvoidBuilding[Y,X] := Min( 254, // Forest does not reach full 255
                                    Max( AVOID_BUILDING_FOREST_MINIMUM, // Forest start at this value
                                         AvoidBuilding[Y,X] + 254 - Round(SqrDist * aDecreaseCoef)
                                       )
+                                 )
+        else if (AvoidBuilding[Y,X] = 0) then
+          AvoidBuilding[Y,X] := Min( 254, // Forest does not reach full 255
+                                   Max( AVOID_BUILDING_FOREST_MINIMUM, // Forest start at this value
+                                        254 - Round(SqrDist * aDecreaseCoef)
+                                      )
                                  );
+      end;
     end;
 end;
 

@@ -210,6 +210,8 @@ var
 const
 {$ENDIF}
 
+
+
        AI_Par: array[TAIPar] of Single = (
          0.0000000, // ATTACK_ArmyVectorField_START
         11.2545700, // ATTACK_ArmyVectorField_FindPositions_DistEnemyOffset
@@ -294,16 +296,16 @@ const
          0.0000000, // MANAGEMENT_END
 
          0.0000000, // PLANNER_FARM_START
-        10.8081493, // PLANNER_FARM_FieldCrit_FlatArea
-         1.6080004, // PLANNER_FARM_FieldCrit_PolyRoute
-         1.9612305, // PLANNER_FARM_FieldCrit_Soil
-         4.7511997, // PLANNER_FARM_FindPlaceForHouse_CityCenter
-         8.6881905, // PLANNER_FARM_FindPlaceForHouse_FlatArea
-        11.3342533, // PLANNER_FARM_FindPlaceForHouse_HouseDist
-         1.7072186, // PLANNER_FARM_FindPlaceForHouse_Route
-      1120.8063965, // PLANNER_FARM_PlanFields_CanBuild
-        40.4509315, // PLANNER_FARM_PlanFields_Dist
-        50.7865372, // PLANNER_FARM_PlanFields_ExistField
+        13.7585087, // PLANNER_FARM_FieldCrit_FlatArea
+         0.4989614, // PLANNER_FARM_FieldCrit_PolyRoute
+         1.9767742, // PLANNER_FARM_FieldCrit_Soil
+         5.6396270, // PLANNER_FARM_FindPlaceForHouse_CityCenter
+        16.0000000, // PLANNER_FARM_FindPlaceForHouse_FlatArea
+        19.9625053, // PLANNER_FARM_FindPlaceForHouse_HouseDist
+        -1.1648518, // PLANNER_FARM_FindPlaceForHouse_Route
+       759.2076416, // PLANNER_FARM_PlanFields_CanBuild
+        32.8001213, // PLANNER_FARM_PlanFields_Dist
+        95.6147385, // PLANNER_FARM_PlanFields_ExistField
          0.0000000, // PLANNER_FARM_END
 
          0.0000000, // PLANNER_FindPlaceForHouse_START
@@ -474,14 +476,14 @@ const
         0.00, // MANAGEMENT_END
 
         0.00, // PLANNER_FARM_START
-        0.00, // PLANNER_FARM_FieldCrit_FlatArea
+       10.00, // PLANNER_FARM_FieldCrit_FlatArea
         0.00, // PLANNER_FARM_FieldCrit_PolyRoute
         0.00, // PLANNER_FARM_FieldCrit_Soil
         0.00, // PLANNER_FARM_FindPlaceForHouse_CityCenter
-        0.00, // PLANNER_FARM_FindPlaceForHouse_FlatArea
+       10.00, // PLANNER_FARM_FindPlaceForHouse_FlatArea
         5.00, // PLANNER_FARM_FindPlaceForHouse_HouseDist
        -2.00, // PLANNER_FARM_FindPlaceForHouse_Route
-        0.00, // PLANNER_FARM_PlanFields_CanBuild
+      500.00, // PLANNER_FARM_PlanFields_CanBuild
         0.00, // PLANNER_FARM_PlanFields_Dist
        30.00, // PLANNER_FARM_PlanFields_ExistField
         0.00, // PLANNER_FARM_END
@@ -651,14 +653,14 @@ const
         0.00, // MANAGEMENT_END
 
         0.00, // PLANNER_FARM_START
-       15.00, // PLANNER_FARM_FieldCrit_FlatArea
+       10.00, // PLANNER_FARM_FieldCrit_FlatArea
         5.00, // PLANNER_FARM_FieldCrit_PolyRoute
         3.00, // PLANNER_FARM_FieldCrit_Soil
        10.00, // PLANNER_FARM_FindPlaceForHouse_CityCenter
-       15.00, // PLANNER_FARM_FindPlaceForHouse_FlatArea
+       10.00, // PLANNER_FARM_FindPlaceForHouse_FlatArea
        15.00, // PLANNER_FARM_FindPlaceForHouse_HouseDist
         4.00, // PLANNER_FARM_FindPlaceForHouse_Route
-       75.00, // PLANNER_FARM_PlanFields_CanBuild
+      500.00, // PLANNER_FARM_PlanFields_CanBuild
        75.00, // PLANNER_FARM_PlanFields_Dist
        75.00, // PLANNER_FARM_PlanFields_ExistField
         0.00, // PLANNER_FARM_END
