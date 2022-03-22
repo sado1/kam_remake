@@ -630,7 +630,7 @@ begin
     0:  CellText := IntToStr(Node.Index);
     1:  CellText := IntToStr(handID);
     2:  CellText := IntToStr(iQ);
-    3:  CellText := gResWares[del.Demand[del.Delivery[iQ].DemandID].Ware].Title;
+    3:  CellText := gResWares[del.DeliveryWare[iQ]].Title;
     4:  if del.Offer[del.Delivery[iQ].OfferID].Loc_House = nil then
           CellText := 'nil'
         else

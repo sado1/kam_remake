@@ -298,6 +298,7 @@ type
   TKMUnitSerf = class(TKMCivilUnit)
   private
     fCarry: TKMWareType;
+    function GetCarry: TKMWareType;
   public
     constructor Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPointDir; aOwner: TKMHandID; aInHouse: TKMHouse);
     constructor Load(LoadStream: TKMemoryStream); override;
@@ -308,7 +309,7 @@ type
     function TryDeliverFrom(aFrom: TKMHouse): Boolean;
     procedure DelegateDelivery(aToSerf: TKMUnitSerf);
 
-    property Carry: TKMWareType read fCarry;
+    property Carry: TKMWareType read GetCarry;
     procedure CarryGive(Res: TKMWareType);
     procedure CarryTake;
 
@@ -752,6 +753,14 @@ procedure TKMUnitSerf.Deliver(aFrom: TKMHouse; toUnit: TKMUnit; Res: TKMWareType
 begin
   fThought := thNone; //Clear ? thought
   fTask := TKMTaskDeliver.Create(Self, aFrom, toUnit, Res, aID);
+end;
+
+
+function TKMUnitSerf.GetCarry: TKMWareType;
+begin
+  if Self = nil then Exit(wtNone);
+
+  Result := fCarry;
 end;
 
 

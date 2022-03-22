@@ -253,6 +253,7 @@ type
     function GetDemand(aDemandID: Integer): TKMDeliveryDemand;
     function GetOffer(aOfferID: Integer): TKMDeliveryOffer;
     function GetDelivery(aQueueID: Integer): TKMDeliveryQueueItem;
+    function GetWareType(aQueueID: Integer): TKMWareType;
   public
     constructor Create(aHandIndex: TKMHandID);
     destructor Destroy; override;
@@ -284,6 +285,7 @@ type
 
     property Delivery[aQueueID: Integer]: TKMDeliveryQueueItem read GetDelivery;
     property DeliveryCount: Integer read fQueueCount;
+    property DeliveryWare[aQueueID: Integer]: TKMWareType read GetWareType;
 
     property Demand[aDemandID: Integer]: TKMDeliveryDemand read GetDemand;
     property DemandCount: Integer read fDemandCount;
@@ -1184,6 +1186,20 @@ begin
   //If the serf is inside the house (invisible) test from point below
   if not aSerf.Visible then
     Result := KMPointBelow(Result);
+end;
+
+
+function TKMDeliveries.GetWareType(aQueueID: Integer): TKMWareType;
+begin
+  Result := fQueue[aQueueID].Serf.Carry;
+
+  if Result in WARES_VALID then Exit;
+
+  Result := fOffer[fQueue[aQueueID].OfferID].Ware;
+
+  if Result in WARES_VALID then Exit;
+
+  Result := fDemand[fQueue[aQueueID].DemandID].Ware;
 end;
 
 
