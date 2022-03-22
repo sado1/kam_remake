@@ -379,7 +379,11 @@ begin
 
   //No need to call SetRes functins here, since its just moving resource from In to Out
   Inc(fMarketResOut[aWare], aCnt);
-  gHands[Owner].Deliveries.Queue.AddOffer(Self, aWare, aCnt); //Add res as offer, since they are in 'out' queue
+
+  // No need to add offer if market is already in TakeOut delivery mode
+  if DeliveryMode <> dmTakeOut  then
+    gHands[Owner].Deliveries.Queue.AddOffer(Self, aWare, aCnt); //Add res as offer, since they are in 'out' queue
+
   Dec(fMarketResIn[aWare], aCnt);
 end;
 
@@ -392,7 +396,11 @@ begin
 
   //No need to call SetRes functins here, since its just moving resource from Out to In
   Dec(fMarketResOut[aWare], Result);
-  gHands[Owner].Deliveries.Queue.RemOffer(Self, aWare, Result); //Remove offer, we moved wares to In
+
+  // Do not remove offer, if market is in TakeOut delivery mode
+  // We still allow to take the ware out
+  if DeliveryMode <> dmTakeOut  then
+    gHands[Owner].Deliveries.Queue.RemOffer(Self, aWare, Result); //Remove offer, we moved wares to In
   Inc(fMarketResIn[aWare], Result);
 end;
 
