@@ -488,9 +488,8 @@ begin
           begin
             // Make sure that reservation is no longer used
             gHands[fOwner].AI.CityManagement.Builder.UnlockHouseLoc(HT, H.Entrance);
-            if (HT = htWoodcutter) then
-              gAIFields.Influences.MarkForest(fPlannedHouses[HT].Plans[K].
-              P, AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_Radius], Min(AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_ABRange],AVOID_BUILDING_FOREST_RANGE-1) / sqr(AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_Radius]), true);
+            if (HT = htWoodcutters) then
+              gAIFields.Influences.MarkForest(fPlannedHouses[HT].Plans[K].SpecPoint, AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_Radius], Min(AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_ABRange],AVOID_BUILDING_FOREST_RANGE-1) / sqr(AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_Radius]), true);
             if (fPlannedHouses[HT].Plans[K].House <> nil) then
               gHands.CleanUpHousePointer(fPlannedHouses[HT].Plans[K].House);
             fPlannedHouses[HT].Plans[K].House := H.GetPointer;
