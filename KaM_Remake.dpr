@@ -63,10 +63,11 @@ uses
   KM_WorkerThread in 'src\common\KM_WorkerThread.pas',
 
   KM_Console in 'src\KM_Console.pas',
-  KM_Controls in 'src\KM_Controls.pas',
-  KM_ControlsChart in 'src\KM_ControlsChart.pas',
-  KM_ControlsMemo in 'src\KM_ControlsMemo.pas',
-  KM_ControlsMinimapView in 'src\KM_ControlsMinimapView.pas',
+  
+  KM_Controls in 'src\controls\KM_Controls.pas',
+  KM_ControlsChart in 'src\controls\KM_ControlsChart.pas',
+  KM_ControlsMemo in 'src\controls\KM_ControlsMemo.pas',
+  KM_ControlsMinimapView in 'src\controls\KM_ControlsMinimapView.pas',
 
   KM_DevPerfLog in 'src\perflog\KM_DevPerfLog.pas',
   KM_DevPerfLogForm in 'src\perflog\KM_DevPerfLogForm.pas',
