@@ -5,7 +5,8 @@ uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLType, {$ENDIF}
   Classes,
-  KM_Controls, KM_Defaults, KM_GUIMapEdMenuSave, KM_CommonTypes;
+  KM_Controls, KM_ControlsDrop,
+  KM_Defaults, KM_GUIMapEdMenuSave, KM_CommonTypes;
 
 type
   TKMMapEdMenuQuickPlay = class

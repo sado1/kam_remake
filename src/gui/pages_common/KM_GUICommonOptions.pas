@@ -3,7 +3,7 @@ unit KM_GUICommonOptions;
 interface
 uses
   Classes, Math, SysUtils,
-  KM_Controls,
+  KM_Controls, KM_ControlsDrop,
   KromOGLUtils,
   KM_MainSettings,
   KM_Pics, KM_Resolutions, KM_ResKeyFuncs, KM_GUICommonKeys,

@@ -3,7 +3,8 @@ unit KM_GUIMapEdExtras;
 interface
 uses
    Classes, SysUtils,
-   KM_Controls, KM_Defaults;
+   KM_Defaults,
+   KM_Controls, KM_ControlsDrop;
 
 type
   TKMMapEdExtras = class

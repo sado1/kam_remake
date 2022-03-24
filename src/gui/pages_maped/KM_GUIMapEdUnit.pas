@@ -4,7 +4,8 @@ interface
 uses
    Classes, KromUtils, Math, StrUtils, SysUtils,
    Controls,
-   KM_Controls, KM_Defaults, KM_Pics, KM_Units, KM_UnitGroup,
+   KM_Controls, KM_ControlsDrop,
+   KM_Defaults, KM_Pics, KM_Units, KM_UnitGroup,
    KM_Points, KM_InterfaceGame;
 
 type
