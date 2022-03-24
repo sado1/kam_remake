@@ -1344,7 +1344,7 @@ type
     procedure Paint; override;
   end;
 
-  TSortDirection = (sdNone, sdUp, sdDown);
+  TKMSortDirection = (sdNone, sdUp, sdDown);
 
   TKMListHeaderColumn = class
     Caption: UnicodeString;
@@ -1360,7 +1360,7 @@ type
     fColumns: array of TKMListHeaderColumn;
     fColumnHighlight: Integer;
     fSortIndex: Integer;
-    fSortDirection: TSortDirection;
+    fSortDirection: TKMSortDirection;
     fTextAlign: TKMTextAlign;
     function GetColumnIndex(X: Integer): Integer;
     function GetColumn(aIndex: Integer): TKMListHeaderColumn;
@@ -1391,7 +1391,7 @@ type
     property ColumnCount: Integer read fCount;
     property Columns[aIndex: Integer]: TKMListHeaderColumn read GetColumn;
     property SortIndex: Integer read fSortIndex write fSortIndex;
-    property SortDirection: TSortDirection read fSortDirection write fSortDirection;
+    property SortDirection: TKMSortDirection read fSortDirection write fSortDirection;
     property TextAlign: TKMTextAlign read fTextAlign write fTextAlign;
     property ColumnWidth[aIndex: Integer]: Integer read GetColumnWidth;
 
@@ -1447,8 +1447,8 @@ type
     procedure SetEdgeAlpha(aValue: Single);
     function GetSortIndex: Integer;
     procedure SetSortIndex(aIndex: Integer);
-    function GetSortDirection: TSortDirection;
-    procedure SetSortDirection(aDirection: TSortDirection);
+    function GetSortDirection: TKMSortDirection;
+    procedure SetSortDirection(aDirection: TKMSortDirection);
     procedure UpdateScrollBar;
     procedure SetShowHeader(aValue: Boolean);
     function GetOnColumnClick: TIntegerEvent;
@@ -1530,7 +1530,7 @@ type
     property OnCellClick: TPointEventFunc read fOnCellClick write fOnCellClick;
     property OnCellClickShift: TPointEventShiftFunc read fOnCellClickShift write fOnCellClickShift;
     property SortIndex: Integer read GetSortIndex write SetSortIndex;
-    property SortDirection: TSortDirection read GetSortDirection write SetSortDirection;
+    property SortDirection: TKMSortDirection read GetSortDirection write SetSortDirection;
 
     procedure JumpToSelected;
 
@@ -1637,7 +1637,7 @@ type
   end;
 
 
-  TDragAxis = (daHoriz, daVertic, daAll);
+  TKMDragAxis = (daHoriz, daVertic, daAll);
 
   //Element that player can drag within allowed bounds
   TKMDragger = class(TKMControl)
@@ -7318,7 +7318,7 @@ begin
 end;
 
 
-procedure TKMColumnBox.SetSortDirection(aDirection: TSortDirection);
+procedure TKMColumnBox.SetSortDirection(aDirection: TKMSortDirection);
 begin
   fHeader.SortDirection := aDirection;
 end;
@@ -7470,7 +7470,7 @@ begin
 end;
 
 
-function TKMColumnBox.GetSortDirection: TSortDirection;
+function TKMColumnBox.GetSortDirection: TKMSortDirection;
 begin
   Result := fHeader.SortDirection;
 end;
