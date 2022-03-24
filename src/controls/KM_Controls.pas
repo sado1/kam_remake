@@ -1637,8 +1637,6 @@ type
   end;
 
 
-  TKMDragAxis = (daHoriz, daVertic, daAll);
-
   //Element that player can drag within allowed bounds
   TKMDragger = class(TKMControl)
   private
