@@ -32,6 +32,8 @@ type
     fDifficulty: TKMMissionDifficulty;
     fAIType: TKMAIType;
 
+    fLastColIndex: Integer; // Last index of color DropBox
+
     function GetPlayerLoc(aMap: TKMMapInfo): TKMHandID;
     function GetPanelHalf: Integer;
 
@@ -239,6 +241,7 @@ begin
       DropBox_Color.FadeImageWhenDisabled := False;
       DropBox_Color.Add(MakeListRow([''], [$FFFFFFFF], [MakePic(rxGuiMain, 31)], 0));
       DropBox_Color.OnChange := OptionsChange;
+      fLastColIndex := 0;
 
       Label_Difficulty := TKMLabel.Create(Panel_Desc, descL, 385, gResTexts[TX_MISSION_DIFFICULTY], fntMetal, taLeft);
       Label_Difficulty.Anchors := [anLeft, anBottom];
@@ -565,6 +568,8 @@ procedure TKMMenuSingleMap.OptionsChange(Sender: TObject);
 begin
   UpdateDropBoxes;
   DoOptionsChange(True);
+
+  fLastColIndex := DropBox_Color.ItemIndex;
 end;
 
 
@@ -624,6 +629,8 @@ end;
 
 
 procedure TKMMenuSingleMap.UpdateDropBoxes;
+var
+  colItemChange: Integer;
 begin
   if DropBox_Loc.ItemIndex <> -1 then
     fSingleLoc := DropBox_Loc.GetSelectedTag
@@ -642,7 +649,13 @@ begin
 
   //Don't allow selecting separator
   if DropBox_Color.ItemIndex = 1 then
-    DropBox_Color.ItemIndex := 0;
+  begin
+    colItemChange := DropBox_Color.ItemIndex - fLastColIndex;
+    if colItemChange > 0 then
+      DropBox_Color.ItemIndex := 2  // Going Down
+    else
+      DropBox_Color.ItemIndex := 0; // Going Up
+  end;
 
   if InRange(DropBox_Color.ItemIndex, 0, DropBox_Color.List.RowCount - 1) then
     fSingleColor := DropBox_Color.List.Rows[DropBox_Color.ItemIndex].Cells[0].Color;
