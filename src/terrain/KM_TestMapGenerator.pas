@@ -187,6 +187,7 @@ var
     ChangeSettings(mtOffense, ifThenArmy(K mod 2 > 0, atNoMounted, atMoreRanged), aOrder, false);
   end;
 const
+  OFFSET = 10;
   G0 = 0;
   G1 = 10;
   G2 = 20;
@@ -211,7 +212,7 @@ begin
     else if (K > G7) AND (K <= G8) then RandomPlaceAll       (1.0 - (G8 - K)/(G8 - G7))
     else begin end;
 
-    CreateMap(Format('GA_S2_%.*d',[3, K]));
+    CreateMap(Format('GA_S2_%.*d',[3, K + OFFSET]));
   end;
 end;
 

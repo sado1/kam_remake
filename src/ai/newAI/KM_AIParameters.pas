@@ -211,53 +211,52 @@ const
 {$ENDIF}
 
 
-
        AI_Par: array[TAIPar] of Single = (
          0.0000000, // ATTACK_ArmyVectorField_START
-        11.2545700, // ATTACK_ArmyVectorField_FindPositions_DistEnemyOffset
-        12.6872540, // ATTACK_ArmyVectorField_FindPositions_DistEnemyOffsetFF
-         1.1499460, // ATTACK_ArmyVectorField_FindPositions_DistEnemyGainFF
-         9.9655590, // ATTACK_ArmyVectorField_FindPositions_DistCloseToEnemy
+        16.9818439, // ATTACK_ArmyVectorField_FindPositions_DistEnemyOffset
+        16.0000000, // ATTACK_ArmyVectorField_FindPositions_DistEnemyOffsetFF
+         1.7288392, // ATTACK_ArmyVectorField_FindPositions_DistEnemyGainFF
+        13.0224009, // ATTACK_ArmyVectorField_FindPositions_DistCloseToEnemy
          1.0000000, // ATTACK_ArmyVectorField_FindPositions_DistMaxWalk
-        16.6680107, // ATTACK_ArmyVectorField_FindPositions_FollowEnemyVectorFieldUth
-        20.7405357, // ATTACK_ArmyVectorField_FindPositions_FollowRallyVectorFieldUth
+        12.3538628, // ATTACK_ArmyVectorField_FindPositions_FollowEnemyVectorFieldUth
+        15.0000000, // ATTACK_ArmyVectorField_FindPositions_FollowRallyVectorFieldUth
          9.0000000, // ATTACK_ArmyVectorField_FindPositions_AvoidTraffic
-         1.0000000, // ATTACK_ArmyVectorField_FindPositions_RallyPointOffset
-         0.8659309, // ATTACK_ArmyVectorField_EvalClusters_InPlace
-         0.5295043, // ATTACK_ArmyVectorField_EvalClusters_AtAdvantage
-         0.1145662, // ATTACK_ArmyVectorField_EvalClusters_Ambushed
+         1.7389214, // ATTACK_ArmyVectorField_FindPositions_RallyPointOffset
+         0.8523203, // ATTACK_ArmyVectorField_EvalClusters_InPlace
+         1.4710543, // ATTACK_ArmyVectorField_EvalClusters_AtAdvantage
+         0.0100000, // ATTACK_ArmyVectorField_EvalClusters_Ambushed
          0.5000000, // ATTACK_ArmyVectorField_DivideForces_DefendCityAdv
-         0.1009969, // ATTACK_ArmyVectorField_DivideForces_SupportAllyAdv
+         0.2682200, // ATTACK_ArmyVectorField_DivideForces_SupportAllyAdv
          0.0000000, // ATTACK_ArmyVectorField_END
 
          0.0000000, // ATTACK_SQUAD_START
-       405.5160217, // ATTACK_SQUAD_ChangeTarget_Delay
+       433.7562256, // ATTACK_SQUAD_ChangeTarget_Delay
          5.0000000, // ATTACK_SQUAD_MinWalkingDistance
          8.0000000, // ATTACK_SQUAD_TargetReached_House
-         1.2568913, // ATTACK_SQUAD_TargetReached_Position
-        10.7111654, // ATTACK_SQUAD_TargetReached_RangedSquad
-        34.0482292, // ATTACK_SQUAD_TargetReached_Unit
+         3.5676599, // ATTACK_SQUAD_TargetReached_Position
+         9.8213463, // ATTACK_SQUAD_TargetReached_RangedSquad
+        35.0000000, // ATTACK_SQUAD_TargetReached_Unit
          1.0000000, // ATTACK_SQUAD_TrafficDetection_Limit
         10.0000000, // ATTACK_SQUAD_TrafficDetection_Threshold
          0.0000000, // ATTACK_SQUAD_END
 
          0.0000000, // ATTACK_SUPERVISOR_START
-        15.3659906, // ATTACK_SUPERVISOR_EvalTarget_DistanceGroup
-         4.0804152, // ATTACK_SUPERVISOR_EvalTarget_OpportunityDistGain
-         2.4270058, // ATTACK_SUPERVISOR_EvalTarget_OpportunityGain
-         0.6273763, // ATTACK_SUPERVISOR_EvalTarget_DecreaseRisk
-         3.4317601, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainAntiHorse
-        17.0172195, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainDist
-         3.8594828, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainMelee
-         1.4612083, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainMounted
-         3.5444345, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainRangDist
-         2.8511629, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainRanged
+        18.2569256, // ATTACK_SUPERVISOR_EvalTarget_DistanceGroup
+         6.9007883, // ATTACK_SUPERVISOR_EvalTarget_OpportunityDistGain
+         3.2154214, // ATTACK_SUPERVISOR_EvalTarget_OpportunityGain
+         0.5614834, // ATTACK_SUPERVISOR_EvalTarget_DecreaseRisk
+         5.0902061, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainAntiHorse
+        17.9094486, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainDist
+         1.7946672, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainMelee
+         2.8768318, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainMounted
+         3.2722363, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainRangDist
+         3.4447227, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainRanged
          0.0000000, // ATTACK_SUPERVISOR_END
 
          0.0000000, // NAVMESH_PATHFINDING_START
-         1.3624500, // NAVMESH_PATHFINDING_AvoidTraffic
-         1.1045468, // NAVMESH_PATHFINDING_LineLength
-         6.6505418, // NAVMESH_PATHFINDING_AvoidSpecEnemy
+         1.9767959, // NAVMESH_PATHFINDING_AvoidTraffic
+         2.1737068, // NAVMESH_PATHFINDING_LineLength
+         6.6759233, // NAVMESH_PATHFINDING_AvoidSpecEnemy
          0.0000000, // NAVMESH_PATHFINDING_END
 
          0.0000000, // BUILDER_START
@@ -366,28 +365,29 @@ const
          0.0000000, // PREDICTOR_END
 
          0.0000000, // SHORTCUTS_START
-        90.6293259, // SHORTCUTS_BasePrice
-        42.3248749, // SHORTCUTS_Coal
-        27.3731194, // SHORTCUTS_Field
-        11.3640060, // SHORTCUTS_Forest
-        29.8352661, // SHORTCUTS_OtherCase
-        64.2397156, // SHORTCUTS_Road
-        38.9256935, // SHORTCUTS_TurnPenalization
-        31.4437828, // SHORTCUTS_noBuildArea
+        95.1310349, // SHORTCUTS_BasePrice
+        49.1626778, // SHORTCUTS_Coal
+        50.0000000, // SHORTCUTS_Field
+        18.1300087, // SHORTCUTS_Forest
+        24.3808022, // SHORTCUTS_OtherCase
+        46.6517181, // SHORTCUTS_Road
+        33.4370956, // SHORTCUTS_TurnPenalization
+        25.7135334, // SHORTCUTS_noBuildArea
          0.0000000, // SHORTCUTS_END
 
          0.0000000, // ROADS_START
-        27.5643883, // ROADS_BasePrice
-        19.7961369, // ROADS_Coal
-        29.9095650, // ROADS_Field
-        40.7138443, // ROADS_Forest
-        26.0336285, // ROADS_OtherCase
-        24.4913960, // ROADS_Road
-        39.4466858, // ROADS_TurnPenalization
-        24.0783062, // ROADS_noBuildArea
+        42.2091637, // ROADS_BasePrice
+        29.0325890, // ROADS_Coal
+        46.5412674, // ROADS_Field
+        57.8719749, // ROADS_Forest
+        11.6849775, // ROADS_OtherCase
+        23.1054745, // ROADS_Road
+        50.0000000, // ROADS_TurnPenalization
+        35.9236031, // ROADS_noBuildArea
          0.0000000  // ROADS_END
 
        );
+
 
 
 {$IFDEF DEBUG_NewAI}
@@ -395,12 +395,12 @@ const
   AI_Par_Offset: array[TAIPar] of Single = (
         0.00, // ATTACK_ArmyVectorField_START
         8.00, // ATTACK_ArmyVectorField_FindPositions_DistEnemyOffset
-        8.00, // ATTACK_ArmyVectorField_FindPositions_DistEnemyOffsetFF
+       15.00, // ATTACK_ArmyVectorField_FindPositions_DistEnemyOffsetFF
         1.00, // ATTACK_ArmyVectorField_FindPositions_DistEnemyGainFF
         9.00, // ATTACK_ArmyVectorField_FindPositions_DistCloseToEnemy
         1.00, // ATTACK_ArmyVectorField_FindPositions_DistMaxWalk
         5.00, // ATTACK_ArmyVectorField_FindPositions_FollowEnemyVectorFieldUth
-       15.00, // ATTACK_ArmyVectorField_FindPositions_FollowRallyVectorFieldUth
+       10.00, // ATTACK_ArmyVectorField_FindPositions_FollowRallyVectorFieldUth
         9.00, // ATTACK_ArmyVectorField_FindPositions_AvoidTraffic
         1.00, // ATTACK_ArmyVectorField_FindPositions_RallyPointOffset
         0.40, // ATTACK_ArmyVectorField_EvalClusters_InPlace
@@ -572,7 +572,7 @@ const
   AI_Par_Gain: array[TAIPar] of Single = (
         0.00, // ATTACK_ArmyVectorField_START
        10.00, // ATTACK_ArmyVectorField_FindPositions_DistEnemyOffset
-        8.00, // ATTACK_ArmyVectorField_FindPositions_DistEnemyOffsetFF
+       10.00, // ATTACK_ArmyVectorField_FindPositions_DistEnemyOffsetFF
         1.00, // ATTACK_ArmyVectorField_FindPositions_DistEnemyGainFF
         5.00, // ATTACK_ArmyVectorField_FindPositions_DistCloseToEnemy
        10.00, // ATTACK_ArmyVectorField_FindPositions_DistMaxWalk

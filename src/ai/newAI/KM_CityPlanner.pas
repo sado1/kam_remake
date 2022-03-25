@@ -2867,7 +2867,7 @@ begin
   // 1 tile from future house
   else if (AvoidBuilding = AVOID_BUILDING_HOUSE_OUTSIDE_LOCK)
   // Snap to no-build areas (1 tile from house / mountain / special tiles)
-    OR (not (tpBuild in gTerrain.Land^[aToY,aToX].Passability) AND (AvoidBuilding <> AVOID_BUILDING_NODE_LOCK_FIELD))
+    OR (not (tpBuild in gTerrain.Land^[aToY,aToX].Passability) AND (AvoidBuilding = 0))
   // 1 tile form mine
     OR (AvoidBuilding = AVOID_BUILDING_MINE_TILE)           then cost := cost + AI_Par[ROADS_noBuildArea]
   else
@@ -2918,7 +2918,7 @@ begin
   // 1 tile from future house
   else if (AvoidBuilding = AVOID_BUILDING_HOUSE_OUTSIDE_LOCK)
   // Snap to no-build areas (1 tile from house or special tiles)
-    OR (not (tpBuild in gTerrain.Land^[aToY,aToX].Passability) AND (AvoidBuilding <> AVOID_BUILDING_NODE_LOCK_FIELD))
+    OR (not (tpBuild in gTerrain.Land^[aToY,aToX].Passability) AND (AvoidBuilding = 0))
   // 1 tile form mine
     OR (AvoidBuilding = AVOID_BUILDING_MINE_TILE)           then cost := cost + AI_Par[SHORTCUTS_noBuildArea]
   else

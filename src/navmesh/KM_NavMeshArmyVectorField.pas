@@ -543,6 +543,8 @@ begin
         if not GroupCheck then
         begin
           Dec(fClusters.Clusters[K].GroupsCount);
+          // Use the first polygon
+          fClusters.Clusters[K].Groups[M] :=  min(fClusters.Clusters[K].Groups[M], fClusters.Clusters[K].Groups[L]);
           fClusters.Clusters[K].Groups[L] := fClusters.Clusters[K].Groups[ fClusters.Clusters[K].GroupsCount ];
         end
         else
@@ -868,11 +870,19 @@ end;
 
 procedure TKMArmyVectorField.InitQueue(const aCluster: pTKMCombatCluster);
 var
-  K: Integer;
+  K, L, Poly: Integer;
 begin
   Inc(fVisitedIdx);
   for K := 0 to aCluster.GroupsCount - 1 do
-    AddPolyToQueue(ffEnemy, Enemy.GroupsPoly[ aCluster.Groups[K] ]);
+  begin
+    L := aCluster.Groups[K];
+    Poly := Enemy.GroupsPoly[L];
+    while (L < Enemy.GroupsCount) AND (Poly = Enemy.GroupsPoly[L]) do
+    begin
+      AddPolyToQueue(ffEnemy, Enemy.GroupsPoly[L]);
+      Inc(L);
+    end;
+  end;
   for K := 0 to aCluster.HousesCount - 1 do
     AddPolyToQueue(ffEnemy, Enemy.HousesPoly[ aCluster.Houses[K] ]);
 end;
