@@ -135,6 +135,7 @@ var
 implementation
 uses
   SysUtils, Math,
+  KM_ControlsSwitch,
   KM_Resource, KM_ResKeys, KM_RenderUI, KM_RenderAux, KM_Defaults, KM_DevPerfLog, KM_DevPerfLogTypes,
   KM_Cursor,
   KM_Music,
