@@ -2,16 +2,24 @@
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_ControlsTypes;
+  Classes,
+  KM_ControlsTypes,
+  KM_CommonTypes;
 
 
 
   // Check if specified aChar is allowed for specified aAllowedChars type
   function IsCharAllowed(aChar: WideChar; aAllowedChars: TKMAllowedChars): Boolean;
+
+  function IsSelecting(Key: Word; Shift: TShiftState): Boolean;
+
+  function GetCursorDir(aKey: Word): TKMCursorDir;
   
 
 implementation
 uses
+  {$IFDEF MSWindows} Windows, {$ENDIF}
+  {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
   Math,
   KromUtils;
 
@@ -31,6 +39,22 @@ begin
               or (aAllowedChars = acFileName) and CharInSet(aChar, NonFileChars)
               or (aAllowedChars = acText)     and CharInSet(aChar, NonTextCharsWEOL)
               or (aAllowedChars = acAll)      and CharInSet(aChar, NonTextChars));
+end;
+
+
+function IsSelecting(Key: Word; Shift: TShiftState): Boolean;
+begin
+  Result := (ssShift in Shift) and (Key <> VK_SHIFT);
+end;
+
+
+function GetCursorDir(aKey: Word): TKMCursorDir;
+begin
+  case aKey of
+    VK_LEFT:  Result := cdBack;
+    VK_RIGHT: Result := cdForward;
+    else      Result := cdNone;
+  end;
 end;
 
 

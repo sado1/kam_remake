@@ -103,6 +103,7 @@ uses
   SysUtils, StrUtils, Math,
   Clipbrd,
   KromUtils,
+  KM_ControlsUtils,
   KM_Resource, KM_Render, KM_RenderTypes,
   KM_CommonUtils;
 

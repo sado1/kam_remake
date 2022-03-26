@@ -743,9 +743,6 @@ type
   end;
 
 
-  function IsSelecting(Key: Word; Shift: TShiftState): Boolean;
-  function GetCursorDir(aKey: Word): TKMCursorDir;
-
 implementation
 uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
@@ -763,22 +760,6 @@ uses
 
 const
   CLICK_HOLD_TIME_THRESHOLD = 200; // Time period, determine delay between mouse down and 1st click hold events
-
-
-function IsSelecting(Key: Word; Shift: TShiftState): Boolean;
-begin
-  Result := (ssShift in Shift) and (Key <> VK_SHIFT);
-end;
-
-
-function GetCursorDir(aKey: Word): TKMCursorDir;
-begin
-  case aKey of
-    VK_LEFT:  Result := cdBack;
-    VK_RIGHT: Result := cdForward;
-    else      Result := cdNone;
-  end;
-end;
 
 
 { TKMControl }
