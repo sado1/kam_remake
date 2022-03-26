@@ -4,7 +4,8 @@ interface
 uses
   Classes, SysUtils,
   KM_GUICommonOptions,
-  KM_Controls, KM_CommonTypes, KM_GUICommonKeys;
+  KM_Controls, KM_ControlsPopUp,
+  KM_CommonTypes, KM_GUICommonKeys;
 
 type
   TKMGUICommonGameOptions = class

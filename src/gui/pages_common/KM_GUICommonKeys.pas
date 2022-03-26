@@ -2,7 +2,9 @@ unit KM_GUICommonKeys;
 {$I KaM_Remake.inc}
 interface
 uses
-  Classes, KM_ResKeys, KM_Controls, KM_CommonTypes;
+  Classes, KM_ResKeys,
+  KM_Controls, KM_ControlsPopUp,
+  KM_CommonTypes;
 
 type
   TKMGUICommonKeys = class

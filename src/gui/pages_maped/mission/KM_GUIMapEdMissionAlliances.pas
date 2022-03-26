@@ -5,7 +5,8 @@ uses
    {$IFDEF MSWindows} Windows, {$ENDIF}
    {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
    Classes, SysUtils,
-   KM_Controls, KM_Defaults;
+   KM_Controls, KM_ControlsPopUp,
+   KM_Defaults;
 
 type
   TKMMapEdMissionAlliances = class

@@ -69,6 +69,7 @@ uses
   KM_ControlsDrop in 'src\controls\KM_ControlsDrop.pas',
   KM_ControlsMemo in 'src\controls\KM_ControlsMemo.pas',
   KM_ControlsMinimapView in 'src\controls\KM_ControlsMinimapView.pas',
+  KM_ControlsPopUp in 'src\controls\KM_ControlsPopUp.pas',
 
   KM_DevPerfLog in 'src\perflog\KM_DevPerfLog.pas',
   KM_DevPerfLogForm in 'src\perflog\KM_DevPerfLogForm.pas',

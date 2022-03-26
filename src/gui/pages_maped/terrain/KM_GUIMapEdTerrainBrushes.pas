@@ -3,7 +3,7 @@ unit KM_GUIMapEdTerrainBrushes;
 interface
 uses
    Classes, Math, SysUtils,
-   KM_Controls,
+   KM_Controls, KM_ControlsPopUp,
    KM_InterfaceDefaults,
    KM_Defaults, KM_Pics, KM_ResTilesetTypes;
 

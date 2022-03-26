@@ -8,7 +8,8 @@ uses
 
   KM_Networking, KM_NetworkTypes,
   KM_InterfaceGame, KM_InterfaceTypes, KM_CommonTypes,
-  KM_Controls, KM_ControlsMemo, KM_Defaults, KM_Points, KM_Console;
+  KM_Controls, KM_ControlsMemo, KM_ControlsPopUp,
+  KM_Defaults, KM_Points, KM_Console;
 
 
 type
