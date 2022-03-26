@@ -6,7 +6,7 @@ uses
   {$IFDEF Unix} LCLType, {$ENDIF}
   StrUtils, SysUtils, Math, Classes,
   KromOGLUtils,
-  KM_Controls, KM_ControlsList, KM_ControlsMemo, KM_ControlsScroll,
+  KM_Controls, KM_ControlsEdit, KM_ControlsList, KM_ControlsMemo, KM_ControlsScroll,
   KM_Defaults, KM_CommonTypes, KM_Pics,
   KM_InterfaceDefaults, KM_InterfaceTypes, KM_ServerQuery;
 

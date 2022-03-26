@@ -2,7 +2,8 @@ unit KM_GUIMapEdMenuResize;
 {$I KaM_Remake.inc}
 interface
 uses
-   Classes, SysUtils, KM_Controls;
+   Classes, SysUtils,
+   KM_Controls, KM_ControlsEdit;
 
 
 type

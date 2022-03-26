@@ -4,7 +4,8 @@ interface
 uses
    Classes, Math, StrUtils, SysUtils,
    KM_InterfaceDefaults,
-   KM_Controls, KM_Defaults, KM_GUIMapEdTownFormationsPopUp;
+   KM_Controls, KM_ControlsEdit,
+   KM_Defaults, KM_GUIMapEdTownFormationsPopUp;
 
 
 type

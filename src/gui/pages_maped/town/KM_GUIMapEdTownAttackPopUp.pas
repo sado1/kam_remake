@@ -5,7 +5,8 @@ uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLType, {$ENDIF}
   Classes, SysUtils,
-  KM_Controls, KM_Defaults, KM_Pics,
+  KM_Controls, KM_ControlsEdit,
+  KM_Defaults, KM_Pics,
   KM_Points, KM_AIAttacks;
 
 type
