@@ -681,7 +681,8 @@ end;
 
 procedure TKMGameInputProcess.MoveCursorTo(aTick: Integer);
 begin
-  fCursor := aTick;
+  // fCursor cant be 0, while tick could if we load the very first replay savepoint
+  fCursor := Max(1, aTick);
 end;
 
 
