@@ -1587,13 +1587,13 @@ const
   WARES_CNT = 31;
 
   WARES: array [0..WARES_CNT-1] of TKMWareType = (
-    wtAll,     wtWarfare, wtFood,
-    wtTrunk,   wtStone,   wtTimber,        wtIronOre,   wtGoldOre,
-    wtCoal,    wtIron,   wtGold,        wtWine,      wtCorn,
-    wtBread,   wtFlour,   wtLeather,     wtSausage,  wtPig,
-    wtSkin,    wtWoodenShield,  wtIronShield, wtLeatherArmor,     wtIronArmor,
-    wtAxe,     wtSword,   wtLance,        wtPike, wtBow,
-    wtCrossbow, wtHorse,   wtFish);
+    wtAll,      wtWarfare,      wtFood,
+    wtTrunk,    wtStone,        wtTimber,     wtIronOre,      wtGoldOre,
+    wtCoal,     wtIron,         wtGold,       wtWine,         wtCorn,
+    wtBread,    wtFlour,        wtLeather,    wtSausage,      wtPig,
+    wtSkin,     wtWoodenShield, wtIronShield, wtLeatherArmor, wtIronArmor,
+    wtAxe,      wtSword,        wtLance,      wtPike,         wtBow,
+    wtCrossbow, wtHorse,        wtFish);
 
   procedure RefreshChart(aStatType: TKMStatType; W: TKMWareType; aChart: TKMChart; aUseGDP: Boolean);
   var
