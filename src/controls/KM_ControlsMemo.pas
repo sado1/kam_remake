@@ -3,7 +3,8 @@
 interface
 uses
   Classes, Controls,
-  KM_Controls, KM_RenderUI, KM_ResFonts,
+  KM_Controls, KM_ControlsScroll,
+  KM_RenderUI, KM_ResFonts,
   KM_CommonTypes, KM_Points;
 
 

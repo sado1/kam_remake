@@ -5,7 +5,7 @@ uses
   Classes,
   Controls,
   KromOGLUtils,
-  KM_Controls,
+  KM_Controls, KM_ControlsScroll,
   KM_RenderUI,
   KM_ResFonts,
   KM_Pics,
