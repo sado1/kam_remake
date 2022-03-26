@@ -4,7 +4,8 @@ interface
 uses
    Classes, Math, SysUtils,
    KM_InterfaceDefaults,
-   KM_Controls, KM_Defaults;
+   KM_Controls, KM_ControlsTrackBar,
+   KM_Defaults;
 
 
 type

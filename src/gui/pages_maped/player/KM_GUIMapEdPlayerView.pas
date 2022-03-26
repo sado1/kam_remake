@@ -3,7 +3,8 @@ unit KM_GUIMapEdPlayerView;
 interface
 uses
    Classes,
-   KM_Controls, KM_Defaults,
+   KM_Controls, KM_ControlsTrackBar,
+   KM_Defaults,
    KM_Points;
 
 type

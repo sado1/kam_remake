@@ -6,7 +6,7 @@ uses
   {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
   Classes, Math, SysUtils,
   KM_InterfaceDefaults,
-  KM_Controls, KM_ControlsPopUp, KM_ControlsScroll,
+  KM_Controls, KM_ControlsPopUp, KM_ControlsScroll, KM_ControlsTrackBar,
   KM_Defaults, KM_Pics, KM_Cursor, KM_Points, KM_CommonTypes;
 
 type

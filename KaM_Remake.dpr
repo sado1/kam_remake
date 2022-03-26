@@ -75,6 +75,7 @@ uses
   KM_ControlsPopUp in 'src\controls\KM_ControlsPopUp.pas',
   KM_ControlsProgressBar in 'src\controls\KM_ControlsProgressBar.pas',
   KM_ControlsScroll in 'src\controls\KM_ControlsScroll.pas',
+  KM_ControlsTrackBar in 'src\controls\KM_ControlsTrackBar.pas',
   KM_ControlsTypes in 'src\controls\KM_ControlsTypes.pas',
   KM_ControlsUtils in 'src\controls\KM_ControlsUtils.pas',
   KM_ControlsWaresRow in 'src\controls\KM_ControlsWaresRow.pas',
