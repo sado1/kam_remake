@@ -699,7 +699,7 @@ uses
   Clipbrd,
   KromUtils,
   KM_System,
-  KM_ControlsDragger, KM_ControlsEdit, KM_ControlsRadio, KM_ControlsTrackBar, KM_ControlsWaresRow,
+  KM_ControlsDragger, KM_ControlsEdit, KM_ControlsSwitch, KM_ControlsTrackBar, KM_ControlsWaresRow,
   KM_Resource, KM_ResSprites, KM_ResSound, KM_ResTexts, KM_ResKeys,
   KM_Render, KM_RenderTypes,
   KM_Sound, KM_CommonUtils, KM_UtilsExt,

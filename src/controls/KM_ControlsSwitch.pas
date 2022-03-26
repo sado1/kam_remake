@@ -1,4 +1,4 @@
-﻿unit KM_ControlsRadio;
+﻿unit KM_ControlsSwitch;
 {$I KaM_Remake.inc}
 interface
 uses
