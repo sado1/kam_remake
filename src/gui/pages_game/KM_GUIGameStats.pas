@@ -3,7 +3,8 @@
 interface
 uses
   Classes, Math, StrUtils, SysUtils,
-  KM_Controls, KM_Defaults, KM_Houses,
+  KM_Controls, KM_ControlsButton,
+  KM_Defaults, KM_Houses,
   KM_InterfaceGame, KM_ResHouses, KM_CommonTypes;
 
 

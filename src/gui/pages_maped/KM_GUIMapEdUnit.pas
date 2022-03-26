@@ -4,7 +4,7 @@ interface
 uses
    Classes, KromUtils, Math, StrUtils, SysUtils,
    Controls,
-   KM_Controls, KM_ControlsDrop, KM_ControlsEdit, KM_ControlsProgressBar,
+   KM_Controls, KM_ControlsButton, KM_ControlsDrop, KM_ControlsEdit, KM_ControlsProgressBar,
    KM_Defaults, KM_Pics, KM_Units, KM_UnitGroup,
    KM_Points, KM_InterfaceGame;
 

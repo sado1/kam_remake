@@ -2,7 +2,7 @@
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_Controls, KM_ControlsTrackBar,
+  KM_Controls, KM_ControlsButton, KM_ControlsTrackBar,
   KM_Pics,
   KM_InterfaceGame, KM_ResHouses;
 

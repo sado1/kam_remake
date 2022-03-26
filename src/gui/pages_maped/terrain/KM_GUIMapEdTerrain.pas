@@ -3,7 +3,8 @@
 interface
 uses
    Classes, Math, SysUtils,
-   KM_Controls, KM_Defaults, KM_Pics, KM_CommonTypes,
+   KM_Controls, KM_ControlsButton,
+   KM_Defaults, KM_Pics, KM_CommonTypes,
    KM_InterfaceDefaults,
    KM_GUIMapEdTerrainBrushes,
    KM_GUIMapEdTerrainHeights,

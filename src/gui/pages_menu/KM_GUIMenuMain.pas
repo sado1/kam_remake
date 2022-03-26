@@ -3,7 +3,7 @@ unit KM_GUIMenuMain;
 interface
 uses
   Math, SysUtils,
-  KM_Controls, KM_ControlsEdit,
+  KM_Controls, KM_ControlsButton, KM_ControlsEdit,
   KM_Pics, KM_InterfaceDefaults, KM_InterfaceTypes;
 
 

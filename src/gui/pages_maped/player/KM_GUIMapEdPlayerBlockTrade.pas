@@ -3,7 +3,8 @@ unit KM_GUIMapEdPlayerBlockTrade;
 interface
 uses
    Classes,
-   KM_Controls, KM_Pics, KM_InterfaceGame;
+   KM_Controls, KM_ControlsButton,
+   KM_Pics, KM_InterfaceGame;
 
 type
   TKMMapEdPlayerBlockTrade = class

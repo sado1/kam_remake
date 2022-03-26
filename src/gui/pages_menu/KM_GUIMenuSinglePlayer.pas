@@ -4,7 +4,8 @@ interface
 uses
   Math, SysUtils,
   KM_Defaults,
-  KM_Controls, KM_Pics, KM_InterfaceDefaults, KM_InterfaceTypes, KM_GameTypes;
+  KM_Controls, KM_ControlsButton,
+  KM_Pics, KM_InterfaceDefaults, KM_InterfaceTypes, KM_GameTypes;
 
 
 type

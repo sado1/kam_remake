@@ -5,7 +5,7 @@ uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLType, {$ENDIF}
   Classes,
-  KM_Controls, KM_ControlsEdit, KM_ControlsSwitch,
+  KM_Controls, KM_ControlsButton, KM_ControlsEdit, KM_ControlsSwitch,
   KM_Defaults, KM_Pics, KM_AIGoals;
 
 type

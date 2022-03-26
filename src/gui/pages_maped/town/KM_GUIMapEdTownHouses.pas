@@ -4,7 +4,8 @@ interface
 uses
    Classes, Math, SysUtils,
    KM_InterfaceDefaults,
-   KM_Controls, KM_Defaults, KM_InterfaceGame;
+   KM_Controls, KM_ControlsButton,
+   KM_Defaults, KM_InterfaceGame;
 
 type
   TKMMapEdTownHouses = class(TKMMapEdSubMenuPage)

@@ -3,7 +3,8 @@
 interface
 uses
   StrUtils, SysUtils,
-  KM_Controls, KM_Defaults,
+  KM_Controls, KM_ControlsButton,
+  KM_Defaults,
   KM_InterfaceGame, KM_ResHouses;
 
 

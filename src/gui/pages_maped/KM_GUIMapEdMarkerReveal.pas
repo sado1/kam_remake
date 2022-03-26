@@ -3,7 +3,7 @@ unit KM_GUIMapEdMarkerReveal;
 interface
 uses
    Classes, Math, StrUtils, SysUtils,
-   KM_Controls, KM_ControlsTrackBar,
+   KM_Controls, KM_ControlsButton, KM_ControlsTrackBar,
    KM_Defaults, KM_Pics;
 
 

@@ -3,7 +3,7 @@ unit KM_GUIMapEdTownOffence;
 interface
 uses
    Classes, Math, SysUtils,
-   KM_Controls, KM_ControlsList, KM_ControlsSwitch,
+   KM_Controls, KM_ControlsButton, KM_ControlsList, KM_ControlsSwitch,
    KM_InterfaceDefaults,
    KM_Points, KM_AIAttacks, KM_GUIMapEdTownAttackPopUp;
 

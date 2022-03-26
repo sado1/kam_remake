@@ -5,7 +5,7 @@ uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
   Classes, Controls, SysUtils,
-  KM_Controls, KM_ControlsProgressBar,
+  KM_Controls, KM_ControlsButton, KM_ControlsProgressBar,
   KM_Units, KM_UnitGroup, KM_CommonTypes;
 
 type

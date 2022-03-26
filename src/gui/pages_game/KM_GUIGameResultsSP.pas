@@ -3,7 +3,7 @@ unit KM_GUIGameResultsSP;
 interface
 uses
   SysUtils,
-  KM_Controls, KM_ControlsChart, KM_Defaults, KM_Pics,
+  KM_Controls, KM_ControlsButton, KM_ControlsChart, KM_Defaults, KM_Pics,
   KM_InterfaceDefaults, KM_MapTypes, KM_CampaignTypes,
   KM_GameTypes, KM_CommonTypes;
 
