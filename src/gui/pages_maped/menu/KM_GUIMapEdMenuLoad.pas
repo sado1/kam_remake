@@ -3,7 +3,7 @@ unit KM_GUIMapEdMenuLoad;
 interface
 uses
    Classes, SysUtils,
-   KM_Controls, KM_ControlsList,
+   KM_Controls, KM_ControlsList, KM_ControlsRadio,
    KM_Maps;
 
 type
