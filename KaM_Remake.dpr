@@ -66,6 +66,7 @@ uses
   
   KM_Controls in 'src\controls\KM_Controls.pas',
   KM_ControlsChart in 'src\controls\KM_ControlsChart.pas',
+  KM_ControlsDragger in 'src\controls\KM_ControlsDragger.pas',
   KM_ControlsDrop in 'src\controls\KM_ControlsDrop.pas',
   KM_ControlsEdit in 'src\controls\KM_ControlsEdit.pas',
   KM_ControlsList in 'src\controls\KM_ControlsList.pas',

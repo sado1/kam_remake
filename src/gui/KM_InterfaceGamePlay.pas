@@ -373,6 +373,7 @@ uses
   KM_HandsCollection, KM_Hand,
   KM_RenderPool, KM_ResTexts, KM_Game, KM_GameApp, KM_HouseBarracks, KM_HouseTownHall,
   KM_ScriptingEvents, KM_AIFields, KM_GameSettings,
+  KM_ControlsDragger,
   KM_CommonUtils, KM_ResLocales, KM_ResSound, KM_Resource, KM_Log, KM_ResKeys,
   KM_NetPlayersList, KM_MessageLog, KM_NetworkTypes,
   KM_InterfaceMapEditor, KM_HouseWoodcutters, KM_MapTypes,

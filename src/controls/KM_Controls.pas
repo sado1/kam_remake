@@ -805,27 +805,6 @@ type
   end;
 
 
-  //Element that player can drag within allowed bounds
-  TKMDragger = class(TKMControl)
-  private
-    fMinusX, fMinusY, fPlusX, fPlusY: Integer; //Restrictions
-    fPositionX: Integer;
-    fPositionY: Integer;
-    fStartDragX: Integer;
-    fStartDragY: Integer;
-  public
-    OnMove: TNotifyEventXY;
-    constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer);
-
-    procedure SetBounds(aMinusX, aMinusY, aPlusX, aPlusY: Integer);
-
-    procedure MouseDown(X,Y: Integer; Shift: TShiftState; Button: TMouseButton); override;
-    procedure MouseMove(X,Y: Integer; Shift: TShiftState); override;
-    procedure MouseUp(X,Y: Integer; Shift: TShiftState; Button: TMouseButton); override;
-
-    procedure Paint; override;
-  end;
-
   function IsSelecting(Key: Word; Shift: TShiftState): Boolean;
   function GetCursorDir(aKey: Word): TKMCursorDir;
 
@@ -837,7 +816,7 @@ uses
   Clipbrd,
   KromUtils,
   KM_System,
-  KM_ControlsEdit, KM_ControlsWaresRow,
+  KM_ControlsDragger, KM_ControlsEdit, KM_ControlsWaresRow,
   KM_Resource, KM_ResSprites, KM_ResSound, KM_ResTexts, KM_ResKeys,
   KM_Render, KM_RenderTypes,
   KM_Sound, KM_CommonUtils, KM_UtilsExt,
@@ -3380,75 +3359,6 @@ begin
 
   TKMRenderUI.WritePicture(AbsLeft + thumbPos, AbsTop+fTrackTop, ThumbWidth, thumbHeight, [anLeft,anRight], rxGui, 132);
   TKMRenderUI.WriteText(AbsLeft + thumbPos + ThumbWidth div 2, AbsTop+fTrackTop+3, 0, ThumbText, SliderFont, taCenter, TEXT_COLOR[fEnabled]);
-end;
-
-
-{ TKMDragger }
-constructor TKMDragger.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer);
-begin
-  inherited Create(aParent, aLeft, aTop, aWidth, aHeight);
-
-  //Original position is used to resrict movement
-  fPositionX := 0;
-  fPositionY := 0;
-end;
-
-
-procedure TKMDragger.SetBounds(aMinusX, aMinusY, aPlusX, aPlusY: Integer);
-begin
-  fMinusX := aMinusX;
-  fMinusY := aMinusY;
-  fPlusX  := aPlusX;
-  fPlusY  := aPlusY;
-end;
-
-
-procedure TKMDragger.MouseDown(X,Y: Integer; Shift: TShiftState; Button: TMouseButton);
-begin
-  inherited;
-  fStartDragX := X - fPositionX;
-  fStartDragY := Y - fPositionY;
-
-  MouseMove(X,Y,Shift);
-end;
-
-
-procedure TKMDragger.MouseMove(X,Y: Integer; Shift: TShiftState);
-begin
-  inherited;
-
-  if csDown in State then
-  begin
-    //Bounds are signed numbers, set them properly
-    fPositionX := EnsureRange((X - fStartDragX), fMinusX, fPlusX);
-    fPositionY := EnsureRange((Y - fStartDragY), fMinusY, fPlusY);
-
-    if Assigned(OnMove) then OnMove(Self, fPositionX, fPositionY);
-  end;
-end;
-
-
-procedure TKMDragger.MouseUp(X,Y: Integer; Shift: TShiftState; Button: TMouseButton);
-begin
-  inherited;
-  MouseMove(X,Y,Shift);
-end;
-
-
-procedure TKMDragger.Paint;
-var
-  stateSet: TKMButtonStateSet;
-begin
-  inherited;
-  stateSet := [];
-  if (csOver in State) and fEnabled then
-    stateSet := stateSet + [bsOver];
-  if (csDown in State) then
-    stateSet := stateSet + [bsDown];
-  if not fEnabled then
-    stateSet := stateSet + [bsDisabled];
-
-  TKMRenderUI.Write3DButton(AbsLeft, AbsTop, Width, Height, rxGui, 0, $FFFF00FF, stateSet, bsGame);
 end;
 
 
