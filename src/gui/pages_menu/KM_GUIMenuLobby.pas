@@ -219,6 +219,7 @@ implementation
 uses
   KM_Log, KM_CommonTypes, KM_Points, KM_CommonUtils,
   KM_GameSettings,
+  KM_ControlsTypes,
   KM_Sound,
   KM_RenderUI,
   KM_Resource, KM_ResFonts, KM_ResLocales, KM_ResSound, KM_ResTypes,

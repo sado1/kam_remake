@@ -3,7 +3,7 @@
 interface
 uses
   Classes, Controls,
-  KM_Controls,
+  KM_Controls, KM_ControlsTypes,
   KM_RenderUI,
   KM_ResFonts,
   KM_Points;
@@ -154,6 +154,7 @@ uses
   Clipbrd,
   SysUtils, Math,
   KromUtils, KromOGLUtils,
+  KM_ControlsUtils,
   KM_Resource, KM_ResTypes,
   KM_CommonTypes, KM_Defaults,
   KM_CommonUtils, KM_UtilsExt;

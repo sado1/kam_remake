@@ -37,8 +37,13 @@ type
 
 implementation
 uses
-  StrUtils, KM_HandsCollection, KM_Game, KM_ResTexts, KM_RenderUI, KM_ResFonts,
-  KM_InterfaceGame, KM_Hand, KM_CommonUtils;
+  StrUtils,
+  KM_Hand, KM_HandsCollection,
+  KM_Game, KM_InterfaceGame,
+  KM_ControlsTypes,
+  KM_RenderUI,
+  KM_ResTexts, KM_ResFonts,
+  KM_CommonUtils;
 
 
 { TKMMapEdPlayerColors }

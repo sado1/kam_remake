@@ -362,6 +362,7 @@ uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
   SysUtils, StrUtils, Math,
+  KM_ControlsTypes, KM_ControlsUtils,
   KM_Resource, KM_ResTypes,
   KM_CommonUtils;
 
