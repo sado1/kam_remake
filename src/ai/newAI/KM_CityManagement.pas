@@ -1045,7 +1045,7 @@ end;
 // Distribute required weapons into exist houses (first will be produced the larger amount of wares)
 procedure TKMCityManagement.OrderWeapons();
 const
-  WEAPONS_PER_A_UPDATE = 3;
+  WEAPONS_PER_A_UPDATE = 25;
   PRODUCTION_HOUSES = [htArmorSmithy, htArmorWorkshop, htWeaponSmithy, htWeaponWorkshop];
 var
   I, K, MaxIdx, HouseCnt: Integer;
@@ -1092,7 +1092,7 @@ begin
               WT := gResHouses[HT].ResOutput[K];
               if (WT = wtLeatherArmor) then
               begin
-                H.ResOrder[K] := 10;
+                H.ResOrder[K] := 100;
                 Break;
               end;
             end;

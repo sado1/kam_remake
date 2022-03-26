@@ -239,17 +239,16 @@ begin
   Full := 0;
   Middle := 0;
   Low := 0;
-  Food := 0;
   for PL in aAlly do
   begin
-    Inc(Full  ,fEvals[PL].FoodState.Full);
-    Inc(Middle,fEvals[PL].FoodState.Middle);
-    Inc(Low   ,fEvals[PL].FoodState.Low);
+    Food := 0;
     Inc(Food  ,gHands[PL].Stats.GetWareBalance(wtBread));
     Inc(Food  ,gHands[PL].Stats.GetWareBalance(wtWine));
     Inc(Food  ,gHands[PL].Stats.GetWareBalance(wtSausage));
     Inc(Food  ,gHands[PL].Stats.GetWareBalance(wtFish));
-    Low := max(0, Low - Food);
+    Inc(Full  ,fEvals[PL].FoodState.Full);
+    Inc(Middle,fEvals[PL].FoodState.Middle);
+    Inc(Low   ,max(0, fEvals[PL].FoodState.Low - Food));
   end;
   if ((Full + Middle + Low) > 0) then
     Result := ((Full + Middle) / Max(1, (Full + Middle + Low))) < FOOD_THRESHOLD;

@@ -577,7 +577,7 @@ begin
 
   // Decide count of workers + build nodes
   FreePlace := Max(  0, Min( 2000, Min(fFieldCnt,fBuildCnt) - 1000 )  ); // FreePlace in <0,2000>
-  fWorkerCount := Round( Min( 50 - 40 * fUpdatedPeaceFactor * Byte(not gGame.IsPeaceTime), // Decrease count of required workers after peace
+  fWorkerCount := Round( Min( 50 - 35 * fUpdatedPeaceFactor * Byte(not gGame.IsPeaceTime), // Decrease count of required workers after peace
                               15 + FreePlace*AI_Par[PREDICTOR_WorkerCountCoef] + fPeaceFactor*8 )
                        );
   // Try to build mines even when perf. optimalization prohibits it (once in ~8 min)

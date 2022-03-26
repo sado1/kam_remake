@@ -737,8 +737,6 @@ procedure TKMSupervisor.UpdateAttacks(aTeam: Byte; aTick: Cardinal);
           H[Cnt] := fArmyVector.Enemy.Houses[ Houses[K] ];
           Inc(Cnt);
         end;
-      for K := 0 to HousesCount - 1 do
-        H[K] := fArmyVector.Enemy.Houses[ Houses[K] ];
       AttackCluster(aAttack, aIdx, pGCWA, EG, H);
     end;
     // Set orders to move
