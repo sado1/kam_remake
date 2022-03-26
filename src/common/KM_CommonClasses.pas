@@ -647,8 +647,10 @@ procedure TKMemoryStream.LoadToStream(aStream: TKMemoryStream; const aMarker: st
 var
   isCompressed: Boolean;
   streamSize: Cardinal;
+  {$IFNDEF NO_COMPRESSION}
   S: TKMemoryStream;
   DS: TDecompressionStream;
+  {$ENDIF}
 begin
   if Position >= Size then Exit;
 
