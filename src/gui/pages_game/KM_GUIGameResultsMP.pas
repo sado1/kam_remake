@@ -3,7 +3,9 @@
 interface
 uses
   Classes, Math, StrUtils, SysUtils,
-  KM_CommonTypes, KM_Controls, KM_ControlsChart, KM_Defaults, KM_Pics,
+  KM_CommonTypes,
+  KM_Controls, KM_ControlsChart, KM_ControlsList,
+  KM_Defaults, KM_Pics,
   KM_InterfaceDefaults, KM_ResWares, KM_HandStats,
   KM_ResTypes;
 
