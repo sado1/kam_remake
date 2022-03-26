@@ -1688,10 +1688,10 @@ begin
     begin
       W := TKMWareType(Columnbox_Wares.Rows[J].Tag);
 
-      RefreshChart(ST, W, @Charts_Wares[ST, W], False);
+      RefreshChart(ST, W, Charts_Wares[ST, W], False);
       wareInGDP := GetWareIdInGDPArr(W);
       if wareInGDP <> -1 then
-        RefreshChart(ST, W, @Charts_WaresGDP[ST, wareInGDP], True);
+        RefreshChart(ST, W, Charts_WaresGDP[ST, wareInGDP], True);
     end;
 
   if not Columnbox_Wares.IsSelected then
