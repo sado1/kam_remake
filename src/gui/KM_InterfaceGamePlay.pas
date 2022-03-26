@@ -7,7 +7,7 @@ uses
   StrUtils, SysUtils, Math, Classes, TypInfo, Generics.Collections,
   Controls,
   KromUtils,
-  KM_Controls, KM_ControlsDrop, KM_ControlsEdit, KM_ControlsList,  KM_ControlsMinimapView,
+  KM_Controls, KM_ControlsDrop, KM_ControlsEdit, KM_ControlsList,  KM_ControlsMinimapView, KM_ControlsProgressBar,
   KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Pics, KM_Points, KM_CommonClassesExt,
   KM_InterfaceTypes, KM_InterfaceGame, KM_Terrain, KM_Houses, KM_Units, KM_Minimap, KM_Viewport, KM_Render,
   KM_UnitGroup, KM_UnitWarrior, KM_Saves, KM_MessageStack, KM_ResHouses, KM_Alerts, KM_Networking,

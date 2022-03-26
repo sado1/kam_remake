@@ -4,7 +4,9 @@ interface
 uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
-  Classes, Controls, SysUtils, KM_Controls, KM_Units, KM_UnitGroup, KM_CommonTypes;//, KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Pics,
+  Classes, Controls, SysUtils,
+  KM_Controls, KM_ControlsProgressBar,
+  KM_Units, KM_UnitGroup, KM_CommonTypes;
 
 type
   TKMGUIGameUnit = class

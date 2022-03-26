@@ -72,6 +72,7 @@ uses
   KM_ControlsMemo in 'src\controls\KM_ControlsMemo.pas',
   KM_ControlsMinimapView in 'src\controls\KM_ControlsMinimapView.pas',
   KM_ControlsPopUp in 'src\controls\KM_ControlsPopUp.pas',
+  KM_ControlsProgressBar in 'src\controls\KM_ControlsProgressBar.pas',
   KM_ControlsScroll in 'src\controls\KM_ControlsScroll.pas',
 
   KM_DevPerfLog in 'src\perflog\KM_DevPerfLog.pas',

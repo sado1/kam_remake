@@ -4,7 +4,8 @@ interface
 uses
    Classes, Math, StrUtils, SysUtils,
    Controls,
-   KM_Controls, KM_Defaults, KM_Pics, KM_Houses, KM_InterfaceGame, KM_ResHouses;
+   KM_Controls, KM_ControlsProgressBar,
+   KM_Defaults, KM_Pics, KM_Houses, KM_InterfaceGame, KM_ResHouses;
 
 type
   TKMMapEdHouse = class

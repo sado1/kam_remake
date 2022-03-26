@@ -3,7 +3,8 @@ unit KM_GUIGameHouse;
 interface
 uses
   StrUtils, SysUtils, Math, Classes,
-  KM_Controls, KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Pics,
+  KM_Controls, KM_ControlsProgressBar,
+  KM_CommonClasses, KM_CommonTypes, KM_Defaults, KM_Pics,
   KM_InterfaceGame, KM_Houses, KM_HouseMarket, KM_ResWares;
 
 const LINE_HEIGHT = 25; //Each new Line is placed ## pixels after previous
