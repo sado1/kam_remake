@@ -74,6 +74,7 @@ uses
   KM_ControlsPopUp in 'src\controls\KM_ControlsPopUp.pas',
   KM_ControlsProgressBar in 'src\controls\KM_ControlsProgressBar.pas',
   KM_ControlsScroll in 'src\controls\KM_ControlsScroll.pas',
+  KM_ControlsWaresRow in 'src\controls\KM_ControlsWaresRow.pas',
 
   KM_DevPerfLog in 'src\perflog\KM_DevPerfLog.pas',
   KM_DevPerfLogForm in 'src\perflog\KM_DevPerfLogForm.pas',

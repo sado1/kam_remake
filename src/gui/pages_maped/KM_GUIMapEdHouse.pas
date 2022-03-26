@@ -4,7 +4,7 @@ interface
 uses
    Classes, Math, StrUtils, SysUtils,
    Controls,
-   KM_Controls, KM_ControlsProgressBar,
+   KM_Controls, KM_ControlsProgressBar, KM_ControlsWaresRow,
    KM_Defaults, KM_Pics, KM_Houses, KM_InterfaceGame, KM_ResHouses;
 
 type
