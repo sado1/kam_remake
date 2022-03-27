@@ -272,10 +272,8 @@ begin
 
   count := 0;
   for I := 0 to GetTagCount - 1 do
-  begin
     if fLinesAggregator.FItemsVisibility[I] then
       Inc(count);
-  end;
 
   str := IfThen(gHands[FHandIndex].OwnerNiknameU <> '', gHands[FHandIndex].OwnerNiknameU, gHands[FHandIndex].OwnerName);
   Width := Max(count * (GUI_SPEC_ITEM_WIDTH + GUI_SPEC_ITEM_SRLITE_H) + GUI_SPEC_ITEM_SRLITE_H, gRes.Fonts[fntGrey].GetTextSize(str).X + 32 + 4);
