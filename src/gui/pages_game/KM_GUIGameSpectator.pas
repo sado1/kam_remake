@@ -972,7 +972,6 @@ end;
 constructor TKMGUIGameSpectator.Create(aParent: TKMPanel; aOnJumpToPlayer: TIntegerEvent; aSetViewportPos: TPointFEvent);
 const
   DROPBOX_W = 270;
-  LINES_CNT = 11;
 begin
   inherited Create;
 
@@ -998,7 +997,7 @@ begin
   FDropBoxPanel.Show;
   FDropBox := TKMDropList.Create(FDropBoxPanel, 5, 5, DROPBOX_W, 20, fntMetal, '', bsGame, True, 0.85, DROPBOX_RENDER_LAYER);
   FDropBox.OnChange := ChangePage;
-  FDropBox.DropCount := LINES_CNT;
+  FDropBox.DropCount := Ord(High(TKMHandStatType)) + 1;
 
   FDropBox.Add(gResTexts[TX_WORD_NONE]);
   FDropBox.Add(gResTexts[TX_WORD_RESOURCES]);
@@ -1014,7 +1013,7 @@ begin
 
   FDropBox.ItemIndex := 0;
 
-  Assert(FDropBox.Count = LINES_CNT);
+  Assert(FDropBox.Count = FDropBox.DropCount);
 end;
 
 
