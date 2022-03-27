@@ -92,7 +92,6 @@ type
   end;
 
 
-  ///
   TKMGUIGameSpectator = class
   private
     FDropBoxPanel: TKMPanel;
