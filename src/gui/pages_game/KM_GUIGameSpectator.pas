@@ -23,7 +23,6 @@ type
     fAdditionalValue: String;
     fProgress: Single;
     fItemTag: Integer;
-    fShowItem: Boolean;
     FOnItemClick: TIntBoolEvent;
     FDoHighlight: TBoolIntFuncSimple;
     procedure ItemClicked(Sender: TObject; Shift: TShiftState);
@@ -40,7 +39,6 @@ type
     property Value: String read FValue write FValue;
     property AdditionalValue: String read FAdditionalValue write FAdditionalValue;
     property Progress: Single read FProgress write FProgress;
-    property ShowItem: Boolean read fShowItem write fShowItem;
     procedure CreateChilds;
     procedure PaintPanel(aPaintLayer: TKMPaintLayer); override;
   end;
@@ -159,7 +157,6 @@ begin
   FValue := '';
   FAdditionalValue := '';
   FProgress := -1;
-  fShowItem := False;
   FDoHighlight := aDoHighlight;
   FOnItemClick := aOnItemClick;
   CreateChilds;
@@ -198,20 +195,14 @@ procedure TKMGUIGameSpectatorItem.PaintPanel(aPaintLayer: TKMPaintLayer);
 var
   paintLightness: Single;
 begin
-  paintLightness := 0;
-  if fShowItem then
-    paintLightness := CTRL_HIGHLIGHT_COEF_DEF * Byte(((csOver in Image.State) or (csOver in Bevel.State)) and FDoHighlight(FItemTag));
+  paintLightness := CTRL_HIGHLIGHT_COEF_DEF * Byte(((csOver in Image.State) or (csOver in Bevel.State)) and FDoHighlight(FItemTag));
 
   Image.Lightness := paintLightness;
 
-  Image.Visible := fShowItem;
-
-  Bevel.Visible := fShowItem;
-
-  PercentBar.Visible := fShowItem and (FProgress >= 0);
+  PercentBar.Visible := (FProgress >= 0);
   PercentBar.Position := fProgress;
 
-  Label_Text.Caption := IfThen(fShowItem, fValue);
+  Label_Text.Caption := fValue;
   Label_AddText.Caption := fAdditionalValue;
 
   inherited PaintPanel(aPaintLayer);
@@ -282,8 +273,7 @@ begin
   count := 0;
   for I := 0 to GetTagCount - 1 do
   begin
-    fItems[I].Visible := fLinesAggregator.FItemsVisibility[I];
-    if fItems[I].Visible then
+    if fLinesAggregator.FItemsVisibility[I] then
       Inc(count);
   end;
 
@@ -293,7 +283,7 @@ begin
 
   position := Width - GUI_SPEC_ITEM_SRLITE_H - GUI_SPEC_ITEM_WIDTH;
   for I := 0 to GetTagCount - 1 do
-    if fItems[I].Visible then
+    if fLinesAggregator.FItemsVisibility[I] then
     begin
       fItems[I].Top := GUI_SPEC_HEADER_HEIGHT;
       fItems[I].Left := position;
@@ -314,10 +304,10 @@ begin
     fItems[I].Value := GetValue(FHandIndex, GetTag(I));
     fItems[I].AdditionalValue := GetAdditionalValue(FHandIndex, GetTag(I));
     fItems[I].Progress := GetProgress(FHandIndex, GetTag(I));
-    fItems[I].ShowItem := (fItems[I].Value <> '')
+    fItems[I].Visible := (fItems[I].Value <> '')
                           or (fItems[I].AdditionalValue <> '')
                           or (fItems[I].Progress >= 0);
-    if fItems[I].ShowItem then
+    if fItems[I].Visible then
       fLinesAggregator.FItemsVisibility[I] := True;
   end;
 end;
