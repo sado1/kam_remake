@@ -373,7 +373,7 @@ uses
   KM_GameInputProcess, KM_GameInputProcess_Multi, KM_AI, KM_RenderUI, KM_Cursor, KM_Maps,
   KM_HandsCollection, KM_Hand,
   KM_RenderPool, KM_ResTexts, KM_Game, KM_GameApp, KM_HouseBarracks, KM_HouseTownHall,
-  KM_ScriptingEvents, KM_AIFields, KM_GameSettings,
+  KM_ScriptingEvents, KM_AIFields, KM_GameAppSettings, KM_GameSettings,
   KM_ControlsDragger,
   KM_CommonUtils, KM_ResLocales, KM_ResSound, KM_Resource, KM_Log, KM_ResKeys,
   KM_NetPlayersList, KM_MessageLog, KM_NetworkTypes,
@@ -593,7 +593,7 @@ begin
 
   // If they just closed settings then we should save them (if something has changed)
   if LastVisiblePage = fGuiMenuOptions then
-    gGameSettings.SaveSettings;
+    gGameAppSettings.SaveSettings;
 
   // Ensure, that saves scanning will be stopped when user leaves save/load page
   if (LastVisiblePage = Panel_Save) or (LastVisiblePage = Panel_Load) then

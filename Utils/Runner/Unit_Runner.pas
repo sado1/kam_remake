@@ -179,8 +179,7 @@ begin
   end;
 
   // Init settings global variables
-  gGameAppSettings := TKMGameAppSettings.Create;
-  TKMainSettings.Create(tgtWidth, tgtHeight);
+  gGameAppSettings := TKMGameAppSettings.Create(tgtWidth, tgtHeight);
 
   gGameApp := TKMGameApp.Create(fRenderTarget, tgtWidth, tgtHeight, False, nil, nil, nil, True);
   gGameSettings.Autosave := False;

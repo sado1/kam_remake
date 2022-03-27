@@ -352,7 +352,9 @@ uses
   KM_ServerQuery in 'src\net\KM_ServerQuery.pas',
   
   KM_Settings in 'src\settings\KM_Settings.pas',
+  KM_SettingsXML in 'src\settings\KM_SettingsXML.pas',
   KM_GameAppSettings in 'src\settings\KM_GameAppSettings.pas',
+  KM_GameAppSettingsPart in 'src\settings\KM_GameAppSettingsPart.pas',
   KM_KeysSettings in 'src\settings\KM_KeysSettings.pas',
   KM_GameSettings in 'src\settings\KM_GameSettings.pas',
   KM_MainSettings in 'src\settings\KM_MainSettings.pas',

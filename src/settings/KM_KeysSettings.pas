@@ -2,14 +2,19 @@ unit KM_KeysSettings;
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_GameAppSettings;
+  KM_IoXML,
+  KM_GameAppSettingsPart;
 
 type
   // Hotkey settings loader/saver
   TKMKeysSettings = class(TKMGameAppSettingsPart)
+  private
+    fHotkeysNode: TKMXmlNode;
   public
     procedure LoadFromXML; override;
     procedure SaveToXML; override;
+
+    procedure UpdateResKeys;
   end;
 
 var
@@ -21,32 +26,39 @@ uses
   KM_ResTexts,
   KM_ResKeys,
   KM_ResKeyFuncs,
-  KM_ResTypes,
-  KM_IoXML;
+  KM_ResTypes;
 
 
 { TKMKeysSettings }
-procedure TKMKeysSettings.LoadFromXML;
+procedure TKMKeysSettings.UpdateResKeys;
 var
   KF: TKMKeyFunction;
-  nHotkeys, nKey: TKMXmlNode;
+  nKey: TKMXmlNode;
   keyFuncName: string;
 begin
-  if Self = nil then Exit;
-  inherited;
-
-  nHotkeys := Root.AddOrFindChild('Hotkeys');
+  if gResKeys = nil then Exit;
 
   for KF := KEY_FUNC_LOW to High(TKMKeyFunction) do
   begin
     keyFuncName := GetKeyFunctionStr(KF);
-    if nHotkeys.HasChild(keyFuncName) then
+    if fHotkeysNode.HasChild(keyFuncName) then
     begin
-      nKey := nHotkeys.AddOrFindChild(keyFuncName);
+      nKey := fHotkeysNode.AddOrFindChild(keyFuncName);
       if nKey.HasAttribute('Key') then
         gResKeys[KF] := nKey.Attributes['Key'].AsInteger;
     end;
   end;
+end;
+
+
+procedure TKMKeysSettings.LoadFromXML;
+begin
+  if Self = nil then Exit;
+  inherited;
+
+  fHotkeysNode := Root.AddOrFindChild('Hotkeys');
+
+  UpdateResKeys;
 end;
 
 
@@ -59,6 +71,11 @@ begin
   inherited;
 
   nHotkeys := Root.AddOrFindChild('Hotkeys');
+
+  if gResKeys = nil then Exit;
+
+  // Clear old data before filling in
+  nHotkeys.Clear;
 
   for KF := KEY_FUNC_LOW to High(TKMKeyFunction) do
   begin

@@ -9,7 +9,7 @@ uses
   KM_Defaults,
   KM_WindowParams,
   KM_IoXML,
-  KM_GameAppSettings;
+  KM_GameAppSettingsPart;
 
 type
   // Settings that are irrelevant to the game (game does not cares about them)
@@ -48,6 +48,10 @@ type
   end;
 
 
+var
+  gMainSettings: TKMainSettings;
+
+
 implementation
 uses
   SysUtils, INIfiles, Math;
@@ -61,21 +65,19 @@ const
 { TKMainSettings }
 constructor TKMainSettings.Create(aScreenWidth, aScreenHeight: Integer);
 begin
-  // Prepare all data containers for settings load first
+  inherited Create;
+
   fWindowParams := TKMWindowParams.Create;
   fScreenWidth := aScreenWidth;
   fScreenHeight := aScreenHeight;
-
-  // Load settings after
-  inherited Create;
 end;
 
 
 destructor TKMainSettings.Destroy;
 begin
-  inherited; // Save settings first
+  FreeAndNil(fWindowParams);
 
-  FreeAndNil(fWindowParams); // Cleanup everything afterwards
+  inherited;
 end;
 
 
@@ -143,6 +145,8 @@ begin
   inherited;
 
   nMainSettings := Root.AddOrFindChild('Main');
+  // Clear old data before filling in
+  nMainSettings.Clear;
 
   // GFX
   nGFX := nMainSettings.AddOrFindChild('GFX');

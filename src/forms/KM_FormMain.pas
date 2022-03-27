@@ -393,7 +393,7 @@ uses
   KM_FormLogistics, KM_Game,
   KM_RandomChecks,
   KM_Log, KM_CommonClasses, KM_VclHelpers, KM_Video,
-  KM_GameSettings,
+  KM_MainSettings, KM_GameSettings,
   KM_ServerSettings,
 
   KM_IoXML,
@@ -474,10 +474,10 @@ begin
   Constraints.MinHeight := MIN_RESOLUTION_HEIGHT + bordersHeight;
 
   // We have to put it here, to proper window positioning for multimonitor systems
-  if not gMain.Settings.FullScreen then
+  if not gMainSettings.FullScreen then
   begin
-    Left := gMain.Settings.WindowParams.Left;
-    Top := gMain.Settings.WindowParams.Top;
+    Left := gMainSettings.WindowParams.Left;
+    Top := gMainSettings.WindowParams.Top;
   end;
 
   fMissionDefOpenPath := ExeDir;
@@ -1614,16 +1614,16 @@ begin
       // We've set default window params, so update them
       gMain.UpdateWindowParams(GetWindowParams);
       // Unset NeedResetToDefaults flag
-      gMain.Settings.WindowParams.NeedResetToDefaults := False;
+      gMainSettings.WindowParams.NeedResetToDefaults := False;
     end else begin
       // Here we set window Width/Height and State
       // Left and Top will set on FormShow, so omit setting them here
       Position := poDesigned;
-      ClientWidth  := gMain.Settings.WindowParams.Width;
-      ClientHeight := gMain.Settings.WindowParams.Height;
-      Left := gMain.Settings.WindowParams.Left;
-      Top := gMain.Settings.WindowParams.Top;
-      WindowState  := gMain.Settings.WindowParams.State;
+      ClientWidth  := gMainSettings.WindowParams.Width;
+      ClientHeight := gMainSettings.WindowParams.Height;
+      Left := gMainSettings.WindowParams.Left;
+      Top := gMainSettings.WindowParams.Top;
+      WindowState  := gMainSettings.WindowParams.State;
     end;
   end;
 

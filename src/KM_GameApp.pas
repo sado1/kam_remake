@@ -183,8 +183,7 @@ begin
 
   gResKeys := TKMResKeys.Create;
 
-  gGameSettings := TKMGameSettings.Create;
-  gKeySettings := TKMKeysSettings.Create;
+  gKeySettings.UpdateResKeys;
 
   // When creating local server from inside the game,
   // it makes sense to store its settings along with the game's in the shared folder
@@ -267,8 +266,6 @@ begin
 
   FreeAndNil(fChat);
   FreeThenNil(fCampaigns);
-  FreeThenNil(gGameSettings);
-  FreeThenNil(gKeySettings);
   FreeThenNil(fServerSettings);
   FreeThenNil(fMainMenuInterface);
   FreeThenNil(gRes);

@@ -22,7 +22,6 @@ type
 
     fLastAlphaShadows: Boolean;
 
-    fMainSettings: TKMainSettings;
     fResolutions: TKMResolutions;
 
     // We remember old values to enable/disable "Apply" button dynamicaly
@@ -591,7 +590,7 @@ begin
   // Only in Menu
   if IsMenu then
   begin
-    CheckBox_VSync.Checked         := fMainSettings.VSync;
+    CheckBox_VSync.Checked         := gMainSettings.VSync;
     CheckBox_FullFonts.Enabled     := not gResLocales.LocaleByCode(gGameSettings.Locale).NeedsFullFonts;
     CheckBox_FullFonts.Checked     := gGameSettings.LoadFullFonts or not CheckBox_FullFonts.Enabled;
     CheckBox_ShadowQuality.Checked := gGameSettings.AlphaShadows;
@@ -690,11 +689,11 @@ begin
   // Only in Menu
   if IsMenu then
   begin
-    fMainSettings.VSync        := CheckBox_VSync.Checked;
+    gMainSettings.VSync        := CheckBox_VSync.Checked;
     gGameSettings.AlphaShadows := CheckBox_ShadowQuality.Checked;
 
     // Menu options
-    SetupVSync(fMainSettings.VSync);
+    SetupVSync(gMainSettings.VSync);
 
     if Sender = CheckBox_FullFonts then
     begin
@@ -786,7 +785,7 @@ begin
   resID := DropBox_Resolution.ItemIndex;
   refID := DropBox_RefreshRate.ItemIndex;
   Button_ResApply.Enabled :=
-      (fMainSettings.FullScreen <> CheckBox_FullScreen.Checked) or
+      (gMainSettings.FullScreen <> CheckBox_FullScreen.Checked) or
       (CheckBox_FullScreen.Checked and ((fPrevResolutionId.ResID <> resID) or
                                                 (fPrevResolutionId.RefID <> refID)));
   // Remember which one we have selected so we can reselect it if the user changes resolution
@@ -801,7 +800,7 @@ var
 begin
   if fResolutions.Count = 0 then Exit;
 
-  fMainSettings.FullScreen := CheckBox_FullScreen.Checked;
+  gMainSettings.FullScreen := CheckBox_FullScreen.Checked;
 
   ResID := DropBox_Resolution.ItemIndex;
   RefID := DropBox_RefreshRate.ItemIndex;
@@ -809,7 +808,7 @@ begin
   NewResolution.Height := fResolutions.Items[ResID].Height;
   NewResolution.RefRate := fResolutions.Items[ResID].RefRate[RefID];
 
-  fMainSettings.Resolution := NewResolution;
+  gMainSettings.Resolution := NewResolution;
   gMain.ReinitRender(True);
 end;
 
@@ -847,7 +846,7 @@ begin
   DropBox_Resolution.Clear;
   DropBox_RefreshRate.Clear;
 
-  R := fResolutions.GetResolutionIDs(fMainSettings.Resolution);
+  R := fResolutions.GetResolutionIDs(gMainSettings.Resolution);
 
   if fResolutions.Count > 0 then
   begin
@@ -877,11 +876,11 @@ begin
     DropBox_RefreshRate.ItemIndex := 0;
   end;
 
-  CheckBox_FullScreen.Checked := fMainSettings.FullScreen;
+  CheckBox_FullScreen.Checked := gMainSettings.FullScreen;
   // Controls should be disabled, when there is no resolution to choose
   CheckBox_FullScreen.Enabled := fResolutions.Count > 0;
-  DropBox_Resolution.Enabled  := (fMainSettings.FullScreen) and (fResolutions.Count > 0);
-  DropBox_RefreshRate.Enabled := (fMainSettings.FullScreen) and (fResolutions.Count > 0);
+  DropBox_Resolution.Enabled  := (gMainSettings.FullScreen) and (fResolutions.Count > 0);
+  DropBox_RefreshRate.Enabled := (gMainSettings.FullScreen) and (fResolutions.Count > 0);
 
   fPrevResolutionId := R;
   Button_ResApply.Disable;
@@ -896,7 +895,6 @@ begin
   // Only in Menu
   if IsMenu then
   begin
-    fMainSettings := gMain.Settings;
     fResolutions := gMain.Resolutions;
     fLastAlphaShadows := gGameSettings.AlphaShadows;
   end;

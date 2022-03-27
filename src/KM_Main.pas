@@ -23,7 +23,7 @@ type
     fLastRenderTime, fOldFrameTimes, fFrameCount: Cardinal;
     fMutex: THandle;
 
-    fMainSettings: TKMainSettings;
+//    fMainSettings: TKMainSettings;
     fResolutions: TKMResolutions;
     fMapCacheUpdater: TTMapsCacheUpdater;
 
@@ -83,7 +83,6 @@ type
     property GameTickInterval: Cardinal read fGameTickInterval;
 
     property Resolutions: TKMResolutions read fResolutions;
-    property Settings: TKMainSettings read fMainSettings;
   end;
 
 
@@ -246,14 +245,14 @@ begin
 
   //Only after we read settings (fullscreen property and resolutions)
   //we can decide whenever we want to create Game fullscreen or not (OpenGL init depends on that)
-  gGameAppSettings := TKMGameAppSettings.Create;
-  fMainSettings := TKMainSettings.Create(Screen.Width, Screen.Height);
+  gGameAppSettings := TKMGameAppSettings.Create(Screen.Width, Screen.Height);
+
   //We need to verify INI values, as they can be from another display
-  if not fResolutions.IsValid(fMainSettings.Resolution) then
+  if not fResolutions.IsValid(gMainSettings.Resolution) then
   begin
-    fMainSettings.Resolution := fResolutions.FindCorrect(fMainSettings.Resolution);
-    if not fResolutions.IsValid(fMainSettings.Resolution) then
-      fMainSettings.FullScreen := False;
+    gMainSettings.Resolution := fResolutions.FindCorrect(gMainSettings.Resolution);
+    if not fResolutions.IsValid(gMainSettings.Resolution) then
+      gMainSettings.FullScreen := False;
   end;
 
   gVideoPlayer := TKMVideoPlayer.Create(ENABLE_VIDEOS_UNDER_WINE or not IsUnderWine);
@@ -264,8 +263,8 @@ begin
   fFormMain.ControlsSetVisibile(SHOW_DEBUG_CONTROLS);
 
   // Check INI window params, if not valid - set NeedResetToDefaults flag for future update
-  if not fMainSettings.WindowParams.IsValid(GetScreenMonitorsInfo) then
-    fMainSettings.WindowParams.NeedResetToDefaults := True;
+  if not gMainSettings.WindowParams.IsValid(GetScreenMonitorsInfo) then
+    gMainSettings.WindowParams.NeedResetToDefaults := True;
 
   // Stop app if we did not ReinitRender properly (didn't pass game folder permissions test)
   //todo: refactor. Separate folder permissions check and render initialization
@@ -354,13 +353,13 @@ begin
     FreeThenNil(gSystem);
     //Reset the resolution
     FreeThenNil(fResolutions);
-    FreeThenNil(fMainSettings);
 
     if fMapCacheUpdater <> nil then
       fMapCacheUpdater.Stop;
 
+    FreeThenNil(gGameAppSettings); // Before GameApp is destroyed
     FreeThenNil(gGameApp);
-    FreeThenNil(gGameAppSettings); // After GameApp is destroyed
+
     FreeThenNil(gLog);
 
     {$IFDEF MSWindows}
@@ -394,7 +393,7 @@ end;
 //Apply the cursor restriction when alt-tabbing back
 procedure TKMMain.DoRestore(Sender: TObject);
 begin
-  if Application.Active and (fMainSettings <> nil) then
+  if Application.Active and (gMainSettings <> nil) then
     ApplyCursorRestriction; //Cursor restriction is lost when alt-tabbing out, so we need to apply it again
 end;
 
@@ -412,7 +411,7 @@ begin
   if Application.Active then Exit;
 
   //Prevent the game window from being in the way by minimizing when alt-tabbing
-  if (fMainSettings <> nil) and fMainSettings.FullScreen then
+  if (gMainSettings <> nil) and gMainSettings.FullScreen then
   begin
     {$IFDEF MSWindows}
       ClipCursor(nil); //Remove all cursor clipping just in case Windows doesn't automatically
@@ -426,7 +425,7 @@ procedure TKMMain.UpdateFPS(latestFrameTime: Cardinal);
 var
   fpsLag: Integer;
 begin
-  if fMainSettings <> nil then //fMainSettings could be nil on Game Exit ?? Just check if its not nil
+  if gMainSettings <> nil then //gMainSettings could be nil on Game Exit ?? Just check if its not nil
   begin
     Inc(fOldFrameTimes, latestFrameTime);
     Inc(fFrameCount);
@@ -436,7 +435,7 @@ begin
       if gGameApp <> nil then
         gGameApp.FPSMeasurement(Round(fFPS));
 
-      fpsLag := 1000 div fMainSettings.FPSCap;
+      fpsLag := 1000 div gMainSettings.FPSCap;
       fFPSString := Format('%.1f FPS', [fFPS]) + IfThen(CAP_MAX_FPS, ' (' + IntToStr(fpsLag) + ')');
       StatusBarText(SB_ID_FPS, fFPSString);
       fOldFrameTimes := 0;
@@ -449,8 +448,8 @@ end;
 function TKMMain.GetRenderInterval: Cardinal;
 begin
   Result := 0;
-  if CAP_MAX_FPS and (fMainSettings <> nil) then
-    Result := 1000 div fMainSettings.FPSCap;
+  if CAP_MAX_FPS and (gMainSettings <> nil) then
+    Result := 1000 div gMainSettings.FPSCap;
 end;
 
 
@@ -493,9 +492,9 @@ end;
 
 function TKMMain.ForcedRenderRequired: Boolean;
 begin
-  Result := (fMainSettings <> nil)
-    and fMainSettings.IsNoRenderMaxTimeSet
-    and (TimeSince(fLastRenderTime) > gMain.Settings.NoRenderMaxTime);
+  Result := (gMainSettings <> nil)
+    and gMainSettings.IsNoRenderMaxTimeSet
+    and (TimeSince(fLastRenderTime) > gMainSettings.NoRenderMaxTime);
 end;
 
 
@@ -598,26 +597,26 @@ function TKMMain.ReinitRender(aReturnToOptions: Boolean): Boolean;
 
 begin
   Result := True;
-  if fMainSettings.FullScreen then
+  if gMainSettings.FullScreen then
   begin
     // Lock window params while we are in FullScreen mode
-    fMainSettings.WindowParams.LockParams;
-    if fResolutions.IsValid(fMainSettings.Resolution) then
-      fResolutions.SetResolution(fMainSettings.Resolution)
+    gMainSettings.WindowParams.LockParams;
+    if fResolutions.IsValid(gMainSettings.Resolution) then
+      fResolutions.SetResolution(gMainSettings.Resolution)
     else
-      fMainSettings.FullScreen := False;
+      gMainSettings.FullScreen := False;
   end else
     fResolutions.Restore;
 
   fFormLoading.Position := poScreenCenter;
-  fFormMain.ToggleFullscreen(fMainSettings.FullScreen, fMainSettings.WindowParams.NeedResetToDefaults);
+  fFormMain.ToggleFullscreen(gMainSettings.FullScreen, gMainSettings.WindowParams.NeedResetToDefaults);
 
   //It's required to re-init whole OpenGL related things when RC gets toggled fullscreen
   FreeThenNil(gGameApp); //Saves all settings into ini file in midst
   gGameApp := TKMGameApp.Create(fFormMain.RenderArea,
                                 fFormMain.RenderArea.Width,
                                 fFormMain.RenderArea.Height,
-                                fMainSettings.VSync,
+                                gMainSettings.VSync,
                                 fFormLoading.LoadingStep,
                                 fFormLoading.LoadingText,
                                 StatusBarText);
@@ -659,8 +658,8 @@ begin
   ForceResize; //Force everything to resize
 
   // Unlock window params if are no longer in FullScreen mode
-  if not fMainSettings.FullScreen then
-    fMainSettings.WindowParams.UnlockParams;
+  if not gMainSettings.FullScreen then
+    gMainSettings.WindowParams.UnlockParams;
 
   ApplyCursorRestriction;
 end;
@@ -829,9 +828,9 @@ end;
 procedure TKMMain.UpdateWindowParams(const aWindowParams: TKMWindowParamsRecord);
 begin
   if gGameApp = nil then Exit;
-  if fMainSettings.WindowParams = nil then Exit; //just in case...
+  if gMainSettings.WindowParams = nil then Exit; //just in case...
 
-  fMainSettings.WindowParams.ApplyWindowParams(aWindowParams);
+  gMainSettings.WindowParams.ApplyWindowParams(aWindowParams);
 end;
 
 
@@ -863,7 +862,7 @@ var
 begin
   //This restriction is removed when alt-tabbing out, and added again when alt-tabbing back
   {$IFDEF MSWindows}
-  if fMainSettings.FullScreen then
+  if gMainSettings.FullScreen then
   begin
     rect := fFormMain.BoundsRect;
     ClipCursor(@rect);

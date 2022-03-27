@@ -9,7 +9,7 @@ uses
   KM_Defaults, KM_CommonTypes, KM_CommonClasses,
 
   KM_IoXML, KM_InterfaceTypes,
-  KM_GameAppSettings;
+  KM_GameAppSettingsPart;
 
 
 type
@@ -217,7 +217,6 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    procedure SaveSettings; override;
 
     procedure LoadFromXML; override;
     procedure SaveToXML; override;
@@ -341,22 +340,21 @@ uses
 { TGameSettings }
 constructor TKMGameSettings.Create;
 begin
+  inherited;
+
   fWareDistribution := TKMWareDistribution.Create;
 
   fFavouriteMaps := TKMMapsCRCList.Create;
   fFavouriteMaps.OnMapsUpdate := SetMenuFavouriteMapsStr;
-
-  inherited;
 end;
 
 
 destructor TKMGameSettings.Destroy;
 begin
-  inherited; // Save settings first
-
-  // Cleanup everything afterwards
   FreeAndNil(fWareDistribution);
   FreeAndNil(fFavouriteMaps);
+
+  inherited;
 end;
 
 
@@ -373,15 +371,6 @@ begin
   if Self = nil then Exit(nil);
 
   Result := fFavouriteMaps;
-end;
-
-
-//Save only when needed
-procedure TKMGameSettings.SaveSettings;
-begin
-  if SKIP_SETTINGS_SAVE then Exit;
-
-  gGameAppSettings.SaveSettings;
 end;
 
 
@@ -616,6 +605,8 @@ begin
   inherited;
 
   nGameSettings := Root.AddOrFindChild('Game');
+  // Clear old data before filling in
+  nGameSettings.Clear;
 
   // Game GFX
   nGFX := nGameSettings.AddOrFindChild('GFX');
