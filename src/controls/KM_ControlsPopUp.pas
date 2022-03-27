@@ -5,7 +5,7 @@ uses
   Classes,
   Controls,
   KromOGLUtils,
-  KM_Controls, KM_ControlsList,
+  KM_Controls, KM_ControlsBase, KM_ControlsList,
   KM_ResFonts,
   KM_Points,
   KM_CommonTypes;

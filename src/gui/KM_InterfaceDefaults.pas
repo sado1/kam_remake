@@ -6,7 +6,8 @@ uses
   {$IFDEF Unix} LCLType, {$ENDIF}
   Classes,
   Controls,
-  KM_Controls, KM_Points, KM_ResFonts,
+  KM_Controls, KM_ControlsBase,
+  KM_Points, KM_ResFonts,
   KM_ResTypes, KM_InterfaceTypes;
 
 

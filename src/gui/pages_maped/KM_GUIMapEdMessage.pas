@@ -3,7 +3,7 @@ unit KM_GUIMapEdMessage;
 interface
 uses
    Classes, SysUtils,
-   KM_Controls, KM_Defaults;
+   KM_Controls, KM_ControlsBase, KM_Defaults;
 
 type
   TKMMapEdMessage = class

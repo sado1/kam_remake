@@ -5,7 +5,8 @@ uses
   Classes, Controls,
   KromOGLUtils,
   KM_RenderUI, KM_Minimap, KM_Viewport,
-  KM_ResFonts, KM_CommonTypes, KM_Points, KM_Defaults, KM_Controls;
+  KM_ResFonts, KM_CommonTypes, KM_Points, KM_Defaults,
+  KM_Controls, KM_ControlsBase;
 
 
 type

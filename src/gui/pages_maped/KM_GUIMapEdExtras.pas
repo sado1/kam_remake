@@ -4,7 +4,7 @@ interface
 uses
    Classes, SysUtils,
    KM_Defaults,
-   KM_Controls, KM_ControlsDrop, KM_ControlsSwitch, KM_ControlsTrackBar;
+   KM_Controls, KM_ControlsBase, KM_ControlsDrop, KM_ControlsSwitch, KM_ControlsTrackBar;
 
 type
   TKMMapEdExtras = class
