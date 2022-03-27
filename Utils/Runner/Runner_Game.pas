@@ -500,17 +500,17 @@ begin
     Output := + GetHouseQty(htAny) * HOUSE_WEIGHT
               + GetWeaponsProduced * WEAPONS_WEIGHT
               - GetCitizensLost * CITIZENS_LOST;
-    IronArmy := Min( GetWaresProduced(wtMetalArmor),
-                       GetWaresProduced(wtHallebard)
-                     + GetWaresProduced(wtArbalet)
-                     + Min(GetWaresProduced(wtSword), GetWaresProduced(wtMetalShield))
+    IronArmy := Min( GetWaresProduced(wtIronArmor),
+                       GetWaresProduced(wtPike)
+                     + GetWaresProduced(wtCrossbow)
+                     + Min(GetWaresProduced(wtSword), GetWaresProduced(wtIronShield))
                    );
-    WoodArmy := Min( GetWaresProduced(wtArmor),
+    WoodArmy := Min( GetWaresProduced(wtLeatherArmor),
                        GetWaresProduced(wtBow)
                      + GetWaresProduced(wtPike)
-                     + Min(GetWaresProduced(wtShield), GetWaresProduced(wtAxe))
+                     + Min(GetWaresProduced(wtWoodenShield), GetWaresProduced(wtAxe))
                    );
-    Militia := Min( Max(0,WoodArmy - GetWaresProduced(wtArmor)), GetWaresProduced(wtAxe));
+    Militia := Min( Max(0,WoodArmy - GetWaresProduced(wtLeatherArmor)), GetWaresProduced(wtAxe));
     Output := Output
               + IronArmy * IRON_SOLDIER
               + WoodArmy * WOOD_SOLDIER
@@ -831,17 +831,17 @@ procedure TKMRunnerFindBugs.Execute(aRun: Integer);
       Output := + GetHouseQty(htAny) * HOUSE_WEIGHT
                 + GetWeaponsProduced * WEAPONS_WEIGHT
                 - GetCitizensLost * CITIZENS_LOST;
-      IronArmy := Min( GetWaresProduced(wtMetalArmor),
-                         GetWaresProduced(wtHallebard)
-                       + GetWaresProduced(wtArbalet)
-                       + Min(GetWaresProduced(wtSword), GetWaresProduced(wtMetalShield))
+      IronArmy := Min( GetWaresProduced(wtIronArmor),
+                         GetWaresProduced(wtPike)
+                       + GetWaresProduced(wtCrossbow)
+                       + Min(GetWaresProduced(wtSword), GetWaresProduced(wtIronShield))
                      );
-      WoodArmy := Min( GetWaresProduced(wtArmor),
+      WoodArmy := Min( GetWaresProduced(wtLeatherArmor),
                          GetWaresProduced(wtBow)
                        + GetWaresProduced(wtPike)
-                       + Min(GetWaresProduced(wtShield), GetWaresProduced(wtAxe))
+                       + Min(GetWaresProduced(wtWoodenShield), GetWaresProduced(wtAxe))
                      );
-      Militia := Min( Max(0,WoodArmy - GetWaresProduced(wtArmor)), GetWaresProduced(wtAxe));
+      Militia := Min( Max(0,WoodArmy - GetWaresProduced(wtLeatherArmor)), GetWaresProduced(wtAxe));
       Output := Output
                 + IronArmy * IRON_SOLDIER
                 + WoodArmy * WOOD_SOLDIER
@@ -2061,8 +2061,8 @@ begin
   //fPlayers[0].AddUnitGroup(ut_Hallebardman, KMPoint(63, 64), dir_E, 8, 24);
   //fPlayers[1].AddUnitGroup(ut_Cavalry, KMPoint(65, 64), dir_W, 8, 24);
 
-  gHands[0].AddUnitGroup(utSwordsman, KMPoint(63, 64), TKMDirection(dirE), 8, 24);
-  gHands[1].AddUnitGroup(utSwordsman, KMPoint(65, 64), TKMDirection(dirW), 8, 24);
+  gHands[0].AddUnitGroup(utSwordFighter, KMPoint(63, 64), TKMDirection(dirE), 8, 24);
+  gHands[1].AddUnitGroup(utSwordFighter, KMPoint(65, 64), TKMDirection(dirW), 8, 24);
 
   gHands[1].UnitGroups[0].OrderAttackUnit(gHands[0].Units[0], True);
 
