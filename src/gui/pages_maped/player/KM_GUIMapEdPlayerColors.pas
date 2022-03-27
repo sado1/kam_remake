@@ -3,7 +3,7 @@ unit KM_GUIMapEdPlayerColors;
 interface
 uses
    Classes, SysUtils,
-   KM_Controls, KM_ControlsEdit, KM_ControlsSwitch;
+   KM_Controls, KM_ControlsColor, KM_ControlsEdit, KM_ControlsSwitch;
 
 type
   TKMPlayerTab = (ptGoals, ptColor, ptBlockHouse, ptBlockTrade, ptMarkers);
