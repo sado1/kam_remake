@@ -368,7 +368,7 @@
 370:Výšiny
 371:Políčka
 372:Objekty
-373:Výšky
+373:Výška
 374:Tvar
 375:Velikost
 376:Posunutí změní velikost štetce
@@ -429,7 +429,7 @@
 434:Nevolníci a školy
 435:Vojenské budovy
 436:Neznámé
-437:Vojáci
+437:Armády
 438:Budovy
 439:Čas
 440:Tutoriál
@@ -659,6 +659,7 @@
 670:Prodlení rekrutů
 671:Nastaví stejný směr pro všechny propojená políčka vody
 673:Kopírovat
+672:Magická voda
 674:Vložit
 675:Použít vložení
 676:Zrušit vložení
@@ -912,6 +913,7 @@
 961:Běžné klávesy
 962:Herní klávesy
 963:Klávesy editoru map
+964:Čekání na odpojené hráče, data:
 965:Vybere políčko pod kurzorem
 966:Kovárna brnění není obydlena
 967:Výrobna brnění není obydlena
@@ -1019,6 +1021,7 @@
 1069:Posunout hranice:
 1070:Změnit velikost|a uložit
 1071:Změnit velikost mapy a uložit
+1072:Velikost mapy
 1073:Opravdu chcete změnit velikost mapy?||Současná mapa se automaticky přepíše
 1074:Změnění velikosti nedostupné||Nejdříve je třeba uložit mapu
 1075:Měnič vlastníka objektu
@@ -1155,7 +1158,7 @@
 1206:Další možnosti
 1207:Zobrazí další možnosti štětce
 1208:Další možnosti
-1209:Opravit terén pro použití štětce
+1209:Opravit terén
 1210:Pokusí se opravit terén pro umožnění použití štětce
 1211:Opravit terén pro použití štětce
 1212:Opravdu chcete opravit|všechny informace o terénu?|Toto umožní použití štětce|místo ručního vkládání políček
@@ -1205,3 +1208,291 @@
 1256:Jednotky (N/D/R)
 1257:Jednotky (ostatní)
 1258:Otevření/zavření panelu diváka
+1259:Dodávka je zakázána: %s
+1260:Zásobování je zakázáno: %s
+1261:Rekrutovi není povolen vstup do hradu
+1262:Najdi pole podle ID
+1263:Generátor náhodné mapy - Nastavení
+1264:Nastavení generátoru náhodné mapy
+1265:GNM Nastavení
+1266:Velikost mapy:
+1267:Lokace
+1268:Povol lokace se surovinami
+1269:Počet lokací
+1270:Specifikuje počet lokací
+1271:Ochranný rádius
+1272:Specifikuje velikost ochranného rádiusu. Ochraný rádius rezervuje místo pro budování města.
+1273:Propoj lokace
+1274:Zajistí propojení jednotlivých lokací
+1275:Rozvržení
+1276:Rozvržení lokací na mapě
+1277:Obdélníkové
+1278:Vertikální
+1279:Horizontální
+1280:Náhodné
+1281:Pozice obrazovky
+1282:Zdroje
+1283:Zpřístupní zdroje pro každou lokaci (uhlí je přidáno automaticky)
+1284:Opravení dolů
+1285:Zajistí těžitelnost generovaných zdrojů (zlatý a železný důl)
+1286:Kvantita zdrojů: kamení
+1287:Kvantita zdrojů: zlatá ruda
+1288:Kvantita zdrojů: železná ruda
+1289:Překážky
+1290:Povolí překážky (hory, řeky, močály, atd.)
+1291:Velikost
+1292:Průměrná velikost vygenerované překážky
+1293:Hustota
+1294:Hustota generování překážek
+1295:Variance
+1296:Variance velikosti překážek
+1297:Poměr
+1298:Typ a poměr generovaných překážek
+1299:Vytěžené zlato
+1300:Poměr vytěženého zlata
+1301:Vytěžené železo
+1302:Poměr vytěženého železa
+1303:Bažina
+1304:Poměr bažin
+1305:Mokřad
+1306:Poměř mokřadů
+1307:Voda
+1308:Poměr vody
+1309:Biomy
+1310:Povol Biomy
+1311:Typ biomu
+1312:Vybere požadovaný biom
+1313:Tráva
+1314:Tráva je výchozí biom, a proto nemůže být odebrána
+1315:Země
+1316:Povolí generování země
+1317:Sníh
+1318:Povolí generování sněhu
+1319:Písek
+1320:Povolí generování písku
+1321:První vrstva
+1322:První vrstva biomu (vlastnosti primární textury)
+1323:Druhá vrstva
+1324:Druhá vrstva biomu (vlastnosti sekundární textury)
+1325:Krok
+1326:Krok primární vrstvy (větší hodnota = větší biom)
+1327:Krok sekundární vrstvy textures (větší hodnota = větší biom)
+1328:Limit
+1329:Limitace prahů biomu (větší hodnota = větší biom)
+1330:Výška
+1331:Povolí výšku
+1332:Skryj zubatý okraj
+1333:Upraví terén tak, že skryje zubaté okraje textur
+1334:Nepřístupná místa
+1335:Detekuje nepřístupná místa
+1336:Blokuj přístupnost
+1337:Blokuje přístupnost (vylepší navigaci jednotek a generování navigační mřížky)
+1338:Změna textury
+1339:Nahradí terén speciálními biomy
+1340:Objekty
+1341:Povolí objekty
+1342:Zvířata
+1343:Povolí zvířata
+1344:Hustota objektů
+1345:Hustota lesů
+1346:Hustota lesů
+1347:Stromy
+1348:Počet stromů v lese
+1349:ID
+1350:Číslo, které je použito jako identifikátor pro opětovné generování náhodné mapy s totožnou konfigurací
+1351:Náhodné ID
+1352:Generovat mapu s novým ID
+1353:Generovat mapu
+1354:Generuje mapu se současným ID
+1355:Zavřít Generátor Náhodných Map
+1356:Velikost mapy:
+1357:Přehraje další krok v záznamu
+1358:Snadná
+1359:Velmi snadná
+1360:Těžká
+1361:Velmi těžká
+1362:Hostitel má odlišnou verzi hry
+1363:Vše
+1364:'%s' dostupný na všech pozicích
+1365:'%s' zakázaný na všech pozicích
+1366:Krokování algoritmu při generování nerovností (1 = malé, 10 = velké)
+1367:Sklon výšky terénu (0 = vyhlazený, 15 = hrbolatý)
+1368:Maximální výška přístupného terénu
+1369:Náhodná mapa
+1370:Mapa byla vytvořena automaticky pomocí generátoru náhodných map
+1371:Počáteční zdroje
+1372:Množství surovin ve skladišti
+1373:Málo
+1374:Středně
+1375:Hodně
+1376:Zvolit velikost mapy
+1377:Try to start
+1378:Try to load save
+1379:Try to view replay
+1380:Chyba - načítání nepodporované verze %s hra uložená %s
+1381:Chyba - načítání nepodporované verze %s záznam uložen %s
+1382:Jméno mapy
+1383:Čas
+1384:Verze
+1385:Načtení nepodporované verze může způsobit nekonzistenci nebo pád hry
+1386:Nepodporovaná verze
+1387:Odemknout všechny kampaně?\nTato volba nemůže být vrácena.\n\Je vhodné zazálohovat soubor 'Campaigns.dat' uložený v\n'%s'\n\nPotvrdit operaci?
+1388:Hrubá maska - použij automaticky generované přechody
+1389:Zpoždění v herních ticích před tím, než AI začne trénovat lehce obrněné jednotky
+1390:Zpoždění v herních ticích před tím, než AI začne trénovat těžce obrněné jednotky
+1391:Nastaví počet dělníků
+1392:Úroveň promíchání
+1393:Úroveň promíchání přechodů odlišných terénů pomocí masky
+1394:Blokovat budování
+1395:Blokovat budování a chůzi
+1396:Překrývání polí
+1397:Nastaví překrývání polí.|Levé tlačítko myši = bezpečný mód, Levé tlačítko myši + Shift k přepsání cest
+1398:Videolipy:
+1399:Zapnout
+1400:Přizpůsobit obrazovce
+1401:Spustit při startu
+1402:Hlasitost
+1403:Hlasitost videa
+1404:Módy
+1405:Zasněžené domy
+1406:Blokovat výběr barvy hráče
+1407:Blokuje výběr barvy hráče
+1408:Historie
+1409:Historie změn mapy
+1410:Historie
+1411:Použít
+1412:Navrátit se na vybraný bod v historii změn mapy
+1413:Počátek
+1414:Přidat %s %s
+1415:Odstranit %s %s
+1416:Aktualizovat %s %s
+1417:Move %s %s
+1418:Změnit vlastníka: %s %s
+1419:cesta
+1420:pole
+1421:vinice
+1422:překrytí
+1423:objekt
+1424:You do not have enough permissions on the KaM Remake installation directory:\n'%s'\n\nTry to run it with administrative rights, reinstall the game into another directory or exclude KaM_Remake.exe from antivirus check
+1425:Paleta políček
+1426:Paleta políček
+1427:Verze
+1428:Fix terrain brushes
+1429:Make replay savepoints
+1430:Zpět na předešlou jednotku
+1431:Trénovat nebo vybavit jednotku
+1432:Vpřed na následující jednotku
+1433:Klávesy rozkazů jednotek
+1434:Klávesy domů
+1435:Zobrazit obranné pozice
+1436:Zobrazit rovný terén
+1437:Rychlost hry může být změněná hoditelem pouze pokud je jediným aktivním hráčem
+1438:Export zdrojů hotov: [ %s ]
+1439:Prohlížeč zpět
+1440:Prohlížeč vpřed
+1441:Prohlížeč obnovit
+1442:Prohlížeč zastavit
+1443:Prohlížeč hledat
+1444:Prohlížeč favorité
+1445:Prohlížeč domů
+1446:Ztlumit zvuk
+1447:Snížit hlasitost
+1448:Zvýšit hlasitost
+1449:Přehrát další skladbu
+1450:Přehrát předchozí skladbu
+1451:Zastavit přehrávání
+1452:Spustit / zastavit přehrávání
+1453:Spustit poštu
+1454:Spustit výběr média
+1455:Spustit aplikaci 1
+1456:Spustit aplikaci 2
+1457:Přehrát předchozí skladbu
+1458:Přehrát další skladbu
+1459:Vypnout hudbu
+1460:Náhodná skladba
+1461:Zvýšit hlasitost hudby
+1462:Snížit hlasitost hudby
+1463:Ztlumit hudbu
+1464:Zvýšit hlasitost
+1465:Snížit hlasitost
+1466:Ztlumit zvuk
+1467:Ztlumit vše (hudbu a zvuk)
+1468:Štětce
+1469:Stromy
+1470:Všechny objekty kromě stromů
+1471:Kameny
+1472:Květiny
+1473:Houby
+1474:Pařezy
+1475:Klády
+1476:Kaktusy
+1477:Pouštní keře
+1478:Ruiny
+1479:Přidat objekty
+1480:Současně s terénem přidá i objekty zvolené v záložce Objekty
+1481:Hustota
+1482:Hustota objektů / lesa
+1483:Stáří lesa
+1484:Čistící štětec, odstraní veškeré objekty
+1485:Vše
+1486:Sazenice
+1487:Vzrostlé
+1488:Mýtní
+1489:Všechny období růstu stromů
+1490:Sazenice stromů
+1491:Středně vzrostlé stromy
+1492:Mýtní věk
+1493:Vložit pouze terén z kopírované oblasti
+1494:Vložit pouze výšku z kopírované oblasti
+1495:Vložit pouze objekty z kopírované oblasti
+1496:Vložit pouze překryvy terénu z kopírované oblasti
+1497:Pevná výška
+1498:Nastavit pevnou výšku
+1499:Pevná výška
+1500:Výška aplikovaná v poli 'Pevná výška'
+1501:Specifický terén
+1502:Zvýší (levé tlačítko myši) / sníží (pravé tlačítko myši) všechen terén stejného typu (pozice kurzoru určuje typ terénu)
+1503:Přepsat objekty
+1504:Objekty budou nahrazeny jinými objekty, nebo budou smazány
+1505:Maska přechodu - použije automaticky vytvořené přechody
+1506:Dospělé
+1507:Dospělé stromy
+1508:Pařezy
+1509:Pařezy
+1510:Vše-
+1511:Všechny stromy kromě pařezů
+1512:Čas mise:
+1513:Současná rychlost hry
+1514:Současná rychlost záznamu
+1515:Nahrávaná rychlost hry
+1516:HD pohyby
+1517:HD pohyby
+1518:Zvýší rozlišení pohybu jednotek a projektilů
+1519:Hráč %0:s %1:s, pokud %3:s hráče %2:s budou %4:s
+1520:vyhraje
+1521:přežije
+1522:zničeny
+1523:zachráněny
+1524:hlavní budovy ( %s )
+1525:Pouze symetrická spojenectví jsou povolená
+1526:HD animace
+1527:HD animace
+1528:Zvýší počet snímků v animacích
+1529:Vyhladit vrcholy
+1530:Vyhladí vrcholky hor
+1531:Nastavení hry
+1532:Nastavení záznamu
+1533:Nastavení editoru map
+1534:Poznámka: Pokročilý počítač má své vlastní formace a nebude se řídit tímto nastavením
+1535:Zpět do kampaně
+1536:Náhodné skupiny
+1537:Typ skupiny
+1538:0 - Bez brnění, 1 - Kožené brnění, 2 - Železné brnění
+1539:Přidat vojáky
+1540:Spolu s umístěním obranné pozice přidá i vojáky. Typ vojáků se řídí nastavením obranné pozice.
+1541:Počet
+1542:Počet vojáků ve skupině. Pokud je roven 0, počítač vezme v potaz zadefinované formace.
+1543:Sloupce
+1544:Počet sloupců ve skupině. Pokud je roven 0, počítač vezme v potaz zadefinované formace.
+1545:Vyhladit zdroje uhlí
+1546:Zásoby uhlí ve vybrané oblasti budou automaticky vyhlazené od okrajů (pole s nízkým obsahem uhlí) do středu (pole s vysokým obsahem uhlí)
