@@ -815,6 +815,7 @@ var
   texFilter: TFilterType;
   Tx: Cardinal;
 begin
+  {$IFNDEF NO_OGL}
   for SAT := Low(TSpriteAtlasType) to High(TSpriteAtlasType) do
     for I := Low(fGFXPrepData[SAT]) to High(fGFXPrepData[SAT]) do
       with fGFXPrepData[SAT, I] do
@@ -833,6 +834,7 @@ begin
           SaveTextureToPNG(SpriteInfo.Width, SpriteInfo.Height, RXInfo[fRT].FileName + '_rxa_' +
                            SPRITE_TYPE_EXPORT_NAME[SAT] + IntToStr(I), Data);
       end;
+  {$ENDIF}
 end;
 
 
