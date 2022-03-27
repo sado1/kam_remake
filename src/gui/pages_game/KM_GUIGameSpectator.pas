@@ -996,7 +996,7 @@ begin
   FDropBoxPanel.Anchors := [anTop, anRight];
   //FDropBoxPanel.Focusable := false;
   FDropBoxPanel.Show;
-  FDropBox := TKMDropList.Create(FDropBoxPanel, 5, 5, DROPBOX_W, 20, fntMetal, '', bsGame, True, 0.85, TEXT_RENDER_LAYER);
+  FDropBox := TKMDropList.Create(FDropBoxPanel, 5, 5, DROPBOX_W, 20, fntMetal, '', bsGame, True, 0.85, DROPBOX_RENDER_LAYER);
   FDropBox.OnChange := ChangePage;
   FDropBox.DropCount := LINES_CNT;
 
