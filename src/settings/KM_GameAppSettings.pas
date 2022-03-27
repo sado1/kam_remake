@@ -59,8 +59,6 @@ begin
   FreeAndNil(gKeySettings);
   FreeAndNil(gGameSettings);
   FreeAndNil(gMainSettings);
-
-  gGameSettings := nil;
 end;
 
 
