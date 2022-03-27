@@ -33,6 +33,7 @@ type
     procedure SetItemIndex(aIndex: SmallInt); virtual; abstract;
   protected
     procedure DoClick(X,Y: Integer; Shift: TShiftState; Button: TMouseButton); override;
+    procedure SetLeft(aValue: Integer); override;
     procedure SetTop(aValue: Integer); override;
     procedure SetEnabled(aValue: Boolean); override;
     procedure SetVisible(aValue: Boolean); override;
@@ -306,10 +307,18 @@ begin
 end;
 
 
+procedure TKMDropCommon.SetLeft(aValue: Integer);
+begin
+  inherited;
+  // Stick the button to us
+  fButton.Left := Left + Width - Height;
+end;
+
+
 procedure TKMDropCommon.SetTop(aValue: Integer);
 begin
   inherited;
-  //Stick the button to us
+  // Stick the button to us
   fButton.Top := Top;
 end;
 
