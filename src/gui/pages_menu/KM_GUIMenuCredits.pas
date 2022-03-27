@@ -7,7 +7,7 @@ uses
   {$IFDEF FPC} LCLIntf, {$ENDIF} // Required for OpenURL in Lazarus
   Classes,
   Forms,
-  KM_Controls, KM_ControlsButton,
+  KM_Controls, KM_ControlsBase,
   KM_Defaults,
   KM_InterfaceDefaults, KM_InterfaceTypes;
 

@@ -1,4 +1,4 @@
-﻿unit KM_ControlsButton;
+﻿unit KM_ControlsBase;
 {$I KaM_Remake.inc}
 interface
 uses

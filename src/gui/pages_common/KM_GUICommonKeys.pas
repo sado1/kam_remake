@@ -3,7 +3,7 @@ unit KM_GUICommonKeys;
 interface
 uses
   Classes, KM_ResKeys,
-  KM_Controls, KM_ControlsButton, KM_ControlsList, KM_ControlsPopUp,
+  KM_Controls, KM_ControlsBase, KM_ControlsList, KM_ControlsPopUp,
   KM_CommonTypes;
 
 type

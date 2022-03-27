@@ -3,7 +3,7 @@ unit KM_GUIMenuError;
 interface
 uses
   Math, SysUtils,
-  KM_Controls, KM_ControlsButton,
+  KM_Controls, KM_ControlsBase,
   KM_InterfaceDefaults, KM_InterfaceTypes;
 
 

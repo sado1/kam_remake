@@ -3,7 +3,7 @@ unit KM_GUIMapEdMenuSave;
 interface
 uses
    Classes, SysUtils,
-   KM_Controls, KM_ControlsButton, KM_ControlsEdit, KM_ControlsSwitch,
+   KM_Controls, KM_ControlsBase, KM_ControlsEdit, KM_ControlsSwitch,
    KM_Maps, KM_InterfaceGame, KM_CommonTypes, KM_ResFonts;
 
 

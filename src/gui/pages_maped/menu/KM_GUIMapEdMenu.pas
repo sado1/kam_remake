@@ -3,7 +3,7 @@ unit KM_GUIMapEdMenu;
 interface
 uses
   Classes, SysUtils,
-  KM_Controls, KM_ControlsButton,
+  KM_Controls, KM_ControlsBase,
   KM_InterfaceGame, KM_InterfaceDefaults,
   KM_GUIMapEdMenuResize,
   KM_GUIMapEdMenuQuickPlay,

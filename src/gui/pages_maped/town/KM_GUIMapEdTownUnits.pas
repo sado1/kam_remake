@@ -4,7 +4,7 @@ interface
 uses
    Classes, Math, StrUtils, SysUtils,
    KM_InterfaceDefaults,
-   KM_Controls, KM_ControlsButton, KM_ControlsEdit,
+   KM_Controls, KM_ControlsBase, KM_ControlsEdit,
    KM_Defaults, KM_Pics;
 
 type

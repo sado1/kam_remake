@@ -3,7 +3,7 @@ unit KM_GUIMapEdMenuResize;
 interface
 uses
    Classes, SysUtils,
-   KM_Controls, KM_ControlsButton, KM_ControlsEdit;
+   KM_Controls, KM_ControlsBase, KM_ControlsEdit;
 
 
 type

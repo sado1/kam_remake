@@ -3,7 +3,7 @@ unit KM_GUIMapEdPlayerGoals;
 interface
 uses
    Classes, Math, SysUtils,
-   KM_Controls, KM_ControlsButton, KM_ControlsList,
+   KM_Controls, KM_ControlsBase, KM_ControlsList,
    KM_Defaults,
    KM_InterfaceGame, KM_AIGoals,
    KM_GUIMapEdPlayerGoalPopUp;

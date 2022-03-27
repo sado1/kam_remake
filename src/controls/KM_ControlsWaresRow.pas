@@ -3,7 +3,7 @@
 interface
 uses
   Classes, Controls,
-  KM_Controls, KM_ControlsButton,
+  KM_Controls, KM_ControlsBase,
   KM_ResTypes,
   KM_CommonTypes, KM_Defaults;
 

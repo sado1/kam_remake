@@ -3,7 +3,7 @@ unit KM_GUIMapEdMenuQuit;
 interface
 uses
    Classes, SysUtils,
-   KM_Controls, KM_ControlsButton,
+   KM_Controls, KM_ControlsBase,
    KM_Defaults;
 
 type

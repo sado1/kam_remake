@@ -5,7 +5,7 @@ uses
    {$IFDEF MSWindows} Windows, {$ENDIF}
    {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
    Classes, Math, SysUtils, KM_Utils,
-   KM_Controls, KM_ControlsButton,
+   KM_Controls, KM_ControlsBase,
    KM_Defaults,
    KM_InterfaceDefaults,
    KM_GUIMapEdRMG, KM_Pics, KM_TerrainTypes;

@@ -3,7 +3,7 @@ unit KM_GUIMapEdMission;
 interface
 uses
    Classes, Math, SysUtils,
-   KM_Controls, KM_ControlsButton,
+   KM_Controls, KM_ControlsBase,
    KM_InterfaceDefaults,
    KM_GUIMapEdMissionMode,
    KM_GUIMapEdMissionAlliances,

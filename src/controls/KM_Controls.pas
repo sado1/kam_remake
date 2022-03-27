@@ -555,7 +555,7 @@ uses
   Clipbrd,
   KromUtils,
   KM_System,
-  KM_ControlsButton, KM_ControlsDragger, KM_ControlsEdit, KM_ControlsSwitch, KM_ControlsTrackBar, KM_ControlsTypes,
+  KM_ControlsBase, KM_ControlsDragger, KM_ControlsEdit, KM_ControlsSwitch, KM_ControlsTrackBar, KM_ControlsTypes,
   KM_ControlsWaresRow,
   KM_Resource, KM_ResSprites, KM_ResSound, KM_ResTexts, KM_ResKeys,
   KM_Render, KM_RenderTypes,

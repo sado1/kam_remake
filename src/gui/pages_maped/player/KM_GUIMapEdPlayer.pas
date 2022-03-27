@@ -3,7 +3,7 @@ unit KM_GUIMapEdPlayer;
 interface
 uses
    Classes, Math, SysUtils,
-   KM_Controls, KM_ControlsButton,
+   KM_Controls, KM_ControlsBase,
    KM_Defaults, KM_Pics,
    KM_InterfaceDefaults,
    KM_GUIMapEdPlayerBlockHouse,

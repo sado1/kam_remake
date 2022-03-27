@@ -65,7 +65,7 @@ uses
   KM_Console in 'src\KM_Console.pas',
   
   KM_Controls in 'src\controls\KM_Controls.pas',
-  KM_ControlsButton in 'src\controls\KM_ControlsButton.pas',
+  KM_ControlsBase in 'src\controls\KM_ControlsBase.pas',
   KM_ControlsChart in 'src\controls\KM_ControlsChart.pas',
   KM_ControlsColor in 'src\controls\KM_ControlsColor.pas',
   KM_ControlsDragger in 'src\controls\KM_ControlsDragger.pas',
