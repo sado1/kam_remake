@@ -20,7 +20,7 @@ type
     BackAlpha: Single;
     EdgeAlpha: Single;
     Color: TKMColor3f;
-    constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aPaintLayer: Integer = 0);
+    constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aPaintLayer: TKMPaintLayer = pl0);
 
     procedure SetDefBackAlpha;
     procedure SetDefEdgeAlpha;
@@ -37,7 +37,7 @@ type
     LineColor: TColor4; //color of outline
     LineWidth: Byte;
   public
-    constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aPaintLayer: Integer = 0);
+    constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aPaintLayer: TKMPaintLayer = pl0);
     procedure Paint; override;
   end;
 
@@ -68,9 +68,9 @@ type
     MaxLines: Integer;
 
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; const aCaption: UnicodeString;
-                       aFont: TKMFont; aTextAlign: TKMTextAlign; aPaintLayer: Integer = 0); overload;
+                       aFont: TKMFont; aTextAlign: TKMTextAlign; aPaintLayer: TKMPaintLayer = pl0); overload;
     constructor Create(aParent: TKMPanel; aLeft,aTop: Integer; const aCaption: UnicodeString; aFont: TKMFont;
-                       aTextAlign: TKMTextAlign; aPaintLayer: Integer = 0); overload;
+                       aTextAlign: TKMTextAlign; aPaintLayer: TKMPaintLayer = pl0); overload;
 
     function HitTest(X, Y: Integer; aIncludeDisabled: Boolean = False; aIncludeNotHitable: Boolean = False): Boolean; override;
     procedure SetColor(aColor: Cardinal);
@@ -114,7 +114,7 @@ type
     ClipToBounds: Boolean;
     Tiled: Boolean;
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aTexID: Word; aRX: TRXType = rxGui;
-                       aPaintLayer: Integer = 0; aImageAnchors: TKMAnchorsSet = [anLeft, anTop]);
+                       aPaintLayer: TKMPaintLayer = pl0; aImageAnchors: TKMAnchorsSet = [anLeft, anTop]);
     property RX: TRXType read fRX write fRX;
     property TexID: Word read fTexID write fTexID;
     property FlagColor: TColor4 read fFlagColor write fFlagColor;
@@ -165,9 +165,9 @@ type
     TextVAlign: TKMTextVAlign;
     AutoTextPadding: Byte;      //text padding for autoHeight
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aTexID: Word; aRX: TRXType;
-                       aStyle: TKMButtonStyle; aPaintLayer: Integer = 0); overload;
+                       aStyle: TKMButtonStyle; aPaintLayer: TKMPaintLayer = pl0); overload;
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; const aCaption: UnicodeString;
-                       aStyle: TKMButtonStyle; aPaintLayer: Integer = 0); overload;
+                       aStyle: TKMButtonStyle; aPaintLayer: TKMPaintLayer = pl0); overload;
     function Click: Boolean; //Try to click a button and return TRUE if succeded
 
     property Caption: UnicodeString read fCaption write SetCaption;
@@ -238,7 +238,7 @@ uses
 
 
 { TKMBevel }
-constructor TKMBevel.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aPaintLayer: Integer = 0);
+constructor TKMBevel.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aPaintLayer: TKMPaintLayer = pl0);
 begin
   inherited Create(aParent, aLeft, aTop, aWidth, aHeight, aPaintLayer);
 
@@ -273,7 +273,7 @@ end;
 
 
 { TKMShape }
-constructor TKMShape.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aPaintLayer: Integer = 0);
+constructor TKMShape.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aPaintLayer: TKMPaintLayer = pl0);
 begin
   inherited Create(aParent, aLeft, aTop, aWidth, aHeight, aPaintLayer);
 
@@ -291,7 +291,7 @@ end;
 
 { TKMLabel }
 constructor TKMLabel.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; const aCaption: UnicodeString;
-                            aFont: TKMFont; aTextAlign: TKMTextAlign; aPaintLayer: Integer = 0);
+                            aFont: TKMFont; aTextAlign: TKMTextAlign; aPaintLayer: TKMPaintLayer = pl0);
 begin
   inherited Create(aParent, aLeft, aTop, aWidth, aHeight, aPaintLayer);
   fFont := aFont;
@@ -306,7 +306,7 @@ end;
 
 //Same as above but with width/height ommitted, as in most cases we don't know/don't care
 constructor TKMLabel.Create(aParent: TKMPanel; aLeft, aTop: Integer; const aCaption: UnicodeString; aFont: TKMFont;
-                            aTextAlign: TKMTextAlign; aPaintLayer: Integer = 0);
+                            aTextAlign: TKMTextAlign; aPaintLayer: TKMPaintLayer = pl0);
 begin
   Create(aParent, aLeft, aTop, 0, 0, aCaption, aFont, aTextAlign, aPaintLayer);
 end;
@@ -465,7 +465,7 @@ end;
 
 { TKMImage }
 constructor TKMImage.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aTexID: Word; aRX: TRXType = rxGui;
-                            aPaintLayer: Integer = 0; aImageAnchors: TKMAnchorsSet = [anLeft, anTop]);
+                            aPaintLayer: TKMPaintLayer = pl0; aImageAnchors: TKMAnchorsSet = [anLeft, anTop]);
 begin
   inherited Create(aParent, aLeft, aTop, aWidth, aHeight, aPaintLayer);
   fRX := aRX;
@@ -617,7 +617,7 @@ end;
 
 { TKMButton }
 constructor TKMButton.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aTexID: Word; aRX: TRXType;
-                             aStyle: TKMButtonStyle; aPaintLayer: Integer = 0);
+                             aStyle: TKMButtonStyle; aPaintLayer: TKMPaintLayer = pl0);
 begin
   inherited Create(aParent, aLeft, aTop, aWidth, aHeight, aPaintLayer);
   InitCommon(aStyle);
@@ -628,7 +628,7 @@ end;
 
 {Different version of button, with caption on it instead of image}
 constructor TKMButton.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; const aCaption: UnicodeString;
-                             aStyle: TKMButtonStyle; aPaintLayer: Integer = 0);
+                             aStyle: TKMButtonStyle; aPaintLayer: TKMPaintLayer = pl0);
 begin
   inherited Create(aParent, aLeft, aTop, aWidth, aHeight, aPaintLayer);
   InitCommon(aStyle);

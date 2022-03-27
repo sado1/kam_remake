@@ -44,7 +44,7 @@ type
     WheelStep: Word;
 
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aScrollAxis: TKMScrollAxis;
-                       aStyle: TKMButtonStyle; aScrollStyle: TKMScrollStyle = ssGame; aPaintLevel: Integer = 0);
+                       aStyle: TKMButtonStyle; aScrollStyle: TKMScrollStyle = ssGame; aPaintLayer: TKMPaintLayer = pl0);
     property MinValue: Integer read fMinValue write SetMinValue;
     property MaxValue: Integer read fMaxValue write SetMaxValue;
     property Position: Integer read fPosition write SetPosition;
@@ -52,7 +52,7 @@ type
     procedure MouseMove(X,Y: Integer; Shift: TShiftState); override;
     procedure MouseWheel(Sender: TObject; WheelSteps: Integer; var aHandled: Boolean); override;
     property OnChange: TNotifyEvent read fOnChange write fOnChange;
-    procedure PaintPanel(aPaintLayer: Integer); override;
+    procedure PaintPanel(aPaintLayer: TKMPaintLayer); override;
   end;
 
 
@@ -114,7 +114,7 @@ type
 
     procedure MouseWheel(Sender: TObject; WheelSteps: Integer; var aHandled: Boolean); override;
 
-    procedure PaintPanel(aPaintLayer: Integer); override;
+    procedure PaintPanel(aPaintLayer: TKMPaintLayer); override;
   end;
 
 
@@ -126,11 +126,11 @@ uses
 
 { TKMScrollBar }
 constructor TKMScrollBar.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aScrollAxis: TKMScrollAxis;
-                                aStyle: TKMButtonStyle; aScrollStyle: TKMScrollStyle = ssGame; aPaintLevel: Integer = 0);
+                                aStyle: TKMButtonStyle; aScrollStyle: TKMScrollStyle = ssGame; aPaintLayer: TKMPaintLayer = pl0);
 var
   decId, incId: Integer;
 begin
-  inherited Create(aParent, aLeft, aTop, aWidth, aHeight, aPaintLevel);
+  inherited Create(aParent, aLeft, aTop, aWidth, aHeight, aPaintLayer);
   BackAlpha := 0.5;
   EdgeAlpha := 0.75;
   fScrollAxis := aScrollAxis;
@@ -349,7 +349,7 @@ begin
 end;
 
 
-procedure TKMScrollBar.PaintPanel(aPaintLayer: Integer);
+procedure TKMScrollBar.PaintPanel(aPaintLayer: TKMPaintLayer);
 var
   buttonState: TKMButtonStateSet;
 begin
@@ -760,7 +760,7 @@ end;
 
 
 //todo: Review aPaintLayer usage
-procedure TKMScrollPanel.PaintPanel(aPaintLayer: Integer);
+procedure TKMScrollPanel.PaintPanel(aPaintLayer: TKMPaintLayer);
 begin
   TKMRenderUI.SetupClipX(AbsDrawLeft, AbsDrawRight);
   TKMRenderUI.SetupClipY(AbsDrawTop, AbsDrawBottom);

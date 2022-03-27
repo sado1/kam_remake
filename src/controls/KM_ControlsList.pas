@@ -104,7 +104,7 @@ type
   public
     ItemTags: array of Integer;
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont; aStyle: TKMButtonStyle;
-                       aPaintLayer: Integer = 0);
+                       aPaintLayer: TKMPaintLayer = pl0);
     destructor Destroy; override;
 
     property AutoHideScrollBar: boolean read fAutoHideScrollBar write SetAutoHideScrollBar;
@@ -625,7 +625,7 @@ end;
 
 { TKMListBox }
 constructor TKMListBox.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont; aStyle: TKMButtonStyle;
-                              aPaintLayer: Integer = 0);
+                              aPaintLayer: TKMPaintLayer = pl0);
 begin
   inherited Create(aParent, aLeft, aTop, aWidth, aHeight, aPaintLayer);
   fBackAlpha := 0.5;

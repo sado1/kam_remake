@@ -95,7 +95,7 @@ type
 
     property HandleCloseKey: Boolean read fHandleCloseKey write SetHandleCloseKey;
 
-    procedure PaintPanel(aPaintLayer: Integer); override;
+    procedure PaintPanel(aPaintLayer: TKMPaintLayer); override;
   end;
 
 
@@ -122,7 +122,7 @@ type
 //    procedure MouseDown (X,Y: Integer; Shift: TShiftState; Button: TMouseButton); override;
 //    procedure MouseMove (X,Y: Integer; Shift: TShiftState); override;
 //    procedure MouseUp   (X,Y: Integer; Shift: TShiftState; Button: TMouseButton); override;
-//    procedure PaintPanel(aPaintLayer: Integer); override;
+//    procedure PaintPanel(aPaintLayer: TKMPaintLayer); override;
 //  end;
 
 
@@ -457,7 +457,7 @@ begin
 end;
 
 
-procedure TKMPopUpPanel.PaintPanel(aPaintLayer: Integer);
+procedure TKMPopUpPanel.PaintPanel(aPaintLayer: TKMPaintLayer);
 begin
   inherited;
 
@@ -605,7 +605,7 @@ end;
 //end;
 //
 //
-//procedure TKMForm.PaintPanel(aPaintLayer: Integer);
+//procedure TKMForm.PaintPanel(aPaintLayer: TKMPaintLayer);
 //begin
 //  TKMRenderUI.WriteShadow(AbsLeft, AbsTop, Width, Height, 15, $40000000);
 //

@@ -26,7 +26,7 @@ type
     FontColor: TColor4;
     TextYOffset: Integer;
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont = fntMini;
-                       aPaintLayer: Integer = 0);
+                       aPaintLayer: TKMPaintLayer = pl0);
     procedure SetCaptions(const aCaptionLeft, aCaption, aCaptionRight: UnicodeString);
     procedure Paint; override;
   end;
@@ -45,7 +45,7 @@ type
     procedure PaintBar; override;
   public
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont = fntMini;
-                       aPaintLayer: Integer = 0);
+                       aPaintLayer: TKMPaintLayer = pl0);
     property Seam: Single read fSeam write SetSeam;
     property Position: Single read fPosition write SetPosition;
     property MainColor: Cardinal read fMainColor write fMainColor;
@@ -106,7 +106,7 @@ uses
 
 { TKMProgressBarAbstract }
 constructor TKMProgressBarAbstract.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont = fntMini;
-                                          aPaintLayer: Integer = 0);
+                                          aPaintLayer: TKMPaintLayer = pl0);
 begin
   inherited Create(aParent, aLeft, aTop, aWidth, aHeight, aPaintLayer);
   fFont := aFont;
@@ -169,7 +169,7 @@ end;
 
 { TKMPercentBar }
 constructor TKMPercentBar.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont = fntMini;
-                                 aPaintLayer: Integer = 0);
+                                 aPaintLayer: TKMPaintLayer = pl0);
 begin
   inherited;
 

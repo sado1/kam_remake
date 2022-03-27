@@ -40,7 +40,7 @@ type
     procedure UpdateVisibility; override;
   public
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont; aStyle: TKMButtonStyle;
-                       aAutoClose: Boolean = True; aPaintLayer: Integer = 0);
+                       aAutoClose: Boolean = True; aPaintLayer: TKMPaintLayer = pl0);
 
     procedure Clear; virtual; abstract;
     function Count: Integer; virtual; abstract;
@@ -85,7 +85,7 @@ type
     procedure SetVisible(aValue: Boolean); override;
   public
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont; const aDefaultCaption: UnicodeString;
-                       aStyle: TKMButtonStyle; aAutoClose: Boolean = True; aBackAlpha: Single = 0.85; aPaintLayer: Integer = 0);
+                       aStyle: TKMButtonStyle; aAutoClose: Boolean = True; aBackAlpha: Single = 0.85; aPaintLayer: TKMPaintLayer = pl0);
     procedure Clear; override;
     function Count: Integer; override;
     procedure Add(const aItem: UnicodeString; aTag: Integer = 0);
@@ -157,7 +157,7 @@ uses
 
 { TKMDropCommon }
 constructor TKMDropCommon.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont;
-                                 aStyle: TKMButtonStyle; aAutoClose: Boolean = True; aPaintLayer: Integer = 0);
+                                 aStyle: TKMButtonStyle; aAutoClose: Boolean = True; aPaintLayer: TKMPaintLayer = pl0);
 var
   P: TKMPanel;
 begin
@@ -335,7 +335,7 @@ end;
 
 { TKMDropList }
 constructor TKMDropList.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont; const aDefaultCaption: UnicodeString;
-                               aStyle: TKMButtonStyle; aAutoClose: Boolean = True; aBackAlpha: Single = 0.85; aPaintLayer: Integer = 0);
+                               aStyle: TKMButtonStyle; aAutoClose: Boolean = True; aBackAlpha: Single = 0.85; aPaintLayer: TKMPaintLayer = pl0);
 begin
   inherited Create(aParent, aLeft, aTop, aWidth, aHeight, aFont, aStyle, aAutoClose, aPaintLayer);
 

@@ -32,6 +32,8 @@ type
                  hkStatic,  // 'Classic' hint: rendered in the game / mapEd at the bottom left of the play-area
                  hkTextNotFit); // Hint to show text, when it could not fit in the control, f.e. in the Lists and ColumnBoxes
 
+  TKMPaintLayer = (pl0, pl1, pl2, pl3);
+
   TKMControl = class;
   TKMPanel = class;
 
@@ -45,8 +47,8 @@ type
     fCtrlUp: TKMControl; //Control above which cursor was released
 
     fControlIDCounter: Integer;
-    fMaxPaintLayer: Integer;
-    fCurrentPaintLayer: Integer;
+    fMaxPaintLayer: TKMPaintLayer;
+    fCurrentPaintLayer: TKMPaintLayer;
 
     fMouseMoveSubsList: TList<TKMMouseMoveEvent>;
     fMouseDownSubsList: TList<TKMMouseUpDownEvent>;
@@ -191,7 +193,7 @@ type
     fEnabledVisually: Boolean;
     fMouseWheelStep: Integer;
     fTimeOfLastClick: Cardinal; //Required to handle double-clicks
-    fPaintLayer: Integer;
+    fPaintLayer: TKMPaintLayer;
 
     procedure SetLeft(aValue: Integer); virtual;
     procedure SetTop(aValue: Integer); virtual;
@@ -244,7 +246,7 @@ type
     procedure SetHint(const aHint: UnicodeString); virtual;
     procedure SetHintBackColor(const aValue: TKMColor4f); virtual;
 
-    procedure SetPaintLayer(aPaintLayer: Integer);
+    procedure SetPaintLayer(aPaintLayer: TKMPaintLayer);
     function PaintingBaseLayer: Boolean;
 
     function CanFocusNext: Boolean; virtual;
@@ -263,7 +265,7 @@ type
 
     DebugHighlight: Boolean;
 
-    constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aPaintLayer: Integer = 0);
+    constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aPaintLayer: TKMPaintLayer = pl0);
     destructor Destroy; override;
     function HitTest(X, Y: Integer; aIncludeDisabled: Boolean = False; aIncludeNotHitable: Boolean = False): Boolean; virtual;
 
@@ -389,7 +391,7 @@ type
     procedure UpdateVisibility; override;
     procedure UpdateEnableStatus; override;
     function DoPanelHandleMouseWheelByDefault: Boolean; virtual;
-    procedure DoPaint(aPaintLayer: Integer); virtual;
+    procedure DoPaint(aPaintLayer: TKMPaintLayer); virtual;
 
     procedure Enlarge(aChild: TKMControl);
   public
@@ -397,8 +399,8 @@ type
     FocusedControlIndex: Integer; //Index of currently focused control on this Panel
     ChildCount: Word;
     Childs: array of TKMControl;
-    constructor Create(aParent: TKMMasterControl; aLeft, aTop, aWidth, aHeight: Integer; aPaintLevel: Integer = 0); overload;
-    constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aPaintLevel: Integer = 0); overload;
+    constructor Create(aParent: TKMMasterControl; aLeft, aTop, aWidth, aHeight: Integer; aPaintLayer: TKMPaintLayer = pl0); overload;
+    constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aPaintLayer: TKMPaintLayer = pl0); overload;
     destructor Destroy; override;
     function AddChild(aChild: TKMControl): Integer; virtual;
     procedure SetCanChangeEnable(aEnable: Boolean; aExceptControls: array of TKMControlClass; aAlsoSetEnable: Boolean = True);
@@ -409,7 +411,7 @@ type
 
     property MasterControl: TKMMasterControl read fMasterControl;
 
-    procedure PaintPanel(aPaintLayer: Integer); virtual;
+    procedure PaintPanel(aPaintLayer: TKMPaintLayer); virtual;
 
     procedure UpdateState(aTickCount: Cardinal); override;
   end;
@@ -436,7 +438,7 @@ const
 
 
 { TKMControl }
-constructor TKMControl.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aPaintLayer: Integer = 0);
+constructor TKMControl.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aPaintLayer: TKMPaintLayer = pl0);
 begin
   inherited Create;
 
@@ -472,8 +474,11 @@ begin
   if aParent <> nil then
   begin
     fID := aParent.fMasterControl.GetNextCtrlID;
-    aParent.fMasterControl.fMaxPaintLayer := Max(aPaintLayer, aParent.fMasterControl.fMaxPaintLayer);
-  end else if Self is TKMPanel then
+
+    if aPaintLayer > aParent.fMasterControl.fMaxPaintLayer then
+      aParent.fMasterControl.fMaxPaintLayer := aPaintLayer;
+  end else
+  if Self is TKMPanel then
     fID := 0;
 
   //Parent will be Nil only for master Panel which contains all the controls in it
@@ -706,7 +711,7 @@ begin
 end;
 
 
-procedure TKMControl.SetPaintLayer(aPaintLayer: Integer);
+procedure TKMControl.SetPaintLayer(aPaintLayer: TKMPaintLayer);
 begin
   fPaintLayer := aPaintLayer;
 end;
@@ -821,7 +826,7 @@ end;
 
 function TKMControl.PaintingBaseLayer: Boolean;
 begin
-  Result := (fParent = nil) or (fParent.fMasterControl.fCurrentPaintLayer = 0);
+  Result := (fParent = nil) or (fParent.fMasterControl.fCurrentPaintLayer = pl0);
 end;
 
 
@@ -1362,9 +1367,9 @@ end;
 
 
 { TKMPanel } //virtual panels that contain child items
-constructor TKMPanel.Create(aParent: TKMMasterControl; aLeft, aTop, aWidth, aHeight: Integer; aPaintLevel: Integer = 0);
+constructor TKMPanel.Create(aParent: TKMMasterControl; aLeft, aTop, aWidth, aHeight: Integer; aPaintLayer: TKMPaintLayer = pl0);
 begin
-  inherited Create(nil, aLeft, aTop, aWidth, aHeight, aPaintLevel);
+  inherited Create(nil, aLeft, aTop, aWidth, aHeight, aPaintLayer);
 
   fMasterControl := aParent;
   aParent.fMasterPanel := Self;
@@ -1372,9 +1377,9 @@ begin
 end;
 
 
-constructor TKMPanel.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aPaintLevel: Integer = 0);
+constructor TKMPanel.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aPaintLayer: TKMPaintLayer = pl0);
 begin
-  inherited Create(aParent, aLeft, aTop, aWidth, aHeight, aPaintLevel);
+  inherited Create(aParent, aLeft, aTop, aWidth, aHeight, aPaintLayer);
 
   fMasterControl := aParent.fMasterControl;
   Init;
@@ -1682,14 +1687,14 @@ end;
 
 
 {Panel Paint means to Paint all its childs}
-procedure TKMPanel.PaintPanel(aPaintLayer: Integer);
+procedure TKMPanel.PaintPanel(aPaintLayer: TKMPaintLayer);
 begin
   Paint;
   DoPaint(aPaintLayer);
 end;
 
 
-procedure TKMPanel.DoPaint(aPaintLayer: Integer);
+procedure TKMPanel.DoPaint(aPaintLayer: TKMPaintLayer);
 var
   I: Integer;
 begin
@@ -2118,17 +2123,17 @@ begin
 end;
 
 
-{Paint controls}
-{Leave painting of childs to their parent control}
+// Paint controls
+// Leave painting of childs to their parent control
 procedure TKMMasterControl.Paint;
 var
-  I: Integer;
+  I: TKMPaintLayer;
   str: string;
 begin
   if Self = nil then Exit;
 
   CtrlPaintCount := 0;
-  for I := 0 to fMaxPaintLayer do
+  for I := Low(TKMPaintLayer) to fMaxPaintLayer do
   begin
     fCurrentPaintLayer := I;
     fMasterPanel.PaintPanel(I);

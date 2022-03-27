@@ -38,7 +38,7 @@ type
     property Progress: Single read FProgress write FProgress;
     property ShowItem: Boolean read fShowItem write fShowItem;
     procedure CreateChilds;
-    procedure PaintPanel(aPaintLayer: Integer); override;
+    procedure PaintPanel(aPaintLayer: TKMPaintLayer); override;
   end;
 
   TKMGameSpectatorItemLinesAggregator = class
@@ -83,7 +83,7 @@ type
     constructor Create(aParent: TKMPanel; AHandIndex: Integer;
                        aOnJumpToPlayer: TIntegerEvent; aSetViewportPos: TPointFEvent;
                        aLinesAggregator: TKMGameSpectatorItemLinesAggregator = nil); virtual;
-    procedure PaintPanel(aPaintLayer: Integer); override;
+    procedure PaintPanel(aPaintLayer: TKMPaintLayer); override;
     property HandIndex: Integer read FHandIndex;
   end;
 
@@ -246,11 +246,11 @@ const
   GUI_SPEC_HEADER_FLAG = 1164;
   GUI_SPEC_HEADER_FLAG_FRAME = 5;
 
-  BEVEL_RENDER_LAYER = 1;
-  PERCENTBAR_RENDER_LAYER = 1;
-  IMAGE_RENDER_LAYER = 2;
-  TEXT_RENDER_LAYER = 3;
-  DROPBOX_RENDER_LAYER = 3;
+  BEVEL_RENDER_LAYER = pl1;
+  PERCENTBAR_RENDER_LAYER = pl1;
+  IMAGE_RENDER_LAYER = pl2;
+  TEXT_RENDER_LAYER = pl3;
+  DROPBOX_RENDER_LAYER = pl3;
 
 { TKMGUIGameSpectatorItem }
 constructor TKMGUIGameSpectatorItem.Create(aParent: TKMPanel; ATag: Integer; AImageID: Word; const AHint: String;
@@ -299,7 +299,7 @@ begin
 end;
 
 
-procedure TKMGUIGameSpectatorItem.PaintPanel(aPaintLayer: Integer);
+procedure TKMGUIGameSpectatorItem.PaintPanel(aPaintLayer: TKMPaintLayer);
 var
   paintLightness: Single;
 begin
@@ -464,7 +464,7 @@ begin
 end;
 
 
-procedure TKMGUIGameSpectatorItemLine.PaintPanel(aPaintLayer: Integer);
+procedure TKMGUIGameSpectatorItemLine.PaintPanel(aPaintLayer: TKMPaintLayer);
 begin
   Image.TexId := GUI_SPEC_HEADER_FLAG + gGameParams.Tick mod GUI_SPEC_HEADER_FLAG_FRAME;
   Label_Text.Caption := gHands[FHandIndex].OwnerName(not gGameParams.IsSingleplayer);
