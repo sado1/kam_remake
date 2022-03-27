@@ -547,10 +547,6 @@ type
   end;
 
 
-const
-  DEFAULT_HIGHLIGHT_COEF = 0.4;
-
-
 implementation
 uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
@@ -559,7 +555,8 @@ uses
   Clipbrd,
   KromUtils,
   KM_System,
-  KM_ControlsButton, KM_ControlsDragger, KM_ControlsEdit, KM_ControlsSwitch, KM_ControlsTrackBar, KM_ControlsWaresRow,
+  KM_ControlsButton, KM_ControlsDragger, KM_ControlsEdit, KM_ControlsSwitch, KM_ControlsTrackBar, KM_ControlsTypes,
+  KM_ControlsWaresRow,
   KM_Resource, KM_ResSprites, KM_ResSound, KM_ResTexts, KM_ResKeys,
   KM_Render, KM_RenderTypes,
   KM_Sound, KM_CommonUtils, KM_UtilsExt,
@@ -2072,7 +2069,7 @@ begin
   ImageAnchors := aImageAnchors;
   Highlight := False;
   HighlightOnMouseOver := False;
-  HighlightCoef := DEFAULT_HIGHLIGHT_COEF;
+  HighlightCoef := CTRL_HIGHLIGHT_COEF_DEF;
 end;
 
 

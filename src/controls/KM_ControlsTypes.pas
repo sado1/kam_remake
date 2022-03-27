@@ -12,6 +12,9 @@ type
     acText,  //Anything is allowed except for eol symbol
     acAll    //Anything is allowed
   );
+
+const
+  CTRL_HIGHLIGHT_COEF_DEF = 0.4;
   
 
 implementation

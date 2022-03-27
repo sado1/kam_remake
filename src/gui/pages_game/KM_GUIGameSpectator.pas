@@ -229,6 +229,7 @@ implementation
 
 uses
   KM_InterfaceGame, KM_GameParams, KM_RenderUI, KM_ResFonts, KM_Resource, KM_ResTexts, KM_ResUnits,
+  KM_ControlsTypes,
   KM_UnitGroup, KM_HouseTownhall,
   KM_CommonUtils,
   KM_ResTypes;
@@ -304,7 +305,7 @@ var
 begin
   paintLightness := 0;
   if fShowItem then
-    paintLightness := DEFAULT_HIGHLIGHT_COEF * Byte(((csOver in Image.State) or (csOver in Bevel.State)) and FDoHighlight(FItemTag));
+    paintLightness := CTRL_HIGHLIGHT_COEF_DEF * Byte(((csOver in Image.State) or (csOver in Bevel.State)) and FDoHighlight(FItemTag));
 
   Image.Lightness := paintLightness;
 
