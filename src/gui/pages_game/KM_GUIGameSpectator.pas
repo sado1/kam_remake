@@ -11,6 +11,12 @@ uses
 
 
 type
+  // Type of things shown in spectator statistics
+  TKMHandStatType = (
+    slNone, slResources, slWarfare, slHouses, slConstructions, slSLR,
+    slWorkers, slArmy, slArmyTotal, slArmyKilling, slArmyLost
+  );
+
   TKMGUIGameSpectatorItem = class(TKMPanel)
   private
     fHandID: Integer;
@@ -202,15 +208,15 @@ type
   private
     FDropBoxPanel: TKMPanel;
     FDropBox: TKMDropList;
-    FLastIndex: Integer;
+    FLastIndex: TKMHandStatType;
 
     FOnJumpToPlayer: TIntegerEvent;
     FSetViewportPos: TPointFEvent;
 
-    FLinesAggregator: array of TKMGameSpectatorItemLinesAggregator;
-    FLines: array of array[0..MAX_HANDS - 1] of TKMGUIGameSpectatorItemLine;
+    FLinesAggregator: array [TKMHandStatType] of TKMGameSpectatorItemLinesAggregator;
+    FLines: array [TKMHandStatType] of array [0..MAX_HANDS - 1] of TKMGUIGameSpectatorItemLine;
 
-    procedure AddLineType(aParent: TKMPanel; AIndex: Integer; ALineClass: TKMGUIGameSpectatorItemLineClass);
+    procedure AddLineType(aParent: TKMPanel; aLineType: TKMHandStatType; ALineClass: TKMGUIGameSpectatorItemLineClass);
     procedure ChangePage(Sender: TObject);
   public
     constructor Create(aParent: TKMPanel; aOnJumpToPlayer: TIntegerEvent; aSetViewportPos: TPointFEvent);
@@ -973,22 +979,17 @@ begin
   fOnJumpToPlayer := aOnJumpToPlayer;
   fSetViewportPos := aSetViewportPos;
 
-  FLastIndex := 0;
-
-  SetLength(FLines, LINES_CNT);
-  SetLength(FLinesAggregator, LINES_CNT);
-
-  AddLineType(aParent, 0, nil);
-  AddLineType(aParent, 1, TKMGUIGameSpectatorItemLineResources);
-  AddLineType(aParent, 2, TKMGUIGameSpectatorItemLineWarFare);
-  AddLineType(aParent, 3, TKMGUIGameSpectatorItemLineHouses);
-  AddLineType(aParent, 4, TKMGUIGameSpectatorItemLineConstructing);
-  AddLineType(aParent, 5, TKMGUIGameSpectatorItemLinePopulationSLR);
-  AddLineType(aParent, 6, TKMGUIGameSpectatorItemLinePopulationHouseWorkers);
-  AddLineType(aParent, 7, TKMGUIGameSpectatorItemLineArmyInstantenious);
-  AddLineType(aParent, 8, TKMGUIGameSpectatorItemLineArmyTotal);
-  AddLineType(aParent, 9, TKMGUIGameSpectatorItemLineArmyKilling);
-  AddLineType(aParent, 10, TKMGUIGameSpectatorItemLineArmyLost);
+  AddLineType(aParent, slNone, nil);
+  AddLineType(aParent, slResources, TKMGUIGameSpectatorItemLineResources);
+  AddLineType(aParent, slWarfare, TKMGUIGameSpectatorItemLineWarFare);
+  AddLineType(aParent, slHouses, TKMGUIGameSpectatorItemLineHouses);
+  AddLineType(aParent, slConstructions, TKMGUIGameSpectatorItemLineConstructing);
+  AddLineType(aParent, slSLR, TKMGUIGameSpectatorItemLinePopulationSLR);
+  AddLineType(aParent, slWorkers, TKMGUIGameSpectatorItemLinePopulationHouseWorkers);
+  AddLineType(aParent, slArmy, TKMGUIGameSpectatorItemLineArmyInstantenious);
+  AddLineType(aParent, slArmyTotal, TKMGUIGameSpectatorItemLineArmyTotal);
+  AddLineType(aParent, slArmyKilling, TKMGUIGameSpectatorItemLineArmyKilling);
+  AddLineType(aParent, slArmyLost, TKMGUIGameSpectatorItemLineArmyLost);
 
   //Create DropBox after pages, to show it above them
   FDropBoxPanel := TKMPanel.Create(aParent, aParent.Width - DROPBOX_W - 10, 0, DROPBOX_W + 10, 30);
@@ -1019,26 +1020,25 @@ end;
 
 destructor TKMGUIGameSpectator.Destroy;
 var
-  I: Integer;
+  I: TKMHandStatType;
 begin
-  for I := Low(FLinesAggregator) to High(FLinesAggregator) do
-    if FLinesAggregator[I] <> nil then
-      FreeAndNil(FLinesAggregator[I]);
+  for I := Low(TKMHandStatType) to High(TKMHandStatType) do
+    FreeAndNil(FLinesAggregator[I]);
 end;
 
 
-procedure TKMGUIGameSpectator.AddLineType(aParent: TKMPanel; AIndex: Integer; ALineClass: TKMGUIGameSpectatorItemLineClass);
+procedure TKMGUIGameSpectator.AddLineType(aParent: TKMPanel; aLineType: TKMHandStatType; ALineClass: TKMGUIGameSpectatorItemLineClass);
 var
   I: Integer;
 begin
   if ALineClass <> nil then
   begin
-    FLinesAggregator[AIndex] := TKMGameSpectatorItemLinesAggregator.Create;
+    FLinesAggregator[aLineType] := TKMGameSpectatorItemLinesAggregator.Create;
     for I := 0 to gHands.Count - 1 do
     begin
-      FLines[AIndex, I] := ALineClass.Create(aParent, I, fOnJumpToPlayer, fSetViewportPos, FLinesAggregator[AIndex]);
-      FLines[AIndex, I].Visible := False;
-      FLinesAggregator[AIndex].SetCount(FLines[AIndex, I].GetTagCount);
+      FLines[aLineType, I] := ALineClass.Create(aParent, I, fOnJumpToPlayer, fSetViewportPos, FLinesAggregator[aLineType]);
+      FLines[aLineType, I].Visible := False;
+      FLinesAggregator[aLineType].SetCount(FLines[aLineType, I].GetTagCount);
     end;
   end;
 end;
@@ -1055,7 +1055,7 @@ begin
     if Assigned(FLines[FLastIndex, I]) then
       FLines[FLastIndex, I].Visible := False;
 
-  FLastIndex := FDropBox.ItemIndex;
+  FLastIndex := TKMHandStatType(FDropBox.ItemIndex);
 
   position := 32;
   teams := gHands.Teams;
@@ -1083,24 +1083,25 @@ end;
 
 procedure TKMGUIGameSpectator.UpdateState(aTick: Cardinal);
 var
-  I, K: Integer;
+  I: TKMHandStatType;
+  K: Integer;
 begin
   //Updates could be done every 5 ticks
   if aTick mod 5 <> 0 then Exit;
 
   //Reset all aggregators first
-  for I := Low(FLinesAggregator) to High(FLinesAggregator) do
+  for I := Low(TKMHandStatType) to High(TKMHandStatType) do
     if FLinesAggregator[I] <> nil then
       FLinesAggregator[I].ResetItems;
 
   //Collect data from lines items - which to show and which not - into aggregator
-  for I := Low(FLines) to High(FLines) do
+  for I := Low(TKMHandStatType) to High(TKMHandStatType) do
     for K := 0 to Length(FLines[I]) - 1 do
       if FLines[I, K] <> nil then
         FLines[I, K].Update;
 
   //Set visibility for items, by aggregated data
-  for I := Low(FLines) to High(FLines) do
+  for I := Low(TKMHandStatType) to High(TKMHandStatType) do
     for K := 0 to Length(FLines[I]) - 1 do
       if FLines[I, K] <> nil then
         FLines[I, K].UpdateItemsVisibility;
