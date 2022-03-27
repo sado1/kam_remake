@@ -20,7 +20,7 @@ type
     BackAlpha: Single;
     EdgeAlpha: Single;
     Color: TKMColor3f;
-    constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aPaintLayer: TKMPaintLayer = pl0);
+    constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer);
 
     procedure SetDefBackAlpha;
     procedure SetDefEdgeAlpha;
@@ -37,7 +37,7 @@ type
     LineColor: TColor4; //color of outline
     LineWidth: Byte;
   public
-    constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aPaintLayer: TKMPaintLayer = pl0);
+    constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer);
     procedure Paint; override;
   end;
 
@@ -68,9 +68,9 @@ type
     MaxLines: Integer;
 
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; const aCaption: UnicodeString;
-                       aFont: TKMFont; aTextAlign: TKMTextAlign; aPaintLayer: TKMPaintLayer = pl0); overload;
+                       aFont: TKMFont; aTextAlign: TKMTextAlign); overload;
     constructor Create(aParent: TKMPanel; aLeft,aTop: Integer; const aCaption: UnicodeString; aFont: TKMFont;
-                       aTextAlign: TKMTextAlign; aPaintLayer: TKMPaintLayer = pl0); overload;
+                       aTextAlign: TKMTextAlign); overload;
 
     function HitTest(X, Y: Integer; aIncludeDisabled: Boolean = False; aIncludeNotHitable: Boolean = False): Boolean; override;
     procedure SetColor(aColor: Cardinal);
@@ -114,7 +114,7 @@ type
     ClipToBounds: Boolean;
     Tiled: Boolean;
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aTexID: Word; aRX: TRXType = rxGui;
-                       aPaintLayer: TKMPaintLayer = pl0; aImageAnchors: TKMAnchorsSet = [anLeft, anTop]);
+                       aImageAnchors: TKMAnchorsSet = [anLeft, anTop]);
     property RX: TRXType read fRX write fRX;
     property TexID: Word read fTexID write fTexID;
     property FlagColor: TColor4 read fFlagColor write fFlagColor;
@@ -165,9 +165,9 @@ type
     TextVAlign: TKMTextVAlign;
     AutoTextPadding: Byte;      //text padding for autoHeight
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aTexID: Word; aRX: TRXType;
-                       aStyle: TKMButtonStyle; aPaintLayer: TKMPaintLayer = pl0); overload;
+                       aStyle: TKMButtonStyle); overload;
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; const aCaption: UnicodeString;
-                       aStyle: TKMButtonStyle; aPaintLayer: TKMPaintLayer = pl0); overload;
+                       aStyle: TKMButtonStyle); overload;
     function Click: Boolean; //Try to click a button and return TRUE if succeded
 
     property Caption: UnicodeString read fCaption write SetCaption;
@@ -238,9 +238,9 @@ uses
 
 
 { TKMBevel }
-constructor TKMBevel.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aPaintLayer: TKMPaintLayer = pl0);
+constructor TKMBevel.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer);
 begin
-  inherited Create(aParent, aLeft, aTop, aWidth, aHeight, aPaintLayer);
+  inherited Create(aParent, aLeft, aTop, aWidth, aHeight);
 
   SetDefBackAlpha;
   SetDefEdgeAlpha;
@@ -268,14 +268,14 @@ end;
 procedure TKMBevel.Paint;
 begin
   inherited;
-  TKMRenderUI.WriteBevel(AbsLeft, AbsTop, Width, Height, Color, EdgeAlpha, BackAlpha, PaintingBaseLayer);
+  TKMRenderUI.WriteBevel(AbsLeft, AbsTop, Width, Height, Color, EdgeAlpha, BackAlpha);
 end;
 
 
 { TKMShape }
-constructor TKMShape.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aPaintLayer: TKMPaintLayer = pl0);
+constructor TKMShape.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer);
 begin
-  inherited Create(aParent, aLeft, aTop, aWidth, aHeight, aPaintLayer);
+  inherited Create(aParent, aLeft, aTop, aWidth, aHeight);
 
   LineWidth := 2;
 end;
@@ -291,9 +291,9 @@ end;
 
 { TKMLabel }
 constructor TKMLabel.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; const aCaption: UnicodeString;
-                            aFont: TKMFont; aTextAlign: TKMTextAlign; aPaintLayer: TKMPaintLayer = pl0);
+                            aFont: TKMFont; aTextAlign: TKMTextAlign);
 begin
-  inherited Create(aParent, aLeft, aTop, aWidth, aHeight, aPaintLayer);
+  inherited Create(aParent, aLeft, aTop, aWidth, aHeight);
   fFont := aFont;
   fFontColor := $FFFFFFFF;
   fTextAlign := aTextAlign;
@@ -306,9 +306,9 @@ end;
 
 //Same as above but with width/height ommitted, as in most cases we don't know/don't care
 constructor TKMLabel.Create(aParent: TKMPanel; aLeft, aTop: Integer; const aCaption: UnicodeString; aFont: TKMFont;
-                            aTextAlign: TKMTextAlign; aPaintLayer: TKMPaintLayer = pl0);
+                            aTextAlign: TKMTextAlign);
 begin
-  Create(aParent, aLeft, aTop, 0, 0, aCaption, aFont, aTextAlign, aPaintLayer);
+  Create(aParent, aLeft, aTop, 0, 0, aCaption, aFont, aTextAlign);
 end;
 
 
@@ -430,7 +430,7 @@ begin
     end;
   end;
 
-  TKMRenderUI.WriteText(AbsLeft, AbsTop + t, Width, fText, fFont, fTextAlign, col, False, False, False, fTabWidth, PaintingBaseLayer);
+  TKMRenderUI.WriteText(AbsLeft, AbsTop + t, Width, fText, fFont, fTextAlign, col, False, False, False, fTabWidth);
 
   if fStrikethrough then
     TKMRenderUI.WriteShape(TextLeft, AbsTop + fTextSize.Y div 2 - 2, fTextSize.X, 3, col, $FF000000);
@@ -465,9 +465,9 @@ end;
 
 { TKMImage }
 constructor TKMImage.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aTexID: Word; aRX: TRXType = rxGui;
-                            aPaintLayer: TKMPaintLayer = pl0; aImageAnchors: TKMAnchorsSet = [anLeft, anTop]);
+                            aImageAnchors: TKMAnchorsSet = [anLeft, anTop]);
 begin
-  inherited Create(aParent, aLeft, aTop, aWidth, aHeight, aPaintLayer);
+  inherited Create(aParent, aLeft, aTop, aWidth, aHeight);
   fRX := aRX;
   fTexID := aTexID;
   fFlagColor := $FFFF00FF;
@@ -546,10 +546,10 @@ begin
     row := Height div drawHeight + 1;
     for x := -col div 2 to col div 2 do
       for y := -row div 2 to row div 2 do
-        TKMRenderUI.WritePicture(drawLeft + x * drawWidth, drawTop + y * drawHeight, drawWidth, drawHeight, ImageAnchors, fRX, fTexID, Enabled, fFlagColor, paintLightness, PaintingBaseLayer);
- end
+        TKMRenderUI.WritePicture(drawLeft + x * drawWidth, drawTop + y * drawHeight, drawWidth, drawHeight, ImageAnchors, fRX, fTexID, Enabled, fFlagColor, paintLightness);
+  end
   else
-    TKMRenderUI.WritePicture(AbsLeft, AbsTop, Width, Height, ImageAnchors, fRX, fTexID, Enabled, fFlagColor, paintLightness, PaintingBaseLayer);
+    TKMRenderUI.WritePicture(AbsLeft, AbsTop, Width, Height, ImageAnchors, fRX, fTexID, Enabled, fFlagColor, paintLightness);
 
   if ClipToBounds then
   begin
@@ -563,6 +563,7 @@ end;
 constructor TKMImageStack.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aTexID1, aTexID2: Word; aRX: TRXType = rxGui);
 begin
   inherited Create(aParent, aLeft, aTop, aWidth, aHeight);
+
   fRX  := aRX;
   fTexID1 := aTexID1;
   fTexID2 := aTexID2;
@@ -617,9 +618,10 @@ end;
 
 { TKMButton }
 constructor TKMButton.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aTexID: Word; aRX: TRXType;
-                             aStyle: TKMButtonStyle; aPaintLayer: TKMPaintLayer = pl0);
+                             aStyle: TKMButtonStyle);
 begin
-  inherited Create(aParent, aLeft, aTop, aWidth, aHeight, aPaintLayer);
+  inherited Create(aParent, aLeft, aTop, aWidth, aHeight);
+
   InitCommon(aStyle);
   fRX   := aRX;
   TexID := aTexID;
@@ -628,9 +630,10 @@ end;
 
 {Different version of button, with caption on it instead of image}
 constructor TKMButton.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; const aCaption: UnicodeString;
-                             aStyle: TKMButtonStyle; aPaintLayer: TKMPaintLayer = pl0);
+                             aStyle: TKMButtonStyle);
 begin
-  inherited Create(aParent, aLeft, aTop, aWidth, aHeight, aPaintLayer);
+  inherited Create(aParent, aLeft, aTop, aWidth, aHeight);
+
   InitCommon(aStyle);
   Caption := aCaption;
 end;

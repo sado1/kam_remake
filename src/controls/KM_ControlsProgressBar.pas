@@ -25,8 +25,7 @@ type
     Caption, CaptionLeft, CaptionRight: UnicodeString;
     FontColor: TColor4;
     TextYOffset: Integer;
-    constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont = fntMini;
-                       aPaintLayer: TKMPaintLayer = pl0);
+    constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont = fntMini);
     procedure SetCaptions(const aCaptionLeft, aCaption, aCaptionRight: UnicodeString);
     procedure Paint; override;
   end;
@@ -44,8 +43,7 @@ type
   protected
     procedure PaintBar; override;
   public
-    constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont = fntMini;
-                       aPaintLayer: TKMPaintLayer = pl0);
+    constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont = fntMini);
     property Seam: Single read fSeam write SetSeam;
     property Position: Single read fPosition write SetPosition;
     property MainColor: Cardinal read fMainColor write fMainColor;
@@ -105,10 +103,9 @@ uses
 
 
 { TKMProgressBarAbstract }
-constructor TKMProgressBarAbstract.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont = fntMini;
-                                          aPaintLayer: TKMPaintLayer = pl0);
+constructor TKMProgressBarAbstract.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont = fntMini);
 begin
-  inherited Create(aParent, aLeft, aTop, aWidth, aHeight, aPaintLayer);
+  inherited Create(aParent, aLeft, aTop, aWidth, aHeight);
   fFont := aFont;
   FontColor := $FFFFFFFF;
   fTextAlign := taCenter;
@@ -168,14 +165,14 @@ end;
 
 
 { TKMPercentBar }
-constructor TKMPercentBar.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont = fntMini;
-                                 aPaintLayer: TKMPaintLayer = pl0);
+constructor TKMPercentBar.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont = fntMini);
 begin
   inherited;
 
   fMainColor := icBarColorGreen;
   fAddColor := icBarColorBlue;
 end;
+
 
 procedure TKMPercentBar.SetPosition(aValue: Single);
 begin

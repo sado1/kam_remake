@@ -95,7 +95,7 @@ type
 
     property HandleCloseKey: Boolean read fHandleCloseKey write SetHandleCloseKey;
 
-    procedure PaintPanel(aPaintLayer: TKMPaintLayer); override;
+    procedure Paint; override;
   end;
 
 
@@ -457,7 +457,7 @@ begin
 end;
 
 
-procedure TKMPopUpPanel.PaintPanel(aPaintLayer: TKMPaintLayer);
+procedure TKMPopUpPanel.Paint;
 begin
   inherited;
 

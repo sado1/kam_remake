@@ -15,6 +15,13 @@ type
     slWorkers, slArmy, slArmyTotal, slArmyKilling, slArmyLost
   );
 
+  // We render everything in 3 layers to minimize switching of texture bindings
+  TKMSpecPaintLayer = (
+    plNone,  // Without textures (Bevels, ProgressBars)
+    plImage, // Sprites (houses and flags)
+    plText   // Labels
+  );
+
   TKMGUIGameSpectatorItem = class(TKMPanel)
   private
     fHandID: Integer;
@@ -40,7 +47,8 @@ type
     property AdditionalValue: String read FAdditionalValue write FAdditionalValue;
     property Progress: Single read FProgress write FProgress;
     procedure CreateChilds;
-    procedure PaintPanel(aPaintLayer: TKMPaintLayer); override;
+    procedure Paint; override;
+    procedure PaintLayer(aPaintLayer: TKMSpecPaintLayer);
   end;
 
   TKMGameSpectatorItemLinesAggregator = class
@@ -85,7 +93,8 @@ type
     constructor Create(aParent: TKMPanel; aHandIndex: Integer;
                        aOnJumpToPlayer: TIntegerEvent; aSetViewportPos: TPointFEvent;
                        aLinesAggregator: TKMGameSpectatorItemLinesAggregator = nil); virtual;
-    procedure PaintPanel(aPaintLayer: TKMPaintLayer); override;
+    procedure Paint; override;
+    procedure PaintLayer(aPaintLayer: TKMSpecPaintLayer);
     property HandIndex: Integer read FHandIndex;
   end;
 
@@ -103,8 +112,6 @@ type
 
     procedure AddLineType(aParent: TKMPanel; aLineType: TKMHandStatType; aLineClass: TKMGUIGameSpectatorItemLineClass);
     procedure ChangePage(Sender: TObject);
-  protected
-    procedure DoPaint(aPaintLayer: TKMPaintLayer); override;
   public
     constructor Create(aParent: TKMPanel; aOnJumpToPlayer: TIntegerEvent; aSetViewportPos: TPointFEvent);
     destructor Destroy; override;
@@ -116,6 +123,7 @@ type
     property DropBox: TKMDropList read FDropBox;
 
     procedure UpdateState(aTick: Cardinal); override;
+    procedure Paint; override;
   end;
 
 implementation
@@ -137,12 +145,6 @@ const
 
   GUI_SPEC_HEADER_FLAG = 1164;
   GUI_SPEC_HEADER_FLAG_FRAME = 5;
-
-  BEVEL_RENDER_LAYER = pl1;
-  PERCENTBAR_RENDER_LAYER = pl1;
-  IMAGE_RENDER_LAYER = pl2;
-  TEXT_RENDER_LAYER = pl3;
-  DROPBOX_RENDER_LAYER = pl3;
 
 { TKMGUIGameSpectatorItem }
 constructor TKMGUIGameSpectatorItem.Create(aParent: TKMPanel; ATag: Integer; AImageID: Word; const AHint: String;
@@ -173,39 +175,55 @@ end;
 
 procedure TKMGUIGameSpectatorItem.CreateChilds;
 begin
-  Bevel := TKMBevel.Create(Self, 0, 0, Width, Height, BEVEL_RENDER_LAYER);
+  Bevel := TKMBevel.Create(Self, 0, 0, Width, Height);
   Bevel.AnchorsStretch;
   Bevel.OnClickShift := ItemClicked;
-  Image := TKMImage.Create(Self, 2, 0, Width - 4, Height - 4, FImageID, rxGui, IMAGE_RENDER_LAYER);
+  Image := TKMImage.Create(Self, 2, 0, Width - 4, Height - 4, FImageID, rxGui);
   if fHandID < gHands.Count then
     Image.FlagColor := gHands[fHandID].FlagColor;
   Image.ImageCenter;
   Image.Anchors := [anRight, anTop];
   Image.OnClickShift := ItemClicked;
-  PercentBar := TKMPercentBar.Create(Self, 0, Height - 6, Width, 6, fntMini, PERCENTBAR_RENDER_LAYER);
+  PercentBar := TKMPercentBar.Create(Self, 0, Height - 6, Width, 6, fntMini);
   PercentBar.AnchorsStretch;
-  Label_Text := TKMLabel.Create(Self, Width div 2, Height - 16, FValue, fntGrey, taCenter, TEXT_RENDER_LAYER);
+  Label_Text := TKMLabel.Create(Self, Width div 2, Height - 16, FValue, fntGrey, taCenter);
   Label_Text.Anchors := [anRight, anTop];
-  Label_AddText := TKMLabel.Create(Self, Width - 2, -2, FValue, fntGrey, taRight, TEXT_RENDER_LAYER);
+  Label_AddText := TKMLabel.Create(Self, Width - 2, -2, FValue, fntGrey, taRight);
   Label_AddText.Anchors := [anRight, anTop];
 end;
 
 
-procedure TKMGUIGameSpectatorItem.PaintPanel(aPaintLayer: TKMPaintLayer);
-var
-  paintLightness: Single;
+procedure TKMGUIGameSpectatorItem.Paint;
 begin
-  paintLightness := CTRL_HIGHLIGHT_COEF_DEF * Byte(((csOver in Image.State) or (csOver in Bevel.State)) and FDoHighlight(FItemTag));
+  // We paint everything ourselves in layers
+end;
 
-  Image.Lightness := paintLightness;
 
-  PercentBar.Visible := (FProgress >= 0);
-  PercentBar.Position := fProgress;
+procedure TKMGUIGameSpectatorItem.PaintLayer(aPaintLayer: TKMSpecPaintLayer);
+begin
+  if aPaintLayer = plNone then
+  begin
+    Image.Lightness := CTRL_HIGHLIGHT_COEF_DEF * Byte(((csOver in Image.State) or (csOver in Bevel.State)) and FDoHighlight(FItemTag));
 
-  Label_Text.Caption := fValue;
-  Label_AddText.Caption := fAdditionalValue;
+    PercentBar.Visible := (fProgress >= 0);
+    PercentBar.Position := fProgress;
 
-  inherited PaintPanel(aPaintLayer);
+    Label_Text.Caption := fValue;
+    Label_AddText.Caption := fAdditionalValue;
+  end;
+
+  case aPaintLayer of
+    plNone:   begin
+                Bevel.Paint;
+                if PercentBar.IsSetVisible then
+                  PercentBar.Paint;
+              end;
+    plImage:  Image.Paint;
+    plText:   begin
+                Label_Text.Paint;
+                Label_AddText.Paint;
+              end;
+  end;
 end;
 
 
@@ -331,28 +349,49 @@ end;
 
 procedure TKMGUIGameSpectatorItemLine.CreateChilds;
 begin
-  Bevel := TKMBevel.Create(Self, 0, 0, Width, Height, BEVEL_RENDER_LAYER);
+  Bevel := TKMBevel.Create(Self, 0, 0, Width, Height);
   Bevel.AnchorsStretch;
   Bevel.OnClick := LineClicked;
   Bevel.BackAlpha := 0.2;
   Bevel.EdgeAlpha := 0.5;
-  Image_Flag := TKMImage.Create(Self, Width - 32, 0, 32, GUI_SPEC_HEADER_HEIGHT, 0, rxHouses, IMAGE_RENDER_LAYER);
+  Image_Flag := TKMImage.Create(Self, Width - 32, 0, 32, GUI_SPEC_HEADER_HEIGHT, 0, rxHouses);
   if FHandIndex < gHands.Count then
     Image_Flag.FlagColor := gHands[FHandIndex].FlagColor;
   Image_Flag.ImageCenter;
   Image_Flag.Anchors := [anTop, anRight];
   Image_Flag.OnClick := LineClicked;
-  Label_Text := TKMLabel.Create(Self, Width - 32, 0, '', fntGrey, taRight, TEXT_RENDER_LAYER);
+  Label_Text := TKMLabel.Create(Self, Width - 32, 0, '', fntGrey, taRight);
   Label_Text.Anchors := [anRight];
 end;
 
 
-procedure TKMGUIGameSpectatorItemLine.PaintPanel(aPaintLayer: TKMPaintLayer);
+procedure TKMGUIGameSpectatorItemLine.Paint;
 begin
-  Image_Flag.TexId := GUI_SPEC_HEADER_FLAG + gGameParams.Tick mod GUI_SPEC_HEADER_FLAG_FRAME;
-  Label_Text.Caption := gHands[FHandIndex].OwnerName(not gGameParams.IsSingleplayer);
+  // We paint everything ourselves in layers
+end;
 
-  inherited;
+
+procedure TKMGUIGameSpectatorItemLine.PaintLayer(aPaintLayer: TKMSpecPaintLayer);
+var
+  I: Integer;
+begin
+  if aPaintLayer = plNone then
+  begin
+    Image_Flag.TexId := GUI_SPEC_HEADER_FLAG + gGameParams.Tick mod GUI_SPEC_HEADER_FLAG_FRAME;
+    Label_Text.Caption := gHands[FHandIndex].OwnerName(not gGameParams.IsSingleplayer);
+  end;
+
+  case aPaintLayer of
+    plNone:   Bevel.Paint;
+    plImage:  Image_Flag.Paint;
+    plText:   Label_Text.Paint;
+  end;
+
+  // Paint all the items in layers too
+  for I := 0 to ChildCount - 1 do
+    if Childs[I].IsSetVisible then
+      if Childs[I] is TKMGUIGameSpectatorItem then
+        TKMGUIGameSpectatorItem(Childs[I]).PaintLayer(aPaintLayer);
 end;
 
 
@@ -380,8 +419,8 @@ begin
   AddLineType(Self, slArmyKilling, TKMGUIGameSpectatorItemLineArmyKilling);
   AddLineType(Self, slArmyLost, TKMGUIGameSpectatorItemLineArmyLost);
 
-  //Create DropBox after pages, to show it above them
-  FDropBox := TKMDropList.Create(Self, Width - DROPBOX_W - 5, 5, DROPBOX_W, 20, fntMetal, '', bsGame, True, 0.85, DROPBOX_RENDER_LAYER);
+  // Create DropBox after pages, to show it above them
+  FDropBox := TKMDropList.Create(Self, Width - DROPBOX_W - 5, 5, DROPBOX_W, 20, fntMetal, '', bsGame, True, 0.85);
   FDropBox.Anchors := [anTop, anRight];
   FDropBox.OnChange := ChangePage;
   FDropBox.DropCount := Ord(High(TKMHandStatType)) + 1;
@@ -413,20 +452,25 @@ begin
 end;
 
 
-procedure TKMGUIGameSpectator.DoPaint(aPaintLayer: TKMPaintLayer);
+procedure TKMGUIGameSpectator.Paint;
 var
+  L: TKMSpecPaintLayer;
   I: Integer;
 begin
-//todo: This is a copy. See how can we improve on that
+  // No inherited. We paint everything as we see fit (in layers)
+
+  // Paint DropBox and its button
   for I := 0 to ChildCount - 1 do
     if Childs[I].IsSetVisible then
-    begin
-      if Childs[I] is TKMPanel then
-        TKMPanel(Childs[I]).PaintPanel(aPaintLayer)
-      else
-      if (Childs[I].PaintLayer = aPaintLayer) then
-        Childs[I].Paint;
-    end;
+      if not (Childs[I] is TKMGUIGameSpectatorItemLine) then
+        TKMGUIGameSpectatorItemLine(Childs[I]).Paint;
+
+  // Paint everything in layers
+  for L := Low(TKMSpecPaintLayer) to High(TKMSpecPaintLayer) do
+  for I := 0 to ChildCount - 1 do
+    if Childs[I].IsSetVisible then
+      if Childs[I] is TKMGUIGameSpectatorItemLine then
+        TKMGUIGameSpectatorItemLine(Childs[I]).PaintLayer(L);
 end;
 
 

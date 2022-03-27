@@ -103,8 +103,7 @@ type
     function GetMouseOverRow: Integer; override;
   public
     ItemTags: array of Integer;
-    constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont; aStyle: TKMButtonStyle;
-                       aPaintLayer: TKMPaintLayer = pl0);
+    constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont; aStyle: TKMButtonStyle);
     destructor Destroy; override;
 
     property AutoHideScrollBar: boolean read fAutoHideScrollBar write SetAutoHideScrollBar;
@@ -624,10 +623,10 @@ end;
 
 
 { TKMListBox }
-constructor TKMListBox.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont; aStyle: TKMButtonStyle;
-                              aPaintLayer: TKMPaintLayer = pl0);
+constructor TKMListBox.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aFont: TKMFont; aStyle: TKMButtonStyle);
 begin
-  inherited Create(aParent, aLeft, aTop, aWidth, aHeight, aPaintLayer);
+  inherited Create(aParent, aLeft, aTop, aWidth, aHeight);
+
   fBackAlpha := 0.5;
   fItemHeight := 20;
   fItemIndex := -1;

@@ -44,7 +44,7 @@ type
     WheelStep: Word;
 
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aScrollAxis: TKMScrollAxis;
-                       aStyle: TKMButtonStyle; aScrollStyle: TKMScrollStyle = ssGame; aPaintLayer: TKMPaintLayer = pl0);
+                       aStyle: TKMButtonStyle; aScrollStyle: TKMScrollStyle = ssGame);
     property MinValue: Integer read fMinValue write SetMinValue;
     property MaxValue: Integer read fMaxValue write SetMaxValue;
     property Position: Integer read fPosition write SetPosition;
@@ -52,7 +52,7 @@ type
     procedure MouseMove(X,Y: Integer; Shift: TShiftState); override;
     procedure MouseWheel(Sender: TObject; WheelSteps: Integer; var aHandled: Boolean); override;
     property OnChange: TNotifyEvent read fOnChange write fOnChange;
-    procedure PaintPanel(aPaintLayer: TKMPaintLayer); override;
+    procedure Paint; override;
   end;
 
 
@@ -114,7 +114,7 @@ type
 
     procedure MouseWheel(Sender: TObject; WheelSteps: Integer; var aHandled: Boolean); override;
 
-    procedure PaintPanel(aPaintLayer: TKMPaintLayer); override;
+    procedure Paint; override;
   end;
 
 
@@ -126,11 +126,11 @@ uses
 
 { TKMScrollBar }
 constructor TKMScrollBar.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aScrollAxis: TKMScrollAxis;
-                                aStyle: TKMButtonStyle; aScrollStyle: TKMScrollStyle = ssGame; aPaintLayer: TKMPaintLayer = pl0);
+                                aStyle: TKMButtonStyle; aScrollStyle: TKMScrollStyle = ssGame);
 var
   decId, incId: Integer;
 begin
-  inherited Create(aParent, aLeft, aTop, aWidth, aHeight, aPaintLayer);
+  inherited Create(aParent, aLeft, aTop, aWidth, aHeight);
   BackAlpha := 0.5;
   EdgeAlpha := 0.75;
   fScrollAxis := aScrollAxis;
@@ -349,24 +349,23 @@ begin
 end;
 
 
-procedure TKMScrollBar.PaintPanel(aPaintLayer: TKMPaintLayer);
+procedure TKMScrollBar.Paint;
 var
   buttonState: TKMButtonStateSet;
 begin
   inherited;
 
-  if fPaintLayer = aPaintLayer then
-    case fScrollAxis of
-      saVertical:   TKMRenderUI.WriteBevel(AbsLeft, AbsTop+Width, Width, Height - Width*2, EdgeAlpha, BackAlpha);
-      saHorizontal: TKMRenderUI.WriteBevel(AbsLeft+Height, AbsTop, Width - Height*2, Height, EdgeAlpha, BackAlpha);
-    end;
+  case fScrollAxis of
+    saVertical:   TKMRenderUI.WriteBevel(AbsLeft, AbsTop+Width, Width, Height - Width*2, EdgeAlpha, BackAlpha);
+    saHorizontal: TKMRenderUI.WriteBevel(AbsLeft+Height, AbsTop, Width - Height*2, Height, EdgeAlpha, BackAlpha);
+  end;
 
   if fMaxValue > fMinValue then
     buttonState := []
   else
     buttonState := [bsDisabled];
 
-  if (fPaintLayer = aPaintLayer) and not (bsDisabled in buttonState) then //Only show thumb when usable
+  if not (bsDisabled in buttonState) then //Only show thumb when usable
     case fScrollAxis of
       saVertical:   TKMRenderUI.Write3DButton(AbsLeft,AbsTop+Width+fThumbPos,Width,fThumbSize,rxGui,0,$FFFF00FF,buttonState,fStyle);
       saHorizontal: TKMRenderUI.Write3DButton(AbsLeft+Height+fThumbPos,AbsTop,fThumbSize,Height,rxGui,0,$FFFF00FF,buttonState,fStyle);
@@ -738,20 +737,24 @@ begin
   Result := KMRect(AbsDrawLeft, AbsDrawTop, AbsDrawRight, AbsDrawBottom);
 end;
 
+
 function TKMScrollPanel.GetAbsDrawLeft: Integer;
 begin
   Result := Parent.AbsLeft + fClipRect.Left;
 end;
+
 
 function TKMScrollPanel.GetAbsDrawTop: Integer;
 begin
   Result := Parent.AbsTop + fClipRect.Top;
 end;
 
+
 function TKMScrollPanel.GetAbsDrawRight: Integer;
 begin
   Result := Parent.AbsLeft + fClipRect.Right + 20*Byte(AllowScrollV and not fScrollBarV.Visible);
 end;
+
 
 function TKMScrollPanel.GetAbsDrawBottom: Integer;
 begin
@@ -759,8 +762,7 @@ begin
 end;
 
 
-//todo: Review aPaintLayer usage
-procedure TKMScrollPanel.PaintPanel(aPaintLayer: TKMPaintLayer);
+procedure TKMScrollPanel.Paint;
 begin
   TKMRenderUI.SetupClipX(AbsDrawLeft, AbsDrawRight);
   TKMRenderUI.SetupClipY(AbsDrawTop, AbsDrawBottom);

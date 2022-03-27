@@ -42,13 +42,13 @@ type
     class procedure ReleaseClipY;
     class procedure Write3DButton  (aLeft, aTop, aWidth, aHeight: SmallInt; aRX: TRXType; aID: Word; aFlagColor: TColor4;
       aState: TKMButtonStateSet; aStyle: TKMButtonStyle; aImageEnabled: Boolean = True);
-    class procedure WriteBevel     (aLeft, aTop, aWidth, aHeight: SmallInt; aEdgeAlpha: Single = 1; aBackAlpha: Single = 0.5; aResetTexture: Boolean = True); overload;
-    class procedure WriteBevel     (aLeft, aTop, aWidth, aHeight: SmallInt; const aColor: TKMColor3f; aEdgeAlpha: Single = 1; aBackAlpha: Single = 0.5; aResetTexture: Boolean = True); overload;
+    class procedure WriteBevel     (aLeft, aTop, aWidth, aHeight: SmallInt; aEdgeAlpha: Single = 1; aBackAlpha: Single = 0.5); overload;
+    class procedure WriteBevel     (aLeft, aTop, aWidth, aHeight: SmallInt; const aColor: TKMColor3f; aEdgeAlpha: Single = 1; aBackAlpha: Single = 0.5); overload;
     class procedure WritePercentBar(aLeft, aTop, aWidth, aHeight: SmallInt; aPos: Single; aSeam: Single;
-      aMainColor: Cardinal = icBarColorGreen; aAddColor: Cardinal = icBarColorBlue; aResetTexture: Boolean = True);
+      aMainColor: Cardinal = icBarColorGreen; aAddColor: Cardinal = icBarColorBlue);
     class procedure WriteReplayBar (aLeft, aTop, aWidth, aHeight: SmallInt; aPos, aPeacetime, aMaxValue: Integer; aMarks: TList<Integer>; aPattern: Word; aHighlightedMark: Integer = -1);
     class procedure WritePicture   (aLeft, aTop, aWidth, aHeight: SmallInt; aAnchors: TKMAnchorsSet; aRX: TRXType; aID: Word;
-      aEnabled: Boolean = True; aColor: TColor4 = $FFFF00FF; aLightness: Single = 0; aResetTexture: Boolean = True);
+      aEnabled: Boolean = True; aColor: TColor4 = $FFFF00FF; aLightness: Single = 0);
     class procedure WritePlot      (aLeft, aTop, aWidth, aHeight: SmallInt; aValues: TKMCardinalArray; aMaxValue: Cardinal;
       aColor: TColor4; aLineWidth: Byte);
     class procedure WriteOutline   (aLeft, aTop, aWidth, aHeight, aLineWidth: SmallInt; Col: TColor4);
@@ -59,7 +59,7 @@ type
     class procedure WriteLine      (aFromX, aFromY, aToX, aToY: Single; aCol: TColor4; aPattern: Word = $FFFF; aLineWidth: Integer = -1);
     class procedure WriteText      (aLeft, aTop, aWidth: SmallInt; aText: UnicodeString; aFont: TKMFont; aAlign: TKMTextAlign;
       aColor: TColor4 = $FFFFFFFF; aIgnoreMarkup: Boolean = False; aShowMarkup: Boolean = False;
-      aShowEolSymbol: Boolean = False; aTabWidth: Integer = FONT_TAB_WIDTH; aResetTexture: Boolean = True);
+      aShowEolSymbol: Boolean = False; aTabWidth: Integer = FONT_TAB_WIDTH);
     class procedure WriteTextInShape(const aText: string; X,Y: SmallInt; aLineColor, aTextColor: Cardinal; aShapeColor1: Cardinal = $80000000; aText2: string = ''; aShapeColor2: Cardinal = 0; aTextColor2: Cardinal = 0);
     class procedure WriteTexture   (aLeft, aTop, aWidth, aHeight: SmallInt; const aTexture: TTexture; aCol: TColor4);
     class procedure WriteCircle    (aCenterX, aCenterY: SmallInt; aRadius: Byte; aFillColor: TColor4);
@@ -204,8 +204,6 @@ var
   backRX: TRXType;
   backID: Word;
 begin
-  TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
-
   if aStyle = bsMenu then
   begin
     backRX := rxGuiMain;
@@ -298,19 +296,18 @@ begin
 end;
 
 
-class procedure TKMRenderUI.WriteBevel(aLeft, aTop, aWidth, aHeight: SmallInt; aEdgeAlpha: Single = 1; aBackAlpha: Single = 0.5; aResetTexture: Boolean = True);
+class procedure TKMRenderUI.WriteBevel(aLeft, aTop, aWidth, aHeight: SmallInt; aEdgeAlpha: Single = 1; aBackAlpha: Single = 0.5);
 begin
-  WriteBevel(aLeft, aTop, aWidth, aHeight, COLOR3F_BLACK, aEdgeAlpha, aBackAlpha, aResetTexture);
+  WriteBevel(aLeft, aTop, aWidth, aHeight, COLOR3F_BLACK, aEdgeAlpha, aBackAlpha);
 end;
 
 
-class procedure TKMRenderUI.WriteBevel(aLeft, aTop, aWidth, aHeight: SmallInt; const aColor: TKMColor3f; aEdgeAlpha: Single = 1; aBackAlpha: Single = 0.5;
-                                       aResetTexture: Boolean = True);
+class procedure TKMRenderUI.WriteBevel(aLeft, aTop, aWidth, aHeight: SmallInt; const aColor: TKMColor3f; aEdgeAlpha: Single = 1; aBackAlpha: Single = 0.5);
 begin
   if (aWidth < 0) or (aHeight < 0) then Exit;
 
-  if aResetTexture then
-    TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
+  // Reset texture to default (0), because it could be bind to any other texture (atlas)
+  TRender.BindTexture(0);
 
   glPushMatrix;
     glTranslatef(aLeft, aTop, 0);
@@ -347,13 +344,12 @@ end;
 
 
 class procedure TKMRenderUI.WritePercentBar(aLeft,aTop,aWidth,aHeight: SmallInt; aPos: Single; aSeam: Single;
-                                            aMainColor: Cardinal = icBarColorGreen; aAddColor: Cardinal = icBarColorBlue;
-                                            aResetTexture: Boolean = True);
+                                            aMainColor: Cardinal = icBarColorGreen; aAddColor: Cardinal = icBarColorBlue);
 var
   barWidth: Word;
 begin
-//  if aResetTexture then
-    TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
+  // Reset texture to default (0), because it could be bind to any other texture (atlas)
+  TRender.BindTexture(0);
 
   glPushMatrix;
     glTranslatef(aLeft, aTop, 0);
@@ -419,7 +415,8 @@ var
   PTPos, pos: Word;
   mark: Integer;
 begin
-  TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
+  // Reset texture to default (0), because it could be bind to any other texture (atlas)
+  TRender.BindTexture(0);
 
   glPushMatrix;
     glTranslatef(aLeft, aTop, 0);
@@ -472,16 +469,12 @@ end;
 
 
 class procedure TKMRenderUI.WritePicture(aLeft, aTop, aWidth, aHeight: SmallInt; aAnchors: TKMAnchorsSet; aRX: TRXType;
-                                         aID: Word; aEnabled: Boolean = True; aColor: TColor4 = $FFFF00FF; aLightness: Single = 0;
-                                         aResetTexture: Boolean = True);
+                                         aID: Word; aEnabled: Boolean = True; aColor: TColor4 = $FFFF00FF; aLightness: Single = 0);
 var
   offX, offY: Integer;
   drawWidth, drawHeight: Integer;
 begin
   if aID = 0 then Exit;
-
-  if aResetTexture then
-    TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
 
   offX  := 0;
   offY  := 0;
@@ -565,8 +558,6 @@ begin
 
     glPopMatrix;
   end;
-  if aResetTexture then
-    TRender.BindTexture(0);
 end;
 
 
@@ -574,7 +565,8 @@ class procedure TKMRenderUI.WritePlot(aLeft,aTop,aWidth,aHeight: SmallInt; aValu
 var
   I: Integer;
 begin
-  TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
+  // Reset texture to default (0), because it could be bind to any other texture (atlas)
+  TRender.BindTexture(0);
 
   glPushAttrib(GL_LINE_BIT);
   glPushMatrix;
@@ -595,7 +587,8 @@ class procedure TKMRenderUI.WriteOutline(aLeft, aTop, aWidth, aHeight, aLineWidt
 begin
   if aLineWidth = 0 then Exit;
 
-  TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
+  // Reset texture to default (0), because it could be bind to any other texture (atlas)
+  TRender.BindTexture(0);
 
   glPushAttrib(GL_LINE_BIT);
     glLineWidth(aLineWidth);
@@ -610,7 +603,8 @@ end;
 //Renders plane with given color and optional 1px outline
 class procedure TKMRenderUI.WriteShape(aLeft, aTop, aWidth, aHeight: SmallInt; Col: TColor4; Outline: TColor4 = $00000000);
 begin
-  TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
+  // Reset texture to default (0), because it could be bind to any other texture (atlas)
+  TRender.BindTexture(0);
 
   glPushAttrib(GL_LINE_BIT);
     glColor4ubv(@Col);
@@ -631,7 +625,8 @@ class procedure TKMRenderUI.WritePolyShape(aPoints: TKMPointArray; aColor: TColo
 var
   I: Integer;
 begin
-  TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
+  // Reset texture to default (0), because it could be bind to any other texture (atlas)
+  TRender.BindTexture(0);
 
   glColor4ubv(@aColor);
   glLineStipple(2, aPattern);
@@ -648,7 +643,8 @@ class procedure TKMRenderUI.WritePolyShape(aPoints: TKMPointFArray; aColor: TCol
 var
   I: Integer;
 begin
-  TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
+  // Reset texture to default (0), because it could be bind to any other texture (atlas)
+  TRender.BindTexture(0);
 
   glColor4ubv(@aColor);
   glLineStipple(2, aPattern);
@@ -663,7 +659,8 @@ end;
 
 class procedure TKMRenderUI.WriteLine(aFromX, aFromY, aToX, aToY: Single; aCol: TColor4; aPattern: Word = $FFFF; aLineWidth: Integer = -1);
 begin
-  TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
+  // Reset texture to default (0), because it could be bind to any other texture (atlas)
+  TRender.BindTexture(0);
 
   glColor4ubv(@aCol);
 
@@ -684,8 +681,6 @@ begin
 
   if aLineWidth <> -1 then
     glPopAttrib;
-
-  TRender.BindTexture(0);
 end;
 
 
@@ -693,7 +688,7 @@ end;
 // By default color must be non-transparent white
 class procedure TKMRenderUI.WriteText(aLeft, aTop, aWidth: SmallInt; aText: UnicodeString; aFont: TKMFont; aAlign: TKMTextAlign;
   aColor: TColor4 = $FFFFFFFF; aIgnoreMarkup: Boolean = False; aShowMarkup: Boolean = False; aShowEolSymbol: Boolean = False;
-  aTabWidth: Integer = FONT_TAB_WIDTH; aResetTexture: Boolean = True);
+  aTabWidth: Integer = FONT_TAB_WIDTH);
 var
   I, K, off: Integer;
   lineCount, dx, dy, lineHeight, blockWidth, prevAtlas, lineWidthInc: Integer;
@@ -730,9 +725,6 @@ var
   setupClipXApplied: Boolean;
 begin
   if (aText = '') or (aColor = $00000000) or (SKIP_RENDER_TEXT) then Exit;
-
-  if aResetTexture then
-    TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
 
   SetLength(colors, 0);
 
@@ -827,9 +819,6 @@ begin
 
   glColor4ubv(@aColor);
 
-  if aResetTexture then
-    TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
-
   K := 0;
   prevAtlas := -1;
   for I := 1 to Length(aText) do
@@ -869,11 +858,9 @@ begin
       glEnd;
   end;
 
-  if aResetTexture then
-    TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
-
   if SHOW_TEXT_OUTLINES then
   begin
+    TRender.BindTexture(0);
     glPushMatrix;
       case aAlign of
         taLeft:   glTranslatef(aLeft,                               aTop, 0);
@@ -932,8 +919,6 @@ begin
 
   //Paint the label on top of the background
   WriteText(X - ((W - W1) div 2), Y - 7, 0, aText, fntMetal, taCenter, aTextColor);
-
-  TRender.BindTexture(0);
 end;
 
 
@@ -948,8 +933,6 @@ begin
     glTexCoord2f(aTexture.U, aTexture.V); glVertex2f(aLeft+aWidth, aTop+aHeight);
     glTexCoord2f(0, aTexture.V);          glVertex2f(aLeft, aTop+aHeight);
   glEnd;
-
-  TRender.BindTexture(0);
 end;
 
 
@@ -960,7 +943,8 @@ var
 begin
   if aRadius = 0 then Exit;
 
-  TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
+  // Reset texture to default (0), because it could be bind to any other texture (atlas)
+  TRender.BindTexture(0);
 
   glColor4ubv(@aFillColor);
   glBegin(GL_POLYGON);
@@ -987,7 +971,8 @@ begin
   //Same color, but fully transparent
   bCol := aCol and $FFFFFF;
 
-  TRender.BindTexture(0); // We have to reset texture to default (0), because it could be bind to any other texture (atlas)
+  // Reset texture to default (0), because it could be bind to any other texture (atlas)
+  TRender.BindTexture(0);
 
   glPushMatrix;
     //Slightly shifted shadow looks nicer
