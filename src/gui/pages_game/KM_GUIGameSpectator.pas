@@ -216,7 +216,7 @@ type
     FLinesAggregator: array [TKMHandStatType] of TKMGameSpectatorItemLinesAggregator;
     FLines: array [TKMHandStatType] of array [0..MAX_HANDS - 1] of TKMGUIGameSpectatorItemLine;
 
-    procedure AddLineType(aParent: TKMPanel; aLineType: TKMHandStatType; ALineClass: TKMGUIGameSpectatorItemLineClass);
+    procedure AddLineType(aParent: TKMPanel; aLineType: TKMHandStatType; aLineClass: TKMGUIGameSpectatorItemLineClass);
     procedure ChangePage(Sender: TObject);
   public
     constructor Create(aParent: TKMPanel; aOnJumpToPlayer: TIntegerEvent; aSetViewportPos: TPointFEvent);
@@ -1027,19 +1027,18 @@ begin
 end;
 
 
-procedure TKMGUIGameSpectator.AddLineType(aParent: TKMPanel; aLineType: TKMHandStatType; ALineClass: TKMGUIGameSpectatorItemLineClass);
+procedure TKMGUIGameSpectator.AddLineType(aParent: TKMPanel; aLineType: TKMHandStatType; aLineClass: TKMGUIGameSpectatorItemLineClass);
 var
   I: Integer;
 begin
-  if ALineClass <> nil then
+  if aLineClass = nil then Exit;
+
+  FLinesAggregator[aLineType] := TKMGameSpectatorItemLinesAggregator.Create;
+  for I := 0 to gHands.Count - 1 do
   begin
-    FLinesAggregator[aLineType] := TKMGameSpectatorItemLinesAggregator.Create;
-    for I := 0 to gHands.Count - 1 do
-    begin
-      FLines[aLineType, I] := ALineClass.Create(aParent, I, fOnJumpToPlayer, fSetViewportPos, FLinesAggregator[aLineType]);
-      FLines[aLineType, I].Visible := False;
-      FLinesAggregator[aLineType].SetCount(FLines[aLineType, I].GetTagCount);
-    end;
+    FLines[aLineType, I] := aLineClass.Create(aParent, I, fOnJumpToPlayer, fSetViewportPos, FLinesAggregator[aLineType]);
+    FLines[aLineType, I].Visible := False;
+    FLinesAggregator[aLineType].SetCount(FLines[aLineType, I].GetTagCount);
   end;
 end;
 
@@ -1050,7 +1049,7 @@ var
   teams: TKMByteSetArray;
   position, teamAddPos: Integer;
 begin
-  //Hide all lines
+  // Hide all lines
   for I := 0 to gHands.Count - 1 do
     if Assigned(FLines[FLastIndex, I]) then
       FLines[FLastIndex, I].Visible := False;
