@@ -221,7 +221,7 @@ begin
   gLog := TKMLog.Create(ExtractFilePath(ParamStr(0)) + 'Batcher.log');
   if aNeedGame then
   begin
-    gGameAppSettings := TKMGameAppSettings.Create;
+    gGameAppSettings := TKMGameAppSettings.Create(1024, 768);
     gGameApp := TKMGameApp.Create(nil, 1024, 768, False, nil, nil, nil, True);
     gGameSettings.Autosave := False;
   end;

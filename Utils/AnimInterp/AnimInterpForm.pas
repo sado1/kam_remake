@@ -904,7 +904,7 @@ begin
   SimpleShadows := not (aHouseAct in [haSmoke, haFire1..haFire8]);
 
   //Hard coded rules
-  if aHT in [htArmorWorkshop, htStables, htWatchTower, htFisherHut, htWoodcutters, htWatchTower, htTannery] then
+  if aHT in [htArmorWorkshop, htStables, htWatchTower, htFishermans, htWoodcutters, htWatchTower, htTannery] then
     UseBase := False;
 
   if (aHT = htButchers) and (aHouseAct = haIdle) then
@@ -922,7 +922,7 @@ var
   A, ABase: TKMAnimLoop;
   I: Integer;
 const
-  HOUSE_LOOKUP: array[1..3] of TKMHouseType = (htSwine, htStables, htMarketplace);
+  HOUSE_LOOKUP: array[1..3] of TKMHouseType = (htSwine, htStables, htMarket);
 begin
   if (beastHouse = 3) and ((beast > 3) or (beastAge <> 1)) then
   begin
