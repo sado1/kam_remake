@@ -9,11 +9,11 @@ uses
 
 
 type
-  { Color swatch - to select a color from given samples/palette }
+  // Color swatch - to select a color from given samples/palette
   TKMColorSwatch = class(TKMControl)
   private
-    fBackAlpha: single; //Alpha of background (usually 0.5, dropbox 1)
-    fCellSize: Byte; //Size of the square in pixels
+    fBackAlpha: single; // Alpha of background (usually 0.5, dropbox 1)
+    fCellSize: Byte; // Size of the square in pixels
     fColumnCount: Byte;
     fRowCount: Byte;
     fColorIndex: Integer;
@@ -31,7 +31,6 @@ type
     property OnChange: TNotifyEvent write fOnChange;
     procedure Paint; override;
   end;
-
 
 
 implementation
@@ -147,8 +146,6 @@ begin
   //Paint selection
   TKMRenderUI.WriteOutline(AbsLeft+(fColorIndex mod fColumnCount)*fCellSize, AbsTop+(fColorIndex div fColumnCount)*fCellSize, fCellSize, fCellSize, 1, selColor);
 end;
-
-
 
 
 end.
