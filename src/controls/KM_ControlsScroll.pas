@@ -118,7 +118,6 @@ type
   end;
 
 
-
 implementation
 uses
   Math,
@@ -760,6 +759,7 @@ begin
 end;
 
 
+//todo: Review aPaintLayer usage
 procedure TKMScrollPanel.PaintPanel(aPaintLayer: Integer);
 begin
   TKMRenderUI.SetupClipX(AbsDrawLeft, AbsDrawRight);
@@ -770,7 +770,6 @@ begin
   TKMRenderUI.ReleaseClipY;
   TKMRenderUI.ReleaseClipX;
 end;
-
 
 
 end.

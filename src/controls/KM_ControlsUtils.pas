@@ -7,7 +7,6 @@ uses
   KM_CommonTypes;
 
 
-
   // Check if specified aChar is allowed for specified aAllowedChars type
   function IsCharAllowed(aChar: WideChar; aAllowedChars: TKMAllowedChars): Boolean;
 

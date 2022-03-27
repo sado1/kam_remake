@@ -10,7 +10,7 @@ uses
 
 
 type
-  //Selectable Edit - Basic Edit class with selection available
+  // Basic Edit class with selection available
   TKMSelectableEdit = class abstract(TKMControl)
   private
     fFont: TKMFont;
@@ -65,7 +65,7 @@ type
     function KeyUp(Key: Word; Shift: TShiftState): Boolean; override;
   end;
 
-  {EditField}
+  // Edit for text
   TKMEdit = class(TKMSelectableEdit)
   private
     fAllowedChars: TKMAllowedChars;
@@ -133,7 +133,6 @@ type
     function KeyEventHandled(Key: Word; Shift: TShiftState): Boolean; override;
     procedure NumEdCtrlMouseDown(Sender: TObject; X,Y: Integer; Shift: TShiftState; Button: TMouseButton);
     function DoHandleMouseWheelByDefault: Boolean; override;
-
   public
     ValueMin: Integer;
     ValueMax: Integer;
@@ -144,7 +143,6 @@ type
     procedure MouseWheel(Sender: TObject; WheelSteps: Integer; var aHandled: Boolean); override;
     procedure Paint; override;
   end;
-
 
 
 implementation
@@ -158,7 +156,6 @@ uses
   KM_Resource, KM_ResTypes,
   KM_CommonTypes, KM_Defaults,
   KM_CommonUtils, KM_UtilsExt;
-
 
 
 { TKMSelectableEdit }
@@ -1049,8 +1046,6 @@ begin
   if (Sender <> Self) then
     CheckValueOnUnfocus;
 end;
-
-
 
 
 end.

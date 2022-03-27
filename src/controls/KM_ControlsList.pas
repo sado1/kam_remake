@@ -478,7 +478,6 @@ begin
 end;
 
 
-
 { TKMSearchableList }
 procedure TKMSearchableList.KeyPress(Key: Char);
 var
@@ -2059,7 +2058,6 @@ begin
 
   TKMRenderUI.ReleaseClipY;
 end;
-
 
 
 end.

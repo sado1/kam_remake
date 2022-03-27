@@ -13,7 +13,7 @@ uses
 
 
 type
-  {Abstract Progress bar}
+  // Abstract Progress bar
   TKMProgressBarAbstract = class abstract(TKMControl)
   private
     fFont: TKMFont;
@@ -95,7 +95,6 @@ type
   end;
 
 
-
 implementation
 uses
   SysUtils,
@@ -103,7 +102,6 @@ uses
   KM_Resource, KM_ResTexts,
   KM_Defaults,
   KM_CommonUtils;
-
 
 
 { TKMProgressBarAbstract }
@@ -348,8 +346,6 @@ begin
     or not InRange(Y, AbsTop, AbsBottom) then
     fHighlightMark := -1;
 end;
-
-
 
 
 end.

@@ -11,7 +11,7 @@ uses
 
 
 type
-  { Beveled area }
+  // Beveled area
   TKMBevel = class(TKMControl)
   const
     DEF_BACK_ALPHA = 0.4;
@@ -30,7 +30,7 @@ type
   end;
 
 
-  {Rectangle}
+  // Rectangle area
   TKMShape = class(TKMControl)
   public
     FillColor: TColor4;
@@ -42,7 +42,7 @@ type
   end;
 
 
-  {Text Label}
+  // Text Label
   TKMLabel = class(TKMControl)
   private
     fWordWrap: Boolean;
@@ -88,7 +88,7 @@ type
   end;
 
 
-  //Label that is scrolled within an area. Used in Credits
+  // Label that is scrolled within an area. Used in Credits
   TKMLabelScroll = class(TKMLabel)
   public
     SmoothScrollToTop: Cardinal; //Delta between this and TimeGetTime affects vertical position
@@ -97,7 +97,7 @@ type
   end;
 
 
-  {Image}
+  // Image
   TKMImage = class(TKMControl)
   private
     fRX: TRXType;
@@ -125,7 +125,7 @@ type
   end;
 
 
-  {Image stack - for army formation view}
+  // Image stack - for army formation view
   TKMImageStack = class(TKMControl)
   private
     fRX: TRXType;
@@ -142,7 +142,7 @@ type
   end;
 
 
-  {3DButton}
+  // 3D Button
   TKMButton = class(TKMControl)
   private
     fCaption: UnicodeString;
@@ -178,7 +178,7 @@ type
   end;
 
 
-  {Common Flat Button}
+  // Common Flat Button
   TKMButtonFlatCommon = class abstract(TKMControl)
   private
   public
@@ -203,7 +203,7 @@ type
   end;
 
 
-  {FlatButton}
+  // FlatButton
   TKMButtonFlat = class(TKMButtonFlatCommon)
   public
     Down: Boolean;
@@ -211,7 +211,7 @@ type
   end;
 
 
-  {FlatButton with Shape on it}
+  // FlatButton with Shape on it
   TKMFlatButtonShape = class(TKMControl)
   private
     fCaption: UnicodeString;
@@ -832,7 +832,6 @@ begin
   if (csDown in State) or Down then
     TKMRenderUI.WriteOutline(AbsLeft, AbsTop, Width, Height, 1, icWhite);
 end;
-
 
 
 end.

@@ -9,7 +9,7 @@ uses
 
 
 type
-  {Row with resource name and icons}
+  // Row with resource name and icons
   TKMWaresRow = class(TKMButtonFlatCommon)
   public
     WareCount: Word;
@@ -20,7 +20,7 @@ type
   end;
 
 
-  {Ware order bar}
+  // Ware order bar
   TKMWareOrderRow = class(TKMControl)
   private
     fWaresRow: TKMWaresRow;
@@ -54,9 +54,8 @@ type
   end;
 
 
-  {Production cost bar}
+  // Production cost bar
   TKMCostsRow = class(TKMControl)
-  private
   public
     RX: TRXType;
     TexID1, TexID2: Word;
@@ -66,7 +65,7 @@ type
     constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight: Integer; aMaxCount: Byte = 6);
     procedure Paint; override;
   end;
-  
+
 
 implementation
 uses
@@ -308,8 +307,6 @@ begin
       TKMRenderUI.WritePicture(AbsLeft+Width-20, AbsTop, 20, Height, [], RX, TexID2);
   end;
 end;
-
-
 
 
 end.

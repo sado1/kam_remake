@@ -8,7 +8,6 @@ uses
   KM_Points;
 
 type
-
   TKMTrackBar = class(TKMControl)
   private
     fTrackTop: Byte; //Offset trackbar from top (if Caption <> '')
@@ -57,7 +56,7 @@ type
   const
     THUMB_WIDTH_ADD = 24;
   end;
-  
+
 
 implementation
 uses
@@ -230,7 +229,7 @@ end;
 
 
 procedure TKMTrackBar.Paint;
-const //Text color for disabled and enabled control
+const
   TEXT_COLOR: array [Boolean] of TColor4 = ($FF888888, $FFFFFFFF);
 var
   thumbPos, thumbHeight, rangeMinPos, rangeMaxPos: Word;
