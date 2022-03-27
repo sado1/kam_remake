@@ -296,6 +296,7 @@ type
     property HintTextColor: TColor4 read GetHintTextColor;
     property HintBackRect: TKMRect read GetHintBackRect;
     property HintTextOffset: TKMPoint read GetHintTextOffset;
+    property PaintLayer: TKMPaintLayer read fPaintLayer;
 
     property MouseWheelStep: Integer read fMouseWheelStep write fMouseWheelStep;
 

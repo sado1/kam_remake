@@ -70,7 +70,7 @@ type
     procedure CreateChilds;
   protected
     Bevel: TKMBevel;
-    Image: TKMImage;
+    Image_Flag: TKMImage;
     Label_Text: TKMLabel;
 
     function CreateItem(aHandIndex: Integer; ATag: Integer; aOnItemClick: TIntBoolEvent): TKMGUIGameSpectatorItem; virtual; abstract;
@@ -92,9 +92,8 @@ type
   end;
 
 
-  TKMGUIGameSpectator = class
+  TKMGUIGameSpectator = class(TKMPanel)
   private
-    FDropBoxPanel: TKMPanel;
     FDropBox: TKMDropList;
     FLastIndex: TKMHandStatType;
 
@@ -106,6 +105,8 @@ type
 
     procedure AddLineType(aParent: TKMPanel; aLineType: TKMHandStatType; aLineClass: TKMGUIGameSpectatorItemLineClass);
     procedure ChangePage(Sender: TObject);
+  protected
+    procedure DoPaint(aPaintLayer: TKMPaintLayer); override;
   public
     constructor Create(aParent: TKMPanel; aOnJumpToPlayer: TIntegerEvent; aSetViewportPos: TPointFEvent);
     destructor Destroy; override;
@@ -116,7 +117,7 @@ type
 
     property DropBox: TKMDropList read FDropBox;
 
-    procedure UpdateState(aTick: Cardinal);
+    procedure UpdateState(aTick: Cardinal); override;
   end;
 
 implementation
@@ -347,12 +348,12 @@ begin
   Bevel.OnClick := LineClicked;
   Bevel.BackAlpha := 0.2;
   Bevel.EdgeAlpha := 0.5;
-  Image := TKMImage.Create(Self, Width - 32, 0, 32, GUI_SPEC_HEADER_HEIGHT, 0, rxHouses, IMAGE_RENDER_LAYER);
+  Image_Flag := TKMImage.Create(Self, Width - 32, 0, 32, GUI_SPEC_HEADER_HEIGHT, 0, rxHouses, IMAGE_RENDER_LAYER);
   if FHandIndex < gHands.Count then
-    Image.FlagColor := gHands[FHandIndex].FlagColor;
-  Image.ImageCenter;
-  Image.Anchors := [anTop, anRight];
-  Image.OnClick := LineClicked;
+    Image_Flag.FlagColor := gHands[FHandIndex].FlagColor;
+  Image_Flag.ImageCenter;
+  Image_Flag.Anchors := [anTop, anRight];
+  Image_Flag.OnClick := LineClicked;
   Label_Text := TKMLabel.Create(Self, Width - 32, 0, '', fntGrey, taRight, TEXT_RENDER_LAYER);
   Label_Text.Anchors := [anRight];
 end;
@@ -360,7 +361,7 @@ end;
 
 procedure TKMGUIGameSpectatorItemLine.PaintPanel(aPaintLayer: TKMPaintLayer);
 begin
-  Image.TexId := GUI_SPEC_HEADER_FLAG + gGameParams.Tick mod GUI_SPEC_HEADER_FLAG_FRAME;
+  Image_Flag.TexId := GUI_SPEC_HEADER_FLAG + gGameParams.Tick mod GUI_SPEC_HEADER_FLAG_FRAME;
   Label_Text.Caption := gHands[FHandIndex].OwnerName(not gGameParams.IsSingleplayer);
 
   inherited;
@@ -372,29 +373,28 @@ constructor TKMGUIGameSpectator.Create(aParent: TKMPanel; aOnJumpToPlayer: TInte
 const
   DROPBOX_W = 270;
 begin
-  inherited Create;
+  inherited Create(aParent, 0, 0, aParent.Width, aParent.Height);
+  AnchorsStretch;
+  Hitable := False;
 
   fOnJumpToPlayer := aOnJumpToPlayer;
   fSetViewportPos := aSetViewportPos;
 
-  AddLineType(aParent, slNone, nil);
-  AddLineType(aParent, slResources, TKMGUIGameSpectatorItemLineResources);
-  AddLineType(aParent, slWarfare, TKMGUIGameSpectatorItemLineWarFare);
-  AddLineType(aParent, slHouses, TKMGUIGameSpectatorItemLineHouses);
-  AddLineType(aParent, slConstructions, TKMGUIGameSpectatorItemLineConstructing);
-  AddLineType(aParent, slSLR, TKMGUIGameSpectatorItemLinePopulationSLR);
-  AddLineType(aParent, slWorkers, TKMGUIGameSpectatorItemLinePopulationHouseWorkers);
-  AddLineType(aParent, slArmy, TKMGUIGameSpectatorItemLineArmyInstantenious);
-  AddLineType(aParent, slArmyTotal, TKMGUIGameSpectatorItemLineArmyTotal);
-  AddLineType(aParent, slArmyKilling, TKMGUIGameSpectatorItemLineArmyKilling);
-  AddLineType(aParent, slArmyLost, TKMGUIGameSpectatorItemLineArmyLost);
+  AddLineType(Self, slNone, nil);
+  AddLineType(Self, slResources, TKMGUIGameSpectatorItemLineResources);
+  AddLineType(Self, slWarfare, TKMGUIGameSpectatorItemLineWarFare);
+  AddLineType(Self, slHouses, TKMGUIGameSpectatorItemLineHouses);
+  AddLineType(Self, slConstructions, TKMGUIGameSpectatorItemLineConstructing);
+  AddLineType(Self, slSLR, TKMGUIGameSpectatorItemLinePopulationSLR);
+  AddLineType(Self, slWorkers, TKMGUIGameSpectatorItemLinePopulationHouseWorkers);
+  AddLineType(Self, slArmy, TKMGUIGameSpectatorItemLineArmyInstantenious);
+  AddLineType(Self, slArmyTotal, TKMGUIGameSpectatorItemLineArmyTotal);
+  AddLineType(Self, slArmyKilling, TKMGUIGameSpectatorItemLineArmyKilling);
+  AddLineType(Self, slArmyLost, TKMGUIGameSpectatorItemLineArmyLost);
 
   //Create DropBox after pages, to show it above them
-  FDropBoxPanel := TKMPanel.Create(aParent, aParent.Width - DROPBOX_W - 10, 0, DROPBOX_W + 10, 30);
-  FDropBoxPanel.Anchors := [anTop, anRight];
-  //FDropBoxPanel.Focusable := false;
-  FDropBoxPanel.Show;
-  FDropBox := TKMDropList.Create(FDropBoxPanel, 5, 5, DROPBOX_W, 20, fntMetal, '', bsGame, True, 0.85, DROPBOX_RENDER_LAYER);
+  FDropBox := TKMDropList.Create(Self, Width - DROPBOX_W - 5, 5, DROPBOX_W, 20, fntMetal, '', bsGame, True, 0.85, DROPBOX_RENDER_LAYER);
+  FDropBox.Anchors := [anTop, anRight];
   FDropBox.OnChange := ChangePage;
   FDropBox.DropCount := Ord(High(TKMHandStatType)) + 1;
 
@@ -422,6 +422,23 @@ var
 begin
   for I := Low(TKMHandStatType) to High(TKMHandStatType) do
     FreeAndNil(FLinesAggregator[I]);
+end;
+
+
+procedure TKMGUIGameSpectator.DoPaint(aPaintLayer: TKMPaintLayer);
+var
+  I: Integer;
+begin
+//todo: This is a copy. See how can we improve on that
+  for I := 0 to ChildCount - 1 do
+    if Childs[I].IsSetVisible then
+    begin
+      if Childs[I] is TKMPanel then
+        TKMPanel(Childs[I]).PaintPanel(aPaintLayer)
+      else
+      if (Childs[I].PaintLayer = aPaintLayer) then
+        Childs[I].Paint;
+    end;
 end;
 
 
@@ -483,6 +500,8 @@ var
   I: TKMHandStatType;
   K: Integer;
 begin
+  inherited;
+
   //Updates could be done every 5 ticks
   if aTick mod 5 <> 0 then Exit;
 

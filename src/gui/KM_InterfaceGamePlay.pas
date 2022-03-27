@@ -928,8 +928,6 @@ begin
   fGuiMenuOptions.Free;
   fGuiGameResultsSP.Free;
   fGuiGameResultsMP.Free;
-  if Assigned(fGuiGameSpectator) then
-    fGuiGameSpectator.Free;
 
   fMessageStack.Free;
   fSaves.Free;
@@ -4494,9 +4492,6 @@ begin
     fGuiGameResultsSP.UpdateState(aGlobalTickCount);
     fGuiGameResultsMP.UpdateState(aGlobalTickCount);
   end;
-
-  if fGuiGameSpectator <> nil then
-    fGuiGameSpectator.UpdateState(aGlobalTickCount);
 end;
 
 
