@@ -4,8 +4,8 @@ interface
 uses
   Classes, Math, StrUtils, SysUtils,
   KM_Controls, KM_ControlsBase, KM_ControlsDrop, KM_ControlsProgressBar,
-  KM_HandsCollection, KM_Defaults, KM_Hand,
-  KM_ResWares, KM_ResHouses, KM_Pics, KM_CommonTypes, KM_Points, KM_Houses;
+  KM_HandsCollection, KM_Defaults,
+  KM_CommonTypes, KM_Points;
 
 
 type
@@ -126,13 +126,13 @@ type
     procedure Paint; override;
   end;
 
+
 implementation
 uses
-  KM_InterfaceGame, KM_GameParams, KM_RenderUI, KM_ResFonts, KM_Resource, KM_ResTexts, KM_ResUnits,
+  KM_GameParams, KM_RenderUI, KM_ResFonts, KM_Resource, KM_ResTexts,
   KM_ControlsTypes, KM_GUIGameSpectatorItemLines,
-  KM_UnitGroup,
-  KM_CommonUtils,
   KM_ResTypes;
+
 
 const
   GUI_SPEC_ITEM_WIDTH = 28;
@@ -140,11 +140,10 @@ const
   GUI_SPEC_ITEM_SRLITE_H = 4;
   GUI_SPEC_ITEM_SPRITE_V = 4;
   GUI_SPEC_ITEM_TEAM = 14;
-
   GUI_SPEC_HEADER_HEIGHT = 14;
-
   GUI_SPEC_HEADER_FLAG = 1164;
   GUI_SPEC_HEADER_FLAG_FRAME = 5;
+
 
 { TKMGUIGameSpectatorItem }
 constructor TKMGUIGameSpectatorItem.Create(aParent: TKMPanel; ATag: Integer; AImageID: Word; const AHint: String;
