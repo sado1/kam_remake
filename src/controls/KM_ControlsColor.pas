@@ -33,29 +33,29 @@ type
   end;
 
 
-  //DropBox with a ColorSwatch
-  TKMDropColors = class(TKMControl)
-  private
-    fColorIndex: Integer;
-    fRandomCaption: UnicodeString;
-    fButton: TKMButton;
-    fSwatch: TKMColorSwatch;
-    fShape: TKMShape;
-    fOnChange: TNotifyEvent;
-    procedure ListShow(Sender: TObject);
-    procedure ListClick(Sender: TObject);
-    procedure ListHide(Sender: TObject);
-    procedure SetColorIndex(aIndex: Integer);
-    procedure UpdateDropPosition;
-  protected
-    procedure SetEnabled(aValue: Boolean); override;
-  public
-    constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight,aCount: Integer);
-    property ColorIndex: Integer read fColorIndex write SetColorIndex;
-    procedure SetColors(const aColors: array of TColor4; const aRandomCaption: UnicodeString = '');
-    property OnChange: TNotifyEvent write fOnChange;
-    procedure Paint; override;
-  end;
+//  //DropBox with a ColorSwatch
+//  TKMDropColors = class(TKMControl)
+//  private
+//    fColorIndex: Integer;
+//    fRandomCaption: UnicodeString;
+//    fButton: TKMButton;
+//    fSwatch: TKMColorSwatch;
+//    fShape: TKMShape;
+//    fOnChange: TNotifyEvent;
+//    procedure ListShow(Sender: TObject);
+//    procedure ListClick(Sender: TObject);
+//    procedure ListHide(Sender: TObject);
+//    procedure SetColorIndex(aIndex: Integer);
+//    procedure UpdateDropPosition;
+//  protected
+//    procedure SetEnabled(aValue: Boolean); override;
+//  public
+//    constructor Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight,aCount: Integer);
+//    property ColorIndex: Integer read fColorIndex write SetColorIndex;
+//    procedure SetColors(const aColors: array of TColor4; const aRandomCaption: UnicodeString = '');
+//    property OnChange: TNotifyEvent write fOnChange;
+//    procedure Paint; override;
+//  end;
 
 
 
@@ -175,114 +175,114 @@ end;
 
 
 { TKMDropColors }
-constructor TKMDropColors.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight,aCount: Integer);
-var
-  MP: TKMPanel;
-  size: Integer;
-begin
-  inherited Create(aParent, aLeft, aTop, aWidth, aHeight);
-
-  fColorIndex := 0;
-  fRandomCaption := ''; //Disable random by default
-  OnClick := ListShow; //It's common behavior when click on dropbox will show the list
-
-  fButton := TKMButton.Create(aParent, aLeft+aWidth-aHeight, aTop, aHeight, aHeight, 5, rxGui, bsMenu);
-  fButton.OnClick := ListShow;
-  fButton.MakesSound := false;
-
-  MP := MasterParent;
-  fShape := TKMShape.Create(MP, 0, 0, MP.Width, MP.Height);
-  fShape.OnClick := ListHide;
-
-  size := Round(Sqrt(aCount)+0.5); //Round up
-
-  fSwatch := TKMColorSwatch.Create(MP, 0, 0, size, size, aWidth div size);
-  fSwatch.BackAlpha := 0.75;
-  fSwatch.OnClick := ListClick;
-
-  ListHide(nil);
-end;
-
-
-procedure TKMDropColors.ListShow(Sender: TObject);
-begin
-  if fSwatch.Visible then
-  begin
-    ListHide(nil);
-    Exit;
-  end;
-
-  fSwatch.Show;
-  fShape.Show;
-end;
-
-
-procedure TKMDropColors.ListClick(Sender: TObject);
-begin
-  fColorIndex := fSwatch.ColorIndex;
-  if Assigned(fOnChange) then fOnChange(Self);
-  ListHide(nil);
-end;
-
-
-procedure TKMDropColors.ListHide(Sender: TObject);
-begin
-  fSwatch.Hide;
-  fShape.Hide;
-end;
-
-
-procedure TKMDropColors.SetEnabled(aValue: Boolean);
-begin
-  inherited;
-  fButton.Enabled := Enabled;
-  fSwatch.Enabled := Enabled;
-end;
-
-
-//Set ColorIndex to fSwatch as well since it holds the actual color that we use on Paint
-procedure TKMDropColors.SetColorIndex(aIndex: Integer);
-begin
-  fColorIndex := aIndex;
-  fSwatch.ColorIndex := aIndex;
-end;
-
-
-procedure TKMDropColors.UpdateDropPosition;
-begin
-  fSwatch.Left := AbsLeft;
-  fSwatch.Top := AbsTop + Height;
-end;
-
-
-procedure TKMDropColors.SetColors(const aColors: array of TColor4; const aRandomCaption: UnicodeString = '');
-begin
-  //Store local copy of flag to substitute 0 color with "Random" text
-  fRandomCaption := aRandomCaption;
-  fSwatch.SetColors(aColors, (fRandomCaption <> ''));
-end;
-
-
-procedure TKMDropColors.Paint;
-var
-  col: TColor4;
-begin
-  inherited;
-
-  UpdateDropPosition;
-
-  TKMRenderUI.WriteBevel(AbsLeft, AbsTop, Width-fButton.Width, Height);
-  TKMRenderUI.WriteShape(AbsLeft+2, AbsTop+1, Width-fButton.Width-3, Height-2, fSwatch.GetColor);
-
-  if (fRandomCaption <> '') and (fSwatch.ColorIndex = 0) then
-  begin
-    if Enabled then
-      col := $FFFFFFFF
-    else
-      col := $FF888888;
-    TKMRenderUI.WriteText(AbsLeft + 4, AbsTop + 3, 0, fRandomCaption, fntMetal, taLeft, col);
-  end;
-end;
+//constructor TKMDropColors.Create(aParent: TKMPanel; aLeft, aTop, aWidth, aHeight,aCount: Integer);
+//var
+//  MP: TKMPanel;
+//  size: Integer;
+//begin
+//  inherited Create(aParent, aLeft, aTop, aWidth, aHeight);
+//
+//  fColorIndex := 0;
+//  fRandomCaption := ''; //Disable random by default
+//  OnClick := ListShow; //It's common behavior when click on dropbox will show the list
+//
+//  fButton := TKMButton.Create(aParent, aLeft+aWidth-aHeight, aTop, aHeight, aHeight, 5, rxGui, bsMenu);
+//  fButton.OnClick := ListShow;
+//  fButton.MakesSound := false;
+//
+//  MP := MasterParent;
+//  fShape := TKMShape.Create(MP, 0, 0, MP.Width, MP.Height);
+//  fShape.OnClick := ListHide;
+//
+//  size := Round(Sqrt(aCount)+0.5); //Round up
+//
+//  fSwatch := TKMColorSwatch.Create(MP, 0, 0, size, size, aWidth div size);
+//  fSwatch.BackAlpha := 0.75;
+//  fSwatch.OnClick := ListClick;
+//
+//  ListHide(nil);
+//end;
+//
+//
+//procedure TKMDropColors.ListShow(Sender: TObject);
+//begin
+//  if fSwatch.Visible then
+//  begin
+//    ListHide(nil);
+//    Exit;
+//  end;
+//
+//  fSwatch.Show;
+//  fShape.Show;
+//end;
+//
+//
+//procedure TKMDropColors.ListClick(Sender: TObject);
+//begin
+//  fColorIndex := fSwatch.ColorIndex;
+//  if Assigned(fOnChange) then fOnChange(Self);
+//  ListHide(nil);
+//end;
+//
+//
+//procedure TKMDropColors.ListHide(Sender: TObject);
+//begin
+//  fSwatch.Hide;
+//  fShape.Hide;
+//end;
+//
+//
+//procedure TKMDropColors.SetEnabled(aValue: Boolean);
+//begin
+//  inherited;
+//  fButton.Enabled := Enabled;
+//  fSwatch.Enabled := Enabled;
+//end;
+//
+//
+////Set ColorIndex to fSwatch as well since it holds the actual color that we use on Paint
+//procedure TKMDropColors.SetColorIndex(aIndex: Integer);
+//begin
+//  fColorIndex := aIndex;
+//  fSwatch.ColorIndex := aIndex;
+//end;
+//
+//
+//procedure TKMDropColors.UpdateDropPosition;
+//begin
+//  fSwatch.Left := AbsLeft;
+//  fSwatch.Top := AbsTop + Height;
+//end;
+//
+//
+//procedure TKMDropColors.SetColors(const aColors: array of TColor4; const aRandomCaption: UnicodeString = '');
+//begin
+//  //Store local copy of flag to substitute 0 color with "Random" text
+//  fRandomCaption := aRandomCaption;
+//  fSwatch.SetColors(aColors, (fRandomCaption <> ''));
+//end;
+//
+//
+//procedure TKMDropColors.Paint;
+//var
+//  col: TColor4;
+//begin
+//  inherited;
+//
+//  UpdateDropPosition;
+//
+//  TKMRenderUI.WriteBevel(AbsLeft, AbsTop, Width-fButton.Width, Height);
+//  TKMRenderUI.WriteShape(AbsLeft+2, AbsTop+1, Width-fButton.Width-3, Height-2, fSwatch.GetColor);
+//
+//  if (fRandomCaption <> '') and (fSwatch.ColorIndex = 0) then
+//  begin
+//    if Enabled then
+//      col := $FFFFFFFF
+//    else
+//      col := $FF888888;
+//    TKMRenderUI.WriteText(AbsLeft + 4, AbsTop + 3, 0, fRandomCaption, fntMetal, taLeft, col);
+//  end;
+//end;
 
 
 
