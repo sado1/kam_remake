@@ -59,9 +59,7 @@ type
     procedure SetCount(aCount: Integer);
   end;
 
-  TKMGUIGameSpectatorItemLine = class;
   TKMGUIGameSpectatorItemLineClass = class of TKMGUIGameSpectatorItemLine;
-
   TKMGUIGameSpectatorItemLine = class(TKMPanel)
   private
     fLinesAggregator: TKMGameSpectatorItemLinesAggregator;
@@ -90,8 +88,7 @@ type
     function DontHighlight(aIndex: Integer): Boolean;
     function DoHighlight(aIndex: Integer): Boolean;
   public
-    constructor Create(aParent: TKMPanel; aHandIndex: Integer;
-                       aOnJumpToPlayer: TIntegerEvent; aSetViewportPos: TPointFEvent;
+    constructor Create(aParent: TKMPanel; aHandIndex: Integer; aOnJumpToPlayer: TIntegerEvent; aSetViewportPos: TPointFEvent;
                        aLinesAggregator: TKMGameSpectatorItemLinesAggregator = nil); virtual;
     procedure Paint; override;
     procedure PaintLayer(aPaintLayer: TKMSpecPaintLayer);
