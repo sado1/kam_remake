@@ -246,7 +246,6 @@ type
     procedure SetHint(const aHint: UnicodeString); virtual;
     procedure SetHintBackColor(const aValue: TKMColor4f); virtual;
 
-    procedure SetPaintLayer(aPaintLayer: TKMPaintLayer);
     function PaintingBaseLayer: Boolean;
 
     function CanFocusNext: Boolean; virtual;
@@ -708,12 +707,6 @@ procedure TKMControl.SetHint(const aHint: UnicodeString);
 begin
   //fHint := StringReplace(aHint, '|', ' ', [rfReplaceAll]); //Not sure why we were need to replace | here...
   fHint := aHint;
-end;
-
-
-procedure TKMControl.SetPaintLayer(aPaintLayer: TKMPaintLayer);
-begin
-  fPaintLayer := aPaintLayer;
 end;
 
 
