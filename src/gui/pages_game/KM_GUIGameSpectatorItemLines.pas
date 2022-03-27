@@ -122,7 +122,7 @@ implementation
 uses
   KM_InterfaceGame, KM_Resource,
   KM_UnitGroup, KM_HouseTownHall,
-  KM_ResTypes;
+  KM_ResUnits, KM_ResTypes;
 
 
 { TKMGUIGameSpectatorItemLineResources }
