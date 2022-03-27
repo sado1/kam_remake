@@ -136,7 +136,7 @@ end;
 
 function TKMGUIGameSpectatorItemLineResources.GetTagCount: Integer;
 begin
-  Result := WARE_CNT - Warfare_CNT; //Do not show Warfare on resources page
+  Result := WARE_CNT - WARFARE_CNT; //Do not show Warfare on resources page
 end;
 
 
@@ -145,7 +145,7 @@ begin
   if AIndex = 0 then
     Result := Integer(wtFish)
   else
-    Result := Integer(StoreResType[Length(StoreResType) - AIndex - Warfare_CNT]); //opposite order, we draw items from the right
+    Result := Integer(StoreResType[Length(StoreResType) - AIndex - WARFARE_CNT]); //opposite order, we draw items from the right
 end;
 
 
@@ -197,7 +197,7 @@ end;
 
 function TKMGUIGameSpectatorItemLineWarfare.GetTagCount: Integer;
 begin
-  Result := Warfare_CNT + 2; //+1 for recruit and +1 for gold chests in TownHall
+  Result := WARFARE_CNT + 2; //+1 for recruit and +1 for gold chests in TownHall
 end;
 
 
