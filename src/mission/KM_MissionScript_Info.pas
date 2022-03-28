@@ -85,9 +85,9 @@ begin
                           fMapInfo.CanBeHuman[P[0]] := True;
 
     ctAIPlayer:       if P[0] = -1 then
-                          fMapInfo.CanBeAI[fLastHand] := True
+                          fMapInfo.CanBeClassicAI[fLastHand] := True
                         else
-                          fMapInfo.CanBeAI[P[0]] := True;
+                          fMapInfo.CanBeClassicAI[P[0]] := True;
 
     ctAdvancedAIPlayer:if P[0] = -1 then
                           fMapInfo.CanBeAdvancedAI[fLastHand] := True

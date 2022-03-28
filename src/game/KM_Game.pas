@@ -573,7 +573,7 @@ begin
 
                 //Fixed AIs are always enabled (e.g. coop missions)
                 for I := 0 to gNetworking.MapInfo.LocCount - 1 do
-                  if (gNetworking.MapInfo.CanBeAI[I] or gNetworking.MapInfo.CanBeAdvancedAI[I])
+                  if (gNetworking.MapInfo.CanBeClassicAI[I] or gNetworking.MapInfo.CanBeAdvancedAI[I])
                     and not gNetworking.MapInfo.CanBeHuman[I] then
                     playerEnabled[I] := True;
               end;
@@ -604,7 +604,7 @@ begin
                   // Enable loc for player,
                   // or if AI can be placed on a loc and (same AI type is chosen or if there are no other AI types allowed on that loc)
                   playerEnabled[I] :=  (I = aLocation)
-                                    or (mapInfo.CanBeAI[I]         and ((fAIType = aitClassic) or mapInfo.AICanBeOnlyClassic[I]))
+                                    or (mapInfo.CanBeClassicAI[I]  and ((fAIType = aitClassic) or mapInfo.AICanBeOnlyClassic[I]))
                                     or (mapInfo.CanBeAdvancedAI[I] and ((fAIType = aitAdvanced) or mapInfo.AICanBeOnlyAdvanced[I]));
                 mapInfo.Free;
               end;
@@ -875,7 +875,7 @@ const
     if gNetworking.IsMap then
       for I := 0 to gNetworking.MapInfo.LocCount - 1 do
         if gNetworking.MapInfo.CanBeAdvancedAI[I]
-          and not gNetworking.MapInfo.CanBeAI[I]
+          and not gNetworking.MapInfo.CanBeClassicAI[I]
           and not gNetworking.MapInfo.CanBeHuman[I] then
           gHands[I].AI.Setup.EnableAdvancedAI; //Just enable Advanced AI, do not override MapEd AI params
   end;

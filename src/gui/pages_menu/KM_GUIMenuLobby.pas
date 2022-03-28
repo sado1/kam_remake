@@ -1805,7 +1805,7 @@ begin
                       if (curPlayer.IsHuman and (gNetworking.MapInfo.CanBeHuman[K] or ALLOW_TAKE_AI_PLAYERS))
                         or (curPlayer.IsClassicComputer
                           and gNetworking.MapInfo.CanBeHuman[K]
-                          and gNetworking.MapInfo.CanBeAI[K])
+                          and gNetworking.MapInfo.CanBeClassicAI[K])
                         or (curPlayer.IsAdvancedComputer
                           and gNetworking.MapInfo.CanBeHuman[K]
                           and gNetworking.MapInfo.CanBeAdvancedAI[K]) then

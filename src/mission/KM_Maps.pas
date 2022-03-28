@@ -112,7 +112,7 @@ type
     MissionMode: TKMissionMode;
     LocCount: Byte;
     CanBeHuman: array [0..MAX_HANDS-1] of Boolean;
-    CanBeAI: array [0..MAX_HANDS-1] of Boolean;
+    CanBeClassicAI: array [0..MAX_HANDS-1] of Boolean;
     CanBeAdvancedAI: array [0..MAX_HANDS-1] of Boolean;
     DefaultHuman: TKMHandID;
     GoalsVictoryCount, GoalsSurviveCount: array [0..MAX_HANDS-1] of Byte;
@@ -490,7 +490,7 @@ var
 begin
   SetLength(Result, 0);
   for I := 0 to MAX_HANDS - 1 do
-    if CanBeAI[I] then
+    if CanBeClassicAI[I] then
     begin
       SetLength(Result, Length(Result)+1);
       Result[Length(Result)-1] := I;
@@ -515,7 +515,7 @@ end;
 function TKMMapInfo.IsOnlyAILoc(aLoc: Integer): Boolean;
 begin
   Assert(aLoc < MAX_HANDS);
-  Result := not CanBeHuman[aLoc] and (CanBeAI[aLoc] or CanBeAdvancedAI[aLoc]);
+  Result := not CanBeHuman[aLoc] and (CanBeClassicAI[aLoc] or CanBeAdvancedAI[aLoc]);
 end;
 
 
@@ -548,7 +548,7 @@ begin
   for I := 0 to LocCount - 1 do
   begin
     if not CanBeHuman[I]
-      and (CanBeAI[I] or CanBeAdvancedAI[I]) then
+      and (CanBeClassicAI[I] or CanBeAdvancedAI[I]) then
     begin
       Result[K] := FlagColors[I];
       Inc(K);
@@ -652,7 +652,7 @@ begin
   begin
     FlagColors[I] := DEFAULT_TEAM_COLORS[I];
     CanBeHuman[I] := False;
-    CanBeAI[I] := False;
+    CanBeClassicAI[I] := False;
     CanBeAdvancedAI[I] := False;
     GoalsVictoryCount[I] := 0;
     SetLength(GoalsVictory[I], 0);
@@ -795,7 +795,7 @@ var
 begin
   Result := 0;
   for I := 0 to MAX_HANDS - 1 do
-    if (CanBeAI[I] or CanBeAdvancedAI[I]) and not CanBeHuman[I] then
+    if (CanBeClassicAI[I] or CanBeAdvancedAI[I]) and not CanBeHuman[I] then
       Inc(Result);
 end;
 
@@ -900,7 +900,7 @@ var
 begin
   Result := 0;
   for I := Low(CanBeHuman) to High(CanBeHuman) do
-    if CanBeHuman[I] and not CanBeAI[I] and not CanBeAdvancedAI[I] then
+    if CanBeHuman[I] and not CanBeClassicAI[I] and not CanBeAdvancedAI[I] then
       Inc(Result);
 end;
 
@@ -916,8 +916,8 @@ var
   I: Integer;
 begin
   Result := 0;
-  for I := Low(CanBeAI) to High(CanBeAI) do
-    if CanBeAI[I] or CanBeAdvancedAI[I] then
+  for I := Low(CanBeClassicAI) to High(CanBeClassicAI) do
+    if CanBeClassicAI[I] or CanBeAdvancedAI[I] then
       Inc(Result);
 end;
 
@@ -928,20 +928,20 @@ var
 begin
   Result := 0;
   for I := Low(CanBeHuman) to High(CanBeHuman) do
-    if (CanBeAI[I] or CanBeAdvancedAI[I]) and not CanBeHuman[I] then
+    if (CanBeClassicAI[I] or CanBeAdvancedAI[I]) and not CanBeHuman[I] then
       Inc(Result);
 end;
 
 
 function TKMMapInfo.GetAICanBeOnlyAdvanced(aIndex: Integer): Boolean;
 begin
-  Result := CanBeAdvancedAI[aIndex] and not CanBeAI[aIndex];
+  Result := CanBeAdvancedAI[aIndex] and not CanBeClassicAI[aIndex];
 end;
 
 
 function TKMMapInfo.GetAICanBeOnlyClassic(aIndex: Integer): Boolean;
 begin
-  Result := CanBeAI[aIndex] and not CanBeAdvancedAI[aIndex];
+  Result := CanBeClassicAI[aIndex] and not CanBeAdvancedAI[aIndex];
 end;
 
 
@@ -951,7 +951,7 @@ var
 begin
   Result := 0;
   for I := Low(CanBeHuman) to High(CanBeHuman) do
-    if (CanBeAI[I] or CanBeAdvancedAI[I]) and CanBeHuman[I] then
+    if (CanBeClassicAI[I] or CanBeAdvancedAI[I]) and CanBeHuman[I] then
       Inc(Result);
 end;
 
@@ -962,7 +962,7 @@ var
 begin
   Result := False;
   for I := Low(CanBeHuman) to High(CanBeHuman) do
-    if CanBeAI[I] and CanBeAdvancedAI[I] then
+    if CanBeClassicAI[I] and CanBeAdvancedAI[I] then
       Result := True;
 end;
 
