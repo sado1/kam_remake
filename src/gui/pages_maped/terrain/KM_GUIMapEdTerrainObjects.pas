@@ -310,7 +310,7 @@ begin
   NextTop(35);
 
   CleanBrush := TKMButtonFlat.Create(Panel_Objects, 9, NextTop(45), 34, 34, 673, rxGui);
-  CleanBrush.Anchors := [anTop];
+  CleanBrush.Anchors := [anLeft, anTop];
   CleanBrush.OnClick := ObjectsBrushChange;
 
   OverrideObjects := TKMCheckBox.Create(Panel_Objects, 9, NextTop(40), Panel_Objects.Width - 9, 40, gResTexts[TX_MAPED_OBJECTS_BRUSH_OVERRIDE_OBJECTS], fntMetal);
