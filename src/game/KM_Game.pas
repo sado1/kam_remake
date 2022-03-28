@@ -548,9 +548,6 @@ begin
   fParams.MissionDifficulty := aMapDifficulty;
   fAIType := aAIType;
 
-  if fAIType = aitNone then
-    fAIType := DEF_AITYPE;
-
   if fParams.IsMultiPlayerOrSpec then
     fSetMissionFileSP('') //In MP map could be in DL or MP folder, so don't store path
   else
@@ -604,9 +601,11 @@ begin
                 Assert(InRange(aLocation, 0, mapInfo.LocCount - 1), 'No human player detected');
 
                 for I := 0 to mapInfo.LocCount - 1 do
+                  // Enable loc for player,
+                  // or if AI can be placed on a loc and (same AI type is chosen or if there are no other AI types allowed on that loc)
                   playerEnabled[I] :=  (I = aLocation)
-                                    or (mapInfo.CanBeAI[I]         and (fAIType = aitClassic))
-                                    or (mapInfo.CanBeAdvancedAI[I] and (fAIType = aitAdvanced));
+                                    or (mapInfo.CanBeAI[I]         and ((fAIType = aitClassic) or mapInfo.AICanBeOnlyClassic[I]))
+                                    or (mapInfo.CanBeAdvancedAI[I] and ((fAIType = aitAdvanced) or mapInfo.AICanBeOnlyAdvanced[I]));
                 mapInfo.Free;
               end;
 
@@ -657,12 +656,12 @@ begin
       if aColor <> NO_OVERWRITE_COLOR then
         gMySpectator.Hand.FlagColor := aColor;
 
-      //Set Advanced AI for only advanced locs and if choosen Advanced AI in Single map setup
+      // Set Advanced AI for only advanced locs and if choosen Advanced AI in Single map setup or no other AI types are allowed
       for I := 0 to gHands.Count - 1 do
         if gHands[I].Enabled
           and gHands[I].IsComputer
-          and (fAIType = aitAdvanced)
-          and (aitAdvanced in gHands[I].CanBeAITypes) then
+          and (aitAdvanced in gHands[I].CanBeAITypes)
+          and ((fAIType = aitAdvanced) or (gHands[I].CanBeAITypes = [aitAdvanced])) then
           gHands[I].AI.Setup.EnableAdvancedAI;
     end;
 

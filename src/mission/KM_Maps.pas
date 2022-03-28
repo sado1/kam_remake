@@ -105,6 +105,8 @@ type
     function GetDimentions: TKMPoint;
 
     constructor Create; overload;
+    function GetAICanBeOnlyClassic(aIndex: Integer): Boolean;
+    function GetAICanBeOnlyAdvanced(aIndex: Integer): Boolean;
   public
     MapSizeX, MapSizeY: Integer;
     MissionMode: TKMissionMode;
@@ -166,6 +168,10 @@ type
     function IsBuildingMission: Boolean;
     function IsFightingMission: Boolean;
     property FavouriteMapPic: TKMPic read GetFavouriteMapPic;
+
+    property AICanBeOnlyClassic[aIndex: Integer]: Boolean read GetAICanBeOnlyClassic;
+    property AICanBeOnlyAdvanced[aIndex: Integer]: Boolean read GetAICanBeOnlyAdvanced;
+
     property CanBeHumanCount: Byte read GetCanBeHumanCount;
     property CanBeOnlyHumanCount: Byte read GetCanBeOnlyHumanCount;
     property CanBeAICount: Byte read GetCanBeAICount;
@@ -924,6 +930,18 @@ begin
   for I := Low(CanBeHuman) to High(CanBeHuman) do
     if (CanBeAI[I] or CanBeAdvancedAI[I]) and not CanBeHuman[I] then
       Inc(Result);
+end;
+
+
+function TKMMapInfo.GetAICanBeOnlyAdvanced(aIndex: Integer): Boolean;
+begin
+  Result := CanBeAdvancedAI[aIndex] and not CanBeAI[aIndex];
+end;
+
+
+function TKMMapInfo.GetAICanBeOnlyClassic(aIndex: Integer): Boolean;
+begin
+  Result := CanBeAI[aIndex] and not CanBeAdvancedAI[aIndex];
 end;
 
 

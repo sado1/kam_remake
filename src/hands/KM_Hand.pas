@@ -1489,6 +1489,7 @@ begin
 end;
 
 
+// usually AIType is added by mission parser
 procedure TKMHand.AddAIType(aHandAIType: TKMAIType);
 begin
   Include(fCanBeAITypes, aHandAIType);
