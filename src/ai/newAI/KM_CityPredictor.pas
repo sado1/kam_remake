@@ -38,7 +38,7 @@ type
   private
     fOwner: TKMHandID;
     fCityStats: TCityStats;
-    fCityUnderConstruction: Boolean;
+    fCityUnderConstruction, fCityCompleted: Boolean;
     fWorkerCount: Word;
     fMaxGoldMineCnt, fDecCoalMineCnt, fIronMineCnt, fFieldCnt, fBuildCnt: Integer;
     fMaxIronWeapProd, fMaxWoodWeapProd, fMaxSoldiersInMin, fPeaceFactor, fUpdatedPeaceFactor: Single;
@@ -67,7 +67,9 @@ type
     procedure Save(SaveStream: TKMemoryStream);
     procedure Load(LoadStream: TKMemoryStream);
 
+    property UpdatedPeaceFactor: Single read fUpdatedPeaceFactor;
     property CityStats: TCityStats read fCityStats;
+    property CityCompleted: Boolean read fCityCompleted;
     property WareBalance: TWareBalanceArray read fWareBalance;
     property WorkerCount: Word read fWorkerCount;
     property MaxGoldMineCnt: Integer read fMaxGoldMineCnt write fMaxGoldMineCnt;
@@ -165,6 +167,8 @@ begin
   fOwner := aPlayer;
   fSetup := aSetup;
   fWorkerCount := 0;
+  fCityUnderConstruction := false;
+  fCityCompleted := false;
 
   fMaxGoldMineCnt := 0;
   fDecCoalMineCnt := 0;
@@ -202,6 +206,8 @@ begin
   SaveStream.Write(fOwner);
   SaveStream.Write(fWorkerCount);
   SaveStream.Write(fCityUnderConstruction);
+  SaveStream.Write(fCityCompleted);
+
 
   SaveStream.Write(fMaxGoldMineCnt);
   SaveStream.Write(fDecCoalMineCnt);
@@ -240,6 +246,7 @@ begin
   LoadStream.Read(fOwner);
   LoadStream.Read(fWorkerCount);
   LoadStream.Read(fCityUnderConstruction);
+  LoadStream.Read(fCityCompleted);
 
   LoadStream.Read(fMaxGoldMineCnt);
   LoadStream.Read(fDecCoalMineCnt);
@@ -464,36 +471,41 @@ end;
 // Get players stats and store them into local variable (to be able to edit them later)
 procedure TKMCityPredictor.UpdateCityStats();
 var
+  constructedHouses: Integer;
   UT: TKMUnitType;
   HT: TKMHouseType;
-  PH: TPlannedHousesArray;
 begin
-  fCityUnderConstruction := False;
-  PH := gHands[fOwner].AI.CityManagement.Builder.Planner.PlannedHouses;
   with fCityStats do
   begin
     CitizensCnt := 0;
     for UT := Low(Citizens) to High(Citizens) do
     begin
       Citizens[UT] := gHands[fOwner].Stats.GetUnitQty(UT);
-      CitizensCnt := CitizensCnt + Citizens[UT];
+      Inc(CitizensCnt, Citizens[UT]);
     end;
-    CitizensCnt := CitizensCnt - Citizens[utRecruit]; // Count recruits as soldiers
+    Dec(CitizensCnt, Citizens[utRecruit]); // Count recruits as soldiers
     WarriorsCnt := Citizens[utRecruit];
     for UT := Low(Warriors) to High(Warriors) do
     begin
       Warriors[UT] := gHands[fOwner].Stats.GetUnitQty(UT);
-      WarriorsCnt := WarriorsCnt + Warriors[UT];
+      Inc(WarriorsCnt, Warriors[UT]);
     end;
-    HousesCnt := 0;
-    for HT := Low(Houses) to High(Houses) do
+  end;
+
+  constructedHouses := 0;
+  fCityStats.HousesCnt := 0;
+  with gHands[fOwner].AI.CityManagement.Builder do
+  begin
+    for HT := Low(fCityStats.Houses) to High(fCityStats.Houses) do
     begin
       //Houses[HT] := gHands[fOwner].Stats.GetHouseTotal(HT); // Does not consider planned houses
       // Consider only placed, constructed or planned houses (not destroyed houses because plans will remain in CityPlanner)
-      Houses[HT] := PH[HT].Completed + PH[HT].UnderConstruction + PH[HT].Planned;
-      HousesCnt := HousesCnt + Houses[HT];
-      fCityUnderConstruction := fCityUnderConstruction OR (PH[HT].UnderConstruction + PH[HT].Planned > 0);
+      fCityStats.Houses[HT] := Planner.PlannedHouses[HT].Completed + Planner.PlannedHouses[HT].UnderConstruction + Planner.PlannedHouses[HT].Planned;
+      Inc(fCityStats.HousesCnt, fCityStats.Houses[HT]);
+      Inc(constructedHouses, Planner.PlannedHouses[HT].UnderConstruction + Planner.PlannedHouses[HT].Planned);
     end;
+    fCityUnderConstruction := (constructedHouses > 0) AND ((FreeWorkerCnt < 10) OR (constructedHouses > 3));
+    fCityCompleted := (constructedHouses = 0) AND (FreeWorkerCnt = fCityStats.Citizens[utBuilder]);
   end;
 end;
 
@@ -564,10 +576,9 @@ begin
   UpdateWareBalance(True);
 
   // Decide count of workers + build nodes
-  // fSetup.WorkerCount -> better use local variable
   FreePlace := Max(  0, Min( 2000, Min(fFieldCnt,fBuildCnt) - 1000 )  ); // FreePlace in <0,2000>
-  fWorkerCount := Round( Min( 30 - 20 * fUpdatedPeaceFactor * Byte(not gGame.IsPeaceTime), // Decrease count of required workers after peace
-                              10 + FreePlace*0.008 + fPeaceFactor*8 )
+  fWorkerCount := Round( Min( 50 - 35 * fUpdatedPeaceFactor * Byte(not gGame.IsPeaceTime), // Decrease count of required workers after peace
+                              15 + FreePlace*AI_Par[PREDICTOR_WorkerCountCoef] + fPeaceFactor*8 )
                        );
   // Try to build mines even when perf. optimalization prohibits it (once in ~8 min)
   if aIncrementMines then
@@ -586,9 +597,10 @@ const
   SCALE_PEACE_FACTOR = 1.0 / ((SCALE_MAX_PEACE_TIME - SCALE_MIN_PEACE_TIME)*1.0);
 begin
   // PeaceFactor: 0 = peace <= SCALE_MIN_PEACE_TIME; 1 = peace >= SCALE_MAX_PEACE_TIME
-  fPeaceFactor := Max(0,
-                      (Min(SCALE_MAX_PEACE_TIME, gGame.Options.Peacetime) - SCALE_MIN_PEACE_TIME)
-                     ) * SCALE_PEACE_FACTOR;
+  //fPeaceFactor := Max(0,
+  //                    (Min(SCALE_MAX_PEACE_TIME, gGame.Options.Peacetime) - SCALE_MIN_PEACE_TIME)
+  //                   ) * SCALE_PEACE_FACTOR;
+  fPeaceFactor := 0; // According to simulations the peace factor only harms
 
   UpdateFinalProduction();
 end;
@@ -648,7 +660,7 @@ procedure TKMCityPredictor.FilterRequiredHouses(aTick: Cardinal);
   {
   procedure CheckPeaceFactor();
   const
-    IGNORE_HOUSES: set of TKMHouseType = [htCoalMine, htGoldMine, htIronMine, htQuary, htWineyard];
+    IGNORE_HOUSES: set of TKMHouseType = [htCoalMine, htGoldMine, htIronMine, htQuary, htVineyard];
   var
     Cnt: Integer;
     HT: TKMHouseType;
@@ -711,7 +723,7 @@ begin
 
   // Change house requirements due to nonlinear delay, toons of exceptions and unlock order
   // Dont build wineyard too early
-  if (gGameParams.Tick < WINEYARD_DELAY) then
+  if (fUpdatedPeaceFactor < 1) then
     RequiredHouses[htVineyard] := 0;
   // Consideration of corn delay - only remove all required houses, builder will find the right one if they are not removed
   if UpdateFarmHistory() AND not gHands[fOwner].Locks.HouseBlocked[htFarm] then

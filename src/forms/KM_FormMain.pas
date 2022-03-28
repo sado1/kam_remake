@@ -240,6 +240,7 @@ type
     miExportMemoryUsage: TMenuItem;
     chkShowRoutesSteps: TCheckBox;
     btnGameSave: TButton;
+    seHighlightNavMesh: TSpinEdit;
 
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -1479,6 +1480,7 @@ begin
     OVERLAY_AVOID := chkShowAvoid.Checked;
     OVERLAY_OWNERSHIP := chkShowOwnership.Checked;
     OVERLAY_NAVMESH := chkShowNavMesh.Checked;
+    OVERLAY_HIGHLIGHT_POLY := seHighlightNavMesh.Value;
 
     OWN_MARGIN := tbOwnMargin.Position;
     tbOwnThresh.Max := OWN_MARGIN;

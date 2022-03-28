@@ -219,6 +219,7 @@ var
   HOUSE_BUILDING_STEP     :Single = 0;
   WATER_LIGHT_MULTIPLIER  :Single = DEFAULT_WATER_LIGHT_MULTIPLIER; //Terrain light multiplier
   OVERLAY_NAVMESH         :Boolean = False; //Show navmesh
+  OVERLAY_HIGHLIGHT_POLY  :Integer = 0;     //Highlight plygon in navmesh
   OVERLAY_DEFENCES        :Boolean = False; //Show AI defence perimeters
   OVERLAY_DEFENCES_A      :Boolean = False; //Show AI defence perimeters (Animation)
   OVERLAY_INFLUENCE       :Boolean = False; //Show influence map

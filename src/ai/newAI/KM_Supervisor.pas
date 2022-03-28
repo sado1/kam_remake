@@ -367,7 +367,7 @@ begin
   for Owner in fAlli2PL[aTeam] do
     for PL := 0 to gHands.Count - 1 do
         if (gHands[Owner].Alliances[PL] <> atEnemy)
-          OR (fCombatStatus[Owner,PL] = csDefending)
+          OR (fCombatStatus[Owner,PL] in [csDefending, csCounterattack])
           OR (not HasAssets(PL))
           OR ((gHands[Owner].AI.ArmyManagement.AttackNew.Count = 0) AND not gHands[Owner].AI.ArmyManagement.AttackRequest.Active) then
           fCombatStatus[Owner,PL] := csNeutral;
@@ -437,14 +437,14 @@ begin
     for PL := 0 to gHands.Count - 1 do
       if (gHands[Owner].Alliances[PL] = atEnemy) then
       begin
-        // Check if units are closer to enemy city and if so, then change status to attacker
+        // Check if units are closer to enemy city and if so, then change status to counterattack
         if (fCombatStatus[Owner,PL] in [csNeutral, csDefending]) AND HasAssets(PL,False) then
           for K := 0 to gHands[Owner].UnitGroups.Count - 1 do
           begin
             G := gHands[Owner].UnitGroups.Groups[K];
             if (G <> nil) AND not G.IsDead AND (gAIFields.Influences.OwnPoint[ PL, G.Position ] > ARMY_IN_HOSTILE_CITY) then
             begin
-              fCombatStatus[Owner,PL] := csAttackingCity;
+              fCombatStatus[Owner,PL] := csCounterattack;
               break;
             end;
           end;
@@ -723,8 +723,20 @@ procedure TKMSupervisor.UpdateAttacks(aTeam: Byte; aTick: Cardinal);
       for K := 0 to GroupsCount - 1 do
         EG[K] := fArmyVector.Enemy.Groups[ Groups[K] ];
       SetLength(H, HousesCount);
+      Cnt := 0;
+      // Barracks first
       for K := 0 to HousesCount - 1 do
-        H[K] := fArmyVector.Enemy.Houses[ Houses[K] ];
+        if (fArmyVector.Enemy.Houses[ Houses[K] ].HouseType = htBarracks) then
+        begin
+          H[Cnt] := fArmyVector.Enemy.Houses[ Houses[K] ];
+          Inc(Cnt);
+        end;
+      for K := 0 to HousesCount - 1 do
+        if (fArmyVector.Enemy.Houses[ Houses[K] ].HouseType <> htBarracks) then
+        begin
+          H[Cnt] := fArmyVector.Enemy.Houses[ Houses[K] ];
+          Inc(Cnt);
+        end;
       AttackCluster(aAttack, aIdx, pGCWA, EG, H);
     end;
     // Set orders to move
@@ -926,8 +938,11 @@ procedure TKMSupervisor.AttackDecision(aTeam: Byte);
             for L := Low(EnemyPoly) to High(EnemyPoly) do
               if (EnemyPoly[L] > 0) AND gAIFields.NavMesh.Pathfinding.ShortestPolygonRoute(AllyPoly[K], EnemyPoly[L], Distance, RoutePoly) then
               begin
-                DistArr[TeamIdx] := Min(DistArr[TeamIdx], Distance);
-                TargetPL[TeamIdx] := L;
+                if (DistArr[TeamIdx] > Distance) then
+                begin
+                  DistArr[TeamIdx] := Distance;
+                  TargetPL[TeamIdx] := L;
+                end;
               end;
         if (DistArr[TeamIdx] = High(Word)) then
           Continue;
@@ -968,7 +983,7 @@ var
   BestCmpTeam, WorstCmpTeam: Byte;
   IdxPL: Integer;
   DefRatio, BestCmp, AvrgCmp, WorstCmp: Single;
-  PL, BestTarget: TKMHandID;
+  PL, PL2, BestTarget: TKMHandID;
   AR: TKMAttackRequest;
 begin
   if not NewAIInTeam(aTeam, True, False) OR not IsTeamAlive(aTeam) OR (Length(fAlli2PL) < 2) then // I sometimes use my loc as a spectator (alliance with everyone) so make sure that search for enemy will use AI loc
@@ -994,7 +1009,7 @@ begin
     // Consider food
     FoodProblems := gAIFields.Eye.ArmyEvaluation.CheckFoodProblems(fAlli2PL[aTeam]);
     // Make decision
-    if (BestCmp > MIN_ADVANTAGE) OR FoodProblems OR gGameParams.IsTactic then
+    if (BestCmp > MIN_ADVANTAGE) OR (FoodProblems AND (fCombatStatus[fAlli2PL[aTeam,0],fAlli2PL[aTeam,0]] = csNeutral)) OR gGameParams.IsTactic then
     begin
       with AR do
       begin
@@ -1016,6 +1031,15 @@ begin
           else
             fCombatStatus[PL,BestTarget] := csAttackingCity;
         end;
+    end;
+    // Stop attack if food problem was solved
+    if (BestCmp < MIN_ADVANTAGE) AND not FoodProblems AND not gGameParams.IsTactic then
+    begin
+      for PL in fAlli2PL[aTeam] do
+        if gHands[PL].AI.Setup.AutoAttack then
+          for PL2 := 0 to MAX_HANDS - 1 do
+            if (fCombatStatus[PL,PL2] = csAttackingCity) OR (fCombatStatus[PL,PL2] = csAttackingEverything) then
+              fCombatStatus[PL,PL2] := csNeutral;
     end;
   end;
 end;
@@ -1273,6 +1297,7 @@ begin
             case fCombatStatus[PL,PL2] of
               csNeutral:              Continue;
               csDefending:            CombatStatusText := 'def';
+              csCounterattack:        CombatStatusText := 'count att';
               csAttackingCity:        CombatStatusText := 'att city';
               csAttackingEverything:  CombatStatusText := 'att all';
             end;

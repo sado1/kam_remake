@@ -84,7 +84,7 @@ type
     // Avoid building
     procedure AddAvoidBuilding(aX,aY: Word; aRad: Single);
     procedure RemAvoidBuilding(aArea: TKMRect);
-    procedure MarkForest(aPoint: TKMPoint; aRad, aDecreaseCoef: Single);
+    procedure MarkForest(aPoint: TKMPoint; aRad, aDecreaseCoef: Single; aOnlyUnmarkedArea: Boolean = false);
     // Army presence
     function GetAllianceIdx(const aPL: TKMHandID; var aIdx: Integer): Boolean;
     function GetArmyTraffic(const aAlliance, aIdx: Word): Word;
@@ -257,7 +257,7 @@ begin
 end;
 
 
-procedure TKMInfluences.MarkForest(aPoint: TKMPoint; aRad, aDecreaseCoef: Single);
+procedure TKMInfluences.MarkForest(aPoint: TKMPoint; aRad, aDecreaseCoef: Single; aOnlyUnmarkedArea: Boolean = false);
 var
   X,Y, Rad: Integer;
   SqrDist, SqrMaxDist: Single;
@@ -272,11 +272,20 @@ begin
     begin
       SqrDist := Sqr(aPoint.X-X) + Sqr(aPoint.Y-Y);
       if (SqrDist <= SqrMaxDist) then
-        AvoidBuilding[Y,X] := Min( 254, // Forest does not reach full 255
+      begin
+        if not aOnlyUnmarkedArea then
+          AvoidBuilding[Y,X] := Min( 254, // Forest does not reach full 255
                                    Max( AVOID_BUILDING_FOREST_MINIMUM, // Forest start at this value
                                         AvoidBuilding[Y,X] + 254 - Round(SqrDist * aDecreaseCoef)
                                       )
+                                 )
+        else if (AvoidBuilding[Y,X] = 0) then
+          AvoidBuilding[Y,X] := Min( 254, // Forest does not reach full 255
+                                   Max( AVOID_BUILDING_FOREST_MINIMUM, // Forest start at this value
+                                        254 - Round(SqrDist * aDecreaseCoef)
+                                      )
                                  );
+      end;
     end;
 end;
 
@@ -791,17 +800,7 @@ begin
       if (PL = HAND_NONE) then
         Continue
       else
-        Col := (gHands[PL].FlagColor AND tcWhite) OR (OwnPoly[PL,K] shl 24);
-
-      //NavMesh polys coverage
-      with fNavMesh do
-        gRenderAux.TriangleOnTerrain(
-          Nodes[Polygons[K].Indices[0]].X,
-          Nodes[Polygons[K].Indices[0]].Y,
-          Nodes[Polygons[K].Indices[1]].X,
-          Nodes[Polygons[K].Indices[1]].Y,
-          Nodes[Polygons[K].Indices[2]].X,
-          Nodes[Polygons[K].Indices[2]].Y, Col);
+        fNavMesh.DrawPolygon(K, OwnPoly[PL,K], gHands[PL].FlagColor AND tcWhite);
     end;
   end;
 
@@ -819,31 +818,13 @@ begin
       Cnt := 0;
       for GT := GROUP_TYPE_MIN to GROUP_TYPE_MAX do
         Cnt := Cnt + Presence[TeamIdx, K, GT];
+      //NavMesh polys coverage
       if (Cnt > 0) then
-      begin
-        //NavMesh polys coverage
-        with fNavMesh do
-          gRenderAux.TriangleOnTerrain(
-            Nodes[Polygons[K].Indices[0]].X,
-            Nodes[Polygons[K].Indices[0]].Y,
-            Nodes[Polygons[K].Indices[1]].X,
-            Nodes[Polygons[K].Indices[1]].Y,
-            Nodes[Polygons[K].Indices[2]].X,
-            Nodes[Polygons[K].Indices[2]].Y, tcRed OR (Byte(Min(Max(Cnt,$1F),$F0)) shl 24) );
-      end;
+        fNavMesh.DrawPolygon(K, Byte(Min(Max(Cnt,$1F),$F0)), tcRed);
       Cnt := GetArmyTraffic(TeamIdx, K);
+      //NavMesh polys coverage
       if (Cnt > 0) then
-      begin
-        //NavMesh polys coverage
-        with fNavMesh do
-          gRenderAux.TriangleOnTerrain(
-            Nodes[Polygons[K].Indices[0]].X,
-            Nodes[Polygons[K].Indices[0]].Y,
-            Nodes[Polygons[K].Indices[1]].X,
-            Nodes[Polygons[K].Indices[1]].Y,
-            Nodes[Polygons[K].Indices[2]].X,
-            Nodes[Polygons[K].Indices[2]].Y, tcYellow OR (Byte(Min(Max(Cnt,$3F),$F0)) shl 24) );
-      end;
+        fNavMesh.DrawPolygon(K, Byte(Min(Max(Cnt,$3F),$F0)), tcYellow);
     end;
     {
     for I := 0 to fPolyCnt - 1 do
@@ -867,13 +848,7 @@ begin
       begin
         BestCnt := Min(BestCnt,$9F);
         //NavMesh polys coverage
-        gRenderAux.TriangleOnTerrain(
-          NodeArr[PolyArr[I].Indices[0]].X,
-          NodeArr[PolyArr[I].Indices[0]].Y,
-          NodeArr[PolyArr[I].Indices[1]].X,
-          NodeArr[PolyArr[I].Indices[1]].Y,
-          NodeArr[PolyArr[I].Indices[2]].X,
-          NodeArr[PolyArr[I].Indices[2]].Y, (Col OR (BestCnt shl 24)) );
+        fNavMesh.DrawPolygon(I, BestCnt, Col);
       end;
     end;
     //}

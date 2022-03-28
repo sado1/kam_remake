@@ -575,14 +575,7 @@ begin
 
       // Draw defensive lines as a triangles
       Col := Max( $22, Min($FF, Threat) );
-      with gAIFields.NavMesh do
-        gRenderAux.TriangleOnTerrain(
-          Nodes[Polygons[Idx].Indices[0]].X,
-          Nodes[Polygons[Idx].Indices[0]].Y,
-          Nodes[Polygons[Idx].Indices[1]].X,
-          Nodes[Polygons[Idx].Indices[1]].Y,
-          Nodes[Polygons[Idx].Indices[2]].X,
-          Nodes[Polygons[Idx].Indices[2]].Y, (Col shl 24) OR tcRed);
+      gAIFields.NavMesh.DrawPolygon(Idx, Col, tcRed);
 
       // Draw hostile units around defensive lines
       if (Threat > 0) then

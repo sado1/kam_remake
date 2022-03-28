@@ -506,7 +506,7 @@ begin
       for K := 0 to I-1 do
         if InfluenceArr[K] AND
           not (   (Mines.Items[K].Y <> Mines.Items[I].Y)
-                OR (  Abs(Mines.Items[K].X - Mines.Items[I].X) > (3 + Byte(aMineType = htIronMine)) )   ) then
+                OR (  Abs(Mines.Items[K].X - Mines.Items[I].X) >= (3 + Byte(aMineType = htIronMine)) )   ) then
         begin
           InfluenceArr[I] := False;
           break;
@@ -1223,17 +1223,6 @@ procedure TKMEye.Paint(aRect: TKMRect);
       gRenderAux.Text(Point.X, Point.Y, gResHouses[HT].HouseName, $FF000000);
     end;
   end;
-  procedure DrawTriangle(aIdx: Integer; aColor: Cardinal);
-  begin
-    with gAIFields.NavMesh do
-      gRenderAux.TriangleOnTerrain(
-        Nodes[ Polygons[aIdx].Indices[0] ].X,
-        Nodes[ Polygons[aIdx].Indices[0] ].Y,
-        Nodes[ Polygons[aIdx].Indices[1] ].X,
-        Nodes[ Polygons[aIdx].Indices[1] ].Y,
-        Nodes[ Polygons[aIdx].Indices[2] ].X,
-        Nodes[ Polygons[aIdx].Indices[2] ].Y, aColor);
-  end;
 var
   PL: TKMHandID;
   I,X,Y: Integer;
@@ -1595,13 +1584,13 @@ begin
     LeftSideFree := True;
     RightSideFree := True;
     for Dir := Low(Surroundings[DIST]) to High(Surroundings[DIST]) do
-      for K := Low(Surroundings[DIST,Dir]) to High(Surroundings[DIST,Dir]) do
-      //for K := Low(Surroundings[DIST,Dir]) + Byte(Dir = dirS) to High(Surroundings[DIST,Dir]) - Byte(Dir = dirS) do
+      //for K := Low(Surroundings[DIST,Dir]) to High(Surroundings[DIST,Dir]) do
+      for K := Low(Surroundings[DIST,Dir]) + Byte(Dir = dirS) to High(Surroundings[DIST,Dir]) - Byte(Dir = dirS) do
       begin
         Point := KMPointAdd(aLoc, Surroundings[DIST,Dir,K]);
         if fHouseReq.IgnoreAvoidBuilding AND (State[Point.Y, Point.X] in [bsReserved, bsHousePlan]) then
           Exit;
-        if (Dir = dirS) AND (State[Point.Y, Point.X] in [bsNoBuild, bsHousePlan, bsFieldPlan]) then
+        if (Dir = dirS) AND (State[Point.Y, Point.X] in [bsNoBuild, bsHousePlan]) AND ((K < 2) OR (K > 3) OR (State[Point.Y, Point.X] <> bsFieldPlan)) then
           Exit;
         if (Dir = dirE) then
           RightSideFree := RightSideFree AND not (State[Point.Y, Point.X] in [bsNoBuild, bsHousePlan]);

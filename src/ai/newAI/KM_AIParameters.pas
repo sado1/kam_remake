@@ -31,13 +31,13 @@ type
     ,ATTACK_ArmyVectorField_FindPositions_DistCloseToEnemy
     ,ATTACK_ArmyVectorField_FindPositions_DistMaxWalk
     ,ATTACK_ArmyVectorField_FindPositions_FollowEnemyVectorFieldUth
-    ,ATTACK_ArmyVectorField_FindPositions_FollowRallyVectorFieldUth
     ,ATTACK_ArmyVectorField_FindPositions_AvoidTraffic
     ,ATTACK_ArmyVectorField_FindPositions_RallyPointOffset
     ,ATTACK_ArmyVectorField_EvalClusters_InPlace
     ,ATTACK_ArmyVectorField_EvalClusters_AtAdvantage
     ,ATTACK_ArmyVectorField_EvalClusters_Ambushed
     ,ATTACK_ArmyVectorField_DivideForces_DefendCityAdv
+    ,ATTACK_ArmyVectorField_DivideForces_SupportAllyAdv
     ,ATTACK_ArmyVectorField_END
 
     ,ATTACK_SQUAD_START
@@ -128,11 +128,19 @@ type
     ,PLANNER_FindPlaceForHouse_END
 
     ,PLANNER_FindPlaceForQuary_START
+    ,MANAGEMENT_CheckStoreWares_Stone
+    ,PREDICTOR_WareNeedPerAWorker_Stone
+    ,PREDICTOR_WareNeedPerAWorker_StoneOffset
+    ,PREDICTOR_WorkerCountCoef
+    ,PLANNER_FindPlaceForQuary_StoneLoc_StoneCnt
+    ,PLANNER_FindPlaceForQuary_StoneLoc_AlreadyMined
+    ,PLANNER_FindPlaceForQuary_StoneLoc_Distance
     ,PLANNER_FindPlaceForQuary_DistCity
     ,PLANNER_FindPlaceForQuary_DistStone
     ,PLANNER_FindPlaceForQuary_DistTimer
     ,PLANNER_FindPlaceForQuary_Obstacle
     ,PLANNER_FindPlaceForQuary_SnapCrit
+    ,PLANNER_FindPlaceForQuary_QtyStone
     ,PLANNER_FindPlaceForQuary_END
 
     ,PLANNER_FOREST_START
@@ -164,8 +172,6 @@ type
 
     ,PREDICTOR_START
     ,PREDICTOR_SecondSchool_MinRequiredUnits
-    ,PREDICTOR_WareNeedPerAWorker_Stone
-    ,PREDICTOR_WareNeedPerAWorker_StoneOffset
     ,PREDICTOR_WareNeedPerAWorker_Wood
     ,PREDICTOR_END
 
@@ -204,53 +210,51 @@ const
 {$ENDIF}
 
 
-
-
        AI_Par: array[TAIPar] of Single = (
          0.0000000, // ATTACK_ArmyVectorField_START
-         8.0601425, // ATTACK_ArmyVectorField_FindPositions_DistEnemyOffset
-        13.6067219, // ATTACK_ArmyVectorField_FindPositions_DistEnemyOffsetFF
-         1.1517301, // ATTACK_ArmyVectorField_FindPositions_DistEnemyGainFF
-         6.1063805, // ATTACK_ArmyVectorField_FindPositions_DistCloseToEnemy
-         2.5668924, // ATTACK_ArmyVectorField_FindPositions_DistMaxWalk
-        15.0436134, // ATTACK_ArmyVectorField_FindPositions_FollowEnemyVectorFieldUth
-        24.6206589, // ATTACK_ArmyVectorField_FindPositions_FollowRallyVectorFieldUth
-         9.0000000, // ATTACK_ArmyVectorField_FindPositions_AvoidTraffic
-         1.6734661, // ATTACK_ArmyVectorField_FindPositions_RallyPointOffset
-         0.7751327, // ATTACK_ArmyVectorField_EvalClusters_InPlace
-         2.0712500, // ATTACK_ArmyVectorField_EvalClusters_AtAdvantage
-         0.0474027, // ATTACK_ArmyVectorField_EvalClusters_Ambushed
-         1.2200397, // ATTACK_ArmyVectorField_DivideForces_DefendCityAdv
+        23.8595066, // ATTACK_ArmyVectorField_FindPositions_DistEnemyOffset
+        17.4091473, // ATTACK_ArmyVectorField_FindPositions_DistEnemyOffsetFF
+         1.5993488, // ATTACK_ArmyVectorField_FindPositions_DistEnemyGainFF
+        16.9659538, // ATTACK_ArmyVectorField_FindPositions_DistCloseToEnemy
+         6.5492649, // ATTACK_ArmyVectorField_FindPositions_DistMaxWalk
+        15.9957075, // ATTACK_ArmyVectorField_FindPositions_FollowEnemyVectorFieldUth
+         9.1061239, // ATTACK_ArmyVectorField_FindPositions_AvoidTraffic
+         7.7757473, // ATTACK_ArmyVectorField_FindPositions_RallyPointOffset
+         0.9000000, // ATTACK_ArmyVectorField_EvalClusters_InPlace
+         2.1793294, // ATTACK_ArmyVectorField_EvalClusters_AtAdvantage
+         0.0341255, // ATTACK_ArmyVectorField_EvalClusters_Ambushed
+         0.5000000, // ATTACK_ArmyVectorField_DivideForces_DefendCityAdv
+         0.1121276, // ATTACK_ArmyVectorField_DivideForces_SupportAllyAdv
          0.0000000, // ATTACK_ArmyVectorField_END
 
          0.0000000, // ATTACK_SQUAD_START
-       420.7174988, // ATTACK_SQUAD_ChangeTarget_Delay
+       416.4127197, // ATTACK_SQUAD_ChangeTarget_Delay
          5.0000000, // ATTACK_SQUAD_MinWalkingDistance
          8.0000000, // ATTACK_SQUAD_TargetReached_House
-         1.7261932, // ATTACK_SQUAD_TargetReached_Position
-         9.0640764, // ATTACK_SQUAD_TargetReached_RangedSquad
-        31.7482128, // ATTACK_SQUAD_TargetReached_Unit
+         5.0000000, // ATTACK_SQUAD_TargetReached_Position
+        10.2428083, // ATTACK_SQUAD_TargetReached_RangedSquad
+        35.0000000, // ATTACK_SQUAD_TargetReached_Unit
          1.0000000, // ATTACK_SQUAD_TrafficDetection_Limit
         10.0000000, // ATTACK_SQUAD_TrafficDetection_Threshold
          0.0000000, // ATTACK_SQUAD_END
 
          0.0000000, // ATTACK_SUPERVISOR_START
-        23.2421970, // ATTACK_SUPERVISOR_EvalTarget_DistanceGroup
-         2.0713634, // ATTACK_SUPERVISOR_EvalTarget_OpportunityDistGain
-         1.0000000, // ATTACK_SUPERVISOR_EvalTarget_OpportunityGain
-         0.5773205, // ATTACK_SUPERVISOR_EvalTarget_DecreaseRisk
-         4.4429784, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainAntiHorse
-        29.6554585, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainDist
-         3.3574333, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainMelee
-         2.0209789, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainMounted
-         1.3686754, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainRangDist
-         3.6909661, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainRanged
+        22.1900902, // ATTACK_SUPERVISOR_EvalTarget_DistanceGroup
+         3.9091630, // ATTACK_SUPERVISOR_EvalTarget_OpportunityDistGain
+         3.3577795, // ATTACK_SUPERVISOR_EvalTarget_OpportunityGain
+         0.6074438, // ATTACK_SUPERVISOR_EvalTarget_DecreaseRisk
+         6.6606860, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainAntiHorse
+         6.9580350, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainDist
+         2.6582916, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainMelee
+         3.9733243, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainMounted
+         2.8656545, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainRangDist
+         1.3565565, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainRanged
          0.0000000, // ATTACK_SUPERVISOR_END
 
          0.0000000, // NAVMESH_PATHFINDING_START
-         1.0000000, // NAVMESH_PATHFINDING_AvoidTraffic
-         2.7006221, // NAVMESH_PATHFINDING_LineLength
-         6.0000000, // NAVMESH_PATHFINDING_AvoidSpecEnemy
+         0.4070168, // NAVMESH_PATHFINDING_AvoidTraffic
+         1.1412202, // NAVMESH_PATHFINDING_LineLength
+         5.1420155, // NAVMESH_PATHFINDING_AvoidSpecEnemy
          0.0000000, // NAVMESH_PATHFINDING_END
 
          0.0000000, // BUILDER_START
@@ -289,16 +293,16 @@ const
          0.0000000, // MANAGEMENT_END
 
          0.0000000, // PLANNER_FARM_START
-        10.8081493, // PLANNER_FARM_FieldCrit_FlatArea
-         1.6080004, // PLANNER_FARM_FieldCrit_PolyRoute
-         1.9612305, // PLANNER_FARM_FieldCrit_Soil
-         4.7511997, // PLANNER_FARM_FindPlaceForHouse_CityCenter
-         8.6881905, // PLANNER_FARM_FindPlaceForHouse_FlatArea
-        11.3342533, // PLANNER_FARM_FindPlaceForHouse_HouseDist
-         1.7072186, // PLANNER_FARM_FindPlaceForHouse_Route
-        20.8064556, // PLANNER_FARM_PlanFields_CanBuild
-        40.4509315, // PLANNER_FARM_PlanFields_Dist
-        50.7865372, // PLANNER_FARM_PlanFields_ExistField
+        13.7585087, // PLANNER_FARM_FieldCrit_FlatArea
+         0.4989614, // PLANNER_FARM_FieldCrit_PolyRoute
+         1.9767742, // PLANNER_FARM_FieldCrit_Soil
+         5.6396270, // PLANNER_FARM_FindPlaceForHouse_CityCenter
+        16.0000000, // PLANNER_FARM_FindPlaceForHouse_FlatArea
+        19.9625053, // PLANNER_FARM_FindPlaceForHouse_HouseDist
+        -1.1648518, // PLANNER_FARM_FindPlaceForHouse_Route
+       759.2076416, // PLANNER_FARM_PlanFields_CanBuild
+        32.8001213, // PLANNER_FARM_PlanFields_Dist
+        95.6147385, // PLANNER_FARM_PlanFields_ExistField
          0.0000000, // PLANNER_FARM_END
 
          0.0000000, // PLANNER_FindPlaceForHouse_START
@@ -311,11 +315,19 @@ const
          0.0000000, // PLANNER_FindPlaceForHouse_END
 
          0.0000000, // PLANNER_FindPlaceForQuary_START
-        31.5224438, // PLANNER_FindPlaceForQuary_DistCity
-        12.8906088, // PLANNER_FindPlaceForQuary_DistStone
-      1080.8776855, // PLANNER_FindPlaceForQuary_DistTimer
-        85.5322800, // PLANNER_FindPlaceForQuary_Obstacle
-        56.4987259, // PLANNER_FindPlaceForQuary_SnapCrit
+        27.4838066, // MANAGEMENT_CheckStoreWares_Stone
+         0.6821785, // PREDICTOR_WareNeedPerAWorker_Stone
+        14.5459347, // PREDICTOR_WareNeedPerAWorker_StoneOffset
+         0.0047831, // PREDICTOR_WorkerCountCoef
+         5.0048351, // PLANNER_FindPlaceForQuary_StoneLoc_StoneCnt
+       125.4238663, // PLANNER_FindPlaceForQuary_StoneLoc_AlreadyMined
+        13.8679466, // PLANNER_FindPlaceForQuary_StoneLoc_Distance
+        20.9321098, // PLANNER_FindPlaceForQuary_DistCity
+        25.5000973, // PLANNER_FindPlaceForQuary_DistStone
+      3051.0822754, // PLANNER_FindPlaceForQuary_DistTimer
+        90.0000000, // PLANNER_FindPlaceForQuary_Obstacle
+        14.2139816, // PLANNER_FindPlaceForQuary_SnapCrit
+        26.7360783, // PLANNER_FindPlaceForQuary_QtyStone
          0.0000000, // PLANNER_FindPlaceForQuary_END
 
          0.0000000, // PLANNER_FOREST_START
@@ -347,31 +359,29 @@ const
 
          0.0000000, // PREDICTOR_START
         44.3221283, // PREDICTOR_SecondSchool_MinRequiredUnits
-         0.6563203, // PREDICTOR_WareNeedPerAWorker_Stone
-         6.7707891, // PREDICTOR_WareNeedPerAWorker_StoneOffset
          0.3007088, // PREDICTOR_WareNeedPerAWorker_Wood
          0.0000000, // PREDICTOR_END
 
          0.0000000, // SHORTCUTS_START
-       105.4901276, // SHORTCUTS_BasePrice
-        36.0100517, // SHORTCUTS_Coal
-        28.4500065, // SHORTCUTS_Field
-        46.3248215, // SHORTCUTS_Forest
-        23.4434166, // SHORTCUTS_OtherCase
-        39.0297012, // SHORTCUTS_Road
-        70.4304733, // SHORTCUTS_TurnPenalization
-        34.4703903, // SHORTCUTS_noBuildArea
+        95.1310349, // SHORTCUTS_BasePrice
+        49.1626778, // SHORTCUTS_Coal
+        50.0000000, // SHORTCUTS_Field
+        18.1300087, // SHORTCUTS_Forest
+        24.3808022, // SHORTCUTS_OtherCase
+        46.6517181, // SHORTCUTS_Road
+        33.4370956, // SHORTCUTS_TurnPenalization
+        25.7135334, // SHORTCUTS_noBuildArea
          0.0000000, // SHORTCUTS_END
 
          0.0000000, // ROADS_START
-        32.6338196, // ROADS_BasePrice
-        20.8406906, // ROADS_Coal
-        41.7385406, // ROADS_Field
-        49.8783913, // ROADS_Forest
-        33.5808334, // ROADS_OtherCase
-        26.4302139, // ROADS_Road
-        27.7078152, // ROADS_TurnPenalization
-        39.9684258, // ROADS_noBuildArea
+        42.2091637, // ROADS_BasePrice
+        29.0325890, // ROADS_Coal
+        46.5412674, // ROADS_Field
+        57.8719749, // ROADS_Forest
+        11.6849775, // ROADS_OtherCase
+        23.1054745, // ROADS_Road
+        50.0000000, // ROADS_TurnPenalization
+        35.9236031, // ROADS_noBuildArea
          0.0000000  // ROADS_END
 
        );
@@ -383,19 +393,19 @@ const
 const
   AI_Par_Offset: array[TAIPar] of Single = (
         0.00, // ATTACK_ArmyVectorField_START
-        8.00, // ATTACK_ArmyVectorField_FindPositions_DistEnemyOffset
-        8.00, // ATTACK_ArmyVectorField_FindPositions_DistEnemyOffsetFF
+       14.00, // ATTACK_ArmyVectorField_FindPositions_DistEnemyOffset
+       12.00, // ATTACK_ArmyVectorField_FindPositions_DistEnemyOffsetFF
         1.00, // ATTACK_ArmyVectorField_FindPositions_DistEnemyGainFF
-        1.00, // ATTACK_ArmyVectorField_FindPositions_DistCloseToEnemy
+       12.00, // ATTACK_ArmyVectorField_FindPositions_DistCloseToEnemy
         1.00, // ATTACK_ArmyVectorField_FindPositions_DistMaxWalk
         5.00, // ATTACK_ArmyVectorField_FindPositions_FollowEnemyVectorFieldUth
-       15.00, // ATTACK_ArmyVectorField_FindPositions_FollowRallyVectorFieldUth
-        9.00, // ATTACK_ArmyVectorField_FindPositions_AvoidTraffic
+        1.00, // ATTACK_ArmyVectorField_FindPositions_AvoidTraffic
         1.00, // ATTACK_ArmyVectorField_FindPositions_RallyPointOffset
         0.40, // ATTACK_ArmyVectorField_EvalClusters_InPlace
         0.00, // ATTACK_ArmyVectorField_EvalClusters_AtAdvantage
-        0.01, // ATTACK_ArmyVectorField_EvalClusters_Ambushed
-        1.00, // ATTACK_ArmyVectorField_DivideForces_DefendCityAdv
+        0.00, // ATTACK_ArmyVectorField_EvalClusters_Ambushed
+        0.50, // ATTACK_ArmyVectorField_DivideForces_DefendCityAdv
+        0.00, // ATTACK_ArmyVectorField_DivideForces_SupportAllyAdv
         0.00, // ATTACK_ArmyVectorField_END
 
         0.00, // ATTACK_SQUAD_START
@@ -415,7 +425,7 @@ const
         1.00, // ATTACK_SUPERVISOR_EvalTarget_OpportunityGain
         0.50, // ATTACK_SUPERVISOR_EvalTarget_DecreaseRisk
         2.00, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainAntiHorse
-       10.00, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainDist
+        5.00, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainDist
         1.00, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainMelee
         1.00, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainMounted
         1.00, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainRangDist
@@ -423,7 +433,7 @@ const
         0.00, // ATTACK_SUPERVISOR_END
 
         0.00, // NAVMESH_PATHFINDING_START
-        1.00, // NAVMESH_PATHFINDING_AvoidTraffic
+        0.00, // NAVMESH_PATHFINDING_AvoidTraffic
         0.00, // NAVMESH_PATHFINDING_LineLength
         5.00, // NAVMESH_PATHFINDING_AvoidSpecEnemy
         0.00, // NAVMESH_PATHFINDING_END
@@ -464,14 +474,14 @@ const
         0.00, // MANAGEMENT_END
 
         0.00, // PLANNER_FARM_START
-        0.00, // PLANNER_FARM_FieldCrit_FlatArea
+       10.00, // PLANNER_FARM_FieldCrit_FlatArea
         0.00, // PLANNER_FARM_FieldCrit_PolyRoute
         0.00, // PLANNER_FARM_FieldCrit_Soil
         0.00, // PLANNER_FARM_FindPlaceForHouse_CityCenter
-        0.00, // PLANNER_FARM_FindPlaceForHouse_FlatArea
+       10.00, // PLANNER_FARM_FindPlaceForHouse_FlatArea
         5.00, // PLANNER_FARM_FindPlaceForHouse_HouseDist
        -2.00, // PLANNER_FARM_FindPlaceForHouse_Route
-        0.00, // PLANNER_FARM_PlanFields_CanBuild
+      500.00, // PLANNER_FARM_PlanFields_CanBuild
         0.00, // PLANNER_FARM_PlanFields_Dist
        30.00, // PLANNER_FARM_PlanFields_ExistField
         0.00, // PLANNER_FARM_END
@@ -486,11 +496,19 @@ const
         0.00, // PLANNER_FindPlaceForHouse_END
 
         0.00, // PLANNER_FindPlaceForQuary_START
+        0.00, // MANAGEMENT_CheckStoreWares_Stone
+        0.50, // PREDICTOR_WareNeedPerAWorker_Stone
+       10.00, // PREDICTOR_WareNeedPerAWorker_StoneOffset
+        0.00, // PREDICTOR_WorkerCountCoef
+        0.00, // PLANNER_FindPlaceForQuary_StoneLoc_StoneCnt
+      100.00, // PLANNER_FindPlaceForQuary_StoneLoc_AlreadyMined
+        0.00, // PLANNER_FindPlaceForQuary_StoneLoc_Distance
         0.00, // PLANNER_FindPlaceForQuary_DistCity
         0.00, // PLANNER_FindPlaceForQuary_DistStone
         0.00, // PLANNER_FindPlaceForQuary_DistTimer
-       40.00, // PLANNER_FindPlaceForQuary_Obstacle
-       10.00, // PLANNER_FindPlaceForQuary_SnapCrit
+       80.00, // PLANNER_FindPlaceForQuary_Obstacle
+        5.00, // PLANNER_FindPlaceForQuary_SnapCrit
+        0.00, // PLANNER_FindPlaceForQuary_QtyStone
         0.00, // PLANNER_FindPlaceForQuary_END
 
         0.00, // PLANNER_FOREST_START
@@ -522,8 +540,6 @@ const
 
         0.00, // PREDICTOR_START
        20.00, // PREDICTOR_SecondSchool_MinRequiredUnits
-        0.50, // PREDICTOR_WareNeedPerAWorker_Stone
-        5.00, // PREDICTOR_WareNeedPerAWorker_StoneOffset
         0.01, // PREDICTOR_WareNeedPerAWorker_Wood
         0.00, // PREDICTOR_END
 
@@ -533,8 +549,8 @@ const
         0.00, // SHORTCUTS_Field
        10.00, // SHORTCUTS_Forest
         0.00, // SHORTCUTS_OtherCase
-        0.00, // SHORTCUTS_Road
-       35.00, // SHORTCUTS_TurnPenalization
+       20.00, // SHORTCUTS_Road
+       20.00, // SHORTCUTS_TurnPenalization
        20.00, // SHORTCUTS_noBuildArea
         0.00, // SHORTCUTS_END
 
@@ -554,18 +570,18 @@ const
   AI_Par_Gain: array[TAIPar] of Single = (
         0.00, // ATTACK_ArmyVectorField_START
        10.00, // ATTACK_ArmyVectorField_FindPositions_DistEnemyOffset
-        8.00, // ATTACK_ArmyVectorField_FindPositions_DistEnemyOffsetFF
+       10.00, // ATTACK_ArmyVectorField_FindPositions_DistEnemyOffsetFF
         1.00, // ATTACK_ArmyVectorField_FindPositions_DistEnemyGainFF
-       10.00, // ATTACK_ArmyVectorField_FindPositions_DistCloseToEnemy
+        5.00, // ATTACK_ArmyVectorField_FindPositions_DistCloseToEnemy
        10.00, // ATTACK_ArmyVectorField_FindPositions_DistMaxWalk
        15.00, // ATTACK_ArmyVectorField_FindPositions_FollowEnemyVectorFieldUth
-       10.00, // ATTACK_ArmyVectorField_FindPositions_FollowRallyVectorFieldUth
-        0.00, // ATTACK_ArmyVectorField_FindPositions_AvoidTraffic
+        9.00, // ATTACK_ArmyVectorField_FindPositions_AvoidTraffic
        10.00, // ATTACK_ArmyVectorField_FindPositions_RallyPointOffset
         0.50, // ATTACK_ArmyVectorField_EvalClusters_InPlace
         3.00, // ATTACK_ArmyVectorField_EvalClusters_AtAdvantage
-        0.50, // ATTACK_ArmyVectorField_EvalClusters_Ambushed
-        0.50, // ATTACK_ArmyVectorField_DivideForces_DefendCityAdv
+        0.25, // ATTACK_ArmyVectorField_EvalClusters_Ambushed
+        0.00, // ATTACK_ArmyVectorField_DivideForces_DefendCityAdv
+        0.90, // ATTACK_ArmyVectorField_DivideForces_SupportAllyAdv
         0.00, // ATTACK_ArmyVectorField_END
 
         0.00, // ATTACK_SQUAD_START
@@ -585,7 +601,7 @@ const
         4.00, // ATTACK_SUPERVISOR_EvalTarget_OpportunityGain
         0.25, // ATTACK_SUPERVISOR_EvalTarget_DecreaseRisk
         5.00, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainAntiHorse
-       20.00, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainDist
+       10.00, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainDist
         3.00, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainMelee
         3.00, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainMounted
         3.00, // ATTACK_SUPERVISOR_EvalTarget_ThreatGainRangDist
@@ -634,14 +650,14 @@ const
         0.00, // MANAGEMENT_END
 
         0.00, // PLANNER_FARM_START
-       15.00, // PLANNER_FARM_FieldCrit_FlatArea
+       10.00, // PLANNER_FARM_FieldCrit_FlatArea
         5.00, // PLANNER_FARM_FieldCrit_PolyRoute
         3.00, // PLANNER_FARM_FieldCrit_Soil
        10.00, // PLANNER_FARM_FindPlaceForHouse_CityCenter
-       15.00, // PLANNER_FARM_FindPlaceForHouse_FlatArea
+       10.00, // PLANNER_FARM_FindPlaceForHouse_FlatArea
        15.00, // PLANNER_FARM_FindPlaceForHouse_HouseDist
         4.00, // PLANNER_FARM_FindPlaceForHouse_Route
-       75.00, // PLANNER_FARM_PlanFields_CanBuild
+      500.00, // PLANNER_FARM_PlanFields_CanBuild
        75.00, // PLANNER_FARM_PlanFields_Dist
        75.00, // PLANNER_FARM_PlanFields_ExistField
         0.00, // PLANNER_FARM_END
@@ -656,11 +672,19 @@ const
         0.00, // PLANNER_FindPlaceForHouse_END
 
         0.00, // PLANNER_FindPlaceForQuary_START
+       50.00, // MANAGEMENT_CheckStoreWares_Stone
+        0.30, // PREDICTOR_WareNeedPerAWorker_Stone
+       10.00, // PREDICTOR_WareNeedPerAWorker_StoneOffset
+        0.01, // PREDICTOR_WorkerCountCoef
+       10.00, // PLANNER_FindPlaceForQuary_StoneLoc_StoneCnt
+      100.00, // PLANNER_FindPlaceForQuary_StoneLoc_AlreadyMined
+       20.00, // PLANNER_FindPlaceForQuary_StoneLoc_Distance
        50.00, // PLANNER_FindPlaceForQuary_DistCity
        50.00, // PLANNER_FindPlaceForQuary_DistStone
     15000.00, // PLANNER_FindPlaceForQuary_DistTimer
        50.00, // PLANNER_FindPlaceForQuary_Obstacle
-       50.00, // PLANNER_FindPlaceForQuary_SnapCrit
+       20.00, // PLANNER_FindPlaceForQuary_SnapCrit
+       50.00, // PLANNER_FindPlaceForQuary_QtyStone
         0.00, // PLANNER_FindPlaceForQuary_END
 
         0.00, // PLANNER_FOREST_START
@@ -692,8 +716,6 @@ const
 
         0.00, // PREDICTOR_START
        30.00, // PREDICTOR_SecondSchool_MinRequiredUnits
-        0.30, // PREDICTOR_WareNeedPerAWorker_Stone
-       10.00, // PREDICTOR_WareNeedPerAWorker_StoneOffset
         0.30, // PREDICTOR_WareNeedPerAWorker_Wood
         0.00, // PREDICTOR_END
 

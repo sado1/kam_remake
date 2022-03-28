@@ -478,13 +478,13 @@ const
   MILITIA_SOLDIER = 3;
   COMPLETE_HOUSE = 5;
   {
-    utMilitia,      utAxeFighter,   utSwordsman,     utBowman,
+    utMilitia,      utAxeFighter,   utSwordFighter,  utBowman,
     utArbaletman,   utPikeman,      utHallebardman,  utHorseScout,
     utCavalry,      utBarbarian,
     utPeasant,      utSlingshot,    utMetalBarbarian,utHorseman,
   }
   WARRIOR_PRICE: array[WARRIOR_MIN..WARRIOR_MAX] of Integer = (
-    1, 3, 6, 3+4, // Militia     AxeFighter  Swordsman       utBowman
+    1, 3, 6, 3+4, // Militia     AxeFighter  utSwordFighter  utBowman
     5+4, 3, 5, 4, // Arbaletman  Pikeman     Hallebardman    utHorseScout
     7, 6,       // Cavalry     Barbarian
     2, 2+4, 6, 3  // Peasant     Slingshot   MetalBarbarian  utHorseman
