@@ -965,6 +965,7 @@ var
 begin
   if fMyControls.KeyUp(Key, Shift) then Exit; //Handled by Controls
 
+  keyHandled := False;
   inherited KeyUp(Key, Shift, keyHandled);
 
   // Update game options in case we used sounds hotkeys
