@@ -73,7 +73,7 @@ begin
   repeat
     FindFirst(SubFolders[I] + '*', faAnyFile, SearchRec);
     repeat
-      if (SearchRec.Name <> '.') and (SearchRec.Name <> '..') then
+      if (SearchRec.Name <> '') and (SearchRec.Name <> '.') and (SearchRec.Name <> '..') then
         if (SearchRec.Attr and faDirectory = faDirectory) then
           SubFolders.Add(SubFolders[I] + SearchRec.Name + '\')
         else
