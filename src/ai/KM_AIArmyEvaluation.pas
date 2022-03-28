@@ -53,8 +53,9 @@ const
 
 implementation
 uses
-  Math,
+  Classes, Math,
   KM_Hand, KM_HandsCollection, KM_HandStats,
+  KM_UnitsCollection,
   KM_Resource, KM_ResUnits, KM_ResTypes;
 
 
