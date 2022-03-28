@@ -861,7 +861,7 @@ begin
     InsertInQueue(aIdx);
     case aFFType of
       ffEnemy: fVectorField[aIdx].Enemy      := INIT_DISTANCE_QUEUE;
-      ffRally: fVectorField[aIdx].RallyPoint := INIT_DISTANCE_QUEUE;
+      ffRally: fVectorField[aIdx].RallyPoint := fVectorField[aIdx].RallyPoint;
       ffSearch: begin end;
     end;
   end;
@@ -1115,13 +1115,13 @@ procedure TKMArmyVectorField.FindPositions();
     SCALE_AVOID_TRAFFIC = 40;
   var
     K, L, Idx, Cnt, Increase: Integer;
-    BestDistance: Cardinal;
+    BestDistance: Single;
     GroupsPoly: TKMWordArray;
   begin
     // Find index of group closest to the combat line
-    BestDistance := High(Cardinal);
+    BestDistance := 1E10;
     for K := 0 to aCnt - 1 do
-      BestDistance := min(BestDistance, fVectorField[  Ally.GroupsPoly[ aGroups[K].Idx ]  ].Enemy);
+      BestDistance := min(BestDistance, abs(fVectorField[  Ally.GroupsPoly[ aGroups[K].Idx ]  ].Enemy - AI_Par[ATTACK_ArmyVectorField_FindPositions_DistEnemyOffsetFF]));
 
     // Add groups close to combat line as rally point
     Cnt := 0;
@@ -1131,7 +1131,7 @@ procedure TKMArmyVectorField.FindPositions();
     begin
       Idx := Ally.GroupsPoly[ aGroups[K].Idx ];
       // Determine rally point
-      if (fVectorField[Idx].Enemy < BestDistance + AI_Par[ATTACK_ArmyVectorField_FindPositions_RallyPointOffset]) then
+      if (abs(fVectorField[Idx].Enemy - AI_Par[ATTACK_ArmyVectorField_FindPositions_DistEnemyOffsetFF]) < BestDistance + AI_Par[ATTACK_ArmyVectorField_FindPositions_RallyPointOffset]) then
       begin
         GroupsPoly[Cnt] := Idx;
         Inc(Cnt);
@@ -1464,6 +1464,7 @@ type
 var
   K, L, Team, SelectedIdx, BestIdx, NearbyIdx: Integer;
   Color, Opacity: Cardinal;
+  Dist: Single;
   P1,P2,P3,P4: TKMPoint;
   G: TKMUnitGroup;
   H: TKMHouse;
@@ -1503,7 +1504,21 @@ begin
     end;
   //}
   // Vector field
-  if (OVERLAY_AI_VEC_FLD_ENEM OR OVERLAY_AI_VEC_FLD_ALLY) AND (SelectedIdx > -1) AND (length(fDbgVector[Team].CCT) > SelectedIdx) then
+  if (OVERLAY_AI_VEC_FLD_ENEM AND OVERLAY_AI_VEC_FLD_ALLY) AND (SelectedIdx > -1) AND (length(fDbgVector[Team].CCT) > SelectedIdx) then
+  begin
+    with fDbgVector[Team] do
+    begin
+      for K := 0 to fPolygonsCnt - 1 do
+      begin
+        Dist := (fDbgVector[Team].VectorFields[SelectedIdx,K].RallyPoint
+          + abs(fDbgVector[Team].VectorFields[SelectedIdx,K].Enemy - AI_Par[ATTACK_ArmyVectorField_FindPositions_DistEnemyOffsetFF]) * AI_Par[ATTACK_ArmyVectorField_FindPositions_DistEnemyGainFF]);
+        if (7*Dist < 250) then
+          gAIFields.NavMesh.DrawPolygon(K, 250-round(7*Dist), tcRed, 0, IntToStr(Round(Dist)));
+      end;
+    end;
+
+  end
+  else if (OVERLAY_AI_VEC_FLD_ENEM OR OVERLAY_AI_VEC_FLD_ALLY) AND (SelectedIdx > -1) AND (length(fDbgVector[Team].CCT) > SelectedIdx) then
   begin
     getVecItem := function(const aIdx: Word): Word
     begin
@@ -1520,14 +1535,14 @@ begin
 
     with fDbgVector[Team] do
     begin
-      Opacity := 0;
-      for K := 0 to fPolygonsCnt - 1 do
-        Opacity := max(Opacity, getVecItem(K));
+      //Opacity := 0;
+      //for K := 0 to fPolygonsCnt - 1 do
+      //  Opacity := max(Opacity, getVecItem(K));
 
       for K := 0 to fPolygonsCnt - 1 do
-        if (VectorFields[SelectedIdx,K].Enemy > 0) then
+        if (getVecItem(K) > 0) then
         begin
-          gAIFields.NavMesh.DrawPolygon(K, Round(getVecItem(K)/Opacity*250), tcWhite);
+          gAIFields.NavMesh.DrawPolygon(K, (5*getVecItem(K)) mod 250, tcWhite, 0, IntToStr(getVecItem(K)));
           BestIdx := gAIFields.NavMesh.Polygons[K].Nearby[0];
           for L := 1 to gAIFields.NavMesh.Polygons[K].NearbyCount - 1 do
           begin
