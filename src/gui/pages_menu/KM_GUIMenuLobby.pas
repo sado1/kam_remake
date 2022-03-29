@@ -795,7 +795,7 @@ begin
               with gNetworking.NetPlayers[netI] do
               begin
                 gChat.WhisperRecipient := IndexOnServer;
-                UpdateButtonCaption(NiknameU, IfThen(IsColorSet, FlagColorToTextColor(FlagColor), 0));
+                UpdateButtonCaption(NicknameU, IfThen(IsColorSet, FlagColorToTextColor(FlagColor), 0));
               end;
             end;
           end;
@@ -835,7 +835,7 @@ begin
     n := gNetworking.NetPlayers[I];
 
     if n.IsHuman and n.Connected and not n.Dropped then
-      Menu_Chat.AddItem(n.NiknameColoredU, n.IndexOnServer);
+      Menu_Chat.AddItem(n.NicknameColoredU, n.IndexOnServer);
   end;
 
   C := TKMControl(Sender);
@@ -1793,7 +1793,7 @@ begin
                     for K := 0 to gNetworking.SaveInfo.GameInfo.PlayerCount - 1 do
                       if gNetworking.SaveInfo.GameInfo.Enabled[K]
                       and (gNetworking.SaveInfo.GameInfo.CanBeHuman[K] or ALLOW_TAKE_AI_PLAYERS) then
-                        AddLocation(UnicodeString(gNetworking.SaveInfo.GameInfo.OwnerNikname[K]), I, K+1);
+                        AddLocation(UnicodeString(gNetworking.SaveInfo.GameInfo.OwnerNickname[K]), I, K+1);
                   end;
         ngkMap:  begin
                     isValid := gNetworking.MapInfo.IsValid;
@@ -2808,7 +2808,7 @@ begin
       or gNetworking.NetPlayers[recipientNetIndex].Dropped then
     begin
       gNetworking.PostLocalMessage(Format(gResTexts[TX_MULTIPLAYER_CHAT_PLAYER_NOT_CONNECTED_ANYMORE],
-                                          [gNetworking.NetPlayers[recipientNetIndex].NiknameColored]),
+                                          [gNetworking.NetPlayers[recipientNetIndex].NicknameColored]),
                                     csSystem);
       ChatMenuSelect(CHAT_MENU_ALL);
     end else

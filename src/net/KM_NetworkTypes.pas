@@ -31,7 +31,7 @@ type
   TKMessageKind = (
     mkAskToJoin,       //Client asks Host if he can join
     mkAllowToJoin,     //Host allows Client to join
-    mkRefuseToJoin,    //Host can refuse when e.g. Nikname is already taken
+    mkRefuseToJoin,    //Host can refuse when e.g. Nickname is already taken
 
     mkAskForAuth,      //Joiner sends challenge to host, and askes host to send its challenge
     mkIndexOnServer,   //Server tells Client his index

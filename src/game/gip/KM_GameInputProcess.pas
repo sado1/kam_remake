@@ -436,7 +436,7 @@ type
 
     procedure CmdPlayerAllianceSet(aForPlayer, aToPlayer: TKMHandID; aAllianceType: TKMAllianceType);
     procedure CmdPlayerAddDefaultGoals(aPlayer: TKMHandID; aBuilding: Boolean);
-    procedure CmdPlayerChanged(aPlayer: TKMHandID; aPlayerNikname: AnsiString; aType: TKMHandType; aAIType: TKMAIType);
+    procedure CmdPlayerChanged(aPlayer: TKMHandID; aPlayerNickname: AnsiString; aType: TKMHandType; aAIType: TKMAIType);
 
     procedure CmdScriptSoundRemoveRequest(aScriptSoundUID: Integer);
 
@@ -1060,7 +1060,7 @@ begin
       gicGameMessageListRead:     P.MessageLog.ReadAtCountGIP := IntParams[0];
       gicGamePlayerChange:        begin
                                     Assert(not gGameParams.IsMapEditor);
-                                    gHands[IntParams[0]].OwnerNikname := AnsiStrParam;
+                                    gHands[IntParams[0]].OwnerNickname := AnsiStrParam;
                                     gHands.UpdateHandState(IntParams[0], TKMHandType(IntParams[1]), TKMAIType(IntParams[2]));
                                     gGame.GamePlayInterface.UpdateUI; //Update players drop list
                                   end;
@@ -1337,10 +1337,10 @@ begin
 end;
 
 
-procedure TKMGameInputProcess.CmdPlayerChanged(aPlayer: TKMHandID; aPlayerNikname: AnsiString; aType: TKMHandType; aAIType: TKMAIType);
+procedure TKMGameInputProcess.CmdPlayerChanged(aPlayer: TKMHandID; aPlayerNickname: AnsiString; aType: TKMHandType; aAIType: TKMAIType);
 begin
   Assert(ReplayState = gipRecording);
-  TakeCommand(MakeCommand(gicGamePlayerChange, aPlayerNikname, aPlayer, Byte(aType), Byte(aAIType)));
+  TakeCommand(MakeCommand(gicGamePlayerChange, aPlayerNickname, aPlayer, Byte(aType), Byte(aAIType)));
 end;
 
 

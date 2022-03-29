@@ -38,7 +38,7 @@ type
     PlayerCount: Byte;
     Enabled: array [0..MAX_HANDS-1] of Boolean;
     CanBeHuman: array [0..MAX_HANDS-1] of Boolean;
-    OwnerNikname: array [0..MAX_HANDS-1] of AnsiString; //Nikname of the player who plays this location
+    OwnerNickname: array [0..MAX_HANDS-1] of AnsiString; //Nickname of the player who plays this location
     HandTypes: array [0..MAX_HANDS-1] of TKMHandType;
     Color: array [0..MAX_HANDS-1] of Cardinal;
     Team: array [0..MAX_HANDS-1] of Integer;
@@ -128,7 +128,7 @@ procedure TKMGameInfo.Load(LoadStream: TKMemoryStream);
     begin
       LoadStream.Read(CanBeHuman[I]);
       LoadStream.Read(Enabled[I]);
-      LoadStream.ReadA(OwnerNikname[I]);
+      LoadStream.ReadA(OwnerNickname[I]);
       LoadStream.Read(HandTypes[I], SizeOf(HandTypes[I]));
       LoadStream.Read(Color[I]);
       LoadStream.Read(Team[I]);
@@ -201,7 +201,7 @@ begin
   begin
     SaveStream.Write(CanBeHuman[I]);
     SaveStream.Write(Enabled[I]);
-    SaveStream.WriteA(OwnerNikname[I]);
+    SaveStream.WriteA(OwnerNickname[I]);
     SaveStream.Write(HandTypes[I], SizeOf(HandTypes[I]));
     SaveStream.Write(Color[I]);
     SaveStream.Write(Team[I]);

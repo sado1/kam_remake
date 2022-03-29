@@ -215,8 +215,8 @@ begin
         or gNetworking.NetPlayers[netI].Dropped then
       begin
         gNetworking.PostLocalMessage(Format(gResTexts[TX_MULTIPLAYER_CHAT_PLAYER_NOT_CONNECTED_ANYMORE],
-                                                [gNetworking.NetPlayers[netI].NiknameColored]),
-                                          csSystem);
+                                            [gNetworking.NetPlayers[netI].NicknameColored]),
+                                     csSystem);
         Chat_MenuSelect(CHAT_MENU_ALL);
       end else
         gGameApp.Chat.Post
@@ -324,7 +324,7 @@ begin
               with gNetworking.NetPlayers[netI] do
               begin
                 gGameApp.Chat.WhisperRecipient := aItemTag;
-                UpdateButtonCaption(NiknameU, IfThen(IsColorSet, FlagColorToTextColor(FlagColor), 0));
+                UpdateButtonCaption(NicknameU, IfThen(IsColorSet, FlagColorToTextColor(FlagColor), 0));
               end;
             end;
           end;
@@ -371,7 +371,7 @@ begin
     n := gNetworking.NetPlayers[I];
 
     if n.IsHuman and n.Connected and not n.Dropped then
-      Menu_Chat.AddItem(n.NiknameColoredU, n.IndexOnServer);
+      Menu_Chat.AddItem(n.NicknameColoredU, n.IndexOnServer);
   end;
 
   C := TKMControl(Sender);

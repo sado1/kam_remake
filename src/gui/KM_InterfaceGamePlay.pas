@@ -2788,9 +2788,9 @@ begin
     waitDCPlayersMsg := '';
     for I := Low(aPlayers) to High(aPlayers) do
       if not gNetworking.NetPlayers[aPlayers[I]].Dropped then
-        waitPlayersMsg := waitPlayersMsg + gNetworking.NetPlayers[aPlayers[I]].NiknameU + IfThen(I <> High(aPlayers), ', ')
+        waitPlayersMsg := waitPlayersMsg + gNetworking.NetPlayers[aPlayers[I]].NicknameU + IfThen(I <> High(aPlayers), ', ')
       else
-        waitDCPlayersMsg := waitDCPlayersMsg + gNetworking.NetPlayers[aPlayers[I]].NiknameU + IfThen(I <> High(aPlayers), ', ');
+        waitDCPlayersMsg := waitDCPlayersMsg + gNetworking.NetPlayers[aPlayers[I]].NicknameU + IfThen(I <> High(aPlayers), ', ');
 
     if waitPlayersMsg <> '' then
       waitPlayersMsg := gResTexts[TX_MULTIPLAYER_WAITING] + ' ' + waitPlayersMsg;
@@ -3194,7 +3194,7 @@ begin
     end;
 
     if gNetworking.NetPlayers[netI].IsHuman then
-      Label_AlliesPlayer[I].Caption := gNetworking.NetPlayers[netI].NiknameU
+      Label_AlliesPlayer[I].Caption := gNetworking.NetPlayers[netI].NicknameU
     else
       Label_AlliesPlayer[I].Caption := gHands[gNetworking.NetPlayers[netI].HandIndex].OwnerName;
 

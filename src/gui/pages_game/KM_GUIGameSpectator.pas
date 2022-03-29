@@ -289,7 +289,7 @@ begin
     if fLinesAggregator.FItemsVisibility[I] then
       Inc(count);
 
-  str := IfThen(gHands[FHandIndex].OwnerNiknameU <> '', gHands[FHandIndex].OwnerNiknameU, gHands[FHandIndex].OwnerName);
+  str := IfThen(gHands[FHandIndex].OwnerNicknameU <> '', gHands[FHandIndex].OwnerNicknameU, gHands[FHandIndex].OwnerName);
   Width := Max(count * (GUI_SPEC_ITEM_WIDTH + GUI_SPEC_ITEM_SRLITE_H) + GUI_SPEC_ITEM_SRLITE_H, gRes.Fonts[fntGrey].GetTextSize(str).X + 32 + 4);
   Left := Parent.Width - Width;
 

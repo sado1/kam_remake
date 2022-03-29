@@ -218,7 +218,7 @@ begin
       TKMBevel.Create(Panel_MPPlayerName, 0, 0, 320, 120);
       TKMLabel.Create(Panel_MPPlayerName, 8, 10, 304, 20, gResTexts[TX_MP_MENU_PLAYERNAME], fntOutline, taLeft);
       Edit_MP_PlayerName := TKMEdit.Create(Panel_MPPlayerName, 8, 30, 140, 20, fntGrey);
-      Edit_MP_PlayerName.MaxLen := MAX_NIKNAME_LENGTH;
+      Edit_MP_PlayerName.MaxLen := MAX_NICKNAME_LENGTH;
       Edit_MP_PlayerName.AllowedChars := acANSI7;
       TKMLabel.Create(Panel_MPPlayerName, 8, 60, 304, 20, gResTexts[TX_MP_MENU_STATUS], fntOutline, taLeft);
       Label_MP_Status := TKMLabel.Create(Panel_MPPlayerName, 8, 80, 304, 36, '', fntGrey, taLeft);
@@ -840,7 +840,7 @@ begin
 end;
 
 
-//Make sure that the nikname as a whole is valid (checks that TKMEdit can not always perform)
+//Make sure that the nickname as a whole is valid (checks that TKMEdit can not always perform)
 function TKMMenuMultiplayer.ValidatePlayerName(const aName: UnicodeString): Boolean;
 
   function IsReserved(const aName: String): Boolean; inline;
@@ -867,8 +867,8 @@ begin
   if IsReserved(aName) then
     err := Format(gResTexts[TX_GAME_ERROR_RESERVER_PLAYERNAME], [aName])
   else
-  if Length(aName) > MAX_NIKNAME_LENGTH then
-    err := Format(gResTexts[TX_GAME_ERROR_LONG_PLAYERNAME], [MAX_NIKNAME_LENGTH])
+  if Length(aName) > MAX_NICKNAME_LENGTH then
+    err := Format(gResTexts[TX_GAME_ERROR_LONG_PLAYERNAME], [MAX_NICKNAME_LENGTH])
   else
   if (Pos('|', aName) <> 0) or (Pos('[$', aName) <> 0) or (Pos('[]', aName) <> 0) or (Pos('<$', aName) <> 0) then
     err := gResTexts[TX_GAME_ERROR_ILLEGAL_PLAYERNAME]

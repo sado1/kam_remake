@@ -61,7 +61,7 @@ type
     fUnitGroups: TKMUnitGroups;
     fMessageLog: TKMMessageLog;
 
-    fOwnerNikname: AnsiString; //Multiplayer owner nikname
+    fOwnerNickname: AnsiString; //Multiplayer owner nickname
     fHandType: TKMHandType;
     fCanBeHuman: Boolean;
     fCanBeAITypes: TKMAITypeSet;
@@ -106,13 +106,13 @@ type
     procedure WarriorWalkedOut(aWarrior: TKMUnitWarrior);
     function LocHasNoAllyPlans(const aLoc: TKMPoint): Boolean;
     function GetGameFlagColor: Cardinal;
-    function GetOwnerNiknameU: UnicodeString;
+    function GetOwnerNicknameU: UnicodeString;
     procedure ChooseFirstStorehouse();
 
     function GetAI: TKMHandAI;
     procedure SetFlagColor(const Value: Cardinal);
 
-    procedure SetOwnerNikname(const aName: AnsiString);
+    procedure SetOwnerNickname(const aName: AnsiString);
     function GetDeliveries: TKMHandLogistics;
     procedure SetHandType(const Value: TKMHandType);
     procedure SetEnabled(const Value: Boolean);
@@ -141,8 +141,8 @@ type
     property Disabled: Boolean read IsDisabled;
 
     procedure SetHandIndex(aNewIndex: TKMHandID);
-    property OwnerNikname: AnsiString read fOwnerNikname write SetOwnerNikname; //MP owner nikname (empty in SP)
-    property OwnerNiknameU: UnicodeString read GetOwnerNiknameU;
+    property OwnerNickname: AnsiString read fOwnerNickname write SetOwnerNickname; //MP owner nickname (empty in SP)
+    property OwnerNicknameU: UnicodeString read GetOwnerNicknameU;
     function CalcOwnerName: UnicodeString; //Universal owner name
     function OwnerName(aNumberedAIs: Boolean = True; aLocalized: Boolean = True): UnicodeString; //Universal owner name
     function GetHandOwnerName(aIsHuman, aIsAdvAI: Boolean; aNumberedAIs: Boolean = True; aLocalized: Boolean = True): UnicodeString;
@@ -410,7 +410,7 @@ begin
   fUnitGroups   := TKMUnitGroups.Create;
   fMessageLog   := TKMMessageLog.Create;
 
-  fOwnerNikname := '';
+  fOwnerNickname := '';
   fHandType     := hndComputer;
   fCanBeHuman   := False;
   fCanBeAITypes  := [];
@@ -965,9 +965,9 @@ begin
 end;
 
 
-procedure TKMHand.SetOwnerNikname(const aName: AnsiString); //MP owner nikname (empty in SP)
+procedure TKMHand.SetOwnerNickname(const aName: AnsiString); //MP owner nickname (empty in SP)
 begin
-  fOwnerNikname := aName;
+  fOwnerNickname := aName;
 end;
 
 
@@ -1039,9 +1039,9 @@ begin
 end;
 
 
-function TKMHand.GetOwnerNiknameU: UnicodeString;
+function TKMHand.GetOwnerNicknameU: UnicodeString;
 begin
-  Result := UnicodeString(fOwnerNikname);
+  Result := UnicodeString(fOwnerNickname);
 end;
 
 
@@ -1666,7 +1666,7 @@ begin
     end;
 
   //Try to take player name from mission text if we are in SP
-  //Do not use names in MP to avoid confusion of AI players with real player niknames
+  //Do not use names in MP to avoid confusion of AI players with real player nicknames
   if gGameParams.Mode in [gmSingle, gmCampaign, gmMapEd, gmReplaySingle] then
     if gGame.TextMission.HasText(HANDS_NAMES_OFFSET + fID) then
       if IsHuman then
@@ -1675,8 +1675,8 @@ begin
         Result := gGame.TextMission[HANDS_NAMES_OFFSET + fID];
 
   //If this location is controlled by an MP player - show his nik
-  if (fOwnerNikname <> '') and IsHuman then
-    Result := UnicodeString(fOwnerNikname);
+  if (fOwnerNickname <> '') and IsHuman then
+    Result := UnicodeString(fOwnerNickname);
 end;
 
 
@@ -1698,12 +1698,12 @@ function TKMHand.GetHandOwnerName(aIsHuman, aIsAdvAI: Boolean; aNumberedAIs: Boo
 
 begin
   //If this location is controlled by an MP player - show his nik
-  if (fOwnerNikname <> '')
-    and aIsHuman then //we could ask AI to play on ex human loc, so fOwnerNikname will be still some human name
-    Exit(UnicodeString(fOwnerNikname));
+  if (fOwnerNickname <> '')
+    and aIsHuman then //we could ask AI to play on ex human loc, so fOwnerNickname will be still some human name
+    Exit(UnicodeString(fOwnerNickname));
 
   //Try to take player name from mission text if we are in SP
-  //Do not use names in MP to avoid confusion of AI players with real player niknames
+  //Do not use names in MP to avoid confusion of AI players with real player nicknames
   if (gGameParams.Mode in [gmSingle, gmCampaign, gmMapEd, gmReplaySingle])
     and gGame.TextMission.HasText(HANDS_NAMES_OFFSET + fID) then
   begin
@@ -1965,7 +1965,7 @@ begin
   fMessageLog.Save(SaveStream);
 
   SaveStream.Write(fID);
-  SaveStream.WriteA(fOwnerNikname);
+  SaveStream.WriteA(fOwnerNickname);
   SaveStream.Write(fHandType, SizeOf(fHandType));
   SaveStream.Write(fCanBeHuman, SizeOf(fCanBeHuman));
   SaveStream.Write(fCanBeAITypes, SizeOf(fCanBeAITypes));
@@ -2004,7 +2004,7 @@ begin
   fMessageLog.Load(LoadStream);
 
   LoadStream.Read(fID);
-  LoadStream.ReadA(fOwnerNikname);
+  LoadStream.ReadA(fOwnerNickname);
   LoadStream.Read(fHandType, SizeOf(fHandType));
   LoadStream.Read(fCanBeHuman, SizeOf(fCanBeHuman));
   LoadStream.Read(fCanBeAITypes, SizeOf(fCanBeAITypes));

@@ -331,12 +331,12 @@ begin
     begin
       myData.PlayerIndex := gNetworking.MyIndex;
       myData.HandID      := gNetworking.MyNetPlayer.HandIndex;
-      myData.Nickname    := gNetworking.MyNetPlayer.Nikname;
+      myData.Nickname    := gNetworking.MyNetPlayer.Nickname;
       myData.Check       := OurCheck;
 
       otherData.PlayerIndex := aPlayerIndex;
       otherData.HandID      := gNetworking.NetPlayers[aPlayerIndex].HandIndex;
-      otherData.Nickname    := gNetworking.NetPlayers[aPlayerIndex].Nikname;
+      otherData.Nickname    := gNetworking.NetPlayers[aPlayerIndex].Nickname;
       otherData.Check       := PlayerCheck[aPlayerIndex];
 
       errorStr := Format(#13#10 + 'Random check mismatch for tick %d processed at tick %d:' + #13#10 +

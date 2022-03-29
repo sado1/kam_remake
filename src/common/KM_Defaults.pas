@@ -56,7 +56,7 @@ const
   SERVER_SETTINGS_FILE  = 'KaM Remake Server Settings.ini';
   DEFAULT_LOCALE: AnsiString = 'eng';
 
-  MAX_NIKNAME_LENGTH = 16;
+  MAX_NICKNAME_LENGTH = 16;
 
   DEL_LOGS_OLDER_THAN   = 14;           //in days
 

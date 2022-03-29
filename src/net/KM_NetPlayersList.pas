@@ -14,17 +14,17 @@ type
   //@Rey: This class can actually be renamed to TKMLobbySlot
   TKMNetPlayerInfo = class
   private
-    fNikname: AnsiString;
+    fNickname: AnsiString;
     fLangCode: AnsiString;
     fIndexOnServer: TKMNetHandleIndex;
     fFlagColor: Cardinal; //Flag color
     fPings: array[0 .. PING_COUNT-1] of Word; //Ring buffer
     fPingPos: Byte;
     procedure SetLangCode(const aCode: AnsiString);
-    function GetNiknameColored: AnsiString;
-    function GetNikname: AnsiString;
-    function GetNiknameColoredU: UnicodeString;
-    function GetNiknameU: UnicodeString;
+    function GetNicknameColored: AnsiString;
+    function GetNickname: AnsiString;
+    function GetNicknameColoredU: UnicodeString;
+    function GetNicknameU: UnicodeString;
     function GetHandIndex: Integer;
     function GetFlagColor: Cardinal;
     procedure SetFlagColor(const Value: Cardinal);
@@ -56,10 +56,10 @@ type
     function IsSpectator: Boolean;
     function GetPlayerType: TKMHandType;
     function SlotName: UnicodeString; //Player name if it's human or computer or closed
-    property Nikname: AnsiString read GetNikname; //Human player nikname (ANSI-Latin)
-    property NiknameColored: AnsiString read GetNiknameColored;
-    property NiknameU: UnicodeString read GetNiknameU;
-    property NiknameColoredU: UnicodeString read GetNiknameColoredU;
+    property Nickname: AnsiString read GetNickname; //Human player nickname (ANSI-Latin)
+    property NicknameColored: AnsiString read GetNicknameColored;
+    property NicknameU: UnicodeString read GetNicknameU;
+    property NicknameColoredU: UnicodeString read GetNicknameColoredU;
     property LangCode: AnsiString read fLangCode write SetLangCode;
     property IndexOnServer: TKMNetHandleIndex read fIndexOnServer;
     property SetIndexOnServer: TKMNetHandleIndex write fIndexOnServer;
@@ -95,11 +95,11 @@ type
     procedure Clear;
     property Count: Integer read fCount;
 
-    procedure AddPlayer(const aNik: AnsiString; aIndexOnServer: TKMNetHandleIndex; const aLang: AnsiString; aAsSpectator: Boolean = False);
+    procedure AddPlayer(const aNick: AnsiString; aIndexOnServer: TKMNetHandleIndex; const aLang: AnsiString; aAsSpectator: Boolean = False);
     procedure AddAIPlayer(aAdvancedAI: Boolean; aSlot: Integer = -1);
     procedure AddClosedPlayer(aSlot: Integer = -1);
     procedure DisconnectPlayer(aIndexOnServer: TKMNetHandleIndex);
-    procedure DisconnectAllClients(const aOwnNikname: AnsiString);
+    procedure DisconnectAllClients(const aOwnNickname: AnsiString);
     procedure DropPlayer(aIndexOnServer: TKMNetHandleIndex; aLastSentCommandsTick: Integer = LAST_SENT_COMMANDS_TICK_NONE);
     procedure RemPlayer(aIndex: Integer);
     procedure RemServerPlayer(aIndexOnServer: TKMNetHandleIndex);
@@ -107,11 +107,11 @@ type
 
     //Getters
     function ServerToLocal(aIndexOnServer: TKMNetHandleIndex): Integer;
-    function NiknameToLocal(const aNikname: AnsiString): Integer;
+    function NicknameToLocal(const aNickname: AnsiString): Integer;
     function StartingLocToLocal(aLoc: Integer): Integer;
     function PlayerIndexToLocal(aIndex: TKMHandID): Integer;
 
-    function CheckCanJoin(const aNik: AnsiString; aIndexOnServer: TKMNetHandleIndex): Integer;
+    function CheckCanJoin(const aNick: AnsiString; aIndexOnServer: TKMNetHandleIndex): Integer;
     function CheckCanReconnect(aLocalIndex: Integer): Integer;
     function LocAvailable(aIndex: Integer): Boolean;
     function ColorAvailable(aColor: Cardinal): Boolean;
@@ -302,7 +302,7 @@ end;
 function TKMNetPlayerInfo.SlotName: UnicodeString;
 begin
   case PlayerNetType of
-    nptHuman:     Result := NiknameU;
+    nptHuman:     Result := NicknameU;
     nptComputerClassic:  //In lobby AI players don't have numbers yet (they are added on mission start)
                   Result := gResTexts[TX_AI_PLAYER_CLASSIC];
     nptComputerAdvanced:  //In lobby AI players don't have numbers yet (they are added on mission start)
@@ -313,35 +313,35 @@ begin
 end;
 
 
-function TKMNetPlayerInfo.GetNikname: AnsiString;
+function TKMNetPlayerInfo.GetNickname: AnsiString;
 begin
   if Self = nil then Exit('');
 
   if IsHuman or (gHands = nil) or (HandIndex = -1) then
-    Result := fNikname
+    Result := fNickname
   else
     Result := AnsiString(gHands[HandIndex].OwnerName(True, False));
 end;
 
 
-function TKMNetPlayerInfo.GetNiknameColored: AnsiString;
+function TKMNetPlayerInfo.GetNicknameColored: AnsiString;
 begin
   if IsColorSet then
-    Result := WrapColorA(Nikname, FlagColorToTextColor(FlagColor))
+    Result := WrapColorA(Nickname, FlagColorToTextColor(FlagColor))
   else
-    Result := Nikname;
+    Result := Nickname;
 end;
 
 
-function TKMNetPlayerInfo.GetNiknameU: UnicodeString;
+function TKMNetPlayerInfo.GetNicknameU: UnicodeString;
 begin
-  Result := UnicodeString(GetNikname);
+  Result := UnicodeString(GetNickname);
 end;
 
 
-function TKMNetPlayerInfo.GetNiknameColoredU: UnicodeString;
+function TKMNetPlayerInfo.GetNicknameColoredU: UnicodeString;
 begin
-  Result := UnicodeString(GetNiknameColored);
+  Result := UnicodeString(GetNicknameColored);
 end;
 
 
@@ -357,7 +357,7 @@ end;
 
 procedure TKMNetPlayerInfo.Load(LoadStream: TKMemoryStream);
 begin
-  LoadStream.ReadA(fNikname);
+  LoadStream.ReadA(fNickname);
   LoadStream.ReadA(fLangCode);
   LoadStream.Read(SmallInt(fIndexOnServer));
   LoadStream.Read(PlayerNetType, SizeOf(PlayerNetType));
@@ -378,7 +378,7 @@ end;
 
 procedure TKMNetPlayerInfo.Save(SaveStream: TKMemoryStream);
 begin
-  SaveStream.WriteA(fNikname);
+  SaveStream.WriteA(fNickname);
   SaveStream.WriteA(fLangCode);
   SaveStream.Write(fIndexOnServer);
   SaveStream.Write(PlayerNetType, SizeOf(PlayerNetType));
@@ -558,11 +558,11 @@ begin
 end;
 
 
-procedure TKMNetPlayersList.AddPlayer(const aNik: AnsiString; aIndexOnServer: TKMNetHandleIndex; const aLang: AnsiString; aAsSpectator: Boolean = False);
+procedure TKMNetPlayersList.AddPlayer(const aNick: AnsiString; aIndexOnServer: TKMNetHandleIndex; const aLang: AnsiString; aAsSpectator: Boolean = False);
 begin
   Assert(fCount <= MAX_LOBBY_SLOTS, 'Can''t add player');
   Inc(fCount);
-  fNetPlayers[fCount].fNikname := aNik;
+  fNetPlayers[fCount].fNickname := aNick;
   fNetPlayers[fCount].fLangCode := aLang;
   fNetPlayers[fCount].fIndexOnServer := aIndexOnServer;
   fNetPlayers[fCount].PlayerNetType := nptHuman;
@@ -593,7 +593,7 @@ begin
     Inc(fCount);
     aSlot := fCount;
   end;
-  fNetPlayers[aSlot].fNikname := '';
+  fNetPlayers[aSlot].fNickname := '';
   fNetPlayers[aSlot].fLangCode := '';
   fNetPlayers[aSlot].fIndexOnServer := -1;
   if aAdvancedAI then
@@ -622,7 +622,7 @@ begin
     Inc(fCount);
     aSlot := fCount;
   end;
-  fNetPlayers[aSlot].fNikname := '';
+  fNetPlayers[aSlot].fNickname := '';
   fNetPlayers[aSlot].fLangCode := '';
   fNetPlayers[aSlot].fIndexOnServer := -1;
   fNetPlayers[aSlot].PlayerNetType := nptClosed;
@@ -651,12 +651,12 @@ begin
 end;
 
 //Mark all human players as disconnected (used when reconnecting if all clients were lost)
-procedure TKMNetPlayersList.DisconnectAllClients(const aOwnNikname: AnsiString);
+procedure TKMNetPlayersList.DisconnectAllClients(const aOwnNickname: AnsiString);
 var
   I: Integer;
 begin
   for I := 1 to fCount do
-    if (fNetPlayers[I].IsHuman) and (fNetPlayers[I].Nikname <> aOwnNikname) then
+    if (fNetPlayers[I].IsHuman) and (fNetPlayers[I].Nickname <> aOwnNickname) then
       fNetPlayers[I].Connected := False;
 end;
 
@@ -708,14 +708,14 @@ begin
 end;
 
 
-//Networking needs to convert Nikname to local index in players list
-function TKMNetPlayersList.NiknameToLocal(const aNikname: AnsiString): Integer;
+//Networking needs to convert Nickname to local index in players list
+function TKMNetPlayersList.NicknameToLocal(const aNickname: AnsiString): Integer;
 var
   I: Integer;
 begin
   Result := -1;
   for I := 1 to fCount do
-    if fNetPlayers[I].fNikname = aNikname then
+    if fNetPlayers[I].fNickname = aNickname then
       Exit(I);
 end;
 
@@ -744,7 +744,7 @@ end;
 
 
 //See if player can join our game
-function TKMNetPlayersList.CheckCanJoin(const aNik: AnsiString; aIndexOnServer: TKMNetHandleIndex): Integer;
+function TKMNetPlayersList.CheckCanJoin(const aNick: AnsiString; aIndexOnServer: TKMNetHandleIndex): Integer;
 begin
   if fCount >= MAX_LOBBY_SLOTS then
     Result := TX_NET_ROOM_FULL
@@ -752,7 +752,7 @@ begin
   if ServerToLocal(aIndexOnServer) <> -1 then
     Result := TX_NET_SAME_NAME
   else
-  if NiknameToLocal(aNik) <> -1 then
+  if NicknameToLocal(aNick) <> -1 then
     Result := TX_NET_SAME_NAME
   else
   //If this player must take a spectator spot, check that one is open
@@ -1718,7 +1718,7 @@ begin
   Result := '';
   for I := 1 to fCount do
   begin
-    Result := Result + '   ' + IntToStr(I) + ': ' + fNetPlayers[I].NiknameU;
+    Result := Result + '   ' + IntToStr(I) + ': ' + fNetPlayers[I].NicknameU;
     if I < fCount then
       Result := Result + '|';
   end;

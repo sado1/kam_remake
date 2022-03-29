@@ -885,7 +885,7 @@ const
     I: Integer;
     handIndex: TKMHandID;
     playersInfo: string;
-    playerNikname: AnsiString;
+    playerNickname: AnsiString;
   begin
     playersInfo := '';
     //Assign existing NetPlayers(1..N) to map players(0..N-1)
@@ -908,20 +908,20 @@ const
           if gNetworking.IsHost then
           begin
             if gNetworking.NetPlayers[I].IsHuman then
-              playerNikname := gNetworking.NetPlayers[I].Nikname
+              playerNickname := gNetworking.NetPlayers[I].Nickname
             else
-              playerNikname := '';
+              playerNickname := '';
 
             //Command execution will update player, same way as it will be updated in the replay
-            fGameInputProcess.CmdPlayerChanged(handIndex, playerNikname, gNetworking.NetPlayers[I].GetPlayerType,
+            fGameInputProcess.CmdPlayerChanged(handIndex, playerNickname, gNetworking.NetPlayers[I].GetPlayerType,
                                               NETPLAYERTYPE_TO_AITYPE[gNetworking.NetPlayers[I].PlayerNetType]);
           end;
         end
         else
           gHands.UpdateHandState(handIndex, gNetworking.NetPlayers[I].GetPlayerType, NETPLAYERTYPE_TO_AITYPE[gNetworking.NetPlayers[I].PlayerNetType]);
 
-        //Update player nikname to show in the list for specs, in the stats etc
-        gHands[handIndex].OwnerNikname := gNetworking.NetPlayers[I].Nikname;
+        //Update player nickname to show in the list for specs, in the stats etc
+        gHands[handIndex].OwnerNickname := gNetworking.NetPlayers[I].Nickname;
 
         playersInfo := playersInfo + sLineBreak +
                        Format('netI: %d P: %s hand: %d',
@@ -932,7 +932,7 @@ const
                                handIndex]);
       end
       else
-        playersInfo := playersInfo + sLineBreak + Format('netI: %d P: %s is spectator', [I, gNetworking.NetPlayers[I].NiknameU]);
+        playersInfo := playersInfo + sLineBreak + Format('netI: %d P: %s is spectator', [I, gNetworking.NetPlayers[I].NicknameU]);
 
     gLog.AddTime('NetPlayersInfo: cnt = ' + IntToStr(gNetworking.NetPlayers.Count) + playersInfo);
   end;
@@ -2192,7 +2192,7 @@ begin
       begin
         gameInfo.Enabled[I] := False;
         gameInfo.CanBeHuman[I] := False;
-        gameInfo.OwnerNikname[I] := '';
+        gameInfo.OwnerNickname[I] := '';
         gameInfo.HandTypes[I] := hndHuman;
         gameInfo.Color[I] := 0;
         gameInfo.Team[I] := 0;
@@ -2203,7 +2203,7 @@ begin
         begin
           gameInfo.Enabled[I] := True;
           gameInfo.CanBeHuman[I] := gNetworking.NetPlayers[netIndex].IsHuman;
-          gameInfo.OwnerNikname[I] := gNetworking.NetPlayers[netIndex].Nikname;
+          gameInfo.OwnerNickname[I] := gNetworking.NetPlayers[netIndex].Nickname;
           gameInfo.HandTypes[I] := gNetworking.NetPlayers[netIndex].GetPlayerType;
           gameInfo.Color[I] := gNetworking.NetPlayers[netIndex].FlagColor;
           gameInfo.Team[I] := gNetworking.NetPlayers[netIndex].Team;
@@ -2212,7 +2212,7 @@ begin
         begin
           gameInfo.Enabled[I] := gHands[I].Enabled;
           gameInfo.CanBeHuman[I] := gHands[I].IsHuman;
-          gameInfo.OwnerNikname[I] := gHands[I].OwnerNikname; //MP nikname, not translated OwnerName
+          gameInfo.OwnerNickname[I] := gHands[I].OwnerNickname; //MP nickname, not translated OwnerName
           gameInfo.HandTypes[I] := gHands[I].HandType;
           gameInfo.Color[I] := gHands[I].FlagColor;
           gameInfo.Team[I] := gHands[I].Team;
@@ -3348,7 +3348,7 @@ begin
       and (TimeSince(fLastTimeUserAction) > PLAYER_AFK_TIME*60*1000)
       and (TimeSince(fLastAfkMessageSent) > PLAYER_AFK_MESSAGE_DELAY) then
     begin
-      gNetworking.PostMessage(TX_PLAYER_AFK_MESSAGE, csSystem, gNetworking.MyNetPlayer.NiknameColoredU,
+      gNetworking.PostMessage(TX_PLAYER_AFK_MESSAGE, csSystem, gNetworking.MyNetPlayer.NicknameColoredU,
                               WrapColor(IntToStr(TimeSince(fLastTimeUserAction) div 60000), icGoldenYellow));
       fLastAfkMessageSent := TimeGet;
     end;
