@@ -275,6 +275,8 @@ begin
   fNetGameFilter := TKMPGameFilter.Create;
 
   fNetClient := TKMNetClient.Create;
+  // Handle all 'background (unhandled)' exceptions, so we will be able to intercept them with madExcept
+  fNetClient.SetHandleBackgrounException;
   fNetPlayers := TKMNetPlayersList.Create;
   fServerQuery := TKMServerQuery.Create(aMasterServerAddress, aServerUDPScanPort);
   fNetGameOptions := TKMGameOptions.Create;

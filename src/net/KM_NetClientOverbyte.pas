@@ -2,7 +2,7 @@ unit KM_NetClientOverbyte;
 {$I KaM_Remake.inc}
 interface
 uses
-  Classes, SysUtils, OverbyteIcsWSocket, WinSock;
+  Classes, SysUtils, OverbyteIcsWSocket, OverbyteIcsWndControl, WinSock;
 
 
 { This unit knows nothing about KaM, it's just a puppet in hands of KM_ClientControl,
@@ -30,6 +30,7 @@ type
     procedure ConnectTo(const aAddress: string; const aPort: Word);
     procedure Disconnect;
     procedure SendData(aData:pointer; aLength:cardinal);
+    procedure SetHandleBackgrounException;
     property OnError:TGetStrProc write fOnError;
     property OnConnectSucceed:TNotifyEvent write fOnConnectSucceed;
     property OnConnectFailed:TGetStrProc write fOnConnectFailed;
@@ -106,6 +107,27 @@ procedure TKMNetClientOverbyte.SendData(aData: Pointer; aLength: Cardinal);
 begin
   if fSocket.State = wsConnected then //Sometimes this occurs just before disconnect/reconnect
     fSocket.Send(aData, aLength);
+end;
+
+
+// Handle all 'background (unhandled)' exceptions, so we will be able to intercept them with madExcept
+procedure TKMNetClientOverbyte.SetHandleBackgrounException;
+begin
+// From OverbyteIcsWndControl unit comment section:
+
+//  Call setter function
+//  SetIcsThreadLocalFinalBgExceptionHandling() to enable one of
+//  the following options in current thread context. With
+//  "fehAppHandleException" unhandled exceptions are passed to the
+//  Application exception handler if available, with
+//  "fehShowException" unhandled exceptions are displayed either
+//  in the console or through Windows MessageBox API (owner HWND = 0).
+//  Both options allow tools like MadExcept to catch and display
+//  the exception, with "fehNone" (default) unhandled exceptions
+//  are thrown away silently.
+
+  // Both options fehAppHandleException and fehShowException will show madExcept dialog
+  SetIcsThreadLocalFinalBgExceptionHandling(fehAppHandleException);
 end;
 
 

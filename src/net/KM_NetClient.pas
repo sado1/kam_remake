@@ -67,6 +67,7 @@ type
     property OnForcedDisconnect: TNotifyEvent write fOnForcedDisconnect; //Signal we were forcelly disconnected
 
     property OnRecieveData: TNotifySenderDataEvent write fOnRecieveData;
+    procedure SetHandleBackgrounException;
     procedure SendData(aSender, aRecepient: TKMNetHandleIndex; aData: Pointer; aLength: Cardinal);
     procedure UpdateStateIdle;
 
@@ -111,6 +112,12 @@ end;
 procedure TKMNetClient.Error(const S: string);
 begin
   if Assigned(fOnStatusMessage) then fOnStatusMessage('Client: Error ' + S);
+end;
+
+
+procedure TKMNetClient.SetHandleBackgrounException;
+begin
+  fClient.SetHandleBackgrounException;
 end;
 
 

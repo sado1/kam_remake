@@ -42,6 +42,7 @@ type
     procedure ConnectTo(const aAddress: string; const aPort: Word);
     procedure Disconnect;
     procedure SendData(aData:pointer; aLength:cardinal);
+    procedure SetHandleBackgrounException;
     procedure UpdateStateIdle;
     property OnError:TGetStrProc write fOnError;
     property OnConnectSucceed:TNotifyEvent write fOnConnectSucceed;
@@ -147,6 +148,12 @@ begin
     PutInBuffer(aData, aLength);
     AttemptSend;
   end;
+end;
+
+
+procedure TKMNetClientLNet.SetHandleBackgrounException;
+begin
+  // Do nothing for now
 end;
 
 
