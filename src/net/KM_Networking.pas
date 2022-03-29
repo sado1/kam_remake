@@ -205,6 +205,7 @@ type
     procedure VoteReturnToLobby;
     procedure AnnounceReadyToReturnToLobby;
     procedure WakeUpNotReady;
+    procedure AskToSendCrashreport(aOtherPlayerIndex: Integer; aErrorStr: UnicodeString);
 
     //Common
     procedure ConsoleCommand(const aText: UnicodeString);
@@ -1588,6 +1589,7 @@ const
                                                mkClientReconnected,
                                                mkRefuseReconnect,
                                                mkAskToReconnect,
+                                               mkAskToSendCrashreport,
                                                mkStart,
                                                mkGiveHost,
                                                mkKicked,
@@ -2222,6 +2224,13 @@ begin
                 if (playerIndex<>-1) and not fNetPlayers[playerIndex].Dropped then
                   if Assigned(OnCommands) then OnCommands(M, playerIndex);
               end;
+      mkAskToSendCrashreport:
+              begin
+                // We were asked to send crashreport. Raise new Exception then
+                M.ReadW(tmpStringW);
+                gLog.AddTime('Received mkAskToSendCrashreport with player error msg: ' + tmpStringW);
+                raise Exception.Create(Format(gResTexts[TX_ERROR_ASK_TO_SEND_RNGCHECK_REPORT], [#13#10#13#10, tmpStringW]));
+              end;
 
       mkResyncFromTick:
               begin
@@ -2732,6 +2741,13 @@ begin
     end;
   end;
   PostLocalMessage(Format(gResTexts[TX_LOBBY_ALERT_GET_READY_SENT], [IntToStr(K)]), csSystem);
+end;
+
+
+// Ask other player to send report. We need reports from both players, who got desync error, to compare the saves and fix the desync
+procedure TKMNetworking.AskToSendCrashreport(aOtherPlayerIndex: Integer; aErrorStr: UnicodeString);
+begin
+  PacketSendW(fNetPlayers[aOtherPlayerIndex].IndexOnServer, mkAskToSendCrashreport, aErrorStr);
 end;
 
 

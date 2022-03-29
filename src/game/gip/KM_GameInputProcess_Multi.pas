@@ -92,6 +92,22 @@ uses
   KM_GameTypes,
   KM_Networking;
 
+type
+  TKMRngCheckPlayerData = record
+    PlayerIndex: Integer;
+    HandID: TKMHandID;
+    Nickname: AnsiString;
+    Check: Cardinal;
+    function ToStr: string;
+  end;
+
+
+{ TKMRngCheckPlayerData }
+function TKMRngCheckPlayerData.ToStr: string;
+begin
+  Result := Format('PlayerIndex = %d; Hand = %d; Nick = %s; Check = %d', [PlayerIndex, HandID, Nickname, Check]);
+end;
+
 
 { TKMCommandsPack }
 procedure TKMCommandsPack.Clear;
@@ -305,15 +321,31 @@ end;
 
 
 procedure TKMGameInputProcess_Multi.DoRandomCheck(aTick: Cardinal; aPlayerIndex: ShortInt);
+var
+  myData, otherData: TKMRngCheckPlayerData;
+  errorStr: string;
 begin
   with fRandomCheck[aTick mod MAX_SCHEDULE] do
   begin
-    Assert(OurCheck = PlayerCheck[aPlayerIndex],Format('Random check mismatch for tick %d from net player %d [%s] [Hand %d] processed at tick %d',
-                                                       [aTick,
-                                                        aPlayerIndex,
-                                                        gNetworking.NetPlayers[aPlayerIndex].Nikname,
-                                                        gNetworking.NetPlayers[aPlayerIndex].HandIndex,
-                                                        gGameParams.Tick]));
+    if OurCheck <> PlayerCheck[aPlayerIndex] then
+    begin
+      myData.PlayerIndex := gNetworking.MyIndex;
+      myData.HandID      := gNetworking.MyNetPlayer.HandIndex;
+      myData.Nickname    := gNetworking.MyNetPlayer.Nikname;
+      myData.Check       := OurCheck;
+
+      otherData.PlayerIndex := aPlayerIndex;
+      otherData.HandID      := gNetworking.NetPlayers[aPlayerIndex].HandIndex;
+      otherData.Nickname    := gNetworking.NetPlayers[aPlayerIndex].Nikname;
+      otherData.Check       := PlayerCheck[aPlayerIndex];
+
+      errorStr := Format(#13#10 + 'Random check mismatch for tick %d processed at tick %d:' + #13#10 +
+                         'MyPlayer: [%s],' + #13#10 +
+                         'OtherPlayer: [%s]',
+                         [aTick, gGameParams.Tick, myData.ToStr, otherData.ToStr]);
+      gNetworking.AskToSendCrashreport(aPlayerIndex, errorStr);
+      raise Exception.Create(errorStr);
+    end;
     PlayerCheckPending[aPlayerIndex] := False;
   end;
 end;

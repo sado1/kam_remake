@@ -1608,3 +1608,5 @@ TX_MENU_SETTINGS_REPLAY = 1532; //Replay settings
 TX_MENU_SETTINGS_MAPED = 1533; //MapEd settings
 
 TX_MENU_MISSION_TO_CAMPAIGN_MAP = 1535; //To Campaign Map
+
+TX_ERROR_ASK_TO_SEND_RNGCHECK_REPORT = 1547; //Other player for desync error. Please send us this crashreport.\nOther player error message is:\n%s

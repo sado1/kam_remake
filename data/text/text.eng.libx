@@ -1489,8 +1489,9 @@
 1539:Add group
 1540:Add group after placing defence position. Group  depends on AI formations
 1541:Count
-1542:Number of units in group. At 0 it takes the AI formations
+1542:Number of units in group. At 0 it takes the AI formations 
 1543:Columns
 1544:Number of columns in group. If number of units is 0 it takes the AI formations columns count
 1545:Make coal smooth
 1546:Coal deposits in the selection will be automatically set from the tiles with lowest coal count at the edges to the highest in the center
+1547:Other player got desync error. Please send us this crashreport, it will help us to fix it.%sOther player error message is:%s

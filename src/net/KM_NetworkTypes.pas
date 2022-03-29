@@ -88,6 +88,8 @@ type
     mkReconnectionAccepted, //Host tells dropped player they are accepted back into the game
     mkClientReconnected, //Host tells other players the index of a reconnected client
 
+    mkAskToSendCrashreport,
+
     mkCommands,        //Clients exchange commands for next ticks
     mkTextTranslated,  //Clients exchange translated text (system messages)
     mkTextChat,        //Clients exchange chat messages
@@ -163,6 +165,7 @@ const
     pfNumber,   //mkResyncFromTick
     pfNoData,   //mkReconnectionAccepted
     pfNumber,   //mkClientReconnected
+    pfStringW,  //mkAskToSendCrashreport
     pfBinary,   //mkCommands
     pfBinary,   //mkTextTranslated
     pfBinary,   //mkTextChat
