@@ -114,7 +114,7 @@ begin
   if gLog = nil then Exit; //Could crash very early before even the log file is created
 
   //It's nice to know when the exception happened in our log if the user decides to play on and sends the report later
-  logMessage := 'Exception occurred: ' + ExceptIntf.ExceptClass + ': ' + ExceptIntf.ExceptMessage;
+  logMessage := 'Exception occurred [' + ExceptIntf.ExceptClass + ']: ' + ExceptIntf.ExceptMessage;
   if ExceptIntf.ExceptObject is ELocError then
     logMessage := logMessage + ' at location ' + TypeToString(ELocError(ExceptIntf.ExceptObject).Loc);
   gLog.AddTime(logMessage);
