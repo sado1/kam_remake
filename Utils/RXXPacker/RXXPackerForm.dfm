@@ -3,7 +3,7 @@ object RXXForm1: TRXXForm1
   Top = 90
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = 'RXX Packer'
-  ClientHeight = 331
+  ClientHeight = 327
   ClientWidth = 289
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -17,7 +17,7 @@ object RXXForm1: TRXXForm1
   OnDestroy = FormDestroy
   DesignSize = (
     289
-    331)
+    327)
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
@@ -35,13 +35,14 @@ object RXXForm1: TRXXForm1
   end
   object btnPackRXX: TButton
     Left = 16
-    Top = 298
+    Top = 294
     Width = 257
     Height = 25
     Anchors = [akLeft, akRight, akBottom]
     Caption = 'Pack to RXX File'
     TabOrder = 0
     OnClick = btnPackRXXClick
+    ExplicitTop = 298
   end
   object ListBox1: TListBox
     Left = 16
@@ -55,13 +56,14 @@ object RXXForm1: TRXXForm1
   end
   object btnUpdateList: TButton
     Left = 16
-    Top = 267
+    Top = 263
     Width = 257
     Height = 25
     Anchors = [akLeft, akRight, akBottom]
     Caption = 'Update List'
     TabOrder = 2
     OnClick = btnUpdateListClick
+    ExplicitTop = 267
   end
   object edSpritesBaseDir: TEdit
     Left = 16
@@ -69,5 +71,13 @@ object RXXForm1: TRXXForm1
     Width = 257
     Height = 21
     TabOrder = 3
+  end
+  object chkPackToRXA: TCheckBox
+    Left = 192
+    Top = 175
+    Width = 89
+    Height = 17
+    Caption = 'Pack to RXA'
+    TabOrder = 4
   end
 end

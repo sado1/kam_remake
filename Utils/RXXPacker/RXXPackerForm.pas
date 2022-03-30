@@ -22,6 +22,7 @@ type
     btnUpdateList: TButton;
     edSpritesBaseDir: TEdit;
     Label2: TLabel;
+    chkPackToRXA: TCheckBox;
     procedure btnPackRXXClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -134,12 +135,12 @@ var
   RT: TRXType;
   I: Integer;
   Tick: Cardinal;
-  spritesBaseDir: string;
 begin
   btnPackRXX.Enabled := False;
   Tick := GetTickCount;
 
   fRXXPacker.SpritesBaseDir := edSpritesBaseDir.Text;
+  fRxxPacker.PackToRXA := chkPackToRXA.Checked;
 
   Assert(DirectoryExists(fRXXPacker.SpritesBaseDir + SPRITES_RES_DIR + '\'),
          'Cannot find ' + fRXXPacker.SpritesBaseDir + SPRITES_RES_DIR + '\ folder.' + #10#13 +
