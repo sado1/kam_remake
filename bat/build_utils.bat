@@ -37,7 +37,7 @@ if %IncludeScriptingEditor%==True (
   if errorlevel 1 goto exit3
 )
 
-call build_linux_servers.bat
+REM call build_linux_servers.bat
 if errorlevel 1 goto exit3
 
 goto exit0
