@@ -17,7 +17,7 @@ xcopy ..\data\cursors "%kam_folder%"\data\cursors\ /y /r /s
 xcopy ..\data\gfx "%kam_folder%"\data\gfx\ /y /r /s
 @REM Copy *.rxx files only from the /data/Sprites folder, since we will copy *.rxa from the KMR private repo
 xcopy ..\data\Sprites\*.rxx "%kam_folder%"\data\Sprites\ /y /r /s 
-xcopy ..\data\Sprites\*.rxa "%kam_folder%"\data\Sprites\ /y /r /s 
+REM xcopy ..\data\Sprites\*.rxa "%kam_folder%"\data\Sprites\ /y /r /s 
 xcopy ..\data\text "%kam_folder%"\data\text\ /y /r /s
 xcopy ..\data\locales.txt "%kam_folder%"\data\locales.txt* /y /r /i
 xcopy ..\Docs\Readme "%kam_folder%"\ /y /r /s
@@ -28,9 +28,9 @@ xcopy ..\"Modding graphics" "%kam_folder%"\"Modding graphics"\ /y /r /s
 
 
 REM ============================================================
-REM Copy *.rxa resource files from KMR private repo
+REM Copy *.rxa resource files 
 REM ============================================================
-xcopy %KMRPrivateRepoDir%\data\Sprites\*.rxa "%kam_folder%"\data\Sprites\ /y /r /s
+xcopy "%SpritesRXADir%"\*.rxa "%kam_folder%"\data\Sprites\ /y /r /s
 
 
 call pull_maps.bat
@@ -38,10 +38,10 @@ call pull_maps.bat
 REM ============================================================
 REM Copy Maps, Campaigns and Tutorials
 REM ============================================================
-xcopy %KMRMapsRepoDir%\Campaigns "%kam_folder%"\Campaigns\ /y /r /s
-xcopy %KMRMapsRepoDir%\Maps "%kam_folder%"\Maps\ /y /r /s /exclude:excluded_test_maps.txt
-xcopy %KMRMapsRepoDir%\MapsMP "%kam_folder%"\MapsMP\ /y /r /s
-xcopy %KMRMapsRepoDir%\Tutorials "%kam_folder%"\Tutorials\ /y /r /s
+xcopy "%KMRMapsRepoDir%"\Campaigns "%kam_folder%"\Campaigns\ /y /r /s
+xcopy "%KMRMapsRepoDir%"\Maps "%kam_folder%"\Maps\ /y /r /s /exclude:excluded_test_maps.txt
+xcopy "%KMRMapsRepoDir%"\MapsMP "%kam_folder%"\MapsMP\ /y /r /s
+xcopy "%KMRMapsRepoDir%"\Tutorials "%kam_folder%"\Tutorials\ /y /r /s
 
 
 
@@ -100,7 +100,7 @@ xcopy "..\Utils\Campaign builder\CampaignBuilder.exe" "%kam_folder%"\Utils\Campa
 xcopy "..\Utils\DedicatedServer\KaM_DedicatedServer.exe" "%kam_folder%"\Utils\KaM_Remake_Server_win32.exe* /y /r /i
 xcopy "..\Utils\DedicatedServerGUI\KaM_DedicatedServerGUI.exe" "%kam_folder%"\Utils\KaM_Remake_ServerGUI_win32.exe* /y /r /i
 xcopy "..\Utils\ScriptValidator\ScriptValidator.exe" "%kam_folder%"\Utils\ScriptValidator.exe* /y /r /i
-xcopy "..\Utils\_TranslationManager (moved to kp-wiki repo)\TranslationManager.exe" "%kam_folder%"\Utils\TranslationManager.exe* /y /r /i
+xcopy "..\Utils\TranslationManager\TranslationManager.exe" "%kam_folder%"\Utils\TranslationManager.exe* /y /r /i
 @REM copy linux dedicated servers
 xcopy "..\Utils\DedicatedServer\KaM_Remake_Server_linux_x86" "%kam_folder%"\Utils\KaM_Remake_Server_linux_x86* /y /r /i
 xcopy "..\Utils\DedicatedServer\KaM_Remake_Server_linux_x86_64" "%kam_folder%"\Utils\KaM_Remake_Server_linux_x86_64* /y /r /i

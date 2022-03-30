@@ -23,6 +23,7 @@ call rsvars_local.bat
 @SET KMRPrivateRepoDir=%KMRPrivateRepoDir_LOCAL%
 @SET KaMOrigDir=%KaMOrigDir_LOCAL%
 @SET KMRPrevVersionDir=%KMRPrevVersionDir_LOCAL%
+@SET SpritesRXADir=%SpritesRXADir_LOCAL%
 @SET BuildFullDir=%BuildFullDir_LOCAL%
 @SET KMRVideosDir=%KMRVideosDir_LOCAL%
 @SET ScriptingEditorDir=%ScriptingEditorDir_LOCAL%
