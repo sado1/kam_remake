@@ -2,6 +2,7 @@ program RXXPacker;
 {$I ..\..\KaM_Remake.inc}
 {$APPTYPE CONSOLE}
 uses
+  //{$IFDEF WDC} FastMM4, {$ENDIF} //Can be used only in Delphi, not Lazarus
   Forms, SysUtils,
   {$IFDEF FPC}Interfaces,{$ENDIF}
   {$IFDEF MSWindows} Windows, {$ENDIF}
@@ -54,7 +55,8 @@ uses
 {$ENDIF}
 
 var
-  I, K: Integer;
+  I, K, cnt: Integer;
+  paramString: string;
   forcedConsoleMode: Boolean;
   rxType: TRXType;
   lRxxPacker: TKMRXXPacker;
@@ -104,11 +106,12 @@ begin
       palettes.LoadPalettes(ExeDir + 'data\gfx\');
       try
         I := 0;
-        while I < ParamCount do // Skip 0, as this is the EXE-path
+        cnt := ParamCount;
+        while I < cnt do // Skip 0, as this is the EXE-path
         begin
           Inc(I);
-
-          if ((LowerCase(ParamStr(I)) = 'sbd') or (LowerCase(ParamStr(I)) = 'spritesbasedir')) then
+          paramString := ParamStr(I);
+          if ((LowerCase(paramString) = 'sbd') or (LowerCase(paramString) = 'spritesbasedir')) then
           begin
             if (I >= ParamCount) then
             begin
@@ -128,7 +131,16 @@ begin
             Continue;
           end;
 
-          if LowerCase(ParamStr(I)) = 'all' then
+          if ((LowerCase(paramString) = 'packtorxa') or (LowerCase(paramString) = 'rxa')) then
+          begin
+            lRxxPacker.PackToRXA := True;
+
+            Continue;
+          end;
+
+          paramString := ParamStr(I);
+
+          if LowerCase(paramString) = 'all' then
           begin
             for K := Low(RXX_TO_PACK) to High(RXX_TO_PACK) do
             begin
@@ -140,7 +152,7 @@ begin
           end;
 
           for rxType := Low(TRXType) to High(TRXType) do
-            if (LowerCase(ParamStr(I)) = LowerCase(RXInfo[rxType].FileName)) then
+            if (LowerCase(paramString) = LowerCase(RXInfo[rxType].FileName)) then
             begin
               tick := GetTickCount;
               lRxxPacker.Pack(rxType, palettes);
