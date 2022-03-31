@@ -1456,6 +1456,7 @@ var
   ID: Integer;
   color: Cardinal;
 begin
+  if gNetworking.SelectGameKind = ngkNone then Exit;
   if (gNetworking.SelectGameKind = ngkMap) and not gNetworking.MapInfo.TxtInfo.BlockColorSelection then Exit;
   if (gNetworking.SelectGameKind = ngkSave) and not gNetworking.SaveInfo.GameInfo.TxtInfo.BlockColorSelection then Exit;
 
