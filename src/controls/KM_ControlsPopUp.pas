@@ -1,4 +1,4 @@
-﻿unit KM_ControlsPopUp;
+unit KM_ControlsPopUp;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -132,16 +132,6 @@ uses
   KM_RenderUI,
   KM_ResTexts, KM_ResKeys, KM_ResTypes,
   KM_Defaults;
-//  {$IFDEF MSWindows} Windows, {$ENDIF}
-//  {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
-//  SysUtils, StrUtils, Math,
-//  Clipbrd,
-//  KromUtils,
-//  KM_System,
-//  KM_Resource, KM_ResSprites, KM_ResSound, KM_ResTexts, KM_ResKeys,
-//  KM_Render, KM_RenderTypes,
-//  KM_Sound, KM_CommonUtils, KM_UtilsExt,
-//  KM_GameSettings, KM_InterfaceTypes;
 
 
 { TKMPopUpMenu }
