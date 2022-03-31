@@ -1,4 +1,4 @@
-unit KM_ControlsPopUp;
+﻿unit KM_ControlsPopUp;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -43,6 +43,8 @@ type
     fDragStartPos: TKMPoint;
     fBGImageType: TKMPopUpBGImageType;
     fHandleCloseKey: Boolean;
+    fCapOffsetY: Integer;
+
     fOnClose: TEvent;
     procedure UpdateSizes;
     procedure Close(Sender: TObject);
@@ -59,6 +61,7 @@ type
     procedure SetActualHeight(aValue: Integer);
 
     procedure SetHandleCloseKey(aValue: Boolean);
+    procedure SetCapOffsetY(aValue: Integer);
   protected
     BevelBG: TKMBevel;
     BevelShade: TKMBevel;
@@ -68,10 +71,8 @@ type
     ItemsPanel: TKMPanel;
     DragEnabled: Boolean;
     ImageBG, ImageClose: TKMImage;
-    Caption: UnicodeString;
-    Font: TKMFont;
-    FontColor: TColor4;
-    CapOffsetY: Integer;
+
+    CaptionLabel: TKMLabel;
 
     constructor Create(aParent: TKMPanel; aWidth, aHeight: Integer; const aCaption: UnicodeString = '';
                        aImageType: TKMPopUpBGImageType = pubgitYellow; aWithCrossImg: Boolean = False;
@@ -92,10 +93,9 @@ type
 
     property ActualHeight: Integer read GetActualHeight write SetActualHeight;
     property ActualWidth: Integer read GetActualWidth write SetActualWidth;
+    property CapOffsetY: Integer read fCapOffsetY write SetCapOffsetY;
 
     property HandleCloseKey: Boolean read fHandleCloseKey write SetHandleCloseKey;
-
-    procedure Paint; override;
   end;
 
 
@@ -260,11 +260,9 @@ begin
   BaseHeight := baseH;
 
   FitInParent := True;
-  Font := DEF_FONT;
-  FontColor := icWhite;
-  Caption := aCaption;
   DragEnabled := False;
   fHandleCloseKey := False;
+  fCapOffsetY := 0;
 
   if aShowShadeBevel then
     BevelShade := TKMBevel.Create(Self, -2000,  -2000, 5000, 5000);
@@ -299,6 +297,8 @@ begin
   end;
 
   ImageBG.ImageStretch;
+
+  CaptionLabel := TKMLabel.Create(ItemsPanel, 0, -25, ItemsPanel.Width, 20, aCaption, DEF_FONT, taCenter);
 
   AnchorsCenter;
   Hide;
@@ -447,14 +447,6 @@ begin
 end;
 
 
-procedure TKMPopUpPanel.Paint;
-begin
-  inherited;
-
-  TKMRenderUI.WriteText(AbsLeft, AbsTop + GetTopMargin - 25 + CapOffsetY, Width, Caption, Font, taCenter, FontColor);
-end;
-
-
 procedure TKMPopUpPanel.SetHeight(aValue: Integer);
 begin
   inherited;
@@ -513,6 +505,14 @@ procedure TKMPopUpPanel.SetHandleCloseKey(aValue: Boolean);
 begin
   fHandleCloseKey := aValue;
   Focusable := aValue;
+end;
+
+
+procedure TKMPopUpPanel.SetCapOffsetY(aValue: Integer);
+begin
+  CaptionLabel.Top := CaptionLabel.Top + aValue - fCapOffsetY;
+
+  fCapOffsetY := aValue;
 end;
 
 
