@@ -1,4 +1,4 @@
-﻿unit KM_ControlsList;
+unit KM_ControlsList;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -720,7 +720,7 @@ end;
 procedure TKMListBox.SetVisible(aValue: Boolean);
 begin
   inherited;
-  fScrollBar.Visible := Visible and (not fAutoHideScrollBar or fScrollBar.Enabled); //Hide scrollbar and its buttons
+  fScrollBar.Visible := IsSetVisible and (not fAutoHideScrollBar or fScrollBar.Enabled); //Hide scrollbar and its buttons
 end;
 
 
@@ -1396,8 +1396,8 @@ end;
 procedure TKMColumnBox.SetVisible(aValue: Boolean);
 begin
   inherited;
-  fHeader.Visible := Visible and ShowHeader;
-  fScrollBar.Visible := Visible and fScrollBar.Enabled; //Hide scrollbar and its buttons
+  fHeader.Visible := IsSetVisible and fShowHeader;
+  fScrollBar.Visible := IsSetVisible and fScrollBar.Enabled; //Hide scrollbar and its buttons
 end;
 
 
@@ -1552,7 +1552,7 @@ begin
   fScrollBar.MaxValue := fRowCount - (Height - fHeader.Height * Byte(ShowHeader)) div fItemHeight;
   Assert(fScrollBar.MaxValue >= fScrollBar.MinValue);
   oldScrollBarVisible := fScrollBar.Visible;
-  fScrollBar.Visible := Visible and (fScrollBar.MaxValue <> fScrollBar.MinValue);
+  fScrollBar.Visible := IsSetVisible and (fScrollBar.MaxValue <> fScrollBar.MinValue);
   if fScrollBar.Visible <> oldScrollBarVisible then
     ScrollBarChangeVisibility;
 
