@@ -274,6 +274,8 @@ begin
       WritePicture(down, down, aWidth, aHeight, [], aRX, aID, aImageEnabled, aFlagColor);
     end;
 
+    TRender.BindTexture(0);
+
     //Render MouseOver highlight
     if bsOver in aState then
     begin
