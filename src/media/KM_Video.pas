@@ -621,6 +621,7 @@ var
 begin
   if Self = nil then Exit(False);
   if not fPlayerEnabled then Exit(False);
+  if gResLocales = nil then Exit(False);
 
   Result := False;
   aFileName := '';
