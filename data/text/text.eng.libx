@@ -470,7 +470,7 @@
 482:Equip rate iron
 483:Autodefence
 484:AI creates and manages defense positions automatically. Ignores all manually set defense positions
-485:Place defence position for AI. To change defence position parameters use :  RMB - direction, CTRL + RMB - group type, ALT + RMB - defensive/attacking 
+485:Place defence position for AI.|To change defence position parameters use:|RMB - direction, Ctrl + RMB - group type, Alt + RMB - defensive / attacking 
 486:AI defence positions
 487:Laborers
 488:Serfs per 10 houses
