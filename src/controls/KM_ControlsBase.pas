@@ -734,7 +734,7 @@ begin
   //If disabled then text should be faded
   col := IfThen(Enabled, icWhite, icGray);
 
-  top := AbsTop + Byte(csDown in State) + CapOffsetY;
+  top := AbsTop + Byte(bsDown in stateSet) + CapOffsetY;
 
   textY := gRes.Fonts[Font].GetTextSize(Caption).Y;
   case TextVAlign of
@@ -743,7 +743,7 @@ begin
     tvaMiddle:  Inc(top, (Height div 2) - (textY div 2) + 2);
     tvaBottom:  Inc(top, Height - textY);
   end;
-  TKMRenderUI.WriteText(AbsLeft + Byte(csDown in State) + CapOffsetX, top,
+  TKMRenderUI.WriteText(AbsLeft + Byte(bsDown in stateSet) + CapOffsetX, top,
                         Width, Caption, Font, fTextAlign, col);
 end;
 
