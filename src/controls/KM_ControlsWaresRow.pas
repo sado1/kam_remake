@@ -254,10 +254,10 @@ end;
 procedure TKMWareOrderRow.SetVisible(aValue: Boolean);
 begin
   inherited;
-  fWaresRow.Visible := Visible;
-  fOrderRem.Visible := Visible;
-  fOrderLab.Visible := Visible;
-  fOrderAdd.Visible := Visible;
+  fWaresRow.Visible := IsSetVisible;
+  fOrderRem.Visible := IsSetVisible;
+  fOrderLab.Visible := IsSetVisible;
+  fOrderAdd.Visible := IsSetVisible;
 end;
 
 

@@ -919,8 +919,8 @@ end;
 procedure TKMNumericEdit.SetVisible(aValue: Boolean);
 begin
   inherited;
-  fButtonDec.Visible := Visible;
-  fButtonInc.Visible := Visible;
+  fButtonDec.Visible := IsSetVisible;
+  fButtonInc.Visible := IsSetVisible;
 end;
 
 

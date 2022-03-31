@@ -763,7 +763,7 @@ end;
 procedure TKMListBox.UpdateScrollBar;
 begin
   fScrollBar.MaxValue := fItems.Count - GetVisibleRows;
-  fScrollBar.Visible := Visible and (not fAutoHideScrollBar or fScrollBar.Enabled);
+  fScrollBar.Visible := IsSetVisible and (not fAutoHideScrollBar or fScrollBar.Enabled);
   //Separators can not be used with scroll bar for now.
   //Scrollbar works line-wise, not pixel-wise,
   //so adding separators could cause visual issues
