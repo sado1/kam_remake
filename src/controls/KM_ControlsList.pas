@@ -354,7 +354,7 @@ type
   function MakeListRow(const aCaption, aHint: array of string; const aColor: array of TColor4; aTag: Integer = 0): TKMListRow; overload;
   function MakeListRow(const aCaption: array of string; const aColor: array of TColor4; const aColorHighlight: array of TColor4; aTag: Integer = 0): TKMListRow; overload;
   function MakeListRow(const aCaption: array of string; const aColor: array of TColor4; const aPic: array of TKMPic; aTag: Integer = 0): TKMListRow; overload;
-  
+
 
 implementation
 uses
@@ -1544,7 +1544,7 @@ begin
 end;
 
 
-//fRowCount or Height has changed
+// fRowCount or Height has changed
 procedure TKMColumnBox.UpdateScrollBar;
 var
   oldScrollBarVisible: Boolean;
@@ -1555,11 +1555,10 @@ begin
   fScrollBar.Visible := IsSetVisible and (fScrollBar.MaxValue <> fScrollBar.MinValue);
   if fScrollBar.Visible <> oldScrollBarVisible then
     ScrollBarChangeVisibility;
-
 end;
 
 
-//If we don't add columns there will be Assert on items add
+// If we don't add columns there will be Assert on items add
 procedure TKMColumnBox.SetColumns(aHeaderFont: TKMFont; aCaptions: array of string; aOffsets: array of Word);
 var
   hints: array of string;
