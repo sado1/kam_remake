@@ -1541,16 +1541,9 @@ begin
 
   if aHandled then Exit;
   
-  if gCursor.Mode in [cmField, cmWine] then
-  begin
-    if (X < 0) or (Y < 0) then Exit; // This happens when you use the mouse wheel on the window frame
-
-    gGame.MapEditor.MouseWheel(Shift, WheelSteps, X, Y);
-  end else begin
-    fGuiTerrain.MouseWheel(Shift, WheelSteps, X, Y, aHandled);
-    if not aHandled then
-      inherited;
-  end;
+  fGuiTerrain.MouseWheel(Shift, WheelSteps, X, Y, aHandled);
+  if not aHandled then
+    inherited;
 end;
 
 
