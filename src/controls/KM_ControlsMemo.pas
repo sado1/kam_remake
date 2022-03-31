@@ -239,11 +239,11 @@ begin
 
   if fScrollDown then
   begin
-    if oldMax-fScrollBar.Position <= 2 then //If they were near the bottom BEFORE updating, keep them at the bottom
+    if oldMax - fScrollBar.Position <= 2 then //If they were near the bottom BEFORE updating, keep them at the bottom
       SetTopIndex(fItems.Count) //This puts it at the bottom because of the EnsureRange in SetTopIndex
   end
   else
-    SetTopIndex(0);
+    SetTopIndex(fScrollBar.Position);
 end;
 
 
