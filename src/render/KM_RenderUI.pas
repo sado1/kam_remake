@@ -235,6 +235,7 @@ begin
   end;
 
   glPushMatrix;
+  try
     glTranslatef(aLeft, aTop, 0);
 
       //Background
@@ -255,6 +256,7 @@ begin
       chamfer := 2 + Byte(Min(aWidth, aHeight) > 25);
 
       glPushMatrix;
+      try
         //Scale to save on XY+/-Inset coordinates calculations
         glScalef(aWidth, aHeight, 0);
         insetX := chamfer / aWidth;
@@ -265,7 +267,9 @@ begin
           glColor4f(c2,c2,c2,0.5); glkQuad(1, 0, 1,        1,        1-insetX, 1-insetY, 1-insetX, 0+insetY);
           glColor4f(c2,c2,c2,0.4); glkQuad(0, 1, 0+insetX, 1-insetY, 1-insetX, 1-insetY, 1,        1       );
         glEnd;
-      glPopMatrix;
+      finally
+        glPopMatrix;
+      end;
 
     //Render a pic ontop
     if aID <> 0 then
@@ -293,8 +297,9 @@ begin
         glkRect(0, 0, aWidth, aHeight);
       glEnd;
     end;
-
-  glPopMatrix;
+  finally
+    glPopMatrix;
+  end;
 end;
 
 
@@ -312,6 +317,7 @@ begin
   TRender.BindTexture(0);
 
   glPushMatrix;
+  try
     glTranslatef(aLeft, aTop, 0);
 
     //Background
@@ -341,7 +347,9 @@ begin
         glVertex2f(aWidth-0.5, 0.5);
       glEnd;
     end;
-  glPopMatrix;
+  finally
+    glPopMatrix;
+  end;
 end;
 
 
@@ -354,7 +362,7 @@ begin
   TRender.BindTexture(0);
 
   glPushMatrix;
-    glTranslatef(aLeft, aTop, 0);
+  try  glTranslatef(aLeft, aTop, 0);
 
     WriteBevel(0, 0, aWidth, aHeight);
 
@@ -389,7 +397,9 @@ begin
       glVertex2f(2.5,2.5);
       glVertex2f(2.5,aHeight-1.5);
     glEnd;
-  glPopMatrix;
+  finally
+    glPopMatrix;
+  end;
 end;
 
 
@@ -408,9 +418,7 @@ const
   procedure WriteWideLine(aX: Word; aColor: Cardinal; aPattern: Word = $FFFF);
   begin
     if InRange(aX, 0, aWidth) then  //Dont allow to render outside of control
-    begin
       WriteLine(aX,     1, aX    , aHeight - 1, aColor, aPattern, 2);
-    end;
   end;
 
 var
@@ -421,6 +429,7 @@ begin
   TRender.BindTexture(0);
 
   glPushMatrix;
+  try
     glTranslatef(aLeft, aTop, 0);
 
     WriteBevel(0, 0, aWidth, aHeight);
@@ -466,7 +475,9 @@ begin
       glVertex2f(2.5, 2.5);
       glVertex2f(2.5, aHeight - 1.5);
     glEnd;
-  glPopMatrix;
+  finally
+    glPopMatrix;
+  end;
 end;
 
 
@@ -510,6 +521,7 @@ begin
   with gGFXData[aRX, aID] do
   begin
     glPushMatrix;
+    try
       glTranslatef(aLeft + offX, aTop + offY, 0);
 
       //Base layer
@@ -557,8 +569,9 @@ begin
         glEnd;
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       end;
-
-    glPopMatrix;
+    finally
+      glPopMatrix;
+    end;
   end;
 end;
 
@@ -572,6 +585,7 @@ begin
 
   glPushAttrib(GL_LINE_BIT);
   glPushMatrix;
+  try
     //glEnable(GL_LINE_SMOOTH); //Smooth lines actually look odd in KaM
     glTranslatef(aLeft, aTop, 0);
     glLineWidth(aLineWidth);
@@ -580,8 +594,10 @@ begin
       for I := 0 to High(aValues) do
         glVertex2f(I / High(aValues) * aWidth, aHeight - aValues[I] / aMaxValue * aHeight);
     glEnd;
-  glPopAttrib;
-  glPopMatrix;
+  finally
+    glPopAttrib;
+    glPopMatrix;
+  end;
 end;
 
 
@@ -593,12 +609,15 @@ begin
   TRender.BindTexture(0);
 
   glPushAttrib(GL_LINE_BIT);
+  try
     glLineWidth(aLineWidth);
     glColor4ubv(@Col);
     glBegin(GL_LINE_LOOP);
       glkRect(aLeft + aLineWidth / 2, aTop + aLineWidth / 2, aLeft + aWidth - aLineWidth / 2, aTop + aHeight - aLineWidth / 2);
     glEnd;
-  glPopAttrib;
+  finally
+    glPopAttrib;
+  end;
 end;
 
 
@@ -609,6 +628,7 @@ begin
   TRender.BindTexture(0);
 
   glPushAttrib(GL_LINE_BIT);
+  try
     glColor4ubv(@Col);
     glBegin(GL_QUADS);
       glkRect(aLeft, aTop, aLeft + aWidth, aTop + aHeight);
@@ -618,7 +638,9 @@ begin
     glBegin(GL_LINE_LOOP);
       glkRect(aLeft + 0.5, aTop + 0.5, aLeft + aWidth - 0.5, aTop + aHeight - 0.5);
     glEnd;
-  glPopAttrib;
+  finally
+    glPopAttrib;
+  end;
 end;
 
 
@@ -634,9 +656,7 @@ begin
   glLineStipple(2, aPattern);
   glBegin(GL_POLYGON);
     for I := 0 to High(aPoints) do
-    begin
       glVertex2f(aPoints[I].X, aPoints[I].Y);
-    end;
   glEnd;
 end;
 
@@ -652,9 +672,7 @@ begin
   glLineStipple(2, aPattern);
   glBegin(GL_POLYGON);
     for I := 0 to High(aPoints) do
-    begin
       glVertex2f(aPoints[I].X, aPoints[I].Y);
-    end;
   glEnd;
 end;
 
@@ -903,9 +921,9 @@ begin
   hasText2 := aShapeColor2 <> 0;
 
   W1 := 10 + 10 * Length(aText);
-  W2 := Byte(hasText2)*(10 + 10 * Length(aText2));
+  W2 := Ord(hasText2)*(10 + 10 * Length(aText2));
   W := W1 + W2;
-  WriteShape  (X - W div 2, Y - 10, W1, 20, aShapeColor1);
+  WriteShape(X - W div 2, Y - 10, W1, 20, aShapeColor1);
 
   if hasText2 then
   begin
@@ -977,6 +995,7 @@ begin
   TRender.BindTexture(0);
 
   glPushMatrix;
+  try
     //Slightly shifted shadow looks nicer
     glTranslatef(aLeft + aBlur / 8, aTop + aBlur / 6, 0);
 
@@ -1017,7 +1036,9 @@ begin
       DoNode(-aBlur, 0, bCol);
       DoNode(0, 0, aCol);
     glEnd;
-  glPopMatrix;
+  finally
+    glPopMatrix;
+  end;
 end;
 
 
