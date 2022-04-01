@@ -390,8 +390,8 @@ const
   PANEL_TRACK_TOP = 285;
   REPLAYBAR_DEFAULT_WIDTH = 400;
 
-  KEY_FUNCS_ALLOWED_ON_PAUSE: set of TKMKeyFunction = [kfMusicPrevTrack, kfMusicNextTrack, kfChat,
-                                                       kfSpecpanelSelectDropbox, kfReplayPlayNextTick];
+  KEY_FUNCS_ALLOWED_ON_PAUSE: TKMKeyFunctionSet = [kfMusicPrevTrack, kfMusicNextTrack, kfChat,
+                                                   kfSpecpanelSelectDropbox, kfReplayPlayNextTick];
 
 
 { TKMGamePlayInterface }

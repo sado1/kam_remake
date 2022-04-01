@@ -199,13 +199,14 @@ type
     kfMapedHistory          // Maped History
   );
 
+  TKMKeyFunctionSet = set of TKMKeyFunction;
 
   TKMKeyFuncArea = (faCommon,
-                 faGame,
-                   faUnit,
-                   faHouse,
-                 faSpecReplay,
-                 faMapEdit);
+                      faGame,
+                        faUnit,
+                        faHouse,
+                      faSpecReplay,
+                      faMapEdit);
 
   TKMKeyFuncAreaSet = set of TKMKeyFuncArea;
 
