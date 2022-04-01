@@ -3448,7 +3448,10 @@ begin
   if GameOnPause then
   begin
     if Key = gResKeys[kfPause] then
+    begin
       SetPause(False);
+      Exit;
+    end;
 
     keyAreas := [faCommon, faGame];
 
@@ -3457,7 +3460,10 @@ begin
 
     keyFunc := gResKeys.GetKeyFunctionForKey(Key, keyAreas);
 
-    if (keyFunc = kfNone) or not (keyFunc in KEY_FUNCS_ALLOWED_ON_PAUSE) then
+    if keyFunc = kfNone then
+      Exit;
+
+    if (fUIMode in [umSP, umMP]) and not (keyFunc in KEY_FUNCS_ALLOWED_ON_PAUSE) and BLOCK_GAME_ON_PAUSE then
       Exit;
   end;
 
