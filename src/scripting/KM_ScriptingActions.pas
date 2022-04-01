@@ -1758,11 +1758,11 @@ end;
 
 //* Version: 13900
 //* Sets whether the AI should automatically repair damaged buildings
-//* aRepairMode of TKMAIRepairMode enumeration type: (rmNone, rmNever, rmAlways, rmManual)
+//* aRepairMode of TKMAIRepairMode enumeration type: (rmNone, rmRepairNever, rmRepairAlways, rmRepairManual)
 //* rmNone unused
-//* rmNever disable repair for all houses
-//* rmAlways enable repair for all houses
-//* rmManual repair is set by script manually via Actions.HouseRepairEnable
+//* rmRepairNever disable repair for all houses
+//* rmRepairAlways enable repair for all houses
+//* rmRepairManual repair is set by script manually via Actions.HouseRepairEnable
 procedure TKMScriptActions.AIRepairMode(aHand: Integer; aRepairMode: TKMAIRepairMode);
 begin
   try

@@ -22,7 +22,10 @@ type
     NumUnits, UnitsPerRow: Integer;
   end;
 
-  TKMAIRepairMode = (rmNone, rmRepairNever, rmRepairAlways, rmRepairManual);
+  TKMAIRepairMode = (rmNone,
+                     rmRepairNever,   // disable AI repair for all houses
+                     rmRepairAlways,  // enable AI repair for all houses
+                     rmRepairManual); // repair state is set by script manually via Actions.HouseRepairEnable
 
 implementation
 
