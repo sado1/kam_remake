@@ -213,6 +213,8 @@ type
 const
   KEY_FUNC_LOW = Succ(kfNone); // 1st key function
 
+  KEY_FUNCS_ALL = [KEY_FUNC_LOW..High(TKMKeyFunction)];
+
 type
   // Cursors
   TKMCursor = (

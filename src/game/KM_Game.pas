@@ -1,4 +1,4 @@
-﻿unit KM_Game;
+unit KM_Game;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -119,6 +119,7 @@ type
     procedure UpdateTickCounters;
     function GetTicksBehindCnt: Single;
     procedure SetIsPaused(aValue: Boolean);
+    function GetIsPlayerWaiting: Boolean;
 
     function IsMPGameSpeedChangeAllowed: Boolean;
 
@@ -197,6 +198,9 @@ type
 
     property IsExiting: Boolean read fIsExiting;
     property IsPaused: Boolean read fIsPaused write SetIsPaused;
+    property IsWaitingForNetwork: Boolean read fWaitingForNetwork;
+    property IsPlayerWaiting: Boolean read GetIsPlayerWaiting;
+
     property IsStarted: Boolean read fIsStarted;
     property ReadyToStop: Boolean read fReadyToStop write fReadyToStop;
 
@@ -2129,6 +2133,12 @@ begin
 end;
 
 
+function TKMGame.GetIsPlayerWaiting: Boolean;
+begin
+  Result := fIsPaused or fWaitingForNetwork;
+end;
+
+
 //In replay mode we can step the game by exactly one frame and then pause again
 procedure TKMGame.StepOneFrame;
 begin
@@ -3362,8 +3372,7 @@ end;
 //This is our real-time "thread", use it wisely
 procedure TKMGame.UpdateStateIdle(aFrameTime: Cardinal);
 begin
-  if not fIsPaused or not BLOCK_GAME_ON_PAUSE or fParams.IsReplay  then
-    fActiveInterface.UpdateStateIdle(aFrameTime);
+  fActiveInterface.UpdateStateIdle(aFrameTime);
 
   //Terrain should be updated in real time when user applies brushes
   if fMapEditor <> nil then

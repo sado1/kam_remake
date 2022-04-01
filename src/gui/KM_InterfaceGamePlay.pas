@@ -13,7 +13,8 @@ uses
   KM_InterfaceTypes, KM_InterfaceGame, KM_Terrain, KM_Houses, KM_Units, KM_Minimap, KM_Viewport, KM_Render,
   KM_UnitGroup, KM_UnitWarrior, KM_Saves, KM_MessageStack, KM_ResHouses, KM_Alerts, KM_Networking,
   KM_HandEntity, KM_HandTypes,
-  KM_GameTypes, KM_ResFonts,
+  KM_GameTypes,
+  KM_ResFonts, KM_ResTypes,
   KM_GUICommonGameOptions,
   KM_GUIGameResultsSP,
   KM_GUIGameResultsMP,
@@ -166,6 +167,8 @@ type
     procedure Replay_Single_SetPlayersDropbox;
     procedure Replay_Multi_SetPlayersDropbox;
     procedure ReplayMarkClick(aTick: Integer);
+    function IsKeyFuncBlockedOnPause(aKeyFunc: TKMKeyFunction): Boolean;
+    function IsKeyBlockedOnPause(aKey: Word): Boolean;
 
     procedure StopPlay(aMsg: TKMGameResultMsg; aPrepareToStopGame: Boolean = True);
     procedure StopGame(const aText: UnicodeString = '');
@@ -305,6 +308,7 @@ type
 
       function GetToolbarWidth: Integer; override;
       function GetDebugInfo: string; override;
+      function ZoomChangeBlocked: Boolean; override;
   public
     constructor Create(aRender: TRender; aUIMode: TUIMode); reintroduce;
     destructor Destroy; override;
@@ -381,7 +385,6 @@ uses
   KM_GameParams,
   KM_Video, KM_Music, KM_Sound, KM_ScriptSound,
   KM_HandEntityHelper,
-  KM_ResTypes,
   KM_Utils, KM_MapUtils;
 
 const
@@ -390,8 +393,14 @@ const
   PANEL_TRACK_TOP = 285;
   REPLAYBAR_DEFAULT_WIDTH = 400;
 
-  KEY_FUNCS_ALLOWED_ON_PAUSE: TKMKeyFunctionSet = [kfMusicPrevTrack, kfMusicNextTrack, kfChat,
-                                                   kfSpecpanelSelectDropbox, kfReplayPlayNextTick];
+  KEY_FUNCS_ALLOWED_ON_PAUSE: TKMKeyFunctionSet = [
+    kfMusicPrevTrack, kfMusicNextTrack, kfMusicDisable, kfMusicShuffle, kfMusicVolumeUp, kfMusicVolumeDown,  kfMusicMute,
+    kfSoundVolumeUp, kfSoundVolumeDown, kfSoundMute, kfMuteAll,
+    kfChat, kfCloseMenu,
+    kfSpecpanelSelectDropbox, kfReplayPlayNextTick];
+
+  KEY_FUNCS_ALLOWED_ON_PAUSE_IN_SP: TKMKeyFunctionSet =
+    [kfScrollLeft, kfScrollRight, kfScrollUp, kfScrollDown, kfZoomIn, kfZoomOut, kfZoomReset];
 
 
 { TKMGamePlayInterface }
@@ -3297,6 +3306,59 @@ begin
 end;
 
 
+function TKMGamePlayInterface.ZoomChangeBlocked: Boolean;
+begin
+  Result := gMySpectator.Hand.InCinematic
+            or (gGame.IsPlayerWaiting and IsKeyFuncBlockedOnPause(kfZoomReset)); // Assume mousewheel is blocked if zoom reset is not allowed
+end;
+
+
+function TKMGamePlayInterface.IsKeyFuncBlockedOnPause(aKeyFunc: TKMKeyFunction): Boolean;
+var
+  allowedKeyFuncs: TKMKeyFunctionSet;
+begin
+  Result := False;
+
+  if not BLOCK_GAME_ON_PAUSE then Exit;
+
+  if aKeyFunc = kfNone then
+    Exit(True);
+
+  case fUIMode of
+    umSP: allowedKeyFuncs := KEY_FUNCS_ALLOWED_ON_PAUSE + KEY_FUNCS_ALLOWED_ON_PAUSE_IN_SP;
+    umMP: begin
+            allowedKeyFuncs := KEY_FUNCS_ALLOWED_ON_PAUSE;
+            if MULTIPLAYER_SPEEDUP
+              or gGame.CanMPPlayerChangeSpeed then
+              allowedKeyFuncs := allowedKeyFuncs + KEY_FUNCS_ALLOWED_ON_PAUSE_IN_SP;
+          end;
+    else  allowedKeyFuncs := KEY_FUNCS_ALL;
+  end;
+
+  Result := not (aKeyFunc in allowedKeyFuncs);
+end;
+
+
+function TKMGamePlayInterface.IsKeyBlockedOnPause(aKey: Word): Boolean;
+var
+  keyFunc: TKMKeyFunction;
+  keyAreas: TKMKeyFuncAreaSet;
+begin
+  Result := False;
+
+  if not BLOCK_GAME_ON_PAUSE then Exit;
+
+  keyAreas := [faCommon, faGame];
+
+  if (fUIMode in [umReplay, umSpectate]) then
+    Include(keyAreas, faSpecReplay);
+
+  keyFunc := gResKeys.GetKeyFunctionForKey(aKey, keyAreas);
+
+  Result := IsKeyFuncBlockedOnPause(keyFunc);
+end;
+
+
 procedure TKMGamePlayInterface.KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean);
 var
   rect: TKMRect;
@@ -3304,7 +3366,7 @@ var
 begin
   aHandled := True; // assume we handle all keys here
 
-  if gGame.IsPaused and (fUIMode in [umSP, umMP]) and BLOCK_GAME_ON_PAUSE then Exit;
+  if gGame.IsPlayerWaiting and IsKeyBlockedOnPause(Key) then Exit;
 
   if fMyControls.KeyDown(Key, Shift) then
   begin
@@ -3435,12 +3497,9 @@ procedure TKMGamePlayInterface.KeyUp(Key: Word; Shift: TShiftState; var aHandled
       umMP, umSpectate: Result := SpeedChangeAllowedInMP or (PAUSE_GAME_BEFORE_TICK <> -1);
     end;
   end;
-
 var
   selectId: Integer;
   specPlayerIndex: ShortInt;
-  keyFunc: TKMKeyFunction;
-  keyAreas: TKMKeyFuncAreaSet;
   keyHandled, doSetPause: Boolean;
 begin
   aHandled := True; // assume we handle all keys here
@@ -3453,19 +3512,12 @@ begin
       Exit;
     end;
 
-    keyAreas := [faCommon, faGame];
-
-    if (fUIMode in [umReplay, umSpectate]) then
-      Include(keyAreas, faSpecReplay);
-
-    keyFunc := gResKeys.GetKeyFunctionForKey(Key, keyAreas);
-
-    if keyFunc = kfNone then
+    if IsKeyBlockedOnPause(Key) then
       Exit;
-
-    if (fUIMode in [umSP, umMP]) and not (keyFunc in KEY_FUNCS_ALLOWED_ON_PAUSE) and BLOCK_GAME_ON_PAUSE then
-      Exit;
-  end;
+  end
+  else
+  if gGame.IsWaitingForNetwork and IsKeyBlockedOnPause(Key) then
+    Exit;
 
   if fMyControls.KeyUp(Key, Shift) then Exit;
 
@@ -4504,7 +4556,10 @@ end;
 procedure TKMGamePlayInterface.UpdateStateIdle(aFrameTime: Cardinal);
 begin
   // Check to see if we need to scroll
-  fViewport.UpdateStateIdle(aFrameTime, not fDragScrolling, gMySpectator.Hand.InCinematic);
+  fViewport.UpdateStateIdle(aFrameTime,
+                            not fDragScrolling
+                            and not ((gGame.IsPaused or gGame.IsWaitingForNetwork) and IsKeyFuncBlockedOnPause(kfScrollUp)),
+                            gMySpectator.Hand.InCinematic);
 end;
 
 

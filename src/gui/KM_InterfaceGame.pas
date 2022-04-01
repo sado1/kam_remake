@@ -39,6 +39,8 @@ type
     Bevel_DebugInfo: TKMBevel;
     Label_DebugInfo: TKMLabel;
 
+    function ZoomChangeBlocked: Boolean; virtual;
+
     function IsDragScrollingAllowed: Boolean; virtual;
     function GetHintPositionBase: TKMPoint; override;
     function GetHintFont: TKMFont; override;
@@ -503,6 +505,12 @@ begin
 end;
 
 
+function TKMUserInterfaceGame.ZoomChangeBlocked: Boolean;
+begin
+  Result := False;
+end;
+
+
 procedure TKMUserInterfaceGame.MouseWheel(Shift: TShiftState; WheelSteps, X, Y: Integer; var aHandled: Boolean);
 var
   prevCursor: TKMPointF;
@@ -515,7 +523,7 @@ begin
   if (X < 0) or (Y < 0) then Exit; // This happens when you use the mouse wheel on the window frame
 
   // Allow to zoom only when cursor is over map. Controls handle zoom on their own
-  if aHandled then Exit;
+  if aHandled or ZoomChangeBlocked then Exit;
   
   UpdateGameCursor(X, Y, Shift); // Make sure we have the correct cursor position to begin with
   prevCursor := gCursor.Float;
