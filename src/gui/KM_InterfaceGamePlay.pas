@@ -2982,7 +2982,7 @@ var
 begin
   G := gHands.GetGroupByUID(fSelection[aId]);
   if (aObject <> G) and (aObject is TKMUnitGroup) and (G is TKMUnitGroup)
-  and (TKMUnitGroup(aObject).GroupType = G.GroupType) then
+    and (TKMUnitGroup(aObject).GroupType = G.GroupType) then
   begin
     gSoundPlayer.PlayWarrior(TKMUnitGroup(aObject).UnitType, spJoin); // In SP joining is instant, aObject does not exist after that
     gGame.GameInputProcess.CmdArmy(gicArmyLink, TKMUnitGroup(aObject), G);
@@ -3025,6 +3025,7 @@ begin
       if (oldSelected <> gMySpectator.Selected) and (fUIMode in [umSP, umMP]) and not HasLostMPGame then
         gSoundPlayer.PlayCitizen(TKMUnit(gMySpectator.Selected).UnitType, spSelect);
 
+
       CheckSelectTwice(TKMUnit(gMySpectator.Selected).PositionF);
     end
     else
@@ -3056,6 +3057,10 @@ begin
         CheckSelectTwice(TKMUnitGroup(gMySpectator.Selected).SelectedUnit.PositionF);
       end;
     end;
+
+    // Reset menu in case we has someone selected
+    if gMySpectator.Selected <> nil then
+      SwitchPage(Button_Back);
   end;
 
   // In a replay we want in-game statistics (and other things) to be shown for the owner of the last select object
@@ -3596,6 +3601,7 @@ begin
     selectId := -1;
 
   if selectId <> -1 then
+  begin
     if (ssCtrl in Shift) then
       Selection_Assign(selectId, gMySpectator.Selected)
     else
@@ -3603,6 +3609,7 @@ begin
       Selection_Link(selectId, gMySpectator.Selected)
     else
       Selection_Select(selectId);
+  end;
 
   // Menu shortcuts
   if Key = gResKeys[kfMenuBuild] then
