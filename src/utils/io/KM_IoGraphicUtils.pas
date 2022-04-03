@@ -38,7 +38,7 @@ begin
         itJpeg: begin
                   jpg := TJpegImage.Create;
                   try
-                    jpg.assign(mkbmp);
+                    jpg.Assign(mkbmp);
                     jpg.ProgressiveEncoding := True;
                     jpg.ProgressiveDisplay  := True;
                     jpg.Performance         := jpBestQuality;
@@ -70,7 +70,6 @@ begin
         if FileExists(filePath) then
           DeleteFile(filePath);
       end;
-
     end;
   finally
     mkbmp.Free;
