@@ -783,11 +783,15 @@ end;
 
 
 procedure TKMGamePlayInterface.GameOptionsChanged;
+var
+  oldIndex: Integer;
 begin
+  oldIndex := Radio_PlayersColorMode.ItemIndex;
   //Update player color mode radio
   Radio_PlayersColorMode.ItemIndex := Byte(gGameSettings.PlayersColorMode) - 1;
 
-  fMinimap.Update;
+  if oldIndex <> Radio_PlayersColorMode.ItemIndex then
+    fMinimap.Update;
 end;
 
 
