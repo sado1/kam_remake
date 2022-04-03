@@ -19,7 +19,7 @@ AppUpdatesURL={#Website}
 VersionInfoCompany={#MyAppName}
 VersionInfoVersion=1.0
 VersionInfoProductName={#MyAppName}
-DefaultDirName={sd}\Games\{code:GetAppFullName} 
+DefaultDirName={sd}\Program Files (x86)\{code:GetAppFullName} 
 LicenseFile=License.eng.txt
 DisableProgramGroupPage=yes
 UsePreviousAppDir=no
@@ -229,6 +229,10 @@ begin
       end;
   end;
 end;  
+
+
+[Dirs]
+Name: "{app}"; Permissions: users-modify
 
 
 [Files]
