@@ -2751,8 +2751,8 @@ begin
   else // GameStop has Destroyed our Sender by now
   if Sender = Button_PlayMore then
     case fPlayMoreMsg of
-      grWin:       gGame.Hold(false, grWin);
-      grDefeat:    gGame.Hold(false, grDefeat);
+      grWin:       gGame.Hold(False, grWin);
+      grDefeat:    gGame.Hold(False, grDefeat);
       grReplayEnd: begin
                       gGame.SkipReplayEndCheck := True;
                       gGame.Hold(False, grReplayEnd);
