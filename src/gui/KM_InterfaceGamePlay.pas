@@ -3025,7 +3025,6 @@ begin
       if (oldSelected <> gMySpectator.Selected) and (fUIMode in [umSP, umMP]) and not HasLostMPGame then
         gSoundPlayer.PlayCitizen(TKMUnit(gMySpectator.Selected).UnitType, spSelect);
 
-
       CheckSelectTwice(TKMUnit(gMySpectator.Selected).PositionF);
     end
     else
