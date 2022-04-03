@@ -3649,8 +3649,6 @@ begin
         gGameSettings.PlayersColorMode := pcmDefault;
     end;
     GameOptionsChanged;
-    //Update minimap immidiately
-//    fMinimap.Update;
   end;
 
   if   (Key = gResKeys[kfSpeedup1])
