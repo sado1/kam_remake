@@ -1529,9 +1529,9 @@
 1579:Abyss
 1580:Any unsaved changes will be lost. Exit?
 1581:Warning
-1582:To none
-1583:To dig 1
-1584:To dig 2
-1585:To dig 3
-1586:To dig 4
-1587:To road
+1582:No overlay
+1583:Dig overlay stage 1
+1584:Dig overlay stage 2
+1585:Dig overlay stage 3
+1586:Dig overlay stage 4
+1587:Road overlay
