@@ -1,4 +1,4 @@
-unit KM_Game;
+﻿unit KM_Game;
 {$I KaM_Remake.inc}
 interface
 uses
@@ -3351,10 +3351,10 @@ const
 begin
   gScriptSounds.UpdateStateGlobal;
 
+  fActiveInterface.UpdateState(aGlobalTickCount);
+
   if not fIsPaused then
   begin
-    fActiveInterface.UpdateState(aGlobalTickCount);
-
     //Notify about player being AFK
     if fParams.IsMultiplayerGame //Only for MP game players, not specs
       and (TimeSince(fLastTimeUserAction) > PLAYER_AFK_TIME*60*1000)

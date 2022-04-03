@@ -4447,6 +4447,9 @@ var
   str: string;
 begin
   inherited;
+
+  if gGame.IsPaused then Exit;
+
   // Update minimap every 1000ms
   if aGlobalTickCount mod 10 = 0 then
     fMinimap.Update;
