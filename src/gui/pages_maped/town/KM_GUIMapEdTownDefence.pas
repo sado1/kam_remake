@@ -47,23 +47,29 @@ implementation
 uses
   KM_Game, KM_HandsCollection, KM_Resource, KM_ResTexts, KM_Cursor, KM_RenderUI, KM_ResFonts, KM_InterfaceGame,
   KM_Hand, KM_Utils, KM_MapEdTypes;
+
 const
-DEF_POS_ARMY_THUMB_TX: array[TKMGroupLevel] of Integer = (TX_MAPED_AI_GROUP_LVL_WEAK,
-                                                          TX_MAPED_AI_ARMY_TYPE_LEATHER,
-                                                          TX_MAPED_AI_ARMY_TYPE_IRON);
+  DEF_POS_ARMY_THUMB_TX: array[TKMGroupLevel] of Integer = (TX_MAPED_AI_GROUP_LVL_WEAK,
+                                                            TX_MAPED_AI_ARMY_TYPE_LEATHER,
+                                                            TX_MAPED_AI_ARMY_TYPE_IRON);
 
 { TKMMapEdTownDefence }
 constructor TKMMapEdTownDefence.Create(aParent: TKMPanel);
+
   function GetDefPosArmyThumbWidth(aFont: TKMFont): Integer;
   var
-    BFA: TKMGroupLevel;
+    GL: TKMGroupLevel;
   begin
     Result := 0;
-    for BFA := Low(DEF_POS_ARMY_THUMB_TX) to High(DEF_POS_ARMY_THUMB_TX) do
-      Result := Max(Result, gRes.Fonts[aFont].GetTextSize(gResTexts[DEF_POS_ARMY_THUMB_TX[BFA]]).X);
+    for GL := Low(DEF_POS_ARMY_THUMB_TX) to High(DEF_POS_ARMY_THUMB_TX) do
+      Result := Max(Result, gRes.Fonts[aFont].GetTextSize(gResTexts[DEF_POS_ARMY_THUMB_TX[GL]]).X);
 
     Inc(Result, TKMTrackBar.THUMB_WIDTH_ADD);
   end;
+
+const
+  DEF_GROUP_LVL: TKMGroupLevel = glLeather; // Leather soldiers by default
+
 begin
   inherited Create;
 
@@ -125,11 +131,10 @@ begin
   TrackBar_DefencePositionUType.Anchors := [anLeft, anTop, anRight];
   TrackBar_DefencePositionUType.Hint := gResTexts[TX_MAPED_AI_GROUP_LVL_HINT];
   TrackBar_DefencePositionUType.OnChange := Town_DefenceChange;
-  TrackBar_DefencePositionUType.Position := Ord(glLow); // All ages by default
-  TrackBar_DefencePositionUType.ThumbText := gResTexts[TX_MAPED_AI_GROUP_LVL_WEAK];
+  TrackBar_DefencePositionUType.Position := Ord(DEF_GROUP_LVL);
+  TrackBar_DefencePositionUType.ThumbText := gResTexts[DEF_POS_ARMY_THUMB_TX[DEF_GROUP_LVL]];
   TrackBar_DefencePositionUType.FixedThumbWidth := True;
   TrackBar_DefencePositionUType.ThumbWidth := GetDefPosArmyThumbWidth(TrackBar_DefencePositionUType.Font);
-//  TrackBar_DefencePositionUType.AutoThumbWidth := True; // Auto calc thumb width
 
   fSubMenuActionsEvents[0] := Town_DefenceAddClick;
   fSubMenuActionsEvents[1] := Town_DefenceChange;
@@ -169,12 +174,8 @@ begin
   gMySpectator.Hand.AI.Setup.RecruitCount := TrackBar_RecruitCount.Position;
   gMySpectator.Hand.AI.Setup.RecruitDelay := NumEdit_RecruitDelay.Value * 600;
 
-  TrackBar_DefencePositionUType.ThumbText := gResTexts[DEF_POS_ARMY_THUMB_TX[TKMGroupLevel(TrackBar_DefencePositionUType.Position)]];
-  case TrackBar_DefencePositionUType.Position of
-    0: gCursor.MapEdDefPosGroupLevel := glLow;
-    1: gCursor.MapEdDefPosGroupLevel := glLeather;
-    2: gCursor.MapEdDefPosGroupLevel := glIron;
-  end;
+  gCursor.MapEdDefPosGroupLevel := TKMGroupLevel(TrackBar_DefencePositionUType.Position);
+  TrackBar_DefencePositionUType.ThumbText := gResTexts[DEF_POS_ARMY_THUMB_TX[gCursor.MapEdDefPosGroupLevel]];
 
   gCursor.MapEdDefPosSetGroup := CheckBox_DefencePositionGiveGroup.Checked;  //add groups with defence pos
 
@@ -185,6 +186,7 @@ begin
 
   Town_DefenceRefresh;
 end;
+
 
 procedure TKMMapEdTownDefence.Town_DefenceFormations(Sender: TObject);
 begin
