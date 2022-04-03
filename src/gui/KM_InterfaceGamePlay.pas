@@ -2756,6 +2756,7 @@ begin
       grReplayEnd: begin
                       gGame.SkipReplayEndCheck := True;
                       gGame.Hold(False, grReplayEnd);
+                      UpdateReplayButtons;
                     end;
     end;
 end;
