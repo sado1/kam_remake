@@ -470,7 +470,7 @@
 482:Uzbrój żelaznych
 483:Autom. obrona
 484:SI tworzy i zarządza pozycjami obrony automatycznie
-485:Umieść pozycje obrony dla SI.|Do zmiany parametrów pozycji użyj:|RMB - kierunek, Ctrl + RMB - typ oddziału, Alt + RMB - obronna / atakująca 
+485:Umieść pozycje obrony dla SI.|Do zmiany parametrów pozycji użyj:|RMB - kierunek, Ctrl + RMB - typ oddziału, Alt + RMB - obronna / atakująca
 486:Pozycje obrony SI
 487:Robotnicy
 488:Pomocnicy/10 budynków
@@ -1133,9 +1133,6 @@
 1203:Twarda maska - użyj automatycznie utworzonych przejść
 1204:Koszt niestandardowych jednostek Ratusza
 1205:Koszt niestandardowych cen Targu
-1206:Dodatkowe opcje
-1207:Dodatkowe opcje pędzla
-1208:Dodatkowe opcje pędzla
 1209:Napraw pędzle
 1210:Spróbuj naprawić zawarte w mapie informacje na temat terenu, aby umożliwić malowanie terenu pędzlem
 1211:Napraw pędzle

@@ -658,8 +658,8 @@
 669:Doba, po kterou počítač nebude cvičit rekruty (minuty)
 670:Prodlení rekrutů
 671:Nastaví stejný směr pro všechny propojená políčka vody
-673:Kopírovat
 672:Magická voda
+673:Kopírovat
 674:Vložit
 675:Použít vložení
 676:Zrušit vložení
@@ -1155,9 +1155,6 @@
 1203:Ostrá maska - využije automaticky vytvořené přechody
 1204:Vlatní ceny jednotek v radnici
 1205:Vlastní ceny surovin v tržišti
-1206:Další možnosti
-1207:Zobrazí další možnosti štětce
-1208:Další možnosti
 1209:Opravit terén
 1210:Pokusí se opravit terén pro umožnění použití štětce
 1211:Opravit terén pro použití štětce
@@ -1336,7 +1333,7 @@
 1384:Verze
 1385:Načtení nepodporované verze může způsobit nekonzistenci nebo pád hry
 1386:Nepodporovaná verze
-1387:Odemknout všechny kampaně?\nTato volba nemůže být vrácena.\n\Je vhodné zazálohovat soubor 'Campaigns.dat' uložený v\n'%s'\n\nPotvrdit operaci?
+1387:Odemknout všechny kampaně?\nTato volba nemůže být vrácena.\n\\Je vhodné zazálohovat soubor 'Campaigns.dat' uložený v\n'%s'\n\nPotvrdit operaci?
 1388:Hrubá maska - použij automaticky generované přechody
 1389:Zpoždění v herních ticích před tím, než AI začne trénovat lehce obrněné jednotky
 1390:Zpoždění v herních ticích před tím, než AI začne trénovat těžce obrněné jednotky
