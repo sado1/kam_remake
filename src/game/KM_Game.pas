@@ -2196,7 +2196,7 @@ begin
     gameInfo.MapSizeX := gTerrain.MapX;
     gameInfo.MapSizeY := gTerrain.MapY;
     gameInfo.TxtInfo := fMapTxtInfo;
-
+    gameInfo.MapTxtInfoNasToBeFreed := False; // Don't Free MapTxtInfo object in gameInfo, its used by our game
     gameInfo.PlayerCount := gHands.Count;
     for I := 0 to gHands.Count - 1 do
     begin

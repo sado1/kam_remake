@@ -445,6 +445,8 @@ var
 begin
   for I := Low(TKMHandStatType) to High(TKMHandStatType) do
     FreeAndNil(FLinesAggregator[I]);
+
+  inherited;
 end;
 
 
