@@ -185,23 +185,23 @@ object Form1: TForm1
     object Label4: TLabel
       Left = 5
       Top = 66
-      Width = 82
+      Width = 79
       Height = 16
-      Caption = 'Text contains:'
+      Caption = 'Text contains'
     end
     object Label1: TLabel
       Left = 5
       Top = 118
-      Width = 127
+      Width = 124
       Height = 16
-      Caption = 'Label name contains:'
+      Caption = 'Label name contains'
     end
     object Label3: TLabel
       Left = 5
       Top = 170
-      Width = 122
+      Width = 128
       Height = 32
-      Caption = 'Label ID or ID range (f.e. 50 or 10-40):'
+      Caption = 'Label ID, list or range (50 or 50,60 or 10-40)'
       WordWrap = True
     end
     object cbShowMis: TCheckBox

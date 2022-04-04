@@ -105,7 +105,8 @@ type
 
 implementation
 uses
-  TranslationManagerUtils;
+  TranslationManagerUtils,
+  KM_CommonTypes, KM_CommonUtils;
 
 {$R *.dfm}
 
@@ -285,10 +286,34 @@ procedure TForm1.RefreshList;
     end;
   end;
 
+  function ParseList(aString: String; out aIDArr: TIntegerArray): Boolean;
+  var
+    I, val: Integer;
+    sl: TStringList;
+  begin
+    Result := False;
+    sl := TStringList.Create;
+    try
+      ExtractStrings([';', ','], [' '], PWideChar(WideString(aString)), sl);
+      for I := 0 to sl.Count - 1 do
+      begin
+        if TryStrToInt(Trim(sl[I]), val) then
+        begin
+          SetLength(aIDArr, Length(aIDArr) + 1);
+          aIDArr[Length(aIDArr) - 1] := val;
+          Result := True;
+        end;
+      end;
+    finally
+      sl.Free;
+    end;
+  end;
+
   function ShowConst(aIndex: Integer): Boolean;
   var
     I,K, TextID, DefLoc, LabelId, RangeFrom, RangeTo: Integer;
     TextConstName: String;
+    idArr: TIntegerArray;
   begin
     Result := True;
     TextID := fTextManager.Consts[aIndex].TextID;
@@ -336,7 +361,8 @@ procedure TForm1.RefreshList;
     if Result and (edLabelId.Text <> '') then
       Result := (TextID <> -1)
         and ((TryStrToInt(Trim(edLabelId.Text), LabelId) and (TextID = LabelId))
-          or (ParseRange(edLabelId.Text, RangeFrom, RangeTo) and InRange(TextID, RangeFrom, RangeTo)));
+          or (ParseRange(edLabelId.Text, RangeFrom, RangeTo) and InRange(TextID, RangeFrom, RangeTo))
+          or (ParseList(edLabelId.Text, idArr) and ArrayContains(TextID, idArr)));
   end;
 var
   I, TopIdx, ItemIdx: Integer;
