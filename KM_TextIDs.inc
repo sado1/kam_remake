@@ -1,4 +1,4 @@
-﻿TX_HOUSES_NAMES__29 = 0; //Sawmill
+TX_HOUSES_NAMES__29 = 0; //Sawmill
 TX_HOUSES_NAMES_IRONSMITHY = 1; //Iron smithy
 TX_HOUSES_NAMES_WEAPONSMITHY = 2; //Weapon smithy
 TX_HOUSES_NAMES_COALMINE = 3; //Coal mine
@@ -307,7 +307,7 @@ TX_RESOURCES_ALL = 276; //All wares
 TX_RESOURCES_WARFARE = 277; //Warfare
 TX_RESOURCES_FOOD = 278; //Food
 
-TX_CREDITS_TEXT = 279; //JOYMANIA ENTERTAINMENT||PROGRAMMING:|Peter Ohlmann||GAME GRAPHICS:|Adam Sprys||LEVEL DESIGN:|Adam Sprys|AndrA� QuaAY||SOUND EDITING AND MIXING:|Tonstudio Mannheim||MUSIC:|Gerd Hofmann|Joachim SchA�fer|JA?rgen Rebhann|Klaus Staendike|Steffen SchA?ngel||ILLUSTRATIONS:|Boleslaw Kasza|Christoph Werner||TRANSLATION:|Ronnie Shankland|Patricia Bellantuono|Andrea Rumpelt|||ZUXXEZ ENTERTAINMENT AG||PRODUCER:|Uwe SchA�fer||MANUAL:|Peter Ohlmann|Uwe SchA�fer||BETA TESTING:|Peter Ohlmann|Adam Sprys|Alexandra Constandache|Dirk P. Hassinger|Achim Heidelauf|Uwe SchA�fer|Ingrid SchA�fer|Dirk U. Jantz|Ion Constandache|Yaman Egeli|Roman Eich|Iris Mocsnek|Anke Jantz|Paul Hassinger|Liza Hassinger||GAMES DIRECTOR:|Achim Heidelauf||PUBLISHED BY:|TopWare Interactive||CUTSCENES:||DIRECTION:|Slawomir Jedrzejewski||Kajetan Czarnecki|Wojciech Drazek|Daniel Duplaga|Rafal Januszkiewicz|Andrzej Rams|Piotr Rulka|Krzysztof Rybczynski|Grzegorz Wisniewski||VOICES:|Claus Boyen (Storyteller)||Tim Timmermann|Peter Houska|Dirk MA?hlbach|Ralf Ditze|Gerhard Piske|Gernot Wassmann||ARTWORK:|Boleslaw Kasza|Adam Sprys||OPENING ANIMATION:|Uwe SchA�fer|Christian Bigalk|Additional 3D-Modelling:|Niels Horstmann||SPECIAL THANKS TO:|Tadeusz Zuber|Dieter Ohlmann|Alexandra Constandache|Ingrid SchA�fer
+TX_CREDITS_TEXT = 279; //JOYMANIA ENTERTAINMENT||PROGRAMMING:|Peter Ohlmann||GAME GRAPHICS:|Adam Sprys||LEVEL DESIGN:|Adam Sprys|Andre Qua?||SOUND EDITING AND MIXING:|Tonstudio Mannheim||MUSIC:|Gerd Hofmann|Joachim Schafer|Jurgen Rebhann|Klaus Staendike|Steffen Schungel||ILLUSTRATIONS:|Boleslaw Kasza|Christoph Werner||TRANSLATION:|Ronnie Shankland|Patricia Bellantuono|Andrea Rumpelt|||ZUXXEZ ENTERTAINMENT AG||PRODUCER:|Uwe Schafer||MANUAL:|Peter Ohlmann|Uwe Schafer||BETA TESTING:|Peter Ohlmann|Adam Sprys|Alexandra Constandache|Dirk P. Hassinger|Achim Heidelauf|Uwe Schafer|Ingrid Schafer|Dirk U. Jantz|Ion Constandache|Yaman Egeli|Roman Eich|Iris Mocsnek|Anke Jantz|Paul Hassinger|Liza Hassinger||GAMES DIRECTOR:|Achim Heidelauf||PUBLISHED BY:|TopWare Interactive||CUTSCENES:||DIRECTION:|Slawomir Jedrzejewski||Kajetan Czarnecki|Wojciech Drazek|Daniel Duplaga|Rafal Januszkiewicz|Andrzej Rams|Piotr Rulka|Krzysztof Rybczynski|Grzegorz Wisniewski||VOICES:|Claus Boyen (Storyteller)||Tim Timmermann|Peter Houska|Dirk Muhlbach|Ralf Ditze|Gerhard Piske|Gernot Wassmann||ARTWORK:|Boleslaw Kasza|Adam Sprys||OPENING ANIMATION:|Uwe Schafer|Christian Bigalk|Additional 3D-Modelling:|Niels Horstmann||SPECIAL THANKS TO:|Tadeusz Zuber|Dieter Ohlmann|Alexandra Constandache|Ingrid Schafer
 
 TX_MENU_MISSION_CANCELED = 280; //Mission canceled
 TX_MENU_REPLAY_ENDED = 281; //Replay ended
@@ -505,7 +505,7 @@ TX_MAPED_TERRAIN_MASK_5_HINT = 1505; //Gradient mask - use automatically created
 TX_MAPED_TERRAIN_GRASS = 1550; //Grass
 TX_MAPED_TERRAIN_MOSS = 1551; //Moss
 TX_MAPED_TERRAIN_PALE_GRASS = 1552; //Pale grass
-TX_MAPED_TERRAIN_GRASS_DIRT = 1553; //Grass Dirt
+TX_MAPED_TERRAIN_GRASS_DIRT = 1553; //Grass on dirt
 TX_MAPED_TERRAIN_DIRT = 1554; //Dirt
 TX_MAPED_TERRAIN_COAST_SAND = 1555; //Coast sand
 TX_MAPED_TERRAIN_GRASS_SAND1 = 1556; //Grass sand 1
@@ -607,16 +607,16 @@ TX_MAPED_AI_FORMATIONS_COLUMNS = 450; //Columns
 TX_MAPED_AI_FORMATIONS_COUNT = 451; //Count
 TX_MAPED_AI_FORMATIONS_TITLE = 452; //Troop Formations
 TX_MAPED_AI_FORMATIONS = 453; //Edit formations
-TX_MAPED_AI_FORMATIONS_AAI_INFO = 1534; //Notice: Advanced AI use its own formation parameters and would ignore these settings
+TX_MAPED_AI_FORMATIONS_AAI_INFO = 1534; //Notice: Advanced AI use its own formation parameters and will ignore these settings
 TX_MAPED_AI_MAX_SOLDIERS_ENABLE_HINT = 454; //Set a limit on how many soldiers the AI can have
 TX_MAPED_AI_MAX_SOLDIERS_HINT = 455; //How many soldiers AI can have at once
 
-TX_MAPED_AI_GROUP_LVL_WEAK = 1537; // Weak (units without armor)
-TX_MAPED_AI_GROUP_LVL_HINT = 1538; //0 - low HP units, 1 - Leather armored units, 2 - Iron units
+TX_MAPED_AI_GROUP_LVL_WEAK = 1537; //Weak
+TX_MAPED_AI_GROUP_LVL_HINT = 1538; //Soldiers withour armor, leather armored units or iron armored units
 TX_MAPED_AI_ADD_GROUP = 1539; //Add group
 TX_MAPED_AI_ADD_GROUP_HINT = 1540; //Add group after placing defence position. Group  depends on AI formations
 
-TX_MAPED_UNITS_FORMATION_NUMBER = 1541; //Number
+TX_MAPED_UNITS_FORMATION_NUMBER = 1541; //Count
 TX_MAPED_UNITS_FORMATION_NUMBER_HINT = 1542; //Number of units in group. At 0 it takes the AI formations
 TX_MAPED_UNITS_FORMATION_COLUMNS = 1543; //Columns
 TX_MAPED_UNITS_FORMATION_COLUMNS_HINT = 1544; //Number of columns in group. If number of units is 0 it takes the AI formations columns count
@@ -708,12 +708,12 @@ TX_MAPED_COPY_COPY_HINT = 497; //Copy terrain
 TX_MAPED_COPY_TITLE = 498; //Copy/paste
 TX_MAPED_TERRAIN_OVERLAYS = 1396; //Tile overlays
 TX_MAPED_TERRAIN_HINTS_OVERLAYS = 1397; //Set tile overlays.|Use LMB for safe mode and LMB+Shift to overwrite roads
-TX_MAPED_TERRAIN_OVERLAY_TO_NONE = 1582; //To none
-TX_MAPED_TERRAIN_OVERLAY_TO_DIG1 = 1583; //To dig 1
-TX_MAPED_TERRAIN_OVERLAY_TO_DIG2 = 1584; //To dig 2
-TX_MAPED_TERRAIN_OVERLAY_TO_DIG3 = 1585; //To dig 3
-TX_MAPED_TERRAIN_OVERLAY_TO_DIG4 = 1586; //To dig 4
-TX_MAPED_TERRAIN_OVERLAY_TO_ROAD = 1587; //To road
+TX_MAPED_TERRAIN_OVERLAY_TO_NONE = 1582; //No overlay
+TX_MAPED_TERRAIN_OVERLAY_TO_DIG1 = 1583; //Dig overlay stage 1
+TX_MAPED_TERRAIN_OVERLAY_TO_DIG2 = 1584; //Dig overlay stage 2
+TX_MAPED_TERRAIN_OVERLAY_TO_DIG3 = 1585; //Dig overlay stage 3
+TX_MAPED_TERRAIN_OVERLAY_TO_DIG4 = 1586; //Dig overlay stage 4
+TX_MAPED_TERRAIN_OVERLAY_TO_ROAD = 1587; //Road overlay
 TX_MAPED_COPY = 673; //Copy
 TX_MAPED_PASTE = 674; //Paste
 TX_MAPED_PASTE_APPLY = 675; //Paste apply
@@ -1371,7 +1371,7 @@ TX_HOUSE_LOGO_HINT = 1185; //Go to selected house
 TX_UNIT_SCROLL_HINT = 1186; //Go to selected unit
 
 TX_GAME_SETTINGS_COLOR_MODE = 1187; //Ally / Enemy color mode
-TX_GAME_SETTINGS_COLOR_MODE_HINT = 1188; //Self / ally / enemy colors for players instead of initial player colors
+TX_GAME_SETTINGS_COLOR_MODE_HINT = 1188; //Self / Ally / Enemy colors for players instead of initial player colors
 TX_PLAYERS_COLOR_MODE_CAPTION = 1248; //Players colors:
 TX_PLAYERS_COLOR_MODE_DEFAULT = 1249; //Default
 TX_PLAYERS_COLOR_MODE_ALLY_ENEMY = 1250; //Ally / Enemy
@@ -1391,9 +1391,9 @@ TX_UNIT_TASK_DISMISS_NOT_AVAIL_HINT = 1193; //Dismiss is not available during cu
 TX_MAP_CUSTOM_PARAM_TH_TROOP_COST = 1204; //Custom TownHall units cost
 TX_MAP_CUSTOM_PARAM_MARKET_PRICE = 1205; //Custom gold market prices
 
-TX_MAPED_TERRAIN_BRUSH_OPTIONS = 1206; //Options
-TX_MAPED_TERRAIN_BRUSH_OPTIONS_HINT = 1207; //Additional brush options
-TX_MAPED_TERRAIN_BRUSH_OPTIONS_TITLE = 1208; //Additional brush options
+TX_MAPED_TERRAIN_BRUSH_OPTIONS = 1206; //
+TX_MAPED_TERRAIN_BRUSH_OPTIONS_HINT = 1207; //
+TX_MAPED_TERRAIN_BRUSH_OPTIONS_TITLE = 1208; //
 
 TX_MAPED_TERRAIN_BRUSH_BLENDING = 1392; //Blending level
 TX_MAPED_TERRAIN_BRUSH_BLENDING_HINT = 1393; //Blending level of terrain transitions via masks
@@ -1641,13 +1641,13 @@ TX_MENU_OPTIONS_LERP_ANIMS = 1526; //HD animations
 TX_GAME_SETTINGS_LERP_ANIMS = 1527; //HD animations
 TX_SETTINGS_LERP_ANIMS_HINT = 1528; //Increase number of frames used in animations
 
-TX_MENU_SETTINGS_GAME = 1531; //Game settings
-TX_MENU_SETTINGS_REPLAY = 1532; //Replay settings
-TX_MENU_SETTINGS_MAPED = 1533; //MapEd settings
+TX_MENU_SETTINGS_GAME = 1531; //Game Settings
+TX_MENU_SETTINGS_REPLAY = 1532; //Replay Settings
+TX_MENU_SETTINGS_MAPED = 1533; //Map Editor Settings
 
 TX_MENU_MISSION_TO_CAMPAIGN_MAP = 1535; //To Campaign Map
 
-TX_ERROR_ASK_TO_SEND_RNGCHECK_REPORT = 1547; //Other player for desync error. Please send us this crashreport.\nOther player error message is:\n%s
+TX_ERROR_ASK_TO_SEND_RNGCHECK_REPORT = 1547; //Other player got desync error. Please send us this crashreport, it will help us to fix it.%sOther player error message is:%s
 
 TX_EXIT_WARN_MESSAGE = 1580; //Any unsaved changes will be lost. Exit?
 TX_EXIT_WARN_HEADER = 1581; //Warning
