@@ -172,8 +172,11 @@ uses
 const
   DEFAULT_ATTEMPS_CNT_TO_TRY = 3;
 
+  function TryExecuteMethod(const aStrParam, aMethodName: UnicodeString; var aErrorStr: UnicodeString;
+                            aMethod: TUnicodeStringEvent; aAttemps: Byte = DEFAULT_ATTEMPS_CNT_TO_TRY): Boolean; overload;
+
   function TryExecuteMethod(aObjParam: TObject; const aStrParam, aMethodName: UnicodeString; var aErrorStr: UnicodeString;
-                            aMethod: TUnicodeStringObjEvent; aAttemps: Byte = DEFAULT_ATTEMPS_CNT_TO_TRY): Boolean;
+                            aMethod: TUnicodeStringObjEvent; aAttemps: Byte = DEFAULT_ATTEMPS_CNT_TO_TRY): Boolean; overload;
 
   function TryExecuteMethodProc(const aStrParam, aMethodName: UnicodeString; var aErrorStr: UnicodeString;
                                 aMethodProc: TUnicodeStringEventProc; aAttemps: Byte = DEFAULT_ATTEMPS_CNT_TO_TRY): Boolean; overload;
@@ -1915,6 +1918,35 @@ begin
   Delete(Arr, Index, 1);
 end;
 {$ENDIF}
+
+
+function TryExecuteMethod(const aStrParam, aMethodName: UnicodeString; var aErrorStr: UnicodeString;
+                          aMethod: TUnicodeStringEvent; aAttemps: Byte = DEFAULT_ATTEMPS_CNT_TO_TRY): Boolean;
+var
+  tryCnt: Byte;
+begin
+  Result := False;
+  tryCnt := 0;
+  aErrorStr := '';
+  while not Result and (tryCnt < aAttemps) do
+    try
+      Inc(tryCnt);
+
+      aMethod(aStrParam);
+
+      Result := True;
+    except
+      on E: Exception do //Ignore IO exceptions here, try to save file up to 3 times
+      begin
+        aErrorStr := Format('Error at attemp #%d while executing method %s for parameter: %s', [tryCnt, aMethodName, aStrParam]);
+        Sleep(50); // Wait a bit
+      end;
+    end;
+
+  if not Result then
+    aErrorStr := Format('Error executing method (%d tries) %s for parameter: %s', [aAttemps, aMethodName, aStrParam]);
+end;
+
 
 function TryExecuteMethod(aObjParam: TObject; const aStrParam, aMethodName: UnicodeString; var aErrorStr: UnicodeString;
                           aMethod: TUnicodeStringObjEvent; aAttemps: Byte = DEFAULT_ATTEMPS_CNT_TO_TRY): Boolean;
