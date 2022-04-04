@@ -10,7 +10,7 @@ DeleteMaps=Do you want to delete all Maps and Campaigns as well?
 
 ;Dutch
 dut.CreateStartShortcut=Aanmaken van een start menu snelkoppeling
-dut.NoKaM=De installatie wizard heft gedetecteerd dat Knights and Merchants: Te Peasants Rebellion niet is geinstalleerd.%n%nDe installatie is afgebroken
+dut.NoKaM=De installatie wizard heeft gedetecteerd dat Knights and Merchants: The Peasants Rebellion niet is geïnstalleerd. Je moet het originele spel hebben geïnstalleerd om KaM Remake te kunnen spelen.%n%nDe installatie is afgebroken.
 dut.SteamFirstRun=Originele KaM geïnstalleerd vanaf Steam moet minstens één keer worden gestart op deze computer, zodat het KMR-installatieprogramma het spel kan detecteren en verifiëren.
 dut.CantUpdate=De installatie wizard kon geen bestaande versie vinden van de KaM Remake om deze bij te werken naar de nieuwste versie. Download en installeer de complete versie.%n%nDe installatie is afgebroken
 dut.OpenAL=Wil je dat de installatie wizard OpenAL installeerd? (Aan te raden) OpenAL is nodig voor de werking van het geluid in KaM Remake
