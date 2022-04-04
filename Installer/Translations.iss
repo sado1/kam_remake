@@ -11,9 +11,12 @@ DeleteMaps=Do you want to delete all Maps and Campaigns as well?
 ;Dutch
 dut.CreateStartShortcut=Aanmaken van een start menu snelkoppeling
 dut.NoKaM=De installatie wizard heft gedetecteerd dat Knights and Merchants: Te Peasants Rebellion niet is geinstalleerd.%n%nDe installatie is afgebroken
+dut.SteamFirstRun=Originele KaM geïnstalleerd vanaf Steam moet minstens één keer worden gestart op deze computer, zodat het KMR-installatieprogramma het spel kan detecteren en verifiëren.
 dut.CantUpdate=De installatie wizard kon geen bestaande versie vinden van de KaM Remake om deze bij te werken naar de nieuwste versie. Download en installeer de complete versie.%n%nDe installatie is afgebroken
 dut.OpenAL=Wil je dat de installatie wizard OpenAL installeerd? (Aan te raden) OpenAL is nodig voor de werking van het geluid in KaM Remake
 dut.ViewReadme=Lees de Readme
+dut.DeleteSaves=Wil je ook alle opgeslagen spellen en voortgang in de campagnes verwijderen?
+dut.DeleteMaps=Wil je ook alle Kaarten en Campagnes verwijderen?
 
 ;Swedish
 swe.CreateStartShortcut=Skapa en genväg i startmenyn
@@ -53,10 +56,10 @@ fre.ViewReadme=Voir le lisez-moi
 ;Czech
 cze.CreateStartShortcut=Vytvořit zástupce v nabídce Start
 cze.NoKaM=Instalátor zjistil, že hra Knights and Merchants: The Peasants Rebellion není nainstalována. Instalace bude nyní ukončena.
+cze.SteamFirstRun=Knights and Merchants na Steamu je potřeba pustit alespoň jednou, aby mohla instalace pokračovat.
 cze.CantUpdate=Instalátor nenalezl na vašem počítači KaM Remake. Nejprve si stáhněte kompletní KaM Remake, poté můžete aktualizovat. Instalace bude nyní ukončena.
 cze.OpenAL=Chcete nainstalovat OpenAL? (Doporučeno) OpenAL je vyžadováno pro správnou funkci zvuku v KaM Remake
 cze.ViewReadme=Otevřít Readme
-cze.SteamFirstRun=Knights and Merchants na Steamu je potřeba pustit alespoň jednou, aby mohla instalace pokračovat.
 cze.DeleteSaves=Chcete také smazat všechny uložené hry a postup v kampani?
 cze.DeleteMaps=Chcete také smazat všechny mapy a kampaně?
 
