@@ -183,3 +183,13 @@ slv.CreateStartShortcut=Ustvari bljižnico na meniju
 slv.NoKaM=Čarovnik za namestitev je zaznal da nimate nameščeno igro Knights and Merchants: The Peasants Rebellion. Morate imeti nameščeno originalno igro če želite igrati KaM Remake.%n%nNamestitev bo prekinjena
 slv.OpenAL=Ali želite namestiti OpenAL? (Močno priporočeno) potrebno je za elovanje zvokov v igri KaM Remake.
 slv.ViewReadme=Poglej si opis
+
+;Finnish
+fin.CreateStartShortcut=Luo käynnistysvalikon pikakuvake
+fin.NoKaM=Asennusohjelma ei havainnut olemassaolevaa asennusta pelistä Knights and Merchants: The Peasants Rebellion. Sinulla täytyy olla alkuperäinen peli asennettuna jotta voit asentaa KaM Remaken.%n%nAsennus keskeytetään
+fin.SteamFirstRun=Alkuperäinen KaM-asennus Steamista täytyy käynnistää kerran ennenkuin KMR-asennusohjelma pystyy löytämään ja varmistamaan sen.
+fin.CantUpdate=Asennusohjelma ei löytänyt olemassa olevaa versiota Kam Remakesta päivitystä varten. Lataa ja asenna koko asennusohjelma.%n%nAsennus keskeytetään
+fin.OpenAL=Haluatko että asennusohjelma asentaa OpenAL:in? (Vahva suositus) Tämä vaaditaan jotta äänet toimisivat. 
+fin.ViewReadme=Tarkastele LueMinut
+fin.DeleteSaves=Haluatko varmasti poistaa tallennuksesi ja etenemisesi kaikista kampanjoista?
+fin.DeleteMaps=Haluatko varmasti poistaa kaikki Kartat ja Kampanjat?
