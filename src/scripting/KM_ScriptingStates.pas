@@ -4064,7 +4064,7 @@ end;
 //* Version: 6216
 //* Returns a random integer such that: 0 <= Number
 //* Result: Number 0 to aMax
-function TKMScriptStates.KaMRandomI(aMax:Integer): Integer;
+function TKMScriptStates.KaMRandomI(aMax: Integer): Integer;
 begin
   try
     //No parameters to check, any integer is fine (even negative)

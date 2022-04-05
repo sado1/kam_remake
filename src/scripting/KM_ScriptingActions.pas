@@ -1208,7 +1208,8 @@ end;
 
 //* Version: 14000
 //* Give player a digged house area and returns House ID or -1 if house site was not able to be added.
-//* aStoneAmount, aWoodAmount - number of resources to be added to the site
+//* aStoneAmount: number of resources to be added to the site
+//* aWoodAmount: number of resources to be added to the site
 function TKMScriptActions.GiveHouseSiteEx(aHand: Integer; aHouseType: TKMHouseType; X, Y, aWoodAmount, aStoneAmount: Integer): Integer;
 var
   H: TKMHouse;
@@ -1268,7 +1269,7 @@ end;
 
 //* Version: 7000+
 //* Sets AI army type
-//* aType = (atIronThenLeather, atLeather, atIron, atIronAndLeather)
+//* aType: (atIronThenLeather, atLeather, atIron, atIronAndLeather)
 procedure TKMScriptActions.AIArmyType(aHand: Byte; aType: TKMArmyType);
 begin
   try
@@ -1758,11 +1759,11 @@ end;
 
 //* Version: 13900
 //* Sets whether the AI should automatically repair damaged buildings
-//* aRepairMode of TKMAIRepairMode enumeration type: (rmNone, rmRepairNever, rmRepairAlways, rmRepairManual)
-//* rmNone unused
-//* rmRepairNever disable repair for all houses
-//* rmRepairAlways enable repair for all houses
-//* rmRepairManual repair is set by script manually via Actions.HouseRepairEnable
+//* aRepairMode: One of the values (rmNone, rmRepairNever, rmRepairAlways, rmRepairManual)
+//* rmNone - unused
+//* rmRepairNever - disable repair for all houses
+//* rmRepairAlways - enable repair for all houses
+//* rmRepairManual - repair is set by script manually via Actions.HouseRepairEnable
 procedure TKMScriptActions.AIRepairMode(aHand: Integer; aRepairMode: TKMAIRepairMode);
 begin
   try
@@ -1926,7 +1927,7 @@ end;
 //* Version: 7000+
 //* Sets field age if tile is corn field, or adds finished field and sets its age if tile is empty, and returns true if this was successfully done
 //* aStage: 0..6, sets the field growth stage. 0 = empty field; 6 = corn has been cut
-//* aRandomAge sets FieldAge to random, according to specified stage. Makes fields more realistic
+//* aRandomAge: sets FieldAge to random, according to specified stage. Makes fields more realistic
 function TKMScriptActions.GiveFieldAged(aHand, X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean;
 begin
   try
@@ -2129,8 +2130,8 @@ end;
 
 //* Version 7000+
 //* Sets winefield age if tile is winefield, or adds finished winefield and sets its age if tile is empty, and returns true if this was successfully done
-//* aStage = 0..3, sets the field growth stage. 0 = new fruits; 3 = grapes are ready to be harvested; according to WINE_STAGES_COUNT
-//* aRandomAge sets FieldAge to random, according to specified stage. Makes fields more realistic
+//* aStage: 0..3, sets the field growth stage. 0 = new fruits; 3 = grapes are ready to be harvested; according to WINE_STAGES_COUNT
+//* aRandomAge: sets FieldAge to random, according to specified stage. Makes fields more realistic
 function TKMScriptActions.GiveWineFieldAged(aHand, X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean;
 begin
   try
@@ -3592,7 +3593,8 @@ end;
 
 //* Version: 11000
 //* Apply brush from MapEd to the map
-//* X,Y: coodinates
+//* X: X coodinate
+//* Y: Y coodinate
 //* aSquare: is brush square or circle
 //* aSize: brush size
 //* aTerKind: terrain kind
@@ -3620,7 +3622,8 @@ end;
 
 //* Version: 11000
 //* Apply Elevation change brush from MapEd to the map
-//* X,Y: coodinates
+//* X: X coodinate
+//* Y: Y coodinate
 //* aSquare: is brush square or circle
 //* aRaise: raise elevation or lower it
 //* aSize: brush size
@@ -3647,7 +3650,8 @@ end;
 
 //* Version: 11000
 //* Apply Equalize brush from MapEd to the map
-//* X,Y: coodinates
+//* X: X coodinate
+//* Y: Y coodinate
 //* aSquare: is brush square or circle
 //* aSize: brush size
 //* aSlope: elevation slope
@@ -3673,7 +3677,8 @@ end;
 
 //* Version: 11000
 //* Apply Flatten brush from MapEd to the map
-//* X,Y: coodinates
+//* X: X coodinate
+//* Y: Y coodinate
 //* aSquare: is brush square or circle
 //* aSize: brush size
 //* aSlope: elevation slope
@@ -3699,7 +3704,8 @@ end;
 
 //* Version: 11000
 //* Apply magic water brush from MapEd to the map
-//* X,Y: coodinates
+//* X: X coodinate
+//* Y: Y coodinate
 procedure TKMScriptActions.MapBrushMagicWater(X, Y: Integer);
 begin
   try
@@ -3720,7 +3726,8 @@ end;
 
 //* Version: 11000
 //* Apply brush with mask specified from MapEd to the map
-//* X,Y: coodinates
+//* X: X coodinate
+//* Y: Y coodinate
 //* aSquare: is brush square or circle
 //* aSize: brush size
 //* aTerKind: terrain kind
@@ -4048,8 +4055,8 @@ end;
 
 //* Version: 11000
 //* Sets the terrain overlay on the tile at the specified XY coordinates.
-//* aOverwrite = False means safe way to change tile overlay, disallowing to set it on top of old fields/roads
-//* aOverwrite = True allows to destroy roads and re-dig fields (like in game we can build road on top of field and when laborer dies there is a digged overlay left)
+//* aOverwrite: False means safe way to change tile overlay, disallowing to set it on top of old fields/roads
+//* aOverwrite: True allows to destroy roads and re-dig fields (like in game we can build road on top of field and when laborer dies there is a digged overlay left)
 function TKMScriptActions.MapTileOverlaySet(X, Y: Integer; aOverlay: TKMTileOverlay; aOverwrite: Boolean): Boolean;
 begin
   try
