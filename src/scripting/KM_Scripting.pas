@@ -406,7 +406,14 @@ begin
     Sender.AddTypeS('TKMAudioFormat', '(afWav, afOgg)'); //Needed for PlaySound
 
     // Types needed for MapTilesArraySet function
-    Sender.AddTypeS('TKMTerrainTileBrief', 'record X,Y: Byte; Terrain: Word; Rotation: Byte; Height: Byte; Obj: Word; UpdateTerrain, UpdateRotation, UpdateHeight, UpdateObject: Boolean; end');
+    Sender.AddTypeS('TKMTerrainTileBrief', 'record ' +
+      'X,Y: Byte; ' +
+      'Terrain: Word; ' +
+      'Rotation: Byte; ' +
+      'Height: Byte; ' +
+      'Obj: Word; ' +
+      'UpdateTerrain, UpdateRotation, UpdateHeight, UpdateObject: Boolean; ' +
+    'end');
 
     Sender.AddTypeS('TKMMissionDifficulty', '(mdNone, mdEasy3, mdEasy2, mdEasy1, mdNormal, mdHard1, mdHard2, mdHard3)');
     Sender.AddTypeS('TKMMissionDifficultySet', 'set of TKMMissionDifficulty');
