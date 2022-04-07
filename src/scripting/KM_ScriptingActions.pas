@@ -1289,12 +1289,14 @@ end;
 //* Version: 7000+
 //* Add AI attack 
 //* Possible targets:
-//* <pre>TKMAIAttackTarget = (
-//*  attClosestUnit, // Closest enemy unit
-//*  attClosestBuildingFromArmy, // Closest building from the group lauching the attack
-//*  attClosestBuildingFromStartPos, // Closest building from the AI's start position
-//*  attCustomPosition // Custom point defined with aCustomPosition
-//* );</pre>
+//* <pre>
+//* TKMAIAttackTarget = (
+//*   attClosestUnit, // Closest enemy unit
+//*   attClosestBuildingFromArmy, // Closest building from the group lauching the attack
+//*   attClosestBuildingFromStartPos, // Closest building from the AI's start position
+//*   attCustomPosition // Custom point defined with aCustomPosition
+//* );
+//* </pre>
 //* aHand: handID
 //* aRepeating: is attack repeating
 //* aDelay: attack delay from the game start (in ticks)
@@ -3787,7 +3789,8 @@ end;
 //* 2. tile height (same as for MapTileHeightSet)
 //* 3. tile object (same as for MapTileObjectSet)
 //* Works much faster, then applying all changes successively for every tile, because pathfinding compute is executed only once after all changes have been done
-//* <pre>TKMTerrainTileBrief = record
+//* <pre>
+//* TKMTerrainTileBrief = record
 //*   X, Y: Byte;     // Tile map coordinates
 //*   Terrain: Byte;  // Terrain tile type (0..255)
 //*   Rotation: Byte; // Tile rotation (0..3)
@@ -3796,8 +3799,8 @@ end;
 //*   ChangeSet: TKMTileChangeTypeSet; // Set of changes.
 //* end;
 //* TKMTileChangeTypeSet = set of TKMTileChangeType
-//* TKMTileChangeType =
-//*   (tctTerrain, tctRotation, tctHeight, tctObject)</pre>
+//* TKMTileChangeType = (tctTerrain, tctRotation, tctHeight, tctObject)
+//* </pre>
 //* ChangeSet determines what should be changed on tile
 //* F.e. if we want to change terrain type and height, then ChangeSet should contain tctTerrain and tctHeight
 //* Note: aTiles elements should start from 0, as for dynamic array. So f.e. to change map tile 1,1 we should set aTiles[0][0].
@@ -3806,7 +3809,7 @@ end;
 //* aTiles: Check detailed info on this type in description
 //* aRevertOnFail: do we need to revert all changes on any error while applying changes. If True, then no changes will be applied on error. If False - we will continue apply changes where possible
 //* aShowDetailedErrors: show detailed errors after. Can slow down the execution, because of logging. If aRevertOnFail is set to True, then only first error will be shown
-//* Returns true, if there was no errors on any tile. False if there was at least 1 error.
+//* Result: True, if there was no errors on any tile. False if there was at least 1 error.
 function TKMScriptActions.MapTilesArraySet(aTiles: array of TKMTerrainTileBrief; aRevertOnFail, aShowDetailedErrors: Boolean): Boolean;
 
   function GetTileErrorsStr(aErrorsIn: TKMTileChangeTypeSet): string;
