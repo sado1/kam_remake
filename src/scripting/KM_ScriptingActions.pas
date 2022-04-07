@@ -1288,24 +1288,22 @@ end;
 
 //* Version: 7000+
 //* Add AI attack 
-//** <b>aHand</b> - handID
-//** <b>aRepeating</b> - is attack repeating
-//** <b>aDelay</b> - attack delay from the game start (in ticks)
-//** <b>aTotalMen</b> - total soldiers to attack
-//** <b>aMelleCount</b>, <b>aAntiHorseCount</b>, <b>aRangedCount</b>, <b>aMountedCount</b> - soldiers groups count
-//** <b>aRandomGroups</b> - use random groups for attack
-//** <b>aTarget</b> - attack target of TKMAIAttackTarget type. Possible values:
-//** <pre>TKMAIAttackTarget = (
-//**  attClosestUnit, //Closest enemy unit
-//**  attClosestBuildingFromArmy,
-//**    //Closest building from the group lauching the attack
-//**  attClosestBuildingFromStartPos,
-//**    //Closest building from the AI's start position
-//**  attCustomPosition
-//**    //Custom point defined with aCustomPosition
-//** );</pre>
-//** <b>aCustomPosition</b> - TKMPoint for custom position of attack. Used if attCustomPosition was set up as attack target
-//** <b>Result</b>: Attack UID, that could be used to remove this attack later on
+//* Possible targets:
+//* <pre>TKMAIAttackTarget = (
+//*  attClosestUnit, // Closest enemy unit
+//*  attClosestBuildingFromArmy, // Closest building from the group lauching the attack
+//*  attClosestBuildingFromStartPos, // Closest building from the AI's start position
+//*  attCustomPosition // Custom point defined with aCustomPosition
+//* );</pre>
+//* aHand: handID
+//* aRepeating: is attack repeating
+//* aDelay: attack delay from the game start (in ticks)
+//* aTotalMen: total soldiers to attack
+//* aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount: soldiers groups count
+//* aRandomGroups:  use random groups for attack
+//* aTarget: attack target of TKMAIAttackTarget type
+//* aCustomPosition: custom position of attack. Used if attCustomPosition was set up as attack target
+//* Result: Attack UID, that could be used to remove this attack later on
 function TKMScriptActions.AIAttackAdd(aHand: Integer; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer;
                                       aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount: Integer; aRandomGroups: Boolean;
                                       aTarget: TKMAIAttackTarget; aCustomPosition: TKMPoint): Integer;
