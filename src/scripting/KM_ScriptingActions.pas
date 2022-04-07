@@ -2094,7 +2094,7 @@ begin
       end;
     end
     else
-      LogParamWarn('Actions.GiveWeapons', [aHand, GetEnumName(TypeInfo(TKMWareType), Integer(aType)), aCount]);
+      LogParamWarn('Actions.GiveWeaponsEx', [aHand, GetEnumName(TypeInfo(TKMWareType), Integer(aType)), aCount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2102,7 +2102,7 @@ begin
 end;
 
 
-//* Version 6311
+//* Version: 6311
 //* Adds finished winefield and returns true if winefield was successfully added
 function TKMScriptActions.GiveWineField(aHand, X, Y: Integer): Boolean;
 begin
@@ -2128,7 +2128,7 @@ begin
 end;
 
 
-//* Version 7000+
+//* Version: 7000+
 //* Sets winefield age if tile is winefield, or adds finished winefield and sets its age if tile is empty, and returns true if this was successfully done
 //* aStage: 0..3, sets the field growth stage. 0 = new fruits; 3 = grapes are ready to be harvested; according to WINE_STAGES_COUNT
 //* aRandomAge: sets FieldAge to random, according to specified stage. Makes fields more realistic
