@@ -663,6 +663,7 @@ TX_MAPED_AI_ATTACK_COL_DELAY = 477; //Delay
 TX_MAPED_AI_ATTACK_COL_TYPE = 478; //Type
 TX_MAPED_AI_ATTACK_AUTO = 479; //Autoattack
 TX_MAPED_AI_ATTACK_AUTO_HINT = 810; //AI creates and manages attacks automatically. Ignores manually set attacks
+TX_MAPED_AI_ATTACK_HELP = 823; //Help section for AI attacks
 TX_MAPED_AI_ATTACK = 480; //AI attacks
 TX_MAPED_AI_ATTACK_ADD = 1137; //Add AI attack
 TX_MAPED_AI_ATTACK_DEL = 1138; //Remove AI attack
