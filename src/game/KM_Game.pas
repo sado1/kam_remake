@@ -71,6 +71,7 @@ type
     fSpeedChangeTick: Single;
     fSpeedChangeTime: Cardinal; //time of last game speed change
     fPausedTicksCnt: Cardinal;
+    fIsJustStarted: Boolean; // True when game is just started (loaded save / savepoint / started) and no ticks were played yet
 
     fLastTimeUserAction: Cardinal;
     fLastAfkMessageSent: Cardinal;
@@ -374,6 +375,7 @@ begin
   fIsStarted := False;
   fIsPaused := False;
   fIsExiting := False;
+  fIsJustStarted := False;
 
   fTerrainPainter := TKMTerrainPainter.Create;
 
@@ -798,6 +800,7 @@ begin
   gRenderPool.ReInit;
 
   fIsStarted := True;
+  fIsJustStarted := True; // Mark game as just started
 
   gLog.AddTime('After game start', True);
 end;
@@ -2681,6 +2684,8 @@ begin
       bodyStream.Free;
     end;
   end;
+
+  fIsJustStarted := True; // Mark game as just started
 end;
 
 
@@ -3050,6 +3055,9 @@ function TKMGame.PlayGameTick: Boolean;
     // Spread savepoints / autosaves / autosave at PT end (at 0 tick) among ticks to avoid async / main threads overload
     SAVEPT_TICK_SHIFT = 1;
   begin
+    // Do not add autosave or savepoint for a just started / loaded game
+    if fIsJustStarted then Exit;
+
     //Save game to memory (to be able to load it later)
     //Make savepoint only after everything is updated (UpdateState)
     if gGameSettings.SaveCheckpoints
@@ -3090,6 +3098,9 @@ begin
       ManageSaves;
 
       IncTick;
+
+      // Game is no longer 'just started'
+      fIsJustStarted := False;
 
       fGameInputProcess.TakePlannedCommands;
 
@@ -3156,6 +3167,9 @@ function TKMGame.PlayReplayTick: Boolean;
 
   procedure ManageSaves;
   begin
+    // Do not add savepoint for a just loaded game
+    if fIsJustStarted then Exit;
+
     //Only increase LastTick, since we could load replay earlier at earlier state
     fSavePoints.LastTick := Max(fSavePoints.LastTick, fParams.Tick);
 
@@ -3187,6 +3201,9 @@ begin
     ManageSaves;
 
     IncTick;
+
+    // Game is no longer 'just started'
+    fIsJustStarted := False;
 
     fScripting.UpdateState;
     gTerrain.UpdateState;
