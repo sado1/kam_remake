@@ -24,7 +24,7 @@ type
     constructor New(aX, aY: Single);
   end;
 
-  //* array of points
+  //* Point with integer coordinates X and Y
   TKMPoint = record
     X,Y: Integer;
 
