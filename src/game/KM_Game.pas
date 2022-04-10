@@ -799,7 +799,7 @@ begin
 
   fIsStarted := True;
 
-  gLog.AddTime('After game ends', True);
+  gLog.AddTime('After game start', True);
 end;
 
 
