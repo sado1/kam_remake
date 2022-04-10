@@ -457,6 +457,7 @@ begin
 
     Sender.AddTypeS('TKMWareTypeSet', 'set of TKMWareType');
 
+    //@Rey can not make SP parse this unless we include it into the KMR code
     Sender.AddTypeS('TReplaceFlags', '(rfReplaceAll, rfIgnoreCase)'); //Needed for string util Utils.StringReplace
 
     Sender.AddTypeS('TKMFont', '(fntAntiqua, fntGame, fntGrey, fntMetal, fntMini, fntOutline, fntArial, fntMonospaced)');

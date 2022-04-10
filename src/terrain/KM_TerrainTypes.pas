@@ -1,6 +1,5 @@
 unit KM_TerrainTypes;
 {$I KaM_Remake.inc}
-
 interface
 uses
   KM_Defaults,
@@ -8,6 +7,7 @@ uses
   KM_CommonClasses;
 
 type
+  //* Tile overlay type
   TKMTileOverlay = (toNone, toDig1, toDig2, toDig3, toDig4, toRoad);
 
   // Tile corners
@@ -132,7 +132,8 @@ type
 
   TKMTerrainTileArray = array of TKMTerrainTile;
 
-  TKMTerrainTileBrief = record
+  //* Brief terrain tile info
+  TKMTerrainTileBrief = packed record
     X,Y: Byte;
     Terrain: Word;
     Rotation: Byte;

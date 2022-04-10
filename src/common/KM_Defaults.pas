@@ -562,6 +562,7 @@ const
 
 { Terrain }
 type
+  //* terrain passability
   TKMTerrainPassability = (
     tpNone,
     tpWalk,        // General passability of tile for any walking units
@@ -618,6 +619,7 @@ const
 
 {Units}
 type
+  //* Unit type
   TKMUnitType = (utNone, utAny,
     utSerf,         utWoodcutter,   utMiner,         utAnimalBreeder,
     utFarmer,       utCarpenter,    utBaker,         utButcher,
@@ -633,7 +635,7 @@ type
 
     utWolf,         utFish,         utWatersnake,    utSeastar,
     utCrab,         utWaterflower,  utWaterleaf,     utDuck);
-
+  //* Unit type set
   TKMUnitTypeSet = set of TKMUnitType;
 
 const
@@ -666,9 +668,11 @@ const
 type
   TKMCheckAxis = (axX, axY);
 
-//Used for AI defence and linking troops
+// Used for AI defence and linking troops
 type
+  //* Group type
   TKMGroupType = (gtNone, gtAny, gtMelee, gtAntiHorse, gtRanged, gtMounted);
+  //* Group type set
   TKMGroupTypeSet = set of TKMGroupType;
 
 const
@@ -681,6 +685,7 @@ const
 
 type
   TKMGroupTypeArray = array [GROUP_TYPE_MIN..GROUP_TYPE_MAX] of Word;
+  //* AI army type
   TKMArmyType = (atIronThenLeather, atLeather, atIron, atIronAndLeather);
 
 const
@@ -793,6 +798,7 @@ const
 
 {Terrain}
 type
+  //* Field type
   TKMFieldType = (
     ftNone,
     ftRoad,
