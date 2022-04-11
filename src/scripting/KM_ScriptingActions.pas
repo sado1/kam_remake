@@ -167,8 +167,8 @@ type
 
     procedure OverlayTextSet(aHand: Shortint; const aText: AnsiString);
     procedure OverlayTextSetFormatted(aHand: Shortint; const aText: AnsiString; aParams: array of const);
-    procedure OverlayTextSetFont(aHand: TKMHandID; aFont: TKMFont);
-    procedure OverlayTextSetWordWrap(aHand: TKMHandID; aWordWrap: Boolean);
+    procedure OverlayTextSetFont(aHand: Shortint; aFont: TKMFont);
+    procedure OverlayTextSetWordWrap(aHand: Shortint; aWordWrap: Boolean);
     procedure OverlayTextAppend(aHand: Shortint; const aText: AnsiString);
     procedure OverlayTextAppendFormatted(aHand: Shortint; const aText: AnsiString; aParams: array of const);
 
@@ -4193,7 +4193,7 @@ end;
 //* Sets text overlay font
 //* Possible values are: fntAntiqua, fntGame, fntGrey, fntMetal, fntMini, fntOutline, fntArial, fntMonospaced
 //* If the player index is -1 it will be set for all players.
-procedure TKMScriptActions.OverlayTextSetFont(aHand: TKMHandID; aFont: TKMFont);
+procedure TKMScriptActions.OverlayTextSetFont(aHand: Shortint; aFont: TKMFont);
 begin
   try
     if InRange(aHand, -1, gHands.Count - 1) then //-1 means all players
@@ -4212,7 +4212,7 @@ end;
 //* Version: 14000
 //* Sets or unsets text overlay word wrap
 //* If the player index is -1 it will be set for all players.
-procedure TKMScriptActions.OverlayTextSetWordWrap(aHand: TKMHandID; aWordWrap: Boolean);
+procedure TKMScriptActions.OverlayTextSetWordWrap(aHand: Shortint; aWordWrap: Boolean);
 begin
   try
     if InRange(aHand, -1, gHands.Count - 1) then //-1 means all players
