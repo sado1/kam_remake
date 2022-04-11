@@ -699,106 +699,98 @@ begin
     //*States-Check*//
 
     c := Sender.AddClassN(nil, AnsiString(fActions.ClassName));
+    //*Actions-Check*//
     RegisterMethodCheck(c, 'procedure AIArmyType(aHand: Byte; aType: TKMArmyType)');
-    RegisterMethodCheck(c, 'function AIAttackAdd(aHand: Integer; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer;' +
-                           'aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount: Integer; ' +
-                           'aRandomGroups: Boolean; aTarget: TKMAIAttackTarget; aCustomPosition: TKMPoint): Integer');
-    RegisterMethodCheck(c, 'function AIAttackAddEx(aHand: Integer; var aAttackInfo: TKMAIAttackInfo): Integer');
-    RegisterMethodCheck(c, 'function AIAttackRemove(aHand, aAIAttackUID: Integer): Boolean');
+    RegisterMethodCheck(c, 'function  AIAttackAdd(aHand: Integer; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer; aMeleeGroupCount: Integer; aAntiHorseGroupCount: Integer; aRangedGroupCount: Integer; aMountedGroupCount: Integer; aRandomGroups: Boolean; aTarget: TKMAIAttackTarget; aCustomPosition: TKMPoint): Integer');
+    RegisterMethodCheck(c, 'function  AIAttackAddEx(aHand: Integer; var aAttackInfo: TKMAIAttackInfo): Integer');
+    RegisterMethodCheck(c, 'function  AIAttackRemove(aHand: Integer; aAIAttackUID: Integer): Boolean');
     RegisterMethodCheck(c, 'procedure AIAttackRemoveAll(aHand: Integer)');
     RegisterMethodCheck(c, 'procedure AIAutoAttack(aHand: Byte; aAutoAttack: Boolean)');
     RegisterMethodCheck(c, 'procedure AIAutoAttackRange(aHand: Byte; aRange: Integer)');
     RegisterMethodCheck(c, 'procedure AIAutoBuild(aHand: Byte; aAuto: Boolean)');
     RegisterMethodCheck(c, 'procedure AIAutoDefence(aHand: Byte; aAuto: Boolean)');
     RegisterMethodCheck(c, 'procedure AIAutoRepair(aHand: Byte; aAuto: Boolean)');
-    RegisterMethodCheck(c, 'function AIDefencePositionAdd(aHand: Byte; X, Y: Integer; aDir, aGroupType: Byte; aRadius: Integer; aDefType: Byte): Integer');
-    RegisterMethodCheck(c, 'function AIDefencePositionAddEx(aHand, aOrder: Integer; var aDefencePosition: TKMDefencePositionInfo): Integer');
+    RegisterMethodCheck(c, 'function  AIDefencePositionAdd(aHand: Byte; X, Y: Integer; aDir: Byte; aGroupType: Byte; aRadius: Integer; aDefType: Byte): Integer');
+    RegisterMethodCheck(c, 'function  AIDefencePositionAddEx(aHand: Integer; aOrder: Integer; var aDefencePosition: TKMDefencePositionInfo): Integer');
     RegisterMethodCheck(c, 'procedure AIDefencePositionRemove(aHand: Byte; X, Y: Integer)');
     RegisterMethodCheck(c, 'procedure AIDefencePositionRemoveAll(aHand: Byte)');
-    RegisterMethodCheck(c, 'procedure AIDefencePositionRemoveByUID(aHand, aUID: Integer)');
+    RegisterMethodCheck(c, 'procedure AIDefencePositionRemoveByUID(aHand: Integer; aUID: Integer)');
     RegisterMethodCheck(c, 'procedure AIDefendAllies(aHand: Byte; aDefend: Boolean)');
     RegisterMethodCheck(c, 'procedure AIEquipRate(aHand: Byte; aType: Byte; aRate: Integer)');
-    RegisterMethodCheck(c, 'procedure AIGroupsFormationSet(aHand, aType: Byte; aCount, aColumns: Integer)');
-    RegisterMethodCheck(c, 'procedure AIGroupsFormationSetEx(aHand: Integer; aGroupType: TKMGroupType; aCount, aColumns: Integer)');
-    RegisterMethodCheck(c, 'procedure AIRecruitDelay(aHand, aDelay: Cardinal)');
-    RegisterMethodCheck(c, 'procedure AIRecruitLimit(aHand, aLimit: Byte)');
+    RegisterMethodCheck(c, 'procedure AIGroupsFormationSet(aHand: Byte; aType: Byte; aCount: Integer; aColumns: Integer)');
+    RegisterMethodCheck(c, 'procedure AIGroupsFormationSetEx(aHand: Integer; aGroupType: TKMGroupType; aCount: Integer; aColumns: Integer)');
+    RegisterMethodCheck(c, 'procedure AIRecruitDelay(aHand: Byte; aDelay: Cardinal)');
+    RegisterMethodCheck(c, 'procedure AIRecruitLimit(aHand: Byte; aLimit: Byte)');
     RegisterMethodCheck(c, 'procedure AIRepairMode(aHand: Integer; aRepairMode: TKMAIRepairMode)');
     RegisterMethodCheck(c, 'procedure AISerfsPerHouse(aHand: Byte; aSerfs: Single)');
     RegisterMethodCheck(c, 'procedure AISoldiersLimit(aHand: Byte; aLimit: Integer)');
     RegisterMethodCheck(c, 'procedure AIStartPosition(aHand: Byte; X, Y: Integer)');
-    RegisterMethodCheck(c, 'procedure AIWorkerLimit(aHand, aLimit: Byte)');
-
+    RegisterMethodCheck(c, 'procedure AIWorkerLimit(aHand: Byte; aLimit: Byte)');
     RegisterMethodCheck(c, 'procedure CinematicEnd(aHand: Byte)');
-    RegisterMethodCheck(c, 'procedure CinematicPanTo(aHand: Byte; X, Y, Duration: Integer)');
+    RegisterMethodCheck(c, 'procedure CinematicPanTo(aHand: Byte; X, Y: Integer; Duration: Integer)');
     RegisterMethodCheck(c, 'procedure CinematicStart(aHand: Byte)');
-
     RegisterMethodCheck(c, 'procedure FogCoverAll(aHand: Byte)');
-    RegisterMethodCheck(c, 'procedure FogCoverCircle(aHand, X, Y, aRadius: Integer)');
-    RegisterMethodCheck(c, 'procedure FogCoverRect(aHand, X1, Y1, X2, Y2: Integer)');
+    RegisterMethodCheck(c, 'procedure FogCoverCircle(aHand: Integer; X, Y: Integer; aRadius: Integer)');
+    RegisterMethodCheck(c, 'procedure FogCoverRect(aHand: Integer; X1: Integer; Y1: Integer; X2: Integer; Y2: Integer)');
     RegisterMethodCheck(c, 'procedure FogRevealAll(aHand: Byte)');
-    RegisterMethodCheck(c, 'procedure FogRevealCircle(aHand, X, Y, aRadius: Integer)');
-    RegisterMethodCheck(c, 'procedure FogRevealRect(aHand, X1, Y1, X2, Y2: Integer)');
-
+    RegisterMethodCheck(c, 'procedure FogRevealCircle(aHand: Integer; X, Y: Integer; aRadius: Integer)');
+    RegisterMethodCheck(c, 'procedure FogRevealRect(aHand: Integer; X1: Integer; Y1: Integer; X2: Integer; Y2: Integer)');
     RegisterMethodCheck(c, 'procedure GameSpeed(aSpeed: Single)');
     RegisterMethodCheck(c, 'procedure GameSpeedChangeAllowed(aAllowed: Boolean)');
-
-    RegisterMethodCheck(c, 'function  GiveAnimal(aType, X,Y: Integer): Integer');
-    RegisterMethodCheck(c, 'function  GiveAnimalEx(aType: TKMUnitType; X,Y: Integer): Integer');
-    RegisterMethodCheck(c, 'function  GiveField(aHand, X, Y: Integer): Boolean');
-    RegisterMethodCheck(c, 'function  GiveFieldAged(aHand, X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean');
-    RegisterMethodCheck(c, 'function  GiveGroup(aHand, aType, X, Y, aDir, aCount, aColumns: Integer): Integer');
-    RegisterMethodCheck(c, 'function  GiveGroupEx(aHand: Integer; aType: TKMUnitType; X,Y: Integer; aDir: TKMDirection; aCount, aColumns: Integer): Integer');
-    RegisterMethodCheck(c, 'function  GiveHouse(aHand, aHouseType, X,Y: Integer): Integer');
-    RegisterMethodCheck(c, 'function  GiveHouseEx(aHand: Integer; aHouseType: TKMHouseType; X,Y: Integer): Integer');
-    RegisterMethodCheck(c, 'function  GiveHouseSite(aHand, aHouseType, X, Y: Integer; aAddMaterials: Boolean): Integer');
-    RegisterMethodCheck(c, 'function  GiveHouseSiteEx(aHand: Integer; aHouseType: TKMHouseType; X, Y, aWoodAmount, aStoneAmount: Integer): Integer');
-    RegisterMethodCheck(c, 'function  GiveRoad(aHand, X, Y: Integer): Boolean');
-    RegisterMethodCheck(c, 'function  GiveUnit(aHand, aType, X,Y, aDir: Integer): Integer');
-    RegisterMethodCheck(c, 'function  GiveUnitEx(aHand: Integer; aType: TKMUnitType; X,Y: Integer; aDir: TKMDirection): Integer');
-    RegisterMethodCheck(c, 'procedure GiveWares(aHand, aType, aCount: Integer)');
+    RegisterMethodCheck(c, 'function  GiveAnimal(aType: Integer; X, Y: Integer): Integer');
+    RegisterMethodCheck(c, 'function  GiveAnimalEx(aType: TKMUnitType; X, Y: Integer): Integer');
+    RegisterMethodCheck(c, 'function  GiveField(aHand: Integer; X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function  GiveFieldAged(aHand: Integer; X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean');
+    RegisterMethodCheck(c, 'function  GiveGroup(aHand: Integer; aType: Integer; X, Y: Integer; aDir: Integer; aCount: Integer; aColumns: Integer): Integer');
+    RegisterMethodCheck(c, 'function  GiveGroupEx(aHand: Integer; aType: TKMUnitType; X, Y: Integer; aDir: TKMDirection; aCount: Integer; aColumns: Integer): Integer');
+    RegisterMethodCheck(c, 'function  GiveHouse(aHand: Integer; aHouseType: Integer; X, Y: Integer): Integer');
+    RegisterMethodCheck(c, 'function  GiveHouseEx(aHand: Integer; aHouseType: TKMHouseType; X, Y: Integer): Integer');
+    RegisterMethodCheck(c, 'function  GiveHouseSite(aHand: Integer; aHouseType: Integer; X, Y: Integer; aAddMaterials: Boolean): Integer');
+    RegisterMethodCheck(c, 'function  GiveHouseSiteEx(aHand: Integer; aHouseType: TKMHouseType; X, Y: Integer; aWoodAmount: Integer; aStoneAmount: Integer): Integer');
+    RegisterMethodCheck(c, 'function  GiveRoad(aHand: Integer; X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function  GiveUnit(aHand: Integer; aType: Integer; X, Y: Integer; aDir: Integer): Integer');
+    RegisterMethodCheck(c, 'function  GiveUnitEx(aHand: Integer; aType: TKMUnitType; X, Y: Integer; aDir: TKMDirection): Integer');
+    RegisterMethodCheck(c, 'procedure GiveWares(aHand: Integer; aType: Integer; aCount: Integer)');
     RegisterMethodCheck(c, 'procedure GiveWaresEx(aHand: Integer; aType: TKMWareType; aCount: Integer)');
-    RegisterMethodCheck(c, 'procedure GiveWeapons(aHand, aType, aCount: Integer)');
+    RegisterMethodCheck(c, 'procedure GiveWeapons(aHand: Integer; aType: Integer; aCount: Integer)');
     RegisterMethodCheck(c, 'procedure GiveWeaponsEx(aHand: Integer; aType: TKMWareType; aCount: Integer)');
-    RegisterMethodCheck(c, 'function  GiveWineField(aHand, X, Y: Integer): Boolean');
-    RegisterMethodCheck(c, 'function  GiveWineFieldAged(aHand, X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean');
-
+    RegisterMethodCheck(c, 'function  GiveWineField(aHand: Integer; X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function  GiveWineFieldAged(aHand: Integer; X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean');
     RegisterMethodCheck(c, 'procedure GroupAllowAllyToSelect(aGroupID: Integer; aAllow: Boolean)');
     RegisterMethodCheck(c, 'procedure GroupBlockOrders(aGroupID: Integer; aBlock: Boolean)');
     RegisterMethodCheck(c, 'procedure GroupDisableHungryMessage(aGroupID: Integer; aDisable: Boolean)');
-    RegisterMethodCheck(c, 'procedure GroupHungerSet(aGroupID, aHungerLevel: Integer)');
+    RegisterMethodCheck(c, 'procedure GroupHungerSet(aGroupID: Integer; aHungerLevel: Integer)');
     RegisterMethodCheck(c, 'procedure GroupKillAll(aGroupID: Integer; aSilent: Boolean)');
-    RegisterMethodCheck(c, 'procedure GroupOrderAttackHouse(aGroupID, aHouseID: Integer)');
-    RegisterMethodCheck(c, 'procedure GroupOrderAttackUnit(aGroupID, aUnitID: Integer)');
+    RegisterMethodCheck(c, 'procedure GroupOrderAttackHouse(aGroupID: Integer; aHouseID: Integer)');
+    RegisterMethodCheck(c, 'procedure GroupOrderAttackUnit(aGroupID: Integer; aUnitID: Integer)');
     RegisterMethodCheck(c, 'procedure GroupOrderFood(aGroupID: Integer)');
     RegisterMethodCheck(c, 'procedure GroupOrderHalt(aGroupID: Integer)');
-    RegisterMethodCheck(c, 'procedure GroupOrderLink(aGroupID, aDestGroupID: Integer)');
+    RegisterMethodCheck(c, 'procedure GroupOrderLink(aGroupID: Integer; aDestGroupID: Integer)');
     RegisterMethodCheck(c, 'function  GroupOrderSplit(aGroupID: Integer): Integer');
-    RegisterMethodCheck(c, 'function  GroupOrderSplitUnit(aGroupID, aUnitID: Integer): Integer');
+    RegisterMethodCheck(c, 'function  GroupOrderSplitUnit(aGroupID: Integer; aUnitID: Integer): Integer');
     RegisterMethodCheck(c, 'procedure GroupOrderStorm(aGroupID: Integer)');
-    RegisterMethodCheck(c, 'procedure GroupOrderWalk(aGroupID: Integer; X, Y, aDirection: Integer)');
+    RegisterMethodCheck(c, 'procedure GroupOrderWalk(aGroupID: Integer; X, Y: Integer; aDirection: Integer)');
     RegisterMethodCheck(c, 'procedure GroupOrderWalkEx(aGroupID: Integer; X, Y: Integer; aDirection: TKMDirection)');
     RegisterMethodCheck(c, 'procedure GroupSetFormation(aGroupID: Integer; aNumColumns: Byte)');
-
     RegisterMethodCheck(c, 'procedure HandHouseLock(aHand: Integer; aHouseType: TKMHouseType; aLock: TKMHandHouseLock)');
     RegisterMethodCheck(c, 'procedure HandTradeAllowed(aHand: Integer; aWareType: TKMWareType; aAllowed: Boolean)');
     RegisterMethodCheck(c, 'procedure HandUnitCanTrain(aHand: Integer; aUnitType: TKMUnitType; aCanTrain: Boolean)');
     RegisterMethodCheck(c, 'procedure HandWareDistribution(aHand: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType; aAmount: Integer)');
-
     RegisterMethodCheck(c, 'procedure HouseAddBuildingMaterials(aHouseID: Integer)');
-    RegisterMethodCheck(c, 'procedure HouseAddBuildingMaterialsEx(aHouseID, aWoodAmount, aStoneAmount: Integer)');
+    RegisterMethodCheck(c, 'procedure HouseAddBuildingMaterialsEx(aHouseID: Integer; aWoodAmount: Integer; aStoneAmount: Integer)');
     RegisterMethodCheck(c, 'procedure HouseAddBuildingProgress(aHouseID: Integer)');
-    RegisterMethodCheck(c, 'procedure HouseAddBuildingProgressEx(aHouseID, aBuildSteps: Integer)');
+    RegisterMethodCheck(c, 'procedure HouseAddBuildingProgressEx(aHouseID: Integer; aBuildSteps: Integer)');
     RegisterMethodCheck(c, 'procedure HouseAddDamage(aHouseID: Integer; aDamage: Integer)');
     RegisterMethodCheck(c, 'procedure HouseAddRepair(aHouseID: Integer; aRepair: Integer)');
-    RegisterMethodCheck(c, 'procedure HouseAddWaresTo(aHouseID: Integer; aType, aCount: Integer)');
+    RegisterMethodCheck(c, 'procedure HouseAddWaresTo(aHouseID: Integer; aType: Integer; aCount: Integer)');
     RegisterMethodCheck(c, 'procedure HouseAddWaresToEx(aHouseID: Integer; aType: TKMWareType; aCount: Integer)');
-    RegisterMethodCheck(c, 'procedure HouseAllow(aHand, aHouseType: Integer; aAllowed: Boolean)');
+    RegisterMethodCheck(c, 'procedure HouseAllow(aHand: Integer; aHouseType: Integer; aAllowed: Boolean)');
     RegisterMethodCheck(c, 'procedure HouseAllowAllyToSelect(aHouseID: Integer; aAllow: Boolean)');
-    RegisterMethodCheck(c, 'procedure HouseAllowAllyToSelectAll(aHand: Byte; aAllow: Boolean)');
+    RegisterMethodCheck(c, 'procedure HouseAllowAllyToSelectAll(aHand: Shortint; aAllow: Boolean)');
     RegisterMethodCheck(c, 'function  HouseBarracksEquip(aHouseID: Integer; aUnitType: Integer; aCount: Integer): Integer');
     RegisterMethodCheck(c, 'function  HouseBarracksEquipEx(aHouseID: Integer; aUnitType: TKMUnitType; aCount: Integer): Integer');
     RegisterMethodCheck(c, 'procedure HouseBarracksGiveRecruit(aHouseID: Integer)');
-    RegisterMethodCheck(c, 'procedure HouseBarracksGiveRecruits(aHouseID, aCount: Integer)');
+    RegisterMethodCheck(c, 'procedure HouseBarracksGiveRecruits(aHouseID: Integer; aCount: Integer)');
     RegisterMethodCheck(c, 'procedure HouseBarracksRecruitBlock(aHouseID: Integer; aBlocked: Boolean)');
     RegisterMethodCheck(c, 'procedure HouseDeliveryBlock(aHouseID: Integer; aDeliveryBlocked: Boolean)');
     RegisterMethodCheck(c, 'procedure HouseDeliveryMode(aHouseID: Integer; aDeliveryMode: TKMDeliveryMode)');
@@ -807,111 +799,94 @@ begin
     RegisterMethodCheck(c, 'procedure HouseRepairEnable(aHouseID: Integer; aRepairEnabled: Boolean)');
     RegisterMethodCheck(c, 'function  HouseSchoolQueueAdd(aHouseID: Integer; aUnitType: Integer; aCount: Integer): Integer');
     RegisterMethodCheck(c, 'function  HouseSchoolQueueAddEx(aHouseID: Integer; aUnitType: TKMUnitType; aCount: Integer): Integer');
-    RegisterMethodCheck(c, 'procedure HouseSchoolQueueRemove(aHouseID, QueueIndex: Integer)');
-    RegisterMethodCheck(c, 'procedure HouseTakeWaresFrom(aHouseID: Integer; aType, aCount: Integer)');
+    RegisterMethodCheck(c, 'procedure HouseSchoolQueueRemove(aHouseID: Integer; QueueIndex: Integer)');
+    RegisterMethodCheck(c, 'procedure HouseTakeWaresFrom(aHouseID: Integer; aType: Integer; aCount: Integer)');
     RegisterMethodCheck(c, 'procedure HouseTakeWaresFromEx(aHouseID: Integer; aType: TKMWareType; aCount: Integer)');
     RegisterMethodCheck(c, 'function  HouseTownHallEquip(aHouseID: Integer; aUnitType: Integer; aCount: Integer): Integer');
     RegisterMethodCheck(c, 'function  HouseTownHallEquipEx(aHouseID: Integer; aUnitType: TKMUnitType; aCount: Integer): Integer');
     RegisterMethodCheck(c, 'procedure HouseTownHallMaxGold(aHouseID: Integer; aMaxGold: Integer)');
-    RegisterMethodCheck(c, 'procedure HouseUnlock(aHand, aHouseType: Integer)');
-    RegisterMethodCheck(c, 'procedure HouseWoodcutterChopOnly(aHouseID: Integer; aChopOnly: Boolean)');
-    RegisterMethodCheck(c, 'procedure HouseWoodcutterMode(aHouseID: Integer; aWoodcutterMode: TKMWoodcutterMode)');
-    RegisterMethodCheck(c, 'procedure HouseWareBlock(aHouseID, aWareType: Integer; aBlocked: Boolean)');
+    RegisterMethodCheck(c, 'procedure HouseUnlock(aHand: Integer; aHouseType: Integer)');
+    RegisterMethodCheck(c, 'procedure HouseWareBlock(aHouseID: Integer; aWareType: Integer; aBlocked: Boolean)');
     RegisterMethodCheck(c, 'procedure HouseWareBlockEx(aHouseID: Integer; aWareType: TKMWareType; aBlocked: Boolean)');
     RegisterMethodCheck(c, 'procedure HouseWareBlockTakeOut(aHouseID: Integer; aWareType: TKMWareType; aBlocked: Boolean)');
-    RegisterMethodCheck(c, 'procedure HouseWeaponsOrderSet(aHouseID, aWareType, aAmount: Integer)');
+    RegisterMethodCheck(c, 'procedure HouseWeaponsOrderSet(aHouseID: Integer; aWareType: Integer; aAmount: Integer)');
     RegisterMethodCheck(c, 'procedure HouseWeaponsOrderSetEx(aHouseID: Integer; aWareType: TKMWareType; aAmount: Integer)');
-
-    RegisterMethodCheck(c, 'procedure Log(const aText: AnsiString)');
+    RegisterMethodCheck(c, 'procedure HouseWoodcutterChopOnly(aHouseID: Integer; aChopOnly: Boolean)');
+    RegisterMethodCheck(c, 'procedure HouseWoodcutterMode(aHouseID: Integer; aWoodcutterMode: TKMWoodcutterMode)');
+    RegisterMethodCheck(c, 'procedure Log(aText: AnsiString)');
     RegisterMethodCheck(c, 'procedure LogLinesMaxCnt(aMaxLogLinesCnt: Integer)');
-
-    RegisterMethodCheck(c, 'procedure MarketSetTrade(aMarketID, aFrom, aTo, aAmount: Integer)');
-    RegisterMethodCheck(c, 'procedure MarketSetTradeEx(aMarketID: Integer; aFrom, aTo: TKMWareType; aAmount: Integer)');
-
-    RegisterMethodCheck(c, 'function MapTileHeightSet(X, Y, Height: Integer): Boolean');
-    RegisterMethodCheck(c, 'function MapTileObjectSet(X, Y, Obj: Integer): Boolean');
-    RegisterMethodCheck(c, 'function MapTileOverlaySet(X, Y: Integer; aOverlay: TKMTileOverlay; aOverwrite: Boolean): Boolean');
-    RegisterMethodCheck(c, 'function MapTileSet(X, Y, aType, aRotation: Integer): Boolean');
-    RegisterMethodCheck(c, 'function MapTilesArraySet(aTiles: array of TKMTerrainTileBrief; aRevertOnFail, aShowDetailedErrors: Boolean): Boolean');
-    RegisterMethodCheck(c, 'function MapTilesArraySetS(aTiles: TAnsiStringArray; aRevertOnFail, aShowDetailedErrors: Boolean): Boolean');
-
-    RegisterMethodCheck(c, 'procedure MapBrush(X, Y: Integer; aSquare: Boolean; aSize: Integer; aTerKind: TKMTerrainKind; aRandomTiles, aOverrideCustomTiles: Boolean)');
-    RegisterMethodCheck(c, 'procedure MapBrushElevation(X, Y: Integer; aSquare, aRaise: Boolean; aSize, aSlope, aSpeed: Integer)');
-    RegisterMethodCheck(c, 'procedure MapBrushEqualize(X, Y: Integer; aSquare: Boolean; aSize, aSlope, aSpeed: Integer)');
-    RegisterMethodCheck(c, 'procedure MapBrushFlatten(X, Y: Integer; aSquare: Boolean; aSize, aSlope, aSpeed: Integer)');
-    RegisterMethodCheck(c, 'procedure MapBrushMagicWater(X, Y: Integer)');
-    RegisterMethodCheck(c, 'procedure MapBrushWithMask(X, Y: Integer; aSquare: Boolean; aSize: Integer; aTerKind: TKMTerrainKind;'
-                                      + 'aRandomTiles, aOverrideCustomTiles: Boolean;'
-                                      + 'aBrushMask: TKMTileMaskKind; aBlendingLvl: Integer; aUseMagicBrush: Boolean)');
-
-    RegisterMethodCheck(c, 'procedure OverlayTextAppend(aHand: Shortint; const aText: AnsiString)');
-    RegisterMethodCheck(c, 'procedure OverlayTextAppendFormatted(aHand: Shortint; const aText: AnsiString; Params: array of const)');
-    RegisterMethodCheck(c, 'procedure OverlayTextSet(aHand: Shortint; const aText: AnsiString)');
-    RegisterMethodCheck(c, 'procedure OverlayTextSetFormatted(aHand: Shortint; const aText: AnsiString; Params: array of const)');
+    RegisterMethodCheck(c, 'procedure MapBrush(X: Integer; Y: Integer; aSquare: Boolean; aSize: Integer; aTerKind: TKMTerrainKind; aRandomTiles: Boolean; aOverrideCustomTiles: Boolean)');
+    RegisterMethodCheck(c, 'procedure MapBrushElevation(X: Integer; Y: Integer; aSquare: Boolean; aRaise: Boolean; aSize: Integer; aSlope: Integer; aSpeed: Integer)');
+    RegisterMethodCheck(c, 'procedure MapBrushEqualize(X: Integer; Y: Integer; aSquare: Boolean; aSize: Integer; aSlope: Integer; aSpeed: Integer)');
+    RegisterMethodCheck(c, 'procedure MapBrushFlatten(X: Integer; Y: Integer; aSquare: Boolean; aSize: Integer; aSlope: Integer; aSpeed: Integer)');
+    RegisterMethodCheck(c, 'procedure MapBrushMagicWater(X: Integer; Y: Integer)');
+    RegisterMethodCheck(c, 'procedure MapBrushWithMask(X: Integer; Y: Integer; aSquare: Boolean; aSize: Integer; aTerKind: TKMTerrainKind; aRandomTiles: Boolean; aOverrideCustomTiles: Boolean; aBrushMask: TKMTileMaskKind; aBlendingLvl: Integer; aUseMagicBrush: Boolean)');
+    RegisterMethodCheck(c, 'function  MapTileHeightSet(X, Y: Integer; Height: Integer): Boolean');
+    RegisterMethodCheck(c, 'function  MapTileObjectSet(X, Y: Integer; Obj: Integer): Boolean');
+    RegisterMethodCheck(c, 'function  MapTileOverlaySet(X, Y: Integer; aOverlay: TKMTileOverlay; aOverwrite: Boolean): Boolean');
+    RegisterMethodCheck(c, 'function  MapTilesArraySet(aTiles: array of TKMTerrainTileBrief; aRevertOnFail: Boolean; aShowDetailedErrors: Boolean): Boolean');
+    RegisterMethodCheck(c, 'function  MapTilesArraySetS(aTilesS: TAnsiStringArray; aRevertOnFail: Boolean; aShowDetailedErrors: Boolean): Boolean');
+    RegisterMethodCheck(c, 'function  MapTileSet(X, Y: Integer; aType: Integer; aRotation: Integer): Boolean');
+    RegisterMethodCheck(c, 'procedure MarketSetTrade(aMarketID: Integer; aFrom: Integer; aTo: Integer; aAmount: Integer)');
+    RegisterMethodCheck(c, 'procedure MarketSetTradeEx(aMarketID: Integer; aFrom: TKMWareType; aTo: TKMWareType; aAmount: Integer)');
+    RegisterMethodCheck(c, 'procedure OverlayTextAppend(aHand: Shortint; aText: AnsiString)');
+    RegisterMethodCheck(c, 'procedure OverlayTextAppendFormatted(aHand: Shortint; aText: AnsiString; aParams: array of const)');
+    RegisterMethodCheck(c, 'procedure OverlayTextSet(aHand: Shortint; aText: AnsiString)');
     RegisterMethodCheck(c, 'procedure OverlayTextSetFont(aHand: Shortint; aFont: TKMFont)');
+    RegisterMethodCheck(c, 'procedure OverlayTextSetFormatted(aHand: Shortint; aText: AnsiString; aParams: array of const)');
     RegisterMethodCheck(c, 'procedure OverlayTextSetWordWrap(aHand: Shortint; aWordWrap: Boolean)');
-
     RegisterMethodCheck(c, 'procedure Peacetime(aPeacetime: Cardinal)');
-
-    RegisterMethodCheck(c, 'function  PlanAddField(aHand, X, Y: Integer): Boolean');
-    RegisterMethodCheck(c, 'function  PlanAddHouse(aHand, aHouseType, X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function  PlanAddField(aHand: Integer; X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function  PlanAddHouse(aHand: Integer; aHouseType: Integer; X, Y: Integer): Boolean');
     RegisterMethodCheck(c, 'function  PlanAddHouseEx(aHand: Integer; aHouseType: TKMHouseType; X, Y: Integer): Boolean');
-    RegisterMethodCheck(c, 'function  PlanAddRoad(aHand, X, Y: Integer): Boolean');
-    RegisterMethodCheck(c, 'function  PlanAddWinefield(aHand, X, Y: Integer): Boolean');
-    RegisterMethodCheck(c, 'function  PlanConnectRoad(aHand, X1, Y1, X2, Y2: Integer; aCompleted: Boolean): Boolean');
-    RegisterMethodCheck(c, 'function  PlanRemove(aHand, X, Y: Integer): Boolean');
-
+    RegisterMethodCheck(c, 'function  PlanAddRoad(aHand: Integer; X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function  PlanAddWinefield(aHand: Integer; X, Y: Integer): Boolean');
+    RegisterMethodCheck(c, 'function  PlanConnectRoad(aHand: Integer; X1: Integer; Y1: Integer; X2: Integer; Y2: Integer; aCompleted: Boolean): Boolean');
+    RegisterMethodCheck(c, 'function  PlanRemove(aHand: Integer; X, Y: Integer): Boolean');
     RegisterMethodCheck(c, 'procedure PlayerAddDefaultGoals(aHand: Byte; aBuildings: Boolean)');
-    RegisterMethodCheck(c, 'procedure PlayerAllianceChange(aHand1, aHand2: Byte; aCompliment, aAllied: Boolean)');
-    RegisterMethodCheck(c, 'procedure PlayerAllianceNFogChange(aHand1, aHand2: Byte; aCompliment, aAllied, aSyncAllyFog: Boolean)');
+    RegisterMethodCheck(c, 'procedure PlayerAllianceChange(aHand1: Byte; aHand2: Byte; aCompliment: Boolean; aAllied: Boolean)');
+    RegisterMethodCheck(c, 'procedure PlayerAllianceNFogChange(aHand1: Byte; aHand2: Byte; aCompliment: Boolean; aAllied: Boolean; aSyncAllyFog: Boolean)');
     RegisterMethodCheck(c, 'procedure PlayerDefeat(aHand: Integer)');
     RegisterMethodCheck(c, 'procedure PlayerGoalsRemoveAll(aHand: Integer; aForAllPlayers: Boolean)');
-    RegisterMethodCheck(c, 'procedure PlayerShareBeacons(aHand1, aHand2: Integer; aCompliment, aShare: Boolean)');
-    RegisterMethodCheck(c, 'procedure PlayerShareFog(aHand1, aHand2: Integer; aShare: Boolean)');
-    RegisterMethodCheck(c, 'procedure PlayerShareFogCompliment(aHand1, aHand2: Integer; aShare: Boolean)');
-    RegisterMethodCheck(c, 'procedure PlayerWareDistribution(aHand, aWareType, aHouseType, aAmount: Byte)');
-    RegisterMethodCheck(c, 'procedure PlayerWin(const aVictors: array of Integer; aTeamVictory: Boolean)');
-
-    RegisterMethodCheck(c, 'function PlayWAV(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer');
-    RegisterMethodCheck(c, 'function PlayWAVAtLocation(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer');
-    RegisterMethodCheck(c, 'function PlayWAVAtLocationLooped(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer');
-    RegisterMethodCheck(c, 'function PlayWAVFadeMusic(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer');
-    RegisterMethodCheck(c, 'function PlayWAVLooped(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer');
-    RegisterMethodCheck(c, 'procedure StopLoopedWAV(aLoopIndex: Integer)');
-
-    RegisterMethodCheck(c, 'function PlayOGG(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer');
-    RegisterMethodCheck(c, 'function PlayOGGAtLocation(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer');
-    RegisterMethodCheck(c, 'function PlayOGGAtLocationLooped(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer');
-    RegisterMethodCheck(c, 'function PlayOGGFadeMusic(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer');
-    RegisterMethodCheck(c, 'function PlayOGGLooped(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer');
-    RegisterMethodCheck(c, 'procedure StopLoopedOGG(aLoopIndex: Integer)');
-    RegisterMethodCheck(c, 'function PlaySound(aHand: ShortInt; const aFileName: AnsiString; aAudioFormat: TKMAudioFormat; ' +
-                            'aVolume: Single; aFadeMusic, aLooped: Boolean): Integer');
-    RegisterMethodCheck(c, 'function PlaySoundAtLocation(aHand: ShortInt; const aFileName: AnsiString; aAudioFormat: TKMAudioFormat; ' +
-                            'aVolume: Single; aFadeMusic, aLooped: Boolean; aRadius: Single; aX, aY: Integer): Integer');
-    RegisterMethodCheck(c, 'procedure StopSound(aSoundIndex: Integer)');
-
+    RegisterMethodCheck(c, 'procedure PlayerShareBeacons(aHand1: Integer; aHand2: Integer; aBothWays: Boolean; aShare: Boolean)');
+    RegisterMethodCheck(c, 'procedure PlayerShareFog(aHand1: Integer; aHand2: Integer; aShare: Boolean)');
+    RegisterMethodCheck(c, 'procedure PlayerShareFogCompliment(aHand1: Integer; aHand2: Integer; aShare: Boolean)');
+    RegisterMethodCheck(c, 'procedure PlayerWareDistribution(aHand: Byte; aWareType: Byte; aHouseType: Byte; aAmount: Byte)');
+    RegisterMethodCheck(c, 'procedure PlayerWin(aVictors: array of Integer; aTeamVictory: Boolean)');
+    RegisterMethodCheck(c, 'function  PlayOGG(aHand: Shortint; aFileName: AnsiString; aVolume: Single): Integer');
+    RegisterMethodCheck(c, 'function  PlayOGGAtLocation(aHand: Shortint; aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer');
+    RegisterMethodCheck(c, 'function  PlayOGGAtLocationLooped(aHand: Shortint; aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer');
+    RegisterMethodCheck(c, 'function  PlayOGGFadeMusic(aHand: Shortint; aFileName: AnsiString; aVolume: Single): Integer');
+    RegisterMethodCheck(c, 'function  PlayOGGLooped(aHand: Shortint; aFileName: AnsiString; aVolume: Single): Integer');
+    RegisterMethodCheck(c, 'function  PlaySound(aHand: Shortint; aFileName: AnsiString; aAudioFormat: TKMAudioFormat; aVolume: Single; aFadeMusic: Boolean; aLooped: Boolean): Integer');
+    RegisterMethodCheck(c, 'function  PlaySoundAtLocation(aHand: Shortint; aFileName: AnsiString; aAudioFormat: TKMAudioFormat; aVolume: Single; aFadeMusic: Boolean; aLooped: Boolean; aRadius: Single; aX, aY: Integer): Integer');
+    RegisterMethodCheck(c, 'function  PlayWAV(aHand: Shortint; aFileName: AnsiString; aVolume: Single): Integer');
+    RegisterMethodCheck(c, 'function  PlayWAVAtLocation(aHand: Shortint; aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer');
+    RegisterMethodCheck(c, 'function  PlayWAVAtLocationLooped(aHand: Shortint; aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer');
+    RegisterMethodCheck(c, 'function  PlayWAVFadeMusic(aHand: Shortint; aFileName: AnsiString; aVolume: Single): Integer');
+    RegisterMethodCheck(c, 'function  PlayWAVLooped(aHand: Shortint; aFileName: AnsiString; aVolume: Single): Integer');
     RegisterMethodCheck(c, 'procedure RemoveRoad(X, Y: Integer)');
-
-    RegisterMethodCheck(c, 'procedure SetTradeAllowed(aHand, aResType: Integer; aAllowed: Boolean)');
-
-    RegisterMethodCheck(c, 'procedure ShowMsg(aHand: ShortInt; const aText: AnsiString)');
-    RegisterMethodCheck(c, 'procedure ShowMsgFormatted(aHand: Shortint; const aText: AnsiString; Params: array of const)');
-    RegisterMethodCheck(c, 'procedure ShowMsgGoto(aHand: Shortint; aX, aY: Integer; const aText: AnsiString)');
-    RegisterMethodCheck(c, 'procedure ShowMsgGotoFormatted(aHand: Shortint; aX, aY: Integer; const aText: AnsiString; Params: array of const)');
-
+    RegisterMethodCheck(c, 'procedure SetTradeAllowed(aHand: Integer; aResType: Integer; aAllowed: Boolean)');
+    RegisterMethodCheck(c, 'procedure ShowMsg(aHand: Shortint; aText: AnsiString)');
+    RegisterMethodCheck(c, 'procedure ShowMsgFormatted(aHand: Shortint; aText: AnsiString; Params: array of const)');
+    RegisterMethodCheck(c, 'procedure ShowMsgGoto(aHand: Shortint; aX, aY: Integer; aText: AnsiString)');
+    RegisterMethodCheck(c, 'procedure ShowMsgGotoFormatted(aHand: Shortint; aX, aY: Integer; aText: AnsiString; Params: array of const)');
+    RegisterMethodCheck(c, 'procedure StopLoopedOGG(aSoundIndex: Integer)');
+    RegisterMethodCheck(c, 'procedure StopLoopedWAV(aSoundIndex: Integer)');
+    RegisterMethodCheck(c, 'procedure StopSound(aSoundIndex: Integer)');
     RegisterMethodCheck(c, 'procedure UnitAllowAllyToSelect(aUnitID: Integer; aAllow: Boolean)');
     RegisterMethodCheck(c, 'procedure UnitBlock(aHand: Byte; aType: Integer; aBlock: Boolean)');
-    RegisterMethodCheck(c, 'function  UnitDirectionSet(aUnitID, aDirection: Integer): Boolean');
+    RegisterMethodCheck(c, 'function  UnitDirectionSet(aUnitID: Integer; aDirection: Integer): Boolean');
     RegisterMethodCheck(c, 'function  UnitDirectionSetEx(aUnitID: Integer; aDirection: TKMDirection): Boolean');
     RegisterMethodCheck(c, 'procedure UnitDismiss(aUnitID: Integer)');
     RegisterMethodCheck(c, 'procedure UnitDismissableSet(aUnitID: Integer; aDismissable: Boolean)');
     RegisterMethodCheck(c, 'procedure UnitDismissCancel(aUnitID: Integer)');
-    RegisterMethodCheck(c, 'procedure UnitHPChange(aUnitID, aHP: Integer)');
+    RegisterMethodCheck(c, 'procedure UnitHPChange(aUnitID: Integer; aHP: Integer)');
     RegisterMethodCheck(c, 'procedure UnitHPSetInvulnerable(aUnitID: Integer; aInvulnerable: Boolean)');
-    RegisterMethodCheck(c, 'procedure UnitHungerSet(aUnitID, aHungerLevel: Integer)');
+    RegisterMethodCheck(c, 'procedure UnitHungerSet(aUnitID: Integer; aHungerLevel: Integer)');
     RegisterMethodCheck(c, 'procedure UnitKill(aUnitID: Integer; aSilent: Boolean)');
     RegisterMethodCheck(c, 'function  UnitOrderWalk(aUnitID: Integer; X, Y: Integer): Boolean');
+    //*Actions-Check*//
 
     c := Sender.AddClassN(nil, AnsiString(fUtils.ClassName));
     RegisterMethodCheck(c, 'function AbsI(aValue: Integer): Integer');
