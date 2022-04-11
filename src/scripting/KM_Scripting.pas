@@ -476,7 +476,8 @@ begin
     RegisterMethodCheck(c, 'function  AIAutoBuild(aHand: Byte): Boolean');
     RegisterMethodCheck(c, 'function  AIAutoDefence(aHand: Byte): Boolean');
     RegisterMethodCheck(c, 'function  AIAutoRepair(aHand: Byte): Boolean');
-    RegisterMethodCheck(c, 'procedure AIDefencePositionGet(aHand: Byte; aID: Byte; out aX, aY: Integer; out aGroupType: Byte; out aRadius: Integer; out aDefType: Byte)');
+    RegisterMethodCheck(c, 'procedure AIDefencePositionGet(aHand: Byte; aID: Byte; out aX, aY: Integer; out aGroupType: Byte; out aRadius: Integer; ' +
+      'out aDefType: Byte)');
     RegisterMethodCheck(c, 'function  AIDefencePositionGetByIndex(aHand: Integer; aIndex: Integer): TKMDefencePositionInfo');
     RegisterMethodCheck(c, 'function  AIDefendAllies(aHand: Byte): Boolean');
     RegisterMethodCheck(c, 'function  AIEquipRate(aHand: Byte; aType: Byte): Integer');
@@ -701,7 +702,10 @@ begin
     c := Sender.AddClassN(nil, AnsiString(fActions.ClassName));
     //*Actions-Check*//
     RegisterMethodCheck(c, 'procedure AIArmyType(aHand: Byte; aType: TKMArmyType)');
-    RegisterMethodCheck(c, 'function  AIAttackAdd(aHand: Integer; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer; aMeleeGroupCount: Integer; aAntiHorseGroupCount: Integer; aRangedGroupCount: Integer; aMountedGroupCount: Integer; aRandomGroups: Boolean; aTarget: TKMAIAttackTarget; aCustomPosition: TKMPoint): Integer');
+    RegisterMethodCheck(c, 'function  AIAttackAdd(aHand: Integer; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer; ' +
+      'aMeleeGroupCount: Integer; aAntiHorseGroupCount: Integer; aRangedGroupCount: Integer; ' +
+      'aMountedGroupCount: Integer; aRandomGroups: Boolean; aTarget: TKMAIAttackTarget; ' +
+      'aCustomPosition: TKMPoint): Integer');
     RegisterMethodCheck(c, 'function  AIAttackAddEx(aHand: Integer; var aAttackInfo: TKMAIAttackInfo): Integer');
     RegisterMethodCheck(c, 'function  AIAttackRemove(aHand: Integer; aAIAttackUID: Integer): Boolean');
     RegisterMethodCheck(c, 'procedure AIAttackRemoveAll(aHand: Integer)');
@@ -710,7 +714,8 @@ begin
     RegisterMethodCheck(c, 'procedure AIAutoBuild(aHand: Byte; aAuto: Boolean)');
     RegisterMethodCheck(c, 'procedure AIAutoDefence(aHand: Byte; aAuto: Boolean)');
     RegisterMethodCheck(c, 'procedure AIAutoRepair(aHand: Byte; aAuto: Boolean)');
-    RegisterMethodCheck(c, 'function  AIDefencePositionAdd(aHand: Byte; X, Y: Integer; aDir: Byte; aGroupType: Byte; aRadius: Integer; aDefType: Byte): Integer');
+    RegisterMethodCheck(c, 'function  AIDefencePositionAdd(aHand: Byte; X, Y: Integer; aDir: Byte; aGroupType: Byte; aRadius: Integer; ' +
+      'aDefType: Byte): Integer');
     RegisterMethodCheck(c, 'function  AIDefencePositionAddEx(aHand: Integer; aOrder: Integer; var aDefencePosition: TKMDefencePositionInfo): Integer');
     RegisterMethodCheck(c, 'procedure AIDefencePositionRemove(aHand: Byte; X, Y: Integer)');
     RegisterMethodCheck(c, 'procedure AIDefencePositionRemoveAll(aHand: Byte)');
@@ -741,12 +746,15 @@ begin
     RegisterMethodCheck(c, 'function  GiveAnimalEx(aType: TKMUnitType; X, Y: Integer): Integer');
     RegisterMethodCheck(c, 'function  GiveField(aHand: Integer; X, Y: Integer): Boolean');
     RegisterMethodCheck(c, 'function  GiveFieldAged(aHand: Integer; X, Y: Integer; aStage: Byte; aRandomAge: Boolean): Boolean');
-    RegisterMethodCheck(c, 'function  GiveGroup(aHand: Integer; aType: Integer; X, Y: Integer; aDir: Integer; aCount: Integer; aColumns: Integer): Integer');
-    RegisterMethodCheck(c, 'function  GiveGroupEx(aHand: Integer; aType: TKMUnitType; X, Y: Integer; aDir: TKMDirection; aCount: Integer; aColumns: Integer): Integer');
+    RegisterMethodCheck(c, 'function  GiveGroup(aHand: Integer; aType: Integer; X, Y: Integer; aDir: Integer; aCount: Integer; ' +
+      'aColumns: Integer): Integer');
+    RegisterMethodCheck(c, 'function  GiveGroupEx(aHand: Integer; aType: TKMUnitType; X, Y: Integer; aDir: TKMDirection; ' +
+      'aCount: Integer; aColumns: Integer): Integer');
     RegisterMethodCheck(c, 'function  GiveHouse(aHand: Integer; aHouseType: Integer; X, Y: Integer): Integer');
     RegisterMethodCheck(c, 'function  GiveHouseEx(aHand: Integer; aHouseType: TKMHouseType; X, Y: Integer): Integer');
     RegisterMethodCheck(c, 'function  GiveHouseSite(aHand: Integer; aHouseType: Integer; X, Y: Integer; aAddMaterials: Boolean): Integer');
-    RegisterMethodCheck(c, 'function  GiveHouseSiteEx(aHand: Integer; aHouseType: TKMHouseType; X, Y: Integer; aWoodAmount: Integer; aStoneAmount: Integer): Integer');
+    RegisterMethodCheck(c, 'function  GiveHouseSiteEx(aHand: Integer; aHouseType: TKMHouseType; X, Y: Integer; aWoodAmount: Integer; ' +
+      'aStoneAmount: Integer): Integer');
     RegisterMethodCheck(c, 'function  GiveRoad(aHand: Integer; X, Y: Integer): Boolean');
     RegisterMethodCheck(c, 'function  GiveUnit(aHand: Integer; aType: Integer; X, Y: Integer; aDir: Integer): Integer');
     RegisterMethodCheck(c, 'function  GiveUnitEx(aHand: Integer; aType: TKMUnitType; X, Y: Integer; aDir: TKMDirection): Integer');
@@ -815,12 +823,18 @@ begin
     RegisterMethodCheck(c, 'procedure HouseWoodcutterMode(aHouseID: Integer; aWoodcutterMode: TKMWoodcutterMode)');
     RegisterMethodCheck(c, 'procedure Log(aText: AnsiString)');
     RegisterMethodCheck(c, 'procedure LogLinesMaxCnt(aMaxLogLinesCnt: Integer)');
-    RegisterMethodCheck(c, 'procedure MapBrush(X: Integer; Y: Integer; aSquare: Boolean; aSize: Integer; aTerKind: TKMTerrainKind; aRandomTiles: Boolean; aOverrideCustomTiles: Boolean)');
-    RegisterMethodCheck(c, 'procedure MapBrushElevation(X: Integer; Y: Integer; aSquare: Boolean; aRaise: Boolean; aSize: Integer; aSlope: Integer; aSpeed: Integer)');
-    RegisterMethodCheck(c, 'procedure MapBrushEqualize(X: Integer; Y: Integer; aSquare: Boolean; aSize: Integer; aSlope: Integer; aSpeed: Integer)');
-    RegisterMethodCheck(c, 'procedure MapBrushFlatten(X: Integer; Y: Integer; aSquare: Boolean; aSize: Integer; aSlope: Integer; aSpeed: Integer)');
+    RegisterMethodCheck(c, 'procedure MapBrush(X: Integer; Y: Integer; aSquare: Boolean; aSize: Integer; aTerKind: TKMTerrainKind; ' +
+      'aRandomTiles: Boolean; aOverrideCustomTiles: Boolean)');
+    RegisterMethodCheck(c, 'procedure MapBrushElevation(X: Integer; Y: Integer; aSquare: Boolean; aRaise: Boolean; aSize: Integer; ' +
+      'aSlope: Integer; aSpeed: Integer)');
+    RegisterMethodCheck(c, 'procedure MapBrushEqualize(X: Integer; Y: Integer; aSquare: Boolean; aSize: Integer; aSlope: Integer; ' +
+      'aSpeed: Integer)');
+    RegisterMethodCheck(c, 'procedure MapBrushFlatten(X: Integer; Y: Integer; aSquare: Boolean; aSize: Integer; aSlope: Integer; ' +
+      'aSpeed: Integer)');
     RegisterMethodCheck(c, 'procedure MapBrushMagicWater(X: Integer; Y: Integer)');
-    RegisterMethodCheck(c, 'procedure MapBrushWithMask(X: Integer; Y: Integer; aSquare: Boolean; aSize: Integer; aTerKind: TKMTerrainKind; aRandomTiles: Boolean; aOverrideCustomTiles: Boolean; aBrushMask: TKMTileMaskKind; aBlendingLvl: Integer; aUseMagicBrush: Boolean)');
+    RegisterMethodCheck(c, 'procedure MapBrushWithMask(X: Integer; Y: Integer; aSquare: Boolean; aSize: Integer; aTerKind: TKMTerrainKind; ' +
+      'aRandomTiles: Boolean; aOverrideCustomTiles: Boolean; aBrushMask: TKMTileMaskKind; ' +
+      'aBlendingLvl: Integer; aUseMagicBrush: Boolean)');
     RegisterMethodCheck(c, 'function  MapTileHeightSet(X, Y: Integer; Height: Integer): Boolean');
     RegisterMethodCheck(c, 'function  MapTileObjectSet(X, Y: Integer; Obj: Integer): Boolean');
     RegisterMethodCheck(c, 'function  MapTileOverlaySet(X, Y: Integer; aOverlay: TKMTileOverlay; aOverwrite: Boolean): Boolean');
@@ -854,15 +868,22 @@ begin
     RegisterMethodCheck(c, 'procedure PlayerWareDistribution(aHand: Byte; aWareType: Byte; aHouseType: Byte; aAmount: Byte)');
     RegisterMethodCheck(c, 'procedure PlayerWin(aVictors: array of Integer; aTeamVictory: Boolean)');
     RegisterMethodCheck(c, 'function  PlayOGG(aHand: Shortint; aFileName: AnsiString; aVolume: Single): Integer');
-    RegisterMethodCheck(c, 'function  PlayOGGAtLocation(aHand: Shortint; aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer');
-    RegisterMethodCheck(c, 'function  PlayOGGAtLocationLooped(aHand: Shortint; aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer');
+    RegisterMethodCheck(c, 'function  PlayOGGAtLocation(aHand: Shortint; aFileName: AnsiString; aVolume: Single; aRadius: Single; ' +
+      'aX, aY: Integer): Integer');
+    RegisterMethodCheck(c, 'function  PlayOGGAtLocationLooped(aHand: Shortint; aFileName: AnsiString; aVolume: Single; aRadius: Single; ' +
+      'aX, aY: Integer): Integer');
     RegisterMethodCheck(c, 'function  PlayOGGFadeMusic(aHand: Shortint; aFileName: AnsiString; aVolume: Single): Integer');
     RegisterMethodCheck(c, 'function  PlayOGGLooped(aHand: Shortint; aFileName: AnsiString; aVolume: Single): Integer');
-    RegisterMethodCheck(c, 'function  PlaySound(aHand: Shortint; aFileName: AnsiString; aAudioFormat: TKMAudioFormat; aVolume: Single; aFadeMusic: Boolean; aLooped: Boolean): Integer');
-    RegisterMethodCheck(c, 'function  PlaySoundAtLocation(aHand: Shortint; aFileName: AnsiString; aAudioFormat: TKMAudioFormat; aVolume: Single; aFadeMusic: Boolean; aLooped: Boolean; aRadius: Single; aX, aY: Integer): Integer');
+    RegisterMethodCheck(c, 'function  PlaySound(aHand: Shortint; aFileName: AnsiString; aAudioFormat: TKMAudioFormat; ' +
+      'aVolume: Single; aFadeMusic: Boolean; aLooped: Boolean): Integer');
+    RegisterMethodCheck(c, 'function  PlaySoundAtLocation(aHand: Shortint; aFileName: AnsiString; aAudioFormat: TKMAudioFormat; ' +
+      'aVolume: Single; aFadeMusic: Boolean; aLooped: Boolean; aRadius: Single; ' +
+      'aX, aY: Integer): Integer');
     RegisterMethodCheck(c, 'function  PlayWAV(aHand: Shortint; aFileName: AnsiString; aVolume: Single): Integer');
-    RegisterMethodCheck(c, 'function  PlayWAVAtLocation(aHand: Shortint; aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer');
-    RegisterMethodCheck(c, 'function  PlayWAVAtLocationLooped(aHand: Shortint; aFileName: AnsiString; aVolume: Single; aRadius: Single; aX, aY: Integer): Integer');
+    RegisterMethodCheck(c, 'function  PlayWAVAtLocation(aHand: Shortint; aFileName: AnsiString; aVolume: Single; aRadius: Single; ' +
+      'aX, aY: Integer): Integer');
+    RegisterMethodCheck(c, 'function  PlayWAVAtLocationLooped(aHand: Shortint; aFileName: AnsiString; aVolume: Single; aRadius: Single; ' +
+      'aX, aY: Integer): Integer');
     RegisterMethodCheck(c, 'function  PlayWAVFadeMusic(aHand: Shortint; aFileName: AnsiString; aVolume: Single): Integer');
     RegisterMethodCheck(c, 'function  PlayWAVLooped(aHand: Shortint; aFileName: AnsiString; aVolume: Single): Integer');
     RegisterMethodCheck(c, 'procedure RemoveRoad(X, Y: Integer)');
