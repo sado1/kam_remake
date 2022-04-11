@@ -1288,15 +1288,6 @@ end;
 
 //* Version: 7000+
 //* Add AI attack 
-//* Possible targets:
-//* <pre>
-//* TKMAIAttackTarget = (
-//*   attClosestUnit, // Closest enemy unit
-//*   attClosestBuildingFromArmy, // Closest building from the group lauching the attack
-//*   attClosestBuildingFromStartPos, // Closest building from the AI's start position
-//*   attCustomPosition // Custom point defined with aCustomPosition
-//* );
-//* </pre>
 //* aHand: handID
 //* aRepeating: is attack repeating
 //* aDelay: attack delay from the game start (in ticks)
