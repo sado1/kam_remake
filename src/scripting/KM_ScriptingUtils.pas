@@ -968,6 +968,11 @@ end;
 //* rfIgnoreCase: Ignore case when searching
 function TKMScriptUtils.StringReplace(const Str, OldPattern, NewPattern: String; Flags: TReplaceFlags): String;
 begin
+  { Stub for Scripting Parser to parse:
+  //* Flags for string replacement operations
+  TReplaceFlags = set of (rfReplaceAll, rfIgnoreCase);
+  }
+
   try
     Result := SysUtils.StringReplace(Str, OldPattern, NewPattern, Flags);
   except
