@@ -910,99 +910,70 @@ begin
     //*Actions-Check*//
 
     c := Sender.AddClassN(nil, AnsiString(fUtils.ClassName));
-    RegisterMethodCheck(c, 'function AbsI(aValue: Integer): Integer');
-    RegisterMethodCheck(c, 'function AbsS(aValue: Single): Single');
-
-    RegisterMethodCheck(c, 'function ArrayElementCount(const aElement: AnsiString; aArray: array of AnsiString): Integer');
-    RegisterMethodCheck(c, 'function ArrayElementCountB(aElement: Boolean; aArray: array of Boolean): Integer');
-    RegisterMethodCheck(c, 'function ArrayElementCountI(aElement: Integer; aArray: array of Integer): Integer');
-    RegisterMethodCheck(c, 'function ArrayElementCountS(aElement: Single; aArray: array of Single): Integer');
-
-    RegisterMethodCheck(c, 'function ArrayHasElement(const aElement: AnsiString; aArray: array of AnsiString): Boolean');
-    RegisterMethodCheck(c, 'function ArrayHasElementB(aElement: Boolean; aArray: array of Boolean): Boolean');
-    RegisterMethodCheck(c, 'function ArrayHasElementI(aElement: Integer; aArray: array of Integer): Boolean');
-    RegisterMethodCheck(c, 'function ArrayHasElementS(aElement: Single; aArray: array of Single): Boolean');
-
-    RegisterMethodCheck(c, 'function ArrayRemoveIndexI(aIndex: Integer; aArray: TIntegerArray): TIntegerArray');
-    RegisterMethodCheck(c, 'function ArrayRemoveIndexS(aIndex: Integer; aArray: TAnsiStringArray): TAnsiStringArray');
-
-    RegisterMethodCheck(c, 'function BoolToStr(aBool: Boolean): AnsiString');
-
-    RegisterMethodCheck(c, 'function ColorBrightness(const aHexColor: string): Single');
-
-    RegisterMethodCheck(c, 'function CompareString(const Str1, Str2: String): Integer');
-    RegisterMethodCheck(c, 'function CompareText(const Str1, Str2: String): Integer');
-    RegisterMethodCheck(c, 'function CopyString(Str: String; Index, Count: Integer): String');
-
-    RegisterMethodCheck(c, 'procedure DeleteString(var Str: String; Index, Count: Integer)');
-
-    RegisterMethodCheck(c, 'function EnsureRangeS(aValue, aMin, aMax: Single): Single');
-    RegisterMethodCheck(c, 'function EnsureRangeI(aValue, aMin, aMax: Integer): Integer');
-
-    RegisterMethodCheck(c, 'function Format(aFormatting: string; aData: array of const): string');
-    RegisterMethodCheck(c, 'function FormatFloat(const aFormat: string; aValue: Single): string');
-
-    RegisterMethodCheck(c, 'function IfThen(aBool: Boolean; const aTrue, aFalse: AnsiString): AnsiString');
-    RegisterMethodCheck(c, 'function IfThenI(aBool: Boolean; aTrue, aFalse: Integer): Integer');
-    RegisterMethodCheck(c, 'function IfThenS(aBool: Boolean; aTrue, aFalse: Single): Single');
-
-    RegisterMethodCheck(c, 'function InAreaI(aX, aY, aXMin, aYMin, aXMax, aYMax: Integer): Boolean');
-    RegisterMethodCheck(c, 'function InAreaS(aX, aY, aXMin, aYMin, aXMax, aYMax: Single): Boolean');
-
-    RegisterMethodCheck(c, 'function InRangeI(aValue, aMin, aMax: Integer): Boolean');
-    RegisterMethodCheck(c, 'function InRangeS(aValue, aMin, aMax: Single): Boolean');
-
+    //*Utils-Check*//
+    RegisterMethodCheck(c, 'function  AbsI(aValue: Integer): Integer');
+    RegisterMethodCheck(c, 'function  AbsS(aValue: Single): Single');
+    RegisterMethodCheck(c, 'function  ArrayElementCount(aElement: AnsiString; aArray: array of String): Integer');
+    RegisterMethodCheck(c, 'function  ArrayElementCountB(aElement: Boolean; aArray: array of Boolean): Integer');
+    RegisterMethodCheck(c, 'function  ArrayElementCountI(aElement: Integer; aArray: array of Integer): Integer');
+    RegisterMethodCheck(c, 'function  ArrayElementCountS(aElement: Single; aArray: array of Single): Integer');
+    RegisterMethodCheck(c, 'function  ArrayHasElement(aElement: AnsiString; aArray: array of String): Boolean');
+    RegisterMethodCheck(c, 'function  ArrayHasElementB(aElement: Boolean; aArray: array of Boolean): Boolean');
+    RegisterMethodCheck(c, 'function  ArrayHasElementI(aElement: Integer; aArray: array of Integer): Boolean');
+    RegisterMethodCheck(c, 'function  ArrayHasElementS(aElement: Single; aArray: array of Single): Boolean');
+    RegisterMethodCheck(c, 'function  ArrayRemoveIndexI(aIndex: Integer; aArray: TIntegerArray): TIntegerArray');
+    RegisterMethodCheck(c, 'function  ArrayRemoveIndexS(aIndex: Integer; aArray: TAnsiStringArray): TAnsiStringArray');
+    RegisterMethodCheck(c, 'function  BoolToStr(aBool: Boolean): AnsiString');
+    RegisterMethodCheck(c, 'function  CeilTo(aValue: Single; aBase: Integer): Integer');
+    RegisterMethodCheck(c, 'function  ColorBrightness(aHexColor: String): Single');
+    RegisterMethodCheck(c, 'function  CompareString(Str1: String; Str2: String): Integer');
+    RegisterMethodCheck(c, 'function  CompareText(Str1: String; Str2: String): Integer');
+    RegisterMethodCheck(c, 'function  CopyString(Str: String; Index: Integer; Count: Integer): String');
+    RegisterMethodCheck(c, 'procedure DeleteString(var Str: String; Index: Integer; Count: Integer)');
+    RegisterMethodCheck(c, 'function  EnsureRangeI(aValue: Integer; aMin, aMax: Integer): Integer');
+    RegisterMethodCheck(c, 'function  EnsureRangeS(aValue: Single; aMin, aMax: Single): Single');
+    RegisterMethodCheck(c, 'function  FloorTo(aValue: Single; aBase: Integer): Integer');
+    RegisterMethodCheck(c, 'function  Format(aFormatting: String; aData: array of const): string');
+    RegisterMethodCheck(c, 'function  FormatFloat(aFormat: String; aValue: Single): string');
+    RegisterMethodCheck(c, 'function  IfThen(aBool: Boolean; aTrue: AnsiString; aFalse: AnsiString): AnsiString');
+    RegisterMethodCheck(c, 'function  IfThenI(aBool: Boolean; aTrue: Integer; aFalse: Integer): Integer');
+    RegisterMethodCheck(c, 'function  IfThenS(aBool: Boolean; aTrue: Single; aFalse: Single): Single');
+    RegisterMethodCheck(c, 'function  InAreaI(aX, aY: Integer; aXMin: Integer; aYMin: Integer; aXMax: Integer; aYMax: Integer): Boolean');
+    RegisterMethodCheck(c, 'function  InAreaS(aX, aY: Single; aXMin: Single; aYMin: Single; aXMax: Single; aYMax: Single): Boolean');
+    RegisterMethodCheck(c, 'function  InRangeI(aValue: Integer; aMin, aMax: Integer): Boolean');
+    RegisterMethodCheck(c, 'function  InRangeS(aValue: Single; aMin, aMax: Single): Boolean');
     RegisterMethodCheck(c, 'procedure InsertString(Source: String; var Target: String; Index: Integer)');
+    RegisterMethodCheck(c, 'function  KMPoint(X, Y: Integer): TKMPoint');
+    RegisterMethodCheck(c, 'function  LowerCase(Str: String): String');
+    RegisterMethodCheck(c, 'function  MaxI(A, B: Integer): Integer');
+    RegisterMethodCheck(c, 'function  MaxInArrayI(aArray: array of Integer): Integer');
+    RegisterMethodCheck(c, 'function  MaxInArrayS(aArray: array of Single): Single');
+    RegisterMethodCheck(c, 'function  MaxS(A, B: Single): Single');
+    RegisterMethodCheck(c, 'function  MinI(A, B: Integer): Integer');
+    RegisterMethodCheck(c, 'function  MinInArrayI(aArray: array of Integer): Integer');
+    RegisterMethodCheck(c, 'function  MinInArrayS(aArray: array of Single): Single');
+    RegisterMethodCheck(c, 'function  MinS(A, B: Single): Single');
+    RegisterMethodCheck(c, 'procedure MoveString(Source: String; var Destination: String; Count: Integer)');
+    RegisterMethodCheck(c, 'function  Pos(SubStr: String; Str: String): Integer');
+    RegisterMethodCheck(c, 'function  Power(aBase: Extended; aExp: Extended): Extended');
+    RegisterMethodCheck(c, 'function  RandomRangeI(aFrom: Integer; aTo: Integer): Integer');
+    RegisterMethodCheck(c, 'function  RGBDecToBGRHex(aR: Byte; aG: Byte; aB: Byte): AnsiString');
+    RegisterMethodCheck(c, 'function  RGBToBGRHex(aHexColor: String): AnsiString');
+    RegisterMethodCheck(c, 'function  RoundTo(aValue: Single; aBase: Integer): Integer');
+    RegisterMethodCheck(c, 'function  Sqr(A: Extended): Extended');
+    RegisterMethodCheck(c, 'function  StringReplace(Str: String; OldPattern: String; NewPattern: String; Flags: TReplaceFlags): String');
+    RegisterMethodCheck(c, 'function  SumI(aArray: array of Integer): Integer');
+    RegisterMethodCheck(c, 'function  SumS(aArray: array of Single): Single');
+    RegisterMethodCheck(c, 'function  TimeToString(aTicks: Integer): AnsiString');
+    RegisterMethodCheck(c, 'function  TimeToTick(aHours: Integer; aMinutes: Integer; aSeconds: Integer): Cardinal');
+    RegisterMethodCheck(c, 'function  Trim(Str: String): String');
+    RegisterMethodCheck(c, 'function  TrimLeft(Str: String): String');
+    RegisterMethodCheck(c, 'function  TrimRight(Str: String): String');
+    RegisterMethodCheck(c, 'function  TruncTo(aValue: Single; aBase: Integer): Integer');
+    RegisterMethodCheck(c, 'function  UpperCase(Str: String): String');
+    //*Utils-Check*//
 
-    RegisterMethodCheck(c, 'function KMPoint(X,Y: Integer): TKMPoint');
-
-    RegisterMethodCheck(c, 'function LowerCase(const Str: String): String');
-
-    RegisterMethodCheck(c, 'function MaxI(A, B: Integer): Integer');
-    RegisterMethodCheck(c, 'function MaxS(A, B: Single): Single');
-
-    RegisterMethodCheck(c, 'function MaxInArrayI(aArray: array of Integer): Integer');
-    RegisterMethodCheck(c, 'function MaxInArrayS(aArray: array of Single): Single');
-
-    RegisterMethodCheck(c, 'function MinI(A, B: Integer): Integer');
-    RegisterMethodCheck(c, 'function MinS(A, B: Single): Single');
-
-    RegisterMethodCheck(c, 'function MinInArrayI(aArray: array of Integer): Integer');
-    RegisterMethodCheck(c, 'function MinInArrayS(aArray: array of Single): Single');
-
-    RegisterMethodCheck(c, 'procedure MoveString(const Source: String; var Destination: String; Count: Integer)');
-
-    RegisterMethodCheck(c, 'function Pos(SubStr, Str: String): Integer');
-
-    RegisterMethodCheck(c, 'function Power(Base, Exponent: Extended): Extended');
-
-    RegisterMethodCheck(c, 'function RandomRangeI(aFrom, aTo: Integer): Integer');
-
-    RegisterMethodCheck(c, 'function RGBDecToBGRHex(aR, aG, aB: Byte): AnsiString');
-    RegisterMethodCheck(c, 'function RGBToBGRHex(const aHexColor: string): AnsiString');
-
-    RegisterMethodCheck(c, 'function CeilTo(aValue: Single; aBase: Integer): Integer');
-    RegisterMethodCheck(c, 'function FloorTo(aValue: Single; aBase: Integer): Integer');
-    RegisterMethodCheck(c, 'function RoundTo(aValue: Single; aBase: Integer): Integer');
-    RegisterMethodCheck(c, 'function TruncTo(aValue: Single; aBase: Integer): Integer');
-
-    RegisterMethodCheck(c, 'function Sqr(A: Extended): Extended');
-
-    RegisterMethodCheck(c, 'function StringReplace(const Str, OldPattern, NewPattern: string; Flags: TReplaceFlags): String');
-
-    RegisterMethodCheck(c, 'function SumI(aArray: array of Integer): Integer');
-    RegisterMethodCheck(c, 'function SumS(aArray: array of Single): Single');
-
-    RegisterMethodCheck(c, 'function TimeToString(aTicks: Integer): AnsiString');
-    RegisterMethodCheck(c, 'function TimeToTick(aHours, aMinutes, aSeconds: Integer): Cardinal');
-
-    RegisterMethodCheck(c, 'function Trim(const Str: String): String');
-    RegisterMethodCheck(c, 'function TrimLeft(const Str: String): String');
-    RegisterMethodCheck(c, 'function TrimRight(const Str: String): String');
-
-    RegisterMethodCheck(c, 'function UpperCase(const Str: String): String');
-
-        // Register objects
+    // Register objects
     AddImportedClassVariable(Sender, 'States', AnsiString(fStates.ClassName));
     AddImportedClassVariable(Sender, 'Actions', AnsiString(fActions.ClassName));
     AddImportedClassVariable(Sender, 'Utils', AnsiString(fUtils.ClassName));
