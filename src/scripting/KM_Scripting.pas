@@ -1016,7 +1016,7 @@ const
 
   (ParamCount: 1; Typ: (0, btSingle,0,      0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGameSpeedChanged
 
-  (ParamCount: 4; Typ: (0, btS32,   btS32,  btS32, btEnum ); Dir: (pmIn, pmInOut, pmInOut, pmInOut)), // OnGroupBeforeOrderSplit
+  (ParamCount: 4; Typ: (0, btS32,   btEnum,  btS32, btEnum ); Dir: (pmIn, pmInOut, pmInOut, pmInOut)), // OnGroupBeforeOrderSplit
   (ParamCount: 1; Typ: (0, btS32,   0,      0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGroupHungry
   (ParamCount: 2; Typ: (0, btS32,   btS32,  0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGroupOrderAttackHouse
   (ParamCount: 2; Typ: (0, btS32,   btS32,  0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGroupOrderAttackUnit
