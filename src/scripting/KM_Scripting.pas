@@ -1013,6 +1013,17 @@ const
   //*Events-Check*//
   (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnBeacon
   (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnFieldBuilt
+
+  (ParamCount: 1; Typ: (0, btSingle,0,      0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGameSpeedChanged
+
+  (ParamCount: 4; Typ: (0, btS32,   btS32,  btS32, btEnum ); Dir: (pmIn, pmInOut, pmInOut, pmInOut)), // OnGroupBeforeOrderSplit
+  (ParamCount: 1; Typ: (0, btS32,   0,      0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGroupHungry
+  (ParamCount: 2; Typ: (0, btS32,   btS32,  0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGroupOrderAttackHouse
+  (ParamCount: 2; Typ: (0, btS32,   btS32,  0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGroupOrderAttackUnit
+  (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGroupOrderMove
+  (ParamCount: 2; Typ: (0, btS32,   btS32,  0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGroupOrderLink
+  (ParamCount: 2; Typ: (0, btS32,   btS32,  0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGroupOrderSplit
+
   (ParamCount: 4; Typ: (0, btS32,   btS32,  btS32, btS32  ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHouseAfterDestroyed
   (ParamCount: 4; Typ: (0, btEnum,  btS32,  btS32, btS32  ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHouseAfterDestroyedEx
   (ParamCount: 1; Typ: (0, btS32,   0,      0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHouseBuilt
@@ -1025,16 +1036,6 @@ const
   (ParamCount: 2; Typ: (0, btS32,   btS32,  0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHouseDestroyed
   (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHouseRepaired
   (ParamCount: 4; Typ: (0, btS32,   btEnum, btS32, btS32  ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHouseWareCountChanged
-
-  (ParamCount: 1; Typ: (0, btSingle,0,      0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGameSpeedChanged
-
-  (ParamCount: 1; Typ: (0, btS32,   0,      0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGroupHungry
-  (ParamCount: 2; Typ: (0, btS32,   btS32,  0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGroupOrderAttackHouse
-  (ParamCount: 2; Typ: (0, btS32,   btS32,  0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGroupOrderAttackUnit
-  (ParamCount: 4; Typ: (0, btS32,   btS32,  btS32, btEnum ); Dir: (pmIn, pmInOut, pmInOut, pmInOut)), // OnGroupBeforeOrderSplit
-  (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGroupOrderMove
-  (ParamCount: 2; Typ: (0, btS32,   btS32,  0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGroupOrderLink
-  (ParamCount: 2; Typ: (0, btS32,   btS32,  0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnGroupOrderSplit
 
   (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnMarketTrade
   (ParamCount: 3; Typ: (0, btS32,   btEnum, btEnum,0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnMarketTradeEx
