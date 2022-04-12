@@ -1010,7 +1010,7 @@ const
     Dir: array [0..3] of TPSParameterMode;
   end =
   (
-  //*Types-Check**/
+  //*Events-Check*//
   (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnBeacon
   (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnFieldBuilt
   (ParamCount: 4; Typ: (0, btS32,   btS32,  btS32, btS32  ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnHouseAfterDestroyed
@@ -1070,7 +1070,7 @@ const
   (ParamCount: 2; Typ: (0, btS32,   btS32,  0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnWarriorEquipped
   (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnWarriorWalked
   (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn))  // OnWinefieldBuilt
-  //*Types-Check**/
+  //*Events-Check*//
   );
 var
   I: Integer;
