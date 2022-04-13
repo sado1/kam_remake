@@ -12,7 +12,7 @@ uses
   KM_Defaults, KM_Points, KM_CommonClasses, KM_CommonTypes, KM_CommonUtils,
   KM_Houses, KM_ResHouses, KM_Sort,
   KM_PathFindingRoad, KM_PathFindingAStarNew, KM_Eye, KM_AIParameters,
-  KM_AIInfluences, KM_NavMeshDefences,
+  KM_AIInfluences, KM_NavMeshDefences, KM_CityPredictor,
   KM_ResTypes;
 
 const
@@ -121,6 +121,7 @@ type
     {$ENDIF}
 
     fOwner: TKMHandID;
+    fPredictor: TKMCityPredictor;
     fConstructedHouses: Word;
     fDefenceTowersPlanned: Boolean;
     fStonesDepleted: Boolean;
@@ -152,7 +153,7 @@ type
     function PlanDefenceTowers(): Boolean;
 
   public
-    constructor Create(aPlayer: TKMHandID);
+    constructor Create(aPlayer: TKMHandID; aPredictor: TKMCityPredictor);
     destructor Destroy(); override;
     procedure Save(SaveStream: TKMemoryStream);
     procedure Load(LoadStream: TKMemoryStream);
@@ -247,10 +248,11 @@ end;
 
 
 { TKMCityPlanner }
-constructor TKMCityPlanner.Create(aPlayer: TKMHandID);
+constructor TKMCityPlanner.Create(aPlayer: TKMHandID; aPredictor: TKMCityPredictor);
 var
   HT: TKMHouseType;
 begin
+  fPredictor := aPredictor;
   for HT := HOUSE_MIN to HOUSE_MAX do
     with fPlannedHouses[HT] do
     begin
@@ -313,7 +315,7 @@ begin
   SaveStream.Write(fOwner);
   SaveStream.Write(fConstructedHouses);
   SaveStream.Write(fDefenceTowersPlanned);
-  //SaveStream.Write(fStonesDepleted);
+  SaveStream.Write(fStonesDepleted);
   SaveStream.Write(fForestsInfo.Count);
   if (fForestsInfo.Count > 0) then
     SaveStream.Write(fForestsInfo.Forests[0], SizeOf(TKMForestInfo) * fForestsInfo.Count);
@@ -358,7 +360,7 @@ begin
   LoadStream.Read(fOwner);
   LoadStream.Read(fConstructedHouses);
   LoadStream.Read(fDefenceTowersPlanned);
-  //LoadStream.Read(fStonesDepleted);
+  LoadStream.Read(fStonesDepleted);
   LoadStream.Read(fForestsInfo.Count);
   SetLength(fForestsInfo.Forests,fForestsInfo.Count);
   if (fForestsInfo.Count > 0) then
@@ -983,16 +985,25 @@ begin
   //  Output := true;
   //  ExistLoc := H.PointBelowEntrance;
   //end;
-  if Output AND fRoadPlanner.Route_Make(KMPointBelow(NewLoc), KMPointBelow(ExistLoc), aField)
-    AND ((aField.Count < MAX_ROAD_DISTANCE) OR (aHT = htWatchtower)) then
+  if Output AND fRoadPlanner.Route_Make(KMPointBelow(NewLoc), KMPointBelow(ExistLoc), aField) then
   begin
-    Output := True;
-    ReplaceOverlappingRoad( fPlannedHouses[aHT].Plans[aIdx].Loc );
-
-    if (aHT = htWatchtower) AND not CheckRoadToTowers() then
+    if not ((aField.Count < MAX_ROAD_DISTANCE) OR (aHT = htWatchtower)) then
     begin
       Output := False;
       RemovePlan(aHT,aIdx);
+      if (aHT in [htGoldMine, htIronMine, htCoalMine]) then
+        fPredictor.MarkExhaustedMine(aHT);
+    end
+    else
+    begin
+      Output := True;
+      ReplaceOverlappingRoad( fPlannedHouses[aHT].Plans[aIdx].Loc );
+
+      if (aHT = htWatchtower) AND not CheckRoadToTowers() then
+      begin
+        Output := False;
+        RemovePlan(aHT,aIdx);
+      end;
     end;
   end
   else
@@ -1000,6 +1011,9 @@ begin
     Output := False;
     RemovePlan(aHT,aIdx);
   end;
+  // Make sure list is empty
+  if not Output then
+    aField.Count := 0;
   Result := Output;
 end;
 
@@ -2042,7 +2056,7 @@ procedure TKMCityPlanner.CheckStoneReserves(aForceToPlaceQuarry: Boolean; aReqQu
 const
   HT = htQuarry;
   MIN_CNT = 60; // possible to mine X layers of stone tile = X * 3 stones
-  MIN_CNT_USED = 40;
+  MIN_CNT_USED = 25;
 var
   CanBeReplaced: Boolean;
   I,K, LowestIdx: Integer;
@@ -2104,8 +2118,12 @@ begin
             // Try to place new quarry
             //if (aReqQuarryCnt >= 0) AND FindPlaceForQuary(CopySL) then
             if (aReqQuarryCnt >= 0) AND FindPlaceForQuary(StoneLocs) then
+            begin
               with fPlannedHouses[HT] do
                 Plans[ Count-1 ].HouseReservation := True; // Reserve houses so builder will init road
+            end
+            else
+              fStonesDepleted := true;
             // Demolish old quarry (in case that alternative is completed)
             if not aForceToPlaceQuarry AND (aReqQuarryCnt < 0) then
               with fPlannedHouses[HT] do
