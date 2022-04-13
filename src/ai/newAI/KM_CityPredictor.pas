@@ -809,12 +809,12 @@ const
   COLOR_YELLOW = '[$00FFFF]';
   COLOR_GREEN = '[$00FF00]';
   WARE_TO_STRING: array[WARE_MIN..WARE_MAX] of UnicodeString = (
-    'Trunk'#9#9,   'Stone'#9#9,   'Wood'#9#9,        'Iron ore'#9#9,  'Gold ore'#9#9,
-    'Coal'#9#9#9,  'Steel'#9#9#9, 'Gold'#9#9#9,      'Wine'#9#9#9,    'Corn'#9#9#9,
-    'Bread'#9#9,   'Flour'#9#9#9, 'Leather'#9#9,     'Sausages'#9,    'Pig'#9#9#9,
-    'Skin'#9#9#9,  'Shield'#9#9,  'MetalShield'#9#9, 'Armor'#9#9,     'MetalArmor'#9#9,
+    'Trunk'#9#9,   'Stone'#9#9,   'Wood'#9#9,        'Iron ore'#9,    'Gold ore'#9,
+    'Coal'#9#9,    'Steel'#9#9,   'Gold'#9#9,        'Wine'#9#9,      'Corn'#9#9,
+    'Bread'#9#9,   'Flour'#9#9,   'Leather'#9,       'Sausages'#9,    'Pig'#9#9,
+    'Skin'#9#9,    'Shield'#9#9,  'MetalShield'#9#9, 'Armor'#9#9,     'MetalArmor'#9#9,
     'Axe'#9#9,     'Sword'#9#9,   'Pike'#9#9,        'Hallebard'#9#9, 'Bow'#9#9,
-    'Arbalet'#9#9, 'Horse'#9#9,   'Fish'#9#9#9
+    'Arbalet'#9#9, 'Horse'#9#9,   'Fish'#9#9
   );
 
   procedure AddWare(aWT: TKMWareType; const aSpecificText: String);
@@ -842,7 +842,14 @@ const
       if (Exhaustion > 10) then        ExhaustionColor := COLOR_GREEN
       else if (Exhaustion > 1) then    ExhaustionColor := COLOR_YELLOW;
 
-      aBalanceText := Format('%s'#9'%s%dx %s%s'#9'%s%5.2f%s'#9#9#9#9'%s%5.2f%s'#9#9#9#9#9'%s%5.2f%s'#9#9#9'%s%5.2f%s'#9#9#9'%s%5.2f%s|',
+      aBalanceText := Format('%s'#9 +
+                             '%s%dx %s' +
+                             '%s'#9 +
+                             '%s%5.2f%s'#9#9#9 +
+                             '%s%5.2f%s'#9#9#9#9 +
+                             '%s%5.2f%s'#9#9#9 +
+                             '%s%5.2f%s'#9#9 +
+                             '%s%5.2f%s|',
                        [                        aBalanceText,
                         HouseCntColor,          Cnt,               COLOR_WHITE,
                                                 aSpecificText,
