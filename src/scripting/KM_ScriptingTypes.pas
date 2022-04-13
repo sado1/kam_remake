@@ -6,6 +6,7 @@ uses
 
 type
   TKMScriptEventType = (
+    //*Events-Reg*//
     evtBeacon,
     evtFieldBuilt,
     evtGameSpeedChanged,
@@ -32,11 +33,11 @@ type
     evtMarketTradeEx,
     evtMissionStart,
     evtPeacetimeEnd,
+    evtPlanFieldPlaced,
+    evtPlanFieldRemoved,
     evtPlanRoadDigged,
     evtPlanRoadPlaced,
     evtPlanRoadRemoved,
-    evtPlanFieldPlaced,
-    evtPlanFieldRemoved,
     evtPlanWinefieldDigged,
     evtPlanWinefieldPlaced,
     evtPlanWinefieldRemoved,
@@ -46,14 +47,15 @@ type
     evtTick,
     evtUnitAfterDied,
     evtUnitAfterDiedEx,
+    evtUnitAttacked,
     evtUnitDied,
     evtUnitTrained,
     evtUnitWounded,
-    evtUnitAttacked,
     evtWareProduced,
     evtWarriorEquipped,
     evtWarriorWalked,
     evtWinefieldBuilt
+    //*Events-Reg*//
   );
 
 

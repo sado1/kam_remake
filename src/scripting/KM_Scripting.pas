@@ -1044,11 +1044,11 @@ const
 
   (ParamCount: 0; Typ: (0, 0,       0,      0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPeacetimeEnd
 
+  (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlanFieldPlaced
+  (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlanFieldRemoved
   (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlanRoadDigged
   (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlanRoadPlaced
   (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlanRoadRemoved
-  (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlanFieldPlaced
-  (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlanFieldRemoved
   (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlanWinefieldDigged
   (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlanWinefieldPlaced
   (ParamCount: 3; Typ: (0, btS32,   btS32,  btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnPlanWinefieldRemoved
@@ -1062,10 +1062,10 @@ const
 
   (ParamCount: 4; Typ: (0, btS32,   btS32,  btS32, btS32  ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnUnitAfterDied
   (ParamCount: 4; Typ: (0, btEnum,  btS32,  btS32, btS32  ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnUnitAfterDiedEx
+  (ParamCount: 2; Typ: (0, btS32,   btS32,  0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnUnitAttacked
   (ParamCount: 2; Typ: (0, btS32,   btS32,  0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnUnitDied
   (ParamCount: 1; Typ: (0, btS32,   0,      0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnUnitTrained
   (ParamCount: 2; Typ: (0, btS32,   btS32,  0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnUnitWounded
-  (ParamCount: 2; Typ: (0, btS32,   btS32,  0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnUnitAttacked
   (ParamCount: 3; Typ: (0, btS32,   btEnum, btS32, 0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnWareProduced
 
   (ParamCount: 2; Typ: (0, btS32,   btS32,  0,     0      ); Dir: (pmIn, pmIn, pmIn, pmIn)), // OnWarriorEquipped
