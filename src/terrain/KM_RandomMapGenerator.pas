@@ -63,7 +63,7 @@ type
     Decomposition, BasicTiles, CA: Boolean;
   end;
 
-
+type
   TKMRandomMapGenerator = class
   private
     fMapX, fMapY: Word;

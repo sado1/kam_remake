@@ -243,18 +243,14 @@ type
   end;
 
   TKMBalancedResources = class
-  private
   protected
     fResCnt: Word;
     fResources: TBalancedResource1Array;
   public
-    constructor Create();
-    destructor Destroy(); override;
-
     property Count: Word read fResCnt;
     property Resources: TBalancedResource1Array read fResources write fResources;
 
-    procedure ClearArray();
+    procedure ClearArray;
     procedure AddResource(aOwner, aResource, aMinesCnt: Byte; aQuantity: Integer; var aPoints: TKMPointArray);
   end;
 
@@ -965,21 +961,7 @@ end;
 
 
 { TKMBalancedResources }
-constructor TKMBalancedResources.Create;
-begin
-  inherited;
-
-  fResCnt := 0;
-end;
-
-
-destructor TKMBalancedResources.Destroy();
-begin
-  inherited;
-end;
-
-
-procedure TKMBalancedResources.ClearArray();
+procedure TKMBalancedResources.ClearArray;
 begin
   SetLength(fResources, 0);
   fResCnt := 0;
@@ -990,6 +972,7 @@ procedure TKMBalancedResources.AddResource(aOwner, aResource, aMinesCnt: Byte; a
 begin
   if (fResCnt >= Length(fResources)) then
     SetLength(fResources, fResCnt + 24);
+
   with Resources[fResCnt] do
   begin
     InitOwner := aOwner;
@@ -999,7 +982,8 @@ begin
     Quantity := aQuantity;
     Points := aPoints;
   end;
-  fResCnt := fResCnt + 1;
+
+  Inc(fResCnt);
 end;
 
 
