@@ -1922,12 +1922,13 @@ var
     end;
 
   // Detect shape of resource
-    MineSearch := TKMMinerFixSearch.Create(  KMPoint(  Low(A[0]), Low(A) ), KMPoint( High(A[0]), High(A) ), MinLimit, MaxLimit, aVisited, A  );
+    MineSearch := TKMMinerFixSearch.Create(KMPoint(Low(A[0]), Low(A)), KMPoint(High(A[0]), High(A)), MinLimit, MaxLimit, aVisited, A);
     try
       MineSearch.QuickFlood(aPosition.X,aPosition.Y,Resource);
     finally
       MineSearch.Free;
     end;
+
     for X := Low(Shape) to High(Shape) do
       if (Shape[X].Min <> MinLimit[X]) then
       begin

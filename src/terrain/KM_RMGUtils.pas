@@ -51,7 +51,7 @@ type
     property Seed: LongInt read fSeed write fSeed;
     procedure NextSeed;
     function Random(): Single;
-    function RandomI(const Max: Integer): Integer;
+    function RandomI(const aMax: Integer): Integer;
   end;
 
   // Fast flood algorithm (Queue + for cycle instead of recursion)
@@ -213,10 +213,8 @@ type
 
   // Remove "sharp" edges of each shape = edges with 1x1 or 2x2 tiles => each tile have at least 2 surrounding tiles in row and 2 tiles in column
   TKMSharpShapeFixer = class(TKMInternalTileCounter)
-  private
   protected
     procedure MarkAsVisited(const aX,aY: SmallInt); override;
-  public
   end;
 
 // Standard flood fill algorithm with queue instead of recursion -> first element is the closest to the center point, second is automatically second closest etc.
@@ -243,7 +241,7 @@ type
   end;
 
   TKMBalancedResources = class
-  protected
+  private
     fResCnt: Word;
     fResources: TBalancedResource1Array;
   public
@@ -313,9 +311,9 @@ begin
      Result := -Result;
 end;
 
-function TKMRandomNumberGenerator.RandomI(const Max: Integer): Integer;
+function TKMRandomNumberGenerator.RandomI(const aMax: Integer): Integer;
 begin
-  Result := Trunc(Random() * Max);
+  Result := Trunc(Random() * aMax);
 end;
 
 
@@ -995,7 +993,7 @@ begin
 
   fVisited := 255;
   SetLength(fVisitedArr, Length(aBiomeArr), Length(aBiomeArr[0]));
-  fQueue := TQueue.Create();
+  fQueue := TQueue.Create;
 end;
 
 destructor TKMHeightFillWalkableAreas.Destroy();
@@ -1080,7 +1078,7 @@ begin
   fIgnoreTileType := aIgnoreTileTypes;
   if (aHeight < 0) then
     fDecreaseCoef := -fDecreaseCoef;
-  fMaxDistance := abs(aHeight / aDecreaseCoef);
+  fMaxDistance := Abs(aHeight / aDecreaseCoef);
 
   ClearVisitedArr();
   for I := 0 to Length(aInitPoints) - 1 do
@@ -1107,6 +1105,7 @@ begin
   fPointCnt := fPointCnt + 1;
 end;
 
+
 procedure TKMShapePointsExtractor.QuickFlood(aX,aY,aSearchBiome,aVisitedNum: SmallInt; var aPoints: TKMPointArray);
 begin
   fPointCnt := 0;
@@ -1114,5 +1113,6 @@ begin
   SetLength(fPoints, fPointCnt);
   aPoints := fPoints;
 end;
+
 
 end.
