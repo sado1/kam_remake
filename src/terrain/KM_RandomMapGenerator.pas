@@ -2018,6 +2018,7 @@ begin
       RESOURCE := 3
     else // Coal and Stone are always fine
       Continue;
+
     for K := Low(Resources[I].Points) to High(Resources[I].Points) do
       if not Visited[ Resources[I].Points[K].Y, Resources[I].Points[K].X ]
          AND (A[ Resources[I].Points[K].Y, Resources[I].Points[K].X ] = Resources[I].Resource) then
@@ -2026,7 +2027,7 @@ begin
 end;
 
 
-// Cellular automaton - CA will secure that each tile has in his surrounding at leas another 3 tiles and together they make square
+// Cellular automaton - CA will secure that each tile has in its surrounding at least another 3 tiles and together they make square
 // A = TKMByte2Array of biomes
 procedure TKMRandomMapGenerator.CellularAutomaton(var A: TKMByte2Array);
 var
