@@ -162,6 +162,9 @@ const
   HOUSE_FLAG_TEX_ID_FRAME = 5;
   HOUSE_ORDER_ROW_MOUSEWHEEL_STEP = 5;
 
+  SCHOOL_CH_ORDER_TO_0_SHIFT = ssCtrl; // Shift state to change Unit order in queue to 0 in School
+  SCHOOL_CH_ORDER_TO_1_SHIFT = ssAlt;  // Shift state to change Unit order in queue to 1 in School
+
 
 constructor TKMGUIGameHouse.Create(aParent: TKMPanel; aSetViewportEvent: TPointFEvent);
 var
@@ -1392,10 +1395,10 @@ begin
       // Left click - add Unit to queue
       gGame.GameInputProcess.CmdHouse(gicHouseSchoolTrain, school, School_Order[fLastSchoolUnit], 1);
       // If Ctrl is also pressed, then change last unit order to 0
-      if (ssCtrl in Shift) then
+      if SCHOOL_CH_ORDER_TO_0_SHIFT in Shift then
         gGame.GameInputProcess.CmdHouse(gicHouseSchoolTrainChLastUOrder, school, 0)
       // else If Alt is also pressed, then change last unit order to 1
-      else if ssAlt in Shift then
+      else if SCHOOL_CH_ORDER_TO_1_SHIFT in Shift then
         gGame.GameInputProcess.CmdHouse(gicHouseSchoolTrainChLastUOrder, school, 1);
     end;
   end;
@@ -1453,10 +1456,10 @@ begin
   if ssRight in Shift then
     for I := school.QueueLength - 1 downto id do
       gGame.GameInputProcess.CmdHouse(gicHouseRemoveTrain, school, I)
-  else if (ssShift in Shift) then
+  else if SCHOOL_CH_ORDER_TO_0_SHIFT in Shift then
     // Left click + Shift - change Unit order in queue to 0
     gGame.GameInputProcess.CmdHouse(gicHouseSchoolTrainChOrder, school, id, 0)
-  else if ssCtrl in Shift then
+  else if SCHOOL_CH_ORDER_TO_1_SHIFT in Shift then
     // Left click + Ctrl - change Unit order in queue to 1
     gGame.GameInputProcess.CmdHouse(gicHouseSchoolTrainChOrder, school, id, Min(id, 1))
   else
