@@ -42,9 +42,12 @@ pol.ViewReadme=Zobacz plik Readme
 ;Hungarian
 hun.CreateStartShortcut=Start Menü ikon létrehozása
 hun.NoKaM=A telepítő nem észlelte a Knights and Merchants: A Parasztfelkelést telepítve.%n%nA telepítés megszakításra kerül.
+hun.SteamFirstRun=Steamről telepített KaM esetében az eredeti játékot legalább egyszer futtatni kell, hogy a KaM Remake telepítője felismerje azt.
 hun.CantUpdate=A telepítő nem talált KaM Remake verziót a számítógépen, hogy frissítse. Kérem töltse le és használja a teljes telepítőt.%n%nA telepítés megszakításra kerül.
 hun.OpenAL=Szeretnéd, hogy a telepítő telepítse az OpenAL-t? (Erősen ajánlott) A hangok működéséhez szükséges a KaM Remake-ben
 hun.ViewReadme=Olvass el fájl megtekintése
+hun.DeleteSaves=Töröli az összes Mentett játékot és minden Kampány állását is?
+hun.DeleteMaps=Töröli az összes Térképet és Kampányt?
 
 ;French
 fre.CreateStartShortcut=Créer un raccourci dans le menu Démarrer
