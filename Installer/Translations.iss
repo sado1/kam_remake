@@ -38,9 +38,13 @@ ger.DeleteMaps=Möchten Sie auch alle Karten und Kampagnen löschen?
 ;Polish
 pol.CreateStartShortcut=Stwórz skrót w Menu Start
 pol.NoKaM=Kreator instalacji wykrył że nie masz zainstalowanego Knights and Merchants: The Peasants Rebellion.%n%nInstalacja zostanie przerwana.
+pol.SteamFirstRun=Gra Knights and Merchants, zakupiona w sklepie Steam, musi zostać uruchomiona przynajmniej raz, aby program instalacyjny Remake był w stanie ją wykryć i zweryfikować.
 pol.CantUpdate=Kreator instalacji nie był w stanie znaleźć istniejącej wersji KaM Remake do zaktualizowania. Proszę pobrać i zainstalować kompletny instalator.%n%nInstalacja zostanie przerwana.
 pol.OpenAL=Czy chcesz aby kreator instalacji zainstalował OpenAL? (Zalecane) Jest on wymagany by działały dźwięki w KaM Remake.
 pol.ViewReadme=Zobacz plik Readme
+pol.DeleteSaves=Czy chcesz usunąć wszystkie twoje zapisane gry, jak również postęp wszystkich kampanii?
+pol.DeleteMaps=Czy chcesz usunąć również wszystkie mapy oraz kampanie?
+
 
 ;Hungarian
 hun.CreateStartShortcut=Start Menü ikon létrehozása
