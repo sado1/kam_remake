@@ -254,7 +254,7 @@ begin
 end;
 
 
-{Market page}
+// Market page
 procedure TKMGUIGameHouse.Create_HouseMarket;
 var
   I: Integer;
@@ -325,7 +325,7 @@ begin
 end;
 
 
-{Store page}
+// Store page
 procedure TKMGUIGameHouse.Create_HouseStore;
 var
   I: Integer;
@@ -353,7 +353,7 @@ begin
 end;
 
 
-{School page}
+// School page
 procedure TKMGUIGameHouse.Create_HouseSchool;
 var
   I: Integer;
@@ -396,7 +396,7 @@ begin
 end;
 
 
-{Barracks page}
+// Barracks page
 procedure TKMGUIGameHouse.Create_HouseTownhall;
 var
   dy: Integer;
@@ -827,7 +827,7 @@ end;
 procedure TKMGUIGameHouse.ShowCommonOrders(aHouse: TKMHouse; Base: Integer; var Line, RowRes: Integer);
 var
   I: Integer;
-  res: TKMWareType;
+  W: TKMWareType;
 begin
   //Show Orders
   if gResHouses[aHouse.HouseType].DoesOrders then
@@ -838,13 +838,13 @@ begin
     Inc(Line);
     for I := 1 to 4 do //Orders
     begin
-      res := gResHouses[aHouse.HouseType].ResOutput[I];
-      if gResWares[res].IsValid then
+      W := gResHouses[aHouse.HouseType].ResOutput[I];
+      if gResWares[W].IsValid then
       begin
-        WareOrderRow_Order[I].WareRow.TexID := gResWares[res].GUIIcon;
-        WareOrderRow_Order[I].WareRow.Caption := gResWares[res].Title;
-        WareOrderRow_Order[I].Hint := gResWares[res].Title;
-        WareOrderRow_Order[I].WareRow.WareCount := aHouse.CheckResOut(res);
+        WareOrderRow_Order[I].WareRow.TexID := gResWares[W].GUIIcon;
+        WareOrderRow_Order[I].WareRow.Caption := gResWares[W].Title;
+        WareOrderRow_Order[I].Hint := gResWares[W].Title;
+        WareOrderRow_Order[I].WareRow.WareCount := aHouse.CheckResOut(W);
         WareOrderRow_Order[I].OrderCount := aHouse.ResOrder[I];
         WareOrderRow_Order[I].Show;
         WareOrderRow_Order[I].Top := Base + Line * LINE_HEIGHT;
@@ -856,21 +856,21 @@ begin
     Inc(Line);
     for I := 1 to 4 do //Costs
     begin
-      res := gResHouses[aHouse.HouseType].ResOutput[I];
-      if gResWares[res].IsValid then
+      W := gResHouses[aHouse.HouseType].ResOutput[I];
+      if gResWares[W].IsValid then
       begin
-        CostsRow_Costs[I].Caption := gResWares[res].Title;
+        CostsRow_Costs[I].Caption := gResWares[W].Title;
         CostsRow_Costs[I].RX := rxGui;
         //Hide the icons when they are not used
-        if WARFARE_COSTS[res, 1] = wtNone then
+        if WARFARE_COSTS[W, 1] = wtNone then
           CostsRow_Costs[I].TexID1 := 0
         else
-          CostsRow_Costs[I].TexID1 := gResWares[WARFARE_COSTS[res, 1]].GUIIcon;
+          CostsRow_Costs[I].TexID1 := gResWares[WARFARE_COSTS[W, 1]].GUIIcon;
 
-        if WARFARE_COSTS[res, 2] = wtNone then
+        if WARFARE_COSTS[W, 2] = wtNone then
           CostsRow_Costs[I].TexID2 := 0
         else
-          CostsRow_Costs[I].TexID2 := gResWares[WARFARE_COSTS[res, 2]].GUIIcon;
+          CostsRow_Costs[I].TexID2 := gResWares[WARFARE_COSTS[W, 2]].GUIIcon;
 
         CostsRow_Costs[I].Show;
         CostsRow_Costs[I].Top := Base + Line * LINE_HEIGHT - 2*I - 6; //Pack them closer so they fit on 1024x576
@@ -1360,10 +1360,10 @@ begin
 end;
 
 
-{Process click on Left-Train-Right buttons of School}
+// Process click on Left-Train-Right buttons of School
 procedure TKMGUIGameHouse.House_SchoolUnitChange(Sender: TObject; Shift: TShiftState);
 var
-  I: Byte;
+  I: Integer;
   school: TKMHouseSchool;
 begin
   if gMySpectator.Selected = nil then
@@ -1439,24 +1439,7 @@ begin
 end;
 
 
-{Toggle ware delivery for separate resources (wood, leather) in Armor workshop}
-procedure TKMGUIGameHouse.House_ArmorWSDeliveryToggle(Sender: TObject);
-var
-  I: Integer;
-  armorWS: TKMHouseArmorWorkshop;
-begin
-  armorWS := TKMHouseArmorWorkshop(gMySpectator.Selected);
-  for I := 1 to 2 do
-  begin
-    if Sender = WaresRow_ArmorWS_Common[I] then
-      gGame.GameInputProcess.CmdHouse(gicHouseArmorWSDeliveryToggle, armorWS, gResHouses[htArmorWorkshop].ResInput[I]);
-
-    Image_ArmorWS_Accept[I].Visible := not armorWS.AcceptWareForDelivery(gResHouses[htArmorWorkshop].ResInput[I]);
-  end;
-end;
-
-
-{Process click on Units queue buttons of School}
+// Process click on Units queue buttons of School
 procedure TKMGUIGameHouse.House_SchoolUnitQueueClick(Sender: TObject; Shift: TShiftState);
 var
   I, id: Integer;
@@ -1475,7 +1458,7 @@ begin
     gGame.GameInputProcess.CmdHouse(gicHouseSchoolTrainChOrder, school, id, 0)
   else if ssCtrl in Shift then
     // Left click + Ctrl - change Unit order in queue to 1
-    gGame.GameInputProcess.CmdHouse(gicHouseSchoolTrainChOrder, school, id, min(id,1))
+    gGame.GameInputProcess.CmdHouse(gicHouseSchoolTrainChOrder, school, id, Min(id, 1))
   else
     //Left click removes 1 unit from queue
     gGame.GameInputProcess.CmdHouse(gicHouseRemoveTrain, school, id);
@@ -1484,8 +1467,25 @@ begin
 end;
 
 
-{That small red triangle blocking delivery of wares to Barracks}
-{Ware determined by Button.Tag property}
+// Toggle ware delivery for separate resources (wood, leather) in Armor workshop
+procedure TKMGUIGameHouse.House_ArmorWSDeliveryToggle(Sender: TObject);
+var
+  I: Integer;
+  armorWS: TKMHouseArmorWorkshop;
+begin
+  armorWS := TKMHouseArmorWorkshop(gMySpectator.Selected);
+  for I := 1 to 2 do
+  begin
+    if Sender = WaresRow_ArmorWS_Common[I] then
+      gGame.GameInputProcess.CmdHouse(gicHouseArmorWSDeliveryToggle, armorWS, gResHouses[htArmorWorkshop].ResInput[I]);
+
+    Image_ArmorWS_Accept[I].Visible := not armorWS.AcceptWareForDelivery(gResHouses[htArmorWorkshop].ResInput[I]);
+  end;
+end;
+
+
+// That small red triangle blocking delivery of wares to Barracks
+// Ware determined by Button.Tag property
 procedure TKMGUIGameHouse.House_BarracksItemClickShift(Sender: TObject; Shift: TShiftState);
 begin
   if gMySpectator.Selected = nil then
@@ -1510,8 +1510,8 @@ begin
 end;
 
 
-{That small red triangle blocking delivery of wares to Storehouse}
-{Ware determined by Button.Tag property}
+// That small red triangle blocking delivery of wares to Storehouse
+// Ware determined by Button.Tag property
 procedure TKMGUIGameHouse.House_StoreItemClickShift(Sender: TObject; Shift: TShiftState);
 begin
   if gMySpectator.Selected = nil then
@@ -1531,16 +1531,16 @@ end;
 procedure TKMGUIGameHouse.House_MarketFill(aMarket: TKMHouseMarket);
 var
   I, tmp: Integer;
-  R: TKMWareType;
+  W: TKMWareType;
 begin
   for I := 0 to STORE_RES_COUNT - 1 do
   begin
-    R := TKMWareType(Button_Market[I].Tag);
-    if aMarket.AllowedToTrade(R) then
+    W := TKMWareType(Button_Market[I].Tag);
+    if aMarket.AllowedToTrade(W) then
     begin
-      Button_Market[I].TexID := gResWares[R].GUIIcon;
-      Button_Market[I].Hint := gResWares[R].Title;
-      tmp := aMarket.GetResTotal(R);
+      Button_Market[I].TexID := gResWares[W].GUIIcon;
+      Button_Market[I].Hint := gResWares[W].Title;
+      tmp := aMarket.GetResTotal(W);
       Button_Market[I].Caption := IfThen(tmp = 0, '-', IntToStr(tmp));
     end
     else
@@ -1551,7 +1551,7 @@ begin
     end;
 
     //Disabling buttons will let player know that he cant select new trade without canceling current one
-    Button_Market[I].Enabled := (R in [aMarket.ResFrom, aMarket.ResTo]) or not aMarket.TradeInProgress;
+    Button_Market[I].Enabled := (W in [aMarket.ResFrom, aMarket.ResTo]) or not aMarket.TradeInProgress;
   end;
 
   //Position the shape that marks the FROM ware
