@@ -941,7 +941,8 @@ begin
     RegisterMethodCheck(c, 'function  RGBToBGRHex(aHexColor: string): AnsiString');
     RegisterMethodCheck(c, 'function  RoundTo(aValue: Single; aBase: Integer): Integer');
     RegisterMethodCheck(c, 'function  Sqr(A: Extended): Extended');
-    RegisterMethodCheck(c, 'function  StringReplace(Str: string; OldPattern: string; NewPattern: string; Flags: TReplaceFlags): String');
+    RegisterMethodCheck(c, 'function  StringReplace(Str: string; OldPattern: string; NewPattern: string; aReplaceAll: Boolean; ' +
+      'aIgnoreCase: Boolean): String');
     RegisterMethodCheck(c, 'function  SumI(aArray: array of Integer): Integer');
     RegisterMethodCheck(c, 'function  SumS(aArray: array of Single): Single');
     RegisterMethodCheck(c, 'function  TimeToString(aTicks: Integer): AnsiString');
