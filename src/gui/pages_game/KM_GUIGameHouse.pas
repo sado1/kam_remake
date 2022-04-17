@@ -162,7 +162,7 @@ const
   HOUSE_FLAG_TEX_ID_FRAME = 5;
   HOUSE_ORDER_ROW_MOUSEWHEEL_STEP = 5;
 
-  RMB_SHIFT_STATES: TShiftState = [ssRight, ssShift];
+  RMB_SHIFT_STATES: TShiftState = [ssRight, ssShift]; // Shift states which are used as right mouse button for some of the buttons
   SCHOOL_CH_ORDER_TO_0_SHIFT = ssCtrl; // Shift state to change Unit order in queue to 0 in School
   SCHOOL_CH_ORDER_TO_1_SHIFT = ssAlt;  // Shift state to change Unit order in queue to 1 in School
 
