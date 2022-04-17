@@ -162,6 +162,7 @@ const
   HOUSE_FLAG_TEX_ID_FRAME = 5;
   HOUSE_ORDER_ROW_MOUSEWHEEL_STEP = 5;
 
+  RMB_SHIFT_STATES: TShiftState = [ssRight, ssShift];
   SCHOOL_CH_ORDER_TO_0_SHIFT = ssCtrl; // Shift state to change Unit order in queue to 0 in School
   SCHOOL_CH_ORDER_TO_1_SHIFT = ssAlt;  // Shift state to change Unit order in queue to 1 in School
 
@@ -1264,9 +1265,9 @@ begin
   Image_Barracks_NotAcceptRecruit.Visible := barracks.NotAcceptRecruitFlag;
 
 
-  if (Sender = Button_Barracks_Left) and (ssRight in Shift) then
+  if (Sender = Button_Barracks_Left) and (RMB_SHIFT_STATES * Shift <> []) then
     fLastBarracksUnit := 0;
-  if (Sender = Button_Barracks_Right) and (ssRight in Shift) then
+  if (Sender = Button_Barracks_Right) and (RMB_SHIFT_STATES * Shift <> []) then
     fLastBarracksUnit := High(Barracks_Order);
 
   if (Sender = Button_Barracks_Left)and(fLastBarracksUnit > 0) then
@@ -1323,9 +1324,9 @@ begin
   Image_TH_Right.FlagColor := gHands[townHall.Owner].FlagColor;
   Image_TH_Train.FlagColor := gHands[townHall.Owner].FlagColor;
 
-  if (Sender = Button_TH_Left) and (ssRight in Shift) then
+  if (Sender = Button_TH_Left) and (RMB_SHIFT_STATES * Shift <> []) then
     fLastTHUnit := 0;
-  if (Sender = Button_TH_Right) and (ssRight in Shift) then
+  if (Sender = Button_TH_Right) and (RMB_SHIFT_STATES * Shift <> []) then
     fLastTHUnit := High(TownHall_Order);
 
   if (Sender = Button_TH_Left) and (fLastTHUnit > 0) then
@@ -1375,9 +1376,9 @@ begin
     Exit;
   school := TKMHouseSchool(gMySpectator.Selected);
 
-  if (ssRight in Shift) and (Sender = Button_School_Left) then
+  if (RMB_SHIFT_STATES * Shift <> []) and (Sender = Button_School_Left) then
     fLastSchoolUnit := 0;
-  if (ssRight in Shift) and (Sender = Button_School_Right) then
+  if (RMB_SHIFT_STATES * Shift <> []) and (Sender = Button_School_Right) then
     fLastSchoolUnit := High(School_Order);
 
   if (Sender = Button_School_Left) and (fLastSchoolUnit > 0) then
@@ -1388,7 +1389,7 @@ begin
   if Sender = Button_School_Train then
   begin
     // Right click - fill queue with same units
-    if (ssRight in Shift) or (ssShift in Shift) then
+    if RMB_SHIFT_STATES * Shift <> [] then
       gGame.GameInputProcess.CmdHouse(gicHouseSchoolTrain, school, School_Order[fLastSchoolUnit], 10)
     else if (ssLeft in Shift) then
     begin
@@ -1453,7 +1454,7 @@ begin
 
   //Right click clears entire queue after this item.
   //In that case we remove the same id repeatedly because they're automatically move along
-  if ssRight in Shift then
+  if RMB_SHIFT_STATES * Shift <> [] then
     for I := school.QueueLength - 1 downto id do
       gGame.GameInputProcess.CmdHouse(gicHouseRemoveTrain, school, I)
   else if SCHOOL_CH_ORDER_TO_0_SHIFT in Shift then
