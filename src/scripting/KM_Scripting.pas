@@ -343,6 +343,7 @@ var
 begin
   if Name = 'SYSTEM' then
   begin
+    //*Types-Reg*//
     // Common
     Sender.AddTypeS('TIntegerArray', 'array of Integer'); //Needed for PlayerGetAllUnits
     Sender.AddTypeS('TAnsiStringArray', 'array of AnsiString'); //Needed for some array Utils
@@ -461,6 +462,7 @@ begin
     Sender.AddTypeS('TReplaceFlags', '(rfReplaceAll, rfIgnoreCase)'); //Needed for string util Utils.StringReplace
 
     Sender.AddTypeS('TKMFont', '(fntAntiqua, fntGame, fntGrey, fntMetal, fntMini, fntOutline, fntArial, fntMonospaced)');
+    //*Types-Reg*//
 
     // Add CampaignData type and variable only after addition of all other custom types,
     // so those types could be used in the TKMCampaignData declaration
