@@ -1388,7 +1388,7 @@ begin
   if Sender = Button_School_Train then
   begin
     // Right click - fill queue with same units
-    if (ssRight in Shift) then
+    if (ssRight in Shift) or (ssShift in Shift) then
       gGame.GameInputProcess.CmdHouse(gicHouseSchoolTrain, school, School_Order[fLastSchoolUnit], 10)
     else if (ssLeft in Shift) then
     begin
