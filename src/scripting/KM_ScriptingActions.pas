@@ -3782,18 +3782,16 @@ end;
 //* Works much faster, then applying all changes successively for every tile, because pathfinding compute is executed only once after all changes have been done
 //* <pre>
 //* TKMTerrainTileBrief = record
-//*   X, Y: Byte;     // Tile map coordinates
-//*   Terrain: Byte;  // Terrain tile type (0..255)
+//*   X, Y: Word;     // Tile map coordinates
+//*   Terrain: Word;  // Terrain tile type (0..596)
 //*   Rotation: Byte; // Tile rotation (0..3)
-//*   Height: Byte;   // Heigth (0..100)
-//*   Obj: Byte;      // Object (0..255)
-//*   ChangeSet: TKMTileChangeTypeSet; // Set of changes.
+//*   Height: Byte;   // Heigth (0..150)
+//*   Obj: Word;      // Object (0..255)
+//*   UpdateTerrain, UpdateRotation, UpdateHeight, UpdateObject: Boolean; // What part of tile should be updated?
 //* end;
-//* TKMTileChangeTypeSet = set of TKMTileChangeType
-//* TKMTileChangeType = (tctTerrain, tctRotation, tctHeight, tctObject)
 //* </pre>
-//* ChangeSet determines what should be changed on tile
-//* F.e. if we want to change terrain type and height, then ChangeSet should contain tctTerrain and tctHeight
+//* UpdateXXX fields determines what should be changed on tile
+//* F.e. if we want to change terrain type and height, then UpdateTerrain and UpdateHeight should be set to True
 //* Note: aTiles elements should start from 0, as for dynamic array. So f.e. to change map tile 1,1 we should set aTiles[0][0].
 //* Note: Errors are shown as map tiles (f.e. for error while applying aTiles[0][0] tile there will be a message with for map tile 1,1)
 //*
