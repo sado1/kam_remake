@@ -407,7 +407,7 @@ begin
 
     // Types needed for MapTilesArraySet function
     Sender.AddTypeS('TKMTerrainTileBrief', 'record ' +
-      'X,Y: Byte; ' +
+      'X,Y: Word; ' +
       'Terrain: Word; ' +
       'Rotation: Byte; ' +
       'Height: Byte; ' +

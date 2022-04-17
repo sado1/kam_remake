@@ -279,7 +279,7 @@ type
   // Get all points which are inside of specific shape (biome)
   TKMShapePointsExtractor = class(TKMInternalTileCounter)
   private
-    fPointCnt: Word;
+    fPointCnt: Cardinal;
     fPoints: TKMPointArray;
   protected
     procedure MarkAsVisited(const aX,aY: SmallInt); override;
