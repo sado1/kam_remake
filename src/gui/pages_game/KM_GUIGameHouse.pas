@@ -63,6 +63,7 @@ type
     procedure ShowTownHall(aHouse: TKMHouse);
     procedure ShowArmorWorkshop(aHouse: TKMHouse);
 
+    function GetEquipAmount(Shift: TShiftState): Integer;
   protected
     Panel_House: TKMPanel;
       Label_House: TKMLabel;
@@ -978,6 +979,18 @@ begin
 end;
 
 
+function TKMGUIGameHouse.GetEquipAmount(Shift: TShiftState): Integer;
+begin
+  // We use Left Click + Shift ro order 10
+  // since its like we use it for an equip hotkey (Shift + S)
+  // and to order 100 we can use Shift + Right Click
+  if Shift = [ssLeft, ssShift] then
+    Shift := [ssRight];
+
+  Result := Min(GetMultiplicator(Shift), MAX_UNITS_TO_EQUIP);
+end;
+
+
 function TKMGUIGameHouse.Visible: Boolean;
 begin
   Result := Panel_House.Visible;
@@ -1276,7 +1289,7 @@ begin
     Inc(fLastBarracksUnit);
 
   if Sender = Button_Barracks_Train then //Equip unit
-    gGame.GameInputProcess.CmdHouse(gicHouseBarracksEquip, barracks, Barracks_Order[fLastBarracksUnit], Min(GetMultiplicator(Shift), MAX_UNITS_TO_EQUIP));
+    gGame.GameInputProcess.CmdHouse(gicHouseBarracksEquip, barracks, Barracks_Order[fLastBarracksUnit], GetEquipAmount(Shift));
 
   Button_Barracks_Train.Enabled := not gGame.IsPeaceTime and barracks.CanEquip(Barracks_Order[fLastBarracksUnit]);
   Button_Barracks_Left.Enabled := fLastBarracksUnit > 0;
@@ -1335,8 +1348,7 @@ begin
     Inc(fLastTHUnit);
 
   if Sender = Button_TH_Train then //Equip unit
-    gGame.GameInputProcess.CmdHouse(gicHouseTownHallEquip, townHall, TownHall_Order[fLastTHUnit],
-                                    Min(GetMultiplicator(Shift), MAX_UNITS_TO_EQUIP));
+    gGame.GameInputProcess.CmdHouse(gicHouseTownHallEquip, townHall, TownHall_Order[fLastTHUnit], GetEquipAmount(Shift));
 
   Button_TH_Train.Enabled := not gGame.IsPeaceTime and townHall.CanEquip(TownHall_Order[fLastTHUnit]);
   Button_TH_Left.Enabled := fLastTHUnit > 0;
