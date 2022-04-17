@@ -143,13 +143,13 @@
 144:Destroy selected building
 145:Decrease order amount
 146:Increase order amount
-147:Previous soldier type
-148:Next soldier type
-149:Equip current soldier type
-150:Next profession
-151:Previous profession
-152:Add to queue. Use RMB, Shift or Ctrl to modify the queue
-153:Switch between delivery modes of wares: demand / closed / offer. Use LMB / RMB to switch forward/backward
+147:Previous soldier type. Use Shift to get to the first soldier type
+148:Next soldier type. Use Shift to get to the last soldier type
+149:Equip current soldier type. Use Shift to equip 10 soldiers
+150:Next profession. Use Shift to get to the last profession
+151:Previous profession. Use Shift to get to the first profession
+152:Add to queue.|Use RMB, Ctrl or Alt to modify the queue and Shift to fill it
+153:Switch between delivery modes of wares: demand / closed / offer|Use LMB / RMB to switch forward / backward
 154:Cost:
 155:Switch on/off house repair
 156:Building not available at this time

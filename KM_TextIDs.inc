@@ -157,15 +157,13 @@ TX_HOUSE_DEMOLISH = 143; //Do you really want to|demolish this building?
 TX_HOUSE_DEMOLISH_YES_HINT = 144; //Destroy selected building
 TX_HOUSE_ORDER_DEC_HINT = 145; //Decrease order amount
 TX_HOUSE_ORDER_INC_HINT = 146; //Increase order amount
-TX_HOUSE_BARRACKS_PREV_HINT = 147; //Previous soldier type
-TX_HOUSE_BARRACKS_NEXT_HINT = 148; //Next soldier type
+TX_HOUSE_BARRACKS_PREV_HINT = 147; //Previous soldier type. Use Shift to get to the first soldier type
+TX_HOUSE_BARRACKS_NEXT_HINT = 148; //Next soldier type. Use Shift to get to the last soldier type
 TX_HOUSE_BARRACKS_TRAIN_HINT = 149; //Equip current soldier type
-TX_HOUSE_BARRACKS_TRAIN_DISABLED_HINT = 706; //This soldier type is not available
-TX_HOUSE_SCHOOL_NEXT_HINT = 150; //Next profession
-TX_HOUSE_SCHOOL_PREV_HINT = 151; //Previous profession
-TX_HOUSE_SCHOOL_TRAIN_HINT = 152; //Add to queue. Use RMB, Shift or Ctrl to modify the queue
-TX_HOUSE_SCHOOL_TRAIN_DISABLED_HINT = 707; //This unit type is not available
-TX_HOUSE_TOGGLE_DELIVERS_HINT = 153; //Switch between delivery modes of wares: demand / closed / offer. Use LMB / RMB to switch forward/backward
+TX_HOUSE_SCHOOL_NEXT_HINT = 150; //Next profession. Use Shift to get to the last profession
+TX_HOUSE_SCHOOL_PREV_HINT = 151; //Previous profession. Use Shift to get to the first profession
+TX_HOUSE_SCHOOL_TRAIN_HINT = 152; //Add to queue.|Use RMB, Ctrl or Alt to modify the queue and Shift to fill it
+TX_HOUSE_TOGGLE_DELIVERS_HINT = 153; //Switch between delivery modes of wares: demand / closed / offer|Use LMB / RMB to switch forward / backward
 
 TX_HOUSE_WARE_COSTS = 154; //Cost:
 TX_HOUSE_TOGGLE_REPAIR_HINT = 155; //Switch on/off house repair
@@ -1652,3 +1650,6 @@ TX_ERROR_ASK_TO_SEND_RNGCHECK_REPORT = 1547; //Other player got desync error. Pl
 
 TX_EXIT_WARN_MESSAGE = 1580; //Any unsaved changes will be lost. Exit?
 TX_EXIT_WARN_HEADER = 1581; //Warning
+
+TX_HOUSE_BARRACKS_TRAIN_DISABLED_HINT = 706; //This soldier type is not available
+TX_HOUSE_SCHOOL_TRAIN_DISABLED_HINT = 707; //This unit type is not available
