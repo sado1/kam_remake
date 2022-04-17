@@ -28,9 +28,12 @@ swe.ViewReadme=Visa Readme-filen
 ;German
 ger.CreateStartShortcut=Verknüpfung im Startmenü erstellen
 ger.NoKaM=Setup hat ermittelt, dass Knights and Merchants: The Peasants Rebellion nicht installiert ist.
+ger.SteamFirstRun=Das von Steam installierte Original-KaM muss mindestens einmal auf dem System gestartet werden, damit das KMR-Installationsprogramm es erkennen und überprüfen kann.
 ger.CantUpdate=Setup war nicht in der Lage eine installierte Version von KaM Remake zu aktualisieren. Bitte lade die Vollversion von KaM Remake herunter und führe das Setup erneut aus.
 ger.OpenAL=Soll Setup auch OpenAl installieren (empfohlen)? Es wird für die Soundwiedergabe von KaM Remake benötigt.
 ger.ViewReadme=Readme anzeigen
+ger.DeleteSaves=Möchten Sie auch alle Ihre gespeicherten Spiele und den Fortschritt aller Kampagnen löschen?
+ger.DeleteMaps=Möchten Sie auch alle Karten und Kampagnen löschen?
 
 ;Polish
 pol.CreateStartShortcut=Stwórz skrót w Menu Start
