@@ -998,7 +998,7 @@ const
   icTransparent = $00;
   icDarkGray = $FF606060;
   icDarkGrayTrans = $60606060;
-  icDarkestGrayTrans = $80303030;
+  icDarkestGrayTrans = $20303030;
   icGray = $FF808080;
   icGray2 = $FF888888;
   icLightGray = $FFA0A0A0;
