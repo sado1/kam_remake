@@ -25,7 +25,6 @@ type
   end;
 
   //* Point with integer coordinates X and Y
-  //* Priority: 1
   TKMPoint = record
     X,Y: Integer;
 

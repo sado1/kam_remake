@@ -344,6 +344,9 @@ begin
   if Name = 'SYSTEM' then
   begin
     //*Types-Reg*//
+    Sender.AddTypeS('TAnsiStringArray', 'array of AnsiString');
+    Sender.AddTypeS('TByteSet', 'set of Byte');
+    Sender.AddTypeS('TIntegerArray', 'array of Integer');
     Sender.AddTypeS('TKMAIAttackTarget', '(attClosestUnit, attClosestBuildingFromArmy, attClosestBuildingFromStartPos, attCustomPosition)');
     Sender.AddTypeS('TKMAIAttackType', '(aatOnce, aatRepeating)');
     Sender.AddTypeS('TKMAIDefencePosType', '(dtFrontLine, dtBackLine)');
@@ -369,6 +372,9 @@ begin
       'htWoodcutters)');
     Sender.AddTypeS('TKMMissionDifficulty', '(mdNone, mdEasy3, mdEasy2, mdEasy1, mdNormal, ' +
       'mdHard1, mdHard2, mdHard3)');
+    Sender.AddTypeS('TKMPoint', 'record ' +
+        'X,Y: Integer; ' +
+      'end;');
     Sender.AddTypeS('TKMTerrainKind', '(tkCustom, tkGrass, tkMoss, tkPaleGrass, tkCoastSand, ' +
       'tkGrassSand1, tkGrassSand2, tkGrassSand3, tkSand, tkGrassDirt, ' +
       'tkDirt, tkCobbleStone, tkGrassyWater, tkSwamp, tkIce, ' +
@@ -378,6 +384,14 @@ begin
     Sender.AddTypeS('TKMTerrainPassability', '(tpNone, tpWalk, tpWalkRoad, tpBuildNoObj, tpBuild, ' +
       'tpMakeRoads, tpCutTree, tpFish, tpCrab, tpWolf, ' +
       'tpElevate, tpWorker, tpOwn, tpFactor)');
+    Sender.AddTypeS('TKMTerrainTileBrief', 'record ' +
+        'X,Y: Word; ' +
+        'Terrain: Word; ' +
+        'Rotation: Byte; ' +
+        'Height: Byte; ' +
+        'Obj: Word; ' +
+        'UpdateTerrain, UpdateRotation, UpdateHeight, UpdateObject: Boolean; ' +
+      'end;');
     Sender.AddTypeS('TKMTileMaskKind', '(mkNone, mkSoft1, mkSoft2, mkSoft3, mkStraight, ' +
       'mkGradient)');
     Sender.AddTypeS('TKMTileOverlay', '(toNone, toDig1, toDig2, toDig3, toDig4, ' +
@@ -398,17 +412,7 @@ begin
       'wtBow, wtCrossbow, wtHorse, wtFish, wtAll, ' +
       'wtWarfare, wtFood)');
     Sender.AddTypeS('TKMWoodcutterMode', '(wmChopAndPlant, wmChop, wmPlant)');
-    Sender.AddTypeS('TByteSet', 'set of Byte');
-    Sender.AddTypeS('TKMGroupTypeSet', 'set of TKMGroupType');
-    Sender.AddTypeS('TKMHouseTypeSet', 'set of TKMHouseType');
-    Sender.AddTypeS('TKMMissionDifficultySet', 'set of TKMMissionDifficulty');
-    Sender.AddTypeS('TKMUnitTypeSet', 'set of TKMUnitType');
-    Sender.AddTypeS('TKMWareTypeSet', 'set of TKMWareType');
-    Sender.AddTypeS('TAnsiStringArray', 'array of AnsiString');
-    Sender.AddTypeS('TIntegerArray', 'array of Integer');
-    Sender.AddTypeS('TKMPoint', 'record ' +
-        'X,Y: Integer; ' +
-      'end;');
+    // Dependent types of level 1
     Sender.AddTypeS('TKMAIAttackInfo', 'record ' +
         'UID: Integer; ' +
         'AttackType: TKMAIAttackType; ' +
@@ -432,14 +436,11 @@ begin
         'GroupType: TKMGroupType; ' +
         'PositionType: TKMAIDefencePosType; ' +
       'end;');
-    Sender.AddTypeS('TKMTerrainTileBrief', 'record ' +
-        'X,Y: Word; ' +
-        'Terrain: Word; ' +
-        'Rotation: Byte; ' +
-        'Height: Byte; ' +
-        'Obj: Word; ' +
-        'UpdateTerrain, UpdateRotation, UpdateHeight, UpdateObject: Boolean; ' +
-      'end;');
+    Sender.AddTypeS('TKMGroupTypeSet', 'set of TKMGroupType');
+    Sender.AddTypeS('TKMHouseTypeSet', 'set of TKMHouseType');
+    Sender.AddTypeS('TKMMissionDifficultySet', 'set of TKMMissionDifficulty');
+    Sender.AddTypeS('TKMUnitTypeSet', 'set of TKMUnitType');
+    Sender.AddTypeS('TKMWareTypeSet', 'set of TKMWareType');
     //*Types-Reg*//
 
     // Add CampaignData type and variable only after addition of all other custom types,
