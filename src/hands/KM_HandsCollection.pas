@@ -994,10 +994,34 @@ end;
 procedure TKMHandsCollection.SetHandsTeamColors;
 var
   I, J: Integer;
+  useMPTeamColors: Boolean;
+  teamColorInit: Boolean;
+  teamColor: Cardinal;
 begin
+  // For FFA games we can't use predefined team colors
+  useMPTeamColors := Length(fTeams) <= MAX_TEAMS;
+
+  teamColor := icBlack;
   for I := 0 to Length(fTeams) - 1 do
+  begin
+    teamColorInit := False;
     for J in fTeams[I] do
-      fHandsList[J].TeamColor := MP_TEAM_COLORS[I];
+    begin
+      // Use predefined team colors, if possible
+      if useMPTeamColors then
+        fHandsList[J].TeamColor := MP_TEAM_COLORS[I]
+      else
+      begin
+        // Otherwise use color of the first team member as a 'team color'
+        if not teamColorInit then
+        begin
+          teamColorInit := True;
+          teamColor := fHandsList[J].FlagColor;
+        end;
+        fHandsList[J].TeamColor := teamColor;
+      end;
+    end;
+  end;
 end;
 
 
