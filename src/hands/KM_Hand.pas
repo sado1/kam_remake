@@ -423,7 +423,7 @@ begin
     SelectionHotkeys[I] := -1; //Not set
 
   fAlliances[fID] := atAlly; //Others are set to enemy by default
-  fFlagColor := DEFAULT_TEAM_COLORS[fID]; //Init with default color, later replaced by Script
+  fFlagColor := DEFAULT_PLAYERS_COLORS[fID]; //Init with default color, later replaced by Script
   fTeamColor := fFlagColor;
   fTeam := NO_TEAM;
 

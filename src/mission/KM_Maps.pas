@@ -650,7 +650,7 @@ begin
   fTxtInfo.ResetInfo;
   for I:=0 to MAX_HANDS-1 do
   begin
-    FlagColors[I] := DEFAULT_TEAM_COLORS[I];
+    FlagColors[I] := DEFAULT_PLAYERS_COLORS[I];
     CanBeHuman[I] := False;
     CanBeClassicAI[I] := False;
     CanBeAdvancedAI[I] := False;
