@@ -147,6 +147,7 @@ var
   SKIP_RNG_CHECKS_FOR_SOME_GIC: Boolean = True; //Skip rng checks for Autosave and few other commands to have same AI city with predefined seed + mapconfig
   ALLOW_SELECT_ALLIES     :Boolean = True;  //Do we allow to select ally units or groups
   ALLOW_SELECT_ALL        :Boolean = DEBUG_CFG; //Do we allow to select all entities (allies and enemies)
+  SHOW_RES_CNT_K_FOR_10000:Boolean = not DEBUG_CFG; //Do we show resource amount with K postfix (10123 -> 10k)
   GAME_NO_UPDATE_ON_TIMER :Boolean = False; //Block game update by timer (only allow to update it manually)
   GAME_SAVE_STRIP_FOR_CRC :Boolean = False; //Strip unsynced data from Game saves, to compare saves CRC
   ALLOW_LOAD_UNSUP_VERSION_SAVE:

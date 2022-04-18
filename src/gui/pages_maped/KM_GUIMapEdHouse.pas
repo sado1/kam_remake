@@ -447,7 +447,7 @@ begin
   for I := 1 to STORE_RES_COUNT do
   begin
     tmp := TKMHouseStore(fHouse).CheckResIn(StoreResType[I]);
-    Button_Store[I].Caption := IfThen(tmp = 0, '-', IntToStr(tmp));
+    Button_Store[I].Caption := IfThen(tmp = 0, '-', IntToKStr(tmp));
   end;
 end;
 
@@ -490,10 +490,10 @@ begin
   for I := 1 to BARRACKS_RES_COUNT do
   begin
     tmp := TKMHouseBarracks(fHouse).CheckResIn(BarracksResType[I]);
-    Button_Barracks[I].Caption := IfThen(tmp = 0, '-', IntToStr(tmp));
+    Button_Barracks[I].Caption := IfThen(tmp = 0, '-', IntToKStr(tmp));
   end;
   tmp := TKMHouseBarracks(fHouse).MapEdRecruitCount;
-  Button_Barracks_Recruit.Caption := IfThen(tmp = 0, '-', IntToStr(tmp));
+  Button_Barracks_Recruit.Caption := IfThen(tmp = 0, '-', IntToKStr(tmp));
   Button_Barracks_RallyPoint.Down := (gCursor.Mode = cmMarkers) and (gCursor.Tag1 = MARKER_RALLY_POINT);
 end;
 
