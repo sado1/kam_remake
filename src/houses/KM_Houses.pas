@@ -274,10 +274,12 @@ type
     procedure ResAddToOut(aWare: TKMWareType; const aCount: Integer = 1);
     procedure ResAddToEitherFromScript(aWare: TKMWareType; aCount: Integer);
     procedure ResAddToBuild(aWare: TKMWareType; aCount: Integer = 1);
+    procedure ResTake(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); virtual;
     procedure ResTakeFromIn(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); virtual;
     procedure ResTakeFromOut(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False); virtual;
     function ResCanAddToIn(aWare: TKMWareType): Boolean; virtual;
     function ResCanAddToOut(aWare: TKMWareType): Boolean;
+    function CanHaveWareType(aWare: TKMWareType): Boolean; virtual;
     function ResOutputAvailable(aWare: TKMWareType; const aCount: Word): Boolean; virtual;
     property ResOrder[aId: Byte]: Integer read GetResOrder write SetResOrder;
     property ResIn[aId: Byte]: Word read GetResIn write SetResIn;
@@ -1709,6 +1711,12 @@ begin
 end;
 
 
+function TKMHouse.CanHaveWareType(aWare: TKMWareType): Boolean;
+begin
+  Result := ResCanAddToIn(aWare) or ResCanAddToOut(aWare);
+end;
+
+
 function TKMHouse.GetResIn(aI: Byte): Word;
 begin
   Result := fResourceIn[aI];
@@ -1787,6 +1795,15 @@ begin
     for I := 1 to 4 do
       if aWare = gResHouses[fType].ResInput[I] then
         Result := ResIn[I] - ResInLocked[I] >= aCount;
+end;
+
+
+procedure TKMHouse.ResTake(aWare: TKMWareType; aCount: Word = 1; aFromScript: Boolean = False);
+begin
+  //Range checking is done within ResTakeFromIn and ResTakeFromOut when aFromScript=True
+  //Only one will succeed, we don't care which one it is
+  ResTakeFromIn(aWare, aCount, aFromScript);
+  ResTakeFromOut(aWare, aCount, aFromScript);
 end;
 
 

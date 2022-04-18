@@ -2821,7 +2821,7 @@ begin
       res := WARE_ID_TO_TYPE[aType];
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil) and not H.IsDestroyed and H.IsComplete then
-        if H.ResCanAddToIn(res) or H.ResCanAddToOut(res) then
+        if H.CanHaveWareType(res) then
         begin
           if aCount > 0 then
           begin
@@ -2854,7 +2854,7 @@ begin
     begin
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil) and not H.IsDestroyed and H.IsComplete then
-        if H.ResCanAddToIn(aType) or H.ResCanAddToOut(aType) then
+        if H.CanHaveWareType(aType) then
         begin
           if aCount > 0 then
           begin
@@ -2891,15 +2891,10 @@ begin
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil) and not H.IsDestroyed and H.IsComplete then
         //Store/barracks mix input/output (add to input, take from output) so we must process them together
-        if H.ResCanAddToIn(res) or H.ResCanAddToOut(res) then
+        if H.CanHaveWareType(res) then
         begin
           if aCount > 0 then
-          begin
-            //Range checking is done within ResTakeFromIn and ResTakeFromOut when aFromScript=True
-            //Only one will succeed, we don't care which one it is
-            H.ResTakeFromIn(res, aCount, True);
-            H.ResTakeFromOut(res, aCount, True);
-          end;
+            H.ResTake(res, aCount, True);
         end
         else
           LogIntParamWarn('Actions.HouseTakeWaresFrom wrong ware type', [aHouseID, aType, aCount]);
@@ -2927,15 +2922,10 @@ begin
       H := fIDCache.GetHouse(aHouseID);
       if (H <> nil) and not H.IsDestroyed and H.IsComplete then
         //Store/barracks mix input/output (add to input, take from output) so we must process them together
-        if H.ResCanAddToIn(aType) or H.ResCanAddToOut(aType) then
+        if H.CanHaveWareType(aType) then
         begin
           if aCount > 0 then
-          begin
-            //Range checking is done within ResTakeFromIn and ResTakeFromOut when aFromScript=True
-            //Only one will succeed, we don't care which one it is
-            H.ResTakeFromIn(aType, aCount, True);
-            H.ResTakeFromOut(aType, aCount, True);
-          end;
+            H.ResTake(aType, aCount, True);
         end
         else
           LogParamWarn('Actions.HouseTakeWaresFromEx wrong ware type', [aHouseID, GetEnumName(TypeInfo(TKMWareType), Integer(aType)), aCount]);
