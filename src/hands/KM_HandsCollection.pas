@@ -1002,14 +1002,7 @@ begin
   begin
     teamColorInit := False;
     for J in fTeams[I] do
-    begin
-      if not teamColorInit then
-      begin
-        teamColorInit := True;
-        teamColor := fHandsList[J].FlagColor;
-      end;
-      fHandsList[J].TeamColor := teamColor;
-    end;
+      fHandsList[J].TeamColor := MP_TEAM_COLORS[I];
   end;
 end;
 

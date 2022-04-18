@@ -953,6 +953,16 @@ const
     $FF000000  //Black
   );
 
+  // Colors which are used for an MP teams
+  MP_TEAM_COLORS: array[0..MAX_TEAMS - 1] of Cardinal = (
+    $FF0000EB, // 1 Red
+    $FF076CF8, // 2 Orange
+    $FF07FFFF, // 3 Lauenburg yellow
+    $FF07FF07, // 4 Neon green
+    $FFFACE64, // 5 Sky blue
+    $FFDE8FFB  // 6 Pink
+  );
+
   // DEBUG colors (transparent color - opacity will be added by debug tools)
   tcBlack      = $000000;
   tcBlue       = $FF0000;
