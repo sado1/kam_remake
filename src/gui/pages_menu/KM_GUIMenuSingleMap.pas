@@ -526,13 +526,13 @@ begin
       DropBox_Color.Add(MakeListRow([''], [$FF000000], [MakePic(rxGuiMain, 0)]));
       aiColors := map.AIOnlyLocsColors; // save it locally to avoid multiple calculations
       //MP colours
-      for I := Low(MP_TEAM_COLORS) to High(MP_TEAM_COLORS) do
+      for I := Low(MP_PLAYER_COLORS) to High(MP_PLAYER_COLORS) do
       begin
         // Do not add used AI colors to the list
-        if IsColorCloseToColors(MP_TEAM_COLORS[I], aiColors, MIN_PLAYER_COLOR_DIST) then
+        if IsColorCloseToColors(MP_PLAYER_COLORS[I], aiColors, MIN_PLAYER_COLOR_DIST) then
           Continue;
 
-        DropBox_Color.Add(MakeListRow([''], [MP_TEAM_COLORS[I]], [MakePic(rxGuiMain, 30)]));
+        DropBox_Color.Add(MakeListRow([''], [MP_PLAYER_COLORS[I]], [MakePic(rxGuiMain, 30)]));
       end;
       DropBox_Color.ItemIndex := lastColor; //Keep previous selection
     end;

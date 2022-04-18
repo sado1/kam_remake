@@ -891,7 +891,7 @@ const
 const
   //Colors available for selection in multiplayer
   MP_COLOR_COUNT = 26;
-  MP_TEAM_COLORS: array [1..MP_COLOR_COUNT] of Cardinal = (
+  MP_PLAYER_COLORS: array [1..MP_COLOR_COUNT] of Cardinal = (
     $FF0000EB, // 1 Red
     $FF076CF8, // 2 Orange
     $FF00B5FF, // 3 Gold
