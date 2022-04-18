@@ -772,7 +772,7 @@
 820:Leather
 821:Mixed
 822:Downloaded maps
-823:Notice: the first "Repeating" attack will send all the troops that AI player has. However, for every next "Repeating" attack (as well as for "Single Attack"), it sends enough groups to exceed the "Minimum number of units to attack".
+823:Notice: the first "Repeating" attack will send all the troops that AI player has at the attacking outposts. However, for every next "Repeating" attack (as well as for "Single Attack"), it sends enough groups to exceed the "Minimum number of units to attack"
 824:Move
 825:View Readme PDF
 826:Failed to launch PDF viewer
