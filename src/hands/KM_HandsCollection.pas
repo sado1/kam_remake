@@ -994,16 +994,10 @@ end;
 procedure TKMHandsCollection.SetHandsTeamColors;
 var
   I, J: Integer;
-  teamColorInit: Boolean;
-  teamColor: Cardinal;
 begin
-  teamColor := icBlack;
   for I := 0 to Length(fTeams) - 1 do
-  begin
-    teamColorInit := False;
     for J in fTeams[I] do
       fHandsList[J].TeamColor := MP_TEAM_COLORS[I];
-  end;
 end;
 
 
