@@ -166,6 +166,7 @@ uses
   {$IFDEF USE_MAD_EXCEPT} KM_Exceptions, {$ENDIF}
   KM_FormLogistics,
   KM_Main, KM_Controls, KM_Log, KM_Sound, KM_GameInputProcess, KM_GameInputProcess_Multi,
+  KM_HandsCollection,
   KM_GameSavePoints,
   KM_Cursor, KM_ResTexts, KM_ResKeys,
   KM_IoGraphicUtils, KM_Settings,
@@ -1066,11 +1067,14 @@ end;
 
 procedure TKMGameApp.GameStarted(aGameMode: TKMGameMode);
 begin
+  Assert(gGame <> nil);
+
   if gMain <> nil then
   begin
     gMain.FormMain.SetExportGameStats(aGameMode in [gmMultiSpectate, gmReplaySingle, gmReplayMulti]);
     gMain.FormMain.SetSaveEditableMission(aGameMode = gmMapEd);
     gMain.FormMain.SetSaveGameWholeMapImage(True);
+    gMain.FormMain.SetMySpecHandIndex(gMySpectator.HandID);
   end;
 
   if Assigned(FormLogistics) then

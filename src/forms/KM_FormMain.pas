@@ -6,6 +6,7 @@ uses
   ComCtrls, Controls, Buttons, Dialogs, ExtCtrls, Forms, Graphics, Menus, StdCtrls,
   KM_RenderControl, KM_CommonTypes,
   KM_WindowParams, KM_SettingsDev,
+  KM_Defaults,
   {$IFDEF FPC} LResources, Spin, {$ENDIF}
   {$IFDEF WDC} Vcl.Samples.Spin, {$ENDIF}
   {$IFDEF MSWindows} KM_VclMenuHint, ShellAPI, Windows, Messages; {$ENDIF}
@@ -362,6 +363,7 @@ type
     procedure SetSaveEditableMission(aEnabled: Boolean);
     procedure SetSaveGameWholeMapImage(aEnabled: Boolean);
     procedure SetExportGameStats(aEnabled: Boolean);
+    procedure SetMySpecHandIndex(aHandID: TKMHandID);
     procedure ShowFolderPermissionError;
     procedure SetEntitySelected(aEntityUID: Integer; aEntity2UID: Integer = 0);
     property OnControlsUpdated: TObjectIntegerEvent read fOnControlsUpdated write fOnControlsUpdated;
@@ -382,7 +384,6 @@ uses
   {$IFDEF FASTMM} FastMM4, {$ENDIF}
   KromUtils,
   KromShellUtils,
-  KM_Defaults,
   KM_Main,
   //Use these units directly to avoid pass-through methods in fMain
   KM_Resource, KM_ResHouses, KM_ResWares,
@@ -518,6 +519,14 @@ end;
 procedure TFormMain.SetExportGameStats(aEnabled: Boolean);
 begin
   ExportGameStats.Enabled := aEnabled;
+end;
+
+
+procedure TFormMain.SetMySpecHandIndex(aHandID: TKMHandID);
+begin
+  if not InRange(aHandID, 0, MAX_HANDS - 1) then Exit;
+
+  RGPlayer.ItemIndex := aHandID;
 end;
 
 
