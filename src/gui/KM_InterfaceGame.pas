@@ -355,6 +355,7 @@ begin
 end;
 
 
+// This event happens every ~33ms if the Key is Down and holded
 procedure TKMUserInterfaceGame.KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean);
   {$IFDEF MSWindows}
 var

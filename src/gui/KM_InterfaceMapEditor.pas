@@ -875,6 +875,7 @@ begin
 end;
 
 
+// This event happens every ~33ms if the Key is Down and holded
 procedure TKMMapEdInterface.KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean);
 var
   keyHandled, keyPassedToModal: Boolean;

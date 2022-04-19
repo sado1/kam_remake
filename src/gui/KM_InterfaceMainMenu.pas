@@ -381,6 +381,7 @@ begin
 end;
 
 
+// This event happens every ~33ms if the Key is Down and holded
 procedure TKMMainMenuInterface.KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean);
 begin
   inherited;

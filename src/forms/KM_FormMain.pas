@@ -518,6 +518,7 @@ begin
 end;
 
 
+// This event happens every ~33ms if the Key is Down and holded
 procedure TFormMain.FormKeyDownProc(aKey: Word; aShift: TShiftState);
 begin
   if aKey = gResKeys[kfDebugWindow] then

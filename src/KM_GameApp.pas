@@ -378,6 +378,7 @@ begin
 end;
 
 
+// This event happens every ~33ms if the Key is Down and holded
 procedure TKMGameApp.KeyDown(Key: Word; Shift: TShiftState);
 var
   keyHandled: Boolean;
