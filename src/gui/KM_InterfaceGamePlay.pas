@@ -181,6 +181,9 @@ type
     function CanShowAllies: Boolean;
     procedure UpdateMessageImages;
     procedure UpdateReplayBar;
+
+    function CanHandleKey(Key: Word; Shift: TShiftState): Boolean;
+    function SpeedChangeAllowedInMP: Boolean;
   protected
     Sidebar_Top: TKMImage;
     Sidebar_Middle: TKMImage;
@@ -3394,6 +3397,7 @@ begin
     Exit;
   end;
 
+  keyHandled := False;
   inherited KeyDown(Key, Shift, keyHandled);
   if keyHandled then Exit;
 
@@ -3496,18 +3500,16 @@ begin
 end;
 
 
-// Note: we deliberately don't pass any Keys to MyControls when game is not running
-// thats why MyControls.KeyUp is only in gsRunning clause
-// Ignore all keys if game is on 'Pause'
-procedure TKMGamePlayInterface.KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
+function TKMGamePlayInterface.SpeedChangeAllowedInMP: Boolean;
+begin
+  Result := MULTIPLAYER_SPEEDUP
+            or gGame.CanMPPlayerChangeSpeed;
+end;
 
-  function SpeedChangeAllowedInMP: Boolean;
-  begin
-    Result := MULTIPLAYER_SPEEDUP
-              or gGame.CanMPPlayerChangeSpeed;
-  end;
 
-  function GameOnPause: Boolean;
+function TKMGamePlayInterface.CanHandleKey(Key: Word; Shift: TShiftState): Boolean;
+
+  function IsGameOnPause: Boolean;
   begin
     Result := False;
     if not gGame.IsPaused then Exit(False);
@@ -3517,6 +3519,30 @@ procedure TKMGamePlayInterface.KeyUp(Key: Word; Shift: TShiftState; var aHandled
       umMP, umSpectate: Result := SpeedChangeAllowedInMP or (PAUSE_GAME_BEFORE_TICK <> -1);
     end;
   end;
+
+begin
+  Result := True;
+  if IsGameOnPause then
+  begin
+    if Key = gResKeys[kfPause] then
+    begin
+      SetPause(False);
+      Exit(False);
+    end;
+
+    if IsKeyBlockedOnPause(Key) then
+      Exit(False);
+  end
+  else
+  if gGame.IsWaitingForNetwork and IsKeyBlockedOnPause(Key) then
+    Exit(False);
+end;
+
+
+// Note: we deliberately don't pass any Keys to MyControls when game is not running
+// thats why MyControls.KeyUp is only in gsRunning clause
+// Ignore all keys if game is on 'Pause'
+procedure TKMGamePlayInterface.KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
 var
   selectId: Integer;
   specPlayerIndex: ShortInt;
@@ -3524,20 +3550,8 @@ var
 begin
   aHandled := True; // assume we handle all keys here
 
-  if GameOnPause then
-  begin
-    if Key = gResKeys[kfPause] then
-    begin
-      SetPause(False);
-      Exit;
-    end;
-
-    if IsKeyBlockedOnPause(Key) then
-      Exit;
-  end
-  else
-  if gGame.IsWaitingForNetwork and IsKeyBlockedOnPause(Key) then
-    Exit;
+  // Check if the game is on pause / waiting for network / key is blocked
+  if not CanHandleKey(Key, Shift) then Exit;
 
   if fMyControls.KeyUp(Key, Shift) then Exit;
 
