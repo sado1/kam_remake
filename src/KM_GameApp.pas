@@ -556,6 +556,10 @@ end;
 
 procedure TKMGameApp.CreateGame(aGameMode: TKMGameMode);
 begin
+  //Reset controls if MainForm exists (KMR could be run without main form)
+  if gMain <> nil then
+    gMain.FormMain.ControlsReset;
+
   gGame := TKMGame.Create(aGameMode, gRender, GameDestroyed,
                           fSaveWorkerThreadHolder,
                           fBaseSaveWorkerThreadHolder,
@@ -711,10 +715,6 @@ begin
   StopGame(grSilent); //Stop everything silently
   LoadGameAssets;
 
-  //Reset controls if MainForm exists (KMR could be run without main form)
-  if gMain <> nil then
-    gMain.FormMain.ControlsReset;
-
   CreateGame(aGameMode);
   try
     gGame.LoadFromFile(filePath, aGIPPath);
@@ -755,10 +755,6 @@ begin
   //!!!!! ------------------------------------------------------------
   StopGame(grSilent); //Stop everything silently
   LoadGameAssets;
-
-  //Reset controls if MainForm exists (KMR could be run without main form)
-  if gMain <> nil then
-    gMain.FormMain.ControlsReset;
 
   CreateGame(aGameMode);
   try
@@ -813,10 +809,6 @@ begin
   StopGame(grSilent); //Stop everything silently
   LoadGameAssets;
 
-  //Reset controls if MainForm exists (KMR could be run without main form)
-  if gMain <> nil then
-    gMain.FormMain.ControlsReset;
-
   CreateGame(gameMode);
   try
     // SavedReplays have been just created, and we will reassign them in the next line.
@@ -860,10 +852,6 @@ var
 begin
   StopGame(grSilent); //Stop everything silently
   LoadGameAssets;
-
-  //Reset controls if MainForm exists (KMR could be run without main form)
-  if gMain <> nil then
-    gMain.FormMain.ControlsReset;
 
   CreateGame(aGameMode);
   gGame.SetSeed(4); //Every time the game will be the same as previous. Good for debug.
