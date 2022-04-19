@@ -16,7 +16,7 @@ uses
 
 type
   // Common class for ingame interfaces (Gameplay, MapEd)
-  TKMUserInterfaceGame = class(TKMUserInterfaceCommon)
+  TKMUserInterfaceGame = class abstract(TKMUserInterfaceCommon)
   private
     fDragScrollingCursorPos: TPoint;
     fDragScrollingViewportPos: TKMPointF;
@@ -51,6 +51,7 @@ type
     procedure InitDebugControls;
 
     procedure ViewportPositionChanged(const aPos: TKMPointF);
+    procedure OptionsChanged; virtual; abstract;
   public
     constructor Create(aRender: TRender); reintroduce;
     destructor Destroy; override;
@@ -349,9 +350,10 @@ end;
 
 procedure TKMUserInterfaceGame.KeyPress(Key: Char);
 begin
-  inherited;
   if Assigned(fOnUserAction) then
     fOnUserAction(uatKeyPress);
+
+  inherited;
 end;
 
 
@@ -362,10 +364,19 @@ var
   windowRect: TRect;
   {$ENDIF}
 begin
-  inherited;
-
   if Assigned(fOnUserAction) then
     fOnUserAction(uatKeyDown);
+
+  if aHandled then Exit;
+
+  inherited;
+
+  // Update game options in case we used sounds hotkeys
+  if aHandled then
+  begin
+    OptionsChanged;
+    Exit;
+  end;
 
   aHandled := True;
   //Scrolling
@@ -409,9 +420,16 @@ begin
   if Assigned(fOnUserAction) then
     fOnUserAction(uatKeyUp);
 
+  if aHandled then Exit;
+
   inherited;
 
-  if aHandled then Exit;
+  // Update game options in case we used sounds hotkeys
+  if aHandled then
+  begin
+    OptionsChanged;
+    Exit;
+  end;
 
   aHandled := True;
   //Scrolling

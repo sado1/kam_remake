@@ -126,7 +126,8 @@ type
     function GetToolbarWidth: Integer; override;
 
     procedure HistoryUpdateUI;
-    procedure GameOptionsChanged;
+    procedure MapEdOptionsWereChanged;
+    procedure OptionsChanged; override;
   public
     constructor Create(aRender: TRender);
     destructor Destroy; override;
@@ -275,7 +276,7 @@ begin
   fGuiPlayer := TKMMapEdPlayer.Create(Panel_Common, PageChanged);
   fGuiMission := TKMMapEdMission.Create(Panel_Common, PageChanged);
   fGuiMenu := TKMMapEdMenu.Create(Panel_Common, PageChanged, MapTypeChanged, UpdateHotkeys);
-  fGuiMenu.GuiMenuSettings.GUICommonOptions.OnOptionsChange := GameOptionsChanged;
+  fGuiMenu.GuiMenuSettings.GUICommonOptions.OnOptionsChange := MapEdOptionsWereChanged;
 
   //Objects pages
   fGuiUnit := TKMMapEdUnit.Create(Panel_Common);
@@ -1158,9 +1159,15 @@ begin
 end;
 
 
-procedure TKMMapEdInterface.GameOptionsChanged;
+procedure TKMMapEdInterface.MapEdOptionsWereChanged;
 begin
   fMinimap.Update;
+end;
+
+
+procedure TKMMapEdInterface.OptionsChanged;
+begin
+  fGuiMenu.GuiMenuSettings.GUICommonOptions.Refresh;
 end;
 
 

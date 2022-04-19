@@ -85,7 +85,7 @@ type
 
     property ToolbarWidth: Integer read GetToolbarWidth;
 
-    procedure KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean); virtual; abstract;
+    procedure KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean); virtual;
     procedure KeyPress(Key: Char); virtual;
     procedure KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean); virtual;
     //Child classes don't pass these events to controls depending on their state
@@ -244,6 +244,41 @@ begin
 end;
 
 
+// This event happens every ~33ms if the Key is Down and holded
+procedure TKMUserInterfaceCommon.KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean);
+begin
+  if aHandled then Exit;
+
+  if Key = gResKeys[kfMusicVolumeUp] then
+  begin
+    gGameSettings.MusicVolume := gGameSettings.MusicVolume + 1 / OPT_SLIDER_MAX;
+    gMusic.Volume := gGameSettings.MusicVolume;
+    aHandled := True;
+  end;
+
+  if Key = gResKeys[kfMusicVolumeDown] then
+  begin
+    gGameSettings.MusicVolume := gGameSettings.MusicVolume - 1 / OPT_SLIDER_MAX;
+    gMusic.Volume := gGameSettings.MusicVolume;
+    aHandled := True;
+  end;
+
+  if Key = gResKeys[kfSoundVolumeUp] then
+  begin
+    gGameSettings.SoundFXVolume := gGameSettings.SoundFXVolume + 1 / OPT_SLIDER_MAX;
+    gSoundPlayer.UpdateSoundVolume(gGameSettings.SoundFXVolume);
+    aHandled := True;
+  end;
+
+  if Key = gResKeys[kfSoundVolumeDown] then
+  begin
+    gGameSettings.SoundFXVolume := gGameSettings.SoundFXVolume - 1 / OPT_SLIDER_MAX;
+    gSoundPlayer.UpdateSoundVolume(gGameSettings.SoundFXVolume);
+    aHandled := True;
+  end;
+end;
+
+
 procedure TKMUserInterfaceCommon.KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
 var
   mutedAll: Boolean;
@@ -276,38 +311,10 @@ begin
     aHandled := True;
   end;
 
-  if Key = gResKeys[kfMusicVolumeUp] then
-  begin
-    gGameSettings.MusicVolume := gGameSettings.MusicVolume + 1 / OPT_SLIDER_MAX;
-    gMusic.Volume := gGameSettings.MusicVolume;
-    aHandled := True;
-  end;
-
-  if Key = gResKeys[kfMusicVolumeDown] then
-  begin
-    gGameSettings.MusicVolume := gGameSettings.MusicVolume - 1 / OPT_SLIDER_MAX;
-    gMusic.Volume := gGameSettings.MusicVolume;
-    aHandled := True;
-  end;
-
   if Key = gResKeys[kfMusicMute] then
   begin
     gMusic.ToggleMuted;
     gGameSettings.MusicVolume := gMusic.Volume;
-    aHandled := True;
-  end;
-
-  if Key = gResKeys[kfSoundVolumeUp] then
-  begin
-    gGameSettings.SoundFXVolume := gGameSettings.SoundFXVolume + 1 / OPT_SLIDER_MAX;
-    gSoundPlayer.UpdateSoundVolume(gGameSettings.SoundFXVolume);
-    aHandled := True;
-  end;
-
-  if Key = gResKeys[kfSoundVolumeDown] then
-  begin
-    gGameSettings.SoundFXVolume := gGameSettings.SoundFXVolume - 1 / OPT_SLIDER_MAX;
-    gSoundPlayer.UpdateSoundVolume(gGameSettings.SoundFXVolume);
     aHandled := True;
   end;
 
@@ -321,7 +328,7 @@ begin
   if Key = gResKeys[kfMuteAll] then
   begin
     mutedAll := gSoundPlayer.Muted and gMusic.Muted;
-    
+
     gSoundPlayer.Muted := not mutedAll;
     gMusic.Muted := not mutedAll;
     gGameSettings.SoundFXVolume := gSoundPlayer.Volume;

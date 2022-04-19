@@ -309,6 +309,7 @@ type
       function GetToolbarWidth: Integer; override;
       function GetDebugInfo: string; override;
       function ZoomChangeBlocked: Boolean; override;
+      procedure OptionsChanged; override;
   public
     constructor Create(aRender: TRender; aUIMode: TUIMode); reintroduce;
     destructor Destroy; override;
@@ -3325,6 +3326,12 @@ begin
 end;
 
 
+procedure TKMGamePlayInterface.OptionsChanged;
+begin
+  fGuiMenuOptions.Refresh;
+end;
+
+
 function TKMGamePlayInterface.IsKeyFuncBlockedOnPause(aKeyFunc: TKMKeyFunction): Boolean;
 var
   allowedKeyFuncs: TKMKeyFunctionSet;
@@ -3536,10 +3543,6 @@ begin
 
   keyHandled := False;
   inherited KeyUp(Key, Shift, keyHandled);
-
-  // Update game options in case we used sounds hotkeys
-  if keyHandled then
-    fGuiMenuOptions.Refresh;
 
   if (fUIMode = umReplay) and (Key = gResKeys[kfPause]) then
   begin

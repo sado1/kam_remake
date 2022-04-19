@@ -384,11 +384,20 @@ end;
 // This event happens every ~33ms if the Key is Down and holded
 procedure TKMMainMenuInterface.KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean);
 begin
+  // First check if controls can handle the key (f.e. set KeyBindings)
+  if fMyControls.KeyDown(Key, Shift) then
+  begin
+    aHandled := True;
+    Exit; //Handled by Controls
+  end;
+
   inherited;
 
-  aHandled := True; // assume we handle all keys here
+  // Update game options in case we used sounds hotkeys
+  if aHandled then
+    fMenuOptions.Refresh;
 
-  if fMyControls.KeyDown(Key, Shift) then Exit; //Handled by Controls
+  aHandled := True; // assume we handle all keys here
 
   if (fMenuPage <> nil) then
     fMenuPage.MenuKeyDown(Key, Shift);
@@ -397,6 +406,7 @@ end;
 
 procedure TKMMainMenuInterface.KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
 begin
+  // First check if controls can handle the key (f.e. set KeyBindings)
   if fMyControls.KeyUp(Key, Shift) then
   begin
     aHandled := True;
@@ -405,6 +415,7 @@ begin
 
   inherited;
 
+  // Update game options in case we used sounds hotkeys
   if aHandled then
     fMenuOptions.Refresh;
 
