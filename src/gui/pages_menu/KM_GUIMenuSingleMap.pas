@@ -494,7 +494,7 @@ begin
 
       //AI type
       DropBox_AIPlayerType.Clear;
-      if map.HasDifferentAITypes then
+      if map.HasDifferentAITypes(map.DefaultHuman) then
       begin
         DropBox_AIPlayerType.Add(gResTexts[TX_AI_PLAYER_CLASSIC_SHORT], Byte(aitClassic));
         DropBox_AIPlayerType.Add(gResTexts[TX_AI_PLAYER_ADVANCED_SHORT], Byte(aitAdvanced));

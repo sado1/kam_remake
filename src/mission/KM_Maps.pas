@@ -177,7 +177,7 @@ type
     property CanBeAICount: Byte read GetCanBeAICount;
     property CanBeOnlyAICount: Byte read GetCanBeOnlyAICount;
     property CanBeHumanAndAICount: Byte read GetCanBeHumanAndAICount;
-    function HasDifferentAITypes: Boolean;
+    function HasDifferentAITypes(aExceptLoc: TKMHandID = -1): Boolean;
   end;
 
 
@@ -956,14 +956,19 @@ begin
 end;
 
 
-function TKMMapInfo.HasDifferentAITypes: Boolean;
+function TKMMapInfo.HasDifferentAITypes(aExceptLoc: TKMHandID = -1): Boolean;
 var
   I: Integer;
 begin
   Result := False;
-  for I := Low(CanBeHuman) to High(CanBeHuman) do
+  for I := 0 to MAX_HANDS - 1 do
+  begin
+    if I = aExceptLoc then
+      Continue;
+
     if CanBeClassicAI[I] and CanBeAdvancedAI[I] then
       Result := True;
+  end;
 end;
 
 
