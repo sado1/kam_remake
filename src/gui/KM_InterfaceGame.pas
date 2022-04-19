@@ -64,7 +64,7 @@ type
 
     procedure DebugControlsUpdated(aSenderTag: Integer); override;
 
-    procedure KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean); override;
+    procedure KeyDown(Key: Word; Shift: TShiftState; aIsFirst: Boolean; var aHandled: Boolean); override;
     procedure KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean); override;
     procedure KeyPress(Key: Char); override;
     procedure MouseWheel(Shift: TShiftState; WheelSteps: Integer; X,Y: Integer; var aHandled: Boolean); override;
@@ -358,7 +358,7 @@ end;
 
 
 // This event happens every ~33ms if the Key is Down and holded
-procedure TKMUserInterfaceGame.KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean);
+procedure TKMUserInterfaceGame.KeyDown(Key: Word; Shift: TShiftState; aIsFirst: Boolean; var aHandled: Boolean);
   {$IFDEF MSWindows}
 var
   windowRect: TRect;

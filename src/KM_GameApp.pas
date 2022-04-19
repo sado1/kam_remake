@@ -129,7 +129,7 @@ type
     property GlobalTickCount: Cardinal read fGlobalTickCount;
     property Chat: TKMChat read fChat;
 
-    procedure KeyDown(Key: Word; Shift: TShiftState);
+    procedure KeyDown(Key: Word; Shift: TShiftState; aIsFirst: Boolean);
     procedure KeyPress(Key: Char);
     procedure KeyUp(Key: Word; Shift: TShiftState);
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
@@ -379,7 +379,7 @@ end;
 
 
 // This event happens every ~33ms if the Key is Down and holded
-procedure TKMGameApp.KeyDown(Key: Word; Shift: TShiftState);
+procedure TKMGameApp.KeyDown(Key: Word; Shift: TShiftState; aIsFirst: Boolean);
 var
   keyHandled: Boolean;
 begin
@@ -390,9 +390,9 @@ begin
   end;
 
   if gGame <> nil then
-    gGame.ActiveInterface.KeyDown(Key, Shift, keyHandled)
+    gGame.ActiveInterface.KeyDown(Key, Shift, aIsFirst, keyHandled)
   else
-    fMainMenuInterface.KeyDown(Key, Shift, keyHandled);
+    fMainMenuInterface.KeyDown(Key, Shift, aIsFirst, keyHandled);
 end;
 
 

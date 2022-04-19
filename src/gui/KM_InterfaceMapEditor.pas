@@ -139,7 +139,7 @@ type
     property GuiMission: TKMMapEdMission read fGuiMission;
     property GuiMenu: TKMMapEdMenu read fGuiMenu;
 
-    procedure KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean); override;
+    procedure KeyDown(Key: Word; Shift: TShiftState; aIsFirst: Boolean; var aHandled: Boolean); override;
     procedure KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean); override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X,Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X,Y: Integer; var aHandled: Boolean); override;
@@ -877,7 +877,7 @@ end;
 
 
 // This event happens every ~33ms if the Key is Down and holded
-procedure TKMMapEdInterface.KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean);
+procedure TKMMapEdInterface.KeyDown(Key: Word; Shift: TShiftState; aIsFirst: Boolean; var aHandled: Boolean);
 var
   keyHandled, keyPassedToModal: Boolean;
 begin
@@ -900,7 +900,7 @@ begin
 
   if keyHandled then Exit;
 
-  inherited KeyDown(Key, Shift, keyHandled);
+  inherited KeyDown(Key, Shift, aIsFirst, keyHandled);
   if keyHandled then Exit;
 
   gCursor.SState := Shift; // Update Shift state on KeyDown

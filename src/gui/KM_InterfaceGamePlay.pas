@@ -361,7 +361,7 @@ type
     procedure Load(LoadStream: TKMemoryStream);
     procedure LoadMinimap(LoadStream: TKMemoryStream);
 
-    procedure KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean); override;
+    procedure KeyDown(Key: Word; Shift: TShiftState; aIsFirst: Boolean; var aHandled: Boolean); override;
     procedure KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean); override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X,Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X,Y: Integer; var aHandled: Boolean); override;
@@ -3382,7 +3382,7 @@ end;
 
 
 // This event happens every ~33ms if the Key is Down and holded
-procedure TKMGamePlayInterface.KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean);
+procedure TKMGamePlayInterface.KeyDown(Key: Word; Shift: TShiftState; aIsFirst: Boolean; var aHandled: Boolean);
 var
   rect: TKMRect;
   keyHandled: Boolean;
@@ -3398,7 +3398,7 @@ begin
   end;
 
   keyHandled := False;
-  inherited KeyDown(Key, Shift, keyHandled);
+  inherited KeyDown(Key, Shift, aIsFirst, keyHandled);
   if keyHandled then Exit;
 
     // As we don't have names for teams in SP we only allow showing team names in MP or MP replays

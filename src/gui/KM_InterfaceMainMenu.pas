@@ -71,7 +71,7 @@ type
     procedure ExportPages(const aPath: string); override;
     procedure ReturnToLobby(const aSaveName: UnicodeString);
 
-    procedure KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean); override;
+    procedure KeyDown(Key: Word; Shift: TShiftState; aIsFirst: Boolean; var aHandled: Boolean); override;
     procedure KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean); override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X,Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X,Y: Integer; var aHandled: Boolean); override;
@@ -382,7 +382,7 @@ end;
 
 
 // This event happens every ~33ms if the Key is Down and holded
-procedure TKMMainMenuInterface.KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean);
+procedure TKMMainMenuInterface.KeyDown(Key: Word; Shift: TShiftState; aIsFirst: Boolean; var aHandled: Boolean);
 begin
   // First check if controls can handle the key (f.e. set KeyBindings)
   if fMyControls.KeyDown(Key, Shift) then

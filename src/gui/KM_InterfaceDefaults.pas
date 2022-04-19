@@ -85,7 +85,7 @@ type
 
     property ToolbarWidth: Integer read GetToolbarWidth;
 
-    procedure KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean); virtual;
+    procedure KeyDown(Key: Word; Shift: TShiftState; aIsFirst: Boolean; var aHandled: Boolean); virtual;
     procedure KeyPress(Key: Char); virtual;
     procedure KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean); virtual;
     //Child classes don't pass these events to controls depending on their state
@@ -245,7 +245,7 @@ end;
 
 
 // This event happens every ~33ms if the Key is Down and holded
-procedure TKMUserInterfaceCommon.KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean);
+procedure TKMUserInterfaceCommon.KeyDown(Key: Word; Shift: TShiftState; aIsFirst: Boolean; var aHandled: Boolean);
 begin
   if aHandled then Exit;
 

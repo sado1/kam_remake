@@ -324,7 +324,7 @@ type
     fUpdating: Boolean;
     fMissionDefOpenPath: UnicodeString;
     fOnControlsUpdated: TObjectIntegerEvent;
-    procedure FormKeyDownProc(aKey: Word; aShift: TShiftState);
+    procedure FormKeyDownProc(aKey: Word; aShift: TShiftState; aIsFirst: Boolean);
     procedure FormKeyUpProc(aKey: Word; aShift: TShiftState);
 //    function ConfirmExport: Boolean;
     function GetMouseWheelStepsCnt(aWheelData: Integer): Integer;
@@ -345,6 +345,7 @@ type
     procedure WMAppCommand(var Msg: TMessage); message WM_APPCOMMAND;
     procedure WMMouseWheel(var Msg: TMessage); message WM_MOUSEWHEEL;
     procedure WMMenuSelect(var Msg: TWMMenuSelect); message WM_MENUSELECT;
+    procedure DoMessage(var Msg: TMsg; var Handled: Boolean);
   private
     fDevSettings: TKMDevSettings;
   protected
@@ -415,6 +416,8 @@ end;
 //Remove VCL panel and use flicker-free TMyPanel instead
 procedure TFormMain.FormCreate(Sender: TObject);
 begin
+  Application.OnMessage := DoMessage;
+
   fStartVideoPlayed := False;
   RenderArea := TKMRenderControl.Create(Self);
   RenderArea.Parent := Self;
@@ -519,7 +522,7 @@ end;
 
 
 // This event happens every ~33ms if the Key is Down and holded
-procedure TFormMain.FormKeyDownProc(aKey: Word; aShift: TShiftState);
+procedure TFormMain.FormKeyDownProc(aKey: Word; aShift: TShiftState; aIsFirst: Boolean);
 begin
   if aKey = gResKeys[kfDebugWindow] then
   begin
@@ -527,7 +530,8 @@ begin
     ControlsSetVisibile(SHOW_DEBUG_CONTROLS, not (ssCtrl in aShift)); //Hide groupbox when Ctrl is pressed
   end;
 
-  if gGameApp <> nil then gGameApp.KeyDown(aKey, aShift);
+  if gGameApp <> nil then
+    gGameApp.KeyDown(aKey, aShift, aIsFirst);
 end;
 
 
@@ -539,8 +543,8 @@ end;
 
 procedure TFormMain.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  Assert(KeyPreview, 'MainForm should recieve all keys to pass them to fGame');
-  FormKeyDownProc(Key, Shift);
+//  Assert(KeyPreview, 'MainForm should recieve all keys to pass them to fGame');
+//  FormKeyDownProc(Key, Shift, True);
 end;
 
 
@@ -579,7 +583,7 @@ procedure TFormMain.RenderAreaMouseDown(Sender: TObject; Button: TMouseButton; S
 begin
   // Handle middle mouse button as Key
   if Button = mbMiddle then
-    FormKeyDownProc(VK_MBUTTON, Shift)
+    FormKeyDownProc(VK_MBUTTON, Shift, True)
   else if gGameApp <> nil then
     gGameApp.MouseDown(Button, Shift, X, Y);
 end;
@@ -1890,6 +1894,35 @@ begin
   end;
 
   fMenuItemHint.DoActivateHint(menuItem);
+end;
+
+
+procedure TFormMain.DoMessage(var Msg: TMsg; var Handled: Boolean);
+var
+  //repCount: Integer;
+  prevState: Integer;
+  shiftState: TShiftState;
+  key: Word;
+begin
+  // Application.OnMessage allows us to catch ALL messages (even those handled by F11 panel controls when they are active)
+  if Msg.message = WM_KEYDOWN then
+  begin
+    // Msg.lParam format:
+    // [0..15 repCount] - always returns 1 ?
+    // [16..23 scan code]
+    // [24 extended bit]
+    // [25..28 reserved]
+    // [29 context]
+    // [30 previous state]
+    // [31 transition state]
+
+    //repCount := Msg.lParam and $FF;
+    prevState := Msg.lParam shr 30 and $1;
+    shiftState := KeyDataToShiftState(Msg.lParam);
+    key := Msg.wParam;
+
+    FormKeyDownProc(Key, shiftState, prevState = 0);
+  end;
 end;
 {$ENDIF}
 
