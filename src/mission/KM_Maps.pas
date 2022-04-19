@@ -1489,8 +1489,10 @@ var
       smByFavouriteDesc:      Result := not A.IsFavourite and B.IsFavourite;
       smByNameAsc:            Result := CompareTextLogical(A.Name, B.Name) < 0;
       smByNameDesc:           Result := CompareTextLogical(A.Name, B.Name) > 0;
-      smBySizeAsc:            Result := MapSizeIndex(A.MapSizeX, A.MapSizeY) < MapSizeIndex(B.MapSizeX, B.MapSizeY);
-      smBySizeDesc:           Result := MapSizeIndex(A.MapSizeX, A.MapSizeY) > MapSizeIndex(B.MapSizeX, B.MapSizeY);
+      smBySizeAsc:            // Compare by actual map area, size indexes will be sorted automatically
+                              Result := A.MapSizeX*A.MapSizeY < B.MapSizeX*B.MapSizeY;
+      smBySizeDesc:           // Compare by actual map area, size indexes will be sorted automatically
+                              Result := A.MapSizeX*A.MapSizeY > B.MapSizeX*B.MapSizeY;
       smByPlayersAsc:         Result := A.LocCount < B.LocCount;
       smByPlayersDesc:        Result := A.LocCount > B.LocCount;
       smByHumanPlayersAsc:    Result := A.HumanPlayerCount < B.HumanPlayerCount;
