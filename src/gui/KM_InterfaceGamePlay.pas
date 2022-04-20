@@ -184,6 +184,17 @@ type
 
     function CanHandleKey(Key: Word; Shift: TShiftState): Boolean;
     function SpeedChangeAllowedInMP: Boolean;
+
+    procedure HandleReplayPauseKey(Key: Word; Shift: TShiftState);
+    procedure HandleMiscKeys(Key: Word; Shift: TShiftState);
+    procedure HandleSelectKeys(Key: Word; Shift: TShiftState);
+    procedure HandleMenuKeys(Key: Word; Shift: TShiftState);
+    procedure HandleHouseKeys(Key: Word; Shift: TShiftState);
+    procedure HandleSpeedUpKeys(Key: Word; Shift: TShiftState);
+    function HandleSpectatorKeys(Key: Word; Shift: TShiftState): Boolean;
+    procedure HandleFieldPlanKeys(Key: Word; Shift: TShiftState);
+    procedure HandlePauseKey(Key: Word; Shift: TShiftState);
+    procedure HandleDebugKeys(Key: Word; Shift: TShiftState);
   protected
     Sidebar_Top: TKMImage;
     Sidebar_Middle: TKMImage;
@@ -3539,35 +3550,22 @@ begin
 end;
 
 
-// Note: we deliberately don't pass any Keys to MyControls when game is not running
-// thats why MyControls.KeyUp is only in gsRunning clause
-// Ignore all keys if game is on 'Pause'
-procedure TKMGamePlayInterface.KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
-var
-  selectId: Integer;
-  specPlayerIndex: ShortInt;
-  keyHandled, doSetPause: Boolean;
+procedure TKMGamePlayInterface.HandleReplayPauseKey(Key: Word; Shift: TShiftState);
 begin
-  aHandled := True; // assume we handle all keys here
+  if (fUIMode <> umReplay) or (Key <> gResKeys[kfPause]) then Exit;
 
-  // Check if the game is on pause / waiting for network / key is blocked
-  if not CanHandleKey(Key, Shift) then Exit;
+  if Button_ReplayPause.Enabled or not gGame.IsPaused then
+    ReplayClick(Button_ReplayPause)
+  else if Button_ReplayResume.Enabled or gGame.IsPaused then
+    ReplayClick(Button_ReplayResume);
+end;
 
-  if fMyControls.KeyUp(Key, Shift) then Exit;
 
-  keyHandled := False;
-  inherited KeyUp(Key, Shift, keyHandled);
+procedure TKMGamePlayInterface.HandleMiscKeys(Key: Word; Shift: TShiftState);
+begin
+  if Key = gResKeys[kfShowTeams] then
+    fShowTeamNames := False;
 
-  if (fUIMode = umReplay) and (Key = gResKeys[kfPause]) then
-  begin
-    if Button_ReplayPause.Enabled or not gGame.IsPaused then
-      ReplayClick(Button_ReplayPause)
-    else if Button_ReplayResume.Enabled or gGame.IsPaused then
-      ReplayClick(Button_ReplayResume);
-  end;
-
-  // These keys are allowed during replays
-  if Key = gResKeys[kfShowTeams] then fShowTeamNames := False;
   if Key = gResKeys[kfBeacon] then
     if not fSelectingTroopDirection
       and not fGuiGameResultsSP.Visible
@@ -3577,6 +3575,7 @@ begin
       MinimapView.ClickableOnce := True;
       gSystem.Cursor := kmcBeacon;
     end;
+
   if Key = gResKeys[kfCloseMenu] then
   begin
     // Progressively hide open elements on Esc
@@ -3601,7 +3600,13 @@ begin
     if Button_Back.Visible then
       SwitchPage(Button_Back);
   end;
+end;
 
+
+procedure TKMGamePlayInterface.HandleSelectKeys(Key: Word; Shift: TShiftState);
+var
+  selectId: Integer;
+begin
   // Dynamic key-binding means we cannot use "case of"
   if Key = gResKeys[kfSelect1]  then selectId := 0 else
   if Key = gResKeys[kfSelect2]  then selectId := 1 else
@@ -3635,8 +3640,11 @@ begin
     else
       Selection_Select(selectId);
   end;
+end;
 
-  // Menu shortcuts
+
+procedure TKMGamePlayInterface.HandleMenuKeys(Key: Word; Shift: TShiftState);
+begin
   if Key = gResKeys[kfMenuBuild] then
     if Button_Main[tbBuild].Enabled then
       SwitchPage(Button_Main[tbBuild]);
@@ -3651,7 +3659,11 @@ begin
 
   if Key = gResKeys[kfMenuMenu] then
     SwitchPage(Button_Main[tbMenu]);
+end;
 
+
+procedure TKMGamePlayInterface.HandleHouseKeys(Key: Word; Shift: TShiftState);
+begin
   // Switch between same type buildings/units/groups
   if (Key = gResKeys[kfNextEntitySameType])
     and (gMySpectator.Selected <> nil) then
@@ -3672,7 +3684,11 @@ begin
     end;
     GameOptionsChanged;
   end;
+end;
 
+
+procedure TKMGamePlayInterface.HandleSpeedUpKeys(Key: Word; Shift: TShiftState);
+begin
   if   (Key = gResKeys[kfSpeedup1])
     or (Key = gResKeys[kfSpeedup2])
     or (Key = gResKeys[kfSpeedup3])
@@ -3698,57 +3714,162 @@ begin
       gSoundPlayer.Play(sfxCantPlace);
     end;
   end;
+end;
+
+
+function TKMGamePlayInterface.HandleSpectatorKeys(Key: Word; Shift: TShiftState): Boolean;
+var
+  specPlayerIndex: ShortInt;
+begin
+  Result := False;
+  if not (fUIMode in [umReplay, umSpectate]) then Exit;
+
+  if Key = gResKeys[kfSpecpanelSelectDropbox] then
+    fGuiGameSpectator.DropBox.SwitchOpen;
+
+  if Key = gResKeys[kfSpectatePlayer1] then
+    specPlayerIndex := 1
+  else if Key = gResKeys[kfSpectatePlayer2] then
+    specPlayerIndex := 2
+  else if Key = gResKeys[kfSpectatePlayer3] then
+    specPlayerIndex := 3
+  else if Key = gResKeys[kfSpectatePlayer4] then
+    specPlayerIndex := 4
+  else if Key = gResKeys[kfSpectatePlayer5] then
+    specPlayerIndex := 5
+  else if Key = gResKeys[kfSpectatePlayer6] then
+    specPlayerIndex := 6
+  else if Key = gResKeys[kfSpectatePlayer7] then
+    specPlayerIndex := 7
+  else if Key = gResKeys[kfSpectatePlayer8] then
+    specPlayerIndex := 8
+  else if Key = gResKeys[kfSpectatePlayer9] then
+    specPlayerIndex := 9
+  else if Key = gResKeys[kfSpectatePlayer10] then
+    specPlayerIndex := 10
+  else if Key = gResKeys[kfSpectatePlayer11] then
+    specPlayerIndex := 11
+  else if Key = gResKeys[kfSpectatePlayer12] then
+    specPlayerIndex := 12
+  else
+    specPlayerIndex := -1;
+
+  if (specPlayerIndex <> -1) and (Dropbox_ReplayFOW.Count >= specPlayerIndex) then
+  begin
+    //Jump to player when ALT is also pressed
+    if ssAlt in Shift then
+    begin
+      Replay_DropBox_JumpToPlayer(specPlayerIndex - 1);
+      Exit(True);
+    end else if ssShift in Shift then //Select player when SHIFT is also pressed
+    begin
+      Replay_ViewPlayer(specPlayerIndex - 1);
+      Exit(True);
+    end;
+  end;
+
+  if (Key = gResKeys[kfReplayPlayNextTick]) and Button_ReplayStep.IsClickable then
+    ReplayClick(Button_ReplayStep);
+end;
+
+
+procedure TKMGamePlayInterface.HandleFieldPlanKeys(Key: Word; Shift: TShiftState);
+begin
+  // Field plans hotkeys
+  if not Button_Main[tbBuild].Enabled then Exit;
+
+  if Key = gResKeys[kfPlanRoad] then
+  begin
+    if not fGuiGameBuild.Visible then
+      SwitchPage(Button_Main[tbBuild]);
+    fGuiGameBuild.PlanRoad;
+  end;
+
+  if Key = gResKeys[kfPlanField] then
+  begin
+    if not fGuiGameBuild.Visible then
+      SwitchPage(Button_Main[tbBuild]);
+    fGuiGameBuild.PlanField;
+  end;
+
+  if Key = gResKeys[kfPlanWine] then
+  begin
+    if not fGuiGameBuild.Visible then
+      SwitchPage(Button_Main[tbBuild]);
+    fGuiGameBuild.PlanWine;
+  end;
+
+  if Key = gResKeys[kfErasePlan] then
+  begin
+    if not fGuiGameBuild.Visible then
+      SwitchPage(Button_Main[tbBuild]);
+    fGuiGameBuild.ErasePlan;
+    gSystem.Cursor := kmcDefault; //Reset cursor, as it could be kmcInfo, f.e.
+  end;
+end;
+
+
+procedure TKMGamePlayInterface.HandlePauseKey(Key: Word; Shift: TShiftState);
+var
+  doSetPause: Boolean;
+begin
+  // General function keys
+  if (Key <> gResKeys[kfPause]) then Exit;
+
+  doSetPause := False;
+  case fUIMode of
+    umSP:       doSetPause := True;
+    umReplay:   ;
+    umMP,
+    umSpectate: doSetPause := SpeedChangeAllowedInMP;
+  end;
+
+  if doSetPause then
+    SetPause(True); // Display pause overlay
+end;
+
+
+procedure TKMGamePlayInterface.HandleDebugKeys(Key: Word; Shift: TShiftState);
+begin
+  { Temporary cheat codes }
+  if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or (fUIMode = umSP)) then
+  begin
+    if Key = gResKeys[kfDebugRevealmap] then gGame.GameInputProcess.CmdTemp(gicTempRevealMap);
+    if Key = gResKeys[kfDebugVictory]   then gGame.GameInputProcess.CmdTemp(gicTempVictory);
+    if Key = gResKeys[kfDebugDefeat]    then gGame.GameInputProcess.CmdTemp(gicTempDefeat);
+    if Key = gResKeys[kfDebugAddscout]  then gGame.GameInputProcess.CmdTemp(gicTempAddScout, gCursor.Cell);
+  end;
+end;
+
+
+// Note: we deliberately don't pass any Keys to MyControls when game is not running
+// thats why MyControls.KeyUp is only in gsRunning clause
+// Ignore all keys if game is on 'Pause'
+procedure TKMGamePlayInterface.KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
+var
+  keyHandled: Boolean;
+begin
+  aHandled := True; // assume we handle all keys here
+
+  // Check if the game is on pause / waiting for network / key is blocked
+  if not CanHandleKey(Key, Shift) then Exit;
+
+  if fMyControls.KeyUp(Key, Shift) then Exit;
+
+  keyHandled := False;
+  inherited KeyUp(Key, Shift, keyHandled);
+
+  // These keys are allowed during replays
+  HandleReplayPauseKey(Key, Shift);
+  HandleMiscKeys(Key, Shift);
+  HandleSelectKeys(Key, Shift);
+  HandleMenuKeys(Key, Shift);
+  HandleHouseKeys(Key, Shift);
+  HandleSpeedUpKeys(Key, Shift);
 
   // First check if this key was associated with some Spectate/Replay key
-  if (fUIMode in [umReplay, umSpectate]) then
-  begin
-    if Key = gResKeys[kfSpecpanelSelectDropbox] then
-      fGuiGameSpectator.DropBox.SwitchOpen;
-
-    if Key = gResKeys[kfSpectatePlayer1] then
-      specPlayerIndex := 1
-    else if Key = gResKeys[kfSpectatePlayer2] then
-      specPlayerIndex := 2
-    else if Key = gResKeys[kfSpectatePlayer3] then
-      specPlayerIndex := 3
-    else if Key = gResKeys[kfSpectatePlayer4] then
-      specPlayerIndex := 4
-    else if Key = gResKeys[kfSpectatePlayer5] then
-      specPlayerIndex := 5
-    else if Key = gResKeys[kfSpectatePlayer6] then
-      specPlayerIndex := 6
-    else if Key = gResKeys[kfSpectatePlayer7] then
-      specPlayerIndex := 7
-    else if Key = gResKeys[kfSpectatePlayer8] then
-      specPlayerIndex := 8
-    else if Key = gResKeys[kfSpectatePlayer9] then
-      specPlayerIndex := 9
-    else if Key = gResKeys[kfSpectatePlayer10] then
-      specPlayerIndex := 10
-    else if Key = gResKeys[kfSpectatePlayer11] then
-      specPlayerIndex := 11
-    else if Key = gResKeys[kfSpectatePlayer12] then
-      specPlayerIndex := 12
-    else
-      specPlayerIndex := -1;
-
-    if (specPlayerIndex <> -1) and (Dropbox_ReplayFOW.Count >= specPlayerIndex) then
-    begin
-      //Jump to player when ALT is also pressed
-      if ssAlt in Shift then
-      begin
-        Replay_DropBox_JumpToPlayer(specPlayerIndex - 1);
-        Exit;
-      end else if ssShift in Shift then //Select player when SHIFT is also pressed
-      begin
-        Replay_ViewPlayer(specPlayerIndex - 1);
-        Exit;
-      end;
-    end;
-
-    if (Key = gResKeys[kfReplayPlayNextTick]) and Button_ReplayStep.IsClickable then
-      ReplayClick(Button_ReplayStep);
-  end;
+  if HandleSpectatorKeys(Key, Shift) then
+    Exit;
 
   fGuiGameUnit.KeyUp(Key, Shift, keyHandled);
   fGuiGameHouse.KeyUp(Key, Shift, keyHandled);
@@ -3758,62 +3879,9 @@ begin
   // thus the easy way to make that is to exit now
   if fUIMode = umReplay then Exit;
 
-  // Field plans hotkeys
-  if Button_Main[tbBuild].Enabled then
-  begin
-    if Key = gResKeys[kfPlanRoad] then
-    begin
-      if not fGuiGameBuild.Visible then
-        SwitchPage(Button_Main[tbBuild]);
-      fGuiGameBuild.PlanRoad;
-    end;
-
-    if Key = gResKeys[kfPlanField] then
-    begin
-      if not fGuiGameBuild.Visible then
-        SwitchPage(Button_Main[tbBuild]);
-      fGuiGameBuild.PlanField;
-    end;
-
-    if Key = gResKeys[kfPlanWine] then
-    begin
-      if not fGuiGameBuild.Visible then
-        SwitchPage(Button_Main[tbBuild]);
-      fGuiGameBuild.PlanWine;
-    end;
-
-    if Key = gResKeys[kfErasePlan] then
-    begin
-      if not fGuiGameBuild.Visible then
-        SwitchPage(Button_Main[tbBuild]);
-      fGuiGameBuild.ErasePlan;
-      gSystem.Cursor := kmcDefault; //Reset cursor, as it could be kmcInfo, f.e.
-    end;
-  end;
-
-  // General function keys
-  if (Key = gResKeys[kfPause]) then
-  begin
-    doSetPause := False;
-    case fUIMode of
-      umSP:       doSetPause := True;
-      umReplay:   ;
-      umMP,
-      umSpectate: doSetPause := SpeedChangeAllowedInMP;
-    end;
-
-    if doSetPause then
-      SetPause(True); // Display pause overlay
-  end;
-
-  { Temporary cheat codes }
-  if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or (fUIMode = umSP)) then
-  begin
-    if Key = gResKeys[kfDebugRevealmap] then gGame.GameInputProcess.CmdTemp(gicTempRevealMap);
-    if Key = gResKeys[kfDebugVictory]   then gGame.GameInputProcess.CmdTemp(gicTempVictory);
-    if Key = gResKeys[kfDebugDefeat]    then gGame.GameInputProcess.CmdTemp(gicTempDefeat);
-    if Key = gResKeys[kfDebugAddscout]  then gGame.GameInputProcess.CmdTemp(gicTempAddScout, gCursor.Cell);
-  end;
+  HandleFieldPlanKeys(Key, Shift);
+  HandlePauseKey(Key, Shift);
+  HandleDebugKeys(Key, Shift);
 end;
 
 
