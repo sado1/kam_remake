@@ -52,6 +52,9 @@ type
 
     procedure ViewportPositionChanged(const aPos: TKMPointF);
     procedure OptionsChanged; virtual; abstract;
+
+    procedure HandleScrollKeysDown(Key: Word; var aHandled: Boolean);
+    procedure HandleScrollKeysUp(Key: Word; var aHandled: Boolean);
   public
     constructor Create(aRender: TRender); reintroduce;
     destructor Destroy; override;
@@ -357,27 +360,12 @@ begin
 end;
 
 
-// This event happens every ~33ms if the Key is Down and holded
-procedure TKMUserInterfaceGame.KeyDown(Key: Word; Shift: TShiftState; aIsFirst: Boolean; var aHandled: Boolean);
-  {$IFDEF MSWindows}
+procedure TKMUserInterfaceGame.HandleScrollKeysDown(Key: Word; var aHandled: Boolean);
+{$IFDEF MSWindows}
 var
   windowRect: TRect;
-  {$ENDIF}
+{$ENDIF}
 begin
-  if Assigned(fOnUserAction) then
-    fOnUserAction(uatKeyDown);
-
-  if aHandled then Exit;
-
-  inherited;
-
-  // Update game options in case we used sounds hotkeys
-  if aHandled then
-  begin
-    OptionsChanged;
-    Exit;
-  end;
-
   aHandled := True;
   //Scrolling
   if Key = gResKeys[kfScrollLeft]       then
@@ -415,10 +403,11 @@ begin
 end;
 
 
-procedure TKMUserInterfaceGame.KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
+// This event happens every ~33ms if the Key is Down and holded
+procedure TKMUserInterfaceGame.KeyDown(Key: Word; Shift: TShiftState; aIsFirst: Boolean; var aHandled: Boolean);
 begin
   if Assigned(fOnUserAction) then
-    fOnUserAction(uatKeyUp);
+    fOnUserAction(uatKeyDown);
 
   if aHandled then Exit;
 
@@ -431,6 +420,12 @@ begin
     Exit;
   end;
 
+  HandleScrollKeysDown(Key, aHandled);
+end;
+
+
+procedure TKMUserInterfaceGame.HandleScrollKeysUp(Key: Word; var aHandled: Boolean);
+begin
   aHandled := True;
   //Scrolling
   if Key = gResKeys[kfScrollLeft]       then
@@ -452,7 +447,28 @@ begin
     if fDragScrolling then
       ResetDragScrolling;
   end
-  else aHandled := False;
+  else
+    aHandled := False;
+end;
+
+
+procedure TKMUserInterfaceGame.KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
+begin
+  if Assigned(fOnUserAction) then
+    fOnUserAction(uatKeyUp);
+
+  if aHandled then Exit;
+
+  inherited;
+
+  // Update game options in case we used sounds hotkeys
+  if aHandled then
+  begin
+    OptionsChanged;
+    Exit;
+  end;
+
+  HandleScrollKeysUp(Key, aHandled);
 end;
 
 
