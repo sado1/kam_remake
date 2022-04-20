@@ -244,6 +244,7 @@ type
     btnGameSave: TButton;
     seHighlightNavMesh: TSpinEdit;
     mnExportUnitsDat: TMenuItem;
+    mnOpenSettingsDir: TMenuItem;
 
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -317,6 +318,7 @@ type
     procedure ControlsUpdate(Sender: TObject);
     procedure btnGameSaveClick(Sender: TObject);
     procedure mnExportUnitsDatClick(Sender: TObject);
+    procedure mnOpenSettingsDirClick(Sender: TObject);
   private
     {$IFDEF MSWindows}
     fMenuItemHint: TKMVclMenuItemHint; // Custom hint over menu item
@@ -399,7 +401,7 @@ uses
   KM_FormLogistics, KM_Game,
   KM_RandomChecks,
   KM_Log, KM_CommonClasses, KM_VclHelpers, KM_Video,
-  KM_MainSettings, KM_GameSettings,
+  KM_Settings, KM_MainSettings, KM_GameSettings,
   KM_ServerSettings,
 
   KM_IoXML,
@@ -704,6 +706,15 @@ end;
 procedure TFormMain.mnExportUnitsDatClick(Sender: TObject);
 begin
   gRes.Units.ExportCSV(ExeDir + 'Export' + PathDelim + 'units.dat.csv')
+end;
+
+
+procedure TFormMain.mnOpenSettingsDirClick(Sender: TObject);
+var
+  s: string;
+begin
+  s := ExpandFileName(TKMSettings.GetDir);
+  ShellExecute(Application.Handle, 'open', 'explorer.exe', PChar('"' + s + '"'), nil, SW_NORMAL);
 end;
 
 
