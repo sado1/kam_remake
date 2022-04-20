@@ -54,6 +54,9 @@ type
     function GetHintActualFont: TKMFont;
 
     procedure SetHintBackStaticAlpha;
+
+    procedure HandleSoundVolumeKeys(Key: Word; var aHandled: Boolean);
+    procedure HandleSoundKeys(Key: Word; var aHandled: Boolean);
   protected
     fMyControls: TKMMasterControl;
     Panel_Main: TKMPanel;
@@ -244,8 +247,7 @@ begin
 end;
 
 
-// This event happens every ~33ms if the Key is Down and holded
-procedure TKMUserInterfaceCommon.KeyDown(Key: Word; Shift: TShiftState; aIsFirst: Boolean; var aHandled: Boolean);
+procedure TKMUserInterfaceCommon.HandleSoundVolumeKeys(Key: Word; var aHandled: Boolean);
 begin
   if aHandled then Exit;
 
@@ -279,7 +281,7 @@ begin
 end;
 
 
-procedure TKMUserInterfaceCommon.KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
+procedure TKMUserInterfaceCommon.HandleSoundKeys(Key: Word; var aHandled: Boolean);
 var
   mutedAll: Boolean;
 begin
@@ -335,6 +337,25 @@ begin
     gGameSettings.MusicVolume := gMusic.Volume;
     aHandled := True;
   end;
+end;
+
+
+// This event happens every ~33ms if the Key is Down and holded
+procedure TKMUserInterfaceCommon.KeyDown(Key: Word; Shift: TShiftState; aIsFirst: Boolean; var aHandled: Boolean);
+begin
+  if aHandled then Exit;
+
+  HandleSoundVolumeKeys(Key, aHandled);
+
+  if aIsFirst then Exit;
+
+  HandleSoundKeys(Key, aHandled);
+end;
+
+
+procedure TKMUserInterfaceCommon.KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
+begin
+//
 end;
 
 
