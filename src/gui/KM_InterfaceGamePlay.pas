@@ -176,7 +176,6 @@ type
     procedure ShowSPStats;
 
     procedure SetViewportPos(const aLoc: TKMPointF);
-    procedure CheckMessageKeys(Key: Word);
     function CanShowChat: Boolean;
     function CanShowAllies: Boolean;
     procedure UpdateMessageImages;
@@ -184,6 +183,8 @@ type
 
     function CanHandleKey(Key: Word; Shift: TShiftState): Boolean;
     function SpeedChangeAllowedInMP: Boolean;
+
+    procedure HandleMessageKeys(Key: Word);
 
     procedure HandleReplayPauseKey(Key: Word; Shift: TShiftState);
     procedure HandleMiscKeys(Key: Word; Shift: TShiftState);
@@ -3431,7 +3432,7 @@ begin
 
     end;
 
-  CheckMessageKeys(Key);
+  HandleMessageKeys(Key);
 end;
 
 
@@ -3463,7 +3464,7 @@ begin
 end;
 
 
-procedure TKMGamePlayInterface.CheckMessageKeys(Key: Word);
+procedure TKMGamePlayInterface.HandleMessageKeys(Key: Word);
 var
   I: Integer;
   lastAlert: TKMAlert;
