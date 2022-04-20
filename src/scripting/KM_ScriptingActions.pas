@@ -2797,7 +2797,7 @@ begin
     begin
       H := fIDCache.GetHouse(aHouseID);
       if H <> nil then
-        H.DemolishHouse(HAND_NONE, aSilent);
+        H.Demolish(HAND_NONE, aSilent);
     end
     else
       LogIntParamWarn('Actions.HouseDestroy', [aHouseID]);

@@ -193,7 +193,7 @@ type
     property OnShowGameMessage: TKMGameShowMessageEvent read fOnShowGameMessage write fOnShowGameMessage;
 
     procedure RemoveHouse;
-    procedure DemolishHouse(aFrom: TKMHandID; IsSilent: Boolean = False); virtual;
+    procedure Demolish(aFrom: TKMHandID; IsSilent: Boolean = False); virtual;
     property BuildingProgress: Word read fBuildingProgress;
 
     procedure SetPosition(const aPos: TKMPoint); //Used only by map editor
@@ -684,13 +684,13 @@ procedure TKMHouse.RemoveHouse;
 begin
   Assert(gGameParams.IsMapEditor, 'Operation allowed only in the MapEd');
 
-  DemolishHouse(Owner, True);
+  Demolish(Owner, True);
   gHands[Owner].Houses.DeleteHouseFromList(Self);
 end;
 
 
 //IsSilent parameter is used by Editor and scripts
-procedure TKMHouse.DemolishHouse(aFrom: TKMHandID; IsSilent: Boolean = False);
+procedure TKMHouse.Demolish(aFrom: TKMHandID; IsSilent: Boolean = False);
 var
   I: Integer;
   W: TKMWareType;
@@ -1260,7 +1260,7 @@ begin
     //Properly release house assets
     //Do not remove house in Editor just yet, mapmaker might increase the hp again
     if (GetHealth = 0) and not aIsEditor then
-      DemolishHouse(attackerHand);
+      Demolish(attackerHand);
   end;
 end;
 
