@@ -1068,7 +1068,7 @@ begin
   Result := H <> nil;
   if Result then
   begin
-    H.RemoveHouse;
+    H.Remove;
 
     gGame.MapEditor.History.MakeCheckpoint(caHouses, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_REMOVE_SMTH],
                                                             [gRes.Houses[H.HouseType].HouseName, H.Entrance.ToString]));

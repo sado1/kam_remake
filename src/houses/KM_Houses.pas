@@ -192,7 +192,7 @@ type
 
     property OnShowGameMessage: TKMGameShowMessageEvent read fOnShowGameMessage write fOnShowGameMessage;
 
-    procedure RemoveHouse;
+    procedure Remove;
     procedure Demolish(aFrom: TKMHandID; IsSilent: Boolean = False); virtual;
     property BuildingProgress: Word read fBuildingProgress;
 
@@ -680,7 +680,7 @@ begin
 end;
 
 
-procedure TKMHouse.RemoveHouse;
+procedure TKMHouse.Remove;
 begin
   Assert(gGameParams.IsMapEditor, 'Operation allowed only in the MapEd');
 
