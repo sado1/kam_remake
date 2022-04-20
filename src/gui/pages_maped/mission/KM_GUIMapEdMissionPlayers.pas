@@ -66,50 +66,50 @@ const
 { TKMMapEdMissionPlayers }
 constructor TKMMapEdMissionPlayers.Create(aParent: TKMPanel);
 var
-  I, Top, PanelH: Integer;
+  I, top, panelH: Integer;
   MPT: TKMMapEdPlayerType;
 begin
   inherited Create;
 
   fPlayerIdToDelete := -1;
 
-  PanelH := LINE_H * MAX_HANDS + 140;
+  panelH := LINE_H * MAX_HANDS + 140;
 
-  Panel_PlayerTypes := TKMPopUpPanel.Create(aParent.MasterParent, PANEL_W, PanelH + 20, gResTexts[TX_MAPED_PLAYERS_TYPE],
+  Panel_PlayerTypes := TKMPopUpPanel.Create(aParent.MasterParent, PANEL_W, panelH + 20, gResTexts[TX_MAPED_PLAYERS_TYPE],
                                             pubgitYellow, False, False);
-  Top := 0;
-  TKMLabel.Create(Panel_PlayerTypes.ItemsPanel,  13, Top, 20, 20, '#', fntGrey, taLeft);
+  top := 0;
+  TKMLabel.Create(Panel_PlayerTypes.ItemsPanel,  13, top, 20, 20, '#', fntGrey, taLeft);
 
-  with TKMLabel.Create(Panel_PlayerTypes.ItemsPanel, 33, Top, 30, 20, gResTexts[TX_MAPED_PLAYERS_DEFAULT_SHORT], fntGrey, taLeft) do
+  with TKMLabel.Create(Panel_PlayerTypes.ItemsPanel, 33, top, 30, 20, gResTexts[TX_MAPED_PLAYERS_DEFAULT_SHORT], fntGrey, taLeft) do
     Hint := gResTexts[TX_MAPED_PLAYERS_DEFAULT];
-  with TKMImage.Create(Panel_PlayerTypes.ItemsPanel,84, Top, 60, 20, 588, rxGui) do
+  with TKMImage.Create(Panel_PlayerTypes.ItemsPanel,84, top, 60, 20, 588, rxGui) do
     Hint := gResTexts[TX_PLAYER_HUMAN];
-  with TKMImage.Create(Panel_PlayerTypes.ItemsPanel,127, Top, 20, 20,  62, rxGuiMain) do
+  with TKMImage.Create(Panel_PlayerTypes.ItemsPanel,127, top, 20, 20,  62, rxGuiMain) do
     Hint := gResTexts[TX_AI_PLAYER_CLASSIC];
-  with TKMImage.Create(Panel_PlayerTypes.ItemsPanel,169, Top, 20, 20,  74, rxGuiMain) do
+  with TKMImage.Create(Panel_PlayerTypes.ItemsPanel,169, top, 20, 20,  74, rxGuiMain) do
     Hint := gResTexts[TX_AI_PLAYER_ADVANCED];
 
-  Inc(Top, 25);
+  Inc(top, 25);
   for I := 0 to MAX_HANDS - 1 do
   begin
 
-    Label_PlayerId[I] := TKMLabel.Create(Panel_PlayerTypes.ItemsPanel,  13, Top, 20, 20, IntToStr(I+1), fntOutline, taLeft);
+    Label_PlayerId[I] := TKMLabel.Create(Panel_PlayerTypes.ItemsPanel,  13, top, 20, 20, IntToStr(I+1), fntOutline, taLeft);
 
     for MPT := Low(TKMMapEdPlayerType) to High(TKMMapEdPlayerType) do
     begin
-      ChkBox_PlayerTypes[I,MPT] := TKMCheckBox.Create(Panel_PlayerTypes.ItemsPanel, 43 + Ord(MPT)*42, Top - 2, 20, 20, '', fntMetal);
+      ChkBox_PlayerTypes[I,MPT] := TKMCheckBox.Create(Panel_PlayerTypes.ItemsPanel, 43 + Ord(MPT)*42, top - 2, 20, 20, '', fntMetal);
       ChkBox_PlayerTypes[I,MPT].Tag     := I;
       ChkBox_PlayerTypes[I,MPT].OnClick := Mission_PlayerTypesChange;
     end;
-    Inc(Top, LINE_H);
+    Inc(top, LINE_H);
   end;
 
-  Label_PlayerTypesAll := TKMLabel.Create(Panel_PlayerTypes.ItemsPanel,  13, Top, 75, 20, gResTexts[TX_MAPED_PLAYER_TYPE_ALLOW_ALL],
+  Label_PlayerTypesAll := TKMLabel.Create(Panel_PlayerTypes.ItemsPanel,  13, top, 75, 20, gResTexts[TX_MAPED_PLAYER_TYPE_ALLOW_ALL],
                                           fntOutline, taLeft);
 
   for MPT := Low(ChkBox_PlayerTypesAll) to High(ChkBox_PlayerTypesAll) do
   begin
-    ChkBox_PlayerTypesAll[MPT] := TKMCheckBox.Create(Panel_PlayerTypes.ItemsPanel, 43 + Ord(MPT)*42, Top - 2, 20, 20, '', fntMetal, True);
+    ChkBox_PlayerTypesAll[MPT] := TKMCheckBox.Create(Panel_PlayerTypes.ItemsPanel, 43 + Ord(MPT)*42, top - 2, 20, 20, '', fntMetal, True);
     ChkBox_PlayerTypesAll[MPT].Tag     := Ord(MPT);
     ChkBox_PlayerTypesAll[MPT].Hint    := Format(gResTexts[TX_MAPED_PLAYER_TYPE_ALLOW_ALL_HINT],
                                                [gResTexts[PLAYER_TYPE_TX[MPT]]]);
