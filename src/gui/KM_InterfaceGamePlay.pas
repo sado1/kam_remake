@@ -4249,14 +4249,20 @@ begin
                 // Ask wherever player wants to destroy own house (don't ask about houses that are not started, they are removed below)
                 if H <> nil then
                 begin
-                  gMySpectator.Selected := H; // Select the house irregardless of unit below/above
-                  //Update select, to set up fIsSelectedMyObj
-                  //Don't update selected object again!
-                  gMySpectator.UpdateSelect(False);
-                  HidePages;
-                  SwitchPage(nil); // Hide main back button if we were in e.g. stats
-                  fGuiGameHouse.Show(H, True);
-                  gSoundPlayer.Play(sfxClick);
+                  // Ctrl + Shift will delete house immidiately, without confirmation
+                  if (ssShift in Shift) and (ssCtrl in Shift) then
+                    gGame.GameInputProcess.CmdBuild(gicBuildRemoveHouse, P)
+                  else
+                  begin
+                    gMySpectator.Selected := H; // Select the house irregardless of unit below/above
+                    //Update select, to set up fIsSelectedMyObj
+                    //Don't update selected object again!
+                    gMySpectator.UpdateSelect(False);
+                    HidePages;
+                    SwitchPage(nil); // Hide main back button if we were in e.g. stats
+                    fGuiGameHouse.Show(H, True);
+                    gSoundPlayer.Play(sfxClick);
+                  end;
                 end
                 else
                 begin
