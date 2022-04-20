@@ -190,6 +190,7 @@ begin
   Panel_Objects := TKMScrollPanel.Create(aParent, 0, 28, aParent.Width, aParent.Height - 28, [saVertical], bsMenu, ssCommon);
   Panel_Objects.Padding.SetBottom(10);
   Panel_Objects.ScrollV_PadTop := 10;
+  Panel_Objects.ScrollV_PadBottom := 10;
   Panel_Objects.ScrollV_PadLeft := -20;
   Panel_Objects.AnchorsStretch;
 
