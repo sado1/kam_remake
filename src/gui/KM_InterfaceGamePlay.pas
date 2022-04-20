@@ -184,6 +184,7 @@ type
     function CanHandleKey(Key: Word; Shift: TShiftState): Boolean;
     function SpeedChangeAllowedInMP: Boolean;
 
+    procedure HandleShowTeamKeyDown(Key: Word);
     procedure HandleMessageKeys(Key: Word);
 
     procedure HandleReplayPauseKey(Key: Word; Shift: TShiftState);
@@ -3393,10 +3394,81 @@ begin
 end;
 
 
+procedure TKMGamePlayInterface.HandleMessageKeys(Key: Word);
+var
+  I: Integer;
+  lastAlert: TKMAlert;
+  msg: TKMLogMessage;
+begin
+  // Messages
+  if Key = gResKeys[kfCenterAlert] then
+  begin
+    // Spacebar centers you on the latest alert
+    lastAlert := fAlerts.GetLatestAlert;
+    if lastAlert <> nil then
+      fViewport.Position := lastAlert.Loc
+    else
+    begin
+      //If there are no active alerts, then centers on last unread message in log (house / unit)
+      for I := gMySpectator.Hand.MessageLog.CountLog - 1 downto Max(gMySpectator.Hand.MessageLog.CountLog - MAX_LOG_MSGS, 0) do
+      begin
+        msg := gMySpectator.Hand.MessageLog[I];
+
+        if not msg.IsRead and msg.IsGoto then
+        begin
+          MessageLog_ShowMessage(I);
+          Break;
+        end;
+      end;
+    end;
+  end;
+
+  if Key = gResKeys[kfDeleteMsg] then
+    Button_MessageDelete.Click;
+
+  // Enter is the shortcut to bring up chat in multiplayer
+  if (Key = gResKeys[kfChat]) and CanShowChat then
+  begin
+    if not fGuiGameChat.Visible then
+    begin
+      Allies_Close(nil);
+      Message_Close(nil);
+      MessageLog_Close(nil);
+      Label_ChatUnread.Caption := ''; // No unread messages
+      fGuiGameChat.Show;
+    end else
+      fGuiGameChat.Focus;
+  end;
+end;
+
+
+procedure TKMGamePlayInterface.HandleShowTeamKeyDown(Key: Word);
+var
+  rect: TKMRect;
+begin
+  // As we don't have names for teams in SP we only allow showing team names in MP or MP replays
+  if (Key = gResKeys[kfShowTeams]) then
+    if SHOW_UIDs or (fUIMode in [umMP, umSpectate]) or (gGameParams.Mode = gmReplayMulti) then //Only MP replays
+    begin
+      fShowTeamNames := True;
+      // Update it immediately so there's no 300ms lag after pressing the key
+      fUnitsTeamNames.Clear;
+      rect := fViewport.GetMinimapClip;
+      gHands.GetUnitsInRect(rect, fUnitsTeamNames);
+      if SHOW_UIDs then
+      begin
+        fGroupsTeamNames.Clear;
+        fHousesTeamNames.Clear;
+        gHands.GetGroupsInRect(rect, fGroupsTeamNames);
+        gHands.GetHousesInRect(rect, fHousesTeamNames);
+      end;
+    end;
+end;
+
+
 // This event happens every ~33ms if the Key is Down and holded
 procedure TKMGamePlayInterface.KeyDown(Key: Word; Shift: TShiftState; aIsFirst: Boolean; var aHandled: Boolean);
 var
-  rect: TKMRect;
   keyHandled: Boolean;
 begin
   aHandled := True; // assume we handle all keys here
@@ -3413,25 +3485,7 @@ begin
   inherited KeyDown(Key, Shift, aIsFirst, keyHandled);
   if keyHandled then Exit;
 
-    // As we don't have names for teams in SP we only allow showing team names in MP or MP replays
-  if (Key = gResKeys[kfShowTeams]) then
-    if SHOW_UIDs or (fUIMode in [umMP, umSpectate]) or (gGameParams.Mode = gmReplayMulti) then //Only MP replays
-    begin
-      fShowTeamNames := True;
-      // Update it immediately so there's no 300ms lag after pressing the key
-      fUnitsTeamNames.Clear;
-      rect := fViewport.GetMinimapClip;
-      gHands.GetUnitsInRect(rect, fUnitsTeamNames);
-      if SHOW_UIDs then
-      begin
-        fGroupsTeamNames.Clear;
-        fHousesTeamNames.Clear;
-        gHands.GetGroupsInRect(rect, fGroupsTeamNames);
-        gHands.GetHousesInRect(rect, fHousesTeamNames);
-      end;
-
-    end;
-
+  HandleShowTeamKeyDown(Key);
   HandleMessageKeys(Key);
 end;
 
@@ -3461,54 +3515,6 @@ end;
 function TKMGamePlayInterface.CanShowAllies: Boolean;
 begin
   Result := fUIMode in [umMP, umSpectate];
-end;
-
-
-procedure TKMGamePlayInterface.HandleMessageKeys(Key: Word);
-var
-  I: Integer;
-  lastAlert: TKMAlert;
-  msg: TKMLogMessage;
-begin
-  // Messages
-  if Key = gResKeys[kfCenterAlert] then
-  begin
-    // Spacebar centers you on the latest alert
-    lastAlert := fAlerts.GetLatestAlert;
-    if lastAlert <> nil then
-      fViewport.Position := lastAlert.Loc
-    else
-    begin
-      //If there are no active alerts, then centers on last unread message in log (house / unit)
-      for I := gMySpectator.Hand.MessageLog.CountLog - 1 downto Max(gMySpectator.Hand.MessageLog.CountLog - MAX_LOG_MSGS, 0) do
-      begin
-        msg := gMySpectator.Hand.MessageLog[I];
-        
-        if not msg.IsRead and msg.IsGoto then
-        begin
-          MessageLog_ShowMessage(I);
-          Break;
-        end;
-      end;
-    end;
-  end;
-
-  if Key = gResKeys[kfDeleteMsg] then
-    Button_MessageDelete.Click;
-
-  // Enter is the shortcut to bring up chat in multiplayer
-  if (Key = gResKeys[kfChat]) and CanShowChat then
-  begin
-    if not fGuiGameChat.Visible then
-    begin
-      Allies_Close(nil);
-      Message_Close(nil);
-      MessageLog_Close(nil);
-      Label_ChatUnread.Caption := ''; // No unread messages
-      fGuiGameChat.Show;
-    end else
-      fGuiGameChat.Focus;
-  end;
 end;
 
 
@@ -3564,9 +3570,6 @@ end;
 
 procedure TKMGamePlayInterface.HandleMiscKeys(Key: Word; Shift: TShiftState);
 begin
-  if Key = gResKeys[kfShowTeams] then
-    fShowTeamNames := False;
-
   if Key = gResKeys[kfBeacon] then
     if not fSelectingTroopDirection
       and not fGuiGameResultsSP.Visible
@@ -3859,6 +3862,9 @@ begin
 
   keyHandled := False;
   inherited KeyUp(Key, Shift, keyHandled);
+
+  if Key = gResKeys[kfShowTeams] then
+    fShowTeamNames := False;
 
   // These keys are allowed during replays
   HandleReplayPauseKey(Key, Shift);
