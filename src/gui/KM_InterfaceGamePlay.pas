@@ -181,22 +181,20 @@ type
     procedure UpdateMessageImages;
     procedure UpdateReplayBar;
 
-    function CanHandleKey(Key: Word; Shift: TShiftState): Boolean;
     function SpeedChangeAllowedInMP: Boolean;
 
     procedure HandleShowTeamKeyDown(Key: Word);
     procedure HandleMessageKeys(Key: Word);
 
-    procedure HandleReplayPauseKey(Key: Word; Shift: TShiftState);
-    procedure HandleMiscKeys(Key: Word; Shift: TShiftState);
+    function HandlePauseKey(Key: Word): Boolean;
+    procedure HandleMiscKeys(Key: Word);
     procedure HandleSelectKeys(Key: Word; Shift: TShiftState);
-    procedure HandleMenuKeys(Key: Word; Shift: TShiftState);
-    procedure HandleHouseKeys(Key: Word; Shift: TShiftState);
-    procedure HandleSpeedUpKeys(Key: Word; Shift: TShiftState);
+    procedure HandleMenuKeys(Key: Word);
+    procedure HandleNextHouseKey(Key: Word);
+    procedure HandleSpeedUpKeys(Key: Word);
     function HandleSpectatorKeys(Key: Word; Shift: TShiftState): Boolean;
-    procedure HandleFieldPlanKeys(Key: Word; Shift: TShiftState);
-    procedure HandlePauseKey(Key: Word; Shift: TShiftState);
-    procedure HandleDebugKeys(Key: Word; Shift: TShiftState);
+    procedure HandleFieldPlanKeys(Key: Word);
+    procedure HandleDebugKeys(Key: Word);
   protected
     Sidebar_Top: TKMImage;
     Sidebar_Middle: TKMImage;
@@ -3473,6 +3471,8 @@ var
 begin
   aHandled := True; // assume we handle all keys here
 
+  if aIsFirst and HandlePauseKey(Key) then Exit;
+
   if gGame.IsPlayerWaiting and IsKeyBlockedOnPause(Key) then Exit;
 
   if fMyControls.KeyDown(Key, Shift) then
@@ -3485,8 +3485,29 @@ begin
   inherited KeyDown(Key, Shift, aIsFirst, keyHandled);
   if keyHandled then Exit;
 
+  if (Key = gResKeys[kfReplayPlayNextTick]) and Button_ReplayStep.IsClickable then
+    ReplayClick(Button_ReplayStep);
+
+  // Next keys are
+  if not aIsFirst then Exit;
+
   HandleShowTeamKeyDown(Key);
   HandleMessageKeys(Key);
+
+  // These keys are allowed during replays
+  HandleMiscKeys(Key);
+  HandleSelectKeys(Key, Shift);
+  HandleMenuKeys(Key);
+  HandleNextHouseKey(Key);
+  HandleSpeedUpKeys(Key);
+  HandleFieldPlanKeys(Key);
+
+  // First check if this key was associated with some Spectate/Replay key
+  if HandleSpectatorKeys(Key, Shift) then
+    Exit;
+
+  fGuiGameUnit.KeyUp(Key, Shift, keyHandled);
+  fGuiGameHouse.KeyUp(Key, Shift, keyHandled);
 end;
 
 
@@ -3525,7 +3546,7 @@ begin
 end;
 
 
-function TKMGamePlayInterface.CanHandleKey(Key: Word; Shift: TShiftState): Boolean;
+function TKMGamePlayInterface.HandlePauseKey(Key: Word): Boolean;
 
   function IsGameOnPause: Boolean;
   begin
@@ -3539,36 +3560,25 @@ function TKMGamePlayInterface.CanHandleKey(Key: Word; Shift: TShiftState): Boole
   end;
 
 begin
-  Result := True;
-  if IsGameOnPause then
-  begin
-    if Key = gResKeys[kfPause] then
-    begin
-      SetPause(False);
-      Exit(False);
-    end;
+  Result := False;
+  if Key <> gResKeys[kfPause] then Exit;
 
-    if IsKeyBlockedOnPause(Key) then
-      Exit(False);
-  end
-  else
-  if gGame.IsWaitingForNetwork and IsKeyBlockedOnPause(Key) then
-    Exit(False);
+  case fUIMode of
+    umSP:       Result := True;
+    umReplay:   if Button_ReplayPause.Enabled or not gGame.IsPaused then
+                  ReplayClick(Button_ReplayPause)
+                else if Button_ReplayResume.Enabled or gGame.IsPaused then
+                  ReplayClick(Button_ReplayResume);
+    umMP,
+    umSpectate: Result := SpeedChangeAllowedInMP;
+  end;
+
+  if Result then
+    SetPause(not IsGameOnPause); // Display pause overlay
 end;
 
 
-procedure TKMGamePlayInterface.HandleReplayPauseKey(Key: Word; Shift: TShiftState);
-begin
-  if (fUIMode <> umReplay) or (Key <> gResKeys[kfPause]) then Exit;
-
-  if Button_ReplayPause.Enabled or not gGame.IsPaused then
-    ReplayClick(Button_ReplayPause)
-  else if Button_ReplayResume.Enabled or gGame.IsPaused then
-    ReplayClick(Button_ReplayResume);
-end;
-
-
-procedure TKMGamePlayInterface.HandleMiscKeys(Key: Word; Shift: TShiftState);
+procedure TKMGamePlayInterface.HandleMiscKeys(Key: Word);
 begin
   if Key = gResKeys[kfBeacon] then
     if not fSelectingTroopDirection
@@ -3647,7 +3657,7 @@ begin
 end;
 
 
-procedure TKMGamePlayInterface.HandleMenuKeys(Key: Word; Shift: TShiftState);
+procedure TKMGamePlayInterface.HandleMenuKeys(Key: Word);
 begin
   if Key = gResKeys[kfMenuBuild] then
     if Button_Main[tbBuild].Enabled then
@@ -3666,7 +3676,7 @@ begin
 end;
 
 
-procedure TKMGamePlayInterface.HandleHouseKeys(Key: Word; Shift: TShiftState);
+procedure TKMGamePlayInterface.HandleNextHouseKey(Key: Word);
 begin
   // Switch between same type buildings/units/groups
   if (Key = gResKeys[kfNextEntitySameType])
@@ -3691,7 +3701,7 @@ begin
 end;
 
 
-procedure TKMGamePlayInterface.HandleSpeedUpKeys(Key: Word; Shift: TShiftState);
+procedure TKMGamePlayInterface.HandleSpeedUpKeys(Key: Word);
 begin
   if   (Key = gResKeys[kfSpeedup1])
     or (Key = gResKeys[kfSpeedup2])
@@ -3771,13 +3781,10 @@ begin
       Exit(True);
     end;
   end;
-
-  if (Key = gResKeys[kfReplayPlayNextTick]) and Button_ReplayStep.IsClickable then
-    ReplayClick(Button_ReplayStep);
 end;
 
 
-procedure TKMGamePlayInterface.HandleFieldPlanKeys(Key: Word; Shift: TShiftState);
+procedure TKMGamePlayInterface.HandleFieldPlanKeys(Key: Word);
 begin
   // Field plans hotkeys
   if not Button_Main[tbBuild].Enabled then Exit;
@@ -3813,28 +3820,10 @@ begin
 end;
 
 
-procedure TKMGamePlayInterface.HandlePauseKey(Key: Word; Shift: TShiftState);
-var
-  doSetPause: Boolean;
+procedure TKMGamePlayInterface.HandleDebugKeys(Key: Word);
 begin
-  // General function keys
-  if (Key <> gResKeys[kfPause]) then Exit;
+  if fUIMode = umReplay then Exit;
 
-  doSetPause := False;
-  case fUIMode of
-    umSP:       doSetPause := True;
-    umReplay:   ;
-    umMP,
-    umSpectate: doSetPause := SpeedChangeAllowedInMP;
-  end;
-
-  if doSetPause then
-    SetPause(True); // Display pause overlay
-end;
-
-
-procedure TKMGamePlayInterface.HandleDebugKeys(Key: Word; Shift: TShiftState);
-begin
   { Temporary cheat codes }
   if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or (fUIMode = umSP)) then
   begin
@@ -3856,7 +3845,7 @@ begin
   aHandled := True; // assume we handle all keys here
 
   // Check if the game is on pause / waiting for network / key is blocked
-  if not CanHandleKey(Key, Shift) then Exit;
+  if gGame.IsPlayerWaiting and IsKeyBlockedOnPause(Key) then Exit;
 
   if fMyControls.KeyUp(Key, Shift) then Exit;
 
@@ -3866,29 +3855,7 @@ begin
   if Key = gResKeys[kfShowTeams] then
     fShowTeamNames := False;
 
-  // These keys are allowed during replays
-  HandleReplayPauseKey(Key, Shift);
-  HandleMiscKeys(Key, Shift);
-  HandleSelectKeys(Key, Shift);
-  HandleMenuKeys(Key, Shift);
-  HandleHouseKeys(Key, Shift);
-  HandleSpeedUpKeys(Key, Shift);
-
-  // First check if this key was associated with some Spectate/Replay key
-  if HandleSpectatorKeys(Key, Shift) then
-    Exit;
-
-  fGuiGameUnit.KeyUp(Key, Shift, keyHandled);
-  fGuiGameHouse.KeyUp(Key, Shift, keyHandled);
-
-  // All the following keys don't work in Replay, because they alter game state
-  // which is nonsense
-  // thus the easy way to make that is to exit now
-  if fUIMode = umReplay then Exit;
-
-  HandleFieldPlanKeys(Key, Shift);
-  HandlePauseKey(Key, Shift);
-  HandleDebugKeys(Key, Shift);
+  HandleDebugKeys(Key);
 end;
 
 
