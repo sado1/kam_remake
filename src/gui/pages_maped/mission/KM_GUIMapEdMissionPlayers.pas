@@ -19,12 +19,14 @@ type
     procedure Mission_PlayerTypesAllClick(Sender: TObject);
     procedure Mission_PlayerIdUpdate;
     procedure PlayerDelete_Click(Sender: TObject);
+    procedure PlayerDeleteConfirm_Click(Sender: TObject);
     procedure ClosePlayerTypes_Click(Sender: TObject);
 
     procedure PlayerDeleteConfirm(aVisible: Boolean);
   protected
     Panel_PlayerTypes: TKMPopUpPanel;
       ChkBox_PlayerTypes: array [0..MAX_HANDS-1, TKMMapEdPlayerType] of TKMCheckBox;
+      Button_PlayerDelete: array [0..MAX_HANDS-1] of TKMButtonFlat;
       ChkBox_PlayerTypesAll: array [mptHuman..mptAdvancedAI] of TKMCheckBox;
       Label_PlayerTypesAll: TKMLabel;
       Label_PlayerId: array [0..MAX_HANDS-1] of TKMLabel;
@@ -32,7 +34,7 @@ type
 
     PopUp_Confirm_PlayerDelete: TKMPopUpMenu;
       Image_Confirm_PlayerDelete: TKMImage;
-      Button_PlayerDelete, Button_PlayerDeleteConfirm, Button_PlayerDeleteCancel: TKMButton;
+      Button_PlayerDeleteConfirm, Button_PlayerDeleteCancel: TKMButton;
       Label_PlayerDeleteConfirmTitle, Label_PlayerDeleteConfirm: TKMLabel;
   public
     constructor Create(aParent: TKMPanel);
@@ -44,7 +46,6 @@ type
     procedure Hide;
 
     procedure UpdatePlayerTypes;
-    procedure UpdatePlayer(aIndex: TKMHandID = -1);
   end;
 
 
@@ -56,8 +57,9 @@ uses
   KM_RenderUI;
 
 const
-  PANEL_W  = 200;
-  LINE_H = 22;
+  PANEL_W  = 250;
+  BTN_DELETE_W = 22;
+  LINE_H = 24;
   ICON_SPACE_W = 25;
   ICON_SPACE_H = 32;
 
@@ -71,9 +73,7 @@ var
 begin
   inherited Create;
 
-  fPlayerIdToDelete := -1;
-
-  panelH := LINE_H * MAX_HANDS + 140;
+  panelH := LINE_H * MAX_HANDS + 80;
 
   Panel_PlayerTypes := TKMPopUpPanel.Create(aParent.MasterParent, PANEL_W, panelH + 20, gResTexts[TX_MAPED_PLAYERS_TYPE],
                                             pubgitYellow, False, False);
@@ -101,6 +101,13 @@ begin
       ChkBox_PlayerTypes[I,MPT].Tag     := I;
       ChkBox_PlayerTypes[I,MPT].OnClick := Mission_PlayerTypesChange;
     end;
+
+    Button_PlayerDelete[I] := TKMButtonFlat.Create(Panel_PlayerTypes.ItemsPanel,
+                                                   ChkBox_PlayerTypes[I, mptAdvancedAI].Right + 20, top - 4, BTN_DELETE_W, BTN_DELETE_W, 340);
+    Button_PlayerDelete[I].Hint := Format(gResTexts[TX_MAPED_PLAYER_DELETE_HINT], [I + 1]);
+    Button_PlayerDelete[I].Tag := I;
+    Button_PlayerDelete[I].OnClick := PlayerDelete_Click;
+
     Inc(top, LINE_H);
   end;
 
@@ -115,12 +122,6 @@ begin
                                                [gResTexts[PLAYER_TYPE_TX[MPT]]]);
     ChkBox_PlayerTypesAll[MPT].OnClick := Mission_PlayerTypesAllClick;
   end;
-
-  Button_PlayerDelete := TKMButton.Create(Panel_PlayerTypes.ItemsPanel, 15,
-                                          Panel_PlayerTypes.ItemsPanel.Height - 80, PANEL_W - 30, 26,
-                                          Format(gResTexts[TX_MAPED_PLAYER_DELETE], [1]), bsGame);
-  Button_PlayerDelete.Anchors := [anLeft, anRight, anBottom];
-  Button_PlayerDelete.OnClick := PlayerDelete_Click;
 
   Button_Close := TKMButton.Create(Panel_PlayerTypes.ItemsPanel, 15,
                                    Panel_PlayerTypes.ItemsPanel.Height - 40,
@@ -147,11 +148,11 @@ begin
 
     Button_PlayerDeleteConfirm := TKMButton.Create(PopUp_Confirm_PlayerDelete, 20, 155, 170, 30, gResTexts[TX_MENU_LOAD_DELETE_DELETE], bsMenu);
     Button_PlayerDeleteConfirm.Anchors := [anLeft, anBottom];
-    Button_PlayerDeleteConfirm.OnClick := PlayerDelete_Click;
+    Button_PlayerDeleteConfirm.OnClick := PlayerDeleteConfirm_Click;
 
     Button_PlayerDeleteCancel  := TKMButton.Create(PopUp_Confirm_PlayerDelete, PopUp_Confirm_PlayerDelete.Width - 190, 155, 170, 30, gResTexts[TX_WORD_CANCEL], bsMenu);
     Button_PlayerDeleteCancel.Anchors := [anLeft, anBottom];
-    Button_PlayerDeleteCancel.OnClick := PlayerDelete_Click;
+    Button_PlayerDeleteCancel.OnClick := PlayerDeleteConfirm_Click;
 end;
 
 
@@ -189,6 +190,8 @@ begin
       checkedCnt[MPT] := checkedCnt[MPT] + Byte(ChkBox_PlayerTypes[I, MPT].Checked
                                         and ChkBox_PlayerTypes[I, MPT].Enabled);
     end;
+
+    Button_PlayerDelete[I].Enabled := hasAssets;
   end;
 
   isAllEnabled := False;
@@ -236,10 +239,21 @@ end;
 
 
 procedure TKMMapEdMissionPlayers.PlayerDelete_Click(Sender: TObject);
+var
+  playerId: Integer;
 begin
-  if Sender = Button_PlayerDelete then
-    PlayerDeleteConfirm(True);
+  playerId := TKMButtonFlat(Sender).Tag;
 
+  if Sender = Button_PlayerDelete[playerId] then
+  begin
+    fPlayerIdToDelete := playerId;
+    PlayerDeleteConfirm(True);
+  end;
+end;
+
+
+procedure TKMMapEdMissionPlayers.PlayerDeleteConfirm_Click(Sender: TObject);
+begin
   if Sender = Button_PlayerDeleteCancel then
     PlayerDeleteConfirm(False);
 
@@ -264,39 +278,17 @@ procedure TKMMapEdMissionPlayers.KeyDown(Key: Word; Shift: TShiftState; var aHan
 begin
   if aHandled then Exit;
 
-  if Visible then
-  begin
-    if PopUp_Confirm_PlayerDelete.Visible then
-    begin
-      if Key = VK_ESCAPE then //If confirmation dialog is opened only Esc button could be handled
-      begin
-        aHandled := True;
-        PopUp_Confirm_PlayerDelete.Hide; //Hide 'delete player' confirmation dialog
-      end;
-    end
-    else
-      case Key of
-        VK_DELETE:  begin
-                      aHandled := True;
-                      if Button_PlayerDelete.Enabled then
-                        PlayerDelete_Click(Button_PlayerDelete);
-                    end;
-        VK_UP:      begin
-                      aHandled := True;
-                      if fPlayerIdToDelete > 0 then
-                        UpdatePlayer(fPlayerIdToDelete - 1);
-                    end;
-        VK_DOWN:    begin
-                      aHandled := True;
-                      if fPlayerIdToDelete < MAX_HANDS - 1 then
-                        UpdatePlayer(fPlayerIdToDelete + 1);
-                    end;
-        VK_ESCAPE:  begin
-                      aHandled := True;
-                      Hide;
-                    end;
-      end;
-  end;
+  if not Visible then Exit;
+
+  // Handle only VK_ESCAPE
+  if Key <> VK_ESCAPE then Exit;
+
+  aHandled := True;
+
+  if PopUp_Confirm_PlayerDelete.Visible then
+    PopUp_Confirm_PlayerDelete.Hide //Hide 'delete player' confirmation dialog
+  else
+    Hide;
 end;
 
 
@@ -332,8 +324,6 @@ var
   playerId: Integer;
 begin
   playerId := TKMCheckBox(Sender).Tag;
-
-  UpdatePlayer(playerId);
 
   //There should be exactly one default human player
   if Sender = ChkBox_PlayerTypes[playerId, mptDefault] then
@@ -382,22 +372,12 @@ procedure TKMMapEdMissionPlayers.Mission_PlayerIdUpdate;
 var
   I: Integer;
 begin
-  UpdatePlayer;
-
   for I := 0 to MAX_HANDS - 1 do
     if I < gHands.Count then
+    begin
       Label_PlayerId[I].Enabled := gHands[I].HasAssets;
-end;
-
-
-procedure TKMMapEdMissionPlayers.UpdatePlayer(aIndex: TKMHandID = -1);
-begin
-  if aIndex = -1 then
-    aIndex := gMySpectator.HandID;
-
-  Button_PlayerDelete.Enabled := gHands[aIndex].HasAssets;
-  Button_PlayerDelete.Caption := Format(gResTexts[TX_MAPED_PLAYER_DELETE], [aIndex + 1]);
-  fPlayerIdToDelete := aIndex;
+      Button_PlayerDelete[I].Enabled := gHands[I].HasAssets;
+    end;
 end;
 
 

@@ -674,7 +674,6 @@ var
   I: Integer;
 begin
   gMySpectator.HandID := aIndex;
-  fGuiMission.GuiMissionPlayers.UpdatePlayer(aIndex);
   fGuiTown.GuiDefence.UpdatePlayer(aIndex);
 
   for I := 0 to MAX_HANDS - 1 do

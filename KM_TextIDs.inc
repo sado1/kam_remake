@@ -1299,12 +1299,12 @@ TX_WORD_TEAMS = 1105; //Teams
 TX_WORD_CLOSE = 1117; //Close
 TX_WORD_TEXT = 1159; //Text
 
-TX_MAPED_PLAYER_DELETE = 1114; //Delete Player %d
+TX_MAPED_PLAYER_DELETE_HINT = 1114; //Delete Player %d
 TX_MAPED_PLAYER_TYPE_ALLOW_ALL = 1363; //All
 TX_MAPED_PLAYER_TYPE_ALLOW_ALL_HINT = 1364; //Allow '%s' for all available locs
 TX_MAPED_PLAYER_TYPE_DISALLOW_ALL_HINT = 1365; //Prohibit '%s' for all available locs
 
-TX_MAPED_PLAYER_DELETE_TITLE = 1115; //Deleting Player %d
+TX_MAPED_PLAYER_DELETE_TITLE = 1115; //Delete Player %d
 TX_MAPED_PLAYER_DELETE_CONFIRM = 1116; //Are you sure you want to clear the player?|All his data will be erased!
 
 TX_MENU_MAP_TYPE = 1122; //Map type
