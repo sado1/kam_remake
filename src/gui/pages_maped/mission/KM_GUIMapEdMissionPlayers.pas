@@ -11,31 +11,36 @@ uses
 type
   TKMMapEdPlayerType = (mptDefault, mptHuman, mptClassicAI, mptAdvancedAI);
 
+  TKMMapEdConfirmationType = (mctNone, mctMPSetup, mctDeletePlayer);
+
   TKMMapEdMissionPlayers = class
   private
-    fPlayerIdToDelete: TKMHandID;
+    fPlayerIdToConfirm: TKMHandID;
+    fConfirmationType: TKMMapEdConfirmationType;
 
     procedure Mission_PlayerTypesChange(Sender: TObject);
     procedure Mission_PlayerTypesAllClick(Sender: TObject);
     procedure Mission_PlayerIdUpdate;
     procedure PlayerDelete_Click(Sender: TObject);
     procedure PlayerDeleteConfirm_Click(Sender: TObject);
+    procedure PlayerMPSetup_Click(Sender: TObject);
     procedure ClosePlayerTypes_Click(Sender: TObject);
 
-    procedure PlayerDeleteConfirm(aVisible: Boolean);
+    procedure DoConfirm(aVisible: Boolean);
   protected
     Panel_PlayerTypes: TKMPopUpPanel;
       ChkBox_PlayerTypes: array [0..MAX_HANDS-1, TKMMapEdPlayerType] of TKMCheckBox;
+      Button_PlayerMPSetup: array [0..MAX_HANDS-1] of TKMButtonFlat;
       Button_PlayerDelete: array [0..MAX_HANDS-1] of TKMButtonFlat;
       ChkBox_PlayerTypesAll: array [mptHuman..mptAdvancedAI] of TKMCheckBox;
       Label_PlayerTypesAll: TKMLabel;
       Label_PlayerId: array [0..MAX_HANDS-1] of TKMLabel;
       Button_Close: TKMButton;
 
-    PopUp_Confirm_PlayerDelete: TKMPopUpMenu;
-      Image_Confirm_PlayerDelete: TKMImage;
-      Button_PlayerDeleteConfirm, Button_PlayerDeleteCancel: TKMButton;
-      Label_PlayerDeleteConfirmTitle, Label_PlayerDeleteConfirm: TKMLabel;
+    PopUp_Confirm_Player: TKMPopUpMenu;
+      Image_Confirm_Player: TKMImage;
+      Button_PlayerConfirm, Button_PlayerConfirmCancel: TKMButton;
+      Label_PlayerConfirmTitle, Label_PlayerConfirmWarn: TKMLabel;
   public
     constructor Create(aParent: TKMPanel);
 
@@ -57,11 +62,16 @@ uses
   KM_RenderUI;
 
 const
-  PANEL_W  = 250;
+  PANEL_W  = 300;
+  BTN_MPSETUP_W = 24;
   BTN_DELETE_W = 22;
-  LINE_H = 24;
+  LINE_H = 26;
   ICON_SPACE_W = 25;
   ICON_SPACE_H = 32;
+  CONF_W = 500;
+  CONF_H = 260;
+  CONF_BTN_W = 170;
+  CONF_BTN_PAD = 40;
 
   PLAYER_TYPE_TX: array [mptHuman..mptAdvancedAI] of Integer = (TX_PLAYER_HUMAN, TX_AI_PLAYER_CLASSIC, TX_AI_PLAYER_ADVANCED);
 
@@ -72,6 +82,8 @@ var
   MPT: TKMMapEdPlayerType;
 begin
   inherited Create;
+
+  fConfirmationType := mctNone;
 
   panelH := LINE_H * MAX_HANDS + 80;
 
@@ -102,8 +114,14 @@ begin
       ChkBox_PlayerTypes[I,MPT].OnClick := Mission_PlayerTypesChange;
     end;
 
+    Button_PlayerMPSetup[I] := TKMButtonFlat.Create(Panel_PlayerTypes.ItemsPanel,
+                                                   ChkBox_PlayerTypes[I, mptAdvancedAI].Right + 20, top - 5, BTN_MPSETUP_W, BTN_MPSETUP_W, 678);
+    Button_PlayerMPSetup[I].Hint := Format(gResTexts[TX_MAPED_PLAYER_AI_MP_SETUP_HINT],  [I + 1]);
+    Button_PlayerMPSetup[I].Tag := I;
+    Button_PlayerMPSetup[I].OnClick := PlayerMPSetup_Click;
+
     Button_PlayerDelete[I] := TKMButtonFlat.Create(Panel_PlayerTypes.ItemsPanel,
-                                                   ChkBox_PlayerTypes[I, mptAdvancedAI].Right + 20, top - 4, BTN_DELETE_W, BTN_DELETE_W, 340);
+                                                   Button_PlayerMPSetup[I].Right + 20, top - 4, BTN_DELETE_W, BTN_DELETE_W, 340);
     Button_PlayerDelete[I].Hint := Format(gResTexts[TX_MAPED_PLAYER_DELETE_HINT], [I + 1]);
     Button_PlayerDelete[I].Tag := I;
     Button_PlayerDelete[I].OnClick := PlayerDelete_Click;
@@ -129,30 +147,33 @@ begin
   Button_Close.Anchors := [anLeft, anRight, anBottom];
   Button_Close.OnClick := ClosePlayerTypes_Click;
 
-  PopUp_Confirm_PlayerDelete := TKMPopUpMenu.Create(aParent.MasterParent, 450);
-  PopUp_Confirm_PlayerDelete.Height := 200;
-  PopUp_Confirm_PlayerDelete.AnchorsCenter;
-  PopUp_Confirm_PlayerDelete.Left := (aParent.MasterParent.Width div 2) - (PopUp_Confirm_PlayerDelete.Width div 2);
-  PopUp_Confirm_PlayerDelete.Top := (aParent.MasterParent.Height div 2) - 90;
+  PopUp_Confirm_Player := TKMPopUpMenu.Create(aParent.MasterParent, CONF_W);
+  PopUp_Confirm_Player.Height := CONF_H;
+  PopUp_Confirm_Player.AnchorsCenter;
+  PopUp_Confirm_Player.Left := (aParent.MasterParent.Width div 2) - (PopUp_Confirm_Player.Width div 2);
+  PopUp_Confirm_Player.Top := (aParent.MasterParent.Height div 2) - 90;
 
-    TKMBevel.Create(PopUp_Confirm_PlayerDelete, -2000,  -2000, 5000, 5000);
+    TKMBevel.Create(PopUp_Confirm_Player, -2000,  -2000, 5000, 5000);
 
-    Image_Confirm_PlayerDelete := TKMImage.Create(PopUp_Confirm_PlayerDelete, 0, 0, PopUp_Confirm_PlayerDelete.Width, PopUp_Confirm_PlayerDelete.Height, 15, rxGuiMain);
-    Image_Confirm_PlayerDelete.ImageStretch;
+    Image_Confirm_Player := TKMImage.Create(PopUp_Confirm_Player, 0, 0, PopUp_Confirm_Player.Width, PopUp_Confirm_Player.Height, 15, rxGuiMain);
+    Image_Confirm_Player.ImageStretch;
 
-    Label_PlayerDeleteConfirmTitle := TKMLabel.Create(PopUp_Confirm_PlayerDelete, PopUp_Confirm_PlayerDelete.Width div 2, 40, Format(gResTexts[TX_MAPED_PLAYER_DELETE_TITLE], [0]), fntOutline, taCenter);
-    Label_PlayerDeleteConfirmTitle.Anchors := [anLeft, anBottom];
+    Label_PlayerConfirmTitle := TKMLabel.Create(PopUp_Confirm_Player, PopUp_Confirm_Player.Width div 2, 40, Format(gResTexts[TX_MAPED_PLAYER_DELETE_TITLE], [0]), fntOutline, taCenter);
+    Label_PlayerConfirmTitle.Anchors := [anLeft, anBottom];
 
-    Label_PlayerDeleteConfirm := TKMLabel.Create(PopUp_Confirm_PlayerDelete, 20, 85, PopUp_Confirm_PlayerDelete.Width - 40, 0, gResTexts[TX_MAPED_PLAYER_DELETE_CONFIRM], fntMetal, taCenter);
-    Label_PlayerDeleteConfirm.Anchors := [anLeft, anBottom];
+    Label_PlayerConfirmWarn := TKMLabel.Create(PopUp_Confirm_Player, 20, 85, PopUp_Confirm_Player.Width - 40, 0, gResTexts[TX_MAPED_PLAYER_DELETE_CONFIRM], fntMetal, taCenter);
+    Label_PlayerConfirmWarn.WordWrap := True;
+    Label_PlayerConfirmWarn.Anchors := [anLeft, anBottom];
 
-    Button_PlayerDeleteConfirm := TKMButton.Create(PopUp_Confirm_PlayerDelete, 20, 155, 170, 30, gResTexts[TX_MENU_LOAD_DELETE_DELETE], bsMenu);
-    Button_PlayerDeleteConfirm.Anchors := [anLeft, anBottom];
-    Button_PlayerDeleteConfirm.OnClick := PlayerDeleteConfirm_Click;
+    Button_PlayerConfirm := TKMButton.Create(PopUp_Confirm_Player, ((CONF_W - CONF_BTN_PAD) div 2) - CONF_BTN_W, CONF_H - 50, CONF_BTN_W, 30,
+                                             gResTexts[TX_WORD_OK], bsMenu);
+    Button_PlayerConfirm.Anchors := [anLeft, anBottom];
+    Button_PlayerConfirm.OnClick := PlayerDeleteConfirm_Click;
 
-    Button_PlayerDeleteCancel  := TKMButton.Create(PopUp_Confirm_PlayerDelete, PopUp_Confirm_PlayerDelete.Width - 190, 155, 170, 30, gResTexts[TX_WORD_CANCEL], bsMenu);
-    Button_PlayerDeleteCancel.Anchors := [anLeft, anBottom];
-    Button_PlayerDeleteCancel.OnClick := PlayerDeleteConfirm_Click;
+    Button_PlayerConfirmCancel  := TKMButton.Create(PopUp_Confirm_Player, (CONF_W + CONF_BTN_PAD) div 2, CONF_H - 50, CONF_BTN_W, 30,
+                                                    gResTexts[TX_WORD_CANCEL], bsMenu);
+    Button_PlayerConfirmCancel.Anchors := [anLeft, anBottom];
+    Button_PlayerConfirmCancel.OnClick := PlayerDeleteConfirm_Click;
 end;
 
 
@@ -191,6 +212,7 @@ begin
                                         and ChkBox_PlayerTypes[I, MPT].Enabled);
     end;
 
+    Button_PlayerMPSetup[I].Enabled := hasAssets;
     Button_PlayerDelete[I].Enabled := hasAssets;
   end;
 
@@ -227,14 +249,25 @@ begin
 end;
 
 
-procedure TKMMapEdMissionPlayers.PlayerDeleteConfirm(aVisible: Boolean);
+procedure TKMMapEdMissionPlayers.DoConfirm(aVisible: Boolean);
 begin
   if aVisible then
   begin
-    Label_PlayerDeleteConfirmTitle.Caption := Format(gResTexts[TX_MAPED_PLAYER_DELETE_TITLE], [fPlayerIdToDelete + 1]);
-    PopUp_Confirm_PlayerDelete.Show;
+    Assert(fConfirmationType <> mctNone);
+    case fConfirmationType of
+      mctMPSetup:      begin
+                         Label_PlayerConfirmTitle.Caption := Format(gResTexts[TX_MAPED_PLAYER_AI_MP_SETUP_CONFIRM_TITLE], [fPlayerIdToConfirm + 1]);
+                         Label_PlayerConfirmWarn.Caption := Format(gResTexts[TX_MAPED_PLAYER_AI_MP_SETUP_CONFIRM], [fPlayerIdToConfirm + 1]);
+                       end;
+      mctDeletePlayer: begin
+                         Label_PlayerConfirmTitle.Caption := Format(gResTexts[TX_MAPED_PLAYER_DELETE_TITLE], [fPlayerIdToConfirm + 1]);
+                         Label_PlayerConfirmWarn.Caption := gResTexts[TX_MAPED_PLAYER_DELETE_CONFIRM];
+                       end;
+    end;
+
+    PopUp_Confirm_Player.Show;
   end else
-    PopUp_Confirm_PlayerDelete.Hide;
+    PopUp_Confirm_Player.Hide;
 end;
 
 
@@ -246,24 +279,44 @@ begin
 
   if Sender = Button_PlayerDelete[playerId] then
   begin
-    fPlayerIdToDelete := playerId;
-    PlayerDeleteConfirm(True);
+    fPlayerIdToConfirm := playerId;
+    fConfirmationType := mctDeletePlayer;
+    DoConfirm(True);
   end;
 end;
 
 
 procedure TKMMapEdMissionPlayers.PlayerDeleteConfirm_Click(Sender: TObject);
 begin
-  if Sender = Button_PlayerDeleteCancel then
-    PlayerDeleteConfirm(False);
+  if Sender = Button_PlayerConfirmCancel then
+    DoConfirm(False);
 
-  if Sender = Button_PlayerDeleteConfirm then
+  if Sender = Button_PlayerConfirm then
   begin
-    gGame.MapEditor.DeletePlayer(fPlayerIdToDelete);
-    PlayerDeleteConfirm(False);
+    case fConfirmationType of
+      mctMPSetup:       gGame.MapEditor.ApplyAIMultiplayerSetup(fPlayerIdToConfirm);
+      mctDeletePlayer:  gGame.MapEditor.DeletePlayer(fPlayerIdToConfirm);
+    end;
+
+    DoConfirm(False);
 
     Mission_PlayerIdUpdate;
     UpdatePlayerTypes;
+  end;
+end;
+
+
+procedure TKMMapEdMissionPlayers.PlayerMPSetup_Click(Sender: TObject);
+var
+  playerId: Integer;
+begin
+  playerId := TKMButtonFlat(Sender).Tag;
+
+  if Sender = Button_PlayerMPSetup[playerId] then
+  begin
+    fPlayerIdToConfirm := playerId;
+    fConfirmationType := mctMPSetup;
+    DoConfirm(True);
   end;
 end;
 
@@ -285,8 +338,8 @@ begin
 
   aHandled := True;
 
-  if PopUp_Confirm_PlayerDelete.Visible then
-    PopUp_Confirm_PlayerDelete.Hide //Hide 'delete player' confirmation dialog
+  if PopUp_Confirm_Player.Visible then
+    PopUp_Confirm_Player.Hide //Hide 'delete player' confirmation dialog
   else
     Hide;
 end;
@@ -376,6 +429,7 @@ begin
     if I < gHands.Count then
     begin
       Label_PlayerId[I].Enabled := gHands[I].HasAssets;
+      Button_PlayerMPSetup[I].Enabled := gHands[I].HasAssets;
       Button_PlayerDelete[I].Enabled := gHands[I].HasAssets;
     end;
 end;

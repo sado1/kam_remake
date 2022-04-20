@@ -308,6 +308,7 @@
 309:Apply
 310:Language:
 311:High shadow quality
+312:Ok
 314:Loading... Please wait
 315:An Error Has Occurred!
 316:Loading new locale
@@ -1531,3 +1532,6 @@
 1586:Dig overlay stage 4
 1587:Road overlay
 1588:Default
+1589:Apply multiplayer AI builder settings to player %d
+1590:Multiplayer setup for AI player %d
+1591:Warning: This will override all existing AI settings for player %d. Continue?

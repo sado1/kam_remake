@@ -733,6 +733,9 @@ TX_MAPED_AI_DEFAULTS_HEADING = 813; //Apply AI defaults
 TX_MAPED_AI_DEFAULTS_MP_BUILDER = 814; //Multiplayer builder
 TX_MAPED_AI_DEFAULTS_MP_BUILDER_HINT = 815; //Applies aggressive AI builder settings to all players (for multiplayer building maps)
 TX_MAPED_AI_DEFAULTS_CONFIRM = 816; //Warning: This will override all existing AI settings for all players. Continue?
+TX_MAPED_PLAYER_AI_MP_SETUP_HINT = 1589; //Apply multiplayer AI builder settings to player %d
+TX_MAPED_PLAYER_AI_MP_SETUP_CONFIRM_TITLE = 1590; //Multiplayer setup for AI player %d
+TX_MAPED_PLAYER_AI_MP_SETUP_CONFIRM = 1591; //Warning: This will override all existing AI settings for player %d. Continue?
 
 TX_MP_MENU_PLAYERNAME = 500; //Player name
 TX_MP_MENU_STATUS = 501; //Status:
@@ -1289,6 +1292,7 @@ TX_LOBBY_REMEMBER_PASSWORD = 1096; //Remember this password
 TX_LOBBY_USE_LAST_PASSWORD = 1097; //Use last known password
 TX_GO_PREV_MENU = 1098; //Go previous menu
 
+TX_WORD_OK = 312; //Ok
 TX_WORD_YES = 1099; //Yes
 TX_WORD_NO = 1100; //No
 TX_WORD_CANCEL = 1101; //Cancel
