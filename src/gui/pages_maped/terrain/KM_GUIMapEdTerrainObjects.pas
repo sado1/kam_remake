@@ -81,6 +81,9 @@ type
 
     procedure Show;
     function Visible: Boolean; override;
+    function IsPaletteVisible: Boolean;
+    procedure PaletteHide;
+
     procedure Hide;
     procedure Resize;
     procedure Cancel_Clicked(var aHandled: Boolean);
@@ -819,6 +822,18 @@ end;
 function TKMMapEdTerrainObjects.Visible: Boolean;
 begin
   Result := Panel_Objects.Visible;
+end;
+
+
+function TKMMapEdTerrainObjects.IsPaletteVisible: Boolean;
+begin
+  Result := PopUp_ObjectsPalette.Visible;
+end;
+
+
+procedure TKMMapEdTerrainObjects.PaletteHide;
+begin
+  PopUp_ObjectsPalette.Hide;
 end;
 
 

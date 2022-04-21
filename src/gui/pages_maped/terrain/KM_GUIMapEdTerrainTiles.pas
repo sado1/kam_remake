@@ -53,6 +53,8 @@ type
 
     function Visible: Boolean; override;
     function IsFocused: Boolean; override;
+    function IsPaletteVisible: Boolean;
+    procedure PaletteHide;
 
     procedure UpdateHotkeys;
     procedure UpdateState;
@@ -487,6 +489,18 @@ end;
 function TKMMapEdTerrainTiles.IsFocused: Boolean;
 begin
   Result := Visible or Panel_TilesPalettePopup.Visible;
+end;
+
+
+function TKMMapEdTerrainTiles.IsPaletteVisible: Boolean;
+begin
+  Result := Panel_TilesPalettePopup.Visible;
+end;
+
+
+procedure TKMMapEdTerrainTiles.PaletteHide;
+begin
+  Panel_TilesPalettePopup.Hide;
 end;
 
 

@@ -112,8 +112,18 @@ begin
   if aHandled or not aIsFirst then Exit;
 
   fGuiBrushes.KeyDown(Key, Shift, aIsFirst, aHandled);
+
+
   fGuiTiles.KeyDown(Key, Shift, aIsFirst, aHandled);
+  // Hide Objects palette if Tiles palette visible now
+  if fGuiTiles.IsPaletteVisible then
+    fGuiObjects.PaletteHide;
+
   fGuiObjects.KeyDown(Key, Shift, aIsFirst, aHandled);
+  // Hide Tiles palette if Objects palette visible now
+  if fGuiObjects.IsPaletteVisible then
+    fGuiTiles.PaletteHide;
+
   fGuiSelection.KeyDown(Key, Shift, aIsFirst, aHandled);
 end;
 
