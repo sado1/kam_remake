@@ -3488,7 +3488,7 @@ begin
   if (Key = gResKeys[kfReplayPlayNextTick]) and Button_ReplayStep.IsClickable then
     ReplayClick(Button_ReplayStep);
 
-  // Next keys are
+  // Next keys are handled only on a first KeyDown event
   if not aIsFirst then Exit;
 
   HandleShowTeamKeyDown(Key);
@@ -3506,8 +3506,8 @@ begin
   if HandleSpectatorKeys(Key, Shift) then
     Exit;
 
-  fGuiGameUnit.KeyUp(Key, Shift, keyHandled);
-  fGuiGameHouse.KeyUp(Key, Shift, keyHandled);
+  fGuiGameUnit.KeyDown(Key, Shift, keyHandled);
+  fGuiGameHouse.KeyDown(Key, Shift, keyHandled);
 end;
 
 

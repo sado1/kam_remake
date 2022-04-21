@@ -138,7 +138,7 @@ type
     procedure Hide;
     function Visible: Boolean;
 
-    procedure KeyUp(Key: Word; aShift: TShiftState; var aHandled: Boolean);
+    procedure KeyDown(Key: Word; aShift: TShiftState; var aHandled: Boolean);
 
     procedure Save(SaveStream: TKMemoryStream);
     procedure Load(LoadStream: TKMemoryStream);
@@ -1156,7 +1156,7 @@ begin
 end;
 
 
-procedure TKMGUIGameHouse.KeyUp(Key: Word; aShift: TShiftState; var aHandled: Boolean);
+procedure TKMGUIGameHouse.KeyDown(Key: Word; aShift: TShiftState; var aHandled: Boolean);
 begin
   if aHandled then Exit;
 

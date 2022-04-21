@@ -60,7 +60,7 @@ type
 
     function Visible: Boolean;
     procedure Hide;
-    procedure KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
+    procedure KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean);
 
     procedure ShowUnitInfo(aUnit: TKMUnit; aAskDismiss: Boolean = False);
     procedure ShowGroupInfo(Sender: TKMUnitGroup; aAskDismiss: Boolean = False);
@@ -537,7 +537,7 @@ begin
 end;
 
 
-procedure TKMGUIGameUnit.KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
+procedure TKMGUIGameUnit.KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean);
 begin
   if aHandled then Exit;
 
