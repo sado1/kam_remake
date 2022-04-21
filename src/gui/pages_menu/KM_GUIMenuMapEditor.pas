@@ -192,7 +192,7 @@ begin
                                                  Panel_MapFilter.Width - 2*FILTER_PAD_X, 20, gResTexts[TX_MENU_MAP_FILTER_BY_PLAYERS_NUMBER], fntGrey);
       CheckBox_ByPlayerCnt.OnClick := MapFilterChanged;
       TrackBar_PlayersCnt := TKMTrackBar.Create(Panel_MapFilter, FILTER_PAD_X, CheckBox_ByPlayerCnt.Bottom + FILTER_PAD_Y,
-                                                Panel_MapFilter.Width - 2*FILTER_PAD_X, 1, MAX_HANDS);
+                                                Panel_MapFilter.Width - 2*FILTER_PAD_X, 1, MAX_LOBBY_PLAYERS);
       TrackBar_PlayersCnt.Anchors := [anLeft,anTop];
       TrackBar_PlayersCnt.Disable;
       TrackBar_PlayersCnt.OnChange := MapFilterChanged;
@@ -732,7 +732,7 @@ begin
         or ((Radio_BuildFight.ItemIndex = 1) and (fMaps[I].MissionMode <> mmFighting)) //Fight map filter
         or ((Radio_CoopSpecial.ItemIndex = 0) and not fMaps[I].TxtInfo.IsSpecial)     //Special map filter
         or ((Radio_CoopSpecial.ItemIndex = 1) and not fMaps[I].TxtInfo.IsCoop)        //Coop map filter
-        or (TrackBar_PlayersCnt.Enabled and (fMaps[I].LocCount <> TrackBar_PlayersCnt.Position)) //Players number map filter
+        or (TrackBar_PlayersCnt.Enabled and (fMaps[I].HumanPlayerCount <> TrackBar_PlayersCnt.Position)) //Players number map filter
          then
         skipMap := True;
       for MS := MAP_SIZE_ENUM_MIN to MAP_SIZE_ENUM_MAX do
