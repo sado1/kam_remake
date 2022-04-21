@@ -713,6 +713,7 @@ begin
     for I := 0 to Min(MAX_UI_GOALS, M.GoalsVictoryCount[fSingleLoc]) - 1 do
     begin
       G := M.GoalsVictory[fSingleLoc,I];
+      if G.Play < 0 then Continue; // Could be on some old maps
       Image_VictGoal[I].TexID := GOAL_CONDITION_PIC[G.Cond];
       Image_VictGoal[I].FlagColor := fSingleColor;
       Image_VictGoalSt[I].Show;
