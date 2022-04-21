@@ -40,7 +40,6 @@ type
     constructor Create(aParent: TKMPanel; aOnPageChange: TNotifyEvent; aHideAllPages: TEvent);
     destructor Destroy; override;
     procedure KeyDown(Key: Word; Shift: TShiftState; aIsFirst: Boolean; var aHandled: Boolean);
-    procedure KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
     procedure MouseWheel(Shift: TShiftState; WheelSteps: Integer; X,Y: Integer; var aHandled: Boolean);
 
     property GuiTiles: TKMMapEdTerrainTiles read GetGuiTiles;
@@ -116,12 +115,6 @@ begin
   fGuiTiles.KeyDown(Key, Shift, aIsFirst, aHandled);
   fGuiObjects.KeyDown(Key, Shift, aIsFirst, aHandled);
   fGuiSelection.KeyDown(Key, Shift, aIsFirst, aHandled);
-end;
-
-
-procedure TKMMapEdTerrain.KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
-begin
-  fGuiObjects.KeyUp(Key, Shift, aHandled);
 end;
 
 

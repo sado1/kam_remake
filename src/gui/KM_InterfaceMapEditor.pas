@@ -979,8 +979,7 @@ begin
   aHandled := True; // assume we handle all keys here
 
   keyHandled := False;
-  //For undo/redo shortcuts, palettes and other
-  fGuiTerrain.KeyUp(Key, Shift, keyHandled);
+
   if keyHandled then Exit;
 
   //F1-F5 menu shortcuts

@@ -77,7 +77,6 @@ type
     constructor Create(aParent: TKMPanel; aHideAllPages: TEvent);
 
     procedure KeyDown(Key: Word; Shift: TShiftState; aIsFirst: Boolean; var aHandled: Boolean);
-    procedure KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
     procedure MouseWheel(Shift: TShiftState; WheelSteps: Integer; X,Y: Integer; var aHandled: Boolean);
 
     procedure Show;
@@ -865,18 +864,17 @@ begin
   if aHandled or not aIsFirst then Exit;
 
   aHandled := Key = gResKeys[kfMapedObjPalette];
-  if (Key = VK_ESCAPE) and PopUp_ObjectsPalette.Visible then
+
+  if Key = VK_ESCAPE then
   begin
-    PopUp_ObjectsPalette.Hide;
-    aHandled := True;
-  end;
-end;
-
-
-procedure TKMMapEdTerrainObjects.KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
-begin
-  aHandled := Key = gResKeys[kfMapedObjPalette];
-  if aHandled then
+    if PopUp_ObjectsPalette.Visible then
+     begin
+       PopUp_ObjectsPalette.Hide;
+        aHandled := True;
+     end;
+  end
+  else
+  if Key = gResKeys[kfMapedObjPalette] then
   begin
     //Reset selected and hide all pages
     if Assigned(fHideAllPages) and (gMySpectator.Selected <> nil) then
