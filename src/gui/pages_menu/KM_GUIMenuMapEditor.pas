@@ -258,7 +258,9 @@ begin
 
       ColumnBox_MapEd := TKMColumnBox.Create(Panel_MapEdLoad, 0, 20, 440, 576, fntMetal,  bsMenu);
       ColumnBox_MapEd.Anchors := [anLeft, anTop, anBottom];
-      ColumnBox_MapEd.SetColumns(fntOutline, ['', '', gResTexts[TX_MENU_MAP_TITLE], '#', gResTexts[TX_MENU_MAP_SIZE]], [0, 22, 44, 310, 340]);
+      ColumnBox_MapEd.SetColumns(fntOutline, ['', '', gResTexts[TX_MENU_MAP_TITLE], gResTexts[TX_MENU_MAP_HUMAN_TITLE], '#',
+                                              gResTexts[TX_MENU_MAP_SIZE]],
+                                             [0, 22, 44, 310, 335, 360]);
       ColumnBox_MapEd.SearchColumn := 2;
       ColumnBox_MapEd.OnColumnClick := ColumnClick;
       ColumnBox_MapEd.OnChange := SelectMap;
@@ -744,9 +746,9 @@ begin
         Continue;
 
       color := fMaps[I].GetLobbyColor;
-      R := MakeListRow(['', '', fMaps[I].Name, IntToStr(fMaps[I].LocCount), fMaps[I].SizeText],  //Texts
-                       ['', '', '', '', fMaps[I].Dimensions.ToString],  //Hints
-                       [color, color, color, color, color], //Colors
+      R := MakeListRow(['', '', fMaps[I].Name, IntToStr(fMaps[I].HumanPlayerCount), IntToStr(fMaps[I].LocCount), fMaps[I].SizeText],  //Texts
+                       ['', '', '', '', '', fMaps[I].Dimensions.ToString],  //Hints
+                       [color, color, color, color, color, color], //Colors
                        I);
       R.Cells[0].Pic := fMaps[I].FavouriteMapPic;
       R.Cells[0].HighlightOnMouseOver := True;
@@ -803,10 +805,14 @@ begin
           else
             SM := smByNameAsc;
       3:  if SortDirection = sdDown then
+            SM := smByHumanPlayersDesc
+          else
+            SM := smByHumanPlayersAsc;
+      4:  if SortDirection = sdDown then
             SM := smByPlayersDesc
           else
             SM := smByPlayersAsc;
-      4:  if SortDirection = sdDown then
+      5:  if SortDirection = sdDown then
             SM := smBySizeDesc
           else
             SM := smBySizeAsc;

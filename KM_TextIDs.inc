@@ -1616,7 +1616,7 @@ TX_MAPED_TERRAIN_TILES_PALETTE = 1426; //Tiles palette
 TX_MENU_OPTIONS_MAKE_SAVEPOINTS = 1429; //Make replay savepoints
 
 TX_BUILD_HOUSE_POSTFIX = 313; //|Hold Shift to place several houses
-TX_UNUSED_1356_MAPSIZE = 1356; //Map size:
+TX_MENU_MAP_HUMAN_TITLE = 1356; //H
 
 TX_MAPED_VIEW_DEFENCES = 1435; //Show defence positions
 TX_MAPED_VIEW_FLAT_TERRAIN = 1436; //Show flat terrain
