@@ -160,8 +160,8 @@
 161:Dispatch troop
 162:Supply troop with food
 163:Start storm attack
-164:Add line
-165:Withdraw line
+164:Add line|Click RMB or press Shift to add 5 lines
+165:Withdraw line|Click RMB or press Shift to withdraw 5 lines
 166:Select|group
 167:Cancel
 168:Delete

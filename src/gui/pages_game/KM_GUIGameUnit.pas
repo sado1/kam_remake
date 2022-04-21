@@ -469,13 +469,21 @@ begin
 
   if Sender = Button_Army_ForDown then
   begin
-    gGame.GameInputProcess.CmdArmy(gicArmyFormation, group, 0, GetMultiplicator(Shift, 5));
+    // Consider LMB click + Shift as a RMB click
+    if ((ssLeft in Shift) and (ssShift in Shift)) then
+      Shift := [ssRight];
+      
+    gGame.GameInputProcess.CmdArmy(gicArmyFormation, group, 0, GetMultiplicator(Shift, RMB_ADD_ROWS_CNT));
     gSoundPlayer.PlayWarrior(group.UnitType, spFormation);
   end;
 
   if Sender = Button_Army_ForUp   then
   begin
-    gGame.GameInputProcess.CmdArmy(gicArmyFormation, group, 0, -GetMultiplicator(Shift, 5));
+    // Consider LMB click + Shift as a RMB click
+    if ((ssLeft in Shift) and (ssShift in Shift)) then
+      Shift := [ssRight];
+      
+    gGame.GameInputProcess.CmdArmy(gicArmyFormation, group, 0, -GetMultiplicator(Shift, RMB_ADD_ROWS_CNT));
     gSoundPlayer.PlayWarrior(group.UnitType, spFormation);
   end;
 

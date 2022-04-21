@@ -297,9 +297,22 @@ var
   rotCnt: Integer;
 begin
   if Sender = Button_Army_ForUp then
-    SetUnitsPerRaw(fGroup.UnitsPerRow - GetMultiplicator(Shift));
+  begin
+    // Consider LMB click + Shift as a RMB click
+    if ((ssLeft in Shift) and (ssShift in Shift)) then
+      Shift := [ssRight];
+
+    SetUnitsPerRaw(fGroup.UnitsPerRow - GetMultiplicator(Shift, RMB_ADD_ROWS_CNT));
+  end;
+
   if Sender = Button_Army_ForDown then
-    SetUnitsPerRaw(fGroup.UnitsPerRow + GetMultiplicator(Shift));
+  begin
+    // Consider LMB click + Shift as a RMB click
+    if ((ssLeft in Shift) and (ssShift in Shift)) then
+      Shift := [ssRight];
+
+    SetUnitsPerRaw(fGroup.UnitsPerRow + GetMultiplicator(Shift, RMB_ADD_ROWS_CNT));
+  end;
 
   ImageStack_Army.SetCount(fGroup.MapEdCount, fGroup.UnitsPerRow, fGroup.UnitsPerRow div 2);
   Label_ArmyCount.Caption := IntToStr(fGroup.MapEdCount);
@@ -372,9 +385,11 @@ procedure TKMMapEdUnit.Unit_ArmyChange2(Sender: TObject; Shift: TShiftState);
 var
   newCount: Integer;
 begin
-  if Sender = Button_ArmyDec then //Decrease
+  if Sender = Button_ArmyDec then
+    //Decrease
     newCount := fGroup.MapEdCount - GetMultiplicator(Shift)
-  else //Increase
+  else
+    //Increase
     newCount := fGroup.MapEdCount + GetMultiplicator(Shift);
 
   fGroup.MapEdCount := EnsureRange(newCount, 1, MAPED_GROUP_MAX_CNT); //Limit max members
