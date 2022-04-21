@@ -154,8 +154,8 @@
 155:Switch on/off house repair
 156:Building not available at this time
 157:Condition
-158:Turn troop left
-159:Turn troop right
+158:Turn troop left|Click RMB or press Shift to turn 90 degrees, press Ctrl to turn 180 degrees
+159:Turn troop right|Click RMB or press Shift to turn 90 degrees, press Ctrl to turn 180 degrees
 160:Attack
 161:Dispatch troop
 162:Supply troop with food

@@ -169,8 +169,8 @@ TX_HOUSE_WARE_COSTS = 154; //Cost:
 TX_HOUSE_TOGGLE_REPAIR_HINT = 155; //Switch on/off house repair
 TX_HOUSE_NOT_AVAILABLE = 156; //Building not available at this time
 TX_UNIT_CONDITION = 157; //Condition
-TX_ARMY_ROTATE_CCW_HINT = 158; //Turn troop left
-TX_ARMY_ROTATE_CW_HINT = 159; //Turn troop right
+TX_ARMY_ROTATE_CCW_HINT = 158; //Turn troop left|Click RMB or press Shift to turn 90 degrees, press Ctrl to turn 180 degrees
+TX_ARMY_ROTATE_CW_HINT = 159; //Turn troop right|Click RMB or press Shift to turn 90 degrees, press Ctrl to turn 180 degrees
 TX_ARMY_ATTACK_HINT = 160; //Attack
 TX_ARMY_GOTO_HINT = 161; //Dispatch troop
 TX_ARMY_FEED_HINT = 162; //Supply troop with food
@@ -190,7 +190,6 @@ TX_MSG_COAL_DEPLETED = 175; //Your coal mine seams are exhausted.
 TX_MSG_IRON_DEPLETED = 176; //Your iron mine veins are exhausted.
 TX_MSG_GOLD_DEPLETED = 177; //Your gold mine veins are exhausted.
 TX_MSG_WOODCUTTER_DEPLETED = 178; //Your woodcutter cannot find any further trees to fell
-TX_MSG_WOODCUTTER_PLANT_DEPLETED = 1022; //Your woodcutter cannot find any free place to plant a tree
 TX_MSG_HOUSE_UNOCCUPIED = 179; //This house is not occupied.
 TX_MSG_ORDER_COMPLETED = 829; //The order has been completed
 TX_MSG_TROOP_HUNGRY = 180; //This troop is really hungry, they better get something to eat soon!
@@ -252,7 +251,6 @@ TX_MUSIC_JOURNEY = 226; //Journey
 TX_MENU_CAMPAIGNS = 227; //Campaigns
 TX_MENU_CAMP_HEADER = 228; //Campaigns
 TX_MENU_CAMP_START = 229; //Start Campaign!
-TX_MENU_CAMP_HINT = 795; //To play a previously unlocked campaign mission, select the mission flag on the campaign briefing map
 TX_MENU_SINGLE_MAP = 230; //Play Single Map
 TX_MENU_SINGLE_START_MAP = 231; //Start Map
 TX_MENU_BACK = 232; //Back to Menu
@@ -828,6 +826,8 @@ TX_LOBBY_RESET_BANS = 768; //Reset all bans
 TX_LOBBY_VIEW_README = 825; //View Readme PDF
 TX_LOBBY_PDF_ERROR = 826; //Failed to launch PDF viewer
 
+TX_MENU_CAMP_HINT = 795; //To play a previously unlocked campaign mission, select the mission flag on the campaign briefing map
+
 TX_MULTIPLAYER_WAITING = 577; //Waiting for players:
 TX_CHAT_ALL = 578; //All
 TX_CHAT_TEAM = 579; //Team
@@ -1168,6 +1168,7 @@ TX_KEY_LAUNCH_MEDIA_SELECT = 1454; //Launch media select
 TX_KEY_LAUNCH_APP1 = 1455; //Launch application 1
 TX_KEY_LAUNCH_APP2 = 1456; //Launch application 2
 
+TX_MSG_WOODCUTTER_PLANT_DEPLETED = 1022; //Your woodcutter cannot find any free place to plant a tree
 
 TX_MSG_HOUSE_UNOCCUPIED__22 = 966; //This armor smithy is not occupied
 TX_MSG_HOUSE_UNOCCUPIED_ARMORYWORKSHOP = 967; //This armory workshop is not occupied
