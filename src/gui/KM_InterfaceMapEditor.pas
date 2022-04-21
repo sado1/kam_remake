@@ -1012,7 +1012,7 @@ begin
   if Key = gResKeys[kfMapedUnivErasor] then
     UniversalEraser_Click(Button_UniversalEraser);
 
-  //Universal erasor
+  //Change owner
   if Key = gResKeys[kfMapedPaintBucket] then
     ChangeOwner_Click(Button_ChangeOwner);
 
