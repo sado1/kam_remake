@@ -77,7 +77,8 @@ uses
   KM_System, 
   KM_Game, KM_GameInputProcess,
   KM_HandsCollection, KM_Hand, KM_HandSpectator, KM_HandTypes,
-  KM_InterfaceGame, KM_RenderUI,
+  KM_InterfaceGame, KM_InterfaceTypes,
+  KM_RenderUI,
   KM_Resource, KM_ResFonts, KM_ResTexts, KM_ResKeys, KM_ResSound, KM_ResUnits, KM_Pics,
   KM_UnitWarrior, KM_Utils, KM_UtilsExt, KM_Defaults, KM_Sound, KM_CommonUtils,
   KM_UnitGroupTypes,
@@ -442,10 +443,10 @@ begin
 
   if (Sender = Button_Army_RotCW) or (Sender = Button_Army_RotCCW) then
   begin
-    if ssShift in Shift then
+    if ssCtrl in Shift then
       rotCnt := 4
     else
-    if ssRight in Shift then
+    if RMB_SHIFT_STATES * Shift <> [] then
       rotCnt := 2
     else
       rotCnt := 1;

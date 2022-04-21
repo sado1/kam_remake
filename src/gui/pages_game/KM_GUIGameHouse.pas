@@ -152,6 +152,7 @@ uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLIntf, LCLType, {$ENDIF}
   KM_Game, KM_GameInputProcess, KM_Hand,
+  KM_InterfaceTypes,
   KM_HouseBarracks, KM_HouseSchool, KM_HouseTownHall, KM_HouseWoodcutters, KM_HouseStore, KM_HouseArmorWorkshop,
   KM_HandsCollection, KM_RenderUI, KM_ResKeys,
   KM_Resource, KM_ResFonts, KM_ResHouses, KM_ResTexts, KM_ResUnits, KM_Utils, KM_UtilsExt, KM_Points,
@@ -163,7 +164,6 @@ const
   HOUSE_FLAG_TEX_ID_FRAME = 5;
   HOUSE_ORDER_ROW_MOUSEWHEEL_STEP = 5;
 
-  RMB_SHIFT_STATES: TShiftState = [ssRight, ssShift]; // Shift states which are used as right mouse button for some of the buttons
   SCHOOL_CH_ORDER_TO_0_SHIFT = ssCtrl; // Shift state to change Unit order in queue to 0 in School
   SCHOOL_CH_ORDER_TO_1_SHIFT = ssAlt;  // Shift state to change Unit order in queue to 1 in School
 

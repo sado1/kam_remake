@@ -64,6 +64,7 @@ uses
   KM_Resource, KM_ResFonts, KM_ResTexts, KM_ResUnits, KM_ResTypes,
   KM_UtilsExt, KM_Terrain,
   KM_UnitGroupTypes,
+  KM_InterfaceTypes,
   KM_MapEdTypes;
 
 
@@ -305,10 +306,10 @@ begin
 
   if (Sender = Button_Army_RotCW) or (Sender = Button_Army_RotCCW) then
   begin
-    if ssShift in Shift then
+    if ssCtrl in Shift then
       rotCnt := 4
     else
-    if ssRight in Shift then
+    if RMB_SHIFT_STATES * Shift <> [] then
       rotCnt := 2
     else
       rotCnt := 1;
