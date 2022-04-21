@@ -44,7 +44,7 @@ type
   public
     constructor Create(aParent: TKMPanel);
 
-    procedure KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean);
+    procedure KeyDown(Key: Word; Shift: TShiftState; aIsFirst: Boolean; var aHandled: Boolean);
 
     procedure TilesTableSetTileTexId(aTexId: Integer);
 
@@ -347,9 +347,9 @@ begin
 end;
 
 
-procedure TKMMapEdTerrainTiles.KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean);
+procedure TKMMapEdTerrainTiles.KeyDown(Key: Word; Shift: TShiftState; aIsFirst: Boolean; var aHandled: Boolean);
 begin
-  if aHandled then Exit;
+  if aHandled or not aIsFirst then Exit;
 
   if (Key = VK_ESCAPE) and Panel_TilesPalettePopup.Visible then
   begin

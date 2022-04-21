@@ -76,7 +76,7 @@ type
   public
     constructor Create(aParent: TKMPanel; aHideAllPages: TEvent);
 
-    procedure KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean);
+    procedure KeyDown(Key: Word; Shift: TShiftState; aIsFirst: Boolean; var aHandled: Boolean);
     procedure KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
     procedure MouseWheel(Shift: TShiftState; WheelSteps: Integer; X,Y: Integer; var aHandled: Boolean);
 
@@ -860,9 +860,9 @@ begin
 end;
 
 
-procedure TKMMapEdTerrainObjects.KeyDown(Key: Word; Shift: TShiftState; var aHandled: Boolean);
+procedure TKMMapEdTerrainObjects.KeyDown(Key: Word; Shift: TShiftState; aIsFirst: Boolean; var aHandled: Boolean);
 begin
-  if aHandled then Exit;
+  if aHandled or not aIsFirst then Exit;
 
   aHandled := Key = gResKeys[kfMapedObjPalette];
   if (Key = VK_ESCAPE) and PopUp_ObjectsPalette.Visible then
