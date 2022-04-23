@@ -2945,6 +2945,7 @@ begin
   begin
     Edit_Description.Text := gNetworking.Description;
     Edit_Password.Text := UnicodeString(gNetworking.Password);
+    Button_SettingsUseLastPassword.Enabled := Trim(gGameSettings.LastPassword) <> '';
     Panel_Settings.Show;
   end;
 
