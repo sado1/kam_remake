@@ -8,7 +8,7 @@ uses
   KM_WindowParams, KM_SettingsDev,
   KM_Defaults,
   {$IFDEF FPC} LResources, Spin, {$ENDIF}
-  {$IFDEF WDC} Vcl.Samples.Spin, {$ENDIF}
+  {$IFNDEF FPC} Vcl.Samples.Spin, {$ENDIF}  // For some unnown reason Delphi auto add Vcl.Samples.Spin when use {$IFDEF WDC}
   {$IFDEF MSWindows} KM_VclMenuHint, ShellAPI, Windows, Messages; {$ENDIF}
   {$IFDEF Unix} LCLIntf, LCLType; {$ENDIF}
 
@@ -355,7 +355,7 @@ type
   private
     fDevSettings: TKMDevSettings;
   protected
-    procedure WndProc(var Message: TMessage); override;
+    procedure WndProc(var Message: TMessage); override; //
     {$ENDIF}
   public
     RenderArea: TKMRenderControl;
