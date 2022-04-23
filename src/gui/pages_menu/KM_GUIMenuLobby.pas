@@ -728,6 +728,7 @@ begin
     Edit_Password := TKMEdit.Create(Panel_Settings, 20, 120, SET_W - 40, 20, fntGrey);
     Edit_Password.AllowedChars := acANSI7; //Passwords are basic ANSI so everyone can type them
     Checkbox_RememberPassword := TKMCheckbox.Create(Panel_Settings, 20, 153, SET_W - 20, 30, gResTexts[TX_LOBBY_REMEMBER_PASSWORD], fntGrey);
+    Checkbox_RememberPassword.Hint := gResTexts[TX_LOBBY_SETTINGS_SAVE_PWD];
 
     Button_SettingsResetBans := TKMButton.Create(Panel_Settings, 20, 180, SET_W - 40, 30, gResTexts[TX_LOBBY_RESET_BANS], bsMenu);
     Button_SettingsUseLastPassword := TKMButton.Create(Panel_Settings, 20, 220, SET_W - 40, 30, gResTexts[TX_LOBBY_USE_LAST_PASSWORD], bsMenu);
@@ -2961,9 +2962,7 @@ begin
     Edit_Password.Text := gGameSettings.LastPassword;
 
   if Sender = Button_SettingsCancel then
-  begin
     Panel_Settings.Hide;
-  end;
 
   if Sender = Button_SettingsSave then
   begin

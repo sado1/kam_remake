@@ -825,6 +825,7 @@ TX_LOBBY_DOWNLOAD_OVERWRITE = 738; //Overwrite existing files
 TX_LOBBY_RESET_BANS = 768; //Reset all bans
 TX_LOBBY_VIEW_README = 825; //View Readme PDF
 TX_LOBBY_PDF_ERROR = 826; //Failed to launch PDF viewer
+TX_LOBBY_SETTINGS_SAVE_PWD = 1592; //Stores the current password for future use
 
 TX_MENU_CAMP_HINT = 795; //To play a previously unlocked campaign mission, select the mission flag on the campaign briefing map
 

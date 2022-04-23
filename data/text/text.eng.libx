@@ -1536,3 +1536,4 @@
 1589:Apply multiplayer AI builder settings to player %d
 1590:Multiplayer setup for AI player %d
 1591:Warning: This will override all existing AI settings for player %d. Continue?
+1592:Stores the current password for future use
