@@ -616,7 +616,12 @@ begin
     fResolutions.Restore;
 
   fFormLoading.Position := poScreenCenter;
-  fFormMain.ToggleFullscreen(gMainSettings.FullScreen, gMainSettings.WindowParams.NeedResetToDefaults);
+
+  // Will show windowed form and play videos
+  // Should be made before GameApp creation, otherwise window position will not be set correctly
+  // (its prbably because it will be overwritten, on gGameApp creation)
+  if not gMainSettings.FullScreen then
+    fFormMain.ShowInWindow;
 
   //It's required to re-init whole OpenGL related things when RC gets toggled fullscreen
   FreeThenNil(gGameApp); //Saves all settings into ini file in midst
@@ -627,6 +632,11 @@ begin
                                 fFormLoading.LoadingStep,
                                 fFormLoading.LoadingText,
                                 StatusBarText);
+
+  // Will show fullscreen form and play videos
+  // We need to start it after GameApp creation, since we need gResLocales to load proper video file by loaded locale
+  if gMainSettings.FullScreen then
+    fFormMain.ShowFullscreen;
 
   // Check if player has all permissions on game folder. Close the app if not
   // Check is done after gGameApp creating because we want to load texts first to shw traslated error message

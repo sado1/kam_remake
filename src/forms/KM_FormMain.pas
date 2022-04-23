@@ -349,6 +349,9 @@ type
     procedure WMMouseWheel(var Msg: TMessage); message WM_MOUSEWHEEL;
     procedure WMMenuSelect(var Msg: TWMMenuSelect); message WM_MENUSELECT;
     procedure DoMessage(var Msg: TMsg; var Handled: Boolean);
+
+    procedure ShowInCustomWindow;
+    procedure ShowInDefaultWindow;
   private
     fDevSettings: TKMDevSettings;
   protected
@@ -361,7 +364,10 @@ type
     procedure ControlsSetVisibile(aShowCtrls: Boolean); overload;
     procedure ControlsReset;
     procedure ControlsRefill;
-    procedure ToggleFullscreen(aFullscreen, aWindowDefaultParams: Boolean);
+
+    procedure ShowFullScreen;
+    procedure ShowInWindow;
+
     procedure SetSaveEditableMission(aEnabled: Boolean);
     procedure SetSaveGameWholeMapImage(aEnabled: Boolean);
     procedure SetExportGameStats(aEnabled: Boolean);
@@ -1631,37 +1637,59 @@ begin
 end;
 
 
-procedure TFormMain.ToggleFullscreen(aFullscreen, aWindowDefaultParams: Boolean);
+procedure TFormMain.ShowFullScreen;
 begin
-  if aFullScreen then begin
-    Show; //Make sure the form is shown (e.g. on game creation), otherwise it won't wsMaximize
-    BorderStyle  := bsSizeable; //if we don't set Form1 sizeable it won't maximize
-    WindowState  := wsNormal;
-    WindowState  := wsMaximized;
-    BorderStyle  := bsNone;     //and now we can make it borderless again
-  end else begin
-    BorderStyle  := bsSizeable;
-    WindowState  := wsNormal;
-    if (aWindowDefaultParams) then
-    begin
-      Position := poScreenCenter;
-      ClientWidth  := MENU_DESIGN_X;
-      ClientHeight := MENU_DESIGN_Y;
-      // We've set default window params, so update them
-      gMain.UpdateWindowParams(GetWindowParams);
-      // Unset NeedResetToDefaults flag
-      gMainSettings.WindowParams.NeedResetToDefaults := False;
-    end else begin
-      // Here we set window Width/Height and State
-      // Left and Top will set on FormShow, so omit setting them here
-      Position := poDesigned;
-      ClientWidth  := gMainSettings.WindowParams.Width;
-      ClientHeight := gMainSettings.WindowParams.Height;
-      Left := gMainSettings.WindowParams.Left;
-      Top := gMainSettings.WindowParams.Top;
-      WindowState  := gMainSettings.WindowParams.State;
-    end;
-  end;
+  Show; //Make sure the form is shown (e.g. on game creation), otherwise it won't wsMaximize
+  BorderStyle  := bsSizeable; //if we don't set Form1 sizeable it won't maximize
+  WindowState  := wsNormal;
+  WindowState  := wsMaximized;
+  BorderStyle  := bsNone;     //and now we can make it borderless again
+
+  //Make sure Panel is properly aligned
+  RenderArea.Align := alClient;
+end;
+
+
+procedure TFormMain.ShowInWindow;
+begin
+  if gMainSettings.WindowParams.NeedResetToDefaults then
+    ShowInDefaultWindow
+  else
+    ShowInCustomWindow;
+end;
+
+
+procedure TFormMain.ShowInCustomWindow;
+begin
+  BorderStyle  := bsSizeable;
+  WindowState  := wsNormal;
+
+  // Here we set window Width/Height and State
+  // Left and Top will set on FormShow, so omit setting them here
+  Position := poDesigned;
+  ClientWidth  := gMainSettings.WindowParams.Width;
+  ClientHeight := gMainSettings.WindowParams.Height;
+  Left := gMainSettings.WindowParams.Left;
+  Top := gMainSettings.WindowParams.Top;
+  WindowState  := gMainSettings.WindowParams.State;
+
+  //Make sure Panel is properly aligned
+  RenderArea.Align := alClient;
+end;
+
+
+procedure TFormMain.ShowInDefaultWindow;
+begin
+  BorderStyle  := bsSizeable;
+  WindowState  := wsNormal;
+
+  Position := poScreenCenter;
+  ClientWidth  := MENU_DESIGN_X;
+  ClientHeight := MENU_DESIGN_Y;
+  // We've set default window params, so update them
+  gMain.UpdateWindowParams(GetWindowParams);
+  // Unset NeedResetToDefaults flag
+  gMainSettings.WindowParams.NeedResetToDefaults := False;
 
   //Make sure Panel is properly aligned
   RenderArea.Align := alClient;
