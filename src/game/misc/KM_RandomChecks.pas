@@ -85,7 +85,7 @@ uses
   KM_Log;
 
 var
-  MAX_TICKS_CNT: Integer = 10*60*10; // 10 minutes
+  MAX_TICKS_CNT: Integer = 5*60*10; // 5 minutes
 
 
 { TKMRandomLogger }
