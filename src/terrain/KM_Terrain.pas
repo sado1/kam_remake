@@ -166,7 +166,8 @@ type
     function CheckAnimalIsStuck(const aLoc: TKMPoint; aPass: TKMTerrainPassability; aCheckUnits: Boolean = True): Boolean;
     function GetOutOfTheWay(aUnit: Pointer; const aPusherLoc: TKMPoint; aPass: TKMTerrainPassability; aPusherWasPushed: Boolean = False): TKMPoint;
     function FindSideStepPosition(const aLoc, aLoc2, aLoc3: TKMPoint; aPass: TKMTerrainPassability; out aSidePoint: TKMPoint; aOnlyTakeBest: Boolean): Boolean;
-    function Route_CanBeMade(const aLocA, aLocB: TKMPoint; aPass: TKMTerrainPassability; aDistance: Single): Boolean;
+    function Route_CanBeMade(const aLocA, aLocB: TKMPoint; aPass: TKMTerrainPassability): Boolean; overload; inline;
+    function Route_CanBeMade(const aLocA, aLocB: TKMPoint; aPass: TKMTerrainPassability; aDistance: Single): Boolean; overload;
     function Route_CanBeMadeToVertex(const aLocA, aLocB: TKMPoint; aPass: TKMTerrainPassability): Boolean;
     function GetClosestTile(const aTargetLoc, aOriginLoc: TKMPoint; aPass: TKMTerrainPassability; aAcceptTargetLoc: Boolean): TKMPoint;
     function GetClosestRoad(const aFromLoc: TKMPoint; aWalkConnectIDSet: TKMByteSet; aPass: TKMTerrainPassability = tpWalkRoad): TKMPoint;
@@ -2314,7 +2315,7 @@ begin
       if TileIsWineField(P) then
         if Land^[P.Y,P.X].FieldAge = CORN_AGE_MAX then
           if not TileIsLocked(P) then //Taken by another farmer
-            if Route_CanBeMade(aLoc, P, tpWalk, 0) then
+            if Route_CanBeMade(aLoc, P, tpWalk) then
             begin
               if KMLengthSqr(aLoc, P) <= Sqr(aRadius div 2) then
                 nearTiles.Add(KMPointDir(P, dirNA))
@@ -2347,7 +2348,7 @@ begin
     for I := 0 to validTiles.Count - 1 do
     begin
       P := validTiles[I];
-      if TileIsCornField(P) and Route_CanBeMade(aLoc, P, tpWalk, 0) then
+      if TileIsCornField(P) and Route_CanBeMade(aLoc, P, tpWalk) then
         aCornLocs.Add(P);
     end;
   finally
@@ -2369,7 +2370,7 @@ begin
     for I := 0 to validTiles.Count - 1 do
     begin
       P := validTiles[I];
-      if TileIsWineField(P) and Route_CanBeMade(aLoc, P, tpWalk, 0) then
+      if TileIsWineField(P) and Route_CanBeMade(aLoc, P, tpWalk) then
         aCornLocs.Add(P);
     end;
   finally
@@ -2399,7 +2400,7 @@ begin
         if((aPlantAct in [taAny, taPlant]) and (Land^[P.Y,P.X].FieldAge = 0)) or
           ((aPlantAct in [taAny, taCut])   and (Land^[P.Y,P.X].FieldAge = CORN_AGE_MAX)) then
           if not TileIsLocked(P) then //Taken by another farmer
-            if Route_CanBeMade(aLoc, P, tpWalk, 0) then
+            if Route_CanBeMade(aLoc, P, tpWalk) then
             begin
               if KMLengthSqr(aLoc, P) <= Sqr(aRadius div 2) then
                 nearTiles.Add(P)
@@ -2445,7 +2446,7 @@ begin
         and not KMSamePoint(aAvoidLoc, P)
         and TileHasStone(P.X, P.Y - 1)
         and (aIgnoreWorkingUnits or not TileIsLocked(P)) //Already taken by another stonemason
-        and Route_CanBeMade(aLoc, P, tpWalk, 0) then
+        and Route_CanBeMade(aLoc, P, tpWalk) then
         aStoneLocs.Add(P);
     end;
   finally
@@ -2607,7 +2608,7 @@ begin
 
   for I := -1 to 0 do
     for K := -1 to 0 do
-      if Route_CanBeMade(aLoc, KMPoint(aTree.X+K, aTree.Y+I), tpWalk, 0) then
+      if Route_CanBeMade(aLoc, KMPoint(aTree.X+K, aTree.Y+I), tpWalk) then
       begin
         slope := Round(HeightAt(aTree.X+K-0.5, aTree.Y+I-0.5) * CELL_HEIGHT_DIV) - Land^[aTree.Y, aTree.X].Height;
         //Cutting trees which are higher than us from the front looks visually poor, (axe hits ground) so avoid it where possible
@@ -2704,7 +2705,7 @@ begin
 
       if (aPlantAct in [taPlant, taAny])
         and TileGoodToPlantTree(T.X, T.Y)
-        and Route_CanBeMade(aLoc, T, tpWalk, 0)
+        and Route_CanBeMade(aLoc, T, tpWalk)
         and not TileIsLocked(T) then //Taken by another woodcutter
       begin
         if ObjectIsChopableTree(T, caAgeStump) then
@@ -2762,7 +2763,7 @@ begin
       P := validTiles[I];
       //Check that this tile is valid
       if (aIgnoreWorkingUnits or not TileIsLocked(P)) //Taken by another fisherman
-        and Route_CanBeMade(aLoc, P, tpWalk, 0)
+        and Route_CanBeMade(aLoc, P, tpWalk)
         and not KMSamePoint(aAvoidLoc, P) then
         //Now find a tile around this one that is water
         for J := -1 to 1 do
@@ -3922,34 +3923,38 @@ begin
 end;
 
 
+function TKMTerrain.Route_CanBeMade(const aLocA, aLocB: TKMPoint; aPass: TKMTerrainPassability): Boolean;
+var
+  WC: TKMWalkConnect;
+begin
+  case aPass of
+    tpWalk:      WC := wcWalk;
+    tpWalkRoad:  WC := wcRoad;
+    tpFish:      WC := wcFish;
+    tpWorker:    WC := wcWork;
+    else Exit;
+  end;
+
+  Result :=     CheckPassability(aLocA, aPass)
+            and CheckPassability(aLocB, aPass)
+            and (Land[aLocA.Y,aLocA.X].WalkConnect[WC] = Land[aLocB.Y,aLocB.X].WalkConnect[WC]);
+end;
+
+
 //Test wherever it is possible to make the route without actually making it to save performance
 function TKMTerrain.Route_CanBeMade(const aLocA, aLocB: TKMPoint; aPass: TKMTerrainPassability; aDistance: Single): Boolean;
 var
   I, K: Integer;
-  testRadius: Boolean;
+  tstRad1, tstRad2: Boolean;
   distanceSqr: Single;
   WC: TKMWalkConnect;
+  x1, x2, y1, y2: Integer;
 begin
   Result := True;
 
-  //target has to be different point than source
-  //Result:=not (KMSamePoint(LocA,LocB)); //Or maybe we don't care
-
-  //Source point has to be walkable
-  Result := Result and CheckPassability(aLocA, aPass);
-
-  if not Result then
-    Exit;
-
-  //Target has to be walkable within Distance
-  testRadius := False;
-  distanceSqr := Sqr(aDistance);
-  for I := Max(round(aLocB.Y - aDistance), 1) to Min(Round(aLocB.Y + aDistance), fMapY - 1) do
-    for K := Max(round(aLocB.X - aDistance), 1) to Min(Round(aLocB.X + aDistance), fMapX - 1) do
-      if KMLengthSqr(aLocB, KMPoint(K, I)) <= distanceSqr then
-        testRadius := testRadius or CheckPassability(KMPoint(K, I), aPass);
-
-  Result := Result and testRadius;
+  // Target could be same point as a source (we dont care)
+  // Source point has to be walkable
+  Result := CheckPassability(aLocA, aPass);
 
   if not Result then
     Exit;
@@ -3962,27 +3967,29 @@ begin
     else Exit;
   end;
 
-  {if WC = wcWork then
-  with TBitmap.Create do
-  begin
-    Width := fMapX;
-    Height:= fMapY;
-    PixelFormat := pf32bit;
-    for I := 0 to Height-1 do
-      for K := 0 to Width-1 do
-        Canvas.Pixels[K,I] := Land^[I+1,K+1].WalkConnect[wcWork] * 32;
-    SaveToFile(ExeDir + 'wcWork.bmp');
-    Free;
-  end;}
+  if aDistance = 0 then
+    Exit(CheckPassability(aLocB, aPass) and (Land[aLocA.Y,aLocA.X].WalkConnect[WC] = Land[aLocB.Y,aLocB.X].WalkConnect[WC]));
 
-  //Walkable way between A and B is proved by FloodFill
-  testRadius := False;
-  for I := Max(Round(aLocB.Y - aDistance), 1) to Min(Round(aLocB.Y + aDistance), fMapY-1) do
-    for K := Max(Round(aLocB.X - aDistance), 1) to Min(Round(aLocB.X + aDistance), fMapX-1) do
-      if KMLengthSqr(aLocB,KMPoint(K, I)) <= distanceSqr then
-        testRadius := testRadius or (Land[aLocA.Y,aLocA.X].WalkConnect[WC] = Land^[i,k].WalkConnect[WC]);
+  // Target has to be walkable within Distance
+  tstRad1 := False;
+  tstRad2 := False;
+  distanceSqr := Sqr(aDistance);
 
-  Result := Result and testRadius;
+  y1 := Max(Round(aLocB.Y - aDistance), 1);
+  y2 := Min(Round(aLocB.Y + aDistance), fMapY - 1);
+  x1 := Max(Round(aLocB.X - aDistance), 1);
+  x2 := Min(Round(aLocB.X + aDistance), fMapX - 1);
+
+  // Walkable way between A and B is proved by FloodFill
+  for I := y1 to y2 do
+    for K := x1 to x2 do
+      if KMLengthSqr(aLocB.X, aLocB.Y, K, I) <= distanceSqr then
+      begin
+        tstRad1 := tstRad1 or CheckPassability(K, I, aPass);
+        tstRad2 := tstRad2 or (Land[aLocA.Y,aLocA.X].WalkConnect[WC] = Land[I,K].WalkConnect[WC]);
+      end;
+
+  Result := Result and tstRad1 and tstRad2;
 end;
 
 
@@ -3995,7 +4002,7 @@ begin
   //Check from top-left of vertex to vertex tile itself
   for I := Max(aLocB.Y - 1, 1) to aLocB.Y do
     for K := Max(aLocB.X - 1, 1) to aLocB.X do
-      Result := Result or Route_CanBeMade(aLocA, KMPoint(K, I), aPass, 0);
+      Result := Result or Route_CanBeMade(aLocA, KMPoint(K, I), aPass);
 end;
 
 
@@ -4064,7 +4071,7 @@ begin
     if not TileInMapCoords(P.X,P.Y) then Continue;
     if CheckPassability(P, aPass)
       and (Land^[P.Y,P.X].WalkConnect[wcType] in aWalkConnectIDSet)
-      and Route_CanBeMade(aFromLoc, P, tpWalk, 0)
+      and Route_CanBeMade(aFromLoc, P, tpWalk)
     then
     begin
       Result := P; //Assign if all test are passed

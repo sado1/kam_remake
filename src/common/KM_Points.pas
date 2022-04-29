@@ -190,6 +190,7 @@ type
   function KMLengthDiag(const A, B: TKMPoint): Single; overload;
   function KMLengthDiag(X,Y: Integer; const B: TKMPoint): Single; overload;
   function KMLengthSqr(const A, B: TKMPoint): Integer; overload;
+  function KMLengthSqr(const X1, Y1, X2, Y2: Integer): Integer; overload;
   function KMLengthSqr(const A, B: TKMPointF): Single; overload;
   function KMLengthSqr(const A: TKMPoint; const B: TKMPointF): Single; overload;
 
@@ -1101,6 +1102,12 @@ end;
 function KMLengthSqr(const A, B: TKMPoint): Integer;
 begin
   Result := Sqr(A.X - B.X) + Sqr(A.Y - B.Y);
+end;
+
+
+function KMLengthSqr(const X1, Y1, X2, Y2: Integer): Integer;
+begin
+  Result := Sqr(X1 - X2) + Sqr(Y1 - Y2);
 end;
 
 

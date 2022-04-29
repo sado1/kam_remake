@@ -1182,7 +1182,7 @@ begin
   Result := Result and (
             ( //House-House delivery should be performed only if there's a connecting road
             (demand.Loc_House <> nil) and
-            (gTerrain.Route_CanBeMade(offer.Loc_House.PointBelowEntrance, demand.Loc_House.PointBelowEntrance, tpWalkRoad, 0))
+            (gTerrain.Route_CanBeMade(offer.Loc_House.PointBelowEntrance, demand.Loc_House.PointBelowEntrance, tpWalkRoad))
             )
             or
             ( //House-Unit delivery can be performed without connecting road
@@ -1388,7 +1388,7 @@ function TKMDeliveries.TryCalcRouteCost(aCalcKind: TKMDeliveryCalcKind; aFromPos
     if aPass = tpNone then
       Exit(False);
 
-    Result := gTerrain.Route_CanBeMade(LocA, LocB, aPass, 0);
+    Result := gTerrain.Route_CanBeMade(LocA, LocB, aPass);
   end;
 
 var
@@ -1749,7 +1749,7 @@ procedure TKMDeliveries.DeliveryFindBestDemand(aSerf: TKMUnitSerf; aDeliveryId: 
         if H.IsComplete
           and not H.IsDestroyed
           and H.CanHaveWareType(dWT) then
-          Result := Result and gTerrain.Route_CanBeMade(H.PointBelowEntrance, demand.Loc_House.PointBelowEntrance, tpWalkRoad, 0);
+          Result := Result and gTerrain.Route_CanBeMade(H.PointBelowEntrance, demand.Loc_House.PointBelowEntrance, tpWalkRoad);
       end;
   end;
 
