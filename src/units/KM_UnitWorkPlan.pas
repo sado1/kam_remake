@@ -238,8 +238,7 @@ begin
 end;
 
 
-procedure TKMUnitWorkPlan.FindPlan(aUnit: TKMUnit; aHome: TKMHouseType; aProduct: TKMWareType;
-                                 aLoc: TKMPoint; aPlantAct: TKMPlantAct);
+procedure TKMUnitWorkPlan.FindPlan(aUnit: TKMUnit; aHome: TKMHouseType; aProduct: TKMWareType; aLoc: TKMPoint; aPlantAct: TKMPlantAct);
 var
   I: Integer;
   tmp: TKMPointDir;

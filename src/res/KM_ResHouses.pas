@@ -921,7 +921,7 @@ var
 begin
   SL := TStringList.Create;
 
-  S := 'House name;WoodCost;StoneCost;ResProductionX';
+  S := 'House name;WoodCost;StoneCost;ResProductionX;WorkerRest';
   SL.Append(S);
 
   for HT := HOUSE_MIN to HOUSE_MAX do
@@ -931,6 +931,7 @@ begin
     AddField(fItems[HT].WoodCost);
     AddField(fItems[HT].StoneCost);
     AddField(fItems[HT].ResProductionX);
+    AddField(fItems[HT].WorkerRest);
     SL.Append(S);
 
     for I := 1 to 4 do
