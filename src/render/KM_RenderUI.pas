@@ -488,6 +488,7 @@ var
   drawWidth, drawHeight: Integer;
 begin
   if aID = 0 then Exit;
+  if aID > High(gGFXData[aRX]) then Exit;
 
   offX  := 0;
   offY  := 0;
