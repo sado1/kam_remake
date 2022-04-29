@@ -3927,6 +3927,8 @@ function TKMTerrain.RouteCanBeMade(const aLocA, aLocB: TKMPoint; aPass: TKMTerra
 var
   WC: TKMWalkConnect;
 begin
+  Result := False;
+
   case aPass of
     tpWalk:      WC := wcWalk;
     tpWalkRoad:  WC := wcRoad;
@@ -3950,8 +3952,6 @@ var
   WC: TKMWalkConnect;
   x1, x2, y1, y2: Integer;
 begin
-  Result := True;
-
   // Target could be same point as a source (we dont care)
   // Source point has to be walkable
   Result := CheckPassability(aLocA, aPass);
