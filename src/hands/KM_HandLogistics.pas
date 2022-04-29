@@ -1263,12 +1263,12 @@ end;
 // Delivery is only permitted if the serf can access the From house.
 function TKMDeliveries.SerfCanDoDelivery(oWT: TKMWareType; iO: Integer; aSerf: TKMUnitSerf): Boolean;
 var
-  LocA, LocB: TKMPoint;
+  locA, locB: TKMPoint;
 begin
-  LocA := GetSerfActualPos(aSerf);
-  LocB := fOffer[oWT,iO].Loc_House.PointBelowEntrance;
+  locA := GetSerfActualPos(aSerf);
+  locB := fOffer[oWT,iO].Loc_House.PointBelowEntrance;
 
-  Result := aSerf.CanWalkTo(LocA, LocB, tpWalk);
+  Result := aSerf.CanWalkTo(locA, locB, tpWalk);
 end;
 
 
