@@ -1052,11 +1052,12 @@ begin
 end;
 
 
-{Check if requested tile (X,Y) is within Map boundaries}
-{X,Y are unsigned int, usually called from loops, hence no TKMPoint can be used}
+// Check if requested tile (X,Y) is within Map boundaries
+// X,Y are unsigned int, usually called from loops, hence no TKMPoint can be used
 function TKMTerrain.TileInMapCoords(X,Y: Integer; aInset: Byte): Boolean;
 begin
-  Result := InRange(X, 1 + aInset, fMapX - 1 - aInset) and InRange(Y, 1 + aInset, fMapY - 1 - aInset);
+  // Direct comparison is a bit faster, than using InRange
+  Result := (X >= 1 + aInset) and (X <= fMapX - 1 - aInset) and (Y >= 1 + aInset) and (Y <= fMapY - 1 - aInset);
 end;
 
 
