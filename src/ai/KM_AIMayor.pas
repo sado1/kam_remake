@@ -809,7 +809,7 @@ begin
           FromLoc := TKMUnitActionWalkTo(gHands[fOwner].Units[I].Action).WalkFrom;
           ToLoc := TKMUnitActionWalkTo(gHands[fOwner].Units[I].Action).WalkTo;
           //Unit's route must be using road network, not f.e. delivering to soldiers
-          if gTerrain.Route_CanBeMade(FromLoc, ToLoc, tpWalkRoad) then
+          if gTerrain.RouteCanBeMade(FromLoc, ToLoc, tpWalkRoad) then
           begin
             //Check for shortcuts we could build
             NodeList.Clear;

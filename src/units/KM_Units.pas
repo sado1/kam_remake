@@ -2003,25 +2003,25 @@ end;
 
 function TKMUnit.CanWalkTo(const aTo: TKMPoint; aDistance: Single): Boolean;
 begin
-  Result := gTerrain.Route_CanBeMade(Position, aTo, DesiredPassability, aDistance);
+  Result := gTerrain.RouteCanBeMade(Position, aTo, DesiredPassability, aDistance);
 end;
 
 
 function TKMUnit.CanWalkTo(const aTo: TKMPoint; aPass: TKMTerrainPassability; aDistance: Single): Boolean;
 begin
-  Result := gTerrain.Route_CanBeMade(Position, aTo, aPass, aDistance);
+  Result := gTerrain.RouteCanBeMade(Position, aTo, aPass, aDistance);
 end;
 
 
 function TKMUnit.CanWalkTo(const aFrom, aTo: TKMPoint; aDistance: Single): Boolean;
 begin
-  Result := gTerrain.Route_CanBeMade(aFrom, aTo, DesiredPassability, aDistance);
+  Result := gTerrain.RouteCanBeMade(aFrom, aTo, DesiredPassability, aDistance);
 end;
 
 
 function TKMUnit.CanWalkTo(const aFrom, aTo: TKMPoint; aPass: TKMTerrainPassability; aDistance: Single): Boolean;
 begin
-  Result := gTerrain.Route_CanBeMade(aFrom, aTo, aPass, aDistance);
+  Result := gTerrain.RouteCanBeMade(aFrom, aTo, aPass, aDistance);
 end;
 
 
@@ -2036,7 +2036,7 @@ begin
   try
     aHouse.GetListOfCellsWithin(cells);
     for I := 0 to cells.Count - 1 do
-    if gTerrain.Route_CanBeMade(aFrom, cells[I], aPass, aDistance) then
+    if gTerrain.RouteCanBeMade(aFrom, cells[I], aPass, aDistance) then
       Exit(True);
   finally
     cells.Free;

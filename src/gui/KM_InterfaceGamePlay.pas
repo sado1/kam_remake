@@ -773,7 +773,7 @@ begin
     and not fPlacingBeacon
     and (fUIMode in [umSP, umMP]) and not HasLostMPGame then
   begin
-    if gTerrain.Route_CanBeMade(TKMHouse(gMySpectator.Selected).PointBelowEntrance, loc, tpWalk, 0) then
+    if gTerrain.RouteCanBeMade(TKMHouse(gMySpectator.Selected).PointBelowEntrance, loc, tpWalk, 0) then
     begin
       if gMySpectator.Selected is TKMHouseBarracks then
         gGame.GameInputProcess.CmdHouse(gicHouseBarracksRally, TKMHouse(gMySpectator.Selected), loc)
@@ -4341,9 +4341,9 @@ begin
           and not HasLostMPGame then
         begin
           P2 := TKMHouse(gMySpectator.Selected).PointBelowEntrance;
-          if gTerrain.Route_CanBeMade(P2, P, tpWalk, 0)
-            or gTerrain.Route_CanBeMade(KMPointLeft(P2), P, tpWalk, 0)
-            or gTerrain.Route_CanBeMade(KMPointRight(P2), P, tpWalk, 0) then
+          if gTerrain.RouteCanBeMade(P2, P, tpWalk, 0)
+            or gTerrain.RouteCanBeMade(KMPointLeft(P2), P, tpWalk, 0)
+            or gTerrain.RouteCanBeMade(KMPointRight(P2), P, tpWalk, 0) then
           begin
             if gMySpectator.Selected is TKMHouseBarracks then
               gGame.GameInputProcess.CmdHouse(gicHouseBarracksRally, TKMHouse(gMySpectator.Selected), P)
