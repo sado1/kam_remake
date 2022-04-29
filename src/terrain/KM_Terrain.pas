@@ -183,7 +183,8 @@ type
 
     function CoordsWithinMap(X, Y: Single; aInset: Byte = 0): Boolean; inline;
     function PointFInMapCoords(const aPointF: TKMPointF; aInset: Byte = 0): Boolean; inline;
-    function TileInMapCoords(X, Y: Integer; aInset: Byte = 0): Boolean; overload; inline;
+    function TileInMapCoords(X, Y: Integer; aInset: Byte): Boolean; overload; inline;
+    function TileInMapCoords(X, Y: Integer): Boolean; overload; inline;
     function TileInMapCoords(const aCell: TKMPoint; Inset: Byte = 0): Boolean; overload; inline;
     function TileInMapCoords(X,Y: Integer; aInsetRect: TKMRect): Boolean; overload; inline;
     function VerticeInMapCoords(X, Y: Integer; aInset: Byte = 0): Boolean; overload; inline;
@@ -1053,9 +1054,16 @@ end;
 
 {Check if requested tile (X,Y) is within Map boundaries}
 {X,Y are unsigned int, usually called from loops, hence no TKMPoint can be used}
-function TKMTerrain.TileInMapCoords(X,Y: Integer; aInset: Byte = 0): Boolean;
+function TKMTerrain.TileInMapCoords(X,Y: Integer; aInset: Byte): Boolean;
 begin
   Result := InRange(X, 1 + aInset, fMapX - 1 - aInset) and InRange(Y, 1 + aInset, fMapY - 1 - aInset);
+end;
+
+
+function TKMTerrain.TileInMapCoords(X,Y: Integer): Boolean;
+begin
+  // Direct comparison is a bit faster, than using InRange
+  Result := (X >= 1) and (X <= fMapX - 1) and (Y >= 1) and (Y <= fMapY - 1);
 end;
 
 
