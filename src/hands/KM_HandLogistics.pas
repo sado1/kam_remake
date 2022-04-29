@@ -240,7 +240,8 @@ type
     procedure CloseDelivery(aID: Integer);
     procedure CloseDemand(aWare: TKMWareType; aID: Integer);
     procedure CloseOffer(aWare: TKMWareType; aID: Integer);
-    function ValidWareTypePair(oWT, dWT: TKMWareType): Boolean;
+    function ValidWareTypePair(oWT, dWT: TKMWareType): Boolean; inline;
+    function ValidDemand(dWT: TKMWareType; iD: Integer): Boolean; inline;
     function ValidDelivery(oWT, dWT: TKMWareType; iO, iD: Integer; aIgnoreOffer: Boolean = False): Boolean;
     function SerfCanDoDelivery(oWT: TKMWareType; iO: Integer; aSerf: TKMUnitSerf): Boolean;
     function PermitDelivery(oWT, dWT: TKMWareType; iO, iD: Integer; aSerf: TKMUnitSerf): Boolean;
@@ -536,7 +537,7 @@ begin
         for oWT := WARE_MIN to WARE_MAX do
           if fQueue.ValidWareTypePair(oWT, dWT) then
             for iD := 0 to fQueue.fDemandCount[dWT] - 1 do
-              if fQueue.fDemand[dWT, iD].IsActive
+              if fQueue.ValidDemand(dWT, iD)
                 and (fQueue.fDemand[dWT, iD].Importance >= bestImportance) then //Skip any less important than the best we found
                 for iO := 0 to fQueue.fOfferCount[oWT] - 1 do
                   if fQueue.fOffer[oWT, iO].IsActive
@@ -1162,6 +1163,14 @@ begin
 end;
 
 
+function TKMDeliveries.ValidDemand(dWT: TKMWareType; iD: Integer): Boolean;
+begin
+  Result := fDemand[dWT,iD].IsActive
+            and ((fDemand[dWT,iD].DemandType = dtAlways) or (fDemand[dWT,iD].BeingPerformed = 0))
+            and not fDemand[dWT,iD].IsDeleted;
+end;
+
+
 //IgnoreOffer means we don't check whether offer was already taken or deleted (used after offer was already claimed)
 function TKMDeliveries.ValidDelivery(oWT, dWT: TKMWareType; iO, iD: Integer; aIgnoreOffer: Boolean = False): Boolean;
 var
@@ -1176,8 +1185,7 @@ begin
   // Conditions are called in the frequency of a negative Result: most negative first
 
   //If Demand and Offer aren't reserved already
-  Result := (aIgnoreOffer or (offer.BeingPerformed < offer.Count))
-             and ((demand.DemandType = dtAlways) or (demand.BeingPerformed = 0));
+  Result := (aIgnoreOffer or (offer.BeingPerformed < offer.Count));
 
   Result := Result and (
             ( //House-House delivery should be performed only if there's a connecting road
@@ -1224,7 +1232,7 @@ begin
   end;
 
   //If Demand and Offer aren't deleted
-  Result := Result and not demand.IsDeleted and (aIgnoreOffer or not offer.IsDeleted);
+  Result := Result and (aIgnoreOffer or not offer.IsDeleted);
 
   //Do not allow delivery from 1 house to same house (f.e. store)
   Result := Result and ((demand.Loc_House = nil)
@@ -1323,7 +1331,7 @@ begin
             begin
               offersTaken := 0;
               for iD := 0 to fDemandCount[dWT] - 1 do
-                if fDemand[dWT,iD].IsActive and not demandTaken[dWT,iD] and ValidDelivery(oWT,dWT,iO,iD) then
+                if ValidDemand(dWT, iD) and not demandTaken[dWT,iD] and ValidDelivery(oWT,dWT,iO,iD) then
                 begin
                   if fDemand[dWT,iD].DemandType = dtOnce then
                   begin
@@ -1654,7 +1662,7 @@ begin
     for dWT := Low(fDemandCount) to High(fDemandCount) do
       if ValidWareTypePair(oWT, dWT) then
         for iD := 0 to fDemandCount[dWT] - 1 do
-          if fDemand[dWT,iD].IsActive
+          if ValidDemand(dWT, iD)
           and not ((oldD = iD) and (oldDWT = dWT))
           and (fDemand[dWT,iD].Importance >= bestImportance) //Skip any less important than the best we found
           and ValidDelivery(oWT, dWT, iO, iD, True) then
@@ -1734,8 +1742,6 @@ procedure TKMDeliveries.DeliveryFindBestDemand(aSerf: TKMUnitSerf; aDeliveryId: 
                           or (not demand.Loc_House.ShouldAbandonDeliveryTo(aWare)
                              and (demand.Loc_House <> oldDemand^.Loc_House)));
 
-    //If Demand aren't reserved already
-    Result := Result and ((demand.DemandType = dtAlways) or (demand.BeingPerformed = 0));
 
     //For constructing houses check if they are connected with road to some other houses,
     //which can produce demanded ware (stone or wood)
@@ -1775,15 +1781,14 @@ procedure TKMDeliveries.DeliveryFindBestDemand(aSerf: TKMUnitSerf; aDeliveryId: 
     allowOffroad := True; //(fDemand[oldDemandId].Loc_Unit <> nil) or fQueue[aDeliveryId].IsFromUnit;
 
     fBestBidCandidates.Clear;
-//    fBestBidCandidates.EnlargeTo(128);      // Do we need it ?
+    fBestBidCandidates.EnlargeTo(128);      // Do we need it ?
 
     //Try to find house or unit demand first (not storage)
     for dWT := Low(fDemandCount) to High(fDemandCount) do
       if ValidWareTypePair(aWare, dWT) then
         for iD := 0 to fDemandCount[dWT] - 1 do
-          if fDemand[dWT,iD].IsActive
+          if ValidDemand(dWT, iD)
             and not ((iD = oldDemandId) and (dWT = oldDWT))
-            and not fDemand[dWT,iD].IsDeleted
             and (fDemand[dWT,iD].Importance >= bestImportance)
             and ValidBestDemand(dWT, oldDWT, iD, oldDemandId) then
           begin
@@ -2004,12 +2009,13 @@ begin
       for oWT := WARE_MIN to WARE_MAX do
         if ValidWareTypePair(oWT, dWT) then
           for iD := 0 to fDemandCount[dWT] - 1 do
-            if fDemand[dWT,iD].IsActive
+            if ValidDemand(dWT, iD)
               and (fDemand[dWT,iD].Importance >= bestImportance) then //Skip any less important than the best we found
               for iO := 0 to fOfferCount[oWT] - 1 do
                 if ((aHouse = nil) or (fOffer[oWT,iO].Loc_House = aHouse))  //Make sure from house is the one requested
                   and fOffer[oWT,iO].IsActive
-                  and PermitDelivery(oWT, dWT, iO, iD, aSerf) then
+                  and ValidDelivery(oWT, dWT, iO, iD) // Do validation first
+                  and SerfCanDoDelivery(oWT, iO, aSerf) then
                 begin
                   bid := TKMDeliveryBid.Create(fDemand[dWT,iD].Importance, aSerf, oWT, dWT, iO, iD);
                   if TryCalculateBid(dckFast, bid, aSerf) then
