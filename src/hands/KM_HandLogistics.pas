@@ -244,7 +244,6 @@ type
     function ValidDemand(dWT: TKMWareType; iD: Integer): Boolean; inline;
     function ValidDelivery(oWT, dWT: TKMWareType; iO, iD: Integer; aIgnoreOffer: Boolean = False): Boolean;
     function SerfCanDoDelivery(oWT: TKMWareType; iO: Integer; aSerf: TKMUnitSerf): Boolean;
-    function PermitDelivery(oWT, dWT: TKMWareType; iO, iD: Integer; aSerf: TKMUnitSerf): Boolean;
     function TryCalculateBid(aCalcKind: TKMDeliveryCalcKind; var aBidCost: TKMDeliveryBid; aSerf: TKMUnitSerf = nil): Boolean; overload;
     function TryCalculateBidBasic(aCalcKind: TKMDeliveryCalcKind; var aBidBasicCost: TKMDeliveryBid; aSerf: TKMUnitSerf = nil;
                                   aAllowOffroad: Boolean = False): Boolean; overload;
@@ -1269,12 +1268,6 @@ begin
   locB := fOffer[oWT,iO].Loc_House.PointBelowEntrance;
 
   Result := aSerf.CanWalkTo(locA, locB, tpWalk);
-end;
-
-
-function TKMDeliveries.PermitDelivery(oWT, dWT: TKMWareType; iO,iD: Integer; aSerf: TKMUnitSerf): Boolean;
-begin
-  Result := ValidDelivery(oWT, dWT, iO, iD) and SerfCanDoDelivery(oWT, iO, aSerf);
 end;
 
 
