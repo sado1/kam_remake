@@ -4824,10 +4824,10 @@ end;
 {Cursor position should be converted to tile-coords respecting tile heights}
 function TKMTerrain.ConvertCursorToMapCoord(inX,inY: Single): Single;
 var
-  I, ii:    Integer;
-  Xc, Yc:   Integer;
+  I, ii: Integer;
+  Xc, Yc: Integer;
   tmp, len, lenNegative: Integer;
-  Ycoef:  array of Single;
+  Ycoef: array of Single;
 begin
   Xc := EnsureRange(Round(inX + 0.5), 1, fMapX - 1); //Cell below cursor without height check
   Yc := EnsureRange(Round(inY + 0.5), 1, fMapY - 1);
