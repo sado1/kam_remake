@@ -1268,7 +1268,7 @@ begin
   LocA := GetSerfActualPos(aSerf);
   LocB := fOffer[oWT,iO].Loc_House.PointBelowEntrance;
 
-  Result := aSerf.CanWalkTo(LocA, LocB, tpWalk, 0);
+  Result := aSerf.CanWalkTo(LocA, LocB, tpWalk);
 end;
 
 

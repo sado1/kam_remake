@@ -236,6 +236,7 @@ type
     function CanWalkTo(const aTo: TKMPoint; aDistance: Single): Boolean; overload;
     function CanWalkTo(const aTo: TKMPoint; aPass: TKMTerrainPassability; aDistance: Single): Boolean; overload;
     function CanWalkTo(const aFrom, aTo: TKMPoint; aDistance: Single): Boolean; overload;
+    function CanWalkTo(const aFrom, aTo: TKMPoint; aPass: TKMTerrainPassability): Boolean; overload;
     function CanWalkTo(const aFrom, aTo: TKMPoint; aPass: TKMTerrainPassability; aDistance: Single): Boolean; overload;
     function CanWalkTo(const aFrom: TKMPoint; aHouse: TKMHouse; aPass: TKMTerrainPassability; aDistance: Single): Boolean; overload;
     function CanWalkDiagonaly(const aFrom, aTo: TKMPoint): Boolean;
@@ -2016,6 +2017,12 @@ end;
 function TKMUnit.CanWalkTo(const aFrom, aTo: TKMPoint; aDistance: Single): Boolean;
 begin
   Result := gTerrain.RouteCanBeMade(aFrom, aTo, DesiredPassability, aDistance);
+end;
+
+
+function TKMUnit.CanWalkTo(const aFrom, aTo: TKMPoint; aPass: TKMTerrainPassability): Boolean;
+begin
+  Result := gTerrain.RouteCanBeMade(aFrom, aTo, aPass);
 end;
 
 
