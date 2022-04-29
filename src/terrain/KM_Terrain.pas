@@ -181,19 +181,19 @@ type
     function VertexUsageCompatible(const aLocFrom, aLocTo: TKMPoint): Boolean;
     function GetVertexUsageType(const aLocFrom, aLocTo: TKMPoint): TKMVertexUsage;
 
-    function CoordsWithinMap(X, Y: Single; aInset: Byte = 0): Boolean; inline;
-    function PointFInMapCoords(const aPointF: TKMPointF; aInset: Byte = 0): Boolean; inline;
-    function TileInMapCoords(X, Y: Integer; aInset: Byte): Boolean; overload; inline;
-    function TileInMapCoords(X, Y: Integer): Boolean; overload; inline;
-    function TileInMapCoords(const aCell: TKMPoint; Inset: Byte = 0): Boolean; overload; inline;
-    function TileInMapCoords(X,Y: Integer; aInsetRect: TKMRect): Boolean; overload; inline;
-    function VerticeInMapCoords(X, Y: Integer; aInset: Byte = 0): Boolean; overload; inline;
-    function VerticeInMapCoords(const aCell: TKMPoint; aInset: Byte = 0): Boolean; overload; inline;
-    procedure EnsureCoordsWithinMap(var X, Y: Single; aInset: Byte = 0); inline;
-    function EnsureTilesRectWithinMap(const aRectF: TKMRectF; aInset: Single = 0): TKMRectF; inline;
-    function EnsureVerticesRectWithinMap(const aRectF: TKMRectF; aInset: Single = 0): TKMRectF; inline;
-    function EnsureTileInMapCoords(X, Y: Integer; aInset: Byte = 0): TKMPoint; overload; inline;
-    function EnsureTileInMapCoords(const aLoc: TKMPoint; aInset: Byte = 0): TKMPoint; overload; inline;
+    function CoordsWithinMap(const X, Y: Single; const aInset: Byte = 0): Boolean; inline;
+    function PointFInMapCoords(const aPointF: TKMPointF; const aInset: Byte = 0): Boolean; inline;
+    function TileInMapCoords(const X, Y: Integer; const aInset: Byte): Boolean; overload; inline;
+    function TileInMapCoords(const X, Y: Integer): Boolean; overload; inline;
+    function TileInMapCoords(const aCell: TKMPoint; const Inset: Byte = 0): Boolean; overload; inline;
+    function TileInMapCoords(const X,Y: Integer; const aInsetRect: TKMRect): Boolean; overload; inline;
+    function VerticeInMapCoords(const X, Y: Integer; const aInset: Byte = 0): Boolean; overload; inline;
+    function VerticeInMapCoords(const aCell: TKMPoint; const aInset: Byte = 0): Boolean; overload; inline;
+    procedure EnsureCoordsWithinMap(var X, Y: Single; const aInset: Byte = 0); inline;
+    function EnsureTilesRectWithinMap(const aRectF: TKMRectF; const aInset: Single = 0): TKMRectF; inline;
+    function EnsureVerticesRectWithinMap(const aRectF: TKMRectF; const aInset: Single = 0): TKMRectF; inline;
+    function EnsureTileInMapCoords(const X, Y: Integer; const aInset: Byte = 0): TKMPoint; overload; inline;
+    function EnsureTileInMapCoords(const aLoc: TKMPoint; const aInset: Byte = 0): TKMPoint; overload; inline;
 
     function TileGoodForIronMine(X, Y: Word): Boolean;
     function TileGoodForGoldmine(X, Y: Word): Boolean;
@@ -1054,21 +1054,21 @@ end;
 
 // Check if requested tile (X,Y) is within Map boundaries
 // X,Y are unsigned int, usually called from loops, hence no TKMPoint can be used
-function TKMTerrain.TileInMapCoords(X,Y: Integer; aInset: Byte): Boolean;
+function TKMTerrain.TileInMapCoords(const X,Y: Integer; const aInset: Byte): Boolean;
 begin
   // Direct comparison is a bit faster, than using InRange
   Result := (X >= 1 + aInset) and (X <= fMapX - 1 - aInset) and (Y >= 1 + aInset) and (Y <= fMapY - 1 - aInset);
 end;
 
 
-function TKMTerrain.TileInMapCoords(X,Y: Integer): Boolean;
+function TKMTerrain.TileInMapCoords(const X,Y: Integer): Boolean;
 begin
   // Direct comparison is a bit faster, than using InRange
   Result := (X >= 1) and (X <= fMapX - 1) and (Y >= 1) and (Y <= fMapY - 1);
 end;
 
 
-function TKMTerrain.CoordsWithinMap(X, Y: Single; aInset: Byte = 0): Boolean;
+function TKMTerrain.CoordsWithinMap(const X, Y: Single; const aInset: Byte = 0): Boolean;
 begin
   Result :=     (X >= 1 + aInset)
             and (X <= fMapX - 1 - aInset)
@@ -1077,19 +1077,19 @@ begin
 end;
 
 
-function TKMTerrain.PointFInMapCoords(const aPointF: TKMPointF; aInset: Byte = 0): Boolean;
+function TKMTerrain.PointFInMapCoords(const aPointF: TKMPointF; const aInset: Byte = 0): Boolean;
 begin
   Result := CoordsWithinMap(aPointF.X, aPointF.Y, aInset);
 end;
 
 
-function TKMTerrain.TileInMapCoords(const aCell: TKMPoint; Inset: Byte = 0): Boolean;
+function TKMTerrain.TileInMapCoords(const aCell: TKMPoint; const Inset: Byte = 0): Boolean;
 begin
   Result := TileInMapCoords(aCell.X, aCell.Y, Inset);
 end;
 
 
-function TKMTerrain.TileInMapCoords(X,Y: Integer; aInsetRect: TKMRect): Boolean;
+function TKMTerrain.TileInMapCoords(const X,Y: Integer; const aInsetRect: TKMRect): Boolean;
 begin
   Result :=     InRange(X, 1 + aInsetRect.Left, fMapX - 1 + aInsetRect.Right)
             and InRange(Y, 1 + aInsetRect.Top,  fMapY - 1 + aInsetRect.Bottom);
@@ -1098,13 +1098,13 @@ end;
 
 {Check if requested vertice is within Map boundaries}
 {X,Y are unsigned int, usually called from loops, hence no TKMPoint can be used}
-function TKMTerrain.VerticeInMapCoords(X,Y: Integer; aInset: Byte = 0): Boolean;
+function TKMTerrain.VerticeInMapCoords(const X,Y: Integer; const aInset: Byte = 0): Boolean;
 begin
   Result := InRange(X, 1 + aInset, fMapX - aInset) and InRange(Y, 1 + aInset, fMapY - aInset);
 end;
 
 
-function TKMTerrain.VerticeInMapCoords(const aCell: TKMPoint; aInset: Byte = 0): Boolean;
+function TKMTerrain.VerticeInMapCoords(const aCell: TKMPoint; const aInset: Byte = 0): Boolean;
 begin
   Result := VerticeInMapCoords(aCell.X, aCell.Y, aInset);
 end;
@@ -1112,21 +1112,21 @@ end;
 
 {Ensure that requested tile is within Map boundaries}
 {X,Y are unsigned int, usually called from loops, hence no TKMPoint can be used}
-function TKMTerrain.EnsureTileInMapCoords(X,Y: Integer; aInset: Byte = 0): TKMPoint;
+function TKMTerrain.EnsureTileInMapCoords(const X,Y: Integer; const aInset: Byte = 0): TKMPoint;
 begin
   Result.X := EnsureRange(X, 1 + aInset, fMapX - 1 - aInset);
   Result.Y := EnsureRange(Y, 1 + aInset, fMapY - 1 - aInset);
 end;
 
 
-procedure TKMTerrain.EnsureCoordsWithinMap(var X, Y: Single; aInset: Byte = 0);
+procedure TKMTerrain.EnsureCoordsWithinMap(var X, Y: Single; const aInset: Byte = 0);
 begin
   X := EnsureRange(X, 1 + aInset, fMapX - 1 - aInset);
   Y := EnsureRange(Y, 1 + aInset, fMapY - 1 - aInset);
 end;
 
 
-function TKMTerrain.EnsureTilesRectWithinMap(const aRectF: TKMRectF; aInset: Single = 0): TKMRectF;
+function TKMTerrain.EnsureTilesRectWithinMap(const aRectF: TKMRectF; const aInset: Single = 0): TKMRectF;
 begin
   Result.Left   := EnsureRangeF(aRectF.Left,   1 + aInset, fMapX - 1 - aInset);
   Result.Right  := EnsureRangeF(aRectF.Right,  1 + aInset, fMapX - 1 - aInset);
@@ -1135,7 +1135,7 @@ begin
 end;
 
 
-function TKMTerrain.EnsureVerticesRectWithinMap(const aRectF: TKMRectF; aInset: Single = 0): TKMRectF;
+function TKMTerrain.EnsureVerticesRectWithinMap(const aRectF: TKMRectF; const aInset: Single = 0): TKMRectF;
 begin
   Result.Left   := EnsureRangeF(aRectF.Left,   aInset, fMapX - aInset);
   Result.Right  := EnsureRangeF(aRectF.Right,  aInset, fMapX - aInset);
@@ -1144,7 +1144,7 @@ begin
 end;
 
 
-function TKMTerrain.EnsureTileInMapCoords(const aLoc: TKMPoint; aInset: Byte = 0): TKMPoint;
+function TKMTerrain.EnsureTileInMapCoords(const aLoc: TKMPoint; const aInset: Byte = 0): TKMPoint;
 begin
   Result := EnsureTileInMapCoords(aLoc.X, aLoc.Y, aInset);
 end;
