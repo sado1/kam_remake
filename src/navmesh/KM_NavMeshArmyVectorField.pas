@@ -170,7 +170,8 @@ const
 implementation
 uses
   SysUtils,
-  KM_Hand, KM_HandsCollection, KM_Terrain,
+  KM_Hand, KM_HandsCollection, KM_HandTypes, KM_HandEntity,
+  KM_Terrain,
   KM_AIFields, KM_NavMesh, KM_AIParameters,
   {$IFDEF DEBUG_ArmyVectorField}
   DateUtils, KM_CommonUtils,

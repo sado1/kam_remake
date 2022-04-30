@@ -45,7 +45,8 @@ type
 implementation
 uses
   Classes, SysUtils, Math, KromUtils,
-  KM_Hand, KM_Game, KM_GameParams, KM_GameTypes, KM_HandsCollection,
+  KM_Hand, KM_HandEntity,
+  KM_Game, KM_GameParams, KM_GameTypes, KM_HandsCollection,
   KM_UnitsCollection, KM_UnitWarrior,
   KM_HouseCollection, KM_HouseBarracks, KM_HouseStore,
   KM_AI,

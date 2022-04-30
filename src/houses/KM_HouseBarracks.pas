@@ -60,6 +60,8 @@ uses
   Math, Types,
   KM_Hand,
   KM_HandsCollection,
+  KM_HandTypes,
+  KM_HandEntity,
   KM_Units,
   KM_UnitWarrior,
   KM_ScriptingEvents,

@@ -35,7 +35,7 @@ type
 implementation
 uses
   KM_Houses, KM_HouseWoodcutters, KM_HouseSwineStable,
-  KM_HandsCollection,
+  KM_HandsCollection, KM_HandTypes, KM_HandEntity,
   KM_Resource, KM_ResMapElements, KM_ResTexts,
   KM_Hand, KM_ResUnits, KM_ScriptingEvents, KM_Terrain;
 

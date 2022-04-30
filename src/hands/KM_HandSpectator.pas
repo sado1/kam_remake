@@ -70,7 +70,8 @@ type
 
 implementation
 uses
-  KM_GameParams, KM_Cursor, KM_HandsCollection,
+  KM_GameParams, KM_Cursor,
+  KM_HandsCollection, KM_HandTypes,
   KM_Units, KM_UnitGroup, KM_UnitWarrior, KM_Houses,
   KM_CommonUtils,
   KM_GameTypes;

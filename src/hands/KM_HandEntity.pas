@@ -11,7 +11,7 @@ type
     fType: TKMHandEntityType;
     fOwner: TKMHandID;
     fAllowAllyToSelect: Boolean; // Allow ally to select entity
-    function GetOwner: TKMHandID;
+    function GetOwner: TKMHandID; inline;
     function GetType: TKMHandEntityType;
   protected
     function GetPositionF: TKMPointF; virtual; abstract;

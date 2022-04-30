@@ -49,7 +49,8 @@ type
 
 implementation
 uses
-  KM_Units, KM_HandsCollection, KM_Hand;
+  KM_Units,
+  KM_HandsCollection, KM_Hand, KM_HandTypes, KM_HandEntity;
 
 
 { TKMHouseSchool }

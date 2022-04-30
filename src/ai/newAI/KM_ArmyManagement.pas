@@ -70,7 +70,9 @@ type
 
 implementation
 uses
-  KM_Game, KM_GameParams, KM_Hand, KM_HandsCollection, KM_Terrain,
+  KM_Game, KM_GameParams,
+  KM_Hand, KM_HandsCollection, KM_HandTypes, KM_HandEntity,
+  KM_Terrain,
   KM_HouseBarracks,
   KM_CommonUtils,
   KM_DevPerfLog, KM_DevPerfLogTypes,

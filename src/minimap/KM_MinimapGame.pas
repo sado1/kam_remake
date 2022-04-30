@@ -25,7 +25,7 @@ uses
   Math,
   KM_Terrain, KM_TerrainTypes,
   KM_Game, KM_GameParams,
-  KM_HandsCollection, KM_Hand, KM_HandTypes,
+  KM_HandsCollection, KM_Hand, KM_HandTypes, KM_HandEntity,
   KM_Units, KM_UnitGroup,
   KM_Resource, KM_ResUnits,
   KM_Defaults, KM_Points, KM_CommonTypes, KM_CommonUtils,

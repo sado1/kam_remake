@@ -130,7 +130,9 @@ type
 implementation
 uses
   KM_HandLogistics, KM_HandsCollection, KM_Resource, KM_ResMapElements,
-  KM_Game, KM_Hand, KM_ScriptingEvents;
+  KM_Game,
+  KM_Hand, KM_HandTypes, KM_HandEntity,
+  KM_ScriptingEvents;
 
 
 { TKMTaskBuild }

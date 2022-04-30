@@ -24,7 +24,7 @@ type
 
 implementation
 uses
-  KM_HandsCollection, KM_Hand,
+  KM_HandsCollection, KM_Hand, KM_HandTypes, KM_HandEntity,
   KM_Projectiles,
   KM_CommonGameTypes, KM_ResTypes;
 

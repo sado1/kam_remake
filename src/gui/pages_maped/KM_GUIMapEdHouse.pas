@@ -99,7 +99,8 @@ implementation
 uses
   {$IFDEF MSWindows} Windows, {$ENDIF}
   {$IFDEF Unix} LCLType, {$ENDIF}
-  KM_HandsCollection, KM_ResTexts, KM_Resource, KM_RenderUI, KM_ResUnits,
+  KM_HandsCollection, KM_HandTypes, KM_HandEntity,
+  KM_ResTexts, KM_Resource, KM_RenderUI, KM_ResUnits,
   KM_HouseBarracks, KM_HouseTownHall, KM_HouseStore,
   KM_ResWares, KM_ResFonts, KM_ResTypes,
   KM_Cursor, KM_UtilsExt;

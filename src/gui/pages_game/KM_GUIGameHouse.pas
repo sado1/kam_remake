@@ -154,7 +154,8 @@ uses
   KM_Game, KM_GameInputProcess, KM_Hand,
   KM_InterfaceTypes,
   KM_HouseBarracks, KM_HouseSchool, KM_HouseTownHall, KM_HouseWoodcutters, KM_HouseStore, KM_HouseArmorWorkshop,
-  KM_HandsCollection, KM_RenderUI, KM_ResKeys,
+  KM_HandsCollection, KM_HandTypes, KM_HandEntity,
+  KM_RenderUI, KM_ResKeys,
   KM_Resource, KM_ResFonts, KM_ResHouses, KM_ResTexts, KM_ResUnits, KM_Utils, KM_UtilsExt, KM_Points,
   KM_ResTypes;
 

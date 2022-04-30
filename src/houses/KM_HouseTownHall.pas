@@ -63,7 +63,7 @@ type
 implementation
 uses
   Math,
-  KM_Hand, KM_HandsCollection, KM_HandLogistics,
+  KM_Hand, KM_HandsCollection, KM_HandLogistics, KM_HandTypes, KM_HandEntity,
   KM_UnitWarrior, KM_ResUnits, KM_ScriptingEvents,
   KM_InterfaceGame;
 

@@ -149,7 +149,7 @@ type
 implementation
 uses
   Math,
-  KM_HandsCollection, KM_Hand, KM_HandTypes,
+  KM_HandsCollection, KM_Hand, KM_HandTypes, KM_HandEntity,
   KM_Units, KM_UnitsCollection,
   KM_GameParams, KM_GameSettings,
   KM_Game, KM_CommonUtils, KM_Resource, KM_HouseTownhall, KM_HouseBarracks, KM_HouseStore,
@@ -467,6 +467,7 @@ end;
 
 { TKMCheckpointHouses }
 constructor TKMCheckpointHouses.Create(const aCaption: string);
+
   procedure AddHouse(aHouse: TKMHouse; var aCount: Integer);
   var
     I: Integer;

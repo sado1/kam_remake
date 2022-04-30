@@ -112,7 +112,9 @@ type
 implementation
 uses
   TypInfo,
-  KM_RenderAux, KM_Game, KM_GameParams, KM_HandsCollection, KM_Terrain, KM_ResUnits, KM_UnitGroup,
+  KM_RenderAux, KM_Game, KM_GameParams,
+  KM_HandsCollection, KM_HandTypes, KM_HandEntity,
+  KM_Terrain, KM_ResUnits, KM_UnitGroup,
   KM_UnitActionGoInOut, KM_UnitActionStay, KM_UnitTaskBuild, KM_PathFinding,
   KM_UnitWarrior, KM_Log, KM_Resource, KM_CommonClassesExt,
   KM_CommonExceptions;

@@ -76,7 +76,7 @@ uses
   Math,
   KM_System, 
   KM_Game, KM_GameInputProcess,
-  KM_HandsCollection, KM_Hand, KM_HandSpectator, KM_HandTypes,
+  KM_HandsCollection, KM_Hand, KM_HandSpectator, KM_HandTypes, KM_HandEntity,
   KM_InterfaceGame, KM_InterfaceTypes,
   KM_RenderUI,
   KM_Resource, KM_ResFonts, KM_ResTexts, KM_ResKeys, KM_ResSound, KM_ResUnits, KM_Pics,

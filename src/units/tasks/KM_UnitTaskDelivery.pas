@@ -58,7 +58,7 @@ type
 implementation
 uses
   Math, TypInfo,
-  KM_HandsCollection, KM_Hand, KM_HandTypes,
+  KM_HandsCollection, KM_Hand, KM_HandTypes, KM_HandEntity,
   KM_UnitWarrior, KM_HouseInn,
   KM_UnitTaskBuild, KM_Log, KM_RenderAux;
 

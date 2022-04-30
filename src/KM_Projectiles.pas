@@ -58,7 +58,8 @@ uses
   Math, KromUtils,
   KM_Terrain, KM_RenderAux,
   KM_Resource, KM_ResSound, KM_ResUnits,
-  KM_Hand, KM_HandsCollection, KM_Sound,
+  KM_Hand, KM_HandsCollection, KM_HandTypes, KM_HandEntity,
+  KM_Sound,
   KM_CommonUtils, KM_Defaults;
 
 
