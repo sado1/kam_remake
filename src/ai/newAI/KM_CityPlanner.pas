@@ -199,7 +199,7 @@ const
     {htInn}            [ htButchers,       htBakery,         htStore,          htVineyard                       ],
     {htIronMine}       [ htStore                                                                                ],
     {htIronSmithy}     [ htCoalMine,       htIronMine,       htWeaponSmithy,   htIronSmithy                     ],
-    {htMarketplace}    [ htStore,          htMetallurgists,  htMarket,    htBarracks                       ],
+    {htMarket}         [ htStore,          htMetallurgists,  htMarket,         htBarracks                       ],
     // Metallurgist must be only close to coal / gold because serfs are not able to support this extremely critical resources
     {htMetallurgists}  [ htCoalMine,       htGoldMine                                                           ],// htSchool, htStore
     {htMill}           [ htBakery,         htInn,            htMill                                             ],
@@ -2768,7 +2768,7 @@ begin
   for HT := HOUSE_MIN to HOUSE_MAX do
   begin
     case HT of
-      htStore,htSchool,htInn,htMarket: Color := tcBlack;
+      htStore,htSchool,htInn,htMarket:  Color := tcBlack;
       htQuarry,htWoodcutters,htSawmill: Color := tcBlue;
       htGoldMine,htCoalMine,htIronMine,htMetallurgists: Color := tcYellow;
       htIronSmithy,htArmorSmithy,htWeaponSmithy,htTannery,htArmorWorkshop,htWeaponWorkshop,htBarracks: Color := tcRed;

@@ -101,7 +101,7 @@ begin
     htSwine,
     htStables:       Result := TKMHouseSwineStable.Create(uid, aHouseType,aPosX,aPosY, aOwner, aHBS);
     htInn:           Result := TKMHouseInn.Create(uid, aHouseType,aPosX,aPosY, aOwner, aHBS);
-    htMarket:   Result := TKMHouseMarket.Create(uid, aHouseType,aPosX,aPosY, aOwner, aHBS);
+    htMarket:        Result := TKMHouseMarket.Create(uid, aHouseType,aPosX,aPosY, aOwner, aHBS);
     htSchool:        Result := TKMHouseSchool.Create(uid, aHouseType,aPosX,aPosY, aOwner, aHBS);
     htBarracks:      Result := TKMHouseBarracks.Create(uid, aHouseType,aPosX,aPosY, aOwner, aHBS);
     htTownHall:      Result := TKMHouseTownHall.Create(uid, aHouseType,aPosX,aPosY, aOwner, aHBS);
@@ -386,7 +386,7 @@ begin
       htSwine,
       htStables:       H := TKMHouseSwineStable.Load(LoadStream);
       htInn:           H := TKMHouseInn.Load(LoadStream);
-      htMarket:   H := TKMHouseMarket.Load(LoadStream);
+      htMarket:        H := TKMHouseMarket.Load(LoadStream);
       htSchool:        H := TKMHouseSchool.Load(LoadStream);
       htBarracks:      H := TKMHouseBarracks.Load(LoadStream);
       htStore:         H := TKMHouseStore.Load(LoadStream);

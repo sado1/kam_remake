@@ -164,7 +164,7 @@ const
     (HouseType: (htCoalMine, htIronMine, htGoldMine, htNone);           UnitType: (utMiner, utNone)),
     (HouseType: (htSawmill, htWeaponWorkshop, htArmorWorkshop, htNone); UnitType: (utCarpenter, utNone)),
     (HouseType: (htBarracks, htTownHall, htWatchTower, htNone);         UnitType: (utRecruit, utNone)),
-    (HouseType: (htStore, htSchool, htInn, htMarket);              UnitType: (utSerf, utBuilder))
+    (HouseType: (htStore, htSchool, htInn, htMarket);                   UnitType: (utSerf, utBuilder))
     );
 
   MapEd_Order: array [0..13] of TKMUnitType = (

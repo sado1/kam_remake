@@ -212,10 +212,10 @@ begin
   SubStep := EnsureRange(Floor(INTERP_LEVEL*aStepFrac), 0, INTERP_LEVEL-1);
 
   case aHT of
-    htSwine:       Result := fBeasts[1, BeastId, BeastAge, Step, SubStep];
-    htStables:     Result := fBeasts[2, BeastId, BeastAge, Step, SubStep];
-    htMarket: Result := fBeasts[3, BeastId, 1,        Step, SubStep];
-    else           Result := -1;
+    htSwine:   Result := fBeasts[1, BeastId, BeastAge, Step, SubStep];
+    htStables: Result := fBeasts[2, BeastId, BeastAge, Step, SubStep];
+    htMarket:  Result := fBeasts[3, BeastId, 1,        Step, SubStep];
+    else       Result := -1;
   end;
 
   //While in development disable interpolation if the sprite is missing
