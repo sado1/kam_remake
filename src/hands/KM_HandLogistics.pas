@@ -162,7 +162,7 @@ type
     procedure ResetValues;
     function IsValid: Boolean;
 
-    procedure IncAddition(aValue: Single);
+    procedure IncAddition(aValue: Single); inline;
   end;
 
   TKMDeliveryBidCalcEventType = (bceBid, bceBidBasic, bceSerfBid);
