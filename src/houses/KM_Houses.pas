@@ -48,19 +48,21 @@ type
   TKMHouseSketch = class(TKMHandEntityPointer<TKMHouse>)
   private
     fType: TKMHouseType; //House type
-    function GetEntrance: TKMPoint;
-    function GetPointBelowEntrance: TKMPoint;
+    fEntrance: TKMPoint;
+    fPointBelowEntrance: TKMPoint;
+    procedure UpdateEntrancePos;
   protected
     fPosition: TKMPoint; //House position on map, kinda virtual thing cos it doesn't match with entrance
     function GetPosition: TKMPoint; override;
+    procedure SetPosition(const aPosition: TKMPoint); virtual;
     constructor Create; overload;
   public
     constructor Create(aUID: Integer; aHouseType: TKMHouseType; PosX, PosY: Integer; aOwner: TKMHandID); overload;
 
     property HouseType: TKMHouseType read fType;
 
-    property Entrance: TKMPoint read GetEntrance;
-    property PointBelowEntrance: TKMPoint read GetPointBelowEntrance;
+    property Entrance: TKMPoint read fEntrance;
+    property PointBelowEntrance: TKMPoint read fPointBelowEntrance;
 
     function ObjToStringShort(const aSeparator: String = '|'): String; override;
 
@@ -84,7 +86,7 @@ type
 
     procedure SetHouseUID(aUID: Integer);
     procedure SetHouseType(aHouseType: TKMHouseType);
-    procedure SetPosition(aPosition: TKMPoint);
+    procedure SetPosition(const aPosition: TKMPoint); override;
 
     class var DummyHouseSketch: TKMHouseSketchEdit;
   end;
@@ -196,7 +198,7 @@ type
     procedure Demolish(aFrom: TKMHandID; IsSilent: Boolean = False); virtual;
     property BuildingProgress: Word read fBuildingProgress;
 
-    procedure SetPosition(const aPos: TKMPoint); //Used only by map editor
+    procedure UpdatePosition(const aPos: TKMPoint); //Used only by map editor
     procedure OwnerUpdate(aOwner: TKMHandID; aMoveToNewOwner: Boolean = False);
 
     function GetClosestCell(const aPos: TKMPoint): TKMPoint;
@@ -360,29 +362,37 @@ begin
 
   inherited Create(etHouse, aUID, aOwner);
 
-  fPosition   := KMPoint (PosX, PosY);
-  fType       := aHouseType;
+  fType     := aHouseType;
+  fPosition := KMPoint (PosX, PosY);
+  UpdateEntrancePos;
 end;
 
 
 {Return Entrance of the house, which is different than house position sometimes}
-function TKMHouseSketch.GetEntrance: TKMPoint;
+procedure TKMHouseSketch.UpdateEntrancePos;
 begin
-  Result.X := Position.X + gResHouses[fType].EntranceOffsetX;
-  Result.Y := Position.Y;
-  Assert((Result.X > 0) and (Result.Y > 0));
-end;
+  if IsEmpty then Exit;
+  
+  fEntrance.X := fPosition.X + gResHouses[fType].EntranceOffsetX;
+  fEntrance.Y := fPosition.Y;
+  Assert((fEntrance.X > 0) and (fEntrance.Y > 0));
 
-
-function TKMHouseSketch.GetPointBelowEntrance: TKMPoint;
-begin
-  Result := KMPointBelow(Entrance);
+  fPointBelowEntrance := KMPointBelow(fEntrance);
 end;
 
 
 function TKMHouseSketch.GetPosition: TKMPoint;
 begin
   Result := fPosition;
+end;
+
+
+procedure TKMHouseSketch.SetPosition(const aPosition: TKMPoint);
+begin
+  fPosition.X := aPosition.X;
+  fPosition.Y := aPosition.Y;
+
+  UpdateEntrancePos;
 end;
 
 
@@ -446,10 +456,11 @@ begin
 end;
 
 
-procedure TKMHouseSketchEdit.SetPosition(aPosition: TKMPoint);
+procedure TKMHouseSketchEdit.SetPosition(const aPosition: TKMPoint);
 begin
-  if fEditable then
-    fPosition := aPosition;
+  if not fEditable then Exit;
+
+  inherited;
 end;
 
 
@@ -547,6 +558,7 @@ begin
   LoadStream.CheckMarker('House');
   LoadStream.Read(fType, SizeOf(fType));
   LoadStream.Read(fPosition);
+  UpdateEntrancePos;
   LoadStream.Read(fBuildState, SizeOf(fBuildState));
   LoadStream.Read(fBuildSupplyWood);
   LoadStream.Read(fBuildSupplyStone);
@@ -751,7 +763,7 @@ end;
 
 //Used by MapEditor
 //Set house to new position
-procedure TKMHouse.SetPosition(const aPos: TKMPoint);
+procedure TKMHouse.UpdatePosition(const aPos: TKMPoint);
 var
   wasOnSnow, isRallyPointSet: Boolean;
 begin
@@ -767,9 +779,9 @@ begin
     if (Self is TKMHouseWFlagPoint) then
       isRallyPointSet := TKMHouseWFlagPoint(Self).IsFlagPointSet;
 
-    gTerrain.RemRoad(GetEntrance);
-    fPosition.X := aPos.X - gResHouses[fType].EntranceOffsetX;
-    fPosition.Y := aPos.Y;
+    gTerrain.RemRoad(Entrance);
+
+    SetPosition(KMPoint(aPos.X - gResHouses[fType].EntranceOffsetX, aPos.Y));
 
     //Update rally/cutting point position for houses with flag point after change fPosition
     if (Self is TKMHouseWFlagPoint) then

@@ -1302,7 +1302,7 @@ var
 begin
   newPos := aHouse.Position <> aPos;
 
-  aHouse.SetPosition(aPos);
+  aHouse.UpdatePosition(aPos);
 
   if newPos then
     gGame.MapEditor.History.MakeCheckpoint(caHouses, Format(gResTexts[TX_MAPED_HISTORY_CHPOINT_MOVE_SMTH],
