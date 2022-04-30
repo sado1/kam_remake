@@ -86,7 +86,7 @@ type
     procedure SetSelected(aValue: TKMUnitWarrior);
     function GetSelected: TKMUnitWarrior;
   protected
-    function GetPosition: TKMPoint; override;
+    function GetPosition: TKMPoint;
     function GetInstance: TKMUnitGroup; override;
     function GetPositionF: TKMPointF; override;
     procedure SetPositionF(const aPositionF: TKMPointF); override;
@@ -119,6 +119,7 @@ type
     function IsAttackingHouse: Boolean; //Attacking house
     function IsAttackingUnit: Boolean;
     function IsIdleToAI(aOrderWalkKindSet: TKMOrderWalkKindSet = []): Boolean;
+    property Position: TKMPoint read GetPosition;
     function IsPositioned(const aLoc: TKMPoint; Dir: TKMDirection): Boolean;
     function IsAllyTo(aUnit: TKMUnit): Boolean; overload;
     function IsAllyTo(aUnitGroup: TKMUnitGroup): Boolean; overload;
@@ -2105,8 +2106,9 @@ begin
   if Self = nil then Exit('nil');
 
   Result := inherited ObjToStringShort(aSeparator) +
-            Format('%sType = %s%sMembersCnt = %d%sOffendersCnt = %d',
+            Format('%sPos = %s%sType = %s%sMembersCnt = %d%sOffendersCnt = %d',
                    [aSeparator,
+                    Position.ToString, aSeparator,
                     GetEnumName(TypeInfo(TKMGroupType), Integer(fGroupType)), aSeparator,
                     fMembers.Count, aSeparator,
                     fOffenders.Count]);

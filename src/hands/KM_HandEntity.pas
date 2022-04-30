@@ -14,7 +14,6 @@ type
     function GetOwner: TKMHandID;
     function GetType: TKMHandEntityType;
   protected
-    function GetPosition: TKMPoint; virtual; abstract;
     function GetPositionF: TKMPointF; virtual; abstract;
     procedure SetPositionF(const aPositionF: TKMPointF); virtual; abstract;
     procedure SetOwner(const aOwner: TKMHandID); virtual;
@@ -30,7 +29,6 @@ type
     property EntityType: TKMHandEntityType read GetType;
     property Owner: TKMHandID read GetOwner write SetOwner;
 
-    property Position: TKMPoint read GetPosition;
     property PositionF: TKMPointF read GetPositionF write SetPositionF;
 
     property AllowAllyToSelect: Boolean read GetAllowAllyToSelect write SetAllowAllyToSelect;
@@ -42,7 +40,6 @@ type
     function IsHouse: Boolean;
 
     function ObjToString(const aSeparator: String = '|'): String; override;
-    function ObjToStringShort(const aSeparator: String = '|'): String; override;
   end;
 
   TKMHandEntityPointer<T> = class abstract(TKMHandEntity)
@@ -190,13 +187,6 @@ begin
 end;
 
 
-function TKMHandEntity.ObjToStringShort(const aSeparator: String = '|'): String;
-begin
-  Result := inherited ObjToStringShort(aSeparator) +
-            Format('%sPos = %s', [aSeparator, Position.ToString]);
-end;
-
-
 function TKMHandEntity.ObjToString(const aSeparator: String = '|'): String;
 begin
   Result := inherited ObjToString(aSeparator) +
@@ -253,20 +243,20 @@ end;
 //Should be used only by gHands for clarity sake
 procedure TKMHandEntityPointer<T>.ReleasePointer;
 var
-  ErrorMsg: UnicodeString;
+  errorMsg: UnicodeString;
 begin
   Assert(gGameParams.AllowPointerOperations, 'ReleasePointer is not allowed outside of game tick update procedure, it could cause game desync');
 
   if fPointerCount < 1 then
   begin
-    ErrorMsg := 'Unit remove pointer for U: ';
+    errorMsg := 'Unit remove pointer for U: ';
     try
-      ErrorMsg := ErrorMsg + ObjToStringShort(',');
+      errorMsg := errorMsg + ObjToStringShort(',');
     except
       on E: Exception do
-        ErrorMsg := ErrorMsg + IntToStr(UID) + ' Pos = ' + Position.ToString;
+        errorMsg := errorMsg + IntToStr(UID);
     end;
-    raise ELocError.Create(ErrorMsg, Position);
+    raise Exception.Create(errorMsg);
   end;
 
   Dec(fPointerCount);

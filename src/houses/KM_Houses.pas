@@ -53,7 +53,7 @@ type
     procedure UpdateEntrancePos;
   protected
     fPosition: TKMPoint; //House position on map, kinda virtual thing cos it doesn't match with entrance
-    function GetPosition: TKMPoint; override;
+    function GetPosition: TKMPoint; inline;
     procedure SetPosition(const aPosition: TKMPoint); virtual;
     constructor Create; overload;
   public
@@ -61,6 +61,7 @@ type
 
     property HouseType: TKMHouseType read fType;
 
+    property Position: TKMPoint read GetPosition;
     property Entrance: TKMPoint read fEntrance;
     property PointBelowEntrance: TKMPoint read fPointBelowEntrance;
 
@@ -410,8 +411,9 @@ begin
   if Self = nil then Exit('nil');
 
   Result := inherited ObjToStringShort(aSeparator) +
-            Format('%sType = %s%sEntr = %s',
+            Format('%sPos = %s%sType = %s%sEntr = %s',
                   [aSeparator,
+                   Position.ToString, aSeparator,
                    GetEnumName(TypeInfo(TKMHouseType), Integer(fType)), aSeparator,
                    TypeToString(Entrance)]);
 end;
