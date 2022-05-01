@@ -167,7 +167,6 @@ type
 
     procedure CloseUnit(aRemoveTileUsage: Boolean = True); virtual;
 
-    // Duplicate of HandEntity PosF property, but with much faster access to it
     property PositionF: TKMPointF read fPositionF write SetPositionF;
     property PositionPrev: TKMPoint read fPositionPrev;
     property PositionNext: TKMPoint read fPositionNext write SetPositionNext;
