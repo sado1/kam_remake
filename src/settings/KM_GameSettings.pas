@@ -89,11 +89,6 @@ type
     fDayGamesCount: Integer;       //Number of games played today (used for saves namings)
     fLastDayGamePlayed: TDateTime; //Last day game played
 
-    //GameTweaks
-    fGameTweaks_AllowSnowHouses: Boolean;
-    fGameTweaks_InterpolatedRender: Boolean;
-    fGameTweaks_InterpolatedAnimations: Boolean;
-
     //Campaign
     fCampaignLastDifficulty: TKMMissionDifficulty;
 
@@ -640,8 +635,8 @@ begin
 
     // Tweaks
     nGameTweaks := nGameCommon.AddOrFindChild('Tweaks');
-      nGameTweaks.Attributes['AllowSnowHouses']    := fGameTweaks_AllowSnowHouses;
-      nGameTweaks.Attributes['InterpolatedRender'] := fGameTweaks_InterpolatedRender;
+      nGameTweaks.Attributes['AllowSnowHouses']    := GFX.AllowSnowHouses;
+      nGameTweaks.Attributes['InterpolatedRender'] := GFX.InterpolatedRender;
 
   // Campaign
   nCampaign := nGameSettings.AddOrFindChild('Campaign');
