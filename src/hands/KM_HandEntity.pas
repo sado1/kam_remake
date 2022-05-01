@@ -16,8 +16,10 @@ type
     function GetType: TKMHandEntityType;
   protected
     function GetPosition: TKMPoint; virtual; abstract;
+
     function GetPosF: TKMPointF; virtual; abstract;
     procedure SetPosF(const aPositionF: TKMPointF); virtual; abstract;
+
     procedure SetOwner(const aOwner: TKMHandID); virtual;
     function GetAllowAllyToSelect: Boolean; virtual;
     procedure SetAllowAllyToSelect(aAllow: Boolean); virtual;
@@ -32,7 +34,7 @@ type
     property Owner: TKMHandID read GetOwner write SetOwner;
 
     property Position: TKMPoint read GetPosition;
-    property PosF: TKMPointF read GetPosF write SetPosF;
+    property PosF: TKMPointF read GetPosF;
 
     property AllowAllyToSelect: Boolean read GetAllowAllyToSelect write SetAllowAllyToSelect;
 
