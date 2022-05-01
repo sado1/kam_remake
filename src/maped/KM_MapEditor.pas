@@ -534,25 +534,24 @@ end;
 //aEraseAll - if true all objects under the cursor will be deleted
 procedure TKMMapEditor.EraseObject(aEraseAll: Boolean);
 var
-  obj: TObject;
+  entity: TKMHandEntity;
   P: TKMPoint;
   fieldsChanged, isCorn, isWine: Boolean;
   removeTxID: Integer;
 begin
   fieldsChanged := False;
   P := gCursor.Cell;
-  obj := gMySpectator.HitTestCursor(True);
+  entity := gMySpectator.HitTestCursor(True);
   removeTxID := -1;
 
   try
-    //Delete unit/house
-    if obj is TKMUnit then
+    // Delete unit/house
+    if entity is TKMUnit then
     begin
-      gHands.RemAnyUnit(TKMUnit(obj).Position);
+      gHands.RemAnyUnit(TKMUnit(entity).Position);
       if not aEraseAll then Exit;
-    end
-    else
-    if obj is TKMHouse then
+    end else
+    if entity is TKMHouse then
     begin
       gHands.RemAnyHouse(P);
       if not aEraseAll then Exit;
@@ -564,7 +563,7 @@ begin
     if EraseTerrainObject(removeTxID) and not aEraseAll then
       Exit;
 
-    //Delete tile overlay (road/corn/wine)
+    // Delete tile overlay (road/corn/wine)
     if gTerrain.Land^[P.Y,P.X].TileOverlay = toRoad then
     begin
       if not fieldsChanged then
