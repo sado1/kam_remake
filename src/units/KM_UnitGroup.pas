@@ -379,17 +379,17 @@ begin
   //Assign event handlers after load
   for I := 0 to Count - 1 do
   begin
-    fMembers[I] := TKMUnitWarrior(gHands.GetUnitByUID(Cardinal(fMembers[I])));
+    fMembers[I] := TKMUnitWarrior(gHands.GetUnitByUID(Integer(fMembers[I])));
     fMembers[I].OnWarriorDied := Member_Died;
     fMembers[I].OnPickedFight := Member_PickedFight;
   end;
 
   for I := 0 to fOffenders.Count - 1 do
-    fOffenders[I] := TKMUnitWarrior(gHands.GetUnitByUID(Cardinal(TKMUnitWarrior(fOffenders[I]))));
+    fOffenders[I] := TKMUnitWarrior(gHands.GetUnitByUID(Integer(TKMUnitWarrior(fOffenders[I]))));
 
-  fOrderTargetGroup := gHands.GetGroupByUID(Cardinal(fOrderTargetGroup));
-  fOrderTargetHouse := gHands.GetHouseByUID(Cardinal(fOrderTargetHouse));
-  fOrderTargetUnit  := gHands.GetUnitByUID(Cardinal(fOrderTargetUnit));
+  fOrderTargetGroup := gHands.GetGroupByUID(Integer(fOrderTargetGroup));
+  fOrderTargetHouse := gHands.GetHouseByUID(Integer(fOrderTargetHouse));
+  fOrderTargetUnit  := gHands.GetUnitByUID(Integer(fOrderTargetUnit));
 end;
 
 

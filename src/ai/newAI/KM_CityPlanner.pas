@@ -404,7 +404,7 @@ begin
   for HT := HOUSE_MIN to HOUSE_MAX do
     for K := 0 to fPlannedHouses[HT].Count - 1 do
       with fPlannedHouses[HT].Plans[K] do
-        House := gHands.GetHouseByUID(Cardinal(House));
+        House := gHands.GetHouseByUID(Integer(House));
 end;
 
 

@@ -58,7 +58,7 @@ end;
 procedure TKMTaskAttackHouse.SyncLoad;
 begin
   inherited;
-  fHouse := gHands.GetHouseByUID(Cardinal(fHouse));
+  fHouse := gHands.GetHouseByUID(Integer(fHouse));
 end;
 
 

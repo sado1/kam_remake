@@ -418,7 +418,7 @@ var
 begin
   for I := 0 to fSerfCount - 1 do
   begin
-    U := gHands.GetUnitByUID(Cardinal(fSerfs[I]));
+    U := gHands.GetUnitByUID(Integer(fSerfs[I]));
     Assert(U is TKMUnitSerf, 'Non-serf in delivery list');
     fSerfs[I] := TKMUnitSerf(U);
   end;
@@ -2443,7 +2443,7 @@ begin
     for I := 0 to fOfferCount[WT] - 1 do
       with fOffer[WT,I] do
       begin
-        Loc_House := gHands.GetHouseByUID(Cardinal(Loc_House));
+        Loc_House := gHands.GetHouseByUID(Integer(Loc_House));
         Form_UpdateOfferNode(WT,I);
       end;
 
@@ -2451,15 +2451,15 @@ begin
     for I := 0 to fDemandCount[WT] - 1 do
       with fDemand[WT,I] do
       begin
-        Loc_House := gHands.GetHouseByUID(Cardinal(Loc_House));
-        Loc_Unit := gHands.GetUnitByUID(Cardinal(Loc_Unit));
+        Loc_House := gHands.GetHouseByUID(Integer(Loc_House));
+        Loc_Unit := gHands.GetUnitByUID(Integer(Loc_Unit));
         Form_UpdateDemandNode(WT,I);
       end;
 
   for I := 0 to fQueueCount - 1 do
     with fQueue[I] do
     begin
-      Serf := TKMUnitSerf(gHands.GetUnitByUID(Cardinal(Serf)));
+      Serf := TKMUnitSerf(gHands.GetUnitByUID(Integer(Serf)));
       Form_UpdateQueueNode(I);
     end;
 end;

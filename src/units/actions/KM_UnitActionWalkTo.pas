@@ -305,8 +305,8 @@ end;
 procedure TKMUnitActionWalkTo.SyncLoad;
 begin
   inherited;
-  fTargetUnit   := gHands.GetUnitByUID(cardinal(fTargetUnit));
-  fTargetHouse  := gHands.GetHouseByUID(cardinal(fTargetHouse));
+  fTargetUnit   := gHands.GetUnitByUID(Integer(fTargetUnit));
+  fTargetHouse  := gHands.GetHouseByUID(Integer(fTargetHouse));
 end;
 
 

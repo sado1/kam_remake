@@ -137,9 +137,9 @@ end;
 procedure TKMTaskDeliver.SyncLoad;
 begin
   inherited;
-  fFrom    := gHands.GetHouseByUID(Cardinal(fFrom));
-  fToHouse := gHands.GetHouseByUID(Cardinal(fToHouse));
-  fToUnit  := gHands.GetUnitByUID(Cardinal(fToUnit));
+  fFrom    := gHands.GetHouseByUID(Integer(fFrom));
+  fToHouse := gHands.GetHouseByUID(Integer(fToHouse));
+  fToUnit  := gHands.GetUnitByUID(Integer(fToUnit));
 end;
 
 

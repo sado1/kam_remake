@@ -98,7 +98,7 @@ procedure TKMUnitActionFight.SyncLoad;
 begin
   inherited;
 
-  fOpponent := gHands.GetUnitByUID(Cardinal(fOpponent));
+  fOpponent := gHands.GetUnitByUID(Integer(fOpponent));
 end;
 
 

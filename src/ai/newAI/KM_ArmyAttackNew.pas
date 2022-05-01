@@ -211,10 +211,10 @@ end;
 
 procedure TKMCombatGroup.SyncLoad();
 begin
-  fGroup := gHands.GetGroupByUID( Cardinal(fGroup) );
-  fTargetHouse := gHands.GetHouseByUID( Cardinal(fTargetHouse) );
-  fTargetGroup := gHands.GetGroupByUID( Cardinal(fTargetGroup) );
-  fTargetUnit := gHands.GetUnitByUID( Cardinal(fTargetUnit) );
+  fGroup := gHands.GetGroupByUID(Integer(fGroup));
+  fTargetHouse := gHands.GetHouseByUID(Integer(fTargetHouse));
+  fTargetGroup := gHands.GetGroupByUID(Integer(fTargetGroup));
+  fTargetUnit := gHands.GetUnitByUID(Integer(fTargetUnit));
 end;
 
 

@@ -458,7 +458,7 @@ begin
   inherited;
 
   for I := 0 to Length(fItems) - 1 do
-    fItems[I].fOwner := gHands.GetUnitByUID(Cardinal(fItems[I].fOwner));
+    fItems[I].fOwner := gHands.GetUnitByUID(Integer(fItems[I].fOwner));
 end;
 
 

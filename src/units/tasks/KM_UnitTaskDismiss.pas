@@ -88,7 +88,7 @@ end;
 procedure TKMTaskDismiss.SyncLoad;
 begin
   inherited;
-  fSchool := gHands[fUnit.Owner].Houses.GetHouseByUID(Cardinal(fSchool));
+  fSchool := gHands[fUnit.Owner].Houses.GetHouseByUID(Integer(fSchool));
 end;
 
 

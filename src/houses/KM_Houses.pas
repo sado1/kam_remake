@@ -605,7 +605,7 @@ end;
 
 procedure TKMHouse.SyncLoad;
 begin
-  fWorker := TKMUnit( gHands.GetUnitByUID( Cardinal(fWorker) ) );
+  fWorker := TKMUnit( gHands.GetUnitByUID(Integer(fWorker) ) );
   CurrentAction.SyncLoad;
 end;
 

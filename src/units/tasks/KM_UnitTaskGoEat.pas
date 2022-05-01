@@ -60,7 +60,7 @@ procedure TKMTaskGoEat.SyncLoad;
 begin
   inherited;
 
-  fInn := TKMHouseInn(gHands.GetHouseByUID(Cardinal(fInn)));
+  fInn := TKMHouseInn(gHands.GetHouseByUID(Integer(fInn)));
 end;
 
 

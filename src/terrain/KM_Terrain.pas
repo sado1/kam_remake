@@ -5068,7 +5068,7 @@ var
 begin
   for I := 1 to fMapY do
     for K := 1 to fMapX do
-      Land[I,K].IsUnit := gHands.GetUnitByUID(Cardinal(Land^[I,K].IsUnit));
+      Land[I,K].IsUnit := gHands.GetUnitByUID(Integer(Land^[I,K].IsUnit));
 end;
 
 

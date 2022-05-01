@@ -138,7 +138,7 @@ end;
 
 procedure TKMDefencePosition.SyncLoad();
 begin
-  fGroup := gHands.GetGroupByUID(Cardinal(fGroup));
+  fGroup := gHands.GetGroupByUID(Integer(fGroup));
 end;
 
 

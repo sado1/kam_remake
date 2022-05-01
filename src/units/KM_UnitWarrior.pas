@@ -188,10 +188,10 @@ procedure TKMUnitWarrior.SyncLoad;
 begin
   inherited;
 
-  fGroup := TKMUnitGroup(  gHands.GetGroupByUID( Cardinal(fGroup) )  );
-  fOrderTargetUnit := TKMUnitWarrior(gHands.GetUnitByUID( Cardinal(fOrderTargetUnit) ));
-  fAttackingUnit := TKMUnitWarrior(gHands.GetUnitByUID( Cardinal(fAttackingUnit) ));
-  fOrderTargetHouse := gHands.GetHouseByUID( Cardinal(fOrderTargetHouse) );
+  fGroup := TKMUnitGroup(  gHands.GetGroupByUID(Integer(fGroup) )  );
+  fOrderTargetUnit := TKMUnitWarrior(gHands.GetUnitByUID(Integer(fOrderTargetUnit) ));
+  fAttackingUnit := TKMUnitWarrior(gHands.GetUnitByUID(Integer(fAttackingUnit) ));
+  fOrderTargetHouse := gHands.GetHouseByUID(Integer(fOrderTargetHouse) );
 
   if Action is TKMUnitActionGoInOut then
     TKMUnitActionGoInOut(Action).OnWalkedOut := WalkedOut;

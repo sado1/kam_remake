@@ -591,7 +591,7 @@ end;
 procedure TKMTaskBuildHouseArea.SyncLoad;
 begin
   inherited;
-  fHouse := gHands.GetHouseByUID(cardinal(fHouse));
+  fHouse := gHands.GetHouseByUID(Integer(fHouse));
 end;
 
 
@@ -799,7 +799,7 @@ end;
 procedure TKMTaskBuildHouse.SyncLoad;
 begin
   inherited;
-  fHouse := gHands.GetHouseByUID(Cardinal(fHouse));
+  fHouse := gHands.GetHouseByUID(Integer(fHouse));
 end;
 
 
@@ -930,7 +930,7 @@ end;
 procedure TKMTaskBuildHouseRepair.SyncLoad;
 begin
   inherited;
-  fHouse := gHands.GetHouseByUID(Cardinal(fHouse));
+  fHouse := gHands.GetHouseByUID(Integer(fHouse));
 end;
 
 

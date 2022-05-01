@@ -62,7 +62,7 @@ end;
 procedure TKMTaskThrowRock.SyncLoad;
 begin
   inherited;
-  fTarget := gHands.GetUnitByUID(cardinal(fTarget));
+  fTarget := gHands.GetUnitByUID(Integer(fTarget));
 end;
 
 

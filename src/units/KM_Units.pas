@@ -1299,8 +1299,8 @@ begin
   if fAction <> nil then
     fAction.SyncLoad;
 
-  fHome := gHands.GetHouseByUID(cardinal(fHome));
-  fInHouse := gHands.GetHouseByUID(cardinal(fInHouse));
+  fHome := gHands.GetHouseByUID(Integer(fHome));
+  fInHouse := gHands.GetHouseByUID(Integer(fInHouse));
 
   //Create last so it can initialise with loaded (and sync-loaded) values
   fVisual := TKMUnitVisual.Create(Self);
@@ -2615,7 +2615,7 @@ end;
 
 procedure TKMUnitTask.SyncLoad;
 begin
-  fUnit := gHands.GetUnitByUID(cardinal(fUnit));
+  fUnit := gHands.GetUnitByUID(Integer(fUnit));
 end;
 
 
@@ -2717,7 +2717,7 @@ end;
 
 procedure TKMUnitAction.SyncLoad;
 begin
-  fUnit := gHands.GetUnitByUID(cardinal(fUnit));
+  fUnit := gHands.GetUnitByUID(Integer(fUnit));
 end;
 
 

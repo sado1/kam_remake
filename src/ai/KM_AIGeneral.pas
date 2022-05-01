@@ -170,7 +170,7 @@ begin
   fDefencePositions.SyncLoad;
 
   for uid in fUnitsEquipOrdered.Keys do
-    fUnitsEquipOrdered[uid] := TKMUnitWarrior(gHands.GetUnitByUID(Cardinal(uid)));
+    fUnitsEquipOrdered[uid] := TKMUnitWarrior(gHands.GetUnitByUID(Integer(uid)));
 end;
 
 

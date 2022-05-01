@@ -106,7 +106,7 @@ begin
   inherited;
 
   for I := 0 to RecruitsCount - 1 do
-    fRecruitsList.Items[I] := gHands.GetUnitByUID(Cardinal(fRecruitsList.Items[I]));
+    fRecruitsList.Items[I] := gHands.GetUnitByUID(Integer(fRecruitsList.Items[I]));
 end;
 
 

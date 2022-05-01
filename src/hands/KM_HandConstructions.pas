@@ -379,7 +379,7 @@ var
   I: Integer;
 begin
   for I := 0 to fHousesCount - 1 do
-    fHouses[i].House := gHands.GetHouseByUID(cardinal(fHouses[I].House));
+    fHouses[i].House := gHands.GetHouseByUID(Integer(fHouses[I].House));
 end;
 
 
@@ -677,7 +677,7 @@ var
   I: Integer;
 begin
   for I := 0 to fFieldsCount - 1 do
-    fFields[I].Worker := gHands.GetUnitByUID(Cardinal(fFields[I].Worker));
+    fFields[I].Worker := gHands.GetUnitByUID(Integer(fFields[I].Worker));
 end;
 
 
@@ -966,7 +966,7 @@ var
   I: Integer;
 begin
   for I := 0 to fPlansCount - 1 do
-    fPlans[I].Worker := gHands.GetUnitByUID(Cardinal(fPlans[I].Worker));
+    fPlans[I].Worker := gHands.GetUnitByUID(Integer(fPlans[I].Worker));
 end;
 
 
@@ -1127,7 +1127,7 @@ var
   I: Integer;
 begin
   for I := 0 to fHousesCount - 1 do
-    fHouses[I].House := gHands.GetHouseByUID(Cardinal(fHouses[I].House));
+    fHouses[I].House := gHands.GetHouseByUID(Integer(fHouses[I].House));
 end;
 
 
@@ -1233,7 +1233,7 @@ var
 begin
   for I := 0 to fWorkersCount - 1 do
   begin
-    U := gHands.GetUnitByUID(Cardinal(fWorkers[I].Worker));
+    U := gHands.GetUnitByUID(Integer(fWorkers[I].Worker));
     Assert(U is TKMUnitWorker, 'Non-worker in build list');
     fWorkers[I].Worker := TKMUnitWorker(U);
   end;

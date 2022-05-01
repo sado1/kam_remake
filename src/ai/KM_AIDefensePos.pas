@@ -170,7 +170,7 @@ end;
 
 procedure TAIDefencePosition.SyncLoad;
 begin
-  fCurrentGroup := gHands.GetGroupByUID(Cardinal(fCurrentGroup));
+  fCurrentGroup := gHands.GetGroupByUID(Integer(fCurrentGroup));
 end;
 
 
