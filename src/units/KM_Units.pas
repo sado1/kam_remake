@@ -79,7 +79,7 @@ type
   end;
 
 
-  TKMUnit =  class abstract(TKMHandEntityPointer<TKMUnit>)
+  TKMUnit = class abstract(TKMHandEntityPointer<TKMUnit>)
   protected //Accessible for child classes
     fType: TKMUnitType;
     fTask: TKMUnitTask;
@@ -138,7 +138,7 @@ type
     function GetPosition: TKMPoint; override;
     function GetPosF: TKMPointF; override;
     procedure SetPosF(const aPositionF: TKMPointF); override;
-    function IsSelectableImpl: Boolean; override;
+    function GetIsSelectable: Boolean; override;
   public
     AnimStep: Integer;
     IsExchanging: Boolean; //Current walk is an exchange, used for sliding
@@ -336,12 +336,12 @@ type
   end;
 
 
-  //Animals
+  // Animals
   TKMUnitAnimal = class(TKMUnit)
   private
     fFishCount: Byte; //1-5
   protected
-    function IsSelectableImpl: Boolean; override;
+    function GetIsSelectable: Boolean; override;
   public
     constructor Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPointDir; aOwner: TKMHandID); overload;
     constructor Load(LoadStream: TKMemoryStream); override;
@@ -1009,7 +1009,7 @@ constructor TKMUnitAnimal.Create(aID: Cardinal; aUnitType: TKMUnitType; const aL
 begin
   inherited Create(aID, aUnitType, aLoc, aOwner, nil);
 
-  //Always start with 5 fish in the group
+  // Always start with 5 fish in the group
   if aUnitType = utFish then
     fFishCount := 5;
 end;
@@ -1021,7 +1021,7 @@ begin
 end;
 
 
-function TKMUnitAnimal.IsSelectableImpl: Boolean;
+function TKMUnitAnimal.GetIsSelectable: Boolean;
 begin
   Result := False;
 end;
@@ -2307,7 +2307,7 @@ begin
 end;
 
 
-function TKMUnit.IsSelectableImpl: Boolean;
+function TKMUnit.GetIsSelectable: Boolean;
 begin
   Result := not IsDeadOrDying;
 end;

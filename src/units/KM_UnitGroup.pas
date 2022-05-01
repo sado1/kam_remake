@@ -92,7 +92,7 @@ type
     function GetPositionF: TKMPointF; inline;
     procedure SetPosF(const aPositionF: TKMPointF); override;
     procedure SetOwner(const aOwner: TKMHandID); override;
-    function IsSelectableImpl: Boolean; override;
+    function GetIsSelectable: Boolean; override;
   public
     //Each group can have initial order
     //SendGroup - walk to some location
@@ -708,7 +708,7 @@ begin
 end;
 
 
-//Group is dead, but still exists cos of pointers to it
+// Group is dead, but still exists cos of pointers to it
 function TKMUnitGroup.IsDead: Boolean;
 begin
   Result := (Count = 0);
@@ -721,7 +721,7 @@ begin
 end;
 
 
-function TKMUnitGroup.IsSelectableImpl: Boolean;
+function TKMUnitGroup.GetIsSelectable: Boolean;
 begin
   Result := not IsDead;
 end;

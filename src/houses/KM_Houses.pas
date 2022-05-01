@@ -76,6 +76,7 @@ type
     fEditable: Boolean;
   protected
     function GetInstance: TKMHouse; override;
+    function GetIsSelectable: Boolean; override;
     function GetPosF: TKMPointF; override;
     procedure SetPosF(const aPositionF: TKMPointF); override;
   public
@@ -177,7 +178,7 @@ type
     function GetPositionF: TKMPointF; inline;
     procedure SetPosF(const aPositionF: TKMPointF); override;
 
-    function IsSelectableImpl: Boolean; override;
+    function GetIsSelectable: Boolean; override;
 
     procedure MakeSound; virtual; //Swine/stables make extra sounds
   public
@@ -471,6 +472,12 @@ function TKMHouseSketchEdit.GetInstance: TKMHouse;
 begin
   //Not used. Make compiler happy
   raise Exception.Create('Can''t get instance of TKMHouseSketchEdit');
+end;
+
+
+function TKMHouseSketchEdit.GetIsSelectable: Boolean;
+begin
+  Result := False;
 end;
 
 
@@ -924,7 +931,7 @@ begin
 end;
 
 
-function TKMHouse.IsSelectableImpl: Boolean;
+function TKMHouse.GetIsSelectable: Boolean;
 begin
   Result := not IsDestroyed;
 end;
@@ -935,10 +942,10 @@ begin
   Result := 0;
   case HouseType of
     htQuarry:       Result := TX_MSG_STONE_DEPLETED;
-    htCoalMine:    Result := TX_MSG_COAL_DEPLETED;
-    htIronMine:    Result := TX_MSG_IRON_DEPLETED;
-    htGoldMine:    Result := TX_MSG_GOLD_DEPLETED;
-    htWoodcutters: if TKMHouseWoodcutters(Self).WoodcutterMode = wmPlant then
+    htCoalMine:     Result := TX_MSG_COAL_DEPLETED;
+    htIronMine:     Result := TX_MSG_IRON_DEPLETED;
+    htGoldMine:     Result := TX_MSG_GOLD_DEPLETED;
+    htWoodcutters:  if TKMHouseWoodcutters(Self).WoodcutterMode = wmPlant then
                       Result := TX_MSG_WOODCUTTER_PLANT_DEPLETED
                     else
                       Result := TX_MSG_WOODCUTTER_DEPLETED;
