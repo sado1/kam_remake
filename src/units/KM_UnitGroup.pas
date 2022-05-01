@@ -235,7 +235,7 @@ type
 implementation
 uses
   TypInfo,
-  KM_Game, KM_GameParams, KM_Hand, KM_HandsCollection, KM_Terrain, KM_CommonUtils, KM_ResTexts, KM_RenderPool,
+  KM_Game, KM_GameParams, KM_GameUIDTracker, KM_Hand, KM_HandsCollection, KM_Terrain, KM_CommonUtils, KM_ResTexts, KM_RenderPool,
   KM_Hungarian, KM_UnitActionWalkTo, KM_ResUnits, KM_ScriptingEvents,
   KM_UnitActionStormAttack, KM_CommonClassesExt, KM_RenderAux,
   KM_GameTypes, KM_Log, KM_DevPerfLog, KM_DevPerfLogTypes,
@@ -2289,7 +2289,7 @@ end;
 
 function TKMUnitGroups.AddGroup(aWarrior: TKMUnitWarrior): TKMUnitGroup;
 begin
-  Result := TKMUnitGroup.Create(gGame.GetNewUID, aWarrior);
+  Result := TKMUnitGroup.Create(gUIDTracker.GetNewUID, aWarrior);
   fGroups.Add(Result)
 end;
 
@@ -2300,7 +2300,7 @@ begin
   Result := nil;
   Assert(aUnitType in [WARRIOR_MIN..WARRIOR_MAX]);
 
-  Result := TKMUnitGroup.Create(gGame.GetNewUID, aOwner, aUnitType, PosX, PosY, aDir, aUnitPerRow, aCount);
+  Result := TKMUnitGroup.Create(gUIDTracker.GetNewUID, aOwner, aUnitType, PosX, PosY, aDir, aUnitPerRow, aCount);
 
   //If group failed to create (e.g. due to being placed on unwalkable position)
   //then its memberCount = 0
@@ -2377,12 +2377,12 @@ begin
                    else
                    begin
                      //Create a new group with this one warrior
-                     Result := TKMUnitGroup.Create(gGame.GetNewUID, aUnit);
+                     Result := TKMUnitGroup.Create(gUIDTracker.GetNewUID, aUnit);
                      fGroups.Add(Result);
                    end;
                  end;
     hndComputer: begin
-                   Result := TKMUnitGroup.Create(gGame.GetNewUID, aUnit);
+                   Result := TKMUnitGroup.Create(gUIDTracker.GetNewUID, aUnit);
                    fGroups.Add(Result);
                  end;
   end;

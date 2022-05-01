@@ -49,7 +49,7 @@ implementation
 uses
   SysUtils,
   KM_Game, KM_GameParams, KM_HandsCollection, KM_Log, KM_Resource, KM_ResUnits, KM_UnitWarrior,
-  KM_UnitActionWalkTo,
+  KM_UnitActionWalkTo, KM_GameUIDTracker,
   KM_DevPerfLog, KM_DevPerfLogTypes,
   KM_CommonExceptions;
 
@@ -126,7 +126,7 @@ begin
   end;
 
   pointDir := KMPointDir(placeTo, aLoc.Dir);
-  uid := gGame.GetNewUID;
+  uid := gUIDTracker.GetNewUID;
   case aUnitType of
     utSerf:                       Result := TKMUnitSerf.Create(uid, aUnitType, pointDir, aOwner, aInHouse);
     utBuilder:                    Result := TKMUnitWorker.Create(uid, aUnitType, pointDir, aOwner, aInHouse);
@@ -136,7 +136,8 @@ begin
     utRecruit:                    Result := TKMUnitRecruit.Create(uid, aUnitType, pointDir, aOwner, aInHouse);
     WARRIOR_MIN..WARRIOR_MAX:     Result := TKMUnitWarrior.Create(uid, aUnitType, pointDir, aOwner, aInHouse);
     ANIMAL_MIN..ANIMAL_MAX:       Result := TKMUnitAnimal.Create(uid, aUnitType, pointDir, aOwner); //Do not specify aAddInHouse, we want to call TKMUnitAnimal constructor
-    else                          raise ELocError.Create('Add ' + gRes.Units[aUnitType].GUIName, pointDir.Loc);
+  else
+    raise ELocError.Create('Add ' + gRes.Units[aUnitType].GUIName, pointDir.Loc);
   end;
 
   if Result <> nil then
@@ -301,7 +302,7 @@ begin
     LoadStream.Read(unitType, SizeOf(unitType));
     case unitType of
       utSerf:                   U := TKMUnitSerf.Load(LoadStream);
-      utBuilder:                 U := TKMUnitWorker.Load(LoadStream);
+      utBuilder:                U := TKMUnitWorker.Load(LoadStream);
       utWoodCutter..utFisher,
       {utWorker,}
       utStonemason..utMetallurgist:

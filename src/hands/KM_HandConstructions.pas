@@ -696,7 +696,7 @@ begin
   if I >= Length(fPlans) then
     SetLength(fPlans, Length(fPlans) + LENGTH_INC);
 
-  fPlans[I].UID := gGameUIDTracker.GetNewUID;
+  fPlans[I].UID := gUIDTracker.GetNewUID;
   fPlans[I].HouseType := aHouseType;
   fPlans[I].Loc := aLoc;
   fPlans[I].JobStatus := jsOpen;

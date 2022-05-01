@@ -56,7 +56,7 @@ type
 
 implementation
 uses
-  Math, KM_Game;
+  Math, KM_Game, KM_GameUIDTracker;
 
 
 { TAIAttacks }
@@ -103,7 +103,7 @@ begin
   if fCount >= Length(fAttacks) then
     SetLength(fAttacks, fCount + 16);
 
-  aAttack.UID := gGame.GetNewUID;
+  aAttack.UID := gUIDTracker.GetNewUID;
   fAttacks[fCount] := aAttack;
   Inc(fCount);
   Result := aAttack.UID;

@@ -61,8 +61,6 @@ type
     fSpeedGIP: Single; //GameSpeed, recorded to GIP, could be requested by scripts
     fSpeedChangeAllowed: Boolean; //Is game speed change allowed?
 
-    fUIDTracker: TKMGameUIDTracker;       //Units-Houses tracker, to issue unique IDs
-
     //Saved to local data
     fLastReplayTickLocal: Cardinal; // stored / loaded in the .sloc file, if available
     fSkipReplayEndCheck: Boolean;
@@ -254,7 +252,6 @@ type
 
     property LockedMutex: Boolean read fLockedMutex write fLockedMutex;
 
-    function GetNewUID: Integer;
     function GetNormalSpeed: Single;
     function GetToggledNormalSpeed: Single;
     procedure StepOneFrame;
@@ -359,7 +356,7 @@ begin
   fOnDestroy := aOnDestroy;
 
   fAdvanceFrame := False;
-  fUIDTracker   := TKMGameUIDTracker.Create;
+  gUIDTracker := TKMGameUIDTracker.Create;
   GameResult   := grCancel;
   fDoHold    := False;
   fSkipReplayEndCheck := False;
@@ -487,7 +484,7 @@ begin
     FreeAndNil(fGameInputProcess);
 
   FreeAndNil(fOptions);
-  FreeAndNil(fUIDTracker);
+  FreeAndNil(gUIDTracker);
   FreeAndNil(fTextMission);
 
   //When leaving the game we should always reset the cursor in case the user had beacon or linking selected
@@ -1937,12 +1934,6 @@ begin
 end;
 
 
-function TKMGame.GetNewUID: Integer;
-begin
-  Result := fUIDTracker.GetNewUID;
-end;
-
-
 function TKMGame.GetNormalSpeed: Single;
 begin
   if fParams.IsMultiPlayerOrSpec then
@@ -2279,7 +2270,7 @@ begin
   if not isMulti then
     aBodyStream.WriteW(fParams.MissionFileRelSP);
 
-  fUIDTracker.Save(aBodyStream); //Units-Houses ID tracker
+  gUIDTracker.Save(aBodyStream); //Units-Houses ID tracker
   aBodyStream.Write(GetKaMSeed); //Include the random seed in the save file to ensure consistency in replays
 
   if not isMulti then
@@ -2634,7 +2625,7 @@ begin
       fSetMissionFileSP(missionFileSP);
     end;
 
-    fUIDTracker.Load(bodyStream);
+    gUIDTracker.Load(bodyStream);
     bodyStream.Read(loadedSeed);
 
     if not saveIsMultiplayer then

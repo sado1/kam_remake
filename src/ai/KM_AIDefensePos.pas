@@ -84,7 +84,7 @@ type
 implementation
 uses
   SysUtils, TypInfo,
-  KM_Game, KM_GameParams, KM_HandsCollection, KM_RenderAux, KM_RenderPool, KM_Hand,
+  KM_Game, KM_GameUIDTracker, KM_GameParams, KM_HandsCollection, KM_RenderAux, KM_RenderPool, KM_Hand,
   KM_UnitGroupTypes, KM_InterfaceGame;
 
 
@@ -265,7 +265,7 @@ function TAIDefencePositions.CreateDefPosition(const aPos: TKMPointDir; aGroupTy
 begin
   Assert(aGroupType in GROUP_TYPES_VALID, 'Invalid group type: ' + GetEnumName(TypeInfo(TKMGroupType), Integer(aGroupType)));
 
-  Result := TAIDefencePosition.Create(gGame.GetNewUID, aPos, aGroupType, aRadius, aDefenceType);
+  Result := TAIDefencePosition.Create(gUIDTracker.GetNewUID, aPos, aGroupType, aRadius, aDefenceType);
 end;
 
 
