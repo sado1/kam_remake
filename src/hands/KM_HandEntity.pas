@@ -17,7 +17,7 @@ type
   protected
     function GetPosition: TKMPoint; virtual; abstract;
 
-    function GetPosF: TKMPointF; virtual; abstract;
+    function GetPositionForDisplay: TKMPointF; virtual; abstract;
 
     procedure SetOwner(const aOwner: TKMHandID); virtual;
     function GetAllowAllyToSelect: Boolean; virtual;
@@ -33,7 +33,7 @@ type
     property Owner: TKMHandID read GetOwner write SetOwner;
 
     property Position: TKMPoint read GetPosition;
-    property PosF: TKMPointF read GetPosF;
+    property PosF: TKMPointF read GetPositionForDisplay;
 
     property AllowAllyToSelect: Boolean read GetAllowAllyToSelect write SetAllowAllyToSelect;
 

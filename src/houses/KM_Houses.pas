@@ -77,7 +77,7 @@ type
   protected
     function GetInstance: TKMHouse; override;
     function GetIsSelectable: Boolean; override;
-    function GetPosF: TKMPointF; override;
+    function GetPositionForDisplay: TKMPointF; override;
   public
     constructor Create;
 
@@ -173,7 +173,7 @@ type
     property ResDeliveryCnt[aIndex: Integer]: Word read GetResourceDeliveryCount write SetResourceDeliveryCount;
 
     function GetInstance: TKMHouse; override;
-    function GetPosF: TKMPointF; override;
+    function GetPositionForDisplay: TKMPointF; override;
     function GetPositionF: TKMPointF; inline;
 
     function GetIsSelectable: Boolean; override;
@@ -478,7 +478,7 @@ begin
 end;
 
 
-function TKMHouseSketchEdit.GetPosF: TKMPointF;
+function TKMHouseSketchEdit.GetPositionForDisplay: TKMPointF;
 begin
   //Not used. Make compiler happy
   raise Exception.Create('Can''t get positionF of TKMHouseSketchEdit');
