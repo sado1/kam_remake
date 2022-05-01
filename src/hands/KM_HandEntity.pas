@@ -33,7 +33,7 @@ type
     property Owner: TKMHandID read GetOwner write SetOwner;
 
     property Position: TKMPoint read GetPosition;
-    property PosF: TKMPointF read GetPositionForDisplay;
+    property PositionForDisplay: TKMPointF read GetPositionForDisplay;
 
     property AllowAllyToSelect: Boolean read GetAllowAllyToSelect write SetAllowAllyToSelect;
 
@@ -189,7 +189,7 @@ begin
             Format('%sOwner = %d%sPositionF = %s%sAllowAllyToSel = %s',
                    [aSeparator,
                     Owner, aSeparator,
-                    PosF.ToString, aSeparator,
+                    PositionForDisplay.ToString, aSeparator,
                     BoolToStr(AllowAllyToSelect, True)]);
 end;
 
