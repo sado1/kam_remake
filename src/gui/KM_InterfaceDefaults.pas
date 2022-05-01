@@ -301,8 +301,8 @@ begin
 
   if Key = gResKeys[kfMusicDisable] then
   begin
-    gGameSettings.SFX.MusicOff := not gGameSettings.SFX.MusicOff;
-    gMusic.ToggleEnabled(not gGameSettings.SFX.MusicOff);
+    gGameSettings.SFX.MusicEnabled := not gGameSettings.SFX.MusicEnabled;
+    gMusic.ToggleEnabled(gGameSettings.SFX.MusicEnabled);
     aHandled := True;
   end;
 

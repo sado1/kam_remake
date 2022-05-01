@@ -575,7 +575,7 @@ begin
   TrackBar_ScrollSpeed.Position := Round(gGameSettings.ScrollSpeed / SCROLL_SPEED_MULTIPLIER);
   TrackBar_SFX.Position         := Round(gGameSettings.SFX.SoundFXVolume * TrackBar_SFX.MaxValue);
   TrackBar_Music.Position       := Round(gGameSettings.SFX.MusicVolume * TrackBar_Music.MaxValue);
-  CheckBox_MusicOff.Checked     := gGameSettings.SFX.MusicOff;
+  CheckBox_MusicOff.Checked     := not gGameSettings.SFX.MusicEnabled;
   TrackBar_Music.Enabled        := not CheckBox_MusicOff.Checked;
   CheckBox_ShuffleOn.Checked    := gGameSettings.SFX.ShuffleOn;
   CheckBox_ShuffleOn.Enabled    := not CheckBox_MusicOff.Checked;
@@ -643,7 +643,7 @@ var
   musicToggled, shuffleToggled: Boolean;
 begin
   // Change these options only if they changed state since last time
-  musicToggled := (gGameSettings.SFX.MusicOff <> CheckBox_MusicOff.Checked);
+  musicToggled := (gGameSettings.SFX.MusicEnabled <> not CheckBox_MusicOff.Checked);
   shuffleToggled := (gGameSettings.SFX.ShuffleOn <> CheckBox_ShuffleOn.Checked);
 
   gGameSettings.GFX.Brightness         := TrackBar_Brightness.Position;
@@ -655,7 +655,7 @@ begin
   gGameSettings.ScrollSpeed        := TrackBar_ScrollSpeed.Position * SCROLL_SPEED_MULTIPLIER;
   gGameSettings.SFX.SoundFXVolume      := TrackBar_SFX.Position / TrackBar_SFX.MaxValue;
   gGameSettings.SFX.MusicVolume        := TrackBar_Music.Position / TrackBar_Music.MaxValue;
-  gGameSettings.SFX.MusicOff           := CheckBox_MusicOff.Checked;
+  gGameSettings.SFX.MusicEnabled       := not CheckBox_MusicOff.Checked;
   gGameSettings.SFX.ShuffleOn          := CheckBox_ShuffleOn.Checked;
   gGameSettings.GFX.AllowSnowHouses    := CheckBox_SnowHouses.Checked;
 
@@ -741,8 +741,8 @@ begin
 
   if musicToggled then
   begin
-    gMusic.ToggleEnabled(not gGameSettings.SFX.MusicOff);
-    if not gGameSettings.SFX.MusicOff then
+    gMusic.ToggleEnabled(gGameSettings.SFX.MusicEnabled);
+    if gGameSettings.SFX.MusicEnabled then
       shuffleToggled := True; // Re-shuffle songs if music has been enabled
   end;
 

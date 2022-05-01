@@ -33,7 +33,7 @@ type
     procedure SetMusicVolume(aValue: Single);
     procedure SetSoundFXVolume(aValue: Single);
   public
-    MusicOff: Boolean;
+    MusicEnabled: Boolean;
     ShuffleOn: Boolean;
     property MusicVolume: Single read fMusicVolume write SetMusicVolume;
     property SoundFXVolume: Single read fSoundFXVolume write SetSoundFXVolume;
@@ -377,7 +377,7 @@ begin
 
   // Music
   nMusic := nGameSettings.AddOrFindChild('Music');
-    SFX.MusicOff     := not nMusic.Attributes['Enabled'].AsBoolean(True); // Reversed value
+    SFX.MusicEnabled := nMusic.Attributes['Enabled'].AsBoolean(True);
     SFX.MusicVolume  := nMusic.Attributes['Volume'].AsFloat(0.5);
     SFX.ShuffleOn    := nMusic.Attributes['Shuffle'].AsBoolean(False);
 
@@ -578,7 +578,7 @@ begin
 
   // Music
   nMusic := nGameSettings.AddOrFindChild('Music');
-    nMusic.Attributes['Enabled']  := not SFX.MusicOff; // Reversed value
+    nMusic.Attributes['Enabled']  := SFX.MusicEnabled; // Reversed value
     nMusic.Attributes['Volume']   := SFX.MusicVolume;
     nMusic.Attributes['Shuffle']  := SFX.ShuffleOn;
 

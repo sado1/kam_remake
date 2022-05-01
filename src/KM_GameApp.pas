@@ -222,7 +222,7 @@ begin
   InitMainMenu(aScreenX, aScreenY);
 
   // Start the Music playback as soon as loading is complete
-  if not NoMusic and not gGameSettings.SFX.MusicOff then
+  if not NoMusic and gGameSettings.SFX.MusicEnabled then
     gMusic.PlayMenuTrack;
 
   gMusic.ToggleShuffle(gGameSettings.SFX.ShuffleOn); //Determine track order
@@ -1370,7 +1370,7 @@ begin
   if fGlobalTickCount mod 10 = 0 then
   begin
     // Music
-    if not gGameSettings.SFX.MusicOff and gMusic.IsEnded then
+    if gGameSettings.SFX.MusicEnabled and gMusic.IsEnded then
       gMusic.PlayNextTrack; //Feed new music track
 
     //StatusBar
