@@ -96,7 +96,7 @@ begin
   // Special case for a unit who just started exiting the house
   // In that case fPrev slide was not calculated with door slide consideration
   // and thus fPrev.Slide would be 0 in the most cases (or in all cases)
-  // That will make unit 'jump' from fPrev.PosF to fCurr.PosF + fCurr.Slide, which looks very bad
+  // That will make unit 'jump' from fPrev.PositionF to fCurr.PositionF + fCurr.Slide, which looks very bad
   if not fPrev.IsActGoInOutStarted
     and fCurr.IsActGoInOutStarted
     and (fPrev.InHouseType <> htNone) then
