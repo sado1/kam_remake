@@ -194,11 +194,10 @@ begin
   if Self = nil then Exit;
   if not fPlayerEnabled then Exit;
 {$IFDEF VIDEOS}
-  if not gGameSettings.VideoOn then
-    Exit;
+  if not gGameSettings.Video.Enabled then Exit;
 
-  if TryGetPathFile(aCampaignPath + aVideoName, path) or
-    TryGetPathFile(VIDEOFILE_PATH + aVideoName, path) then
+  if TryGetPathFile(aCampaignPath + aVideoName, path)
+  or TryGetPathFile(VIDEOFILE_PATH + aVideoName, path) then
     AddVideoToList(path);
 {$ENDIF}
 end;
@@ -214,14 +213,14 @@ begin
   if Self = nil then Exit;
   if not fPlayerEnabled then Exit;
 {$IFDEF VIDEOS}
-  if not gGameSettings.VideoOn then
-    Exit;
+  if not gGameSettings.Video.Enabled then Exit;
+
   missionPath := ExtractFilePath(aMissionFile);
   fileName := ExtractFileName(ChangeFileExt(aMissionFile, '')) + '.' + aVideoName;
 
-  if TryGetPathFile(missionPath + fileName, path) or
-    TryGetPathFile(missionPath + aVideoName, path) or
-    TryGetPathFile(VIDEOFILE_PATH + aVideoName, path) then
+  if TryGetPathFile(missionPath + fileName, path)
+  or TryGetPathFile(missionPath + aVideoName, path)
+  or TryGetPathFile(VIDEOFILE_PATH + aVideoName, path) then
     AddVideoToList(path);
 {$ENDIF}
 end;
@@ -236,10 +235,10 @@ begin
   if Self = nil then Exit;
   if not fPlayerEnabled then Exit;
 {$IFDEF VIDEOS}
-  if not gGameSettings.VideoOn then
-    Exit;
-  if TryGetPathFile(aVideoName, path) or
-    TryGetPathFile(VIDEOFILE_PATH + aVideoName, path) then
+  if not gGameSettings.Video.Enabled then Exit;
+
+  if TryGetPathFile(aVideoName, path)
+  or TryGetPathFile(VIDEOFILE_PATH + aVideoName, path) then
     AddVideoToList(path, aKind);
 {$ENDIF}
 end;
@@ -297,13 +296,11 @@ begin
     Exit;
 
   case GetState of
-    vlcpsPlaying:
-      begin
-        FTime := libvlc_media_player_get_time(FMediaPlayer);
-        FLenght := libvlc_media_player_get_length(FMediaPlayer);
-      end;
-    vlcpsEnded:
-        Stop;
+    vlcpsPlaying: begin
+                    FTime := libvlc_media_player_get_time(FMediaPlayer);
+                    FLenght := libvlc_media_player_get_length(FMediaPlayer);
+                  end;
+    vlcpsEnded:   Stop;
   end;
 {$ENDIF}
 end;
@@ -327,7 +324,7 @@ begin
     FCriticalSection.Leave;
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    if gGameSettings.VideoStretch then
+    if gGameSettings.Video.VideoStretch then
     begin
       aspectRatio := FWidth / FHeight;
       if aspectRatio > FScreenWidth / FScreenHeight then
@@ -516,7 +513,7 @@ begin
       //libvlc_media_player_set_hwnd(FMediaPlayer, Pointer(FPanel.Handle));
       libvlc_media_player_play(FMediaPlayer);
       SetTrackByLocale;
-      libvlc_audio_set_volume(FMediaPlayer, Round(gGameSettings.VideoVolume * 100));
+      libvlc_audio_set_volume(FMediaPlayer, Round(gGameSettings.Video.VideoVolume * 100));
     end
     else
       Stop;

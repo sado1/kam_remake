@@ -26,7 +26,6 @@ type
     property Brightness: Byte read fBrightness write SetBrightness;
   end;
 
-
   TKMSettingsSFX = record
   private
     fMusicVolume: Single;
@@ -38,6 +37,17 @@ type
     ShuffleOn: Boolean;
     property MusicVolume: Single read fMusicVolume write SetMusicVolume;
     property SoundFXVolume: Single read fSoundFXVolume write SetSoundFXVolume;
+  end;
+
+  TKMSettingsVideo = record
+  private
+    fVideoVolume: Single;
+    procedure SetVideoVolume(aValue: Single);
+  public
+    Enabled: Boolean;
+    VideoStretch: Boolean;
+    PlayOnStartup: Boolean;
+    property VideoVolume: Single read fVideoVolume write SetVideoVolume;
   end;
 
 
@@ -90,12 +100,6 @@ type
     //Replay
     fReplaySavepoint: Boolean;
     fReplaySavepointFrequency: Integer;
-
-    //Video
-    fVideoOn: Boolean;
-    fVideoStretch: Boolean;
-    fVideoStartup: Boolean;
-    fVideoVolume: Single;
 
     //MapEd
     fMapEdHistoryDepth: Integer;
@@ -150,9 +154,6 @@ type
     //Replay
     procedure SetReplaySavepointFrequency(aValue: Integer);
 
-    //Video
-    procedure SetVideoVolume(aValue: Single);
-
     //MapEd
     procedure SetMapEdHistoryDepth(const aValue: Integer);
     procedure SetMapEdMaxTerrainHeight(const aValue: Integer);
@@ -166,6 +167,7 @@ type
   public
     GFX: TKMSettingsGFX;
     SFX: TKMSettingsSFX;
+    Video: TKMSettingsVideo;
 
     constructor Create;
     destructor Destroy; override;
@@ -213,12 +215,6 @@ type
     property ReplayShowBeacons: Boolean read fReplayShowBeacons write fReplayShowBeacons;
     property ReplaySavepoint: Boolean read fReplaySavepoint write fReplaySavepoint;
     property ReplaySavepointFrequency: Integer read fReplaySavepointFrequency write SetReplaySavepointFrequency;
-
-    // Video
-    property VideoOn: Boolean read fVideoOn write fVideoOn;
-    property VideoStretch: Boolean read fVideoStretch write fVideoStretch;
-    property VideoStartup: Boolean read fVideoStartup write fVideoStartup;
-    property VideoVolume: Single read fVideoVolume write SetVideoVolume;
 
     // MapEd
     property MapEdHistoryDepth: Integer read fMapEdHistoryDepth write SetMapEdHistoryDepth;
@@ -289,6 +285,13 @@ end;
 procedure TKMSettingsSFX.SetMusicVolume(aValue: Single);
 begin
   fMusicVolume := EnsureRange(aValue, 0, 1);
+end;
+
+
+{ TKMSettingsVideo }
+procedure TKMSettingsVideo.SetVideoVolume(aValue: Single);
+begin
+  fVideoVolume := EnsureRange(aValue, 0, 1);
 end;
 
 
@@ -380,10 +383,10 @@ begin
 
   // Video
   nVideo := nGameSettings.AddOrFindChild('Video');
-    fVideoOn      := nVideo.Attributes['Enabled'].AsBoolean(False); //Disabled by default
-    fVideoStretch := nVideo.Attributes['Stretch'].AsBoolean(True);
-    fVideoStartup := nVideo.Attributes['Startup'].AsBoolean(True);
-    fVideoVolume  := nVideo.Attributes['Volume'].AsFloat(0.5);
+    Video.Enabled      := nVideo.Attributes['Enabled'].AsBoolean(False); //Disabled by default
+    Video.VideoStretch := nVideo.Attributes['Stretch'].AsBoolean(True);
+    Video.PlayOnStartup := nVideo.Attributes['Startup'].AsBoolean(True);
+    Video.VideoVolume  := nVideo.Attributes['Volume'].AsFloat(0.5);
 
   // GameCommon
   nGameCommon := nGameSettings.AddOrFindChild('GameCommon');
@@ -581,10 +584,10 @@ begin
 
   // Video
   nVideo := nGameSettings.AddOrFindChild('Video');
-    nVideo.Attributes['Enabled']  := fVideoOn;
-    nVideo.Attributes['Stretch']  := fVideoStretch;
-    nVideo.Attributes['Startup']  := fVideoStartup;
-    nVideo.Attributes['Volume']   := fVideoVolume;
+    nVideo.Attributes['Enabled']  := Video.Enabled;
+    nVideo.Attributes['Stretch']  := Video.VideoStretch;
+    nVideo.Attributes['Startup']  := Video.PlayOnStartup;
+    nVideo.Attributes['Volume']   := Video.VideoVolume;
 
   // GameCommon
   nGameCommon := nGameSettings.AddOrFindChild('GameCommon');
@@ -765,12 +768,6 @@ end;
 procedure TKMGameSettings.SetReplaySavepointFrequency(aValue: Integer);
 begin
   fReplaySavepointFrequency := EnsureRange(aValue, REPLAY_SAVEPOINT_FREQUENCY_MIN, REPLAY_SAVEPOINT_FREQUENCY_MAX);
-end;
-
-
-procedure TKMGameSettings.SetVideoVolume(aValue: Single);
-begin
-  fVideoVolume := EnsureRange(aValue, 0, 1);
 end;
 
 

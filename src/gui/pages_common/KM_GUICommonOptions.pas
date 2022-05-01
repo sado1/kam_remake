@@ -581,11 +581,11 @@ begin
   CheckBox_ShuffleOn.Enabled    := not CheckBox_MusicOff.Checked;
   CheckBox_SnowHouses.Checked   := gGameSettings.GFX.AllowSnowHouses;
 
-  CheckBox_VideoEnable.Checked   := gGameSettings.VideoOn;
-  CheckBox_VideoStretch.Checked  := gGameSettings.VideoStretch;
-  CheckBox_VideoStretch.Enabled  := gGameSettings.VideoOn;
-  CheckBox_VideoStartup.Checked  := gGameSettings.VideoStartup;
-  CheckBox_VideoStartup.Enabled  := gGameSettings.VideoOn;
+  CheckBox_VideoEnable.Checked   := gGameSettings.Video.Enabled;
+  CheckBox_VideoStretch.Checked  := gGameSettings.Video.VideoStretch;
+  CheckBox_VideoStretch.Enabled  := gGameSettings.Video.Enabled;
+  CheckBox_VideoStartup.Checked  := gGameSettings.Video.PlayOnStartup;
+  CheckBox_VideoStartup.Enabled  := gGameSettings.Video.Enabled;
 
   // Only in Menu
   if IsMenu then
@@ -595,8 +595,8 @@ begin
     CheckBox_FullFonts.Checked     := gGameSettings.GFX.LoadFullFonts or not CheckBox_FullFonts.Enabled;
     CheckBox_ShadowQuality.Checked := gGameSettings.GFX.AlphaShadows;
 
-    Button_VideoTest.Enabled       := gGameSettings.VideoOn;
-    TrackBar_VideoVolume.Position  := Round(gGameSettings.VideoVolume * TrackBar_VideoVolume.MaxValue);
+    Button_VideoTest.Enabled       := gGameSettings.Video.Enabled;
+    TrackBar_VideoVolume.Position  := Round(gGameSettings.Video.VideoVolume * TrackBar_VideoVolume.MaxValue);
     //Disable Video volume util we will fix it
     //Video volume is set via windows mixer now, and it affect all other game sounds/music after the end of video playback
     TrackBar_VideoVolume.Enabled     := False; //gGameSettings.VideoOn;
@@ -665,12 +665,12 @@ begin
   gSoundPlayer.UpdateSoundVolume(gGameSettings.SFX.SoundFXVolume);
   gMusic.Volume := gGameSettings.SFX.MusicVolume;
 
-  gGameSettings.VideoOn            := CheckBox_VideoEnable.Checked;
-  gGameSettings.VideoStretch       := CheckBox_VideoStretch.Checked;
-  gGameSettings.VideoStartup       := CheckBox_VideoStartup.Checked;
+  gGameSettings.Video.Enabled         := CheckBox_VideoEnable.Checked;
+  gGameSettings.Video.VideoStretch    := CheckBox_VideoStretch.Checked;
+  gGameSettings.Video.PlayOnStartup   := CheckBox_VideoStartup.Checked;
 
   if IsMenu then
-    gGameSettings.VideoVolume      := TrackBar_VideoVolume.Position / TrackBar_VideoVolume.MaxValue;
+    gGameSettings.Video.VideoVolume      := TrackBar_VideoVolume.Position / TrackBar_VideoVolume.MaxValue;
 
   if Sender = CheckBox_VideoEnable then
   begin

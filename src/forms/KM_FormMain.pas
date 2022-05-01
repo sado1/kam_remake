@@ -500,7 +500,7 @@ begin
 
   Application.ProcessMessages;
 
-  if not fStartVideoPlayed and (gGameSettings <> nil) and gGameSettings.VideoStartup then
+  if not fStartVideoPlayed and (gGameSettings <> nil) and gGameSettings.Video.PlayOnStartup then
   begin
     gVideoPlayer.AddVideo(CAMPAIGNS_FOLDER_NAME + PathDelim + 'The Peasants Rebellion' + PathDelim + 'Logo', vfkStarting);
     gVideoPlayer.AddVideo('KaM', vfkStarting);

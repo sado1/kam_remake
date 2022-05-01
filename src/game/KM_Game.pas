@@ -1345,7 +1345,7 @@ begin
     Exit;
 
   if (aHandIndex = gMySpectator.HandID)
-    and not gGameSettings.VideoOn then // Don't play victory sound if videos are on
+  and not gGameSettings.Video.Enabled then // Don't play victory sound if videos are on
     gSoundPlayer.Play(sfxnVictory, 1, True); //Fade music
 
   if fParams.IsMultiplayerGame then
@@ -1378,7 +1378,7 @@ procedure TKMGame.PlayerDefeat(aPlayerIndex: TKMHandID; aShowDefeatMessage: Bool
 
   procedure PlayDefeatSound;
   begin
-    if not gGameSettings.VideoOn then // Don't play defeat sound if videos are on
+    if not gGameSettings.Video.Enabled then // Don't play defeat sound if videos are on
       gSoundPlayer.Play(sfxnDefeat, 1, True); //Fade music
   end;
 
