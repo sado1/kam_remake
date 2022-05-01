@@ -207,8 +207,10 @@ type
     function TileIsCoal(X, Y: Word): Byte; inline;
     function TileIsIron(X, Y: Word): Byte; inline;
     function TileIsGold(X, Y: Word): Byte; inline;
-    function TileIsCornField(const aLoc: TKMPoint): Boolean;
-    function TileIsWineField(const aLoc: TKMPoint): Boolean;
+    function TileIsCornField(const aLoc: TKMPoint): Boolean; overload; inline;
+    function TileIsCornField(const X, Y: Word): Boolean; overload; inline;
+    function TileIsWineField(const aLoc: TKMPoint): Boolean; overload; inline;
+    function TileIsWineField(const X, Y: Word): Boolean; overload; inline;
     function TileIsWalkableRoad(const aLoc: TKMPoint): Boolean;
     function TileIsLocked(const aLoc: TKMPoint): Boolean;
     function TileIsGoodToCutTree(const aLoc: TKMPoint): Boolean;
@@ -1583,32 +1585,58 @@ end;
 //Check if the tile is a corn field
 function TKMTerrain.TileIsCornField(const aLoc: TKMPoint): Boolean;
 begin
-  Result := False;
-  if not TileInMapCoords(aLoc.X,aLoc.Y) then
-    Exit;
+  if not TileInMapCoords(aLoc.X,aLoc.Y) then Exit(False);
+
   //Tile can't be used as a field if there is road or any other overlay
-  if not fMapEditor then
-    Result := fTileset[Land^[aLoc.Y, aLoc.X].BaseLayer.Terrain].Corn
-              and (Land^[aLoc.Y,aLoc.X].TileOverlay = toNone)
+  if fMapEditor then
+    Result := (gGame.MapEditor.LandMapEd^[aLoc.Y,aLoc.X].CornOrWine = 1) and (Land^[aLoc.Y,aLoc.X].TileOverlay = toNone)
   else
-    Result := (gGame.MapEditor.LandMapEd^[aLoc.Y,aLoc.X].CornOrWine = 1) and (Land^[aLoc.Y,aLoc.X].TileOverlay = toNone);
+    Result := fTileset[Land^[aLoc.Y, aLoc.X].BaseLayer.Terrain].Corn
+              and (Land^[aLoc.Y,aLoc.X].TileOverlay = toNone);
+end;
+
+
+function TKMTerrain.TileIsCornField(const X, Y: Word): Boolean;
+begin
+  if not TileInMapCoords(X, Y) then Exit(False);
+
+  //Tile can't be used as a field if there is road or any other overlay
+  if fMapEditor then
+    Result := (gGame.MapEditor.LandMapEd^[Y,X].CornOrWine = 1) and (Land^[Y,X].TileOverlay = toNone)
+  else
+    Result := fTileset[Land^[Y, X].BaseLayer.Terrain].Corn
+              and (Land^[Y,X].TileOverlay = toNone);
 end;
 
 
 //Check if the tile is a wine field
 function TKMTerrain.TileIsWineField(const aLoc: TKMPoint): Boolean;
 begin
-  Result := False;
-  if not TileInMapCoords(aLoc.X,aLoc.Y) then
-    Exit;
+  if not TileInMapCoords(aLoc.X,aLoc.Y) then Exit(False);
+
   //Tile can't be used as a winefield if there is road or any other overlay
   //It also must have right object on it
-  if not fMapEditor then
+  if fMapEditor then
+    Result := (gGame.MapEditor.LandMapEd^[aLoc.Y,aLoc.X].CornOrWine = 2) and (Land^[aLoc.Y,aLoc.X].TileOverlay = toNone)
+  else
     Result := fTileset[Land^[aLoc.Y, aLoc.X].BaseLayer.Terrain].Wine
               and (Land^[aLoc.Y,aLoc.X].TileOverlay = toNone)
-              and ObjectIsWine(aLoc)
+              and ObjectIsWine(aLoc);
+end;
+
+
+function TKMTerrain.TileIsWineField(const X, Y: Word): Boolean;
+begin
+  if not TileInMapCoords(X, Y) then Exit(False);
+
+  //Tile can't be used as a winefield if there is road or any other overlay
+  //It also must have right object on it
+  if fMapEditor then
+    Result := (gGame.MapEditor.LandMapEd^[Y,X].CornOrWine = 2) and (Land^[Y,X].TileOverlay = toNone)
   else
-    Result := (gGame.MapEditor.LandMapEd^[aLoc.Y,aLoc.X].CornOrWine = 2) and (Land^[aLoc.Y,aLoc.X].TileOverlay = toNone);
+    Result := fTileset[Land^[Y, X].BaseLayer.Terrain].Wine
+              and (Land^[Y,X].TileOverlay = toNone)
+              and ObjectIsWine(X, Y)
 end;
 
 
