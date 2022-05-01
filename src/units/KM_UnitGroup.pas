@@ -2205,12 +2205,12 @@ end;
 procedure TKMUnitGroup.PaintHighlighted(aTickLag: Single; aHandColor, aFlagColor: Cardinal; aDoImmediateRender: Boolean = False;
                                         aDoHighlight: Boolean = False; aHighlightColor: Cardinal = 0);
 
-  function GetFlagPositionF(const aV: TKMUnitVisualState): TKMPointF;
+  function GetFlagPositionF(const aUVS: TKMUnitVisualState): TKMPointF;
   begin
-    Result.X := aV.PosF.X + UNIT_OFF_X + aV.SlideX;
-    Result.Y := aV.PosF.Y + UNIT_OFF_Y + aV.SlideY;
+    Result.X := aUVS.PositionF.X + UNIT_OFF_X + aUVS.SlideX;
+    Result.Y := aUVS.PositionF.Y + UNIT_OFF_Y + aUVS.SlideY;
     //Flag needs to be rendered above or below unit depending on direction (see AddUnitFlag)
-    if IsFlagRenderBeforeUnit(aV.Dir) then
+    if IsFlagRenderBeforeUnit(aUVS.Dir) then
       Result.Y := Result.Y - FLAG_X_OFFSET
     else
       Result.Y := Result.Y + FLAG_X_OFFSET;

@@ -471,8 +471,8 @@ begin
   V := fVisual.GetLerp(aTickLag);
   act := V.Action;
 
-  xPaintPos := V.PosF.X + UNIT_OFF_X + V.SlideX;
-  yPaintPos := V.PosF.Y + UNIT_OFF_Y + V.SlideY;
+  xPaintPos := V.PositionF.X + UNIT_OFF_X + V.SlideX;
+  yPaintPos := V.PositionF.Y + UNIT_OFF_Y + V.SlideY;
 
   ID := UID * Byte(not (act in [uaDie, uaEat]));
 
@@ -824,8 +824,8 @@ begin
   V := fVisual.GetLerp(aTickLag);
   act := V.Action;
 
-  xPaintPos := V.PosF.X + UNIT_OFF_X + V.SlideX;
-  yPaintPos := V.PosF.Y + UNIT_OFF_Y + V.SlideY;
+  xPaintPos := V.PositionF.X + UNIT_OFF_X + V.SlideX;
+  yPaintPos := V.PositionF.Y + UNIT_OFF_Y + V.SlideY;
 
   ID := UID * Byte(not (act in [uaDie, uaEat]));
 
@@ -972,8 +972,8 @@ begin
   if fAction = nil then Exit;
   V := fVisual.GetLerp(aTickLag);
 
-  xPaintPos := V.PosF.X + UNIT_OFF_X + V.SlideX;
-  yPaintPos := V.PosF.Y + UNIT_OFF_Y + V.SlideY;
+  xPaintPos := V.PositionF.X + UNIT_OFF_X + V.SlideX;
+  yPaintPos := V.PositionF.Y + UNIT_OFF_Y + V.SlideY;
 
   ID := UID * Byte(not (V.Action in [uaDie, uaEat]));
 
@@ -1121,8 +1121,8 @@ begin
   else
     act := V.Action;
 
-  xPaintPos := V.PosF.X + UNIT_OFF_X + V.SlideX;
-  yPaintPos := V.PosF.Y + UNIT_OFF_Y + V.SlideY;
+  xPaintPos := V.PositionF.X + UNIT_OFF_X + V.SlideX;
+  yPaintPos := V.PositionF.Y + UNIT_OFF_Y + V.SlideY;
 
   //Make fish/watersnakes more visible in the MapEd
   if (gGameParams.Mode = gmMapEd) and (fType in [utFish, utWatersnake, utSeastar]) then

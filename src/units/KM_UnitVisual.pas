@@ -6,7 +6,8 @@ uses
 
 type
   TKMUnitVisualState = record
-    PosF: TKMPointF;
+  public
+    PositionF: TKMPointF; // Precise unit position
     Dir: TKMDirection;
     SlideX, SlideY: Single;
     Action: TKMUnitActionType;
@@ -47,7 +48,7 @@ var
   U: TKMUnit;
 begin
   U := TKMUnit(aUnit);
-  PosF := U.PositionF;
+  PositionF := U.PositionF;
   Dir := U.Direction;
   SlideX := U.GetSlide(axX);
   SlideY := U.GetSlide(axY);
@@ -105,7 +106,7 @@ begin
     prevSlideY := prevSlideY + gResHouses[fPrev.InHouseType].GetDoorwayOffset(axY);
   end;
 
-  Result.PosF := KMLerp(fCurr.PosF, fPrev.PosF, aLag);
+  Result.PositionF := KMLerp(fCurr.PositionF, fPrev.PositionF, aLag);
   Result.SlideX := KromUtils.Lerp(fCurr.SlideX, prevSlideX, aLag);
   Result.SlideY := KromUtils.Lerp(fCurr.SlideY, prevSlideY, aLag);
   //If there's no lag, use the current state
@@ -119,13 +120,13 @@ begin
   else
   begin
     //Are we moving?
-    if fCurr.PosF <> fPrev.PosF then
+    if fCurr.PositionF <> fPrev.PositionF then
     begin
       //Always interpolate the animation if the unit is moving
       Result.AnimFraction := 1.0 - aLag;
 
       //If we were still and just started moving
-      if fPrevPrev.PosF = fPrev.PosF then
+      if fPrevPrev.PositionF = fPrev.PositionF then
       begin
         //Since the unit starts moving without warning we need to backwards interpolate
         Result.Dir := fCurr.Dir;
