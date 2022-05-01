@@ -151,7 +151,7 @@ procedure TKMFogOfWar.RevealCircle(const Pos: TKMPoint; Radius, Amount: Word);
   var
     I, K: Word;
     I1, I2, K1, K2: Word;
-    sqrRadius: Integer;
+    sqrRadius, sqrI: Integer;
     revArray: PKMByte2Array;
   begin
     if aForRevelation then
@@ -169,23 +169,31 @@ procedure TKMFogOfWar.RevealCircle(const Pos: TKMPoint; Radius, Amount: Word);
     //Inline maths here to gain performance
     if aAmount >= FOG_OF_WAR_MAX then
     begin
-      for I := I1 to I2 do for K := K1 to K2 do
-        if (Sqr(Pos.X - K) + Sqr(Pos.Y - I)) <= sqrRadius then
-        begin
-          revArray^[I, K] := FOG_OF_WAR_MAX;
-          if aForRevelation then
-            fRevealedToMax[I, K] := True;
-        end;
+      for I := I1 to I2 do
+      begin
+        sqrI := Sqr(Pos.Y - I);
+        for K := K1 to K2 do
+          if (Sqr(Pos.X - K) + sqrI) <= sqrRadius then
+          begin
+            revArray^[I, K] := FOG_OF_WAR_MAX;
+            if aForRevelation then
+              fRevealedToMax[I, K] := True;
+          end;
+      end;
     end
     else
     begin
-      for I := I1 to I2 do for K := K1 to K2 do
-        if (Sqr(Pos.X - K) + Sqr(Pos.Y - I)) <= sqrRadius then
-        begin
-          revArray^[I, K] := Min(revArray^[I, K] + aAmount, FOG_OF_WAR_MAX);
-          if aForRevelation and (revArray^[I, K] = FOG_OF_WAR_MAX) then
-            fRevealedToMax[I, K] := True;
-        end;
+      for I := I1 to I2 do
+      begin
+        sqrI := Sqr(Pos.Y - I);
+        for K := K1 to K2 do
+          if (Sqr(Pos.X - K) + sqrI) <= sqrRadius then
+          begin
+            revArray^[I, K] := Min(revArray^[I, K] + aAmount, FOG_OF_WAR_MAX);
+            if aForRevelation and (revArray^[I, K] = FOG_OF_WAR_MAX) then
+              fRevealedToMax[I, K] := True;
+          end;
+      end;
     end;
   end;
 
