@@ -826,7 +826,7 @@ var
   dir: TKMDirection;
 begin
   P := gCursor.Cell;
-  if gCursor.Tag1 = 255 then
+  if gCursor.Tag1 = UNIT_REMOVE_TAG then
   begin
     entity := gMySpectator.HitTestCursor(True);
     // Delete unit by using precise HitTest result from gCursor (rather than Position)
