@@ -43,6 +43,7 @@ type
     property IsStarted: Boolean read GetIsStarted; // Is unit actually started exiting or going inside?
     property Direction: TKMGoInDirection read fDirection;
     function GetDoorwaySlide(aCheck: TKMCheckAxis): Single;
+    function GetDoorwaySlides: TKMPointF;
     function Execute: TKMActionResult; override;
     procedure Save(SaveStream: TKMemoryStream); override;
   end;
@@ -330,6 +331,18 @@ begin
     offset := gResHouses[fHouse.HouseType].GetDoorwayOffset(aCheck);
 
     Result := Mix(0, offset, fStep);
+  end;
+end;
+
+
+function TKMUnitActionGoInOut.GetDoorwaySlides: TKMPointF;
+begin
+  if (fHouse = nil) or not fInitiated then
+    Result := KMPointF(0, 0)
+  else
+  begin
+    Result.X := Mix(0, gResHouses[fHouse.HouseType].GetDoorwayOffset(axX), fStep);
+    Result.Y := Mix(0, gResHouses[fHouse.HouseType].GetDoorwayOffset(axY), fStep);
   end;
 end;
 

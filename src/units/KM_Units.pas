@@ -247,6 +247,7 @@ type
     procedure Walk(const aFrom, aTo: TKMPoint);
     function GetActivityText: UnicodeString; virtual;
     function GetSlide(aCheck: TKMCheckAxis): Single;
+    function GetSlides: TKMPointF;
     function PathfindingShouldAvoid: Boolean; virtual;
 
     function ObjToString(const aSeparator: String = '|'): String; override;
@@ -386,6 +387,16 @@ uses
   KM_GameTypes,
   KM_HandTypes,
   KM_CommonExceptions;
+
+
+//Pixel positions (waypoints) for sliding around other units. Uses a lookup to save on-the-fly calculations.
+//Follows a sort of a bell curve (normal distribution) shape for realistic acceleration/deceleration.
+//I tweaked it by hand to look similar to KaM.
+//1st row for straight, 2nd for diagonal sliding
+const
+  SLIDE_LOOKUP: array[1..2, 0..Round(CELL_SIZE_PX * 1.42)] of Byte = ( //1.42 instead of 1.41 because we want to round up just in case (it was causing a crash because Round(40*sqrt(2)) = 57 but Round(40*1.41) = 56)
+    (0,0,0,0,0,0,1,1,2,2,3,3,4,5,6,7,7,8,8,9,9,9,9,8,8,7,7,6,5,4,3,3,2,2,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
+    (0,0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,3,3,4,4,4,5,5,5,6,6,6,7,7,7,7,6,6,6,5,5,5,4,4,4,3,3,2,2,2,1,1,1,1,0,0,0,0,0,0,0,0,0));
 
 
 { TKMCivilUnit }
@@ -2218,32 +2229,25 @@ end;
 
 
 function TKMUnit.GetSlide(aCheck: TKMCheckAxis): Single;
-//Pixel positions (waypoints) for sliding around other units. Uses a lookup to save on-the-fly calculations.
-//Follows a sort of a bell curve (normal distribution) shape for realistic acceleration/deceleration.
-//I tweaked it by hand to look similar to KaM.
-//1st row for straight, 2nd for diagonal sliding
-const
-  SLIDE_LOOKUP: array[1..2, 0..Round(CELL_SIZE_PX * 1.42)] of Byte = ( //1.42 instead of 1.41 because we want to round up just in case (it was causing a crash because Round(40*sqrt(2)) = 57 but Round(40*1.41) = 56)
-    (0,0,0,0,0,0,1,1,2,2,3,3,4,5,6,7,7,8,8,9,9,9,9,8,8,7,7,6,5,4,3,3,2,2,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
-    (0,0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,3,3,4,4,4,5,5,5,6,6,6,7,7,7,7,6,6,6,5,5,5,4,4,4,3,3,2,2,2,1,1,1,1,0,0,0,0,0,0,0,0,0));
 var
   dY, dX, pixelPos, lookupDiagonal: ShortInt;
 begin
   Result := 0;
 
-  //When going into a house, units "slide" towards the door when it is not on center
+  // When going into a house, units "slide" towards the door when it is not on center
   if Action is TKMUnitActionGoInOut then
     Result := Result + TKMUnitActionGoInOut(Action).GetDoorwaySlide(aCheck);
 
-  if (not IsExchanging) or not (Action.ActName in [uanWalkTo, uanGoInOut]) then exit;
+  if not IsExchanging or not (Action.ActName in [uanWalkTo, uanGoInOut]) then Exit;
 
-  //Uses Y because a walk in the Y means a slide in the X
+  // Uses Y because a walk in the Y means a slide in the X
   dX := Sign(PositionNext.X - fPositionF.X);
   dY := Sign(PositionNext.Y - fPositionF.Y);
-  if (aCheck = axX) and (dY = 0) then Exit; //Unit is not shifted
+
+  if (aCheck = axX) and (dY = 0) then Exit; // Unit is not shifted
   if (aCheck = axY) and (dX = 0) then Exit;
 
-  lookupDiagonal := Abs(dX) + Abs(dY); //which gives us swith: 1-straight, 2-diagonal.
+  lookupDiagonal := Abs(dX) + Abs(dY); // Which gives us swith: 1-straight, 2-diagonal.
 
   case aCheck of
     axX:  begin
@@ -2254,6 +2258,43 @@ begin
             pixelPos := Round(Abs(fPositionF.X - PositionPrev.X) * CELL_SIZE_PX * Sqrt(lookupDiagonal)); //Diagonal movement *sqrt(2)
             Result := Result - (dX * SLIDE_LOOKUP[lookupDiagonal, pixelPos]) / CELL_SIZE_PX;
           end;
+  end;
+end;
+
+
+function TKMUnit.GetSlides: TKMPointF;
+var
+  dY, dX, pixelPos, lookupDiagonal: ShortInt;
+  tmp: Single;
+begin
+  // When going into a house, units "slide" towards the door when it is not on center
+  if Action is TKMUnitActionGoInOut then
+    Result := TKMUnitActionGoInOut(Action).GetDoorwaySlides
+  else
+    Result := KMPointF(0, 0);
+
+  if not IsExchanging or not (Action.ActName in [uanWalkTo, uanGoInOut]) then Exit;
+
+  // Uses Y because a walk in the Y means a slide in the X
+  dX := Sign(PositionNext.X - fPositionF.X);
+  dY := Sign(PositionNext.Y - fPositionF.Y);
+
+  if (dX = 0) and (dY = 0) then Exit; // Unit is not shifted
+
+  lookupDiagonal := Abs(dX) + Abs(dY); // Which gives us swith: 1-straight, 2-diagonal.
+
+  tmp := CELL_SIZE_PX * Sqrt(lookupDiagonal); // Diagonal movement *sqrt(2)
+
+  if dY <> 0 then
+  begin
+    pixelPos := Round(Abs(fPositionF.Y - PositionPrev.Y) * tmp);
+    Result.X := Result.X + (dY * SLIDE_LOOKUP[lookupDiagonal, pixelPos]) / CELL_SIZE_PX;
+  end;
+
+  if dX <> 0 then
+  begin
+    pixelPos := Round(Abs(fPositionF.X - PositionPrev.X) * tmp);
+    Result.Y := Result.Y - (dX * SLIDE_LOOKUP[lookupDiagonal, pixelPos]) / CELL_SIZE_PX;
   end;
 end;
 
@@ -2566,7 +2607,7 @@ begin
     fTask.Paint;
 
   if SHOW_POINTER_DOTS then
-    gRenderAux.UnitPointers(fPositionF.X + 0.5 + GetSlide(axX), fPositionF.Y + 1   + GetSlide(axY), PointerCount);
+    gRenderAux.UnitPointers(fPositionF.X + 0.5 + GetSlide(axX), fPositionF.Y + 1 + GetSlide(axY), PointerCount);
 
   if SHOW_TILE_UNIT then
     gRenderAux.CircleOnTerrain(fPositionF.X - 0.5 + GetSlide(axX), fPositionF.Y - 0.5 + GetSlide(axY), 0.35, GetRandomColorWSeed(UID));

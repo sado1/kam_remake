@@ -46,12 +46,14 @@ uses
 procedure TKMUnitVisualState.SetFromUnit(aUnit: TObject);
 var
   U: TKMUnit;
+  slide: TKMPointF;
 begin
   U := TKMUnit(aUnit);
   PositionF := U.PositionF;
   Dir := U.Direction;
-  SlideX := U.GetSlide(axX);
-  SlideY := U.GetSlide(axY);
+  slide := U.GetSlides;
+  SlideX := slide.X;
+  SlideY := slide.Y;
   AnimStep := U.AnimStep;
   AnimFraction := 0.0;
 
