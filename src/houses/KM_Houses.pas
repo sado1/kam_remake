@@ -258,7 +258,7 @@ type
     procedure UpdateDamage;
 
     function IsStone: Boolean;
-    function IsComplete: Boolean;
+    function IsComplete: Boolean; inline;
     function IsDamaged: Boolean;
     property IsDestroyed: Boolean read fIsDestroyed;
     property GetDamage: Word read fDamage;

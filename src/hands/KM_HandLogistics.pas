@@ -12,6 +12,7 @@ uses
   {$IFDEF USE_HASH}
   Generics.Collections, Generics.Defaults, System.Hash,
   {$ENDIF}
+  Math,
   KM_Units, KM_Houses, KM_ResHouses,
   KM_HandEntity, KM_HandTypes,
   KM_ResWares, KM_CommonClasses, KM_Defaults, KM_Points,
@@ -158,9 +159,9 @@ type
     constructor Create(aSerf: TKMUnitSerf); overload;
     constructor Create(aImportance: TKMDemandImportance; aSerf: TKMUnitSerf; oWT, dWT: TKMWareType; iO, iD: Integer; iQ: Integer = DELIVERY_NO_ID); overload;
 
-    function Cost: Single;
+    function Cost: Single; inline;
     procedure ResetValues;
-    function IsValid: Boolean;
+    function IsValid: Boolean; inline;
 
     procedure IncAddition(aValue: Single); inline;
   end;
@@ -234,7 +235,7 @@ type
     procedure Form_UpdateDemandNode(aWare: TKMWareType; aI: Integer);
     procedure Form_UpdateQueueNode(aI: Integer);
 
-    function CompareBids(A, B: TKMDeliveryBid): Boolean;
+    function CompareBids(A, B: TKMDeliveryBid): Boolean; inline;
 
     function GetSerfActualPos(aSerf: TKMUnit): TKMPoint;
     procedure CloseDelivery(aID: Integer);
@@ -343,9 +344,13 @@ type
   end;
 
 
+const
+  NOT_REACHABLE_DEST_VALUE = MaxSingle;
+
+
 implementation
 uses
-  Classes, SysUtils, Math, TypInfo,
+  Classes, SysUtils, TypInfo,
   KM_Terrain,
   KM_FormLogistics, KM_UnitTaskDelivery,
   KM_Main, KM_Game, KM_GameParams, KM_Hand, KM_HandsCollection, KM_HouseBarracks, KM_HouseStore,
@@ -360,7 +365,6 @@ const
   //Approx compensation to compare Bid cost calc with pathfinding and without it. Pathfinding is usually longer
   BID_CALC_PATHF_COMPENSATION = 0.9;
   LENGTH_INC = 32; //Increment array lengths by this value
-  NOT_REACHABLE_DEST_VALUE = MaxSingle;
   CACHE_CLEAN_FREQ = 100; //In update counts
   OFFER_DEMAND_CACHED_BID_TTL = 50; //In ticks. DeliveryUpdate is not made every tick
   SERF_OFFER_CACHED_BID_TTL = 30;   //In ticks. DeliveryUpdate is not made every tick
