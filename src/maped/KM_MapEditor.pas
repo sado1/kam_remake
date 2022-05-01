@@ -545,16 +545,16 @@ begin
   removeTxID := -1;
 
   try
-    // Delete unit/house by using precise HitTest result from gCursor (rather than Position)
-    if entity is TKMUnit then
-    begin
-      gHands.RemAnyUnit(TKMUnit(entity).Position);
-      if not aEraseAll then Exit;
-    end else
-    if entity is TKMHouse then
-    begin
-      gHands.RemAnyHouse(P);
-      if not aEraseAll then Exit;
+    case entity.EntityType of
+      etUnit: begin
+                // Delete unit by using precise HitTest result from gCursor (rather than Position)
+                gHands.RemAnyUnit(entity.Position);
+                if not aEraseAll then Exit;
+              end;
+      etHouse:begin
+                gHands.RemAnyHouse(P);
+                if not aEraseAll then Exit;
+              end;
     end;
 
     isCorn := gTerrain.TileIsCornField(P);
@@ -820,7 +820,7 @@ end;
 procedure TKMMapEditor.ProceedUnitsCursorMode;
 var
   P: TKMPoint;
-  obj: TObject;
+  entity: TKMHandEntity;
   formation: TKMFormation;
   GT: TKMGroupType;
   dir: TKMDirection;
@@ -828,9 +828,10 @@ begin
   P := gCursor.Cell;
   if gCursor.Tag1 = 255 then
   begin
-    obj := gMySpectator.HitTestCursor(True);
-    if obj is TKMUnit then
-      gHands.RemAnyUnit(TKMUnit(obj).Position);
+    entity := gMySpectator.HitTestCursor(True);
+    // Delete unit by using precise HitTest result from gCursor (rather than Position)
+    if entity.IsUnit then
+      gHands.RemAnyUnit(entity.Position);
   end
   else
   if gTerrain.CanPlaceUnit(P, TKMUnitType(gCursor.Tag1)) then
