@@ -626,7 +626,7 @@ var
   I: Integer;
 begin
   Result := nil;
-  if aUID = NO_ENTITY_UID then Exit;
+  if aUID = UID_NONE then Exit;
 
   for I := 0 to fCount - 1 do
   begin
@@ -641,7 +641,7 @@ var
   I: Integer;
 begin
   Result := nil;
-  if aUID = NO_ENTITY_UID then Exit;
+  if aUID = UID_NONE then Exit;
 
   for I := 0 to fCount - 1 do
   begin
@@ -661,7 +661,7 @@ var
   I: Integer;
 begin
   Result := nil;
-  if aUID = NO_ENTITY_UID then Exit;
+  if aUID = UID_NONE then Exit;
 
   for I := 0 to fCount - 1 do
   begin

@@ -614,7 +614,7 @@ type
 
 
 const
-  UID_NONE: Integer = -1; //Would be better to have it 0. But now it's -1 for backwards compatibility
+  UID_NONE: Integer = -1; // Would be better to have it 0. But now it's -1 for backwards compatibility
 
 
 {Units}

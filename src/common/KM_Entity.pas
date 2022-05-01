@@ -23,13 +23,11 @@ type
     function ObjToStringShort(const aSeparator: String = '|'): String; virtual;
   end;
 
-const
-  NO_ENTITY_UID = 0;
-
 
 implementation
 uses
-  SysUtils;
+  SysUtils,
+  KM_Defaults;
 
 
 { TKMEntity }
@@ -65,7 +63,7 @@ end;
 
 function TKMEntity.GetUID: Integer;
 begin
-  if Self = nil then Exit(NO_ENTITY_UID); // Exit with 0, if object is not set. Good UID is always > 0
+  if Self = nil then Exit(UID_NONE);
 
   Result := fUID;
 end;
