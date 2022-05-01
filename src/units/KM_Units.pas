@@ -2233,27 +2233,27 @@ begin
 
   //When going into a house, units "slide" towards the door when it is not on center
   if Action is TKMUnitActionGoInOut then
-    Result := Result+TKMUnitActionGoInOut(Action).GetDoorwaySlide(aCheck);
+    Result := Result + TKMUnitActionGoInOut(Action).GetDoorwaySlide(aCheck);
 
   if (not IsExchanging) or not (Action.ActName in [uanWalkTo, uanGoInOut]) then exit;
 
   //Uses Y because a walk in the Y means a slide in the X
-  dX := sign(PositionNext.X - fPositionF.X);
-  dY := sign(PositionNext.Y - fPositionF.Y);
-  if (aCheck = axX) and (dY = 0) then exit; //Unit is not shifted
-  if (aCheck = axY) and (dX = 0) then exit;
+  dX := Sign(PositionNext.X - fPositionF.X);
+  dY := Sign(PositionNext.Y - fPositionF.Y);
+  if (aCheck = axX) and (dY = 0) then Exit; //Unit is not shifted
+  if (aCheck = axY) and (dX = 0) then Exit;
 
-  lookupDiagonal := abs(dX) + abs(dY); //which gives us swith: 1-straight, 2-diagonal.
+  lookupDiagonal := Abs(dX) + Abs(dY); //which gives us swith: 1-straight, 2-diagonal.
 
-  if aCheck = axX then
-  begin
-    pixelPos := Round(abs(fPositionF.Y-PositionPrev.Y)*CELL_SIZE_PX*sqrt(lookupDiagonal)); //Diagonal movement *sqrt(2)
-    Result := Result+(dY*SLIDE_LOOKUP[lookupDiagonal,pixelPos])/CELL_SIZE_PX;
-  end;
-  if aCheck = axY then
-  begin
-    pixelPos := Round(abs(fPositionF.X-PositionPrev.X)*CELL_SIZE_PX*sqrt(lookupDiagonal)); //Diagonal movement *sqrt(2)
-    Result := Result-(dX*SLIDE_LOOKUP[lookupDiagonal,pixelPos])/CELL_SIZE_PX;
+  case aCheck of
+    axX:  begin
+            pixelPos := Round(Abs(fPositionF.Y - PositionPrev.Y) * CELL_SIZE_PX * Sqrt(lookupDiagonal)); //Diagonal movement *sqrt(2)
+            Result := Result + (dY * SLIDE_LOOKUP[lookupDiagonal, pixelPos]) / CELL_SIZE_PX;
+          end;
+    axY:  begin
+            pixelPos := Round(Abs(fPositionF.X - PositionPrev.X) * CELL_SIZE_PX * Sqrt(lookupDiagonal)); //Diagonal movement *sqrt(2)
+            Result := Result - (dX * SLIDE_LOOKUP[lookupDiagonal, pixelPos]) / CELL_SIZE_PX;
+          end;
   end;
 end;
 
