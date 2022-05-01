@@ -1988,7 +1988,7 @@ procedure TKMGamePlayInterface.SelectEntity(aEntity: TKMHandEntity);
 begin
   if Self = nil then Exit;
   if gHands = nil then Exit;
-
+  if aEntity = nil then Exit;
   if not aEntity.IsSelectable then Exit;
 
   fViewport.Position := aEntity.PosF;
@@ -2235,7 +2235,7 @@ begin
       mkHouse:  begin
                   // Find among houses for a spectator hand
                   H := gHands[gMySpectator.HandID].Houses.GetHouseByUID(msg.EntityUID);
-                  if H.IsSelectable then
+                  if (H <> nil) and H.IsSelectable then
                   begin
                     loc := H.Position;
                     gMySpectator.Highlight := H;
@@ -2246,7 +2246,7 @@ begin
       mkGroup:  begin
                   // Find among groups for a spectator hand
                   G := gHands[gMySpectator.HandID].UnitGroups.GetGroupByUID(msg.EntityUID);
-                  if G.IsSelectable then
+                  if (G <> nil) and G.IsSelectable then
                   begin
                     loc := G.Position;
                     SelectUnitGroup(G);

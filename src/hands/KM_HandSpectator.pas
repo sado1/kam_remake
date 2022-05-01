@@ -140,7 +140,7 @@ begin
   if UID <> UID_NONE then
   begin
     entity := gHands.GetObjectByUID(UID);
-    if entity.IsSelectable then
+    if (entity <> nil) and entity.IsSelectable then
       Result := entity
     else
       fLastSpecSelectedObjUID[fHandIndex] := UID_NONE;  // Last selected object is not valid anymore, so reset UID
