@@ -94,7 +94,7 @@ end;
 
 function TKMHousesCollection.AddToCollection(aHouseType: TKMHouseType; aPosX, aPosY: Integer; aOwner: TKMHandID; aHBS: TKMHouseBuildState): TKMHouse;
 var
-  uid: Cardinal;
+  uid: Integer;
 begin
   uid := gGame.GetNewUID;
 

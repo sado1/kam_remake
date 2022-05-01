@@ -94,7 +94,7 @@ end;
 function TKMUnitsCollection.AddUnit(aOwner: TKMHandID; aUnitType: TKMUnitType; const aLoc: TKMPointDir;
                                     aAutoPlace: Boolean = True; aRequiredWalkConnect: Byte = 0; aInHouse: TKMHouse = nil): TKMUnit;
 var
-  ID: Cardinal;
+  uid: Integer;
   placeTo: TKMPoint;
   pointDir: TKMPointDir;
   U: TKMUnit;
@@ -126,16 +126,16 @@ begin
   end;
 
   pointDir := KMPointDir(placeTo, aLoc.Dir);
-  ID := gGame.GetNewUID;
+  uid := gGame.GetNewUID;
   case aUnitType of
-    utSerf:                       Result := TKMUnitSerf.Create(ID, aUnitType, pointDir, aOwner, aInHouse);
-    utBuilder:                    Result := TKMUnitWorker.Create(ID, aUnitType, pointDir, aOwner, aInHouse);
+    utSerf:                       Result := TKMUnitSerf.Create(uid, aUnitType, pointDir, aOwner, aInHouse);
+    utBuilder:                    Result := TKMUnitWorker.Create(uid, aUnitType, pointDir, aOwner, aInHouse);
     utWoodCutter..utFisher,
     {utWorker,}
-    utStonemason..utMetallurgist: Result := TKMUnitCitizen.Create(ID, aUnitType, pointDir, aOwner, aInHouse);
-    utRecruit:                    Result := TKMUnitRecruit.Create(ID, aUnitType, pointDir, aOwner, aInHouse);
-    WARRIOR_MIN..WARRIOR_MAX:     Result := TKMUnitWarrior.Create(ID, aUnitType, pointDir, aOwner, aInHouse);
-    ANIMAL_MIN..ANIMAL_MAX:       Result := TKMUnitAnimal.Create(ID, aUnitType, pointDir, aOwner); //Do not specify aAddInHouse, we want to call TKMUnitAnimal constructor
+    utStonemason..utMetallurgist: Result := TKMUnitCitizen.Create(uid, aUnitType, pointDir, aOwner, aInHouse);
+    utRecruit:                    Result := TKMUnitRecruit.Create(uid, aUnitType, pointDir, aOwner, aInHouse);
+    WARRIOR_MIN..WARRIOR_MAX:     Result := TKMUnitWarrior.Create(uid, aUnitType, pointDir, aOwner, aInHouse);
+    ANIMAL_MIN..ANIMAL_MAX:       Result := TKMUnitAnimal.Create(uid, aUnitType, pointDir, aOwner); //Do not specify aAddInHouse, we want to call TKMUnitAnimal constructor
     else                          raise ELocError.Create('Add ' + gRes.Units[aUnitType].GUIName, pointDir.Loc);
   end;
 

@@ -192,17 +192,17 @@ type
 
     function TrainUnit(aUnitType: TKMUnitType; aInHouse: TKMHouse): TKMUnit;
 
-    function GetNextHouseWSameType(aHouseType: TKMHouseType; aStartFromUID: Cardinal): TKMHouse; overload;
-    function GetNextHouseWSameType(aHouseType: TKMHouseType; aStartFromUID: Cardinal;
+    function GetNextHouseWSameType(aHouseType: TKMHouseType; aStartFromUID: Integer): TKMHouse; overload;
+    function GetNextHouseWSameType(aHouseType: TKMHouseType; aStartFromUID: Integer;
                                    out aHouseSketch: TKMHouseSketchEdit;
                                    aSketchTypesSet: TKMHouseSketchTypeSet = [hstHouse]): TKMHouse; overload;
-    function GetNextHouseWSameType(aHouseType: TKMHouseType; aStartFromUID: Cardinal;
+    function GetNextHouseWSameType(aHouseType: TKMHouseType; aStartFromUID: Integer;
                                    out aHouseSketch: TKMHouseSketchEdit;
                                    aSketchTypesSet: TKMHouseSketchTypeSet;
                                    aVerifySketch: TAnonHouseSketchBoolFn;
                                    aVerifySketchBoolParam: Boolean): TKMHouse; overload;
-    function GetNextUnitWSameType(aUnitType: TKMUnitType; aStartFromUID: Cardinal): TKMUnit;
-    function GetNextGroupWSameType(aUnitType: TKMUnitType; aStartFromUID: Cardinal): TKMUnitGroup;
+    function GetNextUnitWSameType(aUnitType: TKMUnitType; aStartFromUID: Integer): TKMUnit;
+    function GetNextGroupWSameType(aUnitType: TKMUnitType; aStartFromUID: Integer): TKMUnitGroup;
 
     function CanAddFieldPlan(const aLoc: TKMPoint; aFieldType: TKMFieldType): Boolean;
     function CanAddFakeFieldPlan(const aLoc: TKMPoint; aFieldType: TKMFieldType): Boolean;
@@ -693,13 +693,13 @@ begin
 end;
 
 
-function TKMHand.GetNextHouseWSameType(aHouseType: TKMHouseType; aStartFromUID: Cardinal): TKMHouse;
+function TKMHand.GetNextHouseWSameType(aHouseType: TKMHouseType; aStartFromUID: Integer): TKMHouse;
 begin
   Result := GetNextHouseWSameType(aHouseType, aStartFromUID, TKMHouseSketchEdit.DummyHouseSketch);
 end;
 
 
-function TKMHand.GetNextHouseWSameType(aHouseType: TKMHouseType; aStartFromUID: Cardinal;
+function TKMHand.GetNextHouseWSameType(aHouseType: TKMHouseType; aStartFromUID: Integer;
                                        out aHouseSketch: TKMHouseSketchEdit;
                                        aSketchTypesSet: TKMHouseSketchTypeSet = [hstHouse]): TKMHouse;
 begin
@@ -707,7 +707,7 @@ begin
 end;
 
 
-function TKMHand.GetNextHouseWSameType(aHouseType: TKMHouseType; aStartFromUID: Cardinal;
+function TKMHand.GetNextHouseWSameType(aHouseType: TKMHouseType; aStartFromUID: Integer;
                                        out aHouseSketch: TKMHouseSketchEdit;
                                        aSketchTypesSet: TKMHouseSketchTypeSet;
                                        aVerifySketch: TAnonHouseSketchBoolFn;
@@ -839,7 +839,7 @@ begin
 end;
 
 
-function TKMHand.GetNextUnitWSameType(aUnitType: TKMUnitType; aStartFromUID: Cardinal): TKMUnit;
+function TKMHand.GetNextUnitWSameType(aUnitType: TKMUnitType; aStartFromUID: Integer): TKMUnit;
 var
   I: Integer;
   U, firstU, lastU: TKMUnit;
@@ -885,7 +885,7 @@ begin
 end;
 
 
-function TKMHand.GetNextGroupWSameType(aUnitType: TKMUnitType; aStartFromUID: Cardinal): TKMUnitGroup;
+function TKMHand.GetNextGroupWSameType(aUnitType: TKMUnitType; aStartFromUID: Integer): TKMUnitGroup;
 var
   I: Integer;
   group, firstG, lastG: TKMUnitGroup;

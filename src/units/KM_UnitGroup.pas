@@ -99,8 +99,8 @@ type
     MapEdOrder: TKMMapEdOrder;
     OnGroupDied: TKMUnitGroupEvent;
 
-    constructor Create(aID: Cardinal; aCreator: TKMUnitWarrior); overload;
-    constructor Create(aID: Cardinal; aOwner: TKMHandID; aUnitType: TKMUnitType; PosX, PosY: Word; aDir: TKMDirection;
+    constructor Create(aUID: Integer; aCreator: TKMUnitWarrior); overload;
+    constructor Create(aUID: Integer; aOwner: TKMHandID; aUnitType: TKMUnitType; PosX, PosY: Word; aDir: TKMDirection;
                        aUnitPerRow, aCount: Word); overload;
     constructor Load(LoadStream: TKMemoryStream); override;
     procedure SyncLoad;
@@ -247,10 +247,10 @@ const
 
 
 { TKMUnitGroup }
-//Create a Group from a single warrior (short version)
-constructor TKMUnitGroup.Create(aID: Cardinal; aCreator: TKMUnitWarrior);
+// Create a Group from a single warrior (short version)
+constructor TKMUnitGroup.Create(aUID: Integer; aCreator: TKMUnitWarrior);
 begin
-  inherited Create(etGroup, aID, aCreator.Owner);
+  inherited Create(etGroup, aUID, aCreator.Owner);
 
   fGroupType := UNIT_TO_GROUP_TYPE[aCreator.UnitType];
   Assert(fGroupType in GROUP_TYPES_VALID, 'Can''t assign group type ' + GetEnumName(TypeInfo(TKMGroupType), Integer(fGroupType)));
@@ -266,8 +266,8 @@ begin
 end;
 
 
-//Create a Group from script (creates all the warriors as well)
-constructor TKMUnitGroup.Create(aID: Cardinal; aOwner: TKMHandID; aUnitType: TKMUnitType; PosX, PosY: Word;
+// Create a Group from script (creates all the warriors as well)
+constructor TKMUnitGroup.Create(aUID: Integer; aOwner: TKMHandID; aUnitType: TKMUnitType; PosX, PosY: Word;
                                 aDir: TKMDirection; aUnitPerRow, aCount: Word);
 var
   I: Integer;
@@ -277,7 +277,7 @@ var
   newCondition: Word;
   desiredArea: Byte;
 begin
-  inherited Create(etGroup, aID, aOwner);
+  inherited Create(etGroup, aUID, aOwner);
 
   fGroupType := UNIT_TO_GROUP_TYPE[aUnitType];
   Assert(fGroupType in GROUP_TYPES_VALID, 'Can''t assign group type ' + GetEnumName(TypeInfo(TKMGroupType), Integer(fGroupType)));

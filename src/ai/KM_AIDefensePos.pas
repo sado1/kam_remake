@@ -262,13 +262,10 @@ end;
 
 
 function TAIDefencePositions.CreateDefPosition(const aPos: TKMPointDir; aGroupType: TKMGroupType; aRadius: Integer; aDefenceType: TKMAIDefencePosType): TAIDefencePosition;
-var
-  uid: Integer;
 begin
-  uid := gGame.GetNewUID;
   Assert(aGroupType in GROUP_TYPES_VALID, 'Invalid group type: ' + GetEnumName(TypeInfo(TKMGroupType), Integer(aGroupType)));
 
-  Result := TAIDefencePosition.Create(uid, aPos, aGroupType, aRadius, aDefenceType);
+  Result := TAIDefencePosition.Create(gGame.GetNewUID, aPos, aGroupType, aRadius, aDefenceType);
 end;
 
 
