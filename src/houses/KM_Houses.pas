@@ -78,7 +78,6 @@ type
     function GetInstance: TKMHouse; override;
     function GetIsSelectable: Boolean; override;
     function GetPosF: TKMPointF; override;
-    procedure SetPosF(const aPositionF: TKMPointF); override;
   public
     constructor Create;
 
@@ -176,7 +175,6 @@ type
     function GetInstance: TKMHouse; override;
     function GetPosF: TKMPointF; override;
     function GetPositionF: TKMPointF; inline;
-    procedure SetPosF(const aPositionF: TKMPointF); override;
 
     function GetIsSelectable: Boolean; override;
 
@@ -214,8 +212,7 @@ type
     property BuildingRepair: Boolean read fBuildingRepair write SetBuildingRepair;
     property PlacedOverRoad: Boolean read fPlacedOverRoad write fPlacedOverRoad;
 
-    // Duplicate of HandEntity PosF property, but with much faster access to it
-    property PositionF: TKMPointF read GetPositionF write SetPosF;
+    property PositionF: TKMPointF read GetPositionF;
     property DeliveryMode: TKMDeliveryMode read fDeliveryMode;
     property NewDeliveryMode: TKMDeliveryMode read fNewDeliveryMode write SetNewDeliveryMode;
     procedure SetNextDeliveryMode;
@@ -485,13 +482,6 @@ function TKMHouseSketchEdit.GetPosF: TKMPointF;
 begin
   //Not used. Make compiler happy
   raise Exception.Create('Can''t get positionF of TKMHouseSketchEdit');
-end;
-
-
-procedure TKMHouseSketchEdit.SetPosF(const aPositionF: TKMPointF);
-begin
-  //Not used. Make compiler happy
-  raise Exception.Create('Can''t set positionF of TKMHouseSketchEdit');
 end;
 
 
@@ -1139,12 +1129,6 @@ end;
 function TKMHouse.GetInstance: TKMHouse;
 begin
   Result := Self;
-end;
-
-
-procedure TKMHouse.SetPosF(const aPositionF: TKMPointF);
-begin
-  raise Exception.Create('Can''t set PositionF for House');
 end;
 
 

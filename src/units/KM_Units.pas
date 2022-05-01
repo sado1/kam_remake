@@ -137,7 +137,7 @@ type
     function GetInstance: TKMUnit; override;
     function GetPosition: TKMPoint; override;
     function GetPosF: TKMPointF; override;
-    procedure SetPosF(const aPositionF: TKMPointF); override;
+    procedure SetPositionF(const aPositionF: TKMPointF);
     function GetIsSelectable: Boolean; override;
   public
     AnimStep: Integer;
@@ -168,7 +168,7 @@ type
     procedure CloseUnit(aRemoveTileUsage: Boolean = True); virtual;
 
     // Duplicate of HandEntity PosF property, but with much faster access to it
-    property PositionF: TKMPointF read fPositionF write SetPosF;
+    property PositionF: TKMPointF read fPositionF write SetPositionF;
     property PositionPrev: TKMPoint read fPositionPrev;
     property PositionNext: TKMPoint read fPositionNext write SetPositionNext;
     procedure SetUnitPosition(aPos: TKMPoint);
@@ -1630,7 +1630,7 @@ begin
 end;
 
 
-procedure TKMUnit.SetPosF(const aPositionF: TKMPointF);
+procedure TKMUnit.SetPositionF(const aPositionF: TKMPointF);
 begin
   fPositionF := aPositionF;
 end;

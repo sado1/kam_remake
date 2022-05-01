@@ -18,7 +18,6 @@ type
     function GetPosition: TKMPoint; virtual; abstract;
 
     function GetPosF: TKMPointF; virtual; abstract;
-    procedure SetPosF(const aPositionF: TKMPointF); virtual; abstract;
 
     procedure SetOwner(const aOwner: TKMHandID); virtual;
     function GetAllowAllyToSelect: Boolean; virtual;

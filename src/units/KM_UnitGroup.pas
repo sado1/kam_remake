@@ -90,7 +90,6 @@ type
     function GetInstance: TKMUnitGroup; override;
     function GetPosF: TKMPointF; override;
     function GetPositionF: TKMPointF; inline;
-    procedure SetPosF(const aPositionF: TKMPointF); override;
     procedure SetOwner(const aOwner: TKMHandID); override;
     function GetIsSelectable: Boolean; override;
   public
@@ -121,8 +120,7 @@ type
     function IsAttackingUnit: Boolean;
     function IsIdleToAI(aOrderWalkKindSet: TKMOrderWalkKindSet = []): Boolean;
 
-    // Duplicate of HandEntity PosF property, but with much faster access to it
-    property PositionF: TKMPointF read GetPositionF write SetPosF;
+    property PositionF: TKMPointF read GetPositionF;
 
     function IsPositioned(const aLoc: TKMPoint; Dir: TKMDirection): Boolean;
     function IsAllyTo(aUnit: TKMUnit): Boolean; overload;
@@ -1946,12 +1944,6 @@ end;
 function TKMUnitGroup.GetInstance: TKMUnitGroup;
 begin
   Result := Self;
-end;
-
-
-procedure TKMUnitGroup.SetPosF(const aPositionF: TKMPointF);
-begin
-  raise Exception.Create('Can''t set PositionF for UnitGroup');
 end;
 
 
