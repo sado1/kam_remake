@@ -1132,7 +1132,7 @@ begin
 end;
 
 
-function TKMHouse.GetPosF: TKMPointF;
+function TKMHouse.GetPositionForDisplay: TKMPointF;
 begin
   Result := Entrance.ToFloat;
 end;
