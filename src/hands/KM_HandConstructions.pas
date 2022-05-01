@@ -213,6 +213,7 @@ type
 implementation
 uses
   Math,
+  KM_Entity,
   KM_GameUIDTracker, KM_HandsCollection, KM_Resource;
 
 

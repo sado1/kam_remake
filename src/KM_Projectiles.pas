@@ -56,6 +56,7 @@ var
 implementation
 uses
   Math, KromUtils,
+  KM_Entity,
   KM_Terrain, KM_RenderAux,
   KM_Resource, KM_ResSound, KM_ResUnits,
   KM_Hand, KM_HandsCollection, KM_HandTypes, KM_HandEntity,

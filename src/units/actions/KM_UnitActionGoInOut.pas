@@ -50,6 +50,7 @@ type
 
 implementation
 uses
+  KM_Entity,
   KM_HandsCollection, KM_HandTypes, KM_HandEntity,
   KM_Resource, KM_Terrain, KM_UnitActionStay, KM_UnitActionWalkTo,
   KM_HouseBarracks, KM_ResHouses, KM_ResUnits, KM_CommonUtils, KM_GameParams,

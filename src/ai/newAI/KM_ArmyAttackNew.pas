@@ -126,6 +126,7 @@ var
 implementation
 uses
   Types, TypInfo,
+  KM_Entity,
   KM_Game, KM_GameParams,
   KM_HandsCollection, KM_HandTypes, KM_HandEntity,
   KM_Terrain, KM_AIFields,

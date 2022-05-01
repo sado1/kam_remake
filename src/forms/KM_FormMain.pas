@@ -373,7 +373,7 @@ type
     procedure SetExportGameStats(aEnabled: Boolean);
     procedure SetMySpecHandIndex(aHandID: TKMHandID);
     procedure ShowFolderPermissionError;
-    procedure SetEntitySelected(aEntityUID: Integer; aEntity2UID: Integer = 0);
+    procedure SetEntitySelected(aEntityUID: Integer; aEntity2UID: Integer);
     property OnControlsUpdated: TObjectIntegerEvent read fOnControlsUpdated write fOnControlsUpdated;
 
     procedure Defocus;
@@ -1266,19 +1266,19 @@ begin
 end;
 
 
-procedure TFormMain.SetEntitySelected(aEntityUID: Integer; aEntity2UID: Integer = 0);
+procedure TFormMain.SetEntitySelected(aEntityUID: Integer; aEntity2UID: Integer);
 begin
   if not AllowFindObjByUID then Exit;
 
   seEntityUID.SetValueWithoutChange(aEntityUID);
   seWarriorUID.SetValueWithoutChange(aEntity2UID);
-                                                                {TODO -oOwner -cGeneral : ActionItem}
+
   if GetKeyState(VK_MENU) < 0 then
     seFindObjByUID.Value := aEntityUID // will trigger OnChange
   else
   if GetKeyState(VK_SHIFT) < 0 then
   begin
-    if aEntity2UID = 0 then
+    if aEntity2UID = UID_NONE then
       aEntity2UID := aEntityUID;
     seFindObjByUID.Value := aEntity2UID; // will trigger OnChange
   end

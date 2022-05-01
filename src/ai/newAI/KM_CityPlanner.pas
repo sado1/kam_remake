@@ -221,6 +221,7 @@ const
 
 implementation
 uses
+  KM_Entity,
   KM_GameParams,
   KM_HouseCollection,
   KM_HandsCollection, KM_Hand, KM_HandTypes,

@@ -53,6 +53,7 @@ type
 implementation
 uses
   SysUtils, Types, Math,
+  KM_Entity,
   KM_Game, KM_GameParams, KM_GameUIDTracker, KM_Terrain,
   KM_HandTypes, KM_HandEntity,
   KM_HouseInn, KM_HouseMarket, KM_HouseBarracks, KM_HouseSchool, KM_HouseStore, KM_HouseArmorWorkshop, KM_HouseSwineStable,

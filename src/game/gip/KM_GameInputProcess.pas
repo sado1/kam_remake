@@ -473,6 +473,7 @@ type
 implementation
 uses
   Classes, SysUtils, StrUtils, TypInfo, Math,
+  KM_Entity,
   KM_GameApp, KM_Game, KM_GameParams, KM_GameSettings,
   KM_HandsCollection, KM_HandEntity,
   KM_HouseMarket, KM_HouseBarracks, KM_HouseSchool, KM_HouseTownHall, KM_HouseStore, KM_HouseArmorWorkshop,

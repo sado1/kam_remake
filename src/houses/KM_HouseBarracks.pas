@@ -58,6 +58,7 @@ type
 implementation
 uses
   Math, Types,
+  KM_Entity,
   KM_Hand,
   KM_HandsCollection,
   KM_HandTypes,

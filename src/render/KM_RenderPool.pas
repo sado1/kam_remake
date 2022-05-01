@@ -156,6 +156,7 @@ var
 
 implementation
 uses
+  KM_Entity,
   KM_RenderAux, KM_RenderGameAux, KM_HandsCollection, KM_Game, KM_GameSettings, KM_Sound, KM_Resource, KM_ResUnits,
   KM_ResMapElements, KM_AIFields, KM_TerrainPainter, KM_Cursor,
   KM_Hand, KM_UnitGroup, KM_CommonUtils,

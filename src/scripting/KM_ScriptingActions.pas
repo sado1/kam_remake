@@ -239,6 +239,7 @@ type
 implementation
 uses
   TypInfo,
+  KM_Entity,
   KM_AI, KM_AIDefensePos,
   KM_Game, KM_GameParams, KM_GameTypes, KM_FogOfWar,
   KM_HandsCollection, KM_HandLogistics, KM_HandConstructions, KM_HandEntity,

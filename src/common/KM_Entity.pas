@@ -10,7 +10,10 @@ type
   private
     fUID: Integer; //unique entity ID
   protected
-    function GetUID: Integer;
+    // Accessing field directly with a getter is a hair faster,
+    // but it is more cumbersome to have 2 getters and we don't need it anyway,
+    // since getting 65k UIDs (in XXL Terrain.Load) speeds up by only 0.05sec
+    function GetUID: Integer; inline;
     procedure SetUID(aUID: Integer);
   public
     constructor Create(aUID: Integer);

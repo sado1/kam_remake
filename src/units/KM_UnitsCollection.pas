@@ -48,6 +48,7 @@ type
 implementation
 uses
   SysUtils,
+  KM_Entity,
   KM_Game, KM_GameParams, KM_HandsCollection, KM_Log, KM_Resource, KM_ResUnits, KM_UnitWarrior,
   KM_UnitActionWalkTo, KM_GameUIDTracker,
   KM_DevPerfLog, KM_DevPerfLogTypes,

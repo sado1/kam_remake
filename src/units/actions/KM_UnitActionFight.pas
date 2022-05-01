@@ -38,6 +38,7 @@ type
 
 implementation
 uses
+  KM_Entity,
   KM_HandsCollection, KM_HandTypes, KM_HandEntity,
   KM_ResSound, KM_Sound, KM_UnitWarrior, KM_Resource, KM_Projectiles,
   KM_ResUnits, KM_Hand;

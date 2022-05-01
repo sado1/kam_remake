@@ -359,6 +359,7 @@ const
 implementation
 uses
   TypInfo,
+  KM_Entity,
   KM_Game, KM_GameParams, KM_RenderPool, KM_RenderAux, KM_ResTexts,
   KM_HandsCollection, KM_UnitWarrior, KM_Resource, KM_ResUnits,
   KM_Hand, KM_MapEdTypes,

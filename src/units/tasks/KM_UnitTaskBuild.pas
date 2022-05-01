@@ -129,6 +129,7 @@ type
 
 implementation
 uses
+  KM_Entity,
   KM_HandLogistics, KM_HandsCollection, KM_Resource, KM_ResMapElements,
   KM_Game,
   KM_Hand, KM_HandTypes, KM_HandEntity,

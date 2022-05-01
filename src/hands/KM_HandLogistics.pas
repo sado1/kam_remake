@@ -352,6 +352,7 @@ const
 implementation
 uses
   Classes, SysUtils, TypInfo,
+  KM_Entity,
   KM_Terrain,
   KM_FormLogistics, KM_UnitTaskDelivery,
   KM_Main, KM_Game, KM_GameParams, KM_Hand, KM_HandsCollection, KM_HouseBarracks, KM_HouseStore,

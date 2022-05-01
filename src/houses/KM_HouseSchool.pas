@@ -49,6 +49,7 @@ type
 
 implementation
 uses
+  KM_Entity,
   KM_Units,
   KM_HandsCollection, KM_Hand, KM_HandTypes, KM_HandEntity;
 

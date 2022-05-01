@@ -23,6 +23,7 @@ type
 
 implementation
 uses
+  KM_Entity,
   KM_HandsCollection, KM_Game;
 
 

@@ -316,6 +316,7 @@ var
 
 implementation
 uses
+  KM_Entity,
   KM_Log,
   KM_HandsCollection, KM_Hand, KM_HandTypes, KM_HandEntity,
   KM_TerrainUtils, KM_TerrainWalkConnect,

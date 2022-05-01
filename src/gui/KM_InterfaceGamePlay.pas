@@ -389,6 +389,7 @@ type
 implementation
 uses
   KM_Main, KM_System,
+  KM_Entity,
   KM_GameInputProcess, KM_GameInputProcess_Multi, KM_AI, KM_RenderUI, KM_Cursor, KM_Maps,
   KM_HandsCollection, KM_Hand,
   KM_RenderPool, KM_ResTexts, KM_Game, KM_GameApp, KM_HouseBarracks, KM_HouseTownHall,

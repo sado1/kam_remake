@@ -42,7 +42,10 @@ type
 
 implementation
 uses
-  KM_GameParams, KM_HandsCollection, KM_DevPerfLog, KM_DevPerfLogTypes;
+  KM_Entity,
+  KM_GameParams, KM_HandsCollection,
+  KM_DevPerfLog, KM_DevPerfLogTypes,
+  KM_Defaults;
 
 
 { TKMScriptingIdCache }

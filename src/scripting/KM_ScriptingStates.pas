@@ -275,6 +275,7 @@ type
 implementation
 uses
   TypInfo,
+  KM_Entity,
   KM_AI, KM_ArmyDefence, KM_AIDefensePos,
   KM_Game, KM_GameApp, KM_GameParams,
   KM_UnitsCollection, KM_UnitWarrior, KM_UnitTaskSelfTrain,
