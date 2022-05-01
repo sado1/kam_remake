@@ -2343,7 +2343,7 @@ end;
 
 procedure TKMGamePlayInterface.Menu_Update;
 begin
-  if gGameSettings.MusicOff then
+  if gGameSettings.SFX.MusicOff then
     Label_Menu_Track.Caption := '-'
   else
     Label_Menu_Track.Caption := gMusic.GetTrackTitle;
@@ -2364,9 +2364,9 @@ begin
   end else
     Panel_Track.Top := PANEL_TRACK_TOP;
 
-  Label_Menu_Track.Enabled      := not gGameSettings.MusicOff;
-  Button_Menu_TrackUp.Enabled   := not gGameSettings.MusicOff;
-  Button_Menu_TrackDown.Enabled := not gGameSettings.MusicOff;
+  Label_Menu_Track.Enabled      := not gGameSettings.SFX.MusicOff;
+  Button_Menu_TrackUp.Enabled   := not gGameSettings.SFX.MusicOff;
+  Button_Menu_TrackDown.Enabled := not gGameSettings.SFX.MusicOff;
 end;
 
 

@@ -573,11 +573,11 @@ begin
   CheckBox_LerpAnims.Enabled    := CheckBox_LerpRender.Checked;
   CheckBox_LerpAnims.Checked    := gGameSettings.GFX.InterpolatedAnimations;
   TrackBar_ScrollSpeed.Position := Round(gGameSettings.ScrollSpeed / SCROLL_SPEED_MULTIPLIER);
-  TrackBar_SFX.Position         := Round(gGameSettings.SoundFXVolume * TrackBar_SFX.MaxValue);
-  TrackBar_Music.Position       := Round(gGameSettings.MusicVolume * TrackBar_Music.MaxValue);
-  CheckBox_MusicOff.Checked     := gGameSettings.MusicOff;
+  TrackBar_SFX.Position         := Round(gGameSettings.SFX.SoundFXVolume * TrackBar_SFX.MaxValue);
+  TrackBar_Music.Position       := Round(gGameSettings.SFX.MusicVolume * TrackBar_Music.MaxValue);
+  CheckBox_MusicOff.Checked     := gGameSettings.SFX.MusicOff;
   TrackBar_Music.Enabled        := not CheckBox_MusicOff.Checked;
-  CheckBox_ShuffleOn.Checked    := gGameSettings.ShuffleOn;
+  CheckBox_ShuffleOn.Checked    := gGameSettings.SFX.ShuffleOn;
   CheckBox_ShuffleOn.Enabled    := not CheckBox_MusicOff.Checked;
   CheckBox_SnowHouses.Checked   := gGameSettings.GFX.AllowSnowHouses;
 
@@ -643,8 +643,8 @@ var
   musicToggled, shuffleToggled: Boolean;
 begin
   // Change these options only if they changed state since last time
-  musicToggled := (gGameSettings.MusicOff <> CheckBox_MusicOff.Checked);
-  shuffleToggled := (gGameSettings.ShuffleOn <> CheckBox_ShuffleOn.Checked);
+  musicToggled := (gGameSettings.SFX.MusicOff <> CheckBox_MusicOff.Checked);
+  shuffleToggled := (gGameSettings.SFX.ShuffleOn <> CheckBox_ShuffleOn.Checked);
 
   gGameSettings.GFX.Brightness         := TrackBar_Brightness.Position;
   gGameSettings.GFX.InterpolatedRender := CheckBox_LerpRender.Checked;
@@ -653,17 +653,17 @@ begin
   CheckBox_LerpAnims.Enabled       := CheckBox_LerpRender.Checked;
 
   gGameSettings.ScrollSpeed        := TrackBar_ScrollSpeed.Position * SCROLL_SPEED_MULTIPLIER;
-  gGameSettings.SoundFXVolume      := TrackBar_SFX.Position / TrackBar_SFX.MaxValue;
-  gGameSettings.MusicVolume        := TrackBar_Music.Position / TrackBar_Music.MaxValue;
-  gGameSettings.MusicOff           := CheckBox_MusicOff.Checked;
-  gGameSettings.ShuffleOn          := CheckBox_ShuffleOn.Checked;
+  gGameSettings.SFX.SoundFXVolume      := TrackBar_SFX.Position / TrackBar_SFX.MaxValue;
+  gGameSettings.SFX.MusicVolume        := TrackBar_Music.Position / TrackBar_Music.MaxValue;
+  gGameSettings.SFX.MusicOff           := CheckBox_MusicOff.Checked;
+  gGameSettings.SFX.ShuffleOn          := CheckBox_ShuffleOn.Checked;
   gGameSettings.GFX.AllowSnowHouses    := CheckBox_SnowHouses.Checked;
 
   TrackBar_Music.Enabled      := not CheckBox_MusicOff.Checked;
   CheckBox_ShuffleOn.Enabled  := not CheckBox_MusicOff.Checked;
 
-  gSoundPlayer.UpdateSoundVolume(gGameSettings.SoundFXVolume);
-  gMusic.Volume := gGameSettings.MusicVolume;
+  gSoundPlayer.UpdateSoundVolume(gGameSettings.SFX.SoundFXVolume);
+  gMusic.Volume := gGameSettings.SFX.MusicVolume;
 
   gGameSettings.VideoOn            := CheckBox_VideoEnable.Checked;
   gGameSettings.VideoStretch       := CheckBox_VideoStretch.Checked;
@@ -741,13 +741,13 @@ begin
 
   if musicToggled then
   begin
-    gMusic.ToggleEnabled(not gGameSettings.MusicOff);
-    if not gGameSettings.MusicOff then
+    gMusic.ToggleEnabled(not gGameSettings.SFX.MusicOff);
+    if not gGameSettings.SFX.MusicOff then
       shuffleToggled := True; // Re-shuffle songs if music has been enabled
   end;
 
   if shuffleToggled then
-    gMusic.ToggleShuffle(gGameSettings.ShuffleOn);
+    gMusic.ToggleShuffle(gGameSettings.SFX.ShuffleOn);
 
   if Assigned(OnOptionsChange) then
     OnOptionsChange();

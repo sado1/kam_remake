@@ -27,6 +27,20 @@ type
   end;
 
 
+  TKMSettingsSFX = record
+  private
+    fMusicVolume: Single;
+    fSoundFXVolume: Single;
+    procedure SetMusicVolume(aValue: Single);
+    procedure SetSoundFXVolume(aValue: Single);
+  public
+    MusicOff: Boolean;
+    ShuffleOn: Boolean;
+    property MusicVolume: Single read fMusicVolume write SetMusicVolume;
+    property SoundFXVolume: Single read fSoundFXVolume write SetSoundFXVolume;
+  end;
+
+
   // Gameplay settings, those that affect the game
   // Everything gets written through setter to set fNeedsSave flag
   TKMGameSettings = class(TKMGameAppSettingsPart)
@@ -76,12 +90,6 @@ type
     //Replay
     fReplaySavepoint: Boolean;
     fReplaySavepointFrequency: Integer;
-
-    //SFX
-    fMusicOff: Boolean;
-    fShuffleOn: Boolean;
-    fMusicVolume: Single;
-    fSoundFXVolume: Single;
 
     //Video
     fVideoOn: Boolean;
@@ -142,10 +150,6 @@ type
     //Replay
     procedure SetReplaySavepointFrequency(aValue: Integer);
 
-    //SFX
-    procedure SetMusicVolume(aValue: Single);
-    procedure SetSoundFXVolume(aValue: Single);
-
     //Video
     procedure SetVideoVolume(aValue: Single);
 
@@ -161,6 +165,7 @@ type
     function GetAsyncGameResLoader: Boolean;
   public
     GFX: TKMSettingsGFX;
+    SFX: TKMSettingsSFX;
 
     constructor Create;
     destructor Destroy; override;
@@ -208,12 +213,6 @@ type
     property ReplayShowBeacons: Boolean read fReplayShowBeacons write fReplayShowBeacons;
     property ReplaySavepoint: Boolean read fReplaySavepoint write fReplaySavepoint;
     property ReplaySavepointFrequency: Integer read fReplaySavepointFrequency write SetReplaySavepointFrequency;
-
-    // SFX
-    property MusicOff: Boolean read fMusicOff write fMusicOff;
-    property ShuffleOn: Boolean read fShuffleOn write fShuffleOn;
-    property MusicVolume: Single read fMusicVolume write SetMusicVolume;
-    property SoundFXVolume: Single read fSoundFXVolume write SetSoundFXVolume;
 
     // Video
     property VideoOn: Boolean read fVideoOn write fVideoOn;
@@ -273,9 +272,23 @@ uses
   KM_TerrainTypes;
 
 
+{ TKMSettingsGFX }
 procedure TKMSettingsGFX.SetBrightness(aValue: Byte);
 begin
   fBrightness := EnsureRange(aValue, 0, 20);
+end;
+
+
+{ TKMSettingsSFX }
+procedure TKMSettingsSFX.SetSoundFXVolume(aValue: Single);
+begin
+  fSoundFXVolume := EnsureRange(aValue, 0, 1);
+end;
+
+
+procedure TKMSettingsSFX.SetMusicVolume(aValue: Single);
+begin
+  fMusicVolume := EnsureRange(aValue, 0, 1);
 end;
 
 
@@ -357,13 +370,13 @@ begin
 
   // SFX
   nSFX := nGameSettings.AddOrFindChild('SFX');
-    fSoundFXVolume  := nSFX.Attributes['Volume'].AsFloat(0.5);
+    SFX.SoundFXVolume  := nSFX.Attributes['Volume'].AsFloat(0.5);
 
   // Music
   nMusic := nGameSettings.AddOrFindChild('Music');
-    fMusicOff     := not nMusic.Attributes['Enabled'].AsBoolean(True); // Reversed value
-    fMusicVolume  := nMusic.Attributes['Volume'].AsFloat(0.5);
-    fShuffleOn    := nMusic.Attributes['Shuffle'].AsBoolean(False);
+    SFX.MusicOff     := not nMusic.Attributes['Enabled'].AsBoolean(True); // Reversed value
+    SFX.MusicVolume  := nMusic.Attributes['Volume'].AsFloat(0.5);
+    SFX.ShuffleOn    := nMusic.Attributes['Shuffle'].AsBoolean(False);
 
   // Video
   nVideo := nGameSettings.AddOrFindChild('Video');
@@ -558,13 +571,13 @@ begin
 
   // SFX
   nSFX := nGameSettings.AddOrFindChild('SFX');
-    nSFX.Attributes['Volume'] := fSoundFXVolume;
+    nSFX.Attributes['Volume'] := SFX.SoundFXVolume;
 
   // Music
   nMusic := nGameSettings.AddOrFindChild('Music');
-    nMusic.Attributes['Enabled']  := not fMusicOff; // Reversed value
-    nMusic.Attributes['Volume']   := fMusicVolume;
-    nMusic.Attributes['Shuffle']  := fShuffleOn;
+    nMusic.Attributes['Enabled']  := not SFX.MusicOff; // Reversed value
+    nMusic.Attributes['Volume']   := SFX.MusicVolume;
+    nMusic.Attributes['Shuffle']  := SFX.ShuffleOn;
 
   // Video
   nVideo := nGameSettings.AddOrFindChild('Video');
@@ -752,18 +765,6 @@ end;
 procedure TKMGameSettings.SetReplaySavepointFrequency(aValue: Integer);
 begin
   fReplaySavepointFrequency := EnsureRange(aValue, REPLAY_SAVEPOINT_FREQUENCY_MIN, REPLAY_SAVEPOINT_FREQUENCY_MAX);
-end;
-
-
-procedure TKMGameSettings.SetSoundFXVolume(aValue: Single);
-begin
-  fSoundFXVolume := EnsureRange(aValue, 0, 1);
-end;
-
-
-procedure TKMGameSettings.SetMusicVolume(aValue: Single);
-begin
-  fMusicVolume := EnsureRange(aValue, 0, 1);
 end;
 
 

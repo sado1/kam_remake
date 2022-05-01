@@ -210,8 +210,8 @@ begin
     //pauses here until the user clicks ok.
     MessageDlg(gResTexts[TX_GAME_ERROR_OLD_OPENGL] + EolW + EolW + gResTexts[TX_GAME_ERROR_OLD_OPENGL_2], mtWarning, [mbOk], 0);
 
-  gSoundPlayer  := TKMSoundPlayer.Create(gGameSettings.SoundFXVolume);
-  gMusic        := TKMMusicLib.Create(gGameSettings.MusicVolume);
+  gSoundPlayer  := TKMSoundPlayer.Create(gGameSettings.SFX.SoundFXVolume);
+  gMusic        := TKMMusicLib.Create(gGameSettings.SFX.MusicVolume);
   gSoundPlayer.OnRequestFade   := gMusic.Fade;
   gSoundPlayer.OnRequestUnfade := gMusic.Unfade;
 
@@ -222,10 +222,10 @@ begin
   InitMainMenu(aScreenX, aScreenY);
 
   // Start the Music playback as soon as loading is complete
-  if not NoMusic and not gGameSettings.MusicOff then
+  if not NoMusic and not gGameSettings.SFX.MusicOff then
     gMusic.PlayMenuTrack;
 
-  gMusic.ToggleShuffle(gGameSettings.ShuffleOn); //Determine track order
+  gMusic.ToggleShuffle(gGameSettings.SFX.ShuffleOn); //Determine track order
 
   fSaveWorkerThreadHolder := TKMWorkerThreadHolder.Create('SaveWorker');
   fAutoSaveWorkerThreadHolder := TKMWorkerThreadHolder.Create('AutoSaveWorker');
@@ -1370,7 +1370,7 @@ begin
   if fGlobalTickCount mod 10 = 0 then
   begin
     // Music
-    if not gGameSettings.MusicOff and gMusic.IsEnded then
+    if not gGameSettings.SFX.MusicOff and gMusic.IsEnded then
       gMusic.PlayNextTrack; //Feed new music track
 
     //StatusBar
