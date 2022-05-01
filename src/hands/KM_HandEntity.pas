@@ -14,8 +14,8 @@ type
     function GetOwner: TKMHandID; inline;
     function GetType: TKMHandEntityType;
   protected
-    function GetPositionF: TKMPointF; virtual; abstract;
-    procedure SetPositionF(const aPositionF: TKMPointF); virtual; abstract;
+    function GetPosF: TKMPointF; virtual; abstract;
+    procedure SetPosF(const aPositionF: TKMPointF); virtual; abstract;
     procedure SetOwner(const aOwner: TKMHandID); virtual;
     function GetAllowAllyToSelect: Boolean; virtual;
     procedure SetAllowAllyToSelect(aAllow: Boolean); virtual;
@@ -29,7 +29,7 @@ type
     property EntityType: TKMHandEntityType read GetType;
     property Owner: TKMHandID read GetOwner write SetOwner;
 
-    property PositionF: TKMPointF read GetPositionF write SetPositionF;
+    property PosF: TKMPointF read GetPosF write SetPosF;
 
     property AllowAllyToSelect: Boolean read GetAllowAllyToSelect write SetAllowAllyToSelect;
 
@@ -193,7 +193,7 @@ begin
             Format('%sOwner = %d%sPositionF = %s%sAllowAllyToSel = %s',
                    [aSeparator,
                     Owner, aSeparator,
-                    PositionF.ToString, aSeparator,
+                    PosF.ToString, aSeparator,
                     BoolToStr(AllowAllyToSelect, True)]);
 end;
 

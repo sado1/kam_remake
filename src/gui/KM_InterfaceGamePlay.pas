@@ -1991,7 +1991,7 @@ begin
 
   if not aEntity.IsSelectable then Exit;
 
-  fViewport.Position := aEntity.PositionF;
+  fViewport.Position := aEntity.PosF;
 
   if aEntity is TKMUnitWarrior then
     gMySpectator.Selected := aEntity.AsUnitWarrior.Group
@@ -2034,7 +2034,7 @@ begin
   lastSelectedEntity := gMySpectator.LastSpecSelectedEntity;
   if lastSelectedEntity <> nil then
     // Center screen on last selected object for chosen hand
-    fViewport.Position := lastSelectedEntity.PositionF
+    fViewport.Position := lastSelectedEntity.PosF
   else
   if not KMSamePoint(gHands[gMySpectator.HandID].CenterScreen, KMPOINT_ZERO) then
     fViewport.Position := gHands[gMySpectator.HandID].CenterScreen.ToFloat //By default set viewport position to hand CenterScreen

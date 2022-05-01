@@ -77,8 +77,8 @@ type
     fEditable: Boolean;
   protected
     function GetInstance: TKMHouse; override;
-    function GetPositionF: TKMPointF; override;
-    procedure SetPositionF(const aPositionF: TKMPointF); override;
+    function GetPosF: TKMPointF; override;
+    procedure SetPosF(const aPositionF: TKMPointF); override;
   public
     constructor Create;
 
@@ -174,8 +174,9 @@ type
     property ResDeliveryCnt[aIndex: Integer]: Word read GetResourceDeliveryCount write SetResourceDeliveryCount;
 
     function GetInstance: TKMHouse; override;
-    function GetPositionF: TKMPointF; override;
-    procedure SetPositionF(const aPositionF: TKMPointF); override;
+    function GetPosF: TKMPointF; override;
+    function GetPositionF: TKMPointF; inline;
+    procedure SetPosF(const aPositionF: TKMPointF); override;
 
     function IsSelectableImpl: Boolean; override;
 
@@ -213,6 +214,8 @@ type
     property BuildingRepair: Boolean read fBuildingRepair write SetBuildingRepair;
     property PlacedOverRoad: Boolean read fPlacedOverRoad write fPlacedOverRoad;
 
+    // Duplicate of HandEntity PosF property, but with much faster access to it
+    property PositionF: TKMPointF read GetPositionF write SetPosF;
     property DeliveryMode: TKMDeliveryMode read fDeliveryMode;
     property NewDeliveryMode: TKMDeliveryMode read fNewDeliveryMode write SetNewDeliveryMode;
     procedure SetNextDeliveryMode;
@@ -473,14 +476,14 @@ begin
 end;
 
 
-function TKMHouseSketchEdit.GetPositionF: TKMPointF;
+function TKMHouseSketchEdit.GetPosF: TKMPointF;
 begin
   //Not used. Make compiler happy
   raise Exception.Create('Can''t get positionF of TKMHouseSketchEdit');
 end;
 
 
-procedure TKMHouseSketchEdit.SetPositionF(const aPositionF: TKMPointF);
+procedure TKMHouseSketchEdit.SetPosF(const aPositionF: TKMPointF);
 begin
   //Not used. Make compiler happy
   raise Exception.Create('Can''t set positionF of TKMHouseSketchEdit');
@@ -1134,9 +1137,15 @@ begin
 end;
 
 
-procedure TKMHouse.SetPositionF(const aPositionF: TKMPointF);
+procedure TKMHouse.SetPosF(const aPositionF: TKMPointF);
 begin
   raise Exception.Create('Can''t set PositionF for House');
+end;
+
+
+function TKMHouse.GetPosF: TKMPointF;
+begin
+  Result := Entrance.ToFloat;
 end;
 
 
