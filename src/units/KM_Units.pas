@@ -135,7 +135,7 @@ type
     function GetInHouse: TKMHouse;
   protected
     function GetInstance: TKMUnit; override;
-    function GetPositionForDisplay: TKMPointF; override;
+    function GetPositionForDisplayF: TKMPointF; override;
     procedure SetPositionF(const aPositionF: TKMPointF);
     function GetIsSelectable: Boolean; override;
   public
@@ -1629,7 +1629,7 @@ begin
 end;
 
 
-function TKMUnit.GetPositionForDisplay: TKMPointF;
+function TKMUnit.GetPositionForDisplayF: TKMPointF;
 begin
   Result := fPositionF;
 end;

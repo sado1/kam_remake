@@ -77,7 +77,7 @@ type
   protected
     function GetInstance: TKMHouse; override;
     function GetIsSelectable: Boolean; override;
-    function GetPositionForDisplay: TKMPointF; override;
+    function GetPositionForDisplayF: TKMPointF; override;
   public
     constructor Create;
 
@@ -173,7 +173,7 @@ type
     property ResDeliveryCnt[aIndex: Integer]: Word read GetResourceDeliveryCount write SetResourceDeliveryCount;
 
     function GetInstance: TKMHouse; override;
-    function GetPositionForDisplay: TKMPointF; override;
+    function GetPositionForDisplayF: TKMPointF; override;
     function GetPositionF: TKMPointF; inline;
 
     function GetIsSelectable: Boolean; override;
@@ -472,7 +472,7 @@ begin
 end;
 
 
-function TKMHouseSketchEdit.GetPositionForDisplay: TKMPointF;
+function TKMHouseSketchEdit.GetPositionForDisplayF: TKMPointF;
 begin
   Assert(False, 'Should not get positionF of TKMHouseSketchEdit');
   //Not used. Make compiler happy
@@ -1127,7 +1127,7 @@ begin
 end;
 
 
-function TKMHouse.GetPositionForDisplay: TKMPointF;
+function TKMHouse.GetPositionForDisplayF: TKMPointF;
 begin
   Result := Entrance.ToFloat;
 end;

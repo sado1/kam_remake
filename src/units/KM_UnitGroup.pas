@@ -88,7 +88,7 @@ type
   protected
     function GetPosition: TKMPoint; inline;
     function GetInstance: TKMUnitGroup; override;
-    function GetPositionForDisplay: TKMPointF; override;
+    function GetPositionForDisplayF: TKMPointF; override;
     function GetPositionF: TKMPointF; inline;
     procedure SetOwner(const aOwner: TKMHandID); override;
     function GetIsSelectable: Boolean; override;
@@ -1948,7 +1948,7 @@ begin
 end;
 
 
-function TKMUnitGroup.GetPositionForDisplay: TKMPointF;
+function TKMUnitGroup.GetPositionForDisplayF: TKMPointF;
 begin
   Result := FlagBearer.PositionF;
 end;
