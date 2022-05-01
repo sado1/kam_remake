@@ -1496,7 +1496,7 @@ begin
 end;
 
 
-function TKMNetworking.CalculateGameCRC:Cardinal;
+function TKMNetworking.CalculateGameCRC: Cardinal;
 begin
   //CRC checks are done on the data we already loaded, not the files on HDD which can change.
   Result := gRes.GetDATCRC;
