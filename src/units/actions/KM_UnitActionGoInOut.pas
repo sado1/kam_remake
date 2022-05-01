@@ -96,8 +96,8 @@ procedure TKMUnitActionGoInOut.SyncLoad;
 begin
   inherited;
 
-  fHouse := gHands.GetHouseByUID(cardinal(fHouse));
-  fPushedUnit := gHands.GetUnitByUID(cardinal(fPushedUnit));
+  fHouse := gHands.GetHouseByUID(Integer(fHouse));
+  fPushedUnit := gHands.GetUnitByUID(Integer(fPushedUnit));
 end;
 
 
