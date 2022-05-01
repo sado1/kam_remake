@@ -155,8 +155,8 @@ type
     function DecOreDeposit(const aLoc: TKMPoint; aWare: TKMWareType): Boolean;
 
     function GetPassablePointWithinSegment(aOriginPoint, aTargetPoint: TKMPoint; aPass: TKMTerrainPassability; aMaxDistance: Integer = -1): TKMPoint;
-    function CheckPassability(X, Y: Integer; aPass: TKMTerrainPassability): Boolean; overload;
-    function CheckPassability(const aLoc: TKMPoint; aPass: TKMTerrainPassability): Boolean; overload;
+    function CheckPassability(X, Y: Integer; aPass: TKMTerrainPassability): Boolean; overload; inline;
+    function CheckPassability(const aLoc: TKMPoint; aPass: TKMTerrainPassability): Boolean; overload; inline;
     function HasUnit(const aLoc: TKMPoint): Boolean;
     function HasVertexUnit(const aLoc: TKMPoint): Boolean;
     function GetRoadConnectID(const aLoc: TKMPoint): Byte;
@@ -3928,14 +3928,12 @@ function TKMTerrain.RouteCanBeMade(const aLocA, aLocB: TKMPoint; aPass: TKMTerra
 var
   WC: TKMWalkConnect;
 begin
-  Result := False;
-
   case aPass of
     tpWalk:      WC := wcWalk;
     tpWalkRoad:  WC := wcRoad;
     tpFish:      WC := wcFish;
     tpWorker:    WC := wcWork;
-    else Exit;
+    else Exit(False);
   end;
 
   Result :=     CheckPassability(aLocA, aPass)
