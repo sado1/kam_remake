@@ -480,8 +480,9 @@ end;
 
 function TKMHouseSketchEdit.GetPositionForDisplay: TKMPointF;
 begin
+  Assert(False, 'Should not get positionF of TKMHouseSketchEdit');
   //Not used. Make compiler happy
-  raise Exception.Create('Can''t get positionF of TKMHouseSketchEdit');
+  Result := Entrance.ToFloat;
 end;
 
 
