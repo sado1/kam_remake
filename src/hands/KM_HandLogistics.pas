@@ -1242,9 +1242,6 @@ begin
     end;
   end;
 
-  //If Demand and Offer aren't deleted
-//  Result := Result and (aIgnoreOffer or not offer.IsDeleted);
-
   //Do not allow delivery from 1 house to same house (f.e. store)
   Result := Result and (demand.Loc_House <> offer.Loc_House);
 
