@@ -568,10 +568,10 @@ procedure TKMGUICommonOptions.Refresh;
 begin
   Init;
 
-  TrackBar_Brightness.Position  := gGameSettings.Brightness;
-  CheckBox_LerpRender.Checked   := gGameSettings.InterpolatedRender;
+  TrackBar_Brightness.Position  := gGameSettings.GFX.Brightness;
+  CheckBox_LerpRender.Checked   := gGameSettings.GFX.InterpolatedRender;
   CheckBox_LerpAnims.Enabled    := CheckBox_LerpRender.Checked;
-  CheckBox_LerpAnims.Checked    := gGameSettings.InterpolatedAnimations;
+  CheckBox_LerpAnims.Checked    := gGameSettings.GFX.InterpolatedAnimations;
   TrackBar_ScrollSpeed.Position := Round(gGameSettings.ScrollSpeed / SCROLL_SPEED_MULTIPLIER);
   TrackBar_SFX.Position         := Round(gGameSettings.SoundFXVolume * TrackBar_SFX.MaxValue);
   TrackBar_Music.Position       := Round(gGameSettings.MusicVolume * TrackBar_Music.MaxValue);
@@ -579,7 +579,7 @@ begin
   TrackBar_Music.Enabled        := not CheckBox_MusicOff.Checked;
   CheckBox_ShuffleOn.Checked    := gGameSettings.ShuffleOn;
   CheckBox_ShuffleOn.Enabled    := not CheckBox_MusicOff.Checked;
-  CheckBox_SnowHouses.Checked   := gGameSettings.AllowSnowHouses;
+  CheckBox_SnowHouses.Checked   := gGameSettings.GFX.AllowSnowHouses;
 
   CheckBox_VideoEnable.Checked   := gGameSettings.VideoOn;
   CheckBox_VideoStretch.Checked  := gGameSettings.VideoStretch;
@@ -592,8 +592,8 @@ begin
   begin
     CheckBox_VSync.Checked         := gMainSettings.VSync;
     CheckBox_FullFonts.Enabled     := not gResLocales.LocaleByCode(gGameSettings.Locale).NeedsFullFonts;
-    CheckBox_FullFonts.Checked     := gGameSettings.LoadFullFonts or not CheckBox_FullFonts.Enabled;
-    CheckBox_ShadowQuality.Checked := gGameSettings.AlphaShadows;
+    CheckBox_FullFonts.Checked     := gGameSettings.GFX.LoadFullFonts or not CheckBox_FullFonts.Enabled;
+    CheckBox_ShadowQuality.Checked := gGameSettings.GFX.AlphaShadows;
 
     Button_VideoTest.Enabled       := gGameSettings.VideoOn;
     TrackBar_VideoVolume.Position  := Round(gGameSettings.VideoVolume * TrackBar_VideoVolume.MaxValue);
@@ -646,9 +646,9 @@ begin
   musicToggled := (gGameSettings.MusicOff <> CheckBox_MusicOff.Checked);
   shuffleToggled := (gGameSettings.ShuffleOn <> CheckBox_ShuffleOn.Checked);
 
-  gGameSettings.Brightness         := TrackBar_Brightness.Position;
-  gGameSettings.InterpolatedRender := CheckBox_LerpRender.Checked;
-  gGameSettings.InterpolatedAnimations := CheckBox_LerpAnims.Checked;
+  gGameSettings.GFX.Brightness         := TrackBar_Brightness.Position;
+  gGameSettings.GFX.InterpolatedRender := CheckBox_LerpRender.Checked;
+  gGameSettings.GFX.InterpolatedAnimations := CheckBox_LerpAnims.Checked;
 
   CheckBox_LerpAnims.Enabled       := CheckBox_LerpRender.Checked;
 
@@ -657,7 +657,7 @@ begin
   gGameSettings.MusicVolume        := TrackBar_Music.Position / TrackBar_Music.MaxValue;
   gGameSettings.MusicOff           := CheckBox_MusicOff.Checked;
   gGameSettings.ShuffleOn          := CheckBox_ShuffleOn.Checked;
-  gGameSettings.AllowSnowHouses    := CheckBox_SnowHouses.Checked;
+  gGameSettings.GFX.AllowSnowHouses    := CheckBox_SnowHouses.Checked;
 
   TrackBar_Music.Enabled      := not CheckBox_MusicOff.Checked;
   CheckBox_ShuffleOn.Enabled  := not CheckBox_MusicOff.Checked;
@@ -690,14 +690,14 @@ begin
   if IsMenu then
   begin
     gMainSettings.VSync        := CheckBox_VSync.Checked;
-    gGameSettings.AlphaShadows := CheckBox_ShadowQuality.Checked;
+    gGameSettings.GFX.AlphaShadows := CheckBox_ShadowQuality.Checked;
 
     // Menu options
     SetupVSync(gMainSettings.VSync);
 
     if Sender = CheckBox_FullFonts then
     begin
-      gGameSettings.LoadFullFonts := CheckBox_FullFonts.Checked;
+      gGameSettings.GFX.LoadFullFonts := CheckBox_FullFonts.Checked;
       if CheckBox_FullFonts.Checked and (gRes.Fonts.LoadLevel <> fllFull) then
       begin
         // When enabling full fonts, use ToggleLocale reload the entire interface
@@ -896,7 +896,7 @@ begin
   if IsMenu then
   begin
     fResolutions := gMain.Resolutions;
-    fLastAlphaShadows := gGameSettings.AlphaShadows;
+    fLastAlphaShadows := gGameSettings.GFX.AlphaShadows;
   end;
 end;
 
@@ -931,7 +931,7 @@ begin
   // Return to MainMenu and restore resolution changes
   gGameAppSettings.SaveSettings;
 
-  if IsMenu and (fLastAlphaShadows <> gGameSettings.AlphaShadows)
+  if IsMenu and (fLastAlphaShadows <> gGameSettings.GFX.AlphaShadows)
     and Assigned(OnPreloadGameResources) then
     OnPreloadGameResources;  //Update loaded game resources, if we changed alpha shadow setting
 

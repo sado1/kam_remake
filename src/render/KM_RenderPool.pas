@@ -795,7 +795,7 @@ begin
   if (aWoodStep = 1) and (aStoneStep = 1) then
   begin
     // Snow only happens on fully built houses
-    if gGameSettings.AllowSnowHouses
+    if gGameSettings.GFX.AllowSnowHouses
       and (aSnowStep > 0)
       and (picSnow <> 0) then
     begin

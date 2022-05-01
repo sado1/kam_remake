@@ -1668,8 +1668,8 @@ begin
   gPerfLogs.SectionEnter(psFrameFullC);
   {$ENDIF}
   try
-    //How far in the past should we render? (0.0=Current tick, 1.0=Previous tick)
-    if gGameSettings.InterpolatedRender then
+    // How far in the past should we render? (0.0=Current tick, 1.0=Previous tick)
+    if gGameSettings.GFX.InterpolatedRender then
     begin
       tickLag := TimeSince(fLastUpdateState) / gMain.GameTickInterval;
       tickLag := 1.0 - tickLag;

@@ -13,11 +13,25 @@ uses
 
 
 type
-  //Gameplay settings, those that affect the game
-  //Everything gets written through setter to set fNeedsSave flag
+  TKMSettingsGFX = record
+  private
+    fBrightness: Byte;
+    procedure SetBrightness(aValue: Byte);
+  public
+    AlphaShadows: Boolean;
+    LoadFullFonts: Boolean;
+    InterpolatedRender: Boolean;
+    InterpolatedAnimations: Boolean;
+    AllowSnowHouses: Boolean;
+    property Brightness: Byte read fBrightness write SetBrightness;
+  end;
+
+
+  // Gameplay settings, those that affect the game
+  // Everything gets written through setter to set fNeedsSave flag
   TKMGameSettings = class(TKMGameAppSettingsPart)
   private
-    //GFX
+    // GFX
     fBrightness: Byte;
     fAlphaShadows: Boolean;
     fLoadFullFonts: Boolean;
@@ -121,9 +135,6 @@ type
 
     fFavouriteMaps: TKMMapsCRCList;
 
-    //GFX
-    procedure SetBrightness(aValue: Byte);
-
     //Game
     procedure SetAutosaveFrequency(aValue: Integer);
     procedure SetAutosaveCount(aValue: Integer);
@@ -153,23 +164,18 @@ type
     procedure SetSpeedPace(const aValue: Word);
     function GetFavouriteMaps: TKMMapsCRCList;
     function GetAsyncGameResLoader: Boolean;
-
   public
+    GFX: TKMSettingsGFX;
+
     constructor Create;
     destructor Destroy; override;
 
     procedure LoadFromXML; override;
     procedure SaveToXML; override;
 
-    //GFX
-    property Brightness: Byte read fBrightness write SetBrightness;
-    property AlphaShadows: Boolean read fAlphaShadows write fAlphaShadows;
-    property LoadFullFonts: Boolean read fLoadFullFonts write fLoadFullFonts;
-
-    //Game
+    // Game
     property Autosave: Boolean read fAutosave write fAutosave;
     property AutosaveAtGameEnd: Boolean read fAutosaveAtGameEnd write fAutosaveAtGameEnd;
-
     property AutosaveFrequency: Integer read fAutosaveFrequency write SetAutosaveFrequency;
     property AutosaveCount: Integer read fAutosaveCount write SetAutosaveCount;
     property SpecShowBeacons: Boolean read fSpecShowBeacons write fSpecShowBeacons;
@@ -199,33 +205,28 @@ type
     property DayGamesCount: Integer read fDayGamesCount write fDayGamesCount;
     property LastDayGamePlayed: TDateTime read fLastDayGamePlayed write fLastDayGamePlayed;
 
-    //GameTweaks
-    property AllowSnowHouses: Boolean read fGameTweaks_AllowSnowHouses write fGameTweaks_AllowSnowHouses;
-    property InterpolatedRender: Boolean read fGameTweaks_InterpolatedRender write fGameTweaks_InterpolatedRender;
-    property InterpolatedAnimations: Boolean read fGameTweaks_InterpolatedAnimations write fGameTweaks_InterpolatedAnimations;
-
-    //Campaign
+    // Campaign
     property CampaignLastDifficulty: TKMMissionDifficulty read fCampaignLastDifficulty write fCampaignLastDifficulty;
 
-    //Replay
+    // Replay
     property ReplayAutopause: Boolean read fReplayAutopause write fReplayAutopause;
     property ReplayShowBeacons: Boolean read fReplayShowBeacons write fReplayShowBeacons;
     property ReplaySavepoint: Boolean read fReplaySavepoint write fReplaySavepoint;
     property ReplaySavepointFrequency: Integer read fReplaySavepointFrequency write SetReplaySavepointFrequency;
 
-    //SFX
+    // SFX
     property MusicOff: Boolean read fMusicOff write fMusicOff;
     property ShuffleOn: Boolean read fShuffleOn write fShuffleOn;
     property MusicVolume: Single read fMusicVolume write SetMusicVolume;
     property SoundFXVolume: Single read fSoundFXVolume write SetSoundFXVolume;
 
-    //Video
+    // Video
     property VideoOn: Boolean read fVideoOn write fVideoOn;
     property VideoStretch: Boolean read fVideoStretch write fVideoStretch;
     property VideoStartup: Boolean read fVideoStartup write fVideoStartup;
     property VideoVolume: Single read fVideoVolume write SetVideoVolume;
 
-    //MapEd
+    // MapEd
     property MapEdHistoryDepth: Integer read fMapEdHistoryDepth write SetMapEdHistoryDepth;
     property MapEdMaxTerrainHeight: Integer read fMapEdMaxTerrainHeight write SetMapEdMaxTerrainHeight;
 
@@ -240,7 +241,7 @@ type
     //Misc
     property AsyncGameResLoader: Boolean read GetAsyncGameResLoader;
 
-    //Menu
+    // Menu
     property MenuMapSPType: Byte read fMenu_MapSPType write fMenu_MapSPType;
     property MenuReplaysType: Byte read fMenu_ReplaysType write fMenu_ReplaysType;
     property MenuMapEdMapType: Byte read fMenu_MapEdMapType write fMenu_MapEdMapType;
@@ -277,7 +278,13 @@ uses
   KM_TerrainTypes;
 
 
-{ TGameSettings }
+procedure TKMSettingsGFX.SetBrightness(aValue: Byte);
+begin
+  fBrightness := EnsureRange(aValue, 0, 20);
+end;
+
+
+{ TKMGameSettings }
 constructor TKMGameSettings.Create;
 begin
   inherited;
@@ -435,8 +442,8 @@ begin
 
     // Tweaks
     nGameTweaks := nGameCommon.AddOrFindChild('Tweaks');
-      AllowSnowHouses    := nGameTweaks.Attributes['AllowSnowHouses'].AsBoolean(True);     // With restriction by ALLOW_SNOW_HOUSES
-      InterpolatedRender := nGameTweaks.Attributes['InterpolatedRender'].AsBoolean(False); // With restriction by ALLOW_INTERPOLATED_RENDER
+      GFX.AllowSnowHouses    := nGameTweaks.Attributes['AllowSnowHouses'].AsBoolean(True);
+      GFX.InterpolatedRender := nGameTweaks.Attributes['InterpolatedRender'].AsBoolean(False);
 
   // Campaign
   nCampaign := nGameSettings.AddOrFindChild('Campaign');
@@ -699,12 +706,6 @@ procedure TKMGameSettings.SetLocale(const aLocale: AnsiString);
 begin
   //We can get some unsupported LocaleCode, but that is fine, it will have Eng fallback anyway
   fLocale := aLocale;
-end;
-
-
-procedure TKMGameSettings.SetBrightness(aValue: Byte);
-begin
-  fBrightness := EnsureRange(aValue, 0, 20);
 end;
 
 
