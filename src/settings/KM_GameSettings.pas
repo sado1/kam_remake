@@ -1012,23 +1012,17 @@ end;
 
 procedure TKMGameSettings.SetAllowSnowHouses(aValue: Boolean);
 begin
-  if not ALLOW_SNOW_HOUSES then Exit;
-
   fGameTweaks_AllowSnowHouses := aValue;
 end;
 
 procedure TKMGameSettings.SetInterpolatedAnimations(const aValue: Boolean);
 begin
-  if not ALLOW_INTERPOLATED_ANIMS then Exit;
-
   fGameTweaks_InterpolatedAnimations := aValue;
 end;
 
 
 procedure TKMGameSettings.SetInterpolatedRender(aValue: Boolean);
 begin
-  if not ALLOW_INTERPOLATED_RENDER then Exit;
-
   fGameTweaks_InterpolatedRender := aValue;
 end;
 

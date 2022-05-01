@@ -155,7 +155,7 @@ end;
 
 function TKMGameParams.GetDynamicFOW: Boolean;
 begin
-  if Self = nil then Exit(DYNAMIC_FOG_OF_WAR);
+  if Self = nil then Exit(FEAT_DYNAMIC_FOG_OF_WAR);
   
   Result := fDynamicFOW;
 end;

@@ -300,10 +300,10 @@ begin
     Army_HideJoinMenu(nil); // Cannot be joining while in combat/charging
 
   Label_UnitDescription.Hide;
-  Button_Unit_Dismiss.Visible := SHOW_DISMISS_GROUP_BTN and not fAskDismiss and not fJoiningGroups;
+  Button_Unit_Dismiss.Visible := FEAT_DISMISS_GROUP_BTN and not fAskDismiss and not fJoiningGroups;
   Panel_Army.Visible := not fAskDismiss and not fJoiningGroups;
   Panel_Army_JoinGroups.Visible := not fAskDismiss and fJoiningGroups;
-  Panel_Unit_Dismiss.Visible := SHOW_DISMISS_GROUP_BTN and fAskDismiss and not fJoiningGroups;
+  Panel_Unit_Dismiss.Visible := FEAT_DISMISS_GROUP_BTN and fAskDismiss and not fJoiningGroups;
 
   ShowDismissBtn;
 
