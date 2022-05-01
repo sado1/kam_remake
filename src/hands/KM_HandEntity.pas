@@ -5,7 +5,8 @@ uses
   KM_Defaults, KM_Points, KM_CommonClasses, KM_HandTypes, KM_Entity, KromOGLUtils;
 
 type
-  { Common class for TKMUnit / TKMHouse / TKMUnitGroup }
+  // Common class for TKMUnit / TKMHouse / TKMUnitGroup
+  // "class abstract" disallows anyone from creating an instance of it (can create only child classes)
   TKMHandEntity = class abstract(TKMEntity)
   private
     fType: TKMHandEntityType;

@@ -5,6 +5,7 @@ uses
   KM_CommonClasses;
 
 type
+  // Abstract entity (has only the basic properties)
   TKMEntity = class abstract
   private
     fUID: Integer; //unique entity ID
@@ -31,6 +32,7 @@ uses
   SysUtils;
 
 
+{ TKMEntity }
 constructor TKMEntity.Create(aUID: Integer);
 begin
   inherited Create;
