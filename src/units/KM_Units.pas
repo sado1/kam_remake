@@ -170,7 +170,7 @@ type
     property PositionF: TKMPointF read fPositionF write SetPositionF;
     property PositionPrev: TKMPoint read fPositionPrev;
     property PositionNext: TKMPoint read fPositionNext write SetPositionNext;
-    procedure SetUnitPosition(aPos: TKMPoint);
+    procedure SetUnitPosition(const aPos: TKMPoint);
 
     property Direction: TKMDirection read fDirection write SetDirection;
     property CurrentHitPoints: Byte read fHitPoints;
@@ -1491,7 +1491,7 @@ begin
 end;
 
 
-procedure TKMUnit.SetUnitPosition(aPos: TKMPoint);
+procedure TKMUnit.SetUnitPosition(const aPos: TKMPoint);
 var
   newPos: Boolean;
 begin

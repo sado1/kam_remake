@@ -69,8 +69,8 @@ type
     function IsEmpty: Boolean;
   end;
 
-  //Editable Version of TKMHouseSketch
-  //We do not want to allow edit TKMHouse fields, but need to do that for some sketches
+  // Editable Version of TKMHouseSketch
+  // We do not want to allow edit TKMHouse fields, but need to do that for some sketches
   TKMHouseSketchEdit = class(TKMHouseSketch)
   private
     fEditable: Boolean;
@@ -82,7 +82,7 @@ type
     constructor Create;
 
     procedure Clear;
-    procedure CopyTo(var aHouseSketch: TKMHouseSketchEdit);
+    procedure CopyTo(aHouseSketch: TKMHouseSketchEdit);
 
     procedure SetHouseUID(aUID: Integer);
     procedure SetHouseType(aHouseType: TKMHouseType);
@@ -435,7 +435,7 @@ begin
 end;
 
 
-procedure TKMHouseSketchEdit.CopyTo(var aHouseSketch: TKMHouseSketchEdit);
+procedure TKMHouseSketchEdit.CopyTo(aHouseSketch: TKMHouseSketchEdit);
 begin
   aHouseSketch.SetUID(UID);
   aHouseSketch.SetHouseType(HouseType);
