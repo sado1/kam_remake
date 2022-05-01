@@ -133,9 +133,9 @@ type
   private
     function GetTask: TKMUnitTask;
     function GetInHouse: TKMHouse;
-    function GetPosition: TKMPoint; inline;
   protected
     function GetInstance: TKMUnit; override;
+    function GetPosition: TKMPoint; override;
     function GetPosF: TKMPointF; override;
     procedure SetPosF(const aPositionF: TKMPointF); override;
     function IsSelectableImpl: Boolean; override;
@@ -205,7 +205,6 @@ type
     property  DesiredPassability: TKMTerrainPassability read GetDesiredPassability;
     property KilledBy: TKMHandID read fKilledBy;
 
-    property  Position: TKMPoint read GetPosition;
     property  Home: TKMHouse read fHome write SetHome;
     property  Action: TKMUnitAction read fAction;
     property  Task: TKMUnitTask read GetTask;
@@ -2328,9 +2327,8 @@ begin
     taskStr := fTask.ObjToString;
 
   Result := inherited ObjToStringShort(aSeparator) +
-            Format('%sPos = %s%sType = %s%sAction = %s%sTask = [%s]%sIsDead = %s',
+            Format('%sType = %s%sAction = %s%sTask = [%s]%sIsDead = %s',
                    [aSeparator,
-                    Position.ToString, aSeparator,
                     GetEnumName(TypeInfo(TKMUnitType), Integer(fType)), aSeparator,
                     actStr, aSeparator,
                     taskStr, aSeparator,

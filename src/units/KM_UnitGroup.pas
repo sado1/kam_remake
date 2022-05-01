@@ -86,7 +86,7 @@ type
     procedure SetSelected(aValue: TKMUnitWarrior);
     function GetSelected: TKMUnitWarrior;
   protected
-    function GetPosition: TKMPoint;
+    function GetPosition: TKMPoint; override;
     function GetInstance: TKMUnitGroup; override;
     function GetPosF: TKMPointF; override;
     function GetPositionF: TKMPointF; inline;
@@ -123,7 +123,6 @@ type
 
     // Duplicate of HandEntity PosF property, but with much faster access to it
     property PositionF: TKMPointF read GetPositionF write SetPosF;
-    property Position: TKMPoint read GetPosition;
 
     function IsPositioned(const aLoc: TKMPoint; Dir: TKMDirection): Boolean;
     function IsAllyTo(aUnit: TKMUnit): Boolean; overload;
@@ -2117,9 +2116,8 @@ begin
   if Self = nil then Exit('nil');
 
   Result := inherited ObjToStringShort(aSeparator) +
-            Format('%sPos = %s%sType = %s%sMembersCnt = %d%sOffendersCnt = %d',
+            Format('%sType = %s%sMembersCnt = %d%sOffendersCnt = %d',
                    [aSeparator,
-                    Position.ToString, aSeparator,
                     GetEnumName(TypeInfo(TKMGroupType), Integer(fGroupType)), aSeparator,
                     fMembers.Count, aSeparator,
                     fOffenders.Count]);
