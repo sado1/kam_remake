@@ -855,31 +855,27 @@ begin
   begin
     U := fUnits[I];
     if (U = nil)
-      or U.IsDeadOrDying
-      or (U.UnitType <> aUnitType)
-      or not U.Visible then
+    or U.IsDeadOrDying
+    or (U.UnitType <> aUnitType)
+    or not U.Visible then
       Continue;
 
-    //Just find any first house
+    // Just find any first unit
     if (aStartFromUID = 0) then
-    begin
-      Result := U;
-      Break;
-    end;
+      Exit(U);
 
     lastU := U;
 
     if U.UID = aStartFromUID then
-      found := True                // Mark that we found our unit
+      found := True               // Mark that we found our unit
     else if found then
-    begin
-      Result := U;                 // Save the next unit after Found to Result and Break
-      Break;
-    end else if firstU = nil then
-      firstU := U;                 // Save 1st unit in list in case our unit is the last one
+      Exit(U)                     // Save the next unit after Found to Result and Break
+    else
+    if firstU = nil then
+      firstU := U;                // Save 1st unit in list in case our unit is the last one
   end;
 
-  if (Result = nil) and found then   // Found should be always True here
+  if found then          // Found should be always True here
   begin
     if firstU = nil then //Could happen, when we have only 1 unit with that type...
       Result := lastU
