@@ -291,13 +291,13 @@ end;
 
 procedure TKMUnitsCollection.Load(LoadStream: TKMemoryStream);
 var
-  I, NewCount: Integer;
+  I, newCount: Integer;
   unitType: TKMUnitType;
   U: TKMUnit;
 begin
   LoadStream.CheckMarker('Units');
-  LoadStream.Read(NewCount);
-  for I := 0 to NewCount - 1 do
+  LoadStream.Read(newCount);
+  for I := 0 to newCount - 1 do
   begin
     LoadStream.Read(unitType, SizeOf(unitType));
     case unitType of
@@ -310,7 +310,8 @@ begin
       utRecruit:                U := TKMUnitRecruit.Load(LoadStream);
       WARRIOR_MIN..WARRIOR_MAX: U := TKMUnitWarrior.Load(LoadStream);
       ANIMAL_MIN..ANIMAL_MAX:   U := TKMUnitAnimal.Load(LoadStream);
-      else                      U := nil;
+    else
+      U := nil;
     end;
 
     if U <> nil then
