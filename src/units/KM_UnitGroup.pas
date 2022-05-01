@@ -86,9 +86,9 @@ type
     procedure SetSelected(aValue: TKMUnitWarrior);
     function GetSelected: TKMUnitWarrior;
   protected
-    function GetPosition: TKMPoint; override;
+    function GetPosition: TKMPoint; inline;
     function GetInstance: TKMUnitGroup; override;
-    function GetPositionForDisplay: TKMPointF; override;
+    function GetPositionForDisplayF: TKMPointF; override;
     function GetPositionF: TKMPointF; inline;
     procedure SetOwner(const aOwner: TKMHandID); override;
     function GetIsSelectable: Boolean; override;
@@ -120,6 +120,7 @@ type
     function IsAttackingUnit: Boolean;
     function IsIdleToAI(aOrderWalkKindSet: TKMOrderWalkKindSet = []): Boolean;
 
+    property Position: TKMPoint read GetPosition;
     property PositionF: TKMPointF read GetPositionF;
 
     function IsPositioned(const aLoc: TKMPoint; Dir: TKMDirection): Boolean;
@@ -1947,7 +1948,7 @@ begin
 end;
 
 
-function TKMUnitGroup.GetPositionForDisplay: TKMPointF;
+function TKMUnitGroup.GetPositionForDisplayF: TKMPointF;
 begin
   Result := FlagBearer.PositionF;
 end;
