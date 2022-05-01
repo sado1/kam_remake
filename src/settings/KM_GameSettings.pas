@@ -31,11 +31,6 @@ type
   // Everything gets written through setter to set fNeedsSave flag
   TKMGameSettings = class(TKMGameAppSettingsPart)
   private
-    // GFX
-    fBrightness: Byte;
-    fAlphaShadows: Boolean;
-    fLoadFullFonts: Boolean;
-
     //Game
     fAutosave: Boolean;
     fAutosaveAtGameEnd: Boolean;
@@ -356,9 +351,9 @@ begin
 
   // Game GFX
   nGFX := nGameSettings.AddOrFindChild('GFX');
-    fBrightness     := nGFX.Attributes['Brightness'].AsInteger(1);
-    fAlphaShadows   := nGFX.Attributes['AlphaShadows'].AsBoolean(True);
-    fLoadFullFonts  := nGFX.Attributes['LoadFullFonts'].AsBoolean(False);
+    GFX.Brightness     := nGFX.Attributes['Brightness'].AsInteger(1);
+    GFX.AlphaShadows   := nGFX.Attributes['AlphaShadows'].AsBoolean(True);
+    GFX.LoadFullFonts  := nGFX.Attributes['LoadFullFonts'].AsBoolean(False);
 
   // SFX
   nSFX := nGameSettings.AddOrFindChild('SFX');
@@ -557,9 +552,9 @@ begin
 
   // Game GFX
   nGFX := nGameSettings.AddOrFindChild('GFX');
-    nGFX.Attributes['Brightness']     := fBrightness;
-    nGFX.Attributes['AlphaShadows']   := fAlphaShadows;
-    nGFX.Attributes['LoadFullFonts']  := fLoadFullFonts;
+    nGFX.Attributes['Brightness']     := GFX.Brightness;
+    nGFX.Attributes['AlphaShadows']   := GFX.AlphaShadows;
+    nGFX.Attributes['LoadFullFonts']  := GFX.LoadFullFonts;
 
   // SFX
   nSFX := nGameSettings.AddOrFindChild('SFX');
