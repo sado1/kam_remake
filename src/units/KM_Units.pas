@@ -135,7 +135,6 @@ type
     function GetInHouse: TKMHouse;
   protected
     function GetInstance: TKMUnit; override;
-    function GetPosition: TKMPoint; override;
     function GetPositionForDisplay: TKMPointF; override;
     procedure SetPositionF(const aPositionF: TKMPointF);
     function GetIsSelectable: Boolean; override;
@@ -168,6 +167,7 @@ type
     procedure CloseUnit(aRemoveTileUsage: Boolean = True); virtual;
 
     property PositionF: TKMPointF read fPositionF write SetPositionF;
+    property Position: TKMPoint read fPositionRound;
     property PositionPrev: TKMPoint read fPositionPrev;
     property PositionNext: TKMPoint read fPositionNext write SetPositionNext;
     procedure SetUnitPosition(const aPos: TKMPoint);
@@ -1620,12 +1620,6 @@ procedure TKMUnit.SetPositionNext(const aLoc: TKMPoint);
 begin
   fPositionPrev := PositionNext;
   fPositionNext := aLoc;
-end;
-
-
-function TKMUnit.GetPosition: TKMPoint;
-begin
-  Result := fPositionRound;
 end;
 
 

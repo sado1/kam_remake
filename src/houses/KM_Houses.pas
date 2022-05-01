@@ -53,7 +53,6 @@ type
     procedure UpdateEntrancePos;
   protected
     fPosition: TKMPoint; //House position on map, kinda virtual thing cos it doesn't match with entrance
-    function GetPosition: TKMPoint; override;
     procedure SetPosition(const aPosition: TKMPoint); virtual;
     constructor Create; overload;
   public
@@ -61,6 +60,7 @@ type
 
     property HouseType: TKMHouseType read fType;
 
+    property Position: TKMPoint read fPosition;
     property Entrance: TKMPoint read fEntrance;
     property PointBelowEntrance: TKMPoint read fPointBelowEntrance;
 
@@ -379,12 +379,6 @@ begin
   Assert((fEntrance.X > 0) and (fEntrance.Y > 0));
 
   fPointBelowEntrance := KMPointBelow(fEntrance);
-end;
-
-
-function TKMHouseSketch.GetPosition: TKMPoint;
-begin
-  Result := fPosition;
 end;
 
 

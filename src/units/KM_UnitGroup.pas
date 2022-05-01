@@ -86,7 +86,7 @@ type
     procedure SetSelected(aValue: TKMUnitWarrior);
     function GetSelected: TKMUnitWarrior;
   protected
-    function GetPosition: TKMPoint; override;
+    function GetPosition: TKMPoint; inline;
     function GetInstance: TKMUnitGroup; override;
     function GetPositionForDisplay: TKMPointF; override;
     function GetPositionF: TKMPointF; inline;
@@ -120,6 +120,7 @@ type
     function IsAttackingUnit: Boolean;
     function IsIdleToAI(aOrderWalkKindSet: TKMOrderWalkKindSet = []): Boolean;
 
+    property Position: TKMPoint read GetPosition;
     property PositionF: TKMPointF read GetPositionF;
 
     function IsPositioned(const aLoc: TKMPoint; Dir: TKMDirection): Boolean;

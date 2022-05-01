@@ -548,7 +548,7 @@ begin
     case entity.EntityType of
       etUnit: begin
                 // Delete unit by using precise HitTest result from gCursor (rather than Position)
-                gHands.RemAnyUnit(entity.Position);
+                gHands.RemAnyUnit(TKMUnit(entity).Position);
                 if not aEraseAll then Exit;
               end;
       etHouse:begin
@@ -831,7 +831,7 @@ begin
     entity := gMySpectator.HitTestCursor(True);
     // Delete unit by using precise HitTest result from gCursor (rather than Position)
     if entity.IsUnit then
-      gHands.RemAnyUnit(entity.Position);
+      gHands.RemAnyUnit(TKMUnit(entity).Position);
   end
   else
   if gTerrain.CanPlaceUnit(P, TKMUnitType(gCursor.Tag1)) then

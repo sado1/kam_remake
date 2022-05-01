@@ -15,8 +15,6 @@ type
     function GetOwner: TKMHandID; inline;
     function GetType: TKMHandEntityType;
   protected
-    function GetPosition: TKMPoint; virtual; abstract;
-
     function GetPositionForDisplay: TKMPointF; virtual; abstract;
 
     procedure SetOwner(const aOwner: TKMHandID); virtual;
@@ -32,7 +30,6 @@ type
     property EntityType: TKMHandEntityType read GetType;
     property Owner: TKMHandID read GetOwner write SetOwner;
 
-    property Position: TKMPoint read GetPosition;
     property PositionForDisplay: TKMPointF read GetPositionForDisplay;
 
     property AllowAllyToSelect: Boolean read GetAllowAllyToSelect write SetAllowAllyToSelect;
@@ -179,7 +176,7 @@ end;
 function TKMHandEntity.ObjToStringShort(const aSeparator: String = '|'): String;
 begin
   Result := inherited ObjToStringShort(aSeparator) +
-            Format('%sPos = %s', [aSeparator, Position.ToString]);
+            Format('%sPos = %s', [aSeparator, PositionForDisplay.ToString]);
 end;
 
 
@@ -250,9 +247,9 @@ begin
       ErrorMsg := ErrorMsg + ObjToStringShort(',');
     except
       on E: Exception do
-        ErrorMsg := ErrorMsg + IntToStr(UID) + ' Pos = ' + Position.ToString;
+        ErrorMsg := ErrorMsg + IntToStr(UID) + ' Pos = ' + PositionForDisplay.ToString;
     end;
-    raise ELocError.Create(ErrorMsg, Position);
+    raise ELocError.Create(ErrorMsg, KMPointRound(PositionForDisplay));
   end;
 
   Dec(fPointerCount);
