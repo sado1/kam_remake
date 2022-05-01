@@ -531,31 +531,20 @@ begin
 end;
 
 
-//aEraseAll - if true all objects under the cursor will be deleted
+// aEraseAll - if true all objects under the cursor will be deleted
 procedure TKMMapEditor.EraseObject(aEraseAll: Boolean);
 var
-  entity: TKMHandEntity;
   P: TKMPoint;
   fieldsChanged, isCorn, isWine: Boolean;
   removeTxID: Integer;
 begin
   fieldsChanged := False;
   P := gCursor.Cell;
-  entity := gMySpectator.HitTestCursor(True);
   removeTxID := -1;
 
   try
-    // Delete unit/house
-    if entity is TKMUnit then
-    begin
-      gHands.RemAnyUnit(TKMUnit(entity).Position);
-      if not aEraseAll then Exit;
-    end else
-    if entity is TKMHouse then
-    begin
-      gHands.RemAnyHouse(P);
-      if not aEraseAll then Exit;
-    end;
+    if gHands.RemAnyUnit(P) and not aEraseAll then Exit;
+    if gHands.RemAnyHouse(P) and not aEraseAll then Exit;
 
     isCorn := gTerrain.TileIsCornField(P);
     isWine := gTerrain.TileIsWineField(P);
