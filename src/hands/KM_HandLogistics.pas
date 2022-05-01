@@ -1246,8 +1246,7 @@ begin
 //  Result := Result and (aIgnoreOffer or not offer.IsDeleted);
 
   //Do not allow delivery from 1 house to same house (f.e. store)
-  Result := Result and ((demand.Loc_House = nil)
-                       or (demand.Loc_House.UID <> offer.Loc_House.UID));
+  Result := Result and (demand.Loc_House <> offer.Loc_House);
 
   //If Demand and Offer are different HouseTypes, means forbid Store<->Store deliveries
   //except the case where 2nd store is being built and requires building materials
