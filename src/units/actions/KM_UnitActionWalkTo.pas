@@ -153,7 +153,7 @@ constructor TKMUnitActionWalkTo.Create( aUnit: TKMUnit;
                                         aSilent: Boolean = False);
 var
   errorStr: String;
-  RouteWasBuilt: Boolean; //Check if route was built, otherwise return nil
+  routeWasBuilt: Boolean; //Check if route was built, otherwise return nil
 begin
   inherited Create(aUnit, aActionType, False);
 
@@ -217,10 +217,10 @@ begin
     fPass := GetEffectivePassability; //Units are allowed to step off roads when they are pushed
   end;
 
-  RouteWasBuilt := AssembleTheRoute;
+  routeWasBuilt := AssembleTheRoute;
 
   //If route fails to build that's a serious issue, (consumes CPU) Can*** should mean that never happens
-  if not RouteWasBuilt // Means it will exit in Execute
+  if not routeWasBuilt // Means it will exit in Execute
     and not aSilent then // do not log this error in silent mode (we could expect route could not be build in some cases (f.e. warrior reRoute when attack house)
     //NoFlush logging here because this log is not much important
   begin
@@ -458,8 +458,8 @@ end;
 function TKMUnitActionWalkTo.AssembleTheRoute: Boolean;
 var
   I: Integer;
-  NodeList2: TKMPointList;
-  AvoidLocked: TKMPathAvoidLocked;
+  nodeList2: TKMPointList;
+  avoidLocked: TKMPathAvoidLocked;
 begin
   //Build a piece of route to return to nearest road piece connected to destination road network
   if (fPass = tpWalkRoad)
@@ -469,40 +469,40 @@ begin
     if CanWalkToTarget(fWalkFrom, tpWalk) then
       gGame.Pathfinding.Route_ReturnToWalkable(fWalkFrom, fWalkTo, wcRoad, gTerrain.GetRoadConnectID(fWalkTo), [tpWalk], NodeList);
 
-  AvoidLocked := palNoAvoid;
+  avoidLocked := palNoAvoid;
   if (fUnit is TKMUnitWarrior)
     and (TKMUnitWarrior(fUnit).Task <> nil)
     and (TKMUnitWarrior(fUnit).Task.TaskType = uttAttackHouse) then
   begin
     if fAvoidLockedAsMovementCost then
-      AvoidLocked := palAvoidByMovementCost
+      avoidLocked := palAvoidByMovementCost
     else
-      AvoidLocked := palAvoidAsUnwalkable;
+      avoidLocked := palAvoidAsUnwalkable;
   end;
 
   //Build a route A*
   if NodeList.Count = 0 then //Build a route from scratch
   begin
     if CanWalkToTarget(fWalkFrom, fPass) then
-      gGame.Pathfinding.Route_Make(fWalkFrom, fWalkTo, [fPass], fDistance, fTargetHouse, NodeList, AvoidLocked) //Try to make the route with fPass
+      gGame.Pathfinding.Route_Make(fWalkFrom, fWalkTo, [fPass], fDistance, fTargetHouse, NodeList, avoidLocked) //Try to make the route with fPass
   end
   else //Append route to existing part
   begin
-    NodeList2 := TKMPointList.Create;
+    nodeList2 := TKMPointList.Create;
     try
       //Make a route
       if CanWalkToTarget(NodeList[NodeList.Count-1], fPass) then
-        gGame.Pathfinding.Route_Make(NodeList.Last, fWalkTo, [fPass], fDistance, fTargetHouse, NodeList2, AvoidLocked); //Try to make the route with fPass
+        gGame.Pathfinding.Route_Make(NodeList.Last, fWalkTo, [fPass], fDistance, fTargetHouse, nodeList2, avoidLocked); //Try to make the route with fPass
 
       //If this part of the route fails, the whole route has failed
       //At minimum Route_Make returns Count = 1 (fWalkTo)
-      if NodeList2.Count > 0 then
-        for I := 1 to NodeList2.Count - 1 do
-          NodeList.Add(NodeList2[I])
+      if nodeList2.Count > 0 then
+        for I := 1 to nodeList2.Count - 1 do
+          NodeList.Add(nodeList2[I])
       else
         NodeList.Clear; //Clear NodeList so we return false
     finally
-      NodeList2.Free;
+      nodeList2.Free;
     end;
   end;
 
@@ -537,21 +537,21 @@ end;
 function TKMUnitActionWalkTo.CheckAllTilesAroundHouseLocked: Boolean;
 var
   I: Integer;
-  CellsAround: TKMPointDirList;
+  cellsAround: TKMPointDirList;
 begin
   Result := (fTargetHouse <> nil) and not fTargetHouse.IsDestroyed;
   if not Result then
     Exit;
 
-  CellsAround := TKMPointDirList.Create;
+  cellsAround := TKMPointDirList.Create;
   try
-    fTargetHouse.GetListOfCellsAround(CellsAround, fPass);
+    fTargetHouse.GetListOfCellsAround(cellsAround, fPass);
 
-    for I := 0 to CellsAround.Count - 1 do
-      if not gTerrain.TileIsLocked(CellsAround[I].Loc) then
+    for I := 0 to cellsAround.Count - 1 do
+      if not gTerrain.TileIsLocked(cellsAround[I].Loc) then
         Exit(False);
   finally
-    CellsAround.Free;
+    cellsAround.Free;
   end;
 end;
 
@@ -563,8 +563,8 @@ end;
 function TKMUnitActionWalkTo.CheckForObstacle(aDir: TKMDirection): TKMObstacleCheck;
 var
   T: TKMPoint;
-  DistNext: Single;
-  AllTilesAroundLocked: Boolean;
+  distNext: Single;
+  allTilesAroundLocked: Boolean;
   U: TKMUnit;
   animStep: Integer;
 begin
@@ -574,9 +574,9 @@ begin
 
   if (fUnit is TKMUnitWorker) then
   begin
-    DistNext := gHands.DistanceToEnemyTowers(T, fUnit.Owner);
-    if (DistNext <= RANGE_WATCHTOWER_MAX)
-      and (DistNext < gHands.DistanceToEnemyTowers(fUnit.Position, fUnit.Owner)) then
+    distNext := gHands.DistanceToEnemyTowers(T, fUnit.Owner);
+    if (distNext <= RANGE_WATCHTOWER_MAX)
+      and (distNext < gHands.DistanceToEnemyTowers(fUnit.Position, fUnit.Owner)) then
     begin
       //Cancel the plan if we cant approach it
       if TKMUnitWorker(fUnit).Task is TKMTaskBuild then
@@ -621,9 +621,9 @@ begin
   begin
     if CanWalkToTarget(fUnit.Position, GetEffectivePassability) then
     begin
-      AllTilesAroundLocked := CheckAllTilesAroundHouseLocked;
+      allTilesAroundLocked := CheckAllTilesAroundHouseLocked;
 
-      if AllTilesAroundLocked then
+      if allTilesAroundLocked then
         // Keep on walking. Some spot may free up.
         // Also, "greedy" warriors look and feel better.
         Exit(ocNoObstacle)
@@ -1327,6 +1327,7 @@ end;
 procedure TKMUnitActionWalkTo.Save(SaveStream: TKMemoryStream);
 begin
   inherited;
+
   SaveStream.PlaceMarker('UnitActionWalkTo');
   SaveStream.Write(fWalkFrom);
   SaveStream.Write(fWalkTo);
