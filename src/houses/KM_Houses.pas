@@ -605,7 +605,7 @@ end;
 
 procedure TKMHouse.SyncLoad;
 begin
-  fWorker := TKMUnit( gHands.GetUnitByUID(Integer(fWorker) ) );
+  fWorker := TKMUnit(gHands.GetUnitByUID(Integer(fWorker)));
   CurrentAction.SyncLoad;
 end;
 
@@ -613,7 +613,7 @@ end;
 destructor TKMHouse.Destroy;
 begin
   FreeAndNil(CurrentAction);
-  gHands.CleanUpUnitPointer( TKMUnit(fWorker) );
+  gHands.CleanUpUnitPointer(TKMUnit(fWorker));
 
   inherited;
 end;

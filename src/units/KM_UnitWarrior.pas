@@ -12,7 +12,7 @@ type
   TKMWarriorEvent = procedure(aWarrior: TKMUnitWarrior) of object;
   TKMWarrior2Event = procedure(aWarrior: TKMUnitWarrior; aUnit: TKMUnit) of object;
 
-  //What player has ordered us to do
+  // What player has ordered us to do
   TKMWarriorOrder = (
     woNone, //No orders
     woWalk, //Walk somewhere
@@ -188,10 +188,10 @@ procedure TKMUnitWarrior.SyncLoad;
 begin
   inherited;
 
-  fGroup := TKMUnitGroup(  gHands.GetGroupByUID(Integer(fGroup) )  );
-  fOrderTargetUnit := TKMUnitWarrior(gHands.GetUnitByUID(Integer(fOrderTargetUnit) ));
-  fAttackingUnit := TKMUnitWarrior(gHands.GetUnitByUID(Integer(fAttackingUnit) ));
-  fOrderTargetHouse := gHands.GetHouseByUID(Integer(fOrderTargetHouse) );
+  fGroup := TKMUnitGroup(gHands.GetGroupByUID(Integer(fGroup)));
+  fOrderTargetUnit := TKMUnitWarrior(gHands.GetUnitByUID(Integer(fOrderTargetUnit)));
+  fAttackingUnit := TKMUnitWarrior(gHands.GetUnitByUID(Integer(fAttackingUnit)));
+  fOrderTargetHouse := gHands.GetHouseByUID(Integer(fOrderTargetHouse));
 
   if Action is TKMUnitActionGoInOut then
     TKMUnitActionGoInOut(Action).OnWalkedOut := WalkedOut;
