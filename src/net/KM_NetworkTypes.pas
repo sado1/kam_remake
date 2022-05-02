@@ -31,9 +31,9 @@ type
 
   // Attention!
   //
-  // ****************************************************
-  // Add any new commands to the end of the next enum !!!
-  // ****************************************************
+  // *********************************************************
+  // Add any new message kinds to the end of the next enum !!!
+  // *********************************************************
   //
   // Real situation example:
   // ************************************************************************************************************************
@@ -47,6 +47,8 @@ type
   // but some other command, which he did not except to receive and just ignores it. Thus password is not set on the server side.
   // When server and game client both have same version - their commands IDs are equal and everything is fine.
   // ************************************************************************************************************************
+  //
+  // Alternative solution could be to send message kind as a text, to avoid such errors in the future
 
   TKMessageKind = (
     mkAskToJoin,       //Client asks Host if he can join
