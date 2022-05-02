@@ -49,6 +49,7 @@ type
   // ************************************************************************************************************************
   //
   // Alternative solution could be to send message kind as a text, to avoid such errors in the future
+  // Or even better solution is to use fixed IDs for an enum values
 
   TKMessageKind = (
     mkAskToJoin,       //Client asks Host if he can join
