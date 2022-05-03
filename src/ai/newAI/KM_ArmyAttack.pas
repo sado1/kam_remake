@@ -1741,7 +1741,7 @@ begin
   aTargetUnit := nil;
   aTargetGroup := nil;
   // Compute common stuf first
-  aTargetHouse := gHands.GetClosestHouse(aInitPoint, fOwner, atEnemy, TARGET_HOUSES, false);
+  aTargetHouse := gHands.GetClosestHouse(aInitPoint, fOwner, atEnemy, TARGET_HOUSES, False);
   if (aTargetHouse = nil) then
   begin
     aTargetGroup := gHands.GetClosestGroup(aInitPoint, fOwner, atEnemy);

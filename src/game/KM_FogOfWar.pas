@@ -378,7 +378,7 @@ end;
 //Check if requested vertice is revealed for given player
 //Return value of revelation is 0..255
 //0 unrevealed, 255 revealed completely
-//but false in cases where it will effect the gameplay (e.g. unit hit test)
+//but False in cases where it will effect the gameplay (e.g. unit hit test)
 function TKMFogOfWar.CheckVerticeRev(aRevArray: PKMByte2Array; const X,Y: Word): Byte;
 var
   F: Byte;
@@ -454,7 +454,7 @@ end;
 //Check if requested tile is revealed for given player
 //Input values for tiles (X,Y) are in 1..N range
 //Return value of revelation within 0..255 (0 unrevealed, 255 fully revealed)
-//but false in cases where it will effect the gameplay (e.g. unit hit test)
+//but False in cases where it will effect the gameplay (e.g. unit hit test)
 function TKMFogOfWar.CheckTileRev(aRevArray: PKMByte2Array; const X,Y: Word): Byte;
 begin
   if (X <= 0) or (X >= fMapX)

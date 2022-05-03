@@ -594,7 +594,7 @@ end;
 function TKMUnitWarrior.OrderDone: Boolean;
 begin
   Result := False;
-  if fNextOrder <> woNone then Exit; //We haven't had time to take the order yet, so return false
+  if fNextOrder <> woNone then Exit; //We haven't had time to take the order yet, so return False
 
   //Did we performed the Order?
   case fOrder of

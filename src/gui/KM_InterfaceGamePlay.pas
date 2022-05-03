@@ -627,7 +627,7 @@ begin
   HidePages;
 
   // If Sender is one of 4 main buttons, then open the page, hide the buttons and show Return button
-  Flip4MainButtons(false);
+  Flip4MainButtons(False);
   fOpenedMenu := tbNone;
   if Sender = Button_Main[tbBuild] then
   begin
@@ -1690,7 +1690,7 @@ begin
   fGuiGameChat.Hide;
   MessageLog_Close(nil);
   Panel_Message.Show;
-  // Must update top AFTER showing panel, otherwise Button_MessageGoTo.Visible will always return false
+  // Must update top AFTER showing panel, otherwise Button_MessageGoTo.Visible will always return False
   Button_MessageDelete.Top := IfThen(Button_MessageGoTo.Visible, 104, 74);
   gSoundPlayer.Play(sfxMessageOpen); // Play parchment sound when they open the message
 end;
@@ -3902,7 +3902,7 @@ begin
   if fSelectingTroopDirection then
   begin
     gMain.ApplyCursorRestriction; // Reset the cursor restrictions from selecting direction
-    fSelectingTroopDirection := false;
+    fSelectingTroopDirection := False;
     DirectionCursorHide;
   end;
 

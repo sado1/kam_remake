@@ -536,7 +536,7 @@ begin
         for M := 0 to L - 1 do
           if (Enemy.Groups[ fClusters.Clusters[K].Groups[L] ] = Enemy.Groups[ fClusters.Clusters[K].Groups[M] ]) then
           begin
-            GroupCheck := false;
+            GroupCheck := False;
             break;
           end;
         if not GroupCheck then
@@ -900,7 +900,7 @@ end;
 procedure TKMArmyVectorField.InitQueue(const aGroupPoly: Word);
 begin
   if (fVisitedIdx = High(Byte)) then
-    MakeNewQueue(false);
+    MakeNewQueue(False);
   Inc(fVisitedIdx);
   AddPolyToQueue(ffSearch, aGroupPoly);
 end;

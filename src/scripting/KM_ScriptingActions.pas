@@ -1357,7 +1357,7 @@ end;
 
 //* Version: 7000+
 //* Remove AI attack by attack UID
-//* Result: true, if attack was succesfully removed, false, if attack was not found
+//* Result: true, if attack was succesfully removed, False, if attack was not found
 function TKMScriptActions.AIAttackRemove(aHand, aAIAttackUID: Integer): Boolean;
 begin
   Result := False;
@@ -3742,7 +3742,7 @@ end;
 //* Version: 6587
 //* Sets the tile type and rotation at the specified XY coordinates.
 //* Tile IDs can be seen by hovering over the tiles on the terrain tiles tab in the map editor.
-//* Returns true if the change succeeded or false if it failed.
+//* Returns true if the change succeeded or False if it failed.
 //* The change will fail if it would cause a unit to become stuck or a house/field to be damaged
 //* aType: Tile type (0..255)
 //* aRotation: Tile rotation (0..3)
@@ -3883,7 +3883,7 @@ begin
     for I := Low(aTilesS) to High(aTilesS) do
     begin
       arrElem := StrSplitA(ReplaceStr(String(aTilesS[I]), ' ', ''), ',');
-      parserError := false;
+      parserError := False;
 
       //checking params count, if count is invalid we cannot proceed
       if (Length(arrElem) <> 6) then
@@ -3988,7 +3988,7 @@ end;
 
 //* Version: 6587
 //* Sets the height of the terrain at the top left corner (vertex) of the tile at the specified XY coordinates.
-//* Returns true if the change succeeded or false if it failed.
+//* Returns true if the change succeeded or False if it failed.
 //* The change will fail if it would cause a unit to become stuck or a house to be damaged
 //* Height: Height (0..100)
 function TKMScriptActions.MapTileHeightSet(X, Y, Height: Integer): Boolean;
@@ -4013,7 +4013,7 @@ end;
 //* Sets the terrain object on the tile at the specified XY coordinates.
 //* Object IDs can be seen in the map editor on the objects tab.
 //* Object 61 is "block walking". To set no object, use object type 255.
-//* Returns true if the change succeeded or false if it failed.
+//* Returns true if the change succeeded or False if it failed.
 //* The change will fail if it would cause a unit to become stuck or a house/field to be damaged
 //* Obj: Object type (0..255)
 function TKMScriptActions.MapTileObjectSet(X, Y, Obj: Integer): Boolean;
@@ -4262,7 +4262,7 @@ end;
 
 //* Version: 5057
 //* Adds a road plan.
-//* Returns true if the plan was successfully added or false if it failed (e.g. tile blocked)
+//* Returns true if the plan was successfully added or False if it failed (e.g. tile blocked)
 function TKMScriptActions.PlanAddRoad(aHand, X, Y: Integer): Boolean;
 begin
   try
@@ -4302,7 +4302,7 @@ end;
 
 //* Version: 5057
 //* Adds a corn field plan.
-//* Returns true if the plan was successfully added or false if it failed (e.g. tile blocked)
+//* Returns true if the plan was successfully added or False if it failed (e.g. tile blocked)
 function TKMScriptActions.PlanAddField(aHand, X, Y: Integer): Boolean;
 begin
   try
@@ -4328,7 +4328,7 @@ end;
 
 //* Version: 5057
 //* Adds a wine field plan.
-//* Returns true if the plan was successfully added or false if it failed (e.g. tile blocked)
+//* Returns true if the plan was successfully added or False if it failed (e.g. tile blocked)
 function TKMScriptActions.PlanAddWinefield(aHand, X, Y: Integer): Boolean;
 begin
   try
@@ -4408,7 +4408,7 @@ end;
 
 //* Version: 5345
 //* Removes house, road or field plans from the specified tile for the specified player
-//* Returns true if the plan was successfully removed or false if it failed (e.g. tile blocked)
+//* Returns true if the plan was successfully removed or False if it failed (e.g. tile blocked)
 function TKMScriptActions.PlanRemove(aHand, X, Y: Integer): Boolean;
 var
   housePlan: TKMHousePlan;
@@ -4442,7 +4442,7 @@ end;
 
 //* Version: 5057
 //* Adds a road plan.
-//* Returns true if the plan was successfully added or false if it failed (e.g. tile blocked)
+//* Returns true if the plan was successfully added or False if it failed (e.g. tile blocked)
 function TKMScriptActions.PlanAddHouse(aHand, aHouseType, X, Y: Integer): Boolean;
 begin
   Result := False;
@@ -4469,7 +4469,7 @@ end;
 
 //* Version: 14000
 //* Adds a road plan.
-//* Returns true if the plan was successfully added or false if it failed (e.g. tile blocked)
+//* Returns true if the plan was successfully added or False if it failed (e.g. tile blocked)
 function TKMScriptActions.PlanAddHouseEx(aHand: Integer; aHouseType: TKMHouseType; X, Y: Integer): Boolean;
 begin
   Result := False;
@@ -4608,7 +4608,7 @@ end;
 //* Version: 5057
 //* Makes the specified unit face a certain direction.
 //* Note: Only works on idle units so as not to interfere with game logic and cause crashes.
-//* Returns true on success or false on failure.
+//* Returns true on success or False on failure.
 function TKMScriptActions.UnitDirectionSet(aUnitID, aDirection: Integer): Boolean;
 var
   U: TKMUnit;
@@ -4637,7 +4637,7 @@ end;
 //* Version: 14000
 //* Makes the specified unit face a certain direction.
 //* Note: Only works on idle units so as not to interfere with game logic and cause crashes.
-//* Returns true on success or false on failure.
+//* Returns true on success or False on failure.
 function TKMScriptActions.UnitDirectionSetEx(aUnitID: Integer; aDirection: TKMDirection): Boolean;
 var
   U: TKMUnit;
@@ -4732,7 +4732,7 @@ end;
 //* Version: 5057
 //* Order the specified unit to walk somewhere.
 //* Note: Only works on idle units so as not to interfere with game logic and cause crashes.
-//* Returns true on success or false on failure.
+//* Returns true on success or False on failure.
 function TKMScriptActions.UnitOrderWalk(aUnitID: Integer; X, Y: Integer): Boolean;
 var
   U: TKMUnit;
@@ -4870,7 +4870,7 @@ end;
 
 //* Version: 5993
 //* Sets whether the specified group will alert the player when they become hungry
-//* (true to disable hunger messages, false to enable them)
+//* (true to disable hunger messages, False to enable them)
 procedure TKMScriptActions.GroupDisableHungryMessage(aGroupID: Integer; aDisable: Boolean);
 var
   G: TKMUnitGroup;

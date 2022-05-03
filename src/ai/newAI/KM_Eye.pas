@@ -564,10 +564,10 @@ begin
   Road := TKMPointList.Create();
   try
     // Scan Resources - gold, iron
-    MineLocs := FindSeparateMineLocs(false, htIronMine);
+    MineLocs := FindSeparateMineLocs(False, htIronMine);
     for K := 0 to Length(MineLocs) - 1 do
       ScanLocArea(CenterPointArr[0], KMPointBelow(MineLocs[K]));
-    MineLocs := FindSeparateMineLocs(false, htGoldMine);
+    MineLocs := FindSeparateMineLocs(False, htGoldMine);
     for K := 0 to Length(MineLocs) - 1 do
       ScanLocArea(CenterPointArr[0], KMPointBelow(MineLocs[K]));
     // Scan Resources - coal

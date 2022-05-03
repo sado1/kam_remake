@@ -41,7 +41,7 @@ type
     fSpeedActual: Single; //Actual speedup value, used to play the game
     fSpeedMultiplier: Word; //How many ticks are compressed into one
     fWaitingForNetwork: Boolean; //Indicates that we are waiting for other players commands in MP
-    fAdvanceFrame: Boolean; //Replay variable to advance 1 frame, afterwards set to false
+    fAdvanceFrame: Boolean; //Replay variable to advance 1 frame, afterwards set to False
     fLockedMutex: Boolean;
     fIgnoreConsistencyCheckErrors: Boolean; // User can ignore all consistency check errors while watching SP replay
 

@@ -304,7 +304,7 @@ begin
     Load_DeleteConfirmation(true);
 
   if (Sender = Button_DeleteYes) or (Sender = Button_DeleteNo) then
-    Load_DeleteConfirmation(false); //Hide confirmation anyways
+    Load_DeleteConfirmation(False); //Hide confirmation anyways
 
   //Delete the savegame
   if Sender = Button_DeleteYes then

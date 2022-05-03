@@ -296,8 +296,8 @@ begin
   inherited;
 
   fNetClient := TKMNetClient.Create;
-  fQueryIsDone := false;
-  fQueryActive := false;
+  fQueryIsDone := False;
+  fQueryActive := False;
 end;
 
 
@@ -336,8 +336,8 @@ begin
     fQueryIsDone := true; //Give up
   if fQueryIsDone then
   begin
-    fQueryIsDone := false;
-    fQueryActive := false;
+    fQueryIsDone := False;
+    fQueryActive := False;
     fOnQueryDone(Self);
   end;
 end;

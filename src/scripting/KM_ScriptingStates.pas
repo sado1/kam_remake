@@ -1471,7 +1471,7 @@ end;
 
 //* Version: 5057
 //* Check how player 1 feels towards player 2 (order matters).
-//* Returns true for ally, false for enemy
+//* Returns true for ally, False for enemy
 //* Result: Allied
 function TKMScriptStates.PlayerAllianceCheck(aHand1, aHand2: Byte): Boolean;
 begin
@@ -2390,7 +2390,7 @@ end;
 
 
 //* Version: 5057
-//* Will be false if nobody selected that location in multiplayer
+//* Will be False if nobody selected that location in multiplayer
 //* Result: Enabled
 function TKMScriptStates.PlayerEnabled(aHand: Byte): Boolean;
 begin
@@ -5293,7 +5293,7 @@ end;
 
 //* Version: 7000+
 //* See if unit is invulnerable
-//* Result: true or false
+//* Result: true or False
 function TKMScriptStates.UnitHPInvulnerable(aUnitID: Integer): Boolean;
 var
   U: TKMUnit;
@@ -5759,7 +5759,7 @@ end;
 
 
 //* Version: 11200
-//* Returns the manual formation parameter of the specified group (false for new group, true if player changed formation manually at least once)
+//* Returns the manual formation parameter of the specified group (False for new group, true if player changed formation manually at least once)
 //* Result: manual formation
 function TKMScriptStates.GroupManualFormation(aGroupID: Integer): Boolean;
 var

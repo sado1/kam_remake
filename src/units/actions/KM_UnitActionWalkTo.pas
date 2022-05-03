@@ -39,7 +39,7 @@ type
     fDoExchange: Boolean; //Command to make exchange maneuver with other unit, should use MakeExchange when vertex use needs to be set
     fInteractionCount, fLastSideStepNodePos: Integer;
     fInteractionStatus: TKMInteractionStatus;
-    fAvoidLockedAsMovementCost: Boolean; //Avoid locked as 'movement cost' if true and means 'as unwalkable' if false
+    fAvoidLockedAsMovementCost: Boolean; //Avoid locked as 'movement cost' if true and means 'as unwalkable' if False
     function AssembleTheRoute: Boolean;
     function CanWalkToTarget(const aFrom: TKMPoint; aPass: TKMTerrainPassability): Boolean;
     function CheckForNewDestination: TKMDestinationCheck;
@@ -330,7 +330,7 @@ begin
     DecVertex;
 
   if fUnit <> nil then
-    fUnit.IsExchanging := false;
+    fUnit.IsExchanging := False;
 
   gHands.CleanUpUnitPointer(fTargetUnit);
   gHands.CleanUpHousePointer(fTargetHouse);
@@ -500,7 +500,7 @@ begin
         for I := 1 to nodeList2.Count - 1 do
           NodeList.Add(nodeList2[I])
       else
-        NodeList.Clear; //Clear NodeList so we return false
+        NodeList.Clear; //Clear NodeList so we return False
     finally
       nodeList2.Free;
     end;
@@ -855,7 +855,7 @@ var
   altOpponent: TKMUnit;
 begin
   //If there is a unit on one of the tiles either side of target that wants to swap, do so
-  Result := false;
+  Result := False;
   if aHighestInteractionCount >= DODGE_TIMEOUT then
   //UnitsHitTest (used twice here) is fairly CPU intensive, so don't run it every time
   if CheckInteractionFreq(aHighestInteractionCount,DODGE_TIMEOUT,DODGE_FREQ) then
@@ -976,7 +976,7 @@ begin
   else
     found := gTerrain.FindSideStepPosition(fUnit.Position, aPosition, NodeList[NodePos+2], GetEffectivePassability, sideStepTest, NodePos - fLastSideStepNodePos < 2);
 
-  if not found then Exit; //It could be 0,0 if all tiles were blocked (return false)
+  if not found then Exit; //It could be 0,0 if all tiles were blocked (return False)
 
   //Otherwise the sidestep is valid so modify our route to go via this tile
   Explanation := 'Sidestepping to a tile next to target';
@@ -1013,7 +1013,7 @@ var
   opponent: TKMUnit;
   highestInteractionCount: integer;
 begin
-  Result := True; //false = interaction yet unsolved, stay and wait.
+  Result := True; //False = interaction yet unsolved, stay and wait.
   if not DO_UNIT_INTERACTION then Exit;
 
   //If there's a unit using this vertex to walk diagonally then we must wait, they will be finished after this step
@@ -1150,7 +1150,7 @@ var
 begin
   Result := arActContinues;
   StepDone := False;
-  fDoesWalking := False; // Set it to false at start of update
+  fDoesWalking := False; // Set it to False at start of update
 
   // Happens whe e.g. Serf stays in front of Store and gets Deliver task
   if KMSamePoint(fWalkFrom, fWalkTo) then
@@ -1278,7 +1278,7 @@ begin
         gTerrain.UnitSwap(fUnit.PositionPrev,fUnit.PositionNext,fUnit);
 
       fInteractionStatus := kisNone;
-      fDoExchange := false;
+      fDoExchange := False;
       fUnit.IsExchanging := true; //So unit knows that it must slide
       fInteractionCount := 0;
       if KMStepIsDiag(fUnit.PositionPrev, fUnit.PositionNext) then IncVertex; //Occupy the vertex

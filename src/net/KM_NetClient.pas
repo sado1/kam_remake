@@ -145,7 +145,7 @@ end;
 
 procedure TKMNetClient.ConnectFailed(const S: string);
 begin
-  fConnected := false;
+  fConnected := False;
   if Assigned(fOnStatusMessage) then fOnStatusMessage('Client: Connection failed. '+S);
   if Assigned(fOnConnectFailed) then fOnConnectFailed(S);
 end;
@@ -162,7 +162,7 @@ begin
   SetLength(fBuffer,0);
   fBufferSize := 0;
 
-  fConnected := false;
+  fConnected := False;
   fClient.Disconnect;
 end;
 
@@ -180,7 +180,7 @@ begin
     if Assigned(fOnForcedDisconnect) then
       fOnForcedDisconnect(Self);
   end;
-  fConnected := false;
+  fConnected := False;
 end;
 
 

@@ -2971,7 +2971,7 @@ begin
                   if Land^[P2.Y+T,P2.X+S].TileLock in [tlFenced,tlDigged,tlHouse] then
                   begin
                     MarkPoint(KMPoint(P2.X+S,P2.Y+T), TC_BLOCK);
-                    allowBuild := false;
+                    allowBuild := False;
                   end;
 
           //Mark the tile according to previous check results
@@ -3002,7 +3002,7 @@ end;
 
 function TKMTerrain.WaterHasFish(const aLoc: TKMPoint): Boolean;
 begin
-  Result := (gHands.PlayerAnimals.GetFishInWaterBody(Land^[aLoc.Y,aLoc.X].WalkConnect[wcFish],false) <> nil);
+  Result := (gHands.PlayerAnimals.GetFishInWaterBody(Land^[aLoc.Y,aLoc.X].WalkConnect[wcFish],False) <> nil);
 end;
 
 
@@ -3605,7 +3605,7 @@ begin
     154: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 153;
     155: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 154;
     263: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 155;
-    else Result := false;
+    else Result := False;
   end;
   Land^[aLoc.Y,aLoc.X].BaseLayer.Rotation := KaMRandom(4, 'TKMTerrain.DecOreDeposit 5');
   UpdatePassability(aLoc);
@@ -3819,7 +3819,7 @@ begin
           if (Land^[aLoc.Y+I,aLoc.X+K].IsUnit = nil) or (not aCheckUnits) then
             if aPass in Land^[aLoc.Y+I,aLoc.X+K].Passability then
             begin
-              Result := false; //at least one tile is empty, so unit is not stuck
+              Result := False; //at least one tile is empty, so unit is not stuck
               exit;
             end;
 end;

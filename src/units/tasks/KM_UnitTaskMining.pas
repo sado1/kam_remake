@@ -76,7 +76,7 @@ end;
 //Note: Phase is -1 because it will have been increased at the end of last Execute
 function TKMTaskMining.WalkShouldAbandon: Boolean;
 begin
-  Result := false;
+  Result := False;
   Assert(fUnit is TKMUnitCitizen);
   if fPhase = 2 then //Unit is walking to mine-position
     Result := ResourceTileIsLocked or //If someone takes our place
@@ -137,7 +137,7 @@ end;
 
 //Try to find alternative target for our WorkPlan
 //Happens when we discover that resource is gone or is occupied by another busy unit
-//Return false if new plan could not be found
+//Return False if new plan could not be found
 procedure TKMTaskMining.FindAnotherWorkPlan;
 var OldLoc: TKMPoint; OldDir: TKMDirection;
 begin
@@ -278,7 +278,7 @@ begin
        if WorkPlan.GatheringScript = gsFisherCatch then
        begin
          Direction := WorkPlan.WorkDir;
-         SetActionLockedStay(13, uaWork1, false); //Throw the line out
+         SetActionLockedStay(13, uaWork1, False); //Throw the line out
        end else
          SetActionLockedStay(0, WorkPlan.ActionWalkTo);
 
@@ -301,7 +301,7 @@ begin
     5: //After work tasks for specific mining jobs
        case WorkPlan.GatheringScript of
          gsWoodCutterCut:  SetActionLockedStay(10, WorkPlan.ActionWorkType, true, 5, 5); //Wait for the tree to start falling down
-         gsFisherCatch:    SetActionLockedStay(15, uaWork, false); //Pull the line in
+         gsFisherCatch:    SetActionLockedStay(15, uaWork, False); //Pull the line in
          else              SetActionLockedStay(0, WorkPlan.ActionWorkType);
        end;
     6: begin

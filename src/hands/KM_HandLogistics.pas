@@ -2286,7 +2286,7 @@ end;
 procedure TKMDeliveries.CloseOffer(aWare: TKMWareType; aID: Integer);
 begin
   Assert(fOffer[aWare,aID].BeingPerformed = 0);
-  fOffer[aWare,aID].IsDeleted := false;
+  fOffer[aWare,aID].IsDeleted := False;
   fOffer[aWare,aID].IsActive := False;
   fOffer[aWare,aID].Count := 0;
   gHands.CleanUpHousePointer(fOffer[aWare,aID].Loc_House);

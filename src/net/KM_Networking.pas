@@ -889,7 +889,7 @@ begin
   if (fSelectGameKind = ngkSave) and (MyNetPlayer.StartLocation = 0) then
   begin
     PostLocalMessage(gResTexts[TX_LOBBY_ERROR_SELECT_PLAYER], csSystem);
-    Result := false;
+    Result := False;
     Exit;
   end;
 
@@ -904,7 +904,7 @@ begin
   else
   begin
     PostLocalMessage(gResTexts[TX_LOBBY_ERROR_NO_MAP], csSystem);
-    Result := false;
+    Result := False;
   end;
 end;
 

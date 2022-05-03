@@ -268,7 +268,7 @@ begin
 
   for I := 0 to High(Image_CampaignSubNode) do
   begin
-    Image_CampaignSubNode[I].Visible := false;
+    Image_CampaignSubNode[I].Visible := False;
     Image_CampaignSubNode[I].Left := fCampaign.Maps[fMapIndex].Nodes[I].X;
     Image_CampaignSubNode[I].Top  := fCampaign.Maps[fMapIndex].Nodes[I].Y;
   end;

@@ -180,11 +180,11 @@ var
   end;
   procedure OffenceNoRanged(aOrder: Single);
   begin
-    ChangeSettings(mtOffense, atNoRanged, aOrder, false);
+    ChangeSettings(mtOffense, atNoRanged, aOrder, False);
   end;
   procedure OffenceAll(aOrder: Single);
   begin
-    ChangeSettings(mtOffense, ifThenArmy(K mod 2 > 0, atNoMounted, atMoreRanged), aOrder, false);
+    ChangeSettings(mtOffense, ifThenArmy(K mod 2 > 0, atNoMounted, atMoreRanged), aOrder, False);
   end;
 const
   OFFSET = 10;

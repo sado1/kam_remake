@@ -172,7 +172,7 @@ begin
   Assert(fUsedDoorway, 'Dec doorway when not in use?');
 
   if fHouse<>nil then dec(fHouse.DoorwayUse);
-  fUsedDoorway := false;
+  fUsedDoorway := False;
 end;
 
 

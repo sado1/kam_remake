@@ -847,7 +847,7 @@ begin
   if Carry <> wtNone then
     gRenderPool.AddUnitCarry(Carry, ID, V.Dir, V.AnimStep, V.AnimFraction, xPaintPos, yPaintPos, gHands[Owner].GameFlagColor)
   else
-    gRenderPool.AddUnit(UnitType, ID, uaWalkArm, V.Dir, V.AnimStep, V.AnimFraction, xPaintPos, yPaintPos, gHands[Owner].GameFlagColor, false);
+    gRenderPool.AddUnit(UnitType, ID, uaWalkArm, V.Dir, V.AnimStep, V.AnimFraction, xPaintPos, yPaintPos, gHands[Owner].GameFlagColor, False);
 
   if fThought <> thNone then
     gRenderPool.AddUnitThought(fType, act, V.Dir, fThought, xPaintPos, yPaintPos);
@@ -1152,8 +1152,8 @@ constructor TKMUnit.Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TK
 begin
   inherited Create(etUnit, aID, aOwner);
   fTicker       := aID; //Units update states will be spread more evenly that way
-  fIsDead       := false;
-  fKillASAP     := false;
+  fIsDead       := False;
+  fKillASAP     := False;
   fThought      := thNone;
   fHome         := nil;
   fInHouse      := nil;

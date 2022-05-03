@@ -2046,7 +2046,7 @@ begin
   while repeatWhile AND (overflow < 10) do
   begin
     overflow := overflow + 1;
-    repeatWhile := false;
+    repeatWhile := False;
     for Y1 := 1 to High(A)-2 do
     begin
       Y0 := Y1-1;
@@ -4004,7 +4004,7 @@ end;
 //        begin
 //          B[Y1,X1,aY,aX] := BT[ A[Y1,X1] , A[Y0+aY,X0+aX] ];
 //          if (B[Y1,X1,aY,aX] <> -1) then
-//            check := false
+//            check := False
 //          else
 //            B[Y1,X1,aY,aX] := A[Y1,X1];
 //        end;
@@ -4217,7 +4217,7 @@ end;
 //  var
 //    i,j: Integer;
 //  begin
-//    Result := false;
+//    Result := False;
 //    for i := Low(Arr) to High(Arr)-1 do
 //    begin
 //      Tile := Arr[I];
@@ -4404,7 +4404,7 @@ end;
 //      // 4-tiles transition
 //        15: begin
 //            // Special case where are 2 diagonal tiles same
-//              check := false;
+//              check := False;
 //              if (B[Y1,X1] = B[Y2,X2]) then // 1 = 4
 //              begin
 //                if not canWalk[ B[Y1,X2] ] then

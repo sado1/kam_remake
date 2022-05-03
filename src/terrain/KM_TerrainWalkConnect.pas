@@ -81,7 +81,7 @@ begin
     //  102
     //  102
     //So we can see now that the affected tile (in the middle) became unwalkable.
-    //This means ExactlyOneAreaIDInRect_New returns false (there are exactly 2 areas, not 1)
+    //This means ExactlyOneAreaIDInRect_New returns False (there are exactly 2 areas, not 1)
     //and we do a global update.
 
     //   EXAMPLE 2

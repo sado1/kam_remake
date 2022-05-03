@@ -240,16 +240,16 @@ begin
          gHands[Owner].Deliveries.Queue.AddDemand(nil, fUnit, wtStone, 1, dtOnce, diHigh4);
          fDemandSet := true;
 
-         SetActionLockedStay(11,uaWork1,false);
+         SetActionLockedStay(11,uaWork1,False);
        end;
     2: begin
          gTerrain.ResetDigState(fLoc); //Remove any dig over that might have been there (e.g. destroyed house) after first dig
          gTerrain.IncDigState(fLoc);
-         SetActionLockedStay(11,uaWork1,false);
+         SetActionLockedStay(11,uaWork1,False);
        end;
     3: begin
          gTerrain.IncDigState(fLoc);
-         SetActionLockedStay(11,uaWork1,false);
+         SetActionLockedStay(11,uaWork1,False);
        end;
     //Warning! This step value is harcoded in KM_UnitTaskDelivery
     4: begin //This step is repeated until Serf brings us some stone
@@ -262,20 +262,20 @@ begin
          end;
        end;
     5: begin
-         SetActionLockedStay(11,uaWork2,false);
-         fDemandSet := false;
+         SetActionLockedStay(11,uaWork2,False);
+         fDemandSet := False;
          Thought := thNone;
        end;
     6: begin
          gTerrain.IncDigState(fLoc);
-         SetActionLockedStay(11,uaWork2,false);
+         SetActionLockedStay(11,uaWork2,False);
        end;
     7: begin
          gTerrain.IncDigState(fLoc);
          gTerrain.FlattenTerrain(fLoc); //Flatten the terrain slightly on and around the road
          if gMapElements[gTerrain.Land^[fLoc.Y,fLoc.X].Obj].WineOrCorn then
            gTerrain.RemoveObject(fLoc); //Remove corn/wine/grass as they won't fit with road
-         SetActionLockedStay(11,uaWork2,false);
+         SetActionLockedStay(11,uaWork2,False);
        end;
     8: begin
          gTerrain.SetRoad(fLoc, Owner);
@@ -386,15 +386,15 @@ begin
         gHands[Owner].Deliveries.Queue.AddDemand(nil,fUnit,wtTimber, 1, dtOnce, diHigh4);
         fDemandSet := true;
 
-        SetActionLockedStay(12*4,uaWork1,false);
+        SetActionLockedStay(12*4,uaWork1,False);
       end;
    2: begin
         gTerrain.IncDigState(fLoc);
-        SetActionLockedStay(24,uaWork1,false);
+        SetActionLockedStay(24,uaWork1,False);
       end;
    3: begin
         gTerrain.IncDigState(fLoc);
-        SetActionLockedStay(24,uaWork1,false);
+        SetActionLockedStay(24,uaWork1,False);
       end;
    4: begin
         gTerrain.ResetDigState(fLoc);
@@ -413,7 +413,7 @@ begin
         Thought := thWood;
       end;
    6: begin
-        fDemandSet := false;
+        fDemandSet := False;
         SetActionLockedStay(11*8, uaWork2, False);
         Thought := thNone;
       end;
@@ -516,7 +516,7 @@ begin
         SetActionLockedStay(0,uaWalk);
        end;
     2: begin
-        SetActionLockedStay(11,uaWork1,false);
+        SetActionLockedStay(11,uaWork1,False);
         inc(fPhase2);
         if fPhase2 = 2 then gTerrain.ResetDigState(fLoc); //Remove any dig over that might have been there (e.g. destroyed house)
         if (fPhase2 = 6) and gMapElements[gTerrain.Land^[fLoc.Y,fLoc.X].Obj].WineOrCorn then
@@ -715,18 +715,18 @@ begin
           Exit;
         end;
     3:  begin
-          SetActionLockedStay(11,uaWork1,false); //Don't flatten terrain here as we haven't started digging yet
+          SetActionLockedStay(11,uaWork1,False); //Don't flatten terrain here as we haven't started digging yet
         end;
     4:  begin
-          SetActionLockedStay(11,uaWork1,false);
+          SetActionLockedStay(11,uaWork1,False);
           gTerrain.FlattenTerrain(fCellsToDig[fLastToDig]);
         end;
     5:  begin
-          SetActionLockedStay(11,uaWork1,false);
+          SetActionLockedStay(11,uaWork1,False);
           gTerrain.FlattenTerrain(fCellsToDig[fLastToDig]);
         end;
     6:  begin
-          SetActionLockedStay(11,uaWork1,false);
+          SetActionLockedStay(11,uaWork1,False);
           gTerrain.FlattenTerrain(fCellsToDig[fLastToDig]);
           gTerrain.FlattenTerrain(fCellsToDig[fLastToDig]); //Flatten the terrain twice now to ensure it really is flat
           gTerrain.SetTileLock(fCellsToDig[fLastToDig], tlDigged); //Block passability on tile
@@ -984,12 +984,12 @@ begin
             SetActionLockedStay(0, uaWalk);
           end;
       2:  begin
-            SetActionLockedStay(5, uaWork, false, 0, 0); //Start animation
+            SetActionLockedStay(5, uaWork, False, 0, 0); //Start animation
             Direction := fBuildFrom.Dir;
           end;
       3:  begin
             fHouse.AddRepair;
-            SetActionLockedStay(6, uaWork,false, 0, 5); //Do building and end animation
+            SetActionLockedStay(6, uaWork,False, 0, 5); //Do building and end animation
             inc(fPhase2);
           end;
       4:  begin

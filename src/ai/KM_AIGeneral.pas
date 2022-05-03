@@ -62,7 +62,7 @@ uses
 
 
 const
-  //For compatibility with KaM these must be false. We can add a !REMAKE_AI command later
+  //For compatibility with KaM these must be False. We can add a !REMAKE_AI command later
   //to make them more "intelligent", but for now these are required for the campaigns to be playable.
 
   //On the other hand, no need to reproduce KaM's flaws, so fill closest defence
@@ -674,8 +674,8 @@ begin
   //Find target
   case aTarget of
     attClosestUnit:                  TargetUnit := gHands.GetClosestUnit(aGroup.Position, fOwner, atEnemy);
-    attClosestBuildingFromArmy:      TargetHouse := gHands.GetClosestHouse(aGroup.Position, fOwner, atEnemy, TARGET_HOUSES, false);
-    attClosestBuildingFromStartPos:  TargetHouse := gHands.GetClosestHouse(fSetup.StartPosition, fOwner, atEnemy, TARGET_HOUSES, false);
+    attClosestBuildingFromArmy:      TargetHouse := gHands.GetClosestHouse(aGroup.Position, fOwner, atEnemy, TARGET_HOUSES, False);
+    attClosestBuildingFromStartPos:  TargetHouse := gHands.GetClosestHouse(fSetup.StartPosition, fOwner, atEnemy, TARGET_HOUSES, False);
     attCustomPosition:               begin
                                         TargetHouse := gHands.HousesHitTest(aCustomPos.X, aCustomPos.Y);
                                         if (TargetHouse <> nil) and

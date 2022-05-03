@@ -192,7 +192,7 @@ end;
 
 destructor TRenderTerrain.Destroy;
 begin
-//  fUseVBO := VBOSupported; //Could have been set to false if 3D rendering is enabled, so reset it
+//  fUseVBO := VBOSupported; //Could have been set to False if 3D rendering is enabled, so reset it
   if fUseVBO then
   begin
     //Since RenderTerrain is created fresh everytime fGame is created, we should clear
