@@ -199,7 +199,7 @@ begin
 {$IFDEF VIDEOS}
   if not gGameSettings.Video.Enabled then Exit;
 
-  if TryGetPathFile(aCampaignPath + aVideoName, path)
+  if TryGetPathFile(ExtractRelativePath(ExeDir, aCampaignPath) + aVideoName, path)
   or TryGetPathFile(VIDEOFILE_PATH + aVideoName, path) then
     AddVideoToList(path);
 {$ENDIF}
