@@ -55,7 +55,7 @@ type
     FTrackList: TStringList;
     FVideoList: TList<TKMVideoFile>;
 
-    function TryGetPathFile(const aPath: string; var aFileName: string): Boolean;
+    function TryGetPathFile(const aPathRelative: string; var aFileName: string): Boolean;
     procedure SetTrackByLocale;
     function GetState: TVLCPlayerState;
 
@@ -96,7 +96,10 @@ var
 
 implementation
 uses
-  KM_Render, KM_RenderTypes, KM_RenderUI, dglOpenGL, KM_ResLocales, KM_GameApp, KM_GameSettings, KM_Music, KM_Sound;
+  KM_Render, KM_RenderTypes, KM_RenderUI, dglOpenGL, KM_ResLocales,
+  KM_GameApp, KM_GameSettings,
+  KM_Music, KM_Sound,
+  KM_Defaults;
 
 const
   FADE_MUSIC_TIME   = 500; // Music fade time, in ms
@@ -609,7 +612,7 @@ end;
 
 
 {$IFDEF VIDEOS}
-function TKMVideoPlayer.TryGetPathFile(const aPath: string; var aFileName: string): Boolean;
+function TKMVideoPlayer.TryGetPathFile(const aPathRelative: string; var aFileName: string): Boolean;
 var
   I: Integer;
   searchRec: TSearchRec;
@@ -623,8 +626,8 @@ begin
   Result := False;
   aFileName := '';
 
-  path := ExtractFilePath(aPath);
-  if not DirectoryExists(ExtractFilePath(ParamStr(0)) + path) then
+  path := ExtractFilePath(aPathRelative);
+  if not DirectoryExists(ExeDir + path) then
     Exit;
 
   localePostfixes := TStringList.Create;
@@ -634,7 +637,7 @@ begin
     localePostfixes.Add('.' + UnicodeString(gResLocales.DefaultLocale));
     localePostfixes.Add('');
 
-    fileName := ExtractFileName(aPath);
+    fileName := ExtractFileName(aPathRelative);
     for I := 0 to localePostfixes.Count - 1 do
     begin
       try
