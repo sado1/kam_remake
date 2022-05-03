@@ -2041,7 +2041,7 @@ begin
   //   | [Y2,X0]  [Y2,X1]  [Y2,X2] |                        | 6  5  4 |
   //    ———————————————————————————                          —————————
   overflow := 0;
-  repeatWhile := true;
+  repeatWhile := True;
   // There are changes which affect previous tiles so the cycle somethimes have to be repeated
   while repeatWhile AND (overflow < 10) do
   begin
@@ -2092,7 +2092,7 @@ begin
 
           else// if A[Y1,X1] > 0 then // When is grass here do nothing
           begin
-            repeatWhile := true;
+            repeatWhile := True;
             if (A[Y1,X1] = A[Y1,X0]) then
             begin
               A[Y2,X0] := A[Y1,X1];
@@ -3998,7 +3998,7 @@ end;
 //
 //    // Detect 8 surrounding tiles and store ideal transition of each tile into B
 //      //{
-//      check := true;
+//      check := True;
 //      for aY := 0 to 2 do
 //        for aX := 0 to 2 do
 //        begin
@@ -4224,7 +4224,7 @@ end;
 //      for j := i+1 to High(Arr) do
 //        if (Tile = Arr[j]) then
 //        begin
-//          Result := true;
+//          Result := True;
 //          Exit;
 //        end;
 //    end;
@@ -4412,7 +4412,7 @@ end;
 //                else if not canWalk[ B[Y2,X1] ] then
 //                  B[Y2,X1] := B[Y1,X1] // 3 := 1
 //                else
-//                   check := true;
+//                   check := True;
 //              end
 //              else if (B[Y2,X1] = B[Y1,X2]) then // 2 = 3
 //              begin
@@ -4421,10 +4421,10 @@ end;
 //                else if not canWalk[ B[Y2,X2] ] then
 //                  B[Y2,X2] := B[Y2,X1] // 4 := 2
 //                else
-//                   check := true;
+//                   check := True;
 //              end
 //              else
-//                check := true;
+//                check := True;
 //
 //            // 4 different tiles
 //              if check then

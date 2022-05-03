@@ -372,7 +372,7 @@ begin
   fServer.OnDataAvailable := DataAvailable;
   fServer.StartListening(aPort);
   Status('Listening on port ' + IntToStr(aPort));
-  fListening := true;
+  fListening := True;
   SaveHTMLStatus;
 end;
 
@@ -1119,7 +1119,7 @@ begin
     Result := False;
     Exit;
   end;
-  Result := true;
+  Result := True;
   Inc(fRoomCount);
   SetLength(fRoomInfo,fRoomCount);
   fRoomInfo[fRoomCount-1].HostHandle := NET_ADDRESS_EMPTY;

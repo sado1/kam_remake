@@ -39,7 +39,7 @@ type
     fDoExchange: Boolean; //Command to make exchange maneuver with other unit, should use MakeExchange when vertex use needs to be set
     fInteractionCount, fLastSideStepNodePos: Integer;
     fInteractionStatus: TKMInteractionStatus;
-    fAvoidLockedAsMovementCost: Boolean; //Avoid locked as 'movement cost' if true and means 'as unwalkable' if False
+    fAvoidLockedAsMovementCost: Boolean; //Avoid locked as 'movement cost' if True and means 'as unwalkable' if False
     function AssembleTheRoute: Boolean;
     function CanWalkToTarget(const aFrom: TKMPoint; aPass: TKMTerrainPassability): Boolean;
     function CheckForNewDestination: TKMDestinationCheck;
@@ -345,7 +345,7 @@ begin
 end;
 
 
-// Returns true only when unit is stuck for some reason
+// Returns True only when unit is stuck for some reason
 function TKMUnitActionWalkTo.CanAbandonExternal: Boolean;
 begin
   Result := (not fDoExchange) //Other unit could have set this
@@ -385,7 +385,7 @@ begin
   begin
     Explanation := 'We were forced to exchange places';
     ExplanationLogAdd;
-    fDoExchange := true;
+    fDoExchange := True;
     if KMLengthDiag(aForcedExchangePos, NodeList[NodePos+1]) >= 1.5 then
       NodeList.Insert(NodePos+1, fUnit.Position); //We must back-track if we cannot continue our route from the new tile
     NodeList.Insert(NodePos+1, aForcedExchangePos);
@@ -649,7 +649,7 @@ begin
 end;
 
 
-{ Walk is complete when one of the following is true:
+{ Walk is complete when one of the following is True:
   - We reached last node en route irregardless of walkTarget (position, house, unit)
   - We were walking to spot and required range is reached
   - We were walking to house and required range to house is reached
@@ -795,9 +795,9 @@ begin
 
             Explanation := 'Unit in the way is walking in the opposite direction. Performing an exchange';
             ExplanationLogAdd;
-            fDoExchange := true;
+            fDoExchange := True;
             //They both will exchange next tick
-            Result := true; //Means exit DoUnitInteraction
+            Result := True; //Means exit DoUnitInteraction
           end
           else //Otherwise try to force the unit to exchange IF they are in the waiting phase
             if TKMUnitActionWalkTo(aOpponent.Action).fInteractionStatus = kisWaiting then
@@ -807,9 +807,9 @@ begin
 
               Explanation := 'Unit in the way is in waiting phase. Forcing an exchange';
               ExplanationLogAdd;
-              fDoExchange := true;
+              fDoExchange := True;
               //They both will exchange next tick
-              Result := true; //Means exit DoUnitInteraction
+              Result := True; //Means exit DoUnitInteraction
             end;
         end;
       end;
@@ -893,7 +893,7 @@ begin
 
                 Explanation:='Unit on tile next to target tile wants to swap. Performing an exchange';
                 ExplanationLogAdd;
-                fDoExchange := true;
+                fDoExchange := True;
                 ChangeStepTo(tempPos);
                 //They both will exchange next tick
                 //Means exit DoUnitInteraction
@@ -965,7 +965,7 @@ var
   sideStepTest: TKMPoint;
   found: Boolean;
 begin
-  Result := False; //Should only return true if a sidestep was taken (for use in CheckForObstacle)
+  Result := False; //Should only return True if a sidestep was taken (for use in CheckForObstacle)
   if (aHighestInteractionCount < SIDESTEP_TIMEOUT) or fDoExchange then exit;
   if KMSamePoint(aPosition, fWalkTo) then Exit; //Someone stays right on target, no point in side-stepping
   if not CheckInteractionFreq(aHighestInteractionCount, SIDESTEP_TIMEOUT, SIDESTEP_FREQ) then Exit; //FindSideStepPosition is CPU intensive, so don't run it every time
@@ -989,9 +989,9 @@ end;
 
 //States whether we are allowed to run time consuming tests
 //  1. We must have been stuck for more than aTimeout
-//  2. We must only return true every aFreq ticks.
+//  2. We must only return True every aFreq ticks.
 //For example: say we are checking whether we can use the solution Avoid. aTimeout = 10, aFreq = 20.
-//Therefore we return true on these ticks: 10, 30, 50, 70....
+//Therefore we return True on these ticks: 10, 30, 50, 70....
 //You could sum this up in words as: After 10 ticks, check the solution, then every 20 ticks
 //after that, check it again. I hope that makes sense, please rewrite it in a more obvious way.
 //Read the memo at the top of this file explaining what TIMEOUT and FREQ mean.
@@ -1059,7 +1059,7 @@ begin
 
   if fDestBlocked then fInteractionStatus := kisWaiting;
 
-  //INTERACTION SOLUTIONS: Split into different sections or "solutions". If true returned it means exit.
+  //INTERACTION SOLUTIONS: Split into different sections or "solutions". If True returned it means exit.
 
   //If we are asking someone to move away then just wait until they are gone
   if IntCheckIfPushing(opponent) then exit;
@@ -1261,7 +1261,7 @@ begin
       end;
 
     //Perform exchange
-    //Both exchanging units have fDoExchange:=true assigned by 1st unit, hence 2nd should not try doing UnitInteraction!
+    //Both exchanging units have fDoExchange:=True assigned by 1st unit, hence 2nd should not try doing UnitInteraction!
     if fDoExchange then
     begin
        //If this is a diagonal exchange we must make sure someone (other than the other unit) is not crossing our path
@@ -1279,7 +1279,7 @@ begin
 
       fInteractionStatus := kisNone;
       fDoExchange := False;
-      fUnit.IsExchanging := true; //So unit knows that it must slide
+      fUnit.IsExchanging := True; //So unit knows that it must slide
       fInteractionCount := 0;
       if KMStepIsDiag(fUnit.PositionPrev, fUnit.PositionNext) then IncVertex; //Occupy the vertex
     end else
@@ -1320,7 +1320,7 @@ begin
 
   Inc(fUnit.AnimStep);
   StepDone := False; //We are not actually done because now we have just taken another step
-  fDoesWalking := True; //Now it's definitely true that unit did walked one step
+  fDoesWalking := True; //Now it's definitely True that unit did walked one step
 end;
 
 

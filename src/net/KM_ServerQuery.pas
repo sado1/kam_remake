@@ -311,7 +311,7 @@ end;
 
 procedure TKMQuery.PerformQuery(const aAddress: string; aPort: Word; aServerID: Integer);
 begin
-  fQueryActive := true;
+  fQueryActive := True;
   fServerID := aServerID;
   fQueryStarted := TimeGet;
   fNetClient.Disconnect;
@@ -333,7 +333,7 @@ begin
 
   fNetClient.UpdateStateIdle;
   if TimeSince(fQueryStarted) > QUERY_TIMEOUT then
-    fQueryIsDone := true; //Give up
+    fQueryIsDone := True; //Give up
   if fQueryIsDone then
   begin
     fQueryIsDone := False;
@@ -377,7 +377,7 @@ begin
     mkServerInfo:
       begin
         fOnServerData(fServerID, M, fPingStarted);
-        fQueryIsDone := true; //We cannot call fOnQueryDone now because that would disconnect the socket halfway through the receive procedure (crashes)
+        fQueryIsDone := True; //We cannot call fOnQueryDone now because that would disconnect the socket halfway through the receive procedure (crashes)
       end;
   end;
 

@@ -36,7 +36,7 @@ type
     fScripting: TKMScripting;
     fOnDestroy: TEvent;
 
-    fIsExiting: Boolean; //Set this to true on Exit and unit/house pointers will be released without cross-checking
+    fIsExiting: Boolean; //Set this to True on Exit and unit/house pointers will be released without cross-checking
     fIsPaused: Boolean;
     fSpeedActual: Single; //Actual speedup value, used to play the game
     fSpeedMultiplier: Word; //How many ticks are compressed into one
@@ -1318,7 +1318,7 @@ end;
 
 procedure TKMGame.RequestHold(Msg: TKMGameResultMsg);
 begin
-  fDoHold := true;
+  fDoHold := True;
   fDoHoldState := Msg;
 end;
 

@@ -2021,7 +2021,7 @@ end;
 
 
 {Check wherever unit can walk from A to B diagonaly}
-{Return true if direction is either walkable or not diagonal}
+{Return True if direction is either walkable or not diagonal}
 {Maybe this can also be used later for inter-tile passability}
 function TKMTerrain.CanWalkDiagonaly(const aFrom: TKMPoint; aX, aY: SmallInt): Boolean;
 begin
@@ -3587,7 +3587,7 @@ begin
   if not (aWare in [wtIronOre,wtGoldOre,wtCoal]) then
     raise ELocError.Create('Wrong ore decrease', aLoc);
 
-  Result := true;
+  Result := True;
   case Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain of
     144: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 157 + KaMRandom(3, 'TKMTerrain.DecOreDeposit'); //Gold
     145: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 144;
@@ -4699,7 +4699,7 @@ function TKMTerrain.CheckHeightPass(const aLoc: TKMPoint; aPass: TKMHeightPass):
 begin
   //Three types measured in KaM: >=25 - unwalkable/unroadable; >=25 - iron/gold mines unbuildable;
   //>=18 - other houses unbuildable.
-  Result := true;
+  Result := True;
 
   if not TileInMapCoords(aLoc.X, aLoc.Y) then exit;
 

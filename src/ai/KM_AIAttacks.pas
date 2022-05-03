@@ -143,7 +143,7 @@ end;
 
 
 //Remove AIAttack by its ID
-//Result - true, if delete was succesfull, False, if no AIAttack was found
+//Result - True, if delete was succesfull, False, if no AIAttack was found
 function TKMAIAttacks.Remove(aAttackUID: Integer): Boolean;
 var
   I: Integer;

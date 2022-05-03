@@ -482,7 +482,7 @@ begin
 end;
 
 
-// Return true if we are attacking or following specified unit
+// Return True if we are attacking or following specified unit
 function TKMUnitWarrior.IsAttackingUnit(aUnit: TKMUnit): Boolean;
 begin
   if (Self = nil) or (aUnit = nil) then Exit(False);
@@ -691,7 +691,7 @@ begin
   else
     testDir := dirNA;
 
-  range := GetFightMaxRange(true);
+  range := GetFightMaxRange(True);
   //AI has an "auto attack range" for melee like in TSK/TPR so you can't sneak past them (when idle)
   if not IsRanged and IsIdle and gHands[Owner].IsComputer then
     range := Max(range, gHands[Owner].AI.Setup.AutoAttackRange);

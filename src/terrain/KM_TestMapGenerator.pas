@@ -164,11 +164,11 @@ var
   end;
   procedure DefenceNoRanged(aOrder: Single);
   begin
-    ChangeSettings(mtDefense, atNoRanged, aOrder, true);
+    ChangeSettings(mtDefense, atNoRanged, aOrder, True);
   end;
   procedure DefenceAll(aOrder: Single);
   begin
-    ChangeSettings(mtDefense, ifThenArmy(K mod 2 > 0, atNoMounted, atMoreRanged), aOrder, true);
+    ChangeSettings(mtDefense, ifThenArmy(K mod 2 > 0, atNoMounted, atMoreRanged), aOrder, True);
   end;
   procedure RandomGroupsNoRanged(aOrder: Single);
   begin
@@ -443,7 +443,7 @@ begin
       aatRepeating, // TKMAIAttackType
       1, 1, // Delay TotalMen
       0, 0, 0, 0, // MeleeCount AntiHorseCount RangedCount MountedCount
-      true, // TakeAll
+      True, // TakeAll
       attClosestUnit, // Target
       0, // Range
       KMPoint(1,1) // CustomPosition

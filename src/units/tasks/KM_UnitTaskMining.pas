@@ -200,7 +200,7 @@ begin
                             end;
                         end;
     gsFarmerWine:      Result := TileIsWineField(WorkPlan.Loc) and (Land^[WorkPlan.Loc.Y, WorkPlan.Loc.X].FieldAge = CORN_AGE_MAX);
-    gsFisherCatch:     Result := CatchFish(KMPointDir(WorkPlan.Loc,WorkPlan.WorkDir),true);
+    gsFisherCatch:     Result := CatchFish(KMPointDir(WorkPlan.Loc,WorkPlan.WorkDir),True);
     gsWoodCutterPlant: Result := TileGoodToPlantTree(WorkPlan.Loc.X, WorkPlan.Loc.Y);
     gsWoodCutterCut:   begin
                           P := KMGetVertexTile(WorkPlan.Loc, WorkPlan.WorkDir);
@@ -300,7 +300,7 @@ begin
        end;
     5: //After work tasks for specific mining jobs
        case WorkPlan.GatheringScript of
-         gsWoodCutterCut:  SetActionLockedStay(10, WorkPlan.ActionWorkType, true, 5, 5); //Wait for the tree to start falling down
+         gsWoodCutterCut:  SetActionLockedStay(10, WorkPlan.ActionWorkType, True, 5, 5); //Wait for the tree to start falling down
          gsFisherCatch:    SetActionLockedStay(15, uaWork, False); //Pull the line in
          else              SetActionLockedStay(0, WorkPlan.ActionWorkType);
        end;

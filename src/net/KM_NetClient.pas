@@ -137,7 +137,7 @@ end;
 
 procedure TKMNetClient.ConnectSucceed(Sender: TObject);
 begin
-  fConnected := true;
+  fConnected := True;
   if Assigned(fOnStatusMessage) then fOnStatusMessage('Client: Connected');
   if Assigned(fOnConnectSucceed) then fOnConnectSucceed(Self);
 end;

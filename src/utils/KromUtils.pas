@@ -159,7 +159,7 @@ if (length(in_s)>k) then begin
 
     if in_s[k]='"' then begin
     inc(k); //Getting path from "...."
-    QMarks:=true;
+    QMarks:=True;
     end;
 
     repeat

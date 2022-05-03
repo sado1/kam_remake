@@ -489,7 +489,7 @@ begin
             // Make sure that reservation is no longer used
             gHands[fOwner].AI.CityManagement.Builder.UnlockHouseLoc(HT, H.Entrance);
             if (HT = htWoodcutters) then
-              gAIFields.Influences.MarkForest(fPlannedHouses[HT].Plans[K].SpecPoint, AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_Radius], Min(AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_ABRange],AVOID_BUILDING_FOREST_RANGE-1) / sqr(AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_Radius]), true);
+              gAIFields.Influences.MarkForest(fPlannedHouses[HT].Plans[K].SpecPoint, AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_Radius], Min(AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_ABRange],AVOID_BUILDING_FOREST_RANGE-1) / sqr(AI_Par[PLANNER_FOREST_FindPlaceForWoodcutter_Radius]), True);
             if (fPlannedHouses[HT].Plans[K].House <> nil) then
               gHands.CleanUpHousePointer(fPlannedHouses[HT].Plans[K].House);
             fPlannedHouses[HT].Plans[K].House := H.GetPointer;
@@ -506,7 +506,7 @@ begin
         with fPlannedHouses[HT].Plans[fPlannedHouses[HT].Count-1] do
         begin
           House := H.GetPointer;
-          Placed := true;
+          Placed := True;
         end;
       end;
     end;
@@ -980,7 +980,7 @@ begin
   //H := gHands[fOwner].Houses.FindHouse(htAny, NewLoc.X, NewLoc.Y, 1, False); // True = complete house, False = house plan
   //if (H <> nil) then
   //begin
-  //  Output := true;
+  //  Output := True;
   //  ExistLoc := H.PointBelowEntrance;
   //end;
   if Output AND fRoadPlanner.Route_Make(KMPointBelow(NewLoc), KMPointBelow(ExistLoc), aField) then
@@ -2121,7 +2121,7 @@ begin
                 Plans[ Count-1 ].HouseReservation := True; // Reserve houses so builder will init road
             end
             else
-              fStonesDepleted := true;
+              fStonesDepleted := True;
             // Demolish old quarry (in case that alternative is completed)
             if not aForceToPlaceQuarry AND (aReqQuarryCnt < 0) then
               with fPlannedHouses[HT] do

@@ -1141,7 +1141,7 @@ var
 begin
   Result := True;
 
-  if fCheckGoals then //Already set all to true
+  if fCheckGoals then //Already set all to True
     Exit;
 
   for I := 0 to fCount - 1 do

@@ -1409,7 +1409,7 @@ begin
   if aClearOffenders and CanTakeOrders then
     ClearOffenders;
 
-  //Halt is not a true order, it is just OrderWalk
+  //Halt is not a True order, it is just OrderWalk
   //hose target depends on previous activity
   case fOrder of
     goNone:         if not KMSamePoint(fOrderLoc.Loc, KMPOINT_ZERO) then

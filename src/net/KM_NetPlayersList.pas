@@ -808,7 +808,7 @@ function TKMNetPlayersList.AllReady: Boolean;
 var
   I: Integer;
 begin
-  Result := true;
+  Result := True;
   for I := 1 to fCount do
     if fNetPlayers[I].Connected and fNetPlayers[I].IsHuman then
       Result := Result and fNetPlayers[I].ReadyToStart and fNetPlayers[I].HasMapOrSave;

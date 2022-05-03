@@ -203,7 +203,7 @@ begin
       //Start fighting this opponent by resetting the action
       fOpponent.GetPointer; //Add to pointer count
       TKMUnitWarrior(fUnit).OnPickedFight(TKMUnitWarrior(fUnit), fOpponent);
-      Locked := true;
+      Locked := True;
       fFightDelay := -1;
       //Ranged units should turn to face the new opponent immediately
       if TKMUnitWarrior(fUnit).IsRanged then
@@ -223,7 +223,7 @@ begin
 end;
 
 
-//A result of true means exit from Execute
+//A result of True means exit from Execute
 function TKMUnitActionFight.ExecuteProcessRanged(Step: Byte): Boolean;
 var
   W: TKMUnitWarrior;
@@ -261,7 +261,7 @@ begin
 end;
 
 
-//A result of true means exit from Execute
+//A result of True means exit from Execute
 function TKMUnitActionFight.ExecuteProcessMelee(Step: Byte): Boolean;
 var
   isHit: Boolean;

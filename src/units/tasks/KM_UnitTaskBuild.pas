@@ -238,7 +238,7 @@ begin
          CancelThePlan;
 
          gHands[Owner].Deliveries.Queue.AddDemand(nil, fUnit, wtStone, 1, dtOnce, diHigh4);
-         fDemandSet := true;
+         fDemandSet := True;
 
          SetActionLockedStay(11,uaWork1,False);
        end;
@@ -258,7 +258,7 @@ begin
          if not fIsDigged then
          begin
            gScriptEvents.ProcPlanRoadDigged(Owner, fLoc.X, fLoc.Y);
-           fIsDigged := true;
+           fIsDigged := True;
          end;
        end;
     5: begin
@@ -384,7 +384,7 @@ begin
         gTerrain.ResetDigState(fLoc); //Remove any dig over that might have been there (e.g. destroyed house)
 
         gHands[Owner].Deliveries.Queue.AddDemand(nil,fUnit,wtTimber, 1, dtOnce, diHigh4);
-        fDemandSet := true;
+        fDemandSet := True;
 
         SetActionLockedStay(12*4,uaWork1,False);
       end;
@@ -404,7 +404,7 @@ begin
         if not fIsDigged then
         begin
           gScriptEvents.ProcPlanWinefieldDigged(Owner, fLoc.X, fLoc.Y);
-          fIsDigged := true;
+          fIsDigged := True;
         end;
       end;
    //Warning! This step value is harcoded in KM_UnitTaskDelivery

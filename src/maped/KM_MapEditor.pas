@@ -531,7 +531,7 @@ begin
 end;
 
 
-//aEraseAll - if true all objects under the cursor will be deleted
+//aEraseAll - if True all objects under the cursor will be deleted
 procedure TKMMapEditor.EraseObject(aEraseAll: Boolean);
 var
   entity: TKMHandEntity;

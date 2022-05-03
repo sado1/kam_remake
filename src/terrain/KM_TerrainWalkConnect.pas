@@ -162,7 +162,7 @@ begin
 end;
 
 
-//Returns true if there is exactly one walkable area within Rect in Land.WalkConnect (from last time we updated WalkConnect)
+//Returns True if there is exactly one walkable area within Rect in Land.WalkConnect (from last time we updated WalkConnect)
 class function TKMTerrainWalkConnect.ExactlyOneAreaIDInRect_Current(const aRect:TKMRect; aWC: TKMWalkConnect): Boolean;
 var
   areaId: Byte;

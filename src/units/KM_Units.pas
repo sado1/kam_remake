@@ -182,7 +182,7 @@ type
     procedure SetActionStay(aTimeToStay: Integer; aAction: TKMUnitActionType; aStayStill: Boolean = True; aStillFrame: Byte = 0; aStep: Integer = 0);
     procedure SetActionStorm(aRow: Integer);
     procedure SetActionSteer;
-    procedure SetActionLockedStay(aTimeToStay: Integer; aAction: TKMUnitActionType; aStayStill: Boolean=true; aStillFrame: Byte = 0; aStep: Integer = 0);
+    procedure SetActionLockedStay(aTimeToStay: Integer; aAction: TKMUnitActionType; aStayStill: Boolean=True; aStillFrame: Byte = 0; aStep: Integer = 0);
 
     procedure SetActionWalk(const aLocB: TKMPoint; aActionType: TKMUnitActionType; aDistance: Single; aTargetUnit: TKMUnit;
                             aTargetHouse: TKMHouse; aAvoidLockedByMovementCost: Boolean = True);
@@ -840,7 +840,7 @@ begin
 
   ID := UID * Byte(not (act in [uaDie, uaEat]));
 
-  gRenderPool.AddUnit(UnitType, ID, act, V.Dir, V.AnimStep, V.AnimFraction, xPaintPos, yPaintPos, gHands[Owner].GameFlagColor, true);
+  gRenderPool.AddUnit(UnitType, ID, act, V.Dir, V.AnimStep, V.AnimFraction, xPaintPos, yPaintPos, gHands[Owner].GameFlagColor, True);
 
   if fTask is TKMTaskDie then Exit; //Do not show unnecessary arms
 
@@ -988,7 +988,7 @@ begin
 
   ID := UID * Byte(not (V.Action in [uaDie, uaEat]));
 
-  gRenderPool.AddUnit(UnitType, ID, V.Action, V.Dir, V.AnimStep, V.AnimFraction, xPaintPos, yPaintPos, gHands[Owner].GameFlagColor, true);
+  gRenderPool.AddUnit(UnitType, ID, V.Action, V.Dir, V.AnimStep, V.AnimFraction, xPaintPos, yPaintPos, gHands[Owner].GameFlagColor, True);
 
   if fThought <> thNone then
     gRenderPool.AddUnitThought(fType, V.Action, V.Dir, fThought, xPaintPos, yPaintPos);
@@ -2085,7 +2085,7 @@ begin
 end;
 
 
-//Return true if the unit has to be killed due to lack of space
+//Return True if the unit has to be killed due to lack of space
 function TKMUnit.UpdateVisibility: Boolean;
 var
   newCurrPosition: TKMPoint;
@@ -2524,7 +2524,7 @@ begin
 
   UpdateThoughts;
   UpdateHitPoints;
-  if UpdateVisibility then Exit; //incase units home was destroyed. Returns true if the unit was killed due to lack of space
+  if UpdateVisibility then Exit; //incase units home was destroyed. Returns True if the unit was killed due to lack of space
 
   //Shortcut to kill unit in place if it's on an unwalkable tile. We use fNextPosition rather than fCurrPosition
   //because once we have taken a step from a tile we no longer care about it. (fNextPosition matches up with IsUnit in terrain)

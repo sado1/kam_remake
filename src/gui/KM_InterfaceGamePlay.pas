@@ -1128,7 +1128,7 @@ var
 begin
   Image_Chat := TKMImage.Create(Panel_Main,TOOLBAR_WIDTH,Panel_Main.Height-48,30,48,494);
   Image_Chat.Anchors := [anLeft, anBottom];
-  Image_Chat.HighlightOnMouseOver := true;
+  Image_Chat.HighlightOnMouseOver := True;
   Image_Chat.Hint := gResTexts[TX_GAMEPLAY_CHAT_HINT];
   Image_Chat.OnClick := Chat_Click;
   Label_ChatUnread := TKMLabel.Create(Panel_Main,TOOLBAR_WIDTH,Panel_Main.Height-30,30,36,'',fntOutline,taCenter);
@@ -1145,7 +1145,7 @@ begin
 
   Image_MessageLog := TKMImage.Create(Panel_Main,TOOLBAR_WIDTH,Panel_Main.Height - 48 - IfThen(fUIMode in [umMP, umSpectate], 48*2),30,48,495);
   Image_MessageLog.Anchors := [anLeft, anBottom];
-  Image_MessageLog.HighlightOnMouseOver := true;
+  Image_MessageLog.HighlightOnMouseOver := True;
   Image_MessageLog.Hint := gResTexts[TX_GAME_MESSAGE_LOG];
   Image_MessageLog.OnClick := MessageLog_Click;
   Image_MessageLog.Hide; // Will be shows on first message
@@ -2753,7 +2753,7 @@ begin
                   end;
     else raise Exception.Create('Wrong message in ShowMPPlayMore');
   end;
-  Panel_MPPlayMore.Visible := true;
+  Panel_MPPlayMore.Visible := True;
 end;
 
 

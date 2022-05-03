@@ -94,7 +94,7 @@ begin
     Exit;
   end;
 
-  Result := true;
+  Result := True;
   {$ENDIF}
   //glXChooseVisual() should be on Uni insted of ChoosePixelFormatx
 end;

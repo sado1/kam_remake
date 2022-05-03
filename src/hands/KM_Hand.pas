@@ -2175,7 +2175,7 @@ end;
 
 
 procedure TKMHand.AddFirstStorehouse(aEntrance: TKMPoint);
-  // Place road and return true if it is possible
+  // Place road and return True if it is possible
   function AddRoad(aPoint: TKMPoint): Boolean;
   begin
     Result := CanAddFieldPlan(KMPoint(aPoint.X, aPoint.Y), ftRoad);

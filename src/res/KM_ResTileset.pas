@@ -324,7 +324,7 @@ end;
 //  if WriteResourceInfoToTXT then
 //    ExportPatternDat(ExeDir + 'Export'+PathDelim+'Pattern.csv');
 //
-//  Result := true;
+//  Result := True;
 //end;
 
 

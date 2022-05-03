@@ -1298,7 +1298,7 @@ begin
   //Stop the previous connection without calling Self.Disconnect as that frees everything
   fNetClient.Disconnect;
   tempMyIndex := fMyIndex;
-  Join(fServerAddress,fServerPort,fMyNickname,fRoomToJoin, true); //Join the same server/room as before in reconnecting mode
+  Join(fServerAddress,fServerPort,fMyNickname,fRoomToJoin, True); //Join the same server/room as before in reconnecting mode
   fMyIndex := tempMyIndex; //Join overwrites it, but we must remember it
 end;
 
@@ -2210,7 +2210,7 @@ begin
 
       mkReadyToPlay:
               begin
-                fNetPlayers[fNetPlayers.ServerToLocal(aSenderIndex)].ReadyToPlay := true;
+                fNetPlayers[fNetPlayers.ServerToLocal(aSenderIndex)].ReadyToPlay := True;
                 if Assigned(OnReadyToPlay) then OnReadyToPlay;
                 if IsHost then TryPlayGame;
               end;

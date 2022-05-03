@@ -507,7 +507,7 @@ begin
   if aFadeMusic and (fVolume > 0) and not fMusicIsFaded then
   begin
     if Assigned(fOnFadeMusic) then fOnFadeMusic;
-    fMusicIsFaded := true;
+    fMusicIsFaded := True;
   end;
 
   //Stop previously playing sound and release buffer
