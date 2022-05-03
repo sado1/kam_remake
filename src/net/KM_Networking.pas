@@ -235,7 +235,7 @@ type
     property PacketsStatsStartTime: Cardinal read fPacketsStatsStartTime;
     procedure ResetPacketsStats;
 
-    procedure UpdateState(aTick: cardinal);
+    procedure UpdateState(aGlobalTickCount: cardinal);
     procedure UpdateStateIdle;
     procedure FPSMeasurement(aFPS: Cardinal);
 
@@ -2674,7 +2674,7 @@ begin
 end;
 
 
-procedure TKMNetworking.UpdateState(aTick: cardinal);
+procedure TKMNetworking.UpdateState(aGlobalTickCount: cardinal);
 begin
   // Reconnection delay
   if (fReconnectRequested <> 0) and (TimeSince(fReconnectRequested) > RECONNECT_PAUSE) then DoReconnection;
