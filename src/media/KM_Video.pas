@@ -311,8 +311,25 @@ end;
 
 procedure TKMVideoPlayer.Paint;
 {$IFDEF VIDEOS}
+
+  procedure FitToScreen(out aWidth, aHeight: Integer);
+  var
+    aspectRatio: Single;
+  begin
+    aspectRatio := FWidth / FHeight;
+    if aspectRatio > FScreenWidth / FScreenHeight then
+    begin
+      aWidth := FScreenWidth;
+      aHeight := Round(FScreenWidth / aspectRatio);
+    end
+    else
+    begin
+      aWidth := Round(FScreenHeight * aspectRatio);
+      aHeight := FScreenHeight;
+    end;
+  end;
+
 var
-  aspectRatio: Single;
   width, height: Integer;
 {$ENDIF}
 begin
@@ -328,23 +345,16 @@ begin
     glBindTexture(GL_TEXTURE_2D, 0);
 
     if gGameSettings.Video.VideoStretch then
-    begin
-      aspectRatio := FWidth / FHeight;
-      if aspectRatio > FScreenWidth / FScreenHeight then
-      begin
-        width := FScreenWidth;
-        height := Round(FScreenWidth / aspectRatio);
-      end
-      else
-      begin
-        width := Round(FScreenHeight * aspectRatio);
-        height := FScreenHeight;
-      end;
-    end
+      FitToScreen(width, height)
     else
     begin
-      width := FWidth;
-      height := FHeight;
+      if (FWidth < FScreenWidth) and (FHeight < FScreenHeight) then
+      begin
+        width := FWidth;
+        height := FHeight;
+      end
+      else
+        FitToScreen(width, height);
     end;
 
     TKMRenderUI.WriteTexture((FScreenWidth - width) div 2, (FScreenHeight - height) div 2, width, height, FTexture, $FFFFFFFF);
