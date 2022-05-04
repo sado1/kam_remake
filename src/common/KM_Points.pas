@@ -1078,11 +1078,15 @@ end;
 
 //Rough and faster Length as combination of straight and diagonal
 function KMLengthDiag(const A, B: TKMPoint): Single;
+var
+  absX, absY: Integer;
 begin
-  if Abs(A.X - B.X) > Abs(A.Y - B.Y) then
-    Result := Abs(A.X - B.X) + Abs(A.Y - B.Y) * 0.41
+  absX := Abs(A.X - B.X);
+  absY := Abs(A.Y - B.Y);
+  if absX > absY then
+    Result := absX + absY * 0.41
   else
-    Result := Abs(A.Y - B.Y) + Abs(A.X - B.X) * 0.41;
+    Result := absY + absX * 0.41;
 end;
 
 
