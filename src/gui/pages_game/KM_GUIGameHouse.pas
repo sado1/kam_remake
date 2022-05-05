@@ -665,8 +665,8 @@ begin
 
   Button_HouseRepair.TexID := IfThen(aHouse.BuildingRepair, 39, 40);
 
-  // Use NewDeliveryMode, as it is supposed to be in UI, instead of DeliveryMode
-  //@Rey is this comment right? Makes no sense to me ..
+  // We use aHouse.NewDeliveryMode, so that player could see the effect immediately
+  // (instead of DeliveryMode which goes through GIP)
   Button_HouseDeliveryMode.TexID := DELIVERY_MODE_SPRITE[aHouse.NewDeliveryMode];
 
   Label_House_UnderConstruction.Hide;

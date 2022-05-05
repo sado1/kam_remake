@@ -25,7 +25,6 @@ type
     procedure HouseHealthChange(Sender: TObject; Shift: TShiftState);
     procedure HouseHealthClickHold(Sender: TObject; AButton: TMouseButton; var aHandled: Boolean);
 
-    procedure House_SetDeliveryMode(aMode: TKMDeliveryMode);
     procedure House_UpdateDeliveryMode(aMode: TKMDeliveryMode);
     procedure House_DeliveryModeToggle(Sender: TObject; Shift: TShiftState);
     procedure House_RepairToggle(Sender: TObject);
@@ -653,39 +652,23 @@ begin
   if aHandled then Exit;
 
   if (Key = VK_ESCAPE)
-    and Visible
-    and (gMySpectator.Selected <> nil) then
-    begin
-      gMySpectator.Selected := nil;
-      Hide;
-      aHandled := True;
-    end;
+  and Visible
+  and (gMySpectator.Selected <> nil) then
+  begin
+    gMySpectator.Selected := nil;
+    Hide;
+    aHandled := True;
+  end;
 end;
-
-
-procedure TKMMapEdHouse.House_SetDeliveryMode(aMode: TKMDeliveryMode);
-begin
-  fHouse.SetDeliveryModeInstantly(aMode);
-  House_UpdateDeliveryMode(aMode);
-end;
-
 
 procedure TKMMapEdHouse.House_DeliveryModeToggle(Sender: TObject; Shift: TShiftState);
 begin
-  case fHouse.DeliveryMode of
-    dmDelivery: if ssLeft in Shift then
-                  House_SetDeliveryMode(dmClosed)
-                else if ssRight in Shift then
-                  House_SetDeliveryMode(dmTakeOut);
-    dmClosed:   if ssLeft in Shift then
-                  House_SetDeliveryMode(dmTakeOut)
-                else if ssRight in Shift then
-                  House_SetDeliveryMode(dmDelivery);
-    dmTakeOut:  if ssLeft in Shift then
-                  House_SetDeliveryMode(dmDelivery)
-                else if ssRight in Shift then
-                  House_SetDeliveryMode(dmClosed);
-  end;
+  if ssLeft in Shift then
+    fHouse.SetNextDeliveryMode
+  else if ssRight in Shift then
+    fHouse.SetPrevDeliveryMode;
+
+  House_UpdateDeliveryMode(fHouse.DeliveryMode);
 end;
 
 

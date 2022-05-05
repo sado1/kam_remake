@@ -884,17 +884,17 @@ end;
 
 procedure TKMHouse.SetNextDeliveryMode;
 begin
-  SetNewDeliveryMode(TKMDeliveryMode((Ord(fNewDeliveryMode) + 3 - 1) mod 3)); //We use opposite order for legacy support
+  SetNewDeliveryMode(TKMDeliveryMode((Ord(fNewDeliveryMode) + 3 - 1) mod 3)); // We use opposite order for legacy support
 end;
 
 
 procedure TKMHouse.SetPrevDeliveryMode;
 begin
-  SetNewDeliveryMode(TKMDeliveryMode((Ord(fNewDeliveryMode) + 1) mod 3)); //We use opposite order for legacy support
+  SetNewDeliveryMode(TKMDeliveryMode((Ord(fNewDeliveryMode) + 1) mod 3)); // We use opposite order for legacy support
 end;
 
 
-//Set delivery mdoe immidiately
+// Set delivery mdoe immidiately
 procedure TKMHouse.SetDeliveryModeInstantly(aValue: TKMDeliveryMode);
 begin
   fNewDeliveryMode := aValue;
