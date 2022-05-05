@@ -643,17 +643,8 @@ end;
 
 
 procedure TKMMapEdHouse.House_UpdateDeliveryMode(aMode: TKMDeliveryMode);
-var
-  texId: Word;
 begin
-  texId := 0;
-
-  case aMode of
-    dmDelivery:  texId := 37;
-    dmClosed:    texId := 38;
-    dmTakeOut:   texId := 664;
-  end;
-  Button_HouseDeliveryMode.TexID := texId;
+  Button_HouseDeliveryMode.TexID := DELIVERY_MODE_SPRITE[aMode];
 end;
 
 
@@ -681,23 +672,19 @@ end;
 
 procedure TKMMapEdHouse.House_DeliveryModeToggle(Sender: TObject; Shift: TShiftState);
 begin
-  //todo: Replace with Tag property
-  case Button_HouseDeliveryMode.TexID of
-    37: // dmDelivery
-          if ssLeft in Shift then
-            House_SetDeliveryMode(dmClosed)
-          else if ssRight in Shift then
-            House_SetDeliveryMode(dmTakeOut);
-    38: // dmClosed
-          if ssLeft in Shift then
-            House_SetDeliveryMode(dmTakeOut)
-          else if ssRight in Shift then
-            House_SetDeliveryMode(dmDelivery);
-    664: // dmTakeOut
-          if ssLeft in Shift then
-            House_SetDeliveryMode(dmDelivery)
-          else if ssRight in Shift then
-            House_SetDeliveryMode(dmClosed);
+  case fHouse.DeliveryMode of
+    dmDelivery: if ssLeft in Shift then
+                  House_SetDeliveryMode(dmClosed)
+                else if ssRight in Shift then
+                  House_SetDeliveryMode(dmTakeOut);
+    dmClosed:   if ssLeft in Shift then
+                  House_SetDeliveryMode(dmTakeOut)
+                else if ssRight in Shift then
+                  House_SetDeliveryMode(dmDelivery);
+    dmTakeOut:  if ssLeft in Shift then
+                  House_SetDeliveryMode(dmDelivery)
+                else if ssRight in Shift then
+                  House_SetDeliveryMode(dmClosed);
   end;
 end;
 

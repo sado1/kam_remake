@@ -665,11 +665,9 @@ begin
 
   Button_HouseRepair.TexID := IfThen(aHouse.BuildingRepair, 39, 40);
 
-  case aHouse.NewDeliveryMode of //Use NewDeliveryMode, as it is supposed to be in UI, instead of DeliveryMode
-    dmDelivery: Button_HouseDeliveryMode.TexID := 37;
-    dmClosed:   Button_HouseDeliveryMode.TexID := 38;
-    dmTakeOut:  Button_HouseDeliveryMode.TexID := 664;
-  end;
+  // Use NewDeliveryMode, as it is supposed to be in UI, instead of DeliveryMode
+  //@Rey is this comment right? Makes no sense to me ..
+  Button_HouseDeliveryMode.TexID := DELIVERY_MODE_SPRITE[aHouse.NewDeliveryMode];
 
   Label_House_UnderConstruction.Hide;
   Image_HouseConstructionWood.Hide;
@@ -682,86 +680,75 @@ begin
   Panel_House.Show;
 
   case aHouse.HouseType of
-    htMarket:
-        begin
-          House_MarketFill(TKMHouseMarket(aHouse));
-          Panel_HouseMarket.Show;
-        end;
+    htMarket:         begin
+                        House_MarketFill(TKMHouseMarket(aHouse));
+                        Panel_HouseMarket.Show;
+                      end;
+    htStore:          begin
+                        House_StoreFill;
+                        Panel_HouseStore.Show;
+                      end;
+    htSchool:         begin
+                        WaresRow_School_Gold.WareCount := aHouse.CheckResIn(wtGold) - Byte(TKMHouseSchool(aHouse).HideOneGold);
+                        Button_School_UnitWIP.FlagColor := gHands[aHouse.Owner].FlagColor;
+                        for I := 1 to 5 do
+                          Button_School_UnitPlan[I].FlagColor := gHands[aHouse.Owner].FlagColor;
+                        Image_School_Left.FlagColor  := gHands[aHouse.Owner].FlagColor;
+                        Image_School_Right.FlagColor := gHands[aHouse.Owner].FlagColor;
+                        Image_School_Train.FlagColor := gHands[aHouse.Owner].FlagColor;
+                        House_SchoolUnitChange(nil, []);
+                        Panel_House_School.Show;
+                      end;
+    htBarracks:       begin
+                        House_BarracksUnitChange(nil, []);
+                        Panel_HouseBarracks.Show;
+                      end;
+    htWoodcutters:    begin
+                        House_WoodcutterChange(nil);
+                        Panel_HouseWoodcutter.Show;
 
-    htStore:
-        begin
-          House_StoreFill;
-          Panel_HouseStore.Show;
-        end;
+                        //First thing - hide everything
+                        for I := 0 to Panel_House_Common.ChildCount - 1 do
+                          Panel_House_Common.Childs[I].Hide;
 
-    htSchool:
-        begin
-          WaresRow_School_Gold.WareCount := aHouse.CheckResIn(wtGold) - Byte(TKMHouseSchool(aHouse).HideOneGold);
-          Button_School_UnitWIP.FlagColor := gHands[aHouse.Owner].FlagColor;
-          for I := 1 to 5 do
-            Button_School_UnitPlan[I].FlagColor := gHands[aHouse.Owner].FlagColor;
-          Image_School_Left.FlagColor  := gHands[aHouse.Owner].FlagColor;
-          Image_School_Right.FlagColor := gHands[aHouse.Owner].FlagColor;
-          Image_School_Train.FlagColor := gHands[aHouse.Owner].FlagColor;
-          House_SchoolUnitChange(nil, []);
-          Panel_House_School.Show;
-        end;
+                        Label_Common_Offer.Show;
+                        Label_Common_Offer.Caption := gResTexts[TX_HOUSE_DELIVERS]+'(x'+inttostr(gResHouses[aHouse.HouseType].ResProductionX)+'):';
+                        Label_Common_Offer.Top := 8;
 
-    htBarracks:
-        begin
-          House_BarracksUnitChange(nil, []);
-          Panel_HouseBarracks.Show;
-        end;
+                        WaresRow_Common[1].TexID := gResWares[gResHouses[aHouse.HouseType].ResOutput[1]].GUIIcon;
+                        WaresRow_Common[1].WareCount := aHouse.CheckResOut(gResHouses[aHouse.HouseType].ResOutput[1]);
+                        WaresRow_Common[1].Caption := gResWares[gResHouses[aHouse.HouseType].ResOutput[1]].Title;
+                        WaresRow_Common[1].Hint := gResWares[gResHouses[aHouse.HouseType].ResOutput[1]].Title;
+                        WaresRow_Common[1].Show;
+                        WaresRow_Common[1].Top := 2 + LINE_HEIGHT;
 
-    htWoodcutters:
-        begin
-          House_WoodcutterChange(nil);
-          Panel_HouseWoodcutter.Show;
+                        Label_DepletedMsg.Top := Radio_Woodcutter.Bottom + 5;
+                        Label_DepletedMsg.Visible := aHouse.ResourceDepleted;
+                        if aHouse.ResourceDepleted then
+                          Label_DepletedMsg.Caption := gResTexts[aHouse.GetResourceDepletedMessageId];
+                      end;
+    htArmorWorkshop:  ShowArmorWorkshop(aHouse);
+    htTownHall:       ShowTownHall(aHouse);
+  else
+    //First thing - hide everything
+    for I := 0 to Panel_House_Common.ChildCount - 1 do
+      Panel_House_Common.Childs[I].Hide;
 
-          //First thing - hide everything
-          for I := 0 to Panel_House_Common.ChildCount - 1 do
-            Panel_House_Common.Childs[I].Hide;
+    //Now show only what we need
+    rowRes := 1;
+    line := 0;
+    base := 2;
 
-          Label_Common_Offer.Show;
-          Label_Common_Offer.Caption := gResTexts[TX_HOUSE_DELIVERS]+'(x'+inttostr(gResHouses[aHouse.HouseType].ResProductionX)+'):';
-          Label_Common_Offer.Top := 8;
+    //Show Demand
+    ShowCommonDemand(aHouse, base, line, rowRes);
 
-          WaresRow_Common[1].TexID := gResWares[gResHouses[aHouse.HouseType].ResOutput[1]].GUIIcon;
-          WaresRow_Common[1].WareCount := aHouse.CheckResOut(gResHouses[aHouse.HouseType].ResOutput[1]);
-          WaresRow_Common[1].Caption := gResWares[gResHouses[aHouse.HouseType].ResOutput[1]].Title;
-          WaresRow_Common[1].Hint := gResWares[gResHouses[aHouse.HouseType].ResOutput[1]].Title;
-          WaresRow_Common[1].Show;
-          WaresRow_Common[1].Top := 2 + LINE_HEIGHT;
+    //Show Output
+    ShowCommonOutput(aHouse, base, line, rowRes);
 
-          Label_DepletedMsg.Top := Radio_Woodcutter.Bottom + 5;
-          Label_DepletedMsg.Visible := aHouse.ResourceDepleted;
-          if aHouse.ResourceDepleted then
-            Label_DepletedMsg.Caption := gResTexts[aHouse.GetResourceDepletedMessageId];
-        end;
-    htArmorWorkshop: ShowArmorWorkshop(aHouse);
-    htTownHall:      ShowTownHall(aHouse);
-    else
-        begin
-          //First thing - hide everything
-          for I := 0 to Panel_House_Common.ChildCount - 1 do
-            Panel_House_Common.Childs[I].Hide;
+    //Show Orders
+    ShowCommonOrders(aHouse, base, line, rowRes);
 
-          //Now show only what we need
-          rowRes := 1;
-          line := 0;
-          base := 2;
-
-          //Show Demand
-          ShowCommonDemand(aHouse, base, line, rowRes);
-
-          //Show Output
-          ShowCommonOutput(aHouse, base, line, rowRes);
-
-          //Show Orders
-          ShowCommonOrders(aHouse, base, line, rowRes);
-
-          Panel_House_Common.Show;
-        end;
+    Panel_House_Common.Show;
   end;
 end;
 

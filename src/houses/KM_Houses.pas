@@ -13,7 +13,10 @@ uses
 type
   //* Delivery mode
   TKMDeliveryMode = (dmClosed, dmDelivery, dmTakeOut);
+const
+  DELIVERY_MODE_SPRITE: array [TKMDeliveryMode] of Word = (38, 37, 664);
 
+type
   TKMHouse = class;
   TKMHouseEvent = procedure(aHouse: TKMHouse) of object;
   TKMHouseFromEvent = procedure(aHouse: TKMHouse; aFrom: TKMHandID) of object;
