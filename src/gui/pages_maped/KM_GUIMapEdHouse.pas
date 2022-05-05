@@ -53,13 +53,17 @@ type
   protected
     Panel_House: TKMPanel;
       Label_House: TKMLabel;
-      Image_House_Logo, Image_House_Worker: TKMImage;
-      Button_HouseDeliveryMode, Button_HouseRepair: TKMButton;
+      Image_House_Logo: TKMImage;
+      Image_House_Worker: TKMImage;
+      Button_HouseDeliveryMode: TKMButton;
+      Button_HouseRepair: TKMButton;
       Image_House_Worker_Closed: TKMImage;
       Button_House_Worker: TKMButton;
       HealthBar_House: TKMPercentBar;
-      Button_HouseHealthDec, Button_HouseHealthInc: TKMButton;
-      Label_House_Input, Label_House_Output: TKMLabel;
+      Button_HouseHealthDec: TKMButton;
+      Button_HouseHealthInc: TKMButton;
+      Label_House_Input: TKMLabel;
+      Label_House_Output: TKMLabel;
       ResRow_Ware_Input: array [0..3] of TKMWareOrderRow;
       ResRow_Ware_Output: array [0..3] of TKMWareOrderRow;
 

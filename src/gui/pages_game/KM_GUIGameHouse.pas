@@ -67,8 +67,11 @@ type
   protected
     Panel_House: TKMPanel;
       Label_House: TKMLabel;
-      Button_HouseDeliveryMode,Button_HouseRepair: TKMButton;
-      Image_House_Logo,Image_House_Worker, Image_House_Worker_Closed: TKMImage;
+      Button_HouseDeliveryMode: TKMButton;
+      Button_HouseRepair: TKMButton;
+      Image_House_Logo: TKMImage;
+      Image_House_Worker: TKMImage;
+      Image_House_Worker_Closed: TKMImage;
       Button_House_Worker: TKMButton;
       HealthBar_House: TKMPercentBar;
 
