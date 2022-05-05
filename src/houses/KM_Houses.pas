@@ -216,6 +216,7 @@ type
     property PlacedOverRoad: Boolean read fPlacedOverRoad write fPlacedOverRoad;
 
     property PositionF: TKMPointF read GetPositionF;
+
     property DeliveryMode: TKMDeliveryMode read fDeliveryMode;
     property NewDeliveryMode: TKMDeliveryMode read fNewDeliveryMode write SetNewDeliveryMode;
     procedure SetNextDeliveryMode;
@@ -348,9 +349,9 @@ uses
   KM_ResTileset;
 
 const
-  //Delay, In ticks, from user click on DeliveryMode btn, to tick, when mode will be really set.
-  //Made to prevent serf's taking/losing deliveries only because player clicks throught modes.
-  //No hurry, let's wait a bit for player to be sure, what mode he needs
+  // Delay, in ticks, from user click on DeliveryMode btn, to tick, when mode will be really set.
+  // Made to prevent serf's taking/losing deliveries only because player clicks throught modes.
+  // No hurry, let's wait a bit for player to be sure, what mode he needs
   UPDATE_DELIVERY_MODE_DELAY = 10;
 
 

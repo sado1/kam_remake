@@ -2,9 +2,8 @@ unit KM_HouseTownHall;
 {$I KaM_Remake.inc}
 interface
 uses
-  KM_Houses,
-
   KM_CommonClasses, KM_Defaults,
+  KM_Houses,
   KM_ResTypes;
 
 const
@@ -67,7 +66,8 @@ uses
   KM_UnitWarrior, KM_ResUnits, KM_ScriptingEvents,
   KM_InterfaceGame;
 
-{TKMHouseTownHall}
+
+{ TKMHouseTownHall }
 constructor TKMHouseTownHall.Create(aUID: Integer; aHouseType: TKMHouseType; PosX, PosY: Integer; aOwner: TKMHandID; aBuildState: TKMHouseBuildState);
 var
   I, M: Integer;
@@ -315,7 +315,6 @@ begin
     ResTakeFromOut(aWare, aCount, aFromScript)
   else
     ResTakeFromIn(aWare, aCount, aFromScript);
-
 end;
 
 
