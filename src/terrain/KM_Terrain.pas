@@ -2020,9 +2020,9 @@ begin
 end;
 
 
-{Check wherever unit can walk from A to B diagonaly}
-{Return True if direction is either walkable or not diagonal}
-{Maybe this can also be used later for inter-tile passability}
+// Check wherever unit can walk from A to B diagonaly
+// Return True if direction is either walkable or not diagonal
+// Maybe this can also be used later for inter-tile passability
 function TKMTerrain.CanWalkDiagonaly(const aFrom: TKMPoint; aX, aY: SmallInt): Boolean;
 begin
   Result := True;
@@ -2141,9 +2141,8 @@ begin
 end;
 
 
-procedure TKMTerrain.RemField(const aLoc: TKMPoint; aDoUpdatePass, aDoUpdateWalk: Boolean;
-                              out aUpdatePassRect: TKMRect; out aDiagObjectChanged: Boolean;
-                              aDoUpdateFences: Boolean);
+procedure TKMTerrain.RemField(const aLoc: TKMPoint; aDoUpdatePass, aDoUpdateWalk: Boolean; out aUpdatePassRect: TKMRect;
+  out aDiagObjectChanged: Boolean; aDoUpdateFences: Boolean);
 begin
   Land^[aLoc.Y,aLoc.X].TileOwner := -1;
   Land^[aLoc.Y,aLoc.X].TileOverlay := toNone;
@@ -2313,7 +2312,8 @@ begin
     toDig3: Land^[aLoc.Y,aLoc.X].TileOverlay := toDig4;
     toDig2: Land^[aLoc.Y,aLoc.X].TileOverlay := toDig3;
     toDig1: Land^[aLoc.Y,aLoc.X].TileOverlay := toDig2;
-    else     Land^[aLoc.Y,aLoc.X].TileOverlay := toDig1;
+  else
+    Land^[aLoc.Y,aLoc.X].TileOverlay := toDig1;
   end;
 end;
 
@@ -2324,7 +2324,7 @@ begin
 end;
 
 
-{ Finds a winefield ready to be picked }
+// Finds a winefield ready to be picked
 function TKMTerrain.FindWineField(const aLoc: TKMPoint; aRadius: Integer; const aAvoidLoc: TKMPoint; out aFieldPoint: TKMPointDir): Boolean;
 var
   I: Integer;
@@ -2408,9 +2408,9 @@ begin
 end;
 
 
-{ Finds a corn field }
+// Finds a corn field
 function TKMTerrain.FindCornField(const aLoc: TKMPoint; aRadius: Integer; const aAvoidLoc: TKMPoint; aPlantAct: TKMPlantAct;
-                                  out aPlantActOut: TKMPlantAct; out aFieldPoint: TKMPointDir): Boolean;
+  out aPlantActOut: TKMPlantAct; out aFieldPoint: TKMPointDir): Boolean;
 var
   I: Integer;
   validTiles, nearTiles, farTiles: TKMPointList;
@@ -3363,7 +3363,6 @@ end;
 function TKMTerrain.DecStoneDeposit(const aLoc: TKMPoint): Boolean;
 type
   TStoneTransitionType = (sttNone, sttGrass, sttCoastSand, sttDirt, sttSnow, sttSnowOnDirt);
-
 const
   TransitionsTerKinds: array[TStoneTransitionType] of TKMTerrainKind =
                                                       (tkGrass, tkGrass, tkCoastSand, tkDirt, tkSnow, tkSnowOnDirt);
@@ -3548,8 +3547,8 @@ begin
   transition := GetStoneTransitionType(aLoc.X,aLoc.Y + 1); //Check transition type by lower point (Y + 1)
 
   Result := True;
-  //Replace with smaller ore deposit tile (there are 2 sets of tiles, we can choose random)
-   case Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain of
+  // Replace with smaller ore deposit tile (there are 2 sets of tiles, we can choose random)
+  case Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain of
     132, 137: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 131 + KaMRandom(2, 'TKMTerrain.DecStoneDeposit')*5;
     131, 136: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 130 + KaMRandom(2, 'TKMTerrain.DecStoneDeposit 2')*5;
     130, 135: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 129 + KaMRandom(2, 'TKMTerrain.DecStoneDeposit 3')*5;
@@ -3573,7 +3572,8 @@ begin
                 //Tile type has changed and we need to update these 5 tiles transitions:
                 UpdateTransition(aLoc.X,  aLoc.Y, 0);
               end;
-    else      Exit(False);
+  else
+    Exit(False);
   end;
 
   FlattenTerrain(aLoc, True, True); //Ignore canElevate since it can prevent stonehill from being still walkable and cause a crash
@@ -3605,7 +3605,8 @@ begin
     154: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 153;
     155: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 154;
     263: Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain := 155;
-    else Result := False;
+  else
+    Result := False;
   end;
   Land^[aLoc.Y,aLoc.X].BaseLayer.Rotation := KaMRandom(4, 'TKMTerrain.DecOreDeposit 5');
   UpdatePassability(aLoc);
@@ -3721,16 +3722,15 @@ begin
           housesNearVertex := True;
 
   if VerticeInMapCoords(aLoc.X,aLoc.Y)
-    and not housesNearVertex then
+  and not housesNearVertex then
     AddPassability(tpElevate);
 end;
 
 
-//Find closest passable point to TargetPoint within line segment OriginPoint <-> TargetPoint
-//MaxDistance - maximum distance between finded point and origin point. MaxDistance = -1 means there is no distance restriction
-function TKMTerrain.GetPassablePointWithinSegment(aOriginPoint, aTargetPoint: TKMPoint;
-                                                  aPass: TKMTerrainPassability;
-                                                  aMaxDistance: Integer = -1): TKMPoint;
+// Find closest passable point to TargetPoint within line segment OriginPoint <-> TargetPoint
+// MaxDistance - maximum distance between found point and origin point. MaxDistance = -1 means there is no distance restriction
+function TKMTerrain.GetPassablePointWithinSegment(aOriginPoint, aTargetPoint: TKMPoint; aPass: TKMTerrainPassability;
+  aMaxDistance: Integer = -1): TKMPoint;
 
   function IsDistBetweenPointsAllowed(const aOriginPoint, aTargetPoint: TKMPoint; aMaxDistance: Integer): Boolean; inline;
   begin
@@ -3747,8 +3747,8 @@ begin
     normDistance := Min(aMaxDistance, Floor(KMLength(aOriginPoint, aTargetPoint)));
 
   while (normDistance >= 0)
-    and (not IsDistBetweenPointsAllowed(aOriginPoint, aTargetPoint, aMaxDistance)
-         or not CheckPassability(aTargetPoint, aPass)) do
+  and (not IsDistBetweenPointsAllowed(aOriginPoint, aTargetPoint, aMaxDistance)
+       or not CheckPassability(aTargetPoint, aPass)) do
   begin
     normVector := KMNormVector(KMPoint(aTargetPoint.X - aOriginPoint.X, aTargetPoint.Y - aOriginPoint.Y), normDistance);
     aTargetPoint := KMPoint(aOriginPoint.X + normVector.X, aOriginPoint.Y + normVector.Y);

@@ -2398,10 +2398,12 @@ begin
   Result := not KMSamePoint(fFlagPoint, PointBelowEntrance);
 end;
 
+
 procedure TKMHouseWFlagPoint.SetFlagPoint(aFlagPoint: TKMPoint);
 begin
   fFlagPoint := GetValidPoint(aFlagPoint);
 end;
+
 
 procedure TKMHouseWFlagPoint.ValidateFlagPoint;
 begin
