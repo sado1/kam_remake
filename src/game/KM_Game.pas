@@ -112,6 +112,8 @@ type
     procedure OtherPlayerDisconnected(aDefeatedPlayerHandId: Integer);
     function GetActiveHandIDs: TKMByteSet;
 
+    procedure VisibleLayersWereSet;
+
     procedure RecalcMapCRC;
 
     function GetTickDuration: Single;
@@ -347,7 +349,8 @@ begin
   if gMain <> nil then
     gMain.FormMain.SuppressAltForMenu := True;
 
-  fParams := TKMGameParams.Create(aGameMode, RecalcMapCRC, fSetGameTickEvent, fSetGameTickFracEvent, fSetGameModeEvent, fSetMissionFileSP, fSetBlockPointer);
+  fParams := TKMGameParams.Create(aGameMode, RecalcMapCRC, VisibleLayersWereSet, fSetGameTickEvent, fSetGameTickFracEvent,
+                                  fSetGameModeEvent, fSetMissionFileSP, fSetBlockPointer);
 
   fSaveWorkerThreadHolder := aSaveWorkerThreadHolder;
   fBaseSaveWorkerThreadHolder := aBaseSaveWorkerThreadHolder;
@@ -3354,6 +3357,12 @@ end;
 procedure TKMGame.UserAction(aActionType: TKMUserActionType);
 begin
   fLastTimeUserAction := Max(fLastTimeUserAction, TimeGet);
+end;
+
+
+procedure TKMGame.VisibleLayersWereSet;
+begin
+  gTerrain.UpdateRenderHeight;
 end;
 
 

@@ -32,6 +32,7 @@ type
                           const aPaintedTile: TKMPainterTile;
                           const aMapEdTile: TKMMapEdTerrainTile): TKMUndoTile;
     procedure RestoreTileFromUndo(var aTile: TKMTerrainTile;
+                                  var aTileExt: TKMTerrainTileExt;
                                   var aPaintedTile: TKMPainterTile;
                                   var aMapEdTile: TKMMapEdTerrainTile;
                                   aUndoTile: TKMUndoTile;
@@ -242,8 +243,9 @@ begin
 end;
 
 
-procedure TKMCheckpointTerrain.RestoreTileFromUndo(var aTile: TKMTerrainTile; var aPaintedTile: TKMPainterTile;
-                                                   var aMapEdTile: TKMMapEdTerrainTile; aUndoTile: TKMUndoTile; aUnderHouse: Boolean);
+procedure TKMCheckpointTerrain.RestoreTileFromUndo(var aTile: TKMTerrainTile; var aTileExt: TKMTerrainTileExt;
+                                                   var aPaintedTile: TKMPainterTile; var aMapEdTile: TKMMapEdTerrainTile;
+                                                   aUndoTile: TKMUndoTile; aUnderHouse: Boolean);
 var
   L: Integer;
 begin
@@ -252,6 +254,7 @@ begin
 
   aTile.LayersCnt               := aUndoTile.LayersCnt;
   aTile.Height                  := aUndoTile.Height;
+  aTileExt.RenderHeight         := aTile.GetRenderHeight;
   aTile.Obj                     := aUndoTile.Obj;
   aTile.IsCustom                := aUndoTile.IsCustom;
   aTile.BlendingLvl             := aUndoTile.BlendingLvl;
@@ -284,6 +287,7 @@ begin
   for I := 0 to gTerrain.MapY-1 do
   for K := 0 to gTerrain.MapX-1 do
     RestoreTileFromUndo(gTerrain.MainLand^[I+1,K+1],
+                        gTerrain.LandExt^[I+1,K+1],
                         gGame.TerrainPainter.MainLandTerKind[I+1,K+1],
                         gGame.MapEditor.MainLandMapEd^[I+1,K+1],
                         fData[I,K], gHands.HousesHitTest(K+1,I+1) <> nil);

@@ -14,7 +14,8 @@ type
   {Class to store all terrain data, aswell terrain routines}
   TKMTerrain = class
   private
-    fLand: TKMLand;
+    fLand: TKMLand; // Actual Land
+    fLandExt: TKMLandExt; // Precalculated Land data to speedup the render, updated on Land update. Does not saved
     fMainLand: PKMLand; // pointer to the actual fLand with all terrain data
 
     fAnimStep: Cardinal;
@@ -53,6 +54,7 @@ type
     function HousesNearTile(X,Y: Word): Boolean;
   public
     Land: PKMLand;
+    LandExt: PKMLandExt;
 
     Fences: TKMLandFences;
     FallingTrees: TKMPointTagList;
@@ -283,6 +285,10 @@ type
     function HeightAt(inX, inY: Single): Single;
     function RenderHeightAt(inX, inY: Single): Single;
 
+    procedure UpdateRenderHeight; overload;
+    procedure UpdateRenderHeight(const aRect: TKMRect); overload;
+    procedure UpdateRenderHeight(X, Y: Integer); overload;
+
     procedure UpdateLighting; overload;
     procedure UpdateLighting(const aRect: TKMRect); overload;
     procedure UpdateLighting(X, Y: Integer); overload;
@@ -340,6 +346,7 @@ begin
   fTileset := gRes.Tileset; //Local shortcut
 
   fMainLand := @fLand;
+  LandExt := @fLandExt;
   SetMainLand;
 end;
 
@@ -384,6 +391,7 @@ begin
         LayersCnt    := 0;
         BaseLayer.SetAllCorners;
         Height       := HEIGHT_DEFAULT + KaMRandom(HEIGHT_RAND_VALUE, 'TKMTerrain.MakeNewMap 3');  //variation in Height
+        LandExt[I, K].RenderHeight := GetRenderHeight;
         BaseLayer.Rotation     := KaMRandom(4, 'TKMTerrain.MakeNewMap 4');  //Make it random
         Obj          := OBJ_NONE;             //none
         IsCustom     := False;
@@ -459,6 +467,7 @@ begin
 
         Land^[I,J].BaseLayer   := tileBasic.BaseLayer;
         Land^[I,J].SetHeightExact(tileBasic.Height); // Set fHeight directly, without any limitations
+        UpdateRenderHeight(J, I);
         Land^[I,J].Obj         := tileBasic.Obj;
         Land^[I,J].LayersCnt   := tileBasic.LayersCnt;
         Land^[I,J].IsCustom    := tileBasic.IsCustom;
@@ -667,6 +676,7 @@ begin
   oldHeight := aHeight;
   //Apply change
   Land^[Y, X].Height := aHeight;
+  UpdateRenderHeight(X, Y);
 
   //Don't check canElevate: If scripter wants to block mines that's his choice
 
@@ -681,6 +691,7 @@ begin
         begin
           //Rollback change
           Land^[Y, X].Height := oldHeight;
+          UpdateRenderHeight(X, Y);
           Exit(False);
         end;
 
@@ -4297,14 +4308,32 @@ begin
   Assert(vertsFactored <> 0); //Non-neighbour verts will always be factored
   avg := Round(avg / vertsFactored);
 
-  if CanElevateAt(aLoc.X  , aLoc.Y  ) then
-    Land[aLoc.Y  ,aLoc.X  ].Height := Mix(avg, Land^[aLoc.Y  ,aLoc.X  ].Height, 0.5);
-  if CanElevateAt(aLoc.X+1, aLoc.Y  ) then
-    Land[aLoc.Y  ,aLoc.X+1].Height := Mix(avg, Land^[aLoc.Y  ,aLoc.X+1].Height, 0.5);
-  if CanElevateAt(aLoc.X  , aLoc.Y+1) then
-    Land[aLoc.Y+1,aLoc.X  ].Height := Mix(avg, Land^[aLoc.Y+1,aLoc.X  ].Height, 0.5);
-  if CanElevateAt(aLoc.X+1, aLoc.Y+1) then
-    Land[aLoc.Y+1,aLoc.X+1].Height := Mix(avg, Land^[aLoc.Y+1,aLoc.X+1].Height, 0.5);
+  // X, Y
+  if CanElevateAt(aLoc.X  , aLoc.Y) then
+  begin
+    Land[aLoc.Y, aLoc.X  ].Height := Mix(avg, Land^[aLoc.Y  ,aLoc.X  ].Height, 0.5);
+    UpdateRenderHeight(aLoc.X, aLoc.Y);
+  end;
+  // X + 1, Y
+  if CanElevateAt(aLoc.X + 1, aLoc.Y) then
+  begin
+    Land[aLoc.Y, aLoc.X+1].Height := Mix(avg, Land^[aLoc.Y  ,aLoc.X+1].Height, 0.5);
+    UpdateRenderHeight(aLoc.X + 1, aLoc.Y);
+  end;
+  // X, Y + 1
+  if CanElevateAt(aLoc.X, aLoc.Y + 1) then
+  begin
+    Land[aLoc.Y + 1, aLoc.X].Height := Mix(avg, Land^[aLoc.Y + 1, aLoc.X].Height, 0.5);
+    UpdateRenderHeight(aLoc.X, aLoc.Y + 1);
+  end;
+  // X + 1, Y + 1
+  if CanElevateAt(aLoc.X + 1, aLoc.Y + 1) then
+  begin
+    Land[aLoc.Y + 1 ,aLoc.X + 1].Height := Mix(avg, Land^[aLoc.Y + 1, aLoc.X + 1].Height, 0.5);
+    UpdateRenderHeight(aLoc.X + 1, aLoc.Y + 1);
+  end;
+
+
 
   //All 9 tiles around and including this one could have become unwalkable and made a unit stuck, so check them all
   for I := Max(aLoc.Y-1, 1) to Min(aLoc.Y+1, fMapY-1) do
@@ -4347,6 +4376,29 @@ begin
 end;
 
 
+procedure TKMTerrain.UpdateRenderHeight;
+begin
+  UpdateRenderHeight(fMapRect);
+end;
+
+
+procedure TKMTerrain.UpdateRenderHeight(const aRect: TKMRect);
+var
+  I, K: Integer;
+begin
+  //Valid vertices are within 1..Map
+  for I := Max(aRect.Top, 1) to Min(aRect.Bottom, fMapY) do
+    for K := Max(aRect.Left, 1) to Min(aRect.Right, fMapX) do
+      UpdateRenderHeight(K, I);
+end;
+
+
+procedure TKMTerrain.UpdateRenderHeight(X, Y: Integer);
+begin
+  LandExt[Y, X].RenderHeight := Land^[Y, X].GetRenderHeight;
+end;
+
+
 procedure TKMTerrain.UpdateLighting;
 begin
   UpdateLighting(fMapRect);
@@ -4378,19 +4430,26 @@ var
   x0, y2: Integer;
   sLight, sLightWater: Single;
 begin
-  x0 := Max(X - 1, 1);
-  y2 := Min(Y + 1, fMapY);
-  sLight := EnsureRange((Land^[Y,X].RenderHeight - (Land^[y2,X].RenderHeight + Land^[Y,x0].RenderHeight)/2)/22, -1, 1); // 1.33*16 ~=22.
-  sLightWater := EnsureRange(sLight*WATER_LIGHT_MULTIPLIER + 0.1, -1, 1);
-  Land^[Y,X].Light := ConvertLightToByte(sLight); //  1.33*16 ~=22.
-
-  //Use more contrast lighting for Waterbeds
-  if fTileset[Land^[Y, X].BaseLayer.Terrain].Water then
-    Land^[Y,X].Light := ConvertLightToByte(sLightWater);
-
   //Map borders always fade to black
   if (Y = 1) or (Y = fMapY) or (X = 1) or (X = fMapX) then
-    Land^[Y,X].Light := 0;
+    Land^[Y,X].Light := 0
+  else
+  begin
+    x0 := Max(X - 1, 1);
+    y2 := Min(Y + 1, fMapY);
+
+    sLight := EnsureRange((LandExt^[Y,X].RenderHeight - (LandExt^[y2,X].RenderHeight + LandExt^[Y,x0].RenderHeight)/2)/22, -1, 1); // 1.33*16 ~=22.
+    //Use more contrast lighting for Waterbeds
+    if fTileset[Land^[Y, X].BaseLayer.Terrain].Water then
+    begin
+      sLightWater := EnsureRange(sLight*WATER_LIGHT_MULTIPLIER + 0.1, -1, 1);
+      Land^[Y,X].Light := ConvertLightToByte(sLightWater);
+    end
+    else
+      Land^[Y,X].Light := ConvertLightToByte(sLight); //  1.33*16 ~=22.
+  end;
+
+  LandExt[Y,X].RenderLight := Land^[Y,X].GetRenderLight;
 end;
 
 
@@ -4790,6 +4849,7 @@ procedure TKMTerrain.UpdateAll(const aRect: TKMRect);
 begin
   UpdatePassability(aRect);
   UpdateFences(aRect);
+  UpdateRenderHeight(aRect);
   UpdateLighting(aRect);
 end;
 
@@ -4869,8 +4929,8 @@ begin
   begin
     ii := I - lenNegative;
     tmp       := EnsureRange(Yc + ii, 1, fMapY);
-    Ycoef[I] := (Yc - 1) + ii - (Land^[tmp, Xc].RenderHeight * (1 - frac(inX))
-                          + Land^[tmp, Xc + 1].RenderHeight * frac(inX)) / CELL_HEIGHT_DIV;
+    Ycoef[I] := (Yc - 1) + ii - (LandExt^[tmp, Xc].RenderHeight * (1 - frac(inX))
+                          + LandExt^[tmp, Xc + 1].RenderHeight * frac(inX)) / CELL_HEIGHT_DIV;
   end;
 
   Result := inY; //Assign something incase following code returns nothing
@@ -4925,8 +4985,8 @@ begin
   Xc := EnsureRange(Trunc(inX), 0, fMapX-1);
   Yc := EnsureRange(Trunc(inY), 0, fMapY-1);
 
-  tmp1 := Mix(Land[Yc+1, Min(Xc+2, fMapX)].RenderHeight, Land^[Yc+1, Xc+1].RenderHeight, Frac(inX));
-  tmp2 := Mix(Land[Min(Yc+2, fMapY), Min(Xc+2, fMapX)].RenderHeight, Land^[Min(Yc+2, fMapY), Xc+1].RenderHeight, Frac(inX));
+  tmp1 := Mix(LandExt[Yc+1, Min(Xc+2, fMapX)].RenderHeight, LandExt^[Yc+1, Xc+1].RenderHeight, Frac(inX));
+  tmp2 := Mix(LandExt[Min(Yc+2, fMapY), Min(Xc+2, fMapX)].RenderHeight, LandExt^[Min(Yc+2, fMapY), Xc+1].RenderHeight, Frac(inX));
   Result := inY - Mix(tmp2, tmp1, Frac(inY)) / CELL_HEIGHT_DIV;
 end;
 
@@ -4971,8 +5031,8 @@ begin
   Xc := EnsureRange(Trunc(inX), 0, fMapX-1);
   Yc := EnsureRange(Trunc(inY), 0, fMapY-1);
 
-  tmp1 := Mix(Land[Yc+1, Min(Xc+2, fMapX)].RenderHeight, Land^[Yc+1, Xc+1].RenderHeight, Frac(inX));
-  tmp2 := Mix(Land[Min(Yc+2, fMapY), Min(Xc+2, fMapX)].RenderHeight, Land^[Min(Yc+2, fMapY), Xc+1].RenderHeight, Frac(inX));
+  tmp1 := Mix(LandExt[Yc+1, Min(Xc+2, fMapX)].RenderHeight, LandExt^[Yc+1, Xc+1].RenderHeight, Frac(inX));
+  tmp2 := Mix(LandExt[Min(Yc+2, fMapY), Min(Xc+2, fMapX)].RenderHeight, LandExt^[Min(Yc+2, fMapY), Xc+1].RenderHeight, Frac(inX));
   Result := Mix(tmp2, tmp1, Frac(inY)) / CELL_HEIGHT_DIV;
 end;
 
@@ -5081,7 +5141,11 @@ begin
 
   for I := 1 to fMapY do
     for J := 1 to fMapX do
+    begin
       UpdateFences(KMPoint(J,I), False);
+      LandExt[I,J].RenderLight := Land^[I,J].GetRenderLight;
+      LandExt[I,J].RenderHeight := Land[I,J].GetRenderHeight;
+    end;
 
   fFinder := TKMTerrainFinder.Create;
 

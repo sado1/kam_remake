@@ -128,7 +128,7 @@ begin
             if isBorder then
               light := 255 - fow
             else
-              light := Round(landPtr.RenderLight * 64) - (255 - fow); //it's -255..255 range now
+              light := Round(gTerrain.LandExt[MY,MX].RenderLight * 64) - (255 - fow); //it's -255..255 range now
 
             col := gRes.Tileset[landPtr.BaseLayer.Terrain].MainColor;
             fBase[tileID] := Byte(EnsureRange(col.R + light, 0, 255)) or
