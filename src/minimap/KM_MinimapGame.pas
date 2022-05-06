@@ -54,7 +54,7 @@ var
   fow: Byte;
   U: TKMUnit;
   P: TKMPoint;
-  doesFit, isBorder: Boolean;
+  doesFit, isBorder, isBorderY: Boolean;
   light: Smallint;
   group: TKMUnitGroup;
   tileOwner: TKMHandID;
@@ -86,10 +86,10 @@ begin
   for I := 0 to fMapY - 1 do
   begin
     MY := I + 1;
-    isBorder := (I = 0) or (I = fMapY - 1);
+    isBorderY := (I = 0) or (I = fMapY - 1);
     for K := 0 to fMapX - 1 do
     begin
-      isBorder := isBorder or (K = 0) or (K = fMapX - 1);
+      isBorder := isBorderY or (K = 0) or (K = fMapX - 1);
       MX := K + 1;
       fow := gMySpectator.FogOfWar.CheckTileRevelation(MX,MY);
 
