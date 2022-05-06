@@ -1266,14 +1266,10 @@ end;
 procedure TRenderTerrain.DoRenderTile(aTerrainId: Word; pX,pY,Rot: Integer; aDoBindTexture: Boolean; aUseTileLookup: Boolean;
                                       DoHighlight: Boolean = False; HighlightColor: Cardinal = 0;
                                       aBlendingLvl: Byte = 0);
-var
-  I: Integer;
-  corners: TKMTileCorners;
+const
+  NO_CORNERS: TKMTileCorners = (False, False, False, False);
 begin
-  for I := 0 to 3 do
-    corners[I] := False;
-
-  DoRenderTile(aTerrainId, pX,pY,Rot, corners, aDoBindTexture, aUseTileLookup, DoHighlight, HighlightColor, aBlendingLvl);
+  DoRenderTile(aTerrainId, pX,pY,Rot, NO_CORNERS, aDoBindTexture, aUseTileLookup, DoHighlight, HighlightColor, aBlendingLvl);
 end;
 
 
@@ -1313,8 +1309,6 @@ end;
 //Render single terrain cell
 procedure TRenderTerrain.RenderTile(aTerrainId: Word; pX,pY,Rot: Integer; DoHighlight: Boolean = False; HighlightColor: Cardinal = 0);
 begin
-  if not gTerrain.TileInMapCoords(pX,pY) then Exit;
-
   DoRenderTile(aTerrainId, pX, pY, Rot, True, True, DoHighlight, HighlightColor);
 end;
 
