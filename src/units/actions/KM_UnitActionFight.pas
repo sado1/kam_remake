@@ -190,6 +190,7 @@ begin
   //See if Opponent has walked away (i.e. Serf) or died
   if fOpponent.IsDeadOrDying //Don't continue to fight dead units
   or not fOpponent.Visible //Don't continue to fight units that have went into a house
+  or (gHands[fUnit.Owner].Alliances[fOpponent.Owner] = atAlly) //Unit could become ally from script
   or not TKMUnitWarrior(fUnit).WithinFightRange(fOpponent.Position)
   or not fUnit.CanWalkDiagonaly(fUnit.Position, fOpponent.Position) then //Might be a tree between us now
   begin
