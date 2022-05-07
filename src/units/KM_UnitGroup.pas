@@ -124,9 +124,7 @@ type
     property PositionF: TKMPointF read GetPositionF;
 
     function IsPositioned(const aLoc: TKMPoint; Dir: TKMDirection): Boolean;
-    function IsAllyTo(aUnit: TKMUnit): Boolean; overload;
-    function IsAllyTo(aUnitGroup: TKMUnitGroup): Boolean; overload;
-    function IsAllyTo(aHouse: TKMHouse): Boolean; overload;
+    function IsAllyTo(aEntity: TKMHandEntity): Boolean;
     function CanTakeOrders: Boolean;
     function CanWalkTo(const aTo: TKMPoint; aDistance: Single): Boolean;
     function FightMaxRange: Single;
@@ -1161,21 +1159,9 @@ begin
 end;
 
 
-function TKMUnitGroup.IsAllyTo(aUnit: TKMUnit): Boolean;
+function TKMUnitGroup.IsAllyTo(aEntity: TKMHandEntity): Boolean;
 begin
-  Result := gHands[Owner].Alliances[aUnit.Owner] = atAlly;
-end;
-
-
-function TKMUnitGroup.IsAllyTo(aUnitGroup: TKMUnitGroup): Boolean;
-begin
-  Result := gHands[Owner].Alliances[aUnitGroup.Owner] = atAlly;
-end;
-
-
-function TKMUnitGroup.IsAllyTo(aHouse: TKMHouse): Boolean;
-begin
-  Result := gHands[Owner].Alliances[aHouse.Owner] = atAlly;
+  Result := gHands[Owner].Alliances[aEntity.Owner] = atAlly;
 end;
 
 
