@@ -4955,6 +4955,7 @@ begin
       G := fIDCache.GetGroup(aGroupID);
       H := fIDCache.GetHouse(aHouseID);
       if (G <> nil)
+        and G.CanTakeOrders
         and (H <> nil)
         and not H.IsDestroyed then
         G.OrderAttackHouse(H, True);
@@ -4982,7 +4983,7 @@ begin
       U := fIDCache.GetUnit(aUnitID);
 
       //Player can not attack animals
-      if (G <> nil) and (U <> nil) and (U.Owner <> HAND_ANIMAL) then
+      if (G <> nil) and (U <> nil) and (U.Owner <> HAND_ANIMAL) and G.CanTakeOrders then
         G.OrderAttackUnit(U, True);
     end
     else
@@ -5004,7 +5005,7 @@ begin
     if (aGroupID > 0) then
     begin
       G := fIDCache.GetGroup(aGroupID);
-      if (G <> nil) then
+      if (G <> nil) and G.CanTakeOrders then
         G.OrderFood(True);
     end
     else
@@ -5026,7 +5027,7 @@ begin
     if (aGroupID > 0) then
     begin
       G := fIDCache.GetGroup(aGroupID);
-      if (G <> nil) then
+      if (G <> nil) and G.CanTakeOrders then
         G.OrderHalt(True);
     end
     else
@@ -5049,7 +5050,7 @@ begin
     begin
       G := fIDCache.GetGroup(aGroupID);
       G2 := fIDCache.GetGroup(aDestGroupID);
-      if (G <> nil) and (G2 <> nil) and (G.Owner = G2.Owner) then  //Check group owners to prevent "DNA Modifications" ;D
+      if (G <> nil) and G.CanTakeOrders and (G2 <> nil) and (G.Owner = G2.Owner) then  //Check group owners to prevent "DNA Modifications" ;D
         G.OrderLinkTo(G2, True);
     end
     else
@@ -5073,7 +5074,7 @@ begin
     if (aGroupID > 0) then
     begin
       G := fIDCache.GetGroup(aGroupID);
-      if (G <> nil) then
+      if (G <> nil) and G.CanTakeOrders then
       begin
         G2 := G.OrderSplit;
         if G2 <> nil then
@@ -5105,6 +5106,7 @@ begin
       G := fIDCache.GetGroup(aGroupID);
       U := fIDCache.GetUnit(aUnitID);
       if (G <> nil)
+      and G.CanTakeOrders
       and (U <> nil)
       and (U is TKMUnitWarrior)
       and (G.HasMember(TKMUnitWarrior(U))) then
@@ -5133,7 +5135,7 @@ begin
     if (aGroupID > 0) then
     begin
       G := fIDCache.GetGroup(aGroupID);
-      if (G <> nil) and (G.GroupType = gtMelee) then
+      if (G <> nil) and (G.GroupType = gtMelee) and G.CanTakeOrders then
         G.OrderStorm(True);
     end
     else
@@ -5157,7 +5159,7 @@ begin
       and (TKMDirection(aDirection + 1) in [dirN..dirNW]) then
     begin
       G := fIDCache.GetGroup(aGroupID);
-      if (G <> nil) and G.CanWalkTo(KMPoint(X,Y), 0) then
+      if (G <> nil) and G.CanTakeOrders and G.CanWalkTo(KMPoint(X,Y), 0) then
         G.OrderWalk(KMPoint(X,Y), True, wtokScript, TKMDirection(aDirection+1));
     end
     else
@@ -5181,7 +5183,7 @@ begin
       and (aDirection in [dirN..dirNW]) then
     begin
       G := fIDCache.GetGroup(aGroupID);
-      if (G <> nil) and G.CanWalkTo(KMPoint(X,Y), 0) then
+      if (G <> nil) and G.CanTakeOrders and G.CanWalkTo(KMPoint(X,Y), 0) then
         G.OrderWalk(KMPoint(X,Y), True, wtokScript, aDirection);
     end
     else
