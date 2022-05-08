@@ -367,6 +367,13 @@ var
 {$ENDIF}
 begin
   aHandled := True;
+
+  if gMySpectator.Hand.InCinematic then
+  begin
+    aHandled := False;
+    Exit;
+  end;
+
   //Scrolling
   if Key = gResKeys[kfScrollLeft]       then
     fViewport.ScrollKeyLeft  := True
@@ -427,6 +434,13 @@ end;
 procedure TKMUserInterfaceGame.HandleScrollKeysUp(Key: Word; var aHandled: Boolean);
 begin
   aHandled := True;
+
+  if gMySpectator.Hand.InCinematic then
+  begin
+    aHandled := False;
+    Exit;
+  end;
+
   //Scrolling
   if Key = gResKeys[kfScrollLeft]       then
     fViewport.ScrollKeyLeft := False
