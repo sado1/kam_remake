@@ -119,9 +119,9 @@ type
     function MessageLog_ItemClick(Sender: TObject; Shift: TShiftState; const X,Y: Integer): Boolean;
     procedure MessageLog_Close(Sender: TObject);
     procedure MessageLog_Update(aFullRefresh: Boolean);
-    procedure Minimap_Update(Sender: TObject; const X,Y:integer);
-    procedure Minimap_RightClick(Sender: TObject; const X,Y:integer);
-    procedure Minimap_Click(Sender: TObject; const X,Y:integer);
+    procedure Minimap_Update(Sender: TObject; const X,Y: Integer);
+    procedure Minimap_RightClick(Sender: TObject; const X,Y: Integer);
+    procedure Minimap_Click(Sender: TObject; const X,Y: Integer);
     procedure GameOptionsChanged;
 
     procedure Menu_Save_RefreshList(Sender: TObject);
@@ -153,7 +153,7 @@ type
     procedure Update_Image_AlliesMute(aImage: TKMImage);
     procedure UpdateNetPlayersMapping;
     procedure Menu_Update;
-    procedure DirectionCursorShow(X,Y: Integer; Dir: TKMDirection);
+    procedure DirectionCursorShow(X,Y: Integer; aDir: TKMDirection);
     procedure DirectionCursorHide;
     function HasLostMPGame: Boolean;
     procedure UpdateSelectedObject;
@@ -332,9 +332,9 @@ type
     procedure MessageIssue(aKind: TKMMessageKind; const aText: UnicodeString; const aLoc: TKMPoint); overload;
     procedure UpdateUI;
     procedure UpdateClock(aSpeedActual, aDefaultSpeed, aSpeedRecorded: Single);
-    procedure ShowPlayMore(DoShow: Boolean; Msg: TKMGameResultMsg);
-    procedure ShowMPPlayMore(Msg: TKMGameResultMsg);
-    procedure ShowNetworkLag(aShow: Boolean; aPlayers: TKMByteArray; IsHost: Boolean);
+    procedure ShowPlayMore(aDoShow: Boolean; aMsg: TKMGameResultMsg);
+    procedure ShowMPPlayMore(aMsg: TKMGameResultMsg);
+    procedure ShowNetworkLag(aShow: Boolean; aPlayers: TKMByteArray; aIsHost: Boolean);
 
     procedure SetScriptedOverlay(const aText: UnicodeString; const aSettings: TKMOverlayTextSettings);
 
@@ -2704,11 +2704,11 @@ begin
 end;
 
 
-procedure TKMGamePlayInterface.ShowPlayMore(DoShow: Boolean; Msg: TKMGameResultMsg);
+procedure TKMGamePlayInterface.ShowPlayMore(aDoShow: Boolean; aMsg: TKMGameResultMsg);
 begin
   ReleaseDirectionSelector;
-  fPlayMoreMsg := Msg;
-  case Msg of
+  fPlayMoreMsg := aMsg;
+  case aMsg of
     grWin:       begin
                     Label_PlayMore.Caption := gResTexts[TX_GAMEPLAY_WON];
                     Button_PlayMore.Caption := gResTexts[TX_GAMEPLAY_CONTINUE_PLAYING];
@@ -2724,18 +2724,18 @@ begin
                     Button_PlayMore.Caption := gResTexts[TX_GAMEPLAY_REPLAY_CONTINUEWATCHING];
                     Button_PlayQuit.Caption := gResTexts[TX_GAMEPLAY_QUIT_TO_MENU];
                  end;
-    else if DoShow then
+    else if aDoShow then
       raise Exception.Create('Wrong message in ShowPlayMore'); // Can become hidden with any message
   end;
-  Panel_PlayMore.Visible := DoShow;
+  Panel_PlayMore.Visible := aDoShow;
 end;
 
 
-procedure TKMGamePlayInterface.ShowMPPlayMore(Msg: TKMGameResultMsg);
+procedure TKMGamePlayInterface.ShowMPPlayMore(aMsg: TKMGameResultMsg);
 begin
   ReleaseDirectionSelector;
-  fPlayMoreMsg := Msg;
-  case Msg of
+  fPlayMoreMsg := aMsg;
+  case aMsg of
     grWin:       begin
                     Label_MPPlayMore.Caption := gResTexts[TX_GAMEPLAY_WON];
                     Button_MPPlayMore.Caption := gResTexts[TX_GAMEPLAY_CONTINUE_PLAYING];
@@ -2795,7 +2795,7 @@ begin
 end;
 
 
-procedure TKMGamePlayInterface.ShowNetworkLag(aShow: Boolean; aPlayers: TKMByteArray; IsHost: Boolean);
+procedure TKMGamePlayInterface.ShowNetworkLag(aShow: Boolean; aPlayers: TKMByteArray; aIsHost: Boolean);
 var
   I: Integer;
   waitPlayersMsg, waitDCPlayersMsg: UnicodeString;
@@ -2836,7 +2836,7 @@ begin
 
     waitPlayersMsg := waitPlayersMsg + waitDCPlayersMsg;
 
-    Button_NetDropPlayers.Visible := IsHost;
+    Button_NetDropPlayers.Visible := aIsHost;
 
     if not aShow then
       fNetWaitDropPlayersDelayStarted := 0
@@ -2944,12 +2944,12 @@ begin
 end;
 
 
-procedure TKMGamePlayInterface.DirectionCursorShow(X,Y: Integer; Dir: TKMDirection);
+procedure TKMGamePlayInterface.DirectionCursorShow(X,Y: Integer; aDir: TKMDirection);
 begin
   Image_DirectionCursor.Visible := True;
-  Image_DirectionCursor.Left    := X + gRes.Cursors.CursorOffset(Dir).X;
-  Image_DirectionCursor.Top     := Y + gRes.Cursors.CursorOffset(Dir).Y;
-  Image_DirectionCursor.TexID   := gRes.Cursors.CursorTexID(Dir);
+  Image_DirectionCursor.Left    := X + gRes.Cursors.CursorOffset(aDir).X;
+  Image_DirectionCursor.Top     := Y + gRes.Cursors.CursorOffset(aDir).Y;
+  Image_DirectionCursor.TexID   := gRes.Cursors.CursorTexID(aDir);
 end;
 
 
