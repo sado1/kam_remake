@@ -277,7 +277,7 @@ type
       Panel_PlayMoreMsg: TKMPanel;
         Image_PlayMore: TKMImage;
         Label_PlayMore: TKMLabel;
-        Button_PlayMore,Button_PlayQuit: TKMButton;
+        Button_PlayMore,Button_PlayMore_ReturnToMapEd,Button_PlayQuit: TKMButton;
     Panel_MPPlayMore: TKMPanel;
       Bevel_MPPlayMore: TKMBevel;
       Image_MPPlayMore: TKMImage;
@@ -1064,8 +1064,11 @@ begin
 
       Label_PlayMore  := TKMLabel.Create(Panel_PlayMoreMsg,100,80,NO_TEXT,fntOutline,taCenter);
       Button_PlayMore := TKMButton.Create(Panel_PlayMoreMsg,0,100,200,30,NO_TEXT,bsGame);
+      Button_PlayMore_ReturnToMapEd := TKMButton.Create(Panel_PlayMoreMsg,0,140,200,30,gResTexts[TX_MENU_RETURN_TO_MAPED],bsGame);
+      Button_PlayMore_ReturnToMapEd.Hide;
       Button_PlayQuit := TKMButton.Create(Panel_PlayMoreMsg,0,140,200,30,NO_TEXT,bsGame);
       Button_PlayMore.OnClick := PlayMoreClick;
+      Button_PlayMore_ReturnToMapEd.OnClick := Menu_ReturnToMapEd;
       Button_PlayQuit.OnClick := PlayMoreClick;
     Panel_PlayMore.Hide; // Initially hidden
 end;
@@ -2599,11 +2602,15 @@ begin
 
   if gGame.StartedFromMapEditor then
   begin
-    Button_ReturnToMapEd.Visible := True; //Do not use Show here, as we will show this tab in UI immidiately
+    Button_ReturnToMapEd.Visible := True; //Do not use Show here, as we will show this tab in UI immidiately in that case
     Button_Quit_No.Top := Button_ReturnToMapEd.Bottom + 20;
+    Button_PlayMore_ReturnToMapEd.Visible := True; //Do not use Show here, as we will show this tab in UI immidiately in that case
+    Button_PlayQuit.Top := Button_PlayMore_ReturnToMapEd.Bottom + 20;
   end else begin
     Button_ReturnToMapEd.Hide;
     Button_Quit_No.Top := Button_ReturnToMapEd.Top;
+    Button_PlayMore_ReturnToMapEd.Hide;
+    Button_PlayQuit.Top := Button_PlayMore_ReturnToMapEd.Top;
   end;
 
   // Chat and Allies setup should be accessible only in Multiplayer
