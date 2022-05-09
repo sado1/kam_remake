@@ -260,7 +260,7 @@ type
 
   TKMHandAnimals = class(TKMHandCommon)
   public
-    function GetFishInWaterBody(aWaterID: Byte; FindHighestCount: Boolean = True): TKMUnitAnimal;
+    function GetFishInWaterBody(aWaterID: Byte; FindHighestCount: Boolean = True): TKMUnitFish;
   end;
 
   function GetStatsUpdatePeriod: Integer;
@@ -2271,7 +2271,7 @@ end;
 
 
 { TKMHandAnimals }
-function TKMHandAnimals.GetFishInWaterBody(aWaterID: Byte; FindHighestCount: Boolean = True): TKMUnitAnimal;
+function TKMHandAnimals.GetFishInWaterBody(aWaterID: Byte; FindHighestCount: Boolean = True): TKMUnitFish;
 var
   I, highestGroupCount: Integer;
   U: TKMUnit;
@@ -2286,11 +2286,11 @@ begin
 
     if (U <> nil)
     and (U.UnitType = utFish)
-    and (not U.IsDeadOrDying) //Fish are killed when they are caught or become stuck
+    and not U.IsDeadOrDying //Fish are killed when they are caught or become stuck
     and (gTerrain.Land^[U.Position.Y, U.Position.X].WalkConnect[wcFish] = aWaterID)
-    and (TKMUnitAnimal(U).FishCount > highestGroupCount) then
+    and (TKMUnitFish(U).FishCount > highestGroupCount) then
     begin
-      Result := TKMUnitAnimal(U);
+      Result := TKMUnitFish(U);
       //This is for time saving when we don't actually care which group is returned
       if not FindHighestCount then Exit;
       highestGroupCount := Result.FishCount;

@@ -760,7 +760,8 @@ const
 
 
 const
-  FISH_COUNT_ACT: array [1..5] of TKMUnitActionType = (uaWalk, uaWork, uaSpec, uaDie, uaWork1);
+  FISH_CNT_DEFAULT = 10;
+  FISH_CNT_MAX = 255;
 
 
 type

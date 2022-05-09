@@ -338,19 +338,36 @@ type
 
   // Animals
   TKMUnitAnimal = class(TKMUnit)
-  private
-    fFishCount: Byte; //1-5
   protected
     function GetIsSelectable: Boolean; override;
+    function GetPaintActionType(aAct: TKMUnitActionType): TKMUnitActionType; virtual;
   public
     constructor Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPointDir; aOwner: TKMHandID); overload;
-    constructor Load(LoadStream: TKMemoryStream); override;
-    property FishCount: byte read fFishCount;
-    function ReduceFish: Boolean;
+
     function IsAnimal: Boolean; override;
-    procedure Save(SaveStream: TKMemoryStream); override;
+
     function UpdateState: Boolean; override;
     procedure Paint(aTickLag: Single); override;
+  end;
+
+
+  TKMUnitFish = class(TKMUnitAnimal)
+  private
+    fFishCount: Byte; //1-255
+  protected
+    function GetPaintActionType(aAct: TKMUnitActionType): TKMUnitActionType; override;
+  public
+    constructor Create(aID: Cardinal; const aLoc: TKMPointDir; aOwner: TKMHandID); overload;
+    constructor Load(LoadStream: TKMemoryStream); override;
+
+    property FishCount: byte read fFishCount;
+    function ReduceFish: Boolean;
+
+    procedure Save(SaveStream: TKMemoryStream); override;
+
+    procedure Paint(aTickLag: Single); override;
+
+    class function GetFishActionType(aFishCount: Integer): TKMUnitActionType;
   end;
 
 const
@@ -1019,10 +1036,6 @@ end;
 constructor TKMUnitAnimal.Create(aID: Cardinal; aUnitType: TKMUnitType; const aLoc: TKMPointDir; aOwner: TKMHandID);
 begin
   inherited Create(aID, aUnitType, aLoc, aOwner, nil);
-
-  // Always start with 5 fish in the group
-  if aUnitType = utFish then
-    fFishCount := 5;
 end;
 
 
@@ -1035,36 +1048,6 @@ end;
 function TKMUnitAnimal.GetIsSelectable: Boolean;
 begin
   Result := False;
-end;
-
-
-constructor TKMUnitAnimal.Load(LoadStream: TKMemoryStream);
-begin
-  inherited;
-
-  LoadStream.CheckMarker('UnitAnimal');
-  LoadStream.Read(fFishCount);
-end;
-
-
-function TKMUnitAnimal.ReduceFish: Boolean;
-begin
-  Result := fType = utFish;
-  if not Result then Exit;
-
-  if fFishCount > 1 then
-    Dec(fFishCount)
-  else
-    Kill(HAND_NONE, True, False);
-end;
-
-
-procedure TKMUnitAnimal.Save(SaveStream: TKMemoryStream);
-begin
-  inherited;
-
-  SaveStream.PlaceMarker('UnitAnimal');
-  SaveStream.Write(fFishCount);
 end;
 
 
@@ -1114,23 +1097,25 @@ begin
 end;
 
 
+function TKMUnitAnimal.GetPaintActionType(aAct: TKMUnitActionType): TKMUnitActionType;
+begin
+  Result := aAct;
+end;
+
+
 //For fish the action is the number of fish in the group
 procedure TKMUnitAnimal.Paint(aTickLag: Single);
 var
   V: TKMUnitVisualState;
   act: TKMUnitActionType;
-  xPaintPos, yPaintPos: single;
+  xPaintPos, yPaintPos: Single;
 begin
   inherited;
+
   if fAction = nil then exit;
   V := fVisual.GetLerp(aTickLag);
 
-  Assert((fType <> utFish) or (InRange(fFishCount, 1, 5)));
-
-  if fType = utFish then
-    act := FISH_COUNT_ACT[fFishCount]
-  else
-    act := V.Action;
+  act := GetPaintActionType(V.Action);
 
   xPaintPos := V.PositionF.X + UNIT_OFF_X + V.SlideX;
   yPaintPos := V.PositionF.Y + UNIT_OFF_Y + V.SlideY;
@@ -1144,6 +1129,74 @@ begin
   //Animals share the same WalkTo logic as other units and they exchange places if necessary
   //Animals can be picked only in MapEd
   gRenderPool.AddUnit(fType, UID * Byte(gGameParams.IsMapEditor), act, V.Dir, V.AnimStep, V.AnimFraction, xPaintPos, yPaintPos, $FFFFFFFF, True);
+end;
+
+
+{ TKMUnitFish }
+constructor TKMUnitFish.Create(aID: Cardinal; const aLoc: TKMPointDir; aOwner: TKMHandID);
+begin
+  inherited Create(aID, utFish, aLoc, aOwner);
+
+  // Always start with 10 fish in the group
+  fFishCount := FISH_CNT_DEFAULT;
+end;
+
+
+constructor TKMUnitFish.Load(LoadStream: TKMemoryStream);
+begin
+  inherited;
+
+  LoadStream.CheckMarker('UnitFish');
+  LoadStream.Read(fFishCount);
+end;
+
+
+class function TKMUnitFish.GetFishActionType(aFishCount: Integer): TKMUnitActionType;
+begin
+  Result := uaUnknown;
+
+  if aFishCount > 8 then
+    Result := uaWork1
+  else
+    case aFishCount of
+      1,2: Result := uaWalk;
+      3,4: Result := uaWork;
+      5,6: Result := uaSpec;
+      7,8: Result := uaDie;
+    end;
+end;
+
+
+function TKMUnitFish.GetPaintActionType(aAct: TKMUnitActionType): TKMUnitActionType;
+begin
+  Result := GetFishActionType(fFishCount);
+end;
+
+
+function TKMUnitFish.ReduceFish: Boolean;
+begin
+  Result := fType = utFish;
+  if not Result then Exit;
+
+  if fFishCount > 2 then
+    fFishCount := EnsureRange(fFishCount - 2, 0, FISH_CNT_MAX)
+  else
+    Kill(HAND_NONE, True, False);
+end;
+
+
+procedure TKMUnitFish.Save(SaveStream: TKMemoryStream);
+begin
+  inherited;
+
+  SaveStream.PlaceMarker('UnitFish');
+  SaveStream.Write(fFishCount);
+end;
+
+
+procedure TKMUnitFish.Paint(aTickLag: Single);
+begin
+  inherited;
 end;
 
 
