@@ -193,6 +193,7 @@ procedure TKMMissionParserStandard.ProcessCommand(CommandType: TKMCommandType; P
 var
   I: Integer;
   qty, HandI: Integer;
+  U: TKMUnit;
   H: TKMHouse;
   HT: TKMHouseType;
   UT: TKMUnitType;
@@ -405,12 +406,17 @@ begin
 
     ctSetUnit:          if PointInMap(P[1]+1, P[2]+1) then
                         begin
+                          UT := UNIT_OLD_ID_TO_TYPE[P[0]];
                           //Animals should be added regardless of current player
-                          if UNIT_OLD_ID_TO_TYPE[P[0]] in [ANIMAL_MIN..ANIMAL_MAX] then
-                            gHands.PlayerAnimals.AddUnit(UNIT_OLD_ID_TO_TYPE[P[0]], KMPoint(P[1]+1, P[2]+1))
+                          if UT in [ANIMAL_MIN..ANIMAL_MAX] then
+                          begin
+                            U := gHands.PlayerAnimals.AddUnit(UT, KMPoint(P[1]+1, P[2]+1));
+                            if (UT = utFish) and InRange(P[3], 1, FISH_CNT_MAX) then
+                              TKMUnitFish(U).FishCount := P[3];
+                          end
                           else
-                          if (fLastHand <> HAND_NONE) and (UNIT_OLD_ID_TO_TYPE[P[0]] in [HUMANS_MIN..HUMANS_MAX]) then
-                            fLastUnit := gHands[fLastHand].AddUnit(UNIT_OLD_ID_TO_TYPE[P[0]], KMPoint(P[1]+1, P[2]+1));
+                          if (fLastHand <> HAND_NONE) and (UT in [HUMANS_MIN..HUMANS_MAX]) then
+                            fLastUnit := gHands[fLastHand].AddUnit(UT, KMPoint(P[1]+1, P[2]+1));
                         end;
 
     ctSetUnitByStock:   if fLastHand <> HAND_NONE then
@@ -836,6 +842,7 @@ var
   releaseAllHouses: Boolean;
   saveString: AnsiString;
   saveStream: TFileStream;
+  params: TIntegerArray;
 
   procedure AddData(const aText: AnsiString);
   begin
@@ -1186,7 +1193,19 @@ begin
   for I := 0 to gHands.PlayerAnimals.Units.Count - 1 do
   begin
     U := gHands.PlayerAnimals.Units[I];
-    AddCommand(ctSetUnit, [UNIT_TYPE_TO_OLD_ID[U.UnitType], U.Position.X-1 + aLeftInset, U.Position.Y-1 + aTopInset]);
+    SetLength(params, 3);
+    params[0] := UNIT_TYPE_TO_OLD_ID[U.UnitType];
+    params[1] := U.Position.X - 1 + aLeftInset;
+    params[2] := U.Position.Y - 1 + aTopInset;
+
+    // Also save fish count to dat
+    if U is TKMUnitFish then
+    begin
+      SetLength(params, 4);
+      params[3] := TKMUnitFish(U).FishCount;
+    end;
+
+    AddCommand(ctSetUnit, params);
   end;
   AddData(''); //NL
 

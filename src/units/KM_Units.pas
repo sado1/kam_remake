@@ -360,7 +360,7 @@ type
     constructor Create(aID: Cardinal; const aLoc: TKMPointDir; aOwner: TKMHandID); overload;
     constructor Load(LoadStream: TKMemoryStream); override;
 
-    property FishCount: byte read fFishCount;
+    property FishCount: Byte read fFishCount write fFishCount;
     function ReduceFish: Boolean;
 
     procedure Save(SaveStream: TKMemoryStream); override;
