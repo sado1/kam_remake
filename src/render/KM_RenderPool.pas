@@ -2137,8 +2137,8 @@ begin
   if aUID > 0 then
     with RenderList[fCount].SelectionRect do
     begin
-      snsTop    := fUnitsRXData.SizeNoShadow[aId].top + 1;
-      snsBottom := fUnitsRXData.SizeNoShadow[aId].bottom + 1;
+      snsTop    := fUnitsRXData.SizeNoShadow[aId].top;
+      snsBottom := fUnitsRXData.SizeNoShadow[aId].bottom;
 
       imH := snsBottom - snsTop + 1;
       hTop := EnsureRange(imH, CELL_SIZE_PX, MAX_SEL_RECT_HEIGHT);
@@ -2146,9 +2146,9 @@ begin
       //Enlarge rect from image size to the top, to be at least CELL_SIZE_PX height
       hAdd := Max(0, CELL_SIZE_PX - imH); // height to add to image pos. half to the top, half to the bottom
 
-      Left := RenderList[fCount].Loc.X - 0.5 - fUnitsRXData.Pivot[aId].X / CELL_SIZE_PX;
+      Left := pX - 0.5 - fUnitsRXData.Pivot[aId].X / CELL_SIZE_PX;
       Right := Left + 1; // Exactly +1 tile
-      Bottom := gY + ((hAdd / 2) - (fUnitsRXData.Size[aId].Y - snsBottom))/ CELL_SIZE_PX; // Consider shadow at the image bottom
+      Bottom := gY + ((hAdd / 2) - (fUnitsRXData.Size[aId].Y - snsBottom - 1))/ CELL_SIZE_PX; // Consider shadow at the image bottom
       Top := Bottom - hTop / CELL_SIZE_PX; // -1 ~ -1.5 tiles
     end;
 
