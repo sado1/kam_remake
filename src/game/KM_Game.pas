@@ -1882,7 +1882,7 @@ begin
 
     // Update text to show
     gHands[I].OverlayText := TextMission.ParseTextMarkup(UnicodeString(gHands[I].OverlayMarkup),
-                                                            gHands[I].OverlayParams.ToVarRecArray);
+                                                         gHands[I].OverlayParams.ToVarRecArray);
   end;
 
   OverlayUpdate;
