@@ -23,7 +23,7 @@ type
     procedure Unit_ArmyClickHold(Sender: TObject; AButton: TMouseButton; var aHandled: Boolean);
     procedure UnitConditionsChange(Sender: TObject; Shift: TShiftState);
     procedure UnitConditionsClickHold(Sender: TObject; AButton: TMouseButton; var aHandled: Boolean);
-
+    procedure UnitFishCntChange(Sender: TObject);
   protected
     Panel_Unit: TKMPanel;
     Label_UnitName: TKMLabel;
@@ -32,6 +32,7 @@ type
     ConditionBar_Unit: TKMPercentBar;
     Button_ConditionInc, Button_ConditionDefault, Button_ConditionDec: TKMButton;
     Image_UnitPic: TKMImage;
+    Edit_FishCount: TKMNumericEdit;
 
     Panel_Army: TKMPanel;
     Button_Army_RotCW, Button_Army_RotCCW: TKMButton;
@@ -92,6 +93,12 @@ begin
   Label_UnitDescription := TKMLabel.Create(Panel_Unit,0,152,Panel_Unit.Width,200,'',fntGrey,taLeft); //Taken from LIB resource
   Label_UnitDescription.WordWrap := True;
 
+  TKMLabel.Create(Panel_Army, 0, 185, 'X:', fntGrey, taLeft);
+  Edit_FishCount := TKMNumericEdit.Create(Panel_Unit, 20, 172, 1, FISH_CNT_MAX);
+  Edit_FishCount.AutoFocusable := False;
+  Edit_FishCount.OnChange := UnitFishCntChange;
+  Edit_FishCount.Value := FISH_CNT_DEFAULT;
+
   Panel_Army := TKMPanel.Create(Panel_Unit, 0, 160, Panel_Unit.Width, 400);
   Button_Army_RotCCW  := TKMButton.Create(Panel_Army,       0,  0, 56, 40, 23, rxGui, bsGame);
   Button_Army_RotCW   := TKMButton.Create(Panel_Army,     124,  0, 56, 40, 24, rxGui, bsGame);
@@ -149,20 +156,41 @@ begin
   Label_UnitDescription.Show;
   Panel_Unit.Show;
 
-  Button_ConditionInc.Visible := MAPED_SHOW_CONDITION_UNIT_BTNS;
-  Button_ConditionDec.Visible := MAPED_SHOW_CONDITION_UNIT_BTNS;
-  Button_ConditionDefault.Visible := MAPED_SHOW_CONDITION_UNIT_BTNS;
+  ConditionBar_Unit.Visible := not fUnit.IsAnimal;
+  Label_UnitCondition.Visible := not fUnit.IsAnimal;
+  Button_ConditionInc.Visible := MAPED_SHOW_CONDITION_UNIT_BTNS and not fUnit.IsAnimal;
+  Button_ConditionDec.Visible := MAPED_SHOW_CONDITION_UNIT_BTNS and not fUnit.IsAnimal;
+  Button_ConditionDefault.Visible := MAPED_SHOW_CONDITION_UNIT_BTNS and not fUnit.IsAnimal;
   Button_ConditionDefault.Enabled := not fUnit.StartWDefaultCondition;
   Panel_Army.Hide;
+
+  Edit_FishCount.Visible := fUnit is TKMUnitFish;
+  if Edit_FishCount.Visible then
+    Edit_FishCount.Value := TKMUnitFish(fUnit).FishCount;
 
   if fUnit = nil then Exit;
 
   Label_UnitName.Caption := gRes.Units[fUnit.UnitType].GUIName;
-  Image_UnitPic.TexID := gRes.Units[fUnit.UnitType].GUIScroll;
-  Image_UnitPic.FlagColor := gHands[fUnit.Owner].FlagColor;
-  SetPositionUnitConditions(fUnit.Condition);
 
-  Label_UnitDescription.Caption := gRes.Units[fUnit.UnitType].Description;
+  if fUnit.IsAnimal then
+  begin
+    Image_UnitPic.TexID := 0;
+    Image_UnitPic.FlagColor := icGray;
+    if fUnit is TKMUnitFish then
+      Label_UnitDescription.Caption := gResTexts[TX_MAPED_FISH_COUNT]
+    else
+      Label_UnitDescription.Caption := '';
+  end
+  else
+  begin
+    Image_UnitPic.TexID := gRes.Units[fUnit.UnitType].GUIScroll;
+    Image_UnitPic.FlagColor := gHands[fUnit.Owner].FlagColor;
+    SetPositionUnitConditions(fUnit.Condition);
+    Label_UnitDescription.Caption := gRes.Units[fUnit.UnitType].Description;
+  end;
+
+
+
 end;
 
 
@@ -173,10 +201,16 @@ begin
 
   Label_UnitDescription.Hide;
   Panel_Unit.Show;
+
+  ConditionBar_Unit.Show;
+  Label_UnitCondition.Show;
   Button_ConditionInc.Show;
   Button_ConditionDec.Show;
   Button_ConditionDefault.Show;
   Button_ConditionDefault.Enabled := not fGroup.FlagBearer.StartWDefaultCondition;
+
+  Edit_FishCount.Hide;
+
   Panel_Army.Show;
 
   if fGroup = nil then Exit;
@@ -269,6 +303,14 @@ begin
   if (Sender = Button_ConditionDec)
     or (Sender = Button_ConditionInc) then
     UnitConditionsChange(Sender, GetShiftState(aButton));
+end;
+
+
+procedure TKMMapEdUnit.UnitFishCntChange(Sender: TObject);
+begin
+  Assert(fUnit is TKMUnitFish);
+
+  TKMUnitFish(fUnit).FishCount := Edit_FishCount.Value;
 end;
 
 

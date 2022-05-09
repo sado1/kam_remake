@@ -1659,3 +1659,5 @@ TX_EXIT_WARN_HEADER = 1581; //Warning
 
 TX_HOUSE_BARRACKS_TRAIN_DISABLED_HINT = 706; //This soldier type is not available
 TX_HOUSE_SCHOOL_TRAIN_DISABLED_HINT = 707; //This unit type is not available
+
+TX_MAPED_FISH_COUNT = 1593; //Fish count

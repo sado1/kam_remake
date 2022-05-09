@@ -3302,6 +3302,7 @@ begin
                             {$ENDIF}
                             gTerrain.IncAnimStep;
                             gHands.IncAnimStep;
+                            gHands.PlayerAnimals.UpdateVisualState;
                             gHands.UpdateVisualState;
                             {$IFDEF PERFLOG}
                             gPerfLogs.TickEnd;

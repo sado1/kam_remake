@@ -760,6 +760,7 @@ const
 
 
 const
+  // Fish counts
   FISH_CNT_DEFAULT = 10;
   FISH_CNT_MAX = 255;
 

@@ -1053,7 +1053,7 @@ begin
 
   if (Button = mbLeft) and (gCursor.Mode = cmNone) then
   begin
-    obj := gMySpectator.HitTestCursor;
+    obj := gMySpectator.HitTestCursor(True);
     if obj <> nil then
     begin
       UpdateSelection;
@@ -1193,7 +1193,7 @@ begin
     if marker.MarkerType <> mmtNone then
       gSystem.Cursor := kmcInfo
     else
-    if gMySpectator.HitTestCursor <> nil then
+    if gMySpectator.HitTestCursor(True) <> nil then
       gSystem.Cursor := kmcInfo
     else
     if not fViewport.Scrolling then
@@ -1368,7 +1368,7 @@ end;
 
 procedure TKMMapEdInterface.UpdateSelection;
 begin
-  gMySpectator.UpdateSelect;
+  gMySpectator.UpdateSelect(True, True);
 
   if gMySpectator.Selected is TKMHouse then
   begin
@@ -1379,7 +1379,8 @@ begin
   if gMySpectator.Selected is TKMUnit then
   begin
     HidePages;
-    Player_SetActive(TKMUnit(gMySpectator.Selected).Owner);
+    if not (gMySpectator.Selected is TKMUnitAnimal) then
+      Player_SetActive(TKMUnit(gMySpectator.Selected).Owner);
     fGuiUnit.Show(TKMUnit(gMySpectator.Selected));
   end;
   if gMySpectator.Selected is TKMUnitGroup then

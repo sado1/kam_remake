@@ -59,7 +59,7 @@ type
     function HitTestCursor(aIncludeAnimals: Boolean = False): TKMHandEntity;
     function HitTestCursorWGroup(aIncludeAnimals: Boolean = False): TKMHandEntity;
     procedure UpdateNewSelected; overload;
-    procedure UpdateSelect(aCheckUnderCursor: Boolean = True);
+    procedure UpdateSelect(aCheckUnderCursor: Boolean = True; aAllowAnimals: Boolean = False);
     procedure Load(LoadStream: TKMemoryStream);
     procedure Save(SaveStream: TKMemoryStream);
     procedure UpdateState(aTick: Cardinal);
@@ -264,7 +264,7 @@ end;
 
 
 //Select anything player CAN select below cursor
-procedure TKMSpectator.UpdateSelect(aCheckUnderCursor: Boolean = True);
+procedure TKMSpectator.UpdateSelect(aCheckUnderCursor: Boolean = True; aAllowAnimals: Boolean = False);
 var
   newSelected: TKMHandEntity;
   UID: Integer;
@@ -280,7 +280,7 @@ begin
 
     //Don't allow the player to select dead units
     if ((newSelected is TKMUnit) and TKMUnit(newSelected).IsDeadOrDying)
-      or (newSelected is TKMUnitAnimal) then //...or animals
+      or (not aAllowAnimals and (newSelected is TKMUnitAnimal)) then //...or animals
       newSelected := nil;
 
     //If Id belongs to some Warrior, try to select his group instead
