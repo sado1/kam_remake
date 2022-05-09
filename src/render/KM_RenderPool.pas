@@ -2117,10 +2117,10 @@ end;
 // New items must provide their ground level
 procedure TRenderList.AddSpriteG(aRX: TRXType; aId: Integer; aUID: Integer; pX,pY,gX,gY: Single; aTeam: Cardinal = $0; aAlphaStep: Single = -1);
 const
-  MAX_SEL_RECT_HEIGHT = CELL_SIZE_PX * 1.5; //Restrict too long images selection rect
+  MAX_SEL_RECT_HEIGHT = 60; //Restrict too long images selection rect
 var
-  W, H, WS: Integer;
-  snsLeft, snsRight, snsTop, snsBottom: Integer;
+  hAdd, imH, hTop: Single;
+  snsTop, snsBottom: Integer;
 begin
   if fCount >= Length(RenderList) then
     SetLength(RenderList, fCount + 256); // Book some space
@@ -2134,23 +2134,22 @@ begin
   RenderList[fCount].TeamColor  := aTeam;           // Team Id (determines color)
   RenderList[fCount].AlphaStep  := aAlphaStep;      // Alpha step for wip buildings
 
-    if aUID > 0 then
+  if aUID > 0 then
     with RenderList[fCount].SelectionRect do
     begin
-      snsLeft   := fUnitsRXData.SizeNoShadow[aId].left;
-      snsRight  := fUnitsRXData.SizeNoShadow[aId].right;
-      snsTop    := fUnitsRXData.SizeNoShadow[aId].top;
-      snsBottom := fUnitsRXData.SizeNoShadow[aId].bottom;
+      snsTop    := fUnitsRXData.SizeNoShadow[aId].top + 1;
+      snsBottom := fUnitsRXData.SizeNoShadow[aId].bottom + 1;
 
-      WS := (snsRight div 2) + fUnitsRXData.Pivot[aId].x; //Fix for bow and crossbowman
-      //Enlarge rect from image size to the left and right, to be at least CELL_SIZE_PX width and height
-      W := Max(0, CELL_SIZE_PX - (Abs(WS div 2) + snsRight - snsLeft)); //width to add to image pos. half to the left, half to the right
-      H := Max(0, CELL_SIZE_PX - (snsBottom - snsTop)); //height to add to image pos. half to the top, half to the bottom
+      imH := snsBottom - snsTop + 1;
+      hTop := EnsureRange(imH, CELL_SIZE_PX, MAX_SEL_RECT_HEIGHT);
 
-      Left := RenderList[fCount].Loc.X + (-(W div 2) - Max(0,WS) + snsLeft) / CELL_SIZE_PX;
-      Bottom := gY - ((H div 2) + fUnitsRXData.Size[aId].Y - 1 - snsBottom) / CELL_SIZE_PX;
-      Right := Left + (W - Min(0, WS) + gGFXData[aRX, aId].PxWidth - (fUnitsRXData.Size[aId].X - 1 - snsRight)) / CELL_SIZE_PX;
-      Top := Bottom - Min(MAX_SEL_RECT_HEIGHT, H + gGFXData[aRX, aId].PxHeight - snsTop) / CELL_SIZE_PX;
+      //Enlarge rect from image size to the top, to be at least CELL_SIZE_PX height
+      hAdd := Max(0, CELL_SIZE_PX - imH); // height to add to image pos. half to the top, half to the bottom
+
+      Left := RenderList[fCount].Loc.X - 0.5 - fUnitsRXData.Pivot[aId].X / CELL_SIZE_PX;
+      Right := Left + 1; // Exactly +1 tile
+      Bottom := gY + ((hAdd / 2) - (fUnitsRXData.Size[aId].Y - snsBottom))/ CELL_SIZE_PX; // Consider shadow at the image bottom
+      Top := Bottom - hTop / CELL_SIZE_PX; // -1 ~ -1.5 tiles
     end;
 
   Inc(fCount); // New item added
