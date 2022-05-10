@@ -361,7 +361,7 @@ type
     constructor Load(LoadStream: TKMemoryStream); override;
 
     property FishCount: Byte read fFishCount write fFishCount;
-    function ReduceFish: Boolean;
+    procedure ReduceFish;
 
     procedure Save(SaveStream: TKMemoryStream); override;
 
@@ -1173,13 +1173,10 @@ begin
 end;
 
 
-function TKMUnitFish.ReduceFish: Boolean;
+procedure TKMUnitFish.ReduceFish;
 begin
-  Result := fType = utFish;
-  if not Result then Exit;
-
-  if fFishCount > 2 then
-    fFishCount := EnsureRange(fFishCount - 2, 0, FISH_CNT_MAX)
+  if fFishCount > 1 then
+    Dec(fFishCount)
   else
     Kill(HAND_NONE, True, False);
 end;

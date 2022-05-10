@@ -780,6 +780,9 @@ begin
 
   fCRC := LoadHouseDat(ExeDir+'data' + PathDelim + 'defines' + PathDelim + 'houses.dat');
 
+  fItems[htFishermans].fHouseDat.ResProductionX := 1; //we cathc 1 fish per time
+  fItems[htFishermans].fHouseDat.WorkerRest := 5; //Set fisher's rest similar to what other houses have
+
   fItems[htTannery].fHouseDat.Anim[haFlag3].Count := 0; //fix for tannery 2 flags at one place. Flag3 is unnecessary
 
   fItems[htMarket].fHouseType := htMarket;

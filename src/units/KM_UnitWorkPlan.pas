@@ -493,7 +493,7 @@ begin
                         if fIssued then
                         begin
                           ResourcePlan(wtNone,0,wtNone,0,wtFish);
-                          WalkStyle(tmp,uaWalk,uaWork2,12,0,uaWalkTool,gsFisherCatch);
+                          WalkStyle(tmp,uaWalk,uaWork2,10,0,uaWalkTool,gsFisherCatch);
                         end else
                           //We must check again this time ignoring working units since they don't indicate the resource is depleted
                           ResourceDepleted := not gTerrain.FindFishWater(aLoc, gRes.Units[aUnit.UnitType].MiningRange, KMPOINT_ZERO, True, tmp);
