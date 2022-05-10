@@ -4224,7 +4224,16 @@ procedure TKMScriptActions.OverlayTextAppend(aHand: Shortint; const aText: AnsiS
 begin
   try
     if InRange(aHand, -1, gHands.Count - 1) then //-1 means all players
-      gGame.OverlayAppend(aHand, aText, [])
+    begin
+      try
+        gGame.OverlayAppend(aHand, aText, [])
+      except
+        // We could set or append formatted overlay markup and parameters earlier, so Format will be called for them and
+        // Format may throw an exception
+        on E: EConvertError do
+          LogIntParamWarn('Actions.OverlayTextAppend: EConvertError: ' + E.Message, []);
+      end;
+    end
     else
       LogIntParamWarn('Actions.OverlayTextAppend: ' + UnicodeString(aText), [aHand]);
   except
@@ -4246,7 +4255,7 @@ begin
       try
         gGame.OverlayAppend(aHand, aText, aParams);
       except
-        //Format may throw an exception
+        // Format may throw an exception
         on E: EConvertError do
           LogIntParamWarn('Actions.OverlayTextAppendFormatted: EConvertError: ' + E.Message, []);
       end;
