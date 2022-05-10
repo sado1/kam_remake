@@ -4144,7 +4144,7 @@ begin
     if InRange(aHand, -1, gHands.Count - 1) then //-1 means all players
       gGame.OverlaySet(aHand, aText, [])
     else
-      LogIntParamWarn('Actions.OverlayTextSet: '+UnicodeString(aText), [aHand]);
+      LogParamWarn('Actions.OverlayTextSet: ' + UnicodeString(aText), [aHand, aText]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4166,11 +4166,11 @@ begin
       except
         //Format may throw an exception
         on E: EConvertError do
-          LogIntParamWarn('Actions.OverlayTextSetFormatted: EConvertError: ' + E.Message, []);
+          LogParamWarn('Actions.OverlayTextSetFormatted: EConvertError: ' + E.Message, [aHand, aText], aParams);
       end;
     end
     else
-      LogIntParamWarn('Actions.OverlayTextSetFormatted: ' + UnicodeString(aText), [aHand]);
+      LogParamWarn('Actions.OverlayTextSetFormatted: ' + UnicodeString(aText), [aHand, aText], aParams);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4231,11 +4231,11 @@ begin
         // We could set or append formatted overlay markup and parameters earlier, so Format will be called for them and
         // Format may throw an exception
         on E: EConvertError do
-          LogIntParamWarn('Actions.OverlayTextAppend: EConvertError: ' + E.Message, []);
+          LogParamWarn('Actions.OverlayTextAppend: EConvertError: ' + E.Message, [aHand, aText]);
       end;
     end
     else
-      LogIntParamWarn('Actions.OverlayTextAppend: ' + UnicodeString(aText), [aHand]);
+      LogParamWarn('Actions.OverlayTextAppend: ' + UnicodeString(aText), [aHand, aText]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -4257,11 +4257,11 @@ begin
       except
         // Format may throw an exception
         on E: EConvertError do
-          LogIntParamWarn('Actions.OverlayTextAppendFormatted: EConvertError: ' + E.Message, []);
+          LogParamWarn('Actions.OverlayTextAppendFormatted: EConvertError: ' + E.Message, [aHand, aText], aParams);
       end;
     end
     else
-      LogIntParamWarn('Actions.OverlayTextAppendFormatted: ' + UnicodeString(aText), [aHand]);
+      LogParamWarn('Actions.OverlayTextAppendFormatted: ' + UnicodeString(aText), [aHand, aText], aParams);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
