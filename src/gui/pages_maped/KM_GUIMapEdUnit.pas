@@ -63,6 +63,7 @@ uses
   KM_HandsCollection, KM_HandTypes, KM_HandEntity,
   KM_RenderUI,
   KM_Resource, KM_ResFonts, KM_ResTexts, KM_ResUnits, KM_ResTypes,
+  KM_Game,
   KM_UtilsExt, KM_Terrain,
   KM_UnitGroupTypes,
   KM_InterfaceTypes,
@@ -311,6 +312,7 @@ begin
   Assert(fUnit is TKMUnitFish);
 
   TKMUnitFish(fUnit).FishCount := Edit_FishCount.Value;
+  gGame.MapEditor.Deposits.UpdateAreas([rdFish]);
 end;
 
 

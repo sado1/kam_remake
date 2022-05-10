@@ -3,11 +3,8 @@ unit KM_TerrainDeposits;
 interface
 uses
   Classes, Math, SysUtils,
-  KM_Defaults, KM_Points, KM_Terrain, KM_Units;
+  KM_Defaults, KM_Points, KM_Terrain, KM_Units, KM_MapEdTypes;
 
-
-type
-  TKMRawDeposit = (rdStone, rdCoal, rdIron, rdGold, rdFish);
 
 const
   DEPOSIT_COLORS: array[TKMRawDeposit] of Cardinal = (
