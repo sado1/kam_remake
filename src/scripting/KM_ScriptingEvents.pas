@@ -492,9 +492,6 @@ begin
   if ExceptionOutsideScript then
   begin
     ExceptionOutsideScript := False; //Reset
-    {$IFDEF WDC}
-    e.Message := e.Message + sLineBreak + 'stacktrace: ' + sLineBreak + e.StackTrace;
-    {$ENDIF}
     raise e at ExceptAddr; //Exception was in game code not script, so pass up to madExcept
   end
   else
