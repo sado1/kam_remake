@@ -313,7 +313,9 @@ begin
                                 U := TKMUnitCitizen.Load(LoadStream);
       utRecruit:                U := TKMUnitRecruit.Load(LoadStream);
       WARRIOR_MIN..WARRIOR_MAX: U := TKMUnitWarrior.Load(LoadStream);
-      ANIMAL_MIN..ANIMAL_MAX:   U := TKMUnitAnimal.Load(LoadStream);
+      utWolf,
+      utWatersnake..utDuck:     U := TKMUnitAnimal.Load(LoadStream);
+      utFish:                   U := TKMUnitFish.Load(LoadStream);
     else
       U := nil;
     end;
