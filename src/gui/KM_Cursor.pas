@@ -51,6 +51,8 @@ type
     MapEdSpeed: Byte;
     MapEdConstHeight: Byte;
 
+    MapEdFishCount: Byte;
+
     // MapEd other pages
     // todo: refactor to use only 1 flag here
     MapEdDir: Byte;

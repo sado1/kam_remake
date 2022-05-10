@@ -824,6 +824,7 @@ var
   formation: TKMFormation;
   GT: TKMGroupType;
   dir: TKMDirection;
+  U: TKMUnit;
 begin
   P := gCursor.Cell;
   if gCursor.Tag1 = UNIT_REMOVE_TAG then
@@ -852,7 +853,11 @@ begin
       gMySpectator.Hand.AddUnitGroup(TKMUnitType(gCursor.Tag1), P, dir, formation.UnitsPerRow, formation.NumUnits)
     end
     else
-      gHands.PlayerAnimals.AddUnit(TKMUnitType(gCursor.Tag1), P);
+    begin
+      U := gHands.PlayerAnimals.AddUnit(TKMUnitType(gCursor.Tag1), P);
+      if U is TKMUNitFish then
+        TKMUNitFish(U).FishCount := gCursor.MapEdFishCount;
+    end;
   end;
 end;
 
