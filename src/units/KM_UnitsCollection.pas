@@ -137,9 +137,9 @@ begin
     utRecruit:                    Result := TKMUnitRecruit.Create(uid, aUnitType, pointDir, aOwner, aInHouse);
     WARRIOR_MIN..WARRIOR_MAX:     Result := TKMUnitWarrior.Create(uid, aUnitType, pointDir, aOwner, aInHouse);
     // Do not specify aAddInHouse, we want to call TKMUnitAnimal constructor
-    utWolf:                       Result := TKMUnitAnimal.Create(uid, aUnitType, pointDir, aOwner);
-    utFish:                       Result := TKMUnitFish.Create(uid, pointDir, aOwner);
+    utWolf,
     utWatersnake..utDuck:         Result := TKMUnitAnimal.Create(uid, aUnitType, pointDir, aOwner);
+    utFish:                       Result := TKMUnitFish.Create(uid, pointDir, aOwner);
   else
     raise ELocError.Create('Add ' + gRes.Units[aUnitType].GUIName, pointDir.Loc);
   end;
