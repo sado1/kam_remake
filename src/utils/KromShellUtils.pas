@@ -114,9 +114,14 @@ end;
 
 
 function IsUnderWine: Boolean;
+{$IFNDEF WDC64}
 var
   H: Cardinal;
+{$ENDIF}
 begin
+  {$IFDEF WDC64}
+  Result := False;
+  {$ELSE}
   Result := False;
   H := LoadLibrary('ntdll.dll');
   if H > HINSTANCE_ERROR then
@@ -124,6 +129,7 @@ begin
     Result := Assigned(GetProcAddress(H, 'wine_get_version'));
     FreeLibrary(H);
   end;
+  {$ENDIF}
 end;
 
 
