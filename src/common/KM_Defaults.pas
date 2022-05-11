@@ -32,19 +32,9 @@ const
   {$I KM_Revision.inc};
   {$I KM_NetProtocolRevision.inc};
 
-  {$IFDEF USESECUREAUTH}
-    {$IFDEF DEBUG}
-    GAME_VERSION_POSTFIX  = ' [ DEBUG ]';
-    {$ELSE}
-    GAME_VERSION_POSTFIX  = '';
-    {$ENDIF}
-  {$ELSE}
-    {$IFDEF DEBUG}
-    GAME_VERSION_POSTFIX  = ' [ UNSECURE - DEBUG ]';
-    {$ELSE}
-    GAME_VERSION_POSTFIX  = ' [ UNSECURE ]';
-    {$ENDIF}
-  {$ENDIF}
+var
+  GAME_VERSION_POSTFIX: AnsiString = '';
+const
   GAME_VERSION_CUSTOM_POSTFIX = ''; // Custom postfix for the test builds
   GAME_VERSION_PREFIX   = ''; //Game version string displayed in menu corner
 var
@@ -87,7 +77,7 @@ var
   FREE_POINTERS         :Boolean = True;  //If True, units/houses will be freed and removed from the list once they are no longer needed
   CAP_MAX_FPS           :Boolean = True;  //Should limit rendering performance to avoid GPU overheating (disable to measure debug performance)
   CRASH_ON_REPLAY       :Boolean = True;  //Crash as soon as replay consistency fails (random numbers mismatch)
-  BLOCK_DUPLICATE_APP   :Boolean = not DEBUG_CFG; //Do not allow to run multiple games at once (to prevent MP cheating)
+  BLOCK_DUPLICATE_APP   :Boolean = False;//not DEBUG_CFG; //Do not allow to run multiple games at once (to prevent MP cheating)
   DO_NETWORK_AUTH       :Boolean = not DEBUG_CFG; //Do network auth. If no its equivalent to use KM_NetAuthUnsecure
   QUERY_ON_FORM_CLOSE   :Boolean = not DEBUG_CFG; //Do we ask player about lost changes on game exit ?
   SHOW_DISMISS_UNITS_BTN:Boolean = True; //The button to order citizens go back to school
@@ -1122,6 +1112,18 @@ implementation
 
 initialization
 begin
+  {$IFNDEF USESECUREAUTH}
+  GAME_VERSION_POSTFIX := GAME_VERSION_POSTFIX + ' [ UNSECURE ]';
+  {$ENDIF}
+
+  {$IFDEF DEBUG}
+  GAME_VERSION_POSTFIX := GAME_VERSION_POSTFIX + ' [ DEBUG ]';
+  {$ENDIF}
+
+  {$IFDEF WDC64}
+  GAME_VERSION_POSTFIX := GAME_VERSION_POSTFIX + ' [x64]';
+  {$ENDIF}
+
   GAME_REVISION := AnsiString('r' + IntToStr(GAME_REVISION_NUM));
   GAME_VERSION := GAME_VERSION_PREFIX + GAME_REVISION + GAME_VERSION_POSTFIX + GAME_VERSION_CUSTOM_POSTFIX;
   //Clients of this net protocol version may connect to the dedicated server
