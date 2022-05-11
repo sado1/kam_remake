@@ -354,7 +354,7 @@ begin
   Panel_Video.Visible := gVideoPlayer.PlayerEnabled;
 
   {$IFNDEF VIDEOS}
-  Panel_Options_Video.Hide; //Hide panel when no videos defined
+  Panel_Video.Hide; //Hide panel when no videos defined
   {$ENDIF}
 end;
 
