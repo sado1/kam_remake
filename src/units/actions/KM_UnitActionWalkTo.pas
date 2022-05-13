@@ -562,7 +562,7 @@ end;
   aDir - previous Unit Direction, need it to restore Direction for Warrior attacking House}
 function TKMUnitActionWalkTo.CheckForObstacle(aDir: TKMDirection): TKMObstacleCheck;
 var
-  T: TKMPoint;
+  nextPos: TKMPoint;
   distNext: Single;
   allTilesAroundLocked: Boolean;
   U: TKMUnit;
@@ -570,11 +570,11 @@ var
 begin
   Result := ocNoObstacle;
 
-  T := NodeList[NodePos+1];
+  nextPos := NodeList[NodePos+1];
 
   if (fUnit is TKMUnitWorker) then
   begin
-    distNext := gHands.DistanceToEnemyTowers(T, fUnit.Owner);
+    distNext := gHands.DistanceToEnemyTowers(nextPos, fUnit.Owner);
     if (distNext <= RANGE_WATCHTOWER_MAX)
     and (distNext < gHands.DistanceToEnemyTowers(fUnit.Position, fUnit.Owner)) then
     begin
@@ -587,12 +587,12 @@ begin
   end;
 
   // Check if there is an real obstacle first
-  if (not gTerrain.CheckPassability(T, GetEffectivePassability))
-  or (not gTerrain.CanWalkDiagonaly(fUnit.Position, T.X, T.Y)) then
+  if (not gTerrain.CheckPassability(nextPos, GetEffectivePassability))
+  or (not gTerrain.CanWalkDiagonaly(fUnit.Position, nextPos.X, nextPos.Y)) then
   begin
     //Try side stepping the obstacle.
     //By making HighestInteractionCount be the required timeout, we assure the solution is always checked
-    if IntSolutionSideStep(T, SIDESTEP_TIMEOUT) then
+    if IntSolutionSideStep(nextPos, SIDESTEP_TIMEOUT) then
       Result := ocNoObstacle
     else
     //Completely re-route if no simple side step solution is available
