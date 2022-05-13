@@ -273,7 +273,7 @@ type
   private
     procedure CleanHousePointer(aFreeAndNilTask: Boolean = False);
   protected
-    function InitiateActivity: TKMUnitTask; virtual; abstract;
+    procedure TaskGetWork; virtual; abstract;
     function FindHome: Boolean;
     procedure ProceedHouseClosedForWorker;
   public
@@ -284,7 +284,7 @@ type
   //This is a common class for all units, who can work in house
   TKMUnitCitizen = class(TKMSettledUnit)
   protected
-    function InitiateActivity: TKMUnitTask; override;
+    procedure TaskGetWork; override;
   public
     function CanWorkAt(aLoc: TKMPoint; aGatheringScript: TKMGatheringScript): Boolean;
     function GetActivityText: UnicodeString; override;
@@ -293,8 +293,7 @@ type
 
   TKMUnitRecruit = class(TKMSettledUnit)
   protected
-    function InitiateActivity: TKMUnitTask; override;
-  public
+    procedure TaskGetWork; override;
   end;
 
   //Serf - transports all wares between houses
@@ -645,8 +644,8 @@ begin
       end else begin
 
         if not (fHome.HouseType in HOUSE_WORKSHOP)
-          or (fHome.CheckResOut(wtAll) < MAX_WARES_OUT_WORKSHOP) then //Do not do anything if we have too many ready resources
-          fTask := InitiateActivity; //Unit is at home, so go get a job
+        or (fHome.CheckResOut(wtAll) < MAX_WARES_OUT_WORKSHOP) then //Do not do anything if we have too many ready resources
+          TaskGetWork; //Unit is at home, so go get a job
 
         if fTask = nil then //We didn't find any job to do - rest at home
           SetActionStay(Max(gResHouses[fHome.HouseType].WorkerRest,1)*10, uaWalk); //By default it's 0, don't scan that often
@@ -686,19 +685,19 @@ begin
 end;
 
 
-function TKMUnitCitizen.InitiateActivity: TKMUnitTask;
+procedure TKMUnitCitizen.TaskGetWork;
 var
   res: Integer;
-  TM: TKMTaskMining;
+  tm: TKMTaskMining;
 begin
-  Result := nil;
+  fTask := nil;
 
   if not KMSamePoint(fPositionRound, fHome.Entrance) then
     raise ELocError.Create('Mining from wrong spot', fPositionRound);
 
   res := 1;
-  //Check if House has production orders
-  //Ask the house what order we should make
+  // Check if House has production orders
+  // Ask the house what order we should make
   if gResHouses[fHome.HouseType].DoesOrders then
   begin
     res := fHome.PickOrder;
@@ -712,9 +711,10 @@ begin
   and (fHome.CheckResOut(gResHouses[fHome.HouseType].ResOutput[res]) >= MAX_WARES_IN_HOUSE) then
     Exit;
 
-  TM := TKMTaskMining.Create(Self, gResHouses[fHome.HouseType].ResOutput[res]);
+  fTask := TKMTaskMining.Create(Self, gResHouses[fHome.HouseType].ResOutput[res]);
+  tm := TKMTaskMining(fTask);
 
-  if TM.WorkPlan.ResourceDepleted then
+  if tm.WorkPlan.ResourceDepleted then
   begin
     if not fHome.ResourceDepleted then
       fHome.IssueResourceDepletedMsg;
@@ -724,44 +724,38 @@ begin
     //(it could appear again, f.e. by script)
     fHome.ResourceDepleted := False;
 
-  if TM.WorkPlan.IsIssued
-    and ((TM.WorkPlan.Resource1 = wtNone) or (fHome.CheckResIn(TM.WorkPlan.Resource1) >= TM.WorkPlan.Count1))
-    and ((TM.WorkPlan.Resource2 = wtNone) or (fHome.CheckResIn(TM.WorkPlan.Resource2) >= TM.WorkPlan.Count2))
-    and (fHome.CheckResOut(TM.WorkPlan.Product1) < MAX_WARES_IN_HOUSE)
-    and (fHome.CheckResOut(TM.WorkPlan.Product2) < MAX_WARES_IN_HOUSE) then
-  begin
-    //if gResHouses[fHome.HouseType].DoesOrders then
-      //Take order to production
-      //fHome.ResOrder[Res] := fHome.ResOrder[Res] - 1;
-    Result := TM;
-  end
-  else
-  begin
-    TM.Free;
-    Result := nil;
-  end;
+  // Verify the task can be done
+  if not ( //todo: Invert negation here
+  tm.WorkPlan.IsIssued
+  and ((tm.WorkPlan.Resource1 = wtNone) or (fHome.CheckResIn(tm.WorkPlan.Resource1) >= tm.WorkPlan.Count1))
+  and ((tm.WorkPlan.Resource2 = wtNone) or (fHome.CheckResIn(tm.WorkPlan.Resource2) >= tm.WorkPlan.Count2))
+  and (fHome.CheckResOut(tm.WorkPlan.Product1) < MAX_WARES_IN_HOUSE)
+  and (fHome.CheckResOut(tm.WorkPlan.Product2) < MAX_WARES_IN_HOUSE)
+  ) then
+    // If task can't be done - discard it
+    FreeAndNil(fTask);
 end;
 
 
 { TKMUnitRecruit }
-function TKMUnitRecruit.InitiateActivity: TKMUnitTask;
+procedure TKMUnitRecruit.TaskGetWork;
 var
   enemy: TKMUnit;
 begin
-  Result := nil;
+  fTask := nil;
 
-  //See if we are in a tower and have something to throw
+  // See if we are in a tower and have something to throw
   if not (fHome is TKMHouseTower) or (fHome.CheckResIn(wtStone) <= 0) then
     Exit;
 
   enemy := gTerrain.UnitsHitTestWithinRad(fPositionRound, RANGE_WATCHTOWER_MIN, RANGE_WATCHTOWER_MAX, Owner, atEnemy, dirNA, not RANDOM_TARGETS);
 
-  //Note: In actual game there might be two Towers nearby,
-  //both throwing a stone into the same enemy. We should not
-  //negate that fact, thats real-life situation.
+  // Note: In actual game there might be two Towers nearby,
+  // both throwing a stone into the same enemy. We should not
+  // negate that fact, thats real-life situation.
 
   if enemy <> nil then
-    Result := TKMTaskThrowRock.Create(Self, enemy);
+    fTask := TKMTaskThrowRock.Create(Self, enemy);
 end;
 
 
