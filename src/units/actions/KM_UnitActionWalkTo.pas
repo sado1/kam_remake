@@ -576,19 +576,19 @@ begin
   begin
     distNext := gHands.DistanceToEnemyTowers(T, fUnit.Owner);
     if (distNext <= RANGE_WATCHTOWER_MAX)
-      and (distNext < gHands.DistanceToEnemyTowers(fUnit.Position, fUnit.Owner)) then
+    and (distNext < gHands.DistanceToEnemyTowers(fUnit.Position, fUnit.Owner)) then
     begin
-      //Cancel the plan if we cant approach it
-      if TKMUnitWorker(fUnit).Task is TKMTaskBuild then
-        TKMTaskBuild(TKMUnitWorker(fUnit).Task).CancelThePlan;
-      Result := ocNoRoute;
-      Exit;
+      // Cancel the plan if we cant approach it
+      if fUnit.Task is TKMTaskBuild then
+        TKMTaskBuild(fUnit.Task).CancelThePlan;
+
+      Exit(ocNoRoute);
     end;
   end;
 
   // Check if there is an real obstacle first
-  if (not gTerrain.CheckPassability(T, GetEffectivePassability)) or
-     (not gTerrain.CanWalkDiagonaly(fUnit.Position, T.X, T.Y)) then
+  if (not gTerrain.CheckPassability(T, GetEffectivePassability))
+  or (not gTerrain.CanWalkDiagonaly(fUnit.Position, T.X, T.Y)) then
   begin
     //Try side stepping the obstacle.
     //By making HighestInteractionCount be the required timeout, we assure the solution is always checked
