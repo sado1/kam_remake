@@ -77,6 +77,7 @@ type
     property ValidationIssues: TKMScriptValidatorResult read fValidationIssues;
     procedure LoadFromFile(const aFileName, aCampaignDataFilePath: UnicodeString; aCampaignData: TKMemoryStream);
     procedure ExportDataToText;
+    procedure ExportScriptCode;
 
     procedure Save(SaveStream: TKMemoryStream);
     procedure Load(LoadStream: TKMemoryStream);
@@ -1737,12 +1738,32 @@ var
   s: string;
   SL: TStringList;
 begin
+  if Self = nil then Exit;
+
   SL := TStringList.Create;
   try
     IFPS3DataToText(fByteCode, s);
     SL.Text := s;
     ForceDirectories(ExeDir  + 'Export' + PathDelim);
     SL.SaveToFile(ExeDir + 'Export' + PathDelim + 'script_DataText.txt');
+  finally
+    SL.Free;
+  end;
+end;
+
+
+procedure TKMScripting.ExportScriptCode;
+var
+  s: string;
+  SL: TStringList;
+begin
+  if Self = nil then Exit;
+
+  SL := TStringList.Create;
+  try
+    SL.Text := fScriptCode;
+    ForceDirectories(ExeDir  + 'Export' + PathDelim);
+    SL.SaveToFile(ExeDir + 'Export' + PathDelim + 'script_code.script');
   finally
     SL.Free;
   end;

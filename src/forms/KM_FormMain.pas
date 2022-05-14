@@ -245,6 +245,7 @@ type
     seHighlightNavMesh: TSpinEdit;
     mnExportUnitsDat: TMenuItem;
     mnOpenSettingsDir: TMenuItem;
+    mnScriptCode: TMenuItem;
 
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -319,6 +320,7 @@ type
     procedure btnGameSaveClick(Sender: TObject);
     procedure mnExportUnitsDatClick(Sender: TObject);
     procedure mnOpenSettingsDirClick(Sender: TObject);
+    procedure mnScriptCodeClick(Sender: TObject);
   private
     {$IFDEF MSWindows}
     fMenuItemHint: TKMVclMenuItemHint; // Custom hint over menu item
@@ -721,6 +723,15 @@ var
 begin
   s := ExpandFileName(TKMSettings.GetDir);
   ShellExecute(Application.Handle, 'open', 'explorer.exe', PChar('"' + s + '"'), nil, SW_NORMAL);
+end;
+
+
+procedure TFormMain.mnScriptCodeClick(Sender: TObject);
+begin
+  if (gGameApp <> nil)
+  and (gGameApp.Game <> nil)
+  and (gGame.Scripting <> nil) then
+    gGame.Scripting.ExportScriptCode;
 end;
 
 

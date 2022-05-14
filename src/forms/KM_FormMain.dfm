@@ -1747,6 +1747,10 @@ object FormMain: TFormMain
         Caption = 'Script Data'
         OnClick = Export_ScriptDataClick
       end
+      object mnScriptCode: TMenuItem
+        Caption = 'Script Code'
+        OnClick = mnScriptCodeClick
+      end
       object N6: TMenuItem
         Caption = '-'
       end
