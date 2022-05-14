@@ -1754,7 +1754,6 @@ end;
 
 procedure TKMScripting.ExportScriptCode;
 var
-  s: string;
   SL: TStringList;
 begin
   if Self = nil then Exit;
