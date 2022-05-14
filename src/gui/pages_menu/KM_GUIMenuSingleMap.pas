@@ -380,7 +380,7 @@ begin
       end;
 
       R := MakeListRow(['', IntToStr(fMaps[I].LocCount), fMaps[I].Name, MapSizeText(fMaps[I].MapSizeX, fMaps[I].MapSizeY)]);
-      R.Cells[2].SubTxt := fMaps[I].TxtInfo.SmallDesc;
+      R.Cells[2].SubTxt := fMaps[I].TxtInfo.SmallDescToDisplay;
       R.Cells[0].Pic := MakePic(rxGui, 28 + Byte(fMaps[I].MissionMode <> mmFighting) * 14);
       R.Tag := I;
       ColumnBox_Maps.AddItem(R);
@@ -463,6 +463,7 @@ begin
 
       Label_Title.Caption := map.Name;
       Memo_Desc.Text      := map.BigDesc;
+      ColumnBox_Maps.SelectedItem.Cells[2].SubTxt := map.TxtInfo.SmallDescToDisplay; // Update SmallText of the selected map
       MinimapView.Show;
 
       //Location

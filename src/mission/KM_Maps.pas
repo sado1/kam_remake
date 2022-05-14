@@ -29,12 +29,34 @@ type
 
   TKMMapTxtInfo = class
   private
+    // Saved
+    // Desc fixed string in the .txt file. Should be saved
+    fSmallDesc: UnicodeString;
+    fBigDesc: UnicodeString;
+
+    // Desc LibxID. Should be saved
+    fSmallDescLibx: Integer;
+    fBigDescLibx: Integer;
+
+    // Not saved
+    // Translated text, which we load by LibxID. Should not be saved
+    fSmallDescTranslated: UnicodeString;
+    fBigDescTranslated: UnicodeString;
+
     fBlockColorSelection: Boolean;
     function IsEmpty: Boolean;
     function GetBlockColorSelection: Boolean;
+
+    procedure NormalizeDesc;
+
+    procedure SetSmallDesc(const aSmallDesc: UnicodeString);
+    procedure SetBigDesc(const aBigDesc: UnicodeString);
+
+    function GetSmallDescToDisplay: UnicodeString;
+    function GetBigDescToDisplay: UnicodeString;
   public
-    Author, Version, BigDesc, SmallDesc: UnicodeString;
-    SmallDescLibx, BigDescLibx: Integer;
+    Author: UnicodeString;
+    Version: UnicodeString;
     IsCoop: Boolean; //Some multiplayer missions are defined as coop
     IsSpecial: Boolean; //Some missions are defined as special (e.g. tower defence, quest, etc.)
     IsRMG: Boolean; //Missions that were generated via Random Map Generator
@@ -48,11 +70,18 @@ type
 
     constructor Create;
 
+    property SmallDesc: UnicodeString write SetSmallDesc; // We want to read SmallDescToDisplay instead
+    property SmallDescLibx: Integer read fSmallDescLibx; // We want to set LibxID and its translation at once
+    procedure SetSmallDescLibxAndTranslation(aSmallDescLibx: Integer; aTranslation: UnicodeString);
+    property SmallDescToDisplay: UnicodeString read GetSmallDescToDisplay;
+
+    property BigDesc: UnicodeString write SetBigDesc;
+    property BigDescLibx: Integer read fBigDescLibx;
+    procedure SetBigDescLibxAndTranslation(aBigDescLibx: Integer; aTranslation: UnicodeString);
+    property BigDescToDisplay: UnicodeString read GetBigDescToDisplay;
+
     procedure Load(LoadStream: TKMemoryStream);
     procedure Save(SaveStream: TKMemoryStream);
-
-    procedure SetBigDesc(const aBigDesc: UnicodeString);
-    function GetBigDesc: UnicodeString;
 
     function IsSmallDescLibxSet: Boolean;
     function IsBigDescLibxSet: Boolean;
@@ -982,7 +1011,7 @@ begin
       Result := Result + WrapColor(gResTexts[CUSTOM_MAP_PARAM_DESCR_TX[CSP]] + ':', icRed) + '|'
                        + WrapColor('[' + fCustomScriptParams[CSP].Data + ']', icOrange) + '||';
 
-  Result := Result + TxtInfo.BigDesc;
+  Result := Result + TxtInfo.BigDescToDisplay;
 
   // Add 1 new line for author & version section
   if (TxtInfo.Author <> '') or (TxtInfo.Version <> '') and (Result <> '') then
@@ -1051,15 +1080,17 @@ begin
   if Version <> '' then
     WriteLine('Version', Version);
 
-  if SmallDescLibx <> -1 then
-    WriteLine('SmallDescLIBX', IntToStr(SmallDescLibx))
-  else if SmallDesc <> '' then
-    WriteLine('SmallDesc', SmallDesc);
+  if fSmallDescLibx <> LIBX_NO_ID then
+    WriteLine('SmallDescLIBX', IntToStr(fSmallDescLibx))
+  else
+  if fSmallDesc <> '' then
+    WriteLine('SmallDesc', fSmallDesc);
 
-  if BigDescLibx <> -1 then
-    WriteLine('BigDescLIBX', IntToStr(BigDescLibx))
-  else if BigDesc <> '' then
-    WriteLine('BigDesc', BigDesc);
+  if fBigDescLibx <> LIBX_NO_ID then
+    WriteLine('BigDescLIBX', IntToStr(fBigDescLibx))
+  else
+  if fBigDesc <> '' then
+    WriteLine('BigDesc', fBigDesc);
 
   if IsCoop then
     WriteLine('SetCoop');
@@ -1116,7 +1147,7 @@ procedure TKMMapTxtInfo.LoadTXTInfo(const aFilePath: String);
   end;
 
 var
-  I: Integer;
+  I, tmpInt: Integer;
   St, S: String;
   ft: TextFile;
   stList: TStringList;
@@ -1132,26 +1163,36 @@ begin
       ReadLn(ft, St);
       if SameText(St, 'Author') then
         Readln(ft, Author);
+
       if SameText(St, 'Version') then
         Readln(ft, Version);
+
       if SameText(St, 'BigDesc') then
-        Readln(ft, BigDesc);
+      begin
+        Readln(ft, S);
+        BigDesc := S; // Will reset BigDescLIBX if needed
+      end;
 
       if SameText(St, 'BigDescLIBX') then
       begin
         Readln(ft, S);
-        BigDescLibx := StrToIntDef(S, -1);
-        BigDesc := LoadDescriptionFromLIBX(BigDescLibx);
+        tmpInt := StrToIntDef(S, LIBX_NO_ID);
+        if tmpInt <> LIBX_NO_ID then
+          SetBigDescLibxAndTranslation(tmpInt, LoadDescriptionFromLIBX(tmpInt));
       end;
 
       if SameText(St, 'SmallDesc') then
-        ReadLn(ft, SmallDesc);
+      begin
+        ReadLn(ft, S);
+        SmallDesc := S; // Will reset SmallDescLIBX if needed
+      end;
 
       if SameText(St, 'SmallDescLIBX') then
       begin
         Readln(ft, S);
-        SmallDescLibx := StrToIntDef(S, -1);
-        SmallDesc := LoadDescriptionFromLIBX(SmallDescLibx);
+        tmpInt := StrToIntDef(S, LIBX_NO_ID);
+        if tmpInt <> LIBX_NO_ID then
+          SetSmallDescLibxAndTranslation(tmpInt, LoadDescriptionFromLIBX(tmpInt));
       end;
 
       if SameText(St, 'SetCoop')   then
@@ -1190,19 +1231,66 @@ begin
       end;
     until(eof(ft));
     CloseFile(ft);
+
+    // Normalize descriptions
+    NormalizeDesc;
   end;
+end;
+
+
+function TKMMapTxtInfo.GetSmallDescToDisplay: UnicodeString;
+begin
+  if fSmallDescLibx = LIBX_NO_ID then
+    Result := fSmallDesc
+  else
+    Result := fSmallDescTranslated;
+end;
+
+
+function TKMMapTxtInfo.GetBigDescToDisplay: UnicodeString;
+begin
+  if fBigDescLibx = LIBX_NO_ID then
+    Result := fBigDesc
+  else
+    Result := fBigDescTranslated;
+end;
+
+
+procedure TKMMapTxtInfo.SetSmallDesc(const aSmallDesc: UnicodeString);
+begin
+  fSmallDesc := aSmallDesc;
+
+  if fSmallDesc <> '' then
+    SetSmallDescLibxAndTranslation(LIBX_NO_ID, '');
 end;
 
 
 procedure TKMMapTxtInfo.SetBigDesc(const aBigDesc: UnicodeString);
 begin
-  BigDesc := aBigDesc;
+  fBigDesc := aBigDesc;
+
+  if fSmallDesc <> '' then
+    SetBigDescLibxAndTranslation(LIBX_NO_ID, '');
 end;
 
 
-function TKMMapTxtInfo.GetBigDesc: UnicodeString;
+// Sets LibxID and its translation from Libx
+procedure TKMMapTxtInfo.SetSmallDescLibxAndTranslation(aSmallDescLibx: Integer; aTranslation: UnicodeString);
 begin
-  Result := BigDesc;
+  fSmallDescLibx := aSmallDescLibx;
+  fSmallDescTranslated :=  aTranslation;
+  if fSmallDescLibx <> LIBX_NO_ID then
+    fSmallDesc := '';
+end;
+
+
+// Sets LibxID and its translation from Libx
+procedure TKMMapTxtInfo.SetBigDescLibxAndTranslation(aBigDescLibx: Integer; aTranslation: UnicodeString);
+begin
+  fBigDescLibx := aBigDescLibx;
+  fBigDescTranslated :=  aTranslation;
+  if fBigDescLibx <> LIBX_NO_ID then
+    fBigDesc := '';
 end;
 
 
@@ -1214,15 +1302,30 @@ begin
 end;
 
 
+// Normalize descriptions, thus they should have either LibxID or text
+procedure TKMMapTxtInfo.NormalizeDesc;
+begin
+  if fSmallDescLibx = LIBX_NO_ID then
+    fSmallDescTranslated := ''
+  else
+    fSmallDesc := '';
+
+  if fBigDescLibx = LIBX_NO_ID then
+    fBigDescTranslated := ''
+  else
+    fBigDesc := '';
+end;
+
+
 function TKMMapTxtInfo.IsSmallDescLibxSet: Boolean;
 begin
-  Result := SmallDescLibx <> -1;
+  Result := SmallDescLibx <> LIBX_NO_ID;
 end;
 
 
 function TKMMapTxtInfo.IsBigDescLibxSet: Boolean;
 begin
-  Result := BigDescLibx <> -1;
+  Result := BigDescLibx <> LIBX_NO_ID;
 end;
 
 
@@ -1237,8 +1340,8 @@ begin
   Result := not (IsCoop or IsSpecial or IsPlayableAsSP or IsRMG
             or BlockTeamSelection or BlockColorSelection or BlockPeacetime or BlockFullMapPreview
             or (Author <> '') or (Version <> '')
-            or (SmallDesc <> '') or IsSmallDescLibxSet
-            or (BigDesc <> '') or IsBigDescLibxSet
+            or (fSmallDesc <> '') or IsSmallDescLibxSet
+            or (fBigDesc <> '') or IsBigDescLibxSet
             or HasDifficultyLevels);
 end;
 
@@ -1267,10 +1370,12 @@ begin
   DifficultyLevels := [];
   Author := '';
   Version := '';
-  SmallDesc := '';
-  SmallDescLibx := -1;
-  BigDesc := '';
-  BigDescLibx := -1;
+  fSmallDesc := '';
+  fSmallDescLibx := LIBX_NO_ID;
+  fSmallDescTranslated := '';
+  fBigDesc := '';
+  fBigDescLibx := LIBX_NO_ID;
+  fBigDescTranslated := '';
 end;
 
 
@@ -1290,11 +1395,11 @@ begin
   LoadStream.Read(BlockPeacetime);
   LoadStream.Read(BlockFullMapPreview);
 
-  LoadStream.ReadW(SmallDesc);
-  LoadStream.Read(SmallDescLibx);
+  LoadStream.ReadW(fSmallDesc);
+  LoadStream.Read(fSmallDescLibx);
 
-  LoadStream.ReadW(BigDesc);
-  LoadStream.Read(BigDescLibx);
+  LoadStream.ReadW(fBigDesc);
+  LoadStream.Read(fBigDescLibx);
 end;
 
 
@@ -1314,11 +1419,11 @@ begin
   SaveStream.Write(BlockPeacetime);
   SaveStream.Write(BlockFullMapPreview);
 
-  SaveStream.WriteW(SmallDesc);
-  SaveStream.Write(SmallDescLibx);
+  SaveStream.WriteW(fSmallDesc);
+  SaveStream.Write(fSmallDescLibx);
 
-  SaveStream.WriteW(BigDesc);
-  SaveStream.Write(BigDescLibx);
+  SaveStream.WriteW(fBigDesc);
+  SaveStream.Write(fBigDescLibx);
 end;
 
 

@@ -18,6 +18,7 @@ const
 
   HANDS_NAMES_OFFSET = 100;
   MISSION_NAME_LIBX_ID = 200; //Reserved Libx ID for Mission name in Campaigns
+  LIBX_NO_ID = -1;
 
 type
   TKMTextLibraryCommon = class
