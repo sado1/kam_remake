@@ -120,6 +120,9 @@ begin
     end
     else
     begin
+      if CURSOR_SPRITE_INDEX[C] >= Length(rxData.Size) then
+        Continue;
+
       sx := rxData.Size[CURSOR_SPRITE_INDEX[C]].X;
       sy := rxData.Size[CURSOR_SPRITE_INDEX[C]].Y;
       bm.Width  := sx; bm.Height  := sy;
