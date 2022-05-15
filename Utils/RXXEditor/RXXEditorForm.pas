@@ -68,8 +68,6 @@ uses
 
 
 procedure TRXXForm1.FormCreate(Sender: TObject);
-var
-  RT: TRXType;
 begin
   ExeDir := ExpandFileName(ExtractFilePath(ParamStr(0)) + '..\..\');
 
@@ -270,7 +268,6 @@ end;
 
 procedure TRXXForm1.btnExportClick(Sender: TObject);
 var
-  filePath: string;
   I: Integer;
 begin
   if lbSpritesList.SelCount = 1 then

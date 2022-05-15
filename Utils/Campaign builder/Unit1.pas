@@ -122,7 +122,7 @@ begin
   DoubleBuffered := True; //Makes images drag around smoothly
   ScrollBox1.DoubleBuffered := True;
 
-  Caption := 'Campaign Builder (' + GAME_REVISION + ')';
+  Caption := string('Campaign Builder (' + GAME_REVISION + ')');
 
   fExePath := ExtractFilePath(ParamStr(0));
   fCampaignsPath := ExpandFileName(fExePath + '..\..\Campaigns\');
