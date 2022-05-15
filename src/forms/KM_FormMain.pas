@@ -246,6 +246,7 @@ type
     mnExportUnitsDat: TMenuItem;
     mnOpenSettingsDir: TMenuItem;
     mnScriptCode: TMenuItem;
+    btnGameRestart: TButton;
 
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -321,6 +322,7 @@ type
     procedure mnExportUnitsDatClick(Sender: TObject);
     procedure mnOpenSettingsDirClick(Sender: TObject);
     procedure mnScriptCodeClick(Sender: TObject);
+    procedure btnGameRestartClick(Sender: TObject);
   private
     {$IFDEF MSWindows}
     fMenuItemHint: TKMVclMenuItemHint; // Custom hint over menu item
@@ -998,6 +1000,12 @@ end;
 procedure TFormMain.btFindObjByUIDClick(Sender: TObject);
 begin
   FindObjByUID(seFindObjByUID.Value);
+end;
+
+
+procedure TFormMain.btnGameRestartClick(Sender: TObject);
+begin
+  gGameApp.NewRestartLastSPGame;
 end;
 
 

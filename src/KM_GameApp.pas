@@ -101,6 +101,8 @@ type
     procedure NewMultiplayerMap(const aFileName: UnicodeString; aMapKind: TKMMapKind; aCRC: Cardinal; aSpectating: Boolean;
                                 aDifficulty: TKMMissionDifficulty);
     procedure NewMultiplayerSave(const aSaveName: UnicodeString; Spectating: Boolean);
+
+    procedure NewRestartLastSPGame;
     procedure NewRestartLast(const aGameName, aMissionFileRel, aSave: UnicodeString; aGameMode: TKMGameMode; aCampName: TKMCampaignId;
                              aCampMap: Byte; aLocation: Byte; aColor: Cardinal; aDifficulty: TKMMissionDifficulty = mdNone;
                              aAIType: TKMAIType = aitNone);
@@ -955,6 +957,42 @@ begin
 
   if Assigned(fOnGameStart) and (gGame <> nil) then
     fOnGameStart(gGame.Params.Mode);
+end;
+
+
+procedure TKMGameApp.NewRestartLastSPGame;
+var
+  gameMode: TKMGameMode;
+  repeatGameName: UnicodeString;
+  repeatMissionFileRel: UnicodeString;
+  repeatSave: UnicodeString;
+  repeatCampName: TKMCampaignId;
+  repeatCampMap: Byte;
+  repeatLocation: Byte;
+  repeatColor: Cardinal;
+  repeatDifficulty: TKMMissionDifficulty;
+  repeatAIType: TKMAIType;
+begin
+  if gGame = nil then Exit;
+
+  if not gGame.Params.IsSingleplayerGame then Exit;
+
+  //Remember which map we played so we could restart it
+  gameMode              := gGame.Params.Mode;
+  repeatGameName        := gGame.Params.Name;
+  repeatMissionFileRel  := gGame.Params.MissionFileRel;
+  repeatSave            := gGame.SaveFile;
+  repeatCampName        := gGame.CampaignName;
+  repeatCampMap         := gGame.CampaignMap;
+  repeatLocation        := gGame.PlayerLoc;
+  repeatColor           := gGame.PlayerColor;
+  repeatDifficulty      := gGame.Params.MissionDifficulty;
+  repeatAIType          := gGame.AIType;
+
+  StopGame(grSilent);
+
+  gGameApp.NewRestartLast(repeatGameName, repeatMissionFileRel, repeatSave, gameMode, repeatCampName, repeatCampMap,
+                          repeatLocation, repeatColor, repeatDifficulty, repeatAIType);
 end;
 
 

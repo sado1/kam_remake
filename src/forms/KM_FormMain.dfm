@@ -1492,9 +1492,9 @@ object FormMain: TFormMain
         OnClick = chkSuperSpeedClick
       end
       object btnGameStop: TButton
-        Left = 185
+        Left = 200
         Top = 5
-        Width = 53
+        Width = 35
         Height = 17
         Caption = 'Stop'
         TabOrder = 1
@@ -1540,13 +1540,22 @@ object FormMain: TFormMain
         OnChange = ControlsUpdate
       end
       object btnGameSave: TButton
-        Left = 126
+        Left = 117
         Top = 5
-        Width = 53
+        Width = 35
         Height = 17
         Caption = 'Save'
         TabOrder = 5
         OnClick = btnGameSaveClick
+      end
+      object btnGameRestart: TButton
+        Left = 155
+        Top = 5
+        Width = 42
+        Height = 17
+        Caption = 'Restart'
+        TabOrder = 6
+        OnClick = btnGameRestartClick
       end
     end
   end
