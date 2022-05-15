@@ -120,6 +120,7 @@ begin
     end
     else
     begin
+      // Just skip missing cursor, do not crash the game
       if CURSOR_SPRITE_INDEX[C] >= Length(rxData.Size) then
         Continue;
 
