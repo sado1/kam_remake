@@ -401,14 +401,14 @@ begin
     nGameAutosave := nGameCommon.AddOrFindChild('Autosave');
       fAutosave           := nGameAutosave.Attributes['Enabled'].AsBoolean(True);
       fAutosaveAtGameEnd  := nGameAutosave.Attributes['OnGameEnd'].AsBoolean(False);
-      fAutosaveFrequency  := nGameAutosave.Attributes['Frequency'].AsInteger(AUTOSAVE_FREQUENCY_DEFAULT);
-      fAutosaveCount      := nGameAutosave.Attributes['Count'].AsInteger(AUTOSAVE_COUNT_DEF);
+      AutosaveFrequency   := nGameAutosave.Attributes['Frequency'].AsInteger(AUTOSAVE_FREQUENCY_DEFAULT); // With setter
+      AutosaveCount       := nGameAutosave.Attributes['Count'].AsInteger(AUTOSAVE_COUNT_DEF); // With setter
 
     // SavePoints
     nGameSavePoints := nGameCommon.AddOrFindChild('SavePoints');
       fSaveCheckpoints      := nGameSavePoints.Attributes['Enabled'].AsBoolean(True);
-      fSaveCheckpointsFreq  := nGameSavePoints.Attributes['Frequency'].AsInteger(GAME_SAVE_CHECKPOINT_FREQ_DEF);
-      fSaveCheckpointsLimit := nGameSavePoints.Attributes['Limit'].AsInteger(GAME_SAVE_CHECKPOINT_CNT_LIMIT_DEF);
+      SaveCheckpointsFreq   := nGameSavePoints.Attributes['Frequency'].AsInteger(GAME_SAVE_CHECKPOINT_FREQ_DEF); // With setter
+      SaveCheckpointsLimit  := nGameSavePoints.Attributes['Limit'].AsInteger(GAME_SAVE_CHECKPOINT_CNT_LIMIT_DEF); // With setter
 
     // PlayersColor
     nGamePlayersColor := nGameCommon.AddOrFindChild('PlayersColor');
@@ -456,14 +456,14 @@ begin
 
   // Replay
   nReplay := nGameSettings.AddOrFindChild('Replay');
-    fReplayAutopause := nReplay.Attributes['Autopause'].AsBoolean(False);
-    fReplayShowBeacons := nReplay.Attributes['ShowBeacons'].AsBoolean(False);
-    fReplaySavepoint := nReplay.Attributes['Savepoint'].AsBoolean(True);
-    fReplaySavepointFrequency := nReplay.Attributes['SavepointFrequency'].AsInteger(REPLAY_SAVEPOINT_FREQUENCY_DEF);
+    fReplayAutopause          := nReplay.Attributes['Autopause'].AsBoolean(False);
+    fReplayShowBeacons        := nReplay.Attributes['ShowBeacons'].AsBoolean(False);
+    fReplaySavepoint          := nReplay.Attributes['Savepoint'].AsBoolean(True);
+    ReplaySavepointFrequency  := nReplay.Attributes['SavepointFrequency'].AsInteger(REPLAY_SAVEPOINT_FREQUENCY_DEF); // With setter
 
   // MapEd
   nMapEd := nGameSettings.AddOrFindChild('MapEd');
-    MapEdHistoryDepth := nMapEd.Attributes['HistoryDepth'].AsInteger(MAPED_HISTORY_DEPTH_DEF); // With setter
+    MapEdHistoryDepth     := nMapEd.Attributes['HistoryDepth'].AsInteger(MAPED_HISTORY_DEPTH_DEF); // With setter
     MapEdMaxTerrainHeight := nMapEd.Attributes['MaxTerrainHeight'].AsInteger(HEIGHT_MAX); // With setter;
 
   // Multiplayer
