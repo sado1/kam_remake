@@ -35,6 +35,7 @@ type
                         Data: TKMCardinalArray;
                       end;
     procedure Allocate(aCount: Integer); virtual; //Allocate space for data that is being loaded
+    procedure ReadRXZHeader(aStream: TStream; out aVersionStr: AnsiString);
     {$IFNDEF NO_OGL}
     procedure MakeGFX_BinPacking(aTexType: TTexFormat; aStartingIndex: Integer; var BaseRAM, ColorRAM, TexCount: Cardinal;
                                  aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil);
@@ -205,7 +206,9 @@ uses
   KM_Render,
   {$ENDIF}
   TypInfo,
-  KM_Log, KM_CommonUtils, KM_Points, KM_GameSettings;
+  KM_Log, KM_CommonClasses,
+  KM_CommonUtils, KM_Utils, KM_Points,
+  KM_GameSettings;
 
 const
   MAX_GAME_ATLAS_SIZE = 2048; //Max atlas size for KaM. No need for bigger atlases
@@ -682,12 +685,36 @@ begin
 end;
 
 
+// Read header of the RXX / RXA files
+procedure TKMSpritePack.ReadRXZHeader(aStream: TStream; out aVersionStr: AnsiString);
+const
+  ZLIB_HEADER: Word = $DA78; // Header of ZLIB archiver. We used for RXX before introducing RXX1 format version
+var
+  header: Word;
+begin
+  aStream.Read(header, SizeOf(header));
+
+  if header = ZLIB_HEADER then
+  begin
+    // Reset position
+    aStream.Position := 0;
+    aVersionStr := '';
+    Exit;
+  end;
+
+  aStream.Position := 0;
+
+  ReadBinaryHeader(aStream, aVersionStr);
+end;
+
+
 procedure TKMSpritePack.LoadFromRXXFile(const aFileName: string; aStartingIndex: Integer = 1);
 var
   I: Integer;
   rxxCount: Integer;
   inputStream: TFileStream;
   decompressionStream: TDecompressionStream;
+  version: AnsiString;
 begin
   case fRT of
     rxTiles: if SKIP_RENDER and not DO_NOT_SKIP_LOAD_TILESET then Exit;
@@ -697,6 +724,8 @@ begin
   if not FileExists(aFileName) then Exit;
 
   inputStream := TFileStream.Create(aFileName, fmOpenRead or fmShareDenyNone);
+  ReadRXZHeader(inputStream, version);
+
   decompressionStream := TDecompressionStream.Create(inputStream);
 
   try
@@ -741,6 +770,7 @@ var
   rxxCount, atlasCount, spriteCount, dataCount: Integer;
   inputStream: TFileStream;
   decompressionStream: TDecompressionStream;
+  version: AnsiString;
 begin
   {$IFNDEF NO_OGL}
   case fRT of
@@ -751,6 +781,7 @@ begin
   if not FileExists(aFileName) then Exit;
 
   inputStream := TFileStream.Create(aFileName, fmOpenRead or fmShareDenyNone);
+  ReadRXZHeader(inputStream, version);
   decompressionStream := TDecompressionStream.Create(inputStream);
 
   try

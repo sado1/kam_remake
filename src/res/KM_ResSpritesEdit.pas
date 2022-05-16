@@ -45,7 +45,12 @@ uses
   KM_SoftShadows,
   KM_IoPNG,
   KM_RenderTypes,
-  KM_CommonClasses;
+  KM_CommonClasses,
+  KM_Utils;
+
+
+const
+  RXX_VERSION_1: AnsiString = 'RXX1';
 
 
 var
@@ -688,7 +693,7 @@ var
   SAT: TSpriteAtlasType;
   InputStream: TCompressionStream;
   OutputStream: TFileStream;
-  baseRAM, idealRAM, colorRAM, texCount: Cardinal;
+  baseRAM, colorRAM, texCount: Cardinal;
 begin
   if IsEmpty then Exit;
 
@@ -697,6 +702,7 @@ begin
   ForceDirectories(ExtractFilePath(aFileName));
 
   OutputStream := TFileStream.Create(aFileName, fmCreate);
+  WriteBinaryHeader(OutputStream, RXX_VERSION_1);
   InputStream := TCompressionStream.Create(clMax, OutputStream);
 
   //Sprite info
@@ -778,6 +784,7 @@ begin
         InputStream.Write(fRXData.Mask[I, 0], fRXData.Size[I].X * fRXData.Size[I].Y);
     end;
   OutputStream := TFileStream.Create(aFileName, fmCreate);
+  WriteBinaryHeader(OutputStream, RXX_VERSION_1);
   CompressionStream := TCompressionStream.Create(clMax, OutputStream);
   InputStream.Position := 0;
   CompressionStream.CopyFrom(InputStream, InputStream.Size);
