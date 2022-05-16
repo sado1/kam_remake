@@ -47,16 +47,16 @@ end;
 
 procedure TKMRXXPacker.Pack(RT: TRXType; fPalettes: TKMResPalettes);
 var
-  DeathAnimProcessed: array of Integer;
-  DeathAnimCount: Integer;
+  deathAnimProcessed: array of Integer;
+  deathAnimCount: Integer;
 
   function DeathAnimAlreadyDone(aID: Integer):Boolean;
   var
     I: Integer;
   begin
     Result := False;
-    for I := 0 to DeathAnimCount - 1 do
-      if DeathAnimProcessed[I] = aID then
+    for I := 0 to deathAnimCount - 1 do
+      if deathAnimProcessed[I] = aID then
         Exit(True);
   end;
 
@@ -130,8 +130,8 @@ begin
           spritePack.SoftenShadows(6251, 6322, False); //Smooth thought bubbles
           //Smooth all death animations for all units
           resUnits := TKMResUnits.Create;
-          DeathAnimCount := 0; //We need to remember which ones we've done because units reuse them
-          SetLength(DeathAnimProcessed, 1000); //Hopefully more than enough
+          deathAnimCount := 0; //We need to remember which ones we've done because units reuse them
+          SetLength(deathAnimProcessed, 1000); //Hopefully more than enough
           for UT := HUMANS_MIN to HUMANS_MAX do
             for dir := dirN to dirNW do
               for step := 1 to 30 do
@@ -141,8 +141,8 @@ begin
                 and not DeathAnimAlreadyDone(spriteID) then
                 begin
                   spritePack.SoftenShadows(spriteID, False);
-                  DeathAnimProcessed[DeathAnimCount] := spriteID;
-                  inc(DeathAnimCount);
+                  deathAnimProcessed[deathAnimCount] := spriteID;
+                  Inc(deathAnimCount);
                 end;
               end;
           resUnits.Free;
