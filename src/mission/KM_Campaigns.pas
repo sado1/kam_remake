@@ -513,7 +513,8 @@ begin
     //Load mission name from mission Libx library
     textMission := TKMTextLibraryMulti.Create;
     try
-      textMission.LoadLocale(GetMissionFile(I, '.%s.libx'));
+      // Make a full scan for Libx top ID, to allow unordered Libx ID's by not carefull campaign makers
+      textMission.LoadLocale(GetMissionFile(I, '.%s.libx'), True);
       if textMission.HasText(MISSION_NAME_LIBX_ID) then
         fMapsInfo[I].MissionName := StringReplace(textMission[MISSION_NAME_LIBX_ID], '|', ' ', [rfReplaceAll]); //Replace | with space
     finally

@@ -714,13 +714,15 @@ begin
                 begin
                   fGameInputProcess := TKMGameInputProcess_Multi.Create(gipRecording);
                   fTextMission := TKMTextLibraryMulti.Create;
-                  fTextMission.LoadLocale(ChangeFileExt(aMissionFullFilePath, '.%s.libx'));
+                  // Make a full scan for Libx top ID, to allow unordered Libx ID's by not carefull mapmakers
+                  fTextMission.LoadLocale(ChangeFileExt(aMissionFullFilePath, '.%s.libx'), True);
                 end;
       gmSingle, gmCampaign:
                 begin
                   fGameInputProcess := TKMGameInputProcess_Single.Create(gipRecording);
                   fTextMission := TKMTextLibraryMulti.Create;
-                  fTextMission.LoadLocale(ChangeFileExt(aMissionFullFilePath, '.%s.libx'));
+                  // Make a full scan for Libx top ID, to allow unordered Libx ID's by not carefull mapmakers
+                  fTextMission.LoadLocale(ChangeFileExt(aMissionFullFilePath, '.%s.libx'), True);
                 end;
       gmMapEd:  ;
     end;
