@@ -321,6 +321,7 @@ const
   AUTOSAVE_FREQUENCY_MAX  = 3000;
   AUTOSAVE_FREQUENCY_DEFAULT = 600; //How often to do autosave, every N ticks
   AUTOSAVE_SAVE_NAME = 'autosave';
+  AUTOSAVE_AFTER_PT_END_SAVE_NAME = 'autosave_after_pt_end';
   CRASHREPORT_SAVE_NAME = 'crashreport';
 
   // Checkpoint, which are made in the memory while watching replay

@@ -1507,7 +1507,7 @@ end;
 
 procedure TKMGame.AutoSaveAfterPT(aTimestamp: TDateTime);
 begin
-  Save('autosave_after_pt_end', aTimestamp);
+  Save(AUTOSAVE_AFTER_PT_END_SAVE_NAME, aTimestamp);
 end;
 
 
