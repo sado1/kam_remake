@@ -109,8 +109,6 @@ type
     Button_ChangeOwner: TKMButtonFlat;
     Button_UniversalEraser: TKMButtonFlat;
 
-    Label_Stat: TKMLabel;
-
     Panel_Common: TKMPanel;
       Button_Main: array [1..5] of TKMButton; //5 buttons
       Label_MissionName: TKMLabel;
@@ -202,7 +200,6 @@ begin
 
   Label_MissionName := TKMLabel.Create(Panel_Main, MAPED_TOOLBAR_WIDTH + 4, 10, 500, 10, NO_TEXT, fntGrey, taLeft);
   Label_Coordinates := TKMLabel.Create(Panel_Main, MAPED_TOOLBAR_WIDTH + 4, 30, 'X: Y:', fntGrey, taLeft);
-  Label_Stat := TKMLabel.Create(Panel_Main, MAPED_TOOLBAR_WIDTH + 4, 50, 0, 0, '', fntOutline, taLeft);
 
 //  TKMLabel.Create(Panel_Main, TB_PAD, 190, TB_WIDTH, 0, gResTexts[TX_MAPED_PLAYERS], fntOutline, taLeft);
   for I := 0 to MAX_HANDS - 1 do
