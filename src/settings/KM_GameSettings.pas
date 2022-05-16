@@ -52,7 +52,6 @@ type
 
 
   // Gameplay settings, those that affect the game
-  // Everything gets written through setter to set fNeedsSave flag
   TKMGameSettings = class(TKMGameAppSettingsPart)
   private
     //Game
