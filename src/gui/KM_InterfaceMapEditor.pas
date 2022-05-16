@@ -1114,7 +1114,7 @@ procedure TKMMapEdInterface.Update_Label_Info;
 const
   FADE_TIME_MAX = 2000;
 var
-  time, col: Cardinal;
+  time: Cardinal;
   A: Byte;
 begin
   time := TimeGet;
@@ -1124,7 +1124,6 @@ begin
   begin
     // a bit of 'animation'
     A := Round(Min(fInfoHideTime - time, FADE_TIME_MAX) / FADE_TIME_MAX * 255);
-    col := ((A shl 24) or $FFFFFF);
     Label_Info.FontColor := ((A shl 24) or $FFFFFF);
   end;
 end;
