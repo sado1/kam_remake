@@ -83,6 +83,7 @@ const
 
     // Map Editor Keys
     13,                                     // Map Editor Extra's menu (Return)
+    83,                                     // Map Editor Save map (S, but Ctrl+S is actually used)
     112, 113, 114, 115, 116,                // Map Editor menus (F1-F5)
     49, 50, 51, 52, 53, 54,                 // Map Editor sub-menus (1-6)
     81, 87, 69, 82, 84, 89, 85,             // Map Editor sub-menu actions (Q, W, E, R, T, Y, U)

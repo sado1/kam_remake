@@ -180,6 +180,7 @@ type
 
     // faMapEdit
     kfMapedExtra,     // Maped Extra's menu
+    kfMapedSaveMap,   // Maped Save map
     kfMapedTerrain,   // Maped Terrain Editing
     kfMapedVillage,   // Maped Village Planning
     kfMapedVisual,    // Maped Visual Scripts

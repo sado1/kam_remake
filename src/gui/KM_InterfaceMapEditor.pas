@@ -57,6 +57,10 @@ type
     fGuiMarkerReveal: TKMMapEdMarkerReveal;
     fGuiMenu: TKMMapEdMenu;
 
+    fMapIsMultiplayer: Boolean;
+
+    fInfoHideTime: Cardinal;
+
     procedure Layers_UpdateVisibility;
     procedure Marker_Done(Sender: TObject);
     procedure Minimap_OnUpdate(Sender: TObject; const X,Y: Integer);
@@ -87,6 +91,7 @@ type
     procedure ShowSubMenu(aIndex: Byte);
     procedure ExecuteSubMenuAction(aIndex: Byte; var aHandled: Boolean);
     procedure Update_Label_Coordinates;
+    procedure Update_Label_Info;
     procedure MapTypeChanged(aIsMultiplayer: Boolean);
 
     procedure SetHousePosition(aHouse: TKMHouse; aPos: TKMPoint);
@@ -103,6 +108,7 @@ type
   protected
     MinimapView: TKMMinimapView;
     Label_Coordinates: TKMLabel;
+    Label_Info: TKMLabel;
     Button_PlayerSelect: array [0..MAX_HANDS-1] of TKMFlatButtonShape; //Animals are common for all
     Button_History: TKMButtonFlat;
     Button_Undo, Button_Redo: TKMButtonFlat;
@@ -167,10 +173,14 @@ uses
   KM_ResTexts, KM_Game, KM_GameParams, KM_Cursor,
   KM_Resource, KM_ResHouses, KM_TerrainDeposits, KM_ResKeys, KM_GameApp,
   KM_AIDefensePos, KM_RenderUI, KM_ResFonts, KM_CommonClasses, KM_UnitWarrior,
-  KM_Utils,
+  KM_Maps,
+  KM_Utils, KM_CommonUtils,
   KM_UnitGroupTypes,
   KM_ResTypes,
   KM_CommonTypes;
+
+const
+  INFO_SHOW_TIME = 5000; // in ms
 
 
 { TKMMapEdInterface }
@@ -200,6 +210,7 @@ begin
 
   Label_MissionName := TKMLabel.Create(Panel_Main, MAPED_TOOLBAR_WIDTH + 4, 10, 500, 10, NO_TEXT, fntGrey, taLeft);
   Label_Coordinates := TKMLabel.Create(Panel_Main, MAPED_TOOLBAR_WIDTH + 4, 30, 'X: Y:', fntGrey, taLeft);
+  Label_Info := TKMLabel.Create(Panel_Main, MAPED_TOOLBAR_WIDTH + 4, 50, '', fntOutline, taLeft);
 
 //  TKMLabel.Create(Panel_Main, TB_PAD, 190, TB_WIDTH, 0, gResTexts[TX_MAPED_PLAYERS], fntOutline, taLeft);
   for I := 0 to MAX_HANDS - 1 do
@@ -502,6 +513,7 @@ begin
   fViewport.UpdateStateIdle(aFrameTime, not fDragScrolling, False);
   fGuiTown.UpdateStateIdle;
   Update_Label_Coordinates;
+  Update_Label_Info;
 end;
 
 
@@ -979,6 +991,22 @@ begin
 
   if keyHandled then Exit;
 
+  if (Key = gResKeys[kfMapedSaveMap]) and (ssCtrl in Shift) then
+  begin
+    gSystem.Cursor := kmcAnimatedDirSelector;
+    fInfoHideTime := High(Cardinal);
+    Label_Info.Visible := True;
+    Label_Info.Caption := gResTexts[TX_MAPED_MAP_SAVING];
+
+    gGameApp.Render; // Update 'Map saving' label
+
+    gGame.SaveMapEditor(TKMapsCollection.FullPath(Trim(gGameParams.Name), '.dat', fMapIsMultiplayer));
+
+    fInfoHideTime := TimeGet + INFO_SHOW_TIME;
+    Label_Info.Caption := gResTexts[TX_MAPED_MAP_SAVED];
+    gSystem.Cursor := kmcDefault;
+  end;
+
   //F1-F5 menu shortcuts
   if Key = gResKeys[kfMapedTerrain]   then
     Button_Main[1].Click;
@@ -1079,6 +1107,26 @@ begin
   Label_Coordinates.Caption := Format('X: %d, Y: %d, Z: %d', [gCursor.Cell.X, gCursor.Cell.Y,
                                                               gTerrain.Land^[EnsureRange(Round(gCursor.Float.Y + 1), 1, gTerrain.MapY),
                                                                              EnsureRange(Round(gCursor.Float.X + 1), 1, gTerrain.MapX)].Height]);
+end;
+
+
+procedure TKMMapEdInterface.Update_Label_Info;
+const
+  FADE_TIME_MAX = 2000;
+var
+  time, col: Cardinal;
+  A: Byte;
+begin
+  time := TimeGet;
+  if time > fInfoHideTime then
+    Label_Info.Visible := False
+  else
+  begin
+    // a bit of 'animation'
+    A := Round(Min(fInfoHideTime - time, FADE_TIME_MAX) / FADE_TIME_MAX * 255);
+    col := ((A shl 24) or $FFFFFF);
+    Label_Info.FontColor := ((A shl 24) or $FFFFFF);
+  end;
 end;
 
 
@@ -1566,6 +1614,7 @@ end;
 
 procedure TKMMapEdInterface.SetLoadMode(aMultiplayer: Boolean);
 begin
+  fMapIsMultiplayer := aMultiplayer;
   fGuiMenu.SetLoadMode(aMultiplayer);
 end;
 
