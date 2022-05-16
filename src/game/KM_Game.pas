@@ -138,7 +138,7 @@ type
     procedure MultiplayerRig(aNewGame: Boolean);
     procedure SaveGameToStream(aTimestamp: TDateTime; aSaveStream: TKMemoryStream); overload;
     procedure SaveGameToStream(aTimestamp: TDateTime; aHeaderStream, aBodyStream: TKMemoryStream); overload;
-    procedure SaveGameToFile(const aPathName: String; aSaveWorkerThread: TKMWorkerThread; aTimestamp: TDateTime; const aMPLocalDataPathName: String = '');
+    procedure SaveGameToFile(const aPathName: String; aSaveByPlayer: Boolean; aSaveWorkerThread: TKMWorkerThread; aTimestamp: TDateTime; const aMPLocalDataPathName: String = '');
 
     function PlayGameTick: Boolean;
     function PlayReplayTick: Boolean;
@@ -760,9 +760,9 @@ begin
   //Basesave is sort of temp we save to HDD instead of keeping in RAM
   if fParams.Mode in [gmSingle, gmCampaign, gmMulti, gmMultiSpectate] then
     {$IFDEF PARALLEL_RUNNER}
-      SaveGameToFile(SaveName('basesave_thread_'+IntToStr(THREAD_NUMBER), EXT_SAVE_BASE, fParams.IsMultiplayerOrSpec), fBaseSaveWorkerThreadHolder.Worker, UTCNow);
+      SaveGameToFile(SaveName('basesave_thread_' + IntToStr(THREAD_NUMBER), EXT_SAVE_BASE, fParams.IsMultiplayerOrSpec), False, fBaseSaveWorkerThreadHolder.Worker, UTCNow);
     {$ELSE}
-      SaveGameToFile(SaveName('basesave', EXT_SAVE_BASE, fParams.IsMultiplayerOrSpec), fBaseSaveWorkerThreadHolder.Worker, UTCNow);
+      SaveGameToFile(SaveName(BASESAVE_NAME, EXT_SAVE_BASE, fParams.IsMultiplayerOrSpec), False, fBaseSaveWorkerThreadHolder.Worker, UTCNow);
     {$ENDIF}
 
   if fParams.IsMapEditor then
@@ -2332,8 +2332,8 @@ end;
 
 
 //Saves the game in all its glory
-procedure TKMGame.SaveGameToFile(const aPathName: String; aSaveWorkerThread: TKMWorkerThread; aTimestamp: TDateTime;
-                                 const aMPLocalDataPathName: String = '');
+procedure TKMGame.SaveGameToFile(const aPathName: String; aSaveByPlayer: Boolean; aSaveWorkerThread: TKMWorkerThread;
+                                 aTimestamp: TDateTime; const aMPLocalDataPathName: String = '');
 var
   mainStream, headerStream, bodyStream, saveStreamTxt: TKMemoryStream;
   gameMPLocalData: TKMGameMPLocalData;
@@ -2365,7 +2365,19 @@ begin
     begin
       path := ExtractFilePath(aPathName);
       if DirectoryExists(path) then
-        KMDeleteFolderContent(path) // Delete save folder content, since we want to overwrite old saves
+      begin
+        // Delete save folder content, since we want to overwrite old saves
+        if aSaveByPlayer then
+        begin
+          // Delete whole folder to the bin
+          // It looks better have one folder in the bin, than many files
+          KMDeleteFolderToBin(path);
+          ForceDirectories(path);
+        end
+        else
+          // Delete all files
+          KMDeleteFolderContent(path);
+      end
       else
         ForceDirectories(path);
     end, 'Prepare save dir');
@@ -2428,6 +2440,7 @@ procedure TKMGame.Save(const aSaveName: UnicodeString; aTimestamp: TDateTime; aS
 var
   I, index: Integer;
   fullPath, rngPath, mpLocalDataPath, newSaveName, loadFrom: UnicodeString;
+  saveByPlayer: Boolean;
 begin
   {$IFDEF PERFLOG}
   gPerfLogs.SectionEnter(psGameSaveWait);
@@ -2453,7 +2466,8 @@ begin
     fullPath := SaveName(aSaveName, EXT_SAVE_MAIN, fParams.IsMultiplayer);
     mpLocalDataPath := SaveName(aSaveName, EXT_SAVE_MP_LOCAL, fParams.IsMultiplayer);
 
-    SaveGameToFile(fullPath, aSaveWorkerThread, aTimestamp, mpLocalDataPath);
+    saveByPlayer := (aSaveName <> AUTOSAVE_SAVE_NAME) and (aSaveName <> AUTOSAVE_AFTER_PT_END_SAVE_NAME);
+    SaveGameToFile(fullPath, saveByPlayer, aSaveWorkerThread, aTimestamp, mpLocalDataPath);
 
     if not fParams.IsMultiPlayerOrSpec then
       // Update GameSettings for saved positions in lists of saves and replays
@@ -2835,7 +2849,7 @@ begin
 
   if fParams.Mode in [gmSingle, gmCampaign, gmMulti, gmMultiSpectate] then
   begin
-    DeleteFile(SaveName('basesave', EXT_SAVE_BASE, fParams.IsMultiPlayerOrSpec));
+    KMDeleteFile(SaveName('basesave', EXT_SAVE_BASE, fParams.IsMultiPlayerOrSpec));
     ForceDirectories(SavePath('basesave', fParams.IsMultiPlayerOrSpec)); //basesave directory could not exist at this moment, if this is the first game ever, f.e.
     KMCopyFile(ChangeFileExt(ExeDir + fLoadFromFileRel, EXT_SAVE_BASE_DOT), SaveName('basesave', EXT_SAVE_BASE, fParams.IsMultiPlayerOrSpec));
   end;

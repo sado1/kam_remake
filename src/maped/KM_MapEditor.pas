@@ -370,7 +370,7 @@ begin
         if not SameFileName(destPath, fAttachedFiles[I]) then
         begin
           if FileExists(destPath) then
-            DeleteFile(destPath);
+            KMDeleteFile(destPath);
           KMCopyFile(fAttachedFiles[I], destPath);
         end;
       end;

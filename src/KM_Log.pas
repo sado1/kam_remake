@@ -111,6 +111,7 @@ var
 implementation
 uses
   Classes, SysUtils,
+  KM_FileIO,
   KM_Defaults, KM_CommonUtils;
 
 const
@@ -157,7 +158,7 @@ begin
       Assert(FileAge(fPathToLogs + SearchRec.Name, fileDateTime), 'How is that it does not exists any more?');
 
       if (Abs(Now - fileDateTime) > DEL_LOGS_OLDER_THAN) then
-        DeleteFile(fPathToLogs + SearchRec.Name);
+        KMDeleteFile(fPathToLogs + SearchRec.Name);
     until (FindNext(SearchRec) <> 0);
   finally
     FindClose(SearchRec);

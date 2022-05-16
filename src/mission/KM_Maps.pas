@@ -1065,7 +1065,7 @@ begin
   if IsEmpty then
   begin
     if FileExists(aFilePath) then
-      DeleteFile(aFilePath);
+      KMDeleteFile(aFilePath);
     Exit;
   end;
 
@@ -1540,7 +1540,7 @@ begin
    Lock;
    try
      Assert(InRange(aIndex, 0, fCount - 1));
-     KMDeleteFolder(fMaps[aIndex].Dir);
+     KMDeleteFolderToBin(fMaps[aIndex].Dir);
      fMaps[aIndex].Free;
      for I  := aIndex to fCount - 2 do
        fMaps[I] := fMaps[I + 1];

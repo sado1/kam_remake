@@ -320,6 +320,7 @@ const
   AUTOSAVE_FREQUENCY_MIN  = 600;
   AUTOSAVE_FREQUENCY_MAX  = 3000;
   AUTOSAVE_FREQUENCY_DEFAULT = 600; //How often to do autosave, every N ticks
+  BASESAVE_NAME = 'basesave';
   AUTOSAVE_SAVE_NAME = 'autosave';
   AUTOSAVE_AFTER_PT_END_SAVE_NAME = 'autosave_after_pt_end';
   CRASHREPORT_SAVE_NAME = 'crashreport';

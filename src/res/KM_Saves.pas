@@ -451,7 +451,7 @@ begin
   Lock;
   try
     Assert(InRange(aIndex, 0, fCount-1));
-    KMDeleteFolder(fSaves[aIndex].Path);
+    KMDeleteFolderToBin(fSaves[aIndex].Path);
     fSaves[aIndex].Free;
     for I := aIndex to fCount - 2 do
       fSaves[I] := fSaves[I+1]; //Move them down
