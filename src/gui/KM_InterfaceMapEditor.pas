@@ -26,7 +26,8 @@ uses
   KM_GUIMapEdMenuQuickPlay,
   KM_GUIMapEdUnit,
   KM_GUIMapEdRMG,
-  KM_MapEdTypes;
+  KM_MapEdTypes,
+  KM_CommonTypes;
 
 type
   TKMMapEdInterface = class(TKMUserInterfaceGame)
@@ -105,6 +106,9 @@ type
     procedure History_UpdatePos;
 
     function GetGuiTerrain: TKMMapEdTerrain;
+
+    procedure MapSaveStarted;
+    procedure MapSaveEnded;
   protected
     MinimapView: TKMMinimapView;
     Label_Coordinates: TKMLabel;
@@ -133,7 +137,7 @@ type
     procedure MapEdOptionsWereChanged;
     procedure OptionsChanged; override;
   public
-    constructor Create(aRender: TRender);
+    constructor Create(aRender: TRender; var aMapSaveStarted, aMapSaveEnded: TEvent);
     destructor Destroy; override;
 
     procedure ShowMessage(const aText: string);
@@ -176,15 +180,14 @@ uses
   KM_Maps,
   KM_Utils, KM_CommonUtils,
   KM_UnitGroupTypes,
-  KM_ResTypes,
-  KM_CommonTypes;
+  KM_ResTypes;
 
 const
-  INFO_SHOW_TIME = 5000; // in ms
+  INFO_SHOW_TIME = 3000; // in ms
 
 
 { TKMMapEdInterface }
-constructor TKMMapEdInterface.Create(aRender: TRender);
+constructor TKMMapEdInterface.Create(aRender: TRender; var aMapSaveStarted, aMapSaveEnded: TEvent);
 const
   TB_PAD_MAP_ED = 0;
   TB_PAD_MBTN_LEFT = 9;
@@ -192,9 +195,12 @@ var
   I: Integer;
   S: TKMShape;
 begin
-  inherited;
+  inherited Create(aRender);
 
   fMinimap.PaintVirtualGroups := True;
+
+  aMapSaveStarted := MapSaveStarted;
+  aMapSaveEnded := MapSaveEnded;
 
   ResetDragObject;
   //                                   250
@@ -968,6 +974,25 @@ begin
 end;
 
 
+procedure TKMMapEdInterface.MapSaveStarted;
+begin
+  gSystem.Cursor := kmcAnimatedDirSelector;
+  fInfoHideTime := High(Cardinal);
+  Label_Info.Visible := True;
+  Label_Info.Caption := gResTexts[TX_MAPED_MAP_SAVING];
+
+  gGameApp.Render; // Update 'Map saving' label
+end;
+
+
+procedure TKMMapEdInterface.MapSaveEnded;
+begin
+  fInfoHideTime := TimeGet + INFO_SHOW_TIME;
+  Label_Info.Caption := gResTexts[TX_MAPED_MAP_SAVED];
+  gSystem.Cursor := kmcDefault;
+end;
+
+
 procedure TKMMapEdInterface.KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
 var
   I: Integer;
@@ -992,20 +1017,7 @@ begin
   if keyHandled then Exit;
 
   if (Key = gResKeys[kfMapedSaveMap]) and (ssCtrl in Shift) then
-  begin
-    gSystem.Cursor := kmcAnimatedDirSelector;
-    fInfoHideTime := High(Cardinal);
-    Label_Info.Visible := True;
-    Label_Info.Caption := gResTexts[TX_MAPED_MAP_SAVING];
-
-    gGameApp.Render; // Update 'Map saving' label
-
     gGame.SaveMapEditor(TKMapsCollection.FullPath(Trim(gGameParams.Name), '.dat', fMapIsMultiplayer));
-
-    fInfoHideTime := TimeGet + INFO_SHOW_TIME;
-    Label_Info.Caption := gResTexts[TX_MAPED_MAP_SAVED];
-    gSystem.Cursor := kmcDefault;
-  end;
 
   //F1-F5 menu shortcuts
   if Key = gResKeys[kfMapedTerrain]   then
@@ -1112,7 +1124,7 @@ end;
 
 procedure TKMMapEdInterface.Update_Label_Info;
 const
-  FADE_TIME_MAX = 2000;
+  FADE_TIME_MAX = 1000;
 var
   time: Cardinal;
   A: Byte;

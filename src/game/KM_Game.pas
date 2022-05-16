@@ -97,6 +97,9 @@ type
     fBaseSaveWorkerThreadHolder: TKMWorkerThreadHolder; // Worker thread for base save only
     fAutoSaveWorkerThreadHolder: TKMWorkerThreadHolder; // Worker thread for autosaves only
 
+    fMapEdMapSaveStarted: TEvent;
+    fMapEdMapSaveEnded: TEvent;
+
     procedure IssueAutosaveCommand(aAfterPT: Boolean);
     function FindHandToSpec: Integer;
     function CheckIfPieceTimeJustEnded: Boolean;
@@ -396,7 +399,7 @@ begin
   begin
     if fParams.IsMapEditor then
     begin
-      fMapEditorInterface := TKMMapEdInterface.Create(aRender);
+      fMapEditorInterface := TKMMapEdInterface.Create(aRender, fMapEdMapSaveStarted, fMapEdMapSaveEnded);
       fActiveInterface := fMapEditorInterface;
     end
     else
@@ -1571,6 +1574,9 @@ var
 begin
   if aPathName = '' then Exit;
 
+  if Assigned(fMapEdMapSaveStarted) then
+    fMapEdMapSaveStarted;
+
   // Store old values, cause they will be updated after save
   oldSimpleCRC := fParams.MapSimpleCRC;
   oldFullCRC := fParams.MapFullCRC;
@@ -1659,6 +1665,9 @@ begin
   gHands.AddPlayers(MAX_HANDS - gHands.Count);
   for I := 0 to gHands.Count - 1 do
     gHands[I].FogOfWar.RevealEverything;
+
+  if Assigned(fMapEdMapSaveEnded) then
+    fMapEdMapSaveEnded;
 end;
 
 
