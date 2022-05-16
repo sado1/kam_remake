@@ -96,6 +96,7 @@ type
     fSaveWorkerThreadHolder: TKMWorkerThreadHolder; // Worker thread for normal saves and save at the end of PT
     fBaseSaveWorkerThreadHolder: TKMWorkerThreadHolder; // Worker thread for base save only
     fAutoSaveWorkerThreadHolder: TKMWorkerThreadHolder; // Worker thread for autosaves only
+    fSavePTWorkerThreadHolder: TKMWorkerThreadHolder; // Worker thread for normal saves and save at the end of PT
 
     fMapEdMapSaveStarted: TEvent;
     fMapEdMapSaveEnded: TEvent;
@@ -158,7 +159,8 @@ type
     constructor Create(aGameMode: TKMGameMode; aRender: TRender; aOnDestroy: TEvent;
                        aSaveWorkerThreadHolder,
                        aBaseSaveWorkerThreadHolder,
-                       aAutoSaveWorkerThreadHolder: TKMWorkerThreadHolder);
+                       aAutoSaveWorkerThreadHolder,
+                       aSavePTWorkerThreadHolder: TKMWorkerThreadHolder);
     destructor Destroy; override;
 
     procedure Start(const aMissionFullFilePath, aName: UnicodeString; aFullCRC, aSimpleCRC: Cardinal; aCampaign: TKMCampaign;
@@ -342,7 +344,8 @@ const
 constructor TKMGame.Create(aGameMode: TKMGameMode; aRender: TRender; aOnDestroy: TEvent;
                            aSaveWorkerThreadHolder,
                            aBaseSaveWorkerThreadHolder,
-                           aAutoSaveWorkerThreadHolder: TKMWorkerThreadHolder);
+                           aAutoSaveWorkerThreadHolder,
+                           aSavePTWorkerThreadHolder: TKMWorkerThreadHolder);
 const
   UIMode: array[TKMGameMode] of TUIMode = (umSP, umSP, umMP, umSpectate, umSP, umReplay, umReplay);
 begin
@@ -358,6 +361,7 @@ begin
   fSaveWorkerThreadHolder := aSaveWorkerThreadHolder;
   fBaseSaveWorkerThreadHolder := aBaseSaveWorkerThreadHolder;
   fAutoSaveWorkerThreadHolder := aAutoSaveWorkerThreadHolder;
+  fSavePTWorkerThreadHolder := aSavePTWorkerThreadHolder;
 
   fOnDestroy := aOnDestroy;
 
@@ -2788,7 +2792,7 @@ end;
 
 procedure TKMGame.LoadSavePoint(aTick: Cardinal; const aSaveFile: UnicodeString);
 var
-  loadStream: TKMemoryStream;
+  spStream, decompStream: TKMemoryStream;
   lastReplayTick: Cardinal;
   skipReplayEndCheck: Boolean;
 begin
@@ -2800,9 +2804,13 @@ begin
     lastReplayTick := fLastReplayTickLocal;
     skipReplayEndCheck := fSkipReplayEndCheck;
 
-    loadStream := TKMemoryStreamBinary(fSavePoints[aTick]);
-    loadStream.Position := 0;
-    LoadFromStream(loadStream);
+    spStream := TKMemoryStreamBinary(fSavePoints[aTick]);
+    spStream.Position := 0;
+
+    decompStream := TKMemoryStreamBinary.Create;
+    decompStream.LoadFromStreamCompressed(spStream);
+
+    LoadFromStream(decompStream);
 
     // Restore game (replay) parameters, that are shared among all game savepoints
     gGame.LastReplayTickLocal := lastReplayTick;
@@ -2829,7 +2837,7 @@ begin
     saveStream := TKMemoryStreamBinary.Create;
     SaveGameToStream(0, saveStream); // Date is not important
 
-    fSavePoints.NewSavePoint(saveStream, fParams.Tick);
+    fSavePoints.NewSavePointAsyncAndFree(saveStream, fParams.Tick, fSavePTWorkerThreadHolder.Worker);
   finally
     {$IFDEF PERFLOG}
     gPerfLogs.SectionLeave(psGameSavePoint);

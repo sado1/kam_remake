@@ -43,6 +43,7 @@ type
     fSaveWorkerThreadHolder: TKMWorkerThreadHolder; // Worker thread for normal saves and save at the end of PT
     fBaseSaveWorkerThreadHolder: TKMWorkerThreadHolder; // Worker thread for base save only
     fAutoSaveWorkerThreadHolder: TKMWorkerThreadHolder; // Worker thread for autosaves only
+    fSavePTWorkerThreadHolder: TKMWorkerThreadHolder; // Worker thread for savepoints only
 
     procedure CreateGame(aGameMode: TKMGameMode);
 
@@ -232,6 +233,7 @@ begin
   fSaveWorkerThreadHolder := TKMWorkerThreadHolder.Create('SaveWorker');
   fAutoSaveWorkerThreadHolder := TKMWorkerThreadHolder.Create('AutoSaveWorker');
   fBaseSaveWorkerThreadHolder := TKMWorkerThreadHolder.Create('BaseSaveWorker');
+  fSavePTWorkerThreadHolder := TKMWorkerThreadHolder.Create('SavePointsWorker');
 
   fOnGameStart := GameStarted;
   fOnGameEnd := GameEnded;
@@ -266,6 +268,7 @@ begin
   FreeAndNil(fSaveWorkerThreadHolder);
   FreeAndNil(fAutoSaveWorkerThreadHolder);
   FreeAndNil(fBaseSaveWorkerThreadHolder);
+  FreeAndNil(fSavePTWorkerThreadHolder);
 
   FreeAndNil(fChat);
   FreeThenNil(fCampaigns);
@@ -566,7 +569,8 @@ begin
   gGame := TKMGame.Create(aGameMode, gRender, GameDestroyed,
                           fSaveWorkerThreadHolder,
                           fBaseSaveWorkerThreadHolder,
-                          fAutoSaveWorkerThreadHolder);
+                          fAutoSaveWorkerThreadHolder,
+                          fSavePTWorkerThreadHolder);
 end;
 
 
