@@ -8,12 +8,19 @@ uses
 type
   TKMRXXPacker = class
   private
-    fSpritesBaseDir: string;
+    fSpritesLoadDir: string;
+    fSpritesSaveDir: string;
+    fPackToRXX: Boolean;
     fPackToRXA: Boolean;
-    procedure SetSpritesBaseDir(const aValue: string);
+    fAddVersionHeader: Boolean;
+    procedure SetSpritesLoadDir(const aValue: string);
+    procedure SetSpritesSaveDir(const aValue: string);
   public
+    property PackToRXX: Boolean read fPackToRXX write fPackToRXX;
     property PackToRXA: Boolean read fPackToRXA write fPackToRXA;
-    property SpritesBaseDir: string read fSpritesBaseDir write SetSpritesBaseDir;
+    property AddRXXHeader: Boolean read fAddVersionHeader write fAddVersionHeader;
+    property SpritesLoadDir: string read fSpritesLoadDir write SetSpritesLoadDir;
+    property SpritesSaveDir: string read fSpritesSaveDir write SetSpritesSaveDir;
     constructor Create(const aSpritesBaseDir: string);
     procedure Pack(RT: TRXType; fPalettes: TKMResPalettes);
   end;
@@ -31,8 +38,10 @@ constructor TKMRXXPacker.Create(const aSpritesBaseDir: string);
 begin
   inherited Create;
 
+  fPackToRXX := True;
   fPackToRXA := False;
-  SpritesBaseDir := aSpritesBaseDir;
+  fAddVersionHeader := True;
+  SpritesLoadDir := aSpritesBaseDir;
 end;
 
 
@@ -63,7 +72,7 @@ begin
   //ruCustom sprite packs do not have a main RXX file so don't need packing
   if RXInfo[RT].Usage <> ruCustom then
   begin
-    rxName := SpritesBaseDir + SPRITES_RES_DIR + '\' + RXInfo[RT].FileName + '.rx';
+    rxName := SpritesLoadDir + SPRITES_RES_DIR + '\' + RXInfo[RT].FileName + '.rx';
     Assert((RT = rxTiles) or FileExists(rxName),
            'Cannot find ' + rxName + ' file.' + #13#10 +
            'Please copy the file from your KaM\data\gfx\res\ folder.');
@@ -74,11 +83,11 @@ begin
       if RT <> rxTiles then
       begin
         spritePack.LoadFromRXFile(rxName);
-        spritePack.OverloadFromFolder(SpritesBaseDir + SPRITES_RES_DIR + '\', False); // Do not soften shadows, it will be done later on
+        spritePack.OverloadFromFolder(SpritesLoadDir + SPRITES_RES_DIR + '\', False); // Do not soften shadows, it will be done later on
       end
       else
-      if DirectoryExists(SpritesBaseDir + SPRITES_RES_DIR + '\') then
-        spritePack.OverloadFromFolder(SpritesBaseDir + SPRITES_RES_DIR + '\');
+      if DirectoryExists(SpritesLoadDir + SPRITES_RES_DIR + '\') then
+        spritePack.OverloadFromFolder(SpritesLoadDir + SPRITES_RES_DIR + '\');
 
       //Tiles must stay the same size as they can't use pivots
       if (RT <> rxTiles) and (gLog <> nil) then
@@ -105,7 +114,8 @@ begin
       //  SpritePack.SoftWater(nil);
 
       //Save
-      spritePack.SaveToRXXFile(ExeDir + 'data\Sprites\' + RXInfo[RT].FileName + '.rxx');
+      if fPackToRXX then
+        spritePack.SaveToRXXFile(fSpritesSaveDir + 'data\Sprites\' + RXInfo[RT].FileName + '.rxx', fAddVersionHeader);
 
       //Generate alpha shadows for the following sprite packs
       if RT in [rxHouses,rxUnits,rxGui,rxTrees] then
@@ -148,14 +158,15 @@ begin
         else
           spritePack.SoftenShadows;
 
-        spritePack.SaveToRXXFile(ExeDir + 'data\Sprites\' + RXInfo[RT].FileName + '_a.rxx');
+        if fPackToRXX then
+          spritePack.SaveToRXXFile(fSpritesSaveDir + 'data\Sprites\' + RXInfo[RT].FileName + '_a.rxx', fAddVersionHeader);
 
         if fPackToRXA then
         begin
-          if DirectoryExists(SpritesBaseDir + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(RT)+1) + '\') then
-            spritePack.OverloadFromFolder(SpritesBaseDir + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(RT)+1) + '\', False); // Shadows are already softened for interps
+          if DirectoryExists(SpritesLoadDir + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(RT)+1) + '\') then
+            spritePack.OverloadFromFolder(SpritesLoadDir + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(RT)+1) + '\', False); // Shadows are already softened for interps
 
-          spritePack.SaveToRXAFile(ExeDir + 'data\Sprites\' + RXInfo[RT].FileName + '.rxa');
+          spritePack.SaveToRXAFile(fSpritesSaveDir + 'data\Sprites\' + RXInfo[RT].FileName + '.rxa', fAddVersionHeader);
         end;
       end;
     finally
@@ -165,13 +176,23 @@ begin
 end;
 
 
-procedure TKMRXXPacker.SetSpritesBaseDir(const aValue: string);
+procedure TKMRXXPacker.SetSpritesLoadDir(const aValue: string);
 begin
-  fSpritesBaseDir := aValue;
+  fSpritesLoadDir := aValue;
 
   // Append PathDelim '/' at the end of path to dir
   if not aValue.EndsWith(PathDelim) then
-    fSpritesBaseDir := fSpritesBaseDir + PathDelim;
+    fSpritesLoadDir := fSpritesLoadDir + PathDelim;
+end;
+
+
+procedure TKMRXXPacker.SetSpritesSaveDir(const aValue: string);
+begin
+  fSpritesSaveDir := aValue;
+
+  // Append PathDelim '/' at the end of path to dir
+  if not aValue.EndsWith(PathDelim) then
+    fSpritesSaveDir := fSpritesSaveDir + PathDelim;
 end;
 
 

@@ -29,8 +29,8 @@ type
     procedure SoftWater(aTileset: TKMResTileset);
     procedure Delete(aIndex: Integer);
     procedure LoadFromRXFile(const aFileName: string);
-    procedure SaveToRXXFile(const aFileName: string);
-    procedure SaveToRXAFile(const aFileName: string);
+    procedure SaveToRXXFile(const aFileName: string; aAddHeader: Boolean);
+    procedure SaveToRXAFile(const aFileName: string; aAddHeader: Boolean);
     function TrimSprites: Cardinal; //For debug
     procedure ClearTemp; override;
     procedure GetImageToBitmap(aIndex: Integer; aBmp, aMask: TBitmap);
@@ -685,7 +685,7 @@ begin
 end;
 
 
-procedure TKMSpritePackEdit.SaveToRXAFile(const aFileName: string);
+procedure TKMSpritePackEdit.SaveToRXAFile(const aFileName: string; aAddHeader: Boolean);
 const
   SNS_MAX_ABS_VAL = CELL_SIZE_PX*5; // Empirical value
 var
@@ -702,7 +702,8 @@ begin
   ForceDirectories(ExtractFilePath(aFileName));
 
   OutputStream := TFileStream.Create(aFileName, fmCreate);
-  WriteBinaryHeader(OutputStream, RXX_VERSION_1);
+  if aAddHeader then
+    WriteBinaryHeader(OutputStream, RXX_VERSION_1);
   InputStream := TCompressionStream.Create(clMax, OutputStream);
 
   //Sprite info
@@ -752,7 +753,7 @@ begin
 end;
 
 
-procedure TKMSpritePackEdit.SaveToRXXFile(const aFileName: string);
+procedure TKMSpritePackEdit.SaveToRXXFile(const aFileName: string; aAddHeader: Boolean);
 var
   I: Integer;
   InputStream: TMemoryStream;
@@ -784,7 +785,8 @@ begin
         InputStream.Write(fRXData.Mask[I, 0], fRXData.Size[I].X * fRXData.Size[I].Y);
     end;
   OutputStream := TFileStream.Create(aFileName, fmCreate);
-  WriteBinaryHeader(OutputStream, RXX_VERSION_1);
+  if aAddHeader then
+    WriteBinaryHeader(OutputStream, RXX_VERSION_1);
   CompressionStream := TCompressionStream.Create(clMax, OutputStream);
   InputStream.Position := 0;
   CompressionStream.CopyFrom(InputStream, InputStream.Size);
