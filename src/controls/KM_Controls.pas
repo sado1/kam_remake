@@ -806,6 +806,9 @@ end;
 
 function TKMControl.GetMasterPanel: TKMPanel;
 begin
+  // Parent is nil only for MasterPanel itself
+  if Parent = nil then Exit(TKMPanel(Self));
+
   Result := Parent.MasterControl.MasterPanel;
 end;
 
