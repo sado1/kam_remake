@@ -453,7 +453,8 @@ begin
           H := gHands[PL].Houses[K];
           if (H <> nil)
             AND not H.IsDestroyed
-            AND (H.HouseType in gHands[fOwner].AI.ArmyManagement.ArmyVectorFieldScanHouses)
+            AND ((H.HouseType in gHands[fOwner].AI.ArmyManagement.ArmyVectorFieldScanHouses)
+                    or (htAny in gHands[fOwner].AI.ArmyManagement.ArmyVectorFieldScanHouses))
             AND (not aOnlyCompleted OR H.IsComplete) then
           begin
             if (Length(Houses) <= HousesCount) then
