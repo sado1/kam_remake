@@ -669,7 +669,7 @@ begin
     fHouse.SetPrevDeliveryMode;
 
   // Apply changes immediately
-  fHouse.UpdateDeliveryMode;
+  fHouse.SetDeliveryModeInstantly(fHouse.NewDeliveryMode);
 
   House_UpdateDeliveryMode(fHouse.DeliveryMode);
 end;
