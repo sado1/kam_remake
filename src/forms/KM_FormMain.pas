@@ -1973,29 +1973,34 @@ end;
 
 procedure TFormMain.DoMessage(var Msg: TMsg; var Handled: Boolean);
 var
-  //repCount: Integer;
+  //repCount, altState: Integer;
   prevState: Integer;
   shiftState: TShiftState;
   key: Word;
 begin
   // Application.OnMessage allows us to catch ALL messages (even those handled by F11 panel controls when they are active)
-  if Msg.message = WM_KEYDOWN then
-  begin
-    // Msg.lParam format:
-    // [0..15 repCount] - always returns 1 ?
-    // [16..23 scan code]
-    // [24 extended bit]
-    // [25..28 reserved]
-    // [29 context]
-    // [30 previous state]
-    // [31 transition state]
+  case Msg.message of
+    WM_KEYDOWN,
+    WM_SYSKEYDOWN:
+      begin
+        // Msg.lParam format:
+        // [0..15 repCount] - always returns 1 ?
+        // [16..23 scan code]
+        // [24 extended bit]
+        // [25..28 reserved]
+        // [29 context]
+        // [30 previous state]
+        // [31 transition state]
 
-    //repCount := Msg.lParam and $FF;
-    prevState := Msg.lParam shr 30 and $1;
-    shiftState := KeyDataToShiftState(Msg.lParam);
-    key := Msg.wParam;
+        //repCount := Msg.lParam and $FF;
+        //altState := Msg.lParam shr 29 and $1;
+        prevState := Msg.lParam shr 30 and $1;
+        shiftState := KeyDataToShiftState(Msg.lParam);
 
-    FormKeyDownProc(Key, shiftState, prevState = 0);
+        key := Msg.wParam;
+
+        FormKeyDownProc(Key, shiftState, prevState = 0);
+      end;
   end;
 end;
 {$ENDIF}
