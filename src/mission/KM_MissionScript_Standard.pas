@@ -1123,7 +1123,7 @@ begin
 
         //Set Delivery mode after Wares, so in case there are some wares and delivery mode TakeOut, then we will need to add proper Offers
         if H.DeliveryMode <> dmDelivery then //Default delivery mode is dmDelivery
-          AddCommand(ctSetHouseDeliveryMode, [Byte(H.DeliveryMode)]);
+          AddCommand(ctSetHouseDeliveryMode, [Ord(H.DeliveryMode)]);
       end;
     end;
     AddData(''); //NL

@@ -668,6 +668,9 @@ begin
   else if ssRight in Shift then
     fHouse.SetPrevDeliveryMode;
 
+  // Apply changes immediately
+  fHouse.UpdateDeliveryMode;
+
   House_UpdateDeliveryMode(fHouse.DeliveryMode);
 end;
 
