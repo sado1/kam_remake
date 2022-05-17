@@ -8,14 +8,14 @@ uses
 type
   TKMSavePoint = class
   private
-    fStream: TKMemoryStream;
+    fStreamCompressed: TKMemoryStream; // Compressed stream of a game save (save point)
     fTick: Cardinal;
     // Opened spectator menu, viewports position etc...
   public
     constructor Create(aStream: TKMemoryStream; aTick: Cardinal);
     destructor Destroy; override;
 
-    property Stream: TKMemoryStream read fStream;
+    property StreamCompressed: TKMemoryStream read fStreamCompressed;
     property Tick: Cardinal read fTick;
   end;
 
@@ -72,14 +72,14 @@ constructor TKMSavePoint.Create(aStream: TKMemoryStream; aTick: Cardinal);
 begin
   inherited Create;
 
-  fStream := aStream;
+  fStreamCompressed := aStream;
   fTick := aTick;
 end;
 
 
 destructor TKMSavePoint.Destroy;
 begin
-  fStream.Free;
+  fStreamCompressed.Free;
 
   inherited;
 end;
@@ -229,7 +229,7 @@ begin
   Lock;
   try
     if fSavePoints.TryGetValue(aTick, savePoint) then
-      Result := savePoint.Stream;
+      Result := savePoint.StreamCompressed;
   finally
     Unlock;
   end;
@@ -331,8 +331,8 @@ begin
       aSaveStream.PlaceMarker('SavePoint');
       aSaveStream.Write(key);
       savePoint := fSavePoints.Items[key];
-      aSaveStream.Write(Cardinal(savePoint.fStream.Size));
-      aSaveStream.CopyFrom(savePoint.fStream, 0);
+      aSaveStream.Write(Cardinal(savePoint.fStreamCompressed.Size));
+      aSaveStream.CopyFrom(savePoint.fStreamCompressed, 0);
     end;
   finally
     Unlock;
