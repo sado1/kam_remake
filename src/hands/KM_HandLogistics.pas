@@ -1495,8 +1495,14 @@ begin
       secondPass := tpNone;
       if aAllowOffroad then
         secondPass := tpWalk;
+
+      // Set tpWalkRoad only on dckFast stage
+      // We should not set it on dckAccurate stage since we already set it on dckFast and we could overwrite its value
+      // (F.e. setting tpWalkRoad over tpWalk, which was set because serf is offroad atm)
+      if aCalcKind = dckFast then
+        aBidBasicCost.OfferToDemand.Pass := tpWalkRoad;
+
       //Calc cost between offer and demand houses
-      aBidBasicCost.OfferToDemand.Pass := tpWalkRoad;
       Result := TryCalcRouteCost(aCalcKind, aOfferPos, fDemand[dWT,iD].Loc_House.PointBelowEntrance, drsOfferToDemand, aBidBasicCost.OfferToDemand, secondPass);
 
       if aCalcKind = dckAccurate then
