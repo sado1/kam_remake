@@ -100,9 +100,12 @@ ita.ViewReadme=Visualizza il file Readme
 ;Spanish
 spa.CreateStartShortcut=Crea un acceso directo en el menú de inicio
 spa.NoKaM=El asistente de instalación ha detectado que no tienes Knights and Merchants: The Peasants Rebellion instalado. Usted debe tener instalado el juego original para poder jugar el remake de Kam.%n%nLa instalación se interrumpirá
+spa.SteamFirstRun=El KaM original instalado desde Steam debe iniciarse al menos una vez en el sistema para que el instalador de KMR pueda detectarlo y verificarlo.
 spa.CantUpdate=El asistente de instalación no ha podido encontrar la versión Kam Remake para poder actualizar. Por favor, descarga y instala la versión completa.%n%nLa instalación se interrumpirá.
 spa.OpenAL=¿Quieres que el asistente de instalación instale OpenAL? (Muy recomendable) se requiere para el sonido del juego Kam Remake
 spa.ViewReadme=Ver el archivo Readme
+spa.DeleteSaves=¿Quieres eliminar todas tus partidas guardadas y el progreso de todas las campañas también?
+spa.DeleteMaps=¿Quieres eliminar también todos los mapas y campañas?
 
 ;Bulgarian
 bul.CreateStartShortcut=Създай пряк път
