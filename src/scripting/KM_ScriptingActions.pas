@@ -20,6 +20,7 @@ type
   public
     property OnSetLogLinesMaxCnt: TIntegerEvent read fOnSetLogLinesMaxCnt write fOnSetLogLinesMaxCnt;
 
+    procedure AAIAttackHouseTypesSet(aHand: Byte; aHouses: TKMHouseTypeSet);
     procedure AIArmyType(aHand: Byte; aType: TKMArmyType);
     function AIAttackAdd(aHand: Integer; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer;
                          aMeleeGroupCount, aAntiHorseGroupCount, aRangedGroupCount, aMountedGroupCount: Integer; aRandomGroups: Boolean;
@@ -249,7 +250,7 @@ uses
   KM_Resource, KM_ResUnits, KM_Hand, KM_ResMapElements,
   KM_PathFindingRoad,
   KM_Terrain,
-  KM_CommonUtils, KM_CommonClasses;
+  KM_CommonUtils, KM_CommonClasses, KM_CommonClassesExt;
 
 const
   MIN_SOUND_AT_LOC_RADIUS = 28;
@@ -1261,6 +1262,25 @@ begin
     end
     else
       LogParamWarn('Actions.GiveHouseSiteEx', [aHand, GetEnumName(TypeInfo(TKMHouseType), Integer(aHouseType)), X, Y, aWoodAmount, aStoneAmount]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14600
+//* Sets enemy houses of which house types Advanced AI should attack
+//* By default those house types are [htBarracks, htStore, htSchool, htTownhall]
+procedure TKMScriptActions.AAIAttackHouseTypesSet(aHand: Byte; aHouses: TKMHouseTypeSet);
+begin
+  try
+    if InRange(aHand, 0, gHands.Count - 1)
+      and gHands[aHand].Enabled
+      and gHands[aHand].AI.Setup.NewAI then
+      gHands[aHand].AI.ArmyManagement.ArmyVectorFieldScanHouses := aHouses
+    else
+      LogParamWarn('Actions.AAIAttackHouseTypesSet', [aHand, TSet<TKMHouseTypeSet>.SetToString(aHouses)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

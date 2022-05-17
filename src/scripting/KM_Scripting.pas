@@ -683,6 +683,7 @@ begin
 
     c := Sender.AddClassN(nil, AnsiString(fActions.ClassName));
     //*Actions-Check*//
+    RegisterMethodCheck(c, 'procedure AAIAttackHouseTypesSet(aHand: Byte; aHouses: TKMHouseTypeSet)');
     RegisterMethodCheck(c, 'procedure AIArmyType(aHand: Byte; aType: TKMArmyType)');
     RegisterMethodCheck(c, 'function  AIAttackAdd(aHand: Integer; aRepeating: Boolean; aDelay: Cardinal; aTotalMen: Integer; ' +
       'aMeleeGroupCount: Integer; aAntiHorseGroupCount: Integer; aRangedGroupCount: Integer; ' +
@@ -1425,6 +1426,7 @@ begin
     with classImp.Add(TKMScriptActions) do
     begin
       //*Actions-Reg*//
+      RegisterMethod(@TKMScriptActions.AAIAttackHouseTypesSet, 'AAIAttackHouseTypesSet');
       RegisterMethod(@TKMScriptActions.AIArmyType, 'AIArmyType');
       RegisterMethod(@TKMScriptActions.AIAttackAdd, 'AIAttackAdd');
       RegisterMethod(@TKMScriptActions.AIAttackAddEx, 'AIAttackAddEx');
