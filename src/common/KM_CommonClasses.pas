@@ -755,10 +755,10 @@ end;
 
 
 procedure TKMemoryStream.SaveToStreamCompressed(var aStream: TKMemoryStream; const aMarker: string = '');
+{$IFNDEF NO_COMPRESSION}
 var
-  {$IFNDEF NO_COMPRESSION}
   CS: TCompressionStream;
-  {$ENDIF}
+{$ENDIF}
 begin
   if aMarker <> '' then
     aStream.PlaceMarker(aMarker);
@@ -776,10 +776,10 @@ end;
 
 
 procedure TKMemoryStream.LoadFromStreamCompressed(var aStream: TKMemoryStream; const aMarker: string = '');
+{$IFNDEF NO_COMPRESSION}
 var
-  {$IFNDEF NO_COMPRESSION}
   DS: TDecompressionStream;
-  {$ENDIF}
+{$ENDIF}
 begin
   if aMarker <> '' then
     aStream.CheckMarker(aMarker);
