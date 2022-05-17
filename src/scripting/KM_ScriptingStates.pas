@@ -21,6 +21,7 @@ type
     function _ClosestUnit(aHand, X, Y: Integer; aUnitType: TKMUnitType; out aSucceed: Boolean): Integer;
     function _ClosestUnitMultipleTypes(aHand, X, Y: Integer; aUnitTypes: TKMUnitTypeSet; out aSucceed: Boolean): Integer;
   public
+    function AAIAttackHouseTypesGet(aHand: Byte): TKMHouseTypeSet;
     function AIArmyType(aHand: Byte): TKMArmyType;
     function AIAutoAttack(aHand: Byte): Boolean;
     function AIAutoAttackRange(aHand: Byte): Integer;
@@ -300,6 +301,28 @@ end;
 
 
 { TKMScriptStates }
+
+
+//* Version: 14600
+//* Gets set of house types, houses of which Advanced AI should attack
+//* aHand: HandID
+//* Returns empty set if wrong handId was passed
+function TKMScriptStates.AAIAttackHouseTypesGet(aHand: Byte): TKMHouseTypeSet;
+begin
+  try
+    Result := [];
+    if InRange(aHand, 0, gHands.Count - 1)
+      and gHands[aHand].Enabled
+      and gHands[aHand].AI.Setup.NewAI then
+      Result := gHands[aHand].AI.ArmyManagement.ArmyVectorFieldScanHouses
+    else
+      LogIntParamWarn('States.AAIAttackHouseTypesGet', [aHand]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
 
 //* Version: 7000+
 //* Gets AI army type

@@ -1270,7 +1270,7 @@ end;
 
 
 //* Version: 14600
-//* Sets enemy houses of which house types Advanced AI should attack
+//* Sets set of house types, houses of which Advanced AI should attack
 //* By default those house types are [htBarracks, htStore, htSchool, htTownhall]
 procedure TKMScriptActions.AAIAttackHouseTypesSet(aHand: Byte; aHouses: TKMHouseTypeSet);
 begin

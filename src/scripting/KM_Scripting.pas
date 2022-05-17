@@ -452,6 +452,7 @@ begin
     // After that they can be used from within the script.
     c := Sender.AddClassN(nil, AnsiString(fStates.ClassName));
     //*States-Check*//
+    RegisterMethodCheck(c, 'function  AAIAttackHouseTypesGet(aHand: Byte): TKMHouseTypeSet');
     RegisterMethodCheck(c, 'function  AIArmyType(aHand: Byte): TKMArmyType');
     RegisterMethodCheck(c, 'function  AIAutoAttack(aHand: Byte): Boolean');
     RegisterMethodCheck(c, 'function  AIAutoAttackRange(aHand: Byte): Integer');
@@ -1194,6 +1195,7 @@ begin
     with classImp.Add(TKMScriptStates) do
     begin
       //*States-Reg*//
+      RegisterMethod(@TKMScriptStates.AAIAttackHouseTypesGet, 'AAIAttackHouseTypesGet');
       RegisterMethod(@TKMScriptStates.AIArmyType, 'AIArmyType');
       RegisterMethod(@TKMScriptStates.AIAutoAttack, 'AIAutoAttack');
       RegisterMethod(@TKMScriptStates.AIAutoAttackRange, 'AIAutoAttackRange');
