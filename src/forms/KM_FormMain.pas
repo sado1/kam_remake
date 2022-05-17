@@ -381,6 +381,7 @@ type
     property OnControlsUpdated: TObjectIntegerEvent read fOnControlsUpdated write fOnControlsUpdated;
 
     procedure Defocus;
+    procedure OtherFormChanged;
 
     procedure AfterFormCreated;
   end;
@@ -1256,6 +1257,12 @@ begin
     FormLogistics.Clear;
 
   ControlsUpdate(nil);
+end;
+
+
+procedure TFormMain.OtherFormChanged;
+begin
+  fDevSettings.Save;
 end;
 
 
