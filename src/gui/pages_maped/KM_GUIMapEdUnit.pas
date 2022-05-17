@@ -341,32 +341,22 @@ var
   rotCnt: Integer;
 begin
   if Sender = Button_Army_ForUp then
-  begin
-    // Consider LMB click + Shift as a RMB click
-    if ((ssLeft in Shift) and (ssShift in Shift)) then
-      Shift := [ssRight];
-
     SetUnitsPerRaw(fGroup.UnitsPerRow - GetMultiplicator(Shift, RMB_ADD_ROWS_CNT));
-  end;
 
   if Sender = Button_Army_ForDown then
-  begin
-    // Consider LMB click + Shift as a RMB click
-    if ((ssLeft in Shift) and (ssShift in Shift)) then
-      Shift := [ssRight];
-
     SetUnitsPerRaw(fGroup.UnitsPerRow + GetMultiplicator(Shift, RMB_ADD_ROWS_CNT));
-  end;
 
   ImageStack_Army.SetCount(fGroup.MapEdCount, fGroup.UnitsPerRow, fGroup.UnitsPerRow div 2);
   Label_ArmyCount.Caption := IntToStr(fGroup.MapEdCount);
 
   if (Sender = Button_Army_RotCW) or (Sender = Button_Army_RotCCW) then
   begin
-    if ssCtrl in Shift then
+    // 180 degrees by Shift
+    if ssShift in Shift then
       rotCnt := 4
     else
-    if RMB_SHIFT_STATES * Shift <> [] then
+    // 90 degrees by RMB
+    if IsRMBInShiftState(Shift) then
       rotCnt := 2
     else
       rotCnt := 1;

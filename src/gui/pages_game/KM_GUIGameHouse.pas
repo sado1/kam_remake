@@ -168,8 +168,8 @@ const
   HOUSE_FLAG_TEX_ID_FRAME = 5;
   HOUSE_ORDER_ROW_MOUSEWHEEL_STEP = 5;
 
-  SCHOOL_CH_ORDER_TO_0_SHIFT = ssCtrl; // Shift state to change Unit order in queue to 0 in School
-  SCHOOL_CH_ORDER_TO_1_SHIFT = ssAlt;  // Shift state to change Unit order in queue to 1 in School
+  SCHOOL_CH_ORDER_TO_0_SHIFT = ssShift; // Shift state to change Unit order in queue to 0 in School
+  SCHOOL_CH_ORDER_TO_1_SHIFT = ssCtrl;  // Shift state to change Unit order in queue to 1 in School
 
 
 constructor TKMGUIGameHouse.Create(aParent: TKMPanel; aSetViewportEvent: TPointFEvent);
@@ -972,12 +972,6 @@ end;
 
 function TKMGUIGameHouse.GetEquipAmount(Shift: TShiftState): Integer;
 begin
-  // We use Left Click + Shift ro order 10
-  // since its like we use it for an equip hotkey (Shift + S)
-  // and to order 100 we can use Shift + Right Click
-  if Shift = [ssLeft, ssShift] then
-    Shift := [ssRight];
-
   Result := Min(GetMultiplicator(Shift), MAX_UNITS_TO_EQUIP);
 end;
 
@@ -1151,14 +1145,8 @@ procedure TKMGUIGameHouse.KeyDown(Key: Word; aShift: TShiftState; var aHandled: 
 begin
   if aHandled then Exit;
 
-  // Shift is 10 units order
-  if ssShift in aShift then
-  begin
-    Exclude(aShift, ssShift);
-    Include(aShift, ssRight);
-  end
-  else
-    Include(aShift, ssLeft);
+  // Hotkey press is equal to click with LMB
+  Include(aShift, ssLeft);
 
   //Prev unit
   if Key = gResKeys[kfTrainGotoPrev] then
@@ -1269,9 +1257,9 @@ begin
   Image_Barracks_NotAcceptRecruit.Visible := barracks.NotAcceptRecruitFlag;
 
 
-  if (Sender = Button_Barracks_Left) and (RMB_SHIFT_STATES * Shift <> []) then
+  if (Sender = Button_Barracks_Left) and IsRMBInShiftState(Shift) then
     fLastBarracksUnit := 0;
-  if (Sender = Button_Barracks_Right) and (RMB_SHIFT_STATES * Shift <> []) then
+  if (Sender = Button_Barracks_Right) and IsRMBInShiftState(Shift) then
     fLastBarracksUnit := High(Barracks_Order);
 
   if (Sender = Button_Barracks_Left)and(fLastBarracksUnit > 0) then
@@ -1328,9 +1316,9 @@ begin
   Image_TH_Right.FlagColor := gHands[townHall.Owner].FlagColor;
   Image_TH_Train.FlagColor := gHands[townHall.Owner].FlagColor;
 
-  if (Sender = Button_TH_Left) and (RMB_SHIFT_STATES * Shift <> []) then
+  if (Sender = Button_TH_Left) and IsRMBInShiftState(Shift) then
     fLastTHUnit := 0;
-  if (Sender = Button_TH_Right) and (RMB_SHIFT_STATES * Shift <> []) then
+  if (Sender = Button_TH_Right) and IsRMBInShiftState(Shift) then
     fLastTHUnit := High(TownHall_Order);
 
   if (Sender = Button_TH_Left) and (fLastTHUnit > 0) then
@@ -1379,9 +1367,9 @@ begin
     Exit;
   school := TKMHouseSchool(gMySpectator.Selected);
 
-  if (RMB_SHIFT_STATES * Shift <> []) and (Sender = Button_School_Left) then
+  if IsRMBInShiftState(Shift) and (Sender = Button_School_Left) then
     fLastSchoolUnit := 0;
-  if (RMB_SHIFT_STATES * Shift <> []) and (Sender = Button_School_Right) then
+  if IsRMBInShiftState(Shift) and (Sender = Button_School_Right) then
     fLastSchoolUnit := High(School_Order);
 
   if (Sender = Button_School_Left) and (fLastSchoolUnit > 0) then
@@ -1392,9 +1380,10 @@ begin
   if Sender = Button_School_Train then
   begin
     // Right click - fill queue with same units
-    if RMB_SHIFT_STATES * Shift <> [] then
+    if IsRMBInShiftState(Shift) then
       gGame.GameInputProcess.CmdHouse(gicHouseSchoolTrain, school, School_Order[fLastSchoolUnit], 10)
-    else if (ssLeft in Shift) then
+    else
+    if (ssLeft in Shift) then
     begin
       // Left click - add Unit to queue
       gGame.GameInputProcess.CmdHouse(gicHouseSchoolTrain, school, School_Order[fLastSchoolUnit], 1);
@@ -1457,7 +1446,7 @@ begin
 
   //Right click clears entire queue after this item.
   //In that case we remove the same id repeatedly because they're automatically move along
-  if RMB_SHIFT_STATES * Shift <> [] then
+  if IsRMBInShiftState(Shift) then
     for I := school.QueueLength - 1 downto id do
       gGame.GameInputProcess.CmdHouse(gicHouseRemoveTrain, school, I)
   else if SCHOOL_CH_ORDER_TO_0_SHIFT in Shift then

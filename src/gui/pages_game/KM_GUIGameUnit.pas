@@ -443,10 +443,12 @@ begin
 
   if (Sender = Button_Army_RotCW) or (Sender = Button_Army_RotCCW) then
   begin
-    if ssCtrl in Shift then
+    // 180 degrees by Shift
+    if ssShift in Shift then
       rotCnt := 4
     else
-    if RMB_SHIFT_STATES * Shift <> [] then
+    // 90 degrees by RMB
+    if IsRMBInShiftState(Shift) then
       rotCnt := 2
     else
       rotCnt := 1;
@@ -469,20 +471,12 @@ begin
 
   if Sender = Button_Army_ForDown then
   begin
-    // Consider LMB click + Shift as a RMB click
-    if ((ssLeft in Shift) and (ssShift in Shift)) then
-      Shift := [ssRight];
-      
     gGame.GameInputProcess.CmdArmy(gicArmyFormation, group, 0, GetMultiplicator(Shift, RMB_ADD_ROWS_CNT));
     gSoundPlayer.PlayWarrior(group.UnitType, spFormation);
   end;
 
   if Sender = Button_Army_ForUp   then
   begin
-    // Consider LMB click + Shift as a RMB click
-    if ((ssLeft in Shift) and (ssShift in Shift)) then
-      Shift := [ssRight];
-      
     gGame.GameInputProcess.CmdArmy(gicArmyFormation, group, 0, -GetMultiplicator(Shift, RMB_ADD_ROWS_CNT));
     gSoundPlayer.PlayWarrior(group.UnitType, spFormation);
   end;
@@ -550,6 +544,9 @@ procedure TKMGUIGameUnit.KeyDown(Key: Word; Shift: TShiftState; var aHandled: Bo
 begin
   if aHandled then Exit;
 
+  // Hotkey press is equal to click with LMB
+  Include(Shift, ssLeft);
+
   // Standard army shortcuts from KaM
   if Key = gResKeys[kfArmyHalt] then
     if Panel_Army.Visible and Button_Army_Stop.Enabled and not OnSelectingTroopDirection(nil) then
@@ -590,14 +587,14 @@ begin
   if Key = gResKeys[kfArmyAddLine] then
     if Panel_Army.Visible and Button_Army_ForDown.Enabled and not OnSelectingTroopDirection(nil) then
     begin
-      Army_Issue_Order(Button_Army_ForDown, Shift + [ssLeft]); // + ssLeft to emulate click by LMB
+      Army_Issue_Order(Button_Army_ForDown, Shift);
       aHandled := True;
     end;
 
   if Key = gResKeys[kfArmyDelLine] then
     if Panel_Army.Visible and Button_Army_ForUp.Enabled and not OnSelectingTroopDirection(nil) then
     begin
-      Army_Issue_Order(Button_Army_ForUp, Shift + [ssLeft]); // + ssLeft to emulate click by LMB
+      Army_Issue_Order(Button_Army_ForUp, Shift);
       aHandled := True;
     end;
 
