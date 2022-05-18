@@ -20,7 +20,7 @@ begin
 
   pdfPath := aMap.DetermineReadmeFilePath;
   if pdfPath <> '' then
-    Result := OpenPDF(pdfPath);
+    Result := ShellOpenPath(pdfPath);
 end;
 
 end.

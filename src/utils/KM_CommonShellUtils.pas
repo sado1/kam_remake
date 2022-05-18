@@ -2,7 +2,7 @@ unit KM_CommonShellUtils;
 {$I KaM_Remake.inc}
 interface
 
-  function OpenPDF(const aURL: string): Boolean;
+  function ShellOpenPath(const aURL: string): Boolean;
 
   function GetMemUsed: NativeUInt;
   function GetCommittedStackSize: NativeUInt;
@@ -16,7 +16,7 @@ uses
   ;
 
 
-function OpenPDF(const aURL: string): Boolean;
+function ShellOpenPath(const aURL: string): Boolean;
 begin
   if aURL = '' then Exit(False);
 
