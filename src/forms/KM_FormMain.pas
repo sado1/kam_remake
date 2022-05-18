@@ -568,6 +568,7 @@ begin
     end;
 
     UpdateFormState;
+    fDevSettings.Save;
   end;
 
   if gGameApp <> nil then
