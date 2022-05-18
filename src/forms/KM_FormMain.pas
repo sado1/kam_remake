@@ -416,7 +416,7 @@ uses
   KM_Log, KM_CommonClasses, KM_VclHelpers, KM_Video,
   KM_Settings, KM_MainSettings, KM_GameSettings,
   KM_ServerSettings,
-
+  KM_CommonShellUtils,
   KM_IoXML,
   KM_GameInputProcess,
   KM_ResTypes,
@@ -723,17 +723,14 @@ end;
 
 
 procedure TFormMain.mnOpenSettingsDirClick(Sender: TObject);
-var
-  s: string;
 begin
-  s := gGameAppSettings.Path;
-  ShellExecute(Application.Handle, 'open', 'explorer.exe', pchar('/select, "' + s + '"'),  nil, SW_NORMAL);
+  ShellOpenFolder(gGameAppSettings.Path, True);
 end;
 
 
 procedure TFormMain.mnOpenSettingsXMLClick(Sender: TObject);
 begin
-  ShellExecute(Application.Handle, 'open', PChar(gGameAppSettings.Path), nil, nil, SW_SHOWNORMAL);
+  ShellOpenFile(gGameAppSettings.Path);
 end;
 
 
