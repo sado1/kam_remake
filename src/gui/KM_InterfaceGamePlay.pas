@@ -4526,6 +4526,24 @@ var
 begin
   inherited;
 
+  // Update replay counters
+  if fUIMode = umReplay then
+  begin
+    lastTick := gGame.GetReplayLastTick;
+    // Replays can continue after end, keep the bar in 0..1 range
+    ReplayBar_Replay.SetParameters(gGameParams.Tick,
+                                   gGame.Options.Peacetime*60*10,
+                                   lastTick);
+
+    if lastTick = gGameParams.Tick then
+      str := TickToTimeStr(lastTick)
+    else
+      str := TimeToString(gGame.MissionTime) + ' / ' + TickToTimeStr(lastTick);
+
+    Label_ReplayBar.Caption := str;
+  end;
+
+  // Everything else seems should not be updated when game is paused...
   if gGame.IsPaused then Exit;
 
   // Update minimap every 1000ms
@@ -4543,22 +4561,7 @@ begin
   else
     Label_PeacetimeRemaining.Caption := '';
 
-  // Update replay counters
-  if fUIMode = umReplay then
-  begin
-    lastTick := gGame.GetReplayLastTick;
-    // Replays can continue after end, keep the bar in 0..1 range
-    ReplayBar_Replay.SetParameters(gGameParams.Tick,
-                                   gGame.Options.Peacetime*60*10,
-                                   lastTick);
 
-    if lastTick = gGameParams.Tick then
-      str := TickToTimeStr(lastTick)
-    else
-      str := TimeToString(gGame.MissionTime) + ' / ' + TickToTimeStr(lastTick);
-
-    Label_ReplayBar.Caption := str;
-  end;
 
   // Update speedup clocks
   if Image_Clock.Visible then
