@@ -148,8 +148,8 @@ begin
                 Exit;
               end;
               SetActionLockedStay(0,uaWork,False); //Melee units pause after the hit
-              closest := fHouse.GetClosestCell(Position);
-              if not KMSamePoint(Position, closest) then //Unbuilt houses can be attacked from within
+              closest := fHouse.GetClosestCell(PositionNext);
+              if not KMSamePoint(PositionNext, closest) then //Unbuilt houses can be attacked from within
                 Direction := KMGetDirection(PositionNext, closest); //Look at house
 
             end;
