@@ -13,7 +13,6 @@ object FormMain: TFormMain
   Font.Style = []
   KeyPreview = True
   Menu = MainMenu1
-  OldCreateOrder = False
   Position = poDesigned
   Scaled = False
   OnClose = FormClose
@@ -25,7 +24,6 @@ object FormMain: TFormMain
   OnKeyUp = FormKeyUp
   OnMouseWheel = FormMouseWheel
   OnShow = FormShow
-  PixelsPerInch = 96
   TextHeight = 13
   object StatusBar1: TStatusBar
     Left = 0
@@ -1604,6 +1602,10 @@ object FormMain: TFormMain
       object mnOpenSettingsDir: TMenuItem
         Caption = 'Open settings folder'
         OnClick = mnOpenSettingsDirClick
+      end
+      object mnOpenSettingsXML: TMenuItem
+        Caption = 'Open settings.xml'
+        OnClick = mnOpenSettingsXMLClick
       end
       object N7: TMenuItem
         Caption = '-'

@@ -247,6 +247,7 @@ type
     mnOpenSettingsDir: TMenuItem;
     mnScriptCode: TMenuItem;
     btnGameRestart: TButton;
+    mnOpenSettingsXML: TMenuItem;
 
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -323,6 +324,7 @@ type
     procedure mnOpenSettingsDirClick(Sender: TObject);
     procedure mnScriptCodeClick(Sender: TObject);
     procedure btnGameRestartClick(Sender: TObject);
+    procedure mnOpenSettingsXMLClick(Sender: TObject);
   private
     {$IFDEF MSWindows}
     fMenuItemHint: TKMVclMenuItemHint; // Custom hint over menu item
@@ -724,8 +726,14 @@ procedure TFormMain.mnOpenSettingsDirClick(Sender: TObject);
 var
   s: string;
 begin
-  s := ExpandFileName(TKMSettings.GetDir);
-  ShellExecute(Application.Handle, 'open', 'explorer.exe', PChar('"' + s + '"'), nil, SW_NORMAL);
+  s := gGameAppSettings.Path;
+  ShellExecute(Application.Handle, 'open', 'explorer.exe', pchar('/select, "' + s + '"'),  nil, SW_NORMAL);
+end;
+
+
+procedure TFormMain.mnOpenSettingsXMLClick(Sender: TObject);
+begin
+  ShellExecute(Application.Handle, 'open', PChar(gGameAppSettings.Path), nil, nil, SW_SHOWNORMAL);
 end;
 
 
