@@ -469,7 +469,7 @@ begin
             SetActionWalkToSpot(fToHouse.PointBelowEntrance);
         end;
     7:  begin
-          Direction := KMGetDirection(Position, fToHouse.Entrance);
+          Direction := KMGetDirection(PositionNext, fToHouse.Entrance);
           fToHouse.ResAddToBuild(Carry);
           gHands[Owner].Stats.WareConsumed(Carry);
           CarryTake;

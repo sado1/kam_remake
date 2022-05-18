@@ -127,7 +127,7 @@ begin
               SetActionLockedStay(Delay,uaWork); //Pretend to aim
 
               if not KMSamePoint(Position, fHouse.GetClosestCell(Position)) then //Unbuilt houses can be attacked from within
-                Direction := KMGetDirection(Position, fHouse.Entrance); //Look at house
+                Direction := KMGetDirection(PositionNext, fHouse.Entrance); //Look at house
 
               if gMySpectator.FogOfWar.CheckTileRevelation(Round(PositionF.X), Round(PositionF.Y)) >= 255 then
               case UnitType of
@@ -148,7 +148,7 @@ begin
               end;
               SetActionLockedStay(0,uaWork,False); //Melee units pause after the hit
               if not KMSamePoint(Position, fHouse.GetClosestCell(Position)) then //Unbuilt houses can be attacked from within
-                Direction := KMGetDirection(Position, fHouse.GetClosestCell(Position)); //Look at house
+                Direction := KMGetDirection(PositionNext, fHouse.GetClosestCell(Position)); //Look at house
 
             end;
           end;

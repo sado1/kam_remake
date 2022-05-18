@@ -387,11 +387,11 @@ begin
     ExplanationLogAdd;
     fDoExchange := True;
     if KMLengthDiag(aForcedExchangePos, NodeList[NodePos+1]) >= 1.5 then
-      NodeList.Insert(NodePos+1, fUnit.Position); //We must back-track if we cannot continue our route from the new tile
+      NodeList.Insert(NodePos+1, fUnit.PositionNext); //We must back-track if we cannot continue our route from the new tile
     NodeList.Insert(NodePos+1, aForcedExchangePos);
-    if KMSamePoint(fUnit.Position, aForcedExchangePos) then
-      raise ELocError.Create('Exchange to same place', fUnit.Position);
-    fUnit.Direction := KMGetDirection(fUnit.Position, aForcedExchangePos);
+    if KMSamePoint(fUnit.PositionNext, aForcedExchangePos) then
+      raise ELocError.Create('Exchange to same place', fUnit.PositionNext);
+    fUnit.Direction := KMGetDirection(fUnit.PositionNext, aForcedExchangePos);
     fDoesWalking := True;
   end
   else
@@ -412,7 +412,7 @@ begin
   else //Otherwise we must insert it
     NodeList.Insert(NodePos+1, aPos);
 
-  fUnit.Direction := KMGetDirection(fUnit.Position, aPos); //Face the new tile
+  fUnit.Direction := KMGetDirection(fUnit.PositionNext, aPos); //Face the new tile
 end;
 
 
@@ -863,8 +863,8 @@ begin
     //Tiles to the left (-1) and right (+1) (relative to unit) of the one we are walking to
     for I := 0 to 1 do
     begin
-      if I = 0 then tempPos := KMGetPointInDir(fUnit.Position, KMPrevDirection((KMGetDirection(fUnit.Position,NodeList[NodePos+1]))));
-      if I = 1 then tempPos := KMGetPointInDir(fUnit.Position, KMNextDirection((KMGetDirection(fUnit.Position,NodeList[NodePos+1]))));
+      if I = 0 then tempPos := KMGetPointInDir(fUnit.Position, KMPrevDirection((KMGetDirection(fUnit.PositionNext,NodeList[NodePos+1]))));
+      if I = 1 then tempPos := KMGetPointInDir(fUnit.Position, KMNextDirection((KMGetDirection(fUnit.PositionNext,NodeList[NodePos+1]))));
 
       //First make sure tile is on map and walkable!
       if gTerrain.TileInMapCoords(tempPos.X, tempPos.Y)

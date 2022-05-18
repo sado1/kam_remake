@@ -967,7 +967,7 @@ begin
                               or (KMLength(fMembers[I].Position, OrderTargetUnit.Position) <= fMembers[I].GetFightMaxRange) then
                               begin
                                 //We are at the right spot, so face towards enemy
-                                fMembers[I].Direction := KMGetDirection(fMembers[I].Position, OrderTargetUnit.Position);
+                                fMembers[I].Direction := KMGetDirection(fMembers[I].PositionNext, OrderTargetUnit.PositionNext);
                                 fMembers[I].FaceDir := fMembers[I].Direction;
                                 if not fMembers[I].CheckForEnemy then
                                   //If we are too close to shoot, make sure the animation still frame is still updated
@@ -1325,7 +1325,7 @@ begin
         begin
           //We are within range, so face towards the enemy
           //Don't fight this specific enemy, giving archers exact targets is too abusable in MP. Choose random target in that direction.
-          fMembers[I].Direction := KMGetDirection(fMembers[I].Position, aUnit.Position);
+          fMembers[I].Direction := KMGetDirection(fMembers[I].PositionNext, aUnit.PositionNext);
           fMembers[I].FaceDir := fMembers[I].Direction;
           if not fMembers[I].CheckForEnemy then
             //If we are too close to shoot, make sure the animation still frame is still updated
