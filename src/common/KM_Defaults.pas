@@ -141,7 +141,6 @@ var
   ALLOW_LOAD_UNSUP_VERSION_SAVE:
                            Boolean = DEBUG_CFG; //Allow to try load saves / replay with unsupported version
   SHOW_ENEMIES_STATS      :Boolean = False; //Do we allow to show enemies stats during the game
-  SHOW_DEBUG_CONTROLS     :Boolean = False; //Show debug panel / Form1 menu (F11)
   SHOW_CONTROLS_OVERLAY   :Boolean = False; //Draw colored overlays ontop of controls! always Off here
   SHOW_CONTROLS_ID        :Boolean = False; //Draw controls ID
   SHOW_FOCUSED_CONTROL    :Boolean = False; //Outline focused control

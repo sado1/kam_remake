@@ -329,10 +329,12 @@ type
     {$IFDEF MSWindows}
     fMenuItemHint: TKMVclMenuItemHint; // Custom hint over menu item
     {$ENDIF}
+    fDevSettings: TKMDevSettings;
     fStartVideoPlayed: Boolean;
     fUpdating: Boolean;
     fMissionDefOpenPath: UnicodeString;
     fOnControlsUpdated: TObjectIntegerEvent;
+
     procedure FormKeyDownProc(aKey: Word; aShift: TShiftState; aIsFirst: Boolean);
     procedure FormKeyUpProc(aKey: Word; aShift: TShiftState);
 //    function ConfirmExport: Boolean;
@@ -358,16 +360,13 @@ type
 
     procedure ShowInCustomWindow;
     procedure ShowInDefaultWindow;
-  private
-    fDevSettings: TKMDevSettings;
   protected
     procedure WndProc(var Message: TMessage); override; //
     {$ENDIF}
   public
     RenderArea: TKMRenderControl;
     SuppressAltForMenu: Boolean; //Suppress Alt key 'activate window menu' function
-    procedure ControlsSetVisibile(aShowCtrls, aShowGroupBox: Boolean); overload;
-    procedure ControlsSetVisibile(aShowCtrls: Boolean); overload;
+    procedure UpdateFormState;
     procedure ControlsReset;
     procedure ControlsRefill;
 
@@ -471,6 +470,15 @@ begin
 
   chkShowFlatTerrain.Tag := Ord(dcFlatTerrain);
   tbWaterLight.Tag := Ord(dcFlatTerrain);
+
+  fDevSettings := TKMDevSettings.Create(ExeDir, mainGroup, cpGameControls);
+
+  fUpdating := True;
+  try
+    fDevSettings.Load;
+  finally
+    fUpdating := False;
+  end;
 end;
 
 
@@ -550,8 +558,16 @@ procedure TFormMain.FormKeyDownProc(aKey: Word; aShift: TShiftState; aIsFirst: B
 begin
   if aKey = gResKeys[kfDebugWindow] then
   begin
-    SHOW_DEBUG_CONTROLS := not SHOW_DEBUG_CONTROLS;
-    ControlsSetVisibile(SHOW_DEBUG_CONTROLS, not (ssCtrl in aShift)); //Hide groupbox when Ctrl is pressed
+    case fDevSettings.DebugFormState of
+      fsNone  :     if (ssCtrl in aShift) then
+                      fDevSettings.DebugFormState := fsDebugMenu //Hide groupbox when Ctrl is pressed
+                    else
+                      fDevSettings.DebugFormState := fsDebugFull;
+      fsDebugMenu:  fDevSettings.DebugFormState := fsDebugFull;
+      fsDebugFull:  fDevSettings.DebugFormState := fsNone;
+    end;
+
+    UpdateFormState;
   end;
 
   if gGameApp <> nil then
@@ -1273,15 +1289,7 @@ end;
 
 procedure TFormMain.AfterFormCreated;
 begin
-  fDevSettings := TKMDevSettings.Create(ExeDir, mainGroup, cpGameControls);
-
-  fUpdating := True;
-  try
-    fDevSettings.Load;
-  finally
-    fUpdating := False;
-    ControlsUpdate(nil); // Update controls after loading all of them
-  end;
+  ControlsUpdate(nil); // Update controls after loading all of them
 
   ConstrolsDisableTabStops;
 end;
@@ -1290,7 +1298,7 @@ end;
 function TFormMain.AllowFindObjByUID: Boolean;
 begin
   Result := // Update values only if Debug panel is opened or if we are debugging
-        ((SHOW_DEBUG_CONTROLS and not cpDebugInput.Collapsed)
+        (((fDevSettings.DebugFormState <> fsNone) and not cpDebugInput.Collapsed)
           or {$IFDEF DEBUG} True {$ELSE} False {$ENDIF}) // But its ok if we are in Debug build
         and chkFindObjByUID.Checked     // and checkbox is checked
         and gMain.IsDebugChangeAllowed; // and not in MP
@@ -1373,30 +1381,46 @@ begin
 end;
 
 
-procedure TFormMain.ControlsSetVisibile(aShowCtrls: Boolean);
-begin
-  ControlsSetVisibile(aShowCtrls, aShowCtrls);
-end;
-
-
-procedure TFormMain.ControlsSetVisibile(aShowCtrls, aShowGroupBox: Boolean);
+procedure TFormMain.UpdateFormState;
 var
   I: Integer;
+  showCtrls, showGroupBox: Boolean;
 begin
+  case fDevSettings.DebugFormState of
+    fsNone:       begin
+                    showCtrls := False;
+                    showGroupBox := False;
+                  end;
+    fsDebugMenu:  begin
+                    showCtrls := True;
+                    showGroupBox := False;
+                  end;
+    fsDebugFull:  begin
+                    showCtrls := True;
+                    showGroupBox := True;
+                  end;
+    else
+    begin
+      showCtrls := False;
+      showGroupBox := False;
+    end;
+  end;
+
+
   Refresh;
 
-  mainGroup.Visible  := aShowGroupBox and aShowCtrls;
-  StatusBar1.Visible := aShowCtrls;
+  mainGroup.Visible  := showGroupBox and showCtrls;
+  StatusBar1.Visible := showCtrls;
 
   //For some reason cycling Form.Menu fixes the black bar appearing under the menu upon making it visible.
   //This is a better workaround than ClientHeight = +20 because it works on Lazarus and high DPI where Menu.Height <> 20.
   Menu := nil;
-  if aShowCtrls then Menu := MainMenu1;
+  if showCtrls then Menu := MainMenu1;
 
-  mainGroup.Enabled  := aShowGroupBox and aShowCtrls;
-  StatusBar1.Enabled := aShowCtrls;
+  mainGroup.Enabled  := showGroupBox and showCtrls;
+  StatusBar1.Enabled := showCtrls;
   for I := 0 to MainMenu1.Items.Count - 1 do
-    MainMenu1.Items[I].Enabled := aShowCtrls;
+    MainMenu1.Items[I].Enabled := showCtrls;
 
   Refresh;
 

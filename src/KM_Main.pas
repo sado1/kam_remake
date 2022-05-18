@@ -264,7 +264,7 @@ begin
 
   fFormMain.Caption := 'KaM Remake - ' + UnicodeString(GAME_VERSION);
   //Will make the form slightly higher, so do it before ReinitRender so it is reset
-  fFormMain.ControlsSetVisibile(SHOW_DEBUG_CONTROLS);
+  fFormMain.UpdateFormState;
 
   // Check INI window params, if not valid - set NeedResetToDefaults flag for future update
   if not gMainSettings.WindowParams.IsValid(GetScreenMonitorsInfo) then
