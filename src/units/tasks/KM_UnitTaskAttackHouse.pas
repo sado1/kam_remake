@@ -82,6 +82,7 @@ function TKMTaskAttackHouse.Execute: TKMTaskResult;
 var
    AnimLength: Integer;
    Delay, Cycle: Integer;
+   closest: TKMPoint;
 begin
   Result := trTaskContinues;
 
@@ -147,8 +148,9 @@ begin
                 Exit;
               end;
               SetActionLockedStay(0,uaWork,False); //Melee units pause after the hit
-              if not KMSamePoint(Position, fHouse.GetClosestCell(Position)) then //Unbuilt houses can be attacked from within
-                Direction := KMGetDirection(PositionNext, fHouse.GetClosestCell(Position)); //Look at house
+              closest := fHouse.GetClosestCell(Position);
+              if not KMSamePoint(Position, closest) then //Unbuilt houses can be attacked from within
+                Direction := KMGetDirection(PositionNext, closest); //Look at house
 
             end;
           end;
