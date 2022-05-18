@@ -84,6 +84,8 @@ type
 
     function HandHouseCanBuild(aHand: Integer; aHouseType: TKMHouseType): Boolean;
     function HandHouseLock(aHand: Integer; aHouseType: TKMHouseType): TKMHandHouseLock;
+    function HandIsAdvancedAI(aHand: Byte): Boolean;
+    function HandIsClassicAI(aHand: Byte): Boolean;
     function HandUnitCanTrain(aHand: Integer; aUnitType: TKMUnitType): Boolean;
     function HandWareDistribution(aHand: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType): Integer;
 
@@ -2487,6 +2489,46 @@ begin
       Result := gHands[aHand].Locks.HouseLock[aHouseType]
     else
       LogIntParamWarn('States.HandHouseLock', [aHand, Ord(aHouseType)]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14600
+//* Wherever hand is controlled by Advanced AI
+//* Result: Hand is Advanced AI
+function TKMScriptStates.HandIsAdvancedAI(aHand: Byte): Boolean;
+begin
+  try
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
+      Result := gHands[aHand].IsAdvancedAI
+    else
+    begin
+      Result := False;
+      LogParamWarn('States.HandIsAdvancedAI', [aHand]);
+    end;
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Verson: 14600
+//* Wherever hand is controlled by Classic AI
+//* Result: Hand is Classic AI
+function TKMScriptStates.HandIsClassicAI(aHand: Byte): Boolean;
+begin
+    try
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
+      Result := gHands[aHand].IsClassicAI
+    else
+    begin
+      Result := False;
+      LogParamWarn('States.HandIsClassicAI', [aHand]);
+    end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

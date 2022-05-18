@@ -179,6 +179,9 @@ type
     function IsAnimal: Boolean;
     function IsHuman: Boolean;
     function IsComputer: Boolean;
+    function IsAdvancedAI: Boolean;
+    function IsClassicAI: Boolean;
+
     function CanBeAI: Boolean;
 
     procedure AfterMissionInit(aFlattenRoads: Boolean);
@@ -669,6 +672,18 @@ end;
 function TKMHand.IsComputer: Boolean;
 begin
   Result := fHandType = hndComputer;
+end;
+
+
+function TKMHand.IsAdvancedAI: Boolean;
+begin
+  Result := IsComputer and fAI.Setup.NewAI;
+end;
+
+
+function TKMHand.IsClassicAI: Boolean;
+begin
+  Result := IsComputer and not fAI.Setup.NewAI;
 end;
 
 

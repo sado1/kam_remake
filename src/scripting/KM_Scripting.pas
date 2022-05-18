@@ -509,6 +509,8 @@ begin
     RegisterMethodCheck(c, 'function  GroupTypeEx(aGroupID: Integer): TKMGroupType');
     RegisterMethodCheck(c, 'function  HandHouseCanBuild(aHand: Integer; aHouseType: TKMHouseType): Boolean');
     RegisterMethodCheck(c, 'function  HandHouseLock(aHand: Integer; aHouseType: TKMHouseType): TKMHandHouseLock');
+    RegisterMethodCheck(c, 'function  HandIsAdvancedAI(aHand: Byte): Boolean');
+    RegisterMethodCheck(c, 'function  HandIsClassicAI(aHand: Byte): Boolean');
     RegisterMethodCheck(c, 'function  HandUnitCanTrain(aHand: Integer; aUnitType: TKMUnitType): Boolean');
     RegisterMethodCheck(c, 'function  HandWareDistribution(aHand: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType): Integer');
     RegisterMethodCheck(c, 'function  HouseAllowAllyToSelect(aHouseID: Integer): Boolean');
@@ -1251,6 +1253,8 @@ begin
       RegisterMethod(@TKMScriptStates.GroupTypeEx, 'GroupTypeEx');
       RegisterMethod(@TKMScriptStates.HandHouseCanBuild, 'HandHouseCanBuild');
       RegisterMethod(@TKMScriptStates.HandHouseLock, 'HandHouseLock');
+      RegisterMethod(@TKMScriptStates.HandIsAdvancedAI, 'HandIsAdvancedAI');
+      RegisterMethod(@TKMScriptStates.HandIsClassicAI, 'HandIsClassicAI');
       RegisterMethod(@TKMScriptStates.HandUnitCanTrain, 'HandUnitCanTrain');
       RegisterMethod(@TKMScriptStates.HandWareDistribution, 'HandWareDistribution');
       RegisterMethod(@TKMScriptStates.HouseAllowAllyToSelect, 'HouseAllowAllyToSelect');
