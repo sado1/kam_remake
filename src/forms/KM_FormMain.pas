@@ -326,6 +326,7 @@ type
     procedure mnScriptCodeClick(Sender: TObject);
     procedure btnGameRestartClick(Sender: TObject);
     procedure mnOpenSettingsXMLClick(Sender: TObject);
+    procedure cpCollapseChanged(Sender: TObject);
   private
     {$IFDEF MSWindows}
     fMenuItemHint: TKMVclMenuItemHint; // Custom hint over menu item
@@ -1692,6 +1693,12 @@ begin
   if Assigned(fOnControlsUpdated) and (Sender is TControl) then
     fOnControlsUpdated(Sender, TControl(Sender).Tag);
 
+  fDevSettings.Save;
+end;
+
+
+procedure TFormMain.cpCollapseChanged(Sender: TObject);
+begin
   fDevSettings.Save;
 end;
 
