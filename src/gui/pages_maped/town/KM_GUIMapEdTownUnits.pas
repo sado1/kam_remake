@@ -45,6 +45,8 @@ uses
 
 { TKMMapEdTownUnits }
 constructor TKMMapEdTownUnits.Create(aParent: TKMPanel);
+const
+  MAPED_FISH_CNT_DEFAULT = 50;
 var
   I: Integer;
   lineY: Word;
@@ -133,8 +135,7 @@ begin
 //  NumEd_FishCount.Hint := gResTexts[TX_MAPED_UNITS_FORMATION_COLUMNS_HINT];
   NumEd_FishCount.AutoFocusable := False;
   NumEd_FishCount.OnChange := Town_NumericChange;
-  NumEd_FishCount.Value := FISH_CNT_DEFAULT;
-
+  NumEd_FishCount.Value := MAPED_FISH_CNT_DEFAULT;
 
   for I := 0 to High(fSubMenuActionsEvents) do
     fSubMenuActionsEvents[I] := Town_UnitChange;
