@@ -62,6 +62,8 @@ type
 
     procedure UpdateStateIdle(aFrameTime: Cardinal; aAllowMouseScrolling: Boolean; aInCinematic: Boolean);
     function ToStr: string;
+
+    procedure Paint;
   end;
 
 
@@ -70,6 +72,7 @@ uses
   Math, SysUtils,
   KromUtils, KM_InterfaceTypes,
   KM_Resource, KM_ResTypes,
+  KM_RenderAux,
   KM_Main, KM_System, KM_GameApp, KM_GameSettings,
   KM_Defaults, KM_CommonUtils;
 
@@ -226,7 +229,7 @@ begin
                                    fMapX - 1); // Max visible map coordinate is fMapX - 1
         //Top row should be visible
         fPosition.Y := EnsureRange(Value.Y,
-                                   - TopPad,     // Min visible map coordinate is -TopPad
+                                   0,     // Min visible map coordinate is -TopPad
                                    fMapY - 1); // Max visible map coordinate is fMapY - 1
       end;
   end;
@@ -490,6 +493,12 @@ begin
   LoadStream.Read(fPosition);
 
   SetPosition(fPosition); //EnsureRanges
+end;
+
+
+procedure TKMViewport.Paint;
+begin
+  gRenderAux.CircleOnTerrain(fPosition.X, fPosition.Y, 0.5, icCyan, icRed);
 end;
 
 

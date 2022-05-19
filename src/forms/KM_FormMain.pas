@@ -248,6 +248,7 @@ type
     mnScriptCode: TMenuItem;
     btnGameRestart: TButton;
     mnOpenSettingsXML: TMenuItem;
+    chkViewportPos: TCheckBox;
 
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -1339,6 +1340,7 @@ begin
     chkLoadUnsupSaves.    SetCheckedWithoutClick(ALLOW_LOAD_UNSUP_VERSION_SAVE);
     chkDebugScripting.    SetCheckedWithoutClick(DEBUG_SCRIPTING_EXEC);
     chkPaintSounds.       SetCheckedWithoutClick(DISPLAY_SOUNDS);
+    chkViewportPos.       SetCheckedWithoutClick(SHOW_VIEWPORT_POS);
     chkSkipRender.        SetCheckedWithoutClick(SKIP_RENDER);
     chkSkipSound.         SetCheckedWithoutClick(SKIP_SOUND);
     chkShowGameTick.      SetCheckedWithoutClick(SHOW_GAME_TICK);
@@ -1546,6 +1548,7 @@ begin
     SKIP_RENDER := chkSkipRender.Checked;
     SKIP_SOUND := chkSkipSound.Checked;
     DISPLAY_SOUNDS := chkPaintSounds.Checked;
+    SHOW_VIEWPORT_POS := chkViewportPos.Checked;
 
     gbFindObjByUID.Enabled := chkFindObjByUID.Checked;
 

@@ -189,6 +189,7 @@ var
   SHOW_POINTER_DOTS       :Boolean = False; //Show pointer count as small dots below unit/houses
   SHOW_GROUND_LINES       :Boolean = False; //Show a line below all sprites to mark the ground height used in Z-Order
   SHOW_UNIT_MOVEMENT      :Boolean = False; //Draw unit movement overlay (occupied tile), Only if unit interaction enabled
+  SHOW_VIEWPORT_POS       :Boolean = False; //Draw viewport position
   SHOW_JAM_METER          :Boolean = False; //Show jam meter value on terrain
   SHOW_TILE_OBJECT_ID     :Boolean = False; //Show tiles object ID
   SHOW_TILES_OWNER        :Boolean = False; //Show tiles owner

@@ -476,6 +476,9 @@ begin
 
   if SHOW_UNIT_MOVEMENT then
     gRenderAux.UnitMoves(aRect);
+
+  if SHOW_VIEWPORT_POS and (gGame.ActiveInterface <> nil) then
+    gGame.ActiveInterface.Viewport.Paint;
 end;
 
 
