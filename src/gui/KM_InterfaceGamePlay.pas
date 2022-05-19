@@ -2182,7 +2182,9 @@ end;
 
 procedure TKMGamePlayInterface.MessageIssue(aKind: TKMMessageKind; const aText: UnicodeString; const aLoc: TKMPoint);
 begin
-  if fUIMode in [umReplay, umSpectate] then Exit; // No message stack in replay/spectate
+  if fUIMode = umReplay then Exit; // No message stack in replay
+  if (fUIMode = umSpectate) and (aKind <> mkQuill) then Exit; // Only utility (script errors) messages for a spectator
+
   fMessageStack.Add(aKind, aText, aLoc);
   Message_UpdateStack;
   gSoundPlayer.Play(sfxMessageNotice, 4); // Play horn sound on new message if it is the right type
