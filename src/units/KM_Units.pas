@@ -1707,17 +1707,13 @@ end;
 
 
 procedure TKMUnit.SetPositionRoundByPosF;
-var
-  P: TKMPoint;
 begin
   // Choose between prev and next position
   // Do not do simple Round of fPositionF, since it could be rounded to a wrong tile, not prevPos and not nextPos
   if KMLengthSqr(fPositionPrev, fPositionF) < KMLengthSqr(fPositionNext, fPositionF) then
-    P := fPositionPrev
+    SetPositionRound(fPositionPrev)
   else
-    P := fPositionNext;
-
-  SetPositionRound(P);
+    SetPositionRound(fPositionNext);
 end;
 
 
