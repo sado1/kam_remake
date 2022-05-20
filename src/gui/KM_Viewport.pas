@@ -57,6 +57,8 @@ type
     procedure PanTo(const aLoc: TKMPointF; aTicksCnt: Cardinal);
     procedure CinematicReset;
 
+    procedure TopHillChanged(aValue: Single);
+
     procedure Save(SaveStream: TKMemoryStream);
     procedure Load(LoadStream: TKMemoryStream);
 
@@ -493,6 +495,12 @@ begin
   LoadStream.Read(fPosition);
 
   SetPosition(fPosition); //EnsureRanges
+end;
+
+
+procedure TKMViewport.TopHillChanged(aValue: Single);
+begin
+  fTopHill := aValue / CELL_SIZE_PX;
 end;
 
 

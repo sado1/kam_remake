@@ -641,6 +641,8 @@ begin
   fMinimap.LoadFromTerrain;
   fMinimap.Update;
 
+  gTerrain.OnTopHillChanged := fViewport.TopHillChanged;
+
   if aMoveViewport then
   begin
     fViewport.ResizeMap(gTerrain.MapX, gTerrain.MapY, gTerrain.TopHill / CELL_SIZE_PX);

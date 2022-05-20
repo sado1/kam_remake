@@ -29,6 +29,9 @@ type
 
     fBoundsWC: TKMRect; //WC rebuild bounds used in FlattenTerrain (put outside to fight with recursion SO error in FlattenTerrain EnsureWalkable)
 
+    fTopHill: Integer;
+    fOnTopHillChanged: TSingleEvent;
+
     fUnitPointersTemp: array [1..MAX_MAP_SIZE, 1..MAX_MAP_SIZE] of Pointer;
 
     function TileHasParameter(X, Y: Word; aCheckTileFunc: TBooleanWordFunc; aAllow2CornerTiles: Boolean = False;
@@ -52,6 +55,12 @@ type
     function TrySetTileObject(X, Y: Integer; aObject: Word; out aDiagonalChanged: Boolean; aUpdatePassability: Boolean = True): Boolean; overload;
 
     function HousesNearTile(X,Y: Word): Boolean;
+
+    procedure SetTopHill(aValue: Integer);
+    procedure UpdateTopHill; overload;
+    procedure UpdateTopHill(X, Y: Integer); overload;
+
+    procedure Init;
   public
     Land: PKMLand;
     LandExt: PKMLandExt;
@@ -273,7 +282,9 @@ type
     function GetCornStage(const aLoc: TKMPoint): Byte;
     function GetWineStage(const aLoc: TKMPoint): Byte;
 
-    function TopHill: Byte;
+    property TopHill: Integer read fTopHill;
+    property OnTopHillChanged: TSingleEvent read fOnTopHillChanged write fOnTopHillChanged;
+
     procedure FlattenTerrain(const Loc: TKMPoint; aUpdateWalkConnects: Boolean = True; aIgnoreCanElevate: Boolean = False); overload;
     procedure FlattenTerrain(LocList: TKMPointList); overload;
 
@@ -287,7 +298,7 @@ type
 
     procedure UpdateRenderHeight; overload;
     procedure UpdateRenderHeight(const aRect: TKMRect); overload;
-    procedure UpdateRenderHeight(X, Y: Integer); overload;
+    procedure UpdateRenderHeight(X, Y: Integer; aUpdateTopHill: Boolean = True); overload;
 
     procedure UpdateLighting; overload;
     procedure UpdateLighting(const aRect: TKMRect); overload;
@@ -418,6 +429,8 @@ begin
 
   //Everything except roads
   UpdateWalkConnect([wcWalk, wcFish, wcWork], MapRect, True);
+
+  Init;
 end;
 
 
@@ -493,6 +506,9 @@ begin
 
   //Everything except roads
   UpdateWalkConnect([wcWalk, wcFish, wcWork], MapRect, True);
+
+  Init;
+
   gLog.AddTime('Map file loaded');
 end;
 
@@ -4390,13 +4406,25 @@ begin
   //Valid vertices are within 1..Map
   for I := Max(aRect.Top, 1) to Min(aRect.Bottom, fMapY) do
     for K := Max(aRect.Left, 1) to Min(aRect.Right, fMapX) do
-      UpdateRenderHeight(K, I);
+      UpdateRenderHeight(K, I, False);
+
+  UpdateTopHill;
 end;
 
 
-procedure TKMTerrain.UpdateRenderHeight(X, Y: Integer);
+procedure TKMTerrain.UpdateRenderHeight(X, Y: Integer; aUpdateTopHill: Boolean = True);
 begin
   LandExt[Y, X].RenderHeight := Land^[Y, X].GetRenderHeight;
+
+  if not aUpdateTopHill then Exit;
+
+  // Update only for top terrain rows
+  if Y > Ceil(HEIGHT_MAX / CELL_SIZE_PX) then Exit;
+
+  if fMapEditor then
+    UpdateTopHill // Full scan first map rows to get exact TopHill
+  else
+    UpdateTopHill(X, Y); // Only increase TopHill if needed in the game
 end;
 
 
@@ -5038,17 +5066,32 @@ begin
 end;
 
 
-//Get highest walkable hill on a maps top row to use for viewport top bound
-function TKMTerrain.TopHill: Byte;
+procedure TKMTerrain.SetTopHill(aValue: Integer);
+begin
+  if fTopHill = aValue then Exit;
+
+  fTopHill := aValue;
+  if Assigned(fOnTopHillChanged) then
+    fOnTopHillChanged(fTopHill);
+end;
+
+
+procedure TKMTerrain.UpdateTopHill(X, Y: Integer);
+begin
+  SetTopHill(Max(fTopHill, LandExt^[Y, X].RenderHeight - (Y-1) * CELL_SIZE_PX));
+end;
+
+
+//Get highest hill on a maps top row to use for viewport top bound
+procedure TKMTerrain.UpdateTopHill;
 var
   I, K: Integer;
 begin
-  Result := 0;
-  //Check last 2 strips in case 2nd has a taller hill
-  for I := 1 to 2 do
-  for K := 2 to fMapX do
-  if ((tpWalk in Land[I, K-1].Passability) or (tpWalk in Land^[I, K].Passability)) then
-    Result := Max(Result, Land^[I, K].Height - (I-1) * CELL_SIZE_PX);
+  SetTopHill(0);
+  //Check last several strips in case lower has a taller hill
+  for I := 1 to Ceil(HEIGHT_MAX / CELL_SIZE_PX) do
+    for K := 1 to fMapX  do
+      UpdateTopHill(K, I);
 end;
 
 
@@ -5150,6 +5193,8 @@ begin
 
   fFinder := TKMTerrainFinder.Create;
 
+  Init;
+
   gLog.AddTime('Terrain loaded');
 end;
 
@@ -5161,6 +5206,12 @@ begin
   for I := 1 to fMapY do
     for K := 1 to fMapX do
       Land[I,K].IsUnit := gHands.GetUnitByUID(Integer(Land^[I,K].IsUnit));
+end;
+
+
+procedure TKMTerrain.Init;
+begin
+  UpdateTopHill;
 end;
 
 
