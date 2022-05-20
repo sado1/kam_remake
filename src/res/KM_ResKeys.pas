@@ -91,7 +91,9 @@ const
     119,                                    // Map Editor show tiles palette (F8)
     46,                                     // Map Editor universal erasor (Delete)
     45,                                     // Map Editor paint bucket (Insert)
-    72                                      // Map Editor history (H)
+    72,                                     // Map Editor history (H)
+    0,                                      // Map Editor Flat terrain
+    0                                       // Map Editor Tiles grid
   );
 
 

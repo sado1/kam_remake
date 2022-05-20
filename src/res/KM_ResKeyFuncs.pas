@@ -97,7 +97,9 @@ const
     TX_KEY_FUNC_MAPEDIT_TILES_PALETTE,                                            // Map Editor show tiles palette
     TX_KEY_FUNC_MAPEDIT_UNIV_ERASOR,                                              // Map Editor universal erasor
     TX_KEY_FUNC_MAPEDIT_PAINT_BUCKET,                                             // Map Editor paint bucket
-    TX_KEY_FUNC_MAPEDIT_HISTORY                                                   // Map Editor history
+    TX_KEY_FUNC_MAPEDIT_HISTORY,                                                  // Map Editor history
+    TX_KEY_FUNC_MAPEDIT_FLAT_TERRAIN,                                             // Map Editor flat terrain
+    TX_KEY_FUNC_MAPEDIT_TILES_GRID                                                // Map Editor tiles grid
   );
 
 { TKMResKeys }

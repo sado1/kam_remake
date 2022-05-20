@@ -109,6 +109,8 @@ type
 
     procedure MapSaveStarted;
     procedure MapSaveEnded;
+
+    procedure ManageExtrasKeys(Key: Word; Shift: TShiftState);
   protected
     MinimapView: TKMMinimapView;
     Label_Coordinates: TKMLabel;
@@ -615,6 +617,7 @@ begin
   if fGuiMenu.GuiMenuResize.Visible then
     gGame.MapEditor.VisibleLayers := gGame.MapEditor.VisibleLayers + [melMapResize];
 
+  // Update Lighting if FlatTerrain layer was added or removed
   if flatTerWasEnabled xor (mlFlatTerrain in gGameParams.VisibleLayers) then
     gTerrain.UpdateLighting;
 end;
@@ -993,6 +996,32 @@ begin
 end;
 
 
+procedure TKMMapEdInterface.ManageExtrasKeys(Key: Word; Shift: TShiftState);
+begin
+  if not Key in [gResKeys[kfMapedFlatTerrain], gResKeys[kfMapedTilesGrid]] then Exit;
+
+  // Flat terrain
+  if Key = gResKeys[kfMapedFlatTerrain] then
+  begin
+    fGuiExtras.CheckBox_ShowFlatTerrain.Checked := not fGuiExtras.CheckBox_ShowFlatTerrain.Checked;
+    Layers_UpdateVisibility;
+  end;
+
+  // Tiles grid
+  if Key = gResKeys[kfMapedTilesGrid] then
+  begin
+    fGuiExtras.CheckBox_ShowFlatTerrain.Checked := not fGuiExtras.CheckBox_ShowFlatTerrain.Checked;
+    SHOW_TERRAIN_TILES_GRID := not SHOW_TERRAIN_TILES_GRID;
+  end;
+
+  //Call event handlers after we updated visible layers
+  if Assigned(gGameApp.OnOptionsChange) then
+    gGameApp.OnOptionsChange;
+
+  fGuiExtras.Refresh;
+end;
+
+
 procedure TKMMapEdInterface.KeyUp(Key: Word; Shift: TShiftState; var aHandled: Boolean);
 var
   I: Integer;
@@ -1056,6 +1085,7 @@ begin
   if Key = gResKeys[kfMapedHistory] then
     History_Click(Button_History);
 
+  ManageExtrasKeys(Key, Shift);
 
   if (ssCtrl in Shift) and (Key = Ord('Y')) then
   begin

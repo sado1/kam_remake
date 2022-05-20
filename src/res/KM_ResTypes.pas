@@ -203,7 +203,9 @@ type
     kfMapedTilesPalette,    // Maped Tiles palette
     kfMapedUnivErasor,      // Maped Universal erasor
     kfMapedPaintBucket,     // Maped Paint bucket
-    kfMapedHistory          // Maped History
+    kfMapedHistory,         // Maped History
+    kfMapedFlatTerrain,     // Maped Flat terrain
+    kfMapedTilesGrid        // Maped Tiles grid
   );
 
   TKMKeyFunctionSet = set of TKMKeyFunction;
