@@ -219,7 +219,9 @@ end;
 
 procedure TKMHouseTownHall.PostLoadMission;
 begin
-  UpdateDemands;
+  // House could be destroyed on the game start if placed with 0 health in the MapEd
+  if not IsDestroyed then
+    UpdateDemands;
 end;
 
 
