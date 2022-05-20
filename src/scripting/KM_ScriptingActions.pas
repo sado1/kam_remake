@@ -2208,16 +2208,18 @@ end;
 
 //* Version: 5777
 //* Reveals a rectangular area in fog of war for player
-//* X1: Left coordinate
-//* Y1: Top coordinate
-//* X2: Right coordinate
-//* Y2: Bottom coordinate
+//* Left top corner of the map is 0:0
+//* Right bottom corner is MapX, MapY (f.e. 255:255)
+//* X1: Left coordinate of the 1st tile left top corner vertex
+//* Y1: Top coordinate of the 1st tile left top corner vertex
+//* X2: Right coordinate of the 2nd tile left top corner vertex
+//* Y2: Bottom coordinate of the 2nd tile left top corner vertex
 procedure TKMScriptActions.FogRevealRect(aHand, X1, Y1, X2, Y2: Integer);
 begin
   try
     if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
-    and gTerrain.TileInMapCoords(X1,Y1)
-    and gTerrain.TileInMapCoords(X2,Y2) then
+      and gTerrain.VerticeInMapCoords(X1+1,Y1+1)
+      and gTerrain.VerticeInMapCoords(X2+1,Y2+1) then
       gHands[aHand].FogOfWar.RevealRect(KMPoint(X1, Y1), KMPoint(X2, Y2), FOG_OF_WAR_MAX)
     else
       LogIntParamWarn('Actions.FogRevealRect', [aHand, X1, Y1, X2, Y2]);
@@ -2230,16 +2232,18 @@ end;
 
 //* Version: 5777
 //* Covers a rectangular area in fog of war for player
-//* X1: Left coordinate
-//* Y1: Top coordinate
-//* X2: Right coordinate
-//* Y2: Bottom coordinate
+//* Left top corner of the map is 0:0
+//* Right bottom corner is MapX, MapY (f.e. 255:255)
+//* X1: Left coordinate of the 1st tile left top corner vertex
+//* Y1: Top coordinate of the 1st tile left top corner vertex
+//* X2: Right coordinate of the 2nd tile left top corner vertex
+//* Y2: Bottom coordinate of the 2nd tile left top corner vertex
 procedure TKMScriptActions.FogCoverRect(aHand, X1, Y1, X2, Y2: Integer);
 begin
   try
     if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
-    and gTerrain.TileInMapCoords(X1,Y1)
-    and gTerrain.TileInMapCoords(X2,Y2) then
+      and gTerrain.VerticeInMapCoords(X1+1,Y1+1)
+      and gTerrain.VerticeInMapCoords(X2+1,Y2+1) then
       gHands[aHand].FogOfWar.CoverRect(KMPoint(X1, Y1), KMPoint(X2, Y2))
     else
       LogIntParamWarn('Actions.FogCoverRect', [aHand, X1, Y1, X2, Y2]);
