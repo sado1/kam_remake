@@ -2983,7 +2983,9 @@ begin
   OfferID := DELIVERY_NO_ID;
   DemandID := DELIVERY_NO_ID;
   JobStatus := jsEmpty;
+  {$IFDEF USE_VIRTUAL_TREEVIEW}
   Node := nil;
+  {$ENDIF}
 end;
 
 
@@ -3009,7 +3011,9 @@ begin
   Loc_House := nil;
   BeingPerformed := 0;
   IsDeleted := False;
+  {$IFDEF USE_VIRTUAL_TREEVIEW}
   Node := nil;
+  {$ENDIF}
 end;
 
 
@@ -3038,7 +3042,9 @@ begin
   BeingPerformed := 0;
   IsDeleted := False;
   NotifyLocHouseOnClose := False;
+  {$IFDEF USE_VIRTUAL_TREEVIEW}
   Node := nil;
+  {$ENDIF}
 end;
 
 
