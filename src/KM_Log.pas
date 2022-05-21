@@ -259,7 +259,7 @@ begin
     AssignFile(fLogFile, fLogPath);
     Rewrite(fLogFile);
     //           hh:nn:ss.zzz 12345.678s 1234567ms     text-text-text
-    WriteLn(fLogFile, '   Timestamp    Elapsed     Delta     Description');
+    WriteLn(fLogFile, '   Timestamp    Elapsed     Delta  Thread    Description');
     CloseFile(fLogFile);
   except
     on E: Exception do
@@ -345,10 +345,11 @@ begin
       WriteLn(fLogFile, '    Date: ' + FormatDateTime('yyyy/mm/dd', Now));
       WriteLn(fLogFile, '========================');
     end;
-    WriteLn(fLogFile, Format('%12s %9.3fs %7dms     %s', [
+    WriteLn(fLogFile, Format('%12s %9.3fs %7dms %6d    %s', [
                   FormatDateTime('hh:nn:ss.zzz', Now),
                   TimeSince(fFirstTick) / 1000,
                   TimeSince(fPreviousTick),
+                  TThread.CurrentThread.ThreadID,
                   aText]));
 
     if aDoCloseFile then
