@@ -392,7 +392,7 @@ const
 
   FRIENDLY_FIRE = True; //Whenever archers could kill fellow men with their arrows
 
-  NET_DROP_PLAYER_MIN_WAIT = 30; //Host must wait at least this long before dropping disconnected players
+  NET_DROP_PLAYER_MIN_WAIT = 15; // in seconds. Host must wait at least this long before dropping disconnected players
   ANNOUNCE_BUILD_MAP = 30*60*10; //30 minutes
   ANNOUNCE_BATTLE_MAP = 2*60*10; //2 minutes
 
