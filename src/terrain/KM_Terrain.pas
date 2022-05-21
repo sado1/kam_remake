@@ -422,6 +422,45 @@ begin
       Fences[I, K].Kind := fncNone;
       Fences[I, K].Side := 0;
     end;
+  {
+  for I := 1 to fMapY do
+  begin
+
+//    if (I mod 4) < 3 then
+//      SetRoad(KMPoint( I, 1), 0);
+//
+//    if ((I + 2) mod 4) < 3 then
+//      SetRoad(KMPoint(I, fMapX - 1), 0);
+
+    for K := 1 to fMapX do
+    begin
+      if ((I mod 2) = 0) and (K <= I) then
+        SetRoad(KMPoint(K, I), 0);
+
+      if I = 1 then
+        SetRoad(KMPoint(K, I), 0);
+
+      if I = fMapY - 1 then
+        SetRoad(KMPoint(K, I), 0);
+
+      if (I = 3) and (((fMapX - 1 - K - 1) mod 4) > 0) then
+        SetRoad(KMPoint(K, I), 0);
+
+      ////----------------------------
+      if ((K mod 2) = 0) and (K >= I) and (I >= 3) then
+        SetRoad(KMPoint(K, I), 0);
+
+//      if K = 1 then
+//        SetRoad(KMPoint(K, I), 0);
+
+      if K = fMapY - 1 then
+        SetRoad(KMPoint(K, I), 0);
+
+      if (K = 1) and (((fMapY - 1 - I - 1 + 2) mod 4) > 0) then
+        SetRoad(KMPoint(K, I), 0);
+
+    end;
+  end;           }
 
   fFinder := TKMTerrainFinder.Create;
   UpdateLighting;

@@ -930,8 +930,13 @@ begin
     if fDestBlocked or aOpponent.Action.Locked then
     begin
       newNodeList := TKMPointList.Create;
-      //Make a new route avoiding tiles with busy units
-      if gGame.Pathfinding.Route_MakeAvoid(fUnit.Position, fWalkTo, [GetEffectivePassability], fDistance, fTargetHouse, newNodeList) then
+      // Make a new route avoiding tiles with busy units
+
+      // Todo: try to not make completely new route with penalty for a walk offroad (for a delivering serfs f.e.)
+      // In that case we can still get a serf going offroad in some cases when its better for him to make a shortcut
+      // Better would be to try to make a new route, which will try to reunite with an old route and then those routes will be merged
+      // This way we will get still only-road route except the small route around blocked tile
+      if gGame.Pathfinding.Route_MakeAvoid(fUnit.Position, fWalkTo, fPass, GetEffectivePassability, fDistance, fTargetHouse, newNodeList) then
         //Check if the new route still goes through busy units (no other route exists)
         if (newNodeList.Count > 1) and gTerrain.TileIsLocked(newNodeList[1]) then
         begin
@@ -1132,7 +1137,8 @@ begin
 end;
 
 
-function TKMUnitActionWalkTo.GetEffectivePassability:TKMTerrainPassability; //Returns passability that unit is allowed to walk on
+// Returns passability that unit is allowed to walk on
+function TKMUnitActionWalkTo.GetEffectivePassability: TKMTerrainPassability;
 begin
   //Road walking is only recomended. (i.e. for route building) We are allowed to step off the road sometimes.
   if fPass = tpWalkRoad then
