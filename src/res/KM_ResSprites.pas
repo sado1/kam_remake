@@ -1733,7 +1733,7 @@ begin
     gLog.AddTime('GeneratedMasks cnt = ' + IntToStr(generatedMasks.Count));
     generatedMasks.Free;
   end;
-  gLog.AddTime('GenerateTerrainTransitions Done.');
+  gLog.AddTime('GenerateTerrainTransitions Done');
 end;
 
 
@@ -1888,6 +1888,7 @@ end;
 //Try to load RXX first, then RX, then use Folder
 function TKMResSprites.LoadSprites(aRT: TRXType; aAlphaShadows: Boolean): Boolean;
 begin
+  gLog.AddTime('Load Sprites started');
   Result := False;
   if aAlphaShadows and FileExists(ExeDir + 'data' + PathDelim + 'Sprites' + PathDelim + RXInfo[aRT].FileName + '_a.rxx') then
   begin
@@ -1906,6 +1907,8 @@ begin
   fSprites[aRT].OverloadFromFolder(ExeDir + 'Sprites' + PathDelim); // Legacy support
   // 'Sprites' folder name confused some of the players, cause there is already data/Sprites folder
   fSprites[aRT].OverloadFromFolder(ExeDir + 'Modding graphics' + PathDelim);
+
+  gLog.AddTime('Load Sprites Done');
 
   // Generate terrain transitions
   if aRT = rxTiles then

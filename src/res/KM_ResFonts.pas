@@ -555,6 +555,7 @@ var
   fntPath: string;
   startTime, totalTime: Cardinal;
 begin
+  gLog.AddTime('Load font started');
   fLoadLevel := aLoadLevel;
   startTime := TimeGet;
 

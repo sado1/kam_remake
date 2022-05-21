@@ -92,6 +92,8 @@ constructor TRender.Create(aRenderControl: TKMRenderControl; aScreenX, aScreenY:
 begin
   inherited Create;
 
+  gLog.AddTime('Init Render started');
+
   fFBOInited := False;
   fBlind := aRenderControl = nil;
   fRenderControl := aRenderControl;
@@ -130,6 +132,7 @@ begin
 
     Resize(aScreenX, aScreenY);
   end;
+  gLog.AddTime('Init Render Done');
 end;
 
 
