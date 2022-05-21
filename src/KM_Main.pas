@@ -202,8 +202,11 @@ const
 var
   tryInd: Integer;
   logsPath: UnicodeString;
+  time: Cardinal;
 begin
   Result := True;
+
+  time := TimeGet;
 
   ExeDir := ExtractFilePath(ParamStr(0));
 
@@ -243,6 +246,8 @@ begin
     end;
     gLog.DeleteOldLogs;
   end;
+
+  gLog.AddTime('Game Load started');
 
   //Resolutions are created first so that we could check Settings against them
   fResolutions := TKMResolutions.Create;
@@ -294,6 +299,8 @@ begin
   fFormLoading.Hide;
 
   fFormMain.AfterFormCreated;
+
+  gLog.AddTime('Game Load Done in ' + IntToStr(TimeSince(time)));
 end;
 
 
