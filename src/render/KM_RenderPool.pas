@@ -30,8 +30,8 @@ type
   private
     fUnitsRXData: TRXData; //shortcut
     fCount: Word;
-    RenderOrder: array of Word; // Order in which sprites will be drawn ()
-    RenderList: array of TKMRenderSprite;
+    fRenderOrder: array of Word; // Order in which sprites will be drawn ()
+    fRenderList: array of TKMRenderSprite;
 
     fStat_Sprites: Integer; // Total sprites in queue
     fStat_Sprites2: Integer;// Rendered sprites
@@ -1968,7 +1968,7 @@ begin
   inherited;
 
   fCount := 0;
-  SetLength(RenderList, 512); // Allocate some space
+  SetLength(fRenderList, 512); // Allocate some space
 
   fUnitsRXData := gRes.Sprites[rxUnits].RXData;
 end;
@@ -1976,7 +1976,7 @@ end;
 
 destructor TRenderList.Destroy;
 begin
-  SetLength(RenderList, 0);
+  SetLength(fRenderList, 0);
 
   inherited;
 end;
@@ -1990,13 +1990,13 @@ begin
   // Skip if cursor is over FOW
   if gMySpectator.FogOfWar.CheckRevelation(CurPos) <= FOG_OF_WAR_MIN then Exit;
   // Select closest (higher Z) units first (list is in low..high Z-order)
-  for I := Length(RenderOrder) - 1 downto 0 do
+  for I := Length(fRenderOrder) - 1 downto 0 do
   begin
-    K := RenderOrder[I];
+    K := fRenderOrder[I];
     // Don't check child sprites, we don't want to select serfs by the long pike they are carrying
-    if (RenderList[K].UID > 0) and KMInRect(CurPos, RenderList[K].SelectionRect) then
+    if (fRenderList[K].UID > 0) and KMInRect(CurPos, fRenderList[K].SelectionRect) then
     begin
-      Result := RenderList[K].UID;
+      Result := fRenderList[K].UID;
       Exit;
     end;
   end;
@@ -2013,15 +2013,15 @@ procedure TRenderList.ClipRenderList;
 var
   I, J: Integer;
 begin
-  SetLength(RenderOrder, fCount);
+  SetLength(fRenderOrder, fCount);
   J := 0;
   for I := 0 to fCount - 1 do
-    if RenderList[I].NewInst then
+    if fRenderList[I].NewInst then
     begin
-      RenderOrder[J] := I;
+      fRenderOrder[J] := I;
       Inc(J);
     end;
-  SetLength(RenderOrder, J);
+  SetLength(fRenderOrder, J);
 end;
 
 
@@ -2037,13 +2037,13 @@ var
   begin
     lo := aLo;
     hi := aHi;
-    mid := RenderList[RenderOrder[(lo + hi) div 2]].Feet.Y;
+    mid := fRenderList[fRenderOrder[(lo + hi) div 2]].Feet.Y;
     repeat
-      while RenderList[RenderOrder[lo]].Feet.Y < mid do Inc(lo);
-      while RenderList[RenderOrder[hi]].Feet.Y > mid do Dec(hi);
+      while fRenderList[fRenderOrder[lo]].Feet.Y < mid do Inc(lo);
+      while fRenderList[fRenderOrder[hi]].Feet.Y > mid do Dec(hi);
       if lo <= hi then
       begin
-        SwapInt(RenderOrder[lo], RenderOrder[hi]);
+        SwapInt(fRenderOrder[lo], fRenderOrder[hi]);
         Inc(lo);
         Dec(hi);
       end;
@@ -2060,12 +2060,12 @@ var
     B := aMid;
     for I := aStart to aEnd - 1 do
       if (A < aMid) and ((B >= aEnd)
-      or (RenderList[renderOrderAux[A]].Feet.Y <= RenderList[renderOrderAux[B]].Feet.Y)) then
+      or (fRenderList[renderOrderAux[A]].Feet.Y <= fRenderList[renderOrderAux[B]].Feet.Y)) then
       begin
-        RenderOrder[I] := renderOrderAux[A];
+        fRenderOrder[I] := renderOrderAux[A];
         Inc(A);
       end else begin
-        RenderOrder[I] := renderOrderAux[B];
+        fRenderOrder[I] := renderOrderAux[B];
         Inc(B);
       end;
   end;
@@ -2079,12 +2079,12 @@ var
     B := aMid;
     for I := aStart to aEnd-1 do
       if (A < aMid) and ((B >= aEnd)
-      or (RenderList[RenderOrder[A]].Feet.Y <= RenderList[RenderOrder[B]].Feet.Y)) then
+      or (fRenderList[fRenderOrder[A]].Feet.Y <= fRenderList[fRenderOrder[B]].Feet.Y)) then
       begin
-        renderOrderAux[I] := RenderOrder[A];
+        renderOrderAux[I] := fRenderOrder[A];
         Inc(A);
       end else begin
-        renderOrderAux[I] := RenderOrder[B];
+        renderOrderAux[I] := fRenderOrder[B];
         Inc(B);
       end;
   end;
@@ -2108,10 +2108,10 @@ begin
   ClipRenderList;
   if fCount > 0 then
   begin
-    SetLength(renderOrderAux, Length(RenderOrder));
-    Move(RenderOrder[0], renderOrderAux[0], Length(RenderOrder)*SizeOf(RenderOrder[0]));
+    SetLength(renderOrderAux, Length(fRenderOrder));
+    Move(fRenderOrder[0], renderOrderAux[0], Length(fRenderOrder)*SizeOf(fRenderOrder[0]));
     // Quicksort is unstable which causes Z fighting, so we use mergesort
-    DoMergeSort(0, Length(RenderOrder), False);
+    DoMergeSort(0, Length(fRenderOrder), False);
     // DoQuickSort(0, Length(RenderOrder) - 1);
   end;
 end;
@@ -2125,20 +2125,20 @@ var
   hAdd, imH, hTop: Single;
   snsTop, snsBottom: Integer;
 begin
-  if fCount >= Length(RenderList) then
-    SetLength(RenderList, fCount + 256); // Book some space
+  if fCount >= Length(fRenderList) then
+    SetLength(fRenderList, fCount + 256); // Book some space
 
-  RenderList[fCount].Loc        := KMPointF(pX, pY); // Position of sprite, floating-point
-  RenderList[fCount].Feet       := KMPointF(gX, gY); // Ground position of sprite for Z-sorting
-  RenderList[fCount].RX         := aRX;             // RX library
-  RenderList[fCount].Id         := aId;             // Texture Id
-  RenderList[fCount].UID        := aUID;            // Object Id
-  RenderList[fCount].NewInst    := True;            // Is this a new item (can be occluded), or a child one (always on top of it's parent)
-  RenderList[fCount].TeamColor  := aTeam;           // Team Id (determines color)
-  RenderList[fCount].AlphaStep  := aAlphaStep;      // Alpha step for wip buildings
+  fRenderList[fCount].Loc        := KMPointF(pX, pY); // Position of sprite, floating-point
+  fRenderList[fCount].Feet       := KMPointF(gX, gY); // Ground position of sprite for Z-sorting
+  fRenderList[fCount].RX         := aRX;             // RX library
+  fRenderList[fCount].Id         := aId;             // Texture Id
+  fRenderList[fCount].UID        := aUID;            // Object Id
+  fRenderList[fCount].NewInst    := True;            // Is this a new item (can be occluded), or a child one (always on top of it's parent)
+  fRenderList[fCount].TeamColor  := aTeam;           // Team Id (determines color)
+  fRenderList[fCount].AlphaStep  := aAlphaStep;      // Alpha step for wip buildings
 
   if aUID > 0 then
-    with RenderList[fCount].SelectionRect do
+    with fRenderList[fCount].SelectionRect do
     begin
       snsTop    := fUnitsRXData.SizeNoShadow[aId].top;
       snsBottom := fUnitsRXData.SizeNoShadow[aId].bottom;
@@ -2162,17 +2162,17 @@ end;
 // Child items don't need ground level
 procedure TRenderList.AddSprite(aRX: TRXType; aId: Integer; pX,pY: Single; aTeam: Cardinal = $0; aAlphaStep: Single = -1);
 begin
-  if fCount >= Length(RenderList) then
-    SetLength(RenderList, fCount + 256); // Book some space
+  if fCount >= Length(fRenderList) then
+    SetLength(fRenderList, fCount + 256); // Book some space
 
-  RenderList[fCount].Loc        := KMPointF(pX,pY); // Position of sprite, floating-point
-  RenderList[fCount].Feet       := RenderList[fCount-1].Feet;  // Ground position of sprite for Z-sorting
-  RenderList[fCount].RX         := aRX;             // RX library
-  RenderList[fCount].Id         := aId;             // Texture Id
-  RenderList[fCount].UID        := 0;               // Child sprites aren't used for selecting units
-  RenderList[fCount].NewInst    := False;           // Is this a new item (can be occluded), or a child one (always on top of it's parent)
-  RenderList[fCount].TeamColor  := aTeam;           // Team Id (determines color)
-  RenderList[fCount].AlphaStep  := aAlphaStep;      // Alpha step for wip buildings
+  fRenderList[fCount].Loc        := KMPointF(pX,pY); // Position of sprite, floating-point
+  fRenderList[fCount].Feet       := fRenderList[fCount-1].Feet;  // Ground position of sprite for Z-sorting
+  fRenderList[fCount].RX         := aRX;             // RX library
+  fRenderList[fCount].Id         := aId;             // Texture Id
+  fRenderList[fCount].UID        := 0;               // Child sprites aren't used for selecting units
+  fRenderList[fCount].NewInst    := False;           // Is this a new item (can be occluded), or a child one (always on top of it's parent)
+  fRenderList[fCount].TeamColor  := aTeam;           // Team Id (determines color)
+  fRenderList[fCount].AlphaStep  := aAlphaStep;      // Alpha step for wip buildings
 
   Inc(fCount); // New item added
 end;
@@ -2184,10 +2184,10 @@ var
   sp2Exists: Boolean;
 begin
   // Shortcuts to Sprites info
-  sp1 := RenderList[aId];
+  sp1 := fRenderList[aId];
   sp2Exists := (aId + 1 < fCount);
   if sp2Exists then
-    sp2 := RenderList[aId + 1];
+    sp2 := fRenderList[aId + 1];
 
   if sp1.AlphaStep = -1 then
     gRenderPool.RenderSprite(sp1.RX, sp1.Id, sp1.Loc.X, sp1.Loc.Y, sp1.TeamColor)
@@ -2226,28 +2226,28 @@ begin
   {$ENDIF}
   fStat_Sprites := fCount;
   fStat_Sprites2 := 0;
-  objectsCount := Length(RenderOrder);
+  objectsCount := Length(fRenderOrder);
 
   for I := 0 to objectsCount - 1 do
   begin
-    K := RenderOrder[I];
+    K := fRenderOrder[I];
     glPushMatrix;
 
       if RENDER_3D then
       begin
-        glTranslatef(RenderList[K].Loc.X, RenderList[K].Loc.Y, 0);
+        glTranslatef(fRenderList[K].Loc.X, fRenderList[K].Loc.Y, 0);
         glRotatef(gRenderPool.rHeading, -1, 0, 0);
-        glTranslatef(-RenderList[K].Loc.X, -RenderList[K].Loc.Y, 0);
+        glTranslatef(-fRenderList[K].Loc.X, -fRenderList[K].Loc.Y, 0);
       end;
 
       repeat // Render child sprites after their parent
         SendToRender(K);
-        if SHOW_SEL_BUFFER and RenderList[K].NewInst and (RenderList[K].UID > 0) then
-          gRenderAux.SquareOnTerrain(RenderList[K].SelectionRect.Left , RenderList[K].SelectionRect.Top,
-                                     RenderList[K].SelectionRect.Right, RenderList[K].SelectionRect.Bottom, RenderList[K].UID or $FF000000, 1);
+        if SHOW_SEL_BUFFER and fRenderList[K].NewInst and (fRenderList[K].UID > 0) then
+          gRenderAux.SquareOnTerrain(fRenderList[K].SelectionRect.Left , fRenderList[K].SelectionRect.Top,
+                                     fRenderList[K].SelectionRect.Right, fRenderList[K].SelectionRect.Bottom, fRenderList[K].UID or $FF000000, 1);
         Inc(K);
         Inc(fStat_Sprites2);
-      until ((K = fCount) or RenderList[K].NewInst);
+      until ((K = fCount) or fRenderList[K].NewInst);
     glPopMatrix;
   end;
   {$IFDEF PERFLOG}
