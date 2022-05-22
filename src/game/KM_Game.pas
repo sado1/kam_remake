@@ -2808,9 +2808,12 @@ begin
     spStream.Position := 0;
 
     decompStream := TKMemoryStreamBinary.Create;
-    decompStream.LoadFromStreamCompressed(spStream);
-
-    LoadFromStream(decompStream);
+    try
+      decompStream.LoadFromStreamCompressed(spStream);
+      LoadFromStream(decompStream);
+    finally
+      decompStream.Free;
+    end;
 
     // Restore game (replay) parameters, that are shared among all game savepoints
     gGame.LastReplayTickLocal := lastReplayTick;
