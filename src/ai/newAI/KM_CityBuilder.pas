@@ -1594,6 +1594,8 @@ begin
     OR (gHands[fOwner].Stats.GetUnitQty(utBuilder) = 0) then
     Exit;
 
+  if Length(fBuildNodes) = 0 then Exit;
+
   // Check if there is free build node
   for NodeIdx := Low(fBuildNodes) to High(fBuildNodes) do
     if not fBuildNodes[NodeIdx].Active then
