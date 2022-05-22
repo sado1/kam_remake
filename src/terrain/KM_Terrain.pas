@@ -225,6 +225,7 @@ type
     function TileIsWalkableRoad(const aLoc: TKMPoint): Boolean;
     function TileIsLocked(const aLoc: TKMPoint): Boolean;
     function TileIsGoodToCutTree(const aLoc: TKMPoint): Boolean;
+    function CanCutTreeAtVertex(const aWoodcutterPos, aTreeVertex: TKMPoint): Boolean;
 
     function TileHasStone(X, Y: Word): Boolean; inline;
     function TileHasCoal(X, Y: Word): Boolean; inline;
@@ -1741,6 +1742,23 @@ begin
 end;
 
 
+function TKMTerrain.CanCutTreeAtVertex(const aWoodcutterPos, aTreeVertex: TKMPoint): Boolean;
+
+  function TileIsChecked(aLoc: TKMPoint): Boolean;
+  begin
+    Result := not RouteCanBeMade(aWoodcutterPos, aLoc, tpWalk) // Do not check tiles, which we can't reach
+              or TileIsGoodToCutTree(aLoc);
+  end;
+
+begin
+  Result := RouteCanBeMadeToVertex(aWoodcutterPos, aTreeVertex, tpWalk)
+        and TileIsChecked(aTreeVertex)
+        and ((aTreeVertex.X = 1) or TileIsChecked(KMPoint(aTreeVertex.X - 1, aTreeVertex.Y))) //if K=1, K-1 will be off map
+        and ((aTreeVertex.Y = 1) or TileIsChecked(KMPoint(aTreeVertex.X, aTreeVertex.Y - 1)))
+        and ((aTreeVertex.X = 1) or (aTreeVertex.Y = 1) or TileIsChecked(KMPoint(aTreeVertex.X - 1, aTreeVertex.Y - 1)))
+end;
+
+
 function TKMTerrain.TileIsGoodToCutTree(const aLoc: TKMPoint): Boolean;
 var
   U: TKMUnit;
@@ -2790,11 +2808,7 @@ begin
         and ObjectIsChopableTree(T, caAgeFull)
         and (Land^[T.Y,T.X].TreeAge >= TREE_AGE_FULL)
         //Woodcutter could be standing on any tile surrounding this tree
-        and TileIsGoodToCutTree(T)
-        and ((T.X = 1) or TileIsGoodToCutTree(KMPoint(T.X - 1, T.Y))) //if K=1, K-1 will be off map
-        and ((T.Y = 1) or TileIsGoodToCutTree(KMPoint(T.X, T.Y - 1)))
-        and ((T.X = 1) or (T.Y = 1) or TileIsGoodToCutTree(KMPoint(T.X - 1, T.Y - 1)))
-        and RouteCanBeMadeToVertex(aLoc, T, tpWalk)
+        and CanCutTreeAtVertex(aLoc, T)
         and ChooseCuttingDirection(aLoc, T, cuttingPoint) then
         aTrees.Add(cuttingPoint); //Tree
 
