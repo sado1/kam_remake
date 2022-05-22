@@ -1522,6 +1522,8 @@ begin
           Log('SavePointTick = ' + IntToStr(fSavePointTick));
 
           fRunKind := drkReplay;
+
+          Assert(gGame <> nil, 'gGame is nil ! Check Runner.log to find out why it was not possible to create it');
           gGame.GameInputProcess.OnReplayDesync := ReplayCrashed;
 
           SimulateGame(fSavePointTick + 1, Min(fSavePointTick + replayLength, simulLastTick));
