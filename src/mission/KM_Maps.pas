@@ -1043,6 +1043,8 @@ end;
 { TKMMapTxtInfo }
 constructor TKMMapTxtInfo.Create;
 begin
+  inherited;
+
   ResetInfo;
 end;
 
