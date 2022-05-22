@@ -157,7 +157,7 @@ type
     fRunKind: TKMDesyncRunKind;
     fRun: Integer;
     fMap: string;
-    fSavePointTick: Cardinal;
+    fSavePointTick: Integer;
     fRngMismatchFound: Boolean;
     fRngMismatchTick: Integer;
     fCRCDesyncFound: Boolean;
@@ -1512,7 +1512,7 @@ begin
         if LOAD_SAVEPT_AT_TICK <> 0 then
           fSavePointTick := LOAD_SAVEPT_AT_TICK
         else
-          fSavePointTick := (I + Byte(MapsType <> rmtFight)*SKIP_FIRST_SAVEPT_CNT) * savesFreq - 1;
+          fSavePointTick := Max(1, (I + Byte(MapsType <> rmtFight)*SKIP_FIRST_SAVEPT_CNT) * savesFreq - 1);
 
         if gGameApp.TryLoadSavePoint(fSavePointTick) then
         begin
