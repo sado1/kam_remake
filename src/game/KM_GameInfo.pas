@@ -18,11 +18,9 @@ type
   TKMGameInfo = class
   private
     fMapTxtInfo: TKMMapTxtInfo;
-    fMapTxtInfoNasToBeFreed: Boolean;
     fParseError: TKMGameInfoParseError;
     procedure ResetParseError;
     function GetVersionUnicode: UnicodeString;
-    procedure SetMapTxtInfo(const Value: TKMMapTxtInfo);
   public
     Title: UnicodeString; //Used for campaigns and to store in savegames
     Version: AnsiString; //Savegame version, yet unused in maps, they always have actual version
@@ -44,14 +42,14 @@ type
     Team: array [0..MAX_HANDS-1] of Integer;
 
     //To be used in Savegames
-    constructor Create;
+    constructor Create; overload;
+    constructor Create(aMapTxtInfo: TKMMapTxtInfo); overload;
     destructor Destroy; override;
 
     procedure Save(SaveStream: TKMemoryStream);
     procedure Load(LoadStream: TKMemoryStream);
 
-    property TxtInfo: TKMMapTxtInfo read fMapTxtInfo write SetMapTxtInfo;
-    property MapTxtInfoNasToBeFreed: Boolean read fMapTxtInfoNasToBeFreed write fMapTxtInfoNasToBeFreed;
+    property TxtInfo: TKMMapTxtInfo read fMapTxtInfo write fMapTxtInfo;
     property ParseError: TKMGameInfoParseError read fParseError;
     function IsValid(aCheckDATCRC: Boolean): Boolean;
     function AICount: Byte;
@@ -75,18 +73,23 @@ uses
 { TKMGameInfo }
 constructor TKMGameInfo.Create;
 begin
-  inherited;
-  fMapTxtInfo := TKMMapTxtInfo.Create;
-  fMapTxtInfoNasToBeFreed := True;
+  Create(TKMMapTxtInfo.Create);
+end;
 
+
+constructor TKMGameInfo.Create(aMapTxtInfo: TKMMapTxtInfo);
+begin
+  inherited Create;
+
+  fMapTxtInfo := aMapTxtInfo;
   ResetParseError;
 end;
 
 
 destructor TKMGameInfo.Destroy;
 begin
-  if fMapTxtInfoNasToBeFreed then
-    FreeAndNil(fMapTxtInfo);
+  if fMapTxtInfo <> nil then
+    fMapTxtInfo.Free;
 
   inherited;
 end;
@@ -208,18 +211,6 @@ begin
   end;
 
   fMapTxtInfo.Save(SaveStream);
-end;
-
-
-procedure TKMGameInfo.SetMapTxtInfo(const Value: TKMMapTxtInfo);
-begin
-  // Free initially created fMapTxtInfo object
-  if fMapTxtInfoNasToBeFreed then
-    FreeAndNil(fMapTxtInfo);
-
-  fMapTxtInfoNasToBeFreed := False; // We don't want to free object, created outside of this class instance
-
-  fMapTxtInfo := Value;
 end;
 
 

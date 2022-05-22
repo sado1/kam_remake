@@ -2193,7 +2193,7 @@ var
   sizeToAllocate: Cardinal;
   isMulti: Boolean;
 begin
-  gameInfo := TKMGameInfo.Create;
+  gameInfo := TKMGameInfo.Create(fMapTxtInfo);
 
   // Pre-allocate memory for save stream, could save up to 25% of save time
   // Even if we make a bad guess, Stream will reallocate more by itself, if needed
@@ -2219,8 +2219,6 @@ begin
     gameInfo.MissionDifficulty := fParams.MissionDifficulty;
     gameInfo.MapSizeX := gTerrain.MapX;
     gameInfo.MapSizeY := gTerrain.MapY;
-    gameInfo.TxtInfo := fMapTxtInfo;
-    gameInfo.MapTxtInfoNasToBeFreed := False; // Don't Free MapTxtInfo object in gameInfo, its used by our game
     gameInfo.PlayerCount := gHands.Count;
     for I := 0 to gHands.Count - 1 do
     begin
@@ -2257,6 +2255,7 @@ begin
     end;
 
     gameInfo.Save(aHeaderStream); // Saved to header stream (uncompressed)
+    gameInfo.TxtInfo := nil; // Don't Free MapTxtInfo object in gameInfo, its used by our game
   finally
     FreeAndNil(gameInfo);
   end;
@@ -2593,8 +2592,9 @@ begin
       fSetGameTickEvent(gameInfo.TickCount);
       fParams.MissionMode := gameInfo.MissionMode;
       fParams.MissionDifficulty := gameInfo.MissionDifficulty;
+      fMapTxtInfo.Free; // Free previously create gGame's fMapTxtInfo, which was created in TKMGame.Create
       fMapTxtInfo := gameInfo.TxtInfo;
-      gameInfo.MapTxtInfoNasToBeFreed := False; // Don't Free MapTxtInfo object in gameInfo, its used by our game now
+      gameInfo.TxtInfo := nil; // Don't Free MapTxtInfo object in gameInfo, its used by our game
     finally
       FreeAndNil(gameInfo);
     end;
