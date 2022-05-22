@@ -231,7 +231,9 @@ begin
         Stat_UnitWip[UT].Caption := '+' + IntToStr(wipQty)
       else
       if wipQty < 0 then
-        Stat_UnitWip[UT].Caption := IntToStr(wipQty);
+        Stat_UnitWip[UT].Caption := IntToStr(wipQty)
+      else
+        Stat_UnitWip[UT].Caption := '';
 
       Stat_UnitPic[UT].Hint := gRes.Units[UT].GUIName;
       Stat_UnitPic[UT].FlagColor := gMySpectator.Hand.FlagColor;
