@@ -61,7 +61,7 @@ uses
 { TUnitActionGoInOut }
 constructor TKMUnitActionGoInOut.Create(aUnit: TKMUnit; aAction: TKMUnitActionType; aDirection: TKMGoInDirection; aHouse: TKMHouse);
 begin
-  inherited Create(aUnit, aAction, True);
+  inherited Create(aUnit, aAction, False);
 
   //We might stuck trying to exit when house gets destroyed (1)
   //and we might be dying in destroyed house (2)
