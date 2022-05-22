@@ -1879,7 +1879,7 @@ end;
 
 procedure TKMMasterControl.UpdateState(aGlobalTickCount: Cardinal);
 begin
-  if Self = nil then Exit;
+  if (Self = nil) or (fMasterPanel = nil) then Exit;
 
   fMasterPanel.UpdateState(aGlobalTickCount);
 end;
