@@ -101,11 +101,6 @@ type
     procedure GroupOrderWalkEx(aGroupID: Integer; X, Y: Integer; aDirection: TKMDirection);
     procedure GroupSetFormation(aGroupID: Integer; aNumColumns: Byte);
 
-    procedure HandHouseLock(aHand: Integer; aHouseType: TKMHouseType; aLock: TKMHandHouseLock);
-    procedure HandTradeAllowed(aHand: Integer; aWareType: TKMWareType; aAllowed: Boolean);
-    procedure HandUnitCanTrain(aHand: Integer; aUnitType: TKMUnitType; aCanTrain: Boolean);
-    procedure HandWareDistribution(aHand: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType; aAmount: Integer);
-
     procedure HouseAddBuildingMaterials(aHouseID: Integer);
     procedure HouseAddBuildingMaterialsEx(aHouseID, aWoodAmount, aStoneAmount: Integer);
     procedure HouseAddBuildingProgress(aHouseID: Integer);
@@ -188,10 +183,14 @@ type
     procedure PlayerAddDefaultGoals(aHand: Byte; aBuildings: Boolean);
     procedure PlayerDefeat(aHand: Integer);
     procedure PlayerGoalsRemoveAll(aHand: Integer; aForAllPlayers: Boolean);
+    procedure PlayerHouseTypeLock(aHand: Integer; aHouseType: TKMHouseType; aLock: TKMHandHouseLock);
     procedure PlayerShareBeacons(aHand1, aHand2: Integer; aBothWays, aShare: Boolean);
     procedure PlayerShareFog(aHand1, aHand2: Integer; aShare: Boolean);
     procedure PlayerShareFogCompliment(aHand1, aHand2: Integer; aShare: Boolean);
+    procedure PlayerTradeAllowed(aHand: Integer; aWareType: TKMWareType; aAllowed: Boolean);
+    procedure PlayerUnitTypeCanTrain(aHand: Integer; aUnitType: TKMUnitType; aCanTrain: Boolean);
     procedure PlayerWareDistribution(aHand, aWareType, aHouseType, aAmount: Byte);
+    procedure PlayerWareDistributionEx(aHand: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType; aAmount: Integer);
     procedure PlayerWin(const aVictors: array of Integer; aTeamVictory: Boolean);
 
     function PlayWAV(aHand: ShortInt; const aFileName: AnsiString; aVolume: Single): Integer;
@@ -369,6 +368,35 @@ begin
 end;
 
 
+//* Version: 14600
+//* Sets player house lock aLock for a specified house type aHouseType
+//* if htAny is passed for house type then aLock will be applied to all house types
+procedure TKMScriptActions.PlayerHouseTypeLock(aHand: Integer; aHouseType: TKMHouseType; aLock: TKMHandHouseLock);
+var
+  HT: TKMHouseType;
+begin
+  try
+    //Verify all input parameters
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+      and ((aHouseType = htAny) or (aHouseType in HOUSES_VALID)) then
+    begin
+      if aHouseType = htAny then
+      begin
+        for HT in HOUSES_VALID do
+          gHands[aHand].Locks.HouseLock[HT] := aLock;
+      end
+      else
+        gHands[aHand].Locks.HouseLock[aHouseType] := aLock;
+    end
+    else
+      LogParamWarn('Actions.PlayerHouseTypeLock', [aHand, GetEnumName(TypeInfo(TKMHouseType), Integer(aHouseType))]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
 //* Version: 7000+
 //* Sets whether player A shares his beacons with player B.
 //* Sharing can still only happen between allied players, but this command lets you disable allies from sharing.
@@ -496,6 +524,34 @@ begin
     end
     else
       LogIntParamWarn('Actions.PlayerWareDistribution', [aHand, aWareType, aHouseType, aAmount]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14600
+//* Sets ware distribution for the specified resource, house and player.
+//* aAmount: Distribution amount (0..5)
+//* Note: distribution should be set after 1st tick of the game,
+//* thus it will not make effect to use it in OnMissionStart event handler
+procedure TKMScriptActions.PlayerWareDistributionEx(aHand: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType; aAmount: Integer);
+begin
+  try
+    if (aWareType in WARES_VALID)
+      and (aWareType in [wtIron, wtCoal, wtTimber, wtCorn])
+      and (aHouseType in HOUSES_VALID)
+      and InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+      and InRange(aAmount, 0, 5) then
+    begin
+      gHands[aHand].Stats.WareDistribution[aWareType, aHouseType] := aAmount;
+      gHands[aHand].Houses.UpdateResRequest;
+    end
+    else
+      LogParamWarn('Actions.PlayerWareDistributionEx', [aHand,
+                                                        GetEnumName(TypeInfo(TKMWareType), Integer(aWareType)),
+                                                        GetEnumName(TypeInfo(TKMHouseType), Integer(aHouseType)), aAmount]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2485,7 +2541,7 @@ procedure TKMScriptActions.SetTradeAllowed(aHand, aResType: Integer; aAllowed: B
 begin
   try
     //Verify all input parameters
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled
       and (aResType in [Low(WARE_ID_TO_TYPE)..High(WARE_ID_TO_TYPE)]) then
       gHands[aHand].Locks.AllowToTrade[WARE_ID_TO_TYPE[aResType]] := aAllowed
     else
@@ -2497,45 +2553,16 @@ begin
 end;
 
 
-//* Version: 13900
-//* Sets hand (player) house lock aLock for a specified house type aHouseType
-//* if htAny is passed for house type then aLock will be applied to all house types
-procedure TKMScriptActions.HandHouseLock(aHand: Integer; aHouseType: TKMHouseType; aLock: TKMHandHouseLock);
-var
-  HT: TKMHouseType;
-begin
-  try
-    //Verify all input parameters
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
-      and ((aHouseType = htAny) or (aHouseType in HOUSES_VALID)) then
-    begin
-      if aHouseType = htAny then
-      begin
-        for HT in HOUSES_VALID do
-          gHands[aHand].Locks.HouseLock[HT] := aLock;
-      end
-      else
-        gHands[aHand].Locks.HouseLock[aHouseType] := aLock;
-    end
-    else
-      LogParamWarn('Actions.HandHouseLock', [aHand, GetEnumName(TypeInfo(TKMHouseType), Integer(aHouseType))]);
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
-end;
-
-
-//* Version: 14000
+//* Version: 14600
 //* Sets whether the player is allowed to trade the specified resource.
-//* if aHand = -1, then apply it to all hands (players)
-procedure TKMScriptActions.HandTradeAllowed(aHand: Integer; aWareType: TKMWareType; aAllowed: Boolean);
+//* if aHand = -1, then apply it to all players
+procedure TKMScriptActions.PlayerTradeAllowed(aHand: Integer; aWareType: TKMWareType; aAllowed: Boolean);
 var
   I: Integer;
 begin
   try
     //Verify all input parameters
-    if ((aHand = -1) or (InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)))
+    if ((aHand = -1) or (InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled))
       and (aWareType in WARES_VALID) then
     begin
       if aHand = HAND_NONE then
@@ -2548,7 +2575,7 @@ begin
         gHands[aHand].Locks.AllowToTrade[aWareType] := aAllowed;
     end
     else
-      LogParamWarn('Actions.HandTradeAllowed', [aHand, GetEnumName(TypeInfo(TKMWareType), Integer(aWareType)), BoolToStr(aAllowed, True)]);
+      LogParamWarn('Actions.PlayerTradeAllowed', [aHand, GetEnumName(TypeInfo(TKMWareType), Integer(aWareType)), BoolToStr(aAllowed, True)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -2556,10 +2583,10 @@ begin
 end;
 
 
-//* Version: 14000
-//* Sets whether the specified player can train/equip the specified unit type
-//* if aHand = -1, then apply it to all hands (players)
-procedure TKMScriptActions.HandUnitCanTrain(aHand: Integer; aUnitType: TKMUnitType; aCanTrain: Boolean);
+//* Version: 14600
+//* Sets whether the specified player can train / equip the specified unit type
+//* if aHand = -1, then apply it to all players
+procedure TKMScriptActions.PlayerUnitTypeCanTrain(aHand: Integer; aUnitType: TKMUnitType; aCanTrain: Boolean);
 var
   I: Integer;
 begin
@@ -2577,35 +2604,7 @@ begin
         gHands[aHand].Locks.SetUnitBlocked(not aCanTrain, aUnitType);
     end
     else
-      LogParamWarn('Actions.HandUnitCanTrain', [aHand, GetEnumName(TypeInfo(TKMUnitType), Integer(aUnitType)), BoolToStr(aCanTrain, True)]);
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
-end;
-
-
-//* Version: 14000
-//* Sets ware distribution for the specified resource, house and hand (player).
-//* aAmount: Distribution amount (0..5)
-//* Note: distribution should be set after 1st tick of the game,
-//* thus it will not make effect to use it in OnMissionStart event handler
-procedure TKMScriptActions.HandWareDistribution(aHand: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType; aAmount: Integer);
-begin
-  try
-    if (aWareType in WARES_VALID)
-      and (aWareType in [wtIron, wtCoal, wtTimber, wtCorn])
-      and (aHouseType in HOUSES_VALID)
-      and InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
-      and InRange(aAmount, 0, 5) then
-    begin
-      gHands[aHand].Stats.WareDistribution[aWareType, aHouseType] := aAmount;
-      gHands[aHand].Houses.UpdateResRequest;
-    end
-    else
-      LogParamWarn('Actions.HandWareDistribution', [aHand,
-                                                    GetEnumName(TypeInfo(TKMWareType), Integer(aWareType)),
-                                                    GetEnumName(TypeInfo(TKMHouseType), Integer(aHouseType)), aAmount]);
+      LogParamWarn('Actions.PlayerUnitTypeCanTrain', [aHand, GetEnumName(TypeInfo(TKMUnitType), Integer(aUnitType)), BoolToStr(aCanTrain, True)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

@@ -82,13 +82,6 @@ type
     function GroupType(aGroupID: Integer): Integer;
     function GroupTypeEx(aGroupID: Integer): TKMGroupType;
 
-    function HandHouseCanBuild(aHand: Integer; aHouseType: TKMHouseType): Boolean;
-    function HandHouseLock(aHand: Integer; aHouseType: TKMHouseType): TKMHandHouseLock;
-    function HandIsAdvancedAI(aHand: Byte): Boolean;
-    function HandIsClassicAI(aHand: Byte): Boolean;
-    function HandUnitCanTrain(aHand: Integer; aUnitType: TKMUnitType): Boolean;
-    function HandWareDistribution(aHand: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType): Integer;
-
     function HouseAllowAllyToSelect(aHouseID: Integer): Boolean;
     function HouseAt(aX, aY: Integer): Integer;
     function HouseBarracksRallyPointX(aBarracks: Integer): Integer;
@@ -204,13 +197,19 @@ type
     function PlayerColorText(aHand: Byte): AnsiString;
     function PlayerDefeated(aHand: Byte): Boolean;
     function PlayerEnabled(aHand: Byte): Boolean;
+    function PlayerHouseTypeCanBuild(aHand: Integer; aHouseType: TKMHouseType): Boolean;
+    function PlayerHouseTypeLock(aHand: Integer; aHouseType: TKMHouseType): TKMHandHouseLock;
     function PlayerGetAllUnits(aHand: Byte): TIntegerArray;
     function PlayerGetAllHouses(aHand: Byte): TIntegerArray;
     function PlayerGetAllGroups(aHand: Byte): TIntegerArray;
     function PlayerIsAI(aHand: Byte): Boolean;
+    function PlayerIsAdvancedAI(aHand: Byte): Boolean;
+    function PlayerIsClassicAI(aHand: Byte): Boolean;
     function PlayerName(aHand: Byte): AnsiString;
+    function PlayerUnitTypeCanTrain(aHand: Integer; aUnitType: TKMUnitType): Boolean;
     function PlayerVictorious(aHand: Byte): Boolean;
     function PlayerWareDistribution(aHand, aWareType, aHouseType: Byte): Byte;
+    function PlayerWareDistributionEx(aHand: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType): Integer;
 
     function StatAIDefencePositionsCount(aHand: Byte): Integer;
     function StatArmyCount(aHand: Byte): Integer;
@@ -1767,6 +1766,29 @@ begin
 end;
 
 
+//* Version: 14600
+//* Returns the ware distribution for the specified resource, house and player
+//* Result: Ware distribution [0..5]
+function TKMScriptStates.PlayerWareDistributionEx(aHand: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType): Integer;
+begin
+  try
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+      and (aWareType in WARES_VALID)
+      and (aHouseType in HOUSES_VALID) then
+      Result := gHands[aHand].Stats.WareDistribution[aWareType, aHouseType]
+    else
+    begin
+      Result := 0;
+      LogParamWarn('States.PlayerWareDistributionEx', [aHand, GetEnumName(TypeInfo(TKMWareType), Integer(aWareType)),
+                                                              GetEnumName(TypeInfo(TKMHouseType), Integer(aHouseType))]);
+    end;
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
 //* Version: 5165
 //* Returns an array with IDs for all the units of the specified player
 //* Result: Array of unit IDs
@@ -1897,6 +1919,46 @@ begin
     begin
       Result := False;
       LogIntParamWarn('States.PlayerIsAI', [aHand]);
+    end;
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14600
+//* Wherever player is controlled by Advanced AI
+//* Result: Player is Advanced AI
+function TKMScriptStates.PlayerIsAdvancedAI(aHand: Byte): Boolean;
+begin
+  try
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
+      Result := gHands[aHand].IsAdvancedAI
+    else
+    begin
+      Result := False;
+      LogParamWarn('States.PlayerIsAdvancedAI', [aHand]);
+    end;
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Verson: 14600
+//* Wherever player is controlled by Classic AI
+//* Result: Player is Classic AI
+function TKMScriptStates.PlayerIsClassicAI(aHand: Byte): Boolean;
+begin
+    try
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
+      Result := gHands[aHand].IsClassicAI
+    else
+    begin
+      Result := False;
+      LogParamWarn('States.PlayerIsClassicAI', [aHand]);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
@@ -2434,6 +2496,46 @@ begin
 end;
 
 
+//* Version: 14600
+//* Returns True if the specified player can build the specified house type
+//* Result: House can be build
+function TKMScriptStates.PlayerHouseTypeCanBuild(aHand: Integer; aHouseType: TKMHouseType): Boolean;
+begin
+  try
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled
+    and (aHouseType in HOUSES_VALID) then
+      Result := gHands[aHand].Locks.HouseCanBuild(aHouseType)
+    else
+    begin
+      Result := False;
+      LogIntParamWarn('States.PlayerHouseTypeCanBuild', [aHand, Ord(aHouseType)]);
+    end;
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14600
+//* Returns player house type lock as enum value of TKMHandHouseLock = (hlDefault, hlBlocked, hlGranted)
+//* Result: Player house type lock
+function TKMScriptStates.PlayerHouseTypeLock(aHand: Integer; aHouseType: TKMHouseType): TKMHandHouseLock;
+begin
+  Result := hlNone;
+  try
+    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+    and (aHouseType in HOUSES_VALID) then
+      Result := gHands[aHand].Locks.HouseLock[aHouseType]
+    else
+      LogIntParamWarn('States.PlayerHouseTypeLock', [aHand, Ord(aHouseType)]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
 //* Version: 5057
 //* Get name of player as a string (for multiplayer)
 //* Result: Player name
@@ -2456,90 +2558,10 @@ begin
 end;
 
 
-//* Version: 13900
-//* Returns True if the specified hand (player) can build the specified house type
-//* Result: House can build
-function TKMScriptStates.HandHouseCanBuild(aHand: Integer; aHouseType: TKMHouseType): Boolean;
-begin
-  try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
-    and (aHouseType in HOUSES_VALID) then
-      Result := gHands[aHand].Locks.HouseCanBuild(aHouseType)
-    else
-    begin
-      Result := False;
-      LogIntParamWarn('States.HandHouseCanBuild', [aHand, Ord(aHouseType)]);
-    end;
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
-end;
-
-
-//* Version: 13900
-//* Returns hand (player) house lock as enum value of TKMHandHouseLock = (hlDefault, hlBlocked, hlGranted)
-//* Result: Hand house lock
-function TKMScriptStates.HandHouseLock(aHand: Integer; aHouseType: TKMHouseType): TKMHandHouseLock;
-begin
-  Result := hlNone;
-  try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
-    and (aHouseType in HOUSES_VALID) then
-      Result := gHands[aHand].Locks.HouseLock[aHouseType]
-    else
-      LogIntParamWarn('States.HandHouseLock', [aHand, Ord(aHouseType)]);
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
-end;
-
-
 //* Version: 14600
-//* Wherever hand is controlled by Advanced AI
-//* Result: Hand is Advanced AI
-function TKMScriptStates.HandIsAdvancedAI(aHand: Byte): Boolean;
-begin
-  try
-    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
-      Result := gHands[aHand].IsAdvancedAI
-    else
-    begin
-      Result := False;
-      LogParamWarn('States.HandIsAdvancedAI', [aHand]);
-    end;
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
-end;
-
-
-//* Verson: 14600
-//* Wherever hand is controlled by Classic AI
-//* Result: Hand is Classic AI
-function TKMScriptStates.HandIsClassicAI(aHand: Byte): Boolean;
-begin
-    try
-    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
-      Result := gHands[aHand].IsClassicAI
-    else
-    begin
-      Result := False;
-      LogParamWarn('States.HandIsClassicAI', [aHand]);
-    end;
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
-end;
-
-
-//* Version: 13900
-//* Returns True if the specified player can train/equip the specified unit type
-//* Result: Unit unlocked
-function TKMScriptStates.HandUnitCanTrain(aHand: Integer; aUnitType: TKMUnitType): Boolean;
+//* Returns True if the specified player can train / equip the specified unit type
+//* Result: Unit could be trained / equipped
+function TKMScriptStates.PlayerUnitTypeCanTrain(aHand: Integer; aUnitType: TKMUnitType): Boolean;
 begin
   try
     if InRange(aHand, 0, gHands.Count - 1)
@@ -2549,37 +2571,13 @@ begin
     else
     begin
       Result := False;
-      LogParamWarn('States.UnitUnlocked', [aHand, GetEnumName(TypeInfo(TKMUnitType), Integer(aUnitType))]);
+      LogParamWarn('States.PlayerUnitTypeCanTrain', [aHand, GetEnumName(TypeInfo(TKMUnitType), Integer(aUnitType))]);
     end;
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
   end;
 end;
-
-
-//* Version: 13900
-//* Returns the ware distribution for the specified resource, house and player
-//* Result: Ware distribution [0..5]
-function TKMScriptStates.HandWareDistribution(aHand: Integer; aWareType: TKMWareType; aHouseType: TKMHouseType): Integer;
-begin
-  try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
-      and (aWareType in WARES_VALID)
-      and (aHouseType in HOUSES_VALID) then
-      Result := gHands[aHand].Stats.WareDistribution[aWareType, aHouseType]
-    else
-    begin
-      Result := 0;
-      LogParamWarn('States.PlayerWareDistributionEx', [aHand, GetEnumName(TypeInfo(TKMWareType), Integer(aWareType)),
-                                                                GetEnumName(TypeInfo(TKMHouseType), Integer(aHouseType))]);
-    end;
-  except
-    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
-    raise;
-  end;
-end;
-
 
 
 //* Version: 10940
