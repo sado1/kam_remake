@@ -341,7 +341,7 @@ uses
   KM_HandsCollection, KM_Hand, KM_HandTypes, KM_HandEntity,
   KM_TerrainUtils, KM_TerrainWalkConnect,
   KM_Resource, KM_Units, KM_DevPerfLog,
-  KM_ResSound, KM_Sound, KM_UnitActionStay, KM_UnitWarrior, KM_TerrainPainter, KM_Houses,
+  KM_ResSound, KM_Sound, KM_UnitActionStay, KM_UnitActionGoInOut, KM_UnitWarrior, KM_TerrainPainter, KM_Houses,
   KM_ResUnits, KM_ResSprites,
   KM_Game, KM_GameParams, KM_GameTypes, KM_GameSettings,
   KM_ScriptingEvents, KM_Utils, KM_DevPerfLogTypes,
@@ -1768,7 +1768,8 @@ begin
   Result := (U = nil)
             or U.IsAnimal
             or (U.Action = nil)
-            or not U.Action.Locked;
+            or not U.Action.Locked
+            or (U.Action is TKMUnitActionGoInOut);
 end;
 
 
