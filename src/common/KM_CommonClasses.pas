@@ -107,8 +107,8 @@ type
     procedure SaveToFileCompressed(const aFileName: string; const aMarker: string);
     procedure LoadFromFileCompressed(const aFileName: string; const aMarker: string);
 
-    procedure SaveToStreamCompressed(var aStream: TKMemoryStream; const aMarker: string = '');
-    procedure LoadFromStreamCompressed(var aStream: TKMemoryStream; const aMarker: string = '');
+    procedure SaveToStreamCompressed(aStream: TKMemoryStream; const aMarker: string = '');
+    procedure LoadFromStreamCompressed(aStream: TKMemoryStream; const aMarker: string = '');
 
     procedure AppendStream(aStream: TKMemoryStream; const aMarker: string);
     procedure TrimToPosition;
@@ -755,7 +755,7 @@ begin
 end;
 
 
-procedure TKMemoryStream.SaveToStreamCompressed(var aStream: TKMemoryStream; const aMarker: string = '');
+procedure TKMemoryStream.SaveToStreamCompressed(aStream: TKMemoryStream; const aMarker: string = '');
 {$IFNDEF NO_COMPRESSION}
 var
   CS: TCompressionStream;
@@ -776,7 +776,7 @@ begin
 end;
 
 
-procedure TKMemoryStream.LoadFromStreamCompressed(var aStream: TKMemoryStream; const aMarker: string = '');
+procedure TKMemoryStream.LoadFromStreamCompressed(aStream: TKMemoryStream; const aMarker: string = '');
 {$IFNDEF NO_COMPRESSION}
 var
   DS: TDecompressionStream;
