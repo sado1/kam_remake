@@ -127,7 +127,19 @@ begin
               Exit;
             end;
             lRxxPacker.SpritesLoadDir := ParamStr(I);
+            Continue;
+          end;
 
+          if ((LowerCase(paramString) = 'ssd') or (LowerCase(paramString) = 'spritessavedir')) then
+          begin
+            if (I >= ParamCount) then
+            begin
+              writeln('spritesSaveDir directory not specified');
+              Exit;
+            end;
+
+            Inc(I);
+            lRxxPacker.SpritesSaveDir := ParamStr(I);
             Continue;
           end;
 
