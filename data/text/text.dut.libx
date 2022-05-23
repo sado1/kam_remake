@@ -143,12 +143,12 @@
 144:Vernietig gekozen gebouw
 145:Bestellingen verlagen
 146:Bestellingen verhogen
-147:Vorig type eenheid. Gebruik Shift om de eerste eenheid type te krijgen
-148:Volgend type eenheid. Gebruik Shift om de laatste eenheid type te krijgen
-149:Huidig type eenheid bewapenen. Gebruik Shift om 10 eenheden te bewapenen
-150:Volgend beroep. Gebruik Shift om het laatste beroep te krijgen
-151:Vorig beroep. Gebruik Shift om het eerste beroep te krijgen
-152:Aan wachtrij toevoegen.|Gebruik RMK, Ctrl of Alt om de wachtrij te bewerken en Shift om het te vullen
+147:Vorig type eenheid. Gebruik RMK of Alt om de eerste eenheid type te krijgen
+148:Volgend type eenheid. Gebruik RMK of Alt om de laatste eenheid type te krijgen
+149:Huidig type eenheid bewapenen. Gebruik RMK of Alt om 10 eenheden te bewapenen
+150:Volgend beroep. Gebruik RMK of Alt om het laatste beroep te krijgen
+151:Vorig beroep. Gebruik RMK of Alt om het eerste beroep te krijgen
+152:Aan wachtrij toevoegen.|Gebruik Shift of Ctrl om de wachtrij te bewerken en RMK of Alt om het te vullen
 153:Wissel tussen leveringswijzen van producten: vraag / gesloten / aanbod|Gebruik LMK / RMK om vooruit / achteruit te veranderen
 154:Kosten:
 155:Huis reparatie in-/uitschakelen
@@ -1537,3 +1537,9 @@
 1590:Multiplayer instellingen voor AI speler %d
 1591:Waarschuwing: Hiermee worden alle bestaande AI instellingen voor speler %d overschreven. Doorgaan?
 1592:Slaat het huidige wachtwoord op voor toekomstig gebruik
+1593:Hoeveelheid vis
+1594:Kaart opslaan
+1595:Kaart opgeslagen
+1596:Kaart opslaan...
+1597:Plat terrein
+1598:Tegels grid
