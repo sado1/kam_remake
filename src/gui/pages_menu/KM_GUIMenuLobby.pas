@@ -2984,8 +2984,12 @@ begin
   if gNetworking.IsHost then
   begin
     gNetworking.SelectSave(aSaveName);
+
     //Make sure the save was successfully selected
-    Radio_MapType.ItemIndex := DetectMapType;
+    if ((gNetworking.SelectGameKind = ngkMap) and gNetworking.MapInfo.IsValid)
+      or ((gNetworking.SelectGameKind = ngkSave) and gNetworking.SaveInfo.IsValid) then
+      Radio_MapType.ItemIndex := DetectMapType;
+
     if gNetworking.SelectGameKind = ngkSave then
       Lobby_OnMapName(aSaveName);
   end;
