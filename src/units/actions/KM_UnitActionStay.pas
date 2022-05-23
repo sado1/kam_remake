@@ -21,6 +21,8 @@ type
     function GetExplanation: UnicodeString; override;
     function Execute: TKMActionResult; override;
     procedure Save(SaveStream: TKMemoryStream); override;
+
+    function ObjToStringShort(const aSeparator: String = ' '): String; override;
   end;
 
 
@@ -135,6 +137,16 @@ end;
 function TKMUnitActionStay.CanBeInterrupted(aForced: Boolean = True): Boolean;
 begin
   Result := not Locked; //Initial pause before leaving barracks is locked
+end;
+
+
+function TKMUnitActionStay.ObjToStringShort(const aSeparator: String): String;
+begin
+  Result := inherited + Format('%s[StayStill = %s%sTimeToStay = %d%sStillFrame = %d]', [
+                               aSeparator,
+                               BoolToStr(StayStill, True), aSeparator,
+                               TimeToStay, aSeparator,
+                               StillFrame]);
 end;
 
 
