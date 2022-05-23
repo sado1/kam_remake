@@ -44,6 +44,8 @@ type
     property CityManagement: TKMCityManagement read fCityManagement;
     property ArmyManagement: TKMArmyManagement read fArmyManagement;
 
+    property CanBeAITypes: TKMAITypeSet read fCanBeAITypes write fCanBeAITypes;
+
     procedure ResetWonOrLost;
     procedure Defeat(aShowDefeatMessage: Boolean = True); //Defeat the player, this is not reversible
     procedure Victory; //Set this player as victorious, this is not reversible

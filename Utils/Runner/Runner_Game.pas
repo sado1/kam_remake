@@ -146,6 +146,8 @@ type
   end;
 
   TKMRunnerDesyncTest = class(TKMRunnerCommon)
+  const
+    DEF_PLAYER_HAND = 0;
   type
     TKMDesyncRunKind = (drkGame, drkReplay, drkGameCRC, drkReplayCRC, drkGameSave);
   private
@@ -1230,7 +1232,8 @@ begin
 
   if gGameParams.Tick = 1 then
   begin
-    gGame.GameInputProcess.CmdPlayerChanged(0, 'AI 1', hndComputer, AIType);
+    gGame.GameInputProcess.CmdPlayerChanged(DEF_PLAYER_HAND, 'AI 1', hndComputer, AIType);
+    gHands[DEF_PLAYER_HAND].AddAIType(AIType);
 
 //    if gHands[0].CanBeHuman then
 //      gHands[0].AI.Setup.ApplyMultiplayerSetup(AIType = aitAdvanced)
@@ -1414,7 +1417,7 @@ var
     fRunSeed := L;
 
     mapFullName := Format('%sMapsMP\%s\%s.dat',[ExeDir,fMap,fMap]);
-    gGameApp.NewSingleMap(mapFullName, fMap, -1, 0, mdNone, AIType);
+    gGameApp.NewSingleMap(mapFullName, fMap, DEF_PLAYER_HAND, 0, mdNone, AIType);
     gGame.Params.GetGameModeSetEvent(fGameModeSetEvent);
   end;
 

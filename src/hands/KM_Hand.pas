@@ -1505,6 +1505,7 @@ end;
 procedure TKMHand.AddAIType(aHandAIType: TKMAIType);
 begin
   Include(fCanBeAITypes, aHandAIType);
+  AI.CanBeAITypes := fCanBeAITypes;
 end;
 
 
