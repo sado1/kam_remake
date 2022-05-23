@@ -226,7 +226,7 @@ const
 
 type
   // Cursors
-  TKMCursor = (
+  TKMCursorImageType = (
     kmcDefault, kmcInfo, kmcAttack, kmcJoinYes, kmcJoinNo, kmcEdit, kmcDragUp,
     kmcDir0, kmcDir1, kmcDir2, kmcDir3, kmcDir4, kmcDir5, kmcDir6, kmcDir7, kmcDirNA,
     kmcScroll0, kmcScroll1, kmcScroll2, kmcScroll3, kmcScroll4, kmcScroll5, kmcScroll6, kmcScroll7,
@@ -238,7 +238,7 @@ type
 
 const
   // Indexes of cursor images in GUI.RX
-  CURSOR_SPRITE_INDEX: array [TKMCursor] of Word = (
+  CURSOR_SPRITE_INDEX: array [TKMCursorImageType] of Word = (
     1, 452, 457, 460, 450, 453, 449,
     511,  512, 513, 514, 515, 516, 517, 518, 519,
     4, 7, 3, 9, 5, 8, 2, 6,

@@ -351,7 +351,7 @@ procedure TKMViewport.UpdateStateIdle(aFrameTime: Cardinal; aAllowMouseScrolling
 const
   SCROLL_ACCEL_TIME = 400; // Time in ms that scrolling will be affected by acceleration
   SCROLL_FLEX = 4;         // Number of pixels either side of the edge of the screen which will count as scrolling
-  DIRECTIONS_BITFIELD: array [0..15] of TKMCursor = (
+  DIRECTIONS_BITFIELD: array [0..15] of TKMCursorImageType = (
     kmcDefault, kmcScroll6, kmcScroll0, kmcScroll7,
     kmcScroll2, kmcDefault, kmcScroll1, kmcDefault,
     kmcScroll4, kmcScroll5, kmcDefault, kmcDefault,
