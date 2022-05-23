@@ -167,11 +167,12 @@ uses
   {$IFDEF Unix} LCLType, {$ENDIF}
   SysUtils, DateUtils, Math, TypInfo, KromUtils,
   {$IFDEF USE_MAD_EXCEPT} KM_Exceptions, {$ENDIF}
+  KM_System,
   KM_FormLogistics,
   KM_Main, KM_Controls, KM_Log, KM_Sound, KM_GameInputProcess, KM_GameInputProcess_Multi,
   KM_HandsCollection,
   KM_GameSavePoints,
-  KM_Cursor, KM_ResTexts, KM_ResKeys,
+  KM_Cursor, KM_ResTexts, KM_ResKeys, KM_ResTypes,
   KM_IoGraphicUtils, KM_Settings,
   KM_Saves, KM_CommonUtils, KM_CommonShellUtils, KM_RandomChecks,
   KM_DevPerfLog, KM_DevPerfLogTypes;
@@ -700,6 +701,14 @@ end;
 procedure TKMGameApp.StopGameReturnToLobby;
 begin
   if gGame = nil then Exit;
+
+  // Wait till 'paused' save will be made. We want to show it properly in the Lobby UI
+  gSystem.Cursor := kmcAnimatedDirSelector;
+  try
+  gGame.WaitForSaveToBeDone;
+  finally
+    gSystem.Cursor := kmcDefault;
+  end;
 
   FreeThenNil(gGame);
   fNetworking.ReturnToLobby; //Clears gGame event pointers from Networking

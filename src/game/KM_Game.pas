@@ -178,6 +178,7 @@ type
     procedure Save(const aSaveName: UnicodeString; aTimestamp: TDateTime); overload;
     procedure Save(const aSaveName: UnicodeString; aTimestamp: TDateTime; aSaveWorkerThread: TKMWorkerThread); overload;
     procedure SaveAndWait(const aSaveName: UnicodeString);
+    procedure WaitForSaveToBeDone;
 
     procedure AutoSave(aTimestamp: TDateTime);
     procedure AutoSaveAfterPT(aTimestamp: TDateTime);
@@ -2424,6 +2425,12 @@ begin
     SaveGameToStream(aTimestamp, saveStreamTxt);
     TKMemoryStream.AsyncSaveToFileAndFree(saveStreamTxt, aPathName + EXT_SAVE_TXT_DOT, aSaveWorkerThread);
   end;
+end;
+
+
+procedure TKMGame.WaitForSaveToBeDone;
+begin
+  fSaveWorkerThreadHolder.Worker.WaitForAllWorkToComplete;
 end;
 
 
