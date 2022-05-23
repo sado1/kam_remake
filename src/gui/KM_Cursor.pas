@@ -77,7 +77,7 @@ var
 implementation
 
 
-{TKMGameCursor}
+{ TKMCursor }
 constructor TKMCursor.Create;
 begin
   inherited;
