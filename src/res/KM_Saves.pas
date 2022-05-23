@@ -180,7 +180,7 @@ var
 begin
   if not FileExists(fPath + fFileName + EXT_SAVE_MAIN_DOT) then
   begin
-    fSaveError.ErrorString := 'File not exists';
+    fSaveError.ErrorString := gResTexts[TX_SAVE_SAVE_FILE_NOT_EXISTS];
     fSaveError.ErrorType := sietFileNotExist;
     Exit;
   end;

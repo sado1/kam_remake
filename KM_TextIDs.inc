@@ -928,6 +928,7 @@ TX_SAVE_UNSUPPORTED_FORMAT = 627; //Unsupported format %s
 TX_SAVE_UNSUPPORTED_VERSION = 628; //Unsupported version %s
 TX_SAVE_UNSUPPORTED_VERSION_SHORT = 1386; //Unsupported version
 TX_SAVE_UNSUPPORTED_MODS = 629; //Unsupported modifications
+TX_SAVE_SAVE_FILE_NOT_EXISTS = 1599; //Save file does not exist
 TX_MENU_PARSE_ERROR = 630; //An error has occurred while parsing the file %s
 TX_MENU_LOADING_INITIALIZING = 631; //initializing
 TX_MENU_LOADING_SCRIPT = 632; //script
