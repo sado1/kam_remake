@@ -2086,9 +2086,6 @@ begin
   if aUnit.KilledBy <> HAND_NONE then
     gHands[aUnit.KilledBy].Stats.UnitKilled(aUnit.UnitType);
 
-  if aUnit.IsDismissing then
-    Stats.UnitDismissCanceled(aUnit.UnitType);
-
   //Demands: food for soldiers / stone or wood for workers
   Deliveries.Queue.RemDemand(aUnit);
 

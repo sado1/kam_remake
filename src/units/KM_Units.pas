@@ -1420,8 +1420,6 @@ begin
   end;
 
   DoDismiss;
-
-  gHands[Owner].Stats.UnitDismissed(fType);
 end;
 
 
@@ -1448,8 +1446,6 @@ begin
 
   if fTask <> nil then
     FreeAndNil(fTask);
-
-  gHands[Owner].Stats.UnitDismissCanceled(fType);
 end;
 
 

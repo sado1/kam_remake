@@ -41,6 +41,8 @@ begin
   Assert(aUnit is TKMCivilUnit, 'Only civil units are allowed to be dismissed');
   inherited;
 
+  gHands[fUnit.Owner].Stats.UnitDismissed(fUnit.UnitType);
+
   fType := uttDismiss;
   FindNewSchool;
 end;
@@ -58,6 +60,7 @@ destructor TKMTaskDismiss.Destroy;
 begin
   gHands.CleanUpHousePointer(fSchool);
   fUnit.DismissInProgress := False; //Reset dismissInProgress Flag to show proper UI
+  gHands[fUnit.Owner].Stats.UnitDismissCanceled(fUnit.UnitType);
 
   inherited;
 end;
