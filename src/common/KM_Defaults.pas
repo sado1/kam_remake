@@ -247,6 +247,7 @@ var
   INI_HITPOINT_RESTORE    :Boolean = False; //Use the hitpoint restore rate from the INI file to compare with KaM
   SLOW_MAP_SCAN           :Boolean = False; //Scan maps with a pause to emulate uncached file access
   SLOW_SAVE_SCAN          :Boolean = False; //Scan saves with a pause to emulate uncached file access
+  SLOW_GAME_SAVE_ASYNC    :Boolean = False; //Emulate slow game save (in the async save thread)
   SLOW_MAP_SAVE_LOAD      :Boolean = False; //Load map or save to emulate slow network
   SLOW_ASYNC_RES_LOADER   :Boolean = False; //Emulate slow async resource loader (slow res load in async thread)
   DO_PERF_LOGGING         :Boolean = False; //Write each ticks time to log (DEPRECATED PERF_LOGGER)

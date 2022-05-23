@@ -2476,6 +2476,15 @@ begin
   gPerfLogs.SectionEnter(psGameSave);
   {$ENDIF}
   try
+    // Emulate slow save in the async save thread
+    if SLOW_GAME_SAVE_ASYNC then
+      aSaveWorkerThread.QueueWork(procedure
+        begin
+          Sleep(10000);
+        end,
+        'Slow Game Save'
+      );
+
     //Convert name to full path+name
     fullPath := SaveName(aSaveName, EXT_SAVE_MAIN, fParams.IsMultiplayer);
     mpLocalDataPath := SaveName(aSaveName, EXT_SAVE_MP_LOCAL, fParams.IsMultiplayer);
