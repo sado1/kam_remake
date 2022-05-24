@@ -129,7 +129,7 @@ begin
 
   with fUnit do
     case fPhase of
-      0:  SetActionWalkToSpot(fSchool.PointBelowEntrance);
+      0:  SetActionWalkToSpot(fSchool.PointBelowEntrance, uaWalk, 0, fUnit.AnimStep); // Preserv current AnimStep
       1:  SetActionGoIn(uaWalk, gdGoInside, fSchool);
       2:  begin
             //Note: we do not set trTaskDone here, as we are going to destroy this task and Close (delete) unit

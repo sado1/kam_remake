@@ -193,7 +193,7 @@ type
     procedure SetActionWalkFromHouse(aHouse: TKMHouse; aDistance: Single; aActionType: TKMUnitActionType = uaWalk);
     procedure SetActionWalkToUnit(aUnit: TKMUnit; aDistance:single; aActionType: TKMUnitActionType = uaWalk);
     procedure SetActionWalkFromUnit(aUnit: TKMUnit; aDistance: Single; aActionType: TKMUnitActionType = uaWalk);
-    procedure SetActionWalkToSpot(const aLocB: TKMPoint; aActionType: TKMUnitActionType = uaWalk; aDistance: Single = 0);
+    procedure SetActionWalkToSpot(const aLocB: TKMPoint; aActionType: TKMUnitActionType = uaWalk; aDistance: Single = 0; aAnimStep: Integer = 0);
     procedure SetActionWalkToRoad(aActionType: TKMUnitActionType = uaWalk; aDistance: Single = 0;
                                          aTargetPassability: TKMTerrainPassability = tpWalkRoad; aTargetWalkConnectSet: TKMByteSet = []);
     procedure SetActionWalkPushed(const aLocB: TKMPoint; aActionType: TKMUnitActionType = uaWalk);
@@ -1905,12 +1905,12 @@ end;
 
 
 //Walk to spot or its neighbourhood
-procedure TKMUnit.SetActionWalkToSpot(const aLocB: TKMPoint; aActionType: TKMUnitActionType = uaWalk; aDistance: Single = 0);
+procedure TKMUnit.SetActionWalkToSpot(const aLocB: TKMPoint; aActionType: TKMUnitActionType = uaWalk; aDistance: Single = 0; aAnimStep: Integer = 0);
 begin
   if (Action is TKMUnitActionWalkTo) and not TKMUnitActionWalkTo(Action).CanAbandonExternal then
     raise Exception.Create('Interrupting unabandonable Walk action');
 
-  SetAction(TKMUnitActionWalkTo.Create(Self, aLocB, aActionType, aDistance, False, nil, nil));
+  SetAction(TKMUnitActionWalkTo.Create(Self, aLocB, aActionType, aDistance, False, nil, nil), aAnimStep);
 end;
 
 
