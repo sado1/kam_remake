@@ -447,8 +447,9 @@ begin
 
     // Tweaks
     nGameTweaks := nGameCommon.AddOrFindChild('Tweaks');
-      GFX.AllowSnowHouses    := nGameTweaks.Attributes['AllowSnowHouses'].AsBoolean(True);
-      GFX.InterpolatedRender := nGameTweaks.Attributes['InterpolatedRender'].AsBoolean(False);
+      GFX.AllowSnowHouses         := nGameTweaks.Attributes['AllowSnowHouses'].AsBoolean(True);
+      GFX.InterpolatedRender      := nGameTweaks.Attributes['InterpolatedRender'].AsBoolean(False);
+      GFX.InterpolatedAnimations  := nGameTweaks.Attributes['InterpolatedAnimations'].AsBoolean(False);
 
   // Campaign
   nCampaign := nGameSettings.AddOrFindChild('Campaign');
@@ -634,8 +635,9 @@ begin
 
     // Tweaks
     nGameTweaks := nGameCommon.AddOrFindChild('Tweaks');
-      nGameTweaks.Attributes['AllowSnowHouses']    := GFX.AllowSnowHouses;
-      nGameTweaks.Attributes['InterpolatedRender'] := GFX.InterpolatedRender;
+      nGameTweaks.Attributes['AllowSnowHouses']         := GFX.AllowSnowHouses;
+      nGameTweaks.Attributes['InterpolatedRender']      := GFX.InterpolatedRender;
+      nGameTweaks.Attributes['InterpolatedAnimations']  := GFX.InterpolatedAnimations;
 
   // Campaign
   nCampaign := nGameSettings.AddOrFindChild('Campaign');
