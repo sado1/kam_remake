@@ -909,9 +909,6 @@ begin
 
   for WT := WARE_MIN to WARE_MAX do
   begin
-    //Todo: we can use only ResIn / ResOut ware types, depends of the delivery mode
-    if not aHouse.CanHaveWareType(WT) then Continue;
-
     for I := 0 to fDemandCount[WT] - 1 do
       if fDemand[WT,I].Loc_House = aHouse then
       begin
