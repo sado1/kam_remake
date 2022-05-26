@@ -2468,6 +2468,7 @@ begin
   if isPlayerDropOpen then
     Dropbox_ReplayFOW.OpenList;
   Dropbox_ReplayFOW.ItemIndex := playerDropItem;
+  Replay_ViewPlayer(playerDropItem);
 
   Checkbox_ReplayFOW.Checked := showPlayerFOW;
   ReplayClick(Checkbox_ReplayFOW); //Apply FOW
