@@ -272,7 +272,7 @@ end;
 //How much it costs to move From -> To
 function TKMPathFinding.MovementCost(aFromX, aFromY, aToX, aToY: Word): Cardinal;
 const
-  AVOID_ROAD_FEE = 200; // 20 tiles
+  AVOID_ROAD_PENALTY = 100; // 10 tiles
 var
   DX, DY: Word;
   U: TKMUnit;
@@ -292,7 +292,7 @@ begin
     // Goind offroad, when unit has to walk on road is possible to avoid locked tiles,
     // but unit has to get bakc to the road
     if (fRouteKind = rkAvoid) and not gTerrain.CheckPassability(aToX, aToY, fPassBest) then
-      Inc(Result, AVOID_ROAD_FEE);
+      Inc(Result, AVOID_ROAD_PENALTY);
 
     //Always avoid congested areas on roads
     if DO_WEIGHT_ROUTES and (U <> nil) and ((tpWalkRoad in fPass) or U.PathfindingShouldAvoid) then
