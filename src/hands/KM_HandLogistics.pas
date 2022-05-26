@@ -836,29 +836,28 @@ end;
 procedure TKMDeliveries.RemAllOffers(aHouse: TKMHouse);
 var
   I: Integer;
-  WT: TKMWareType;
+  oWT: TKMWareType;
 begin
   if gGameParams.IsMapEditor then
     Exit;
 
-  for WT := WARE_MIN to WARE_MAX do
+  for oWT := WARE_MIN to WARE_MAX do
   begin
-    //Todo: we can use only ResIn / ResOut ware types, depends of the delivery mode
-    if not aHouse.CanHaveWareType(WT) then Continue;
+    if not aHouse.CanHaveWareType(oWT) then Continue;
 
     //We need to parse whole list, never knowing how many offers the house had
-    for I := 0 to fOfferCount[WT] - 1 do
-      if fOffer[WT,I].Loc_House = aHouse then
+    for I := 0 to fOfferCount[oWT] - 1 do
+      if fOffer[oWT,I].Loc_House = aHouse then
       begin
-        if fOffer[WT,I].BeingPerformed > 0 then
+        if fOffer[oWT,I].BeingPerformed > 0 then
         begin
           //Keep it until all associated deliveries are abandoned
-          fOffer[WT,I].IsDeleted := True; //Don't reset it until serfs performing this offer are done with it
-          fOffer[WT,I].Count := 0; //Make the count 0 so no one else tries to take this offer
-          Form_UpdateOfferNode(WT,I);
+          fOffer[oWT,I].IsDeleted := True; //Don't reset it until serfs performing this offer are done with it
+          fOffer[oWT,I].Count := 0; //Make the count 0 so no one else tries to take this offer
+          Form_UpdateOfferNode(oWT,I);
         end
         else
-          CloseOffer(WT,I);
+          CloseOffer(oWT,I);
       end;
   end;
 end;
@@ -900,23 +899,23 @@ end;
 procedure TKMDeliveries.RemDemand(aHouse: TKMHouse);
 var
   I: Integer;
-  WT: TKMWareType;
+  dWT: TKMWareType;
 begin
   if gGameParams.IsMapEditor then
     Exit;
 
   Assert(aHouse <> nil);
 
-  for WT := WARE_MIN to WARE_MAX do
+  for dWT := Low(fDemandCount) to High(fDemandCount) do
   begin
-    for I := 0 to fDemandCount[WT] - 1 do
-      if fDemand[WT,I].Loc_House = aHouse then
+    for I := 0 to fDemandCount[dWT] - 1 do
+      if fDemand[dWT,I].Loc_House = aHouse then
       begin
-        if fDemand[WT,I].BeingPerformed > 0 then
+        if fDemand[dWT,I].BeingPerformed > 0 then
           //Can't free it yet, some serf is using it
-          fDemand[WT,I].IsDeleted := True
+          fDemand[dWT,I].IsDeleted := True
         else
-          CloseDemand(WT,I); //Clear up demand
+          CloseDemand(dWT,I); //Clear up demand
         //Keep on scanning cos House can have multiple demands entries
       end;
   end;
