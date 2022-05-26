@@ -843,8 +843,6 @@ begin
 
   for oWT := WARE_MIN to WARE_MAX do
   begin
-    if not aHouse.CanHaveWareType(oWT) then Continue;
-
     //We need to parse whole list, never knowing how many offers the house had
     for I := 0 to fOfferCount[oWT] - 1 do
       if fOffer[oWT,I].Loc_House = aHouse then
