@@ -273,6 +273,8 @@ end;
 function TKMPathFinding.MovementCost(aFromX, aFromY, aToX, aToY: Word): Cardinal;
 const
   AVOID_ROAD_PENALTY = 100; // 10 tiles
+  AVOID_LOCKED_PENALTY = 200; // 20 tiles
+  AVOID_UNIT_PENALTY = 15; // 1.5 tiles
 var
   DX, DY: Word;
   U: TKMUnit;
@@ -296,10 +298,10 @@ begin
 
     //Always avoid congested areas on roads
     if DO_WEIGHT_ROUTES and (U <> nil) and ((tpWalkRoad in fPass) or U.PathfindingShouldAvoid) then
-      Inc(Result, 15); //Unit = 1.5 extra tiles
+      Inc(Result, AVOID_UNIT_PENALTY); //Unit = 1.5 extra tiles
 
     if (fAvoidLocked = palAvoidByMovementCost) and gTerrain.TileIsLocked(KMPoint(aToX,aToY)) then
-      Inc(Result, 200); //In interaction avoid mode, working unit (or warrior attacking house) = 20 tiles
+      Inc(Result, AVOID_LOCKED_PENALTY); //In interaction avoid mode, working unit (or warrior attacking house) = 20 tiles
   end;
 end;
 
