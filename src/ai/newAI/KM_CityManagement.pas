@@ -896,7 +896,7 @@ var
           for I := Low(TROOP_COST[UT]) to High(TROOP_COST[UT]) do
             if (TROOP_COST[UT,I] <> wtNone) then
               with fRequiredWeapons[ TROOP_COST[UT,I] ] do
-                Required := Required + Round(DEFAULT_ARMY_REQUIREMENTS[UT] * WoodReq * max(1, AllyCounterWeightRatio[GT] / max(1,RatioSum)) );
+                Required := Min(High(Word), Required + Round(DEFAULT_ARMY_REQUIREMENTS[UT] * WoodReq * max(1, AllyCounterWeightRatio[GT] / max(1,RatioSum)) ));
       end;
     end;
 
