@@ -318,8 +318,8 @@ const
 
   AUTOSAVE_COUNT_DEF      = 5;    //How many autosaves to backup by default - this MUST be variable (Parallel Runner)
   AUTOSAVE_COUNT_MIN      = 1;
-  AUTOSAVE_COUNT_MAX      = 100;
-  AUTOSAVE_FREQUENCY_MIN  = 300;
+  AUTOSAVE_COUNT_MAX      = 50;  // 99 max, since it should be 2-digit width to cope with our rename algo
+  AUTOSAVE_FREQUENCY_MIN  = 300;  // 30 sec
   AUTOSAVE_FREQUENCY_MAX  = 6000; // 10 minutes
   AUTOSAVE_FREQUENCY_DEFAULT = 600; // 1 min, How often to do autosave, every N ticks
   BASESAVE_NAME = 'basesave';
