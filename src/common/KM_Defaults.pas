@@ -317,11 +317,11 @@ const
 
 
   AUTOSAVE_COUNT_DEF      = 5;    //How many autosaves to backup by default - this MUST be variable (Parallel Runner)
-  AUTOSAVE_COUNT_MIN      = 2;
-  AUTOSAVE_COUNT_MAX      = 10;
-  AUTOSAVE_FREQUENCY_MIN  = 600;
-  AUTOSAVE_FREQUENCY_MAX  = 3000;
-  AUTOSAVE_FREQUENCY_DEFAULT = 600; //How often to do autosave, every N ticks
+  AUTOSAVE_COUNT_MIN      = 1;
+  AUTOSAVE_COUNT_MAX      = 100;
+  AUTOSAVE_FREQUENCY_MIN  = 300;
+  AUTOSAVE_FREQUENCY_MAX  = 6000; // 10 minutes
+  AUTOSAVE_FREQUENCY_DEFAULT = 600; // 1 min, How often to do autosave, every N ticks
   BASESAVE_NAME = 'basesave';
   AUTOSAVE_SAVE_NAME = 'autosave';
   AUTOSAVE_AFTER_PT_END_SAVE_NAME = 'autosave_after_pt_end';
@@ -329,20 +329,20 @@ const
 
   // Checkpoint, which are made in the memory while watching replay
   REPLAY_SAVEPOINT_FREQUENCY_MIN = 30*10; //30 sec
-  REPLAY_SAVEPOINT_FREQUENCY_MAX = 10*60*60; // 1 hour
+  REPLAY_SAVEPOINT_FREQUENCY_MAX = 60*60*10; // 1 hour
   REPLAY_SAVEPOINT_FREQUENCY_DEF = 5*60*10; // 5 min
-  REPLAY_SAVEPOINT_CNT_MAX       = 40; // Max number of replay autosaves
+  REPLAY_SAVEPOINT_CNT_MAX       = 60; // Max number of replay autosaves
 
-  // Checkpoints, which are made during the game and saved in the .rpl file
+  // Checkpoints, which are made during the game and saved in the .spt file
 {$IFDEF DEBUG}
 var
 {$ENDIF}
-  GAME_SAVE_CHECKPOINT_FREQ_MIN: Integer = 5*60*10; // 5 min
-  GAME_SAVE_CHECKPOINT_FREQ_MAX: Integer = 10*60*60; // 1 hour
-  GAME_SAVE_CHECKPOINT_FREQ_DEF: Integer = 10*15*60; // 15 minutes
+  GAME_SAVE_CHECKPOINT_FREQ_MIN: Integer = 5*60*10;   // 5 min
+  GAME_SAVE_CHECKPOINT_FREQ_MAX: Integer = 2*60*60*10; // 2 hours
+  GAME_SAVE_CHECKPOINT_FREQ_DEF: Integer = 15*60*10; // 15 minutes
   GAME_SAVE_CHECKPOINT_CNT_LIMIT_MIN: Integer  = 0;  // Min limit for number of game checkpoints
-  GAME_SAVE_CHECKPOINT_CNT_LIMIT_MAX: Integer  = 40; // Max limit for number of game checkpoints
-  GAME_SAVE_CHECKPOINT_CNT_LIMIT_DEF: Integer  = 20; // Def limit for number of game checkpoints
+  GAME_SAVE_CHECKPOINT_CNT_LIMIT_MAX: Integer  = 60; // Max limit for number of game checkpoints
+  GAME_SAVE_CHECKPOINT_CNT_LIMIT_DEF: Integer  = 30; // Def limit for number of game checkpoints
 {$IFDEF DEBUG}
 const
 {$ENDIF}
