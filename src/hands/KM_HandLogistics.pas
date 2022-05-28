@@ -241,10 +241,10 @@ type
     procedure CloseDelivery(aID: Integer);
     procedure CloseDemand(aWare: TKMWareType; aID: Integer);
     procedure CloseOffer(aWare: TKMWareType; aID: Integer);
-    function ValidWareTypePair(oWT, dWT: TKMWareType): Boolean; inline;
-    function ValidOffer(oWT: TKMWareType; iO: Integer): Boolean; inline;
-    function ValidDemand(dWT: TKMWareType; iD: Integer): Boolean; inline;
-    function ValidDelivery(oWT, dWT: TKMWareType; iO, iD: Integer; aIgnoreOffer: Boolean = False): Boolean;
+    function ValidWareTypePair(oWT, dWT: TKMWareType): Boolean; {$IFNDEF DEBUG}inline;{$ENDIF}
+    function ValidOffer(oWT: TKMWareType; iO: Integer): Boolean; {$IFNDEF DEBUG}inline;{$ENDIF}
+    function ValidDemand(dWT: TKMWareType; iD: Integer): Boolean; {$IFNDEF DEBUG}inline;{$ENDIF}
+    function ValidDelivery(oWT, dWT: TKMWareType; iO, iD: Integer; aIgnoreOffer: Boolean = False): Boolean; {$IFNDEF DEBUG}inline;{$ENDIF}
     function SerfCanDoDelivery(oWT: TKMWareType; iO: Integer; aSerf: TKMUnitSerf): Boolean;
     function TryCalculateBid(aCalcKind: TKMDeliveryCalcKind; var aBidCost: TKMDeliveryBid; aSerf: TKMUnitSerf = nil): Boolean; overload;
     function TryCalculateBidBasic(aCalcKind: TKMDeliveryCalcKind; var aBidBasicCost: TKMDeliveryBid; aSerf: TKMUnitSerf = nil;
