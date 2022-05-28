@@ -154,6 +154,7 @@ begin
   fBuildID   := aID;
   fDemandSet := False;
   fTileLockSet := False;
+  aWorker.Thought := thBuild;
 end;
 
 
@@ -310,6 +311,7 @@ begin
   fBuildID   := aID;
   fDemandSet := False;
   fTileLockSet := False;
+  aWorker.Thought := thBuild;
 end;
 
 
@@ -449,6 +451,7 @@ begin
   fLoc      := aLoc;
   fBuildID   := aID;
   fTileLockSet := False;
+  aWorker.Thought := thBuild;
 end;
 
 
@@ -559,6 +562,7 @@ begin
   fBuildID    := aID;
   fHouseNeedsWorker  := False; //House needs this worker to complete
   fHouseReadyToBuild := False; //House is ready to be built
+  aWorker.Thought := thBuild;
 
   HA := gResHouses[fHouseType].BuildArea;
 
@@ -779,6 +783,7 @@ begin
   fType := uttBuildHouse;
   fHouse    := aHouse.GetPointer;
   fBuildID   := aID;
+  aWorker.Thought := thBuild;
 
   fCells := TKMPointDirList.Create;
   fHouse.GetListOfCellsAround(fCells, aWorker.DesiredPassability);
@@ -910,6 +915,7 @@ begin
   fType := uttBuildHouseRepair;
   fHouse    := aHouse.GetPointer;
   fRepairID := aRepairID;
+  aWorker.Thought := thBuild;
 
   fCells := TKMPointDirList.Create;
   fHouse.GetListOfCellsAround(fCells, aWorker.DesiredPassability);

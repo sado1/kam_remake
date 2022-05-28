@@ -591,6 +591,8 @@ end;
 
 
 function TKMSettledUnit.UpdateState: Boolean;
+var
+  oldThought: TKMUnitThought;
 begin
   Result := True;
   if fAction = nil then
@@ -614,7 +616,8 @@ begin
   if inherited UpdateState then Exit;
   if IsDead then Exit; //Caused by SelfTrain.Abandoned
 
-  fThought := thNone;
+  oldThought := fThought;
+  Thought := thNone;
 
   if IsHungry
     and not CheckCondition
@@ -630,8 +633,13 @@ begin
     if fHome = nil then
       if FindHome then
         fTask := TKMTaskGoHome.Create(Self) //Home found - go there
-      else begin
-        fThought := thQuest; //Always show quest when idle, unlike serfs who randomly show it
+      else
+      begin
+        if IsHungry then
+          Thought := oldThought
+        else
+          Thought := thQuest; //Always show quest when idle, unlike serfs who randomly show it
+
         SetActionStay(20, uaWalk) //There's no home, but there will hopefully be one soon so don't sleep too long
       end
     else
@@ -902,8 +910,12 @@ begin
   //and not thinking anything else (e.g. death)
   if fTask = nil then
   begin
-    if wasIdle and (oldThought = thNone) and (KaMRandom(2, 'TKMUnitSerf.UpdateState') = 0) then
-      fThought := thQuest;
+    if wasIdle and not IsHungry{(oldThought = thNone)} and (KaMRandom(2, 'TKMUnitSerf.UpdateState') = 0) then
+      fThought := thQuest
+    else
+    if oldThought <> thQuest then
+      fThought := oldThought;
+
     SetActionStay(60,uaWalk); //Stay idle
   end;
 
@@ -1017,7 +1029,7 @@ begin
   CheckCondition;
 
   if (fThought = thBuild) and (fTask = nil) then
-    fThought := thNone; //Remove build thought if we are no longer doing anything
+    Thought := thNone; //Remove build thought if we are no longer doing anything
 
   if (fTask = nil) and (fAction = nil) then SetActionStay(20, uaWalk);
 
@@ -1648,7 +1660,16 @@ end;
 
 procedure TKMUnit.SetThought(aThought: TKMUnitThought);
 begin
-  fThought := aThought;
+  // Only allow to set Dismiss thought if unit is deathly hungry
+  // other thoughs are not allowed to set
+  if (fThought <> thDeath) or (aThought = thDismiss) then
+  begin
+    fThought := aThought;
+
+    // Update Thoughts if we reset he thought (f.e. on task destruction)
+    if fThought = thNone then
+      UpdateThoughts;
+  end;
 end;
 
 
@@ -2111,12 +2132,16 @@ end;
 
 procedure TKMUnit.UpdateThoughts;
 begin
-  if (fThought <> thDeath) and (fCondition <= UNIT_MIN_CONDITION div 3) then
+  if (fThought in [thNone, thQuest]) and IsHungry then
+    fThought := thEat;
+
+  if (fCondition <= UNIT_MIN_CONDITION div 3) then
     fThought := thDeath;
 
   if (fThought in [thDeath, thEat]) and (fCondition > UNIT_MIN_CONDITION) then
     fThought := thNone;
 
+  // Show dismiss thought even for almost dead units
   if (fTask is TKMTaskDismiss) then
     fThought := thDismiss;
 
