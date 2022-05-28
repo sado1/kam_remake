@@ -380,9 +380,9 @@ begin
             Exit;
           end;
           SetActionLockedStay(5,uaWalk); //Wait a moment inside
+          CheckForBetterDestination; //Must run before TakenOffer and before taking ware so Offer is still valid
           fFrom.ResTakeFromOut(fWareType);
           CarryGive(fWareType);
-          CheckForBetterDestination; //Must run before TakenOffer so Offer is still valid
           gHands[Owner].Deliveries.Queue.TakenOffer(fDeliverID);
         end;
     3:  begin

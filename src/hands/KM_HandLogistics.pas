@@ -244,7 +244,7 @@ type
     function ValidWareTypePair(oWT, dWT: TKMWareType): Boolean; inline;
     function ValidOffer(oWT: TKMWareType; iO: Integer): Boolean; inline;
     function ValidDemand(dWT: TKMWareType; iD: Integer): Boolean; inline;
-    function ValidDelivery(oWT, dWT: TKMWareType; iO, iD: Integer): Boolean;
+    function ValidDelivery(oWT, dWT: TKMWareType; iO, iD: Integer; aIgnoreOffer: Boolean = False): Boolean;
     function SerfCanDoDelivery(oWT: TKMWareType; iO: Integer; aSerf: TKMUnitSerf): Boolean;
     function TryCalculateBid(aCalcKind: TKMDeliveryCalcKind; var aBidCost: TKMDeliveryBid; aSerf: TKMUnitSerf = nil): Boolean; overload;
     function TryCalculateBidBasic(aCalcKind: TKMDeliveryCalcKind; var aBidBasicCost: TKMDeliveryBid; aSerf: TKMUnitSerf = nil;
@@ -1180,7 +1180,7 @@ end;
 
 
 //IgnoreOffer means we don't check whether offer was already taken or deleted (used after offer was already claimed)
-function TKMDeliveries.ValidDelivery(oWT, dWT: TKMWareType; iO, iD: Integer): Boolean;
+function TKMDeliveries.ValidDelivery(oWT, dWT: TKMWareType; iO, iD: Integer; aIgnoreOffer: Boolean = False): Boolean;
 var
   I: Integer;
   B: TKMHouseBarracks;
@@ -1209,7 +1209,7 @@ begin
                          or not demand.Loc_House.ShouldAbandonDeliveryTo(oWT));
 
   //If Offer should not be abandoned
-  Result := Result and not offer.Loc_House.ShouldAbandonDeliveryFrom(oWT)
+  Result := Result and (aIgnoreOffer or not offer.Loc_House.ShouldAbandonDeliveryFrom(oWT))
                    //Check store to store evacuation
                    and not offer.Loc_House.ShouldAbandonDeliveryFromTo(demand.Loc_House, oWT, False);
 
@@ -1666,9 +1666,10 @@ begin
           if ValidDemand(dWT, iD)
           and not ((oldD = iD) and (oldDWT = dWT))
           and (fDemand[dWT,iD].Importance >= bestImportance) //Skip any less important than the best we found
-          and ValidDelivery(oWT, dWT, iO, iD) then
+          and ValidDelivery(oWT, dWT, iO, iD, True) then
           begin
             bid := TKMDeliveryBid.Create(fDemand[dWT,iD].Importance, aSerf, oWT, dWT, iO, iD);
+            // Calc bid without serf (he is in the house already)
             if TryCalculateBid(dckFast, bid) then
             begin
               fBestBidCandidates.Push(bid);
@@ -1678,7 +1679,8 @@ begin
               bid.Free;
           end;
 
-    bid := ChooseBestBid(bestImportance, aSerf);
+    // Choose bid without serf (he is in the house already)
+    bid := ChooseBestBid(bestImportance);
 
     if bid <> nil then
     begin
