@@ -47,17 +47,17 @@ type
     property RXData: TRXData read fRXData;
     property Padding: Byte read fPad write fPad;
 
-    procedure LoadFromRXXFile(const aFileName: string; aStartingIndex: Integer = 1);
-    procedure OverloadFromFolder(const aFolder: string; aSoftenShadows: Boolean = True);
     {$IFNDEF NO_OGL}
     procedure MakeGFX(aAlphaShadows: Boolean; aStartingIndex: Integer = 1; aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil);
     {$ENDIF}
     procedure DeleteSpriteTexture(aIndex: Integer);
 
     //Load from atlas format, no MakeGFX bin packing needed
-    procedure LoadFromRXAAndGenTextures(const aFileName: string);
     procedure LoadFromRXAFile(const aFileName: string);
-    procedure GenerateTexturesFromLoadedRXA;
+    procedure LoadFromRXAAndGenTextures(const aFileName: string);
+
+    procedure LoadFromRXXFile(const aFileName: string; aStartingIndex: Integer = 1);
+    procedure OverloadFromFolder(const aFolder: string; aSoftenShadows: Boolean = True);
 
     function GetSoftenShadowType(aID: Integer): TKMSoftenShadowType;
     procedure SoftenShadows(aIdList: TList<Integer>); overload;
@@ -79,9 +79,12 @@ type
     procedure ExportMask(const aFile: string; aIndex: Integer);
 
     procedure ClearGameResGenTemp;
+
     {$IFDEF LOAD_GAME_RES_ASYNC}
-    procedure GenerateTextureAtlasForGameRes;
+    procedure GenerateTexturesFromLoadedRXX;
     {$ENDIF}
+
+    procedure GenerateTexturesFromLoadedRXA;
 
     procedure ClearTemp; virtual;//Release non-required data
   end;
@@ -124,6 +127,8 @@ type
     function GetRXFileName(aRX: TRXType): string;
     function GetSprites(aRT: TRXType): TKMSpritePack;
 
+    function GetSpritesRXAFilePath(aRT: TRXType): string;
+
     {$IFDEF LOAD_GAME_RES_ASYNC}
     procedure ManageAsyncResLoader(const aCallerName: String);
     procedure StopAsyncResourceLoader;
@@ -153,6 +158,8 @@ type
 
     //Used externally to access raw RGBA data (e.g. by ExportAnim)
     function LoadSprites(aRT: TRXType; aAlphaShadows: Boolean): Boolean;
+    function LoadRXASprites(aRT: TRXType): Boolean;
+    function LoadRXASpritesAndGenTextures(aRT: TRXType): Boolean;
     procedure ExportToPNG(aRT: TRXType);
 
     property AlphaShadows: Boolean read fAlphaShadows;
@@ -1435,7 +1442,7 @@ end;
 // Preparation was done asynchroniously by TTGameResourceLoader thread
 // Texture generating task can be done only by main thread, as OpenGL does not work with multiple threads
 // Note: this could be from the loader thread by using `Synchronise` procedure
-procedure TKMSpritePack.GenerateTextureAtlasForGameRes;
+procedure TKMSpritePack.GenerateTexturesFromLoadedRXX;
 var
   I: Integer;
   SAT: TSpriteAtlasType;
@@ -1769,6 +1776,12 @@ begin
 end;
 
 
+function TKMResSprites.GetSpritesRXAFilePath(aRT: TRXType): string;
+begin
+  Result := ExeDir + 'data' + PathDelim + 'Sprites' + PathDelim + RXInfo[aRT].FileName + '.rxa';
+end;
+
+
 function TKMResSprites.GetGenTerrainTransitions(aTerKind: TKMTerrainKind; aMaskKind: TKMTileMaskKind; aMaskType: TKMTileMaskType; aMaskSubtype: TKMTileMaskSubType): Word;
 begin
   Result := fGenTerrainTransitions[aTerKind, aMaskKind, aMaskType, aMaskSubtype];
@@ -1814,7 +1827,6 @@ procedure TKMResSprites.LoadGameResources(aAlphaShadows: Boolean; aForceReload: 
   procedure LoadAllResources;
   var
     RT: TRXType;
-    rxaFile: string;
   begin
     for RT := Low(TRXType) to High(TRXType) do
       if RXInfo[RT].Usage = ruGame then
@@ -1822,15 +1834,10 @@ procedure TKMResSprites.LoadGameResources(aAlphaShadows: Boolean; aForceReload: 
         if Assigned(fStepCaption) then
           fStepCaption(gResTexts[RXInfo[RT].LoadingTextID]);
 
-        rxaFile := ExeDir + 'data' + PathDelim + 'Sprites' + PathDelim + RXInfo[RT].FileName + '.rxa';
-        if fAlphaShadows and FileExists(rxaFile) then
+        if fAlphaShadows and FileExists(GetSpritesRXAFilePath(RT)) then
         begin
           gLog.AddTime('Reading ' + RXInfo[RT].FileName + '.rxa');
-          fSprites[RT].LoadFromRXAAndGenTextures(rxaFile);
-
-          fSprites[RT].OverloadFromFolder(ExeDir + 'Sprites' + PathDelim); // Legacy support
-          // 'Sprites' folder name confused some of the players, cause there is already data/Sprites folder
-          fSprites[RT].OverloadFromFolder(ExeDir + 'Modding graphics' + PathDelim);
+          LoadRXASpritesAndGenTextures(RT);
         end
         else
         begin
@@ -1845,15 +1852,17 @@ procedure TKMResSprites.LoadGameResources(aAlphaShadows: Boolean; aForceReload: 
         fSprites[RT].ClearGameResGenTemp;
       end;
 
+    {$IFDEF LOAD_GAME_RES_ASYNC}
     fGameResLoadCompleted := True;
+    {$ENDIF}
   end;
 
 begin
   gLog.AddTime('TKMResSprites.LoadGameResources');
-  fGameResLoadCompleted := False;
   //Remember which version we load, so if it changes inbetween games we reload it
   fAlphaShadows := aAlphaShadows;
   {$IFDEF LOAD_GAME_RES_ASYNC}
+  fGameResLoadCompleted := False;
   if gGameSettings.AsyncGameResLoader then
   begin
     if fGameResLoader <> nil then
@@ -1919,6 +1928,31 @@ begin
 end;
 
 
+function TKMResSprites.LoadRXASpritesAndGenTextures(aRT: TRXType): Boolean;
+begin
+  Result := LoadRXASprites(aRT);
+
+  if Result then
+    fSprites[aRT].GenerateTexturesFromLoadedRXA;
+end;
+
+
+function TKMResSprites.LoadRXASprites(aRT: TRXType): Boolean;
+var
+  rxaFile: string;
+begin
+  Result := False;
+
+  rxaFile := GetSpritesRXAFilePath(aRT);
+
+  if not FileExists(rxaFile) then Exit;
+
+  fSprites[aRT].LoadFromRXAFile(rxaFile);
+
+  Result := True;
+end;
+
+
 class function TKMResSprites.AllTilesOnOneAtlas: Boolean;
 begin
   Result := AllTilesInOneTexture;
@@ -1947,7 +1981,7 @@ begin
     if fGameResLoader.LastLoadedRXA then
       fSprites[fGameResLoader.RXType].GenerateTexturesFromLoadedRXA
     else
-      fSprites[fGameResLoader.RXType].GenerateTextureAtlasForGameRes;
+      fSprites[fGameResLoader.RXType].GenerateTexturesFromLoadedRXX;
 
     fSprites[fGameResLoader.RXType].ClearTemp;      //Clear fRXData sprites temp data, which is not needed anymore
     fSprites[fGameResLoader.RXType].ClearGameResGenTemp; //Clear all the temp data used for atlas texture generating
@@ -2023,8 +2057,6 @@ end;
 
 
 procedure TTGameResourceLoader.Execute;
-var
-  rxaFile: string;
 begin
   inherited;
 
@@ -2037,16 +2069,11 @@ begin
       if SLOW_ASYNC_RES_LOADER then
         Sleep(5000);
 
-      rxaFile := ExeDir + 'data' + PathDelim + 'Sprites' + PathDelim + RXInfo[RXType].FileName + '.rxa';
-      if fAlphaShadows and FileExists(rxaFile) then
+      if fAlphaShadows and FileExists(fResSprites.GetSpritesRXAFilePath(RXType)) then
       begin
         Log('Start Load RXA ''' + RXInfo[RXType].FileName + '.rxa''');
-        fResSprites.fSprites[RXType].LoadFromRXAFile(rxaFile);
+        fResSprites.LoadRXASprites(RXType);
         if Terminated then Exit;
-
-        fResSprites.fSprites[RXType].OverloadFromFolder(ExeDir + 'Sprites' + PathDelim); // Legacy support
-        // 'Sprites' folder name confused some of the players, cause there is already data/Sprites folder
-        fResSprites.fSprites[RXType].OverloadFromFolder(ExeDir + 'Modding graphics' + PathDelim);
 
         AtomicExchange(Integer(LastLoadedRXA), Integer(True));
         Log('DONE Load RXA ''' + RXInfo[RXType].FileName + '.rxa''');
