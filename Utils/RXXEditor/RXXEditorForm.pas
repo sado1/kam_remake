@@ -308,7 +308,7 @@ procedure TRXXForm1.btnSaveRXXClick(Sender: TObject);
 begin
   if not SaveDialog1.Execute then Exit;
   gLog.AddTime('Trimmed ' + IntToStr(fSprites.TrimSprites));
-  fSprites.SaveToRXXFile(SaveDialog1.FileName);
+  fSprites.SaveToRXXFile(SaveDialog1.FileName, True);
 end;
 
 
