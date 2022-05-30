@@ -1245,7 +1245,7 @@ begin
     // FOW is rendered over the top so no need to make sprites black anymore
     glColor4ub(255, 255, 255, 255);
 
-    TRender.BindTexture(Tex.Id);
+    TRender.BindTexture(Tex.TexID);
     if DoHighlight then
       glColor3ub(HighlightColor AND $FF, HighlightColor SHR 8 AND $FF, HighlightColor SHR 16 AND $FF);
     glBegin(GL_QUADS);
@@ -1256,11 +1256,11 @@ begin
     glEnd;
   end;
 
-  if gGFXData[aRX, aId].Alt.Id <> 0 then
+  if gGFXData[aRX, aId].Alt.TexID <> 0 then
     with gGFXData[aRX, aId] do
     begin
       glColor4ubv(@Col);
-      TRender.BindTexture(Alt.Id);
+      TRender.BindTexture(Alt.TexID);
       glBegin(GL_QUADS);
         glTexCoord2f(Alt.u1, Alt.v2); glVertex2f(pX                     , pY                      );
         glTexCoord2f(Alt.u2, Alt.v2); glVertex2f(pX+pxWidth/CELL_SIZE_PX, pY                      );
@@ -1313,7 +1313,7 @@ begin
     with gGFXData[aRX,aId] do
     begin
       glColor3f(1, 1, 1);
-      TRender.BindTexture(Alt.Id);
+      TRender.BindTexture(Alt.TexID);
       glBegin(GL_QUADS);
         glTexCoord2f(Alt.u1,Alt.v2); glVertex2f(pX                     ,pY         );
         glTexCoord2f(Alt.u2,Alt.v2); glVertex2f(pX+pxWidth/CELL_SIZE_PX,pY         );
@@ -1332,7 +1332,7 @@ begin
         with gGFXData[aRX,aId2] do
         begin
           glColor3f(1, 1, 1);
-          TRender.BindTexture(Alt.Id);
+          TRender.BindTexture(Alt.TexID);
           glBegin(GL_QUADS);
             glTexCoord2f(Alt.u1,Alt.v2); glVertex2f(X2                     ,Y2         );
             glTexCoord2f(Alt.u2,Alt.v2); glVertex2f(X2+pxWidth/CELL_SIZE_PX,Y2         );
@@ -1359,7 +1359,7 @@ begin
     // FOW is rendered over the top so no need to make sprites black anymore
     glColor4ub(255, 255, 255, 255);
 
-    TRender.BindTexture(Tex.Id);
+    TRender.BindTexture(Tex.TexID);
     glBegin(GL_QUADS);
       glTexCoord2f(Tex.u1,Tex.v2); glVertex2f(pX                     ,pY         );
       glTexCoord2f(Tex.u2,Tex.v2); glVertex2f(pX+pxWidth/CELL_SIZE_PX,pY         );

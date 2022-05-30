@@ -597,7 +597,7 @@ begin
     BindVBOArray(vatTile);
     //Bind to tiles texture. All tiles should be places in 1 atlas,
     //so to get TexId we can use any of terrain tile Id (f.e. 1st)
-    TRender.BindTexture(gGFXData[rxTiles, 1].Tex.ID);
+    TRender.BindTexture(gGFXData[rxTiles, 1].Tex.TexID);
 
     //Setup vertex and UV layout and offsets
     glEnableClientState(GL_VERTEX_ARRAY);
@@ -628,7 +628,7 @@ begin
           begin
             with Land^[tY,tX] do
             begin
-              TRender.BindTexture(gGFXData[rxTiles, BaseLayer.Terrain+1].Tex.ID);
+              TRender.BindTexture(gGFXData[rxTiles, BaseLayer.Terrain+1].Tex.TexID);
               glBegin(GL_TRIANGLE_FAN);
               texC := fTileUVLookup[BaseLayer.Terrain, BaseLayer.Rotation mod 4];
             end;
@@ -669,7 +669,7 @@ begin
     BindVBOArray(vatTileLayer);
     //Bind to tiles texture. All tiles should be places in 1 atlas,
     //so to get TexId we can use any of terrain tile Id (f.e. 1st)
-    TRender.BindTexture(gGFXData[rxTiles, 1].Tex.ID);
+    TRender.BindTexture(gGFXData[rxTiles, 1].Tex.TexID);
 
     //Setup vertex and UV layout and offsets
     glEnableClientState(GL_VERTEX_ARRAY);
@@ -702,7 +702,7 @@ begin
 
               with Land^[tY,tX] do
               begin
-                TRender.BindTexture(gGFXData[rxTiles, Layer[L].Terrain+1].Tex.ID);
+                TRender.BindTexture(gGFXData[rxTiles, Layer[L].Terrain+1].Tex.TexID);
                 glBegin(GL_TRIANGLE_FAN);
                 texC := GetTileUV(Layer[L].Terrain, Layer[L].Rotation);
                 terInfo := gRes.Sprites.GetGenTerrainInfo(Layer[L].Terrain);
@@ -749,7 +749,7 @@ begin
     BindVBOArray(vatAnimTile);
     //Bind to tiles texture. All tiles should be placed in 1 atlas,
     //so to get TexId we can use any of terrain tile Id (f.e. 1st)
-    TRender.BindTexture(gGFXData[rxTiles, 1].Tex.ID);
+    TRender.BindTexture(gGFXData[rxTiles, 1].Tex.TexID);
 
     //Setup vertex and UV layout and offsets
     glEnableClientState(GL_VERTEX_ARRAY);
@@ -779,7 +779,7 @@ begin
               if not tile.Animation.Layers[J].HasAnim then Continue;
 
               animID := tile.Animation.Layers[J].GetAnim(aAnimStep);
-              TRender.BindTexture(gGFXData[rxTiles, animID + 1].Tex.ID);
+              TRender.BindTexture(gGFXData[rxTiles, animID + 1].Tex.TexID);
               texC := GetTileUV(animID, Land^[I,K].BaseLayer.Rotation);
 
               glBegin(GL_TRIANGLE_FAN);
@@ -1287,7 +1287,7 @@ begin
     glColor4f(1, 1, 1, 1);
 
   if aDoBindTexture then
-    TRender.BindTexture(gGFXData[rxTiles, aTerrainId + 1].Tex.ID);
+    TRender.BindTexture(gGFXData[rxTiles, aTerrainId + 1].Tex.TexID);
 
   if aUseTileLookup then
     texC := fTileUVLookup[aTerrainId, Rot mod 4]
@@ -1323,7 +1323,7 @@ begin
 
   doBindTexture := not TKMResSprites.AllTilesOnOneAtlas;
   if not doBindTexture then
-    TRender.BindTexture(gGFXData[rxTiles, aTileBasic.BaseLayer.Terrain + 1].Tex.ID);
+    TRender.BindTexture(gGFXData[rxTiles, aTileBasic.BaseLayer.Terrain + 1].Tex.TexID);
 
   // Render Base Layer
   DoRenderTile(aTileBasic.BaseLayer.Terrain, pX, pY, aTileBasic.BaseLayer.Rotation, doBindTexture,
@@ -1360,7 +1360,7 @@ begin
 
   if Pos in [dirN, dirS] then
   begin //Horizontal
-    TRender.BindTexture(gGFXData[rxGui,texID].Tex.ID);
+    TRender.BindTexture(gGFXData[rxGui,texID].Tex.TexID);
     UVa.X := gGFXData[rxGui, texID].Tex.u1;
     UVa.Y := gGFXData[rxGui, texID].Tex.v1;
     UVb.X := gGFXData[rxGui, texID].Tex.u2;
@@ -1379,7 +1379,7 @@ begin
   end
   else
   begin //Vertical
-    TRender.BindTexture(gGFXData[rxGui,texID].Tex.ID);
+    TRender.BindTexture(gGFXData[rxGui,texID].Tex.TexID);
     heightInPx := Round(CELL_SIZE_PX * (1 + (gTerrain.LandExt^[pY,pX].RenderHeight - gTerrain.LandExt^[pY+1,pX].RenderHeight)/CELL_HEIGHT_DIV)+FO);
     UVa.X := gGFXData[rxGui, texID].Tex.u1;
     UVa.Y := gGFXData[rxGui, texID].Tex.v1;
@@ -1416,7 +1416,7 @@ var
 begin
   ID := MarkupTex[aFieldType];
 
-  TRender.BindTexture(gGFXData[rxGui, ID].Tex.ID);
+  TRender.BindTexture(gGFXData[rxGui, ID].Tex.TexID);
 
   UVa.X := gGFXData[rxGui, ID].Tex.u1;
   UVa.Y := gGFXData[rxGui, ID].Tex.v1;

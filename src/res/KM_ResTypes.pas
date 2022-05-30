@@ -247,7 +247,7 @@ const
 type
   TRXUsage = (ruMenu, ruGame, ruCustom); //Where sprites are used
 
-  TSpriteAtlasType = (saBase, saMask);
+  TKMSpriteAtlasType = (saBase, saMask);
 
   TRXInfo = record
     FileName: string; //Used for logging and filenames

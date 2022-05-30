@@ -22,15 +22,15 @@ type
     fTemp: Boolean;
     fPad: Byte; //Force padding between sprites to avoid neighbour edge visibility
     procedure SaveTextureToPNG(aWidth, aHeight: Word; const aFilename: string; var Data: TKMCardinalArray);
-    procedure SetGFXData(aTx: Cardinal; aSpriteInfo: TBinItem; aAtlasType: TSpriteAtlasType);
+    procedure SetGFXData(aTexID: Cardinal; aSpriteInfo: TKMBinItem; aAtlasType: TKMSpriteAtlasType);
   protected
     fRT: TRXType;
     fRXData: TRXData;
 
-    fGFXPrepData: array [TSpriteAtlasType] of // for each atlas type
+    fGFXPrepData: array [TKMSpriteAtlasType] of // for each atlas type
                     array of                  // Atlases
                       record                  // Atlas data, needed for Texture Atlas Generation
-                        SpriteInfo: TBinItem;
+                        SpriteInfo: TKMBinItem;
                         TexType: TTexFormat;
                         Data: TKMCardinalArray;
                       end;
@@ -186,7 +186,7 @@ type
   end;
 
   TKMTexCoords = record
-    ID: Cardinal;
+    TexID: Cardinal;
     u1,v1,u2,v2: Single; //Top-Left, Bottom-Right uv coords
   end;
 
@@ -219,7 +219,7 @@ uses
 
 const
   MAX_GAME_ATLAS_SIZE = 2048; //Max atlas size for KaM. No need for bigger atlases
-  SPRITE_TYPE_EXPORT_NAME: array [TSpriteAtlasType] of string = ('Base', 'Mask');
+  SPRITE_TYPE_EXPORT_NAME: array [TKMSpriteAtlasType] of string = ('Base', 'Mask');
   LOG_EXTRA_GFX: Boolean = False;
 
 var
@@ -254,13 +254,13 @@ end;
 procedure TKMSpritePack.DeleteSpriteTexture(aIndex: Integer);
 begin
   {$IFNDEF NO_OGL}
-  if gGFXData[fRT, aIndex].Tex.ID <> 0 then
-    TRender.DeleteTexture(gGFXData[fRT, aIndex].Tex.ID);
-  if gGFXData[fRT, aIndex].Alt.ID <> 0 then
-    TRender.DeleteTexture(gGFXData[fRT, aIndex].Alt.ID);
+  if gGFXData[fRT, aIndex].Tex.TexID <> 0 then
+    TRender.DeleteTexture(gGFXData[fRT, aIndex].Tex.TexID);
+  if gGFXData[fRT, aIndex].Alt.TexID <> 0 then
+    TRender.DeleteTexture(gGFXData[fRT, aIndex].Alt.TexID);
 
-  gGFXData[fRT, aIndex].Tex.ID := 0;
-  gGFXData[fRT, aIndex].Alt.ID := 0;
+  gGFXData[fRT, aIndex].Tex.TexID := 0;
+  gGFXData[fRT, aIndex].Alt.TexID := 0;
   {$ENDIF}
 end;
 
@@ -773,7 +773,7 @@ end;
 procedure TKMSpritePack.LoadFromRXAFile(const aFileName: string);
 var
   I: Integer;
-  SAT: TSpriteAtlasType;
+  SAT: TKMSpriteAtlasType;
   rxxCount, atlasCount, spriteCount, dataCount: Integer;
   inputStream: TFileStream;
   decompressionStream: TDecompressionStream;
@@ -816,7 +816,7 @@ begin
       end;
 
     //Atlases
-    for SAT := Low(TSpriteAtlasType) to High(TSpriteAtlasType) do
+    for SAT := Low(TKMSpriteAtlasType) to High(TKMSpriteAtlasType) do
     begin
       decompressionStream.Read(atlasCount, 4);
       SetLength(fGFXPrepData[SAT], atlasCount);
@@ -849,12 +849,12 @@ end;
 procedure TKMSpritePack.GenerateTexturesFromLoadedRXA;
 var
   I: Integer;
-  SAT: TSpriteAtlasType;
+  SAT: TKMSpriteAtlasType;
   texFilter: TFilterType;
-  Tx: Cardinal;
+  texID: Cardinal;
 begin
   {$IFNDEF NO_OGL}
-  for SAT := Low(TSpriteAtlasType) to High(TSpriteAtlasType) do
+  for SAT := Low(TKMSpriteAtlasType) to High(TKMSpriteAtlasType) do
     for I := Low(fGFXPrepData[SAT]) to High(fGFXPrepData[SAT]) do
       with fGFXPrepData[SAT, I] do
       begin
@@ -863,10 +863,10 @@ begin
         if LINEAR_FILTER_SPRITES and (fRT in [rxTrees, rxHouses, rxUnits]) then
           texFilter := ftLinear;
 
-        Tx := TRender.GenTexture(SpriteInfo.Width, SpriteInfo.Height, @Data[0], TexType, texFilter, texFilter);
+        texID := TRender.GenTexture(SpriteInfo.Width, SpriteInfo.Height, @Data[0], TexType, texFilter, texFilter);
 
         //Now that we know texture IDs we can fill GFXData structure
-        SetGFXData(Tx, SpriteInfo, SAT);
+        SetGFXData(texID, SpriteInfo, SAT);
 
         if EXPORT_SPRITE_ATLASES_RXA and (fRT in EXPORT_SPRITE_ATLASES_LIST) then
           SaveTextureToPNG(SpriteInfo.Width, SpriteInfo.Height, RXInfo[fRT].FileName + '_rxa_' +
@@ -1203,30 +1203,30 @@ end;
 
 
 //Set GFXData from SpriteInfo
-procedure TKMSpritePack.SetGFXData(aTx: Cardinal; aSpriteInfo: TBinItem; aAtlasType: TSpriteAtlasType);
+procedure TKMSpritePack.SetGFXData(aTexID: Cardinal; aSpriteInfo: TKMBinItem; aAtlasType: TKMSpriteAtlasType);
 var
   K: Integer;
-  ID: Integer;
+  spriteID: Integer;
   txCoords: TKMTexCoords;
 begin
   for K := 0 to High(aSpriteInfo.Sprites) do
   begin
-    ID := aSpriteInfo.Sprites[K].SpriteID;
+    spriteID := aSpriteInfo.Sprites[K].SpriteID;
 
-    txCoords.ID := aTx;
+    txCoords.TexID := aTexID;
     txCoords.u1 := aSpriteInfo.Sprites[K].PosX / aSpriteInfo.Width;
     txCoords.v1 := aSpriteInfo.Sprites[K].PosY / aSpriteInfo.Height;
-    txCoords.u2 := (aSpriteInfo.Sprites[K].PosX + fRXData.Size[ID].X) / aSpriteInfo.Width;
-    txCoords.v2 := (aSpriteInfo.Sprites[K].PosY + fRXData.Size[ID].Y) / aSpriteInfo.Height;
+    txCoords.u2 := (aSpriteInfo.Sprites[K].PosX + fRXData.Size[spriteID].X) / aSpriteInfo.Width;
+    txCoords.v2 := (aSpriteInfo.Sprites[K].PosY + fRXData.Size[spriteID].Y) / aSpriteInfo.Height;
 
     if aAtlasType = saBase then
     begin
-      gGFXData[fRT, ID].Tex := txCoords;
-      gGFXData[fRT, ID].PxWidth := fRXData.Size[ID].X;
-      gGFXData[fRT, ID].PxHeight := fRXData.Size[ID].Y;
+      gGFXData[fRT, spriteID].Tex := txCoords;
+      gGFXData[fRT, spriteID].PxWidth := fRXData.Size[spriteID].X;
+      gGFXData[fRT, spriteID].PxHeight := fRXData.Size[spriteID].Y;
     end
     else
-      gGFXData[fRT, ID].Alt := txCoords;
+      gGFXData[fRT, spriteID].Alt := txCoords;
   end;
 end;
 
@@ -1236,11 +1236,11 @@ end;
 procedure TKMSpritePack.MakeGFX_BinPacking(aTexType: TTexFormat; aStartingIndex: Integer; var BaseRAM, ColorRAM, TexCount: Cardinal;
                                            aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil);
 
-  procedure PrepareAtlases(SpriteInfo: TBinArray; aMode: TSpriteAtlasType; aTexType: TTexFormat);
+  procedure PrepareAtlases(SpriteInfo: TBinArray; aMode: TKMSpriteAtlasType; aTexType: TTexFormat);
   var
     I, K, L, M: Integer;
     CT, CL, Pixel: Cardinal;
-    Tx: Cardinal;
+    texID: Cardinal;
     ID: Integer;
     TD: TKMCardinalArray;
     texFilter: TFilterType;
@@ -1311,9 +1311,9 @@ procedure TKMSpritePack.MakeGFX_BinPacking(aTexType: TTexFormat; aStartingIndex:
         if LINEAR_FILTER_SPRITES and (fRT in [rxTrees, rxHouses, rxUnits]) then
           texFilter := ftLinear;
 
-        Tx := TRender.GenTexture(SpriteInfo[I].Width, SpriteInfo[I].Height, @TD[0], aTexType, texFilter, texFilter);
+        texID := TRender.GenTexture(SpriteInfo[I].Width, SpriteInfo[I].Height, @TD[0], aTexType, texFilter, texFilter);
         //Now that we know texture IDs we can fill GFXData structure
-        SetGFXData(Tx, SpriteInfo[I], aMode);
+        SetGFXData(texID, SpriteInfo[I], aMode);
       end else begin
         Assert(InRange(I, Low(fGFXPrepData[aMode]), High(fGFXPrepData[aMode])),
                Format('Preloading sprite index out of range: %d, range [%d;%d]', [I, Low(fGFXPrepData[aMode]), High(fGFXPrepData[aMode])]));
@@ -1430,9 +1430,9 @@ end;
 
 procedure TKMSpritePack.ClearGameResGenTemp;
 var
-  SAT: TSpriteAtlasType;
+  SAT: TKMSpriteAtlasType;
 begin
-  for SAT := Low(TSpriteAtlasType) to High(TSpriteAtlasType) do
+  for SAT := Low(TKMSpriteAtlasType) to High(TKMSpriteAtlasType) do
     SetLength(fGFXPrepData[SAT], 0);
 end;
 
@@ -1445,13 +1445,13 @@ end;
 procedure TKMSpritePack.GenerateTexturesFromLoadedRXX;
 var
   I: Integer;
-  SAT: TSpriteAtlasType;
-  Tx: Cardinal;
+  SAT: TKMSpriteAtlasType;
+  texID: Cardinal;
   texFilter: TFilterType;
 begin
   {$IFNDEF NO_OGL}
   gLog.AddTime('TKMSpritePack.GenerateTextureAtlasForGameRes');
-  for SAT := Low(TSpriteAtlasType) to High(TSpriteAtlasType) do
+  for SAT := Low(TKMSpriteAtlasType) to High(TKMSpriteAtlasType) do
     for I := Low(fGFXPrepData[SAT]) to High(fGFXPrepData[SAT]) do
     begin
       with fGFXPrepData[SAT,I] do
@@ -1460,9 +1460,9 @@ begin
         if LINEAR_FILTER_SPRITES and (fRT in [rxTrees, rxHouses, rxUnits]) then
           texFilter := ftLinear;
 
-        Tx := TRender.GenTexture(SpriteInfo.Width, SpriteInfo.Height, @Data[0], TexType, texFilter, texFilter);
+        texID := TRender.GenTexture(SpriteInfo.Width, SpriteInfo.Height, @Data[0], TexType, texFilter, texFilter);
         //Now that we know texture IDs we can fill GFXData structure
-        SetGFXData(Tx, SpriteInfo, SAT);
+        SetGFXData(texID, SpriteInfo, SAT);
 
         if EXPORT_SPRITE_ATLASES and (fRT in EXPORT_SPRITE_ATLASES_LIST) then
           SaveTextureToPNG(SpriteInfo.Width, SpriteInfo.Height, RXInfo[fRT].FileName + '_' +

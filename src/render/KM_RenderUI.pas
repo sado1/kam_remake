@@ -240,7 +240,7 @@ begin
 
       //Background
       glColor4f(1, 1, 1, 1);
-      TRender.BindTexture(gGFXData[backRX, backID].Tex.ID);
+      TRender.BindTexture(gGFXData[backRX, backID].Tex.TexID);
       glBegin(GL_QUADS);
         glTexCoord2f(A.x,A.y); glVertex2f(0,0);
         glTexCoord2f(B.x,A.y); glVertex2f(aWidth,0);
@@ -526,7 +526,7 @@ begin
       glTranslatef(aLeft + offX, aTop + offY, 0);
 
       //Base layer
-      TRender.BindTexture(Tex.ID);
+      TRender.BindTexture(Tex.TexID);
       if aEnabled then glColor3f(1,1,1) else glColor3f(0.33,0.33,0.33);
       glBegin(GL_QUADS);
         glTexCoord2f(Tex.u1,Tex.v1); glVertex2f(0            , 0             );
@@ -536,9 +536,9 @@ begin
       glEnd;
 
       //Color overlay for unit icons and scrolls
-      if Alt.ID <> 0 then
+      if Alt.TexID <> 0 then
       begin
-        TRender.BindTexture(Alt.ID);
+        TRender.BindTexture(Alt.TexID);
         if aEnabled then
           glColor3ub(aColor AND $FF, aColor SHR 8 AND $FF, aColor SHR 16 AND $FF)
         else
@@ -554,7 +554,7 @@ begin
       //Highlight for active/focused/mouseOver images
       if aLightness <> 0 then
       begin
-        TRender.BindTexture(Tex.ID); //Replace AltID if it was used
+        TRender.BindTexture(Tex.TexID); //Replace AltID if it was used
         if aLightness > 0 then
           glBlendFunc(GL_SRC_ALPHA, GL_ONE)
         else begin
