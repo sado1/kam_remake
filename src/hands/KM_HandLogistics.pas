@@ -142,6 +142,8 @@ type
   end;
 
   TKMDeliveryBid = class
+  private
+    function GetCost: Single; inline;
   public
     Serf: TKMUnitSerf;
     QueueID: Integer;
@@ -159,7 +161,7 @@ type
     constructor Create(aSerf: TKMUnitSerf); overload;
     constructor Create(aImportance: TKMDemandImportance; aSerf: TKMUnitSerf; oWT, dWT: TKMWareType; iO, iD: Integer; iQ: Integer = DELIVERY_NO_ID); overload;
 
-    function Cost: Single; inline;
+    property Cost: Single read GetCost;
     procedure ResetValues;
     function IsValid: Boolean; inline;
 
@@ -2923,7 +2925,7 @@ begin
 end;
 
 
-function TKMDeliveryBid.Cost: Single;
+function TKMDeliveryBid.GetCost: Single;
 begin
   if not IsValid then
     Exit(NOT_REACHABLE_DEST_VALUE);
