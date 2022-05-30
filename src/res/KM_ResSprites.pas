@@ -31,13 +31,13 @@ type
                     array of                  // Atlases
                       record                  // Atlas data, needed for Texture Atlas Generation
                         SpriteInfo: TKMBinItem;
-                        TexType: TTexFormat;
+                        TexType: TKMTexFormat;
                         Data: TKMCardinalArray;
                       end;
     procedure Allocate(aCount: Integer); virtual; //Allocate space for data that is being loaded
     procedure ReadRXZHeader(aStream: TStream; out aVersionStr: AnsiString);
     {$IFNDEF NO_OGL}
-    procedure MakeGFX_BinPacking(aTexType: TTexFormat; aStartingIndex: Integer; var BaseRAM, ColorRAM, TexCount: Cardinal;
+    procedure MakeGFX_BinPacking(aTexType: TKMTexFormat; aStartingIndex: Integer; var BaseRAM, ColorRAM, TexCount: Cardinal;
                                  aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil);
     {$ENDIF}
   public
@@ -828,7 +828,7 @@ begin
           decompressionStream.Read(spriteCount, 4);
           SetLength(SpriteInfo.Sprites, spriteCount);
           decompressionStream.Read(SpriteInfo.Sprites[0], spriteCount*SizeOf(SpriteInfo.Sprites[0]));
-          decompressionStream.Read(TexType, SizeOf(TTexFormat));
+          decompressionStream.Read(TexType, SizeOf(TKMTexFormat));
           decompressionStream.Read(dataCount, 4);
           SetLength(Data, dataCount);
           decompressionStream.Read(Data[0], dataCount*SizeOf(Data[0]));
@@ -850,7 +850,7 @@ procedure TKMSpritePack.GenerateTexturesFromLoadedRXA;
 var
   I: Integer;
   SAT: TKMSpriteAtlasType;
-  texFilter: TFilterType;
+  texFilter: TKMFilterType;
   texID: Cardinal;
 begin
   {$IFNDEF NO_OGL}
@@ -1173,7 +1173,7 @@ end;
 procedure TKMSpritePack.MakeGFX(aAlphaShadows: Boolean; aStartingIndex: Integer = 1; aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil);
 var
   I: Integer;
-  texType: TTexFormat;
+  texType: TKMTexFormat;
   baseRAM, idealRAM, colorRAM, texCount: Cardinal;
 begin
   if SKIP_RENDER then Exit;
@@ -1233,17 +1233,17 @@ end;
 
 {$IFNDEF NO_OGL}
 //This algorithm is planned to take advantage of more efficient 2D bin packing
-procedure TKMSpritePack.MakeGFX_BinPacking(aTexType: TTexFormat; aStartingIndex: Integer; var BaseRAM, ColorRAM, TexCount: Cardinal;
+procedure TKMSpritePack.MakeGFX_BinPacking(aTexType: TKMTexFormat; aStartingIndex: Integer; var BaseRAM, ColorRAM, TexCount: Cardinal;
                                            aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil);
 
-  procedure PrepareAtlases(SpriteInfo: TBinArray; aMode: TKMSpriteAtlasType; aTexType: TTexFormat);
+  procedure PrepareAtlases(SpriteInfo: TBinArray; aMode: TKMSpriteAtlasType; aTexType: TKMTexFormat);
   var
     I, K, L, M: Integer;
     CT, CL, Pixel: Cardinal;
     texID: Cardinal;
     ID: Integer;
     TD: TKMCardinalArray;
-    texFilter: TFilterType;
+    texFilter: TKMFilterType;
   begin
     //Prepare atlases
     for I := 0 to High(SpriteInfo) do
@@ -1447,7 +1447,7 @@ var
   I: Integer;
   SAT: TKMSpriteAtlasType;
   texID: Cardinal;
-  texFilter: TFilterType;
+  texFilter: TKMFilterType;
 begin
   {$IFNDEF NO_OGL}
   gLog.AddTime('TKMSpritePack.GenerateTextureAtlasForGameRes');

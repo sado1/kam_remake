@@ -9,8 +9,8 @@ uses
 
 
 const
-  TEX_FORMAT_SIZE: array [TTexFormat] of Byte = (2, 4, 1);
-  TEX_FILTER: array [TFilterType] of GLint = (GL_NEAREST, GL_LINEAR);
+  TEX_FORMAT_SIZE: array [TKMTexFormat] of Byte = (2, 4, 1);
+  TEX_FILTER: array [TKMFilterType] of GLint = (GL_NEAREST, GL_LINEAR);
 
 type
   TKMRenderMode = (rm2D, rm3D);
@@ -45,10 +45,10 @@ type
 
     class function GetMaxTexSize: Cardinal; static;
     class function GetMaxViewportDim: Cardinal; static;
-    class function GenerateTextureCommon(aMinFilter, aMagFilter: TFilterType): GLuint;
-    class function GenTexture(DestX, DestY: Word; const Data: Pointer; Mode: TTexFormat; aMinFilter, aMagFilter: TFilterType): GLUint;
+    class function GenerateTextureCommon(aMinFilter, aMagFilter: TKMFilterType): GLuint;
+    class function GenTexture(DestX, DestY: Word; const Data: Pointer; Mode: TKMTexFormat; aMinFilter, aMagFilter: TKMFilterType): GLUint;
     class procedure DeleteTexture(aTex: GLUint);
-    class procedure UpdateTexture(aTexture: GLuint; DestX, DestY: Word; Mode: TTexFormat; const Data: Pointer);
+    class procedure UpdateTexture(aTexture: GLuint; DestX, DestY: Word; Mode: TKMTexFormat; const Data: Pointer);
     class procedure BindTexture(aTexId: Cardinal);
 
     class property MaxTextureSize: Cardinal read GetMaxTexSize;
@@ -212,7 +212,7 @@ begin
 end;
 
 
-class function TRender.GenerateTextureCommon(aMinFilter, aMagFilter: TFilterType): GLuint;
+class function TRender.GenerateTextureCommon(aMinFilter, aMagFilter: TKMFilterType): GLuint;
 var
   texture: GLuint;
 begin
@@ -241,7 +241,7 @@ end;
 
 
 //Generate texture out of TCardinalArray
-class function TRender.GenTexture(DestX, DestY: Word; const Data: Pointer; Mode: TTexFormat; aMinFilter, aMagFilter: TFilterType): GLUint;
+class function TRender.GenTexture(DestX, DestY: Word; const Data: Pointer; Mode: TKMTexFormat; aMinFilter, aMagFilter: TKMFilterType): GLUint;
 begin
   Result := GenerateTextureCommon(aMinFilter, aMagFilter);
   UpdateTexture(Result, DestX, DestY, Mode, Data);
@@ -281,7 +281,7 @@ end;
 
 
 //Update texture with TCardinalArray
-class procedure TRender.UpdateTexture(aTexture: GLuint; DestX, DestY: Word; Mode: TTexFormat; const Data: Pointer);
+class procedure TRender.UpdateTexture(aTexture: GLuint; DestX, DestY: Word; Mode: TKMTexFormat; const Data: Pointer);
 begin
   if not Assigned(glTexImage2D) then Exit;
 

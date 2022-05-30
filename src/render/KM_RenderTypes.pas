@@ -5,13 +5,13 @@ uses
   KM_CommonGameTypes, KM_Points;
 
 type
-  TTexFormat = (
+  TKMTexFormat = (
     tfRGB5A1,
     tfRGBA8,
     tfAlpha8 //Mask used for team colors and house construction steps (GL_ALPHA)
     );
 
-  TFilterType = (
+  TKMFilterType = (
     ftNearest,
     ftLinear
   );
