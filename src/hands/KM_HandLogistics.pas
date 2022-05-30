@@ -139,6 +139,7 @@ type
   TKMDeliveryRouteCalcCost = record
     Value: Single;
     Pass: TKMTerrainPassability;
+    function IsValid: Boolean;
   end;
 
   TKMDeliveryBid = class
@@ -1478,6 +1479,9 @@ begin
     if aCalcKind = dckAccurate then
       Exit;
 
+    // Just set it to non-tpNone value, which will mark this calculation as a valid
+    aBidBasicCost.OfferToDemand.Pass := tpWalkRoad;
+
     aBidBasicCost.OfferToDemand.Value := 7
       //Resource ratios are also considered
       + KaMRandom(65 - 13*gHands[aOwner].Stats.WareDistribution[dWT, fDemand[dWT,iD].Loc_House.HouseType],
@@ -1650,7 +1654,8 @@ begin
     begin
       bestImportance := fDemand[oldDWT,oldD].Importance;
       bid := TKMDeliveryBid.Create(bestImportance, aSerf, oWT, oldDWT, iO, oldD);
-      if TryCalculateBid(dckFast, bid, aSerf) then
+      // Calc bid without serf (he is in the house already)
+      if TryCalculateBid(dckFast, bid) then
         fBestBidCandidates.Push(bid)
       else
         bid.Free;
@@ -2902,6 +2907,13 @@ begin
 end;
 
 
+{ TKMDeliveryRouteCalcCost }
+function TKMDeliveryRouteCalcCost.IsValid: Boolean;
+begin
+  Result := Pass <> tpNone;
+end;
+
+
 { TKMDeliveryBid }
 constructor TKMDeliveryBid.Create(aSerf: TKMUnitSerf);
 begin
@@ -2930,8 +2942,8 @@ begin
   if not IsValid then
     Exit(NOT_REACHABLE_DEST_VALUE);
 
-  Result := Byte(SerfToOffer.Pass <> tpNone) * SerfToOffer.Value
-          + Byte(OfferToDemand.Pass <> tpNone) * OfferToDemand.Value
+  Result := Byte(SerfToOffer.IsValid) * SerfToOffer.Value
+          + Byte(OfferToDemand.IsValid) * OfferToDemand.Value
           + Addition;
 end;
 
