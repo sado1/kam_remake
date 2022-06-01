@@ -42,15 +42,14 @@ type
     chkSuperSpeed: TCheckBox;
     Export_Deliverlists1: TMenuItem;
     Export_Sounds1: TMenuItem;
-    Export_HouseAnim1: TMenuItem;
-    Export_UnitAnim1: TMenuItem;
+    mnExportHouseAnim: TMenuItem;
+    mnExportUnitAnim: TMenuItem;
     RGPlayer: TRadioGroup;
     btnGameStop: TButton;
     OpenMissionMenu: TMenuItem;
-    AnimData1: TMenuItem;
     Other1: TMenuItem;
     Debug_ShowPanel: TMenuItem;
-    Export_TreeAnim1: TMenuItem;
+    mnExportTreeAnim: TMenuItem;
     ExportMainMenu: TMenuItem;
     Debug_EnableCheats: TMenuItem;
     ExportUIPages: TMenuItem;
@@ -89,10 +88,10 @@ type
     chkLogShowInChat: TCheckBox;
     chkUIControlsID: TCheckBox;
     Debug_ShowLogistics: TMenuItem;
-    UnitAnim_All: TMenuItem;
+    mnExportUnitAnimAll: TMenuItem;
     N3: TMenuItem;
-    Soldiers: TMenuItem;
-    Civilians1: TMenuItem;
+    mnExportUnitAnimSoldiers: TMenuItem;
+    mnExportUnitAnimCivilians: TMenuItem;
     SaveSettings: TMenuItem;
     N4: TMenuItem;
     ReloadSettings: TMenuItem;
@@ -249,6 +248,19 @@ type
     btnGameRestart: TButton;
     mnOpenSettingsXML: TMenuItem;
     chkViewportPos: TCheckBox;
+    mnAnimations: TMenuItem;
+    mnHDAnimations: TMenuItem;
+    mnExportHDUnitAnim: TMenuItem;
+    mnExportHDUnitAnimCivilians: TMenuItem;
+    mnExportHDUnitAnimSoldiers: TMenuItem;
+    N13: TMenuItem;
+    mnExportHDUnitAnimAll: TMenuItem;
+    mnExportHDHouseAnim: TMenuItem;
+    mnExportHDTreeAnim: TMenuItem;
+    N14: TMenuItem;
+    reesrxa1: TMenuItem;
+    Housesrxa1: TMenuItem;
+    Unitsrxa1: TMenuItem;
 
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -283,13 +295,13 @@ type
     procedure Export_CustomClick(Sender: TObject);
     procedure Export_TilesetClick(Sender: TObject);
     procedure Export_Sounds1Click(Sender: TObject);
-    procedure Export_HouseAnim1Click(Sender: TObject);
-    procedure Export_TreeAnim1Click(Sender: TObject);
+    procedure mnExportHouseAnimClick(Sender: TObject);
+    procedure mnExportTreeAnimClick(Sender: TObject);
     procedure Export_Fonts1Click(Sender: TObject);
     procedure Export_DeliverLists1Click(Sender: TObject);
-    procedure UnitAnim_AllClick(Sender: TObject);
-    procedure SoldiersClick(Sender: TObject);
-    procedure Civilians1Click(Sender: TObject);
+    procedure mnExportUnitAnimAllClick(Sender: TObject);
+    procedure mnExportUnitAnimSoldiersClick(Sender: TObject);
+    procedure mnExportUnitAnimCiviliansClick(Sender: TObject);
 
     procedure Debug_PrintScreenClick(Sender: TObject);
     procedure Debug_SaveGameWholeMapToImageClick(Sender: TObject);
@@ -327,6 +339,14 @@ type
     procedure btnGameRestartClick(Sender: TObject);
     procedure mnOpenSettingsXMLClick(Sender: TObject);
     procedure cpCollapseChanged(Sender: TObject);
+    procedure mnExportHDTreeAnimClick(Sender: TObject);
+    procedure mnExportHDHouseAnimClick(Sender: TObject);
+    procedure mnExportHDUnitAnimAllClick(Sender: TObject);
+    procedure mnExportHDUnitAnimSoldiersClick(Sender: TObject);
+    procedure mnExportHDUnitAnimCiviliansClick(Sender: TObject);
+    procedure reesrxa1Click(Sender: TObject);
+    procedure Housesrxa1Click(Sender: TObject);
+    procedure Unitsrxa1Click(Sender: TObject);
   private
     {$IFDEF MSWindows}
     fMenuItemHint: TKMVclMenuItemHint; // Custom hint over menu item
@@ -838,18 +858,21 @@ end;
 //Exports
 procedure TFormMain.Export_TreesRXClick(Sender: TObject);
 begin
-  gResExporter.ExportSpritesToPNG(rxTrees, ExportDone);
+  gResExporter.ExportSpritesFromRXXToPNG(rxTrees, ExportDone);
 end;
+
 
 procedure TFormMain.Export_HousesRXClick(Sender: TObject);
 begin
-  gResExporter.ExportSpritesToPNG(rxHouses, ExportDone);
+  gResExporter.ExportSpritesFromRXXToPNG(rxHouses, ExportDone);
 end;
+
 
 procedure TFormMain.Export_UnitsRXClick(Sender: TObject);
 begin
-  gResExporter.ExportSpritesToPNG(rxUnits, ExportDone);
+  gResExporter.ExportSpritesFromRXXToPNG(rxUnits, ExportDone);
 end;
+
 
 procedure TFormMain.Export_ScriptDataClick(Sender: TObject);
 begin
@@ -859,37 +882,74 @@ begin
     gGame.Scripting.ExportDataToText;
 end;
 
+
 procedure TFormMain.Export_GUIClick(Sender: TObject);
 begin
-  gResExporter.ExportSpritesToPNG(rxGUI, ExportDone);
+  gResExporter.ExportSpritesFromRXXToPNG(rxGUI, ExportDone);
 end;
+
 
 procedure TFormMain.Export_GUIMainRXClick(Sender: TObject);
 begin
-  gResExporter.ExportSpritesToPNG(rxGUIMain, ExportDone);
+  gResExporter.ExportSpritesFromRXXToPNG(rxGUIMain, ExportDone);
 end;
+
 
 procedure TFormMain.Export_CustomClick(Sender: TObject);
 begin
-  gResExporter.ExportSpritesToPNG(rxCustom, ExportDone);
+  gResExporter.ExportSpritesFromRXXToPNG(rxCustom, ExportDone);
 end;
+
 
 procedure TFormMain.Export_TilesetClick(Sender: TObject);
 begin
-  gResExporter.ExportSpritesToPNG(rxTiles, ExportDone);
+  gResExporter.ExportSpritesFromRXXToPNG(rxTiles, ExportDone);
 end;
+
 
 procedure TFormMain.Export_Sounds1Click(Sender: TObject);
 begin
   gRes.Sounds.ExportSounds;
 end;
 
-procedure TFormMain.Export_TreeAnim1Click(Sender: TObject);
+
+procedure TFormMain.mnExportTreeAnimClick(Sender: TObject);
 begin
   gResExporter.ExportTreeAnim(ExportDone);
 end;
 
-procedure TFormMain.Export_HouseAnim1Click(Sender: TObject);
+
+procedure TFormMain.mnExportHDHouseAnimClick(Sender: TObject);
+begin
+  gResExporter.ExportHDHouseAnim(ExportDone);
+end;
+
+
+procedure TFormMain.mnExportHDTreeAnimClick(Sender: TObject);
+begin
+  gResExporter.ExportHDTreeAnim(ExportDone);
+end;
+
+
+procedure TFormMain.mnExportHDUnitAnimAllClick(Sender: TObject);
+begin
+  gResExporter.ExportHDUnitAnim(UNIT_MIN, UNIT_MAX, True, ExportDone);
+end;
+
+
+procedure TFormMain.mnExportHDUnitAnimCiviliansClick(Sender: TObject);
+begin
+  gResExporter.ExportHDUnitAnim(CITIZEN_MIN, CITIZEN_MAX, False, ExportDone);
+end;
+
+
+procedure TFormMain.mnExportHDUnitAnimSoldiersClick(Sender: TObject);
+begin
+  gResExporter.ExportHDUnitAnim(WARRIOR_MIN, WARRIOR_MAX, False, ExportDone);
+end;
+
+
+procedure TFormMain.mnExportHouseAnimClick(Sender: TObject);
 begin
   gResExporter.ExportHouseAnim(ExportDone);
 end;
@@ -981,19 +1041,19 @@ begin
 end;
 
 
-procedure TFormMain.UnitAnim_AllClick(Sender: TObject);
+procedure TFormMain.mnExportUnitAnimAllClick(Sender: TObject);
 begin
   gResExporter.ExportUnitAnim(UNIT_MIN, UNIT_MAX, True, ExportDone);
 end;
 
 
-procedure TFormMain.Civilians1Click(Sender: TObject);
+procedure TFormMain.mnExportUnitAnimCiviliansClick(Sender: TObject);
 begin
   gResExporter.ExportUnitAnim(CITIZEN_MIN, CITIZEN_MAX, False, ExportDone);
 end;
 
 
-procedure TFormMain.SoldiersClick(Sender: TObject);
+procedure TFormMain.mnExportUnitAnimSoldiersClick(Sender: TObject);
 begin
   gResExporter.ExportUnitAnim(WARRIOR_MIN, WARRIOR_MAX, False, ExportDone);
 end;
@@ -2128,6 +2188,24 @@ begin
   // To disable TabStop on TRadioGroup we need to disable it on its contents
   for I := 0 to TRadioGroup(Sender).ControlCount - 1 do
     TRadioButton(TRadioGroup(Sender).Controls[I]).TabStop := False;
+end;
+
+
+procedure TFormMain.reesrxa1Click(Sender: TObject);
+begin
+  gResExporter.ExportSpritesFromRXAToPNG(rxTrees, ExportDone);
+end;
+
+
+procedure TFormMain.Housesrxa1Click(Sender: TObject);
+begin
+  gResExporter.ExportSpritesFromRXAToPNG(rxHouses, ExportDone);
+end;
+
+
+procedure TFormMain.Unitsrxa1Click(Sender: TObject);
+begin
+  gResExporter.ExportSpritesFromRXAToPNG(rxUnits, ExportDone);
 end;
 
 

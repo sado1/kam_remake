@@ -16,24 +16,27 @@ uses
 type
   TTGameResourceLoader = class;
 
+  TKMGFXPrepData =  array [TKMSpriteAtlasType] of // for each atlas type
+                      array of                  // Atlases
+                        record                  // Atlas data, needed for Texture Atlas Generation
+                          SpriteInfo: TKMBinItem;
+                          TexType: TKMTexFormat;
+                          Data: TKMCardinalArray;
+                        end;
+
   // Base class for Sprite loading
   TKMSpritePack = class
   private
     fTemp: Boolean;
     fPad: Byte; //Force padding between sprites to avoid neighbour edge visibility
+
     procedure SaveTextureToPNG(aWidth, aHeight: Word; const aFilename: string; var Data: TKMCardinalArray);
     procedure SetGFXData(aTexID: Cardinal; aSpriteInfo: TKMBinItem; aAtlasType: TKMSpriteAtlasType);
   protected
     fRT: TRXType;
     fRXData: TRXData;
 
-    fGFXPrepData: array [TKMSpriteAtlasType] of // for each atlas type
-                    array of                  // Atlases
-                      record                  // Atlas data, needed for Texture Atlas Generation
-                        SpriteInfo: TKMBinItem;
-                        TexType: TKMTexFormat;
-                        Data: TKMCardinalArray;
-                      end;
+    fGFXPrepData: TKMGFXPrepData;
     procedure Allocate(aCount: Integer); virtual; //Allocate space for data that is being loaded
     procedure ReadRXZHeader(aStream: TStream; out aVersionStr: AnsiString);
     {$IFNDEF NO_OGL}
@@ -44,8 +47,11 @@ type
     constructor Create(aRT: TRXType; aTemp: Boolean = False);
 
     procedure AddImage(const aFolder, aFilename: string; aIndex: Integer);
+
+    property RT: TRXType read fRT;
     property RXData: TRXData read fRXData;
     property Padding: Byte read fPad write fPad;
+    property GFXPrepData: TKMGFXPrepData read fGFXPrepData;
 
     {$IFNDEF NO_OGL}
     procedure MakeGFX(aAlphaShadows: Boolean; aStartingIndex: Integer = 1; aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil);
@@ -73,7 +79,7 @@ type
 
     function IsEmpty: Boolean;
 
-    procedure ExportAll(const aFolder: string);
+    procedure ExportAllSpritesFromRXData(const aFolder: string);
     procedure ExportFullImageData(const aFolder: string; aIndex: Integer; aTempList: TStringList = nil);
     procedure ExportImage(const aFile: string; aIndex: Integer);
     procedure ExportMask(const aFile: string; aIndex: Integer);
@@ -852,7 +858,7 @@ end;
 // Preparation was done asynchroniously by TTGameResourceLoader thread
 // Texture generating task can be done only by main thread, as OpenGL does not work with multiple threads
 // Note: this could be from the loader thread by using `Synchronise` procedure
-procedure TKMSpritePack.GenerateTexturesFromLoadedRXA;
+procedure TKMSpritePack.GenerateTexturesFromLoadedRXA;//(var aGFXData: TKMGFXData);
 var
   I: Integer;
   SAT: TKMSpriteAtlasType;
@@ -991,7 +997,7 @@ end;
 
 
 // Export RX to Bitmaps without need to have GraphicsEditor, also this way we preserve image indexes
-procedure TKMSpritePack.ExportAll(const aFolder: string);
+procedure TKMSpritePack.ExportAllSpritesFromRXData(const aFolder: string);
 var
   I: Integer;
   SL: TStringList;
@@ -2021,7 +2027,7 @@ procedure TKMResSprites.ExportToPNG(aRT: TRXType);
 begin
   if LoadSprites(aRT, False) then
   begin
-    fSprites[aRT].ExportAll(ExeDir + 'Export' + PathDelim + RXInfo[aRT].FileName + '.rx' + PathDelim);
+    fSprites[aRT].ExportAllSpritesFromRXData(ExeDir + 'Export' + PathDelim + RXInfo[aRT].FileName + '.rx' + PathDelim);
     ClearTemp;
   end;
 end;

@@ -13,6 +13,7 @@ object FormMain: TFormMain
   Font.Style = []
   KeyPreview = True
   Menu = MainMenu1
+  OldCreateOrder = True
   Position = poDesigned
   Scaled = False
   OnClose = FormClose
@@ -24,6 +25,7 @@ object FormMain: TFormMain
   OnKeyUp = FormKeyUp
   OnMouseWheel = FormMouseWheel
   OnShow = FormShow
+  PixelsPerInch = 96
   TextHeight = 13
   object StatusBar1: TStatusBar
     Left = 0
@@ -1712,62 +1714,106 @@ object FormMain: TFormMain
           Enabled = False
         end
         object Export_TreesRX: TMenuItem
-          Caption = 'Trees.rx'
+          Caption = 'Trees.rxx'
           OnClick = Export_TreesRXClick
         end
         object Export_HousesRX: TMenuItem
-          Caption = 'Houses.rx'
+          Caption = 'Houses.rxx'
           OnClick = Export_HousesRXClick
         end
         object Export_UnitsRX: TMenuItem
-          Caption = 'Units.rx'
+          Caption = 'Units.rxx'
           OnClick = Export_UnitsRXClick
         end
         object Export_GUIRX: TMenuItem
-          Caption = 'GUI.rx'
+          Caption = 'GUI.rxx'
           OnClick = Export_GUIClick
         end
         object Export_GUIMainRX: TMenuItem
-          Caption = 'GUI Main.rx'
+          Caption = 'GUIMain.rxx'
           OnClick = Export_GUIMainRXClick
+        end
+        object Export_Tileset: TMenuItem
+          Caption = 'Tileset.rxx'
+          OnClick = Export_TilesetClick
         end
         object Export_Custom: TMenuItem
           Caption = 'Custom'
           OnClick = Export_CustomClick
         end
-        object Export_Tileset: TMenuItem
-          Caption = 'Tileset'
-          OnClick = Export_TilesetClick
-        end
-      end
-      object AnimData1: TMenuItem
-        Caption = '-'
-        Enabled = False
-      end
-      object Export_TreeAnim1: TMenuItem
-        Caption = 'Tree Anim'
-        OnClick = Export_TreeAnim1Click
-      end
-      object Export_HouseAnim1: TMenuItem
-        Caption = 'House Anim'
-        OnClick = Export_HouseAnim1Click
-      end
-      object Export_UnitAnim1: TMenuItem
-        Caption = 'Unit Anim'
-        object UnitAnim_All: TMenuItem
-          Caption = 'All'
-          OnClick = UnitAnim_AllClick
-        end
-        object N3: TMenuItem
+        object N14: TMenuItem
           Caption = '-'
+          Enabled = False
         end
-        object Soldiers: TMenuItem
-          Caption = 'Soldiers'
-          OnClick = SoldiersClick
+        object reesrxa1: TMenuItem
+          Caption = 'Trees.rxa'
+          OnClick = reesrxa1Click
         end
-        object Civilians1: TMenuItem
-          Caption = 'Civilians'
-          OnClick = Civilians1Click
+        object Housesrxa1: TMenuItem
+          Caption = 'Houses.rxa'
+          OnClick = Housesrxa1Click
+        end
+        object Unitsrxa1: TMenuItem
+          Caption = 'Units.rxa'
+          OnClick = Unitsrxa1Click
+        end
+      end
+      object mnAnimations: TMenuItem
+        Caption = 'Animations'
+        object mnExportTreeAnim: TMenuItem
+          Caption = 'Tree Anim'
+          OnClick = mnExportTreeAnimClick
+        end
+        object mnExportHouseAnim: TMenuItem
+          Caption = 'House Anim'
+          OnClick = mnExportHouseAnimClick
+        end
+        object mnExportUnitAnim: TMenuItem
+          Caption = 'Unit Anim'
+          object mnExportUnitAnimAll: TMenuItem
+            Caption = 'All'
+            OnClick = mnExportUnitAnimAllClick
+          end
+          object N3: TMenuItem
+            Caption = '-'
+          end
+          object mnExportUnitAnimSoldiers: TMenuItem
+            Caption = 'Soldiers'
+            OnClick = mnExportUnitAnimSoldiersClick
+          end
+          object mnExportUnitAnimCivilians: TMenuItem
+            Caption = 'Civilians'
+            OnClick = mnExportUnitAnimCiviliansClick
+          end
+        end
+      end
+      object mnHDAnimations: TMenuItem
+        Caption = 'HD Animations'
+        object mnExportHDTreeAnim: TMenuItem
+          Caption = 'HD Tree Anim'
+          OnClick = mnExportHDTreeAnimClick
+        end
+        object mnExportHDHouseAnim: TMenuItem
+          Caption = 'HD House Anim'
+          OnClick = mnExportHDHouseAnimClick
+        end
+        object mnExportHDUnitAnim: TMenuItem
+          Caption = 'HD Unit Anim'
+          object mnExportHDUnitAnimAll: TMenuItem
+            Caption = 'All HD'
+            OnClick = mnExportHDUnitAnimAllClick
+          end
+          object N13: TMenuItem
+            Caption = '-'
+          end
+          object mnExportHDUnitAnimSoldiers: TMenuItem
+            Caption = 'Soldiers HD'
+            OnClick = mnExportHDUnitAnimSoldiersClick
+          end
+          object mnExportHDUnitAnimCivilians: TMenuItem
+            Caption = 'Civilians HD'
+            OnClick = mnExportHDUnitAnimCiviliansClick
+          end
         end
       end
       object N2: TMenuItem
