@@ -361,6 +361,7 @@ end;
 procedure TKMMain.Stop(Sender: TObject);
 begin
   try
+    gLog.AddTime('Stopping game application...');
     FreeThenNil(gSystem);
     //Reset the resolution
     FreeThenNil(fResolutions);
