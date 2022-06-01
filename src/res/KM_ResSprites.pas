@@ -813,6 +813,9 @@ begin
         if fRT = rxUnits then
           decompressionStream.Read(fRXData.SizeNoShadow[I].left, SizeOf(fRXData.SizeNoShadow[I]));
         decompressionStream.Read(fRXData.HasMask[I], 1);
+
+        // Check if our load resource thread was terminated
+        if TThread.CheckTerminated then Exit;
       end;
 
     //Atlases
@@ -832,6 +835,9 @@ begin
           decompressionStream.Read(dataCount, 4);
           SetLength(Data, dataCount);
           decompressionStream.Read(Data[0], dataCount*SizeOf(Data[0]));
+
+          // Check if our load resource thread was terminated
+          if TThread.CheckTerminated then Exit;
         end;
     end;
   finally
