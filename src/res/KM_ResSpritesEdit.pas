@@ -690,7 +690,7 @@ const
   SNS_MAX_ABS_VAL = CELL_SIZE_PX*5; // Empirical value
 var
   I, Count: Integer;
-  SAT: TSpriteAtlasType;
+  SAT: TKMSpriteAtlasType;
   InputStream: TCompressionStream;
   OutputStream: TFileStream;
   baseRAM, colorRAM, texCount: Cardinal;
@@ -729,7 +729,7 @@ begin
     end;
 
   //Atlases
-  for SAT := Low(TSpriteAtlasType) to High(TSpriteAtlasType) do
+  for SAT := Low(TKMSpriteAtlasType) to High(TKMSpriteAtlasType) do
   begin
     Count := Length(fGFXPrepData[SAT]);
     InputStream.Write(Count, 4);
@@ -741,7 +741,7 @@ begin
         Count := Length(SpriteInfo.Sprites);
         InputStream.Write(Count, 4);
         InputStream.Write(SpriteInfo.Sprites[0], Count*SizeOf(SpriteInfo.Sprites[0]));
-        InputStream.Write(TexType, SizeOf(TTexFormat));
+        InputStream.Write(TexType, SizeOf(TKMTexFormat));
         Count := Length(Data);
         InputStream.Write(Count, 4);
         InputStream.Write(Data[0], Count*SizeOf(Data[0]));

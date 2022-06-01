@@ -83,11 +83,11 @@ begin
       if RT <> rxTiles then
       begin
         spritePack.LoadFromRXFile(rxName);
-        spritePack.OverloadFromFolder(SpritesLoadDir + SPRITES_RES_DIR + '\', False); // Do not soften shadows, it will be done later on
+        spritePack.OverloadRXDataFromFolder(SpritesLoadDir + SPRITES_RES_DIR + '\', False); // Do not soften shadows, it will be done later on
       end
       else
       if DirectoryExists(SpritesLoadDir + SPRITES_RES_DIR + '\') then
-        spritePack.OverloadFromFolder(SpritesLoadDir + SPRITES_RES_DIR + '\');
+        spritePack.OverloadRXDataFromFolder(SpritesLoadDir + SPRITES_RES_DIR + '\');
 
       //Tiles must stay the same size as they can't use pivots
       if (RT <> rxTiles) and (gLog <> nil) then
@@ -164,7 +164,7 @@ begin
         if fPackToRXA then
         begin
           if DirectoryExists(SpritesLoadDir + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(RT)+1) + '\') then
-            spritePack.OverloadFromFolder(SpritesLoadDir + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(RT)+1) + '\', False); // Shadows are already softened for interps
+            spritePack.OverloadRXDataFromFolder(SpritesLoadDir + SPRITES_INTERP_DIR + '\' + IntToStr(Ord(RT)+1) + '\', False); // Shadows are already softened for interps
 
           spritePack.SaveToRXAFile(fSpritesSaveDir + 'data\Sprites\' + RXInfo[RT].FileName + '.rxa', fAddVersionHeader);
         end;
