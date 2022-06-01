@@ -77,8 +77,7 @@ begin
 end;
 
 
-function TKMResInterpolation.UnitAction(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; aStep: Integer;
-  aStepFrac: Single): Integer;
+function TKMResInterpolation.UnitAction(aUnit: TKMUnitType; aAct: TKMUnitActionType; aDir: TKMDirection; aStep: Integer; aStepFrac: Single): Integer;
 var
   A: TKMAnimLoop;
   step, subStep: Integer;
@@ -113,7 +112,7 @@ function TKMResInterpolation.UnitThought(aTh: TKMUnitThought; aStep: Integer; aS
 var
   animCount, step, subStep: Integer;
 begin
-  animCount := THOUGHT_BOUNDS[aTh, 2] - THOUGHT_BOUNDS[aTh, 1];
+  animCount := THOUGHT_BOUNDS[aTh, 2] - THOUGHT_BOUNDS[aTh, 1] + 1;
   step := aStep mod Byte(animCount) + 1;
   subStep := EnsureRange(Floor(INTERP_LEVEL*aStepFrac), 0, INTERP_LEVEL-1);
 
