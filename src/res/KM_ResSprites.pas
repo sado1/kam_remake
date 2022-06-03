@@ -40,7 +40,7 @@ type
     procedure Allocate(aCount: Integer); virtual; //Allocate space for data that is being loaded
     procedure ReadRXZHeader(aStream: TStream; out aVersionStr: AnsiString);
     {$IFNDEF NO_OGL}
-    procedure MakeGFX_BinPacking(aTexType: TKMTexFormat; aStartingIndex: Integer; var BaseRAM, ColorRAM, TexCount: Cardinal;
+    procedure MakeGFX_BinPacking(aTexType: TKMTexFormat; aStartingIndex: Integer; var aBaseRAM, aColorRAM, aTexCount: Cardinal;
                                  aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil);
     {$ENDIF}
   public
@@ -1245,7 +1245,7 @@ end;
 
 {$IFNDEF NO_OGL}
 //This algorithm is planned to take advantage of more efficient 2D bin packing
-procedure TKMSpritePack.MakeGFX_BinPacking(aTexType: TKMTexFormat; aStartingIndex: Integer; var BaseRAM, ColorRAM, TexCount: Cardinal;
+procedure TKMSpritePack.MakeGFX_BinPacking(aTexType: TKMTexFormat; aStartingIndex: Integer; var aBaseRAM, aColorRAM, aTexCount: Cardinal;
                                            aFillGFXData: Boolean = True; aOnStopExecution: TBooleanFuncSimple = nil);
 
   procedure PrepareAtlases(SpriteInfo: TBinArray; aMode: TKMSpriteAtlasType; aTexType: TKMTexFormat);
@@ -1336,11 +1336,11 @@ procedure TKMSpritePack.MakeGFX_BinPacking(aTexType: TKMTexFormat; aStartingInde
       end;
 
       if aMode = saBase then
-        Inc(BaseRAM, SpriteInfo[I].Width * SpriteInfo[I].Height * TEX_FORMAT_SIZE[aTexType])
+        Inc(aBaseRAM, SpriteInfo[I].Width * SpriteInfo[I].Height * TEX_FORMAT_SIZE[aTexType])
       else
-        Inc(ColorRAM, SpriteInfo[I].Width * SpriteInfo[I].Height * TEX_FORMAT_SIZE[aTexType]);
+        Inc(aColorRAM, SpriteInfo[I].Width * SpriteInfo[I].Height * TEX_FORMAT_SIZE[aTexType]);
 
-      Inc(TexCount);
+      Inc(aTexCount);
 
       if aFillGFXData and EXPORT_SPRITE_ATLASES and (fRT in EXPORT_SPRITE_ATLASES_LIST) then
         SaveTextureToPNG(SpriteInfo[I].Width, SpriteInfo[I].Height, RXInfo[fRT].FileName + '_' +
@@ -1359,8 +1359,8 @@ var
   spriteInfo: TBinArray;
   atlasSize, allTilesAtlasSize: Integer;
 begin
-  BaseRAM := 0;
-  ColorRAM := 0;
+  aBaseRAM := 0;
+  aColorRAM := 0;
   //Prepare base atlases
   SetLength(spriteSizes, fRXData.Count - aStartingIndex + 1);
   K := 0;
