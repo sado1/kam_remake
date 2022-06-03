@@ -120,6 +120,7 @@ begin
     Button_PlayerMPSetup[I].Hint := Format(gResTexts[TX_MAPED_PLAYER_AI_MP_SETUP_HINT],  [I + 1]);
     Button_PlayerMPSetup[I].Tag := I;
     Button_PlayerMPSetup[I].OnClick := PlayerMPSetup_Click;
+    Button_PlayerMPSetup[I].BackAlpha := 0.2;
 
     Button_PlayerDelete[I] := TKMButtonFlat.Create(Panel_PlayerTypes.ItemsPanel,
                                                    Button_PlayerMPSetup[I].Right + 20, top - 4,
@@ -127,6 +128,7 @@ begin
     Button_PlayerDelete[I].Hint := Format(gResTexts[TX_MAPED_PLAYER_DELETE_HINT], [I + 1]);
     Button_PlayerDelete[I].Tag := I;
     Button_PlayerDelete[I].OnClick := PlayerDelete_Click;
+    Button_PlayerDelete[I].BackAlpha := 0.2;
 
     Inc(top, LINE_H);
   end;
