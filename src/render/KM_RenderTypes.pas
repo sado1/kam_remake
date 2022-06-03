@@ -18,6 +18,10 @@ type
 
   TKMRenderPoolAddProjectileEvent = procedure (aProj: TKMProjectileType; const aRenderPos, aTilePos: TKMPointF; aDir: TKMDirection; aFlight: Single) of object;
 
+const
+  BEVEL_EDGE_ALPHA_DEF = 1;
+  BEVEL_BACK_ALPHA_DEF = 0.5;
+
 implementation
 
 

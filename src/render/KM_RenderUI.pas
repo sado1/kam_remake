@@ -12,6 +12,7 @@ uses
   Math, StrUtils, SysUtils,
   KromOGLUtils,
   KM_Defaults, KM_CommonTypes, KM_Points, KM_ResTypes,
+  KM_RenderTypes,
   KM_ResFonts, KM_ResSprites;
 
 type
@@ -42,8 +43,12 @@ type
     class procedure ReleaseClipY;
     class procedure Write3DButton  (aLeft, aTop, aWidth, aHeight: SmallInt; aRX: TRXType; aID: Word; aFlagColor: TColor4;
       aState: TKMButtonStateSet; aStyle: TKMButtonStyle; aImageEnabled: Boolean = True);
-    class procedure WriteBevel     (aLeft, aTop, aWidth, aHeight: SmallInt; aEdgeAlpha: Single = 1; aBackAlpha: Single = 0.5); overload;
-    class procedure WriteBevel     (aLeft, aTop, aWidth, aHeight: SmallInt; const aColor: TKMColor3f; aEdgeAlpha: Single = 1; aBackAlpha: Single = 0.5); overload;
+
+    class procedure WriteBevel(aLeft, aTop, aWidth, aHeight: SmallInt;
+                               aEdgeAlpha: Single = BEVEL_EDGE_ALPHA_DEF; aBackAlpha: Single = BEVEL_BACK_ALPHA_DEF); overload;
+    class procedure WriteBevel(aLeft, aTop, aWidth, aHeight: SmallInt; const aColor: TKMColor3f;
+                               aEdgeAlpha: Single = BEVEL_EDGE_ALPHA_DEF; aBackAlpha: Single = BEVEL_BACK_ALPHA_DEF); overload;
+
     class procedure WritePercentBar(aLeft, aTop, aWidth, aHeight: SmallInt; aPos: Single; aSeam: Single;
       aMainColor: Cardinal = icBarColorGreen; aAddColor: Cardinal = icBarColorBlue);
     class procedure WriteReplayBar (aLeft, aTop, aWidth, aHeight: SmallInt; aPos, aPeacetime, aMaxValue: Integer; aMarks: TList<Integer>; aPattern: Word; aHighlightedMark: Integer = -1);
@@ -303,13 +308,15 @@ begin
 end;
 
 
-class procedure TKMRenderUI.WriteBevel(aLeft, aTop, aWidth, aHeight: SmallInt; aEdgeAlpha: Single = 1; aBackAlpha: Single = 0.5);
+class procedure TKMRenderUI.WriteBevel(aLeft, aTop, aWidth, aHeight: SmallInt;
+                                       aEdgeAlpha: Single = BEVEL_EDGE_ALPHA_DEF; aBackAlpha: Single = BEVEL_BACK_ALPHA_DEF);
 begin
   WriteBevel(aLeft, aTop, aWidth, aHeight, COLOR3F_BLACK, aEdgeAlpha, aBackAlpha);
 end;
 
 
-class procedure TKMRenderUI.WriteBevel(aLeft, aTop, aWidth, aHeight: SmallInt; const aColor: TKMColor3f; aEdgeAlpha: Single = 1; aBackAlpha: Single = 0.5);
+class procedure TKMRenderUI.WriteBevel(aLeft, aTop, aWidth, aHeight: SmallInt; const aColor: TKMColor3f;
+                                       aEdgeAlpha: Single = BEVEL_EDGE_ALPHA_DEF; aBackAlpha: Single = BEVEL_BACK_ALPHA_DEF);
 begin
   if (aWidth < 0) or (aHeight < 0) then Exit;
 
