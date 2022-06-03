@@ -115,13 +115,15 @@ begin
     end;
 
     Button_PlayerMPSetup[I] := TKMButtonFlat.Create(Panel_PlayerTypes.ItemsPanel,
-                                                   ChkBox_PlayerTypes[I, mptAdvancedAI].Right + 20, top - 5, BTN_MPSETUP_W, BTN_MPSETUP_W, 678);
+                                                   ChkBox_PlayerTypes[I, mptAdvancedAI].Right + 20, top - 5,
+                                                   BTN_MPSETUP_W, BTN_MPSETUP_W, 678);
     Button_PlayerMPSetup[I].Hint := Format(gResTexts[TX_MAPED_PLAYER_AI_MP_SETUP_HINT],  [I + 1]);
     Button_PlayerMPSetup[I].Tag := I;
     Button_PlayerMPSetup[I].OnClick := PlayerMPSetup_Click;
 
     Button_PlayerDelete[I] := TKMButtonFlat.Create(Panel_PlayerTypes.ItemsPanel,
-                                                   Button_PlayerMPSetup[I].Right + 20, top - 4, BTN_DELETE_W, BTN_DELETE_W, 340);
+                                                   Button_PlayerMPSetup[I].Right + 20, top - 4,
+                                                   BTN_DELETE_W, BTN_DELETE_W, 340);
     Button_PlayerDelete[I].Hint := Format(gResTexts[TX_MAPED_PLAYER_DELETE_HINT], [I + 1]);
     Button_PlayerDelete[I].Tag := I;
     Button_PlayerDelete[I].OnClick := PlayerDelete_Click;
