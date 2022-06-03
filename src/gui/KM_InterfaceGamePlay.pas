@@ -3482,13 +3482,13 @@ var
 begin
   aHandled := True; // assume we handle all keys here
 
-  if aIsFirst and HandlePauseKey(Key) then Exit;
-
   if fMyControls.KeyDown(Key, Shift) then
   begin
     fViewport.ReleaseScrollKeys; // Release the arrow keys when you open a window with an edit to stop them becoming stuck
     Exit;
   end;
+
+  if aIsFirst and HandlePauseKey(Key) then Exit;
 
   if gGame.IsPlayerWaiting and IsKeyBlockedOnPause(Key) then Exit;
 
@@ -3855,10 +3855,10 @@ var
 begin
   aHandled := True; // assume we handle all keys here
 
+  if fMyControls.KeyUp(Key, Shift) then Exit;
+
   // Check if the game is on pause / waiting for network / key is blocked
   if gGame.IsPlayerWaiting and IsKeyBlockedOnPause(Key) then Exit;
-
-  if fMyControls.KeyUp(Key, Shift) then Exit;
 
   keyHandled := False;
   inherited KeyUp(Key, Shift, keyHandled);
