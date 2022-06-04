@@ -2664,7 +2664,7 @@ begin
 
                   if M.HasReadme then
                   begin
-                    Memo_MapDesc.Height := Panel_SetupDesc.Height - 25;
+                    Memo_MapDesc.Height := Panel_SetupDesc.Height - 30;
                     Button_SetupReadme.Show;
                   end;
 
