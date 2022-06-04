@@ -197,6 +197,8 @@ begin
       sprites.LoadRXASprites(rxUnits);
       spritePack := sprites[rxUnits];
 
+      PrepareGFXPrepData(spritePack);
+
       units := TKMResUnits.Create;
       resTexts := TKMTextLibraryMulti.Create;
       resTexts.LoadLocale(ExeDir + 'data' + PathDelim + 'text' + PathDelim + 'text.%s.libx');
@@ -498,6 +500,8 @@ begin
       resTexts := TKMTextLibraryMulti.Create;
       resTexts.LoadLocale(ExeDir + 'data' + PathDelim + 'text' + PathDelim + 'text.%s.libx');
       resTexts.ForceDefaultLocale := True;
+
+      PrepareGFXPrepData(spritePack);
 
       try
         for HT := HOUSE_MIN to HOUSE_MAX do
