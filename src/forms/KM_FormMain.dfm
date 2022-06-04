@@ -1814,6 +1814,10 @@ object FormMain: TFormMain
             Caption = 'Civilians HD'
             OnClick = mnExportHDUnitAnimCiviliansClick
           end
+          object mnExportHDUnitThoughts: TMenuItem
+            Caption = 'Thoughts HD'
+            OnClick = mnExportHDUnitThoughtsClick
+          end
         end
       end
       object N2: TMenuItem

@@ -347,6 +347,7 @@ type
     procedure reesrxa1Click(Sender: TObject);
     procedure Housesrxa1Click(Sender: TObject);
     procedure Unitsrxa1Click(Sender: TObject);
+    procedure mnExportHDUnitThoughtsClick(Sender: TObject);
   private
     {$IFDEF MSWindows}
     fMenuItemHint: TKMVclMenuItemHint; // Custom hint over menu item
@@ -933,19 +934,25 @@ end;
 
 procedure TFormMain.mnExportHDUnitAnimAllClick(Sender: TObject);
 begin
-  gResExporter.ExportHDUnitAnim(UNIT_MIN, UNIT_MAX, True, ExportDone);
+  gResExporter.ExportHDUnitAnim(UNIT_MIN, UNIT_MAX, True, True, ExportDone);
 end;
 
 
 procedure TFormMain.mnExportHDUnitAnimCiviliansClick(Sender: TObject);
 begin
-  gResExporter.ExportHDUnitAnim(CITIZEN_MIN, CITIZEN_MAX, False, ExportDone);
+  gResExporter.ExportHDUnitAnim(CITIZEN_MIN, CITIZEN_MAX, False, False, ExportDone);
 end;
 
 
 procedure TFormMain.mnExportHDUnitAnimSoldiersClick(Sender: TObject);
 begin
-  gResExporter.ExportHDUnitAnim(WARRIOR_MIN, WARRIOR_MAX, False, ExportDone);
+  gResExporter.ExportHDUnitAnim(WARRIOR_MIN, WARRIOR_MAX, False, False, ExportDone);
+end;
+
+
+procedure TFormMain.mnExportHDUnitThoughtsClick(Sender: TObject);
+begin
+  gResExporter.ExportHDUnitAnim(utNone, utNone, True, False, ExportDone);
 end;
 
 
@@ -1947,6 +1954,7 @@ begin
                   end;
   end;
 end;
+
 
 
 {$IFDEF MSWindows}

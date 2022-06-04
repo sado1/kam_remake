@@ -41,7 +41,7 @@ type
     procedure ExportTreeAnim(aOnDone: TProc<String> = nil);
     procedure ExportHDHouseAnim(aOnDone: TProc<String> = nil);
     procedure ExportHouseAnim(aOnDone: TProc<String> = nil);
-    procedure ExportHDUnitAnim(aUnitFrom, aUnitTo: TKMUnitType; aExportUnused: Boolean = False; aOnDone: TProc<String> = nil);
+    procedure ExportHDUnitAnim(aUnitFrom, aUnitTo: TKMUnitType; aExportThoughts, aExportUnused: Boolean; aOnDone: TProc<String> = nil);
     procedure ExportUnitAnim(aUnitFrom, aUnitTo: TKMUnitType; aExportUnused: Boolean = False; aOnDone: TProc<String> = nil);
     procedure ExportSpritesFromRXXToPNG(aRT: TRXType; aOnDone: TProc<String> = nil);
     procedure ExportSpritesFromRXAToPNG(aRT: TRXType; aOnDone: TProc<String> = nil);
@@ -168,7 +168,7 @@ begin
 end;
 
 
-procedure TKMResExporter.ExportHDUnitAnim(aUnitFrom, aUnitTo: TKMUnitType; aExportUnused: Boolean = False; aOnDone: TProc<String> = nil);
+procedure TKMResExporter.ExportHDUnitAnim(aUnitFrom, aUnitTo: TKMUnitType; aExportThoughts, aExportUnused: Boolean; aOnDone: TProc<String> = nil);
 begin
   // Make sure we loaded all of the resources (to avoid collisions with async res loader
   gRes.LoadGameResources(True);
@@ -270,7 +270,7 @@ begin
                 begin
                   if not folderCreated then
                   begin
-                    //Use default locale for Unit GUIName, as translation could be not good for file system (like russian '����������/�������' with slash in it)
+                    //Use default locale for Unit GUIName, as translation could be not good for file system
                     fullFolderPath := folderPath + resTexts.DefaultTexts[units[utSerf].GUITextID] + PathDelim + 'Delivery' + PathDelim
                                     + GetEnumName(TypeInfo(TKMWareType), Integer(WT)) + PathDelim;
                     ForceDirectories(fullFolderPath);
@@ -292,16 +292,22 @@ begin
             end;
           end;
 
-        fullFolderPath := folderPath + 'Thoughts' + PathDelim;
-        ForceDirectories(fullFolderPath);
-        for TH := thEat to High(TKMUnitThought) do
-          for STEP := THOUGHT_BOUNDS[TH,1] to  THOUGHT_BOUNDS[TH,2] do
-            for LVL := 0 to INTERP_LEVEL - 1 do
-            begin
-              spriteID := gRes.Interpolation.UnitThought(TH, STEP, LVL / INTERP_LEVEL);
-              ExportFullImageDataFromGFXData(spritePack, spriteID, fullFolderPath, SList);
-              used[spriteID] := True;
-            end;
+        if aExportThoughts then
+        begin
+          for TH := thEat to High(TKMUnitThought) do
+          begin
+            fullFolderPath := folderPath + 'Thoughts' + PathDelim + GetEnumName(TypeInfo(TKMUnitThought), Integer(TH)) + PathDelim;
+            ForceDirectories(fullFolderPath);
+
+            for STEP := THOUGHT_BOUNDS[TH,1] to  THOUGHT_BOUNDS[TH,2] do
+              for LVL := 0 to INTERP_LEVEL - 1 do
+              begin
+                spriteID := gRes.Interpolation.UnitThought(TH, STEP, LVL / INTERP_LEVEL);
+                ExportFullImageDataFromGFXData(spritePack, spriteID, fullFolderPath, SList);
+                used[spriteID] := True;
+              end;
+          end;
+        end;
 
         if not aExportUnused then Exit;
 
