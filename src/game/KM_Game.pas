@@ -2941,7 +2941,7 @@ var
   calculatedTick: Single;
   timeS: Cardinal;
 begin
-  if Self = nil then Exit(0);
+  if (Self = nil) or (fParams = nil) then Exit(0);
 
   //Lets calculate tick, that shoud be at that moment in theory, depending of speed multiplier and game duration
   timeS := TimeSince(fSpeedChangeTime);
