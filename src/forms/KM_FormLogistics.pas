@@ -166,7 +166,7 @@ const
     (ID: 2;  Title: 'iD';         Alignment: taRightJustify;  Width: 40;  Visible: True; ColumnType: cctNumber),
     (ID: 3;  Title: 'Resource';   Alignment: taLeftJustify;   Width: 110; Visible: True; ColumnType: cctText),
     (ID: 4;  Title: 'To';         Alignment: taLeftJustify;   Width: 130; Visible: True; ColumnType: cctText),
-    (ID: 5;  Title: 'To ID';      Alignment: taRightJustify;  Width: 80;  Visible: True; ColumnType: cctNumber),
+    (ID: 5;  Title: 'To ID';      Alignment: taRightJustify;  Width: 80;  Visible: True; ColumnType: cctText),
     (ID: 6;  Title: 'Type';       Alignment: taLeftJustify;   Width: 70;  Visible: True; ColumnType: cctText),
     (ID: 7;  Title: 'Importance'; Alignment: taLeftJustify;   Width: 70;  Visible: True; ColumnType: cctText),
     (ID: 8;  Title: 'Performed';  Alignment: taLeftJustify;   Width: 80;  Visible: True; ColumnType: cctNumber),
