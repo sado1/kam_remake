@@ -2227,17 +2227,22 @@ begin
       begin
         gameInfo.Enabled[I] := False;
         gameInfo.CanBeHuman[I] := False;
+        gameInfo.CanBeClassicAI[I] := False;
+        gameInfo.CanBeAdvancedAI[I] := False;
         gameInfo.OwnerNickname[I] := '';
         gameInfo.HandTypes[I] := hndHuman;
         gameInfo.Color[I] := 0;
         gameInfo.Team[I] := 0;
-      end else
+      end
+      else
       begin
         netIndex := gNetworking.NetPlayers.PlayerIndexToLocal(I);
         if netIndex <> -1 then
         begin
           gameInfo.Enabled[I] := True;
           gameInfo.CanBeHuman[I] := gNetworking.NetPlayers[netIndex].IsHuman;
+          gameInfo.CanBeClassicAI[I] := gNetworking.NetPlayers[netIndex].IsClassicComputer;
+          gameInfo.CanBeAdvancedAI[I] := gNetworking.NetPlayers[netIndex].IsAdvancedComputer;
           gameInfo.OwnerNickname[I] := gNetworking.NetPlayers[netIndex].Nickname;
           gameInfo.HandTypes[I] := gNetworking.NetPlayers[netIndex].GetPlayerType;
           gameInfo.Color[I] := gNetworking.NetPlayers[netIndex].FlagColor;
@@ -2247,6 +2252,8 @@ begin
         begin
           gameInfo.Enabled[I] := gHands[I].Enabled;
           gameInfo.CanBeHuman[I] := gHands[I].IsHuman;
+          gameInfo.CanBeClassicAI[I] := aitClassic in gHands[I].CanBeAITypes;
+          gameInfo.CanBeAdvancedAI[I] := aitAdvanced in gHands[I].CanBeAITypes;
           gameInfo.OwnerNickname[I] := gHands[I].OwnerNickname; //MP nickname, not translated OwnerName
           gameInfo.HandTypes[I] := gHands[I].HandType;
           gameInfo.Color[I] := gHands[I].FlagColor;
