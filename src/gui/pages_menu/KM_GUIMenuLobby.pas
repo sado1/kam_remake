@@ -1732,6 +1732,7 @@ begin
       DropBox_Loc[I].ItemIndex := 0;
       DropBox_Team[I].ItemIndex := 0;
       DropBox_Colors[I].ItemIndex := 0;
+      ResetDropColorRandom(I);
       Image_Ready[I].TexID := 0; //Hidden
       DropBox_Loc[I].Disable;
       DropBox_Team[I].Disable;
