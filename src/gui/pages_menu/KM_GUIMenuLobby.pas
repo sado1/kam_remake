@@ -1887,7 +1887,8 @@ begin
       DropBox_Colors[I].Enabled := (canEdit or (myNik and not curPlayer.ReadyToStart))
                                         and (not isSave or curPlayer.IsSpectator)
                                         and (    (gNetworking.SelectGameKind <> ngkMap)
-                                           or not gNetworking.MapInfo.TxtInfo.BlockColorSelection);
+                                           or not gNetworking.MapInfo.TxtInfo.BlockColorSelection
+                                           or curPlayer.IsSpectator);
       if myNik and not gNetworking.IsHost then
       begin
         if curPlayer.ReadyToStart then
