@@ -281,7 +281,8 @@ begin
   if not ReinitRender(False) then
     Exit(False);
 
-  fFormMain.ControlsRefill; //Refill some of the debug controls from game settings
+  fFormMain.ControlsReset;  // Reset controls will update Defaults.pas settings after loaded DevSettings
+  fFormMain.ControlsRefill; // Refill some of the debug controls from game settings
 
   // Create gSystem before Application.OnActivate (it uses FlashingStop)
   gSystem := TKMSystem.Create(fFormMain.Handle);
