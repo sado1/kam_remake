@@ -280,9 +280,8 @@ type
 
     function GetDemandsCnt(aHouse: TKMHouse; aWare: TKMWareType; aType: TKMDemandType; aImp: TKMDemandImportance): Integer;
     procedure AddDemand(aHouse: TKMHouse; aUnit: TKMUnit; aWare: TKMWareType; aCount: Integer; aType: TKMDemandType; aImp: TKMDemandImportance);
-    function TryRemoveDemand(aHouse: TKMHouse; aWare: TKMWareType; aCount: Word; aRemoveBeingPerformed: Boolean = True): Word; overload;
-    function TryRemoveDemand(aHouse: TKMHouse; aWare: TKMWareType; aCount: Word; out aPlannedToRemove: Word;
-                             aRemoveBeingPerformed: Boolean = True): Word; overload;
+    function TryRemoveDemand(aHouse: TKMHouse; aWare: TKMWareType; aCount: Integer): Word; overload;
+    function TryRemoveDemand(aHouse: TKMHouse; aWare: TKMWareType; aCount: Integer; out aPlannedToRemove: Integer): Word; overload;
     procedure RemDemand(aHouse: TKMHouse); overload;
     procedure RemDemand(aUnit: TKMUnit); overload;
 
@@ -991,9 +990,9 @@ begin
 end;
 
 
-function TKMDeliveries.TryRemoveDemand(aHouse: TKMHouse; aWare: TKMWareType; aCount: Word; aRemoveBeingPerformed: Boolean = True): Word;
+function TKMDeliveries.TryRemoveDemand(aHouse: TKMHouse; aWare: TKMWareType; aCount: Integer): Word;
 var
-  plannedToRemove: Word;
+  plannedToRemove: Integer;
 begin
   Result := TryRemoveDemand(aHouse, aWare, aCount, plannedToRemove);
 end;
@@ -1001,13 +1000,13 @@ end;
 
 //Attempt to remove aCount demands from this house and report the number
 //if there are some being performed, then mark them as deleted, so they will be cancelled as soon as possible
-function TKMDeliveries.TryRemoveDemand(aHouse: TKMHouse; aWare: TKMWareType; aCount: Word; out aPlannedToRemove: Word;
-                                       aRemoveBeingPerformed: Boolean = True): Word;
+function TKMDeliveries.TryRemoveDemand(aHouse: TKMHouse; aWare: TKMWareType; aCount: Integer; out aPlannedToRemove: Integer): Word;
 var
-  I: Integer;
-  PlannedIDs: array of Integer;
+  I, planned: Integer;
+  plannedIDs: array of Integer;
 begin
   Result := 0;
+  planned := 0;
   aPlannedToRemove := 0;
 
   if gGameParams.IsMapEditor then
@@ -1029,26 +1028,26 @@ begin
       else
       begin
         //Collect all performing demands first (but limit it with `NEEDED - FOUND`)
-        if aRemoveBeingPerformed and (aPlannedToRemove < aCount - Result) then
+        if (planned < aCount - Result) then
         begin
-          if Length(PlannedIDs) = 0 then
-            SetLength(PlannedIDs, aCount); //Set length of PlannedIDs only once
+          if Length(plannedIDs) = 0 then
+            SetLength(plannedIDs, aCount); //Set length of plannedIDs only once
 
-          PlannedIDs[aPlannedToRemove] := I;
-          Inc(aPlannedToRemove);
+          plannedIDs[planned] := I;
+          Inc(planned);
         end;
       end;
       if Result = aCount then
         Break; //We have removed enough demands
     end;
 
-  if aRemoveBeingPerformed then
     //If we didn't find enough not performed demands, mark found performing demands as deleted to be removed soon
-    for I := 0 to Min(aPlannedToRemove, aCount - Result) - 1 do
-    begin
-      fDemand[aWare, PlannedIDs[I]].IsDeleted := True;
-      fDemand[aWare, PlannedIDs[I]].NotifyLocHouseOnClose := aRemoveBeingPerformed;
-    end;
+  for I := 0 to Min(planned, aCount - Result) - 1 do
+  begin
+    Inc(aPlannedToRemove);
+    fDemand[aWare, plannedIDs[I]].IsDeleted := True;
+    fDemand[aWare, plannedIDs[I]].DeleteState := ddtDeleting;
+  end;
 end;
 
 
