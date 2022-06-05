@@ -3,7 +3,7 @@ unit KM_GameInfo;
 interface
 uses
   KM_CommonClasses, KM_Maps, KM_MapTypes, KM_Defaults,
-  KM_HandTypes;
+  KM_HandTypes, KM_CommonTypes;
 
 
 type
@@ -55,6 +55,7 @@ type
     function AICount: Byte;
     function HumanCount: Byte;
     function HumanUsableLocs: TKMHandIDArray;
+    function FixedLocsColors: TKMCardinalArray;
     function GetTimeText: UnicodeString;
     function GetTitleWithTime: UnicodeString;
     function GetSaveTimestamp: UnicodeString;
@@ -255,6 +256,23 @@ begin
       SetLength(Result, Length(Result)+1);
       Result[Length(Result)-1] := I;
     end;
+end;
+
+
+// Color is fixed for loc if map has BlockColorSelection attribute
+// or if its only AI loc, no available for player
+// *** We don't need to check if loc is only for AI for now, it works fine without it
+function TKMGameInfo.FixedLocsColors: TKMCardinalArray;
+var
+  I: Integer;
+begin
+  SetLength(Result, MAX_HANDS);
+
+  for I := 0 to MAX_HANDS - 1 do
+    if TxtInfo.BlockColorSelection{ or IsOnlyAILoc(I)} then
+      Result[I] := Color[I]
+    else
+      Result[I] := 0;
 end;
 
 

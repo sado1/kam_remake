@@ -1000,6 +1000,7 @@ begin
                 //AIs may replace humans
                 aiUsableLocs := fSaveInfo.GameInfo.HumanUsableLocs;
                 advancedAIUsableLocs := fSaveInfo.GameInfo.HumanUsableLocs;
+                fixedLocsColors := fSaveInfo.GameInfo.FixedLocsColors;
               end;
     else      begin
                 SetLength(humanUsableLocs, 0);
