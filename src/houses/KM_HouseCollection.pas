@@ -40,7 +40,7 @@ type
     procedure Load(LoadStream: TKMemoryStream);
     procedure SyncLoad;
     procedure IncAnimStep;
-    procedure UpdateResRequest; //Change resource requested counts for all houses
+    procedure UpdateDemands; //Change resource requested counts for all houses
     procedure DeleteHouseFromList(aHouse: TKMHouse);
     procedure RemoveAllHouses;
     procedure RemoveHousesOutOfBounds(const aInsetRect: TKMRect);
@@ -415,13 +415,13 @@ end;
 
 
 //Update resource requested counts for all houses
-procedure TKMHousesCollection.UpdateResRequest;
+procedure TKMHousesCollection.UpdateDemands;
 var
   I: Integer;
 begin
   for I := 0 to Count - 1 do
   if Houses[I].IsComplete and not Houses[I].IsDestroyed then
-    Houses[I].UpdateResRequest;
+    Houses[I].UpdateDemands;
 end;
 
 

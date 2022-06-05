@@ -55,6 +55,14 @@ type
     procedure Reset;
   end;
 
+  // State of demand deleting
+  TKMDeliveryDemandDeleteState = (
+    ddtNone,          // No demand delete was requested
+    ddtDeleting,      // Demand was requested to be deleted
+    // Demand was reqeusted to be not deleted, but failed.
+    // F.e. if delete was reqeuested when serf is already entering the demanded house
+    ddtDeleteNotCompleted);
+
   PKMDeliveryDemand = ^TKMDeliveryDemand;
   TKMDeliveryDemand = record
     IsActive: Boolean;
@@ -64,7 +72,7 @@ type
     Loc_Unit: TKMUnit;
     BeingPerformed: Cardinal; //Can be performed multiple times for dtAlways
     IsDeleted: Boolean; //So we don't get pointer issues
-    NotifyLocHouseOnClose: Boolean; //Should we notify Loc_House when demand is closed (house could need to do some his actions on that)
+    DeleteState: TKMDeliveryDemandDeleteState; // State of demand delete process
     {$IFDEF USE_VIRTUAL_TREEVIEW}
     Node: PVirtualNode;
     {$ENDIF}
@@ -2197,7 +2205,10 @@ begin
 
   Dec(fDemand[dWT,iD].BeingPerformed); //Remove reservation
 
-  fDemand[dWT,iD].NotifyLocHouseOnClose := False; //No need to notify Loc_House since we already delivered item
+  // If demand delete was requested
+  if fDemand[dWT,iD].DeleteState <> ddtNone then
+    // Serf completed demand, even if it was requested to be closed. It means demand delete was not completed
+    fDemand[dWT,iD].DeleteState := ddtDeleteNotCompleted;
 
   if (fDemand[dWT,iD].DemandType = dtOnce)
     or (fDemand[dWT,iD].IsDeleted and (fDemand[dWT,iD].BeingPerformed = 0)) then
@@ -2276,10 +2287,12 @@ procedure TKMDeliveries.CloseDemand(aWare: TKMWareType; aID: Integer);
 begin
   Assert(fDemand[aWare,aID].BeingPerformed = 0);
 
-  if fDemand[aWare,aID].NotifyLocHouseOnClose and (fDemand[aWare,aID].Loc_House <> nil) then
-    fDemand[aWare,aID].Loc_House.DecResourceDelivery(aWare);
+  // Notify Demand house if Delete demand was requested
+  if fDemand[aWare,aID].DeleteState <> ddtNone then
+    // Pass if delete was not completed flag
+    fDemand[aWare,aID].Loc_House.HouseDemandWasClosed(aWare, fDemand[aWare,aID].DeleteState = ddtDeleteNotCompleted);
 
-  fDemand[aWare,aID].NotifyLocHouseOnClose := False;
+  fDemand[aWare,aID].DeleteState := ddtNone;
   fDemand[aWare,aID].IsActive := False;
   fDemand[aWare,aID].DemandType := dtOnce;
   fDemand[aWare,aID].Importance := Low(TKMDemandImportance);
@@ -2358,7 +2371,7 @@ begin
 
         SaveStream.Write(BeingPerformed);
         SaveStream.Write(IsDeleted);
-        SaveStream.Write(NotifyLocHouseOnClose);
+        SaveStream.Write(DeleteState, SizeOf(DeleteState));
       end;
   end;
 
@@ -2421,7 +2434,7 @@ begin
         LoadStream.Read(Loc_Unit, 4);
         LoadStream.Read(BeingPerformed);
         LoadStream.Read(IsDeleted);
-        LoadStream.Read(NotifyLocHouseOnClose);
+        LoadStream.Read(DeleteState, SizeOf(DeleteState));
       end;
   end;
 
@@ -3050,7 +3063,7 @@ begin
   Loc_Unit := nil;
   BeingPerformed := 0;
   IsDeleted := False;
-  NotifyLocHouseOnClose := False;
+  DeleteState := ddtNone;
   {$IFDEF USE_VIRTUAL_TREEVIEW}
   Node := nil;
   {$ENDIF}

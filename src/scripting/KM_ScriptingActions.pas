@@ -520,7 +520,7 @@ begin
       and InRange(aAmount, 0, 5) then
     begin
       gHands[aHand].Stats.WareDistribution[WARE_ID_TO_TYPE[aWareType], HOUSE_ID_TO_TYPE[aHouseType]] := aAmount;
-      gHands[aHand].Houses.UpdateResRequest;
+      gHands[aHand].Houses.UpdateDemands;
     end
     else
       LogIntParamWarn('Actions.PlayerWareDistribution', [aHand, aWareType, aHouseType, aAmount]);
@@ -546,7 +546,7 @@ begin
       and InRange(aAmount, 0, 5) then
     begin
       gHands[aHand].Stats.WareDistribution[aWareType, aHouseType] := aAmount;
-      gHands[aHand].Houses.UpdateResRequest;
+      gHands[aHand].Houses.UpdateDemands;
     end
     else
       LogParamWarn('Actions.PlayerWareDistributionEx', [aHand,
@@ -2617,7 +2617,7 @@ end;
 procedure TKMScriptActions.HouseAddBuildingMaterials(aHouseID: Integer);
 var
   resNeeded: Integer;
-  plannedToRemove: Word;
+  plannedToRemove: Integer;
   H: TKMHouse;
 begin
   try
@@ -2654,7 +2654,7 @@ end;
 procedure TKMScriptActions.HouseAddBuildingMaterialsEx(aHouseID, aWoodAmount, aStoneAmount: Integer);
 var
   resNeeded: Integer;
-  plannedToRemove: Word;
+  plannedToRemove: Integer;
   H: TKMHouse;
 begin
   try

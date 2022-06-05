@@ -766,7 +766,7 @@ begin
     //gHands[fOwner].Stats.WareDistribution[wtSteel, htWeaponSmithy] := 5;
     //gHands[fOwner].Stats.WareDistribution[wtSteel, htArmorSmithy] := 5;
 
-    gHands[fOwner].Houses.UpdateResRequest;
+    gHands[fOwner].Houses.UpdateDemands;
   end;
 end;
 
@@ -1038,7 +1038,7 @@ begin
   // Ware distribution = fraction / sum of fractions * 5
   gHands[fOwner].Stats.WareDistribution[wtIron, htWeaponSmithy] := Max(  1, Min(5, Round( ArmorFraction / (WeaponFraction + ArmorFraction) * IronShare) )  );
   gHands[fOwner].Stats.WareDistribution[wtIron, htArmorSmithy] := Max(  1, Min(5, Round( WeaponFraction / (WeaponFraction + ArmorFraction) * IronShare) )  );
-  gHands[fOwner].Houses.UpdateResRequest;
+  gHands[fOwner].Houses.UpdateDemands;
 end;
 
 

@@ -1017,11 +1017,11 @@ begin
 
       gicWareDistributionChange:  begin
                                     P.Stats.WareDistribution[TKMWareType(IntParams[0]), TKMHouseType(IntParams[1])] := IntParams[2];
-                                    P.Houses.UpdateResRequest;
+                                    P.Houses.UpdateDemands;
                                   end;
       gicWareDistributions:       begin
                                     P.Stats.WareDistribution.LoadFromStr(UnicodeString(AnsiStrParam));
-                                    P.Houses.UpdateResRequest;
+                                    P.Houses.UpdateDemands;
                                   end;
 
       gicTempAddScout:            if DEBUG_CHEATS and (MULTIPLAYER_CHEATS or not gGameParams.IsMultiPlayerOrSpec) then
