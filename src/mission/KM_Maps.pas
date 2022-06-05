@@ -554,9 +554,11 @@ function TKMMapInfo.FixedLocsColors: TKMCardinalArray;
 var
   I: Integer;
 begin
-  SetLength(Result, MAX_HANDS);
+  SetLength(Result, 0);
+  if Self = nil then Exit;
 
-  for I := 0 to MAX_HANDS - 1 do
+  SetLength(Result, LocCount);
+  for I := 0 to LocCount - 1 do
     if TxtInfo.BlockColorSelection or IsOnlyAILoc(I) then
       Result[I] := FlagColors[I]
     else
@@ -575,14 +577,11 @@ begin
   SetLength(Result, LocCount);
   K := 0;
   for I := 0 to LocCount - 1 do
-  begin
-    if not CanBeHuman[I]
-      and (CanBeClassicAI[I] or CanBeAdvancedAI[I]) then
+    if IsOnlyAILoc(I) then
     begin
       Result[K] := FlagColors[I];
       Inc(K);
     end;
-  end;
 
   SetLength(Result, K);
 end;
