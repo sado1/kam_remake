@@ -1086,7 +1086,7 @@ begin
   if fNextOrder <> woNone then
     TakeNextOrder;
 
-  if (fTicker mod 8 = 0) and not InFight then
+  if (fTicker mod 6 = 0) and not InFight then
     CheckForEnemy; //Split into separate procedure so it can be called from other places
 
   Result := True; //Required for override compatibility
