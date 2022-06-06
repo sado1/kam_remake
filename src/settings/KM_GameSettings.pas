@@ -16,13 +16,15 @@ type
   TKMSettingsGFX = record
   private
     fBrightness: Byte;
+    fInterpolatedAnimations: Boolean;
     procedure SetBrightness(aValue: Byte);
+    function GetInterpolatedAnimations: Boolean;
   public
     AlphaShadows: Boolean;
     LoadFullFonts: Boolean;
     InterpolatedRender: Boolean;
-    InterpolatedAnimations: Boolean;
     AllowSnowHouses: Boolean;
+    property InterpolatedAnimations: Boolean read GetInterpolatedAnimations write fInterpolatedAnimations;
     property Brightness: Byte read fBrightness write SetBrightness;
   end;
 
@@ -263,6 +265,12 @@ uses
 
 
 { TKMSettingsGFX }
+function TKMSettingsGFX.GetInterpolatedAnimations: Boolean;
+begin
+  Result := InterpolatedRender and fInterpolatedAnimations;
+end;
+
+
 procedure TKMSettingsGFX.SetBrightness(aValue: Byte);
 begin
   fBrightness := EnsureRange(aValue, 0, 20);
