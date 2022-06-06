@@ -272,7 +272,7 @@ end;
 //How much it costs to move From -> To
 function TKMPathFinding.MovementCost(aFromX, aFromY, aToX, aToY: Word): Cardinal;
 const
-  AVOID_ROAD_PENALTY = 100; // 10 tiles
+  AVOID_ROAD_PENALTY = 25; // 2.5 tiles
   AVOID_LOCKED_PENALTY = 200; // 20 tiles
   AVOID_UNIT_PENALTY = 15; // 1.5 tiles
 var
