@@ -2455,11 +2455,11 @@ begin
     actStr := fAction.ObjToString(aSeparator + '  ');
 
   Result := inherited ObjToString(aSeparator) +
-            Format('%sAction=%s%sPrevPosition = %s%sNextPosition = %s%s' +
+            Format('%sDir = %s%sPrevPosition = %s%sNextPosition = %s%s' +
                    'Thought = %s%sHitPoints = %d%sHitPointCounter = %d%sCondition = %d%s' +
                    'Home = %s%sInHouse = %s%sVisible = %s%sAnimStep = %d',
                    [aSeparator,
-                    actStr, aSeparator,
+                    GetEnumName(TypeInfo(TKMDirection), Integer(fDirection)), aSeparator,
                     TypeToString(fPositionPrev), aSeparator,
                     TypeToString(fPositionNext), aSeparator,
                     GetEnumName(TypeInfo(TKMUnitThought), Integer(fThought)), aSeparator,

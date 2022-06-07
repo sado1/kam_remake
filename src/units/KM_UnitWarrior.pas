@@ -1053,8 +1053,9 @@ begin
     houseStr := fOrderTargetHouse.ObjToStringShort('; ');
 
   Result := inherited ObjToString(aSeparator) +
-            Format('%sOrderTargetU = [%s]%sAttackingU = [%s]%sOrderTargetH = [%s]%sGroup = %s%s',
+            Format('%sFaceDir = %s%sOrderTargetU = [%s]%sAttackingU = [%s]%sOrderTargetH = [%s]%sGroup = %s%s',
                    [aSeparator,
+                    GetEnumName(TypeInfo(TKMDirection), Integer(FaceDir)), aSeparator,
                     unitStr, aSeparator,
                     attackUStr, aSeparator,
                     houseStr, aSeparator,
