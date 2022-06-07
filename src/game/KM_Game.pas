@@ -156,7 +156,7 @@ type
     StartedFromMapEditor: Boolean;    // True if we start game from map editor ('Quick Play')
     StartedFromMapEdAsMPMap: Boolean; // True if we start game from map editor ('Quick Play') with MP map
 
-    constructor Create(aGameMode: TKMGameMode; aRender: TRender; aOnDestroy: TEvent;
+    constructor Create(aGameMode: TKMGameMode; aRender: TKMRender; aOnDestroy: TEvent;
                        aSaveWorkerThreadHolder,
                        aBaseSaveWorkerThreadHolder,
                        aAutoSaveWorkerThreadHolder,
@@ -299,7 +299,7 @@ type
     procedure ReplayInconsistency(aCommand: TKMStoredGIPCommand; aMyRand: Cardinal);
     procedure SaveCampaignScriptData(SaveStream: TKMemoryStream);
 
-    procedure Render(aRender: TRender);
+    procedure Render(aRender: TKMRender);
     procedure UpdateGame;
     procedure UpdateState(aGlobalTickCount: Cardinal);
     procedure UpdateStateIdle(aFrameTime: Cardinal);
@@ -342,7 +342,7 @@ const
 //Create template for the Game
 //aRender - who will be rendering the Game session
 //aNetworking - access to MP stuff
-constructor TKMGame.Create(aGameMode: TKMGameMode; aRender: TRender; aOnDestroy: TEvent;
+constructor TKMGame.Create(aGameMode: TKMGameMode; aRender: TKMRender; aOnDestroy: TEvent;
                            aSaveWorkerThreadHolder,
                            aBaseSaveWorkerThreadHolder,
                            aAutoSaveWorkerThreadHolder,
@@ -1676,7 +1676,7 @@ begin
 end;
 
 
-procedure TKMGame.Render(aRender: TRender);
+procedure TKMGame.Render(aRender: TKMRender);
 var
   tickLag: Single;
 begin

@@ -16,7 +16,7 @@ type
   TKMRenderMode = (rm2D, rm3D);
 
   //General OpenGL handling
-  TRender = class
+  TKMRender = class
   private class var
     fLastBindedTextureId: Cardinal;
     fMaxTextureSize: Cardinal; // Max supported texture size by video adapter
@@ -74,7 +74,7 @@ type
   end;
 
 var
-  gRender: TRender;
+  gRender: TKMRender;
 
 
 implementation
@@ -88,7 +88,7 @@ const
   MAX_FBO_BUFFER_SIZE = CELL_SIZE_PX * (MAX_MAP_SIZE - 1); // (10200 = CELL_SIZE=40px)*255
 
 { TRender }
-constructor TRender.Create(aRenderControl: TKMRenderControl; aScreenX, aScreenY: Integer; aVSync: Boolean);
+constructor TKMRender.Create(aRenderControl: TKMRenderControl; aScreenX, aScreenY: Integer; aVSync: Boolean);
 begin
   inherited Create;
 
@@ -136,7 +136,7 @@ begin
 end;
 
 
-destructor TRender.Destroy;
+destructor TKMRender.Destroy;
 begin
   if not fBlind then
   begin
@@ -154,7 +154,7 @@ begin
 end;
 
 
-procedure TRender.InitFBO;
+procedure TKMRender.InitFBO;
 begin
   if fFBOInited then Exit;
 
@@ -174,7 +174,7 @@ end;
 //Do not bind same texture again, it can drastically change render performance
 //F.e. on an average Map (Cube 256x256) when full map is shown in viewport
 //there are only ~10k new texture binds, when all other ~30k binds can be skipped
-class procedure TRender.BindTexture(aTexId: Cardinal);
+class procedure TKMRender.BindTexture(aTexId: Cardinal);
 begin
   if aTexId <> fLastBindedTextureId then
   begin
@@ -184,7 +184,7 @@ begin
 end;
 
 
-procedure TRender.Resize(aWidth, aHeight: Integer);
+procedure TKMRender.Resize(aWidth, aHeight: Integer);
 begin
   if fBlind then Exit;
 
@@ -194,7 +194,7 @@ begin
 end;
 
 
-procedure TRender.SetRenderMode(aRenderMode: TKMRenderMode);
+procedure TKMRender.SetRenderMode(aRenderMode: TKMRenderMode);
 begin
   if fBlind then Exit;
 
@@ -212,7 +212,7 @@ begin
 end;
 
 
-class function TRender.GenerateTextureCommon(aMinFilter, aMagFilter: TKMFilterType): GLuint;
+class function TKMRender.GenerateTextureCommon(aMinFilter, aMagFilter: TKMFilterType): GLuint;
 var
   texture: GLuint;
 begin
@@ -241,26 +241,26 @@ end;
 
 
 //Generate texture out of TCardinalArray
-class function TRender.GenTexture(DestX, DestY: Word; const Data: Pointer; Mode: TKMTexFormat; aMinFilter, aMagFilter: TKMFilterType): GLUint;
+class function TKMRender.GenTexture(DestX, DestY: Word; const Data: Pointer; Mode: TKMTexFormat; aMinFilter, aMagFilter: TKMFilterType): GLUint;
 begin
   Result := GenerateTextureCommon(aMinFilter, aMagFilter);
   UpdateTexture(Result, DestX, DestY, Mode, Data);
 end;
 
 
-class procedure TRender.DeleteTexture(aTex: GLUint);
+class procedure TKMRender.DeleteTexture(aTex: GLUint);
 begin
   glDeleteTextures(1, @aTex);
 end;
 
 
-function TRender.GetMaxFBOSize: Cardinal;
+function TKMRender.GetMaxFBOSize: Cardinal;
 begin
   Result := Min(fMaxViewportDim, MAX_FBO_BUFFER_SIZE);
 end;
 
 
-class function TRender.GetMaxTexSize: Cardinal;
+class function TKMRender.GetMaxTexSize: Cardinal;
 begin
   if fMaxTextureSize > 0 then Exit(fMaxTextureSize);
 
@@ -270,7 +270,7 @@ begin
 end;
 
 
-class function TRender.GetMaxViewportDim: Cardinal;
+class function TKMRender.GetMaxViewportDim: Cardinal;
 begin
   if fMaxViewportDim > 0 then Exit(fMaxViewportDim);
 
@@ -281,7 +281,7 @@ end;
 
 
 //Update texture with TCardinalArray
-class procedure TRender.UpdateTexture(aTexture: GLuint; DestX, DestY: Word; Mode: TKMTexFormat; const Data: Pointer);
+class procedure TKMRender.UpdateTexture(aTexture: GLuint; DestX, DestY: Word; Mode: TKMTexFormat; const Data: Pointer);
 begin
   if not Assigned(glTexImage2D) then Exit;
 
@@ -307,25 +307,25 @@ end;
 
 
 //1.4 is considered to be our minimal requirement
-function TRender.IsOldGLVersion: Boolean;
+function TKMRender.IsOldGLVersion: Boolean;
 begin
   Result := not fBlind and not GL_VERSION_1_4;
 end;
 
 
-procedure TRender.ReadRenderedToScreenPixels(var aWidth, aHeight: Integer; var aPixelData: TKMCardinalArray);
+procedure TKMRender.ReadRenderedToScreenPixels(var aWidth, aHeight: Integer; var aPixelData: TKMCardinalArray);
 begin
   SaveBufferToFile(False, aWidth, aHeight, aPixelData);
 end;
 
 
-procedure TRender.ReadRenderedToFBOPixels(var aWidth, aHeight: Integer; var aPixelData: TKMCardinalArray);
+procedure TKMRender.ReadRenderedToFBOPixels(var aWidth, aHeight: Integer; var aPixelData: TKMCardinalArray);
 begin
   SaveBufferToFile(True, aWidth, aHeight, aPixelData);
 end;
 
 
-procedure TRender.SaveBufferToFile(aUseFBOBuffer: Boolean; var aWidth, aHeight: Integer; var aPixelData: TKMCardinalArray);
+procedure TKMRender.SaveBufferToFile(aUseFBOBuffer: Boolean; var aWidth, aHeight: Integer; var aPixelData: TKMCardinalArray);
 {$IFDEF WDC}
 var
   I, K: Integer;
@@ -361,7 +361,7 @@ begin
 end;
 
 
-procedure TRender.BeginFrame;
+procedure TKMRender.BeginFrame;
 begin
   if fBlind then Exit;
 
@@ -382,7 +382,7 @@ end;
 
 
 //Render highlight overlay to make whole picture look brighter (more saturated)
-procedure TRender.RenderBrightness(aValue: Byte);
+procedure TKMRender.RenderBrightness(aValue: Byte);
 begin
   if fBlind then Exit;
 
@@ -402,7 +402,7 @@ begin
 end;
 
 
-procedure TRender.EndFrame;
+procedure TKMRender.EndFrame;
 begin
   if fBlind then Exit;
 

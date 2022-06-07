@@ -56,7 +56,7 @@ type
     procedure HandleScrollKeysDown(Key: Word; var aHandled: Boolean);
     procedure HandleScrollKeysUp(Key: Word; var aHandled: Boolean);
   public
-    constructor Create(aRender: TRender); reintroduce;
+    constructor Create(aRender: TKMRender); reintroduce;
     destructor Destroy; override;
 
     property Minimap: TKMMinimapGame read fMinimap;
@@ -214,7 +214,7 @@ uses
 
 
 { TKMUserInterfaceGame }
-constructor TKMUserInterfaceGame.Create(aRender: TRender);
+constructor TKMUserInterfaceGame.Create(aRender: TKMRender);
 begin
   inherited Create(aRender.ScreenX, aRender.ScreenY);
 
@@ -231,7 +231,7 @@ begin
 
   fPaintDefences := False;
 
-  gRenderPool := TRenderPool.Create(fViewport, aRender);
+  gRenderPool := TKMRenderPool.Create(fViewport, aRender);
 end;
 
 

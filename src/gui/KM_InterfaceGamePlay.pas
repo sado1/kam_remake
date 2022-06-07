@@ -325,7 +325,7 @@ type
       function ZoomChangeBlocked: Boolean; override;
       procedure OptionsChanged; override;
   public
-    constructor Create(aRender: TRender; aUIMode: TUIMode); reintroduce;
+    constructor Create(aRender: TKMRender; aUIMode: TUIMode); reintroduce;
     destructor Destroy; override;
 
     procedure MessageIssue(aKind: TKMMessageKind; const aText: UnicodeString); overload;
@@ -819,7 +819,7 @@ begin
 end;
 
 
-constructor TKMGamePlayInterface.Create(aRender: TRender; aUIMode: TUIMode);
+constructor TKMGamePlayInterface.Create(aRender: TKMRender; aUIMode: TUIMode);
 const
   COLOR_B_SIZE = 20;
 var

@@ -194,7 +194,7 @@ begin
   // it makes sense to store its settings along with the game's in the shared folder
   fServerSettings := TKMServerSettings.Create(slShared);
 
-  gRender := TRender.Create(aRenderControl, aScreenX, aScreenY, aVSync);
+  gRender := TKMRender.Create(aRenderControl, aScreenX, aScreenY, aVSync);
 
   fChat := TKMChat.Create;
 

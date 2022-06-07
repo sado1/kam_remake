@@ -518,7 +518,7 @@ begin
     if(FWidth > 0) and (FHeight > 0) then
     begin
       SetLength(FBuffer, FWidth * FHeight * 3);
-      FTexture.Tex := TRender.GenerateTextureCommon(ftLinear, ftLinear);
+      FTexture.Tex := TKMRender.GenerateTextureCommon(ftLinear, ftLinear);
 
       FMediaPlayer := libvlc_media_player_new_from_media(media);
       libvlc_video_set_format(FMediaPlayer, 'RV24', FWidth, FHeight, FWidth * 3);
@@ -562,7 +562,7 @@ begin
 
   if FTexture.Tex > 0 then
   begin
-    TRender.DeleteTexture(FTexture.Tex);
+    TKMRender.DeleteTexture(FTexture.Tex);
     FTexture.Tex := 0;
   end;
   SetLength(FBuffer, 0);

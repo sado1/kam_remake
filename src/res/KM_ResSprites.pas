@@ -248,7 +248,7 @@ begin
   Result := MAX_GAME_ATLAS_SIZE;
   {$IFNDEF NO_OGL}
   if gRender <> nil then
-    Result := Min(Result, TRender.MaxTextureSize);
+    Result := Min(Result, TKMRender.MaxTextureSize);
   {$ENDIF}
 end;
 
@@ -272,9 +272,9 @@ procedure TKMSpritePack.DeleteSpriteTexture(aIndex: Integer);
 begin
   {$IFNDEF NO_OGL}
   if gGFXData[fRT, aIndex].Tex.TexID <> 0 then
-    TRender.DeleteTexture(gGFXData[fRT, aIndex].Tex.TexID);
+    TKMRender.DeleteTexture(gGFXData[fRT, aIndex].Tex.TexID);
   if gGFXData[fRT, aIndex].Alt.TexID <> 0 then
-    TRender.DeleteTexture(gGFXData[fRT, aIndex].Alt.TexID);
+    TKMRender.DeleteTexture(gGFXData[fRT, aIndex].Alt.TexID);
 
   gGFXData[fRT, aIndex].Tex.TexID := 0;
   gGFXData[fRT, aIndex].Alt.TexID := 0;
@@ -1427,7 +1427,7 @@ begin
       if LINEAR_FILTER_SPRITES and (fRT in [rxTrees, rxHouses, rxUnits]) then
         texFilter := ftLinear;
 
-      texID := TRender.GenTexture(aSpriteInfo[I].Width, aSpriteInfo[I].Height, @TD[0], aTexType, texFilter, texFilter);
+      texID := TKMRender.GenTexture(aSpriteInfo[I].Width, aSpriteInfo[I].Height, @TD[0], aTexType, texFilter, texFilter);
 
       //Now that we know texture IDs we can fill GFXData structure
       SetGFXData(texID, aSpriteInfo[I], aMode);
@@ -1589,7 +1589,7 @@ begin
         if LINEAR_FILTER_SPRITES and (fRT in [rxTrees, rxHouses, rxUnits]) then
           texFilter := ftLinear;
 
-        texID := TRender.GenTexture(SpriteInfo.Width, SpriteInfo.Height, @Data[0], TexType, texFilter, texFilter);
+        texID := TKMRender.GenTexture(SpriteInfo.Width, SpriteInfo.Height, @Data[0], TexType, texFilter, texFilter);
         //Now that we know texture IDs we can fill GFXData structure
         SetGFXData(texID, SpriteInfo, SAT);
 

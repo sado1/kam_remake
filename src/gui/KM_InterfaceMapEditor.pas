@@ -139,7 +139,7 @@ type
     procedure MapEdOptionsWereChanged;
     procedure OptionsChanged; override;
   public
-    constructor Create(aRender: TRender; var aMapSaveStarted, aMapSaveEnded: TEvent);
+    constructor Create(aRender: TKMRender; var aMapSaveStarted, aMapSaveEnded: TEvent);
     destructor Destroy; override;
 
     procedure ShowMessage(const aText: string);
@@ -189,7 +189,7 @@ const
 
 
 { TKMMapEdInterface }
-constructor TKMMapEdInterface.Create(aRender: TRender; var aMapSaveStarted, aMapSaveEnded: TEvent);
+constructor TKMMapEdInterface.Create(aRender: TKMRender; var aMapSaveStarted, aMapSaveEnded: TEvent);
 const
   TB_PAD_MAP_ED = 0;
   TB_PAD_MBTN_LEFT = 9;
