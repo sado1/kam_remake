@@ -679,6 +679,8 @@ begin
   aWarrior.OnPickedFight := Member_PickedFight;
   aWarrior.OnWarriorDied := Member_Died;
   aWarrior.SetGroup(Self);
+  // Face warrior as at our orderLoc
+  aWarrior.FaceDir := fOrderLoc.Dir;
 end;
 
 

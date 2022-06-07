@@ -321,12 +321,21 @@ end;
 function TKMUnitActionFight.Execute: TKMActionResult;
 var
   cycle, step: Byte;
+  W: TKMUnitWarrior;
 begin
-  cycle := max(gRes.Units[fUnit.UnitType].UnitAnim[ActionType, fUnit.Direction].Count, 1);
+  W := TKMUnitWarrior(fUnit);
+  cycle := Max(gRes.Units[fUnit.UnitType].UnitAnim[ActionType, fUnit.Direction].Count, 1);
   step  := fUnit.AnimStep mod cycle;
 
   Result := ExecuteValidateOpponent(step);
-  if Result = arActDone then Exit;
+  if Result = arActDone then
+  begin
+    // Face back to our order direction when we have done fighting with our enemy
+    if W.IsRanged and (W.FaceDir <> dirNA) then
+      fUnit.Direction := W.FaceDir;
+    Exit;
+  end;
+
   step := fUnit.AnimStep mod cycle; //Can be changed by ExecuteValidateOpponent, so recalculate it
 
   //Opponent can walk next to us, keep facing him
@@ -334,7 +343,7 @@ begin
     fUnit.Direction := KMGetDirection(fUnit.PositionF, fOpponent.PositionF);
 
   //If the vertex usage has changed we should update it
-  if not TKMUnitWarrior(fUnit).IsRanged then //Ranged units do not use verticies
+  if not W.IsRanged then //Ranged units do not use verticies
     if not UpdateVertexUsage(fUnit.Position, fOpponent.Position) then
     begin
       //The vertex is being used so we can't fight
@@ -342,7 +351,7 @@ begin
       Exit;
     end;
 
-  if TKMUnitWarrior(fUnit).IsRanged then
+  if W.IsRanged then
   begin
     if ExecuteProcessRanged(step) then
       Exit;
@@ -353,7 +362,7 @@ begin
 
   //Aiming Archers and pausing melee may miss a few ticks, (exited above) so don't put anything critical below!
 
-  StepDone := (fUnit.AnimStep mod cycle = 0) or TKMUnitWarrior(fUnit).IsRanged; //Archers may abandon at any time as they need to walk off imediantly
+  StepDone := (fUnit.AnimStep mod cycle = 0) or W.IsRanged; //Archers may abandon at any time as they need to walk off imediantly
   Inc(fUnit.AnimStep);
 end;
 
