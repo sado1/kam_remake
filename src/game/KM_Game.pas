@@ -140,6 +140,8 @@ type
     function DoRenderGame: Boolean;
 
     procedure MultiplayerRig(aNewGame: Boolean);
+
+    procedure PrepareSaveFolder(const aPathName: String; aSaveByPlayer: Boolean; aSaveWorkerThread: TKMWorkerThread);
     procedure SaveGameToStream(aTimestamp: TDateTime; aSaveStream: TKMemoryStream); overload;
     procedure SaveGameToStream(aTimestamp: TDateTime; aHeaderStream, aBodyStream: TKMemoryStream); overload;
     procedure SaveGameToFile(const aPathName: String; aSaveByPlayer: Boolean; aSaveWorkerThread: TKMWorkerThread; aTimestamp: TDateTime; const aMPLocalDataPathName: String = '');
@@ -2353,39 +2355,19 @@ begin
 end;
 
 
-//Saves the game in all its glory
-procedure TKMGame.SaveGameToFile(const aPathName: String; aSaveByPlayer: Boolean; aSaveWorkerThread: TKMWorkerThread;
-                                 aTimestamp: TDateTime; const aMPLocalDataPathName: String = '');
+procedure TKMGame.PrepareSaveFolder(const aPathName: String; aSaveByPlayer: Boolean; aSaveWorkerThread: TKMWorkerThread);
 var
-  mainStream, headerStream, bodyStream, saveStreamTxt: TKMemoryStream;
-  gameMPLocalData: TKMGameMPLocalData;
+  path: string;
 begin
-  if BLOCK_SAVE then Exit; // This must be here because of paraller Runner
-
-  gLog.AddTime(Format('Saving game at tick %d to ''%s''', [fParams.Tick, aPathName]));
-
-  Assert(not fParams.IsMapEditor and (ALLOW_SAVE_IN_REPLAY or not fParams.IsReplay), 'Saving from wrong state');
-
-  saveStreamTxt := nil;
-  if DoSaveGameAsText then
-    saveStreamTxt := TKMemoryStreamText.Create;
-
-  mainStream := TKMemoryStreamBinary.Create(False); // Not compressed
-  headerStream := TKMemoryStreamBinary.Create(False); // Not compressed
-  bodyStream := TKMemoryStreamBinary.Create(True);    // Compressed
-
-  SaveGameToStream(aTimestamp, headerStream, bodyStream);
-
+  path := aPathName;
   //Makes the folders in case they were deleted.
   //Should do before save Minimap file for MP game
   if (aPathName <> '') then
   begin
     // We can make directories in async too, since all save parts are made in async now
     aSaveWorkerThread.QueueWork(procedure
-    var
-      path: string;
     begin
-      path := ExtractFilePath(aPathName);
+      path := ExtractFilePath(path);
       if DirectoryExists(path) then
       begin
         // Delete save folder content, since we want to overwrite old saves
@@ -2404,6 +2386,32 @@ begin
         ForceDirectories(path);
     end, 'Prepare save dir');
   end;
+end;
+
+
+//Saves the game in all its glory
+procedure TKMGame.SaveGameToFile(const aPathName: String; aSaveByPlayer: Boolean; aSaveWorkerThread: TKMWorkerThread;
+                                 aTimestamp: TDateTime; const aMPLocalDataPathName: String = '');
+var
+  mainStream, headerStream, bodyStream, saveStreamTxt: TKMemoryStream;
+  gameMPLocalData: TKMGameMPLocalData;
+begin
+  if BLOCK_SAVE then Exit; // This must be here because of paraller Runner
+
+  // We have to wait until basesave is made before first game save
+  fBaseSaveWorkerThreadHolder.Worker.WaitForAllWorkToComplete;
+
+  gLog.AddTime(Format('Saving game at tick %d to ''%s''', [fParams.Tick, aPathName]));
+
+  Assert(not fParams.IsMapEditor and (ALLOW_SAVE_IN_REPLAY or not fParams.IsReplay), 'Saving from wrong state');
+
+  PrepareSaveFolder(aPathName, aSaveByPlayer, aSaveWorkerThread);
+
+  mainStream    := TKMemoryStreamBinary.Create(False); // Not compressed
+  headerStream  := TKMemoryStreamBinary.Create(False); // Not compressed
+  bodyStream    := TKMemoryStreamBinary.Create(True);  // Compressed
+
+  SaveGameToStream(aTimestamp, headerStream, bodyStream);
 
   //In MP each player has his own perspective, hence we dont save minimaps in the main save file to avoid cheating,
   //but save minimap in separate file with local game data
@@ -2427,8 +2435,11 @@ begin
 
   mainStream.Write(True); // Save is compressed
   TKMemoryStream.AsyncSaveStreamsToFileAndFree(mainStream, headerStream, bodyStream, aPathName, SAVE_HEADER_MARKER, SAVE_BODY_MARKER, aSaveWorkerThread);
+
+  // Save .sav.txt file
   if DoSaveGameAsText then
   begin
+    saveStreamTxt := TKMemoryStreamText.Create;
     SaveGameToStream(aTimestamp, saveStreamTxt);
     TKMemoryStream.AsyncSaveToFileAndFree(saveStreamTxt, aPathName + EXT_SAVE_TXT_DOT, aSaveWorkerThread);
   end;
@@ -2474,11 +2485,11 @@ begin
   gPerfLogs.SectionEnter(psGameSaveWait);
   {$ENDIF}
   try
-    if (aSaveWorkerThread <> fBaseSaveWorkerThreadHolder.Worker) then
-      // We have to wait until basesave is made before first game save
-      fBaseSaveWorkerThreadHolder.Worker.WaitForAllWorkToComplete;
-
-    //Wait for previous save async tasks to complete before proceeding
+    // Wait for previous save async tasks to complete before proceeding
+    // We don't really need to wait here, since worker will wait automatically anyway in his queue
+    // But if saves are made too often (f.e. on a very high game speed)
+    // then waiting here will force worker to finish all of his previous jobs in his queue,
+    // which is better than waiting a lot of time at the 'final save'
     aSaveWorkerThread.WaitForAllWorkToComplete;
   finally
     {$IFDEF PERFLOG}
@@ -2534,7 +2545,12 @@ begin
 
     // Save checkpoints
     if gGameSettings.SaveCheckpoints and not SKIP_SAVE_SAVPTS_TO_FILE then
-      fSavePoints.SaveToFileAsync(ChangeFileExt(fullPath, EXT_SAVE_GAME_SAVEPTS_DOT), aSaveWorkerThread);
+    begin
+      // Prepare
+      PrepareSaveFolder(fullPath, saveByPlayer, fSavePointWorkerThreadHolder.Worker);
+      // We can save savepoints by our savepoints worker, since we save to the different file anyway
+      fSavePoints.SaveToFileAsync(ChangeFileExt(fullPath, EXT_SAVE_GAME_SAVEPTS_DOT), fSavePointWorkerThreadHolder.Worker);
+    end;
 
     if DoSaveRandomChecks then
       try
