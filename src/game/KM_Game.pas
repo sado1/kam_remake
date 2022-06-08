@@ -181,6 +181,7 @@ type
     procedure Save(const aSaveName: UnicodeString; aTimestamp: TDateTime; aSaveWorkerThread: TKMWorkerThread); overload;
     procedure SaveAndWait(const aSaveName: UnicodeString);
     procedure WaitForSaveToBeDone;
+    procedure WaitForAllSavesToBeDone;
 
     procedure AutoSave(aTimestamp: TDateTime);
     procedure AutoSaveAfterPT(aTimestamp: TDateTime);
@@ -2452,6 +2453,15 @@ begin
 end;
 
 
+procedure TKMGame.WaitForAllSavesToBeDone;
+begin
+  fSaveWorkerThreadHolder.Worker.WaitForAllWorkToComplete;
+  fBaseSaveWorkerThreadHolder.Worker.WaitForAllWorkToComplete;
+  fAutoSaveWorkerThreadHolder.Worker.WaitForAllWorkToComplete;
+  fSavePointWorkerThreadHolder.Worker.WaitForAllWorkToComplete;
+end;
+
+
 // Save game and wait till async worker complete all of its jobs
 procedure TKMGame.SaveAndWait(const aSaveName: UnicodeString);
 begin
@@ -2780,6 +2790,10 @@ begin
   fLastSaveFileRel := fLoadFromFileRel; // We set last save to the loaded file, so we will be able to restart from this point
 
   gLog.AddTime('Loading game from: ' + aPathName);
+
+  // We should wait for the all of save workers to complete their jobs until we load a next save.
+  // Otherwise we could end up loading some corrupted save data if saving is not done yet and we load in the middle of the save process
+  WaitForAllSavesToBeDone;
 
   loadStream := TKMemoryStreamBinary.Create;
   try
