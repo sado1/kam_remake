@@ -705,7 +705,7 @@ begin
   // Wait till 'paused' save will be made. We want to show it properly in the Lobby UI
   gSystem.Cursor := kmcAnimatedDirSelector;
   try
-  gGame.WaitForSaveToBeDone;
+    gGame.WaitForSaveToBeDone;
   finally
     gSystem.Cursor := kmcDefault;
   end;
