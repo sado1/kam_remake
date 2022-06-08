@@ -96,7 +96,7 @@ type
     fSaveWorkerThreadHolder: TKMWorkerThreadHolder; // Worker thread for normal saves and save at the end of PT
     fBaseSaveWorkerThreadHolder: TKMWorkerThreadHolder; // Worker thread for base save only
     fAutoSaveWorkerThreadHolder: TKMWorkerThreadHolder; // Worker thread for autosaves only
-    fSavePTWorkerThreadHolder: TKMWorkerThreadHolder; // Worker thread for normal saves and save at the end of PT
+    fSavePointWorkerThreadHolder: TKMWorkerThreadHolder; // Worker thread for savepoints only
 
     fMapEdMapSaveStarted: TEvent;
     fMapEdMapSaveEnded: TEvent;
@@ -160,7 +160,7 @@ type
                        aSaveWorkerThreadHolder,
                        aBaseSaveWorkerThreadHolder,
                        aAutoSaveWorkerThreadHolder,
-                       aSavePTWorkerThreadHolder: TKMWorkerThreadHolder);
+                       aSavePointWorkerThreadHolder: TKMWorkerThreadHolder);
     destructor Destroy; override;
 
     procedure Start(const aMissionFullFilePath, aName: UnicodeString; aFullCRC, aSimpleCRC: Cardinal; aCampaign: TKMCampaign;
@@ -346,7 +346,7 @@ constructor TKMGame.Create(aGameMode: TKMGameMode; aRender: TKMRender; aOnDestro
                            aSaveWorkerThreadHolder,
                            aBaseSaveWorkerThreadHolder,
                            aAutoSaveWorkerThreadHolder,
-                           aSavePTWorkerThreadHolder: TKMWorkerThreadHolder);
+                           aSavePointWorkerThreadHolder: TKMWorkerThreadHolder);
 const
   UIMode: array[TKMGameMode] of TUIMode = (umSP, umSP, umMP, umSpectate, umSP, umReplay, umReplay);
 begin
@@ -362,7 +362,7 @@ begin
   fSaveWorkerThreadHolder := aSaveWorkerThreadHolder;
   fBaseSaveWorkerThreadHolder := aBaseSaveWorkerThreadHolder;
   fAutoSaveWorkerThreadHolder := aAutoSaveWorkerThreadHolder;
-  fSavePTWorkerThreadHolder := aSavePTWorkerThreadHolder;
+  fSavePointWorkerThreadHolder := aSavePointWorkerThreadHolder;
 
   fOnDestroy := aOnDestroy;
 
@@ -2863,7 +2863,7 @@ begin
     saveStream := TKMemoryStreamBinary.Create;
     SaveGameToStream(0, saveStream); // Date is not important
 
-    fSavePoints.NewSavePointAsyncAndFree(saveStream, fParams.Tick, fSavePTWorkerThreadHolder.Worker);
+    fSavePoints.NewSavePointAsyncAndFree(saveStream, fParams.Tick, fSavePointWorkerThreadHolder.Worker);
   finally
     {$IFDEF PERFLOG}
     gPerfLogs.SectionLeave(psGameSavePoint);
