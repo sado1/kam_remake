@@ -1462,7 +1462,7 @@ function TKMDeliveries.TryCalculateBidBasic(aCalcKind: TKMDeliveryCalcKind; aOff
                                             aOwner: TKMHandID; var aBidBasicCost: TKMDeliveryBid; aSerf: TKMUnitSerf = nil;
                                             aAllowOffroad: Boolean = False): Boolean;
 var
-  iD: Integer;
+  iD, distr: Integer;
   dWT: TKMWareType;
   secondPass: TKMTerrainPassability;
 begin
@@ -1480,8 +1480,8 @@ begin
   //This means weapon and armour smiths should get same amount of iron, even if one is closer to the smelter.
   if (fDemand[dWT,iD].Loc_House <> nil) and fDemand[dWT,iD].Loc_House.IsComplete
     and gResHouses[fDemand[dWT,iD].Loc_House.HouseType].DoesOrders
-    and (aOfferCnt <= 3) //Little resources to share around
-    and (fDemand[dWT,iD].Loc_House.CheckResIn(dWT) <= 2) then //Few resources already delivered
+    and (aOfferCnt <= 2) //Little resources to share around
+    and (fDemand[dWT,iD].Loc_House.CheckResIn(dWT) <= 1) then //Few resources already delivered
   begin
     if aCalcKind = dckAccurate then
       Exit;
@@ -1489,10 +1489,10 @@ begin
     // Just set it to non-tpNone value, which will mark this calculation as a valid
     aBidBasicCost.OfferToDemand.Pass := tpWalkRoad;
 
-    aBidBasicCost.OfferToDemand.Value := 7
-      //Resource ratios are also considered
-      + KaMRandom(65 - 13*gHands[aOwner].Stats.WareDistribution[dWT, fDemand[dWT,iD].Loc_House.HouseType],
-                  'TKMDeliveries.TryCalculateBidBasic');
+    distr := gHands[aOwner].Stats.WareDistribution[dWT, fDemand[dWT,iD].Loc_House.HouseType];
+
+    //Resource ratios are also considered
+    aBidBasicCost.OfferToDemand.Value := 5 + (5 - distr)*4 + KaMRandom(16 - 3*distr, 'TKMDeliveries.TryCalculateBidBasic');
   end
   else
   begin
