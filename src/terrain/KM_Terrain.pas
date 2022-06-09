@@ -261,7 +261,7 @@ type
     function UnitsHitTest(X, Y: Word): Pointer;
     function UnitsHitTestF(const aLoc: TKMPointF): Pointer;
     function UnitsHitTestWithinRad(const aLoc: TKMPoint; aMinRad, aMaxRad: Single; aPlayer: TKMHandID; aAlliance: TKMAllianceType;
-                                   aDir: TKMDirection; const aClosest: Boolean): Pointer;
+                                   aDir: TKMDirection; const aClosest: Boolean; aTestDiagWalkable: Boolean = True): Pointer;
 
     function ScriptTrySetTile(X, Y, aType, aRot: Integer): Boolean;
     function ScriptTrySetTileHeight(X, Y, aHeight: Integer): Boolean;
@@ -1916,7 +1916,7 @@ end;
   Should be optimized versus usual UnitsHitTest
   Prefer Warriors over Citizens}
 function TKMTerrain.UnitsHitTestWithinRad(const aLoc: TKMPoint; aMinRad, aMaxRad: Single; aPlayer: TKMHandID; aAlliance: TKMAllianceType;
-                                          aDir: TKMDirection; const aClosest: Boolean): Pointer;
+                                          aDir: TKMDirection; const aClosest: Boolean; aTestDiagWalkable: Boolean = True): Pointer;
 type
   TKMUnitArray = array of TKMUnit;
   procedure Append(var aArray: TKMUnitArray; var aCount: Integer; const aUnit: TKMUnit);
@@ -2020,12 +2020,14 @@ begin
     if (aMaxRad = 1) and KMStepIsDiag(aLoc, P) then
       requiredMaxRad := 1.42; //Use diagonal radius sqrt(2) instead
 
-    if CanWalkDiagonaly(aLoc, P.X, P.Y)
-    and ((Abs(aLoc.X - P.X) <> 1)
-          or (Abs(aLoc.Y - P.Y) <> 1)
-          or VertexUsageCompatible(aLoc, P)
-        )
-    and InRange(KMLength(KMPointF(aLoc), U.PositionF), aMinRad, requiredMaxRad) //Unit's exact position must be close enough
+    if (not aTestDiagWalkable
+        or CanWalkDiagonaly(aLoc, P.X, P.Y)
+          and ((Abs(aLoc.X - P.X) <> 1)
+            or (Abs(aLoc.Y - P.Y) <> 1)
+            or VertexUsageCompatible(aLoc, P)
+          )
+      )
+      and InRange(KMLength(KMPointF(aLoc), U.PositionF), aMinRad, requiredMaxRad) //Unit's exact position must be close enough
     then
       if aClosest then
       begin
