@@ -1475,30 +1475,30 @@ begin
   if not Result then
     Exit;
 
-  //For weapons production in cases with little resources available, they should be distributed
-  //evenly between places rather than caring about route length.
-  //This means weapon and armour smiths should get same amount of iron, even if one is closer to the smelter.
-  if (fDemand[dWT,iD].Loc_House <> nil) and fDemand[dWT,iD].Loc_House.IsComplete
-    and gResHouses[fDemand[dWT,iD].Loc_House.HouseType].DoesOrders
-    and (aOfferCnt <= 2) //Little resources to share around
-    and (fDemand[dWT,iD].Loc_House.CheckResIn(dWT) <= 1) then //Few resources already delivered
+  if fDemand[dWT,iD].Loc_House <> nil then
   begin
-    if aCalcKind = dckAccurate then
-      Exit;
-
-    // Just set it to non-tpNone value, which will mark this calculation as a valid
-    aBidBasicCost.OfferToDemand.Pass := tpWalkRoad;
-
     distr := gHands[aOwner].Stats.WareDistribution[dWT, fDemand[dWT,iD].Loc_House.HouseType];
 
-    //Resource ratios are also considered
-    aBidBasicCost.OfferToDemand.Value := 5 + (5 - distr)*4 + KaMRandom(16 - 3*distr, 'TKMDeliveries.TryCalculateBidBasic');
-  end
-  else
-  begin
-    //For all other cases - use distance approach. Direct length (rough) or pathfinding (exact)
-    if fDemand[dWT,iD].Loc_House <> nil then
+    //For weapons production in cases with little resources available, they should be distributed
+    //evenly between places rather than caring about route length.
+    //This means weapon and armour smiths should get same amount of iron, even if one is closer to the smelter.
+    if fDemand[dWT,iD].Loc_House.IsComplete
+      and (gResHouses[fDemand[dWT,iD].Loc_House.HouseType].DoesOrders or (fDemand[dWT,iD].Loc_House.HouseType = htIronSmithy))
+      and (aOfferCnt <= 2) //Little resources to share around
+      and (fDemand[dWT,iD].Loc_House.CheckResIn(dWT) <= 1) then //Few resources already delivered
     begin
+      if aCalcKind = dckAccurate then
+        Exit;
+
+      // Just set it to non-tpNone value, which will mark this calculation as a valid
+      aBidBasicCost.OfferToDemand.Pass := tpWalkRoad;
+
+      //Resource ratios are also considered
+      aBidBasicCost.OfferToDemand.Value := 5 + (5 - distr)*4 + KaMRandom(16 - 3*distr, 'TKMDeliveries.TryCalculateBidBasic');
+    end
+    else
+    begin
+      //For all other cases - use distance approach. Direct length (rough) or pathfinding (exact)
       secondPass := tpNone;
       if aAllowOffroad then
         secondPass := tpWalk;
@@ -1512,19 +1512,22 @@ begin
       //Calc cost between offer and demand houses
       Result := TryCalcRouteCost(aCalcKind, aOfferPos, fDemand[dWT,iD].Loc_House.PointBelowEntrance, drsOfferToDemand, aBidBasicCost.OfferToDemand, secondPass);
 
+      // There is no route, Exit immidiately
+      if not Result then
+        Exit;
+
       if aCalcKind = dckAccurate then
         Exit;
 
       //Resource ratios are also considered
-      aBidBasicCost.IncAddition(KaMRandom(16 - 3*gHands[aOwner].Stats.WareDistribution[dWT, fDemand[dWT,iD].Loc_House.HouseType],
-                                          'TKMDeliveries.TryCalculateBidBasic 2'));
-    end
-    else
-    begin
-      aBidBasicCost.OfferToDemand.Pass := tpWalk;
-      //Calc bid cost between offer house and demand Unit (digged worker or hungry warrior)
-      Result := TryCalcRouteCost(aCalcKind, aOfferPos, fDemand[dWT,iD].Loc_Unit.Position, drsOfferToDemand, aBidBasicCost.OfferToDemand);
+      aBidBasicCost.IncAddition(KaMRandom(16 - 3*distr, 'TKMDeliveries.TryCalculateBidBasic 2'));
     end;
+  end
+  else
+  begin
+    aBidBasicCost.OfferToDemand.Pass := tpWalk;
+    //Calc bid cost between offer house and demand Unit (digged worker or hungry warrior)
+    Result := TryCalcRouteCost(aCalcKind, aOfferPos, fDemand[dWT,iD].Loc_Unit.Position, drsOfferToDemand, aBidBasicCost.OfferToDemand);
 
     // There is no route, Exit immidiately
     if not Result then
