@@ -225,7 +225,7 @@ const
   MAX_WORKERS: array [TKMHouseType] of Byte = (
     0,0, //htNone, htAny
     8, {htArmorSmithy}  8,{htArmorWorkshop}  8, {htBakery}      12,{htBarracks}      8, {htButchers}
-    6, {htCoalMine}     8,{htFarm}           7, {htFisherHut}   3, {htGoldMine}      10,{htInn}
+    6, {htCoalMine}     8,{htFarm}           6, {htFisherHut}   3, {htGoldMine}      10,{htInn}
     4, {htIronMine}     8,{htIronSmithy}     10,{htMarketplace} 8, {htMetallurgists} 8, {htMill}
     6, {htQuary}        8,{htSawmill}        10,{htSchool}      8, {htSiegeWorkshop} 10,{htStables}
     10,{htStore}        8,{htSwine}          8, {htTannery}     10,{htTownHall}      6, {htWatchTower}
