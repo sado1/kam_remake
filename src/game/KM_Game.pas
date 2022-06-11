@@ -2556,10 +2556,10 @@ begin
     // Save checkpoints
     if gGameSettings.SaveCheckpoints and not SKIP_SAVE_SAVPTS_TO_FILE then
     begin
-      // Prepare
-      PrepareSaveFolder(fullPath, saveByPlayer, fSavePointWorkerThreadHolder.Worker);
+      // Wait till all of the savepoints will be created
+      fSavePointWorkerThreadHolder.Worker.WaitForAllWorkToComplete;
       // We can save savepoints by our savepoints worker, since we save to the different file anyway
-      fSavePoints.SaveToFileAsync(ChangeFileExt(fullPath, EXT_SAVE_GAME_SAVEPTS_DOT), fSavePointWorkerThreadHolder.Worker);
+      fSavePoints.SaveToFileAsync(ChangeFileExt(fullPath, EXT_SAVE_GAME_SAVEPTS_DOT), aSaveWorkerThread);
     end;
 
     if DoSaveRandomChecks then
