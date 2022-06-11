@@ -472,6 +472,7 @@ begin
     RegisterMethodCheck(c, 'function  AISerfsPerHouse(aHand: Byte): Single');
     RegisterMethodCheck(c, 'function  AISoldiersLimit(aHand: Byte): Integer');
     RegisterMethodCheck(c, 'function  AIStartPosition(aHand: Byte): TKMPoint');
+    RegisterMethodCheck(c, 'function  AIUnlimitedEquip(aHand: Byte): Boolean');
     RegisterMethodCheck(c, 'function  AIWorkerLimit(aHand: Byte): Integer');
     RegisterMethodCheck(c, 'function  CampaignMissionID: Integer');
     RegisterMethodCheck(c, 'function  CampaignMissionsCount: Integer');
@@ -717,6 +718,7 @@ begin
     RegisterMethodCheck(c, 'procedure AISerfsPerHouse(aHand: Byte; aSerfs: Single)');
     RegisterMethodCheck(c, 'procedure AISoldiersLimit(aHand: Byte; aLimit: Integer)');
     RegisterMethodCheck(c, 'procedure AIStartPosition(aHand: Byte; X, Y: Integer)');
+    RegisterMethodCheck(c, 'procedure AIUnlimitedEquip(aHand: Byte; aUnlimitedEquip: Boolean)');
     RegisterMethodCheck(c, 'procedure AIWorkerLimit(aHand: Byte; aLimit: Byte)');
     RegisterMethodCheck(c, 'procedure CinematicEnd(aHand: Byte)');
     RegisterMethodCheck(c, 'procedure CinematicPanTo(aHand: Byte; X, Y: Integer; Duration: Integer)');
@@ -1217,6 +1219,7 @@ begin
       RegisterMethod(@TKMScriptStates.AISerfsPerHouse, 'AISerfsPerHouse');
       RegisterMethod(@TKMScriptStates.AISoldiersLimit, 'AISoldiersLimit');
       RegisterMethod(@TKMScriptStates.AIStartPosition, 'AIStartPosition');
+      RegisterMethod(@TKMScriptStates.AIUnlimitedEquip, 'AIUnlimitedEquip');
       RegisterMethod(@TKMScriptStates.AIWorkerLimit, 'AIWorkerLimit');
       RegisterMethod(@TKMScriptStates.CampaignMissionID, 'CampaignMissionID');
       RegisterMethod(@TKMScriptStates.CampaignMissionsCount, 'CampaignMissionsCount');
@@ -1460,6 +1463,7 @@ begin
       RegisterMethod(@TKMScriptActions.AISerfsPerHouse, 'AISerfsPerHouse');
       RegisterMethod(@TKMScriptActions.AISoldiersLimit, 'AISoldiersLimit');
       RegisterMethod(@TKMScriptActions.AIStartPosition, 'AIStartPosition');
+      RegisterMethod(@TKMScriptActions.AIUnlimitedEquip, 'AIUnlimitedEquip');
       RegisterMethod(@TKMScriptActions.AIWorkerLimit, 'AIWorkerLimit');
       RegisterMethod(@TKMScriptActions.CinematicEnd, 'CinematicEnd');
       RegisterMethod(@TKMScriptActions.CinematicPanTo, 'CinematicPanTo');

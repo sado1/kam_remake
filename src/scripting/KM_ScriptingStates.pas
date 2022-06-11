@@ -40,6 +40,7 @@ type
     function AISerfsPerHouse(aHand: Byte): Single;
     function AISoldiersLimit(aHand: Byte): Integer;
     function AIStartPosition(aHand: Byte): TKMPoint;
+    function AIUnlimitedEquip(aHand: Byte): Boolean;
     function AIWorkerLimit(aHand: Byte): Integer;
 
     function CampaignMissionID: Integer;
@@ -709,10 +710,27 @@ function TKMScriptStates.AIStartPosition(aHand: Byte): TKMPoint;
 begin
   Result := KMPOINT_INVALID_TILE;
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       Result := gHands[aHand].AI.Setup.StartPosition
     else
       LogIntParamWarn('States.AIStartPosition', [aHand]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14800
+//* Gets AI unlimited equip parameter or False if aHand parameter is not valid
+function TKMScriptStates.AIUnlimitedEquip(aHand: Byte): Boolean;
+begin
+  Result := False;
+  try
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
+      Result := gHands[aHand].AI.Setup.UnlimitedEquip
+    else
+      LogIntParamWarn('States.AIUnlimitedEquip', [aHand]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -727,7 +745,7 @@ function TKMScriptStates.AIWorkerLimit(aHand: Byte): Integer;
 begin
   Result := -1;
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       Result := gHands[aHand].AI.Setup.WorkerCount
     else
       LogIntParamWarn('States.AIWorkerLimit', [aHand]);

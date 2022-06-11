@@ -48,6 +48,7 @@ type
     procedure AISerfsPerHouse(aHand: Byte; aSerfs: Single);
     procedure AISoldiersLimit(aHand: Byte; aLimit: Integer);
     procedure AIStartPosition(aHand: Byte; X, Y: Integer);
+    procedure AIUnlimitedEquip(aHand: Byte; aUnlimitedEquip: Boolean);
     procedure AIWorkerLimit(aHand, aLimit: Byte);
 
     procedure CinematicStart(aHand: Byte);
@@ -1814,7 +1815,7 @@ end;
 procedure TKMScriptActions.AIRecruitLimit(aHand, aLimit: Byte);
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       gHands[aHand].AI.Setup.RecruitCount := aLimit
     else
       LogIntParamWarn('Actions.AIRecruitLimit', [aHand, aLimit]);
@@ -1835,7 +1836,7 @@ end;
 procedure TKMScriptActions.AIRepairMode(aHand: Integer; aRepairMode: TKMAIRepairMode);
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled
       and (aRepairMode <> rmNone) then
       gHands[aHand].AI.Setup.RepairMode := aRepairMode
     else
@@ -1853,7 +1854,7 @@ end;
 procedure TKMScriptActions.AISerfsPerHouse(aHand: Byte; aSerfs: Single);
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       gHands[aHand].AI.Setup.SerfsPerHouse := aSerfs
     else
       LogIntParamWarn('Actions.AISerfsPerHouse', [aHand]);
@@ -1869,7 +1870,7 @@ end;
 procedure TKMScriptActions.AISoldiersLimit(aHand: Byte; aLimit: Integer);
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled)
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled
     and (aLimit >= -1) then                       //-1 means unlimited; else MaxSoldiers = aLimit
       gHands[aHand].AI.Setup.MaxSoldiers := aLimit
     else
@@ -1886,11 +1887,27 @@ end;
 procedure TKMScriptActions.AIStartPosition(aHand: Byte; X, Y: Integer);
 begin
   try
-    if (InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled))
-    and (gTerrain.TileInMapCoords(X, Y)) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled
+    and gTerrain.TileInMapCoords(X, Y) then
       gHands[aHand].AI.Setup.StartPosition := KMPoint(X, Y)
     else
       LogIntParamWarn('Actions.AIStartPosition', [aHand, X, Y]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14800
+//* Sets AI unlimited equip parameter
+procedure TKMScriptActions.AIUnlimitedEquip(aHand: Byte; aUnlimitedEquip: Boolean);
+begin
+  try
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
+      gHands[aHand].AI.Setup.UnlimitedEquip := aUnlimitedEquip
+    else
+      LogParamWarn('Actions.AIUnlimitedEquip', [aHand, BoolToStr(aUnlimitedEquip, True)]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;
@@ -1903,7 +1920,7 @@ end;
 procedure TKMScriptActions.AIWorkerLimit(aHand, aLimit: Byte);
 begin
   try
-    if InRange(aHand, 0, gHands.Count - 1) and (gHands[aHand].Enabled) then
+    if InRange(aHand, 0, gHands.Count - 1) and gHands[aHand].Enabled then
       gHands[aHand].AI.Setup.WorkerCount := aLimit
     else
       LogIntParamWarn('Actions.AIWorkerLimit', [aHand, aLimit]);
