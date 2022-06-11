@@ -156,6 +156,7 @@ type
     procedure UpdateHeight;
   public
     FlagColor: TColor4; //When using an image
+    CapColor: TColor4;
     Font: TKMFont;
     MakesSound: Boolean;
     TexID: Word;
@@ -655,6 +656,7 @@ begin
   ShowImageEnabled  := True;
   AutoHeight        := False;
   AutoTextPadding   := 5;
+  CapColor          := icWhite;
 end;
 
 
@@ -735,7 +737,7 @@ begin
   if TexID <> 0 then Exit;
 
   //If disabled then text should be faded
-  col := IfThen(Enabled, icWhite, icGray);
+  col := IfThen(Enabled, CapColor, icGray);
 
   top := AbsTop + Byte(bsDown in stateSet) + CapOffsetY;
 
