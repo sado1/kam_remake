@@ -193,6 +193,10 @@ constructor TKMMapEdInterface.Create(aRender: TKMRender; var aMapSaveStarted, aM
 const
   TB_PAD_MAP_ED = 0;
   TB_PAD_MBTN_LEFT = 9;
+  HND_COL = 9;
+  HND_S = 21;
+  HND_P = 2;
+  TOP_SIDE_BTN = 48;
 var
   I: Integer;
   S: TKMShape;
@@ -223,38 +227,43 @@ begin
 //  TKMLabel.Create(Panel_Main, TB_PAD, 190, TB_WIDTH, 0, gResTexts[TX_MAPED_PLAYERS], fntOutline, taLeft);
   for I := 0 to MAX_HANDS - 1 do
   begin
-    Button_PlayerSelect[I]         := TKMFlatButtonShape.Create(Panel_Main, TB_PAD + (I mod 6)*24, 190 + 24*(I div 6), 21, 21, IntToStr(I+1), fntGrey, $FF0000FF);
+    Button_PlayerSelect[I]         := TKMFlatButtonShape.Create(Panel_Main, TB_PAD + (I mod HND_COL)*(HND_S+HND_P),
+                                                                190 + (HND_S+HND_P)*(I div HND_COL),
+                                                                HND_S, HND_S, IntToStr(I+1), fntGrey, $FF0000FF);
     Button_PlayerSelect[I].Tag     := I;
     Button_PlayerSelect[I].OnClick := Player_ActiveClick;
   end;
   Button_PlayerSelect[0].Down := True; //First player selected by default
 
-  Button_History := TKMButtonFlat.Create(Panel_Main, Button_PlayerSelect[5].Right + 3, 190, 31, 32, 677);
+  Button_History := TKMButtonFlat.Create(Panel_Main, MAPED_TOOLBAR_WIDTH - 33, TOP_SIDE_BTN, 31, 32, 677);
+  Button_History.BackAlpha := 1;
   Button_History.TexOffsetX := -1;
   Button_History.Down := False; // History is hidden by default
   Button_History.OnClick := History_Click;
 
-  Button_ChangeOwner := TKMButtonFlat.Create(Panel_Main, MAPED_TOOLBAR_WIDTH - 44 - 30 + TB_PAD, 190, 30, 32, 662);
-  Button_ChangeOwner.Down := False;
-  Button_ChangeOwner.OnClick := ChangeOwner_Click;
-
-  //Button_TerrainUndo := TKMButton.Create(Panel_Terrain, Panel_Terrain.Width - 20, 0, 10, SMALL_TAB_H + 4, '<', bsGame);
-  Button_Undo := TKMButtonFlat.Create(Panel_Main, Button_PlayerSelect[5].Right + 3, 227, 15, 32, 0);
+  Button_Undo := TKMButtonFlat.Create(Panel_Main, MAPED_TOOLBAR_WIDTH - 33, TOP_SIDE_BTN + 35, 15, 32, 0);
+  Button_Undo.BackAlpha := 1;
   Button_Undo.Caption := '<';
   Button_Undo.CapOffsetY := -10;
   Button_Undo.CapColor := icGreen;
   Button_Undo.Hint := gResTexts[TX_MAPED_UNDO_HINT]+ ' (''Ctrl + Z'')';
   Button_Undo.OnClick := UnRedo_Click;
 
-  //Button_TerrainRedo := TKMButton.Create(Panel_Terrain, Panel_Terrain.Width - 10, 0, 10, SMALL_TAB_H + 4, '>', bsGame);
-  Button_Redo := TKMButtonFlat.Create(Panel_Main, Button_Undo.Right + 1, 227, 15, 32, 0);
+  Button_Redo := TKMButtonFlat.Create(Panel_Main, Button_Undo.Right + 1, TOP_SIDE_BTN + 35, 15, 32, 0);
+  Button_Redo.BackAlpha := 1;
   Button_Redo.Caption := '>';
   Button_Redo.CapOffsetY := -10;
   Button_Redo.CapColor := icGreen;
   Button_Redo.Hint := gResTexts[TX_MAPED_REDO_HINT] + ' (''Ctrl + Y'' or ''Ctrl + Shift + Z'')';
   Button_Redo.OnClick := UnRedo_Click;
 
-  Button_UniversalEraser := TKMButtonFlat.Create(Panel_Main, MAPED_TOOLBAR_WIDTH - 44 - 30 + TB_PAD, 227, 30, 32, 340);
+  Button_ChangeOwner := TKMButtonFlat.Create(Panel_Main, MAPED_TOOLBAR_WIDTH - 33, TOP_SIDE_BTN + 70, 30, 32, 662);
+  Button_ChangeOwner.BackAlpha := 1;
+  Button_ChangeOwner.Down := False;
+  Button_ChangeOwner.OnClick := ChangeOwner_Click;
+
+  Button_UniversalEraser := TKMButtonFlat.Create(Panel_Main, MAPED_TOOLBAR_WIDTH - 33, TOP_SIDE_BTN + 105, 30, 32, 340);
+  Button_UniversalEraser.BackAlpha := 1;
   Button_UniversalEraser.Down := False;
   Button_UniversalEraser.OnClick := UniversalEraser_Click;
 

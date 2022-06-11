@@ -303,9 +303,9 @@ const
   MAX_WOODCUTTER_CUT_PNT_DISTANCE = 5; //Max distance for woodcutter new cutting point from his house
 
 const
-  MAX_HANDS            = 18; //Maximum players (human or AI) per map
-  MAX_LOBBY_PLAYERS    = 12;  //Maximum number of players (not spectators) allowed in the lobby. Map can have additional AI locations up to MAX_HANDS (for co-op).
-  MAX_LOBBY_SPECTATORS = 2;  //Slots available in lobby. Additional slots can be used by spectators
+  MAX_HANDS            = 27; // Maximum players (human or AI) per map
+  MAX_LOBBY_PLAYERS    = 12; // Maximum number of players (not spectators) allowed in the lobby. Map can have additional AI locations up to MAX_HANDS (for co-op).
+  MAX_LOBBY_SPECTATORS = 2;  // Slots available in lobby. Additional slots can be used by spectators
   MAX_LOBBY_SLOTS      = MAX_LOBBY_PLAYERS + MAX_LOBBY_SPECTATORS;
   MAX_TEAMS            = MAX_LOBBY_PLAYERS div 2;
 
@@ -926,24 +926,33 @@ const
   3,   //Black
   255  //White}
   DEFAULT_PLAYERS_COLORS: array [0..MAX_HANDS-1] of Cardinal = (
-    $FF0707FF, //Red
-    $FFE3BB5B, //Cyan
-    $FF27A700, //Green
-    $FFFF67FF, //Magenta
-    $FF07FFFF, //Yellow
-    $FF577B7B, //Grey
-    $FF2383FB, //Orange
-    $FFFF0707, //Blue
-    $FF0BE73F, //Light green
-    $FF720468, //Purple
-    $FF22B3EE, //Yellowish
-    $FF668ACC, //Peach
-    $FF1A50B2, //Brownish
-    $FFB2611A, //Blueish
-    $FF60CC00, //Greenish + blue
-    $FF4F1AB2, //Purpleish
-    $FFFFFFFF, //White
-    $FF000000  //Black
+    $FF0000EB, // 1 Red
+    $FF076CF8, // 2 Orange
+    $FF00B5FF, // 3 Gold
+    $FF07FFFF, // 4 Lauenburg yellow
+    $FF0EC5A2, // 5 Lime green
+    $FF88FF88, // 6 Light green
+    $FF07FF07, // 7 Neon green
+    $FF00A100, // 8 Bright green
+    $FF134B00, // 9 Dark green
+    $FF7A9E00, // 10 Teal
+    $FFFACE64, // 11 Sky blue
+    $FFFB886D, // 12 Light violet blue
+    $FFCC6600, // 13 Medium blue
+    $FF581F00, // 14 Dark blue
+    $FFCB3972, // 15 Violet (Amethyst)
+    $FF720468, // 16 Purple
+    $FFDE8FFB, // 17 Pink
+    $FFFF07FF, // 18 Magenta
+    $FF9DB4FB, // 27 Light Light Red
+    $FF4A00A8, // 19 Dark pink
+    $FF00005E, // 20 Maroon
+    $FF666690, // 21 Light brown
+    $FF103C52, // 22 Brown
+    $FF519EC9, // 23 Tan
+    $FFFFFFFF, // 24 White
+    $FF838383, // 25 Grey
+    $FF1B1B1B  // 26 Black
   );
 
   // Colors which are used for an MP teams
