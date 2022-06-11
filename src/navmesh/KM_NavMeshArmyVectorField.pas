@@ -875,6 +875,8 @@ procedure TKMArmyVectorField.InitQueue(const aCluster: pTKMCombatCluster);
 var
   K, L, Poly: Integer;
 begin
+  if (fVisitedIdx = High(Byte)) then
+    MakeNewQueue(False);
   Inc(fVisitedIdx);
   for K := 0 to aCluster.GroupsCount - 1 do
   begin
@@ -895,6 +897,8 @@ procedure TKMArmyVectorField.InitQueue(const aGroupsPoly: TKMWordArray; aCnt: Wo
 var
   K: Integer;
 begin
+  if (fVisitedIdx = High(Byte)) then
+    MakeNewQueue(False);
   Inc(fVisitedIdx);
   for K := 0 to aCnt - 1 do
     AddPolyToQueue(ffRally, aGroupsPoly[K]);
