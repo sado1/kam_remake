@@ -766,12 +766,12 @@ begin
     //Update defence positions locations
     if fSetup.AutoDefend then
       //Checking mod result against MAX_HANDS causes first update to happen ASAP
-      if (aTick + Byte(fOwner)) mod (MAX_HANDS * 120) = MAX_HANDS then
+      if (aTick + Byte(fOwner)) mod (MAX_HANDS * 50) = MAX_HANDS then
         CheckAutoDefend;
 
     //See if we can launch an attack
     if fSetup.AutoAttack then
-      if (aTick + Byte(fOwner)) mod (MAX_HANDS * 120) = 1 then
+      if (aTick + Byte(fOwner)) mod (MAX_HANDS * 50) = 1 then
         CheckAutoAttack;
 
     if (aTick + Byte(fOwner)) mod MAX_HANDS = 0 then

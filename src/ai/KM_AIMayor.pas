@@ -988,7 +988,7 @@ begin
   {$ENDIF}
   try
     //Checking mod result against MAX_HANDS causes first update to happen ASAP
-    if (aTick + Byte(fOwner)) mod (MAX_HANDS * 10) <> MAX_HANDS then Exit;
+    if (aTick + Byte(fOwner)) mod (MAX_HANDS * 4) <> MAX_HANDS then Exit;
 
     CheckAutoRepair;
 
