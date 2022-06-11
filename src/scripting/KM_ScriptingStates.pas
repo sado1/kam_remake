@@ -117,6 +117,7 @@ type
     function HouseTypeToOccupantType(aHouseType: Integer): Integer;
     function HouseTypeToWorkerType(aHouseType: TKMHouseType): TKMUnitType;
     function HouseUnlocked(aHand, aHouseType: Integer): Boolean;
+    function HouseWareAmount(aHouseID: Integer; aWare: TKMWareType): Integer;
     function HouseWareBlocked(aHouseID, aWareType: Integer): Boolean;
     function HouseWareBlockedEx(aHouseID: Integer; aWareType: TKMWareType): Boolean;
     function HouseWareBlockedTakeOut(aHouseID: Integer; aWareType: TKMWareType): Boolean;
@@ -3162,7 +3163,7 @@ end;
 
 //* Version: 5057
 //* Returns the amount of the specified resource in the specified house
-//* Result: Number of resources
+//* Result: Number of resources or -1 if aHouseID is invalid
 function TKMScriptStates.HouseResourceAmount(aHouseID, aResource: Integer): Integer;
 var
   H: TKMHouse;
@@ -3179,6 +3180,30 @@ begin
     end
     else
       LogIntParamWarn('States.HouseResourceAmount', [aHouseID, aResource]);
+  except
+    gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
+    raise;
+  end;
+end;
+
+
+//* Version: 14800
+//* Returns the amount of the specified ware in the specified house
+//* Result: Number of wares or -1 if aHouseID is invalid
+function TKMScriptStates.HouseWareAmount(aHouseID: Integer; aWare: TKMWareType): Integer;
+var
+  H: TKMHouse;
+begin
+  try
+    Result := -1; //-1 if house id is invalid
+    if aHouseID > 0 then
+    begin
+      H := fIDCache.GetHouse(aHouseID);
+      if H <> nil then
+        Result := H.CheckResIn(aWare) + H.CheckResOut(aWare); //Count both in and out
+    end
+    else
+      LogParamWarn('States.HouseWareAmount', [aHouseID, GetEnumName(TypeInfo(TKMWareType), Integer(aWare))]);
   except
     gScriptEvents.ExceptionOutsideScript := True; //Don't blame script for this exception
     raise;

@@ -542,6 +542,7 @@ begin
     RegisterMethodCheck(c, 'function  HouseTypeToOccupantType(aHouseType: Integer): Integer');
     RegisterMethodCheck(c, 'function  HouseTypeToWorkerType(aHouseType: TKMHouseType): TKMUnitType');
     RegisterMethodCheck(c, 'function  HouseUnlocked(aHand: Integer; aHouseType: Integer): Boolean');
+    RegisterMethodCheck(c, 'function  HouseWareAmount(aHouseID: Integer; aWare: TKMWareType): Integer');
     RegisterMethodCheck(c, 'function  HouseWareBlocked(aHouseID: Integer; aWareType: Integer): Boolean');
     RegisterMethodCheck(c, 'function  HouseWareBlockedEx(aHouseID: Integer; aWareType: TKMWareType): Boolean');
     RegisterMethodCheck(c, 'function  HouseWareBlockedTakeOut(aHouseID: Integer; aWareType: TKMWareType): Boolean');
@@ -1286,6 +1287,7 @@ begin
       RegisterMethod(@TKMScriptStates.HouseTypeToOccupantType, 'HouseTypeToOccupantType');
       RegisterMethod(@TKMScriptStates.HouseTypeToWorkerType, 'HouseTypeToWorkerType');
       RegisterMethod(@TKMScriptStates.HouseUnlocked, 'HouseUnlocked');
+      RegisterMethod(@TKMScriptStates.HouseWareAmount, 'HouseWareAmount');
       RegisterMethod(@TKMScriptStates.HouseWareBlocked, 'HouseWareBlocked');
       RegisterMethod(@TKMScriptStates.HouseWareBlockedEx, 'HouseWareBlockedEx');
       RegisterMethod(@TKMScriptStates.HouseWareBlockedTakeOut, 'HouseWareBlockedTakeOut');
