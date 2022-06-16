@@ -59,9 +59,12 @@ hun.DeleteMaps=Töröli az összes Térképet és Kampányt?
 ;French
 fre.CreateStartShortcut=Créer un raccourci dans le menu Démarrer
 fre.NoKaM=L'assistant d'installation n'a détecté aucune installation de Knights and Merchants : The Peasants Rebellion.%n%nL'installation sera interrompue.
+fre.SteamFirstRun=La version original de KaM installé depuis steam doit avoir été lancé au moins une fois, de façon à ce que l'installateur KMR puisse le détecter et le vérifier.
 fre.CantUpdate=L'assistant d'installation n'a détecté aucune version existante de KaM Remake à mettre à jour. Veuillez télécharger et utiliser l'installateur complet.%n%nL'installation sera interrompue.
 fre.OpenAL=Voulez-vous que l'assistant d'installation installe OpenAL ? (fortement recommandé) OpenAL est requis pour le fonctionnement audio de KaM Remake.
 fre.ViewReadme=Voir le lisez-moi
+fre.DeleteSaves=Voulez vous vraiment supprimer toutes vos sauvegardes et progrès dans les campagnes également ?
+fre.DeleteMaps=Voulez vous supprimer toutes les cartes et campagnes également ?
 
 ;Czech
 cze.CreateStartShortcut=Vytvořit zástupce v nabídce Start
