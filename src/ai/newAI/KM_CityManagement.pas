@@ -13,7 +13,7 @@ uses
 
 type
   TKMWarfareArr = array[WARFARE_MIN..WARFARE_MAX] of record
-    Available, Required: Word;
+    Available, Required: Integer;
     Fraction: Single;
   end;
   TKMWarriorsDemands = array[WARRIOR_EQUIPABLE_BARRACKS_MIN..WARRIOR_EQUIPABLE_BARRACKS_MAX] of Integer;
