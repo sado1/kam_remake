@@ -90,7 +90,7 @@ type
     function GetMissionName(aIndex: Byte): String;
     function GetMissionTitle(aIndex: Byte): String;
     function GetMissionBriefing(aIndex: Byte): String;
-    function GetBreifingAudioFile(aIndex: Byte): String;
+    function GetBriefingAudioFile(aIndex: Byte): String;
     function GetCampaignDataScriptFilePath: UnicodeString;
 
     procedure UnlockAllMissions;
@@ -672,18 +672,26 @@ begin
 end;
 
 
-function TKMCampaign.GetBreifingAudioFile(aIndex: Byte): String;
+// aIndex starts from 0
+function TKMCampaign.GetBriefingAudioFile(aIndex: Byte): String;
+
+  function GetBriefingPath(aLocale: AnsiString): string;
+  begin
+    // map index is 1-based in the file names
+    Result := fPath + ShortName + Format('%.2d', [aIndex + 1]) + PathDelim +
+                      ShortName + Format('%.2d', [aIndex + 1]) + '.' + UnicodeString(aLocale) + '.mp3';
+  end;
+
 begin
-  Result := fPath + ShortName + Format('%.2d', [aIndex+1]) + PathDelim +
-            ShortName + Format('%.2d', [aIndex + 1]) + '.' + UnicodeString(gResLocales.UserLocale) + '.mp3';
+  Assert(InRange(aIndex, 0, MAX_CAMP_MAPS - 1));
+
+  Result := GetBriefingPath(gResLocales.UserLocale);
 
   if not FileExists(Result) then
-    Result := fPath + ShortName + Format('%.2d', [aIndex+1]) + PathDelim +
-              ShortName + Format('%.2d', [aIndex + 1]) + '.' + UnicodeString(gResLocales.FallbackLocale) + '.mp3';
+    Result := GetBriefingPath(gResLocales.FallbackLocale);
 
   if not FileExists(Result) then
-    Result := fPath + ShortName + Format('%.2d', [aIndex+1]) + PathDelim +
-              ShortName + Format('%.2d', [aIndex + 1]) + '.' + UnicodeString(gResLocales.DefaultLocale) + '.mp3';
+    Result := GetBriefingPath(gResLocales.DefaultLocale);
 end;
 
 

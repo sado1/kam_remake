@@ -17,7 +17,7 @@ type
 
     fCampaignId: TKMCampaignId;
     fCampaign: TKMCampaign;
-    fMapIndex: Byte;
+    fMapIndex: Byte; // Map index starts from 0
     fAnimNodeIndex : Byte;
 
     fDifficulty: TKMMissionDifficulty;
@@ -84,7 +84,7 @@ begin
   fCampaigns := aCampaigns;
 
   fDifficulty := mdNone;
-  fMapIndex := 1;
+  fMapIndex := 0;
   fOnPageChange := aOnPageChange;
   OnEscKeyDown := BackClick;
 
@@ -303,7 +303,11 @@ end;
 procedure TKMMenuCampaign.PlayBriefingAudioTrack;
 begin
   gMusic.StopPlayingOtherFile; //Stop playing the previous briefing even if this one doesn't exist
-  TKMAudio.PauseMusicToPlayFile(fCampaign.GetBreifingAudioFile(fMapIndex));
+
+  // For some reason fMapIndex could get incorrect value
+  if not InRange(fMapIndex, 0, MAX_CAMP_MAPS - 1) then Exit;
+
+  TKMAudio.PauseMusicToPlayFile(fCampaign.GetBriefingAudioFile(fMapIndex));
 end;
 
 procedure TKMMenuCampaign.StartClick(Sender: TObject);
