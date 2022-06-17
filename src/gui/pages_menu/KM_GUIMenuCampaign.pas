@@ -40,7 +40,7 @@ type
         Label_CampaignFlags: array[0..MAX_CAMP_MAPS - 1] of TKMLabel;
         Image_CampaignSubNode: array[0..MAX_CAMP_NODES - 1] of TKMImage;
       Panel_CampScroll: TKMPanel;
-        Image_ScrollTop, Image_Scroll, Image_ScrollClose: TKMImage;
+        Image_Scroll, Image_ScrollClose: TKMImage;
         Label_CampaignTitle, Label_CampaignText: TKMLabel;
       Image_ScrollRestore: TKMImage;
       Label_Difficulty: TKMLabel;
@@ -73,6 +73,7 @@ const
   FLAG_LABEL_OFFSET_X = 10;
   FLAG_LABEL_OFFSET_Y = 7;
   CAMP_NODE_ANIMATION_PERIOD = 5;
+  IMG_SCROLL_MAX_HEIGHT = 430;
 
 { TKMGUIMainCampaign }
 constructor TKMMenuCampaign.Create(aParent: TKMPanel; aCampaigns: TKMCampaignsCollection; aOnPageChange: TKMMenuChangeEventText);
@@ -114,7 +115,7 @@ begin
   Panel_CampScroll := TKMPanel.Create(Panel_Campaign, 0, 0, 360, 430);
   Panel_CampScroll.Anchors := [anLeft,anBottom];
 
-    Image_Scroll := TKMImage.Create(Panel_CampScroll, 0, 0, 360, 430, 410, rxGui);
+    Image_Scroll := TKMImage.Create(Panel_CampScroll, 0, 0, 360, IMG_SCROLL_MAX_HEIGHT, 410, rxGui);
     Image_Scroll.ClipToBounds := True;
     Image_Scroll.AnchorsStretch;
     Image_Scroll.ImageAnchors := [anLeft, anRight, anTop];
@@ -246,7 +247,7 @@ end;
 
 procedure TKMMenuCampaign.SelectMap(aMapIndex: Byte);
 var
-  I: Integer;
+  I, panHeight: Integer;
   color: Cardinal;
 begin
   fMapIndex := aMapIndex;
@@ -278,8 +279,18 @@ begin
 
   Panel_CampScroll.Left := IfThen(fCampaign.Maps[fMapIndex].TextPos = bcBottomRight, Panel_Campaign.Width - Panel_CampScroll.Width, 0);
   //Add offset from top and space on bottom to fit buttons
-  Panel_CampScroll.Height := Label_CampaignText.Top + Label_CampaignText.TextSize.Y + 70
-                             + 25*Byte((DropBox_Difficulty.Count > 0) and (fCampaign.Maps[fMapIndex].TextPos = bcBottomRight));
+  panHeight := Label_CampaignText.Top + Label_CampaignText.TextSize.Y + 70
+               + 25*Byte((DropBox_Difficulty.Count > 0) and (fCampaign.Maps[fMapIndex].TextPos = bcBottomRight));
+
+  // Stretch image in case its too small for a briefing text
+  // Stretched scroll does not look good, but its okay for now (only happens for a custom campaigns)
+  // Todo: cut scroll image into 3 pieces (top / center / bottom) and render as many of central part as needed
+  if panHeight > IMG_SCROLL_MAX_HEIGHT then
+    Image_Scroll.ImageAnchors := Image_Scroll.ImageAnchors + [anBottom]
+  else
+    Image_Scroll.ImageAnchors := Image_Scroll.ImageAnchors - [anBottom];
+
+  Panel_CampScroll.Height := panHeight;
   Panel_CampScroll.Top := Panel_Campaign.Height - Panel_CampScroll.Height;
 
   Image_ScrollRestore.Top := Panel_Campaign.Height - 50 - 53 - 32*Byte(DropBox_Difficulty.Count > 0);
