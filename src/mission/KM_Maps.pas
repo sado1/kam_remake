@@ -1351,6 +1351,8 @@ function TKMMapTxtInfo.HasDifficultyLevels: Boolean;
 var
   MD: TKMMissionDifficulty;
 begin
+  if Self = nil then Exit(False);
+
   Result := (DifficultyLevels <> []);
   //We consider there is no difficulty levels, if only one is presented
   for MD := MISSION_DIFFICULTY_MIN to MISSION_DIFFICULTY_MAX do
