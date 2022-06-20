@@ -814,15 +814,14 @@ function TKMTerrainPainter.GetVertexCornerTerKinds(X,Y: Word; var aCornersTerKin
 var
   cornersTerKinds: TKMTerrainKindCorners;
 
-  procedure CheckTile(aX, aY: Word; aCorner: Byte);
+  procedure CheckTile(aX, aY: Integer; aCorner: Byte);
   begin
-    if gTerrain.TileInMapCoords(aX, aY) then
-    begin
-      GetTileOwnCornersTKinds(KMPoint(aX, aY), cornersTerKinds);
+    if not gTerrain.TileInMapCoords(aX, aY) then Exit;
 
-      aCornersTerKinds[Result] := cornersTerKinds[aCorner];
-      Inc(Result);
-    end;
+    GetTileOwnCornersTKinds(KMPoint(aX, aY), cornersTerKinds);
+
+    aCornersTerKinds[Result] := cornersTerKinds[aCorner];
+    Inc(Result);
   end;
 
 begin
