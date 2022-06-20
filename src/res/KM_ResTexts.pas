@@ -54,6 +54,7 @@ type
   public
     constructor Create;
     procedure LoadLocale(const aPathTemplate: string; aFullScan: Boolean = False); // All locales for Mission strings
+    procedure Clear;
     function ParseTextMarkup(const aText: UnicodeString): UnicodeString; overload;
     function ParseTextMarkup(const aText: UnicodeString; aParams: array of const): UnicodeString; overload;
     function HasText(aIndex: Word): Boolean;
@@ -286,6 +287,12 @@ begin
     Result := fTexts[fPref[2], aIndex]
   else
     Result := '~~~String ' + IntToStr(aIndex) + ' out of range!~~~';
+end;
+
+
+procedure TKMTextLibraryMulti.Clear;
+begin
+  SetLength(fTexts, 0);
 end;
 
 

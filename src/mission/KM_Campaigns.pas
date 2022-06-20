@@ -500,26 +500,30 @@ var
   I: Integer;
   textMission: TKMTextLibraryMulti;
 begin
-  for I := 0 to fMapCount - 1 do
-  begin
-    //Load TxtInfo
-    if fMapsInfo[I].TxtInfo = nil then
-      fMapsInfo[I].TxtInfo := TKMMapTxtInfo.Create
-    else
-      fMapsInfo[I].TxtInfo.ResetInfo;
-    fMapsInfo[I].TxtInfo.LoadTXTInfo(GetMissionFile(I, '.txt'));
+  //Load mission name from mission Libx library
+  textMission := TKMTextLibraryMulti.Create;
+  try
+    for I := 0 to fMapCount - 1 do
+    begin
+      //Load TxtInfo
+      if fMapsInfo[I].TxtInfo = nil then
+        fMapsInfo[I].TxtInfo := TKMMapTxtInfo.Create
+      else
+        fMapsInfo[I].TxtInfo.ResetInfo;
 
-    fMapsInfo[I].MissionName := '';
-    //Load mission name from mission Libx library
-    textMission := TKMTextLibraryMulti.Create;
-    try
+      fMapsInfo[I].TxtInfo.LoadTXTInfo(GetMissionFile(I, '.txt'));
+
+      fMapsInfo[I].MissionName := '';
+
+      textMission.Clear; // Better clear object, than rectreate it for every map
       // Make a full scan for Libx top ID, to allow unordered Libx ID's by not carefull campaign makers
-      textMission.LoadLocale(GetMissionFile(I, '.%s.libx'), True);
+      textMission.LoadLocale(GetMissionFile(I, '.%s.libx'));//, True);
+
       if textMission.HasText(MISSION_NAME_LIBX_ID) then
         fMapsInfo[I].MissionName := StringReplace(textMission[MISSION_NAME_LIBX_ID], '|', ' ', [rfReplaceAll]); //Replace | with space
-    finally
-      FreeAndNil(textMission);
     end;
+  finally
+    FreeAndNil(textMission);
   end;
 end;
 
