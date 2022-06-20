@@ -246,6 +246,7 @@ var
   SHOW_GIP_AS_BYTES       :Boolean = False; //Show GIP commands as bytes (or as 'parsed type' if False)
   INI_HITPOINT_RESTORE    :Boolean = False; //Use the hitpoint restore rate from the INI file to compare with KaM
   SLOW_MAP_SCAN           :Boolean = False; //Scan maps with a pause to emulate uncached file access
+  SLOW_CAMPAIGN_SCAN      :Boolean = False; //Scan campaigns with a pause to emulate uncached file access
   SLOW_SAVE_SCAN          :Boolean = False; //Scan saves with a pause to emulate uncached file access
   SLOW_GAME_SAVE_ASYNC    :Boolean = False; //Emulate slow game save (in the async save thread)
   SLOW_MAP_SAVE_LOAD      :Boolean = False; //Load map or save to emulate slow network

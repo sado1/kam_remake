@@ -464,12 +464,14 @@ end;
 procedure TKMMainMenuInterface.UpdateState(aGlobalTickCount: Cardinal);
 begin
   inherited;
+
   fMenuLobby.UpdateState;
   fMenuMapEditor.UpdateState;
   fMenuLoad.UpdateState;
   fMenuReplays.UpdateState;
   fMenuSingleMap.UpdateState;
   fMenuCampaign.UpdateState(aGlobalTickCount);
+  fMenuCampaigns.UpdateState;
 end;
 
 

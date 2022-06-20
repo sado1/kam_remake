@@ -16,10 +16,14 @@ type
     fOnPageChange: TKMMenuChangeEventText; //will be in ancestor class
 
     fCampaigns: TKMCampaignsCollection;
+    fScanCompleted: Boolean;
 
     procedure ListChange(Sender: TObject);
     procedure StartClick(Sender: TObject);
     procedure BackClick(Sender: TObject);
+
+    procedure ScanUpdate(Sender: TObject);
+    procedure ScanTerminate(Sender: TObject);
   protected
     Panel_CampSelect: TKMPanel;
       Panel_Campaigns: TKMPanel;
@@ -29,8 +33,12 @@ type
         Button_Camp_Start, Button_Camp_Back: TKMButton;
   public
     constructor Create(aParent: TKMPanel; aCampaigns: TKMCampaignsCollection; aOnPageChange: TKMMenuChangeEventText);
+
     procedure RefreshList;
+    procedure InitCampaignsScan;
     procedure Show;
+
+    procedure UpdateState;
   end;
 
 
@@ -65,6 +73,10 @@ begin
   inherited Create(gpCampSelect);
 
   fCampaigns := aCampaigns;
+
+  // Rescan campaigns on campaigns menu creation (f.e. on game start or game locale change)
+  InitCampaignsScan;
+
   fOnPageChange := aOnPageChange;
   OnEscKeyDown := BackClick;
 
@@ -181,11 +193,42 @@ begin
 end;
 
 
+procedure TKMMenuCampaigns.ScanUpdate(Sender: TObject);
+begin
+  if not fScanCompleted then  // Don't refresh list, if scan was completed already
+    RefreshList; //Don't jump to selected with each scan update
+end;
+
+
+procedure TKMMenuCampaigns.ScanTerminate(Sender: TObject);
+begin
+  fScanCompleted := True;
+  RefreshList; //After scan complete jump to selected item
+end;
+
+
+procedure TKMMenuCampaigns.InitCampaignsScan;
+begin
+  //Terminate all
+  fCampaigns.TerminateScan;
+
+  //Reset scan variables
+  fScanCompleted := False;
+
+  fCampaigns.Refresh(ScanUpdate, ScanTerminate);
+end;
+
+
 procedure TKMMenuCampaigns.Show;
 begin
   RefreshList;
-
   Panel_CampSelect.Show;
+end;
+
+
+procedure TKMMenuCampaigns.UpdateState;
+begin
+  fCampaigns.UpdateState;
 end;
 
 

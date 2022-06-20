@@ -2,7 +2,7 @@ unit KM_Campaigns;
 {$I KaM_Remake.inc}
 interface
 uses
-  Classes, Generics.Collections,
+  Classes, Generics.Collections, SyncObjs,
   KM_ResTexts, KM_Pics, KM_Maps, KM_MapTypes, KM_CampaignTypes,
   KM_CommonClasses, KM_Points;
 
@@ -97,24 +97,57 @@ type
   end;
 
 
+  TKMCampaignEvent = procedure (aCampaign: TKMCampaign) of object;
+
+  TKMCampaignsScanner = class(TThread)
+  private
+    fOnAdd: TKMCampaignEvent;
+    fOnAddDone: TNotifyEvent;
+    fOnLoadProgress: TNotifyEvent;
+    fOnComplete: TNotifyEvent;
+  public
+    constructor Create(aOnAdd: TKMCampaignEvent; aOnAddDone, aOnLoadProgress, aOnTerminate, aOnComplete: TNotifyEvent);
+    procedure Execute; override;
+  end;
+
+
   TKMCampaignsCollection = class
   private
     fActiveCampaign: TKMCampaign; //Campaign we are playing
     fActiveCampaignMap: Byte; //Map of campaign we are playing, could be different than UnlockedMaps
     fList: TList<TKMCampaign>;
-    function GetCampaign(aIndex: Integer): TKMCampaign;
-    procedure AddCampaign(const aPath: UnicodeString);
 
-    procedure ScanFolder(const aPath: UnicodeString);
+    fOnRefresh: TNotifyEvent;
+    fOnTerminate: TNotifyEvent;
+    fOnComplete: TNotifyEvent;
+
+    fCriticalSection: TCriticalSection;
+    fScanner: TKMCampaignsScanner;
+    fScanning: Boolean; //Flag if scan is in progress
+    fUpdateNeeded: Boolean;
+
+    function GetCampaign(aIndex: Integer): TKMCampaign;
+
+    procedure CampaignAdd(aCampaign: TKMCampaign);
+    procedure CampaignAddDone(Sender: TObject);
+    procedure LoadProgress(Sender: TObject);
+    procedure ScanTerminate(Sender: TObject);
+    procedure ScanComplete(Sender: TObject);
+
+    procedure Clear;
     procedure SortCampaigns;
-    procedure LoadProgress(const aFileName: UnicodeString);
+    procedure LoadProgressFromFile(const aFileName: UnicodeString);
   public
     constructor Create;
     destructor Destroy; override;
 
     //Initialization
-    procedure Load;
     procedure SaveProgress;
+
+    procedure Lock;
+    procedure Unlock;
+    procedure TerminateScan;
+    procedure Refresh(aOnRefresh: TNotifyEvent;  aOnTerminate: TNotifyEvent = nil;aOnComplete: TNotifyEvent = nil);
 
     //Usage
     property ActiveCampaign: TKMCampaign read fActiveCampaign;// write fActiveCampaign;
@@ -125,6 +158,8 @@ type
     procedure UnlockNextMap;
 
     procedure UnlockAllCampaignsMissions;
+
+    procedure UpdateState;
   end;
 
 
@@ -136,7 +171,7 @@ uses
   SysUtils, Math, KromUtils,
   KM_GameParams,
   KM_Resource, KM_ResLocales, KM_ResSprites, KM_ResTypes,
-  KM_Log, KM_Defaults;
+  KM_Log, KM_Defaults, KM_CommonUtils, KM_FileIO;
 
 
 const
@@ -150,53 +185,28 @@ constructor TKMCampaignsCollection.Create;
 begin
   inherited Create;
 
-  fList := TList<TKMCampaign>.Create;
+  fList := TObjectList<TKMCampaign>.Create(True);
+
+  //CS is used to guard sections of code to allow only one thread at once to access them
+  //We mostly don't need it, as UI should access Maps only when map events are signaled
+  //it mostly acts as a safenet
+  fCriticalSection := TCriticalSection.Create;
 end;
 
 
 destructor TKMCampaignsCollection.Destroy;
-var
-  I: Integer;
+//var
+//  I: Integer;
 begin
-  //Free list objects
-  for I := 0 to Count - 1 do
-    Campaigns[I].Free;
+  //Terminate and release the Scanner if we have one working or finished
+  TerminateScan;
 
+  // Objects will be freed automatically since we use TObjectList
   fList.Free;
+
+  fCriticalSection.Free;
+
   inherited;
-end;
-
-
-procedure TKMCampaignsCollection.AddCampaign(const aPath: UnicodeString);
-var
-  C: TKMCampaign;
-begin
-  C := TKMCampaign.Create;
-  C.LoadFromPath(aPath);
-  fList.Add(C);
-end;
-
-
-//Scan campaigns folder
-procedure TKMCampaignsCollection.ScanFolder(const aPath: UnicodeString);
-var
-  searchRec: TSearchRec;
-begin
-  if not DirectoryExists(aPath) then Exit;
-
-  FindFirst(aPath + '*', faDirectory, searchRec);
-  try
-    repeat
-      if (searchRec.Name <> '.') and (searchRec.Name <> '..')
-      and (searchRec.Attr and faDirectory = faDirectory)
-      and FileExists(aPath + searchRec.Name + PathDelim + 'info.cmp') then
-        AddCampaign(aPath + searchRec.Name + PathDelim);
-    until (FindNext(searchRec) <> 0);
-  finally
-    FindClose(searchRec);
-  end;
-
-  SortCampaigns;
 end;
 
 
@@ -239,7 +249,7 @@ end;
 
 
 //Read progress from file trying to find matching campaigns
-procedure TKMCampaignsCollection.LoadProgress(const aFileName: UnicodeString);
+procedure TKMCampaignsCollection.LoadProgressFromFile(const aFileName: UnicodeString);
 var
   M: TKMemoryStream;
   camp: TKMCampaign;
@@ -331,13 +341,6 @@ begin
 end;
 
 
-procedure TKMCampaignsCollection.Load;
-begin
-  ScanFolder(ExeDir + CAMPAIGNS_FOLDER_NAME + PathDelim);
-  LoadProgress(ExeDir + SAVES_FOLDER_NAME + PathDelim + 'Campaigns.dat');
-end;
-
-
 function TKMCampaignsCollection.Count: Integer;
 begin
   Result := fList.Count;
@@ -376,6 +379,144 @@ var
 begin
   for I := 0 to Count - 1 do
     Campaigns[I].UnlockAllMissions;
+end;
+
+
+procedure TKMCampaignsCollection.Lock;
+begin
+  fCriticalSection.Enter;
+end;
+
+
+procedure TKMCampaignsCollection.Unlock;
+begin
+  fCriticalSection.Leave;
+end;
+
+
+procedure TKMCampaignsCollection.CampaignAdd(aCampaign: TKMCampaign);
+begin
+  Lock;
+  try
+    fList.Add(aCampaign);
+
+    //Set the scanning to False so we could Sort
+    fScanning := False;
+
+    //Keep the maps sorted
+    //We signal from Locked section, so everything caused by event can safely access our Maps
+    SortCampaigns;
+
+    fScanning := True;
+  finally
+    Unlock;
+  end;
+end;
+
+
+procedure TKMCampaignsCollection.CampaignAddDone(Sender: TObject);
+begin
+  fUpdateNeeded := True; //Next time the GUI thread calls UpdateState we will run fOnRefresh
+end;
+
+
+procedure TKMCampaignsCollection.LoadProgress(Sender: TObject);
+begin
+  Lock;
+  try
+    LoadProgressFromFile(ExeDir + SAVES_FOLDER_NAME + PathDelim + 'Campaigns.dat');
+  finally
+    Unlock;
+  end;
+end;
+
+
+//Scan was terminated
+//No need to resort since that was done in last MapAdd event
+procedure TKMCampaignsCollection.ScanTerminate(Sender: TObject);
+begin
+  Lock;
+  try
+    fScanning := False;
+    if Assigned(fOnTerminate) then
+      fOnTerminate(Self);
+  finally
+    Unlock;
+  end;
+end;
+
+
+//All maps have been scanned
+//No need to resort since that was done in last MapAdd event
+procedure TKMCampaignsCollection.ScanComplete(Sender: TObject);
+begin
+  Lock;
+  try
+    fScanning := False;
+    if Assigned(fOnComplete) then
+      fOnComplete(Self);
+  finally
+    Unlock;
+  end;
+end;
+
+
+procedure TKMCampaignsCollection.TerminateScan;
+begin
+  if (fScanner <> nil) then
+  begin
+    fScanner.Terminate;
+    fScanner.WaitFor;
+    fScanner.Free;
+    fScanner := nil;
+    fScanning := False;
+  end;
+  fUpdateNeeded := False; //If the scan was terminated we should not run fOnRefresh next UpdateState
+end;
+
+
+procedure TKMCampaignsCollection.Clear;
+var
+  I: Integer;
+begin
+  Assert(not fScanning, 'Guarding from access to inconsistent data');
+  Lock;
+  try
+    for I := fList.Count - 1 downto 0 do
+      fList.Delete(I);
+  finally
+    Unlock;
+  end;
+end;
+
+
+//Start the refresh of maplist
+procedure TKMCampaignsCollection.Refresh(aOnRefresh: TNotifyEvent; aOnTerminate: TNotifyEvent = nil; aOnComplete: TNotifyEvent = nil);
+begin
+  //Terminate previous Scanner if two scans were launched consequentialy
+  TerminateScan;
+  Clear;
+
+  fOnRefresh := aOnRefresh;
+  fOnComplete := aOnComplete;
+  fOnTerminate := aOnTerminate;
+
+  //Scan will launch upon create automatically
+  fScanning := True;
+  fScanner := TKMCampaignsScanner.Create(CampaignAdd, CampaignAddDone, LoadProgress, ScanTerminate, ScanComplete);
+end;
+
+
+procedure TKMCampaignsCollection.UpdateState;
+begin
+  if Self = nil then Exit;
+
+  if not fUpdateNeeded then Exit;
+
+  if Assigned(fOnRefresh) then
+    fOnRefresh(Self);
+
+  fUpdateNeeded := False;
 end;
 
 
@@ -533,34 +674,42 @@ var
   SP: TKMSpritePack;
   firstSpriteIndex: Word;
 begin
-  if gRes.Sprites <> nil then
-  begin
-    SP := gRes.Sprites[rxCustom];
-    firstSpriteIndex := SP.RXData.Count + 1;
-    SP.LoadFromRXXFile(fPath + 'images.rxx', firstSpriteIndex);
+  if gRes.Sprites  = nil then Exit;
+  
+  SP := gRes.Sprites[rxCustom];
+  firstSpriteIndex := SP.RXData.Count + 1;
 
-    if firstSpriteIndex <= SP.RXData.Count then
-    begin
-      //Images were successfuly loaded
-      {$IFNDEF NO_OGL}
-      SP.MakeGFX(False, firstSpriteIndex);
-      {$ENDIF}
-      SP.ClearTemp;
-      fBackGroundPic.RX := rxCustom;
-      fBackGroundPic.ID := firstSpriteIndex;
-    end
-    else
-    begin
-      //Images were not found - use blank
-      fBackGroundPic.RX := rxCustom;
-      fBackGroundPic.ID := 0;
-    end;
+  SP.LoadFromRXXFile(fPath + 'images.rxx', firstSpriteIndex);
+
+  if firstSpriteIndex <= SP.RXData.Count then
+  begin
+    // Make campaign sprite GFX in the main thread only
+    TThread.Synchronize(TThread.CurrentThread, procedure
+      begin
+        //Images were successfully loaded
+        {$IFNDEF NO_OGL}
+        SP.MakeGFX(False, firstSpriteIndex);
+        {$ENDIF}
+      end
+    );
+
+    SP.ClearTemp;
+    fBackGroundPic.RX := rxCustom;
+    fBackGroundPic.ID := firstSpriteIndex;
+  end
+  else
+  begin
+    //Images were not found - use blank
+    fBackGroundPic.RX := rxCustom;
+    fBackGroundPic.ID := 0;
   end;
 end;
 
 
 procedure TKMCampaign.LoadFromPath(const aPath: UnicodeString);
 begin
+  // Load times are about:
+  // LoadMapsInfo - 20-80ms,  LoadLocale 0.5 ms, LoadSprites ~50ms
   fPath := aPath;
 
   LoadFromFile(fPath + 'info.cmp');
@@ -704,6 +853,78 @@ end;
 procedure TKMCampaign.SetUnlockedMap(aValue: Byte);
 begin
   fUnlockedMap := EnsureRange(aValue, fUnlockedMap, fMapCount - 1);
+end;
+
+
+{ TKMCampaignsScanner }
+//aOnAdd - signal that there's new campaign that should be added
+//aOnAddDone - signal that campaign has been added
+//aOnTerminate - scan was terminated (but could be not complete yet)
+//aOnComplete - scan is complete
+constructor TKMCampaignsScanner.Create(aOnAdd: TKMCampaignEvent; aOnAddDone, aOnLoadProgress, aOnTerminate, aOnComplete: TNotifyEvent);
+begin
+  //Thread isn't started until all constructors have run to completion
+  //so Create(False) may be put in front as well
+  inherited Create(False);
+
+  Assert(Assigned(aOnAdd));
+
+  {$IFDEF DEBUG}
+  TThread.NameThreadForDebugging('SavesScanner', ThreadID);
+  {$ENDIF}
+
+  fOnAdd := aOnAdd;
+  fOnAddDone := aOnAddDone;
+  fOnLoadProgress := aOnLoadProgress;
+  fOnComplete := aOnComplete;
+  OnTerminate := aOnTerminate;
+  FreeOnTerminate := False;
+end;
+
+
+procedure TKMCampaignsScanner.Execute;
+var
+  aPath: string;
+  camp: TKMCampaign;
+  searchRec: TSearchRec;
+begin
+  aPath := ExeDir + CAMPAIGNS_FOLDER_NAME + PathDelim;
+
+  if not DirectoryExists(aPath) then Exit;
+
+  gLog.MultithreadLogging := True; // We could log smth while doing saves scan
+
+  try
+    try
+      FindFirst(aPath + '*', faDirectory, searchRec);
+      try
+        repeat
+          if (searchRec.Name <> '.') and (searchRec.Name <> '..')
+            and (searchRec.Attr and faDirectory = faDirectory)
+            and FileExists(aPath + searchRec.Name + PathDelim + 'info.cmp') then
+          begin
+            if SLOW_CAMPAIGN_SCAN then
+              Sleep(150);
+
+            camp := TKMCampaign.Create;
+            camp.LoadFromPath(aPath + searchRec.Name + PathDelim);
+            fOnAdd(camp);
+            // Load progress after each loaded campaign to collect info about unlocked maps before showing the campaign in the list
+            // Its an overkill, but not a huge one, since everything is done in async thread anyway
+            fOnLoadProgress(Self);
+            fOnAddDone(Self);
+          end;
+        until (FindNext(searchRec) <> 0);
+      finally
+        FindClose(searchRec);
+      end;
+    finally
+      if not Terminated and Assigned(fOnComplete) then
+        fOnComplete(Self);
+    end;
+  finally
+    gLog.MultithreadLogging := False;
+  end;
 end;
 
 

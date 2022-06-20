@@ -184,6 +184,8 @@ constructor TKMGameApp.Create(aRenderControl: TKMRenderControl; aScreenX, aScree
 begin
   inherited Create;
 
+  fCampaigns := TKMCampaignsCollection.Create;
+
   fOnCursorUpdate := aOnCursorUpdate;
 
   gResKeys := TKMResKeys.Create;
@@ -218,9 +220,6 @@ begin
   gMusic        := TKMMusicLib.Create(gGameSettings.SFX.MusicVolume);
   gSoundPlayer.OnRequestFade   := gMusic.Fade;
   gSoundPlayer.OnRequestUnfade := gMusic.Unfade;
-
-  fCampaigns    := TKMCampaignsCollection.Create;
-  fCampaigns.Load;
 
   //If game was reinitialized from options menu then we should return there
   InitMainMenu(aScreenX, aScreenY);
@@ -329,7 +328,6 @@ begin
 
   //Release resources that use Locale info
   FreeAndNil(fNetworking);
-  FreeAndNil(fCampaigns);
   FreeAndNil(fMainMenuInterface);
 
   //Recreate resources that use Locale info
@@ -347,9 +345,6 @@ begin
 
   {$IFDEF USE_MAD_EXCEPT}gExceptions.LoadTranslation;{$ENDIF}
 
-  //Campaigns use single locale
-  fCampaigns := TKMCampaignsCollection.Create;
-  fCampaigns.Load;
   InitMainMenu(gRender.ScreenX, gRender.ScreenY);
   fMainMenuInterface.PageChange(aReturnToMenuPage);
   Resize(gRender.ScreenX, gRender.ScreenY); //Force the recreated main menu to resize to the user's screen
