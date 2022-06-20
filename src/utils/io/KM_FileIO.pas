@@ -47,6 +47,8 @@ uses
   //Rename all the files inside folder (MoveFolder is different between Delphi and Lazarus)
   procedure KMRenameFilesInFolder(const aPathToFolder, aFromName, aToName: UnicodeString);
 
+  function KMFileSize(const aFilename: String): Int64;
+
   function IsFilePath(const aPath: UnicodeString): Boolean;
 
   procedure WriteText(const aText: string; aFilename: string; aEncoding: TEncoding);
@@ -444,6 +446,23 @@ begin
   KMRenameFilesInFolder(aDestFolder, SrcName, DestName);
 
   Result := True;
+end;
+
+
+function KMFileSize(const aFilename: String): Int64;
+{$IFDEF MSWindows}
+var
+  info: TWin32FileAttributeData;
+{$ENDIF}
+begin
+  Result := -1;
+
+  {$IFDEF MSWindows}
+  if not GetFileAttributesEx(PWideChar(aFileName), GetFileExInfoStandard, @info) then
+    EXIT;
+
+  Result := Int64(info.nFileSizeLow) or Int64(info.nFileSizeHigh shl 32);
+  {$ENDIF}
 end;
 
 
