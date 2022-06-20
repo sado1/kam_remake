@@ -109,7 +109,7 @@ procedure TKMTextLibraryCommon.LoadLIBXFile(const FilePath: string; var aArray: 
     end;
   end;
 var
-  Tmp: TUnicodeStringArray;
+  tmp: TUnicodeStringArray;
   langCode: AnsiString;
   libTxt: UnicodeString;
   I: Integer;
@@ -123,16 +123,16 @@ begin
   // Load ANSI file with codepage we say into unicode string
   langCode := AnsiString(Copy(FilePath, Length(FilePath) - 7, 3));
   libTxt := ReadTextU(FilePath, gResLocales.LocaleByCode(langCode).FontCodepage);
-  Tmp := TextToArray(libTxt);
+  tmp := TextToArray(libTxt);
 
   topId := -1;
 
-  for I := High(Tmp) downto 0 do
+  for I := High(tmp) downto 0 do
   begin
-    firstDelimiter := Pos(':', Tmp[I]);
+    firstDelimiter := Pos(':', tmp[I]);
     if firstDelimiter = 0 then Continue;
 
-    if TryStrToInt(LeftStr(Tmp[I], firstDelimiter - 1), lineId) then
+    if TryStrToInt(LeftStr(tmp[I], firstDelimiter - 1), lineId) then
     begin
       if not aFullScan then
       begin
@@ -152,9 +152,9 @@ begin
   if Length(aArray) < topId + 1 then
     SetLength(aArray, topId + 1);
 
-  for I := 0 to High(Tmp) do
+  for I := 0 to High(tmp) do
   begin
-    s := Tmp[I];
+    s := tmp[I];
 
     // Get string index and skip erroneous lines
     firstDelimiter := Pos(':', s);
