@@ -3448,8 +3448,8 @@ function TKMTerrain.DecStoneDeposit(const aLoc: TKMPoint): Boolean;
 type
   TKMStoneTransitionType = (sttNone, sttGrass, sttCoastSand, sttDirt, sttSnow, sttSnowOnDirt);
 const
-  TRANSITIONS_TER_KINDS: array[TKMStoneTransitionType] of TKMTerrainKind =
-                                                      (tkGrass, tkGrass, tkCoastSand, tkDirt, tkSnow, tkSnowOnDirt);
+  TRANSITIONS_TER_KINDS: array[TKMStoneTransitionType] of TKMTerrainKind = (tkGrass, tkGrass, tkCoastSand, tkDirt, tkSnow, tkSnowOnDirt);
+
   TRAN_TILES: array[TKMStoneTransitionType] of array[0..6] of Word =
               ((  0, 139, 138, 140, 141, 274, 301),
                (  0, 139, 138, 140, 141, 274, 301),
