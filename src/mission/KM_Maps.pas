@@ -1526,13 +1526,12 @@ procedure TKMapsCollection.UpdateState;
 begin
   if Self = nil then Exit;
 
-  if fUpdateNeeded then
-  begin
-    if Assigned(fOnRefresh) then
-      fOnRefresh(Self);
+  if not fUpdateNeeded then Exit;
 
-    fUpdateNeeded := False;
-  end;
+  if Assigned(fOnRefresh) then
+    fOnRefresh(Self);
+
+  fUpdateNeeded := False;
 end;
 
 

@@ -3010,8 +3010,8 @@ end;
 //Should update anything we want to be updated, obviously
 procedure TKMMenuLobby.UpdateState;
 begin
-  if fMapsMP <> nil then fMapsMP.UpdateState;
-  if fSavesMP <> nil then fSavesMP.UpdateState;
+  fMapsMP.UpdateState;
+  fSavesMP.UpdateState;
 
   if (fLastTimeResetBans <> 0) and (TimeSince(fLastTimeResetBans) > RESET_BANS_COOLDOWN) then
   begin

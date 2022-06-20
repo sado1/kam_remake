@@ -589,13 +589,14 @@ end;
 
 procedure TKMSavesCollection.UpdateState;
 begin
-  if fUpdateNeeded then
-  begin
-    if Assigned(fOnRefresh) then
-      fOnRefresh(Self);
+  if Self = nil then Exit;
 
-    fUpdateNeeded := False;
-  end;
+  if not fUpdateNeeded then Exit;
+
+  if Assigned(fOnRefresh) then
+    fOnRefresh(Self);
+
+  fUpdateNeeded := False;
 end;
 
 

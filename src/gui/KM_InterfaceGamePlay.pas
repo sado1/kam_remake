@@ -4638,7 +4638,7 @@ begin
 
   GameOptionsChanged;
 
-  if fSaves <> nil then fSaves.UpdateState;
+  fSaves.UpdateState;
 
   if aGlobalTickCount mod RESULTS_UPDATE_RATE = 0 then
   begin
