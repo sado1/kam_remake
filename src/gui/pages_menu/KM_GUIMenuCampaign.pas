@@ -57,6 +57,8 @@ type
 
     procedure RefreshCampaign;
 
+    function Visible: Boolean;
+
     procedure UpdateState(aTickCount: Cardinal);
   end;
 
@@ -352,11 +354,18 @@ begin
 end;
 
 
+function TKMMenuCampaign.Visible: Boolean;
+begin
+  Result := Panel_Campaign.Visible;
+end;
+
+
 procedure TKMMenuCampaign.UpdateState(aTickCount: Cardinal);
 begin
-  if fCampaign <> nil then
-    if fCampaign.Maps[fMapIndex].NodeCount > 0 then
-      AnimNodes(aTickCount);
+  if (fCampaign = nil) or not Visible then Exit;
+
+  if fCampaign.Maps[fMapIndex].NodeCount > 0 then
+    AnimNodes(aTickCount);
 end;
 
 
@@ -364,6 +373,8 @@ procedure TKMMenuCampaign.Resize(X, Y: Word);
 var
   I: Integer;
 begin
+  if (fCampaign = nil) or not Visible then Exit;
+
   //Special rules for resizing the campaigns panel
   Panel_Campaign_Flags.Scale := Min(768,Y) / 768;
   Panel_Campaign_Flags.Left := Round(1024*(1-Panel_Campaign_Flags.Scale) / 2);
