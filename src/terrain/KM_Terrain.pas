@@ -3448,7 +3448,8 @@ function TKMTerrain.DecStoneDeposit(const aLoc: TKMPoint): Boolean;
 type
   TKMStoneTransitionType = (sttNone, sttGrass, sttCoastSand, sttDirt, sttSnow, sttSnowOnDirt);
 const
-  TRANSITIONS_TER_KINDS: array[TKMStoneTransitionType] of TKMTerrainKind = (tkGrass, tkGrass, tkCoastSand, tkDirt, tkSnow, tkSnowOnDirt);
+  TRANSITIONS_TER_KINDS: array[TKMStoneTransitionType] of TKMTerrainKind =
+    (tkGrass, tkGrass, tkCoastSand, tkDirt, tkSnow, tkSnowOnDirt);
 
   TRAN_TILES: array[TKMStoneTransitionType] of array[0..6] of Word =
               ((  0, 139, 138, 140, 141, 274, 301),
@@ -3544,15 +3545,24 @@ var
       or not TileHasOnlyTerrainKinds(X, Y, [tkStone, tkGrass, tkCoastSand, tkDirt, tkSnow, tkSnowOnDirt]) then //Do not update transitions with other terrains (mountains f.e.)
       Exit;
 
+    // 1. Get tile transition type (with grass / sand etc)
     transition := GetStoneTransitionType(X,Y);
 
+    // 2. Check what tiles around has stone
+
+    // We 'encode' in bits variable if surrounding tiles are stone tiles
+    // Then we found proper tile to replace
+    // Starting with dirN and going clockwise
+    // f.e. 11 = 1011 = stone is to the left, top and right of the tile
     bits := GetBits(X  , Y-1, transition, dirS)*1 +
             GetBits(X+1, Y  , transition, dirW)*2 +
             GetBits(X  , Y+1, transition, dirN)*4 +
             GetBits(X-1, Y  , transition, dirE)*8;
 
+    // 3. Replace tile with other tile according to the tiles around
     if bits = 0 then
     begin
+      // If there are no stone around in the straight directions then check diagonals
       bitsDiag := GetBits(X-1, Y-1, transition, dirSE)*1 +
                   GetBits(X+1, Y-1, transition, dirSW)*2 +
                   GetBits(X+1, Y+1, transition, dirNW)*4 +
@@ -3562,6 +3572,7 @@ var
       case Land^[Y,X].BaseLayer.Terrain of
         142,
         143:  begin
+                // 142 and 143 are stone-water tiles (triangles)
                 terRot := (Land[Y,X].BaseLayer.Terrain + Land^[Y,X].BaseLayer.Rotation) mod 4;
                 case terRot of
                   0,1:  Exit;
@@ -3592,6 +3603,7 @@ var
             Land^[Y,X].BaseLayer.Terrain  := TKMTerrainPainter.GetRandomTile(TRANSITIONS_TER_KINDS[transition]);
             Land^[Y,X].BaseLayer.Rotation := KaMRandom(4, 'TKMTerrain.DecStoneDeposit.UpdateTransition'); //Randomise the direction of no-stone terrain tiles
           end else begin
+            // 142 and 143 are stone-water tiles (triangles)
             if Land^[Y,X].BaseLayer.Terrain in [142,143] then
               Exit;
             Land^[Y,X].BaseLayer.Terrain := TRAN_TILES[transition, TILE_ID_DIAG_INDEX[bitsDiag]];
@@ -3599,12 +3611,14 @@ var
           end;
         end;
       end;
-    end else
+    end
+    else
     begin
+      // 142 and 143 are stone-water tiles (triangles)
       if Land^[Y,X].BaseLayer.Terrain in [142,143] then
         Exit;
-      
-      //If tile is surrounded with other stone tiles no need to change it
+
+      // If tile is surrounded with other stone tiles no need to change it
       if bits <> 15 then
       begin
         Land^[Y,X].BaseLayer.Terrain  := TRAN_TILES[transition, TILE_ID_INDEX[bits]];
@@ -3614,7 +3628,8 @@ var
     UpdatePassability(KMPoint(X,Y));
     AddToVisited(X,Y);
 
-    //Floodfill through around tiles
+    // 4. Update surrounding tiles
+    // Floodfill through around tiles
     UpdateTransition(X,  Y-1, aStep + 1); //  x x x
     UpdateTransition(X+1,Y,   aStep + 1); //  x   x
     UpdateTransition(X,  Y+1, aStep + 1); //  x x x
