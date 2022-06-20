@@ -3446,11 +3446,11 @@ end;
 // Extract one unit of stone
 function TKMTerrain.DecStoneDeposit(const aLoc: TKMPoint): Boolean;
 type
-  TStoneTransitionType = (sttNone, sttGrass, sttCoastSand, sttDirt, sttSnow, sttSnowOnDirt);
+  TKMStoneTransitionType = (sttNone, sttGrass, sttCoastSand, sttDirt, sttSnow, sttSnowOnDirt);
 const
-  TransitionsTerKinds: array[TStoneTransitionType] of TKMTerrainKind =
+  TRANSITIONS_TER_KINDS: array[TKMStoneTransitionType] of TKMTerrainKind =
                                                       (tkGrass, tkGrass, tkCoastSand, tkDirt, tkSnow, tkSnowOnDirt);
-  TranTiles: array[TStoneTransitionType] of array[0..6] of Word =
+  TRAN_TILES: array[TKMStoneTransitionType] of array[0..6] of Word =
               ((  0, 139, 138, 140, 141, 274, 301),
                (  0, 139, 138, 140, 141, 274, 301),
                ( 32, 269, 268, 270, 271, 273, 302),
@@ -3458,49 +3458,49 @@ const
                ( 46, 286, 285, 287, 288, 290, 304),
                ( 47, 294, 293, 295, 296, 298, 305));
 
-  TileIDIndex: array[1..14] of Word = (1,1,2,1,3,2,4,1,2,3,4,2,4,4);
-  RotID:       array[1..14] of Byte = (0,1,0,2,0,1,3,3,3,1,2,2,1,0);
-  TileIDDiagIndex: array[1..15] of Word = (5,5,6,5,5,6,5,5,6,5,5,6,5,5,5);
-  RotIdDiag:       array[1..15] of Byte = (3,0,0,1,3,1,3,2,3,0,0,2,0,0,0);
+  TILE_ID_INDEX:      array[1..14] of Word = (1,1,2,1,3,2,4,1,2,3,4,2,4,4);
+  ROT_ID:             array[1..14] of Byte = (0,1,0,2,0,1,3,3,3,1,2,2,1,0);
+  TILE_ID_DIAG_INDEX: array[1..15] of Word = (5,5,6,5,5,6,5,5,6,5,5,6,5,5,5);
+  ROT_ID_DIAG:        array[1..15] of Byte = (3,0,0,1,3,1,3,2,3,0,0,2,0,0,0);
 
   NO_REPL = High(Word);
-  WaterDiagRepl: array[TStoneTransitionType] of Word =
-              (127, 127, 118, 105, NO_REPL, NO_REPL);
+  WATER_DIAG_REPL: array[TKMStoneTransitionType] of Word =
+                     (127, 127, 118, 105, NO_REPL, NO_REPL);
 
-  WaterDiagReplRot: array[TStoneTransitionType] of Byte =
-              (1, 1, 1, 3, 100, 100);
+  WATER_DIAG_REPL_ROT: array[TKMStoneTransitionType] of Byte =
+                         (1, 1, 1, 3, 100, 100);
 
   MAX_STEPS = 5; //steps limit
 
 var
-  Visited: TKMPointArray;
-  fVisitedCnt: Integer;
+  visited: TKMPointArray;
+  visitedCnt: Integer;
 
   procedure InitVisited;
   begin
-    SetLength(Visited, 8);
-    fVisitedCnt := 0;
+    SetLength(visited, 8);
+    visitedCnt := 0;
   end;
 
   procedure AddToVisited(X,Y: Word);
   begin
-    if Length(Visited) = fVisitedCnt then
-      SetLength(Visited, fVisitedCnt + 8);
+    if Length(visited) = visitedCnt then
+      SetLength(visited, visitedCnt + 8);
 
-    Visited[fVisitedCnt] := KMPoint(X,Y);
-    Inc(fVisitedCnt);
+    visited[visitedCnt] := KMPoint(X,Y);
+    Inc(visitedCnt);
   end;
 
-  function GetTile(aTransitionType: TStoneTransitionType; aTileIdIndex: Byte): Word;
+  function GetTile(aTransitionType: TKMStoneTransitionType; aTileIdIndex: Byte): Word;
   begin
     if aTileIdIndex = 0 then
-      Result := TKMTerrainPainter.GetRandomTile(TransitionsTerKinds[aTransitionType])
+      Result := TKMTerrainPainter.GetRandomTile(TRANSITIONS_TER_KINDS[aTransitionType])
     else
-      Result := TranTiles[aTransitionType, aTileIdIndex];
+      Result := TRAN_TILES[aTransitionType, aTileIdIndex];
 
   end;
 
-  function GetStoneTransitionType(X, Y: Word): TStoneTransitionType;
+  function GetStoneTransitionType(X, Y: Word): TKMStoneTransitionType;
   begin
     Result := sttNone;
     case Land^[Y,X].BaseLayer.Terrain of
@@ -3514,7 +3514,7 @@ var
 
   function UpdateTransition(X,Y: Integer; aStep: Byte): Boolean;
 
-    function GetBits(aX,aY: Integer; aTransition: TStoneTransitionType; aDir: TKMDirection = dirNA): Byte;
+    function GetBits(aX,aY: Integer; aTransition: TKMStoneTransitionType; aDir: TKMDirection = dirNA): Byte;
     var
       dir: TKMDirection;
     begin
@@ -3523,7 +3523,7 @@ var
       dir := dirNA;
       //if tile has no other terrain types, then check if it has stone, via dirNA
       //otherwise check only tile corners, usign direction
-      if not TileHasOnlyTerrainKinds(aX, aY, [tkStone, TransitionsTerKinds[aTransition]]) then
+      if not TileHasOnlyTerrainKinds(aX, aY, [tkStone, TRANSITIONS_TER_KINDS[aTransition]]) then
         dir := aDir;
 
       //Check is there anything stone-related (stone tile or corner at least)
@@ -3531,7 +3531,7 @@ var
     end;
 
   var
-    transition: TStoneTransitionType;
+    transition: TKMStoneTransitionType;
     bits, bitsDiag: Byte;
     terRot, repl: Integer;
   begin
@@ -3539,7 +3539,7 @@ var
     if not TileInMapCoords(X,Y) //Skip for tiles not in map coords
       or (aStep > MAX_STEPS)  //Limit for steps (no limit for now)
       or TileHasStone(X,Y)      //If tile has stone no need to change it
-      or ArrayContains(KMPoint(X,Y), Visited, fVisitedCnt) //If we already changed this tile
+      or ArrayContains(KMPoint(X,Y), visited, visitedCnt) //If we already changed this tile
       or ((aStep <> 0) and not TileHasTerrainKindPart(X, Y, tkStone)) //If tile has no stone parts (except initial step)
       or not TileHasOnlyTerrainKinds(X, Y, [tkStone, tkGrass, tkCoastSand, tkDirt, tkSnow, tkSnowOnDirt]) then //Do not update transitions with other terrains (mountains f.e.)
       Exit;
@@ -3566,18 +3566,18 @@ var
                 case terRot of
                   0,1:  Exit;
                   2,3:  begin
-                          repl := WaterDiagRepl[transition];
+                          repl := WATER_DIAG_REPL[transition];
                           if repl <> NO_REPL then
                           begin
                             Land^[Y,X].BaseLayer.Terrain := repl;
-                            Land^[Y,X].BaseLayer.Rotation := (terRot + WaterDiagReplRot[transition]) mod 4;
+                            Land^[Y,X].BaseLayer.Rotation := (terRot + WATER_DIAG_REPL_ROT[transition]) mod 4;
                           end
                           else
                           begin
                             Land^[Y,X].BaseLayer.Terrain := 192;
                             Land^[Y,X].BaseLayer.SetCorners([1]);
                             Land^[Y,X].LayersCnt := 1;
-                            Land^[Y,X].Layer[0].Terrain := gRes.Sprites.GenTerrainTransitions[TransitionsTerKinds[transition],
+                            Land^[Y,X].Layer[0].Terrain := gRes.Sprites.GenTerrainTransitions[TRANSITIONS_TER_KINDS[transition],
                                                                                               mkSoft2, tmt2Diagonal, mstMain];
                             Land^[Y,X].Layer[0].Rotation := terRot;
                             Land^[Y,X].Layer[0].SetCorners([0,2,3]);
@@ -3589,13 +3589,13 @@ var
         begin
           if bitsDiag = 0 then
           begin
-            Land^[Y,X].BaseLayer.Terrain  := TKMTerrainPainter.GetRandomTile(TransitionsTerKinds[transition]);
+            Land^[Y,X].BaseLayer.Terrain  := TKMTerrainPainter.GetRandomTile(TRANSITIONS_TER_KINDS[transition]);
             Land^[Y,X].BaseLayer.Rotation := KaMRandom(4, 'TKMTerrain.DecStoneDeposit.UpdateTransition'); //Randomise the direction of no-stone terrain tiles
           end else begin
             if Land^[Y,X].BaseLayer.Terrain in [142,143] then
               Exit;
-            Land^[Y,X].BaseLayer.Terrain := TranTiles[transition, TileIDDiagIndex[bitsDiag]];
-            Land^[Y,X].BaseLayer.Rotation := RotIdDiag[bitsDiag];
+            Land^[Y,X].BaseLayer.Terrain := TRAN_TILES[transition, TILE_ID_DIAG_INDEX[bitsDiag]];
+            Land^[Y,X].BaseLayer.Rotation := ROT_ID_DIAG[bitsDiag];
           end;
         end;
       end;
@@ -3607,8 +3607,8 @@ var
       //If tile is surrounded with other stone tiles no need to change it
       if bits <> 15 then
       begin
-        Land^[Y,X].BaseLayer.Terrain  := TranTiles[transition, TileIDIndex[bits]];
-        Land^[Y,X].BaseLayer.Rotation := RotID[bits];
+        Land^[Y,X].BaseLayer.Terrain  := TRAN_TILES[transition, TILE_ID_INDEX[bits]];
+        Land^[Y,X].BaseLayer.Rotation := ROT_ID[bits];
       end;
     end;
     UpdatePassability(KMPoint(X,Y));
@@ -3626,7 +3626,7 @@ var
   end;
 
 var
-  transition: TStoneTransitionType;
+  transition: TKMStoneTransitionType;
 begin
   transition := GetStoneTransitionType(aLoc.X,aLoc.Y + 1); //Check transition type by lower point (Y + 1)
 
@@ -3649,7 +3649,7 @@ begin
     275, 276,
     283, 284,
     291, 292: begin
-                Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain  := TranTiles[transition, 0]; //Remove stone tile (so tile will have no stone)
+                Land^[aLoc.Y,aLoc.X].BaseLayer.Terrain  := TRAN_TILES[transition, 0]; //Remove stone tile (so tile will have no stone)
                 Land^[aLoc.Y,aLoc.X].BaseLayer.Rotation := KaMRandom(4, 'TKMTerrain.DecStoneDeposit 9');
 
                 InitVisited;
