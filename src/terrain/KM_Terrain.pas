@@ -1437,10 +1437,7 @@ begin
   GetTileCornersTerKinds(X, Y, cornersTerKinds);
   for K := 0 to 3 do
     if cornersTerKinds[K] = aTerKind then
-    begin
-      Result := True;
-      Exit;
-    end;
+      Exit(True);
 end;
 
 
