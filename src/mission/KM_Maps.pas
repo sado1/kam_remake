@@ -27,6 +27,7 @@ type
     Stat: TKMGoalStatus;
   end;
 
+  // Additional map data from TXT file
   TKMMapTxtInfo = class
   private
     // Saved
@@ -57,10 +58,10 @@ type
   public
     Author: UnicodeString;
     Version: UnicodeString;
-    IsCoop: Boolean; //Some multiplayer missions are defined as coop
-    IsSpecial: Boolean; //Some missions are defined as special (e.g. tower defence, quest, etc.)
-    IsRMG: Boolean; //Missions that were generated via Random Map Generator
-    IsPlayableAsSP: Boolean; //Is MP map playable as SP map ?
+    IsCoop: Boolean; // Some multiplayer missions are defined as coop
+    IsSpecial: Boolean; // Some missions are defined as special (e.g. tower defence, quest, etc.)
+    IsRMG: Boolean; // Missions that were generated via Random Map Generator
+    IsPlayableAsSP: Boolean; // Is MP map playable as SP map ?
 
     DifficultyLevels: TKMMissionDifficultySet;
 
