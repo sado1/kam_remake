@@ -354,6 +354,8 @@ end;
 
 
 procedure TKMMenuSingleMap.ListRefresh(aJumpToSelected: Boolean);
+const
+  GLYPH_MISSION_MODE: array [TKMissionMode] of Word = (42, 28);
 var
   I, listI, prevTop: Integer;
   R: TKMListRow;
@@ -381,7 +383,7 @@ begin
 
       R := MakeListRow(['', IntToStr(fMaps[I].LocCount), fMaps[I].Name, MapSizeText(fMaps[I].MapSizeX, fMaps[I].MapSizeY)]);
       R.Cells[2].SubTxt := fMaps[I].TxtInfo.SmallDescToDisplay;
-      R.Cells[0].Pic := MakePic(rxGui, 28 + Byte(fMaps[I].MissionMode <> mmFighting) * 14);
+      R.Cells[0].Pic := MakePic(rxGui, GLYPH_MISSION_MODE[fMaps[I].MissionMode]);
       R.Tag := I;
       ColumnBox_Maps.AddItem(R);
 
