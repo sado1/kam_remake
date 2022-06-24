@@ -539,11 +539,10 @@ begin
   FreeAndNil(fTextLib);
   fScriptDataStream.Free;
 
-  for I := 0 to Length(fMapsInfo) - 1 do
-    if fMapsInfo[I].TxtInfo <> nil then
-      fMapsInfo[I].TxtInfo.Free;
+  for I := 0 to High(fMapsInfo) do
+    FreeAndNil(fMapsInfo[I].TxtInfo);
 
-  //Free background texture
+  // Free background texture
   if fBackGroundPic.ID <> 0 then
     gRes.Sprites[rxCustom].DeleteSpriteTexture(fBackGroundPic.ID);
 
