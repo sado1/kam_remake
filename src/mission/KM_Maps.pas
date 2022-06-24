@@ -1196,7 +1196,7 @@ begin
           SetSmallDescLibxAndTranslation(tmpInt, LoadDescriptionFromLIBX(tmpInt));
       end;
 
-      if SameText(St, 'SetCoop')   then
+      if SameText(St, 'SetCoop') then
       begin
         IsCoop := True;
         BlockTeamSelection := True;
@@ -1270,7 +1270,7 @@ procedure TKMMapTxtInfo.SetBigDesc(const aBigDesc: UnicodeString);
 begin
   fBigDesc := aBigDesc;
 
-  if fSmallDesc <> '' then
+  if fBigDesc <> '' then
     SetBigDescLibxAndTranslation(LIBX_NO_ID, '');
 end;
 
