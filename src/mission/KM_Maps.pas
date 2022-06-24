@@ -1134,6 +1134,7 @@ begin
   CloseFile(ft);
 end;
 
+
 procedure TKMMapTxtInfo.LoadTXTInfo(const aFilePath: String);
 
   function LoadDescriptionFromLIBX(aIndex: Integer): UnicodeString;
