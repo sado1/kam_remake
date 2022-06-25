@@ -72,7 +72,7 @@ begin
   cap := gResTexts[TX_MAPED_MAP_QUICK_PLAY];
   w := Max(WID, gRes.Fonts[TKMPopUpPanel.DEF_FONT].GetTextSize(cap).X + 40);
 
-  PopUp_QuickPlay := TKMPopUpPanel.Create(aParent, w, PANEL_QUICKPLAY_HEIGHT, cap, pubgitGray);
+  PopUp_QuickPlay := TKMPopUpPanel.Create(aParent, w, PANEL_QUICKPLAY_HEIGHT, cap, pbGray);
 
   left := (PopUp_QuickPlay.ItemsPanel.Width - CTRLS_WIDTH) div 2;
     top := 15;

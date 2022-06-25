@@ -324,7 +324,7 @@ begin
   fGuiTerrain.GuiSelection.GuiRMGPopUp := fGuiRMG;
 
   // PopUp window will be reated last
-  PopUp_History := TKMPopUpPanel.Create(Panel_Main, 270, 300, gResTexts[TX_MAPED_HISTORY_TITLE], pubgitScroll, True, False, False);
+  PopUp_History := TKMPopUpPanel.Create(Panel_Main, 270, 300, gResTexts[TX_MAPED_HISTORY_TITLE], pbScroll, True, False, False);
   PopUp_History.Left := Panel_Main.Width - PopUp_History.Width;
   PopUp_History.Top  := 0;
   PopUp_History.DragEnabled := True;

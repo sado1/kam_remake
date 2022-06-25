@@ -33,7 +33,7 @@ type
   end;
 
 
-  TKMPopUpBGImageType = (pubgitGray, pubgitYellow, pubgitScroll);
+  TKMPopUpBGImageType = (pbGray, pbYellow, pbScroll);
 
   TKMPopUpPanel = class(TKMPanel)
   const
@@ -75,7 +75,7 @@ type
     CaptionLabel: TKMLabel;
 
     constructor Create(aParent: TKMPanel; aWidth, aHeight: Integer; const aCaption: UnicodeString = '';
-                       aImageType: TKMPopUpBGImageType = pubgitYellow; aWithCrossImg: Boolean = False;
+                       aImageType: TKMPopUpBGImageType = pbYellow; aWithCrossImg: Boolean = False;
                        aShowBevel: Boolean = True; aShowShadeBevel: Boolean = True);
 
     procedure MouseDown (X,Y: Integer; Shift: TShiftState; Button: TMouseButton); override;
@@ -235,7 +235,7 @@ end;
 // aWidth / aHeight represents not TKMPopUpPanel sizes, but its internal panel: ItemsPanel
 // PopUpPanel draw bigger image behind it
 constructor TKMPopUpPanel.Create(aParent: TKMPanel; aWidth, aHeight: Integer; const aCaption: UnicodeString = '';
-                                 aImageType: TKMPopUpBGImageType = pubgitYellow; aWithCrossImg: Boolean = False;
+                                 aImageType: TKMPopUpBGImageType = pbYellow; aWithCrossImg: Boolean = False;
                                  aShowBevel: Boolean = True; aShowShadeBevel: Boolean = True);
 var
   margin, l, t, topMarg, baseW, baseH, w, h: Integer;
@@ -272,12 +272,12 @@ begin
   ItemsPanel := TKMPanel.Create(Self, margin, topMarg, Width - 2*margin, Height - topMarg - GetBottomMargin);
 
   case fBGImageType of
-    pubgitGray:   ImageBG.TexId := 15;
-    pubgitYellow: ImageBG.TexId := 18;
-    pubgitScroll: begin
-                    ImageBG.Rx := rxGui;
-                    ImageBG.TexId := 409;
-                  end;
+    pbGray:   ImageBG.TexId := 15;
+    pbYellow: ImageBG.TexId := 18;
+    pbScroll: begin
+                ImageBG.Rx := rxGui;
+                ImageBG.TexId := 409;
+              end;
   end;
 
   if aWithCrossImg then
@@ -315,58 +315,43 @@ end;
 
 
 function TKMPopUpPanel.GetLeftRightMargin: Integer;
+const
+  MARGIN_SIDE: array [TKMPopUpBGImageType] of Byte = (20, 35, 20);
 begin
-  Result := 0;
-  case fBGImageType of
-    pubgitGray:   Result := 20;
-    pubgitYellow: Result := 35;
-    pubgitScroll: Result := 20;
-  end;
+  Result := MARGIN_SIDE[fBGImageType];
 end;
 
 
 function TKMPopUpPanel.GetTopMargin: Integer;
+const
+  MARGIN_TOP: array [TKMPopUpBGImageType] of Byte = (40, 80, 50);
 begin
-  Result := 0;
-  case fBGImageType of
-    pubgitGray:   Result := 40;
-    pubgitYellow: Result := 80;
-    pubgitScroll: Result := 50;
-  end;
+  Result := MARGIN_TOP[fBGImageType];
 end;
 
 
 function TKMPopUpPanel.GetBottomMargin: Integer;
+const
+  MARGIN_BOTTOM: array [TKMPopUpBGImageType] of Byte = (20, 50, 20);
 begin
-  Result := 0;
-  case fBGImageType of
-    pubgitGray:   Result := 20;
-    pubgitYellow: Result := 50;
-    pubgitScroll: Result := 20;
-  end;
+  Result := MARGIN_BOTTOM[fBGImageType];
 end;
 
 
 function TKMPopUpPanel.GetCrossTop: Integer;
+const
+  CROSS_TOP: array [TKMPopUpBGImageType] of Byte = (24, 40, 24);
 begin
-  Result := 0;
-  case fBGImageType of
-    pubgitGray:   Result := 24;
-    pubgitYellow: Result := 40;
-    pubgitScroll: Result := 24;
-  end;
+  Result := CROSS_TOP[fBGImageType];
 end;
 
 
 function TKMPopUpPanel.GetCrossRight: Integer;
-begin
-  Result := 0;
+const
   // We probably should calc those sizes as dependant of the Width
-  case fBGImageType of
-    pubgitGray:   Result := 50;
-    pubgitYellow: Result := 130;
-    pubgitScroll: Result := 55;
-  end;
+  CROSS_RIGHT: array [TKMPopUpBGImageType] of Byte = (50, 130, 55);
+begin
+  Result := CROSS_RIGHT[fBGImageType];
 end;
 
 

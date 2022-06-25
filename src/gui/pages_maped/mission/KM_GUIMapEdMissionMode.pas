@@ -93,7 +93,7 @@ begin
   Button_MissionParams.Hint := gResTexts[TX_MAPED_MISSION_PARAMETERS_BTN_HINT];
   Button_MissionParams.OnClick := MissionParams_Click;
 
-  PopUp_MissionParams := TKMPopUpPanel.Create(aParent.MasterParent, 700, POPUP_H, gResTexts[TX_MAPED_MISSION_PARAMETERS_TITLE], pubgitYellow, False, False);
+  PopUp_MissionParams := TKMPopUpPanel.Create(aParent.MasterParent, 700, POPUP_H, gResTexts[TX_MAPED_MISSION_PARAMETERS_TITLE], pbYellow, False, False);
   PopUp_MissionParams.CapOffsetY := -5;
   PopUp_MissionParams.OnKeyDown := MissionParams_OnKeyDown;
 

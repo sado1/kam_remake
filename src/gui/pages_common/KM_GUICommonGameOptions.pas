@@ -47,7 +47,7 @@ const
 begin
   inherited Create;
 
-  PopUpPanel_Settings := TKMPopUpPanel.Create(aParent.MasterParent, W_PNL, H_PNL, aCaption, pubgitYellow, False, False);
+  PopUpPanel_Settings := TKMPopUpPanel.Create(aParent.MasterParent, W_PNL, H_PNL, aCaption, pbYellow, False, False);
   PopUpPanel_Settings.HandleCloseKey := True;
   PopUpPanel_Settings.CapOffsetY := -5;
 

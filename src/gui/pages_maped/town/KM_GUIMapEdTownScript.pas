@@ -67,7 +67,7 @@ begin
   Button_ClassicAIParams.Anchors := [anLeft, anTop, anRight];
   Button_ClassicAIParams.OnClick := ClassicAIParams_Click;
 
-  PopUp_ClassicAIParams := TKMPopUpPanel.Create(aParent.MasterParent, 300, 220, gResTexts[TX_MAPED_AI_CLASSIC_AI_PARAMS_TITLE], pubgitGray);
+  PopUp_ClassicAIParams := TKMPopUpPanel.Create(aParent.MasterParent, 300, 220, gResTexts[TX_MAPED_AI_CLASSIC_AI_PARAMS_TITLE], pbGray);
 
     TrackBar_SerfsPer10Houses := TKMTrackBar.Create(PopUp_ClassicAIParams.ItemsPanel, 10, 10, 280, 1, 50);
     TrackBar_SerfsPer10Houses.Caption := gResTexts[TX_MAPED_AI_SERFS_PER_10_HOUSES];
