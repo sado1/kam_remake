@@ -402,7 +402,7 @@ begin
     Radio_SmallDescType.ItemIndex := Ord(gGame.MapTxtInfo.IsSmallDescLibxSet);
     Radio_BigDescType.ItemIndex := Ord(gGame.MapTxtInfo.IsBigDescLibxSet);
 
-    Edit_SmallDesc.Text     := gGame.MapTxtInfo.SmallDescToDisplay;
+    Edit_SmallDesc.Text     := gGame.MapTxtInfo.SmallDesc; // If there's Libx it won't show up
     NumEdit_SmallDesc.Value := gGame.MapTxtInfo.SmallDescLibx;
     Edit_BigDesc.Text       := gGame.MapTxtInfo.BigDescToDisplay;
     NumEdit_BigDesc.Value   := gGame.MapTxtInfo.BigDescLibx;

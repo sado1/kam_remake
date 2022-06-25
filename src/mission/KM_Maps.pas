@@ -53,7 +53,7 @@ type
     procedure SetSmallDesc(const aSmallDesc: UnicodeString);
     procedure SetBigDesc(const aBigDesc: UnicodeString);
 
-    function GetSmallDescToDisplay: UnicodeString;
+    function GetSmallDescSanitized: UnicodeString;
     function GetBigDescToDisplay: UnicodeString;
   public
     Author: UnicodeString;
@@ -71,10 +71,13 @@ type
 
     constructor Create;
 
-    property SmallDesc: UnicodeString write SetSmallDesc; // We want to read SmallDescToDisplay instead
-    property SmallDescLibx: Integer read fSmallDescLibx; // We want to set LibxID and its translation at once
+    // SmallDesc can be set as text or Libx index by the mapmaker
+    // Since the data is in the text, we can't forbid the mapmaker to use EOLs and other unsupported symbols
+    // Hence, read and let edit what is there, but sanitize for the display in the SP table
+    property SmallDesc: UnicodeString read fSmallDesc write SetSmallDesc;
+    property SmallDescLibx: Integer read fSmallDescLibx;
     procedure SetSmallDescLibxAndTranslation(aSmallDescLibx: Integer; aTranslation: UnicodeString);
-    property SmallDescToDisplay: UnicodeString read GetSmallDescToDisplay;
+    property SmallDescSanitized: UnicodeString read GetSmallDescSanitized;
 
     property BigDesc: UnicodeString write SetBigDesc;
     property BigDescLibx: Integer read fBigDescLibx;
@@ -1045,7 +1048,9 @@ constructor TKMMapTxtInfo.Create;
 begin
   inherited;
 
-  ResetInfo;
+  // Only these two fields should be "non-zero" by default
+  fSmallDescLibx := LIBX_NO_ID;
+  fBigDescLibx := LIBX_NO_ID;
 end;
 
 
@@ -1241,12 +1246,19 @@ begin
 end;
 
 
-function TKMMapTxtInfo.GetSmallDescToDisplay: UnicodeString;
+function TKMMapTxtInfo.GetSmallDescSanitized: UnicodeString;
+var
+  I: Integer;
 begin
   if fSmallDescLibx = LIBX_NO_ID then
     Result := fSmallDesc
   else
     Result := fSmallDescTranslated;
+
+  // Trim to EOL (for display in a table)
+  I := Pos('|', Result);
+  if I <> 0 then
+    Result := LeftStr(Result, I);
 end;
 
 

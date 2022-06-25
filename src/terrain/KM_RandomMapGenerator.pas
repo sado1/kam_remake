@@ -639,7 +639,8 @@ begin
     if gGame.MapTxtInfo.Author = '' then
       gGame.MapTxtInfo.Author := 'Random map generator';
 
-    if gGame.MapTxtInfo.SmallDescToDisplay = '' then
+    // SmallDescSanitized will be empty if there's no SmallDesc and no libx index
+    if gGame.MapTxtInfo.SmallDescSanitized = '' then
       gGame.MapTxtInfo.SmallDesc := 'Randomly generated map';
 
     if gGame.MapTxtInfo.BigDescToDisplay = '' then

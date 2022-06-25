@@ -382,7 +382,7 @@ begin
       end;
 
       R := MakeListRow(['', IntToStr(fMaps[I].LocCount), fMaps[I].Name, MapSizeText(fMaps[I].MapSizeX, fMaps[I].MapSizeY)]);
-      R.Cells[2].SubTxt := fMaps[I].TxtInfo.SmallDescToDisplay;
+      R.Cells[2].SubTxt :=  fMaps[I].TxtInfo.SmallDescSanitized;
       R.Cells[0].Pic := MakePic(rxGui, GLYPH_MISSION_MODE[fMaps[I].MissionMode]);
       R.Tag := I;
       ColumnBox_Maps.AddItem(R);
@@ -465,7 +465,7 @@ begin
 
       Label_Title.Caption := map.Name;
       Memo_Desc.Text      := map.BigDesc;
-      ColumnBox_Maps.SelectedItem.Cells[2].SubTxt := map.TxtInfo.SmallDescToDisplay; // Update SmallText of the selected map
+      ColumnBox_Maps.SelectedItem.Cells[2].SubTxt := map.TxtInfo.SmallDescSanitized; // Update SmallText of the selected map
       MinimapView.Show;
 
       //Location
