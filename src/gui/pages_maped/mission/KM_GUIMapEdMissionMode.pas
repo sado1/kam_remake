@@ -322,31 +322,14 @@ end;
 
 procedure TKMMapEdMissionMode.RadioMissionDesc_Changed(Sender: TObject);
 begin
-  case Radio_SmallDescType.ItemIndex of
-    0:  begin
-          Edit_SmallDesc.Visible := True;
-          NumEdit_SmallDesc.Visible := False;
-        end;
-    1:  begin
-          Edit_SmallDesc.Visible := False;
-          NumEdit_SmallDesc.Visible := True;
-        end;
-  end;
+  Edit_SmallDesc.Visible := Radio_SmallDescType.ItemIndex = 0;
+  NumEdit_SmallDesc.Visible := Radio_SmallDescType.ItemIndex = 1;
 
-  case Radio_BigDescType.ItemIndex of
-    0:  begin
-          Edit_BigDesc.Visible := True;
-          Memo_BigDesc.Visible := True;
-          NumEdit_BigDesc.Visible := False;
-        end;
-    1:  begin
-          Edit_BigDesc.Visible := False;
-          Memo_BigDesc.Visible := False;
-          NumEdit_BigDesc.Visible := True;
-        end;
-  end;
+  Edit_BigDesc.Visible := Radio_BigDescType.ItemIndex = 0;
+  Memo_BigDesc.Visible := Radio_BigDescType.ItemIndex = 0;
+  NumEdit_BigDesc.Visible := Radio_BigDescType.ItemIndex = 1;
 
-  UpdateMapTxtInfo(Sender);
+  UpdateMapTxtInfo(nil);
 end;
 
 
@@ -362,7 +345,8 @@ begin
     CheckBox_BlockTeamSelection.Disable;
     CheckBox_BlockPeacetime.Disable;
     CheckBox_BlockFullMapPreview.Disable;
-  end else begin
+  end else
+  begin
     CheckBox_BlockTeamSelection.Enable;
     CheckBox_BlockPeacetime.Enable;
     CheckBox_BlockFullMapPreview.Enable;
@@ -373,13 +357,13 @@ begin
   gGame.MapTxtInfo.Version := Edit_Version.Text;
 
   case Radio_SmallDescType.ItemIndex of
-    0:  gGame.MapTxtInfo.SmallDesc := Edit_SmallDesc.Text;
-    1:  gGame.MapTxtInfo.SetSmallDescLibxAndTranslation(NumEdit_SmallDesc.Value, '');
+    0: gGame.MapTxtInfo.SmallDesc := Edit_SmallDesc.Text;
+    1: gGame.MapTxtInfo.SetSmallDescLibxAndTranslation(NumEdit_SmallDesc.Value, '');
   end;
 
   case Radio_BigDescType.ItemIndex of
-    0:  gGame.MapTxtInfo.BigDesc     := Edit_BigDesc.Text;
-    1:  gGame.MapTxtInfo.SetBigDescLibxAndTranslation(NumEdit_BigDesc.Value, '');
+    0: gGame.MapTxtInfo.BigDesc := Edit_BigDesc.Text;
+    1: gGame.MapTxtInfo.SetBigDescLibxAndTranslation(NumEdit_BigDesc.Value, '');
   end;
 
   gGame.MapTxtInfo.IsCoop         := CheckBox_Coop.Checked;
