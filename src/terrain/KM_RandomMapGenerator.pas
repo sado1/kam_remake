@@ -636,11 +636,13 @@ begin
   begin
     //gGameParams.IsNormalMission;
 
-    if (Length(gGame.MapTxtInfo.Author) = 0) then
+    if gGame.MapTxtInfo.Author = '' then
       gGame.MapTxtInfo.Author := 'Random map generator';
-    if (Length(gGame.MapTxtInfo.SmallDescToDisplay) = 0) then
+
+    if gGame.MapTxtInfo.SmallDescToDisplay = '' then
       gGame.MapTxtInfo.SmallDesc := 'Randomly generated map';
-    if (Length(gGame.MapTxtInfo.BigDescToDisplay) = 0) then
+
+    if gGame.MapTxtInfo.BigDescToDisplay = '' then
       with RMGSettings.Locs do
         gGame.MapTxtInfo.BigDesc := Format(
           'This is a randomly generated map [%dx%d] for %d players||Parameters:| Stones = %d| Gold = %d| Iron = %d| Initial resources: %s',
